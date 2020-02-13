@@ -2,8 +2,6 @@
 
 ICU_VERSION="58"
 
-echo $PWD
-
 ICU_DIR="$PWD/icu"
 
 ICU_SOURCE="${ICU_DIR}/source"
@@ -27,136 +25,133 @@ CFLAGS="-O3 -D__STDC_INT64__ -fno-exceptions -fno-short-wchar -fno-short-enums -
 CXXFLAGS="${CFLAGS} -std=c++11 -fembed-bitcode"
 
 #will set value to 1
-defines_config_set_1=( \
-"UCONFIG_NO_COLLATION" \
-"UCONFIG_NO_LEGACY_CONVERSION" \
-"UCONFIG_NO_BREAK_ITERATION" \
-"UCONFIG_NO_COLLATION" \
-"UCONFIG_NO_FORMATTING" \
-"UCONFIG_NO_REGULAR_EXPRESSIONS" \
-"UCONFIG_NO_LEGACY_CONVERSION" \
-"CONFIG_NO_CONVERSION" \
-"U_DISABLE_RENAMING" \
+defines_config_set_1=(
+    "UCONFIG_NO_COLLATION"
+    "UCONFIG_NO_LEGACY_CONVERSION"
+    "UCONFIG_NO_BREAK_ITERATION"
+    "UCONFIG_NO_COLLATION"
+    "UCONFIG_NO_FORMATTING"
+    "UCONFIG_NO_REGULAR_EXPRESSIONS"
+    "UCONFIG_NO_LEGACY_CONVERSION"
+    "CONFIG_NO_CONVERSION"
+    "U_DISABLE_RENAMING"
 )
 
 #will set value to 0
-defines_config_set_0=( \
-"U_HAVE_NL_LANGINFO_CODESET" \
-"UCONFIG_NO_TRANSLITERATION" \
-"U_USING_ICU_NAMESPACE" \
+defines_config_set_0=(
+    "U_HAVE_NL_LANGINFO_CODESET"
+    "UCONFIG_NO_TRANSLITERATION"
+    "U_USING_ICU_NAMESPACE"
 )
 
 #will set value to 1
-defines_utypes=( \
-"U_CHARSET_IS_UTF8" \
+defines_utypes=(
+    "U_CHARSET_IS_UTF8"
 )
 
 function prebuild() {
 
-svn export http://source.icu-project.org/repos/icu/tags/release-${ICU_VERSION}/icu4c/ ${ICU_DIR} --native-eol LF
+    svn export http://source.icu-project.org/repos/icu/tags/release-${ICU_VERSION}/icu4c/ ${ICU_DIR} --native-eol LF
 
-echo "===== REMOVING data from bundle ====="
+    echo "===== REMOVING data from bundle ====="
 
-#Data bundle reduction
-{
-echo "GENRB_CLDR_VERSION = 32.0.1"
-echo "GENRB_SYNTHETIC_ALIAS = "
-echo "GENRB_ALIAS_SOURCE = \$(GENRB_SYNTHETIC_ALIAS) "
-echo "GENRB_SOURCE = "
-} > "${ICU_SOURCE}/data/locales/reslocal.mk"
+    #Data bundle reduction
+    {
+        echo "GENRB_CLDR_VERSION = 32.0.1"
+        echo "GENRB_SYNTHETIC_ALIAS = "
+        echo "GENRB_ALIAS_SOURCE = \$(GENRB_SYNTHETIC_ALIAS) "
+        echo "GENRB_SOURCE = "
+    } >"${ICU_SOURCE}/data/locales/reslocal.mk"
 
-{
-echo "LANG_CLDR_VERSION = 32.0.1"
-echo "LANG_SYNTHETIC_ALIAS = "
-echo "LANG_ALIAS_SOURCE = \$(LANG_SYNTHETIC_ALIAS) "
-echo "LANG_SOURCE = "
-} > "${ICU_SOURCE}/data/lang/reslocal.mk"
+    {
+        echo "LANG_CLDR_VERSION = 32.0.1"
+        echo "LANG_SYNTHETIC_ALIAS = "
+        echo "LANG_ALIAS_SOURCE = \$(LANG_SYNTHETIC_ALIAS) "
+        echo "LANG_SOURCE = "
+    } >"${ICU_SOURCE}/data/lang/reslocal.mk"
 
-{
-echo "CURR_CLDR_VERSION = 32.0.1"
-echo "CURR_SYNTHETIC_ALIAS = "
-echo "CURR_ALIAS_SOURCE = \$(CURR_SYNTHETIC_ALIAS) "
-echo "CURR_SOURCE = "
-} > "${ICU_SOURCE}/data/curr/reslocal.mk"
+    {
+        echo "CURR_CLDR_VERSION = 32.0.1"
+        echo "CURR_SYNTHETIC_ALIAS = "
+        echo "CURR_ALIAS_SOURCE = \$(CURR_SYNTHETIC_ALIAS) "
+        echo "CURR_SOURCE = "
+    } >"${ICU_SOURCE}/data/curr/reslocal.mk"
 
-{
-echo "REGION_CLDR_VERSION = 32.0.1"
-echo "REGION_SYNTHETIC_ALIAS = "
-echo "REGION_ALIAS_SOURCE = \$(REGION_SYNTHETIC_ALIAS) "
-echo "REGION_SOURCE = "
-} > "${ICU_SOURCE}/data/region/reslocal.mk"
+    {
+        echo "REGION_CLDR_VERSION = 32.0.1"
+        echo "REGION_SYNTHETIC_ALIAS = "
+        echo "REGION_ALIAS_SOURCE = \$(REGION_SYNTHETIC_ALIAS) "
+        echo "REGION_SOURCE = "
+    } >"${ICU_SOURCE}/data/region/reslocal.mk"
 
-{
-echo "UNIT_CLDR_VERSION = 32.0.1"
-echo "UNIT_SYNTHETIC_ALIAS = "
-echo "UNIT_ALIAS_SOURCE = \$(UNIT_SYNTHETIC_ALIAS) "
-echo "UNIT_SOURCE = "
-} > "${ICU_SOURCE}/data/unit/reslocal.mk"
+    {
+        echo "UNIT_CLDR_VERSION = 32.0.1"
+        echo "UNIT_SYNTHETIC_ALIAS = "
+        echo "UNIT_ALIAS_SOURCE = \$(UNIT_SYNTHETIC_ALIAS) "
+        echo "UNIT_SOURCE = "
+    } >"${ICU_SOURCE}/data/unit/reslocal.mk"
 
-{
-echo "ZONE_CLDR_VERSION = 32.0.1"
-echo "ZONE_SYNTHETIC_ALIAS = "
-echo "ZONE_ALIAS_SOURCE = \$(ZONE_SYNTHETIC_ALIAS) "
-echo "ZONE_SOURCE = "
-} > "${ICU_SOURCE}/data/zone/reslocal.mk"
+    {
+        echo "ZONE_CLDR_VERSION = 32.0.1"
+        echo "ZONE_SYNTHETIC_ALIAS = "
+        echo "ZONE_ALIAS_SOURCE = \$(ZONE_SYNTHETIC_ALIAS) "
+        echo "ZONE_SOURCE = "
+    } >"${ICU_SOURCE}/data/zone/reslocal.mk"
 
-#find "${ICU_SOURCES}/data/mappings/" -name '*.mk' ! -name 'ucmcore.mk' -type f -exec rm -f {} +
+    #find "${ICU_SOURCES}/data/mappings/" -name '*.mk' ! -name 'ucmcore.mk' -type f -exec rm -f {} +
 
-mv "${ICU_SOURCE}/data/mappings/ucmcore.mk" "${ICU_SOURCE}/data/mappings/ucmcore.not_used" 2>/dev/null
-mv "${ICU_SOURCE}/data/mappings/ucmfiles.mk" "${ICU_SOURCE}/data/mappings/ucmfiles.not_used" 2>/dev/null
-mv "${ICU_SOURCE}/data/mappings/ucmebcdic.mk" "${ICU_SOURCE}/data/mappings/ucmebcdic.not_used" 2>/dev/null
-mv "${ICU_SOURCE}/data/mappings/ucmlocal.mk" "${ICU_SOURCE}/data/mappings/ucmlocal.not_used" 2>/dev/null
+    mv "${ICU_SOURCE}/data/mappings/ucmcore.mk" "${ICU_SOURCE}/data/mappings/ucmcore.not_used" 2>/dev/null
+    mv "${ICU_SOURCE}/data/mappings/ucmfiles.mk" "${ICU_SOURCE}/data/mappings/ucmfiles.not_used" 2>/dev/null
+    mv "${ICU_SOURCE}/data/mappings/ucmebcdic.mk" "${ICU_SOURCE}/data/mappings/ucmebcdic.not_used" 2>/dev/null
+    mv "${ICU_SOURCE}/data/mappings/ucmlocal.mk" "${ICU_SOURCE}/data/mappings/ucmlocal.not_used" 2>/dev/null
 
-echo "===== Modify icu/source/common/unicode/uconfig.h ====="
+    echo "===== Modify icu/source/common/unicode/uconfig.h ====="
 
-cp "${ICU_SOURCE}/common/unicode/uconfig" "${ICU_SOURCE}/common/unicode/uconfig.h" 2>/dev/null
-cp "${ICU_SOURCE}/common/unicode/uconfig.h" "${ICU_SOURCE}/common/unicode/uconfig" 2>/dev/null
+    cp "${ICU_SOURCE}/common/unicode/uconfig" "${ICU_SOURCE}/common/unicode/uconfig.h" 2>/dev/null
+    cp "${ICU_SOURCE}/common/unicode/uconfig.h" "${ICU_SOURCE}/common/unicode/uconfig" 2>/dev/null
 
-for var in "${defines_config_set_1[@]}"
-do
-sed "/define __UCONFIG_H__/a \\
+    for var in "${defines_config_set_1[@]}"; do
+        sed "/define __UCONFIG_H__/a \\
 #ifndef ${var} \\
 #define ${var} 1 \\
 #endif \\
-" "${ICU_SOURCE}/common/unicode/uconfig.h" > "${ICU_SOURCE}/common/unicode/uconfig.tmp"
+" "${ICU_SOURCE}/common/unicode/uconfig.h" >"${ICU_SOURCE}/common/unicode/uconfig.tmp"
 
-mv "${ICU_SOURCE}/common/unicode/uconfig.tmp" "${ICU_SOURCE}/common/unicode/uconfig.h"
-done
+        mv "${ICU_SOURCE}/common/unicode/uconfig.tmp" "${ICU_SOURCE}/common/unicode/uconfig.h"
+    done
 
-for var in "${defines_config_set_0[@]}"
-do
-sed "/define __UCONFIG_H__/a \\
+    for var in "${defines_config_set_0[@]}"; do
+        sed "/define __UCONFIG_H__/a \\
 #ifndef ${var} \\
 #define ${var} 0 \\
 #endif \\
-" "${ICU_SOURCE}/common/unicode/uconfig.h" > "${ICU_SOURCE}/common/unicode/uconfig.tmp"
+" "${ICU_SOURCE}/common/unicode/uconfig.h" >"${ICU_SOURCE}/common/unicode/uconfig.tmp"
 
-mv "${ICU_SOURCE}/common/unicode/uconfig.tmp" "${ICU_SOURCE}/common/unicode/uconfig.h"
-done
+        mv "${ICU_SOURCE}/common/unicode/uconfig.tmp" "${ICU_SOURCE}/common/unicode/uconfig.h"
+    done
 
-echo "===== Modify icu/source/common/unicode/utypes.h ====="
+    echo "===== Modify icu/source/common/unicode/utypes.h ====="
 
-cp "${ICU_SOURCE}/common/unicode/utypes" "${ICU_SOURCE}/common/unicode/utypes.h" 2>/dev/null
-cp "${ICU_SOURCE}/common/unicode/utypes.h" "${ICU_SOURCE}/common/unicode/utypes" 2>/dev/null
+    cp "${ICU_SOURCE}/common/unicode/utypes" "${ICU_SOURCE}/common/unicode/utypes.h" 2>/dev/null
+    cp "${ICU_SOURCE}/common/unicode/utypes.h" "${ICU_SOURCE}/common/unicode/utypes" 2>/dev/null
 
-for var in "${defines_utypes[@]}"
-do
-sed "/define UTYPES_H/a \\
+    for var in "${defines_utypes[@]}"; do
+        sed "/define UTYPES_H/a \\
 #ifndef ${var} \\
 #define ${var} 1 \\
 #endif \\
-" "${ICU_SOURCE}/common/unicode/utypes.h" > "${ICU_SOURCE}/common/unicode/utypes.tmp"
+" "${ICU_SOURCE}/common/unicode/utypes.h" >"${ICU_SOURCE}/common/unicode/utypes.tmp"
 
-mv "${ICU_SOURCE}/common/unicode/utypes.tmp" "${ICU_SOURCE}/common/unicode/utypes.h"
+        mv "${ICU_SOURCE}/common/unicode/utypes.tmp" "${ICU_SOURCE}/common/unicode/utypes.h"
 
-done
+    done
 
-echo "===== Patching icu/source/tools/pkgdata/pkgdata.cpp for iOS ====="
+    echo "===== Patching icu/source/tools/pkgdata/pkgdata.cpp for iOS ====="
 
-cp "${ICU_SOURCE}/tools/pkgdata/pkgdata" "${ICU_SOURCE}/tools/pkgdata/pkgdata.cpp" 2>/dev/null
-cp "${ICU_SOURCE}/tools/pkgdata/pkgdata.cpp" "${ICU_SOURCE}/tools/pkgdata/pkgdata" 2>/dev/null
+    cp "${ICU_SOURCE}/tools/pkgdata/pkgdata" "${ICU_SOURCE}/tools/pkgdata/pkgdata.cpp" 2>/dev/null
+    cp "${ICU_SOURCE}/tools/pkgdata/pkgdata.cpp" "${ICU_SOURCE}/tools/pkgdata/pkgdata" 2>/dev/null
 
-sed "s/int result = system(cmd);/ \\
+    sed "s/int result = system(cmd);/ \\
 #if defined(IOS_SYSTEM_FIX) \\
 pid_t pid; \\
 char * argv[2]; argv[0] = cmd; argv[1] = NULL; \\
@@ -166,103 +161,117 @@ int result = 0; \\
 #else \\
 int result = system(cmd); \\
 #endif \\
-/g" "${ICU_SOURCE}/tools/pkgdata/pkgdata.cpp" > "${ICU_SOURCE}/tools/pkgdata/pkgdata.tmp"
+/g" "${ICU_SOURCE}/tools/pkgdata/pkgdata.cpp" >"${ICU_SOURCE}/tools/pkgdata/pkgdata.tmp"
 
-sed "/#include <stdlib.h>/a \\
+    sed "/#include <stdlib.h>/a \\
 #if defined(IOS_SYSTEM_FIX) \\
 #include <spawn.h> \\
 extern char **environ; \\
 #endif \\
-" "${ICU_SOURCE}/tools/pkgdata/pkgdata.tmp" > "${ICU_SOURCE}/tools/pkgdata/pkgdata.cpp"
+" "${ICU_SOURCE}/tools/pkgdata/pkgdata.tmp" >"${ICU_SOURCE}/tools/pkgdata/pkgdata.cpp"
 
-#mv "${ICU_SOURCE}/tools/pkgdata/pkgdata.tmp" "${ICU_SOURCE}/tools/pkgdata/pkgdata.cpp"
+    #mv "${ICU_SOURCE}/tools/pkgdata/pkgdata.tmp" "${ICU_SOURCE}/tools/pkgdata/pkgdata.cpp"
 
-echo "==============================="
-echo "===== Run build for MacOS ====="
-echo "==============================="
+    echo "==============================="
+    echo "===== Run build for MacOS ====="
+    echo "==============================="
 
-export PLATFORM_PREFIX="${PWD}/mac-build"
+    export PLATFORM_PREFIX="${PWD}/mac-build"
 
-export CPPFLAGS=${CFLAGS}
+    export CPPFLAGS=${CFLAGS}
 
-mkdir -p ${PREBUILD}
-cd ${PREBUILD}
+    mkdir -p ${PREBUILD}
 
-sh ${ICU_SOURCE}/runConfigureICU MacOSX --prefix=${PLATFORM_PREFIX} ${CONFIG_PREFIX}
+    cd ${PREBUILD}
 
-make clean
-make -j4
-make install
+    sh ${ICU_SOURCE}/runConfigureICU MacOSX --prefix=${PLATFORM_PREFIX} ${CONFIG_PREFIX}
 
-cd ..
+    make clean
+    make -j4
+    make install
+
+    cd ..
 }
 
-function build {
+function build() {
 
-unset CXX
-unset CC
-unset CFLAGS
-unset CXXFLAGS
-unset LDFLAGS
+    unset CXX
+    unset CC
+    unset CFLAGS
+    unset CXXFLAGS
+    unset LDFLAGS
 
-echo "preparing $1 toolchain"
+    echo "preparing $1 toolchain"
 
-export BUILD_DIR="${PWD}/build-${2}"
+    export BUILD_DIR="${PWD}/build-${2}"
 
-DEVELOPER="$(xcode-select --print-path)"
-SDKROOT="$(xcodebuild -version -sdk $4 | grep -E '^Path' | sed 's/Path: //')"
-ARCH=$2
+    DEVELOPER="$(xcode-select --print-path)"
+    SDKROOT="$(xcodebuild -version -sdk $4 | grep -E '^Path' | sed 's/Path: //')"
+    ARCH=$2
 
-ICU_FLAGS="-I$ICU_SOURCE/common/ -I$ICU_SOURCE/tools/tzcode/ "
+    ICU_FLAGS="-I$ICU_SOURCE/common/ -I$ICU_SOURCE/tools/tzcode/ "
 
-export ADDITION_FLAG="-DIOS_SYSTEM_FIX"
+    export ADDITION_FLAG="-DIOS_SYSTEM_FIX"
 
-export CXX="$DEVELOPER/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++"
-export CC="$DEVELOPER/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"
-export CFLAGS="-fembed-bitcode -isysroot $SDKROOT -I$SDKROOT/usr/include/ -I./include/ -arch $ARCH -miphoneos-version-min=9.0 $ICU_FLAGS $CFLAGS ${ADDITION_FLAG}"
-export CXXFLAGS="${CXXFLAGS} -fembed-bitcode -stdlib=libc++ -isysroot $SDKROOT -I$SDKROOT/usr/include/ -I./include/ -arch $ARCH -miphoneos-version-min=9.0 $ICU_FLAGS ${ADDITION_FLAG}"
-export LDFLAGS="-fembed-bitcode -stdlib=libc++ -L$SDKROOT/usr/lib/ -isysroot $SDKROOT -Wl,-dead_strip -miphoneos-version-min=9.0 -lstdc++ ${ADDITION_FLAG}"
+    export CXX="$DEVELOPER/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++"
+    export CC="$DEVELOPER/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"
+    export CFLAGS="-fembed-bitcode -isysroot $SDKROOT -I$SDKROOT/usr/include/ -I./include/ -arch $ARCH -miphoneos-version-min=9.0 $ICU_FLAGS $CFLAGS ${ADDITION_FLAG}"
+    export CXXFLAGS="${CXXFLAGS} -fembed-bitcode -stdlib=libc++ -isysroot $SDKROOT -I$SDKROOT/usr/include/ -I./include/ -arch $ARCH -miphoneos-version-min=9.0 $ICU_FLAGS ${ADDITION_FLAG}"
+    export LDFLAGS="-fembed-bitcode -stdlib=libc++ -L$SDKROOT/usr/lib/ -isysroot $SDKROOT -Wl,-dead_strip -miphoneos-version-min=9.0 -lstdc++ ${ADDITION_FLAG}"
 
-mkdir -p ${BUILD_DIR}
-cd ${BUILD_DIR}
+    mkdir -p ${BUILD_DIR}
+    cd ${BUILD_DIR}
 
-sh ${ICU_SOURCE}/configure --host=$3 --with-library-suffix=${2} --with-cross-build=${PREBUILD} ${CONFIG_PREFIX}
+    sh ${ICU_SOURCE}/configure --host=$3 --with-library-suffix=${2} --with-cross-build=${PREBUILD} ${CONFIG_PREFIX}
 
-make clean
-make -j4
-make install
+    make clean
+    make -j4
+    make install
 
-cd ..
-
+    cd ..
 }
 
 prebuild
 
-build "armv7"   "armv7"     "armv7-apple-darwin"    "iphoneos"
-build "arm64"   "arm64"     "aarch64-apple-darwin"  "iphoneos"
-build "x86_64"  "x86_64"    "x86_64-apple-darwin"   "iphonesimulator"
+echo "------------------------------------------------------"
+echo " ICU build armv7 libraries"
+echo "------------------------------------------------------"
 
-# source "$PWD/../prefix.sh"
+build "armv7" "armv7" "armv7-apple-darwin" "iphoneos"
 
-# mkdir include
-# mkdir include/unicode
-# cp ${ICU_SOURCE}/common/unicode/*.h ./include/unicode
+echo "------------------------------------------------------"
+echo " ICU build arm64 libraries"
+echo "------------------------------------------------------"
 
-echo "Combining x86_64, armv7, armv7s, and arm64 libraries."
+build "arm64" "arm64" "aarch64-apple-darwin" "iphoneos"
 
-function buildUniversal {
-    lipo -create -output "${PWD}/lib/$1.a" \
-        "${PWD}/build-x86_64/lib/$1x86_64.a" \
-        "${PWD}/build-arm64/lib/$1arm64.a" \
-        "${PWD}/build-armv7/lib/$1armv7.a"
+echo "------------------------------------------------------"
+echo " ICU combining x86_64 libraries"
+echo "------------------------------------------------------"
+
+build "x86_64" "x86_64" "x86_64-apple-darwin" "iphonesimulator"
+
+cd ..
+
+echo "------------------------------------------------------"
+echo " ICU combining x86_64, armv7 and arm64 libraries"
+echo "------------------------------------------------------"
+
+function buildUniversal() {
+    lipo -create -output "${PWD}/build/ios/lib/$1.a" \
+        "${PWD}/ios/build-x86_64/lib/$1x86_64.a" \
+        "${PWD}/ios/build-arm64/lib/$1arm64.a" \
+        "${PWD}/ios/build-armv7/lib/$1armv7.a"
 }
 
-mkdir lib
+mkdir -p build
+mkdir -p build/ios
+mkdir -p build/ios/lib
+mkdir -p build/ios/include
+mkdir -p build/ios/include/unicode
 
-buildUniversal "libicui18n"
-buildUniversal "libicuio"
-buildUniversal "libicule"
-buildUniversal "libiculx"
-buildUniversal "libicutu"
+cp ${ICU_SOURCE}/common/unicode/*.h build/ios/include/unicode
+
 buildUniversal "libicuuc"
+buildUniversal "libicui18n"
 buildUniversal "libicudata"

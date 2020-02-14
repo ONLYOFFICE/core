@@ -53,6 +53,7 @@ SOURCES += \
     ../Source/DocxFormat/Math/oMathPara.cpp \
     ../Source/MathEquation/MathEquation.cpp \
     ../Source/DocxFormat/Docx.cpp \
+    ../Source/DocxFormat/DocxFlat.cpp \
     ../Source/DocxFormat/Comments.cpp \
     ../Source/DocxFormat/VmlDrawing.cpp \
     ../Source/XlsxFormat/Chart/ChartSerialize.cpp \

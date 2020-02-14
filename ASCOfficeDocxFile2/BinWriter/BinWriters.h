@@ -73,6 +73,7 @@ namespace BinDocxRW
 		NSBinPptxRW::CDrawingConverter*			m_pOfficeDrawingConverter;
 		NSFontCutter::CEmbeddedFontsManager*	m_pEmbeddedFontsManager;
 
+		OOX::Document*			m_pMain;
 		OOX::CSettings*			m_oSettings;
 		PPTX::Theme*			m_poTheme;
 
@@ -80,8 +81,9 @@ namespace BinDocxRW
 		std::map<int, bool>		m_mapIgnoreComments;
 
 		ParamsWriter(NSBinPptxRW::CBinaryFileWriter* pCBufferedStream, DocWrapper::FontProcessor* pFontProcessor, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager):
-				m_pCBufferedStream(pCBufferedStream),m_pFontProcessor(pFontProcessor),m_pOfficeDrawingConverter(pOfficeDrawingConverter),m_pEmbeddedFontsManager(pEmbeddedFontsManager)
+				m_pCBufferedStream(pCBufferedStream), m_pFontProcessor(pFontProcessor), m_pOfficeDrawingConverter(pOfficeDrawingConverter),m_pEmbeddedFontsManager(pEmbeddedFontsManager)
 		{
+			m_pMain		= NULL;
 			m_oSettings = NULL;
 			m_poTheme	= NULL;
 			m_pCurRels	= NULL;
@@ -126,7 +128,6 @@ namespace BinDocxRW
 	class BinaryHeaderFooterTableWriter
 	{
 		BinaryCommonWriter				m_oBcw;
-		ParamsWriter&					m_oParamsWriter;
 		OOX::CSettings*					m_oSettings;
 
 		PPTX::Theme*					m_poTheme;
@@ -134,14 +135,16 @@ namespace BinDocxRW
 		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 		std::map<int, bool>*			m_mapIgnoreComments;
 	public:
-		OOX::IFileContainer* m_oDocumentRels;
-		std::vector<OOX::CHdrFtr*> m_aHeaders;
-		std::vector<SimpleTypes::EHdrFtr> m_aHeaderTypes;
-		std::vector<OOX::Logic::CSectionProperty*> m_aHeaderSectPrs;
-		std::vector<OOX::CHdrFtr*> m_aFooters;
-		std::vector<SimpleTypes::EHdrFtr> m_aFooterTypes;
-		std::vector<OOX::Logic::CSectionProperty*> m_aFooterSectPrs;
-	public:
+		ParamsWriter&								m_oParamsWriter;
+		OOX::IFileContainer*						m_oDocumentRels;
+
+		std::vector<OOX::CHdrFtr*>					m_aHeaders;
+		std::vector<SimpleTypes::EHdrFtr>			m_aHeaderTypes;
+		std::vector<OOX::Logic::CSectionProperty*>	m_aHeaderSectPrs;
+		std::vector<OOX::CHdrFtr*>					m_aFooters;
+		std::vector<SimpleTypes::EHdrFtr>			m_aFooterTypes;
+		std::vector<OOX::Logic::CSectionProperty*>	m_aFooterSectPrs;
+
 		BinaryHeaderFooterTableWriter(ParamsWriter& oParamsWriter, OOX::IFileContainer* oDocumentRel, std::map<int, bool>* mapIgnoreComments);
 		void Write();
 		void WriteHdrFtrContent(std::vector<OOX::CHdrFtr*>& aHdrFtrs, std::vector<SimpleTypes::EHdrFtr>& aHdrFtrTypes, std::vector<OOX::Logic::CSectionProperty*>& aHdrSectPrs, bool bHdr);

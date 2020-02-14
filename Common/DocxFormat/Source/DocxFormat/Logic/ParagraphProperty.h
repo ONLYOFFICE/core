@@ -1199,7 +1199,7 @@ namespace OOX
 				return oProperties;
 			}
 			template<typename Type>
-			static nullable<Type>     Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
+			static nullable<Type> Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
 			{
 				nullable<Type> oResult;
 

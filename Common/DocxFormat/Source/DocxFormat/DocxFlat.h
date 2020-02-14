@@ -39,6 +39,8 @@
 
 namespace OOX
 {
+	class CHdrFtr;
+
 	class CDocxFlat : public Document, public File, public WritingElement
 	{
 	public:
@@ -50,6 +52,8 @@ namespace OOX
 		{
 			read( oFilePath );
 		}
+
+		virtual ~CDocxFlat();
 
 		virtual void read(const CPath& oFilePath)
 		{
@@ -87,33 +91,7 @@ namespace OOX
 		virtual void fromXML(XmlUtils::CXmlNode& oNode)
 		{
 		}
-		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-		{
-			if ( oReader.IsEmptyNode() )
-				return;
-
-			int nStylesDepth = oReader.GetDepth();
-			while ( oReader.ReadNextSiblingNode( nStylesDepth ) )
-			{
-				std::wstring sName = oReader.GetName();
-
-				if ( L"w:body" == sName )
-				{
-					m_pDocument = new CDocument(dynamic_cast<Document*>(this));
-					m_pDocument->fromXML(oReader);
-				}
-				else if ( L"w:fonts" == sName )
-					m_pFontTable = oReader;
-				else if ( L"w:lists" == sName )
-					m_pNumbering = oReader;
-				else if ( L"w:styles" == sName )
-					m_pStyles = oReader;
-				else if ( L"w:bgPict" == sName )
-				{
-					//m_oBgPict = oReader;
-				}
-			}
-		}
+		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
         virtual std::wstring toXML() const
 		{
 			std::wstring sXml = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
@@ -132,6 +110,8 @@ namespace OOX
 		nullable<CFontTable>			m_pFontTable;
 		nullable<CNumbering>			m_pNumbering;
 		//nullable<Logic::CBgPict>		m_oBgPict;
+
+		std::map<std::wstring, OOX::CHdrFtr*> m_mapHeadersFooters;
 	
 	};
 

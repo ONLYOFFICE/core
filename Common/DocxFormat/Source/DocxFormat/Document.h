@@ -303,7 +303,10 @@ namespace OOX
 				else if ( _T("w:sdt") == sName )
 					pItem = new Logic::CSdt( document );
 				else if ( _T("w:sectPr") == sName )
+				{
 					m_oSectPr = new Logic::CSectionProperty( document );
+					m_oSectPr->fromXML(oReader);
+				}
 				else if ( _T("w:tbl") == sName )
 					pItem = new Logic::CTbl( document );
 				else if ( _T("wx:sect") == sName && !oReader.IsEmptyNode())

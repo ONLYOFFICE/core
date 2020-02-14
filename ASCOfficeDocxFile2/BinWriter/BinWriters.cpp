@@ -1260,14 +1260,14 @@ void Binary_pPrWriter::WriteSectPr (OOX::Logic::CSectionProperty* pSectPr)
 		WritePageSettings(pSectPr);
 	m_oBcw.WriteItemEnd(nCurPos);
 //Header
-	if(pSectPr->m_arrHeaderReference.size() > 0)
+	if(false == pSectPr->m_arrHeaderReference.empty())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrType::headers);
 			WriteHeaderFooter(pSectPr, pSectPr->m_arrHeaderReference, true);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 //Footer
-	if(pSectPr->m_arrFooterReference.size() > 0)
+	if(false == pSectPr->m_arrFooterReference.empty())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrType::footers);
 			WriteHeaderFooter(pSectPr, pSectPr->m_arrFooterReference, false);
@@ -1431,11 +1431,30 @@ void Binary_pPrWriter::WriteHeaderFooter(OOX::Logic::CSectionProperty* pSectPr, 
 		const ComplexTypes::Word::CHdrFtrRef& oRef = *aRefs[i];
 		if( oRef.m_oType.IsInit() && oRef.m_oId.IsInit())
 		{
-			smart_ptr<OOX::File> oFile = m_oBinaryHeaderFooterTableWriter->m_oDocumentRels->Find(oRef.m_oId->GetValue());
-			if (oFile.IsInit() && (OOX::FileTypes::Header == oFile->type() || OOX::FileTypes::Footer == oFile->type()))
+			int nIndex = 0;
+			OOX::CHdrFtr* pHdrFtr = NULL;
+			
+			OOX::CDocxFlat *docx_flat = dynamic_cast<OOX::CDocxFlat*>(m_oBinaryHeaderFooterTableWriter->m_oParamsWriter.m_pMain);
+
+			if (docx_flat)
 			{
-				int nIndex = 0;
-				OOX::CHdrFtr* pHdrFtr = (OOX::CHdrFtr*)oFile.GetPointer();
+				std::map<std::wstring, OOX::CHdrFtr*>::iterator pFind = docx_flat->m_mapHeadersFooters.find(oRef.m_oId->GetValue());
+				if (pFind != docx_flat->m_mapHeadersFooters.end())
+				{
+					pHdrFtr = pFind->second;
+				}
+			}
+			else
+			{
+				smart_ptr<OOX::File> oFile = m_oBinaryHeaderFooterTableWriter->m_oDocumentRels->Find(oRef.m_oId->GetValue());
+				if (oFile.IsInit() && (OOX::FileTypes::Header == oFile->type() || OOX::FileTypes::Footer == oFile->type()))
+				{
+					pHdrFtr = (OOX::CHdrFtr*)oFile.GetPointer();
+				}
+			}
+			
+			if (pHdrFtr)
+			{
 				if(bHdr)
 				{
 					nIndex = (int)m_oBinaryHeaderFooterTableWriter->m_aHeaders.size();
@@ -8338,6 +8357,7 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 	OOX::CDocx		*pDocx = new OOX::CDocx(OOX::CPath(sDir));
 	OOX::CDocxFlat	*pDocxFlat = NULL;
 
+	OOX::Document	*pMain = NULL;
 	OOX::CDocument	*pDocument = NULL;
 	OOX::CStyles	*pStyles = NULL;
 	OOX::CFontTable	*pFontTable = NULL;
@@ -8352,6 +8372,8 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 		*oBufferedStream.m_pTheme = smart_ptr<PPTX::Theme>(pDocx->m_pTheme);
 		oBufferedStream.m_pTheme->AddRef();
 
+		pMain		= dynamic_cast<OOX::Document*>(pDocx);
+		
 		pDocument	= pDocx->m_pDocument;
 		pStyles		= pDocx->m_pStyles;
 		pFontTable	= pDocx->m_pFontTable;
@@ -8363,6 +8385,8 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 		pDocxFlat = new OOX::CDocxFlat(OOX::CPath(sDir));
 		if ((pDocxFlat) && (pDocxFlat->m_pDocument.IsInit()))
 		{
+			pMain		= dynamic_cast<OOX::Document*>(pDocxFlat);
+			
 			pDocument	= pDocxFlat->m_pDocument.GetPointer();
 			pStyles		= pDocxFlat->m_pStyles.GetPointer();
 			pFontTable	= pDocxFlat->m_pFontTable.GetPointer();
@@ -8475,6 +8499,7 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 //Write DocumentTable
 	ParamsDocumentWriter oParamsDocumentWriter(pDocument);
 	m_oParamsWriter.m_pCurRels = oParamsDocumentWriter.m_pRels;
+	m_oParamsWriter.m_pMain = pMain;
 
 //DocumentTable всегда пишем последней, чтобы сначала заполнить все вспомогательные структуры, а при заполении документа, вызывать методы типа Style_Add...
 	BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(m_oParamsWriter, oParamsDocumentWriter, &m_oParamsWriter.m_mapIgnoreComments, &oBinaryHeaderFooterTableWriter);

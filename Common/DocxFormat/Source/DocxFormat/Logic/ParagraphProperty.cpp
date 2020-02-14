@@ -280,6 +280,8 @@ namespace OOX
 			if ( oReader.IsEmptyNode() )
 				return;
 
+			OOX::Document* document = WritingElement::m_pMainDocument;
+
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
@@ -330,7 +332,10 @@ namespace OOX
 				else if ( !m_bPPrChange && _T("w:rPr") == sName )
 					m_oRPr = oReader;
 				else if ( !m_bPPrChange && _T("w:sectPr") == sName )
-					m_oSectPr = oReader;
+				{
+					m_oSectPr = new CSectionProperty(document);
+					m_oSectPr->fromXML(oReader);
+				}
 				else if ( _T("w:shd") == sName )
 					m_oShd = oReader;
 				else if ( _T("w:snapToGrid") == sName )

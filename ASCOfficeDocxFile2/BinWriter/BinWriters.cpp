@@ -8363,6 +8363,7 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 	OOX::CFontTable	*pFontTable = NULL;
 	OOX::CNumbering	*pNumbering = NULL;
 	OOX::CComments	*pComments = NULL;
+	OOX::CSettings	*pSettings = NULL;
 	
 	if ((pDocx) && (pDocx->m_pDocument))
 	{
@@ -8379,6 +8380,7 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 		pFontTable	= pDocx->m_pFontTable;
 		pNumbering	= pDocx->m_pNumbering;
 		pComments	= pDocx->m_pComments;
+		pSettings	= pDocx->m_pSettings;
 	}
 	else
 	{
@@ -8392,6 +8394,7 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 			pFontTable	= pDocxFlat->m_pFontTable.GetPointer();
 			pNumbering	= pDocxFlat->m_pNumbering.GetPointer();
 			pComments	= &pDocxFlat->m_oComments;
+			pSettings	= pDocxFlat->m_pSettings.GetPointer();
 		}
 	}
 	if (pFontTable)
@@ -8412,18 +8415,21 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 	int nCurPos = 0;
 
 //Write Settings
+	OOX::CSettingsCustom oSettingsCustom;
 	if ((pDocx) && (pDocx->m_pSettings))
 	{
 		std::wstring sSettings = pDocx->GetCustomSettings();
-		OOX::CSettingsCustom oSettingsCustom;
-		if(!sSettings.empty())
+		if(false == sSettings.empty())
 		{
 			oSettingsCustom.FromXml(sSettings);
 		}
+	}
 
+	if (pSettings)
+	{
 		BinDocxRW::BinarySettingsTableWriter oBinarySettingsTableWriter(m_oParamsWriter);
 		int nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Settings);
-		oBinarySettingsTableWriter.Write(*pDocx->m_pSettings, oSettingsCustom);
+		oBinarySettingsTableWriter.Write(*pSettings, oSettingsCustom);
 		this->WriteTableEnd(nCurPos);
 	}
 

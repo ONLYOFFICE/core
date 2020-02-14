@@ -65,6 +65,8 @@ namespace OOX
 				m_pNumbering = oReader;
 			else if ( L"w:styles" == sName )
 				m_pStyles = oReader;
+			else if ( L"w:docPr" == sName )
+				m_pSettings = oReader;
 			else if ( L"w:bgPict" == sName )
 			{
 				//m_oBgPict = oReader;

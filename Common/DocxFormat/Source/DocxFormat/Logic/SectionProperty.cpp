@@ -324,10 +324,10 @@ namespace OOX
 					{
 						pHeader->fromXML(oReader);
 
-						pHeaderRef->m_oId	= L"hdrId" + std::to_wstring(m_arrFooterReference.size() + 1);
+						pHeaderRef->m_oId	= L"hdrId" + std::to_wstring(m_arrHeaderReference.size() + 1);
 						pHeaderRef->m_oType = pHeader->m_oType;
 
-						m_arrFooterReference.push_back( pHeaderRef );
+						m_arrHeaderReference.push_back( pHeaderRef );
 						
 						CDocxFlat* docx_flat = dynamic_cast<CDocxFlat*>(document);
 						if (docx_flat)

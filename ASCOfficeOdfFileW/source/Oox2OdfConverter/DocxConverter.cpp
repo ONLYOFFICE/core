@@ -1991,7 +1991,10 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 				if (s->m_arrHeaderReference[i]->m_oId.IsInit())
 				{
 					convert_hdr_ftr(s->m_arrHeaderReference[i]->m_oId->GetValue());
-					convert(docx_document->m_pDocument->m_oBackground.GetPointer(), 2);
+					if (docx_document)
+					{
+						convert(docx_document->m_pDocument->m_oBackground.GetPointer(), 2);
+					}
 				}
 
 				odt_context->end_header_footer();
@@ -2019,7 +2022,10 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 				if (s->m_arrFooterReference[i]->m_oId.IsInit())
 				{
 					convert_hdr_ftr(s->m_arrFooterReference[i]->m_oId->GetValue());
-					convert(docx_document->m_pDocument->m_oBackground.GetPointer(), 3);
+					if (docx_document)
+					{
+						convert(docx_document->m_pDocument->m_oBackground.GetPointer(), 3);
+					}
 				}
 
 				odt_context->end_header_footer();	
@@ -3416,7 +3422,7 @@ void DocxConverter::convert_settings()
 {
 	if (!odt_context) return;
 
-	OOX::CSettings *settings = docx_document ? docx_document->m_pSettings : NULL;/*(docx_flat_document ? docx_flat_document->m_pStyles.GetPointer() : NULL);*/
+	OOX::CSettings *settings = docx_document ? docx_document->m_pSettings : (docx_flat_document ? docx_flat_document->m_pSettings.GetPointer() : NULL);
 	if (!settings) return;
 
 	if (settings->m_oWriteProtection.IsInit())
@@ -4231,9 +4237,22 @@ void DocxConverter::convert_endnote(int oox_ref_id)
 	}
 	odt_context->end_note();
 }
-void DocxConverter::convert_hdr_ftr	(std::wstring sId)
+void DocxConverter::convert_hdr_ftr(std::wstring sId)
 {
-	OOX::CHdrFtr * oox_hdr_ftr = docx_document->GetHeaderOrFooter(sId);
+	OOX::CHdrFtr *oox_hdr_ftr = NULL;
+	
+	if (docx_document)
+	{
+		oox_hdr_ftr = docx_document->GetHeaderOrFooter(sId);
+	}
+	else if (docx_flat_document)
+	{
+		std::map<std::wstring, OOX::CHdrFtr*>::iterator pFind = docx_flat_document->m_mapHeadersFooters.find(sId);
+		if (pFind != docx_flat_document->m_mapHeadersFooters.end())
+		{
+			oox_hdr_ftr = pFind->second;
+		}
+	}
 	if (oox_hdr_ftr == NULL ) return;
 
 	oox_current_child_document = dynamic_cast<OOX::IFileContainer*>(oox_hdr_ftr);

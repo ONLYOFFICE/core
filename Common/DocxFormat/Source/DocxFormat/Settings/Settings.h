@@ -30,9 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_SETTINGS_INCLUDE_H_
-#define OOX_SETTINGS_INCLUDE_H_
-
 #include "../../Base/Nullable.h"
 
 #include "../File.h"
@@ -2777,13 +2774,7 @@ namespace OOX
 
 			std::vector<OOX::Settings::CSchema*> m_arrSchema;
 		};
-	} // Settings
-} // OOX
 
-namespace OOX
-{
-	namespace Settings
-	{
 		//--------------------------------------------------------------------------------
 		// CShapeDefaults 9.7.2.1;9.7.2.2 (Part 4)
 		//--------------------------------------------------------------------------------	
@@ -2957,29 +2948,33 @@ namespace OOX
 
 			EElementType m_eType;
 		};
-	} // Settings
-} // OOX
+	} // namespace Settings
 
-
-namespace OOX
-{
 	//--------------------------------------------------------------------------------
 	// CSettings 17.11.15.1.78
 	//--------------------------------------------------------------------------------	
-	class CSettings : public OOX::File
+	class CSettings : public OOX::File, OOX::WritingElement
 	{
 	public:
-		CSettings(OOX::Document *pMain) : OOX::File(pMain)
+		CSettings(OOX::Document *pMain) : OOX::File(pMain), OOX::WritingElement(pMain)
 		{
 			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
 			if (docx) docx->m_pSettings = this;			
 		}
-		CSettings(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain)
+		CSettings(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain), OOX::WritingElement(pMain)
 		{
 			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
 			if (docx) docx->m_pSettings = this;			
 
 			read( oPath );
+		}
+		CSettings(XmlUtils::CXmlNode& oNode) : File(NULL), WritingElement(NULL)
+		{
+			fromXML( oNode );
+		}
+		CSettings(XmlUtils::CXmlLiteReader& oReader) : File(NULL), WritingElement(NULL)
+		{
+			fromXML( oReader );
 		}
 		virtual ~CSettings()
 		{
@@ -3001,179 +2996,196 @@ namespace OOX
 			if ( !oReader.ReadNextNode() )
 				return;
 
+			fromXML(oReader);
+		}
+		virtual void fromXML(XmlUtils::CXmlNode& oNode)
+		{
+		}
+		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if (oReader.IsEmptyNode()) return;
+
 			std::wstring sName = oReader.GetName();
-			if ( _T("w:settings") == sName && !oReader.IsEmptyNode() )
+
+			if ( L"w:settings" != sName && L"w:docPr" != sName) return;
+
+			int nStylesDepth = oReader.GetDepth();
+			while ( oReader.ReadNextSiblingNode( nStylesDepth ) )
 			{
-				int nStylesDepth = oReader.GetDepth();
-				while ( oReader.ReadNextSiblingNode( nStylesDepth ) )
+				sName = oReader.GetName();
+
+				wchar_t wChar0 = sName[0];
+				wchar_t wChar2 = sName[2];
+
+				if ( 'w' == wChar0 )
 				{
-					sName = oReader.GetName();
-
-					wchar_t wChar0 = sName[0];
-					wchar_t wChar2 = sName[2];
-
-					if ( 'w' == wChar0 )
+					switch ( wChar2 )
 					{
-						switch ( wChar2 )
+					case 'a':
+						if      ( _T("w:activeWritingStyle")         == sName ) m_oActiveWritingStyle         = oReader;
+						else if ( _T("w:alignBordersAndEdges")       == sName ) m_oAlignBordersAndEdges       = oReader;
+						else if ( _T("w:alwaysMergeEmptyNamespace")  == sName ) m_oAlwaysMergeEmptyNamespace  = oReader;
+						else if ( _T("w:alwaysShowPlaceholderText")  == sName ) m_oAlwaysShowPlaceholderText  = oReader;
+						else if ( _T("w:attachedSchema")             == sName ) m_oAttachedSchema             = oReader;
+						else if ( _T("w:attachedTemplate")           == sName ) m_oAttachedTemplate           = oReader;
+						else if ( _T("w:autoFormatOverride")         == sName ) m_oAutoFormatOverride         = oReader;
+						else if ( _T("w:autoHyphenation")            == sName ) m_oAutoHyphenation            = oReader;
+						break;
+					case 'b':
+						if      ( _T("w:bookFoldPrinting")           == sName ) m_oBookFoldPrinting           = oReader;
+						else if ( _T("w:bookFoldPrintingSheets")     == sName ) m_oBookFoldPrintingSheets     = oReader;
+						else if ( _T("w:bookFoldRevPrinting")        == sName ) m_oBookFoldRevPrinting        = oReader;
+						else if ( _T("w:bordersDoNotSurroundFooter") == sName ) m_oBordersDoNotSurroundFooter = oReader;
+						else if ( _T("w:bordersDoNotSurroundHeader") == sName ) m_oBordersDoNotSurroundHeader = oReader;
+						break;
+					case 'c':
+						if      ( _T("w:captions")                   == sName ) m_oCaptions                   = oReader;
+						else if ( _T("w:characterSpacingControl")    == sName ) m_oCharacterSpacingControl    = oReader;
+						else if ( _T("w:clickAndTypeStyle")          == sName ) m_oClickAndTypeStyle          = oReader;
+						else if ( _T("w:clrSchemeMapping")           == sName ) m_oClrSchemeMapping           = oReader;
+						else if ( _T("w:compat")                     == sName ) m_oCompat                     = oReader;
+						else if ( _T("w:consecutiveHyphenLimit")     == sName ) m_oConsecutiveHyphenLimit     = oReader;
+						break;
+					case 'd':
+						if      ( _T("w:decimalSymbol")              == sName ) m_oDecimalSymbol              = oReader;
+						else if ( _T("w:defaultTableStyle")          == sName ) m_oDefaultTableStyle          = oReader;
+						else if ( _T("w:defaultTabStop")             == sName ) m_oDefaultTabStop             = oReader;
+						else if ( _T("w:displayBackgroundShape")     == sName ) m_oDisplayBackgroundShape     = oReader;
+						else if ( _T("w:displayHorizontalDrawingGridEvery") == sName ) m_oDisplayHorizontalDrawingGridEvery = oReader;
+						else if ( _T("w:displayVerticalDrawingGridEvery")   == sName ) m_oDisplayVerticalDrawingGridEvery   = oReader;
+						else if ( _T("w:documentProtection")         == sName ) m_oDocumentProtection         = oReader;
+						else if ( _T("w:documentType")               == sName ) m_oDocumentType               = oReader;
+						else if ( _T("w:docVars")                    == sName ) m_oDocVars                    = oReader;
+						else if ( _T("w:doNotAutoCompressPictures")  == sName ) m_oDoNotAutoCompressPictures  = oReader;
+						else if ( _T("w:doNotDemarcateInvalidXml")   == sName ) m_oDoNotDemarcateInvalidXml   = oReader;
+						else if ( _T("w:doNotDisplayPageBoundaries") == sName ) m_oDoNotDisplayPageBoundaries = oReader;
+						else if ( _T("w:doNotEmbedSmartTags")        == sName ) m_oDoNotEmbedSmartTags        = oReader;
+						else if ( _T("w:doNotHyphenateCaps")         == sName ) m_oDoNotHyphenateCaps         = oReader;
+						else if ( _T("w:doNotIncludeSubdocsInStats") == sName ) m_oDoNotIncludeSubdocsInStats = oReader;
+						else if ( _T("w:doNotShadeFormData")         == sName ) m_oDoNotShadeFormData         = oReader;
+						else if ( _T("w:doNotTrackFormatting")       == sName ) m_oDoNotTrackFormatting       = oReader;
+						else if ( _T("w:doNotTrackMoves")            == sName ) m_oDoNotTrackMoves            = oReader;
+						else if ( _T("w:doNotUseMarginsForDrawingGridOrigin") == sName ) m_oDoNotUseMarginsForDrawingGridOrigin = oReader;
+						else if ( _T("w:doNotValidateAgainstSchema") == sName ) m_oDoNotValidateAgainstSchema = oReader;
+						else if ( _T("w:drawingGridHorizontalOrigin")  == sName ) m_oDrawingGridHorizontalOrigin  = oReader;
+						else if ( _T("w:drawingGridHorizontalSpacing") == sName ) m_oDrawingGridHorizontalSpacing = oReader;
+						else if ( _T("w:drawingGridVerticalOrigin")  == sName ) m_oDrawingGridVerticalOrigin  = oReader;
+						else if ( _T("w:drawingGridVerticalSpacing") == sName ) m_oDrawingGridVerticalSpacing = oReader;
+						break;
+					case 'e':
+						if      ( _T("w:embedSystemFonts")           == sName ) m_oEmbedSystemFonts           = oReader;
+						else if ( _T("w:embedTrueTypeFonts")         == sName ) m_oEmbedTrueTypeFonts         = oReader;
+						else if ( _T("w:endnotePr")                  == sName ) m_oEndnotePr                  = oReader;
+						else if ( _T("w:evenAndOddHeaders")          == sName ) m_oEvenAndOddHeaders          = oReader;
+						break;
+					case 'f':
+						if      ( _T("w:footnotePr")                 == sName ) m_oFootnotePr                 = oReader;
+						else if ( _T("w:forceUpgrade")               == sName ) m_oForceUpgrade               = oReader;
+						else if ( _T("w:formsDesign")                == sName ) m_oFormsDesign                = oReader;
+						break;
+					case 'g':
+						if      ( _T("w:gutterAtTop")                == sName ) m_oGutterAtTop                = oReader;
+						break;
+					case 'h':
+						if      ( _T("w:hdrShapeDefaults")           == sName ) m_oHdrShapeDefaults           = oReader;
+						else if ( _T("w:hideGrammaticalErrors")      == sName ) m_oHideGrammaticalErrors      = oReader;
+						else if ( _T("w:hideSpellingErrors")         == sName ) m_oHideSpellingErrors         = oReader;
+						else if ( _T("w:hyphenationZone")            == sName ) m_oHyphenationZone            = oReader;
+						break;
+					case 'i':
+						if      ( _T("w:ignoreMixedContent")         == sName ) m_oIgnoreMixedContent         = oReader;
+						break;
+					case 'l':
+						if      ( _T("w:linkStyles")                 == sName ) m_oLinkStyles                 = oReader;
+						else if ( _T("w:listSeparator")              == sName ) m_oListSeparator              = oReader;
+						break;
+					case 'm':
+						if      ( _T("w:mirrorMargins")              == sName ) m_oMirrorMargins              = oReader;
+						break;
+					case 'n':
+						if      ( _T("w:noLineBreaksAfter")          == sName ) m_oNoLineBreaksAfter          = oReader;
+						else if ( _T("w:noLineBreaksBefore")         == sName ) m_oNoLineBreaksBefore         = oReader;
+						else if ( _T("w:noPunctuationKerning")       == sName ) m_oNoPunctuationKerning       = oReader;
+						break;
+					case 'p':
+						if      ( _T("w:printFormsData")             == sName ) m_oPrintFormsData             = oReader;
+						else if ( _T("w:printFractionalCharacterWidth") == sName ) m_oPrintFractionalCharacterWidth = oReader;
+						else if ( _T("w:printPostScriptOverText")    == sName ) m_oPrintPostScriptOverText    = oReader;
+						else if ( _T("w:printTwoOnOne")              == sName ) m_oPrintTwoOnOne              = oReader;
+						else if ( _T("w:proofState")                 == sName ) m_oProofState                 = oReader;
+						break;
+					case 'r':
+						if      ( _T("w:readModeInkLockDown")        == sName ) m_oReadModeInkLockDown        = oReader;
+						else if ( _T("w:removeDateAndTime")          == sName ) m_oRemoveDateAndTime          = oReader;
+						else if ( _T("w:removePersonalInformation")  == sName ) m_oRemovePersonalInformation  = oReader;
+						else if ( _T("w:revisionView")               == sName ) m_oRevisionView               = oReader;
+						else if ( _T("w:rsids")                      == sName ) m_oRsids                      = oReader;
+						break;
+					case 's':
+						if      ( _T("w:saveFormsData")              == sName ) m_oSaveFormsData              = oReader;
+						else if ( _T("w:saveInvalidXml")             == sName ) m_oSaveInvalidXml             = oReader;
+						else if ( _T("w:savePreviewPicture")         == sName ) m_oSavePreviewPicture         = oReader;
+						else if ( _T("w:saveSubsetFonts")            == sName ) m_oSaveSubsetFonts            = oReader;
+						else if ( _T("w:saveThroughXslt")            == sName ) m_oSaveThroughtXslt           = oReader;
+						else if ( _T("w:saveXmlDataOnly")            == sName ) m_oSaveXmlDataOnly            = oReader;
+						else if ( _T("w:shapeDefaults")              == sName ) m_oShapeDefaults              = oReader;
+						else if ( _T("w:showEnvelope")               == sName ) m_oShowEnvelope               = oReader;
+						else if ( _T("w:showXMLTags")                == sName ) m_oShowXMLTags                = oReader;
+						else if ( _T("w:smartTagType")               == sName )
 						{
-						case 'a':
-							if      ( _T("w:activeWritingStyle")         == sName ) m_oActiveWritingStyle         = oReader;
-							else if ( _T("w:alignBordersAndEdges")       == sName ) m_oAlignBordersAndEdges       = oReader;
-							else if ( _T("w:alwaysMergeEmptyNamespace")  == sName ) m_oAlwaysMergeEmptyNamespace  = oReader;
-							else if ( _T("w:alwaysShowPlaceholderText")  == sName ) m_oAlwaysShowPlaceholderText  = oReader;
-							else if ( _T("w:attachedSchema")             == sName ) m_oAttachedSchema             = oReader;
-							else if ( _T("w:attachedTemplate")           == sName ) m_oAttachedTemplate           = oReader;
-							else if ( _T("w:autoFormatOverride")         == sName ) m_oAutoFormatOverride         = oReader;
-							else if ( _T("w:autoHyphenation")            == sName ) m_oAutoHyphenation            = oReader;
-							break;
-						case 'b':
-							if      ( _T("w:bookFoldPrinting")           == sName ) m_oBookFoldPrinting           = oReader;
-							else if ( _T("w:bookFoldPrintingSheets")     == sName ) m_oBookFoldPrintingSheets     = oReader;
-							else if ( _T("w:bookFoldRevPrinting")        == sName ) m_oBookFoldRevPrinting        = oReader;
-							else if ( _T("w:bordersDoNotSurroundFooter") == sName ) m_oBordersDoNotSurroundFooter = oReader;
-							else if ( _T("w:bordersDoNotSurroundHeader") == sName ) m_oBordersDoNotSurroundHeader = oReader;
-							break;
-						case 'c':
-							if      ( _T("w:captions")                   == sName ) m_oCaptions                   = oReader;
-							else if ( _T("w:characterSpacingControl")    == sName ) m_oCharacterSpacingControl    = oReader;
-							else if ( _T("w:clickAndTypeStyle")          == sName ) m_oClickAndTypeStyle          = oReader;
-							else if ( _T("w:clrSchemeMapping")           == sName ) m_oClrSchemeMapping           = oReader;
-							else if ( _T("w:compat")                     == sName ) m_oCompat                     = oReader;
-							else if ( _T("w:consecutiveHyphenLimit")     == sName ) m_oConsecutiveHyphenLimit     = oReader;
-							break;
-						case 'd':
-							if      ( _T("w:decimalSymbol")              == sName ) m_oDecimalSymbol              = oReader;
-							else if ( _T("w:defaultTableStyle")          == sName ) m_oDefaultTableStyle          = oReader;
-							else if ( _T("w:defaultTabStop")             == sName ) m_oDefaultTabStop             = oReader;
-							else if ( _T("w:displayBackgroundShape")     == sName ) m_oDisplayBackgroundShape     = oReader;
-							else if ( _T("w:displayHorizontalDrawingGridEvery") == sName ) m_oDisplayHorizontalDrawingGridEvery = oReader;
-							else if ( _T("w:displayVerticalDrawingGridEvery")   == sName ) m_oDisplayVerticalDrawingGridEvery   = oReader;
-							else if ( _T("w:documentProtection")         == sName ) m_oDocumentProtection         = oReader;
-							else if ( _T("w:documentType")               == sName ) m_oDocumentType               = oReader;
-							else if ( _T("w:docVars")                    == sName ) m_oDocVars                    = oReader;
-							else if ( _T("w:doNotAutoCompressPictures")  == sName ) m_oDoNotAutoCompressPictures  = oReader;
-							else if ( _T("w:doNotDemarcateInvalidXml")   == sName ) m_oDoNotDemarcateInvalidXml   = oReader;
-							else if ( _T("w:doNotDisplayPageBoundaries") == sName ) m_oDoNotDisplayPageBoundaries = oReader;
-							else if ( _T("w:doNotEmbedSmartTags")        == sName ) m_oDoNotEmbedSmartTags        = oReader;
-							else if ( _T("w:doNotHyphenateCaps")         == sName ) m_oDoNotHyphenateCaps         = oReader;
-							else if ( _T("w:doNotIncludeSubdocsInStats") == sName ) m_oDoNotIncludeSubdocsInStats = oReader;
-							else if ( _T("w:doNotShadeFormData")         == sName ) m_oDoNotShadeFormData         = oReader;
-							else if ( _T("w:doNotTrackFormatting")       == sName ) m_oDoNotTrackFormatting       = oReader;
-							else if ( _T("w:doNotTrackMoves")            == sName ) m_oDoNotTrackMoves            = oReader;
-							else if ( _T("w:doNotUseMarginsForDrawingGridOrigin") == sName ) m_oDoNotUseMarginsForDrawingGridOrigin = oReader;
-							else if ( _T("w:doNotValidateAgainstSchema") == sName ) m_oDoNotValidateAgainstSchema = oReader;
-							else if ( _T("w:drawingGridHorizontalOrigin")  == sName ) m_oDrawingGridHorizontalOrigin  = oReader;
-							else if ( _T("w:drawingGridHorizontalSpacing") == sName ) m_oDrawingGridHorizontalSpacing = oReader;
-							else if ( _T("w:drawingGridVerticalOrigin")  == sName ) m_oDrawingGridVerticalOrigin  = oReader;
-							else if ( _T("w:drawingGridVerticalSpacing") == sName ) m_oDrawingGridVerticalSpacing = oReader;
-							break;
-						case 'e':
-							if      ( _T("w:embedSystemFonts")           == sName ) m_oEmbedSystemFonts           = oReader;
-							else if ( _T("w:embedTrueTypeFonts")         == sName ) m_oEmbedTrueTypeFonts         = oReader;
-							else if ( _T("w:endnotePr")                  == sName ) m_oEndnotePr                  = oReader;
-							else if ( _T("w:evenAndOddHeaders")          == sName ) m_oEvenAndOddHeaders          = oReader;
-							break;
-						case 'f':
-							if      ( _T("w:footnotePr")                 == sName ) m_oFootnotePr                 = oReader;
-							else if ( _T("w:forceUpgrade")               == sName ) m_oForceUpgrade               = oReader;
-							else if ( _T("w:formsDesign")                == sName ) m_oFormsDesign                = oReader;
-							break;
-						case 'g':
-							if      ( _T("w:gutterAtTop")                == sName ) m_oGutterAtTop                = oReader;
-							break;
-						case 'h':
-							if      ( _T("w:hdrShapeDefaults")           == sName ) m_oHdrShapeDefaults           = oReader;
-							else if ( _T("w:hideGrammaticalErrors")      == sName ) m_oHideGrammaticalErrors      = oReader;
-							else if ( _T("w:hideSpellingErrors")         == sName ) m_oHideSpellingErrors         = oReader;
-							else if ( _T("w:hyphenationZone")            == sName ) m_oHyphenationZone            = oReader;
-							break;
-						case 'i':
-							if      ( _T("w:ignoreMixedContent")         == sName ) m_oIgnoreMixedContent         = oReader;
-							break;
-						case 'l':
-							if      ( _T("w:linkStyles")                 == sName ) m_oLinkStyles                 = oReader;
-							else if ( _T("w:listSeparator")              == sName ) m_oListSeparator              = oReader;
-							break;
-						case 'm':
-							if      ( _T("w:mirrorMargins")              == sName ) m_oMirrorMargins              = oReader;
-							break;
-						case 'n':
-							if      ( _T("w:noLineBreaksAfter")          == sName ) m_oNoLineBreaksAfter          = oReader;
-							else if ( _T("w:noLineBreaksBefore")         == sName ) m_oNoLineBreaksBefore         = oReader;
-							else if ( _T("w:noPunctuationKerning")       == sName ) m_oNoPunctuationKerning       = oReader;
-							break;
-						case 'p':
-							if      ( _T("w:printFormsData")             == sName ) m_oPrintFormsData             = oReader;
-							else if ( _T("w:printFractionalCharacterWidth") == sName ) m_oPrintFractionalCharacterWidth = oReader;
-							else if ( _T("w:printPostScriptOverText")    == sName ) m_oPrintPostScriptOverText    = oReader;
-							else if ( _T("w:printTwoOnOne")              == sName ) m_oPrintTwoOnOne              = oReader;
-							else if ( _T("w:proofState")                 == sName ) m_oProofState                 = oReader;
-							break;
-						case 'r':
-							if      ( _T("w:readModeInkLockDown")        == sName ) m_oReadModeInkLockDown        = oReader;
-							else if ( _T("w:removeDateAndTime")          == sName ) m_oRemoveDateAndTime          = oReader;
-							else if ( _T("w:removePersonalInformation")  == sName ) m_oRemovePersonalInformation  = oReader;
-							else if ( _T("w:revisionView")               == sName ) m_oRevisionView               = oReader;
-							else if ( _T("w:rsids")                      == sName ) m_oRsids                      = oReader;
-							break;
-						case 's':
-							if      ( _T("w:saveFormsData")              == sName ) m_oSaveFormsData              = oReader;
-							else if ( _T("w:saveInvalidXml")             == sName ) m_oSaveInvalidXml             = oReader;
-							else if ( _T("w:savePreviewPicture")         == sName ) m_oSavePreviewPicture         = oReader;
-							else if ( _T("w:saveSubsetFonts")            == sName ) m_oSaveSubsetFonts            = oReader;
-							else if ( _T("w:saveThroughXslt")            == sName ) m_oSaveThroughtXslt           = oReader;
-							else if ( _T("w:saveXmlDataOnly")            == sName ) m_oSaveXmlDataOnly            = oReader;
-							else if ( _T("w:shapeDefaults")              == sName ) m_oShapeDefaults              = oReader;
-							else if ( _T("w:showEnvelope")               == sName ) m_oShowEnvelope               = oReader;
-							else if ( _T("w:showXMLTags")                == sName ) m_oShowXMLTags                = oReader;
-							else if ( _T("w:smartTagType")               == sName )
-							{
-								OOX::Settings::CSmartTagType *oSTT = new OOX::Settings::CSmartTagType(oReader);
-								if (oSTT) m_arrSmartTagType.push_back( oSTT );
-							}
-							else if ( _T("w:strictFirstAndLastChars")    == sName ) m_oStrictFirstAndLastChars    = oReader;
-							else if ( _T("w:styleLockQFSet")             == sName ) m_oStyleLockQFSet             = oReader;
-							else if ( _T("w:styleLockTheme")             == sName ) m_oStyleLockTheme             = oReader;
-							else if ( _T("w:stylePaneFormatFilter")      == sName ) m_oStylePaneFormatFilter      = oReader;
-							else if ( _T("w:stylePaneSortMethod")        == sName ) m_oStylePaneSortMethod        = oReader;
-							else if ( _T("w:summaryLength")              == sName ) m_oSummaryLength              = oReader;
-							break;
-						case 't':
-							if      ( _T("w:themeFontLang")              == sName ) m_oThemeFontLang              = oReader;
-							else if ( _T("w:trackRevisions")             == sName ) m_oTrackRevisions             = oReader;
-							break;
-						case 'u':
-							if      ( _T("w:updateFields")               == sName ) m_oUpdateFields               = oReader;
-							else if ( _T("w:useXSLTWhenSaving")          == sName ) m_oUseXSLTWhenSaving          = oReader;
-							break;
-						case 'v':
-							if      ( _T("w:view")                       == sName ) m_oView                       = oReader;
-							break;
-						case 'w':
-							if      ( _T("w:writeProtection")            == sName ) m_oWriteProtection            = oReader;
-							break;
-						case 'z':
-							if      ( _T("w:zoom")                       == sName ) m_oZoom                       = oReader;
-							break;
+							OOX::Settings::CSmartTagType *oSTT = new OOX::Settings::CSmartTagType(oReader);
+							if (oSTT) m_arrSmartTagType.push_back( oSTT );
 						}
+						else if ( _T("w:strictFirstAndLastChars")    == sName ) m_oStrictFirstAndLastChars    = oReader;
+						else if ( _T("w:styleLockQFSet")             == sName ) m_oStyleLockQFSet             = oReader;
+						else if ( _T("w:styleLockTheme")             == sName ) m_oStyleLockTheme             = oReader;
+						else if ( _T("w:stylePaneFormatFilter")      == sName ) m_oStylePaneFormatFilter      = oReader;
+						else if ( _T("w:stylePaneSortMethod")        == sName ) m_oStylePaneSortMethod        = oReader;
+						else if ( _T("w:summaryLength")              == sName ) m_oSummaryLength              = oReader;
+						break;
+					case 't':
+						if      ( _T("w:themeFontLang")              == sName ) m_oThemeFontLang              = oReader;
+						else if ( _T("w:trackRevisions")             == sName ) m_oTrackRevisions             = oReader;
+						break;
+					case 'u':
+						if      ( _T("w:updateFields")               == sName ) m_oUpdateFields               = oReader;
+						else if ( _T("w:useXSLTWhenSaving")          == sName ) m_oUseXSLTWhenSaving          = oReader;
+						break;
+					case 'v':
+						if      ( _T("w:view")                       == sName ) m_oView                       = oReader;
+						break;
+					case 'w':
+						if      ( _T("w:writeProtection")            == sName ) m_oWriteProtection            = oReader;
+						break;
+					case 'z':
+						if      ( _T("w:zoom")                       == sName ) m_oZoom                       = oReader;
+						break;
 					}
-					else if ( 's' == wChar0 )
-					{
-						if ( _T("sl:schemaLibrary") == sName )
-							m_oSchemaLibrary = oReader;
-					}
-					else if ( 'm' == wChar0 )
-					{
-						if ( _T("m:mathPr") == sName )
-							m_oMathPr = oReader;
-					}
+				}
+				else if ( 's' == wChar0 )
+				{
+					if ( _T("sl:schemaLibrary") == sName )
+						m_oSchemaLibrary = oReader;
+				}
+				else if ( 'm' == wChar0 )
+				{
+					if ( _T("m:mathPr") == sName )
+						m_oMathPr = oReader;
 				}
 			}
 		}
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
-            std::wstring sXml;
-			sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:settings xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:sl=\"http://schemas.openxmlformats.org/schemaLibrary/2006/main\" mc:Ignorable=\"w14 w15\">");
+            std::wstring sXml = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+			
+			sXml += toXML();
+			
+			CDirectory::SaveToFile( oFilePath.GetPath(), sXml );
+			oContent.Registration( type().OverrideType(), oDirectory, oFilePath );
+		}
+        virtual std::wstring toXML() const
+		{
+			std::wstring sXml = L"<w:settings xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:sl=\"http://schemas.openxmlformats.org/schemaLibrary/2006/main\" mc:Ignorable=\"w14 w15\">";
 
 			// 1
 			if ( m_oWriteProtection.IsInit() )
@@ -3489,11 +3501,13 @@ namespace OOX
 				sXml += _T("<w:listSeparator ") + m_oListSeparator->ToString() + _T("/>");
 
 			sXml += _T("</w:settings>");
-			CDirectory::SaveToFile( oFilePath.GetPath(), sXml );
 
-			oContent.Registration( type().OverrideType(), oDirectory, oFilePath );
+			return sXml;
 		}
-
+		virtual EElementType getType() const
+		{
+			return et_w_settings;
+		}
 		virtual const OOX::FileType type() const
 		{
 			return FileTypes::Setting;
@@ -3507,6 +3521,8 @@ namespace OOX
 			return type().DefaultFileName();
 		}
 
+
+//------------------------------------------------------------------------------------------------------------------
 		nullable<OOX::Settings::CWritingStyle>                        m_oActiveWritingStyle;
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oAlignBordersAndEdges;
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oAlwaysMergeEmptyNamespace;
@@ -3666,4 +3682,3 @@ namespace OOX
 	};
 } // namespace OOX
 
-#endif /* OOX_SETTINGS_INCLUDE_H_ */

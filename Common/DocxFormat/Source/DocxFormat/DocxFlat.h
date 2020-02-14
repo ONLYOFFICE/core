@@ -36,6 +36,7 @@
 #include "Numbering.h"
 #include "Styles.h"
 #include "Comments.h"
+#include "Settings/Settings.h"
 
 namespace OOX
 {
@@ -109,6 +110,7 @@ namespace OOX
 		nullable<CStyles>				m_pStyles;
 		nullable<CFontTable>			m_pFontTable;
 		nullable<CNumbering>			m_pNumbering;
+		nullable<CSettings>				m_pSettings;
 		//nullable<Logic::CBgPict>		m_oBgPict;
 
 		std::map<std::wstring, OOX::CHdrFtr*> m_mapHeadersFooters;

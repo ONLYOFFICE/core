@@ -355,7 +355,9 @@ namespace OOX
 		}
 		virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
-			std::wstring sXml = toXML();
+			std::wstring sXml = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+			
+			sXml += toXML();
 
 			CDirectory::SaveToFile( oPath.GetPath(), sXml );
 
@@ -536,7 +538,7 @@ namespace OOX
 		}
         virtual std::wstring toXML() const
 		{
-			std::wstring sXml = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:document";
+			std::wstring sXml = L"<w:document";
 
 			if ( SimpleTypes::conformanceclassTransitional != m_oConformance.GetValue() )
 			{		

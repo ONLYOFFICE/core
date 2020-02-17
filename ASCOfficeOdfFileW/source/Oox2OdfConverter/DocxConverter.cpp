@@ -34,9 +34,10 @@
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/DocxFlat.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/Comments.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/Footnote.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/Endnote.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Document.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/FontTable.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Numbering.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Styles.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Settings/WebSettings.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Settings/Settings.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/External/HyperLink.h"
@@ -100,7 +101,7 @@ namespace Oox2Odf
 		}
 		return cols_1 == cols_2;
 	}
-DocxConverter::DocxConverter(const std::wstring & path, bool bTemplate)
+DocxConverter::DocxConverter(const std::wstring & path, bool bTemplate) : docx_flat_document(NULL), docx_document(NULL)
 {
     const OOX::CPath oox_path(std::wstring(path.c_str()));
 
@@ -4143,7 +4144,7 @@ void DocxConverter::convert_comment(int oox_comm_id)
 
 	OOX::CComments *pComments = NULL;
 
-	if ((docx_document) && (!docx_document->m_pComments))
+	if (docx_document) 
 	{
 		pComments = docx_document->m_pComments;
 	}
@@ -4183,58 +4184,69 @@ void DocxConverter::convert_comment(int oox_comm_id)
 }
 void DocxConverter::convert_footnote(int oox_ref_id)
 {
-	if (!docx_document) return;
-	if (!docx_document->m_pFootnotes)return;
+	OOX::CFootnotes *oox_footnotes = NULL;
+	
+	if (docx_document)
+	{
+		oox_footnotes = docx_document->m_pFootnotes;
+	}
+	else if (docx_flat_document)
+	{
+		oox_footnotes = &docx_flat_document->m_oFootnotes;
+	}
+	if (oox_footnotes == NULL ) return;
 
 	odt_context->start_note(oox_ref_id, 1);
 
-	for (size_t n = 0 ; n < docx_document->m_pFootnotes->m_arrFootnote.size(); n++)
+	std::map<int, OOX::CFtnEdn*>::iterator pFind = oox_footnotes->m_mapFootnote.find(oox_ref_id);
+
+	if (pFind != oox_footnotes->m_mapFootnote.end())
 	{
-		OOX::CFtnEdn* oox_note = docx_document->m_pFootnotes->m_arrFootnote[n];
-		
-		if (oox_note == NULL)					continue;
-		if (oox_note->m_oId.IsInit() == false)	continue;
-		
-		if (oox_note->m_oId->GetValue() == oox_ref_id)
+		OOX::CFtnEdn* oox_note = pFind->second;
+
+		odt_context->start_note_content();
 		{
-			odt_context->start_note_content();
+            for (size_t i = 0; i < oox_note->m_arrItems.size(); ++i)
 			{
-                for (size_t i = 0; i < oox_note->m_arrItems.size(); ++i)
-				{
-					convert(oox_note->m_arrItems[i]);
-				}
+				convert(oox_note->m_arrItems[i]);
 			}
-			odt_context->end_note_content();
 		}
+		odt_context->end_note_content();
 	}
 	odt_context->end_note();
 }
 void DocxConverter::convert_endnote(int oox_ref_id)
 {
-	if (!docx_document) return;
-	if (!docx_document->m_pEndnotes)return;
+	OOX::CEndnotes *oox_endnotes = NULL;
+	
+	if (docx_document)
+	{
+		oox_endnotes = docx_document->m_pEndnotes;
+	}
+	else if (docx_flat_document)
+	{
+		oox_endnotes = &docx_flat_document->m_oEndnotes;
+	}
+	if (oox_endnotes == NULL ) return;
 
 	odt_context->start_note(oox_ref_id, 2);
 
-	for (size_t n = 0 ; n < docx_document->m_pEndnotes->m_arrEndnote.size(); n++)
+	std::map<int, OOX::CFtnEdn*>::iterator pFind = oox_endnotes->m_mapEndnote.find(oox_ref_id);
+
+	if (pFind != oox_endnotes->m_mapEndnote.end())
 	{
-		OOX::CFtnEdn* oox_note = docx_document->m_pEndnotes->m_arrEndnote[n];
-		
-		if (oox_note == NULL)					continue;
-		if (oox_note->m_oId.IsInit() == false)	continue;
-		
-		if (oox_note->m_oId->GetValue() == oox_ref_id)
+		OOX::CFtnEdn* oox_note = pFind->second;
+
+		odt_context->start_note_content();
 		{
-			odt_context->start_note_content();
+            for (size_t i = 0; i < oox_note->m_arrItems.size(); ++i)
 			{
-                for (size_t i = 0; i < oox_note->m_arrItems.size(); ++i)
-				{
-					convert(oox_note->m_arrItems[i]);
-				}
+				convert(oox_note->m_arrItems[i]);
 			}
-			odt_context->end_note_content();
 		}
+		odt_context->end_note_content();
 	}
+
 	odt_context->end_note();
 }
 void DocxConverter::convert_hdr_ftr(std::wstring sId)

@@ -413,7 +413,10 @@ namespace OOX
 				else if ( _T("w:sdt") == sName )
 					pItem = new CSdt( document );
 				else if ( _T("w:tblGrid") == sName )
+				{
 					m_oTblGrid = new CTblGrid( document );
+					m_oTblGrid->fromXML(oReader);
+				}
 				else if ( _T("w:tblPr") == sName )
 				{
 					pItem = m_oTableProperties = new CTableProperty( document );
@@ -650,6 +653,8 @@ namespace OOX
 					pItem = new CTc( document );
 					if ( pItem )
 					{
+						pItem->fromXML(oReader);
+
 						CTc *pCell = (CTc *)pItem;
 						pCell->m_nNumCol = nNumCol;
 
@@ -662,7 +667,10 @@ namespace OOX
 						}
 						else
 							nNumCol++;
+						
+						m_arrItems.push_back( pItem );
 					}
+					continue;
 				}
 				else if ( _T("w:trPr") == sName )
 				{

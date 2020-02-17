@@ -35,13 +35,14 @@
 
 #include "BinReaderWriterDefines.h"
 
-#include "../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/DocxFlat.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 #include "../../Common/DocxFormat/Source/MathEquation/MathEquation.h"
 
-#include "../../Common/DocxFormat/Source/DocxFormat/Comments.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/Footnote.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/Endnote.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Document.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/FontTable.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Numbering.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Styles.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Settings/Settings.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/External/HyperLink.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"

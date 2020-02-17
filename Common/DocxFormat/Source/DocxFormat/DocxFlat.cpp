@@ -32,10 +32,28 @@
 #pragma once
 
 #include "DocxFlat.h"
+
 #include "HeaderFooter.h"
+#include "Document.h"
+#include "FontTable.h"
+#include "Numbering.h"
+#include "Styles.h"
+#include "Settings/Settings.h"
 
 namespace OOX
 {
+
+	CDocxFlat::CDocxFlat() : File(dynamic_cast<Document*>(this)),	m_oComments(dynamic_cast<Document*>(this)),
+																	m_oEndnotes(dynamic_cast<Document*>(this)), 
+																	m_oFootnotes(dynamic_cast<Document*>(this))
+	{
+	}
+	CDocxFlat::CDocxFlat(const CPath& oFilePath) : File(this),	m_oComments(dynamic_cast<Document*>(this)), 
+																m_oEndnotes(dynamic_cast<Document*>(this)), 
+																m_oFootnotes(dynamic_cast<Document*>(this))
+	{
+		read( oFilePath );
+	}
 	CDocxFlat::~CDocxFlat()
 	{
 		for (std::map<std::wstring, OOX::CHdrFtr*>::iterator it = m_mapHeadersFooters.begin(); it != m_mapHeadersFooters.end(); ++it)

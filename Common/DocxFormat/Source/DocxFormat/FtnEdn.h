@@ -60,7 +60,7 @@ namespace OOX
 	{
 	public:
 		WritingElement_AdditionConstructors(CFtnEdn)
-		CFtnEdn()
+		CFtnEdn(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
 		{
 			m_eType = et_Unknown;
 		}

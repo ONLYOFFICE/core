@@ -219,12 +219,50 @@ namespace OOX
 				pItem = new CDelText( document );
 			else if ( _T("w:drawing") == sName ) 
 				pItem = new CDrawing( document );
+			else if ( _T("w:endnote") == sName )
+			{
+				CEndnoteReference *pEndRef = new CEndnoteReference(document);
+				CFtnEdn *pEnd = new CFtnEdn( document );
+				
+				pEnd->fromXML(oReader);
+				
+				CDocxFlat* docx_flat = dynamic_cast<CDocxFlat*>(document);
+				if (docx_flat)
+				{
+					pEnd->m_oId.Init();
+					pEnd->m_oId->SetValue((int)(docx_flat->m_oEndnotes.m_arrEndnote.size() + 1));
+					pEndRef->m_oId = pEnd->m_oId;
+					
+					docx_flat->m_oEndnotes.m_arrEndnote.push_back(pEnd);
+					docx_flat->m_oEndnotes.m_mapEndnote.insert(std::make_pair(pEnd->m_oId->GetValue(), pEnd));
+				}
+				pItem = pEndRef;
+			}
 			else if ( _T("w:endnoteRef") == sName )
 				pItem = new CEndnoteRef( document );
 			else if ( _T("w:endnoteReference") == sName )
 				pItem = new CEndnoteReference( document );
 			else if ( _T("w:fldChar") == sName )
 				pItem = new CFldChar( document );
+			else if ( _T("w:footnote") == sName )
+			{
+				CFootnoteReference *pFootRef = new CFootnoteReference(document);
+				CFtnEdn *pFoot = new CFtnEdn( document );
+				
+				pFoot->fromXML(oReader);
+				
+				CDocxFlat* docx_flat = dynamic_cast<CDocxFlat*>(document);
+				if (docx_flat)
+				{
+					pFoot->m_oId.Init();
+					pFoot->m_oId->SetValue((int)(docx_flat->m_oFootnotes.m_arrFootnote.size() + 1));
+					pFootRef->m_oId = pFoot->m_oId;
+
+					docx_flat->m_oFootnotes.m_arrFootnote.push_back(pFoot);
+					docx_flat->m_oFootnotes.m_mapFootnote.insert(std::make_pair(pFoot->m_oId->GetValue(), pFoot));
+				}
+				pItem = pFootRef;
+			}
 			else if ( _T("w:footnoteRef") == sName )
 				pItem = new CFootnoteRef( document );
 			else if ( _T("w:footnoteReference") == sName )

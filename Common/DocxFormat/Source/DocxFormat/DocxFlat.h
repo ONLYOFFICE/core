@@ -31,29 +31,25 @@
  */
 #pragma once
 
-#include "Document.h"
-#include "FontTable.h"
-#include "Numbering.h"
-#include "Styles.h"
+
 #include "Comments.h"
-#include "Settings/Settings.h"
+#include "Footnote.h"
+#include "Endnote.h"
 
 namespace OOX
 {
 	class CHdrFtr;
+	class CDocument;
+	class CFontTable;
+	class CNumbering;
+	class CStyles;
 
 	class CDocxFlat : public Document, public File, public WritingElement
 	{
 	public:
 
-		CDocxFlat() : File(dynamic_cast<Document*>(this)), m_oComments(dynamic_cast<Document*>(this))
-		{
-		}
-		CDocxFlat(const CPath& oFilePath) : File(this), m_oComments(dynamic_cast<Document*>(this))
-		{
-			read( oFilePath );
-		}
-
+		CDocxFlat();
+		CDocxFlat(const CPath& oFilePath);
 		virtual ~CDocxFlat();
 
 		virtual void read(const CPath& oFilePath)
@@ -106,13 +102,15 @@ namespace OOX
 //-----------------------------------------------------------------------
 
 		nullable<CDocument>				m_pDocument;
-		CComments						m_oComments;
 		nullable<CStyles>				m_pStyles;
 		nullable<CFontTable>			m_pFontTable;
 		nullable<CNumbering>			m_pNumbering;
 		nullable<CSettings>				m_pSettings;
 		//nullable<Logic::CBgPict>		m_oBgPict;
 
+		CComments						m_oComments;
+		OOX::CFootnotes					m_oFootnotes;
+		OOX::CEndnotes					m_oEndnotes;
 		std::map<std::wstring, OOX::CHdrFtr*> m_mapHeadersFooters;
 	
 	};

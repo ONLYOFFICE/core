@@ -258,19 +258,18 @@ echo " ICU combining x86_64, armv7 and arm64 libraries"
 echo "------------------------------------------------------"
 
 function buildUniversal() {
-    lipo -create -output "${PWD}/build/ios/lib/$1.a" \
+    lipo -create -output "${PWD}/ios/build/$1.a" \
         "${PWD}/ios/build-x86_64/lib/$1x86_64.a" \
         "${PWD}/ios/build-arm64/lib/$1arm64.a" \
         "${PWD}/ios/build-armv7/lib/$1armv7.a"
 }
 
 mkdir -p build
-mkdir -p build/ios
-mkdir -p build/ios/lib
-mkdir -p build/ios/include
-mkdir -p build/ios/include/unicode
+mkdir -p ios/build
+mkdir -p ios/build/include
+mkdir -p ios/build/include/unicode
 
-cp ${ICU_SOURCE}/common/unicode/*.h build/ios/include/unicode
+cp ${ICU_SOURCE}/common/unicode/*.h ios/build/include/unicode
 
 buildUniversal "libicuuc"
 buildUniversal "libicui18n"

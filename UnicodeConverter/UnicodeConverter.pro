@@ -6,7 +6,6 @@ TEMPLATE = lib
 
 CONFIG += shared
 CONFIG += plugin
-
 CONFIG += core_static_link_libstd
 
 CORE_ROOT_DIR = $$PWD/..
@@ -20,17 +19,13 @@ core_linux {
 }
 
 core_ios {
-    CONFIG += core_disable_icu
-
-    OBJECTIVE_SOURCES += UnicodeConverter_internal_ios.mm
+	CONFIG += bundle_dylibs
 }
 
-!core_disable_icu {
-    include(../Common/3dParty/icu/icu.pri)
+include(../Common/3dParty/icu/icu.pri)
 
-    SOURCES += \
+SOURCES += \
         UnicodeConverter.cpp
-}
 
 HEADERS +=\
     UnicodeConverter.h

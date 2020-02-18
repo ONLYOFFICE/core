@@ -789,7 +789,7 @@ void odf_drawing_context::Impl::create_draw_base(int type)
 
 	current_level_.push_back(draw_elm);
 
-	odf_element_state state={draw_elm, style_name, style_shape_elm, level};
+	odf_element_state state(draw_elm, style_name, style_shape_elm, level);
 
 	if (current_drawing_state_.index_base < 0)
 	{
@@ -1268,7 +1268,7 @@ void odf_drawing_context::start_element(office_element_ptr elm, office_element_p
 		}
 	}
 
-	odf_element_state state = {elm, style_name, style_elm, level};
+	odf_element_state state(elm, style_name, style_elm, level);
 	impl_->current_drawing_state_.elements_.push_back(state);
 
 	impl_->current_level_.push_back(elm);
@@ -2839,7 +2839,7 @@ void odf_drawing_context::start_link_object(std::wstring href)
 
 	impl_->current_level_.push_back(element);
 
-	odf_element_state state={element, L"", style, level};
+	odf_element_state state(element, L"", style, level);
 	impl_->current_drawing_state_.elements_.push_back(state);
 
 	if (impl_->root_element_ == NULL)

@@ -52,12 +52,19 @@ class style_header_footer_properties;
 
 struct 	odf_element_state
 {
+	odf_element_state() {}
+	
+	odf_element_state(office_element_ptr _elm, const std::wstring & _style_name = L"", office_element_ptr _style_elm = office_element_ptr(), size_t _level = 0, size_t _type = 0)
+		: elm(_elm), style_name(_style_name), style_elm(_style_elm), level(_level), type(_type)
+	{
+	}
 	office_element_ptr	elm;
 	std::wstring		style_name;
 
 	office_element_ptr	style_elm;
 	
-	size_t level;
+	size_t level = 0;
+	size_t type = 0;
 };
 
 class odf_master_state

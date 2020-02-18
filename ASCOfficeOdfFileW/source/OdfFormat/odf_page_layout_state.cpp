@@ -47,7 +47,7 @@ namespace odf_writer {
 odf_master_state::odf_master_state(office_element_ptr & master_elm )
 {        
 	size_t level =0;
-	odf_element_state state = {master_elm, L"", office_element_ptr(), level};
+	odf_element_state state(master_elm, L"", office_element_ptr(), level);
 	
 	elements_.push_back(state);
 
@@ -72,7 +72,7 @@ office_element_ptr & odf_master_state::get_last_element()
 void odf_master_state::add_child(office_element_ptr & child_elm, office_element_ptr  style_elm, std::wstring style_name )
 {
 	size_t level = current_level_.size();
-	odf_element_state state = {child_elm, style_name, style_elm, level};
+	odf_element_state state(child_elm, style_name, style_elm, level);
 	
 	elements_.push_back(state);
 	current_level_.back()->add_child_element(child_elm);
@@ -117,7 +117,7 @@ void odf_master_state::add_footer(office_element_ptr & elm)
 
 	style_->add_child_element(elm);
 
-	odf_element_state state = {elm, L"", office_element_ptr(), 1};
+	odf_element_state state(elm, L"", office_element_ptr(), 1);
 	elements_.push_back(state);
 
 }
@@ -128,15 +128,14 @@ void odf_master_state::add_header(office_element_ptr & elm)
 
 	style_->add_child_element(elm);
 
-	odf_element_state state = {elm, L"", office_element_ptr(), 1};
+	odf_element_state state(elm, L"", office_element_ptr(), 1);
 	elements_.push_back(state);
 
 }
 ///////////////////////////////////////////////////////////////////////////////
 odf_layout_state::odf_layout_state(office_element_ptr & layout_elm )
 {        
-    size_t level = 0;
-	odf_element_state state = {layout_elm,L"",office_element_ptr(),level};
+	odf_element_state state(layout_elm);
 	
 	elements_.push_back(state);
 	current_level_.push_back(layout_elm);
@@ -144,10 +143,10 @@ odf_layout_state::odf_layout_state(office_element_ptr & layout_elm )
 
 void odf_layout_state::add_child(office_element_ptr & child_elm, office_element_ptr  style_elm, std::wstring style_name )
 {
-	if (current_level_.size() < 1) return;
+	if (current_level_.empty()) return;
 
 	size_t level = current_level_.size();
-	odf_element_state state = {child_elm, style_name, style_elm,level};
+	odf_element_state state(child_elm, style_name, style_elm, level);
 	
 	elements_.push_back(state);
 	current_level_.back()->add_child_element(child_elm);

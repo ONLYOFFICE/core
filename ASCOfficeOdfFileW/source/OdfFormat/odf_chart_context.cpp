@@ -349,7 +349,7 @@ void odf_chart_context::start_chart(office_element_ptr & root)
 	size_t level = impl_->current_level_.size();
 	std::wstring style_name;
 	
-	odf_element_state		state={chart_elm, style_name, style_elm, level};
+	odf_element_state		state(chart_elm, style_name, style_elm, level);
 	odf_chart_level_state	level_state = {NULL, NULL, NULL, NULL, chart_elm};
 
 	style* style_ = dynamic_cast<style*>(style_elm.get());
@@ -857,7 +857,7 @@ void odf_chart_context::add_domain(const std::wstring & formula)
 	
 	if (impl_->current_level_.back().elm)impl_->current_level_.back().elm->add_child_element(elm);
 
-	odf_element_state state={elm, L"", office_element_ptr(), level};
+	odf_element_state state(elm, L"", office_element_ptr(), level);
 	impl_->current_chart_state_.elements_.push_back(state);
 }
 
@@ -875,7 +875,7 @@ void odf_chart_context::add_categories(const std::wstring & odf_formula, office_
 	
 	if (axis)axis->add_child_element(elm);
 
-	odf_element_state state={elm, L"", office_element_ptr(), level};
+	odf_element_state state(elm, L"", office_element_ptr(), level);
 	impl_->current_chart_state_.elements_.push_back(state);
 }
 
@@ -1034,10 +1034,10 @@ void odf_chart_context::end_text()
 		}
 		size_t level_root = impl_->current_level_.size() + 1;
 		
-		odf_element_state state = { text_context_->text_elements_list_[i].elm, 
-									text_context_->text_elements_list_[i].style_name, 
-									text_context_->text_elements_list_[i].style_elm, 
-									text_context_->text_elements_list_[i].level + level_root};
+		odf_element_state state(text_context_->text_elements_list_[i].elm, 
+							 	text_context_->text_elements_list_[i].style_name, 
+								text_context_->text_elements_list_[i].style_elm, 
+								text_context_->text_elements_list_[i].level + level_root);
 
 		impl_->current_chart_state_.elements_.push_back(state);
 	}
@@ -1056,7 +1056,7 @@ void odf_chart_context::add_text(const std::wstring & val)
 
 	impl_->current_level_.back().elm->add_child_element(paragr_elm);
 	
-	odf_element_state state = {paragr_elm, L"", office_element_ptr(), impl_->current_level_.size() + 1};
+	odf_element_state state(paragr_elm, L"", office_element_ptr(), impl_->current_level_.size() + 1);
 	impl_->current_chart_state_.elements_.push_back(state);
 }
 void odf_chart_context::set_textarea_vertical_align(int align)
@@ -1503,7 +1503,7 @@ void odf_chart_context::start_element(office_element_ptr & elm, office_element_p
 	drawing_context()->start_element(elm, style_elm);
 	//if (impl_->current_level_.size()>0) impl_->current_level_.back()->add_child_element(elm); не надо...наследование через start_element в drawing
 	
-	odf_element_state		state={elm, style_name, style_elm, level};
+	odf_element_state		state={elm, style_name, style_elm, level, 0};
 	odf_chart_level_state	level_state = {NULL, NULL, NULL, NULL, elm};
 	
 	impl_->current_chart_state_.elements_.push_back(state);
@@ -1956,7 +1956,8 @@ void odf_chart_context::Impl::create_local_table()
 	{
 		current_level_[0].elm->add_child_element(table_elm);
 		size_t level = current_level_.size();
-		odf_element_state		state = {table_elm, L"", office_element_ptr(), level + 1};		
+		
+		odf_element_state state(table_elm, L"", office_element_ptr(), level + 1);		
 		current_chart_state_.elements_.push_back(state);
 
 		table_state->set_table_name(table_name);

@@ -4450,7 +4450,7 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 
 	int count_rows		= oox_table->m_nCountRow;
 	int count_columns	= oox_table->m_oTblGrid.IsInit() ? (int)oox_table->m_oTblGrid->m_arrGridCol.size() : 0;
-	
+
 	odt_context->styles_context()->table_styles().set_current_dimension(count_columns, count_rows);
 	odt_context->table_context()->set_table_size(count_columns, count_rows);
 //------ колонки

@@ -1277,7 +1277,7 @@ bool odt_conversion_context::start_comment(int oox_comm_id)
 		if (text_context()->current_level_.size() > 0)
 			text_context()->current_level_.back().elm->add_child_element(comm_elm);
 
-		odf_element_state state={comm_elm, L"", office_element_ptr(), text_context()->current_level_.size()};
+		odf_element_state state(comm_elm, L"", office_element_ptr(), text_context()->current_level_.size());
 		text_context()->current_level_.push_back(state);
 
 		return false; //типо новый
@@ -1330,7 +1330,7 @@ void odt_conversion_context::start_note(int oox_ref_id, int type)
 	if (text_context()->current_level_.size() > 0)
 		text_context()->current_level_.back().elm->add_child_element(note_elm);
 
-	odf_element_state state = {note_elm, L"", office_element_ptr(), text_context()->current_level_.size()};
+	odf_element_state state(note_elm, L"", office_element_ptr(), text_context()->current_level_.size());
 	text_context()->current_level_.push_back(state);
 }
 void odt_conversion_context::start_note_content()
@@ -1339,7 +1339,7 @@ void odt_conversion_context::start_note_content()
 
     office_element_ptr note_content_element = notes_context_.get_note_content();
 
-	odf_element_state state = {note_content_element, L"", office_element_ptr(), text_context()->current_level_.size()};
+	odf_element_state state(note_content_element, L"", office_element_ptr(), text_context()->current_level_.size());
 	text_context()->current_level_.push_back(state);
 
 	start_text_context();
@@ -1583,7 +1583,7 @@ void odt_conversion_context::start_table_columns()
 void odt_conversion_context::add_table_column(double width)
 {
 	office_element_ptr elm;
-	create_element(L"table", L"table-column",elm,this);
+	create_element(L"table", L"table-column", elm, this);
 
 	styles_context()->create_style(L"", style_family::TableColumn, true, false, -1);
 

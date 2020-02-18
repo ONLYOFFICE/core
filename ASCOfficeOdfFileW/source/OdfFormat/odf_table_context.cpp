@@ -163,8 +163,10 @@ bool odf_table_context::is_styled()
 }
 void odf_table_context::set_table_size(size_t cols, size_t rows)
 {
-	impl_->current_table().count_cols = cols;
-	impl_->current_table().count_rows = rows;
+	if (cols > 0)
+		impl_->current_table().count_cols = cols;
+	if (rows > 0)
+		impl_->current_table().count_rows = rows;
 }
 void odf_table_context::start_table(office_element_ptr &elm, bool styled)
 {
@@ -193,6 +195,9 @@ void odf_table_context::start_table(office_element_ptr &elm, bool styled)
 void odf_table_context::end_table()
 {
 	//последние объединенные ячейки ..
+	if (impl_->current_table().columns.empty())
+	{
+	}
 	for (size_t i = 0 ; i < impl_->current_table().columns.size(); i++)
 	{
 		impl_->current_table().current_column = (int)i + 1;
@@ -308,6 +313,10 @@ void odf_table_context::add_column(office_element_ptr &elm, bool styled)
 
 	impl_->current_table().columns.push_back(state);
 
+	if ((!impl_->current_table().count_cols) || (*impl_->current_table().count_cols < impl_->current_table().columns.size()))
+	{
+		impl_->current_table().count_cols = impl_->current_table().columns.size();
+	}
 }
 
 void odf_table_context::set_table_inside_v(_CP_OPT(std::wstring) border)
@@ -449,11 +458,10 @@ void odf_table_context::set_column_optimal(bool val)
 void odf_table_context::change_current_column_width(double width)
 {
 	if (impl_->empty()) return;
-	if (impl_->current_table().columns.empty())return;
-
+	
 	int index = impl_->current_table().current_column ;
-	if (index < 0) return;
-
+	if (index < 0) return;	
+	
 	while(index >= impl_->current_table().columns.size())
 	{
 		office_element_ptr elm;
@@ -463,7 +471,9 @@ void odf_table_context::change_current_column_width(double width)
 
 		add_column(elm, true);
 
+		impl_->current_table().table.elm->add_child_element(elm);
 	}
+
 	style *style_ = dynamic_cast<style*>(impl_->current_table().columns[index].style_elm.get());
 
 	if (style_ == NULL) return;
@@ -583,9 +593,8 @@ void odf_table_context::start_cell(office_element_ptr &elm, bool styled)
 	
 	std::wstring def_props = get_default_cell_properties();
 	
-	odf_element_state state;
+	odf_element_state state(elm);
 
-	state.elm = elm;
 	if (styled && cell)
 	{
 		odf_style_state_ptr style_state = impl_->styles_context()->last_state(style_family::TableCell);

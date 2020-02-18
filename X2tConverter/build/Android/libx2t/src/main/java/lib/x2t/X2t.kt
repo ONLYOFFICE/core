@@ -432,7 +432,7 @@ class X2t private constructor() {
 
             if (File(mInputParams.to).exists()) {
                 if (mIsOverwrite) {
-                    FileUtils.deletePath(result.root!!)
+                    FileUtils.deletePath(result.to!!)
                 } else {
                     result.code = CONVERTER_CODE_EXIST
                     return@let

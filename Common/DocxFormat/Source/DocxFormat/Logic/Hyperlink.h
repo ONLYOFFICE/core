@@ -85,6 +85,7 @@ namespace OOX
 				m_oId.reset();
 				m_sTgtFrame.reset();
 				m_sTooltip.reset();
+				m_sDestinition.reset();
 
 				WritingElementWithChilds::ClearItems();
 			}
@@ -102,23 +103,26 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:anchor"),      m_sAnchor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:docLocation"), m_sDocLocation )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:history"),     m_oHistory )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:id"),          m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:tgtFrame"),    m_sTgtFrame )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:tooltip"),     m_sTooltip )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:anchor"),		m_sAnchor )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:bookmark"),		m_sAnchor ) //for Word 2003 XML
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:dest"),			m_sDestinition ) //for Word 2003 XML
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:docLocation"),	m_sDocLocation )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:history"),		m_oHistory )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:id"),			m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:tgtFrame"),		m_sTgtFrame )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:tooltip"),		m_sTooltip )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
-			nullable<std::wstring>									m_sAnchor;
-			nullable<std::wstring>									m_sDocLocation;
+			nullable_string											m_sAnchor;
+			nullable_string											m_sDestinition;
+			nullable_string											m_sDocLocation;
 			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>	m_oHistory;
 			nullable<SimpleTypes::CRelationshipId>					m_oId;
-			nullable<std::wstring>									m_sTgtFrame;
-			nullable<std::wstring>									m_sTooltip;
+			nullable_string											m_sTgtFrame;
+			nullable_string											m_sTooltip;
 		};
 		//--------------------------------------------------------------------------------
 		// AltChunkPr 17.17.2.2 (Part 1)

@@ -255,7 +255,7 @@ namespace OOX
 					pItem = new CDir( document );
 				else if ( _T("w:fldSimple") == sName )
 					pItem = new CFldSimple( document );
-				else if ( _T("w:hyperlink") == sName )
+				else if ( _T("w:hyperlink") == sName || _T("w:hlink") == sName )
 					pItem = new CHyperlink( document );
 				else if ( _T("w:ins") == sName )
 					pItem = new CIns( document );

@@ -45,9 +45,9 @@
 #include "Logic/Paragraph.h"
 #include "Logic/Sdt.h"
 #include "Logic/Table.h"
+#include "Logic/Pict.h"
 #include "Math/oMathPara.h"
 #include "Math/OMath.h"
-
 #include "External/HyperLink.h"
 
 namespace OOX
@@ -171,6 +171,64 @@ namespace OOX
 
 			nullable<OOX::Logic::CDrawing            >	m_oDrawing;
 			nullable<OOX::Vml::CBackground>				m_oBackground; 
+		};
+
+	//Word 2003 XML Reference
+		class CBgPict : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CBgPict)
+			CBgPict(OOX::Document *pMain = NULL) : WritingElement(pMain)
+			{
+			}
+			virtual ~CBgPict()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+
+					if ( _T("w:background") == sName )
+					{
+						ReadAttributes(oReader);
+					}
+					else if ( _T("v:background") == sName )
+						m_oBackground = oReader;
+					else if ( _T("w:binData") == sName )
+						m_oBinData = oReader;
+				}
+			}
+			virtual std::wstring toXML() const
+			{
+				return L"";
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_w_bgPict;
+			}
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:bgcolor"),	m_oColor )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:background"), m_oBackgroundType )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			nullable<OOX::Logic::CBinData>		m_oBinData;
+			nullable<SimpleTypes::CHexColor<>>	m_oColor;
+			nullable_string						m_oBackgroundType; 
+			nullable<OOX::Vml::CBackground>		m_oBackground; 
 		};
 	}
 

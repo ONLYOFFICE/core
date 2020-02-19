@@ -159,6 +159,8 @@ namespace OOX
 			if ( oReader.IsEmptyNode() )
 				return;
 
+			OOX::Document* document = WritingElement::m_pMainDocument;
+
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
@@ -166,127 +168,118 @@ namespace OOX
 				WritingElement *pItem = NULL;
 
 				if ( _T("w:bdo") == sName )
-					pItem = new CBdo( oReader );
+					pItem = new CBdo( document );
 				else if ( _T("w:bookmarkEnd") == sName )
-					pItem = new CBookmarkEnd( oReader );
+					pItem = new CBookmarkEnd( document );
 				else if ( _T("w:bookmarkStart") == sName )
-					pItem = new CBookmarkStart( oReader );
+					pItem = new CBookmarkStart( document );
 				else if ( _T("w:commentRangeEnd") == sName )
-					pItem = new CCommentRangeEnd( oReader );
+					pItem = new CCommentRangeEnd( document );
 				else if ( _T("w:commentRangeStart") == sName )
-					pItem = new CCommentRangeStart( oReader );
+					pItem = new CCommentRangeStart( document );
 				//else if ( _T("w:customXml") == sName )
-				//	pItem = new CCustomXml( oReader );
+				//	pItem = new CCustomXml( document );
 				else if ( _T("w:customXmlDelRangeEnd") == sName )
-					pItem = new CCustomXmlDelRangeEnd( oReader );
+					pItem = new CCustomXmlDelRangeEnd( document );
 				else if ( _T("w:customXmlDelRangeStart") == sName )
-					pItem = new CCustomXmlDelRangeStart( oReader );
+					pItem = new CCustomXmlDelRangeStart( document );
 				else if ( _T("w:customXmlInsRangeEnd") == sName )
-					pItem = new CCustomXmlInsRangeEnd( oReader );
+					pItem = new CCustomXmlInsRangeEnd( document );
 				else if ( _T("w:customXmlInsRangeStart") == sName )
-					pItem = new CCustomXmlInsRangeStart( oReader );
+					pItem = new CCustomXmlInsRangeStart( document );
 				else if ( _T("w:customXmlMoveFromRangeEnd") == sName ) 
-					pItem = new CCustomXmlMoveFromRangeEnd( oReader );
+					pItem = new CCustomXmlMoveFromRangeEnd( document );
 				else if ( _T("w:customXmlMoveFromRangeStart") == sName )
-					pItem = new CCustomXmlMoveFromRangeStart( oReader );
+					pItem = new CCustomXmlMoveFromRangeStart( document );
 				else if ( _T("w:customXmlMoveToRangeEnd") == sName ) 
-					pItem = new CCustomXmlMoveToRangeEnd( oReader );
+					pItem = new CCustomXmlMoveToRangeEnd( document );
 				else if ( _T("w:customXmlMoveToRangeStart") == sName )
-					pItem = new CCustomXmlMoveToRangeStart( oReader );
+					pItem = new CCustomXmlMoveToRangeStart( document );
 				else if ( _T("w:del") == sName )
-					pItem = new CDel( oReader );
+					pItem = new CDel( document );
 				else if ( _T("w:dir") == sName )
-					pItem = new CDir( oReader );
+					pItem = new CDir( document );
 				else if ( _T("w:fldSimple") == sName )
-					pItem = new CFldSimple( oReader );
+					pItem = new CFldSimple( document );
 				else if ( _T("w:hyperlink") == sName )
-					pItem = new CHyperlink( oReader );
+					pItem = new CHyperlink( document );
 				else if ( _T("w:ins") == sName )
-					pItem = new CIns( oReader );
+					pItem = new CIns( document );
 				else if ( _T("w:moveFrom") == sName )
-					pItem = new CMoveFrom( oReader );
+					pItem = new CMoveFrom( document );
 				else if ( _T("w:moveFromRangeEnd") == sName )
-					pItem = new CMoveFromRangeEnd( oReader );
+					pItem = new CMoveFromRangeEnd( document );
 				else if ( _T("w:moveFromRangeStart") == sName )
-					pItem = new CMoveFromRangeStart( oReader );
+					pItem = new CMoveFromRangeStart( document );
 				else if ( _T("w:moveTo") == sName )
-					pItem = new CMoveTo( oReader );
+					pItem = new CMoveTo( document );
 				else if ( _T("w:moveToRangeEnd") == sName )
-					pItem = new CMoveToRangeEnd( oReader );
+					pItem = new CMoveToRangeEnd( document );
 				else if ( _T("w:moveToRangeStart") == sName )
-					pItem = new CMoveToRangeStart( oReader );
+					pItem = new CMoveToRangeStart( document );
 				else if ( _T("m:oMath") == sName )
-					pItem = new COMath( oReader );
+					pItem = new COMath( document );
 				else if ( _T("m:oMathPara") == sName )
-					pItem = new COMathPara( oReader );
+					pItem = new COMathPara( document );
 				else if ( _T("w:permEnd") == sName )
-					pItem = new CPermEnd( oReader );
+					pItem = new CPermEnd( document );
 				else if ( _T("w:permStart") == sName )
-					pItem = new CPermStart( oReader );
+					pItem = new CPermStart( document );
 				else if ( _T("w:proofErr") == sName )
-					pItem = new CProofErr( oReader );
+					pItem = new CProofErr( document );
 				else if ( _T("w:r") == sName )
-					pItem = new CRun( oReader );
+					pItem = new CRun( document );
 				else if ( _T("w:sdt") == sName )
-					pItem = new CSdt( oReader );
+					pItem = new CSdt( document );
 				else if ( _T("w:smartTag") == sName )
-					pItem = new CSmartTag( oReader );
+					pItem = new CSmartTag( document );
 				//else if ( _T("w:subDoc") == sName )
 				//	pItem = new CSubDoc( oReader );
 
 				if ( pItem )
+				{
+					pItem->fromXML(oReader);
 					m_arrItems.push_back( pItem );
+				}
 			}
 		}
 
 
 		std::wstring CHyperlink::toXML() const
 		{
-				std::wstring sResult = _T("<w:hyperlink ");
+				std::wstring sResult = L"<w:hyperlink";
 
 				if ( m_sAnchor.IsInit() )
 				{
-					sResult += _T("w:anchor=\"");
-                    sResult += m_sAnchor.get2();
-					sResult += _T("\" ");
+					sResult += L" w:anchor=\"" + (*m_sAnchor) + L"\"";
 				}
 
 				if ( m_sDocLocation.IsInit() )
 				{
-					sResult += _T("w:docLocation=\"");
-                    sResult += m_sDocLocation.get2();
-					sResult += _T("\" ");
+					sResult += L" w:docLocation=\"" + (*m_sDocLocation) + L"\"";
 				}
 
 				if ( m_oHistory.IsInit() )
 				{
-					sResult += _T("w:history=\"");
-					sResult += m_oHistory->ToString();
-					sResult += _T("\" ");
+					sResult += L" w:history=\"" + m_oHistory->ToString() + L"\"";
 				}
 
 				if ( m_oId.IsInit() )
 				{
-					sResult += _T("r:id=\"");
-					sResult += m_oId->ToString();
-					sResult += _T("\" ");
+					sResult += L" r:id=\"" + m_oId->ToString() + L"\"";
 				}
 
 				if ( m_sTgtFrame.IsInit() )
 				{
-					sResult += _T("w:tgtFrame=\"");
-                    sResult += m_sTgtFrame.get2();
-					sResult += _T("\" ");
+					sResult += L" w:tgtFrame=\"" + (*m_sTgtFrame) + L"\"";
 				}
 
 				if ( m_sTooltip.IsInit() )
 				{
-					sResult += _T("w:tooltip=\"");
-                    sResult += m_sTooltip.get2();
-					sResult += _T("\" ");
+					sResult += L" w:tooltip=\"" + (*m_sTooltip) + L"\"";
 				}
 
-				sResult += _T(">");
+				sResult += L">";
 
                 for ( size_t i = 0; i < m_arrItems.size(); ++i)
                 {
@@ -296,7 +289,7 @@ namespace OOX
                     }
                 }
 
-				sResult += _T("</w:hyperlink>");
+				sResult += L"</w:hyperlink>";
 
 				return sResult;
 		}

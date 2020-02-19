@@ -43,6 +43,11 @@ namespace OOX
 	class CFontTable;
 	class CNumbering;
 	class CStyles;
+	
+	namespace Logic
+	{
+		class CBgPict;
+	}
 
 	class CDocxFlat : public Document, public File, public WritingElement
 	{
@@ -106,7 +111,7 @@ namespace OOX
 		nullable<CFontTable>			m_pFontTable;
 		nullable<CNumbering>			m_pNumbering;
 		nullable<CSettings>				m_pSettings;
-		//nullable<Logic::CBgPict>		m_oBgPict;
+		nullable<Logic::CBgPict>		m_oBgPict;
 
 		CComments						m_oComments;
 		OOX::CFootnotes					m_oFootnotes;

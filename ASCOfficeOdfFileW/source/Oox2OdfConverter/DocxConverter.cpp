@@ -142,10 +142,10 @@ OOX::IFileContainer* DocxConverter::current_document()
 {
 	if (oox_current_child_document)
 		return oox_current_child_document;
-	else
-	{
+	else if (docx_document)
 		return dynamic_cast<OOX::IFileContainer*>(docx_document->m_pDocument);
-	}
+
+	return NULL;
 }
 NSCommon::smart_ptr<OOX::File> DocxConverter::find_file_by_id(const std::wstring &sId)
 {
@@ -161,7 +161,6 @@ NSCommon::smart_ptr<OOX::File> DocxConverter::find_file_by_id(const std::wstring
 
 std::wstring DocxConverter::find_link_by_id (const std::wstring & sId, int type)
 {
-	if (!docx_document) return L"";
 
     std::wstring			ref;
 	smart_ptr<OOX::File>	oFile;
@@ -173,6 +172,7 @@ std::wstring DocxConverter::find_link_by_id (const std::wstring & sId, int type)
 	}
 	if (!ref.empty()) return ref;
 
+	if (!docx_document) return L"";
 	if (docx_document->m_pDocument == NULL) return L"";
 	
 	oFile	= docx_document->m_pDocument->Find(sId);
@@ -1942,7 +1942,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 	}
 	else if (docx_flat_document)
 	{
-		//convert(docx_flat_document->m_oBgPict.GetPointer(), 1);
+		convert(docx_flat_document->m_oBgPict.GetPointer(), 1);
 	}
 			//nullable<ComplexTypes::Word::CTextDirection                  > m_oTextDirection;
 			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oRtlGutter;
@@ -2101,6 +2101,30 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 			odt_context->add_section_column(width_space);
 		}
 	}
+}
+void DocxConverter::convert(OOX::Logic::CBgPict *oox_bg_pict, int type)
+{
+	if (oox_bg_pict == NULL) return;
+
+	if (oox_bg_pict->m_oColor.IsInit())
+	{
+		_CP_OPT(odf_types::color) color;
+		convert (oox_bg_pict->m_oColor.GetPointer(), NULL, NULL, NULL, color);
+
+		odt_context->set_background(color, type);	
+	}
+	odt_context->start_drawings();
+		odt_context->drawing_context()->start_drawing();
+		odt_context->drawing_context()->set_background_state(true);
+
+	if (oox_bg_pict->m_oBackground.IsInit())
+	{
+		convert(oox_bg_pict->m_oBackground.GetPointer());
+	}
+	odf_writer::style_page_layout_properties *current_layout_properties = odt_context->page_layout_context()->last_layout()->get_properties();
+
+	odt_context->drawing_context()->end_drawing_background(current_layout_properties->attlist_.common_draw_fill_attlist_);
+	odt_context->end_drawings();
 }
 void DocxConverter::convert(OOX::Logic::CBackground *oox_background, int type)
 {
@@ -3562,6 +3586,10 @@ void DocxConverter::convert(OOX::Logic::CHyperlink *oox_hyperlink)
 	if (oox_hyperlink->m_oId.IsInit()) //гиперлинк
 	{
 		ref = find_link_by_id(oox_hyperlink->m_oId->GetValue(), 2);
+	}
+	else if (oox_hyperlink->m_sDestinition.IsInit()) //гиперлинк
+	{
+		ref = *oox_hyperlink->m_sDestinition;
 	}
 	else if (oox_hyperlink->m_sAnchor.IsInit())
 	{

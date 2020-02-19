@@ -3911,6 +3911,10 @@ void BinaryDocumentTableWriter::WriteHyperlink(OOX::Logic::CHyperlink* pHyperlin
 			sLink = pHyperlinkFile->Uri().GetPath();
 		}
 	}
+	else if (pHyperlink->m_sDestinition.IsInit())
+	{
+		sLink = *pHyperlink->m_sDestinition;
+	}
 
 	nCurPos = m_oBcw.WriteItemStart(c_oSerParType::Hyperlink);
 		WriteHyperlinkContent(sLink, pHyperlink);
@@ -3930,14 +3934,14 @@ void BinaryDocumentTableWriter::WriteHyperlinkContent(std::wstring& sLink, OOX::
 	if(pHyperlink->m_sAnchor.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_HyperlinkType::Anchor);
-			m_oBcw.m_oStream.WriteStringW3(pHyperlink->m_sAnchor.get2());
+			m_oBcw.m_oStream.WriteStringW3(*pHyperlink->m_sAnchor);
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 //Tooltip
 	if(pHyperlink->m_sTooltip.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_HyperlinkType::Tooltip);
-			m_oBcw.m_oStream.WriteStringW3(pHyperlink->m_sTooltip.get2());
+			m_oBcw.m_oStream.WriteStringW3(*pHyperlink->m_sTooltip);
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 //History
@@ -3951,14 +3955,14 @@ void BinaryDocumentTableWriter::WriteHyperlinkContent(std::wstring& sLink, OOX::
 	if(pHyperlink->m_sDocLocation.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_HyperlinkType::DocLocation);
-			m_oBcw.m_oStream.WriteStringW3(pHyperlink->m_sDocLocation.get2());
+			m_oBcw.m_oStream.WriteStringW3(*pHyperlink->m_sDocLocation);
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 //TgtFrame
 	if(pHyperlink->m_sTgtFrame.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_HyperlinkType::TgtFrame);
-			m_oBcw.m_oStream.WriteStringW3(pHyperlink->m_sTgtFrame.get2());
+			m_oBcw.m_oStream.WriteStringW3(*pHyperlink->m_sTgtFrame);
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 //Content

@@ -182,7 +182,6 @@ namespace OOX
 				pItem = fromXMLElem(oReader);
 				if ( pItem )
 				{
-					pItem->m_pMainDocument = m_pMainDocument;
 					m_arrItems.push_back( pItem );
 				}
 			}

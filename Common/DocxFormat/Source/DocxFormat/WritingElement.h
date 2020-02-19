@@ -679,6 +679,7 @@ namespace OOX
 		et_w_background, // <w:background>
 		et_w_bdo, // <w:bdo>
 		et_w_binData, // <w:binData>
+		et_w_bgPict,  // <w:bgPict>
 		et_w_bookmarkEnd, // <w:bookmarkEnd>
 		et_w_bookmarkStart, // <w:bookmarkStart>
 		et_w_br, // <w:br>

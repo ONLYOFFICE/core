@@ -923,7 +923,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 	if ((drawing->fill.bitmap) && (drawing->fill.bitmap->rId.empty()))
 	{
 		std::wstring href = drawing->fill.bitmap->xlink_href_;
-		drawing->fill.bitmap->rId = Context.get_mediaitems()->add_or_find(href, oox::typeImage, drawing->fill.bitmap->isInternal, href);
+		drawing->fill.bitmap->rId = Context.get_mediaitems()->add_or_find(href, oox::typeImage, drawing->fill.bitmap->isInternal, href, Context.get_type_place());
 	}
 
 //----------------------------------------------------
@@ -1210,7 +1210,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	drawing->fill.bitmap = oox::oox_bitmap_fill::create();
 	drawing->fill.type = 2;
 	drawing->fill.bitmap->isInternal = false;
-    drawing->fill.bitmap->rId = Context.get_mediaitems()->add_or_find(href, oox::typeImage, drawing->fill.bitmap->isInternal, href);
+    drawing->fill.bitmap->rId = Context.get_mediaitems()->add_or_find(href, oox::typeImage, drawing->fill.bitmap->isInternal, href, Context.get_type_place());
 	drawing->fill.bitmap->bStretch = true;
 
     const std::wstring styleName = frame->common_draw_attlists_.shape_with_text_and_styles_.
@@ -1649,7 +1649,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			drawing->type = oox::typeChart;
 			
 			bool isMediaInternal = true;        
-			drawing->objectId = Context.get_mediaitems()->add_or_find(href, drawing->type, isMediaInternal, href);
+			drawing->objectId = Context.get_mediaitems()->add_or_find(href, drawing->type, isMediaInternal, href, Context.get_type_place());
 		}
 		else if (objectBuild.object_type_ == 2 ) //embedded text
 		{	
@@ -1708,7 +1708,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 				bool isMediaInternal = true;        
 				
 				href += FILE_SEPARATOR_STR + href_new;
-				drawing->objectId		= Context.get_mediaitems()->add_or_find(href, drawing->type, isMediaInternal, href);
+				drawing->objectId		= Context.get_mediaitems()->add_or_find(href, drawing->type, isMediaInternal, href, Context.get_type_place());
 				drawing->objectProgId	= L"Excel.Sheet.12";
 			}
 		}
@@ -1749,7 +1749,7 @@ void draw_object_ole::docx_convert(oox::docx_conversion_context & Context)
 	NSFile::CFileBinary::Copy(objectPath, objectPath + extension);
 
 	bool isMediaInternal	= true;
-	drawing->objectId = Context.get_mediaitems()->add_or_find(href + extension, drawing->type, isMediaInternal, href);
+	drawing->objectId = Context.get_mediaitems()->add_or_find(href + extension, drawing->type, isMediaInternal, href, Context.get_type_place());
 
 }
 void draw_control::docx_convert(oox::docx_conversion_context & Context)
@@ -1820,7 +1820,7 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 		Context.get_drawing_context().get_text_stream_shape() = temp_stream.str();
 		Context.set_stream_man(prev);
 		
-		Context.set_drawing_state_content	(drState);
+		Context.set_drawing_state_content(drState);
 		
 		Context.back_context_state();
 
@@ -1882,6 +1882,60 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 	Context.set_paragraph_state(pState);	
 
 	Context.get_drawing_context().stop_shape();
+}
+void draw_param::docx_convert(oox::docx_conversion_context & Context)
+{
+	if (!draw_name_ && !draw_value_) return;
+
+	//Context.get_drawing_context().set_media_param(*draw_name_, *draw_value_);
+}
+
+void draw_plugin::docx_convert(oox::docx_conversion_context & Context)
+{
+	bool & use_image_replace = Context.get_drawing_context().get_use_image_replace();
+	use_image_replace = true;
+
+//------------------------------------------------
+	std::wstring href		= xlink_attlist_.href_.get_value_or(L"");
+	std::wstring folderPath = Context.root()->get_folder();
+	std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
+
+	if (href.empty()) return;
+
+	draw_frame*	frame = Context.get_drawing_context().get_current_frame();		//owner
+	if (!frame) return;
+	
+	oox::_docx_drawing * drawing = dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get());
+	if (!drawing) return;
+	
+	drawing->type = Context.get_mediaitems()->detectMediaType(objectPath); //reset from Media to Audio, Video, ... QuickTime? AudioCD? ... 
+	//drawing->action.enabled = true;
+	//drawing->action.action	= L"ppaction://media";
+
+	bool isMediaInternal = true;
+	drawing->objectId = Context.get_mediaitems()->add_or_find(href, drawing->type, isMediaInternal, href, Context.get_type_place());
+
+	drawing->extId = L"ext" + drawing->objectId;
+	Context.get_mediaitems()->add_rels(isMediaInternal, drawing->extId, href, oox::typeMedia, Context.get_type_place());
+	drawing->extExternal = !isMediaInternal;
+	
+	if (!drawing->fill.bitmap)
+	{
+		drawing->fill.type = 2;
+		drawing->fill.bitmap = oox::oox_bitmap_fill::create();
+		drawing->fill.bitmap->xlink_href_ = L"zero.png";
+		
+		_image_file_::GenerateZeroImage(folderPath + FILE_SEPARATOR_STR + L"zero.png");
+	}
+	std::wstring ref_image;
+	bool isMediaInternal_image = true;
+	drawing->fill.bitmap->rId = Context.get_mediaitems()->add_or_find(drawing->fill.bitmap->xlink_href_, oox::typeImage, isMediaInternal_image, ref_image, Context.get_type_place());		
+	
+//params	
+	for (size_t i = 0; i < content_.size(); i++)
+    {
+        content_[i]->docx_convert(Context);
+    }
 }
 }
 }

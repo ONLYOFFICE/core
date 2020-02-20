@@ -646,23 +646,30 @@ void docx_conversion_context::add_new_run(std::wstring parentStyleId)
 
 std::wstring docx_conversion_context::add_hyperlink(const std::wstring & href, bool draw)
 {
-	hyperlinks::_type_place type = hyperlinks::document_place;
-	
-		 if (current_process_comment_ == true)												type = hyperlinks::comment_place;
-	else if	(current_process_note_ == footNote	|| current_process_note_ == footNoteRefSet)	type = hyperlinks::footnote_place;
-	else if	(current_process_note_ == endNote	|| current_process_note_ == endNoteRefSet )	type = hyperlinks::endnote_place;
-	
+	oox::_rels_type_place type_place = get_type_place();
+		
 	std::wstring href_correct = xml::utils::replace_text_to_xml(href);
     XmlUtils::replace_all( href_correct, L" .", L".");//1 (130).odt
 	
-	return hyperlinks_.add(href_correct, type, draw);
+	return hyperlinks_.add(href_correct, type_place, draw);
 }
 hyperlinks::_ref  docx_conversion_context::last_hyperlink()
 {
 	return hyperlinks_.last();
 }
+_rels_type_place docx_conversion_context::get_type_place()
+{
+	if (current_process_comment_)					return oox::comment_place;
+	if (current_process_note_ == footNote || 
+		current_process_note_ == footNoteRefSet)	return oox::footnote_place;
+	if (current_process_note_ == endNote ||
+		current_process_note_ == endNoteRefSet )	return oox::endnote_place;
+	
+	if (process_headers_footers_)					return oox::header_footer_place;
 
-void docx_conversion_context::dump_hyperlinks(rels & Rels, hyperlinks::_type_place type)
+	return oox::document_place;
+}
+void docx_conversion_context::dump_hyperlinks(rels & Rels, _rels_type_place type)
 {
     hyperlinks_.dump_rels(Rels, type);
 }
@@ -728,9 +735,12 @@ void docx_conversion_context::end_document()
 
 ////////////////////////////////////////////////////////////////////////////
 	dump_bibliography();
-	dump_hyperlinks (notes_context_.footnotesRels(), hyperlinks::footnote_place);
-	dump_hyperlinks (notes_context_.endnotesRels(), hyperlinks::endnote_place);
-   
+	dump_hyperlinks (notes_context_.footnotesRels(), oox::footnote_place);
+	dump_hyperlinks (notes_context_.endnotesRels(), oox::endnote_place);
+
+	get_mediaitems()->dump_rels(notes_context_.footnotesRels(), oox::footnote_place);
+ 	get_mediaitems()->dump_rels(notes_context_.endnotesRels(), oox::endnote_place);
+  
 	output_document_->get_word_files().set_notes(notes_context_);
 ////////////////////////	
 	for (size_t i = 0; i < charts_.size(); i++)
@@ -1993,8 +2003,8 @@ namespace
 		//слить если есть mediaitems, добавить релсы и обнулить их для основного документа.
 		rels internal_rels;
 
-		Context.get_mediaitems()->dump_rels(internal_rels);
-		Context.dump_hyperlinks(internal_rels, hyperlinks::document_place);
+		Context.get_mediaitems()->dump_rels(internal_rels, oox::header_footer_place);
+		Context.dump_hyperlinks(internal_rels, oox::header_footer_place);
 
 		Context.get_headers_footers().add(styleName, dbgStr, type, internal_rels);
 	}

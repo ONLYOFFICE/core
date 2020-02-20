@@ -798,10 +798,12 @@ public:
 
 	std::wstring		add_hyperlink	(const std::wstring & href, bool drawing);
     hyperlinks::_ref	last_hyperlink	();
-    void				dump_hyperlinks	(rels & Rels, hyperlinks::_type_place type);
+    void				dump_hyperlinks	(rels & Rels, _rels_type_place type);
 
     void dump_headers_footers	(rels & Rels) const;
     void dump_notes				(rels & Rels) const;
+
+	_rels_type_place get_type_place();
 	
 	void dump_bibliography();
 	std::wstring  dump_settings_document();

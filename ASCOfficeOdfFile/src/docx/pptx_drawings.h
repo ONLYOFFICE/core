@@ -56,13 +56,13 @@ public:
         bool isInternal,
         std::wstring const & rid,
         std::wstring const & ref,
-		RelsType type
+		_rels_type type
         );
     void add(/**/
         bool isInternal,
         std::wstring const & rid,
         std::wstring const & ref,
-		RelsType type
+		_rels_type type
         );
     bool empty() const;
 

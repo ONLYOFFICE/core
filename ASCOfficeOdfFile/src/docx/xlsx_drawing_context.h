@@ -62,7 +62,7 @@ public:
     xlsx_drawing_context_handle(mediaitems_ptr & items);
     ~xlsx_drawing_context_handle();
     
-    std::pair<std::wstring, std::wstring>	add_drawing_xml(std::wstring const & content, xlsx_drawings_ptr drawings, RelsType const & type_ = typeDefault);
+    std::pair<std::wstring, std::wstring>	add_drawing_xml(std::wstring const & content, xlsx_drawings_ptr drawings, _rels_type const & type_ = typeDefault);
  	std::pair<std::wstring, std::wstring>	add_drawing_vml(std::wstring const & content, xlsx_drawings_ptr drawings);
    
 	const std::vector<drawing_elm> & content()		const;
@@ -152,7 +152,7 @@ public:
 	void process_objects(xlsx_table_metrics & table_metrics);
 
 	void start_action(std::wstring action);
-		void set_link(std::wstring link, RelsType typeRels = typeHyperlink); 
+		void set_link(std::wstring link, _rels_type typeRels = typeHyperlink); 
 	void end_action();
 
 private:

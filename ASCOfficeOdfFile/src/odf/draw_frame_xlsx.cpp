@@ -361,7 +361,7 @@ void draw_object_ole::xlsx_convert(oox::xlsx_conversion_context & Context)
 	if (!href.empty()) 
 	{
 		std::wstring prog, extension;
-		oox::RelsType relsType;
+		oox::_rels_type relsType;
 		detectObject(objectPath, prog, extension, relsType);
 		
 		NSFile::CFileBinary::Copy(objectPath, objectPath + extension);

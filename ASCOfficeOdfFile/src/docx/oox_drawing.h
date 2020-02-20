@@ -77,7 +77,7 @@ namespace oox {
 		std::wstring	hId;
         std::wstring	hRef;
 
-		RelsType		typeRels;
+		_rels_type		typeRels;
 		bool			highlightClick;
     };
 	class _oox_drawing
@@ -86,7 +86,7 @@ namespace oox {
         _oox_drawing() : type(typeUnknown), id(0), x(0), y(0), cx(0), cy(0), sub_type(0), hidden(false), inGroup(false), lined(false), connector(false), name(L"object"), extExternal(false)
         {
         }
-        RelsType		type;
+        _rels_type		type;
 
  		bool			inGroup;
 		size_t			id;

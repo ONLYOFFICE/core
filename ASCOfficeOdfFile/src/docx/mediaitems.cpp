@@ -59,18 +59,10 @@ bool is_internal(const std::wstring & uri, const std::wstring & packetRoot)
 	return NSFile::CFileBinary::Exists(resultPath) || NSDirectory::Exists(mediaPath);
 }
 
-mediaitems::item::item(	std::wstring const & _href,
-                       RelsType _type,
-                       std::wstring const & _outputName,
-						bool _mediaInternal,
-						std::wstring const & _Id
-					   )
-           : href(_href),
-           type(_type),
-           outputName(_outputName),
-           mediaInternal(_mediaInternal),
-		   Id(_Id),
-           valid(true) //вообще говоря даже если файл покоцанный то мы все равно обязаны перенести "объект"
+mediaitems::item::item(std::wstring const & _href,_rels_type _type, std::wstring const & _outputName,
+						bool _mediaInternal, std::wstring const & _Id, _rels_type_place type_place_)
+           : href(_href), type(_type), outputName(_outputName), mediaInternal(_mediaInternal), Id(_Id), valid(true), type_place(type_place_)
+		   //вообще говоря даже если файл покоцанный то мы все равно обязаны перенести "объект"
 {    
 	count_add = 1;
 	count_used = 0;
@@ -102,13 +94,13 @@ void mediaitems::set_font_directory(std::wstring pathFonts)
         applicationFonts_->InitializeFromFolder(pathFonts);
 }
 
-std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, bool & isInternal)
+std::wstring mediaitems::add_or_find(const std::wstring & href, _rels_type type, bool & isInternal, _rels_type_place type_place)
 {
     std::wstring ref;
-    return add_or_find(href, type, isInternal, ref);
+    return add_or_find(href, type, isInternal, ref, type_place);
 }
 
-std::wstring static get_default_file_name(RelsType type)
+std::wstring static get_default_file_name(_rels_type type)
 {
     switch (type)
     {
@@ -136,7 +128,7 @@ std::wstring static get_default_file_name(RelsType type)
         return L"";
     }
 }
-std::wstring mediaitems::create_file_name(const std::wstring & uri, RelsType type, bool & isInternal, size_t Num)
+std::wstring mediaitems::create_file_name(const std::wstring & uri, _rels_type type, bool & isInternal, size_t Num)
 {
 	if (uri.empty()) return L"";
 
@@ -206,7 +198,7 @@ std::wstring mediaitems::detectImageFileExtension(const std::wstring &fileName)
 	return XmlUtils::GetLower(sExt);
 }
 
-std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, bool & isInternal, std::wstring & ref)
+std::wstring mediaitems::add_or_find(const std::wstring & href, _rels_type type, bool & isInternal, std::wstring & ref, _rels_type_place type_place)
 {
 	bool isMediaInternal = true;
 	std::wstring sub_path = L"media/";
@@ -254,6 +246,8 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 	std::wstring id;
     for (size_t i = 0 ; i < items_.size(); i++)
     {
+		if (items_[i].type_place != type_place) continue;
+
 		if ((items_[i].href == inputPath && !inputPath.empty()) || (items_[i].type == type && inputPath.empty()))
 		{
 			id			= items_[i].Id;
@@ -313,13 +307,18 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 			count_shape++;
 		}
 		
-		items_.push_back( item(inputPath, type, xml::utils::replace_text_to_xml(outputPath), isMediaInternal, id) );
+		items_.push_back( item(inputPath, type, xml::utils::replace_text_to_xml(outputPath), isMediaInternal, id, type_place) );
 	}
 
   	ref = outputPath;
     isInternal = isMediaInternal;
 	return id;
 }
+void mediaitems::add_rels(bool isInternal, std::wstring const & rid, std::wstring const & ref, _rels_type type, _rels_type_place type_place)
+{
+	items_.push_back( item(L"", type, ref, isInternal, rid, type_place) );
+}
+
 std::wstring mediaitems::add_control_props(std::wstring & oox_target)
 {
     const bool isMediaInternal = true;
@@ -330,10 +329,10 @@ std::wstring mediaitems::add_control_props(std::wstring & oox_target)
 
 	oox_target = std::wstring(L"ctrlProp") + std::to_wstring(count_control) + L".xml";
 		
-	items_.push_back( item(L"", typeControlProps, oox_target, isMediaInternal, rId) );
+	items_.push_back( item(L"", typeControlProps, oox_target, isMediaInternal, rId, oox::document_place) );
     return rId;
 }
-void mediaitems::dump_rels(rels & Rels)
+void mediaitems::dump_rels(rels & Rels, _rels_type_place type_place)
 {
     for (size_t i = 0; i < items_.size(); i++)
     {
@@ -341,8 +340,10 @@ void mediaitems::dump_rels(rels & Rels)
 		if ( items_[i].type == typeShape ) continue; 
 		if ( items_[i].type == typeGroupShape ) continue; 
 
+		if (items_[i].type_place != type_place) continue;
+		
 		if (items_[i].count_used >= items_[i].count_add) continue; // уже использовали этот релс выше(колонтитул ....)
-        
+
 		Rels.add( relationship(
                 items_[i].Id, 
                 get_rel_type (items_[i].type), 

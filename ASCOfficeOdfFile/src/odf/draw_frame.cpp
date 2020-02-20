@@ -370,7 +370,7 @@ void draw_object_ole::add_child_element( xml::sax * Reader, const std::wstring &
     CP_NOT_APPLICABLE_ELM(); 
 }
 
-void draw_object_ole::detectObject(const std::wstring &fileName, std::wstring &prog, std::wstring &extension, oox::RelsType &rels)
+void draw_object_ole::detectObject(const std::wstring &fileName, std::wstring &prog, std::wstring &extension, oox::_rels_type &rels)
 {
 	extension = L".bin";
 

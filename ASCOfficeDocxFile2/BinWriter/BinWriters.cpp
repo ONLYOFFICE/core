@@ -3159,9 +3159,9 @@ void BinaryDocumentTableWriter::WriteDocumentContent(const std::vector<OOX::Writ
 		}
 	}
 }
-void BinaryDocumentTableWriter::WriteBackground (OOX::Logic::CBackground* pBackground)
+void BinaryDocumentTableWriter::WriteBackground (OOX::WritingElement* pElement)
 {
-	if (pBackground == NULL) return;
+	if (pElement == NULL) return;
 
 	std::wstring sXml;
 	//if (pBackground->m_oDrawing.IsInit())
@@ -3169,19 +3169,34 @@ void BinaryDocumentTableWriter::WriteBackground (OOX::Logic::CBackground* pBackg
 	//	sXml = pBackground->m_oDrawing->m_sXml.get2();
 	//}
 	//else
-	if (pBackground->m_oBackground.IsInit())
-	{
-		sXml = pBackground->m_oBackground->toXML();
-	}
+	OOX::Logic::CBackground *pBackground = dynamic_cast<OOX::Logic::CBackground*>(pElement);
+	OOX::Logic::CBgPict *pBgPict = dynamic_cast<OOX::Logic::CBgPict*>(pElement);
 
-	if (pBackground->m_oColor.IsInit())
+	if (pBackground)
 	{
-		m_oBcw.WriteColor(c_oSerBackgroundType::Color, pBackground->m_oColor.get());
+		if (pBackground->m_oBackground.IsInit())
+		{
+			sXml = pBackground->m_oBackground->toXML();
+		}
+		if (pBackground->m_oColor.IsInit())
+		{
+			m_oBcw.WriteColor(c_oSerBackgroundType::Color, pBackground->m_oColor.get());
+		}	
+		if (pBackground->m_oThemeColor.IsInit())
+		{
+			m_oBcw.WriteThemeColor(c_oSerBackgroundType::ColorTheme, pBackground->m_oColor, pBackground->m_oThemeColor, pBackground->m_oThemeTint, pBackground->m_oThemeShade);
+		}
 	}
-
-	if (pBackground->m_oThemeColor.IsInit())
+	if (pBgPict)
 	{
-		m_oBcw.WriteThemeColor(c_oSerBackgroundType::ColorTheme, pBackground->m_oColor, pBackground->m_oThemeColor, pBackground->m_oThemeTint, pBackground->m_oThemeShade);
+		if (pBgPict->m_oBackground.IsInit())
+		{
+			sXml = pBgPict->m_oBackground->toXML();
+		}
+		if (pBgPict->m_oColor.IsInit())
+		{
+			m_oBcw.WriteColor(c_oSerBackgroundType::Color, pBgPict->m_oColor.get());
+		}	
 	}
 
 	if (!sXml.empty())
@@ -8388,6 +8403,8 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 	}
 	else
 	{
+		if (pDocx) delete pDocx; pDocx = NULL;
+
 		pDocxFlat = new OOX::CDocxFlat(OOX::CPath(sDir));
 		if ((pDocxFlat) && (pDocxFlat->m_pDocument.IsInit()))
 		{
@@ -8518,10 +8535,17 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 	m_oParamsWriter.m_pOfficeDrawingConverter->ClearShapeTypes();
 
 	oBinaryDocumentTableWriter.pSectPr			= pFirstSectPr;
-	oBinaryDocumentTableWriter.pBackground		= pDocument->m_oBackground.GetPointer();
 	oBinaryDocumentTableWriter.poDocument		= pDocument;
 	oBinaryDocumentTableWriter.pJsaProject		= pDocx ? pDocx->m_pJsaProject : NULL;
 
+	if (pDocx)
+	{
+		oBinaryDocumentTableWriter.pBackground = dynamic_cast<OOX::WritingElement*>(pDocument->m_oBackground.GetPointer());
+	}
+	else if (pDocxFlat)
+	{
+		oBinaryDocumentTableWriter.pBackground = dynamic_cast<OOX::WritingElement*>(pDocxFlat->m_oBgPict.GetPointer());
+	}
 	oBinaryDocumentTableWriter.m_bWriteSectPr	= true;
 
 //Write Vba

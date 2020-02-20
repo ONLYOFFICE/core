@@ -304,7 +304,7 @@ namespace BinDocxRW
 	public:
 		Binary_tblPrWriter				btblPrs;
 		OOX::Logic::CSectionProperty*	pSectPr;
-		OOX::Logic::CBackground *		pBackground;
+		OOX::WritingElement*			pBackground;
 		OOX::CDocument*					poDocument;
 		OOX::JsaProject*				pJsaProject;
 
@@ -316,7 +316,7 @@ namespace BinDocxRW
 		void WriteVbaProject(OOX::VbaProject& oVbaProject);
 		void Write(std::vector<OOX::WritingElement*> & aElems);
 		void WriteDocumentContent(const std::vector<OOX::WritingElement*> & aElems);
-		void WriteBackground (OOX::Logic::CBackground* pBackground);
+		void WriteBackground (OOX::WritingElement* pBackground);
 		void WriteParapraph(OOX::Logic::CParagraph& par, OOX::Logic::CParagraphProperty* pPr);
 		void WriteParagraphContent(const std::vector<OOX::WritingElement*> & content, bool bHyperlink = false);
 		void WriteDel(const OOX::Logic::CDel& oDel);

@@ -339,7 +339,7 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-	void detectObject(const std::wstring &fileName, std::wstring &prog, std::wstring &extension, oox::RelsType &rels);
+	void detectObject(const std::wstring &fileName, std::wstring &prog, std::wstring &extension, oox::_rels_type &rels);
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_object_ole);
@@ -353,7 +353,7 @@ public:
     static const ElementType type = typeDrawParam;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	virtual void docx_convert(oox::docx_conversion_context & Context){}
+	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context){}
     virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
@@ -376,7 +376,7 @@ public:
     static const ElementType type = typeDrawPlugin;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	virtual void docx_convert(oox::docx_conversion_context & Context){}
+	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context){}
     virtual void pptx_convert(oox::pptx_conversion_context & Context);
 

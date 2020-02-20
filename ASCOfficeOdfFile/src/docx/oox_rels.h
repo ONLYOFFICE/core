@@ -40,7 +40,7 @@
 namespace cpdoccore { 
 namespace oox {
 
-enum RelsType 
+enum _rels_type 
 {
 	typeUnknown = 0, 
 	typeDefault,
@@ -63,10 +63,18 @@ enum RelsType
 	typeControlProps,
 	typeChartUserShapes
 };
-
+enum _rels_type_place
+{
+	document_place,
+	endnote_place,
+	footnote_place,
+	comment_place,
+	header_footer_place,
+	chart_place
+};
 struct _rel
 { 
-    _rel(bool is_internal_, std::wstring const & rid_, std::wstring const & ref_,  RelsType const & type_) :
+    _rel(bool is_internal_, std::wstring const & rid_, std::wstring const & ref_,  _rels_type const & type_) :
 			is_internal(is_internal_),
 			rid(rid_),
 			ref(ref_),
@@ -76,7 +84,7 @@ struct _rel
     bool			is_internal;
     std::wstring	rid;
     std::wstring	ref;
-    RelsType		type;
+    _rels_type		type;
 };
 
 class relationship : public xml::element_impl<relationship>

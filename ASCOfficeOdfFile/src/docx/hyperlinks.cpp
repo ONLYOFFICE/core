@@ -31,7 +31,6 @@
  */
 
 #include "hyperlinks.h"
-#include "oox_rels.h"
 
 #include <xml/utils.h>
 
@@ -48,7 +47,7 @@ hyperlinks::_ref  hyperlinks::last()
 	return r;
 }
 
-std::wstring hyperlinks::add(const std::wstring & href, _type_place type_place, bool drawing)
+std::wstring hyperlinks::add(const std::wstring & href, _rels_type_place type_place, bool drawing)
 {
 	std::wstring id = std::wstring(L"rHpId") + std::to_wstring(hrefs_.size() + 1);
 	
@@ -60,14 +59,14 @@ std::wstring hyperlinks::add(const std::wstring & href, _type_place type_place, 
 }
 
 
-void hyperlinks::dump_rels(rels & Rels, _type_place type)
+void hyperlinks::dump_rels(rels & Rels, _rels_type_place type_place)
 {
     size_t i = 0;
     for (size_t i = 0; i < hrefs_.size(); i++)
     {
  		if (hrefs_[i].used_rels)continue; // уже использовали этот релс
 
-		if (hrefs_[i].type_place == type)
+		if (hrefs_[i].type_place == type_place)
 		{
 			Rels.add( relationship(hrefs_[i].id, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink", hrefs_[i].href, L"External" ) );
 			hrefs_[i].used_rels = true;

@@ -70,7 +70,7 @@ public:
 		return std::pair<std::wstring, std::wstring>(fileName, rId);
     }
 
-    std::pair<std::wstring, std::wstring> add_drawing_xml(std::wstring const & content, xlsx_drawings_ptr drawings, RelsType const & type_)
+    std::pair<std::wstring, std::wstring> add_drawing_xml(std::wstring const & content, xlsx_drawings_ptr drawings, _rels_type const & type_)
     {
         const std::wstring id = std::to_wstring(next_drawing_id_++);
         const std::wstring fileName = std::wstring(L"drawing") + id + L".xml";
@@ -108,7 +108,7 @@ xlsx_drawing_context_handle::~xlsx_drawing_context_handle()
 {
 }
 
-std::pair<std::wstring, std::wstring> xlsx_drawing_context_handle::add_drawing_xml(std::wstring const & content, xlsx_drawings_ptr drawings, RelsType const & type_)
+std::pair<std::wstring, std::wstring> xlsx_drawing_context_handle::add_drawing_xml(std::wstring const & content, xlsx_drawings_ptr drawings, _rels_type const & type_)
 {
     return impl_->add_drawing_xml(content, drawings, type_);
 }
@@ -626,14 +626,14 @@ void xlsx_drawing_context::process_image(drawing_object_description & obj, _xlsx
 	std::wstring ref;/// это ссылка на выходной внешний объект
 	bool isMediaInternal = false;
 
-	drawing.fill.bitmap->rId = impl_->get_mediaitems()->add_or_find(obj.xlink_href_, typeImage, isMediaInternal, ref);		
+	drawing.fill.bitmap->rId = impl_->get_mediaitems()->add_or_find(obj.xlink_href_, typeImage, isMediaInternal, ref, oox::document_place);		
 
 	if (drawing.type == typeShape)
 	{
 		impl_->get_drawings()->add(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage, false, false);//собственно это не объект, а доп рел и ref объекта
 	
 		isMediaInternal=true;
-		std::wstring rId = impl_->get_mediaitems()->add_or_find(L"", typeShape, isMediaInternal, ref);
+		std::wstring rId = impl_->get_mediaitems()->add_or_find(L"", typeShape, isMediaInternal, ref, oox::document_place);
 		
 		xlsx_drawings_->add(drawing, isMediaInternal, rId, ref, typeShape);//объект
 
@@ -651,7 +651,7 @@ void xlsx_drawing_context::process_chart(drawing_object_description & obj,_xlsx_
 	std::wstring ref;
     bool isMediaInternal = true;
 	
-	drawing.objectId = impl_->get_mediaitems()->add_or_find(obj.xlink_href_, obj.type_, isMediaInternal, ref);
+	drawing.objectId = impl_->get_mediaitems()->add_or_find(obj.xlink_href_, obj.type_, isMediaInternal, ref, oox::document_place);
     xlsx_drawings_->add(drawing, isMediaInternal, drawing.objectId, ref, obj.type_);
 	
 	if (drawing.inGroup)
@@ -691,7 +691,7 @@ void xlsx_drawing_context::process_object(drawing_object_description & obj, xlsx
 	}
 	else
 	{
-		drawing.objectId		= impl_->get_mediaitems()->add_or_find(obj.xlink_href_, obj.type_, isMediaInternal, ref);
+		drawing.objectId		= impl_->get_mediaitems()->add_or_find(obj.xlink_href_, obj.type_, isMediaInternal, ref, oox::document_place);
 		drawing.objectProgId	= obj.descriptor_;
 		
 		xlsx_drawings_->add(drawing, isMediaInternal, drawing.objectId, ref, obj.type_, true);
@@ -705,7 +705,7 @@ void xlsx_drawing_context::process_shape(drawing_object_description & obj,_xlsx_
 	std::wstring ref;
     bool isMediaInternal = true;
 
-	std::wstring rId = impl_->get_mediaitems()->add_or_find(L"", obj.type_, isMediaInternal, ref);
+	std::wstring rId = impl_->get_mediaitems()->add_or_find(L"", obj.type_, isMediaInternal, ref, oox::document_place);
 	xlsx_drawings_->add(drawing, isMediaInternal, rId, ref, obj.type_);
 }
 
@@ -725,7 +725,7 @@ void xlsx_drawing_context::process_group(drawing_object_description & obj, xlsx_
 	std::wstring ref;
     bool isMediaInternal = true;
 
-	std::wstring rId	= impl_->get_mediaitems()->add_or_find(L"", obj.type_, isMediaInternal, ref);
+	std::wstring rId	= impl_->get_mediaitems()->add_or_find(L"", obj.type_, isMediaInternal, ref, oox::document_place);
 	xlsx_drawings_->add(drawing, isMediaInternal, rId, ref, obj.type_);
 
 }
@@ -756,7 +756,7 @@ void xlsx_drawing_context::process_group_objects(std::vector<drawing_object_desc
 			std::wstring ref;
 			bool isMediaInternal = true;
 			
-			drawing.fill.bitmap->rId = impl_->get_mediaitems()->add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal, ref);
+			drawing.fill.bitmap->rId = impl_->get_mediaitems()->add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal, ref, oox::document_place);
 			
 			bool in_sheet = (obj.type_== typeOleObject || obj.type_== typeMsObject) ? true : false;
 			impl_->get_drawings()->add(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage, in_sheet, false);//собственно это не объект, а доп рел и ref объекта
@@ -798,7 +798,7 @@ void xlsx_drawing_context::start_action(std::wstring action)
 	impl_->object_description_.action_.enabled	= true;
 }
 
-void xlsx_drawing_context::set_link(std::wstring link, RelsType typeRels)
+void xlsx_drawing_context::set_link(std::wstring link, _rels_type typeRels)
 {//hyprelinks only
 	++hlinks_size_;
 	std::wstring hId = L"hId" + std::to_wstring(hlinks_size_);

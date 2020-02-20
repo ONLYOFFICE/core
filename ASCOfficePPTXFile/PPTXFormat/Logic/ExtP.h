@@ -117,6 +117,8 @@ namespace PPTX
 					if (strName == L"media")
 					{
 						ReadAttributes1(oReader);
+						if ( oReader.IsEmptyNode() )
+							continue;
 
 						int nParentDepth1 = oReader.GetDepth();
 						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )

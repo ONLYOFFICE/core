@@ -249,7 +249,7 @@ namespace PPTX
 			virtual void GetRect(Aggplus::RECT& pRect)const;
 			
 			virtual std::wstring GetFullPicName()const;
-			smart_ptr<OOX::File> GetMediaLink()const;
+			smart_ptr<OOX::File> GetMediaLink(NSBinPptxRW::CBinaryFileWriter* pWriter = NULL)const;
 			
 			DWORD GetFill(UniFill& fill)const;
 			DWORD GetLine(Ln& line)const;
@@ -272,7 +272,7 @@ namespace PPTX
 //----------------------------------------------------------------------
 			Shape*					m_pLevelUp;
 			NvPicPr					nvPicPr;
-			mutable BlipFill		blipFill;
+			BlipFill				blipFill;
 			SpPr					spPr;
 			nullable<ShapeStyle>	style;
 		//internal

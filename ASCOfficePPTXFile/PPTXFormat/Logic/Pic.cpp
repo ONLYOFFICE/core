@@ -692,7 +692,7 @@ namespace PPTX
 			}
 			else if (nvPicPr.nvPr.media.is_init())
 			{
-				blipFill.additionalFile = GetMediaLink();  
+				blipFill.additionalFile = GetMediaLink(pWriter);  
 
 				smart_ptr<OOX::Media> mediaFile = blipFill.additionalFile.smart_dynamic_cast<OOX::Media>();
 				if (mediaFile.IsInit() && blipFill.blip.IsInit())
@@ -1068,28 +1068,41 @@ namespace PPTX
 				return blipFill.blip->GetFullPicName();
 			return _T("");
 		}
-		smart_ptr<OOX::File> Pic::GetMediaLink()const
+		smart_ptr<OOX::File> Pic::GetMediaLink(NSBinPptxRW::CBinaryFileWriter* pWriter)const
 		{
 			smart_ptr<OOX::File>  file;
+			OOX::IFileContainer* pRels = NULL;
 			
-			if (!parentFileIs<Slide>()) return file;
-
-			if (nvPicPr.nvPr.media.is<WavAudioFile>())
+			if (parentFileIs<Slide>())
 			{
-				return parentFileAs<Slide>().Find(nvPicPr.nvPr.media.as<WavAudioFile>().embed.get());
+				pRels = dynamic_cast<OOX::IFileContainer*>(const_cast<PPTX::WrapperFile*>(parentFile));
 			}
-
-			if (nvPicPr.nvPr.media.is<MediaFile>())
+			//else if ..layout, master
+			else if ((pWriter) && (pWriter->m_pCurrentContainer))
 			{
-				file = parentFileAs<Slide>().Find(nvPicPr.nvPr.media.as<MediaFile>().link.get());		
-				smart_ptr<OOX::Media> mediaFile = file.smart_dynamic_cast<OOX::Media>();
-				
-				if ( (mediaFile.IsInit() == false || mediaFile->filename().GetPath() == L"NULL") && !nvPicPr.nvPr.extLst.empty())
+				if (pWriter->m_pCurrentContainer->is_init())
+					pRels = pWriter->m_pCurrentContainer->operator ->();
+			}
+			if (pRels)
+			{
+				if (nvPicPr.nvPr.media.is<WavAudioFile>())
 				{
-					//todooo - почему везде нулевой то? - сделать поиск по всем uri
-					file = parentFileAs<Slide>().Find(nvPicPr.nvPr.extLst[0].link.get());
-				}		
-			}//удалять ли c UnknownType ???? (если не найден щас генерится)
+					return pRels->Find(nvPicPr.nvPr.media.as<WavAudioFile>().embed.get());
+				}
+
+				if (nvPicPr.nvPr.media.is<MediaFile>())
+				{
+					file = pRels->Find(nvPicPr.nvPr.media.as<MediaFile>().link.get());		
+					smart_ptr<OOX::Media> mediaFile = file.smart_dynamic_cast<OOX::Media>();
+					
+					if ( (mediaFile.IsInit() == false || mediaFile->filename().GetPath() == L"NULL") && !nvPicPr.nvPr.extLst.empty())
+					{
+						//todooo - почему везде нулевой то? - сделать поиск по всем uri
+						file = pRels->Find(nvPicPr.nvPr.extLst[0].link.get());
+					}		
+				}
+
+			}
 			return file;
 		}
 

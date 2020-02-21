@@ -555,6 +555,7 @@ class X2t private constructor() {
                 this.to = cache1.to
                 this.temp = cache1.temp
                 this.theme = inputParams.theme
+                this.password = inputParams.password
             }
 
             var code = first.invoke(inputTemp)
@@ -565,6 +566,7 @@ class X2t private constructor() {
                         this.to = inputParams.to
                         this.temp = cache2.temp
                         this.theme = "${cache2.root}/theme"
+                        this.password = inputParams.password
                     }
 
                     if (!FileUtils.createPath(inputResult.theme!!)) {

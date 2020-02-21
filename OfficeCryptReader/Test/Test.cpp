@@ -3,6 +3,7 @@
 #include "tchar.h"
 #include "../source/ECMACryptFile.h"
 #include "../../Common/OfficeFileFormatChecker.h"
+#include "../../DesktopEditor/common/File.h"
 
 #if defined(_WIN64)
 	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
@@ -25,7 +26,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	ECMACryptFile crypt_file;
 	bool result = false, bDataIntegrity = false;
 
-	std::wstring srcFileName	= L"D:\\test\\_crypted\\test-111.docx";
+	std::wstring srcFileName	= L"D:\\test\\_bad_86\\crypt_file_test.docx";
 	std::wstring dstFileName	= srcFileName + L"-mycrypt.docx";
 	std::wstring dstFileName2	= dstFileName + L".oox";
 	
@@ -39,8 +40,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	//std::wstring dstFileName1	= srcFileName1 + L".oox";
 	//result = crypt_file.DecryptOfficeFile(srcFileName1, dstFileName1, password, bDataIntegrity);
 			
-	result = crypt_file.EncryptOfficeFile(srcFileName, dstFileName, password, L"123456789");
-	result = crypt_file.DecryptOfficeFile(dstFileName, dstFileName2, password, bDataIntegrity);
-		
+	//result = crypt_file.EncryptOfficeFile(srcFileName, dstFileName, password, L"123456789");
+	//result = crypt_file.DecryptOfficeFile(dstFileName, dstFileName2, password, bDataIntegrity);
+	
+	std::wstring addit_name = NSFile::CFileBinary::CreateTempFileWithUniqueName(L"", L"asd");
+	std::string addit_info = "11111111111111111111111111111";
+	crypt_file.WriteAdditional(srcFileName, addit_name.substr(1), addit_info);
 	return 0;
 }

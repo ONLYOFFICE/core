@@ -43,8 +43,14 @@ int _tmain(int argc, _TCHAR* argv[])
 	//result = crypt_file.EncryptOfficeFile(srcFileName, dstFileName, password, L"123456789");
 	//result = crypt_file.DecryptOfficeFile(dstFileName, dstFileName2, password, bDataIntegrity);
 	
-	std::wstring addit_name = NSFile::CFileBinary::CreateTempFileWithUniqueName(L"", L"asd");
-	std::string addit_info = "11111111111111111111111111111";
-	crypt_file.WriteAdditional(srcFileName, addit_name.substr(1), addit_info);
+	std::wstring addit_name = L"11111111111111111111111111111";
+		
+	std::string addit_info = crypt_file.ReadAdditional(srcFileName, addit_name);
+
+	std::wstring temp = NSFile::CFileBinary::CreateTempFileWithUniqueName(L"", L"asd");
+	
+	addit_info += std::string(temp.begin(), temp.end());
+
+	crypt_file.WriteAdditional(srcFileName, addit_name, addit_info);
 	return 0;
 }

@@ -208,30 +208,40 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
+                std::wstring namespace_ext = L"p";
+                if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX || 
+					pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_ext= L"a";
+
 				if (link.IsInit())
 				{
-					pWriter->StartNode(L"p:ext");
+					std::wstring namespace_link = L"p14";
+					if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	namespace_link= L"wp15";
+
+					pWriter->StartNode(namespace_ext + L":ext");
 						pWriter->StartAttributes();
 						pWriter->WriteAttribute(L"uri", std::wstring(L"{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}"));
 						pWriter->EndAttributes();
 
-						pWriter->StartNode(L"p14:media");
+						pWriter->StartNode(namespace_link + L":media");
 							pWriter->StartAttributes();
-							pWriter->WriteAttribute(L"xmlns:p14", std::wstring(L"http://schemas.microsoft.com/office/powerpoint/2010/main"));
+							if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+								pWriter->WriteAttribute(L"xmlns:wp15", std::wstring(L"http://schemas.microsoft.com/office/word/2012/wordprocessingDrawing"));
+							else
+								pWriter->WriteAttribute(L"xmlns:p14", std::wstring(L"http://schemas.microsoft.com/office/powerpoint/2010/main"));
 							pWriter->WriteAttribute(L"r:embed", link->get());
 							pWriter->EndAttributes();
-						pWriter->EndNode(L"p14:media");
-					pWriter->EndNode(L"p:ext");
+						pWriter->EndNode(namespace_link + L":media");
+					pWriter->EndNode(namespace_ext + L":ext");
 				}
 				if (sectionLst.IsInit())
 				{
-					pWriter->StartNode(L"p:ext");
+					pWriter->StartNode(namespace_ext + L"ext");
 						pWriter->StartAttributes();
 						pWriter->WriteAttribute(L"uri", std::wstring(L"{521415D9-36F7-43E2-AB2F-B90AF26B5E84}"));
 						pWriter->EndAttributes();
 
 						sectionLst->toXmlWriter(pWriter);
-					pWriter->EndNode(L"p:ext");
+					pWriter->EndNode(namespace_ext + L":ext");
 				}
 			}
 			

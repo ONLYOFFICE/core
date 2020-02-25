@@ -99,8 +99,8 @@ namespace PPTX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, _T("isPhoto"),	isPhoto)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("userDrawn"),	userDrawn)
+					WritingElement_ReadAttributes_Read_if		( oReader, L"isPhoto",	isPhoto)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"userDrawn",	userDrawn)
 				WritingElement_ReadAttributes_End( oReader )
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
@@ -110,10 +110,10 @@ namespace PPTX
 				XmlMacroReadAttributeBase(node, L"isPhoto", isPhoto);
 				XmlMacroReadAttributeBase(node, L"userDrawn", userDrawn);
 
-				ph = node.ReadNodeNoNS(_T("ph"));
+				ph = node.ReadNodeNoNS(L"ph");
 				media.GetMediaFrom(node);
 
-				XmlUtils::CXmlNode list = node.ReadNodeNoNS(_T("extLst"));
+				XmlUtils::CXmlNode list = node.ReadNodeNoNS(L"extLst");
 				if (list.IsValid())
 				{		
 					XmlUtils::CXmlNodes oNodes;
@@ -135,38 +135,38 @@ namespace PPTX
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("isPhoto"), isPhoto);
-				oAttr.Write(_T("userDrawn"), userDrawn);
+				oAttr.Write(L"isPhoto", isPhoto);
+				oAttr.Write(L"userDrawn", userDrawn);
 
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteNullable(ph);
 				oValue.Write(media);
 
-                return XmlUtils::CreateNode(_T("p:nvPr"), oAttr, oValue);
+                return XmlUtils::CreateNode(L"p:nvPr", oAttr, oValue);
 
 			}
             virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
             {
                 std::wstring namespace_ = m_namespace;
-                if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	namespace_= _T("pic");
-                else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_= _T("xdr");
+                if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	namespace_= L"pic";
+                else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_= L"xdr";
 
                 toXmlWriter2(namespace_, pWriter);
             }
             void toXmlWriter2(const std::wstring& strNS, NSBinPptxRW::CXmlWriter* pWriter) const
             {
-                pWriter->StartNode(strNS + _T(":nvPr"));
+                pWriter->StartNode(strNS + L":nvPr");
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("isPhoto"), isPhoto);
-				pWriter->WriteAttribute(_T("userDrawn"), userDrawn);
+				pWriter->WriteAttribute(L"isPhoto", isPhoto);
+				pWriter->WriteAttribute(L"userDrawn", userDrawn);
 				pWriter->EndAttributes();
 
 				pWriter->Write(ph);
 				media.toXmlWriter(pWriter);
-				pWriter->WriteArray(strNS + _T(":extLst"), extLst);				
+				pWriter->WriteArray(L"a:extLst", extLst);				
 				
-                pWriter->EndNode(strNS + _T(":nvPr"));
+                pWriter->EndNode(strNS + L":nvPr");
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const

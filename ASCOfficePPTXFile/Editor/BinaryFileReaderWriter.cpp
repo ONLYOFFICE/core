@@ -1531,7 +1531,7 @@ namespace NSBinPptxRW
 			
 			std::wstring strOleRelsPath;
 			
-			oRelsGeneratorInfo.nOleRId		= m_lNextRelsID++;
+			oRelsGeneratorInfo.nOleRId = m_lNextRelsID++;
 			oRelsGeneratorInfo.sFilepathOle	= oleFile->filename().GetPath();
 
 			if	(m_pManager->m_nDocumentType != XMLWRITER_DOC_TYPE_XLSX)
@@ -1561,8 +1561,8 @@ namespace NSBinPptxRW
 			
 			std::wstring strMediaRelsPath;
 			
-			oRelsGeneratorInfo.nMediaRId	= m_lNextRelsID++;
-			oRelsGeneratorInfo.sFilepathOle	= mediaFile->filename().GetPath();
+			oRelsGeneratorInfo.nMediaRId = m_lNextRelsID++;
+			oRelsGeneratorInfo.sFilepathMedia = mediaFile->filename().GetPath();
 
 			if	(m_pManager->m_nDocumentType != XMLWRITER_DOC_TYPE_XLSX)
 			{

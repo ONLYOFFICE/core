@@ -139,8 +139,9 @@ namespace PPTX
 				cNvPr.toXmlWriter(pWriter);
 				cNvPicPr.toXmlWriter(pWriter);
 
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_PPTX)
-					nvPr.toXmlWriter(pWriter);
+				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_PPTX ||
+					pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+						nvPr.toXmlWriter(pWriter);
 
 				pWriter->EndNode(namespace_ + L":nvPicPr");
 			}

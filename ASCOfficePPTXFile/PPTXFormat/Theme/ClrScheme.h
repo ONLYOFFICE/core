@@ -79,6 +79,7 @@ namespace PPTX
                 node1 = node.ReadNode(_T("a:folHlink"));
                 lColor.GetColorFrom(node1);         Scheme.insert(std::pair<std::wstring,Logic::UniColor>(_T("folHlink"), lColor));
 
+				FillWithDefaults();
 				FillParentPointersForChilds();
 			}
 
@@ -233,7 +234,85 @@ namespace PPTX
 
 				return *this;
 			}
-
+			void FillWithDefaults()
+			{
+				Logic::UniColor lColor;
+				std::map<std::wstring, Logic::UniColor>::iterator it;
+				it = Scheme.find(L"dk1");
+				if (Scheme.end() == it || !it->second.is_init())
+				{
+					lColor.SetRGBColor(0,0,0);
+					Scheme[L"dk1"] = lColor;
+				}
+				it = Scheme.find(L"lt1");
+				if (Scheme.end() == it || !it->second.is_init())
+				{
+					lColor.SetRGBColor(255,255,255);
+					Scheme[L"lt1"] = lColor;
+				}
+				it = Scheme.find(L"dk2");
+				if (Scheme.end() == it || !it->second.is_init())
+				{
+					lColor.SetRGBColor(0x1F,0x49, 0x7D);
+					Scheme[L"dk2"] = lColor;
+				}
+				it = Scheme.find(L"lt2");
+				if (Scheme.end() == it || !it->second.is_init())
+				{
+					lColor.SetRGBColor(0xEE,0xEC,0xE1);
+					Scheme[L"lt2"] = lColor;
+				}
+				it = Scheme.find(L"accent1");
+				if (Scheme.end() == it || !it->second.is_init())
+				{
+					lColor.SetRGBColor(0x4F, 0x81, 0xBD);
+					Scheme[L"accent1"] = lColor;
+				}
+				it = Scheme.find(L"accent2");
+				if (Scheme.end() == it || !it->second.is_init())
+				{
+					lColor.SetRGBColor(0xC0,0x50,0x4D);
+					Scheme[L"accent2"] = lColor;
+				}
+				it = Scheme.find(L"accent3");
+				if (Scheme.end() == it || !it->second.is_init())
+				{
+					lColor.SetRGBColor(0x9B,0xBB,0x59);
+					Scheme[L"accent3"] = lColor;
+				}
+				it = Scheme.find(L"accent4");
+				if (Scheme.end() == it || !it->second.is_init())
+				{
+					lColor.SetRGBColor(0x80,0x64,0xA2);
+					Scheme[L"accent4"] = lColor;
+				}
+				it = Scheme.find(L"accent5");
+				if (Scheme.end() == it || !it->second.is_init())
+				{
+					lColor.SetRGBColor(0x4B,0xAC,0xC6);
+					Scheme[L"accent5"] = lColor;
+				}
+				it = Scheme.find(L"accent6");
+				if (Scheme.end() == it || !it->second.is_init())
+				{
+					lColor.SetRGBColor(0xF7,0x96,0x46);
+					Scheme[L"accent6"] = lColor;
+				}
+				it = Scheme.find(L"hlink");
+				if (Scheme.end() == it || !it->second.is_init())
+				{
+					lColor.SetRGBColor(0x00,0x00,0xFF);
+					Scheme[L"hlink"] = lColor;
+				}
+				it = Scheme.find(L"folHlink");
+				if (Scheme.end() == it || !it->second.is_init())
+				{
+					lColor.SetRGBColor(0x80, 0x00, 0x80);
+					Scheme[L"folHlink"] = lColor;
+				}
+				
+				FillParentPointersForChilds();
+			}
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

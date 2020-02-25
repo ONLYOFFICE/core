@@ -52,6 +52,7 @@ namespace PPTX
 				majorFont = node.ReadNode(_T("a:majorFont"));
 				minorFont = node.ReadNode(_T("a:minorFont"));
 
+				FillWithDefaults();
 				FillParentPointersForChilds();
 			}
 			virtual std::wstring toXML() const
@@ -132,6 +133,20 @@ namespace PPTX
 				}
 
 				pReader->Seek(_end_rec);
+			}
+			void FillWithDefaults()
+			{
+				if (OOX::et_Unknown == majorFont.latin.m_eType)
+				{
+					majorFont.latin.m_name = _T("a:latin");
+					majorFont.latin.typeface = L"Arial";
+				}
+				if (OOX::et_Unknown == minorFont.latin.m_eType)
+				{
+					minorFont.latin.m_name = _T("a:latin");
+					minorFont.latin.typeface = L"Arial";
+				}
+				FillParentPointersForChilds();
 			}
 
 			std::wstring			name;

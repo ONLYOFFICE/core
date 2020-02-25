@@ -75,6 +75,8 @@ namespace PPTX
 					return Color->GetRGBColor(_oTheme,_oClrMap, ARGB);
 				return 0;
 			}
+			void SetRGBColor(const BYTE& R, const BYTE& G, const BYTE& B);
+
 			virtual std::wstring toXML() const;
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const

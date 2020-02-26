@@ -35,6 +35,7 @@
 
 #include "./../WrapperWritingElement.h"
 #include "./../Logic/UniFill.h"
+#include "./../Logic/Colors/SchemeClr.h"
 #include "./../Logic/Ln.h"
 #include "./../Logic/EffectStyle.h"
 
@@ -84,6 +85,7 @@ namespace PPTX
 				XmlUtils::CXmlNode oNode4 = node.ReadNode(_T("a:bgFillStyleLst"));
 				XmlMacroLoadArray(oNode4, _T("*"), bgFillStyleLst, Logic::UniFill);
 
+				FillWithDefaults();
 				FillParentPointersForChilds();
 			}
 
@@ -251,6 +253,113 @@ namespace PPTX
 				pReader->Seek(_end_rec);
 			}
 
+			void FillWithDefaults()
+			{
+				Logic::SolidFill* pSolidFill = NULL;
+				Logic::SchemeClr* pSchemeClr = NULL;
+
+				// -------------- fill styles -------------------------
+				if (fillStyleLst.size() < 3)
+				{
+					fillStyleLst.clear();
+
+					pSolidFill = new Logic::SolidFill();
+					pSolidFill->m_namespace = L"a";
+					pSchemeClr = new Logic::SchemeClr();
+					pSchemeClr->val.set(L"phClr");
+					pSolidFill->Color.Color.reset(pSchemeClr);
+					fillStyleLst.push_back(Logic::UniFill());
+					fillStyleLst.back().m_type = Logic::UniFill::solidFill;
+					fillStyleLst.back().Fill.reset(pSolidFill);
+
+					pSolidFill = new Logic::SolidFill();
+					pSolidFill->m_namespace = L"a";
+					pSolidFill->Color.SetRGBColor(0,0,0);
+					fillStyleLst.push_back(Logic::UniFill());
+					fillStyleLst.back().m_type = Logic::UniFill::solidFill;
+					fillStyleLst.back().Fill.reset(pSolidFill);
+
+					pSolidFill = new Logic::SolidFill();
+					pSolidFill->m_namespace = L"a";
+					pSolidFill->Color.SetRGBColor(0,0,0);
+					fillStyleLst.push_back(Logic::UniFill());
+					fillStyleLst.back().m_type = Logic::UniFill::solidFill;
+					fillStyleLst.back().Fill.reset(pSolidFill);
+				}
+
+				// -------------- back styles -------------------------
+				if (bgFillStyleLst.size() < 3)
+				{
+					bgFillStyleLst.clear();
+
+					pSolidFill = new Logic::SolidFill();
+					pSolidFill->m_namespace = L"a";
+					pSchemeClr = new Logic::SchemeClr();
+					pSchemeClr->val.set(L"phClr");
+					pSolidFill->Color.Color.reset(pSchemeClr);
+					bgFillStyleLst.push_back(Logic::UniFill());
+					bgFillStyleLst.back().m_type = Logic::UniFill::solidFill;
+					bgFillStyleLst.back().Fill.reset(pSolidFill);
+
+					pSolidFill = new Logic::SolidFill();
+					pSolidFill->m_namespace = L"a";
+					pSolidFill->Color.SetRGBColor(0,0,0);
+					bgFillStyleLst.push_back(Logic::UniFill());
+					bgFillStyleLst.back().m_type = Logic::UniFill::solidFill;
+					bgFillStyleLst.back().Fill.reset(pSolidFill);
+
+					pSolidFill = new Logic::SolidFill();
+					pSolidFill->m_namespace = L"a";
+					pSolidFill->Color.SetRGBColor(0,0,0);
+					bgFillStyleLst.push_back(Logic::UniFill());
+					bgFillStyleLst.back().m_type = Logic::UniFill::solidFill;
+					bgFillStyleLst.back().Fill.reset(pSolidFill);
+				}
+
+				// -------------- line styles -------------------------
+				if (lnStyleLst.size() < 3)
+				{
+					lnStyleLst.clear();
+
+					pSolidFill = new Logic::SolidFill();
+					pSolidFill->m_namespace = L"a";
+					pSchemeClr = new Logic::SchemeClr();
+					pSchemeClr->val.set(L"phClr");
+					pSchemeClr->Modifiers.push_back(Logic::ColorModifier());
+					pSchemeClr->Modifiers.back().name = L"shade";
+					pSchemeClr->Modifiers.back().val = 95000;
+					pSchemeClr->Modifiers.push_back(Logic::ColorModifier());
+					pSchemeClr->Modifiers.back().name = L"satMod";
+					pSchemeClr->Modifiers.back().val = 105000;
+					pSolidFill->Color.Color.reset(pSchemeClr);
+					lnStyleLst.push_back(Logic::Ln());
+					lnStyleLst.back().w = 9525;
+					lnStyleLst.back().Fill.m_type = Logic::UniFill::solidFill;
+					lnStyleLst.back().Fill.Fill.reset(pSolidFill);
+
+					pSolidFill = new Logic::SolidFill();
+					pSolidFill->m_namespace = L"a";
+					pSchemeClr = new Logic::SchemeClr();
+					pSchemeClr->val.set(L"phClr");
+					pSolidFill->Color.Color.reset(pSchemeClr);
+					lnStyleLst.push_back(Logic::Ln());
+					lnStyleLst.back().w = 25400;
+					lnStyleLst.back().Fill.m_type = Logic::UniFill::solidFill;
+					lnStyleLst.back().Fill.Fill.reset(pSolidFill);
+
+					pSolidFill = new Logic::SolidFill();
+					pSolidFill->m_namespace = L"a";
+					pSchemeClr = new Logic::SchemeClr();
+					pSchemeClr->val.set(L"phClr");
+					pSolidFill->Color.Color.reset(pSchemeClr);
+					lnStyleLst.push_back(Logic::Ln());
+					lnStyleLst.back().w = 38100;
+					lnStyleLst.back().Fill.m_type = Logic::UniFill::solidFill;
+					lnStyleLst.back().Fill.Fill.reset(pSolidFill);
+				}
+
+				FillParentPointersForChilds();
+			}
 		public:
 			std::wstring name;
 			std::vector<Logic::UniFill>		fillStyleLst;

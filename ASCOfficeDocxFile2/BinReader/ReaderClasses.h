@@ -2043,25 +2043,30 @@ public:
             sRes += L"\"";
 		}
         sRes += L">";
-//old comments
-		//std::wstring sText = pComment->Text;
 
-		//XmlUtils::replace_all(sText, L"\r", L"");
+		if (false == pComment->sContent.empty())
+		{
+			sRes += pComment->sContent;
+		}
+		else
+		{
+	//old comments
+			std::wstring sText = pComment->Text;
 
-		//int nPrevIndex = 0;
-		//for (int i = 0; i < (int)sText.length(); i++)
-		//{
-		//	wchar_t cToken = sText[i];
-		//	if('\n' == cToken)
-		//	{
-		//		writeContentWritePart(pComment, sText, nPrevIndex, i, sRes);
-		//		nPrevIndex = i + 1;
-		//	}
-		//}
-		//writeContentWritePart(pComment, sText, nPrevIndex, (int)sText.length(), sRes);
-//-------------
-		sRes += pComment->sContent;
-////--------------       
+			XmlUtils::replace_all(sText, L"\r", L"");
+
+			int nPrevIndex = 0;
+			for (int i = 0; i < (int)sText.length(); i++)
+			{
+				wchar_t cToken = sText[i];
+				if('\n' == cToken)
+				{
+					writeContentWritePart(pComment, sText, nPrevIndex, i, sRes);
+					nPrevIndex = i + 1;
+				}
+			}
+			writeContentWritePart(pComment, sText, nPrevIndex, (int)sText.length(), sRes);
+		}     
 		sRes += L"</w:comment>";
 		return sRes;
 	}

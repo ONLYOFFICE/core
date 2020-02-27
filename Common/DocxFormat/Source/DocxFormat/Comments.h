@@ -32,6 +32,7 @@
 #pragma once
 
 #include "File.h"
+#include "IFileContainer.h"
 #include "../Base/Nullable.h"
 #include "FileTypes.h"
 #include "WritingElement.h"
@@ -82,13 +83,19 @@ namespace OOX
 
 	};
 
-	class CComments : public OOX::File
+	class CComments : public OOX::File , public OOX::IFileContainer
 	{
 	public:
 		CComments(OOX::Document *pMain);
 		CComments(OOX::Document *pMain, const CPath& oPath);
 		virtual ~CComments();
-		virtual void read(const CPath& oFilePath);
+		virtual void read(const CPath& oPath)
+		{
+			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+			CPath oRootPath;
+			read(oRootPath, oPath);
+		}
+		virtual void read(const CPath& oRootPath, const CPath& oFilePath);
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
 		}
@@ -159,13 +166,19 @@ namespace OOX
 		nullable<SimpleTypes::COnOff<> >			m_oDone;
 	};
 
-	class CCommentsExt : public OOX::File
+	class CCommentsExt : public OOX::File//, public OOX::IFileContainer
 	{
 	public:
 		CCommentsExt(OOX::Document *pMain);
 		CCommentsExt(OOX::Document *pMain, const CPath& oPath);
 		virtual ~CCommentsExt();
-		virtual void read(const CPath& oFilePath);
+		virtual void read(const CPath& oPath)
+		{
+			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+			CPath oRootPath;
+			read(oRootPath, oPath);
+		}
+		virtual void read(const CPath& oRootPath, const CPath& oFilePath);
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
 		}
@@ -182,8 +195,8 @@ namespace OOX
 			return type().DefaultFileName();
 		}
 
-		std::vector<CCommentExt*>	m_arrComments;
-		std::map<unsigned int, int>			m_mapComments; //paraId, index
+		std::vector<CCommentExt*>		m_arrComments;
+		std::map<unsigned int, int>		m_mapComments; //paraId, index
 	};
 	class CDocumentCommentsExt : public CCommentsExt
 	{

@@ -805,7 +805,8 @@ extern int g_nCurFormatVersion;
 		Replies = 9,
 		OOData = 10,
 		DurableId = 11,
-		ProviderId = 12
+		ProviderId = 12,
+		CommentContent = 13
 	};}
 	namespace c_oSer_SettingsType{enum c_oSer_SettingsType
 	{

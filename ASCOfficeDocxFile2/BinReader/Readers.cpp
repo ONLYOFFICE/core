@@ -3353,22 +3353,40 @@ int Binary_OtherTableReader::ReadImageMapContent(BYTE type, long length, void* p
 }
 
 
-Binary_CommentsTableReader::Binary_CommentsTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter):Binary_CommonReader(poBufferedStream)
+Binary_CommentsTableReader::Binary_CommentsTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter) 
+	: Binary_CommonReader(poBufferedStream), m_oFileWriter(oFileWriter)
 {
 }
 int Binary_CommentsTableReader::Read()
 {
+	m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
+    
+	Writers::ContentWriter oContentWriter;
+	Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, oContentWriter, &m_oComments);
+
+	oBinary_DocumentTableReader.m_bUsedParaIdCounter = true;
+
 	int res = c_oSerConstants::ReadOk;
-	READ_TABLE_DEF(res, this->ReadComments, NULL);
+	READ_TABLE_DEF(res, this->ReadComments, &oBinary_DocumentTableReader);
+
+	OOX::CPath fileRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir +	FILE_SEPARATOR_STR + L"word" +
+																		FILE_SEPARATOR_STR + L"_rels"+
+																		FILE_SEPARATOR_STR + m_oFileWriter.m_oCommentsWriter.getFilename() + L".rels";
+
+	m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(fileRelsPath.GetPath());
+	
 	return res;
-};
+}
 int Binary_CommentsTableReader::ReadComments(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_CommentsType::Comment == type )
 	{
 		CComment* pComment = new CComment(m_oComments.m_oParaIdCounter, m_oComments.m_oFormatIdCounter);
+		pComment->pBinary_DocumentTableReader = poResult;
+		
 		READ1_DEF(length, res, this->ReadCommentContent, pComment);
+
 		if(pComment->bIdOpen && NULL == m_oComments.get(pComment->IdOpen))
 			m_oComments.add(pComment);
 		else
@@ -3377,11 +3395,12 @@ int Binary_CommentsTableReader::ReadComments(BYTE type, long length, void* poRes
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
-};
+}
 int Binary_CommentsTableReader::ReadCommentContent(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
 	CComment* pComment = static_cast<CComment*>(poResult);
+	
 	if ( c_oSer_CommentsType::Id == type )
 	{
 		pComment->bIdOpen = true;
@@ -3431,28 +3450,55 @@ int Binary_CommentsTableReader::ReadCommentContent(BYTE type, long length, void*
 		pComment->bDurableId = true;
 		pComment->DurableId = m_oBufferedStream.GetULong();
 	}
+	else if ( c_oSer_CommentsType::CommentContent == type )
+	{
+		READ1_DEF(length, res, this->ReadCommentContentExt, pComment->pBinary_DocumentTableReader);
+
+		Binary_DocumentTableReader* doc_reader = (Binary_DocumentTableReader*)pComment->pBinary_DocumentTableReader;
+		
+		pComment->sContent = doc_reader->m_oDocumentWriter.m_oContent.GetData();
+		doc_reader->m_oDocumentWriter.m_oContent.Clear();
+
+		int nId = doc_reader->m_pComments->m_oParaIdCounter.getCurrentId();
+		pComment->sParaId = XmlUtils::IntToString(nId, L"%08X");
+
+	}
 	else if ( c_oSer_CommentsType::Replies == type )
 	{
-		READ1_DEF(length, res, this->ReadReplies, &pComment->replies);
+		READ1_DEF(length, res, this->ReadReplies, pComment);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
-};
+}
+int Binary_CommentsTableReader::ReadCommentContentExt(BYTE type, long length, void* poResult)
+{
+	Binary_DocumentTableReader* pBinary_DocumentTableReader = static_cast<Binary_DocumentTableReader*>(poResult);
+
+	if (!pBinary_DocumentTableReader) return c_oSerConstants::ReadOk;
+
+	return pBinary_DocumentTableReader->ReadDocumentContent(type, length, NULL);
+}
 int Binary_CommentsTableReader::ReadReplies(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	std::vector<CComment*>* paComments = static_cast<std::vector<CComment*>*>(poResult);
+
+	CComment* pCommentParent = static_cast<CComment*>(poResult);
+	
 	if ( c_oSer_CommentsType::Comment == type )
 	{
 		CComment* pNewComment = new CComment(m_oComments.m_oParaIdCounter, m_oComments.m_oFormatIdCounter);
+		pNewComment->pBinary_DocumentTableReader = pCommentParent->pBinary_DocumentTableReader;
+
 		READ1_DEF(length, res, this->ReadCommentContent, pNewComment);
-		paComments->push_back(pNewComment);
+
+		pNewComment->sParaIdParent = pCommentParent->sParaId;
+		pCommentParent->replies.push_back(pNewComment);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
-};
+}
 
 
 Binary_SettingsTableReader::Binary_SettingsTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, OOX::CSettingsCustom& oSettingsCustom):
@@ -4204,6 +4250,7 @@ Binary_DocumentTableReader::Binary_DocumentTableReader(NSBinPptxRW::CBinaryFileR
         , m_oMath_rPr(m_oFontTableWriter.m_mapFonts)
         , m_pComments(pComments)
 {
+	m_bUsedParaIdCounter = false;
 	m_byteLastElemType = c_oSerParType::Content;
 	m_pCurWriter = NULL;
 }
@@ -4237,9 +4284,19 @@ int Binary_DocumentTableReader::ReadDocumentContent(BYTE type, long length, void
 		m_byteLastElemType = c_oSerParType::Par;
 		m_oCur_pPr.ClearNoAttack();
 
-        m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<w:p>")));
+		if (m_bUsedParaIdCounter && m_pComments)
+		{
+			int nId = m_pComments->m_oParaIdCounter.getNextId();
+			std::wstring sParaId = XmlUtils::IntToString(nId, L"%08X");
+
+			m_oDocumentWriter.m_oContent.WriteString(L"<w:p w14:paraId=\"" + sParaId + L"\" w14:textId=\"" + sParaId + L"\">");
+		}
+		else
+		{
+			m_oDocumentWriter.m_oContent.WriteString(std::wstring(L"<w:p>"));
+		}
 		READ1_DEF(length, res, this->ReadParagraph, NULL);
-        m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("</w:p>")));
+        m_oDocumentWriter.m_oContent.WriteString(std::wstring(L"</w:p>"));
 	}
 	else if(c_oSerParType::Table == type)
 	{
@@ -7367,17 +7424,27 @@ int Binary_DocumentTableReader::ReadRunContent(BYTE type, long length, void* poR
 	else if(c_oSerRunType::table == type)
 	{
 		//todo
-        m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("</w:p>")));
-        m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<w:tbl>")));
+        m_oDocumentWriter.m_oContent.WriteString(std::wstring(L"</w:p>"));
+        m_oDocumentWriter.m_oContent.WriteString(std::wstring(L"<w:tbl>"));
 		READ1_DEF(length, res, this->ReadDocTable, &m_oDocumentWriter.m_oContent);
-        m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("</w:tbl>")));
-        m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<w:p>")));
+        m_oDocumentWriter.m_oContent.WriteString(std::wstring(L"</w:tbl>"));
 
+		if (m_bUsedParaIdCounter && m_pComments)
+		{
+			int nId = m_pComments->m_oParaIdCounter.getNextId();
+			std::wstring sParaId = XmlUtils::IntToString(nId, L"%08X");
+
+			m_oDocumentWriter.m_oContent.WriteString(L"<w:p w14:paraId=\"" + sParaId + L"\" w14:textId=\"" + sParaId + L"\">");
+		}
+		else
+		{
+			m_oDocumentWriter.m_oContent.WriteString(std::wstring(L"<w:p>"));
+		}
         if(m_oCur_pPr.GetCurSize() > 0)
 		{
-            m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<w:pPr>")));
+            m_oDocumentWriter.m_oContent.WriteString(std::wstring(L"<w:pPr>"));
 			m_oDocumentWriter.m_oContent.Write(m_oCur_pPr);
-            m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("</w:pPr>")));
+            m_oDocumentWriter.m_oContent.WriteString(std::wstring(L"</w:pPr>"));
 		}
 	}
 	else if(c_oSerRunType::fldstart_deprecated == type)
@@ -7769,7 +7836,7 @@ int Binary_DocumentTableReader::ReadCell(BYTE type, long length, void* poResult)
 		//Потому что если перед </tc> не идет <p>, то документ считается невалидным
 		if(c_oSerParType::Par != oBinary_DocumentTableReader.m_byteLastElemType)
 		{
-            m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<w:p />")));
+            m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<w:p/>")));
 		}
 	}
 	else
@@ -8907,14 +8974,15 @@ int Binary_DocumentTableReader::ReadDropDownList(BYTE type, long length, void* p
 }
 
 
-Binary_NotesTableReader::Binary_NotesTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, CComments* pComments, bool bIsFootnote):
-	Binary_CommonReader(poBufferedStream),m_oFileWriter(oFileWriter),m_pComments(pComments),m_bIsFootnote(bIsFootnote)
+Binary_NotesTableReader::Binary_NotesTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, CComments* pComments, bool bIsFootnote)
+	: Binary_CommonReader(poBufferedStream), m_oFileWriter(oFileWriter), m_pComments(pComments), m_bIsFootnote(bIsFootnote)
 {
 }
 int Binary_NotesTableReader::Read()
 {
 	m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
-    std::wstring sFilename;
+    
+	std::wstring sFilename;
 	Writers::ContentWriter* pContentWriter = NULL;
 	if(m_bIsFootnote)
 	{

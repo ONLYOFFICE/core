@@ -268,12 +268,12 @@ void CComment::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	WritingElement_ReadAttributes_End( oReader )
 }
 
-CComments::CComments(OOX::Document *pMain) : OOX::File(pMain)
+CComments::CComments(OOX::Document *pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 {
 	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
 	if (docx) docx->m_pComments = this;			
 }
-CComments::CComments(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain)
+CComments::CComments(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 {
 	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
 	if (docx) docx->m_pComments = this;			
@@ -289,8 +289,10 @@ CComments::~CComments()
 	}
 	m_arrComments.clear();
 }
-void CComments::read(const CPath& oFilePath)
+void CComments::read(const CPath& oRootPath, const CPath& oFilePath)
 {
+	IFileContainer::Read( oRootPath, oFilePath );
+
 	XmlUtils::CXmlLiteReader oReader;
 	
 	if ( !oReader.FromFile( oFilePath.GetPath() ) )
@@ -347,12 +349,12 @@ void CCommentExt::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		WritingElement_ReadAttributes_Read_else_if( oReader, L"w15:done",			m_oDone )
 	WritingElement_ReadAttributes_End( oReader )
 }
-CCommentsExt::CCommentsExt(OOX::Document *pMain) : OOX::File(pMain)
+CCommentsExt::CCommentsExt(OOX::Document *pMain) : OOX::File(pMain)//, OOX::IFileContainer(pMain)
 {
 	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
 	if (docx) docx->m_pCommentsExt = this;			
 }
-CCommentsExt::CCommentsExt(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain)
+CCommentsExt::CCommentsExt(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain)//, OOX::IFileContainer(pMain)
 {
 	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
 	if (docx) docx->m_pCommentsExt = this;			
@@ -368,8 +370,10 @@ CCommentsExt::~CCommentsExt()
 	}
 	m_arrComments.clear();
 }
-void CCommentsExt::read(const CPath& oFilePath)
+void CCommentsExt::read(const CPath& oRootPath, const CPath& oFilePath)
 {
+	//IFileContainer::Read( oRootPath, oFilePath );
+	
 	XmlUtils::CXmlLiteReader oReader;
 
 	if ( !oReader.FromFile( oFilePath.GetPath() ) )

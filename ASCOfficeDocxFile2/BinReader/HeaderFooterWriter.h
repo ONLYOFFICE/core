@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef HEADER_FOOTER_WRITER
-#define HEADER_FOOTER_WRITER
+#pragma once
 
 #include "../../XlsxSerializerCom/Common/Common.h"
 #include "../../Common/DocxFormat/Source/Common/SimpleTypes_Word.h"
@@ -60,8 +59,8 @@ namespace Writers
         std::wstring			rId;
 		SimpleTypes::EHdrFtr	eType;
 	};
-    static  std::wstring g_string_hdr_Start = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
-<w:hdr xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
+static  std::wstring g_string_xml_start = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+static  std::wstring g_string_xmlns = L"xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
 xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
 xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
 xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
@@ -78,35 +77,19 @@ xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
 xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
 xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
 xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
-mc:Ignorable=\"w14 w15 wp14\">");
-    static  std::wstring g_string_hdr_End = _T("</w:hdr>");
+mc:Ignorable=\"w14 w15 wp14\">";
+   
+	static  std::wstring g_string_hdr_Start = g_string_xml_start + L"<w:hdr " + g_string_xmlns;
+    static  std::wstring g_string_hdr_End = L"</w:hdr>";
 
-    static  std::wstring g_string_ftr_Start = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
-<w:ftr xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
-xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
-xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
-xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
-xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
-xmlns:v=\"urn:schemas-microsoft-com:vml\" \
-xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
-xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
-xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
-xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
-xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
-xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
-xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
-xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
-xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
-xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
-xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
-mc:Ignorable=\"w14 w15 wp14\">");
-    static  std::wstring g_string_ftr_End = _T("</w:ftr>");
+    static  std::wstring g_string_ftr_Start = g_string_xml_start + L"<w:ftr " + g_string_xmlns;
+    static  std::wstring g_string_ftr_End = L"</w:ftr>";
 
-	static  std::wstring g_string_footnotes_Start = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:footnotes xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" mc:Ignorable=\"w14 w15 wp14\">");
-    static  std::wstring g_string_footnotes_End = _T("</w:footnotes>");
+	static  std::wstring g_string_footnotes_Start = g_string_xml_start + L"<w:footnotes " + g_string_xmlns;
+	static  std::wstring g_string_footnotes_End = L"</w:footnotes>";
 
-	static  std::wstring g_string_endnotes_Start = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:endnotes xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" mc:Ignorable=\"w14 w15 wp14\">");
-    static  std::wstring g_string_endnotes_End = _T("</w:endnotes>");
+	static  std::wstring g_string_endnotes_Start = g_string_xml_start + L"<w:endnotes " + g_string_xmlns;
+    static  std::wstring g_string_endnotes_End = L"</w:endnotes>";
 
 	class HeaderFooterWriter 
 	{
@@ -133,17 +116,17 @@ mc:Ignorable=\"w14 w15 wp14\">");
 			for(size_t i = 0, length = m_aHeaders.size(); i < length; ++i)
 			{
 				HdrFtrItem* pHeader = m_aHeaders[i];
-				WriteItem(_T("header"), pHeader->m_sFilename, pHeader->Header, true);
+				WriteItem(L"header", pHeader->m_sFilename, pHeader->Header, true);
 			}
 			for(size_t i = 0, length = m_aFooters.size(); i < length; ++i)
 			{
 				HdrFtrItem* pFooter = m_aFooters[i];
-				WriteItem(_T("footer"), pFooter->m_sFilename, pFooter->Header, false);
+				WriteItem(L"footer", pFooter->m_sFilename, pFooter->Header, false);
 			}
 		}
         void WriteItem( std::wstring sHeader,  std::wstring& sFilename, ContentWriter& m_oWriter, bool bHeader)
 		{
-            OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR +_T("word") + FILE_SEPARATOR_STR + sFilename;
+            OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + sFilename;
 
 			NSFile::CFileBinary oFile;
 			oFile.CreateFileW(filePath.GetPath());
@@ -186,7 +169,7 @@ mc:Ignorable=\"w14 w15 wp14\">");
 		}
 		std::wstring getFilename()
 		{
-			return _T("footnotes.xml");
+			return L"footnotes.xml";
 		}
 		bool IsEmpty()
 		{
@@ -208,7 +191,7 @@ mc:Ignorable=\"w14 w15 wp14\">");
 
 			std::wstring sFilename = getFilename();
 
-             std::wstring filePath = m_sDir + FILE_SEPARATOR_STR +_T("word") + FILE_SEPARATOR_STR + sFilename;
+             std::wstring filePath = m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + sFilename;
 
 			NSFile::CFileBinary oFile;
 			oFile.CreateFileW(filePath);
@@ -219,7 +202,7 @@ mc:Ignorable=\"w14 w15 wp14\">");
 		}
 		std::wstring getFilename()
 		{
-			return _T("endnotes.xml");
+			return L"endnotes.xml";
 		}
 		bool IsEmpty()
 		{
@@ -227,4 +210,3 @@ mc:Ignorable=\"w14 w15 wp14\">");
 		}
 	};
 }
-#endif	// #ifndef HEADER_FOOTER_WRITER

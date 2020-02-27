@@ -4181,34 +4181,37 @@ void DocxConverter::convert_comment(int oox_comm_id)
 		pComments = &docx_flat_document->m_oComments;
 	}
 
-	if (pComments)
+	if (!pComments) return;
+	
+	OOX::IFileContainer* back_document = oox_current_child_document;
+	oox_current_child_document = dynamic_cast<OOX::IFileContainer*>(pComments);
+
+	std::map<int, int>::iterator pFind = pComments->m_mapComments.find(oox_comm_id);
+
+	if (pFind != pComments->m_mapComments.end())
 	{
-		std::map<int, int>::iterator pFind = pComments->m_mapComments.find(oox_comm_id);
-
-		if (pFind != pComments->m_mapComments.end())
+		if ( pFind->second < (int)pComments->m_arrComments.size() && pFind->second >= 0)
 		{
-			if ( pFind->second < (int)pComments->m_arrComments.size() && pFind->second >= 0)
-			{
-				OOX::CComment* oox_comment = pComments->m_arrComments[pFind->second];
-				
-				if (oox_comment != NULL)
-				{				
-					odt_context->start_comment_content();
-					{
-						if (oox_comment->m_oAuthor.IsInit())	odt_context->comment_context()->set_author	(*oox_comment->m_oAuthor);
-						if (oox_comment->m_oDate.IsInit())		odt_context->comment_context()->set_date	(oox_comment->m_oDate->GetValue());
-						if (oox_comment->m_oInitials.IsInit())	{}
+			OOX::CComment* oox_comment = pComments->m_arrComments[pFind->second];
+			
+			if (oox_comment != NULL)
+			{				
+				odt_context->start_comment_content();
+				{
+					if (oox_comment->m_oAuthor.IsInit())	odt_context->comment_context()->set_author	(*oox_comment->m_oAuthor);
+					if (oox_comment->m_oDate.IsInit())		odt_context->comment_context()->set_date	(oox_comment->m_oDate->GetValue());
+					if (oox_comment->m_oInitials.IsInit())	{}
 
-						for (size_t i = 0; i < oox_comment->m_arrItems.size(); ++i)
-						{
-							convert(oox_comment->m_arrItems[i]);
-						}
+					for (size_t i = 0; i < oox_comment->m_arrItems.size(); ++i)
+					{
+						convert(oox_comment->m_arrItems[i]);
 					}
-					odt_context->end_comment_content();
 				}
+				odt_context->end_comment_content();
 			}
 		}
 	}
+	oox_current_child_document = back_document;
 }
 void DocxConverter::convert_footnote(int oox_ref_id)
 {
@@ -4223,6 +4226,9 @@ void DocxConverter::convert_footnote(int oox_ref_id)
 		oox_footnotes = &docx_flat_document->m_oFootnotes;
 	}
 	if (oox_footnotes == NULL ) return;
+
+	OOX::IFileContainer* back_document = oox_current_child_document;
+	oox_current_child_document = dynamic_cast<OOX::IFileContainer*>(oox_footnotes);
 
 	odt_context->start_note(oox_ref_id, 1);
 
@@ -4242,6 +4248,8 @@ void DocxConverter::convert_footnote(int oox_ref_id)
 		odt_context->end_note_content();
 	}
 	odt_context->end_note();
+	
+	oox_current_child_document = back_document;
 }
 void DocxConverter::convert_endnote(int oox_ref_id)
 {
@@ -4256,6 +4264,9 @@ void DocxConverter::convert_endnote(int oox_ref_id)
 		oox_endnotes = &docx_flat_document->m_oEndnotes;
 	}
 	if (oox_endnotes == NULL ) return;
+
+	OOX::IFileContainer* back_document = oox_current_child_document;
+	oox_current_child_document = dynamic_cast<OOX::IFileContainer*>(oox_endnotes);
 
 	odt_context->start_note(oox_ref_id, 2);
 
@@ -4274,8 +4285,9 @@ void DocxConverter::convert_endnote(int oox_ref_id)
 		}
 		odt_context->end_note_content();
 	}
-
 	odt_context->end_note();
+
+	oox_current_child_document = back_document;
 }
 void DocxConverter::convert_hdr_ftr(std::wstring sId)
 {
@@ -4295,13 +4307,14 @@ void DocxConverter::convert_hdr_ftr(std::wstring sId)
 	}
 	if (oox_hdr_ftr == NULL ) return;
 
+	OOX::IFileContainer* back_document = oox_current_child_document;
 	oox_current_child_document = dynamic_cast<OOX::IFileContainer*>(oox_hdr_ftr);
 
     for (size_t i = 0; i < oox_hdr_ftr->m_arrItems.size(); ++i)
 	{
 		convert(oox_hdr_ftr->m_arrItems[i]);
 	}
-	oox_current_child_document  = NULL;
+	oox_current_child_document  = back_document;
 }
 
 void DocxConverter::convert(OOX::Logic::CTbl *oox_table)

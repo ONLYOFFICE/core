@@ -226,12 +226,14 @@ public:
 class Binary_CommentsTableReader : public Binary_CommonReader
 {
 public:
-	CComments m_oComments;
-public:
+	CComments				m_oComments;
+	Writers::FileWriter&	m_oFileWriter;
+
 	Binary_CommentsTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter);
 	int Read();
 	int ReadComments(BYTE type, long length, void* poResult);
 	int ReadCommentContent(BYTE type, long length, void* poResult);
+	int ReadCommentContentExt(BYTE type, long length, void* poResult);
 	int ReadReplies(BYTE type, long length, void* poResult);
 };
 class Binary_SettingsTableReader : public Binary_CommonReader
@@ -279,18 +281,21 @@ private:
     Binary_pPrReader                oBinary_pPrReader;
     Binary_rPrReader                oBinary_rPrReader;
     Binary_tblPrReader              oBinary_tblPrReader;
-	NSStringUtils::CStringBuilder*        m_pCurWriter;
+	NSStringUtils::CStringBuilder*	m_pCurWriter;
     rPr                             m_oCur_rPr;
     rPr                             m_oMath_rPr;
-	NSStringUtils::CStringBuilder         m_oCur_pPr;
+	NSStringUtils::CStringBuilder	m_oCur_pPr;
     BYTE                            m_byteLastElemType;
-    CComments*                      m_pComments;
 public:
+    CComments*                      m_pComments;
     Writers::ContentWriter&         m_oDocumentWriter;
     Writers::MediaWriter&           m_oMediaWriter;
 
+	bool							m_bUsedParaIdCounter;
+
     Binary_DocumentTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, Writers::ContentWriter& oDocumentWriter, CComments* pComments);
 	~Binary_DocumentTableReader();
+	
 	int Read();
 	NSStringUtils::CStringBuilder& GetRunStringWriter();
 	int ReadDocumentContentOut(long length);

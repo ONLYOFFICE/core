@@ -46,7 +46,7 @@ CF12::CF12(const CellRef& cell_base_ref)
 	rgce2(cell_base_ref),
 	fmlaActive(cell_base_ref)
 {
-	dxfId_ = 0;
+	dxfId_ = -1;
 	ipriority_ = 0;
 }
 
@@ -112,10 +112,10 @@ void CF12::readFields(CFRecord& record)
 	
 	ipriority_	= ++record.getGlobalWorkbookInfo()->cmt_rules;
 	
-	if  ( 0 == dxf.serialize(record.getGlobalWorkbookInfo()->users_Dxfs_stream))
-		dxfId_ = global_info->cellStyleDxfs_count++;
-	else 
-		dxfId_ = -1;
+	std::wstringstream strm;
+	dxf.serialize(strm);
+	
+	dxfId_ = global_info->RegistrDxfn(strm.str());
 }
 int CF12::serialize(std::wostream & stream)
 {
@@ -155,83 +155,9 @@ int CF12::serialize(std::wostream & stream)
 			if (dxfId_ >= 0)
 				CP_XML_ATTR(L"dxfId", dxfId_);
 
-			if (ct == 3)
-			{
-				CFGradient *gradient = dynamic_cast<CFGradient*>(rgbCT.get());
-				CP_XML_NODE(L"colorScale")
-				{
-					for (size_t i = 0; i < gradient->rgInterp.size(); i ++)
-					{
-						CP_XML_NODE(L"cfvo")
-						{
-							CFVO & cfvo = gradient->rgInterp[i]->cfvo;							
-							switch(cfvo.cfvoType)
-							{
-								case 2:	CP_XML_ATTR(L"type", L"min");			break;
-								case 3:	CP_XML_ATTR(L"type", L"max");			break;
-								case 7:	CP_XML_ATTR(L"type", L"formule");		break;
-								case 4:	CP_XML_ATTR(L"type", L"percent");		break;
-								case 5:	CP_XML_ATTR(L"type", L"percentile");	break;
-								default:
-									CP_XML_ATTR(L"type", L"num");				break;
-							}	
-							if (cfvo.cfvoType == 7)
-								CP_XML_ATTR(L"val", cfvo.fmla.getAssembledFormula()); 
-							else
-								CP_XML_ATTR(L"val", cfvo.numValue);
-						}
-					}
-					for (size_t i = 0; i < gradient->rgCurve.size(); i ++)
-					{
-						CP_XML_NODE(L"color")
-						{
-							CFColor & color = gradient->rgCurve[i]->color;
-							switch(color.xclrType.type)
-							{
-							case 1: CP_XML_ATTR(L"indexed",	color.icv);			break;
-							case 2:	CP_XML_ATTR(L"rgb",		color.rgb.strARGB);	break;
-							case 3: CP_XML_ATTR(L"theme",	color.theme);
-									CP_XML_ATTR(L"tint",	color.numTint);		break;
-							default: CP_XML_ATTR(L"auto", true);
-							}
-						}
-					}
-				}
-			}
-			if (ct == 4)
-			{
-				CFDatabar *dataBar = dynamic_cast<CFDatabar*>(rgbCT.get());
+			if (rgbCT)
+				rgbCT->serialize(CP_XML_STREAM());
 
-				CP_XML_NODE(L"dataBar")
-				{
-					//todooo cfvo = num - db1 & db2
-					CP_XML_NODE(L"cfvo")
-					{
-						if (dataBar->iPercentMin > 0)
-							CP_XML_ATTR(L"percent", dataBar->iPercentMin);
-						else
-							CP_XML_ATTR(L"type", L"min");
-					}
-					CP_XML_NODE(L"cfvo")
-					{
-						if (dataBar->iPercentMax < 100)
-							CP_XML_ATTR(L"percent", dataBar->iPercentMax);
-						else
-							CP_XML_ATTR(L"type", L"max");
-					}
-					CP_XML_NODE(L"color")
-					{
-						switch(dataBar->color.xclrType.type)
-						{
-						case 1: CP_XML_ATTR(L"indexed",	dataBar->color.icv);			break;
-						case 2:	CP_XML_ATTR(L"rgb",		dataBar->color.rgb.strARGB);	break;
-						case 3: CP_XML_ATTR(L"theme",	dataBar->color.theme);
-								CP_XML_ATTR(L"tint",	dataBar->color.numTint);		break;
-						default: CP_XML_ATTR(L"auto", true);
-						}
-					}
-				}
-			}
 			//что использовать зависит от типа ... todooo
 			std::wstring s	= fmlaActive.getAssembledFormula();
 			std::wstring s1 = rgce1.getAssembledFormula();

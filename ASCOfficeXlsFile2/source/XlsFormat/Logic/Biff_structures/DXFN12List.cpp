@@ -46,6 +46,7 @@ DXFN12List::DXFN12List()
 {		
 	bExist	= false;
 	size	= 0xffffffff;
+	dxfId_	= -1;
 }
 
 
@@ -55,6 +56,8 @@ DXFN12List::~DXFN12List()
 
 void DXFN12List::load(CFRecord& record)
 {
+	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
+
 	size_t pos_record = record.getRdPtr();
 	
 	if (size == 0xffffffff) size = record.getDataSize() - pos_record;
@@ -68,8 +71,32 @@ void DXFN12List::load(CFRecord& record)
 	}
 	if (size > 0)
 	{
-		record >> xfext;
+		xfext = XFExtNoFRTPtr(new XFExtNoFRT);
+		record >> *xfext;
+
 		size -= (record.getRdPtr() - pos_record);
+	}
+
+	if (bExist)
+	{
+		if (dxfn.ibitAtrNum && !dxfn.ifmtNinch && !dxfn.fIfmtUser)
+		{
+			dxfn.ibitAtrNum = false;
+		}
+		//if (xfext)
+		//{
+		//	if (xfext->serialize(record.getGlobalWorkbookInfo()->users_Dxfs_stream) >= 0)
+		//	{
+		//		dxfId_ = record.getGlobalWorkbookInfo()->cellStyleDxfs_count++;
+		//	}
+		//}
+		//else
+		{
+			std::wstringstream strm;
+			dxfn.serialize(strm);
+			
+			dxfId_ = global_info->RegistrDxfn(strm.str());
+		}
 	}
 }
 

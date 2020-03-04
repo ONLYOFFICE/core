@@ -69,9 +69,7 @@ public:
 	std::vector<BaseObjectPtr>		m_arLabel;
 	std::vector<BaseObjectPtr>		m_arBIGNAME;
 
-//-------------------------------------------------------------------
-	std::map<std::wstring, BaseObjectPtr>	mapPivotViews;
-
+	std::vector<BaseObjectPtr>		m_arSXAddl;
 };
 
 } // namespace XLS

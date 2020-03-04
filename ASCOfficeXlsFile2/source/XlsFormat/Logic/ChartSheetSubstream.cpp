@@ -71,6 +71,7 @@
 #include "Biff_records/ExternSheet.h"
 #include "Biff_records/FrtFontList.h"
 #include "Biff_records/ChartFrtInfo.h"
+#include "Biff_records/SerParent.h"
 
 #include "Biff_unions/FONTLIST.h"
 #include "Biff_unions/PAGESETUP.h"
@@ -94,6 +95,8 @@
 #include "Biff_unions/DAT.h"
 #include "Biff_unions/PIVOTVIEW.h"
 #include "Biff_unions/RECORD12.h"
+#include "Biff_unions/ATTACHEDLABEL.h"
+#include "Biff_unions/DFTTEXT.h"
 
 #include "../../XlsXlsxConverter/XlsConverter.h"
 #include "../../XlsXlsxConverter/xlsx_conversion_context.h"
@@ -143,7 +146,7 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 	{
 		CFRecordType::TypeId type = proc.getNextRecordType();
 		
-		Log::warning(CFRecordType::getStringById(type));
+		//Log::warning(CFRecordType::getStringById(type));
 
 		if (type == rt_NONE || type == rt_BOF ) break;
 		if (type == rt_EOF) 
@@ -419,34 +422,29 @@ void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 			parent0->m_mapCRTIndex.insert(std::make_pair(crt->m_indexCrt, i));
 		}
 	}
-	if (charts->m_arSERIESFORMAT.empty() && !parent0->m_arCRT.empty())
+	for (size_t i = 0 ; i < charts->m_arSERIESFORMAT.size(); i++)
 	{
-		std::vector<int> ser;
-		m_mapTypeChart.insert(std::make_pair(0, ser));
-		return;
-	}
+		SERIESFORMAT * series = dynamic_cast<SERIESFORMAT *>(charts->m_arSERIESFORMAT[i].get());
+		if (series == NULL) continue;
 
+		SerParent *parent = dynamic_cast<SerParent*>(series->m_SerParent.get());
+		if ( parent )
+		{
+			SERIESFORMAT *series_owner = dynamic_cast<SERIESFORMAT *>(charts->m_arSERIESFORMAT[parent->series - 1].get());
+			if (series_owner)
+			{
+				series_owner->m_arSERIESFORMAT_ext.push_back(charts->m_arSERIESFORMAT[i]);	
+				charts->m_arSERIESFORMAT[i] = BaseObjectPtr();
+			}
+		}
+	}
 	for (size_t i = 0 ; i < charts->m_arSERIESFORMAT.size(); i++)
 	{
 		SERIESFORMAT * series = dynamic_cast<SERIESFORMAT *>(charts->m_arSERIESFORMAT[i].get());
 		if (series == NULL) continue;
 
 		SerToCrt * serCrt = dynamic_cast<SerToCrt *>(series->m_SerToCrt.get());
-
-		if ( serCrt == NULL)
-		{
-			//для доп линий может и не существовать - брать предыдущий  - и объеденить!!!
-			std::unordered_map<int,std::vector<int>>::iterator it = m_mapTypeChart.find(iCrt);
-			if (it != m_mapTypeChart.end())
-			{
-				SERIESFORMAT * series_prev = dynamic_cast<SERIESFORMAT *>(charts->m_arSERIESFORMAT[it->second.back()].get());
-				if (series_prev)
-				{
-					series_prev->m_SERIESFORMAT_ext = charts->m_arSERIESFORMAT[i];	
-				}
-			}
-			continue;
-		}
+		if ( serCrt == NULL) continue;
 
 		iCrt = serCrt->id;
 
@@ -472,8 +470,16 @@ void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 		{
 			it->second.push_back(i);
 		}
-
-	}	
+	}
+	for (size_t i = 0; i < parent0->m_arCRT.size(); i++)
+	{
+		std::unordered_map<int,std::vector<int>>::iterator it = m_mapTypeChart.find(i);
+		if (it == m_mapTypeChart.end())
+		{
+			std::vector<int> ser;
+			m_mapTypeChart.insert(std::make_pair(i, ser));
+		}
+	}
 }
 
 void ChartSheetSubstream::recalc(SERIESDATA* data)
@@ -491,9 +497,17 @@ int ChartSheetSubstream::serialize(std::wostream & _stream)
 
 	ShtProps		*sht_props			= dynamic_cast<ShtProps*>(chart_formats->m_ShtProps.get());
 	Chart			*chart_rect			= dynamic_cast<Chart*>(chart_formats->m_ChartRect.get());
+	
+	DFTTEXT *default_text = (false == chart_formats->m_arDFTTEXT.empty()) ? dynamic_cast<DFTTEXT*>(chart_formats->m_arDFTTEXT[0].get()) : NULL; 
 
+	std::wstring namePivotTable;
 	CP_XML_WRITER(_stream)    
 	{
+		CP_XML_NODE(L"c:lang")
+		{
+			CP_XML_ATTR(L"val",L"en-US");
+		}
+
 		CP_XML_NODE(L"c:roundedCorners") 
 		{
 			if ((chart_area_format) && (chart_area_format->fInvertNeg))	CP_XML_ATTR(L"val", 1); //????
@@ -508,9 +522,16 @@ int ChartSheetSubstream::serialize(std::wostream & _stream)
 				CP_XML_NODE(L"c:name")
 				{
 					std::wstring name = link->stPivotTable.value();
+					
 					std::wstring::size_type pos = name.find(L"]");
+					std::wstring::size_type pos1 = name.find(L"!", pos);
+					
+					if (std::wstring::npos != pos1)
+						namePivotTable = name.substr(pos1 + 1);
+
 					if (std::wstring::npos != pos)
 						name = L"[]" + name.substr(pos + 1);
+
 					CP_XML_STREAM() << name;
 				}
 				CP_XML_NODE(L"c:fmtId")
@@ -521,6 +542,25 @@ int ChartSheetSubstream::serialize(std::wostream & _stream)
 		}
 		CP_XML_NODE(L"c:chart")
 		{
+			if (false == namePivotTable.empty())
+			{
+				std::map<std::wstring, BaseObjectPtr>::iterator pFindTable = global_info_->mapPivotTableViews.find(namePivotTable);
+				if (pFindTable != global_info_->mapPivotTableViews.end())
+				{
+				}
+				//CP_XML_NODE(L"c:pivotFmts")
+				//{
+				//	CP_XML_NODE(L"c:pivotFmt")
+				//	{
+				//		CP_XML_NODE(L"c:idx")
+				//		{
+				//			CP_XML_ATTR(L"val", 0); 
+				//			//<c:marker>
+				//		}
+				//	}
+				//}
+			
+			}
 			serialize_title		(CP_XML_STREAM());		
 			serialize_3D		(CP_XML_STREAM());
 			serialize_plot_area (CP_XML_STREAM());
@@ -554,6 +594,12 @@ int ChartSheetSubstream::serialize(std::wostream & _stream)
 					CP_XML_NODE(L"a:noFill");
 				}
 			}
+		}
+		if ((default_text) && (default_text->m_ATTACHEDLABEL))
+		{
+			ATTACHEDLABEL* attach_lablel = dynamic_cast<ATTACHEDLABEL*>(default_text->m_ATTACHEDLABEL.get());
+			
+			attach_lablel->serialize_txPr(_stream);
 		}
 		if (m_SXViewLink)
 		{
@@ -667,14 +713,17 @@ int ChartSheetSubstream::serialize_3D (std::wostream & _stream)
 			}
 			if (chart3D->fPerspective == false)
 			{
-				CP_XML_NODE(L"c:rAngAx") {  CP_XML_ATTR (L"val" , L"true"); }
+				CP_XML_NODE(L"c:rAngAx") {  CP_XML_ATTR (L"val" , L"1"); }
 			}
 			else
 			{
+				CP_XML_NODE(L"c:rAngAx") 
+				{  
+					CP_XML_ATTR (L"val" , L"0"); 
+				}
 				CP_XML_NODE(L"c:perspective") 
 				{
 					CP_XML_ATTR (L"val" , chart3D->pcDist); 
-					CP_XML_NODE(L"c:rAngAx") {  CP_XML_ATTR (L"val" , L"false"); }
 				}
 			}
 		}
@@ -1076,7 +1125,7 @@ int ChartSheetSubstream::serialize_dPt(std::wostream & _stream, int id, CRT *crt
 						present_idx.insert(std::make_pair(series_data_format->xi, true));
 				}
 				series_ss->serialize	(CP_XML_STREAM(), crt->m_iChartType, series_data_format->xi);
-				series_ss->serialize2	(CP_XML_STREAM(), crt->m_iChartType);
+				//series_ss->serialize2	(CP_XML_STREAM(), crt->m_iChartType); // 3d shape box не нужен - Book 78 3D.xls
 			}
 		}
 
@@ -1175,14 +1224,31 @@ int ChartSheetSubstream::serialize_dLbls (std::wostream & _stream, int id, CRT *
 				need_add_labels = true;
 			}
 		}
+		Pie *pie = dynamic_cast<Pie *>(crt->m_ChartType.get());
 		
 		if (text)
 		{
+			if (text->dlp > 0 && text->dlp < 9)
+			{
+				CP_XML_NODE(L"c:dLblPos")
+				{
+					switch(text->dlp)
+					{
+					case 1: CP_XML_ATTR(L"val", L"outEnd"); break;
+					case 2: CP_XML_ATTR(L"val", L"inEnd"); break;
+					case 3: CP_XML_ATTR(L"val", L"ctr"); break;
+					case 4: CP_XML_ATTR(L"val", L"inBase"); break;
+					case 5: CP_XML_ATTR(L"val", L"t"); break;
+					case 6: CP_XML_ATTR(L"val", L"b"); break;
+					case 7: CP_XML_ATTR(L"val", L"l"); break;
+					case 8: CP_XML_ATTR(L"val", L"r"); break;
+					}
+				}
+			}
 			CP_XML_NODE(L"c:showLegendKey") {CP_XML_ATTR(L"val", text->fShowKey);}
 			need_add_labels = true;
 		}
 
-		Pie *pie = dynamic_cast<Pie *>(crt->m_ChartType.get());
 		if ( (pie) && (pie->fShowLdrLines) ) 
 		{
 			CP_XML_NODE(L"c:showLeaderLines") {CP_XML_ATTR(L"val", pie->fShowLdrLines);}

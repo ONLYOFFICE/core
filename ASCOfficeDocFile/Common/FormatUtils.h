@@ -641,7 +641,7 @@ namespace DocFileFormat
 				}
 			}
 			else
-			{
+            {
 				std::string sCodePage;
 				std::map<int, std::string>::const_iterator pFind = NSUnicodeConverter::mapEncodingsICU.find(code_page);
 				if (pFind != NSUnicodeConverter::mapEncodingsICU.end())
@@ -653,7 +653,7 @@ namespace DocFileFormat
 					sCodePage = "CP1250"/* + std::to_string(code_page)*/;
 
 				NSUnicodeConverter::CUnicodeConverter oConverter;
-				std::wstring unicode_string = oConverter.toUnicode((char*)bytes, size, sCodePage.c_str());
+                std::wstring unicode_string = oConverter.toUnicode((char*)bytes, (unsigned int)size, sCodePage.c_str());
 			
 				for (size_t i = 0; i < unicode_string.size(); i++)
 				{

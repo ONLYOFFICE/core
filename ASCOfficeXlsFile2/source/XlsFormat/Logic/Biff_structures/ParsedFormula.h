@@ -45,6 +45,8 @@ class ParsedFormula : public BiffStructure
 public:
 	ParsedFormula(const CellRef& cell_base_ref);
 
+	void set_base_ref(const CellRef& cell_base_ref);
+
 	void			setCCE(const size_t cce_val); // mandatory to call before any use of "cce"
 	const size_t	getCCE() const;
 	

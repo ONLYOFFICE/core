@@ -312,13 +312,8 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 		shape->sub_type_ = sub_type_.get();
 		set_shape = true;
 	}
-	std::wstring odf_path; //общая часть - объединить ...
-	if (attlist_.drawooo_enhanced_path_)
-		odf_path = attlist_.drawooo_enhanced_path_.get();
-	else if (attlist_.draw_enhanced_path_)
-		odf_path = attlist_.draw_enhanced_path_.get();
 	
-	if (!odf_path.empty())
+	if (!odf_path_.empty())
 	{
 		std::vector<::svg_path::_polyline> o_Polyline;
 	
@@ -327,7 +322,7 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 		
 		try
 		{
-			res = ::svg_path::parseSvgD(o_Polyline, odf_path, true, bClosed);
+			res = ::svg_path::parseSvgD(o_Polyline, odf_path_, true, bClosed);
 		}
 		catch(...)
 		{

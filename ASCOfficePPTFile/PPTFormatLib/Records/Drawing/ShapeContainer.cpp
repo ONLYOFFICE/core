@@ -292,11 +292,11 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 		{
 			pElement->m_lLayoutID = (LONG)pProperty->m_lValue; 
 		}break;
-	case rotation:
+	case ePropertyId_rotation:
 		{
 			pElement->m_dRotate = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case fFlipH:
+	case ePropertyId_fFlipH:
 		{
 			BYTE flag1 = (BYTE)pProperty->m_lValue;
 			BYTE flag3 = (BYTE)(pProperty->m_lValue >> 16);
@@ -503,7 +503,7 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 				pElement->m_oBrush.ColorsPosition.push_back(std::pair<CColor, double>(color, 100. * FIXED_POINT_unsigned(dwPosition)));
 			}
 		}break;
-	case fillBoolean:
+	case fillStyleBooleanProperties:
 		{
 			BYTE flag1 = (BYTE)(pProperty->m_lValue);
 			BYTE flag2 = (BYTE)(pProperty->m_lValue >> 16);
@@ -529,7 +529,7 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 
 			break;
 		}
-	case ODRAW::geoBoolean:
+	case ODRAW::geometryBooleanProperties:
 		{
 			BYTE flag1 = (BYTE)(pProperty->m_lValue);
 			BYTE flag2 = (BYTE)(pProperty->m_lValue >> 8);
@@ -559,7 +559,7 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 			break;
 		}
 // line --------------------------------------------------------
-	case lineBoolean: //Line Style Boolean Properties
+	case lineStyleBooleanProperties: //Line Style Boolean Properties
 	{
 		bool bUsefLineOpaqueBackColor = GETBIT(pProperty->m_lValue, 25);
 		bool bUsefInsetPen			= GETBIT(pProperty->m_lValue, 22);
@@ -720,7 +720,7 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 		{
 			pElement->m_oShadow.PerspectiveY = pProperty->m_lValue;
 		}break;
-	case shadowBoolean:
+	case shadowStyleBooleanProperties:
 		{
 			bool fshadowObscured		= GETBIT(pProperty->m_lValue, 0);
 			bool fShadow				= GETBIT(pProperty->m_lValue, 1);
@@ -758,7 +758,7 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 			bool fInitiator			= fUsefInitiator		? GETBIT(pProperty->m_lValue, 2) : false;
 			bool fBackground		= fUsefBackground		? GETBIT(pProperty->m_lValue, 0) : false;
 		}break;
-	case groupShapeBoolean:
+	case groupShapeBooleanProperties:
 		{
 			bool fUsefLayoutInCell		= GETBIT(pProperty->m_lValue, 31);
 			bool fUsefIsBullet			= GETBIT(pProperty->m_lValue, 30);
@@ -1129,7 +1129,7 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 			};
 			break;
 		}
-	case ODRAW::gtextBoolean:
+	case ODRAW::geometryTextBooleanProperties:
 		{
 			// вот здесь - нужно единицы перевести в пикселы
 			BYTE flag1 = (BYTE)(pProperty->m_lValue);
@@ -1199,7 +1199,7 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 		{
 			pParentShape->m_oText.m_nTextFlow = pProperty->m_lValue;
 		}break;
-	case ODRAW::textBoolean:
+	case ODRAW::textBooleanProperties:
 		{
 			BYTE flag1 = (BYTE)(pProperty->m_lValue);
 			BYTE flag2 = (BYTE)(pProperty->m_lValue >> 8);
@@ -1316,7 +1316,7 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 		{
 			pShape->m_o3dOptions.nTopBevelType = pProperty->m_lValue;
 		}break;
-	case ODRAW::c3DBoolean:
+	case ODRAW::threeDObjectBooleanProperties:
 		{
 			bool fUsef3D					= GETBIT(pProperty->m_lValue, 19);
 			bool fUsefc3DMetallic			= GETBIT(pProperty->m_lValue, 18);
@@ -1443,7 +1443,7 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 		{
 			pShape->m_o3dOptions.dFillIntensity = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case ODRAW::c3DStyleBoolean:
+	case ODRAW::threeDStyleBooleanProperties:
 		{
 			bool fUsefc3DConstrainRotation	= GETBIT(pProperty->m_lValue, 20);
 			bool fUsefc3DRotationCenterAuto	= GETBIT(pProperty->m_lValue, 19);

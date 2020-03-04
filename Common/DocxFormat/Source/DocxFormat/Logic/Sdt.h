@@ -73,14 +73,14 @@ namespace ComplexTypes
 				if ( m_sDisplayText.IsInit() )
 				{
 					sResult += _T("w:displayText=\"");
-                    sResult += m_sDisplayText.get2();
+                    sResult += *m_sDisplayText;
 					sResult += _T("\" ");
 				}
 
 				if ( m_sValue.IsInit() )
 				{
 					sResult += _T("w:value=\"");
-                    sResult += m_sValue.get2();
+                    sResult += *m_sValue;
 					sResult += _T("\" ");
 				}
 
@@ -99,8 +99,8 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<std::wstring > m_sDisplayText;
-			nullable<std::wstring > m_sValue;
+			nullable_string	m_sDisplayText;
+			nullable_string	m_sValue;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -706,7 +706,7 @@ namespace OOX
 		public:
 			WritingElement_AdditionConstructors(CSdtDropDownList)
 			CSdtDropDownList()
-			{
+			{ 
 			}
 			virtual ~CSdtDropDownList()
 			{
@@ -765,7 +765,7 @@ namespace OOX
 				if ( m_sLastValue.IsInit() )
 				{
 					sResult = _T("<w:dropDownList w:lastValue=\"");
-                    sResult += m_sLastValue.get2();
+                    sResult += *m_sLastValue;
 					sResult += _T("\">");
 				}
 				else
@@ -799,10 +799,8 @@ namespace OOX
 
 		public:
 
-			// Attributes
-			nullable<std::wstring >                             m_sLastValue;
-			// Nodes
-			std::vector<ComplexTypes::Word::CSdtListItem*> m_arrListItem;
+			nullable_string									m_sLastValue;
+			std::vector<ComplexTypes::Word::CSdtListItem*>	m_arrListItem;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -918,6 +916,134 @@ namespace OOX
 			nullable<OOX::Logic::CRunProperty> m_oRPr;
 		};
 
+		class CSdtCheckBoxSymbol : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CSdtCheckBoxSymbol)
+			CSdtCheckBoxSymbol()
+			{
+			}
+			virtual ~CSdtCheckBoxSymbol()
+			{
+			}
+
+		public:
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			{
+				XmlMacroReadAttributeBase( oNode, _T("w14:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w14:font"), m_oFont );
+			}
+
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
+			virtual std::wstring toXML() const
+			{
+				return _T("<w14:checkedState ") + ToString() + L"/>";
+			}
+			std::wstring ToString() const
+			{
+				std::wstring sResult;
+				ComplexTypes_WriteAttribute( _T("w14:val=\""), m_oVal );
+				ComplexTypes_WriteAttribute2( _T("w14:font=\""), m_oFont );
+				return sResult;
+			}
+
+			virtual EElementType getType() const
+			{
+				return et_w_sdtCheckboxSymbol;
+			}
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if( oReader, _T("w14:val"), m_oVal )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w14:font"), m_oFont )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+
+			nullable<SimpleTypes::CShortHexNumber<> >   m_oVal;
+			nullable<std::wstring>                      m_oFont;
+		};
+
+		class CSdtCheckBox : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CSdtCheckBox)
+			CSdtCheckBox()
+			{
+			}
+			virtual ~CSdtCheckBox()
+			{
+			}
+
+		public:
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			{
+				XmlUtils::CXmlNode oChild;
+
+				if ( oNode.GetNode( _T("w14:checked"), oChild ) )
+					m_oChecked = oChild;
+				else if ( oNode.GetNode( _T("w14:checkedState"), oChild ) )
+					m_oCheckedState = oChild;
+				else if ( oNode.GetNode( _T("w14:uncheckedState"), oChild ) )
+					m_oUncheckedState = oChild;
+			}
+
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+					if ( _T("w14:checked") == sName )
+						m_oChecked = oReader;
+					else if ( _T("w14:checkedState") == sName )
+						m_oCheckedState = oReader;
+					else if ( _T("w14:uncheckedState") == sName )
+						m_oUncheckedState = oReader;
+				}
+			}
+			virtual std::wstring toXML() const
+			{
+				std::wstring sResult = _T("<w14:checkbox>");
+
+				if ( m_oChecked.IsInit() )
+				{
+					sResult += _T("<w14:checked w14:val=\"");
+					sResult += m_oChecked->m_oVal.ToString2(SimpleTypes::onofftostring1);
+					sResult += _T("\"/>");
+				}
+				WritingElement_WriteNode_1( _T("<w14:checkedState "), m_oCheckedState );
+				WritingElement_WriteNode_1( _T("<w14:uncheckedState "), m_oUncheckedState );
+
+				sResult += _T("</w14:checkbox>");
+
+				return sResult;
+			}
+
+			virtual EElementType getType() const
+			{
+				return et_w_sdtCheckbox;
+			}
+		public:
+
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oChecked;
+			nullable<CSdtCheckBoxSymbol> m_oCheckedState;
+			nullable<CSdtCheckBoxSymbol> m_oUncheckedState;
+		};
+
 		//--------------------------------------------------------------------------------
 		// SdtEndPr 17.5.2.38 (Part 1)
 		//--------------------------------------------------------------------------------
@@ -935,7 +1061,8 @@ namespace OOX
 			sdttypeGroup        =  8,
 			sdttypePicture      =  9,
 			sdttypeRichText     = 10,
-			sdttypeText         = 11
+			sdttypeText         = 11,
+			sdttypeCheckBox     = 12
 		};
 
 		class CSdtPr : public WritingElement
@@ -1049,6 +1176,12 @@ namespace OOX
 					m_oText = oChild;
 					m_eType = sdttypeText;
 				}
+
+				if ( sdttypeUnknown == m_eType && oNode.GetNode( _T("w14:checkbox"), oChild ) )
+				{
+					m_oCheckbox = oChild;
+					m_eType = sdttypeCheckBox;
+				}
 			}
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
@@ -1130,6 +1263,11 @@ namespace OOX
 					{
 						m_oText = oReader;
 						m_eType = sdttypeText;
+					}
+					else if ( sdttypeUnknown == m_eType && _T("w14:checkbox") == sName )
+					{
+						m_oCheckbox = oReader;
+						m_eType = sdttypeCheckBox;
 					}
 				}
 			}
@@ -1228,6 +1366,11 @@ namespace OOX
 						sResult += _T("/>");
 						break;
 					}
+				case sdttypeCheckBox:
+					{
+						WritingElement_WriteNode_2( m_oCheckbox );
+						break;
+					}
 				}
 
 				return sResult;
@@ -1269,6 +1412,7 @@ namespace OOX
 			nullable<ComplexTypes::Word::String                       > m_oTag;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oTemporary;
 			nullable<ComplexTypes::Word::CSdtText                       > m_oText;
+			nullable<CSdtCheckBox										> m_oCheckbox;
 		};
 		//--------------------------------------------------------------------------------
 		// SdtContent 17.5.2.38 (Part 1)

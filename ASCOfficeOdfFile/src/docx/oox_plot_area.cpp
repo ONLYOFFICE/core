@@ -34,6 +34,7 @@
 
 #include <CPOptional.h>
 #include <xml/simple_xml_writer.h>
+#include <boost/algorithm/string.hpp>
 
 #include "../odf/style_text_properties.h"
 
@@ -117,6 +118,104 @@ void oox_plot_area::reset_cross_axis()//обязательно после все
 			if (axis_[j]->get_Id() == curr_id)continue;
 			
 			axis_[j]->add_CrossedId(curr_id);
+		}
+	}
+}
+void oox_plot_area::oox_serialize_view3D(std::wostream & _Wostream)
+{
+	_CP_OPT(std::wstring)	strVal;
+	_CP_OPT(double)			doubleVal;
+
+	odf_reader::GetProperty(properties_3d_, L"transform", strVal);
+
+	if (!strVal) return;
+
+	size_t pos_matrix = strVal->find(L"matrix(");
+	
+	if (pos_matrix == std::wstring::npos) return;
+
+	size_t pos_matrix_end = strVal->find(L")", pos_matrix);
+	if (pos_matrix_end == std::wstring::npos || pos_matrix_end == pos_matrix + 7) return;
+
+	std::wstring tmp = strVal->substr(pos_matrix + 7, pos_matrix_end - 7 - pos_matrix);
+
+	std::vector<std::wstring> values;
+
+	boost::algorithm::split(values, tmp, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+
+	if (values.size() < 12) return;
+
+	double left_x		= XmlUtils::GetDouble(values[0]);
+	double up_x			= XmlUtils::GetDouble(values[1]);
+	double forward_x	= XmlUtils::GetDouble(values[2]);
+	double left_y		= XmlUtils::GetDouble(values[3]);
+	double up_y			= XmlUtils::GetDouble(values[4]);
+	double forward_y	= XmlUtils::GetDouble(values[5]);
+	double left_z		= XmlUtils::GetDouble(values[6]);
+	double up_z			= XmlUtils::GetDouble(values[7]);
+	double forward_z	= XmlUtils::GetDouble(values[8]);
+
+	const double DEG2RAD = 3.1415926 / 180;
+    double sx, sy, sz, cx, cy, cz, theta_x, theta_y, theta_z = 0;
+
+	sy = forward_x;
+	
+	theta_y = (sy == 0 ? 0 : asin(sy));
+	cy = cos(theta_y);
+
+	theta_y /= DEG2RAD;
+
+	sx = - forward_y / cy;
+	cx = forward_z / cy;
+
+	theta_x = (sx == 0 ? 0 : asin(sx));
+	double theta_x_test = (sx == 0 ? 0 : acos(cx));
+
+	theta_x /= DEG2RAD;
+
+	sz = - up_x / cy;
+	cz = left_x / cy;
+	
+	theta_z = (sz == 0 ? 0 : asin(sz));
+	double theta_z_test = (sz == 0 ? 0 : acos(cz));
+
+	theta_z /= DEG2RAD;
+
+    CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE(L"c:view3D")
+        {
+ 			CP_XML_NODE(L"c:rotX")
+			{
+				CP_XML_ATTR(L"val", (int) (theta_x + 0.5) );
+			}
+ 			CP_XML_NODE(L"c:rotY")
+			{
+				CP_XML_ATTR(L"val", (int) (theta_y + 0.5) );
+			}
+			CP_XML_NODE(L"c:depthPercent")
+			{
+				CP_XML_ATTR(L"val", 100 );
+			}	
+			if (theta_z == 0)
+			{
+ 				CP_XML_NODE(L"c:rAngAx")
+				{
+					CP_XML_ATTR(L"val", 1 );
+				}
+			}
+			else
+			{
+ 				CP_XML_NODE(L"c:rAngAx")
+				{
+					CP_XML_ATTR(L"val", 0 );
+				}
+				CP_XML_NODE(L"c:perspective")
+				{
+					CP_XML_ATTR(L"val", (int) (theta_z * 2 + 0.5) );
+				}
+			}
+
 		}
 	}
 }

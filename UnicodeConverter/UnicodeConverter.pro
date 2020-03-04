@@ -19,10 +19,18 @@ core_linux {
     QMAKE_LFLAGS += -Wl,--rpath=./
 }
 
-include(../Common/3dParty/icu/icu.pri)
+core_ios {
+    CONFIG += core_disable_icu
 
-SOURCES += \
-    UnicodeConverter.cpp
+    OBJECTIVE_SOURCES += UnicodeConverter_internal_ios.mm
+}
+
+!core_disable_icu {
+    include(../Common/3dParty/icu/icu.pri)
+
+    SOURCES += \
+        UnicodeConverter.cpp
+}
 
 HEADERS +=\
     UnicodeConverter.h

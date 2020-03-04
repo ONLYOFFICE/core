@@ -228,7 +228,7 @@ void PptxConverter::convert_styles()
 	odp_context->styles_context()->create_default_style(odf_types::style_family::Table);					
 	odf_writer::style_table_properties	* table_properties	= odp_context->styles_context()->last_state()->get_table_properties();
 	//для красивой отрисовки в редакторах - разрешим объеденить стили пересекающихся обрамлений 
-	table_properties->table_format_properties_.table_border_model_ = odf_types::border_model(odf_types::border_model::Collapsing);
+	table_properties->content_.table_border_model_ = odf_types::border_model(odf_types::border_model::Collapsing);
 
 	odp_context->styles_context()->create_default_style(odf_types::style_family::TableRow);					
 	odf_writer::style_table_row_properties	* row_properties	= odp_context->styles_context()->last_state()->get_table_row_properties();
@@ -1350,9 +1350,12 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 		if (pPic.IsInit())		pNvPr = &pPic->nvPicPr.nvPr;
 
 		bool bConvert = false;
+		bool bPlaceholder = false;
 
 		if ((pNvPr) && (pNvPr->ph.is_init()))
 		{
+			bPlaceholder = true;
+			
 			if (type == Notes || type == NotesMaster)
 			{
 				if (pShape.IsInit())	pShape->nvSpPr.nvPr.ph->idx.reset();
@@ -1398,6 +1401,9 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 
 			if (pShape.IsInit())
 			{
+				std::wstring bOriginText = pShape->txBody.IsInit() ? pShape->txBody->GetText(false) : L"";
+				bool bTextPresent = (bOriginText.empty() == false); 
+				
 				PPTX::Logic::Shape update_shape;
 				
 				if (listMasterStyle)
@@ -1414,6 +1420,13 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 					update_shape.txBody->lstStyle.reset(newListStyle);
 				}
 				pShape->Merge(update_shape);
+
+				if (type == Slide && bPlaceholder && false == bTextPresent && update_shape.txBody.IsInit())
+				// спец. для либры - чтобы она отображала плейсхолдеры на слайдах нормально! бл...
+				// изменение форматирования в плейсхолдере для данного слайда похерется
+				{
+					update_shape.txBody->Paragrs.clear();
+				}
 				OoxConverter::convert(&update_shape);
 			}
 			if (pPic.IsInit())

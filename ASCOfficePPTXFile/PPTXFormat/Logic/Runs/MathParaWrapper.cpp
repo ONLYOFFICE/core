@@ -104,7 +104,9 @@ namespace PPTX
 		{
 			if(m_oMathPara.IsInit() || m_oMath.IsInit() || m_oXml.IsInit())
 			{
-				std::wstring sXml = L"<mc:AlternateContent xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\"><mc:Choice xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" Requires=\"a14\"><a14:m>";
+				std::wstring sXml = L"<mc:AlternateContent xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">\
+<mc:Choice xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" Requires=\"a14\"><a14:m>";
 				if(m_oMathPara.IsInit())
 				{
 					sXml += m_oMathPara->toXML();
@@ -128,11 +130,14 @@ namespace PPTX
 
 		void MathParaWrapper::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
+			if (!pWriter) return;
 			pWriter->WriteString(toXML());
 		}
 
 		void MathParaWrapper::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
+			if (!pWriter) return;
+			
 			int nRecordType;
 			void* pElem = NULL;
 			OOX::EElementType eElemType;

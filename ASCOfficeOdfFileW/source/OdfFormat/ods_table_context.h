@@ -80,6 +80,9 @@ public:
 		void set_data_validation_error(const std::wstring &title, const std::wstring &content, bool display);
 		void set_data_validation_promt(const std::wstring &title, const std::wstring &content, bool display);
 	void end_data_validation();
+
+	void start_pivot_table(const std::wstring &name);
+	void end_pivot_table();
 private:
 
     ods_conversion_context & context_;
@@ -89,6 +92,7 @@ private:
 	table_additional_elements_state	table_defined_expressions_;
 	table_additional_elements_state	table_database_ranges_;
 	table_additional_elements_state	table_content_validations_;
+	table_additional_elements_state	table_pivots_;
 
 	size_t count_validations_;
 

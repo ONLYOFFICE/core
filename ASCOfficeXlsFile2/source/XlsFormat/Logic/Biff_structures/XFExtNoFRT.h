@@ -51,6 +51,8 @@ public:
 
 	virtual void load(CFRecord& record);
 
+	int serialize(std::wostream & stream);
+
 	std::vector<ExtProp> rgExt;
 };
 

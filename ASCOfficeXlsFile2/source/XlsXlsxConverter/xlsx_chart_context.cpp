@@ -146,10 +146,6 @@ void oox_chart_context::write_to(std::wostream & strm)
 			CP_XML_ATTR(L"xmlns:a", L"http://schemas.openxmlformats.org/drawingml/2006/main");
             CP_XML_ATTR(L"xmlns:c", L"http://schemas.openxmlformats.org/drawingml/2006/chart");
 		
-			CP_XML_NODE(L"c:lang")
-			{
-				CP_XML_ATTR(L"val",L"en-US");
-			}
 			CP_XML_STREAM() << impl_->chartData_.str();
 		}
 	}

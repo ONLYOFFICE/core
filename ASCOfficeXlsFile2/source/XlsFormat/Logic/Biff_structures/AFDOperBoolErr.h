@@ -44,8 +44,7 @@ public:
 	
 	virtual void load(CFRecord& record);
 	
-
-	static const ElementType	type = typeAFDOperBoolErr;
+	static const ElementType type = typeAFDOperBoolErr;
 
 	_INT16 bes;
 };

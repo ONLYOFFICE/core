@@ -146,7 +146,7 @@ void text::add_text(const std::wstring & Text)
 		text_ += Text[i];
 	}
 }
-text::text(const std::wstring & Text)
+text::text(const std::wstring & Text) : preserve_(true)
 {
     add_text(Text);
 }
@@ -667,7 +667,7 @@ void a::docx_convert(oox::docx_conversion_context & Context)
 	
 	if (Context.is_table_content())
 	{
-		_Wostream << L"<w:hyperlink w:anchor=\"" << ref.substr(1) << L"\" w:history=\"1\">"; //без #
+		_Wostream << L"<w:hyperlink w:anchor=\"" << XmlUtils::EncodeXmlString(ref.substr(1)) << L"\" w:history=\"1\">"; //без #
 		int type = Context.get_table_content_context().get_type_current_content_template_index();
 		//type == 3 (LinkStart)
 		Context.get_table_content_context().next_level_index();
@@ -1127,9 +1127,34 @@ void text_date::add_text(const std::wstring & Text)
 
 void text_date::docx_convert(oox::docx_conversion_context & Context)
 {
-	bool bLock = text_fixed_ ? text_fixed_->get() : false;
+	//bool bLock = text_fixed_ ? text_fixed_->get() : false;
+	//docx_serialize_field(L"DATE", text_, Context, bLock);
 
-	docx_serialize_field(L"DATE", text_, Context, bLock);
+	Context.finish_run();
+
+	Context.output_stream() << L"<w:sdt>";
+		Context.output_stream() << L"<w:sdtPr>";
+		{
+			Context.output_stream() << L"<w:date" << (text_date_value_ ?  (L" w:fullDate=\"" + *text_date_value_ + L"\"") : L"") << L">";
+				
+				std::wstring format;
+				if (style_data_style_name_)
+				{
+				}
+				Context.output_stream() << L"<w:dateFormat w:val=\"" << format << L"\"/>";
+
+				Context.output_stream() << L"<w:lid w:val=\"en-US\"/>";
+				Context.output_stream() << L"<w:storeMappedDataAs w:val=\"dateTime\"/>";
+				Context.output_stream() << L"<w:calendar w:val=\"gregorian\"/>";				
+			Context.output_stream() << L"</w:date>";
+		}
+		Context.output_stream() << L"</w:sdtPr>";
+		Context.output_stream() << L"<w:sdtContent>";
+	
+		docx_serialize_run(text_, Context);
+
+		Context.output_stream() << L"</w:sdtContent>";
+	Context.output_stream() << L"</w:sdt>";
 }
 void text_date::xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_context & Context)
 {
@@ -1137,7 +1162,7 @@ void text_date::xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_c
 }
 void text_date::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    Context.get_text_context().start_field(oox::date,style_data_style_name_.get_value_or(L""));
+    Context.get_text_context().start_field(oox::date, style_data_style_name_.get_value_or(L""));
     if (text_)
     {
         text_->pptx_convert(Context);

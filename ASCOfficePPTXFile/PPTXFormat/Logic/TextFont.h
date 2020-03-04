@@ -43,7 +43,12 @@ namespace PPTX
 		{
 		public:
 			WritingElement_AdditionConstructors(TextFont)
-			PPTX_LOGIC_BASE2(TextFont)
+			TextFont()
+			{
+				m_eType = OOX::et_Unknown;
+			}
+			virtual ~TextFont() {}
+			TextFont(const TextFont& oSrc) { *this = oSrc; }
 
 			virtual OOX::EElementType getType () const
 			{

@@ -46,16 +46,13 @@ public:
 	PtgInt(const std::wstring& word);
 	BiffStructurePtr clone();
 
-	
 	virtual void loadFields(CFRecord& record);
-	
 
 	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false);
 
 	static const unsigned short fixed_id = 0x1E;
 
-private:
-	unsigned short integer;
+	_CP_OPT(unsigned short) value_;
 };
 
 } // namespace XLS

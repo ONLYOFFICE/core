@@ -87,19 +87,6 @@ void TableFeatureType::load(CFRecord& record)
 	fLoadCSPName		= GETBIT(flags, 14);
 	fLoadPldwIdChanged	= GETBIT(flags, 15);
 
-	if (bFeature12)
-	{
-		//crwHeader = 0;
-		//lt = 0x00000003;
-		//fSingleCell = false;
-	}
-	else
-	{
-		//lt != 0x00000003;
-		//crwHeader == 0 && fSingleCell == false -> lt = 0
-	}
-
-	if (fAutoFilter) crwHeader = 1;
 	if (fSingleCell)
 	{
 		crwHeader = 0;

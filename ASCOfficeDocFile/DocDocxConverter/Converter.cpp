@@ -50,7 +50,7 @@
 
 namespace DocFileFormat
 {
-	Converter::Converter()
+	Converter::Converter() : m_nUserLCID(-1)
 	{
 	}
 
@@ -204,7 +204,7 @@ namespace DocFileFormat
 
 	_UINT32 Converter::LoadAndConvert(const std::wstring& strSrcFile, const std::wstring& strDstDirectory, const std::wstring& password, const ProgressCallback* progress, bool &bMacros)
 	{
-		WordDocument			doc(progress, m_sTempFolder);
+		WordDocument			doc(progress, m_sTempFolder, m_nUserLCID);
 		WordprocessingDocument	docx(strDstDirectory, &doc);
 		
 		_UINT32 result = doc.LoadDocument(strSrcFile, password);

@@ -396,16 +396,16 @@ public:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 
-    draw_equation_attlist draw_equation_attlist_;
+    draw_equation_attlist attlist_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_equation);
 ////////////////
-struct draw_handle_geometry
-{
-	int min;
-	int max;
-};
+//struct draw_handle_geometry
+//{
+//	int min;
+//	int max;
+//};
 //////////////////////////////////////////////////////
 class draw_handle_attlist//убрать стринги ... сделать парсинг см стр 378 оазис !!!!!!!!!!!
 {
@@ -469,6 +469,8 @@ public:
 	static const ElementType type = typeDrawCustomShape;
 	static const xml::NodeType xml_type = xml::typeElement;
 	
+	CPDOCCORE_DEFINE_VISITABLE();
+
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 	
@@ -476,29 +478,27 @@ public:
 	virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
-	void find_draw_type_oox();
+    draw_enhanced_geometry_attlist		attlist_;
 
-    draw_enhanced_geometry_attlist attlist_;
-
-	_CP_OPT(int)			sub_type_;
-	_CP_OPT(int)			draw_type_oox_index_;
-	_CP_OPT(std::wstring)	svg_viewbox_;
-	
-	bool					word_art_;
-	bool					bOoxType_;
-
-	typedef std::pair<std::wstring,std::wstring> pair_string_value;
-
-	std::vector<draw_handle_geometry>	draw_handle_geometry_; 
-	std::vector<pair_string_value>		draw_equation_array_;
-	
+	_CP_OPT(std::wstring)				svg_viewbox_;
+		
 	office_element_ptr_array			draw_handle_;
 	office_element_ptr_array			draw_equation_;
-	
+
+//-------------------------------------------------
 	static int parsing(_CP_OPT(std::wstring) val);
 
-	CPDOCCORE_DEFINE_VISITABLE();
-	friend class odf_document;
+	void find_draw_type_oox();
+	
+	std::map<std::wstring, std::wstring> map_draw_equation_;
+	//std::vector<draw_handle_geometry>	draw_handle_geometry_; 
+	
+	_CP_OPT(int)			sub_type_;
+	_CP_OPT(int)			draw_type_oox_index_;
+
+	bool					word_art_;
+	bool					bOoxType_;
+	std::wstring			odf_path_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_enhanced_geometry);
@@ -530,7 +530,6 @@ public:
     virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
 	draw_caption_attlist draw_caption_attlist_;
-
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_caption);
@@ -585,7 +584,7 @@ public:
 	virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
- 	odf_types::dr3d_attlist dr3d_attlist_;
+ 	odf_types::common_dr3d_attlist dr3d_attlist_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(dr3d_scene);

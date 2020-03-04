@@ -38,18 +38,17 @@
 namespace XLS
 {
 
-class CFRecord;
-
 class CFDatabar : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(CFDatabar)
 public:
 	BiffStructurePtr clone();
 
-	static const ElementType	type = typeCFDatabar;
+	static const ElementType type = typeCFDatabar;
 	
 	virtual void load(CFRecord& record);
 
+	virtual int serialize(std::wostream & _stream);
 
 	unsigned char iPercentMin;
 	unsigned char iPercentMax;

@@ -1189,6 +1189,9 @@ CElementPtr  CPPTUserInfo::AddThemeLayoutPlaceholder (CLayout *pLayout, int plac
 			pElement = pElementPlaceholder->CreateDublicate();
 
 			pElement->m_bPlaceholderSet = true;
+
+			if (pElement->m_lPlaceholderType == 14)
+				pElement->m_lPlaceholderType = PT_Body_Empty; // для добавления разных типов объектов
 			
 			pLayout->m_arElements.push_back(pElement);
 			pLayout->m_mapPlaceholders.insert(std::make_pair(placeholderType, pElement)); 
@@ -1244,7 +1247,7 @@ int CPPTUserInfo::AddNewLayout(CTheme* pTheme, CRecordSlide* pRecordSlide, bool 
 
 	pLayout->m_strLayoutType = ConvertLayoutType(layoutRecord.m_nGeom, layoutRecord.m_pPlaceHolderID);
 
-	if (!addShapes) return ind;
+	if (false == addShapes && false == bMasterObjects) return ind;
 //далее только для типовых шаблонов
 	pTheme->m_mapGeomToLayout.insert(std::pair<_UINT64, LONG>(layoutRecord.m_hash, ind));
 	
@@ -1301,6 +1304,7 @@ int CPPTUserInfo::AddNewLayout(CTheme* pTheme, CRecordSlide* pRecordSlide, bool 
 		}
 	}
 	//if (layoutRecord.m_nGeom==0x0F) return ind; // big object only !!!
+	if (false == addShapes) return ind;
 
 	//копируем все элементы без idx которые не были прописаны явно
 	for (std::multimap<int, CElementPtr>::iterator it = pTheme->m_mapPlaceholders.begin(); it != pTheme->m_mapPlaceholders.end(); ++it)
@@ -1602,6 +1606,13 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
 				}
 			}			
 		}
+	}
+	int lLayoutID = AddNewLayout(pTheme, pMaster, false, true);
+
+	if (lLayoutID >= 0 && false == pTheme->m_arLayouts.empty())
+	{
+		CLayout *pLayout_ = pTheme->m_arLayouts.back().get();
+		pLayout_->m_strLayoutType = L"obj";
 	}
 }
 

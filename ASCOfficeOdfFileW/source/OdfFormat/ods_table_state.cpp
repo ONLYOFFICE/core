@@ -44,6 +44,7 @@
 #include "table.h"
 #include "office_annotation.h"
 #include "calcext_elements.h"
+#include "table_data_pilot_tables.h"
 #include "styles.h"
 
 #include "style_table_properties.h"
@@ -253,7 +254,7 @@ void ods_table_state::set_table_hidden(bool Val)
 	style_table_properties *table_properties = office_table_style_->content_.get_style_table_properties();
 	if (table_properties == NULL)return;
 
-	table_properties->table_format_properties_.table_display_ = !Val;
+	table_properties->content_.table_display_ = !Val;
 
 }
 void ods_table_state::set_table_rtl(bool Val)
@@ -263,7 +264,7 @@ void ods_table_state::set_table_rtl(bool Val)
 	style_table_properties *table_properties = office_table_style_->content_.get_style_table_properties();
 	if (table_properties == NULL)return;
 
-	table_properties->table_format_properties_.common_writing_mode_attlist_.style_writing_mode_ = writing_mode(writing_mode::RlTb);
+	table_properties->content_.common_writing_mode_attlist_.style_writing_mode_ = writing_mode(writing_mode::RlTb);
 
 }
 void ods_table_state::set_table_print_ranges(const std::wstring &ranges)
@@ -280,7 +281,7 @@ void ods_table_state::set_table_tab_color(_CP_OPT(color) & _color)
 	style_table_properties *table_properties = office_table_style_->content_.get_style_table_properties();
 	if (table_properties == NULL)return;
 
-	table_properties->table_format_properties_.tableooo_tab_color_ = _color;
+	table_properties->content_.tableooo_tab_color_ = _color;
 }
 void ods_table_state::set_table_style(office_element_ptr & elm)
 {	
@@ -1484,10 +1485,17 @@ void ods_table_state::add_default_cell( unsigned int repeated)
 	end_cell();
 }
 ///////////////////////////////////////////////////
+void ods_table_state::start_pilot_table(office_element_ptr & elm)
+{
+	pilot_table_state_.elm = elm;
+}
+void ods_table_state::end_pilot_table()
+{
+}
 void ods_table_state::start_conditional_formats()
 {
 	office_element_ptr elm;
-	create_element(L"calcext", L"conditional-formats",elm,context_);
+	create_element(L"calcext", L"conditional-formats", elm, context_);
 
 	current_level_.back()->add_child_element(elm);
 	current_level_.push_back(elm);

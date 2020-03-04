@@ -108,7 +108,7 @@ public:
 
 	virtual void serialize(std::wostream & strm);
 
-    table_format_properties table_format_properties_;
+    table_format_properties content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_table_properties)

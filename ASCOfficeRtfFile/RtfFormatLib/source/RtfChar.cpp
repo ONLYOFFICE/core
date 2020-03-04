@@ -34,6 +34,8 @@
 
 #include "Writer/OOXWriter.h"
 
+#include "../../../Common/MS-LCID.h"
+
 std::wstring RtfChar::RenderToOOX(RenderParameter oRenderParameter)
 {
 	RtfDocument*	poRtfDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
@@ -191,9 +193,16 @@ std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, int 
         case RtfDocumentProperty::cp_pca: nCodePage = 850;      break;
         }
     }
-    //если ничего нет ставим ANSI
+    //если ничего нет ставим ANSI или default from user
     if( -1 == nCodePage )
-        nCodePage = CP_ACP;
+	{
+        nCodePage = CP_ACP;		
+	}
+	
+	if (nCodePage == CP_ACP && pDocument->m_nUserLCID > 0)
+	{
+		nCodePage = msLCID2DefCodePage(pDocument->m_nUserLCID);
+	}
 
     std::wstring    unicodeStr (sText);
     std::string     ansiStr ;

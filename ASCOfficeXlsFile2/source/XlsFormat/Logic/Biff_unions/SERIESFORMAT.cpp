@@ -274,15 +274,24 @@ int SERIESFORMAT::serialize_parent(std::wostream & _stream, CHARTFORMATS* chart_
 {
 	if (m_SerParent == NULL)
 	{
-		if (m_SERIESFORMAT_ext)
+		for (size_t i = 0; i < m_arSERIESFORMAT_ext.size(); i++) // объединение
 		{
-			SERIESFORMAT * series_ext = dynamic_cast<SERIESFORMAT *>(m_SERIESFORMAT_ext.get());
+			SERIESFORMAT * series_ext = dynamic_cast<SERIESFORMAT *>(m_arSERIESFORMAT_ext[i].get());
+			if ((series_ext) && (series_ext->m_SerParent))
+			{
+				SerParent *parent = dynamic_cast<SerParent*>(series_ext->m_SerParent.get());
+				parent->recalc(i, m_arSERIESFORMAT_ext);
+			}
+		}
+		for (size_t i = 0; i < m_arSERIESFORMAT_ext.size(); i++)
+		{
+			SERIESFORMAT * series_ext = dynamic_cast<SERIESFORMAT *>(m_arSERIESFORMAT_ext[i].get());
 			if (series_ext)
-				return series_ext->serialize_parent(_stream, chart_formats, true/*, series_id, crt*/);
+				series_ext->serialize_parent(_stream, chart_formats, true/*, series_id, crt*/);
 		}
 		return 0;
 	}
-	SerParent		*ser_parent = dynamic_cast<SerParent*>(m_SerParent.get());
+	SerParent *ser_parent = dynamic_cast<SerParent*>(m_SerParent.get());
 	if (ser_parent == NULL) return 0;
 
 	int id = ser_parent->series;
@@ -336,11 +345,11 @@ int SERIESFORMAT::serialize_parent(std::wostream & _stream, CHARTFORMATS* chart_
 				}
 				CP_XML_NODE(L"c:dispRSqr")
 				{
-					CP_XML_ATTR (L"val" , (bool)trendline->fRSquared);	
+					CP_XML_ATTR (L"val" , (bool)(0 != trendline->fRSquared));	
 				}
 				CP_XML_NODE(L"c:dispEq")
 				{
-					CP_XML_ATTR (L"val" , (bool)trendline->fEquation);	
+					CP_XML_ATTR (L"val" , (bool)(0 != trendline->fEquation));	
 				}
 
 				if ((AT_LABEL) && ((AT_LABEL->m_FRAME) || (AT_LABEL->m_FontX)))
@@ -366,10 +375,60 @@ int SERIESFORMAT::serialize_parent(std::wostream & _stream, CHARTFORMATS* chart_
 		
 		if (err_bars)
 		{
-			//todooo
-			//CP_XML_NODE(L"c:errBars")
-			//{
-			//}
+			CP_XML_NODE(L"c:errBars")
+			{
+				CP_XML_NODE(L"c:errDir")
+				{
+					if (err_bars->sertm == 1 || err_bars->sertm == 2 || err_bars->sertm == 5)
+						 CP_XML_ATTR (L"val", L"x"); 
+					else CP_XML_ATTR (L"val", L"y"); 
+				}
+				CP_XML_NODE(L"c:errBarType")
+				{
+					if (err_bars->sertm == 1 || err_bars->sertm == 3)
+						 CP_XML_ATTR (L"val", L"plus"); 
+					else if (err_bars->sertm == 2 || err_bars->sertm == 4)
+						CP_XML_ATTR (L"val", L"minus"); 
+					else if (err_bars->sertm == 5 || err_bars->sertm == 6)
+						CP_XML_ATTR (L"val", L"both"); 
+				}
+				CP_XML_NODE(L"c:errValType")
+				{
+					switch(err_bars->ebsrc)
+					{
+						case 1:		CP_XML_ATTR (L"val", L"percentage");break;
+						case 2:		CP_XML_ATTR (L"val", L"fixedVal");	break;
+						case 3:		CP_XML_ATTR (L"val", L"stdDev");	break;
+						case 5:		CP_XML_ATTR (L"val", L"stdErr");	break;
+						case 4:	
+						default:
+									CP_XML_ATTR (L"val", L"cust");		break;
+					}
+				}
+				CP_XML_NODE(L"c:noEndCap")
+				{
+					CP_XML_ATTR (L"val", (bool)(0 == err_bars->fTeeTop));
+				}
+				if (err_bars->ebsrc != 4 && err_bars->ebsrc != 5)
+				{
+					CP_XML_NODE(L"c:val")
+					{
+						CP_XML_ATTR (L"val", err_bars->numValue.data.value);
+					}
+				}
+				if (err_bars->ebsrc == 4)
+				{
+					//err_bars->cnum
+				}
+				if (AT_LABEL)
+				{
+					if (AT_LABEL->m_FRAME)
+						AT_LABEL->m_FRAME->serialize(CP_XML_STREAM());
+
+					if (AT_LABEL->m_FontX)
+						AT_LABEL->serialize_txPr(CP_XML_STREAM());
+				}
+			}
 		}
 	}
 

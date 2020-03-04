@@ -212,7 +212,8 @@ namespace BinXlsxRW
 		JsaProject = 13,
 		Comments = 14,
 		CalcPr = 15,
-		Connections = 16
+		Connections = 16,
+		AppName = 17
 	};}	
 	namespace c_oSerDbPrTypes{enum c_oSerDbPrTypes
 	{
@@ -371,7 +372,8 @@ namespace BinXlsxRW
 		DataValidations = 32,
 		QueryTable = 33,
 		Controls = 34,
-		XlsbPos = 35
+		XlsbPos = 35,
+		SortState = 36
 	};}
 	namespace c_oSerWorksheetPropTypes{enum c_oSerWorksheetPropTypes
 	{
@@ -508,9 +510,10 @@ namespace BinXlsxRW
 		//GraphicFrame = 6,
 		//Chart = 7,
 		Ext = 8,
-		pptxDrawing = 9
+		pptxDrawing = 9,
 		//Chart2 = 10,
 		//ObjectName = 11
+		EditAs = 12
 	};}
 	namespace c_oSer_DrawingFromToType{enum c_oSer_DrawingFromToType
 	{
@@ -819,7 +822,9 @@ namespace BinXlsxRW
 		ConditionRef = 4,
 		ConditionSortBy = 5,
 		ConditionDescending = 6,
-		ConditionDxfId = 7
+		ConditionDxfId = 7,
+		ColumnSort = 8,
+		SortMethod = 9
 	};}
 	namespace c_oSer_AutoFilter{enum c_oSer_AutoFilter
 	{

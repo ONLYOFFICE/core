@@ -135,19 +135,33 @@ const bool CONDFMTS::loadContent(BinProcessor& proc)
 //----------------------------------------------------------------------------
 	for (size_t i = 0 ; i < m_arCFEx.size(); i++)
 	{
-
 		CFEx * cfEx = dynamic_cast<CFEx *>(m_arCFEx[i].ex.get());
 		if (cfEx)
 		{
-			size_t ind_cf = cfEx->content.icf;
+			size_t ind_cf = (cfEx->fIsCF12 == 0) ? cfEx->content.icf : i;
 
 			for (size_t j = 0 ; j < m_arCONDFMT.size(); j++)
 			{
 				CONDFMT * CONDFMT_ = dynamic_cast<CONDFMT *>(m_arCONDFMT[j].get());
-				if (CONDFMT_/* && cfEx->fIsCF12 == 0*/)
+				CondFmt *condFmt = CONDFMT_ ? dynamic_cast<CondFmt *>(CONDFMT_->m_CondFmt.get()) : NULL;
+				
+				if ((condFmt) && (condFmt->nID == cfEx->nID))
 				{
-					CondFmt *condFmt = dynamic_cast<CondFmt *>(CONDFMT_->m_CondFmt.get());
-					if ((condFmt->nID == cfEx->nID) && (ind_cf < CONDFMT_->m_arCF.size()))
+					if (ind_cf >= CONDFMT_->m_arCF.size() && m_arCFEx[i].cf12)//4-ое и более условия - 5804543.xls
+					{
+						CONDFMT_->m_arCF.push_back(m_arCFEx[i].cf12);
+						
+						//reset base ref
+						CF12* cf12 = dynamic_cast<CF12 *>(m_arCFEx[i].cf12.get());
+						if (cf12)
+						{
+							cf12->rgce1.set_base_ref(condFmt->getLocation());
+							cf12->rgce2.set_base_ref(condFmt->getLocation());
+							cf12->fmlaActive.set_base_ref(condFmt->getLocation());
+						}
+
+					}
+					if (ind_cf < CONDFMT_->m_arCF.size())
 					{
 						CF* cf = dynamic_cast<CF *>(CONDFMT_->m_arCF[ind_cf].get());
 						if (cf)
@@ -155,8 +169,13 @@ const bool CONDFMTS::loadContent(BinProcessor& proc)
 							cf->m_CFEx = m_arCFEx[i].ex;
 							cf->m_CF12 = m_arCFEx[i].cf12;
 						}
+						CF12* cf2 = dynamic_cast<CF12 *>(CONDFMT_->m_arCF[ind_cf].get());
+						if (cf2)
+						{
+							cf2->m_CFEx = m_arCFEx[i].ex;
+							cf2->m_CF12_2 = m_arCFEx[i].cf12;
+						}
 					}
-
 				}
 				CONDFMT12 * CONDFMT12_ = dynamic_cast<CONDFMT12 *>(m_arCONDFMT[j].get());
 				if (CONDFMT12_ /*&& cfEx->fIsCF12 != 0*/)

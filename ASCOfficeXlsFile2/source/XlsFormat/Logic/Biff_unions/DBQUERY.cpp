@@ -257,12 +257,12 @@ int DBQUERY::serialize_connection(std::wstring & name)
 		CP_XML_NODE(L"connection")
 		{
 			CP_XML_ATTR(L"id", global_info->connectionId);	
-			CP_XML_ATTR(L"name", name);
 			
 			if ( dbQry->query.dbt == 5 )
 			{
 				CP_XML_ATTR(L"keepAlive", 1);
 			}
+			CP_XML_ATTR(L"name", name);
 			
 			if ((dcon) && (!dcon->rgchConnectionDesc.strTotal.empty()))
 			{

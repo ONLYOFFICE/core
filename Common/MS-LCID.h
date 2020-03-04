@@ -38,6 +38,7 @@ class MS_LCID_converter
 {
 public:
 	std::map<int, std::wstring> m_mapLCID;
+	std::map<int,int>			m_mapLCID2DefCodePage;
 
 	std::wstring get_wstring(int id)
 	{
@@ -47,6 +48,15 @@ public:
 			return pInd->second;
 		}
 		return L"";
+	}
+	int get_codepage(int id)
+	{
+		std::map<int, int>::iterator pInd = m_mapLCID2DefCodePage.find(id);
+		if (pInd != m_mapLCID2DefCodePage.end())
+		{
+			return pInd->second;
+		}
+		return 0;
 	}
 	MS_LCID_converter()
 	{
@@ -363,6 +373,120 @@ public:
 		m_mapLCID.insert(std::make_pair( 0x7c68, L"ha-Latn"));
 		m_mapLCID.insert(std::make_pair( 0x7c92, L"ku-Arab"));
 
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1078,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1052,	1250));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 5121,	1256));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 15361,	1256));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 3073,	1256));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 2049,	1256));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 11265,	1256));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 13313,	1256));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 12289,	1256));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 4097,	1256));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 6145,	1256));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 8193,	1256));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 16385,	1256));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1025,	1256));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 10241,	1256));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 7169,	1256));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 14337,	1256));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 9217,	1256));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 2092,	1251));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1068,	1254));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1069,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1059,	1251));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1026,	1251));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1027,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1050,	1250));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1029,	1250));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1030,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 2067,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1043,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 3081,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 10249,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 4105,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 9225,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 2057,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 6153,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 8201,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 5129,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 13321,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 7177,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 11273,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1033,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 12297,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1061,	1257));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1071,	1251));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1080,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1065,	1256));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1035,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 2060,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 3084,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1036,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 5132,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 6156,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 4108,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1110,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 3079,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1031,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 5127,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 4103,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 2055,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1032,	1253));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1037,	1255));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1038,	1250));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1039,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1057,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1040,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 2064,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1087,	1251));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1088,	1251));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1062,	1257));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1063,	1257));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 2110,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1086,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1104,	1251));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1044,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 2068,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1045,	1250));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1046,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 2070,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1048,	1250));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1049,	1251));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 3098,	1251));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 2074,	1250));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1051,	1250));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1060,	1250));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 11274,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 16394,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 13322,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 9226,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 5130,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 7178,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 12298,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 17418,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 4106,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 18442,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 2058,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 19466,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 6154,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 15370,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 10250,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 20490,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1034,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 14346,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 8202,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1089,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 2077,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1053,	1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1092,	1251));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1055,	1254));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1058,	1251));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1056,	1256));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 2115,	1251));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1091,	1254));
+		m_mapLCID2DefCodePage.insert(std::make_pair( 1066,	1258));
+
 	}
 };
 
@@ -370,4 +494,9 @@ static std::wstring msLCID2wstring(int id)
 {
 	MS_LCID_converter lcid;
 	return lcid.get_wstring(id);
+}
+static int msLCID2DefCodePage(int id)
+{
+	MS_LCID_converter lcid;
+	return lcid.get_codepage(id);
 }

@@ -185,7 +185,22 @@ const bool BinReaderProcessor::getNextSubstreamType(unsigned short& type)
 	}
 	if(rt_BOF != record->getTypeId())
 	{
-		return false;
+		//test-file.xls
+		while(rt_Blank == record->getTypeId())
+		{
+			SkipRecord();
+			record = reader_.touchTheNextRecord();
+			if(!record)
+			{
+				return false; // EOF
+			}
+			if(rt_BOF == record->getTypeId())
+			{
+				break;
+			}
+		}
+		if(rt_BOF != record->getTypeId())
+			return false;
 	}
 	unsigned short vers;
 	*record >> vers >> type;

@@ -238,6 +238,9 @@ enum ElementType
 	typeStyleListLevelProperties,
     typeStyleListLevelLabelAlignment,
 
+	typeTextOutlineStyle,
+	typeTextOutlineLevelStyle,
+
     typeStyleTabStop,
     typeStyleTabStops,
     typeStyleDropCap,

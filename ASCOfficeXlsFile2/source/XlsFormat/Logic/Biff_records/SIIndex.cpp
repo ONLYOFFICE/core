@@ -32,10 +32,11 @@
 
 #include "SIIndex.h"
 
-#include <Logic/Biff_records/Number.h>
-#include <Logic/Biff_records/BoolErr.h>
-#include <Logic/Biff_records/Blank.h>
-#include <Logic/Biff_records/Label.h>
+#include "Number.h"
+#include "BoolErr.h"
+#include "Blank.h"
+#include "Label.h"
+#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
 
 
 namespace XLS
@@ -93,7 +94,7 @@ int SIIndex::serialize(std::wostream & _stream, int idx, const CellRef & in_ref)
 					CP_XML_NODE(L"c:pt")
 					{
 						CP_XML_ATTR(L"idx", idx++);
-						CP_XML_NODE(L"c:v") { CP_XML_STREAM() << label->st.value(); }
+						CP_XML_NODE(L"c:v") { CP_XML_STREAM() << XmlUtils::EncodeXmlString(label->st.value()); }
 					}
 					res = 1;
 				}
@@ -133,7 +134,7 @@ int SIIndex::serialize(std::wostream & _stream, ChartParsedFormula & in_ref)
 					CP_XML_NODE(L"c:pt")
 					{
 						CP_XML_ATTR(L"idx", idx++);
-						CP_XML_NODE(L"c:v") { CP_XML_STREAM() << label->st.value(); }
+						CP_XML_NODE(L"c:v") { CP_XML_STREAM() << XmlUtils::EncodeXmlString(label->st.value()); }
 					}
 				}
 			}

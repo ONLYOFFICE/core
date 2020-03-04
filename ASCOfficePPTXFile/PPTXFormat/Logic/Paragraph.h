@@ -388,7 +388,7 @@ namespace PPTX
 				pReader->Seek(_end_rec);
 			}
 
-			std::wstring GetText()const
+			std::wstring GetText(bool bParagraphSeparator = true)const
 			{
 				std::wstring result = _T("");
 				
@@ -397,7 +397,10 @@ namespace PPTX
 					result += RunElems[i].GetText();
 				}
 				
-				result = result + _T("\n");
+				if (bParagraphSeparator)
+				{
+					result = result + _T("\n");
+				}
 				return result;
 			}
 

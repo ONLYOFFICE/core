@@ -229,13 +229,12 @@ public:
 
     odf_types::common_draw_position_attlist	common_draw_position_attlist_;
     odf_types::common_draw_size_attlist		common_draw_size_attlist_;
+ 	odf_types::common_dr3d_attlist			common_dr3d_attlist_;
     
 	common_chart_attlist			common_attlist_;
     
 	_CP_OPT(std::wstring)			table_cell_range_address_;
     _CP_OPT(std::wstring)			chart_data_source_has_labels_;
-
- 	odf_types::dr3d_attlist			dr3d_attlist_;
 };
 
 ///  chart:plot-area

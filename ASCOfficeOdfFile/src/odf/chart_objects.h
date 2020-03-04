@@ -100,7 +100,8 @@ namespace chart {
 	};
 	struct plot_area : public simple
     {
-		std::wstring cell_range_address_;
+		std::wstring			cell_range_address_;
+		std::vector<_property>	properties_3d_; 
 		//series_in_column_or_row
 		//uses_first_as_label
 	};

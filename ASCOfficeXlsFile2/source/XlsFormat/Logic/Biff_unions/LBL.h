@@ -56,6 +56,7 @@ public:
 	BaseObjectPtr	m_NameCmt;
 	BaseObjectPtr	m_NameFnGrp12;
 //-------------------------------------------------------
+	GlobalWorkbookInfoPtr global_info_;
 	bool isSerialize;
 };
 

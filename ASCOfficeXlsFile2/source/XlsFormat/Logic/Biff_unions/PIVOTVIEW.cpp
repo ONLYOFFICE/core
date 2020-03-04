@@ -31,6 +31,7 @@
  */
 
 #include "PIVOTVIEW.h"
+#include "PIVOTVIEWEX.h"
 #include "PIVOTCORE.h"
 #include "PIVOTFRT.h"
 #include "PIVOTVD.h"
@@ -148,6 +149,8 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 
 	PIVOTADDL* addls	= frt ? dynamic_cast<PIVOTADDL*>(frt->m_PIVOTADDL.get()) : NULL;
     PIVOTFRT9* frt9		= frt ? dynamic_cast<PIVOTFRT9*>(frt->m_PIVOTFRT9.get()) : NULL;
+
+	PIVOTVIEWEX* ex = frt9 ? dynamic_cast<PIVOTVIEWEX*>(frt9->m_PIVOTVIEWEX.get()) : NULL;
 
 	SXEx						*view_ex	= pivot_ex ? dynamic_cast<SXEx*>(pivot_ex->m_SXEx.get()) : NULL;
     SXViewEx9					*view_ex9	= frt9 ? dynamic_cast<SXViewEx9*>(frt9->m_SXViewEx9.get()) : NULL;    
@@ -307,6 +310,8 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 				}
 			}
 
+			if (ex)
+				ex->serialize_table_view(CP_XML_STREAM());
 			
 			if ((addls) && (addls->m_SXAddl_SXCView_SXDTableStyleClient))
 			{

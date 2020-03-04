@@ -890,6 +890,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\odf\datatypes\styleprint.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\styleprint.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\odf\datatypes\stylerepeat.cpp"
 				>
 			</File>
@@ -1178,6 +1186,10 @@
 		</File>
 		<File
 			RelativePath="..\..\ASCOfficeOdfFileW\source\OdfFormat\odf_chart_context.h"
+			>
+		</File>
+		<File
+			RelativePath="..\src\docx\oox_chart_axis.h"
 			>
 		</File>
 		<File

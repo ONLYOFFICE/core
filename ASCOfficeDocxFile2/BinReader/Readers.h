@@ -152,9 +152,7 @@ protected:
 	Binary_pPrReader oBinary_pPrReader;
 	Binary_CommonReader2 oBinary_CommonReader2;
 public:
-    std::wstring m_sCurTableShd;
 	std::vector<double> m_aCurTblGrid;
-	bool bCellShd;
 public:
 	Binary_tblPrReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter);
 	int Read_tblPr(BYTE type, long length, void* poResult);
@@ -456,6 +454,7 @@ public:
 	int Read_SecPr(BYTE type, long length, void* poResult);
 	int ReadSdt(BYTE type, long length, void* poResult);
 	int ReadSdtPr(BYTE type, long length, void* poResult);
+	int ReadSdtCheckBox(BYTE type, long length, void* poResult);
 	int ReadSdtComboBox(BYTE type, long length, void* poResult);
 	int ReadSdtListItem(BYTE type, long length, void* poResult);
 	int ReadSdtPrDataBinding(BYTE type, long length, void* poResult);

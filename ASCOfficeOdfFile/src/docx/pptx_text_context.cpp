@@ -277,29 +277,29 @@ void pptx_text_context::Impl::ApplyListProperties(odf_reader::paragraph_format_p
 	if (Level < 0)return;
 	if (list_style_stack_.empty())return;
 	
-	odf_reader::style_list_level_properties	*list_properties= NULL;
+	odf_reader::style_list_level_properties	*list_properties = NULL;
 
 	odf_reader::text_list_style * text_list_style = odf_context_.listStyleContainer().list_style_by_name(list_style_stack_.back());
 	
-	if ((text_list_style) && (Level < (int)text_list_style->get_content().size()))
+	if ((text_list_style) && (Level < (int)text_list_style->content_.size()))
 	{
-		odf_reader::office_element_ptr  elm = text_list_style->get_content()[Level];
+		odf_reader::office_element_ptr  elm = text_list_style->content_[Level];
 		odf_reader::office_element_ptr  elm_list;
 
 		if (elm->get_type() == typeTextListLevelStyleBullet)
 		{
 			odf_reader::text_list_level_style_bullet* list_bullet = dynamic_cast<odf_reader::text_list_level_style_bullet *>(elm.get());
-			if (list_bullet)elm_list = list_bullet->style_list_level_properties_;
+			if (list_bullet)elm_list = list_bullet->list_level_properties_;
 		}
 		if (elm->get_type() == typeTextListLevelStyleNumber)
 		{
 			odf_reader::text_list_level_style_number* list_number = dynamic_cast<odf_reader::text_list_level_style_number *>(elm.get());
-			if (list_number)elm_list = list_number->style_list_level_properties_;
+			if (list_number)elm_list = list_number->list_level_properties_;
 		}
 		if (elm->get_type() == typeTextListLevelStyleImage)
 		{
 			odf_reader::text_list_level_style_image* list_image = dynamic_cast<odf_reader::text_list_level_style_image *>(elm.get());
-			if (list_image)elm_list = list_image->style_list_level_properties_;
+			if (list_image)elm_list = list_image->list_level_properties_;
 		}
 		////////////////////
 		if (elm_list)
@@ -633,7 +633,8 @@ void pptx_text_context::Impl::start_list_item(bool restart)
         list_style_renames_[curStyleName] = newStyleName;
 
         odf_reader::list_style_container & lists = odf_context_.listStyleContainer();
-        odf_reader::text_list_style * curStyle = lists.list_style_by_name(curStyleName);
+        
+		odf_reader::text_list_style * curStyle = lists.list_style_by_name(curStyleName);
         lists.add_list_style(curStyle, newStyleName);
         end_list();
         start_list(newStyleName);

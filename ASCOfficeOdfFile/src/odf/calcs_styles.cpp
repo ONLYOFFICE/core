@@ -155,6 +155,22 @@ paragraph_format_properties calc_paragraph_properties_content(const std::vector<
     }
     return result;
 }
+_CP_OPT(int) calc_outline_level(_CP_OPT(int) value, const style_instance * styleInstance)
+{
+	if (value) return value;
+
+	while (styleInstance)
+    {
+        if (styleInstance->outline_level())
+		{
+			return styleInstance->outline_level();
+		}
+
+        styleInstance = styleInstance->parent();
+    }
+
+	return boost::none;
+}
 
 void calc_tab_stops(const style_instance * styleInstance, oox::tabs_context & context)
 {

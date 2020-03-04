@@ -403,9 +403,6 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 	bool bField = false;
 	if (oox_sdt->m_oSdtPr.IsInit())
 	{
-		if (oox_sdt->m_oSdtPr->m_oAlias.IsInit())//friendly name
-		{
-		}
 		if (oox_sdt->m_oSdtPr->m_oDocPartObj.IsInit())
 		{
 			if (oox_sdt->m_oSdtPr->m_oDocPartObj->m_oDocPartGallery.IsInit() && 
@@ -419,10 +416,78 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 				}
 			}
 		}
+		else if (oox_sdt->m_oSdtPr->m_oDate.IsInit())
+		{
+			odt_context->start_field(true);
+			bField = true;
+
+			if (oox_sdt->m_oSdtPr->m_oDate->m_oFullDate.IsInit())
+			{
+				odt_context->set_field_date_time(oox_sdt->m_oSdtPr->m_oDate->m_oFullDate->ToString());
+			}
+			if ((oox_sdt->m_oSdtPr->m_oDate->m_oDateFormat.IsInit()) && 
+				(oox_sdt->m_oSdtPr->m_oDate->m_oDateFormat->m_sVal.IsInit()))
+			{
+				odt_context->set_field_format(oox_sdt->m_oSdtPr->m_oDate->m_oDateFormat->m_sVal.get2());
+			}
+		}
+		else if (oox_sdt->m_oSdtPr->m_oDropDownList.IsInit())
+		{
+			odt_context->start_field(false);
+			bField = true;
+
+			odt_context->set_field_drop_down();
+			for ( size_t i = 0; i < oox_sdt->m_oSdtPr->m_oDropDownList->m_arrListItem.size(); i++ )
+			{
+				if ( oox_sdt->m_oSdtPr->m_oDropDownList->m_arrListItem[i] )
+				{
+					odt_context->set_field_item(oox_sdt->m_oSdtPr->m_oDropDownList->m_arrListItem[i]->m_sValue.get_value_or(L""), 
+						oox_sdt->m_oSdtPr->m_oDropDownList->m_arrListItem[i]->m_sDisplayText.get_value_or(L""));
+				}
+			}
+		}
+		else if (oox_sdt->m_oSdtPr->m_oComboBox.IsInit())
+		{
+			odt_context->start_field(false);
+			bField = true;
+
+			odt_context->set_field_drop_down();
+			for ( size_t i = 0; i < oox_sdt->m_oSdtPr->m_oComboBox->m_arrListItem.size(); i++ )
+			{
+				if ( oox_sdt->m_oSdtPr->m_oComboBox->m_arrListItem[i] )
+				{
+					odt_context->set_field_item(oox_sdt->m_oSdtPr->m_oComboBox->m_arrListItem[i]->m_sValue.get_value_or(L""), 
+						oox_sdt->m_oSdtPr->m_oComboBox->m_arrListItem[i]->m_sDisplayText.get_value_or(L""));
+				}
+			}
+		}
+		else if (oox_sdt->m_oSdtPr->m_oCheckbox.IsInit())
+		{
+		}
 		if (oox_sdt->m_oSdtPr->m_eType == OOX::Logic::sdttypeBibliography)
 		{
 			odt_context->start_field(false);
 			bField = true;
+		}
+		std::wstring name;
+		if (oox_sdt->m_oSdtPr->m_oAlias.IsInit())
+		{
+			name = oox_sdt->m_oSdtPr->m_oAlias->ToString2();
+		}
+		if (name.empty() && (oox_sdt->m_oSdtPr->m_oId.IsInit()) && (oox_sdt->m_oSdtPr->m_oId->m_oVal.IsInit()))
+		{
+			name = std::to_wstring(oox_sdt->m_oSdtPr->m_oId->m_oVal->GetValue());
+		}
+		odt_context->set_field_name(name);
+		if (oox_sdt->m_oSdtPr->m_oColor.IsInit())
+		{
+			_CP_OPT(odf_types::color) color;
+			convert (	oox_sdt->m_oSdtPr->m_oColor->m_oVal.GetPointer(), 
+						oox_sdt->m_oSdtPr->m_oColor->m_oThemeColor.GetPointer(), 
+						oox_sdt->m_oSdtPr->m_oColor->m_oThemeTint.GetPointer(), 
+						oox_sdt->m_oSdtPr->m_oColor->m_oThemeShade.GetPointer(), color);
+			
+			odt_context->set_field_color(color);
 		}
 	}
 
@@ -3429,7 +3494,7 @@ void DocxConverter::convert(OOX::CDocDefaults *def_style)
 	odt_context->styles_context()->create_default_style(odf_types::style_family::Table);					
 	odf_writer::style_table_properties	* table_properties	= odt_context->styles_context()->last_state()->get_table_properties();
 	//для красивой отрисовки в редакторах - разрешим объеденить стили пересекающихся обрамлений 
-	table_properties->table_format_properties_.table_border_model_ = odf_types::border_model(odf_types::border_model::Collapsing);
+	table_properties->content_.table_border_model_ = odf_types::border_model(odf_types::border_model::Collapsing);
 
 	odt_context->styles_context()->create_default_style(odf_types::style_family::TableRow);					
 	odf_writer::style_table_row_properties	* row_properties	= odt_context->styles_context()->last_state()->get_table_row_properties();
@@ -4400,7 +4465,7 @@ bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer
 			{
 				//динамическое расширение - автоподбор по содержимому.
 				odt_context->table_context()->set_optimal_column_width(true);
-				table_properties->table_format_properties_.style_use_optimal_column_width_ = true;
+				table_properties->content_.style_use_optimal_column_width_ = true;
 			}
 		}
 	}
@@ -4419,13 +4484,13 @@ bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer
 		convert(oox_table_pr->m_oTblInd.GetPointer(), length);
         if (length)
         {
-            table_properties->table_format_properties_.common_horizontal_margin_attlist_.fo_margin_left_ = odf_types::length(length->get_value_unit(odf_types::length::cm),odf_types::length::cm);
+            table_properties->content_.common_horizontal_margin_attlist_.fo_margin_left_ = odf_types::length(length->get_value_unit(odf_types::length::cm),odf_types::length::cm);
         }
-		table_properties->table_format_properties_.table_align_ = odf_types::table_align(odf_types::table_align::Left);
+		table_properties->content_.table_align_ = odf_types::table_align(odf_types::table_align::Left);
 	}
 	else if(oox_table_pr->m_oTblpPr.IsInit()) //отступы, обтекание есть 
 	{
-		table_properties->table_format_properties_.table_align_ = odf_types::table_align(odf_types::table_align::Left);
+		table_properties->content_.table_align_ = odf_types::table_align(odf_types::table_align::Left);
 
 		if (oox_table_pr->m_oTblpPr->m_oTblpX.IsInit() && oox_table_pr->m_oTblpPr->m_oTblpY.IsInit()){}//floating position 
 		else
@@ -4434,39 +4499,39 @@ bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer
 			
 			convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_table_pr->m_oTblpPr->m_oLeftFromText.GetPointer()), length_left);
             if (length_left)
-                table_properties->table_format_properties_.common_horizontal_margin_attlist_.fo_margin_left_ = odf_types::length(length_left->get_value_unit(odf_types::length::cm),odf_types::length::cm);
+                table_properties->content_.common_horizontal_margin_attlist_.fo_margin_left_ = odf_types::length(length_left->get_value_unit(odf_types::length::cm),odf_types::length::cm);
 				
 			convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_table_pr->m_oTblpPr->m_oRightFromText.GetPointer()), length_right);
             if (length_right)
-                table_properties->table_format_properties_.common_horizontal_margin_attlist_.fo_margin_right_= odf_types::length(length_right->get_value_unit(odf_types::length::cm),odf_types::length::cm);
+                table_properties->content_.common_horizontal_margin_attlist_.fo_margin_right_= odf_types::length(length_right->get_value_unit(odf_types::length::cm),odf_types::length::cm);
 
             convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_table_pr->m_oTblpPr->m_oTopFromText.GetPointer()), length_);
             if (length_)
-                table_properties->table_format_properties_.common_vertical_margin_attlist_.fo_margin_top_= odf_types::length(length_->get_value_unit(odf_types::length::cm),odf_types::length::cm);
+                table_properties->content_.common_vertical_margin_attlist_.fo_margin_top_= odf_types::length(length_->get_value_unit(odf_types::length::cm),odf_types::length::cm);
 
             convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_table_pr->m_oTblpPr->m_oBottomFromText.GetPointer()),	length_);
             if (length_)
-                table_properties->table_format_properties_.common_vertical_margin_attlist_.fo_margin_bottom_= odf_types::length(length_->get_value_unit(odf_types::length::cm),odf_types::length::cm);
+                table_properties->content_.common_vertical_margin_attlist_.fo_margin_bottom_= odf_types::length(length_->get_value_unit(odf_types::length::cm),odf_types::length::cm);
 
 			if ((length_left && length_right ) && (*length_left == *length_right))
-				table_properties->table_format_properties_.table_align_ = odf_types::table_align(odf_types::table_align::Center);
+				table_properties->content_.table_align_ = odf_types::table_align(odf_types::table_align::Center);
 		}
 	}
 	else if (oox_table_pr->m_oTblLayout.IsInit() && oox_table_pr->m_oTblLayout->m_oType.IsInit())
 	{
-		table_properties->table_format_properties_.common_horizontal_margin_attlist_.fo_margin_left_ = odf_types::length(0, odf_types::length::cm);
+		table_properties->content_.common_horizontal_margin_attlist_.fo_margin_left_ = odf_types::length(0, odf_types::length::cm);
 		
-		table_properties->table_format_properties_.table_align_ = odf_types::table_align(odf_types::table_align::Left);
+		table_properties->content_.table_align_ = odf_types::table_align(odf_types::table_align::Left);
 	}
 	if(oox_table_pr->m_oJc.IsInit() && oox_table_pr->m_oJc->m_oVal.IsInit())
 	{
 		switch(oox_table_pr->m_oJc->m_oVal->GetValue())
 		{
-		case 0: table_properties->table_format_properties_.table_align_ = odf_types::table_align(odf_types::table_align::Center); break;
+		case 0: table_properties->content_.table_align_ = odf_types::table_align(odf_types::table_align::Center); break;
 		case 2: 
-		case 3: table_properties->table_format_properties_.table_align_ = odf_types::table_align(odf_types::table_align::Left); break;
+		case 3: table_properties->content_.table_align_ = odf_types::table_align(odf_types::table_align::Left); break;
 		case 1: 
-		case 4: table_properties->table_format_properties_.table_align_ = odf_types::table_align(odf_types::table_align::Right); break;
+		case 4: table_properties->content_.table_align_ = odf_types::table_align(odf_types::table_align::Right); break;
 		default: break;
 		}
 	}
@@ -4524,12 +4589,23 @@ bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, bool base_
 		odt_context->table_context()->set_default_cell_properties(odt_context->styles_context()->last_state()->get_name());
 	}
 //стиль создаем всегда	
-	odt_context->styles_context()->create_style(L"",odf_types::style_family::Table, true, false, -1); 
+	odt_context->styles_context()->create_style(L"", odf_types::style_family::Table, true, false, -1); 
 	
-	odf_writer::style_table_properties	* table_properties = odt_context->styles_context()->last_state()->get_table_properties();
+	odf_writer::style_table_properties *table_properties = odt_context->styles_context()->last_state()->get_table_properties();
 	if (base_styled)// накатим свойства - они не наследуются :(
 	{		
 		odt_context->styles_context()->table_styles().get_table_properties(table_properties);
+
+		if (odt_context->styles_context()->table_styles().is_paragraph_properties())
+		{
+			odf_writer::style_paragraph_properties *para_properties = odt_context->styles_context()->last_state()->get_paragraph_properties();
+			odt_context->styles_context()->table_styles().get_paragraph_properties(para_properties);
+		}
+		if (odt_context->styles_context()->table_styles().is_text_properties())
+		{
+			odf_writer::style_text_properties *text_properties = odt_context->styles_context()->last_state()->get_text_properties();
+			odt_context->styles_context()->table_styles().get_text_properties(text_properties);
+		}
 	}
 	convert(oox_table_pr, table_properties);
 	

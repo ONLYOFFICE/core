@@ -49,6 +49,7 @@
 #include "tablecentering.h"
 #include "layoutgridmode.h"
 #include "direction.h"
+#include "styleprint.h"
 
 namespace cpdoccore { 
 namespace odf_writer { 
@@ -73,17 +74,16 @@ public:
     odf_types::common_border_attlist					common_border_attlist_;
     odf_types::common_border_line_width_attlist			common_border_line_width_attlist_;
     odf_types::common_padding_attlist					common_padding_attlist_;
-    odf_types::common_shadow_attlist					common_shadow_attlist_;
-    
+    odf_types::common_shadow_attlist					common_shadow_attlist_;    
     odf_types::common_background_color_attlist			common_background_color_attlist_;
     odf_types::common_writing_mode_attlist				common_writing_mode_attlist_;
+	odf_types::common_page_number_attlist				common_page_number_attlist_;
     
 	_CP_OPT(std::wstring)								style_register_truth_ref_style_name_;
-    _CP_OPT(std::wstring)								style_print_;
+    _CP_OPT(odf_types::style_print)						style_print_;
 	_CP_OPT(std::wstring)								style_paper_tray_name_;
     _CP_OPT(std::wstring)								style_print_orientation_; 
     _CP_OPT(odf_types::direction)						style_print_page_order_;
-    _CP_OPT(std::wstring)								style_first_page_number_;
     _CP_OPT(odf_types::percent)							style_scale_to_;
     _CP_OPT(unsigned int)								style_scale_to_pages_;
     _CP_OPT(odf_types::table_centering)					style_table_centering_;
@@ -98,6 +98,8 @@ public:
     _CP_OPT(odf_types::Bool)							style_layout_grid_display_;
 
 	int													offset_page_border_;
+	_CP_OPT(unsigned int)								loext_scale_to_X_;
+	_CP_OPT(unsigned int)								loext_scale_to_Y_;
 
 };
 

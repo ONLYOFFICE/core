@@ -45,7 +45,7 @@
 
 namespace ImageHelper
 {
-	Global::_BlipType SaveImageToFileFromDIB(unsigned char* data, int size, const std::wstring& file_name)//without ext
+	Global::_BlipType SaveImageToFileFromDIB(unsigned char* data, int size, std::wstring& file_name)//without ext
 	{
 		Global::_BlipType result = Global::msoblipERROR;
 
@@ -99,14 +99,21 @@ namespace ImageHelper
 			
 			//if (header->biWidth % 2 != 0 && sz_bitmap < size -offset)
 			//	header->biWidth++;
+
+			if (header->biClrUsed > 0)
+			{
+				oFrame.put_Palette((unsigned char*)data + offset, header->biClrUsed);
+			
+				offset += header->biClrUsed * 4;
+			}
 			
 			int stride = -(size - offset) / header->biHeight;
 
-			if (-stride >= header->biWidth && header->biBitCount >= 24)
+			if (-stride >= header->biWidth/* && header->biBitCount >= 24*/)
 			{
 				result = Global::msoblipPNG;
 			}
-			oFrame.put_Stride	(stride/*header->biBitCount * header->biWidth /8*/);
+			oFrame.put_Stride(stride);
 			
 			biSizeImage = header->biSizeImage > 0 ? header->biSizeImage : (size - offset);
 		}
@@ -117,24 +124,28 @@ namespace ImageHelper
 		{
 			oFrame.put_Data((unsigned char*)data + offset);
 			
-            if (!oFrame.SaveFile(file_name + L".png", 4/*CXIMAGE_FORMAT_PNG*/))
-				result = Global::msoblipERROR;
-
+			file_name += L".png";
+			if (!oFrame.SaveFile(file_name, 4/*CXIMAGE_FORMAT_PNG*/))
+			{
+				result = Global::msoblipDIB;
+			}
 			oFrame.put_Data(NULL);
 		}
 		else if (result == Global::msoblipWMF)
 		{
+			file_name += L".wmf";
 			NSFile::CFileBinary file;
-            if (file.CreateFileW(file_name + L".wmf"))
+            if (file.CreateFileW(file_name))
 			{
 				file.WriteFile((BYTE*)data, size);
 				file.CloseFile();
 			}
 		}
-		else if (biSizeImage > 0)
+		if (biSizeImage > 0 && result == Global::msoblipDIB)
 		{
+			file_name += L".bmp";
 			NSFile::CFileBinary file;
-            if (file.CreateFileW(file_name + L".bmp"))
+            if (file.CreateFileW(file_name))
 			{
                 _UINT16 vtType		= 0x4D42;				file.WriteFile((BYTE*)&vtType,	2);
                 _UINT32 dwLen		= biSizeImage;			file.WriteFile((BYTE*)&dwLen,	4);

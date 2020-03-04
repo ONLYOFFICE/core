@@ -475,41 +475,55 @@ private:
 class comments_context : boost::noncopyable
 {
 public:
-	comments_context() : state_(0) {}
+	comments_context(){}
 	
 	struct _comment_desc
 	{
+		_comment_desc(const std::wstring & c, int _id, const std::wstring & a, const std::wstring & d) :
+		content(c), id(_id), author(a), date(d)
+		{}
 		std::wstring content;
 		int id;
 		std::wstring date;
 		std::wstring author;
 		std::wstring initials;
 	};
-    void start_comment(const std::wstring & content, const std::wstring & author, const std::wstring & date, bool inRun = false)
+	void end_comment(const std::wstring & name)
+	{
+		std::map<std::wstring, int>::iterator pFind = comments_map_.find(name);
+		if (pFind != comments_map_.end())
+		{
+			ref_end_.push_back(pFind->second);		
+		}
+	}
+	void start_comment(const std::wstring & content, const std::wstring & author, const std::wstring & date, _CP_OPT(std::wstring) name)
 	{
 		int id = comments_.size() + 1;
-		_comment_desc new_comment={content, id, date, author};
+		_comment_desc new_comment(content, id, author, date);
 		
+		if ((name) && (false == name->empty()))
+		{
+			comments_map_.insert(std::make_pair(*name, id));
+			ref_start_.push_back(id);
+		}
+		else
+		{
+			ref_.push_back(id);
+		}
 		comments_.push_back(new_comment);
-
-		state_ = inRun ? 4 : 1;
 	}
-	int current_id()
-	{
-		if (comments_.size()>0 && state_ >0 )return comments_.back().id;
-		else return -1; //not set
-	}
-	void state(int state) {state_ = state;}
-	int state(){return state_;}
+	
 	rels& get_rels(){return internal_rels_;}
 
-	std::vector<_comment_desc> comments_;
+	std::vector<_comment_desc>	comments_;
+	std::vector<int>			ref_start_;
+	std::vector<int>			ref_end_;
+	std::vector<int>			ref_;
+
 private:
-	int state_;
 	rels internal_rels_;//это для гиперлинков или медиа в комментариях
+	std::map<std::wstring, int> comments_map_;
 };
-
-
 
 class text_tracked_context
 {
@@ -934,9 +948,12 @@ public:
     void start_chart(std::wstring name);
     void end_chart	();
 
-	void start_comment	()	{current_process_comment_ = true;}
-	void end_comment	()	{current_process_comment_ = false;}
+	void start_comment_content	()	{current_process_comment_ = true;}
+	void end_comment_content	()	{current_process_comment_ = false;}
    
+	void start_comment(const std::wstring & content, const std::wstring & author, const std::wstring & date, _CP_OPT(std::wstring) name);
+	void end_comment(const std::wstring & name);
+
 	void start_math_formula	();
 	void end_math_formula	();
 

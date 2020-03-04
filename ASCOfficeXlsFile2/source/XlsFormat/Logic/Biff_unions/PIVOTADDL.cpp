@@ -97,7 +97,7 @@ const bool PIVOTADDL::loadContent(BinProcessor& proc)
 		if (level == 0 && addl->bEndElement)
 		{
 			elements_.pop_back(); //end элемент не нужен в дальнейшем
-			break;
+			continue;
 		}
 		else if (addl->bEndElement)
 		{ 			
@@ -119,6 +119,7 @@ const bool PIVOTADDL::loadContent(BinProcessor& proc)
 					case 0x02:	m_arSXADDLHIERARCHY.push_back(current_level);	break;
 					case 0x03:	m_arSXADDLCALCMEMBER.push_back(current_level);	break;
 					case 0x1a:	m_SXADDLCONDFMTS	= current_level;			break;
+					case 0x1b:	m_arSXADDLCONDFMT.push_back(current_level);		break;
 					case 0x1c:	m_SXADDLSXFILTERS12 = current_level;			break;
 				}
 			}			

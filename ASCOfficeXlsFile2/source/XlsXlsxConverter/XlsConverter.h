@@ -35,8 +35,6 @@
 #include <vector>
 #include <boost/shared_ptr.hpp>
 
-#include "progressCallback.h"
-
 namespace oox
 {
 	class xlsx_conversion_context;
@@ -103,15 +101,15 @@ namespace ODRAW
 class XlsConverter
 {
 public:
-	XlsConverter(const std::wstring & xlsFileName, const std::wstring & xlsxFilePath, const std::wstring & password, const std::wstring & fontsPath, const std::wstring & tempPath, const ProgressCallback* ffCallBack, bool & bMacros);
+	XlsConverter(const std::wstring & xlsFileName, const std::wstring & xlsxFilePath, const std::wstring & password, const std::wstring & fontsPath, const std::wstring & tempPath, const int lcid_user, bool & bMacros);
 	~XlsConverter() ;
 
-    oox::xlsx_conversion_context	* xlsx_context;
+    oox::xlsx_conversion_context	*xlsx_context;
 
 	void convertDocument();
 	void write();
 
-	void convert(XLS::BaseObject				* xls_unknown);
+	void convert(XLS::BaseObject *xls_unknown);
 
 	void convert_common(XLS::CommonSubstream* strm);
 
@@ -168,11 +166,6 @@ private:
 	void convert_line_style		(std::vector<ODRAW::OfficeArtFOPTEPtr> & fort);
 	void convert_shadow			(std::vector<ODRAW::OfficeArtFOPTEPtr> & fort);
 	void convert_transform		(std::vector<ODRAW::OfficeArtFOPTEPtr> & fort);
-
-	bool UpdateProgress(long nComplete);
-	
-	const	ProgressCallback		*pCallBack;
-	short							bUserStopConvert;
 
 	std::wstring					xlsx_path;
 	oox::package::xlsx_document		*output_document;

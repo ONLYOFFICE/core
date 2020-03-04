@@ -646,7 +646,7 @@ void ReadNames(NSFonts::CFontInfo* pInfo, FT_Face pFace)
 
 std::wstring CFontList::GetFontBySymbol(int symbol)
 {
-    for (std::list<CFontRange>::iterator iter = m_listRanges.begin(); iter != m_listRanges.end(); iter++)
+    for (std::list<CFontRange>::iterator iter = m_listRanges.begin(); iter != m_listRanges.end() && !m_listRanges.empty(); iter++)
     {
         CFontRange& range = *iter;
         if (symbol >= range.Start && symbol <= range.End)
@@ -661,7 +661,7 @@ std::wstring CFontList::GetFontBySymbol(int symbol)
 
     int _center = 0;
 
-    if (_start > _end)
+    if (_start > _end || m_pRanges == NULL)
         return L"";
 
     while (_start < _end)

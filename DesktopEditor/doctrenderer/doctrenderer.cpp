@@ -95,15 +95,13 @@ namespace NSDoctRenderer
         int m_nMailMergeIndexStart;
         int m_nMailMergeIndexEnd;
 
-        bool m_bIsRetina;
-        int m_nSaveToPDFParams;
+        std::wstring m_sJsonParams;
+        int m_nLcid;
 
-        bool m_bIsOnlyOnePage;
-
+        int m_nRendererParams;
         bool m_bIsCachedScripts;
 
         std::vector<int> m_arThemesThumbnailsParams;
-
     public:
         CExecuteParams() : m_arChanges()
         {
@@ -124,11 +122,10 @@ namespace NSDoctRenderer
             m_nMailMergeIndexStart = -1;
             m_nMailMergeIndexEnd = -1;
 
-            m_bIsRetina = false;
-            m_nSaveToPDFParams = 0;
-
-            m_bIsOnlyOnePage = false;
+            m_nLcid = -1;
             m_bIsCachedScripts = true;
+
+            m_nRendererParams = 0;
         }
         ~CExecuteParams()
         {
@@ -179,17 +176,12 @@ namespace NSDoctRenderer
                 m_strMailMergeField = oNodeMailMerge.ReadAttribute(L"Field");
             }
 
-            int nParams = oNode.ReadValueInt(L"DoctParams", 0);
-            if (nParams & 0x01)
-                m_bIsRetina = true;
+            m_nLcid = oNode.ReadValueInt(L"Lcid", -1);
+            m_sJsonParams = oNode.ReadValueString(L"JsonParams");
 
-            if (nParams & 0x02)
-                m_nSaveToPDFParams = 1;
-
-            if (nParams & 0x04)
+            m_nRendererParams = oNode.ReadValueInt(L"DoctParams", 0);
+            if (0x01 == (0x01 & m_nRendererParams))
                 m_bIsCachedScripts = false;
-
-            m_bIsOnlyOnePage = (oNode.ReadValueInt(L"OnlyOnePage", 0) == 1) ? true : false;
 
             m_arThemesThumbnailsParams.clear();
             std::wstring sThemesThumbnailsParams = oNode.ReadValueString(L"ThemesThumbnailsParams");
@@ -439,29 +431,45 @@ namespace NSDoctRenderer
         static bool Doct_renderer_SaveFile(CExecuteParams* pParams,
                                        CNativeControl* pNative,
                                        v8::Isolate* isolate,
+                                       v8::Local<v8::Context> context,
                                        v8::Local<v8::Object>& global_js,
                                        v8::Handle<v8::Value>* args,
                                        v8::TryCatch& try_catch,
                                        std::wstring& strError,
+                                       v8::Local<v8::Object>& api_js_maybe_null,
                                        bool bIsPdfBase64 = false)
         {
+            v8::Local<v8::Object> js_objectApi = api_js_maybe_null;
+            if (js_objectApi.IsEmpty())
+                js_objectApi = global_js->Get(v8::String::NewFromUtf8(isolate, "Api"))->ToObject();
+
             bool bIsBreak = false;
+            if (js_objectApi.IsEmpty() || !js_objectApi->IsObject())
+            {
+                _LOGGING_ERROR_(L"save_code_api", L"");
+                _LOGGING_ERROR_(L"save_api", L"");
+
+                strError = L"code=\"save_api\"";
+                bIsBreak = true;
+                return bIsBreak;
+            }
+
             switch (pParams->m_eDstFormat)
             {
             case DoctRendererFormat::DOCT:
             case DoctRendererFormat::PPTT:
             case DoctRendererFormat::XLST:
             {
-                v8::Handle<v8::Value> js_func_get_file_s = global_js->Get(v8::String::NewFromUtf8(isolate, "NativeGetFileData"));
+                v8::Handle<v8::Value> js_func_get_file_s = js_objectApi->Get(v8::String::NewFromUtf8(isolate, "asc_nativeGetFileData"));
                 if (js_func_get_file_s->IsFunction())
                 {
                     v8::Handle<v8::Function> func_get_file_s = v8::Handle<v8::Function>::Cast(js_func_get_file_s);
-                    v8::Local<v8::Value> js_result2 = func_get_file_s->Call(global_js, 1, args);
+                    v8::Local<v8::Value> js_result2 = func_get_file_s->Call(js_objectApi, 1, args);
 
                     if (try_catch.HasCaught())
                     {
-                        std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                        std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                        std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                        std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                         _LOGGING_ERROR_(L"save_code", strCode);
                         _LOGGING_ERROR_(L"save", strException);
@@ -501,16 +509,16 @@ namespace NSDoctRenderer
             }
             case DoctRendererFormat::HTML:
             {
-                v8::Handle<v8::Value> js_func_get_file_s = global_js->Get(v8::String::NewFromUtf8(isolate, "NativeGetFileDataHtml"));
+                v8::Handle<v8::Value> js_func_get_file_s = js_objectApi->Get(v8::String::NewFromUtf8(isolate, "asc_nativeGetHtml"));
                 if (js_func_get_file_s->IsFunction())
                 {
                     v8::Handle<v8::Function> func_get_file_s = v8::Handle<v8::Function>::Cast(js_func_get_file_s);
-                    v8::Local<v8::Value> js_result2 = func_get_file_s->Call(global_js, 1, args);
+                    v8::Local<v8::Value> js_result2 = func_get_file_s->Call(js_objectApi, 1, args);
 
                     if (try_catch.HasCaught())
                     {
-                        std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                        std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                        std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                        std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                         _LOGGING_ERROR_(L"save_code", strCode);
                         _LOGGING_ERROR_(L"save", strException);
@@ -520,7 +528,7 @@ namespace NSDoctRenderer
                     }
                     else
                     {
-                        std::string sHTML_Utf8 = to_cstringA(js_result2);
+                        std::string sHTML_Utf8 = CV8Convert::ToStringA(js_result2);
 
                         NSFile::CFileBinary oFile;
                         if (true == oFile.CreateFileW(pParams->m_strDstFilePath))
@@ -535,19 +543,19 @@ namespace NSDoctRenderer
             case DoctRendererFormat::PDF:
             case DoctRendererFormat::PPTX_THEME_THUMBNAIL:
             {
-                v8::Handle<v8::Value> js_func_calculate = global_js->Get(v8::String::NewFromUtf8(isolate, "NativeCalculateFile"));
-                v8::Handle<v8::Value> js_func_pages_count = global_js->Get(v8::String::NewFromUtf8(isolate, "GetNativeCountPages"));                
+                v8::Handle<v8::Value> js_func_calculate = js_objectApi->Get(v8::String::NewFromUtf8(isolate, "asc_nativeCalculateFile"));
+                v8::Handle<v8::Value> js_func_pages_count = js_objectApi->Get(v8::String::NewFromUtf8(isolate, "asc_nativePrintPagesCount"));
 
                 // CALCULATE
                 if (js_func_calculate->IsFunction())
                 {
                     v8::Handle<v8::Function> func_calculate = v8::Handle<v8::Function>::Cast(js_func_calculate);
-                    func_calculate->Call(global_js, 1, args);
+                    func_calculate->Call(js_objectApi, 1, args);
 
                     if (try_catch.HasCaught())
                     {
-                        std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                        std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                        std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                        std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                         _LOGGING_ERROR_(L"calculate_code", strCode);
                         _LOGGING_ERROR_(L"calculate", strException);
@@ -566,12 +574,12 @@ namespace NSDoctRenderer
                     if (js_func_pages_count->IsFunction())
                     {
                         v8::Handle<v8::Function> func_pages_count = v8::Handle<v8::Function>::Cast(js_func_pages_count);
-                        v8::Local<v8::Value> js_result1 = func_pages_count->Call(global_js, 1, args);
+                        v8::Local<v8::Value> js_result1 = func_pages_count->Call(js_objectApi, 1, args);
 
                         if (try_catch.HasCaught())
                         {
-                            std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                            std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                            std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                            std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                             _LOGGING_ERROR_(L"calculate_code", strCode);
                             _LOGGING_ERROR_(L"calculate", strException);
@@ -581,8 +589,7 @@ namespace NSDoctRenderer
                         }
                         else
                         {
-                            v8::Local<v8::Int32> intValue = js_result1->ToInt32();
-                            lPagesCount = (LONG)intValue->Value();
+                            lPagesCount = (LONG)CV8Convert::ToInt(js_result1);
                         }
                     }
                 }
@@ -590,21 +597,30 @@ namespace NSDoctRenderer
                 // RENDER
                 if (!bIsBreak && DoctRendererFormat::PDF == pParams->m_eDstFormat)
                 {
-                    v8::Handle<v8::Value> js_func_get_file_s = global_js->Get(v8::String::NewFromUtf8(isolate, "GetNativeFileDataPDF"));
+                    v8::Handle<v8::Value> js_func_get_file_s = js_objectApi->Get(v8::String::NewFromUtf8(isolate, "asc_nativeGetPDF"));
                     if (js_func_get_file_s->IsFunction())
                     {
                         v8::Handle<v8::Function> func_get_file_s = v8::Handle<v8::Function>::Cast(js_func_get_file_s);
-                        int nArgument = pParams->m_nSaveToPDFParams;
-                        if (pParams->m_bIsOnlyOnePage)
-                            nArgument |= 0x0100;
-                        args[0] = v8::Int32::New(isolate, nArgument);
 
-                        v8::Local<v8::Value> js_result2 = func_get_file_s->Call(global_js, 1, args);
+                        if (pParams->m_sJsonParams.empty())
+                            args[0] = v8::Undefined(isolate);
+                        else
+                        {
+                            std::string sTmp = U_TO_UTF8((pParams->m_sJsonParams));
+
+                        #ifndef V8_OS_XP
+                            args[0] = v8::JSON::Parse(context, v8::String::NewFromUtf8(isolate, (char*)sTmp.c_str())).FromMaybe(v8::Local<v8::Value>());
+                        #else
+                            args[0] = v8::JSON::Parse(v8::String::NewFromUtf8(isolate, (char*)sTmp.c_str()));
+                        #endif
+                        }
+
+                        v8::Local<v8::Value> js_result2 = func_get_file_s->Call(js_objectApi, 1, args);
 
                         if (try_catch.HasCaught())
                         {
-                            std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                            std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                            std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                            std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                             _LOGGING_ERROR_(L"save_code", strCode);
                             _LOGGING_ERROR_(L"save", strException);
@@ -642,8 +658,7 @@ namespace NSDoctRenderer
                 }
                 if (!bIsBreak && DoctRendererFormat::PPTX_THEME_THUMBNAIL == pParams->m_eDstFormat)
                 {
-                    v8::Local<v8::Object> js_objectEditor = global_js->Get(v8::String::NewFromUtf8(isolate, "editor"))->ToObject();
-                    v8::Handle<v8::Value> js_func_get_file_thumbnail = js_objectEditor->Get(v8::String::NewFromUtf8(isolate, "asc_nativeGetThemeThumbnail"));
+                    v8::Handle<v8::Value> js_func_get_file_thumbnail = js_objectApi->Get(v8::String::NewFromUtf8(isolate, "asc_nativeGetThemeThumbnail"));
                     if (js_func_get_file_thumbnail->IsFunction())
                     {
                         v8::Handle<v8::Function> func_get_file_thumbnail = v8::Handle<v8::Function>::Cast(js_func_get_file_thumbnail);
@@ -652,7 +667,7 @@ namespace NSDoctRenderer
                         int nSizeArgs = (int)pParams->m_arThemesThumbnailsParams.size();
                         if (0 == nSizeArgs)
                         {
-                            js_result2 = func_get_file_thumbnail->Call(js_objectEditor, 1, args);
+                            js_result2 = func_get_file_thumbnail->Call(js_objectApi, 1, args);
                         }
                         else
                         {
@@ -662,13 +677,13 @@ namespace NSDoctRenderer
                                 arrArgs->Set(nCurArg++, v8::Int32::New(isolate, *iter));
 
                             args[0] = arrArgs;
-                            js_result2 = func_get_file_thumbnail->Call(js_objectEditor, 1, args);
+                            js_result2 = func_get_file_thumbnail->Call(js_objectApi, 1, args);
                         }
 
                         if (try_catch.HasCaught())
                         {
-                            std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                            std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                            std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                            std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                             _LOGGING_ERROR_(L"save_code", strCode);
                             _LOGGING_ERROR_(L"save", strException);
@@ -682,8 +697,8 @@ namespace NSDoctRenderer
                             {
                                 v8::Local<v8::Object> objNative = js_result2->ToObject();
                                 v8::Local<v8::Uint8Array> pArray = v8::Local<v8::Uint8Array>::Cast(objNative->Get(v8::String::NewFromUtf8(isolate, "data")));
-                                std::wstring sThemeName = to_cstring(objNative->Get(v8::String::NewFromUtf8(isolate, "name")));
-                                int nDataLen = objNative->Get(v8::String::NewFromUtf8(isolate, "dataLen"))->ToInt32()->Value();
+                                std::wstring sThemeName = CV8Convert::ToString(objNative->Get(v8::String::NewFromUtf8(isolate, "name")));
+                                int nDataLen = CV8Convert::ToInt(objNative->Get(v8::String::NewFromUtf8(isolate, "dataLen")));
                                 if (sThemeName.empty())
                                     sThemeName = L"Default";
 
@@ -720,14 +735,14 @@ namespace NSDoctRenderer
 
                 v8::HandleScope handle_scope(isolate);
 
-                v8::Handle<v8::ObjectTemplate> global = v8::ObjectTemplate::New();
-                global->Set(v8::String::NewFromUtf8(isolate, "CreateNativeEngine"), v8::FunctionTemplate::New(isolate, CreateNativeObject));
-                global->Set(v8::String::NewFromUtf8(isolate, "CreateNativeMemoryStream"), v8::FunctionTemplate::New(isolate, CreateNativeMemoryStream));
+                v8::Handle<v8::ObjectTemplate> global = v8::ObjectTemplate::New(isolate);
+                global->Set(isolate, "CreateNativeEngine", v8::FunctionTemplate::New(isolate, CreateNativeObject));
+                global->Set(isolate, "CreateNativeMemoryStream", v8::FunctionTemplate::New(isolate, CreateNativeMemoryStream));
 
                 v8::Local<v8::Context> context = v8::Context::New(isolate, NULL, global);
 
                 v8::Context::Scope context_scope(context);
-                v8::TryCatch try_catch;
+                v8::TryCatch try_catch(isolate);
                 v8::Local<v8::String> source = v8::String::NewFromUtf8(isolate, strScript.c_str());
                 v8::Local<v8::Script> script;
 
@@ -735,7 +750,7 @@ namespace NSDoctRenderer
 
                 CCacheDataScript oCachedScript(sCachePath);
                 if (sCachePath.empty())
-                    script = v8::Script::Compile(source);
+                    script = v8::Script::Compile(context, source).FromMaybe(v8::Local<v8::Script>());
                 else
                 {
                     script = oCachedScript.Compile(context, source);
@@ -746,8 +761,8 @@ namespace NSDoctRenderer
                 // COMPILE
                 if (try_catch.HasCaught())
                 {
-                    std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                    std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                    std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                    std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                     _LOGGING_ERROR_(L"compile_code", strCode);
                     _LOGGING_ERROR_(L"compile", strException);
@@ -759,12 +774,12 @@ namespace NSDoctRenderer
                 // RUN
                 if (!bIsBreak)
                 {
-                    v8::Local<v8::Value> result = script->Run();
+                    v8::Local<v8::Value> result = script->Run(context).FromMaybe(v8::Local<v8::Value>());
 
                     if (try_catch.HasCaught())
                     {
-                        std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                        std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                        std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                        std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                         _LOGGING_ERROR_(L"run_code", strCode);
                         _LOGGING_ERROR_(L"run", strException);
@@ -775,14 +790,6 @@ namespace NSDoctRenderer
                 }
 
                 LOGGER_SPEED_LAP("run")
-
-                if (!bIsBreak && m_oParams.m_bIsRetina)
-                {
-                    v8::Local<v8::String> sourceParams = v8::String::NewFromUtf8(isolate,
-                        "(function(){ if (window && window.SetDoctRendererParams) {window.SetDoctRendererParams({retina:true});} })();");
-                    v8::Local<v8::Script> scriptParams = v8::Script::Compile(sourceParams);
-                    scriptParams->Run();
-                }
 
                 //---------------------------------------------------------------
                 v8::Local<v8::Object> global_js = context->Global();
@@ -803,8 +810,8 @@ namespace NSDoctRenderer
 
                         if (try_catch.HasCaught())
                         {
-                            std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                            std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                            std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                            std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                             _LOGGING_ERROR_(L"run_code", strCode);
                             _LOGGING_ERROR_(L"run", strException);
@@ -837,6 +844,9 @@ namespace NSDoctRenderer
                     pNative->m_nMaxChangesNumber = m_oParams.m_nCountChangesItems;
                 }
 
+                // Api object
+                v8::Local<v8::Object> js_objectApi;
+
                 // OPEN
                 if (!bIsBreak)
                 {
@@ -848,7 +858,7 @@ namespace NSDoctRenderer
                         CChangesWorker oWorkerLoader;
                         int nVersion = oWorkerLoader.OpenNative(pNative->GetFilePath());
 
-                        v8::Handle<v8::Value> args_open[3];
+                        v8::Handle<v8::Value> args_open[4];
                         args_open[0] = oWorkerLoader.GetDataFull();
                         args_open[1] = v8::Integer::New(isolate, nVersion);
 
@@ -863,15 +873,35 @@ namespace NSDoctRenderer
                             args_open[2] = v8::Undefined(isolate);
                         }
 
-                        func_open->Call(global_js, 3, args_open);
+                        v8::Local<v8::Object> globalParams = v8::Object::New(isolate);
+                        if (0 < m_oParams.m_nLcid)
+                        {
+                            globalParams->Set(v8::String::NewFromUtf8(isolate, "locale", v8::String::kNormalString, -1), v8::Int32::New(isolate, m_oParams.m_nLcid));
+                        }
+                        args_open[3] = globalParams;
+
+                        func_open->Call(global_js, 4, args_open);
 
                         if (try_catch.HasCaught())
                         {
-                            std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                            std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                            std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                            std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                             _LOGGING_ERROR_(L"open_code", strCode);
                             _LOGGING_ERROR_(L"open", strException);
+
+                            strError = L"code=\"open\"";
+                            bIsBreak = true;
+                        }
+
+                        js_objectApi = global_js->Get(v8::String::NewFromUtf8(isolate, "Api"))->ToObject();
+                        if (try_catch.HasCaught())
+                        {
+                            std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                            std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
+
+                            _LOGGING_ERROR_(L"api_code", strCode);
+                            _LOGGING_ERROR_(L"api", strException);
 
                             strError = L"code=\"open\"";
                             bIsBreak = true;
@@ -884,7 +914,7 @@ namespace NSDoctRenderer
                 // CHANGES
                 if (!bIsBreak)
                 {
-                    v8::Handle<v8::Value> js_func_apply_changes = global_js->Get(v8::String::NewFromUtf8(isolate, "NativeApplyChangesData"));
+                    v8::Handle<v8::Value> js_func_apply_changes = js_objectApi->Get(v8::String::NewFromUtf8(isolate, "asc_nativeApplyChanges2"));
                     if (m_oParams.m_arChanges.GetCount() != 0)
                     {
                         int nCurrentIndex = 0;
@@ -909,12 +939,12 @@ namespace NSDoctRenderer
                                 args_changes[0] = oWorker.GetData();
                                 args_changes[1] = v8::Boolean::New(isolate, bIsFull);
 
-                                func_apply_changes->Call(global_js, 2, args_changes);
+                                func_apply_changes->Call(js_objectApi, 2, args_changes);
 
                                 if (try_catch.HasCaught())
                                 {
-                                    std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                                    std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                                    std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                                    std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                                     _LOGGING_ERROR_(L"change_code", strCode);
                                     _LOGGING_ERROR_(L"change", strException);
@@ -986,19 +1016,23 @@ namespace NSDoctRenderer
                                 }
 
                                 pBaseData[dwSizeBase] = 0;
-                                v8::Handle<v8::Value> js_func_mm_start = global_js->Get(v8::String::NewFromUtf8(isolate, "NativeStartMailMergeByList"));
+                                v8::Handle<v8::Value> js_func_mm_start = js_objectApi->Get(v8::String::NewFromUtf8(isolate, "asc_StartMailMergeByList"));
 
                                 if (js_func_mm_start->IsFunction())
                                 {
                                     v8::Handle<v8::Function> func_mm_start = v8::Handle<v8::Function>::Cast(js_func_mm_start);
                                     v8::Handle<v8::Value> args_changes[1];
 
+                                #ifndef V8_OS_XP
+                                    args_changes[0] = v8::JSON::Parse(context, v8::String::NewFromUtf8(isolate, (char*)(pBaseData + nStart))).FromMaybe(v8::Local<v8::Value>());
+                                #else
                                     args_changes[0] = v8::JSON::Parse(v8::String::NewFromUtf8(isolate, (char*)(pBaseData + nStart)));
+                                #endif
 
                                     if (try_catch.HasCaught())
                                     {
-                                        std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                                        std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                                        std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                                        std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                                         _LOGGING_ERROR_(L"change_code", strCode);
                                         _LOGGING_ERROR_(L"change", strException);
@@ -1009,12 +1043,12 @@ namespace NSDoctRenderer
 
                                     //args_changes[0] = v8::String::NewFromUtf8(isolate, (char*)(pBaseData + nStart));
 
-                                    func_mm_start->Call(global_js, 1, args_changes);
+                                    func_mm_start->Call(js_objectApi, 1, args_changes);
 
                                     if (try_catch.HasCaught())
                                     {
-                                        std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                                        std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                                        std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                                        std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                                         _LOGGING_ERROR_(L"change_code", strCode);
                                         _LOGGING_ERROR_(L"change", strException);
@@ -1039,7 +1073,7 @@ namespace NSDoctRenderer
                             strReturnParams += L"<MailMergeFields>";
                             for (int nIndexMM  = m_oParams.m_nMailMergeIndexStart; nIndexMM <= m_oParams.m_nMailMergeIndexEnd && !bIsBreak; ++nIndexMM)
                             {
-                                v8::Handle<v8::Value> js_func_mm_preview = global_js->Get(v8::String::NewFromUtf8(isolate, "NativePreviewMailMergeResult"));
+                                v8::Handle<v8::Value> js_func_mm_preview = js_objectApi->Get(v8::String::NewFromUtf8(isolate, "asc_PreviewMailMergeResult"));
 
                                 if (js_func_mm_preview->IsFunction())
                                 {
@@ -1047,12 +1081,12 @@ namespace NSDoctRenderer
                                     v8::Handle<v8::Value> args_changes[1];
                                     args_changes[0] = v8::Integer::New(v8::Isolate::GetCurrent(), nIndexMM);
 
-                                    func_mm_preview->Call(global_js, 1, args_changes);
+                                    func_mm_preview->Call(js_objectApi, 1, args_changes);
 
                                     if (try_catch.HasCaught())
                                     {
-                                        std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                                        std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                                        std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                                        std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                                         _LOGGING_ERROR_(L"change_code", strCode);
                                         _LOGGING_ERROR_(L"change", strException);
@@ -1070,15 +1104,15 @@ namespace NSDoctRenderer
                                     m_oParams.m_strDstFilePath += (L"/file" + std::to_wstring(nIndexMM));
                                     sSaveFile = m_oParams.m_strDstFilePath;
 
-                                    bIsBreak = Doct_renderer_SaveFile(&m_oParams, pNative, isolate, global_js,
-                                                                           args, try_catch, strError);
+                                    bIsBreak = Doct_renderer_SaveFile(&m_oParams, pNative, isolate, context, global_js,
+                                                                           args, try_catch, strError, js_objectApi);
 
                                     m_oParams.m_strDstFilePath = sSaveOld;
                                 }
 
                                 if (!bIsBreak)
                                 {
-                                    v8::Handle<v8::Value> js_func_mm_field = global_js->Get(v8::String::NewFromUtf8(isolate, "NativeGetMailMergeFiledValue"));
+                                    v8::Handle<v8::Value> js_func_mm_field = js_objectApi->Get(v8::String::NewFromUtf8(isolate, "asc_GetMailMergeFiledValue"));
 
                                     if (js_func_mm_field->IsFunction())
                                     {
@@ -1087,12 +1121,12 @@ namespace NSDoctRenderer
                                         args_changes[0] = v8::Integer::New(v8::Isolate::GetCurrent(), nIndexMM);
                                         args_changes[1] = v8::String::NewFromUtf8(isolate, (char*)sFieldUtf8.c_str());
 
-                                        v8::Local<v8::Value> js_result2 = func_mm_field->Call(global_js, 2, args_changes);
+                                        v8::Local<v8::Value> js_result2 = func_mm_field->Call(js_objectApi, 2, args_changes);
 
                                         if (try_catch.HasCaught())
                                         {
-                                            std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                                            std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                                            std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                                            std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                                             _LOGGING_ERROR_(L"change_code", strCode);
                                             _LOGGING_ERROR_(L"change", strException);
@@ -1101,7 +1135,7 @@ namespace NSDoctRenderer
                                             bIsBreak = true;
                                         }
 
-                                        std::wstring sField = to_cstring(js_result2);
+                                        std::wstring sField = CV8Convert::ToString(js_result2);
                                         NSDoctRenderer::replace_for_xml(sField);
                                         NSDoctRenderer::replace_for_xml(sSaveFile);
 
@@ -1117,7 +1151,7 @@ namespace NSDoctRenderer
                 // SAVE
                 if (!bIsBreak && !bIsMailMerge)
                 {
-                    bIsBreak = Doct_renderer_SaveFile(&m_oParams, pNative, isolate, global_js, args, try_catch, strError);
+                    bIsBreak = Doct_renderer_SaveFile(&m_oParams, pNative, isolate, context, global_js, args, try_catch, strError, js_objectApi);
                 }
 
                 LOGGER_SPEED_LAP("save")
@@ -1315,6 +1349,7 @@ namespace NSDoctRenderer
 bool Doct_renderer_SaveFile_ForBuilder(int nFormat, const std::wstring& strDstFile,
                                CNativeControl* pNative,
                                v8::Isolate* isolate,
+                               v8::Local<v8::Context> context,
                                v8::Local<v8::Object>& global_js,
                                v8::Handle<v8::Value>* args,
                                v8::TryCatch& try_catch,
@@ -1324,6 +1359,7 @@ bool Doct_renderer_SaveFile_ForBuilder(int nFormat, const std::wstring& strDstFi
     oParams.m_eDstFormat = (NSDoctRenderer::DoctRendererFormat::FormatFile)nFormat;
     oParams.m_strDstFilePath = strDstFile;
 
+    v8::Local<v8::Object> js_objectApi; // empty
     return NSDoctRenderer::CDoctRenderer_Private::Doct_renderer_SaveFile(&oParams,
-            pNative, isolate, global_js, args, try_catch, strError, false);
+            pNative, isolate, context, global_js, args, try_catch, strError, js_objectApi, false);
 }

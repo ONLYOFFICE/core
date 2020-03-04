@@ -118,7 +118,8 @@ BiffStructurePtr SXAddl::createSxcView(CFRecord& record)
         case 0x1E: result = BiffStructurePtr(new SXAddl_SXCView_SXDTableStyleClient()); break;
         //case 0x21: result = BiffStructurePtr(new SXAddl_SXCView_SXDCompactRwHdr());	break;
         //case 0x22: result = BiffStructurePtr(new SXAddl_SXCView_SXDCompactColHdr());	break;
-        //case 0x26: result = BiffStructurePtr(new SXAddl_SXCView_SXDSXPIIvmb());		break;
+        case 0x26:
+        case 0x36: result = BiffStructurePtr(new SXAddl_SXCView_SXDSXPIIvmb());		break; //ошибка в документации???
 	}
 	return result;
 }
@@ -257,6 +258,8 @@ BiffStructurePtr SXAddl::createSxcSXRule(CFRecord& record)
 	BiffStructurePtr result;	
 	switch(sxd)
 	{
+		case 0x00: result = BiffStructurePtr(new SXAddl_SXCSXrule_SXDId());		break;
+		case 0x13: result = BiffStructurePtr(new SXAddl_SXCSXrule_SXDSXrule());	break;
 		case 0xff: break;
 	}
 	return result;
@@ -266,6 +269,9 @@ BiffStructurePtr SXAddl::createSxcSXFilt(CFRecord& record)
 	BiffStructurePtr result;	
 	switch(sxd)
 	{
+		case 0x00: result = BiffStructurePtr(new SXAddl_SXCSXfilt_SXDId());			break;
+		case 0x14: result = BiffStructurePtr(new SXAddl_SXCSXfilt_SXDSXfilt());		break;
+		case 0x15: result = BiffStructurePtr(new SXAddl_SXCSXfilt_SXDSXItm());		break;
 		case 0xff: break;
 	}
 	return result;
@@ -314,6 +320,7 @@ BiffStructurePtr SXAddl::createSxcSXCondFmts(CFRecord& record)
 	BiffStructurePtr result;	
 	switch(sxd)
 	{
+		case 0x00: result = BiffStructurePtr(new SXAddl_SXCSXCondFmts_SXDId()); break;
 		case 0xff: break;
 	}
 	return result;
@@ -323,6 +330,7 @@ BiffStructurePtr SXAddl::createSxcSXCondFmt(CFRecord& record)
 	BiffStructurePtr result;	
 	switch(sxd)
 	{
+		case 0x35: result = BiffStructurePtr(new SXAddl_SXCSXCondFmt_SXDSXCondFmt()); break;
 		case 0xff: break;
 	}
 	return result;
@@ -332,6 +340,7 @@ BiffStructurePtr SXAddl::createSxcSXFilters12(CFRecord& record)
 	BiffStructurePtr result;	
 	switch(sxd)
 	{
+		case 0x00: result = BiffStructurePtr(new SXAddl_SXCSXFilters12_SXDId()); break;
 		case 0xff: break;
 	}
 	return result;
@@ -341,6 +350,15 @@ BiffStructurePtr SXAddl::createSxcSXFilter12(CFRecord& record)
 	BiffStructurePtr result;	
 	switch(sxd)
 	{
+		case 0x00: result = BiffStructurePtr(new SXAddl_SXCSXFilter12_SXDId());				break;
+		case 0x2F: result = BiffStructurePtr(new SXAddl_SXCSXFilter12_SXDCaption());		break;
+		case 0x38: result = BiffStructurePtr(new SXAddl_SXCSXFilter12_SXDSXFilter());		break;
+		case 0x39: result = BiffStructurePtr(new SXAddl_SXCSXFilter12_SXDSXFilterDesc());	break;
+		case 0x3A: result = BiffStructurePtr(new SXAddl_SXCSXFilter12_SXDSXFilterValue1()); break;
+		case 0x3B: result = BiffStructurePtr(new SXAddl_SXCSXFilter12_SXDSXFilterValue2()); break;
+		case 0x3C: result = BiffStructurePtr(new SXAddl_SXCSXFilter12_SXDXlsFilter());		break;
+		case 0x3D: result = BiffStructurePtr(new SXAddl_SXCSXFilter12_SXDSXFilterValue1()); break;
+		case 0x3E: result = BiffStructurePtr(new SXAddl_SXCSXFilter12_SXDXlsFilterValue2()); break;
 		case 0xff: break;
 	}
 	return result;
@@ -1087,8 +1105,298 @@ void SXAddl_SXCHierarchy_SXDInfo12::load(CFRecord& record)
 	fUnbalancedGroupKnown	= GETBIT(flags, 2);
 	fUnbalancedGroup		= GETBIT(flags, 3);
 	fHidden					= GETBIT(flags, 4);
-
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCSXCondFmt_SXDSXCondFmt::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCSXCondFmt_SXDSXCondFmt(*this));
 }
 
+void SXAddl_SXCSXCondFmt_SXDSXCondFmt::load(CFRecord& record)
+{
+	record.skipNunBytes(6);
+
+	record >> sxcondfmtScope >> sxcondfmtType >> ipriority >> csxrule;
+}
+//-------------------------------------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCSXCondFmts_SXDId::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCSXCondFmts_SXDId(*this));
+}
+
+void SXAddl_SXCSXCondFmts_SXDId::load(CFRecord& record)
+{
+	short reserved;
+	record >> cSxcondfmt >> reserved;
+}
+//-------------------------------------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCSXrule_SXDId::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCSXrule_SXDId(*this));
+}
+
+void SXAddl_SXCSXrule_SXDId::load(CFRecord& record)
+{
+	short reserved;
+	record >> reserved >> reserved >> reserved;
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCSXrule_SXDSXrule::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCSXrule_SXDSXrule(*this));
+}
+
+void SXAddl_SXCSXrule_SXDSXrule::load(CFRecord& record)
+{
+	_UINT32 flags;
+	short flags2, reserved1;
+
+	record >> reserved1 >> reserved1 >> reserved1 >> flags >> flags2;
+	
+    sxrtype		= GETBITS(flags, 4, 7);
+
+	fPart			= GETBIT(flags, 8);
+	fDataOnly		= GETBIT(flags, 9);
+	fLabelOnly		= GETBIT(flags, 10);
+	fGrandRw		= GETBIT(flags, 11);
+	fGrandCol		= GETBIT(flags, 12);
+	fGrandRwSav		= GETBIT(flags, 13);
+	//reserved3		= GETBIT(flags, 14);
+	fGrandColSav	= GETBIT(flags, 15);
+	fFuzzy			= GETBIT(flags, 16);
+    //reserved4		= GETBITS(flags, 17, 31);
+
+	//unused1		= GETBIT(flags2, 0);
+	fLineMode		= GETBIT(flags2, 1);
+	//unused2		= GETBIT(flags2, 2);
+	//unused3		= GETBIT(flags2, 3);
+	//reserved5		= GETBIT(flags2, 4);
+	fDrillOnly		= GETBIT(flags2, 5);
+    //reserved6		= GETBITS(flags, 6, 15);
+
+	record >> irwFirst >> irwLast >> icolFirst >> icolLast;
+
+	record >> csxfilt >> iDim >> isxvd;
+}
+//-------------------------------------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCSXfilt_SXDId::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCSXfilt_SXDId(*this));
+}
+
+void SXAddl_SXCSXfilt_SXDId::load(CFRecord& record)
+{
+	short reserved;
+	record >> reserved >> reserved >> reserved;
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCSXfilt_SXDSXfilt::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCSXfilt_SXDSXfilt(*this));
+}
+
+void SXAddl_SXCSXfilt_SXDSXfilt::load(CFRecord& record)
+{
+	short flags, reserved1;
+
+	record >> reserved1 >> reserved1 >> reserved1 >> flags;
+	
+	sxaxisRw		= GETBIT(flags, 0);
+	sxaxisCol		= GETBIT(flags, 1);
+	//reserved2		= GETBIT(flags, 2);
+	sxaxisData		= GETBIT(flags, 3);
+	fSelected		= GETBIT(flags, 4);
+	//reserved3		= GETBIT(flags, 5);
+	//reserved4		= GETBIT(flags, 6);
+	//reserved5		= GETBITS(flags, 7, 15);
+
+	record >> grbitSbt >> iDim >> isxvd >> cisxvi;
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCSXfilt_SXDSXItm::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCSXfilt_SXDSXItm(*this));
+}
+
+void SXAddl_SXCSXfilt_SXDSXItm::load(CFRecord& record)
+{
+	short reserved1;
+
+	record >> reserved1 >> reserved1 >> reserved1;
+	
+	int sz = (record.getDataSize() - record.getRdPtr()) / 2;
+	for (int i = 0; i < sz; i++)
+	{
+		unsigned short val;
+		record >> val;
+		rgIsxvi.push_back(val);
+	}
+}
+//-------------------------------------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCSXFilters12_SXDId::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCSXFilters12_SXDId(*this));
+}
+
+void SXAddl_SXCSXFilters12_SXDId::load(CFRecord& record)
+{
+	short reserved;
+	record >> cSxfilter12 >> reserved;
+}
+//-------------------------------------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCSXFilter12_SXDId::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCSXFilter12_SXDId(*this));
+}
+
+void SXAddl_SXCSXFilter12_SXDId::load(CFRecord& record)
+{
+	short reserved;
+	record >> dwFilterid >> reserved;
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCSXFilter12_SXDCaption::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCSXFilter12_SXDCaption(*this));
+}
+
+void SXAddl_SXCSXFilter12_SXDCaption::load(CFRecord& record)
+{
+	record >> stName;
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCSXFilter12_SXDSXFilterDesc::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCSXFilter12_SXDSXFilterDesc(*this));
+}
+
+void SXAddl_SXCSXFilter12_SXDSXFilterDesc::load(CFRecord& record)
+{
+	record >> stDescription;
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCSXFilter12_SXDSXFilterValue1::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCSXFilter12_SXDSXFilterValue1(*this));
+}
+
+void SXAddl_SXCSXFilter12_SXDSXFilterValue1::load(CFRecord& record)
+{
+	record >> stValue;
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCSXFilter12_SXDSXFilterValue2::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCSXFilter12_SXDSXFilterValue2(*this));
+}
+
+void SXAddl_SXCSXFilter12_SXDSXFilterValue2::load(CFRecord& record)
+{
+	record >> stValue;
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCSXFilter12_SXDXlsFilterValue1::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCSXFilter12_SXDXlsFilterValue1(*this));
+}
+
+void SXAddl_SXCSXFilter12_SXDXlsFilterValue1::load(CFRecord& record)
+{
+	record >> stValue;
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCSXFilter12_SXDXlsFilterValue2::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCSXFilter12_SXDXlsFilterValue2(*this));
+}
+
+void SXAddl_SXCSXFilter12_SXDXlsFilterValue2::load(CFRecord& record)
+{
+	record >> stValue;
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCSXFilter12_SXDSXFilter::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCSXFilter12_SXDSXFilter(*this));
+}
+
+void SXAddl_SXCSXFilter12_SXDSXFilter::load(CFRecord& record)
+{
+	short reserved2;
+	_UINT32 reserved1, unused;
+
+	record >> reserved1 >> reserved2 >> isxvd >> isxvdMProp >> sxft >> unused >> isxdiMeasure >> isxthMeasure;
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCSXFilter12_SXDXlsFilter::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCSXFilter12_SXDXlsFilter(*this));
+}
+
+void SXAddl_SXCSXFilter12_SXDXlsFilter::load(CFRecord& record)
+{
+	short reserved;
+
+	record >> reserved >> reserved >> reserved >> cft >> ccriteria;
+
+	if (cft == 0x00000003 /*CFTTOP10*/)
+	{
+		data = BiffStructurePtr(new XlsFilter_Top10);
+	}
+	else
+	{
+		data = BiffStructurePtr(new XlsFilter_Criteria);
+	}
+	if (data)
+		data->load(record);
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXEZDoper::clone()
+{
+	return BiffStructurePtr(new SXEZDoper(*this));
+}
+
+void SXEZDoper::load(CFRecord& record)
+{
+	record >> vts >> grbitSign >> vtValue;
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr XlsFilter_Criteria::clone()
+{
+	return BiffStructurePtr(new XlsFilter_Criteria(*this));
+}
+
+void XlsFilter_Criteria::load(CFRecord& record)
+{
+	_UINT32 reserved;
+
+	record >> ezdoper1 >> ezdoper2 >> djoin1 >> reserved;
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr XlsFilter_Top10::clone()
+{
+	return BiffStructurePtr(new XlsFilter_Top10(*this));
+}
+
+void XlsFilter_Top10::load(CFRecord& record)
+{
+	unsigned short flags;
+	record >> top10ft >> flags >> numTopN;
+
+	fTop = GETBIT(flags, 0);
+
+	record.skipNunBytes(14);	//reserved2
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCView_SXDSXPIIvmb::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCView_SXDSXPIIvmb(*this));
+}
+
+void SXAddl_SXCView_SXDSXPIIvmb::load(CFRecord& record)
+{
+	unsigned short reserved;
+	record >> reserved >> reserved >> reserved >> isxpi >> ivmb;
+}
 } // namespace XLS
 

@@ -56,6 +56,7 @@
     
     return YES;
 }
+
 - (NSString*)createTemporaryDirectory {
     
     NSError *error = nil;
@@ -75,6 +76,26 @@
     if(![self createDirectoryAtPath:directory withIntermediateDirectories:YES attributes:nil error:&error]) {
         NSLog(@"Failed to create directory \"%@\". Error: %@", directory, error);
     }
+}
+
+- (NSString*)createCacheDirectory:(NSString*)prefix {
+    NSError *error = nil;
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    if (paths) {
+        NSString *cacheDirectory = [paths objectAtIndex:0];
+        if (cacheDirectory) {
+            NSString* path = [NSString stringWithFormat:@"%@/%@", cacheDirectory, prefix];
+            if(![self createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:&error])
+            {
+                NSLog(@"Could not creat temp path %@. error %@", path, error);
+                return @"";
+            }
+            
+            return path;            
+        }
+    }
+    
+    return @"";
 }
 
 @end

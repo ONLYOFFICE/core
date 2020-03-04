@@ -623,6 +623,74 @@ void odf_page_layout_context::set_page_orientation(int type)
 		props->attlist_.style_print_orientation_ = L"portrait";
 
 }
+void odf_page_layout_context::set_page_scale(double val)
+{
+	style_page_layout_properties * props = get_properties();
+	if (!props)return;
+
+	props->attlist_.style_scale_to_ = val;
+}
+void odf_page_layout_context::set_page_scaleToX(int val)
+{
+	style_page_layout_properties * props = get_properties();
+	if (!props)return;
+
+	props->attlist_.loext_scale_to_X_ = val;
+}
+void odf_page_layout_context::set_page_scaleToY(int val)
+{
+	style_page_layout_properties * props = get_properties();
+	if (!props)return;
+
+	props->attlist_.loext_scale_to_Y_ = val;
+}
+void odf_page_layout_context::set_page_first_page(int val)
+{
+	style_page_layout_properties * props = get_properties();
+	if (!props)return;
+
+	props->attlist_.common_page_number_attlist_.style_first_page_number_ = val;
+}
+void odf_page_layout_context::set_page_centered(bool bHorizontal, bool bVertical)
+{
+	style_page_layout_properties * props = get_properties();
+	if (!props)return;
+
+	if (bHorizontal && bVertical)
+	{
+		props->attlist_.style_table_centering_ = table_centering::Both;
+	}
+	else if (bHorizontal)
+	{
+		props->attlist_.style_table_centering_ = table_centering::Horizontal;
+	}
+	else if (bVertical)
+	{
+		props->attlist_.style_table_centering_ = table_centering::Vertical;
+	}
+}
+void odf_page_layout_context::set_page_print_gridLines(bool val)
+{
+	style_page_layout_properties * props = get_properties();
+	if (!props || !val)return;
+
+	if (!props->attlist_.style_print_)
+	{
+		props->attlist_.style_print_ = odf_types::style_print();
+	}
+	props->attlist_.style_print_->bGrid = val;
+}
+void odf_page_layout_context::set_page_print_headings(bool val)
+{
+	style_page_layout_properties * props = get_properties();
+	if (!props || !val)return;
+
+	if (!props->attlist_.style_print_)
+	{
+		props->attlist_.style_print_ = odf_types::style_print();
+	}
+	props->attlist_.style_print_->bHeaders = val;
+}
 
 }
 }

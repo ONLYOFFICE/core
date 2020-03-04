@@ -49,8 +49,7 @@ namespace XLS
 {
 
 
-DVAXIS::DVAXIS()
-:	id(0)
+DVAXIS::DVAXIS() :	id(0)
 {
 	m_bSecondary = false;
 }

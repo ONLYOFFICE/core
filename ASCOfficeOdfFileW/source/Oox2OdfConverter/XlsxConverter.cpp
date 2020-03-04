@@ -395,10 +395,20 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 	}
 	OoxConverter::convert(oox_sheet->m_oExtLst.GetPointer());
 
+	smart_ptr<OOX::File> oFile = oox_sheet->Find(OOX::Spreadsheet::FileTypes::PivotTable);
+	if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::PivotTable == oFile->type())
+	{
+		smart_ptr<OOX::Spreadsheet::CPivotTableFile> oPivotTable = oFile.smart_dynamic_cast<OOX::Spreadsheet::CPivotTableFile>();
+				
+		convert(oPivotTable.GetPointer());
+	}
+
+
 /////////////////////////////////////////////////////////////////////////
 	convert(oox_sheet->m_oSheetViews.GetPointer());
 	convert(oox_sheet->m_oPageSetup.GetPointer());
 	convert(oox_sheet->m_oPageMargins.GetPointer());
+	convert(oox_sheet->m_oPrintOptions.GetPointer());
 	convert(oox_sheet->m_oPicture.GetPointer());
 	convert(oox_sheet->m_oSheetProtection.GetPointer());
 	
@@ -406,6 +416,64 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 	convert(oox_sheet->m_oHeaderFooter.GetPointer());
 	
 	xlsx_current_container = old_container;
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CPivotTableFile *oox_pivot_table)
+{
+	if (!oox_pivot_table) return;
+	if (!oox_pivot_table->m_oPivotTableDefinition.IsInit()) return;
+
+	smart_ptr<OOX::File> oFile = oox_pivot_table->Find(OOX::Spreadsheet::FileTypes::PivotCacheDefinition);
+	if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::PivotCacheDefinition == oFile->type())
+	{
+		smart_ptr<OOX::Spreadsheet::CPivotCacheDefinitionFile> oPivotCache = oFile.smart_dynamic_cast<OOX::Spreadsheet::CPivotCacheDefinitionFile>();
+				
+		convert(oox_pivot_table->m_oPivotTableDefinition.GetPointer(), oPivotCache->m_oPivotCashDefinition.GetPointer());
+	}
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CPivotTableDefinition *oox_pivot_table, OOX::Spreadsheet::CPivotCacheDefinition* oox_pivot_cache)
+{
+	if (!oox_pivot_table || !oox_pivot_cache) return;
+
+	ods_context->start_pivot_table(oox_pivot_table->m_oName.IsInit() ? *oox_pivot_table->m_oName : L"");
+
+	convert(oox_pivot_table->m_oLocation.GetPointer());
+	if (oox_pivot_table->m_oPivotFields.IsInit())
+	{
+		for (size_t i = 0; i < oox_pivot_table->m_oPivotFields->m_arrItems.size(); i++)
+		{
+			convert(oox_pivot_table->m_oPivotFields->m_arrItems[i]);
+		}
+	}
+	//if (oox_pivot_table->m_oDataFields.IsInit())
+	//{
+	//	for (size_t i = 0; i < oox_pivot_table->m_oDataFields->m_arrItems.size(); i++)
+	//	{
+	//		convert(oox_pivot_table->m_oDataFields->m_arrItems[i]);
+	//	}
+	//}
+	//if (oox_pivot_table->m_oColFields.IsInit())
+	//{
+	//	for (size_t i = 0; i < oox_pivot_table->m_oColFields->m_arrItems.size(); i++)
+	//	{
+	//		convert(oox_pivot_table->m_oColFields->m_arrItems[i]);
+	//	}
+	//}
+	//if (oox_pivot_table->m_oRowFields.IsInit())
+	//{
+	//	for (size_t i = 0; i < oox_pivot_table->m_oRowFields->m_arrItems.size(); i++)
+	//	{
+	//		convert(oox_pivot_table->m_oRowFields->m_arrItems[i]);
+	//	}
+	//}
+	if (oox_pivot_table->m_oPageFields.IsInit())
+	{
+		for (size_t i = 0; i < oox_pivot_table->m_oPageFields->m_arrItems.size(); i++)
+		{
+			convert(oox_pivot_table->m_oPageFields->m_arrItems[i]);
+		}
+	}
+
+	ods_context->end_pivot_table();
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CLegacyDrawingHFWorksheet *oox_background)
 {
@@ -530,9 +598,21 @@ void XlsxConverter::convert(OOX::Spreadsheet::CHeaderFooterElement	*oox_header_f
 			
 			switch(comm)
 			{
-				case 'L':	ods_context->start_header_footer_region(1); pos++; break;
-				case 'C':	ods_context->start_header_footer_region(2); pos++; break;
-				case 'R':	ods_context->start_header_footer_region(3); pos++; break;
+				case 'L':	
+					{
+						current_text_props.content_.clear();
+						ods_context->start_header_footer_region(1); pos++;
+					}break;
+				case 'C':	
+					{
+						current_text_props.content_.clear();
+						ods_context->start_header_footer_region(2); pos++; 
+					}break;
+				case 'R':	
+					{
+						current_text_props.content_.clear();						
+						ods_context->start_header_footer_region(3); pos++; 
+					}break;
 
 				case 'A':	type_add = 1; pos++; break;
 				case 'P':	type_add = 2; pos++; break;
@@ -1677,7 +1757,34 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 		ods_context->end_table_view();
 	}
 }
+void XlsxConverter::convert(OOX::Spreadsheet::CPrintOptions *oox_print_options)
+{
+	if (!oox_print_options) return;
 
+	if (oox_print_options->m_oGridLines.IsInit())
+	{
+		ods_context->page_layout_context()->set_page_print_gridLines(oox_print_options->m_oGridLines->ToBool());
+	}
+	//if (oox_print_options->m_oGridLinesSet.IsInit()) дублирование
+	//{
+	//	ods_context->page_layout_context()->set_page_print_gridLinesSet(oox_print_options->m_oGridLines->ToBool());
+	//}
+	if (oox_print_options->m_oHeadings.IsInit())
+	{
+		ods_context->page_layout_context()->set_page_print_headings(oox_print_options->m_oHeadings->ToBool());
+	}
+	bool bHorizontal = false, bVertical = false;
+
+	if (oox_print_options->m_oHorizontalCentered.IsInit())
+	{
+		bHorizontal = oox_print_options->m_oHorizontalCentered->ToBool();
+	}
+	if (oox_print_options->m_oVerticalCentered.IsInit())
+	{
+		bVertical = oox_print_options->m_oVerticalCentered->ToBool();
+	}
+	ods_context->page_layout_context()->set_page_centered(bHorizontal, bVertical);
+}
 void XlsxConverter::convert(OOX::Spreadsheet::CPageSetup *oox_page)
 {
 	if (!oox_page) return;
@@ -1738,6 +1845,16 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPageSetup *oox_page)
 		}
 	}
 	ods_context->page_layout_context()->set_page_size(width, height);
+
+	if (oox_page->m_oScale.IsInit())
+	{
+		ods_context->page_layout_context()->set_page_scale(oox_page->m_oScale->GetValue());
+	}
+	if ((oox_page->m_oUseFirstPageNumber.IsInit()) && (oox_page->m_oUseFirstPageNumber->ToBool()))
+	{
+		if (oox_page->m_oFirstPageNumber.IsInit())
+			ods_context->page_layout_context()->set_page_first_page(oox_page->m_oFirstPageNumber->GetValue());
+	}
 }
 
 void XlsxConverter::convert(OOX::Spreadsheet::CPageMargins *oox_page)

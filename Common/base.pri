@@ -34,6 +34,14 @@ CONFIG(debug, debug|release) {
     CONFIG += core_release
 }
 
+not_use_dynamic_libs {
+shared {
+    CONFIG -= shared
+    CONFIG -= plugin
+    CONFIG += staticlib
+}
+}
+
 #PLATFORM
 win32 {
     CONFIG += core_windows
@@ -53,6 +61,15 @@ isEqual(QT_MAJOR_VERSION, 5) {
     equals(DST_ARCH, i386) {
         DST_ARCH=x86
     }
+}
+
+ios {
+    CONFIG += core_ios
+    DEFINES += _IOS IOS LINUX _LINUX MAC _MAC _XCODE
+}
+android {
+    CONFIG += core_android
+    DEFINES += __ANDROID__ LINUX _LINUX
 }
 
 win32:contains(QMAKE_TARGET.arch, x86_64): {
@@ -92,8 +109,10 @@ linux-g++-32 {
 
 
 mac {
-    CONFIG += core_mac
-    CONFIG += core_mac_64
+    !core_ios {
+        CONFIG += core_mac
+        CONFIG += core_mac_64
+    }
 }
 
 # DEFINES
@@ -111,6 +130,7 @@ core_linux {
 
 core_mac {
     DEFINES += LINUX _LINUX MAC _MAC
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
 }
 
 # PREFIXES
@@ -119,6 +139,22 @@ core_windows {
     QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
     QMAKE_CXXFLAGS -= -Zc:strictStrings
     QMAKE_CXXFLAGS += /MP
+
+    equals(TEMPLATE, app) {
+        console {
+            core_win_64:QMAKE_LFLAGS_CONSOLE = /SUBSYSTEM:CONSOLE,5.02
+            core_win_32:QMAKE_LFLAGS_CONSOLE = /SUBSYSTEM:CONSOLE,5.01
+        } else {
+            core_win_64:QMAKE_LFLAGS_CONSOLE = /SUBSYSTEM:WINDOWS,5.02
+            core_win_32:QMAKE_LFLAGS_CONSOLE = /SUBSYSTEM:WINDOWS,5.01
+        }
+    }
+}
+
+core_linux {
+    equals(TEMPLATE, app) {
+        QMAKE_LFLAGS += -Wl,--rpath=./:./system
+    }
 }
 
 core_win_32 {
@@ -138,6 +174,69 @@ core_mac_64 {
 }
 core_linux_arm {
     CORE_BUILDS_PLATFORM_PREFIX = arm
+}
+core_ios {
+    CORE_BUILDS_PLATFORM_PREFIX = ios
+
+    CONFIG(iphonesimulator, iphoneos|iphonesimulator): {
+        message("iphonesimulator")
+        CORE_BUILDS_PLATFORM_PREFIX = ios_simulator
+    } else {
+
+        QMAKE_IOS_DEPLOYMENT_TARGET = 10.0
+        CONFIG += core_ios_main_arch
+
+        QMAKE_CFLAGS += -fembed-bitcode
+        QMAKE_CXXFLAGS += -fembed-bitcode
+        QMAKE_LFLAGS += -fembed-bitcode
+
+        core_ios_main_arch {
+            QMAKE_APPLE_DEVICE_ARCHS = arm64
+            core_ios_no_simulator_arch : QMAKE_APPLE_SIMULATOR_ARCHS=
+
+            !core_ios_no_32 {
+                QMAKE_APPLE_DEVICE_ARCHS = $$QMAKE_APPLE_DEVICE_ARCHS armv7
+            }
+        } else {
+            plugin : TARGET = $$join(TARGET, TARGET, "", "_addition")
+            QMAKE_APPLE_DEVICE_ARCHS=
+            QMAKE_APPLE_SIMULATOR_ARCHS=
+        }
+
+        core_ios_nomain_arch {
+            QMAKE_APPLE_DEVICE_ARCHS = $$QMAKE_APPLE_DEVICE_ARCHS arm64e
+            !core_ios_no_32 {
+                QMAKE_APPLE_DEVICE_ARCHS = $$QMAKE_APPLE_DEVICE_ARCHS armv7s
+            }
+        }
+
+        !no_verify_bitcode {
+            # for application: (using xcodebuild)
+            #Q_ENABLE_BITCODE.name = ENABLE_BITCODE
+            #Q_ENABLE_BITCODE.value = NO
+            #
+            #Q_BITCODE_GENERATION_MODE.name = BITCODE_GENERATION_MODE
+            #Q_BITCODE_GENERATION_MODE.value = marker
+            #
+            #QMAKE_MAC_XCODE_SETTINGS += Q_ENABLE_BITCODE
+            #QMAKE_MAC_XCODE_SETTINGS += Q_BITCODE_GENERATION_MODE
+
+            # for libraries
+            !core_debug {
+                QMAKE_LFLAGS += -Xlinker -bitcode_verify
+                QMAKE_LFLAGS += -Xlinker -bitcode_hide_symbols
+                #QMAKE_LFLAGS += -Xlinker -bitcode_symbol_map -Xlinker $$CORE_BUILDS_LIBRARIES_PATH
+            }
+        }
+    }
+
+    !core_ios_no_unistd {
+        DEFINES += HAVE_UNISTD_H
+    }
+}
+core_android {
+    equals(QT_ARCH, arm): CORE_BUILDS_PLATFORM_PREFIX = android_arm
+    equals(QT_ARCH, i386): CORE_BUILDS_PLATFORM_PREFIX = android_x86
 }
 
 core_debug {
@@ -190,10 +289,17 @@ UI_DIR      = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUI
 }
 
 CORE_BUILDS_LIBRARIES_PATH = $$CORE_ROOT_DIR/build/lib/$$CORE_BUILDS_PLATFORM_PREFIX
-core_windows {
-core_debug {
-    CORE_BUILDS_LIBRARIES_PATH = $$CORE_BUILDS_LIBRARIES_PATH/DEBUG
+CORE_BUILDS_BINARY_PATH = $$CORE_ROOT_DIR/build/bin/$$CORE_BUILDS_PLATFORM_PREFIX
+
+OO_BUILD_BRANDING = $$(OO_BRANDING)
+!isEmpty(OO_BUILD_BRANDING) {
+    CORE_BUILDS_LIBRARIES_PATH = $$CORE_ROOT_DIR/build/$$OO_BUILD_BRANDING/lib/$$CORE_BUILDS_PLATFORM_PREFIX
+    CORE_BUILDS_BINARY_PATH = $$CORE_ROOT_DIR/build/$$OO_BUILD_BRANDING/bin/$$CORE_BUILDS_PLATFORM_PREFIX
 }
+
+core_debug {
+    CORE_BUILDS_LIBRARIES_PATH = $$CORE_BUILDS_LIBRARIES_PATH/debug
+    CORE_BUILDS_BINARY_PATH = $$CORE_BUILDS_BINARY_PATH/debug
 }
 
 plugin {
@@ -212,3 +318,54 @@ core_windows {
 
 DEFINES += CRYPTOPP_DISABLE_ASM
 }
+
+core_ios {
+    bundle_dylibs {
+        plugin {
+            CONFIG -= plugin
+            CONFIG += lib_bundle
+
+            QMAKE_LFLAGS_SONAME = -Wl,-install_name,@rpath/
+            #QMAKE_LFLAGS += -Xlinker -rpath -Xlinker @executable_path/Frameworks
+            #QMAKE_LFLAGS += -Xlinker -rpath -Xlinker @loader_path/Frameworks
+
+            # correct version to < 256
+            VERSIONS = $$split(VERSION, ".")
+            VERSION_1 = $$member(VERSIONS, 0)
+            VERSION_2 = $$member(VERSIONS, 1)
+            VERSION_3 = $$member(VERSIONS, 2)
+            VERSION_4 = $$member(VERSIONS, 3)
+
+            greaterThan(VERSION_1, 255): VERSION_1 = 255
+            greaterThan(VERSION_2, 255): VERSION_2 = 255
+            greaterThan(VERSION_3, 255): VERSION_3 = 255
+            greaterThan(VERSION_4, 255): VERSION_4 = 255
+
+            VERSION_CORRECT = $$VERSION_1
+            VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", ".")
+            VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", $$VERSION_2)
+            VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", ".")
+            VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", $$VERSION_3)
+            VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", ".")
+            VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", $$VERSION_4)
+
+            VERSION = $$VERSION_CORRECT
+        }
+    }
+}
+
+defineTest(ADD_DEPENDENCY) {
+    libs = $$ARGS
+    for(lib, libs) {
+        CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH
+        build_xp {
+            isEqual(lib, doctrenderer):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH/xp
+            isEqual(lib, ascdocumentscore):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH/xp
+            isEqual(lib, videoplayer):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH/xp
+        }
+        !bundle_dylibs:LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH_DST -l$$lib
+        bundle_dylibs:LIBS += -F$$CORE_BUILDS_LIBRARIES_PATH_DST -framework $$lib
+    }
+    export(LIBS)
+}
+

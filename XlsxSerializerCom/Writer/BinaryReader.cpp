@@ -878,6 +878,16 @@ int BinaryTableReader::ReadSortState(BYTE type, long length, void* poResult)
 		pSortState->m_oCaseSensitive.Init();
 		pSortState->m_oCaseSensitive->FromBool(m_oBufferedStream.GetBool());
 	}
+	else if(c_oSer_SortState::ColumnSort == type)
+	{
+		pSortState->m_oColumnSort.Init();
+		pSortState->m_oColumnSort->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if(c_oSer_SortState::SortMethod == type)
+	{
+		pSortState->m_oSortMethod.Init();
+		pSortState->m_oSortMethod->SetValue((SimpleTypes::Spreadsheet::ESortMethod)m_oBufferedStream.GetUChar());
+	}
 	else if(c_oSer_SortState::SortConditions == type)
 	{
 		READ1_DEF(length, res, this->ReadSortConditions, pSortState);
@@ -2955,23 +2965,25 @@ int BinaryWorkbookTableReader::ReadPivotCaches(BYTE type, long length, void* poR
 		READ1_DEF(length, res, this->ReadPivotCache, &oPivotCachesTemp);
 		if(-1 != oPivotCachesTemp.nId && NULL != oPivotCachesTemp.pDefinitionData)
 		{
-			OOX::Spreadsheet::CPivotCacheDefinition* pDefinition = new OOX::Spreadsheet::CPivotCacheDefinition(NULL);
+			OOX::Spreadsheet::CPivotCacheDefinitionFile* pDefinitionFile = new OOX::Spreadsheet::CPivotCacheDefinitionFile(NULL);
 			std::wstring srIdRecords;
 			if(NULL != oPivotCachesTemp.pRecords)
 			{
 				NSCommon::smart_ptr<OOX::File> pFileRecords(oPivotCachesTemp.pRecords);
-				srIdRecords = pDefinition->Add(pFileRecords).ToString();
+				srIdRecords = pDefinitionFile->Add(pFileRecords).ToString();
 			}
-			pDefinition->setData(oPivotCachesTemp.pDefinitionData, oPivotCachesTemp.nDefinitionLength, srIdRecords);
-			NSCommon::smart_ptr<OOX::File> pFileDefinition(pDefinition);
-			OOX::RId rIdDefinition = m_oWorkbook.Add(pFileDefinition);
+			pDefinitionFile->setData(oPivotCachesTemp.pDefinitionData, oPivotCachesTemp.nDefinitionLength, srIdRecords);
+			
+			NSCommon::smart_ptr<OOX::File> pFile(pDefinitionFile);
+			OOX::RId rIdDefinition = m_oWorkbook.Add(pFile);
+
 			m_oWorkbook.m_oPivotCachesXml->append(L"<pivotCache cacheId=\"");
 			m_oWorkbook.m_oPivotCachesXml->append(std::to_wstring(oPivotCachesTemp.nId));
 			m_oWorkbook.m_oPivotCachesXml->append(L"\" r:id=\"");
 			m_oWorkbook.m_oPivotCachesXml->append(rIdDefinition.ToString());
 			m_oWorkbook.m_oPivotCachesXml->append(L"\"/>");
 
-			m_mapPivotCacheDefinitions[oPivotCachesTemp.nId] = pFileDefinition;
+			m_mapPivotCacheDefinitions[oPivotCachesTemp.nId] = pFile;
 		}
 		else
 		{
@@ -2997,7 +3009,7 @@ int BinaryWorkbookTableReader::ReadPivotCache(BYTE type, long length, void* poRe
 	}
 	else if(c_oSer_PivotTypes::record == type)
 	{
-		pPivotCachesTemp->pRecords = new OOX::Spreadsheet::CPivotCacheRecords(NULL);
+		pPivotCachesTemp->pRecords = new OOX::Spreadsheet::CPivotCacheRecordsFile(NULL);
 		pPivotCachesTemp->pRecords->setData(m_oBufferedStream.GetPointer(length), length);
 	}
 	else
@@ -3106,21 +3118,21 @@ int BinaryCommentReader::ReadComment(BYTE type, long length, void* poResult)
 		READ1_DEF(length, res, this->ReadCommentDatas, pNewComment);
 	}
 	else if ( c_oSer_Comments::Left == type )
-		pNewComment->m_nLeft = m_oBufferedStream.GetLong();
+		pNewComment->m_nLeft = abs(m_oBufferedStream.GetLong());
 	else if ( c_oSer_Comments::Top == type )
-		pNewComment->m_nTop = m_oBufferedStream.GetLong();
+		pNewComment->m_nTop = abs(m_oBufferedStream.GetLong());
 	else if ( c_oSer_Comments::Right == type )
-		pNewComment->m_nRight = m_oBufferedStream.GetLong();
+		pNewComment->m_nRight = abs( m_oBufferedStream.GetLong());
 	else if ( c_oSer_Comments::Bottom == type )
-		pNewComment->m_nBottom = m_oBufferedStream.GetLong();
+		pNewComment->m_nBottom = abs(m_oBufferedStream.GetLong());
 	else if ( c_oSer_Comments::LeftOffset == type )
-		pNewComment->m_nLeftOffset = m_oBufferedStream.GetLong();
+		pNewComment->m_nLeftOffset = abs(m_oBufferedStream.GetLong());
 	else if ( c_oSer_Comments::TopOffset == type )
-		pNewComment->m_nTopOffset = m_oBufferedStream.GetLong();
+		pNewComment->m_nTopOffset = abs(m_oBufferedStream.GetLong());
 	else if ( c_oSer_Comments::RightOffset == type )
-		pNewComment->m_nRightOffset = m_oBufferedStream.GetLong();
+		pNewComment->m_nRightOffset = abs(m_oBufferedStream.GetLong());
 	else if ( c_oSer_Comments::BottomOffset == type )
-		pNewComment->m_nBottomOffset = m_oBufferedStream.GetLong();
+		pNewComment->m_nBottomOffset = abs(m_oBufferedStream.GetLong());
 	else if ( c_oSer_Comments::LeftMM == type )
 		pNewComment->m_dLeftMM = m_oBufferedStream.GetDoubleReal();
 	else if ( c_oSer_Comments::TopMM == type )
@@ -3287,8 +3299,15 @@ void BinaryCommentReader::parseCommentData(SerializeCommon::CommentData* pCommen
 {
 	if(NULL != pCommentData && false == pCommentData->sText.empty())
 	{
-		addCommentRun(oSi, pCommentData->sUserName + _T(":"), true);
-		addCommentRun(oSi, _T("\n") + pCommentData->sText, false);
+		if (pCommentData->sUserName.empty())
+		{
+			addCommentRun(oSi, pCommentData->sText, false);
+		}
+		else
+		{
+			addCommentRun(oSi, pCommentData->sUserName + _T(":"), true);
+			addCommentRun(oSi, _T("\n") + pCommentData->sText, false);
+		}
 	}
 }
 void BinaryCommentReader::addCommentRun(OOX::Spreadsheet::CSi& oSi, const std::wstring& text, bool isBold)
@@ -3493,6 +3512,12 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		BinaryTableReader oBinaryTableReader(m_oBufferedStream, m_pCurWorksheet.GetPointer());
 		READ1_DEF(length, res, oBinaryTableReader.ReadAutoFilter, &oAutofilter);
 	SEEK_TO_POS_END(oAutofilter);
+//-------------------------------------------------------------------------------------------------------------
+	SEEK_TO_POS_START(c_oSerWorksheetsTypes::SortState);
+		OOX::Spreadsheet::CSortState oSortState;
+		BinaryTableReader oBinaryTableReader(m_oBufferedStream, m_pCurWorksheet.GetPointer());
+		READ1_DEF(length, res, oBinaryTableReader.ReadSortState, &oSortState);
+	SEEK_TO_POS_END(oSortState);
 //-------------------------------------------------------------------------------------------------------------
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::MergeCells);
 		OOX::Spreadsheet::CMergeCells oMergeCells;
@@ -3877,7 +3902,7 @@ int BinaryWorksheetsTableReader::ReadPivotTable(BYTE type, long length, void* po
 	}
 	else if(c_oSer_PivotTypes::table == type)
 	{
-		OOX::Spreadsheet::CPivotTable* pPivotTable = new OOX::Spreadsheet::CPivotTable(NULL);
+		OOX::Spreadsheet::CPivotTableFile* pPivotTable = new OOX::Spreadsheet::CPivotTableFile(NULL);
 		pPivotTable->setData(m_oBufferedStream.GetPointer(length), length);
 		pPivotCachesTemp->pTable = pPivotTable;
 	}
@@ -4588,11 +4613,8 @@ int BinaryWorksheetsTableReader::ReadPrintOptions(BYTE type, long length, void* 
 	int res = c_oSerConstants::ReadOk;
 	if(c_oSer_PrintOptions::GridLines == type)
 	{
-		bool bGridLines = m_oBufferedStream.GetBool();
 		pPrintOptions->m_oGridLines.Init();
-		pPrintOptions->m_oGridLines->FromBool(bGridLines);
-		pPrintOptions->m_oGridLinesSet.Init();
-		pPrintOptions->m_oGridLinesSet->FromBool(bGridLines);
+		pPrintOptions->m_oGridLines->FromBool(m_oBufferedStream.GetBool());
 	}
 	else if(c_oSer_PrintOptions::Headings == type)
 	{
@@ -4824,6 +4846,11 @@ int BinaryWorksheetsTableReader::ReadCellAnchor(BYTE type, long length, void* po
 	if(c_oSer_DrawingType::Type == type)
 	{
 		pCellAnchor->setAnchorType((SimpleTypes::Spreadsheet::ECellAnchorType)m_oBufferedStream.GetUChar());
+	}
+	else if(c_oSer_DrawingType::EditAs == type)
+	{
+		pCellAnchor->m_oEditAs.Init();
+		pCellAnchor->m_oEditAs->SetValue((SimpleTypes::Spreadsheet::ECellAnchorType)m_oBufferedStream.GetUChar());
 	}
 	else if(c_oSer_DrawingType::From == type)
 	{

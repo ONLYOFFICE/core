@@ -782,8 +782,11 @@ void OoxConverter::convert(OOX::Vml::CTextPath *vml_textpath)
 				//width = vml_textpath->m_oStyle->m_arrProperties[i]->get_Value().oValue.dValue;
 				break;
 			case SimpleTypes::Vml::cssptFontFamily:
-				text_properties->content_.fo_font_family_ = vml_textpath->m_oStyle->m_arrProperties[i]->get_Value().wsValue;
-				break;
+			{
+				std::wstring font_family = vml_textpath->m_oStyle->m_arrProperties[i]->get_Value().wsValue;
+				XmlUtils::replace_all(font_family, L"\"", L"");
+				text_properties->content_.fo_font_family_ = font_family;
+			}break;
 			case SimpleTypes::Vml::cssptHTextAlign:
 			switch(vml_textpath->m_oStyle->m_arrProperties[i]->get_Value().eVTextAlign)
 			{			

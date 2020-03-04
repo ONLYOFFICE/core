@@ -81,9 +81,9 @@ namespace BinXlsxRW
 		long nId;
 		BYTE* pDefinitionData;
 		long nDefinitionLength;
-		OOX::Spreadsheet::CPivotCacheRecords* pRecords;
+		OOX::Spreadsheet::CPivotCacheRecordsFile* pRecords;
 		long nCacheId;
-		OOX::Spreadsheet::CPivotTable* pTable;
+		OOX::Spreadsheet::CPivotTableFile* pTable;
 
         PivotCachesTemp()
 		{

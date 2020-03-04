@@ -192,6 +192,8 @@ void chart_plot_area_attlist::add_attributes( const xml::attributes_wc_ptr & Att
     common_draw_position_attlist_.add_attributes(Attributes);
     common_draw_size_attlist_.add_attributes(Attributes);
     common_attlist_.add_attributes(Attributes);
+	common_dr3d_attlist_.add_attributes(Attributes);
+
     CP_APPLY_ATTR(L"table:cell-range-address", table_cell_range_address_);
     CP_APPLY_ATTR(L"chart:data-source-has-labels", chart_data_source_has_labels_);
 }

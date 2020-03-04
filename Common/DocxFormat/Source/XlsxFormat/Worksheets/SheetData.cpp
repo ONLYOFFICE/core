@@ -319,7 +319,7 @@ namespace OOX
 			int nCurDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
-				const char* sName = oReader.GetNameChar();
+				const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 
 				if ( strcmp("v", sName) == 0 )
 				{
@@ -360,7 +360,13 @@ namespace OOX
 		void CCellXLSB::toXLSB(NSBinPptxRW::CXlsbBinaryWriter& oStream)
 		{
 			_INT16 nType = XLSB::rt_CELL_BLANK;
-			bool bWriteFormula = (m_oFormula.m_bIsInit || SimpleTypes::Spreadsheet::celltypeStr == m_oType.GetValue()) && SimpleTypes::Spreadsheet::celltypeSharedString != m_oType.GetValue();
+			if(m_oFormula.m_bIsInit && SimpleTypes::Spreadsheet::celltypeSharedString == m_oType.GetValue())
+			{
+				m_oType.SetValue(SimpleTypes::Spreadsheet::celltypeError);
+				m_oValue.Clean();
+				m_oValue.m_bIsInit = true;
+				m_oValue.m_nValue = 0x0F;//L"#VALUE!";
+			}
 			if(m_oValue.m_bIsInit)
 			{
 				switch(m_oType.GetValue())
@@ -374,7 +380,7 @@ namespace OOX
 				}
 			}
 			bool bIsBlankFormula = false;
-			if(XLSB::rt_CELL_BLANK == nType && bWriteFormula)
+			if(XLSB::rt_CELL_BLANK == nType && m_oFormula.m_bIsInit)
 			{
 				nType = XLSB::rt_CELL_ST;
 				bIsBlankFormula = true;
@@ -389,7 +395,7 @@ namespace OOX
 				case XLSB::rt_CELL_ERROR:
 				case XLSB::rt_CELL_BOOL: nLen += 1; break;
 			}
-			if(bWriteFormula)
+			if(m_oFormula.m_bIsInit)
 			{
 				nLen += m_oFormula.getXLSBSize();
 				if(XLSB::rt_CELL_REAL == nType)
@@ -450,7 +456,7 @@ namespace OOX
 			}
 
 			_UINT16 nFlags = 0;
-			if(bWriteFormula)
+			if(m_oFormula.m_bIsInit)
 			{
 				nFlags = m_oFormula.toXLSB(oStream, bIsBlankFormula);
 			}
@@ -460,7 +466,7 @@ namespace OOX
 				nFlags |= 0x2000;
 			}
 			oStream.WriteUSHORT(nFlags);
-			if(bWriteFormula)
+			if(m_oFormula.m_bIsInit)
 			{
 				m_oFormula.toXLSBExt(oStream);
 			}
@@ -503,7 +509,7 @@ namespace OOX
 			int nCurDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
-				const char* sName = oReader.GetNameChar();
+				const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 
 				if ( strcmp("c", sName) == 0 )
 				{
@@ -812,7 +818,7 @@ namespace OOX
 			int nCurDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
-				const char* sName = oReader.GetNameChar();
+				const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 
 				if ( strcmp("v", sName) == 0 )
 					m_oValue = oReader;
@@ -1063,7 +1069,7 @@ namespace OOX
 			int nCurDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
-				const char* sName = oReader.GetNameChar();
+				const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 
 				if ( strcmp("c", sName) == 0 )
 				{
@@ -1249,7 +1255,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					const char* sName = oReader.GetNameChar();
+					const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 
 					if ( strcmp("row", sName) == 0 )
 					{
@@ -1268,7 +1274,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					const char* sName = oReader.GetNameChar();
+					const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 
 					if ( strcmp("row", sName) == 0 )
 					{

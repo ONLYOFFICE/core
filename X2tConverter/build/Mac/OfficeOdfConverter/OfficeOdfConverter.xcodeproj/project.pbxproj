@@ -176,6 +176,13 @@
 		8A9874322270764D001F896F /* style_presentation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9873952270764B001F896F /* style_presentation.cpp */; };
 		8A9874332270764D001F896F /* odf_controls_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9873962270764C001F896F /* odf_controls_context.cpp */; };
 		8A9874342270764D001F896F /* office_presentation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9873972270764C001F896F /* office_presentation.cpp */; };
+		8A9CF4D9238833B500DBCE6B /* table_data_pilot_tables.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9CF4D8238833B500DBCE6B /* table_data_pilot_tables.cpp */; };
+		8A9CF4DB238833C900DBCE6B /* table_data_pilot_tables.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A9CF4DA238833C900DBCE6B /* table_data_pilot_tables.h */; };
+		8A9CF4E62388373000DBCE6B /* File.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A9CF4E52388373000DBCE6B /* File.h */; };
+		8A9CF4E82388373C00DBCE6B /* File.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9CF4E72388373C00DBCE6B /* File.cpp */; };
+		8A9CF4EA2388374500DBCE6B /* File_ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8A9CF4E92388374500DBCE6B /* File_ios.mm */; };
+		8A9CF4EE2388391500DBCE6B /* styleprint.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A9CF4ED2388391400DBCE6B /* styleprint.h */; };
+		8A9CF4F02388392C00DBCE6B /* styleprint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9CF4EF2388392C00DBCE6B /* styleprint.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -370,6 +377,13 @@
 		8A9873952270764B001F896F /* style_presentation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = style_presentation.cpp; sourceTree = "<group>"; };
 		8A9873962270764C001F896F /* odf_controls_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_controls_context.cpp; sourceTree = "<group>"; };
 		8A9873972270764C001F896F /* office_presentation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = office_presentation.cpp; sourceTree = "<group>"; };
+		8A9CF4D8238833B500DBCE6B /* table_data_pilot_tables.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = table_data_pilot_tables.cpp; sourceTree = "<group>"; };
+		8A9CF4DA238833C900DBCE6B /* table_data_pilot_tables.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = table_data_pilot_tables.h; path = ../../../ASCOfficeOdfFile/src/odf/table_data_pilot_tables.h; sourceTree = "<group>"; };
+		8A9CF4E52388373000DBCE6B /* File.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = File.h; path = ../../../../../DesktopEditor/common/File.h; sourceTree = "<group>"; };
+		8A9CF4E72388373C00DBCE6B /* File.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = File.cpp; path = ../../../../../DesktopEditor/common/File.cpp; sourceTree = "<group>"; };
+		8A9CF4E92388374500DBCE6B /* File_ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = File_ios.mm; path = ../../../../../DesktopEditor/common/File_ios.mm; sourceTree = "<group>"; };
+		8A9CF4ED2388391400DBCE6B /* styleprint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = styleprint.h; path = ../../../../../ASCOfficeOdfFile/src/odf/datatypes/styleprint.h; sourceTree = "<group>"; };
+		8A9CF4EF2388392C00DBCE6B /* styleprint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = styleprint.cpp; path = ../../../../../ASCOfficeOdfFile/src/odf/datatypes/styleprint.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -427,6 +441,11 @@
 				17513E292216EB48008B45F7 /* progressCallback.h */,
 				17513EC62216EB49008B45F7 /* utils.cpp */,
 				17513E2A2216EB48008B45F7 /* utils.h */,
+				8A9CF4E52388373000DBCE6B /* File.h */,
+				8A9CF4E72388373C00DBCE6B /* File.cpp */,
+				8A9CF4E92388374500DBCE6B /* File_ios.mm */,
+				8A9CF4ED2388391400DBCE6B /* styleprint.h */,
+				8A9CF4EF2388392C00DBCE6B /* styleprint.cpp */,
 			);
 			name = ASCOfficeOdfFileW;
 			sourceTree = "<group>";
@@ -434,6 +453,8 @@
 		17513E2B2216EB48008B45F7 /* OdfFormat */ = {
 			isa = PBXGroup;
 			children = (
+				8A9CF4DA238833C900DBCE6B /* table_data_pilot_tables.h */,
+				8A9CF4D8238833B500DBCE6B /* table_data_pilot_tables.cpp */,
 				8A98730622707634001F896F /* abstract_xml.cpp */,
 				8A98737522707645001F896F /* abstract_xml.h */,
 				8A98736622707642001F896F /* anim_elements.cpp */,
@@ -653,6 +674,7 @@
 				8A98739F2270764C001F896F /* style_graphic_properties.h in Headers */,
 				8A9874112270764D001F896F /* odf_style_state.h in Headers */,
 				8A9874142270764D001F896F /* office_elements_create.h in Headers */,
+				8A9CF4DB238833C900DBCE6B /* table_data_pilot_tables.h in Headers */,
 				8A9874162270764D001F896F /* office_scripts.h in Headers */,
 				8A9874212270764D001F896F /* ods_table_state.h in Headers */,
 				8A98739D2270764C001F896F /* style_presentation.h in Headers */,
@@ -671,6 +693,7 @@
 				8A9873B82270764C001F896F /* oox_shapeActionButtons.h in Headers */,
 				8A9873E82270764C001F896F /* style_chart_properties.h in Headers */,
 				17513B0A2216E721008B45F7 /* OfficeOdfConverter.h in Headers */,
+				8A9CF4EE2388391500DBCE6B /* styleprint.h in Headers */,
 				8A9873BB2270764C001F896F /* odf_shape_mapping.h in Headers */,
 				8A9874122270764D001F896F /* abstract_xml.h in Headers */,
 				8A9874222270764D001F896F /* odf_chart_context.h in Headers */,
@@ -696,6 +719,7 @@
 				8A9873BD2270764C001F896F /* oox_shapeMaths.h in Headers */,
 				8A9873D92270764C001F896F /* odf_number_styles_context.h in Headers */,
 				8A9873C02270764C001F896F /* odt_conversion_context.h in Headers */,
+				8A9CF4E62388373000DBCE6B /* File.h in Headers */,
 				8A9873B32270764C001F896F /* oox_shapeCharts.h in Headers */,
 				8A9873A82270764C001F896F /* odf_settings_context.h in Headers */,
 				8A9873F52270764C001F896F /* style_section_properties.h in Headers */,
@@ -795,6 +819,7 @@
 				8A9873F62270764C001F896F /* odf_settings_context.cpp in Sources */,
 				8A98742F2270764D001F896F /* odf_table_context.cpp in Sources */,
 				8A9873A52270764C001F896F /* object_package.cpp in Sources */,
+				8A9CF4D9238833B500DBCE6B /* table_data_pilot_tables.cpp in Sources */,
 				17513F1D2216EB49008B45F7 /* PptxConverter.cpp in Sources */,
 				8A9874032270764C001F896F /* anim_elements.cpp in Sources */,
 				8A9874082270764D001F896F /* mediaitems.cpp in Sources */,
@@ -807,6 +832,8 @@
 				8A9874152270764D001F896F /* odf_number_styles_context.cpp in Sources */,
 				8A98740F2270764D001F896F /* office_annotation.cpp in Sources */,
 				8A9874252270764D001F896F /* odf_conversion_context.cpp in Sources */,
+				8A9CF4F02388392C00DBCE6B /* styleprint.cpp in Sources */,
+				8A9CF4E82388373C00DBCE6B /* File.cpp in Sources */,
 				8A9873C72270764C001F896F /* styles_lite_container.cpp in Sources */,
 				17513F192216EB49008B45F7 /* Converter.cpp in Sources */,
 				8A9873E92270764C001F896F /* odf_style_state.cpp in Sources */,
@@ -830,6 +857,7 @@
 				8A9873A32270764C001F896F /* odf_lists_styles_context.cpp in Sources */,
 				8A9873A92270764C001F896F /* draw_base.cpp in Sources */,
 				8A9873CB2270764C001F896F /* style_paragraph_properties.cpp in Sources */,
+				8A9CF4EA2388374500DBCE6B /* File_ios.mm in Sources */,
 				17513F182216EB49008B45F7 /* utils.cpp in Sources */,
 				8A9874342270764D001F896F /* office_presentation.cpp in Sources */,
 				17513F1A2216EB49008B45F7 /* ConverterChart.cpp in Sources */,

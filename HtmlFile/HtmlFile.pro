@@ -16,7 +16,7 @@ CORE_ROOT_DIR = $$PWD/..
 PWD_ROOT_DIR = $$PWD
 include(../Common/base.pri)
 
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter -lkernel
+ADD_DEPENDENCY(kernel, UnicodeConverter)
 
 core_linux {
     DEFINES += asc_static_link_libstd

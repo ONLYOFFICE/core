@@ -31,7 +31,7 @@
  */
 
 #include "CFDatabar.h"
-#include <Binary/CFRecord.h>
+#include <simple_xml_writer.h>
 
 namespace XLS
 {
@@ -60,6 +60,42 @@ void CFDatabar::load(CFRecord& record)
 	cfvoDB2.load(record);
 }
 
+int CFDatabar::serialize(std::wostream & stream)
+{
+	CP_XML_WRITER(stream)    
+    {
+		CP_XML_NODE(L"dataBar")
+		{
+			//todooo cfvo = num - db1 & db2
+			CP_XML_NODE(L"cfvo")
+			{
+				if (iPercentMin > 0)
+					CP_XML_ATTR(L"percent", iPercentMin);
+				else
+					CP_XML_ATTR(L"type", L"min");
+			}
+			CP_XML_NODE(L"cfvo")
+			{
+				if (iPercentMax < 100)
+					CP_XML_ATTR(L"percent", iPercentMax);
+				else
+					CP_XML_ATTR(L"type", L"max");
+			}
+			CP_XML_NODE(L"color")
+			{
+				switch(color.xclrType.type)
+				{
+				case 1: CP_XML_ATTR(L"indexed",	color.icv);			break;
+				case 2:	CP_XML_ATTR(L"rgb",		color.rgb.strARGB);	break;
+				case 3: CP_XML_ATTR(L"theme",	color.theme);
+						CP_XML_ATTR(L"tint",	color.numTint);		break;
+				default: CP_XML_ATTR(L"auto", true);
+				}
+			}
+		}
+	}
+	return 0;
+}
 
 } // namespace XLS
 

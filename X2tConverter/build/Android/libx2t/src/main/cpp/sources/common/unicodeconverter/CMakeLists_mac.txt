@@ -1,0 +1,47 @@
+cmake_minimum_required(VERSION 3.4.1)
+
+set(CMAKE_VERBOSE_MAKEFILE on)
+
+# Lib src path
+if (NOT DEFINED UNICODE_CONVERTER_DIR)
+    message(FATAL_ERROR "You must set path in \"UNICODE_CONVERTER_DIR\"!")
+endif()
+
+# Lib name
+if (NOT DEFINED LIB_NAME_UNICODE_CONVERTER)
+    message(FATAL_ERROR "You must set library name in \"LIB_NAME_UNICODE_CONVERTER\"!")
+endif()
+
+# Library source .h .cpp
+file(GLOB UNICODE_CONVERTER_CPP ${UNICODE_CONVERTER_DIR}/*.cpp)
+file(GLOB_RECURSE UNICODE_CONVERTER_ICU_CPP
+        ${UNICODE_CONVERTER_DIR}/icubuilds-mac/icu/icu/*.c
+        ${UNICODE_CONVERTER_DIR}/icubuilds-mac/icu/icu/*.cpp)
+
+# Concatenate with freetype resource
+set(UNICODE_CONVERTER_CPP ${UNICODE_CONVERTER_CPP} ${UNICODE_CONVERTER_ICU_CPP})
+
+# Set targer as static library
+add_library(${LIB_NAME_UNICODE_CONVERTER} STATIC ${UNICODE_CONVERTER_CPP})
+
+# Add include files .h
+target_include_directories(${LIB_NAME_UNICODE_CONVERTER}
+    PRIVATE
+        ${UNICODE_CONVERTER_DIR}
+        ${UNICODE_CONVERTER_DIR}/icubuilds-mac/icu
+        ${UNICODE_CONVERTER_DIR}/icubuilds-mac/icu/unicode
+        ${UNICODE_CONVERTER_DIR}/icubuilds-mac/icu/icu/common
+        ${UNICODE_CONVERTER_DIR}/icubuilds-mac/icu/icu/i18n
+        ${UNICODE_CONVERTER_DIR}/icubuilds-mac/icu/icu/io
+        ${UNICODE_CONVERTER_DIR}/icubuilds-mac/icu/icu/layout
+        ${UNICODE_CONVERTER_DIR}/icubuilds-mac/icu/icu/stubdata
+)
+
+# Set target definition
+target_compile_definitions(${LIB_NAME_UNICODE_CONVERTER}
+    PRIVATE
+        UNICODECONVERTER_USE_DYNAMIC_LIBRARY
+        U_COMMON_IMPLEMENTATION
+        U_I18N_IMPLEMENTATION
+        U_IO_IMPLEMENTATION
+)

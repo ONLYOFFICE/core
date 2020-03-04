@@ -1605,7 +1605,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(L"<dataConsolidate");
-					WritingStringNullableAttrString(L"function",	m_oFunction,	m_oFunction.get());
+					WritingStringNullableAttrString(L"function",	m_oFunction,	m_oFunction->ToString());
 					WritingStringNullableAttrInt(L"link",			m_oLink,		m_oLink->GetValue());
 					WritingStringNullableAttrInt(L"startLabels",	m_oStartLabels,	m_oStartLabels->GetValue());
 					WritingStringNullableAttrInt(L"topLabels",		m_oTopLabels,	m_oTopLabels->GetValue());
@@ -1643,12 +1643,12 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("topLabels"),		m_oTopLabels)
 				WritingElement_ReadAttributes_End( oReader )
 			}
-			nullable_string						m_oFunction; //ST_DataConsolidateFunction
-			nullable<SimpleTypes::COnOff<>>		m_oLink; 
-			nullable<SimpleTypes::COnOff<>>		m_oStartLabels;
-			nullable<SimpleTypes::COnOff<>>		m_oTopLabels;
+			nullable<SimpleTypes::Spreadsheet::CDataConsolidateFunction<>>	m_oFunction;
+			nullable<SimpleTypes::COnOff<>>									m_oLink; 
+			nullable<SimpleTypes::COnOff<>>									m_oStartLabels;
+			nullable<SimpleTypes::COnOff<>>									m_oTopLabels;
 
-			nullable<CDataRefs>					m_oDataRefs;
+			nullable<CDataRefs>	m_oDataRefs;
 
 		};
 	} //Spreadsheet

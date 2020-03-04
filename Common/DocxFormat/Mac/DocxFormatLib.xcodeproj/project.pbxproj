@@ -232,6 +232,11 @@
 		8A5B8FD5226F5AF20093271E /* ActiveX.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A5B8FD3226F5AF20093271E /* ActiveX.h */; };
 		8A5B8FD6226F5AF20093271E /* ActiveX.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A5B8FD4226F5AF20093271E /* ActiveX.cpp */; };
 		8A5B8FD8226F61010093271E /* VmlDrawing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A5B8FD7226F61000093271E /* VmlDrawing.cpp */; };
+		8A9CF4E1238834E500DBCE6B /* Pivots.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9CF4DD238834E500DBCE6B /* Pivots.cpp */; };
+		8A9CF4E2238834E500DBCE6B /* PivotCacheRecords.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A9CF4DE238834E500DBCE6B /* PivotCacheRecords.h */; };
+		8A9CF4E3238834E500DBCE6B /* PivotTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A9CF4DF238834E500DBCE6B /* PivotTable.h */; };
+		8A9CF4E4238834E500DBCE6B /* PivotCacheDefinition.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A9CF4E0238834E500DBCE6B /* PivotCacheDefinition.h */; };
+		8A9CF4EC238837DB00DBCE6B /* File_ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8A9CF4EB238837DA00DBCE6B /* File_ios.mm */; };
 		8ADF9DA222BB9C4800918F34 /* Si.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ADF9DA122BB9C4700918F34 /* Si.cpp */; };
 		8ADF9DA422BB9C4F00918F34 /* Text.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ADF9DA322BB9C4F00918F34 /* Text.cpp */; };
 		8ADF9DA622BBA07D00918F34 /* rPr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ADF9DA522BBA07D00918F34 /* rPr.cpp */; };
@@ -479,6 +484,11 @@
 		8A5B8FD3226F5AF20093271E /* ActiveX.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActiveX.h; sourceTree = "<group>"; };
 		8A5B8FD4226F5AF20093271E /* ActiveX.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActiveX.cpp; sourceTree = "<group>"; };
 		8A5B8FD7226F61000093271E /* VmlDrawing.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VmlDrawing.cpp; sourceTree = "<group>"; };
+		8A9CF4DD238834E500DBCE6B /* Pivots.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Pivots.cpp; sourceTree = "<group>"; };
+		8A9CF4DE238834E500DBCE6B /* PivotCacheRecords.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PivotCacheRecords.h; sourceTree = "<group>"; };
+		8A9CF4DF238834E500DBCE6B /* PivotTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PivotTable.h; sourceTree = "<group>"; };
+		8A9CF4E0238834E500DBCE6B /* PivotCacheDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PivotCacheDefinition.h; sourceTree = "<group>"; };
+		8A9CF4EB238837DA00DBCE6B /* File_ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = File_ios.mm; sourceTree = "<group>"; };
 		8ADF9DA122BB9C4700918F34 /* Si.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Si.cpp; sourceTree = "<group>"; };
 		8ADF9DA322BB9C4F00918F34 /* Text.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Text.cpp; sourceTree = "<group>"; };
 		8ADF9DA522BBA07D00918F34 /* rPr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rPr.cpp; sourceTree = "<group>"; };
@@ -835,6 +845,7 @@
 				17E6A1871AC4262800F28F8B /* Worksheets */,
 				17E6A18F1AC4262800F28F8B /* WritingElement.h */,
 				17E6A1901AC4262800F28F8B /* Xlsx.h */,
+				8A9CF4DC238834E500DBCE6B /* Pivot */,
 				69E6AC862031AB0C00795D9D /* Xlsx.cpp */,
 			);
 			path = XlsxFormat;
@@ -985,6 +996,7 @@
 				17E6B3BE1AC4298500F28F8B /* Directory.h */,
 				17E6B3BF1AC4298500F28F8B /* File.h */,
 				691C3E121F20C3D500F1775E /* File.cpp */,
+				8A9CF4EB238837DA00DBCE6B /* File_ios.mm */,
 				17E6B3C01AC4298500F28F8B /* Path.h */,
 				17E6B3C11AC4298500F28F8B /* Types.h */,
 				69F181EA1C7734A700B2952B /* strings_hack_printf.h */,
@@ -1002,6 +1014,17 @@
 				8A10C84722574E7C006F67E5 /* Controls.cpp */,
 			);
 			path = Controls;
+			sourceTree = "<group>";
+		};
+		8A9CF4DC238834E500DBCE6B /* Pivot */ = {
+			isa = PBXGroup;
+			children = (
+				8A9CF4DD238834E500DBCE6B /* Pivots.cpp */,
+				8A9CF4DE238834E500DBCE6B /* PivotCacheRecords.h */,
+				8A9CF4DF238834E500DBCE6B /* PivotTable.h */,
+				8A9CF4E0238834E500DBCE6B /* PivotCacheDefinition.h */,
+			);
+			path = Pivot;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1098,6 +1121,7 @@
 				17C1FC2F1ACC4250006B99B3 /* Styles.h in Headers */,
 				17C1FC301ACC4250006B99B3 /* WritingElement.h in Headers */,
 				690FE0831E9BBA23004B26D0 /* DiagramDrawing.h in Headers */,
+				8A9CF4E3238834E500DBCE6B /* PivotTable.h in Headers */,
 				17C1FC311ACC4250006B99B3 /* NamespaceOwn.h in Headers */,
 				17C1FC321ACC4250006B99B3 /* Run.h in Headers */,
 				17C1FC331ACC4250006B99B3 /* BaseLogicSettings.h in Headers */,
@@ -1122,6 +1146,7 @@
 				17C1FC4B1ACC4250006B99B3 /* Comments.h in Headers */,
 				17C1FC4D1ACC4250006B99B3 /* TableStyles.h in Headers */,
 				17C1FC4E1ACC4250006B99B3 /* Utils.h in Headers */,
+				8A9CF4E2238834E500DBCE6B /* PivotCacheRecords.h in Headers */,
 				17C1FC4F1ACC4250006B99B3 /* SmartPtr.h in Headers */,
 				17C1FC501ACC4250006B99B3 /* Utility.h in Headers */,
 				17C1FC521ACC4250006B99B3 /* SectionProperty.h in Headers */,
@@ -1148,6 +1173,7 @@
 				69E6AC8D2031ACA900795D9D /* VbaProject.h in Headers */,
 				17C1FC6D1ACC4250006B99B3 /* External.h in Headers */,
 				17C1FC6E1ACC4250006B99B3 /* Fills.h in Headers */,
+				8A9CF4E4238834E500DBCE6B /* PivotCacheDefinition.h in Headers */,
 				17C1FC6F1ACC4250006B99B3 /* PhoneticPr.h in Headers */,
 				17C1FC701ACC4250006B99B3 /* Nullable.h in Headers */,
 				17C1FC711ACC4250006B99B3 /* Colors.h in Headers */,
@@ -1239,6 +1265,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8A9CF4E1238834E500DBCE6B /* Pivots.cpp in Sources */,
 				17C1FB941ACC4250006B99B3 /* Hyperlink.cpp in Sources */,
 				17C1FB951ACC4250006B99B3 /* Sdt.cpp in Sources */,
 				690FE07E1E9BBA15004B26D0 /* DrawingExt.cpp in Sources */,
@@ -1287,6 +1314,7 @@
 				8ADF9DA622BBA07D00918F34 /* rPr.cpp in Sources */,
 				17C1FBB31ACC4250006B99B3 /* unicode_util.cpp in Sources */,
 				17C1FBB41ACC4250006B99B3 /* FldSimple.cpp in Sources */,
+				8A9CF4EC238837DB00DBCE6B /* File_ios.mm in Sources */,
 				69DE2217206E24A700A07A0E /* JsaProject.cpp in Sources */,
 				69E6AC872031AB0C00795D9D /* Xlsx.cpp in Sources */,
 				17C1FBB91ACC4250006B99B3 /* Paragraph.cpp in Sources */,

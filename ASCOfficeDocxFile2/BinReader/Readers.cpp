@@ -904,15 +904,7 @@ int Binary_pPrReader::ReadContent( BYTE type, long length, void* poResult)
 				for(size_t i = 0; i < nLen; ++i)
 				{
 					Tab& oTab = oTabs.m_aTabs[i];
-                    std::wstring sVal;
-					switch(oTab.Val)
-					{
-                        case g_tabtype_right:   sVal = L"right";   break;
-                        case g_tabtype_center:  sVal = L"center";  break;
-                        case g_tabtype_clear:   sVal = L"clear";   break;
-                        default:                sVal = L"left";    break;
-					}
-					pCStringWriter->WriteString(L"<w:tab w:val=\"" + sVal + L"\" w:pos=\"" + std::to_wstring(oTab.Pos) + L"\"");
+					pCStringWriter->WriteString(L"<w:tab w:val=\"" + oTab.Val.ToString() + L"\" w:pos=\"" + std::to_wstring(oTab.Pos) + L"\"");
 					if (oTab.bLeader)
 					{
 						std::wstring sLeader;
@@ -1138,7 +1130,17 @@ int Binary_pPrReader::ReadTabItem(BYTE type, long length, void* poResult)
 	int res = c_oSerConstants::ReadOk;
 	Tab* poTabItem = static_cast<Tab*>(poResult);
 	if(c_oSerProp_pPrType::Tab_Item_Val == type)
-		poTabItem->Val = m_oBufferedStream.GetUChar();
+		poTabItem->Val.SetValue((SimpleTypes::ETabJc)m_oBufferedStream.GetUChar());
+	else if(c_oSerProp_pPrType::Tab_Item_Val_deprecated == type)
+	{
+		switch(m_oBufferedStream.GetUChar())
+		{
+		case 1:	poTabItem->Val.SetValue(SimpleTypes::tabjcRight);break;
+		case 2:	poTabItem->Val.SetValue(SimpleTypes::tabjcCenter);break;
+		case 3:	poTabItem->Val.SetValue(SimpleTypes::tabjcClear);break;
+		default:poTabItem->Val.SetValue(SimpleTypes::tabjcLeft);break;
+		}
+	}
 	else if(c_oSerProp_pPrType::Tab_Item_Pos == type)
 		poTabItem->Pos = SerializeCommon::Round( g_dKoef_mm_to_twips * m_oBufferedStream.GetDouble());
 	else if(c_oSerProp_pPrType::Tab_Item_PosTwips == type)
@@ -1935,7 +1937,6 @@ int Binary_tblPrReader::Read_tblPr(BYTE type, long length, void* poResult)
 		Shd oShd;
 		READ2_DEF(length, res, oBinary_CommonReader2.ReadShd, &oShd);
 		pWiterTblPr->Shd = oShd.ToString();
-		m_sCurTableShd = pWiterTblPr->Shd;
 	}
 	else if( c_oSerProp_tblPrType::tblpPr == type )
 	{
@@ -2402,7 +2403,6 @@ int Binary_tblPrReader::Read_CellPr(BYTE type, long length, void* poResult)
 	}
 	else if( c_oSerProp_cellPrType::Shd == type )
 	{
-		bCellShd = true;
 		Shd oShd;
 		READ2_DEF(length, res, oBinary_CommonReader2.ReadShd, &oShd);
 		pCStringWriter->WriteString(oShd.ToString());
@@ -2824,10 +2824,23 @@ int Binary_NumberingTableReader::ReadLevel(BYTE type, long length, void* poResul
 		odocLvl->bFormat = true;
 		odocLvl->Format = m_oBufferedStream.GetLong();
 	}
-	else if ( c_oSerNumTypes::lvl_Jc == type )
+	else if ( c_oSerNumTypes::lvl_NumFmt == type )
+	{
+		ComplexTypes::Word::CNumFmt oNumFmt;
+		READ1_DEF(length, res, oBinary_pPrReader.ReadNumFmt, &oNumFmt);
+		odocLvl->sFormat = L"<w:numFmt " + oNumFmt.ToString() + L"/>";
+	}
+	else if ( c_oSerNumTypes::lvl_Jc_deprecated == type )
 	{
 		odocLvl->bJc = true;
 		odocLvl->Jc = m_oBufferedStream.GetUChar();
+	}
+	else if ( c_oSerNumTypes::lvl_Jc == type )
+	{
+		ComplexTypes::Word::CJc oJc;
+		oJc.m_oVal.Init();
+		oJc.m_oVal->SetValue((SimpleTypes::EJc)m_oBufferedStream.GetUChar());
+		odocLvl->sJc = L"<w:lvlJc " + oJc.ToString() + L"/>";
 	}
 	else if ( c_oSerNumTypes::lvl_LvlText == type )
 	{
@@ -3944,9 +3957,9 @@ int Binary_SettingsTableReader::ReadMathDispDef(BYTE type, long length, void* po
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:dispDef");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		m_oFileWriter.m_oSettingWriter.AddSetting(sVal);
 	}
 	else
@@ -4120,9 +4133,9 @@ int Binary_SettingsTableReader::ReadMathSmallFrac(BYTE type, long length, void* 
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:smallFrac m:val=");
 		if (bVal)
-			sVal += _T("\"true\" />");
+			sVal += _T("\"on\" />");
 		else
-			sVal += _T("\"false\" />");
+			sVal += _T("\"off\" />");
 		m_oFileWriter.m_oSettingWriter.AddSetting(sVal);
 	}
 	else
@@ -4154,9 +4167,9 @@ int Binary_SettingsTableReader::ReadMathWrapRight(BYTE type, long length, void* 
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:wrapRight m:val=");
 		if (bVal)
-			sVal += _T("\"true\" />");
+			sVal += _T("\"on\" />");
 		else
-			sVal += _T("\"false\" />");
+			sVal += _T("\"off\" />");
 		m_oFileWriter.m_oSettingWriter.AddSetting(sVal);
 	}
 	else
@@ -4231,13 +4244,9 @@ int Binary_DocumentTableReader::ReadDocumentContent(BYTE type, long length, void
 	else if(c_oSerParType::Table == type)
 	{
 		m_byteLastElemType = c_oSerParType::Table;
-    //сбрасываем Shd
-        oBinary_tblPrReader.m_sCurTableShd.clear();
         m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<w:tbl>")));
 		READ1_DEF(length, res, this->ReadDocTable, &m_oDocumentWriter.m_oContent);
         m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("</w:tbl>")));
-	//сбрасываем Shd
-        oBinary_tblPrReader.m_sCurTableShd.clear();
 	}
 	else if(c_oSerParType::Sdt == type)
 	{
@@ -5209,9 +5218,9 @@ int Binary_DocumentTableReader::ReadMathAln(BYTE type, long length, void* poResu
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:aln");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		GetRunStringWriter().WriteString(sVal);
 	}
 	else
@@ -5226,9 +5235,9 @@ int Binary_DocumentTableReader::ReadMathAlnScr(BYTE type, long length, void* poR
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:alnScr");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		GetRunStringWriter().WriteString(sVal);
 	}
 	else
@@ -5642,12 +5651,13 @@ int Binary_DocumentTableReader::ReadMathDegHide(BYTE type, long length, void* po
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathBottomNodesValType::Val == type )
 	{
+		//word writes "1"(excel, powerpoint write "on"). "on" is correct for word, libre, onedrive, gdrive
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:degHide");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		GetRunStringWriter().WriteString(sVal);
 	}
 	else
@@ -5662,9 +5672,9 @@ int Binary_DocumentTableReader::ReadMathDiff(BYTE type, long length, void* poRes
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:diff");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		GetRunStringWriter().WriteString(sVal);
 	}
 	else
@@ -5912,9 +5922,9 @@ int Binary_DocumentTableReader::ReadMathGrow(BYTE type, long length, void* poRes
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:grow");
 		if (!bVal)
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		else
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 
 		GetRunStringWriter().WriteString(sVal);
 	}
@@ -5930,9 +5940,9 @@ int Binary_DocumentTableReader::ReadMathHideBot(BYTE type, long length, void* po
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:hideBot");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		GetRunStringWriter().WriteString(sVal);
 	}
 	else
@@ -5947,9 +5957,9 @@ int Binary_DocumentTableReader::ReadMathHideLeft(BYTE type, long length, void* p
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:hideLeft");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		GetRunStringWriter().WriteString(sVal);
 	}
 	else
@@ -5964,9 +5974,9 @@ int Binary_DocumentTableReader::ReadMathHideRight(BYTE type, long length, void* 
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:hideRight");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		GetRunStringWriter().WriteString(sVal);
 	}
 	else
@@ -5981,9 +5991,9 @@ int Binary_DocumentTableReader::ReadMathHideTop(BYTE type, long length, void* po
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:hideTop");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		GetRunStringWriter().WriteString(sVal);
 	}
 	else
@@ -6115,9 +6125,9 @@ int Binary_DocumentTableReader::ReadMathLit(BYTE type, long length, void* poResu
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:lit");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		GetRunStringWriter().WriteString(sVal);
 	}
 	else
@@ -6151,9 +6161,9 @@ int Binary_DocumentTableReader::ReadMathMaxDist(BYTE type, long length, void* po
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:maxDist");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		GetRunStringWriter().WriteString(sVal);
 	}
 	else
@@ -6363,9 +6373,9 @@ int Binary_DocumentTableReader::ReadMathNoBreak(BYTE type, long length, void* po
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:noBreak");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		GetRunStringWriter().WriteString(sVal);
 	}
 	else
@@ -6380,9 +6390,9 @@ int Binary_DocumentTableReader::ReadMathNor(BYTE type, long length, void* poResu
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:nor");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		GetRunStringWriter().WriteString(sVal);
 	}
 	else
@@ -6397,9 +6407,9 @@ int Binary_DocumentTableReader::ReadMathObjDist(BYTE type, long length, void* po
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:objDist");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		GetRunStringWriter().WriteString(sVal);
 	}
 	else
@@ -6457,9 +6467,9 @@ int Binary_DocumentTableReader::ReadMathOpEmu(BYTE type, long length, void* poRe
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:opEmu");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		GetRunStringWriter().WriteString(sVal);
 	}
 	else
@@ -6526,9 +6536,9 @@ int Binary_DocumentTableReader::ReadMathPlcHide(BYTE type, long length, void* po
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:plcHide");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		GetRunStringWriter().WriteString(sVal);
 	}
 	else
@@ -6811,9 +6821,9 @@ int Binary_DocumentTableReader::ReadMathShow(BYTE type, long length, void* poRes
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:show");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		GetRunStringWriter().WriteString(sVal);
 	}
 	else
@@ -7015,9 +7025,9 @@ int Binary_DocumentTableReader::ReadMathStrikeBLTR(BYTE type, long length, void*
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:strikeBLTR");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		GetRunStringWriter().WriteString(sVal);
 	}
 	else
@@ -7032,9 +7042,9 @@ int Binary_DocumentTableReader::ReadMathStrikeH(BYTE type, long length, void* po
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:strikeH");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		GetRunStringWriter().WriteString(sVal);
 	}
 	else
@@ -7049,9 +7059,9 @@ int Binary_DocumentTableReader::ReadMathStrikeTLBR(BYTE type, long length, void*
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:strikeTLBR");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		GetRunStringWriter().WriteString(sVal);
 	}
 	else
@@ -7066,9 +7076,9 @@ int Binary_DocumentTableReader::ReadMathStrikeV(BYTE type, long length, void* po
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:strikeV");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		GetRunStringWriter().WriteString(sVal);
 	}
 	else
@@ -7104,9 +7114,9 @@ int Binary_DocumentTableReader::ReadMathSubHide(BYTE type, long length, void* po
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:subHide");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		GetRunStringWriter().WriteString(sVal);
 	}
 	else
@@ -7121,9 +7131,9 @@ int Binary_DocumentTableReader::ReadMathSupHide(BYTE type, long length, void* po
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:supHide");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		GetRunStringWriter().WriteString(sVal);
 	}
 	else
@@ -7138,9 +7148,9 @@ int Binary_DocumentTableReader::ReadMathTransp(BYTE type, long length, void* poR
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:transp");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		GetRunStringWriter().WriteString(sVal);
 	}
 	else
@@ -7195,9 +7205,9 @@ int Binary_DocumentTableReader::ReadMathZeroAsc(BYTE type, long length, void* po
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:zeroAsc");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		GetRunStringWriter().WriteString(sVal);
 	}
 	else
@@ -7212,9 +7222,9 @@ int Binary_DocumentTableReader::ReadMathZeroDesc(BYTE type, long length, void* p
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:zaroDesc");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		GetRunStringWriter().WriteString(sVal);
 	}
 	else
@@ -7229,9 +7239,9 @@ int Binary_DocumentTableReader::ReadMathZeroWid(BYTE type, long length, void* po
 		bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal = _T("<m:zeroWid");
 		if (bVal)
-			sVal += _T(" m:val=\"true\" />");
+			sVal += _T(" m:val=\"on\" />");
 		else
-			sVal += _T(" m:val=\"false\" />");
+			sVal += _T(" m:val=\"off\" />");
 		GetRunStringWriter().WriteString(sVal);
 	}
 	else
@@ -7356,8 +7366,6 @@ int Binary_DocumentTableReader::ReadRunContent(BYTE type, long length, void* poR
 	}
 	else if(c_oSerRunType::table == type)
 	{
-		//сбрасываем Shd
-        oBinary_tblPrReader.m_sCurTableShd.clear();
 		//todo
         m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("</w:p>")));
         m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<w:tbl>")));
@@ -7371,8 +7379,6 @@ int Binary_DocumentTableReader::ReadRunContent(BYTE type, long length, void* poR
 			m_oDocumentWriter.m_oContent.Write(m_oCur_pPr);
             m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("</w:pPr>")));
 		}
-		//сбрасываем Shd
-        oBinary_tblPrReader.m_sCurTableShd.clear();
 	}
 	else if(c_oSerRunType::fldstart_deprecated == type)
 	{
@@ -7753,13 +7759,7 @@ int Binary_DocumentTableReader::ReadCell(BYTE type, long length, void* poResult)
 	if( c_oSerDocTableType::Cell_Pr == type )
 	{
         pCStringWriter->WriteString(std::wstring(_T("<w:tcPr>")));
-		oBinary_tblPrReader.bCellShd = false;
 		READ2_DEF(length, res, oBinary_tblPrReader.Read_CellPr, pCStringWriter);
-        if(false == oBinary_tblPrReader.bCellShd && !oBinary_tblPrReader.m_sCurTableShd.empty())
-		{
-			pCStringWriter->WriteString(oBinary_tblPrReader.m_sCurTableShd);
-		}
-		oBinary_tblPrReader.bCellShd = false;
         pCStringWriter->WriteString(std::wstring(_T("</w:tcPr>")));
 	}
 	else if( c_oSerDocTableType::Cell_Content == type )
@@ -8717,6 +8717,52 @@ int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult
 		pSdtPr->m_oText->m_oMultiLine.Init();
 		pSdtPr->m_oText->m_oMultiLine->FromBool(m_oBufferedStream.GetBool());
 	}
+	else if (c_oSerSdt::Checkbox == type)
+	{
+		pSdtPr->m_oCheckbox.Init();
+		READ1_DEF(length, res, this->ReadSdtCheckBox, pSdtPr->m_oCheckbox.GetPointer());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int Binary_DocumentTableReader::ReadSdtCheckBox(BYTE type, long length, void* poResult)
+{
+	int res = 0;
+	OOX::Logic::CSdtCheckBox* pSdtCheckBox = static_cast<OOX::Logic::CSdtCheckBox*>(poResult);
+	if (c_oSerSdt::CheckboxChecked == type)
+	{
+		pSdtCheckBox->m_oChecked.Init();
+		pSdtCheckBox->m_oChecked->m_oVal.FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSerSdt::CheckboxCheckedFont == type)
+	{
+		if(!pSdtCheckBox->m_oCheckedState.IsInit())
+			pSdtCheckBox->m_oCheckedState.Init();
+		pSdtCheckBox->m_oCheckedState->m_oFont.Init();
+		pSdtCheckBox->m_oCheckedState->m_oFont->append(m_oBufferedStream.GetString3(length));
+	}
+	else if (c_oSerSdt::CheckboxCheckedVal == type)
+	{
+		if(!pSdtCheckBox->m_oCheckedState.IsInit())
+			pSdtCheckBox->m_oCheckedState.Init();
+		pSdtCheckBox->m_oCheckedState->m_oVal.Init();
+		pSdtCheckBox->m_oCheckedState->m_oVal->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSerSdt::CheckboxUncheckedFont == type)
+	{
+		if(!pSdtCheckBox->m_oUncheckedState.IsInit())
+			pSdtCheckBox->m_oUncheckedState.Init();
+		pSdtCheckBox->m_oUncheckedState->m_oFont.Init();
+		pSdtCheckBox->m_oUncheckedState->m_oFont->append(m_oBufferedStream.GetString3(length));
+	}
+	else if (c_oSerSdt::CheckboxUncheckedVal == type)
+	{
+		if(!pSdtCheckBox->m_oUncheckedState.IsInit())
+			pSdtCheckBox->m_oUncheckedState.Init();
+		pSdtCheckBox->m_oUncheckedState->m_oVal.Init();
+		pSdtCheckBox->m_oUncheckedState->m_oVal->SetValue(m_oBufferedStream.GetLong());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -8745,13 +8791,11 @@ int Binary_DocumentTableReader::ReadSdtListItem(BYTE type, long length, void* po
 	ComplexTypes::Word::CSdtListItem* pSdtListItem = static_cast<ComplexTypes::Word::CSdtListItem*>(poResult);
 	if (c_oSerSdt::DisplayText == type)
 	{
-		pSdtListItem->m_sDisplayText.Init();
-		pSdtListItem->m_sDisplayText->append(m_oBufferedStream.GetString3(length));
+		pSdtListItem->m_sDisplayText = m_oBufferedStream.GetString3(length);
 	}
 	else if (c_oSerSdt::Value == type)
 	{
-		pSdtListItem->m_sValue.Init();
-		pSdtListItem->m_sValue->append(m_oBufferedStream.GetString3(length));
+		pSdtListItem->m_sValue = m_oBufferedStream.GetString3(length);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -8849,8 +8893,7 @@ int Binary_DocumentTableReader::ReadDropDownList(BYTE type, long length, void* p
 	OOX::Logic::CSdtDropDownList* pDropDownList = static_cast<OOX::Logic::CSdtDropDownList*>(poResult);
 	if (c_oSerSdt::LastValue == type)
 	{
-		pDropDownList->m_sLastValue.Init();
-		pDropDownList->m_sLastValue->append(m_oBufferedStream.GetString3(length));
+		pDropDownList->m_sLastValue = m_oBufferedStream.GetString3(length);
 	}
 	else if (c_oSerSdt::SdtListItem == type)
 	{

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -35,10 +35,6 @@
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/common/Path.h"
 
-#if _IOS
-    #import <Foundation/Foundation.h>
-#endif
-
 #if !defined(_WIN32) && !defined (_WIN64)
 #include <unistd.h>
 #endif
@@ -48,15 +44,9 @@
 
 namespace ZLibZipUtils
 {
-  static zipFile zipOpenHelp(const wchar_t* filename)
-  {
-#ifdef _IOS
-      NSString *path =[[NSString alloc] initWithBytes:filename
-                                               length:wcslen(filename)*sizeof(*filename)
-                                             encoding:NSUTF32LittleEndianStringEncoding];
-      return zipOpen( (const char*)[path fileSystemRepresentation], APPEND_STATUS_CREATE );
-#endif
-      
+#ifndef _IOS
+  zipFile zipOpenHelp(const wchar_t* filename)
+  {   
 #if defined(_WIN32) || defined (_WIN64)
 	  zlib_filefunc64_def ffunc;
 	  fill_win32_filefunc64W(&ffunc);
@@ -70,15 +60,8 @@ namespace ZLibZipUtils
 #endif
 	  return zf;
   }
-  static unzFile unzOpenHelp(const wchar_t* filename)
-  {
-#ifdef _IOS
-      NSString *path =[[NSString alloc] initWithBytes:filename
-                                               length:wcslen(filename)*sizeof(*filename)
-                                             encoding:NSUTF32LittleEndianStringEncoding];
-      return unzOpen ((const char*)[path fileSystemRepresentation]);
-#endif
-      
+  unzFile unzOpenHelp(const wchar_t* filename)
+  {   
 #if defined(_WIN32) || defined (_WIN64)
 	  zlib_filefunc64_def ffunc;
 	  fill_win32_filefunc64W(&ffunc);
@@ -92,6 +75,7 @@ namespace ZLibZipUtils
 #endif
 	  return uf;
   }
+#endif
   static std::wstring ascii_to_unicode(const char *src)
   {
       std::string sAnsi(src);
@@ -908,7 +892,7 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 		return false;
 	}
 
-	bool GetFilesSize(const WCHAR*  zip_file_path, const std::wstring& searchPattern, ULONG& nCommpressed, ULONG& nUncommpressed)
+	bool GetFilesSize(const WCHAR*  zip_file_path, const std::wstring& searchPattern, ULONG64& nCommpressed, ULONG64& nUncommpressed)
 	{
 		nCommpressed = 0;
 		nUncommpressed = 0;
@@ -916,8 +900,16 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 		if (unzip_file_handle != NULL)
 		{
 			//todo implement true pattern
-			std::wstring searchExt = searchPattern.substr(2);
-			bool isEmptyPattern = 0 == searchExt.length();
+			bool isAny = false;
+			std::wstring searchExt;
+			if (0 == searchPattern.length() || searchPattern == L"*")
+			{
+				isAny = true;
+			}
+			else if (searchPattern.length() > 1)
+			{
+				searchExt = searchPattern.substr(2);
+			}
 			do
 			{
 				char filename_inzip[256];
@@ -925,7 +917,7 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 				unzGetCurrentFileInfo(unzip_file_handle, &file_info, filename_inzip, sizeof(filename_inzip), NULL, 0, NULL, 0);
 				std::wstring filenameW = codepage_issue_fixFromOEM(filename_inzip);
 				std::transform(filenameW.begin(), filenameW.end(), filenameW.begin(), ::tolower);
-				if (isEmptyPattern || NSFile::GetFileExtention(filenameW) == searchExt)
+				if (isAny || NSFile::GetFileExtention(filenameW) == searchExt)
 				{
 					nCommpressed += file_info.compressed_size;
 					nUncommpressed += file_info.uncompressed_size;

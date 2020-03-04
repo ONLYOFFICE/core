@@ -94,6 +94,8 @@ static std::wstring get_mime_type(const std::wstring & extension)
 	else if (L"xlsx" == extension)	return  L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 	else if (L"docx" == extension)	return  L"application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 	else if (L"doc" == extension)	return  L"application/msword";
+	else if (L"vsd" == extension)	return  L"application/vnd.visio";
+	else if (L"vsdx" == extension)	return  L"application/vnd.ms-visio.drawing";
 	else							return	L"application/octet-stream";
 
 

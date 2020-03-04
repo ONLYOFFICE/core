@@ -166,7 +166,7 @@ namespace MetaFile
 				if (!coding_name.empty())
 				{
 					NSUnicodeConverter::CUnicodeConverter converter;
-					string = converter.toUnicode((char*)stream.GetCurPtr(), length,coding_name.c_str());
+					string = converter.toUnicode((char*)stream.GetCurPtr(), (unsigned int)length, coding_name.c_str());
 				}
 				else
 				{

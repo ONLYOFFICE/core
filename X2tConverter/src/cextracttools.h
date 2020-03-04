@@ -378,8 +378,8 @@ namespace NExtractTools
 	class InputLimit
 	{
 	public:
-		UINT compressed;
-		UINT uncompressed;
+		ULONG64 compressed;
+		ULONG64 uncompressed;
 		std::wstring pattern;
 		InputLimit()
 		{
@@ -399,6 +399,7 @@ namespace NExtractTools
 		int* m_nCsvTxtEncoding;
 		int* m_nCsvDelimiter;
 		std::wstring* m_sCsvDelimiterChar;
+		int* m_nLcid;
 		bool* m_bPaid;
 		bool* m_bFromChanges;
 		bool* m_bDontSaveAdditional;
@@ -407,14 +408,14 @@ namespace NExtractTools
 		std::wstring* m_sThemeDir;
         InputParamsMailMerge* m_oMailMergeSend;
 		InputParamsThumbnail* m_oThumbnail;
-		int* m_nDoctParams;
+		std::wstring* m_sJsonParams;
 		std::wstring* m_sHtmlFileInternalPath;
 		std::wstring* m_sPassword;
 		std::wstring* m_sSavePassword;
 		std::wstring* m_sDocumentID;
 		std::wstring* m_sTempDir;
 		bool* m_bIsNoBase64;
-		boost::unordered_map<int, InputLimit> m_mapInputLimits;
+		boost::unordered_map<int, std::vector<InputLimit>> m_mapInputLimits;
 		bool* m_bIsPDFA;
 		//output params
 		mutable bool m_bOutputConvertCorrupted;
@@ -429,6 +430,7 @@ namespace NExtractTools
 			m_nCsvTxtEncoding = NULL;
 			m_nCsvDelimiter = NULL;
 			m_sCsvDelimiterChar = NULL;
+			m_nLcid = NULL;
 			m_bPaid = NULL;
 			m_bFromChanges = NULL;
 			m_bDontSaveAdditional = NULL;
@@ -437,7 +439,7 @@ namespace NExtractTools
 			m_sThemeDir = NULL;
             m_oMailMergeSend = NULL;
 			m_oThumbnail = NULL;
-			m_nDoctParams = NULL;
+			m_sJsonParams = NULL;
 			m_sHtmlFileInternalPath = NULL;
 			m_sPassword = NULL;
 			m_sSavePassword = NULL;
@@ -458,6 +460,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_nCsvTxtEncoding);
 			RELEASEOBJECT(m_nCsvDelimiter);
 			RELEASEOBJECT(m_sCsvDelimiterChar);
+			RELEASEOBJECT(m_nLcid);
 			RELEASEOBJECT(m_bPaid);
 			RELEASEOBJECT(m_bFromChanges);
 			RELEASEOBJECT(m_bDontSaveAdditional);
@@ -466,7 +469,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_sThemeDir);
             RELEASEOBJECT(m_oMailMergeSend);
 			RELEASEOBJECT(m_oThumbnail);
-			RELEASEOBJECT(m_nDoctParams);
+			RELEASEOBJECT(m_sJsonParams);
 			RELEASEOBJECT(m_sHtmlFileInternalPath);
 			RELEASEOBJECT(m_sPassword);
 			RELEASEOBJECT(m_sSavePassword);
@@ -572,6 +575,11 @@ namespace NExtractTools
 									RELEASEOBJECT(m_sCsvDelimiterChar);
 									m_sCsvDelimiterChar = new std::wstring(sValue);
 								}
+								else if(_T("m_nLcid") == sName)
+								{
+									RELEASEOBJECT(m_nLcid);
+									m_nLcid = new int(XmlUtils::GetInteger(sValue));
+								}
 								else if(_T("m_bPaid") == sName)
 								{
 									RELEASEOBJECT(m_bPaid);
@@ -602,10 +610,10 @@ namespace NExtractTools
 									RELEASEOBJECT(m_bDontSaveAdditional);
 									m_bDontSaveAdditional = new bool(XmlUtils::GetBoolean2(sValue));
 								}
-								else if(_T("m_nDoctParams") == sName)
+								else if(_T("m_sJsonParams") == sName)
 								{
-									RELEASEOBJECT(m_nDoctParams);
-									m_nDoctParams = new int(XmlUtils::GetInteger(sValue));
+									RELEASEOBJECT(m_sJsonParams);
+									m_sJsonParams = new std::wstring(sValue);
 								}
 								else if(_T("m_sHtmlFileInternalPath") == sName)
 								{
@@ -679,13 +687,14 @@ namespace NExtractTools
 							XmlUtils::CXmlNode oZipNode;
 							if (oLimitNode.GetNode(L"m_oZip", oZipNode))
 							{
-								oLimit.compressed = std::stoul(oZipNode.GetAttribute(L"compressed", L"0"));
-								oLimit.uncompressed = std::stoul(oZipNode.GetAttribute(L"uncompressed", L"0"));
+								oLimit.compressed = std::stoull(oZipNode.GetAttribute(L"compressed", L"0"));
+								oLimit.uncompressed = std::stoull(oZipNode.GetAttribute(L"uncompressed", L"0"));
 								oLimit.pattern = oZipNode.GetAttribute(L"template", L"");
 							}
 							for (size_t j = 0; j < aTypes.size(); ++j)
 							{
-								m_mapInputLimits[COfficeFileFormatChecker::GetFormatByExtension(L"." + aTypes[j])] = oLimit;
+								int nFormat = COfficeFileFormatChecker::GetFormatByExtension(L"." + aTypes[j]);
+								m_mapInputLimits[nFormat].push_back(oLimit);
 							}
 						}
 					}
@@ -1171,12 +1180,10 @@ namespace NExtractTools
 		}
         return true;
 	}
-#ifndef _IOS
     std::wstring getMailMergeXml(const std::wstring& sJsonPath, int nRecordFrom, int nRecordTo, const std::wstring& sField);
     std::wstring getDoctXml(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, NSDoctRenderer::DoctRendererFormat::FormatFile eToType,
                             const std::wstring& sTFileDir, const std::wstring& sPdfBinFile, const std::wstring& sImagesDirectory,
                             const std::wstring& sThemeDir, int nTopIndex, const std::wstring& sMailMerge, const InputParams& params);
     _UINT32 apply_changes(const std::wstring &sBinFrom, const std::wstring &sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile eType, const std::wstring &sThemeDir, std::wstring &sBinTo, const InputParams& params);
-#endif
 }
 #endif // CEXTRACTTOOLS_H

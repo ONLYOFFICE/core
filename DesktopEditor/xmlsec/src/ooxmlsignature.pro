@@ -16,7 +16,7 @@ CORE_ROOT_DIR = $$PWD/../../..
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lkernel
+ADD_DEPENDENCY(kernel)
 
 DEFINES -= UNICODE
 

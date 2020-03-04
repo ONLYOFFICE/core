@@ -61,6 +61,7 @@
 #include "datatypes/noteclass.h"
 #include "datatypes/gradientstyle.h"
 #include "datatypes/hatchstyle.h"
+#include "datatypes/styleprint.h"
 
 #include "header_footer.h"
 
@@ -341,7 +342,7 @@ typedef weak_ptr<style>::Type style_weak_ptr;
 typedef std::vector< style_weak_ptr > style_weak_ptr_array;
 typedef std::vector< style_ptr > style_ptr_array;
 
-///         style:style
+// style:style
 class style : public office_element_impl<style>
 {
 public:
@@ -369,18 +370,18 @@ public:
     _CP_OPT( std::wstring ) style_parent_style_name_; 
     _CP_OPT( std::wstring ) style_next_style_name_;	 
     _CP_OPT( std::wstring ) style_list_style_name_;	
+	_CP_OPT( int )			style_list_level_;
     _CP_OPT( std::wstring ) style_master_page_name_;
     _CP_OPT( std::wstring ) style_data_style_name_;	
-    _CP_OPT( std::wstring ) style_class_;
-    _CP_OPT( std::wstring ) style_default_outline_level_; 
+	_CP_OPT( std::wstring ) style_percentage_data_style_name_;
+	_CP_OPT( std::wstring ) style_class_;
+    _CP_OPT( int )			style_default_outline_level_; 
 
     style_content				content_;
     office_element_ptr_array	style_map_;
 
     friend class odf_document;
-
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style);
 
 //  styles
@@ -560,7 +561,7 @@ public:
 	office_element_ptr_array	style_default_style_;
 	office_element_ptr_array	style_presentation_page_layout_;
     
-	office_element_ptr			text_outline_style_; // < TODO
+	office_element_ptr			text_outline_style_;
     office_element_ptr_array	text_notes_configuration_; // < TODO
     office_element_ptr			text_bibliography_configuration_; // < TODO
     office_element_ptr			text_linenumbering_configuration_; // < TODO
@@ -891,11 +892,12 @@ public:
     
     odf_types::common_background_color_attlist	common_background_color_attlist_;
  	odf_types::common_draw_fill_attlist			common_draw_fill_attlist_;
+
+	odf_types::common_page_number_attlist		common_page_number_attlist_;
   
 	_CP_OPT(std::wstring)					style_register_truth_ref_style_name_;
-    _CP_OPT(std::wstring)					style_print_;
+    _CP_OPT(odf_types::style_print)			style_print_;
     _CP_OPT(odf_types::direction)			style_print_page_order_;
-    _CP_OPT(std::wstring)					style_first_page_number_;
     _CP_OPT(odf_types::percent)				style_scale_to_;
     _CP_OPT(unsigned int)					style_scale_to_pages_;
     _CP_OPT(odf_types::table_centering)		style_table_centering_;
@@ -909,6 +911,8 @@ public:
     _CP_OPT(bool)							style_layout_grid_ruby_below_;  
 	_CP_OPT(bool)							style_layout_grid_print_;
     _CP_OPT(bool)							style_layout_grid_display_;
+	_CP_OPT(unsigned int)					loext_scale_to_X_;
+	_CP_OPT(unsigned int)					loext_scale_to_Y_;
 
 };
 
@@ -1041,5 +1045,6 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_presentation_page_layout);
+
 } // namespace odf_reader
 } // namespace cpdoccore

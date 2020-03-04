@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -350,7 +350,6 @@ namespace NExtractTools
 
 		return res;
     }
-#ifndef _IOS
     std::wstring getMailMergeXml(const std::wstring& sJsonPath, int nRecordFrom, int nRecordTo, const std::wstring& sField)
     {
         NSStringUtils::CStringBuilder oBuilder;
@@ -385,12 +384,31 @@ namespace NExtractTools
         oBuilder.WriteString(_T("</ImagesDirectory><ThemesDirectory>"));
         oBuilder.WriteEncodeXmlString(sThemeDir.c_str());
         oBuilder.WriteString(_T("</ThemesDirectory>"));
-        if(NULL != params.m_nDoctParams)
-        {
-            oBuilder.WriteString(_T("<DoctParams>"));
-            oBuilder.AddInt(*params.m_nDoctParams);
-            oBuilder.WriteString(_T("</DoctParams>"));
-        }
+		if(NULL != params.m_nLcid)
+		{
+			oBuilder.WriteString(_T("<Lcid>"));
+			oBuilder.AddInt(*params.m_nLcid);
+			oBuilder.WriteString(_T("</Lcid>"));
+		}
+		std::wstring sJsonParams;
+		bool bOnlyOnePage = NULL != params.m_oThumbnail && (NULL == params.m_oThumbnail->first || true == *params.m_oThumbnail->first);
+		if (NULL != params.m_sJsonParams)
+		{
+			sJsonParams = *params.m_sJsonParams;
+			if (bOnlyOnePage){
+				sJsonParams.insert(1, L"\"printOptions\":{\"onlyFirstPage\":true},");
+			}
+		}
+		else if (bOnlyOnePage)
+		{
+			sJsonParams = L"{\"printOptions\":{\"onlyFirstPage\":true}}";
+		}
+		if (!sJsonParams.empty())
+		{
+			oBuilder.WriteString(_T("<JsonParams>"));
+			oBuilder.WriteEncodeXmlString(sJsonParams);
+			oBuilder.WriteString(_T("</JsonParams>"));
+		}
         oBuilder.WriteString(_T("<Changes TopItem=\""));
         oBuilder.AddInt(nTopIndex);
         oBuilder.WriteString(_T("\">"));
@@ -418,10 +436,6 @@ namespace NExtractTools
         }
         oBuilder.WriteString(_T("</Changes>"));
         oBuilder.WriteString(sMailMerge);
-		if (NULL != params.m_oThumbnail && (NULL == params.m_oThumbnail->first || true == *params.m_oThumbnail->first))
-		{
-			oBuilder.WriteString(_T("<OnlyOnePage>1</OnlyOnePage>"));
-		}
         oBuilder.WriteString(_T("</Settings>"));
         return oBuilder.GetData();
     }
@@ -494,24 +508,26 @@ namespace NExtractTools
 			sBinTo = sBinFrom;
 		return 0;
     }
-#endif
 	bool InputParams::checkInputLimits()
 	{
 		std::wstring& sFrom = *this->m_sFileFrom;
 		int nFormatFrom = *this->m_nFormatFrom;
-		boost::unordered_map<int, InputLimit>::const_iterator itLimit = this->m_mapInputLimits.find(nFormatFrom);
+		boost::unordered_map<int, std::vector<InputLimit>>::const_iterator itLimit = this->m_mapInputLimits.find(nFormatFrom);
 		if(itLimit != this->m_mapInputLimits.end())
 		{
-			const InputLimit& oLimit = itLimit->second;
-			if(oLimit.compressed > 0 || oLimit.uncompressed > 0)
+			for (size_t i = 0; i < itLimit->second.size(); ++i)
 			{
-				ULONG nCompressed = 0;
-				ULONG nUncompressed = 0;
-				COfficeUtils oCOfficeUtils(NULL);
-				oCOfficeUtils.GetFilesSize(sFrom, oLimit.pattern, nCompressed, nUncompressed);
-				if((oLimit.compressed > 0 && nCompressed > oLimit.compressed) || (oLimit.uncompressed > 0 && nUncompressed > oLimit.uncompressed))
+				const InputLimit& oLimit = itLimit->second[i];
+				if(oLimit.compressed > 0 || oLimit.uncompressed > 0)
 				{
-					return false;
+					ULONG64 nCompressed = 0;
+					ULONG64 nUncompressed = 0;
+					COfficeUtils oCOfficeUtils(NULL);
+					oCOfficeUtils.GetFilesSize(sFrom, oLimit.pattern, nCompressed, nUncompressed);
+					if((oLimit.compressed > 0 && nCompressed > oLimit.compressed) || (oLimit.uncompressed > 0 && nUncompressed > oLimit.uncompressed))
+					{
+						return false;
+					}
 				}
 			}
 		}

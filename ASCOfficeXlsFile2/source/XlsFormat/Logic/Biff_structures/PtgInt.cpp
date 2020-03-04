@@ -36,20 +36,17 @@
 namespace XLS
 {
 
-
 PtgInt::PtgInt()
 {
 }
 
-
-PtgInt::PtgInt(const std::wstring& word)
-:	OperandPtg(fixed_id)
+PtgInt::PtgInt(const std::wstring& word) : OperandPtg(fixed_id)
 {
 #if defined(_WIN32) || defined (_WIN64)
-    integer = _wtoi(word.c_str());
+    value_ = _wtoi(word.c_str());
 #else
      wchar_t * pEnd;
-    integer = wcstol(word.c_str(), &pEnd ,10);
+    value_ = wcstol(word.c_str(), &pEnd ,10);
 #endif
 }
 
@@ -62,13 +59,19 @@ BiffStructurePtr PtgInt::clone()
 
 void PtgInt::loadFields(CFRecord& record)
 {
-	record >> integer;
+	if (record.checkFitReadSafe(2))
+	{
+		unsigned short tmp;
+		record >> tmp;
+		value_ = tmp;
+	}
 }
 
 
 void PtgInt::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
-	ptg_stack.push(STR::int2wstr(integer));
+	if (value_)	ptg_stack.push(STR::int2wstr(*value_));
+	else		ptg_stack.push(L"");
 }
 
 

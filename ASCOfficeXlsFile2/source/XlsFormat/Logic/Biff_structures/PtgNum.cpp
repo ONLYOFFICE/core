@@ -31,19 +31,17 @@
  */
 
 #include "PtgNum.h"
-#include <Binary/CFRecord.h>
+#include "../Biff_structures/Xnum.h"
 
 namespace XLS
 {
-
 
 PtgNum::PtgNum()
 {
 }
 
 
-PtgNum::PtgNum(const std::wstring& word)
-:	OperandPtg(fixed_id)
+PtgNum::PtgNum(const std::wstring& word) : value_(0), OperandPtg(fixed_id)
 {
 #if defined(_WIN32) || defined (_WIN64)
     value_ = _wtof(word.c_str());
@@ -61,13 +59,19 @@ BiffStructurePtr PtgNum::clone()
 
 void PtgNum::loadFields(CFRecord& record)
 {
-	record >> value_;
-}
+	if (record.checkFitReadSafe(8))
+	{
+		Xnum tmp;
+		record >> tmp;
 
+		value_ = tmp.data.value;
+	}
+}
 
 void PtgNum::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
-	ptg_stack.push(STR::double2str(value_));
+	if (value_)	ptg_stack.push(STR::double2str(*value_));
+	else		ptg_stack.push(L"");
 }
 
 

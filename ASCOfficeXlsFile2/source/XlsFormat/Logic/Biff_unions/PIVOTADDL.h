@@ -75,6 +75,7 @@ public:
 	std::vector<_sxAddl> m_arSXADDLCALCMEMBER;
 
 	_sxAddl m_SXADDLCONDFMTS;
+	std::vector<_sxAddl> m_arSXADDLCONDFMT;
 	_sxAddl m_SXADDLSXFILTERS12;
 
 //others

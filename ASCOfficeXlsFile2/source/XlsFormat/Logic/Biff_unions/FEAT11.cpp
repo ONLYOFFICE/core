@@ -202,9 +202,15 @@ int FEAT11::serialize(std::wostream & strm, size_t index)
 				CP_XML_ATTR(L"displayName",		display);
 				CP_XML_ATTR(L"ref",				feature11->sqref);
 
-				CP_XML_ATTR(L"headerRowCount",	feature11->rgbFeat.crwHeader);
-				CP_XML_ATTR(L"totalsRowCount",	feature11->rgbFeat.crwTotals);
-				//CP_XML_ATTR(L"totalsRowShown",	feature11->rgbFeat.fShownTotalRow);
+				if (feature11->rgbFeat.crwHeader < 1 )
+				{//ZXC_5693030.xls marker_mc.xls
+					CP_XML_ATTR(L"headerRowCount",	0); 
+				}
+				if (!feature11->rgbFeat.fShownTotalRow)
+				{
+					CP_XML_ATTR(L"totalsRowShown",	0);
+				}
+				//CP_XML_ATTR(L"totalsRowCount",	feature11->rgbFeat.crwTotals);
 				
 				if (!comment.empty()) 
 					CP_XML_ATTR(L"comment", comment);
@@ -222,9 +228,7 @@ int FEAT11::serialize(std::wostream & strm, size_t index)
 
 						CP_XML_NODE(L"autoFilter")
 						{
-							//if (filter)
-							//else
-								CP_XML_ATTR(L"ref", sort_data->rfx);
+							CP_XML_ATTR(L"ref", sort_data->rfx);
 						}
 						CP_XML_NODE(L"sortState")
 						{
@@ -240,29 +244,53 @@ int FEAT11::serialize(std::wostream & strm, size_t index)
 							}
 						}
 					}
-					else if (filter)
-					{
-						CP_XML_NODE(L"autoFilter")
-						{
-							//CP_XML_ATTR(L"ref", filter->rfx);
-							for (size_t k = 0 ; k < (std::min)((size_t)1, filter->arAF12Criteries.size()); k++)
-							{
-								AF12Criteria * af12Criteria = dynamic_cast<AF12Criteria *>(filter->arAF12Criteries[k].get());
-								if (af12Criteria == NULL) continue;
-
-								//CP_XML_NODE(L"filter")
-								{									
-									//CP_XML_ATTR(L"val", af12Criteria->_str);
-									CP_XML_ATTR(L"ref", af12Criteria->_str);
-								}
-							}
-						}
-					}
 					else
 					{
 						CP_XML_NODE(L"autoFilter")
 						{
 							CP_XML_ATTR(L"ref", feature11->sqref);
+
+							if (filter)
+							{
+								CP_XML_NODE(L"customFilters")
+								{
+									for (size_t k = 0 ; k < (std::min)((size_t)1, filter->arAF12Criteries.size()); k++)
+									{
+										AF12Criteria * af12Criteria = dynamic_cast<AF12Criteria *>(filter->arAF12Criteries[k].get());
+										if (af12Criteria == NULL) continue;
+
+										af12Criteria->doper.serialize(CP_XML_STREAM(), L"customFilter", af12Criteria->_str);
+									}
+								}
+							}
+							else
+							{
+								for (size_t i = 0; i < feature11->rgbFeat.arFieldData.size(); i++)
+								{
+									Feat11FieldDataItem* field = dynamic_cast<Feat11FieldDataItem*>(feature11->rgbFeat.arFieldData[i].get());
+									if(!field) continue;
+
+									if (field->AutoFilter.cbAutoFilter > 0 && field->AutoFilter.cbAutoFilter < 2080)
+									{
+										CP_XML_NODE(L"filterColumn")
+										{
+											CP_XML_ATTR(L"colId", field->idField - 1);
+
+											if (field->AutoFilter.recAutoFilter.fTopN != 1)
+											{
+												CP_XML_NODE(L"customFilters")
+												{
+													if (field->AutoFilter.recAutoFilter.wJoin == 0) CP_XML_ATTR(L"and", 1); //and
+													if (field->AutoFilter.recAutoFilter.wJoin == 1) CP_XML_ATTR(L"and", 0); //or
+
+													field->AutoFilter.recAutoFilter.doper1.serialize(CP_XML_STREAM(), L"customFilter", L"");
+													field->AutoFilter.recAutoFilter.doper2.serialize(CP_XML_STREAM(), L"customFilter", L"");
+												}
+											}
+										}
+									}
+								}
+							}
 						}
 					}
 				}
@@ -283,13 +311,26 @@ int FEAT11::serialize(std::wostream & strm, size_t index)
 							if (!field->strTotal.value().empty())
 								CP_XML_ATTR(L"totalsRowLabel", field->strTotal.value());	
 							
-							if (field->dxfFmtAgg.bExist || 
-								field->dxfFmtInsertRow.bExist)
+							if (field->dxfFmtAgg.bExist && field->dxfFmtAgg.dxfId_ >= 0)
 							{
-							//if (!field->stData.value().empty())
-							//	CP_XML_ATTR(L"dataCellStyle", field->stData.value());	
-							//if (!field->stData.value().empty())
-							//	CP_XML_ATTR(L"dataDxfId", field->stData.value());	
+								CP_XML_ATTR(L"dataDxfId", field->dxfFmtAgg.dxfId_); 
+							}
+							if (field->dxfFmtInsertRow.bExist && field->dxfFmtInsertRow.dxfId_ >= 0)
+							{
+								CP_XML_ATTR(L"totalsRowDxfId", field->dxfFmtInsertRow.dxfId_); 
+							}
+							switch(field->ilta)
+							{
+							case 0x00000000: break;
+							case 0x00000001: CP_XML_ATTR(L"totalsRowFunction", L"average");	break;
+							case 0x00000002: CP_XML_ATTR(L"totalsRowFunction", L"count");	break;
+							case 0x00000003: CP_XML_ATTR(L"totalsRowFunction", L"countNums"); break;
+							case 0x00000004: CP_XML_ATTR(L"totalsRowFunction", L"max");		break;
+							case 0x00000005: CP_XML_ATTR(L"totalsRowFunction", L"min");		break;
+							case 0x00000006: CP_XML_ATTR(L"totalsRowFunction", L"sum");		break;
+							case 0x00000007: CP_XML_ATTR(L"totalsRowFunction", L"stdDev");	break;
+							case 0x00000008: CP_XML_ATTR(L"totalsRowFunction", L"var");		break;
+							case 0x00000009: CP_XML_ATTR(L"totalsRowFunction", L"custom");	break;
 							}
 							if (field->fmla.bFmlaExist)
 							{

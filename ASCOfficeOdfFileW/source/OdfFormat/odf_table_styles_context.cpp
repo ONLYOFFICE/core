@@ -48,32 +48,33 @@ style_table_cell_properties *odf_table_styles_context::get_table_cell_properties
 	if (current == NULL)return NULL;
 
 	if (!current->table_cell_props)
-		create_element(L"style", L"table-cell-properties",current->table_cell_props, context_);
+		create_element(L"style", L"table-cell-properties", current->table_cell_props, context_);
 	return dynamic_cast<style_table_cell_properties *>(current->table_cell_props.get());
 
 }
-style_paragraph_properties	*odf_table_styles_context::get_paragraph_properties()
+style_paragraph_properties *odf_table_styles_context::get_paragraph_properties()
 {
 	if (current == NULL)return NULL;
 
 	if (!current->paragraph_props)
-		create_element(L"style", L"paragraph-properties",current->paragraph_props, context_);
+		create_element(L"style", L"paragraph-properties", current->paragraph_props, context_);
+	
 	return dynamic_cast<style_paragraph_properties *>(current->paragraph_props.get());
 }
-style_text_properties		*odf_table_styles_context::get_text_properties()
+style_text_properties *odf_table_styles_context::get_text_properties()
 {
 	if (current == NULL)return NULL;
 	
 	if (!current->text_props)
-		create_element(L"style", L"text-properties",current->text_props, context_);
+		create_element(L"style", L"text-properties", current->text_props, context_);
 	return dynamic_cast<style_text_properties *>(current->text_props.get());
 }
-style_table_properties		*odf_table_styles_context::get_table_properties()
+style_table_properties *odf_table_styles_context::get_table_properties()
 {
 	if (current == NULL)return NULL;
 	
 	if (!current->table_props)
-		create_element(L"style", L"table-properties",current->table_props, context_);
+		create_element(L"style", L"table-properties", current->table_props, context_);
 	return dynamic_cast<style_table_properties *>(current->table_props.get());
 }
 
@@ -93,67 +94,67 @@ void odf_table_styles_context::end_style()
 
 void odf_table_styles_context::add_band1Horz()
 {
-	table_format_array_.back().band1Horz_.is=true;
+	table_format_array_.back().band1Horz_.is = true;
 	current = &table_format_array_.back().band1Horz_;
 }
 void odf_table_styles_context::add_band1Vert()
 {
-	table_format_array_.back().band1Vert_.is=true;
+	table_format_array_.back().band1Vert_.is = true;
 	current = &table_format_array_.back().band1Vert_;
 }
 void odf_table_styles_context::add_band2Horz()
 {
-	table_format_array_.back().band2Horz_.is=true;
+	table_format_array_.back().band2Horz_.is = true;
 	current = &table_format_array_.back().band2Horz_;
 }
 void odf_table_styles_context::add_band2Vert()
 {
-	table_format_array_.back().band2Vert_.is=true;
+	table_format_array_.back().band2Vert_.is = true;
 	current = &table_format_array_.back().band2Vert_;
 }
 void odf_table_styles_context::add_firstCol()
 {
-	table_format_array_.back().firstCol_.is=true;
+	table_format_array_.back().firstCol_.is = true;
 	current = &table_format_array_.back().firstCol_;
 }
 void odf_table_styles_context::add_firstRow()
 {
-	table_format_array_.back().firstRow_.is=true;
+	table_format_array_.back().firstRow_.is = true;
 	current = &table_format_array_.back().firstRow_;
 }
 void odf_table_styles_context::add_lastCol()
 {
-	table_format_array_.back().lastCol_.is=true;
+	table_format_array_.back().lastCol_.is = true;
 	current = &table_format_array_.back().lastCol_;
 }
 void odf_table_styles_context::add_lastRow()
 {
-	table_format_array_.back().lastRow_.is=true;
+	table_format_array_.back().lastRow_.is = true;
 	current = &table_format_array_.back().lastRow_;
 }
 void odf_table_styles_context::add_neCell()
 {
-	table_format_array_.back().neCell_.is=true;
+	table_format_array_.back().neCell_.is = true;
 	current = &table_format_array_.back().neCell_;
 }
 void odf_table_styles_context::add_nwCell()
 {
-	table_format_array_.back().nwCell_.is=true;
+	table_format_array_.back().nwCell_.is = true;
 	current = &table_format_array_.back().nwCell_;
 }
 void odf_table_styles_context::add_seCell()
 {
-	table_format_array_.back().seCell_.is=true;
+	table_format_array_.back().seCell_.is = true;
 	current = &table_format_array_.back().seCell_;
 }
 void odf_table_styles_context::add_swCell()
 {
-	table_format_array_.back().swCell_.is=true;
+	table_format_array_.back().swCell_.is = true;
 	current = &table_format_array_.back().swCell_;
 }
 void odf_table_styles_context::add_wholeTable()
 {
-	table_format_array_.back().wholeTable_.is=true;
+	table_format_array_.back().wholeTable_.is = true;
 	current = &table_format_array_.back().wholeTable_;
 }
 void odf_table_styles_context::set_table_insideV(std::wstring border)
@@ -168,12 +169,12 @@ void odf_table_styles_context::set_table_insideH(std::wstring border)
 
 bool odf_table_styles_context::start_table(std::wstring name)
 {
-	for (long i=0; i < table_format_array_.size(); i++)
+	for (size_t i = 0; i < table_format_array_.size(); i++)
 	{
 		if (table_format_array_[i].style_name == name)
 		{
 			_use_style s = {};
-			s.table_style_ = i;
+			s.table_style_ = (int)i;
 
 			current_used_.push_back(s);
 
@@ -185,7 +186,7 @@ bool odf_table_styles_context::start_table(std::wstring name)
 
 void odf_table_styles_context::set_flags(int val)
 {
-	if (current_used_.size() < 1) return;
+	if (current_used_.empty()) return;
 
 	current_used_.back().first_row	= (val & 0x0020) != 0 ;
 	current_used_.back().first_col	= (val & 0x0080) != 0 ;
@@ -197,14 +198,14 @@ void odf_table_styles_context::set_flags(int val)
 
 void odf_table_styles_context::set_current_dimension(int col, int row)
 {
-	if (current_used_.size() < 1) return;
+	if (current_used_.empty()) return;
 	
 	current_used_.back().table_col_count_ = col;
 	current_used_.back().table_row_count_ = row;
 }
 void odf_table_styles_context::end_table()
 {
-	if (current_used_.size() > 0) 
+	if (current_used_.empty()) 
 		current_used_.pop_back();
 }
 _CP_OPT(std::wstring)  odf_table_styles_context::get_table_insideV()
@@ -274,14 +275,47 @@ void odf_table_styles_context::get_table_cell_properties (int col, int row, styl
 
 void odf_table_styles_context::get_table_properties (style_table_properties* table_props)
 {
-	if (current_used_.size() < 1) return;
+	if (current_used_.empty()) return;
 	if (table_props == NULL)	  return;
 
 	table_format_state & state = table_format_array_[current_used_.back().table_style_];
 
 	table_props->apply_from(dynamic_cast<style_table_properties *>(state.table_.table_props.get()));
 }
+bool odf_table_styles_context::is_paragraph_properties()
+{
+	if (current_used_.empty()) return false;
+	
+	table_format_state & state = table_format_array_[current_used_.back().table_style_];
 
+	return state.table_.paragraph_props.get() != NULL;
+}
+void odf_table_styles_context::get_paragraph_properties (style_paragraph_properties* para_props)
+{
+	if (current_used_.empty()) return;
+	if (para_props == NULL)	  return;
+
+	table_format_state & state = table_format_array_[current_used_.back().table_style_];
+
+	para_props->apply_from(dynamic_cast<style_paragraph_properties *>(state.table_.paragraph_props.get()));
+}
+bool odf_table_styles_context::is_text_properties()
+{
+	if (current_used_.empty()) return false;
+	
+	table_format_state & state = table_format_array_[current_used_.back().table_style_];
+
+	return state.table_.text_props.get() != NULL;
+}
+void odf_table_styles_context::get_text_properties (style_text_properties* text_props)
+{
+	if (current_used_.empty()) return;
+	if (text_props == NULL)	  return;
+
+	table_format_state & state = table_format_array_[current_used_.back().table_style_];
+
+	text_props->apply_from(dynamic_cast<style_text_properties *>(state.table_.text_props.get()));
+}
 void odf_table_styles_context::get_table_cell_properties (style_table_cell_properties* table_cell_props)
 {
 	if (current_used_.size() < 1) return;
@@ -348,8 +382,8 @@ void odf_table_styles_context::get_text_properties (int col, int row, style_text
 }
 void odf_table_styles_context::get_paragraph_properties (int col, int row, style_paragraph_properties* para_props)
 {
-	if (current_used_.size() < 1) return;
-	if (para_props == NULL)			return;
+	if (current_used_.empty()) return;
+	if (para_props == NULL) return;
 
 	table_format_state & state = table_format_array_[current_used_.back().table_style_];
 	
@@ -374,7 +408,7 @@ void odf_table_styles_context::get_paragraph_properties (int col, int row, style
 	bool se = (row == current_used_.back().table_row_count_ && col == current_used_.back().table_col_count_) ? true: false; //bottom right cell
 	bool sw = (row == current_used_.back().table_row_count_ && col == 1) ? true: false;						//bottom left cell.
 //----------------------------------------------------------------------------------------------------------------------------------
-					para_props->apply_from(dynamic_cast<style_paragraph_properties *>(state.table_.paragraph_props.get()));
+	para_props->apply_from(dynamic_cast<style_paragraph_properties *>(state.table_.paragraph_props.get()));
 
 	if (current_used_.back().cols)
 	{

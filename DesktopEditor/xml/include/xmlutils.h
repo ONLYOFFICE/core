@@ -110,12 +110,14 @@ namespace XmlUtils
 		std::wstring	GetText();
                 std::string     GetTextA();
                 const char*		GetTextChar();
+		std::wstring	GetAttributeTextWithHHHH();
 
 		std::wstring	GetText2();
                 std::string     GetText2A();
 		
 		std::wstring	GetText3();
 		void GetTextWithHHHH(bool bPreserve, wchar_t*& sBuffer, long& nSize, long& nLen);
+		std::wstring GetTextWithHHHH(bool bPreserve);
 
 		std::wstring	GetOuterXml();
 		std::wstring	GetInnerXml();
@@ -287,6 +289,7 @@ namespace XmlUtils
 	};
 
 	std::wstring KERNEL_DECL GetNameNoNS(const std::wstring & strNodeName);
+	KERNEL_DECL const char* GetNameNoNS(const char* strNodeName);
 	std::wstring KERNEL_DECL GetNamespace(const std::wstring& strNodeName);
 
     #define XmlMacroLoadArray(node, name, list, type)   \

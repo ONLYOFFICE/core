@@ -57,6 +57,7 @@
 #include "Biff_records/Country.h"
 #include "Biff_records/WsBool.h"
 #include "Biff_records/ExternSheet.h"
+#include "Biff_records/SXAddl.h"
 
 #include "Biff_unions/BACKGROUND.h"
 #include "Biff_unions/BIGNAME.h"
@@ -250,7 +251,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 						CELLTABLE *cell_table = dynamic_cast<CELLTABLE*>(elements_.back().get());
 						cell_table->isConcatinate_ = true;
 					}
-					m_CELLTABLE = elements_.back(); //пофиг какой тут элемент - данные вынесены во вне
+					else m_CELLTABLE = elements_.back(); 
 					elements_.pop_back();
 				}
 				if(0 != shared_formulas_locations.size())
@@ -323,7 +324,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					count--;
 
 					PIVOTVIEW *view = dynamic_cast<PIVOTVIEW*>(m_arPIVOTVIEW.back().get());
-					mapPivotViews.insert(std::make_pair(view->name, m_arPIVOTVIEW.back()));
+					global_info_->mapPivotTableViews.insert(std::make_pair(view->name, m_arPIVOTVIEW.back()));
 				}
 			}break;
 			case rt_DCon:
@@ -538,6 +539,18 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					elements_.pop_back();
 				}
 			}break;
+			//case rt_SXAddl:
+			//{
+			//	proc.optional<SXAddl>();
+			//	SXAddl* addl = dynamic_cast<SXAddl*>(elements_.back().get());				
+			//	if (!addl) continue;
+			//	
+			//	if (false == addl->bEndElement)
+			//	{
+			//		m_arSXAddl.push_back(elements_.back()); 
+			//	}
+			//	elements_.pop_back();
+			//}break;
 			default://unknown .... skip					
 			{
 				proc.SkipRecord();	

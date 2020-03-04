@@ -119,7 +119,7 @@ namespace OOX
 					return;
 
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-				if ( _T("workbook") == sName )
+				if ( L"workbook" == sName )
 				{
 					if ( !oReader.IsEmptyNode() )
 					{
@@ -128,18 +128,24 @@ namespace OOX
 						{
 							sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-							if ( _T("bookViews") == sName )
+							if ( L"bookViews" == sName )
 								m_oBookViews = oReader;
-							else if ( _T("calcPr") == sName )
+							else if ( L"calcPr" == sName )
 								m_oCalcPr = oReader;
-							else if ( _T("definedNames") == sName )
+							else if ( L"definedNames" == sName )
 								m_oDefinedNames = oReader;
-							else if ( _T("sheets") == sName )
+							else if ( L"sheets" == sName )
 								m_oSheets = oReader;
-							else if ( _T("workbookPr") == sName )
+							else if ( L"workbookPr" == sName )
 								m_oWorkbookPr = oReader;
-							else if ( _T("externalReferences") == sName )
+							else if ( L"externalReferences" == sName )
 								m_oExternalReferences = oReader;
+							else if ( L"fileVersion" == sName )
+							{
+								WritingElement_ReadAttributes_Start( oReader )
+									WritingElement_ReadAttributes_Read_if( oReader, L"appName", m_oAppName )
+								WritingElement_ReadAttributes_End( oReader )
+							}
 						}
 					}
 				}		
@@ -147,7 +153,7 @@ namespace OOX
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
 				NSStringUtils::CStringBuilder sXml;
-				sXml.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">"));
+				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">");
 
 				if(m_oWorkbookPr.IsInit())
 					m_oWorkbookPr->toXML(sXml);
@@ -164,7 +170,7 @@ namespace OOX
 
 				if(m_oPivotCachesXml.IsInit())
 					sXml.WriteString(m_oPivotCachesXml.get());
-				sXml.WriteString(_T("</workbook>"));
+				sXml.WriteString(L"</workbook>");
 
                 std::wstring sPath = oPath.GetPath();
                 NSFile::CFileBinary::SaveToFile(sPath.c_str(), sXml.GetData());
@@ -233,7 +239,7 @@ namespace OOX
 			LONG GetActiveSheetIndex()
 			{
 				LONG lActiveSheet = 0;
-				std::wstring sSheetRId = _T("Sheet1"); // Читаем не по rId, а по имени листа
+				std::wstring sSheetRId = L"Sheet1"; // Читаем не по rId, а по имени листа
 				// Get active sheet
 				if ( m_oBookViews.IsInit() && !m_oBookViews->m_arrItems.empty())
 				{
@@ -246,10 +252,8 @@ namespace OOX
 				}
 				return lActiveSheet;
 			}
-		private:
 			CPath											m_oReadPath;
 
-		public:
 			nullable<OOX::Spreadsheet::CBookViews>			m_oBookViews;
 			nullable<OOX::Spreadsheet::CDefinedNames>		m_oDefinedNames;
 			nullable<OOX::Spreadsheet::CSheets>				m_oSheets;
@@ -257,6 +261,7 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CExternalReferences>	m_oExternalReferences;
 			nullable<std::wstring>							m_oPivotCachesXml;
             nullable<OOX::Spreadsheet::CCalcPr>				m_oCalcPr;
+			nullable_string									m_oAppName;
 			
 			CPersonList*									m_pPersonList;
 			bool											m_bMacroEnabled;

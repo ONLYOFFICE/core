@@ -135,7 +135,7 @@ public:
         std::vector<std::wstring> arFiles = NSDirectory::GetFiles(m_sTmpFolder, true);
 
         url_correct2(m_sTmpFolder);
-        int nStart = m_sTmpFolder.length();
+        int nStart = (int)m_sTmpFolder.length();
         for (std::vector<std::wstring>::iterator i = arFiles.begin(); i != arFiles.end(); i++)
         {
             std::wstring sTmp = *i;
@@ -179,9 +179,19 @@ private:
     }
 };
 
-// string convert
-std::wstring to_cstring(v8::Local<v8::Value> v);
-std::string to_cstringA(v8::Local<v8::Value> v);
+class CImagesWorker
+{
+private:
+    std::wstring m_sFolder;
+
+    int m_nIndex;
+    std::map<std::wstring, std::wstring> m_mapImages;
+
+public:
+    CImagesWorker(const std::wstring& sFolder);
+    std::wstring GetImageLocal(const std::wstring& sUrl);
+    std::wstring GetImage(const std::wstring& sUrl);
+};
 
 class CNativeControl
 {
@@ -219,6 +229,9 @@ public:
 
     CZipWorker m_oZipWorker;
 
+    // для добавления картинок -------------------------------------
+    CImagesWorker* m_pWorker;
+
 public:
     CMemoryStream* m_pStream;
 
@@ -237,6 +250,8 @@ public:
         m_sConsoleLogFile = L"";
 
         m_nCurrentChangesBuilderIndex = 0;
+
+        m_pWorker = NULL;
     }
     ~CNativeControl()
     {
@@ -245,6 +260,8 @@ public:
 
         RELEASEARRAYOBJECTS(m_pSaveBinary);
         m_nSaveLen = 0;
+
+        RELEASEOBJECT(m_pWorker);
     }
 
 public:
@@ -444,6 +461,7 @@ CNativeControl* unwrap_nativeobject(v8::Handle<v8::Object> obj);
 
 void _GetFilePath(const v8::FunctionCallbackInfo<v8::Value>& args);
 void _SetFilePath(const v8::FunctionCallbackInfo<v8::Value>& args);
+void _GetImagesPath(const v8::FunctionCallbackInfo<v8::Value>& args);
 
 void _GetFontsDirectory(const v8::FunctionCallbackInfo<v8::Value>& args);
 void _GetEditorType(const v8::FunctionCallbackInfo<v8::Value>& args);
@@ -471,6 +489,8 @@ void _Save_End(const v8::FunctionCallbackInfo<v8::Value>& args);
 void _ConsoleLog(const v8::FunctionCallbackInfo<v8::Value>& args);
 
 void _SaveChanges(const v8::FunctionCallbackInfo<v8::Value>& args);
+
+void _GetImageUrl(const v8::FunctionCallbackInfo<v8::Value>& args);
 
 /// ZIP -----
 void _zipOpenFile(const v8::FunctionCallbackInfo<v8::Value>& args);
@@ -1255,6 +1275,7 @@ public:
 bool Doct_renderer_SaveFile_ForBuilder(int nFormat, const std::wstring& strDstFile,
                                CNativeControl* pNative,
                                v8::Isolate* isolate,
+                               v8::Local<v8::Context> context,
                                v8::Local<v8::Object>& global_js,
                                v8::Handle<v8::Value>* args,
                                v8::TryCatch& try_catch,

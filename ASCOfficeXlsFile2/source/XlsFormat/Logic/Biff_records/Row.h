@@ -74,8 +74,9 @@ public:
 	bool			fExAsc;
 	bool			fExDes;
 	bool			fPhonetic;
+
+	bool			bValid;
 	
-	BackwardOnlyParam<_UINT32> in_block_position;
 };
 
 } // namespace XLS

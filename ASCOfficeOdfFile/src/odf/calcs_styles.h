@@ -61,5 +61,6 @@ namespace cpdoccore
 		style_table_cell_properties_attlist calc_table_cell_properties(const std::vector<const style_instance *> & styleInstances);
 
 		void calc_tab_stops(const style_instance * styleInstance, oox::tabs_context & context);
+		_CP_OPT(int) calc_outline_level(_CP_OPT(int) value, const style_instance * styleInstance);
 	}
 }

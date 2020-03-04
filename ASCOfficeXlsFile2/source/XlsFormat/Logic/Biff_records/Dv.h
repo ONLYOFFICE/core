@@ -32,9 +32,9 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/BiffString.h>
-#include <Logic/Biff_structures/DVParsedFormula.h>
-#include <Logic/Biff_structures/SqRefU.h>
+#include "../Biff_structures/BiffString.h"
+#include "../Biff_structures/DVParsedFormula.h"
+#include "../Biff_structures/SqRefU.h"
 
 namespace XLS
 {

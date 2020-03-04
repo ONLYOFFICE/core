@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -171,10 +171,12 @@ namespace NSFile
         static bool Move(const std::wstring&  strSrc, const std::wstring&  strDst);
         static bool Truncate(const std::wstring& sPath, size_t nNewSize);
 
+        static void SetTempPath(const std::wstring& strTempPath);
         static std::wstring GetTempPath();
+
         static std::wstring CreateTempFileWithUniqueName(const std::wstring& strFolderPathRoot, const std::wstring& Prefix);
         static bool OpenTempFile(std::wstring *pwsName, FILE **ppFile, wchar_t *wsMode, wchar_t *wsExt, wchar_t *wsFolder, wchar_t* wsName = NULL);
-        static FILE* OpenFileNative(const std::wstring& sFileName, const std::wstring& sMode);
+        static FILE* OpenFileNative(const std::wstring& sFileName, const std::wstring& sMode);        
 	};
 
     class KERNEL_DECL CBase64Converter

@@ -39,6 +39,7 @@
 #include "UniFill.h"
 #include "EffectProperties.h"
 #include "Scene3d.h"
+#include "ExtP.h"
 
 namespace PPTX
 {
@@ -96,10 +97,22 @@ namespace PPTX
 						Fill.fromXML(oReader);
 					}
 					else if ( L"effectDag"	== sName	||
-							  L"effectLst"	== sName	||
-							  L"extLst"		== sName )
+							  L"effectLst"	== sName)
 					{
 						EffectList.fromXML(oReader);		
+					}
+					else if ( L"extLst"		== sName )
+					{
+						if ( oReader.IsEmptyNode() )
+							continue;
+
+						int nParentDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						{
+							Ext element;
+							element.fromXML(oReader);
+							extLst.push_back (element);
+						}
 					}
 				}
 				FillParentPointersForChilds();
@@ -259,6 +272,8 @@ namespace PPTX
 			UniFill						Fill;
 			EffectProperties			EffectList;
 			nullable<Scene3d>			scene3d;
+
+			std::vector<Ext>			extLst;
 
 			nullable_limit<Limit::BWMode>	bwMode;
 		protected:

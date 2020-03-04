@@ -95,55 +95,6 @@ namespace ComplexTypes
 			SimpleTypes::COnOff<eDefValue> m_oVal;
 
 		};
-
-		class CDecimalNumber : public ComplexType
-		{
-		public:
-			ComplexTypes_AdditionConstructors(CDecimalNumber)
-			CDecimalNumber()
-			{
-			}
-			virtual ~CDecimalNumber()
-			{
-			}
-
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, _T("val"), m_oVal );
-			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
-
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-			virtual std::wstring ToString() const
-			{
-				std::wstring sResult;
-
-				if ( m_oVal.IsInit() )
-				{
-					sResult += _T("val=\"");
-					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
-				}
-
-				return sResult;
-			}
-		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
-			}
-		public:
-
-			nullable<SimpleTypes::CDecimalNumber<> > m_oVal;
-		};
         class String : public ComplexType
 		{
 		public:
@@ -398,7 +349,7 @@ namespace ComplexTypes
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CChartAxPos)
-				CChartAxPos()
+			CChartAxPos()
 			{
 			}
 			virtual ~CChartAxPos()
@@ -446,7 +397,7 @@ namespace ComplexTypes
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CChartBarGrouping)
-				CChartBarGrouping()
+			CChartBarGrouping()
 			{
 			}
 			virtual ~CChartBarGrouping()
@@ -495,7 +446,7 @@ namespace ComplexTypes
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CChartBarDerection)
-				CChartBarDerection()
+			CChartBarDerection()
 			{
 			}
 			virtual ~CChartBarDerection()

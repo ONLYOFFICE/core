@@ -97,6 +97,9 @@ std::wostream & operator << (std::wostream & _Wostream, const style_numformat & 
 
 style_numformat style_numformat::parse(const std::wstring & Str)
 {
+	if (Str.empty())
+		return style_numformat( none );
+
     std::wstring tmp = Str;
     boost::algorithm::to_lower(tmp);
 

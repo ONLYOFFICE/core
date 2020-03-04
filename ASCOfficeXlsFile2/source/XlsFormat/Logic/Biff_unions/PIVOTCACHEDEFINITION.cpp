@@ -108,7 +108,7 @@ int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 	global_info_->arPivotSxNames.clear();
 	global_info_->idPivotCache = streamId->idStm;
 	
-	std::unordered_map<int, BaseObjectPtr>::iterator pFind = global_info_->mapPivotCacheStream.find(streamId->idStm);
+	std::map<int, BaseObjectPtr>::iterator pFind = global_info_->mapPivotCacheStream.find(streamId->idStm);
 	if (pFind == global_info_->mapPivotCacheStream.end()) return 0;
 
 	PIVOTCACHE* pivot_cache = dynamic_cast<PIVOTCACHE*>(pFind->second.get());
@@ -118,12 +118,6 @@ int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 	SXDBEx*	db_ex	= dynamic_cast<SXDBEx*>(pivot_cache->m_SXDBEx.get());
 
 	if (!db || !db_ex)return 0;
-
-	if (pivot_cache->m_arFDB.empty() && pivot_cache->m_arSXFORMULA.empty())
-	{
-		global_info_->mapPivotCacheStream.erase(pFind);
-		return 0;
-	}
 
 	SXSRC* src = dynamic_cast<SXSRC*>(m_SXSRC.get());
 	bool bSql = src ? src->bSql : false;
@@ -165,27 +159,24 @@ int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 				src->serialize(CP_XML_STREAM());
 			}
 			
-			if (!pivot_cache->m_arFDB.empty())
+			CP_XML_NODE(L"cacheFields")
 			{
-				CP_XML_NODE(L"cacheFields")
+				CP_XML_ATTR(L"count", pivot_cache->m_arFDB.size());
+
+				for (size_t i = 0; i < pivot_cache->m_arFDB.size(); i++)
 				{
-					CP_XML_ATTR(L"count", pivot_cache->m_arFDB.size());
-
-					for (size_t i = 0; i < pivot_cache->m_arFDB.size(); i++)
+					FDB *field = dynamic_cast<FDB *>(pivot_cache->m_arFDB[i].get());
+					if (!field) continue;
+					
+					if (olap_view)
 					{
-						FDB *field = dynamic_cast<FDB *>(pivot_cache->m_arFDB[i].get());
-						if (!field) continue;
+						PIVOTVDTEX *ex = dynamic_cast<PIVOTVDTEX*>(olap_view->m_arPIVOTVDTEX[i].get());
 						
-						if (olap_view)
-						{
-							PIVOTVDTEX *ex = dynamic_cast<PIVOTVDTEX*>(olap_view->m_arPIVOTVDTEX[i].get());
-							
-							field->m_SXVDTEx	= ex->m_SXVDTEx;
-							field->m_arPIVOTTH	= olap_view->m_arPIVOTTH;
-						}
-
-						field->serialize(CP_XML_STREAM(), bSql, !pivot_cache->m_arDBB.empty());
+						field->m_SXVDTEx	= ex->m_SXVDTEx;
+						field->m_arPIVOTTH	= olap_view->m_arPIVOTTH;
 					}
+
+					field->serialize(CP_XML_STREAM(), bSql, !pivot_cache->m_arDBB.empty());
 				}
 			}
 			if (!pivot_cache->m_arSXFORMULA.empty())
@@ -217,7 +208,7 @@ int PIVOTCACHEDEFINITION::serialize_records(std::wostream & strm)
 	SXStreamID* streamId = dynamic_cast<SXStreamID*>(m_SXStreamID.get());
 	if (!streamId) return 0;
 
-	std::unordered_map<int, BaseObjectPtr>::iterator pFind = global_info_->mapPivotCacheStream.find(streamId->idStm);
+	std::map<int, BaseObjectPtr>::iterator pFind = global_info_->mapPivotCacheStream.find(streamId->idStm);
 	if (pFind == global_info_->mapPivotCacheStream.end()) return 0;
 
 	PIVOTCACHE* pivot_cache = dynamic_cast<PIVOTCACHE*>(pFind->second.get());

@@ -543,7 +543,16 @@ void xlsx_drawing_context::set_alternative_drawing(const std::wstring & xml_data
 	if (current_drawing_states == NULL) return;
 	if (current_drawing_states->empty()) return;
 
-	//if (std::wstring::npos != xml_data.find(L"rId=\"")) return; // чужые ссылки на объекты 
+	current_drawing_states->back()->xmlAlternative = xml_data;
+}
+
+void xlsx_drawing_context::reset_alternative_drawing()
+{
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
+
+	std::wstring xml_data = current_drawing_states->back()->xmlAlternative;
+	current_drawing_states->back()->xmlAlternative.clear();
 	
 	XmlUtils::CXmlLiteReader oReader;
 
@@ -554,9 +563,6 @@ void xlsx_drawing_context::set_alternative_drawing(const std::wstring & xml_data
 
 	std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-	if (L"anchor" == sName)
-		oReader.ReadNextNode();
-
 	nullable<PPTX::Logic::SpTreeElem> oElement;
 
 	int nCurDepth = oReader.GetDepth();
@@ -564,8 +570,13 @@ void xlsx_drawing_context::set_alternative_drawing(const std::wstring & xml_data
 	{
 		sName = XmlUtils::GetNameNoNS(oReader.GetName());
 		
-		if ( L"graphicFrame" == sName || L"pic" == sName || L"sp" == sName || L"grpSp" == sName || L"cxnSp" == sName || L"AlternateContent" == sName
-			|| L"spTree" )
+		if (L"AlternateContent" == sName || L"Choice" == sName || 
+			L"twoCellAnchor" == sName || L"oneCellAnchor" == sName || L"absoluteAnchor" == sName)
+		{
+			nCurDepth++;
+			continue;
+		}
+		else if ( L"graphicFrame" == sName || L"pic" == sName || L"sp" == sName || L"grpSp" == sName || L"cxnSp" == sName || L"spTree" == sName)
 		{
 			oElement = oReader;
 		}
@@ -588,19 +599,61 @@ void xlsx_drawing_context::set_alternative_drawing(const std::wstring & xml_data
 			current_drawing_states->back()->xmlGeomAlternative = writer.GetXmlString();
 
 			writer.ClearNoAttack();
-			if ((shape->txBody.IsInit()) && (shape->txBody->bodyPr.IsInit()) && (shape->txBody->bodyPr->prstTxWarp.IsInit()))
-			{//только WordArt
-				shape->txBody->toXmlWriter(&writer);
-				current_drawing_states->back()->xmlTxBodyAlternative = writer.GetXmlString();
+			if ((shape->txBody.IsInit()) && (shape->txBody->bodyPr.IsInit()))
+			{
+				bool bWordArt = shape->txBody->bodyPr->prstTxWarp.IsInit();
+				bool bMath = false;
+
+				if ((false == shape->txBody->Paragrs.empty()) && (false == shape->txBody->Paragrs[0].RunElems.empty()))
+				{
+					bMath = (OOX::et_p_MathPara == shape->txBody->Paragrs[0].RunElems[0].getType());
+				}					
+
+				if (bWordArt || bMath)
+				{
+					shape->txBody->toXmlWriter(&writer);
+					current_drawing_states->back()->xmlTxBodyAlternative = writer.GetXmlString();
+				}
+			}
+			if (shape->spPr.Fill.is_init())
+			{
+				NSBinPptxRW::CXmlWriter writerFill(XMLWRITER_DOC_TYPE_XLSX);
+				shape->spPr.Fill.toXmlWriter(&writerFill);
+
+				current_drawing_states->back()->xmlFillAlternative = writerFill.GetXmlString();
+			}
+			if (shape->spPr.EffectList.is_init())
+			{
+				NSBinPptxRW::CXmlWriter writerEffect(XMLWRITER_DOC_TYPE_XLSX);
+				shape->spPr.EffectList.toXmlWriter(&writerEffect);
+
+				current_drawing_states->back()->xmlEffectAlternative = writerEffect.GetXmlString();
 			}
 		}
 		smart_ptr<PPTX::Logic::SpTree> groupShape = oElement->GetElem().smart_dynamic_cast<PPTX::Logic::SpTree>();
 		if (groupShape.IsInit())
-		{//smartArt			
-			NSBinPptxRW::CXmlWriter writer(XMLWRITER_DOC_TYPE_XLSX);
-			groupShape->toXmlWriter(&writer);
+		{//smartArt	or group	
 
-			current_drawing_states->back()->xmlAlternative = writer.GetXmlString();
+			if (groupShape->grpSpPr.Fill.is_init())
+			{
+				NSBinPptxRW::CXmlWriter writerFill(XMLWRITER_DOC_TYPE_XLSX);
+				groupShape->grpSpPr.Fill.toXmlWriter(&writerFill);
+
+				current_drawing_states->back()->xmlFillAlternative = writerFill.GetXmlString();
+			}
+
+			if (false == groupShape->SpTreeElems.empty()) // smartArt
+			{
+				if (false == groupShape->grpSpPr.xfrm.IsInit())
+				{
+					groupShape->grpSpPr.xfrm.Init();
+					set_xfrm_from_anchor(groupShape->grpSpPr.xfrm.GetPointer(), current_drawing_states->back());
+				}
+				NSBinPptxRW::CXmlWriter writerObject(XMLWRITER_DOC_TYPE_XLSX);
+				groupShape->toXmlWriter(&writerObject);
+
+				current_drawing_states->back()->xmlAlternative = writerObject.GetXmlString();
+			}
 		}
 	}
 
@@ -610,6 +663,32 @@ void xlsx_drawing_context::set_alternative_drawing(const std::wstring & xml_data
 	//	current_drawing_states->back()->xmlAlternative = oReader.GetInnerXml();
 	//	//fill(color index???) ??? prst ???
 	//}
+}
+void xlsx_drawing_context::set_xfrm_from_anchor(PPTX::Logic::Xfrm *xfrm, _drawing_state_ptr state)
+{
+	if (!xfrm) return;
+	if (!state) return;
+
+	if (state->type_anchor == 1)
+	{
+		xfrm->offX = (int)(state->sheet_anchor.absolute.x);
+		xfrm->offY = (int)(state->sheet_anchor.absolute.y);
+		xfrm->extX = (int)(state->sheet_anchor.absolute.cx);
+		xfrm->extY = (int)(state->sheet_anchor.absolute.cy);
+		
+		xfrm->chExtX = (int)(state->sheet_anchor.absolute.cx);
+		xfrm->chExtY = (int)(state->sheet_anchor.absolute.cy);
+	}
+	if (state->type_anchor == 3)
+	{
+		xfrm->offX = (int)(state->absolute_anchor.x * 12700);
+		xfrm->offY = (int)(state->absolute_anchor.y * 12700);
+		xfrm->extX = (int)(state->absolute_anchor.cx * 12700);
+		xfrm->extY = (int)(state->absolute_anchor.cy * 12700); 
+		
+		xfrm->chExtX = (int)(state->absolute_anchor.cx * 12700);
+		xfrm->chExtY = (int)(state->absolute_anchor.cy * 12700); 
+	}
 }
 void xlsx_drawing_context::set_hidden(bool val)
 {
@@ -726,6 +805,8 @@ void xlsx_drawing_context::end_drawing()
 	if (current_drawing_states == NULL) return;
 	if (current_drawing_states->empty()) return;
 
+	reset_alternative_drawing();
+
 	if (current_drawing_states->back()->type == external_items::typeGroup)  return;
 	
 	//std::vector<_drawing_state_ptr>* cur_states = current_drawing_states;;
@@ -775,11 +856,28 @@ void xlsx_drawing_context::end_drawing(_drawing_state_ptr & drawing_state)
 	if (drawing_state->id < 0)	
 		drawing_state->id = count_object + 0x20000;
 
-	if ( current_level > 0 && drawing_state->rotation > 0 && ((int)drawing_state->rotation % 90 == 0))
+	if (((drawing_state->rotation >= 45.0 && drawing_state->rotation <= 135.0) || 
+		(drawing_state->rotation >= 225.0 && drawing_state->rotation <= 315.0) || 
+		(drawing_state->rotation <= -45.0 && drawing_state->rotation >= -135.0) ||
+		(drawing_state->rotation <= -225.0 && drawing_state->rotation >= -315.0))	&& current_level > 0)
 	{
-		int v = drawing_state->child_anchor.cx;
-		drawing_state->child_anchor.cx = drawing_state->child_anchor.cy;
-		drawing_state->child_anchor.cy = v;
+		int left = current_drawing_states->back()->child_anchor.x;
+		int top	= current_drawing_states->back()->child_anchor.y;
+		
+		int right	= current_drawing_states->back()->child_anchor.x + current_drawing_states->back()->child_anchor.cx;
+		int bottom	= current_drawing_states->back()->child_anchor.y + current_drawing_states->back()->child_anchor.cy;
+		
+		left =	(right	+	current_drawing_states->back()->child_anchor.x) * 0.5 - (bottom	-	current_drawing_states->back()->child_anchor.y)  * 0.5;
+		top	=	(bottom	+	current_drawing_states->back()->child_anchor.y) * 0.5 - (right	-	current_drawing_states->back()->child_anchor.x) * 0.5;
+
+		right	= left + current_drawing_states->back()->child_anchor.cy;
+		bottom	= top + current_drawing_states->back()->child_anchor.cx;
+
+		current_drawing_states->back()->child_anchor.x = left;
+		current_drawing_states->back()->child_anchor.y = top;
+		
+		current_drawing_states->back()->child_anchor.cx = right - left;
+		current_drawing_states->back()->child_anchor.cy = bottom - top;
 	}
 
 	if (  drawing_state->type == external_items::typeImage ||
@@ -914,8 +1012,14 @@ void xlsx_drawing_context::serialize_group()
 			
 			CP_XML_NODE(L"xdr:grpSpPr")
 			{
+				CP_XML_ATTR(L"bwMode", L"auto");
 				serialize_xfrm(CP_XML_STREAM(), drawing_state);
-				//serialize_fill(CP_XML_STREAM(), drawing_state);
+				
+				if (false == drawing_state->xmlFillAlternative.empty()) //Family budget (monthly)1.xls
+				{
+					CP_XML_STREAM() << drawing_state->xmlFillAlternative;
+				}
+				//serialize_fill(CP_XML_STREAM(), drawing_state); ???? белый //Family budget (monthly)1.xls
 				//serialize_line(CP_XML_STREAM(), drawing_state);		
 			}
 
@@ -1292,6 +1396,15 @@ void xlsx_drawing_context::serialize_pic(_drawing_state_ptr & drawing_state)
 				}
 
 				CP_XML_NODE(L"a:noFill");
+				
+				if (false == drawing_state->xmlEffectAlternative.empty())
+				{
+					CP_XML_STREAM() << drawing_state->xmlEffectAlternative;
+				}
+				else
+				{
+					//serialize_effect(CP_XML_STREAM(), drawing_state);
+				}
 			}
 		}
 	}
@@ -1380,10 +1493,10 @@ void xlsx_drawing_context::serialize_control(_drawing_state_ptr & drawing_state)
 						CP_XML_NODE(L"a:ext")
 						{
 							CP_XML_ATTR(L"uri", L"{63B3BB69-23CF-44E3-9099-C40C66FF867C}");
-							CP_XML_ATTR(L"xmlns:a14", L"http://schemas.microsoft.com/office/drawing/2010/main");
 
 							CP_XML_NODE(L"a14:compatExt")
 							{
+								CP_XML_ATTR(L"xmlns:a14", L"http://schemas.microsoft.com/office/drawing/2010/main");
 								CP_XML_ATTR(L"spid", L"_x0000_s" + std::to_wstring(drawing_state->id));
 							}
 						}
@@ -1549,9 +1662,54 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 				}
 				if (!is_lined_shape(drawing_state))
 				{
-					serialize_fill(CP_XML_STREAM(), drawing_state);
+					if (false == drawing_state->xmlFillAlternative.empty()) //Family budget (monthly)1.xls
+					{
+						CP_XML_STREAM() << drawing_state->xmlFillAlternative;
+					}
+					else
+					{
+						serialize_fill(CP_XML_STREAM(), drawing_state);
+					}
 				}
-				serialize_line(CP_XML_STREAM(), drawing_state);		
+				serialize_line(CP_XML_STREAM(), drawing_state);	
+				
+				if (false == drawing_state->xmlEffectAlternative.empty())
+				{
+					CP_XML_STREAM() << drawing_state->xmlEffectAlternative;
+				}
+				else
+				{
+					if (drawing_state->shadow.enabled)
+					{
+						double dist = sqrt(drawing_state->shadow.offsetX * drawing_state->shadow.offsetX +
+							drawing_state->shadow.offsetY * drawing_state->shadow.offsetY);
+						double dir = atan(abs(drawing_state->shadow.offsetY / drawing_state->shadow.offsetX)) * 180. / 3.1415926;
+
+						if (drawing_state->shadow.offsetX < 0 && drawing_state->shadow.offsetY < 0)
+							dir += 180;
+						else if (drawing_state->shadow.offsetX < 0)
+							dir = 180 - dir;
+						else if (drawing_state->shadow.offsetY < 0)
+							dir = 360 - dir;
+
+						CP_XML_NODE(L"a:effectLst")
+						{
+							CP_XML_NODE(L"a:outerShdw")
+							{
+								CP_XML_ATTR(L"dist", (int)(dist)); 
+								CP_XML_ATTR(L"dir", (int)(dir * 60000)); 		
+								
+								CP_XML_ATTR(L"sx", (int)(drawing_state->shadow.scaleX2X * 100000 + 0.5)); 
+								CP_XML_ATTR(L"sy", (int)(drawing_state->shadow.scaleY2Y * 100000 + 0.5)); 		
+								
+								CP_XML_ATTR(L"rotWithShape", 0);
+
+								serialize_color(CP_XML_STREAM(), drawing_state->shadow.color, drawing_state->shadow.opacity);	
+							}
+						}
+					}
+					//serialize_effect(CP_XML_STREAM(), drawing_state);
+				}
 			}
 			serialize_text(CP_XML_STREAM(), drawing_state);
 		}
@@ -1560,7 +1718,7 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 	drawing_state->shape = strm.str();
 }
 
-bool xlsx_drawing_context::is_lined_shape	(_drawing_state_ptr & drawing_state)
+bool xlsx_drawing_context::is_lined_shape(_drawing_state_ptr & drawing_state)
 {
 	if (drawing_state->shape_id == msosptStraightConnector1 ||
 		drawing_state->shape_id == msosptLine				||
@@ -1949,7 +2107,14 @@ void xlsx_drawing_context::serialize_xfrm(std::wostream & stream, _drawing_state
 			if (drawing_state->flipV)			CP_XML_ATTR(L"flipV", true);
 			if (drawing_state->flipH)			CP_XML_ATTR(L"flipH", true);
 			
-			if (drawing_state->rotation != 0)	CP_XML_ATTR(L"rot", (int)(drawing_state->rotation * 60000));
+			if (drawing_state->rotation != 0)
+			{
+				if (drawing_state->rotation > 180)
+				{
+					drawing_state->rotation -= 360.;
+				}
+				CP_XML_ATTR(L"rot", (int)(drawing_state->rotation * 60000));
+			}
 			
 			CP_XML_NODE(L"a:off")
 			{
@@ -2145,7 +2310,7 @@ void xlsx_drawing_context::serialize_text(std::wostream & stream, _drawing_state
 						}
 						CP_XML_NODE(L"a:t")
 						{		
-							CP_XML_STREAM() << xml::utils::replace_text_to_xml(drawing_state->wordart.text);
+							CP_XML_STREAM() << drawing_state->wordart.text;
 						}
 					}
 				}
@@ -2252,6 +2417,26 @@ void xlsx_drawing_context::serialize_bitmap_fill(std::wostream & stream, _drawin
 			CP_XML_NODE(L"a:blip")
 			{
 				CP_XML_ATTR(L"r:embed", rId);
+
+				if (fill.grayscale)
+				{
+					CP_XML_NODE(L"a:grayscl");
+				}
+				if (fill.brightness || fill.contrast)
+				{
+					CP_XML_NODE(L"a:lum")
+					{
+						if (fill.brightness)CP_XML_ATTR(L"bright", *fill.brightness * 1000);
+						if (fill.contrast)	CP_XML_ATTR(L"contrast", *fill.contrast * 1000);
+					}
+				}
+				if (fill.biLevel)
+				{
+					CP_XML_NODE(L"a:biLevel")
+					{
+						CP_XML_ATTR(L"thresh", *fill.biLevel * 1000);
+					}
+				}
 			}
 
 			CP_XML_NODE(L"a:srcRect")
@@ -2414,7 +2599,7 @@ void xlsx_drawing_context::serialize_control_props(std::wostream & strm, _drawin
 				case 0x0007: CP_XML_ATTR(L"objectType", L"Button");		break;
 				case 0x0008: CP_XML_ATTR(L"objectType", L"Pict");		break;
 				case 0x0009: CP_XML_ATTR(L"objectType", L"Shape");		break; // Polygon:			
-				case 0x000B: CP_XML_ATTR(L"objectType", L"Checkbox");	break;
+				case 0x000B: CP_XML_ATTR(L"objectType", L"CheckBox");	break;
 				case 0x000C: CP_XML_ATTR(L"objectType", L"Radio");		break;
 				case 0x000D: CP_XML_ATTR(L"objectType", L"Edit");		break;
 				case 0x000E: CP_XML_ATTR(L"objectType", L"Label");		break;
@@ -2581,7 +2766,8 @@ void xlsx_drawing_context::set_control_activeX(const std::wstring & rid)
 	current_drawing_states->back()->type = external_items::typeActiveX;
 	current_drawing_states->back()->objectId = rid;
 }
-void xlsx_drawing_context::set_sheet_anchor(int colFrom, int xFrom, int rwFrom, int yFrom, int colTo, int xTo, int rwTo,int yTo)
+void xlsx_drawing_context::set_sheet_anchor(int colFrom, int xFrom, int rwFrom, int yFrom, int colTo, int xTo, int rwTo, int yTo,
+											double x, double y, double cx, double cy)
 {
 	if (current_drawing_states == NULL) return;	
 	
@@ -2593,6 +2779,11 @@ void xlsx_drawing_context::set_sheet_anchor(int colFrom, int xFrom, int rwFrom, 
 	current_drawing_states->back()->sheet_anchor.yFrom		= yFrom;
 	current_drawing_states->back()->sheet_anchor.xTo		= xTo;
 	current_drawing_states->back()->sheet_anchor.yTo		= yTo;
+
+	current_drawing_states->back()->sheet_anchor.absolute.x		= x;
+	current_drawing_states->back()->sheet_anchor.absolute.y		= y;
+	current_drawing_states->back()->sheet_anchor.absolute.cx	= cx;
+	current_drawing_states->back()->sheet_anchor.absolute.cy	= cy;
 
 	current_drawing_states->back()->type_anchor	= 1;
 }
@@ -2647,8 +2838,7 @@ void xlsx_drawing_context::set_fill_texture(const std::wstring & str)
 
 	current_drawing_states->back()->fill.texture_target = str;
 }
-
-void xlsx_drawing_context::set_crop_top	(double val)
+void xlsx_drawing_context::set_picture_crop_top	(double val)
 {
 	if (current_drawing_states == NULL) return;	
 	if (current_drawing_states->empty()) return;
@@ -2656,7 +2846,7 @@ void xlsx_drawing_context::set_crop_top	(double val)
 	current_drawing_states->back()->fill.texture_crop[1] = val;
     current_drawing_states->back()->fill.texture_crop_enabled = true;
 }
-void xlsx_drawing_context::set_crop_bottom(double val)
+void xlsx_drawing_context::set_picture_crop_bottom(double val)
 {
 	if (current_drawing_states == NULL) return;	
 	if (current_drawing_states->empty()) return;
@@ -2664,7 +2854,7 @@ void xlsx_drawing_context::set_crop_bottom(double val)
 	current_drawing_states->back()->fill.texture_crop[3] = val;
     current_drawing_states->back()->fill.texture_crop_enabled = true;
 }
-void xlsx_drawing_context::set_crop_left (double val)
+void xlsx_drawing_context::set_picture_crop_left (double val)
 {
 	if (current_drawing_states == NULL) return;	
 	if (current_drawing_states->empty()) return;
@@ -2672,7 +2862,7 @@ void xlsx_drawing_context::set_crop_left (double val)
 	current_drawing_states->back()->fill.texture_crop[0] = val;
     current_drawing_states->back()->fill.texture_crop_enabled = true;
 }
-void xlsx_drawing_context::set_crop_right (double val)
+void xlsx_drawing_context::set_picture_crop_right (double val)
 {
 	if (current_drawing_states == NULL) return;	
 	if (current_drawing_states->empty()) return;
@@ -2680,20 +2870,89 @@ void xlsx_drawing_context::set_crop_right (double val)
 	current_drawing_states->back()->fill.texture_crop[2] = val;
     current_drawing_states->back()->fill.texture_crop_enabled = true;
 }
+void xlsx_drawing_context::set_picture_name(const std::wstring & str)
+{
+	//....
+}
+void xlsx_drawing_context::set_picture_grayscale(bool val)
+{
+    current_drawing_states->back()->fill.grayscale = val;
+}
+void xlsx_drawing_context::set_picture_brightness(int val)
+{
+    current_drawing_states->back()->fill.brightness = val;
+}
+void xlsx_drawing_context::set_picture_contrast(int val)
+{
+    current_drawing_states->back()->fill.contrast = val;
+}
+void xlsx_drawing_context::set_picture_biLevel(int val)
+{
+    current_drawing_states->back()->fill.biLevel = val;
+}
+void xlsx_drawing_context::set_picture_transparent(int nColor, const std::wstring & sColor)
+{
+	//....
+}
+void xlsx_drawing_context::set_shadow_enabled(bool val)
+{
+	current_drawing_states->back()->shadow.enabled = val;
+}
+void xlsx_drawing_context::set_shadow_type(int val)
+{
+    current_drawing_states->back()->shadow.type = val;
+}
+void xlsx_drawing_context::set_shadow_opacity(double val)
+{
+    current_drawing_states->back()->shadow.opacity = val;
+}
+void xlsx_drawing_context::set_shadow_color(int nColor, const std::wstring & sColor)
+{
+	current_drawing_states->back()->shadow.color.sRGB = sColor;
+	current_drawing_states->back()->shadow.color.nRGB = nColor;
+}
+void xlsx_drawing_context::set_shadow_highlight(int nColor, const std::wstring & sColor)
+{
+	current_drawing_states->back()->shadow.highlight.sRGB = sColor;
+	current_drawing_states->back()->shadow.highlight.nRGB = nColor;
+}
+void xlsx_drawing_context::set_shadow_originX(double val)
+{
+    current_drawing_states->back()->shadow.originX = val;
+}
+void xlsx_drawing_context::set_shadow_originY(double val)
+{
+    current_drawing_states->back()->shadow.originY = val;
+}
+void xlsx_drawing_context::set_shadow_offsetX(int val)
+{
+    current_drawing_states->back()->shadow.offsetX = val;
+}
+void xlsx_drawing_context::set_shadow_offsetY(int val)
+{
+    current_drawing_states->back()->shadow.offsetY = val;
+}
+void xlsx_drawing_context::set_shadow_scaleX2X(double val)
+{
+    current_drawing_states->back()->shadow.scaleX2X = val;
+}
+void xlsx_drawing_context::set_shadow_scaleY2Y(double val)
+{
+    current_drawing_states->back()->shadow.scaleY2Y = val;
+}
 void xlsx_drawing_context::set_rotation (double val)
 {
 	if (current_drawing_states == NULL) return;	
 	if (current_drawing_states->empty()) return;
 	if (val < 0.001) return;
 
-	current_drawing_states->back()->rotation = val;
-
-	if (((int)current_drawing_states->back()->rotation % 90) == 0 && current_level > 0)
+	if (current_drawing_states->back()->flipH && current_level > 0)
 	{
-		int v = current_drawing_states->back()->child_anchor.cx;
-		current_drawing_states->back()->child_anchor.cx = current_drawing_states->back()->child_anchor.cy;
-		current_drawing_states->back()->child_anchor.cy = v;
+		val += 180.;
 	}
+	if (val > 360) val -= 360;
+
+	current_drawing_states->back()->rotation = val;
 }
 void xlsx_drawing_context::set_line_color (int nColor, const std::wstring & sColor)
 {

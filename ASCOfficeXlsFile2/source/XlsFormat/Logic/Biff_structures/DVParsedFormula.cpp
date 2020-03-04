@@ -36,8 +36,7 @@
 namespace XLS
 {
 
-
-DVParsedFormula::DVParsedFormula() : ParsedFormula(CellRef())
+DVParsedFormula::DVParsedFormula() : cce(0), ParsedFormula(CellRef())
 {
 }
 
@@ -47,11 +46,21 @@ BiffStructurePtr DVParsedFormula::clone()
 	return BiffStructurePtr(new DVParsedFormula(*this));
 }
 
-void DVParsedFormula::load(CFRecord& record)
+void DVParsedFormula::load(CFRecord& record, bool bLoad)
 {
-	unsigned short cce;
 	record >> cce;
 	record.skipNunBytes(2); // unused
+
+	if (bLoad) 
+		return load(record);
+	else
+	{
+		cce = 0;
+	}
+}
+	
+void DVParsedFormula::load(CFRecord& record)
+{
 	rgce.load(record, cce);
 }
 

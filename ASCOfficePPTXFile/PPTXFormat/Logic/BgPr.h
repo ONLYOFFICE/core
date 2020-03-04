@@ -36,6 +36,7 @@
 #include "./../WrapperWritingElement.h"
 #include "UniFill.h"
 #include "EffectProperties.h"
+#include "ExtP.h"
 
 namespace PPTX
 {

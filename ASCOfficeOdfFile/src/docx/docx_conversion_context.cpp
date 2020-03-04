@@ -198,7 +198,30 @@ std::wstring styles_map::name(const std::wstring & Name, odf_types::style_family
 }
 void docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
 {
-    if (!state_.in_run_)
+	if(false == current_process_comment_)
+	{
+		for (size_t i = 0; i < get_comments_context().ref_start_.size(); i++)
+		{
+			output_stream() << L"<w:commentRangeStart w:id=\"" << get_comments_context().ref_start_[i] << L"\"/>";
+		}
+		get_comments_context().ref_start_.clear();
+
+		if (false == get_comments_context().ref_end_.empty())
+		{
+			for (size_t i = 0; i < get_comments_context().ref_end_.size(); i++)
+			{
+				output_stream()<< L"<w:commentRangeEnd w:id=\"" << get_comments_context().ref_end_[i] << L"\"/>";
+			}
+			
+			for (size_t i = 0; i < get_comments_context().ref_end_.size(); i++)
+			{
+				output_stream()<< L"<w:commentReference w:id=\"" << get_comments_context().ref_end_[i] << L"\"/>";			
+			}
+		
+			get_comments_context().ref_end_.clear();		
+		}
+	}
+	if (!state_.in_run_)
     {
         state_.in_run_ = true;
 		output_stream() << L"<w:r>";
@@ -241,6 +264,20 @@ void docx_conversion_context::finish_paragraph()
 	{
 		end_changes();
 
+		if (false == current_process_comment_ && false == get_comments_context().ref_end_.empty())
+		{
+				for (size_t i = 0; i < get_comments_context().ref_end_.size(); i++)
+				{
+					output_stream()<< L"<w:commentRangeEnd w:id=\"" << get_comments_context().ref_end_[i] << L"\"/>";
+				}
+				
+				for (size_t i = 0; i < get_comments_context().ref_end_.size(); i++)
+				{
+					output_stream()<< L"<w:commentReference w:id=\"" << get_comments_context().ref_end_[i] << L"\"/>";			
+				}
+			
+				get_comments_context().ref_end_.clear();	
+		}	
 		output_stream() << L"</w:p>";
 	}
 	
@@ -254,23 +291,17 @@ void docx_conversion_context::finish_run()
 {
     if (false == state_.in_run_) return;
 
-	if (get_comments_context().state() == 4)
+	if (false == current_process_comment_)
 	{
-		output_stream()<< L"<w:commentReference w:id=\"" << get_comments_context().current_id() << L"\"/>";			
-		get_comments_context().state(0);
+		for (size_t i = 0; i < get_comments_context().ref_.size(); i++)
+		{
+			output_stream()<< L"<w:commentReference w:id=\"" << get_comments_context().ref_[i] << L"\"/>";			
+		}
+		get_comments_context().ref_.clear();
 	}
+	
 	output_stream() << L"</w:r>";
     state_.in_run_ = false;
-	
-	if (get_comments_context().state() == 2)
-	{
-		output_stream()<< L"<w:commentRangeEnd w:id=\"" << get_comments_context().current_id() << L"\"/>";
-		
-		add_element_to_run();
-			output_stream()<< L"<w:commentReference w:id=\"" << get_comments_context().current_id() << L"\"/>";			
-			get_comments_context().state(0);
-		finish_run();
-	}
 }
 void docx_conversion_context::start_math_formula()
 {
@@ -609,12 +640,7 @@ void docx_conversion_context::back_context_state()
 void docx_conversion_context::add_new_run(std::wstring parentStyleId)
 {
 	finish_run();
-	if (get_comments_context().state() == 1 ||
-		get_comments_context().state() == 4)//??? comment in run
-	{
-		output_stream() << L"<w:commentRangeStart w:id=\"" << get_comments_context().current_id() << L"\" />";
-		get_comments_context().state(2);//active
-	}
+
     add_element_to_run(parentStyleId);
 }
 
@@ -928,28 +954,44 @@ mc:Ignorable=\"w14 wp14\">";
     std::vector<int> numIds;
 
 	odf_reader::list_style_container::instances_array & arListStyles = list_styles.instances();
+	
 	for (size_t i = 0; i < arListStyles.size(); i++)
-   {
-        odf_reader::office_element_ptr_array & content = arListStyles[i]->get_text_list_style()->get_content();
+	{
+        odf_reader::office_element_ptr_array & content = arListStyles[i]->get_text_list_style()->content_;
 
-		if (content.size() < 1) 
+		if (content.empty()) 
 			continue;
        
 		const int abstractNumId = list_styles.id_by_name(arListStyles[i]->get_style_name());
+        numIds.push_back(abstractNumId);		
         
         strm << L"<w:abstractNum w:abstractNumId=\"" << abstractNumId << "\">";
-        numIds.push_back(abstractNumId);		
        
         for (size_t j = 0; j < (std::min)( content.size(), (size_t)9); j++)
         {
-            start_text_list_style(arListStyles[i]->get_text_list_style()->get_style_name());
-            content[j]->docx_convert(*this);
-            // TODO
+            start_text_list_style(arListStyles[i]->get_text_list_style()->attr_.style_name_);
+				content[j]->docx_convert(*this);
             end_text_list_style();        
         }
 
         strm << L"</w:abstractNum>";
-    }
+	}
+	if (list_styles.outline_style())
+	{
+		const int abstractNumId = list_styles.id_outline();
+        numIds.push_back(abstractNumId);		
+        
+        strm << L"<w:abstractNum w:abstractNumId=\"" << abstractNumId << "\">";
+       
+        for (size_t j = 0; j < (std::min)( list_styles.outline_style()->content_.size(), (size_t)9); j++)
+        {
+            start_text_list_style(L"Outline");
+				list_styles.outline_style()->content_[j]->docx_convert(*this);
+            end_text_list_style();        
+        }
+
+        strm << L"</w:abstractNum>";
+	}
 
 	for (size_t i = 0; i < numIds.size(); i++)
     {
@@ -1524,7 +1566,8 @@ void docx_conversion_context::start_list_item(bool restart)
         list_style_renames_[curStyleName] = newStyleName;
 
         odf_reader::list_style_container & lists = root()->odf_context().listStyleContainer();
-        odf_reader::text_list_style * curStyle = lists.list_style_by_name(curStyleName);
+       
+		odf_reader::text_list_style * curStyle = lists.list_style_by_name(curStyleName);
         lists.add_list_style(curStyle, newStyleName);
         end_list();
         start_list(newStyleName);
@@ -1671,6 +1714,8 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 			double font_size = odf_reader::text_format_properties_content::process_font_size_impl(odf_types::font_size(odf_types::percent(100.0)), styleInst);
 			if (font_size > 0) current_fontSize.push_back(font_size);
 			
+			_CP_OPT(int) outline_level = calc_outline_level(Attr->outline_level_, styleInst);
+			
 			process_page_break_after(styleInst);
 
 			if (styleInst->is_automatic())
@@ -1710,11 +1755,14 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 							set_rtl(false);
 						}
 					}
-					if ((Attr->outline_level_) && (*Attr->outline_level_ > 0))
+					get_styles_context().start_process_style(styleInst);
+
+					if (outline_level)
 					{
-						set_outline_level(*Attr->outline_level_ - 1);
+						set_outline_level(*outline_level);
 					}
-					styleContent->docx_convert(*this);                
+					styleContent->docx_convert(*this);  
+					get_styles_context().end_process_style();
 	               
 					end_automatic_style();
 
@@ -1736,10 +1784,11 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 							start_paragraph();
 							//process_paragraph_style(Context.get_current_paragraph_style()); ??
 
-							if ((Attr->outline_level_) && (*Attr->outline_level_ > 0))
+							//if ((Attr->outline_level_) && (*Attr->outline_level_ > 0))
+							if (outline_level)
 							{
 								output_stream() << L"<w:pPr>";
-									output_stream() << L"<w:outlineLvl w:val=\"" << *Attr->outline_level_ - 1 << L"\"/>";
+									output_stream() << L"<w:outlineLvl w:val=\"" << *outline_level << L"\"/>";
 								output_stream() << L"</w:pPr>";
 							}					
 						}
@@ -1747,9 +1796,10 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 						{
 							output_stream() << get_section_context().dump_;
 							get_section_context().dump_.clear();
-							if ((Attr->outline_level_) && (*Attr->outline_level_ > 0))
+							//if ((Attr->outline_level_) && (*Attr->outline_level_ > 0))
+							if (outline_level)
 							{
-								output_stream() << L"<w:outlineLvl w:val=\"" << *Attr->outline_level_ - 1 << L"\"/>";
+								output_stream() << L"<w:outlineLvl w:val=\"" << *outline_level << L"\"/>";
 							}
 							output_stream() << L"</w:pPr>";
 						}
@@ -1794,9 +1844,19 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 
 				serialize_list_properties(output_stream());
 				
-				if ((Attr->outline_level_) && (*Attr->outline_level_ > 0))
+				//if ((Attr->outline_level_) && (*Attr->outline_level_ > 0))
+				if (outline_level)
 				{
-					output_stream() << L"<w:outlineLvl w:val=\"" << *Attr->outline_level_ - 1 << L"\" />";
+					odf_reader::list_style_container & list_styles = root()->odf_context().listStyleContainer();
+					
+					if (list_style_stack_.empty() && list_styles.outline_style())
+					{
+						output_stream() << L"<w:numPr>";
+							output_stream() << L"<w:ilvl w:val=\"" << *outline_level - 1  << L"\"/>";
+							output_stream() << L"<w:numId w:val=\"" << list_styles.id_outline() << L"\"/>";
+						output_stream() << L"</w:numPr>";
+					}				   
+					output_stream() << L"<w:outlineLvl w:val=\"" << *outline_level << L"\"/>";
 				}
 
 				if (!get_text_tracked_context().dumpRPrInsDel_.empty())

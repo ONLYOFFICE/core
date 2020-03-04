@@ -96,6 +96,9 @@ public:
 	void start_sequence ();
 	void end_sequence ();
 
+	void start_drop_down();
+	void end_drop_down();
+
 	void start_table_of_content ();
 	void end_table_of_content ();
 
@@ -121,6 +124,13 @@ public:
 	void set_field_instr	();
 	std::map<std::wstring, std::wstring> parse_instr_options(const std::wstring& value);
 	
+	void set_field_date_time(const std::wstring &date_time);
+	void set_field_color	(_CP_OPT(color) &color);
+	void set_field_name		(const std::wstring &name);
+	void set_field_format	(const std::wstring &format);
+	void set_field_drop_down();
+	void set_field_item		(const std::wstring &value, const std::wstring &display);
+
 	void start_run			(bool styled = false);
 	void end_run			();
 
@@ -181,7 +191,7 @@ public:
 	void add_empty_header	(int type);
 	void add_empty_footer	(int type);
 
-	void set_background		(_CP_OPT(color) & color, int type);
+	void set_background		(_CP_OPT(color) &color, int type);
 
 	bool is_paragraph_in_current_section_;
 
@@ -224,6 +234,8 @@ private:
 		std::wstring	format;
 		std::wstring	instrText;
 
+		_CP_OPT(color)	color_;
+
 		short			status = 0;//0, 1, 2, 3 - init, prapare, start, finish
 		bool			in_span = false;
 		bool			result = false; //after separate
@@ -235,6 +247,8 @@ private:
 		int				outline_levels = 0;
 		std::vector<int> arTemplateTypes;//text, link, tab ....
 		int				tabLeader = 0;//dot
+
+		std::vector<std::pair<std::wstring, std::wstring>> items;
 	};
 
 	std::vector<_field_state> current_fields;

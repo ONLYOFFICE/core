@@ -53,11 +53,12 @@ public:
 	
 	virtual void load(CFRecord& record);
 
-	DXFN		dxfn;
-	XFExtNoFRT	xfext;
+	DXFN			dxfn;
+	XFExtNoFRTPtr	xfext;
 //-----------------------------------------------------------------
 	bool		bExist;
 	_INT32		size;
+	int			dxfId_;
 };
 
 typedef boost::shared_ptr<DXFN12List> DXFN12ListPtr;

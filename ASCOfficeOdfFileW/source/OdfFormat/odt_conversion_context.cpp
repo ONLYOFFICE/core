@@ -310,7 +310,7 @@ void odt_conversion_context::end_drawings()
 }
 void odt_conversion_context::start_paragraph(bool styled)
 {
-	if (!current_fields.empty() && current_fields.back().status == 1 && !current_fields.back().in_span)
+	if (false == current_fields.empty() && current_fields.back().status == 1 && false == current_fields.back().in_span)
 	{
 		current_fields.back().status = 2;
 		//if (!current_fields.empty() && !current_fields.back().result) return;	//Стандартное_составное_письмо.docx
@@ -323,7 +323,7 @@ void odt_conversion_context::start_paragraph(bool styled)
 		case fieldToc:			start_table_of_content();	break;
 		}	
 	}
-	if (is_paragraph_in_current_section_ && !styled) 
+	if (is_paragraph_in_current_section_ && false == styled) 
 	{
 		styles_context()->create_style(L"", odf_types::style_family::Paragraph, true, false, -1);					
 		styled = true;
@@ -600,6 +600,34 @@ void odt_conversion_context::end_hyperlink()
 
 	is_hyperlink_ = false; //метка .. для гиперлинков в объектах - там не будет span
 }
+void odt_conversion_context::start_drop_down()
+{
+	office_element_ptr elm_drop_down;
+	create_element(L"text", L"drop-down", elm_drop_down, this);
+
+	text_drop_down* drop_down = dynamic_cast<text_drop_down*>(elm_drop_down.get());
+	if (drop_down)
+		drop_down->text_name_ = current_fields.back().name;
+
+	for (size_t i = 0; i < current_fields.back().items.size(); i++)
+	{
+		office_element_ptr elm;
+		create_element(L"text", L"label", elm, this);
+
+		text_label* label = dynamic_cast<text_label*>(elm.get());
+		if (label)
+		{
+			label->text_value_ = current_fields.back().items[i].first;
+		}
+
+		elm_drop_down->add_child_element(elm);
+	}
+	text_context()->start_element(elm_drop_down);
+}
+void odt_conversion_context::end_drop_down()
+{
+	text_context()->end_element();
+}
 void odt_conversion_context::start_sequence()
 {
 	std::map<std::wstring, int>::iterator pFind = mapSequenceDecls.find(current_fields.back().value);
@@ -714,7 +742,7 @@ void odt_conversion_context::set_field_instr()
 	res1 = instr.find(L"TIME");
 	if (std::wstring::npos != res1 && current_fields.back().type == 0)
 	{
-		current_fields.back().type = fieldTime;
+		current_fields.back().type = fieldDateTime;
 	}
 	res1 = instr.find(L"FORMTEXT");
 	if (std::wstring::npos != res1 && current_fields.back().type == 0)
@@ -838,6 +866,47 @@ void odt_conversion_context::set_field_instr()
 		}		
 	}
 }
+void odt_conversion_context::set_field_date_time(const std::wstring &date_time)
+{
+	if (current_fields.empty()) return;
+
+	current_fields.back().status = 1;
+
+	current_fields.back().type = fieldDateTime;
+	current_fields.back().value = date_time;
+}
+void odt_conversion_context::set_field_color(_CP_OPT(color) &clr)
+{
+	if (current_fields.empty()) return;
+
+	current_fields.back().color_ = clr;
+}
+void odt_conversion_context::set_field_format(const std::wstring &format)
+{
+	if (current_fields.empty()) return;
+
+	current_fields.back().format = format;
+}
+void odt_conversion_context::set_field_name(const std::wstring &name)
+{
+	if (current_fields.empty()) return;
+
+	current_fields.back().name = name;
+}
+void odt_conversion_context::set_field_drop_down()
+{
+	if (current_fields.empty()) return;
+	
+	current_fields.back().status = 1;
+
+	current_fields.back().type = fieldDropDown;
+}
+void odt_conversion_context::set_field_item	(const std::wstring &value, const std::wstring &display)
+{
+	if (current_fields.empty()) return;
+
+	current_fields.back().items.push_back(std::make_pair(value, display));
+}
 void odt_conversion_context::start_field(bool in_span)
 {
 	if (false == current_fields.empty() && current_fields.back().status == 0 && current_fields.back().instrText.empty() )
@@ -845,6 +914,7 @@ void odt_conversion_context::start_field(bool in_span)
 
 	_field_state field;
 	current_fields.push_back(field);
+	current_fields.back().in_span = in_span;
 }
 void odt_conversion_context::separate_field()
 {
@@ -1004,8 +1074,9 @@ void odt_conversion_context::end_field()
 		
 		if (current_fields.back().type < 0xff)
 		{
-			if (current_fields.back().type == fieldHyperlink)	end_hyperlink();
-			else if (current_fields.back().type == fieldSeq)	end_sequence();
+			if (current_fields.back().type == fieldHyperlink)		end_hyperlink();
+			else if (current_fields.back().type == fieldSeq)		end_sequence();
+			else if (current_fields.back().type == fieldDropDown)	end_drop_down();
 			else text_context()->end_field();
 		
 			current_fields.pop_back();
@@ -1136,13 +1207,15 @@ void odt_conversion_context::start_run(bool styled)
 {
 	if (is_hyperlink_ && text_context_.size() > 0) return;
 	
-	if (!current_fields.empty() && current_fields.back().status == 1 && !current_fields.back().in_span && current_fields.back().type < 0xff)
+	if (!current_fields.empty() && current_fields.back().status == 1 && false == current_fields.back().in_span && current_fields.back().type < 0xff)
 	{
 		current_fields.back().status = 2;
 
-		if (current_fields.back().type == fieldHyperlink)	start_hyperlink(current_fields.back().value);
-		else if (current_fields.back().type == fieldSeq)	start_sequence();
-		else												text_context()->start_field(current_fields.back().type, current_fields.back().value);
+		if (current_fields.back().type == fieldHyperlink)		start_hyperlink(current_fields.back().value);
+		else if (current_fields.back().type == fieldSeq)		start_sequence();
+		else if (current_fields.back().type == fieldDropDown)	start_drop_down();
+		else												
+			text_context()->start_field(current_fields.back().type, current_fields.back().value);
 	}	
 	
 	text_context()->start_span(styled);

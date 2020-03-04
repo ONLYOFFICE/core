@@ -87,6 +87,101 @@ const bool PIVOTVIEWEX::loadContent(BinProcessor& proc)
 
 	return true;
 }
+int PIVOTVIEWEX::serialize_table_view(std::wostream & strm)
+{	
+	if (m_arPIVOTTH.empty()) return 0;
+
+	PIVOTADDL *addls = dynamic_cast<PIVOTADDL*>(m_PIVOTADDL.get());
+
+	bool bAddl = addls ? (addls->m_arSXADDLHIERARCHY.size() == m_arPIVOTTH.size()) : false;
+
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"pivotHierarchies")
+		{
+			CP_XML_ATTR(L"count", m_arPIVOTTH.size());
+			
+			for (size_t i = 0; i < m_arPIVOTTH.size(); i++)
+			{
+				PIVOTTH* th = dynamic_cast<PIVOTTH*>(m_arPIVOTTH[i].get());
+				SXTH* sxTH = dynamic_cast<SXTH*>(th->m_SXTH.get());
+				
+				SXAddl_SXCHierarchy_SXDId					*id			= NULL;
+				SXAddl_SXCHierarchy_SXDVerUpdInv			*verUpd		= NULL;
+				SXAddl_SXCHierarchy_SXDProperty				*prop		= NULL;
+				SXAddl_SXCHierarchy_SXDFilterMember			*filter		= NULL;
+				SXAddl_SXCHierarchy_SXDSXSetParentUnique	*parent		= NULL;
+				SXAddl_SXCHierarchy_SXDUserCaption			*caption	= NULL;
+				SXAddl_SXCHierarchy_SXDMeasureGrp			*measureGrp	= NULL;
+				SXAddl_SXCHierarchy_SXDDisplayFolder		*display	= NULL;
+				SXAddl_SXCHierarchy_SXDFilterMember12		*filter12	= NULL;
+				SXAddl_SXCHierarchy_SXDInfo12				*info		= NULL;
+				
+				for (size_t j = 0; bAddl && j < addls->m_arSXADDLHIERARCHY[i].elements.size(); j++)
+				{
+					SXAddl * addl = dynamic_cast<SXAddl*>(addls->m_arSXADDLHIERARCHY[i].elements[j].get());
+					if (!addl) continue;
+
+					if (!id)		id			= dynamic_cast<SXAddl_SXCHierarchy_SXDId*>			(addl->content.get());
+					if (!verUpd)	verUpd		= dynamic_cast<SXAddl_SXCHierarchy_SXDVerUpdInv*>	(addl->content.get());
+					if (!prop)		prop		= dynamic_cast<SXAddl_SXCHierarchy_SXDProperty*>	(addl->content.get());
+					if (!filter)	filter		= dynamic_cast<SXAddl_SXCHierarchy_SXDFilterMember*>(addl->content.get());
+					if (!caption)	caption		= dynamic_cast<SXAddl_SXCHierarchy_SXDUserCaption*>	(addl->content.get());
+					if (!measureGrp)measureGrp	= dynamic_cast<SXAddl_SXCHierarchy_SXDMeasureGrp*>	(addl->content.get());
+					if (!filter12)	filter12	= dynamic_cast<SXAddl_SXCHierarchy_SXDFilterMember12*>	(addl->content.get());
+					if (!info)		info		= dynamic_cast<SXAddl_SXCHierarchy_SXDInfo12*>		(addl->content.get());
+				}
+				CP_XML_NODE(L"pivotHierarchy")
+				{
+					CP_XML_ATTR(L"multipleItemSelectionAllowed", sxTH->fEnableMultiplePageItems);
+					
+					CP_XML_ATTR(L"dragToRow", sxTH->fDragToRow);
+					CP_XML_ATTR(L"dragToCol", sxTH->fDragToColumn);
+					CP_XML_ATTR(L"dragToPage", sxTH->fDragToPage);
+					CP_XML_ATTR(L"dragToData", sxTH->fDragToData);
+
+					if (caption)
+					{
+						CP_XML_ATTR(L"caption", caption->stCaption.string.value());
+					}
+
+					if (filter12)
+					{
+						CP_XML_NODE(L"members")
+						{
+							CP_XML_ATTR(L"count", filter12->cItems);
+							CP_XML_ATTR(L"level", filter12->isxtl);
+
+							for (size_t k = 0; k < filter12->rgStMembers.size(); k++)
+							{
+								CP_XML_NODE(L"member")
+								{
+									CP_XML_ATTR(L"name", filter12->rgStMembers[k]);
+								}
+							}
+						}
+					}
+					else if (filter)
+					{
+						CP_XML_NODE(L"members")
+						{
+							CP_XML_ATTR(L"count", filter->cItems);
+
+							for (size_t k = 0; k < filter->rgStMembers.size(); k++)
+							{
+								CP_XML_NODE(L"member")
+								{
+									CP_XML_ATTR(L"name", filter->rgStMembers[k]);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return 0;
+}
 int PIVOTVIEWEX::serialize(std::wostream & strm)
 {				
 	if (m_arPIVOTTH.empty()) return 0;
@@ -200,19 +295,14 @@ int PIVOTVIEWEX::serialize(std::wostream & strm)
 						}
 						if (sxTH->cisxvd > 0)
 							CP_XML_ATTR(L"oneField", sxTH->cisxvd);
+
+						CP_XML_ATTR(L"count", sxTH->cisxvd);
 					}
 					else
 					{
-						//if (!sxTH->stDimension.value().empty())
-						//{
-						//	CP_XML_ATTR(L"attribute",			sxTH->fKeyAttributeHierarchy); 
-						//	CP_XML_ATTR(L"keyAttribute",		sxTH->fKeyAttributeHierarchy); 
-						//}
-						//else
-						{
-							CP_XML_ATTR(L"attribute",			!sxTH->fKeyAttributeHierarchy); 
-						}
-						//keyAttribute
+						CP_XML_ATTR(L"attribute",			sxTH->fAttributeHierarchy); 
+						CP_XML_ATTR(L"keyAttribute",		sxTH->fKeyAttributeHierarchy); 
+
 						CP_XML_ATTR(L"defaultMemberUniqueName", sxTH->stDefault.value());
 						CP_XML_ATTR(L"allUniqueName",			sxTH->stAll.value());
 						CP_XML_ATTR(L"dimensionUniqueName",		sxTH->stDimension.value());
@@ -227,17 +317,29 @@ int PIVOTVIEWEX::serialize(std::wostream & strm)
 						}
 					}
 
-					if (sxTH->cisxvd > 0)
+					if (false == sxTH->rgisxvd.empty())
 					{
 						CP_XML_NODE(L"fieldsUsage")
 						{
-							CP_XML_ATTR(L"count", sxTH->cisxvd);
+							CP_XML_ATTR(L"count", sxTH->rgisxvd.size());
 							for (size_t i = 0; i < sxTH->rgisxvd.size(); i++)
 							{
 								CP_XML_NODE(L"fieldUsage")
 								{
 									CP_XML_ATTR(L"x", sxTH->rgisxvd[i]);
 								}
+							}
+						}
+					}
+					else if (sxTH->isxvd >= 0)
+					{
+						CP_XML_ATTR(L"oneField", 1);
+						CP_XML_NODE(L"fieldsUsage")
+						{
+							CP_XML_ATTR(L"count", 1);
+							CP_XML_NODE(L"fieldUsage")
+							{
+								CP_XML_ATTR(L"x", sxTH->isxvd);
 							}
 						}
 					}
@@ -305,8 +407,11 @@ int PIVOTVIEWEX::serialize(std::wostream & strm)
 			{
 				CP_XML_NODE(L"dimension")
 				{
-					CP_XML_ATTR(L"name",		it->first.substr(1, it->first.length() - 2));
+					std::wstring name = it->first.substr(1, it->first.length() - 2);
+
+					CP_XML_ATTR(L"name",		name);
 					CP_XML_ATTR(L"uniqueName",	it->first);
+					CP_XML_ATTR(L"caption",		name);
 					
 					//if (sxTH->fMeasure)
 					//	CP_XML_ATTR(L"measure",	true);

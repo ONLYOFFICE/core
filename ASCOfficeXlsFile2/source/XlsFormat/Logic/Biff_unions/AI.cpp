@@ -33,6 +33,7 @@
 #include "AI.h"
 #include "../Biff_records/BRAI.h"
 #include "../Biff_records/SeriesText.h"
+#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace XLS
 {
@@ -128,7 +129,7 @@ int AI::serialize(std::wostream & _stream)
 			{
 				CP_XML_NODE(L"c:v") 
 				{
-					CP_XML_STREAM() << text->stText.value();
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(text->stText.value());
 				}
 			}
 		}

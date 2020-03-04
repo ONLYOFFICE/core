@@ -57,6 +57,8 @@ _UINT32 RtfConvertationManager::ConvertRtfToOOX( std::wstring sSrcFileName, std:
     m_bParseFirstItem = true;
 
     RtfDocument oDocument;
+	
+	oDocument.m_nUserLCID = m_nUserLCID;
     oDocument.m_oProperty.SetDefaultRtf();
 
     RtfReader oReader( oDocument, sSrcFileName );

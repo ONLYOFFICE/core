@@ -19,7 +19,7 @@ CORE_ROOT_DIR = $$PWD/../../..
 PWD_ROOT_DIR = $$PWD
 include(../../../Common/base.pri)
 
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter -lkernel
+ADD_DEPENDENCY(UnicodeConverter, kernel)
 
 DEFINES += \
     _QT \
@@ -469,3 +469,8 @@ SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/LeptonLib/sel1.cpp \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/LeptonLib/sel2.cpp \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/LeptonLib/skew.cpp
+
+core_ios {
+OBJECTIVE_SOURCES += ./../../fontengine/ApplicationFonts_ios.mm
+LIBS += -framework Foundation
+}

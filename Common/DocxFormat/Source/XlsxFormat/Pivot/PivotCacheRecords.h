@@ -30,59 +30,104 @@
  *
  */
 #pragma once
-#ifndef OOX_PIVOTCACHERECORDS_FILE_INCLUDE_H_
-#define OOX_PIVOTCACHERECORDS_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
-
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
-		class CPivotCacheRecords : public OOX::File, public OOX::IFileContainer
+		class CPivotCacheRecord : public WritingElementWithChilds<WritingElement>
 		{
 		public:
-			CPivotCacheRecords(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
+			WritingElement_AdditionConstructors(CPivotCacheRecord)
+			
+			CPivotCacheRecord(){}
+			virtual ~CPivotCacheRecord() {}
+			
+			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				m_bSpreadsheets = true;
-				m_pData = NULL;
-				m_nDataLength = 0;
 			}
-			CPivotCacheRecords(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
+            virtual std::wstring toXML() const
 			{
-				m_bSpreadsheets = true;
-				m_pData = NULL;
-				m_nDataLength = 0;
-				read( oRootPath, oPath );
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual EElementType getType () const
+			{
+				return et_x_PivotCacheRecord;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader){}
+		};
+		class CPivotCacheRecords : public WritingElementWithChilds<CPivotCacheRecord>
+		{
+		public:
+			WritingElement_AdditionConstructors(CPivotCacheRecords)
+			CPivotCacheRecords()
+			{
 			}
 			virtual ~CPivotCacheRecords()
 			{
-				ClearItems();
 			}
-		public:
 
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
+			{
+				return L"";
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual EElementType getType () const
+			{
+				return et_x_PivotCacheRecords;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);		
+
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
+			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
+		};
+
+		class CPivotCacheRecordsFile : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
+		{
+		public:
+			CPivotCacheRecordsFile(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+			{
+				m_bSpreadsheets = true;
+				
+				m_pData = NULL;
+				m_nDataLength = 0;
+			}
+			CPivotCacheRecordsFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+			{
+				m_bSpreadsheets = true;
+
+				m_pData = NULL;
+				m_nDataLength = 0;
+
+				read( oRootPath, oPath );
+			}
+			virtual ~CPivotCacheRecordsFile()
+			{
+				m_nDataLength = 0;
+				RELEASEARRAYOBJECTS(m_pData)
+			}
 			virtual void read(const CPath& oPath)
 			{
+				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+				CPath oRootPath;
+				read(oRootPath, oPath);
 			}
-			virtual void read(const CPath& oRootPath, const CPath& oPath)
-			{	
-			}
-			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
-			{
-				if(m_nDataLength > 0)
-				{
-					NSFile::CFileBinary oFile;
-					oFile.CreateFileW(oPath.GetPath());
-					oFile.WriteFile(m_pData, m_nDataLength);
-					oFile.CloseFile();
-
-					oContent.Registration(type().OverrideType(), oDirectory, oPath.GetFilename());
-
-					oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
-					IFileContainer::Write( oPath, oDirectory, oContent );
-				}
-			}
+           void setData(BYTE* pData, long length)
+            {
+				m_nDataLength = length;
+				m_pData = new BYTE[length];
+				memcpy(m_pData, pData, length);
+            }
+			virtual void read(const CPath& oRootPath, const CPath& oPath);
+			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
 			virtual const OOX::FileType type() const
 			{
 				return OOX::Spreadsheet::FileTypes::PivotCacheRecords;
@@ -99,26 +144,13 @@ namespace OOX
 			{
 				return m_oReadPath;
 			}
-			void setData(BYTE* pData, long length)
-			{
-				m_nDataLength = length;
-				m_pData = new BYTE[length];
-				memcpy(m_pData, pData, length);
-			}
+
+			nullable<CPivotCacheRecords> m_oPivotCacheRecords;
 		private:
 			CPath m_oReadPath;
-
-			void ClearItems()
-			{
-				m_nDataLength = 0;
-				RELEASEARRAYOBJECTS(m_pData)
-			}
-
-		public:
-			BYTE* m_pData;
+			
+			BYTE *m_pData;
 			long m_nDataLength;
 		};
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_PIVOTCACHERECORDS_FILE_INCLUDE_H_

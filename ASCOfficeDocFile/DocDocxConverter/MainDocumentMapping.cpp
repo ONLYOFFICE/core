@@ -87,7 +87,7 @@ namespace DocFileFormat
 			m_document->DocProperties->bDisplayBackgroundShape = true;
 			ShapeContainer* pShape = m_document->GetOfficeArt()->GetShapeBackgound();
 
-			ODRAW::OfficeArtFOPTEPtr boolFill = pShape->ExtractOption(fillStyleBooleanProperties);
+			ODRAW::OfficeArtFOPTEPtr boolFill = pShape->ExtractOption(ODRAW::fillStyleBooleanProperties);
 
 			ODRAW::FillStyleBooleanProperties* booleans = dynamic_cast<ODRAW::FillStyleBooleanProperties*>(boolFill.get());
 

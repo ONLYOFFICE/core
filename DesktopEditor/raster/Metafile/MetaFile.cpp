@@ -259,16 +259,12 @@ namespace MetaFile
 			if (dH < 0)
 				dH = -dH;
 
-			if (nWidth  < 0) nWidth = dW;
+            if (nWidth < 0) nWidth = (int)(dW * 96 / 25.4);
 			nHeight = (int)((double)nWidth * dH / dW);
 		}
 
-		//double dDpiX, dDpiY;
-		//oRenderer.get_DpiX(&dDpiX);
-		//oRenderer.get_DpiX(&dDpiY);
-
-		double dWidth  = nWidth ;//* 72 / 25.4 / dDpiX;
-		double dHeight = nHeight ;//* 72 / 25.4 / dDpiY;
+        double dWidth  = 25.4 * nWidth / 96;
+        double dHeight = 25.4 * nHeight / 96;
 
 		BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
 		if (!pBgraData)
@@ -283,7 +279,7 @@ namespace MetaFile
 		}
 		CBgraFrame oFrame;
 		oFrame.put_Data(pBgraData);
-		oFrame.put_Width(nWidth);
+        oFrame.put_Width(nWidth);
 		oFrame.put_Height(nHeight);
 		oFrame.put_Stride(-4 * nWidth);
 

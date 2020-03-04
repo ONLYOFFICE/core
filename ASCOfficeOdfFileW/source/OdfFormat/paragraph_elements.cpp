@@ -673,6 +673,9 @@ void text_date::serialize(std::wostream & _Wostream)
         { 	
 			common_field_fixed_attlist_.serialize(CP_GET_XML_NODE());
 
+			CP_XML_ATTR_OPT(L"style:data-style-name", style_data_style_name_);
+			CP_XML_ATTR_OPT(L"text:date-value", text_date_value_);
+
 			for (size_t i = 0; i < text_.size(); i++)
 			{
 				text_[i]->serialize(CP_XML_STREAM());
@@ -1087,14 +1090,19 @@ void text_sequence_ref::serialize(std::wostream & _Wostream)
 const wchar_t * text_drop_down::ns = L"text";
 const wchar_t * text_drop_down::name = L"drop-down";
 
+void text_drop_down::add_text(const std::wstring & Text)
+{
+    text_ = text_text::create(Text) ;
+}
 void text_drop_down::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"text", L"label")
     {
-        CP_CREATE_ELEMENT(label_);        
+		CP_CREATE_ELEMENT(content_);
     }
     else
         CP_NOT_APPLICABLE_ELM();
+
 }
 void text_drop_down::add_child_element( const office_element_ptr & child_element)
 {
@@ -1103,8 +1111,11 @@ void text_drop_down::add_child_element( const office_element_ptr & child_element
 	ElementType type = child_element->get_type();
 
     if (type == typeTextLabel)
-		label_ = child_element;
-
+		content_.push_back(child_element);
+	else
+	{
+		text_ = child_element;
+	}
 }
 void text_drop_down::serialize(std::wostream & _Wostream)
 {
@@ -1114,11 +1125,12 @@ void text_drop_down::serialize(std::wostream & _Wostream)
         { 	
 			CP_XML_ATTR_OPT (L"text:name", text_name_);
 			
-			if (label_)
-				label_->serialize(CP_XML_STREAM());
-
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
 			if (text_)
-				CP_XML_CONTENT(*text_);
+				text_->text_to_stream(CP_XML_STREAM());
 		}
 	}
 }
@@ -1128,14 +1140,20 @@ void text_drop_down::serialize(std::wostream & _Wostream)
 const wchar_t * text_label::ns = L"text";
 const wchar_t * text_label::name = L"label";
 
+void text_label::add_text(const std::wstring & Text)
+{
+    text_ = Text;
+}
 void text_label::serialize(std::wostream & _Wostream)
 {
  	CP_XML_WRITER(_Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         { 	
-			if (text_value_)
-				CP_XML_CONTENT(*text_value_);
+			CP_XML_ATTR_OPT (L"text:value", text_value_);
+			
+			if (text_)
+				CP_XML_CONTENT(*text_);
 		}
 	}
 }

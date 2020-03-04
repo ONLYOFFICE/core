@@ -97,6 +97,8 @@ namespace Spreadsheet
 		WritingStringNullableAttr(name, WriteString, elem, val)
 #define WritingStringNullableAttrEncodeXmlString(name, elem, val) \
 		WritingStringNullableAttr(name, WriteEncodeXmlString, elem, val)
+#define WritingStringNullableAttrEncodeXmlStringHHHH(name, elem, val) \
+		WritingStringNullableAttr(name, WriteEncodeXmlStringHHHH, elem, val)
 #define WritingStringNullableAttrInt(name, elem, val) \
 		WritingStringNullableAttr(name, AddInt, elem, val)
 #define WritingStringNullableAttrInt64(name, elem, val) \
@@ -111,6 +113,15 @@ namespace Spreadsheet
 
 #define WritingStringNullableAttrBool2(name, elem) \
 		WritingStringNullableAttrString(name, elem, *elem ? L"1": L"0")
+
+#define WritingStringNullableAttrInt2(name, elem) \
+		WritingStringNullableAttrInt(name, elem, *elem)
+
+#define WritingStringNullableAttrDouble2(name, elem) \
+		WritingStringNullableAttrDouble(name, elem, *elem)
+
+#define WritingStringNullableAttrEncodeXmlString2(name, elem) \
+		WritingStringNullableAttrEncodeXmlString(name, elem, *elem)
 
 	const double c_ag_Inch_to_MM	= 25.4;
 	const double c_ag_1pxWidth		= 25.4 / 96;

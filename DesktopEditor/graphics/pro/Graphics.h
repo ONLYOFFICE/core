@@ -82,7 +82,8 @@ namespace NSGraphics
         virtual NSFonts::IFontManager* GetFontManager() = 0;
 
         virtual void CloseFont() = 0;
-
+        virtual void ClearInstallFont() = 0;
+        
         virtual void SetSwapRGB(bool bValue) = 0;
         virtual void SetTileImageDpi(const double& dDpi) = 0;
 

@@ -449,7 +449,7 @@ public:
 
 	virtual void serialize(std::wostream & _Wostream);
 
- 	odf_types::dr3d_attlist dr3d_attlist_;
+ 	odf_types::common_dr3d_attlist dr3d_attlist_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(dr3d_scene);

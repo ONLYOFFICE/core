@@ -42,7 +42,11 @@ class DVParsedFormula : public ParsedFormula
 public:
 	DVParsedFormula();
 	BiffStructurePtr clone();
+
+	void load(CFRecord& record, bool bLoad);
 	virtual void load(CFRecord& record);
+private:
+	unsigned short cce;
 };
 
 } // namespace XLS

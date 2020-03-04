@@ -26,32 +26,20 @@ PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 
-core_linux {
-    QMAKE_LFLAGS += -Wl,--rpath=./:./system
-}
-
-core_win_64 {
-    QMAKE_LFLAGS_CONSOLE  = /SUBSYSTEM:CONSOLE,5.02
-}
-core_win_32 {
-    QMAKE_LFLAGS_CONSOLE  = /SUBSYSTEM:CONSOLE,5.01
+CUSTOM_VERSION_PATH = $$(DOCBUILDER_VERSION_PATH)
+isEmpty(CUSTOM_VERSION_PATH){
+    CUSTOM_VERSION_PATH=.
 }
 
 core_windows {
-    RC_FILE = version.rc
+    RC_FILE = $$CUSTOM_VERSION_PATH/version.rc
 }
 
 ############### destination path ###############
-DESTDIR = $$CORE_ROOT_DIR/build/bin/$$CORE_BUILDS_PLATFORM_PREFIX
+DESTDIR = $$CORE_BUILDS_BINARY_PATH
 ################################################
 
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lkernel -lgraphics -lUnicodeConverter
-
-build_xp {
-    LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH/xp -ldoctrenderer
-} else {
-    LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -ldoctrenderer
-}
+ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, doctrenderer)
 
 core_linux {
     LIBS += -ldl

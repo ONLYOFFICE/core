@@ -74,7 +74,7 @@ public:
 
 //-----------------------------------------------------------------------
 
-	BaseObjectPtr	m_SERIESFORMAT_ext;
+	std::vector<BaseObjectPtr>	m_arSERIESFORMAT_ext;
 };
 } // namespace XLS
 

@@ -44,6 +44,8 @@ class Rgce : public BiffStructure
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(Rgce)
 public:
 	Rgce(const CellRef& cell_base_ref_init);
+	void set_base_ref(const CellRef& cell_base_ref);
+
 	BiffStructurePtr clone();
 
 	static const ElementType	type = typeRgce;
@@ -53,13 +55,14 @@ public:
 
 	const size_t	getCCE() const;
 	void			setCCE(const size_t cce_val); // mandatory to call before any use of "cce"
+
 	const bool		isEmpty() const;
 	const PtgVector&	getPtgs() const;
 	void				addPtg(const PtgPtr ptg);
 	
 	const CellRef&		getLocation() const;
 
-	const CellRef		cell_base_ref;
+	CellRef				cell_base_ref;
 
 	_CP_OPT(size_t)		cce; // Size of rgce variable. Setting explicit is mandatory
 	PtgVector			sequence;

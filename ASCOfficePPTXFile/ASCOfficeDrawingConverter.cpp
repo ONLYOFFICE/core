@@ -1572,6 +1572,7 @@ bool CDrawingConverter::ParceObject(const std::wstring& strXml, std::wstring** p
                             L"line"      == strNameP ||
                             L"background"== strNameP ||
                             L"roundrect" == strNameP ||
+                            L"image"	 == strNameP ||
                             L"polyline"  == strNameP)
 						{
 							if(NULL == pElem)
@@ -1809,7 +1810,13 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 		pPPTShape->SetShapeType((PPTShapes::ShapeType)3);
 		pPPTShape->ReCalculate();
 	}
-    else if (L"v:line" == strNameNode)
+    else if (L"v:image" == strNameNode)
+	{
+		pPPTShape = new CPPTShape();
+		pPPTShape->SetShapeType((PPTShapes::ShapeType)75);
+		pPPTShape->ReCalculate();
+	}
+	else if (L"v:line" == strNameNode)
 	{
 		pPPTShape = new CPPTShape();
 		pPPTShape->SetShapeType((PPTShapes::ShapeType)20);
@@ -2695,7 +2702,11 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 			XmlUtils::CXmlNode oNodeTextBox;
 			
 			std::wstring sTextboxStyle;
-			if (oNodeShape.GetNode(L"v:textbox", oNodeTextBox))
+
+			bool			res_text = oNodeShape.GetNode(L"v:textbox", oNodeTextBox);
+			if (!res_text)	res_text = oNodeShape.GetNode(L"w:textbox", oNodeTextBox); // libre 4.0 эту хрень делает
+			
+			if (res_text)
 			{
 				XmlUtils::CXmlNode oNodeContent;
 				if (oNodeTextBox.GetNode(L"w:txbxContent", oNodeContent))

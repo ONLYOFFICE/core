@@ -36,6 +36,7 @@ namespace NSDoctRenderer
     CDocBuilder::CDocBuilder()
     {
         m_pInternal = new CDocBuilder_Private();
+        m_pInternal->m_pParent = this;
     }
     CDocBuilder::~CDocBuilder()
     {

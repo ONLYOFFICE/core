@@ -225,6 +225,11 @@ struct ods_shared_formula_state
     int moving_type; //1 - col, 2 - row
 };
 
+struct pilot_table_state
+{
+	office_element_ptr elm;
+};
+
 struct table_part_state
 {
 	std::wstring name;
@@ -368,6 +373,9 @@ public:
 		void end_conditional_format();
 	void end_conditional_formats();
 
+	void start_pilot_table(office_element_ptr & elm);
+	void end_pilot_table();
+
 ///////////////////////////////
     void add_hyperlink(const std::wstring & ref,int col, int row, const std::wstring & link, bool bLocation = false);
 	
@@ -467,6 +475,8 @@ private:
 	std::vector<table_part_state> table_parts_;
 
 	std::vector<data_validation_state> data_validations_;
+
+	pilot_table_state pilot_table_state_;
 
 	odf_drawing_context_ptr		drawing_context_;	
 	odf_controls_context		controls_context_;	

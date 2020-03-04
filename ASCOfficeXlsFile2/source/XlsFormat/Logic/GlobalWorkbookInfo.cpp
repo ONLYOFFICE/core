@@ -100,6 +100,7 @@ GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConver
 	
 	last_Axes_id			= 0x2000000;
 	last_Extern_id			= 1;
+	lcid_user				= -1;
 
 	Version					= 0x0600; 
 
@@ -181,6 +182,25 @@ const size_t GlobalWorkbookInfo::RegisterFillId(const FillInfo& fill)
 void GlobalWorkbookInfo::RegisterPaletteColor(int id, const std::wstring & rgb)
 {
 	colors_palette.insert(std::make_pair(id, rgb));
+}
+
+const int GlobalWorkbookInfo::RegistrDxfn(const std::wstring & dxfn)
+{
+	if (dxfn.empty() == true) return -1;
+
+	std::map<std::wstring, int>::iterator pFind = mapUserDxfs.find(dxfn);
+
+	if (pFind == mapUserDxfs.end())
+	{
+		int id = cellStyleDxfs_count++;
+		mapUserDxfs.insert(std::make_pair(dxfn, id));
+		arrUserDxfs.push_back(dxfn);
+		return id;
+	}
+	else
+	{
+		return pFind->second;
+	}
 }
 
 void GlobalWorkbookInfo::GetDigitFontSizePixels()

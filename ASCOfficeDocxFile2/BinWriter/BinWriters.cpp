@@ -1105,21 +1105,7 @@ void Binary_pPrWriter::WriteTabItem(const ComplexTypes::Word::CTabStop& TabItem,
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_pPrType::Tab_Item_Val);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-		switch(TabItem.m_oVal.get().GetValue())
-		{
-		case SimpleTypes::tabjcEnd:
-		case SimpleTypes::tabjcRight:
-			m_oBcw.m_oStream.WriteBYTE(g_tabtype_right);
-			bRight = true;
-			break;
-		case SimpleTypes::tabjcCenter:
-			m_oBcw.m_oStream.WriteBYTE(g_tabtype_center);
-			break;
-		case SimpleTypes::tabjcClear:
-			m_oBcw.m_oStream.WriteBYTE(g_tabtype_clear);
-			break;
-		default: m_oBcw.m_oStream.WriteBYTE(g_tabtype_left);break;
-		}
+		m_oBcw.m_oStream.WriteBYTE(TabItem.m_oVal->GetValue());
 	}
 //pos
 	if(false != TabItem.m_oPos.IsInit())
@@ -1327,9 +1313,9 @@ void Binary_pPrWriter::WriteSectPr (OOX::Logic::CSectionProperty* pSectPr)
 	}
 	if(pSectPr->m_oRtlGutter.IsInit())
 	{
-		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_secPrType::rtlGutter);
-		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-		m_oBcw.m_oStream.WriteBOOL(pSectPr->m_oRtlGutter->m_oVal.ToBool());
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrType::rtlGutter);
+			m_oBcw.m_oStream.WriteBOOL(pSectPr->m_oRtlGutter->m_oVal.ToBool());
+		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }
 void Binary_pPrWriter::WritePageSettings(OOX::Logic::CSectionProperty* pSectPr)
@@ -2771,50 +2757,20 @@ void BinaryNumberingTableWriter::WriteLevel(const OOX::Numbering::CLvl& lvl)
 {
 	int nCurPos = 0;
 	//Format
-	if(false != lvl.m_oNumFmt.IsInit())
+	if(lvl.m_oNumFmt.IsInit())
 	{
-		const ComplexTypes::Word::CNumFmt& oNumFmt = lvl.m_oNumFmt.get();
-		if(false != oNumFmt.m_oVal.IsInit())
-		{
-			const SimpleTypes::CNumberFormat<>& oNumberFormat = oNumFmt.m_oVal.get();
-			m_oBcw.m_oStream.WriteBYTE(c_oSerNumTypes::lvl_Format);
-			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
-			switch(oNumberFormat.GetValue())
-			{
-			case SimpleTypes::numberformatNone:			m_oBcw.m_oStream.WriteLONG(numbering_numfmt_None);break;
-			case SimpleTypes::numberformatBullet:		m_oBcw.m_oStream.WriteLONG(numbering_numfmt_Bullet);break;
-			case SimpleTypes::numberformatDecimal:		m_oBcw.m_oStream.WriteLONG(numbering_numfmt_Decimal);break;
-			case SimpleTypes::numberformatLowerRoman:	m_oBcw.m_oStream.WriteLONG(numbering_numfmt_LowerRoman);break;
-			case SimpleTypes::numberformatUpperRoman:	m_oBcw.m_oStream.WriteLONG(numbering_numfmt_UpperRoman);break;
-			case SimpleTypes::numberformatLowerLetter:	m_oBcw.m_oStream.WriteLONG(numbering_numfmt_LowerLetter);break;
-			case SimpleTypes::numberformatUpperLetter:	m_oBcw.m_oStream.WriteLONG(numbering_numfmt_UpperLetter);break;
-			case SimpleTypes::numberformatDecimalZero:	m_oBcw.m_oStream.WriteLONG(numbering_numfmt_DecimalZero);break;
-			default: 
-				m_oBcw.m_oStream.WriteLONG(oNumberFormat.GetValue() + 0x2008);break; //max our numbering
-			}
-		}
+		m_oBcw.m_oStream.WriteBYTE(c_oSerNumTypes::lvl_NumFmt);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		nCurPos = m_oBcw.WriteItemWithLengthStart();
+		bpPrs.WriteNumFmt(lvl.m_oNumFmt.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 	//Jc
-	if(false != lvl.m_oLvlJc.IsInit())
+	if(lvl.m_oLvlJc.IsInit() && lvl.m_oLvlJc->m_oVal.IsInit())
 	{
-		const ComplexTypes::Word::CJc& oJc = lvl.m_oLvlJc.get();
-		if(false != oJc.m_oVal.IsInit())
-		{
-			m_oBcw.m_oStream.WriteBYTE(c_oSerNumTypes::lvl_Jc);
-			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-			switch(oJc.m_oVal.get().GetValue())
-			{
-			case SimpleTypes::jcCenter: m_oBcw.m_oStream.WriteBYTE(align_Center);break;
-			case SimpleTypes::jcStart:
-			case SimpleTypes::jcLeft: m_oBcw.m_oStream.WriteBYTE(align_Left);break;
-			case SimpleTypes::jcEnd:
-			case SimpleTypes::jcRight: m_oBcw.m_oStream.WriteBYTE(align_Right);break;
-			case SimpleTypes::jcBoth:
-			case SimpleTypes::jcThaiDistribute:
-			case SimpleTypes::jcDistribute: m_oBcw.m_oStream.WriteBYTE(align_Justify);break;
-			default: m_oBcw.m_oStream.WriteBYTE(align_Left);break;
-			}
-		}
+		m_oBcw.m_oStream.WriteBYTE(c_oSerNumTypes::lvl_Jc);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBYTE(lvl.m_oLvlJc->m_oVal->GetValue());
 	}
 	//LvlText
 	if(false != lvl.m_oLvlText.IsInit())
@@ -7308,6 +7264,52 @@ void BinaryDocumentTableWriter::WriteSdtPr(const OOX::Logic::CSdtPr& oStdPr)
 		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::MultiLine);
 		m_oBcw.m_oStream.WriteBOOL(oStdPr.m_oText->m_oMultiLine->ToBool());
 		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oStdPr.m_oCheckbox.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::Checkbox);
+		WriteSdtCheckBox(oStdPr.m_oCheckbox.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+}
+void BinaryDocumentTableWriter::WriteSdtCheckBox(const OOX::Logic::CSdtCheckBox& oSdtCheckBox)
+{
+	int nCurPos = 0;
+	if(oSdtCheckBox.m_oChecked.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::CheckboxChecked);
+		m_oBcw.m_oStream.WriteBOOL(oSdtCheckBox.m_oChecked->m_oVal.ToBool());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oSdtCheckBox.m_oCheckedState.IsInit())
+	{
+		if(oSdtCheckBox.m_oCheckedState->m_oFont.IsInit())
+		{
+			nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::CheckboxCheckedFont);
+			m_oBcw.m_oStream.WriteStringW3(oSdtCheckBox.m_oCheckedState->m_oFont.get());
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+		if(oSdtCheckBox.m_oCheckedState->m_oVal.IsInit())
+		{
+			nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::CheckboxCheckedVal);
+			m_oBcw.m_oStream.WriteLONG(oSdtCheckBox.m_oCheckedState->m_oVal->GetValue());
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+	}
+	if(oSdtCheckBox.m_oUncheckedState.IsInit())
+	{
+		if(oSdtCheckBox.m_oUncheckedState->m_oFont.IsInit())
+		{
+			nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::CheckboxUncheckedFont);
+			m_oBcw.m_oStream.WriteStringW3(oSdtCheckBox.m_oUncheckedState->m_oFont.get());
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+		if(oSdtCheckBox.m_oUncheckedState->m_oVal.IsInit())
+		{
+			nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::CheckboxUncheckedVal);
+			m_oBcw.m_oStream.WriteLONG(oSdtCheckBox.m_oUncheckedState->m_oVal->GetValue());
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
 	}
 }
 void BinaryDocumentTableWriter::WriteSdtComboBox(const OOX::Logic::CSdtComboBox& oSdtComboBox)

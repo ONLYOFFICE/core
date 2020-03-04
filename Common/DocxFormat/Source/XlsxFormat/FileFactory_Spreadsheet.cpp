@@ -50,6 +50,10 @@
 #include "Comments/Comments.h"
 #include "Controls/Controls.h"
 
+#include "Pivot/PivotTable.h"
+#include "Pivot/PivotCacheDefinition.h"
+#include "Pivot/PivotCacheRecords.h"
+
 #include "Table/Table.h"
 #include "Table/QueryTable.h"
 #include "Table/Connections.h"
@@ -96,6 +100,12 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CTableFile( pMain, oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::QueryTable )
 				return smart_ptr<OOX::File>(new CQueryTableFile( pMain, oRootPath, oFileName ));
+			else if ( oRelation.Type() == FileTypes::PivotTable )
+				return smart_ptr<OOX::File>(new CPivotTableFile( pMain, oRootPath, oFileName ));
+			else if ( oRelation.Type() == FileTypes::PivotCacheDefinition )
+				return smart_ptr<OOX::File>(new CPivotCacheDefinitionFile( pMain, oRootPath, oFileName ));
+			else if ( oRelation.Type() == FileTypes::PivotCacheRecords )
+				return smart_ptr<OOX::File>(new CPivotCacheRecordsFile( pMain, oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::Comments )
 				return smart_ptr<OOX::File>(new CComments( pMain, oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::ThreadedComments )
@@ -203,6 +213,12 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CTableFile( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == FileTypes::QueryTable )
 				return smart_ptr<OOX::File>(new CQueryTableFile( pMain, oRootPath, oFileName ));
+			else if ( pRelation->Type() == FileTypes::PivotTable )
+				return smart_ptr<OOX::File>(new CPivotTableFile( pMain, oRootPath, oFileName ));
+			else if ( pRelation->Type() == FileTypes::PivotCacheDefinition )
+				return smart_ptr<OOX::File>(new CPivotCacheDefinitionFile( pMain, oRootPath, oFileName ));
+			else if ( pRelation->Type() == FileTypes::PivotCacheRecords )
+				return smart_ptr<OOX::File>(new CPivotCacheRecordsFile( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == OOX::FileTypes::VmlDrawing )
 				return smart_ptr<OOX::File>(new CVmlDrawing( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == OOX::FileTypes::ChartDrawing)

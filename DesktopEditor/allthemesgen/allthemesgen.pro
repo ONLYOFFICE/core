@@ -9,19 +9,13 @@ PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 
-DESTDIR = $$PWD/../../build/bin/$$CORE_BUILDS_PLATFORM_PREFIX
+DESTDIR = $$CORE_BUILDS_BINARY_PATH
 
 TARGET = allthemesgen
 
 DEFINES += KERNEL_USE_DYNAMIC_LIBRARY
 DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lgraphics -lkernel -lUnicodeConverter
-
-build_xp {
-    LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH/xp -ldoctrenderer
-} else {
-    LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -ldoctrenderer
-}
+ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, doctrenderer)
 
 core_windows {
     DEFINES -= UNICODE

@@ -77,7 +77,7 @@ void PtgSxName::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool f
 			SXPair *pair = dynamic_cast<SXPair*>(global_info->arPivotSxNames[sxIndex].pair[0].get());
 			if (pair)
 			{
-				std::unordered_map<int, BaseObjectPtr>::iterator pFind = global_info->mapPivotCacheStream.find(global_info->idPivotCache);
+				std::map<int, BaseObjectPtr>::iterator pFind = global_info->mapPivotCacheStream.find(global_info->idPivotCache);
 				if (pFind != global_info->mapPivotCacheStream.end())
 				{
 					PIVOTCACHE* pivot_cache = dynamic_cast<PIVOTCACHE*>(pFind->second.get());

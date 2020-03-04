@@ -35,9 +35,6 @@
 
 namespace XLS
 {
-
-
-// Logical representation of SerParent record in BIFF8
 class SerParent: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SerParent)
@@ -48,16 +45,16 @@ public:
 
 	BaseObjectPtr clone();
 
-	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeSerParent;
+	static const ElementType type = typeSerParent;
 
-//-----------------------------
 	_UINT16 series;
 
 	BaseObjectPtr m_SerAuxTrend;
 	BaseObjectPtr m_SerAuxErrBar;
+//-----------------------------
+	void recalc(size_t current_index, std::vector<BaseObjectPtr> & arSERIESFORMAT);
 };
 
 } // namespace XLS

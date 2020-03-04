@@ -52,7 +52,7 @@ public:
 
     CProperty()
     {
-        m_ePID = ODRAW::left;
+        m_ePID = ODRAW::ePropertyId_left;
         m_bIsBlip = false;
         m_bComplex = false;
         m_lValue = 0;

@@ -72,6 +72,21 @@ std::wstring CorrectDir(const std::wstring& sDir)
 
     return sDir.substr(pos1, pos2 - pos1);
 }
+std::wstring CorrectValue(const std::wstring& value)
+{
+    if (value.empty())
+        return L"";
+
+    const wchar_t* data = value.c_str();
+
+    std::wstring::size_type pos1 = (data[0] == '\"') ? 1 : 0;
+    std::wstring::size_type pos2 = value.length();
+
+    if (data[pos2 - 1] == '\"')
+        --pos2;
+
+    return value.substr(pos1, pos2 - pos1);
+}
 void string_replace(std::wstring& text, const std::wstring& replaceFrom, const std::wstring& replaceTo)
 {
     size_t posn = 0;
@@ -308,6 +323,7 @@ int main(int argc, char** argv)
             }
             else if (sKey == L"--change-sdk")
             {
+                sValue = CorrectValue(sValue);
                 if (L"1" == sValue || L"true" == sValue)
                 {
                     bIsNeedCorrectSdkAll = true;
@@ -315,6 +331,7 @@ int main(int argc, char** argv)
             }
             else if (sKey == L"--allfonts")
             {
+                sValue = CorrectValue(sValue);
                 sAllFonts = sValue;
             }
             else if (sKey == L"--params")

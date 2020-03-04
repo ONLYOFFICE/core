@@ -42,6 +42,18 @@ namespace XmlUtils
             return strNodeName;
         return strNodeName.substr(nFind + 1);
     }
+	const char* GetNameNoNS(const char* strNodeName)
+	{
+		const char* find = strchr(strNodeName, ':');
+		if (NULL != find)
+		{
+			return find + 1;
+		}
+		else
+		{
+			return strNodeName;
+		}
+	}
     std::wstring GetNamespace(const std::wstring& strNodeName)
     {
         int nFind = (int)strNodeName.find(L":");

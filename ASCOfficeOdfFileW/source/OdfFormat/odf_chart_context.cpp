@@ -533,20 +533,20 @@ void odf_chart_context::set_chart_3D(bool val)
 
 	if (val && plot_area)
 	{
-		plot_area->chart_plot_area_attlist_.dr3d_attlist_.vpn_ = odf_types::vector3D(0, 0, 0);
-		plot_area->chart_plot_area_attlist_.dr3d_attlist_.vup_ = odf_types::vector3D(0, 0, 0); 
-		plot_area->chart_plot_area_attlist_.dr3d_attlist_.projection_ = L"parallel";
-		plot_area->chart_plot_area_attlist_.dr3d_attlist_.distance_ = odf_types::length(4.2, odf_types::length::cm);
-		plot_area->chart_plot_area_attlist_.dr3d_attlist_.focal_length_ = odf_types::length(8, odf_types::length::cm);
-		plot_area->chart_plot_area_attlist_.dr3d_attlist_.lighting_mode_ = L"false";
+		plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.vpn_ = odf_types::vector3D(0, 0, 0);
+		plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.vup_ = odf_types::vector3D(0, 0, 0); 
+		plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.projection_ = L"parallel";
+		plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.distance_ = odf_types::length(4.2, odf_types::length::cm);
+		plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.focal_length_ = odf_types::length(8, odf_types::length::cm);
+		plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.lighting_mode_ = L"false";
 
-		//plot_area->chart_plot_area_attlist_.dr3d_attlist_.projection_ = L"perspective";
-		//plot_area->chart_plot_area_attlist_.dr3d_attlist_.distance_ = odf_types::length(4.2, odf_types::length::cm);
-		//plot_area->chart_plot_area_attlist_.dr3d_attlist_.focal_length_ = odf_types::length(8, odf_types::length::cm);
-		//plot_area->chart_plot_area_attlist_.dr3d_attlist_.vpn_ = odf_types::vector3D(0.416199821709347,0.173649045905254,0.892537795986984);
-		//plot_area->chart_plot_area_attlist_.dr3d_attlist_.vup_ = odf_types::vector3D(-0.0733876362771618,0.984807599917971,-0.157379306090273); 
+		//plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.projection_ = L"perspective";
+		//plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.distance_ = odf_types::length(4.2, odf_types::length::cm);
+		//plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.focal_length_ = odf_types::length(8, odf_types::length::cm);
+		//plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.vpn_ = odf_types::vector3D(0.416199821709347,0.173649045905254,0.892537795986984);
+		//plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.vup_ = odf_types::vector3D(-0.0733876362771618,0.984807599917971,-0.157379306090273); 
 
-		plot_area->chart_plot_area_attlist_.dr3d_attlist_.vrp_ = odf_types::vector3D(17634.6218373783, 10271.4823817647, 24594.8639082739); 
+		plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.vrp_ = odf_types::vector3D(17634.6218373783, 10271.4823817647, 24594.8639082739); 
 	}
 }
 void odf_chart_context::set_view3D(int rotX, int rotY, int depthPercent, int perspective, int hPercent, bool angAx)
@@ -560,7 +560,7 @@ void odf_chart_context::set_view3D(int rotX, int rotY, int depthPercent, int per
     double sx, sy, sz, cx, cy, cz, theta;
 
     // rotation angle about X-axis (pitch)
-    theta = rotX * DEG2RAD;
+    theta = -rotX * DEG2RAD;
     sx = sin(theta);
     cx = cos(theta);
 
@@ -596,7 +596,7 @@ void odf_chart_context::set_view3D(int rotX, int rotY, int depthPercent, int per
 	chart_plot_area *plot_area = dynamic_cast<chart_plot_area*>(impl_->current_level_.back().elm.get());
 	if (plot_area)
 	{
-		plot_area->chart_plot_area_attlist_.dr3d_attlist_.transform_ = sTransform.str();
+		plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.transform_ = sTransform.str();
 
 		if (impl_->current_level_.back().chart_properties_)
 		{

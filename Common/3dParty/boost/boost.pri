@@ -1,15 +1,8 @@
-INCLUDEPATH += $$PWD/boost_1_58_0
+INCLUDEPATH += $$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX/include
 
 MSVC = vc140
 
-CORE_BOOST_LIBS = $$PWD/boost_1_58_0/build/$$CORE_BUILDS_PLATFORM_PREFIX/static
-
-core_boost_fpic {
-    CORE_BOOST_LIBS = $$PWD/boost_1_58_0/build/$$CORE_BUILDS_PLATFORM_PREFIX/static_fpic
-}
-core_boost_shared {
-    CORE_BOOST_LIBS = $$PWD/boost_1_58_0/build/$$CORE_BUILDS_PLATFORM_PREFIX/shared
-}
+CORE_BOOST_LIBS = $$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib
 
 core_boost_libs {
 

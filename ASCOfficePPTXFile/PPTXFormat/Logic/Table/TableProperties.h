@@ -36,6 +36,7 @@
 #include "./../../WrapperWritingElement.h"
 #include "./../UniFill.h"
 #include "./../EffectProperties.h"
+#include "./../ExtP.h"
 
 namespace PPTX
 {
@@ -95,11 +96,23 @@ namespace PPTX
 						Fill.fromXML(oReader);
 					}
 					else if ( L"a:effectDag"	== strName	||
-							  L"a:effectLst"	== strName	||
-							  L"a:extLst"		== strName )
+							  L"a:effectLst"	== strName)
 					{
 						Effects.fromXML(oReader);		
 					}			
+					else if ( L"a:extLst"		== strName )
+					{
+						if ( oReader.IsEmptyNode() )
+							continue;
+
+						int nParentDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						{
+							Ext element;
+							element.fromXML(oReader);
+							extLst.push_back (element);
+						}
+					}
 				}
 				FillParentPointersForChilds();
 			}
@@ -263,6 +276,8 @@ namespace PPTX
 			UniFill						Fill;
 			EffectProperties			Effects;
 			nullable_string				TableStyleId;
+
+			std::vector<Ext>			extLst;
 /*
 			<xsd:choice minOccurs="0" maxOccurs="1"> 
 			<xsd:element name="tableStyle" type="CT_TableStyle"/> 

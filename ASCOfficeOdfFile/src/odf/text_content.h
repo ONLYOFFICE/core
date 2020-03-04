@@ -66,7 +66,7 @@ public:
 	std::vector<std::wstring>	text_class_names_;
     std::wstring				text_cond_style_name_;
 
-	_CP_OPT(unsigned int)		outline_level_; //from header attr
+	_CP_OPT(int)				outline_level_; 
 
 };
 

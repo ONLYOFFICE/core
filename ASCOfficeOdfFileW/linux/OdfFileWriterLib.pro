@@ -92,6 +92,7 @@ SOURCES += \
     ../source/OdfFormat/svg_creator.cpp \
     ../source/OdfFormat/table.cpp \
     ../source/OdfFormat/table_database_ranges.cpp \
+    ../source/OdfFormat/table_data_pilot_tables.cpp \
     ../source/OdfFormat/table_named_expressions.cpp \
     ../source/OdfFormat/text_elements.cpp \
     ../source/OdfFormat/odf_settings_context.cpp \
@@ -175,6 +176,7 @@ HEADERS += \
     ../source/OdfFormat/table.h \
     ../source/OdfFormat/table_database_ranges.h \
     ../source/OdfFormat/table_named_expressions.h \
+    ../source/OdfFormat/table_data_pilot_tables.h \
     ../source/OdfFormat/text_elements.h \
     ../source/OdfFormat/visitor.h \
     ../source/Oox2OdfConverter/Converter.h \

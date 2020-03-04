@@ -36,9 +36,6 @@ namespace BinDocxRW
 {
 const double eps     = 0.001;
 
-const int shd_Clear = 0;
-const int shd_Nil   = 1;
-
 const int g_tabtype_left = 0;
 const int g_tabtype_right = 1;
 const int g_tabtype_center = 2;
@@ -173,7 +170,7 @@ extern int g_nCurFormatVersion;
 		AbstractNum_Lvls = 4,
 		Lvl = 5,
 		lvl_Format = 6,//deprecated (instead use lvl_NumFmt)
-		lvl_Jc = 7,
+		lvl_Jc_deprecated = 7,//deprecated
 		lvl_LvlText = 8,
 		lvl_LvlTextItem = 9,
 		lvl_LvlTextItemText = 10,
@@ -202,7 +199,8 @@ extern int g_nCurFormatVersion;
 		LvlLegacy = 33,
 		Legacy = 34,
 		LegacyIndent = 35,
-		LegacySpace = 36
+		LegacySpace = 36,
+		lvl_Jc = 37
 	};}
 	namespace c_oSerOtherTableTypes{enum c_oSerOtherTableTypes
 	{
@@ -345,7 +343,7 @@ extern int g_nCurFormatVersion;
 		Tab = 17,
 		Tab_Item = 18,
 		Tab_Item_Pos = 19,
-		Tab_Item_Val = 20,
+		Tab_Item_Val_deprecated = 20,
 		ParaStyle = 21,
 		numPr =  22,
 		numPr_lvl =  23,
@@ -367,7 +365,8 @@ extern int g_nCurFormatVersion;
 		Spacing_LineTwips = 39,
 		Spacing_BeforeTwips = 40,
 		Spacing_AfterTwips = 41,
-		Tab_Item_PosTwips = 42
+		Tab_Item_PosTwips = 42,
+		Tab_Item_Val = 43
 	};}
 	namespace c_oSerProp_rPrType{enum c_oSerProp_rPrType
 	{
@@ -1169,7 +1168,13 @@ extern int g_nCurFormatVersion;
 		Temporary = 34,
 		MultiLine = 35,
 		Appearance = 36,
-		Color = 37
+		Color = 37,
+		Checkbox = 38,
+		CheckboxChecked = 39,
+		CheckboxCheckedFont = 40,
+		CheckboxCheckedVal = 41,
+		CheckboxUncheckedFont = 42,
+		CheckboxUncheckedVal = 43
 	};}
 	namespace c_oSerFFData{enum c_oSerFFData
 	{

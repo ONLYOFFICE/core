@@ -38,7 +38,6 @@
 
 #include "../../../../../../OfficeUtils/src/OfficeUtils.h"
 
-
 namespace ODRAW
 {
 	static int GetCountPoints2(NSCustomShapesConvert::RulesType eRuler, int lRepeatCount)
@@ -146,27 +145,16 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::create(unsigned short opid)
 		case 0x007F:
 			fopte = OfficeArtFOPTEPtr(new ProtectionBooleanProperties);
 			break;
-		case ODRAW::lTxid:
-		case ODRAW::dxTextLeft:
-		case ODRAW::dyTextTop:
-		case ODRAW::dxTextRight:
-		case ODRAW::dyTextBottom:
-		case ODRAW::WrapText:
-		case ODRAW::anchorText:
-		case ODRAW::txflTextFlow:
-		case ODRAW::cdirFont:
-		case ODRAW::hspNext:
-		case ODRAW::txdir:
-		case ODRAW::gtextRTF:
-		case ODRAW::gtextAlign:
-		case ODRAW::gtextSize:
-		case ODRAW::gtextCSSFont:
-			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
-			break;
+		case ODRAW::shadowOriginX:
+		case ODRAW::shadowOriginY:
+		case ODRAW::shadowScaleXToX:
+		case ODRAW::shadowScaleXToY:
+		case ODRAW::shadowScaleYToX:
+		case ODRAW::shadowScaleYToY:
 		case ODRAW::gtextSpacing:
 			fopte = OfficeArtFOPTEPtr(new FixedPoint);
 			break;
-		case ODRAW::textBoolean:
+		case ODRAW::textBooleanProperties:
 			fopte = OfficeArtFOPTEPtr(new TextBooleanProperties);
 			break;
 		case ODRAW::gtextUNICODE:
@@ -410,10 +398,10 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::create(unsigned short opid)
 		case 0x01FF:
 			fopte = OfficeArtFOPTEPtr(new LineStyleBooleanProperties);
 			break;
-		case 0x0204:
+		case ODRAW::shadowOpacity:
 			fopte = OfficeArtFOPTEPtr(new ShadowOpacity);
 			break;
-		case 0x023F:
+		case ODRAW::shadowStyleBooleanProperties:
 			fopte = OfficeArtFOPTEPtr(new ShadowStyleBooleanProperties);
 			break;
 		case 0x02bf:
@@ -444,6 +432,23 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::create(unsigned short opid)
 		case 0x03BF:
 			fopte = OfficeArtFOPTEPtr(new GroupShapeBooleanProperties);
 			break;
+		case ODRAW::lTxid:
+		case ODRAW::dxTextLeft:
+		case ODRAW::dyTextTop:
+		case ODRAW::dxTextRight:
+		case ODRAW::dyTextBottom:
+		case ODRAW::WrapText:
+		case ODRAW::anchorText:
+		case ODRAW::txflTextFlow:
+		case ODRAW::cdirFont:
+		case ODRAW::hspNext:
+		case ODRAW::txdir:
+		case ODRAW::gtextRTF:
+		case ODRAW::gtextAlign:
+		case ODRAW::gtextSize:
+		case ODRAW::gtextCSSFont:
+		case ODRAW::pictureContrast:
+		case ODRAW::pictureBrightness:
 		default:
 			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
 			break;
@@ -673,6 +678,34 @@ void FillStyleBooleanProperties::set()
 	fUsefUseShapeAnchor			= GETBIT(op, 21);
 	fUsefRecolorFillAsPicture	= GETBIT(op, 22);
 }
+void BlipBooleanProperties::load(XLS::CFRecord& record)
+{
+	OfficeArtFOPTE::load(record);
+	set();
+}
+void BlipBooleanProperties::load(IBinaryReader* reader)
+{
+	OfficeArtFOPTE::load(reader);
+	set();
+}
+void BlipBooleanProperties::set()
+{
+	fUsefPicturePreserveGrays	= GETBIT(op,22);
+	fUsefRewind					= GETBIT(op,21);
+	fUsefLooping				= GETBIT(op,20);
+	fUsefNoHitTestPicture		= GETBIT(op,19);
+	fUsefPictureGray			= GETBIT(op,18);
+	fUsefPictureBiLevel			= GETBIT(op,17);
+	fUsefPictureActive			= GETBIT(op,16);
+
+	fPicturePreserveGrays	= GETBIT(op, 6);
+	fRewind					= GETBIT(op, 5);
+	fLooping				= GETBIT(op, 4);
+	fNoHitTestPicture		= GETBIT(op, 3);
+	fPictureGray			= GETBIT(op, 2);
+	fPictureBiLevel			= GETBIT(op, 1);
+	fPictureActive			= GETBIT(op, 0);
+}
 void FillBlip::ReadComplexData(XLS::CFRecord& record)
 {
 	OfficeArtRecordHeader rh_child;
@@ -697,42 +730,92 @@ void FillBlip::ReadComplexData(IBinaryReader* reader)
 }
 void AnyString::ReadComplexData(IBinaryReader* reader)
 {
+	std::wstring tmp;
 	unsigned char* pData = reader->ReadBytes(op, true);
 #if defined(_WIN32) || defined(_WIN64)
-		string_ = std::wstring((wchar_t*)pData, op);
+		tmp = std::wstring((wchar_t*)pData, op / 2);
 #else
-        string_ = convertUtf16ToWString((UTF16*)pData, op);
+        tmp = convertUtf16ToWString((UTF16*)pData, op / 2);
 #endif
-	if (!string_.empty())
+	delete []pData;
+
+	if (false == tmp.empty())
 	{
-        int i, length = (std::min)(op, (_INT32)string_.length());
+        _INT32 i, length = (std::min)(op / 2, (_INT32)tmp.length());
 
 		for (i = 0; i < length; i++)
 		{
-			if (string_.at(i) < 14 ) break;
+			wchar_t val = tmp.at(i);
+
+			if (val == 0) break;
+
+			if (val < 14 )
+			{
+				std::wstring hex = STR::int2hex_wstr(val);
+				if (false == hex.empty())
+				{
+					string_ += L"&#x" + hex.substr(hex.length() - 1) + L";";
+				}
+			}
+			else
+			{
+                switch(val)
+                {
+					case '&':  string_.append(L"&amp;");      break;
+                    case '\"': string_.append(L"&quot;");     break;
+                    case '\'': string_.append(L"&apos;");     break;
+                    case '<':  string_.append(L"&lt;");       break;
+                    case '>':  string_.append(L"&gt;");       break;
+                    default:
+						string_ += val;
+				}
+			}
 		}
-		string_ = string_.substr(0, i);
 	}
-	delete []pData;
 }
 void AnyString::ReadComplexData(XLS::CFRecord& record)
 {	
+	std::wstring tmp;
 #if defined(_WIN32) || defined(_WIN64)
-        string_ = std::wstring(record.getCurData<wchar_t>(), op);
+        tmp = std::wstring(record.getCurData<wchar_t>(), op / 2);
 #else
-        string_ = convertUtf16ToWString(record.getCurData<UTF16>(), op);
+        tmp = convertUtf16ToWString(record.getCurData<UTF16>(), op / 2);
 #endif
-	if (!string_.empty())
+	record.skipNunBytes(op);
+	
+	if (false == tmp.empty())
 	{
-        int i, length = (std::min)(op, (_INT32)string_.length());
+        _INT32 i, length = (std::min)(op / 2, (_INT32)tmp.length());
 
 		for (i = 0; i < length; i++)
 		{
-			if (string_.at(i) < 14 ) break;
+			wchar_t val = tmp.at(i);
+
+			if (val == 0) break;
+
+			if (val < 14 )
+			{
+				std::wstring hex = STR::int2hex_wstr(val);
+				if (false == hex.empty())
+				{
+					string_ += L"&#x" + hex.substr(hex.length() - 1) + L";";
+				}
+			}
+			else
+			{
+                switch(val)
+                {
+					case '&':  string_.append(L"&amp;");      break;
+                    case '\"': string_.append(L"&quot;");     break;
+                    case '\'': string_.append(L"&apos;");     break;
+                    case '<':  string_.append(L"&lt;");       break;
+                    case '>':  string_.append(L"&gt;");       break;
+                    default:
+						string_ += val;
+				}
+			}
 		}
-		string_ = string_.substr(0, i);
 	}
-	record.skipNunBytes(op);
 }
 
 void FillShadeColors::ReadComplexData(XLS::CFRecord& record)
@@ -979,7 +1062,13 @@ void MetroBlob::ReadComplexData(XLS::CFRecord& record)
 	ULONG utf8DataSize = 0;
 	if (S_OK != officeUtils.LoadFileFromArchive(tempFileName, L"drs/shapexml.xml", &utf8Data, utf8DataSize))
 	{
-		officeUtils.LoadFileFromArchive(tempFileName, L"drs/diagrams/drawing1.xml", &utf8Data, utf8DataSize);
+		if (S_OK != officeUtils.LoadFileFromArchive(tempFileName, L"drs/diagrams/drawing1.xml", &utf8Data, utf8DataSize))
+		{
+			if (S_OK != officeUtils.LoadFileFromArchive(tempFileName, L"drs/connectorxml.xml", &utf8Data, utf8DataSize))
+			{
+				officeUtils.LoadFileFromArchive(tempFileName, L"drs/groupshapexml.xml", &utf8Data, utf8DataSize);
+			}
+		}
 	}
 
 	if (utf8Data && utf8DataSize > 0)

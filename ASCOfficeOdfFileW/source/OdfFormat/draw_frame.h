@@ -192,7 +192,7 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-	draw_text_box_attlist draw_text_box_attlist_;
+	draw_text_box_attlist attlist_;
     office_element_ptr_array content_;
 };
 

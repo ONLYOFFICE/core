@@ -30,23 +30,96 @@
  *
  */
 #include "nativecontrol.h"
+#include "../../../core/DesktopEditor/raster/ImageFileFormatChecker.h"
+#include "../../../core/DesktopEditor/raster/BgraFrame.h"
+#include "../../../core/Common/FileDownloader/FileDownloader.h"
 
-std::wstring to_cstring(v8::Local<v8::Value> v)
+CImagesWorker::CImagesWorker(const std::wstring& sFolder)
 {
-    v8::String::Utf8Value data(v);
-    if (NULL == *data)
-        return L"";
-
-    return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)(*data), data.length());
+    m_sFolder = sFolder;
+    std::vector<std::wstring> files = NSDirectory::GetFiles(sFolder);
+    m_nIndex = (int)files.size() + 1;
 }
-
-std::string to_cstringA(v8::Local<v8::Value> v)
+std::wstring CImagesWorker::GetImageLocal(const std::wstring& sUrl)
 {
-    v8::String::Utf8Value data(v);
-    const char* p = (char*)*data;
-    if (NULL == p)
-        return "";
-    return std::string(p);
+    std::wstring sExt = NSFile::GetFileExtention(sUrl);
+    std::wstring sRet = L"image" + std::to_wstring(m_nIndex++) + L"." + sExt;
+    m_mapImages.insert(std::make_pair(sUrl, sRet));
+    NSFile::CFileBinary::Copy(sUrl, m_sFolder + L"/" + sRet);
+    return sRet;
+}
+std::wstring CImagesWorker::GetImage(const std::wstring& sUrl)
+{
+    std::wstring sUrlFile = sUrl;
+    if (sUrlFile.find(L"file://") == 0)
+    {
+        sUrlFile = sUrlFile.substr(7);
+
+        // MS Word copy image with url "file://localhost/..." on mac
+        if (sUrlFile.find(L"localhost") == 0)
+            sUrlFile = sUrlFile.substr(9);
+
+        NSCommon::string_replace(sUrlFile, L"%20", L" ");
+
+        if (!NSFile::CFileBinary::Exists(sUrlFile))
+            sUrlFile = sUrlFile.substr(1);
+    }
+
+    std::map<std::wstring, std::wstring>::iterator find = m_mapImages.find(sUrlFile);
+    if (find != m_mapImages.end())
+        return find->second;
+
+    if (NSFile::CFileBinary::Exists(sUrlFile))
+        return GetImageLocal(sUrlFile);
+
+    bool bIsNeedDownload = false;
+    if (true)
+    {
+        if (sUrlFile.find(L"www.") != std::wstring::npos)
+            bIsNeedDownload = true;
+        else if (sUrlFile.find(L"http://") != std::wstring::npos)
+            bIsNeedDownload = true;
+        else if (sUrlFile.find(L"ftp://") != std::wstring::npos)
+            bIsNeedDownload = true;
+        else if (sUrlFile.find(L"https://") != std::wstring::npos)
+            bIsNeedDownload = true;
+    }
+
+    if (bIsNeedDownload)
+    {
+        CFileDownloader oDownloader(sUrl, false);
+
+        std::wstring sTmpFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"IMG");
+        if (NSFile::CFileBinary::Exists(sTmpFile))
+            NSFile::CFileBinary::Remove(sTmpFile);
+        sTmpFile = sTmpFile + L".png";
+
+        oDownloader.SetFilePath(sTmpFile);
+        oDownloader.Start(0);
+        while ( oDownloader.IsRunned() )
+        {
+            NSThreads::Sleep( 10 );
+        }
+        bool bIsDownloaded = oDownloader.IsFileDownloaded();
+
+        if (bIsDownloaded)
+        {
+            CBgraFrame oFrame;
+            oFrame.OpenFile(sTmpFile);
+
+            std::wstring sRet = L"image" + std::to_wstring(m_nIndex++) + L".png";
+            m_mapImages.insert(std::make_pair(sUrlFile, sRet));
+
+            oFrame.SaveFile(m_sFolder + L"/media/" + sRet, 4);
+
+            NSFile::CFileBinary::Remove(sTmpFile);
+            return sRet;
+        }
+    }
+
+    if (sUrlFile.find(L"image") == 0 || sUrlFile.find(L"display") == 0)
+        return sUrlFile;
+    return L"error";
 }
 
 // wrap_methods -------------
@@ -70,7 +143,13 @@ void _SetFilePath(const v8::FunctionCallbackInfo<v8::Value>& args)
         return;
 
     CNativeControl* pNative = unwrap_nativeobject(args.This());
-    pNative->SetFilePath(to_cstring(args[0]));
+    pNative->SetFilePath(CV8Convert::ToString(args[0]));
+}
+void _GetImagesPath(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    CNativeControl* pNative = unwrap_nativeobject(args.This());
+    std::string sReturn = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(pNative->m_strImagesDirectory);
+    args.GetReturnValue().Set(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), sReturn.c_str()));
 }
 
 void _GetFontsDirectory(const v8::FunctionCallbackInfo<v8::Value>& args)
@@ -102,9 +181,8 @@ void _GetChangesFile(const v8::FunctionCallbackInfo<v8::Value>& args)
 
     if (args.Length() < 1)
         args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
-
-    v8::Local<v8::Int32> intValue = args[0]->ToInt32();
-    int nIndex = (int)intValue->Value();
+    
+    int nIndex = CV8Convert::ToInt(args[0]);
 
     std::string strFile = "";
     if (pNative->m_pChanges != NULL)
@@ -127,7 +205,7 @@ void _SetFileId(const v8::FunctionCallbackInfo<v8::Value>& args)
         return;
 
     CNativeControl* pNative = unwrap_nativeobject(args.This());
-    pNative->SetFileId(to_cstring(args[0]));
+    pNative->SetFileId(CV8Convert::ToString(args[0]));
 }
 
 void _CheckNextChange(const v8::FunctionCallbackInfo<v8::Value>& args)
@@ -158,7 +236,7 @@ void _GetFileArrayBuffer(const v8::FunctionCallbackInfo<v8::Value>& args)
 
     BYTE* pData = NULL;
     DWORD len = 0;
-    pNative->getFileData(to_cstring(args[0]), pData, len);
+    pNative->getFileData(CV8Convert::ToString(args[0]), pData, len);
 
     v8::Local<v8::ArrayBuffer> _buffer = v8::ArrayBuffer::New(v8::Isolate::GetCurrent(), (void*)pData, (size_t)len);
     v8::Local<v8::Uint8Array> _array = v8::Uint8Array::New(_buffer, 0, (size_t)len);
@@ -184,7 +262,7 @@ void _GetFontArrayBuffer(const v8::FunctionCallbackInfo<v8::Value>& args)
     if (strDir.length() != 0)
     {
         strDir += L"/";
-        strDir += to_cstring(args[0]);
+        strDir += CV8Convert::ToString(args[0]);
     }
     else
 #endif
@@ -193,7 +271,7 @@ void _GetFontArrayBuffer(const v8::FunctionCallbackInfo<v8::Value>& args)
     // по идее файлы могут совпадать по имени, но лежать в разных директориях.
     // и поэтому в AllFonts.js надо бы писать пути полные.
     // пока оставим по-старому
-    std::wstring sFind = to_cstring(args[0]);
+    std::wstring sFind = CV8Convert::ToString(args[0]);
     bool bIsFullFilePath = (std::wstring::npos != sFind.find('\\') || std::wstring::npos != sFind.find('/'));
     if (bIsFullFilePath)
     {
@@ -233,7 +311,7 @@ void _GetFileString(const v8::FunctionCallbackInfo<v8::Value>& args)
 
     BYTE* pData = NULL;
     DWORD len = 0;
-    pNative->getFileData(to_cstring(args[0]), pData, len);
+    pNative->getFileData(CV8Convert::ToString(args[0]), pData, len);
 
     args.GetReturnValue().Set(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), (char*)pData, v8::String::kNormalString, len));
 }
@@ -245,8 +323,7 @@ void _Save_AllocNative(const v8::FunctionCallbackInfo<v8::Value>& args)
         return;
 
     CNativeControl* pNative = unwrap_nativeobject(args.This());
-    v8::Local<v8::Int32> intValue = args[0]->ToInt32();
-    int nLen = (int)intValue->Value();
+    int nLen = CV8Convert::ToInt(args[0]);
 
     pNative->Save_Alloc(nLen);
 
@@ -262,8 +339,8 @@ void _Save_ReAllocNative(const v8::FunctionCallbackInfo<v8::Value>& args)
         return;
 
     CNativeControl* pNative = unwrap_nativeobject(args.This());
-    int _pos = args[0]->ToInt32()->Value();
-    int _len = args[1]->ToInt32()->Value();
+    int _pos = CV8Convert::ToInt(args[0]);
+    int _len = CV8Convert::ToInt(args[1]);
 
     pNative->Save_ReAlloc(_pos, _len);
 
@@ -279,8 +356,8 @@ void _Save_End(const v8::FunctionCallbackInfo<v8::Value>& args)
         return;
 
     CNativeControl* pNative = unwrap_nativeobject(args.This());
-    std::string sHeader = to_cstringA(args[0]);
-    int _len = args[1]->ToInt32()->Value();
+    std::string sHeader = CV8Convert::ToStringA(args[0]);
+    int _len = CV8Convert::ToInt(args[1]);
 
     pNative->Save_End(sHeader, _len);
 }
@@ -292,7 +369,7 @@ void _ConsoleLog(const v8::FunctionCallbackInfo<v8::Value>& args)
         return;
 
     CNativeControl* pNative = unwrap_nativeobject(args.This());
-    pNative->ConsoleLog(to_cstringA(args[0]));
+    pNative->ConsoleLog(CV8Convert::ToStringA(args[0]));
 }
 
 void _SaveChanges(const v8::FunctionCallbackInfo<v8::Value>& args)
@@ -302,7 +379,7 @@ void _SaveChanges(const v8::FunctionCallbackInfo<v8::Value>& args)
         return;
 
     CNativeControl* pNative = unwrap_nativeobject(args.This());
-    pNative->DumpChanges(to_cstringA(args[0]), args[1]->ToInt32()->Value(), args[2]->ToInt32()->Value());
+    pNative->DumpChanges(CV8Convert::ToStringA(args[0]), CV8Convert::ToInt(args[1]), CV8Convert::ToInt(args[2]));
 }
 
 /// ZIP -----
@@ -315,7 +392,7 @@ void _zipOpenFile(const v8::FunctionCallbackInfo<v8::Value>& args)
     }
 
     CNativeControl* pNative = unwrap_nativeobject(args.This());
-    bool bIsOpen = pNative->m_oZipWorker.Open(to_cstring(args[0]));
+    bool bIsOpen = pNative->m_oZipWorker.Open(CV8Convert::ToString(args[0]));
     if (!bIsOpen)
     {
         args.GetReturnValue().Set(v8::Null(v8::Isolate::GetCurrent()));
@@ -345,7 +422,7 @@ void _zipOpenFileBase64(const v8::FunctionCallbackInfo<v8::Value>& args)
     }
 
     CNativeControl* pNative = unwrap_nativeobject(args.This());
-    bool bIsOpen = pNative->m_oZipWorker.OpenBase64(to_cstringA(args[0]));
+    bool bIsOpen = pNative->m_oZipWorker.OpenBase64(CV8Convert::ToStringA(args[0]));
     if (!bIsOpen)
     {
         args.GetReturnValue().Set(v8::Null(v8::Isolate::GetCurrent()));
@@ -378,7 +455,7 @@ void _zipGetFileAsString(const v8::FunctionCallbackInfo<v8::Value>& args)
 
     BYTE* pData = NULL;
     DWORD len = 0;
-    pNative->m_oZipWorker.GetFileData(to_cstring(args[0]), pData, len);
+    pNative->m_oZipWorker.GetFileData(CV8Convert::ToString(args[0]), pData, len);
 
     args.GetReturnValue().Set(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), (char*)pData, v8::String::kNormalString, len));
 }
@@ -395,7 +472,7 @@ void _zipGetFileAsBinary(const v8::FunctionCallbackInfo<v8::Value>& args)
 
     BYTE* pData = NULL;
     DWORD len = 0;
-    pNative->m_oZipWorker.GetFileData(to_cstring(args[0]), pData, len);
+    pNative->m_oZipWorker.GetFileData(CV8Convert::ToString(args[0]), pData, len);
 
     v8::Local<v8::ArrayBuffer> _buffer = v8::ArrayBuffer::New(v8::Isolate::GetCurrent(), (void*)pData, (size_t)len);
     v8::Local<v8::Uint8Array> _array = v8::Uint8Array::New(_buffer, 0, (size_t)len);
@@ -419,7 +496,7 @@ void _AddImageInChanges(const v8::FunctionCallbackInfo<v8::Value>& args)
 
     CNativeControl* pNative = unwrap_nativeobject(args.This());
 
-    std::wstring sImage = to_cstring(args[0]);
+    std::wstring sImage = CV8Convert::ToString(args[0]);
     if (sImage.empty())
         return;
 
@@ -428,44 +505,62 @@ void _AddImageInChanges(const v8::FunctionCallbackInfo<v8::Value>& args)
         pNative->m_mapImagesInChanges.insert(std::pair<std::wstring, bool>(sImage, true));
 }
 
+// GetImageUrl
+void _GetImageUrl(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    CNativeControl* pNative = unwrap_nativeobject(args.This());
+    std::wstring sUrl = CV8Convert::ToString(args[0]);
+
+    if (!pNative->m_pWorker)
+        pNative->m_pWorker = new CImagesWorker(pNative->m_strImagesDirectory);
+
+    std::wstring sRet = pNative->m_pWorker->GetImage(sUrl);
+    std::string sRetA = U_TO_UTF8(sRet);
+
+    args.GetReturnValue().Set(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), (char*)sRetA.c_str(), v8::String::kNormalString, (int)sRetA.length()));
+}
+
 v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplate(v8::Isolate* isolate)
 {
     //v8::HandleScope handle_scope(isolate);
 
-    v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New();
+    v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New(isolate);
     result->SetInternalFieldCount(1); // отводим в нем место для хранения CNativeControl
 
     v8::Isolate* current = v8::Isolate::GetCurrent();
 
     // прописываем функции - методы объекта
-    result->Set(v8::String::NewFromUtf8(current, "SetFilePath"), v8::FunctionTemplate::New(current, _SetFilePath));
-    result->Set(v8::String::NewFromUtf8(current, "GetFilePath"), v8::FunctionTemplate::New(current, _GetFilePath));
-    result->Set(v8::String::NewFromUtf8(current, "SetFileId"), v8::FunctionTemplate::New(current, _SetFileId));
-    result->Set(v8::String::NewFromUtf8(current, "GetFileId"), v8::FunctionTemplate::New(current, _GetFileId));
-    result->Set(v8::String::NewFromUtf8(current, "GetFileBinary"), v8::FunctionTemplate::New(current, _GetFileArrayBuffer));
-    result->Set(v8::String::NewFromUtf8(current, "GetFontBinary"), v8::FunctionTemplate::New(current, _GetFontArrayBuffer));
-    result->Set(v8::String::NewFromUtf8(current, "GetFontsDirectory"), v8::FunctionTemplate::New(current, _GetFontsDirectory));
-    result->Set(v8::String::NewFromUtf8(current, "GetFileString"), v8::FunctionTemplate::New(current, _GetFileString));
+    result->Set(current, "SetFilePath", v8::FunctionTemplate::New(current, _SetFilePath));
+    result->Set(current, "GetFilePath", v8::FunctionTemplate::New(current, _GetFilePath));
+    result->Set(current, "SetFileId", v8::FunctionTemplate::New(current, _SetFileId));
+    result->Set(current, "GetFileId", v8::FunctionTemplate::New(current, _GetFileId));
+    result->Set(current, "GetFileBinary", v8::FunctionTemplate::New(current, _GetFileArrayBuffer));
+    result->Set(current, "GetFontBinary", v8::FunctionTemplate::New(current, _GetFontArrayBuffer));
+    result->Set(current, "GetFontsDirectory", v8::FunctionTemplate::New(current, _GetFontsDirectory));
+    result->Set(current, "GetFileString", v8::FunctionTemplate::New(current, _GetFileString));
 
-    result->Set(v8::String::NewFromUtf8(current, "GetEditorType"), v8::FunctionTemplate::New(current, _GetEditorType));
-    result->Set(v8::String::NewFromUtf8(current, "CheckNextChange"), v8::FunctionTemplate::New(current, _CheckNextChange));
+    result->Set(current, "GetEditorType", v8::FunctionTemplate::New(current, _GetEditorType));
+    result->Set(current, "CheckNextChange", v8::FunctionTemplate::New(current, _CheckNextChange));
 
-    result->Set(v8::String::NewFromUtf8(current, "GetCountChanges"), v8::FunctionTemplate::New(current, _GetChangesCount));
-    result->Set(v8::String::NewFromUtf8(current, "GetChangesFile"), v8::FunctionTemplate::New(current, _GetChangesFile));
+    result->Set(current, "GetCountChanges", v8::FunctionTemplate::New(current, _GetChangesCount));
+    result->Set(current, "GetChangesFile", v8::FunctionTemplate::New(current, _GetChangesFile));
 
-    result->Set(v8::String::NewFromUtf8(current, "Save_AllocNative"), v8::FunctionTemplate::New(current, _Save_AllocNative));
-    result->Set(v8::String::NewFromUtf8(current, "Save_ReAllocNative"), v8::FunctionTemplate::New(current, _Save_ReAllocNative));
-    result->Set(v8::String::NewFromUtf8(current, "Save_End"), v8::FunctionTemplate::New(current, _Save_End));
+    result->Set(current, "Save_AllocNative", v8::FunctionTemplate::New(current, _Save_AllocNative));
+    result->Set(current, "Save_ReAllocNative", v8::FunctionTemplate::New(current, _Save_ReAllocNative));
+    result->Set(current, "Save_End", v8::FunctionTemplate::New(current, _Save_End));
 
-    result->Set(v8::String::NewFromUtf8(current, "AddImageInChanges"), v8::FunctionTemplate::New(current, _AddImageInChanges));
+    result->Set(current, "AddImageInChanges", v8::FunctionTemplate::New(current, _AddImageInChanges));
 
-    result->Set(v8::String::NewFromUtf8(current, "ConsoleLog"), v8::FunctionTemplate::New(current, _ConsoleLog));
+    result->Set(current, "ConsoleLog", v8::FunctionTemplate::New(current, _ConsoleLog));
 
-    result->Set(v8::String::NewFromUtf8(current, "ZipOpen"),            v8::FunctionTemplate::New(current, _zipOpenFile));
-    result->Set(v8::String::NewFromUtf8(current, "ZipOpenBase64"),      v8::FunctionTemplate::New(current, _zipOpenFileBase64));
-    result->Set(v8::String::NewFromUtf8(current, "ZipFileAsString"),    v8::FunctionTemplate::New(current, _zipGetFileAsString));
-    result->Set(v8::String::NewFromUtf8(current, "ZipFileAsBinary"),    v8::FunctionTemplate::New(current, _zipGetFileAsBinary));
-    result->Set(v8::String::NewFromUtf8(current, "ZipClose"),           v8::FunctionTemplate::New(current, _zipCloseFile));
+    result->Set(current, "ZipOpen",            v8::FunctionTemplate::New(current, _zipOpenFile));
+    result->Set(current, "ZipOpenBase64",      v8::FunctionTemplate::New(current, _zipOpenFileBase64));
+    result->Set(current, "ZipFileAsString",    v8::FunctionTemplate::New(current, _zipGetFileAsString));
+    result->Set(current, "ZipFileAsBinary",    v8::FunctionTemplate::New(current, _zipGetFileAsBinary));
+    result->Set(current, "ZipClose",           v8::FunctionTemplate::New(current, _zipCloseFile));
+
+    result->Set(current, "getImageUrl", v8::FunctionTemplate::New(current, _GetImageUrl));
+    result->Set(current, "getImagesDirectory", v8::FunctionTemplate::New(current, _GetImagesPath));
 
     // возвращаем временный хэндл хитрым образом, который переносит наш хэндл в предыдущий HandleScope и не дает ему
     // уничтожиться при уничтожении "нашего" HandleScope - handle_scope
@@ -478,42 +573,45 @@ v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplateBuilder(v8::Isolate* i
 {
     //v8::HandleScope handle_scope(isolate);
 
-    v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New();
+    v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New(isolate);
     result->SetInternalFieldCount(1); // отводим в нем место для хранения CNativeControl
 
     v8::Isolate* current = v8::Isolate::GetCurrent();
 
     // прописываем функции - методы объекта
-    result->Set(v8::String::NewFromUtf8(current, "SetFilePath"), v8::FunctionTemplate::New(current, _SetFilePath));
-    result->Set(v8::String::NewFromUtf8(current, "GetFilePath"), v8::FunctionTemplate::New(current, _GetFilePath));
-    result->Set(v8::String::NewFromUtf8(current, "SetFileId"), v8::FunctionTemplate::New(current, _SetFileId));
-    result->Set(v8::String::NewFromUtf8(current, "GetFileId"), v8::FunctionTemplate::New(current, _GetFileId));
-    result->Set(v8::String::NewFromUtf8(current, "GetFileBinary"), v8::FunctionTemplate::New(current, _GetFileArrayBuffer));
-    result->Set(v8::String::NewFromUtf8(current, "GetFontBinary"), v8::FunctionTemplate::New(current, _GetFontArrayBuffer));
-    result->Set(v8::String::NewFromUtf8(current, "GetFontsDirectory"), v8::FunctionTemplate::New(current, _GetFontsDirectory));
-    result->Set(v8::String::NewFromUtf8(current, "GetFileString"), v8::FunctionTemplate::New(current, _GetFileString));
+    result->Set(current, "SetFilePath", v8::FunctionTemplate::New(current, _SetFilePath));
+    result->Set(current, "GetFilePath", v8::FunctionTemplate::New(current, _GetFilePath));
+    result->Set(current, "SetFileId", v8::FunctionTemplate::New(current, _SetFileId));
+    result->Set(current, "GetFileId", v8::FunctionTemplate::New(current, _GetFileId));
+    result->Set(current, "GetFileBinary", v8::FunctionTemplate::New(current, _GetFileArrayBuffer));
+    result->Set(current, "GetFontBinary", v8::FunctionTemplate::New(current, _GetFontArrayBuffer));
+    result->Set(current, "GetFontsDirectory", v8::FunctionTemplate::New(current, _GetFontsDirectory));
+    result->Set(current, "GetFileString", v8::FunctionTemplate::New(current, _GetFileString));
 
-    result->Set(v8::String::NewFromUtf8(current, "GetEditorType"), v8::FunctionTemplate::New(current, _GetEditorType));
-    result->Set(v8::String::NewFromUtf8(current, "CheckNextChange"), v8::FunctionTemplate::New(current, _CheckNextChange));
+    result->Set(current, "GetEditorType", v8::FunctionTemplate::New(current, _GetEditorType));
+    result->Set(current, "CheckNextChange", v8::FunctionTemplate::New(current, _CheckNextChange));
 
-    result->Set(v8::String::NewFromUtf8(current, "GetCountChanges"), v8::FunctionTemplate::New(current, _GetChangesCount));
-    result->Set(v8::String::NewFromUtf8(current, "GetChangesFile"), v8::FunctionTemplate::New(current, _GetChangesFile));
+    result->Set(current, "GetCountChanges", v8::FunctionTemplate::New(current, _GetChangesCount));
+    result->Set(current, "GetChangesFile", v8::FunctionTemplate::New(current, _GetChangesFile));
 
-    result->Set(v8::String::NewFromUtf8(current, "Save_AllocNative"), v8::FunctionTemplate::New(current, _Save_AllocNative));
-    result->Set(v8::String::NewFromUtf8(current, "Save_ReAllocNative"), v8::FunctionTemplate::New(current, _Save_ReAllocNative));
-    result->Set(v8::String::NewFromUtf8(current, "Save_End"), v8::FunctionTemplate::New(current, _Save_End));
+    result->Set(current, "Save_AllocNative", v8::FunctionTemplate::New(current, _Save_AllocNative));
+    result->Set(current, "Save_ReAllocNative", v8::FunctionTemplate::New(current, _Save_ReAllocNative));
+    result->Set(current, "Save_End", v8::FunctionTemplate::New(current, _Save_End));
 
-    result->Set(v8::String::NewFromUtf8(current, "AddImageInChanges"), v8::FunctionTemplate::New(current, _AddImageInChanges));
+    result->Set(current, "AddImageInChanges", v8::FunctionTemplate::New(current, _AddImageInChanges));
 
-    result->Set(v8::String::NewFromUtf8(current, "ConsoleLog"), v8::FunctionTemplate::New(current, _ConsoleLog));
+    result->Set(current, "ConsoleLog", v8::FunctionTemplate::New(current, _ConsoleLog));
 
-    result->Set(v8::String::NewFromUtf8(current, "SaveChanges"), v8::FunctionTemplate::New(current, _SaveChanges));
+    result->Set(current, "SaveChanges", v8::FunctionTemplate::New(current, _SaveChanges));
 
-    result->Set(v8::String::NewFromUtf8(current, "ZipOpen"),            v8::FunctionTemplate::New(current, _zipOpenFile));
-    result->Set(v8::String::NewFromUtf8(current, "ZipOpenBase64"),      v8::FunctionTemplate::New(current, _zipOpenFileBase64));
-    result->Set(v8::String::NewFromUtf8(current, "ZipFileAsString"),    v8::FunctionTemplate::New(current, _zipGetFileAsString));
-    result->Set(v8::String::NewFromUtf8(current, "ZipFileAsBinary"),    v8::FunctionTemplate::New(current, _zipGetFileAsBinary));
-    result->Set(v8::String::NewFromUtf8(current, "ZipClose"),           v8::FunctionTemplate::New(current, _zipCloseFile));
+    result->Set(current, "ZipOpen",            v8::FunctionTemplate::New(current, _zipOpenFile));
+    result->Set(current, "ZipOpenBase64",      v8::FunctionTemplate::New(current, _zipOpenFileBase64));
+    result->Set(current, "ZipFileAsString",    v8::FunctionTemplate::New(current, _zipGetFileAsString));
+    result->Set(current, "ZipFileAsBinary",    v8::FunctionTemplate::New(current, _zipGetFileAsBinary));
+    result->Set(current, "ZipClose",           v8::FunctionTemplate::New(current, _zipCloseFile));
+
+    result->Set(current, "getImageUrl", v8::FunctionTemplate::New(current, _GetImageUrl));
+    result->Set(current, "getImagesDirectory", v8::FunctionTemplate::New(current, _GetImagesPath));
 
     // возвращаем временный хэндл хитрым образом, который переносит наш хэндл в предыдущий HandleScope и не дает ему
     // уничтожиться при уничтожении "нашего" HandleScope - handle_scope

@@ -94,16 +94,25 @@ int SST::serialize(std::wostream & stream)
 				try
 				{
 					//внутрь не втаскиваем- в некоторых элементах обязательно писать r-rPr-t в некоторых достаточно t
-					if (richText->rgRun.size() >0)
+					if (false == richText->rgRun.empty())
 					{							
 						richText->serialize(CP_XML_STREAM());
 					}
 					else
 					{
 						CP_XML_NODE(L"t")
-						{		
+						{
+							size_t size = richText->str_.length();
 							CP_XML_ATTR(L"xml:space", L"preserve");
-							CP_XML_STREAM() << STR::escape_ST_Xstring(xml::utils::replace_text_to_xml(richText->str_));
+							
+							if (size > 0x7fff) //PLANILHA_DE_ALOCACAO_DE_TEMPO_w51.xls
+							{
+								CP_XML_STREAM() << STR::escape_ST_Xstring(xml::utils::replace_text_to_xml(richText->str_.substr(0, 0x7fff - 2)));
+							}
+							else
+							{
+								CP_XML_STREAM() << STR::escape_ST_Xstring(xml::utils::replace_text_to_xml(richText->str_));
+							}
 						}
 					}
 				}

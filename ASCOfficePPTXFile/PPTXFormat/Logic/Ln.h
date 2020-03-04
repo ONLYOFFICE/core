@@ -43,6 +43,7 @@
 #include "PrstDash.h"
 #include "LineEnd.h"
 #include "LineJoin.h"
+#include "ExtP.h"
 
 namespace PPTX
 {
@@ -99,8 +100,24 @@ namespace PPTX
 						prstDash = oReader;
 						//m_eDashType = OOX::Drawing::linedashtypePreset;
 					}
-					else if ( _T("a:extLst") == sName )
-						Effects.fromXML(oReader);
+					else if ( L"effectDag"	== sName	||
+							  L"effectLst"	== sName)
+					{
+						Effects.fromXML(oReader);		
+					}			
+					else if ( L"extLst"		== sName )
+					{
+						if ( oReader.IsEmptyNode() )
+							continue;
+
+						int nParentDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						{
+							Ext element;
+							element.fromXML(oReader);
+							extLst.push_back (element);
+						}
+					}
 				}
 				FillParentPointersForChilds();
 			}
@@ -123,7 +140,6 @@ namespace PPTX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start_No_NS( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("algn"), algn )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("cap"),  cap )
@@ -346,8 +362,10 @@ namespace PPTX
 		public:
 //			OOX::Drawing::ELineDashType	m_eDashType;   // Тип штриха
 
-			EffectProperties			Effects;
 			UniFill						Fill;
+			EffectProperties			Effects;
+
+			std::vector<Ext>			extLst;
 
 			nullable<PrstDash>			prstDash;
 			//custDash (Custom Dash)  ยง20.1.8.21 

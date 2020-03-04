@@ -53,6 +53,13 @@ const std::wstring standart_color[56] = {
 		L"3366FF",L"33CCCC",L"99CC00",L"FFCC00",L"FF9900",L"FF6600",L"666699",L"969696",
 		L"003366",L"339966",L"003300",L"333300",L"993300",L"993366",L"333399",L"333333"	};
 
+namespace PPTX
+{
+	namespace Logic
+	{
+		class Xfrm;
+	}
+}
 namespace oox {
 
 	class external_items;
@@ -78,11 +85,15 @@ private:
 
 struct _color
 {
-	_color() : index(-1), bScheme(false), nRGB(0){}
-	int				nRGB;
+	_color(unsigned char nR, unsigned char  nG, unsigned char  nB) 
+	{
+		SetRGB(nR, nG, nB);
+	}
+	_color(){}
+	int				nRGB = 0;
 	std::wstring	sRGB;
-	int				index;
-	bool			bScheme;
+	int				index = -1;
+	bool			bScheme = false;
 
 	void SetRGB(unsigned char nR, unsigned char  nG, unsigned char  nB);
 
@@ -131,36 +142,25 @@ typedef _CP_PTR(_drawing_state) _drawing_state_ptr;
 class _drawing_state
 {
 public:
-	_drawing_state() :	shape_id(msosptRectangle),  
-						flipH(false), flipV(false), 					
-						bTextBox(false),
-						type_anchor(0),
-						vml_HF_mode_(false), 
-						hidden(false)
+	_drawing_state() : parent_drawing_states(NULL)
 	{
-		id						= -1;		
-		rotation				= 0;
-		parent_drawing_states	= NULL;
-		custom_path				= -1;
-		custom_x_limo			= 0x80000000;		
-		custom_y_limo			= 0x80000000;
-
-		type_control			= -1;
 	}
 
 	external_items::Type	type;
-	bool					hidden;
+	bool					hidden = false;
 	std::wstring			name;
 	std::wstring			description;
 
 	std::wstring			xmlAlternative;
 	std::wstring			xmlGeomAlternative;
 	std::wstring			xmlTxBodyAlternative;
+	std::wstring			xmlFillAlternative;
+	std::wstring			xmlEffectAlternative;
 
 	std::wstring			objectId;
 	std::wstring			objectProgId;
 
-	int						type_control;
+	int						type_control = -1;
 
 	struct _anchor
 	{
@@ -172,24 +172,27 @@ public:
 		int					xTo = 0;
 		int					rwTo = 0;
 		int					yTo = 0;
+
+		_rect				absolute;
 	}						sheet_anchor;
+
 	_rect					child_anchor;
 	_rect					group_anchor;
 	_rect					absolute_anchor;
 
-	int						type_anchor;
+	int						type_anchor = 0;
 	
-	bool					vml_HF_mode_;
+	bool					vml_HF_mode_ = false;
 	
 	std::wstring			shape;
 	std::wstring			vml_shape;
 
-	int						id;
-	MSOSPT					shape_id;
+	int						id = -1;
+	MSOSPT					shape_id = msosptRectangle;
 //----------------------------------------------	
-	bool					flipV;
-	bool					flipH;
-	int						rotation;
+	bool					flipV = false;
+	bool					flipH = false;
+	int						rotation = 0;
 //-----------------------------------------------
 	std::vector<ODRAW::MSOPATHINFO>	custom_segments;
 	std::vector<ODRAW::MSOSG>		custom_guides;
@@ -201,51 +204,61 @@ public:
 
 	_rect							custom_rect;
 	std::vector<_CP_OPT(int)>		custom_adjustValues;
-	int								custom_path;
-	int								custom_x_limo;
-	int								custom_y_limo;
+	int								custom_path= -1;
+	int								custom_x_limo = 0x80000000;
+	int								custom_y_limo = 0x80000000;
 //-----------------------------------------------
 	std::wstring					hyperlink;
 	struct _text
 	{
-		_text() :	align(0)/*noset*/, wrap(0)/*square*/, vert_align(0)/*noset*/, vertical(0)/*horiz*/ ,fit_shape(false)
+		_text()
 		{
 			margins.left = margins.right = 0x00016530;
 			margins.top = margins.bottom = 0x0000b298;
 		}
 		std::wstring	content;		//c форматированием oox
 		std::wstring	vml_content;	//c форматированием vml
-		int				wrap;
-		int				align;
-		int				vert_align;
-		int				vertical;
+		int				wrap = 0; //square
+		int				align = 0; //noset
+		int				vert_align = 0; //noset
+		int				vertical = 0; //horiz
 		RECT			margins;
-		bool			fit_shape;
+		bool			fit_shape = false;
 	}text;
 	
 	struct _wordart
 	{
-		_wordart() : is(false), size(0), bold(false), italic(false), underline(false), vertical(false), strike(false), spacing(1.) {}
-		bool			is;
+		bool			is = false;
 		std::wstring	text;	
 		std::wstring	font;	
-		int				size;
-		bool			bold;
-		bool			italic;
-		bool			underline;
-		bool			strike;
-		bool			vertical;
-		double			spacing;
+		int				size = 0;;
+		bool			bold = false;
+		bool			italic = false;
+		bool			underline = false;
+		bool			strike = false;
+		bool			vertical = false;
+		double			spacing = 1.;
 	}wordart;
 	
-	bool				bTextBox;
+	bool				bTextBox = false;
 
 	struct _shadow
 	{
-		_shadow() {is = false; color.SetRGB(0x7f, 0x7f, 0x7f);}
-		bool			is;
+		_shadow () : color(0x7f, 0x7f, 0x7f), highlight(0x7f, 0x7f, 0x7f) {}
+		
+		bool			enabled = false;
+		int				type = 0x00000000; //msoshadowOffset
+		bool			is = false;
 		_color			color;
-		int				opacity;
+		_color			highlight;
+		double			opacity;
+		double			offsetX = 0x00006338;
+		double			offsetY = 0x00006338;
+		double			scaleX2X = 1.;
+		double			scaleY2Y = 1.;
+		double			originX = 0;
+		double			originY = 0;
+
 	}shadow;
 	
 	struct _fill
@@ -253,23 +266,26 @@ public:
 		_fill() 
 		{
 			color.SetRGB(0xff, 0xff, 0xff);
-			angle = opacity = opacity2 = focus = 0; type = fillSolid; 
 			memset(texture_crop, 0, 4 * sizeof(double));
-			texture_crop_enabled = false;
 		}
 		_color			color;
 		_color			color2;
-		double			opacity;
-		double			opacity2;
-		_fill_type		type;
+		double			opacity = 0;
+		double			opacity2 = 0;
+		_fill_type		type = fillSolid; 
 
-		int				focus;
-		double			angle;
+		int				focus = 0;
+		double			angle = 0;
 		
 		std::wstring	texture_target;
 		double			texture_crop[4];
-		bool			texture_crop_enabled;
+		bool			texture_crop_enabled = false;
 		_texture_mode	texture_mode;
+
+		_CP_OPT(int)	contrast;
+		_CP_OPT(int)	brightness;
+		_CP_OPT(bool)	grayscale;
+		_CP_OPT(int)	biLevel;
 
 		std::vector<std::pair<double, _color>> colorsPosition;
 	}fill;
@@ -282,6 +298,8 @@ public:
 		memset(fill.texture_crop, 0, 4 * sizeof(double));
 		fill.texture_crop_enabled = false;
 		fill.colorsPosition.clear();
+
+		fill.contrast = fill.brightness = fill.grayscale = boost::none;
 	}
 	struct _arrow
 	{
@@ -369,6 +387,8 @@ public:
 		void start_control(int type);
 
 		void set_alternative_drawing(const std::wstring & xml_data);
+		void set_xfrm_from_anchor(PPTX::Logic::Xfrm *xfrm, _drawing_state_ptr state);
+		void reset_alternative_drawing();
 
         void set_id			(int id);
 		void set_FlipH		();
@@ -385,10 +405,16 @@ public:
 		void set_ole_object			(const std::wstring & id, const std::wstring & info);
 		void set_control_activeX	(const std::wstring & id);
 		
-        void set_crop_top			(double val);
-        void set_crop_bottom		(double val);
-        void set_crop_left			(double val);
-        void set_crop_right			(double val);
+        void set_picture_crop_top	(double val);
+        void set_picture_crop_bottom(double val);
+        void set_picture_crop_left	(double val);
+        void set_picture_crop_right	(double val);
+		void set_picture_name		(const std::wstring & str);
+		void set_picture_grayscale	(bool val);
+		void set_picture_brightness	(int val);
+		void set_picture_contrast	(int val);
+		void set_picture_biLevel	(int val);
+		void set_picture_transparent(int nColor, const std::wstring & sColor);
 
         void set_rotation			(double val);
 
@@ -422,6 +448,18 @@ public:
 		void set_line_join			(int val);
 		void set_line_endcap		(int val);
 
+		void set_shadow_enabled		(bool val);
+		void set_shadow_type		(int val);
+		void set_shadow_opacity		(double val);
+		void set_shadow_color		(int nColor, const std::wstring & color);
+		void set_shadow_highlight	(int nColor, const std::wstring & color);
+		void set_shadow_originX		(double val);
+		void set_shadow_originY		(double val);
+		void set_shadow_offsetX		(int val);
+		void set_shadow_offsetY		(int val);
+		void set_shadow_scaleX2X	(double val);
+		void set_shadow_scaleY2Y	(double val);
+
 		void set_fill_old_version	(_UINT32 val);
 		void set_line_old_version	(_UINT32 val);
 		void set_flag_old_version	(_UINT16 val, _UINT16 val2);
@@ -429,7 +467,8 @@ public:
 		void set_absolute_anchor	(double x, double y, double cx, double cy);
         void set_child_anchor		(int x, int y, int cx, int cy);
 		void set_group_anchor		(int x, int y, int cx, int cy);
-        void set_sheet_anchor		(int colFrom, int xFrom, int rwFrom, int yFrom, int colTo, int xTo, int rwTo,int yTo);
+        void set_sheet_anchor		(int colFrom, int xFrom, int rwFrom, int yFrom, int colTo, int xTo, int rwTo, int yTo, 
+										double x, double y, double cx, double cy);
 
         void set_properties			(const std::wstring & str);
         void set_hyperlink			(const std::wstring & link, const std::wstring & display, bool is_external);

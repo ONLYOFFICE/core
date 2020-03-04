@@ -464,7 +464,7 @@ const wchar_t * draw_equation::name = L"equation";
 
 void draw_equation::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    draw_equation_attlist_.add_attributes(Attributes);
+    attlist_.add_attributes(Attributes);
 }
 int draw_enhanced_geometry::parsing(_CP_OPT(std::wstring) val) 
 {
@@ -588,6 +588,44 @@ void draw_enhanced_geometry::find_draw_type_oox()
 			if ((draw_type_oox_index_) && (*draw_type_oox_index_== 96))//L"textBox" "mso-spt24"
 			{
 				sub_type_ = 1;//textBox
+			}
+		}
+	}
+
+	if (attlist_.drawooo_enhanced_path_)		odf_path_ = attlist_.drawooo_enhanced_path_.get();
+	else if (attlist_.draw_enhanced_path_)		odf_path_ = attlist_.draw_enhanced_path_.get();
+
+	for (size_t i = 0; i < draw_equation_.size(); i++)
+	{
+		draw_equation* eq = dynamic_cast<draw_equation*>(draw_equation_[i].get());
+		if (eq)
+		{
+			std::wstring name = eq->attlist_.draw_name_.get_value_or(L"");
+			std::wstring value = eq->attlist_.draw_formula_.get_value_or(L"");
+			
+			map_draw_equation_.insert(std::make_pair(name, value));
+		}
+	}
+
+	if (false == odf_path_.empty())
+	{
+		size_t pos = 0;
+
+		while(true)
+		{
+			pos = odf_path_.find(L"?", pos);
+			if (pos == std::wstring::npos)
+				break;
+
+			size_t pos1 = odf_path_.find(L" ", pos);
+
+			std::wstring name = odf_path_.substr(pos + 1, pos1 - pos - 1);
+
+			std::map<std::wstring, std::wstring>::iterator pFind = map_draw_equation_.find(name);
+			if (pFind != map_draw_equation_.end())
+			{
+				odf_path_ = odf_path_.substr(0, pos) + pFind->second + odf_path_.substr(pos1);
+				pos += pFind->second.length() + 2 - (pos1 - pos);
 			}
 		}
 	}

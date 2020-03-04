@@ -20,7 +20,12 @@ core_windows {
 }
 
 core_linux {
-    LIBS += -L$$CORE_V8_PATH_LIBS -lv8_base -lv8_libplatform -lv8_libbase -lv8_snapshot -lv8_libsampler
+    SNAPSHOT_LIB=v8_snapshot
+    !exists($$CORE_V8_PATH_LIBS/libv8_snapshot.a) {
+        SNAPSHOT_LIB=v8_nosnapshot
+    }
+
+    LIBS += -L$$CORE_V8_PATH_LIBS -lv8_base -lv8_libplatform -lv8_libbase -l$$SNAPSHOT_LIB -lv8_libsampler
     LIBS += -L$$CORE_V8_PATH_LIBS/third_party/icu -licui18n -licuuc
 }
 

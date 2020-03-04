@@ -35,6 +35,7 @@
 #define READER_CLASSES
 
 #include "../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../Common/DocxFormat/Source/Common/SimpleTypes_Word.h"
 
 #include <boost/algorithm/string.hpp>
 
@@ -439,13 +440,12 @@ public:
 class Tab
 {
 public:
-	BYTE Val;
+	SimpleTypes::CTabJc<> Val;
 	long Pos;
 	BYTE Leader;
 	bool bLeader;
 	Tab()
 	{
-		Val = shd_Nil;
 		Pos = 0;
 		bLeader = false;
 	}
@@ -688,8 +688,8 @@ public:
 		{
 			if(DStrikeout)
                 pCStringWriter->WriteString(L"<w:dstrike/>");
-			else if(false == bDoNotWriteNullProp)
-                pCStringWriter->WriteString(L"<w:dstrike w:val=\"false\"/>");
+			//else if(false == bDoNotWriteNullProp)
+   //             pCStringWriter->WriteString(L"<w:dstrike w:val=\"false\"/>");
 		}
 		if(bVanish)
 		{
@@ -1406,7 +1406,9 @@ class docLvl
 public:
 	long ILvl;
 	long Format;
+	std::wstring sFormat;
 	BYTE Jc;
+	std::wstring sJc;
 	std::vector<docLvlText*> Text;
 	long Restart;
 	long Start;
@@ -1491,7 +1493,11 @@ public:
 		{
             oWriter.WriteString(L"<w:start w:val=\"" + std::to_wstring(Start) + L"\"/>");
 		}
-		if(bFormat)
+		if(!sFormat.empty())
+		{
+			oWriter.WriteString(sFormat);
+		}
+		else if(bFormat)
 		{
             std::wstring sFormat;
 			switch(Format)
@@ -1599,19 +1605,23 @@ public:
 			 }
 			 oWriter.WriteString(L"/>");
 		}
-		if(bJc)
+		if(!sJc.empty())
 		{
-            std::wstring sJc;
+			oWriter.WriteString(sJc);
+		}
+		else if(bJc)
+		{
+			std::wstring sJcType;
 			switch(Jc)
 			{
-			case align_Right:sJc = _T("right");break;
-			case align_Left:sJc = _T("left");break;
-			case align_Center:sJc = _T("center");break;
-			case align_Justify:sJc = _T("distribute");break;
+			case align_Right:sJcType = _T("right");break;
+			case align_Left:sJcType = _T("left");break;
+			case align_Center:sJcType = _T("center");break;
+			case align_Justify:sJcType = _T("distribute");break;
 			}
-            if(!sJc.empty())
+			if(!sJcType.empty())
 			{
-                oWriter.WriteString(L"<w:lvlJc w:val=\"" + sJc + L"\"/>");
+				oWriter.WriteString(L"<w:lvlJc w:val=\"" + sJcType + L"\"/>");
 			}
 		}
 		if(bParaPr)

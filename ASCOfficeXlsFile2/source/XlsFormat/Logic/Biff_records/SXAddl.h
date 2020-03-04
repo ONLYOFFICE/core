@@ -33,6 +33,7 @@
 
 #include "BiffRecord.h"
 #include "../Biff_structures/BiffString.h"
+#include "../Biff_structures/Xnum.h"
 
 namespace XLS
 {
@@ -1035,6 +1036,378 @@ public:
 	bool fUnbalancedGroupKnown;
 	bool fUnbalancedGroup;
 	bool fHidden;
+};
+
+class SXAddl_SXCSXCondFmt_SXDSXCondFmt : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCSXCondFmt_SXDSXCondFmt)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCSXCondFmt_SXDSXCondFmt(){}
+	~SXAddl_SXCSXCondFmt_SXDSXCondFmt(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	_UINT32 sxcondfmtScope;
+	_UINT32 sxcondfmtType;
+	_UINT32 ipriority;
+	_UINT32 csxrule;
+};
+
+class SXAddl_SXCSXCondFmts_SXDId : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCSXCondFmts_SXDId)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCSXCondFmts_SXDId(){}
+	~SXAddl_SXCSXCondFmts_SXDId(){}
+
+	virtual void load(CFRecord& record);
+
+	static const ElementType type = typeSXAddl;
+	
+	_INT32 cSxcondfmt;
+};
+
+class SXAddl_SXCSXrule_SXDId : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCSXrule_SXDId)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCSXrule_SXDId(){}
+	~SXAddl_SXCSXrule_SXDId(){}
+
+	virtual void load(CFRecord& record);
+
+	static const ElementType type = typeSXAddl;
+};
+
+class SXAddl_SXCSXrule_SXDSXrule : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCSXrule_SXDSXrule)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCSXrule_SXDSXrule(){}
+	~SXAddl_SXCSXrule_SXDSXrule(){}
+
+	virtual void load(CFRecord& record);
+
+	static const ElementType type = typeSXAddl;
+
+	BYTE sxrtype;
+	bool fPart;
+	bool fDataOnly;
+	bool fLabelOnly;
+	bool fGrandRw;
+	bool fGrandCol;
+	bool fGrandRwSav;
+	bool fGrandColSav;
+	bool fFuzzy;
+	bool fLineMode;
+	bool fDrillOnly;
+
+	BYTE irwFirst;
+	BYTE irwLast;
+	BYTE icolFirst;
+	BYTE icolLast;
+
+	_UINT32 csxfilt;
+	_INT32 iDim;
+	_INT32 isxvd;
+};
+
+class SXAddl_SXCSXfilt_SXDId : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCSXfilt_SXDId)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCSXfilt_SXDId(){}
+	~SXAddl_SXCSXfilt_SXDId(){}
+
+	virtual void load(CFRecord& record);
+
+	static const ElementType type = typeSXAddl;
+};
+
+class SXAddl_SXCSXfilt_SXDSXfilt : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCSXfilt_SXDSXfilt)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCSXfilt_SXDSXfilt(){}
+	~SXAddl_SXCSXfilt_SXDSXfilt(){}
+
+	virtual void load(CFRecord& record);
+
+	static const ElementType type = typeSXAddl;
+
+	bool sxaxisRw;
+	bool sxaxisCol;
+	bool sxaxisData;
+	bool fSelected;
+
+	short grbitSbt;
+	_INT32 iDim;
+	_INT32 isxvd;
+	_UINT32 cisxvi;
+};
+
+class SXAddl_SXCSXfilt_SXDSXItm : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCSXfilt_SXDSXItm)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCSXfilt_SXDSXItm(){}
+	~SXAddl_SXCSXfilt_SXDSXItm(){}
+
+	virtual void load(CFRecord& record);
+
+	static const ElementType type = typeSXAddl;
+
+	std::vector<unsigned short> rgIsxvi;
+};
+
+class SXAddl_SXCSXFilters12_SXDId : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCSXFilters12_SXDId)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCSXFilters12_SXDId(){}
+	~SXAddl_SXCSXFilters12_SXDId(){}
+
+	virtual void load(CFRecord& record);
+
+	static const ElementType type = typeSXAddl;
+
+	_UINT32 cSxfilter12;
+};
+
+class SXAddl_SXCSXFilter12_SXDId : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCSXFilter12_SXDId)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCSXFilter12_SXDId(){}
+	~SXAddl_SXCSXFilter12_SXDId(){}
+
+	virtual void load(CFRecord& record);
+
+	static const ElementType type = typeSXAddl;
+
+	_UINT32 dwFilterid;
+};
+
+class SXAddl_SXCSXFilter12_SXDCaption : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCSXFilter12_SXDCaption)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCSXFilter12_SXDCaption(){}
+	~SXAddl_SXCSXFilter12_SXDCaption(){}
+
+	virtual void load(CFRecord& record);
+
+	static const ElementType type = typeSXAddl;
+
+	XLUnicodeStringSegmentedSXADDL stName;
+};
+
+class SXAddl_SXCSXFilter12_SXDSXFilter : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCSXFilter12_SXDSXFilter)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCSXFilter12_SXDSXFilter(){}
+	~SXAddl_SXCSXFilter12_SXDSXFilter(){}
+
+	virtual void load(CFRecord& record);
+
+	static const ElementType type = typeSXAddl;
+
+	_UINT32 isxvd;
+	_INT32 isxvdMProp;
+	_INT32 sxft; //SxFT enum
+	_INT32 isxdiMeasure;
+	_INT32 isxthMeasure;
+};
+class SXAddl_SXCSXFilter12_SXDSXFilterDesc : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCSXFilter12_SXDSXFilterDesc)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCSXFilter12_SXDSXFilterDesc(){}
+	~SXAddl_SXCSXFilter12_SXDSXFilterDesc(){}
+
+	virtual void load(CFRecord& record);
+
+	static const ElementType type = typeSXAddl;
+
+	XLUnicodeStringSegmentedSXADDL stDescription;
+};
+class SXAddl_SXCSXFilter12_SXDSXFilterValue1 : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCSXFilter12_SXDSXFilterDesc)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCSXFilter12_SXDSXFilterValue1(){}
+	~SXAddl_SXCSXFilter12_SXDSXFilterValue1(){}
+
+	virtual void load(CFRecord& record);
+
+	static const ElementType type = typeSXAddl;
+
+	XLUnicodeStringSegmentedSXADDL stValue;
+};
+class SXAddl_SXCSXFilter12_SXDSXFilterValue2 : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCSXFilter12_SXDSXFilterValue2)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCSXFilter12_SXDSXFilterValue2(){}
+	~SXAddl_SXCSXFilter12_SXDSXFilterValue2(){}
+
+	virtual void load(CFRecord& record);
+
+	static const ElementType type = typeSXAddl;
+
+	XLUnicodeStringSegmentedSXADDL stValue;
+};
+
+class SXAddl_SXCSXFilter12_SXDXlsFilter : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCSXFilter12_SXDXlsFilter)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCSXFilter12_SXDXlsFilter(){}
+	~SXAddl_SXCSXFilter12_SXDXlsFilter(){}
+
+	virtual void load(CFRecord& record);
+
+	static const ElementType type = typeSXAddl;
+
+	_UINT32 cft; //CFT enum
+	_INT32 ccriteria;
+
+	BiffStructurePtr data; //XlsFilter_Top10 or XlsFilter_Criteria
+};
+
+class SXAddl_SXCSXFilter12_SXDXlsFilterValue1 : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCSXFilter12_SXDXlsFilterValue1)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCSXFilter12_SXDXlsFilterValue1(){}
+	~SXAddl_SXCSXFilter12_SXDXlsFilterValue1(){}
+
+	virtual void load(CFRecord& record);
+
+	static const ElementType type = typeSXAddl;
+
+	XLUnicodeStringSegmentedSXADDL stValue;
+};
+class SXAddl_SXCSXFilter12_SXDXlsFilterValue2 : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCSXFilter12_SXDXlsFilterValue2)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCSXFilter12_SXDXlsFilterValue2(){}
+	~SXAddl_SXCSXFilter12_SXDXlsFilterValue2(){}
+
+	virtual void load(CFRecord& record);
+
+	static const ElementType type = typeSXAddl;
+
+	XLUnicodeStringSegmentedSXADDL stValue;
+};
+
+class XlsFilter_Top10 : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(XlsFilter_Top10)
+public:
+	BiffStructurePtr clone();
+
+	XlsFilter_Top10(){}
+	~XlsFilter_Top10(){}
+
+	virtual void load(CFRecord& record);
+
+	static const ElementType type = typeXlsFilter_Top10;
+
+	_UINT32 top10ft; //Top10FT enum
+	bool fTop;
+
+	Xnum numTopN;
+};
+
+
+class SXEZDoper : public BiffStructure
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXEZDoper)
+public:
+	BiffStructurePtr clone();
+
+	static const ElementType type = typeSXEZDoper;
+	
+	virtual void load(CFRecord& record);
+
+	BYTE vts;
+	BYTE grbitSign;
+	_UINT32 vtValue;
+};
+
+class XlsFilter_Criteria : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(XlsFilter_Criteria)
+public:
+	BiffStructurePtr clone();
+
+	XlsFilter_Criteria(){}
+	~XlsFilter_Criteria(){}
+
+	virtual void load(CFRecord& record);
+
+	static const ElementType type = typeXlsFilter_Criteria;
+
+	SXEZDoper ezdoper1;
+	SXEZDoper ezdoper2;
+
+	_UINT32 djoin1; //DJoin enum
+};
+
+class SXAddl_SXCView_SXDSXPIIvmb : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCView_SXDSXPIIvmb)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCView_SXDSXPIIvmb(){}
+	~SXAddl_SXCView_SXDSXPIIvmb(){}
+
+	virtual void load(CFRecord& record);
+
+	static const ElementType type = typeSXAddl;
+
+	_UINT32 isxpi; 
+	_UINT32 ivmb;
 };
 } // namespace XLS
 

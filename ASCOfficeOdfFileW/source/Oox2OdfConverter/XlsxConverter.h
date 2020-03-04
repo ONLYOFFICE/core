@@ -100,6 +100,11 @@ namespace OOX
 		class CDataValidation;
 		class CHeaderFooterElement;
 		class CLegacyDrawingHFWorksheet;
+		class CPrintOptions;
+
+		class CPivotTableFile;
+		class CPivotTableDefinition;
+		class CPivotCacheDefinition;
 	}
 }
 
@@ -158,6 +163,7 @@ namespace Oox2Odf
 
 		void convert_sheets();
 		void convert_styles();		
+		void convert();
 		
 		void convert(OOX::Spreadsheet::CWorksheet			*oox_sheet);
 		void convert(OOX::Spreadsheet::CDefinedName			*oox_defined);
@@ -167,7 +173,8 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CHeaderFooter		*oox_header_footer);
 		void convert(OOX::Spreadsheet::CLegacyDrawingHFWorksheet *oox_background);
 		void convert(OOX::Spreadsheet::CHeaderFooterElement	*oox_header_footer);
-		void convert();
+		void convert(OOX::Spreadsheet::CPivotTableFile		*oox_pivot_table);
+		void convert(OOX::Spreadsheet::CPivotTableDefinition*oox_pivot_table, OOX::Spreadsheet::CPivotCacheDefinition* oox_pivot_cache);
 
 		void convert(OOX::Spreadsheet::CCol					*oox_column);
 		void convert(OOX::Spreadsheet::CRow					*oox_row, OOX::Spreadsheet::CRow *oox_row_prev);
@@ -186,6 +193,7 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CSheetViews			*oox_sheet_views);
 		void convert(OOX::Spreadsheet::CPageSetup			*oox_page);
 		void convert(OOX::Spreadsheet::CPageMargins			*oox_page);
+		void convert(OOX::Spreadsheet::CPrintOptions		*oox_print_options);
 		void convert(OOX::Spreadsheet::CWorkbookView		*oox_book_views);
 		void convert(OOX::Spreadsheet::CExternalLink		*oox_external_link);
 

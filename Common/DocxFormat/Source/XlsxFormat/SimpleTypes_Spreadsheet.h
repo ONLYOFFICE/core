@@ -2459,6 +2459,47 @@ namespace SimpleTypes
 			SimpleType_FromString     (EDateTimeGroup)
             SimpleType_Operator_Equal (CDateTimeGroup)
 		};
+		enum ESortMethod
+		{
+			sortmethodNone = 1,
+			sortmethodPinYin = 2,
+			sortmethodStroke = 3,
+		};
+		template<ESortMethod eDefValue = sortmethodNone>
+		class CSortMethod : public CSimpleType<ESortMethod, eDefValue>
+		{
+		public:
+			CSortMethod() {}
+			CSortMethod(const ESortMethod & val)	{ this->m_eValue = val; }
+
+			virtual ESortMethod FromString(std::wstring &sValue)
+			{
+				if(_T("none") == sValue)
+					this->m_eValue = sortmethodNone;
+				else if(_T("pinYin") == sValue)
+					this->m_eValue = sortmethodPinYin;
+				else if(_T("stroke") == sValue)
+					this->m_eValue = sortmethodStroke;
+				else
+					this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+
+			virtual std::wstring     ToString  () const
+			{
+				std::wstring sResult;
+				switch(this->m_eValue)
+				{
+				case sortmethodNone: sResult = L"none";break;
+				case sortmethodPinYin: sResult = L"pinYin";break;
+				case sortmethodStroke: sResult = L"stroke";break;
+				}
+				return sResult;
+			}
+
+			SimpleType_FromString     (ESortMethod)
+			SimpleType_Operator_Equal (CSortMethod)
+		};
 		enum EDynamicFilterType
 		{
 			dynamicfiltertypeAboveAverage = 1,
@@ -3900,7 +3941,432 @@ namespace SimpleTypes
 
 			SimpleType_FromString     (ETickMarksType)
 			SimpleType_Operator_Equal (CTickMarksType)
+		};
+		enum ESourceCacheType
+		{
+			typeSourceConsolidation	=  0,
+			typeSourceExternal		=  1,
+			typeSourceScenario		=  2,
+			typeSourceWorksheet		=  3,
+		};
+		template<ESourceCacheType eDefValue = typeSourceWorksheet>
+		class CSourceCacheType : public CSimpleType<ESourceCacheType, eDefValue>
+		{
+		public:
+			CSourceCacheType() {}
+			CSourceCacheType(const ESourceCacheType & val)	{ this->m_eValue = val; }
+
+			virtual ESourceCacheType FromString(std::wstring &sValue)
+			{
+				if      ( _T("consolidation")	== sValue )	this->m_eValue = typeSourceConsolidation;
+				else if ( _T("external")		== sValue ) this->m_eValue = typeSourceExternal;
+				else if ( _T("scenario")		== sValue ) this->m_eValue = typeSourceScenario;
+				else if ( _T("worksheet")		== sValue ) this->m_eValue = typeSourceWorksheet;
+
+				return this->m_eValue;
+			}
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case typeSourceConsolidation:	return _T("consolidation");
+					case typeSourceExternal:		return _T("external");
+					case typeSourceScenario:		return _T("scenario");
+					case typeSourceWorksheet:		return _T("worksheet");
+					default :						return _T("worksheet");
+				}
+			}
+			SimpleType_FromString     (ESourceCacheType)
+			SimpleType_Operator_Equal (CSourceCacheType)
 		};		
+		enum EValuesGroupBy
+		{
+			groupByDays				=  0,
+			groupByHours			=  1,
+			groupByMinutes			=  2,
+			groupByMonths			=  3,
+			groupByQuarters			=  4,
+			groupByNumericRanges	=  5,
+			groupBySeconds			=  6,
+			groupByYears			=  7
+		};
+		template<EValuesGroupBy eDefValue = groupByMonths>
+		class CValuesGroupBy : public CSimpleType<EValuesGroupBy, eDefValue>
+		{
+		public:
+			CValuesGroupBy() {}
+			CValuesGroupBy(const EValuesGroupBy & val)	{ this->m_eValue = val; }
+
+			virtual EValuesGroupBy FromString(std::wstring &sValue)
+			{
+				if      ( _T("days")	== sValue )	this->m_eValue = groupByDays;
+				else if ( _T("hours")	== sValue ) this->m_eValue = groupByHours;
+				else if ( _T("minutes")	== sValue ) this->m_eValue = groupByMinutes;
+				else if ( _T("months")	== sValue ) this->m_eValue = groupByMonths;
+				else if ( _T("quarters")== sValue ) this->m_eValue = groupByQuarters;
+				else if ( _T("range")	== sValue ) this->m_eValue = groupByNumericRanges;
+				else if ( _T("seconds")	== sValue ) this->m_eValue = groupBySeconds;
+				else if ( _T("years")	== sValue ) this->m_eValue = groupByYears;
+
+				return this->m_eValue;
+			}
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case groupByDays:			return _T("days");
+					case groupByHours:			return _T("hours");
+					case groupByMinutes:		return _T("minutes");
+					case groupByMonths:			return _T("months");
+					case groupByQuarters:		return _T("quarters");
+					case groupByNumericRanges:	return _T("range");
+					case groupBySeconds:		return _T("seconds");
+					case groupByYears:			return _T("years");
+					default :					return _T("");
+				}
+			}
+			SimpleType_FromString     (EValuesGroupBy)
+			SimpleType_Operator_Equal (CValuesGroupBy)
+		};
+		enum EPivotItemType
+		{
+			typeAverage	=  0,
+			typeBlank	=  1,
+			typeCount	=  2,
+			typeCountA	=  3,
+			typeData	=  4,
+			typeDefault	=  5,
+			typeGrandTotalt	=  6,
+			typeMin		=  7,
+			typeMax		=  8,
+			typeProduct	=  9,
+			typeStdDev	=  10,
+			typeStdDevP	=  11,
+			typeSum		=  12,
+			typeVar		=  13,
+			typeVarP	=  14
+		};
+		template<EPivotItemType eDefValue = typeSum>
+		class CPivotItemType : public CSimpleType<EPivotItemType, eDefValue>
+		{
+		public:
+			CPivotItemType() {}
+			CPivotItemType(const EPivotItemType & val)	{ this->m_eValue = val; }
+
+			virtual EPivotItemType FromString(std::wstring &sValue)
+			{
+				if      ( _T("avg")		== sValue )	this->m_eValue = typeAverage;
+				else if ( _T("blank")	== sValue ) this->m_eValue = typeBlank;
+				else if ( _T("count")	== sValue ) this->m_eValue = typeCount;
+				else if ( _T("countA")	== sValue ) this->m_eValue = typeCountA;
+				else if ( _T("data")	== sValue ) this->m_eValue = typeData;
+				else if ( _T("default")	== sValue ) this->m_eValue = typeDefault;
+				else if ( _T("grand")	== sValue ) this->m_eValue = typeGrandTotalt;
+				else if ( _T("min")		== sValue ) this->m_eValue = typeMin;
+				else if ( _T("max")		== sValue ) this->m_eValue = typeMax;
+				else if ( _T("product")	== sValue ) this->m_eValue = typeProduct;
+				else if ( _T("stdDev")	== sValue ) this->m_eValue = typeStdDev;
+				else if ( _T("stdDevP")	== sValue ) this->m_eValue = typeStdDevP;
+				else if ( _T("sum")		== sValue ) this->m_eValue = typeSum;
+				else if ( _T("var")		== sValue ) this->m_eValue = typeVar;
+				else if ( _T("varP")	== sValue ) this->m_eValue = typeVarP;
+
+				return this->m_eValue;
+			}
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case typeAverage:	return _T("avg");
+					case typeBlank:		return _T("blank");
+					case typeCount:		return _T("count");
+					case typeCountA:	return _T("countA");
+					case typeData:		return _T("data");
+					case typeDefault:	return _T("default");
+					case typeGrandTotalt:return _T("grand");
+					case typeMin:		return _T("min");
+					case typeMax:		return _T("max");
+					case typeProduct:	return _T("product");
+					case typeStdDev:	return _T("stdDev");
+					case typeStdDevP:	return _T("stdDevP");
+					case typeSum:		return _T("sum");
+					case typeVar:		return _T("var");
+					case typeVarP:		return _T("varP");
+					default :			return _T("");
+				}
+			}
+			SimpleType_FromString     (EPivotItemType)
+			SimpleType_Operator_Equal (CPivotItemType)
+		};
+		enum EFieldSortType
+		{
+			sortManual		=  0,
+			sortAscending	=  1,
+			sortDescending	=  2
+		};
+		template<EFieldSortType eDefValue = sortManual>
+		class CFieldSortType : public CSimpleType<EFieldSortType, eDefValue>
+		{
+		public:
+			CFieldSortType() {}
+			CFieldSortType(const EFieldSortType & val)	{ this->m_eValue = val; }
+
+			virtual EFieldSortType FromString(std::wstring &sValue)
+			{
+				if      ( _T("manual")		== sValue )	this->m_eValue = sortManual;
+				else if ( _T("ascending")	== sValue ) this->m_eValue = sortAscending;
+				else if ( _T("descending")	== sValue ) this->m_eValue = sortDescending;
+
+				return this->m_eValue;
+			}
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case sortManual:		return _T("manual");
+					case sortAscending:		return _T("ascending");
+					case sortDescending:	return _T("descending");
+					default :				return _T("");
+				}
+			}
+			SimpleType_FromString     (EFieldSortType)
+			SimpleType_Operator_Equal (CFieldSortType)
+		};
+		
+		enum EPivotAreaType
+		{
+			areaAll			=  0,
+			areaFieldButton =  1,
+			areaData		=  2,	
+			areaNone		=  3,
+			areaNormal		=  4,
+			areaOrigin		=  5,
+			areaTopEnd		=  6
+		};
+		template<EPivotAreaType eDefValue = areaNone>
+		class CPivotAreaType : public CSimpleType<EPivotAreaType, eDefValue>
+		{
+		public:
+			CPivotAreaType() {}
+			CPivotAreaType(const EPivotAreaType & val)	{ this->m_eValue = val; }
+
+			virtual EPivotAreaType FromString(std::wstring &sValue)
+			{
+				if      ( _T("all")		== sValue )	this->m_eValue = areaAll;
+				else if ( _T("button")	== sValue ) this->m_eValue = areaFieldButton;
+				else if ( _T("data")	== sValue ) this->m_eValue = areaData;
+				else if ( _T("none")	== sValue ) this->m_eValue = areaNone;
+				else if ( _T("normal")	== sValue ) this->m_eValue = areaNormal;
+				else if ( _T("origin")	== sValue ) this->m_eValue = areaOrigin;
+				else if ( _T("topEnd")	== sValue ) this->m_eValue = areaTopEnd;
+
+				return this->m_eValue;
+			}
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case areaAll:			return _T("all");
+					case areaFieldButton:	return _T("button");
+					case areaData:			return _T("data");
+					case areaNone:			return _T("none");
+					case areaNormal:		return _T("normal");
+					case areaOrigin:		return _T("origin");
+					case areaTopEnd:		return _T("topEnd");
+					default :				return _T("");
+				}
+			}
+			SimpleType_FromString     (EPivotAreaType)
+			SimpleType_Operator_Equal (CPivotAreaType)
+		};
+		enum EPivotAxisType
+		{
+			axisCol		=  0,
+			axisPage	=  1,
+			axisRow		=  2,
+			axisValues	=  3
+		};
+		template<EPivotAxisType eDefValue = axisCol>
+		class CPivotAxisType : public CSimpleType<EPivotAxisType, eDefValue>
+		{
+		public:
+			CPivotAxisType() {}
+			CPivotAxisType(const EPivotAxisType & val)	{ this->m_eValue = val; }
+
+			virtual EPivotAxisType FromString(std::wstring &sValue)
+			{
+				if      ( _T("axisCol")		== sValue )	this->m_eValue = axisCol;
+				else if ( _T("axisPage")	== sValue ) this->m_eValue = axisPage;
+				else if ( _T("axisRow")		== sValue ) this->m_eValue = axisRow;
+				else if ( _T("axisValues")	== sValue ) this->m_eValue = axisValues;
+
+				return this->m_eValue;
+			}
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case axisCol:		return _T("axisCol");
+					case axisPage:		return _T("axisPage");
+					case axisRow:		return _T("countNums");
+					case axisValues:	return _T("axisRow");
+					default :			return _T("");
+				}
+			}
+			SimpleType_FromString     (EPivotAxisType)
+			SimpleType_Operator_Equal (CPivotAxisType)
+		};
+		enum EFormatAction
+		{
+			actionBlank		=  0,
+			actionDrill		=  1,
+			actionFormatting=  2,
+			actionFormula	=  3
+		};
+		template<EFormatAction eDefValue = actionBlank>
+		class CFormatAction : public CSimpleType<EFormatAction, eDefValue>
+		{
+		public:
+			CFormatAction() {}
+			CFormatAction(const EFormatAction & val)	{ this->m_eValue = val; }
+
+			virtual EFormatAction FromString(std::wstring &sValue)
+			{
+				if      ( _T("blank")		== sValue )	this->m_eValue = actionBlank;
+				else if ( _T("drill")		== sValue ) this->m_eValue = actionDrill;
+				else if ( _T("formatting")	== sValue ) this->m_eValue = actionFormatting;
+				else if ( _T("formula")		== sValue ) this->m_eValue = actionFormula;
+
+				return this->m_eValue;
+			}
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case actionBlank:		return _T("blank");
+					case actionDrill:		return _T("drill");
+					case actionFormatting:	return _T("formatting");
+					case actionFormula:		return _T("formula");
+					default :				return _T("");
+				}
+			}
+			SimpleType_FromString     (EFormatAction)
+			SimpleType_Operator_Equal (CFormatAction)
+		};
+		enum EShowDataAs
+		{
+			dataAsDifference	=  0,
+			dataAsIndex			=  1,
+			dataAsNormal		=  2,
+			dataAsPercentOff	=  3,
+			dataAsPercentDiff	=  4,
+			dataAsPercentOfCol	=  5,
+			dataAsPercentOfRow	=  6,
+			dataAsPercentOfTotal =  7,
+			dataAsRunTotal		=  8
+		};
+		template<EShowDataAs eDefValue = dataAsRunTotal>
+		class CShowDataAs : public CSimpleType<EShowDataAs, eDefValue>
+		{
+		public:
+			CShowDataAs() {}
+			CShowDataAs(const EShowDataAs & val)	{ this->m_eValue = val; }
+
+			virtual EShowDataAs FromString(std::wstring &sValue)
+			{
+				if      ( _T("difference")		== sValue )	this->m_eValue = dataAsDifference;
+				else if ( _T("index")			== sValue ) this->m_eValue = dataAsIndex;
+				else if ( _T("normal")			== sValue ) this->m_eValue = dataAsNormal;
+				else if ( _T("percent")			== sValue ) this->m_eValue = dataAsPercentOff;
+				else if ( _T("percentDiff")		== sValue ) this->m_eValue = dataAsPercentDiff;
+				else if ( _T("percentOfCol")	== sValue ) this->m_eValue = dataAsPercentOfCol;
+				else if ( _T("percentOfRow")	== sValue ) this->m_eValue = dataAsPercentOfRow;
+				else if ( _T("percentOfTotal")	== sValue ) this->m_eValue = dataAsPercentOfTotal;
+				else if ( _T("runTotal")		== sValue ) this->m_eValue = dataAsRunTotal;
+				else										this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case dataAsDifference:		return _T("difference");
+					case dataAsIndex:			return _T("index");
+					case dataAsNormal:			return _T("normal");
+					case dataAsPercentOff:		return _T("percent");
+					case dataAsPercentDiff:		return _T("percentDiff");
+					case dataAsPercentOfCol:	return _T("percentOfCol");
+					case dataAsPercentOfRow:	return _T("percentOfRow");
+					case dataAsPercentOfTotal:	return _T("percentOfTotal");
+					case dataAsRunTotal:		return _T("percentOfTotal");
+					default :					return _T("runTotal");
+				}
+			}
+
+			SimpleType_FromString     (EShowDataAs)
+			SimpleType_Operator_Equal (CShowDataAs)
+		};
+		enum EDataConsolidateFunction 
+		{
+			functionAverage		=  0,
+			functionCount		=  1,
+			functionCountNums	=  2,
+			functionMaximum		=  3,
+			functionMinimum		=  4,
+			functionProduct		=  5,
+			functionStdDev		=  6,
+			functionStdDevP		=  7,
+			functionSum			=  8,
+			functionVariance	=  9,
+			functionVarP		=  10
+		};
+		template<EDataConsolidateFunction eDefValue = functionSum>
+		class CDataConsolidateFunction : public CSimpleType<EDataConsolidateFunction, eDefValue>
+		{
+		public:
+			CDataConsolidateFunction() {}
+			CDataConsolidateFunction(const EDataConsolidateFunction & val)	{ this->m_eValue = val; }
+
+			virtual EDataConsolidateFunction FromString(std::wstring &sValue)
+			{
+				if      ( _T("average")		== sValue )	this->m_eValue = functionAverage;
+				else if ( _T("count")		== sValue ) this->m_eValue = functionCount;
+				else if ( _T("countNums")	== sValue ) this->m_eValue = functionCountNums;
+				else if ( _T("max")			== sValue ) this->m_eValue = functionMaximum;
+				else if ( _T("min")			== sValue ) this->m_eValue = functionMinimum;
+				else if ( _T("product")		== sValue ) this->m_eValue = functionProduct;
+				else if ( _T("stdDev")		== sValue ) this->m_eValue = functionStdDev;
+				else if ( _T("stdDevp")		== sValue ) this->m_eValue = functionStdDevP;
+				else if ( _T("sum")			== sValue ) this->m_eValue = functionSum;
+				else if ( _T("var")			== sValue ) this->m_eValue = functionVariance;
+				else if ( _T("varp")		== sValue ) this->m_eValue = functionVarP;
+				else									this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case functionAverage:	return _T("average");
+					case functionCount:		return _T("count");
+					case functionCountNums:	return _T("countNums");
+					case functionMaximum:	return _T("max");
+					case functionMinimum:	return _T("min");
+					case functionProduct:	return _T("product");
+					case functionStdDev:	return _T("stdDev");
+					case functionStdDevP:	return _T("stdDevp");
+					case functionSum:		return _T("sum");
+					case functionVariance:	return _T("var");
+					case functionVarP:		return _T("varp");
+					default :				return _T("sum");
+				}
+			}
+
+			SimpleType_FromString     (EDataConsolidateFunction)
+			SimpleType_Operator_Equal (CDataConsolidateFunction)
+		};
 		enum EDataValidationType 
 		{
 			validationTypeNone		=  0,

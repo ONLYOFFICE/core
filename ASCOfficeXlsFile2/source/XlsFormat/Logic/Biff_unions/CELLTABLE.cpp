@@ -95,6 +95,15 @@ public:
 					{
 						pFindRow->second.row_info = elements_.front();
 					}
+					else
+					{
+						Row* row_find = dynamic_cast<Row*>(pFindRow->second.row_info.get());
+						if ((row_find) && (false == row_find->bValid) && row->bValid)
+						{
+							pFindRow->second.row_info = elements_.front();
+						}
+
+					}
 				}
 
 				elements_.pop_front();
@@ -250,7 +259,10 @@ int CELLTABLE::serialize(std::wostream & stream)
 								CP_XML_ATTR(L"customFormat", true);
 							}
 						}
-						if (row->miyRw > 0 && row->miyRw < 0x8000 && row->fUnsynced) //v8_14A_1b13.xls //Department_Sales_and_Stock_Monthly_Recap_Store_778_2019-09-03.xls
+						if (row->miyRw > 0 && row->miyRw < 0x8000 && row->bValid &&
+							((row->fUnsynced && row->fGhostDirty) || !row->fGhostDirty))
+			//v8_14A_1b13.xls //Department_Sales_and_Stock_Monthly_Recap_Store_778_2019-09-03.xls
+			//Уведомления об ознакомлении.xls
 						{
 							CP_XML_ATTR(L"ht", row->miyRw / 20.);
 							CP_XML_ATTR(L"customHeight", true);

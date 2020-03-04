@@ -244,9 +244,9 @@ void chart_plot_area_attlist::serialize(CP_ATTR_NODE)
 {
     common_draw_position_attlist_.serialize(CP_GET_XML_NODE());
     common_draw_size_attlist_.serialize(CP_GET_XML_NODE());
+	common_dr3d_attlist_.serialize(CP_GET_XML_NODE());
    
 	common_attlist_.serialize(CP_GET_XML_NODE());
-	dr3d_attlist_.serialize(CP_GET_XML_NODE());
     
 	CP_XML_ATTR_OPT(L"table:cell-range-address", table_cell_range_address_);
     CP_XML_ATTR_OPT(L"chart:data-source-has-labels", chart_data_source_has_labels_);

@@ -59,6 +59,8 @@
 		8A404FC72089FF0800F2D5CF /* MetafileToGraphicsRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A404FC22089FF0700F2D5CF /* MetafileToGraphicsRenderer.h */; };
 		8A404FC82089FF0800F2D5CF /* MetafileToRendererCheck.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A404FC32089FF0700F2D5CF /* MetafileToRendererCheck.h */; };
 		8A404FD7208A020D00F2D5CF /* BaseThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404FD6208A020D00F2D5CF /* BaseThread.cpp */; };
+		8AF08A8323169CC70022678D /* ByteBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AF08A8223169CC70022678D /* ByteBuilder.h */; };
+		8AF08A8523169CD10022678D /* ByteBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AF08A8423169CD10022678D /* ByteBuilder.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -115,6 +117,8 @@
 		8A404FC22089FF0700F2D5CF /* MetafileToGraphicsRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MetafileToGraphicsRenderer.h; path = ../../../graphics/MetafileToGraphicsRenderer.h; sourceTree = "<group>"; };
 		8A404FC32089FF0700F2D5CF /* MetafileToRendererCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MetafileToRendererCheck.h; path = ../../../graphics/MetafileToRendererCheck.h; sourceTree = "<group>"; };
 		8A404FD6208A020D00F2D5CF /* BaseThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BaseThread.cpp; path = ../../../graphics/BaseThread.cpp; sourceTree = "<group>"; };
+		8AF08A8223169CC70022678D /* ByteBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ByteBuilder.h; path = ../../../common/ByteBuilder.h; sourceTree = "<group>"; };
+		8AF08A8423169CD10022678D /* ByteBuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ByteBuilder.cpp; path = ../../../common/ByteBuilder.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,6 +161,8 @@
 				8A404FD6208A020D00F2D5CF /* BaseThread.cpp */,
 				17D913291AC58F000096D788 /* Brush.cpp */,
 				17D9132A1AC58F000096D788 /* Brush.h */,
+				8AF08A8223169CC70022678D /* ByteBuilder.h */,
+				8AF08A8423169CD10022678D /* ByteBuilder.cpp */,
 				17D9132B1AC58F000096D788 /* Clip.cpp */,
 				17D9132C1AC58F000096D788 /* Clip.h */,
 				17D9132D1AC58F000096D788 /* Color.h */,
@@ -258,6 +264,7 @@
 				17C1FEF81ACC4A67006B99B3 /* IRenderer.h in Headers */,
 				17C1FEF91ACC4A67006B99B3 /* GlyphString.h in Headers */,
 				17C1FEFA1ACC4A67006B99B3 /* Graphics.h in Headers */,
+				8AF08A8323169CC70022678D /* ByteBuilder.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -317,6 +324,7 @@
 				8A404F8A2089F1BB00F2D5CF /* pro_Image.cpp in Sources */,
 				17C1FED21ACC4A67006B99B3 /* ApplicationFonts.cpp in Sources */,
 				17C1FED31ACC4A67006B99B3 /* FontFile.cpp in Sources */,
+				8AF08A8523169CD10022678D /* ByteBuilder.cpp in Sources */,
 				17C1FED41ACC4A67006B99B3 /* ApplicationFonts_ios.mm in Sources */,
 				17C1FED51ACC4A67006B99B3 /* ApplicationFontsWorker.cpp in Sources */,
 				8A404FD7208A020D00F2D5CF /* BaseThread.cpp in Sources */,

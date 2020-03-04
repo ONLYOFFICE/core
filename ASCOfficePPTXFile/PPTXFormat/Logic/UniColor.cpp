@@ -338,5 +338,13 @@ namespace PPTX
 			return 0; //return 0; - заменить на просмотр настроек по умолчанию
 		}
 
+		void UniColor::SetRGBColor(const BYTE& R, const BYTE& G, const BYTE& B)
+		{
+			Logic::SrgbClr* rgbColor = new Logic::SrgbClr();
+			rgbColor->SetRGB(R, G, B);
+
+			Color.reset(rgbColor);
+		}
+
 	} // namespace Logic
 } // namespace PPTX

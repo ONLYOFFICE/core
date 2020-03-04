@@ -80,7 +80,7 @@ namespace DocFileFormat
 							ShapeOptions* sh_options = dynamic_cast<ShapeOptions*>( this->Children[j] );
 							if (sh_options)
 							{
-								if (sh_options->OptionsByID.end() != sh_options->OptionsByID.find(Pib))
+								if (sh_options->OptionsByID.end() != sh_options->OptionsByID.find(ODRAW::pib))
 								{
 									m_nShapeType = msosptPictureFrame;
 								}
@@ -101,7 +101,7 @@ namespace DocFileFormat
 			return new ShapeContainer( _reader, bodySize, typeCode, version, instance );
 		}
 
-		ODRAW::OfficeArtFOPTEPtr ExtractOption(const PropertyId & prop) const
+		ODRAW::OfficeArtFOPTEPtr ExtractOption(const ODRAW::ePropertyId & prop) const
 		{
 			ODRAW::OfficeArtFOPTEPtr ret;
 			
@@ -111,7 +111,7 @@ namespace DocFileFormat
 
 				if ( opt == NULL ) continue;
 
-				std::map<PropertyId, ODRAW::OfficeArtFOPTEPtr>::iterator pFind = opt->OptionsByID.find(prop);
+				std::map<ODRAW::ePropertyId, ODRAW::OfficeArtFOPTEPtr>::iterator pFind = opt->OptionsByID.find(prop);
 				if (pFind != opt->OptionsByID.end())
 				{
 					ret = pFind->second;

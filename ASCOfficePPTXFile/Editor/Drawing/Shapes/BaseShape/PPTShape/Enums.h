@@ -849,28 +849,19 @@ namespace ODRAW
 
 	enum ePropertyId
     {
-        //Transform
-        left=0,
-        top=1,
-        right=2,
-        bottom=3,
-        rotation=4,
-        gvPage=5,
-        fChangePage=61,
-        fFlipV=62,
-        fFlipH=63,
+		//Transform
+		ePropertyId_left=0,
+		ePropertyId_top=1,
+		ePropertyId_right=2,
+		ePropertyId_bottom=3,
+		ePropertyId_rotation=4,
+		ePropertyId_gvPage=5,
+		ePropertyId_fChangePage=61,
+		ePropertyId_fFlipV=62,
+		ePropertyId_fFlipH=63,
 
         //Protection
-        fLockAgainstUngrouping=118,
-        fLockRotation=119,
-        fLockAspectRatio=120,
-        fLockPosition=121,
-        fLockAgainstSelect=122,
-        fLockCropping=123,
-        fLockVertices=124,
-        fLockText=125,
-        fLockAdjustHandles=126,
-        fLockAgainstGrouping=127,
+        protectionBooleanProperties=127,
 
         //Text
         lTxid=128,
@@ -887,7 +878,8 @@ namespace ODRAW
         txdir=139,
         ccol=140,
         dzColMargin=141,
-        textBoolean=191,
+        
+		textBooleanProperties=191,
 
         //GeoText
         gtextUNICODE=192,
@@ -898,7 +890,8 @@ namespace ODRAW
         gtextFont=197,
         gtextCSSFont=198,
         gtextFReverseRows=240,
-        gtextBoolean=255,
+
+        geometryTextBooleanProperties=255,
 
         //BLIP
         cropFromTop=256,
@@ -919,14 +912,20 @@ namespace ODRAW
         pibPrint=271,
         pibPrintName=272,
         pibPrintFlags=273,
-        movie=274,
-        pictureRecolor=282,
-        picturePreserveGrays=313,
-        fRewind=314,
-        fLooping=315,
-        pictureGray=317,
-        pictureBiLevel=318,
-        pictureActive=319,
+		movie=274,
+		pictureTransparentExt=277,
+		reserved278=278,
+		pictureTransparentExtMod=279,
+		reserved280=280,
+		reserved281=281,
+		pictureRecolor=282,
+		pictureRecolorExt=283,
+		reserved284=284,
+		pictureRecolorExtMod=285,
+		reserved286=286,
+		reserved287=287,
+
+		blipBooleanProperties=319,
 
         //Geometry
         geoLeft=320,
@@ -955,7 +954,8 @@ namespace ODRAW
         pInscribe=343,
         cxk=344,
         pFragments=345,
-        geoBoolean=383,
+        
+		geometryBooleanProperties=383,
 
         //Fill Style
         fillType=384,
@@ -987,15 +987,12 @@ namespace ODRAW
         fillShapeOriginX=410,
         fillShapeOriginY=411,
         fillShadeType=412,
-        fillColorExt=414,
+		fillColorExt=414,
+		fillColorExtMod=416,
 		fillBackColorExt=418,
-        fRecolorFillAsPicture=441,
-        fUseShapeAnchor=442,
-        fFilled=443,
-        fHitTestFill=444,
-        fillShape=445,
-        fillUseRect=446,
-        fillBoolean=447,
+		fillBackColorExtMod=420,
+        
+		fillStyleBooleanProperties=447,
 
         //Line Style
         lineColor=448,
@@ -1022,7 +1019,8 @@ namespace ODRAW
         lineEndArrowLength=469,
         lineJoinStyle=470,
         lineEndCapStyle=471,
-        lineBoolean=511,
+		
+		lineStyleBooleanProperties=511,
 
         //Shadow Style
         shadowType=512,
@@ -1043,7 +1041,13 @@ namespace ODRAW
         shadowWeight=527,
         shadowOriginX=528,
         shadowOriginY=529,
-        shadowBoolean=575,
+		shadowColorExt=530,
+		shadowColorExtMod=532,
+		shadowHighlightExt=534,
+		shadowHighlightExtMod=536,
+		shadowSoftness=540,
+		
+		shadowStyleBooleanProperties=575,
 
         //Perspective Style
         perspectiveType=576,
@@ -1058,7 +1062,8 @@ namespace ODRAW
         perspectiveWeight=585,
         perspectiveOriginX=586,
         perspectiveOriginY=587,
-        perspectiveBoolean=639,
+        
+		perspectiveBooleanProperties=639,
 
         //3D Object
         c3DSpecularAmt = 640,
@@ -1078,7 +1083,8 @@ namespace ODRAW
 		c3DTopBevelWidth = 664,
 		c3DTopBevelHeight = 665,
 		c3DTopBevelType = 666,
-		c3DBoolean = 703,
+		
+		threeDObjectBooleanProperties = 703,
 
         //3D Style
         c3DYRotationAngle=704,
@@ -1108,7 +1114,8 @@ namespace ODRAW
         c3DFillY=728,
         c3DFillZ=729,
         c3DFillIntensity = 730,
-        c3DStyleBoolean = 767,
+		
+		threeDStyleBooleanProperties=767,
 
         //Shape
         hspMaster = 769,
@@ -1130,7 +1137,8 @@ namespace ODRAW
         spcod = 835,
         dxyCalloutDropSpecified = 836,
         dxyCalloutLengthSpecified = 837,
-		calloutBoolean = 895,
+		
+		calloutBooleanProperties = 895,
 
         //Groupe Shape
         wzName = 896,
@@ -1174,7 +1182,8 @@ namespace ODRAW
         wzAccessBlob=936,
         metroBlob = 937,
         dhgt = 938,
-		groupShapeBoolean = 959,
+
+		groupShapeBooleanProperties = 959,
 
         //Unknown HTML
         wzLineId=1026,
@@ -1202,12 +1211,8 @@ namespace ODRAW
         dgmDefaultFontSize=1287,
         dgmConstrainBounds=1288,
         dgmBaseTextScale=1289,
-        fBorderlessCanvas=1338,
-        fNonStickyInkCanvas=1339,
-        fDoFormat=1340,
-        fReverse=1341,
-        fDoLayout=1342,
-        fPseudoInline=1343,
+
+        diagramBooleanProperties=1343,
 
 		// dashing
 		lineLeftDashStyle=1359,

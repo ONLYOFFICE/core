@@ -48,6 +48,7 @@ class style_numformat
 public:
     enum type
     {
+		none,
         arabic,
         romanUc,
         romanLc,

@@ -37,11 +37,9 @@ namespace XLS
 {
 
 
-CFParsedFormula::CFParsedFormula(const CellRef& cell_base_ref)
-:	ParsedFormula(cell_base_ref)
+CFParsedFormula::CFParsedFormula(const CellRef& cell_base_ref) :	ParsedFormula(cell_base_ref)
 {
 }
-
 
 BiffStructurePtr CFParsedFormula::clone()
 {

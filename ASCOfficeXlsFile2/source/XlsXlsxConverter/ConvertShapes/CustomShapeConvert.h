@@ -50,7 +50,7 @@ namespace NSCustomShapesConvert
 	static wchar_t*	g_guide_string1			= L"<a:gd name=\"gd";
 	static int		g_guide_string1_len		= __wstrlen(g_guide_string1);
 
-	static wchar_t*	g_guide_string2			= L"\"></a:gd>";
+	static wchar_t*	g_guide_string2			= L"\"/>";
 	static int		g_guide_string2_len		= __wstrlen(g_guide_string2);
 
 	static wchar_t*	g_guide_string_val		= L"\" fmla=\"val ";
@@ -267,7 +267,7 @@ namespace NSCustomShapesConvert
 				m_oAdjRes.WriteINT(i);
 				m_oAdjRes.WriteString(_T("\" fmla=\"val "));
 				m_oAdjRes.WriteINT(arAdj[i]);
-				m_oAdjRes.WriteString(_T("\"></a:gd>"));
+				m_oAdjRes.WriteString(_T("\"/>"));
 			}
 			for (int i = nAdjCount; i <= m_lMaxAdjUse; ++i)
 			{
@@ -275,7 +275,7 @@ namespace NSCustomShapesConvert
 				m_oAdjRes.WriteINT(i);
 				m_oAdjRes.WriteString(_T("\" fmla=\"val "));
 				m_oAdjRes.WriteINT(0);
-				m_oAdjRes.WriteString(_T("\"></a:gd>"));
+				m_oAdjRes.WriteString(_T("\"/>"));
 			}
 		}
 		void ConvertFormula(const std::vector<CFormula>& arFormulas)
@@ -1122,7 +1122,7 @@ namespace NSCustomShapesConvert
 			m_oGuidsRes.WriteString(strBase);
 			m_oGuidsRes.WriteString(_T(" "));
 			m_oGuidsRes.WriteString(strFrmla);
-			m_oGuidsRes.WriteString(_T("\"></a:gd>"));
+			m_oGuidsRes.WriteString(_T("\"/>"));
 			
 			m_lIndexDst++;
 

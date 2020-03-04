@@ -59,7 +59,7 @@ BiffStructurePtr PtgStr::clone()
 
 void PtgStr::loadFields(CFRecord& record)
 {
-	ShortXLUnicodeString s;
+	ShortXLUnicodeString s;	
 	record >> s;
 
 	string_ = s;
@@ -71,8 +71,8 @@ void PtgStr::loadFields(CFRecord& record)
 	{
 		string_ = string_.substr(1, string_.length() - 2);
 	}
-	else if (pos1 > 0)
-	{
+	else if (pos1 > 0 && pos1 != pos2)
+	{//012_JKH.OPEN.INFO.PRICE.VO...
 		boost::algorithm::replace_all(string_, L"\"", L"\"\""); 
 	}
 

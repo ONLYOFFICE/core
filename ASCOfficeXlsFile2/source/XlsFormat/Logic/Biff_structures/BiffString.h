@@ -61,6 +61,7 @@ public:
 	BiffString(const std::wstring & str);
 	~BiffString();
 
+	bool bDeleteZero;
 
 	operator std::wstring  () const;
 
@@ -240,6 +241,5 @@ namespace OSHARED
 {
 
 typedef XLS::XLUnicodeString_T<unsigned short, XLS::aw_READ_FROM_CCH, XLS::cch_READ_FROM_RECORD> PBString;
-typedef XLS::XLUnicodeString_T<unsigned int, XLS::aw_WIDE, XLS::cch_READ_FROM_RECORD> HyperlinkString;
 
 } // namespace OSHARED

@@ -69,6 +69,9 @@ const bool LBL::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
+	
+	global_info_ = proc.getGlobalWorkbookInfo();
+	
 	m_Lbl = elements_.back();
 	elements_.pop_back();
 
@@ -138,14 +141,36 @@ int LBL::serialize(std::wostream & stream)
 
 	if (value == L"#REF") value = L"#REF!";
 
+	std::wstring name_ = xml::utils::replace_text_to_xml(name);
+
+	if (name_.empty()) name_ = L"_";
+
+	std::map<std::wstring, int>::iterator pFind = global_info_->mapDefineNamesSerialized.find(name_);
+	if (pFind == global_info_->mapDefineNamesSerialized.end())
+	{
+		global_info_->mapDefineNamesSerialized.insert(std::make_pair(name_, 1));
+	}
+	else
+	{
+		pFind->second++;
+		name_ = L"_" + std::to_wstring(pFind->second) + L"_" + name_;
+	}
+
 	CP_XML_WRITER(stream)    
     {
 		CP_XML_NODE(L"definedName")
 		{
-			CP_XML_ATTR(L"name", xml::utils::replace_text_to_xml(name));
+			CP_XML_ATTR(L"name", name_);
 
 			if (!description.empty())
-				CP_XML_ATTR(L"comment", xml::utils::replace_text_to_xml(description));
+			{
+				std::wstring description_ = xml::utils::replace_text_to_xml(description);
+				if (description_.length() > 255)
+				{
+					description_ = description_.substr(0, 255);
+				}
+				CP_XML_ATTR(L"comment", description_);
+			}
 
 			if (lbl->itab != 0)
 			{

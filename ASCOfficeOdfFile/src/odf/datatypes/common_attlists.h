@@ -191,6 +191,7 @@ public:
 	void serialize(CP_ATTR_NODE);
 
     _CP_OPT(unsigned int) style_page_number_;
+    _CP_OPT(unsigned int) style_first_page_number_;
 
 };
 
@@ -618,7 +619,7 @@ public:
 
 };
 
-class dr3d_attlist
+class common_dr3d_attlist
 {
 public:
     void add_attributes	( const xml::attributes_wc_ptr & Attributes );

@@ -37,20 +37,18 @@
 namespace XLS
 {
 
-class CFRecord;
-
 class CFMultistate : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(CFMultistate)
 public:
 	BiffStructurePtr clone();
 
-	static const ElementType	type = typeCFMultistate;
+	static const ElementType type = typeCFMultistate;
 	
 	virtual void load(CFRecord& record);
 
+	virtual int serialize(std::wostream & _stream);
 
-private:
 	unsigned char cStates;
 	unsigned char iIconSet;
 
@@ -61,6 +59,5 @@ private:
 };
 
 typedef boost::shared_ptr<CFMultistate> CFMultistatePtr;
-
 } // namespace XLS
 

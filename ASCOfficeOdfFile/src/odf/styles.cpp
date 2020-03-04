@@ -449,6 +449,8 @@ std::wostream & style::text_to_stream(std::wostream & _Wostream, bool bXmlEncode
 
 void style::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	_CP_OPT(std::wstring) sTest;
+
     CP_APPLY_ATTR(L"style:name"					, style_name_, std::wstring(L""));
     CP_APPLY_ATTR(L"style:display-name"			, style_display_name_);
     CP_APPLY_ATTR(L"style:family"				, style_family_, style_family());
@@ -459,7 +461,28 @@ void style::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"style:auto-update"			, style_auto_update_, false);
     CP_APPLY_ATTR(L"style:data-style-name"		, style_data_style_name_);
     CP_APPLY_ATTR(L"style:class"				, style_class_);
-    CP_APPLY_ATTR(L"style:default-outline-level", style_default_outline_level_);//было int .. error
+	CP_APPLY_ATTR(L"style:percentage-data-style-name", style_percentage_data_style_name_);
+   
+	CP_APPLY_ATTR(L"style:list-level", sTest);
+	if (sTest)
+	{
+		if (sTest->empty())
+		{
+			style_list_level_ = 0;
+		}
+		else
+			style_list_level_= XmlUtils::GetInteger(*sTest);
+	}
+	CP_APPLY_ATTR(L"style:default-outline-level", sTest);
+	if (sTest)
+	{
+		if (sTest->empty())
+		{
+			style_default_outline_level_ = 9;
+		}
+		else
+			style_default_outline_level_= XmlUtils::GetInteger(*sTest);
+	}
 
 	if (style_master_page_name_)
 	{
@@ -648,11 +671,11 @@ void office_styles::add_child_element( xml::sax * Reader, const std::wstring & N
 	{
         draw_styles_.add_child_element(Reader, Ns, Name, getContext());
 	}
-     else if(CP_CHECK_NAME(L"table",	L"table-template"))
+	else if(CP_CHECK_NAME(L"table",	L"table-template"))
 	{
         templates_.add_child_element(Reader, Ns, Name, getContext());
 	}
-	 else if (L"text" == Ns && L"outline-style" == Name)
+	else if (L"text" == Ns && L"outline-style" == Name)
         CP_CREATE_ELEMENT(text_outline_style_);
     else if (L"text" == Ns && L"notes-configuration" == Name)
         CP_CREATE_ELEMENT(text_notes_configuration_);
@@ -852,11 +875,11 @@ void style_page_layout_properties_attlist::add_attributes( const xml::attributes
     common_shadow_attlist_.add_attributes(Attributes);
     common_background_color_attlist_.add_attributes(Attributes);
 	common_draw_fill_attlist_.add_attributes(Attributes);
+	common_page_number_attlist_.add_attributes(Attributes);
 
 	CP_APPLY_ATTR(L"style:register-truth-ref-style-name", style_register_truth_ref_style_name_);
     CP_APPLY_ATTR(L"style:print",					style_print_);
     CP_APPLY_ATTR(L"style:print-page-order",		style_print_page_order_);
-    CP_APPLY_ATTR(L"style:first-page-number",		style_first_page_number_);
     CP_APPLY_ATTR(L"style:scale-to",				style_scale_to_);
     CP_APPLY_ATTR(L"style:scale-to_pages",			style_scale_to_pages_);
     CP_APPLY_ATTR(L"style:table-centering",			style_table_centering_);
@@ -872,6 +895,8 @@ void style_page_layout_properties_attlist::add_attributes( const xml::attributes
     CP_APPLY_ATTR(L"style:layout-grid-ruby-below",	style_layout_grid_ruby_below_);  
     CP_APPLY_ATTR(L"style:layout-grid-print",		style_layout_grid_print_);
     CP_APPLY_ATTR(L"style:layout-grid-display",		style_layout_grid_display_);
+	CP_APPLY_ATTR(L"loext:scale-to-X",				loext_scale_to_X_);
+	CP_APPLY_ATTR(L"loext:scale-to-Y",				loext_scale_to_Y_);
 }
 
 bool style_page_layout_properties_attlist::compare( const style_page_layout_properties_attlist & attlst )
@@ -1230,6 +1255,31 @@ void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xls
 {
 	CP_XML_WRITER(strm)
 	{
+		if (attlist_.style_table_centering_ || attlist_.style_print_)
+		{
+			CP_XML_NODE(L"printOptions")
+			{
+				if (attlist_.style_print_)
+				{
+					CP_XML_ATTR(L"headings", attlist_.style_print_->bHeaders ? 1 : 0);
+					CP_XML_ATTR(L"gridLines", attlist_.style_print_->bGrid ? 1 : 0);
+				}
+				if (attlist_.style_table_centering_)
+				{
+					if (attlist_.style_table_centering_->get_type() == table_centering::Both || 
+						attlist_.style_table_centering_->get_type() == table_centering::Horizontal)
+					{
+						CP_XML_ATTR(L"horizontalCentered", 1);
+					}
+					if (attlist_.style_table_centering_->get_type() == table_centering::Both || 
+						attlist_.style_table_centering_->get_type() == table_centering::Vertical)
+					{
+						CP_XML_ATTR(L"verticalCentered", 1);
+					}
+				}
+			}
+		}
+
 		odf_types::common_horizontal_margin_attlist		horizontal_margins	= attlist_.common_horizontal_margin_attlist_;
 		odf_types::common_vertical_margin_attlist		vertical_margins	= attlist_.common_vertical_margin_attlist_;
 		
@@ -1266,7 +1316,9 @@ void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xls
 				else CP_XML_ATTR(L"footer", 0.7875);
 			}
 		}
-		if (attlist_.fo_page_width_ || attlist_.fo_page_height_ || attlist_.style_print_orientation_)
+		if (attlist_.fo_page_width_ || attlist_.fo_page_height_ || attlist_.style_print_orientation_ || 
+			attlist_.style_scale_to_ || attlist_.loext_scale_to_X_ || attlist_.loext_scale_to_Y_ || 
+			attlist_.common_page_number_attlist_.style_first_page_number_)
 		{
 			CP_XML_NODE(L"pageSetup")
 			{
@@ -1285,6 +1337,23 @@ void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xls
 				if (attlist_.style_print_orientation_)
 				{
 					CP_XML_ATTR(L"orientation", *attlist_.style_print_orientation_);
+				}
+				if (attlist_.loext_scale_to_X_)
+				{
+					CP_XML_ATTR(L"fitToWidth", *attlist_.loext_scale_to_X_);
+				}
+				if (attlist_.loext_scale_to_Y_)
+				{
+					CP_XML_ATTR(L"fitToHeight", *attlist_.loext_scale_to_Y_);
+				}
+				if (attlist_.style_scale_to_)
+				{
+					CP_XML_ATTR(L"scale", (int)attlist_.style_scale_to_->get_value());
+				}
+				if (attlist_.common_page_number_attlist_.style_first_page_number_)
+				{
+					CP_XML_ATTR(L"useFirstPageNumber", 1);
+					CP_XML_ATTR(L"firstPageNumber", *attlist_.common_page_number_attlist_.style_first_page_number_);
 				}
 			}
 		}
@@ -1505,7 +1574,7 @@ void style_master_page::pptx_convert(oox::pptx_conversion_context & Context)
 	if (attlist_.draw_style_name_)
 	{
 		std::wstring style_name = attlist_.draw_style_name_.get();
-		style_instance * style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name,style_family::DrawingPage,true);
+		style_instance * style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::DrawingPage, true);
 		
 		if ((style_inst) && (style_inst->content()))
 		{

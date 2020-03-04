@@ -603,7 +603,8 @@ std::wstring SearchCellDataStyle(oox::xlsx_conversion_context & Context, std::ws
     {
         style_instance * styleInstance = 
 			odfContext.styleContainer().style_by_name(styleStr, style_family::TableCell,false);
-        if (!styleInstance->data_style_name().empty())
+       
+		if (!styleInstance->data_style_name().empty())
             return styleInstance->data_style_name();   
 
         if (!styleInstance->parent_name().empty())

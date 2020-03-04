@@ -198,7 +198,7 @@ HRESULT COfficeUtils::CompressFilesFromMemory(const std::wstring& _zipFile, cons
 	return S_OK;
 }
 
-HRESULT COfficeUtils::GetFilesSize(const std::wstring& _zipFile, const std::wstring& searchPattern, ULONG& nCommpressed, ULONG& nUncommpressed)
+HRESULT COfficeUtils::GetFilesSize(const std::wstring& _zipFile, const std::wstring& searchPattern, ULONG64& nCommpressed, ULONG64& nUncommpressed)
 {
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
     std::wstring zipFile = CorrectPathW(_zipFile);

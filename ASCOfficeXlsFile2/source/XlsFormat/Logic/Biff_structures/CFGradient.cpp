@@ -31,7 +31,6 @@
  */
 
 #include "CFGradient.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {
@@ -114,7 +113,52 @@ void CFGradient::load(CFRecord& record)
 		rgCurve.push_back(item);
 	}
 }
-
+int CFGradient::serialize(std::wostream & stream)
+{
+	CP_XML_WRITER(stream)    
+    {
+		CP_XML_NODE(L"colorScale")
+		{
+			for (size_t i = 0; i < rgInterp.size(); i ++)
+			{
+				CP_XML_NODE(L"cfvo")
+				{
+					CFVO & cfvo = rgInterp[i]->cfvo;							
+					switch(cfvo.cfvoType)
+					{
+						case 2:	CP_XML_ATTR(L"type", L"min");			break;
+						case 3:	CP_XML_ATTR(L"type", L"max");			break;
+						case 7:	CP_XML_ATTR(L"type", L"formule");		break;
+						case 4:	CP_XML_ATTR(L"type", L"percent");		break;
+						case 5:	CP_XML_ATTR(L"type", L"percentile");	break;
+						default:
+							CP_XML_ATTR(L"type", L"num");				break;
+					}	
+					if (cfvo.cfvoType == 7)
+						CP_XML_ATTR(L"val", cfvo.fmla.getAssembledFormula()); 
+					else
+						CP_XML_ATTR(L"val", cfvo.numValue);
+				}
+			}
+			for (size_t i = 0; i < rgCurve.size(); i ++)
+			{
+				CP_XML_NODE(L"color")
+				{
+					CFColor & color = rgCurve[i]->color;
+					switch(color.xclrType.type)
+					{
+					case 1: CP_XML_ATTR(L"indexed",	color.icv);			break;
+					case 2:	CP_XML_ATTR(L"rgb",		color.rgb.strARGB);	break;
+					case 3: CP_XML_ATTR(L"theme",	color.theme);
+							CP_XML_ATTR(L"tint",	color.numTint);		break;
+					default: CP_XML_ATTR(L"auto", true);
+					}
+				}
+			}
+		}
+	}
+	return 0;
+}
 
 } // namespace XLS
 

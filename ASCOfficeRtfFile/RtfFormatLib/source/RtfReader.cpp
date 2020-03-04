@@ -33,6 +33,8 @@
 #include "Writer/OOXWriter.h"
 #include "DestinationCommand.h"
 
+#include "../../../Common/MS-LCID.h"
+
 RtfReader::RtfReader(RtfDocument& oDocument, std::wstring sFilename ) : m_oDocument(oDocument), m_sFilename(sFilename)
 {
 	m_oState = ReaderStatePtr(new ReaderState());
@@ -111,9 +113,15 @@ std::wstring RtfAbstractReader::ExecuteTextInternalCodePage( std::string& sCharS
             case RtfDocumentProperty::cp_pca:   nCodepage = 850;        break; //ms dos latin eu
             }
         }
-        //если ничего нет ставим ANSI
+        //если ничего нет ставим ANSI или default from user
         if( -1 == nCodepage )
+		{
             nCodepage = CP_ACP;
+		}
+		if (nCodepage == CP_ACP && oDocument.m_nUserLCID > 0)
+		{
+			nCodepage = msLCID2DefCodePage(oDocument.m_nUserLCID);
+		}
 
         sResult = RtfUtility::convert_string_icu(sCharString.begin(), sCharString.end(), nCodepage);
 

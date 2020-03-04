@@ -53,16 +53,18 @@ BaseObjectPtr CFEx::clone()
 
 void CFEx::readFields(CFRecord& record)
 {
+	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
+
 	record >> frtRefHeaderU;
 	record >> fIsCF12 >> nID;
 	if(!fIsCF12)
 	{
 		record >> content;
 		
-		if (content.dxf.serialize(record.getGlobalWorkbookInfo()->users_Dxfs_stream) >= 0)
-		{
-			dxfId_ = record.getGlobalWorkbookInfo()->cellStyleDxfs_count++;
-		}
+		std::wstringstream strm;
+		content.dxf.serialize(strm);
+		
+		dxfId_ = global_info->RegistrDxfn(strm.str());
 	}
 }
 

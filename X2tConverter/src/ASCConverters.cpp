@@ -536,13 +536,34 @@ namespace NExtractTools
 			if (OfficeFileFormatChecker.isOfficeFile(sFrom))
 			{
 				if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO)
-					return mscrypt2oot_bin(sFrom, sTo, sTemp, params);
+				{
+					// test protect
+					bool isOldPassword = params.hasPassword();
+					const std::wstring sOldPassword = params.getPassword();
+					
+					if (isOldPassword) delete params.m_sPassword;
+					params.m_sPassword = new std::wstring(L"VelvetSweatshop");
+
+					_UINT32 nRes = mscrypt2oot_bin(sFrom, sTo, sTemp, params);
+					if (SUCCEEDED_X2T(nRes))
+					{
+						return nRes;
+					}
+					else
+					{
+						delete params.m_sPassword;
+						if (isOldPassword)
+							params.m_sPassword = new std::wstring(sOldPassword);
+						return mscrypt2oot_bin(sFrom, sTo, sTemp, params);
+					}					
+				}
 				else
 				{
 					//вместо xlsx другой формат!!
 				}
 			}
-			else return AVS_FILEUTILS_ERROR_CONVERT;		}
+			else return AVS_FILEUTILS_ERROR_CONVERT;		
+		}
 
 		return xlsx_dir2xlst_bin(sTempUnpackedXLSX, sTo, params, true, sFrom);
     }
@@ -1978,8 +1999,11 @@ namespace NExtractTools
 	_UINT32 rtf2docx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
    {
         RtfConvertationManager rtfConvert;
-        rtfConvert.m_sTempFolder = sTemp;
-        return 0 == rtfConvert.ConvertRtfToOOX(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+        
+		rtfConvert.m_sTempFolder = sTemp;
+		rtfConvert.m_nUserLCID = (NULL != params.m_nLcid) ? *params.m_nLcid : -1;
+       
+		return 0 == rtfConvert.ConvertRtfToOOX(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
    }
 
 	// rtf -> doct
@@ -2083,8 +2107,10 @@ namespace NExtractTools
 	_UINT32 doc2docx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
 	{
         COfficeDocFile docFile;
-		docFile.m_sTempFolder = sTemp;
 		
+		docFile.m_sTempFolder = sTemp;		
+		docFile.m_nUserLCID = (NULL != params.m_nLcid) ? *params.m_nLcid : -1;
+	
 		bool bMacros = false;
 
 		_UINT32 hRes = docFile.LoadFromFile( sFrom, sTo, params.getPassword(), bMacros, NULL);
@@ -3173,7 +3199,7 @@ namespace NExtractTools
                nRes = docx_dir2txt(sFrom, sTo, sTemp, params);
            }
            else
-               nRes = AVS_FILEUTILS_ERROR_CONVERT;
+               nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
        }
        else if(AVS_OFFICESTUDIO_FILE_CANVAS_WORD == nFormatTo)
        {
@@ -3223,7 +3249,7 @@ namespace NExtractTools
            }
        }
        else
-            nRes = AVS_FILEUTILS_ERROR_CONVERT;
+            nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
        return nRes;
    }
 	_UINT32 fromDocument(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTemp, InputParams& params)
@@ -3259,7 +3285,7 @@ namespace NExtractTools
                else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB == nFormatFrom)
                    nRes = epub2doct_dir(sFrom, sDoctDir, sTemp, params);
                else
-                   nRes = AVS_FILEUTILS_ERROR_CONVERT;
+                   nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
            }
            else
            {
@@ -3274,7 +3300,7 @@ namespace NExtractTools
                else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB == nFormatFrom)
                    nRes = epub2doct_dir(sFrom, sDoctDir, sTemp, params);
                else
-                   nRes = AVS_FILEUTILS_ERROR_CONVERT;
+                   nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
                
 			   if(SUCCEEDED_X2T(nRes))
                {
@@ -3338,7 +3364,7 @@ namespace NExtractTools
                nRes = txt2docx_dir(sFrom, sDocxDir, sTemp, params);
            }
            else
-               nRes = AVS_FILEUTILS_ERROR_CONVERT;
+               nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
            if(SUCCEEDED_X2T(nRes))
            {
                nRes = fromDocxDir(sDocxDir, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
@@ -3394,7 +3420,7 @@ namespace NExtractTools
                nRes = xlsx_dir2ods(sFrom, sTo, sTemp, params, true);
            }
 		   else
-               nRes = AVS_FILEUTILS_ERROR_CONVERT;
+               nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
        }
        else if(AVS_OFFICESTUDIO_FILE_OTHER_JSON == nFormatTo)
        {
@@ -3454,7 +3480,7 @@ namespace NExtractTools
            }
        }
        else
-           nRes = AVS_FILEUTILS_ERROR_CONVERT;
+           nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
        return nRes;
    }
 	_UINT32 fromSpreadsheet(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTemp, InputParams& params)
@@ -3503,8 +3529,45 @@ namespace NExtractTools
            NSDirectory::CreateDirectory(sXlsxDir);
 		   if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX == nFormatFrom)
            {
-               nRes = zip2dir(sFrom, sXlsxDir);
-               sXlsxFile = sFrom;
+				nRes = zip2dir(sFrom, sXlsxDir);
+				if(SUCCEEDED_X2T(nRes))
+				{
+					sXlsxFile = sFrom;
+				}
+				else
+				{
+					//check crypt 
+					COfficeFileFormatChecker OfficeFileFormatChecker;
+					if (OfficeFileFormatChecker.isOfficeFile(sFrom))
+					{
+						if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO)
+						{
+							std::wstring sResultDecryptFile = sTemp	+ FILE_SEPARATOR_STR + L"uncrypt_file.oox";
+							// test protect
+							bool isOldPassword = params.hasPassword();
+							const std::wstring sOldPassword = params.getPassword();
+							
+							if (isOldPassword) delete params.m_sPassword;
+							params.m_sPassword = new std::wstring(L"VelvetSweatshop");
+
+							nRes = mscrypt2oox(sFrom, sResultDecryptFile, sTemp, params);
+							if(SUCCEEDED_X2T(nRes))
+							{
+								nRes = zip2dir(sResultDecryptFile, sXlsxDir);
+								if(SUCCEEDED_X2T(nRes))
+								{
+									sXlsxFile = sResultDecryptFile;
+								}
+							}
+							else
+							{
+								delete params.m_sPassword;
+								if (isOldPassword)
+									params.m_sPassword = new std::wstring(sOldPassword);
+							}
+						}
+					}
+				}
            }
 		   else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM == nFormatFrom)
 		   {
@@ -3545,7 +3608,7 @@ namespace NExtractTools
                nRes = odf_flat2oox_dir(sFrom, sXlsxDir, sTemp, params);
            }
 		   else
-               nRes = AVS_FILEUTILS_ERROR_CONVERT;
+               nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
            if(SUCCEEDED_X2T(nRes))
            {
 			   nRes = fromXlsxDir(sXlsxDir, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params, sXlsxFile);
@@ -3604,7 +3667,7 @@ namespace NExtractTools
                nRes = pptx_dir2odp(sFrom, sTo, sTemp, params, true);
 			}
 			else
-               nRes = AVS_FILEUTILS_ERROR_CONVERT;
+               nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
 		}
 		else if(AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == nFormatTo)
 		{
@@ -3653,7 +3716,7 @@ namespace NExtractTools
            }
        }
        else
-           nRes = AVS_FILEUTILS_ERROR_CONVERT;
+           nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
        return nRes;
    }
 	_UINT32 fromPresentation(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTemp, InputParams& params)
@@ -3737,7 +3800,7 @@ namespace NExtractTools
 		   }
        }
 	   else
-           nRes = AVS_FILEUTILS_ERROR_CONVERT;
+           nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
        if(SUCCEEDED_X2T(nRes))
        {
            nRes = fromPptxDir(sPptxDir, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
@@ -3768,7 +3831,7 @@ namespace NExtractTools
                else if(AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == nFormatFrom)
                    nRes = fromPpttBin(sTFile, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
                else
-                   nRes = AVS_FILEUTILS_ERROR_CONVERT;
+                   nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
            }
        }
        return nRes;
@@ -3780,7 +3843,7 @@ namespace NExtractTools
        initApplicationFonts(pApplicationFonts, params);
        if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
        {
-           if(nFormatFrom == nFormatTo)
+           if(nFormatFrom == nFormatTo && !params.getIsPDFA())
            {
                 NSFile::CFileBinary::Copy(sFrom, sTo);
            }
@@ -3819,7 +3882,7 @@ namespace NExtractTools
 	   }
        else
        {
-           nRes = AVS_FILEUTILS_ERROR_CONVERT;
+           nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
        }
        RELEASEOBJECT(pApplicationFonts);
        return nRes;
@@ -3837,7 +3900,7 @@ namespace NExtractTools
        }
        else
        {
-            nRes = AVS_FILEUTILS_ERROR_CONVERT;
+            nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
        }
        return nRes;
    }
@@ -3862,7 +3925,9 @@ namespace NExtractTools
    {
 	   bool bMacros = false;
 
-       _UINT32 nRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), params.getFontPath(), sTemp, NULL, bMacros);
+	   int lcid = (NULL != params.m_nLcid) ? *params.m_nLcid : -1;
+       
+	   _UINT32 nRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), params.getFontPath(), sTemp, lcid, bMacros);
 		
 	   nRes = processEncryptionError(nRes, sFrom, params);
        return nRes;
@@ -4512,6 +4577,10 @@ namespace NExtractTools
 			//TCD_EPUB2DOCX,
 			//TCD_EPUB2DOCT,
 			//TCD_EPUB2DOCT_BIN,
+			default:
+			{
+				result = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+			}break;
 		}
 
 		// delete temp dir

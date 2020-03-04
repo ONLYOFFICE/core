@@ -37,14 +37,16 @@ namespace XLS
 {
 
 BiffString::BiffString()
-:	struct_size(0)
+:	struct_size(0),
+	bDeleteZero(false)
 {
 }
 
 
 BiffString::BiffString(const size_t size)
 :	struct_size(0),
-	cch_(size)
+	cch_(size),
+	bDeleteZero(false)
 {
 }
 
@@ -52,7 +54,8 @@ BiffString::BiffString(const size_t size)
 BiffString::BiffString(const std::wstring & str)
 :	struct_size(0),
 	str_(str),
-	cch_(str.length())
+	cch_(str.length()),
+	bDeleteZero(false)
 {
 }
 
@@ -143,12 +146,36 @@ void BiffString::load(CFRecord& record, const size_t cch1, const bool is_wide1)
 
 	if(is_wide)
 	{
+		if (false == bDeleteZero)
+		{
 #if defined(_WIN32) || defined(_WIN64)
-		std::wstring inp_str(record.getCurData<wchar_t>(), cch);
-		str_ = inp_str.c_str();
+			str_ = std::wstring(record.getCurData<wchar_t>(), cch);
 #else
-		str_= convertUtf16ToWString(record.getCurData<UTF16>(), cch);
+			str_= convertUtf16ToWString(record.getCurData<UTF16>(), cch);
 #endif
+			record.skipNunBytes(raw_length);
+		}
+		else
+		{
+			//5804543.xls - font name in dx for table - c a l i 0 0 0 0 b r i - !!!!
+			UTF16 *buf_read = new UTF16[cch];
+
+			for (size_t i = 0; i < cch; i++)
+			{
+				unsigned short val;
+				do
+				{
+					record >> val;
+				}while(val == 0);
+				buf_read[i] = val;
+			}
+	#if defined(_WIN32) || defined(_WIN64)
+			str_ = std::wstring((wchar_t*)buf_read, cch);
+	#else
+			str_= convertUtf16ToWString(buf_read, cch);
+	#endif
+			delete []buf_read;
+		}
 	}
 	else
 	{
@@ -177,9 +204,8 @@ void BiffString::load(CFRecord& record, const size_t cch1, const bool is_wide1)
 		{
 			str_ = STR::toStdWString(inp_str, record.getGlobalWorkbookInfo()->CodePage).c_str();
 		}
-
+		record.skipNunBytes(raw_length);
 	}
-	record.skipNunBytes(raw_length);
 }
 
 const size_t BiffString::getSize() const

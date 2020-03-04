@@ -30,7 +30,10 @@
  *
  */
 
+#include "../Biff_unions/SERIESFORMAT.h"
+
 #include "SerParent.h"
+#include "SerAuxErrBar.h"
 
 namespace XLS
 {
@@ -54,6 +57,45 @@ void SerParent::readFields(CFRecord& record)
 {
 	record >> series;
 }
+
+void SerParent::recalc(size_t current_index, std::vector<BaseObjectPtr> & arSERIESFORMAT)
+{
+	SerAuxErrBar * err_bars_current	= dynamic_cast<SerAuxErrBar*>(m_SerAuxErrBar.get());
+
+	for (size_t i = 0; i < arSERIESFORMAT.size(); i++)
+	{
+		if (current_index == i) continue;
+
+		SERIESFORMAT * series_ext = dynamic_cast<SERIESFORMAT *>(arSERIESFORMAT[i].get());
+		if (series_ext)
+		{
+			SerParent *parent = dynamic_cast<SerParent*>(series_ext->m_SerParent.get());
+			if (parent)
+			{
+				SerAuxErrBar * err_bars	= dynamic_cast<SerAuxErrBar*>(parent->m_SerAuxErrBar.get());
+				if (err_bars_current && err_bars)
+				{
+					if ((err_bars_current->sertm == 1 && err_bars->sertm == 2) ||
+						(err_bars_current->sertm == 2 && err_bars->sertm == 1) )
+					{
+						err_bars_current->sertm = 5;
+						
+						parent->m_SerAuxErrBar = BaseObjectPtr();
+					}
+					if ((err_bars_current->sertm == 3 && err_bars->sertm == 4) ||
+						(err_bars_current->sertm == 4 && err_bars->sertm == 3) )
+					{
+						err_bars_current->sertm = 6;
+
+						parent->m_SerAuxErrBar = BaseObjectPtr();
+					}
+				}
+			}
+		}
+
+	}
+}
+
 
 } // namespace XLS
 

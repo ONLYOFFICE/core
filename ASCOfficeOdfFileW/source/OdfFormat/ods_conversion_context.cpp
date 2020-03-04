@@ -105,6 +105,9 @@ void ods_conversion_context::end_document()
 	if (table_context_.table_content_validations_.root)
 		root_spreadsheet_->add_child_element(table_context_.table_content_validations_.root);
 	
+	if (table_context_.table_pivots_.root)
+		root_spreadsheet_->add_child_element(table_context_.table_pivots_.root);
+
 	odf_conversion_context::end_document();
 }
 
@@ -376,6 +379,14 @@ void ods_conversion_context::add_hyperlink(const std::wstring & ref, const std::
 		utils::parsing_ref (ref_cells[0], col, row);
 		current_table()->add_hyperlink(ref, col, row, link, bLocation);
 	}
+}
+void ods_conversion_context::start_pivot_table(const std::wstring &name)
+{
+	return table_context_.start_pivot_table(name);
+}
+void ods_conversion_context::end_pivot_table()
+{
+	table_context_.end_pivot_table();
 }
 bool ods_conversion_context::start_data_validation(const std::wstring & ref, int type)
 {

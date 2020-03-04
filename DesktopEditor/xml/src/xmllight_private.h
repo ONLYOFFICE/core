@@ -351,6 +351,25 @@ namespace XmlUtils
 
             return (const char*)pValue;
         }
+		inline std::wstring GetAttributeTextWithHHHH()
+		{
+			if (!IsValid())
+				return L"";
+
+			const xmlChar* pValue = xmlTextReaderConstValue(reader);
+			if (NULL == pValue)
+				return L"";
+
+			const char* pValueA = (const char*)pValue;
+			LONG nLenA = strlen((const char*)pValueA);
+			LONG nRequired = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8BufferSize(nLenA);
+			wchar_t* sBuffer = new wchar_t[nRequired];
+			LONG lOutputCount = 0;
+			NSFile::CUtf8Converter::GetUnicodeStringFromUTF8WithHHHH((const BYTE*)pValueA, nLenA, sBuffer, lOutputCount);
+			std::wstring sRes(sBuffer, lOutputCount);
+			delete[] sBuffer;
+			return sRes;
+		}
 
         std::wstring GetText2()
         {
@@ -470,6 +489,14 @@ namespace XmlUtils
 			{
 				nLen = NSStringExt::FindLastNotOf(sBuffer, nLen, L" \n\r\t") + 1;
 			}
+		}
+		std::wstring GetTextWithHHHH(bool bPreserve)
+		{
+			wchar_t* pUnicodes = NULL;
+			LONG nSize = 0;
+			LONG nLen = 0;
+			GetTextWithHHHH(bPreserve, pUnicodes, nSize, nLen);
+			return std::wstring(pUnicodes, nLen);
 		}
         inline std::wstring GetOuterXml()
         {

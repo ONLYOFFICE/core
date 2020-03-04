@@ -64,9 +64,6 @@ void AFDOperStr::load(CFRecord& record)
 
 	record >> cch >> fCompare;
 
-	unsigned char _cch = cch;
-	unsigned char _fCompare = fCompare;
-
 	record.skipNunBytes(1);	// reserved1
 	record.skipNunBytes(1);	// unused2
 

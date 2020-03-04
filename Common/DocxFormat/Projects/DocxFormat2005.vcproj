@@ -1497,6 +1497,14 @@
 				RelativePath="..\Source\XlsxFormat\Xlsx.h"
 				>
 			</File>
+			<File
+				RelativePath="..\Source\XlsxFormat\XlsxFlat.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\XlsxFormat\XlsxFlat.h"
+				>
+			</File>
 			<Filter
 				Name="CalcChain"
 				>

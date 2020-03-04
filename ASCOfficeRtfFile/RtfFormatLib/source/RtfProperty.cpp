@@ -2298,6 +2298,7 @@ std::wstring RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 			if( m_nSpaceBetween > 0 )	sSpacing += L" w:lineRule=\"atLeast\"";
 			else						sSpacing += L" w:lineRule=\"exact\"";
 		}
+		else sSpacing += L" w:lineRule=\"auto\"";
 	}
 	//else
     //	sSpacing += L" w:line=\"240\""); //по умолчанию - единичный

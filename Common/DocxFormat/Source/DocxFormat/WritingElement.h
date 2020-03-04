@@ -1084,6 +1084,7 @@ namespace OOX
 		et_cdr_AbsSizeAnchor,
 
 		et_x_Unknown,
+		et_x_SpreadsheetFlat,
 		et_x_BookViews, // <bookViews>
 		et_x_WorkbookPr,
 		et_x_WorkbookView, // <workbookView>

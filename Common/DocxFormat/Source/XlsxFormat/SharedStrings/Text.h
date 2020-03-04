@@ -106,7 +106,7 @@ namespace OOX
 				writer.WriteString(name);
 				writer.WriteString(_T(">"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 

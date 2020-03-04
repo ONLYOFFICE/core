@@ -70,7 +70,7 @@ namespace OOX
 				return et_x_RgbColor;
 			}
 		private:
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -79,12 +79,9 @@ namespace OOX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rgb"),      m_oRgb )
-
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::Spreadsheet::CHexColor> m_oRgb;

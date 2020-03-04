@@ -132,6 +132,8 @@ namespace OOX
 			const FileType WorkbookComments(L"", L"workbookComments.bin",
 												L"",
 												L"http://schemas.onlyoffice.com/workbookComments");
+
+			const FileType SpreadsheetFlat(L"", L"", L"", L"");
 		
 
 		} // namespace FileTypes

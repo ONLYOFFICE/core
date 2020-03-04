@@ -141,9 +141,18 @@ void CDataValidation::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			m_oFormula2 = oReader;
 		}
-		else if (L"sqref" == sName)
+		else if (L"sqref" == sName || L"Range" == sName)
 		{
 			m_oSqRef = oReader.GetText2();
+		}
+		else if (L"Type" == sName)
+		{
+			m_oType = oReader.GetText2();
+		}
+		else if (L"Value" == sName)
+		{
+			m_oFormula1 = new CDataValidationFormula(m_pMainDocument);
+			m_oFormula1->fromXML(oReader);
 		}
 	}
 }

@@ -795,7 +795,7 @@ void CConditionalFormatting::fromXML(XmlUtils::CXmlLiteReader& oReader)
 
 		if (L"cfRule" == sName)
 			m_arrItems.push_back(new CConditionalFormattingRule(oReader));
-		if (L"sqref" == sName)
+		if (L"sqref" == sName || L"Range" == sName)
 			m_oSqRef = oReader.GetText2();
 	}
 }

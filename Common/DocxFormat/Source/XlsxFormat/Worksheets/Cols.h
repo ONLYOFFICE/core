@@ -46,7 +46,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCol)
-			CCol()
+			CCol(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CCol()
@@ -74,7 +74,7 @@ namespace OOX
 				WritingStringNullableAttrDouble(L"width", m_oWidth, m_oWidth->GetValue());
 				writer.WriteString(_T("/>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -91,9 +91,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("bestFit"),		m_oBestFit)
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("collapsed"),	m_oCollapsed )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("customWidth"),	m_oCustomWidth )
@@ -104,8 +102,8 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("phonetic"),	m_oPhonetic )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("style"),		m_oStyle )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("width"),		m_oWidth )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:Width"),	m_oWidth )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
@@ -125,7 +123,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCols)
-			CCols()
+			CCols(OOX::Document *pMain = NULL) : WritingElementWithChilds<CCol>(pMain)
 			{
 			}
 			virtual ~CCols()
@@ -167,7 +165,12 @@ namespace OOX
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("col") == sName )
-						m_arrItems.push_back( new CCol( oReader ));
+					{
+						CCol *pCol = new CCol(m_pMainDocument);
+						pCol->fromXML(oReader);
+
+						m_arrItems.push_back(pCol);
+					}
 				}
 			}
 

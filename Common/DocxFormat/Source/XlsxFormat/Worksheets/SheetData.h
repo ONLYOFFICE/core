@@ -30,12 +30,11 @@
  *
  */
 #pragma once
-#ifndef OOX_SHEETDATA_FILE_INCLUDE_H_
-#define OOX_SHEETDATA_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
 
 #include "../SharedStrings/Si.h"
+#include "Cols.h"
 
 namespace NSBinPptxRW
 {
@@ -89,7 +88,7 @@ namespace OOX
 			void Clean();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXLSB(NSBinPptxRW::CXlsbBinaryWriter& oStream);
-		public:
+
 			_UINT32 m_nCol;
 			_UINT32 m_nStyle;
 			SimpleTypes::Spreadsheet::CCellTypeType<SimpleTypes::Spreadsheet::celltypeNumber> m_oType;
@@ -339,20 +338,21 @@ namespace OOX
 		private:
 			void PrepareForBinaryWriter();
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributesData(XmlUtils::CXmlLiteReader& oReader);
 
 			nullable<std::string>								m_oRef;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oRow;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCol;
 		public:
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCellMetadata;
-				nullable<SimpleTypes::COnOff<>>						m_oShowPhonetic;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oStyle;
-				nullable<SimpleTypes::Spreadsheet::CCellTypeType<>>	m_oType;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oValueMetadata;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCellMetadata;
+			nullable<SimpleTypes::COnOff<>>						m_oShowPhonetic;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oStyle;
+			nullable<SimpleTypes::Spreadsheet::CCellTypeType<>>	m_oType;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oValueMetadata;
 
-				nullable<CFormula>	m_oFormula;
-				nullable<CSi>		m_oRichText;
-				nullable<CText>		m_oValue;
+			nullable<CFormula>	m_oFormula;
+			nullable<CSi>		m_oRichText;
+			nullable<CText>		m_oValue;
 		};
 
 		//необработано:
@@ -465,6 +465,7 @@ namespace OOX
 			}
 		
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oXlsbPos;
+			nullable<OOX::Spreadsheet::CCols>				m_oCols;
 		private:
 			void fromXLSBToXmlCell (CCell& pCell, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
 			void fromXLSBToXmlRowStart (CRow* pRow, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
@@ -477,4 +478,3 @@ namespace OOX
 	} //Spreadsheet
 } // namespace OOX
 
-#endif // OOX_SHEETDATA_FILE_INCLUDE_H_

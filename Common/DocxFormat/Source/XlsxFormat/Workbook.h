@@ -30,9 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_WORKBOOK_FILE_INCLUDE_H_
-#define OOX_WORKBOOK_FILE_INCLUDE_H_
-
 #include "../../Base/Nullable.h"
 
 #include "FileTypes.h"
@@ -44,7 +41,7 @@ namespace OOX
 		class CWorkbook : public OOX::File, public IFileContainer
 		{
 		public:
-			CWorkbook()
+			CWorkbook(OOX::Document *pMain = NULL) : OOX::File(pMain), IFileContainer(pMain), WritingElement(pMain) 
 			{
 			}
 			CWorkbook(const CPath& oPath)
@@ -91,5 +88,3 @@ namespace OOX
 		};
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_WORKBOOK_FILE_INCLUDE_H_

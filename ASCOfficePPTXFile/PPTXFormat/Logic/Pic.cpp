@@ -200,7 +200,7 @@ namespace PPTX
 					BinXlsxRW::BinaryFileWriter xlsxBinaryWriter(oFontProcessor); 
 					OOX::Spreadsheet::CXlsx oXlsxEmbedded(oox_unpacked);										
 					
-					xlsxBinaryWriter.intoBindoc(oXlsxEmbedded, *oDrawingConverter.m_pBinaryWriter , NULL, &oDrawingConverter);					
+					xlsxBinaryWriter.intoBindoc(&oXlsxEmbedded, *oDrawingConverter.m_pBinaryWriter , NULL, &oDrawingConverter);					
                 }
 				//else if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX)
 				//{

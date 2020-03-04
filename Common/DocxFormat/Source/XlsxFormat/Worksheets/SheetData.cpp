@@ -30,6 +30,8 @@
  *
  */
 #include "../Xlsx.h"
+#include "../XlsxFlat.h"
+
 #include "SheetData.h"
 
 #include "../SharedStrings/SharedStrings.h"
@@ -820,8 +822,14 @@ namespace OOX
 			{
 				const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 
-				if ( strcmp("v", sName) == 0 )
+				if ( strcmp("v", sName) == 0)
 					m_oValue = oReader;
+				else if (strcmp("Data", sName) == 0)
+				{
+					ReadAttributesData(oReader);
+					m_oValue.Init();
+					m_oValue->m_sText = oReader.GetText3();
+				}
 				else if ( strcmp("f", sName) == 0 )
 					m_oFormula = oReader;
 				else if ( strcmp("is", sName) == 0 )
@@ -1020,6 +1028,13 @@ namespace OOX
 			oStream.Seek(nEnd);
 		}
 
+		void CCell::ReadAttributesData(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_StartChar( oReader )
+				WritingElement_ReadAttributes_Read_ifChar ( oReader, "ss:Type", m_oType )
+				//ss:ArrayRange
+			WritingElement_ReadAttributes_EndChar( oReader )
+		}
 		void CCell::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_StartChar( oReader )
@@ -1028,13 +1043,27 @@ namespace OOX
 				{
 					m_oRef = oReader.GetTextA();
 				}
+				else if (strcmp("ss:Formula", wsName) == 0)
+				{
+					m_oFormula.Init();
+					m_oFormula->m_sText = oReader.GetText();
+					m_oFormula->m_sText = m_oFormula->m_sText.substr(1);
+					//convert R1C1 to ..
+				}
+				else if (strcmp("ss:Index", wsName) == 0)
+				{
+					m_oRef = oReader.GetTextA();
+				}
+				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "ss:Type", m_oType )
+				//ss:ArrayRange
+				
+				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "ss:StyleID", m_oStyle )
 				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "s", m_oStyle )
 				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "t", m_oType )
 				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "cm", m_oCellMetadata )
 				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "vm", m_oValueMetadata )
 				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "ph", m_oShowPhonetic )
-
-				WritingElement_ReadAttributes_EndChar( oReader )
+			WritingElement_ReadAttributes_EndChar( oReader )
 		}
 
 		void CRow::toXMLStart(NSStringUtils::CStringBuilder& writer) const
@@ -1071,7 +1100,7 @@ namespace OOX
 			{
 				const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 
-				if ( strcmp("c", sName) == 0 )
+				if ( strcmp("c", sName) == 0 || strcmp("Cell", sName) == 0)
 				{
 					CCell *pCell = new CCell(m_pMainDocument);
 					if (pCell)
@@ -1150,22 +1179,40 @@ namespace OOX
 		void CRow::CheckIndex()
 		{
 			CXlsx* xlsx = dynamic_cast<CXlsx*>(m_pMainDocument);
-			if (!m_oR.IsInit() || m_oR->GetValue() <= xlsx->m_nLastReadRow)
+			CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
+			if (xlsx)
 			{
-				xlsx->m_nLastReadRow = xlsx->m_nLastReadRow + 1;
-				m_oR.Init();
-				m_oR->SetValue(xlsx->m_nLastReadRow);
+				if (!m_oR.IsInit() || m_oR->GetValue() <= xlsx->m_nLastReadRow)
+				{
+					xlsx->m_nLastReadRow = xlsx->m_nLastReadRow + 1;
+					m_oR.Init();
+					m_oR->SetValue(xlsx->m_nLastReadRow);
+				}
+				else
+				{
+					xlsx->m_nLastReadRow = m_oR->GetValue();
+				}
+				xlsx->m_nLastReadCol = -1;
 			}
-			else
+			else if (xlsx_flat)
 			{
-				xlsx->m_nLastReadRow = m_oR->GetValue();
+				if (!m_oR.IsInit() || m_oR->GetValue() <= xlsx_flat->m_nLastReadRow)
+				{
+					xlsx_flat->m_nLastReadRow = xlsx_flat->m_nLastReadRow + 1;
+					m_oR.Init();
+					m_oR->SetValue(xlsx_flat->m_nLastReadRow);
+				}
+				else
+				{
+					xlsx_flat->m_nLastReadRow = m_oR->GetValue();
+				}
+				xlsx_flat->m_nLastReadCol = -1;
 			}
-			xlsx->m_nLastReadCol = -1;
 		}
 		void CRow::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_StartChar( oReader )
-				if ( strcmp("r", wsName) == 0 )\
+				if ( strcmp("r", wsName) == 0 || strcmp("Num", wsName) == 0)\
 				{
 					m_oR.Init();
 					m_oR->SetValue(atoi(oReader.GetTextChar()));
@@ -1180,7 +1227,7 @@ namespace OOX
 					m_oCustomFormat.Init();
 					m_oCustomFormat->FromStringA(oReader.GetTextChar());
 				}
-				else if ( strcmp("ht", wsName) == 0 )\
+				else if ( strcmp("ht", wsName) == 0 || strcmp("ss:Height", wsName) == 0 )\
 				{
 					m_oHt.Init();
 					m_oHt->SetValue(atof(oReader.GetTextChar()));
@@ -1275,13 +1322,27 @@ namespace OOX
 				{
 					const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 
-					if ( strcmp("row", sName) == 0 )
+					if ( strcmp("row", sName) == 0 || strcmp("Row", sName) == 0)
 					{
 						CRow *pRow = new CRow(m_pMainDocument);
 						if (pRow)
 						{
 							pRow->fromXML(oReader);
 							m_arrItems.push_back(pRow);
+						}
+					}
+					else if (strcmp("Column", sName) == 0)
+					{
+						CCol *pColumn = new CCol(m_pMainDocument);
+						if (pColumn)
+						{
+							pColumn->fromXML(oReader);
+
+							if (false == m_oCols.IsInit())
+							{
+								m_oCols.Init();
+							}
+							m_oCols->m_arrItems.push_back(pColumn);
 						}
 					}
 				}

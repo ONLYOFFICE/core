@@ -263,9 +263,6 @@ namespace OOX
 		};
 
 	}
-} // OOX
-namespace OOX
-{
 	//--------------------------------------------------------------------------------
 	// DocDefaults 17.7.5.1 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -534,7 +531,7 @@ namespace OOX
 	{
 	public:
 
-		CStyle()
+		CStyle(OOX::Document *pMain = NULL) : WritingElement(pMain) 
 		{
 		}
 		CStyle(XmlUtils::CXmlNode &oNode)
@@ -570,9 +567,7 @@ namespace OOX
 			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 			return *this;
 		}
-	public:
-
-		virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+		virtual void fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			if ( _T("w:style") != oNode.GetName() )
 				return;
@@ -621,7 +616,7 @@ namespace OOX
 			WritingElement_ReadNode( oNode, oChild, _T("w:uiPriority"),      m_oUiPriority );
 			WritingElement_ReadNode( oNode, oChild, _T("w:unhideWhenUsed"),  m_oUnhideWhenUsed );
 		}
-		virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
 
@@ -661,7 +656,7 @@ namespace OOX
 				else if ( _T("w:unhideWhenUsed") == sName ) m_oUnhideWhenUsed = oReader;
 			}
 		}
-        virtual std::wstring      toXML() const
+        virtual std::wstring toXML() const
 		{
 			std::wstring sResult = _T("<w:style ");
 
@@ -766,23 +761,23 @@ namespace OOX
 	class CStyles : public OOX::File, public WritingElement
 	{
 	public:
-		CStyles(OOX::Document *pMain) : OOX::File(pMain)
+		CStyles(OOX::Document *pMain) : OOX::File(pMain), WritingElement(pMain)
 		{
 			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
 			if (docx) docx->m_pStyles = this;			
 		}
-		CStyles(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain)
+		CStyles(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain), WritingElement(pMain)
 		{
 			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
 			if (docx) docx->m_pStyles = this;			
 
 			read( oPath );
 		}
-		CStyles(XmlUtils::CXmlNode& oNode) : File(NULL)
+		CStyles(XmlUtils::CXmlNode& oNode) : File(NULL), WritingElement(NULL)
 		{
 			fromXML( oNode );
 		}
-		CStyles(XmlUtils::CXmlLiteReader& oReader) : File(NULL)
+		CStyles(XmlUtils::CXmlLiteReader& oReader) : File(NULL), WritingElement(NULL)
 		{
 			fromXML( oReader );
 		}

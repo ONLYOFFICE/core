@@ -60,6 +60,7 @@ SOURCES += \
     ../Source/XlsxFormat/Chart/ChartSerializeEx.cpp \
     ../Source/XlsxFormat/Common.cpp \
     ../Source/XlsxFormat/Xlsx.cpp \
+    ../Source/XlsxFormat/XlsxFlat.cpp \
     ../Source/XlsxFormat/Worksheets/Worksheet.cpp \
     ../Source/XlsxFormat/Worksheets/SheetData.cpp \
     ../Source/XlsxFormat/Worksheets/ConditionalFormatting.cpp \
@@ -166,6 +167,7 @@ HEADERS += docxformatlib.h \
     ../Source/DocxFormat/CustomXml.h \
     ../Source/DocxFormat/Document.h \
     ../Source/DocxFormat/Docx.h \
+    ../Source/DocxFormat/DocxFlat.h \
     ../Source/DocxFormat/Endnote.h \
     ../Source/DocxFormat/File.h \
     ../Source/DocxFormat/FileFactory.h \
@@ -247,6 +249,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/WritingElement.h \
     ../Source/DocxFormat/WorkbookComments.h \
     ../Source/XlsxFormat/Xlsx.h \
+    ../Source/XlsxFormat/XlsxFlat.h \
     ../Source/XML/Utils.h \
     ../Source/XML/XmlSimple.h \
     ../Source/MathEquation/LEStream.h \

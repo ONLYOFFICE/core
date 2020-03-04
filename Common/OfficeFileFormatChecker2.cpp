@@ -782,16 +782,16 @@ bool COfficeFileFormatChecker::isOOXFlatFormatFile(unsigned char* pBuffer,int dw
 	std::string xml_string((char*)pBuffer, dwBytes);
 
     const char *docxFormatLine = "xmlns:w=\"http://schemas.microsoft.com/office/word/2003/wordml\"";
-    //const char *xlsxFormatLine = "xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"";
+    const char *xlsxFormatLine = "xmlns:ss=\"urn:schemas-microsoft-com:office:spreadsheet\"";
 
 	if (std::string::npos != xml_string.find(docxFormatLine))
 	{
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_FLAT;
 	}
-	//else if (std::string::npos != xml_string.find(xlsxFormatLine))
-	//{
-	//	nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_FLAT;
-	//}
+	else if (std::string::npos != xml_string.find(xlsxFormatLine))
+	{
+		nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_FLAT;
+	}
 
 	if (nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN) return true;
 

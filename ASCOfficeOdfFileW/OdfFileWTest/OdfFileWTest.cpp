@@ -78,6 +78,7 @@ HRESULT convert_single(std::wstring srcFileName)
 		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM:		dstPath += L"-my.ott"; type = L"text"; bTemplate = true; break;
 
 		case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX:
+		case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_FLAT:
 		case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM:	dstPath += L"-my.ods"; type = L"spreadsheet";	break;
 		
 		case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX:

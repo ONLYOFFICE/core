@@ -31,6 +31,7 @@
  */
 #include "XlsxConverter.h"
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/XlsxFlat.h"
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Workbook/Workbook.h"
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Worksheet.h"
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Comments/Comments.h"
@@ -70,8 +71,17 @@ XlsxConverter::XlsxConverter(const std::wstring & path, bool bTemplate)
 {
     const OOX::CPath oox_path(std::wstring(path.c_str()));
 
-    xlsx_document   = new OOX::Spreadsheet::CXlsx(oox_path);
+    xlsx_document = new OOX::Spreadsheet::CXlsx(oox_path);
 
+	if (xlsx_document && xlsx_document->m_arWorksheets.empty() && !xlsx_document->m_pWorkbook)
+	{
+		delete xlsx_document; xlsx_document = NULL;
+		xlsx_flat_document = new OOX::Spreadsheet::CXlsxFlat(oox_path);
+	}
+	if (xlsx_flat_document && xlsx_flat_document->m_arWorksheets.empty()/* && !xlsx_flat_document->m_pWorkbook*/)
+	{
+		delete xlsx_flat_document; xlsx_flat_document = NULL;
+	}
 	output_document = new odf_writer::package::odf_document(L"spreadsheet", bTemplate);
     ods_context     = new odf_writer::ods_conversion_context(output_document);
 
@@ -81,6 +91,7 @@ XlsxConverter::~XlsxConverter()
 {
 	if (ods_context)		delete ods_context;		ods_context		= NULL;
 	if (xlsx_document)		delete xlsx_document;	xlsx_document	= NULL;
+	if (xlsx_flat_document)	delete xlsx_flat_document;	xlsx_flat_document	= NULL;
 	if (output_document)	delete output_document;	output_document = NULL;
 }
 odf_writer::odf_conversion_context* XlsxConverter::odf_context()
@@ -137,9 +148,10 @@ std::wstring XlsxConverter::find_link_by_id (const std::wstring & sId, int type)
 
 bool XlsxConverter::convertDocument()
 {
-    if (!xlsx_document)     return false;
     if (!output_document)   return false;
     if (!ods_context)       return false;
+   
+	if (!xlsx_document && !xlsx_flat_document) return false;
 
 	ods_context->start_document();
 
@@ -147,7 +159,8 @@ bool XlsxConverter::convertDocument()
 
 	convert_sheets();
 
-	delete xlsx_document; xlsx_document = NULL;
+	if (xlsx_document)		delete xlsx_document;		xlsx_document = NULL;
+	if (xlsx_flat_document) delete xlsx_flat_document;	xlsx_flat_document = NULL;
 
 	ods_context->end_document();
 
@@ -157,78 +170,94 @@ bool XlsxConverter::convertDocument()
 void XlsxConverter::convert_sheets()
 {
 	if (!ods_context) return;
-	
-	OOX::Spreadsheet::CWorkbook *Workbook= xlsx_document->m_pWorkbook;
-	if (!Workbook) return;
 
-	std::map<std::wstring, OOX::Spreadsheet::CWorksheet*> &mapWorksheets = xlsx_document->m_mapWorksheets;
-	
-	xlsx_current_container = dynamic_cast<OOX::IFileContainer*>(Workbook);
-	
-	if(Workbook->m_oExternalReferences.IsInit())
+	if (xlsx_document)
 	{	
-		for (size_t i = 0; i < Workbook->m_oExternalReferences->m_arrItems.size(); i++)
-		{
-			OOX::Spreadsheet::CExternalReference *externalRef = dynamic_cast<OOX::Spreadsheet::CExternalReference*>(Workbook->m_oExternalReferences->m_arrItems[i]);
-			if((externalRef) && (externalRef->m_oRid.IsInit()))
+		OOX::Spreadsheet::CWorkbook *Workbook = xlsx_document->m_pWorkbook;
+		if (!Workbook) return;
+
+		std::map<std::wstring, OOX::Spreadsheet::CWorksheet*> &mapWorksheets = xlsx_document->m_mapWorksheets;
+		
+		xlsx_current_container = dynamic_cast<OOX::IFileContainer*>(Workbook);
+		
+		if(Workbook->m_oExternalReferences.IsInit())
+		{	
+			for (size_t i = 0; i < Workbook->m_oExternalReferences->m_arrItems.size(); i++)
 			{
-				smart_ptr<OOX::File> file = find_file_by_id(externalRef->m_oRid->GetValue());
-				
-				smart_ptr<OOX::External> fileExternal = file.smart_dynamic_cast<OOX::External>();
-				if (fileExternal.IsInit())
+				OOX::Spreadsheet::CExternalReference *externalRef = dynamic_cast<OOX::Spreadsheet::CExternalReference*>(Workbook->m_oExternalReferences->m_arrItems[i]);
+				if((externalRef) && (externalRef->m_oRid.IsInit()))
 				{
-					ods_context->add_external_reference(fileExternal->Uri().GetPath());
-				}
-				else
-				{
-					smart_ptr<OOX::Spreadsheet::CExternalLink> externalLink = file.smart_dynamic_cast<OOX::Spreadsheet::CExternalLink>();
-					convert(externalLink.GetPointer());
+					smart_ptr<OOX::File> file = find_file_by_id(externalRef->m_oRid->GetValue());
+					
+					smart_ptr<OOX::External> fileExternal = file.smart_dynamic_cast<OOX::External>();
+					if (fileExternal.IsInit())
+					{
+						ods_context->add_external_reference(fileExternal->Uri().GetPath());
+					}
+					else
+					{
+						smart_ptr<OOX::Spreadsheet::CExternalLink> externalLink = file.smart_dynamic_cast<OOX::Spreadsheet::CExternalLink>();
+						convert(externalLink.GetPointer());
+					}
 				}
 			}
 		}
-	}
-	if(Workbook->m_oBookViews.IsInit())
-	{	
-		for (size_t i = 0; i < Workbook->m_oBookViews->m_arrItems.size(); i++)
-		{
-			convert(Workbook->m_oBookViews->m_arrItems[i]);
-		}
-	}
-	if(Workbook->m_oSheets.IsInit())
-	{				
-		for(size_t i = 0, length = Workbook->m_oSheets->m_arrItems.size(); i < length; ++i)
-		{
-			OOX::Spreadsheet::CSheet* pSheet = Workbook->m_oSheets->m_arrItems[i];
-				
-			if(pSheet->m_oRid.IsInit())
+		if(Workbook->m_oBookViews.IsInit())
+		{	
+			for (size_t i = 0; i < Workbook->m_oBookViews->m_arrItems.size(); i++)
 			{
-                std::wstring sSheetRId = pSheet->m_oRid.get2().ToString();
-				std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>::iterator pFind = mapWorksheets.find(sSheetRId);
-				
-				if (pFind != mapWorksheets.end())
+				convert(Workbook->m_oBookViews->m_arrItems[i]);
+			}
+		}
+		if(Workbook->m_oSheets.IsInit())
+		{				
+			for(size_t i = 0, length = Workbook->m_oSheets->m_arrItems.size(); i < length; ++i)
+			{
+				OOX::Spreadsheet::CSheet* pSheet = Workbook->m_oSheets->m_arrItems[i];
+					
+				if(pSheet->m_oRid.IsInit())
 				{
-					ods_context->start_sheet();
-						ods_context->current_table()->set_table_name(pSheet->m_oName.get2());
-						if (pSheet->m_oState.IsInit() && (	pSheet->m_oState->GetValue() == SimpleTypes::Spreadsheet::visibleHidden || 
-															pSheet->m_oState->GetValue() == SimpleTypes::Spreadsheet::visibleVeryHidden))
-							ods_context->current_table()->set_table_hidden(true);
-						
-						convert(pFind->second);
-					ods_context->end_sheet();	
+					std::wstring sSheetRId = pSheet->m_oRid.get2().ToString();
+					std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>::iterator pFind = mapWorksheets.find(sSheetRId);
+					
+					if (pFind != mapWorksheets.end())
+					{
+						ods_context->start_sheet();
+							ods_context->current_table()->set_table_name(pSheet->m_oName.get2());
+							if (pSheet->m_oState.IsInit() && (	pSheet->m_oState->GetValue() == SimpleTypes::Spreadsheet::visibleHidden || 
+																pSheet->m_oState->GetValue() == SimpleTypes::Spreadsheet::visibleVeryHidden))
+								ods_context->current_table()->set_table_hidden(true);
+							
+							convert(pFind->second);
+						ods_context->end_sheet();	
+					}
 				}
 			}
 		}
+		if (Workbook->m_oDefinedNames.IsInit())
+		{
+			for (size_t i = 0; i < Workbook->m_oDefinedNames->m_arrItems.size(); i++)
+			{
+				convert(Workbook->m_oDefinedNames->m_arrItems[i]);
+			}
+		}
+//----------------------------------------------------------------
+		OoxConverter::convert(xlsx_document->m_pJsaProject);
 	}
-	if (Workbook->m_oDefinedNames.IsInit())
+	else if (xlsx_flat_document)
 	{
-		for (size_t i = 0; i < Workbook->m_oDefinedNames->m_arrItems.size(); i++)
+		for(size_t i = 0; i < xlsx_flat_document->m_arWorksheets.size(); ++i)
 		{
-			convert(Workbook->m_oDefinedNames->m_arrItems[i]);
+			ods_context->start_sheet();
+				//ods_context->current_table()->set_table_name(xlsx_flat_document->m_arWorksheets->m_oName.get2());
+				//if (pSheet->m_oState.IsInit() && (	pSheet->m_oState->GetValue() == SimpleTypes::Spreadsheet::visibleHidden || 
+				//									pSheet->m_oState->GetValue() == SimpleTypes::Spreadsheet::visibleVeryHidden))
+				//	ods_context->current_table()->set_table_hidden(true);
+				
+				convert(xlsx_flat_document->m_arWorksheets[i]);
+			ods_context->end_sheet();	
 		}
 	}
-//-----------------------------------------------------------------------------------------------------------------
-	OoxConverter::convert(xlsx_document->m_pJsaProject);
-
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CDefinedName *oox_defined)
 {
@@ -1484,6 +1513,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCol *oox_column)
 	if (oox_column == NULL)return;
 
 	int start_column = oox_column->m_oMin.IsInit() ? oox_column->m_oMin->GetValue() : 0 ;
+	
 	int repeated =	(oox_column->m_oMax.IsInit() ? oox_column->m_oMax->GetValue() : 0) - 
 					(oox_column->m_oMin.IsInit() ? oox_column->m_oMin->GetValue() : 0) + 1;
 
@@ -1969,7 +1999,10 @@ void XlsxConverter::convert_styles()
 	ods_context->styles_context()->create_default_style(odf_types::style_family::TableCell);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-	OOX::Spreadsheet::CStyles * xlsx_styles = xlsx_document->m_pStyles;
+	OOX::Spreadsheet::CStyles *xlsx_styles = NULL;
+	
+	if (xlsx_document)		xlsx_styles = xlsx_document->m_pStyles;
+	if (xlsx_flat_document) xlsx_styles = xlsx_flat_document->m_pStyles.GetPointer();
 	
 	if (!xlsx_styles)return;
 //todooo ?? стоит ли обращать на параметр Count ??

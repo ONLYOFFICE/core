@@ -29,20 +29,69 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "../Source/XlsxFormat/Chart/ChartSerialize.cpp"
-#include "../Source/XlsxFormat/Chart/ChartSerializeEx.cpp"
-#include "../Source/XlsxFormat/Common.cpp"
-#include "../Source/XlsxFormat/FileFactory_Spreadsheet.cpp"
-#include "../Source/XlsxFormat/Xlsx.cpp"
-#include "../Source/XlsxFormat/XlsxFlat.cpp"
-#include "../Source/XlsxFormat/Worksheets/SheetData.cpp"
-#include "../Source/XlsxFormat/Worksheets/Worksheet.cpp"
-#include "../Source/XlsxFormat/Worksheets/ConditionalFormatting.cpp"
-#include "../Source/XlsxFormat/Worksheets/DataValidation.cpp"
-#include "../Source/XlsxFormat/Table/Tables.cpp"
-#include "../Source/XlsxFormat/Controls/Controls.cpp"
-#include "../Source/XlsxFormat/Styles/rPr.cpp"
-#include "../Source/XlsxFormat/SharedStrings/Si.cpp"
-#include "../Source/XlsxFormat/SharedStrings/Text.cpp"
-#include "../Source/XlsxFormat/Pivot/Pivots.cpp"
+#include "XlsxFlat.h"
+
+#include "Workbook/Workbook.h"
+#include "SharedStrings/SharedStrings.h"
+#include "Styles/Styles.h"
+#include "Worksheets/Worksheet.h"
+#include "Workbook/DefinedNames.h"
+
+
+namespace OOX
+{
+namespace Spreadsheet
+{
+	CXlsxFlat::CXlsxFlat() : File(dynamic_cast<Document*>(this))
+	{
+		m_nLastReadRow = 0;
+		m_nLastReadCol = -1;
+	}
+	CXlsxFlat::CXlsxFlat(const CPath& oFilePath) : File(this)
+	{
+		m_nLastReadRow = 0;
+		m_nLastReadCol = -1;
+		
+		read( oFilePath );
+	}
+	CXlsxFlat::~CXlsxFlat()
+	{
+
+	}
+	void CXlsxFlat::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		if ( oReader.IsEmptyNode() )
+			return;
+
+		int nStylesDepth = oReader.GetDepth();
+		while ( oReader.ReadNextSiblingNode( nStylesDepth ) )
+		{
+			std::wstring sName = oReader.GetName();
+
+			if ( L"ExcelWorkbook" == sName )
+			{
+			}
+			else if ( L"Worksheet" == sName )
+			{
+				CWorksheet *pWorksheet = new CWorksheet(dynamic_cast<OOX::Document*>(this));
+				pWorksheet->fromXML(oReader);
+				
+				m_arWorksheets.push_back(pWorksheet);
+			}
+			else if ( L"Styles" == sName )
+			{
+				m_pStyles = new CStyles(dynamic_cast<OOX::Document*>(this));
+				m_pStyles->fromXML(oReader);
+			}
+			else if ( L"Names" == sName )
+			{
+				m_pDefinedNames = new CDefinedNames(dynamic_cast<OOX::Document*>(this));
+				m_pDefinedNames->fromXML(oReader);
+			}
+		}
+	}
+}
+
+}

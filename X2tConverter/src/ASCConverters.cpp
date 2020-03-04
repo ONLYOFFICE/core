@@ -186,7 +186,6 @@ namespace NExtractTools
     // docxflat -> doct
     _UINT32 docxflat2doct (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
-        // Extract docx to temp directory
         std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
         std::wstring sResultDoctFileEditor = sResultDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
 
@@ -597,9 +596,23 @@ namespace NExtractTools
 
 		return xlsx_dir2xlst_bin(sTempUnpackedXLSX, sTo, params, true, sFrom);
     }
+	// xlsxflat -> bin
+    _UINT32 xlsxflat2xlst_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+    {
+		std::wstring sToDir = NSDirectory::GetFolderPath(sTo);
+		
+		BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
+
+		m_oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
+        m_oCXlsxSerializer.setFontDir(params.getFontPath());
+
+        return m_oCXlsxSerializer.saveToFile (sTo, sFrom, params.getXmlOptions());
+    }
+
 	_UINT32 xlsx_dir2xlst_bin (const std::wstring &sXlsxDir, const std::wstring &sTo, InputParams& params, bool bXmlOptions, const std::wstring &sXlsxFile)
     {
 		std::wstring sToDir = NSDirectory::GetFolderPath(sTo);
+		
 		BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
 		if (m_oCXlsxSerializer.hasPivot(sXlsxDir))
 		{
@@ -640,7 +653,24 @@ namespace NExtractTools
 
         return nRes;
     }
+    // xlsxflat -> xlst
+    _UINT32 xlsxflat2xlst (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+    {
+        std::wstring sResultXlstDir = sTemp + FILE_SEPARATOR_STR + _T("xlst_unpacked");
+        std::wstring sResultXlstFileEditor = sResultXlstDir + FILE_SEPARATOR_STR + _T("Editor.bin");
 
+        NSDirectory::CreateDirectory(sResultXlstDir);
+
+        _UINT32 nRes = xlsxflat2xlst_bin(sFrom, sResultXlstFileEditor, sTemp, params);
+
+        if (SUCCEEDED_X2T(nRes))
+        {
+            COfficeUtils oCOfficeUtils(NULL);
+            nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultXlstDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+        }
+
+        return nRes;
+    }
     // bin -> xslx
     _UINT32 xlst_bin2xlsx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params)
     {
@@ -4251,6 +4281,14 @@ namespace NExtractTools
 			case TCD_XLSX2XLST:
 			{
 				result =  xlsx2xlst (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_XLSXFLAT2XLST:
+			{
+				result = xlsxflat2xlst (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_XLSXFLAT2XLST_BIN:
+			{
+				result = xlsxflat2xlst_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
 			}break;
 			case TCD_XLST2XLSX:
 			{

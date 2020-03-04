@@ -43,7 +43,7 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
-		CWorksheet::CWorksheet(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
+		CWorksheet::CWorksheet(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain), WritingElement(pMain)
 		{
 			m_bSpreadsheets = true;
 			m_bWriteDirectlyToFile = false;
@@ -61,7 +61,7 @@ namespace OOX
 			else 
 				m_bPrepareForBinaryWriter = false;
 		}
-		CWorksheet::CWorksheet(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath, const std::wstring & rId) : OOX::File(pMain), OOX::IFileContainer(pMain)
+		CWorksheet::CWorksheet(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath, const std::wstring & rId) : OOX::File(pMain), OOX::IFileContainer(pMain), WritingElement(pMain)
 		{
 			m_bSpreadsheets = true;
 			m_bWriteDirectlyToFile = false;
@@ -101,14 +101,14 @@ namespace OOX
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 			if ( L"worksheet" == sName || L"chartsheet" == sName)
 			{
-				read(oReader);
+				fromXML(oReader);
 			}
 
 			PrepareComments(m_pComments, m_pThreadedComments, m_oLegacyDrawing.GetPointer());
 			PrepareConditionalFormatting();
 			PrepareDataValidations();
 		}
-		void CWorksheet::read(XmlUtils::CXmlLiteReader& oReader)
+		void CWorksheet::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if ( oReader.IsEmptyNode() ) return;
 			
@@ -135,11 +135,17 @@ namespace OOX
 					m_oPageSetup = oReader;
 				else if ( _T("printOptions") == sName )
 					m_oPrintOptions = oReader;
-				else if ( _T("sheetData") == sName )
+				else if ( L"sheetData" == sName || L"Table" == sName) // 2003 XML Format
 				{
-					m_oSheetData.Init();
-					m_oSheetData->m_pMainDocument = OOX::File::m_pMainDocument; //todooo передалать на неявное
+					m_oSheetData = new CSheetData(OOX::WritingElement::m_pMainDocument);
 					m_oSheetData->fromXML(oReader);
+
+					if (m_oSheetData->m_oCols.IsInit())
+					{
+						m_oCols = m_oSheetData->m_oCols;
+						m_oSheetData->m_oCols->m_arrItems.clear();
+						m_oSheetData->m_oCols.reset();
+					}
 				}
 				else if (_T("conditionalFormatting") == sName)
 					m_arrConditionalFormatting.push_back(new CConditionalFormatting(oReader));
@@ -179,6 +185,24 @@ namespace OOX
 					m_oDataConsolidate = oReader;
 				else if (_T("sortState") == sName)
 					m_oSortState = oReader;
+				else if (L"DataValidation" == sName)
+				{
+					if (false == m_oDataValidations.IsInit())
+					{
+						m_oDataValidations.Init();
+					}
+					CDataValidation* validation = new CDataValidation(OOX::WritingElement::m_pMainDocument);
+					validation->fromXML(oReader);
+
+					m_oDataValidations->m_arrItems.push_back(validation);
+				}
+				else if (L"ConditionalFormatting" == sName)
+				{
+					CConditionalFormatting* cond_formating = new CConditionalFormatting(OOX::WritingElement::m_pMainDocument);
+					cond_formating->fromXML(oReader);
+
+					m_arrConditionalFormatting.push_back(cond_formating);
+				}
 				else if (L"AlternateContent" == sName)
 				{
 					int nSubDepth = oReader.GetDepth();
@@ -187,7 +211,7 @@ namespace OOX
 						std::wstring sSubName = XmlUtils::GetNameNoNS(oReader.GetName());
 						if ( L"Choice" == sSubName )
 						{
-							read(oReader);
+							fromXML(oReader);
 						}
 					}
 				}
@@ -499,68 +523,73 @@ namespace OOX
 				pSheetView->m_oWorkbookViewId->SetValue(0);
 			}
 		}
+		void CWorksheet::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			if(m_oSheetPr.IsInit())
+				m_oSheetPr->toXML(writer);
+			if(m_oSheetViews.IsInit())
+				m_oSheetViews->toXML(writer);
+			if(m_oSheetFormatPr.IsInit())
+				m_oSheetFormatPr->toXML(writer);
+			if(m_oCols.IsInit())
+				m_oCols->toXML(writer);
+			if(m_oSheetData.IsInit())
+				m_oSheetData->toXML(writer);
+			if(m_oSheetProtection.IsInit())
+				m_oSheetProtection->toXML(writer);
+			if(m_oAutofilter.IsInit())
+				m_oAutofilter->toXML(writer);
+			if(m_oSortState.IsInit())
+				m_oSortState->toXML(writer);
+			if(m_oDataConsolidate.IsInit())
+				m_oDataConsolidate->toXML(writer);
+			if(m_oMergeCells.IsInit())
+				m_oMergeCells->toXML(writer);
+			for (size_t nIndex = 0, nLength = m_arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
+				m_arrConditionalFormatting[nIndex]->toXML(writer);
+			if(m_oDataValidations.IsInit())
+				m_oDataValidations->toXML(writer);
+			if(m_oHyperlinks.IsInit())
+				m_oHyperlinks->toXML(writer);
+			if(m_oPrintOptions.IsInit())
+				m_oPrintOptions->toXML(writer);
+			if(m_oPageMargins.IsInit())
+				m_oPageMargins->toXML(writer);
+			if(m_oPageSetup.IsInit())
+				m_oPageSetup->toXML(writer);
+			if(m_oHeaderFooter.IsInit())
+				m_oHeaderFooter->toXML(writer);
+			if(m_oRowBreaks.IsInit())
+				m_oRowBreaks->toXML(writer);
+			if(m_oColBreaks.IsInit())
+				m_oColBreaks->toXML(writer);
+			if(m_oDrawing.IsInit())
+				m_oDrawing->toXML(writer);
+			if(m_oLegacyDrawing.IsInit())
+				m_oLegacyDrawing->toXML(writer);
+			if(m_oLegacyDrawingHF.IsInit())
+				m_oLegacyDrawingHF->toXML(writer);
+			if(m_oPicture.IsInit())
+				m_oPicture->toXML(writer);
+			if(m_oOleObjects.IsInit())
+				m_oOleObjects->toXML(writer);
+			if(m_oControls.IsInit())
+				m_oControls->toXML(writer);
+			if(m_oTableParts.IsInit())
+				m_oTableParts->toXML(writer);
+			if(m_oExtLst.IsInit())
+			{
+				writer.WriteString(m_oExtLst->toXMLWithNS(L""));
+			}
+		}
 		void CWorksheet::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
 			if (!m_bWriteDirectlyToFile)
 			{
 				NSStringUtils::CStringBuilder sXml;
+				
 				toXMLStart(sXml);
-				if(m_oSheetPr.IsInit())
-					m_oSheetPr->toXML(sXml);
-				if(m_oSheetViews.IsInit())
-					m_oSheetViews->toXML(sXml);
-				if(m_oSheetFormatPr.IsInit())
-					m_oSheetFormatPr->toXML(sXml);
-				if(m_oCols.IsInit())
-					m_oCols->toXML(sXml);
-				if(m_oSheetData.IsInit())
-					m_oSheetData->toXML(sXml);
-				if(m_oSheetProtection.IsInit())
-					m_oSheetProtection->toXML(sXml);
-				if(m_oAutofilter.IsInit())
-					m_oAutofilter->toXML(sXml);
-				if(m_oSortState.IsInit())
-					m_oSortState->toXML(sXml);
-				if(m_oDataConsolidate.IsInit())
-					m_oDataConsolidate->toXML(sXml);
-				if(m_oMergeCells.IsInit())
-					m_oMergeCells->toXML(sXml);
-				for (size_t nIndex = 0, nLength = m_arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
-					m_arrConditionalFormatting[nIndex]->toXML(sXml);
-				if(m_oDataValidations.IsInit())
-					m_oDataValidations->toXML(sXml);
-				if(m_oHyperlinks.IsInit())
-					m_oHyperlinks->toXML(sXml);
-				if(m_oPrintOptions.IsInit())
-					m_oPrintOptions->toXML(sXml);
-				if(m_oPageMargins.IsInit())
-					m_oPageMargins->toXML(sXml);
-				if(m_oPageSetup.IsInit())
-					m_oPageSetup->toXML(sXml);
-				if(m_oHeaderFooter.IsInit())
-					m_oHeaderFooter->toXML(sXml);
-				if(m_oRowBreaks.IsInit())
-					m_oRowBreaks->toXML(sXml);
-				if(m_oColBreaks.IsInit())
-					m_oColBreaks->toXML(sXml);
-				if(m_oDrawing.IsInit())
-					m_oDrawing->toXML(sXml);
-				if(m_oLegacyDrawing.IsInit())
-					m_oLegacyDrawing->toXML(sXml);
-				if(m_oLegacyDrawingHF.IsInit())
-					m_oLegacyDrawingHF->toXML(sXml);
-				if(m_oPicture.IsInit())
-					m_oPicture->toXML(sXml);
-				if(m_oOleObjects.IsInit())
-					m_oOleObjects->toXML(sXml);
-				if(m_oControls.IsInit())
-					m_oControls->toXML(sXml);
-				if(m_oTableParts.IsInit())
-					m_oTableParts->toXML(sXml);
-				if(m_oExtLst.IsInit())
-				{
-					sXml.WriteString(m_oExtLst->toXMLWithNS(_T("")));
-				}
+					toXML(sXml);
 				toXMLEnd(sXml);
 
 				NSFile::CFileBinary::SaveToFile(oPath.GetPath(), sXml.GetData());

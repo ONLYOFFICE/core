@@ -52,10 +52,10 @@ namespace OOX
 	{
 		//необработанные child:
 		//<extLst>
-		class CStyles : public OOX::File, public OOX::IFileContainer
+		class CStyles : public OOX::File, public OOX::IFileContainer, public WritingElement
 		{
 		public:
-			CStyles(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
+			CStyles(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain), WritingElement(pMain)
 			{
 				m_bSpreadsheets = true;
 				
@@ -65,7 +65,7 @@ namespace OOX
 					xlsx->m_pStyles = this;
 				}
 			}
-			CStyles(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
+			CStyles(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain), WritingElement(pMain)
 			{
 				m_bSpreadsheets = true;
 
@@ -79,8 +79,6 @@ namespace OOX
 			virtual ~CStyles()
 			{
 			}
-		public:
-
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -103,73 +101,89 @@ namespace OOX
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if ( _T("styleSheet") == sName )
 				{
-					ReadAttributes( oReader );
+				}
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				if(m_oNumFmts.IsInit())
+					m_oNumFmts->toXML(writer);
+				if(m_oFonts.IsInit())
+					m_oFonts->toXML(writer);
+				if(m_oFills.IsInit())
+					m_oFills->toXML(writer);
+				if(m_oBorders.IsInit())
+					m_oBorders->toXML(writer);
+				if(m_oCellStyleXfs.IsInit())
+					m_oCellStyleXfs->toXML(writer);
+				if(m_oCellXfs.IsInit())
+					m_oCellXfs->toXML(writer);
+				if(m_oCellStyles.IsInit())
+					m_oCellStyles->toXML(writer);
+				if(m_oColors.IsInit())
+					m_oColors->toXML(writer);
+				if(m_oDxfs.IsInit())
+					m_oDxfs->toXML(writer);
+				if(m_oTableStyles.IsInit())
+					m_oTableStyles->toXML(writer);
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+				
+				if ( oReader.IsEmptyNode() ) return;
 
-					if ( !oReader.IsEmptyNode() )
-					{
-						int nStylesDepth = oReader.GetDepth();
-						while ( oReader.ReadNextSiblingNode( nStylesDepth ) )
-						{
-							sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				int nStylesDepth = oReader.GetDepth();
+				while ( oReader.ReadNextSiblingNode( nStylesDepth ) )
+				{
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-							if ( _T("borders") == sName )
-								m_oBorders = oReader;
-							else if ( _T("cellStyles") == sName )
-								m_oCellStyles = oReader;
-							else if ( _T("cellStyleXfs") == sName )
-								m_oCellStyleXfs = oReader;
-							else if ( _T("cellXfs") == sName )
-								m_oCellXfs = oReader;
-							else if ( _T("colors") == sName )
-								m_oColors = oReader;
-							else if ( _T("dxfs") == sName )
-								m_oDxfs = oReader;
-							//else if ( _T("extLst") == sName )
-							//	pItem = new CSi( oReader );
-							else if ( _T("fills") == sName )
-								m_oFills = oReader;
-							else if ( _T("fonts") == sName )
-								m_oFonts = oReader;
-							else if ( _T("numFmts") == sName )
-								m_oNumFmts = oReader;
-							else if ( _T("tableStyles") == sName )
-								m_oTableStyles = oReader;
-						}
-					}
-				}		
+					if ( _T("borders") == sName )
+						m_oBorders = oReader;
+					else if ( _T("cellStyles") == sName )
+						m_oCellStyles = oReader;
+					else if ( _T("cellStyleXfs") == sName )
+						m_oCellStyleXfs = oReader;
+					else if ( _T("cellXfs") == sName )
+						m_oCellXfs = oReader;
+					else if ( _T("colors") == sName )
+						m_oColors = oReader;
+					else if ( _T("dxfs") == sName )
+						m_oDxfs = oReader;
+					//else if ( _T("extLst") == sName )
+					//	pItem = new CSi( oReader );
+					else if ( _T("fills") == sName )
+						m_oFills = oReader;
+					else if ( _T("fonts") == sName )
+						m_oFonts = oReader;
+					else if ( _T("numFmts") == sName )
+						m_oNumFmts = oReader;
+					else if ( _T("tableStyles") == sName )
+						m_oTableStyles = oReader;
+				}
 			}
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
 				NSStringUtils::CStringBuilder sXml;
-				sXml.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
+
+				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
 <styleSheet \
 xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
 xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
 mc:Ignorable=\"x14ac\" \
-xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\">"));
-				if(m_oNumFmts.IsInit())
-					m_oNumFmts->toXML(sXml);
-				if(m_oFonts.IsInit())
-					m_oFonts->toXML(sXml);
-				if(m_oFills.IsInit())
-					m_oFills->toXML(sXml);
-				if(m_oBorders.IsInit())
-					m_oBorders->toXML(sXml);
-				if(m_oCellStyleXfs.IsInit())
-					m_oCellStyleXfs->toXML(sXml);
-				if(m_oCellXfs.IsInit())
-					m_oCellXfs->toXML(sXml);
-				if(m_oCellStyles.IsInit())
-					m_oCellStyles->toXML(sXml);
-				if(m_oColors.IsInit())
-					m_oColors->toXML(sXml);
-				if(m_oDxfs.IsInit())
-					m_oDxfs->toXML(sXml);
-				if(m_oTableStyles.IsInit())
-					m_oTableStyles->toXML(sXml);
-				sXml.WriteString(_T("</styleSheet>"));
+xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\">");
 
-                std::wstring sPath = oPath.GetPath();
+				toXML(sXml);
+
+ 				sXml.WriteString(L"</styleSheet>");
+
+               std::wstring sPath = oPath.GetPath();
                 NSFile::CFileBinary::SaveToFile(sPath.c_str(), sXml.GetData());
 
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );

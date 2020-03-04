@@ -1534,17 +1534,17 @@ namespace SimpleTypes
 			{
 				if(_T("b") == sValue)
                     this->m_eValue = celltypeBool;
-				else if(_T("d") == sValue)
+				else if(_T("d") == sValue || L"Date" == sValue)
                     this->m_eValue = celltypeDate;
 				else if(_T("e") == sValue)
                     this->m_eValue = celltypeError;
 				else if(_T("inlineStr") == sValue)
                     this->m_eValue = celltypeInlineStr;
-				else if(_T("n") == sValue)
+				else if(_T("n") == sValue || L"Number" == sValue)
                     this->m_eValue = celltypeNumber;
 				else if(_T("s") == sValue)
                     this->m_eValue = celltypeSharedString;
-				else if(_T("str") == sValue)
+				else if(L"str" == sValue || L"String" == sValue)
                     this->m_eValue = celltypeStr;
 				else
                     this->m_eValue = eDefValue;
@@ -4387,14 +4387,15 @@ namespace SimpleTypes
 
 			virtual EDataValidationType FromString(std::wstring &sValue)
 			{
-				if      ( _T("custom")		== sValue )	this->m_eValue = validationTypeCustom;
-				else if ( _T("date")		== sValue ) this->m_eValue = validationTypeDate;
-				else if ( _T("decimal")		== sValue ) this->m_eValue = validationTypeDecimal;
-				else if ( _T("list")		== sValue ) this->m_eValue = validationTypeList;
-				else if ( _T("none")		== sValue ) this->m_eValue = validationTypeNone;
-				else if ( _T("textLength")	== sValue ) this->m_eValue = validationTypeTextLength;
-				else if ( _T("time")		== sValue ) this->m_eValue = validationTypeTime;
-				else if ( _T("whole")		== sValue ) this->m_eValue = validationTypeWhole;
+				if      ( L"custom"		== sValue )	this->m_eValue = validationTypeCustom;
+				else if ( L"date"		== sValue ) this->m_eValue = validationTypeDate;
+				else if ( L"decimal"	== sValue ) this->m_eValue = validationTypeDecimal;
+				else if (	L"list"		== sValue ||
+							L"List"	== sValue)		this->m_eValue = validationTypeList;
+				else if ( L"none"		== sValue ) this->m_eValue = validationTypeNone;
+				else if ( L"textLength"	== sValue ) this->m_eValue = validationTypeTextLength;
+				else if ( L"time"		== sValue ) this->m_eValue = validationTypeTime;
+				else if ( L"whole"		== sValue ) this->m_eValue = validationTypeWhole;
 				else									this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
@@ -4403,15 +4404,15 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case validationTypeCustom	:	return _T("custom");
-					case validationTypeDate	:		return _T("date");
-					case validationTypeDecimal :	return _T("decimal");
-					case validationTypeList :		return _T("list");
-					case validationTypeNone :		return _T("none");
-					case validationTypeTextLength :	return _T("textLength");
-					case validationTypeTime:		return _T("time");
-					case validationTypeWhole:		return _T("whole");
-					default :						return _T("none");
+					case validationTypeCustom	:	return L"custom";
+					case validationTypeDate	:		return L"date";
+					case validationTypeDecimal :	return L"decimal";
+					case validationTypeList :		return L"list";
+					case validationTypeNone :		return L"none";
+					case validationTypeTextLength :	return L"textLength";
+					case validationTypeTime:		return L"time";
+					case validationTypeWhole:		return L"whole";
+					default :						return L"none";
 				}
 			}
 

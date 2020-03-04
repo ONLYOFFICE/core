@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_LOGIC_RUN_INCLUDE_H_
-#define OOX_LOGIC_RUN_INCLUDE_H_
 
 #include "RunProperty.h"
 #include "RunContent.h"
@@ -113,5 +111,3 @@ namespace OOX
 		};
 	} // namespace Logic
 } // namespace OOX
-
-#endif // OOX_LOGIC_RUN_INCLUDE_H_

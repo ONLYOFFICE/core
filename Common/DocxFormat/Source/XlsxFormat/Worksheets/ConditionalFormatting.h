@@ -373,7 +373,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CConditionalFormatting)
-			CConditionalFormatting() : m_bIsExtended(false), m_bIsValid(false)
+			CConditionalFormatting(OOX::Document *pMain = NULL) : WritingElementWithChilds<CConditionalFormattingRule>(pMain), m_bIsExtended(false), m_bIsValid(false)
 			{
 			}
 			virtual ~CConditionalFormatting()

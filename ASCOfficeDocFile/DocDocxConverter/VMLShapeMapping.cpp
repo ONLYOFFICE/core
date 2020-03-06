@@ -1792,6 +1792,9 @@ namespace DocFileFormat
 				if (dAngle < -360.0)
 					dAngle += 360.0;
 
+				if (dAngle > 360.0)
+					dAngle -= 360.0;
+
 				if ((dAngle >= 45.0 && dAngle <= 135.0) || (dAngle >= 225.0 && dAngle <= 315.0) || (dAngle <= -45.0 && dAngle >= -135.0) || (dAngle <= -225.0 && dAngle >= -315.0))
 					twistDimensions	=	true;
 			}

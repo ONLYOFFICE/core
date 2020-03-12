@@ -2550,7 +2550,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDxf *dxFmt, int oox_dx_id)
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool automatic, bool root)
 {
-	OOX::Spreadsheet::CStyles * xlsx_styles = xlsx_document->m_pStyles;
+	OOX::Spreadsheet::CStyles *xlsx_styles = NULL;
+	
+	if (xlsx_document)		xlsx_styles = xlsx_document->m_pStyles;
+	if (xlsx_flat_document) xlsx_styles = xlsx_flat_document->m_pStyles.GetPointer();
+	
+	if (!xlsx_styles)return;
 
 	int id_parent	= xfc_style->m_oXfId.IsInit()		? xfc_style->m_oXfId->GetValue()	: -1; 
 	int fill_id		= xfc_style->m_oFillId.IsInit()		? xfc_style->m_oFillId->GetValue()	: -1;

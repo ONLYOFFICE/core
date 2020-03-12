@@ -747,8 +747,12 @@ namespace SimpleTypes
 			}
 		private:
 
-            void Parse(const std::wstring& sValue)
+            void Parse(std::wstring sValue)
 			{
+				if (0 == sValue.find(L"#"))
+				{
+					sValue = sValue.substr(1);
+				}
                 int nValueLength = (int)sValue.length();
 
                 if(3 == nValueLength)
@@ -968,11 +972,11 @@ namespace SimpleTypes
                     this->m_eValue = borderstyleDashDot;
 				else if(_T("dashDotDot") == sValue)
                     this->m_eValue = borderstyleDashDotDot;
-				else if(_T("dashed") == sValue)
+				else if(_T("dashed") == sValue || _T("Dash") == sValue)
                     this->m_eValue = borderstyleDashed;
-				else if(_T("dotted") == sValue)
+				else if(_T("dotted") == sValue || _T("Dot") == sValue)
                     this->m_eValue = borderstyleDotted;
-				else if(_T("double") == sValue)
+				else if(_T("double") == sValue || _T("Double") == sValue)
                     this->m_eValue = borderstyleDouble;
 				else if(_T("hair") == sValue)
                     this->m_eValue = borderstyleHair;
@@ -1210,19 +1214,19 @@ namespace SimpleTypes
                     this->m_eValue = patterntypeDarkTrellis;
 				else if(_T("darkUp") == sValue)
                     this->m_eValue = patterntypeDarkUp;
-				else if(_T("darkVertical") == sValue)
+				else if(_T("darkVertical") == sValue || L"VertStripe" == sValue)
                     this->m_eValue = patterntypeDarkVertical;
-				else if(_T("gray0625") == sValue)
+				else if(_T("gray0625") == sValue || L"Gray0625" == sValue )
                     this->m_eValue = patterntypeGray0625;
-				else if(_T("gray125") == sValue)
+				else if(_T("gray125") == sValue || L"Gray125" == sValue)
                     this->m_eValue = patterntypeGray125;
 				else if(_T("lightDown") == sValue)
                     this->m_eValue = patterntypeLightDown;
 				else if(_T("lightGray") == sValue)
                     this->m_eValue = patterntypeLightGray;
-				else if(_T("lightGrid") == sValue)
+				else if(_T("lightGrid") == sValue || L"ThinHorzCross" == sValue)
                     this->m_eValue = patterntypeLightGrid;
-				else if(_T("lightHorizontal") == sValue)
+				else if(_T("lightHorizontal") == sValue || L"HorzStripe" == sValue)
                     this->m_eValue = patterntypeLightHorizontal;
 				else if(_T("lightTrellis") == sValue)
                     this->m_eValue = patterntypeLightTrellis;
@@ -1230,18 +1234,18 @@ namespace SimpleTypes
                     this->m_eValue = patterntypeLightUp;
 				else if(_T("lightVertical") == sValue)
                     this->m_eValue = patterntypeLightVertical;
-				else if(_T("mediumGray") == sValue)
+				else if(_T("mediumGray") == sValue || L"Gray50" == sValue)
                     this->m_eValue = patterntypeMediumGray;
-				else if(_T("none") == sValue)
+				else if(_T("none") == sValue || L"None" == sValue)
                     this->m_eValue = patterntypeNone;
-				else if(_T("solid") == sValue)
+				else if(_T("solid") == sValue || L"Solid" == sValue)
                     this->m_eValue = patterntypeSolid;
 				else
                     this->m_eValue = eDefValue;
                 return this->m_eValue;
 			}
 
-			virtual std::wstring     ToString  () const 
+			virtual std::wstring ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
@@ -1534,7 +1538,7 @@ namespace SimpleTypes
 			{
 				if(_T("b") == sValue)
                     this->m_eValue = celltypeBool;
-				else if(_T("d") == sValue || L"Date" == sValue)
+				else if(_T("d") == sValue || L"DateTime" == sValue)
                     this->m_eValue = celltypeDate;
 				else if(_T("e") == sValue)
                     this->m_eValue = celltypeError;
@@ -4777,5 +4781,5 @@ namespace SimpleTypes
 			SimpleType_FromString     (EEditValidation)
 			SimpleType_Operator_Equal (CEditValidation)
 		};
-	};// Spreadsheet
+	}// Spreadsheet
 } // SimpleTypes

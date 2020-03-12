@@ -30,9 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_FILLS_FILE_INCLUDE_H_
-#define OOX_FILLS_FILE_INCLUDE_H_
-
 #include "../CommonInclude.h"
 
 #include "rPr.h"
@@ -311,6 +308,35 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
+				if ( oReader.GetAttributesCount() <= 0) return;
+
+				nullable_string sColor, sPatternColor, sPattern;
+
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:PatternColor"), sPatternColor )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("ss:Pattern"), sPattern )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("ss:Color"), sColor )
+				WritingElement_ReadAttributes_End( oReader )
+				
+				if (sColor.IsInit() == false && sPattern.IsInit() == false && sPatternColor.IsInit() == false) return;
+				
+				m_oPatternFill.Init();
+				if (sColor.IsInit())
+				{
+					m_oPatternFill->m_oFgColor.Init(); m_oPatternFill->m_oFgColor->m_oRgb.Init();
+					m_oPatternFill->m_oFgColor->m_oRgb->FromString(*sColor);
+				}
+				if (sPatternColor.IsInit())
+				{
+					m_oPatternFill->m_oBgColor.Init(); m_oPatternFill->m_oBgColor->m_oRgb.Init();
+					m_oPatternFill->m_oBgColor->m_oRgb->FromString(*sPatternColor);
+				}
+				m_oPatternFill->m_oPatternType.Init();
+				if (sPattern.IsInit())
+				{
+					m_oPatternFill->m_oPatternType->FromString(*sPattern);
+				}
+				else m_oPatternFill->m_oPatternType->FromString(L"Solid");
 			}
 		public:
 			nullable<CGradientFill>		m_oGradientFill;
@@ -390,5 +416,3 @@ namespace OOX
 		};
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_FILLS_FILE_INCLUDE_H_

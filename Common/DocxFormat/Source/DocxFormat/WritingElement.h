@@ -1310,7 +1310,8 @@ namespace OOX
 		et_x_SparklineGroups,
 		et_x_SparklineGroup,
 		et_x_Sparklines,
-		et_x_Sparkline
+		et_x_Sparkline,
+		et_x_Style2003
 	};
 
 	class Document

@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_CELLSTYLES_FILE_INCLUDE_H_
-#define OOX_CELLSTYLES_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
 
@@ -83,24 +81,21 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("builtinId"),      m_oBuiltinId )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("customBuiltin"),      m_oCustomBuiltin )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("hidden"),      m_oHidden )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("iLevel"),      m_oILevel )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("name"),      m_oName )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("xfId"),      m_oXfId )
-
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oBuiltinId;
 			nullable<SimpleTypes::COnOff<>>					m_oCustomBuiltin;
 			nullable<SimpleTypes::COnOff<>>					m_oHidden;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oILevel;
-			nullable<std::wstring>							m_oName;
+			nullable_string									m_oName;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oXfId;
 		};
 
@@ -162,17 +157,12 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
 					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("count"),      m_oCount )
-
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
 		};
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_CELLSTYLES_FILE_INCLUDE_H_

@@ -1659,7 +1659,7 @@ void BinaryStyleTableWriter::WriteCellStyle(const OOX::Spreadsheet::CCellStyle& 
 	if (oCellStyle.m_oName.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSer_CellStyle::Name);
-		m_oBcw.m_oStream.WriteStringW(oCellStyle.m_oName.get2());
+		m_oBcw.m_oStream.WriteStringW(*oCellStyle.m_oName);
 	}
 	if (oCellStyle.m_oXfId.IsInit())
 	{

@@ -1164,8 +1164,7 @@ int BinarySharedStringTableReader::ReadRPr(BYTE type, long length, void* poResul
 	else if(c_oSerFontTypes::RFont == type)
 	{
 		pFont->m_oRFont.Init();
-		pFont->m_oRFont->m_sVal.Init();
-		pFont->m_oRFont->m_sVal->append(m_oBufferedStream.GetString4(length));
+		pFont->m_oRFont->m_sVal = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSerFontTypes::Scheme == type)
 	{
@@ -1550,8 +1549,7 @@ int BinaryStyleTableReader::ReadFont(BYTE type, long length, void* poResult)
 	{
 		std::wstring sFontName(m_oBufferedStream.GetString4(length));
 		pFont->m_oRFont.Init();
-		pFont->m_oRFont->m_sVal.Init();
-		pFont->m_oRFont->m_sVal->append(sFontName);
+		pFont->m_oRFont->m_sVal = sFontName;
 	}
 	else if(c_oSerFontTypes::Scheme == type)
 	{
@@ -1846,8 +1844,7 @@ int BinaryStyleTableReader::ReadCellStyle(BYTE type, long length, void* poResult
 	}
 	else if(c_oSer_CellStyle::Name == type)
 	{
-		pCellStyle->m_oName.Init();
-		pCellStyle->m_oName->append(m_oBufferedStream.GetString4(length));
+		pCellStyle->m_oName = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSer_CellStyle::XfId == type)
 	{
@@ -2664,8 +2661,7 @@ int BinaryWorkbookTableReader::ReadExternalSheetNames(BYTE type, long length, vo
 	if(c_oSer_ExternalLinkTypes::SheetName == type)
 	{
 		ComplexTypes::Spreadsheet::String* pSheetName = new ComplexTypes::Spreadsheet::String();
-		pSheetName->m_sVal.Init();
-		pSheetName->m_sVal->append(m_oBufferedStream.GetString4(length));
+		pSheetName->m_sVal = m_oBufferedStream.GetString4(length);
 		pSheetNames->m_arrItems.push_back(pSheetName);
 	}
 	else
@@ -3321,8 +3317,7 @@ void BinaryCommentReader::addCommentRun(OOX::Spreadsheet::CSi& oSi, const std::w
 		pRPr.m_oBold->m_oVal.FromBool(true);
 	}
 	pRPr.m_oRFont.Init();
-	pRPr.m_oRFont->m_sVal.Init();
-	pRPr.m_oRFont->m_sVal->append(_T("Tahoma"));
+	pRPr.m_oRFont->m_sVal = L"Tahoma";
 	pRPr.m_oSz.Init();
 	pRPr.m_oSz->m_oVal.Init();
 	pRPr.m_oSz->m_oVal->SetValue(9);
@@ -6407,8 +6402,7 @@ void BinaryWorksheetsTableReader::AddLineBreak(OOX::Spreadsheet::CSi& oSi)
 	pRun->m_oRPr.Init();
 	OOX::Spreadsheet::CRPr& pRPr = pRun->m_oRPr.get2();
 	pRPr.m_oRFont.Init();
-	pRPr.m_oRFont->m_sVal.Init();
-	pRPr.m_oRFont->m_sVal->append(_T("Tahoma"));
+	pRPr.m_oRFont->m_sVal = L"Tahoma";
 	pRPr.m_oSz.Init();
 	pRPr.m_oSz->m_oVal.Init();
 	pRPr.m_oSz->m_oVal->SetValue(9);

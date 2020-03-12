@@ -91,6 +91,8 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
+				nullable_double ptWidth;
+
 				WritingElement_ReadAttributes_Start( oReader )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("bestFit"),		m_oBestFit)
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("collapsed"),	m_oCollapsed )
@@ -102,8 +104,16 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("phonetic"),	m_oPhonetic )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("style"),		m_oStyle )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("width"),		m_oWidth )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:Width"),	m_oWidth )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:Width"),	ptWidth )
 				WritingElement_ReadAttributes_End( oReader )
+
+				if (ptWidth.IsInit())
+				{
+					m_oWidth.Init();
+					const double pixDpi = *ptWidth / 72.0 * 96.;
+					double maxDigitSize = 4.25;
+					m_oWidth->SetValue((int(( pixDpi /*/ 0.75*/ - 5)/ maxDigitSize * 100. + 0.5)) /100. * 0.9);
+				}
 			}
 
 		public:

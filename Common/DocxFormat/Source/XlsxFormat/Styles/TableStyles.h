@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_TABLESTYLES_FILE_INCLUDE_H_
-#define OOX_TABLESTYLES_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
 
@@ -263,5 +261,3 @@ namespace OOX
 		};
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_TABLESTYLES_FILE_INCLUDE_H_

@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_RPR_FILE_INCLUDE_H_
-#define OOX_RPR_FILE_INCLUDE_H_
 
 #include "../../Base/Nullable.h"
 #include "../../Common/SimpleTypes_Word.h"
@@ -55,7 +53,7 @@ namespace OOX
 			{
 			}
 
-			virtual void    fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -65,21 +63,18 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("auto"),      m_oAuto )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("indexed"),      m_oIndexed )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rgb"),      m_oRgb )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("theme"),      m_oTheme )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("tint"),      m_oTint )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("auto"),	m_oAuto )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("indexed"),	m_oIndexed )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rgb"),		m_oRgb )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("theme"),	m_oTheme )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("tint"),	m_oTint )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::COnOff<>>						m_oAuto;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oIndexed;
-			nullable<std::wstring>									m_oRgb;
+			nullable_string										m_oRgb;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oTheme;
 			nullable<SimpleTypes::CDouble>						m_oTint;
 		};
@@ -170,5 +165,3 @@ namespace OOX
 		};
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_RPR_FILE_INCLUDE_H_

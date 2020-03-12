@@ -33,9 +33,10 @@
 #include "../XlsxFlat.h"
 
 #include "SheetData.h"
-
-#include "../SharedStrings/SharedStrings.h"
 #include "Worksheet.h"
+
+#include "../Styles/Styles.h"
+#include "../SharedStrings/SharedStrings.h"
 
 #include "../../../../../ASCOfficePPTXFile/Editor/BinaryFileReaderWriter.h"
 #include "../../../../../XlsxSerializerCom/Writer/CSVWriter.h"
@@ -1037,6 +1038,8 @@ namespace OOX
 		}
 		void CCell::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
+			nullable_string sStyleId;
+
 			WritingElement_ReadAttributes_StartChar( oReader )
 
 				if (strcmp("r", wsName) == 0)
@@ -1057,13 +1060,27 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "ss:Type", m_oType )
 				//ss:ArrayRange
 				
-				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "ss:StyleID", m_oStyle )
+				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "ss:StyleID", sStyleId )
 				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "s", m_oStyle )
 				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "t", m_oType )
 				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "cm", m_oCellMetadata )
 				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "vm", m_oValueMetadata )
 				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "ph", m_oShowPhonetic )
 			WritingElement_ReadAttributes_EndChar( oReader )
+
+			if (sStyleId.IsInit())
+			{
+				CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
+				if ((xlsx_flat) && (xlsx_flat->m_pStyles.IsInit()))
+				{
+					std::map<std::wstring, size_t>::iterator pFind = xlsx_flat->m_pStyles->m_mapStyles2003.find(*sStyleId);
+					if (pFind != xlsx_flat->m_pStyles->m_mapStyles2003.end())
+					{
+						m_oStyle.Init();
+						m_oStyle->SetValue(pFind->second);
+					}
+				}
+			}
 		}
 
 		void CRow::toXMLStart(NSStringUtils::CStringBuilder& writer) const

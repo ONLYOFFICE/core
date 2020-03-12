@@ -30,9 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_NUMFMTS_FILE_INCLUDE_H_
-#define OOX_NUMFMTS_FILE_INCLUDE_H_
-
 #include "../CommonInclude.h"
 
 #include "rPr.h"
@@ -87,14 +84,13 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("formatCode"),		m_oFormatCode )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("numFmtId"),		m_oNumFmtId )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("sourceLinked"),	m_oSourceLinked )
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("formatCode"),      m_oFormatCode )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("numFmtId"),      m_oNumFmtId )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("sourceLinked"),      m_oSourceLinked )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("fss:Format"),		m_oFormatCode )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<std::wstring >							m_oFormatCode;
@@ -159,11 +155,8 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"),      m_oCount )
-
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
@@ -171,5 +164,3 @@ namespace OOX
 		};
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_NUMFMTS_FILE_INCLUDE_H_

@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_XFS_FILE_INCLUDE_H_
-#define OOX_XFS_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
 
@@ -234,9 +232,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("applyAlignment"),      m_oApplyAlignment )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("applyBorder"),      m_oApplyBorder )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("applyFill"),      m_oApplyFill )
@@ -250,8 +246,7 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("pivotButton"),      m_oPivotButton )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("quotePrefix"),      m_oQuotePrefix )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("xfId"),      m_oXfId )
-
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::COnOff<>>					m_oApplyAlignment;
@@ -399,12 +394,9 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"),      m_oCount )
-
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
@@ -412,4 +404,3 @@ namespace OOX
 	} //Spreadsheet
 } // namespace OOX
 
-#endif // OOX_XFS_FILE_INCLUDE_H_

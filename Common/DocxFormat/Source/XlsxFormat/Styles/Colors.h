@@ -30,9 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_COLORS_FILE_INCLUDE_H_
-#define OOX_COLORS_FILE_INCLUDE_H_
-
 #include "../CommonInclude.h"
 
 #include "rPr.h"
@@ -104,4 +101,3 @@ namespace OOX
 	} //Spreadsheet
 } // namespace OOX
 
-#endif // OOX_COLORS_FILE_INCLUDE_H_

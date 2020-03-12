@@ -42,9 +42,10 @@ namespace OOX
 		class CWorksheet;
 		class CWorkbook;
 		class CSharedStrings;
-		class CStyles;
+		class CStyles2003;
 		class CCalcChain;
 		class CDefinedNames;
+		class CStyles;
 
 		class CXlsxFlat : public OOX::Document, public OOX::File, public WritingElement
 		{
@@ -107,7 +108,7 @@ namespace OOX
 	//-----------------------------------------------------------------------
 
 			nullable<CDefinedNames>		m_pDefinedNames;
-			std::vector<CWorksheet*>	m_arWorksheets;	//order as is
+			std::vector<CWorksheet*>	m_arWorksheets;
 			nullable<CStyles>			m_pStyles;
 
 		

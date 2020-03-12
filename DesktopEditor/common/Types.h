@@ -29,6 +29,9 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
+#pragma once
+
 #ifndef _BUILD_TYPES_CROSSPLATFORM_H_
 #define _BUILD_TYPES_CROSSPLATFORM_H_
 

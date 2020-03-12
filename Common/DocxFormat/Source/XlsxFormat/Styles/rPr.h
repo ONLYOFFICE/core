@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_RPR_FILE_INCLUDE_H_
-#define OOX_RPR_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
 
@@ -517,12 +515,9 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"),      m_oCharset )
-
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::Spreadsheet::CFontCharset<>>	m_oCharset;
@@ -590,12 +585,9 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"),      m_oFontFamily )
-
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::Spreadsheet::CFontFamily<>>	m_oFontFamily;
@@ -668,12 +660,9 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"),      m_oUnderline )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"), m_oUnderline )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::Spreadsheet::CUnderline<>>	m_oUnderline;
@@ -868,4 +857,3 @@ namespace OOX
 	} //Spreadsheet
 } // namespace OOX
 
-#endif // OOX_RPR_FILE_INCLUDE_H_

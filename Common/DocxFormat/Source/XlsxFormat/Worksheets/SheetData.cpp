@@ -32,7 +32,6 @@
 #include "../Xlsx.h"
 #include "../XlsxFlat.h"
 
-#include "SheetData.h"
 #include "Worksheet.h"
 
 #include "../Styles/Styles.h"
@@ -101,7 +100,31 @@ namespace OOX
 			L"WLN", L"WLO", L"WLP", L"WLQ", L"WLR", L"WLS", L"WLT", L"WLU", L"WLV", L"WLW", L"WLX", L"WLY", L"WLZ", L"WMA", L"WMB", L"WMC", L"WMD", L"WME", L"WMF", L"WMG", L"WMH", L"WMI", L"WMJ", L"WMK", L"WML", L"WMM", L"WMN", L"WMO", L"WMP", L"WMQ", L"WMR", L"WMS", L"WMT", L"WMU", L"WMV", L"WMW", L"WMX", L"WMY", L"WMZ", L"WNA", L"WNB", L"WNC", L"WND", L"WNE", L"WNF", L"WNG", L"WNH", L"WNI", L"WNJ", L"WNK", L"WNL", L"WNM", L"WNN", L"WNO", L"WNP", L"WNQ", L"WNR", L"WNS", L"WNT", L"WNU", L"WNV", L"WNW", L"WNX", L"WNY", L"WNZ", L"WOA", L"WOB", L"WOC", L"WOD", L"WOE", L"WOF", L"WOG", L"WOH", L"WOI", L"WOJ", L"WOK", L"WOL", L"WOM", L"WON", L"WOO", L"WOP", L"WOQ", L"WOR", L"WOS", L"WOT", L"WOU", L"WOV", L"WOW", L"WOX", L"WOY", L"WOZ", L"WPA", L"WPB", L"WPC", L"WPD", L"WPE", L"WPF", L"WPG", L"WPH", L"WPI", L"WPJ", L"WPK", L"WPL", L"WPM", L"WPN", L"WPO", L"WPP", L"WPQ", L"WPR", L"WPS", L"WPT", L"WPU", L"WPV", L"WPW", L"WPX", L"WPY", L"WPZ", L"WQA", L"WQB", L"WQC", L"WQD", L"WQE", L"WQF", L"WQG", L"WQH", L"WQI", L"WQJ", L"WQK", L"WQL", L"WQM", L"WQN", L"WQO", L"WQP", L"WQQ", L"WQR", L"WQS", L"WQT", L"WQU", L"WQV", L"WQW", L"WQX", L"WQY", L"WQZ", L"WRA", L"WRB", L"WRC", L"WRD", L"WRE", L"WRF", L"WRG", L"WRH", L"WRI", L"WRJ", L"WRK", L"WRL", L"WRM", L"WRN", L"WRO", L"WRP", L"WRQ", L"WRR", L"WRS", L"WRT", L"WRU", L"WRV", L"WRW", L"WRX", L"WRY", L"WRZ", L"WSA", L"WSB", L"WSC", L"WSD", L"WSE", L"WSF", L"WSG", L"WSH", L"WSI", L"WSJ", L"WSK", L"WSL", L"WSM", L"WSN", L"WSO", L"WSP", L"WSQ", L"WSR", L"WSS", L"WST", L"WSU", L"WSV", L"WSW", L"WSX", L"WSY", L"WSZ", L"WTA", L"WTB", L"WTC", L"WTD", L"WTE", L"WTF", L"WTG", L"WTH", L"WTI", L"WTJ", L"WTK", L"WTL", L"WTM", L"WTN", L"WTO", L"WTP", L"WTQ", L"WTR", L"WTS", L"WTT", L"WTU", L"WTV", L"WTW", L"WTX", L"WTY", L"WTZ", L"WUA", L"WUB", L"WUC", L"WUD", L"WUE", L"WUF", L"WUG", L"WUH", L"WUI", L"WUJ", L"WUK", L"WUL", L"WUM", L"WUN", L"WUO", L"WUP", L"WUQ", L"WUR", L"WUS", L"WUT", L"WUU", L"WUV", L"WUW", L"WUX", L"WUY", L"WUZ", L"WVA", L"WVB", L"WVC", L"WVD", L"WVE", L"WVF", L"WVG", L"WVH", L"WVI", L"WVJ", L"WVK", L"WVL", L"WVM", L"WVN", L"WVO", L"WVP", L"WVQ", L"WVR", L"WVS", L"WVT", L"WVU", L"WVV", L"WVW", L"WVX", L"WVY", L"WVZ", 
 			L"WWA", L"WWB", L"WWC", L"WWD", L"WWE", L"WWF", L"WWG", L"WWH", L"WWI", L"WWJ", L"WWK", L"WWL", L"WWM", L"WWN", L"WWO", L"WWP", L"WWQ", L"WWR", L"WWS", L"WWT", L"WWU", L"WWV", L"WWW", L"WWX", L"WWY", L"WWZ", L"WXA", L"WXB", L"WXC", L"WXD", L"WXE", L"WXF", L"WXG", L"WXH", L"WXI", L"WXJ", L"WXK", L"WXL", L"WXM", L"WXN", L"WXO", L"WXP", L"WXQ", L"WXR", L"WXS", L"WXT", L"WXU", L"WXV", L"WXW", L"WXX", L"WXY", L"WXZ", L"WYA", L"WYB", L"WYC", L"WYD", L"WYE", L"WYF", L"WYG", L"WYH", L"WYI", L"WYJ", L"WYK", L"WYL", L"WYM", L"WYN", L"WYO", L"WYP", L"WYQ", L"WYR", L"WYS", L"WYT", L"WYU", L"WYV", L"WYW", L"WYX", L"WYY", L"WYZ", L"WZA", L"WZB", L"WZC", L"WZD", L"WZE", L"WZF", L"WZG", L"WZH", L"WZI", L"WZJ", L"WZK", L"WZL", L"WZM", L"WZN", L"WZO", L"WZP", L"WZQ", L"WZR", L"WZS", L"WZT", L"WZU", L"WZV", L"WZW", L"WZX", L"WZY", L"WZZ", L"XAA", L"XAB", L"XAC", L"XAD", L"XAE", L"XAF", L"XAG", L"XAH", L"XAI", L"XAJ", L"XAK", L"XAL", L"XAM", L"XAN", L"XAO", L"XAP", L"XAQ", L"XAR", L"XAS", L"XAT", L"XAU", L"XAV", L"XAW", L"XAX", L"XAY", L"XAZ", L"XBA", L"XBB", L"XBC", L"XBD", L"XBE", L"XBF", L"XBG", L"XBH", L"XBI", L"XBJ", L"XBK", L"XBL", L"XBM", L"XBN", L"XBO", L"XBP", L"XBQ", L"XBR", L"XBS", L"XBT", L"XBU", L"XBV", L"XBW", L"XBX", L"XBY", L"XBZ", L"XCA", L"XCB", L"XCC", L"XCD", L"XCE", L"XCF", L"XCG", L"XCH", L"XCI", L"XCJ", L"XCK", L"XCL", L"XCM", L"XCN", L"XCO", L"XCP", L"XCQ", L"XCR", L"XCS", L"XCT", L"XCU", L"XCV", L"XCW", L"XCX", L"XCY", L"XCZ", L"XDA", L"XDB", L"XDC", L"XDD", L"XDE", L"XDF", L"XDG", L"XDH", L"XDI", L"XDJ", L"XDK", L"XDL", L"XDM", L"XDN", L"XDO", L"XDP", L"XDQ", L"XDR", L"XDS", L"XDT", L"XDU", L"XDV", L"XDW", L"XDX", L"XDY", L"XDZ", L"XEA", L"XEB", L"XEC", L"XED", L"XEE", L"XEF", L"XEG", L"XEH", L"XEI", L"XEJ", L"XEK", L"XEL", L"XEM", L"XEN", L"XEO", L"XEP", L"XEQ", L"XER", L"XES", L"XET", L"XEU", L"XEV", L"XEW", L"XEX", L"XEY", L"XEZ", L"XFA", L"XFB", L"XFC", L"XFD" };
 
+		static std::string getColAddress(size_t col)
+		{//from 1
+			col--;
+			static const size_t r = ('Z' - 'A' + 1);
+			std::string res;
+			size_t r0 = col / r;
 
+			if (r0 > 0)
+			{
+				const std::string rest = getColAddress(col - r * r0);
+				const std::string res	= getColAddress(r0-1) + rest;
+				return res;
+			}
+			else
+				return std::string(1, (char)(L'A' + col));
+		}
+
+		static std::string getRowAddress(size_t row)
+		{//from 1
+			return std::to_string(row);
+		}
+		static std::string getCellAddress(size_t row, size_t col)
+		{
+			return getColAddress(col) + getRowAddress(row);
+		}
 		CFormulaXLSB::CFormulaXLSB():m_oFormula(256),m_oRef(256),m_oR1(256),m_oR2(256)
 		{
 			Clean();
@@ -835,6 +858,11 @@ namespace OOX
 					m_oFormula = oReader;
 				else if ( strcmp("is", sName) == 0 )
 					m_oRichText = oReader;
+				else if ( strcmp("NamedCell", sName) == 0 )
+				{
+					m_oRichText = oReader;
+				}
+//o:SmartTags, ss:Comment, x:PhoneticText
 			}
 			PrepareForBinaryWriter();
 		}
@@ -1031,14 +1059,16 @@ namespace OOX
 
 		void CCell::ReadAttributesData(XmlUtils::CXmlLiteReader& oReader)
 		{
+			if ( oReader.GetAttributesCount() <= 0 ) return;
+
 			WritingElement_ReadAttributes_StartChar( oReader )
 				WritingElement_ReadAttributes_Read_ifChar ( oReader, "ss:Type", m_oType )
-				//ss:ArrayRange
 			WritingElement_ReadAttributes_EndChar( oReader )
 		}
 		void CCell::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			nullable_string sStyleId;
+			nullable_string sStyleId, sArrayRange;
+			nullable_int iAcross, iDown, iRowIndex;
 
 			WritingElement_ReadAttributes_StartChar( oReader )
 
@@ -1055,23 +1085,37 @@ namespace OOX
 				}
 				else if (strcmp("ss:Index", wsName) == 0)
 				{
-					m_oRef = oReader.GetTextA();
+					iRowIndex = oReader.GetText();
 				}
-				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "ss:Type", m_oType )
-				//ss:ArrayRange
-				
+				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "ss:MergeAcross", iAcross )
+				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "ss:MergeDown", iDown )
+				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "ss:ArrayRange", sArrayRange )		
 				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "ss:StyleID", sStyleId )
+
 				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "s", m_oStyle )
 				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "t", m_oType )
 				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "cm", m_oCellMetadata )
 				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "vm", m_oValueMetadata )
 				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "ph", m_oShowPhonetic )
+
 			WritingElement_ReadAttributes_EndChar( oReader )
 
-			if (sStyleId.IsInit())
+			CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
+			if (xlsx_flat)
 			{
-				CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
-				if ((xlsx_flat) && (xlsx_flat->m_pStyles.IsInit()))
+				if (iRowIndex.IsInit())
+				{
+					xlsx_flat->m_nLastReadCol = *iRowIndex;
+				}
+				else
+				{
+					xlsx_flat->m_nLastReadCol = (xlsx_flat->m_nLastReadCol < 0 ? 1 : xlsx_flat->m_nLastReadCol + 1);
+				}
+
+				//m_oRef = "R" + std::to_string(xlsx_flat->m_nLastReadRow) + "C" + std::to_string(xlsx_flat->m_nLastReadCol);
+				m_oRef = getCellAddress(xlsx_flat->m_nLastReadRow, xlsx_flat->m_nLastReadCol);
+
+				if (sStyleId.IsInit() && xlsx_flat->m_pStyles.IsInit())
 				{
 					std::map<std::wstring, size_t>::iterator pFind = xlsx_flat->m_pStyles->m_mapStyles2003.find(*sStyleId);
 					if (pFind != xlsx_flat->m_pStyles->m_mapStyles2003.end())
@@ -1079,6 +1123,22 @@ namespace OOX
 						m_oStyle.Init();
 						m_oStyle->SetValue(pFind->second);
 					}
+				}
+				if (iAcross.IsInit() || iDown.IsInit())
+				{
+					//std::string Ref = m_oRef.get2() + ":R" + std::to_string(xlsx_flat->m_nLastReadRow + 1 + iDown.get_value_or(0)) + "C" + std::to_string(xlsx_flat->m_nLastReadCol + 1 + iAcross.get_value_or(0));
+					std::string Ref =  m_oRef.get2() + ":" + getCellAddress(xlsx_flat->m_nLastReadRow + iDown.get_value_or(0),
+																			xlsx_flat->m_nLastReadCol + iAcross.get_value_or(0));
+
+					CWorksheet* sheet = xlsx_flat->m_arWorksheets.back();
+					if (false == sheet->m_oMergeCells.IsInit())
+					{
+						sheet->m_oMergeCells.Init();
+					}
+					CMergeCell *pMergeCell = new CMergeCell(m_pMainDocument);
+					pMergeCell->m_oRef = std::wstring(Ref.begin(), Ref.end());
+					
+					sheet->m_oMergeCells->m_arrItems.push_back(pMergeCell);
 				}
 			}
 		}
@@ -1122,8 +1182,8 @@ namespace OOX
 					CCell *pCell = new CCell(m_pMainDocument);
 					if (pCell)
 					{
-						pCell->fromXML(oReader);
 						m_arrItems.push_back(pCell);
+						pCell->fromXML(oReader);
 					}
 				}
 			}
@@ -1298,9 +1358,15 @@ namespace OOX
 			if ( oReader.IsEmptyNode() )
 				return;
 			CXlsx* xlsx = dynamic_cast<CXlsx*>(m_pMainDocument);
+			CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
+			
 			if(xlsx)
 			{
 				xlsx->m_nLastReadRow = 0;
+			}
+			if (xlsx_flat)
+			{
+				xlsx_flat->m_nLastReadRow = 0;
 			}
 			if (xlsx && xlsx->m_pXlsbWriter)
 			{
@@ -1344,8 +1410,8 @@ namespace OOX
 						CRow *pRow = new CRow(m_pMainDocument);
 						if (pRow)
 						{
-							pRow->fromXML(oReader);
 							m_arrItems.push_back(pRow);
+							pRow->fromXML(oReader);
 						}
 					}
 					else if (strcmp("Column", sName) == 0)
@@ -1353,13 +1419,13 @@ namespace OOX
 						CCol *pColumn = new CCol(m_pMainDocument);
 						if (pColumn)
 						{
-							pColumn->fromXML(oReader);
-
 							if (false == m_oCols.IsInit())
 							{
 								m_oCols.Init();
 							}
 							m_oCols->m_arrItems.push_back(pColumn);
+							
+							pColumn->fromXML(oReader);
 						}
 					}
 				}

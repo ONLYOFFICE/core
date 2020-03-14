@@ -3910,7 +3910,7 @@ void BinaryWorksheetTableWriter::WriteMergeCells(const OOX::Spreadsheet::CMergeC
 		if(pMergeCell->m_oRef.IsInit())
 		{
 			m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetsTypes::MergeCell);
-			m_oBcw.m_oStream.WriteStringW(pMergeCell->m_oRef.get2());
+			m_oBcw.m_oStream.WriteStringW(*pMergeCell->m_oRef);
 		}
 	}
 }

@@ -176,9 +176,9 @@ namespace OOX
 					if ( L"definedName" == sName || L"NamedRange" == sName)
 					{
 						CDefinedName *pDefinedName = new CDefinedName(m_pMainDocument);
-						pDefinedName->fromXML(oReader);
-
 						m_arrItems.push_back( pDefinedName);
+						
+						pDefinedName->fromXML(oReader);
 					}
 				}
 			}

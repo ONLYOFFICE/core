@@ -310,8 +310,8 @@ namespace OOX
 
 				if ( pItem )
 				{
-					pItem->fromXML(oReader);
 					m_arrItems.push_back( pItem );
+					pItem->fromXML(oReader);
 				}
 			}
 		}

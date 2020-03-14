@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _BUILD_STREAM_WRITER_CROSSPLATFORM_H_
-#define _BUILD_STREAM_WRITER_CROSSPLATFORM_H_
+#pragma once
 
 #include "File.h"
 #include "StringBuilder.h"
@@ -48,4 +47,3 @@ namespace NSFile
 	};
  }
 
-#endif // _BUILD_STREAM_WRITER_CROSSPLATFORM_H_

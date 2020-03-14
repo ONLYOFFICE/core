@@ -76,9 +76,9 @@ namespace Spreadsheet
 			else if ( L"Worksheet" == sName )
 			{
 				CWorksheet *pWorksheet = new CWorksheet(dynamic_cast<OOX::Document*>(this));
-				pWorksheet->fromXML(oReader);
-				
 				m_arWorksheets.push_back(pWorksheet);
+				
+				pWorksheet->fromXML(oReader);				
 			}
 			else if ( L"Styles" == sName )
 			{

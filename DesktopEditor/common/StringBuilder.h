@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _BUILD_STRING_BUILDER_CROSSPLATFORM_H_
-#define _BUILD_STRING_BUILDER_CROSSPLATFORM_H_
+#pragma once
 
 #include <string>
 #include <string.h>
@@ -161,5 +160,3 @@ namespace NSStringUtils
     KERNEL_DECL void string_replace(std::wstring& text, const std::wstring& replaceFrom, const std::wstring& replaceTo);
     KERNEL_DECL void string_replaceA(std::string& text, const std::string& replaceFrom, const std::string& replaceTo);
 }
-
-#endif // _BUILD_STRING_BUILDER_CROSSPLATFORM_H_

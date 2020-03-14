@@ -4676,8 +4676,7 @@ int BinaryWorksheetsTableReader::ReadMergeCells(BYTE type, long length, void* po
 	if(c_oSerWorksheetsTypes::MergeCell == type)
 	{
 		OOX::Spreadsheet::CMergeCell* pMergeCell = new OOX::Spreadsheet::CMergeCell();
-		pMergeCell->m_oRef.Init();
-		pMergeCell->m_oRef->append(m_oBufferedStream.GetString4(length));
+		pMergeCell->m_oRef = m_oBufferedStream.GetString4(length);
 		pMergeCells->m_arrItems.push_back(pMergeCell);
 	}
 	else

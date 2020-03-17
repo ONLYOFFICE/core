@@ -1603,9 +1603,7 @@ int BinaryStyleTableReader::ReadNumFmt(BYTE type, long length, void* poResult)
 	int res = c_oSerConstants::ReadOk;
 	if(c_oSerNumFmtTypes::FormatCode == type)
 	{
-		std::wstring sFormatCode(m_oBufferedStream.GetString4(length));
-		pNumFmt->m_oFormatCode.Init();
-		pNumFmt->m_oFormatCode->append(sFormatCode);
+		pNumFmt->m_oFormatCode = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSerNumFmtTypes::NumFmtId == type)
 	{

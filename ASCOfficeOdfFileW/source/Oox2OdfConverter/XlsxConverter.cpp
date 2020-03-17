@@ -2225,7 +2225,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CNumFmt *numFmt)
 
 	if (numFmt->m_oFormatCode.IsInit() && numFmt->m_oNumFmtId.IsInit())
 	{
-		ods_context->numbers_styles_context()->add_or_find(numFmt->m_oNumFmtId->GetValue(), numFmt->m_oFormatCode.get());
+		ods_context->numbers_styles_context()->add_or_find(numFmt->m_oNumFmtId->GetValue(), *numFmt->m_oFormatCode);
 	}
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf_writer::style_paragraph_properties	* paragraph_properties

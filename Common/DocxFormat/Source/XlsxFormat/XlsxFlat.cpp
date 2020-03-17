@@ -69,6 +69,10 @@ namespace Spreadsheet
 		{
 			m_pWorkbook = new CWorkbook(dynamic_cast<OOX::Document*>(this));
 		}
+		if (false == m_pSharedStrings.IsInit())
+		{
+			m_pSharedStrings = new CSharedStrings(dynamic_cast<OOX::Document*>(this));
+		}
 		int nStylesDepth = oReader.GetDepth();
 		while ( oReader.ReadNextSiblingNode( nStylesDepth ) )
 		{

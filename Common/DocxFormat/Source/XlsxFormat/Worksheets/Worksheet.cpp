@@ -240,10 +240,6 @@ namespace OOX
 			CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(WritingElement::m_pMainDocument);
 			if (xlsx_flat)
 			{
-				if (false == xlsx_flat->m_pWorkbook.IsInit())
-				{
-					xlsx_flat->m_pWorkbook = new CWorkbook(WritingElement::m_pMainDocument);
-				}
 				if (false == xlsx_flat->m_pWorkbook->m_oSheets.IsInit())
 				{
 					xlsx_flat->m_pWorkbook->m_oSheets = new CSheets(WritingElement::m_pMainDocument);

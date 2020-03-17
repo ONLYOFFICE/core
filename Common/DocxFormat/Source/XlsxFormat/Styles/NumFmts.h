@@ -64,7 +64,7 @@ namespace OOX
 				writer.WriteString(L"<");
 				writer.WriteString(sHeader);
 				WritingStringNullableAttrInt(L"numFmtId", m_oNumFmtId, m_oNumFmtId->GetValue());
-				WritingStringNullableAttrEncodeXmlString(L"formatCode", m_oFormatCode, m_oFormatCode.get());
+				WritingStringNullableAttrEncodeXmlString(L"formatCode", m_oFormatCode, *m_oFormatCode);
 				WritingStringNullableAttrBool(L"sourceLinked", m_oSourceLinked);
 				writer.WriteString(_T("/>"));
 			}
@@ -93,7 +93,7 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<std::wstring >							m_oFormatCode;
+			nullable_string									m_oFormatCode;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oNumFmtId;
 			nullable<SimpleTypes::COnOff<>>					m_oSourceLinked;
 		};

@@ -1598,7 +1598,7 @@ void BinaryStyleTableWriter::WriteNumFmt(const OOX::Spreadsheet::CNumFmt& numFmt
 	//FormatCode
 	if(numFmt.m_oFormatCode.IsInit())
 	{
-		std::wstring& sFormatCode = numFmt.m_oFormatCode.get2();
+		std::wstring& sFormatCode = *numFmt.m_oFormatCode;
 		m_oBcw.m_oStream.WriteBYTE(c_oSerNumFmtTypes::FormatCode);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 		m_oBcw.m_oStream.WriteStringW(sFormatCode);
@@ -6751,18 +6751,21 @@ void BinaryFileWriter::intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinary
 	OOX::Spreadsheet::CXlsx *pXlsx = dynamic_cast<OOX::Spreadsheet::CXlsx *>(pDocument);
 	OOX::Spreadsheet::CXlsxFlat *pXlsxFlat = dynamic_cast<OOX::Spreadsheet::CXlsxFlat *>(pDocument);
 
-	OOX::Spreadsheet::CStyles	*pStyles = NULL;
+	OOX::Spreadsheet::CStyles *pStyles = NULL;
 	OOX::Spreadsheet::CWorkbook *pWorkbook = NULL;
+	OOX::Spreadsheet::CSharedStrings *pSharedStrings = NULL;
 
 	if (pXlsx)
 	{
 		pWorkbook = pXlsx->m_pWorkbook;
 		pStyles = pXlsx->m_pStyles;
+		pSharedStrings = pXlsx->m_pSharedStrings;
 	}
 	if (pXlsxFlat)
 	{
 		pWorkbook = pXlsxFlat->m_pWorkbook.GetPointer();
 		pStyles = pXlsxFlat->m_pStyles.GetPointer();
+		pSharedStrings = pXlsxFlat->m_pSharedStrings.GetPointer();
 	}
 
 	int nCurPos;
@@ -6789,11 +6792,11 @@ void BinaryFileWriter::intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinary
 		this->WriteTableEnd(nCurPos);
 	}
 
-	if(pXlsx && pXlsx->m_pSharedStrings)
+	if(pSharedStrings)
 	{
 		nCurPos = WriteTableStart(c_oSerTableTypes::SharedStrings);
 		BinarySharedStringTableWriter oBinarySharedStringTableWriter(oBufferedStream, pEmbeddedFontsManager);
-		oBinarySharedStringTableWriter.Write(*pXlsx->m_pSharedStrings, pIndexedColors, pXlsx->GetTheme(), m_oFontProcessor);
+		oBinarySharedStringTableWriter.Write(*pSharedStrings, pIndexedColors, pXlsx ? pXlsx->GetTheme() : NULL, m_oFontProcessor);
 		WriteTableEnd(nCurPos);
 	}
 

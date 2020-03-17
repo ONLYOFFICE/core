@@ -110,7 +110,7 @@ namespace OOX
 			nullable<CWorkbook>			m_pWorkbook;
 			std::vector<CWorksheet*>	m_arWorksheets;
 			nullable<CStyles>			m_pStyles;
-
+            nullable<CSharedStrings>    m_pSharedStrings;
 		
 			int	m_nLastReadRow;
 			int	m_nLastReadCol;

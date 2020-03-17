@@ -869,37 +869,45 @@ namespace OOX
 		void CCell::PrepareForBinaryWriter()
 		{
 			CXlsx* xlsx = dynamic_cast<CXlsx*>(m_pMainDocument);
-			if (!xlsx) return;
+			CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
 
-			//for xml with empty cell reference
-			int nRow = 0;
-			int nCol = 0;
-			getRowCol(nRow, nCol);
-			xlsx->m_nLastReadCol = nCol > xlsx->m_nLastReadCol ? nCol : xlsx->m_nLastReadCol + 1;
-			setRowCol(xlsx->m_nLastReadRow, xlsx->m_nLastReadCol);
+			CSharedStrings *pSharedStrings = NULL;
+			if (xlsx)
+			{
+				//for xml with empty cell reference
+				int nRow = 0;
+				int nCol = 0;
+				getRowCol(nRow, nCol);
+				xlsx->m_nLastReadCol = nCol > xlsx->m_nLastReadCol ? nCol : xlsx->m_nLastReadCol + 1;
+				setRowCol(xlsx->m_nLastReadRow, xlsx->m_nLastReadCol);
 
-			if(false == xlsx->m_arWorksheets.back()->m_bPrepareForBinaryWriter) return;
+				if (false == xlsx->m_arWorksheets.back()->m_bPrepareForBinaryWriter) return;
 
-			if( !xlsx->m_pSharedStrings)
-			{	// еще не прочитался rels
-
-				xlsx->m_arWorksheets.back()->m_bPrepareForBinaryWriter = false;
-				return;
+				if( !xlsx->m_pSharedStrings)
+				{	// еще не прочитался rels
+					xlsx->m_arWorksheets.back()->m_bPrepareForBinaryWriter = false;
+					return;
+				}
+				pSharedStrings = xlsx->m_pSharedStrings;
 			}
-
+			else if (xlsx_flat)
+			{
+				pSharedStrings = xlsx_flat->m_pSharedStrings.GetPointer();
+			}
 
 			if(m_oType.IsInit())
 			{
 				if(SimpleTypes::Spreadsheet::celltypeInlineStr == m_oType->GetValue())
 				{
-					if(!xlsx->m_pSharedStrings)
+					if(xlsx && !xlsx->m_pSharedStrings)
 					{
 						xlsx->CreateSharedStrings();
+						pSharedStrings = xlsx->m_pSharedStrings;
 					}
 					OOX::Spreadsheet::CSi* pSi = m_oRichText.GetPointerEmptyNullable();
 					if(NULL != pSi)
 					{
-						int nIndex = xlsx->m_pSharedStrings->AddSi(pSi);
+						int nIndex = pSharedStrings->AddSi(pSi);
 						//меняем значение ячейки
 						m_oValue.Init();
 						m_oValue->m_sText = std::to_wstring(nIndex);
@@ -912,14 +920,17 @@ namespace OOX
 				{
 					if (m_oValue.IsInit())
 					{
-						if(!xlsx->m_pSharedStrings)
+						if(xlsx && !xlsx->m_pSharedStrings)
+						{
 							xlsx->CreateSharedStrings();
+							pSharedStrings = xlsx->m_pSharedStrings;
+						}
 						//добавляем в SharedStrings
 						CSi* pSi = new CSi();
 						CText* pText =  new CText();
 						pText->m_sText = m_oValue->ToString();
 						pSi->m_arrItems.push_back(pText);
-						int nIndex = xlsx->m_pSharedStrings->AddSi(pSi);
+						int nIndex = pSharedStrings->AddSi(pSi);
 						//меняем значение ячейки
 						m_oValue.Init();
 						m_oValue->m_sText = std::to_wstring(nIndex);

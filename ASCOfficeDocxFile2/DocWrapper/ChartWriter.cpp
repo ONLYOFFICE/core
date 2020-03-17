@@ -211,8 +211,7 @@ namespace BinXlsxRW{
         for (boost::unordered_map<std::wstring, int>::iterator it = m_mapFormats.begin(); it != m_mapFormats.end(); ++it)
 		{
 			OOX::Spreadsheet::CNumFmt* pNumFmt = new OOX::Spreadsheet::CNumFmt();
-			pNumFmt->m_oFormatCode.Init();
-			pNumFmt->m_oFormatCode->append(it->first);
+			pNumFmt->m_oFormatCode = (it->first);
 			pNumFmt->m_oNumFmtId.Init();
 			pNumFmt->m_oNumFmtId->SetValue(NUMID_START + it->second);
 			oXlsx.m_pStyles->m_oNumFmts->m_arrItems.push_back(pNumFmt);

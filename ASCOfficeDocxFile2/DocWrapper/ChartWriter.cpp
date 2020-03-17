@@ -163,8 +163,7 @@ namespace BinXlsxRW{
 			toXlsxSheetdata(pWorksheet, *it->second, aSharedStrings);
 			
 			OOX::Spreadsheet::CSheet* pSheet = new OOX::Spreadsheet::CSheet();
-			pSheet->m_oName.Init();
-			pSheet->m_oName->append(sSheetName);
+			pSheet->m_oName = sSheetName;
 			pSheet->m_oSheetId.Init();
 			pSheet->m_oSheetId->SetValue(nSheetId++);
 			

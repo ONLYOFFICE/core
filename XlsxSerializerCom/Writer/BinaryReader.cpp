@@ -2522,13 +2522,11 @@ int BinaryWorkbookTableReader::ReadDefinedName(BYTE type, long length, void* poR
 	int res = c_oSerConstants::ReadOk;
 	if(c_oSerDefinedNameTypes::Name == type)
 	{
-		pDefinedName->m_oName.Init();
-		pDefinedName->m_oName->append(m_oBufferedStream.GetString4(length));
+		pDefinedName->m_oName = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSerDefinedNameTypes::Ref == type)
 	{
-		pDefinedName->m_oRef.Init();
-		pDefinedName->m_oRef->append(m_oBufferedStream.GetString4(length));
+		pDefinedName->m_oRef = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSerDefinedNameTypes::LocalSheetId == type)
 	{
@@ -2542,8 +2540,7 @@ int BinaryWorkbookTableReader::ReadDefinedName(BYTE type, long length, void* poR
     }
 	else if(c_oSerDefinedNameTypes::Comment == type)
     {
-		pDefinedName->m_oComment.Init();
-		pDefinedName->m_oComment->append(m_oBufferedStream.GetString4(length));
+		pDefinedName->m_oComment = m_oBufferedStream.GetString4(length);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -3911,8 +3908,7 @@ int BinaryWorksheetsTableReader::ReadWorksheetProp(BYTE type, long length, void*
 	int res = c_oSerConstants::ReadOk;
 	if(c_oSerWorksheetPropTypes::Name == type)
 	{
-		m_pCurSheet->m_oName.Init();
-		m_pCurSheet->m_oName->append(m_oBufferedStream.GetString4(length));
+		m_pCurSheet->m_oName = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSerWorksheetPropTypes::SheetId == type)
 	{
@@ -4640,13 +4636,11 @@ int BinaryWorksheetsTableReader::ReadHyperlink(BYTE type, long length, void* poR
 	int res = c_oSerConstants::ReadOk;
 	if(c_oSerHyperlinkTypes::Ref == type)
 	{
-		pHyperlink->m_oRef.Init();
-		pHyperlink->m_oRef->append(m_oBufferedStream.GetString4(length));
+		pHyperlink->m_oRef = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSerHyperlinkTypes::Display == type)
 	{
-		pHyperlink->m_oDisplay.Init();
-		pHyperlink->m_oDisplay->append(m_oBufferedStream.GetString4(length));
+		pHyperlink->m_oDisplay = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSerHyperlinkTypes::Hyperlink == type)
 	{
@@ -4657,13 +4651,11 @@ int BinaryWorksheetsTableReader::ReadHyperlink(BYTE type, long length, void* poR
 	}
 	else if(c_oSerHyperlinkTypes::Location == type)
 	{
-		pHyperlink->m_oLocation.Init();
-		pHyperlink->m_oLocation->append(m_oBufferedStream.GetString4(length));
+		pHyperlink->m_oLocation = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSerHyperlinkTypes::Tooltip == type)
 	{
-		pHyperlink->m_oTooltip.Init();
-		pHyperlink->m_oTooltip->append(m_oBufferedStream.GetString4(length));
+		pHyperlink->m_oTooltip = m_oBufferedStream.GetString4(length);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

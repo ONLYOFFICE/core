@@ -65,6 +65,10 @@ namespace Spreadsheet
 		if ( oReader.IsEmptyNode() )
 			return;
 
+		if (false == m_pWorkbook.IsInit())
+		{
+			m_pWorkbook = new CWorkbook(dynamic_cast<OOX::Document*>(this));
+		}
 		int nStylesDepth = oReader.GetDepth();
 		while ( oReader.ReadNextSiblingNode( nStylesDepth ) )
 		{
@@ -72,6 +76,7 @@ namespace Spreadsheet
 
 			if ( L"ExcelWorkbook" == sName )
 			{
+				m_pWorkbook->fromXML(oReader);
 			}
 			else if ( L"Worksheet" == sName )
 			{
@@ -87,8 +92,8 @@ namespace Spreadsheet
 			}
 			else if ( L"Names" == sName )
 			{
-				m_pDefinedNames = new CDefinedNames(dynamic_cast<OOX::Document*>(this));
-				m_pDefinedNames->fromXML(oReader);
+				m_pWorkbook->m_oDefinedNames = new CDefinedNames(dynamic_cast<OOX::Document*>(this));
+				m_pWorkbook->m_oDefinedNames->fromXML(oReader);
 			}
 		}
 	}

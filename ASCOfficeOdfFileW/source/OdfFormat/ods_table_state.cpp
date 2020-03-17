@@ -1288,8 +1288,14 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 	}
 	
 	//кэшированные значения
-	if (value.length() >0)
+	if (false == value.empty())
 	{
+		if (is_cell_hyperlink())
+		{
+			need_cash = true;
+			cell->attlist_.common_value_and_type_attlist_->office_string_value_ = boost::none;
+		}
+
 		bool need_test_cach = false;
 
 		if (cell->attlist_.common_value_and_type_attlist_->office_value_type_)
@@ -1303,7 +1309,7 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 			if (need_test_cach)
 			{
 				double test = boost::lexical_cast<double>(value);			
-				need_cash =true;
+				need_cash = true;
 			}
 		}
 		catch(...)
@@ -1314,15 +1320,16 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 				cell->attlist_.common_value_and_type_attlist_->office_value_type_ = office_value_type(office_value_type::String);
 			}
 		}
+
 		if (need_cash)
 		{
-			context_->start_text_context();
-				context_->text_context()->start_paragraph();
-					context_->text_context()->add_text_content(value);
-				context_->text_context()->end_paragraph();
+			ods_conversion_context* ods_context = dynamic_cast<ods_conversion_context*>(context_);
 
-				set_cell_text(context_->text_context(), true);
-			context_->end_text_context();
+			ods_context->start_cell_text();
+				ods_context->text_context()->add_text_content(value);
+			ods_context->end_cell_text();
+				
+			set_cell_text( ods_context->text_context(), true);
 		}
 	}
 }

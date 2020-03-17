@@ -1067,7 +1067,7 @@ namespace OOX
 		}
 		void CCell::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			nullable_string sStyleId, sArrayRange;
+			nullable_string sStyleId, sArrayRange,sHyperlink;
 			nullable_int iAcross, iDown, iRowIndex;
 
 			WritingElement_ReadAttributes_StartChar( oReader )
@@ -1091,6 +1091,7 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "ss:MergeDown", iDown )
 				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "ss:ArrayRange", sArrayRange )		
 				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "ss:StyleID", sStyleId )
+				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "ss:HRef", sHyperlink )
 
 				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "s", m_oStyle )
 				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "t", m_oType )
@@ -1103,6 +1104,8 @@ namespace OOX
 			CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
 			if (xlsx_flat)
 			{
+				CWorksheet* sheet = xlsx_flat->m_arWorksheets.back();
+				
 				if (iRowIndex.IsInit())
 				{
 					xlsx_flat->m_nLastReadCol = *iRowIndex;
@@ -1130,7 +1133,6 @@ namespace OOX
 					std::string Ref =  m_oRef.get2() + ":" + getCellAddress(xlsx_flat->m_nLastReadRow + iDown.get_value_or(0),
 																			xlsx_flat->m_nLastReadCol + iAcross.get_value_or(0));
 
-					CWorksheet* sheet = xlsx_flat->m_arWorksheets.back();
 					if (false == sheet->m_oMergeCells.IsInit())
 					{
 						sheet->m_oMergeCells.Init();
@@ -1139,6 +1141,29 @@ namespace OOX
 					pMergeCell->m_oRef = std::wstring(Ref.begin(), Ref.end());
 					
 					sheet->m_oMergeCells->m_arrItems.push_back(pMergeCell);
+				}
+				if (sHyperlink.IsInit())
+				{
+					if (false == sheet->m_oHyperlinks.IsInit())
+					{
+						sheet->m_oHyperlinks.Init();
+					}
+					CHyperlink *pHyperlink = new CHyperlink(m_pMainDocument);
+					
+					pHyperlink->m_oRef = std::wstring(m_oRef->begin(), m_oRef->end());
+					pHyperlink->m_oDisplay = sHyperlink;
+
+					if (sHyperlink->find(L"#") == 0)
+					{
+						sHyperlink = sHyperlink->substr(1);
+						pHyperlink->m_oLocation = sHyperlink;
+					}
+					else
+					{
+						pHyperlink->m_oLink = sHyperlink;
+					}
+					
+					sheet->m_oHyperlinks->m_arrItems.push_back(pHyperlink);
 				}
 			}
 		}

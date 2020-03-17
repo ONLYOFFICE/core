@@ -54,18 +54,18 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-                writer.WriteString(_T("<definedName"));
-				WritingStringNullableAttrEncodeXmlString(L"name", m_oName, m_oName.get());
+                writer.WriteString(L"<definedName");
+				WritingStringNullableAttrEncodeXmlString(L"name", m_oName, *m_oName);
 				WritingStringNullableAttrInt(L"localSheetId", m_oLocalSheetId, m_oLocalSheetId->GetValue());
 				WritingStringNullableAttrBool(L"hidden", m_oHidden);
-				writer.WriteString(_T(">"));
+				writer.WriteString(L">");
 				if(m_oRef.IsInit())
-					writer.WriteEncodeXmlString(m_oRef.get());
-				writer.WriteString(_T("</definedName>"));
+					writer.WriteEncodeXmlString(*m_oRef);
+				writer.WriteString(L"</definedName>");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -86,49 +86,55 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
+				nullable_string oRefersTo;
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("comment"),			m_oComment )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("customMenu"),      m_oCustomMenu )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("description"),		m_oDescription )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("function"),		m_oFunction )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("functionGroupId"),	m_oFunctionGroupId )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("help"),			m_oHelp )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("hidden"),			m_oHidden )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("localSheetId"),	m_oLocalSheetId )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("name"),			m_oName )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("publishToServer"),	m_oPublishToServer )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("shortcutKey "),	m_oShortcutKey  )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("statusBar "),      m_oStatusBar  )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("vbProcedure "),	m_oVbProcedure  )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("workbookParameter "),	m_oWorkbookParameter  )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("xlm "),			m_oXlm  )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"comment",		m_oComment )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"customMenu",		m_oCustomMenu )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"description",	m_oDescription )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"function",		m_oFunction )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"functionGroupId",m_oFunctionGroupId )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"help",			m_oHelp )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"hidden",			m_oHidden )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"localSheetId",	m_oLocalSheetId )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"name",			m_oName )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"publishToServer",m_oPublishToServer )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"shortcutKey ",	m_oShortcutKey  )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"statusBar",		m_oStatusBar  )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"vbProcedure",	m_oVbProcedure  )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"workbookParameter",	m_oWorkbookParameter  )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"xlm",			m_oXlm  )
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:Name"),			m_oName )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:RefersTo"),		m_oRef )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"ss:Name",		m_oName )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"ss:RefersTo",	oRefersTo )
 				WritingElement_ReadAttributes_End( oReader )
+
+				if (oRefersTo.IsInit())
+				{
+					m_oRef = oRefersTo->substr(1);
+				}
 			}
 
 		public:
-				nullable<std::wstring>								m_oComment;
-				nullable<std::wstring>								m_oCustomMenu;
-				nullable<std::wstring>								m_oDescription;
-				nullable<SimpleTypes::COnOff<>>						m_oFunction;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oFunctionGroupId;
-				nullable<std::wstring>								m_oHelp;
-				nullable<SimpleTypes::COnOff<>>						m_oHidden;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oLocalSheetId;
-				nullable<std::wstring>								m_oName;
-				nullable<SimpleTypes::COnOff<>>						m_oPublishToServer;
-				nullable<std::wstring>								m_oShortcutKey;
-				nullable<std::wstring>								m_oStatusBar;
-				nullable<SimpleTypes::COnOff<>>						m_oVbProcedure;
-				nullable<SimpleTypes::COnOff<>>						m_oWorkbookParameter;
-				nullable<SimpleTypes::COnOff<>>						m_oXlm;
+				nullable_string									m_oComment;
+				nullable_string									m_oCustomMenu;
+				nullable_string									m_oDescription;
+				nullable<SimpleTypes::COnOff<>>					m_oFunction;
+				nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oFunctionGroupId;
+				nullable_string									m_oHelp;
+				nullable<SimpleTypes::COnOff<>>					m_oHidden;
+				nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oLocalSheetId;
+				nullable_string									m_oName;
+				nullable<SimpleTypes::COnOff<>>					m_oPublishToServer;
+				nullable_string									m_oShortcutKey;
+				nullable_string									m_oStatusBar;
+				nullable<SimpleTypes::COnOff<>>					m_oVbProcedure;
+				nullable<SimpleTypes::COnOff<>>					m_oWorkbookParameter;
+				nullable<SimpleTypes::COnOff<>>					m_oXlm;
 
-				nullable<std::wstring>								m_oRef;
+				nullable_string									m_oRef;
 		};
 
-		class CDefinedNames  : public WritingElementWithChilds<CDefinedName>
+		class CDefinedNames : public WritingElementWithChilds<CDefinedName>
 		{
 		public:
 			WritingElement_AdditionConstructors(CDefinedNames)
@@ -143,13 +149,13 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_arrItems.empty()) return;
 				
-				writer.WriteString(_T("<definedNames>"));
+				writer.WriteString(L"<definedNames>");
 				
                 for ( size_t i = 0; i < m_arrItems.size(); ++i)
                 {
@@ -159,7 +165,7 @@ namespace OOX
                     }
                 }
 				
-				writer.WriteString(_T("</definedNames>"));
+				writer.WriteString(L"</definedNames>");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

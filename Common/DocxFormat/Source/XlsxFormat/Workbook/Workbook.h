@@ -32,6 +32,7 @@
 #pragma once
 
 #include "../Xlsx.h"
+#include "../XlsxFlat.h"
 #include "../CommonInclude.h"
 
 #include "BookViews.h"
@@ -61,10 +62,10 @@ namespace OOX
 		//<webPublishObjects>
 		//<workbookPr>
 		//<workbookProtection>
-		class CWorkbook : public OOX::File, public OOX::IFileContainer
+		class CWorkbook : public OOX::File, public OOX::IFileContainer, public WritingElement
 		{
 		public:
-			CWorkbook(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
+			CWorkbook(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain), WritingElement(pMain)
 			{
 				m_bMacroEnabled	= false;
 				m_bSpreadsheets = true;
@@ -76,7 +77,7 @@ namespace OOX
 					xlsx->m_pWorkbook = this;
 				}
 			}
-			CWorkbook(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
+			CWorkbook(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain), WritingElement(pMain)
 			{
 				m_bMacroEnabled	= false;
 				m_bSpreadsheets = true;
@@ -121,56 +122,75 @@ namespace OOX
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if ( L"workbook" == sName )
 				{
-					if ( !oReader.IsEmptyNode() )
-					{
-						int nDocumentDepth = oReader.GetDepth();
-						while ( oReader.ReadNextSiblingNode( nDocumentDepth ) )
-						{
-							sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					fromXML(oReader);
+				}
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">");
 
-							if ( L"bookViews" == sName )
-								m_oBookViews = oReader;
-							else if ( L"calcPr" == sName )
-								m_oCalcPr = oReader;
-							else if ( L"definedNames" == sName )
-								m_oDefinedNames = oReader;
-							else if ( L"sheets" == sName )
-								m_oSheets = oReader;
-							else if ( L"workbookPr" == sName )
-								m_oWorkbookPr = oReader;
-							else if ( L"externalReferences" == sName )
-								m_oExternalReferences = oReader;
-							else if ( L"fileVersion" == sName )
-							{
-								WritingElement_ReadAttributes_Start( oReader )
-									WritingElement_ReadAttributes_Read_if( oReader, L"appName", m_oAppName )
-								WritingElement_ReadAttributes_End( oReader )
-							}
+				if(m_oWorkbookPr.IsInit())
+					m_oWorkbookPr->toXML(writer);
+				if(m_oBookViews.IsInit())
+					m_oBookViews->toXML(writer);
+				if(m_oSheets.IsInit())
+					m_oSheets->toXML(writer);
+				if (m_oExternalReferences.IsInit())
+					m_oExternalReferences->toXML(writer);
+				if(m_oDefinedNames.IsInit())
+					m_oDefinedNames->toXML(writer);
+				if(m_oCalcPr.IsInit())
+					m_oCalcPr->toXML(writer);
+
+				if(m_oPivotCachesXml.IsInit())
+					writer.WriteString(m_oPivotCachesXml.get());
+				writer.WriteString(L"</workbook>");
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( !oReader.IsEmptyNode() )
+				{
+					int nDocumentDepth = oReader.GetDepth();
+					while ( oReader.ReadNextSiblingNode( nDocumentDepth ) )
+					{
+						std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+						if ( L"bookViews" == sName )
+							m_oBookViews = oReader;
+						else if ( L"calcPr" == sName )
+							m_oCalcPr = oReader;
+						else if ( L"definedNames" == sName )
+							m_oDefinedNames = oReader;
+						else if ( L"sheets" == sName )
+							m_oSheets = oReader;
+						else if ( L"workbookPr" == sName )
+							m_oWorkbookPr = oReader;
+						else if ( L"externalReferences" == sName )
+							m_oExternalReferences = oReader;
+						else if ( L"fileVersion" == sName )
+						{
+							WritingElement_ReadAttributes_Start( oReader )
+								WritingElement_ReadAttributes_Read_if( oReader, L"appName", m_oAppName )
+							WritingElement_ReadAttributes_End( oReader )
 						}
 					}
-				}		
+				}
 			}
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
 				NSStringUtils::CStringBuilder sXml;
-				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">");
 
-				if(m_oWorkbookPr.IsInit())
-					m_oWorkbookPr->toXML(sXml);
-				if(m_oBookViews.IsInit())
-					m_oBookViews->toXML(sXml);
-				if(m_oSheets.IsInit())
-					m_oSheets->toXML(sXml);
-				if (m_oExternalReferences.IsInit())
-					m_oExternalReferences->toXML(sXml);
-				if(m_oDefinedNames.IsInit())
-					m_oDefinedNames->toXML(sXml);
-				if(m_oCalcPr.IsInit())
-					m_oCalcPr->toXML(sXml);
+				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
 
-				if(m_oPivotCachesXml.IsInit())
-					sXml.WriteString(m_oPivotCachesXml.get());
-				sXml.WriteString(L"</workbook>");
+				toXML(sXml);
 
                 std::wstring sPath = oPath.GetPath();
                 NSFile::CFileBinary::SaveToFile(sPath.c_str(), sXml.GetData());
@@ -190,6 +210,10 @@ namespace OOX
 			virtual const CPath DefaultFileName() const
 			{
 				return type().DefaultFileName();
+			}
+			virtual EElementType getType () const
+			{
+				return et_x_Workbook;
 			}
 			const CPath& GetReadPath()
 			{

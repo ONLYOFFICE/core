@@ -1962,7 +1962,7 @@ void BinarySharedStringTableWriter::WriteRPr(const OOX::Spreadsheet::CRPr& rPr, 
 
 
 BinaryWorkbookTableWriter::BinaryWorkbookTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream, OOX::Document *pDocument) 
-: m_oBcw(oCBufferedStream)
+: m_oBcw(oCBufferedStream), m_pXlsx(NULL), m_pXlsxFlat(NULL)
 {
 	m_pXlsx		= dynamic_cast<OOX::Spreadsheet::CXlsx*>(pDocument);
 	m_pXlsxFlat	= dynamic_cast<OOX::Spreadsheet::CXlsxFlat*>(pDocument);
@@ -2904,13 +2904,13 @@ void BinaryWorkbookTableWriter::WriteDefinedName(const OOX::Spreadsheet::CDefine
 	if(definedName.m_oName.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerDefinedNameTypes::Name);
-		m_oBcw.m_oStream.WriteStringW(definedName.m_oName.get2());
+		m_oBcw.m_oStream.WriteStringW(*definedName.m_oName);
 	}
 	//Ref
 	if(definedName.m_oRef.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerDefinedNameTypes::Ref);
-		m_oBcw.m_oStream.WriteStringW(definedName.m_oRef.get2());
+		m_oBcw.m_oStream.WriteStringW(*definedName.m_oRef);
 	}
 	//LocalSheetId
 	if(definedName.m_oLocalSheetId.IsInit())
@@ -2930,11 +2930,11 @@ void BinaryWorkbookTableWriter::WriteDefinedName(const OOX::Spreadsheet::CDefine
 	if (definedName.m_oComment.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerDefinedNameTypes::Comment);
-		m_oBcw.m_oStream.WriteStringW(definedName.m_oComment.get2());
+		m_oBcw.m_oStream.WriteStringW(*definedName.m_oComment);
 	}
 }
 
-BinaryPersonTableWriter::BinaryPersonTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream):m_oBcw(oCBufferedStream)
+BinaryPersonTableWriter::BinaryPersonTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream) : m_oBcw(oCBufferedStream)
 {
 }
 void BinaryPersonTableWriter::Write(OOX::Spreadsheet::CPersonList& oPersonList)
@@ -2992,14 +2992,14 @@ void BinaryWorksheetTableWriter::Write(OOX::Spreadsheet::CWorkbook& workbook,  s
 	WriteWorksheets(workbook, mapWorksheets);
 	m_oBcw.WriteItemWithLengthEnd(nStart);
 }
-void BinaryWorksheetTableWriter::Write(std::vector<OOX::Spreadsheet::CWorksheet*>& arrWorksheets)
+void BinaryWorksheetTableWriter::Write(OOX::Spreadsheet::CWorkbook& workbook, std::vector<OOX::Spreadsheet::CWorksheet*>& arrWorksheets)
 {
 	int nStart = m_oBcw.WriteItemWithLengthStart();
 
     for(size_t i = 0; i < arrWorksheets.size(); ++i)
 	{
 		int nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Worksheet);
-			WriteWorksheet(NULL, *arrWorksheets[i]);
+			WriteWorksheet(workbook.m_oSheets->m_arrItems[i], *arrWorksheets[i]);
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 
@@ -3008,7 +3008,7 @@ void BinaryWorksheetTableWriter::Write(std::vector<OOX::Spreadsheet::CWorksheet*
 void BinaryWorksheetTableWriter::WriteWorksheets(OOX::Spreadsheet::CWorkbook& workbook, std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>& mapWorksheets)
 {
 	int nCurPos;
-	//определяем порядок следования .. излинише с vector
+	//определяем порядок следования .. излишне с vector
 	if(workbook.m_oSheets.IsInit())
 	{
         for(size_t i = 0; i < workbook.m_oSheets->m_arrItems.size(); ++i)
@@ -3294,7 +3294,7 @@ void BinaryWorksheetTableWriter::WriteWorksheetProp(OOX::Spreadsheet::CSheet& oS
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetPropTypes::Name);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-		m_oBcw.m_oStream.WriteStringW(oSheet.m_oName.get2());
+		m_oBcw.m_oStream.WriteStringW(*oSheet.m_oName);
 	}
 	//SheetId
 	if(oSheet.m_oSheetId.IsInit())
@@ -3866,10 +3866,14 @@ void BinaryWorksheetTableWriter::WriteHyperlink(const OOX::Spreadsheet::CHyperli
 				sHyperlink = oRels->Target().GetPath();
 		}
 	}
+	else if (oHyperlink.m_oLink.IsInit())
+	{
+		sHyperlink = *oHyperlink.m_oLink;
+	}
 	if(oHyperlink.m_oLocation.IsInit())
-		sLocation = oHyperlink.m_oLocation.get();
+		sLocation = *oHyperlink.m_oLocation;
 	if (oHyperlink.m_oDisplay.IsInit())
-		sDisplay = oHyperlink.m_oDisplay.get();
+		sDisplay = *oHyperlink.m_oDisplay;
 
 	if (!sRef.empty() && (!sHyperlink.empty() || !sLocation.empty() || !sDisplay.empty()))
 	{
@@ -3892,13 +3896,13 @@ void BinaryWorksheetTableWriter::WriteHyperlink(const OOX::Spreadsheet::CHyperli
 		if(oHyperlink.m_oTooltip.IsInit())
 		{
 			m_oBcw.m_oStream.WriteBYTE(c_oSerHyperlinkTypes::Tooltip);
-			m_oBcw.m_oStream.WriteStringW(oHyperlink.m_oTooltip.get2());
+			m_oBcw.m_oStream.WriteStringW(*oHyperlink.m_oTooltip);
 		}
 		//Display
 		if(oHyperlink.m_oDisplay.IsInit())
 		{
 			m_oBcw.m_oStream.WriteBYTE(c_oSerHyperlinkTypes::Display);
-			m_oBcw.m_oStream.WriteStringW(oHyperlink.m_oDisplay.get2());
+			m_oBcw.m_oStream.WriteStringW(*oHyperlink.m_oDisplay);
 		}
 	}
 }
@@ -6747,14 +6751,28 @@ void BinaryFileWriter::intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinary
 	OOX::Spreadsheet::CXlsx *pXlsx = dynamic_cast<OOX::Spreadsheet::CXlsx *>(pDocument);
 	OOX::Spreadsheet::CXlsxFlat *pXlsxFlat = dynamic_cast<OOX::Spreadsheet::CXlsxFlat *>(pDocument);
 
+	OOX::Spreadsheet::CStyles	*pStyles = NULL;
+	OOX::Spreadsheet::CWorkbook *pWorkbook = NULL;
+
+	if (pXlsx)
+	{
+		pWorkbook = pXlsx->m_pWorkbook;
+		pStyles = pXlsx->m_pStyles;
+	}
+	if (pXlsxFlat)
+	{
+		pWorkbook = pXlsxFlat->m_pWorkbook.GetPointer();
+		pStyles = pXlsxFlat->m_pStyles.GetPointer();
+	}
+
 	int nCurPos;
 	WriteMainTableStart();
 //SharedString
 	OOX::Spreadsheet::CIndexedColors* pIndexedColors = NULL;
 	
-	if( (pXlsx && pXlsx->m_pStyles) && pXlsx->m_pStyles->m_oColors.IsInit() && pXlsx->m_pStyles->m_oColors->m_oIndexedColors.IsInit())
+	if( pStyles && pStyles->m_oColors.IsInit() && pStyles->m_oColors->m_oIndexedColors.IsInit())
 	{
-		pIndexedColors = pXlsx->m_pStyles->m_oColors->m_oIndexedColors.operator ->();
+		pIndexedColors = pStyles->m_oColors->m_oIndexedColors.operator ->();
 	}
 
 	if(pXlsx && pXlsx->m_pApp)
@@ -6779,7 +6797,7 @@ void BinaryFileWriter::intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinary
 		WriteTableEnd(nCurPos);
 	}
 
-	if(pXlsx && pXlsx->m_pWorkbook && pXlsx->m_pWorkbook->m_pPersonList)
+	if(pWorkbook && pWorkbook->m_pPersonList)
 	{
 		nCurPos = WriteTableStart(c_oSerTableTypes::PersonList);
 		BinaryPersonTableWriter oBinaryPersonTableWriter(oBufferedStream);
@@ -6787,11 +6805,11 @@ void BinaryFileWriter::intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinary
 		WriteTableEnd(nCurPos);
 	}
 //Styles
-	if(pXlsx && pXlsx->m_pStyles)
+	if(pStyles)
 	{
 		nCurPos = WriteTableStart(c_oSerTableTypes::Styles);
 		BinaryStyleTableWriter oBinaryStyleTableWriter(oBufferedStream, pEmbeddedFontsManager);
-		oBinaryStyleTableWriter.Write(*pXlsx->m_pStyles, pXlsx->GetTheme(), m_oFontProcessor);
+		oBinaryStyleTableWriter.Write(*pStyles, pXlsx ? pXlsx->GetTheme() : NULL, m_oFontProcessor);
 		WriteTableEnd(nCurPos);
 	}
 ////CalcChain
@@ -6804,19 +6822,17 @@ void BinaryFileWriter::intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinary
 	//	WriteTableEnd(nCurPos);
 	//}
 
+//Workbook
+	if ( pWorkbook)
+	{
+		nCurPos = WriteTableStart(c_oSerTableTypes::Workbook);
+		BinaryWorkbookTableWriter oBinaryWorkbookTableWriter(oBufferedStream, pXlsx ? dynamic_cast<OOX::Document*>(pXlsx) : dynamic_cast<OOX::Document*>(pXlsxFlat));
+		oBinaryWorkbookTableWriter.Write(*pWorkbook);
+		WriteTableEnd(nCurPos);
+	}
 	if(pXlsx)
 	{
-	//Workbook
-		if ( pXlsx->m_pWorkbook)
-		{
-			nCurPos = WriteTableStart(c_oSerTableTypes::Workbook);
-			BinaryWorkbookTableWriter oBinaryWorkbookTableWriter(oBufferedStream, pXlsx);
-			oBinaryWorkbookTableWriter.Write(*pXlsx->m_pWorkbook);
-			WriteTableEnd(nCurPos);
-		}
-
 	//Worksheets
-
 		nCurPos = WriteTableStart(c_oSerTableTypes::Worksheets);
 		BinaryWorksheetTableWriter oBinaryWorksheetTableWriter(oBufferedStream, pEmbeddedFontsManager, pIndexedColors, pXlsx->GetTheme(), m_oFontProcessor, pOfficeDrawingConverter);
 		oBinaryWorksheetTableWriter.Write(*pXlsx->m_pWorkbook, pXlsx->m_mapWorksheets); 
@@ -6832,7 +6848,7 @@ void BinaryFileWriter::intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinary
 	{
 		nCurPos = WriteTableStart(c_oSerTableTypes::Worksheets);
 		BinaryWorksheetTableWriter oBinaryWorksheetTableWriter(oBufferedStream, pEmbeddedFontsManager, pIndexedColors, NULL, m_oFontProcessor, pOfficeDrawingConverter);
-		oBinaryWorksheetTableWriter.Write( pXlsxFlat->m_arWorksheets); 
+		oBinaryWorksheetTableWriter.Write(*pXlsxFlat->m_pWorkbook.GetPointer(), pXlsxFlat->m_arWorksheets); 
 		WriteTableEnd(nCurPos);
 	}
 	

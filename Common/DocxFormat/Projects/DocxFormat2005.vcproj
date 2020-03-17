@@ -1478,10 +1478,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Source\XlsxFormat\Workbook.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Source\XlsxFormat\Worksheets\WorksheetChildOther.h"
 				>
 			</File>

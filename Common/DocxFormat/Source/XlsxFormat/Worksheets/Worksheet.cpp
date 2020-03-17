@@ -29,7 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "../Xlsx.h"
+#include "../Workbook/Workbook.h"
+
 #include "Worksheet.h"
 
 #include "../Comments/Comments.h"
@@ -110,7 +111,10 @@ namespace OOX
 		}
 		void CWorksheet::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
-			if ( oReader.IsEmptyNode() ) return;
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
 			
 			int nDocumentDepth = oReader.GetDepth();
 			std::wstring sName;
@@ -126,9 +130,15 @@ namespace OOX
 				else if ( _T("drawing") == sName )
 					m_oDrawing = oReader;
 				else if ( _T("hyperlinks") == sName )
-					m_oHyperlinks = oReader;
+				{
+					m_oHyperlinks = new CHyperlinks(OOX::WritingElement::m_pMainDocument);
+					m_oHyperlinks->fromXML(oReader);
+				}
 				else if ( _T("mergeCells") == sName )
-					m_oMergeCells = oReader;
+				{
+					m_oMergeCells = new CMergeCells(OOX::WritingElement::m_pMainDocument);
+					m_oMergeCells->fromXML(oReader);
+				}
 				else if ( _T("pageMargins") == sName )
 					m_oPageMargins = oReader;
 				else if ( _T("pageSetup") == sName )
@@ -215,6 +225,38 @@ namespace OOX
 						}
 					}
 				}
+			}
+		}
+
+
+		void CWorksheet::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			nullable_string sName;
+			
+			WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if	( oReader, L"ss:Name", sName )
+			WritingElement_ReadAttributes_End( oReader )
+
+			CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(WritingElement::m_pMainDocument);
+			if (xlsx_flat)
+			{
+				if (false == xlsx_flat->m_pWorkbook.IsInit())
+				{
+					xlsx_flat->m_pWorkbook = new CWorkbook(WritingElement::m_pMainDocument);
+				}
+				if (false == xlsx_flat->m_pWorkbook->m_oSheets.IsInit())
+				{
+					xlsx_flat->m_pWorkbook->m_oSheets = new CSheets(WritingElement::m_pMainDocument);
+				}
+				CSheet* pSheet = new CSheet( WritingElement::m_pMainDocument );
+				xlsx_flat->m_pWorkbook->m_oSheets->m_arrItems.push_back(pSheet);
+
+				if (sName.IsInit())
+				{
+					pSheet->m_oName = sName;
+				}
+				pSheet->m_oSheetId.Init();
+				pSheet->m_oSheetId->SetValue(xlsx_flat->m_pWorkbook->m_oSheets->m_arrItems.size());
 			}
 		}
 

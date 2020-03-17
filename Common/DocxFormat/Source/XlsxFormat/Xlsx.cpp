@@ -240,8 +240,7 @@ void OOX::Spreadsheet::CXlsx::PrepareWorkbook()
 		m_pWorkbook->m_oSheets.Init();
 		
 		OOX::Spreadsheet::CSheet* pSheet = new OOX::Spreadsheet::CSheet();
-		pSheet->m_oName.Init();
-		pSheet->m_oName->append(_T("Sheet1"));
+		pSheet->m_oName = L"Sheet1";
 		pSheet->m_oSheetId.Init();
 		pSheet->m_oSheetId->SetValue(1);
 		pSheet->m_oRid.Init();

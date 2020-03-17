@@ -225,7 +225,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/Table/Autofilter.h \
     ../Source/XlsxFormat/Table/Table.h \
     ../Source/XlsxFormat/Workbook/BookViews.h \
-	../Source/XlsxFormat/Workbook/CalcPr.h \
+    ../Source/XlsxFormat/Workbook/CalcPr.h \
     ../Source/XlsxFormat/Workbook/DefinedNames.h \
     ../Source/XlsxFormat/Workbook/Sheets.h \
     ../Source/XlsxFormat/Workbook/Workbook.h \
@@ -238,14 +238,13 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/Worksheets/SheetData.h \
     ../Source/XlsxFormat/Worksheets/Worksheet.h \
     ../Source/XlsxFormat/Worksheets/WorksheetChildOther.h \
-	../Source/XlsxFormat/Controls/Controls.h \
+    ../Source/XlsxFormat/Controls/Controls.h \
     ../Source/XlsxFormat/Common.h \
     ../Source/XlsxFormat/CommonInclude.h \
     ../Source/XlsxFormat/ComplexTypes_Spreadsheet.h \
     ../Source/XlsxFormat/FileFactory_Spreadsheet.h \
     ../Source/XlsxFormat/FileTypes_Spreadsheet.h \
     ../Source/XlsxFormat/SimpleTypes_Spreadsheet.h \
-    ../Source/XlsxFormat/Workbook.h \
     ../Source/XlsxFormat/WritingElement.h \
     ../Source/DocxFormat/WorkbookComments.h \
     ../Source/XlsxFormat/Xlsx.h \

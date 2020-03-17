@@ -171,20 +171,21 @@ void XlsxConverter::convert_sheets()
 {
 	if (!ods_context) return;
 
+	OOX::Spreadsheet::CWorkbook *pWorkbook = NULL;
 	if (xlsx_document)
 	{	
-		OOX::Spreadsheet::CWorkbook *Workbook = xlsx_document->m_pWorkbook;
-		if (!Workbook) return;
+		pWorkbook = xlsx_document->m_pWorkbook;
+		if (!pWorkbook) return;
 
 		std::map<std::wstring, OOX::Spreadsheet::CWorksheet*> &mapWorksheets = xlsx_document->m_mapWorksheets;
 		
-		xlsx_current_container = dynamic_cast<OOX::IFileContainer*>(Workbook);
+		xlsx_current_container = dynamic_cast<OOX::IFileContainer*>(pWorkbook);
 		
-		if(Workbook->m_oExternalReferences.IsInit())
+		if(pWorkbook->m_oExternalReferences.IsInit())
 		{	
-			for (size_t i = 0; i < Workbook->m_oExternalReferences->m_arrItems.size(); i++)
+			for (size_t i = 0; i < pWorkbook->m_oExternalReferences->m_arrItems.size(); i++)
 			{
-				OOX::Spreadsheet::CExternalReference *externalRef = dynamic_cast<OOX::Spreadsheet::CExternalReference*>(Workbook->m_oExternalReferences->m_arrItems[i]);
+				OOX::Spreadsheet::CExternalReference *externalRef = dynamic_cast<OOX::Spreadsheet::CExternalReference*>(pWorkbook->m_oExternalReferences->m_arrItems[i]);
 				if((externalRef) && (externalRef->m_oRid.IsInit()))
 				{
 					smart_ptr<OOX::File> file = find_file_by_id(externalRef->m_oRid->GetValue());
@@ -202,18 +203,18 @@ void XlsxConverter::convert_sheets()
 				}
 			}
 		}
-		if(Workbook->m_oBookViews.IsInit())
+		if(pWorkbook->m_oBookViews.IsInit())
 		{	
-			for (size_t i = 0; i < Workbook->m_oBookViews->m_arrItems.size(); i++)
+			for (size_t i = 0; i < pWorkbook->m_oBookViews->m_arrItems.size(); i++)
 			{
-				convert(Workbook->m_oBookViews->m_arrItems[i]);
+				convert(pWorkbook->m_oBookViews->m_arrItems[i]);
 			}
 		}
-		if(Workbook->m_oSheets.IsInit())
+		if(pWorkbook->m_oSheets.IsInit())
 		{				
-			for(size_t i = 0, length = Workbook->m_oSheets->m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = pWorkbook->m_oSheets->m_arrItems.size(); i < length; ++i)
 			{
-				OOX::Spreadsheet::CSheet* pSheet = Workbook->m_oSheets->m_arrItems[i];
+				OOX::Spreadsheet::CSheet* pSheet = pWorkbook->m_oSheets->m_arrItems[i];
 					
 				if(pSheet->m_oRid.IsInit())
 				{
@@ -223,7 +224,7 @@ void XlsxConverter::convert_sheets()
 					if (pFind != mapWorksheets.end())
 					{
 						ods_context->start_sheet();
-							ods_context->current_table()->set_table_name(pSheet->m_oName.get2());
+							ods_context->current_table()->set_table_name(*pSheet->m_oName);
 							if (pSheet->m_oState.IsInit() && (	pSheet->m_oState->GetValue() == SimpleTypes::Spreadsheet::visibleHidden || 
 																pSheet->m_oState->GetValue() == SimpleTypes::Spreadsheet::visibleVeryHidden))
 								ods_context->current_table()->set_table_hidden(true);
@@ -234,28 +235,39 @@ void XlsxConverter::convert_sheets()
 				}
 			}
 		}
-		if (Workbook->m_oDefinedNames.IsInit())
-		{
-			for (size_t i = 0; i < Workbook->m_oDefinedNames->m_arrItems.size(); i++)
-			{
-				convert(Workbook->m_oDefinedNames->m_arrItems[i]);
-			}
-		}
 //----------------------------------------------------------------
 		OoxConverter::convert(xlsx_document->m_pJsaProject);
 	}
 	else if (xlsx_flat_document)
 	{
+		pWorkbook = xlsx_flat_document->m_pWorkbook.GetPointer();
+		if (!pWorkbook) return;		
+
 		for(size_t i = 0; i < xlsx_flat_document->m_arWorksheets.size(); ++i)
 		{
+			OOX::Spreadsheet::CSheet* pSheet = NULL;
+			if ((xlsx_flat_document->m_pWorkbook.IsInit()) && 
+				(xlsx_flat_document->m_pWorkbook->m_oSheets.IsInit()) &&
+				(xlsx_flat_document->m_pWorkbook->m_oSheets->m_arrItems.size() > i))
+			{
+				pSheet = xlsx_flat_document->m_pWorkbook->m_oSheets->m_arrItems[i];
+			}
 			ods_context->start_sheet();
-				//ods_context->current_table()->set_table_name(xlsx_flat_document->m_arWorksheets->m_oName.get2());
+				if ((pSheet) && (pSheet->m_oName.IsInit()))
+				ods_context->current_table()->set_table_name(*pSheet->m_oName);
 				//if (pSheet->m_oState.IsInit() && (	pSheet->m_oState->GetValue() == SimpleTypes::Spreadsheet::visibleHidden || 
 				//									pSheet->m_oState->GetValue() == SimpleTypes::Spreadsheet::visibleVeryHidden))
 				//	ods_context->current_table()->set_table_hidden(true);
 				
 				convert(xlsx_flat_document->m_arWorksheets[i]);
 			ods_context->end_sheet();	
+		}
+	}
+	if (pWorkbook->m_oDefinedNames.IsInit())
+	{
+		for (size_t i = 0; i < pWorkbook->m_oDefinedNames->m_arrItems.size(); i++)
+		{
+			convert(pWorkbook->m_oDefinedNames->m_arrItems[i]);
 		}
 	}
 }
@@ -269,12 +281,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDefinedName *oox_defined)
 
 	if (oox_defined->m_oName.IsInit() && oox_defined->m_oRef.IsInit())
 	{
-		std::wstring name = oox_defined->m_oName.get2();
+		std::wstring name = *oox_defined->m_oName;
 
 		bool printable = false;
 		if (name  == L"_xlnm.Print_Area")printable = true;
 
-		ods_context->add_defined_expression (name, oox_defined->m_oRef.get2(), sheet_id, printable);
+		ods_context->add_defined_expression (name, *oox_defined->m_oRef, sheet_id, printable);
 	}
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
@@ -1023,6 +1035,11 @@ void XlsxConverter::convert(OOX::Spreadsheet::CHyperlink *oox_hyperlink,OOX::Spr
 		}
 		ods_context->add_hyperlink(ref, link, display, false);
 	}
+	else if (oox_hyperlink->m_oLink.IsInit())
+	{
+		link = oox_hyperlink->m_oLink.get();
+		ods_context->add_hyperlink(ref, link, display, false);
+	}
 	else if (oox_hyperlink->m_oLocation.IsInit())
 	{
 		link = oox_hyperlink->m_oLocation.get();
@@ -1237,6 +1254,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCell *oox_cell)
 				ods_context->current_table()->set_cell_type	(value_type);
 			
 			ods_context->current_table()->set_cell_value (oox_cell->m_oValue->m_sText);
+			//ods_context->current_table()->set_cell_cache (oox_cell->m_oValue->m_sText);
 		}
 	}
 
@@ -1598,7 +1616,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorkbookView *oox_book_views)
 		if (table_id >= 0 && table_id < (int)Workbook->m_oSheets->m_arrItems.size())
 		{
 			ods_context->settings_context()->add_property(L"ActiveTable", L"string", 
-				Workbook->m_oSheets->m_arrItems[table_id]->m_oName.get2());
+				*Workbook->m_oSheets->m_arrItems[table_id]->m_oName);
 		}
 	}
 	if (oox_book_views->m_oShowSheetTabs.IsInit())

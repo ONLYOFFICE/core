@@ -1086,6 +1086,7 @@ namespace OOX
 		et_x_Unknown,
 		et_x_SpreadsheetFlat,
 		et_x_BookViews, // <bookViews>
+		et_x_Workbook,
 		et_x_WorkbookPr,
 		et_x_WorkbookView, // <workbookView>
 		et_x_DefinedNames, // <definedNames>

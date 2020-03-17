@@ -686,7 +686,7 @@ void ods_conversion_context::start_cell_text()
 	start_text_context();
 ////////////
 	office_element_ptr paragr_elm;
-	create_element(L"text", L"p",paragr_elm,this);
+	create_element(L"text", L"p", paragr_elm, this);
 	
 	current_text_context_->start_paragraph(paragr_elm);
 

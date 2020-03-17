@@ -107,7 +107,7 @@ namespace OOX
 			}
 	//-----------------------------------------------------------------------
 
-			nullable<CDefinedNames>		m_pDefinedNames;
+			nullable<CWorkbook>			m_pWorkbook;
 			std::vector<CWorksheet*>	m_arWorksheets;
 			nullable<CStyles>			m_pStyles;
 

@@ -44,7 +44,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSheet)
-			CSheet()
+			CSheet(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CSheet()
@@ -84,30 +84,27 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"),	m_oRid )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("name"),	m_oName )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("sheetId"),	m_oSheetId )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("state"),	m_oState )
-
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 				nullable<SimpleTypes::CRelationshipId>				m_oRid;
-				nullable<std::wstring>								m_oName;
+				nullable_string										m_oName;
 				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oSheetId;
 				nullable<SimpleTypes::Spreadsheet::CVisibleType<>>	m_oState;
 
 		};
 
-		class CSheets  : public WritingElementWithChilds<CSheet>
+		class CSheets : public WritingElementWithChilds<CSheet>
 		{
 		public:
 			WritingElement_AdditionConstructors(CSheets)
-			CSheets()
+			CSheets(OOX::Document *pMain = NULL) : WritingElementWithChilds<CSheet>(pMain)
 			{
 			}
 			virtual ~CSheets()

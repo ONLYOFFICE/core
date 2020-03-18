@@ -2267,6 +2267,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		m_oReadPath = oPath;
 		IFileContainer::Read( oRootPath, oPath );
 
+		return;// todooo option read
+
 		XmlUtils::CXmlLiteReader oReader;
 
 		if ( !oReader.FromFile( oPath.GetPath() ) )

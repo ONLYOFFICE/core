@@ -55,7 +55,7 @@
 		#define FILE_SEPARATOR
 		#define FILE_SEPARATOR_CHAR '/'
         #define FILE_SEPARATOR_STR L"/"
-        #define FILE_SEPARATOR_STRA L"/"
+        #define FILE_SEPARATOR_STRA "/"
     #endif
 #endif
 

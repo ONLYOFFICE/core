@@ -50,11 +50,13 @@
 		#define FILE_SEPARATOR
 		#define FILE_SEPARATOR_CHAR '\\'
         #define FILE_SEPARATOR_STR L"\\"
-	#else
+        #define FILE_SEPARATOR_STRA "\\"
+    #else
 		#define FILE_SEPARATOR
 		#define FILE_SEPARATOR_CHAR '/'
         #define FILE_SEPARATOR_STR L"/"
-	#endif
+        #define FILE_SEPARATOR_STRA L"/"
+    #endif
 #endif
 
 #include "../../Common/kernel_config.h"

@@ -207,6 +207,75 @@ namespace ZLibZipUtils
 
   /*========================================================================================================*/
 
+  static std::string normalize_path(const std::string &path)
+  {
+      const char*   pData   = path.c_str();
+      int           nLen    = (int) path.length();
+
+      char* pDataNorm       = new char[nLen + 1];
+      int*  pSlashPoints    = new int[nLen + 1];
+
+      int nStart          = 0;
+      int nCurrent        = 0;
+      int nCurrentSlash   = -1;
+      int nCurrentW       = 0;
+      bool bIsUp          = false;
+
+#if !defined(_WIN32) && !defined (_WIN64)
+      if (pData[nCurrent] == FILE_SEPARATOR_CHAR)
+          pDataNorm[nCurrentW++] = pData[nCurrent];
+#endif
+      while (nCurrent < nLen)
+      {
+          if (pData[nCurrent] == FILE_SEPARATOR_CHAR)
+          {
+              if (nStart < nCurrent)
+              {
+                  bIsUp = false;
+                  if ((nCurrent - nStart) == 2)
+                  {
+                      if (pData[nStart] == (char)'.' && pData[nStart + 1] == (char)'.')
+                      {
+                          if (nCurrentSlash > 0)
+                          {
+                              --nCurrentSlash;
+                              nCurrentW = pSlashPoints[nCurrentSlash];
+                              bIsUp = true;
+                          }
+                      }
+                  }
+                  if (!bIsUp)
+                  {
+                      pDataNorm[nCurrentW++] = (char) FILE_SEPARATOR_CHAR;
+                      ++nCurrentSlash;
+                      pSlashPoints[nCurrentSlash] = nCurrentW;
+                  }
+              }
+              nStart = nCurrent + 1;
+              ++nCurrent;
+              continue;
+          }
+          pDataNorm[nCurrentW++] = pData[nCurrent];
+          ++nCurrent;
+      }
+
+      pDataNorm[nCurrentW] = (char)'\0';
+
+      std::string result = std::string(pDataNorm, nCurrentW);
+
+      delete []pDataNorm;
+
+      return result;
+  }
+  static void replace_all(std::string& subject, const std::string& search, const std::string& replace)
+  {
+      size_t pos = 0;
+      while ((pos = subject.find(search, pos)) != std::string::npos)
+      {
+          subject.replace(pos, search.length(), replace);
+          pos += replace.length();
+      }
+  }
   static int do_extract_currentfile( unzFile uf, const int* popt_extract_without_path, int* popt_overwrite, const char* password )
   {   	  
 	char filename_inzipA[256];
@@ -293,8 +362,33 @@ namespace ZLibZipUtils
           *(filename_withoutpath-1)='\0';
           makedir(write_filename);
           *(filename_withoutpath-1)=c;
+
+          char* current_directory = getcwd(NULL, 0);
+          if (current_directory)
+          {
+                std::string current_path(current_directory);
+                free(current_directory);
+
+                replace_all(current_path, "/", FILE_SEPARATOR_STRA);
+                replace_all(current_path, "\\", FILE_SEPARATOR_STRA);
+
+                std::string filename_inzip(filename_inzipA);
+
+                replace_all(filename_inzip, "/", FILE_SEPARATOR_STRA);
+                replace_all(filename_inzip, "\\", FILE_SEPARATOR_STRA);
+
+                std::string norm_path = normalize_path(current_path + filename_inzip);
+
+                if (std::string::npos == norm_path.find(current_path))
+                {
+                    return UNZ_INTERNALERROR;
+                }
+         }
+
 		  if(oFile.CreateFileW(write_filename))
+          {
 			  fout = oFile.GetFileNative();
+		  }
         }
       }
 

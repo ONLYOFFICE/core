@@ -345,7 +345,7 @@ xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\">");
 					}
 					else
 					{
-						size_t iXfs = m_oCellStyleXfs->m_arrItems.size();
+						int iXfs = m_oCellStyleXfs->m_arrItems.size();
 						m_oCellStyleXfs->m_arrItems.push_back(pStyleXfs);
 
 						pCellXfs->m_oXfId = iXfs;

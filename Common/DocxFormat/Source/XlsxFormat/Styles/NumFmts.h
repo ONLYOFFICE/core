@@ -89,7 +89,7 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("numFmtId"),		m_oNumFmtId )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("sourceLinked"),	m_oSourceLinked )
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("fss:Format"),		m_oFormatCode )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:Format"),		m_oFormatCode )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:

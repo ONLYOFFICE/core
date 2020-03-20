@@ -279,8 +279,7 @@ namespace CSVReader
 		
 		OOX::Spreadsheet::CSheet *pSheet = new OOX::Spreadsheet::CSheet();
 		
-		pSheet->m_oName.Init();
-		pSheet->m_oName->append(L"Sheet1");
+		pSheet->m_oName = L"Sheet1";
 		pSheet->m_oSheetId.Init();
 		pSheet->m_oSheetId->SetValue(1);
 		pSheet->m_oRid.Init();

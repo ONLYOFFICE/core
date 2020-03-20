@@ -415,7 +415,6 @@ namespace NExtractTools
         InputParamsMailMerge* m_oMailMergeSend;
 		InputParamsThumbnail* m_oThumbnail;
 		std::wstring* m_sJsonParams;
-		std::wstring* m_sHtmlFileInternalPath;
 		std::wstring* m_sPassword;
 		std::wstring* m_sSavePassword;
 		std::wstring* m_sDocumentID;
@@ -446,7 +445,6 @@ namespace NExtractTools
             m_oMailMergeSend = NULL;
 			m_oThumbnail = NULL;
 			m_sJsonParams = NULL;
-			m_sHtmlFileInternalPath = NULL;
 			m_sPassword = NULL;
 			m_sSavePassword = NULL;
 			m_sDocumentID = NULL;
@@ -476,7 +474,6 @@ namespace NExtractTools
             RELEASEOBJECT(m_oMailMergeSend);
 			RELEASEOBJECT(m_oThumbnail);
 			RELEASEOBJECT(m_sJsonParams);
-			RELEASEOBJECT(m_sHtmlFileInternalPath);
 			RELEASEOBJECT(m_sPassword);
 			RELEASEOBJECT(m_sSavePassword);
 			RELEASEOBJECT(m_sDocumentID);
@@ -620,11 +617,6 @@ namespace NExtractTools
 								{
 									RELEASEOBJECT(m_sJsonParams);
 									m_sJsonParams = new std::wstring(sValue);
-								}
-								else if(_T("m_sHtmlFileInternalPath") == sName)
-								{
-									RELEASEOBJECT(m_sHtmlFileInternalPath);
-									m_sHtmlFileInternalPath = new std::wstring(sValue);
 								}
 								else if(_T("m_sPassword") == sName)
 								{

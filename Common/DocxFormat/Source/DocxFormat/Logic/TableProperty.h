@@ -438,15 +438,87 @@ namespace ComplexTypes
 					m_oVertAnchor.Init();
 					m_oVertAnchor->SetValue(SimpleTypes::vanchorMargin);
 				}
-				if(false == m_oTblpX.IsInit() && false == m_oTblpXSpec.IsInit())
+				if(false == m_oTblpXSpec.IsInit())
 				{
-					m_oTblpXSpec.Init();
-					m_oTblpXSpec->SetValue(SimpleTypes::xalignLeft);
+					if(false == m_oTblpX.IsInit())
+					{
+						m_oTblpX.Init();
+						m_oTblpX->FromTwips(0);
+					}
+					//Several values of sprmTDxaAbs have special meanings as specified by
+					//[ECMA-376] Part 4, Section 2.18.114. These values are specified as
+					//follows.
+					switch(m_oTblpX->ToTwips())
+					{
+						case 0:
+							m_oTblpX.reset(NULL);
+							m_oTblpXSpec.Init();
+							m_oTblpXSpec->SetValue(SimpleTypes::xalignLeft);
+						break;
+						case -4:
+							m_oTblpX.reset(NULL);
+							m_oTblpXSpec.Init();
+							m_oTblpXSpec->SetValue(SimpleTypes::xalignCenter);
+						break;
+						case -8:
+							m_oTblpX.reset(NULL);
+							m_oTblpXSpec.Init();
+							m_oTblpXSpec->SetValue(SimpleTypes::xalignRight);
+						break;
+						case -12:
+							m_oTblpX.reset(NULL);
+							m_oTblpXSpec.Init();
+							m_oTblpXSpec->SetValue(SimpleTypes::xalignInside);
+						break;
+						case -16:
+							m_oTblpX.reset(NULL);
+							m_oTblpXSpec.Init();
+							m_oTblpXSpec->SetValue(SimpleTypes::xalignOutside);
+						break;
+					}
 				}
-				if(false == m_oTblpY.IsInit() && false == m_oTblpYSpec.IsInit())
+				if(false == m_oTblpYSpec.IsInit())
 				{
-					m_oTblpY.Init();
-					m_oTblpY->FromTwips(0);
+					if(false == m_oTblpY.IsInit())
+					{
+						m_oTblpY.Init();
+						m_oTblpY->FromTwips(0);
+					}
+					//The meanings that are provided correspond to
+					//values that are defined in [ECMA-376] Part 4, Section 2.18.115 ST_YAlign
+					//(Vertical Alignment Location).
+					switch(m_oTblpY->ToTwips())
+					{
+						case 0:
+							m_oVertAnchor.Init();
+							m_oVertAnchor->SetValue(SimpleTypes::vanchorText);
+						break;
+						case -4:
+							m_oTblpY.reset(NULL);
+							m_oTblpYSpec.Init();
+							m_oTblpYSpec->SetValue(SimpleTypes::yalignTop);
+						break;
+						case -8:
+							m_oTblpY.reset(NULL);
+							m_oTblpYSpec.Init();
+							m_oTblpYSpec->SetValue(SimpleTypes::yalignCenter);
+						break;
+						case -12:
+							m_oTblpY.reset(NULL);
+							m_oTblpYSpec.Init();
+							m_oTblpYSpec->SetValue(SimpleTypes::yalignBottom);
+						break;
+						case -16:
+							m_oTblpY.reset(NULL);
+							m_oTblpYSpec.Init();
+							m_oTblpYSpec->SetValue(SimpleTypes::yalignInside);
+						break;
+						case -20:
+							m_oTblpY.reset(NULL);
+							m_oTblpYSpec.Init();
+							m_oTblpYSpec->SetValue(SimpleTypes::yalignOutside);
+						break;
+					}
 				}
 			}
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)

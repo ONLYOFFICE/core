@@ -25,10 +25,6 @@ ADD_DEPENDENCY(graphics, kernel, UnicodeConverter)
 } else {
     DEFINES += V8_OS_XP
     DESTDIR=$$DESTDIR/xp
-    OBJECTS_DIR = $$OBJECTS_DIR/xp
-    MOC_DIR     = $$MOC_DIR/xp
-    RCC_DIR     = $$RCC_DIR/xp
-    UI_DIR      = $$UI_DIR/xp
     include(../../Common/3dParty/v8/v8_xp/v8.pri)
 }
 

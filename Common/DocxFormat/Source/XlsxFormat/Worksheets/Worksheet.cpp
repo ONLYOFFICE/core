@@ -247,6 +247,7 @@ namespace OOX
 				CSheet* pSheet = new CSheet( WritingElement::m_pMainDocument );
 				xlsx_flat->m_pWorkbook->m_oSheets->m_arrItems.push_back(pSheet);
 
+				pSheet->m_oState = new SimpleTypes::Spreadsheet::CVisibleType<>(SimpleTypes::Spreadsheet::visibleVisible);
 				if (sName.IsInit())
 				{
 					pSheet->m_oName = sName;

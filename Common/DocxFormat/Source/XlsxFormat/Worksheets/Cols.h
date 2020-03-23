@@ -92,6 +92,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				nullable_double ptWidth;
+				nullable_bool bAutoFit;
 
 				WritingElement_ReadAttributes_Start( oReader )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("bestFit"),		m_oBestFit)
@@ -104,7 +105,9 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("phonetic"),	m_oPhonetic )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("style"),		m_oStyle )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("width"),		m_oWidth )
+
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:Width"),	ptWidth )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:AutoFitWidth"),	bAutoFit )
 				WritingElement_ReadAttributes_End( oReader )
 
 				if (ptWidth.IsInit())
@@ -113,6 +116,18 @@ namespace OOX
 					const double pixDpi = *ptWidth / 72.0 * 96.;
 					double maxDigitSize = 4.25;
 					m_oWidth->SetValue((int(( pixDpi /*/ 0.75*/ - 5)/ maxDigitSize * 100. + 0.5)) /100. * 0.9);
+					
+					m_oCustomWidth.Init();
+					m_oCustomWidth->FromBool(true);
+				}
+
+				if (bAutoFit.IsInit() && (*bAutoFit == false))
+				{
+				}
+				else
+				{
+					m_oBestFit.Init();
+					m_oBestFit->FromBool(true);
 				}
 			}
 

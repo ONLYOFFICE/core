@@ -1455,13 +1455,20 @@ namespace OOX
 						CCol *pColumn = new CCol(m_pMainDocument);
 						if (pColumn)
 						{
+							pColumn->fromXML(oReader);
+
 							if (false == m_oCols.IsInit())
 							{
 								m_oCols.Init();
 							}
-							m_oCols->m_arrItems.push_back(pColumn);
+
+							m_oCols->m_arrItems.push_back(pColumn);	
+
+							pColumn->m_oMin.Init();
+							pColumn->m_oMin->SetValue(m_oCols->m_arrItems.size());
 							
-							pColumn->fromXML(oReader);
+							pColumn->m_oMax.Init();
+							pColumn->m_oMax->SetValue(m_oCols->m_arrItems.size());
 						}
 					}
 				}

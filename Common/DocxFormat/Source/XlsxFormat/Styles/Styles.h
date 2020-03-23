@@ -300,7 +300,8 @@ xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\">");
 						pStyleXfs->m_oApplyBorder.Init();
 						pStyleXfs->m_oApplyBorder->FromBool(true);
 					}
-					if (m_arrStyles2003[i]->m_oFill.IsInit())
+					if ((m_arrStyles2003[i]->m_oFill.IsInit())/* &&
+						(m_arrStyles2003[i]->m_oFill->m_oPatternFill.IsInit())*/)
 					{
 						int index = m_oFills->m_arrItems.size();
 						m_oFills->m_arrItems.push_back(m_arrStyles2003[i]->m_oFill.GetPointerEmptyNullable());
@@ -322,13 +323,17 @@ xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\">");
 					}
 					if (m_arrStyles2003[i]->m_oNumFmt.IsInit())
 					{
-						int index = m_oNumFmts->m_arrItems.size();
-						m_oNumFmts->m_arrItems.push_back(m_arrStyles2003[i]->m_oNumFmt.GetPointerEmptyNullable());
-						//m_oNumFmts->m_mapFonts.insert(std::make_pair(index, m_oFonts->m_arrItems.back()));
-						
+						int index = 0;
+						if (m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode.IsInit())
+						{
+							index = 168 + m_oNumFmts->m_arrItems.size();
+							m_arrStyles2003[i]->m_oNumFmt->m_oNumFmtId = index;
+							m_oNumFmts->m_arrItems.push_back(m_arrStyles2003[i]->m_oNumFmt.GetPointerEmptyNullable());
+							
+							pStyleXfs->m_oApplyNumberFormat.Init();
+							pStyleXfs->m_oApplyNumberFormat->FromBool(true);
+						}						
 						pStyleXfs->m_oNumFmtId = index;
-						pStyleXfs->m_oApplyNumberFormat.Init();
-						pStyleXfs->m_oApplyNumberFormat->FromBool(true);
 					}
 					CXfs *pCellXfs = new CXfs(*pStyleXfs);
 					

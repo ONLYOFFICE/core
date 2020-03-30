@@ -30,7 +30,6 @@ win32 {
 
 QMAKE_TARGET_COMPANY = $$PUBLISHER_NAME
 QMAKE_TARGET_COPYRIGHT = Copyright (C) $${PUBLISHER_NAME} $${CURRENT_YEAR}. All rights reserved
-message($$QMAKE_TARGET_COPYRIGHT)
 
 # CONFIGURATION
 CONFIG(debug, debug|release) {

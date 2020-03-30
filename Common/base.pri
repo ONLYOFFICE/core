@@ -17,7 +17,11 @@ isEmpty(PUBLISHER_NAME){
 }
 
 win32 {
-    CURRENT_YEAR = $$system("echo %Date:~-4%")
+    CURRENT_YEAR = $$system(wmic PATH Win32_LocalTime GET ^Year /FORMAT:VALUE | find \"=\")
+    CURRENT_YEAR = $$replace(CURRENT_YEAR, "Year=", "")
+    CURRENT_YEAR = $$replace(CURRENT_YEAR, "\r", "")
+    CURRENT_YEAR = $$replace(CURRENT_YEAR, "\n", "")
+    CURRENT_YEAR = $$replace(CURRENT_YEAR, "\t", "")
 }
 
 !win32 {
@@ -26,6 +30,7 @@ win32 {
 
 QMAKE_TARGET_COMPANY = $$PUBLISHER_NAME
 QMAKE_TARGET_COPYRIGHT = Copyright (C) $${PUBLISHER_NAME} $${CURRENT_YEAR}. All rights reserved
+message($$QMAKE_TARGET_COPYRIGHT)
 
 # CONFIGURATION
 CONFIG(debug, debug|release) {

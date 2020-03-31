@@ -17,7 +17,11 @@ isEmpty(PUBLISHER_NAME){
 }
 
 win32 {
-    CURRENT_YEAR = $$system("echo %Date:~-4%")
+    CURRENT_YEAR = $$system(wmic PATH Win32_LocalTime GET ^Year /FORMAT:VALUE | find \"=\")
+    CURRENT_YEAR = $$replace(CURRENT_YEAR, "Year=", "")
+    CURRENT_YEAR = $$replace(CURRENT_YEAR, "\r", "")
+    CURRENT_YEAR = $$replace(CURRENT_YEAR, "\n", "")
+    CURRENT_YEAR = $$replace(CURRENT_YEAR, "\t", "")
 }
 
 !win32 {

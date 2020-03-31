@@ -358,16 +358,13 @@ namespace ZLibZipUtils
         if ((fout==NULL) && ((*popt_extract_without_path)==0) &&
 		    (filename_withoutpath!=(wchar_t*)filename_inzip))
         {
-          char c=*(filename_withoutpath-1);
-          *(filename_withoutpath-1)='\0';
-          makedir(write_filename);
-          *(filename_withoutpath-1)=c;
-
           char* current_directory = getcwd(NULL, 0);
           if (current_directory)
           {
                 std::string current_path(current_directory);
                 free(current_directory);
+
+				current_path += FILE_SEPARATOR_STRA;
 
                 replace_all(current_path, "/", FILE_SEPARATOR_STRA);
                 replace_all(current_path, "\\", FILE_SEPARATOR_STRA);
@@ -378,12 +375,17 @@ namespace ZLibZipUtils
                 replace_all(filename_inzip, "\\", FILE_SEPARATOR_STRA);
 
                 std::string norm_path = normalize_path(current_path + filename_inzip);
+                std::string norm_current_path = normalize_path(current_path);
 
-                if (std::string::npos == norm_path.find(current_path))
+                if (std::string::npos == norm_path.find(norm_current_path))
                 {
                     return UNZ_INTERNALERROR;
                 }
          }
+          char c=*(filename_withoutpath-1);
+          *(filename_withoutpath-1)='\0';
+          makedir(write_filename);
+          *(filename_withoutpath-1)=c;
 
 		  if(oFile.CreateFileW(write_filename))
           {

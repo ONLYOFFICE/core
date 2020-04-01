@@ -146,6 +146,10 @@ namespace OOX
 	std::wstring ActiveXObject::ReadString(MemoryStream *stream, size_t size, bool bCompressed)
 	{
 		if (!stream) return L"";
+		if (stream->GetPosition() + size > stream->GetSize())
+		{
+			size = stream->GetSize() - stream->GetPosition();
+		}
 		
 		std::wstring result;
 
@@ -160,7 +164,9 @@ namespace OOX
 		}
 		int count_padding = 4 - (size % 4);
 		if (count_padding > 0 && count_padding < 4)
+		{
 			stream->Seek(stream->GetPosition() + count_padding);
+		}
 
 		return result;
 	}
@@ -334,6 +340,8 @@ namespace OOX
 	}
 	void ActiveXObjectButton::Parse(unsigned char* pData, DWORD size)
 	{
+		return;
+
 		MemoryStream mem_stream(pData, size, false);
 		mem_stream.Seek(16);
 

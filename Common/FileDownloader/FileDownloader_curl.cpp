@@ -47,6 +47,18 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
+std::string wget_url_validate(const std::string& url)
+{
+    std::string::size_type pos = 0;
+    const char* url_ptr = url.c_str();
+    while ('-' == *url_ptr++) // '\0' => break
+        ++pos;
+    if (*url_ptr == '\0')
+        return "";
+
+    return url.substr(pos);
+}
+
 int download_external(const std::wstring& sUrl, const std::wstring& sOutput)
 {
     int nReturnCode = -1;
@@ -68,13 +80,14 @@ int download_external(const std::wstring& sUrl, const std::wstring& sOutput)
 
         case 0: // child process
         {
-            const char* nargs[6];
+            const char* nargs[7];
             nargs[0] = "/usr/bin/curl";
-            nargs[1] = sUrlA.c_str();
-            nargs[2] = "--output";
-            nargs[3] = sOutputA.c_str();
-            nargs[4] = "--silent";
-            nargs[5] = NULL;
+            nargs[1] = "--url";
+            nargs[2] = sUrlA.c_str();
+            nargs[3] = "--output";
+            nargs[4] = sOutputA.c_str();
+            nargs[5] = "--silent";
+            nargs[6] = NULL;
 
             const char* nenv[3];
             nenv[0] = "LD_PRELOAD=";
@@ -97,6 +110,8 @@ int download_external(const std::wstring& sUrl, const std::wstring& sOutput)
 
     if (0 != nReturnCode && NSFile::CFileBinary::Exists(L"/usr/bin/wget"))
     {
+        std::string sUrlValidateA = wget_url_validate(sUrlA);
+
         pid_t pid = fork(); // create child process
         int status;
 
@@ -109,7 +124,7 @@ int download_external(const std::wstring& sUrl, const std::wstring& sOutput)
         {
             const char* nargs[6];
             nargs[0] = "/usr/bin/wget";
-            nargs[1] = sUrlA.c_str();
+            nargs[1] = sUrlValidateA.c_str();
             nargs[2] = "-O";
             nargs[3] = sOutputA.c_str();
             nargs[4] = "-q";

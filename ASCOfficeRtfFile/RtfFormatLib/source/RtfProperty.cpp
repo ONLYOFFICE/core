@@ -261,13 +261,13 @@ std::wstring RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 					break;
 			}
 			sResult += L"<w:rFonts w:ascii=\"";
-			sResult += sFontName;
+			sResult += XmlUtils::EncodeXmlString( sFontName, true );
 			sResult += L"\" w:eastAsia=\"";
-			sResult += sFontName;
+			sResult += XmlUtils::EncodeXmlString( sFontName, true );
 			sResult += L"\" w:hAnsi=\"";
-			sResult += sFontName;
+			sResult += XmlUtils::EncodeXmlString( sFontName, true );
 			sResult += L"\" w:cs=\"";
-			sResult += sFontName;
+			sResult += XmlUtils::EncodeXmlString( sFontName, true );
 			sResult += L"\"";
 			sResult += sHint;
 			sResult += L"/>";

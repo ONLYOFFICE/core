@@ -135,6 +135,7 @@ core_linux {
 core_mac {
     DEFINES += LINUX _LINUX MAC _MAC
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
+    QMAKE_LFLAGS += -isysroot $$QMAKE_MAC_SDK_PATH
 }
 
 # PREFIXES

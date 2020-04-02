@@ -147,9 +147,7 @@ namespace NExtractTools
 				if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO)
 					return mscrypt2oot_bin(sFrom, sTo, sTemp, params);
 				else
-				{
-					//вместо docx другой формат!!
-				}
+					return AVS_FILEUTILS_ERROR_CONVERT;
 			}
 			else return AVS_FILEUTILS_ERROR_CONVERT;
 		}
@@ -228,7 +226,7 @@ namespace NExtractTools
 			}
 			else
 			{
-				nRes = dir2zip(sResultDocxDir, sTo);
+				nRes = dir2zip(sResultDocxDir, sTo, true);
 			}
 		}
 
@@ -559,7 +557,7 @@ namespace NExtractTools
 				}
 				else
 				{
-					//вместо xlsx другой формат!!
+					return AVS_FILEUTILS_ERROR_CONVERT;
 				}
 			}
 			else return AVS_FILEUTILS_ERROR_CONVERT;		
@@ -648,7 +646,7 @@ namespace NExtractTools
 			}
 			else
 			{
-				nRes = dir2zip(sResultXlsxDir, sTo);
+				nRes = dir2zip(sResultXlsxDir, sTo, true);
 			}
 		}
         return nRes;
@@ -938,7 +936,8 @@ namespace NExtractTools
 			{
 				if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO)
 					return mscrypt2oot_bin(sFrom, sTo, sTemp, params);
-				//вместо pptx другой формат!!
+				else
+					return AVS_FILEUTILS_ERROR_CONVERT;
 			}
 			else return AVS_FILEUTILS_ERROR_CONVERT;
 		}
@@ -1021,7 +1020,7 @@ namespace NExtractTools
 			}
 			else
 			{
-				nRes = dir2zip(sResultPptxDir, sTo);
+				nRes = dir2zip(sResultPptxDir, sTo, true);
 			}
 		}
         return nRes;
@@ -1071,10 +1070,10 @@ namespace NExtractTools
         return pptt_bin2pptx(sTempPpttFileEditor, sTo, sTemp, bFromChanges, sThemeDir, params);
     }
     // zip dir
-    _UINT32 dir2zip (const std::wstring &sFrom, const std::wstring &sTo)
+    _UINT32 dir2zip (const std::wstring &sFrom, const std::wstring &sTo, bool bSorted, int method, short level)
     {
         COfficeUtils oCOfficeUtils(NULL);
-        return (S_OK == oCOfficeUtils.CompressFileOrDirectory(sFrom, sTo)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+        return (S_OK == oCOfficeUtils.CompressFileOrDirectory(sFrom, sTo, bSorted, method, level)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
     }
 
     // unzip dir
@@ -3170,7 +3169,7 @@ namespace NExtractTools
 					}
 					else
 					{
-						nRes = dir2zip(sFrom, sTo);
+						nRes = dir2zip(sFrom, sTo, true);
 					}
 				}
            }
@@ -3402,7 +3401,7 @@ namespace NExtractTools
 					}
 					else
 					{
-						nRes = dir2zip(sFrom, sTo);
+						nRes = dir2zip(sFrom, sTo, true);
 					}
 				}
            }
@@ -3649,7 +3648,7 @@ namespace NExtractTools
 					}
 					else
 					{
-						nRes = dir2zip(sFrom, sTo);
+						nRes = dir2zip(sFrom, sTo, true);
 					}
 				}
 			}

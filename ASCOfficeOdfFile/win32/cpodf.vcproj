@@ -1255,6 +1255,14 @@
 				RelativePath="..\src\odf\chart_build_oox.cpp"
 				>
 				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
 					>
 					<Tool
@@ -1303,6 +1311,14 @@
 				RelativePath="..\src\odf\draw_frame_docx.cpp"
 				>
 				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
 					>
 					<Tool
@@ -1315,6 +1331,14 @@
 				RelativePath="..\src\odf\draw_frame_pptx.cpp"
 				>
 				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
 					>
 					<Tool
@@ -1326,6 +1350,14 @@
 			<File
 				RelativePath="..\src\odf\draw_frame_xlsx.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|x64"
 					>

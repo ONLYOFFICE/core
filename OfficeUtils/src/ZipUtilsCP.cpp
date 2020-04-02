@@ -448,7 +448,10 @@ namespace ZLibZipUtils
 	  if (do_extract_currentfile(uf,&opt_extract_without_path,
                                  &opt_overwrite,
                                  password) != UNZ_OK)
-      break;
+	  {
+			err = -1;
+			break;
+	  }
 
 	  if ( progress != NULL )
 	  {
@@ -481,7 +484,7 @@ namespace ZLibZipUtils
 		(*progress)( UTILS_ONPROGRESSEVENT_ID, progressValue, &cancel );
 	}
 
-	return 0;
+	return err;
   }
 
   /*========================================================================================================*/
@@ -841,9 +844,9 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 	  if ( buffer != NULL )
 	  {
 #if defined(_WIN32) || defined (_WIN64)
-	    err = _wchdir( buffer );
+	    int err1 = _wchdir( buffer );
 #else
-	    err = chdir( buffer );
+	    int err1 = chdir( buffer );
 #endif
 
 	    free( buffer );

@@ -147,9 +147,7 @@ namespace NExtractTools
 				if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO)
 					return mscrypt2oot_bin(sFrom, sTo, sTemp, params);
 				else
-				{
-					//вместо docx другой формат!!
-				}
+					return AVS_FILEUTILS_ERROR_CONVERT;
 			}
 			else return AVS_FILEUTILS_ERROR_CONVERT;
 		}
@@ -559,7 +557,7 @@ namespace NExtractTools
 				}
 				else
 				{
-					//вместо xlsx другой формат!!
+					return AVS_FILEUTILS_ERROR_CONVERT;
 				}
 			}
 			else return AVS_FILEUTILS_ERROR_CONVERT;		
@@ -938,7 +936,8 @@ namespace NExtractTools
 			{
 				if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO)
 					return mscrypt2oot_bin(sFrom, sTo, sTemp, params);
-				//вместо pptx другой формат!!
+				else
+					return AVS_FILEUTILS_ERROR_CONVERT;
 			}
 			else return AVS_FILEUTILS_ERROR_CONVERT;
 		}

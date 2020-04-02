@@ -640,23 +640,46 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 			std::vector<std::wstring> aCurFiles			= NSDirectory::GetFiles(szText);
 			std::vector<std::wstring> aCurDirectories	= NSDirectory::GetDirectories(szText);
 			
-			if (sorted)
-			{
-				std::sort(aCurFiles.begin(), aCurFiles.end());
-				std::sort(aCurDirectories.begin(), aCurDirectories.end());
-			}
-			for(size_t i = 0; i < aCurDirectories.size(); ++i)
+            for(size_t i = 0; i < aCurDirectories.size(); ++i)
 			{
 				std::wstring sDirName = NSSystemPath::GetFileName(aCurDirectories[i]);
-				StringDeque.push_back( aCurDirectories[i] );
-				zipDeque.push_back( zipDir + sDirName );
+
+                if (sorted)
+                {
+                    if (sDirName == L"ppt")
+                    {
+                         StringDeque.push_front(aCurDirectories[i] );
+                         zipDeque.push_front( zipDir + sDirName );
+                    }
+                    else if(sDirName == L"xl")
+                    {
+                         StringDeque.push_front( aCurDirectories[i] );
+                         zipDeque.push_front( zipDir + sDirName );
+                     }
+                    else if (sDirName == L"word")
+                    {
+                         StringDeque.push_front( aCurDirectories[i] );
+                         zipDeque.push_front( zipDir + sDirName );
+                     }
+                    else
+                    {
+                        StringDeque.push_back( aCurDirectories[i] );
+                        zipDeque.push_back( zipDir + sDirName );
+                    }
+                }
+                else
+                {
+                    StringDeque.push_back( aCurDirectories[i] );
+                    zipDeque.push_back( zipDir + sDirName );
+                }
 			}
-		
+
 			for (size_t i = 0; i < aCurFiles.size(); ++i)
 			{
 				std::wstring cFileName = NSSystemPath::GetFileName(aCurFiles[i]);
 				
-				if (std::wstring::npos != cFileName.find(L"mimetype")) // возможно и полное соответствие
+                if (std::wstring::npos != cFileName.find(L"mimetype") ||
+                    std::wstring::npos != cFileName.find(L"[Content_Types]")) // возможно и полное соответствие
 				{
 					file = NSSystemPath::Combine(szText, cFileName);
 					zipFileName = zipDir + cFileName;

@@ -41,11 +41,15 @@
 #include "../../../../../XlsxSerializerCom/Writer/CSVWriter.h"
 #include "../../../../../DesktopEditor/common/StreamWriter.h"
 
+#include <boost/regex.hpp>
+
 namespace OOX
 {
 	namespace Spreadsheet
 	{
-		static const wchar_t* m_aLetters[] = { L"A", L"B", L"C", L"D", L"E", L"F", L"G", L"H", L"I", L"J", L"K", L"L", L"M", L"N", L"O", L"P", L"Q", L"R", L"S", L"T", L"U", L"V", L"W", L"X", L"Y", L"Z", L"AA", L"AB", L"AC", L"AD", L"AE", L"AF", L"AG", L"AH", L"AI", L"AJ", L"AK", L"AL", L"AM", L"AN", L"AO", L"AP", L"AQ", L"AR", L"AS", L"AT", L"AU", L"AV", L"AW", L"AX", L"AY", L"AZ", L"BA", L"BB", L"BC", L"BD", L"BE", L"BF", L"BG", L"BH", L"BI", L"BJ", L"BK", L"BL", L"BM", L"BN", L"BO", L"BP", L"BQ", L"BR", L"BS", L"BT", L"BU", L"BV", L"BW", L"BX", L"BY", L"BZ", L"CA", L"CB", L"CC", L"CD", L"CE", L"CF", L"CG", L"CH", L"CI", L"CJ", L"CK", L"CL", L"CM", L"CN", L"CO", L"CP", L"CQ", L"CR", L"CS", L"CT", L"CU", L"CV", L"CW", L"CX", L"CY", L"CZ", L"DA", L"DB", L"DC", L"DD", L"DE", L"DF", L"DG", L"DH", L"DI", L"DJ", L"DK", L"DL", L"DM", L"DN", L"DO", L"DP", L"DQ", L"DR", L"DS", L"DT", L"DU", L"DV", L"DW", L"DX", L"DY", L"DZ", L"EA", L"EB", L"EC", L"ED", L"EE", L"EF", L"EG", L"EH", L"EI", L"EJ", L"EK", L"EL", L"EM", L"EN", L"EO", L"EP", L"EQ", L"ER", L"ES", L"ET", L"EU", L"EV", L"EW", L"EX", L"EY", L"EZ", L"FA", L"FB", L"FC", L"FD", L"FE", L"FF", L"FG", L"FH", L"FI", L"FJ", L"FK", L"FL", L"FM", L"FN", L"FO", L"FP", L"FQ", L"FR", L"FS", L"FT", L"FU", L"FV", L"FW", L"FX", L"FY", L"FZ", L"GA", L"GB", L"GC", L"GD", L"GE", L"GF", L"GG", L"GH", L"GI", L"GJ", L"GK", L"GL", L"GM", L"GN", L"GO", L"GP", L"GQ", L"GR", L"GS", L"GT", L"GU", L"GV", L"GW", L"GX", L"GY", L"GZ", L"HA", L"HB", L"HC", L"HD", L"HE", L"HF", L"HG", L"HH", L"HI", L"HJ", L"HK", L"HL", L"HM", L"HN", L"HO", L"HP", L"HQ", L"HR", L"HS", L"HT", L"HU", L"HV", L"HW", L"HX", L"HY", L"HZ", L"IA", L"IB", L"IC", L"ID", L"IE", L"IF", L"IG", L"IH", L"II", L"IJ", L"IK", L"IL", L"IM", L"IN", L"IO", L"IP", L"IQ", L"IR", L"IS", L"IT", L"IU", L"IV", L"IW", L"IX", L"IY", L"IZ", L"JA", L"JB", L"JC", L"JD", L"JE", L"JF", L"JG", L"JH", L"JI", L"JJ", L"JK", L"JL", L"JM", L"JN", L"JO", L"JP", L"JQ", L"JR", L"JS", L"JT", L"JU", L"JV", L"JW", L"JX", L"JY", L"JZ", L"KA", L"KB", L"KC", L"KD", L"KE", L"KF", L"KG", L"KH", L"KI", L"KJ", L"KK", L"KL", L"KM", L"KN", L"KO", L"KP", L"KQ", L"KR", L"KS", L"KT", L"KU", L"KV", L"KW", L"KX", L"KY", L"KZ", L"LA", L"LB", L"LC", L"LD", L"LE", L"LF", L"LG", L"LH", L"LI", L"LJ", L"LK", L"LL", L"LM", L"LN", L"LO", L"LP", L"LQ", L"LR", L"LS", L"LT", L"LU", L"LV", L"LW", L"LX", L"LY", L"LZ", L"MA", L"MB", L"MC", L"MD", L"ME", L"MF", L"MG", L"MH", L"MI", L"MJ", L"MK", L"ML", L"MM", L"MN", L"MO", L"MP", L"MQ", L"MR", L"MS", L"MT", L"MU", L"MV", L"MW", L"MX", L"MY", L"MZ", L"NA", L"NB", L"NC", L"ND", L"NE", L"NF", L"NG", L"NH", L"NI", L"NJ", L"NK", L"NL", L"NM", L"NN", L"NO", L"NP", L"NQ", L"NR", L"NS", L"NT", L"NU", L"NV", L"NW", L"NX", L"NY", L"NZ", L"OA", L"OB", L"OC", L"OD", L"OE", L"OF", L"OG", L"OH", L"OI", L"OJ", L"OK", L"OL", L"OM", L"ON", L"OO", L"OP", L"OQ", L"OR", L"OS", L"OT", L"OU", L"OV", L"OW", L"OX", L"OY", L"OZ", L"PA", L"PB", L"PC", L"PD", L"PE", L"PF", L"PG", L"PH", L"PI", L"PJ", L"PK", L"PL", L"PM", L"PN", L"PO", L"PP", L"PQ", L"PR", L"PS", L"PT", L"PU", L"PV", L"PW", L"PX", L"PY", L"PZ", L"QA", L"QB", L"QC", L"QD", L"QE", L"QF", L"QG", L"QH", L"QI", L"QJ", L"QK", L"QL", L"QM", L"QN", L"QO", L"QP", L"QQ", L"QR", L"QS", L"QT", L"QU", L"QV", L"QW", L"QX", L"QY", L"QZ", L"RA", L"RB", L"RC", L"RD", L"RE", L"RF", L"RG", L"RH", L"RI", L"RJ", L"RK", L"RL", L"RM", L"RN", L"RO", L"RP", L"RQ", L"RR", L"RS", L"RT", L"RU", L"RV", L"RW", L"RX", L"RY", L"RZ", L"SA", L"SB", L"SC", L"SD", L"SE", L"SF", L"SG", L"SH", L"SI", L"SJ", L"SK", L"SL", L"SM", L"SN", L"SO", L"SP", L"SQ", L"SR", L"SS", L"ST", L"SU", L"SV", L"SW", L"SX", L"SY", L"SZ", L"TA", L"TB", L"TC", L"TD", L"TE", L"TF", L"TG", L"TH", L"TI", L"TJ", L"TK", L"TL", L"TM", L"TN", L"TO", L"TP", L"TQ", L"TR", L"TS", L"TT", L"TU", L"TV", L"TW", L"TX", L"TY", L"TZ", L"UA", L"UB", L"UC", L"UD", L"UE", L"UF", L"UG", L"UH", L"UI", L"UJ", L"UK", L"UL", L"UM", L"UN", L"UO", L"UP", L"UQ", L"UR", L"US", L"UT", L"UU", L"UV", L"UW", L"UX", L"UY", L"UZ", L"VA", L"VB", L"VC", L"VD", L"VE", L"VF", L"VG", L"VH", L"VI", L"VJ", L"VK", L"VL", L"VM", L"VN", L"VO", L"VP", L"VQ", L"VR", L"VS", L"VT", L"VU", L"VV", L"VW", L"VX", L"VY", L"VZ", L"WA", L"WB", L"WC", L"WD", L"WE", L"WF", L"WG", L"WH", L"WI", L"WJ", L"WK", L"WL", L"WM", L"WN", L"WO", L"WP", L"WQ", L"WR", L"WS", L"WT", L"WU", L"WV", L"WW", L"WX", L"WY", 
+		static const wchar_t* m_aLetters[] = 
+		{ 
+			L"A", L"B", L"C", L"D", L"E", L"F", L"G", L"H", L"I", L"J", L"K", L"L", L"M", L"N", L"O", L"P", L"Q", L"R", L"S", L"T", L"U", L"V", L"W", L"X", L"Y", L"Z", L"AA", L"AB", L"AC", L"AD", L"AE", L"AF", L"AG", L"AH", L"AI", L"AJ", L"AK", L"AL", L"AM", L"AN", L"AO", L"AP", L"AQ", L"AR", L"AS", L"AT", L"AU", L"AV", L"AW", L"AX", L"AY", L"AZ", L"BA", L"BB", L"BC", L"BD", L"BE", L"BF", L"BG", L"BH", L"BI", L"BJ", L"BK", L"BL", L"BM", L"BN", L"BO", L"BP", L"BQ", L"BR", L"BS", L"BT", L"BU", L"BV", L"BW", L"BX", L"BY", L"BZ", L"CA", L"CB", L"CC", L"CD", L"CE", L"CF", L"CG", L"CH", L"CI", L"CJ", L"CK", L"CL", L"CM", L"CN", L"CO", L"CP", L"CQ", L"CR", L"CS", L"CT", L"CU", L"CV", L"CW", L"CX", L"CY", L"CZ", L"DA", L"DB", L"DC", L"DD", L"DE", L"DF", L"DG", L"DH", L"DI", L"DJ", L"DK", L"DL", L"DM", L"DN", L"DO", L"DP", L"DQ", L"DR", L"DS", L"DT", L"DU", L"DV", L"DW", L"DX", L"DY", L"DZ", L"EA", L"EB", L"EC", L"ED", L"EE", L"EF", L"EG", L"EH", L"EI", L"EJ", L"EK", L"EL", L"EM", L"EN", L"EO", L"EP", L"EQ", L"ER", L"ES", L"ET", L"EU", L"EV", L"EW", L"EX", L"EY", L"EZ", L"FA", L"FB", L"FC", L"FD", L"FE", L"FF", L"FG", L"FH", L"FI", L"FJ", L"FK", L"FL", L"FM", L"FN", L"FO", L"FP", L"FQ", L"FR", L"FS", L"FT", L"FU", L"FV", L"FW", L"FX", L"FY", L"FZ", L"GA", L"GB", L"GC", L"GD", L"GE", L"GF", L"GG", L"GH", L"GI", L"GJ", L"GK", L"GL", L"GM", L"GN", L"GO", L"GP", L"GQ", L"GR", L"GS", L"GT", L"GU", L"GV", L"GW", L"GX", L"GY", L"GZ", L"HA", L"HB", L"HC", L"HD", L"HE", L"HF", L"HG", L"HH", L"HI", L"HJ", L"HK", L"HL", L"HM", L"HN", L"HO", L"HP", L"HQ", L"HR", L"HS", L"HT", L"HU", L"HV", L"HW", L"HX", L"HY", L"HZ", L"IA", L"IB", L"IC", L"ID", L"IE", L"IF", L"IG", L"IH", L"II", L"IJ", L"IK", L"IL", L"IM", L"IN", L"IO", L"IP", L"IQ", L"IR", L"IS", L"IT", L"IU", L"IV", L"IW", L"IX", L"IY", L"IZ", L"JA", L"JB", L"JC", L"JD", L"JE", L"JF", L"JG", L"JH", L"JI", L"JJ", L"JK", L"JL", L"JM", L"JN", L"JO", L"JP", L"JQ", L"JR", L"JS", L"JT", L"JU", L"JV", L"JW", L"JX", L"JY", L"JZ", L"KA", L"KB", L"KC", L"KD", L"KE", L"KF", L"KG", L"KH", L"KI", L"KJ", L"KK", L"KL", L"KM", L"KN", L"KO", L"KP", L"KQ", L"KR", L"KS", L"KT", L"KU", L"KV", L"KW", L"KX", L"KY", L"KZ", L"LA", L"LB", L"LC", L"LD", L"LE", L"LF", L"LG", L"LH", L"LI", L"LJ", L"LK", L"LL", L"LM", L"LN", L"LO", L"LP", L"LQ", L"LR", L"LS", L"LT", L"LU", L"LV", L"LW", L"LX", L"LY", L"LZ", L"MA", L"MB", L"MC", L"MD", L"ME", L"MF", L"MG", L"MH", L"MI", L"MJ", L"MK", L"ML", L"MM", L"MN", L"MO", L"MP", L"MQ", L"MR", L"MS", L"MT", L"MU", L"MV", L"MW", L"MX", L"MY", L"MZ", L"NA", L"NB", L"NC", L"ND", L"NE", L"NF", L"NG", L"NH", L"NI", L"NJ", L"NK", L"NL", L"NM", L"NN", L"NO", L"NP", L"NQ", L"NR", L"NS", L"NT", L"NU", L"NV", L"NW", L"NX", L"NY", L"NZ", L"OA", L"OB", L"OC", L"OD", L"OE", L"OF", L"OG", L"OH", L"OI", L"OJ", L"OK", L"OL", L"OM", L"ON", L"OO", L"OP", L"OQ", L"OR", L"OS", L"OT", L"OU", L"OV", L"OW", L"OX", L"OY", L"OZ", L"PA", L"PB", L"PC", L"PD", L"PE", L"PF", L"PG", L"PH", L"PI", L"PJ", L"PK", L"PL", L"PM", L"PN", L"PO", L"PP", L"PQ", L"PR", L"PS", L"PT", L"PU", L"PV", L"PW", L"PX", L"PY", L"PZ", L"QA", L"QB", L"QC", L"QD", L"QE", L"QF", L"QG", L"QH", L"QI", L"QJ", L"QK", L"QL", L"QM", L"QN", L"QO", L"QP", L"QQ", L"QR", L"QS", L"QT", L"QU", L"QV", L"QW", L"QX", L"QY", L"QZ", L"RA", L"RB", L"RC", L"RD", L"RE", L"RF", L"RG", L"RH", L"RI", L"RJ", L"RK", L"RL", L"RM", L"RN", L"RO", L"RP", L"RQ", L"RR", L"RS", L"RT", L"RU", L"RV", L"RW", L"RX", L"RY", L"RZ", L"SA", L"SB", L"SC", L"SD", L"SE", L"SF", L"SG", L"SH", L"SI", L"SJ", L"SK", L"SL", L"SM", L"SN", L"SO", L"SP", L"SQ", L"SR", L"SS", L"ST", L"SU", L"SV", L"SW", L"SX", L"SY", L"SZ", L"TA", L"TB", L"TC", L"TD", L"TE", L"TF", L"TG", L"TH", L"TI", L"TJ", L"TK", L"TL", L"TM", L"TN", L"TO", L"TP", L"TQ", L"TR", L"TS", L"TT", L"TU", L"TV", L"TW", L"TX", L"TY", L"TZ", L"UA", L"UB", L"UC", L"UD", L"UE", L"UF", L"UG", L"UH", L"UI", L"UJ", L"UK", L"UL", L"UM", L"UN", L"UO", L"UP", L"UQ", L"UR", L"US", L"UT", L"UU", L"UV", L"UW", L"UX", L"UY", L"UZ", L"VA", L"VB", L"VC", L"VD", L"VE", L"VF", L"VG", L"VH", L"VI", L"VJ", L"VK", L"VL", L"VM", L"VN", L"VO", L"VP", L"VQ", L"VR", L"VS", L"VT", L"VU", L"VV", L"VW", L"VX", L"VY", L"VZ", L"WA", L"WB", L"WC", L"WD", L"WE", L"WF", L"WG", L"WH", L"WI", L"WJ", L"WK", L"WL", L"WM", L"WN", L"WO", L"WP", L"WQ", L"WR", L"WS", L"WT", L"WU", L"WV", L"WW", L"WX", L"WY", 
 			L"WZ", L"XA", L"XB", L"XC", L"XD", L"XE", L"XF", L"XG", L"XH", L"XI", L"XJ", L"XK", L"XL", L"XM", L"XN", L"XO", L"XP", L"XQ", L"XR", L"XS", L"XT", L"XU", L"XV", L"XW", L"XX", L"XY", L"XZ", L"YA", L"YB", L"YC", L"YD", L"YE", L"YF", L"YG", L"YH", L"YI", L"YJ", L"YK", L"YL", L"YM", L"YN", L"YO", L"YP", L"YQ", L"YR", L"YS", L"YT", L"YU", L"YV", L"YW", L"YX", L"YY", L"YZ", L"ZA", L"ZB", L"ZC", L"ZD", L"ZE", L"ZF", L"ZG", L"ZH", L"ZI", L"ZJ", L"ZK", L"ZL", L"ZM", L"ZN", L"ZO", L"ZP", L"ZQ", L"ZR", L"ZS", L"ZT", L"ZU", L"ZV", L"ZW", L"ZX", L"ZY", L"ZZ", L"AAA", L"AAB", L"AAC", L"AAD", L"AAE", L"AAF", L"AAG", L"AAH", L"AAI", L"AAJ", L"AAK", L"AAL", L"AAM", L"AAN", L"AAO", L"AAP", L"AAQ", L"AAR", L"AAS", L"AAT", L"AAU", L"AAV", L"AAW", L"AAX", L"AAY", L"AAZ", L"ABA", L"ABB", L"ABC", L"ABD", L"ABE", L"ABF", L"ABG", L"ABH", L"ABI", L"ABJ", L"ABK", L"ABL", L"ABM", L"ABN", L"ABO", L"ABP", L"ABQ", L"ABR", L"ABS", L"ABT", L"ABU", L"ABV", L"ABW", L"ABX", L"ABY", L"ABZ", L"ACA", L"ACB", L"ACC", L"ACD", L"ACE", L"ACF", L"ACG", L"ACH", L"ACI", L"ACJ", L"ACK", L"ACL", L"ACM", L"ACN", L"ACO", L"ACP", L"ACQ", L"ACR", L"ACS", L"ACT", L"ACU", L"ACV", L"ACW", L"ACX", L"ACY", L"ACZ", L"ADA", L"ADB", L"ADC", L"ADD", L"ADE", L"ADF", L"ADG", L"ADH", L"ADI", L"ADJ", L"ADK", L"ADL", L"ADM", L"ADN", L"ADO", L"ADP", L"ADQ", L"ADR", L"ADS", L"ADT", L"ADU", L"ADV", L"ADW", L"ADX", L"ADY", L"ADZ", L"AEA", L"AEB", L"AEC", L"AED", L"AEE", L"AEF", L"AEG", L"AEH", L"AEI", L"AEJ", L"AEK", L"AEL", L"AEM", L"AEN", L"AEO", L"AEP", L"AEQ", L"AER", L"AES", L"AET", L"AEU", L"AEV", L"AEW", L"AEX", L"AEY", L"AEZ", L"AFA", L"AFB", L"AFC", L"AFD", L"AFE", L"AFF", L"AFG", L"AFH", L"AFI", L"AFJ", L"AFK", L"AFL", L"AFM", L"AFN", L"AFO", L"AFP", L"AFQ", L"AFR", L"AFS", L"AFT", L"AFU", L"AFV", L"AFW", L"AFX", L"AFY", L"AFZ", L"AGA", L"AGB", L"AGC", L"AGD", L"AGE", L"AGF", L"AGG", L"AGH", L"AGI", L"AGJ", L"AGK", L"AGL", L"AGM", L"AGN", L"AGO", L"AGP", L"AGQ", L"AGR", L"AGS", L"AGT", L"AGU", L"AGV", L"AGW", L"AGX", L"AGY", L"AGZ", L"AHA", L"AHB", L"AHC", L"AHD", L"AHE", L"AHF", L"AHG", L"AHH", L"AHI", L"AHJ", L"AHK", L"AHL", L"AHM", L"AHN", L"AHO", L"AHP", L"AHQ", L"AHR", L"AHS", L"AHT", L"AHU", L"AHV", 
 			L"AHW", L"AHX", L"AHY", L"AHZ", L"AIA", L"AIB", L"AIC", L"AID", L"AIE", L"AIF", L"AIG", L"AIH", L"AII", L"AIJ", L"AIK", L"AIL", L"AIM", L"AIN", L"AIO", L"AIP", L"AIQ", L"AIR", L"AIS", L"AIT", L"AIU", L"AIV", L"AIW", L"AIX", L"AIY", L"AIZ", L"AJA", L"AJB", L"AJC", L"AJD", L"AJE", L"AJF", L"AJG", L"AJH", L"AJI", L"AJJ", L"AJK", L"AJL", L"AJM", L"AJN", L"AJO", L"AJP", L"AJQ", L"AJR", L"AJS", L"AJT", L"AJU", L"AJV", L"AJW", L"AJX", L"AJY", L"AJZ", L"AKA", L"AKB", L"AKC", L"AKD", L"AKE", L"AKF", L"AKG", L"AKH", L"AKI", L"AKJ", L"AKK", L"AKL", L"AKM", L"AKN", L"AKO", L"AKP", L"AKQ", L"AKR", L"AKS", L"AKT", L"AKU", L"AKV", L"AKW", L"AKX", L"AKY", L"AKZ", L"ALA", L"ALB", L"ALC", L"ALD", L"ALE", L"ALF", L"ALG", L"ALH", L"ALI", L"ALJ", L"ALK", L"ALL", L"ALM", L"ALN", L"ALO", L"ALP", L"ALQ", L"ALR", L"ALS", L"ALT", L"ALU", L"ALV", L"ALW", L"ALX", L"ALY", L"ALZ", L"AMA", L"AMB", L"AMC", L"AMD", L"AME", L"AMF", L"AMG", L"AMH", L"AMI", L"AMJ", L"AMK", L"AML", L"AMM", L"AMN", L"AMO", L"AMP", L"AMQ", L"AMR", L"AMS", L"AMT", L"AMU", L"AMV", L"AMW", L"AMX", L"AMY", L"AMZ", L"ANA", L"ANB", L"ANC", L"AND", L"ANE", L"ANF", L"ANG", L"ANH", L"ANI", L"ANJ", L"ANK", L"ANL", L"ANM", L"ANN", L"ANO", L"ANP", L"ANQ", L"ANR", L"ANS", L"ANT", L"ANU", L"ANV", L"ANW", L"ANX", L"ANY", L"ANZ", L"AOA", L"AOB", L"AOC", L"AOD", L"AOE", L"AOF", L"AOG", L"AOH", L"AOI", L"AOJ", L"AOK", L"AOL", L"AOM", L"AON", L"AOO", L"AOP", L"AOQ", L"AOR", L"AOS", L"AOT", L"AOU", L"AOV", L"AOW", L"AOX", L"AOY", L"AOZ", L"APA", L"APB", L"APC", L"APD", L"APE", L"APF", L"APG", L"APH", L"API", L"APJ", L"APK", L"APL", L"APM", L"APN", L"APO", L"APP", L"APQ", L"APR", L"APS", L"APT", L"APU", L"APV", L"APW", L"APX", L"APY", L"APZ", L"AQA", L"AQB", L"AQC", L"AQD", L"AQE", L"AQF", L"AQG", L"AQH", L"AQI", L"AQJ", L"AQK", L"AQL", L"AQM", L"AQN", L"AQO", L"AQP", L"AQQ", L"AQR", L"AQS", L"AQT", L"AQU", L"AQV", L"AQW", L"AQX", L"AQY", L"AQZ", L"ARA", L"ARB", L"ARC", L"ARD", L"ARE", L"ARF", L"ARG", L"ARH", L"ARI", L"ARJ", L"ARK", L"ARL", L"ARM", L"ARN", L"ARO", L"ARP", L"ARQ", L"ARR", L"ARS", L"ART", L"ARU", L"ARV", L"ARW", L"ARX", L"ARY", L"ARZ", L"ASA", L"ASB", L"ASC", L"ASD", L"ASE", L"ASF", L"ASG", L"ASH", L"ASI", L"ASJ", L"ASK", L"ASL", L"ASM", L"ASN", L"ASO", L"ASP", L"ASQ", L"ASR", L"ASS", L"AST", L"ASU", L"ASV", L"ASW", L"ASX", L"ASY", L"ASZ", L"ATA", L"ATB", L"ATC", L"ATD", L"ATE", L"ATF", L"ATG", L"ATH", L"ATI", L"ATJ", L"ATK", L"ATL", L"ATM", L"ATN", L"ATO", L"ATP", L"ATQ", L"ATR", L"ATS", L"ATT", L"ATU", L"ATV", L"ATW", L"ATX", L"ATY", L"ATZ", L"AUA", L"AUB", L"AUC", L"AUD", L"AUE", L"AUF", L"AUG", L"AUH", L"AUI", L"AUJ", L"AUK", L"AUL", L"AUM", L"AUN", L"AUO", L"AUP", L"AUQ", L"AUR", L"AUS", L"AUT", L"AUU", L"AUV", L"AUW", L"AUX", L"AUY", L"AUZ", L"AVA", L"AVB", L"AVC", L"AVD", L"AVE", L"AVF", L"AVG", L"AVH", L"AVI", L"AVJ", L"AVK", L"AVL", L"AVM", L"AVN", L"AVO", L"AVP", L"AVQ", L"AVR", L"AVS", L"AVT", L"AVU", L"AVV", L"AVW", L"AVX", L"AVY", L"AVZ", L"AWA", L"AWB", L"AWC", L"AWD", L"AWE", L"AWF", L"AWG", L"AWH", L"AWI", L"AWJ", L"AWK", L"AWL", L"AWM", L"AWN", L"AWO", L"AWP", L"AWQ", L"AWR", L"AWS", L"AWT", L"AWU", L"AWV", L"AWW", L"AWX", L"AWY", L"AWZ", L"AXA", L"AXB", L"AXC", L"AXD", L"AXE", L"AXF", L"AXG", L"AXH", L"AXI", L"AXJ", L"AXK", L"AXL", L"AXM", L"AXN", L"AXO", L"AXP", L"AXQ", L"AXR", L"AXS", L"AXT", L"AXU", L"AXV", L"AXW", L"AXX", L"AXY", L"AXZ", L"AYA", L"AYB", L"AYC", L"AYD", L"AYE", L"AYF", L"AYG", L"AYH", L"AYI", L"AYJ", L"AYK", L"AYL", L"AYM", L"AYN", L"AYO", L"AYP", L"AYQ", L"AYR", L"AYS", L"AYT", L"AYU", L"AYV", L"AYW", L"AYX", L"AYY", L"AYZ", L"AZA", L"AZB", L"AZC", L"AZD", L"AZE", L"AZF", L"AZG", L"AZH", L"AZI", L"AZJ", L"AZK", L"AZL", L"AZM", L"AZN", L"AZO", L"AZP", L"AZQ", L"AZR", L"AZS", L"AZT", L"AZU", L"AZV", L"AZW", L"AZX", L"AZY", L"AZZ", L"BAA", L"BAB", L"BAC", L"BAD", L"BAE", L"BAF", L"BAG", L"BAH", L"BAI", L"BAJ", L"BAK", L"BAL", L"BAM", L"BAN", L"BAO", L"BAP", L"BAQ", L"BAR", L"BAS", L"BAT", L"BAU", L"BAV", L"BAW", L"BAX", L"BAY", L"BAZ", L"BBA", L"BBB", L"BBC", L"BBD", L"BBE", L"BBF", L"BBG", L"BBH", L"BBI", L"BBJ", L"BBK", L"BBL", L"BBM", L"BBN", L"BBO", L"BBP", L"BBQ", L"BBR", L"BBS", L"BBT", L"BBU", L"BBV", L"BBW", L"BBX", L"BBY", L"BBZ", L"BCA", L"BCB", L"BCC", L"BCD", L"BCE", L"BCF", L"BCG", L"BCH", L"BCI", L"BCJ", L"BCK", L"BCL", L"BCM", L"BCN",
 			L"BCO", L"BCP", L"BCQ", L"BCR", L"BCS", L"BCT", L"BCU", L"BCV", L"BCW", L"BCX", L"BCY", L"BCZ", L"BDA", L"BDB", L"BDC", L"BDD", L"BDE", L"BDF", L"BDG", L"BDH", L"BDI", L"BDJ", L"BDK", L"BDL", L"BDM", L"BDN", L"BDO", L"BDP", L"BDQ", L"BDR", L"BDS", L"BDT", L"BDU", L"BDV", L"BDW", L"BDX", L"BDY", L"BDZ", L"BEA", L"BEB", L"BEC", L"BED", L"BEE", L"BEF", L"BEG", L"BEH", L"BEI", L"BEJ", L"BEK", L"BEL", L"BEM", L"BEN", L"BEO", L"BEP", L"BEQ", L"BER", L"BES", L"BET", L"BEU", L"BEV", L"BEW", L"BEX", L"BEY", L"BEZ", L"BFA", L"BFB", L"BFC", L"BFD", L"BFE", L"BFF", L"BFG", L"BFH", L"BFI", L"BFJ", L"BFK", L"BFL", L"BFM", L"BFN", L"BFO", L"BFP", L"BFQ", L"BFR", L"BFS", L"BFT", L"BFU", L"BFV", L"BFW", L"BFX", L"BFY", L"BFZ", L"BGA", L"BGB", L"BGC", L"BGD", L"BGE", L"BGF", L"BGG", L"BGH", L"BGI", L"BGJ", L"BGK", L"BGL", L"BGM", L"BGN", L"BGO", L"BGP", L"BGQ", L"BGR", L"BGS", L"BGT", L"BGU", L"BGV", L"BGW", L"BGX", L"BGY", L"BGZ", L"BHA", L"BHB", L"BHC", L"BHD", L"BHE", L"BHF", L"BHG", L"BHH", L"BHI", L"BHJ", L"BHK", L"BHL", L"BHM", L"BHN", L"BHO", L"BHP", L"BHQ", L"BHR", L"BHS", L"BHT", L"BHU", L"BHV", L"BHW", L"BHX", L"BHY", L"BHZ", L"BIA", L"BIB", L"BIC", L"BID", L"BIE", L"BIF", L"BIG", L"BIH", L"BII", L"BIJ", L"BIK", L"BIL", L"BIM", L"BIN", L"BIO", L"BIP", L"BIQ", L"BIR", L"BIS", L"BIT", L"BIU", L"BIV", L"BIW", L"BIX", L"BIY", L"BIZ", L"BJA", L"BJB", L"BJC", L"BJD", L"BJE", L"BJF", L"BJG", L"BJH", L"BJI", L"BJJ", L"BJK", L"BJL", L"BJM", L"BJN", L"BJO", L"BJP", L"BJQ", L"BJR", L"BJS", L"BJT", L"BJU", L"BJV", L"BJW", L"BJX", L"BJY", L"BJZ", L"BKA", L"BKB", L"BKC", L"BKD", L"BKE", L"BKF", L"BKG", L"BKH", L"BKI", L"BKJ", L"BKK", L"BKL", L"BKM", L"BKN", L"BKO", L"BKP", L"BKQ", L"BKR", L"BKS", L"BKT", L"BKU", L"BKV", L"BKW", L"BKX", L"BKY", L"BKZ", L"BLA", L"BLB", L"BLC", L"BLD", L"BLE", L"BLF", L"BLG", L"BLH", L"BLI", L"BLJ", L"BLK", L"BLL", L"BLM", L"BLN", L"BLO", L"BLP", L"BLQ", L"BLR", L"BLS", L"BLT", L"BLU", L"BLV", L"BLW", L"BLX", L"BLY", L"BLZ", L"BMA", L"BMB", L"BMC", L"BMD", L"BME", L"BMF", L"BMG", L"BMH", L"BMI", L"BMJ", L"BMK", L"BML", L"BMM", L"BMN", L"BMO", L"BMP", L"BMQ", L"BMR", L"BMS", L"BMT", L"BMU", L"BMV", L"BMW", L"BMX", L"BMY", L"BMZ", L"BNA", L"BNB", L"BNC", L"BND", L"BNE", L"BNF", L"BNG", L"BNH", L"BNI", L"BNJ", L"BNK", L"BNL", L"BNM", L"BNN", L"BNO", L"BNP", L"BNQ", L"BNR", L"BNS", L"BNT", L"BNU", L"BNV", L"BNW", L"BNX", L"BNY", L"BNZ", L"BOA", L"BOB", L"BOC", L"BOD", L"BOE", L"BOF", L"BOG", L"BOH", L"BOI", L"BOJ", L"BOK", L"BOL", L"BOM", L"BON", L"BOO", L"BOP", L"BOQ", L"BOR", L"BOS", L"BOT", L"BOU", L"BOV", L"BOW", L"BOX", L"BOY", L"BOZ", L"BPA", L"BPB", L"BPC", L"BPD", L"BPE", L"BPF", L"BPG", L"BPH", L"BPI", L"BPJ", L"BPK", L"BPL", L"BPM", L"BPN", L"BPO", L"BPP", L"BPQ", L"BPR", L"BPS", L"BPT", L"BPU", L"BPV", L"BPW", L"BPX", L"BPY", L"BPZ", L"BQA", L"BQB", L"BQC", L"BQD", L"BQE", L"BQF", L"BQG", L"BQH", L"BQI", L"BQJ", L"BQK", L"BQL", L"BQM", L"BQN", L"BQO", L"BQP", L"BQQ", L"BQR", L"BQS", L"BQT", L"BQU", L"BQV", L"BQW", L"BQX", L"BQY", L"BQZ", L"BRA", L"BRB", L"BRC", L"BRD", L"BRE", L"BRF", L"BRG", L"BRH", L"BRI", L"BRJ", L"BRK", L"BRL", L"BRM", L"BRN", L"BRO", L"BRP", L"BRQ", L"BRR", L"BRS", L"BRT", L"BRU", L"BRV", L"BRW", L"BRX", L"BRY", L"BRZ", L"BSA", L"BSB", L"BSC", L"BSD", L"BSE", L"BSF", L"BSG", L"BSH", L"BSI", L"BSJ", L"BSK", L"BSL", L"BSM", L"BSN", L"BSO", L"BSP", L"BSQ", L"BSR", L"BSS", L"BST", L"BSU", L"BSV", L"BSW", L"BSX", L"BSY", L"BSZ", L"BTA", L"BTB", L"BTC", L"BTD", L"BTE", L"BTF", L"BTG", L"BTH", L"BTI", L"BTJ", L"BTK", L"BTL", L"BTM", L"BTN", L"BTO", L"BTP", L"BTQ", L"BTR", L"BTS", L"BTT", L"BTU", L"BTV", L"BTW", L"BTX", L"BTY", L"BTZ", L"BUA", L"BUB", L"BUC", L"BUD", L"BUE", L"BUF", L"BUG", L"BUH", L"BUI", L"BUJ", L"BUK", L"BUL", L"BUM", L"BUN", L"BUO", L"BUP", L"BUQ", L"BUR", L"BUS", L"BUT", L"BUU", L"BUV", L"BUW", L"BUX", L"BUY", L"BUZ", L"BVA", L"BVB", L"BVC", L"BVD", L"BVE", L"BVF", L"BVG", L"BVH", L"BVI", L"BVJ", L"BVK", L"BVL", L"BVM", L"BVN", L"BVO", L"BVP", L"BVQ", L"BVR", L"BVS", L"BVT", L"BVU", L"BVV", L"BVW", L"BVX", L"BVY", L"BVZ", L"BWA", L"BWB", L"BWC", L"BWD", L"BWE", L"BWF", L"BWG", L"BWH", L"BWI", L"BWJ", L"BWK", L"BWL", L"BWM", L"BWN", L"BWO", L"BWP", L"BWQ", L"BWR", L"BWS", L"BWT", L"BWU", L"BWV", L"BWW", L"BWX", L"BWY", L"BWZ", L"BXA", L"BXB", L"BXC", L"BXD", L"BXE", L"BXF", L"BXG", L"BXH", L"BXI", L"BXJ", L"BXK", L"BXL", L"BXM", L"BXN",
@@ -100,7 +104,8 @@ namespace OOX
 			L"WLN", L"WLO", L"WLP", L"WLQ", L"WLR", L"WLS", L"WLT", L"WLU", L"WLV", L"WLW", L"WLX", L"WLY", L"WLZ", L"WMA", L"WMB", L"WMC", L"WMD", L"WME", L"WMF", L"WMG", L"WMH", L"WMI", L"WMJ", L"WMK", L"WML", L"WMM", L"WMN", L"WMO", L"WMP", L"WMQ", L"WMR", L"WMS", L"WMT", L"WMU", L"WMV", L"WMW", L"WMX", L"WMY", L"WMZ", L"WNA", L"WNB", L"WNC", L"WND", L"WNE", L"WNF", L"WNG", L"WNH", L"WNI", L"WNJ", L"WNK", L"WNL", L"WNM", L"WNN", L"WNO", L"WNP", L"WNQ", L"WNR", L"WNS", L"WNT", L"WNU", L"WNV", L"WNW", L"WNX", L"WNY", L"WNZ", L"WOA", L"WOB", L"WOC", L"WOD", L"WOE", L"WOF", L"WOG", L"WOH", L"WOI", L"WOJ", L"WOK", L"WOL", L"WOM", L"WON", L"WOO", L"WOP", L"WOQ", L"WOR", L"WOS", L"WOT", L"WOU", L"WOV", L"WOW", L"WOX", L"WOY", L"WOZ", L"WPA", L"WPB", L"WPC", L"WPD", L"WPE", L"WPF", L"WPG", L"WPH", L"WPI", L"WPJ", L"WPK", L"WPL", L"WPM", L"WPN", L"WPO", L"WPP", L"WPQ", L"WPR", L"WPS", L"WPT", L"WPU", L"WPV", L"WPW", L"WPX", L"WPY", L"WPZ", L"WQA", L"WQB", L"WQC", L"WQD", L"WQE", L"WQF", L"WQG", L"WQH", L"WQI", L"WQJ", L"WQK", L"WQL", L"WQM", L"WQN", L"WQO", L"WQP", L"WQQ", L"WQR", L"WQS", L"WQT", L"WQU", L"WQV", L"WQW", L"WQX", L"WQY", L"WQZ", L"WRA", L"WRB", L"WRC", L"WRD", L"WRE", L"WRF", L"WRG", L"WRH", L"WRI", L"WRJ", L"WRK", L"WRL", L"WRM", L"WRN", L"WRO", L"WRP", L"WRQ", L"WRR", L"WRS", L"WRT", L"WRU", L"WRV", L"WRW", L"WRX", L"WRY", L"WRZ", L"WSA", L"WSB", L"WSC", L"WSD", L"WSE", L"WSF", L"WSG", L"WSH", L"WSI", L"WSJ", L"WSK", L"WSL", L"WSM", L"WSN", L"WSO", L"WSP", L"WSQ", L"WSR", L"WSS", L"WST", L"WSU", L"WSV", L"WSW", L"WSX", L"WSY", L"WSZ", L"WTA", L"WTB", L"WTC", L"WTD", L"WTE", L"WTF", L"WTG", L"WTH", L"WTI", L"WTJ", L"WTK", L"WTL", L"WTM", L"WTN", L"WTO", L"WTP", L"WTQ", L"WTR", L"WTS", L"WTT", L"WTU", L"WTV", L"WTW", L"WTX", L"WTY", L"WTZ", L"WUA", L"WUB", L"WUC", L"WUD", L"WUE", L"WUF", L"WUG", L"WUH", L"WUI", L"WUJ", L"WUK", L"WUL", L"WUM", L"WUN", L"WUO", L"WUP", L"WUQ", L"WUR", L"WUS", L"WUT", L"WUU", L"WUV", L"WUW", L"WUX", L"WUY", L"WUZ", L"WVA", L"WVB", L"WVC", L"WVD", L"WVE", L"WVF", L"WVG", L"WVH", L"WVI", L"WVJ", L"WVK", L"WVL", L"WVM", L"WVN", L"WVO", L"WVP", L"WVQ", L"WVR", L"WVS", L"WVT", L"WVU", L"WVV", L"WVW", L"WVX", L"WVY", L"WVZ", 
 			L"WWA", L"WWB", L"WWC", L"WWD", L"WWE", L"WWF", L"WWG", L"WWH", L"WWI", L"WWJ", L"WWK", L"WWL", L"WWM", L"WWN", L"WWO", L"WWP", L"WWQ", L"WWR", L"WWS", L"WWT", L"WWU", L"WWV", L"WWW", L"WWX", L"WWY", L"WWZ", L"WXA", L"WXB", L"WXC", L"WXD", L"WXE", L"WXF", L"WXG", L"WXH", L"WXI", L"WXJ", L"WXK", L"WXL", L"WXM", L"WXN", L"WXO", L"WXP", L"WXQ", L"WXR", L"WXS", L"WXT", L"WXU", L"WXV", L"WXW", L"WXX", L"WXY", L"WXZ", L"WYA", L"WYB", L"WYC", L"WYD", L"WYE", L"WYF", L"WYG", L"WYH", L"WYI", L"WYJ", L"WYK", L"WYL", L"WYM", L"WYN", L"WYO", L"WYP", L"WYQ", L"WYR", L"WYS", L"WYT", L"WYU", L"WYV", L"WYW", L"WYX", L"WYY", L"WYZ", L"WZA", L"WZB", L"WZC", L"WZD", L"WZE", L"WZF", L"WZG", L"WZH", L"WZI", L"WZJ", L"WZK", L"WZL", L"WZM", L"WZN", L"WZO", L"WZP", L"WZQ", L"WZR", L"WZS", L"WZT", L"WZU", L"WZV", L"WZW", L"WZX", L"WZY", L"WZZ", L"XAA", L"XAB", L"XAC", L"XAD", L"XAE", L"XAF", L"XAG", L"XAH", L"XAI", L"XAJ", L"XAK", L"XAL", L"XAM", L"XAN", L"XAO", L"XAP", L"XAQ", L"XAR", L"XAS", L"XAT", L"XAU", L"XAV", L"XAW", L"XAX", L"XAY", L"XAZ", L"XBA", L"XBB", L"XBC", L"XBD", L"XBE", L"XBF", L"XBG", L"XBH", L"XBI", L"XBJ", L"XBK", L"XBL", L"XBM", L"XBN", L"XBO", L"XBP", L"XBQ", L"XBR", L"XBS", L"XBT", L"XBU", L"XBV", L"XBW", L"XBX", L"XBY", L"XBZ", L"XCA", L"XCB", L"XCC", L"XCD", L"XCE", L"XCF", L"XCG", L"XCH", L"XCI", L"XCJ", L"XCK", L"XCL", L"XCM", L"XCN", L"XCO", L"XCP", L"XCQ", L"XCR", L"XCS", L"XCT", L"XCU", L"XCV", L"XCW", L"XCX", L"XCY", L"XCZ", L"XDA", L"XDB", L"XDC", L"XDD", L"XDE", L"XDF", L"XDG", L"XDH", L"XDI", L"XDJ", L"XDK", L"XDL", L"XDM", L"XDN", L"XDO", L"XDP", L"XDQ", L"XDR", L"XDS", L"XDT", L"XDU", L"XDV", L"XDW", L"XDX", L"XDY", L"XDZ", L"XEA", L"XEB", L"XEC", L"XED", L"XEE", L"XEF", L"XEG", L"XEH", L"XEI", L"XEJ", L"XEK", L"XEL", L"XEM", L"XEN", L"XEO", L"XEP", L"XEQ", L"XER", L"XES", L"XET", L"XEU", L"XEV", L"XEW", L"XEX", L"XEY", L"XEZ", L"XFA", L"XFB", L"XFC", L"XFD" };
 
-		static std::string getColAddress(size_t col)
+//------------------------------------------------------------------------------
+		static std::wstring getColAddress(size_t col)
 		{//from 1
 			col--;
 			static const size_t r = ('Z' - 'A' + 1);
@@ -109,23 +114,144 @@ namespace OOX
 
 			if (r0 > 0)
 			{
-				const std::string rest = getColAddress(col - r * r0);
-				const std::string res	= getColAddress(r0-1) + rest;
+				const std::wstring rest = getColAddress(col - r * r0);
+				const std::wstring res	= getColAddress(r0-1) + rest;
+				return res;
+			}
+			else
+				return std::wstring(1, (char)(L'A' + col));
+		}
+
+		static std::wstring getRowAddress(size_t row)
+		{//from 1
+			return std::to_wstring(row);
+		}
+//------------------------------------------------------------------------------
+		static std::string getColAddressA(size_t col)
+		{//from 1
+			col--;
+			static const size_t r = ('Z' - 'A' + 1);
+			std::string res;
+			size_t r0 = col / r;
+
+			if (r0 > 0)
+			{
+				const std::string rest = getColAddressA(col - r * r0);
+				const std::string res	= getColAddressA(r0-1) + rest;
 				return res;
 			}
 			else
 				return std::string(1, (char)(L'A' + col));
 		}
 
-		static std::string getRowAddress(size_t row)
+		static std::string getRowAddressA(size_t row)
 		{//from 1
 			return std::to_string(row);
 		}
-		static std::string getCellAddress(size_t row, size_t col)
+//------------------------------------------------------------------------------
+		static std::wstring getCellAddress(size_t row, size_t col)
 		{
 			return getColAddress(col) + getRowAddress(row);
 		}
-		CFormulaXLSB::CFormulaXLSB():m_oFormula(256),m_oRef(256),m_oR1(256),m_oR2(256)
+		static std::string getCellAddressA(size_t row, size_t col)
+		{
+			return getColAddressA(col) + getRowAddressA(row);
+		}
+//------------------------------------------------------------------------------
+
+	class r1c1_formula_convert
+	{
+	public:
+		static size_t base_row;
+		static size_t base_col;
+
+		r1c1_formula_convert()
+		{}
+
+		static std::wstring replace_ref(boost::wsmatch const & what)
+		{
+			const size_t sz = what.size();
+
+			std::wstring result = what[0].str();
+
+			std::wstring sCell = sz > 1 ? what[1].str() : L"";
+			std::wstring sRow = sz > 2 ? what[2].str() : L"";
+			std::wstring sCol = sz > 3 ? what[3].str() : L"";
+
+			size_t row = boost::lexical_cast<size_t>(sRow);
+			size_t col = boost::lexical_cast<size_t>(sCol);
+
+			return getCellAddress(row, col);
+		}
+		static std::wstring replace_ref_from_base(boost::wsmatch const & what)
+		{
+			const size_t sz = what.size();
+
+			std::wstring result = what[0].str();
+
+			std::wstring s1 = sz > 1 ? what[1].str() : L"";
+			std::wstring s2 = sz > 2 ? what[2].str() : L"";
+			std::wstring s3 = sz > 3 ? what[3].str() : L"";
+			std::wstring s4 = sz > 4 ? what[4].str() : L"";
+			std::wstring s5 = sz > 5 ? what[5].str() : L"";
+
+			//size_t row = sRow.empty() ? 0 : boost::lexical_cast<size_t>(sRow);
+			//size_t col = sCol.empty() ? 0 : boost::lexical_cast<size_t>(sCol);
+
+			size_t row = 0, col = 0;
+
+			if (s2.empty())
+			{
+				row = base_row;
+			}
+			else if (0 == s2.find(L"["))
+			{
+				row = boost::lexical_cast<size_t>(s2.substr(1, s2.length() - 2)) + base_row;
+			}
+			else
+			{
+				row = boost::lexical_cast<size_t>(s2);
+			}
+			if (s4.empty())
+			{
+				col = base_col;
+			}
+			else if (0 == s4.find(L"["))
+			{
+				col = boost::lexical_cast<size_t>(s4.substr(1, s4.length() - 2)) + base_col;
+			}
+			else
+			{
+				col = boost::lexical_cast<size_t>(s4);
+			}
+			return getCellAddress(row, col);
+		}
+
+
+		std::wstring convert(const std::wstring& expr)
+		{
+			//boost::wregex findRef(L"(\R(\\d+)\C(\\d+))"); //easy
+			boost::wregex findRefFromBase(L"(\R((\\[?\-?\\d+\\]?)?)\C((\\[?\-?\\d+\\]?)?))");
+
+			//std::wstring result = boost::regex_replace(
+			//	expr,
+			//	findRef,
+			//	&replace_ref,
+			//	boost::match_default | boost::format_all);
+			
+			std::wstring result = boost::regex_replace(
+  				expr,
+				findRefFromBase,
+				&replace_ref_from_base,
+				boost::match_default | boost::format_all);
+
+			return result;
+		}
+	};
+	size_t r1c1_formula_convert::base_col = 1;
+	size_t r1c1_formula_convert::base_row = 1;
+
+	CFormulaXLSB::CFormulaXLSB():m_oFormula(256),m_oRef(256),m_oR1(256),m_oR2(256)
 		{
 			Clean();
 		}
@@ -1079,7 +1205,7 @@ namespace OOX
 		void CCell::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			nullable_string sStyleId, sArrayRange,sHyperlink;
-			nullable_int iAcross, iDown, iRowIndex;
+			nullable_int iAcross, iDown, iColIndex;
 
 			WritingElement_ReadAttributes_StartChar( oReader )
 
@@ -1094,10 +1220,7 @@ namespace OOX
 					m_oFormula->m_sText = m_oFormula->m_sText.substr(1);
 					//convert R1C1 to ..
 				}
-				else if (strcmp("ss:Index", wsName) == 0)
-				{
-					iRowIndex = oReader.GetText();
-				}
+				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "ss:Index", iColIndex )
 				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "ss:MergeAcross", iAcross )
 				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "ss:MergeDown", iDown )
 				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "ss:ArrayRange", sArrayRange )		
@@ -1117,9 +1240,9 @@ namespace OOX
 			{
 				CWorksheet* sheet = xlsx_flat->m_arWorksheets.back();
 				
-				if (iRowIndex.IsInit())
+				if (iColIndex.IsInit())
 				{
-					xlsx_flat->m_nLastReadCol = *iRowIndex;
+					xlsx_flat->m_nLastReadCol = *iColIndex;
 				}
 				else
 				{
@@ -1127,7 +1250,16 @@ namespace OOX
 				}
 
 				//m_oRef = "R" + std::to_string(xlsx_flat->m_nLastReadRow) + "C" + std::to_string(xlsx_flat->m_nLastReadCol);
-				m_oRef = getCellAddress(xlsx_flat->m_nLastReadRow, xlsx_flat->m_nLastReadCol);
+				m_oRef = getCellAddressA( xlsx_flat->m_nLastReadRow, xlsx_flat->m_nLastReadCol);
+
+				r1c1_formula_convert::base_row = xlsx_flat->m_nLastReadRow;
+				r1c1_formula_convert::base_col = xlsx_flat->m_nLastReadCol;
+				
+				r1c1_formula_convert convert;
+				if (m_oFormula.IsInit())
+				{
+					m_oFormula->m_sText = convert.convert(m_oFormula->m_sText);
+				}
 
 				if (sStyleId.IsInit() && xlsx_flat->m_pStyles.IsInit())
 				{
@@ -1141,7 +1273,7 @@ namespace OOX
 				if (iAcross.IsInit() || iDown.IsInit())
 				{
 					//std::string Ref = m_oRef.get2() + ":R" + std::to_string(xlsx_flat->m_nLastReadRow + 1 + iDown.get_value_or(0)) + "C" + std::to_string(xlsx_flat->m_nLastReadCol + 1 + iAcross.get_value_or(0));
-					std::string Ref =  m_oRef.get2() + ":" + getCellAddress(xlsx_flat->m_nLastReadRow + iDown.get_value_or(0),
+					std::string Ref =  m_oRef.get2() + ":" + getCellAddressA(xlsx_flat->m_nLastReadRow + iDown.get_value_or(0),
 																			xlsx_flat->m_nLastReadCol + iAcross.get_value_or(0));
 
 					if (false == sheet->m_oMergeCells.IsInit())
@@ -1152,6 +1284,8 @@ namespace OOX
 					pMergeCell->m_oRef = std::wstring(Ref.begin(), Ref.end());
 					
 					sheet->m_oMergeCells->m_arrItems.push_back(pMergeCell);
+
+					xlsx_flat->m_nLastReadCol += iAcross.get_value_or(0);
 				}
 				if (sHyperlink.IsInit())
 				{

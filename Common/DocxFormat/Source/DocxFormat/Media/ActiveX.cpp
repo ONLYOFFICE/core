@@ -41,6 +41,19 @@
 
 namespace OOX
 {
+	ActiveX_xml::~ActiveX_xml()
+	{
+		ClearItems();
+	}
+	void ActiveX_xml::ClearItems()
+	{
+		for (size_t nIndex = 0; nIndex < m_arrOcxPr.size(); ++nIndex)
+		{
+			if (m_arrOcxPr[nIndex]) delete m_arrOcxPr[nIndex];
+			m_arrOcxPr[nIndex] = NULL;
+		}
+		m_arrOcxPr.clear();
+	}
 	void ActiveX_xml::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start(oReader)
@@ -100,6 +113,7 @@ namespace OOX
 	}
 	void ActiveX_xml::read_bin(const CPath& oPath)
 	{
+		return;
 		NSFile::CFileBinary file;
 
 		if (false == m_oClassId.IsInit()) return;
@@ -340,8 +354,6 @@ namespace OOX
 	}
 	void ActiveXObjectButton::Parse(unsigned char* pData, DWORD size)
 	{
-		return;
-
 		MemoryStream mem_stream(pData, size, false);
 		mem_stream.Seek(16);
 

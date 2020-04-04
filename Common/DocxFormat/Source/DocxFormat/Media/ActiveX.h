@@ -179,10 +179,10 @@ namespace OOX
 		}
 		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
-				ReadAttributes(oReader);
-				
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
+			ReadAttributes(oReader);
+			
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
 		}
 
 		virtual EElementType getType () const
@@ -199,8 +199,8 @@ namespace OOX
 
 			WritingElement_ReadAttributes_End(oReader)
 		}
-		nullable<std::wstring> m_oName;
-		nullable<std::wstring> m_oValue;
+		nullable_string m_oName;
+		nullable_string m_oValue;
 
 		//font
 		//picture
@@ -217,18 +217,8 @@ namespace OOX
 			m_bDocument = false;
 			read( oRootPath, filename );
 		}
-		virtual ~ActiveX_xml()
-		{
-			ClearItems();
-		}
-		virtual void ClearItems()
-		{
-			for (size_t nIndex = 0; nIndex < m_arrOcxPr.size(); ++nIndex)
-			{
-				delete m_arrOcxPr[nIndex];
-			}
-			m_arrOcxPr.clear();
-		}
+		virtual ~ActiveX_xml();
+		virtual void ClearItems();
 		virtual void read(const CPath& oPath)
 		{
 			CPath oRootPath;

@@ -3140,7 +3140,7 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
 		currentVmlDrawing = oFile.smart_dynamic_cast<OOX::CVmlDrawing>();
 	}
 	//Drawing
-	if(oWorksheet.m_oDrawing.IsInit() && oWorksheet.m_oDrawing->m_oId.IsInit())
+	if (oWorksheet.m_oDrawing.IsInit() && oWorksheet.m_oDrawing->m_oId.IsInit())
 	{
 		smart_ptr<OOX::Spreadsheet::CDrawing> currentDrawing;
 		
@@ -3162,14 +3162,14 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
 	}
 	WriteControls(oWorksheet, currentVmlDrawing.GetPointer());
 
-	if(oWorksheet.m_oLegacyDrawingHF.IsInit())
+	if (oWorksheet.m_oLegacyDrawingHF.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::LegacyDrawingHF);
 		WriteLegacyDrawingHF(oWorksheet);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	//Autofilter
-	if(oWorksheet.m_oAutofilter.IsInit())
+	if (oWorksheet.m_oAutofilter.IsInit())
 	{
 		BinaryTableWriter oBinaryTableWriter(m_oBcw.m_oStream);
 		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Autofilter);
@@ -3177,7 +3177,7 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 	//TableParts
-	if(oWorksheet.m_oTableParts.IsInit())
+	if (oWorksheet.m_oTableParts.IsInit())
 	{
 		BinaryTableWriter oBinaryTableWriter(m_oBcw.m_oStream);
 		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::TableParts);
@@ -3194,7 +3194,7 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);		
 	}
 	//Comments
-	if(oWorksheet.m_mapComments.size() > 0)
+	if (false == oWorksheet.m_mapComments.empty())
 	{
 		bool bIsEmpty = true;
 		int nCurPos = 0;

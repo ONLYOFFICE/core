@@ -32,7 +32,7 @@
 
 #include "../Workbook/Workbook.h"
 
-#include "Worksheet.h"
+#include "../Comments/Comments.h"
 #include "DataValidation.h"
 
 #include "../Styles/Styles.h"
@@ -983,6 +983,23 @@ namespace OOX
 					m_oValue.Init();
 					m_oValue->m_sText = oReader.GetText3();
 				}
+				else if (strcmp("Comment", sName) == 0)
+				{
+					CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
+					if (xlsx_flat)
+					{
+						CCommentItem *pComment = new CCommentItem();
+						ReadComment(oReader, pComment);
+
+						pComment->m_nRow = xlsx_flat->m_nLastReadRow - 1;
+						pComment->m_nCol = xlsx_flat->m_nLastReadCol - 1;
+
+						std::wstring sId = std::to_wstring(*pComment->m_nRow) + L"-" + std::to_wstring(*pComment->m_nCol);
+						
+						CWorksheet* pWorksheet = xlsx_flat->m_arWorksheets.back();
+						pWorksheet->m_mapComments [sId] = pComment;
+					}
+				}
 				else if ( strcmp("f", sName) == 0 )
 					m_oFormula = oReader;
 				else if ( strcmp("is", sName) == 0 )
@@ -991,9 +1008,27 @@ namespace OOX
 				{
 					m_oRichText = oReader;
 				}
-//o:SmartTags, ss:Comment, x:PhoneticText
+//o:SmartTags, x:PhoneticText
 			}
 			PrepareForBinaryWriter();
+		}
+		void CCell::ReadComment(XmlUtils::CXmlLiteReader& oReader, CCommentItem* pComment)
+		{
+			if (!pComment) return;
+
+			WritingElement_ReadAttributes_StartChar( oReader )
+				WritingElement_ReadAttributes_Read_ifChar ( oReader, "ss:Author", pComment->m_sAuthor )
+			WritingElement_ReadAttributes_EndChar( oReader )
+
+			CText *pText = new CText();
+			pText->fromXML(oReader);
+
+			CRun *pRun = new CRun();
+			pRun->m_arrItems.push_back(pText);
+			
+			pComment->m_oText.Init();
+			pComment->m_oText->m_arrItems.push_back(pRun);
+
 		}
 		void CCell::PrepareForBinaryWriter()
 		{

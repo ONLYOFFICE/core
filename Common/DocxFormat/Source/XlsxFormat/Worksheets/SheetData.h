@@ -54,6 +54,8 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CCommentItem;
+
 		class CFormulaXLSB
 		{
 		public:
@@ -339,6 +341,7 @@ namespace OOX
 			void PrepareForBinaryWriter();
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 			void ReadAttributesData(XmlUtils::CXmlLiteReader& oReader);
+			void ReadComment(XmlUtils::CXmlLiteReader& oReader, CCommentItem* pComment);
 
 			nullable<std::string>								m_oRef;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oRow;

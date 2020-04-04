@@ -29,10 +29,11 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "../Xlsx.h"
-#include "../XlsxFlat.h"
+
+#include "../Workbook/Workbook.h"
 
 #include "Worksheet.h"
+#include "DataValidation.h"
 
 #include "../Styles/Styles.h"
 #include "../SharedStrings/SharedStrings.h"
@@ -114,8 +115,8 @@ namespace OOX
 
 			if (r0 > 0)
 			{
-				const std::wstring rest = getColAddress(col - r * r0);
-				const std::wstring res	= getColAddress(r0-1) + rest;
+				const std::wstring rest = getColAddress(col - r * r0 + 1);
+				const std::wstring res	= getColAddress(r0 - 1) + rest;
 				return res;
 			}
 			else
@@ -136,7 +137,7 @@ namespace OOX
 
 			if (r0 > 0)
 			{
-				const std::string rest = getColAddressA(col - r * r0);
+				const std::string rest = getColAddressA(col - r * r0 + 1);
 				const std::string res	= getColAddressA(r0-1) + rest;
 				return res;
 			}
@@ -149,13 +150,13 @@ namespace OOX
 			return std::to_string(row);
 		}
 //------------------------------------------------------------------------------
-		static std::wstring getCellAddress(size_t row, size_t col)
+		static std::wstring getCellAddress(size_t row, size_t col, bool bAbsolute = false)
 		{
-			return getColAddress(col) + getRowAddress(row);
+			return (bAbsolute ? L"$" : L"") + getColAddress(col) + (bAbsolute ? L"$" : L"") + getRowAddress(row);
 		}
-		static std::string getCellAddressA(size_t row, size_t col)
+		static std::string getCellAddressA(size_t row, size_t col, bool bAbsolute = false)
 		{
-			return getColAddressA(col) + getRowAddressA(row);
+			return (bAbsolute ? "$" : "") + getColAddressA(col) + (bAbsolute ? "$" : "") + getRowAddressA(row);
 		}
 //------------------------------------------------------------------------------
 
@@ -164,6 +165,7 @@ namespace OOX
 	public:
 		static size_t base_row;
 		static size_t base_col;
+		static bool bAbsolute;
 
 		r1c1_formula_convert()
 		{}
@@ -181,7 +183,7 @@ namespace OOX
 			size_t row = boost::lexical_cast<size_t>(sRow);
 			size_t col = boost::lexical_cast<size_t>(sCol);
 
-			return getCellAddress(row, col);
+			return getCellAddress(row, col, bAbsolute);
 		}
 		static std::wstring replace_ref_from_base(boost::wsmatch const & what)
 		{
@@ -224,7 +226,7 @@ namespace OOX
 			{
 				col = boost::lexical_cast<size_t>(s4);
 			}
-			return getCellAddress(row, col);
+			return getCellAddress(row, col, bAbsolute);
 		}
 
 
@@ -248,8 +250,9 @@ namespace OOX
 			return result;
 		}
 	};
-	size_t r1c1_formula_convert::base_col = 1;
-	size_t r1c1_formula_convert::base_row = 1;
+	size_t	r1c1_formula_convert::base_col = 1;
+	size_t	r1c1_formula_convert::base_row = 1;
+	bool	r1c1_formula_convert::bAbsolute  = false;
 
 	CFormulaXLSB::CFormulaXLSB():m_oFormula(256),m_oRef(256),m_oR1(256),m_oR2(256)
 		{
@@ -1252,12 +1255,13 @@ namespace OOX
 				//m_oRef = "R" + std::to_string(xlsx_flat->m_nLastReadRow) + "C" + std::to_string(xlsx_flat->m_nLastReadCol);
 				m_oRef = getCellAddressA( xlsx_flat->m_nLastReadRow, xlsx_flat->m_nLastReadCol);
 
-				r1c1_formula_convert::base_row = xlsx_flat->m_nLastReadRow;
-				r1c1_formula_convert::base_col = xlsx_flat->m_nLastReadCol;
-				
-				r1c1_formula_convert convert;
 				if (m_oFormula.IsInit())
 				{
+					r1c1_formula_convert::base_row = xlsx_flat->m_nLastReadRow;
+					r1c1_formula_convert::base_col = xlsx_flat->m_nLastReadCol;
+					
+					r1c1_formula_convert convert;
+
 					m_oFormula->m_sText = convert.convert(m_oFormula->m_sText);
 				}
 
@@ -1684,6 +1688,110 @@ namespace OOX
 				}
 			}
 		}
+//---------------------------------------------------------------------------------------------------------------------
+		void CDefinedName::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			nullable_string oRefersTo;
+			WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"comment",		m_oComment )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"customMenu",		m_oCustomMenu )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"description",	m_oDescription )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"function",		m_oFunction )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"functionGroupId",m_oFunctionGroupId )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"help",			m_oHelp )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"hidden",			m_oHidden )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"localSheetId",	m_oLocalSheetId )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"name",			m_oName )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"publishToServer",m_oPublishToServer )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"shortcutKey ",	m_oShortcutKey  )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"statusBar",		m_oStatusBar  )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"vbProcedure",	m_oVbProcedure  )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"workbookParameter",	m_oWorkbookParameter  )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"xlm",			m_oXlm  )
 
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"ss:Name",		m_oName )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"ss:RefersTo",	oRefersTo )
+			WritingElement_ReadAttributes_End( oReader )
+
+			if (oRefersTo.IsInit())
+			{
+				r1c1_formula_convert::base_row = 1;
+				r1c1_formula_convert::base_col = 1;
+				
+				r1c1_formula_convert convert;
+
+				m_oRef = convert.convert(oRefersTo->substr(1));
+			}
+		}
+//----------------------------------------------------------------------------------------------------------------------------
+void CDataValidation::fromXML(XmlUtils::CXmlLiteReader& oReader)
+{
+	ReadAttributes( oReader );
+
+	if ( oReader.IsEmptyNode() )
+		return;
+
+	int nCurDepth = oReader.GetDepth();
+	while (oReader.ReadNextSiblingNode(nCurDepth))
+	{
+		std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+		if (L"formula1" == sName)
+		{
+			m_oFormula1 = oReader;
+		}
+		else if (L"formula2" == sName)
+		{
+			m_oFormula2 = oReader;
+		}
+		else if (L"sqref" == sName)
+		{
+			m_oSqRef = oReader.GetText2();
+		}
+//--------------------------------------------------- xml spreadsheet 2002
+		else if (L"Range" == sName)
+		{
+			r1c1_formula_convert::base_row = 1;
+			r1c1_formula_convert::base_col = 1;
+			
+			r1c1_formula_convert convert;
+
+			m_oSqRef = convert.convert(oReader.GetText2());
+		}
+		else if (L"Type" == sName)
+		{
+			m_oType = oReader.GetText2();
+
+			m_oAllowBlank.Init();
+			m_oAllowBlank->FromBool(true);
+
+			m_oShowInputMessage.Init();
+			m_oShowInputMessage->FromBool(true);
+		}
+		else if (L"Value" == sName)
+		{
+			r1c1_formula_convert::base_row = 1;
+			r1c1_formula_convert::base_col = 1;
+			r1c1_formula_convert::bAbsolute = true;
+			
+			r1c1_formula_convert convert;
+
+			m_oFormula1 = new CDataValidationFormula(m_pMainDocument);
+			m_oFormula1->m_sText = convert.convert(oReader.GetText3());
+
+			//if (m_oFormula1->m_sText.find(L"!") == std::wstring::npos)
+			//{
+			//	CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
+			//	if (xlsx_flat)
+			//	{
+			//		CSheet *pSheet = xlsx_flat->m_pWorkbook->m_oSheets->m_arrItems.back();
+			//		if (pSheet->m_oName.IsInit())
+			//		{
+			//			m_oFormula1->m_sText = *pSheet->m_oName + L"!" + m_oFormula1->m_sText;
+			//		}
+			//	}
+			//}
+		}
+	}
+}
 	} //Spreadsheet
 } // OOX

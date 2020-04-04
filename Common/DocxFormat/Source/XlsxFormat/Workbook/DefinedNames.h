@@ -84,35 +84,7 @@ namespace OOX
 
 		private:
 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				nullable_string oRefersTo;
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, L"comment",		m_oComment )
-					WritingElement_ReadAttributes_Read_if     ( oReader, L"customMenu",		m_oCustomMenu )
-					WritingElement_ReadAttributes_Read_if     ( oReader, L"description",	m_oDescription )
-					WritingElement_ReadAttributes_Read_if     ( oReader, L"function",		m_oFunction )
-					WritingElement_ReadAttributes_Read_if     ( oReader, L"functionGroupId",m_oFunctionGroupId )
-					WritingElement_ReadAttributes_Read_if     ( oReader, L"help",			m_oHelp )
-					WritingElement_ReadAttributes_Read_if     ( oReader, L"hidden",			m_oHidden )
-					WritingElement_ReadAttributes_Read_if     ( oReader, L"localSheetId",	m_oLocalSheetId )
-					WritingElement_ReadAttributes_Read_if     ( oReader, L"name",			m_oName )
-					WritingElement_ReadAttributes_Read_if     ( oReader, L"publishToServer",m_oPublishToServer )
-					WritingElement_ReadAttributes_Read_if     ( oReader, L"shortcutKey ",	m_oShortcutKey  )
-					WritingElement_ReadAttributes_Read_if     ( oReader, L"statusBar",		m_oStatusBar  )
-					WritingElement_ReadAttributes_Read_if     ( oReader, L"vbProcedure",	m_oVbProcedure  )
-					WritingElement_ReadAttributes_Read_if     ( oReader, L"workbookParameter",	m_oWorkbookParameter  )
-					WritingElement_ReadAttributes_Read_if     ( oReader, L"xlm",			m_oXlm  )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, L"ss:Name",		m_oName )
-					WritingElement_ReadAttributes_Read_if     ( oReader, L"ss:RefersTo",	oRefersTo )
-				WritingElement_ReadAttributes_End( oReader )
-
-				if (oRefersTo.IsInit())
-				{
-					m_oRef = oRefersTo->substr(1);
-				}
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader); // -> SheetData.cpp
 
 		public:
 				nullable_string									m_oComment;

@@ -1273,7 +1273,11 @@ namespace OOX
 			}
 			std::wstring toXMLStart() const
 			{
-				std::wstring sResult = _T("<w:sdtPr>");
+				return L"<w:sdtPr>";
+			}
+			std::wstring toXMLEnd() const
+			{
+				std::wstring sResult = L"";
 
 				WritingElement_WriteNode_2( m_oRPr );
 				WritingElement_WriteNode_1( L"<w:alias ",         m_oAlias );
@@ -1372,12 +1376,8 @@ namespace OOX
 						break;
 					}
 				}
-
+				sResult += L"</w:sdtPr>";
 				return sResult;
-			}
-			std::wstring toXMLEnd() const
-			{
-				return _T("</w:sdtPr>");
 			}
 
 			virtual std::wstring toXML() const

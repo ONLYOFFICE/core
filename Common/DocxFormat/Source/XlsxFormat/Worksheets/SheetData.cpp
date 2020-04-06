@@ -979,9 +979,11 @@ namespace OOX
 					m_oValue = oReader;
 				else if (strcmp("Data", sName) == 0)
 				{
-					ReadAttributesData(oReader);
-					m_oValue.Init();
-					m_oValue->m_sText = oReader.GetText3();
+					CData data(oReader);
+
+					m_oType = data.m_oType;
+					m_oValue = data.m_oValue;
+					m_oRichText = data.m_oRichText;
 				}
 				else if (strcmp("Comment", sName) == 0)
 				{
@@ -1006,7 +1008,28 @@ namespace OOX
 					m_oRichText = oReader;
 				else if ( strcmp("NamedCell", sName) == 0 )
 				{
-					m_oRichText = oReader;
+					nullable_string name;
+					WritingElement_ReadAttributes_StartChar( oReader )
+						WritingElement_ReadAttributes_Read_ifChar ( oReader, "ss:Name", name )
+					WritingElement_ReadAttributes_EndChar( oReader )					
+
+					CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
+
+					if (xlsx_flat && name.IsInit())
+					{
+						if (false == xlsx_flat->m_pWorkbook->m_oDefinedNames.IsInit())
+						{
+							xlsx_flat->m_pWorkbook->m_oDefinedNames.Init();
+						}
+
+						CDefinedName* pDefinedName = new CDefinedName();
+						pDefinedName->m_oName = name;
+						if (m_oRef.IsInit()) //todooo ref wstring->string ????
+							pDefinedName->m_oRef = std::wstring(m_oRef->begin(), m_oRef->end());
+						pDefinedName->m_oLocalSheetId = xlsx_flat->m_arWorksheets.size();
+
+						xlsx_flat->m_pWorkbook->m_oDefinedNames->m_arrItems.push_back(pDefinedName);
+					}
 				}
 //o:SmartTags, x:PhoneticText
 			}
@@ -1020,15 +1043,40 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_ifChar ( oReader, "ss:Author", pComment->m_sAuthor )
 			WritingElement_ReadAttributes_EndChar( oReader )
 
-			CText *pText = new CText();
-			pText->fromXML(oReader);
+			CData data_comment;
+			data_comment.m_oType.Init();
+			data_comment.m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeStr);
+			data_comment.fromXML(oReader);
 
-			CRun *pRun = new CRun();
-			pRun->m_arrItems.push_back(pText);
-			
-			pComment->m_oText.Init();
-			pComment->m_oText->m_arrItems.push_back(pRun);
+			pComment->m_oText = data_comment.m_oRichText;
 
+		}
+		void CData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.GetAttributesCount() <= 0 ) return;
+
+			WritingElement_ReadAttributes_StartChar( oReader )
+				WritingElement_ReadAttributes_Read_ifChar ( oReader, "ss:Type", m_oType )
+			WritingElement_ReadAttributes_EndChar( oReader )
+		}
+		void CData::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if(SimpleTypes::Spreadsheet::celltypeStr != m_oType->GetValue())
+			{
+				m_oValue = oReader;
+				return;
+			}
+
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+				const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
+
+				if ( strcmp("v", sName) == 0)
+					m_oValue = m_oValue;
+			}
 		}
 		void CCell::PrepareForBinaryWriter()
 		{
@@ -1056,12 +1104,16 @@ namespace OOX
 			}
 			else if (xlsx_flat)
 			{
+				if (false == xlsx_flat->m_pSharedStrings.IsInit())
+				{
+					xlsx_flat->m_pSharedStrings = new CSharedStrings(m_pMainDocument);
+				}
 				pSharedStrings = xlsx_flat->m_pSharedStrings.GetPointer();
 			}
 
 			if(m_oType.IsInit())
 			{
-				if(SimpleTypes::Spreadsheet::celltypeInlineStr == m_oType->GetValue())
+				if(m_oRichText.IsInit()/*SimpleTypes::Spreadsheet::celltypeInlineStr == m_oType->GetValue()*/)
 				{
 					if(xlsx && !xlsx->m_pSharedStrings)
 					{
@@ -1092,9 +1144,12 @@ namespace OOX
 						//добавляем в SharedStrings
 						CSi* pSi = new CSi();
 						CText* pText =  new CText();
+						
 						pText->m_sText = m_oValue->ToString();
 						pSi->m_arrItems.push_back(pText);
+						
 						int nIndex = pSharedStrings->AddSi(pSi);
+						
 						//меняем значение ячейки
 						m_oValue.Init();
 						m_oValue->m_sText = std::to_wstring(nIndex);
@@ -1230,15 +1285,6 @@ namespace OOX
 			}
 
 			oStream.Seek(nEnd);
-		}
-
-		void CCell::ReadAttributesData(XmlUtils::CXmlLiteReader& oReader)
-		{
-			if ( oReader.GetAttributesCount() <= 0 ) return;
-
-			WritingElement_ReadAttributes_StartChar( oReader )
-				WritingElement_ReadAttributes_Read_ifChar ( oReader, "ss:Type", m_oType )
-			WritingElement_ReadAttributes_EndChar( oReader )
 		}
 		void CCell::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{

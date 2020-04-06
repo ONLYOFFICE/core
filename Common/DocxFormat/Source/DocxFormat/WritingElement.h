@@ -1137,6 +1137,7 @@ namespace OOX
 		et_x_Row,
 		et_x_Cell,
 		et_x_Formula,
+		et_x_Data,
 		et_x_Cols,
 		et_x_Col,
 		et_x_Hyperlinks,

@@ -141,7 +141,7 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -184,20 +184,55 @@ namespace OOX
 			}
 
 		public:
-				nullable<SimpleTypes::COnOff<>>							m_oAca;
-				nullable<SimpleTypes::COnOff<>>							m_oBx;
-				nullable<SimpleTypes::COnOff<>>							m_oCa;
-				nullable<SimpleTypes::COnOff<>>							m_oDel1;
-				nullable<SimpleTypes::COnOff<>>							m_oDel2;
-				nullable<SimpleTypes::COnOff<>>							m_oDt2D;
-				nullable<SimpleTypes::COnOff<>>							m_oDtr;
-				nullable<std::wstring>									m_oR1;
-				nullable<std::wstring>									m_oR2;
-				nullable<std::wstring>									m_oRef;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oSi;
-				nullable<SimpleTypes::Spreadsheet::CCellFormulaType<>>	m_oT;
+			nullable<SimpleTypes::COnOff<>>							m_oAca;
+			nullable<SimpleTypes::COnOff<>>							m_oBx;
+			nullable<SimpleTypes::COnOff<>>							m_oCa;
+			nullable<SimpleTypes::COnOff<>>							m_oDel1;
+			nullable<SimpleTypes::COnOff<>>							m_oDel2;
+			nullable<SimpleTypes::COnOff<>>							m_oDt2D;
+			nullable<SimpleTypes::COnOff<>>							m_oDtr;
+			nullable<std::wstring>									m_oR1;
+			nullable<std::wstring>									m_oR2;
+			nullable<std::wstring>									m_oRef;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oSi;
+			nullable<SimpleTypes::Spreadsheet::CCellFormulaType<>>	m_oT;
 
-				std::wstring m_sText;
+			std::wstring m_sText;
+		};
+		class CData : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CData)
+			CData()
+			{
+			}
+			virtual ~CData()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
+			{
+				return L"";
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual EElementType getType () const
+			{
+				return et_x_Data;
+			}
+
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+		public:
+			nullable<SimpleTypes::Spreadsheet::CCellTypeType<>>	m_oType;
+			nullable<CSi>										m_oRichText;
+			nullable<CText>										m_oValue;
 		};
 
 		class CCell : public WritingElement
@@ -340,7 +375,6 @@ namespace OOX
 		private:
 			void PrepareForBinaryWriter();
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			void ReadAttributesData(XmlUtils::CXmlLiteReader& oReader);
 			void ReadComment(XmlUtils::CXmlLiteReader& oReader, CCommentItem* pComment);
 
 			nullable<std::string>								m_oRef;

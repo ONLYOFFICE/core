@@ -119,6 +119,8 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
         NSDirectory::GetFiles2(*i, strFontsW_Cur, true);
     }
 
+    std::sort(strFontsW_Cur.begin(), strFontsW_Cur.end());
+
     bool bIsEqual = true;
     if (strFonts.size() != strFontsW_Cur.size())
         bIsEqual = false;

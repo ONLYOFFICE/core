@@ -220,13 +220,13 @@ namespace OOX
 			{
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+					void fromXML2(XmlUtils::CXmlLiteReader& oReader);
 			virtual EElementType getType () const
 			{
 				return et_x_Data;
 			}
 
 		private:
-			void fromXML2(XmlUtils::CXmlLiteReader& oReader);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 			void dump(const std::wstring &text);
 

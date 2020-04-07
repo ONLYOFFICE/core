@@ -983,7 +983,7 @@ namespace OOX
 
 					m_oType = data.m_oType;
 					m_oValue = data.m_oValue;
-					m_oRichText = data.m_oRichText;
+					m_oRichText = data.m_oRichText.GetPointerEmptyNullable();
 				}
 				else if (strcmp("Comment", sName) == 0)
 				{
@@ -1043,13 +1043,21 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_ifChar ( oReader, "ss:Author", pComment->m_sAuthor )
 			WritingElement_ReadAttributes_EndChar( oReader )
 
-			CData data_comment;
-			data_comment.m_oType.Init();
-			data_comment.m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeStr);
-			data_comment.fromXML(oReader);
+			if ( oReader.IsEmptyNode() )
+				return;
 
-			pComment->m_oText = data_comment.m_oRichText;
-
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode2( nCurDepth ) )
+			{
+				const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
+				if ( strcmp("Data", sName) == 0)
+				{
+					CData data_comment;
+					data_comment.fromXML2(oReader);
+					
+					pComment->m_oText = data_comment.m_oRichText.GetPointerEmptyNullable();
+				}
+			}
 		}
 		void CData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -1069,10 +1077,11 @@ namespace OOX
 				return;
 			}
 			fromXML2(oReader);
-			dump(oReader.GetText3());
 		}
 		void CData::dump(const std::wstring &text)
 		{
+			if (text.empty()) return;
+
 			if (false == m_oRichText.IsInit())
 				m_oRichText.Init();
 
@@ -1123,16 +1132,16 @@ namespace OOX
 				return;
 
 			int nCurDepth = oReader.GetDepth();
-			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			while( oReader.ReadNextSiblingNode2( nCurDepth ) )
 			{
 				const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 
 				if ( strcmp("B", sName) == 0)
 				{
 					bBold = true;
-					fromXML(oReader);
+					fromXML2(oReader);
 
-					dump(oReader.GetText3());
+					//dump(oReader.GetText());
 					bBold.reset();
 				}
 				else if ( strcmp("I", sName) == 0)
@@ -1140,7 +1149,7 @@ namespace OOX
 					bItalic = true;
 					fromXML2(oReader);
 
-					dump(oReader.GetText3());
+					//dump(oReader.GetText());
 					bItalic.reset();
 				}
 				else if ( strcmp("U", sName) == 0)
@@ -1148,7 +1157,7 @@ namespace OOX
 					bUnderline = true;
 					fromXML2(oReader);
 
-					dump(oReader.GetText3());
+					//dump(oReader.GetText());
 					bUnderline.reset();
 				}
 				else if ( strcmp("Sub", sName) == 0)
@@ -1156,7 +1165,7 @@ namespace OOX
 					bSubscript = true;
 					fromXML2(oReader);
 
-					dump(oReader.GetText3());
+					//dump(oReader.GetText());
 					bSubscript.reset();
 				}
 				else if ( strcmp("Sup", sName) == 0)
@@ -1164,7 +1173,7 @@ namespace OOX
 					bSuperscript  = true;
 					fromXML2(oReader);
 
-					dump(oReader.GetText3());
+					//dump(oReader.GetText());
 					bSuperscript.reset();
 				}
 				else if ( strcmp("Font", sName) == 0)
@@ -1176,9 +1185,13 @@ namespace OOX
 					
 					fromXML2(oReader);
 
-					dump(oReader.GetText3());
+					//dump(oReader.GetText());
 					sColor.reset();
 					nFontSize.reset();
+				}
+				else if (strcmp("#text", sName) == 0)
+				{
+					dump(oReader.GetText());
 				}
 			}
 		}

@@ -226,8 +226,18 @@ namespace OOX
 			}
 
 		private:
-
+			void fromXML2(XmlUtils::CXmlLiteReader& oReader);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			void dump(const std::wstring &text);
+
+			nullable_bool	bBold;
+			nullable_bool	bItalic;
+			nullable_bool	bUnderline;
+			nullable_bool	bSubscript;
+			nullable_bool	bSuperscript;
+			nullable_string sColor;
+			nullable_int	nFontSize;
+
 
 		public:
 			nullable<SimpleTypes::Spreadsheet::CCellTypeType<>>	m_oType;

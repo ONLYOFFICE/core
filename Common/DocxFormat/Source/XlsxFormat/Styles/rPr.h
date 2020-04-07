@@ -421,16 +421,13 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
                     WritingElement_ReadAttributes_Read_if     ( oReader, _T("auto"),    m_oAuto )
                     WritingElement_ReadAttributes_Read_if     ( oReader, _T("indexed"), m_oIndexed )
                     WritingElement_ReadAttributes_Read_if     ( oReader, _T("rgb"),     m_oRgb )
                     WritingElement_ReadAttributes_Read_if     ( oReader, _T("theme"),   m_oThemeColor )
                     WritingElement_ReadAttributes_Read_if     ( oReader, _T("tint"),    m_oTint )
-
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::COnOff<>>						m_oAuto;
@@ -622,12 +619,9 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"),      m_oFontScheme )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if( oReader, _T("val"), m_oFontScheme )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::Spreadsheet::CFontScheme<>>	m_oFontScheme;

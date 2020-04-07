@@ -1068,14 +1068,118 @@ namespace OOX
 				m_oValue = oReader;
 				return;
 			}
+			fromXML2(oReader);
+			dump(oReader.GetText3());
+		}
+		void CData::dump(const std::wstring &text)
+		{
+			if (false == m_oRichText.IsInit())
+				m_oRichText.Init();
+
+			CText *pText = new CText();
+			pText->m_sText = text;
+
+			CRun *pRun = new CRun();
+			pRun->m_arrItems.push_back(pText);
+			
+			pRun->m_oRPr = new CRPr();
+
+			if (bBold.IsInit())
+			{
+				pRun->m_oRPr->m_oBold.Init();
+				pRun->m_oRPr->m_oBold->m_oVal.FromBool(*bBold);
+			}
+			if (bItalic.IsInit())
+			{
+				pRun->m_oRPr->m_oItalic.Init();
+				pRun->m_oRPr->m_oItalic->m_oVal.FromBool(*bItalic);
+			}
+			if (bUnderline.IsInit())
+			{
+				pRun->m_oRPr->m_oUnderline.Init(); pRun->m_oRPr->m_oUnderline->m_oUnderline.Init();
+				pRun->m_oRPr->m_oUnderline->m_oUnderline->SetValue(SimpleTypes::Spreadsheet::underlineSingle);
+			}
+			if (sColor.IsInit())
+			{
+				pRun->m_oRPr->m_oColor.Init(); 
+				pRun->m_oRPr->m_oColor->m_oRgb = new SimpleTypes::Spreadsheet::CHexColor(*sColor);
+			}
+			if (nFontSize.IsInit())
+			{
+				pRun->m_oRPr->m_oSz.Init(); pRun->m_oRPr->m_oSz->m_oVal.Init();
+				pRun->m_oRPr->m_oSz->m_oVal->SetValue(*nFontSize);
+			}
+			if (bSubscript.IsInit() || bSuperscript.IsInit())
+			{
+				pRun->m_oRPr->m_oVertAlign.Init(); pRun->m_oRPr->m_oVertAlign->m_oVerticalAlign.Init();
+				if (bSubscript.IsInit())	pRun->m_oRPr->m_oVertAlign->m_oVerticalAlign->SetValue(SimpleTypes::verticalalignrunSubscript);
+				if (bSuperscript.IsInit())	pRun->m_oRPr->m_oVertAlign->m_oVerticalAlign->SetValue(SimpleTypes::verticalalignrunSuperscript);
+			}
+			m_oRichText->m_arrItems.push_back(pRun);
+		}
+		void CData::fromXML2(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
 
 			int nCurDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
 				const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 
-				if ( strcmp("v", sName) == 0)
-					m_oValue = m_oValue;
+				if ( strcmp("B", sName) == 0)
+				{
+					bBold = true;
+					fromXML(oReader);
+
+					dump(oReader.GetText3());
+					bBold.reset();
+				}
+				else if ( strcmp("I", sName) == 0)
+				{
+					bItalic = true;
+					fromXML2(oReader);
+
+					dump(oReader.GetText3());
+					bItalic.reset();
+				}
+				else if ( strcmp("U", sName) == 0)
+				{
+					bUnderline = true;
+					fromXML2(oReader);
+
+					dump(oReader.GetText3());
+					bUnderline.reset();
+				}
+				else if ( strcmp("Sub", sName) == 0)
+				{
+					bSubscript = true;
+					fromXML2(oReader);
+
+					dump(oReader.GetText3());
+					bSubscript.reset();
+				}
+				else if ( strcmp("Sup", sName) == 0)
+				{
+					bSuperscript  = true;
+					fromXML2(oReader);
+
+					dump(oReader.GetText3());
+					bSuperscript.reset();
+				}
+				else if ( strcmp("Font", sName) == 0)
+				{
+					WritingElement_ReadAttributes_Start_No_NS( oReader )
+						WritingElement_ReadAttributes_Read_if ( oReader, L"Color",	sColor )
+						WritingElement_ReadAttributes_Read_if ( oReader, L"Size",	nFontSize )
+					WritingElement_ReadAttributes_End_No_NS( oReader )
+					
+					fromXML2(oReader);
+
+					dump(oReader.GetText3());
+					sColor.reset();
+					nFontSize.reset();
+				}
 			}
 		}
 		void CCell::PrepareForBinaryWriter()
@@ -1401,17 +1505,17 @@ namespace OOX
 		void CRow::toXMLStart(NSStringUtils::CStringBuilder& writer) const
 		{
 			writer.WriteString(_T("<row"));
-			WritingStringNullableAttrInt(L"r", m_oR, m_oR->GetValue());
-			WritingStringNullableAttrInt(L"s", m_oS, m_oS->GetValue());
-			WritingStringNullableAttrBool(L"customFormat", m_oCustomFormat);
-			WritingStringNullableAttrDouble(L"ht", m_oHt, m_oHt->GetValue());
-			WritingStringNullableAttrBool(L"hidden", m_oHidden);
-			WritingStringNullableAttrBool(L"customHeight", m_oCustomHeight);
-			WritingStringNullableAttrInt(L"outlineLevel", m_oOutlineLevel, m_oOutlineLevel->GetValue());
-			WritingStringNullableAttrBool(L"collapsed", m_oCollapsed);
-			WritingStringNullableAttrBool(L"thickTop", m_oThickTop);
-			WritingStringNullableAttrBool(L"thickBot", m_oThickBot);
-			WritingStringNullableAttrBool(L"ph", m_oPh);
+				WritingStringNullableAttrInt(L"r", m_oR, m_oR->GetValue());
+				WritingStringNullableAttrInt(L"s", m_oS, m_oS->GetValue());
+				WritingStringNullableAttrBool(L"customFormat", m_oCustomFormat);
+				WritingStringNullableAttrDouble(L"ht", m_oHt, m_oHt->GetValue());
+				WritingStringNullableAttrBool(L"hidden", m_oHidden);
+				WritingStringNullableAttrBool(L"customHeight", m_oCustomHeight);
+				WritingStringNullableAttrInt(L"outlineLevel", m_oOutlineLevel, m_oOutlineLevel->GetValue());
+				WritingStringNullableAttrBool(L"collapsed", m_oCollapsed);
+				WritingStringNullableAttrBool(L"thickTop", m_oThickTop);
+				WritingStringNullableAttrBool(L"thickBot", m_oThickBot);
+				WritingStringNullableAttrBool(L"ph", m_oPh);
 			writer.WriteString(_T(">"));
 		}
 		void CRow::toXMLEnd(NSStringUtils::CStringBuilder& writer) const

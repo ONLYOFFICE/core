@@ -203,8 +203,7 @@ void OOX::Spreadsheet::CXlsx::PrepareWorkbook()
 		OOX::Spreadsheet::CWorksheet* pWorksheet = new OOX::Spreadsheet::CWorksheet(this);
 		
 		pWorksheet->m_oDimension.Init();
-		pWorksheet->m_oDimension->m_oRef.Init();
-		pWorksheet->m_oDimension->m_oRef->append(_T("A1"));
+		pWorksheet->m_oDimension->m_oRef = L"A1";
 		pWorksheet->m_oSheetViews.Init();
 		
 		OOX::Spreadsheet::CSheetView* pSheetView = new OOX::Spreadsheet::CSheetView();

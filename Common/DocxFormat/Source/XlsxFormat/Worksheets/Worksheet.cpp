@@ -123,47 +123,67 @@ namespace OOX
 			{
 				sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-				if ( _T("cols") == sName )
+				if ( L"cols" == sName )
 					m_oCols = oReader;
-				else if ( _T("dimension") == sName )
+				else if ( L"dimension" == sName )
 					m_oDimension = oReader;
-				else if ( _T("drawing") == sName )
+				else if ( L"drawing" == sName )
 					m_oDrawing = oReader;
-				else if ( _T("hyperlinks") == sName )
+				else if ( L"hyperlinks" == sName )
 				{
 					m_oHyperlinks = new CHyperlinks(OOX::WritingElement::m_pMainDocument);
 					m_oHyperlinks->fromXML(oReader);
 				}
-				else if ( _T("mergeCells") == sName )
+				else if ( L"mergeCells" == sName )
 				{
 					m_oMergeCells = new CMergeCells(OOX::WritingElement::m_pMainDocument);
 					m_oMergeCells->fromXML(oReader);
 				}
-				else if ( _T("pageMargins") == sName )
+				else if ( L"pageMargins" == sName )
 					m_oPageMargins = oReader;
 				else if ( _T("pageSetup") == sName )
 					m_oPageSetup = oReader;
-				else if ( _T("printOptions") == sName )
+				else if ( L"printOptions" == sName )
 					m_oPrintOptions = oReader;
-				else if ( L"sheetData" == sName || L"Table" == sName) // 2003 XML Format
+				else if ( L"sheetData" == sName || L"Table" == sName) // 2002 XML Format
 				{
 					m_oSheetData = new CSheetData(OOX::WritingElement::m_pMainDocument);
 					m_oSheetData->fromXML(oReader);
+				}
+				else if (L"WorksheetOptions" == sName) // 2002 XML Format
+				{
+					ReadWorksheetOptions(oReader);
+				}
+				else if (L"Names")
+				{
+					CDefinedNames names(oReader);	
 
-					if (m_oSheetData->m_oCols.IsInit())
+					CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(WritingElement::m_pMainDocument);
+					if (xlsx_flat)
 					{
-						m_oCols = m_oSheetData->m_oCols;
-						m_oSheetData->m_oCols->m_arrItems.clear();
-						m_oSheetData->m_oCols.reset();
+						for (size_t i = 0; i < names.m_arrItems.size(); i++)
+						{
+							if (names.m_arrItems[i])
+							{
+								if ((names.m_arrItems[i]->m_oName.IsInit()) && (*names.m_arrItems[i]->m_oName == L"Print_Area"))
+								{
+									names.m_arrItems[i]->m_oName = L"_xlnm.Print_Area";
+								}
+								names.m_arrItems[i]->m_oLocalSheetId = xlsx_flat->m_arWorksheets.size() - 1;
+								xlsx_flat->m_pWorkbook->m_oDefinedNames->m_arrItems.push_back(names.m_arrItems[i]);
+								names.m_arrItems[i] = NULL;
+							}
+						}
+						names.m_arrItems.clear();
 					}
 				}
-				else if (_T("conditionalFormatting") == sName)
+				else if (L"conditionalFormatting" == sName)
 					m_arrConditionalFormatting.push_back(new CConditionalFormatting(oReader));
-				else if ( _T("sheetFormatPr") == sName )
+				else if ( L"sheetFormatPr" == sName )
 					m_oSheetFormatPr = oReader;
-				else if ( _T("sheetViews") == sName )
+				else if ( L"sheetViews" == sName )
 					m_oSheetViews = oReader;
-				else if ( _T("autoFilter") == sName )
+				else if ( L"autoFilter" == sName )
 					m_oAutofilter = oReader;
 				else if ( _T("tableParts") == sName )
 					m_oTableParts = oReader;
@@ -229,6 +249,8 @@ namespace OOX
 		}
 
 
+		//void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader);//SheetData.cpp
+
 		void CWorksheet::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			nullable_string sName;
@@ -256,8 +278,6 @@ namespace OOX
 				pSheet->m_oSheetId->SetValue(xlsx_flat->m_pWorkbook->m_oSheets->m_arrItems.size());
 			}
 		}
-
-
 		void CWorksheet::PrepareDataValidations()
 		{
 			if (m_oExtLst.IsInit() == false) return;

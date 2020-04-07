@@ -310,7 +310,7 @@ namespace OOX
 			}
 
 		public:
-			nullable<std::wstring>	m_oRef;
+			nullable_string	m_oRef;
 		};
 
 		class CSheetFormatPr : public WritingElement
@@ -431,7 +431,7 @@ namespace OOX
 				WritingElement_ReadAttributes_Start( oReader )
 					WritingElement_ReadAttributes_Read_if		( oReader, _T("activePane")	, m_oActivePane)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("state")		, m_oState)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("topLeftCell")	, m_oTopLeftCell)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("topLeftCell"), m_oTopLeftCell)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("xSplit")		, m_oXSplit)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("ySplit")		, m_oYSplit)	
 				WritingElement_ReadAttributes_End( oReader )
@@ -440,7 +440,7 @@ namespace OOX
 		public:
             nullable<SimpleTypes::Spreadsheet::CActivePane<>>   m_oActivePane;
             nullable<SimpleTypes::Spreadsheet::CPaneState<>>    m_oState;
-            nullable<std::wstring>								m_oTopLeftCell;
+            nullable_string										m_oTopLeftCell;
             nullable<SimpleTypes::CDouble>                      m_oXSplit;
             nullable<SimpleTypes::CDouble>                      m_oYSplit;
 		};
@@ -488,17 +488,17 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, _T("activeCell")	, m_oActiveCell)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("activeCellId")	, m_oActiveCellId)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("sqref")		, m_oSqref)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("pane")			, m_oPane)
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("activeCell"),	m_oActiveCell)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("activeCellId"),	m_oActiveCellId)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("sqref"),			m_oSqref)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("pane"),			m_oPane)
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
-			nullable<std::wstring>								m_oActiveCell;
+			nullable_string										m_oActiveCell;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oActiveCellId;
-			nullable<std::wstring>								m_oSqref;
+			nullable_string										m_oSqref;
 			nullable<SimpleTypes::Spreadsheet::CActivePane<>>	m_oPane;
 		};
 
@@ -571,9 +571,9 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if (_T("pane") == sName)
+					if (L"pane" == sName)
 						m_oPane = oReader;
-					if (_T("selection") == sName)
+					if (L"selection" == sName)
 					{
 						m_arrItems.push_back(new CSelection(oReader));
 					}
@@ -626,7 +626,7 @@ namespace OOX
 				nullable<SimpleTypes::COnOff<>>						m_oShowWhiteSpace;
 				nullable<SimpleTypes::COnOff<>>						m_oShowZeros;
 				nullable<SimpleTypes::COnOff<>>						m_oTabSelected;
-				nullable<std::wstring>								m_oTopLeftCell;
+				nullable_string										m_oTopLeftCell;
 				nullable<SimpleTypes::Spreadsheet::CSheetViewType<>>m_oView;
 				nullable<SimpleTypes::COnOff<>>						m_oWindowProtection;
 				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oWorkbookViewId;
@@ -739,7 +739,6 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if		( oReader, _T("autoPageBreaks"), m_oAutoPageBreaks )
 				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("fitToPage"),	m_oFitToPage )
@@ -879,7 +878,6 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if		( oReader, _T("codeName"),							m_oCodeName )
 				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("enableFormatConditionsCalculation"),	m_oEnableFormatConditionsCalculation )
@@ -898,12 +896,12 @@ namespace OOX
 			nullable<CPageSetUpPr>				m_oPageSetUpPr;
 			nullable<COutlinePr>				m_oOutlinePr;
 
-			nullable<std::wstring>				m_oCodeName;
+			nullable_string						m_oCodeName;
 			nullable<SimpleTypes::COnOff<>>		m_oEnableFormatConditionsCalculation;
 			nullable<SimpleTypes::COnOff<>>		m_oFilterMode;
 			nullable<SimpleTypes::COnOff<>>		m_oPublished;
 			nullable<SimpleTypes::COnOff<>>		m_oSyncHorizontal;
-			nullable<std::wstring>				m_oSyncRef;
+			nullable_string						m_oSyncRef;
 			nullable<SimpleTypes::COnOff<>>		m_oSyncVertical;
 			nullable<SimpleTypes::COnOff<>>		m_oTransitionEntry;
 			nullable<SimpleTypes::COnOff<>>		m_oTransitionEvaluation;

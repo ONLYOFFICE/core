@@ -3050,7 +3050,7 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
 	if(oWorksheet.m_oDimension.IsInit() && oWorksheet.m_oDimension->m_oRef.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetsTypes::Dimension);
-		m_oBcw.m_oStream.WriteStringW(oWorksheet.m_oDimension->m_oRef.get2());
+		m_oBcw.m_oStream.WriteStringW(*oWorksheet.m_oDimension->m_oRef);
 	}
 	//SheetViews
 	if(oWorksheet.m_oSheetViews.IsInit())
@@ -3470,7 +3470,7 @@ void BinaryWorksheetTableWriter::WriteSheetView(const OOX::Spreadsheet::CSheetVi
 	if (oSheetView.m_oTopLeftCell.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetView::TopLeftCell);
-		m_oBcw.m_oStream.WriteStringW4(oSheetView.m_oTopLeftCell.get2());
+		m_oBcw.m_oStream.WriteStringW4(*oSheetView.m_oTopLeftCell);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	if (oSheetView.m_oView.IsInit())
@@ -3550,7 +3550,7 @@ void BinaryWorksheetTableWriter::WritePane(const OOX::Spreadsheet::CPane& oPane)
 	if (oPane.m_oTopLeftCell.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSer_Pane::TopLeftCell);
-		m_oBcw.m_oStream.WriteStringW(oPane.m_oTopLeftCell.get2());
+		m_oBcw.m_oStream.WriteStringW(*oPane.m_oTopLeftCell);
 	}
 	//XSplit
 	if (oPane.m_oXSplit.IsInit())
@@ -5539,7 +5539,7 @@ void BinaryWorksheetTableWriter::WriteSheetPr(const OOX::Spreadsheet::CSheetPr& 
 	if (oSheetPr.m_oCodeName.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetPr::CodeName);
-		m_oBcw.m_oStream.WriteStringW4(oSheetPr.m_oCodeName.get2());
+		m_oBcw.m_oStream.WriteStringW4(*oSheetPr.m_oCodeName);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	if (oSheetPr.m_oEnableFormatConditionsCalculation.IsInit())
@@ -5569,7 +5569,7 @@ void BinaryWorksheetTableWriter::WriteSheetPr(const OOX::Spreadsheet::CSheetPr& 
 	if (oSheetPr.m_oSyncRef.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetPr::SyncRef);
-		m_oBcw.m_oStream.WriteStringW4(oSheetPr.m_oSyncRef.get2());
+		m_oBcw.m_oStream.WriteStringW4(*oSheetPr.m_oSyncRef);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	if (oSheetPr.m_oSyncVertical.IsInit())

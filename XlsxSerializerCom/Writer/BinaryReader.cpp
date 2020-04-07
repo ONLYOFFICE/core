@@ -4067,8 +4067,7 @@ int BinaryWorksheetsTableReader::ReadSheetView(BYTE type, long length, void* poR
 	}
 	else if(c_oSer_SheetView::TopLeftCell == type)
 	{
-		pSheetView->m_oTopLeftCell.Init();
-		pSheetView->m_oTopLeftCell->append(m_oBufferedStream.GetString4(length));
+		pSheetView->m_oTopLeftCell = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSer_SheetView::View == type)
 	{
@@ -4137,8 +4136,7 @@ int BinaryWorksheetsTableReader::ReadPane(BYTE type, long length, void* poResult
 	}
 	else if(c_oSer_Pane::TopLeftCell == type)
 	{
-		pPane->m_oTopLeftCell.Init();
-		pPane->m_oTopLeftCell->append(m_oBufferedStream.GetString4(length));
+		pPane->m_oTopLeftCell = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSer_Pane::XSplit == type)
 	{
@@ -4160,8 +4158,7 @@ int BinaryWorksheetsTableReader::ReadSelection(BYTE type, long length, void* poR
 	int res = c_oSerConstants::ReadOk;
 	if(c_oSer_Selection::ActiveCell == type)
 	{
-		pSelection->m_oActiveCell.Init();
-		pSelection->m_oActiveCell->append(m_oBufferedStream.GetString4(length));
+		pSelection->m_oActiveCell = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSer_Selection::ActiveCellId == type)
 	{
@@ -4170,8 +4167,7 @@ int BinaryWorksheetsTableReader::ReadSelection(BYTE type, long length, void* poR
 	}
 	else if(c_oSer_Selection::Sqref == type)
 	{
-		pSelection->m_oSqref.Init();
-		pSelection->m_oSqref->append(m_oBufferedStream.GetString4(length));
+		pSelection->m_oSqref = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSer_Selection::Pane == type)
 	{
@@ -4188,8 +4184,7 @@ int BinaryWorksheetsTableReader::ReadSheetPr(BYTE type, long length, void* poRes
 	int res = c_oSerConstants::ReadOk;
 	if(c_oSer_SheetPr::CodeName == type)
 	{
-		pSheetPr->m_oCodeName.Init();
-		pSheetPr->m_oCodeName->append(m_oBufferedStream.GetString4(length));
+		pSheetPr->m_oCodeName = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSer_SheetPr::EnableFormatConditionsCalculation == type)
 	{
@@ -4213,8 +4208,7 @@ int BinaryWorksheetsTableReader::ReadSheetPr(BYTE type, long length, void* poRes
 	}
 	else if(c_oSer_SheetPr::SyncRef == type)
 	{
-		pSheetPr->m_oSyncRef.Init();
-		pSheetPr->m_oSyncRef->append(m_oBufferedStream.GetString4(length));
+		pSheetPr->m_oSyncRef = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSer_SheetPr::SyncVertical == type)
 	{

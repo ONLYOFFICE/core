@@ -1007,29 +1007,7 @@ namespace OOX
 				else if ( strcmp("is", sName) == 0 )
 					m_oRichText = oReader;
 				else if ( strcmp("NamedCell", sName) == 0 )
-				{
-					nullable_string name;
-					WritingElement_ReadAttributes_StartChar( oReader )
-						WritingElement_ReadAttributes_Read_ifChar ( oReader, "ss:Name", name )
-					WritingElement_ReadAttributes_EndChar( oReader )					
-
-					CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
-
-					if (xlsx_flat && name.IsInit())
-					{
-						if (false == xlsx_flat->m_pWorkbook->m_oDefinedNames.IsInit())
-						{
-							xlsx_flat->m_pWorkbook->m_oDefinedNames.Init();
-						}
-
-						CDefinedName* pDefinedName = new CDefinedName();
-						pDefinedName->m_oName = name;
-						if (m_oRef.IsInit()) //todooo ref wstring->string ????
-							pDefinedName->m_oRef = std::wstring(m_oRef->begin(), m_oRef->end());
-						pDefinedName->m_oLocalSheetId = xlsx_flat->m_arWorksheets.size();
-
-						xlsx_flat->m_pWorkbook->m_oDefinedNames->m_arrItems.push_back(pDefinedName);
-					}
+				{//дублирование имен
 				}
 //o:SmartTags, x:PhoneticText
 			}
@@ -1091,38 +1069,42 @@ namespace OOX
 			CRun *pRun = new CRun();
 			pRun->m_arrItems.push_back(pText);
 			
-			pRun->m_oRPr = new CRPr();
+			if (bBold.IsInit() || bItalic.IsInit() || bUnderline.IsInit()|| nFontSize.IsInit() || bSubscript.IsInit() || bSuperscript.IsInit() ||
+				(sColor.IsInit() && *sColor != L"#333333"))
+			{
+				pRun->m_oRPr = new CRPr();
 
-			if (bBold.IsInit())
-			{
-				pRun->m_oRPr->m_oBold.Init();
-				pRun->m_oRPr->m_oBold->m_oVal.FromBool(*bBold);
-			}
-			if (bItalic.IsInit())
-			{
-				pRun->m_oRPr->m_oItalic.Init();
-				pRun->m_oRPr->m_oItalic->m_oVal.FromBool(*bItalic);
-			}
-			if (bUnderline.IsInit())
-			{
-				pRun->m_oRPr->m_oUnderline.Init(); pRun->m_oRPr->m_oUnderline->m_oUnderline.Init();
-				pRun->m_oRPr->m_oUnderline->m_oUnderline->SetValue(SimpleTypes::Spreadsheet::underlineSingle);
-			}
-			if (sColor.IsInit())
-			{
-				pRun->m_oRPr->m_oColor.Init(); 
-				pRun->m_oRPr->m_oColor->m_oRgb = new SimpleTypes::Spreadsheet::CHexColor(*sColor);
-			}
-			if (nFontSize.IsInit())
-			{
-				pRun->m_oRPr->m_oSz.Init(); pRun->m_oRPr->m_oSz->m_oVal.Init();
-				pRun->m_oRPr->m_oSz->m_oVal->SetValue(*nFontSize);
-			}
-			if (bSubscript.IsInit() || bSuperscript.IsInit())
-			{
-				pRun->m_oRPr->m_oVertAlign.Init(); pRun->m_oRPr->m_oVertAlign->m_oVerticalAlign.Init();
-				if (bSubscript.IsInit())	pRun->m_oRPr->m_oVertAlign->m_oVerticalAlign->SetValue(SimpleTypes::verticalalignrunSubscript);
-				if (bSuperscript.IsInit())	pRun->m_oRPr->m_oVertAlign->m_oVerticalAlign->SetValue(SimpleTypes::verticalalignrunSuperscript);
+				if (bBold.IsInit())
+				{
+					pRun->m_oRPr->m_oBold.Init();
+					pRun->m_oRPr->m_oBold->m_oVal.FromBool(*bBold);
+				}
+				if (bItalic.IsInit())
+				{
+					pRun->m_oRPr->m_oItalic.Init();
+					pRun->m_oRPr->m_oItalic->m_oVal.FromBool(*bItalic);
+				}
+				if (bUnderline.IsInit())
+				{
+					pRun->m_oRPr->m_oUnderline.Init(); pRun->m_oRPr->m_oUnderline->m_oUnderline.Init();
+					pRun->m_oRPr->m_oUnderline->m_oUnderline->SetValue(SimpleTypes::Spreadsheet::underlineSingle);
+				}
+				if (sColor.IsInit())
+				{
+					pRun->m_oRPr->m_oColor.Init(); 
+					pRun->m_oRPr->m_oColor->m_oRgb = new SimpleTypes::Spreadsheet::CHexColor(*sColor);
+				}
+				if (nFontSize.IsInit())
+				{
+					pRun->m_oRPr->m_oSz.Init(); pRun->m_oRPr->m_oSz->m_oVal.Init();
+					pRun->m_oRPr->m_oSz->m_oVal->SetValue(*nFontSize);
+				}
+				if (bSubscript.IsInit() || bSuperscript.IsInit())
+				{
+					pRun->m_oRPr->m_oVertAlign.Init(); pRun->m_oRPr->m_oVertAlign->m_oVerticalAlign.Init();
+					if (bSubscript.IsInit())	pRun->m_oRPr->m_oVertAlign->m_oVerticalAlign->SetValue(SimpleTypes::verticalalignrunSubscript);
+					if (bSuperscript.IsInit())	pRun->m_oRPr->m_oVertAlign->m_oVerticalAlign->SetValue(SimpleTypes::verticalalignrunSuperscript);
+				}
 			}
 			m_oRichText->m_arrItems.push_back(pRun);
 		}
@@ -1457,6 +1439,7 @@ namespace OOX
 				{
 					r1c1_formula_convert::base_row = xlsx_flat->m_nLastReadRow;
 					r1c1_formula_convert::base_col = xlsx_flat->m_nLastReadCol;
+					r1c1_formula_convert::bAbsolute = false;
 					
 					r1c1_formula_convert convert;
 
@@ -1789,22 +1772,24 @@ namespace OOX
 					else if (strcmp("Column", sName) == 0)
 					{
 						CCol *pColumn = new CCol(m_pMainDocument);
-						if (pColumn)
+						if (pColumn && xlsx_flat)
 						{
 							pColumn->fromXML(oReader);
 
-							if (false == m_oCols.IsInit())
+							CWorksheet* pWorksheet = xlsx_flat->m_arWorksheets.back();
+
+							if (false == pWorksheet->m_oCols.IsInit())
 							{
-								m_oCols.Init();
+								pWorksheet->m_oCols.Init();
 							}
 
-							m_oCols->m_arrItems.push_back(pColumn);	
+							pWorksheet->m_oCols->m_arrItems.push_back(pColumn);	
 
 							pColumn->m_oMin.Init();
-							pColumn->m_oMin->SetValue(m_oCols->m_arrItems.size());
+							pColumn->m_oMin->SetValue(pWorksheet->m_oCols->m_arrItems.size());
 							
 							pColumn->m_oMax.Init();
-							pColumn->m_oMax->SetValue(m_oCols->m_arrItems.size());
+							pColumn->m_oMax->SetValue(pWorksheet->m_oCols->m_arrItems.size());
 						}
 					}
 				}
@@ -1915,6 +1900,7 @@ namespace OOX
 			{
 				r1c1_formula_convert::base_row = 1;
 				r1c1_formula_convert::base_col = 1;
+				r1c1_formula_convert::bAbsolute = true;
 				
 				r1c1_formula_convert convert;
 
@@ -1950,6 +1936,7 @@ void CDataValidation::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			r1c1_formula_convert::base_row = 1;
 			r1c1_formula_convert::base_col = 1;
+			r1c1_formula_convert::bAbsolute = false;
 			
 			r1c1_formula_convert convert;
 
@@ -1991,5 +1978,152 @@ void CDataValidation::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		}
 	}
 }
+//----------------------------------------------------------------------------------------------------------------------------
+void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
+{
+	if ( oReader.IsEmptyNode() )
+		return;
+	
+	CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(WritingElement::m_pMainDocument);
+
+	if (!xlsx_flat) return;
+
+	if (false == m_oSheetViews.IsInit())
+	{
+		m_oSheetViews.Init();		
+		m_oSheetViews->m_arrItems.push_back(new CSheetView());
+	}		
+	nullable_int active_pane;
+	nullable_bool bFreeze;
+	nullable_int xSplit, ySplit;
+
+	nullable_int active_pane_number;
+	std::map<int, nullable<CPane>> mapPanes;
+
+	int nDocumentDepth = oReader.GetDepth();
+	while ( oReader.ReadNextSiblingNode( nDocumentDepth ) )
+	{
+		std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+		if ( L"PageSetup" == sName )
+		{
+		}
+		else if ( L"Panes" == sName )
+		{
+			int nDocumentDepth1 = oReader.GetDepth();
+			while ( oReader.ReadNextSiblingNode( nDocumentDepth1 ) )
+			{
+				std::wstring sName1 = XmlUtils::GetNameNoNS(oReader.GetName());
+
+				if ( L"Pane" == sName1 )
+				{
+					nullable<CPane> pane; pane.Init();
+					nullable_int number;
+
+					int nDocumentDepth2 = oReader.GetDepth();
+					nullable_int col, row;
+					while ( oReader.ReadNextSiblingNode( nDocumentDepth2 ) )
+					{
+						std::wstring sName2 = XmlUtils::GetNameNoNS(oReader.GetName());
+						if ( L"Number" == sName2 )
+						{
+							number = oReader.GetText2();
+						}
+						else if (L"ActiveRow" == sName2)
+						{
+							row = oReader.GetText2();
+						}
+						else if (L"ActiveCol" == sName2)
+						{
+							col = oReader.GetText2();
+						}
+						else if (L"RangeSelection" == sName2)
+						{
+							r1c1_formula_convert::base_row = xlsx_flat->m_nLastReadRow;
+							r1c1_formula_convert::base_col = xlsx_flat->m_nLastReadCol;
+							r1c1_formula_convert::bAbsolute = false;
+							
+							r1c1_formula_convert convert;
+
+							m_oSheetViews->m_arrItems.back()->m_arrItems.push_back(new CSelection());							
+							m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref = convert.convert(oReader.GetText2());
+						}
+					}
+					if (col.IsInit() && row.IsInit())
+					{
+						if (m_oSheetViews->m_arrItems.back()->m_arrItems.empty())
+							m_oSheetViews->m_arrItems.back()->m_arrItems.push_back(new CSelection());
+
+						m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oActiveCell = getCellAddress(*row + 1, *col + 1);
+						if (false == m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref.IsInit())
+						{
+							m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref = m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oActiveCell;
+						}
+					}
+					if (number.IsInit())
+					{
+						mapPanes.insert(std::make_pair(*number, pane));
+					}
+				}
+			}
+		}
+		else if ( L"SplitHorizontal" == sName )
+		{
+			ySplit = oReader.GetText2();
+		}
+		else if ( L"SplitVertical" == sName )
+		{
+			xSplit = oReader.GetText2();
+		}
+		else if ( L"DoNotDisplayGridlines" == sName )
+		{
+			m_oSheetViews->m_arrItems.back()->m_oShowGridLines.Init();
+			m_oSheetViews->m_arrItems.back()->m_oShowGridLines->FromBool(false);
+		}
+		else if ( L"Selected" == sName )
+		{
+			m_oSheetViews->m_arrItems.back()->m_oTabSelected.Init();
+			m_oSheetViews->m_arrItems.back()->m_oTabSelected->FromBool(true);
+		}
+		else if ( L"FreezePanes" == sName )
+		{
+			bFreeze = true;
+		}
+		else if ( L"ActivePane" == sName )
+		{
+			active_pane_number = oReader.GetText2();
+		}	
+	}
+
+	if (active_pane_number.IsInit())
+	{
+		std::map<int, nullable<CPane>>::iterator pFind = mapPanes.find(*active_pane_number);
+		if (pFind != mapPanes.end())
+		{
+			m_oSheetViews->m_arrItems.back()->m_oPane = pFind->second;
+		}
+	}
+	if (m_oSheetViews->m_arrItems.back()->m_oPane.IsInit())
+	{
+		m_oSheetViews->m_arrItems.back()->m_oPane->m_oActivePane.Init();
+		m_oSheetViews->m_arrItems.back()->m_oPane->m_oActivePane->SetValue(SimpleTypes::Spreadsheet::activepaneBottomLeft);
+		if (bFreeze.IsInit())
+		{
+			m_oSheetViews->m_arrItems.back()->m_oPane->m_oXSplit.Init();
+			m_oSheetViews->m_arrItems.back()->m_oPane->m_oXSplit->SetValue(SimpleTypes::Spreadsheet::panestateFrozen);
+		}
+		if (ySplit.IsInit())
+		{
+			m_oSheetViews->m_arrItems.back()->m_oPane->m_oYSplit.Init();
+			m_oSheetViews->m_arrItems.back()->m_oPane->m_oYSplit->SetValue(*ySplit);
+		}
+		if (xSplit.IsInit())
+		{
+			m_oSheetViews->m_arrItems.back()->m_oPane->m_oXSplit.Init();
+			m_oSheetViews->m_arrItems.back()->m_oPane->m_oXSplit->SetValue(*xSplit);
+		}
+	}
+}
+
 	} //Spreadsheet
 } // OOX

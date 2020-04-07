@@ -512,7 +512,6 @@ namespace OOX
 			}
 		
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oXlsbPos;
-			nullable<OOX::Spreadsheet::CCols>				m_oCols;
 		private:
 			void fromXLSBToXmlCell (CCell& pCell, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
 			void fromXLSBToXmlRowStart (CRow* pRow, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);

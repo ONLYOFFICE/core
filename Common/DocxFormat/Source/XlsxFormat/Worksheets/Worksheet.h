@@ -124,6 +124,8 @@ namespace OOX
 			void PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::Spreadsheet::CThreadedComments* pThreadedComments, OOX::Spreadsheet::CLegacyDrawingWorksheet* pLegacyDrawing);
 			void PrepareToWrite();
 
+			void ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader);
+
 			CPath	m_oReadPath;
 			
 			bool	m_bPrepareForBinaryWriter;

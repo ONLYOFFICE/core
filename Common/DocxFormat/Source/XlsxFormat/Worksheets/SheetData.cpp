@@ -116,7 +116,7 @@ namespace OOX
 			if (r0 > 0)
 			{
 				const std::wstring rest = getColAddress(col - r * r0 + 1);
-				const std::wstring res	= getColAddress(r0 - 1) + rest;
+				const std::wstring res	= getColAddress(r0 - 1 + 1) + rest;
 				return res;
 			}
 			else
@@ -138,7 +138,7 @@ namespace OOX
 			if (r0 > 0)
 			{
 				const std::string rest = getColAddressA(col - r * r0 + 1);
-				const std::string res	= getColAddressA(r0-1) + rest;
+				const std::string res	= getColAddressA(r0 - 1 + 1) + rest;
 				return res;
 			}
 			else

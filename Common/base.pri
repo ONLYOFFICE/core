@@ -17,7 +17,11 @@ isEmpty(PUBLISHER_NAME){
 }
 
 win32 {
-    CURRENT_YEAR = $$system("echo %Date:~6,4%")
+    CURRENT_YEAR = $$system(wmic PATH Win32_LocalTime GET ^Year /FORMAT:VALUE | find \"=\")
+    CURRENT_YEAR = $$replace(CURRENT_YEAR, "Year=", "")
+    CURRENT_YEAR = $$replace(CURRENT_YEAR, "\r", "")
+    CURRENT_YEAR = $$replace(CURRENT_YEAR, "\n", "")
+    CURRENT_YEAR = $$replace(CURRENT_YEAR, "\t", "")
 }
 
 !win32 {
@@ -131,6 +135,7 @@ core_linux {
 core_mac {
     DEFINES += LINUX _LINUX MAC _MAC
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
+    QMAKE_LFLAGS += -isysroot $$QMAKE_MAC_SDK_PATH
 }
 
 # PREFIXES
@@ -145,8 +150,8 @@ core_windows {
             core_win_64:QMAKE_LFLAGS_CONSOLE = /SUBSYSTEM:CONSOLE,5.02
             core_win_32:QMAKE_LFLAGS_CONSOLE = /SUBSYSTEM:CONSOLE,5.01
         } else {
-            core_win_64:QMAKE_LFLAGS_CONSOLE = /SUBSYSTEM:WINDOWS,5.02
-            core_win_32:QMAKE_LFLAGS_CONSOLE = /SUBSYSTEM:WINDOWS,5.01
+            core_win_64:QMAKE_LFLAGS_WINDOWS = /SUBSYSTEM:WINDOWS,5.02
+            core_win_32:QMAKE_LFLAGS_WINDOWS = /SUBSYSTEM:WINDOWS,5.01
         }
     }
 }
@@ -286,6 +291,12 @@ OBJECTS_DIR = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUI
 MOC_DIR     = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX/moc
 RCC_DIR     = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX/rcc
 UI_DIR      = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX/ui
+build_xp {
+    OBJECTS_DIR = $$OBJECTS_DIR/xp
+    MOC_DIR     = $$MOC_DIR/xp
+    RCC_DIR     = $$RCC_DIR/xp
+    UI_DIR      = $$UI_DIR/xp
+}
 }
 
 CORE_BUILDS_LIBRARIES_PATH = $$CORE_ROOT_DIR/build/lib/$$CORE_BUILDS_PLATFORM_PREFIX

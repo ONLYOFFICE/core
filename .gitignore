@@ -11,6 +11,8 @@ Common/3dParty/icu/win_32
 Common/3dParty/icu/linux_64
 Common/3dParty/icu/linux_32
 Common/3dParty/icu/mac_64
+Common/3dParty/icu/ios
+Common/3dParty/icu/mac-build
 Common/3dParty/cef/win_64
 Common/3dParty/cef/win_32
 Common/3dParty/cef/linux_64

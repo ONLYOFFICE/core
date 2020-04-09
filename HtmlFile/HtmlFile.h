@@ -56,9 +56,9 @@ public:
     /// \param sPathInternal - path (subprocesspath = path + HtmlFileInternal.exe) ("" -> GetProcessDirectory()/HtmlFileInternal/HtmlFileInternal.exe)
     /// \return 1 error, 0 - success
 
-    int Convert(const std::vector<std::wstring>& arFiles, const std::wstring& sDstfolder, const std::wstring& sPathInternal = L"");
-    int ConvertEpub(const std::wstring& sFolder, std::wstring& sMetaInfo, const std::wstring& sDstfolder, const std::wstring& sPathInternal = L"");
-    int ConvertMht(const std::wstring& sFile, const std::wstring& sDstfolder, const std::wstring& sPathInternal = L"");
+    int Convert(const std::vector<std::wstring>& arFiles, const std::wstring& sDstfolder);
+    int ConvertEpub(const std::wstring& sFolder, std::wstring& sMetaInfo, const std::wstring& sDstfolder);
+    int ConvertMht(const std::wstring& sFile, const std::wstring& sDstfolder);
 };
 
 #endif // _HTMLFILE_HTMLFILE_H_

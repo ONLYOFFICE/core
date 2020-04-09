@@ -1,1 +1,0 @@
-echo "build: OK!"

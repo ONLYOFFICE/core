@@ -329,10 +329,10 @@ namespace CSVReader
 		}
 		else
 		{
-			const NSUnicodeConverter::EncodindId& oEncodindId = NSUnicodeConverter::Encodings[nCodePage];
+			const auto oEncodindId = std::find_if (NSUnicodeConverter::Encodings, NSUnicodeConverter::Encodings + UNICODE_CONVERTER_ENCODINGS_COUNT - 1, [nCodePage] (const NSUnicodeConverter::EncodindId& ei) { return ei.WindowsCodePage == nCodePage; });
             
 			NSUnicodeConverter::CUnicodeConverter oUnicodeConverter;
-			sFileDataW = oUnicodeConverter.toUnicode((const char*)pInputBuffer, nInputBufferSize, oEncodindId.Name);
+			sFileDataW = oUnicodeConverter.toUnicode((const char*)pInputBuffer, nInputBufferSize, oEncodindId->Name);
 		}
  //------------------------------------------------------------------------------------------------------------------------------     
 
@@ -340,10 +340,10 @@ namespace CSVReader
 
 		if (nSize < 1 && nInputBufferSize > 0)
 		{//для синхронности вывода превью и нормального результата
-			const NSUnicodeConverter::EncodindId& oEncodindId = NSUnicodeConverter::Encodings[nCodePage];
+			const auto oEncodindId = std::find_if (NSUnicodeConverter::Encodings, NSUnicodeConverter::Encodings + UNICODE_CONVERTER_ENCODINGS_COUNT - 1, [nCodePage] (const NSUnicodeConverter::EncodindId& ei) { return ei.WindowsCodePage == nCodePage; });
             
 			NSUnicodeConverter::CUnicodeConverter oUnicodeConverter;
-			sFileDataW = oUnicodeConverter.toUnicode((const char*)pInputBuffer, nInputBufferSize, oEncodindId.Name);
+			sFileDataW = oUnicodeConverter.toUnicode((const char*)pInputBuffer, nInputBufferSize, oEncodindId->Name);
 
 			nSize = sFileDataW.length();
 			//return AVS_FILEUTILS_ERROR_CONVERT_ICU;

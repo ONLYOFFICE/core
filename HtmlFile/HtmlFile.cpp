@@ -55,11 +55,30 @@ class CHtmlFile_Private
 {
 public:
     bool m_bIsEpub;
+    std::wstring m_sHtmlFileInternal;
 
 public:
     CHtmlFile_Private()
     {
         m_bIsEpub = false;
+        m_sHtmlFileInternal = L"";
+
+        std::wstring sProcessPath = NSFile::GetProcessDirectory();
+        std::wstring sPathConfig = sProcessPath + L"/DoctRenderer.config";
+        if (NSFile::CFileBinary::Exists(sPathConfig))
+        {
+            XmlUtils::CXmlNode oNode;
+            if (oNode.FromXmlFile(sPathConfig))
+            {
+                std::wstring sPath = oNode.ReadValueString(L"htmlfileinternal");
+                if (!sPath.empty())
+                {
+                    if (0 == sPath.find(L"./"))
+                        sPath = sProcessPath + sPath.substr(1);
+                    m_sHtmlFileInternal = sPath;
+                }
+            }
+        }
     }
 };
 
@@ -224,9 +243,9 @@ static void GetScriptsPath(NSStringUtils::CStringBuilder& oBuilder)
     }
 }
 
-int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstring& sDstfolder, const std::wstring& sPathInternal)
+int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstring& sDstfolder)
 {
-    std::wstring sInternal = sPathInternal;
+    std::wstring sInternal = m_internal->m_sHtmlFileInternal;
     if (sInternal.empty())
         sInternal = NSFile::GetProcessDirectory() + L"/HtmlFileInternal/";
 
@@ -635,7 +654,7 @@ static std::vector<std::wstring> ParseEpub(const std::wstring& sPackagePath, std
     return arHtmls;
 }
 
-int CHtmlFile::ConvertEpub(const std::wstring& sFolder, std::wstring& sMetaInfo, const std::wstring& sDstfolder, const std::wstring& sPathInternal)
+int CHtmlFile::ConvertEpub(const std::wstring& sFolder, std::wstring& sMetaInfo, const std::wstring& sDstfolder)
 {
     std::wstring sFolderWithSlash = sFolder;
     NSStringExt::Replace(sFolderWithSlash, L"\\", L"/");
@@ -691,7 +710,7 @@ int CHtmlFile::ConvertEpub(const std::wstring& sFolder, std::wstring& sMetaInfo,
         return 1;
 
     m_internal->m_bIsEpub = true;
-    int nErr = this->Convert(arHtmls, sDstfolder, sPathInternal);
+    int nErr = this->Convert(arHtmls, sDstfolder);
     m_internal->m_bIsEpub = false;
     return nErr;
 }
@@ -1399,7 +1418,7 @@ namespace NSMht
     };
 }
 
-int CHtmlFile::ConvertMht(const std::wstring& sFile, const std::wstring& sDstfolder, const std::wstring& sPathInternal)
+int CHtmlFile::ConvertMht(const std::wstring& sFile, const std::wstring& sDstfolder)
 {
     NSMht::CMhtFile oFile;
     oFile.Parse(sFile);
@@ -1408,5 +1427,5 @@ int CHtmlFile::ConvertMht(const std::wstring& sFile, const std::wstring& sDstfol
 
     std::vector<std::wstring> arFiles;
     arFiles.push_back(sFileMht);
-    return this->Convert(arFiles, sDstfolder, sPathInternal);
+    return this->Convert(arFiles, sDstfolder);
 }

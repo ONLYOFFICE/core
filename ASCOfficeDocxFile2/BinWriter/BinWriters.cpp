@@ -7622,7 +7622,9 @@ void BinaryCommentsTableWriter::WriteComment(CCommentWriteTemp& oComment)
 		}
 		else
 		{
-			nDurableId = XmlUtils::GenerateInt();
+			//numbers greater than 0x7FFFFFFE cause MS Office errors(ST_LongHexNumber by spec)
+			nDurableId = XmlUtils::GenerateInt() & 0x7FFFFFFF;
+			nDurableId = (0x7FFFFFFF != nDurableId) ? nDurableId : nDurableId - 1;
 		}
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_CommentsType::DurableId);
 		m_oBcw.m_oStream.WriteULONG(nDurableId);

@@ -178,7 +178,7 @@ namespace NExtractTools
     _UINT32 html2docx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-    _UINT32 dir2zip			(const std::wstring &sFrom, const std::wstring &sTo);
+    _UINT32 dir2zip			(const std::wstring &sFrom, const std::wstring &sTo, bool bSorted = false, int method = 8/*Z_DEFLATED*/, short level = -1);
     _UINT32 zip2dir			(const std::wstring &sFrom, const std::wstring &sTo);
 
     _UINT32 convertmailmerge (const InputParamsMailMerge& oMailMergeSend,const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params);

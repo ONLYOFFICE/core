@@ -207,6 +207,75 @@ namespace ZLibZipUtils
 
   /*========================================================================================================*/
 
+  static std::string normalize_path(const std::string &path)
+  {
+      const char*   pData   = path.c_str();
+      int           nLen    = (int) path.length();
+
+      char* pDataNorm       = new char[nLen + 1];
+      int*  pSlashPoints    = new int[nLen + 1];
+
+      int nStart          = 0;
+      int nCurrent        = 0;
+      int nCurrentSlash   = -1;
+      int nCurrentW       = 0;
+      bool bIsUp          = false;
+
+#if !defined(_WIN32) && !defined (_WIN64)
+      if (pData[nCurrent] == FILE_SEPARATOR_CHAR)
+          pDataNorm[nCurrentW++] = pData[nCurrent];
+#endif
+      while (nCurrent < nLen)
+      {
+          if (pData[nCurrent] == FILE_SEPARATOR_CHAR)
+          {
+              if (nStart < nCurrent)
+              {
+                  bIsUp = false;
+                  if ((nCurrent - nStart) == 2)
+                  {
+                      if (pData[nStart] == (char)'.' && pData[nStart + 1] == (char)'.')
+                      {
+                          if (nCurrentSlash > 0)
+                          {
+                              --nCurrentSlash;
+                              nCurrentW = pSlashPoints[nCurrentSlash];
+                              bIsUp = true;
+                          }
+                      }
+                  }
+                  if (!bIsUp)
+                  {
+                      pDataNorm[nCurrentW++] = (char) FILE_SEPARATOR_CHAR;
+                      ++nCurrentSlash;
+                      pSlashPoints[nCurrentSlash] = nCurrentW;
+                  }
+              }
+              nStart = nCurrent + 1;
+              ++nCurrent;
+              continue;
+          }
+          pDataNorm[nCurrentW++] = pData[nCurrent];
+          ++nCurrent;
+      }
+
+      pDataNorm[nCurrentW] = (char)'\0';
+
+      std::string result = std::string(pDataNorm, nCurrentW);
+
+      delete []pDataNorm;
+
+      return result;
+  }
+  static void replace_all(std::string& subject, const std::string& search, const std::string& replace)
+  {
+      size_t pos = 0;
+      while ((pos = subject.find(search, pos)) != std::string::npos)
+      {
+          subject.replace(pos, search.length(), replace);
+          pos += replace.length();
+      }
+  }
   static int do_extract_currentfile( unzFile uf, const int* popt_extract_without_path, int* popt_overwrite, const char* password )
   {   	  
 	char filename_inzipA[256];
@@ -289,12 +358,39 @@ namespace ZLibZipUtils
         if ((fout==NULL) && ((*popt_extract_without_path)==0) &&
 		    (filename_withoutpath!=(wchar_t*)filename_inzip))
         {
+          char* current_directory = getcwd(NULL, 0);
+          if (current_directory)
+          {
+                std::string current_path(current_directory);
+                free(current_directory);
+
+				current_path += FILE_SEPARATOR_STRA;
+
+                replace_all(current_path, "/", FILE_SEPARATOR_STRA);
+                replace_all(current_path, "\\", FILE_SEPARATOR_STRA);
+
+                std::string filename_inzip(filename_inzipA);
+
+                replace_all(filename_inzip, "/", FILE_SEPARATOR_STRA);
+                replace_all(filename_inzip, "\\", FILE_SEPARATOR_STRA);
+
+                std::string norm_path = normalize_path(current_path + filename_inzip);
+                std::string norm_current_path = normalize_path(current_path);
+
+                if (std::string::npos == norm_path.find(norm_current_path))
+                {
+                    return UNZ_INTERNALERROR;
+                }
+         }
           char c=*(filename_withoutpath-1);
           *(filename_withoutpath-1)='\0';
           makedir(write_filename);
           *(filename_withoutpath-1)=c;
+
 		  if(oFile.CreateFileW(write_filename))
+          {
 			  fout = oFile.GetFileNative();
+		  }
         }
       }
 
@@ -352,7 +448,10 @@ namespace ZLibZipUtils
 	  if (do_extract_currentfile(uf,&opt_extract_without_path,
                                  &opt_overwrite,
                                  password) != UNZ_OK)
-      break;
+	  {
+			err = -1;
+			break;
+	  }
 
 	  if ( progress != NULL )
 	  {
@@ -385,7 +484,7 @@ namespace ZLibZipUtils
 		(*progress)( UTILS_ONPROGRESSEVENT_ID, progressValue, &cancel );
 	}
 
-	return 0;
+	return err;
   }
 
   /*========================================================================================================*/
@@ -541,23 +640,46 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 			std::vector<std::wstring> aCurFiles			= NSDirectory::GetFiles(szText);
 			std::vector<std::wstring> aCurDirectories	= NSDirectory::GetDirectories(szText);
 			
-			if (sorted)
-			{
-				std::sort(aCurFiles.begin(), aCurFiles.end());
-				std::sort(aCurDirectories.begin(), aCurDirectories.end());
-			}
-			for(size_t i = 0; i < aCurDirectories.size(); ++i)
+            for(size_t i = 0; i < aCurDirectories.size(); ++i)
 			{
 				std::wstring sDirName = NSSystemPath::GetFileName(aCurDirectories[i]);
-				StringDeque.push_back( aCurDirectories[i] );
-				zipDeque.push_back( zipDir + sDirName );
+
+                if (sorted)
+                {
+                    if (sDirName == L"ppt")
+                    {
+                         StringDeque.push_front(aCurDirectories[i] );
+                         zipDeque.push_front( zipDir + sDirName );
+                    }
+                    else if(sDirName == L"xl")
+                    {
+                         StringDeque.push_front( aCurDirectories[i] );
+                         zipDeque.push_front( zipDir + sDirName );
+                     }
+                    else if (sDirName == L"word")
+                    {
+                         StringDeque.push_front( aCurDirectories[i] );
+                         zipDeque.push_front( zipDir + sDirName );
+                     }
+                    else
+                    {
+                        StringDeque.push_back( aCurDirectories[i] );
+                        zipDeque.push_back( zipDir + sDirName );
+                    }
+                }
+                else
+                {
+                    StringDeque.push_back( aCurDirectories[i] );
+                    zipDeque.push_back( zipDir + sDirName );
+                }
 			}
-		
+
 			for (size_t i = 0; i < aCurFiles.size(); ++i)
 			{
 				std::wstring cFileName = NSSystemPath::GetFileName(aCurFiles[i]);
 				
-				if (std::wstring::npos != cFileName.find(L"mimetype")) // возможно и полное соответствие
+                if (std::wstring::npos != cFileName.find(L"mimetype") ||
+                    std::wstring::npos != cFileName.find(L"[Content_Types]")) // возможно и полное соответствие
 				{
 					file = NSSystemPath::Combine(szText, cFileName);
 					zipFileName = zipDir + cFileName;
@@ -745,9 +867,9 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 	  if ( buffer != NULL )
 	  {
 #if defined(_WIN32) || defined (_WIN64)
-	    err = _wchdir( buffer );
+	    int err1 = _wchdir( buffer );
 #else
-	    err = chdir( buffer );
+	    int err1 = chdir( buffer );
 #endif
 
 	    free( buffer );

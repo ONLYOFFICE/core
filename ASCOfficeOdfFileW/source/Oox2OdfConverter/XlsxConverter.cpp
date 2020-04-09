@@ -71,6 +71,7 @@ XlsxConverter::XlsxConverter(const std::wstring & path, bool bTemplate)
 {
     const OOX::CPath oox_path(std::wstring(path.c_str()));
 
+	xlsx_flat_document = NULL;
     xlsx_document = new OOX::Spreadsheet::CXlsx(oox_path);
 
 	if (xlsx_document && xlsx_document->m_arWorksheets.empty() && !xlsx_document->m_pWorkbook)

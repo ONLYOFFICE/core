@@ -150,13 +150,13 @@ namespace OOX
 			return std::to_string(row);
 		}
 //------------------------------------------------------------------------------
-		static std::wstring getCellAddress(size_t row, size_t col, bool bAbsolute = false)
+		static std::wstring getCellAddress(size_t row, size_t col, bool bAbsoluteRow = false, bool bAbsoluteCol = false)
 		{
-			return (bAbsolute ? L"$" : L"") + getColAddress(col) + (bAbsolute ? L"$" : L"") + getRowAddress(row);
+			return (bAbsoluteCol ? L"$" : L"") + getColAddress(col) + (bAbsoluteRow ? L"$" : L"") + getRowAddress(row);
 		}
-		static std::string getCellAddressA(size_t row, size_t col, bool bAbsolute = false)
+		static std::string getCellAddressA(size_t row, size_t col, bool bAbsoluteRow = false, bool bAbsoluteCol = false)
 		{
-			return (bAbsolute ? "$" : "") + getColAddressA(col) + (bAbsolute ? "$" : "") + getRowAddressA(row);
+			return (bAbsoluteCol ? "$" : "") + getColAddressA(col) + (bAbsoluteRow ? "$" : "") + getRowAddressA(row);
 		}
 //------------------------------------------------------------------------------
 
@@ -165,7 +165,6 @@ namespace OOX
 	public:
 		static size_t base_row;
 		static size_t base_col;
-		static bool bAbsolute;
 
 		r1c1_formula_convert()
 		{}
@@ -183,7 +182,7 @@ namespace OOX
 			size_t row = boost::lexical_cast<size_t>(sRow);
 			size_t col = boost::lexical_cast<size_t>(sCol);
 
-			return getCellAddress(row, col, bAbsolute);
+			return getCellAddress(row, col, true, true);
 		}
 		static std::wstring replace_ref_from_base(boost::wsmatch const & what)
 		{
@@ -202,6 +201,8 @@ namespace OOX
 
 			size_t row = 0, col = 0;
 
+			bool bAbsoluteCol = false, bAbsoluteRow = false;
+
 			if (s2.empty())
 			{
 				row = base_row;
@@ -213,6 +214,7 @@ namespace OOX
 			else
 			{
 				row = boost::lexical_cast<size_t>(s2);
+				bAbsoluteRow = true;
 			}
 			if (s4.empty())
 			{
@@ -225,8 +227,9 @@ namespace OOX
 			else
 			{
 				col = boost::lexical_cast<size_t>(s4);
+				bAbsoluteCol = true;
 			}
-			return getCellAddress(row, col, bAbsolute);
+			return getCellAddress(row, col, bAbsoluteRow, bAbsoluteCol);
 		}
 
 
@@ -252,7 +255,6 @@ namespace OOX
 	};
 	size_t	r1c1_formula_convert::base_col = 1;
 	size_t	r1c1_formula_convert::base_row = 1;
-	bool	r1c1_formula_convert::bAbsolute  = false;
 
 	CFormulaXLSB::CFormulaXLSB():m_oFormula(256),m_oRef(256),m_oR1(256),m_oR2(256)
 		{
@@ -1439,7 +1441,6 @@ namespace OOX
 				{
 					r1c1_formula_convert::base_row = xlsx_flat->m_nLastReadRow;
 					r1c1_formula_convert::base_col = xlsx_flat->m_nLastReadCol;
-					r1c1_formula_convert::bAbsolute = false;
 					
 					r1c1_formula_convert convert;
 
@@ -1644,7 +1645,7 @@ namespace OOX
 		void CRow::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_StartChar( oReader )
-				if ( strcmp("r", wsName) == 0 || strcmp("Num", wsName) == 0)\
+				if ( strcmp("r", wsName) == 0 || strcmp("ss:Index", wsName) == 0)\
 				{
 					m_oR.Init();
 					m_oR->SetValue(atoi(oReader.GetTextChar()));
@@ -1900,7 +1901,6 @@ namespace OOX
 			{
 				r1c1_formula_convert::base_row = 1;
 				r1c1_formula_convert::base_col = 1;
-				r1c1_formula_convert::bAbsolute = true;
 				
 				r1c1_formula_convert convert;
 
@@ -1936,7 +1936,6 @@ void CDataValidation::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			r1c1_formula_convert::base_row = 1;
 			r1c1_formula_convert::base_col = 1;
-			r1c1_formula_convert::bAbsolute = false;
 			
 			r1c1_formula_convert convert;
 
@@ -1956,7 +1955,6 @@ void CDataValidation::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			r1c1_formula_convert::base_row = 1;
 			r1c1_formula_convert::base_col = 1;
-			r1c1_formula_convert::bAbsolute = true;
 			
 			r1c1_formula_convert convert;
 
@@ -2041,7 +2039,6 @@ void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
 						{
 							r1c1_formula_convert::base_row = xlsx_flat->m_nLastReadRow;
 							r1c1_formula_convert::base_col = xlsx_flat->m_nLastReadCol;
-							r1c1_formula_convert::bAbsolute = false;
 							
 							r1c1_formula_convert convert;
 
@@ -2109,8 +2106,8 @@ void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
 		m_oSheetViews->m_arrItems.back()->m_oPane->m_oActivePane->SetValue(SimpleTypes::Spreadsheet::activepaneBottomLeft);
 		if (bFreeze.IsInit())
 		{
-			m_oSheetViews->m_arrItems.back()->m_oPane->m_oXSplit.Init();
-			m_oSheetViews->m_arrItems.back()->m_oPane->m_oXSplit->SetValue(SimpleTypes::Spreadsheet::panestateFrozen);
+			m_oSheetViews->m_arrItems.back()->m_oPane->m_oState.Init();
+			m_oSheetViews->m_arrItems.back()->m_oPane->m_oState->SetValue(SimpleTypes::Spreadsheet::panestateFrozen);
 		}
 		if (ySplit.IsInit())
 		{

@@ -147,9 +147,9 @@ public:
 		std::vector<bool>	levels;
 		std::wstring		style_name;
 	}list_state_;
+	bool					single_paragraph_;
 private:
 	bool					keep_next_paragraph_;
-	bool					single_paragraph_;
 
 	_CP_OPT(odf_types::fo_break) need_break_; 
 

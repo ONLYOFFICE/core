@@ -706,10 +706,17 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	odf_read_context & odfContext = Context.root()->odf_context();   
 
-	style_instance *defaultCellStyle=NULL, *defaultColumnCellStyle = NULL,  *defaultRowCellStyle =NULL, *cellStyle = NULL;
+	style_instance *defaultCellStyle = NULL, *defaultColumnCellStyle = NULL,  *defaultRowCellStyle = NULL, *cellStyle = NULL;
 	try
 	{
-		defaultCellStyle		= odfContext.styleContainer().style_default_by_type(style_family::TableCell);
+		if (is_present_hyperlink_)
+		{
+			defaultCellStyle	= odfContext.styleContainer().style_by_name(L"Hyperlink", style_family::TableCell, true);
+		}
+		if (!defaultCellStyle)
+		{
+			defaultCellStyle	= odfContext.styleContainer().style_default_by_type(style_family::TableCell); 
+		}
 
 		defaultColumnCellStyle	= odfContext.styleContainer().style_by_name(columnStyleName,	style_family::TableCell, false);
 		defaultRowCellStyle		= odfContext.styleContainer().style_by_name(rowStyleName,		style_family::TableCell, false);        

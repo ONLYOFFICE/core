@@ -158,8 +158,13 @@ void paragraph::add_child_element( xml::sax * Reader, const std::wstring & Ns, c
 		}
 		content_.push_back(sequence_);
     }
-	else
+	else		
+	{
+		if CP_CHECK_NAME(L"text", L"a")
+			is_present_hyperlink_ = true;
+
 		CP_CREATE_ELEMENT_SIMPLE(content_);
+	}
 }
 
 void paragraph::add_text(const std::wstring & Text)

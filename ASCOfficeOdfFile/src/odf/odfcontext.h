@@ -174,8 +174,8 @@ public:
 
     style_instance * hyperlink_style();
     
-	style_instance * style_by_name			(const std::wstring & Name, odf_types::style_family::type Type,bool object_in_styles) const;
-	style_instance * style_by_display_name	(const std::wstring & Name, odf_types::style_family::type Type,bool object_in_styles) const;
+	style_instance * style_by_name			(const std::wstring & Name, odf_types::style_family::type Type, bool object_in_styles) const;
+	style_instance * style_by_display_name	(const std::wstring & Name, odf_types::style_family::type Type, bool object_in_styles) const;
 
 	style_instance * style_default_by_type	(odf_types::style_family::type Type) const;
     

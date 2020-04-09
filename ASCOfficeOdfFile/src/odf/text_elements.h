@@ -51,7 +51,7 @@ namespace text {
 class paragraph
 {
 public:
-    paragraph() : next_section_(false), next_end_section_(false), is_header_(false) {}
+    paragraph() : next_section_(false), next_end_section_(false), is_header_(false), is_present_hyperlink_(false) {}
 
     std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
    
@@ -81,14 +81,16 @@ public:
 	paragraph_attrs				attrs_;
 
     office_element_ptr_array	content_;
+	
 	office_element_ptr			sequence_;
+
+	bool						is_header_;
+	bool						is_present_hyperlink_;
 private:
 	void drop_cap_text_docx_convert(office_element_ptr first_text_paragraph,oox::docx_conversion_context & Context);
  
 	bool					next_section_;
-    bool					next_end_section_;
-	
-	bool					is_header_;
+    bool					next_end_section_;	
 
     friend class p;   
 	friend class h;   

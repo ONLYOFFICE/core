@@ -67,7 +67,6 @@ namespace OOX
 	}
 	void ActiveX_xml::read(const CPath& oRootPath, const CPath& oPath)
 	{
-		return;
 		m_oReadPath = oPath;
 		IFileContainer::Read( oRootPath, oPath );
 
@@ -114,6 +113,7 @@ namespace OOX
 	}
 	void ActiveX_xml::read_bin(const CPath& oPath)
 	{
+		return;
 		NSFile::CFileBinary file;
 
 		if (false == m_oClassId.IsInit()) return;

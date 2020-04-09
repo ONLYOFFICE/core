@@ -704,6 +704,9 @@ void ods_conversion_context::start_cell_text()
 		text_a_->common_xlink_attlist_.href_ = state.link;
 		
 		current_text_context_->start_element(text_a_elm); // может быть стоит сделать собственый???
+		// libra дурит если в табличках будет вложенный span в гиперлинк ... оО (хотя это разрешено в спецификации!!!)
+
+		current_text_context_->single_paragraph_ = true;
 	}
 }
 

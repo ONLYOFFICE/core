@@ -414,7 +414,10 @@ namespace OOX
 					pItem = new CSdt( document );
 				else if ( _T("w:tblGrid") == sName )
 				{
-					m_oTblGrid = new CTblGrid( document );
+					if (false == m_oTblGrid.IsInit())
+					{
+						m_oTblGrid = new CTblGrid( document );
+					}
 					m_oTblGrid->fromXML(oReader);
 				}
 				else if ( _T("w:tblPr") == sName )

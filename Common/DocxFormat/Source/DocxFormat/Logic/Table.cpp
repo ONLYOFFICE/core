@@ -343,9 +343,7 @@ namespace OOX
 				}
 			}
 		}
-
-
-		void    CTbl::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		void CTbl::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if ( oReader.IsEmptyNode() )
 				return;
@@ -663,7 +661,11 @@ namespace OOX
 				}
 				else if ( _T("w:trPr") == sName )
 				{
-					pItem = m_pTableRowProperties = new CTableRowProperties( oReader );
+					if (!m_pTableRowProperties)
+					{
+						pItem = m_pTableRowProperties = new CTableRowProperties();
+					}
+					m_pTableRowProperties->fromXML(oReader);
 				}
 
 				if ( pItem )
@@ -878,7 +880,12 @@ namespace OOX
 					pItem = new CTbl( oReader );
 				else if ( _T("w:tcPr") == sName )
 				{
-					pItem = m_pTableCellProperties = new CTableCellProperties( oReader );
+					if (!m_pTableCellProperties)
+					{
+						pItem =  m_pTableCellProperties = new CTableCellProperties();
+					}
+
+					m_pTableCellProperties->fromXML(oReader);
 				}
 
 				if ( pItem )
@@ -911,9 +918,8 @@ namespace OOX
 
 				return sResult;
 		}
-		void    CTc::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		void CTc::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
 			WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:id"), m_sId )
 			WritingElement_ReadAttributes_End( oReader )

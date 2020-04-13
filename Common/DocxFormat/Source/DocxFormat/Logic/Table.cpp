@@ -411,7 +411,13 @@ namespace OOX
 				else if ( _T("w:sdt") == sName )
 					pItem = new CSdt( oReader );
 				else if ( _T("w:tblGrid") == sName )
-					m_oTblGrid = oReader;
+				{
+					if (false == m_oTblGrid.IsInit())
+					{
+						m_oTblGrid = new CTblGrid();
+					}
+					m_oTblGrid->fromXML(oReader);
+				}
 				else if ( _T("w:tblPr") == sName )
 				{
 					pItem = m_oTableProperties = new CTableProperty( oReader );

@@ -169,7 +169,7 @@ namespace OOX
 								{
 									names.m_arrItems[i]->m_oName = L"_xlnm.Print_Area";
 								}
-								names.m_arrItems[i]->m_oLocalSheetId = xlsx_flat->m_arWorksheets.size() - 1;
+								names.m_arrItems[i]->m_oLocalSheetId = (unsigned int)(xlsx_flat->m_arWorksheets.size() - 1);
 								xlsx_flat->m_pWorkbook->m_oDefinedNames->m_arrItems.push_back(names.m_arrItems[i]);
 								names.m_arrItems[i] = NULL;
 							}

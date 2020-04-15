@@ -1768,9 +1768,9 @@ public:
 		if(bGridAfter && nGridAfter > 0)
 		{
             writer.WriteString(L"<w:grid" + sName + L" w:val=\"" + std::to_wstring(nGridAfter) + L"\"/>");
-			if(oAfterWidth.bW)
-				oAfterWidth.Write(writer, _T("w:w") + sName);
 		}
+		if(oAfterWidth.bW)
+			oAfterWidth.Write(writer, _T("w:w") + sName);
 	}
 };
 class WriteHyperlink

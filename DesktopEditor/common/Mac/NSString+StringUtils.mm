@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2020
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -59,7 +59,7 @@
     if (len < 1) {
         return @"";
     }
-
+    
     return [[NSString alloc] initWithBytes:string
                                     length:len*sizeof(char)
                                   encoding:CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingUTF8)];
@@ -84,6 +84,22 @@
     NSStringEncoding encode = CFStringConvertEncodingToNSStringEncoding ( kCFStringEncodingUTF8 );
     NSData* data = [self dataUsingEncoding:encode];
     return std::string((char*)data.bytes, data.length);
+}
+
++ (NSString *)queryParameter:(NSURL *)url key:(NSString *)key {
+    NSURLComponents *urlComponents = [NSURLComponents componentsWithURL:url
+                                                resolvingAgainstBaseURL:NO];
+    NSArray *queryItems = urlComponents.queryItems;
+    
+    if ([queryItems count] == 0)
+        return @"";
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name=%@", key];
+    NSURLQueryItem *queryItem = [[queryItems
+                                  filteredArrayUsingPredicate:predicate]
+                                 firstObject];
+    
+    return queryItem.value;
 }
 
 @end

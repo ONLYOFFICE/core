@@ -392,6 +392,7 @@ namespace NSCommon
         {
             NSFonts::IFontManager* pManager = applicationFonts->GenerateFontManager();
             NSFonts::IFontsCache* pCache = NSFonts::NSFontCache::Create();
+            pCache->SetCacheSize(3);
             pCache->SetStreams(applicationFonts->GetStreams());
             pManager->SetOwnerCache(pCache);
 
@@ -426,6 +427,9 @@ namespace NSCommon
 
                 pRenderer->put_Width(lWidthPix * 25.4 / dDpi);
                 pRenderer->put_Height(lHeightPix * 25.4 / dDpi);
+
+                bool isUseMapForStreams = false;
+                std::map<std::wstring, bool> mapUsedFiles;
 
                 for (int index = 0; index < nCountFonts; ++index)
                 {
@@ -476,6 +480,9 @@ namespace NSCommon
 
                         if (NULL != pInfoCur)
                         {
+                            if (isUseMapForStreams)
+                                mapUsedFiles.insert(std::pair<std::wstring, bool>(pInfoCur->m_wsFontPath, true));
+
                             pManager->LoadFontFromFile(pInfoCur->m_wsFontPath, 0, 14, dDpi, dDpi);
                         }
                         pRenderer->put_FontPath(pInfoCur->m_wsFontPath);
@@ -503,6 +510,9 @@ namespace NSCommon
 
                             if (NULL != pInfoCur)
                             {
+                                if (isUseMapForStreams)
+                                    mapUsedFiles.insert(std::pair<std::wstring, bool>(pInfoCur->m_wsFontPath, true));
+
                                 pManager->LoadFontFromFile(pInfoCur->m_wsFontPath, 0, 14, dDpi, dDpi);
                             }
                             pRenderer->put_FontPath(pInfoCur->m_wsFontPath);
@@ -514,6 +524,11 @@ namespace NSCommon
                     pRenderer->put_FontSize(14);
 
                     pRenderer->CommandDrawText(pPair->second.m_sName, 5, 25.4 * (index * lH1_px + lH1_px) / dDpi - 2, 0, 0);
+
+                    if (isUseMapForStreams)
+                        applicationFonts->GetStreams()->CheckStreams(mapUsedFiles);
+                    else
+                        applicationFonts->GetStreams()->Clear();
                 }
 
                 std::wstring strThumbnailPath = strFolderThumbnails + L"/fonts_thumbnail";

@@ -679,7 +679,8 @@ namespace OOX
 				{
 					if (!m_pTableRowProperties)
 					{
-						pItem = m_pTableRowProperties = new CTableRowProperties(document);
+						m_pTableRowProperties = new CTableRowProperties(document);
+						m_arrItems.push_back( m_pTableRowProperties );
 					}
 					m_pTableRowProperties->fromXML(oReader);
 				}
@@ -902,7 +903,8 @@ namespace OOX
 				{
 					if (!m_pTableCellProperties)
 					{
-						pItem =  m_pTableCellProperties = new CTableCellProperties(document);
+						m_pTableCellProperties = new CTableCellProperties(document);
+						m_arrItems.push_back( m_pTableCellProperties );
 					}
 
 					m_pTableCellProperties->fromXML(oReader);

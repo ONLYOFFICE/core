@@ -270,6 +270,7 @@ public:
 		m_byteShade	= oColor.m_byteShade;
 		m_byteTint	= oColor.m_byteTint;
 
+		m_bAuto		= oColor.m_bAuto;
 		return (*this);
 	}
 

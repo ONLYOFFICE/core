@@ -3112,7 +3112,7 @@ std::wstring RtfRowProperty::RenderToOOX(RenderParameter oRenderParameter)
 	{
 		switch( m_eWidthEndInvCellUnit )
 		{
-        case mu_Percent:	sResult += L"<w:wAfter w:type=\"pct\" w:w=\"" + std::to_wstring(m_nWidthEndInvCell) + L"%\"/>"; break;
+        case mu_Percent:	sResult += L"<w:wAfter w:type=\"pct\" w:w=\"" + std::to_wstring(m_nWidthEndInvCell) + L"\"/>"; break;
         case mu_Twips:		sResult += L"<w:wAfter w:type=\"dxa\" w:w=\"" + std::to_wstring(m_nWidthEndInvCell) + L"\"/>";	break;
 		default:
 			break;

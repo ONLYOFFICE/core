@@ -648,6 +648,8 @@ namespace NSDoctRenderer
     }
     void CDocBuilder::SetTmpFolder(const wchar_t* folder)
     {
+        if (m_pInternal->m_bIsServerSafeVersion)
+            return;
         m_pInternal->m_sTmpFolder = std::wstring(folder);
     }
     void CDocBuilder::CloseFile()
@@ -907,7 +909,10 @@ namespace NSDoctRenderer
         else if (sParam == "--cache-scripts")
             m_pInternal->m_bIsCacheScript = (std::wstring(value) == L"true");
         else if (sParam == "--save-use-only-names")
+        {
+            m_pInternal->m_bIsServerSafeVersion = true;
             m_pInternal->m_sFolderForSaveOnlyUseNames = std::wstring(value);
+        }
         else if (sParam == "--all-fonts-path")
         {
             m_pInternal->m_strAllFonts = std::wstring(value);

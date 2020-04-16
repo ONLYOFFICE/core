@@ -186,6 +186,7 @@ namespace NSDoctRenderer
 
         bool m_bIsCacheScript;
 
+        bool m_bIsServerSafeVersion;
         std::wstring m_sFolderForSaveOnlyUseNames;
 
         std::string m_sGlobalVariable;
@@ -214,6 +215,7 @@ namespace NSDoctRenderer
             m_bIsGlobalVariableUse = false;
 
             m_bIsNotUseConfigAllFontsDir = false;
+            m_bIsServerSafeVersion = false;
         }
 
         void Init()
@@ -550,6 +552,10 @@ namespace NSDoctRenderer
                 }
             }
 #endif
+
+            // не открываем локальные файлы в серверной версии.
+            if (m_bIsServerSafeVersion)
+                return;
 
             NSFile::CFileBinary::Copy(from, to);
         }

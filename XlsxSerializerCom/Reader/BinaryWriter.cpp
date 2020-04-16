@@ -6699,7 +6699,7 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 		int nBinBufferLen = oBufferedStream.GetPosition();
 		if (bIsNoBase64)
 		{
-			int nMidPoint = nHeaderLen + pXlsxFlat ? 0 : GetMainTableSize();
+			int nMidPoint = nHeaderLen + GetMainTableSize();
 			
 			NSFile::CFileBinary oFile;
 			if(0 != m_nLastFilePosOffset)

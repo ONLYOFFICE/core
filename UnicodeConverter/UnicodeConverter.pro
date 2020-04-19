@@ -35,3 +35,4 @@ SOURCES += \
 
 HEADERS +=\
     UnicodeConverter.h
+}

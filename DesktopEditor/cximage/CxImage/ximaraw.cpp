@@ -10,10 +10,6 @@
  * Copyright 1997-2007 by Dave Coffin, dcoffin a cybercom o net
  */
 
-#ifdef __ANDROID__
-#include <swab.h>
-#endif
-
 #include "ximaraw.h"
 #include "../../common/File.h"
 

@@ -240,8 +240,11 @@ core_ios {
     }
 }
 core_android {
-    equals(QT_ARCH, arm): CORE_BUILDS_PLATFORM_PREFIX = android_arm
-    equals(QT_ARCH, i386): CORE_BUILDS_PLATFORM_PREFIX = android_x86
+    CORE_BUILDS_PLATFORM_PREFIX = $$join(ANDROID_TARGET_ARCH, ANDROID_TARGET_ARCH, "android_", "")
+
+    !core_android_no_unistd {
+        DEFINES += HAVE_UNISTD_H
+    }
 }
 
 core_debug {
@@ -380,3 +383,5 @@ defineTest(ADD_DEPENDENCY) {
     export(LIBS)
 }
 
+ADD_INC_PATH = $$(ADDITIONAL_INCLUDE_PATH)
+!isEmpty(ADD_INC_PATH):INCLUDEPATH += $$ADD_INC_PATH

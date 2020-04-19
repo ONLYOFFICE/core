@@ -31,6 +31,9 @@ ADD_DEPENDENCY(graphics, kernel, UnicodeConverter)
 core_ios {
     CONFIG += doct_renderer_empty
 }
+core_android {
+    CONFIG += doct_renderer_empty
+}
 
 doct_renderer_empty {
 SOURCES += doctrenderer_empty.cpp

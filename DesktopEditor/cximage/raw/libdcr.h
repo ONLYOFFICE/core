@@ -67,6 +67,8 @@ static void swab(const char* __src, char* __dst, ssize_t __byte_count)
 }
 #endif
 #define _swab   swab
+#else
+#define _swab   swab
 #endif
 
 #endif

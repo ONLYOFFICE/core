@@ -68,6 +68,9 @@ namespace OOX
 									  *m_sUri == L"{78C0D931-6437-407d-A8EE-F0AAD7539E65}"	||
 									  *m_sUri == L"{B025F937-C7B1-47D3-B67F-A62EFF666E3E}"	||
 									  *m_sUri == L"{CCE6A557-97BC-4b89-ADB6-D9C93CAAB3DF}"	||
+									  *m_sUri == L"{03082B11-2C62-411c-B77F-237D8FCFBE4C}"	||
+									  *m_sUri == L"{2F2917AC-EB37-4324-AD4E-5DD8C200BD13}"	||
+									  *m_sUri == L"{470722E0-AACD-4C17-9CDC-17EF765DBC7E}"	||
 									  *m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))   
 			{
 				int nCurDepth = oReader.GetDepth();
@@ -102,6 +105,18 @@ namespace OOX
 						}
 					}
 					else if (sName == L"dataValidations")
+					{
+						m_oDataValidations = oReader;
+					}
+					else if (sName == L"slicerCachePivotTables")
+					{
+						m_oDataValidations = oReader;
+					}
+					else if (sName == L"tableSlicerCache")
+					{
+						m_oDataValidations = oReader;
+					}
+					else if (sName == L"slicerCacheHideItemsWithNoData")
 					{
 						m_oDataValidations = oReader;
 					}

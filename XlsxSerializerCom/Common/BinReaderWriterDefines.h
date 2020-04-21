@@ -213,7 +213,8 @@ namespace BinXlsxRW
 		Comments = 14,
 		CalcPr = 15,
 		Connections = 16,
-		AppName = 17
+		AppName = 17,
+		SlicerCache = 18
 	};}	
 	namespace c_oSerDbPrTypes{enum c_oSerDbPrTypes
 	{

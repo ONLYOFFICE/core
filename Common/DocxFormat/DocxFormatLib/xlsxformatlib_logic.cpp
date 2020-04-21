@@ -46,3 +46,4 @@
 #include "../Source/XlsxFormat/SharedStrings/Si.cpp"
 #include "../Source/XlsxFormat/SharedStrings/Text.cpp"
 #include "../Source/XlsxFormat/Pivot/Pivots.cpp"
+#include "../Source/XlsxFormat/Slicer/SlicerCache.cpp"

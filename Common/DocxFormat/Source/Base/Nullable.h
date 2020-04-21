@@ -396,6 +396,77 @@ namespace NSCommon
 
         const int& get()const { return  *m_pPointer; }
 	};
+	class nullable_uint : public nullable_base<unsigned int>
+	{
+	public:
+		nullable_uint() : nullable_base<unsigned int>()
+		{
+		}
+
+		void normalize(const int& min, const int& max)
+		{
+			if (IsInit())
+			{
+				if (*m_pPointer < min)
+					*m_pPointer = min;
+				else if (*m_pPointer > max)
+					*m_pPointer = max;
+			}
+		}
+		void normalize_positive()
+		{
+			if (IsInit())
+			{
+				if (*m_pPointer < 0)
+					*m_pPointer = 0;
+			}
+		}
+		nullable_uint& operator=(const wchar_t* cwsValue)
+		{
+			RELEASEOBJECT(m_pPointer);
+
+			if ( NULL != cwsValue )
+				m_pPointer = new unsigned int(XmlUtils::GetInteger(cwsValue));
+
+			return *this;
+		}
+		void operator=(const std::wstring& value)
+		{
+			RELEASEOBJECT(this->m_pPointer);
+			this->m_pPointer = new unsigned int(XmlUtils::GetInteger(value));
+		}
+		void operator=(const unsigned int& value)
+		{
+			RELEASEOBJECT(this->m_pPointer);
+			this->m_pPointer = new unsigned int(value);
+		}
+
+		nullable_uint& operator=(const nullable_uint& oSrc)
+		{
+			RELEASEOBJECT(m_pPointer);
+
+			if (NULL != oSrc.m_pPointer )
+				m_pPointer = new unsigned int(*oSrc);
+			return *this;
+		}
+
+		unsigned int get_value_or(const unsigned int& value) const
+		{
+			if (NULL == m_pPointer)
+			{
+				unsigned int ret = value;
+				return ret;
+			}
+			return *m_pPointer;
+		}
+		unsigned int& operator*()  { return *m_pPointer; }
+		unsigned int* operator->() { return  m_pPointer; }
+
+		unsigned int& operator*() const  { return *m_pPointer; }
+		unsigned int* operator->() const { return  m_pPointer; }
+
+		const unsigned int& get()const { return  *m_pPointer; }
+	};
     class nullable_int64 : public nullable_base<_INT64>
 	{
 	public:

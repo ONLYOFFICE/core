@@ -4781,5 +4781,148 @@ namespace SimpleTypes
 			SimpleType_FromString     (EEditValidation)
 			SimpleType_Operator_Equal (CEditValidation)
 		};
+
+		enum ETabularSlicerCacheSortOrder
+		{
+			ctabularslicercachesortorderAscending = 0,
+			ctabularslicercachesortorderDescending = 1
+		};
+
+		template<ETabularSlicerCacheSortOrder eDefValue = ctabularslicercachesortorderAscending>
+		class CTabularSlicerCacheSortOrder : public CSimpleType<ETabularSlicerCacheSortOrder, eDefValue>
+		{
+		public:
+			CTabularSlicerCacheSortOrder(){}
+			virtual ETabularSlicerCacheSortOrder FromString(std::wstring &sValue)
+			{
+				if(L"ascending" == sValue)
+					this->m_eValue = ctabularslicercachesortorderAscending;
+				else if(L"descending" == sValue)
+					this->m_eValue = ctabularslicercachesortorderDescending;
+				else
+					this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+			ETabularSlicerCacheSortOrder FromStringA(const char* sValue)
+			{
+				if(strcmp("ascending", sValue) == 0)
+					this->m_eValue = ctabularslicercachesortorderAscending;
+				else if(strcmp("descending", sValue) == 0)
+					this->m_eValue = ctabularslicercachesortorderDescending;
+				else
+					this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+			virtual std::wstring ToString() const
+			{
+				switch(this->m_eValue)
+				{
+				case ctabularslicercachesortorderAscending : return L"ascending";break;
+				case ctabularslicercachesortorderDescending : return L"descending";break;
+				}
+				return L"ascending";
+			}
+			SimpleType_FromString(ETabularSlicerCacheSortOrder)
+			SimpleType_Operator_Equal(CTabularSlicerCacheSortOrder)
+		};
+		enum ESlicerCacheCrossFilter
+		{
+			cslicercachecrossfilterNone = 0,
+			cslicercachecrossfilterShowItemsWithDataAtTop = 1,
+			cslicercachecrossfilterShowItemsWithNoData = 2
+		};
+
+		template<ESlicerCacheCrossFilter eDefValue = cslicercachecrossfilterNone>
+		class CSlicerCacheCrossFilter : public CSimpleType<ESlicerCacheCrossFilter, eDefValue>
+		{
+		public:
+			CSlicerCacheCrossFilter(){}
+			virtual ESlicerCacheCrossFilter FromString(std::wstring &sValue)
+			{
+				if(L"none" == sValue)
+					this->m_eValue = cslicercachecrossfilterNone;
+				else if(L"showItemsWithDataAtTop" == sValue)
+					this->m_eValue = cslicercachecrossfilterShowItemsWithDataAtTop;
+				else if(L"showItemsWithNoData" == sValue)
+					this->m_eValue = cslicercachecrossfilterShowItemsWithNoData;
+				else
+					this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+			ESlicerCacheCrossFilter FromStringA(const char* sValue)
+			{
+				if(strcmp("none", sValue) == 0)
+					this->m_eValue = cslicercachecrossfilterNone;
+				else if(strcmp("showItemsWithDataAtTop", sValue) == 0)
+					this->m_eValue = cslicercachecrossfilterShowItemsWithDataAtTop;
+				else if(strcmp("showItemsWithNoData", sValue) == 0)
+					this->m_eValue = cslicercachecrossfilterShowItemsWithNoData;
+				else
+					this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+			virtual std::wstring ToString() const
+			{
+				switch(this->m_eValue)
+				{
+				case cslicercachecrossfilterNone : return L"none";break;
+				case cslicercachecrossfilterShowItemsWithDataAtTop : return L"showItemsWithDataAtTop";break;
+				case cslicercachecrossfilterShowItemsWithNoData : return L"showItemsWithNoData";break;
+				}
+				return L"none";
+			}
+			SimpleType_FromString(ESlicerCacheCrossFilter)
+			SimpleType_Operator_Equal(CSlicerCacheCrossFilter)
+		};
+		enum EOlapSlicerCacheSortOrder
+		{
+			colapslicercachesortorderNatural = 0,
+			colapslicercachesortorderAscending = 1,
+			colapslicercachesortorderDescending = 2
+		};
+
+		template<EOlapSlicerCacheSortOrder eDefValue = colapslicercachesortorderNatural>
+		class COlapSlicerCacheSortOrder : public CSimpleType<EOlapSlicerCacheSortOrder, eDefValue>
+		{
+		public:
+			COlapSlicerCacheSortOrder(){}
+			virtual EOlapSlicerCacheSortOrder FromString(std::wstring &sValue)
+			{
+				if(L"natural" == sValue)
+					this->m_eValue = colapslicercachesortorderNatural;
+				else if(L"ascending" == sValue)
+					this->m_eValue = colapslicercachesortorderAscending;
+				else if(L"descending" == sValue)
+					this->m_eValue = colapslicercachesortorderDescending;
+				else
+					this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+			EOlapSlicerCacheSortOrder FromStringA(const char* sValue)
+			{
+				if(strcmp("natural", sValue) == 0)
+					this->m_eValue = colapslicercachesortorderNatural;
+				else if(strcmp("ascending", sValue) == 0)
+					this->m_eValue = colapslicercachesortorderAscending;
+				else if(strcmp("descending", sValue) == 0)
+					this->m_eValue = colapslicercachesortorderDescending;
+				else
+					this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+			virtual std::wstring ToString() const
+			{
+				switch(this->m_eValue)
+				{
+				case colapslicercachesortorderNatural : return L"natural";break;
+				case colapslicercachesortorderAscending : return L"ascending";break;
+				case colapslicercachesortorderDescending : return L"descending";break;
+				}
+				return L"natural";
+			}
+			SimpleType_FromString(EOlapSlicerCacheSortOrder)
+			SimpleType_Operator_Equal(COlapSlicerCacheSortOrder)
+		};
+
 	}// Spreadsheet
 } // SimpleTypes

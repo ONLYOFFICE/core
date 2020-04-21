@@ -53,6 +53,7 @@
 #include "Pivot/PivotTable.h"
 #include "Pivot/PivotCacheDefinition.h"
 #include "Pivot/PivotCacheRecords.h"
+#include "Slicer/SlicerCache.h"
 
 #include "Table/Table.h"
 #include "Table/QueryTable.h"
@@ -106,6 +107,8 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CPivotCacheDefinitionFile( pMain, oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::PivotCacheRecords )
 				return smart_ptr<OOX::File>(new CPivotCacheRecordsFile( pMain, oRootPath, oFileName ));
+			else if ( oRelation.Type() == FileTypes::SlicerCache )
+				return smart_ptr<OOX::File>(new CSlicerCacheFile( pMain, oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::Comments )
 				return smart_ptr<OOX::File>(new CComments( pMain, oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::ThreadedComments )
@@ -219,6 +222,8 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CPivotCacheDefinitionFile( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == FileTypes::PivotCacheRecords )
 				return smart_ptr<OOX::File>(new CPivotCacheRecordsFile( pMain, oRootPath, oFileName ));
+			else if ( pRelation->Type() == FileTypes::SlicerCache )
+				return smart_ptr<OOX::File>(new CSlicerCacheFile( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == OOX::FileTypes::VmlDrawing )
 				return smart_ptr<OOX::File>(new CVmlDrawing( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == OOX::FileTypes::ChartDrawing)

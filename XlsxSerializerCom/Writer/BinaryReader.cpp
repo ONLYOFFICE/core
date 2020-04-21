@@ -68,6 +68,7 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Core.h"
 
 #include "../../Common/DocxFormat/Source/XlsxFormat/Comments/ThreadedComments.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Slicer/SlicerCache.h"
 
 namespace BinXlsxRW 
 {
@@ -2055,6 +2056,16 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 		READ1_DEF(length, res, this->ReadConnections, oConnection->m_oConnections.GetPointer());
 
 		smart_ptr<OOX::File> oFile = oConnection.smart_dynamic_cast<OOX::File>();
+		m_oWorkbook.Add(oFile);
+	}
+	else if(c_oSerWorkbookTypes::SlicerCache == type)
+	{
+		smart_ptr<OOX::Spreadsheet::CSlicerCacheFile> oSlicerCacheFile(new OOX::Spreadsheet::CSlicerCacheFile(NULL));
+		oSlicerCacheFile->m_oSlicerCacheDefinition.Init();
+		m_oBufferedStream.GetUChar();//type
+		oSlicerCacheFile->m_oSlicerCacheDefinition->fromPPTY(&m_oBufferedStream);
+
+		smart_ptr<OOX::File> oFile = oSlicerCacheFile.smart_dynamic_cast<OOX::File>();
 		m_oWorkbook.Add(oFile);
 	}
 	else

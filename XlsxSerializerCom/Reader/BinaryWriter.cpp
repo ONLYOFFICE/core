@@ -54,6 +54,7 @@
 #include "../../Common/DocxFormat/Source/XlsxFormat/SharedStrings/SharedStrings.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/ExternalLinks/ExternalLinkPath.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Comments/ThreadedComments.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Slicer/SlicerCache.h"
 
 namespace BinXlsxRW 
 {
@@ -2053,6 +2054,14 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
 		nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::Connections);
 		WriteConnections(pConnectionFile->m_oConnections.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);		
+	}
+	pFile = workbook.Find(OOX::Spreadsheet::FileTypes::SlicerCache);
+	OOX::Spreadsheet::CSlicerCacheFile *pSlicerCacheFile = dynamic_cast<OOX::Spreadsheet::CSlicerCacheFile*>(pFile.GetPointer());
+	if (pSlicerCacheFile && pSlicerCacheFile->m_oSlicerCacheDefinition.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::SlicerCache);
+		m_oBcw.m_oStream.WriteRecord2(0, pSlicerCacheFile->m_oSlicerCacheDefinition);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 
 	if (workbook.m_oAppName.IsInit())

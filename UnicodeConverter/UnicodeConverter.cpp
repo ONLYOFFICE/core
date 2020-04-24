@@ -38,6 +38,12 @@
 
 #include "../DesktopEditor/common/File.h"
 
+#if !defined (_WIN32) && !defined (_WIN64)
+    #include "iconv.h"
+#else
+    #include <windows.h>
+#endif
+
 namespace NSUnicodeConverter
 {
     class CUnicodeConverter_Private
@@ -190,7 +196,6 @@ namespace NSUnicodeConverter
             }
             return sRes;
         }
-
         std::wstring toUnicode(const char* sInput, const unsigned int& nInputLen, int nCodePage, bool isExact)
         {
             std::wstring sRes = L"";
@@ -299,6 +304,56 @@ namespace NSUnicodeConverter
             }
             return sRes;
         }
+        std::wstring convert_string(const char* sInput, const unsigned int& nInputLen, int nCodepage = 0)
+        {
+            bool ansi = true;
+            std::wstring sResult;
+
+            size_t insize = nInputLen;
+            char* inptr = (char*)sInput;
+
+            if (nCodepage > 0)
+            {
+#if defined (_WIN32) || defined (_WIN64)
+                int outsize_with_0 = MultiByteToWideChar(nCodepage, 0, inptr, -1, NULL, NULL);
+                sResult.resize(outsize_with_0);
+                if (MultiByteToWideChar(nCodepage, 0, inptr, -1, (LPWSTR)sResult.c_str(), outsize_with_0) > 0)
+                {
+                    sResult.erase(outsize_with_0 - 1);
+                    ansi = false;
+                }
+#elif defined(__linux__)
+                std::string sCodepage =  "CP" + std::to_string(nCodepage);
+
+                iconv_t ic= iconv_open("WCHAR_T", sCodepage.c_str());
+                if (ic != (iconv_t) -1)
+                {
+                    sResult.resize(insize);
+                    char* outptr = (char*)sResult.c_str();
+
+                    size_t nconv = 0, avail = (insize) * sizeof(wchar_t), outsize = insize;
+                    nconv = iconv (ic, &inptr, &insize, &outptr, &avail);
+                    if (nconv == 0)
+                    {
+                        if (avail > 0)
+                        {
+                            outsize = outsize - avail/sizeof(wchar_t);
+                            sResult.erase(sResult.begin() + outsize);
+                        }
+                        ansi = false;
+                    }
+                    iconv_close(ic);
+                }
+#endif
+            }
+            if (ansi)
+            {
+                std::string inp(sInput, nInputLen);
+                sResult = std::wstring(inp.begin(), inp.end());
+            }
+
+            return sResult;
+        }
     };
 }
 
@@ -331,7 +386,16 @@ namespace NSUnicodeConverter
     }
     std::wstring CUnicodeConverter::toUnicode(const char* sInput, const unsigned int& nInputLen, int nCodePage, bool isExact)
     {
-        return m_pInternal->toUnicode(sInput, nInputLen, nCodePage, isExact);
+        if (nInputLen < 1) return std::wstring(L"");
+
+        std::wstring result;
+        result = m_pInternal->toUnicode(sInput, nInputLen, nCodePage, isExact);
+
+        if (result.empty() && nInputLen > 0)
+        {
+            result = m_pInternal->convert_string(sInput, nInputLen, nCodePage);
+        }
+        return result;
     }
     std::wstring CUnicodeConverter::toUnicode(const std::string &sInput, int nCodePage, bool isExact)
     {

@@ -71,7 +71,7 @@ bool PropertyStr::Read (XLS::CFStreamPtr stream)
 			}
 			catch(...)
 			{
-				value  = size > 0 ? STR::toStdWStringSystem(std::string(s, size), code_page) : L"";
+				//value  = size > 0 ? STR::toStdWStringSystem(std::string(s, size), code_page) : L""; .. to UnicodeConverter
 			}
 			delete []s;
 		}

@@ -90,7 +90,7 @@ namespace STR
 	std::string		toStdString	(std::wstring wide_string, const unsigned int code_page);
 	std::wstring	toStdWString(std::string ansi_string, const unsigned int code_page);
 	std::wstring	toStdWString(char* ansi, int size, const unsigned int code_page);
-	std::wstring	toStdWStringSystem(std::string ansi_string, const unsigned int code_page);
+	//std::wstring	toStdWStringSystem(std::string ansi_string, const unsigned int code_page);  .. to UnicodeConverter
 };
 
 namespace XMLSTUFF

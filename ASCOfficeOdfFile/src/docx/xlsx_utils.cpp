@@ -175,7 +175,9 @@ std::wstring cellType2Str(XlsxCellType::type type)
 {
     switch(type)
     {
-    case XlsxCellType::b:
+	case XlsxCellType::d:
+        return L"d";
+	case XlsxCellType::b:
         return L"b";
     case XlsxCellType::n:
         return L"n";

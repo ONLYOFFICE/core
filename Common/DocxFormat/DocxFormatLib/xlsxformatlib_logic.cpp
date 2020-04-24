@@ -47,3 +47,5 @@
 #include "../Source/XlsxFormat/SharedStrings/Text.cpp"
 #include "../Source/XlsxFormat/Pivot/Pivots.cpp"
 #include "../Source/XlsxFormat/Slicer/SlicerCache.cpp"
+#include "../Source/XlsxFormat/Slicer/SlicerCacheExt.cpp"
+#include "../Source/XlsxFormat/Slicer/Slicer.cpp"

@@ -69,6 +69,8 @@
 
 #include "../../Common/DocxFormat/Source/XlsxFormat/Comments/ThreadedComments.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Slicer/SlicerCache.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Slicer/SlicerCacheExt.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Slicer/Slicer.h"
 
 namespace BinXlsxRW 
 {
@@ -1291,6 +1293,22 @@ int BinaryStyleTableReader::ReadStyleTableContent(BYTE type, long length, void* 
 			m_oStyles.m_oTableStyles->m_oCount->SetValue(0);
 		}
 	}
+	else if(c_oSerStylesTypes::SlicerStyles == type)
+	{
+		OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+		pOfficeArtExtension->m_oSlicerStyles.Init();
+
+		m_oBufferedStream.GetUChar();//type
+		pOfficeArtExtension->m_oSlicerStyles->fromPPTY(&m_oBufferedStream);
+
+		pOfficeArtExtension->m_sUri.Init();
+		pOfficeArtExtension->m_sUri = L"{EB79DEF2-80B8-43e5-95BD-54CBDDF9020C}";
+		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
+
+		if (m_oStyles.m_oExtLst.IsInit() == false)
+			m_oStyles.m_oExtLst.Init();
+		m_oStyles.m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -2058,15 +2076,20 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 		smart_ptr<OOX::File> oFile = oConnection.smart_dynamic_cast<OOX::File>();
 		m_oWorkbook.Add(oFile);
 	}
-	else if(c_oSerWorkbookTypes::SlicerCache == type)
+	else if(c_oSerWorkbookTypes::SlicerCaches == type)
 	{
-		smart_ptr<OOX::Spreadsheet::CSlicerCacheFile> oSlicerCacheFile(new OOX::Spreadsheet::CSlicerCacheFile(NULL));
-		oSlicerCacheFile->m_oSlicerCacheDefinition.Init();
-		m_oBufferedStream.GetUChar();//type
-		oSlicerCacheFile->m_oSlicerCacheDefinition->fromPPTY(&m_oBufferedStream);
+		OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+		pOfficeArtExtension->m_oSlicerCaches.Init();
 
-		smart_ptr<OOX::File> oFile = oSlicerCacheFile.smart_dynamic_cast<OOX::File>();
-		m_oWorkbook.Add(oFile);
+		READ1_DEF(length, res, this->ReadSlicerCaches, pOfficeArtExtension->m_oSlicerCaches.GetPointer());
+
+		pOfficeArtExtension->m_sUri.Init();
+		pOfficeArtExtension->m_sUri = L"{BBE1A952-AA13-448e-AADC-164F8A28A991}";
+		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
+
+		if (m_oWorkbook.m_oExtLst.IsInit() == false)
+			m_oWorkbook.m_oExtLst.Init();
+		m_oWorkbook.m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -3018,6 +3041,30 @@ int BinaryWorkbookTableReader::ReadPivotCache(BYTE type, long length, void* poRe
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
+int BinaryWorkbookTableReader::ReadSlicerCaches(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CSlicerCaches* pSlicerCaches = static_cast<OOX::Spreadsheet::CSlicerCaches*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+	if(c_oSerWorkbookTypes::SlicerCache == type)
+	{
+		OOX::Spreadsheet::CSlicerCacheFile* pSlicerCache = new OOX::Spreadsheet::CSlicerCacheFile(NULL);
+		pSlicerCache->m_oSlicerCacheDefinition.Init();
+
+		m_oBufferedStream.GetUChar();//type
+		pSlicerCache->m_oSlicerCacheDefinition->fromPPTY(&m_oBufferedStream);
+
+		NSCommon::smart_ptr<OOX::File> pSlicerCacheFile(pSlicerCache);
+		const OOX::RId oRId = m_oWorkbook.Add(pSlicerCacheFile);
+
+		pSlicerCaches->m_oSlicerCache.emplace_back();
+		pSlicerCaches->m_oSlicerCache.back().m_oRId.Init();
+		pSlicerCaches->m_oSlicerCache.back().m_oRId->SetValue(oRId.get());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+
 BinaryCommentReader::BinaryCommentReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorksheet* pCurWorksheet) 
 	: Binary_CommonReader(oBufferedStream), m_pCurWorksheet(pCurWorksheet)
 {
@@ -3761,7 +3808,21 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		m_pCurWorksheet->m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
 
 	SEEK_TO_POS_END2();
-	
+//-------------------------------------------------------------------------------------------------------------
+	SEEK_TO_POS_START(c_oSerWorksheetsTypes::Slicers);
+		OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+		pOfficeArtExtension->m_oSlicerList.Init();
+		READ1_DEF(length, res, this->ReadSlicers, pOfficeArtExtension->m_oSlicerList.GetPointer());
+
+		pOfficeArtExtension->m_sUri.Init();
+		pOfficeArtExtension->m_sUri = L"{A8765BA9-456A-4dab-B4F3-ACF838C121DE}";
+		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
+
+		if (m_pCurWorksheet->m_oExtLst.IsInit() == false)
+			m_pCurWorksheet->m_oExtLst.Init();
+		m_pCurWorksheet->m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
+	SEEK_TO_POS_END2();
+
 	if (m_pCurWorksheet->m_oExtLst.IsInit())
 	{
 		oStreamWriter.WriteString(m_pCurWorksheet->m_oExtLst->toXMLWithNS(L""));
@@ -6384,6 +6445,29 @@ int BinaryWorksheetsTableReader::ReadSparkline(BYTE type, long length, void* poR
     {
         pSparkline->m_oSqRef.Init();
         pSparkline->m_oSqRef->append(m_oBufferedStream.GetString4(length));
+    }
+    else
+        res = c_oSerConstants::ReadUnknown;
+    return res;
+}
+int BinaryWorksheetsTableReader::ReadSlicers(BYTE type, long length, void* poResult)
+{
+    OOX::Spreadsheet::CSlicerRefs* pSlicerRefs = static_cast<OOX::Spreadsheet::CSlicerRefs*>(poResult);
+    int res = c_oSerConstants::ReadOk;
+    if(c_oSerWorksheetsTypes::Slicer == type)
+    {
+		OOX::Spreadsheet::CSlicerFile* pSlicer = new OOX::Spreadsheet::CSlicerFile(NULL);
+		pSlicer->m_oSlicers.Init();
+		
+		m_oBufferedStream.GetUChar();//type
+		pSlicer->m_oSlicers->fromPPTY(&m_oBufferedStream);
+		
+		NSCommon::smart_ptr<OOX::File> pSlicerFile(pSlicer);
+		const OOX::RId oRId = m_pCurWorksheet->Add(pSlicerFile);
+        
+		pSlicerRefs->m_oSlicer.emplace_back();
+		pSlicerRefs->m_oSlicer.back().m_oRId.Init();
+		pSlicerRefs->m_oSlicer.back().m_oRId->SetValue(oRId.get());	
     }
     else
         res = c_oSerConstants::ReadUnknown;

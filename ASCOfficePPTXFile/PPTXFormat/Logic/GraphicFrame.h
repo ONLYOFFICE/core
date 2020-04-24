@@ -40,6 +40,13 @@
 #include "SmartArt.h"
 #include "Pic.h"
 
+namespace OOX
+{
+	namespace Spreadsheet
+	{
+		class CDrawingSlicer;
+	}
+}
 
 namespace PPTX
 {
@@ -95,6 +102,7 @@ namespace PPTX
             nullable<Table>			table;
 			nullable<SmartArt>		smartArt;
 			nullable<ChartRec>		chartRec;
+			nullable<OOX::Spreadsheet::CDrawingSlicer>		slicer;
 
 			SpTreeElem				element;
 

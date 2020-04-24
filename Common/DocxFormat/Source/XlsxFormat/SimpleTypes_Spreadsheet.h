@@ -4924,5 +4924,85 @@ namespace SimpleTypes
 			SimpleType_Operator_Equal(COlapSlicerCacheSortOrder)
 		};
 
+		enum ESlicerStyleType
+		{
+			cslicerstyletypeUnselectedItemWithData = 0,
+			cslicerstyletypeSelectedItemWithData = 1,
+			cslicerstyletypeUnselectedItemWithNoData = 2,
+			cslicerstyletypeSelectedItemWithNoData = 3,
+			cslicerstyletypeHoveredUnselectedItemWithData = 4,
+			cslicerstyletypeHoveredSelectedItemWithData = 5,
+			cslicerstyletypeHoveredUnselectedItemWithNoData = 6,
+			cslicerstyletypeHoveredSelectedItemWithNoData = 7
+		};
+
+		template<ESlicerStyleType eDefValue = cslicerstyletypeUnselectedItemWithData>
+		class CSlicerStyleType : public CSimpleType<ESlicerStyleType, eDefValue>
+		{
+		public:
+			CSlicerStyleType(){}
+			virtual ESlicerStyleType FromString(std::wstring &sValue)
+			{
+				if(L"unselectedItemWithData" == sValue)
+					this->m_eValue = cslicerstyletypeUnselectedItemWithData;
+				else if(L"selectedItemWithData" == sValue)
+					this->m_eValue = cslicerstyletypeSelectedItemWithData;
+				else if(L"unselectedItemWithNoData" == sValue)
+					this->m_eValue = cslicerstyletypeUnselectedItemWithNoData;
+				else if(L"selectedItemWithNoData" == sValue)
+					this->m_eValue = cslicerstyletypeSelectedItemWithNoData;
+				else if(L"hoveredUnselectedItemWithData" == sValue)
+					this->m_eValue = cslicerstyletypeHoveredUnselectedItemWithData;
+				else if(L"hoveredSelectedItemWithData" == sValue)
+					this->m_eValue = cslicerstyletypeHoveredSelectedItemWithData;
+				else if(L"hoveredUnselectedItemWithNoData" == sValue)
+					this->m_eValue = cslicerstyletypeHoveredUnselectedItemWithNoData;
+				else if(L"hoveredSelectedItemWithNoData" == sValue)
+					this->m_eValue = cslicerstyletypeHoveredSelectedItemWithNoData;
+				else
+					this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+			ESlicerStyleType FromStringA(const char* sValue)
+			{
+				if(strcmp("unselectedItemWithData", sValue) == 0)
+					this->m_eValue = cslicerstyletypeUnselectedItemWithData;
+				else if(strcmp("selectedItemWithData", sValue) == 0)
+					this->m_eValue = cslicerstyletypeSelectedItemWithData;
+				else if(strcmp("unselectedItemWithNoData", sValue) == 0)
+					this->m_eValue = cslicerstyletypeUnselectedItemWithNoData;
+				else if(strcmp("selectedItemWithNoData", sValue) == 0)
+					this->m_eValue = cslicerstyletypeSelectedItemWithNoData;
+				else if(strcmp("hoveredUnselectedItemWithData", sValue) == 0)
+					this->m_eValue = cslicerstyletypeHoveredUnselectedItemWithData;
+				else if(strcmp("hoveredSelectedItemWithData", sValue) == 0)
+					this->m_eValue = cslicerstyletypeHoveredSelectedItemWithData;
+				else if(strcmp("hoveredUnselectedItemWithNoData", sValue) == 0)
+					this->m_eValue = cslicerstyletypeHoveredUnselectedItemWithNoData;
+				else if(strcmp("hoveredSelectedItemWithNoData", sValue) == 0)
+					this->m_eValue = cslicerstyletypeHoveredSelectedItemWithNoData;
+				else
+					this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+			virtual std::wstring ToString() const
+			{
+				switch(this->m_eValue)
+				{
+				case cslicerstyletypeUnselectedItemWithData : return L"unselectedItemWithData";break;
+				case cslicerstyletypeSelectedItemWithData : return L"selectedItemWithData";break;
+				case cslicerstyletypeUnselectedItemWithNoData : return L"unselectedItemWithNoData";break;
+				case cslicerstyletypeSelectedItemWithNoData : return L"selectedItemWithNoData";break;
+				case cslicerstyletypeHoveredUnselectedItemWithData : return L"hoveredUnselectedItemWithData";break;
+				case cslicerstyletypeHoveredSelectedItemWithData : return L"hoveredSelectedItemWithData";break;
+				case cslicerstyletypeHoveredUnselectedItemWithNoData : return L"hoveredUnselectedItemWithNoData";break;
+				case cslicerstyletypeHoveredSelectedItemWithNoData : return L"hoveredSelectedItemWithNoData";break;
+				}
+				return L"unselectedItemWithData";
+			}
+			SimpleType_FromString(ESlicerStyleType)
+			SimpleType_Operator_Equal(CSlicerStyleType)
+		};
+
 	}// Spreadsheet
 } // SimpleTypes

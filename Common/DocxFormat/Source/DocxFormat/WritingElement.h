@@ -406,6 +406,7 @@ namespace OOX
 		et_a_GroupShapeNonVisual,	
 		et_a_ConnectionNonVisualShapeProps,
 		et_a_ShapeNonVisual,
+		et_a_Slicer,
 		
 		et_dgm_DiagrammParts,	// <dgm:relIds> 
 		et_dgm_ptLst,			// <dgm:ptLst> 
@@ -1339,6 +1340,18 @@ namespace OOX
 		et_x_OlapSlicerCacheRange,
 		et_x_OlapSlicerCacheItemParent,
 		et_x_OlapSlicerCacheItem,
+		et_x_SlicerCacheOlapLevelName,
+		et_x_SlicerCacheHideNoData,
+		et_x_TableSlicerCache,
+		et_x_SlicerStyleElement,
+		et_x_Slicer,
+		et_x_SlicerCache,
+		et_x_SlicerRef,
+		et_x_SlicerStyle,
+		et_x_Slicers,
+		et_x_SlicerCaches,
+		et_x_SlicerRefs,
+		et_x_SlicerStyles,
 
 		et_x_SparklineGroups,
 		et_x_SparklineGroup,

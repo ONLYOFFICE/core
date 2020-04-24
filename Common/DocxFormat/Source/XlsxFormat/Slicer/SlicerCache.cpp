@@ -30,6 +30,7 @@
  *
  */
 #include "SlicerCache.h"
+#include "SlicerCacheExt.h"
 
 namespace OOX
 {
@@ -1302,18 +1303,20 @@ void CSlicerCacheDefinition::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) con
 		for(size_t i = 0; i < m_oExtLst->m_arrExt.size(); ++i)
 		{
 			OOX::Drawing::COfficeArtExtension* pExt = m_oExtLst->m_arrExt[i];
-			if ( !pExt->m_arrConditionalFormatting.empty() )
+			if(!pExt->m_oSlicerCachePivotTables.empty())
 			{
-//				pWriter->WriteRecord1(2, m_oData);
+				pWriter->StartRecord(2);
+
+				_UINT32 len = (_UINT32)pExt->m_oSlicerCachePivotTables.size();
+				pWriter->WriteULONG(len);
+
+				for (_UINT32 i = 0; i < len; ++i)
+					pWriter->WriteRecord1(0, *pExt->m_oSlicerCachePivotTables[i]);
+
+				pWriter->EndRecord();
 			}
-			else if ( !pExt->m_arrConditionalFormatting.empty() )
-			{
-//				pWriter->WriteRecord1(3, m_oData);
-			}
-			else if ( !pExt->m_arrConditionalFormatting.empty() )
-			{
-//				pWriter->WriteRecord1(4, m_oData);
-			}
+			pWriter->WriteRecord2(3, pExt->m_oTableSlicerCache);
+			pWriter->WriteRecord2(4, pExt->m_oSlicerCacheHideItemsWithNoData);
 		}
 	}
 }
@@ -1370,20 +1373,57 @@ void CSlicerCacheDefinition::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		}
 		case 2:
 		{
-//			m_oExtLst.Init();
-//			m_oExtLst->fromPPTY(pReader);
+			OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+
+			pReader->Skip(4);
+			ULONG _c = pReader->GetULong();
+			for (ULONG i = 0; i < _c; ++i)
+			{
+				pReader->Skip(1); // type
+				OOX::Spreadsheet::CSlicerCachePivotTable* pSlicerCachePivotTable = new OOX::Spreadsheet::CSlicerCachePivotTable();
+				pSlicerCachePivotTable->fromPPTY(pReader);
+				pOfficeArtExtension->m_oSlicerCachePivotTables.push_back(pSlicerCachePivotTable);
+			}
+
+			pOfficeArtExtension->m_sUri.Init();
+			pOfficeArtExtension->m_sUri->append(_T("{03082B11-2C62-411c-B77F-237D8FCFBE4C}"));
+			if(!m_oExtLst.IsInit())
+			{
+				m_oExtLst.Init();
+			}
+			m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
 			break;
 		}
 		case 3:
 		{
-//			m_oExtLst.Init();
-//			m_oExtLst->fromPPTY(pReader);
+			OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+			pOfficeArtExtension->m_oSlicerCacheHideItemsWithNoData.Init();
+			pOfficeArtExtension->m_oSlicerCacheHideItemsWithNoData->fromPPTY(pReader);
+
+			pOfficeArtExtension->m_sUri.Init();
+			pOfficeArtExtension->m_sUri->append(_T("{2F2917AC-EB37-4324-AD4E-5DD8C200BD13}"));
+			pOfficeArtExtension->m_sAdditionalNamespace = _T("xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\"");
+			if(!m_oExtLst.IsInit())
+			{
+				m_oExtLst.Init();
+			}
+			m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
 			break;
 		}
 		case 4:
 		{
-//			m_oExtLst.Init();
-//			m_oExtLst->fromPPTY(pReader);
+			OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+			pOfficeArtExtension->m_oTableSlicerCache.Init();
+			pOfficeArtExtension->m_oTableSlicerCache->fromPPTY(pReader);
+
+			pOfficeArtExtension->m_sUri.Init();
+			pOfficeArtExtension->m_sUri->append(_T("{470722E0-AACD-4C17-9CDC-17EF765DBC7E}"));
+			pOfficeArtExtension->m_sAdditionalNamespace = _T("xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\"");
+			if(!m_oExtLst.IsInit())
+			{
+				m_oExtLst.Init();
+			}
+			m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
 			break;
 		}
 		default:
@@ -1395,7 +1435,6 @@ void CSlicerCacheDefinition::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	}
 	pReader->Seek(_end_rec);
 }
-
 
 void CSlicerCacheFile::read(const CPath& oRootPath, const CPath& oPath)
 {

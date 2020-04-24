@@ -185,6 +185,7 @@ namespace BinXlsxRW
 		void WriteDdeValues(const OOX::Spreadsheet::CDdeValues& ddeValues);
 		void WriteDdeValue(const OOX::Spreadsheet::CDdeValue& ddeValue);
 		void WriteDefinedName(const OOX::Spreadsheet::CDefinedName& definedName);
+		void WriteSlicerCaches(OOX::Spreadsheet::CWorkbook& workbook, const OOX::Spreadsheet::CSlicerCaches& oSlicerCaches);
 	};
 	class BinaryPersonTableWriter
 	{
@@ -279,6 +280,7 @@ namespace BinXlsxRW
 		void WriteDataValidations(const OOX::Spreadsheet::CDataValidations& oDataValidations);
 		void WriteDataValidationsContent(const OOX::Spreadsheet::CDataValidations& oDataValidations);
 		void WriteDataValidation(const OOX::Spreadsheet::CDataValidation& oDataValidation);
+		void WriteSlicers(OOX::Spreadsheet::CWorksheet& oWorksheet, const OOX::Spreadsheet::CSlicerRefs& oSlicers);
 	};
 	class BinaryCalcChainTableWriter
 	{

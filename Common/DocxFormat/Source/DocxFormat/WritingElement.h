@@ -122,6 +122,15 @@ namespace OOX
 	while( strlen(wsName) != 0 )\
 	{
 
+#define WritingElement_ReadAttributes_StartChar_No_NS(Reader) \
+	if ( Reader.GetAttributesCount() <= 0 )\
+		return;\
+	if ( !Reader.MoveToFirstAttribute() )\
+		return;\
+	const char* wsName = XmlUtils::GetNameNoNS(Reader.GetNameChar());\
+	while( strlen(wsName) != 0 )\
+	{
+
 #define WritingElement_ReadAttributes_Start_No_NS(Reader) \
 	if ( Reader.GetAttributesCount() <= 0 )\
 		return;\
@@ -169,6 +178,13 @@ namespace OOX
 		if ( !Reader.MoveToNextAttribute() ) \
 			break;\
 		wsName = Reader.GetNameChar();\
+	}\
+	Reader.MoveToElement();
+
+#define WritingElement_ReadAttributes_EndChar_No_NS(Reader) \
+		if ( !Reader.MoveToNextAttribute() ) \
+			break;\
+		wsName = XmlUtils::GetNameNoNS(Reader.GetNameChar());\
 	}\
 	Reader.MoveToElement();
 
@@ -390,6 +406,7 @@ namespace OOX
 		et_a_GroupShapeNonVisual,	
 		et_a_ConnectionNonVisualShapeProps,
 		et_a_ShapeNonVisual,
+		et_a_Slicer,
 		
 		et_dgm_DiagrammParts,	// <dgm:relIds> 
 		et_dgm_ptLst,			// <dgm:ptLst> 
@@ -1308,6 +1325,33 @@ namespace OOX
 		et_x_PivotCacheRecord,
 		et_x_SharedItemsIndex,
 		et_x_MemberPropertyIndex,
+
+		et_x_SlicerCacheDefinition,
+		et_x_SlicerCachePivotTable,
+		et_x_SlicerCacheData,
+		et_x_OlapSlicerCache,
+		et_x_TabularSlicerCache,
+		et_x_OlapSlicerCacheLevelsData,
+		et_x_OlapSlicerCacheSelections,
+		et_x_TabularSlicerCacheItems,
+		et_x_OlapSlicerCacheLevelData,
+		et_x_OlapSlicerCacheSelection,
+		et_x_TabularSlicerCacheItem,
+		et_x_OlapSlicerCacheRange,
+		et_x_OlapSlicerCacheItemParent,
+		et_x_OlapSlicerCacheItem,
+		et_x_SlicerCacheOlapLevelName,
+		et_x_SlicerCacheHideNoData,
+		et_x_TableSlicerCache,
+		et_x_SlicerStyleElement,
+		et_x_Slicer,
+		et_x_SlicerCache,
+		et_x_SlicerRef,
+		et_x_SlicerStyle,
+		et_x_Slicers,
+		et_x_SlicerCaches,
+		et_x_SlicerRefs,
+		et_x_SlicerStyles,
 
 		et_x_SparklineGroups,
 		et_x_SparklineGroup,

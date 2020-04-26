@@ -35,6 +35,8 @@
 #include "../Diagram/DiagramData.h"
 #include "../../XlsxFormat/Worksheets/ConditionalFormatting.h"
 #include "../../XlsxFormat/Worksheets/DataValidation.h"
+#include "../../XlsxFormat/Slicer/SlicerCache.h"
+#include "../../XlsxFormat/Slicer/SlicerCacheExt.h"
 
 namespace OOX
 {
@@ -57,6 +59,12 @@ namespace OOX
 				delete m_arrConditionalFormatting[nIndex];
 			}
 			m_arrConditionalFormatting.clear();
+
+			for (size_t nIndex = 0; nIndex < m_oSlicerCachePivotTables.size(); ++nIndex)
+			{
+				delete m_oSlicerCachePivotTables[nIndex];
+			}
+			m_oSlicerCachePivotTables.clear();
 		}
 		void COfficeArtExtension::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -68,6 +76,15 @@ namespace OOX
 									  *m_sUri == L"{78C0D931-6437-407d-A8EE-F0AAD7539E65}"	||
 									  *m_sUri == L"{B025F937-C7B1-47D3-B67F-A62EFF666E3E}"	||
 									  *m_sUri == L"{CCE6A557-97BC-4b89-ADB6-D9C93CAAB3DF}"	||
+									  *m_sUri == L"{A8765BA9-456A-4dab-B4F3-ACF838C121DE}"	||
+									  *m_sUri == L"{3A4CF648-6AED-40f4-86FF-DC5316D8AED3}"	||
+									  *m_sUri == L"{BBE1A952-AA13-448e-AADC-164F8A28A991}"	||
+									  *m_sUri == L"{46BE6895-7355-4a93-B00E-2C351335B9C9}"	||
+									  *m_sUri == L"{EB79DEF2-80B8-43e5-95BD-54CBDDF9020C}"	||
+									  *m_sUri == L"{03082B11-2C62-411c-B77F-237D8FCFBE4C}"	||
+									  *m_sUri == L"{2F2917AC-EB37-4324-AD4E-5DD8C200BD13}"	||
+									  *m_sUri == L"{470722E0-AACD-4C17-9CDC-17EF765DBC7E}"	||
+									  *m_sUri == L"{46F421CA-312F-682f-3DD2-61675219B42D}"	||
 									  *m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))   
 			{
 				int nCurDepth = oReader.GetDepth();
@@ -104,6 +121,55 @@ namespace OOX
 					else if (sName == L"dataValidations")
 					{
 						m_oDataValidations = oReader;
+					}
+					else if (sName == L"slicerList")
+					{
+						if (L"{A8765BA9-456A-4dab-B4F3-ACF838C121DE}" == *m_sUri)
+						{
+							m_oSlicerList = oReader;
+						}
+						else
+						{
+							m_oSlicerListExt = oReader;
+						}
+					}
+					else if (sName == L"slicerCaches")
+					{
+						if (L"{BBE1A952-AA13-448e-AADC-164F8A28A991}" == *m_sUri)
+						{
+							m_oSlicerCaches = oReader;
+						}
+						else
+						{
+							m_oSlicerCachesExt = oReader;
+						}
+					}
+					else if (sName == L"dxfs")
+					{
+						m_oDxfs = oReader;
+					}
+					else if (sName == L"slicerStyles")
+					{
+						m_oSlicerStyles = oReader;
+					}
+					else if (sName == L"slicerCachePivotTables")
+					{
+						if ( oReader.IsEmptyNode() )
+							continue;
+
+						int nCurDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nCurDepth1 ) )
+						{
+							m_oSlicerCachePivotTables.push_back(new OOX::Spreadsheet::CSlicerCachePivotTable(oReader));
+						}
+					}
+					else if (sName == L"tableSlicerCache")
+					{
+						m_oTableSlicerCache = oReader;
+					}
+					else if (sName == L"slicerCacheHideItemsWithNoData")
+					{
+						m_oSlicerCacheHideItemsWithNoData = oReader;
 					}
 					else if (sName == L"id")
 					{
@@ -168,6 +234,67 @@ namespace OOX
 			{
 				NSStringUtils::CStringBuilder writer;
 				m_oDataValidations->toXML2(writer, true);
+				sResult += writer.GetData().c_str();
+			}
+			if(m_oSlicerList.IsInit())
+			{
+				NSStringUtils::CStringBuilder writer;
+				m_oSlicerList->toXML(writer, L"x14:slicerList");
+				sResult += writer.GetData().c_str();
+			}
+			if(m_oSlicerListExt.IsInit())
+			{
+				NSStringUtils::CStringBuilder writer;
+				m_oSlicerListExt->toXML(writer, L"x14:slicerList");
+				sResult += writer.GetData().c_str();
+			}
+			if(m_oSlicerCaches.IsInit())
+			{
+				NSStringUtils::CStringBuilder writer;
+				m_oSlicerCaches->toXML(writer, L"slicerCaches", L"x14:");
+				sResult += writer.GetData().c_str();
+			}
+			if(m_oSlicerCachesExt.IsInit())
+			{
+				NSStringUtils::CStringBuilder writer;
+				m_oSlicerCachesExt->toXML(writer, L"slicerCaches", L"x15:");
+				sResult += writer.GetData().c_str();
+			}
+			if(m_oDxfs.IsInit())
+			{
+				NSStringUtils::CStringBuilder writer;
+				m_oDxfs->toXML2(writer, L"x14:dxfs");
+				sResult += writer.GetData().c_str();
+			}
+			if(m_oSlicerStyles.IsInit())
+			{
+				NSStringUtils::CStringBuilder writer;
+				m_oSlicerStyles->toXML(writer, L"x14:slicerStyles");
+				sResult += writer.GetData().c_str();
+			}
+			if(m_oSlicerCachePivotTables.size() > 0)
+			{
+				NSStringUtils::CStringBuilder writer;
+				writer.StartNode(L"x15:slicerCachePivotTables");
+				writer.StartAttributes();
+				writer.EndAttributes();
+				for(size_t i = 0; i < m_oSlicerCachePivotTables.size(); ++i)
+				{
+					m_oSlicerCachePivotTables[i]->toXML(writer, L"pivotTable");
+				}
+				writer.EndNode(L"x15:slicerCachePivotTables");
+				sResult += writer.GetData().c_str();
+			}
+			if(m_oTableSlicerCache.IsInit())
+			{
+				NSStringUtils::CStringBuilder writer;
+				m_oTableSlicerCache->toXML(writer, L"x15:tableSlicerCache");
+				sResult += writer.GetData().c_str();
+			}
+			if(m_oSlicerCacheHideItemsWithNoData.IsInit())
+			{
+				NSStringUtils::CStringBuilder writer;
+				m_oSlicerCacheHideItemsWithNoData->toXML(writer, L"x15:slicerCacheHideItemsWithNoData");
 				sResult += writer.GetData().c_str();
 			}
 			if (m_oId.IsInit())

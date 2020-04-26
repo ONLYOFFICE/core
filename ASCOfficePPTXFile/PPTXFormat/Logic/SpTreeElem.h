@@ -74,6 +74,7 @@ namespace PPTX
 			}			
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributesRequires(XmlUtils::CXmlLiteReader& oReader);
 
 			virtual std::wstring toXML() const;
             virtual bool is_init() const {return (m_elem.IsInit());}
@@ -107,8 +108,10 @@ namespace PPTX
 				return m_elem;
 			}
 			virtual void SetParentPointer(const WrapperWritingElement* pParent) {if(is_init()) m_elem->SetParentPointer(pParent);};
+			std::wstring GetSlicerRequires();
 
 			nullable_string m_binaryData;
+			std::wstring m_sRequires;//from mc:Choice
 		private:
 			smart_ptr<WrapperWritingElement> m_elem;
 		protected:

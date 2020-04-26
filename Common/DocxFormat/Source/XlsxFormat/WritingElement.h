@@ -123,6 +123,12 @@ namespace Spreadsheet
 #define WritingStringNullableAttrEncodeXmlString2(name, elem) \
 		WritingStringNullableAttrEncodeXmlString(name, elem, *elem)
 
+#define WritingNullable(elem, action) \
+		if(elem.IsInit()) \
+		{ \
+			action \
+		}
+
 	const double c_ag_Inch_to_MM	= 25.4;
 	const double c_ag_1pxWidth		= 25.4 / 96;
 

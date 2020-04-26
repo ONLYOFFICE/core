@@ -991,6 +991,13 @@ namespace NSBinPptxRW
 			WriteBool1(type, *val);
 	}
 
+	void CBinaryFileWriter::WriteByte1(int type, const BYTE& val)
+	{
+		BYTE bType = (BYTE)type;
+		WriteBYTE(bType);
+		WriteBYTE(val);
+	}
+
 	void CBinaryFileWriter::WriteInt1(int type, const int& val)
 	{
 		BYTE bType = (BYTE)type;
@@ -1002,6 +1009,17 @@ namespace NSBinPptxRW
 		if (val.is_init())
 			WriteInt1(type, *val);
 	}
+	void CBinaryFileWriter::WriteUInt1(int type, const unsigned int& val)
+	{
+		BYTE bType = (BYTE)type;
+		WriteBYTE(bType);
+		WriteULONG(val);
+	}
+	void CBinaryFileWriter::WriteUInt2(int type, const NSCommon::nullable_uint& val)
+	{
+		if (val.is_init())
+			WriteUInt1(type, *val);
+	}
 
 	void CBinaryFileWriter::WriteDouble1(int type, const double& val)
 	{
@@ -1012,6 +1030,18 @@ namespace NSBinPptxRW
 	{
 		if (val.is_init())
 			WriteDouble1(type, *val);
+	}
+
+	void CBinaryFileWriter::WriteDoubleReal1(int type, const double& val)
+	{
+		BYTE bType = (BYTE)type;
+		WriteBYTE(bType);
+		WriteDoubleReal(val);
+	}
+	void CBinaryFileWriter::WriteDoubleReal2(int type, const NSCommon::nullable_double& val)
+	{
+		if (val.is_init())
+			WriteDoubleReal1(type, *val);
 	}
 
 	void CBinaryFileWriter::WriteSize_t1(int type, const size_t& val)

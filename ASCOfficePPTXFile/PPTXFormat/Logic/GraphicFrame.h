@@ -40,6 +40,13 @@
 #include "SmartArt.h"
 #include "Pic.h"
 
+namespace OOX
+{
+	namespace Spreadsheet
+	{
+		class CDrawingSlicer;
+	}
+}
 
 namespace PPTX
 {
@@ -95,8 +102,12 @@ namespace PPTX
             nullable<Table>			table;
 			nullable<SmartArt>		smartArt;
 			nullable<ChartRec>		chartRec;
+			nullable<OOX::Spreadsheet::CDrawingSlicer>		slicer;
+			nullable<OOX::Spreadsheet::CDrawingSlicer>		slicerExt;
 
 			SpTreeElem				element;
+
+			std::wstring m_sRequires;//from mc:Choice
 
 			std::wstring GetVmlXmlBySpid(smart_ptr<OOX::IFileContainer> & rels)	const;
 

@@ -44,6 +44,7 @@ namespace OOX
 		class CDataValidations;
 		class CSlicerRefs;
 		class CSlicerCaches;
+		class CDxfs;
 		class CSlicerStyles;
 		class CSlicerCachePivotTable;
 		class CTableSlicerCache;
@@ -184,9 +185,13 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CAltTextTable>		m_oAltTextTable;
             nullable<std::wstring>							m_oId;
 			nullable<OOX::Spreadsheet::CDataValidations>	m_oDataValidations;
-			nullable<OOX::Spreadsheet::CSlicerRefs>	m_oSlicerList;
-			nullable<OOX::Spreadsheet::CSlicerCaches>	m_oSlicerCaches;
-			nullable<OOX::Spreadsheet::CSlicerStyles>	m_oSlicerStyles;
+
+			nullable<OOX::Spreadsheet::CSlicerRefs>			m_oSlicerList;
+			nullable<OOX::Spreadsheet::CSlicerRefs>			m_oSlicerListExt;
+			nullable<OOX::Spreadsheet::CSlicerCaches>		m_oSlicerCaches;
+			nullable<OOX::Spreadsheet::CSlicerCaches>		m_oSlicerCachesExt;
+			nullable<OOX::Spreadsheet::CDxfs>				m_oDxfs;
+			nullable<OOX::Spreadsheet::CSlicerStyles>		m_oSlicerStyles;
 
 			std::vector<OOX::Spreadsheet::CSlicerCachePivotTable*> m_oSlicerCachePivotTables;
 			nullable<OOX::Spreadsheet::CTableSlicerCache>	m_oTableSlicerCache;

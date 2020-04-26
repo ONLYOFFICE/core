@@ -103,7 +103,8 @@ namespace BinXlsxRW
 		CellStyleXfs = 14,
 		CellStyles = 15,
 		CellStyle = 16,
-		SlicerStyles = 17
+		SlicerStyles = 17,
+		ExtDxfs = 18
 	};}
 	namespace c_oSerBorderTypes{enum c_oSerBorderTypes
 	{
@@ -216,7 +217,8 @@ namespace BinXlsxRW
 		Connections = 16,
 		AppName = 17,
 		SlicerCaches = 18,
-		SlicerCache = 19
+		SlicerCachesExt = 19,
+		SlicerCache = 20
 	};}	
 	namespace c_oSerDbPrTypes{enum c_oSerDbPrTypes
 	{
@@ -378,7 +380,8 @@ namespace BinXlsxRW
 		XlsbPos = 35,
 		SortState = 36,
 		Slicers = 37,
-		Slicer = 38
+		SlicersExt = 38,
+		Slicer = 39
 	};}
 	namespace c_oSerWorksheetPropTypes{enum c_oSerWorksheetPropTypes
 	{

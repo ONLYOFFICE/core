@@ -1293,6 +1293,24 @@ int BinaryStyleTableReader::ReadStyleTableContent(BYTE type, long length, void* 
 			m_oStyles.m_oTableStyles->m_oCount->SetValue(0);
 		}
 	}
+	else if(c_oSerStylesTypes::ExtDxfs == type)
+	{
+		OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+
+		pOfficeArtExtension->m_oDxfs.Init();
+		READ1_DEF(length, res, this->ReadDxfs, pOfficeArtExtension->m_oDxfs.GetPointer());
+
+		pOfficeArtExtension->m_oDxfs->m_oCount.Init();
+		pOfficeArtExtension->m_oDxfs->m_oCount->SetValue((unsigned int)pOfficeArtExtension->m_oDxfs->m_arrItems.size());
+
+		pOfficeArtExtension->m_sUri.Init();
+		pOfficeArtExtension->m_sUri = L"{46F421CA-312F-682f-3DD2-61675219B42D}";
+		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
+
+		if (m_oStyles.m_oExtLst.IsInit() == false)
+			m_oStyles.m_oExtLst.Init();
+		m_oStyles.m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
+	}
 	else if(c_oSerStylesTypes::SlicerStyles == type)
 	{
 		OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
@@ -2086,6 +2104,21 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 		pOfficeArtExtension->m_sUri.Init();
 		pOfficeArtExtension->m_sUri = L"{BBE1A952-AA13-448e-AADC-164F8A28A991}";
 		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
+
+		if (m_oWorkbook.m_oExtLst.IsInit() == false)
+			m_oWorkbook.m_oExtLst.Init();
+		m_oWorkbook.m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
+	}
+	else if(c_oSerWorkbookTypes::SlicerCachesExt == type)
+	{
+		OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+		pOfficeArtExtension->m_oSlicerCachesExt.Init();
+
+		READ1_DEF(length, res, this->ReadSlicerCaches, pOfficeArtExtension->m_oSlicerCachesExt.GetPointer());
+
+		pOfficeArtExtension->m_sUri.Init();
+		pOfficeArtExtension->m_sUri = L"{46BE6895-7355-4a93-B00E-2C351335B9C9}";
+		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\"";
 
 		if (m_oWorkbook.m_oExtLst.IsInit() == false)
 			m_oWorkbook.m_oExtLst.Init();
@@ -3817,6 +3850,20 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		pOfficeArtExtension->m_sUri.Init();
 		pOfficeArtExtension->m_sUri = L"{A8765BA9-456A-4dab-B4F3-ACF838C121DE}";
 		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
+
+		if (m_pCurWorksheet->m_oExtLst.IsInit() == false)
+			m_pCurWorksheet->m_oExtLst.Init();
+		m_pCurWorksheet->m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
+	SEEK_TO_POS_END2();
+
+	SEEK_TO_POS_START(c_oSerWorksheetsTypes::SlicersExt);
+		OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+		pOfficeArtExtension->m_oSlicerListExt.Init();
+		READ1_DEF(length, res, this->ReadSlicers, pOfficeArtExtension->m_oSlicerListExt.GetPointer());
+
+		pOfficeArtExtension->m_sUri.Init();
+		pOfficeArtExtension->m_sUri = L"{3A4CF648-6AED-40f4-86FF-DC5316D8AED3}";
+		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\"";
 
 		if (m_pCurWorksheet->m_oExtLst.IsInit() == false)
 			m_pCurWorksheet->m_oExtLst.Init();

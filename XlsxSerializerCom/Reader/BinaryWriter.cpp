@@ -1102,7 +1102,13 @@ void BinaryStyleTableWriter::WriteStylesContent(OOX::Spreadsheet::CStyles& style
 		for(size_t i = 0; i < styles.m_oExtLst->m_arrExt.size(); ++i)
 		{
 			OOX::Drawing::COfficeArtExtension* pExt = styles.m_oExtLst->m_arrExt[i];
-			if ( pExt->m_oSlicerStyles.IsInit() )
+			if ( pExt->m_oDxfs.IsInit() )
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerStylesTypes::ExtDxfs);
+				WriteDxfs(pExt->m_oDxfs.get(), pIndexedColors, pTheme, oFontProcessor);
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			else if ( pExt->m_oSlicerStyles.IsInit() )
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerStylesTypes::SlicerStyles);
 				m_oBcw.m_oStream.WriteRecord2(0, pExt->m_oSlicerStyles);
@@ -2036,6 +2042,12 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::SlicerCaches);
 				WriteSlicerCaches(workbook, pExt->m_oSlicerCaches.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			else if ( pExt->m_oSlicerCachesExt.IsInit() )
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::SlicerCachesExt);
+				WriteSlicerCaches(workbook, pExt->m_oSlicerCachesExt.get());
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 		}
@@ -3176,6 +3188,12 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Slicers);
 				WriteSlicers(oWorksheet, pExt->m_oSlicerList.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			else if ( pExt->m_oSlicerListExt.IsInit() )
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::SlicersExt);
+				WriteSlicers(oWorksheet, pExt->m_oSlicerListExt.get());
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
         }

@@ -103,8 +103,11 @@ namespace PPTX
 			nullable<SmartArt>		smartArt;
 			nullable<ChartRec>		chartRec;
 			nullable<OOX::Spreadsheet::CDrawingSlicer>		slicer;
+			nullable<OOX::Spreadsheet::CDrawingSlicer>		slicerExt;
 
 			SpTreeElem				element;
+
+			std::wstring m_sRequires;//from mc:Choice
 
 			std::wstring GetVmlXmlBySpid(smart_ptr<OOX::IFileContainer> & rels)	const;
 

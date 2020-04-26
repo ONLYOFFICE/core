@@ -205,7 +205,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
 			virtual std::wstring toXML() const{return L"";}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const{}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const;
+			virtual void toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName, const std::wstring& sPrefix) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 			virtual EElementType getType() const

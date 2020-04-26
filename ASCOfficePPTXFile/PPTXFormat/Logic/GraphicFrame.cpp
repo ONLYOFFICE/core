@@ -206,7 +206,14 @@ namespace PPTX
 				}
 				else if (strName == L"slicer")
 				{
-					slicer = oReader;
+					if(L"a14" == m_sRequires)
+					{
+						slicer = oReader;
+					}
+					else
+					{
+						slicerExt = oReader;
+					}
 					result = true;
 				}
 				else if (strName == L"AlternateContent")
@@ -306,7 +313,14 @@ namespace PPTX
 					}
 					else if (L"slicer" == strName)
 					{
-						slicer = oNode;
+						if(L"a14" == m_sRequires)
+						{
+							slicer = oNode;
+						}
+						else
+						{
+							slicerExt = oNode;
+						}
 						result = true;
 					}
 					else if (L"legacyDrawing" == strName)
@@ -387,6 +401,12 @@ namespace PPTX
 				slicer->toXML(*pWriter, L"sle:slicer");
 				pWriter->WriteString(L"</a:graphicData></a:graphic>");
 			}
+			else if (slicerExt.is_init())
+			{
+				pWriter->WriteString(L"<a:graphic><a:graphicData uri=\"http://schemas.microsoft.com/office/drawing/2010/slicer\">");
+				slicerExt->toXML(*pWriter, L"sle:slicer");
+				pWriter->WriteString(L"</a:graphicData></a:graphic>");
+			}
 		}
 		void GraphicFrame::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
@@ -408,7 +428,7 @@ namespace PPTX
 
 		bool GraphicFrame::IsEmpty() const
 		{
-			return !olePic.is_init() && !smartArt.is_init() && !table.is_init() && !chartRec.is_init() && !vmlSpid.is_init() && !slicer.is_init() && !element.is_init();
+			return !olePic.is_init() && !smartArt.is_init() && !table.is_init() && !chartRec.is_init() && !vmlSpid.is_init() && !slicer.is_init() && !slicerExt.is_init() && !element.is_init();
 		}
 
 		void GraphicFrame::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -430,7 +450,7 @@ namespace PPTX
 				xml_object_vml = GetVmlXmlBySpid(xml_object_rels);
 			}
 
-			if (smartArt.is_init() && !table.is_init() && !chartRec.is_init() && !slicer.is_init() && !vmlSpid.is_init())
+			if (smartArt.is_init() && !table.is_init() && !chartRec.is_init() && !slicer.is_init() && !slicerExt.is_init() && !vmlSpid.is_init())
 			{
 				smartArt->LoadDrawing(pWriter);
 				
@@ -485,7 +505,7 @@ namespace PPTX
 				return;
 			}
 
-			if (!table.is_init() && !chartRec.is_init() && !slicer.is_init() && xml_object_vml.empty() == false)
+			if (!table.is_init() && !chartRec.is_init() && !slicer.is_init() && !slicerExt.is_init() && xml_object_vml.empty() == false)
 			{
 				std::wstring temp = L"<v:object>";
                 temp += xml_object_vml;
@@ -537,6 +557,10 @@ namespace PPTX
 			else if (slicer.is_init())
 			{
 					pWriter->WriteRecord2(5, slicer);
+			}
+			else if (slicerExt.is_init())
+			{
+					pWriter->WriteRecord2(6, slicerExt);
 			}
 			else if (element.is_init())
 			{
@@ -611,6 +635,11 @@ namespace PPTX
 						slicer = new OOX::Spreadsheet::CDrawingSlicer();
 						slicer->fromPPTY(pReader);
 					}break;
+					case 6:
+					{
+						slicerExt = new OOX::Spreadsheet::CDrawingSlicer();
+						slicerExt->fromPPTY(pReader);
+					}break;
 					default:
 						pReader->SkipRecord();
 						break;
@@ -664,6 +693,12 @@ namespace PPTX
 			{
 				sXml += L"<a:graphic><a:graphicData uri=\"http://schemas.microsoft.com/office/drawing/2010/slicer\">";
 				sXml += slicer->toXML();
+				sXml += L"</a:graphicData></a:graphic>";
+			}
+			else if (slicerExt.IsInit())
+			{
+				sXml += L"<a:graphic><a:graphicData uri=\"http://schemas.microsoft.com/office/drawing/2010/slicer\">";
+				sXml += slicerExt->toXML();
 				sXml += L"</a:graphicData></a:graphic>";
 			}
 			return sXml;

@@ -542,19 +542,25 @@ void CSlicerCaches::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		}
 	}
 }
-void CSlicerCaches::toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const
+void CSlicerCaches::toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName, const std::wstring& sPrefix) const
 {
-	writer.StartNode(sName);
+	writer.StartNode(sPrefix + sName);
 	writer.StartAttributes();
+	std::wstring sChildPrefix;
+	if(sPrefix.length() > 0 && L"x14:" != sPrefix)
+	{
+		sChildPrefix = L"x14:";
+		writer.WriteAttribute(L"xmlns:x14", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
+	}
 	writer.EndAttributes();
 	if(m_oSlicerCache.size() > 0)
 	{
 		for(size_t i = 0; i < m_oSlicerCache.size(); ++i)
 		{
-			(&m_oSlicerCache[i])->toXML(writer, L"slicerCache");
+			(&m_oSlicerCache[i])->toXML(writer, L"x14:slicerCache");
 		}
 	}
-	writer.EndNode(sName);
+	writer.EndNode(sPrefix + sName);
 }
 void CSlicerRefs::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
@@ -581,6 +587,7 @@ void CSlicerRefs::toXML(NSStringUtils::CStringBuilder& writer, const std::wstrin
 {
 	writer.StartNode(sName);
 	writer.StartAttributes();
+	writer.WriteAttribute(L"xmlns:x14", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
 	writer.EndAttributes();
 	if(m_oSlicer.size() > 0)
 	{

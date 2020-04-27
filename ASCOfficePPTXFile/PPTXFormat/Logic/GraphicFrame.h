@@ -39,14 +39,7 @@
 #include "Table/Table.h"
 #include "SmartArt.h"
 #include "Pic.h"
-
-namespace OOX
-{
-	namespace Spreadsheet
-	{
-		class CDrawingSlicer;
-	}
-}
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Slicer/SlicerCacheExt.h"
 
 namespace PPTX
 {

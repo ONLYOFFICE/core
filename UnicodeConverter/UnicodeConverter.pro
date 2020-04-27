@@ -22,10 +22,17 @@ core_ios {
 	CONFIG += bundle_dylibs
 }
 
-include(../Common/3dParty/icu/icu.pri)
+core_android {
+    CONFIG += core_disable_icu
+    SOURCES += UnicodeConverter_internal_android.cpp
+}
+
+!core_disable_icu {
+    include(../Common/3dParty/icu/icu.pri)
 
 SOURCES += \
-        UnicodeConverter.cpp
+    UnicodeConverter.cpp
 
 HEADERS +=\
     UnicodeConverter.h
+}

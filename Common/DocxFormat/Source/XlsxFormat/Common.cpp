@@ -31,7 +31,12 @@
  */
 
 #ifdef __ANDROID__
-#include <gcvt.h>
+#include <stdio.h>
+char* gcvt(double x, int n, char* b)
+{
+    sprintf(b, "%.*g", n, x);
+    return b;
+}
 #endif
 
 #include "CommonInclude.h"

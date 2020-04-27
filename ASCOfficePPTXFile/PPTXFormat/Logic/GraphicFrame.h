@@ -39,7 +39,7 @@
 #include "Table/Table.h"
 #include "SmartArt.h"
 #include "Pic.h"
-
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Slicer/SlicerCacheExt.h"
 
 namespace PPTX
 {
@@ -95,8 +95,12 @@ namespace PPTX
             nullable<Table>			table;
 			nullable<SmartArt>		smartArt;
 			nullable<ChartRec>		chartRec;
+			nullable<OOX::Spreadsheet::CDrawingSlicer>		slicer;
+			nullable<OOX::Spreadsheet::CDrawingSlicer>		slicerExt;
 
 			SpTreeElem				element;
+
+			std::wstring m_sRequires;//from mc:Choice
 
 			std::wstring GetVmlXmlBySpid(smart_ptr<OOX::IFileContainer> & rels)	const;
 

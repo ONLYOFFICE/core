@@ -149,6 +149,8 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 					m_oDefinedNames->toXML(writer);
 				if(m_oCalcPr.IsInit())
 					m_oCalcPr->toXML(writer);
+				if(m_oExtLst.IsInit())
+					writer.WriteString(m_oExtLst->toXMLWithNS(L""));
 
 				if(m_oPivotCachesXml.IsInit())
 					writer.WriteString(m_oPivotCachesXml.get());
@@ -175,6 +177,8 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 							m_oWorkbookPr = oReader;
 						else if ( L"externalReferences" == sName )
 							m_oExternalReferences = oReader;
+						else if ( L"extLst" == sName )
+							m_oExtLst = oReader;
 						else if ( L"fileVersion" == sName )
 						{
 							WritingElement_ReadAttributes_Start( oReader )
@@ -286,6 +290,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 			nullable<std::wstring>							m_oPivotCachesXml;
             nullable<OOX::Spreadsheet::CCalcPr>				m_oCalcPr;
 			nullable_string									m_oAppName;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
 			
 			CPersonList*									m_pPersonList;
 			bool											m_bMacroEnabled;

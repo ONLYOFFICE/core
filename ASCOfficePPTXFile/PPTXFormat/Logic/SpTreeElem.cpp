@@ -253,7 +253,9 @@ namespace PPTX
 				m_elem.reset(new Logic::SpTree(oReader));
 			else if (name == L"graphicFrame")
 			{
-				Logic::GraphicFrame *pGraphic = new Logic::GraphicFrame(oReader);
+				Logic::GraphicFrame *pGraphic = new Logic::GraphicFrame();
+				pGraphic->m_sRequires = m_sRequires;
+				pGraphic->fromXML(oReader);
 
 				if (pGraphic && pGraphic->IsEmpty() == false)
 					m_elem.reset(pGraphic);
@@ -274,10 +276,12 @@ namespace PPTX
 					
 					if (strName == L"mc:Choice")
 					{
+						ReadAttributesRequires(oReader);
 						oReader.ReadNextSiblingNode(nCurDepth + 1);
-						//GetAttributeIfExist(L"Requires", sRequires) && L"a14" == sRequires)
+
 						fromXML(oReader);
 						
+						m_sRequires = L"";
 						if (m_elem.is_init())
 							break;
 					}
@@ -343,6 +347,12 @@ namespace PPTX
 				m_binaryData = node.GetText();
 			}
 			else m_elem.reset();
+		}
+		void SpTreeElem::ReadAttributesRequires(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("Requires"), m_sRequires )
+			WritingElement_ReadAttributes_End( oReader )
 		}
 
 		std::wstring SpTreeElem::GetUriElem()
@@ -481,6 +491,21 @@ namespace PPTX
 					break;
 			}
 		}
-
+		std::wstring SpTreeElem::GetSlicerRequires()
+		{
+			if (m_elem.IsInit() && m_elem.is<PPTX::Logic::GraphicFrame>())
+			{
+				PPTX::Logic::GraphicFrame& oGraphicFrame = m_elem.as<PPTX::Logic::GraphicFrame>();
+				if(oGraphicFrame.slicer.IsInit())
+				{
+					return L"a14";
+				}
+				else if(oGraphicFrame.slicerExt.IsInit())
+				{
+					return L"sle15";
+				}
+			}
+			return L"";
+		}
 	} // namespace Logic
 } // namespace PPTX

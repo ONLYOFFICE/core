@@ -154,7 +154,7 @@ namespace OOX
 				{
 					ReadWorksheetOptions(oReader);
 				}
-				else if (L"Names")
+				else if (L"Names" == sName)
 				{
 					CDefinedNames names(oReader);	
 

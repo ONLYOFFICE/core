@@ -128,7 +128,9 @@ namespace NSStringUtils
         void RemoveLastSpaces();
         bool IsSpace();
 
+		void AddBool2(bool val);
         void AddInt(int val);
+		void AddUInt(unsigned int val);
         void AddIntDel10(int val);
         void AddIntDel100(int val);
         void AddInt64(__int64 val);
@@ -147,6 +149,30 @@ namespace NSStringUtils
 
         void Skip(int nSkip);
 
+        void StartNode(const std::wstring& name);
+        void StartAttributes();
+        void EndAttributes();
+        void EndNode(const std::wstring& name);
+        void WriteNodeBegin(std::wstring strNodeName, bool bAttributed = false);
+        void WriteNodeEnd(std::wstring strNodeName, bool bEmptyNode = false, bool bEndNode = true);
+
+        void WriteAttribute(const std::wstring& strName, bool value);
+        void WriteAttribute(const std::wstring& strName, int value);
+        void WriteAttribute(const std::wstring& strName, unsigned int value);
+        void WriteAttribute(const std::wstring& strName, double value);
+        void WriteAttribute(const std::wstring& strName, const std::wstring& value);
+        void WriteAttribute(const std::wstring& strName, const wchar_t* value);
+        void WriteAttributeEncodeXml(const std::wstring& strName, const std::wstring& value);
+        void WriteAttributeEncodeXml(const std::wstring& strName, const wchar_t* value);
+
+        void WriteNodeValue(const std::wstring& strName, bool value);
+        void WriteNodeValue(const std::wstring& strName, int value);
+        void WriteNodeValue(const std::wstring& strName, unsigned int value);
+        void WriteNodeValue(const std::wstring& strName, double value);
+        void WriteNodeValue(const std::wstring& strName, const std::wstring& value);
+        void WriteNodeValue(const std::wstring& strName, const wchar_t* value);
+        void WriteNodeValueEncodeXml(const std::wstring& strName, const std::wstring& value);
+        void WriteNodeValueEncodeXml(const std::wstring& strName, const wchar_t* value);
 	protected:
         inline void WriteEncodeXmlString_4bytes(const wchar_t* pString, int nCount);
         inline void WriteEncodeXmlString_2bytes(const wchar_t* pString, int nCount);

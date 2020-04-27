@@ -227,6 +227,7 @@ namespace BinXlsxRW
 		int ReadConnectionOlapPr(BYTE type, long length, void* poResult);
 		int ReadConnectionTextPr(BYTE type, long length, void* poResult);
 		int ReadConnectionWebPr(BYTE type, long length, void* poResult);
+		int ReadSlicerCaches(BYTE type, long length, void* poResult);
 	};
 	class BinaryCommentReader : public Binary_CommonReader
 	{
@@ -337,6 +338,7 @@ namespace BinXlsxRW
         int ReadDataValidations(BYTE type, long length, void* poResult);
 		int ReadDataValidationsContent(BYTE type, long length, void* poResult);
         int ReadDataValidation(BYTE type, long length, void* poResult);
+		int ReadSlicers(BYTE type, long length, void* poResult);
 		
 		void WriteComments();
 		void AddLineBreak(OOX::Spreadsheet::CSi& oSi);

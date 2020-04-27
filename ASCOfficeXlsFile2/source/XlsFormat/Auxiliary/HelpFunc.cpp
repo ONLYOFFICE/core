@@ -42,7 +42,7 @@
 #if defined(_WIN32) || defined(__WIN64)
 	#include "Windows.h"
 #else
-    #include "iconv.h"
+    //#include "iconv.h"  .. to UnicodeConverter
 #endif
 
 namespace AUX
@@ -451,53 +451,53 @@ const size_t hex_str2int(const std::wstring::const_iterator& it_begin, const std
 	}
 	return numeric;
 }
-std::wstring toStdWStringSystem(std::string ansi_string, const unsigned int code_page)
-{
-    bool ansi = true;
-    std::wstring sResult;
-
-    size_t insize = ansi_string.length();
-	char* inptr = (char*)ansi_string.c_str();
-
-	if (code_page > 0)
-    {
-#if defined (_WIN32) || defined (_WIN64)
-		int outsize_with_0 = MultiByteToWideChar(code_page, 0, inptr, -1, NULL, NULL);
-		sResult.resize(outsize_with_0); 
-		if (MultiByteToWideChar(code_page, 0, inptr, -1, (LPWSTR)sResult.c_str(), outsize_with_0) > 0)
-        {
-			sResult.erase(outsize_with_0 - 1);
-            ansi = false;
-        }
-#elif defined(__linux__)
-        std::string sCodepage =  "CP" + std::to_string(code_page);
-
-        iconv_t ic= iconv_open("WCHAR_T", sCodepage.c_str());
-        if (ic != (iconv_t) -1)
-        {
-			sResult.resize(insize);
-			char* outptr = (char*)sResult.c_str();
-
-            size_t nconv = 0, avail = (insize) * sizeof(wchar_t), outsize = insize;
-            nconv = iconv (ic, &inptr, &insize, &outptr, &avail);
-            if (nconv == 0)
-            {
-                if (avail > 0)
-                {
-                    outsize = outsize - avail/sizeof(wchar_t);
-                    sResult.erase(sResult.begin() + outsize);
-                }
-                ansi = false;
-            }
-            iconv_close(ic);
-        }
-#endif
-    }
-    if (ansi)
-        sResult = std::wstring(ansi_string.begin(), ansi_string.end());
-
-    return sResult;
-}
+//std::wstring toStdWStringSystem(std::string ansi_string, const unsigned int code_page)  .. to UnicodeConverter
+//{
+//    bool ansi = true;
+//    std::wstring sResult;
+//
+//    size_t insize = ansi_string.length();
+//	char* inptr = (char*)ansi_string.c_str();
+//
+//	if (code_page > 0)
+//    {
+//#if defined (_WIN32) || defined (_WIN64)
+//		int outsize_with_0 = MultiByteToWideChar(code_page, 0, inptr, -1, NULL, NULL);
+//		sResult.resize(outsize_with_0); 
+//		if (MultiByteToWideChar(code_page, 0, inptr, -1, (LPWSTR)sResult.c_str(), outsize_with_0) > 0)
+//        {
+//			sResult.erase(outsize_with_0 - 1);
+//            ansi = false;
+//        }
+//#elif defined(__linux__)
+//        std::string sCodepage =  "CP" + std::to_string(code_page);
+//
+//        iconv_t ic= iconv_open("WCHAR_T", sCodepage.c_str());
+//        if (ic != (iconv_t) -1)
+//        {
+//			sResult.resize(insize);
+//			char* outptr = (char*)sResult.c_str();
+//
+//            size_t nconv = 0, avail = (insize) * sizeof(wchar_t), outsize = insize;
+//            nconv = iconv (ic, &inptr, &insize, &outptr, &avail);
+//            if (nconv == 0)
+//            {
+//                if (avail > 0)
+//                {
+//                    outsize = outsize - avail/sizeof(wchar_t);
+//                    sResult.erase(sResult.begin() + outsize);
+//                }
+//                ansi = false;
+//            }
+//            iconv_close(ic);
+//        }
+//#endif
+//    }
+//    if (ansi)
+//        sResult = std::wstring(ansi_string.begin(), ansi_string.end());
+//
+//    return sResult;
+//}
 std::wstring toStdWString(std::string ansi_string, const unsigned int code_page)
 {
     std::string sCodePage;

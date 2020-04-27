@@ -210,6 +210,9 @@ namespace OOX
 					m_oDxfs->toXML(writer);
 				if(m_oTableStyles.IsInit())
 					m_oTableStyles->toXML(writer);
+				if(m_oExtLst.IsInit())
+					writer.WriteString(m_oExtLst->toXMLWithNS(L""));
+
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -249,6 +252,8 @@ namespace OOX
 
 						m_arrStyles2003.push_back( style);
 					}
+					else if (L"extLst" == sName)
+						m_oExtLst = oReader;
 				}
 				AfterRead();
 			}
@@ -541,6 +546,8 @@ xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\">");
 			nullable<OOX::Spreadsheet::CFonts>			m_oFonts;
 			nullable<OOX::Spreadsheet::CNumFmts>		m_oNumFmts;
 			nullable<OOX::Spreadsheet::CTableStyles>	m_oTableStyles;
+
+			nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;
 
 			std::vector<CStyle2003*>					m_arrStyles2003;
 			std::map<std::wstring, size_t>				m_mapStyles2003;

@@ -85,7 +85,10 @@ SOURCES += \
     ../Source/XlsxFormat/Styles/rPr.cpp \
     ../Source/XlsxFormat/SharedStrings/Si.cpp \
     ../Source/XlsxFormat/SharedStrings/Text.cpp \
-    ../Source/XlsxFormat/Pivot/Pivots.cpp
+    ../Source/XlsxFormat/Pivot/Pivots.cpp \
+    ../Source/XlsxFormat/Slicer/SlicerCache.cpp \
+    ../Source/XlsxFormat/Slicer/SlicerCacheExt.cpp \
+    ../Source/XlsxFormat/Slicer/Slicer.cpp
 }
 
 
@@ -266,4 +269,7 @@ HEADERS += docxformatlib.h \
     ../Source/DocxFormat/Diagram/DiagramDrawing.h \
     ../Source/XlsxFormat/Pivot/PivotTable.h \
     ../Source/XlsxFormat/Pivot/PivotCacheDefinition.h \
-    ../Source/XlsxFormat/Pivot/PivotCacheRecords.h
+    ../Source/XlsxFormat/Pivot/PivotCacheRecords.h \
+    ../Source/XlsxFormat/Slicer/SlicerCache.h \
+    ../Source/XlsxFormat/Slicer/SlicerCacheExt.h \
+    ../Source/XlsxFormat/Slicer/Slicer.h

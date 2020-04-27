@@ -34,7 +34,7 @@
 #include "RtfDefine.h"
 
 #if !defined (_WIN32) && !defined (_WIN64)
-    #include "iconv.h"
+    //#include "iconv.h" .. to UnicodeConverter
 #else
     #include <windows.h>
 #endif
@@ -547,53 +547,53 @@ public:
 
         return 1252;//ANSI
     }
-    static std::wstring convert_string(std::string::const_iterator start, std::string::const_iterator end, int nCodepage = 0)
-    {
-        bool ansi = true;
-        std::wstring sResult;
-
-        size_t insize = end - start;
-		char* inptr = (char*)start.operator ->();
-	
-		if (nCodepage > 0)
-        {
-#if defined (_WIN32) || defined (_WIN64)
-			int outsize_with_0 = MultiByteToWideChar(nCodepage, 0, inptr, -1, NULL, NULL);
-			sResult.resize(outsize_with_0); 
-			if (MultiByteToWideChar(nCodepage, 0, inptr, -1, (LPWSTR)sResult.c_str(), outsize_with_0) > 0)
-            {
-				sResult.erase(outsize_with_0 - 1);
-                ansi = false;
-            }
-#elif defined(__linux__)
-            std::string sCodepage =  "CP" + std::to_string(nCodepage);
-
-            iconv_t ic= iconv_open("WCHAR_T", sCodepage.c_str());
-            if (ic != (iconv_t) -1)
-            {
-				sResult.resize(insize);
-				char* outptr = (char*)sResult.c_str();
-
-                size_t nconv = 0, avail = (insize) * sizeof(wchar_t), outsize = insize;
-                nconv = iconv (ic, &inptr, &insize, &outptr, &avail);
-                if (nconv == 0)
-                {
-                    if (avail > 0)
-                    {
-                        outsize = outsize - avail/sizeof(wchar_t);
-                        sResult.erase(sResult.begin() + outsize);
-                    }
-                    ansi = false;
-                }
-                iconv_close(ic);
-            }
-#endif
-        }
-        if (ansi)
-            sResult = std::wstring(start, end);
-
-        return sResult;
-	}
+//    static std::wstring convert_string(std::string::const_iterator start, std::string::const_iterator end, int nCodepage = 0) .. to UnicodeConverter
+//    {
+//        bool ansi = true;
+//        std::wstring sResult;
+//
+//        size_t insize = end - start;
+//		char* inptr = (char*)start.operator ->();
+//	
+//		if (nCodepage > 0)
+//        {
+//#if defined (_WIN32) || defined (_WIN64)
+//			int outsize_with_0 = MultiByteToWideChar(nCodepage, 0, inptr, -1, NULL, NULL);
+//			sResult.resize(outsize_with_0); 
+//			if (MultiByteToWideChar(nCodepage, 0, inptr, -1, (LPWSTR)sResult.c_str(), outsize_with_0) > 0)
+//            {
+//				sResult.erase(outsize_with_0 - 1);
+//                ansi = false;
+//            }
+//#elif defined(__linux__)
+//            std::string sCodepage =  "CP" + std::to_string(nCodepage);
+//
+//            iconv_t ic= iconv_open("WCHAR_T", sCodepage.c_str());
+//            if (ic != (iconv_t) -1)
+//            {
+//				sResult.resize(insize);
+//				char* outptr = (char*)sResult.c_str();
+//
+//                size_t nconv = 0, avail = (insize) * sizeof(wchar_t), outsize = insize;
+//                nconv = iconv (ic, &inptr, &insize, &outptr, &avail);
+//                if (nconv == 0)
+//                {
+//                    if (avail > 0)
+//                    {
+//                        outsize = outsize - avail/sizeof(wchar_t);
+//                        sResult.erase(sResult.begin() + outsize);
+//                    }
+//                    ansi = false;
+//                }
+//                iconv_close(ic);
+//            }
+//#endif
+//        }
+//        if (ansi)
+//            sResult = std::wstring(start, end);
+//
+//        return sResult;
+//	}
     static std::wstring convert_string_icu(std::string::const_iterator start, std::string::const_iterator end, int nCodepage = 0)
     {
         std::string sCodePage;
@@ -628,7 +628,7 @@ public:
 			return result;
 		}
     }
-    static std::string convert_string(std::wstring::const_iterator start, std::wstring::const_iterator end, int nCodepage = 0)
+    static std::string convert_string_icu(std::wstring::const_iterator start, std::wstring::const_iterator end, int nCodepage = 0)
     {
         std::string sCodePage;
 		std::map<int, std::string>::const_iterator pFind = NSUnicodeConverter::mapEncodingsICU.find(nCodepage);

@@ -1162,6 +1162,12 @@ namespace NSFile
 
             oFile.CloseFile();
         }
+        else
+        {
+#ifdef _WIN32
+            return (0 != ::CopyFileW(strSrc.c_str(), strDst.c_str(), 1));
+#endif
+        }
 
         char* pBuffer_in = NULL;
         char* pBuffer_out = NULL;

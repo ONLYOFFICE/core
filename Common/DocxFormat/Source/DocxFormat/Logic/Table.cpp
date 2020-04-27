@@ -677,7 +677,12 @@ namespace OOX
 				}
 				else if ( _T("w:trPr") == sName )
 				{
-					pItem = m_pTableRowProperties = new CTableRowProperties( document );
+					if (!m_pTableRowProperties)
+					{
+						m_pTableRowProperties = new CTableRowProperties(document);
+						m_arrItems.push_back( m_pTableRowProperties );
+					}
+					m_pTableRowProperties->fromXML(oReader);
 				}
 
 				if ( pItem )
@@ -896,7 +901,13 @@ namespace OOX
 					pItem = new CTbl( document );
 				else if ( _T("w:tcPr") == sName )
 				{
-					pItem = m_pTableCellProperties = new CTableCellProperties( document );
+					if (!m_pTableCellProperties)
+					{
+						m_pTableCellProperties = new CTableCellProperties(document);
+						m_arrItems.push_back( m_pTableCellProperties );
+					}
+
+					m_pTableCellProperties->fromXML(oReader);
 				}
 
 				if ( pItem )

@@ -5,8 +5,8 @@
 # iOS simulator.
 #
 # To configure the script, define:
-#    BOOST_VERSION:   Which version of Boost to build (e.g. 1.58.0)
-#    BOOST_VERSION2:  Same as BOOST_VERSION, but with _ instead of . (e.g. 1_58_0)
+#    BOOST_VERSION:   Which version of Boost to build (e.g. 1.72.0)
+#    BOOST_VERSION2:  Same as BOOST_VERSION, but with _ instead of . (e.g. 1_72_0)
 #    BOOST_LIBS:      Which Boost libraries to build
 #    MIN_IOS_VERSION: Minimum iOS Target Version (e.g. 8.0)
 #    IOS_SDK_VERSION: iOS SDK version (e.g. 9.0)
@@ -24,8 +24,8 @@ BOOST_LIBS="regex"
 BUILD_IOS=
 CLEAN=
 
-BOOST_VERSION=1.58.0
-BOOST_VERSION2=1_58_0
+BOOST_VERSION=1.72.0
+BOOST_VERSION2=1_72_0
 MIN_IOS_VERSION=8.0
 IOS_SDK_VERSION=`xcodebuild BITCODE_GENERATION_MODE="bitcode" ENABLE_BITCODE="YES" OTHER_CFLAGS="-fembed-bitcode" -showsdks | grep iphoneos | \
     egrep "[[:digit:]]+\.[[:digit:]]+" -o | tail -1`

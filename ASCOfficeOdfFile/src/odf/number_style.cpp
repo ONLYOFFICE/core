@@ -458,11 +458,11 @@ void number_day::oox_convert(oox::num_format_context & Context)
     std::wostream & strm = Context.output();
     if (number_style_.get_value_or(L"short") == L"long")
     {
-        strm << L"DD";
+        strm << L"dd";
     }
     else
     {
-        strm << L"D";
+        strm << L"d";
     }
 }
 
@@ -488,11 +488,11 @@ void number_day_of_week::oox_convert(oox::num_format_context & Context)
     std::wostream & strm = Context.output();
     if (number_style_.get_value_or(L"short") == L"long")
     {
-        strm << L"DDDD";
+        strm << L"dddd";
     }
     else
     {
-        strm << L"DDD";
+        strm << L"ddd";
     }
 }
 
@@ -552,22 +552,22 @@ void number_month::oox_convert(oox::num_format_context & Context)
     {
         if (number_style_.get_value_or(L"short") == L"long")
         {
-            strm << L"MM";
+            strm << L"mm";
         }
         else
         {
-            strm << L"M";
+            strm << L"m";
         }
     }
     else
     {
         if (number_style_.get_value_or(L"short") == L"long")
         {
-            strm << L"MMMM";
+            strm << L"mmmm";
         }
         else
         {
-            strm << L"MMM";
+            strm << L"mmm";
         }
     }
 }
@@ -593,11 +593,11 @@ void number_year::oox_convert(oox::num_format_context & Context)
     std::wostream & strm = Context.output();
     if (number_style_.get_value_or(L"short") == L"long")
     {
-        strm << L"YYYY";
+        strm << L"yyyy";
     }
     else
     {
-        strm << L"YY";
+        strm << L"yy";
     }
 }
 
@@ -632,12 +632,12 @@ void number_hours::oox_convert(oox::num_format_context & Context)
     std::wostream & strm = Context.output();
     if (number_style_.get_value_or(L"short") == L"long")
     {
-        strm << L"HH";
+        strm << L"hh";
     }
     else
     {
         // TODO
-        strm << L"HH";
+        strm << L"hh";
     }
 }
 
@@ -662,12 +662,12 @@ void number_minutes::oox_convert(oox::num_format_context & Context)
     std::wostream & strm = Context.output();
     if (number_style_.get_value_or(L"short") == L"long")
     {
-        strm << L"MM";
+        strm << L"mm";
     }
     else
     {
         // TODO
-        strm << L"MM";
+        strm << L"mm";
     }
 }
 
@@ -693,12 +693,12 @@ void number_seconds::oox_convert(oox::num_format_context & Context)
     std::wostream & strm = Context.output();
     if (number_style_.get_value_or(L"short") == L"long")
     {
-        strm << L"SS";
+        strm << L"ss";
     }
     else
     {
         // TODO
-        strm << L"SS";
+        strm << L"ss";
     }
 
     if (int dec = number_decimal_places_.get_value_or(0))

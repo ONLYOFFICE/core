@@ -2948,8 +2948,14 @@ std::wstring RtfTableProperty::RenderToOOX(RenderParameter oRenderParameter)
         sDefCellMargins += L"<w:bottom w:w=\"" + std::to_wstring(m_nDefCellMarBottom) + L"\" w:type=\"dxa\"/>";
 	if( PROP_DEF != m_nDefCellMarLeft && 3 == m_eDefCellMarLeftUnit )
         sDefCellMargins += L"<w:left w:w=\"" + std::to_wstring(m_nDefCellMarLeft) + L"\" w:type=\"dxa\"/>";
+	else
+        sDefCellMargins += L"<w:left w:w=\"0\" w:type=\"dxa\"/>";
+
 	if( PROP_DEF != m_nDefCellMarRight && 3 == m_eDefCellMarRightUnit )
         sDefCellMargins += L"<w:right w:w=\"" + std::to_wstring(m_nDefCellMarRight) + L"\" w:type=\"dxa\"/>";
+	else
+        sDefCellMargins += L"<w:right w:w=\"0\" w:type=\"dxa\"/>";
+
 	if( PROP_DEF != m_nDefCellMarTop && 3 == m_eDefCellMarTopUnit )
         sDefCellMargins += L"<w:top w:w=\"" + std::to_wstring(m_nDefCellMarTop) + L"\" w:type=\"dxa\"/>";
 	
@@ -3111,7 +3117,7 @@ std::wstring RtfRowProperty::RenderToOOX(RenderParameter oRenderParameter)
 	{
 		switch( m_eWidthEndInvCellUnit )
 		{
-        case mu_Percent:	sResult += L"<w:wAfter w:type=\"pct\" w:w=\"" + std::to_wstring(m_nWidthEndInvCell) + L"%\"/>"; break;
+        case mu_Percent:	sResult += L"<w:wAfter w:type=\"pct\" w:w=\"" + std::to_wstring(m_nWidthEndInvCell) + L"\"/>"; break;
         case mu_Twips:		sResult += L"<w:wAfter w:type=\"dxa\" w:w=\"" + std::to_wstring(m_nWidthEndInvCell) + L"\"/>";	break;
 		default:
 			break;

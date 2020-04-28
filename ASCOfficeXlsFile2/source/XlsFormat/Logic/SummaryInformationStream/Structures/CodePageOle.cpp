@@ -30,6 +30,8 @@
  *
  */
 
+#include <string>
+
 #include "CodePageOle.h"
 #include <Binary/CFStream.h>
 #include <Auxiliary/HelpFunc.h>

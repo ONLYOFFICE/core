@@ -1805,6 +1805,34 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Slicer"
+				>
+				<File
+					RelativePath="..\Source\XlsxFormat\Slicer\Slicer.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Slicer\Slicer.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Slicer\SlicerCache.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Slicer\SlicerCache.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Slicer\SlicerCacheExt.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Slicer\SlicerCacheExt.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Math"

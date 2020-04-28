@@ -1130,10 +1130,10 @@ namespace NExtractTools
         return pptt_bin2pptx(sTempPpttFileEditor, sTo, sTemp, bFromChanges, sThemeDir, params);
     }
     // zip dir
-    _UINT32 dir2zip (const std::wstring &sFrom, const std::wstring &sTo, bool bSorted, int method, short level)
+    _UINT32 dir2zip (const std::wstring &sFrom, const std::wstring &sTo, bool bSorted, int method, short level, bool bDateTime)
     {
         COfficeUtils oCOfficeUtils(NULL);
-        return (S_OK == oCOfficeUtils.CompressFileOrDirectory(sFrom, sTo, bSorted, method, level)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+        return (S_OK == oCOfficeUtils.CompressFileOrDirectory(sFrom, sTo, bSorted, method, level, bDateTime)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
     }
 
     // unzip dir
@@ -4381,7 +4381,7 @@ namespace NExtractTools
 			}break;
 			case TCD_ZIPDIR:
 			{
-				result =  dir2zip (sFileFrom, sFileTo);
+				result =  dir2zip (sFileFrom, sFileTo, false, 8, -1, true);
 			}break;
 			case TCD_UNZIPDIR:
 			{

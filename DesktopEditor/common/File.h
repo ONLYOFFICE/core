@@ -176,7 +176,9 @@ namespace NSFile
 
         static std::wstring CreateTempFileWithUniqueName(const std::wstring& strFolderPathRoot, const std::wstring& Prefix);
         static bool OpenTempFile(std::wstring *pwsName, FILE **ppFile, wchar_t *wsMode, wchar_t *wsExt, wchar_t *wsFolder, wchar_t* wsName = NULL);
-        static FILE* OpenFileNative(const std::wstring& sFileName, const std::wstring& sMode);        
+        static FILE* OpenFileNative(const std::wstring& sFileName, const std::wstring& sMode);
+
+        static unsigned long GetDateTime(const std::wstring & strFileName);
 	};
 
     class KERNEL_DECL CBase64Converter

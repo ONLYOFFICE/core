@@ -42,6 +42,7 @@
 #if defined(__linux__) || defined(_MAC) && !defined(_IOS)
 #include <unistd.h>
 #include <string.h>
+#include <sys/stat.h>
 #endif
 
 #ifdef _IOS
@@ -1420,6 +1421,40 @@ namespace NSFile
     void CFileBinary::SetTempPath(const std::wstring& strTempPath)
     {
         g_overrideTmpPath = strTempPath;
+    }
+
+    unsigned long CFileBinary::GetDateTime(const std::wstring & inputFile)
+    {
+        unsigned long result = 0;
+#if defined(_WIN32) || defined (_WIN64)
+        HANDLE hFile;
+        hFile = ::CreateFileW(inputFile.c_str(), GENERIC_READ, FILE_SHARE_READ,  NULL,  OPEN_EXISTING,  FILE_ATTRIBUTE_NORMAL, NULL);
+
+        if (hFile)
+        {
+            FILETIME ft; ft.dwLowDateTime = ft.dwHighDateTime = 0;
+            if (GetFileTime(hFile, NULL, NULL, &ft))
+            {
+                WORD fatDate = 0, fatTime = 0;
+                if (FileTimeToDosDateTime(&ft, &fatDate,  &fatTime))
+                {
+                    result = (fatDate << 16) + fatTime;
+                }
+            }
+            CloseHandle(hFile);
+        }
+#elif defined(__linux__) || defined(_MAC) && !defined(_IOS)
+        BYTE* pUtf8 = NULL;
+        LONG lLen = 0;
+        CUtf8Converter::GetUtf8StringFromUnicode(inputFile.c_str(), sFileName.length(), pUtf8, lLen, false);
+
+        stat attrib;
+        stat((char*)pUtf8, &attrib);
+        delete [] pUtf8;
+
+        result = st_mtime;
+#endif
+        return result;
     }
 }
 

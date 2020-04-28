@@ -1446,7 +1446,7 @@ namespace NSFile
 #elif defined(__linux__) || defined(_MAC) && !defined(_IOS)
         BYTE* pUtf8 = NULL;
         LONG lLen = 0;
-        CUtf8Converter::GetUtf8StringFromUnicode(inputFile.c_str(), sFileName.length(), pUtf8, lLen, false);
+        CUtf8Converter::GetUtf8StringFromUnicode(inputFile.c_str(), inputFile.length(), pUtf8, lLen, false);
 
         stat attrib;
         stat((char*)pUtf8, &attrib);

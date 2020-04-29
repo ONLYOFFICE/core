@@ -3558,18 +3558,25 @@ namespace NExtractTools
 			bPaid = *params.m_bPaid;
 
        _UINT32 nRes = 0;
-       if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom)
+       if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_FLAT == nFormatFrom)
        {
            if(AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == nFormatTo || AVS_OFFICESTUDIO_FILE_OTHER_JSON == nFormatTo)
            {
-               nRes = csv2xlst_bin(sFrom, sTo, params);
+               if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom)
+                   nRes = csv2xlst_bin(sFrom, sTo, params);
+               else
+                   nRes = xlsxflat2xlst_bin(sFrom, sTo, sTemp, params);
            }
            else
            {
                std::wstring sXlstDir = sTemp + FILE_SEPARATOR_STR + _T("xlst_unpacked");
                NSDirectory::CreateDirectory(sXlstDir);
                std::wstring sTFile = sXlstDir + FILE_SEPARATOR_STR + _T("Editor.bin");
-               nRes = csv2xlst_bin(sFrom, sTFile, params);
+               if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom)
+                   nRes = csv2xlst_bin(sFrom, sTFile, params);
+               else
+                   nRes = xlsxflat2xlst_bin(sFrom, sTFile, sTemp, params);
+
                if(SUCCEEDED_X2T(nRes))
                {
                    //зануляем sXmlOptions чтобы, при конвертации xlst bin -> xlsx не перепутать с csv

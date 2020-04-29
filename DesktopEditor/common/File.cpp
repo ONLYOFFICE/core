@@ -1448,7 +1448,7 @@ namespace NSFile
         LONG lLen = 0;
         CUtf8Converter::GetUtf8StringFromUnicode(inputFile.c_str(), inputFile.length(), pUtf8, lLen, false);
 
-        stat attrib;
+        struct stat attrib;
         stat((char*)pUtf8, &attrib);
         delete [] pUtf8;
 

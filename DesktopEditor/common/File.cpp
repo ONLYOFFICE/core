@@ -1452,7 +1452,7 @@ namespace NSFile
         stat((char*)pUtf8, &attrib);
         delete [] pUtf8;
 
-        result = st_mtime;
+        result = attrib.st_mtime;
 #endif
         return result;
     }

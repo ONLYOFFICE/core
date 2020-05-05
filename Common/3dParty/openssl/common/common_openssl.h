@@ -69,7 +69,7 @@ namespace NSOpenSSL
 
     // pbkdf2
     unsigned char* PBKDF2(const char* pass, int passlen, unsigned char* salt, int saltlen, int hash_alg, int key_len);
-    unsigned char* PBKDF2_desktop(const char* pass, int passlen, unsigned char* salt, int saltlen);
+    unsigned char* PBKDF2_desktop(std::string pass);
 
     // aes
     int AES_GetKeySize(int type);

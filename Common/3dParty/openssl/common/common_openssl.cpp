@@ -317,9 +317,13 @@ namespace NSOpenSSL
         }
         return out;
     }
-    unsigned char* PBKDF2_desktop(const char* pass, int passlen, unsigned char* salt, int saltlen)
+    unsigned char* PBKDF2_desktop(std::string pass)
     {
-        return PBKDF2(pass, passlen, salt, saltlen, OPENSSL_HASH_ALG_SHA256, 32 + 16);
+        unsigned int pass_sha256_len = 0;
+        unsigned char* pass_sha256 = NSOpenSSL::GetHash((unsigned char*)pass.c_str(), (unsigned int)pass.length(), OPENSSL_HASH_ALG_SHA512, pass_sha256_len);
+        unsigned char* key_iv = PBKDF2(pass.c_str(), (int)pass.length(), pass_sha256, pass_sha256_len, OPENSSL_HASH_ALG_SHA256, 32 + 16);
+        openssl_free(pass_sha256);
+        return key_iv;
     }
 
     // aes
@@ -356,6 +360,7 @@ namespace NSOpenSSL
         EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
         EVP_CIPHER_CTX_init(ctx);
         EVP_EncryptInit_ex(ctx, _get_cipher_aes(type), NULL, key, iv);
+        EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, 16, NULL);
         int out_len1 = (int)size + AES_BLOCK_SIZE;
         int out_len2 = 0;
         data_crypt = openssl_alloc(out_len1);
@@ -363,6 +368,7 @@ namespace NSOpenSSL
         EVP_EncryptFinal_ex(ctx, data_crypt + out_len1, &out_len2);
         data_crypt_len = out_len1 + out_len2;
         EVP_CIPHER_CTX_free(ctx);
+        EVP_cleanup();
         return true;
     }
     bool AES_Decrypt(int type, unsigned char* key, unsigned char* iv, const unsigned char* data, const unsigned int& size, unsigned char*& data_decrypt, unsigned int& data_decrypt_len)
@@ -370,6 +376,7 @@ namespace NSOpenSSL
         EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
         EVP_CIPHER_CTX_init(ctx);
         EVP_DecryptInit_ex(ctx, _get_cipher_aes(type), NULL, key, iv);
+        EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, 16, NULL);
         int out_len1 = (int)size;
         int out_len2 = 0;
         data_decrypt = openssl_alloc(out_len1);
@@ -377,13 +384,12 @@ namespace NSOpenSSL
         EVP_DecryptFinal_ex(ctx, data_decrypt + out_len1, &out_len2);
         data_decrypt_len = out_len1 + out_len2;
         EVP_CIPHER_CTX_free(ctx);
+        EVP_cleanup();
         return true;
     }
 
     bool AES_Encrypt_desktop(const std::string& pass, const std::string& input, std::string& output)
     {
-        unsigned int salt_len = 0;
-        unsigned char* salt = GetHash((unsigned char*)pass.c_str(), (unsigned int)pass.length(), OPENSSL_HASH_ALG_SHA256, salt_len);
         return true;
     }
     bool AES_Decrypt_desktop(const std::string& pass, const std::string& input, std::string& output)

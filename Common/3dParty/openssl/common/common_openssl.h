@@ -46,42 +46,49 @@
 
 #define OPENSSL_AES_256_CBC           0
 
-#include <openssl/sha.h>
 #include "../../../../DesktopEditor/common/File.h"
+
+#ifdef COMMON_OPENSSL_BUILDING
+#define OPENSSL_DECL Q_DECL_EXPORT
+#else
+#define OPENSSL_DECL Q_DECL_IMPORT
+#endif
 
 namespace NSOpenSSL
 {
     // alloc
-    unsigned char* openssl_alloc(unsigned int len);
-    void openssl_free(unsigned char* data);
+    OPENSSL_DECL unsigned char* openssl_alloc(unsigned int len);
+    OPENSSL_DECL void openssl_free(unsigned char* data);
 
     // hash
-    unsigned int GetHashSize(const int& alg);
-    unsigned char* GetHash(const unsigned char* data, const unsigned int& size, const int& alg, unsigned int& len);
+    OPENSSL_DECL unsigned int GetHashSize(const int& alg);
+    OPENSSL_DECL unsigned char* GetHash(const unsigned char* data, const unsigned int& size, const int& alg, unsigned int& len);
 
     // rsa
-    bool RSA_GenerateKeys(unsigned char*& publicKey, unsigned char*& privateKey);
-    bool RSA_EncryptPublic(const unsigned char* publicKey, const unsigned char* data, const unsigned int& size, unsigned char*& data_crypt, unsigned int& data_crypt_len);
-    bool RSA_DecryptPrivate(const unsigned char* privateKey, const unsigned char* data, const unsigned int& size, unsigned char*& data_decrypt, unsigned int& data_decrypt_len);
+    OPENSSL_DECL bool RSA_GenerateKeys(unsigned char*& publicKey, unsigned char*& privateKey);
+    OPENSSL_DECL bool RSA_EncryptPublic(const unsigned char* publicKey, const unsigned char* data, const unsigned int& size, unsigned char*& data_crypt, unsigned int& data_crypt_len);
+    OPENSSL_DECL bool RSA_DecryptPrivate(const unsigned char* privateKey, const unsigned char* data, const unsigned int& size, unsigned char*& data_decrypt, unsigned int& data_decrypt_len);
 
-    bool RSA_EncryptPublic_desktop(const unsigned char* publicKey, const std::string& input, std::string& out);
-    bool RSA_DecryptPrivate_desktop(const unsigned char* privateKey, const std::string& input, std::string& out);
+    OPENSSL_DECL bool RSA_EncryptPublic_desktop(const unsigned char* publicKey, const std::string& input, std::string& out);
+    OPENSSL_DECL bool RSA_DecryptPrivate_desktop(const unsigned char* privateKey, const std::string& input, std::string& out);
 
     // pbkdf2
-    unsigned char* PBKDF2(const char* pass, int passlen, unsigned char* salt, int saltlen, int hash_alg, int key_len);
-    unsigned char* PBKDF2_desktop(std::string pass);
+    OPENSSL_DECL unsigned char* PBKDF2(const char* pass, int passlen, unsigned char* salt, int saltlen, int hash_alg, int key_len);
+    OPENSSL_DECL unsigned char* PBKDF2_desktop(std::string pass);
 
     // aes
-    int AES_GetKeySize(int type);
-    int AES_GetIvSize(int type);
-    bool AES_Encrypt(int type, unsigned char* key, unsigned char* iv, const unsigned char* data, const unsigned int& size, unsigned char*& data_crypt, unsigned int& data_crypt_len);
-    bool AES_Decrypt(int type, unsigned char* key, unsigned char* iv, const unsigned char* data, const unsigned int& size, unsigned char*& data_crypt, unsigned int& data_crypt_len);
+    OPENSSL_DECL int AES_GetKeySize(int type);
+    OPENSSL_DECL int AES_GetIvSize(int type);
+    OPENSSL_DECL bool AES_Encrypt(int type, const unsigned char* key, const unsigned char* iv, const unsigned char* data, const unsigned int& size, unsigned char*& data_crypt, unsigned int& data_crypt_len);
+    OPENSSL_DECL bool AES_Decrypt(int type, const unsigned char* key, const unsigned char* iv, const unsigned char* data, const unsigned int& size, unsigned char*& data_crypt, unsigned int& data_crypt_len);
 
-    bool AES_Encrypt_desktop(const std::string& pass, const std::string& input, std::string& output);
-    bool AES_Decrypt_desktop(const std::string& pass, const std::string& input, std::string& output);
+    OPENSSL_DECL bool AES_Encrypt_desktop(const std::string& pass, const std::string& input, std::string& output);
+    OPENSSL_DECL bool AES_Decrypt_desktop(const std::string& pass, const std::string& input, std::string& output);
+    OPENSSL_DECL bool AES_Encrypt_desktop(const unsigned char* key_iv, const std::string& input, std::string& output);
+    OPENSSL_DECL bool AES_Decrypt_desktop(const unsigned char* key_iv, const std::string& input, std::string& output);
 
     // serialize
-    std::string Serialize(const unsigned char* data, const unsigned int& size, const int& alg);
+    OPENSSL_DECL std::string Serialize(const unsigned char* data, const unsigned int& size, const int& alg);
 }
 
 #endif // COMMON_OPENSSL_H

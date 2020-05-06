@@ -58,4 +58,5 @@ SOURCES += \
 
 }
 
+CONFIG += open_ssl_common
 include(../../../Common/3dParty/openssl/openssl.pri)

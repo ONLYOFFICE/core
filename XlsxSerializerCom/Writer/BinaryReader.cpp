@@ -2250,6 +2250,15 @@ int BinaryWorkbookTableReader::ReadConnection(BYTE type, long length, void* poRe
 		pConnection->m_oWebPr.Init();
 		READ1_DEF(length, res, this->ReadConnectionWebPr, pConnection->m_oWebPr.GetPointer());
 	}
+	else if(c_oSerConnectionsTypes::IdExt == type)
+	{
+		pConnection->m_oIdExt = m_oBufferedStream.GetString4(length);
+	}
+	else if(c_oSerConnectionsTypes::RangePr == type)
+	{
+		pConnection->m_oRangePr.Init();
+		READ1_DEF(length, res, this->ReadConnectionRangePr, pConnection->m_oRangePr.GetPointer());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -2320,7 +2329,17 @@ int BinaryWorkbookTableReader::ReadConnectionOlapPr(BYTE type, long length, void
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
-
+int BinaryWorkbookTableReader::ReadConnectionRangePr(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CRangePr* pRangePr = static_cast<OOX::Spreadsheet::CRangePr*>(poResult);
+	
+	int res = c_oSerConstants::ReadOk;
+	if(c_oSerRangePrTypes::SourceName == type)
+	{
+		pRangePr->m_oSourceName = m_oBufferedStream.GetString4(length);
+	}
+	return res;
+}
 int BinaryWorkbookTableReader::ReadConnectionTextPr(BYTE type, long length, void* poResult)
 {
 	OOX::Spreadsheet::CTextPr* pTextPr = static_cast<OOX::Spreadsheet::CTextPr*>(poResult);

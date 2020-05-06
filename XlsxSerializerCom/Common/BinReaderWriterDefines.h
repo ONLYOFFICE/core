@@ -273,6 +273,10 @@ namespace BinXlsxRW
 		HtmlFormat = 11,
 		Tables = 12
 	};}
+	namespace c_oSerRangePrTypes{enum c_oSerRangePrTypes
+	{
+		SourceName = 0
+	};}
 	namespace c_oSerConnectionsTypes{enum c_oSerConnectionsTypes
 	{
 		Connection = 0,
@@ -299,7 +303,9 @@ namespace BinXlsxRW
 		DbPr = 21,
 		OlapPr = 22,
 		TextPr = 23,
-		WebPr = 24
+		WebPr = 24,
+		RangePr = 25,
+		IdExt = 26
 	};}
 	namespace c_oSerWorkbookVbaProjectTypes{enum c_oSerWorkbookVbaProjectTypes
 	{

@@ -2404,6 +2404,26 @@ void BinaryWorkbookTableWriter::WriteConnection(const OOX::Spreadsheet::CConnect
 		WriteConnectionWebPr(connection.m_oWebPr.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
+	if(connection.m_oExtLst.IsInit())
+	{
+		for (size_t i = 0; i < connection.m_oExtLst->m_arrExt.size(); ++i)
+		{
+			if (connection.m_oExtLst->m_arrExt[i]->m_oConnection.IsInit())
+			{
+				if(connection.m_oExtLst->m_arrExt[i]->m_oConnection->m_oIdExt.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerConnectionsTypes::IdExt);
+					m_oBcw.m_oStream.WriteStringW(*connection.m_oExtLst->m_arrExt[i]->m_oConnection->m_oIdExt);
+				}
+				if (connection.m_oExtLst->m_arrExt[i]->m_oConnection->m_oRangePr.IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerConnectionsTypes::RangePr);
+					WriteConnectionRangePr(connection.m_oExtLst->m_arrExt[i]->m_oConnection->m_oRangePr.get());
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+			}
+		}
+	}
 }
 void BinaryWorkbookTableWriter::WriteConnectionDbPr(const OOX::Spreadsheet::CDbPr& dbPr)
 {
@@ -2570,6 +2590,15 @@ void BinaryWorkbookTableWriter::WriteConnectionTextPr(const OOX::Spreadsheet::CT
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 	//m_oTextFields;
+}
+void BinaryWorkbookTableWriter::WriteConnectionRangePr(const OOX::Spreadsheet::CRangePr& rangePr)
+{
+	int nCurPos = 0;
+	if(rangePr.m_oSourceName.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerRangePrTypes::SourceName);
+		m_oBcw.m_oStream.WriteStringW(*rangePr.m_oSourceName);
+	}
 }
 void BinaryWorkbookTableWriter::WriteConnectionWebPr(const OOX::Spreadsheet::CWebPr& webPr)
 {

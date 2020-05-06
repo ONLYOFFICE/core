@@ -169,6 +169,7 @@ namespace BinXlsxRW
 		void WriteConnectionOlapPr(const OOX::Spreadsheet::COlapPr& olapPr);
 		void WriteConnectionTextPr(const OOX::Spreadsheet::CTextPr& textPr);
 		void WriteConnectionWebPr(const OOX::Spreadsheet::CWebPr& webPr);
+		void WriteConnectionRangePr(const OOX::Spreadsheet::CRangePr& rangePr);
 		void WriteExternalReferences(const OOX::Spreadsheet::CExternalReferences& externalReferences, OOX::Spreadsheet::CWorkbook& workbook);
 		void WriteExternalBook(const OOX::Spreadsheet::CExternalBook& externalBook, const std::wstring& sLink);
 		void WriteExternalSheetNames(const OOX::Spreadsheet::CExternalSheetNames& sheetNames);

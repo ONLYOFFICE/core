@@ -32,6 +32,7 @@
 #include "DrawingExt.h"
 #include "../../XlsxFormat/Worksheets/Sparkline.h"
 #include "../../XlsxFormat/Table/Table.h"
+#include "../../XlsxFormat/Table/Connections.h"
 #include "../Diagram/DiagramData.h"
 #include "../../XlsxFormat/Worksheets/ConditionalFormatting.h"
 #include "../../XlsxFormat/Worksheets/DataValidation.h"
@@ -85,6 +86,7 @@ namespace OOX
 									  *m_sUri == L"{2F2917AC-EB37-4324-AD4E-5DD8C200BD13}"	||
 									  *m_sUri == L"{470722E0-AACD-4C17-9CDC-17EF765DBC7E}"	||
 									  *m_sUri == L"{46F421CA-312F-682f-3DD2-61675219B42D}"	||
+									  *m_sUri == L"{DE250136-89BD-433C-8126-D09CA5730AF9}"	||
 									  *m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))   
 			{
 				int nCurDepth = oReader.GetDepth();
@@ -121,6 +123,10 @@ namespace OOX
 					else if (sName == L"dataValidations")
 					{
 						m_oDataValidations = oReader;
+					}
+					else if (sName == L"connection")
+					{
+						m_oConnection = oReader;
 					}
 					else if (sName == L"slicerList")
 					{

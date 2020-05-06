@@ -1195,6 +1195,7 @@ namespace OOX
 		et_x_QueryTableDeletedField,
 		et_x_Connections,
 		et_x_Connection,
+		et_x_rangePr,
 		et_x_dbPr,
 		et_x_textPr,
 		et_x_olapPr,

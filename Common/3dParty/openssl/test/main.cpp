@@ -77,5 +77,18 @@ int main(int argc, char *argv[])
         NSOpenSSL::openssl_free(message_decrypt);
     }
 
+    if (true)
+    {
+        std::string password = "{PASSWORD}";
+        std::string message = "{MESSAGE}";
+        std::string message_crypted = "";
+        std::string message_decrypted = "";
+
+        NSOpenSSL::AES_Encrypt_desktop(password, message, message_crypted);
+        NSOpenSSL::AES_Decrypt_desktop(password, message_crypted, message_decrypted);
+
+        message;
+    }
+
     return 0;
 }

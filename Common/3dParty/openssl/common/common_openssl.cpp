@@ -390,10 +390,47 @@ namespace NSOpenSSL
 
     bool AES_Encrypt_desktop(const std::string& pass, const std::string& input, std::string& output)
     {
+        unsigned char* key_iv = PBKDF2_desktop(pass);
+        unsigned char* data_crypt = NULL;
+        unsigned int data_crypt_len = 0;
+        bool bRes = AES_Encrypt(OPENSSL_AES_256_CBC, key_iv, key_iv + 32, (unsigned char*)input.c_str(), (unsigned int)input.length(), data_crypt, data_crypt_len);
+
+        if (!bRes)
+        {
+            openssl_free(key_iv);
+            return false;
+        }
+
+        output = Serialize(data_crypt, data_crypt_len, OPENSSL_SERIALIZE_TYPE_BASE64);
+        openssl_free(data_crypt);
+        openssl_free(key_iv);
         return true;
     }
     bool AES_Decrypt_desktop(const std::string& pass, const std::string& input, std::string& output)
     {
+        unsigned char* input_ptr = NULL;
+        int input_ptr_len = 0;
+        bool bBase64 = NSFile::CBase64Converter::Decode(input.c_str(), (int)input.length(), input_ptr, input_ptr_len);
+        if (!bBase64)
+            return false;
+
+        unsigned char* key_iv = PBKDF2_desktop(pass);
+        unsigned char* data_decrypt = NULL;
+        unsigned int data_decrypt_len = 0;
+        bool bRes = AES_Decrypt(OPENSSL_AES_256_CBC, key_iv, key_iv + 32, input_ptr, input_ptr_len, data_decrypt, data_decrypt_len);
+
+        if (!bRes)
+        {
+            RELEASEARRAYOBJECTS(input_ptr);
+            openssl_free(key_iv);
+            return false;
+        }
+
+        //output = Serialize(out_ptr, out_ptr_len, OPENSSL_SERIALIZE_TYPE_ASCII);
+        output = std::string((char*)data_decrypt, data_decrypt_len);
+        RELEASEARRAYOBJECTS(input_ptr);
+        openssl_free(data_decrypt);
+        openssl_free(key_iv);
         return true;
     }
 

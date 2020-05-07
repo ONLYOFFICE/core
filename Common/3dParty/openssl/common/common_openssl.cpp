@@ -402,7 +402,7 @@ namespace NSOpenSSL
         openssl_free(key_iv);
         return bRes;
     }
-    OPENSSL_DECL bool AES_Encrypt_desktop(const unsigned char* key_iv, const std::string& input, std::string& output)
+    bool AES_Encrypt_desktop(const unsigned char* key_iv, const std::string& input, std::string& output)
     {
         unsigned char* data_crypt = NULL;
         unsigned int data_crypt_len = 0;
@@ -415,7 +415,7 @@ namespace NSOpenSSL
         openssl_free(data_crypt);
         return true;
     }
-    OPENSSL_DECL bool AES_Decrypt_desktop(const unsigned char* key_iv, const std::string& input, std::string& output)
+    bool AES_Decrypt_desktop(const unsigned char* key_iv, const std::string& input, std::string& output)
     {
         unsigned char* input_ptr = NULL;
         int input_ptr_len = 0;

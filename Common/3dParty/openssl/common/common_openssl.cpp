@@ -307,7 +307,7 @@ namespace NSOpenSSL
         }
         return EVP_sha1();
     }
-    unsigned char* PBKDF2(const char* pass, int passlen, unsigned char* salt, int saltlen, int hash_alg, int key_len)
+    unsigned char* PBKDF2(const char* pass, int passlen, const unsigned char* salt, int saltlen, int hash_alg, int key_len)
     {
         unsigned char* out = openssl_alloc(key_len);
         if (0 == PKCS5_PBKDF2_HMAC(pass, passlen, salt, saltlen, 1000, Get_EVP_MD(hash_alg), key_len, out))
@@ -317,12 +317,20 @@ namespace NSOpenSSL
         }
         return out;
     }
-    unsigned char* PBKDF2_desktop(std::string pass)
+    unsigned char* PBKDF2_desktop(const std::string& pass, const std::string& salt)
     {
-        unsigned int pass_sha256_len = 0;
-        unsigned char* pass_sha256 = NSOpenSSL::GetHash((unsigned char*)pass.c_str(), (unsigned int)pass.length(), OPENSSL_HASH_ALG_SHA512, pass_sha256_len);
-        unsigned char* key_iv = PBKDF2(pass.c_str(), (int)pass.length(), pass_sha256, pass_sha256_len, OPENSSL_HASH_ALG_SHA256, 32 + 16);
-        openssl_free(pass_sha256);
+        unsigned char* key_iv = NULL;
+        if (salt.empty())
+        {
+            unsigned int pass_salt_len = 0;
+            unsigned char* pass_salt = NSOpenSSL::GetHash((unsigned char*)pass.c_str(), (unsigned int)pass.length(), OPENSSL_HASH_ALG_SHA512, pass_salt_len);
+            key_iv = PBKDF2(pass.c_str(), (int)pass.length(), pass_salt, pass_salt_len, OPENSSL_HASH_ALG_SHA256, 32 + 16);
+            openssl_free(pass_salt);
+        }
+        else
+        {
+            key_iv = PBKDF2(pass.c_str(), (int)pass.length(), (const unsigned char*)salt.c_str(), (unsigned int)salt.length(), OPENSSL_HASH_ALG_SHA256, 32 + 16);
+        }
         return key_iv;
     }
 
@@ -388,16 +396,16 @@ namespace NSOpenSSL
         return true;
     }
 
-    bool AES_Encrypt_desktop(const std::string& pass, const std::string& input, std::string& output)
+    bool AES_Encrypt_desktop(const std::string& pass, const std::string& input, std::string& output, const std::string& salt)
     {
-        unsigned char* key_iv = PBKDF2_desktop(pass);
+        unsigned char* key_iv = PBKDF2_desktop(pass, salt);
         bool bRes = AES_Encrypt_desktop(key_iv, input, output);
         openssl_free(key_iv);
         return bRes;
     }
-    bool AES_Decrypt_desktop(const std::string& pass, const std::string& input, std::string& output)
+    bool AES_Decrypt_desktop(const std::string& pass, const std::string& input, std::string& output,  const std::string& salt)
     {
-        unsigned char* key_iv = PBKDF2_desktop(pass);
+        unsigned char* key_iv = PBKDF2_desktop(pass, salt);
         bool bRes = AES_Decrypt_desktop(key_iv, input, output);
         openssl_free(key_iv);
         return bRes;

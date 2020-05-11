@@ -34,6 +34,14 @@
 #include "./../../DesktopEditor/common/File.h"
 #include <iostream>
 
+// examples:
+// ooxml_crypt --file=D:/cryptor/1.docx --password=111
+// ooxml_crypt --file=D:/cryptor/1.docx --add={user-id-1}\ndata1
+// ooxml_crypt --file=D:/cryptor/1.docx --remove={user-id-1}
+// ooxml_crypt --file=D:/cryptor/1.docx --remove={user-id-1}\ndata1
+// ooxml_crypt --file=D:/cryptor/1.docx --add={user-id-1}\ndata11
+// ooxml_crypt --file=D:/cryptor/1.docx --info=
+
 #ifdef WIN32
 int wmain(int argc, wchar_t** argv)
 #else
@@ -44,10 +52,11 @@ int main(int argc, char** argv)
         return 0;
 
     std::wstring file_path;
-    std::string add_record;
-    std::string remove_record;
     std::wstring password;
     bool is_print_info = false;
+
+    std::vector<std::string> add_records;
+    std::vector<std::string> remove_records;
 
     for (int i = 0; i < argc; ++i)
     {
@@ -79,16 +88,11 @@ int main(int argc, char** argv)
         }
         else if (key == L"add")
         {
-            if (!add_record.empty())
-                add_record += "\n";
-            add_record += "{";
-            add_record += U_TO_UTF8(value);
-            add_record += "}";
+            add_records.push_back(U_TO_UTF8(value));
         }
         else if (key == L"remove")
         {
-            remove_record = U_TO_UTF8(value);
-            remove_record += ",";
+            remove_records.push_back(U_TO_UTF8(value));
         }
         else if (key == L"password")
         {
@@ -128,72 +132,76 @@ int main(int argc, char** argv)
         return 0;
     }
 
-    if (!remove_record.empty() && !docinfo.empty())
+    std::string sResult = "";
+    sResult.reserve(1000);
+
+    const char* doc_info_str = docinfo.c_str();
+    const char* doc_info_str_end = doc_info_str + docinfo.length();
+
+    while (doc_info_str < doc_info_str_end)
     {
-        const char* doc_info_str = docinfo.c_str();
-        const char* doc_info_str_end = doc_info_str + docinfo.length();
+        const char* rec_start = doc_info_str;
 
-        const char* remove_record_str = remove_record.c_str();
-        const char* remove_record_str_end = remove_record.c_str() + remove_record.length();
+        // 1) ищем старт записи
+        while (doc_info_str < doc_info_str_end && *doc_info_str != '\n')
+        {}
 
+        const char* end_record_first = doc_info_str;
+
+        // 2) ищем конец записи
         while (doc_info_str < doc_info_str_end)
         {
-            const char* rec_start = doc_info_str;
-
-            // check record...
-            ++doc_info_str; // skip {
-            bool is_found = true;
-            while (doc_info_str < doc_info_str_end && remove_record_str < remove_record_str_end)
+            if (*doc_info_str == '\n')
             {
-                if (*doc_info_str++ != *remove_record_str++)
-                {
-                    is_found = false;
-                    break;
-                }
-            }
-            if (!is_found)
-                remove_record_str = remove_record.c_str();
+                ++doc_info_str;
 
-            // move to next record
-            while (doc_info_str < doc_info_str_end)
-            {
                 if (*doc_info_str == '\n')
                 {
                     ++doc_info_str;
                     break;
                 }
-                ++doc_info_str;
             }
+        }
 
-            if (is_found)
+        bool isAdd = true;
+        std::string sRec = std::string(rec_start, (doc_info_str - rec_start));
+
+        // 3) проверяем запись на удаление
+        for (std::vector<std::string>::iterator iter = remove_records.begin(); iter != remove_records.end(); iter++)
+        {
+            if (*iter == std::string(rec_start, (end_record_first - rec_start)))
             {
-                std::string::size_type first = rec_start - docinfo.c_str();
-                std::string new_doc_info;
-                if (first > 0)
-                {
-                    if (doc_info_str >= doc_info_str_end)
-                        first -= 1;
-                    new_doc_info = docinfo.substr(0, first);
-                }
-                if (doc_info_str < doc_info_str_end)
-                {
-                    new_doc_info += docinfo.substr(doc_info_str - docinfo.c_str());
-                }
-
-                docinfo = new_doc_info;
-                break;
+                isAdd = false;
             }
+            else if (*iter == sRec)
+            {
+                isAdd = false;
+            }
+        }
+
+        // 4) проверяем запись на удаление
+        for (std::vector<std::string>::iterator iter = add_records.begin(); iter != add_records.end(); iter++)
+        {
+            if (*iter == sRec)
+            {
+                isAdd = false;
+            }
+        }
+
+        if (isAdd)
+        {
+            sResult += sRec;
+            sResult += "\n";
         }
     }
 
-    if (!add_record.empty())
+    for (std::vector<std::string>::iterator iter = add_records.begin(); iter != add_records.end(); iter++)
     {
-        if (!docinfo.empty())
-            docinfo += "\n";
-        docinfo += add_record;
+        sResult += *iter;
+        sResult += "\n";
     }
 
-    bool result = file.WriteAdditional(file_path, L"DocumentID", docinfo);
+    bool result = file.WriteAdditional(file_path, L"DocumentID", sResult);
     if (!result)
     {
         std::cout << "error: docinfo not writed" << std::endl;

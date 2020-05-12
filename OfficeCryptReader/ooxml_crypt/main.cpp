@@ -42,6 +42,25 @@
 // ooxml_crypt --file=D:/cryptor/1.docx --add={user-id-1}\ndata11
 // ooxml_crypt --file=D:/cryptor/1.docx --info=
 
+void string_replace(std::wstring& text, const std::wstring& replaceFrom, const std::wstring& replaceTo)
+{
+    size_t posn = 0;
+    while (std::wstring::npos != (posn = text.find(replaceFrom, posn)))
+    {
+        text.replace(posn, replaceFrom.length(), replaceTo);
+        posn += replaceTo.length();
+    }
+}
+void string_replaceA(std::string& text, const std::string& replaceFrom, const std::string& replaceTo)
+{
+    size_t posn = 0;
+    while (std::string::npos != (posn = text.find(replaceFrom, posn)))
+    {
+        text.replace(posn, replaceFrom.length(), replaceTo);
+        posn += replaceTo.length();
+    }
+}
+
 #ifdef WIN32
 int wmain(int argc, wchar_t** argv)
 #else
@@ -88,11 +107,24 @@ int main(int argc, char** argv)
         }
         else if (key == L"add")
         {
-            add_records.push_back(U_TO_UTF8(value));
+            if (!value.empty())
+            {
+                if (value.c_str()[value.length() - 1] == '\n')
+                    value = value.substr(0, value.length() - 1);
+
+                string_replace(value, L";;;", L"\n");
+                add_records.push_back(U_TO_UTF8(value));
+            }
         }
         else if (key == L"remove")
         {
-            remove_records.push_back(U_TO_UTF8(value));
+            if (!value.empty())
+            {
+                if (value.c_str()[value.length() - 1] == '\n')
+                    value = value.substr(0, value.length() - 1);
+                string_replace(value, L";;;", L"\n");
+                remove_records.push_back(U_TO_UTF8(value));
+            }
         }
         else if (key == L"password")
         {
@@ -144,17 +176,15 @@ int main(int argc, char** argv)
 
         // 1) ищем старт записи
         while (doc_info_str < doc_info_str_end && *doc_info_str != '\n')
-        {}
+            ++doc_info_str;
 
-        const char* end_record_first = doc_info_str;
+        std::string::size_type len_first = doc_info_str - rec_start;
 
         // 2) ищем конец записи
         while (doc_info_str < doc_info_str_end)
         {
-            if (*doc_info_str == '\n')
+            if (*doc_info_str++ == '\n')
             {
-                ++doc_info_str;
-
                 if (*doc_info_str == '\n')
                 {
                     ++doc_info_str;
@@ -164,12 +194,12 @@ int main(int argc, char** argv)
         }
 
         bool isAdd = true;
-        std::string sRec = std::string(rec_start, (doc_info_str - rec_start));
+        std::string sRec = std::string(rec_start, (doc_info_str - rec_start - 2));
 
         // 3) проверяем запись на удаление
         for (std::vector<std::string>::iterator iter = remove_records.begin(); iter != remove_records.end(); iter++)
         {
-            if (*iter == std::string(rec_start, (end_record_first - rec_start)))
+            if (*iter == std::string(rec_start, len_first))
             {
                 isAdd = false;
             }
@@ -191,14 +221,14 @@ int main(int argc, char** argv)
         if (isAdd)
         {
             sResult += sRec;
-            sResult += "\n";
+            sResult += "\n\n";
         }
     }
 
     for (std::vector<std::string>::iterator iter = add_records.begin(); iter != add_records.end(); iter++)
     {
         sResult += *iter;
-        sResult += "\n";
+        sResult += "\n\n";
     }
 
     bool result = file.WriteAdditional(file_path, L"DocumentID", sResult);

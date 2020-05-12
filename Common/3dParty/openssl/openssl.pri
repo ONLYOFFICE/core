@@ -1,5 +1,7 @@
 INCLUDEPATH += $$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX/include
-LIBS += -L$$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib -llibcrypto -llibssl
+
+core_windows:LIBS += -L$$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib -llibcrypto -llibssl
+!core_windows:LIBS += -L$$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib -lcrypto -lssl
 
 open_ssl_common {
     DEFINES += COMMON_OPENSSL_BUILDING

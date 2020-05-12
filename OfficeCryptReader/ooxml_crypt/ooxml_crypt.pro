@@ -14,6 +14,9 @@ include($$CORE_ROOT_DIR/Common/3dParty/boost/boost.pri)
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
 ADD_DEPENDENCY(kernel)
 
+CONFIG += open_ssl_common
+include($$CORE_ROOT_DIR/Common/3dParty/openssl/openssl.pri)
+
 DEFINES += CRYPTOPP_DISABLE_ASM
 DESTDIR = $$CORE_BUILDS_BINARY_PATH
 
@@ -42,6 +45,9 @@ core_windows {
     LIBS += -lShell32
     LIBS += -lGdi32
     LIBS += -lUser32
+    LIBS += -lcrypt32
+    LIBS += -lcryptui
+    LIBS += -lws2_32
 }
 
 core_linux {

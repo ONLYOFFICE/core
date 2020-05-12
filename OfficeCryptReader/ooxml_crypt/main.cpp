@@ -32,6 +32,7 @@
 
 #include "./../source/ECMACryptFile.h"
 #include "./../../DesktopEditor/common/File.h"
+#include "./../../Common/3dParty/openssl/common/common_openssl.h"
 #include <iostream>
 
 // examples:
@@ -73,6 +74,9 @@ int main(int argc, char** argv)
     std::wstring file_path;
     std::wstring password;
     bool is_print_info = false;
+    bool is_decrypt = false;
+    std::string user;
+    std::wstring user_key_file;
 
     std::vector<std::string> add_records;
     std::vector<std::string> remove_records;
@@ -134,6 +138,18 @@ int main(int argc, char** argv)
         {
             is_print_info = true;
         }
+        else if (key == L"decrypt")
+        {
+            is_decrypt = true;
+        }
+        else if (key == L"user")
+        {
+            user = U_TO_UTF8(value);
+        }
+        else if (key == L"key")
+        {
+            user_key_file = value;
+        }
     }
 
     if (file_path.empty() || !NSFile::CFileBinary::Exists(file_path))
@@ -164,11 +180,67 @@ int main(int argc, char** argv)
         return 0;
     }
 
-    std::string sResult = "";
-    sResult.reserve(1000);
-
     const char* doc_info_str = docinfo.c_str();
     const char* doc_info_str_end = doc_info_str + docinfo.length();
+
+    if (is_decrypt)
+    {
+        std::string encrypted_password = "";
+
+        // находим нужную запись
+        while (doc_info_str < doc_info_str_end)
+        {
+            const char* rec_start = doc_info_str;
+
+            // 1) ищем старт записи
+            while (doc_info_str < doc_info_str_end && *doc_info_str != '\n')
+                ++doc_info_str;
+
+            if (user == std::string(rec_start, doc_info_str - rec_start))
+            {
+                 rec_start = doc_info_str;
+
+                 while (doc_info_str < doc_info_str_end && *doc_info_str != '\n')
+                     ++doc_info_str;
+
+                encrypted_password = std::string(rec_start, doc_info_str - rec_start);
+            }
+
+            // идем в конец записи
+            while (doc_info_str < doc_info_str_end)
+            {
+                if (*doc_info_str++ == '\n')
+                {
+                    if (*doc_info_str == '\n')
+                    {
+                        ++doc_info_str;
+                        break;
+                    }
+                }
+            }
+        }
+
+        std::string private_key_content;
+        NSFile::CFileBinary::ReadAllTextUtf8A(user_key_file, private_key_content);
+
+        std::string passwordA;
+        NSOpenSSL::RSA_DecryptPrivate_desktop((unsigned char*)private_key_content.c_str(), encrypted_password, passwordA);
+        std::wstring password = UTF8_TO_U(passwordA);
+
+        // encrypt file
+        ECMACryptFile file;
+        bool bDataIntegrity;
+        bool result = file.DecryptOfficeFile(file_path, file_path, password, bDataIntegrity);
+        if (!result)
+        {
+            std::cout << "error: file is not decrypted" << std::endl;
+            return 0;
+        }
+        return 2;
+    }
+
+    std::string sResult = "";
+    sResult.reserve(1000);
 
     while (doc_info_str < doc_info_str_end)
     {

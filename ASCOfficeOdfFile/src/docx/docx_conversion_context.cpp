@@ -908,21 +908,25 @@ namespace
         }
     }
 
-    std::wstring StyleDisplayName(const std::wstring & Name, const std::wstring & DisplayName, odf_types::style_family::type Type)
+    std::wstring StyleDisplayName(const std::wstring & Name, const std::wstring & DisplayName, odf_types::style_family::type Type, bool &bDisplayed)
     {
-        if (!DisplayName.empty())
+		bDisplayed = true;
+        if (false == DisplayName.empty())
             return DisplayName;
 
-		if (!Name.empty())
+		if (false == Name.empty())
+		{
+			bDisplayed = false;
             return Name;
+		}
         else
         {
             switch(Type)
             {
             case odf_types::style_family::Paragraph:
                 return L"Normal";
-                break;
             default:
+				bDisplayed = false;
                 return std::wstring(L"DStyle_") + boost::lexical_cast<std::wstring>(odf_types::style_family( Type) );
             }
         }
@@ -1123,11 +1127,9 @@ void docx_conversion_context::process_styles()
 
 		for (size_t i = 0; i < arStyles.size(); i++)
 		{
-            if (!arStyles[i]->is_automatic() && 
-					(
-					arStyles[i]->type() == odf_types::style_family::Paragraph ||
-					arStyles[i]->type() == odf_types::style_family::Text
-					))
+            if (false == arStyles[i]->is_automatic() && 
+					(arStyles[i]->type() == odf_types::style_family::Paragraph ||
+					 arStyles[i]->type() == odf_types::style_family::Text))
             {
                 const std::wstring id = styles_map_.get(arStyles[i]->name(), arStyles[i]->type());
                 _Wostream << L"<w:style w:styleId=\"" << id << L"\" w:type=\"" << StyleTypeOdf2Docx(arStyles[i]->type()) << L"\""; 
@@ -1137,7 +1139,8 @@ void docx_conversion_context::process_styles()
 				}
 				_Wostream << L">";
 
-                const std::wstring displayName = StyleDisplayName(arStyles[i]->name(), arStyles[i]->display_name(), arStyles[i]->type());
+				bool bDisplayed = (arStyles[i]->type() == odf_types::style_family::Paragraph);
+                const std::wstring displayName = StyleDisplayName(arStyles[i]->name(), arStyles[i]->display_name(), arStyles[i]->type(), bDisplayed);
 
 				_Wostream << L"<w:name w:val=\"" << XmlUtils::EncodeXmlString(displayName) << L"\"/>";
 
@@ -1146,12 +1149,13 @@ void docx_conversion_context::process_styles()
                     const std::wstring basedOnId = styles_map_.get(baseOn->name(), baseOn->type());
                     _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\"/>";
                 }
-                else if (!arStyles[i]->is_default() && styles_map_.check(L"", arStyles[i]->type()))
+                else if (false == arStyles[i]->is_default() && styles_map_.check(L"", arStyles[i]->type()))
                 {
+					bDisplayed = false;
                     const std::wstring basedOnId = styles_map_.get(L"", arStyles[i]->type());
                     _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\"/>";
                 }
-				else
+				if (bDisplayed)
 				{
 					_Wostream << L"<w:qFormat/>";
 				}

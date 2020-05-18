@@ -46,6 +46,7 @@
 #include "calcext_elements.h"
 #include "table_data_pilot_tables.h"
 #include "styles.h"
+#include "paragraph_elements.h"
 
 #include "style_table_properties.h"
 #include "style_text_properties.h"
@@ -1325,15 +1326,66 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 		{
 			ods_conversion_context* ods_context = dynamic_cast<ods_conversion_context*>(context_);
 
-			ods_context->start_cell_text();
-				ods_context->text_context()->add_text_content(value);
-			ods_context->end_cell_text();
+			if (ods_context)
+			{
+				ods_context->start_cell_text();
+					ods_context->text_context()->add_text_content(value);
+				ods_context->end_cell_text();
+					
+				set_cell_text( ods_context->text_context(), true);
+			}
+			else
+			{
+				context_->start_text_context();
 				
-			set_cell_text( ods_context->text_context(), true);
+				start_cell_text();
+					context_->text_context()->add_text_content(value);
+				end_cell_text();
+					
+				set_cell_text( context_->text_context(), true);
+				
+				context_->end_text_context();
+			}
 		}
 	}
 }
+void ods_table_state::start_cell_text()
+{
+////////////
+	office_element_ptr paragr_elm;
+	create_element(L"text", L"p", paragr_elm, context_);
+	
+	context_->text_context()->start_paragraph(paragr_elm);
 
+	if (is_cell_hyperlink())
+	{
+		ods_hyperlink_state & state = current_hyperlink();
+		
+		office_element_ptr text_a_elm;
+		create_element(L"text", L"a", text_a_elm, context_);
+
+		text_a* text_a_ = dynamic_cast<text_a*>(text_a_elm.get());
+		if (text_a_ == NULL)return;
+
+		text_a_->common_xlink_attlist_.type_ = xlink_type(xlink_type::Simple);
+		text_a_->common_xlink_attlist_.href_ = state.link;
+		
+		context_->text_context()->start_element(text_a_elm); // может быть стоит сделать собственый???
+		// libra дурит если в табличках будет вложенный span в гиперлинк ... оО (хотя это разрешено в спецификации!!!)
+
+		context_->text_context()->single_paragraph_ = true;
+	}
+}
+
+void ods_table_state::end_cell_text()
+{
+	if (context_->text_context())
+	{
+		if (is_cell_hyperlink())	context_->text_context()->end_element();
+		
+		context_->text_context()->end_paragraph();
+	}
+}
 void ods_table_state::end_cell()
 {
 	if ( cells_size_  < 1)return;

@@ -350,6 +350,9 @@ public:
 	void set_cell_array_formula(std::wstring & formula, std::wstring ref);
 	void set_cell_spanned(int spanned_cols, int spanned_rows);
     void add_or_find_cell_shared_formula(std::wstring & formula, std::wstring ref, int ind);
+
+	void start_cell_text();
+	void end_cell_text();
 	
 	static std::wstring replace_cell_row(boost::wsmatch const & what);
 	static std::wstring replace_cell_column(boost::wsmatch const & what);

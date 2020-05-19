@@ -32,7 +32,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ApplicationFontsWorker.h"
+#include "../../../../core/DesktopEditor/graphics/pro/Fonts.h"
 
 @interface ASCFontsAssistant: NSObject
 

@@ -37,8 +37,9 @@
 #import "ASCFontsAssistant.h"
 
 #import "NSString+StringUtils.h"
-#import "ApplicationFontsWorker.h"
 #import "NSFileManager+Utils.h"
+
+#import "../../../../core/DesktopEditor/fontengine/ApplicationFontsWorker.h"
 
 @implementation ASCFontsAssistant
 

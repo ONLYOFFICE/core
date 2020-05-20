@@ -30,10 +30,6 @@
  *
  */
 
-#import <Foundation/Foundation.h>
-#import <MobileCoreServices/UTCoreTypes.h>
-#import <UIKit/UIKit.h>
-
 #import "ASCFontsAssistant.h"
 
 #import "NSString+StringUtils.h"

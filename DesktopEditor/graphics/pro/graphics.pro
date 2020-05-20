@@ -471,6 +471,16 @@ SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/LeptonLib/skew.cpp
 
 core_ios {
-OBJECTIVE_SOURCES += ./../../fontengine/ApplicationFonts_ios.mm
-LIBS += -framework Foundation
+
+    HEADERS += \
+        ./../../fontengine/ApplicationFontsWorker.h \
+        ./../../common/Mac/ASCFontsAssistant.h
+
+    OBJECTIVE_SOURCES += \
+        ./../../fontengine/ApplicationFonts_ios.mm \
+        ./../../common/File_ios.mm \
+        ./../../fontengine/ApplicationFontsWorker.cpp \
+        ./../../common/Mac/ASCFontsAssistant.mm
+
+    LIBS += -framework Foundation
 }

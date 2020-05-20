@@ -33,6 +33,7 @@
 
 #include "SimpleTypes_Base.h"
 #include "../Base/ASCWinAPI.h"  // GetSysColor
+#include "../../../../DesktopEditor/common/StringExt.h"
 // Здесь представлены все простые типы Drawing-Main из спецификации Office Open Xml (20.1.10)
 namespace SimpleTypes
 {
@@ -2881,6 +2882,256 @@ namespace SimpleTypes
 			}
 
             return this->m_eValue;
+		}
+
+		bool FromStringIgnoreCase(std::wstring &sValue)
+		{
+			this->m_eValue = presetcolorvalBlack;
+			SetRGBA( 0, 0, 0, 255 );
+
+			if ( sValue.empty() )
+				return false;
+
+			std::wstring sValueLower = sValue;
+			NSStringExt::ToLower(sValueLower);
+			wchar_t wChar = sValueLower[0];
+			switch ( wChar )
+			{
+			case 'a':
+				if      ( (L"aliceblue")			== sValueLower ) { this->m_eValue = presetcolorvalAliceBlue; SetRGBA(240,248,255); }
+				else if ( (L"antiquewhite")		== sValueLower ) { this->m_eValue = presetcolorvalAntiqueWhite; SetRGBA(250,235,215); }
+				else if ( (L"aqua")				== sValueLower ) { this->m_eValue = presetcolorvalAqua; SetRGBA(0,255,255); }
+				else if ( (L"aquamarine")			== sValueLower ) { this->m_eValue = presetcolorvalAquamarine; SetRGBA(127,255,212); }
+				else if ( (L"azure")				== sValueLower ) { this->m_eValue = presetcolorvalAzure; SetRGBA(240,255,255); }
+				break;
+			case 'b':
+				if      ( (L"beige")				== sValueLower ) { this->m_eValue = presetcolorvalBeige; SetRGBA(245,245,220); }
+				else if ( (L"bisque")				== sValueLower ) { this->m_eValue = presetcolorvalBisque ; SetRGBA(255,228,196); }
+				else if ( (L"black")				== sValueLower ) { this->m_eValue = presetcolorvalBlack ; SetRGBA(0,0,0); }
+				else if ( (L"blanchedalmond")		== sValueLower ) { this->m_eValue = presetcolorvalBlanchedAlmond ; SetRGBA(255,235,205); }
+				else if ( (L"blue")				== sValueLower ) { this->m_eValue = presetcolorvalBlue ; SetRGBA(0,0,255); }
+				else if ( (L"blueviolet")			== sValueLower ) { this->m_eValue = presetcolorvalBlueViolet ; SetRGBA(138,43,226); }
+				else if ( (L"brown")				== sValueLower ) { this->m_eValue = presetcolorvalBrown ; SetRGBA(165,42,42); }
+				else if ( (L"burlywood")			== sValueLower ) { this->m_eValue = presetcolorvalBurlyWood ; SetRGBA(222,184,135); }
+				break;
+			case 'c':
+				if      ( (L"cadetblue")			== sValueLower ) { this->m_eValue = presetcolorvalCadetBlue ; SetRGBA(95,158,160); }
+				else if ( (L"chartreuse")			== sValueLower ) { this->m_eValue = presetcolorvalChartreuse ; SetRGBA(127,255,0); }
+				else if ( (L"chocolate")			== sValueLower ) { this->m_eValue = presetcolorvalChocolate ; SetRGBA(210,105,30); }
+				else if ( (L"coral")				== sValueLower ) { this->m_eValue = presetcolorvalCoral ; SetRGBA(255,127,80); }
+				else if ( (L"cornflowerblue")		== sValueLower ) { this->m_eValue = presetcolorvalCornflowerBlue ; SetRGBA(100,149,237); }
+				else if ( (L"cornsilk")			== sValueLower ) { this->m_eValue = presetcolorvalCornsilk ; SetRGBA(255,248,220); }
+				else if ( (L"crimson")				== sValueLower ) { this->m_eValue = presetcolorvalCrimson ; SetRGBA(220,20,60); }
+				else if ( (L"cyan")				== sValueLower ) { this->m_eValue = presetcolorvalCyan ; SetRGBA(0,255,255); }
+				break;
+			case 'd':
+				if      ( (L"darkblue")			== sValueLower ) { this->m_eValue = presetcolorvalDarkBlue ; SetRGBA(0,0,139); }
+				else if ( (L"darkcyan")			== sValueLower ) { this->m_eValue = presetcolorvalDarkCyan ; SetRGBA(0,139,139); }
+				else if ( (L"darkgoldenrod")		== sValueLower ) { this->m_eValue = presetcolorvalDarkGoldenrod ; SetRGBA(184,134,11); }
+				else if ( (L"darkgray")			== sValueLower ) { this->m_eValue = presetcolorvalDarkGray ; SetRGBA(169,169,169); }
+				else if ( (L"darkgreen")			== sValueLower ) { this->m_eValue = presetcolorvalDarkGreen ; SetRGBA(0,100,0); }
+				else if ( (L"darkgrey")			== sValueLower ) { this->m_eValue = presetcolorvalDarkGrey ; SetRGBA(169,169,169); }
+				else if ( (L"darkkhaki")			== sValueLower ) { this->m_eValue = presetcolorvalDarkKhaki ; SetRGBA(189,183,107); }
+				else if ( (L"darkmagenta")			== sValueLower ) { this->m_eValue = presetcolorvalDarkMagenta ; SetRGBA(139,0,139); }
+				else if ( (L"darkolivegreen")		== sValueLower ) { this->m_eValue = presetcolorvalDarkOliveGreen ; SetRGBA(85,107,47); }
+				else if ( (L"darkorange")			== sValueLower ) { this->m_eValue = presetcolorvalDarkOrange ; SetRGBA(255,140,0); }
+				else if ( (L"darkorchid")			== sValueLower ) { this->m_eValue = presetcolorvalDarkOrchid ; SetRGBA(153,50,204); }
+				else if ( (L"darkred")				== sValueLower ) { this->m_eValue = presetcolorvalDarkRed ; SetRGBA(139,0,0); }
+				else if ( (L"darksalmon")			== sValueLower ) { this->m_eValue = presetcolorvalDarkSalmon ; SetRGBA(233,150,122); }
+				else if ( (L"darkseagreen")		== sValueLower ) { this->m_eValue = presetcolorvalDarkSeaGreen ; SetRGBA(143,188,143); }
+				else if ( (L"darkslateblue")		== sValueLower ) { this->m_eValue = presetcolorvalDarkSlateBlue ; SetRGBA(72,61,139); }
+				else if ( (L"darkslategray")		== sValueLower ) { this->m_eValue = presetcolorvalDarkSlateGray ; SetRGBA(47,79,79); }
+				else if ( (L"darkslategrey")		== sValueLower ) { this->m_eValue = presetcolorvalDarkSlateGrey ; SetRGBA(47,79,79); }
+				else if ( (L"darkturquoise")		== sValueLower ) { this->m_eValue = presetcolorvalDarkTurquoise ; SetRGBA(0,206,209); }
+				else if ( (L"darkviolet")			== sValueLower ) { this->m_eValue = presetcolorvalDarkViolet ; SetRGBA(148,0,211); }
+				else if ( (L"deeppink")			== sValueLower ) { this->m_eValue = presetcolorvalDeepPink ; SetRGBA(255,20,147); }
+				else if ( (L"deepskyblue")			== sValueLower ) { this->m_eValue = presetcolorvalDeepSkyBlue ; SetRGBA(0,191,255); }
+				else if ( (L"dimgray")				== sValueLower ) { this->m_eValue = presetcolorvalDimGray ; SetRGBA(105,105,105); }
+				else if ( (L"dimgrey")				== sValueLower ) { this->m_eValue = presetcolorvalDimGrey ; SetRGBA(105,105,105); }
+				else if ( (L"dkblue")				== sValueLower ) { this->m_eValue = presetcolorvalDkBlue ; SetRGBA(0,0,139); }
+				else if ( (L"dkcyan")				== sValueLower ) { this->m_eValue = presetcolorvalDkCyan ; SetRGBA(0,139,139); }
+				else if ( (L"dkgoldenrod")			== sValueLower ) { this->m_eValue = presetcolorvalDkGoldenrod ; SetRGBA(184,134,11); }
+				else if ( (L"dkgray")				== sValueLower ) { this->m_eValue = presetcolorvalDkGray ; SetRGBA(169,169,169); }
+				else if ( (L"dkgreen")				== sValueLower ) { this->m_eValue = presetcolorvalDkGreen ; SetRGBA(0,100,0); }
+				else if ( (L"dkgrey")				== sValueLower ) { this->m_eValue = presetcolorvalDkGrey ; SetRGBA(169,169,169); }
+				else if ( (L"dkkhaki")				== sValueLower ) { this->m_eValue = presetcolorvalDkKhaki ; SetRGBA(189,183,107); }
+				else if ( (L"dkmagenta")			== sValueLower ) { this->m_eValue = presetcolorvalDkMagenta ; SetRGBA(139,0,139); }
+				else if ( (L"dkolivegreen")		== sValueLower ) { this->m_eValue = presetcolorvalDkOliveGreen ; SetRGBA(85,107,47); }
+				else if ( (L"dkorange")			== sValueLower ) { this->m_eValue = presetcolorvalDkOrange ; SetRGBA(255,140,0); }
+				else if ( (L"dkorchid")			== sValueLower ) { this->m_eValue = presetcolorvalDkOrchid ; SetRGBA(153,50,204); }
+				else if ( (L"dkred")				== sValueLower ) { this->m_eValue = presetcolorvalDkRed ; SetRGBA(139,0,0); }
+				else if ( (L"dksalmon")			== sValueLower ) { this->m_eValue = presetcolorvalDkSalmon ; SetRGBA(233,150,122); }
+				else if ( (L"dkseagreen")			== sValueLower ) { this->m_eValue = presetcolorvalDkSeaGreen ; SetRGBA(143,188,139); }
+				else if ( (L"dkslateblue")			== sValueLower ) { this->m_eValue = presetcolorvalDkSlateBlue ; SetRGBA(72,61,139); }
+				else if ( (L"dkslategray")			== sValueLower ) { this->m_eValue = presetcolorvalDkSlateGray ; SetRGBA(47,79,79); }
+				else if ( (L"dkslategrey")			== sValueLower ) { this->m_eValue = presetcolorvalDkSlateGrey ; SetRGBA(47,79,79); }
+				else if ( (L"dkturquoise")			== sValueLower ) { this->m_eValue = presetcolorvalDkTurquoise ; SetRGBA(0,206,209); }
+				else if ( (L"dkviolet")			== sValueLower ) { this->m_eValue = presetcolorvalDkViolet ; SetRGBA(148,0,211); }
+				else if ( (L"dodgerblue")			== sValueLower ) { this->m_eValue = presetcolorvalDodgerBlue ; SetRGBA(30,144,255); }
+				break;
+			case 'f':
+				if      ( (L"firebrick")			== sValueLower ) { this->m_eValue = presetcolorvalFirebrick ; SetRGBA(178,34,34); }
+				else if ( (L"floralwhite")			== sValueLower ) { this->m_eValue = presetcolorvalFloralWhite ; SetRGBA(255,250,240); }
+				else if ( (L"forestgreen")			== sValueLower ) { this->m_eValue = presetcolorvalForestGreen ; SetRGBA(34,139,34); }
+				else if ( (L"fuchsia")				== sValueLower ) { this->m_eValue = presetcolorvalFuchsia ; SetRGBA(255,0,255); }
+				break;
+			case 'g':
+				if      ( (L"gainsboro")			== sValueLower ) { this->m_eValue = presetcolorvalGainsboro ; SetRGBA(220,220,220); }
+				else if ( (L"ghostwhite")			== sValueLower ) { this->m_eValue = presetcolorvalGhostWhite ; SetRGBA(248,248,255); }
+				else if ( (L"gold")				== sValueLower ) { this->m_eValue = presetcolorvalGold ; SetRGBA(255,215,0); }
+				else if ( (L"goldenrod")			== sValueLower ) { this->m_eValue = presetcolorvalGoldenrod ; SetRGBA(218,165,32); }
+				else if ( (L"gray")				== sValueLower ) { this->m_eValue = presetcolorvalGray ; SetRGBA(128,128,128); }
+				else if ( (L"green")				== sValueLower ) { this->m_eValue = presetcolorvalGreen ; SetRGBA(0,128,0); }
+				else if ( (L"greenyellow")			== sValueLower ) { this->m_eValue = presetcolorvalGreenYellow ; SetRGBA(173,255,47); }
+				else if ( (L"grey")				== sValueLower ) { this->m_eValue = presetcolorvalGrey ; SetRGBA(128,128,128); }
+				break;
+			case 'h':
+				if      ( (L"honeydew")			== sValueLower ) { this->m_eValue = presetcolorvalHoneydew ; SetRGBA(240,255,240); }
+				else if ( (L"hotpink")				== sValueLower ) { this->m_eValue = presetcolorvalHotPink ; SetRGBA(255,105,180); }
+				break;
+			case 'i':
+				if      ( (L"indianred")			== sValueLower ) { this->m_eValue = presetcolorvalIndianRed ; SetRGBA(205,92,92); }
+				else if ( (L"indigo")				== sValueLower ) { this->m_eValue = presetcolorvalIndigo ; SetRGBA(75,0,130); }
+				else if ( (L"ivory")				== sValueLower ) { this->m_eValue = presetcolorvalIvory ; SetRGBA(255,255,240); }
+				break;
+			case 'k':
+				if      ( (L"khaki")				== sValueLower ) { this->m_eValue = presetcolorvalKhaki ; SetRGBA(240,230,140); }
+				break;
+			case 'l':
+				if      ( (L"lavender")			== sValueLower ) { this->m_eValue = presetcolorvalLavender ; SetRGBA(230,230,250); }
+				else if ( (L"lavenderblush")		== sValueLower ) { this->m_eValue = presetcolorvalLavenderBlush ; SetRGBA(255,240,245); }
+				else if ( (L"lawngreen")			== sValueLower ) { this->m_eValue = presetcolorvalLawnGreen ; SetRGBA(124,252,0); }
+				else if ( (L"lemonchiffon")		== sValueLower ) { this->m_eValue = presetcolorvalLemonChiffon ; SetRGBA(255,250,205); }
+				else if ( (L"lightblue")			== sValueLower ) { this->m_eValue = presetcolorvalLightBlue ; SetRGBA(173,216,230); }
+				else if ( (L"lightcoral")			== sValueLower ) { this->m_eValue = presetcolorvalLightCoral ; SetRGBA(240,128,128); }
+				else if ( (L"lightcyan")			== sValueLower ) { this->m_eValue = presetcolorvalLightCyan ; SetRGBA(224,255,255); }
+				else if ( (L"lightgoldenrodyellow")== sValueLower ) { this->m_eValue = presetcolorvalLightGoldenrodYellow; SetRGBA(250,250,210); }
+				else if ( (L"lightgray")			== sValueLower ) { this->m_eValue = presetcolorvalLightGray ; SetRGBA(211,211,211); }
+				else if ( (L"lightgreen")			== sValueLower ) { this->m_eValue = presetcolorvalLightGreen ; SetRGBA(144,238,144); }
+				else if ( (L"lightgrey")			== sValueLower ) { this->m_eValue = presetcolorvalLightGrey ; SetRGBA(211,211,211); }
+				else if ( (L"lightpink")			== sValueLower ) { this->m_eValue = presetcolorvalLightPink ; SetRGBA(255,182,193); }
+				else if ( (L"lightsalmon")			== sValueLower ) { this->m_eValue = presetcolorvalLightSalmon ; SetRGBA(255,160,122); }
+				else if ( (L"lightseagreen")		== sValueLower ) { this->m_eValue = presetcolorvalLightSeaGreen ; SetRGBA(32,178,170); }
+				else if ( (L"lightskyblue")		== sValueLower ) { this->m_eValue = presetcolorvalLightSkyBlue ; SetRGBA(135,206,250); }
+				else if ( (L"lightslategray")		== sValueLower ) { this->m_eValue = presetcolorvalLightSlateGray ; SetRGBA(119,136,153); }
+				else if ( (L"lightslategrey")		== sValueLower ) { this->m_eValue = presetcolorvalLightSlateGrey ; SetRGBA(119,136,153); }
+				else if ( (L"lightsteelblue")		== sValueLower ) { this->m_eValue = presetcolorvalLightSteelBlue ; SetRGBA(176,196,222); }
+				else if ( (L"lightyellow")			== sValueLower ) { this->m_eValue = presetcolorvalLightYellow ; SetRGBA(255,255,224); }
+				else if ( (L"lime")				== sValueLower ) { this->m_eValue = presetcolorvalLime ; SetRGBA(0,255,0); }
+				else if ( (L"limegreen")			== sValueLower ) { this->m_eValue = presetcolorvalLimeGreen ; SetRGBA(50,205,50); }
+				else if ( (L"linen")				== sValueLower ) { this->m_eValue = presetcolorvalLinen; SetRGBA(250,240,230); }
+				else if ( (L"ltblue")				== sValueLower ) { this->m_eValue = presetcolorvalLtBlue ; SetRGBA(173,216,230); }
+				else if ( (L"ltcoral")				== sValueLower ) { this->m_eValue = presetcolorvalLtCoral ; SetRGBA(240,128,128); }
+				else if ( (L"ltcyan")				== sValueLower ) { this->m_eValue = presetcolorvalLtCyan ; SetRGBA(224,255,255); }
+				else if ( (L"ltgoldenrodyellow")	== sValueLower ) { this->m_eValue = presetcolorvalLtGoldenrodYellow; SetRGBA(250,250,120); }
+				else if ( (L"ltgray")				== sValueLower ) { this->m_eValue = presetcolorvalLtGray ; SetRGBA(211,211,211); }
+				else if ( (L"ltgreen")				== sValueLower ) { this->m_eValue = presetcolorvalLtGreen ; SetRGBA(144,238,144); }
+				else if ( (L"ltgrey")				== sValueLower ) { this->m_eValue = presetcolorvalLtGrey ; SetRGBA(211,211,211); }
+				else if ( (L"ltpink")				== sValueLower ) { this->m_eValue = presetcolorvalLtPink ; SetRGBA(255,182,193); }
+				else if ( (L"ltsalmon")			== sValueLower ) { this->m_eValue = presetcolorvalLtSalmon ; SetRGBA(255,160,122); }
+				else if ( (L"ltseagreen")			== sValueLower ) { this->m_eValue = presetcolorvalLtSeaGreen ; SetRGBA(32,178,170); }
+				else if ( (L"ltskyblue")			== sValueLower ) { this->m_eValue = presetcolorvalLtSkyBlue ; SetRGBA(135,206,250); }
+				else if ( (L"ltslategray")			== sValueLower ) { this->m_eValue = presetcolorvalLtSlateGray ; SetRGBA(119,136,153); }
+				else if ( (L"ltslategrey")			== sValueLower ) { this->m_eValue = presetcolorvalLtSlateGrey ; SetRGBA(119,136,153); }
+				else if ( (L"ltsteelblue")			== sValueLower ) { this->m_eValue = presetcolorvalLtSteelBlue ; SetRGBA(176,196,222); }
+				else if ( (L"ltyellow")			== sValueLower ) { this->m_eValue = presetcolorvalLtYellow ; SetRGBA(255,255,224); }
+				break;
+			case 'm':
+				if      ( (L"magenta")				== sValueLower ) { this->m_eValue = presetcolorvalMagenta ; SetRGBA(255,0,255); }
+				else if ( (L"maroon")				== sValueLower ) { this->m_eValue = presetcolorvalMaroon ; SetRGBA(128,0,0); }
+				else if ( (L"medaquamarine")		== sValueLower ) { this->m_eValue = presetcolorvalMedAquamarine ; SetRGBA(102,205,170); }
+				else if ( (L"medblue")				== sValueLower ) { this->m_eValue = presetcolorvalMedBlue ; SetRGBA(0,0,205); }
+				else if ( (L"mediumaquamarine")	== sValueLower ) { this->m_eValue = presetcolorvalMediumAquamarine; SetRGBA(102,205,170); }
+				else if ( (L"mediumblue")			== sValueLower ) { this->m_eValue = presetcolorvalMediumBlue ; SetRGBA(0,0,205); }
+				else if ( (L"mediumorchid")		== sValueLower ) { this->m_eValue = presetcolorvalMediumOrchid ; SetRGBA(186,85,211); }
+				else if ( (L"mediumpurple")		== sValueLower ) { this->m_eValue = presetcolorvalMediumPurple ; SetRGBA(147,112,219); }
+				else if ( (L"mediumseagreen")		== sValueLower ) { this->m_eValue = presetcolorvalMediumSeaGreen ; SetRGBA(60,179,113); }
+				else if ( (L"mediumslateblue")		== sValueLower ) { this->m_eValue = presetcolorvalMediumSlateBlue ; SetRGBA(123,104,238); }
+				else if ( (L"mediumspringgreen")	== sValueLower ) { this->m_eValue = presetcolorvalMediumSpringGreen; SetRGBA(0,250,154); }
+				else if ( (L"mediumturquoise")		== sValueLower ) { this->m_eValue = presetcolorvalMediumTurquoise ; SetRGBA(72,209,204); }
+				else if ( (L"mediumvioletred")		== sValueLower ) { this->m_eValue = presetcolorvalMediumVioletRed ; SetRGBA(199,21,133); }
+				else if ( (L"medorchid")			== sValueLower ) { this->m_eValue = presetcolorvalMedOrchid ; SetRGBA(186,85,211); }
+				else if ( (L"medpurple")			== sValueLower ) { this->m_eValue = presetcolorvalMedPurple ; SetRGBA(147,112,219); }
+				else if ( (L"medseagreen")			== sValueLower ) { this->m_eValue = presetcolorvalMedSeaGreen ; SetRGBA(60,179,113); }
+				else if ( (L"medslateblue")		== sValueLower ) { this->m_eValue = presetcolorvalMedSlateBlue ; SetRGBA(123,104,238); }
+				else if ( (L"medspringgreen")		== sValueLower ) { this->m_eValue = presetcolorvalMedSpringGreen ; SetRGBA(0,250,154); }
+				else if ( (L"medturquoise")		== sValueLower ) { this->m_eValue = presetcolorvalMedTurquoise ; SetRGBA(72,209,204); }
+				else if ( (L"medvioletred")		== sValueLower ) { this->m_eValue = presetcolorvalMedVioletRed ; SetRGBA(199,21,133); }
+				else if ( (L"midnightblue")		== sValueLower ) { this->m_eValue = presetcolorvalMidnightBlue ; SetRGBA(25,25,112); }
+				else if ( (L"mintcream")			== sValueLower ) { this->m_eValue = presetcolorvalMintCream ; SetRGBA(245,255,250); }
+				else if ( (L"mistyrose")			== sValueLower ) { this->m_eValue = presetcolorvalMistyRose ; SetRGBA(255,228,225); }
+				else if ( (L"moccasin")			== sValueLower ) { this->m_eValue = presetcolorvalMoccasin ; SetRGBA(255,228,181); }
+				break;
+			case 'n':
+				if      ( (L"navajowhite")			== sValueLower ) { this->m_eValue = presetcolorvalNavajoWhite ; SetRGBA(255,222,173); }
+				else if ( (L"navy")				== sValueLower ) { this->m_eValue = presetcolorvalNavy ; SetRGBA(0,0,128); }
+				break;
+			case 'o':
+				if      ( (L"oldlace")				== sValueLower ) { this->m_eValue = presetcolorvalOldLace ; SetRGBA(253,245,230); }
+				else if ( (L"olive")				== sValueLower ) { this->m_eValue = presetcolorvalOlive ; SetRGBA(128,128,0); }
+				else if ( (L"olivedrab")			== sValueLower ) { this->m_eValue = presetcolorvalOliveDrab ; SetRGBA(107,142,35); }
+				else if ( (L"orange")				== sValueLower ) { this->m_eValue = presetcolorvalOrange ; SetRGBA(255,165,0); }
+				else if ( (L"orangered")			== sValueLower ) { this->m_eValue = presetcolorvalOrangeRed ; SetRGBA(255,69,0); }
+				else if ( (L"orchid")				== sValueLower ) { this->m_eValue = presetcolorvalOrchid ; SetRGBA(218,112,214); }
+				break;
+			case 'p':
+				if      ( (L"palegoldenrod")		== sValueLower ) { this->m_eValue = presetcolorvalPaleGoldenrod ; SetRGBA(238,232,170); }
+				else if ( (L"palegreen")			== sValueLower ) { this->m_eValue = presetcolorvalPaleGreen ; SetRGBA(152,251,152); }
+				else if ( (L"paleturquoise")		== sValueLower ) { this->m_eValue = presetcolorvalPaleTurquoise ; SetRGBA(175,238,238); }
+				else if ( (L"palevioletred")		== sValueLower ) { this->m_eValue = presetcolorvalPaleVioletRed ; SetRGBA(219,112,147); }
+				else if ( (L"papayawhip")			== sValueLower ) { this->m_eValue = presetcolorvalPapayaWhip ; SetRGBA(255,239,213); }
+				else if ( (L"peachpuff")			== sValueLower ) { this->m_eValue = presetcolorvalPeachPuff ; SetRGBA(255,218,185); }
+				else if ( (L"peru")				== sValueLower ) { this->m_eValue = presetcolorvalPeru ; SetRGBA(205,133,63); }
+				else if ( (L"pink")				== sValueLower ) { this->m_eValue = presetcolorvalPink ; SetRGBA(255,192,203); }
+				else if ( (L"plum")				== sValueLower ) { this->m_eValue = presetcolorvalPlum ; SetRGBA(221,160,221); }
+				else if ( (L"powderblue")			== sValueLower ) { this->m_eValue = presetcolorvalPowderBlue ; SetRGBA(176,224,230); }
+				else if ( (L"purple")				== sValueLower ) { this->m_eValue = presetcolorvalPurple ; SetRGBA(128,0,128); }
+				break;
+			case 'r':
+				if      ( (L"red")					== sValueLower ) { this->m_eValue = presetcolorvalRed ; SetRGBA(255,0,0); }
+				else if ( (L"rosybrown")			== sValueLower ) { this->m_eValue = presetcolorvalRosyBrown ; SetRGBA(188,143,143); }
+				else if ( (L"royalblue")			== sValueLower ) { this->m_eValue = presetcolorvalRoyalBlue ; SetRGBA(65,105,225); }
+				break;
+			case 's':
+				if      ( (L"saddlebrown")			== sValueLower ) { this->m_eValue = presetcolorvalSaddleBrown ; SetRGBA(139,69,19); }
+				else if ( (L"salmon")				== sValueLower ) { this->m_eValue = presetcolorvalSalmon ; SetRGBA(250,128,114); }
+				else if ( (L"sandybrown")			== sValueLower ) { this->m_eValue = presetcolorvalSandyBrown ; SetRGBA(244,164,96); }
+				else if ( (L"seagreen")			== sValueLower ) { this->m_eValue = presetcolorvalSeaGreen ; SetRGBA(46,139,87); }
+				else if ( (L"seashell")			== sValueLower ) { this->m_eValue = presetcolorvalSeaShell ; SetRGBA(255,245,238); }
+				else if ( (L"sienna")				== sValueLower ) { this->m_eValue = presetcolorvalSienna ; SetRGBA(160,82,45); }
+				else if ( (L"silver")				== sValueLower ) { this->m_eValue = presetcolorvalSilver ; SetRGBA(192,192,192); }
+				else if ( (L"skyblue")				== sValueLower ) { this->m_eValue = presetcolorvalSkyBlue ; SetRGBA(135,206,235); }
+				else if ( (L"slateblue")			== sValueLower ) { this->m_eValue = presetcolorvalSlateBlue ; SetRGBA(106,90,205); }
+				else if ( (L"slategray")			== sValueLower ) { this->m_eValue = presetcolorvalSlateGray ; SetRGBA(112,128,144); }
+				else if ( (L"slategrey")			== sValueLower ) { this->m_eValue = presetcolorvalSlateGrey ; SetRGBA(112,128,144); }
+				else if ( (L"snow")				== sValueLower ) { this->m_eValue = presetcolorvalSnow ; SetRGBA(255,250,250); }
+				else if ( (L"springgreen")			== sValueLower ) { this->m_eValue = presetcolorvalSpringGreen ; SetRGBA(0,255,127); }
+				else if ( (L"steelblue")			== sValueLower ) { this->m_eValue = presetcolorvalSteelBlue ; SetRGBA(70,130,180); }
+				break;
+			case 't':
+				if      ( (L"tan")					== sValueLower ) { this->m_eValue = presetcolorvalTan ; SetRGBA(210,180,140); }
+				else if ( (L"teal")				== sValueLower ) { this->m_eValue = presetcolorvalTeal ; SetRGBA(0,128,128); }
+				else if ( (L"thistle")				== sValueLower ) { this->m_eValue = presetcolorvalThistle ; SetRGBA(216,191,216); }
+				else if ( (L"tomato")				== sValueLower ) { this->m_eValue = presetcolorvalTomato ; SetRGBA(255,99,71); }
+				else if ( (L"turquoise")			== sValueLower ) { this->m_eValue = presetcolorvalTurquoise ; SetRGBA(64,224,208); }
+				break;
+			case 'v':
+				if      ( (L"violet")				== sValueLower ) { this->m_eValue = presetcolorvalViolet ; SetRGBA(238,130,238); }
+				break;
+			case 'w':
+				if      ( (L"wheat")				== sValueLower ) { this->m_eValue = presetcolorvalWheat ; SetRGBA(245,222,179); }
+				else if ( (L"white")				== sValueLower ) { this->m_eValue = presetcolorvalWhite ; SetRGBA(255,255,255); }
+				else if ( (L"whitesmoke")			== sValueLower ) { this->m_eValue = presetcolorvalWhiteSmoke ; SetRGBA(245,245,245); }
+				break;
+			case 'y':
+				if      ( (L"yellow")				== sValueLower ) { this->m_eValue = presetcolorvalYellow ; SetRGBA(255,255,0); }
+				else if ( (L"yellowgreen")			== sValueLower ) { this->m_eValue = presetcolorvalYellowGreen ; SetRGBA(154,205,50); }
+				break;
+			default:
+				return false;
+			}
+
+			return true;
 		}
 
         virtual std::wstring         ToString  () const

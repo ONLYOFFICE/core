@@ -328,11 +328,8 @@ namespace CSVReader
 		}
 		else
 		{
-#ifdef __ANDROID__
-			const auto oEncodindId = *std::find_if (NSUnicodeConverter::Encodings, NSUnicodeConverter::Encodings + UNICODE_CONVERTER_ENCODINGS_COUNT - 1, [nCodePage] (const NSUnicodeConverter::EncodindId& ei) { return ei.WindowsCodePage == nCodePage; });
-#else
 			const NSUnicodeConverter::EncodindId& oEncodindId = NSUnicodeConverter::Encodings[nCodePage];
-#endif
+
 			NSUnicodeConverter::CUnicodeConverter oUnicodeConverter;
 			sFileDataW = oUnicodeConverter.toUnicode((const char*)pInputBuffer, nInputBufferSize, oEncodindId.Name);
 		}
@@ -342,11 +339,8 @@ namespace CSVReader
 
 		if (nSize < 1 && nInputBufferSize > 0)
 		{//для синхронности вывода превью и нормального результата
-#ifdef __ANDROID__
-			const auto oEncodindId = *std::find_if (NSUnicodeConverter::Encodings, NSUnicodeConverter::Encodings + UNICODE_CONVERTER_ENCODINGS_COUNT - 1, [nCodePage] (const NSUnicodeConverter::EncodindId& ei) { return ei.WindowsCodePage == nCodePage; });
-#else
 			const NSUnicodeConverter::EncodindId& oEncodindId = NSUnicodeConverter::Encodings[nCodePage];
-#endif
+
 			NSUnicodeConverter::CUnicodeConverter oUnicodeConverter;
 			sFileDataW = oUnicodeConverter.toUnicode((const char*)pInputBuffer, nInputBufferSize, oEncodindId.Name);
 

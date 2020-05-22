@@ -74,6 +74,14 @@
     return array;
 }
 
++ (std::vector<std::wstring>)stringsStdArray:(NSArray<NSString*>*)sources {
+    std::vector<std::wstring> strings;
+    for (NSString* str in sources) {
+        strings.push_back(str.stdwstring);
+    }
+    return strings;
+}
+
 - (std::wstring)stdwstring {
     NSStringEncoding encode = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingUTF32LE);
     NSData* data = [self dataUsingEncoding:encode];    

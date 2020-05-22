@@ -49,13 +49,13 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
 {
     if (m_sDirectory.empty())
         return NULL;
-
+    
     std::wstring strAllFontsJSPath      = m_sDirectory + L"/AllFonts.js";
     std::wstring strFontsSelectionBin   = m_sDirectory + L"/font_selection.bin";
-
+    
     std::vector<std::string> strFonts;
     std::wstring strFontsCheckPath = m_sDirectory + L"/fonts.log";
-
+    
     if (true)
     {
         NSFile::CFileBinary oFile;
@@ -66,7 +66,7 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
             DWORD dwReaden = 0;
             oFile.ReadFile((BYTE*)pBuffer, nSize, dwReaden);
             oFile.CloseFile();
-
+            
             int nStart = 0;
             int nCur = nStart;
             for (; nCur < nSize; ++nCur)
@@ -82,10 +82,10 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
                     nStart = nCur + 1;
                 }
             }
-
+            
             delete[] pBuffer;
         }
-
+        
 #ifdef ONLYOFFICE_FONTS_VERSION_
         if (0 != strFonts.size())
         {
@@ -107,24 +107,24 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
         }
 #endif
     }
-
+    
     NSFonts::IApplicationFonts* pApplicationF = NSFonts::NSApplication::Create();
     std::vector<std::wstring> strFontsW_Cur;
-
+    
     if (m_bIsUseSystemFonts)
         strFontsW_Cur = pApplicationF->GetSetupFontFiles();
-
+    
     for (std::vector<std::wstring>::iterator i = m_arAdditionalFolders.begin(); i != m_arAdditionalFolders.end(); i++)
     {
         NSDirectory::GetFiles2(*i, strFontsW_Cur, true);
     }
-
+    
     std::sort(strFontsW_Cur.begin(), strFontsW_Cur.end());
-
+    
     bool bIsEqual = true;
     if (strFonts.size() != strFontsW_Cur.size())
         bIsEqual = false;
-
+    
     if (bIsEqual)
     {
         int nCount = (int)strFonts.size();
@@ -137,13 +137,13 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
             }
         }
     }
-
+    
     if (bIsEqual)
     {
         if (!NSFile::CFileBinary::Exists(strFontsSelectionBin))
             bIsEqual = false;
     }
-
+    
     if (!bIsEqual)
     {
         if (NSFile::CFileBinary::Exists(strFontsCheckPath))
@@ -156,16 +156,16 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
             NSFile::CFileBinary::Remove(m_sDirectory + L"/fonts_thumbnail.png");
         if (NSFile::CFileBinary::Exists(m_sDirectory + L"/fonts_thumbnail@2x.png"))
             NSFile::CFileBinary::Remove(m_sDirectory + L"/fonts_thumbnail@2x.png");
-
+        
         int nFlag = 3;
         if (!m_bIsUseOpenType)
             nFlag = 2;
-
+        
         pApplicationF->InitializeFromArrayFiles(strFontsW_Cur, nFlag);
-
+        
         NSCommon::SaveAllFontsJS(pApplicationF, strAllFontsJSPath, m_bIsNeedThumbnails ? m_sDirectory : L"", strFontsSelectionBin);
     }
-
+    
     NSFile::CFileBinary oFile;
     oFile.CreateFileW(strFontsCheckPath);
 #ifdef ONLYOFFICE_FONTS_VERSION_
@@ -180,11 +180,11 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
         oFile.WriteFile((BYTE*)"\n", 1);
     }
     oFile.CloseFile();
-
+    
     pApplicationF->Release();
     pApplicationF = NSFonts::NSApplication::Create();
     pApplicationF->InitializeFromFolder(m_sDirectory);
-
+    
     return pApplicationF;
 }
 
@@ -201,15 +201,53 @@ std::vector<std::wstring> CApplicationFontsWorker::GetFontNames(NSFonts::IApplic
     if (!pFonts || !pFonts->GetList())
         return arNames;
     std::vector<NSFonts::CFontInfo*>* arInfos = pFonts->GetList()->GetFonts();
-
+    
     std::map<std::wstring, bool> map;
-
+    
     for (std::vector<NSFonts::CFontInfo*>::iterator iter = arInfos->begin(); iter != arInfos->end(); iter++)
     {
         if (map.find((*iter)->m_wsFontName) == map.end())
             arNames.push_back((*iter)->m_wsFontName);
     }
-
+    
     std::sort(arNames.begin(), arNames.end());
+    return arNames;
+}
+
+std::vector<std::wstring> CApplicationFontsWorker::GetFontNamesWithExcludes(NSFonts::IApplicationFonts* pFonts, std::vector<std::wstring> excludes)
+{
+    std::vector<std::wstring> arNames;
+    
+    if (!pFonts || !pFonts->GetList())
+        return arNames;
+    
+    std::vector<NSFonts::CFontInfo*>* arInfos = pFonts->GetList()->GetFonts();
+    
+    std::map<std::wstring, bool> map;
+    
+    for (std::vector<NSFonts::CFontInfo*>::iterator iter = arInfos->begin(); iter != arInfos->end(); iter++)
+    {
+        std::wstring fontName = (*iter)->m_wsFontName;
+        
+        bool isExclude = false;
+        for (size_t i = 0; i < excludes.size(); ++i) {
+            if (fontName.find(excludes[i]) != std::string::npos) {
+                isExclude = true;
+                break;
+            }
+        }
+        
+        if (isExclude) {
+            continue;
+        }
+        
+        if (map.find(fontName) == map.end()) {
+            arNames.push_back(fontName);
+            map[fontName] = true;
+        }
+    }
+    
+    std::sort(arNames.begin(), arNames.end());
+    
     return arNames;
 }

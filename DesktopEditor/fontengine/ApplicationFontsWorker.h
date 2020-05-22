@@ -53,6 +53,7 @@ public:
     std::string GetAllFonts();
 
     static std::vector<std::wstring> GetFontNames(NSFonts::IApplicationFonts* pFonts);
+    static std::vector<std::wstring> GetFontNamesWithExcludes(NSFonts::IApplicationFonts* pFonts, std::vector<std::wstring> arExcludes);
 };
 
 #endif // _BUILD_APPLICATIONFONTSWORKER_H_

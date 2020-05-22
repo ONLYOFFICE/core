@@ -30,18 +30,41 @@
  *
  */
 
-#import <Foundation/Foundation.h>
-#import <string>
-#import <vector>
+#ifndef FONTS_ASSISTANT_H
+#define FONTS_ASSISTANT_H
 
-@interface NSString (StringUtils)
-+ (id)stringWithWString:(const std::wstring&)string;
-+ (id)stringWithAString:(const std::string&)string;
-+ (id)stringWithUtf8Buffer:(const char*)string length:(size_t)len;
-+ (NSMutableArray*)stringsArray:(const std::vector<std::wstring>&)sources;
-+ (std::vector<std::wstring>)stringsStdArray:(NSArray<NSString*>*)sources;
-- (std::wstring)stdwstring;
-- (std::string)stdstring;
-+ (NSString *)queryParameter:(NSURL *)url key:(NSString *)key;
+#include <string>
+#include <vector>
 
-@end
+#include "../../../core/DesktopEditor/graphics/pro/Fonts.h"
+
+namespace ASC
+{
+    class CFontsAssistant
+    {
+    public:
+        CFontsAssistant(const std::vector<std::wstring>& arFontsPaths, const std::wstring& sDataFontsPath);
+        
+        void Check();
+        NSFonts::IApplicationFonts* Load();
+        
+        std::vector<std::wstring> GetAvailableFonts();
+        std::string GetScriptData();
+        
+        void AddExcludeFont(const std::wstring& sFontName);
+    
+    private:
+        static std::wstring GetSystemFontPath();
+        
+    private:
+        std::vector<std::wstring> m_arFontsPaths;
+        std::wstring m_sDataFontsPath;
+        
+        std::vector<std::wstring> m_arAvailableFonts;
+        std::string m_sScriptData;
+        
+        std::vector<std::wstring> m_arExcludeFonts;
+    };
+}
+
+#endif /* FONTS_ASSISTANT_H */

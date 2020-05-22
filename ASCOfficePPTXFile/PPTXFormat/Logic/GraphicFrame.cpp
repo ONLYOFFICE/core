@@ -350,9 +350,10 @@ namespace PPTX
 		{
 			nvGraphicFramePr.toXmlWriter(pWriter);
             
-			if (xfrm.IsInit() && pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX)
+			if (xfrm.IsInit() && (pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX || pWriter->m_lGroupIndex >= 0))
 			{				
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && pWriter->m_lGroupIndex >= 0)	xfrm->m_ns = L"xdr";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX && pWriter->m_lGroupIndex >= 0) xfrm->m_ns = L"wpg";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)						xfrm->m_ns = L"a";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)					xfrm->m_ns = L"cdr";
 				

@@ -474,13 +474,12 @@ core_ios {
 
     HEADERS += \
         ./../../fontengine/ApplicationFontsWorker.h \
-        ./../../common/Mac/ASCFontsAssistant.h
+        ./../../fontengine/FontsAssistant.h
 
     OBJECTIVE_SOURCES += \
         ./../../fontengine/ApplicationFonts_ios.mm \
-        ./../../common/File_ios.mm \
         ./../../fontengine/ApplicationFontsWorker.cpp \
-        ./../../common/Mac/ASCFontsAssistant.mm
+        ./../../fontengine/FontsAssistant.cpp
 
     LIBS += -framework Foundation
 }

@@ -616,7 +616,7 @@ public:
 
     void RemoveSignature(const std::string& sGuid)
     {
-        int nCountSignatures = m_arSignatures.size();
+        int nCountSignatures = (int)m_arSignatures.size();
         if (0 == nCountSignatures)
             return;
 

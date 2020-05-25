@@ -19,14 +19,6 @@ include($$CORE_ROOT_DIR/Common/base.pri)
 ADD_DEPENDENCY(kernel)
 
 DEFINES -= UNICODE
-
-core_linux {
-    CONFIG += signature_openssl
-}
-core_mac {
-    CONFIG += signature_openssl
-}
-
 HEADERS += \
     include/XmlCertificate.h \
     include/OOXMLSigner.h \
@@ -51,10 +43,12 @@ HEADERS += \
     LIBS += -lcrypt32
     LIBS += -lcryptui
     LIBS += -lAdvapi32
+    LIBS += -lws2_32
+    LIBS += -lUser32
 
 }
 
-signature_openssl {
+!core_windows {
 
 HEADERS += \
     src/XmlSigner_openssl.h
@@ -64,8 +58,5 @@ SOURCES += \
 
 }
 
-signature_openssl {
-
+CONFIG += open_ssl_common
 include(../../../Common/3dParty/openssl/openssl.pri)
-
-}

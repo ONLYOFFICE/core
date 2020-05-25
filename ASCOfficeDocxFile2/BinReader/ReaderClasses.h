@@ -100,6 +100,7 @@ public:
 		bSectionType = false;
 		bPageNumStart = false;
 		bRtlGutter = false;
+		bGutter = false;
 	}
     std::wstring Write()
 	{

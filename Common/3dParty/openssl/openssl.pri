@@ -1,18 +1,11 @@
-core_linux {
+INCLUDEPATH += $$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX/include
 
-INCLUDEPATH += $$PWD/openssl/include
+core_windows:LIBS += -L$$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib -llibcrypto -llibssl
+!core_windows:LIBS += -L$$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib -lcrypto -lssl
 
-QMAKE_LFLAGS += -fvisibility=hidden
-LIBS += $$PWD/openssl/libssl.a
-LIBS += $$PWD/openssl/libcrypto.a
+open_ssl_common {
+    DEFINES += COMMON_OPENSSL_BUILDING
 
-}
-
-core_mac {
-
-INCLUDEPATH += $$PWD/openssl/include
-
-LIBS += $$PWD/openssl/libssl.a
-LIBS += $$PWD/openssl/libcrypto.a
-
+    HEADERS += $$PWD/common/common_openssl.h
+    SOURCES += $$PWD/common/common_openssl.cpp
 }

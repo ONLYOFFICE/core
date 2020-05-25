@@ -730,10 +730,12 @@ public:
 		{
             pCStringWriter->WriteString(L"<w:sz w:val=\"" + std::to_wstring(FontSize) + L"\"/>");
 		}
-		if(bFontSizeCs)
-		{
+        if(bFontSizeCs)
+        {
+            if(false == bFontSize)
+                pCStringWriter->WriteString(L"<w:sz w:val=\"" + std::to_wstring(FontSizeCs) + L"\"/>");
             pCStringWriter->WriteString(L"<w:szCs w:val=\"" + std::to_wstring(FontSizeCs) + L"\"/>");
-		}
+        }
 		if(bHighLight)
 		{
 			docRGB& H = HighLight;

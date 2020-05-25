@@ -2918,7 +2918,15 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 	//	pNewChar->m_eType = RtfCharSpecial::rsc_chatn;
 	//	m_oCurParagraph->AddItem( pNewChar );
 	//}
-    else if ( "chftn" == sCommand )
+ 	else if ( "chpgn" == sCommand ) //todooo - other special
+	{//header & footer
+		RtfCharSpecialPtr pNewChar ( new RtfCharSpecial() );
+		
+		pNewChar->m_oProperty = oReader.m_oState->m_oCharProp;
+		pNewChar->m_eType = RtfCharSpecial::rsc_chpgn;
+		m_oCurParagraph->AddItem( pNewChar );
+	}
+	else if ( "chftn" == sCommand )
 	{
 		if ( 1 == oReader.m_nFootnote )
 		{

@@ -40,10 +40,10 @@ endmacro()
 
 # ---------- Arguments ----------
 # 3dParty libs path arg
-if (NOT DEFINED ARG_PATH_LIB_SRC_3D_PARTY)
-    message(FATAL_ERROR "You must set argument \"ARG_PATH_LIB_SRC_3D_PARTY\" with path to 3d-party library...")
-elseif (NOT EXISTS ${ARG_PATH_LIB_SRC_3D_PARTY})
-    file(MAKE_DIRECTORY ${ARG_PATH_LIB_SRC_3D_PARTY})
+if (NOT DEFINED ARG_PATH_LIB_3D_PARTY)
+    message(FATAL_ERROR "You must set argument \"ARG_PATH_LIB_3D_PARTY\" with path to 3d-party library...")
+elseif (NOT EXISTS ${ARG_PATH_LIB_3D_PARTY})
+    file(MAKE_DIRECTORY ${ARG_PATH_LIB_3D_PARTY})
     message(STATUS "Destination 3dParty path doesn't exist, created!")
 endif()
 
@@ -70,29 +70,37 @@ endif()
 # x2t lib
 set(LIB_NAME_X2T ${ARG_NAME_LIB})
 
-# 3d party libraries
-set(LIB_NAME_ICONV iconv)
-set(LIB_NAME_BOOST boost)
-set(LIB_NAME_BOOST_REGEX boost_regex)
-set(LIB_NAME_ICU icu)
-set(LIB_NAME_ICU_DATA icudata)
-set(LIB_NAME_ICU_i18n icui18n)
-set(LIB_NAME_ICU_UC icuuc)
 
 # ---------- Paths sources  ----------
 # Core src dir path
 set(CORE_DIR ${ARG_PATH_SRC_CORE})
-message(STATUS "Core source path: ${CORE_DIR}")
 set(X2T_DEST ${ARG_PATH_LIB_DST}/${ANDROID_ABI})
 message(STATUS "X2t destination path: ${X2T_DEST}")
 
-# Prebuild libraries path
-set(LIBS_DIR ${ARG_PATH_LIB_SRC_3D_PARTY})
-message(STATUS "Prebuild libraries path: ${LIBS_DIR}")
+# Path to source files
+set(X2T_DIR ${CORE_DIR}/X2tConverter)
+message(STATUS "X2t converter source path: ${X2T_DIR}")
 
+
+# Prebuild libraries path
+set(LIBS_DIR ${ARG_PATH_LIB_3D_PARTY})
+message(STATUS "Prebuild libraries path: ${LIBS_DIR}")
+set(X2T_LIBS ${LIBS_DIR}/${ANDROID_ABI})
+message(STATUS "Prebuild libraries path: ${X2T_LIBS}")
+# configure import libs
+set(X2T_INCLUDE ${CORE_DIR}/X2tConverter/src/dylib
+        ${CORE_DIR}/UnicodeConverter
+        ${CORE_DIR}/Common)
+
+# DesktopEditor
+set(DESKTOP_EDITOR_DIR ${CORE_DIR}/DesktopEditor)
+message(STATUS "Desktop editor source path: ${DESKTOP_EDITOR_DIR}")
+# Font engine
+set(FONT_ENGINE_DIR ${DESKTOP_EDITOR_DIR}/fontengine)
+message(STATUS "Font engine source path: ${FONT_ENGINE_DIR}")
 
 # Iconv libs path
-set(ICONV_INCLUDE_DIR ${LIBS_DIR}/${LIB_NAME_ICONV}/${ANDROID_ABI}/include)
+#[[set(ICONV_INCLUDE_DIR ${LIBS_DIR}/${LIB_NAME_ICONV}/${ANDROID_ABI}/include)
 message(STATUS "Iconv include path: ${ICONV_INCLUDE_DIR}")
 
 if (NOT EXISTS ${ICONV_INCLUDE_DIR})
@@ -104,11 +112,11 @@ message(STATUS "Iconv lib path: ${ICONV_LIB_DIR}")
 
 if (NOT EXISTS ${ICONV_LIB_DIR})
     message(FATAL_ERROR "Iconv path with .a files doesn't exist!")
-endif()
+endif()]]
 
 
 # Boost src dir path
-set(BOOST_INCLUDE_DIR ${CORE_DIR}/Common/3dParty/${LIB_NAME_BOOST}/boost_1_58_0)
+#[[set(BOOST_INCLUDE_DIR ${CORE_DIR}/Common/3dParty/${LIB_NAME_BOOST}/boost_1_58_0)
 message(STATUS "Boost include path: ${BOOST_INCLUDE_DIR}")
 
 if (NOT EXISTS ${BOOST_INCLUDE_DIR})
@@ -120,11 +128,11 @@ message(STATUS "Boost lib path: ${BOOST_LIB_DIR}")
 
 if (NOT EXISTS ${BOOST_LIB_DIR})
     message(FATAL_ERROR "Boost path with .a files doesn't exist!")
-endif()
+endif()]]
 
 
 # Icu src dir path
-set(ICU_INCLUDE_DIR ${LIBS_DIR}/${LIB_NAME_ICU}/${ANDROID_ABI}/include)
+#[[set(ICU_INCLUDE_DIR ${LIBS_DIR}/${LIB_NAME_ICU}/${ANDROID_ABI}/include)
 message(STATUS "Icu include path: ${ICU_INCLUDE_DIR}")
 
 if (NOT EXISTS ${ICU_INCLUDE_DIR})
@@ -136,16 +144,16 @@ message(STATUS "Icu lib path: ${ICU_LIB_DIR}")
 
 if (NOT EXISTS ${ICU_LIB_DIR})
     message(FATAL_ERROR "Icu path with .h files doesn't exist!")
-endif()
+endif()]]
 
 
 # Add global path for lib resources here
 # Workaround src dir path
-set(WORKAROUND_DIR ${CMAKE_CURRENT_SOURCE_DIR}/workaround)
+#[[set(WORKAROUND_DIR ${CMAKE_CURRENT_SOURCE_DIR}/workaround)
 message(STATUS "Workaround source path: ${WORKAROUND_DIR}")
 if (NOT EXISTS ${WORKAROUND_DIR})
     message(FATAL_ERROR "Workaround source path doesn't exist!")
-endif()
+endif()]]
 
 
 # Show default compile flags
@@ -197,31 +205,32 @@ add_compile_options(
 # Dir with headers
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${ICONV_INCLUDE_DIR}
-    ${ICU_INCLUDE_DIR}
-    ${BOOST_INCLUDE_DIR}
+   # ${ICONV_INCLUDE_DIR}
+   # ${ICU_INCLUDE_DIR}
+   # ${BOOST_INCLUDE_DIR}
 )
 
-# Dir with libraries
+#[[# Dir with libraries
 link_directories(
     ${ICONV_LIB_DIR}
     ${ICU_LIB_DIR}
     ${BOOST_LIB_DIR}
 )
-
+]]
 # Link global libraries
 link_libraries(
     android
     log
-    ${LIB_NAME_ICU_UC}
+   #[[ ${LIB_NAME_ICU_UC}
     ${LIB_NAME_ICU_i18n}
     ${LIB_NAME_ICU_DATA}
     ${LIB_NAME_ICONV}
-    ${LIB_NAME_BOOST_REGEX}
+    ${LIB_NAME_BOOST_REGEX}]]
 )
 
 
 # Add dependencies sub projects
+#[[
 add_subdirectory(sources/cpufeature x2t/cpufeature)
 
 add_subdirectory(sources/common/officeutils x2t/common/officeutils)
@@ -259,65 +268,75 @@ add_subdirectory(sources/formats/txt x2t/formats/txt)
 add_subdirectory(sources/formats/xps x2t/formats/xps)
 
 add_subdirectory(sources/x2t x2t/x2t_converter)
+]]
 
 # Add target library
 add_library(${LIB_NAME_X2T}
     SHARED
+        ${FONT_ENGINE_DIR}/FontsAssistant.cpp
+        ${FONT_ENGINE_DIR}/ApplicationFontsWorker.cpp
         jni/X2t.cpp
 )
+add_library(DjVuFile SHARED IMPORTED)
+add_library(doctrenderer SHARED IMPORTED)
+add_library(graphics SHARED IMPORTED)
+add_library(HtmlFile SHARED IMPORTED)
+add_library(HtmlRenderer SHARED IMPORTED)
+add_library(kernel SHARED IMPORTED)
+add_library(PdfReader SHARED IMPORTED)
+add_library(PdfWriter SHARED IMPORTED)
+add_library(UnicodeConverter SHARED IMPORTED)
+add_library(x2t SHARED IMPORTED)
+add_library(XpsFile SHARED IMPORTED)
 
 # Export lib to common libs path
 set_target_properties(${LIB_NAME_X2T}
     PROPERTIES LIBRARY_OUTPUT_DIRECTORY
         ${X2T_DEST}
 )
+# Searches for a specified prebuilt library and stores the path as a
+# variable. Because CMake includes system libraries in the search path by
+# default, you only need to specify the name of the public NDK library
+# you want to add. CMake verifies that the library exists before
+# completing its build.
+set_target_properties(DjVuFile PROPERTIES IMPORTED_LOCATION
+        ${X2T_LIBS}/libDjVuFile.so)
+set_target_properties(doctrenderer PROPERTIES IMPORTED_LOCATION
+        ${X2T_LIBS}/libdoctrenderer.so)
+set_target_properties(graphics PROPERTIES IMPORTED_LOCATION
+        ${X2T_LIBS}/libgraphics.so)
+set_target_properties(HtmlFile PROPERTIES IMPORTED_LOCATION
+        ${X2T_LIBS}/libHtmlFile.so)
+set_target_properties(HtmlRenderer PROPERTIES IMPORTED_LOCATION
+        ${X2T_LIBS}/libHtmlRenderer.so)
+set_target_properties(kernel PROPERTIES IMPORTED_LOCATION
+        ${X2T_LIBS}/libkernel.so)
+set_target_properties(PdfReader PROPERTIES IMPORTED_LOCATION
+        ${X2T_LIBS}/libPdfReader.so)
+set_target_properties(PdfWriter PROPERTIES IMPORTED_LOCATION
+        ${X2T_LIBS}/libPdfWriter.so)
+set_target_properties(UnicodeConverter PROPERTIES IMPORTED_LOCATION
+        ${X2T_LIBS}/libUnicodeConverter.so)
+set_target_properties(x2t PROPERTIES IMPORTED_LOCATION
+        ${X2T_LIBS}/libx2t.so)
+set_target_properties(XpsFile PROPERTIES IMPORTED_LOCATION
+        ${X2T_LIBS}/libXpsFile.so)
 
 # Add dependency library
 target_link_libraries(${LIB_NAME_X2T}
-    PUBLIC
+
         # Converter
-        x2t-converter
-
-    PRIVATE
-        # Formats
-        pdf-writer
-        pdf-reader
-        rtf
-        odf-writer
-        odf-reader
-        djvu
-        docx
-        doc
-        xls
-        ppt
-        pptx
-        txt
-        xps
-        html-file
-        html-render
-        pole
-        docxformat
-
-        # Editors
-        downloader
-        doct-render
+        DjVuFile
+        doctrenderer
         graphics
-        font-engine
-        editor-xml
-        cximage
-        agg
-        freetype
-
-        # Common
-        officeutils
-        crypto-reader
-        xlsx-serialize
-        editor-common
-        unicodeconv
-        cryptopp
-
-        # System
-        cpufeature
+        HtmlFile
+        HtmlRenderer
+        kernel
+        PdfReader
+        PdfWriter
+        UnicodeConverter
+        x2t
+        XpsFile
 )
 
 # Add include files .h
@@ -325,7 +344,9 @@ target_include_directories(${LIB_NAME_X2T}
     PUBLIC
         jni/objects
         jni/utils
+        ${X2T_INCLUDE}
     PRIVATE
         ${CORE_DIR}
 )
 
+#include(ndk-stl-config.cmake)

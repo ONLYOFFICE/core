@@ -6,7 +6,7 @@
 #include <locale>
 #include <codecvt>
 #include <JniLogUtils.h>
-
+#include <vector>
 
 #define DELETE_LOCAL_REF(ENV, REFERENCE)                                             \
     if (REFERENCE != NULL && !ENV->IsSameObject(REFERENCE, NULL)) {                  \
@@ -200,6 +200,32 @@ class JniBaseObjects {
             using convert_typeX = std::codecvt_utf8<wchar_t>;
             std::wstring_convert<convert_typeX, wchar_t> converterX;
             return converterX.to_bytes(str);
+        }
+
+        static jobjectArray wStringToObjectArray(JNIEnv *jEnv, std::wstring *data, int length) {
+            jobjectArray jObjectArray = NULL;
+            jsize len = length;
+
+            jObjectArray = jEnv->NewObjectArray(len, (jEnv)->FindClass(CLASS_PATH_STRING), NULL);
+
+            for (jsize i = 0; i < len; ++i) {
+                (jEnv)->SetObjectArrayElement(jObjectArray, i,
+                                              JniBaseObjects::wStringToJString(jEnv, data[i]));
+            }
+
+            return jObjectArray;
+        }
+
+        static vector<std::wstring> objectArrayToVectorWString(JNIEnv *jEnv, jobjectArray stringArray) {
+
+            vector<std::wstring>			stringArr;
+
+            int stringCount = jEnv->GetArrayLength(stringArray);
+
+            for (int i=0; i<stringCount; i++) {
+                jstring string = (jstring) (jEnv->GetObjectArrayElement(stringArray, i));
+                stringArr.push_back(jstringToWString(jEnv, string));
+            }
         }
 };
 

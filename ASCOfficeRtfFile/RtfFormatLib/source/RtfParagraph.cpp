@@ -87,8 +87,8 @@ std::wstring RtfParagraph::RenderToRtf(RenderParameter oRenderParameter)
 
 std::wstring RtfParagraph::RenderToOOX(RenderParameter oRenderParameter)
 {
-	RtfDocument*	poRtfDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
-	OOXWriter*		poOOXWriter		= static_cast<OOXWriter*>(oRenderParameter.poWriter);
+	RtfDocument*	pRtfDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
+	OOXWriter*		pOOXWriter		= static_cast<OOXWriter*>(oRenderParameter.poWriter);
 
 	std::wstring sResult ;
 
@@ -134,7 +134,7 @@ std::wstring RtfParagraph::RenderToOOX(RenderParameter oRenderParameter)
 		sResult += L"<w:p";
 		if (oRenderParameter.nType == RENDER_TO_OOX_PARAM_COMMENT)
 		{
-			std::wstring sParaId = XmlUtils::IntToString(++poOOXWriter->m_nextParaId, L"%08X");
+			std::wstring sParaId = XmlUtils::IntToString(++pOOXWriter->m_nextParaId, L"%08X");
 			sResult += L" w14:paraId=\"" + sParaId + L"\" w14:textId=\"" + sParaId + L"\"";
 		}
 		sResult += L"><w:pPr>";
@@ -145,7 +145,7 @@ std::wstring RtfParagraph::RenderToOOX(RenderParameter oRenderParameter)
 		if ( PROP_DEF != m_oProperty.m_nTableStyle && m_oProperty.m_bInTable > 0)
 		{
 			RtfStylePtr oCurStyle;
-			if( true == poRtfDocument->m_oStyleTable.GetStyle( m_oProperty.m_nTableStyle, oCurStyle ) )
+			if( true == pRtfDocument->m_oStyleTable.GetStyle( m_oProperty.m_nTableStyle, oCurStyle ) )
 			{
 				RtfParagraphStyle* oCurParaStyle = dynamic_cast<RtfParagraphStyle*>(oCurStyle.get());
 

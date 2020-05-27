@@ -226,6 +226,8 @@ class JniBaseObjects {
                 jstring string = (jstring) (jEnv->GetObjectArrayElement(stringArray, i));
                 stringArr.push_back(jstringToWString(jEnv, string));
             }
+
+            return stringArr;
         }
 };
 

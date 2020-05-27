@@ -49,6 +49,8 @@ namespace ASC
     {
     #if defined(_IOS) || defined(_MAC)
         return std::wstring(L"/System/Library/Fonts");
+    #elif defined(__ANDROID__)
+        return std::wstring(L"/system/fonts");
     #endif
         return std::wstring(L"");
     }

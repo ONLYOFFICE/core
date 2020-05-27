@@ -86,7 +86,7 @@ public:
 					if( NULL != oParam.poTableStyle )
 						oNewParagraph->m_oProperty.m_nTableStyle = oParam.poTableStyle->m_nID;
 					oNewParagraph->m_oProperty.m_nItap = oParam.oReader->m_nCurItap;
-					oNewParagraph->m_oProperty.m_bInTable = true;
+					oNewParagraph->m_oProperty.m_bInTable = 1;
 					
 					oOutputCell.AddItem( oNewParagraph );
 				}break;

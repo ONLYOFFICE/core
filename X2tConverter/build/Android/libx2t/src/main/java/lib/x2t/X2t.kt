@@ -324,8 +324,8 @@ class X2t private constructor() {
             xmlSerializer.setOutput(writer)
             xmlSerializer.startDocument("UTF-8", null)
             xmlSerializer.startTag(null, "TaskQueueDataConvert")
-            xmlSerializer.attribute(null,"xmlns:xsi",""""http://www.w3.org/2001/XMLSchema-instance"""")
-            xmlSerializer.attribute(null,"xmlns:xsd", """"http://www.w3.org/2001/XMLSchema"""")
+            xmlSerializer.attribute(null,"xmlns:xsi","""http://www.w3.org/2001/XMLSchema-instance""")
+            xmlSerializer.attribute(null,"xmlns:xsd", """http://www.w3.org/2001/XMLSchema""")
 
             insertParam(xmlSerializer,"m_sKey", key )
             insertParam(xmlSerializer,"m_nFormatTo", format )
@@ -339,30 +339,30 @@ class X2t private constructor() {
                 insertParam(xmlSerializer,"m_sPassword", password )
             }
 
-            insertParam(xmlSerializer,"m_bIsPDFA", null, hashMapOf("xsi:nil" to """"true""""))
+            insertParam(xmlSerializer,"m_bIsPDFA", null, hashMapOf("xsi:nil" to """true"""))
 
             delimiter?.let{
                 insertParam(xmlSerializer,"m_nCsvDelimiter", delimiter)
             } ?: run {
-                insertParam(xmlSerializer,"m_nCsvDelimiter", null, hashMapOf("xsi:nil" to """"false""""))
+                insertParam(xmlSerializer,"m_nCsvDelimiter", null, hashMapOf("xsi:nil" to """false"""))
             }
 
             delimiterChar?.let{
                 insertParam(xmlSerializer,"m_nCsvDelimiterChar", delimiterChar)
             } ?: run {
-                insertParam(xmlSerializer,"m_nCsvDelimiterChar", null, hashMapOf("xsi:nil" to """"false""""))
+                insertParam(xmlSerializer,"m_nCsvDelimiterChar", null, hashMapOf("xsi:nil" to """false"""))
             }
 
             encoding?.let{
                 insertParam(xmlSerializer,"m_nCsvTxtEncoding", encoding)
             } ?: run {
-                insertParam(xmlSerializer,"m_nCsvTxtEncoding", null, hashMapOf("xsi:nil" to """"false""""))
+                insertParam(xmlSerializer,"m_nCsvTxtEncoding", null, hashMapOf("xsi:nil" to """false"""))
             }
 
-            insertParam(xmlSerializer,"m_bPaid", null, hashMapOf("xsi:nil" to """"true""""))
-            insertParam(xmlSerializer,"m_bEmbeddedFonts", "false" )
-            insertParam(xmlSerializer,"m_bFromChanges", null, hashMapOf("xsi:nil" to """"false""""))
-            insertParam(xmlSerializer,"m_nDoctParams", null, hashMapOf("xsi:nil" to """"false""""))
+            insertParam(xmlSerializer,"m_bPaid", null, hashMapOf("xsi:nil" to """true"""))
+            insertParam(xmlSerializer,"m_bEmbeddedFonts", "false")
+            insertParam(xmlSerializer,"m_bFromChanges", null, hashMapOf("xsi:nil" to """false"""))
+            insertParam(xmlSerializer,"m_nDoctParams", null, hashMapOf("xsi:nil" to """false"""))
             insertParam(xmlSerializer,"m_bIsNoBase64", "true" )
 
 

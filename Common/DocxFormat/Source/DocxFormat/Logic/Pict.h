@@ -261,83 +261,83 @@ namespace OOX
 							{
 							case 'b':
 								if ( _T("o:bottom") == sName )
-									pItem = new OOX::VmlOffice::CStrokeChild( oSubReader );
+									pItem = new OOX::VmlOffice::CStrokeChild( m_pMainDocument );
 
 								break;
 
 							case 'c':
 								if ( _T("o:callout") == sName )
-									pItem = new OOX::VmlOffice::CCallout( oSubReader );
+									pItem = new OOX::VmlOffice::CCallout( m_pMainDocument );
 								else if ( _T("o:clippath") == sName )
-									pItem = new OOX::VmlOffice::CClipPath( oSubReader );
+									pItem = new OOX::VmlOffice::CClipPath( m_pMainDocument );
 								else if ( _T("o:column") == sName )
-									pItem = new OOX::VmlOffice::CStrokeChild( oSubReader );
+									pItem = new OOX::VmlOffice::CStrokeChild( m_pMainDocument );
 								else if ( _T("o:complex") == sName )
-									pItem = new OOX::VmlOffice::CComplex( oSubReader );
+									pItem = new OOX::VmlOffice::CComplex( m_pMainDocument );
 
 								break;
 
 							case 'd':
 								if ( _T("o:diagram") == sName )
-									pItem = new OOX::VmlOffice::CDiagram( oSubReader );
+									pItem = new OOX::VmlOffice::CDiagram( m_pMainDocument );
 
 								break;
 
 							case 'e':
 								if ( _T("o:equationxml") == sName )
-									pItem = new OOX::VmlOffice::CEquationXml( oSubReader );
+									pItem = new OOX::VmlOffice::CEquationXml( m_pMainDocument );
 								else if ( _T("o:extrusion") == sName )
-									pItem = new OOX::VmlOffice::CExtrusion( oSubReader );
+									pItem = new OOX::VmlOffice::CExtrusion( m_pMainDocument );
 
 								break;
 
 							case 'f':
 								if ( _T("o:fill") == sName )
-									pItem = new OOX::VmlOffice::CFill( oSubReader );
+									pItem = new OOX::VmlOffice::CFill( m_pMainDocument );
 
 								break;
 
 							case 'i':
 								if ( _T("o:ink") == sName )
-									pItem = new OOX::VmlOffice::CInk( oSubReader );
+									pItem = new OOX::VmlOffice::CInk( m_pMainDocument );
 
 								break;
 
 							case 'l':
 								if ( _T("o:left") == sName )
-									pItem = new OOX::VmlOffice::CStrokeChild( oSubReader );
+									pItem = new OOX::VmlOffice::CStrokeChild( m_pMainDocument );
 								else if ( _T("o:lock") == sName )
-									pItem = new OOX::VmlOffice::CLock( oSubReader );
+									pItem = new OOX::VmlOffice::CLock( m_pMainDocument );
 
 								break;
 
 							case 'O':
 								if ( _T("o:OLEObject") == sName )
-									pItem = new OOX::VmlOffice::COLEObject( oSubReader );
+									pItem = new OOX::VmlOffice::COLEObject( m_pMainDocument );
 
 								break;
 
 							case 'r':
 								if ( _T("o:right") == sName )
-									pItem = new OOX::VmlOffice::CStrokeChild( oSubReader );
+									pItem = new OOX::VmlOffice::CStrokeChild( m_pMainDocument );
 
 								break;
 
 							case 's':
 								if ( _T("o:shapedefaults") == sName )
-									pItem = new OOX::VmlOffice::CShapeDefaults( oSubReader );
+									pItem = new OOX::VmlOffice::CShapeDefaults( m_pMainDocument );
 								else if ( _T("o:shapelayout") == sName )
-									pItem = new OOX::VmlOffice::CShapeLayout( oSubReader );
+									pItem = new OOX::VmlOffice::CShapeLayout( m_pMainDocument );
 								else if ( _T("o:signatureline") == sName )
-									pItem = new OOX::VmlOffice::CSignatureLine( oSubReader );
+									pItem = new OOX::VmlOffice::CSignatureLine( m_pMainDocument );
 								else if ( _T("o:skew") == sName )
-									pItem = new OOX::VmlOffice::CSkew( oSubReader );
+									pItem = new OOX::VmlOffice::CSkew( m_pMainDocument );
 
 								break;
 
 							case 't':
 								if ( _T("o:top") == sName )
-									pItem = new OOX::VmlOffice::CStrokeChild( oSubReader );
+									pItem = new OOX::VmlOffice::CStrokeChild( m_pMainDocument );
 
 								break;
 							}
@@ -352,94 +352,96 @@ namespace OOX
 							{
 							case 'a':
 								if ( _T("v:arc") == sName )
-									m_oShapeArc =  oSubReader;
-
-								break;
+								{
+									m_oShapeArc =  new OOX::Vml::CArc(m_pMainDocument);
+								}break;
 
 							case 'b':
 								if ( _T("v:background") == sName )
-									pItem = new OOX::Vml::CBackground( oSubReader );
+									pItem = new OOX::Vml::CBackground( m_pMainDocument );
 
 								break;
 
 							case 'c':
 								if ( _T("v:curve") == sName )
-									m_oShapeCurve =  oSubReader;//???
-
-								break;
-
+								{
+									m_oShapeCurve =  new OOX::Vml::CCurve(m_pMainDocument);//???
+								}break;
 							case 'f':
 								if ( _T("v:fill") == sName )
-									pItem = new OOX::Vml::CFill( oSubReader );
+									pItem = new OOX::Vml::CFill( m_pMainDocument );
 								else if ( _T("v:formulas") == sName )
-									pItem = new OOX::Vml::CFormulas( oSubReader );
+									pItem = new OOX::Vml::CFormulas( m_pMainDocument );
 
 								break;
 
 							case 'g':
 								if ( _T("v:group") == sName )
-									m_oShapeGroup =  oSubReader;
-
-								break;
+								{
+									m_oShapeGroup =  OOX::Vml::CGroup(m_pMainDocument);
+								}break;
 
 							case 'h':
 								if ( _T("v:handles") == sName )
-									pItem = new OOX::Vml::CHandles( oSubReader );
+									pItem = new OOX::Vml::CHandles( m_pMainDocument );
 
 								break;
 
 							case 'i':
 								if ( _T("v:image") == sName )
-									m_oImage =  oSubReader;
+								{
+									m_oImage =  new OOX::Vml::CImage(m_pMainDocument);
+								}
 								else if ( _T("v:imagedata") == sName )
-									pItem = new OOX::Vml::CImageData( oSubReader );
-
+								{
+									pItem = new OOX::Vml::CImageData( m_pMainDocument );
+								}
 								break;
 
 							case 'l':
 								if ( _T("v:line") == sName )
-									m_oShapeLine =  oSubReader;
+									m_oShapeLine =  new OOX::Vml::CLine( m_pMainDocument );
 
 								break;
 
 							case 'o':
 								if ( _T("v:oval") == sName )
-									m_oShapeOval =  oSubReader;
+									m_oShapeOval =  new OOX::Vml::COval( m_pMainDocument );
 								break;
 
 							case 'p':
 								if ( _T("v:path") == sName )
-									pItem = new OOX::Vml::CPath( oSubReader );
+									pItem = new OOX::Vml::CPath( m_pMainDocument );
 								else if ( _T("v:polyline") == sName )
-									m_oShapePolyLine =  oSubReader;
+									m_oShapePolyLine =  new OOX::Vml::CPolyLine( m_pMainDocument );
 
 								break;
 
 							case 'r':
 								if ( _T("v:rect") == sName )
-									m_oShapeRect =  oSubReader;
+									m_oShapeRect =  new OOX::Vml::CRect( m_pMainDocument );
 								else if ( _T("v:roundrect") == sName )
-									m_oShapeRoundRect =  oSubReader;
+									m_oShapeRoundRect =  new OOX::Vml::CRoundRect( m_pMainDocument );
 
 								break;
 
 							case 's':
 								if ( _T("v:shadow") == sName )
-									pItem = new OOX::Vml::CShadow( oSubReader );
+									pItem = new OOX::Vml::CShadow( m_pMainDocument );
 								else if ( _T("v:shape") == sName )
-									m_oShape = oSubReader;
+									m_oShape = new OOX::Vml::CShape( m_pMainDocument );
 								else if ( _T("v:shapetype") == sName )
-									m_oShapeType = oSubReader;
+									m_oShapeType = new OOX::Vml::CShapeType( m_pMainDocument );
 								else if ( _T("v:stroke") == sName )
-									pItem = new OOX::Vml::CStroke( oSubReader );
+									pItem = new OOX::Vml::CStroke( m_pMainDocument );
 
 								break;
 
 							case 't':
 								if ( _T("v:textbox") == sName )
-									pItem = new OOX::Vml::CTextbox( oSubReader );
+									pItem = new OOX::Vml::CTextbox( m_pMainDocument );
 								else if ( _T("v:textpath") == sName )
-									pItem = new OOX::Vml::CTextPath( oSubReader );
+									pItem = new OOX::Vml::CTextPath( m_pMainDocument );
 
 								break;
 							}
@@ -447,10 +449,10 @@ namespace OOX
 						}
 					case 'w':
 						if ( L"w:control" == sName )
-							m_oControl = oSubReader;
+							m_oControl = new OOX::Logic::CControl( m_pMainDocument );
 						else if ( L"w:binData" == sName )
 						{
-							m_oBinData = oSubReader;
+							m_oBinData = new OOX::Logic::CBinData( m_pMainDocument );
 						}
 
 						break;
@@ -459,6 +461,7 @@ namespace OOX
 					if ( pItem )
 					{
 						m_arrItems.push_back( pItem );
+						pItem->fromXML(oSubReader );
 					}
 				}
 			}

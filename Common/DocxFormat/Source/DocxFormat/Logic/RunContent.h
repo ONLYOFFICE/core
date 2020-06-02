@@ -799,7 +799,7 @@ namespace OOX
 				std::wstring wsName = oReader.GetName();
 				while( !wsName.empty() )
 				{
-					if ( _T("xml:space") == wsName )
+					if ( L"xml:space" == wsName )
 					{
 						oSpace = oReader.GetText();
 						break;

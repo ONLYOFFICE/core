@@ -30,6 +30,8 @@
  *
  */
 #include "../DocxFlat.h"
+#include "../Docx.h"
+#include "../Document.h"
 
 #include "Run.h"
 
@@ -364,9 +366,19 @@ namespace OOX
 		}
 		void CRun::fromXMLText(XmlUtils::CXmlLiteReader& oReader)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(WritingElement::m_pMainDocument);
+
 			//for <w:t>6<w:cr/>6</w:t>
-			nullable<SimpleTypes::CXmlSpace<> > oSpace;
+			nullable<SimpleTypes::CXmlSpace<>> oSpace;
 			CText::ReadAttributes(oReader, oSpace);
+
+			if ((docx) && (docx->m_pDocument))
+			{
+				if (false == oSpace.IsInit() && docx->m_pDocument->m_oSpace.IsInit())
+				{
+					oSpace = docx->m_pDocument->m_oSpace;
+				}
+			}
 
 			if ( oReader.IsEmptyNode() )
 				return;

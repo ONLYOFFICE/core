@@ -406,7 +406,7 @@ namespace OOX
 				return;
 
 			std::wstring sName = oReader.GetName();
-			if ( _T("w:document") == sName || _T("w:wordDocument") == sName)
+			if ( L"w:document" == sName || L"w:wordDocument" == sName)
 			{
 				fromXML(oReader);
 			}			
@@ -559,7 +559,8 @@ namespace OOX
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:conformance"), m_oConformance )
+			WritingElement_ReadAttributes_Read_if		( oReader, L"w:conformance",	m_oConformance )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"xml:space",		m_oSpace )
 			WritingElement_ReadAttributes_End( oReader )
 		}
 		virtual void fromXML(XmlUtils::CXmlNode& oNode)
@@ -652,6 +653,8 @@ mc:Ignorable=\"w14 w15 wp14\">";
 		CPath									m_oReadPath;
 
 		SimpleTypes::CConformanceClass<SimpleTypes::conformanceclassTransitional> m_oConformance;
+
+		nullable<SimpleTypes::CXmlSpace<>>		m_oSpace;
 
 		nullable<OOX::Logic::CSectionProperty>	m_oSectPr;
 		nullable<OOX::Logic::CBackground>		m_oBackground;

@@ -60,35 +60,109 @@ if (NOT DEFINED ARG_PATH_SRC_CORE)
     message(FATAL_ERROR "You must set argument \"ARG_PATH_SRC_CORE\" with path to core sources...")
 endif()
 
-# X2t library name
+# X2tConverter library name
 if (NOT DEFINED ARG_NAME_LIB)
-    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB\" with x2t lib name...")
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB\" with x2tConverter lib name...")
 endif()
 
+# djvufile library name
+if (NOT DEFINED ARG_NAME_LIB_DJVUFILE)
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB_DJVUFILE\" with djvufile lib name...")
+endif()
+
+# doctrenderer library name
+if (NOT DEFINED ARG_NAME_LIB_DOCTRENDERER)
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB_DOCTRENDERER\" with doctrenderer lib name...")
+endif()
+
+# graphics library name
+if (NOT DEFINED ARG_NAME_LIB_GRAPHICS)
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB_GRAPHICS\" with graphics lib name...")
+endif()
+
+# htmlfile library name
+if (NOT DEFINED ARG_NAME_LIB_HTMLFILE)
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB_HTMLFILE\" with htmlfile lib name...")
+endif()
+
+# htmlrenderer library name
+if (NOT DEFINED ARG_NAME_LIB_HTMLRENDERER)
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB_HTMLRENDERER\" with htmlrenderer lib name...")
+endif()
+
+# kernel library name
+if (NOT DEFINED ARG_NAME_LIB_KERNEL)
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB_KERNEL\" with kernel lib name...")
+endif()
+
+# pdfreader library name
+if (NOT DEFINED ARG_NAME_LIB_PDFREADER)
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB_PDFREADER\" with pdfreader lib name...")
+endif()
+
+# pdfwriter library name
+if (NOT DEFINED ARG_NAME_LIB_PDFWRITER)
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB_PDFWRITER\" with pdfwriter lib name...")
+endif()
+
+# unicodeconverter library name
+if (NOT DEFINED ARG_NAME_LIB_UNICODECONVERTER)
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB_UNICODECONVERTER\" with unicodeconverter lib name...")
+endif()
+
+# x2t library name
+if (NOT DEFINED ARG_NAME_LIB_X2T)
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB_X2T\" with x2t lib name...")
+endif()
+
+# xpsfile library name
+if (NOT DEFINED ARG_NAME_LIB_XPSFILE)
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB_XPSFILE\" with xpsfile lib name...")
+endif()
 
 # ---------- Names ----------
+# X2tConverter lib
+set(LIB_NAME_X2T_CONVERTER ${ARG_NAME_LIB})
+# djvufile lib
+set(LIB_NAME_DJVUFILE ${ARG_NAME_LIB_DJVUFILE})
+# doctrenderer lib
+set(LIB_NAME_DOCTRENDERER ${ARG_NAME_LIB_DOCTRENDERER})
+# graphics lib
+set(LIB_NAME_GRAPHICS ${ARG_NAME_LIB_GRAPHICS})
+# htmlfile lib
+set(LIB_NAME_HTMLFILE ${ARG_NAME_LIB_HTMLFILE})
+# htmlrenderer lib
+set(LIB_NAME_HTMLRENDERER ${ARG_NAME_LIB_HTMLRENDERER})
+# kernel lib
+set(LIB_NAME_KERNEL ${ARG_NAME_LIB_KERNEL})
+# pdfreader lib
+set(LIB_NAME_PDFREADER ${ARG_NAME_LIB_PDFREADER})
+# pdfwriter lib
+set(LIB_NAME_PDFWRITER ${ARG_NAME_LIB_PDFWRITER})
+# unicodeconverter lib
+set(LIB_NAME_UNICODECONVERTER ${ARG_NAME_LIB_UNICODECONVERTER})
 # x2t lib
-set(LIB_NAME_X2T ${ARG_NAME_LIB})
-
+set(LIB_NAME_X2T ${ARG_NAME_LIB_X2T})
+# xpsfile lib
+set(LIB_NAME_XPSFILE ${ARG_NAME_LIB_XPSFILE})
 
 # ---------- Paths sources  ----------
 # Core src dir path
 set(CORE_DIR ${ARG_PATH_SRC_CORE})
-set(X2T_DEST ${ARG_PATH_LIB_DST}/${ANDROID_ABI})
-message(STATUS "X2t destination path: ${X2T_DEST}")
+set(X2T_CONVERTER_DEST ${ARG_PATH_LIB_DST}/${ANDROID_ABI})
+message(STATUS "X2t Converter destination path: ${X2T_CONVERTER_DEST}")
 
 # Path to source files
-set(X2T_DIR ${CORE_DIR}/X2tConverter)
-message(STATUS "X2t converter source path: ${X2T_DIR}")
-
+set(X2T_CONVERTER_DIR ${CORE_DIR}/X2tConverter)
+message(STATUS "X2t converter source path: ${X2T_DIR_CONVERTER}")
 
 # Prebuild libraries path
 set(LIBS_DIR ${ARG_PATH_LIB_3D_PARTY})
 message(STATUS "Prebuild libraries path: ${LIBS_DIR}")
-set(X2T_LIBS ${LIBS_DIR}/${ANDROID_ABI})
-message(STATUS "Prebuild libraries path: ${X2T_LIBS}")
+set(X2T_CONVERTER_LIBS ${LIBS_DIR}/${ANDROID_ABI})
+message(STATUS "Prebuild libraries path: ${X2T_CONVERTER_LIBS}")
 # configure import libs
-set(X2T_INCLUDE ${CORE_DIR}/X2tConverter/src/dylib
+set(X2T_CONVERTER_INCLUDE ${CORE_DIR}/X2tConverter/src/dylib
         ${CORE_DIR}/UnicodeConverter
         ${CORE_DIR}/Common)
 
@@ -271,82 +345,80 @@ add_subdirectory(sources/x2t x2t/x2t_converter)
 ]]
 
 # Add target library
-add_library(${LIB_NAME_X2T}
+add_library(${LIB_NAME_X2T_CONVERTER}
     SHARED
         ${FONT_ENGINE_DIR}/FontsAssistant.cpp
         ${FONT_ENGINE_DIR}/ApplicationFontsWorker.cpp
         jni/X2t.cpp
 )
-add_library(DjVuFile SHARED IMPORTED)
-add_library(doctrenderer SHARED IMPORTED)
-add_library(graphics SHARED IMPORTED)
-add_library(HtmlFile SHARED IMPORTED)
-add_library(HtmlRenderer SHARED IMPORTED)
-add_library(kernel SHARED IMPORTED)
-add_library(PdfReader SHARED IMPORTED)
-add_library(PdfWriter SHARED IMPORTED)
-add_library(UnicodeConverter SHARED IMPORTED)
-add_library(x2t SHARED IMPORTED)
-add_library(XpsFile SHARED IMPORTED)
+add_library(${LIB_NAME_DJVUFILE} SHARED IMPORTED)
+add_library(${LIB_NAME_DOCTRENDERER} SHARED IMPORTED)
+add_library(${LIB_NAME_GRAPHICS} SHARED IMPORTED)
+add_library(${LIB_NAME_HTMLFILE} SHARED IMPORTED)
+add_library(${LIB_NAME_HTMLRENDERER} SHARED IMPORTED)
+add_library(${LIB_NAME_KERNEL} SHARED IMPORTED)
+add_library(${LIB_NAME_PDFREADER} SHARED IMPORTED)
+add_library(${LIB_NAME_PDFWRITER} SHARED IMPORTED)
+add_library(${LIB_NAME_UNICODECONVERTER} SHARED IMPORTED)
+add_library(${LIB_NAME_X2T} SHARED IMPORTED)
+add_library(${LIB_NAME_XPSFILE} SHARED IMPORTED)
 
 # Export lib to common libs path
-set_target_properties(${LIB_NAME_X2T}
+set_target_properties(${LIB_NAME_X2T_CONVERTER}
     PROPERTIES LIBRARY_OUTPUT_DIRECTORY
-        ${X2T_DEST}
+        ${X2T_CONVERTER_DEST}
 )
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by
 # default, you only need to specify the name of the public NDK library
 # you want to add. CMake verifies that the library exists before
 # completing its build.
-set_target_properties(DjVuFile PROPERTIES IMPORTED_LOCATION
-        ${X2T_LIBS}/libDjVuFile.so)
-set_target_properties(doctrenderer PROPERTIES IMPORTED_LOCATION
-        ${X2T_LIBS}/libdoctrenderer.so)
-set_target_properties(graphics PROPERTIES IMPORTED_LOCATION
-        ${X2T_LIBS}/libgraphics.so)
-set_target_properties(HtmlFile PROPERTIES IMPORTED_LOCATION
-        ${X2T_LIBS}/libHtmlFile.so)
-set_target_properties(HtmlRenderer PROPERTIES IMPORTED_LOCATION
-        ${X2T_LIBS}/libHtmlRenderer.so)
-set_target_properties(kernel PROPERTIES IMPORTED_LOCATION
-        ${X2T_LIBS}/libkernel.so)
-set_target_properties(PdfReader PROPERTIES IMPORTED_LOCATION
-        ${X2T_LIBS}/libPdfReader.so)
-set_target_properties(PdfWriter PROPERTIES IMPORTED_LOCATION
-        ${X2T_LIBS}/libPdfWriter.so)
-set_target_properties(UnicodeConverter PROPERTIES IMPORTED_LOCATION
-        ${X2T_LIBS}/libUnicodeConverter.so)
-set_target_properties(x2t PROPERTIES IMPORTED_LOCATION
-        ${X2T_LIBS}/libx2t.so)
-set_target_properties(XpsFile PROPERTIES IMPORTED_LOCATION
-        ${X2T_LIBS}/libXpsFile.so)
+set_target_properties(${LIB_NAME_DJVUFILE} PROPERTIES IMPORTED_LOCATION
+        ${X2T_CONVERTER_LIBS}/lib${LIB_NAME_DJVUFILE}.so)
+set_target_properties(${LIB_NAME_DOCTRENDERER} PROPERTIES IMPORTED_LOCATION
+        ${X2T_CONVERTER_LIBS}/lib${LIB_NAME_DOCTRENDERER}.so)
+set_target_properties(${LIB_NAME_GRAPHICS} PROPERTIES IMPORTED_LOCATION
+        ${X2T_CONVERTER_LIBS}/lib${LIB_NAME_GRAPHICS}.so)
+set_target_properties(${LIB_NAME_HTMLFILE} PROPERTIES IMPORTED_LOCATION
+        ${X2T_CONVERTER_LIBS}/lib${LIB_NAME_HTMLFILE}.so)
+set_target_properties(${LIB_NAME_HTMLRENDERER} PROPERTIES IMPORTED_LOCATION
+        ${X2T_CONVERTER_LIBS}/lib${LIB_NAME_HTMLRENDERER}.so)
+set_target_properties(${LIB_NAME_KERNEL} PROPERTIES IMPORTED_LOCATION
+        ${X2T_CONVERTER_LIBS}/lib${LIB_NAME_KERNEL}.so)
+set_target_properties(${LIB_NAME_PDFREADER} PROPERTIES IMPORTED_LOCATION
+        ${X2T_CONVERTER_LIBS}/lib${LIB_NAME_PDFREADER}.so)
+set_target_properties(${LIB_NAME_PDFWRITER} PROPERTIES IMPORTED_LOCATION
+        ${X2T_CONVERTER_LIBS}/lib${LIB_NAME_PDFWRITER}.so)
+set_target_properties(${LIB_NAME_UNICODECONVERTER} PROPERTIES IMPORTED_LOCATION
+        ${X2T_CONVERTER_LIBS}/lib${LIB_NAME_UNICODECONVERTER}.so)
+set_target_properties(${LIB_NAME_X2T} PROPERTIES IMPORTED_LOCATION
+        ${X2T_CONVERTER_LIBS}/lib${LIB_NAME_X2T}.so)
+set_target_properties(${LIB_NAME_XPSFILE} PROPERTIES IMPORTED_LOCATION
+        ${X2T_CONVERTER_LIBS}/lib${LIB_NAME_XPSFILE}.so)
 
 # Add dependency library
-target_link_libraries(${LIB_NAME_X2T}
+target_link_libraries(${LIB_NAME_X2T_CONVERTER}
 
         # Converter
-        DjVuFile
-        doctrenderer
-        graphics
-        HtmlFile
-        HtmlRenderer
-        kernel
-        PdfReader
-        PdfWriter
-        UnicodeConverter
-        x2t
-        XpsFile
+        ${LIB_NAME_DJVUFILE}
+        ${LIB_NAME_DOCTRENDERER}
+        ${LIB_NAME_GRAPHICS}
+        ${LIB_NAME_HTMLFILE}
+        ${LIB_NAME_HTMLRENDERER}
+        ${LIB_NAME_KERNEL}
+        ${LIB_NAME_PDFREADER}
+        ${LIB_NAME_PDFWRITER}
+        ${LIB_NAME_UNICODECONVERTER}
+        ${LIB_NAME_X2T}
+        ${LIB_NAME_XPSFILE}
 )
 
 # Add include files .h
-target_include_directories(${LIB_NAME_X2T}
+target_include_directories(${LIB_NAME_X2T_CONVERTER}
     PUBLIC
         jni/objects
         jni/utils
-        ${X2T_INCLUDE}
+        ${X2T_CONVERTER_INCLUDE}
     PRIVATE
         ${CORE_DIR}
 )
-
-#include(ndk-stl-config.cmake)

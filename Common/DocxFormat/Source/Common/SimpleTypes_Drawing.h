@@ -2907,7 +2907,7 @@ namespace SimpleTypes
 			case 'b':
 				if      ( (L"beige")				== sValueLower ) { this->m_eValue = presetcolorvalBeige; SetRGBA(245,245,220); }
 				else if ( (L"bisque")				== sValueLower ) { this->m_eValue = presetcolorvalBisque ; SetRGBA(255,228,196); }
-				else if ( (L"black")				== sValueLower ) { this->m_eValue = presetcolorvalBlack ; SetRGBA(0,0,0); }
+				else if ( (L"black")				== sValueLower ) { return true; }
 				else if ( (L"blanchedalmond")		== sValueLower ) { this->m_eValue = presetcolorvalBlanchedAlmond ; SetRGBA(255,235,205); }
 				else if ( (L"blue")				== sValueLower ) { this->m_eValue = presetcolorvalBlue ; SetRGBA(0,0,255); }
 				else if ( (L"blueviolet")			== sValueLower ) { this->m_eValue = presetcolorvalBlueViolet ; SetRGBA(138,43,226); }
@@ -3127,11 +3127,9 @@ namespace SimpleTypes
 				if      ( (L"yellow")				== sValueLower ) { this->m_eValue = presetcolorvalYellow ; SetRGBA(255,255,0); }
 				else if ( (L"yellowgreen")			== sValueLower ) { this->m_eValue = presetcolorvalYellowGreen ; SetRGBA(154,205,50); }
 				break;
-			default:
-				return false;
 			}
-
-			return true;
+			//would exit earlier if 'black' == sValue therefore here presetcolorvalBlack is default value
+			return presetcolorvalBlack != this->m_eValue;
 		}
 
         virtual std::wstring         ToString  () const

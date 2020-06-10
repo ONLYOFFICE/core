@@ -260,6 +260,9 @@ enum ElementType
     typeStyleFooterLeft,
     typeStyleFootnoteSep,
 
+	typeLoextHeaderFirst,
+	typeLoextFooterFirst,
+
     typeStyleSectionProperties,
     typeStyleHeaderStyle,
     typeStyleFooterStyle,

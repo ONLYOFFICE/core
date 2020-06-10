@@ -649,6 +649,17 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_header_first);
 
+// loext:header-first
+class loext_header_first :  public style_header_first
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeLoextHeaderFirst;
+};
+CP_REGISTER_OFFICE_ELEMENT2(loext_header_first);
+
 // style:footer_first
 class style_footer_first : public header_footer_impl
 {
@@ -662,6 +673,17 @@ public:
 	virtual void xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context);
 };
 CP_REGISTER_OFFICE_ELEMENT2(style_footer_first);
+
+// loext:footer_first
+class loext_footer_first : public style_footer_first
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeLoextFooterFirst;
+};
+CP_REGISTER_OFFICE_ELEMENT2(loext_footer_first);
 
 // style:header-left
 class style_header_left : public header_footer_impl

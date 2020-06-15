@@ -74,7 +74,6 @@ script_type script_type::parse(const std::wstring & Str)
         return script_type( Ignore );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return script_type( Latin );
     }
 }

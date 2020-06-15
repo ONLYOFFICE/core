@@ -64,7 +64,6 @@ border_model border_model::parse(const std::wstring & Str)
         return border_model( Separating );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return border_model( Collapsing );
     }
 }

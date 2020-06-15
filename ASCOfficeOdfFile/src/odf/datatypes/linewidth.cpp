@@ -132,7 +132,6 @@ line_width line_width::parse(const std::wstring & Str)
     } 
     catch(errors::invalid_attribute & ) {}
 
-    BOOST_THROW_EXCEPTION( errors::invalid_attribute() );
     return line_width(Auto);
 }
 

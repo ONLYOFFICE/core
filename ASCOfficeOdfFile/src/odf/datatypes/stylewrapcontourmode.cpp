@@ -64,7 +64,6 @@ wrap_contour_mode wrap_contour_mode::parse(const std::wstring & Str)
         return wrap_contour_mode( Outside );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return wrap_contour_mode( Full );
     }
 }

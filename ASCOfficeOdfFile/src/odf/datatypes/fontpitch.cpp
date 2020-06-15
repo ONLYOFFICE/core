@@ -63,7 +63,6 @@ font_pitch font_pitch::parse(const std::wstring & Str)
         return font_pitch( Variable );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return font_pitch( Fixed );
     }
 }

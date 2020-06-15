@@ -80,11 +80,11 @@ using namespace chart;
 	
 void object_odf_context::set_pivot_source(std::wstring const & val)
 {
+	bPivotChart_ = true;
+
+	if (val.empty()) return;
+
 	pivot_source_ = val;
-	if (pivot_source_.empty() == false)
-	{
-		bPivotChart_ = true;
-	}
 }
 
 void object_odf_context::set_width(double valPt)
@@ -939,6 +939,10 @@ void process_build_object::visit(chart_mean_value & val)
 {
 	ApplyChartProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.series_.back().mean_value_.properties_);
 	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.series_.back().mean_value_.graphic_properties_, object_odf_context_.series_.back().mean_value_.fill_);
+}
+void process_build_object::visit(chart_date_scale & val)
+{
+	object_odf_context_.axises_.back().type_ = 4;
 }
 void process_build_object::visit(chart_error_indicator & val)
 {

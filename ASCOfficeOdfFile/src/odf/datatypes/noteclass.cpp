@@ -64,7 +64,6 @@ noteclass noteclass::parse(const std::wstring & Str)
         return noteclass( Endnote );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return noteclass( Footnote );
     }
 }

@@ -64,7 +64,6 @@ run_through run_through::parse(const std::wstring & Str)
         return run_through( Background );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return run_through( Foreground );
     }
 }

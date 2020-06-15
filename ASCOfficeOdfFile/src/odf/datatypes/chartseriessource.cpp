@@ -58,7 +58,6 @@ chart_series_source chart_series_source::parse(const std::wstring & Str)
         return chart_series_source( rows );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return chart_series_source( columns );
     }
 }

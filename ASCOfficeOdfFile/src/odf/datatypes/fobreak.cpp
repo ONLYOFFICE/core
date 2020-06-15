@@ -68,7 +68,6 @@ fo_break fo_break::parse(const std::wstring & Str)
         return fo_break( Page );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return fo_break( Auto );
     }
 }

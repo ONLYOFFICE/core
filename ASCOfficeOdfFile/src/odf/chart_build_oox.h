@@ -322,6 +322,7 @@ public:
 	virtual void visit(chart_grid			& val);
     virtual void visit(chart_wall			& val);
     virtual void visit(chart_floor			& val);   
+	virtual void visit(chart_date_scale		& val);
 	virtual void visit(table_table			& val);
 
 	virtual void visit(table_table_rows			& val);

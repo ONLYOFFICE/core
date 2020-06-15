@@ -136,7 +136,6 @@ style_family style_family::parse(const std::wstring & Str)
         return style_family( Ruby );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return style_family( Default );
     }
 }

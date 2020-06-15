@@ -64,7 +64,6 @@ text_rotation_scale text_rotation_scale::parse(const std::wstring & Str)
         return text_rotation_scale( LineHeight );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return text_rotation_scale( Fixed );
     }
 }

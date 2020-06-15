@@ -29,12 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _CPDOCCORE_ODF_UNDERLINECOLOR_H_
-#define _CPDOCCORE_ODF_UNDERLINECOLOR_H_
-
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #include <iosfwd>
 #include <string>
@@ -87,4 +82,3 @@ APPLY_PARSE_XML_ATTRIBUTES(odf_types::underline_color);
 
 }
 
-#endif

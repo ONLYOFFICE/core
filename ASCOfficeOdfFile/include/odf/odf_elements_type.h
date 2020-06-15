@@ -601,6 +601,7 @@ enum ElementType
     typeChartStockRangeLine,
 	typeChartRegressionCurve,
 	typeChartEquation,
+	typeChartDateScale,
 
 	typeStyleChartProperties,
 

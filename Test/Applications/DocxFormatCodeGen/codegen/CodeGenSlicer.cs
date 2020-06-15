@@ -43,154 +43,47 @@ using System.CodeDom.Compiler;
 
 namespace codegen
 {
-    public class GenMemberPivot
-    {
-        public string sName;
-        public string sNamespace;
-
-        public string sType;
-        public Type oSystemType;
-
-        public bool? bIsAttribute;
-        public string sDefAttribute;
-
-        public bool? bQualified;//нужно ли при записи в xml писать prefix
-
-        public int? nArrayRank;
-        public List<GenMemberPivot> aArrayTypes;
-        public bool? bIsArrayTypesHidden;
-
-        public GenMemberPivot(string _sName)
-        {
-            sName = _sName;
-            sNamespace = null;
-            sType = null;
-            oSystemType = null;
-            bIsAttribute = null;
-            sDefAttribute = null;
-            bQualified = null;
-            nArrayRank = null;
-            bIsArrayTypesHidden = null;
-            aArrayTypes = null;
-        }
-        public void merge(GenMemberPivot val)
-        {
-            if (string.IsNullOrEmpty(this.sName))
-                sName = val.sName;
-            if (string.IsNullOrEmpty(this.sNamespace))
-                sNamespace = val.sNamespace;
-            if (string.IsNullOrEmpty(this.sType))
-                sType = val.sType;
-            if (null == this.oSystemType)
-                oSystemType = val.oSystemType;
-            if (!this.bIsAttribute.HasValue)
-                bIsAttribute = val.bIsAttribute;
-            if (string.IsNullOrEmpty(this.sDefAttribute))
-                sDefAttribute = val.sDefAttribute;
-            if (!this.bQualified.HasValue)
-                bQualified = val.bQualified;
-            if (!this.nArrayRank.HasValue)
-                nArrayRank = val.nArrayRank;
-            if (!this.bIsArrayTypesHidden.HasValue)
-                bIsArrayTypesHidden = val.bIsArrayTypesHidden;
-        }
-        public void completeDefaults()
-        {
-            if (!bIsAttribute.HasValue)
-                bIsAttribute = false;
-            if (!bQualified.HasValue)
-                bQualified = true;
-        }
-        public bool isArray()
-        {
-            return null != aArrayTypes;
-        }
-        public bool isArrayChoice()
-        {
-            return !this.nArrayRank.HasValue;
-        }
-        public GenMemberPivot getArrayTypeIfSimple()
-        {
-            return 0 == this.nArrayRank && 1 == this.aArrayTypes.Count ? this.aArrayTypes[0] : null;
-        }
-    }
-
-    //[System.Xml.Serialization.XmlElementAttribute("c")]
-    //public CT_CalcCell[] c {
-    //nArrayRank=0;aArrayTypes=[CT_CalcCell];bIsArrayTypesHidden=true
-
-    //[System.Xml.Serialization.XmlElementAttribute("b", typeof(CT_Boolean))]
-    //[System.Xml.Serialization.XmlElementAttribute("d", typeof(CT_DateTime))]
-    //[System.Xml.Serialization.XmlElementAttribute("e", typeof(CT_Error))]
-    //[System.Xml.Serialization.XmlElementAttribute("m", typeof(CT_Missing))]
-    //[System.Xml.Serialization.XmlElementAttribute("n", typeof(CT_Number))]
-    //[System.Xml.Serialization.XmlElementAttribute("s", typeof(CT_String))]
-    //public object[] Items {
-    //nArrayRank=0;aArrayTypes=[CT_Boolean, CT_DateTime, CT_Error, CT_Missing, CT_Number, CT_String];bIsArrayTypesHidden=true
-
-    //[System.Xml.Serialization.XmlElementAttribute("consolidation", typeof(CT_Consolidation))]
-    //[System.Xml.Serialization.XmlElementAttribute("extLst", typeof(CT_ExtensionList))]
-    //[System.Xml.Serialization.XmlElementAttribute("worksheetSource", typeof(CT_WorksheetSource))]
-    //public object Item
-    //{
-    //nArrayRank=null;aArrayTypes=[CT_Consolidation, CT_ExtensionList, CT_WorksheetSource];bIsArrayTypesHidden=true
-
-    //[System.Xml.Serialization.XmlArrayItemAttribute("author", IsNullable=false)]
-    //public string[] authors {
-    //nArrayRank=0;aArrayTypes=[string];bIsArrayTypesHidden=false
-
-    //[System.Xml.Serialization.XmlArrayItemAttribute("b", typeof(CT_Boolean), IsNullable=false)]
-    //[System.Xml.Serialization.XmlArrayItemAttribute("d", typeof(CT_DateTime), IsNullable=false)]
-    //[System.Xml.Serialization.XmlArrayItemAttribute("e", typeof(CT_Error), IsNullable=false)]
-    //[System.Xml.Serialization.XmlArrayItemAttribute("m", typeof(CT_Missing), IsNullable=false)]
-    //[System.Xml.Serialization.XmlArrayItemAttribute("n", typeof(CT_Number), IsNullable=false)]
-    //[System.Xml.Serialization.XmlArrayItemAttribute("s", typeof(CT_String), IsNullable=false)]
-    //[System.Xml.Serialization.XmlArrayItemAttribute("x", typeof(CT_Index), IsNullable=false)]
-    //public object[][] r {
-    //nArrayRank=1;aArrayTypes=[CT_Boolean, CT_DateTime, CT_Error, CT_Missing, CT_Number, CT_String, CT_Index];bIsArrayTypesHidden=false
-
-    public class GenClassPivot
-    {
-        public string sName;
-        public string sNamespace;
-        public bool bIsEnum;
-        public List<GenMemberPivot> aMembers = new List<GenMemberPivot>();
-        public string sRootName;
-        public GenClassPivot(string _sName, string _sNamespace)
-        {
-            sName = _sName;
-            sNamespace = _sNamespace;
-            bIsEnum = false;
-            sRootName = "";
-        }
-        public bool isRoot()
-        {
-            return !string.IsNullOrEmpty(this.sRootName);
-        }
-    }
-    class CodeGenPivot
+    class CodeGenSlicer
     {
         Dictionary<string, GenClassPivot> m_mapGeneratedClasses = new Dictionary<string, GenClassPivot>();
-        int m_nItemsChoiceTypeCount = 0;
+
+        //string gc_sXsd = "xlslicercache.xsd";
+        //string[] gc_aTargetTypes = new string[] { "CT_SlicerCacheDefinition" };
+        //string gc_sTargetNamespace = "http://schemas.microsoft.com/office/spreadsheetml/2009/9/main";
+
+        //string gc_sXsd = "xlslicercache.xsd";
+        //string[] gc_aTargetTypes = new string[] { "CT_SlicerCaches", "CT_SlicerRefs", "CT_SlicerStyles", "CT_Slicers" };
+        //string gc_sTargetNamespace = "http://schemas.microsoft.com/office/spreadsheetml/2009/9/main";
+
+        //string gc_sXsd = "xlslicercache15.xsd";
+        //string[] gc_aTargetTypes = new string[] { "CT_TableSlicerCache", "CT_SlicerCacheHideNoData" };
+        //string gc_sTargetNamespace = "http://schemas.microsoft.com/office/spreadsheetml/2010/11/main";
+
+        //string gc_sXsd = "5.2.xsd";
+        //string[] gc_aTargetTypes = new string[] { "CT_Slicer" };
+        //string gc_sTargetNamespace = "http://schemas.microsoft.com/office/drawing/2010/slicer";
+
+        //string gc_sXsd = "xlslicercache15.xsd";
+        //string[] gc_aTargetTypes = new string[] { "CT_Timeline", "CT_TimelineCacheRefs" };
+        //string gc_sTargetNamespace = "http://schemas.microsoft.com/office/spreadsheetml/2010/11/main";
+
+        string gc_sXsd = "xlslicercache15.xsd";
+        string[] gc_aTargetTypes = new string[] { "CT_Connection" };
+        string gc_sTargetNamespace = "http://schemas.microsoft.com/office/spreadsheetml/2010/11/main";
+
+
         public void Start(string sDirIn, string sDirCppXmlOut, string sDirCppBinOut, string sDirJsBinOut, ValidationEventHandler oValidationEventHandler)
         {
-            string sChartNamespace = "http://purl.oclc.org/ooxml/spreadsheetml/main";
-
-            string[] aFiles = Directory.GetFiles(sDirIn);
+            string sXsdPath = sDirIn + "xlsx-ext/" + gc_sXsd;
             XmlSchemaSet schemaSet = new XmlSchemaSet();
             schemaSet.ValidationEventHandler += oValidationEventHandler;
-            for (int i = 0; i < aFiles.Length; i++)
-            {
-                string sFile = aFiles[i];
-                if (".xsd" == Path.GetExtension(sFile))
-                    schemaSet.Add(null, sFile);
-            }
+            schemaSet.Add(null, sXsdPath);
             schemaSet.Compile();
             XmlSchema chartSchema = null;
             XmlSchemas schemas = new XmlSchemas();
             foreach (XmlSchema schema in schemaSet.Schemas())
             {
-                if (schema.TargetNamespace == sChartNamespace)
+                if (schema.TargetNamespace == gc_sTargetNamespace)
                 {
                     chartSchema = schema;
                     schemas.Add(schema);
@@ -226,20 +119,16 @@ namespace codegen
 
                 List<GenClassPivot> aGenClasses = PreProcess(ns, chartSchema);
 
-                aGenClasses = FilterClassesPivot(aGenClasses);
+                aGenClasses = FilterClassesSlicer(aGenClasses);
 
-                //(new CodegenCPP()).Process(sDirCppXmlOut, sDirCppBinOut, aGenClasses);
+                (new CodegenSlicerCPP()).Process(sDirCppXmlOut, aGenClasses, gc_sTargetNamespace);
                 //(new CodegenJS()).Process(sDirJsBinOut, aGenClasses);
-                (new CodegenJSXml()).Process(sDirJsBinOut, aGenClasses);
             }
         }
-        List<GenClassPivot> FilterClassesPivot(List<GenClassPivot> aInput)
+        List<GenClassPivot> FilterClassesSlicer(List<GenClassPivot> aInput)
         {
             Queue<GenClassPivot> aTemp = new Queue<GenClassPivot>();
             List<GenClassPivot> aRes = new List<GenClassPivot>();
-            string[] aTargetTypes = new string[] { "CT_PivotCacheDefinition", "CT_PivotCacheRecords", "CT_pivotTableDefinition" };
-            //string[] aTargetTypes = new string[] { "CT_Workbook" };
-            //string[] aTargetTypes = new string[] { "CT_Comments" };
 
             Dictionary<string, bool> mapTargetSubTypes = new Dictionary<string, bool>();
             Dictionary<string, bool> namspaces = new Dictionary<string, bool>();
@@ -248,7 +137,7 @@ namespace codegen
             for (int i = 0; i < aInput.Count; ++i)
             {
                 GenClassPivot oGenClass = aInput[i];
-                if (0 == aTargetTypes.Length || -1 != Array.IndexOf(aTargetTypes, oGenClass.sName))
+                if (0 == gc_aTargetTypes.Length || -1 != Array.IndexOf(gc_aTargetTypes, oGenClass.sName))
                     aTemp.Enqueue(oGenClass);
                 mapAllClasses[oGenClass.sName] = oGenClass;
             }

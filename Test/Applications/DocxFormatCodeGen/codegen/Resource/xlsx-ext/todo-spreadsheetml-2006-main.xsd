@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+  targetNamespace="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+  elementFormDefault="qualified">
+  <xsd:simpleType name="ST_Xstring">
+    <xsd:restriction base="xsd:string"/>
+  </xsd:simpleType>
+  <xsd:simpleType name="ST_UnsignedShortHex">
+    <xsd:restriction base="xsd:string"/>
+  </xsd:simpleType>
+  <xsd:simpleType name="ST_Guid">
+    <xsd:restriction base="xsd:token">
+      <xsd:pattern value="\{[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}\}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+</xsd:schema>

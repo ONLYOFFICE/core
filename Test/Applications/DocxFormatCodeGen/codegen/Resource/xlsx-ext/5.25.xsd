@@ -1,0 +1,11 @@
+<xsd:schema targetNamespace="http://schemas.microsoft.com/office/spreadsheetml/2017/dynamicarray" elementFormDefault="qualified" xmlns:x="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns="http://schemas.microsoft.com/office/spreadsheetml/2017/dynamicarray" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:import namespace="http://schemas.openxmlformats.org/spreadsheetml/2006/main" schemaLocation="xlbasictypes.xsd"/>
+   <xsd:element name="dynamicArrayProperties" type="CT_DynamicArrayProperties"/>
+   <xsd:complexType name="CT_DynamicArrayProperties">
+     <xsd:sequence>
+       <xsd:element name="extLst" type="x:CT_ExtensionList" minOccurs="0" maxOccurs="1"/>
+     </xsd:sequence>
+     <xsd:attribute name="fDynamic" type="xsd:boolean" use="optional"/>
+     <xsd:attribute name="fCollapsed" type="xsd:boolean" use="optional"/>
+   </xsd:complexType>
+ </xsd:schema>

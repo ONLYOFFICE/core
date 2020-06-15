@@ -1,0 +1,1 @@
+ <xsd:schema targetNamespace="http://schemas.microsoft.com/office/spreadsheetml/2019/extlinksprops" elementFormDefault="qualified" xmlns:x="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns="http://schemas.microsoft.com/office/spreadsheetml/2019/extlinksprops" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>

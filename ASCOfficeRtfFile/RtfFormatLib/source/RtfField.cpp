@@ -261,6 +261,11 @@ std::wstring RtfField::RenderToOOX(RenderParameter oRenderParameter)
 					RtfParagraph *paragraph = dynamic_cast<RtfParagraph *>(m_pResult->m_pTextItems->m_aArray[i].get());
 					if (paragraph)
 					{
+						if (bDelete) sResult += L"</w:del>";
+						if (bInsert) sResult += L"</w:ins>";
+
+						bDelete = bInsert = false;
+
 						sResult += L"</w:p>";
 						sResult += L"<w:p>";
 							sResult += L"<w:pPr>";						

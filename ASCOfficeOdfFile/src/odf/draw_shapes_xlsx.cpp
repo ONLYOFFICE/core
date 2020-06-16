@@ -344,6 +344,20 @@ void draw_enhanced_geometry::xlsx_convert(oox::xlsx_conversion_context & Context
 
 				}
 			}
+			else if (svg_viewbox_)
+			{
+				std::vector< std::wstring > splitted;			    
+				boost::algorithm::split(splitted, *svg_viewbox_, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+				
+				if (splitted.size() == 4)
+				{
+					int w = boost::lexical_cast<int>(splitted[2]);
+					int h = boost::lexical_cast<int>(splitted[3]);
+					
+					Context.get_drawing_context().set_property(odf_reader::_property(L"custom_path_w", w));
+					Context.get_drawing_context().set_property(odf_reader::_property(L"custom_path_h", h));
+				}
+			}
 		}
 		else if (!draw_type_oox_index_)
 		{

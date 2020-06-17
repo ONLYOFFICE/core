@@ -765,6 +765,7 @@
 
 #define ASC_MENU_EVENT_TYPE_COLOR_SCHEMES           2404    //  CAscColorSchemes
 #define ASC_MENU_EVENT_TYPE_CHANGE_COLOR_SCHEME     2415    //  SET(int)
+#define ASC_MENU_EVENT_TYPE_GET_COLOR_SCHEME        2416    //  GET(int)
 
 #define ASC_MENU_EVENT_TYPE_GO_TO_INTERNAL_LINK     5000
 

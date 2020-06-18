@@ -11,13 +11,16 @@ namespace ParseLogs
     {
         static bool processFile(string filename, bool start, Dictionary<string, int> unique, StreamWriter writetext)
         {
+            string key = "";
+            string logMessage = "";
             foreach (var line in File.ReadLines(filename))
             {
                 if (!start)
                 {
                     if (line.Contains("[ERROR] nodeJS - changesError"))
                     {
-                        string key = "";
+                        key = "";
+                        logMessage = "";
                         int indexStart = line.IndexOf(" Error: ");
                         if (-1 != indexStart)
                         {
@@ -28,27 +31,41 @@ namespace ParseLogs
                                 key = key.Substring(0, indexEnd);
                             }
                         }
-                        else
+                        if("" == key || !unique.ContainsKey(key))
                         {
-                            key = line.Substring(line.IndexOf(" changesError: "));
-                        }
-                        if (!unique.ContainsKey(key))
-                        {
-                            unique[key] = 1;
+                            if("" != key)
+                            {
+                                unique[key] = 1;
+                            }
                             start = true;
-                            writetext.WriteLine(line);
+                            logMessage += line;
+                            logMessage += '\n';
                         }
                     }
                 }
                 else
                 {
+                    if ("" == key)
+                    {
+                        key = line;
+                        if (!unique.ContainsKey(key))
+                        {
+                            unique[key] = 1;
+                        }
+                        else
+                        {
+                            start = false;
+                            continue;
+                        }
+                    }
                     if (!line.StartsWith("["))
                     {
-                        writetext.WriteLine(line);
+                        logMessage += line;
+                        logMessage += '\n';
                     }
                     else
                     {
-                        writetext.WriteLine("");
+                        writetext.WriteLine(logMessage);
                         start = false;
                     }
                    
@@ -61,7 +78,7 @@ namespace ParseLogs
         {
             string inputDir = @"D:\logs\doc.onlyoffice.com\sync\logs\docservice";
             string outputFile = @"D:\logs\doc.onlyoffice.com\sync\changesError.txt";
-            string startDate = "out.log-20200315";
+            string startDate = "out.log-20200601";
             using (StreamWriter writetext = new StreamWriter(outputFile))
             {
                 Dictionary<string, int> unique = new Dictionary<string, int>();

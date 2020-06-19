@@ -1344,7 +1344,7 @@ namespace DocFileFormat
 	{
 		ParagraphPropertyExceptions* backup = _lastValidPapx;
 
-		std::map<short, short> boundaries;
+		std::map<short, short> mapBoundaries;
 		
 		int cp = initialCp;
 		int fc = m_document->FindFileCharPos( cp );
@@ -1406,19 +1406,26 @@ namespace DocFileFormat
 								boundary1 = FormatUtils::BytesToInt16( iter->Arguments + 1, i * 2 , iter->argumentsSize );
 								boundary2 = FormatUtils::BytesToInt16( iter->Arguments + 1, ( i + 1 ) * 2, iter->argumentsSize );
 
-								AddBoundary(boundary1, boundary2, boundaries);
+								//if (boundary1 < 0) boundary1 = 0;
+								//if (boundary2 < 0) boundary2 = 0;
+
+								mapBoundaries.insert(std::make_pair(boundary1, 0));
+								mapBoundaries.insert(std::make_pair(boundary2, 0));
+								//AddBoundary(boundary1, boundary2, mapBoundaries);
 							}
 							if (max_boundary < boundary2)
 								max_boundary = boundary2;
 
-							AddBoundary(boundary2, max_boundary, boundaries);
+							mapBoundaries.insert(std::make_pair(boundary2, 0));
+							mapBoundaries.insert(std::make_pair(max_boundary, 0));
+							//AddBoundary(boundary2, max_boundary, mapBoundaries);
 						}break;
 						default:
 							break;
 					}
 				}
 			}
-			if (nestingLevel != iTap_current && fEndNestingLevel && !boundaries.empty())
+			if (nestingLevel != iTap_current && fEndNestingLevel && !mapBoundaries.empty())
 				break;
 			//get the next papx
 			papx = findValidPapx( fcRowEnd );
@@ -1431,11 +1438,16 @@ namespace DocFileFormat
 
 		}
 
-		if ( !boundaries.empty() )
+		if ( !mapBoundaries.empty() )
 		{
-			for ( std::map<short, short>::iterator it = boundaries.begin(); it != boundaries.end(); ++it)
+			std::map<short, short>::iterator it = mapBoundaries.begin(); 
+			std::map<short, short>::iterator it_next = it; it_next++;
+
+			for ( ; it_next != mapBoundaries.end(); ++it_next, ++it)
 			{
-				grid.push_back( it->second );
+				int sz = it_next->first - it->first;
+				if (sz > 2)
+					grid.push_back( it_next->first - it->first );
 			}
 		}
 		_lastValidPapx = backup;

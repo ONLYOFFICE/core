@@ -41,6 +41,8 @@ namespace oox {
 
 void oox_chart_shape::oox_serialize(std::wostream & _Wostream)
 {
+	if (!bEnabled) return;
+
 	CP_XML_WRITER(_Wostream)
     {
 		CP_XML_NODE(L"c:spPr")
@@ -52,8 +54,9 @@ void oox_chart_shape::oox_serialize(std::wostream & _Wostream)
 
 }
 
-void oox_chart_shape::set(std::vector<odf_reader::_property> & prop,_oox_fill & fill)
+void oox_chart_shape::set(std::vector<odf_reader::_property> & prop, _oox_fill & fill)
 {
+	bEnabled = true;
 	content_ = prop;
 	fill_ = fill;
 }

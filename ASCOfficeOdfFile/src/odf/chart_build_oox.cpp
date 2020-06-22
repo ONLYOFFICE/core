@@ -397,6 +397,10 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 
 		if (!current) continue;
 
+		current->set_stock_gain_marke(stock_gain_marker_);
+		current->set_stock_loss_marker(stock_loss_marker_);
+		current->set_stock_range_line(stock_range_line_);
+
 		if (1 == series_.size())
 		{
 			current->varyColors_ = false;
@@ -845,7 +849,6 @@ void process_build_object::visit(chart_plot_area& val)
 	ApplyTextProperties		(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), object_odf_context_.plot_area_.text_properties_);
 }
 
-
 void process_build_object::visit(chart_axis& val)
 {
     object_odf_context_.start_axis(val.attlist_.chart_dimension_.get_value_or(L""),
@@ -937,6 +940,7 @@ void process_build_object::visit(chart_data_point & val)
 }
 void process_build_object::visit(chart_mean_value & val)
 {
+	object_odf_context_.series_.back().mean_value_.bEnabled = true;
 	ApplyChartProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.series_.back().mean_value_.properties_);
 	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.series_.back().mean_value_.graphic_properties_, object_odf_context_.series_.back().mean_value_.fill_);
 }
@@ -946,8 +950,24 @@ void process_build_object::visit(chart_date_scale & val)
 }
 void process_build_object::visit(chart_error_indicator & val)
 {
-	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.series_.back().error_indicator_.graphic_properties_,object_odf_context_.series_.back().error_indicator_.fill_ );
-}	
+	object_odf_context_.series_.back().error_indicator_.bEnabled = true;
+	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.series_.back().error_indicator_.graphic_properties_, object_odf_context_.series_.back().error_indicator_.fill_ );
+}
+void process_build_object::visit(chart_stock_range_line & val)
+{
+	object_odf_context_.stock_range_line_.bEnabled = true;
+	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.stock_range_line_.graphic_properties_, object_odf_context_.stock_range_line_.fill_ );
+}
+void process_build_object::visit(chart_stock_loss_marker & val)
+{
+	object_odf_context_.stock_loss_marker_.bEnabled = true;
+	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.stock_loss_marker_.graphic_properties_, object_odf_context_.stock_loss_marker_.fill_ );
+}
+void process_build_object::visit(chart_stock_gain_marker & val)
+{
+	object_odf_context_.stock_gain_marker_.bEnabled = true;
+	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.stock_gain_marker_.graphic_properties_, object_odf_context_.stock_gain_marker_.fill_ );
+}
 void process_build_object::visit(chart_regression_curve & val)
 {
 	oox::_oox_fill fill;

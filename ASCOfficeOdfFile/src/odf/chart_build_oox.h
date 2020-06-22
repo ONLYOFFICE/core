@@ -198,6 +198,10 @@ public:
 	
 	chart::simple				footer_;
 
+	chart::simple				stock_gain_marker_;
+	chart::simple				stock_loss_marker_;
+	chart::simple				stock_range_line_;
+
 	std::vector<_property>		chart_properties_;
 	std::vector<_property>		chart_graphic_properties_;
 	oox::_oox_fill				chart_fill_;
@@ -258,6 +262,9 @@ class process_build_object
 		public visitor<chart_regression_curve>,
 		public visitor<chart_equation>,
 		public visitor<chart_error_indicator>,
+		public visitor<chart_stock_range_line>,
+		public visitor<chart_stock_loss_marker>,
+		public visitor<chart_stock_gain_marker>,
 		public visitor<chart_wall>,
 		public visitor<chart_floor>,
 
@@ -309,7 +316,7 @@ public:
     virtual void visit(chart_subtitle		& val);
     virtual void visit(chart_footer			& val);
     virtual void visit(chart_legend			& val);
-    virtual void visit(chart_plot_area& val);
+    virtual void visit(chart_plot_area		& val);
     virtual void visit(chart_axis			& val);
 	virtual void visit(chart_series			& val);
     virtual void visit(chart_domain			& val);
@@ -317,12 +324,16 @@ public:
 	virtual void visit(chart_mean_value		& val);
 	virtual void visit(chart_error_indicator	& val);
 	virtual void visit(chart_regression_curve	& val);
+	virtual void visit(chart_stock_range_line	& val);
+	virtual void visit(chart_stock_loss_marker	& val);
+	virtual void visit(chart_stock_gain_marker	& val);
  	virtual void visit(chart_equation			& val);
 	virtual void visit(chart_categories		& val);
 	virtual void visit(chart_grid			& val);
     virtual void visit(chart_wall			& val);
     virtual void visit(chart_floor			& val);   
 	virtual void visit(chart_date_scale		& val);
+	
 	virtual void visit(table_table			& val);
 
 	virtual void visit(table_table_rows			& val);

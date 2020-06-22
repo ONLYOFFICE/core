@@ -43,8 +43,9 @@
 
 #include "../../OfficeUtils/src/OfficeUtils.h"
 #ifndef _IOS
-#include "../../ASCOfficeDocFile/DocFormatLib/DocFormatLib.h"
+	#include "../../ASCOfficeDocFile/DocFormatLib/DocFormatLib.h"
 #endif
+#include "../../HtmlFile/HtmlFile.h"
 #include "../../ASCOfficeRtfFile/RtfFormatLib/source/ConvertationManager.h"
 
 
@@ -3248,6 +3249,28 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile)
                 
                 result = (S_OK == rtfConvert.ConvertRtfToOOX(file_name_inp, sResultDocxDir));
             }break;
+			case AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML:
+			{
+				std::wstring sResultDoctDir = NSDirectory::CreateDirectoryWithUniqueName(oAltChunkFile.filename().GetDirectory()); 
+				std::vector<std::wstring> arFiles;
+				arFiles.push_back(file_name_inp);
+
+				CHtmlFile oHtmlFile;
+				oHtmlFile.Convert(arFiles, sResultDoctDir);
+				{
+					BinDocxRW::CDocxSerializer oCDocxSerializer;
+
+					std::wstring sXmlOptions;
+					std::wstring sThemePath;             // will be filled by 'CreateDocxFolders' method
+					std::wstring sMediaPath;             // will be filled by 'CreateDocxFolders' method
+					std::wstring sEmbedPath;             // will be filled by 'CreateDocxFolders' method
+
+					oCDocxSerializer.CreateDocxFolders (sResultDocxDir, sThemePath, sMediaPath, sEmbedPath);
+
+					result = oCDocxSerializer.loadFromFile (sResultDoctDir, sResultDocxDir, sXmlOptions, sThemePath, sMediaPath, sEmbedPath);
+				}			  
+				NSDirectory::DeleteDirectory(sResultDoctDir);
+			}break;
 #endif
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:

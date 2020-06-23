@@ -3252,23 +3252,30 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile)
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML:
 			{
 				std::wstring sResultDoctDir = NSDirectory::CreateDirectoryWithUniqueName(oAltChunkFile.filename().GetDirectory()); 
+				std::wstring sResultDoctFileEditor = sResultDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
+				
 				std::vector<std::wstring> arFiles;
 				arFiles.push_back(file_name_inp);
-
-				CHtmlFile oHtmlFile;
-				oHtmlFile.Convert(arFiles, sResultDoctDir);
+				try
 				{
-					BinDocxRW::CDocxSerializer oCDocxSerializer;
+					CHtmlFile oHtmlFile;
+					if (0 == oHtmlFile.Convert(arFiles, sResultDoctDir))
+					{
+						BinDocxRW::CDocxSerializer oCDocxSerializer;
 
-					std::wstring sXmlOptions;
-					std::wstring sThemePath;             // will be filled by 'CreateDocxFolders' method
-					std::wstring sMediaPath;             // will be filled by 'CreateDocxFolders' method
-					std::wstring sEmbedPath;             // will be filled by 'CreateDocxFolders' method
+						std::wstring sXmlOptions;
+						std::wstring sThemePath;             // will be filled by 'CreateDocxFolders' method
+						std::wstring sMediaPath;             // will be filled by 'CreateDocxFolders' method
+						std::wstring sEmbedPath;             // will be filled by 'CreateDocxFolders' method
 
-					oCDocxSerializer.CreateDocxFolders (sResultDocxDir, sThemePath, sMediaPath, sEmbedPath);
+						oCDocxSerializer.CreateDocxFolders (sResultDocxDir, sThemePath, sMediaPath, sEmbedPath);
 
-					result = oCDocxSerializer.loadFromFile (sResultDoctDir, sResultDocxDir, sXmlOptions, sThemePath, sMediaPath, sEmbedPath);
-				}			  
+						result = oCDocxSerializer.loadFromFile (sResultDoctFileEditor, sResultDocxDir, sXmlOptions, sThemePath, sMediaPath, sEmbedPath);
+					}
+				}
+				catch(...)
+				{
+				}
 				NSDirectory::DeleteDirectory(sResultDoctDir);
 			}break;
 #endif

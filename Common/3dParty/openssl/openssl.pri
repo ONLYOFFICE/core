@@ -1,7 +1,10 @@
-INCLUDEPATH += $$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX/include
+OPEN_SSL_PLATFORM=$$CORE_BUILDS_PLATFORM_PREFIX
+build_xp:OPEN_SSL_PLATFORM=$$join(OPEN_SSL_PLATFORM, OPEN_SSL_PLATFORM, "", "_xp")
 
-core_windows:LIBS += -L$$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib -llibcrypto -llibssl
-!core_windows:LIBS += -L$$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib -lcrypto -lssl
+INCLUDEPATH += $$PWD/build/$$OPEN_SSL_PLATFORM/include
+
+core_windows:LIBS += -L$$PWD/build/$$OPEN_SSL_PLATFORM/lib -llibcrypto -llibssl
+!core_windows:LIBS += -L$$PWD/build/$$OPEN_SSL_PLATFORM/lib -lcrypto -lssl
 
 open_ssl_common {
     DEFINES += COMMON_OPENSSL_BUILDING

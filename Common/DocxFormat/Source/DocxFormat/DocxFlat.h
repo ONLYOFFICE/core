@@ -93,6 +93,7 @@ namespace OOX
 		virtual void fromXML(XmlUtils::CXmlNode& oNode)
 		{
 		}
+		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
         virtual std::wstring toXML() const
 		{
@@ -105,6 +106,7 @@ namespace OOX
 			return et_w_wordDocument;
 		}
 //-----------------------------------------------------------------------
+		nullable<SimpleTypes::CXmlSpace<>> m_oSpace;
 
 		nullable<CDocument>				m_pDocument;
 		nullable<CStyles>				m_pStyles;

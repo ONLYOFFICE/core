@@ -313,15 +313,7 @@ namespace OOX
 				pItem = new CSym( document );
 			else if ( _T("w:t") == sName )
 			{
-				CDocxFlat* docx_flat = dynamic_cast<CDocxFlat*>(document);
-				if (docx_flat)
-				{
-					pItem = new CText( document );
-				}
-				else
-				{
-					fromXMLText(oReader);
-				}
+				fromXMLText(oReader);
 			}
 			else if ( _T("w:tab") == sName )
 				pItem = new CTab( document );
@@ -367,6 +359,7 @@ namespace OOX
 		void CRun::fromXMLText(XmlUtils::CXmlLiteReader& oReader)
 		{
 			CDocx* docx = dynamic_cast<CDocx*>(WritingElement::m_pMainDocument);
+			CDocxFlat* docx_flat = dynamic_cast<CDocxFlat*>(WritingElement::m_pMainDocument);
 
 			//for <w:t>6<w:cr/>6</w:t>
 			nullable<SimpleTypes::CXmlSpace<>> oSpace;
@@ -379,7 +372,13 @@ namespace OOX
 					oSpace = docx->m_pDocument->m_oSpace;
 				}
 			}
-
+			else if (docx_flat)
+			{
+				if (false == oSpace.IsInit() && docx_flat->m_oSpace.IsInit())
+				{
+					oSpace = docx_flat->m_oSpace;
+				}
+			}
 			if ( oReader.IsEmptyNode() )
 				return;
 
@@ -390,7 +389,10 @@ namespace OOX
 			XmlUtils::XmlNodeType eNodeType = XmlUtils::XmlNodeType_EndElement;
 			while (oReader.Read(eNodeType) && oReader.GetDepth() >= nDepth && XmlUtils::XmlNodeType_EndElement != eNodeType)
 			{
-				if (eNodeType == XmlUtils::XmlNodeType_Text || eNodeType == XmlUtils::XmlNodeType_Whitespace || eNodeType == XmlUtils::XmlNodeType_SIGNIFICANT_WHITESPACE)
+				if (	eNodeType == XmlUtils::XmlNodeType_Text
+					||	eNodeType == XmlUtils::XmlNodeType_Whitespace 
+					||	eNodeType == XmlUtils::XmlNodeType_SIGNIFICANT_WHITESPACE
+					||	eNodeType == XmlUtils::XmlNodeType_CDATA)
 				{
 					const char* pValue = oReader.GetTextChar();
 					if(bTrimLeft)

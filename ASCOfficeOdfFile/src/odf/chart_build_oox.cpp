@@ -303,31 +303,31 @@ void object_odf_context::calc_cache_series(std::wstring adress, std::vector<std:
 		{
 			int col = pFind->second.col;
 			int row = pFind->second.row;
- 			
-			if (col == 0 || row == 0)
+
+			//if (col == 0 || row == 0)
 			{
 				for (size_t i = 0; i < cash_values.size(); i++)
 				{
-					if (col == 0)
-					{
-						if (cash_values[i].col == col)
+					//if (col == 0)
+					//{
+						if (cash_values[i].col == col && cash_values[i].row != 0) 
 						{
 							cash.push_back(cash_values[i].val);
 						}
-					}
-					if (row == 0)
-					{
-						if (cash_values[i].row == row)
-						{
-							cash.push_back(cash_values[i].val);
-						}
-					}
+					//}
+					//if (row == 0)
+					//{
+					//	if (cash_values[i].row == row)
+					//	{
+					//		cash.push_back(cash_values[i].val);
+					//	}
+					//}
 				}		
 			}
-			else
-			{
-				cash.push_back(pFind->second.val);
-			}
+			//else
+			//{
+			//	cash.push_back(pFind->second.val);
+			//}
 		}
 	}
 	else

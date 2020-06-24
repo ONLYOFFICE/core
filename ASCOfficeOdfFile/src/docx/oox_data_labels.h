@@ -58,6 +58,12 @@ public:
 	void set_showPercent	(bool Val){showPercent_		= Val;}
 	void set_showSerName	(bool Val){showSerName_		= Val;}
 	void set_showVal		(bool Val){showVal_			= Val;}
+	
+	void set_formatCode		(std::wstring & formatCode, bool linkData)
+	{
+		formatCode_ = formatCode;
+		linkData_ = linkData;
+	}
 
 	void set_position		(int Val){position_	= Val;}
 
@@ -66,6 +72,8 @@ public:
    
 private:
 
+	std::wstring formatCode_;
+	bool linkData_;
 	bool showBubbleSize_;		// (Show Bubble Size) §21.2.2.178
 	bool showCatName_;			// (Show Category Name) §21.2.2.179
 	bool showLeaderLines_;		// (Show Leader Lines) §21.2.2.183

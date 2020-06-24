@@ -137,7 +137,7 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 		{
 			CP_XML_NODE(L"c:orientation")
 			{
-				odf_reader::GetProperty(content_.properties_,L"reverse-direction",boolVal);
+				odf_reader::GetProperty(content_.properties_, L"reverse-direction",boolVal);
 				if ((boolVal == true) && (boolVal.get()==true))
 				{
 					CP_XML_ATTR(L"val", "maxMin");
@@ -147,7 +147,7 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 					CP_XML_ATTR(L"val", "minMax");//default
 				}
 			}
-			odf_reader::GetProperty(content_.properties_,L"maximum", doubleVal);
+			odf_reader::GetProperty(content_.properties_, L"maximum", doubleVal);
 			if (doubleVal)
 			{
 				CP_XML_NODE(L"c:max")
@@ -189,16 +189,31 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 				CP_XML_ATTR(L"val",L"l");//  "b" | "l" |  "r" |  "t"// == bottom left right top
 		}
 		//oox_serialize_ln(_Wostream, content_.graphic_properties_);
+		_CP_OPT(std::wstring) strNumFormat, strPercentFormat;
+		_CP_OPT(bool) bLinkData;
+		_CP_OPT(int) nTypeFormat;
 
-		odf_reader::GetProperty(content_.properties_, L"num_format", strVal);
-		odf_reader::GetProperty(content_.properties_, L"link-data-style-to-source", boolVal);
+		odf_reader::GetProperty(content_.properties_, L"num_format", strNumFormat);
+		odf_reader::GetProperty(content_.properties_, L"percentage_num_format", strPercentFormat);
+		odf_reader::GetProperty(content_.properties_, L"data-label-number", nTypeFormat);
+		odf_reader::GetProperty(content_.properties_, L"link-data-style-to-source", bLinkData);
 
-		if ((strVal) && (strVal->length() > 1))
+		std::wstring formatCode;
+		if ((nTypeFormat) && (*nTypeFormat == 2) && strPercentFormat)
+		{
+			formatCode = *strPercentFormat;
+		}
+		else if ((strNumFormat) && (strNumFormat->length() > 1))
+		{
+			formatCode = *strNumFormat;
+		}
+
+		if (formatCode.length() > 1)
 		{
 			CP_XML_NODE(L"c:numFmt")
 			{
-				CP_XML_ATTR(L"formatCode", *strVal);
-				CP_XML_ATTR(L"sourceLinked", boolVal.get_value_or(true));
+				CP_XML_ATTR(L"formatCode", formatCode);
+				CP_XML_ATTR(L"sourceLinked", bLinkData.get_value_or(true));
 			}
 		}
 
@@ -228,7 +243,7 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 				{
 					shape.oox_serialize(CP_XML_STREAM());
 				}
-				odf_reader::GetProperty(content_.properties_,L"display_label",boolVal);
+				odf_reader::GetProperty(content_.properties_, L"display_label",boolVal);
 				if ((boolVal == true) && (boolVal.get()==true))
 				{
 					CP_XML_NODE(L"c:minorTickMark")
@@ -241,7 +256,7 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 		
 		title.oox_serialize(_Wostream);
 		
-		odf_reader::GetProperty(content_.properties_,L"display_label", boolVal);
+		odf_reader::GetProperty(content_.properties_, L"display_label", boolVal);
 		if ((boolVal == true) && (boolVal.get()==true))
 		{
 			CP_XML_NODE(L"c:tickLblPos")
@@ -250,7 +265,7 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 			}
 		}		
 		
-		shape.set(content_.graphic_properties_,content_.fill_) ;
+		shape.set(content_.graphic_properties_, content_.fill_) ;
 		shape.oox_serialize(_Wostream);
 
 		oox_serialize_default_text(_Wostream, content_.text_properties_);

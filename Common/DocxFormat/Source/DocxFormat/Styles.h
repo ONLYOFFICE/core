@@ -856,9 +856,9 @@ namespace OOX
 					OOX::CStyle *oStyle = new OOX::CStyle (oReader);
 					if (oStyle)
 					{
-						if (oStyle->m_oName.IsInit())
+						if (oStyle->m_sStyleId.IsInit())
 						{
-							m_arrStyleNamesMap[oStyle->m_oName->ToString()] = (int)m_arrStyle.size();
+							m_arrStyleNamesMap.insert(std::make_pair(oStyle->m_sStyleId.get(), m_arrStyle.size()));
 						}
 						m_arrStyle.push_back( oStyle );
 					}
@@ -896,7 +896,7 @@ namespace OOX
 		nullable<OOX::CDocDefaults>		m_oDocDefaults;
 		nullable<OOX::CLatentStyles>	m_oLatentStyles;
 		std::vector<OOX::CStyle*>		m_arrStyle;
-		std::map<std::wstring, int>		m_arrStyleNamesMap;
+		std::map<std::wstring, size_t>	m_arrStyleNamesMap;
 
 	};
 } // namespace OOX

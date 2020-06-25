@@ -59,7 +59,7 @@ namespace odf_reader {
 static formulasconvert::odf2oox_converter formulas_converter;
 
 
-int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Context, text_format_properties_content *text_properties) 
+int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Context, text_format_properties_content_ptr text_properties) 
 {
 	if (elements_.empty()) return -1;
 
@@ -752,7 +752,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
             instances.push_back(cellStyle);
     }
 
-    text_format_properties_content		textFormatProperties	= calc_text_properties_content		(instances);          
+    text_format_properties_content_ptr	textFormatProperties	= calc_text_properties_content		(instances);          
 	paragraph_format_properties			parFormatProperties		= calc_paragraph_properties_content	(instances);
     style_table_cell_properties_attlist cellFormatProperties	= calc_table_cell_properties		(instances);
 
@@ -871,7 +871,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
     
 	if (is_style_visible)
 	{
-		xfId_last_set = Context.get_style_manager().xfId(&textFormatProperties, &parFormatProperties, &cellFormatProperties, &cellFormat, num_format, false, is_style_visible);
+		xfId_last_set = Context.get_style_manager().xfId(textFormatProperties, &parFormatProperties, &cellFormatProperties, &cellFormat, num_format, false, is_style_visible);
 	}
 
 	for (unsigned int r = 0; r < attlist_.table_number_columns_repeated_; ++r)
@@ -882,7 +882,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 		if (is_style_visible)
 			Context.set_current_cell_style_id(xfId_last_set);
 		
-		const int sharedStringId = content_.xlsx_convert(Context, &textFormatProperties);
+		const int sharedStringId = content_.xlsx_convert(Context, textFormatProperties);
 
 //---------------------------------------------------------------------------------------------------------	
 		if (t_val == oox::XlsxCellType::str || t_val == oox::XlsxCellType::inlineStr)
@@ -1067,7 +1067,7 @@ void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Conte
             instances.push_back(cellStyle);
     }
 
-    text_format_properties_content		textFormatProperties	= calc_text_properties_content		(instances);          
+    text_format_properties_content_ptr	textFormatProperties	= calc_text_properties_content		(instances);          
 	paragraph_format_properties			parFormatProperties		= calc_paragraph_properties_content	(instances);
     style_table_cell_properties_attlist cellFormatProperties	= calc_table_cell_properties		(instances);
 
@@ -1178,7 +1178,7 @@ void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Conte
     
 	if (is_style_visible)
 	{
-		xfId_last_set = Context.get_style_manager().xfId(&textFormatProperties, &parFormatProperties, &cellFormatProperties, &cellFormat, num_format, false, is_style_visible);
+		xfId_last_set = Context.get_style_manager().xfId(textFormatProperties, &parFormatProperties, &cellFormatProperties, &cellFormat, num_format, false, is_style_visible);
 	}
 
 	for (unsigned int r = 0; r < attlist_.table_number_columns_repeated_; ++r)
@@ -1192,7 +1192,7 @@ void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Conte
 		if (is_style_visible)
 			Context.set_current_cell_style_id(xfId_last_set);
 		
-		const int sharedStringId = content_.xlsx_convert(Context, &textFormatProperties);
+		const int sharedStringId = content_.xlsx_convert(Context, textFormatProperties);
 
 		if (t_val == oox::XlsxCellType::str && sharedStringId >= 0)
 			t_val = oox::XlsxCellType::s;//в случае текста, если он есть берем кэшированное значение

@@ -41,8 +41,10 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-    class text_format_properties_content;
-    class paragraph_format_properties;
+	class text_format_properties_content;
+	typedef boost::shared_ptr<text_format_properties_content> text_format_properties_content_ptr;
+
+	class paragraph_format_properties;
     class style_table_cell_properties_attlist;
 }
 }
@@ -104,7 +106,7 @@ namespace oox {
     struct xlsx_font
     {
 		xlsx_font () {};
-		xlsx_font (	const odf_reader::text_format_properties_content		* textProp,
+		xlsx_font (	const odf_reader::text_format_properties_content_ptr	textProp,
 					const odf_reader::paragraph_format_properties			* parProp,
 					const odf_reader::style_table_cell_properties_attlist	* cellProp);
 

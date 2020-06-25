@@ -36,6 +36,9 @@
 #include "oox_chart_shape.h"
 #include "oox_drawing.h"
 
+#include "../odf/odfcontext.h"
+#include "../odf/style_text_properties.h"
+
 namespace cpdoccore {
 namespace oox {
 
@@ -61,9 +64,9 @@ void oox_chart_shape::set(std::vector<odf_reader::_property> & prop, _oox_fill &
 	fill_ = fill;
 }
 
-void oox_serialize_default_text(std::wostream & _Wostream, std::vector<odf_reader::_property>& properties)
+void oox_serialize_default_text(std::wostream & _Wostream, odf_reader::text_format_properties_content_ptr properties)
 {
-	if (properties.size() < 1)return;
+	if (!properties) return;
 
 	CP_XML_WRITER(_Wostream)
     {
@@ -75,27 +78,8 @@ void oox_serialize_default_text(std::wostream & _Wostream, std::vector<odf_reade
 			{
 				CP_XML_NODE(L"a:pPr")
 				{
-					CP_XML_NODE(L"a:defRPr")
-					{							
-						_CP_OPT(double) dVal;
-						_CP_OPT(int) iVal;	
-						_CP_OPT(std::wstring) sVal;
-
-						if (odf_reader::GetProperty(properties, L"font-size",dVal))
-							CP_XML_ATTR(L"sz", (int)(dVal.get()*100));
-						
-						if ((odf_reader::GetProperty(properties, L"font-style",iVal)) && (*iVal >0))
-							CP_XML_ATTR(L"i", "true");
-						
-						if ((odf_reader::GetProperty(properties, L"font-weight",iVal)) && (*iVal >0))
-							CP_XML_ATTR(L"b", "true");		
-				
-						if (odf_reader::GetProperty(properties, L"font-color",sVal))
-							CP_XML_NODE(L"a:solidFill")	
-							{
-								CP_XML_NODE(L"a:srgbClr"){CP_XML_ATTR(L"val", sVal.get());}
-							}
-					}
+					odf_reader::fonts_container fonts;
+					properties->oox_serialize(CP_XML_STREAM(), true, fonts, true);
 
 				}
 			}

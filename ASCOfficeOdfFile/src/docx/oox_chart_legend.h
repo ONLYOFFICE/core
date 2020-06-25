@@ -40,7 +40,7 @@
 namespace cpdoccore {
 namespace oox {
 
-class oox_chart_legend: boost::noncopyable
+class oox_chart_legend : boost::noncopyable
 {
 public:
 	oox_chart_legend(){}

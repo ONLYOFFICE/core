@@ -366,7 +366,7 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 {
 	chart_context.set_pivot_chart	(pivot_source_);
 
-	chart_context.set_title		(title_);
+	chart_context.set_title		(title_, sub_title_);
 	chart_context.set_wall		(wall_);
 	chart_context.set_floor		(floor_);
 	chart_context.set_legend	(legend_);
@@ -652,13 +652,12 @@ void process_build_object::ApplyChartProperties(std::wstring style, std::vector<
 		}
     }
 }
-void process_build_object::ApplyTextProperties(std::wstring style, std::vector<_property> & propertiesOut)
+void process_build_object::ApplyTextProperties(std::wstring style, text_format_properties_content_ptr &propertiesOut)
 {
 	style_instance* styleInst = styles_.style_by_name(style, odf_types::style_family::Chart, false/*Context.process_headers_footers_*/);
     if(styleInst)
 	{
-		text_format_properties_content properties = calc_text_properties_content(styleInst);
-		properties.apply_to(propertiesOut);
+		propertiesOut = calc_text_properties_content(styleInst);
     }
 }
 void process_build_object::ApplyGraphicProperties(std::wstring style, std::vector<_property> & propertiesOut, oox::_oox_fill & fill)
@@ -779,6 +778,7 @@ void process_build_object::visit(chart_title& val)
 		t.content_ = v.str();
 	}
 	ApplyTextProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.text_properties_);
+	ApplyGraphicProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.graphic_properties_, t.fill_);
 
 ///////////////////////////////////////////////////////////////////////////////////////
 	if (val.attlist_.common_draw_position_attlist_.svg_x_)
@@ -804,6 +804,9 @@ void process_build_object::visit(chart_subtitle & val)
 	std::wstringstream v;
 	val.text_p_->text_to_stream(v, false);
 	t.content_ = v.str();
+
+	ApplyTextProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.text_properties_);
+	ApplyGraphicProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.graphic_properties_, t.fill_);
 
 	if (val.attlist_.common_draw_position_attlist_.svg_x_)
     {

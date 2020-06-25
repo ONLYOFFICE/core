@@ -55,9 +55,17 @@ public:
 	{
 		content_ = t;
 	}
+	void set_sub_content(odf_reader::chart::title &  t)
+	{
+		sub_ = t;
+	}
 private:
+    void oox_content_serialize(std::wostream & _Wostream, odf_reader::chart::title & content);
+	
 	cpdoccore::oox::oox_layout layout_;
+	
 	odf_reader::chart::title content_;
+	odf_reader::chart::title sub_;
 
 //extLst (Chart Extensibility) §21.2.2.64
 //layout (Layout) §21.2.2.88

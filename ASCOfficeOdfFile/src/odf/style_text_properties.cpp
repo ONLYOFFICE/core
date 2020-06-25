@@ -1522,11 +1522,14 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
 }
 
 
-void text_format_properties_content::oox_serialize(std::wostream & strm, bool graphic, fonts_container & fonts)
+void text_format_properties_content::oox_serialize(std::wostream & strm, bool graphic, fonts_container & fonts, bool default_)
 {
 	if (graphic)
 	{	
-		drawing_serialize(strm, L"a:rPr", fonts);
+		if (default_)
+			drawing_serialize(strm, L"a:defRPr", fonts);
+		else
+			drawing_serialize(strm, L"a:rPr", fonts);
 	}
 	else
 	{

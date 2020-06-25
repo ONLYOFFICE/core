@@ -125,7 +125,7 @@ namespace oox {
 //////////////////////////////////////////////////////////////////////////////
 	struct _oox_fill
 	{
-		_oox_fill() : type(-1){}
+		int type = -1;
 
 		oox_gradient_fill_ptr	gradient;
 		oox_hatch_fill_ptr		hatch;
@@ -133,11 +133,10 @@ namespace oox {
 		oox_solid_fill_ptr		solid;
 
 		_CP_OPT(double) opacity;
-		int				type;
 
 		void clear()
 		{
-			type=-1;
+			type = -1;
 			opacity = boost::none;
 
 			gradient.reset();

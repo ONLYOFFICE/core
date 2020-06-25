@@ -484,7 +484,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 
 			}
 		}
-		if (!content_.text_properties_.empty())
+		if (!content_.text_properties_)
 		{
 			if (!data_labels_) data_labels_ = oox_data_labels();
 
@@ -518,7 +518,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 						shape.oox_serialize(CP_XML_STREAM());
 					}
 
-					if (!content_.points_[i].text_properties_.empty())
+					if (!content_.points_[i].text_properties_)
 					{
 						if (!data_labels_) data_labels_ = oox_data_labels();
 

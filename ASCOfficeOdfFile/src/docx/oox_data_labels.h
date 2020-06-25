@@ -41,6 +41,13 @@
 #include <xml/attributes.h>
             
 namespace cpdoccore {
+
+namespace odf_reader {
+
+	class text_format_properties_content;
+	typedef boost::shared_ptr<text_format_properties_content> text_format_properties_content_ptr;
+}
+
 namespace oox {
 
 class oox_data_labels
@@ -67,8 +74,8 @@ public:
 
 	void set_position		(int Val){position_	= Val;}
 
-	void add_dLbl			(int ind, std::vector<odf_reader::_property> & text_properties);
-	void set_common_dLbl	( std::vector<odf_reader::_property> & text_properties);
+	void add_dLbl			(int ind, odf_reader::text_format_properties_content_ptr text_properties);
+	void set_common_dLbl	( odf_reader::text_format_properties_content_ptr text_properties);
    
 private:
 
@@ -84,8 +91,8 @@ private:
 
 	int position_;
 
-	std::vector<odf_reader::_property>					textPr_;
-	std::map<int, std::vector<odf_reader::_property>>	dLbls_;
+	odf_reader::text_format_properties_content_ptr					textPr_;
+	std::map<int, odf_reader::text_format_properties_content_ptr>	dLbls_;
 
 
 //delete (Delete) §21.2.2.40

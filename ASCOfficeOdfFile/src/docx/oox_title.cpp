@@ -34,29 +34,69 @@
 #include <boost/functional.hpp>
 #include <CPOptional.h>
 #include <xml/simple_xml_writer.h>
+#include "../odf/odfcontext.h"
 #include "../odf/style_text_properties.h"
 
 namespace cpdoccore {
 namespace oox {
 
+void oox_title::oox_content_serialize(std::wostream & _Wostream, odf_reader::chart::title & content)
+{
+	if (content_.content_.empty()) return;
+
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE(L"a:p")
+		{
+			CP_XML_NODE(L"a:pPr")
+			{
+				CP_XML_NODE(L"a:defRPr"){}
+			}
+			CP_XML_NODE(L"a:r")
+			{
+				//odf_reader::fonts_container & fonts = context.fontContainer();
+				odf_reader::fonts_container fonts;
+				if (content.text_properties_)
+					content.text_properties_->oox_serialize(CP_XML_STREAM(), true, fonts);
+
+				CP_XML_NODE(L"a:t")
+				{
+					CP_XML_CONTENT(content.content_);
+				}
+			}
+		}
+	}
+}
+
 void oox_title::oox_serialize(std::wostream & _Wostream)
 {
-	if (content_.content_.length() < 1)
-	{
-		//возможен шаблон txPr
-		return;
-	}
-    
+	if (!content_.bEnabled && !sub_.bEnabled) return;
+	
 	CP_XML_WRITER(_Wostream)
     {
 		CP_XML_NODE(L"c:title")
         {
-			CP_XML_NODE(L"c:tx")
+			if (false == content_.content_.empty() || false == sub_.content_.empty())
 			{
-				CP_XML_NODE(L"c:rich")
+				CP_XML_NODE(L"c:tx")
+				{
+					CP_XML_NODE(L"c:rich")
+					{
+						CP_XML_NODE(L"a:bodyPr"){}
+						CP_XML_NODE(L"a:lstStyle"){}
+						
+						oox_content_serialize(CP_XML_STREAM(), content_);
+						oox_content_serialize(CP_XML_STREAM(), sub_);				
+					}
+				}
+			}
+			else if (content_.text_properties_)
+			{
+				CP_XML_NODE(L"c:txPr")
 				{
 					CP_XML_NODE(L"a:bodyPr"){}
 					CP_XML_NODE(L"a:lstStyle"){}
+					
 					CP_XML_NODE(L"a:p")
 					{
 						CP_XML_NODE(L"a:pPr")
@@ -65,32 +105,11 @@ void oox_title::oox_serialize(std::wostream & _Wostream)
 						}
 						CP_XML_NODE(L"a:r")
 						{
-							CP_XML_NODE(L"a:rPr")
-							{
-								_CP_OPT(double) dVal;
-								_CP_OPT(std::wstring) sVal;
-								_CP_OPT(int) iVal;	
-
-								if (odf_reader::GetProperty(content_.text_properties_,L"font-size",dVal))
-									CP_XML_ATTR(L"sz", (int)(dVal.get()*100));
-								
-								if ((odf_reader::GetProperty(content_.text_properties_,L"font-style",iVal)) && (*iVal >0))
-									CP_XML_ATTR(L"i", "true");
-								if ((odf_reader::GetProperty(content_.text_properties_,L"font-weight",iVal)) && (*iVal >0))
-									CP_XML_ATTR(L"b", "true");		
-								if (odf_reader::GetProperty(content_.text_properties_,L"font-color",sVal))
-									CP_XML_NODE(L"a:solidFill")	
-									{
-										CP_XML_NODE(L"a:srgbClr"){CP_XML_ATTR(L"val", sVal.get());}
-									}
-							}
-							CP_XML_NODE(L"a:t")
-							{
-								CP_XML_CONTENT(content_.content_);
-							}
+							//odf_reader::fonts_container & fonts = context.fontContainer();
+							odf_reader::fonts_container fonts;
+							content_.text_properties_->oox_serialize(CP_XML_STREAM(), true, fonts);
 						}
-					}
-				
+					}			
 				}
 			}
             layout_.oox_serialize(CP_XML_STREAM());
@@ -100,6 +119,7 @@ void oox_title::oox_serialize(std::wostream & _Wostream)
 			}
 		}
     }
+
 }
 }
 }

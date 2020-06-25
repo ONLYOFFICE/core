@@ -45,8 +45,6 @@
 
 #include "visitor.h"
 
-#include "chart_objects.h"
-
 #include "office_document.h"
 #include "office_body.h"
 #include "office_chart.h"
@@ -56,8 +54,9 @@
 #include "table.h"
 #include "odfcontext.h"
 
-namespace cpdoccore { 
+#include "chart_objects.h"
 
+namespace cpdoccore { 
 namespace odf_reader {
 
 namespace {
@@ -187,7 +186,6 @@ public:
 	std::wstring domain_cell_range_adress2_;
 
 	chart::title				title_;
-	office_element_ptr_array	title_odf_context_;
 
 	chart::title				sub_title_;
 	chart::legend				legend_;
@@ -291,9 +289,10 @@ public:
 
 private:
 	void ApplyChartProperties(std::wstring style, std::vector<_property> & propertiesOut);
-	void ApplyTextProperties(std::wstring style, std::vector<_property> & propertiesOut);
 	void ApplyGraphicProperties(std::wstring style, std::vector<_property> & propertiesOut, oox::_oox_fill & fill);
 
+	void ApplyTextProperties(std::wstring style, text_format_properties_content_ptr & propertiesOut);
+	
 	bool visit_table(std::wstring const & name);
     void visit_column(unsigned int repeated);
     bool visit_rows(unsigned int repeated);

@@ -32,6 +32,10 @@
 #include "xlsx_fill.h"
 #include "xlsx_fills.h"
 
+#include "../odf/style_text_properties.h"
+#include "../odf/style_table_properties.h"
+#include "../odf/style_paragraph_properties.h"
+
 #include <xml/simple_xml_writer.h>
 
 #include <boost/functional.hpp>
@@ -87,7 +91,7 @@ size_t xlsx_fills::size() const
     return impl_->fills_.size();
 }
 
-size_t xlsx_fills::fillId(	const odf_reader::text_format_properties_content		* textProp,
+size_t xlsx_fills::fillId(	const odf_reader::text_format_properties_content_ptr	textProp,
 							const odf_reader::paragraph_format_properties			* parProp,
 							const odf_reader::style_table_cell_properties_attlist	* cellProp, bool default_set)
 {
@@ -95,7 +99,7 @@ size_t xlsx_fills::fillId(	const odf_reader::text_format_properties_content		* t
     return fillId(textProp, parProp, cellProp,default_set, is_default);
 }
 
-size_t xlsx_fills::fillId(	const odf_reader::text_format_properties_content		* textProp,
+size_t xlsx_fills::fillId(	const odf_reader::text_format_properties_content_ptr	textProp,
 							const odf_reader::paragraph_format_properties			* parProp,
 							const odf_reader::style_table_cell_properties_attlist	* cellProp, 
 							bool default_set, bool & is_default)

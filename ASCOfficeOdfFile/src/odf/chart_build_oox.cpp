@@ -667,7 +667,7 @@ void process_build_object::ApplyGraphicProperties(std::wstring style, std::vecto
 	{
 		graphic_format_properties properties = calc_graphic_properties_content(styleInst);
 
-		Compute_GraphicFill(properties.common_draw_fill_attlist_, properties.style_background_image_ , draw_styles_ , fill);
+		Compute_GraphicFill(properties.common_draw_fill_attlist_, properties.style_background_image_ , draw_styles_ , fill, false, false);
 
 		if (fill.bitmap)
 		{

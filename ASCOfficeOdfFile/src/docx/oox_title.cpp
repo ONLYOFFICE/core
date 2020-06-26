@@ -117,6 +117,10 @@ void oox_title::oox_serialize(std::wostream & _Wostream)
 			{
 				CP_XML_ATTR(L"val", 0);
 			}
+			
+			oox_chart_shape shape;
+			shape.set(content_.graphic_properties_, content_.fill_);
+			shape.oox_serialize(CP_XML_STREAM());
 		}
     }
 

@@ -613,6 +613,7 @@ namespace PdfReader
 
 			std::wstring wsTempFileName = L"";
 			Ref oEmbRef;
+			bool bFontSubstitution = false;
 			// 1. Если шрифт внедренный, тогда скидываем его в темповый файл.
 			// 2. Если шрифт лежит вне пдф, а в самом пдф есть ссылка на него, тогда используем эту ссылку.
 			// 3. В противном случае подбираем шрифт.			
@@ -1018,6 +1019,8 @@ namespace PdfReader
 				{
 					wsFileName = pFontInfo->m_wsFontPath;
 					eFontType  = pFont->IsCIDFont() ? fontCIDType2 : fontTrueType;
+
+					bFontSubstitution = true;
 				}
 				else // В крайнем случае, в данном шрифте просто не пишем ничего
 				{
@@ -1274,12 +1277,11 @@ namespace PdfReader
 				case fontCIDType2OT:
 				{
 					// Создаем карту CID-to-GID
-					// Если у нас есть мап ToUnicode, тогда на основе его читаем из файла гиды по юникодным значениям, 
-					// если не нашли, но у нас есть мап CIDtoGID, тогда строим по последнему.
-
+					// Если у нас шрифт был не встроен и подбирался и есть мап ToUnicode, тогда на основе его читаем из файла гиды по юникодным значениям.
+					// Для встроенных шрифтов используем мап CIDtoGID
 					pCodeToGID = NULL;
 					nLen = 0;
-					if (L"" != wsFileName)
+					if (L"" != wsFileName && bFontSubstitution)
 					{
 						CharCodeToUnicode *pCodeToUnicode = NULL;
 						if ((pCodeToUnicode = ((GrCIDFont *)pFont)->GetToUnicode()))
@@ -1316,7 +1318,7 @@ namespace PdfReader
 										}
 										else
 										{
-											pCodeToGID[nCode] = nCode;
+											pCodeToGID[nCode] = 0;
 										}
 									}
 								}
@@ -1326,8 +1328,7 @@ namespace PdfReader
 							pCodeToUnicode->Release();
 						}
 					}
-
-					if (!pCodeToGID && ((GrCIDFont *)pFont)->GetCIDToGID())
+					else if (((GrCIDFont *)pFont)->GetCIDToGID())
 					{
 						nLen = ((GrCIDFont *)pFont)->GetCIDToGIDLen();
 						pCodeToGID = (unsigned short *)MemUtilsMallocArray(nLen, sizeof(unsigned short));

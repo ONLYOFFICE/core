@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<company>
+	<staff id="001">
+		<firstname>Иван</firstname>
+		<lastname>Иванович</lastname>
+	</staff>
+	<staff id="002">
+		<firstname>Петр</firstname>
+		<lastname>Петров</lastname>
+	</staff>
+</company>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <company>
-	<staff id="001" a2="hi2" a3="hi3">
+  <staff id="001" a2="hi2" a3="hi3">
 		<firstname>h1</firstname>
 		<lastname>h2</lastname>
 	</staff>

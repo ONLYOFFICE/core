@@ -3263,10 +3263,12 @@ namespace PdfReader
 		Aggplus::CImage oImage;
 		oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
 
-		// Пишем данные в pBufferPtr
-		ImageStream *pImageStream = new ImageStream(pStream, nWidth, pColorMap->GetComponentsCount(), pColorMap->GetBitsPerComponent());
+		int nComponentsCount = pColorMap->GetComponentsCount();
 
-		pImageStream->Reset();
+		// Пишем данные в pBufferPtr
+		ImageStream *pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->GetBitsPerComponent());
+
+		pImageStream->Reset();		
 
 		unsigned char unAlpha = m_bTransparentGroup ? 255.0 * pGState->GetFillOpacity() : 255;
 
@@ -3277,12 +3279,29 @@ namespace PdfReader
 			{
 				int nIndex = 4 * (nX + nY * nWidth);
 				pImageStream->GetPixel(unPixel);
+
 				GrRGB oRGB;
 				pColorMap->GetRGB(unPixel, &oRGB);
 				pBufferPtr[nIndex + 0] = ColorToByte(oRGB.b);
 				pBufferPtr[nIndex + 1] = ColorToByte(oRGB.g);
 				pBufferPtr[nIndex + 2] = ColorToByte(oRGB.r);
 				pBufferPtr[nIndex + 3] = unAlpha;
+
+				if (pMaskColors)
+				{
+					bool isMask = true;
+					for (int nCompIndex = 0; nCompIndex < nComponentsCount; ++nCompIndex)
+					{
+						if (pMaskColors[nCompIndex * 2] > unPixel[nCompIndex] || unPixel[nCompIndex] > pMaskColors[nCompIndex * 2 + 1])
+						{
+							isMask = false;
+							break;
+						}
+					}
+
+					if (isMask)
+						pBufferPtr[nIndex + 3] = 0;
+				}
 			}
 		}
 

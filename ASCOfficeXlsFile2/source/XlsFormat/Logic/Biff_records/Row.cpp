@@ -104,7 +104,15 @@ int Row::serialize(std::wostream &stream)
 				((fUnsynced && fGhostDirty) || !fGhostDirty))
 			{
 				CP_XML_ATTR(L"ht", miyRw / 20.);
-				CP_XML_ATTR(L"customHeight", true);
+				if (fUnsynced)
+				{
+					CP_XML_ATTR(L"customHeight", true);			
+				}
+				else
+				{
+					//auto set
+				}
+
 			}
 			if (iOutLevel > 0)
 			{

@@ -45,7 +45,7 @@ namespace OOX
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
 				std::wstring sName = oReader.GetName();
-				if ( _T("mc:Choice") == sName )
+				if ( L"mc:Choice" == sName )
 				{
 					ReadAttributes(oReader, m_oChoiceRequires);
 
@@ -62,12 +62,12 @@ namespace OOX
 					//без RemoveAll они очистятся вместе с altRun
 					altRun.m_arrItems.clear();
 				}
-				else if ( _T("mc:Fallback") == sName )
+				else if ( L"mc:Fallback" == sName )
 				{
-					if (m_oChoiceRequires.is_init() && !m_arrChoiceItems.empty())
-					{
-						continue; // не зачем баласт читать - берем более современную или оригинальную версию.
-					}
+					//if (m_oChoiceRequires.is_init() && !m_arrChoiceItems.empty())
+					//{
+					//	continue; // не зачем баласт читать - берем более современную или оригинальную версию.
+					//}
 					
 					CRun altRun(oReader);
 					

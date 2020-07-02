@@ -6000,19 +6000,27 @@ void BinaryDocumentTableWriter::WriteDrawingPptx(OOX::WritingElement* item)
 		OOX::WritingElement* we = NULL;
 		OOX::Logic::CAlternateContent* pAlternateContent = static_cast<OOX::Logic::CAlternateContent*>(item);
 
-		if(pAlternateContent->m_arrChoiceItems.size() > 0)
+		if (pAlternateContent)
 		{
-			we = pAlternateContent->m_arrChoiceItems[0];
-			if(OOX::et_w_drawing == pAlternateContent->m_arrChoiceItems[0]->getType())
+			if ((false == pAlternateContent->m_arrChoiceItems.empty()) && 
+				(pAlternateContent->m_oChoiceRequires.IsInit()) && (*pAlternateContent->m_oChoiceRequires != L"aink"))
 			{
 				we = pAlternateContent->m_arrChoiceItems[0];
+				if(OOX::et_w_drawing == pAlternateContent->m_arrChoiceItems[0]->getType())
+				{
+					we = pAlternateContent->m_arrChoiceItems[0];
+				}
 			}
-		}
 
-		if (we == NULL)
-		{
-			if(pAlternateContent->m_arrChoiceItems.size() > 0)
+			if (we == NULL)
 			{
+				if (false == pAlternateContent->m_arrFallbackItems.empty())
+				{
+					if(OOX::et_w_drawing == pAlternateContent->m_arrFallbackItems[0]->getType())
+					{
+						we = pAlternateContent->m_arrFallbackItems[0];
+					}
+				}
 			}
 		}
 

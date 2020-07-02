@@ -1,0 +1,31 @@
+@font-face {
+	font-family: "LiberEmb";
+	font-style: normal;
+	font-weight: normal;
+	src: url(fonts/PTSans-Regular.ttf);
+}
+
+@font-face {
+	font-family: "LiberEmb";
+	font-style: normal;
+	font-weight: bold;
+	src: url(fonts/PTSans-Bold.ttf);
+}
+
+@font-face {
+	font-family: "LiberEmb";
+	font-style: italic;
+	font-weight: normal;
+	src: url(fonts/PTSans-Italic.ttf);
+}
+
+@font-face {
+	font-family: "LiberEmb";
+	font-style: italic;
+	font-weight: bold;
+	src: url(fonts/PTSans-BoldItalic.ttf);
+}
+
+body,div,h1,h2,h3,h4,h5,h6,div,p {
+	font-family: "LiberEmb";
+}

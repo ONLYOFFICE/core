@@ -226,8 +226,35 @@ public:
                         return false;
                     }
 
-                    // ПРЕОБРАЗОВАНИЕ ТИПОВ из std::wstring в const char *
+                    // преобразование из std::wstring в const char * через временный файл
                     size_t len = base64.length();
+                    std::wofstream temp; // временный файл
+                    temp.open("temp.txt");
+                    for(size_t i = 0 ; i < len; i++)
+                    {
+                        temp << base64[i];
+                    }
+                    temp.close();
+
+                    char * mas = new char[len];
+                    BYTE * res = new BYTE[len];
+                    int * reslen = new int[1];
+                    int lenin = 0;
+
+                    std::ifstream tempin("temp.txt");
+                    if(tempin.is_open())
+                    {
+                        while(!tempin.eof())
+                        {
+                            char c = tempin.get();
+                            mas[lenin++] = c;
+                        }
+                    }
+                    tempin.close();
+                    remove("temp.txt");
+                    reslen[0] = (int)len;
+                    // преобразование из std::wstring в const char * через преобразование типов
+                    /*
                     const wchar_t * mas1 = base64.c_str();
                     char * mas2 = new char[len];
                     for(size_t i = 0 ; i < len; i++)
@@ -236,8 +263,8 @@ public:
                     BYTE * res = new BYTE[len];
                     int * reslen = new int[1];
                     reslen[0] = (int)len;
-                    // ЧТО-ТО НЕ ТАК
-                    bool decode = NSBase64::Base64Decode(mas2, (int)len, res, reslen);
+                    */
+                    bool decode = NSBase64::Base64Decode(mas, (int)len, res, reslen);
                     std::wcout << decode << std::endl;
 
                     // Запись картинки в файл

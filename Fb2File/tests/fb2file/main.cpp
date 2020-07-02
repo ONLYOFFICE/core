@@ -215,7 +215,7 @@ public:
                 oLightReader.MoveToElement();
 
                 //Сохранение картинки в файл
-                std::wofstream out; // поток для записи
+                std::ofstream out; // поток для записи
                 out.open(save + id); // окрываем файл для записи
                 if (out.is_open())
                 {
@@ -225,6 +225,7 @@ public:
                         out.close();
                         return false;
                     }
+
                     // ПРЕОБРАЗОВАНИЕ ТИПОВ из std::wstring в const char *
                     size_t len = base64.length();
                     const wchar_t * mas1 = base64.c_str();

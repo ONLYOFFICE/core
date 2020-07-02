@@ -7,6 +7,7 @@
 
 #include "../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../../DesktopEditor/common/Base64.h"
+#include "../../../DesktopEditor/common/File.h"
 
 // Тэг author
 struct author
@@ -66,6 +67,20 @@ private:
         {
             std::wcout << is << L" not specified" << std::endl;
             res = L"";
+        }
+        return res;
+    }
+    std::string contentA(std::wstring is)
+    {
+        std::string res;
+        if(oLightReader.ReadNextSiblingNode2(oLightReader.GetDepth()))
+        {
+            res = oLightReader.GetTextA();
+        }
+        else
+        {
+            std::wcout << is << L" not specified" << std::endl;
+            res = "";
         }
         return res;
     }
@@ -214,66 +229,20 @@ public:
                 binary.insert(std::make_pair(id, content_type));
                 oLightReader.MoveToElement();
 
-                //Сохранение картинки в файл
-                std::ofstream out; // поток для записи
-                out.open(save + id); // окрываем файл для записи
-                if (out.is_open())
+                NSFile::CFileBinary oImageWriter;
+                if (oImageWriter.CreateFileW(save + id))
                 {
-                    std::wstring base64 = content(id);
-                    if(base64 == L"")
+                    std::string base64 = contentA(id);
+                    int nSrcLen = (int)base64.length();
+                    int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
+                    BYTE* pImageData = new BYTE[nDecodeLen];
+                    if (TRUE == NSBase64::Base64Decode(base64.c_str(), nSrcLen, pImageData, &nDecodeLen))
                     {
-                        out.close();
-                        return false;
+                        oImageWriter.WriteFile(pImageData, (DWORD)nDecodeLen);
                     }
-
-                    // преобразование из std::wstring в const char * через временный файл
-                    size_t len = base64.length();
-                    std::wofstream temp; // временный файл
-                    temp.open("temp.txt");
-                    for(size_t i = 0 ; i < len; i++)
-                    {
-                        temp << base64[i];
-                    }
-                    temp.close();
-
-                    char * mas = new char[len];
-                    BYTE * res = new BYTE[len];
-                    int * reslen = new int[1];
-                    int lenin = 0;
-
-                    std::ifstream tempin("temp.txt");
-                    if(tempin.is_open())
-                    {
-                        while(!tempin.eof())
-                        {
-                            char c = tempin.get();
-                            mas[lenin++] = c;
-                        }
-                    }
-                    tempin.close();
-                    remove("temp.txt");
-                    reslen[0] = (int)len;
-                    // преобразование из std::wstring в const char * через преобразование типов
-                    /*
-                    const wchar_t * mas1 = base64.c_str();
-                    char * mas2 = new char[len];
-                    for(size_t i = 0 ; i < len; i++)
-                        mas2[i] = (char)mas1[i];
-
-                    BYTE * res = new BYTE[len];
-                    int * reslen = new int[1];
-                    reslen[0] = (int)len;
-                    */
-                    bool decode = NSBase64::Base64Decode(mas, (int)len, res, reslen);
-                    std::wcout << decode << std::endl;
-
-                    // Запись картинки в файл
-                    for(int i = 0 ; i < *reslen; i++)
-                    {
-                        out << res[i];
-                    }
+                    RELEASEARRAYOBJECTS(pImageData);
+                    oImageWriter.CloseFile();
                 }
-                out.close();
             }
         }
         return true;

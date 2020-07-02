@@ -69,6 +69,7 @@ namespace PdfReader
         EError       GetError();
         double       GetVersion();
         int          GetPermissions();
+		std::wstring GetPageLabel(int nPageIndex);
 
         bool         ExtractAllImages(const wchar_t* wsDstPath, const wchar_t* wsPrefix = 0);
 		int          GetImagesCount();

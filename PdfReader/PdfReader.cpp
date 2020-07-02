@@ -42,6 +42,7 @@
 #include "Src/ErrorConstants.h"
 #include "Src/ExtractImageOutputDev.h"
 #include "Src/RendererOutputDev.h"
+#include "Src/PageLabels.h"
 
 namespace PdfReader
 {
@@ -178,6 +179,21 @@ namespace PdfReader
 			nPermissions += PERMISSION_CHANGE;
 
 		return nPermissions;
+	}
+	std::wstring CPdfReader::GetPageLabel(int nPageIndex)
+	{
+		if (!m_pInternal->m_pPDFDocument)
+			return std::wstring();
+
+		StringExt* seLabel = m_pInternal->m_pPDFDocument->GetPageLabels()->GetLabel(nPageIndex);
+		if (seLabel)
+		{
+			std::wstring wsResult(seLabel->GetWString());
+			delete seLabel;
+			return wsResult;
+		}
+
+		return std::wstring();
 	}
     bool CPdfReader::ExtractAllImages(const wchar_t* wsDstPath, const wchar_t* wsPrefix)
 	{

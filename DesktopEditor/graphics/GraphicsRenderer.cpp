@@ -679,7 +679,7 @@ HRESULT CGraphicsRenderer::CommandDrawTextExCHAR(const LONG& c, const LONG& gid,
 
 HRESULT CGraphicsRenderer::CommandDrawTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
 {
-    if (NULL != pGids)
+    if (NULL != pGids && 0 != nGidsCount && !(1 == nGidsCount && 0 == *pGids))
 	{
         m_oFont.StringGID = TRUE;
         if (c_nHyperlinkType == m_lCurrentCommandType)

@@ -3206,6 +3206,14 @@ namespace PdfReader
 
 		pImageStream->Reset();
 
+		GrColorSpace* pColorSpace = pGState->GetFillColorSpace();
+		GrRGB oRGB;
+		pColorSpace->GetRGB(pGState->GetFillColor(), &oRGB);
+
+		unsigned char r = ColorToByte(oRGB.r);
+		unsigned char g = ColorToByte(oRGB.g);
+		unsigned char b = ColorToByte(oRGB.b);
+
 		unsigned char unAlpha = m_bTransparentGroup ? 255.0 * pGState->GetFillOpacity() : 255;
 		unsigned char unPixel = 0;
 		int nInvert = (bInvert ? 1 : 0);
@@ -3217,9 +3225,9 @@ namespace PdfReader
 			{
 				int nIndex = 4 * (nX + nY * nWidth);
 				unsigned char unPixel = *pMask++ ^ nInvert;
-				pBufferPtr[nIndex + 0] = unPixel ? 255 : 0;
-				pBufferPtr[nIndex + 1] = unPixel ? 255 : 0;
-				pBufferPtr[nIndex + 2] = unPixel ? 255 : 0;
+				pBufferPtr[nIndex + 0] = unPixel ? 255 : b;
+				pBufferPtr[nIndex + 1] = unPixel ? 255 : g;
+				pBufferPtr[nIndex + 2] = unPixel ? 255 : r;
 				pBufferPtr[nIndex + 3] = unPixel ? 0 : unAlpha;
 			}
 		}

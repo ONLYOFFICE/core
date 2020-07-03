@@ -6,8 +6,8 @@
 #include <vector>
 #include <map>
 
-// Тэг author
-struct author
+// Информация об авторе книги. Тэг author, translator
+struct SAuthor
 {
     std::wstring first_name;
     std::wstring middle_name;
@@ -17,16 +17,12 @@ struct author
     std::vector<std::wstring> email;
 };
 
-class CFb2File_Private
+// Описание информации о произведении. Тэг title-info, src-title-info
+struct STitleInfo
 {
-public:
-    XmlUtils::CXmlLiteReader m_oLightReader; // SAX Reader
-    std::wstring m_sFile;                    // Имя файла
-    std::wstring m_sDstFolder;               // Путь к результату
-    // Контент файла
     std::vector<std::wstring> m_arGenres; // Жанры
-    std::vector<author> m_arAuthors;      // Авторы
-    std::vector<author> m_arTranslator;   // Переводчики
+    std::vector<SAuthor> m_arAuthors;     // Авторы
+    std::vector<SAuthor> m_arTranslator;  // Переводчики
 
     std::wstring m_sBookTitle; // Название
     std::wstring m_sLang;      // Язык после перевода
@@ -37,12 +33,9 @@ public:
     std::wstring* m_pCoverpage;                     // Обложка
     std::wstring* m_pSrcLang;                       // Язык до перевода
 
-    std::map<std::wstring, std::wstring> m_mXmlns;    // Ссылки
     std::map<std::wstring, std::wstring> m_mSequence; // Серии книг
-    std::map<std::wstring, std::wstring> m_mImage;    // Картинки
 
-public:
-    CFb2File_Private()
+    STitleInfo()
     {
         m_pAnnotation = NULL;
         m_pKeywords = NULL;
@@ -51,20 +44,64 @@ public:
         m_pSrcLang = NULL;
     }
 
-    ~CFb2File_Private()
+    ~STitleInfo()
     {
-        m_oLightReader.Clear();
         m_arGenres.clear();
         m_arAuthors.clear();
         m_arTranslator.clear();
-        m_mXmlns.clear();
+
         m_mSequence.clear();
-        m_mImage.clear();
+
         RELEASEARRAYOBJECTS(m_pAnnotation);
         RELEASEARRAYOBJECTS(m_pKeywords);
         RELEASEARRAYOBJECTS(m_pDate);
         RELEASEARRAYOBJECTS(m_pCoverpage);
         RELEASEARRAYOBJECTS(m_pSrcLang);
+    }
+};
+
+class CFb2File_Private
+{
+public:
+    XmlUtils::CXmlLiteReader m_oLightReader; // SAX Reader
+    std::wstring m_sFile;                    // Имя файла
+    std::wstring m_sDstFolder;               // Путь к результату
+
+    STitleInfo m_oTitleInfo; // Данные о книге
+
+    STitleInfo* m_pSrcTitleInfo; // Данные об исходнике книги
+    /*
+    std::vector<std::wstring> m_arGenres; // Жанры
+    std::vector<SAuthor> m_arAuthors;      // Авторы
+    std::vector<SAuthor> m_arTranslator;   // Переводчики
+
+    std::wstring m_sBookTitle; // Название
+    std::wstring m_sLang;      // Язык после перевода
+
+    std::wstring* m_pAnnotation;                    // Аннотация
+    std::wstring* m_pKeywords;                      // Ключевые слова
+    std::pair<std::wstring, std::wstring>* m_pDate; // Дата
+    std::wstring* m_pCoverpage;                     // Обложка
+    std::wstring* m_pSrcLang;                       // Язык до перевода
+
+    std::map<std::wstring, std::wstring> m_mSequence; // Серии книг
+    */
+    std::map<std::wstring, std::wstring> m_mXmlns;    // Ссылки
+    std::map<std::wstring, std::wstring> m_mImage;    // Картинки
+
+public:
+    CFb2File_Private()
+    {
+        m_pSrcTitleInfo = NULL;
+    }
+
+    ~CFb2File_Private()
+    {
+        m_oLightReader.Clear();
+        m_mXmlns.clear();
+        m_mImage.clear();
+        if(m_pSrcTitleInfo)
+            delete m_pSrcTitleInfo;
     }
 
     // Читает и проверят соответствует ли текущий раздел ожиданиям
@@ -78,9 +115,9 @@ public:
     }
 
     // Читает поля автора
-    bool readAuthor(std::vector<author>& arAuthor)
+    bool readAuthor(std::vector<SAuthor>& arAuthor)
     {
-        author oAuthor;
+        SAuthor oAuthor;
         int nDepth = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nDepth))
         {
@@ -132,6 +169,157 @@ public:
                 return false;
         }
         arAuthor.push_back(oAuthor);
+        return true;
+    }
+
+    bool getTitleInfo(STitleInfo& oTitleInfo)
+    {
+        // Читаем genre (один или более)
+        if(!isSection(L"genre"))
+            return false;
+        do
+        {
+            std::wstring sGenre;
+            sGenre = content();
+            if(sGenre == L"")
+                return false;
+            oTitleInfo.m_arGenres.push_back(sGenre);
+        } while(isSection(L"genre"));
+
+        // Читаем author (один или более)
+        do
+        {
+            if(!readAuthor(oTitleInfo.m_arAuthors))
+                return false;
+        } while(isSection(L"author"));
+
+        // Читаем book-title
+        if(m_oLightReader.GetName() != L"book-title")
+            return false;
+        std::wstring sBookTitle;
+        sBookTitle = content();
+        if(sBookTitle == L"")
+            return false;
+        oTitleInfo.m_sBookTitle = sBookTitle;
+
+        // Читаем все до lang
+        while(!isSection(L"lang"))
+        {
+            if(m_oLightReader.GetDepth() == 0)
+                return false;
+            std::wstring sRes;
+            std::wstring sName = m_oLightReader.GetName();
+
+            // Читаем annotation (ноль или один)
+            if(sName == L"annotation")
+            {
+                // Содержит форматированный текст - НЕ РЕАЛИЗОВАНО
+                if(oTitleInfo.m_pAnnotation)
+                    return false;
+                oTitleInfo.m_pAnnotation = new std::wstring[1];
+                *oTitleInfo.m_pAnnotation = L"";
+                int nDepth = m_oLightReader.GetDepth();
+                while(m_oLightReader.ReadNextSiblingNode(nDepth))
+                {
+                    *oTitleInfo.m_pAnnotation += content();
+                }
+            }
+            // Читаем keywords (ноль или один)
+            else if(sName == L"keywords")
+            {
+                if(oTitleInfo.m_pKeywords)
+                    return false;
+                oTitleInfo.m_pKeywords = new std::wstring[1];
+                sRes = content();
+                if(sRes == L"")
+                    return false;
+                *oTitleInfo.m_pKeywords = sRes;
+            }
+            // Читаем date (ноль или один)
+            else if(sName == L"date")
+            {
+                if(oTitleInfo.m_pDate)
+                    return false;
+                oTitleInfo.m_pDate = new std::pair<std::wstring, std::wstring>[1];
+                std::wstring sDate = L"";
+                if(m_oLightReader.MoveToNextAttribute())
+                {
+                    sDate = m_oLightReader.GetText();
+                    m_oLightReader.MoveToElement();
+                }
+                sRes = content();
+                if(sRes == L"")
+                    return false;
+                *oTitleInfo.m_pDate = make_pair(sDate, sRes);
+            }
+            // Читаем coverpage (ноль или один)
+            else if(sName == L"coverpage")
+            {
+                if(oTitleInfo.m_pCoverpage)
+                    return false;
+                oTitleInfo.m_pCoverpage = new std::wstring[1];
+                if(!m_oLightReader.ReadNextSiblingNode(m_oLightReader.GetDepth()))
+                    return false;
+                if(!m_oLightReader.MoveToNextAttribute())
+                    return false;
+                sRes = m_oLightReader.GetText();
+                if(sRes == L"")
+                    return false;
+                m_oLightReader.MoveToElement();
+                *oTitleInfo.m_pCoverpage = sRes;
+            }
+        }
+
+        // Читаем lang
+        if(m_oLightReader.GetName() != L"lang")
+            return false;
+        std::wstring sLang;
+        sLang = content();
+        if(sLang == L"")
+            return false;
+        oTitleInfo.m_sLang = sLang;
+
+        // Читаем все до document-info
+        while(!isSection(L"document-info"))
+        {
+            if(m_oLightReader.GetDepth() == 0)
+                return false;
+            std::wstring sRes;
+            std::wstring sName = m_oLightReader.GetName();
+
+            // Читаем src-lang (ноль или один)
+            if(sName == L"src-lang")
+            {
+                if(oTitleInfo.m_pSrcLang)
+                    return false;
+                oTitleInfo.m_pSrcLang = new std::wstring[1];
+                sRes = content();
+                if(sRes == L"")
+                    return false;
+                *oTitleInfo.m_pSrcLang = sRes;
+            }
+            // Читаем translator (любое)
+            else if(sName == L"translator")
+            {
+                if(!readAuthor(oTitleInfo.m_arTranslator))
+                    return false;
+            }
+            // Читаем sequence (любое)
+            else if(sName == L"sequence")
+            {
+                if(!m_oLightReader.MoveToNextAttribute())
+                    return false;
+                std::wstring sSName = m_oLightReader.GetText();
+                if(!m_oLightReader.MoveToNextAttribute())
+                    return false;
+                std::wstring sSNumber = m_oLightReader.GetText();
+                oTitleInfo.m_mSequence.insert(std::make_pair(sSName, sSNumber));
+            }
+            else if(sName == L"src-title-info")
+            {
+                break;
+            }
+        }
         return true;
     }
 
@@ -198,150 +386,15 @@ int CFb2File::Convert (const std::wstring& sPath, const std::wstring& sDirectory
         return false;
 
     // Читаем наполнение title-info
-    // Читаем genre (один или более)
-    if(!m_internal->isSection(L"genre"))
+    if(!m_internal->getTitleInfo(m_internal->m_oTitleInfo))
         return false;
-    do
+
+    if(m_internal->m_oLightReader.GetName() == L"src-title-info")
     {
-        std::wstring sGenre;
-        sGenre = m_internal->content();
-        if(sGenre == L"")
+        m_internal->m_pSrcTitleInfo = new STitleInfo();
+        if(!m_internal->getTitleInfo(*m_internal->m_pSrcTitleInfo))
             return false;
-        m_internal->m_arGenres.push_back(sGenre);
-    } while(m_internal->isSection(L"genre"));
-
-    // Читаем author (один или более)
-    do
-    {
-        if(!m_internal->readAuthor(m_internal->m_arAuthors))
-            return false;
-    } while(m_internal->isSection(L"author"));
-
-    // Читаем book-title
-    if(m_internal->m_oLightReader.GetName() != L"book-title")
-        return false;
-    std::wstring sBookTitle;
-    sBookTitle = m_internal->content();
-    if(sBookTitle == L"")
-        return false;
-    m_internal->m_sBookTitle = sBookTitle;
-
-    // Читаем все до lang
-    while(!m_internal->isSection(L"lang"))
-    {
-        if(m_internal->m_oLightReader.GetDepth() == 0)
-            return false;
-        std::wstring sRes;
-        std::wstring sName = m_internal->m_oLightReader.GetName();
-
-        // Читаем annotation (ноль или один)
-        if(sName == L"annotation")
-        {
-            // Содержит форматированный текст - НЕ РЕАЛИЗОВАНО
-            if(m_internal->m_pAnnotation)
-                return false;
-            m_internal->m_pAnnotation = new std::wstring[1];
-            *m_internal->m_pAnnotation = L"";
-            int nDepth = m_internal->m_oLightReader.GetDepth();
-            while(m_internal->m_oLightReader.ReadNextSiblingNode(nDepth))
-            {
-                *m_internal->m_pAnnotation += m_internal->content();
-            }
-        }
-        // Читаем keywords (ноль или один)
-        else if(sName == L"keywords")
-        {
-            if(m_internal->m_pKeywords)
-                return false;
-            m_internal->m_pKeywords = new std::wstring[1];
-            sRes = m_internal->content();
-            if(sRes == L"")
-                return false;
-            *m_internal->m_pKeywords = sRes;
-        }
-        // Читаем date (ноль или один)
-        else if(sName == L"date")
-        {
-            if(m_internal->m_pDate)
-                return false;
-            m_internal->m_pDate = new std::pair<std::wstring, std::wstring>[1];
-            std::wstring sDate = L"";
-            if(m_internal->m_oLightReader.MoveToNextAttribute())
-            {
-                sDate = m_internal->m_oLightReader.GetText();
-                m_internal->m_oLightReader.MoveToElement();
-            }
-            sRes = m_internal->content();
-            if(sRes == L"")
-                return false;
-            *m_internal->m_pDate = make_pair(sDate, sRes);
-        }
-        // Читаем coverpage (ноль или один)
-        else if(sName == L"coverpage")
-        {
-            if(m_internal->m_pCoverpage)
-                return false;
-            m_internal->m_pCoverpage = new std::wstring[1];
-            if(!m_internal->m_oLightReader.ReadNextSiblingNode(m_internal->m_oLightReader.GetDepth()))
-                return false;
-            if(!m_internal->m_oLightReader.MoveToNextAttribute())
-                return false;
-            sRes = m_internal->m_oLightReader.GetText();
-            if(sRes == L"")
-                return false;
-            m_internal->m_oLightReader.MoveToElement();
-            *m_internal->m_pCoverpage = sRes;
-        }
     }
-
-    // Читаем lang
-    if(m_internal->m_oLightReader.GetName() != L"lang")
-        return false;
-    std::wstring sLang;
-    sLang = m_internal->content();
-    if(sLang == L"")
-        return false;
-    m_internal->m_sLang = sLang;
-
-    // Читаем все до document-info
-    while(!m_internal->isSection(L"document-info"))
-    {
-        if(m_internal->m_oLightReader.GetDepth() == 0)
-            return false;
-        std::wstring sRes;
-        std::wstring sName = m_internal->m_oLightReader.GetName();
-
-        // Читаем src-lang (ноль или один)
-        if(sName == L"src-lang")
-        {
-            if(m_internal->m_pSrcLang)
-                return false;
-            m_internal->m_pSrcLang = new std::wstring[1];
-            sRes = m_internal->content();
-            if(sRes == L"")
-                return false;
-            *m_internal->m_pSrcLang = sRes;
-        }
-        // Читаем translator (любое)
-        else if(sName == L"translator")
-        {
-            if(!m_internal->readAuthor(m_internal->m_arTranslator))
-                return false;
-        }
-        // Читаем sequence (любое)
-        else if(sName == L"sequence")
-        {
-            if(!m_internal->m_oLightReader.MoveToNextAttribute())
-                return false;
-            std::wstring sSName = m_internal->m_oLightReader.GetText();
-            if(!m_internal->m_oLightReader.MoveToNextAttribute())
-                return false;
-            std::wstring sSNumber = m_internal->m_oLightReader.GetText();
-            m_internal->m_mSequence.insert(std::make_pair(sSName, sSNumber));
-        }
-    }
-
-    // ПРОЧИТАН разде title-info
 
     // ПРОПУСКАЕМ body
 

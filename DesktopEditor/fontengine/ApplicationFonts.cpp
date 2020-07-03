@@ -778,7 +778,7 @@ int CFontList::GetFixedPitchPenalty(INT bCandFixed, INT bReqFixed)
 }
 
 CFontListNamePicker CFontList::m_oPicker;
-int CFontList::GetFaceNamePenalty(std::wstring sCandName, std::wstring sReqName, bool bIsUseNamePicker)
+int CFontList::GetFaceNamePenalty(const std::wstring& sCandName, const std::wstring& sReqName, bool bIsUseNamePicker)
 {
     if ( 0 == sReqName.length() )
 		return 0;
@@ -788,6 +788,9 @@ int CFontList::GetFaceNamePenalty(std::wstring sCandName, std::wstring sReqName,
 
 	if ( sReqName == sCandName )
 		return 0;
+
+    if (CFontListNamePicker::IsEqualsFontsAdvanced(sCandName, sReqName))
+        return 100;
 
     if ( std::wstring::npos != sReqName.find( sCandName ) || std::wstring::npos != sCandName.find( sReqName ) )
     {
@@ -1010,6 +1013,93 @@ void CFontList::ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory,
     *pLen = (LONG)(pDataMem - pData);
 }
 
+class CFontSelectFormatCorrection
+{
+private:
+    std::wstring* m_oldName;
+    INT* m_oldBold;
+    INT* m_oldItalic;
+
+public:
+    CFontSelectFormatCorrection()
+    {
+        m_oldName = NULL;
+        m_oldBold = NULL;
+        m_oldItalic = NULL;
+    }
+
+    static CFontSelectFormatCorrection* CheckCorrection(NSFonts::CFontSelectFormat& oSelect)
+    {
+        // пробуем "подправить" настройки
+        std::wstring sName = *oSelect.wsName;
+        NSFonts::makeLower(sName);
+
+        INT* oldBold = NULL;
+        INT* oldItalic = NULL;
+
+        bool isCorrect = false;
+        if (std::wstring::npos != sName.find(L"bold"))
+        {
+            isCorrect = true;
+
+            size_t posn = 0;
+            while (std::wstring::npos != (posn = sName.find(L"bold", posn)))
+                sName.erase(posn, 4);
+
+            oldBold = oSelect.bBold;
+            if (!oSelect.bBold)
+                oSelect.bBold = new INT(TRUE);
+        }
+        if (std::wstring::npos != sName.find(L"italic") ||
+            std::wstring::npos != sName.find(L"oblique"))
+        {
+            isCorrect = true;
+
+            size_t posn = 0;
+            while (std::wstring::npos != (posn = sName.find(L"italic", posn)))
+                sName.erase(posn, 6);
+            while (std::wstring::npos != (posn = sName.find(L"oblique", posn)))
+                sName.erase(posn, 7);
+
+            oldItalic = oSelect.bItalic;
+            if (!oSelect.bItalic)
+                oSelect.bItalic = new INT(TRUE);
+        }
+
+        if (!isCorrect)
+            return NULL;
+
+        CFontSelectFormatCorrection* pCorrection = new CFontSelectFormatCorrection();
+        pCorrection->m_oldName = oSelect.wsName;
+        oSelect.wsName = new std::wstring(sName);
+        pCorrection->m_oldBold = oldBold;
+        pCorrection->m_oldItalic = oldItalic;
+
+        return pCorrection;
+    }
+
+    void Restore(NSFonts::CFontSelectFormat& oSelect)
+    {
+        RELEASEOBJECT((oSelect.wsName));
+        oSelect.wsName = m_oldName;
+
+        if (m_oldBold != oSelect.bBold)
+        {
+            RELEASEOBJECT((oSelect.bBold));
+            oSelect.bBold = m_oldBold;
+        }
+        if (m_oldItalic != oSelect.bItalic)
+        {
+            RELEASEOBJECT((oSelect.bItalic));
+            oSelect.bItalic = m_oldItalic;
+        }
+
+        m_oldName = NULL;
+        m_oldBold = NULL;
+        m_oldItalic = NULL;
+    }
+};
+
 NSFonts::CFontInfo* CFontList::GetByParams(NSFonts::CFontSelectFormat& oSelect, bool bIsDictionaryUse)
 {
     int nFontsCount = m_pList.size();
@@ -1026,104 +1116,127 @@ NSFonts::CFontInfo* CFontList::GetByParams(NSFonts::CFontSelectFormat& oSelect, 
     int nMinPenalty = -1; // Минимальный вес
 
 	int nDefPenalty = 2147483647;
-
     NSFonts::CFontInfo* pInfoMin = NULL;
-    for (std::vector<NSFonts::CFontInfo*>::iterator iter = m_pList.begin(); iter != m_pList.end(); iter++)
-	{
-		int nCurPenalty = 0;
-        NSFonts::CFontInfo* pInfo = *iter;
+    CFontSelectFormatCorrection* pSelectCorrection = NULL;
 
-		if ( NULL != oSelect.pPanose )
-		{
-			nCurPenalty += GetPanosePenalty( pInfo->m_aPanose, oSelect.pPanose );
-		}
+    while (true)
+    {
+        for (std::vector<NSFonts::CFontInfo*>::iterator iter = m_pList.begin(); iter != m_pList.end(); iter++)
+        {
+            int nCurPenalty = 0;
+            NSFonts::CFontInfo* pInfo = *iter;
 
-		ULONG arrCandRanges[6] = { pInfo->m_ulUnicodeRange1, pInfo->m_ulUnicodeRange2, pInfo->m_ulUnicodeRange3, pInfo->m_ulUnicodeRange4, pInfo->m_ulCodePageRange1, pInfo->m_ulCodePageRange2 };
-		
-		if (true)
-		{
-			if (NULL != oSelect.ulRange1 &&
-				NULL != oSelect.ulRange2 &&
-				NULL != oSelect.ulRange3 &&
-				NULL != oSelect.ulRange4 &&
-				NULL != oSelect.ulCodeRange1 &&
-				NULL != oSelect.ulCodeRange2)
-			{
-				ULONG arrReqRanges[6]  = { *oSelect.ulRange1, *oSelect.ulRange2, *oSelect.ulRange3, *oSelect.ulRange4, *oSelect.ulCodeRange1, *oSelect.ulCodeRange2 };
-				nCurPenalty += GetSigPenalty( arrCandRanges, arrReqRanges, nCurPenalty >= 1000 ? 50 : 10, 10 );
-			}
-		}
+            if ( NULL != oSelect.pPanose )
+            {
+                nCurPenalty += GetPanosePenalty( pInfo->m_aPanose, oSelect.pPanose );
+            }
 
-		unsigned char unCharset = UNKNOWN_CHARSET; 
-		if (NULL != oSelect.unCharset)
-			unCharset = *oSelect.unCharset;
+            ULONG arrCandRanges[6] = { pInfo->m_ulUnicodeRange1, pInfo->m_ulUnicodeRange2, pInfo->m_ulUnicodeRange3, pInfo->m_ulUnicodeRange4, pInfo->m_ulCodePageRange1, pInfo->m_ulCodePageRange2 };
 
-		if ( NULL != oSelect.bFixedWidth )
-			nCurPenalty += GetFixedPitchPenalty( pInfo->m_bIsFixed, *oSelect.bFixedWidth );
+            if (true)
+            {
+                if (NULL != oSelect.ulRange1 &&
+                    NULL != oSelect.ulRange2 &&
+                    NULL != oSelect.ulRange3 &&
+                    NULL != oSelect.ulRange4 &&
+                    NULL != oSelect.ulCodeRange1 &&
+                    NULL != oSelect.ulCodeRange2)
+                {
+                    ULONG arrReqRanges[6]  = { *oSelect.ulRange1, *oSelect.ulRange2, *oSelect.ulRange3, *oSelect.ulRange4, *oSelect.ulCodeRange1, *oSelect.ulCodeRange2 };
+                    nCurPenalty += GetSigPenalty( arrCandRanges, arrReqRanges, nCurPenalty >= 1000 ? 50 : 10, 10 );
+                }
+            }
 
-		if ( oSelect.wsName != NULL && oSelect.wsAltName != NULL )
-		{
-            nCurPenalty += min( GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsName, true ),
-                                GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsAltName, true ) );
-		}
-		else if ( oSelect.wsName != NULL )
-            nCurPenalty += GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsName, true );
-		else if ( oSelect.wsAltName != NULL )
-            nCurPenalty += GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsAltName, true );
+            unsigned char unCharset = UNKNOWN_CHARSET;
+            if (NULL != oSelect.unCharset)
+                unCharset = *oSelect.unCharset;
 
-		if ( NULL != oSelect.usWidth )
-			nCurPenalty += GetWidthPenalty( pInfo->m_usWidth, *oSelect.usWidth );
+            if ( NULL != oSelect.bFixedWidth )
+                nCurPenalty += GetFixedPitchPenalty( pInfo->m_bIsFixed, *oSelect.bFixedWidth );
 
-		if ( NULL != oSelect.usWeight )
-			nCurPenalty += GetWeightPenalty( pInfo->m_usWeigth, *oSelect.usWeight );
+            if ( oSelect.wsName != NULL && oSelect.wsAltName != NULL )
+            {
+                nCurPenalty += min( GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsName, true ),
+                                    GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsAltName, true ) );
+            }
+            else if ( oSelect.wsName != NULL )
+                nCurPenalty += GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsName, true );
+            else if ( oSelect.wsAltName != NULL )
+                nCurPenalty += GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsAltName, true );
 
-		if ( NULL != oSelect.bBold )
-			nCurPenalty += GetBoldPenalty( pInfo->m_bBold, *oSelect.bBold );
+            if ( NULL != oSelect.usWidth )
+                nCurPenalty += GetWidthPenalty( pInfo->m_usWidth, *oSelect.usWidth );
 
-		if ( NULL != oSelect.bItalic )
-			nCurPenalty += GetItalicPenalty( pInfo->m_bItalic, *oSelect.bItalic );
+            if ( NULL != oSelect.usWeight )
+                nCurPenalty += GetWeightPenalty( pInfo->m_usWeigth, *oSelect.usWeight );
 
-		if ( NULL != oSelect.wsFamilyClass )
-			nCurPenalty += GetFamilyUnlikelyPenalty( pInfo->m_sFamilyClass, *oSelect.wsFamilyClass );
-		else if (NULL != oSelect.sFamilyClass)
-			nCurPenalty += GetFamilyUnlikelyPenalty( pInfo->m_sFamilyClass, *oSelect.sFamilyClass );
-		
-		//nCurPenalty += GetFontFormatPenalty( pInfo->m_eFontFormat, fontTrueType );
-		nCurPenalty += GetCharsetPenalty( arrCandRanges, unCharset );
+            //if ( NULL != oSelect.bBold )
+            //	nCurPenalty += GetBoldPenalty( pInfo->m_bBold, *oSelect.bBold );
+            //if ( NULL != oSelect.bItalic )
+            //	nCurPenalty += GetItalicPenalty( pInfo->m_bItalic, *oSelect.bItalic );
 
-		if ( NULL != oSelect.shAvgCharWidth )
-			nCurPenalty += GetAvgWidthPenalty( pInfo->m_shAvgCharWidth, *oSelect.shAvgCharWidth );
+            // проверяем всегда!!! иначе только по имени может подобраться болд, и появляется зависимость от порядка шрифтов
+            nCurPenalty += GetBoldPenalty( pInfo->m_bBold, (NULL != oSelect.bBold) ? *oSelect.bBold : FALSE );
+            nCurPenalty += GetItalicPenalty( pInfo->m_bItalic, (NULL != oSelect.bItalic) ? *oSelect.bItalic : FALSE );
 
-		if ( NULL != oSelect.shAscent )
-			nCurPenalty += GetAscentPenalty( pInfo->m_shAscent, *oSelect.shAscent );
+            if ( NULL != oSelect.wsFamilyClass )
+                nCurPenalty += GetFamilyUnlikelyPenalty( pInfo->m_sFamilyClass, *oSelect.wsFamilyClass );
+            else if (NULL != oSelect.sFamilyClass)
+                nCurPenalty += GetFamilyUnlikelyPenalty( pInfo->m_sFamilyClass, *oSelect.sFamilyClass );
 
-		if ( NULL != oSelect.shDescent )
-			nCurPenalty += GetDescentPenalty( pInfo->m_shDescent, *oSelect.shDescent );
+            //nCurPenalty += GetFontFormatPenalty( pInfo->m_eFontFormat, fontTrueType );
+            nCurPenalty += GetCharsetPenalty( arrCandRanges, unCharset );
 
-		if ( NULL != oSelect.shLineGap )
-			nCurPenalty += GetLineGapPenalty( pInfo->m_shLineGap, *oSelect.shLineGap );
+            if ( NULL != oSelect.shAvgCharWidth )
+                nCurPenalty += GetAvgWidthPenalty( pInfo->m_shAvgCharWidth, *oSelect.shAvgCharWidth );
 
-		if ( NULL != oSelect.shXHeight )
-			nCurPenalty += GetXHeightPenalty( pInfo->m_shXHeight, *oSelect.shXHeight );
+            if ( NULL != oSelect.shAscent )
+                nCurPenalty += GetAscentPenalty( pInfo->m_shAscent, *oSelect.shAscent );
 
-		if ( NULL != oSelect.shCapHeight )
-			nCurPenalty += GetCapHeightPenalty( pInfo->m_shCapHeight, *oSelect.shCapHeight );
+            if ( NULL != oSelect.shDescent )
+                nCurPenalty += GetDescentPenalty( pInfo->m_shDescent, *oSelect.shDescent );
 
-        if ( nMinPenalty < 0 )
-		{
-            pInfoMin   = pInfo;
-			nMinPenalty = nCurPenalty;
-		}
-		else if ( nCurPenalty < nMinPenalty )
-		{
-            pInfoMin   = pInfo;
-			nMinPenalty = nCurPenalty;
-		}
+            if ( NULL != oSelect.shLineGap )
+                nCurPenalty += GetLineGapPenalty( pInfo->m_shLineGap, *oSelect.shLineGap );
 
-		// Нашелся шрифт, удовлетворяющий всем параметрам, дальше искать нет смысла
-		if ( 0 == nCurPenalty )
-			break;
-	}
+            if ( NULL != oSelect.shXHeight )
+                nCurPenalty += GetXHeightPenalty( pInfo->m_shXHeight, *oSelect.shXHeight );
+
+            if ( NULL != oSelect.shCapHeight )
+                nCurPenalty += GetCapHeightPenalty( pInfo->m_shCapHeight, *oSelect.shCapHeight );
+
+            if ( nMinPenalty < 0 )
+            {
+                pInfoMin   = pInfo;
+                nMinPenalty = nCurPenalty;
+            }
+            else if ( nCurPenalty < nMinPenalty )
+            {
+                pInfoMin   = pInfo;
+                nMinPenalty = nCurPenalty;
+            }
+
+            // Нашелся шрифт, удовлетворяющий всем параметрам, дальше искать нет смысла
+            if ( 0 == nCurPenalty )
+                break;
+        }
+
+        if (0 == nMinPenalty)
+            break;
+
+        if (NULL == oSelect.wsName || pSelectCorrection)
+            break;
+
+        pSelectCorrection = CFontSelectFormatCorrection::CheckCorrection(oSelect);
+        if (NULL == pSelectCorrection)
+            break;
+    }
+
+    if (pSelectCorrection)
+    {
+        pSelectCorrection->Restore(oSelect);
+        RELEASEOBJECT(pSelectCorrection);
+    }
 
     return pInfoMin;
 }

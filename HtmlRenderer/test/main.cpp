@@ -33,6 +33,7 @@
 
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/graphics/pro/Graphics.h"
+#include "../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
 
 #include "../../PdfReader/PdfReader.h"
 #include "../../DjVuFile/DjVu.h"
@@ -77,17 +78,15 @@ int main(int argc, char *argv[])
     return 0;
 #endif
 
-    NSFonts::IApplicationFonts* pFonts = NSFonts::NSApplication::Create();
-    if (true)
-    {
-        pFonts->Initialize();
-    }
-    else
-    {
-        std::vector<std::wstring> arFiles = pFonts->GetSetupFontFiles();
-        NSDirectory::GetFiles2(L"D:\\GIT\\core-fonts", arFiles, true);
-        pFonts->InitializeFromArrayFiles(arFiles);
-    }
+    CApplicationFontsWorker oWorker;
+    oWorker.m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts_cache";
+    //oWorker.m_arAdditionalFolders.push_back(L"D:\\GIT\\core-fonts");
+    oWorker.m_bIsNeedThumbnails = false;
+
+    if (!NSDirectory::Exists(oWorker.m_sDirectory))
+        NSDirectory::CreateDirectory(oWorker.m_sDirectory);
+
+    NSFonts::IApplicationFonts* pFonts = oWorker.Check();
 
 #ifdef METAFILE_TEST
 

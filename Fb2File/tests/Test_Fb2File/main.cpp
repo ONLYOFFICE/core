@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "../Fb2File/Fb2File.h"
+#include "../../Fb2File.h"
 
 int main()
 {

@@ -6,7 +6,7 @@
 #ifndef FB2FILE_USE_DYNAMIC_LIBRARY
 #define FB2FILE_DECL_EXPORT
 #else
-#include "../../../DesktopEditor/common/base_export.h"
+#include "../DesktopEditor/common/base_export.h"
 #define FB2FILE_DECL_EXPORT Q_DECL_EXPORT
 #endif
 

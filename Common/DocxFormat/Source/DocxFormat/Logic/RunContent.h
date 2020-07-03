@@ -35,8 +35,9 @@
 #include "../../Base/Nullable.h"
 #include "../../Common/SimpleTypes_Word.h"
 #include "../../Common/ComplexTypes.h"
+#include "../../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Xfrm.h"
 
-//        2. Класс CRuby   17.3.3.25
+// 2. Класс CRuby   17.3.3.25
 
 namespace OOX
 {
@@ -136,28 +137,21 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("r:id"), m_oId );
+				XmlMacroReadAttributeBase( oNode, L"r:id", m_oId );
 			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            virtual std::wstring toXML() const
 			{
-				ReadAttributes( oReader );
-
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd( oReader.GetDepth() );
-			}
-
-            virtual std::wstring      toXML() const
-			{
-                std::wstring sResult = _T("<w:contentPart ");
+                std::wstring sResult = L"<w:contentPart ";
 
 				if ( m_oId.IsInit() )
 				{
-					sResult += _T("r:id=\"");
+					sResult += L"r:id=\"";
 					sResult += m_oId->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
-				sResult += _T(" />");
+				sResult += L" />";
 
 				return sResult;
 			}
@@ -170,32 +164,15 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				if ( oReader.GetAttributesCount() <= 0 )
-					return;
-
-				if ( !oReader.MoveToFirstAttribute() )
-					return;
-
-				std::wstring wsName = oReader.GetName();
-				while( !wsName.empty() )
-				{
-					if ( _T("r:id") == wsName )
-					{
-						m_oId = oReader.GetText();
-						break;
-					}
-
-					if ( !oReader.MoveToNextAttribute() )
-						break;
-
-					wsName = oReader.GetName();
-				}
-
-				oReader.MoveToElement();
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if ( oReader, L"r:id",	m_oId)
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
-
+			std::wstring							m_namespace;
+			nullable<PPTX::Logic::Xfrm>				m_oXfrm;
+			//nullable<nvContentPartPr>				m_oNvContentPartPr;
 			nullable<SimpleTypes::CRelationshipId > m_oId;
 
 		};

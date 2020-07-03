@@ -440,7 +440,7 @@ namespace BinDocxRW
 		void WriteRunContent(std::vector<OOX::WritingElement*>::iterator &start, std::vector<OOX::WritingElement*>::iterator &end, bool bHyperlink = false);
 		void WriteNoteRef(const nullable<SimpleTypes::COnOff<>>& oCustomMarkFollows, const nullable<SimpleTypes::CDecimalNumber<>>& oId);
 		void WriteText(const std::wstring& text, BYTE type);
-		void WriteDrawingPptx(OOX::WritingElement* item);
+		bool WriteDrawingPptx(OOX::WritingElement* item);
 		void WriteDrawing(std::wstring* pXml, OOX::Logic::CDrawing* pDrawing, PPTX::Logic::GraphicFrame *pGraphic);
 		void WriteNvGraphicFramePr(const PPTX::Logic::NvGraphicFramePr& oGraphicFramePr);
 		void WriteDocPr(const PPTX::Logic::CNvPr& oDocPr);

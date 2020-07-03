@@ -5983,9 +5983,9 @@ void BinaryDocumentTableWriter::WriteText(const std::wstring& text, BYTE type)
 			m_oBcw.m_pEmbeddedFontsManager->CheckString(text);
 	}
 }
-void BinaryDocumentTableWriter::WriteDrawingPptx(OOX::WritingElement* item)
+bool BinaryDocumentTableWriter::WriteDrawingPptx(OOX::WritingElement* item)
 {
-	if (item == NULL) return;
+	if (item == NULL) return false;
 
 	OOX::EElementType		pElementType	= item->getType();
 	std::wstring*			pXml			= NULL;
@@ -5995,6 +5995,8 @@ void BinaryDocumentTableWriter::WriteDrawingPptx(OOX::WritingElement* item)
 
 	m_oBcw.m_oStream.ClearCurShapePositionAndSizes();
 
+	bool res = true;
+
 	if(OOX::et_mc_alternateContent == pElementType)
 	{
 		OOX::WritingElement* we = NULL;
@@ -6002,29 +6004,22 @@ void BinaryDocumentTableWriter::WriteDrawingPptx(OOX::WritingElement* item)
 
 		if (pAlternateContent)
 		{
-			if ((false == pAlternateContent->m_arrChoiceItems.empty()) && 
-				(pAlternateContent->m_oChoiceRequires.IsInit()) && (*pAlternateContent->m_oChoiceRequires != L"aink"))
+			if (false == pAlternateContent->m_arrChoiceItems.empty())
 			{
 				we = pAlternateContent->m_arrChoiceItems[0];
-				if(OOX::et_w_drawing == pAlternateContent->m_arrChoiceItems[0]->getType())
-				{
-					we = pAlternateContent->m_arrChoiceItems[0];
-				}
 			}
+			res = WriteDrawingPptx(we);
 
-			if (we == NULL)
+			if (res == false || we == NULL)
 			{
 				if (false == pAlternateContent->m_arrFallbackItems.empty())
 				{
-					if(OOX::et_w_drawing == pAlternateContent->m_arrFallbackItems[0]->getType())
-					{
-						we = pAlternateContent->m_arrFallbackItems[0];
-					}
+					we = pAlternateContent->m_arrFallbackItems[0];
+					res = WriteDrawingPptx(we);
 				}
 			}
 		}
 
-		WriteDrawingPptx(we);
 	}
 	else if(OOX::et_w_drawing == pElementType)
 	{
@@ -6051,12 +6046,25 @@ void BinaryDocumentTableWriter::WriteDrawingPptx(OOX::WritingElement* item)
 		WriteDrawing(pXml, NULL, NULL);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	else if (pGraphicDrawing || pGraphic)
+	{
+		if ((pGraphic) && (pGraphic->contentPart.IsInit()))
+		{
+			//todooo разобрать по типам вставок
+			res = false;
+		}
+		else
+		{
+			int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::pptxDrawing);
+			WriteDrawing(NULL, pGraphicDrawing, pGraphic);
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+	}
 	else
 	{
-		int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::pptxDrawing);
-		WriteDrawing(NULL, pGraphicDrawing, pGraphic);
-		m_oBcw.WriteItemEnd(nCurPos);
+		res = false;
 	}
+	return res;
 }
 void BinaryDocumentTableWriter::WriteDrawing(std::wstring* pXml, OOX::Logic::CDrawing* pDrawing, PPTX::Logic::GraphicFrame *pGraphic)
 {

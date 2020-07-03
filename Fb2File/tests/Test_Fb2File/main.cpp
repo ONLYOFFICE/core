@@ -13,6 +13,6 @@ int main()
         return 1;
     }
 
-    int nResConvert = oFile.Convert(L"path", L"directory");
+    int nResConvert = oFile.Convert(L"path", L"../../../media/");
     return 0;
 }

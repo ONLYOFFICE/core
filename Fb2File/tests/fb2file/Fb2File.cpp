@@ -32,17 +32,7 @@ public:
     std::map<std::wstring, std::wstring> m_mImage; // Картинки
 
 public:
-    CFb2File_Private()
-    {
-        oLightReader = XmlUtils::CXmlLiteReader();
-        m_sFile = L"";
-        m_sDstFolder = L"";
-        m_arGenres = std::vector<std::wstring>();
-        m_arAuthors = std::vector<author>();
-        m_sBookTitle = L"";
-        m_mXmlns = std::map<std::wstring, std::wstring>();
-        m_mImage = std::map<std::wstring, std::wstring>();
-    }
+    CFb2File_Private(){}
 
     ~CFb2File_Private()
     {

@@ -407,9 +407,9 @@ namespace NSCommon
 		{
 			if (IsInit())
 			{
-				if (*m_pPointer < min)
+				if ((int)(*m_pPointer) < min)
 					*m_pPointer = min;
-				else if (*m_pPointer > max)
+				else if ((int)(*m_pPointer) > max)
 					*m_pPointer = max;
 			}
 		}
@@ -417,7 +417,7 @@ namespace NSCommon
 		{
 			if (IsInit())
 			{
-				if (*m_pPointer < 0)
+				if ((int)(*m_pPointer) < 0)
 					*m_pPointer = 0;
 			}
 		}

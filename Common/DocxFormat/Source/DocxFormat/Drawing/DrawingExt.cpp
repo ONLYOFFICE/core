@@ -29,6 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "Drawing.h"
 #include "DrawingExt.h"
 #include "../../XlsxFormat/Worksheets/Sparkline.h"
 #include "../../XlsxFormat/Table/Table.h"
@@ -43,6 +44,614 @@ namespace OOX
 {
 	namespace Drawing
 	{
+		void CWrapSquare::fromXML(XmlUtils::CXmlNode& node)
+		{
+			XmlMacroReadAttributeBase(node, L"distB",	m_oDistB );
+			XmlMacroReadAttributeBase(node, L"distL",	m_oDistL );
+			XmlMacroReadAttributeBase(node, L"distR",	m_oDistR );
+			XmlMacroReadAttributeBase(node, L"distT",	m_oDistT );
+			XmlMacroReadAttributeBase(node, L"wrapText",	m_oWrapText );
+
+			XmlUtils::CXmlNodes oNodes;
+			if (node.GetNodes(_T("*"), oNodes))
+			{
+				int nCount = oNodes.GetCount();
+				for (int i = 0; i < nCount; ++i)
+				{
+					XmlUtils::CXmlNode oNode;
+					oNodes.GetAt(i, oNode);
+
+					std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+					if ( _T("effectExtents") == sName )
+						m_oEffectExtent = oNode;
+				}
+			}
+		}
+		void CWrapSquare::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+                std::wstring sName = oReader.GetName();
+				if ( _T("wp:effectExtents") == sName )
+					m_oEffectExtent = oReader;
+			}
+		}
+		std::wstring CWrapSquare::toXML() const
+		{
+            std::wstring sResult = _T("<wp:wrapSquare ");
+			if(m_oWrapText.IsInit())
+				sResult += _T("wrapText=\"") + m_oWrapText->ToString() + _T("\" ");
+
+			if ( m_oDistB.IsInit() ) sResult += _T("distB=\"") + m_oDistB->ToString() + _T("\" ");
+			if ( m_oDistL.IsInit() ) sResult += _T("distL=\"") + m_oDistL->ToString() + _T("\" ");
+			if ( m_oDistR.IsInit() ) sResult += _T("distR=\"") + m_oDistR->ToString() + _T("\" ");
+			if ( m_oDistT.IsInit() ) sResult += _T("distT=\"") + m_oDistT->ToString() + _T("\" ");
+
+			if ( m_oEffectExtent.IsInit() )
+				sResult += m_oEffectExtent->toXML();
+
+			sResult += _T("</wp:wrapSquare>");
+
+			return sResult;
+		}
+		void CWrapSquare::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_Read_if     ( oReader, _T("distB"),    m_oDistB )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("distL"),    m_oDistL )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("distR"),    m_oDistR )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("distT"),    m_oDistT )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("wrapText"), m_oWrapText )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+		void CWrapPath::fromXML(XmlUtils::CXmlNode& node)
+		{
+			XmlMacroReadAttributeBase(node, L"edited",	m_oEdited );
+
+			XmlUtils::CXmlNodes oNodes;
+			
+			bool bStart = false;
+			if (node.GetNodes(_T("*"), oNodes))
+			{
+				int nCount = oNodes.GetCount();
+				for (int i = 0; i < nCount; ++i)
+				{
+					XmlUtils::CXmlNode oNode;
+					oNodes.GetAt(i, oNode);
+
+					std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+					if ( _T("start") == sName )
+					{
+						m_oStart = oNode;
+						bStart = true;
+					}
+					else if ( bStart && _T("lineTo") == sName )
+					{
+						ComplexTypes::Drawing::CPoint2D *oPoint = new ComplexTypes::Drawing::CPoint2D(oNode);
+						if (oPoint) m_arrLineTo.push_back( oPoint );
+					}
+				}
+			}
+		}
+		void CWrapPath::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+
+			bool bStart = false;
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+                std::wstring sName = oReader.GetName();
+				if ( _T("wp:start") == sName )
+				{
+					m_oStart = oReader;
+					bStart = true;
+				}
+				else if ( bStart && _T("wp:lineTo") == sName )
+				{
+					ComplexTypes::Drawing::CPoint2D *oPoint = new ComplexTypes::Drawing::CPoint2D(oReader);
+					if (oPoint) m_arrLineTo.push_back( oPoint );
+				}
+			}
+		}
+		std::wstring CWrapPath::toXML() const
+		{
+            std::wstring sResult = _T("");
+            //std::wstring sResult = _T("<wp:wrapPolygon ");
+			//
+			//if ( m_oEdited.IsInit() ) sResult += _T("edited=\"") + m_oEdited->ToString() + _T("\">");
+			//else                      sResult += _T(">");
+
+			//sResult += _T("<wp:start ") +  m_oStart.ToString() + _T("/>");
+
+			//for ( int nIndex = 0; nIndex < m_arrLineTo.GetSize(); nIndex++ )
+			//	sResult += _T("<wp:lineTo ") + m_arrLineTo[nIndex].ToString() + _T("/>");
+
+			//sResult += _T("</wp:wrapPolygon>");
+
+			return sResult;
+		}
+		void CWrapPath::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_ReadSingle( oReader, _T("edited"), m_oEdited )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+		void CWrapThrough::fromXML(XmlUtils::CXmlNode& node)
+		{
+			XmlMacroReadAttributeBase(node, L"distL",		m_oDistL );
+			XmlMacroReadAttributeBase(node, L"distR",		m_oDistR );
+			XmlMacroReadAttributeBase(node, L"wrapText",	m_oWrapText );
+
+			XmlUtils::CXmlNodes oNodes;
+			if (node.GetNodes(_T("*"), oNodes))
+			{
+				int nCount = oNodes.GetCount();
+				for (int i = 0; i < nCount; ++i)
+				{
+					XmlUtils::CXmlNode oNode;
+					oNodes.GetAt(i, oNode);
+
+					std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+					if ( _T("wrapPolygon") == sName )
+					{
+						m_oWrapPolygon = oNode;
+					}
+				}
+			}
+		}
+		void CWrapThrough::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+                std::wstring sName = oReader.GetName();
+				if ( _T("wp:wrapPolygon") == sName )
+					m_oWrapPolygon = oReader;
+			}
+		}
+		std::wstring CWrapThrough::toXML() const
+		{
+            std::wstring sResult = _T("<wp:wrapThrough ");
+			
+			if ( m_oDistL.IsInit()    ) sResult += _T("distL=\"")    + m_oDistL->ToString()    + _T("\" ");
+			if ( m_oDistR.IsInit()    ) sResult += _T("distR=\"")    + m_oDistR->ToString()    + _T("\" ");
+			if ( m_oWrapText.IsInit() ) sResult += _T("wrapText=\"") + m_oWrapText->ToString() + _T("\" ");
+			
+			sResult += _T(">");
+			if(m_oWrapPolygon.IsInit())
+				sResult += m_oWrapPolygon->toXML();
+			sResult += _T("</wp:wrapThrough>");
+
+			return sResult;
+		}
+		void CWrapThrough::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_Read_if     ( oReader, _T("distL"),    m_oDistL )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("distR"),    m_oDistR )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("wrapText"), m_oWrapText )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+
+		void CWrapTight::fromXML(XmlUtils::CXmlNode& node)
+		{
+			XmlUtils::CXmlNodes oNodes;
+			if (node.GetNodes(_T("*"), oNodes))
+			{
+				int nCount = oNodes.GetCount();
+				for (int i = 0; i < nCount; ++i)
+				{
+					XmlUtils::CXmlNode oNode;
+					oNodes.GetAt(i, oNode);
+
+					std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+					if ( _T("wrapPolygon") == sName )
+					{
+						m_oWrapPolygon = oNode;
+					}
+				}
+			}
+		}
+		void CWrapTight::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+                std::wstring sName = oReader.GetName();
+				if ( _T("wp:wrapPolygon") == sName )
+					m_oWrapPolygon = oReader;
+			}
+		}
+		std::wstring CWrapTight::toXML() const
+		{
+            std::wstring sResult = _T("<wp:wrapTight ");
+			
+			if ( m_oDistL.IsInit()    ) sResult += _T("distL=\"")    + m_oDistL->ToString()    + _T("\" ");
+			if ( m_oDistR.IsInit()    ) sResult += _T("distR=\"")    + m_oDistR->ToString()    + _T("\" ");
+			if ( m_oWrapText.IsInit() ) sResult += _T("wrapText=\"") + m_oWrapText->ToString() + _T("\" ");
+
+			sResult += _T(">");
+			if(m_oWrapPolygon.IsInit())
+				sResult += m_oWrapPolygon->toXML();
+			sResult += _T("</wp:wrapTight>");
+
+			return sResult;
+		}
+		void CWrapTight::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_Read_if     ( oReader, _T("distL"),    m_oDistL )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("distR"),    m_oDistR )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("wrapText"), m_oWrapText )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+		void CWrapTopBottom::fromXML(XmlUtils::CXmlNode& node)
+		{
+			XmlMacroReadAttributeBase(node, L"distB",	m_oDistB );
+			XmlMacroReadAttributeBase(node, L"distT",	m_oDistT );
+
+			XmlUtils::CXmlNodes oNodes;
+			if (node.GetNodes(_T("*"), oNodes))
+			{
+				int nCount = oNodes.GetCount();
+				for (int i = 0; i < nCount; ++i)
+				{
+					XmlUtils::CXmlNode oNode;
+					oNodes.GetAt(i, oNode);
+
+					std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+					if ( _T("effectExtents") == sName )
+						m_oEffectExtent = oNode;
+				}
+			}
+		}
+		void CWrapTopBottom::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+                std::wstring sName = oReader.GetName();
+				if ( _T("wp:effectExtent") == sName )
+					m_oEffectExtent = oReader;
+			}
+		}
+		std::wstring CWrapTopBottom::toXML() const
+		{
+            std::wstring sResult = _T("<wp:wrapTopAndBottom ");
+			
+			if ( m_oDistB.IsInit() ) sResult += _T("distB=\"") + m_oDistB->ToString() + _T("\" ");
+			if ( m_oDistT.IsInit() ) sResult += _T("distT=\"") + m_oDistT->ToString() + _T("\" ");
+
+			sResult += _T(">");
+			
+			if ( m_oEffectExtent.IsInit() )
+				sResult += m_oEffectExtent->toXML();
+			
+			sResult += _T("</wp:wrapTopAndBottom>");
+
+			return sResult;
+		}
+		void CWrapTopBottom::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_Read_if     ( oReader, _T("distB"), m_oDistB )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("distT"), m_oDistT )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+		void CAnchor::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_Read_if     ( oReader, _T("allowOverlap"),   m_oAllowOverlap )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("behindDoc"),      m_oBehindDoc )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("distB"),          m_oDistB )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("distL"),          m_oDistL )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("distR"),          m_oDistR )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("distT"),          m_oDistT )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("hidden"),         m_oHidden )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("layoutInCell"),   m_oLayoutInCell )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("locked"),         m_oLocked )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("relativeHeight"), m_oRelativeHeight )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("simplePos"),      m_bSimplePos )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+		void CAnchor::ReadAttributes(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase(oNode, L"allowOverlap",	m_oAllowOverlap );
+			XmlMacroReadAttributeBase(oNode, L"behindDoc",      m_oBehindDoc );
+			XmlMacroReadAttributeBase(oNode, L"distB",          m_oDistB );
+			XmlMacroReadAttributeBase(oNode, L"distL",          m_oDistL );
+			XmlMacroReadAttributeBase(oNode, L"distR",          m_oDistR );
+			XmlMacroReadAttributeBase(oNode, L"distT",          m_oDistT );
+			XmlMacroReadAttributeBase(oNode, L"hidden",         m_oHidden );
+			XmlMacroReadAttributeBase(oNode, L"layoutInCell",   m_oLayoutInCell );
+			XmlMacroReadAttributeBase(oNode, L"locked",         m_oLocked );
+			XmlMacroReadAttributeBase(oNode, L"relativeHeight", m_oRelativeHeight );
+			XmlMacroReadAttributeBase(oNode, L"simplePos",      m_bSimplePos );
+		}
+		void CAnchor::fromXML(XmlUtils::CXmlNode& node)
+		{
+			ReadAttributes(node);
+			m_eWrapType = anchorwrapUnknown;
+
+			XmlUtils::CXmlNodes oNodes;
+			if (node.GetNodes(_T("*"), oNodes))
+			{
+				int nCount = oNodes.GetCount();
+				for (int i = 0; i < nCount; ++i)
+				{
+					XmlUtils::CXmlNode oNode;
+					oNodes.GetAt(i, oNode);
+
+					std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+					if ( _T("docPr") == sName )
+						m_oDocPr = oNode;
+					else if ( _T("effectExtent") == sName )
+						m_oEffectExtent = oNode;
+					else if ( _T("extent") == sName )
+						m_oExtent = oNode;
+					else if ( _T("positionH") == sName )
+						m_oPositionH = oNode;
+					else if ( _T("positionV") == sName )
+						m_oPositionV = oNode;
+					else if ( _T("simplePos") == sName )
+						m_oSimplePos = oNode;
+					else if ( _T("sizeRelH") == sName )
+						m_oSizeRelH = oNode;
+					else if ( _T("sizeRelV") == sName )
+						m_oSizeRelV = oNode;
+					else if ( false == m_eWrapType.IsInit() )
+					{
+						if ( _T("wrapNone") == sName )
+						{
+							m_oWrapNone = oNode;
+							m_eWrapType = anchorwrapNone;
+						}
+						else if ( _T("wrapSquare") == sName )
+						{
+							m_oWrapSquare = oNode;
+							m_eWrapType = anchorwrapSquare;
+						}
+						else if ( _T("wrapThrough") == sName )
+						{
+							m_oWrapThrough = oNode;
+							m_eWrapType = anchorwrapThrough;
+						}
+						else if ( _T("wrapTight") == sName )
+						{
+							m_oWrapTight = oNode;
+							m_eWrapType = anchorwrapTight;
+						}
+						else if ( _T("wrapTopAndBottom") == sName )
+						{
+							m_oWrapTopAndBottom = oNode;
+							m_eWrapType = anchorwrapTopAndBottom;
+						}
+					}
+				}
+				m_oGraphic.fromXML(node);
+			}
+		}
+		void CAnchor::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+                std::wstring sName = oReader.GetName();
+				if ( _T("wp:docPr") == sName )
+					m_oDocPr = oReader;
+				else if ( _T("wp:effectExtent") == sName )
+					m_oEffectExtent = oReader;
+				else if ( _T("wp:extent") == sName )
+					m_oExtent = oReader;
+				else if ( _T("wp:positionH") == sName )
+					m_oPositionH = oReader;
+				else if ( _T("wp:positionV") == sName )
+					m_oPositionV = oReader;
+				else if ( _T("wp:simplePos") == sName )
+					m_oSimplePos = oReader;
+				else if ( _T("wp14:sizeRelH") == sName )
+					m_oSizeRelH = oReader;
+				else if ( _T("wp14:sizeRelV") == sName )
+					m_oSizeRelV = oReader;
+				else if ( _T("mc:AlternateContent") == sName )
+				//ПРИВЛЕЧЕНИЕ СРЕДСТВ ИЗ МЕСТНЫХ ИСТОЧНИКОВ.docx
+				//вариативность на разные версии офиса части параметров - кстати ... это может встретиться в ЛЮБОМ месте 
+				//todooo сделать чтение не обязательно fallback, по выбору версии нужной нам (w14, ..)
+				{
+					nCurDepth++;
+					while( oReader.ReadNextSiblingNode( nCurDepth ) )
+					{
+						std::wstring sName = oReader.GetName();
+						if ( _T("mc:Fallback") == sName || _T("mc:Choice") == sName )
+						{
+                            std::wstring strXml = _T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
+								strXml += oReader.GetOuterXml();
+								strXml += _T("</root>");
+							
+							XmlUtils::CXmlLiteReader oSubReader;
+							
+							if (oSubReader.FromString(strXml))
+							{
+								oSubReader.ReadNextNode();//root
+								oSubReader.ReadNextNode();//fallback
+
+								fromXML(oSubReader);
+								//break чтобы не читать сразу оба Choice и Fallback
+								break;
+							}
+						}
+					}
+					nCurDepth--;
+				}
+				else if ( false == m_eWrapType.IsInit() )
+				{
+					if ( _T("wp:wrapNone") == sName )
+					{
+						m_oWrapNone = oReader;
+						m_eWrapType = anchorwrapNone;
+					}
+					else if ( _T("wp:wrapSquare") == sName )
+					{
+						m_oWrapSquare = oReader;
+						m_eWrapType = anchorwrapSquare;
+					}
+					else if ( _T("wp:wrapThrough") == sName )
+					{
+						m_oWrapThrough = oReader;
+						m_eWrapType = anchorwrapThrough;
+					}
+					else if ( _T("wp:wrapTight") == sName )
+					{
+						m_oWrapTight = oReader;
+						m_eWrapType = anchorwrapTight;
+					}
+					else if ( _T("wp:wrapTopAndBottom") == sName )
+					{
+						m_oWrapTopAndBottom = oReader;
+						m_eWrapType = anchorwrapTopAndBottom;
+					}
+				}
+				else
+				{
+					m_oGraphic.fromXML2(oReader);
+				}
+			}
+		}
+		std::wstring CAnchor::toXML() const
+		{
+            std::wstring sResult = _T("");
+			return sResult;
+		}
+
+		void CInline::ReadAttributes(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase(oNode, L"distB",          m_oDistB );
+			XmlMacroReadAttributeBase(oNode, L"distL",          m_oDistL );
+			XmlMacroReadAttributeBase(oNode, L"distR",          m_oDistR );
+			XmlMacroReadAttributeBase(oNode, L"distT",          m_oDistT );
+		}
+		void CInline::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_Read_if     ( oReader, _T("distB"),          m_oDistB )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("distL"),          m_oDistL )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("distR"),          m_oDistR )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("distT"),          m_oDistT )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+		void CInline::fromXML(XmlUtils::CXmlNode& node)
+		{
+			ReadAttributes( node );
+
+			XmlUtils::CXmlNodes oNodes;
+			if (node.GetNodes(_T("*"), oNodes))
+			{
+				int nCount = oNodes.GetCount();
+				for (int i = 0; i < nCount; ++i)
+				{
+					XmlUtils::CXmlNode oNode;
+					oNodes.GetAt(i, oNode);
+
+					std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+					if ( _T("docPr") == sName )
+						m_oDocPr = oNode;
+					else if ( _T("effectExtent") == sName )
+						m_oEffectExtent = oNode;
+					else if ( _T("extent") == sName )
+						m_oExtent = oNode;
+				}
+				m_oGraphic.fromXML(node);
+			}
+		}
+		void CInline::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+                std::wstring sName = oReader.GetName();
+				if ( _T("wp:docPr") == sName )
+					m_oDocPr = oReader;
+				else if ( _T("wp:effectExtent") == sName )
+					m_oEffectExtent = oReader;
+				else if ( _T("wp:extent") == sName )
+					m_oExtent = oReader;
+				else
+				{
+					m_oGraphic.fromXML2(oReader);
+				}
+			}
+		}
+        std::wstring CInline::toXML() const
+		{
+            std::wstring sResult = _T("<wp:inline ");
+			
+			if ( m_oDistB.IsInit() ) sResult += _T("distB=\"") + m_oDistB->ToString() + _T("\" ");
+			if ( m_oDistL.IsInit() ) sResult += _T("distL=\"") + m_oDistL->ToString() + _T("\" ");
+			if ( m_oDistR.IsInit() ) sResult += _T("distR=\"") + m_oDistR->ToString() + _T("\" ");
+			if ( m_oDistT.IsInit() ) sResult += _T("distT=\"") + m_oDistT->ToString() + _T("\" ");
+
+			sResult += _T(">");
+			
+			if ( m_oExtent.IsInit() )  
+				sResult += _T("<wp:extent ") + m_oExtent->ToString() + _T("/>");
+
+			if ( m_oEffectExtent.IsInit() )
+				sResult += m_oEffectExtent->toXML();
+
+			if ( m_oDocPr.IsInit() )
+				sResult += m_oDocPr->toXML();
+
+			m_oGraphic.m_namespace == L"wp"; 
+			sResult += m_oGraphic.toXML2();	
+
+			sResult += _T("</wp:inline>");
+
+			return sResult;
+		}
+
 		CCompatExt::~CCompatExt()
 		{
 		}

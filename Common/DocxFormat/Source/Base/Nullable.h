@@ -403,13 +403,13 @@ namespace NSCommon
 		{
 		}
 
-		void normalize(const int& min, const int& max)
+		void normalize(const unsigned int& min, const unsigned int& max)
 		{
 			if (IsInit())
 			{
-				if ((int)(*m_pPointer) < min)
+				if (*m_pPointer < min)
 					*m_pPointer = min;
-				else if ((int)(*m_pPointer) > max)
+				else if (*m_pPointer > max)
 					*m_pPointer = max;
 			}
 		}

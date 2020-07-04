@@ -1,6 +1,5 @@
 #include "../CEpubFile.h"
 #include "../../DesktopEditor/common/Directory.h"
-#include <iostream>
 
 CEpubFile::CEpubFile()
 {
@@ -8,7 +7,7 @@ CEpubFile::CEpubFile()
 
 CEpubFile::~CEpubFile()
 {
-//    NSDirectory::DeleteDirectory(_tempDir);
+    NSDirectory::DeleteDirectory(_tempDir);
 }
 
 bool CEpubFile::IsEbubFile(const std::wstring &fileName)
@@ -38,17 +37,22 @@ bool CEpubFile::Convert(const std::wstring& inputFile, const std::wstring& outpu
     if (OfficeUtils.ExtractToDirectory(inputFile, _tempDir.c_str(), password, 1) != S_OK)
         return false;
 
-
     XmlUtils::CXmlLiteReader XmlLiteReader;
 
     if (XmlLiteReader.FromFile(_tempDir + L"/content.opf"))
+    {
         while (XmlLiteReader.ReadNextNode())
         {
-            std::wcout << XmlLiteReader.GetDepth() << " - " << XmlLiteReader.GetName() << " - " << XmlLiteReader.GetText() << " - " << XmlLiteReader.GetNamespacePrefix() << std::endl;
+            if (XmlLiteReader.GetNamespacePrefix() == L"dc")
+            {
+                std::wstring name = XmlLiteReader.GetName();
+                std::wstring value = XmlLiteReader.GetText2();
+                dataAboutFile[name.substr(3, name.length())] = value;
+            }
         }
+    }
     else
         return false;
-
 
     return true;
 }

@@ -24,4 +24,3 @@ SOURCES += src/CEpubFile.cpp
 HEADERS += CEpubFile.h \
     src/EpubFile_global.h
 
-DEFINES += LEpubFile

@@ -401,7 +401,7 @@ namespace PdfReader
 	Graphics::Graphics(GlobalParams *pGlobalParams, XRef *pXref, OutputDev *pOut, int nPageNumber, Dict *pResorcesDict, double dHorDPI, double dVerDPI, PDFRectangle *pBox, PDFRectangle *pCropBox, int nRotate, bool(*pAbortCheckCallBack)(void *pData), void *pAbortCheckData)
 	{
 #ifdef _DEBUG
-		std::wstring wsFileName = L"D:\\Output\\PDF Dump\\DumpPDF_Page" + std::to_wstring(nPageNumber) + L".bin";
+		std::wstring wsFileName = L"E:\\Ilya\\Work\\Test\\PdfDump\\Dump" + std::to_wstring(nPageNumber) + L".bin";
 		m_pDumpFile = NSFile::CFileBinary::OpenFileNative(wsFileName, L"wb");
 #endif
 
@@ -1563,7 +1563,8 @@ namespace PdfReader
 		{
 			if (m_pGState->GetStrokeColorSpace()->GetMode() == csPattern)
 			{
-				DoPatternStroke();
+				//DoPatternStroke();
+				m_pOut->Stroke(m_pGState);
 			}
 			else
 			{

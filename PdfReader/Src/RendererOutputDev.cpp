@@ -492,9 +492,14 @@ namespace PdfReader
 		}
 		else
 		{
+			for (int nIndex = 0; nIndex < nSize; ++nIndex)
+			{
+				pDash[nIndex] = PDFCoordsToMM(pDash[nIndex]);
+			}
+
 			m_pRenderer->PenDashPattern(pDash, (long)nSize);
 			m_pRenderer->put_PenDashStyle(Aggplus::DashStyleCustom);
-			m_pRenderer->put_PenDashOffset(dStart);
+			m_pRenderer->put_PenDashOffset(PDFCoordsToMM(dStart));
 		}
 	}
 	void RendererOutputDev::UpdateFlatness(GrState *pGState)
@@ -3684,7 +3689,7 @@ namespace PdfReader
 	void RendererOutputDev::DoPath(GrState *pGState, GrPath *pPath, double dPageHeight, double *pCTM)
 	{
         if (m_bDrawOnlyText)
-            return;
+			return;
 
 		if (m_bTransparentGroup)
 			return;
@@ -3761,22 +3766,22 @@ namespace PdfReader
         m_pRenderer->BeginCommand(c_nResetClipType);
         m_pRenderer->EndCommand(c_nResetClipType);
 
-        for (int nIndex = nPathIndexStart; nIndex < pClip->GetPathsCount(); nIndex++)
-        {
-            GrPath *pPath   = pClip->GetPath(nIndex);
-            int     nFlag   = pClip->GetFlag(nIndex);
-            double *pMatrix = pClip->GetMatrix(nIndex);
+		for (int nIndex = nPathIndexStart; nIndex < pClip->GetPathsCount(); nIndex++)
+		{
+			GrPath *pPath   = pClip->GetPath(nIndex);
+			int     nFlag   = pClip->GetFlag(nIndex);
+			double *pMatrix = pClip->GetMatrix(nIndex);
 
-            int     nClipFlag = GrClipEOFlag == nFlag ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
-            nClipFlag |= c_nClipRegionIntersect;
+			int     nClipFlag = GrClipEOFlag == nFlag ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
+			nClipFlag |= c_nClipRegionIntersect;
 
-            m_pRenderer->BeginCommand(c_nClipType);
-            m_pRenderer->put_ClipMode(nClipFlag);
-            DoPath(pGState, pPath, pGState->GetPageHeight(), pMatrix);
-            m_pRenderer->EndCommand(c_nPathType);
-            m_pRenderer->EndCommand(c_nClipType);
-            m_pRenderer->PathCommandEnd();
-        }
+			m_pRenderer->BeginCommand(c_nClipType);
+			m_pRenderer->put_ClipMode(nClipFlag);
+			DoPath(pGState, pPath, pGState->GetPageHeight(), pMatrix);
+			m_pRenderer->EndCommand(c_nPathType);
+			m_pRenderer->EndCommand(c_nClipType);
+			m_pRenderer->PathCommandEnd();
+		}
 
         int nTextClipCount = pClip->GetTextsCount();
         if (-1 == nPathIndex && nTextClipCount > 0)

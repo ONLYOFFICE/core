@@ -1,5 +1,7 @@
 #include "../CEpubFile.h"
 #include "../../DesktopEditor/common/Directory.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
+#include "../../DesktopEditor/xml/include/xmlutils.h"
 
 CEpubFile::CEpubFile()
 {
@@ -41,6 +43,49 @@ bool CEpubFile::Convert(const std::wstring& inputFile, const std::wstring& outpu
 
     if (XmlLiteReader.FromFile(_tempDir + L"/content.opf"))
     {
+        /*
+        // читаем ноду
+        XmlLiteReader.ReadNextNode();
+
+        if (true)
+        {
+            // вот как пробежаться по всей ноде:
+
+            // читаем ее атрибуты, если нужно
+            if (XmlLiteReader.GetAttributesCount() > 0 &&
+                XmlLiteReader.MoveToFirstAttribute())
+            {
+                std::wstring sAttributeName = XmlLiteReader.GetName();
+
+                while (!sAttributeName.empty())
+                {
+                    // обработка атрибута
+                    std::wstring sAttributeValue = XmlLiteReader.GetText();
+
+                    if (!XmlLiteReader.MoveToNextAttribute())
+                        break;
+                    sAttributeName = XmlLiteReader.GetName();
+                }
+
+                XmlLiteReader.MoveToElement();
+            }
+
+            if (!XmlLiteReader.IsEmptyNode())
+            {
+                int nParentDepth = XmlLiteReader.GetDepth();
+                while( XmlLiteReader.ReadNextSiblingNode( nParentDepth ) )
+                {
+                    std::wstring sName = XmlLiteReader.GetName();
+
+                    // и тут так же читаем всю ноду
+                }
+            }
+        }
+
+        чтение sax - ридером не так удобно, как dom, но он быстрее.
+        за один проход надо все прочитать.
+        */
+
         while (XmlLiteReader.ReadNextNode())
         {
             if (XmlLiteReader.GetNamespacePrefix() == L"dc")

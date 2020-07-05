@@ -2,8 +2,6 @@
 #define CEPUBFILE_H
 
 #include "src/EpubFile_global.h"
-#include "../OfficeUtils/src/OfficeUtils.h"
-#include "../DesktopEditor/xml/include/xmlutils.h"
 #include <map>
 
 class EPUBFILE_EXPORT CEpubFile

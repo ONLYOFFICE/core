@@ -20,7 +20,7 @@ public:
     ~CFb2File();
 
     bool IsFb2File(const std::wstring& sFile);
-    void SetImpDirectory(const std::wstring& sFolder);
+    void SetTmpDirectory(const std::wstring& sFolder);
     int Convert(const std::wstring& sPath, const std::wstring& sDirectory);
 };
 

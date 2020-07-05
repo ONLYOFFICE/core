@@ -1,10 +1,11 @@
 #include <iostream>
 #include "../../../DesktopEditor/xml/include/xmlutils.h"
+#include "../../../DesktopEditor/common/File.h"
 
 int main()
 {
     XmlUtils::CXmlLiteReader oLightReader;
-    if (oLightReader.FromFile(L"../../../../test.xml"))
+    if (oLightReader.FromFile(NSFile::GetProcessDirectory() + L"/../../../examples/test.xml"))
     {
         while(oLightReader.ReadNextNode())
         {

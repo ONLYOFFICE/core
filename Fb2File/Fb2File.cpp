@@ -2,6 +2,7 @@
 #include "../DesktopEditor/xml/include/xmlutils.h"
 #include "../DesktopEditor/common/Base64.h"
 #include "../DesktopEditor/common/File.h"
+#include "../DesktopEditor/common/Directory.h"
 
 #include <vector>
 #include <map>
@@ -367,7 +368,7 @@ bool CFb2File::IsFb2File(const std::wstring& sFile)
 }
 
 // Выставление временной (рабочей) папки
-void CFb2File::SetImpDirectory(const std::wstring& sFolder)
+void CFb2File::SetTmpDirectory(const std::wstring& sFolder)
 {
     m_internal->m_sDstFolder = sFolder;
 }
@@ -398,6 +399,8 @@ int CFb2File::Convert (const std::wstring& sPath, const std::wstring& sDirectory
 
     // ПРОПУСКАЕМ body
 
+    std::wstring sMediaDirectory = sDirectory + L"/media";
+    NSDirectory::CreateDirectory(sMediaDirectory);
     while(m_internal->m_oLightReader.ReadNextNode())
     {
         // Читает картинки
@@ -421,7 +424,7 @@ int CFb2File::Convert (const std::wstring& sPath, const std::wstring& sDirectory
 
             // Пишет картинку в файл
             NSFile::CFileBinary oImageWriter;
-            if (!oImageWriter.CreateFileW(sDirectory + sId))
+            if (!oImageWriter.CreateFileW(sMediaDirectory + L"/" + sId))
                 return false;
             std::string sBase64 = m_internal->contentA(sId);
             int nSrcLen = (int)sBase64.length();

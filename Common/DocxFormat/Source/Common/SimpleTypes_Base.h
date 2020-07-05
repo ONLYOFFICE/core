@@ -121,6 +121,7 @@ namespace SimpleTypes
 		{
 			m_eValue = DefValue;
 		}
+        virtual ~CSimpleType() {}
 
 		virtual E GetValue () const
 		{
@@ -145,6 +146,7 @@ namespace SimpleTypes
 	public:
 
 		CUniversalMeasure() {}
+        virtual ~CUniversalMeasure() {}
 
         virtual double  FromString(std::wstring &sValue)     = 0;
         virtual std::wstring ToString  () const              = 0;
@@ -287,6 +289,7 @@ namespace SimpleTypes
 	public:
 
 		CUniversalMeasureOrPercent() {}
+        virtual ~CUniversalMeasureOrPercent() {}
 
 		virtual double  FromString(std::wstring &sValue)
 		{
@@ -468,6 +471,7 @@ namespace SimpleTypes
 	{
 	public:
 		CDouble() {}
+        virtual ~CDouble() {}
 
         virtual double  FromString(std::wstring &sValue)
 		{

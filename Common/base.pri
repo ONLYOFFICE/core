@@ -256,6 +256,10 @@ core_android {
         isEqual(CORE_BUILDS_PLATFORM_PREFIX, android_x86_64):OO_DESTDIR_BUILD_OVERRIDE=$$OO_DESTDIR_BUILD_OVERRIDE/x86_64
     }
 
+    core_debug {
+        QMAKE_LFLAGS += -Wl,--build-id=sha1
+    }
+
     !core_android_no_unistd {
         DEFINES += HAVE_UNISTD_H
     }

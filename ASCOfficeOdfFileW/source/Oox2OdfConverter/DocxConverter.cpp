@@ -200,6 +200,7 @@ bool DocxConverter::convertDocument()
 	if (docx_flat_document)	delete docx_flat_document; docx_flat_document = NULL;
 
 	odt_context->end_document();
+	return true;
 }
 
 void DocxConverter::convert_document()

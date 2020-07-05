@@ -48,6 +48,7 @@ namespace SimpleTypes
 			{
 				m_eValue = val;
 			}
+            virtual ~CSimpleType() {}
 
 			virtual E GetValue() const
 			{

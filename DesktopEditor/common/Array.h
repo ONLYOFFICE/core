@@ -35,7 +35,9 @@
 #include "Types.h"
 #include <string.h>
 
-#if 0 //__APPLE__
+#ifdef INTERNAL_USE_ARRAY_AS_VECTOR
+
+// Use std::vector instead this class
 
 #include <vector>
 

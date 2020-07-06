@@ -67,6 +67,8 @@ isEqual(QT_MAJOR_VERSION, 5) {
     }
 }
 
+DEFINES += INTERNAL_USE_ARRAY_AS_VECTOR
+
 ios {
     CONFIG += core_ios
     DEFINES += _IOS IOS LINUX _LINUX MAC _MAC _XCODE

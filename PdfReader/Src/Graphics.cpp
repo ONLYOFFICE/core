@@ -1563,8 +1563,7 @@ namespace PdfReader
 		{
 			if (m_pGState->GetStrokeColorSpace()->GetMode() == csPattern)
 			{
-				//DoPatternStroke();
-				m_pOut->Stroke(m_pGState);
+				DoPatternStroke();
 			}
 			else
 			{
@@ -1909,6 +1908,12 @@ namespace PdfReader
 		{
 			return;
 		}
+
+		// TODO: Обводка по паттерну работает неправильно. Она не учитывает, ни пунктирность, ни тип соединения,
+		//       ни тип окончания. Либо надо строить здесь внешний пат для обводки через заливку, либо
+		//       ждать, когда будет реализация внутри Renderer
+		m_pOut->Stroke(m_pGState);
+		return;
 
 		GrPattern *pPattern = NULL;
 		if (!(pPattern = m_pGState->GetStrokePattern()))
@@ -2758,6 +2763,7 @@ namespace PdfReader
 			m_pGState->LineTo(dStartX1, dStartY1);
 			m_pGState->ClosePath();
 			m_pOut->Fill(m_pGState);
+
 			m_pGState->ClearPath();
 
 			// Начальные значения для следующего полигона

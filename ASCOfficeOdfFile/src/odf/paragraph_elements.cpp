@@ -490,10 +490,10 @@ void span::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 	CP_APPLY_ATTR(L"text:style-name", text_style_name_, std::wstring(L""));
     
-    const std::wstring classNames = Attributes->get_val< std::wstring >(L"text:class-names").get_value_or(L"");
+    std::wstring classNames = Attributes->get_val< std::wstring >(L"text:class-names").get_value_or(L"");
     std::vector< std::wstring > classNamesArray;
 
-    if (classNames.size())
+    if (false == classNames.empty())
     {
         boost::algorithm::split(classNamesArray, classNames, boost::algorithm::is_any_of(L" "));
 

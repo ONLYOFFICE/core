@@ -89,7 +89,7 @@ public:
         
         for (int i = 0; i < nAllocSize; i++)
             Add();
-        
+
         return TRUE;
     }
     
@@ -139,6 +139,11 @@ public:
         }
         return m_aT[nIndex];
     }
+
+	T* GetData()
+	{
+		return m_aT.data();
+	}
     
 private:
     

@@ -70,6 +70,8 @@ isEqual(QT_MAJOR_VERSION, 5) {
     }
 }
 
+DEFINES += INTERNAL_USE_ARRAY_AS_VECTOR
+
 ios {
     CONFIG += core_ios
     DEFINES += _IOS IOS LINUX _LINUX MAC _MAC _XCODE
@@ -161,7 +163,9 @@ core_windows {
 
 core_linux {
     equals(TEMPLATE, app) {
-        QMAKE_LFLAGS += -Wl,--rpath=./:./system
+        QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN\'"
+        QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN/system\'"
+        QMAKE_LFLAGS += -Wl,--disable-new-dtags
     }
 }
 

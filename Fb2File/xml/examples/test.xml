@@ -1,11 +1,3 @@
 <?xml version="1.0"?>
-<company>
-  <staff id="001" a2="hi2" a3="hi3">
-		<firstname>h1</firstname>
-		<lastname>h2</lastname>
-	</staff>
-	<staff id="002">
-		<firstname>h11</firstname>
-		<lastname>h12</lastname>
-	</staff>
-</company>
+<p>Вот это слово выведем <strong>жирным</strong>,
+а вот это - <emphasis>курсивным</emphasis>.</p>

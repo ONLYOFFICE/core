@@ -2,31 +2,42 @@
 #include "../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../../DesktopEditor/common/File.h"
 
+void read(XmlUtils::CXmlLiteReader& oLightReader)
+{
+    std::wcout << "tag: "         << oLightReader.GetName()
+               << "\tdepth: "     << oLightReader.GetDepth();
+    while(oLightReader.MoveToNextAttribute())
+    {
+        std::wcout << "\tattribute: " << oLightReader.GetName()
+                   << "\ttext: "     << oLightReader.GetText();
+    }
+    oLightReader.MoveToElement();
+    int nDepth = oLightReader.GetDepth();
+    while(oLightReader.ReadNextSiblingNode2(nDepth))
+    {
+        std::wstring sName = oLightReader.GetName();
+        if(sName == L"#text")
+        {
+            std::wcout << "\ttext: " << oLightReader.GetText();
+        }
+        else
+        {
+            std::wcout << std::endl;
+            read(oLightReader);
+        }
+    }
+    std::wcout << std::endl;
+}
+
 int main()
 {
+    setlocale(LC_ALL, "Russian");
     XmlUtils::CXmlLiteReader oLightReader;
     if (oLightReader.FromFile(NSFile::GetProcessDirectory() + L"/../../../examples/test.xml"))
     {
         while(oLightReader.ReadNextNode())
         {
-            // Читает файл потоком заменяя \n и \t
-            // std::wcout << oLightReader.GetOuterXml() << std::endl;
-
-            // Читаю с помощью функций
-            std::wcout << "tag: "         << oLightReader.GetName()
-                       << "\tdepth: "     << oLightReader.GetDepth();
-            while(oLightReader.MoveToNextAttribute())
-            {
-                std::wcout << "\tattribute: " << oLightReader.GetName()
-                           << "\ttext: "     << oLightReader.GetText();
-            }
-            oLightReader.MoveToElement();
-            if(oLightReader.ReadNextSiblingNode2(oLightReader.GetDepth()))
-            {
-                std::wstring res = oLightReader.GetText();
-                std::wcout << "\ttext: " << res;
-            }
-            std::wcout << std::endl;
+            read(oLightReader);
         }
     }
     else

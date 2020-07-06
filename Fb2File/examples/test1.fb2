@@ -37,7 +37,6 @@
   </src-title-info>
   <document-info>
    <author>
-    <first-name></first-name>
     <last-name>MCat78</last-name>
     <nickname>MCat78</nickname>
     <email>MCat78@mail.ru</email>
@@ -60,7 +59,11 @@
    <year>2004</year>
    <isbn>5-17-023133-4, 5-9660-0091-3</isbn>
   </publish-info>
+  <custom-info into-type="hi">hu</custom-info>
+  <custom-info into-type="hi2">hu2</custom-info>
+  <custom-info into-type="hi3">hu3</custom-info>
  </description>
+ <body></body>
  <binary id="cover.jpg" content-type="image/jpeg">/9j/4AAQSkZJRgABAgAAZABkAAD/7AARRHVja3kAAQAEAAAAPAAA/+4AJkFkb2JlAGTAAAAA
 AQMAFQQDBgoNAAAeJwAAQnYAAHXhAAC8H//bAIQABgQEBAUEBgUFBgkGBQYJCwgGBggLDAoK
 CwoKDBAMDAwMDAwQDA4PEA8ODBMTFBQTExwbGxscHx8fHx8fHx8fHwEHBwcNDA0YEBAYGhUR

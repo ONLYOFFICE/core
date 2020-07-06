@@ -6,7 +6,7 @@ BUILD_NUMBER = $$(BUILD_NUMBER)
 !isEmpty(PRODUCT_VERSION){
     !isEmpty(BUILD_NUMBER){
         VERSION = $${PRODUCT_VERSION}.$${BUILD_NUMBER}
-	}
+    }
 }
 
 DEFINES += INTVER=$$VERSION
@@ -160,7 +160,9 @@ core_windows {
 
 core_linux {
     equals(TEMPLATE, app) {
-        QMAKE_LFLAGS += -Wl,--rpath=./:./system
+        QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN\'"
+        QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN/system\'"
+        QMAKE_LFLAGS += -Wl,--disable-new-dtags
     }
 }
 

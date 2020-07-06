@@ -15,8 +15,8 @@ include(../Common/base.pri)
 
 DEFINES += UNICODECONVERTER_USE_DYNAMIC_LIBRARY
 
-core_linux {
-    QMAKE_LFLAGS += -Wl,--rpath=./
+core_linux {    
+    QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN\'"
 }
 
 core_ios {

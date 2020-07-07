@@ -29,8 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "Drawing.h"
 #include "DrawingExt.h"
+#include "Drawing.h"
 #include "../../XlsxFormat/Worksheets/Sparkline.h"
 #include "../../XlsxFormat/Table/Table.h"
 #include "../../XlsxFormat/Table/Connections.h"
@@ -616,7 +616,7 @@ namespace OOX
 					m_oDocPr = oReader;
 				else if ( _T("wp:effectExtent") == sName )
 					m_oEffectExtent = oReader;
-				else if ( _T("wp:extent") == sName )
+				else if ( _T("wp:extent") == sName ) 
 					m_oExtent = oReader;
 				else
 				{
@@ -663,6 +663,16 @@ namespace OOX
 			m_oDataModelExt.reset();
 			m_oCompatExt.reset();
 			m_oDataValidations.reset();
+			m_oConnection.reset();
+			m_oDxfs.reset();
+			m_oTableSlicerCache.reset();
+			m_oSlicerList.reset();
+			m_oSlicerListExt.reset();
+			m_oSlicerCaches.reset();
+			m_oSlicerCachesExt.reset();
+			m_oSlicerStyles.reset();
+			m_oTableSlicerCache.reset();
+			m_oSlicerCacheHideItemsWithNoData.reset();
 
 			for (size_t nIndex = 0; nIndex < m_arrConditionalFormatting.size(); ++nIndex)
 			{

@@ -507,8 +507,7 @@ extern int g_nCurFormatVersion;
 		BookmarkStart = 23,
 		BookmarkEnd = 24,
 		MRun = 25,
-		AltChunk = 26,
-		EmbeddedAbstractNum = 27
+		AltChunk = 26
 	};}
 	namespace c_oSerDocTableType{enum c_oSerDocTableType
 	{

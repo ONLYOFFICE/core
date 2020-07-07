@@ -44,6 +44,8 @@ namespace PPTX
 	{
 		MathParaWrapper::~MathParaWrapper()
 		{
+			m_oMathPara.reset();
+			m_oMath.reset();
 		}
 		MathParaWrapper& MathParaWrapper::operator=(const MathParaWrapper& oSrc)
 		{

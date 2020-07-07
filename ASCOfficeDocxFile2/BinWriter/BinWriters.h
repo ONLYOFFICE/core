@@ -78,6 +78,12 @@ namespace BinDocxRW
 		OOX::CSettings*			m_pSettings;
 		PPTX::Theme*			m_pTheme;
 		
+		OOX::CStyles*			m_pStyles;
+		OOX::CNumbering*		m_pNumbering;
+
+		bool m_bLocalStyles;
+		bool m_bLocalNumbering;
+
 		OOX::CStyles*			m_pEmbeddedStyles;
 		OOX::CNumbering*		m_pEmbeddedNumbering;
 
@@ -91,9 +97,13 @@ namespace BinDocxRW
 			m_pSettings = NULL;
 			m_pTheme	= NULL;
 			m_pCurRels	= NULL;
+			m_pStyles	= NULL;
+			m_pNumbering = NULL;
 
 			m_pEmbeddedStyles = NULL;
 			m_pEmbeddedNumbering = NULL;
+
+			m_bLocalStyles = m_bLocalNumbering = false;
 		}
 	};
 	class ParamsDocumentWriter
@@ -135,11 +145,7 @@ namespace BinDocxRW
 	class BinaryHeaderFooterTableWriter
 	{
 		BinaryCommonWriter				m_oBcw;
-		OOX::CSettings*					m_pSettings;
-		OOX::CStyles*					m_pEmbeddedStyles;
 
-		PPTX::Theme*					m_pTheme;
-		DocWrapper::FontProcessor&		m_oFontProcessor;
 		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 		std::map<int, bool>*			m_mapIgnoreComments;
 	public:
@@ -181,13 +187,9 @@ namespace BinDocxRW
 	{
 		BinaryCommonWriter m_oBcw;
 		Binary_rPrWriter brPrs;
-		OOX::CSettings* m_pSettings;
 		
-		OOX::CStyles* m_pEmbeddedStyles;
-		OOX::CNumbering* m_pEmbeddedNumbering;
+		ParamsWriter& m_oParamsWriter;
 	public:
-		OOX::Numbering::CAbstractNum* m_pEmbeddedAbstractNum;
-
 		BinaryHeaderFooterTableWriter* m_oBinaryHeaderFooterTableWriter;
 
 		Binary_pPrWriter(ParamsWriter& oParamsWriter, BinaryHeaderFooterTableWriter* oBinaryHeaderFooterTableWriter);
@@ -214,6 +216,9 @@ namespace BinDocxRW
 							 const nullable<ComplexTypes::Word::CDecimalNumber>& numStart, nullable<ComplexTypes::Word::CFtnPos>* ftnPos,
 							 nullable<ComplexTypes::Word::CEdnPos>* endPos, std::vector<OOX::CFtnEdnSepRef*>* refs);
 		void WriteNumFmt(const ComplexTypes::Word::CNumFmt& oNumFmt);
+
+	private:
+		std::wstring AddEmbeddedStyle(const std::wstring & styleId);
 	};
 	class Binary_tblPrWriter
 	{
@@ -304,12 +309,12 @@ namespace BinDocxRW
 	{
 	private:
 		ParamsWriter&			m_oParamsWriter;
+		
 		ParamsDocumentWriter&	m_oParamsDocumentWriter;
 		BinaryCommonWriter		m_oBcw;
 		Binary_pPrWriter		bpPrs;
 		Binary_rPrWriter		brPrs;
 		std::wstring			m_sCurParStyle;
-		OOX::CSettings*			m_pSettings;
 
 		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 		std::map<int, bool>*			m_mapIgnoreComments;

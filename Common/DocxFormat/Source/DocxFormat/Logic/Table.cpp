@@ -556,7 +556,7 @@ namespace OOX
 								if ( pCell->m_pTableCellProperties )
 								{
 									if ( pCell->m_pTableCellProperties->m_oGridSpan.IsInit() && pCell->m_pTableCellProperties->m_oGridSpan->m_oVal.IsInit() )
-										nNumCol += pCell->m_pTableCellProperties->m_oGridSpan->m_oVal->GetValue();
+										nNumCol += *pCell->m_pTableCellProperties->m_oGridSpan->m_oVal;
 									else
 										nNumCol++;
 								}
@@ -664,7 +664,7 @@ namespace OOX
 						if ( pCell->m_pTableCellProperties )
 						{
 							if ( pCell->m_pTableCellProperties->m_oGridSpan.IsInit() && pCell->m_pTableCellProperties->m_oGridSpan->m_oVal.IsInit() )
-								nNumCol += pCell->m_pTableCellProperties->m_oGridSpan->m_oVal->GetValue();
+								nNumCol += *pCell->m_pTableCellProperties->m_oGridSpan->m_oVal;
 							else
 								nNumCol++;
 						}

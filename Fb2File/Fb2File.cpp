@@ -197,6 +197,71 @@ public:
         return true;
     }
 
+    // Читает title
+    bool readTitle()
+    {
+        m_sBody += L"title\n";
+        int nDeath = m_oLightReader.GetDepth();
+        while(m_oLightReader.ReadNextSiblingNode(nDeath))
+        {
+            if(m_oLightReader.GetName() == L"p")
+            {
+                if(!readP())
+                    return false;
+            }
+            else if(m_oLightReader.GetName() == L"empty-line")
+                m_sBody += L"\n";
+            else
+                return false;
+        }
+        return true;
+    }
+
+    // Читает epigraph
+    bool readEpigraph()
+    {
+        m_sBody += L"epigraph\n";
+        int nDeath = m_oLightReader.GetDepth();
+        while(m_oLightReader.ReadNextSiblingNode(nDeath))
+        {
+            std::wstring sName = m_oLightReader.GetName();
+            if(sName == L"p")
+            {
+                if(!readP())
+                    return false;
+            }
+            else if(sName == L"poem")
+            {
+                if(!readPoem())
+                    return false;
+            }
+            else if(sName == L"cite")
+            {
+                if(!readCite())
+                    return false;
+            }
+            else if(sName == L"empty-line")
+                m_sBody += L"\n";
+            else if(sName == L"text-author")
+                break;
+            else
+                return false;
+        }
+        // Читаем text-author (любое)
+        if(m_oLightReader.GetName() == L"text-author")
+        {
+            do
+            {
+                if(m_oLightReader.GetName() != L"text-author")
+                    return false;
+                m_sBody += L"text-author\n";
+                if(!readP())
+                    return false;
+            } while(m_oLightReader.ReadNextSiblingNode(nDeath));
+        }
+        return true;
+    }
+
     // Читает p
     bool readP()
     {
@@ -271,18 +336,332 @@ public:
     // Читает poem
     bool readPoem()
     {
+        m_sBody += L"poem\n";
+        while(m_oLightReader.MoveToNextAttribute())
+            m_sBody += L"\t" + m_oLightReader.GetName() + L" " + m_oLightReader.GetText() + L"\n";
+        if(!m_oLightReader.ReadNextNode())
+            return false;
+
+        // Читаем title (ноль или один)
+        if(m_oLightReader.GetName() == L"title")
+        {
+            if(!readTitle())
+                return false;
+            if(!m_oLightReader.ReadNextNode())
+                return false;
+        }
+
+        // Читаем epigraph (любое)
+        if(m_oLightReader.GetName() == L"epigraph")
+        {
+            do
+            {
+                if(!readEpigraph())
+                    return false;
+            } while(isSection(L"epigraph"));
+        }
+
+        // Читаем stanza (один или более)
+        if(m_oLightReader.GetName() != L"stanza")
+            return false;
+        int nDeath = m_oLightReader.GetDepth() - 1;
+        do
+        {
+            if(m_oLightReader.GetName() != L"stanza")
+                break;
+
+            // Читаем title (ноль или один)
+            if(isSection(L"title"))
+            {
+                if(!readTitle())
+                    return false;
+                if(!m_oLightReader.ReadNextNode())
+                    return false;
+            }
+
+            // Читаем subtitle (ноль или один)
+            if(m_oLightReader.GetName() == L"subtitle")
+            {
+                m_sBody += L"subtitle\n";
+                if(!readP())
+                    return false;
+                if(!m_oLightReader.ReadNextNode())
+                    return false;
+            }
+
+            // Читаем v (один или более)
+            if(m_oLightReader.GetName() != L"v")
+                return false;
+            int nVDeath = m_oLightReader.GetDepth() - 1;
+            do
+            {
+                if(m_oLightReader.GetName() != L"v")
+                    return false;
+                m_sBody += L"v\n";
+                if(!readP())
+                    return false;
+            } while(m_oLightReader.ReadNextSiblingNode(nVDeath));
+        } while(m_oLightReader.ReadNextSiblingNode(nDeath));
+
+        // Читаем text-author (любое)
+        if(m_oLightReader.GetName() == L"text-author")
+        {
+            do
+            {
+                if(m_oLightReader.GetName() != L"text-author")
+                    break;
+                m_sBody += L"text-author\n";
+                if(!readP())
+                    return false;
+            } while(m_oLightReader.ReadNextSiblingNode(nDeath));
+        }
+
+        // Читаем date (ноль или один)
+        if(m_oLightReader.GetName() == L"date")
+        {
+            m_sBody += L"date\n";
+            while(m_oLightReader.MoveToNextAttribute())
+                m_sBody += L"\t" + m_oLightReader.GetName() + L" " + m_oLightReader.GetText() + L"\n";
+            m_oLightReader.MoveToElement();
+        }
+
         return true;
     }
 
     // Читает cite
     bool readCite()
     {
+        m_sBody += L"cite\n";
+        int nDeath = m_oLightReader.GetDepth();
+        while(m_oLightReader.ReadNextSiblingNode(nDeath))
+        {
+            std::wstring sName = m_oLightReader.GetName();
+            if(sName == L"p")
+            {
+                if(!readP())
+                    return false;
+            }
+            else if(sName == L"subtitle")
+            {
+                m_sBody += L"subtitle\n";
+                if(!readP())
+                    return false;
+            }
+            else if(sName == L"empty-line")
+                m_sBody += L"\n";
+            else if(sName == L"poem")
+            {
+                if(!readPoem())
+                    return false;
+            }
+            else if(sName == L"table")
+            {
+                if(!readTable())
+                    return false;
+            }
+            else if(sName == L"text-author")
+                break;
+            else
+                return false;
+        }
+        // Читаем text-author (любое)
+        if(m_oLightReader.GetName() == L"text-author")
+        {
+            do
+            {
+                if(m_oLightReader.GetName() != L"text-author")
+                    return false;
+                m_sBody += L"text-author\n";
+                if(!readP())
+                    return false;
+            } while(m_oLightReader.ReadNextSiblingNode(nDeath));
+        }
+        return true;
+    }
+
+    // Читает table
+    bool readTable()
+    {
+        m_sBody += L"table\n";
+        while(m_oLightReader.MoveToNextAttribute())
+            m_sBody += L"\t" + m_oLightReader.GetName() + L" " + m_oLightReader.GetText() + L"\n";
+        m_oLightReader.MoveToElement();
+        int nDeath = m_oLightReader.GetDepth();
+        if(!m_oLightReader.ReadNextSiblingNode(nDeath))
+            return false;
+
+        // Читаем tr (один или более)
+        if(m_oLightReader.GetName() != L"tr")
+            return false;
+        do
+        {
+            if(m_oLightReader.GetName() != L"tr")
+                return false;
+            m_sBody += L"tr\n";
+            int nTrDeath = m_oLightReader.GetDepth();
+            while(m_oLightReader.ReadNextSiblingNode(nTrDeath))
+            {
+                // Читаем th (любое)
+                if(m_oLightReader.GetName() == L"th")
+                {
+                    m_sBody += L"th\n";
+                    if(!readP())
+                        return false;
+                }
+                // Читаем td (любое)
+                else if(m_oLightReader.GetName() == L"td")
+                {
+                    m_sBody += L"td\n";
+                    if(!readP())
+                        return false;
+                }
+                else
+                    return false;
+            }
+        } while(m_oLightReader.ReadNextSiblingNode(nDeath));
         return true;
     }
 
     // Читает section
     bool readSection()
     {
+        m_sBody += L"section\n";
+        while(m_oLightReader.MoveToNextAttribute())
+            m_sBody += L"\t" + m_oLightReader.GetName() + L" " + m_oLightReader.GetText() + L"\n";
+        if(!m_oLightReader.ReadNextNode())
+            return false;
+
+        // Читаем title (ноль или один)
+        if(m_oLightReader.GetName() == L"title")
+        {
+            if(!readTitle())
+                return false;
+            if(!m_oLightReader.ReadNextNode())
+                return false;
+        }
+
+        // Читаем epigraph (любое)
+        if(m_oLightReader.GetName() == L"epigraph")
+        {
+            do
+            {
+                if(!readEpigraph())
+                    return false;
+            } while(isSection(L"epigraph"));
+        }
+
+        // Читаем image (ноль или один)
+        if(m_oLightReader.GetName() == L"image")
+        {
+            m_sBody += L"image\n";
+            while(m_oLightReader.MoveToNextAttribute())
+                m_sBody += L"\t" + m_oLightReader.GetName() + L" " + m_oLightReader.GetText() + L"\n";
+            if(!m_oLightReader.ReadNextNode())
+                return false;
+        }
+
+        // Читаем annotation (ноль или один)
+        if(m_oLightReader.GetName() == L"annotation")
+        {
+            m_sBody += L"annotation\n";
+            int nDeath = m_oLightReader.GetDepth();
+            while(m_oLightReader.ReadNextSiblingNode(nDeath))
+            {
+                std::wstring sAnName = m_oLightReader.GetName();
+                if(sAnName == L"p")
+                {
+                    if(!readP())
+                        return false;
+                }
+                else if(sAnName == L"poem")
+                {
+                    if(!readPoem())
+                        return false;
+                }
+                else if(sAnName == L"cite")
+                {
+                    if(!readCite())
+                        return false;
+                }
+                else if(sAnName == L"subtitle")
+                {
+                    m_sBody += L"subtitle\n";
+                    if(!readP())
+                        return false;
+                }
+                else if(sAnName == L"empty-line")
+                    m_sBody += L"\n";
+                else if(sAnName == L"table")
+                {
+                    if(!readTable())
+                        return false;
+                }
+                else
+                    return false;
+            }
+            if(!m_oLightReader.ReadNextNode())
+                return false;
+        }
+
+        // Читаем вложенные section (любое)
+        if(m_oLightReader.GetName() == L"section")
+        {
+            int nDeath = m_oLightReader.GetDepth() - 1;
+            do
+            {
+                if(m_oLightReader.GetName() != L"section")
+                    return false;
+                if(!readSection())
+                    return false;
+            } while(m_oLightReader.ReadNextSiblingNode(nDeath));
+        }
+        // Читаем произвольный набор
+        else
+        {
+            int nDeath = m_oLightReader.GetDepth() - 1;
+            do
+            {
+                std::wstring sName = m_oLightReader.GetName();
+                if(sName == L"p")
+                {
+                    if(!readP())
+                        return false;
+                }
+                else if(sName == L"image")
+                {
+                    m_sBody += L"image\n";
+                    while(m_oLightReader.MoveToNextAttribute())
+                        m_sBody += L"\t" + m_oLightReader.GetName() + L" " + m_oLightReader.GetText() + L"\n";
+                    m_oLightReader.MoveToElement();
+                }
+                else if(sName == L"poem")
+                {
+                    if(!readPoem())
+                        return false;
+                }
+                else if(sName == L"subtitle")
+                {
+                    m_sBody += L"subtitle\n";
+                    if(!readP())
+                        return false;
+                }
+                else if(sName == L"cite")
+                {
+                    if(!readCite())
+                        return false;
+                }
+                else if(sName == L"empty-line")
+                    m_sBody += L"\n";
+                else if(sName == L"table")
+                {
+                    if(!readTable())
+                        return false;
+                }
+                else
+                    return false;
+            } while(m_oLightReader.ReadNextSiblingNode(nDeath));
+        }
+
         return true;
     }
 
@@ -302,20 +681,8 @@ public:
         // Читаем title (ноль или один)
         if(m_oLightReader.GetName() == L"title")
         {
-            m_sBody += L"title\n";
-            int nDeath = m_oLightReader.GetDepth();
-            while(m_oLightReader.ReadNextSiblingNode(nDeath))
-            {
-                if(m_oLightReader.GetName() == L"p")
-                {
-                    if(!readP())
-                        return false;
-                }
-                else if(m_oLightReader.GetName() == L"empty-line")
-                    m_sBody += L"\n";
-                else
-                    return false;
-            }
+            if(!readTitle())
+                return false;
             if(!m_oLightReader.ReadNextNode())
                 return false;
         }
@@ -325,53 +692,23 @@ public:
         {
             do
             {
-                m_sBody += L"epigraph\n";
-                int nDeath = m_oLightReader.GetDepth();
-                while(m_oLightReader.ReadNextSiblingNode(nDeath))
-                {
-                    std::wstring sEpName = m_oLightReader.GetName();
-                    if(sEpName == L"p")
-                    {
-                        if(!readP())
-                            return false;
-                    }
-                    else if(sEpName == L"poem")
-                    {
-                        if(!readPoem())
-                            return false;
-                    }
-                    else if(sEpName == L"cite")
-                    {
-                        if(!readCite())
-                            return false;
-                    }
-                    else if(sEpName == L"empty-line")
-                        m_sBody += L"\n";
-                    else if(sEpName == L"text-author")
-                        break;
-                    else
-                        return false;
-                }
-
-                // Читаем text-author
-                if(m_oLightReader.GetName() == L"text-author")
-                {
-                    do
-                    {
-                        if(m_oLightReader.GetName() != L"text-author")
-                            return false;
-                        m_sBody += L"text-author\n";
-                        if(!readP())
-                            return false;
-                    } while(m_oLightReader.ReadNextSiblingNode(nDeath));
-                }
+                if(!readEpigraph())
+                    return false;
             } while(isSection(L"epigraph"));
         }
 
-        // Читаем section
+        // Читаем section (один или более)
         if(m_oLightReader.GetName() != L"section")
             return false;
-        return readSection();
+        int nDeath = m_oLightReader.GetDepth() - 1;
+        do
+        {
+            if(m_oLightReader.GetName() != L"section")
+                return false;
+            if(!readSection())
+                return false;
+        } while(m_oLightReader.ReadNextSiblingNode(nDeath));
+        return true;
     }
 
     // Читает custom-info
@@ -788,6 +1125,7 @@ int CFb2File::Convert (const std::wstring& sPath, const std::wstring& sDirectory
     m_internal->m_sBody = L"";
     do
     {
+        /*
         if(m_internal->m_oLightReader.MoveToNextAttribute())
         {
             if(m_internal->m_oLightReader.GetName() == L"name" &&
@@ -796,6 +1134,7 @@ int CFb2File::Convert (const std::wstring& sPath, const std::wstring& sDirectory
 
             }
         }
+        */
         if(!m_internal->readBody())
             return false;
     } while(m_internal->isSection(L"body"));

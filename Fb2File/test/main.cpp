@@ -27,14 +27,5 @@ int main()
     }
 
     int nResConvert = oFile.Convert(sFile, sOutputDirectory);
-    // GetText() ДЛЯ ТЕСТА
-    std::wcout << oFile.GetText();
-    /*
-    std::wstring res = oFile.GetText();
-    for(size_t i = 0; i < res.length(); i = i + 100)
-    {
-         std::wcout << res.substr(i, 100);
-    }
-    */
     return 0;
 }

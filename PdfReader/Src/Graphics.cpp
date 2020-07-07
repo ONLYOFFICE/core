@@ -401,7 +401,7 @@ namespace PdfReader
 	Graphics::Graphics(GlobalParams *pGlobalParams, XRef *pXref, OutputDev *pOut, int nPageNumber, Dict *pResorcesDict, double dHorDPI, double dVerDPI, PDFRectangle *pBox, PDFRectangle *pCropBox, int nRotate, bool(*pAbortCheckCallBack)(void *pData), void *pAbortCheckData)
 	{
 #ifdef _DEBUG
-		std::wstring wsFileName = L"D:\\Output\\PDF Dump\\DumpPDF_Page" + std::to_wstring(nPageNumber) + L".bin";
+		std::wstring wsFileName = L"E:\\Ilya\\Work\\Test\\PdfDump\\Dump" + std::to_wstring(nPageNumber) + L".bin";
 		m_pDumpFile = NSFile::CFileBinary::OpenFileNative(wsFileName, L"wb");
 #endif
 
@@ -1909,6 +1909,12 @@ namespace PdfReader
 			return;
 		}
 
+		// TODO: Обводка по паттерну работает неправильно. Она не учитывает, ни пунктирность, ни тип соединения,
+		//       ни тип окончания. Либо надо строить здесь внешний пат для обводки через заливку, либо
+		//       ждать, когда будет реализация внутри Renderer
+		m_pOut->Stroke(m_pGState);
+		return;
+
 		GrPattern *pPattern = NULL;
 		if (!(pPattern = m_pGState->GetStrokePattern()))
 		{
@@ -2757,6 +2763,7 @@ namespace PdfReader
 			m_pGState->LineTo(dStartX1, dStartY1);
 			m_pGState->ClosePath();
 			m_pOut->Fill(m_pGState);
+
 			m_pGState->ClearPath();
 
 			// Начальные значения для следующего полигона

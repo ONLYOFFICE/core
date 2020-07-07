@@ -45,7 +45,6 @@
 namespace cpdoccore { 
 namespace oox {
 
-
 class oox_chart_context;
 typedef _CP_PTR(oox_chart_context) oox_chart_context_ptr;
 
@@ -67,9 +66,10 @@ public:
 	{
 		pivot_source_ = source;
 	}
-	void set_title(odf_reader::chart::title & t)
+	void set_title(odf_reader::chart::title & t, odf_reader::chart::title & sub)
 	{
 		title_.set_content(t);
+		title_.set_sub_content(sub);
 	}
 	void add_axis(int type, odf_reader::chart::axis & content)
 	{

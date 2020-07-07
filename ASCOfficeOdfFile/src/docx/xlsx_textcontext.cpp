@@ -41,14 +41,13 @@
 #include <xml/utils.h>
 
 #include "../odf/odfcontext.h"
-#include "../odf/style_text_properties.h"
-#include "../odf/style_paragraph_properties.h"
 #include "../odf/calcs_styles.h"
 
+#include "../odf/style_paragraph_properties.h"
+#include "../odf/style_text_properties.h"
 
 namespace cpdoccore {
 namespace oox {
-
 
 class xlsx_text_context::Impl: boost::noncopyable
 {
@@ -65,7 +64,7 @@ public:
     std::wstring	end_span2();
 
     void			start_cell_content();
-	void			set_cell_text_properties( odf_reader::text_format_properties_content * text_properties);
+	void			set_cell_text_properties( odf_reader::text_format_properties_content_ptr text_properties);
     int				end_cell_content();
 
 	void			start_comment_content();
@@ -100,10 +99,11 @@ private:
 	bool only_text;
 
 	odf_reader::styles_container				& styles_;
-	odf_reader::text_format_properties_content	* text_properties_cell_;
 	odf_reader::styles_container				* local_styles_ptr_;
 
-    std::wstring	dump_paragraph();
+	odf_reader::text_format_properties_content_ptr text_properties_cell_;
+   
+	std::wstring	dump_paragraph();
 	std::wstring	dump_run();
 
     void write_rPr(std::wostream & strm);
@@ -281,10 +281,14 @@ void xlsx_text_context::Impl::ApplyTextProperties(std::wstring style, std::wstri
 	if (paraStyle)		instances.push_back(paraStyle);
 	if (textStyle)		instances.push_back(textStyle);
 
-	propertiesOut.apply_from(calc_text_properties_content(instances));
+	odf_reader::text_format_properties_content_ptr text_props = calc_text_properties_content(instances);
+	if (text_props)
+	{
+		propertiesOut.apply_from(*text_props.get());
+	}
 }
 
-void xlsx_text_context::Impl::set_cell_text_properties(odf_reader::text_format_properties_content * text_properties)
+void xlsx_text_context::Impl::set_cell_text_properties(odf_reader::text_format_properties_content_ptr text_properties)
 {
 	text_properties_cell_ = text_properties;
 }
@@ -582,7 +586,7 @@ void xlsx_text_context::set_local_styles_container(odf_reader::styles_container*
 	return impl_->set_local_styles_container(local_styles_);
 }
 
-void xlsx_text_context::set_cell_text_properties(odf_reader::text_format_properties_content *text_properties)
+void xlsx_text_context::set_cell_text_properties(odf_reader::text_format_properties_content_ptr text_properties)
 {
 	return impl_->set_cell_text_properties(text_properties);
 }

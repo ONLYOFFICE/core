@@ -62,8 +62,16 @@ namespace OOX
 		}
 		m_mapHeadersFooters.clear();
 	}
+	void CDocxFlat::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start( oReader )
+		WritingElement_ReadAttributes_Read_if	( oReader, L"xml:space", m_oSpace )
+		WritingElement_ReadAttributes_End( oReader )
+	}
 	void CDocxFlat::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
+		ReadAttributes( oReader );
+
 		if ( oReader.IsEmptyNode() )
 			return;
 

@@ -100,7 +100,6 @@ text_emphasize text_emphasize::parse(const std::wstring & Str)
             type1_ = Disc;
         else
         {
-            BOOST_THROW_EXCEPTION( errors::invalid_attribute() );
             return text_emphasize(None, None);
         }
     }
@@ -114,7 +113,6 @@ text_emphasize text_emphasize::parse(const std::wstring & Str)
             type2_ = Below;
         else
         {
-            BOOST_THROW_EXCEPTION( errors::invalid_attribute() );
             return text_emphasize(None, None);
         }        
 
@@ -126,7 +124,6 @@ text_emphasize text_emphasize::parse(const std::wstring & Str)
         return text_emphasize(type1_, type2_);
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );
         return text_emphasize(None, None);
     }
 

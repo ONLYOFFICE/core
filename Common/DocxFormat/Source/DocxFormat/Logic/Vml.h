@@ -57,7 +57,10 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CVmlCommonElements)
-            CVmlCommonElements(){m_bComment = false;}
+            CVmlCommonElements(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain) 
+			{
+				m_bComment = false;
+			}
 			
 			virtual ~CVmlCommonElements(){}
 
@@ -150,7 +153,9 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CArc)
-			CArc(){}
+			CArc(OOX::Document *pMain = NULL) : CVmlCommonElements(pMain)
+			{
+			}
 			virtual ~CArc(){}
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
@@ -231,7 +236,9 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCurve)
-			CCurve(){}
+			CCurve(OOX::Document *pMain = NULL) : CVmlCommonElements(pMain)
+			{
+			}
 			virtual ~CCurve(){}
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
@@ -392,15 +399,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CFill)
-			CFill()
+			CFill(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CFill()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CFill::fromXML(XmlUtils::CXmlNode& oNode)
@@ -477,7 +481,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CBackground)
-			CBackground()
+			CBackground(OOX::Document *pMain = NULL) : CVmlCommonElements(pMain) 
 			{
 			}
 			virtual ~CBackground()
@@ -538,7 +542,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CFormulas)
-			CFormulas()
+			CFormulas(OOX::Document *pMain = NULL) : WritingElementWithChilds<OOX::Vml::CF>(pMain)
 			{
 			}
 			virtual ~CFormulas()
@@ -649,15 +653,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CHandles)
-			CHandles()
+			CHandles(OOX::Document *pMain = NULL) : WritingElementWithChilds<OOX::Vml::CH>(pMain)
 			{
 			}
 			virtual ~CHandles()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CHandles::fromXML(XmlUtils::CXmlNode& oNode)
@@ -711,7 +712,9 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CImage)
-			CImage(){}
+			CImage(OOX::Document *pMain = NULL) : CVmlCommonElements(pMain)
+			{
+			}
 			virtual ~CImage(){}
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
@@ -752,7 +755,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CImageData)
-			CImageData()
+			CImageData(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CImageData()
@@ -813,9 +816,10 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CLine)
-			CLine(){}
+			CLine(OOX::Document *pMain = NULL) : CVmlCommonElements(pMain)
+			{
+			}
 			virtual ~CLine(){}
-		public:
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
@@ -899,9 +903,10 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(COval)
-			COval(){}
+			COval(OOX::Document *pMain = NULL) : CVmlCommonElements(pMain)
+			{
+			}
 			virtual ~COval(){}
-		public:
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
@@ -939,15 +944,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPath)
-			CPath()
+			CPath(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CPath()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CPath::fromXML(XmlUtils::CXmlNode& oNode)
@@ -994,10 +996,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPolyLine)
-			CPolyLine(){}
+			CPolyLine(OOX::Document *pMain = NULL) : CVmlCommonElements(pMain)
+			{
+			}
 			virtual ~CPolyLine(){}
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode){}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode){}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 				CVmlCommonElements::ReadAttributes( oReader );
@@ -1055,20 +1059,21 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CRect)
-			CRect(){}
+			CRect(OOX::Document *pMain = NULL) : CVmlCommonElements(pMain)
+			{
+			}
 			virtual ~CRect(){}
-		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CRect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				CVmlCommonElements::ReadAttributes( oReader );
 				CVmlCommonElements::ReadElements( oReader );
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<v:rect ");
 
@@ -1095,7 +1100,9 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CRoundRect)
-			CRoundRect(){}
+			CRoundRect(OOX::Document *pMain = NULL) : CVmlCommonElements(pMain)
+			{
+			}
 			virtual ~CRoundRect(){}
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
@@ -1172,7 +1179,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CShadow)
-			CShadow()
+			CShadow(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CShadow()
@@ -1310,10 +1317,10 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CShape)
-			CShape(){}
+			CShape(OOX::Document *pMain = NULL) : CVmlCommonElements(pMain) 
+			{
+			}
 			virtual ~CShape(){}
-
-		public:
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode){}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -1388,7 +1395,9 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CShapeType)
-			CShapeType(){}
+			CShapeType(OOX::Document *pMain = NULL) : CVmlCommonElements(pMain) 
+			{
+			}
 			virtual ~CShapeType(){}
 			virtual void fromXML(XmlUtils::CXmlNode& oNode){}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -1565,15 +1574,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CStroke)
-			CStroke()
+			CStroke(OOX::Document *pMain = NULL) : WritingElement(pMain) 
 			{
 			}
 			virtual ~CStroke()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CStroke::fromXML(XmlUtils::CXmlNode& oNode)
@@ -1657,7 +1663,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CTextbox)
-			CTextbox()
+			CTextbox(OOX::Document *pMain = NULL) : WritingElement(pMain) 
 			{
 			}
 			virtual ~CTextbox()
@@ -1694,7 +1700,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CTextPath)
-			CTextPath()
+			CTextPath(OOX::Document *pMain = NULL) : WritingElement(pMain) 
 			{
 			}
 			virtual ~CTextPath()
@@ -1811,7 +1817,9 @@ namespace OOX
 		public:
 			WritingElement_AdditionConstructors(CGroup);
 			
-			CGroup(){}
+			CGroup(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
+			{
+			}
 			virtual ~CGroup(){}
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1881,7 +1889,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CShapeDefaults)
-			CShapeDefaults()
+			CShapeDefaults(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CShapeDefaults()

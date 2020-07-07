@@ -105,7 +105,6 @@ vertical_rel vertical_rel::parse(const std::wstring & Str)
 
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return vertical_rel( Page );
     }
 }

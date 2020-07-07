@@ -68,7 +68,6 @@ font_style font_style::parse(const std::wstring & Str)
         return font_style( Oblique );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return font_style( Normal );
     }
 }

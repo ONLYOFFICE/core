@@ -1,0 +1,4 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/office/spreadsheetml/2015/02/main" xmlns:x="http://schemas.openxmlformats.org/spreadsheetml/2006/main" targetNamespace="http://schemas.microsoft.com/office/spreadsheetml/2015/02/main" elementFormDefault="qualified">
+   <xsd:import namespace="http://schemas.openxmlformats.org/spreadsheetml/2006/main" schemaLocation="xlbasictypes.xsd"/>
+   <xsd:attribute name="formatCode16" type="x:ST_Xstring"/>
+ </xsd:schema>

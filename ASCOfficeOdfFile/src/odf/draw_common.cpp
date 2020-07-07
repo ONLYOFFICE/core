@@ -376,9 +376,9 @@ void Compute_GradientFill(draw_gradient * image_style,oox::oox_gradient_fill_ptr
 }
 
 
-void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_element_ptr & style_image, styles_lite_container &styles, oox::_oox_fill & fill, bool txbx)
+void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_element_ptr & style_image, styles_lite_container &styles, oox::_oox_fill & fill, bool txbx, bool reset_fill)
 {
-	if (fill.type < 1)	fill.type = 0; 
+	if (fill.type < 1 && reset_fill) fill.type = 0; 
 
 	if (props.draw_opacity_) 
 	{
@@ -412,7 +412,7 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_el
 		fill.solid = oox::oox_solid_fill::create();
 		fill.solid->color = props.draw_fill_color_->get_hex_value();
 		
-		if (fill.type == 0 && !txbx )fill.type = 1;	//в этом случае тип может и не быть задан явно
+		if (fill.type <= 0 && !txbx ) fill.type = 1;	//в этом случае тип может и не быть задан явно
 	}
 	
 	if (props.draw_fill_image_name_)

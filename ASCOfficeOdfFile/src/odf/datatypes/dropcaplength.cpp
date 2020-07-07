@@ -75,7 +75,6 @@ drop_cap_length drop_cap_length::parse(const std::wstring & Str)
     {
     }
 
-    BOOST_THROW_EXCEPTION( errors::invalid_attribute() );
     return drop_cap_length( 1 );
 }
 

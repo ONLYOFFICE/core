@@ -713,7 +713,8 @@ namespace OOX
 		et_w_commentReference, // <w:commentReference>
 		et_w_compat, // <w:compat>
 		et_w_compatSetting, // <w:compatSetting>
-		et_w_contentPart, // <w:contentPart>
+		et_w_contentPart, // <w:contentPart> <w14:contentPart>
+		et_w_nvContentPartPr, // <w14:nvContentPartPr>
 		et_w_continuationSeparator, // <w:continuationSeparator>
 		et_w_control, // <w:control>
 		et_w_customXmlDelRangeEnd, // <w:customXmlDelRangeEnd>

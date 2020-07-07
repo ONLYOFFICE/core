@@ -29,12 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _CPDOCCORE_ODF_FONTVARIANT_H_
-#define _CPDOCCORE_ODF_FONTVARIANT_H_
-
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #include <iosfwd>
 #include <string>
@@ -76,5 +71,3 @@ std::wostream & operator << (std::wostream & _Wostream, const font_variant & _Va
 APPLY_PARSE_XML_ATTRIBUTES(odf_types::font_variant);
 
 }
-
-#endif

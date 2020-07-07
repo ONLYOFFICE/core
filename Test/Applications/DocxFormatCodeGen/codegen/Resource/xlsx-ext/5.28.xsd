@@ -1,0 +1,12 @@
+<xsd:schema targetNamespace="http://schemas.microsoft.com/office/spreadsheetml/2020/richvaluerefresh" elementFormDefault="qualified" xmlns:x="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns="http://schemas.microsoft.com/office/spreadsheetml/2020/richvaluerefresh" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:element name="refreshIntervals" type="CT_RichValueRefreshIntervals"/>
+   <xsd:complexType name="CT_RichValueRefreshIntervals">
+     <xsd:sequence>
+       <xsd:element name="refreshInterval" minOccurs="1" maxOccurs="unbounded" type="CT_RichValueRefreshInterval"/>
+     </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="CT_RichValueRefreshInterval">
+     <xsd:attribute name="resourceId" type="xsd:string" use="required"/>
+     <xsd:attribute name="interval" type="xsd:int" use="required"/>
+   </xsd:complexType>
+ </xsd:schema>

@@ -59,7 +59,6 @@ chart_interpolation chart_interpolation::parse(const std::wstring & Str)
         return chart_interpolation( bSpline );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return chart_interpolation( none );
     }
 }

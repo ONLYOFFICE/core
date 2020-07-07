@@ -32,7 +32,6 @@
 
 #include <xml/simple_xml_writer.h>
 #include "oox_types_chart.h"
-#include "oox_chart_shape.h"
 
 namespace cpdoccore {
 namespace oox {
@@ -59,8 +58,9 @@ void oox_chart::set_name(const std::wstring& val)
 }
 void oox_chart::set_content_series(odf_reader::chart::series & content)
 {
-	series_.back()->content_=content;
+	series_.back()->content_= content;
 }
+
 void oox_chart::set_values_series(int ind, std::vector<std::wstring> & val)
 {
 	if (val.empty())return;
@@ -467,7 +467,21 @@ void oox_stock_chart::set_properties(std::vector<odf_reader::_property> g)
 	
 	oox_chart::set_properties(g);
 
-	odf_reader::GetProperty(g, L"japanese-candle-stick",bCandleStick);
+	odf_reader::GetProperty(g, L"japanese-candle-stick", bCandleStick);
+}
+void oox_stock_chart::set_stock_gain_marke(odf_reader::chart::simple & obj)
+{
+	if (!obj.bEnabled) return;
+}
+void oox_stock_chart::set_stock_loss_marker(odf_reader::chart::simple & obj)
+{
+	if (!obj.bEnabled) return;
+}
+void oox_stock_chart::set_stock_range_line(odf_reader::chart::simple & obj)
+{
+	if (!obj.bEnabled) return;
+
+	range_line.set(obj.graphic_properties_, obj.fill_);
 }
 void oox_stock_chart::oox_serialize(std::wostream & _Wostream)
 {
@@ -480,10 +494,13 @@ void oox_stock_chart::oox_serialize(std::wostream & _Wostream)
         {
 			oox_serialize_common(CP_XML_STREAM());
 			
-			//CP_XML_NODE(L"c:hiLowLines")//hiLowLines (High Low Lines) §21.2.2.80
-			//{
-			//	//shape.oox_serialize(CP_XML_STREAM());
-			//}
+			if (range_line.bEnabled)
+			{
+				CP_XML_NODE(L"c:hiLowLines")
+				{
+					range_line.oox_serialize(CP_XML_STREAM());
+				}
+			}
 			CP_XML_NODE(L"c:upDownBars")
 			{
 				CP_XML_NODE(L"c:gapWidth")

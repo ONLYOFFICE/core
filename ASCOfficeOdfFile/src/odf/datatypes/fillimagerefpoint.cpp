@@ -81,7 +81,6 @@ fill_image_ref_point fill_image_ref_point::parse(const std::wstring & Str)
         return fill_image_ref_point( bottom_right );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return fill_image_ref_point( center );
     }
 }

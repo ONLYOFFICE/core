@@ -96,17 +96,17 @@ void process_paragraph_drop_cap_attr(const paragraph_attrs & Attr, oox::docx_con
 
 	//font size пощитаем здесь .. так как его значение нужо в стиле параграфа (межстрочный интервал) - в (pt*20)
 	
-	text_format_properties_content text_properties = calc_text_properties_content (styleInst);
+	text_format_properties_content_ptr text_properties = calc_text_properties_content (styleInst);
 
-	if (!text_properties.fo_font_size_)
+	if ((text_properties) && (!text_properties->fo_font_size_))
 	{		//default
 		styleInst = Context.root()->odf_context().styleContainer().style_default_by_type(style_family::Paragraph);
 		text_properties = calc_text_properties_content (styleInst);
 	}
-	if (text_properties.fo_font_size_)
+	if ((text_properties) && (text_properties->fo_font_size_))
 	{
-		Context.get_drop_cap_context().FontSize = text_properties.process_font_size(
-				text_properties.fo_font_size_, Context.get_styles_context().get_current_processed_style(), false, //1.);
+		Context.get_drop_cap_context().FontSize = text_properties->process_font_size(
+				text_properties->fo_font_size_, Context.get_styles_context().get_current_processed_style(), false, //1.);
 		7.25 * (Context.get_drop_cap_context().Scale + (Context.get_drop_cap_context().Scale-1) * 0.7));//формула ачуметь !! - подбор вручную
 	}
 }
@@ -245,17 +245,17 @@ size_t paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 			{
 				styleInst = Context.root()->odf_context().styleContainer().style_by_name(attrs_.text_style_name_, style_family::Paragraph, Context.process_headers_footers_);
 			}
-			text_format_properties_content text_properties = calc_text_properties_content (styleInst);
+			text_format_properties_content_ptr text_properties = calc_text_properties_content (styleInst);
 
-			if (!text_properties.fo_font_size_)
+			if ((text_properties) && (!text_properties->fo_font_size_))
 			{		//default
 				styleInst = Context.root()->odf_context().styleContainer().style_default_by_type(style_family::Text);
 				text_properties = calc_text_properties_content (styleInst);
 			}
-			if (text_properties.fo_font_size_)
+			if ((text_properties) && (text_properties->fo_font_size_))
 			{
-				Context.get_drop_cap_context().FontSize = text_properties.process_font_size(
-					text_properties.fo_font_size_, Context.get_styles_context().get_current_processed_style(),  false, //1);
+				Context.get_drop_cap_context().FontSize = text_properties->process_font_size(
+					text_properties->fo_font_size_, Context.get_styles_context().get_current_processed_style(),  false, //1);
 							 7.25 * (Context.get_drop_cap_context().Scale + (Context.get_drop_cap_context().Scale-1) * 0.7));
 			}
 		}

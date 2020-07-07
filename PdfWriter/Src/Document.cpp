@@ -744,9 +744,9 @@ namespace PdfWriter
 
 		return pShading;
 	}
-	CImageTilePattern*CDocument::CreateImageTilePattern(double dW, double dH, CImageDict* pImageDict, CMatrix* pMatrix, EImageTilePatternType eType)
+	CImageTilePattern*CDocument::CreateImageTilePattern(double dW, double dH, CImageDict* pImageDict, CMatrix* pMatrix, EImageTilePatternType eType, double dXStepSpacing, double dYStepSpacing)
 	{
-		return new CImageTilePattern(m_pXref, dW, dH, pImageDict, pMatrix, eType);
+		return new CImageTilePattern(m_pXref, dW, dH, pImageDict, pMatrix, eType, dXStepSpacing, dYStepSpacing);
 	}
 	CImageTilePattern*CDocument::CreateHatchPattern(double dW, double dH, const BYTE& nR1, const BYTE& nG1, const BYTE& nB1, const BYTE& nAlpha1, const BYTE& nR2, const BYTE& nG2, const BYTE& nB2, const BYTE& nAlpha2, const std::wstring& wsHatch)
 	{

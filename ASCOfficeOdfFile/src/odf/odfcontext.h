@@ -69,6 +69,7 @@ public:
         const std::wstring				& ParentStyleName,
         const std::wstring				& NextStyleName,
         const std::wstring				& DataStyleName,
+        const std::wstring				& PercentageDataStyleName,
 		const std::wstring				& StyleClass,
         _CP_OPT(std::wstring)			ListStyleName,
 		_CP_OPT(int)					ListLevel,
@@ -85,7 +86,8 @@ public:
     const std::wstring				& next_name()	const;
 	const styles_container			* container()	const { return container_; }
     const std::wstring				& data_style_name() const;
-    const std::wstring				& style_class() const;
+	const std::wstring				& percentage_data_style_name() const;
+	const std::wstring				& style_class() const;
     _CP_OPT(std::wstring)			list_style_name() const;
  
 	bool							is_automatic()	const;
@@ -111,6 +113,7 @@ private:
     mutable style_instance			* parent_;
     mutable style_instance			* next_;   
     std::wstring					data_style_name_;
+	std::wstring					percentage_data_style_name_;
     _CP_OPT(std::wstring)			list_style_name_;
 	_CP_OPT(int)					list_level_;
 	_CP_OPT(int)					outline_level_;
@@ -165,6 +168,7 @@ public:
 					const std::wstring				& ParentStyleName,
 					const std::wstring				& NextStyleName,
 					const std::wstring				& DataStyleName,
+					const std::wstring				& PercentageDataStyleName,
 					const std::wstring				& StyleClass,
 					_CP_OPT(std::wstring)			ListStyleName = boost::none,
 					_CP_OPT(int)					ListLevel = boost::none,

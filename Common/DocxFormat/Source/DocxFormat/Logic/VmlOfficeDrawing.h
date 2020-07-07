@@ -57,16 +57,13 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CStrokeChild)
-			CStrokeChild()
+			CStrokeChild(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 				m_eType = et_Unknown;
 			}
 			virtual ~CStrokeChild()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				m_eType = et_Unknown;
@@ -223,14 +220,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCallout)
-			CCallout()
+			CCallout(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CCallout()
 			{
 			}
-
-		public:
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
@@ -319,15 +314,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CClipPath)
-			CClipPath()
+			CClipPath(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CClipPath()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CClipPath::fromXML(XmlUtils::CXmlNode& oNode)
@@ -445,7 +437,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CColorMru)
-			CColorMru()
+			CColorMru(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CColorMru()
@@ -549,15 +541,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CComplex)
-			CComplex()
+			CComplex(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CComplex()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CComplex::fromXML(XmlUtils::CXmlNode& oNode)
@@ -757,15 +746,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDiagram)
-			CDiagram()
+			CDiagram(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CDiagram()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CDiagram::fromXML(XmlUtils::CXmlNode& oNode)
@@ -919,15 +905,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CEquationXml)
-			CEquationXml()
+			CEquationXml(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CEquationXml()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CEquationXml::fromXML(XmlUtils::CXmlNode& oNode)
@@ -984,15 +967,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CExtrusion)
-			CExtrusion()
+			CExtrusion(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CExtrusion()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CExtrusion::fromXML(XmlUtils::CXmlNode& oNode)
@@ -1261,27 +1241,24 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CFill)
-			CFill()
+			CFill(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CFill()
 			{
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CFill::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<o:fill ");
 
@@ -1381,15 +1358,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CInk)
-			CInk()
+			CInk(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CInk()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CInk::fromXML(XmlUtils::CXmlNode& oNode)
@@ -1401,7 +1375,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<o:ink ");
 
@@ -1487,15 +1461,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CLock)
-			CLock()
+			CLock(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CLock()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CLock::fromXML(XmlUtils::CXmlNode& oNode)
@@ -1643,15 +1614,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(COLEObject)
-			COLEObject()
+			COLEObject(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~COLEObject()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				if ( _T("o:OLEObject") != oNode.GetName() )
@@ -2084,15 +2052,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CShapeLayout)
-			CShapeLayout()
+			CShapeLayout(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CShapeLayout()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CShapeLayout::fromXML(XmlUtils::CXmlNode& oNode)
@@ -2169,15 +2134,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSignatureLine)
-			CSignatureLine()
+			CSignatureLine(OOX::Document *pMain = NULL) : PPTX::WrapperWritingElement(pMain)
 			{
 			}
 			virtual ~CSignatureLine()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase(oNode, L"o:addlxml", m_sAddXml);
@@ -2413,15 +2375,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSkew)
-			CSkew()
+			CSkew(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CSkew()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CSkew::fromXML(XmlUtils::CXmlNode& oNode)

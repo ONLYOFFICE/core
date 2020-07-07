@@ -66,7 +66,6 @@ chart_regression_type chart_regression_type::parse(const std::wstring & Str)
         return chart_regression_type( power );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return chart_regression_type( none );
     }
 }

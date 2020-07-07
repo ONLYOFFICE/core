@@ -39,14 +39,15 @@ namespace codegen
 {
     class Program
     {
-        static string sDirIn = @"..\..\Resource\";
+        static string sDirIn = @"../../Resource/";
         static string sDirCppXmlOut = @"..\..\gen\";
         static string sDirCppBinOut = @"..\..\gen\";
         static string sDirJsBinOut = @"..\..\gen\";
         static void Main(string[] args)
         {
             //(new codegen.CodeGen()).Start(sDirIn, sDirCppXmlOut, sDirCppBinOut, sDirJsBinOut, ValidationCallback);
-            (new codegen.CodeGenPivot()).Start(sDirIn, sDirCppXmlOut, sDirCppBinOut, sDirJsBinOut, ValidationCallback);
+            //(new codegen.CodeGenPivot()).Start(sDirIn, sDirCppXmlOut, sDirCppBinOut, sDirJsBinOut, ValidationCallback);
+            (new codegen.CodeGenSlicer()).Start(sDirIn, sDirCppXmlOut, sDirCppBinOut, sDirJsBinOut, ValidationCallback);
         }
         static void ValidationCallback(object sender, ValidationEventArgs args)
         {

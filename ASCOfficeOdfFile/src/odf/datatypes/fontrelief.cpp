@@ -68,7 +68,6 @@ font_relief font_relief::parse(const std::wstring & Str)
         return font_relief( Engraved );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return font_relief( None );
     }
 }

@@ -127,14 +127,32 @@ void oox_chart_series::parse_properties()
 		
 		data_labels_->set_showCatName(*boolVal); 
 	}
-	odf_reader::GetProperty(content_.properties_, L"data-label-number", intVal);
+	_CP_OPT(std::wstring) strNumFormat, strPercentFormat;
+	_CP_OPT(bool) bLinkData;
+	_CP_OPT(int) nTypeFormat;
 
-	if (intVal)
+	odf_reader::GetProperty(content_.properties_, L"num_format", strNumFormat);
+	odf_reader::GetProperty(content_.properties_, L"percentage_num_format", strPercentFormat);
+	odf_reader::GetProperty(content_.properties_, L"data-label-number", nTypeFormat);
+	odf_reader::GetProperty(content_.properties_, L"link-data-style-to-source", bLinkData);
+
+	std::wstring formatCode = strNumFormat.get_value_or(L"");
+	if (nTypeFormat)
 	{
 		if (!data_labels_)	data_labels_ = oox_data_labels();
 		
-		if (*intVal == 1)	data_labels_->set_showVal(true); 
-		if (*intVal == 2)	data_labels_->set_showPercent(true); 		
+		if (*nTypeFormat == 1)	data_labels_->set_showVal(true); 
+		if (*nTypeFormat == 2)
+		{
+			data_labels_->set_showPercent(true); 		
+			if (strPercentFormat)
+				formatCode = *strPercentFormat;
+		}
+	}
+	if (false == formatCode.empty())
+	{
+		if (!data_labels_)	data_labels_ = oox_data_labels();
+		data_labels_->set_formatCode(formatCode, bLinkData.get_value_or(true));
 	}
 	odf_reader::GetProperty(content_.properties_, L"label-position", intVal);
 	if (intVal && labelPosEnabled_)
@@ -466,7 +484,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 
 			}
 		}
-		if (!content_.text_properties_.empty())
+		if (!content_.text_properties_)
 		{
 			if (!data_labels_) data_labels_ = oox_data_labels();
 
@@ -500,7 +518,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 						shape.oox_serialize(CP_XML_STREAM());
 					}
 
-					if (!content_.points_[i].text_properties_.empty())
+					if (!content_.points_[i].text_properties_)
 					{
 						if (!data_labels_) data_labels_ = oox_data_labels();
 

@@ -3327,7 +3327,7 @@ namespace NExtractTools
 			bPaid = *params.m_bPaid;
 
        _UINT32 nRes = 0;
-       if(AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML == nFormatFrom || AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT == nFormatFrom || AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB == nFormatFrom)
+       if(AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML == nFormatFrom || AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT == nFormatFrom || AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB == nFormatFrom || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_FLAT == nFormatFrom)
        {
            if(AVS_OFFICESTUDIO_FILE_CANVAS_WORD == nFormatTo)
            {
@@ -3339,6 +3339,8 @@ namespace NExtractTools
                    nRes = mht2doct_dir(sFrom, sDoctDir, sTemp, params);
                else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB == nFormatFrom)
                    nRes = epub2doct_dir(sFrom, sDoctDir, sTemp, params);
+               else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_FLAT == nFormatFrom)
+                   nRes = docxflat2doct_bin(sFrom, sTo, sTemp, params);
                else
                    nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
            }
@@ -3354,6 +3356,8 @@ namespace NExtractTools
                    nRes = mht2doct_dir(sFrom, sDoctDir, sTemp, params);
                else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB == nFormatFrom)
                    nRes = epub2doct_dir(sFrom, sDoctDir, sTemp, params);
+               else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_FLAT == nFormatFrom)
+                   nRes = docxflat2doct_bin(sFrom, sTFile, sTemp, params);
                else
                    nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
                

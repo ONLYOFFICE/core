@@ -93,7 +93,6 @@ horizontal_rel horizontal_rel::parse(const std::wstring & Str)
         return horizontal_rel( Char );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return horizontal_rel( Page );
     }
 }

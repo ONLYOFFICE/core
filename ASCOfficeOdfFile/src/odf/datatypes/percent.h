@@ -29,12 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _CPDOCCORE_ODF_PERCENT_H_
-#define _CPDOCCORE_ODF_PERCENT_H_
 
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #include <iosfwd>
 #include "odfattributes.h"
@@ -79,4 +75,3 @@ namespace cpdoccore {
 	APPLY_PARSE_XML_ATTRIBUTES(odf_types::percent_rel);
 
 }
-#endif

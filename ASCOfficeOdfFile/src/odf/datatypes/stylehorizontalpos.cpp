@@ -89,7 +89,6 @@ horizontal_pos horizontal_pos::parse(const std::wstring & Str)
         return horizontal_pos( FromInside );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return horizontal_pos( Left );
     }
 }

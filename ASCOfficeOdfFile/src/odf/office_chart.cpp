@@ -308,11 +308,6 @@ void chart_categories::add_attributes( const xml::attributes_wc_ptr & Attributes
     CP_APPLY_ATTR(L"table:cell-range-address", table_cell_range_address_);
 }
 
-void chart_categories::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-{
-    CP_NOT_APPLICABLE_ELM();    
-}
-
 ///////
 
 void chart_series_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -350,12 +345,7 @@ void chart_domain::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"table:cell-range-address", table_cell_range_address_);
 }
 
-void chart_domain::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-{
-    CP_NOT_APPLICABLE_ELM();    
-}
-
-///
+///////
 
 void chart_data_point_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -373,12 +363,6 @@ void chart_data_point::add_attributes( const xml::attributes_wc_ptr & Attributes
     attlist_.add_attributes(Attributes);
 }
 
-void chart_data_point::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-{
-    CP_NOT_APPLICABLE_ELM();
-}
-
-
 // chart:mean-value
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * chart_mean_value::ns = L"chart";
@@ -387,11 +371,6 @@ const wchar_t * chart_mean_value::name = L"mean-value";
 void chart_mean_value::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     common_attlist_.add_attributes(Attributes);
-}
-
-void chart_mean_value::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-{
-    CP_NOT_APPLICABLE_ELM();
 }
 
 // chart:error-indicator
@@ -404,10 +383,6 @@ void chart_error_indicator::add_attributes( const xml::attributes_wc_ptr & Attri
     common_attlist_.add_attributes(Attributes);
 }
 
-void chart_error_indicator::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-{
-    CP_NOT_APPLICABLE_ELM();
-}
 
 // chart:regression-curve
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -437,12 +412,6 @@ void chart_equation::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"chart:display-r-square", display_r_square_);
 }
 
-void chart_equation::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-{
-    CP_NOT_APPLICABLE_ELM();
-}
-
-
 // chart:stock-gain-marker
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * chart_stock_gain_marker::ns = L"chart";
@@ -451,11 +420,6 @@ const wchar_t * chart_stock_gain_marker::name = L"stock-gain-marker";
 void chart_stock_gain_marker::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     common_attlist_.add_attributes(Attributes);
-}
-
-void chart_stock_gain_marker::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-{
-    CP_NOT_APPLICABLE_ELM();
 }
 
 // chart:stock-loss-marker
@@ -468,11 +432,6 @@ void chart_stock_loss_marker::add_attributes( const xml::attributes_wc_ptr & Att
     common_attlist_.add_attributes(Attributes);
 }
 
-void chart_stock_loss_marker::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-{
-    CP_NOT_APPLICABLE_ELM();
-}
-
 // chart:stock-range-line
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * chart_stock_range_line::ns = L"chart";
@@ -483,9 +442,13 @@ void chart_stock_range_line::add_attributes( const xml::attributes_wc_ptr & Attr
     common_attlist_.add_attributes(Attributes);
 }
 
-void chart_stock_range_line::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+//chartooo:date-scale
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * chart_date_scale::ns = L"chartooo";
+const wchar_t * chart_date_scale::name = L"date-scale";
+
+void chart_date_scale::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_NOT_APPLICABLE_ELM();
 }
 
 }

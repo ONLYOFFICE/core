@@ -39,18 +39,21 @@ namespace cpdoccore {
 
 namespace odf_reader {
 
-text_format_properties_content calc_text_properties_content(const std::vector<const style_text_properties*> & textProps)
+text_format_properties_content_ptr calc_text_properties_content(const std::vector<const style_text_properties*> & textProps)
 {
-    text_format_properties_content result;
- 	for (size_t i = 0; i < textProps.size(); i++)
+	if (textProps.empty()) return text_format_properties_content_ptr();
+
+	text_format_properties_content_ptr result = boost::make_shared<text_format_properties_content>();
+ 	
+	for (size_t i = 0; i < textProps.size(); i++)
     {
         if (textProps[i])
-            result.apply_from(textProps[i]->content());
+            result->apply_from(textProps[i]->content());
     }
     return result;
 }
 
-text_format_properties_content calc_text_properties_content(const style_instance * styleInstance)
+text_format_properties_content_ptr calc_text_properties_content(const style_instance * styleInstance)
 {
     std::vector<const style_text_properties*> textProps;
 
@@ -67,12 +70,19 @@ text_format_properties_content calc_text_properties_content(const style_instance
     return calc_text_properties_content(textProps);
 }
 
-text_format_properties_content calc_text_properties_content(const std::vector<const style_instance *> & styleInstances)
+text_format_properties_content_ptr calc_text_properties_content(const std::vector<const style_instance *> & styleInstances)
 {
-    text_format_properties_content result;
+	if (styleInstances.empty()) return text_format_properties_content_ptr();
+
+	text_format_properties_content_ptr result = boost::make_shared<text_format_properties_content>();
+
  	for (size_t i = 0; i < styleInstances.size(); i++)
     {
-        result.apply_from(calc_text_properties_content(styleInstances[i]));
+		text_format_properties_content_ptr props = calc_text_properties_content(styleInstances[i]);
+		if (props)
+		{
+			result->apply_from(*props.get());
+		}
     }
     return result;
 }

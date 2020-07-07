@@ -63,7 +63,6 @@ line_mode line_mode::parse(const std::wstring & Str)
         return line_mode( SkipWhiteSpace );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return line_mode( Continuous );
     }
 }

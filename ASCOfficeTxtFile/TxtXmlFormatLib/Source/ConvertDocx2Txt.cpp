@@ -46,7 +46,7 @@
 #include "../../../Common/DocxFormat/Source/DocxFormat/Endnote.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/HeaderFooter.h"
 
-#include "Common//ToString.h"
+#include "Common/ToString.h"
 #include <map>
 
 namespace Docx2Txt
@@ -89,6 +89,8 @@ namespace Docx2Txt
         bool m_bCancelled;
         int ListCount;
         int* Lists;
+		
+		std::wstring styleNameParagraphPrev;
 
 		std::wstring convert(OOX::Logic::CParagraph * pParagraph, TxtXml::ITxtXmlEvent& Event,
 									OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles);
@@ -324,64 +326,69 @@ namespace Docx2Txt
 	std::wstring Converter_Impl::convert(OOX::Logic::CParagraph* pParagraph, TxtXml::ITxtXmlEvent& Event, 
 												OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles* pStyles)
 	{
-		if (pParagraph == NULL) return _T("");
+		if (pParagraph == NULL) return L"";
 
-		std::wstring line = _T("");
+		std::wstring line;
 
 		int level = 0;
 		int listNum = 0;
 
+		std::wstring styleName;
 		if (pParagraph->m_oParagraphProperty)
 		{
-			if (pParagraph->m_oParagraphProperty->m_oNumPr.IsInit())
+			if (pParagraph->m_oParagraphProperty->m_oPStyle.IsInit())
 			{
-				if (pParagraph->m_oParagraphProperty->m_oNumPr->m_oIlvl.IsInit())
-				{
-					level = pParagraph->m_oParagraphProperty->m_oNumPr->m_oIlvl->m_oVal.IsInit() ? 
-						pParagraph->m_oParagraphProperty->m_oNumPr->m_oIlvl->m_oVal->GetValue() + 1 : 0;
-				}
-				if (pParagraph->m_oParagraphProperty->m_oNumPr->m_oNumID.IsInit())
-				{
-					listNum = pParagraph->m_oParagraphProperty->m_oNumPr->m_oNumID->m_oVal.IsInit() ? 
-						pParagraph->m_oParagraphProperty->m_oNumPr->m_oNumID->m_oVal->GetValue()  : 0;
-				}
+				styleName = pParagraph->m_oParagraphProperty->m_oPStyle->m_sVal.IsInit() ? pParagraph->m_oParagraphProperty->m_oPStyle->m_sVal.get() : L"";
 			}
-		}
-	
-		if((listNum == 0) || (level == 0))
-		{
-			if(pParagraph->m_oParagraphProperty)
+			if (false == styleName.empty() && pStyles)
 			{
-                std::wstring styleName;
-				if (pParagraph->m_oParagraphProperty->m_oPStyle.IsInit())
-					pParagraph->m_oParagraphProperty->m_oPStyle->m_sVal.IsInit() ? pParagraph->m_oParagraphProperty->m_oPStyle->m_sVal.get() : _T("");
-			
-                if(styleName != _T("") && pStyles)
-				{
-                    std::map<std::wstring, int>::iterator pPair = pStyles->m_arrStyleNamesMap.find(styleName);
+                std::map<std::wstring, size_t>::iterator pPair = pStyles->m_mapStyleNames.find(styleName);
 
-					if (pPair != pStyles->m_arrStyleNamesMap.end())
+				if (pPair != pStyles->m_mapStyleNames.end())
+				{
+					OOX::CStyle* style = pStyles->m_arrStyle[pPair->second];
+			
+					if ((style) && (style->m_oParPr.IsInit()))
 					{
-						OOX::CStyle* style = pStyles->m_arrStyle[pPair->second];
-				
-						if((style) && (style->m_oParPr.IsInit()))
+						if (style->m_oParPr->m_oNumPr.IsInit())
 						{
-							if((style->m_oParPr->m_oNumPr.IsInit()) && (style->m_oParPr->m_oNumPr->m_oIlvl.IsInit()))
+							if (pParagraph->m_oParagraphProperty->m_oNumPr.IsInit() == false)
 							{
-								listNum = style->m_oParPr->m_oNumPr->m_oIlvl->m_oVal.IsInit() ? style->m_oParPr->m_oNumPr->m_oIlvl->m_oVal->GetValue() + 1 : 0;
+								pParagraph->m_oParagraphProperty->m_oNumPr = style->m_oParPr->m_oNumPr;
+							}
+							if (style->m_oParPr->m_oNumPr->m_oIlvl.IsInit())
+							{
+								level = style->m_oParPr->m_oNumPr->m_oIlvl->m_oVal.IsInit() ? *style->m_oParPr->m_oNumPr->m_oIlvl->m_oVal + 1 : 0;
 							}
 						}
 					}
 				}
 			}
-		}
-		if((listNum > 0) && (level > 0) && pNumbering)
-		{
-			level--;
-			int start = (listNum - 1) * 9;
-			for(int i = level + 1; i < 9; i++)
+			if (pParagraph->m_oParagraphProperty->m_oNumPr.IsInit())
 			{
-				Lists[start + i] = 0;
+				if (pParagraph->m_oParagraphProperty->m_oNumPr->m_oIlvl.IsInit())
+				{
+					level = pParagraph->m_oParagraphProperty->m_oNumPr->m_oIlvl->m_oVal.IsInit() ? 
+						*pParagraph->m_oParagraphProperty->m_oNumPr->m_oIlvl->m_oVal + 1 : 0;
+				}
+				if (pParagraph->m_oParagraphProperty->m_oNumPr->m_oNumID.IsInit())
+				{
+					listNum = pParagraph->m_oParagraphProperty->m_oNumPr->m_oNumID->m_oVal.IsInit() ? 
+						*pParagraph->m_oParagraphProperty->m_oNumPr->m_oNumID->m_oVal : 1;
+				}
+			}
+		}
+	
+		if (listNum > 0 && pNumbering)
+		{
+			int start = (listNum - 1) * 9;
+			if (level > 0)
+			{
+				level--;
+				for(int i = level + 1; i < 9; i++)
+				{
+					Lists[start + i] = 0;
+				}
 			}
 
 			listNum--;
@@ -390,7 +397,7 @@ namespace Docx2Txt
 				size_t abstractNumId = 0;
 				if ((pNumbering->m_arrNum[listNum]) && (pNumbering->m_arrNum[listNum]->m_oAbstractNumId.IsInit()) &&
 							(pNumbering->m_arrNum[listNum]->m_oAbstractNumId->m_oVal.IsInit()))
-					abstractNumId = pNumbering->m_arrNum[listNum]->m_oAbstractNumId->m_oVal->GetValue();
+					abstractNumId = *pNumbering->m_arrNum[listNum]->m_oAbstractNumId->m_oVal;
 				
 				OOX::Numbering::CAbstractNum* abstractNum = NULL;
 				if (abstractNumId < pNumbering->m_arrAbstractNum.size())
@@ -398,12 +405,15 @@ namespace Docx2Txt
 
 				if (abstractNum)
 				{
-					Lists[start + level]++;
-					
-					int ind_level = -1;
+					if (styleName != styleNameParagraphPrev)	Lists[start + level] = 1;
+					else 										Lists[start + level]++;
+
+					styleNameParagraphPrev = styleName;
+
+					int ind_level = - 1;
 					for (size_t i = 0; i< abstractNum->m_arrLvl.size(); i++)//??? стоит ли???
 					{
-						if ((abstractNum->m_arrLvl[i]) && (abstractNum->m_arrLvl[i]->m_oIlvl.IsInit()) && (abstractNum->m_arrLvl[i]->m_oIlvl->GetValue() == level))
+						if ((abstractNum->m_arrLvl[i]) && (abstractNum->m_arrLvl[i]->m_oIlvl.IsInit()) && (*abstractNum->m_arrLvl[i]->m_oIlvl == level))
 						{
 							ind_level = i;
 							break;
@@ -421,16 +431,17 @@ namespace Docx2Txt
 
 							if (abstractNum->m_arrLvl[ind_level]->m_oNumFmt->m_oVal->GetValue() == SimpleTypes::numberformatBullet)
 							{
-								//всли символ более-менее корректный 
-								if ((strLevelText.length() > 0) && (IsUnicodeSymbol(strLevelText[0]))) line += strLevelText + _T(" ");
-								else line += _T("* ");
+								////всли символ более-менее корректный 
+								//if ((strLevelText.length() > 0) && (IsUnicodeSymbol(strLevelText[0]))) line += strLevelText + L" ";
+								//else 
+								line += L"* ";
 							}
 							else
 							{
 								std::wstring example = strLevelText;
 								for(int i = 0; i < 9; i++)
 								{
-									std::wstring num = _T("%") + ToWString(i + 1);
+									std::wstring num = L"%" + ToWString(i + 1);
 									while(example.find(num) != example.npos)
 									{
 										switch(abstractNum->m_arrLvl[ind_level]->m_oNumFmt->m_oVal->GetValue())
@@ -453,7 +464,7 @@ namespace Docx2Txt
 										}
 									}
 								}
-								line += example + _T(" ");
+								line += example + L" ";
 							}
 						}
 					}
@@ -467,93 +478,89 @@ namespace Docx2Txt
 		{
 			if (pParagraph->m_arrItems[i] == NULL) continue;
 
-			if (pParagraph->m_arrItems[i]->getType() == OOX::et_w_r)
+			OOX::Logic::CRun *run = dynamic_cast<OOX::Logic::CRun*>(pParagraph->m_arrItems[i]);
+
+            for (size_t j = 0; run && j < run->m_arrItems.size(); ++j)
 			{
-				OOX::Logic::CRun *run = dynamic_cast<OOX::Logic::CRun*>(pParagraph->m_arrItems[i]);
+				if (run->m_arrItems[j] == NULL) continue;
 
-                for (size_t j = 0; j < run->m_arrItems.size(); ++j)
+				else if (run->m_arrItems[j]->getType() == OOX::et_w_fldChar)
 				{
-					if (run->m_arrItems[j] == NULL) continue;
+					OOX::Logic::CFldChar *fldChar = dynamic_cast<OOX::Logic::CFldChar*>(run->m_arrItems[j]);
 
-					if (run->m_arrItems[j]->getType() == OOX::et_w_fldChar)
+					if ((fldChar) && (fldChar->m_oFldCharType.IsInit()))
 					{
-						OOX::Logic::CFldChar *fldChar = dynamic_cast<OOX::Logic::CFldChar*>(run->m_arrItems[j]);
-
-						if ((fldChar) && (fldChar->m_oFldCharType.IsInit()))
-						{
-							if (fldChar->m_oFldCharType->GetValue() == SimpleTypes::fldchartypeBegin)	inField = true;
-							else																		inField = false;
-						}
-					}
-					else if (inField == false)
-					{
-						bool caps = false;
-						
-						if ((run->m_oRunProperty) && (run->m_oRunProperty->m_oCaps.Init()) && (run->m_oRunProperty->m_oCaps->m_oVal.ToBool()))	caps = true;
-
-						std::wstring wstr;						
-						if (run->m_arrItems[j]->getType() == OOX::et_w_tab)
-						{
-							wstr = L"\x09";
-						}
-						else if (run->m_arrItems[j]->getType() == OOX::et_w_t)
-						{
-							OOX::Logic::CText* text = dynamic_cast<OOX::Logic::CText*>(run->m_arrItems[j]);
-							wstr = text->m_sText;
-							if(caps)
-							{
-								//std::locale loc;
-								//str = Encoding::unicode2utf8(std::toupper(wstr,loc));
-							}
-						}
-						
-						if (run->m_arrItems[j]->getType() == OOX::et_w_footnoteReference || 
-							pParagraph->m_arrItems[i]->getType() == OOX::et_w_endnoteReference)
-						{// todooo Ref ????
-
-                            std::vector<std::wstring> notes_content;
-
-							OOX::Logic::CFootnoteReference* footnote_ref = dynamic_cast<OOX::Logic::CFootnoteReference*>(run->m_arrItems[j]);
-							OOX::Logic::CEndnoteReference* endnote_ref = dynamic_cast<OOX::Logic::CEndnoteReference*>(run->m_arrItems[j]);
-							NoteCount++;
-
-							if (footnote_ref && m_inputFile.m_pFootnotes)
-							{								
-								for (size_t r = 0; r < m_inputFile.m_pFootnotes->m_arrFootnote.size(); r++)
-								{
-									OOX::CFtnEdn* note = dynamic_cast<OOX::CFtnEdn*>(m_inputFile.m_pFootnotes->m_arrFootnote[r]);
-
-									if (note && note->m_oId == footnote_ref->m_oId)
-									{
-										convert(m_inputFile.m_pFootnotes->m_arrFootnote[r]->m_arrItems, notes_content, Event, false, pDocument, pNumbering, pStyles);
-									}
-								}
-								Notes.insert(std::make_pair(ToWString(NoteCount), notes_content));
-							}
-							if (endnote_ref && m_inputFile.m_pEndnotes)
-							{
-								for (size_t r =0; r < m_inputFile.m_pEndnotes->m_arrEndnote.size(); r++)
-								{
-									OOX::CFtnEdn* note = dynamic_cast<OOX::CFtnEdn*>(m_inputFile.m_pEndnotes->m_arrEndnote[r]);
-									
-									if (note && note->m_oId == endnote_ref->m_oId)
-									{
-										convert(m_inputFile.m_pEndnotes->m_arrEndnote[r]->m_arrItems, notes_content, Event, false, pDocument, pNumbering, pStyles);
-									}
-								}
-								Notes.insert(std::make_pair(ToWString(NoteCount), notes_content));
-							}
-
-							wstr += L"[" + ToWString(NoteCount) + L"]"; ;
-						}
-						line += wstr;
+						if (fldChar->m_oFldCharType->GetValue() == SimpleTypes::fldchartypeBegin)	inField = true;
+						else																		inField = false;
 					}
 				}
-			}
-			else
-			{
-				//придумать для всех остальных что ли перевод в текст .. 
-				//line += pItem.toTxt();
+				else if (inField == false)
+				{
+					bool caps = false;
+					//
+					//if ((run->m_oRunProperty) && (run->m_oRunProperty->m_oCaps.Init()) && (run->m_oRunProperty->m_oCaps->m_oVal.ToBool()))	
+					//	caps = true;
+
+					std::wstring wstr;						
+					if (run->m_arrItems[j]->getType() == OOX::et_w_tab)
+					{
+						wstr = L"\x09";
+					}
+					else if (run->m_arrItems[j]->getType() == OOX::et_w_br)
+					{
+						wstr = L"\x0A";
+					}
+					else if (run->m_arrItems[j]->getType() == OOX::et_w_t)
+					{
+						OOX::Logic::CText* text = dynamic_cast<OOX::Logic::CText*>(run->m_arrItems[j]);
+						wstr = text->m_sText;
+						if(caps)
+						{
+							wstr = XmlUtils::GetUpper(wstr);
+						}
+					}
+					
+					if (run->m_arrItems[j]->getType() == OOX::et_w_footnoteReference || 
+						pParagraph->m_arrItems[i]->getType() == OOX::et_w_endnoteReference)
+					{// todooo Ref ????
+
+                        std::vector<std::wstring> notes_content;
+
+						OOX::Logic::CFootnoteReference* footnote_ref = dynamic_cast<OOX::Logic::CFootnoteReference*>(run->m_arrItems[j]);
+						OOX::Logic::CEndnoteReference* endnote_ref = dynamic_cast<OOX::Logic::CEndnoteReference*>(run->m_arrItems[j]);
+						NoteCount++;
+
+						if (footnote_ref && m_inputFile.m_pFootnotes)
+						{								
+							for (size_t r = 0; r < m_inputFile.m_pFootnotes->m_arrFootnote.size(); r++)
+							{
+								OOX::CFtnEdn* note = dynamic_cast<OOX::CFtnEdn*>(m_inputFile.m_pFootnotes->m_arrFootnote[r]);
+
+								if (note && note->m_oId == footnote_ref->m_oId)
+								{
+									convert(m_inputFile.m_pFootnotes->m_arrFootnote[r]->m_arrItems, notes_content, Event, false, pDocument, pNumbering, pStyles);
+								}
+							}
+							Notes.insert(std::make_pair(ToWString(NoteCount), notes_content));
+						}
+						if (endnote_ref && m_inputFile.m_pEndnotes)
+						{
+							for (size_t r =0; r < m_inputFile.m_pEndnotes->m_arrEndnote.size(); r++)
+							{
+								OOX::CFtnEdn* note = dynamic_cast<OOX::CFtnEdn*>(m_inputFile.m_pEndnotes->m_arrEndnote[r]);
+								
+								if (note && note->m_oId == endnote_ref->m_oId)
+								{
+									convert(m_inputFile.m_pEndnotes->m_arrEndnote[r]->m_arrItems, notes_content, Event, false, pDocument, pNumbering, pStyles);
+								}
+							}
+							Notes.insert(std::make_pair(ToWString(NoteCount), notes_content));
+						}
+
+						wstr += L"[" + ToWString(NoteCount) + L"]"; ;
+					}
+					line += wstr;
+				}
 			}
 		}
 
@@ -563,16 +570,39 @@ namespace Docx2Txt
 
 	std::wstring Converter_Impl::IntToLowerLetter(int number)
 	{
-		std::wstring result(number / 26 + 1, m_letters[(number % 26) - 1]);
-		return result;
+		number--;
+		static const size_t r = (L'z' - L'a' + 1);
+		std::wstring res;
+		size_t r0 = number / r;
+
+		if (r0 > 0)
+		{
+			std::wstring rest = IntToLowerLetter(number - r * r0);
+			std::wstring res	= IntToLowerLetter(r0-1) + rest;
+			return res;
+		}
+		else
+			return std::wstring(1, (wchar_t)(L'a' + number));
+
+		return res;
 	}
 
 	std::wstring Converter_Impl::IntToUpperLetter(int number)
 	{
-		//std::locale loc;
-		std::wstring result(number / 26 + 1, m_letters[(number % 26) - 1]);
-		//result = std::toupper(result,loc);
-		return result;
+		number--;
+		static const size_t r = (L'Z' - L'A' + 1);
+		std::wstring res;
+		size_t r0 = number / r;
+
+		if (r0 > 0)
+		{
+			std::wstring rest = IntToUpperLetter(number - r * r0);
+			std::wstring res = IntToUpperLetter(r0-1) + rest;
+			return res;
+		}
+		else
+			return std::wstring(1, (wchar_t)(L'A' + number));
+		return res;
 	}
 
 	std::wstring Converter_Impl::IntToLowerRoman(int number)
@@ -617,9 +647,8 @@ namespace Docx2Txt
 
 	std::wstring Converter_Impl::IntToUpperRoman(int number)
 	{
-		//std::locale loc;
 		std::wstring result = IntToLowerRoman(number);
-		//result = std::toupper(result,loc);
+		result = XmlUtils::GetUpper(result);
 		return result;
 	}
 

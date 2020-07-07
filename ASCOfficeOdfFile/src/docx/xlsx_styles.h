@@ -38,10 +38,12 @@
 namespace cpdoccore {
 namespace odf_reader {
 
-	class text_format_properties_content;
 	class graphic_format_properties;
 	class paragraph_format_properties;
 	class style_table_cell_properties_attlist;
+	
+	class text_format_properties_content;
+	typedef boost::shared_ptr<text_format_properties_content> text_format_properties_content_ptr;
 }
 
 namespace oox {
@@ -55,19 +57,19 @@ public:
     xlsx_style_manager(xlsx_conversion_context *context);
     size_t size() const;
     
-	size_t xfId(const odf_reader::text_format_properties_content		* textProp,
+	size_t xfId(const odf_reader::text_format_properties_content_ptr	textProp,
 				const odf_reader::paragraph_format_properties			* parProp,
 				const odf_reader::style_table_cell_properties_attlist	* cellProp,
 				const xlsx_cell_format * xlxsCellFormat,
 				const std::wstring &num_format,  bool  default_set,bool & is_visible);
 
-    size_t xfId(const odf_reader::text_format_properties_content		* textProp,
+    size_t xfId(const odf_reader::text_format_properties_content_ptr	textProp,
 				const odf_reader::paragraph_format_properties			* parProp,
 				const odf_reader::style_table_cell_properties_attlist	* cellProp,
 				const xlsx_cell_format * xlxsCellFormat,
 				const std::wstring &num_format, bool  default_set);
 
-    size_t dxfId(const odf_reader::text_format_properties_content		* textProp,
+    size_t dxfId(const odf_reader::text_format_properties_content_ptr	textProp,
 				 const odf_reader::graphic_format_properties			* graphProp,
 				 const odf_reader::style_table_cell_properties_attlist	* cellProp);
 

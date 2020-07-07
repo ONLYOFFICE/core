@@ -149,11 +149,10 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 					m_oDefinedNames->toXML(writer);
 				if(m_oCalcPr.IsInit())
 					m_oCalcPr->toXML(writer);
-				if(m_oExtLst.IsInit())
-					writer.WriteString(m_oExtLst->toXMLWithNS(L""));
-
 				if(m_oPivotCachesXml.IsInit())
 					writer.WriteString(m_oPivotCachesXml.get());
+				if(m_oExtLst.IsInit())
+					writer.WriteString(m_oExtLst->toXMLWithNS(L""));
 				writer.WriteString(L"</workbook>");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)

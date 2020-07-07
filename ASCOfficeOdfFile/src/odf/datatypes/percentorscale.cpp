@@ -73,7 +73,6 @@ percent_or_scale percent_or_scale::parse(const std::wstring & Str)
         return percent_or_scale( ScaleMin );    
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return percent_or_scale( Scale );
     }
 }

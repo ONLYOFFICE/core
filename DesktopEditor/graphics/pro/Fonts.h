@@ -334,7 +334,7 @@ namespace NSFonts
         {
         }
 
-        virtual int IsEquals(const CFontInfo *pFontInfo)
+        int IsEquals(const CFontInfo *pFontInfo)
         {
             return (m_wsFontName == pFontInfo->m_wsFontName &&
                 m_wsStyle == pFontInfo->m_wsStyle &&

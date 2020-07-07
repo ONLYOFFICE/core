@@ -500,16 +500,18 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ChartLines *line, int type)
 {
 	if (line == NULL)return;
 
-	if (type <3)//grid lines
+	if (type < 3)//grid lines
 	{
 		odf_context()->chart_context()->start_grid(type);
 			convert(line->m_oSpPr.GetPointer());	
 		odf_context()->chart_context()->end_element();
 	}
-	//if (type == 3)//drop line
-	//{
-	//	odf_context()->chart_context()->s
-	//}
+	if (type == 3)//drop line - нет в формате опен офис
+	{
+		odf_context()->chart_context()->start_stock_range_line();
+			convert(line->m_oSpPr.GetPointer());
+		odf_context()->chart_context()->end_element();
+	}
 	if (type == 4)//Hi-Lo line
 	{
 		odf_context()->chart_context()->start_stock_range_line();
@@ -855,7 +857,8 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_StockChart *chart)
 		{
 			odf_context()->chart_context()->add_axis_group_series(*chart->m_axId[i]->m_val);
 		}		
-		convert (chart->m_dropLines ,3);			
+		convert (chart->m_dropLines, 3);
+
 		if (chart->m_upDownBars)
 		{
 			odf_context()->chart_context()->set_chart_stock_candle_stick(true);

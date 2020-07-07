@@ -69,7 +69,6 @@ integer_or_nolimit integer_or_nolimit::parse(const std::wstring & Str)
         {}
     }
 
-    BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
     return integer_or_nolimit( NoLimit );
 }
 

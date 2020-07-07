@@ -29,12 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _CPDOCCORE_ODF_LETTERSPACING_H_
-#define _CPDOCCORE_ODF_LETTERSPACING_H_
 
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #include <iosfwd>
 #include <string>
@@ -84,5 +80,3 @@ std::wostream & operator << (std::wostream & _Wostream, const letter_spacing & _
 APPLY_PARSE_XML_ATTRIBUTES(odf_types::letter_spacing);
 
 }
-
-#endif

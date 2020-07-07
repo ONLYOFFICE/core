@@ -202,7 +202,7 @@ int ComputeMarginX(const style_page_layout_properties				* pagePropertiesNode,
 	length contextWidth = ComputeContextWidth(pagePropertiesNode, pageProperties, attlists_,
 												styleHorizontalRel, styleHorizontalPos, pageWidth, pageMarginLeft,pageMarginRight);
 
-    _CP_OPT(length)		contextSubstractedValue(0, length::pt);
+    _CP_OPT(length)		contextSubstractedValue = length(0., length::pt);
     _CP_OPT(style_wrap) styleWrap = graphicProperties.style_wrap_;
    
 	if (!styleWrap || 

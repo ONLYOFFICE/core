@@ -64,7 +64,6 @@ text_autospace text_autospace::parse(const std::wstring & Str)
         return text_autospace( IdeographAlpha );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return text_autospace( None );
     }
 }

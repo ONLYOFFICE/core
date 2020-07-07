@@ -64,7 +64,6 @@ punctuation_wrap punctuation_wrap::parse(const std::wstring & Str)
         return punctuation_wrap( Hanging );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return punctuation_wrap( Simple );
     }
 }

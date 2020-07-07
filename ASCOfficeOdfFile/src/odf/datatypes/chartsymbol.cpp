@@ -84,7 +84,6 @@ chart_symbol_type chart_symbol_type::parse(const std::wstring & Str)
         return chart_symbol_type( namedSymbol );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return chart_symbol_type( noneSymbol );
     }
 }
@@ -126,7 +125,6 @@ chart_symbol_name chart_symbol_name::parse(const std::wstring & Str)
 
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return chart_symbol_name( squareSymbol );
     }
 }

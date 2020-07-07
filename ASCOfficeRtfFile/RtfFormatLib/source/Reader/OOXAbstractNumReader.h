@@ -50,7 +50,7 @@ public:
 		RtfListProperty oNewList;
 		
 		if (m_ooxAbstractNum->m_oAbstractNumId.IsInit())
-			oNewList.m_nID = m_ooxAbstractNum->m_oAbstractNumId->GetValue();
+			oNewList.m_nID = *m_ooxAbstractNum->m_oAbstractNumId;
 
 		if (m_ooxAbstractNum->m_oMultiLevelType.IsInit())
 		{
@@ -63,7 +63,7 @@ public:
 			}					
 		}
 		if (m_ooxAbstractNum->m_oName.IsInit())
-			oNewList.m_sName = m_ooxAbstractNum->m_oName->m_sVal.get2();
+			oNewList.m_sName = *m_ooxAbstractNum->m_oName->m_sVal;
 
 		if (m_ooxAbstractNum->m_oTmpl.IsInit() && m_ooxAbstractNum->m_oTmpl->m_oVal.IsInit())
 			oNewList.m_nTemplateId = m_ooxAbstractNum->m_oTmpl->m_oVal->GetValue();

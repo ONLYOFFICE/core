@@ -64,7 +64,6 @@ text_align_source text_align_source::parse(const std::wstring & Str)
         return text_align_source( ValueType );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return text_align_source( Fix );
     }
 }

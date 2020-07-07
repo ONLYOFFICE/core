@@ -74,7 +74,6 @@ style_type style_type::parse(const std::wstring & Str)
         return style_type( Char );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return style_type( Left );
     }
 }

@@ -98,7 +98,6 @@ font_stretch font_stretch::parse(const std::wstring & Str)
         return font_stretch( UltraExpanded );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return font_stretch( Normal );
     }
 }

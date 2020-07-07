@@ -122,7 +122,7 @@ void xlsx_conversion_context::start_document()
 	instances.push_back(odfContext.styleContainer().style_default_by_type(odf_types::style_family::TableCell));
 	instances.push_back(odfContext.styleContainer().style_by_name(L"Default", odf_types::style_family::TableCell, false));
 
-    odf_reader::text_format_properties_content		textFormatProperties	= calc_text_properties_content(instances);
+    odf_reader::text_format_properties_content_ptr	textFormatProperties	= calc_text_properties_content(instances);
     odf_reader::paragraph_format_properties			parFormatProperties		= calc_paragraph_properties_content(instances);
     odf_reader::style_table_cell_properties_attlist	cellFormatProperties	= calc_table_cell_properties(instances);
 
@@ -131,7 +131,7 @@ void xlsx_conversion_context::start_document()
 	cellFormat.set_cell_type(XlsxCellType::s);
     cellFormat.set_num_format(oox::odf_string_to_build_in(0));
 
-    default_style_ = get_style_manager().xfId(&textFormatProperties, &parFormatProperties, &cellFormatProperties, &cellFormat, L"", true);
+    default_style_ = get_style_manager().xfId(textFormatProperties, &parFormatProperties, &cellFormatProperties, &cellFormat, L"", true);
 
 }
 
@@ -665,12 +665,12 @@ int xlsx_conversion_context::get_current_cell_style_id()
     return get_table_context().get_current_cell_style_id();
 }
 
-std::pair<float,float> xlsx_conversion_context::getMaxDigitSize()
+std::pair<double, double> xlsx_conversion_context::getMaxDigitSize()
 {
     if (maxDigitSize_.first <= 0.1)
     {
 		std::wstring font_name;
-		int font_size;
+		int font_size = 10;
 
 		std::vector<const odf_reader::style_instance *> instances;
 		
@@ -687,31 +687,32 @@ std::pair<float,float> xlsx_conversion_context::getMaxDigitSize()
 			if (inst) instances.push_back(inst);
 		}
 
-		odf_reader::text_format_properties_content textFormatProperties	= calc_text_properties_content(instances);
+		odf_reader::text_format_properties_content_ptr textFormatProperties	= calc_text_properties_content(instances);
 
-		if (textFormatProperties.fo_font_family_)
-			font_name = textFormatProperties.fo_font_family_.get();
-		else
+		if (textFormatProperties)
 		{
-			std::wstring style_font_name;
-			if (textFormatProperties.style_font_name_)				style_font_name = textFormatProperties.style_font_name_.get();
-			else if (textFormatProperties.style_font_name_complex_)	style_font_name = textFormatProperties.style_font_name_complex_.get();
-			else if (textFormatProperties.style_font_name_asian_)	style_font_name = textFormatProperties.style_font_name_asian_.get();
-			
-			odf_reader::fonts_container & fonts = odf_document_->odf_context().fontContainer();
-			odf_reader::font_instance * font = fonts.font_by_style_name(style_font_name);
-			if (font)
+			if (textFormatProperties->fo_font_family_)
+				font_name = textFormatProperties->fo_font_family_.get();
+			else
 			{
-				font_name = font->name();
+				std::wstring style_font_name;
+				
+				if (textFormatProperties->style_font_name_)					style_font_name = textFormatProperties->style_font_name_.get();
+				else if (textFormatProperties->style_font_name_complex_)	style_font_name = textFormatProperties->style_font_name_complex_.get();
+				else if (textFormatProperties->style_font_name_asian_)		style_font_name = textFormatProperties->style_font_name_asian_.get();
+				
+				odf_reader::fonts_container & fonts = odf_document_->odf_context().fontContainer();
+				odf_reader::font_instance * font = fonts.font_by_style_name(style_font_name);
+				if (font)
+				{
+					font_name = font->name();
+				}
 			}
+			if ((textFormatProperties->fo_font_size_) && (textFormatProperties->fo_font_size_->get_type() == odf_types::font_size::Length))
+				font_size = (int)(0.5 + textFormatProperties->fo_font_size_->get_length().get_value_unit(odf_types::length::pt));
 		}
 		if (font_name.empty()) font_name = L"Arial";
-
-		if ((textFormatProperties.fo_font_size_) && (textFormatProperties.fo_font_size_->get_type() == odf_types::font_size::Length))
-			font_size = (int)(0.5 + textFormatProperties.fo_font_size_->get_length().get_value_unit(odf_types::length::pt));
-		else
-			font_size =10;
-		
+	
         maxDigitSize_ = utils::GetMaxDigitSizePixels(font_name.c_str(), font_size, 96., 0, mediaitems_->applicationFonts());
     }    
     return maxDigitSize_;

@@ -3461,7 +3461,7 @@ namespace PdfReader
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 		m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
 	}
-	void RendererOutputDev::DrawSoftMaskedImage(GrState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GrImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GrImageColorMap *pMaskColorMap)
+	void RendererOutputDev::DrawSoftMaskedImage(GrState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GrImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GrImageColorMap *pMaskColorMap, unsigned char *pMatteColor)
 	{
         if (m_bDrawOnlyText)
             return;
@@ -3634,6 +3634,36 @@ namespace PdfReader
 				}
 			}
 			delete pSMaskStream;
+		}
+
+		// Undo preblend
+		if (pMatteColor)
+		{
+			GrRGB oMatteRGB;
+			pColorMap->GetRGB(pMatteColor, &oMatteRGB);
+
+			unsigned char unMatteR = ColorToByte(oMatteRGB.r);
+			unsigned char unMatteG = ColorToByte(oMatteRGB.g);
+			unsigned char unMatteB = ColorToByte(oMatteRGB.b);
+
+			for (int nIndex = 0; nIndex < nHeight * nWidth * 4; nIndex += 4)
+			{
+				unsigned char unA = pBufferPtr[nIndex + 3];
+
+				if (0 == unA)
+				{
+					pBufferPtr[nIndex + 0] = 255;
+					pBufferPtr[nIndex + 1] = 255;
+					pBufferPtr[nIndex + 2] = 255;
+					continue;
+				}
+
+				double dK = 255.0 / unA;
+
+				pBufferPtr[nIndex + 0] = max(0, min(255, int((pBufferPtr[nIndex + 0] - unMatteB) * dK + unMatteB)));
+				pBufferPtr[nIndex + 1] = max(0, min(255, int((pBufferPtr[nIndex + 1] - unMatteG) * dK + unMatteG)));
+				pBufferPtr[nIndex + 2] = max(0, min(255, int((pBufferPtr[nIndex + 2] - unMatteR) * dK + unMatteR)));
+			}
 		}
 
 		double arrMatrix[6];

@@ -2454,7 +2454,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
@@ -2467,7 +2467,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
@@ -2480,7 +2480,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
@@ -2493,7 +2493,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
@@ -2506,7 +2506,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
@@ -2814,7 +2814,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		int nClipFlag = bEO ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
@@ -2831,7 +2831,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		m_pRenderer->put_FontName(wsFontName);
@@ -2869,7 +2869,7 @@ namespace PdfReader
     }
 	void RendererOutputDev::BeginStringOperator(GrState *pGState)
 	{
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		m_pRenderer->BeginCommand(c_nTextType);
@@ -2899,7 +2899,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::EndStringOperator(GrState *pGState)
 	{
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		int nRenderMode = pGState->GetRenderMode();
@@ -2925,7 +2925,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::DrawString(GrState *pGState, StringExt *seString)
 	{
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		// Проверяем наличие списка со шрифтами
@@ -2974,7 +2974,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::DrawChar(GrState *pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY, CharCode nCode, int nBytesCount, Unicode *pUnicode, int nUnicodeLen)
 	{
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		// Проверяем наличие списка со шрифтами
@@ -3721,7 +3721,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
 			return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		double arrMatrix[6];
@@ -3773,7 +3773,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		if (m_bTiling)

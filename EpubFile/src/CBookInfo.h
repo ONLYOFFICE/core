@@ -8,8 +8,10 @@ class CBookInfo
 {
     std::map <std::wstring, std::wstring> _bookInfo;
     XmlUtils::CXmlLiteReader *_reader;
+    std::vector<std::wstring> _hrefs;
     void ReadNodes();
-
+    void ReadMetadata();
+    void ReadManifest();
 public:
     CBookInfo();
     CBookInfo(const XmlUtils::CXmlLiteReader &reader);
@@ -18,6 +20,7 @@ public:
     bool SetReader(const XmlUtils::CXmlLiteReader &reader);
     std::map <std::wstring, std::wstring> GetBookInfo();
     bool ReadInfo();
+    void ShowInfo();
 };
 
 #endif // CBOOKINFO_H

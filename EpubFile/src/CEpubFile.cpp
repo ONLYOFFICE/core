@@ -51,6 +51,7 @@ bool CEpubFile::Convert(const std::wstring& inputFile, const std::wstring& outpu
         if (book.ReadInfo())
         {
             //Дальнейшие действия
+            book.ShowInfo();
         }
     }
     else

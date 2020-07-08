@@ -2,14 +2,13 @@
 #define CEPUBFILE_H
 
 #include "src/EpubFile_global.h"
-#include <map>
+#include <iostream>
 
 class EPUBFILE_EXPORT CEpubFile
 {
     std::wstring _fileName;
     std::wstring _tempDir;
 
-    std::map <std::wstring, std::wstring> dataAboutFile;
 public:
     CEpubFile();
     ~CEpubFile();

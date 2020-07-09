@@ -30,20 +30,16 @@ struct STitleInfo
     std::wstring m_sBookTitle; // Название
     std::wstring m_sLang;      // Язык после перевода
 
-    std::wstring* m_pAnnotation;                    // Аннотация (ФОРМАТИРОВАННЫЙ ТЕКСТ)
     std::wstring* m_pKeywords;                      // Ключевые слова
     std::pair<std::wstring, std::wstring>* m_pDate; // Дата
-    std::wstring* m_pCoverpage;                     // Обложка
     std::wstring* m_pSrcLang;                       // Язык до перевода
 
     std::map<std::wstring, std::wstring> m_mSequence; // Серии книг
 
     STitleInfo()
     {
-        m_pAnnotation = NULL;
         m_pKeywords = NULL;
         m_pDate = NULL;
-        m_pCoverpage = NULL;
         m_pSrcLang = NULL;
     }
 
@@ -55,10 +51,8 @@ struct STitleInfo
 
         m_mSequence.clear();
 
-        RELEASEARRAYOBJECTS(m_pAnnotation);
         RELEASEARRAYOBJECTS(m_pKeywords);
         RELEASEARRAYOBJECTS(m_pDate);
-        RELEASEARRAYOBJECTS(m_pCoverpage);
         RELEASEARRAYOBJECTS(m_pSrcLang);
     }
 };
@@ -153,6 +147,7 @@ public:
         m_pSrcTitleInfo = NULL;
         m_pPublishInfo = NULL;
         m_nImageId = 1;
+        m_nHyperLinkId = 1;
     }
 
     ~CFb2File_Private()
@@ -264,24 +259,21 @@ public:
 
     // Читает title
     // имеет право писать p
-    bool readTitle(bool bNeedP, unsigned int nLevel)
+    bool readTitle(std::wstring sLevel)
     {
         int nDeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
         {
-            if(bNeedP)
-                m_oBuilder += L"<w:p>";
-            // Уровень заголовка
-            std::wstring sLevel = (nLevel == 0) ? L"" : std::to_wstring(nLevel);
+            m_oBuilder += L"<w:p>";
             // Пишем title + sLevel
-            m_oBuilder += L"<w:pPr><w:pStyle w:val=\"title";
+            m_oBuilder += L"<w:pPr><w:pStyle w:val=\"";
             m_oBuilder += sLevel;
             m_oBuilder += L"\"/></w:pPr>";
 
             std::wstring sName = m_oLightReader.GetName();
             if(sName == L"p")
             {
-                if(!readP(true, L""))
+                if(!readP(L""))
                     return false;
             }
             else if(sName == L"empty-line")
@@ -290,14 +282,13 @@ public:
             }
             else
                 return false;
-            if(bNeedP)
-                m_oBuilder += L"</w:p>";
+            m_oBuilder += L"</w:p>";
         }
         return true;
     }
 
     // Читает epigraph
-    // НЕ имеет право писать p
+    // имеет право писать p
     bool readEpigraph()
     {
         int nDeath = m_oLightReader.GetDepth();
@@ -306,26 +297,27 @@ public:
             std::wstring sName = m_oLightReader.GetName();
             if(sName == L"p")
             {
-                m_oBuilder += L"<w:pPr><w:pStyle w:val=\"epigraph\"/></w:pPr>";
-                if(!readP(true, L""))
+                m_oBuilder += L"<w:p>";
+                m_oBuilder += L"<w:pPr><w:pStyle w:val=\"epigraph-p\"/></w:pPr>";
+                if(!readP(L""))
                     return false;
+                m_oBuilder += L"</w:p>";
             }
             else if(sName == L"poem")
             {
-                m_oBuilder += L"<w:pPr><w:pStyle w:val=\"poem\"/></w:pPr>";
                 if(!readPoem())
                     return false;
             }
             else if(sName == L"cite")
             {
-                m_oBuilder += L"<w:pPr><w:pStyle w:val=\"cite\"/></w:pPr>";
                 if(!readCite())
                     return false;
             }
             else if(sName == L"empty-line")
             {
-                m_oBuilder += L"<w:pPr><w:pStyle w:val=\"epigraph\"/></w:pPr>";
+                m_oBuilder += L"<w:p>";
                 m_oBuilder += L"<w:r><w:t></w:t></w:r>";
+                m_oBuilder += L"</w:p>";
             }
             else if(sName == L"text-author")
                 break;
@@ -339,9 +331,11 @@ public:
             {
                 if(m_oLightReader.GetName() != L"text-author")
                     return false;
+                m_oBuilder += L"<w:p>";
                 m_oBuilder += L"<w:pPr><w:pStyle w:val=\"epigraph-text-author\"/></w:pPr>";
-                if(!readP(true, L""))
+                if(!readP(L""))
                     return false;
+                m_oBuilder += L"</w:p>";
             } while(m_oLightReader.ReadNextSiblingNode(nDeath));
         }
         return true;
@@ -350,7 +344,7 @@ public:
     // Читает p
     // НЕ имеет право писать p
     // sRStyle - накопленный стиль
-    bool readP(bool bNeedR, std::wstring sRStyle)
+    bool readP(std::wstring sRStyle)
     {
         // Читаем id, style, xml:lang
         /*
@@ -366,8 +360,7 @@ public:
             // Читаем обычный текст
             if(sName == L"#text")
             {
-                if(bNeedR)
-                    m_oBuilder += L"<w:r>";
+                m_oBuilder += L"<w:r>";
                 // Стиль текста
                 m_oBuilder += L"<w:rPr>";
                 m_oBuilder += sRStyle;
@@ -376,20 +369,19 @@ public:
                 m_oBuilder += L"<w:t xml:space=\"preserve\">";
                 m_oBuilder += m_oLightReader.GetText();
                 m_oBuilder += L"</w:t>";
-                if(bNeedR)
-                    m_oBuilder += L"</w:r>";
+                m_oBuilder += L"</w:r>";
 
             }
             // Читаем полужирный текст
             else if (sName == L"strong")
             {
-                if(!readP(true, sRStyle + L"<w:b/>"))
+                if(!readP(sRStyle + L"<w:b/>"))
                     return false;
             }
             // Читаем курсивный текст
             else if(sName == L"emphasis")
             {
-                if(!readP(true, sRStyle + L"<w:i/>"))
+                if(!readP(sRStyle + L"<w:i/>"))
                     return false;
             }
             // Читаем стилизованный текст
@@ -397,7 +389,7 @@ public:
             {
                 // ИГНОРИРУЕМ
                 // if(!readP(true, sRStyle + L"<w:rStyle w:val=\"ЗНАЧЕНИЕ\"/>"))
-                if(!readP(true, sRStyle))
+                if(!readP(sRStyle))
                     return false;
             }
             // Читаем ссылку
@@ -419,41 +411,33 @@ public:
                     return false;
                 m_oLightReader.MoveToElement();
 
-                // МОГУТ БЫТЬ КОММЕНТАРИЯМИ <w:commentRangeStart/> ФАЙЛ comments.xml
+                // БУДУ РЕАЛИЗОВЫВАТЬ КАК footnoteReference
 
-                m_oBuilder += L"<w:hyperlink r:id=\"";
-                // РЕЛЬСЫ rHyp + id
-                m_oBuilder += std::to_wstring(m_nHyperLinkId++);
-                m_oBuilder += L"\" w:tooltip=\"";
-                m_oBuilder += sHyperName;
-                m_oBuilder += L"\">";
-
-                if(!readP(true, sRStyle + L"<w:rStyle w:val=\"hyperlink\"/>"))
+                if(!readP(sRStyle))
                     return false;
-                m_oBuilder += L"</w:hyperlink>";
             }
             // Читаем вычеркнутый текст
             else if(sName == L"strikethrough")
             {
-                if(!readP(true, sRStyle + L"<w:strike/>"))
+                if(!readP(sRStyle + L"<w:strike/>"))
                     return false;
             }
             // Читает нижний текст
             else if(sName == L"sub")
             {
-                if(!readP(true, sRStyle + L"<w:vertAlign w:val=\"subscript\"/>"))
+                if(!readP(sRStyle + L"<w:vertAlign w:val=\"subscript\"/>"))
                     return false;
             }
             // Читает верхний текст
             else if(sName == L"sup")
             {
-                if(!readP(true, sRStyle + L"<w:vertAlign w:val=\"superscript\"/>"))
+                if(!readP(sRStyle + L"<w:vertAlign w:val=\"superscript\"/>"))
                     return false;
             }
             // Читает код
             else if(sName == L"code")
             {
-                if(!readP(true, sRStyle + L"<w:rStyle w:val=\"code\"/>"))
+                if(!readP(sRStyle + L"<w:rStyle w:val=\"code\"/>"))
                     return false;
             }
             // Читает картинку в тексте
@@ -469,7 +453,7 @@ public:
     }
 
     // Читает poem
-    // НЕ имеет право писать p
+    // имеет право писать p
     bool readPoem()
     {
         /*
@@ -485,8 +469,7 @@ public:
         // Читаем title (ноль или один)
         if(m_oLightReader.GetName() == L"title")
         {
-            // 5 - заголовок стихотворения
-            if(!readTitle(false, 5))
+            if(!readTitle(L"title-poem"))
                 return false;
             if(!m_oLightReader.ReadNextSiblingNode(nDeath))
                 return false;
@@ -512,12 +495,13 @@ public:
         {
             if(m_oLightReader.GetName() != L"stanza")
                 break;
+            if(!m_oLightReader.ReadNextSiblingNode(nSDeath))
+                return false;
 
             // Читаем title (ноль или один)
-            if(isSection(L"title"))
+            if(m_oLightReader.GetName() == L"title")
             {
-                // 6 - заголовок строфы
-                if(!readTitle(false, 6))
+                if(!readTitle(L"title-stanza"))
                     return false;
                 if(!m_oLightReader.ReadNextSiblingNode(nSDeath))
                     return false;
@@ -526,9 +510,11 @@ public:
             // Читаем subtitle (ноль или один)
             if(m_oLightReader.GetName() == L"subtitle")
             {
+                m_oBuilder += L"<w:p>";
                 m_oBuilder += L"<w:pPr><w:pStyle w:val=\"stanza-subtitle\"/></w:pPr>";
-                if(!readP(true, L""))
+                if(!readP(L""))
                     return false;
+                m_oBuilder += L"</w:p>";
                 if(!m_oLightReader.ReadNextSiblingNode(nSDeath))
                     return false;
             }
@@ -540,9 +526,11 @@ public:
             {
                 if(m_oLightReader.GetName() != L"v")
                     return false;
-                m_oBuilder += L"<w:pPr><w:pStyle w:val=\"vpoem\"/></w:pPr>";
-                if(!readP(true, L""))
+                m_oBuilder += L"<w:p>";
+                m_oBuilder += L"<w:pPr><w:pStyle w:val=\"v-stanza\"/></w:pPr>";
+                if(!readP(L""))
                     return false;
+                m_oBuilder += L"</w:p>";
             } while(m_oLightReader.ReadNextSiblingNode(nSDeath));
         } while(m_oLightReader.ReadNextSiblingNode(nDeath));
 
@@ -553,25 +541,30 @@ public:
             {
                 if(m_oLightReader.GetName() != L"text-author")
                     break;
+                m_oBuilder += L"<w:p>";
                 m_oBuilder += L"<w:pPr><w:pStyle w:val=\"poem-text-author\"/></w:pPr>";
-                if(!readP(true, L""))
+                if(!readP(L""))
                     return false;
+                m_oBuilder += L"</w:p>";
             } while(m_oLightReader.ReadNextSiblingNode(nDeath));
         }
 
         // Читаем date (ноль или один)
         if(m_oLightReader.GetName() == L"date")
         {
+            m_oBuilder += L"<w:p>";
+            m_oBuilder += L"<w:pPr><w:pStyle w:val=\"poem-date\"/></w:pPr>";
             m_oBuilder += L"<w:r><w:t>";
             m_oBuilder += content();
             m_oBuilder += L"</w:t></w:r>";
+            m_oBuilder += L"</w:p>";
         }
 
         return true;
     }
 
     // Читает cite
-    // НЕ имеет право писать p
+    // имеет право писать p
     bool readCite()
     {
         int nDeath = m_oLightReader.GetDepth();
@@ -580,17 +573,22 @@ public:
             std::wstring sName = m_oLightReader.GetName();
             if(sName == L"p")
             {
-                if(!readP(true, L""))
+                m_oBuilder += L"<w:p>";
+                m_oBuilder += L"<w:pPr><w:pStyle w:val=\"cite-p\"/></w:pPr>";
+                if(!readP(L""))
                     return false;
+                m_oBuilder += L"</w:p>";
             }
             else if(sName == L"subtitle")
             {
+                m_oBuilder += L"<w:p>";
                 m_oBuilder += L"<w:pPr><w:pStyle w:val=\"cite-subtitle\"/></w:pPr>";
-                if(!readP(true, L""))
+                if(!readP(L""))
                     return false;
+                m_oBuilder += L"</w:p>";
             }
             else if(sName == L"empty-line")
-                m_oBuilder += L"<w:r><w:t></w:t></w:r>";
+                m_oBuilder += L"<w:p><w:r><w:t></w:t></w:r></w:p>";
             else if(sName == L"poem")
             {
                 if(!readPoem())
@@ -613,9 +611,11 @@ public:
             {
                 if(m_oLightReader.GetName() != L"text-author")
                     return false;
+                m_oBuilder += L"<w:p>";
                 m_oBuilder += L"<w:pPr><w:pStyle w:val=\"cite-text-author\"/></w:pPr>";
-                if(!readP(true, L""))
+                if(!readP(L""))
                     return false;
+                m_oBuilder += L"</w:p>";
             } while(m_oLightReader.ReadNextSiblingNode(nDeath));
         }
         return true;
@@ -644,14 +644,14 @@ public:
                 if(m_oLightReader.GetName() == L"th")
                 {
                     // m_sBody += L"th\n";
-                    if(!readP(true, L""))
+                    if(!readP(L""))
                         return false;
                 }
                 // Читаем td (любое)
                 else if(m_oLightReader.GetName() == L"td")
                 {
                     // m_sBody += L"td\n";
-                    if(!readP(true, L""))
+                    if(!readP(L""))
                         return false;
                 }
                 else
@@ -661,9 +661,54 @@ public:
         return true;
     }
 
+    // Читает annotation
+    // имеет право писать p
+    bool readAnnotation()
+    {
+        int nADeath = m_oLightReader.GetDepth();
+        while(m_oLightReader.ReadNextSiblingNode(nADeath))
+        {
+            m_oBuilder += L"<w:p>";
+            m_oBuilder += L"<w:pPr><w:pStyle w:val=\"annotation\"/></w:pPr>";
+            std::wstring sAnName = m_oLightReader.GetName();
+            if(sAnName == L"p")
+            {
+                if(!readP(L""))
+                    return false;
+            }
+            else if(sAnName == L"poem")
+            {
+                if(!readPoem())
+                    return false;
+            }
+            else if(sAnName == L"cite")
+            {
+                if(!readCite())
+                    return false;
+            }
+            else if(sAnName == L"subtitle")
+            {
+                m_oBuilder += L"<w:pPr><w:pStyle w:val=\"annotation-subtitle\"/></w:pPr>";
+                if(!readP(L""))
+                    return false;
+            }
+            else if(sAnName == L"empty-line")
+                m_oBuilder += L"<w:r><w:t></w:t></w:r>";
+            else if(sAnName == L"table")
+            {
+                if(!readTable())
+                    return false;
+            }
+            else
+                return false;
+            m_oBuilder += L"</w:p>";
+        }
+        return true;
+    }
+
     // Читает section
     // имеет право писать p
-    bool readSection(bool bNeedP, unsigned int nLevel)
+    bool readSection(unsigned int nLevel)
     {
         int nDeath = m_oLightReader.GetDepth();
         if(!m_oLightReader.ReadNextSiblingNode(nDeath))
@@ -672,7 +717,7 @@ public:
         // Читаем title (ноль или один)
         if(m_oLightReader.GetName() == L"title")
         {
-            if(!readTitle(bNeedP, nLevel))
+            if(!readTitle(L"title" + (nLevel == 0 ? L"" : std::to_wstring(nLevel))))
                 return false;
             if(!m_oLightReader.ReadNextSiblingNode(nDeath))
                 return false;
@@ -685,24 +730,19 @@ public:
             {
                 if(m_oLightReader.GetName() != L"epigraph")
                     break;
-                if(bNeedP)
-                    m_oBuilder += L"<w:p>";
                 if(!readEpigraph())
                     return false;
-                if(bNeedP)
-                    m_oBuilder += L"</w:p>";
             } while(m_oLightReader.ReadNextSiblingNode(nDeath));
         }
 
         // Читаем image (ноль или один)
         if(m_oLightReader.GetName() == L"image")
         {
-            if(bNeedP)
-                m_oBuilder += L"<w:p>";
+            m_oBuilder += L"<w:p>";
+            m_oBuilder += L"<w:pPr><w:jc w:val=\"center\"/></w:pPr>";
             if(!readImage())
                 return false;
-            if(bNeedP)
-                m_oBuilder += L"</w:p>";
+            m_oBuilder += L"</w:p>";
             if(!m_oLightReader.ReadNextSiblingNode(nDeath))
                 return false;
         }
@@ -710,46 +750,8 @@ public:
         // Читаем annotation (ноль или один)
         if(m_oLightReader.GetName() == L"annotation")
         {
-            m_oBuilder += L"<w:pPr><w:pStyle w:val=\"annotation\"/></w:pPr>";
-            int nADeath = m_oLightReader.GetDepth();
-            while(m_oLightReader.ReadNextSiblingNode(nADeath))
-            {
-                if(bNeedP)
-                    m_oBuilder += L"<w:p>";
-                std::wstring sAnName = m_oLightReader.GetName();
-                if(sAnName == L"p")
-                {
-                    if(!readP(true, L""))
-                        return false;
-                }
-                else if(sAnName == L"poem")
-                {
-                    if(!readPoem())
-                        return false;
-                }
-                else if(sAnName == L"cite")
-                {
-                    if(!readCite())
-                        return false;
-                }
-                else if(sAnName == L"subtitle")
-                {
-                    m_oBuilder += L"<w:pPr><w:pStyle w:val=\"annotation-subtitle\"/></w:pPr>";
-                    if(!readP(true, L""))
-                        return false;
-                }
-                else if(sAnName == L"empty-line")
-                    m_oBuilder += L"<w:r><w:t></w:t></w:r>";
-                else if(sAnName == L"table")
-                {
-                    if(!readTable())
-                        return false;
-                }
-                else
-                    return false;
-                if(bNeedP)
-                    m_oBuilder += L"</w:p>";
-            }
+            if(!readAnnotation())
+                return false;
             if(!m_oLightReader.ReadNextSiblingNode(nDeath))
                 return false;
         }
@@ -761,12 +763,10 @@ public:
             {
                 if(m_oLightReader.GetName() != L"section")
                     return false;
-                if(bNeedP)
-                    m_oBuilder += L"<w:p>";
-                if(!readSection(false, nLevel + 1))
+                m_oBuilder += L"<w:p>";
+                if(!readSection(nLevel + 1))
                     return false;
-                if(bNeedP)
-                    m_oBuilder += L"</w:p>";
+                m_oBuilder += L"</w:p>";
             } while(m_oLightReader.ReadNextSiblingNode(nDeath));
         }
         // Читаем произвольный набор
@@ -774,22 +774,24 @@ public:
         {
             do
             {
-                if(bNeedP)
-                    m_oBuilder += L"<w:p>";
                 std::wstring sName = m_oLightReader.GetName();
                 if(sName == L"p")
                 {
                     // Стиль section-p
+                    m_oBuilder += L"<w:p>";
                     m_oBuilder += L"<w:pPr><w:pStyle w:val=\"section-p\"/></w:pPr>";
-                    if(!readP(true, L""))
+                    if(!readP(L""))
                         return false;
+                    m_oBuilder += L"</w:p>";
                 }
                 else if(sName == L"image")
                 {
                     // Стиль section-image
+                    m_oBuilder += L"<w:p>";
                     m_oBuilder += L"<w:pPr><w:pStyle w:val=\"section-image\"/></w:pPr>";
                     if(!readImage())
                         return false;
+                    m_oBuilder += L"</w:p>";
                 }
                 else if(sName == L"poem")
                 {
@@ -798,9 +800,12 @@ public:
                 }
                 else if(sName == L"subtitle")
                 {
+                    // Стиль section-subtitle
+                    m_oBuilder += L"<w:p>";
                     m_oBuilder += L"<w:pPr><w:pStyle w:val=\"section-subtitle\"/></w:pPr>";
-                    if(!readP(true, L""))
+                    if(!readP(L""))
                         return false;
+                    m_oBuilder += L"</w:p>";
                 }
                 else if(sName == L"cite")
                 {
@@ -808,16 +813,16 @@ public:
                         return false;
                 }
                 else if(sName == L"empty-line")
-                    m_oBuilder += L"<w:r><w:t></w:t></w:r>";
+                    m_oBuilder += L"<w:p><w:r><w:t></w:t></w:r></w:p>";
                 else if(sName == L"table")
                 {
+                    m_oBuilder += L"<w:p>";
                     if(!readTable())
                         return false;
+                    m_oBuilder += L"</w:p>";
                 }
                 else
                     return false;
-                if(bNeedP)
-                    m_oBuilder += L"</w:p>";
             } while(m_oLightReader.ReadNextSiblingNode(nDeath));
         }
         return true;
@@ -837,6 +842,7 @@ public:
         if(m_oLightReader.GetName() == L"image")
         {
             m_oBuilder += L"<w:p>";
+            m_oBuilder += L"<w:pPr><w:jc w:val=\"center\"/></w:pPr>";
             if(!readImage())
                 return false;
             m_oBuilder += L"</w:p>";
@@ -848,7 +854,7 @@ public:
         if(m_oLightReader.GetName() == L"title")
         {
             // 0 - заголовок книги
-            if(!readTitle(true, 0))
+            if(!readTitle(L"title"))
                 return false;
             if(!m_oLightReader.ReadNextSiblingNode(nDeath))
                 return false;
@@ -861,10 +867,8 @@ public:
             {
                 if(m_oLightReader.GetName() != L"epigraph")
                     break;
-                m_oBuilder += L"<w:p>";
                 if(!readEpigraph())
                     return false;
-                m_oBuilder += L"</w:p>";
             } while(m_oLightReader.ReadNextSiblingNode(nDeath));
         }
 
@@ -875,7 +879,7 @@ public:
         {
             if(m_oLightReader.GetName() != L"section")
                 return false;
-            if(!readSection(true, 1))
+            if(!readSection(1))
                 return false;
         } while(m_oLightReader.ReadNextSiblingNode(nDeath));
 
@@ -1087,6 +1091,8 @@ public:
             return false;
         oTitleInfo.m_sBookTitle = content();
 
+        bool bAnnotation = false;
+        bool bCoverpage = false;
         // Читаем до lang
         while(!isSection(L"lang"))
         {
@@ -1097,16 +1103,14 @@ public:
             // Читаем annotation (ноль или один)
             if(sName == L"annotation")
             {
-                // Содержит форматированный текст - НЕ РЕАЛИЗОВАНО
-                if(oTitleInfo.m_pAnnotation)
+                if(bAnnotation)
                     return false;
-                oTitleInfo.m_pAnnotation = new std::wstring[1];
-                *oTitleInfo.m_pAnnotation = L"";
-                int nDepth = m_oLightReader.GetDepth();
-                while(m_oLightReader.ReadNextSiblingNode(nDepth))
-                {
-                    *oTitleInfo.m_pAnnotation += content();
-                }
+                bAnnotation = true;
+
+                m_oBuilder += L"<w:body>";
+                if(!readAnnotation())
+                    return false;
+                m_oBuilder += L"<w:sectPr><w:footnotePr/><w:type w:val=\"nextPage\"/><w:pgSz w:w=\"11906\" w:h=\"16838\" w:orient=\"portrait\"/><w:pgMar w:top=\"1134\" w:right=\"850\" w:bottom=\"1134\" w:left=\"1701\" w:header=\"709\" w:footer=\"709\" w:gutter=\"0\"/><w:cols w:num=\"1\" w:sep=\"0\" w:space=\"708\" w:equalWidth=\"1\"/><w:docGrid w:linePitch=\"360\"/></w:sectPr></w:body>";
             }
             // Читаем keywords (ноль или один)
             else if(sName == L"keywords")
@@ -1133,15 +1137,26 @@ public:
             // Читаем coverpage (ноль или один)
             else if(sName == L"coverpage")
             {
-                if(oTitleInfo.m_pCoverpage)
+                if(bCoverpage)
                     return false;
-                oTitleInfo.m_pCoverpage = new std::wstring[1];
-                if(!m_oLightReader.ReadNextSiblingNode(m_oLightReader.GetDepth()))
-                    return false;
-                if(!m_oLightReader.MoveToNextAttribute())
-                    return false;
-                *oTitleInfo.m_pCoverpage = m_oLightReader.GetText();
-                m_oLightReader.MoveToElement();
+                bCoverpage = true;
+
+                m_oBuilder += L"<w:body>";
+                // Читаем image (один или более)
+                int nDeath = m_oLightReader.GetDepth();
+                while(m_oLightReader.ReadNextSiblingNode(nDeath))
+                {
+                    if(m_oLightReader.GetName() != L"image")
+                        return false;
+                    m_oBuilder += L"<w:p>";
+                    m_oBuilder += L"<w:pPr><w:jc w:val=\"center\"/></w:pPr>";
+                    if(!readImage())
+                        return false;
+                    m_oBuilder += L"</w:p>";
+                }
+                // Разрыв страницы
+                m_oBuilder += L"<w:p><w:r><w:br w:type=\"page\"/></w:r></w:p>";
+                m_oBuilder += L"<w:sectPr><w:footnotePr/><w:type w:val=\"nextPage\"/><w:pgSz w:w=\"11906\" w:h=\"16838\" w:orient=\"portrait\"/><w:pgMar w:top=\"1134\" w:right=\"850\" w:bottom=\"1134\" w:left=\"1701\" w:header=\"709\" w:footer=\"709\" w:gutter=\"0\"/><w:cols w:num=\"1\" w:sep=\"0\" w:space=\"708\" w:equalWidth=\"1\"/><w:docGrid w:linePitch=\"360\"/></w:sectPr></w:body>";
             }
         }
 
@@ -1243,6 +1258,9 @@ void CFb2File::SetTmpDirectory(const std::wstring& sFolder)
 // sPath - путь к сохраненному файлу, sDirectory - путь к сохраненным картинкам
 int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory)
 {
+    // Начало файла
+    m_internal->m_oBuilder += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:document xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 w15 wp14\">";
+
     // Читаем description
     if(!m_internal->isSection(L"description"))
         return false;
@@ -1284,9 +1302,6 @@ int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory)
                 return false;
         } while(m_internal->isSection(L"custom-info"));
     }
-
-    // Начало файла
-    m_internal->m_oBuilder += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:document xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 w15 wp14\">";
 
     // Читаем body
     if(m_internal->m_oLightReader.GetName() != L"body")

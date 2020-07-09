@@ -15,7 +15,7 @@ int main()
     std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/1-posledneye-zhelaniye.fb2";
 
     // директория, где будем создавать docx
-    std::wstring sOutputDirectory = NSFile::GetProcessDirectory() + L"/output";
+    std::wstring sOutputDirectory = NSFile::GetProcessDirectory() + L"/word";
     if (!NSDirectory::Exists(sOutputDirectory))
         NSDirectory::CreateDirectory(sOutputDirectory);
 
@@ -27,5 +27,9 @@ int main()
     }
 
     int nResConvert = oFile.Convert(sFile, sOutputDirectory);
+    if(nResConvert)
+        std::cout << "Success" << std::endl;
+    else
+        std::cout << "Failure" << std::endl;
     return 0;
 }

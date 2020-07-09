@@ -133,7 +133,6 @@ public:
     XmlUtils::CXmlLiteReader m_oLightReader;  // SAX Reader
     std::wstring m_sFile;                     // Имя файла
     std::wstring m_sDstFolder;                // Путь к результату
-    // std::wstring m_sBody;                     // Текст
     STitleInfo m_oTitleInfo;                  // Данные о книге
     SDocumentInfo m_oDocumentInfo;            // Информация об fb2-документе
     NSStringUtils::CStringBuilder m_oBuilder; // Текст
@@ -258,6 +257,7 @@ public:
         // Конец записи
         m_oBuilder += L"</wp:inline></w:drawing></w:r>";
 
+        m_mImage.insert(std::make_pair(sImageName, L"rPic" + sImageId));
         m_nImageId++;
         return true;
     }
@@ -1287,6 +1287,7 @@ int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory)
 
     // Начало файла
     m_internal->m_oBuilder += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:document xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 w15 wp14\">";
+
     // Читаем body
     if(m_internal->m_oLightReader.GetName() != L"body")
         return false;
@@ -1299,11 +1300,22 @@ int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory)
     // Конец файла
     m_internal->m_oBuilder += L"</w:document>";
 
+    // Создаем РЕЛЬСЫ
+    NSStringUtils::CStringBuilder oRels;
+    // Начало файла
+    oRels += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">";
+    oRels += L"<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/>";
+    oRels += L"<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings\" Target=\"settings.xml\"/>";
+    oRels += L"<Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings\" Target=\"webSettings.xml\"/>";
+    oRels += L"<Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable\" Target=\"fontTable.xml\"/>";
+    oRels += L"<Relationship Id=\"rId5\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme1.xml\"/>";
+    oRels += L"<Relationship Id=\"rId6\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes\" Target=\"footnotes.xml\"/>";
+
+    // Читает картинки
     std::wstring sMediaDirectory = sDirectory + L"/media";
     NSDirectory::CreateDirectory(sMediaDirectory);
-    while(m_internal->m_oLightReader.ReadNextNode())
+    do
     {
-        // Читает картинки
         if(m_internal->m_oLightReader.GetName() == L"binary")
         {
             std::wstring sId = L"";
@@ -1325,7 +1337,6 @@ int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory)
             m_internal->m_oLightReader.MoveToElement();
             if(sId == L"")
                 return false;
-            m_internal->m_mImage.insert(std::make_pair(sId, sContentType));
 
             // Пишет картинку в файл
             NSFile::CFileBinary oImageWriter;
@@ -1339,8 +1350,36 @@ int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory)
                 oImageWriter.WriteFile(pImageData, (DWORD)nDecodeLen);
             RELEASEARRAYOBJECTS(pImageData);
             oImageWriter.CloseFile();
+
+            // Ищем картинку в списке требующихся
+            // Если есть картинка на которую нет ссылки, то просто пишем ее
+            std::map<std::wstring, std::wstring>::iterator it = m_internal->m_mImage.find(sId);
+            if(it != m_internal->m_mImage.end())
+            {
+                // Запись картинок в рельсы
+                oRels += L"<Relationship Id=\"";
+                oRels += it->second;
+                oRels += L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/";
+                oRels += it->first;
+                oRels += L"\"/>";
+                // Удаляем картинку из списка требующихся
+                m_internal->m_mImage.erase(it);
+            }
         }
-    }
+    } while(m_internal->m_oLightReader.ReadNextNode());
+
+    // Если остались неразрешенные ссылки на картинки в тексте
+    if(!m_internal->m_mImage.empty())
+        return false;
+    // Конец файла рельсов
+    oRels += L"</Relationships>";
+    // Пишем рельсы в файл
+    std::wstring sRelsDirectory = sDirectory + L"/_rels";
+    NSFile::CFileBinary oRelsWriter;
+    if (!oRelsWriter.CreateFileW(sRelsDirectory + L"/document.xml.rels"))
+        return false;
+    oRelsWriter.WriteStringUTF8(oRels.GetData());
+    oRelsWriter.CloseFile();
 
     // Создаем файл для записи
     NSFile::CFileBinary oDocumentXmlWriter;
@@ -1348,8 +1387,6 @@ int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory)
         return false;
     oDocumentXmlWriter.WriteStringUTF8(m_internal->m_oBuilder.GetData());
     oDocumentXmlWriter.CloseFile();
-
-    // Создаем РЕЛЬСЫ
 
     return TRUE;
 }

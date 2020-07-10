@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_PRESPROPS_FILE_INCLUDE_H_
-#define PPTX_PRESPROPS_FILE_INCLUDE_H_
 
 #include "WrapperFile.h"
 #include "FileContainer.h"
@@ -174,5 +172,3 @@ namespace PPTX
 		//prnPr (Printing Properties)
 	};
 } // namespace PPTX
-
-#endif // PPTX_PRESPROPS_FILE_INCLUDE_H_

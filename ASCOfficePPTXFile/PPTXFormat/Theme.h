@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_THEME_FILE_INCLUDE_H_
-#define PPTX_THEME_FILE_INCLUDE_H_
 
 #include "FileContainer.h"
 #include "WrapperFile.h"
@@ -403,5 +401,3 @@ namespace PPTX
 		Logic::ClrMap const* m_map;
 	};
 } // namespace PPTX
-
-#endif // PPTX_THEME_FILE_INCLUDE_H_

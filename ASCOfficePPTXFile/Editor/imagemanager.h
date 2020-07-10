@@ -63,11 +63,6 @@ namespace NSShapeImageGen
 {
 	const long c_nMaxImageSize = 2000;
 
-    static bool _CopyFile(std::wstring strExists, std::wstring strNew, LPVOID lpFunc, LPVOID lpData)
-	{
-        return CDirectory::CopyFile (strExists, strNew);
-	}
-
 	enum MediaType
 	{
 		itJPG	= 0,
@@ -261,8 +256,8 @@ namespace NSShapeImageGen
 			if (strAdditionalFile.empty())
 			{
 				CMediaInfo info;
-				CFile oFile;
-				if (S_OK != oFile.OpenFile(strFile) && std::wstring::npos == strFile.find(L"data:base64,"))
+				NSFile::CFileBinary oFile;
+				if (false == oFile.OpenFile(strFile) && std::wstring::npos == strFile.find(L"data:base64,"))
 				{
 					return info;
 				}
@@ -323,27 +318,21 @@ namespace NSShapeImageGen
 			m_pFontManager = pFontManager;
 		}
 	protected:
-		inline void CopyFile(std::wstring& strFileSrc, std::wstring& strFileDst)
-		{
-			_CopyFile(strFileSrc, strFileDst, NULL, NULL);
-		}
 
 		bool CheckImageSimpleCopy(const std::wstring& strFileSrc, CMediaInfo& oInfo)
 		{
-			CFile oFile;
-			HRESULT hr = oFile.OpenFile(strFileSrc);
-			if (hr != S_OK)
+			NSFile::CFileBinary oFile;
+			bool hr = oFile.OpenFile(strFileSrc);
+			if (!hr)
 				return false;
 
 			if (20 > oFile.GetFileSize())
 				return false;
 
-            ULONG max_size = 3 * 1024 * 1024; // 4 Mb
-			if (max_size < oFile.GetFileSize())
-				return false;
-
 			BYTE pBuffer[20];
-			oFile.ReadFile(pBuffer, 20);
+			DWORD dwSizeRead = 0;
+			oFile.ReadFile(pBuffer, 20, dwSizeRead);
+			oFile.CloseFile();
 
 			// jpg
 			if ( (0xFF == pBuffer[0]) && (0xD8 == pBuffer[1]) && (0xFF == pBuffer[2]) )
@@ -351,7 +340,7 @@ namespace NSShapeImageGen
 				oInfo.m_eType = itJPG;
 
 				OOX::CPath pathSaveItem =  m_strDstMedia + FILE_SEPARATOR_STR + oInfo.GetPath2();
-                CDirectory::CopyFile(strFileSrc, pathSaveItem.GetPath());
+                oFile.Copy(strFileSrc, pathSaveItem.GetPath());
 				return true;
 			}
 
@@ -364,7 +353,8 @@ namespace NSShapeImageGen
                 oInfo.m_eType = itPNG;
 
                 OOX::CPath pathSaveItem =  m_strDstMedia + FILE_SEPARATOR_STR + oInfo.GetPath2();
-                CDirectory::CopyFile(strFileSrc, pathSaveItem.GetPath());
+               
+				oFile.Copy(strFileSrc, pathSaveItem.GetPath());
 
 				return true;
 			}
@@ -394,7 +384,8 @@ namespace NSShapeImageGen
 
 				strSaveItem =  m_strDstMedia + FILE_SEPARATOR_STR + strSaveItem + pathOriginal.GetExtention();
 
-                CDirectory::CopyFile(strFileSrc, strSaveItem);
+                NSFile::CFileBinary file;
+				file.Copy(strFileSrc, strSaveItem);
 			}
 		}
 		void SaveImage(CBgraFrame& oBgraFrame, CMediaInfo& oInfo, LONG __width, LONG __height)
@@ -476,12 +467,15 @@ namespace NSShapeImageGen
 
 		CMediaInfo GenerateImageID(std::wstring strFileName, const std::wstring & strUrl, double dWidth, double dHeight, const std::wstring& strAdditionalFile, int typeAdditionalFile)
 		{
+			NSFile::CFileBinary oTempFile;
+			
 			if (0 == strFileName.find(_T("data:base64,")))
 			{
 				std::string __s = std::string(strFileName.begin() + 12, strFileName.end());
 
 				BYTE* pDstBuffer = NULL;
 				int dstLen = Base64::Base64DecodeGetRequiredLength((int)__s.length());
+				DWORD dwSizeRead = 0;
 
 				pDstBuffer = new BYTE[dstLen];
 				Base64::Base64Decode(__s.c_str(), (int)__s.length(), pDstBuffer, &dstLen);
@@ -490,11 +484,10 @@ namespace NSShapeImageGen
 				std::wstring sImageExtension = checker.DetectFormatByData(pDstBuffer, dstLen);								
                 std::wstring tempFilePath = m_strTempMedia + FILE_SEPARATOR_STR;
 				
-				strFileName = NSFile::CFileBinary::CreateTempFileWithUniqueName(tempFilePath, L"img") + _T(".") + sImageExtension;
+				strFileName = oTempFile.CreateTempFileWithUniqueName(tempFilePath, L"img") + _T(".") + sImageExtension;
 
-                CFile oTempFile;
-                oTempFile.CreateFile(strFileName);
-				oTempFile.WriteFile((void*)pDstBuffer, (DWORD)dstLen);
+                oTempFile.CreateFileW(strFileName);
+				oTempFile.WriteFile(pDstBuffer, (DWORD)dstLen);
 				oTempFile.CloseFile();
 				
 				RELEASEARRAYOBJECTS(pDstBuffer);
@@ -541,14 +534,16 @@ namespace NSShapeImageGen
 					 if(bOle && strExts.empty()) strExts = L".bin";
 
 					std::wstring sCopyOlePath = strSaveItemWE + strExts;
-                    CDirectory::CopyFile(strAdditionalFile, sCopyOlePath);
+                    
+					oTempFile.Copy(strAdditionalFile, sCopyOlePath);
 				}
 
 				if (bVector)
 				{
 					//copy source vector image
 					OOX::CPath pathSaveItem = strSaveDir + oInfo.GetPath2();
-                    CDirectory::CopyFile(strFileName, pathSaveItem.GetPath());
+                    
+					oTempFile.Copy(strFileName, pathSaveItem.GetPath());
 
                     ::MetaFile::IMetaFile* pMetafile = MetaFile::Create(m_pFontManager->GetApplication());
                     if (pMetafile->LoadFromFile(strFileName.c_str()))
@@ -603,7 +598,7 @@ namespace NSShapeImageGen
 							std::wstring strSaveItem = strSaveItemWE + L".png";
                             pMetafile->ConvertToRaster(strSaveItem.c_str(), 4 /*CXIMAGE_FORMAT_PNG*/,  lWidth, lHeight);
 
-							bool bIsSuccess = NSFile::CFileBinary::Exists(strSaveItem);
+							bool bIsSuccess = oTempFile.Exists(strSaveItem);
 							if (bIsSuccess)
 							{
 								oInfo.m_eType = itPNG;
@@ -666,7 +661,8 @@ namespace NSShapeImageGen
 
 				std::wstring strCopyMediaPath = strSaveItemWE + oInfo.m_sExt;
                
-				CDirectory::CopyFile(strFileName, strCopyMediaPath);
+				NSFile::CFileBinary file;
+				file.Copy(strFileName, strCopyMediaPath);
 			
 				m_mapMediaFiles.insert(std::make_pair(sMapKey, oInfo));
 			}

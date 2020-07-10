@@ -39,269 +39,269 @@
 #include "../../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../../../DesktopEditor/common/File.h"
 
-class CFile 
-{
-private:
-    HRESULT _Open(const std::wstring& strFileName, bool bOpen = false, bool bCreate = false, bool bReadWrite = false)
-    {
-        HRESULT hRes = S_OK;
-        CloseFile();
-
-#if defined(_WIN32) || defined(_WIN32_WCE) ||defined(_WIN64)
-        wchar_t* pModeOpen;
-        wchar_t* pModeCreate;
-        if(bReadWrite)
-        {
-            pModeOpen = L"rb+";
-            pModeCreate = L"wb+";
-        }
-        else
-        {
-            pModeOpen = L"rb";
-            pModeCreate = L"wb";
-        }
-        if(NULL == m_pFile && bOpen)
-            _wfopen_s(&m_pFile, strFileName.c_str(), pModeOpen);
-        if(NULL == m_pFile && bCreate)
-            _wfopen_s(&m_pFile, strFileName.c_str(), pModeCreate);
-#else
-        BYTE* pUtf8 = NULL;
-        LONG lLen = 0;
-        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strFileName.c_str(), strFileName.length(), pUtf8, lLen, false);
-        char* pModeOpen;
-        char* pModeCreate;
-        if(bReadWrite)
-        {
-            pModeOpen = "rb+";
-            pModeCreate = "wb+";
-        }
-        else
-        {
-            pModeOpen = "rb";
-            pModeCreate = "wb";
-        }
-        if(NULL == m_pFile && bOpen)
-            m_pFile = fopen((char*)pUtf8, pModeOpen);
-        if(NULL == m_pFile && bCreate)
-            m_pFile = fopen((char*)pUtf8, pModeCreate);
-        RELEASEARRAYOBJECTS(pUtf8);
-#endif
-        if (NULL == m_pFile)
-            return S_FALSE;
-
-        fseek(m_pFile, 0, SEEK_END);
-        m_lFileSize = ftell(m_pFile);
-        fseek(m_pFile, 0, SEEK_SET);
-
-        m_lFilePosition = 0;
-
-        if (0 < strFileName.length())
-        {
-            if (((wchar_t)'/') == strFileName[strFileName.length() - 1])
-                m_lFileSize = 0x7FFFFFFF;
-        }
-
-        unsigned int err = 0x7FFFFFFF;
-        unsigned int cur = (unsigned int)m_lFileSize;
-        if (err == cur)
-        {
-            CloseFile();
-            return S_FALSE;
-        }
-
-        return hRes;
-    }
-public:
-    CFile()
-    {
-        m_pFile = NULL;
-        m_lFilePosition = 0;
-        m_lFileSize = 0;
-    }
-
-    virtual ~CFile()
-    {
-        CloseFile();
-    }
-
-    HRESULT OpenOrCreate(std::wstring strFileName, bool bOnlyOpen = false, bool bReadWrite = false)
-    {
-        return _Open(strFileName, true, true, true);
-    }
-    virtual HRESULT OpenFile(std::wstring FileName)
-    {
-        return _Open(FileName, true, false, false);
-    }
-
-    virtual HRESULT OpenFileRW(std::wstring FileName)
-    {
-        return _Open(FileName, true, false, true);
-    }
-
-    HRESULT ReadFile(BYTE* pData, DWORD nBytesToRead)
-    {
-        if (!m_pFile)
-            return S_FALSE;
-
-        SetPosition(m_lFilePosition);
-        DWORD dwSizeRead = (DWORD)fread((void*)pData, 1, nBytesToRead, m_pFile);
-        m_lFilePosition += dwSizeRead;
-        return S_OK;
-    }
-
-    HRESULT ReadFile2(BYTE* pData, DWORD nBytesToRead)
-    {
-        HRESULT hRes = ReadFile(pData, nBytesToRead);
-        //reverse bytes
-        for (size_t index = 0; index < nBytesToRead / 2; ++index)
-        {
-            BYTE temp = pData[index];
-            pData[index] = pData[nBytesToRead - index - 1];
-            pData[nBytesToRead - index - 1] = temp;
-        }
-        return S_OK;
-    }
-    HRESULT ReadFile3(void* pData, DWORD nBytesToRead)
-    {
-        return ReadFile((BYTE*)pData, nBytesToRead);
-    }
-
-    HRESULT WriteFile(void* pData, DWORD nBytesToWrite)
-    {
-        if (!m_pFile)
-            return S_FALSE;
-
-        size_t nCountWrite = fwrite((void*)pData, 1, nBytesToWrite, m_pFile);
-        m_lFilePosition += nBytesToWrite;
-        return S_OK;
-    }
-
-    HRESULT WriteFile2(void* pData, DWORD nBytesToWrite)
-    {
-        if (!m_pFile)
-            return S_FALSE;
-
-        BYTE* mem = new BYTE[nBytesToWrite];
-        memcpy(mem, pData, nBytesToWrite);
-
-        for (size_t index = 0; index < nBytesToWrite / 2; ++index)
-        {
-            BYTE temp = mem[index];
-            mem[index] = mem[nBytesToWrite - index - 1];
-            mem[nBytesToWrite - index - 1] = temp;
-        }
-
-        return WriteFile(mem, nBytesToWrite);
-    }
-
-    HRESULT CreateFile(std::wstring strFileName)
-    {
-        return _Open(strFileName, false, true, true);
-    }
-    HRESULT SetPosition( ULONG nPos )
-    {
-        if (m_pFile && nPos <= (ULONG)m_lFileSize)
-        {
-            m_lFilePosition = (long)nPos;
-            fseek(m_pFile, m_lFilePosition, SEEK_SET);
-            return S_OK;
-        }
-        else
-        {
-            return !m_pFile ? S_FALSE : S_OK;
-        }
-    }
-    ULONG  GetPosition()
-    {
-        return (ULONG)m_lFilePosition;
-    }
-    HRESULT SkipBytes(ULONG nCount)
-    {
-        return SetPosition(m_lFilePosition + nCount);
-    }
-
-    HRESULT CloseFile()
-    {
-        m_lFilePosition = 0;
-        m_lFileSize = 0;
-
-        if (m_pFile != NULL)
-        {
-            fclose(m_pFile);
-            m_pFile = NULL;
-        }
-        return S_OK;
-    }
-
-    ULONG GetFileSize()
-    {
-        return m_lFileSize;
-    }
-
-    HRESULT WriteReserved(DWORD dwCount)
-    {
-        BYTE* buf = new BYTE[dwCount];
-        memset(buf, 0, (size_t)dwCount);
-        HRESULT hr = WriteFile(buf, dwCount);
-        RELEASEARRAYOBJECTS(buf);
-        return hr;
-    }
-    HRESULT WriteReserved2(DWORD dwCount)
-    {
-        BYTE* buf = new BYTE[dwCount];
-        memset(buf, 0xFF, (size_t)dwCount);
-        HRESULT hr = WriteFile(buf, dwCount);
-        RELEASEARRAYOBJECTS(buf);
-        return hr;
-    }
-    HRESULT WriteReservedTo(DWORD dwPoint)
-    {
-        if ((DWORD)m_lFilePosition >= dwPoint)
-            return S_OK;
-
-        DWORD dwCount = dwPoint - (DWORD)m_lFilePosition;
-        BYTE* buf = new BYTE[dwCount];
-        memset(buf, 0, (size_t)dwCount);
-        HRESULT hr = WriteFile(buf, dwCount);
-        RELEASEARRAYOBJECTS(buf);
-        return hr;
-    }
-    HRESULT SkipReservedTo(DWORD dwPoint)
-    {
-        if ((DWORD)m_lFilePosition >= dwPoint)
-            return S_OK;
-
-        DWORD dwCount = dwPoint - (DWORD)m_lFilePosition;
-        return SkipBytes(dwCount);
-    }
-
-    LONG GetProgress()
-    {
-        if (0 >= m_lFileSize)
-            return -1;
-
-        double dVal = (double)(100 * m_lFilePosition);
-        LONG lProgress = (LONG)(dVal / m_lFileSize);
-        return lProgress;
-    }
-
-    void WriteStringUTF8(const std::wstring& strXml)
-    {
-        BYTE* pData = NULL;
-        LONG lLen = 0;
-
-        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strXml.c_str(), (LONG)strXml.length(), pData, lLen, false);
-
-        WriteFile(pData, lLen);
-
-        RELEASEARRAYOBJECTS(pData);
-    }
-protected:
-    FILE* m_pFile;
-
-    long m_lFilePosition;
-    long m_lFileSize;
-};
+//class CFile 
+//{
+//private:
+//    HRESULT _Open(const std::wstring& strFileName, bool bOpen = false, bool bCreate = false, bool bReadWrite = false)
+//    {
+//        HRESULT hRes = S_OK;
+//        CloseFile();
+//
+//#if defined(_WIN32) || defined(_WIN32_WCE) ||defined(_WIN64)
+//        wchar_t* pModeOpen;
+//        wchar_t* pModeCreate;
+//        if(bReadWrite)
+//        {
+//            pModeOpen = L"rb+";
+//            pModeCreate = L"wb+";
+//        }
+//        else
+//        {
+//            pModeOpen = L"rb";
+//            pModeCreate = L"wb";
+//        }
+//        if(NULL == m_pFile && bOpen)
+//            _wfopen_s(&m_pFile, strFileName.c_str(), pModeOpen);
+//        if(NULL == m_pFile && bCreate)
+//            _wfopen_s(&m_pFile, strFileName.c_str(), pModeCreate);
+//#else
+//        BYTE* pUtf8 = NULL;
+//        LONG lLen = 0;
+//        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strFileName.c_str(), strFileName.length(), pUtf8, lLen, false);
+//        char* pModeOpen;
+//        char* pModeCreate;
+//        if(bReadWrite)
+//        {
+//            pModeOpen = "rb+";
+//            pModeCreate = "wb+";
+//        }
+//        else
+//        {
+//            pModeOpen = "rb";
+//            pModeCreate = "wb";
+//        }
+//        if(NULL == m_pFile && bOpen)
+//            m_pFile = fopen((char*)pUtf8, pModeOpen);
+//        if(NULL == m_pFile && bCreate)
+//            m_pFile = fopen((char*)pUtf8, pModeCreate);
+//        RELEASEARRAYOBJECTS(pUtf8);
+//#endif
+//        if (NULL == m_pFile)
+//            return S_FALSE;
+//
+//        fseek(m_pFile, 0, SEEK_END);
+//        m_lFileSize = ftell(m_pFile);
+//        fseek(m_pFile, 0, SEEK_SET);
+//
+//        m_lFilePosition = 0;
+//
+//        if (0 < strFileName.length())
+//        {
+//            if (((wchar_t)'/') == strFileName[strFileName.length() - 1])
+//                m_lFileSize = 0x7FFFFFFF;
+//        }
+//
+//        unsigned int err = 0x7FFFFFFF;
+//        unsigned int cur = (unsigned int)m_lFileSize;
+//        if (err == cur)
+//        {
+//            CloseFile();
+//            return S_FALSE;
+//        }
+//
+//        return hRes;
+//    }
+//public:
+//    CFile()
+//    {
+//        m_pFile = NULL;
+//        m_lFilePosition = 0;
+//        m_lFileSize = 0;
+//    }
+//
+//    virtual ~CFile()
+//    {
+//        CloseFile();
+//    }
+//
+//    HRESULT OpenOrCreate(std::wstring strFileName, bool bOnlyOpen = false, bool bReadWrite = false)
+//    {
+//        return _Open(strFileName, true, true, true);
+//    }
+//    virtual HRESULT OpenFile(std::wstring FileName)
+//    {
+//        return _Open(FileName, true, false, false);
+//    }
+//
+//    virtual HRESULT OpenFileRW(std::wstring FileName)
+//    {
+//        return _Open(FileName, true, false, true);
+//    }
+//
+//    HRESULT ReadFile(BYTE* pData, DWORD nBytesToRead)
+//    {
+//        if (!m_pFile)
+//            return S_FALSE;
+//
+//        SetPosition(m_lFilePosition);
+//        DWORD dwSizeRead = (DWORD)fread((void*)pData, 1, nBytesToRead, m_pFile);
+//        m_lFilePosition += dwSizeRead;
+//        return S_OK;
+//    }
+//
+//    HRESULT ReadFile2(BYTE* pData, DWORD nBytesToRead)
+//    {
+//        HRESULT hRes = ReadFile(pData, nBytesToRead);
+//        //reverse bytes
+//        for (size_t index = 0; index < nBytesToRead / 2; ++index)
+//        {
+//            BYTE temp = pData[index];
+//            pData[index] = pData[nBytesToRead - index - 1];
+//            pData[nBytesToRead - index - 1] = temp;
+//        }
+//        return S_OK;
+//    }
+//    HRESULT ReadFile3(void* pData, DWORD nBytesToRead)
+//    {
+//        return ReadFile((BYTE*)pData, nBytesToRead);
+//    }
+//
+//    HRESULT WriteFile(void* pData, DWORD nBytesToWrite)
+//    {
+//        if (!m_pFile)
+//            return S_FALSE;
+//
+//        size_t nCountWrite = fwrite((void*)pData, 1, nBytesToWrite, m_pFile);
+//        m_lFilePosition += nBytesToWrite;
+//        return S_OK;
+//    }
+//
+//    HRESULT WriteFile2(void* pData, DWORD nBytesToWrite)
+//    {
+//        if (!m_pFile)
+//            return S_FALSE;
+//
+//        BYTE* mem = new BYTE[nBytesToWrite];
+//        memcpy(mem, pData, nBytesToWrite);
+//
+//        for (size_t index = 0; index < nBytesToWrite / 2; ++index)
+//        {
+//            BYTE temp = mem[index];
+//            mem[index] = mem[nBytesToWrite - index - 1];
+//            mem[nBytesToWrite - index - 1] = temp;
+//        }
+//
+//        return WriteFile(mem, nBytesToWrite);
+//    }
+//
+//    HRESULT CreateFile(std::wstring strFileName)
+//    {
+//        return _Open(strFileName, false, true, true);
+//    }
+//    HRESULT SetPosition( ULONG nPos )
+//    {
+//        if (m_pFile && nPos <= (ULONG)m_lFileSize)
+//        {
+//            m_lFilePosition = (long)nPos;
+//            fseek(m_pFile, m_lFilePosition, SEEK_SET);
+//            return S_OK;
+//        }
+//        else
+//        {
+//            return !m_pFile ? S_FALSE : S_OK;
+//        }
+//    }
+//    ULONG  GetPosition()
+//    {
+//        return (ULONG)m_lFilePosition;
+//    }
+//    HRESULT SkipBytes(ULONG nCount)
+//    {
+//        return SetPosition(m_lFilePosition + nCount);
+//    }
+//
+//    HRESULT CloseFile()
+//    {
+//        m_lFilePosition = 0;
+//        m_lFileSize = 0;
+//
+//        if (m_pFile != NULL)
+//        {
+//            fclose(m_pFile);
+//            m_pFile = NULL;
+//        }
+//        return S_OK;
+//    }
+//
+//    ULONG GetFileSize()
+//    {
+//        return m_lFileSize;
+//    }
+//
+//    HRESULT WriteReserved(DWORD dwCount)
+//    {
+//        BYTE* buf = new BYTE[dwCount];
+//        memset(buf, 0, (size_t)dwCount);
+//        HRESULT hr = WriteFile(buf, dwCount);
+//        RELEASEARRAYOBJECTS(buf);
+//        return hr;
+//    }
+//    HRESULT WriteReserved2(DWORD dwCount)
+//    {
+//        BYTE* buf = new BYTE[dwCount];
+//        memset(buf, 0xFF, (size_t)dwCount);
+//        HRESULT hr = WriteFile(buf, dwCount);
+//        RELEASEARRAYOBJECTS(buf);
+//        return hr;
+//    }
+//    HRESULT WriteReservedTo(DWORD dwPoint)
+//    {
+//        if ((DWORD)m_lFilePosition >= dwPoint)
+//            return S_OK;
+//
+//        DWORD dwCount = dwPoint - (DWORD)m_lFilePosition;
+//        BYTE* buf = new BYTE[dwCount];
+//        memset(buf, 0, (size_t)dwCount);
+//        HRESULT hr = WriteFile(buf, dwCount);
+//        RELEASEARRAYOBJECTS(buf);
+//        return hr;
+//    }
+//    HRESULT SkipReservedTo(DWORD dwPoint)
+//    {
+//        if ((DWORD)m_lFilePosition >= dwPoint)
+//            return S_OK;
+//
+//        DWORD dwCount = dwPoint - (DWORD)m_lFilePosition;
+//        return SkipBytes(dwCount);
+//    }
+//
+//    LONG GetProgress()
+//    {
+//        if (0 >= m_lFileSize)
+//            return -1;
+//
+//        double dVal = (double)(100 * m_lFilePosition);
+//        LONG lProgress = (LONG)(dVal / m_lFileSize);
+//        return lProgress;
+//    }
+//
+//    void WriteStringUTF8(const std::wstring& strXml)
+//    {
+//        BYTE* pData = NULL;
+//        LONG lLen = 0;
+//
+//        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strXml.c_str(), (LONG)strXml.length(), pData, lLen, false);
+//
+//        WriteFile(pData, lLen);
+//
+//        RELEASEARRAYOBJECTS(pData);
+//    }
+//protected:
+//    FILE* m_pFile;
+//
+//    long m_lFilePosition;
+//    long m_lFileSize;
+//};
 
 namespace StreamUtils
 {
@@ -473,11 +473,13 @@ namespace CDirectory
 
     static bool DeleteFile (std::wstring strFileName)
     {
-        return NSFile::CFileBinary::Remove(strFileName);
+		NSFile::CFileBinary file;	
+        return file.Remove(strFileName);
     }
     static bool CopyFile (const std::wstring& strExists, const std::wstring& strNew)
     {
-        return NSFile::CFileBinary::Copy(strExists, strNew);
+		NSFile::CFileBinary file;	
+		return file.Copy(strExists, strNew);
     }
     static void WriteValueToNode(std::wstring strName, DWORD value, XmlUtils::CXmlWriter* pWriter)
     {

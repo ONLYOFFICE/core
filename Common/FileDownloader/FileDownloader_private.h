@@ -52,7 +52,8 @@ public :
     {
         if ( m_sFilePath.length() > 0 && m_bDelete )
         {
-            NSFile::CFileBinary::Remove(m_sFilePath);
+            NSFile::CFileBinary file;
+            file.Remove(m_sFilePath);
             m_sFilePath = L"";
         }
     }

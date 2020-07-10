@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_VIEWPROPS_FILE_INCLUDE_H_
-#define PPTX_VIEWPROPS_FILE_INCLUDE_H_
 
 #include "WrapperFile.h"
 #include "FileContainer.h"
@@ -181,5 +179,3 @@ namespace PPTX
 		nullable<nsViewProps::SorterViewPr>			SorterViewPr;
 	};
 } // namespace PPTX
-
-#endif // PPTX_VIEWPROPS_FILE_INCLUDE_H_

@@ -104,8 +104,8 @@ public:
 	{
 		if(  m_mapComments.empty() ) return false;
 
-		CFile file;
-        if (file.CreateFile(sFolder + FILE_SEPARATOR_STR + _T("comments.xml"))) return false;
+		NSFile::CFileBinary file;
+        if (false == file.CreateFileW(sFolder + FILE_SEPARATOR_STR + _T("comments.xml"))) return false;
 		
 		m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments"), _T("comments.xml") );
 		m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml"), _T("/word/comments.xml") );
@@ -114,11 +114,11 @@ public:
 		
          std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
 
-         file.WriteFile((void*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
+         file.WriteFile((BYTE*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
 
 		 file.CloseFile();
 //-------------------------------------------------------------------------------------------------------------------------
-        if (file.CreateFile(sFolder + FILE_SEPARATOR_STR + L"commentsExtended.xml")) return false;
+        if (false == file.CreateFileW(sFolder + FILE_SEPARATOR_STR + L"commentsExtended.xml")) return false;
 		
 		m_oWriter.m_oDocRels.AddRelationship( L"http://schemas.microsoft.com/office/2011/relationships/commentsExtended", L"commentsExtended.xml" );
 		m_oWriter.m_oContentTypes.AddContent( L"application/vnd.openxmlformats-officedocument.wordprocessingml.commentsExtended+xml", L"/word/commentsExtended.xml" );
@@ -127,7 +127,7 @@ public:
 		
 		sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
 
-         file.WriteFile((void*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
+         file.WriteFile((BYTE*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
 
 		 file.CloseFile();
 		 return true;

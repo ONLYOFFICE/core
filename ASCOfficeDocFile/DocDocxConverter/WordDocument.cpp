@@ -112,7 +112,8 @@ namespace DocFileFormat
 
 		if (!m_sTempDecryptFileName.empty())
 		{
-			NSFile::CFileBinary::Remove(m_sTempDecryptFileName);
+			NSFile::CFileBinary file;	
+			file.Remove(m_sTempDecryptFileName);
 		}
 	}
 }

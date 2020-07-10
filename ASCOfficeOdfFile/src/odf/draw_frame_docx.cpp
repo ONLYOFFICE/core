@@ -1746,7 +1746,8 @@ void draw_object_ole::docx_convert(oox::docx_conversion_context & Context)
 	std::wstring extension;
 	detectObject(objectPath, drawing->objectProgId, extension, drawing->type);
 
-	NSFile::CFileBinary::Copy(objectPath, objectPath + extension);
+	NSFile::CFileBinary file;	
+	file.Copy(objectPath, objectPath + extension);
 
 	bool isMediaInternal	= true;
 	drawing->objectId = Context.get_mediaitems()->add_or_find(href + extension, drawing->type, isMediaInternal, href, Context.get_type_place());

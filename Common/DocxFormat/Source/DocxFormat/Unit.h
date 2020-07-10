@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_UNIT_INCLUDE_H_
-#define OOX_UNIT_INCLUDE_H_
 
 #include "Utility.h"
 
@@ -45,5 +43,3 @@
 //	typedef Unit<int, Percent>	UnitPercent;
 //
 //} // namespace OOX
-
-#endif // OOX_UNIT_INCLUDE_H_

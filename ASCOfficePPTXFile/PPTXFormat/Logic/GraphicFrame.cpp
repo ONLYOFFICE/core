@@ -833,7 +833,9 @@ namespace PPTX
 				delete storageOut;
 			}
 			delete []nativeData;
-			NSFile::CFileBinary::Remove(sXlsxFile);
+			
+			NSFile::CFileBinary file;
+			file.Remove(sXlsxFile);
 
 			olePic.Init();
 			olePic->blipFill.blip.Init();
@@ -845,7 +847,6 @@ namespace PPTX
 
 			olePic->blipFill.blip->oleFilepathImage = NSDirectory::CreateTempFileWithUniqueName(sTempDirectory, L"img");
 
-			NSFile::CFileBinary file;
 			if (file.CreateFileW(olePic->blipFill.blip->oleFilepathImage))
 			{
 				file.WriteFile(binImagePngChartReplacement, 6171);

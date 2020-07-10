@@ -808,6 +808,7 @@ namespace DocFileFormat
 				//СЗ в МРФ Техноград о предоставлении ТП 1 квартал 2019_MO_Q31.doc
                 //elem.AppendAttribute(L"w:type", L"textWrapping");
                 //elem.AppendAttribute(L"w:clear", L"all");
+				//Документ на бланке 2.doc
 
 				m_pXmlWriter->WriteString(elem.GetXMLString());
 			}

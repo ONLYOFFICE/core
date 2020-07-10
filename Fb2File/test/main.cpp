@@ -10,7 +10,7 @@ int main()
     oFile.SetTmpDirectory(NSFile::GetProcessDirectory() + L"/tmp");
 
     // файл, который открываем
-    std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/8-sezon-groz.fb2";
+    std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/5-kreshcheniye-ognem.fb2";
 
     // директория, где будем создавать docx
     std::wstring sOutputDirectory = NSFile::GetProcessDirectory() + L"/res";

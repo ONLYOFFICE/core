@@ -11488,4 +11488,34 @@
 			<w:spacing w:lineRule="auto" w:line="240"/>
 		</w:pPr>
 	</w:style>
+	<w:style w:type="character" w:styleId="footnote">
+		<w:name w:val="footnote reference"/>
+		<w:uiPriority w:val="99"/>
+		<w:unhideWhenUsed/>
+		<w:rPr>
+			<w:vertAlign w:val="superscript"/>
+		</w:rPr>
+	</w:style>
+	<w:style w:type="paragraph" w:styleId="footnote-p">
+		<w:name w:val="footnote text"/>
+		<w:basedOn w:val="400"/>
+		<w:link w:val="footnote-c"/>
+		<w:uiPriority w:val="99"/>
+		<w:semiHidden/>
+		<w:unhideWhenUsed/>
+		<w:rPr>
+			<w:sz w:val="18"/>
+		</w:rPr>
+		<w:pPr>
+			<w:spacing w:lineRule="auto" w:line="240" w:after="40"/>
+		</w:pPr>
+	</w:style>
+	<w:style w:type="character" w:styleId="footnote-c" w:customStyle="1">
+		<w:name w:val="Текст сноски Знак"/>
+		<w:link w:val="footnote-p"/>
+		<w:uiPriority w:val="99"/>
+		<w:rPr>
+			<w:sz w:val="18"/>
+		</w:rPr>
+	</w:style>
 </w:styles>

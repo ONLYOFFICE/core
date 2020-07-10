@@ -123,8 +123,8 @@ namespace PPTX
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("blurRad"), blurRad);
-				oAttr.Write(_T("dir"), dist);
-				oAttr.Write(_T("dist"), dir);
+				oAttr.Write(_T("dir"), dir);
+				oAttr.Write(_T("dist"), dist);
 				oAttr.Write(_T("sx"), sx);
 				oAttr.Write(_T("sy"), sy);
 				oAttr.Write(_T("kx"), kx);

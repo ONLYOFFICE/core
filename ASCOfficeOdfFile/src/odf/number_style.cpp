@@ -77,6 +77,16 @@ void number_style_base::oox_convert_impl(oox::num_format_context & Context)
         }
     }
 
+	ElementType type = this->get_type();
+
+	switch(type)
+	{
+	case typeNumberCurrencyStyle:	Context.bCurrency = true;	break;
+	case typeNumberPercentageStyle:	Context.bPercent = true;	break;
+	case typeNumberDataStyle:		Context.bDate = true;		break;
+	case typeNumberTimeStyle:		Context.bTime = true;		break;
+	}
+
 	for (size_t i = 0; i < content_.size(); i++)
     {
 		number_style_base	*number_style_		= dynamic_cast<number_style_base *>	(content_[i].get());
@@ -427,7 +437,7 @@ void number_text::oox_convert(oox::num_format_context & Context)
 
 	std::wstring text_ = strm.str();
 
-	if (text_ == L"%")
+	if (Context.bDate || Context.bTime || Context.bCurrency || Context.bPercent)
 	{
 	}
 	else

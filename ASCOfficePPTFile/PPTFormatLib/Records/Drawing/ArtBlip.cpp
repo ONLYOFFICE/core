@@ -189,8 +189,8 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 	{
 		std::wstring strFile = L"Image " +std::to_wstring(nImagesCount + 1) + oMetaFile.m_sExtension;
 
-		CFile fileMeta;
-		HRESULT hr = fileMeta.CreateFile(m_strTmpDirectory + FILE_SEPARATOR_STR + strFile);
+		NSFile::CFileBinary fileMeta;
+		HRESULT hr = fileMeta.CreateFileW(m_strTmpDirectory + FILE_SEPARATOR_STR + strFile);
 	
 		if (hr == S_OK)
 		{
@@ -210,22 +210,22 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 		}
 		std::wstring strFile = L"Image " + std::to_wstring(nImagesCount + 1) + sExt;
 		
-		CFile fileImage;
-		HRESULT hr = fileImage.CreateFile(m_strTmpDirectory + FILE_SEPARATOR_STR +  strFile);
-		if (hr == S_OK)
+		NSFile::CFileBinary fileImage;
+
+		if (fileImage.CreateFileW(m_strTmpDirectory + FILE_SEPARATOR_STR +  strFile))
 		{
 			if (RECORD_TYPE_ESCHER_BLIP_DIB == oHeader.RecType)
 			{
 				WORD vtType = 0x4D42;
-				fileImage.WriteFile((void*)&vtType, 2);
+				fileImage.WriteFile((BYTE*)&vtType, 2);
 				_UINT32 dwLen = oHeader.RecLen - lOffset;
-				fileImage.WriteFile((void*)&dwLen, 4);
+				fileImage.WriteFile((BYTE*)&dwLen, 4);
 				_UINT32 dwRes = 0;
-				fileImage.WriteFile((void*)&dwRes, 4);
+				fileImage.WriteFile((BYTE*)&dwRes, 4);
 				_UINT32 dwOffset = 2;
-				fileImage.WriteFile((void*)&dwOffset, 4);
+				fileImage.WriteFile((BYTE*)&dwOffset, 4);
 			}
-			fileImage.WriteFile((void*)pImage, oHeader.RecLen - lOffset);
+			fileImage.WriteFile(pImage, oHeader.RecLen - lOffset);
 			fileImage.CloseFile();
 		}
 		if (pImage)delete[] pImage;

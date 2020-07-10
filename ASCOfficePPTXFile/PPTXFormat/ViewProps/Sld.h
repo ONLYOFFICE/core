@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_VIEWPROPS_SLD_INCLUDE_H_
-#define PPTX_VIEWPROPS_SLD_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "./../Limit/Orient.h"
@@ -91,4 +89,3 @@ namespace PPTX
 	} // namespace nsViewProps
 } // namespace PPTX
 
-#endif // PPTX_VIEWPROPS_SLD_INCLUDE_H_

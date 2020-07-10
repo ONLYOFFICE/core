@@ -56,8 +56,8 @@ public:
 		
 		//if( false == m_sFileXml.empty() ) 
 		{		
-			CFile file;
-            if (file.CreateFile(pathWord + FILE_SEPARATOR_STR + _T("styles.xml"))) return false;
+			NSFile::CFileBinary file;
+            if (false == file.CreateFileW(pathWord + FILE_SEPARATOR_STR + _T("styles.xml"))) return false;
 
 			m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles"), _T("styles.xml") );
 			m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"), _T("/word/styles.xml") );
@@ -65,7 +65,7 @@ public:
             std::wstring sXml = CreateXml();
             std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
 
-            file.WriteFile((void*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
+            file.WriteFile((BYTE*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
 
 			file.CloseFile();
 			return true;

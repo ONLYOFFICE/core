@@ -453,7 +453,8 @@ namespace NExtractTools
 	{
         std::wstring sBinDir = NSDirectory::GetFolderPath(sBinFrom);
 		std::wstring sChangesDir = sBinDir + FILE_SEPARATOR_STR + _T("changes");
-        if (NSDirectory::Exists(sChangesDir))
+       
+		if (NSDirectory::Exists(sChangesDir))
         {
 			sBinTo = sBinDir + FILE_SEPARATOR_STR + _T("EditorWithChanges.bin");
 			std::wstring sImagesDirectory = sBinDir + FILE_SEPARATOR_STR + _T("media");
@@ -499,7 +500,9 @@ namespace NExtractTools
                             std::wstring sImageName = aImages[i];
                             std::wstring sImage = sImagesDirectory + FILE_SEPARATOR_STR + sImageName;
                             std::wstring sImageCopy = sChangesDir + FILE_SEPARATOR_STR + sImageName;
-                            NSFile::CFileBinary::Copy(sImage, sImageCopy);
+							
+							NSFile::CFileBinary file;
+                            file.Copy(sImage, sImageCopy);
                         }
 						////copy doct for version history
 						// std::wstring sBinCopy = sChangesDir + FILE_SEPARATOR_STR + NSSystemPath::GetFileName(sBinFrom);

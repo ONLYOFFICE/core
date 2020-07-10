@@ -56,15 +56,15 @@ public:
 	}
     bool Save(std::wstring sFolder)
 	{
-		CFile file;
+		NSFile::CFileBinary file;
 
-        if (file.CreateFile(sFolder + FILE_SEPARATOR_STR + _T("[Content_Types].xml")) != S_OK) return false;
+        if (false == file.CreateFileW(sFolder + FILE_SEPARATOR_STR + _T("[Content_Types].xml")) != S_OK) return false;
 
          std::wstring sXml = CreateXml();
 
          std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
 
-         file.WriteFile((void*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
+         file.WriteFile((BYTE*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
 		 
 		 file.CloseFile();
 		 return true;

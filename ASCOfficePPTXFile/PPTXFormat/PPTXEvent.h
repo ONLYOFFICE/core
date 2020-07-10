@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_EVENT_INCLUDE_H_
-#define PPTX_EVENT_INCLUDE_H_
 
 namespace PPTX
 {
@@ -55,4 +53,3 @@ namespace PPTX
 		long percent;
 	};
 }
-#endif // PPTX_EVENT_INCLUDE_H_

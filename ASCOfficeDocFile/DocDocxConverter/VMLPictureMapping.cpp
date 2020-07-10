@@ -154,7 +154,7 @@ namespace DocFileFormat
 
 			delete []utf8Data;
 		}
-		NSFile::CFileBinary::Remove(sTempXmlFile);
+        file.Remove(sTempXmlFile);
 
 		if (newXmlString.empty()) return false;
 
@@ -216,7 +216,7 @@ namespace DocFileFormat
 				if (res) break;
 			}
 		}
-		NSFile::CFileBinary::Remove(sTempXmlFile);
+        file.Remove(sTempXmlFile);
 		return res;
 	}
 //---------------------------------------------------------------

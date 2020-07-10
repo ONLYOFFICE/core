@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef STYLES_WRITER
-#define STYLES_WRITER
+#pragma once
 
 #include "../../XlsxSerializerCom/Common/Common.h"
 
@@ -88,4 +87,3 @@ namespace Writers
 		}
 	};
 }
-#endif	// #ifndef STYLES_WRITER

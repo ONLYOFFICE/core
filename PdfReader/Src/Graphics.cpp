@@ -4167,6 +4167,9 @@ namespace PdfReader
 			bool bMaskInvert = false;
 			GrImageColorMap *pMaskColorMap = NULL;
 			int arrMaskColors[2 * GrColorMaxComps];
+			unsigned char arrMatteColor[GrColorMaxComps];
+			bool bMatte = false;
+
 
 			Object oMask, oSMask;
 			pDict->Search("Mask", &oMask);
@@ -4278,6 +4281,19 @@ namespace PdfReader
 					return;
 				}
 
+				pMaskDict->Search("Matte", &oDictItem);
+				if (oDictItem.IsArray())
+				{
+					bMatte = true;
+					for (int nMatteIndex = 0, nMatteCount = oDictItem.ArrayGetLength(); nMatteIndex < nMatteCount; ++nMatteIndex)
+					{
+						Object oTemp;
+						oDictItem.ArrayGet(nMatteIndex, &oTemp);
+						arrMatteColor[nMatteIndex] = fmin(255, fmax(0, (int)(oTemp.GetNum() * 255)));
+						oTemp.Free();
+					}
+				}
+
 				bHaveSoftMask = true;
 			}
 			else if (oMask.IsArray())
@@ -4379,7 +4395,7 @@ namespace PdfReader
 			// Рисуем
 			if (bHaveSoftMask)
 			{
-				m_pOut->DrawSoftMaskedImage(m_pGState, pRef, pStream, nWidth, nHeight, pColorMap, pMaskStream, nMaskWidth, nMaskHeight, pMaskColorMap);
+				m_pOut->DrawSoftMaskedImage(m_pGState, pRef, pStream, nWidth, nHeight, pColorMap, pMaskStream, nMaskWidth, nMaskHeight, pMaskColorMap, bMatte ? arrMatteColor : NULL);
 				delete pMaskColorMap;
 			}
 			else if (bHaveExplicitMask)

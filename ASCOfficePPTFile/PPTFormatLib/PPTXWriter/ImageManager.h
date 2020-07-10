@@ -262,8 +262,9 @@ namespace PPT_FORMAT
 		}
         inline void SaveRels(const std::wstring& strFile)
 		{
-			CFile oFile;
-			oFile.CreateFile(strFile);
+			NSFile::CFileBinary oFile;
+			
+			oFile.CreateFileW(strFile);
             std::wstring strMem = m_oWriter.GetData();
 			oFile.WriteStringUTF8(strMem);
 			oFile.CloseFile();

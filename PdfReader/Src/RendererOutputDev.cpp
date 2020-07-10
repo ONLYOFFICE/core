@@ -639,11 +639,12 @@ namespace PdfReader
 					case fontCIDType2OT:  wsExt = L".cid_2ot";   break;
 				}
 
+                NSFile::CFileBinary file;
 				FILE* pTempFile = NULL;
-				if (!NSFile::CFileBinary::OpenTempFile(&wsTempFileName, &pTempFile, L"wb", (wchar_t*)wsExt.c_str(), (wchar_t*)m_pGlobalParams->GetTempFolder().c_str(), NULL))
+                if (!file.OpenTempFile(&wsTempFileName, &pTempFile, L"wb", (wchar_t*)wsExt.c_str(), (wchar_t*)m_pGlobalParams->GetTempFolder().c_str(), NULL))
 				{
 					if (L"" != wsTempFileName)
-						NSFile::CFileBinary::Remove(wsTempFileName);
+                        file.Remove(wsTempFileName);
 
 					pEntry->bAvailable = true;
 					return;
@@ -660,7 +661,7 @@ namespace PdfReader
 					fclose(pTempFile);
 
 					if (L"" != wsTempFileName)
-						NSFile::CFileBinary::Remove(wsTempFileName);
+                        file.Remove(wsTempFileName);
 
 					pEntry->bAvailable = true;
 					return;
@@ -1046,11 +1047,13 @@ namespace PdfReader
 						wsExt = L".cid_non";
 					}
 
+                    NSFile::CFileBinary file;
 					FILE* pTempFile = NULL;
-					if (!NSFile::CFileBinary::OpenTempFile(&wsTempFileName, &pTempFile, L"wb", (wchar_t*)wsExt.c_str(), (wchar_t*)m_pGlobalParams->GetTempFolder().c_str(), NULL))
+
+                    if (!file.OpenTempFile(&wsTempFileName, &pTempFile, L"wb", (wchar_t*)wsExt.c_str(), (wchar_t*)m_pGlobalParams->GetTempFolder().c_str(), NULL))
 					{
 						if (L"" != wsTempFileName)
-							NSFile::CFileBinary::Remove(wsTempFileName);
+                            file.Remove(wsTempFileName);
 
 						pEntry->bAvailable = true;
 						return;
@@ -1058,13 +1061,13 @@ namespace PdfReader
 					fclose(pTempFile);
 
 					// Копируем файл, для создания уникального имени, чтобы связать с файлом с кодировкой
-					if (NSFile::CFileBinary::Copy(wsFileName, wsTempFileName))
+                    if (file.Copy(wsFileName, wsTempFileName))
 					{
 						wsFileName = wsTempFileName;
 					}
 					else
 					{
-						NSFile::CFileBinary::Remove(wsTempFileName);
+                        file.Remove(wsTempFileName);
 						wsTempFileName = L"";
 					}
 
@@ -1349,7 +1352,10 @@ namespace PdfReader
 				{
 					// Такого не должно произойти
 					if (L"" != wsTempFileName)
-						NSFile::CFileBinary::Remove(wsTempFileName);
+                    {
+                        NSFile::CFileBinary file;
+                        file.Remove(wsTempFileName);
+                    }
 
 					break;
 				}
@@ -2454,7 +2460,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
@@ -2467,7 +2473,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
@@ -2480,7 +2486,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
@@ -2493,7 +2499,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
@@ -2506,7 +2512,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
@@ -2814,7 +2820,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		int nClipFlag = bEO ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
@@ -2831,7 +2837,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		m_pRenderer->put_FontName(wsFontName);
@@ -2869,7 +2875,7 @@ namespace PdfReader
     }
 	void RendererOutputDev::BeginStringOperator(GrState *pGState)
 	{
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		m_pRenderer->BeginCommand(c_nTextType);
@@ -2899,7 +2905,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::EndStringOperator(GrState *pGState)
 	{
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		int nRenderMode = pGState->GetRenderMode();
@@ -2925,7 +2931,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::DrawString(GrState *pGState, StringExt *seString)
 	{
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		// Проверяем наличие списка со шрифтами
@@ -2974,7 +2980,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::DrawChar(GrState *pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY, CharCode nCode, int nBytesCount, Unicode *pUnicode, int nUnicodeLen)
 	{
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		// Проверяем наличие списка со шрифтами
@@ -3461,7 +3467,7 @@ namespace PdfReader
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 		m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
 	}
-	void RendererOutputDev::DrawSoftMaskedImage(GrState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GrImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GrImageColorMap *pMaskColorMap)
+	void RendererOutputDev::DrawSoftMaskedImage(GrState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GrImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GrImageColorMap *pMaskColorMap, unsigned char *pMatteColor)
 	{
         if (m_bDrawOnlyText)
             return;
@@ -3636,6 +3642,36 @@ namespace PdfReader
 			delete pSMaskStream;
 		}
 
+		// Undo preblend
+		if (pMatteColor)
+		{
+			GrRGB oMatteRGB;
+			pColorMap->GetRGB(pMatteColor, &oMatteRGB);
+
+			unsigned char unMatteR = ColorToByte(oMatteRGB.r);
+			unsigned char unMatteG = ColorToByte(oMatteRGB.g);
+			unsigned char unMatteB = ColorToByte(oMatteRGB.b);
+
+			for (int nIndex = 0; nIndex < nHeight * nWidth * 4; nIndex += 4)
+			{
+				unsigned char unA = pBufferPtr[nIndex + 3];
+
+				if (0 == unA)
+				{
+					pBufferPtr[nIndex + 0] = 255;
+					pBufferPtr[nIndex + 1] = 255;
+					pBufferPtr[nIndex + 2] = 255;
+					continue;
+				}
+
+				double dK = 255.0 / unA;
+
+				pBufferPtr[nIndex + 0] = max(0, min(255, int((pBufferPtr[nIndex + 0] - unMatteB) * dK + unMatteB)));
+				pBufferPtr[nIndex + 1] = max(0, min(255, int((pBufferPtr[nIndex + 1] - unMatteG) * dK + unMatteG)));
+				pBufferPtr[nIndex + 2] = max(0, min(255, int((pBufferPtr[nIndex + 2] - unMatteR) * dK + unMatteR)));
+			}
+		}
+
 		double arrMatrix[6];
 		double *pCTM = pGState->GetCTM();
 		//  Исходное предобразование
@@ -3691,7 +3727,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
 			return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		double arrMatrix[6];
@@ -3743,7 +3779,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		if (m_bTiling)

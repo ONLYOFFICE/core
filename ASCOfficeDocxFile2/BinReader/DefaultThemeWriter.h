@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef DEFAULT_THEME_WRITER
-#define DEFAULT_THEME_WRITER
+#pragma once
 
 #include "../../XlsxSerializerCom/Common/Common.h"
 
@@ -342,4 +341,3 @@ m_sContent +=
 		}
 	};
 }
-#endif	// #ifndef DEFAULT_THEME_WRITER

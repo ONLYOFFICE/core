@@ -29,9 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef ASC_OFFICE_DRAWING_CONVERTER
-#define ASC_OFFICE_DRAWING_CONVERTER
-
+#pragma once
 #include "../DesktopEditor/common/ASCVariant.h"
 
 #include "../Common/DocxFormat/Source/Base/Base.h"
@@ -301,4 +299,4 @@ namespace NSBinPptxRW
 		HRESULT SetCurrentRelsPath();
 	};
 }
-#endif //OOX_IFILE_CONTAINER_INCLUDE_H_
+

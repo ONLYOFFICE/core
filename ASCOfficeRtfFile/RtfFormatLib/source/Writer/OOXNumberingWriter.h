@@ -52,9 +52,9 @@ public:
 	{
 		if( false == m_sFileXml.empty() )
 		{
-			CFile file;
+			NSFile::CFileBinary file;
 
-            if (file.CreateFile(sFolder + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + _T("numbering.xml")) != S_OK) return false;
+            if (false == file.CreateFileW(sFolder + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + _T("numbering.xml")) != S_OK) return false;
 				
 			m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering"), _T("numbering.xml") );
 			m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"), _T("/word/numbering.xml") );
@@ -62,7 +62,7 @@ public:
              std::wstring sXml = CreateXml();
              std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
 
-             file.WriteFile((void*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
+             file.WriteFile((BYTE*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
              file.CloseFile();
 			 return true;
 			

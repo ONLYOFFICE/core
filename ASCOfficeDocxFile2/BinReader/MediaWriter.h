@@ -87,7 +87,9 @@ namespace Writers
 		{
             OOX::CPath pathNewImg = AddImageGetNewPath();
 
-            NSFile::CFileBinary::Copy(sImg, pathNewImg.GetPath());
+            NSFile::CFileBinary file;
+			file.Copy(sImg, pathNewImg.GetPath());
+
             std::wstring sFilename = NSSystemPath::GetFileName(pathNewImg.GetPath()).c_str();
 			m_aImageNames.push_back(sFilename);
 		}

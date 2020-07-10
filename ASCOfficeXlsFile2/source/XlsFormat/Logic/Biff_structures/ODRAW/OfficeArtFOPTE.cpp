@@ -1077,7 +1077,7 @@ void MetroBlob::ReadComplexData(XLS::CFRecord& record)
 
 		delete []utf8Data;
 	}
-	NSFile::CFileBinary::Remove(tempFileName);
+	file.Remove(tempFileName);
 }
 //---------------------------------------------------------------------------------------------
 MSOPOINT::MSOPOINT()

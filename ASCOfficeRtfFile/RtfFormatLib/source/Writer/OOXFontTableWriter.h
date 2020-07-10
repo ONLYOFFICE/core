@@ -53,8 +53,8 @@ public:
 
 		if( false == m_sFileXml.empty() )
 		{
-			CFile file;
-            if (file.CreateFile(pathWord + FILE_SEPARATOR_STR + _T("fontTable.xml"))) return false;
+			NSFile::CFileBinary file;
+            if (false == file.CreateFileW(pathWord + FILE_SEPARATOR_STR + _T("fontTable.xml"))) return false;
 
 			m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable"), _T("fontTable.xml") );
 			m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml"), _T("/word/fontTable.xml") );
@@ -63,7 +63,7 @@ public:
 
             std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
 
-            file.WriteFile((void*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
+            file.WriteFile((BYTE*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
 
 			file.CloseFile();
 			return true;

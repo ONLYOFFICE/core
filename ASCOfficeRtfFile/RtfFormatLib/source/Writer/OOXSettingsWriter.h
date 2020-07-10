@@ -86,15 +86,15 @@ public:
 			//	}
 			//}
 
-			CFile file;
-            if (file.CreateFile(pathWord + FILE_SEPARATOR_STR + _T("settings.xml"))) return false;
+			NSFile::CFileBinary file;
+            if (false == file.CreateFileW(pathWord + FILE_SEPARATOR_STR + _T("settings.xml"))) return false;
 
 			m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings"), _T("settings.xml") );
 			m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"), _T("/word/settings.xml") );
 
             std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
 
-            file.WriteFile((void*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
+            file.WriteFile((BYTE*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
 
 			file.CloseFile();
 ;

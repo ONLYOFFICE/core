@@ -126,7 +126,7 @@ namespace PdfReader
 		DrawImage(pGState, pRef, pStream, nWidth, nHeight, pColorMap, NULL, false);
 	}
 
-	void OutputDev::DrawSoftMaskedImage(GrState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GrImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GrImageColorMap *pMaskColorMap)
+	void OutputDev::DrawSoftMaskedImage(GrState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GrImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GrImageColorMap *pMaskColorMap, unsigned char *pMatte)
 	{
 		DrawImage(pGState, pRef, pStream, nWidth, nHeight, pColorMap, NULL, false);
 	}

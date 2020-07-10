@@ -906,7 +906,7 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 
 			delete []utf8Data;
 		}
-		NSFile::CFileBinary::Remove(tempFileName);
+		file.Remove(tempFileName);
 	}break;
 	case ODRAW::geoRight:
 	{

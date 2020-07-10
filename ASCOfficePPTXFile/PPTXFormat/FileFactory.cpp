@@ -67,8 +67,6 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/JsaProject.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/External/HyperLink.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/UnknowTypeFile.h"
-//
-
 
 namespace PPTX
 {

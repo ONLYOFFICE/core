@@ -64,13 +64,14 @@ namespace PdfReader
 		m_lBufferSize   = 0;
 		m_pSourceBuffer = NULL;
 
-		// Создаем темповый файл, в который сбрасываем картинку
+        NSFile::CFileBinary file;
+        // Создаем темповый файл, в который сбрасываем картинку
 		FILE *pTempFile = NULL;
 
 		std::wstring wsTempFile = L"";
-		if (!NSFile::CFileBinary::OpenTempFile(&wsTempFile, &pTempFile, L"wb", NULL, NULL))
+        if (!file.OpenTempFile(&wsTempFile, &pTempFile, L"wb", NULL, NULL))
 		{
-			NSFile::CFileBinary::Remove(wsTempFile);
+            file.Remove(wsTempFile);
 			return;
 		}
 
@@ -111,7 +112,7 @@ namespace PdfReader
 		Jpeg2000::CJ2kFile oJ2;
 		if (!oJ2.Open(&pBufferPointer, nComponentsCount, nWidth, nHeight, wsTempFile, std::wstring(L"")) || !pBufferPointer)
 		{
-			NSFile::CFileBinary::Remove(wsTempFile);
+            file.Remove(wsTempFile);
 			return;
 		}
 
@@ -120,7 +121,7 @@ namespace PdfReader
 		if (!m_pSourceBuffer)
 		{
 			delete[] pBufferPointer;
-			NSFile::CFileBinary::Remove(wsTempFile);
+            file.Remove(wsTempFile);
 			m_lBufferSize = 0;
 			return;
 		}
@@ -135,7 +136,7 @@ namespace PdfReader
 		}
 
 		delete[] pBufferPointer;
-		NSFile::CFileBinary::Remove(wsTempFile);
+        file.Remove(wsTempFile);
 	}
 
 	void JPXStream::Close()

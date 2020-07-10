@@ -237,7 +237,8 @@ namespace odf_writer
 					OOX::CPath file_name_inp ( items[i].oox_ref);
 					OOX::CPath file_name_out ( RootPath + FILE_SEPARATOR_STR + items[i].odf_ref); //ref содержит уже folder_
 
-					NSFile::CFileBinary::Copy(file_name_inp.GetPath(), file_name_out.GetPath());
+					NSFile::CFileBinary file;
+					file.Copy(file_name_inp.GetPath(), file_name_out.GetPath());
 				}
 			}
 

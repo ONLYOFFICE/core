@@ -328,8 +328,9 @@ namespace Writers
 
             OOX::CPath pathFile= fileName;
 
-            CFile oFile;
-            oFile.CreateFile(pathFile.GetPath());
+            NSFile::CFileBinary oFile;
+
+            oFile.CreateFileW(pathFile.GetPath());
             oFile.WriteStringUTF8(s_Common);
             oFile.CloseFile();
         }

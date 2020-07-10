@@ -922,28 +922,54 @@ public:
                     return false;
                 m_oLightReader.MoveToElement();
 
-                // Пишем сноску
-                oFootnotes += L"<w:footnote w:id=\"";
-                oFootnotes += std::to_wstring(nFootnote++);
-                oFootnotes += L"\">";
-
-                // Читаем внутренность section
-                int nSDepth = m_oLightReader.GetDepth();
-                while(m_oLightReader.ReadNextSiblingNode(nSDepth))
+                // Ищем сноску в списке требующихся
+                std::map<std::wstring, std::wstring>::iterator it = m_mFootnotes.find(sFootnoteName);
+                if(it != m_mFootnotes.end())
                 {
-                    if(m_oLightReader.GetName() == L"p")
-                    {
-                        // Стиль section-p
-                        oFootnotes += L"<w:p>";
-                        oFootnotes += L"<w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr>";
-                        oFootnotes += L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r>";
-                        if(!readP(L"", oFootnotes))
-                            return false;
-                        oFootnotes += L"</w:p>";
-                    }
-                }
+                    // Пишем сноску
+                    oFootnotes += L"<w:footnote w:id=\"";
+                    oFootnotes += it->second;
+                    oFootnotes += L"\">";
 
-                oFootnotes += L"</w:footnote>";
+                    // Читаем внутренность section
+                    int nSDepth = m_oLightReader.GetDepth();
+                    while(m_oLightReader.ReadNextSiblingNode(nSDepth))
+                    {
+                        std::wstring sName = m_oLightReader.GetName();
+                        if(sName == L"title")
+                        {
+                            int nTDepth = m_oLightReader.GetDepth();
+                            while(m_oLightReader.ReadNextSiblingNode(nTDepth))
+                            {
+                                if(m_oLightReader.GetName() == L"p")
+                                {
+                                    // Стиль section-p
+                                    oFootnotes += L"<w:p>";
+                                    oFootnotes += L"<w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr>";
+                                    oFootnotes += L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r>";
+                                    if(!readP(L"", oFootnotes))
+                                        return false;
+                                    oFootnotes += L"</w:p>";
+                                }
+                            }
+                        }
+                        else if(sName == L"p")
+                        {
+                            // Стиль section-p
+                            oFootnotes += L"<w:p>";
+                            oFootnotes += L"<w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr>";
+                            oFootnotes += L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r>";
+                            if(!readP(L"", oFootnotes))
+                                return false;
+                            oFootnotes += L"</w:p>";
+                        }
+                    }
+
+                    oFootnotes += L"</w:footnote>";
+
+                    // Удаляем сноску из списка требующихся
+                    m_mFootnotes.erase(it);
+                }
             }
         }
         return true;

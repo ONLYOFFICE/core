@@ -4,6 +4,7 @@
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/common/Directory.h"
 #include "../DesktopEditor/common/StringBuilder.h"
+#include "../OfficeUtils/src/OfficeUtils.h"
 
 #include <vector>
 #include <map>
@@ -1255,9 +1256,14 @@ void CFb2File::SetTmpDirectory(const std::wstring& sFolder)
 }
 
 // Проверяет, соответствует ли fb2 файл формату
-// sPath - путь к сохраненному файлу, sDirectory - путь к сохраненным картинкам
-int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory)
+// sPath - путь к файлу fb2, sDirectory - директория, где формируется и создается docx
+int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory, bool bNeedDocx)
 {
+    // Копирование шаблона
+    // КОСТЫЛЬ
+    std::wstring sTemplate = sDirectory + L"/../../../../template/";
+    NSDirectory::CopyDirectory(sTemplate, sDirectory);
+
     // Начало файла
     m_internal->m_oBuilder += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:document xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 w15 wp14\">";
 
@@ -1327,7 +1333,7 @@ int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory)
     oRels += L"<Relationship Id=\"rId6\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes\" Target=\"footnotes.xml\"/>";
 
     // Читает картинки
-    std::wstring sMediaDirectory = sDirectory + L"/media";
+    std::wstring sMediaDirectory = sDirectory + L"/word/media";
     NSDirectory::CreateDirectory(sMediaDirectory);
     do
     {
@@ -1389,7 +1395,7 @@ int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory)
     // Конец файла рельсов
     oRels += L"</Relationships>";
     // Пишем рельсы в файл
-    std::wstring sRelsDirectory = sDirectory + L"/_rels";
+    std::wstring sRelsDirectory = sDirectory + L"/word/_rels";
     NSFile::CFileBinary oRelsWriter;
     if (!oRelsWriter.CreateFileW(sRelsDirectory + L"/document.xml.rels"))
         return false;
@@ -1398,10 +1404,19 @@ int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory)
 
     // Создаем файл для записи
     NSFile::CFileBinary oDocumentXmlWriter;
-    if (!oDocumentXmlWriter.CreateFileW(sDirectory + L"/document.xml"))
+    if (!oDocumentXmlWriter.CreateFileW(sDirectory + L"/word/document.xml"))
         return false;
     oDocumentXmlWriter.WriteStringUTF8(m_internal->m_oBuilder.GetData());
     oDocumentXmlWriter.CloseFile();
+
+    // Архивим в docx
+    if(bNeedDocx)
+    {
+        COfficeUtils oZip;
+        HRESULT oRes = oZip.CompressFileOrDirectory(sDirectory, sDirectory + L"/res.docx");
+        if(oRes == S_FALSE)
+            return false;
+    }
 
     return TRUE;
 }

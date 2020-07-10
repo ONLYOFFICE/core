@@ -6,16 +6,14 @@
 
 int main()
 {
-    setlocale(LC_ALL, "Russian");
-
     CFb2File oFile;
     oFile.SetTmpDirectory(NSFile::GetProcessDirectory() + L"/tmp");
 
     // файл, который открываем
-    std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/1-posledneye-zhelaniye.fb2";
+    std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/8-sezon-groz.fb2";
 
     // директория, где будем создавать docx
-    std::wstring sOutputDirectory = NSFile::GetProcessDirectory() + L"/word";
+    std::wstring sOutputDirectory = NSFile::GetProcessDirectory() + L"/res";
     if (!NSDirectory::Exists(sOutputDirectory))
         NSDirectory::CreateDirectory(sOutputDirectory);
 
@@ -26,7 +24,7 @@ int main()
         return 1;
     }
 
-    int nResConvert = oFile.Convert(sFile, sOutputDirectory);
+    int nResConvert = oFile.Convert(sFile, sOutputDirectory, true);
     if(nResConvert)
         std::cout << "Success" << std::endl;
     else

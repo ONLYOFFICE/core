@@ -16,7 +16,7 @@ CORE_ROOT_DIR = $$PWD/../../core
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 
-ADD_DEPENDENCY(kernel)
+ADD_DEPENDENCY(kernel, OfficeUtils)
 
 SOURCES += Fb2File.cpp
 

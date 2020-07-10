@@ -21,7 +21,7 @@ public:
 
     bool IsFb2File(const std::wstring& sFile);
     void SetTmpDirectory(const std::wstring& sFolder);
-    int Convert(const std::wstring& sPath, const std::wstring& sDirectory);
+    int Convert(const std::wstring& sPath, const std::wstring& sDirectory, bool bNeedDocx = false);
 };
 
 #endif // _FB2FILE_FB2FILE_H

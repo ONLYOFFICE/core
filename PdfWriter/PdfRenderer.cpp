@@ -39,6 +39,7 @@
 #include "Src/Image.h"
 #include "Src/Font.h"
 #include "Src/FontCidTT.h"
+#include "Src/Annotation.h"
 
 #include "../DesktopEditor/graphics/Image.h"
 #include "../DesktopEditor/graphics/structures.h"
@@ -46,6 +47,8 @@
 #include "../DesktopEditor/raster/ImageFileFormatChecker.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 #include "../DesktopEditor/graphics/pro/Image.h"
+
+#include "../UnicodeConverter/UnicodeConverter.h"
 
 #include "OnlineOfficeBinToPdf.h"
 
@@ -1455,6 +1458,14 @@ HRESULT CPdfRenderer::CommandString(const LONG& lType, const std::wstring& sComm
 {
 	return S_OK;
 }
+HRESULT CPdfRenderer::AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip)
+{
+	NSUnicodeConverter::CUnicodeConverter conv;
+	CAnnotation* pAnnot = m_pDocument->CreateUriLinkAnnot(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)), conv.SASLprepToUtf8(wsUrl).c_str());
+	pAnnot->SetBorderStyle(EBorderSubtype::border_subtype_Solid, 0);
+
+	return S_OK;
+}
 //----------------------------------------------------------------------------------------
 // Дополнительные функции Pdf рендерера
 //----------------------------------------------------------------------------------------
@@ -1577,12 +1588,12 @@ PdfWriter::CImageDict* CPdfRenderer::LoadImage(Aggplus::CImage* pImage, const BY
 		for (int nIndex = 0, nSize = nImageW * nImageH; nIndex < nSize; nIndex++)
 		{
             // making full-transparent pixels white
-            if (pDataMem[3] == 0)
-            {
-                pDataMem[0] = 255;
-                pDataMem[1] = 255;
-                pDataMem[2] = 255;
-            }
+			if (pDataMem[3] == 0)
+			{
+				pDataMem[0] = 255;
+				pDataMem[1] = 255;
+				pDataMem[2] = 255;
+			}
 
             if (!bAlpha && (pDataMem[3] < 255))
 			{

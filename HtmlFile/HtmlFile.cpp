@@ -346,6 +346,8 @@ int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstr
 
     oBuilder.WriteString(L"</destination>");
 
+    NSFile::CFileBinary file;
+
     std::vector<std::wstring> arTmpFiles;
     for (std::vector<std::wstring>::const_iterator iter = arFiles.begin(); iter != arFiles.end(); iter++)
     {
@@ -373,12 +375,14 @@ int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstr
             }
 
             std::wstring sTmpFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(sTmpDir, L"HTM");
-            if (NSFile::CFileBinary::Exists(sTmpFile))
-                NSFile::CFileBinary::Remove(sTmpFile);
+
+            NSFile::CFileBinary file;
+            if (file.Exists(sTmpFile))
+                file.Remove(sTmpFile);
 
             sTmpFile = sTmpFile + L".html";
 
-            NSFile::CFileBinary::Copy(sFilePath, sTmpFile);
+            file.Copy(sFilePath, sTmpFile);
             oBuilder.WriteEncodeXmlString(CorrectHtmlPath(sTmpFile));
             arTmpFiles.push_back(sTmpFile);
         }
@@ -472,7 +476,7 @@ int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstr
     CloseHandle(processinfo.hProcess);
     CloseHandle(processinfo.hThread);
 
-    NSFile::CFileBinary::Remove(sTempFileForParams);
+    file.Remove(sTempFileForParams);
 #endif
 
 #ifdef LINUX
@@ -557,11 +561,12 @@ int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstr
 
     for (std::vector<std::wstring>::iterator i = arTmpFiles.begin(); i != arTmpFiles.end(); i++)
     {
-        NSFile::CFileBinary::Remove(*i);
+        NSFile::CFileBinary file;
+        file.Remove(*i);
     }
     arTmpFiles.clear();
 
-    NSFile::CFileBinary::Remove(sTempFileForParams);
+    file.Remove(sTempFileForParams);
     return nReturnCode;
 }
 
@@ -1069,8 +1074,9 @@ namespace NSMht
 #endif
 
             // под линуксом предыдущая функция создает файл!!!
-            if (NSFile::CFileBinary::Exists(m_sFolder))
-                NSFile::CFileBinary::Remove(m_sFolder);
+            NSFile::CFileBinary file;
+            if (file.Exists(m_sFolder))
+                file.Remove(m_sFolder);
 
             NSDirectory::CreateDirectory(m_sFolder);
 

@@ -639,11 +639,12 @@ namespace PdfReader
 					case fontCIDType2OT:  wsExt = L".cid_2ot";   break;
 				}
 
+                NSFile::CFileBinary file;
 				FILE* pTempFile = NULL;
-				if (!NSFile::CFileBinary::OpenTempFile(&wsTempFileName, &pTempFile, L"wb", (wchar_t*)wsExt.c_str(), (wchar_t*)m_pGlobalParams->GetTempFolder().c_str(), NULL))
+                if (!file.OpenTempFile(&wsTempFileName, &pTempFile, L"wb", (wchar_t*)wsExt.c_str(), (wchar_t*)m_pGlobalParams->GetTempFolder().c_str(), NULL))
 				{
 					if (L"" != wsTempFileName)
-						NSFile::CFileBinary::Remove(wsTempFileName);
+                        file.Remove(wsTempFileName);
 
 					pEntry->bAvailable = true;
 					return;
@@ -660,7 +661,7 @@ namespace PdfReader
 					fclose(pTempFile);
 
 					if (L"" != wsTempFileName)
-						NSFile::CFileBinary::Remove(wsTempFileName);
+                        file.Remove(wsTempFileName);
 
 					pEntry->bAvailable = true;
 					return;
@@ -1046,11 +1047,13 @@ namespace PdfReader
 						wsExt = L".cid_non";
 					}
 
+                    NSFile::CFileBinary file;
 					FILE* pTempFile = NULL;
-					if (!NSFile::CFileBinary::OpenTempFile(&wsTempFileName, &pTempFile, L"wb", (wchar_t*)wsExt.c_str(), (wchar_t*)m_pGlobalParams->GetTempFolder().c_str(), NULL))
+
+                    if (!file.OpenTempFile(&wsTempFileName, &pTempFile, L"wb", (wchar_t*)wsExt.c_str(), (wchar_t*)m_pGlobalParams->GetTempFolder().c_str(), NULL))
 					{
 						if (L"" != wsTempFileName)
-							NSFile::CFileBinary::Remove(wsTempFileName);
+                            file.Remove(wsTempFileName);
 
 						pEntry->bAvailable = true;
 						return;
@@ -1058,13 +1061,13 @@ namespace PdfReader
 					fclose(pTempFile);
 
 					// Копируем файл, для создания уникального имени, чтобы связать с файлом с кодировкой
-					if (NSFile::CFileBinary::Copy(wsFileName, wsTempFileName))
+                    if (file.Copy(wsFileName, wsTempFileName))
 					{
 						wsFileName = wsTempFileName;
 					}
 					else
 					{
-						NSFile::CFileBinary::Remove(wsTempFileName);
+                        file.Remove(wsTempFileName);
 						wsTempFileName = L"";
 					}
 
@@ -1349,7 +1352,10 @@ namespace PdfReader
 				{
 					// Такого не должно произойти
 					if (L"" != wsTempFileName)
-						NSFile::CFileBinary::Remove(wsTempFileName);
+                    {
+                        NSFile::CFileBinary file;
+                        file.Remove(wsTempFileName);
+                    }
 
 					break;
 				}

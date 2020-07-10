@@ -4,7 +4,7 @@
 int main(int argc, char *argv[])
 {
     CEpubFile Epub;
-    std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../Files/Harry Potter 1.epub";
+    std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../Files/Tom Sawyer.epub";
     std::wstring sTmp = NSFile::GetProcessDirectory() + L"/tmp";
     std::wstring sOutput = NSFile::GetProcessDirectory() + L"/output";
 
@@ -12,6 +12,8 @@ int main(int argc, char *argv[])
     {
         Epub.SetTempDirectory(sTmp);
         Epub.Convert(sFile, sOutput);
+        Epub.ShowMap();
     }
+
     return 0;
 }

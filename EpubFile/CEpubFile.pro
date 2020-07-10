@@ -19,9 +19,15 @@ include($$CORE_ROOT_DIR/Common/base.pri)
 ADD_DEPENDENCY(kernel)
 
 SOURCES += src/CEpubFile.cpp \
+    src/CBookToc.cpp \
+    src/CBookContentItem.cpp \
+    src/CBookItem.cpp \
     src/CBookInfo.cpp
 
 HEADERS += CEpubFile.h \
+    src/CBookToc.h \
+    src/CBookContentItem.h \
+    src/CBookItem.h \
     src/CBookInfo.h \
     src/EpubFile_global.h
 

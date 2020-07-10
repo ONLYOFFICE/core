@@ -2,20 +2,30 @@
 #define CEPUBFILE_H
 
 #include "src/EpubFile_global.h"
+#include "src/CBookInfo.h"
+#include "src/CBookItem.h"
+#include "src/CBookToc.h"
+#include "src/CBookContentItem.h"
 #include <iostream>
 
 class EPUBFILE_EXPORT CEpubFile
 {
-    std::wstring _fileName;
-    std::wstring _tempDir;
+    std::wstring m_sFileName;
+    std::wstring m_sTempDir;
+
+    CBookInfo m_oBookInfo;
+    std::map <std::wstring, CBookItem> m_mapRefs;
+    CBookToc m_oToc;
+    std::vector<CBookContentItem> m_arContents;
 
 public:
     CEpubFile();
     ~CEpubFile();
 
-    bool IsEbubFile(const std::wstring& fileName);
-    void SetTempDirectory(const std::wstring& tempDir);
-    bool Convert(const std::wstring& inputFile, const std::wstring& outputFile);
+    bool IsEbubFile(const std::wstring& sfileName);
+    void SetTempDirectory(const std::wstring& stempDir);
+    bool Convert(const std::wstring& sInputFile, const std::wstring& sOutputFile);
+    void ShowMap();
 };
 
 #endif // CEPUBFILE_H

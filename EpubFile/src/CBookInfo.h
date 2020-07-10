@@ -2,24 +2,19 @@
 #define CBOOKINFO_H
 
 #include <map>
+
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 
 class CBookInfo
 {
-    std::map <std::wstring, std::wstring> _bookInfo;
-    XmlUtils::CXmlLiteReader *_reader;
-    std::vector<std::wstring> _hrefs;
-    void ReadNodes();
-    void ReadMetadata();
+    std::map <std::wstring, std::wstring> m_mBookInfo;
     void ReadManifest();
 public:
     CBookInfo();
-    CBookInfo(const XmlUtils::CXmlLiteReader &reader);
     ~CBookInfo();
 
-    bool SetReader(const XmlUtils::CXmlLiteReader &reader);
     std::map <std::wstring, std::wstring> GetBookInfo();
-    bool ReadInfo();
+    bool ReadInfo(XmlUtils::CXmlLiteReader &oXmlLiteReader);
     void ShowInfo();
 };
 

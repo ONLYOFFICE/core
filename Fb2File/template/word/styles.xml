@@ -11518,4 +11518,37 @@
 			<w:sz w:val="18"/>
 		</w:rPr>
 	</w:style>
+	<w:style w:type="table" w:default="1" w:styleId="table-based">
+		<w:name w:val="Normal Table"/>
+		<w:uiPriority w:val="99"/>
+		<w:semiHidden/>
+		<w:unhideWhenUsed/>
+		<w:tblPr>
+			<w:tblInd w:w="0" w:type="dxa"/>
+			<w:tblCellMar>
+				<w:top w:w="0" w:type="dxa"/>
+				<w:left w:w="108" w:type="dxa"/>
+				<w:bottom w:w="0" w:type="dxa"/>
+				<w:right w:w="108" w:type="dxa"/>
+			</w:tblCellMar>
+		</w:tblPr>
+	</w:style>
+	<w:style w:type="table" w:styleId="table">
+		<w:name w:val="Table Grid"/>
+		<w:basedOn w:val="table-based"/>
+		<w:uiPriority w:val="59"/>
+		<w:pPr>
+			<w:spacing w:after="0" w:line="240" w:lineRule="auto"/>
+		</w:pPr>
+		<w:tblPr>
+			<w:tblBorders>
+				<w:top w:val="single" w:sz="4" w:space="0" w:color="000000"/>
+				<w:left w:val="single" w:sz="4" w:space="0" w:color="000000"/>
+				<w:bottom w:val="single" w:sz="4" w:space="0" w:color="000000"/>
+				<w:right w:val="single" w:sz="4" w:space="0" w:color="000000"/>
+				<w:insideH w:val="single" w:sz="4" w:space="0" w:color="000000"/>
+				<w:insideV w:val="single" w:sz="4" w:space="0" w:color="000000"/>
+			</w:tblBorders>
+		</w:tblPr>
+	</w:style>
 </w:styles>

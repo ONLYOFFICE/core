@@ -635,6 +635,9 @@ public:
     // Читает table
     bool readTable()
     {
+        // Стиль таблицы
+        m_oBuilder += L"<w:tbl>";
+        m_oBuilder += L"<w:tblPr><w:tblStyle w:val=\"table\"/><w:tblW w:w=\"0\" w:type=\"auto\"/></w:tblPr><w:tblGrid/>";
 
         int nDeath = m_oLightReader.GetDepth();
         if(!m_oLightReader.ReadNextSiblingNode(nDeath))
@@ -647,28 +650,36 @@ public:
         {
             if(m_oLightReader.GetName() != L"tr")
                 return false;
-            // m_sBody += L"tr\n";
+            m_oBuilder += L"<w:tr>";
             int nTrDeath = m_oLightReader.GetDepth();
             while(m_oLightReader.ReadNextSiblingNode(nTrDeath))
             {
+                m_oBuilder += L"<w:tc><w:p>";
+
                 // Читаем th (любое)
                 if(m_oLightReader.GetName() == L"th")
                 {
-                    // m_sBody += L"th\n";
-                    if(!readP(L"", m_oBuilder))
+                    m_oBuilder += L"<w:pPr><w:jc w:val=\"center\"/></w:pPr>";
+                    if(!readP(L"<w:b/>", m_oBuilder))
                         return false;
                 }
                 // Читаем td (любое)
                 else if(m_oLightReader.GetName() == L"td")
                 {
-                    // m_sBody += L"td\n";
+                    m_oBuilder += L"<w:pPr><w:jc w:val=\"right\"/></w:pPr>";
                     if(!readP(L"", m_oBuilder))
                         return false;
                 }
                 else
                     return false;
+
+                m_oBuilder += L"</w:p></w:tc>";
             }
+            m_oBuilder += L"</w:tr>";
         } while(m_oLightReader.ReadNextSiblingNode(nDeath));
+        m_oBuilder += L"</w:tbl>";
+        // Пустая строка после таблицы
+        m_oBuilder += L"<w:p></w:p>";
         return true;
     }
 
@@ -679,13 +690,14 @@ public:
         int nADeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nADeath))
         {
-            m_oBuilder += L"<w:p>";
-            m_oBuilder += L"<w:pPr><w:pStyle w:val=\"annotation\"/></w:pPr>";
             std::wstring sAnName = m_oLightReader.GetName();
             if(sAnName == L"p")
             {
+                m_oBuilder += L"<w:p>";
+                m_oBuilder += L"<w:pPr><w:pStyle w:val=\"annotation\"/></w:pPr>";
                 if(!readP(L"", m_oBuilder))
                     return false;
+                m_oBuilder += L"</w:p>";
             }
             else if(sAnName == L"poem")
             {
@@ -699,12 +711,14 @@ public:
             }
             else if(sAnName == L"subtitle")
             {
+                m_oBuilder += L"<w:p>";
                 m_oBuilder += L"<w:pPr><w:pStyle w:val=\"annotation-subtitle\"/></w:pPr>";
                 if(!readP(L"", m_oBuilder))
                     return false;
+                m_oBuilder += L"</w:p>";
             }
             else if(sAnName == L"empty-line")
-                m_oBuilder += L"<w:r><w:t></w:t></w:r>";
+                m_oBuilder += L"<w:p><w:r><w:t></w:t></w:r></w:p>";
             else if(sAnName == L"table")
             {
                 if(!readTable())
@@ -712,7 +726,6 @@ public:
             }
             else
                 return false;
-            m_oBuilder += L"</w:p>";
         }
         return true;
     }
@@ -827,10 +840,8 @@ public:
                     m_oBuilder += L"<w:p><w:r><w:t></w:t></w:r></w:p>";
                 else if(sName == L"table")
                 {
-                    m_oBuilder += L"<w:p>";
                     if(!readTable())
                         return false;
-                    m_oBuilder += L"</w:p>";
                 }
                 else
                     return false;
@@ -1131,7 +1142,6 @@ public:
             // Читаем history (ноль или один)
             if(sName == L"history")
             {
-                // Содержит форматированный текст - НЕ РЕАЛИЗОВАНО
                 if(m_oDocumentInfo.m_pHistory)
                     return false;
                 m_oDocumentInfo.m_pHistory = new std::wstring[1];
@@ -1139,7 +1149,7 @@ public:
                 int nDepth = m_oLightReader.GetDepth();
                 while(m_oLightReader.ReadNextSiblingNode(nDepth))
                 {
-                    *m_oDocumentInfo.m_pHistory += content();
+                    // *m_oDocumentInfo.m_pHistory += content();
                 }
             }
             else if(sName == L"publish-info")

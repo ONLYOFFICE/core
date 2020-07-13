@@ -10,6 +10,11 @@
 #include <vector>
 #include <map>
 
+#ifndef VALUE2STR
+#define VALUE_TO_STRING(x) #x
+#define VALUE2STR(x) VALUE_TO_STRING(x)
+#endif
+
 // Информация об авторе книги. Тэг author, translator
 struct SAuthor
 {
@@ -1223,11 +1228,12 @@ int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory,
         sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
 
     // Получить версию
-    /*
-    #if defined(INTVER)
-        std::string sVersion = VALUE2STR(INTVER));
-    #endif
-    */
+#if defined(INTVER)
+    std::string sVersion = VALUE2STR(INTVER);
+#endif
+    sApplication += L"/";
+    sApplication += UTF8_TO_U(sVersion);
+
 
     return TRUE;
 }

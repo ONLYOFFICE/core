@@ -10,12 +10,11 @@ int main()
     oFile.SetTmpDirectory(NSFile::GetProcessDirectory() + L"/tmp");
 
     // файл, который открываем
-    std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/1-posledneye-zhelaniye.fb2";
+    std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/8-sezon-groz.fb2";
 
     // директория, где будем создавать docx
     std::wstring sOutputDirectory = NSFile::GetProcessDirectory() + L"/res";
-    if (!NSDirectory::Exists(sOutputDirectory))
-        NSDirectory::CreateDirectory(sOutputDirectory);
+    NSDirectory::CreateDirectory(sOutputDirectory);
 
     bool bCheck = oFile.IsFb2File(sFile);
     if (!bCheck)

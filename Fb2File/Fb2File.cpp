@@ -725,7 +725,7 @@ public:
                                 }
                             }
                         }
-                        else if(sName == L"p")
+                        else if(sName == L"p" || sName == L"subtitle")
                         {
                             // Стиль section-p
                             oFootnotes += L"<w:p>";
@@ -733,6 +733,40 @@ public:
                             oFootnotes += L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r>";
                             readP(L"", oFootnotes);
                             oFootnotes += L"</w:p>";
+                        }
+                        else if(sName == L"poem")
+                        {
+                            int nPDepth = m_oLightReader.GetDepth();
+                            while(m_oLightReader.ReadNextSiblingNode(nPDepth))
+                            {
+                                std::wstring sPName = m_oLightReader.GetName();
+                                // Читаем stanza (один или более)
+                                if(sPName == L"stanza")
+                                {
+                                    int nSDeath = m_oLightReader.GetDepth();
+                                    while(m_oLightReader.ReadNextSiblingNode(nSDeath))
+                                    {
+                                        // Читаем v (один или более)
+                                        if(m_oLightReader.GetName() == L"v")
+                                        {
+                                            oFootnotes += L"<w:p>";
+                                            oFootnotes += L"<w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr>";
+                                            oFootnotes += L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r>";
+                                            readP(L"", oFootnotes);
+                                            oFootnotes += L"</w:p>";
+                                        }
+                                    }
+                                }
+                                // Читаем text-author (любое)
+                                else if(sPName == L"text-author")
+                                {
+                                    oFootnotes += L"<w:p>";
+                                    oFootnotes += L"<w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr>";
+                                    oFootnotes += L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r>";
+                                    readP(L"", oFootnotes);
+                                    oFootnotes += L"</w:p>";
+                                }
+                            }
                         }
                     }
                     oFootnotes += L"</w:footnote>";

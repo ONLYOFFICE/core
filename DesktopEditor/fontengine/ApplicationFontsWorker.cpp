@@ -144,18 +144,20 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
             bIsEqual = false;
     }
     
-    if (!bIsEqual)
+    NSFile::CFileBinary oFile;
+
+	if (!bIsEqual)
     {
-        if (NSFile::CFileBinary::Exists(strFontsCheckPath))
-            NSFile::CFileBinary::Remove(strFontsCheckPath);
-        if (NSFile::CFileBinary::Exists(strAllFontsJSPath))
-            NSFile::CFileBinary::Remove(strAllFontsJSPath);
-        if (NSFile::CFileBinary::Exists(strFontsSelectionBin))
-            NSFile::CFileBinary::Remove(strFontsSelectionBin);
-        if (NSFile::CFileBinary::Exists(m_sDirectory + L"/fonts_thumbnail.png"))
-            NSFile::CFileBinary::Remove(m_sDirectory + L"/fonts_thumbnail.png");
-        if (NSFile::CFileBinary::Exists(m_sDirectory + L"/fonts_thumbnail@2x.png"))
-            NSFile::CFileBinary::Remove(m_sDirectory + L"/fonts_thumbnail@2x.png");
+        if (oFile.Exists(strFontsCheckPath))
+            oFile.Remove(strFontsCheckPath);
+        if (oFile.Exists(strAllFontsJSPath))
+            oFile.Remove(strAllFontsJSPath);
+        if (oFile.Exists(strFontsSelectionBin))
+            oFile.Remove(strFontsSelectionBin);
+        if (oFile.Exists(m_sDirectory + L"/fonts_thumbnail.png"))
+            oFile.Remove(m_sDirectory + L"/fonts_thumbnail.png");
+        if (oFile.Exists(m_sDirectory + L"/fonts_thumbnail@2x.png"))
+            oFile.Remove(m_sDirectory + L"/fonts_thumbnail@2x.png");
         
         int nFlag = 3;
         if (!m_bIsUseOpenType)
@@ -166,7 +168,6 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
         NSCommon::SaveAllFontsJS(pApplicationF, strAllFontsJSPath, m_bIsNeedThumbnails ? m_sDirectory : L"", strFontsSelectionBin);
     }
     
-    NSFile::CFileBinary oFile;
     oFile.CreateFileW(strFontsCheckPath);
 #ifdef ONLYOFFICE_FONTS_VERSION_
     oFile.WriteStringUTF8(L"ONLYOFFICE_FONTS_VERSION_");

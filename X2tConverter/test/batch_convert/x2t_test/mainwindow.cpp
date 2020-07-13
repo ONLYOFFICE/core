@@ -123,15 +123,16 @@ public:
 
         if (!bIsEqual)
         {
-            if (NSFile::CFileBinary::Exists(strAllFontsJSPath))
-                NSFile::CFileBinary::Remove(strAllFontsJSPath);
-            if (NSFile::CFileBinary::Exists(strFontsSelectionBin))
-                NSFile::CFileBinary::Remove(strFontsSelectionBin);
+            NSFile::CFileBinary oFile;
+
+            if (oFile.Exists(strAllFontsJSPath))
+                oFile.Remove(strAllFontsJSPath);
+            if (oFile.Exists(strFontsSelectionBin))
+                oFile.Remove(strFontsSelectionBin);
 
             if (strFonts.size() != 0)
-                NSFile::CFileBinary::Remove(strDirectory + L"/fonts.log");
+                oFile.Remove(strDirectory + L"/fonts.log");
 
-            NSFile::CFileBinary oFile;
             oFile.CreateFileW(strDirectory + L"/fonts.log");
             int nCount = (int)strFontsW_Cur.size();
             for (int i = 0; i < nCount; ++i)

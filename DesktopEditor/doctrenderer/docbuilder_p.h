@@ -460,6 +460,8 @@ namespace NSDoctRenderer
         bool CreateFile(int type)
         {
             Init();
+			
+			NSFile::CFileBinary file;
 #if 1
             CheckFileDir();
 
@@ -482,7 +484,7 @@ namespace NSDoctRenderer
             else
                 return false;
 
-            bool bRet = NSFile::CFileBinary::Copy(sEmptyPath, m_sFileDir + L"/Editor.bin");
+            bool bRet = file.Copy(sEmptyPath, m_sFileDir + L"/Editor.bin");
             if (bRet)
             {
                 NSDirectory::CreateDirectory(m_sFileDir + L"/media");
@@ -561,7 +563,8 @@ namespace NSDoctRenderer
             if (m_bIsServerSafeVersion)
                 return;
 
-            NSFile::CFileBinary::Copy(from, to);
+            NSFile::CFileBinary file;
+			file.Copy(from, to);
         }
 
         int ConvertToInternalFormat(const std::wstring& sFolder, const std::wstring& sFile, const std::wstring& sParams)

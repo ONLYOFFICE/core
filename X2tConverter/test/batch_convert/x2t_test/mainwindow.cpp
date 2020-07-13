@@ -123,15 +123,16 @@ public:
 
         if (!bIsEqual)
         {
-            if (NSFile::CFileBinary::Exists(strAllFontsJSPath))
-                NSFile::CFileBinary::Remove(strAllFontsJSPath);
-            if (NSFile::CFileBinary::Exists(strFontsSelectionBin))
-                NSFile::CFileBinary::Remove(strFontsSelectionBin);
+            NSFile::CFileBinary oFile;
+
+            if (oFile.Exists(strAllFontsJSPath))
+                oFile.Remove(strAllFontsJSPath);
+            if (oFile.Exists(strFontsSelectionBin))
+                oFile.Remove(strFontsSelectionBin);
 
             if (strFonts.size() != 0)
-                NSFile::CFileBinary::Remove(strDirectory + L"/fonts.log");
+                oFile.Remove(strDirectory + L"/fonts.log");
 
-            NSFile::CFileBinary oFile;
             oFile.CreateFileW(strDirectory + L"/fonts.log");
             int nCount = (int)strFontsW_Cur.size();
             for (int i = 0; i < nCount; ++i)
@@ -655,6 +656,7 @@ public:
 #ifdef WIN32
         NSCommon::string_replace(m_file, L"//", L"\\\\");
 #endif
+		NSFile::CFileBinary file;
 
         NSDirectory::CreateDirectory(sDirectoryDst);
 
@@ -662,7 +664,7 @@ public:
         oBuilder.WriteString(L"<?xml version=\"1.0\" encoding=\"utf-8\"?><TaskQueueDataConvert><m_sFileFrom>");
 
         std::wstring sSrcCopy = sDirectoryDst + L"/" + NSCommon::GetFileName(m_file);
-        NSFile::CFileBinary::Copy(m_file, sSrcCopy);
+        file.Copy(m_file, sSrcCopy);
 
         oBuilder.WriteEncodeXmlString(sSrcCopy);
         oBuilder.WriteString(L"</m_sFileFrom><m_sFileTo>");
@@ -691,7 +693,7 @@ public:
         std::wstring sXmlConvert = oBuilder.GetData();
 
         std::wstring sTempFileForParams = sDirectoryDst + L"/params.xml";
-        NSFile::CFileBinary::SaveToFile(sTempFileForParams, sXmlConvert, true);
+        file.SaveToFile(sTempFileForParams, sXmlConvert, true);
 
         std::wstring sConverterExe = sProcess + L"/x2t";
         int nReturnCode = 0;

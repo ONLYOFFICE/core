@@ -203,9 +203,10 @@ namespace NSDoctRenderer
 
             m_sTmpFolder = NSFile::CFileBinary::GetTempPath();
 
+			NSFile::CFileBinary file;
             // под линуксом предыдущая функция создает файл!!!
-            if (NSFile::CFileBinary::Exists(m_sTmpFolder))
-                NSFile::CFileBinary::Remove(m_sTmpFolder);
+            if (file.Exists(m_sTmpFolder))
+                file.Remove(m_sTmpFolder);
 
             m_pAdditionalData = NULL;
             m_bIsInit = false;
@@ -408,15 +409,16 @@ namespace NSDoctRenderer
 
                 if (!bIsEqual)
                 {
-                    if (NSFile::CFileBinary::Exists(strAllFontsJSPath))
-                        NSFile::CFileBinary::Remove(strAllFontsJSPath);
-                    if (NSFile::CFileBinary::Exists(strFontsSelectionBin))
-                        NSFile::CFileBinary::Remove(strFontsSelectionBin);
+					NSFile::CFileBinary oFile;
+
+                    if (oFile.Exists(strAllFontsJSPath))
+                        oFile.Remove(strAllFontsJSPath);
+                    if (oFile.Exists(strFontsSelectionBin))
+                        oFile.Remove(strFontsSelectionBin);
 
                     if (strFonts.size() != 0)
-                        NSFile::CFileBinary::Remove(strDirectory + L"/fonts.log");
+                        oFile.Remove(strDirectory + L"/fonts.log");
 
-                    NSFile::CFileBinary oFile;
                     oFile.CreateFileW(strDirectory + L"/fonts.log");
                     int nCount = (int)strFontsW_Cur.size();
                     for (int i = 0; i < nCount; ++i)
@@ -436,9 +438,11 @@ namespace NSDoctRenderer
 
         void CheckFileDir()
         {
-            m_sFileDir = NSFile::CFileBinary::CreateTempFileWithUniqueName(m_sTmpFolder, L"DE_");
-            if (NSFile::CFileBinary::Exists(m_sFileDir))
-                NSFile::CFileBinary::Remove(m_sFileDir);
+			NSFile::CFileBinary oFile;
+
+			m_sFileDir = oFile.CreateTempFileWithUniqueName(m_sTmpFolder, L"DE_");
+            if (oFile.Exists(m_sFileDir))
+                oFile.Remove(m_sFileDir);
 
             NSCommon::string_replace(m_sFileDir, L"\\", L"/");
 
@@ -703,7 +707,8 @@ namespace NSDoctRenderer
             }
     #endif
 
-            NSFile::CFileBinary::Remove(sTempFileForParams);
+			NSFile::CFileBinary file;
+            file.Remove(sTempFileForParams);
 
             return nReturnCode;
         }
@@ -993,7 +998,8 @@ namespace NSDoctRenderer
             }
     #endif
 
-            NSFile::CFileBinary::Remove(sTempFileForParams);
+			NSFile::CFileBinary file;
+            file.Remove(sTempFileForParams);
 
             LOGGER_SPEED_LAP("save_convert")
 
@@ -1152,10 +1158,11 @@ namespace NSDoctRenderer
             std::wstring _sFile(path);
             std::wstring sFile = GetSaveFilePath(_sFile);
 
-            if (!append && NSFile::CFileBinary::Exists(sFile))
-                NSFile::CFileBinary::Remove(sFile);
-
             NSFile::CFileBinary oFile;
+
+            if (!append && oFile.Exists(sFile))
+                oFile.Remove(sFile);
+
             FILE* pFile = oFile.OpenFileNative(sFile, append ? L"a+" : L"a");
             if (pFile)
             {

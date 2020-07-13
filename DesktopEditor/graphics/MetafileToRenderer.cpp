@@ -207,6 +207,10 @@ namespace NSOnlineOfficeBinToPdf
 		return ret;
 	#endif
 	}
+	inline double ReadDouble(BYTE*& pData, int& nOffset)
+	{
+		return ReadInt(pData, nOffset) / 100000.0;
+	}
     inline void SkipInt(BYTE*& pData, int& nOffset, int nCount = 1)
 	{
 		pData   += (nCount << 2);
@@ -280,6 +284,11 @@ namespace NSOnlineOfficeBinToPdf
 	{
 		pData += nLen;
 		nOffset += nLen;
+	}
+	inline std::wstring ReadString(BYTE*& pData, int& nOffset)
+	{
+		int nLen = 2 * ReadUSHORT(pData, nOffset);
+		return ReadString16(pData, nOffset, nLen);
 	}
 
     bool ConvertBufferToRenderer(BYTE* pBuffer, LONG lBufferLen, IMetafileToRenderter* pCorrector)
@@ -816,6 +825,20 @@ namespace NSOnlineOfficeBinToPdf
 				INT32 gradientType = ReadInt(current, curindex);
 				int _sLen = (int)ReadInt(current, curindex);
 				std::wstring wsTempString = ReadString16(current, curindex, _sLen);
+				break;
+			}
+			case ctHyperlink:
+			{
+				double dX = ReadDouble(current, curindex);
+				double dY = ReadDouble(current, curindex);
+				double dW = ReadDouble(current, curindex);
+				double dH = ReadDouble(current, curindex);
+
+				std::wstring wsUrl     = ReadString(current, curindex);
+				std::wstring wsTooltip = ReadString(current, curindex);
+
+				pRenderer->AddHyperlink(dX, dY, dW, dH, wsUrl, wsTooltip);
+
 				break;
 			}
 			default:

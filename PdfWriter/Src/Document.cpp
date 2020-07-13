@@ -490,7 +490,7 @@ namespace PdfWriter
 	
 	    return pAnnot;
 	}	
-    CAnnotation* CDocument::CreateUriLinkAnnot(unsigned int unPageNum, TRect oRect, const char* sUri)
+	CAnnotation* CDocument::CreateUriLinkAnnot(const unsigned int& unPageNum, const TRect& oRect, const char* sUri)
 	{
 		CAnnotation* pAnnot = new CUriLinkAnnotation(m_pXref, oRect, sUri);
 	
@@ -499,6 +499,15 @@ namespace PdfWriter
 			CPage* pPage = m_vPages.at(unPageNum);
 			pPage->AddAnnotation(pAnnot);
 		}
+
+		return pAnnot;
+	}
+	CAnnotation* CDocument::CreateUriLinkAnnot(CPage* pPage, const TRect& oRect, const char* sUrl)
+	{
+		CAnnotation* pAnnot = new CUriLinkAnnotation(m_pXref, oRect, sUrl);
+
+		if (pAnnot)
+			pPage->AddAnnotation(pAnnot);
 
 		return pAnnot;
 	}

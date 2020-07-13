@@ -240,9 +240,11 @@ protected:
     {
         if (m_sFilePath.empty())
         {
-            m_sFilePath = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSDirectory::GetTempPath(), L"DW");
-            if (NSFile::CFileBinary::Exists(m_sFilePath))
-                NSFile::CFileBinary::Remove(m_sFilePath);
+			NSFile::CFileBinary file;
+           
+			m_sFilePath = file.CreateTempFileWithUniqueName(NSDirectory::GetTempPath(), L"DW");
+            if (file.Exists(m_sFilePath))
+                file.Remove(m_sFilePath);
         }
         return download_external(m_sFileUrl, m_sFilePath);
     }

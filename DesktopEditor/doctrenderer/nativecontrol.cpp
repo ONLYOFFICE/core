@@ -89,9 +89,11 @@ std::wstring CImagesWorker::GetImage(const std::wstring& sUrl)
     {
         CFileDownloader oDownloader(sUrl, false);
 
-        std::wstring sTmpFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"IMG");
-        if (NSFile::CFileBinary::Exists(sTmpFile))
-            NSFile::CFileBinary::Remove(sTmpFile);
+		NSFile::CFileBinary file;
+        std::wstring sTmpFile = file.CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"IMG");
+        
+		if (file.Exists(sTmpFile))
+            file.Remove(sTmpFile);
         sTmpFile = sTmpFile + L".png";
 
         oDownloader.SetFilePath(sTmpFile);
@@ -112,7 +114,7 @@ std::wstring CImagesWorker::GetImage(const std::wstring& sUrl)
 
             oFrame.SaveFile(m_sFolder + L"/media/" + sRet, 4);
 
-            NSFile::CFileBinary::Remove(sTmpFile);
+            file.Remove(sTmpFile);
             return sRet;
         }
     }

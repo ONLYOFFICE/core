@@ -111,7 +111,8 @@ namespace PdfWriter
 					      
 		CAnnotation*      CreateTextAnnot(unsigned int unPageNum, TRect oRect, const char* sText);
 		CAnnotation*      CreateLinkAnnot(unsigned int unPageNum, TRect oRect, CDestination* pDest);
-		CAnnotation*      CreateUriLinkAnnot(unsigned int unPageNum, TRect oRect, const char* sUri);
+		CAnnotation*      CreateUriLinkAnnot(const unsigned int& unPageNum, const TRect& oRect, const char* sUri);
+		CAnnotation*      CreateUriLinkAnnot(CPage* pPage, const TRect& oRect, const char* sUrl);
 					      
 		CImageDict*       CreateImage();
 		CFont14*          CreateFont14(EStandard14Fonts eType);

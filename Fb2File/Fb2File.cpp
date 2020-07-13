@@ -422,7 +422,7 @@ public:
             std::wstring sName = m_oLightReader.GetName();
             // Читаем title (ноль или один)
             if(sName == L"title")
-                readTitle(L"title-poem");
+                readTitle(L"title4");
             // Читаем epigraph (любое)
             else if(sName == L"epigraph")
                 readEpigraph();
@@ -435,16 +435,10 @@ public:
                     std::wstring sSName = m_oLightReader.GetName();
                     // Читаем title (ноль или один)
                     if(sSName == L"title")
-                        readTitle(L"title-stanza");
+                        readTitle(L"title5");
                     // Читаем subtitle (ноль или один)
-                    else if(sSName == L"subtitle")
-                    {
-                        m_oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"stanza-subtitle\"/></w:pPr>";
-                        readP(L"", m_oBuilder);
-                        m_oBuilder += L"</w:p>";
-                    }
                     // Читаем v (один или более)
-                    else if(sSName == L"v")
+                    else if(sSName == L"v" || sSName == L"subtitle")
                     {
                         m_oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"v-stanza\"/></w:pPr>";
                         readP(L"", m_oBuilder);
@@ -462,7 +456,7 @@ public:
             // Читаем date (ноль или один)
             else if(sName == L"date")
             {
-                m_oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"poem-date\"/></w:pPr><w:r><w:t>";
+                m_oBuilder += L"<w:p><w:r><w:t>";
                 m_oBuilder += content();
                 m_oBuilder += L"</w:t></w:r></w:p>";
             }
@@ -477,15 +471,9 @@ public:
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
         {
             std::wstring sName = m_oLightReader.GetName();
-            if(sName == L"p")
+            if(sName == L"p" || sName == L"subtitle")
             {
                 m_oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"cite-p\"/></w:pPr>";
-                readP(L"", m_oBuilder);
-                m_oBuilder += L"</w:p>";
-            }
-            else if(sName == L"subtitle")
-            {
-                m_oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"cite-subtitle\"/></w:pPr>";
                 readP(L"", m_oBuilder);
                 m_oBuilder += L"</w:p>";
             }
@@ -553,10 +541,9 @@ public:
         while(m_oLightReader.ReadNextSiblingNode(nADeath))
         {
             std::wstring sAnName = m_oLightReader.GetName();
-            if(sAnName == L"p")
+            if(sAnName == L"p" || sAnName == L"subtitle")
             {
-                m_oBuilder += L"<w:p>";
-                m_oBuilder += L"<w:pPr><w:pStyle w:val=\"annotation\"/></w:pPr>";
+                m_oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"annotation\"/></w:pPr>";
                 readP(L"", m_oBuilder);
                 m_oBuilder += L"</w:p>";
             }
@@ -564,15 +551,8 @@ public:
                 readPoem();
             else if(sAnName == L"cite")
                 readCite();
-            else if(sAnName == L"subtitle")
-            {
-                m_oBuilder += L"<w:p>";
-                m_oBuilder += L"<w:pPr><w:pStyle w:val=\"annotation-subtitle\"/></w:pPr>";
-                readP(L"", m_oBuilder);
-                m_oBuilder += L"</w:p>";
-            }
             else if(sAnName == L"empty-line")
-                m_oBuilder += L"<w:p><w:r><w:t></w:t></w:r></w:p>";
+                m_oBuilder += L"<w:p></w:p>";
             else if(sAnName == L"table")
                 readTable();
         }
@@ -610,29 +590,15 @@ public:
                 m_oBuilder += L"</w:p>";
             }
             // Читаем произвольный набор
-            else if(sName == L"p")
+            else if(sName == L"p" || sName == L"subtitle")
             {
                 // Стиль section-p
                 m_oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"section-p\"/></w:pPr>";
                 readP(L"", m_oBuilder);
                 m_oBuilder += L"</w:p>";
             }
-            else if(sName == L"image")
-            {
-                // Стиль section-image
-                m_oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"section-image\"/></w:pPr>";
-                readImage(m_oBuilder);
-                m_oBuilder += L"</w:p>";
-            }
             else if(sName == L"poem")
                 readPoem();
-            else if(sName == L"subtitle")
-            {
-                // Стиль section-subtitle
-                m_oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"section-subtitle\"/></w:pPr>";
-                readP(L"", m_oBuilder);
-                m_oBuilder += L"</w:p>";
-            }
             else if(sName == L"cite")
                 readCite();
             else if(sName == L"empty-line")

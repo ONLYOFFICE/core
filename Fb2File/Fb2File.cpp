@@ -741,6 +741,7 @@ public:
         }
     }
 
+    // Читает description
     void readDescription()
     {
         int nDepth = m_oLightReader.GetDepth();
@@ -1075,7 +1076,7 @@ int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory,
     oRels += L"<Relationship Id=\"rId5\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme1.xml\"/>";
     oRels += L"<Relationship Id=\"rId6\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes\" Target=\"footnotes.xml\"/>";
 
-    // Читает картинки
+    // Директория картинок
     std::wstring sMediaDirectory = sDirectory + L"/word/media";
     NSDirectory::CreateDirectory(sMediaDirectory);
 
@@ -1186,6 +1187,10 @@ int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory,
         oRelsWriter.CloseFile();
     }
 
+    // Директория app и core
+    std::wstring sDocPropsDirectory = sDirectory + L"/docProps";
+    NSDirectory::CreateDirectory(sDocPropsDirectory);
+
     // Создаем core.xml
     NSStringUtils::CStringBuilder oCore;
     oCore += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
@@ -1205,12 +1210,37 @@ int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory,
     // Конец core
     oCore += L"<cp:revision>1</cp:revision></cp:coreProperties>";
     // Пишем core в файл
-    std::wstring sCoreDirectory = sDirectory + L"/docProps";
     NSFile::CFileBinary oCoreWriter;
-    if (oCoreWriter.CreateFileW(sCoreDirectory + L"/core.xml"))
+    if (oCoreWriter.CreateFileW(sDocPropsDirectory + L"/core.xml"))
     {
         oCoreWriter.WriteStringUTF8(oCore.GetData());
         oCoreWriter.CloseFile();
+    }
+
+    // Получаем версию ONLYOFFICE
+    std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+    if (sApplication.empty())
+        sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
+#if defined(INTVER)
+    std::string sVersion = VALUE2STR(INTVER);
+#endif
+    sApplication += L"/";
+    sApplication += UTF8_TO_U(sVersion);
+    // Создаем app.xml
+    NSStringUtils::CStringBuilder oApp;
+    oApp += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+    oApp += L"<Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties\" xmlns:vt=\"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes\">";
+    oApp += L"<Application>";
+    oApp += sApplication;
+    oApp += L"</Application>";
+    oApp += L"<Characters>0</Characters><CharactersWithSpaces>0</CharactersWithSpaces><DocSecurity>0</DocSecurity><HyperlinksChanged>false</HyperlinksChanged><Lines>1</Lines><LinksUpToDate>false</LinksUpToDate><Pages>1</Pages><Paragraphs>1</Paragraphs><ScaleCrop>false</ScaleCrop><SharedDoc>false</SharedDoc><TotalTime>1</TotalTime><Words>0</Words>";
+    oApp += L"</Properties>";
+    // Пишем app в файл
+    NSFile::CFileBinary oAppWriter;
+    if (oAppWriter.CreateFileW(sDocPropsDirectory + L"/app.xml"))
+    {
+        oAppWriter.WriteStringUTF8(oApp.GetData());
+        oAppWriter.CloseFile();
     }
 
     // Архивим в docx
@@ -1221,19 +1251,6 @@ int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory,
         if(oRes == S_FALSE)
             return FALSE;
     }
-
-    // Получить ONLYOFFICE
-    std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
-    if (sApplication.empty())
-        sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
-
-    // Получить версию
-#if defined(INTVER)
-    std::string sVersion = VALUE2STR(INTVER);
-#endif
-    sApplication += L"/";
-    sApplication += UTF8_TO_U(sVersion);
-
 
     return TRUE;
 }

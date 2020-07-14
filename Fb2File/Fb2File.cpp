@@ -1057,10 +1057,14 @@ int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory,
 {
     // Копирование шаблона
     // присутствует КОСТЫЛЬ - путь к шаблону относительно теста
+    /*
     std::wstring sTemplate = sDirectory + L"/../../../../template/";
     COfficeUtils oZip;
     HRESULT oRes = oZip.ExtractToDirectory(sTemplate + L"template.docx", sDirectory, NULL, 0);
     if(oRes == S_FALSE)
+        return FALSE;
+    */
+    if(!ExtractTemplate(sDirectory))
         return FALSE;
 
     // Начало файла

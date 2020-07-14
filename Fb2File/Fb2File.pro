@@ -21,3 +21,4 @@ ADD_DEPENDENCY(kernel)
 SOURCES += Fb2File.cpp
 
 HEADERS += Fb2File.h
+HEADERS += template/template.h

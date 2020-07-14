@@ -177,11 +177,10 @@ void _b_writefile(const v8::FunctionCallbackInfo<v8::Value>& args)
     std::string sData = to_cstringA(args[1]);
     NSCommon::string_replaceA(sData, "%", "%%");
 
-    NSFile::CFileBinary oFile;
-
     if (!bIsAppend)
-        oFile.Remove(sFile);
+        NSFile::CFileBinary::Remove(sFile);
 
+    NSFile::CFileBinary oFile;
     FILE* pFile = oFile.OpenFileNative(sFile, bIsAppend ? L"a+" : L"a");
     if (pFile)
     {

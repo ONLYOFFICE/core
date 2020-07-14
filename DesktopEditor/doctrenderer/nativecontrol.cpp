@@ -45,9 +45,7 @@ std::wstring CImagesWorker::GetImageLocal(const std::wstring& sUrl)
     std::wstring sExt = NSFile::GetFileExtention(sUrl);
     std::wstring sRet = L"image" + std::to_wstring(m_nIndex++) + L"." + sExt;
     m_mapImages.insert(std::make_pair(sUrl, sRet));
-    
-	NSFile::CFileBinary file;
-	file.Copy(sUrl, m_sFolder + L"/" + sRet);
+    NSFile::CFileBinary::Copy(sUrl, m_sFolder + L"/" + sRet);
     return sRet;
 }
 std::wstring CImagesWorker::GetImage(const std::wstring& sUrl)

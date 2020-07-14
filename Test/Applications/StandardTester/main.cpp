@@ -608,10 +608,7 @@ CConverter* CInternalWorker::GetNextConverter()
     NSDirectory::CreateDirectory(pConverter->m_folder_dst);
 
     if (m_bIsStandard)
-	{
-        NSFile::CFileBinary file;
-		file.Copy(pConverter->m_file, pConverter->m_folder_dst + L"/" + sName);
-	}
+        NSFile::CFileBinary::Copy(pConverter->m_file, pConverter->m_folder_dst + L"/" + sName);
 
     pConverter->Start(0);
     return pConverter;

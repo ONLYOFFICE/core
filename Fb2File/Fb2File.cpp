@@ -5,6 +5,7 @@
 #include "../DesktopEditor/common/Directory.h"
 #include "../DesktopEditor/common/StringBuilder.h"
 #include "../DesktopEditor/common/SystemUtils.h"
+#include "../OfficeUtils/src/OfficeUtils.h"
 #include "./template/template.h"
 
 #include <vector>
@@ -320,8 +321,8 @@ public:
                 m_oBuilder += L"<w:p></w:p>";
             else if(sName == L"text-author")
             {
-                m_oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"epigraph-text-author\"/></w:pPr>";
-                readP(L"", m_oBuilder);
+                m_oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"epigraph-p\"/></w:pPr>";
+                readP(L"<w:b/>", m_oBuilder);
                 m_oBuilder += L"</w:p>";
             }
         }
@@ -449,8 +450,8 @@ public:
             // Читаем text-author (любое)
             else if(sName == L"text-author")
             {
-                m_oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"poem-text-author\"/></w:pPr>";
-                readP(L"", m_oBuilder);
+                m_oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"v-stanza\"/></w:pPr>";
+                readP(L"<w:b/>", m_oBuilder);
                 m_oBuilder += L"</w:p>";
             }
             // Читаем date (ноль или один)
@@ -485,8 +486,8 @@ public:
                 readTable();
             else if(sName == L"text-author")
             {
-                m_oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"cite-text-author\"/></w:pPr>";
-                readP(L"", m_oBuilder);
+                m_oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"cite-p\"/></w:pPr>";
+                readP(L"<w:b/>", m_oBuilder);
                 m_oBuilder += L"</w:p>";
             }
         }
@@ -568,7 +569,12 @@ public:
             std::wstring sName = m_oLightReader.GetName();
             // Читаем title (ноль или один)
             if(sName == L"title")
-                readTitle(L"title" + (nLevel == 0 ? L"" : std::to_wstring(nLevel)));
+            {
+                std::wstring sTitle = L"";
+                if(nLevel < 9)
+                    sTitle = L"title" + (nLevel == 0 ? L"" : std::to_wstring(nLevel));
+                readTitle(sTitle);
+            }
             // Читаем epigraph (любое)
             else if(sName == L"epigraph")
                 readEpigraph();
@@ -1056,7 +1062,6 @@ void CFb2File::SetTmpDirectory(const std::wstring& sFolder)
 int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory, bool bNeedDocx)
 {
     // Копирование шаблона
-    // присутствует КОСТЫЛЬ - путь к шаблону относительно теста
     /*
     std::wstring sTemplate = sDirectory + L"/../../../../template/";
     COfficeUtils oZip;

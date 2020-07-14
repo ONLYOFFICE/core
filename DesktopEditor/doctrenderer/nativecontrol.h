@@ -106,12 +106,11 @@ public:
         if (true != NSFile::CBase64Converter::Decode(sData.c_str(), (int)sData.length(), pRawData, nRawSize))
             return false;
 
+        std::wstring sTmpFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSDirectory::GetTempPath(), L"ZIP");
+        if (NSFile::CFileBinary::Exists(sTmpFile))
+            NSFile::CFileBinary::Remove(sTmpFile);
+
         NSFile::CFileBinary oFile;
-
-        std::wstring sTmpFile = oFile.CreateTempFileWithUniqueName(NSDirectory::GetTempPath(), L"ZIP");
-        if (oFile.Exists(sTmpFile))
-            oFile.Remove(sTmpFile);
-
         oFile.CreateFileW(sTmpFile);
         oFile.WriteFile(pRawData, (DWORD)nRawSize);
         oFile.CloseFile();
@@ -122,11 +121,11 @@ public:
         NSDirectory::CreateDirectory(m_sTmpFolder);
         if (S_OK != oUtils.ExtractToDirectory(sTmpFile, m_sTmpFolder, NULL, 0))
         {
-            oFile.Remove(sTmpFile);
+            NSFile::CFileBinary::Remove(sTmpFile);
             return false;
         }
 
-        oFile.Remove(sTmpFile);
+        NSFile::CFileBinary::Remove(sTmpFile);
         CheckDirectory();
         return true;
     }

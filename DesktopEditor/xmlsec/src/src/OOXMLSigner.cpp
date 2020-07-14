@@ -192,10 +192,9 @@ public:
 Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-signature/signature\" Target=\"sig" + std::to_string(rId) + ".xml\"/>\
 </Relationships>");
 
+        NSFile::CFileBinary::Remove(file);
+
         NSFile::CFileBinary oFile;
-
-        oFile.Remove(file);
-
         oFile.CreateFileW(file);
         oFile.WriteFile((BYTE*)sRet.c_str(), (DWORD)sRet.length());
         oFile.CloseFile();

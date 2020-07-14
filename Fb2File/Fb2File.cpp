@@ -5,7 +5,7 @@
 #include "../DesktopEditor/common/Directory.h"
 #include "../DesktopEditor/common/StringBuilder.h"
 #include "../DesktopEditor/common/SystemUtils.h"
-#include "../OfficeUtils/src/OfficeUtils.h"
+#include "./template/template.h"
 
 #include <vector>
 #include <map>

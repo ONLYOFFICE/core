@@ -95,14 +95,14 @@ public:
         std::wstring pathRels = sFolder + FILE_SEPARATOR_STR + _T("_rels");
         NSDirectory::CreateDirectory(pathRels) ;
 
-		NSFile::CFileBinary file;
-        if (false == file.CreateFileW(pathRels + FILE_SEPARATOR_STR + m_sFileName + _T(".rels"))) return false;
+		CFile file;
+        if (file.CreateFile(pathRels + FILE_SEPARATOR_STR + m_sFileName + _T(".rels"))) return false;
 
         std::wstring sXml = CreateXml();
 
         std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
 
-        file.WriteFile((BYTE*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
+        file.WriteFile((void*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
 		file.CloseFile();
         
         return true;

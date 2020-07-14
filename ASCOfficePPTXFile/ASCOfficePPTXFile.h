@@ -29,7 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
+#ifndef ASC_OFFICE_PPTX_FILE
+#define ASC_OFFICE_PPTX_FILE
 
 #include "../DesktopEditor/common/ASCVariant.h"
 
@@ -100,4 +101,4 @@ public:
     _UINT32 OpenDirectoryToPPTY	(std::wstring bsInput, std::wstring bsOutput);
     _UINT32 ConvertPPTYToPPTX	(std::wstring bsInput, std::wstring bsOutput, std::wstring bsThemesFolder);
 };
-
+#endif //ASC_OFFICE_PPTX_FILE

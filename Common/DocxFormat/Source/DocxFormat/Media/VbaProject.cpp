@@ -117,8 +117,7 @@ namespace OOX
 					OOX::CPath inputPath = pReader->m_strFolder + FILE_SEPARATOR_STR + _T("media")  + FILE_SEPARATOR_STR + file_name;
 					OOX::CPath outputPath = pReader->m_pRels->m_pManager->GetDstFolder() + FILE_SEPARATOR_STR + _T("vbaProject.bin");
 
-					NSFile::CFileBinary file;	
-					file.Copy(inputPath.GetPath(), outputPath.GetPath());
+					NSFile::CFileBinary::Copy(inputPath.GetPath(), outputPath.GetPath());
 
 					set_filename(outputPath.GetPath(), false);
 					

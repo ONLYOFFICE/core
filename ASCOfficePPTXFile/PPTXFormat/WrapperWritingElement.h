@@ -30,6 +30,8 @@
  *
  */
 #pragma once
+#ifndef PPTX_WRAPPER_WRITING_ELEMENT_INCLUDE_H_
+#define PPTX_WRAPPER_WRITING_ELEMENT_INCLUDE_H_
 
 #include "../../Common/DocxFormat/Source/DocxFormat/WritingElement.h"
 #include "WrapperFile.h"
@@ -149,3 +151,5 @@ namespace PPTX
 		}
 	};
 } // namespace PPTX
+
+#endif // PPTX_WRAPPER_WRITING_ELEMENT_INCLUDE_H_

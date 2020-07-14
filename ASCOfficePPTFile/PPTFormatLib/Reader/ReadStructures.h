@@ -248,15 +248,15 @@ public:
 		}
 	}
 
-	void ToFile(NSFile::CFileBinary* pFile)
+	void ToFile(CFile* pFile)
 	{
 		if (NULL != m_pMetaHeader)
 		{
-			pFile->WriteFile(m_pMetaHeader, m_lMetaHeaderSize);
+			pFile->WriteFile((void*)m_pMetaHeader, m_lMetaHeaderSize);
 		}
 		if (NULL != m_pMetaFile)
 		{
-			pFile->WriteFile(m_pMetaFile, m_lMetaFileSize);
+			pFile->WriteFile((void*)m_pMetaFile, m_lMetaFileSize);
 		}
 	}
 };

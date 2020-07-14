@@ -67,7 +67,7 @@ namespace PPT_FORMAT
 		}
 
 	protected:
-		void WriteApp			(NSFile::CFileBinary& oFile);
+		void WriteApp			(CFile& oFile);
 		void WriteContentTypes	();
 		void WritePresInfo		();
 		void WriteAll			();

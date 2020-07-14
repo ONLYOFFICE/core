@@ -45,8 +45,8 @@ namespace NSWMFToImageConverter
 	public:
 		LONG GetImageType(std::wstring strFile)
 		{		
-			NSFile::CFileBinary oFile;
-			if (true != oFile.OpenFile(strFile))
+			CFile oFile;
+			if (S_OK != oFile.OpenFile(strFile))
 			{
 				oFile.CloseFile();
 				return 0;
@@ -59,8 +59,8 @@ namespace NSWMFToImageConverter
 				return 0;
 			}
 
-			DWORD dwKey = 0, dwSizeRead;
-			oFile.ReadFile((BYTE*)(&dwKey), 4, dwSizeRead);
+			DWORD dwKey = 0;
+			oFile.ReadFile((BYTE*)(&dwKey), 4);
 
 			if (0x9AC6CDD7 == dwKey)
 			{
@@ -71,8 +71,8 @@ namespace NSWMFToImageConverter
 
 			if (0x00000001 == dwKey)
 			{
-				oFile.SeekFile(40);
-				oFile.ReadFile((BYTE*)(&dwKey), 4, dwSizeRead);
+				oFile.SetPosition(40);
+				oFile.ReadFile((BYTE*)(&dwKey), 4);
 				oFile.CloseFile();
 
 				if (0x464D4520 == dwKey)

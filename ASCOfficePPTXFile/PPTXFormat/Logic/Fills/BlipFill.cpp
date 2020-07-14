@@ -328,9 +328,9 @@ namespace PPTX
 									
 									OOX::CPath pathTemp = NSFile::CFileBinary::CreateTempFileWithUniqueName(tempFilePath, _T("img")) + _T(".") + sImageExtension;
 
-									NSFile::CFileBinary oTempFile;
-                                    oTempFile.CreateFileW(pathTemp.GetPath());
-									oTempFile.WriteFile(pDstBuffer, (DWORD)dstLen);
+                                    CFile oTempFile;
+                                    oTempFile.CreateFile(pathTemp.GetPath());
+									oTempFile.WriteFile((void*)pDstBuffer, (DWORD)dstLen);
 									oTempFile.CloseFile();
 									
 									strImagePath = strTempFile =pathTemp.GetPath(); // strTempFile для удаления

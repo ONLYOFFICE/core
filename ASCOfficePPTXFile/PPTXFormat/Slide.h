@@ -30,6 +30,8 @@
  *
  */
 #pragma once
+#ifndef PPTX_SLIDES_SLIDE_INCLUDE_H_
+#define PPTX_SLIDES_SLIDE_INCLUDE_H_
 
 #include "WrapperFile.h"
 #include "FileContainer.h"
@@ -343,3 +345,5 @@ namespace PPTX
 		}
 	};
 } // namespace PPTX
+
+#endif // PPTX_SLIDES_SLIDE_INCLUDE_H_

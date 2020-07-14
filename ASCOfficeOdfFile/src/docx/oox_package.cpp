@@ -400,10 +400,7 @@ void media::write(const std::wstring & RootPath)
 				ConvertSvmToImage(file_name, file_name_out, appFonts_);
 			}
 			else
-			{
-				NSFile::CFileBinary file;	
-				file.Copy(file_name, file_name_out);
-			}
+				NSFile::CFileBinary::Copy(file_name, file_name_out);
         }
     }
 
@@ -442,8 +439,7 @@ void embeddings::write(const std::wstring & RootPath)
 
 			std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + items[i].outputName;
 			
-			NSFile::CFileBinary file;	
-			file.Copy(items[i].href, file_name_out);
+			NSFile::CFileBinary::Copy(items[i].href, file_name_out);
 		}
     }
 }

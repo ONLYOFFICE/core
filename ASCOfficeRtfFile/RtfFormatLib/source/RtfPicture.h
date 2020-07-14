@@ -120,10 +120,11 @@ public:
 		BYTE	pBuffer[ 16 ];
 		DWORD	dwBytesRead = 0;
 
-        NSFile::CFileBinary file;
-		if (file.OpenFile(sFilename) == false) return dt_none;
+        CFile file;
+		if (file.OpenFile(sFilename) != S_OK) return dt_none;
 
-		file.ReadFile(pBuffer, 16, dwBytesRead);
+		file.ReadFile(pBuffer, 16);
+		dwBytesRead = (DWORD)file.GetPosition();
 		file.CloseFile();
 
 		//jpeg	

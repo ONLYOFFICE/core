@@ -166,10 +166,10 @@ namespace NSFile
         static bool ReadAllTextUtf8A(const std::wstring&  strFileName, std::string& sData);
         static bool SaveToFile(const std::wstring&  strFileName, const std::wstring& strXml, bool bIsBOM = false);
         static bool Exists(const std::wstring&  strFileName);
-        bool Copy(const std::wstring&  strSrc, const std::wstring&  strDst);
-        bool Remove(const std::wstring& strFileName);
-        bool Move(const std::wstring&  strSrc, const std::wstring&  strDst);
-        bool Truncate(const std::wstring& sPath, size_t nNewSize);
+        static bool Copy(const std::wstring&  strSrc, const std::wstring&  strDst);
+        static bool Remove(const std::wstring& strFileName);
+        static bool Move(const std::wstring&  strSrc, const std::wstring&  strDst);
+        static bool Truncate(const std::wstring& sPath, size_t nNewSize);
 
         static void SetTempPath(const std::wstring& strTempPath);
         static std::wstring GetTempPath();

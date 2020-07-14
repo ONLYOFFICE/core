@@ -318,8 +318,7 @@ bool odf_document::Impl::decrypt_folder (const std::wstring &password, const std
 		}
 		if (!result) 
 		{
-			NSFile::CFileBinary file;	
-			file.Copy(arFiles[i], dstPath + FILE_SEPARATOR_STR + sFileName);
+			NSFile::CFileBinary::Copy(arFiles[i], dstPath + FILE_SEPARATOR_STR + sFileName);
 			result = true;
 		}
 	}

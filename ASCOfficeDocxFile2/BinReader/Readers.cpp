@@ -3309,13 +3309,12 @@ int Binary_OtherTableReader::ReadOtherContent(BYTE type, long length, void* poRe
 int Binary_OtherTableReader::ReadImageMapContent(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	NSFile::CFileBinary oFile;
-	
 	if ( c_oSerOtherTableTypes::ImageMap_Src == type )
 	{
         std::wstring sImage(m_oBufferedStream.GetString3(length));
         std::wstring sFilePath;
 		bool bDeleteFile = false;
+		NSFile::CFileBinary oFile;
         if(0 == sImage.find(_T("data:")))
 		{
 			if(oFile.CreateTempFile())
@@ -3339,13 +3338,11 @@ int Binary_OtherTableReader::ReadImageMapContent(BYTE type, long length, void* p
 		{
 			m_oFileWriter.m_oMediaWriter.AddImage2(pFileNative);
 		}
-		else if(oFile.Exists(sFilePath))
+		else if(NSFile::CFileBinary::Exists(sFilePath))
 		{
 			m_oFileWriter.m_oMediaWriter.AddImage(sFilePath);
 			if(bDeleteFile)
-			{
-				oFile.Remove(sFilePath);
-			}
+				NSFile::CFileBinary::Remove(sFilePath);
 		}
 	}
 	else

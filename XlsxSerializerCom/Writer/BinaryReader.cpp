@@ -6613,13 +6613,12 @@ int BinaryOtherTableReader::ReadMediaContent(BYTE type, long length, void* poRes
 int BinaryOtherTableReader::ReadMediaItem(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	NSFile::CFileBinary oFile;
-	
 	if(c_oSer_OtherType::MediaSrc == type)
 	{
         std::wstring sImage (m_oBufferedStream.GetString3(length));
         std::wstring sImageSrc;
 		bool bAddToDelete = false;
+		NSFile::CFileBinary oFile;
 
         if(0 == sImage.find(L"data:"))
 		{
@@ -6631,8 +6630,7 @@ int BinaryOtherTableReader::ReadMediaItem(BYTE type, long length, void* poResult
 			//url
 			sImageSrc = SerializeCommon::DownloadImage(sImage);
             std::wstring sNewTempFile = SerializeCommon::changeExtention(sImageSrc, L"jpg");
-			
-			oFile.Move(sImageSrc, sNewTempFile);
+			NSFile::CFileBinary::Move(sImageSrc, sNewTempFile);
 			sImageSrc = sNewTempFile;
 			bAddToDelete = true;
 		}
@@ -6659,9 +6657,7 @@ int BinaryOtherTableReader::ReadMediaItem(BYTE type, long length, void* poResult
 		{
 			ReadMediaItemSaveFilePath(sImageSrc);
 			if(bAddToDelete)
-			{
-				oFile.Remove(sImageSrc);
-			}
+				NSFile::CFileBinary::Remove(sImageSrc);
 		}
 	}
 	else if(c_oSer_OtherType::MediaId == type)
@@ -6706,8 +6702,7 @@ void BinaryOtherTableReader::ReadMediaItemSaveFilePath(const std::wstring& sTemp
 {
     std::wstring sNewImagePath = ReadMediaItemSaveFileGetNewPath(sTempPath);
 
-	NSFile::CFileBinary file;
-	file.Copy(sTempPath, sNewImagePath);
+	NSFile::CFileBinary::Copy(sTempPath, sNewImagePath);
 	m_sCurSrc = sNewImagePath;
 }
 

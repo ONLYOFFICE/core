@@ -217,10 +217,7 @@ public :
             if (m_sFilePath.empty())
                 m_sFilePath = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sOut.c_str(), sOut.length());
             else
-            {
-                NSFile::CFileBinary file;
-                file.Move(UTF8_TO_U(sOut), m_sFilePath);
-            }
+                NSFile::CFileBinary::Move(UTF8_TO_U(sOut), m_sFilePath);
         }
         //int nRes = execl("/usr/bin/wget", stringWstingToUtf8String (m_sFileUrl).c_str(), "-P", stringWstingToUtf8String (m_sFilePath).c_str(), (char *)NULL);
         //m_bComplete = nRes >= 0;

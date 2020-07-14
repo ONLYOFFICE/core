@@ -402,7 +402,6 @@ namespace NSDirectory
         NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strSrc.c_str(), strSrc.length(), pUtf8, lLen, false);
         DIR *dp;
         struct dirent *dirp;
-        NSFile::CFileBinary file;
         if((dp  = opendir((char*)pUtf8)) != NULL)
         {
             while ((dirp = readdir(dp)) != NULL)
@@ -427,7 +426,7 @@ namespace NSDirectory
                 if (2 == nType)
                 {
                     std::wstring sName = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)dirp->d_name, strlen(dirp->d_name));
-                    file.Copy(strSrc + L"/" + sName, strDst + L"/" + sName);
+                    NSFile::CFileBinary::Copy(strSrc + L"/" + sName, strDst + L"/" + sName);
                 }
 
                 if (bIsRecursion && (1 == nType))
@@ -451,9 +450,6 @@ namespace NSDirectory
         NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strSrc.c_str(), strSrc.length(), pUtf8, lLen, false);
         DIR *dp;
         struct dirent *dirp;
-
-        NSFile::CFileBinary file;
-
         if((dp  = opendir((char*)pUtf8)) != NULL)
         {
             while ((dirp = readdir(dp)) != NULL)
@@ -461,7 +457,7 @@ namespace NSDirectory
                 if(DT_REG == dirp->d_type)
                 {
                     std::wstring sName = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)dirp->d_name, strlen(dirp->d_name));
-                    file.Copy(strSrc + L"/" + sName, strDst + L"/" + sName);
+                    NSFile::CFileBinary::Copy(strSrc + L"/" + sName, strDst + L"/" + sName);
                 }
 
                 if (bIsRecursion && DT_DIR == dirp->d_type)

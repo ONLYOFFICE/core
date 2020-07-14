@@ -590,10 +590,17 @@ public:
                 m_oBuilder += L"</w:p>";
             }
             // Читаем произвольный набор
-            else if(sName == L"p" || sName == L"subtitle")
+            else if(sName == L"p")
             {
                 // Стиль section-p
                 m_oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"section-p\"/></w:pPr>";
+                readP(L"", m_oBuilder);
+                m_oBuilder += L"</w:p>";
+            }
+            else if(sName == L"subtitle")
+            {
+                // Стиль section-subtitle
+                m_oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"section-subtitle\"/></w:pPr>";
                 readP(L"", m_oBuilder);
                 m_oBuilder += L"</w:p>";
             }

@@ -14,6 +14,7 @@ int main()
 
     // директория, где будем создавать docx
     std::wstring sOutputDirectory = NSFile::GetProcessDirectory() + L"/res";
+    NSDirectory::DeleteDirectory(sOutputDirectory);
     NSDirectory::CreateDirectory(sOutputDirectory);
 
     bool bCheck = oFile.IsFb2File(sFile);

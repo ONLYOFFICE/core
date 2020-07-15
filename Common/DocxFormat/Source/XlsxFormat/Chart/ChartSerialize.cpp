@@ -32,7 +32,6 @@
 //Generated code
 #include "ChartSerialize.h"
 #include "../../../../../DesktopEditor/common/StringExt.h"
-
 namespace OOX{
 	namespace Spreadsheet{
 

@@ -1525,11 +1525,9 @@ namespace PdfReader
 
 			fclose(pFile);
 
-            NSFile::CFileBinary file;
-
 			if (!(m_pCMap = pGlobalParams->GetCMap(seCollection, seCMapName, (wchar_t*)wsTempFile.c_str())))
 			{
-                file.Remove(wsTempFile.c_str());
+				NSFile::CFileBinary::Remove(wsTempFile.c_str());
 
 				if (seCollection)
 					delete seCollection;
@@ -1542,7 +1540,7 @@ namespace PdfReader
 				return;
 			}
 
-            file.Remove(wsTempFile.c_str());
+			NSFile::CFileBinary::Remove(wsTempFile.c_str());
 
 			if (seCMapName)
 				delete seCMapName;

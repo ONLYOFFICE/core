@@ -583,20 +583,19 @@ namespace NSBinPptxRW
         bool SaveToFile(std::wstring strFilePath, bool bEncodingToUTF8 = true, bool bIsClearNoAttack = true)
         {
             std::wstring strData = m_oWriter.GetData();
-            
-			NSFile::CFileBinary oFile;
-
-			if (!bEncodingToUTF8)
+            if (!bEncodingToUTF8)
             {
-                oFile.CreateFileW(strFilePath);
-                oFile.WriteFile((BYTE*)strData.c_str(), (DWORD)strData.length());
+                CFile oFile;
+                oFile.CreateFile(strFilePath);
+                oFile.WriteFile((void*)strData.c_str(), (DWORD)strData.length());
                 oFile.CloseFile();
             }
             else
             {
                 CDirectory::SaveToFile(strFilePath, strData);
 
-                oFile.CreateFileW(strFilePath);
+                CFile oFile;
+                oFile.CreateFile(strFilePath);
                 std::wstring strHead = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
                 oFile.WriteStringUTF8(strHead);
                 oFile.WriteStringUTF8(strData);

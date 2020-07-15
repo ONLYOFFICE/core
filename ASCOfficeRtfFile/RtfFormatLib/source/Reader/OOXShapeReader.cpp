@@ -2130,25 +2130,25 @@ bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput
 	else if( RtfPicture::dt_apm ==  pOutput.eDataType )
 	{
 		//убираем заголовок apm (22 byte)
-		NSFile::CFileBinary file_inp; //mpa
-		NSFile::CFileBinary file_out;//wmf
+		CFile file_inp; //mpa
+		CFile file_out;//wmf
 
         std::wstring sTargetFile = NSDirectory::CreateTempFileWithUniqueName(ooxPath.GetDirectory(), L"img");
 
-		bool res = file_inp.OpenFile(sPath);
-		if (res != true) return false;
+		int res = file_inp.OpenFile(sPath);
+		if (res != S_OK) return false;
 
-        res = file_out.CreateFileW(sTargetFile);
-		if (res != true) return false;
+        res = file_out.CreateFile(sTargetFile);
+		if (res != S_OK) return false;
 
 		DWORD dwBytesRead = 0;
 		DWORD dwBytesWrite = 0;
 		BYTE pBuffer[1024];
 		DWORD nHeaderLen = 22;
 
-		dwBytesRead = file_inp.GetFilePosition();
-		file_inp.ReadFile(pBuffer, 1024, dwBytesRead);
-		dwBytesRead = file_inp.GetFilePosition() - dwBytesRead;
+		dwBytesRead = file_inp.GetPosition();
+		file_inp.ReadFile(pBuffer, 1024);
+		dwBytesRead = file_inp.GetPosition() - dwBytesRead;
 			
 		while( 0 != dwBytesRead )
 		{
@@ -2165,9 +2165,9 @@ bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput
 			else
 				file_out.WriteFile( pBuffer, dwBytesRead);
 
-			dwBytesRead = file_inp.GetFilePosition();
-			file_inp.ReadFile(pBuffer, 1024, dwBytesRead);
-			dwBytesRead = file_inp.GetFilePosition() - dwBytesRead;
+			dwBytesRead = file_inp.GetPosition();
+			file_inp.ReadFile(pBuffer, 1024);
+			dwBytesRead = file_inp.GetPosition() - dwBytesRead;
 		}
 		file_inp.CloseFile();
 		file_out.CloseFile();

@@ -75,8 +75,7 @@ public:
                 oMetafile.ConvertToRaster(sTempFile.c_str(), 4, 1000, -1);
                 m_oImage.Create(sTempFile);
 
-                NSFile::CFileBinary file;
-                file.Remove(sTempFile);
+                NSFile::CFileBinary::Remove(sTempFile);
             }
         }
 	}

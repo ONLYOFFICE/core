@@ -393,8 +393,7 @@ void draw_object_ole::pptx_convert(oox::pptx_conversion_context & Context)
 		oox::_rels_type relsType;
 		detectObject(objectPath, prog, extension, relsType);
 		
-		NSFile::CFileBinary file;	
-        file.Copy(objectPath, objectPath + extension);
+		NSFile::CFileBinary::Copy(objectPath, objectPath + extension);
 
 		if (relsType == oox::typeMsObject)
 			Context.get_slide_context().set_ms_object(href + extension, prog);

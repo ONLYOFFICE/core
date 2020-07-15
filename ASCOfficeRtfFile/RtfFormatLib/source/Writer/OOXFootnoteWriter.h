@@ -80,8 +80,8 @@ public:
 	{
 		if(  m_sFootnotes.empty() ) return false;
 
-		NSFile::CFileBinary file;
-        if (false == file.CreateFileW(sFolder + FILE_SEPARATOR_STR + _T("footnotes.xml"))) return false;
+		CFile file;
+        if (file.CreateFile(sFolder + FILE_SEPARATOR_STR + _T("footnotes.xml"))) return false;
 		
 		m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes"), _T("footnotes.xml") );
 		m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml"), _T("/word/footnotes.xml") );
@@ -90,7 +90,7 @@ public:
 		
          std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
 
-         file.WriteFile((BYTE*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
+         file.WriteFile((void*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
 
 		 file.CloseFile();
 		 return true;
@@ -160,15 +160,15 @@ public:
 	{
 		if( m_sEndnotes.empty() ) return false;
 
-		NSFile::CFileBinary file;
-        if (false == file.CreateFileW(sFolder + FILE_SEPARATOR_STR + _T("endnotes.xml"))) return false;
+		CFile file;
+        if (file.CreateFile(sFolder + FILE_SEPARATOR_STR + _T("endnotes.xml"))) return false;
 
 		m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes"), _T("endnotes.xml") );
 		m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml"), _T("/word/endnotes.xml") );
 
         std::string sXml = CreateXml();
 
-        file.WriteFile((BYTE*)sXml.c_str(), (DWORD)sXml.length());
+        file.WriteFile((void*)sXml.c_str(), (DWORD)sXml.length());
 		file.CloseFile();
 		return true;
 	}

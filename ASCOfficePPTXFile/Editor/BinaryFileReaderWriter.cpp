@@ -398,9 +398,7 @@ namespace NSBinPptxRW
 
 		if (oPathOutput.GetPath() != strInput && NSFile::CFileBinary::Exists(strInput))
 		{
-            NSFile::CFileBinary file;
-			file.Copy(strInput, oPathOutput.GetPath());
-			
+            NSFile::CFileBinary::Copy(strInput, oPathOutput.GetPath());
 			oImageManagerInfo.sFilepathImage = oPathOutput.GetPath();
 		}
 		return oImageManagerInfo;
@@ -419,8 +417,7 @@ namespace NSBinPptxRW
 
 			if (oPathOutput.GetPath() != strInput && NSFile::CFileBinary::Exists(strInput))
 			{
-                NSFile::CFileBinary file;
-				file.Copy(strInput, oPathOutput.GetPath());
+                NSFile::CFileBinary::Copy(strInput, oPathOutput.GetPath());
 				oImageManagerInfo.sFilepathImage = oPathOutput.GetPath();
 			}
 		}
@@ -453,9 +450,7 @@ namespace NSBinPptxRW
 			}
 			else if (NSFile::CFileBinary::Exists(strAdditionalImage))
 			{
-				NSFile::CFileBinary file;
-				file.Copy(strAdditionalImage, strAdditionalImageOut);
-				
+				NSFile::CFileBinary::Copy(strAdditionalImage, strAdditionalImageOut);
 				oImageManagerInfo.sFilepathAdditional = strAdditionalImageOut;
 			}
 
@@ -475,8 +470,7 @@ namespace NSBinPptxRW
 
 			if (NSFile::CFileBinary::Exists(strAdditionalImage))
 			{
-				NSFile::CFileBinary file;
-				file.Copy(strAdditionalImage, strAdditionalImageOut);
+				NSFile::CFileBinary::Copy(strAdditionalImage, strAdditionalImageOut);
 				oImageManagerInfo.sFilepathAdditional = strAdditionalImageOut;
 			}
 		}
@@ -1065,20 +1059,20 @@ namespace NSBinPptxRW
 
 	void CBinaryFileWriter::GetBase64File(const std::wstring& sFile, std::string& strDst64)
 	{
-		NSFile::CFileBinary oFile;
-		bool hr = oFile.OpenFile(sFile);
+		CFile oFile;
+		HRESULT hr = oFile.OpenFile(sFile);
 
-		if (hr != true)
+		if (S_OK != hr)
 		{
 			strDst64 = "";
 			return;
 		}
 
-		DWORD dwLen = (DWORD)oFile.GetFileSize(), dwSizeRead = 0;
+		DWORD dwLen = (DWORD)oFile.GetFileSize();
 		BYTE* pBuffer = new BYTE[dwLen];
 
-		oFile.SeekFile(0);
-		oFile.ReadFile(pBuffer, dwLen, dwSizeRead);
+		oFile.SetPosition(0);
+		oFile.ReadFile(pBuffer, dwLen);
 
 		int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength((int)dwLen, Base64::B64_BASE64_FLAG_NOCRLF);
         BYTE *pbBase64Buffer = new BYTE[nBase64BufferLen + 1 + 64];
@@ -1478,9 +1472,8 @@ namespace NSBinPptxRW
 	}
 	void CRelsGenerator::SaveRels(const std::wstring& strFile)
 	{
-		NSFile::CFileBinary oFile;
-
-		oFile.CreateFileW(strFile);
+		CFile oFile;
+		oFile.CreateFile(strFile);
 		std::wstring strMem = m_pWriter->GetData();
 		oFile.WriteStringUTF8(strMem);
 		oFile.CloseFile();

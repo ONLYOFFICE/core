@@ -29,7 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
+#ifndef WEB_SETTINGS_WRITER
+#define WEB_SETTINGS_WRITER
 
 #include "../../XlsxSerializerCom/Common/Common.h"
 
@@ -60,3 +61,4 @@ namespace Writers
 		}
 	};
 }
+#endif	// #ifndef WEB_SETTINGS_WRITER

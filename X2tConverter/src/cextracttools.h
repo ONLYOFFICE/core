@@ -228,8 +228,7 @@ namespace NExtractTools
     static bool copyOrigin(const std::wstring& sFileFrom, const std::wstring& sFileTo)
     {
         size_t nIndex = sFileFrom.rfind('.');
-		NSFile::CFileBinary file;
-        return file.Copy(sFileFrom, NSSystemPath::GetDirectoryName(sFileTo) + FILE_SEPARATOR_STR + _T("origin") + sFileFrom.substr(nIndex));
+        return NSFile::CFileBinary::Copy(sFileFrom, NSSystemPath::GetDirectoryName(sFileTo) + FILE_SEPARATOR_STR + _T("origin") + sFileFrom.substr(nIndex));
     }
 
     class InputParamsMailMerge

@@ -201,14 +201,14 @@ bool CFontConverter::ToOTF(std::wstring sFontIn, std::wstring sFontOut, unsigned
             {
                 // error parse font
                 // Просто копируем файл
-                oFileBinary.Copy(sFontIn, sFontOut);
+                NSFile::CFileBinary::Copy(sFontIn, sFontOut);
             }
         }
     }
     else
     {
         // Просто копируем файл
-        oFileBinary.Copy(sFontIn, sFontOut);
+        NSFile::CFileBinary::Copy(sFontIn, sFontOut);
     }
 
     FT_Done_Face( pFace );

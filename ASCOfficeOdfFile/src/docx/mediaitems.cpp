@@ -172,15 +172,15 @@ std::wstring mediaitems::create_file_name(const std::wstring & uri, _rels_type t
 }
 std::wstring mediaitems::detectImageFileExtension(const std::wstring &fileName)
 {
-	NSFile::CFileBinary file;
+	CFile file;
 
 	std::wstring sExt;
-	if (file.OpenFile(fileName) == true)
+	if (file.OpenFile(fileName) == S_OK)
 	{
 		BYTE buffer[128];
-		DWORD buffer_size = 128, size_read = 0;
+		int buffer_size = 128;
 		
-		file.ReadFile(buffer, buffer_size, size_read);
+		file.ReadFile(buffer, buffer_size);
 		file.CloseFile();
 		
 		CImageFileFormatChecker image_checker;

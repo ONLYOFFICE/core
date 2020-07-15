@@ -29,7 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
+#ifndef FONT_TABLE_WRITER
+#define FONT_TABLE_WRITER
 
 #include "../../XlsxSerializerCom/Common/Common.h"
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
@@ -136,4 +137,4 @@ namespace Writers
 		}
 	};
 }
-
+#endif	// #ifndef FONT_TABLE_WRITER

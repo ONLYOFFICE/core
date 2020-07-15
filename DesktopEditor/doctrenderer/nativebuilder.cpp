@@ -38,11 +38,9 @@ void CBuilderDocumentEmbed::OpenFile(const std::wstring& sFile, const std::wstri
 
     std::wstring sTmpDir = pBuilder->m_sTmpFolder;
 
-	NSFile::CFileBinary file;
-    m_sFolder = file.CreateTempFileWithUniqueName(sTmpDir, L"DE_");
-   
-	if (file.Exists(m_sFolder))
-        file.Remove(m_sFolder);
+    m_sFolder = NSFile::CFileBinary::CreateTempFileWithUniqueName(sTmpDir, L"DE_");
+    if (NSFile::CFileBinary::Exists(m_sFolder))
+        NSFile::CFileBinary::Remove(m_sFolder);
 
     NSCommon::string_replace(m_sFolder, L"\\", L"/");
 

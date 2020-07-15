@@ -213,15 +213,18 @@ bool RtfWriter::SaveByItemEnd()
 		{
 			//свойства секции
 
-			NSFile::CFileBinary file;
-			if (file.OpenFile(m_aTempFilesSectPr[i]) == true)
+			CFile file;
+			if (file.OpenFile(m_aTempFilesSectPr[i]) == S_OK)
 			{
 				DWORD dwBytesRead = 1;
 				BYTE byteBuffer[ 4096 ];
 
 				while( 0 != dwBytesRead )
 				{
-					file.ReadFile( byteBuffer, 4096, dwBytesRead);
+					dwBytesRead  = file.GetPosition();
+					file.ReadFile( byteBuffer, 4096);
+					dwBytesRead  = file.GetPosition() - dwBytesRead;
+
 					oTargetFileWriter.Write( byteBuffer,  dwBytesRead );
 				}
 				file.CloseFile();
@@ -234,7 +237,10 @@ bool RtfWriter::SaveByItemEnd()
 
 				while( 0 != dwBytesRead )
 				{
-					file.ReadFile(byteBuffer, 4096, dwBytesRead);					
+					dwBytesRead  = file.GetPosition();
+					file.ReadFile(byteBuffer, 4096);
+					dwBytesRead  = file.GetPosition() - dwBytesRead;
+					
 					oTargetFileWriter.Write( byteBuffer,  dwBytesRead );
 				}
 				file.CloseFile();

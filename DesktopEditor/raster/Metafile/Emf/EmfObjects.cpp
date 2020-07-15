@@ -50,14 +50,13 @@ namespace MetaFile
 	}
 	CEmfLogBrushEx::~CEmfLogBrushEx()
 	{
-            if (BS_DIBPATTERN == BrushStyle && L"" != DibPatternPath)
-            {
-                NSFile::CFileBinary file;
-                file.Remove(DibPatternPath);
-            }
+		if (BS_DIBPATTERN == BrushStyle && L"" != DibPatternPath)
+        {
+            NSFile::CFileBinary::Remove(DibPatternPath);
+        }
 
-            if (DibBuffer)
-                delete[] DibBuffer;
+		if (DibBuffer)
+			delete[] DibBuffer;
 	}
 	void CEmfLogBrushEx::SetDibPattern(unsigned char* pBuffer, unsigned int ulWidth, unsigned int ulHeight)
 	{

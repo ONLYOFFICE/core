@@ -100,8 +100,7 @@ namespace OOX
 
 			OOX::CPath pathSaveItem =  path + FILE_SEPARATOR_STR + m_filename.GetFilename();
             
-			NSFile::CFileBinary file;	
-			file.Copy(m_filename.GetPath(), pathSaveItem.GetPath());
+			NSFile::CFileBinary::Copy(m_filename.GetPath(), pathSaveItem.GetPath());
 		}
 		virtual const CPath DefaultDirectory() const
 		{

@@ -30,6 +30,8 @@
  *
  */
 #pragma once
+#ifndef PPTX_VIEWPROPS_GRIDSPACING_INCLUDE_H_
+#define PPTX_VIEWPROPS_GRIDSPACING_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 
@@ -96,3 +98,5 @@ namespace PPTX
 		};
 	} // namespace nsViewProps
 } // namespace PPTX
+
+#endif // PPTX_VIEWPROPS_GRIDSPACING_INCLUDE_H_

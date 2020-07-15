@@ -190,10 +190,9 @@ public:
 Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-signature/origin\" Target=\"_xmlsignatures/origin.sigs\"/>\
 </Relationships>");
 
+        NSFile::CFileBinary::Remove(file);
+
         NSFile::CFileBinary oFile;
-
-        oFile.Remove(file);
-
         oFile.CreateFileW(file);
         oFile.WriteFile((BYTE*)sRet.c_str(), (DWORD)sRet.length());
         oFile.CloseFile();

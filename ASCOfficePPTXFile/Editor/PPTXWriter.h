@@ -1179,9 +1179,8 @@ namespace NSBinPptxRW
 			std::wstring strVal = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
 								<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
 								<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"../theme/theme") + strThemeNotesNum + _T(".xml\"/></Relationships>");
-			NSFile::CFileBinary oFileRels;
-			
-			oFileRels.CreateFileW(pathNotesMasterRels.GetPath() + FILE_SEPARATOR_STR + _T("notesMaster1.xml.rels"));
+			CFile oFileRels;
+			oFileRels.CreateFile(pathNotesMasterRels.GetPath() + FILE_SEPARATOR_STR + _T("notesMaster1.xml.rels"));
 			oFileRels.WriteStringUTF8(strVal);
 			oFileRels.CloseFile();			
 			

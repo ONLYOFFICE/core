@@ -1175,8 +1175,7 @@ namespace NSHtmlRenderer
                 RELEASEARRAYOBJECTS(pOutput);
                 RELEASEARRAYOBJECTS(pData);
 
-                NSFile::CFileBinary file;
-                file.Remove(strTempFont);
+                NSFile::CFileBinary::Remove(strTempFont);
             }
 
             NSFile::CFileBinary oFileFontFileJS_type;
@@ -2091,8 +2090,7 @@ namespace NSHtmlRenderer
 
             oFilePages.CloseFile();
 
-            NSFile::CFileBinary file;
-            file.Remove(m_strDstDirectoryFiles + L"/document_temp.bin");
+            NSFile::CFileBinary::Remove(m_strDstDirectoryFiles + L"/document_temp.bin");
 
             if (bIsNoBase64)
             {

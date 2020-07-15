@@ -608,10 +608,7 @@ CConverter* CInternalWorker::GetNextConverter()
     NSDirectory::CreateDirectory(pConverter->m_folder_dst);
 
     if (m_bIsStandard)
-	{
-        NSFile::CFileBinary file;
-		file.Copy(pConverter->m_file, pConverter->m_folder_dst + L"/" + sName);
-	}
+        NSFile::CFileBinary::Copy(pConverter->m_file, pConverter->m_folder_dst + L"/" + sName);
 
     pConverter->Start(0);
     return pConverter;
@@ -746,16 +743,15 @@ void CheckFonts(const bool& bIsUseSystemFonts, std::vector<std::wstring>& arDirs
 
     if (!bIsEqual)
     {
-        NSFile::CFileBinary oFile;
-
-        if (oFile.Exists(strAllFontsJSPath))
-            oFile.Remove(strAllFontsJSPath);
-        if (oFile.Exists(strFontsSelectionBin))
-            oFile.Remove(strFontsSelectionBin);
+        if (NSFile::CFileBinary::Exists(strAllFontsJSPath))
+            NSFile::CFileBinary::Remove(strAllFontsJSPath);
+        if (NSFile::CFileBinary::Exists(strFontsSelectionBin))
+            NSFile::CFileBinary::Remove(strFontsSelectionBin);
 
         if (strFonts.size() != 0)
-            oFile.Remove(strDirectory + L"/fonts.log");
+            NSFile::CFileBinary::Remove(strDirectory + L"/fonts.log");
 
+        NSFile::CFileBinary oFile;
         oFile.CreateFileW(strDirectory + L"/fonts.log");
         oFile.WriteStringUTF8(L"ONLYOFFICE_FONTS_VERSION_");
         oFile.WriteStringUTF8(std::to_wstring(ONLYOFFICE_FONTS_VERSION_));

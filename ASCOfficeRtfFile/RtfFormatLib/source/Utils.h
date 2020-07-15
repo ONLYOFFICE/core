@@ -314,18 +314,18 @@ public:
     private:
         static void DecodeFromFile( std::wstring& sFilename, NFileWriter::CBufferedFileWriter& oFileWriter )
          {
-            NSFile::CFileBinary file;
+            CFile file;
 
-            if (file.OpenFile(sFilename) == false) return;
+            if (file.OpenFile(sFilename) != S_OK) return;
 
             DWORD dwBytesRead = 0;
             BYTE byteBuffer[ BUF_SIZE ];
 
             char aLookup[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
-            file.ReadFile(byteBuffer,BUF_SIZE, dwBytesRead);
+            file.ReadFile(byteBuffer ,BUF_SIZE);
 
-            dwBytesRead = (DWORD)file.GetFilePosition();
+            dwBytesRead = (DWORD)file.GetPosition();
             while( 0 != dwBytesRead )
             {
                 for (size_t i = 0; i < (int)dwBytesRead; i++ )
@@ -336,9 +336,9 @@ public:
                     oFileWriter.Write( &byteFirst, 1 );
                     oFileWriter.Write( &byteSecond, 1 );
                 }
-                dwBytesRead = (DWORD)file.GetFilePosition();
-                file.ReadFile(byteBuffer, BUF_SIZE, dwBytesRead);
-                dwBytesRead = (DWORD)file.GetFilePosition() - dwBytesRead;
+                dwBytesRead = (DWORD)file.GetPosition();
+                file.ReadFile(byteBuffer ,BUF_SIZE);
+                dwBytesRead = (DWORD)file.GetPosition() - dwBytesRead;
             }
             file.CloseFile();
          }
@@ -451,17 +451,17 @@ public:
 		if( NULL == pbData )
 			return;
 
-		NSFile::CFileBinary file;
-        if (file.CreateFileW(sFilename) == false) return;
+		CFile file;
+        if (file.CreateFile(sFilename) != S_OK) return;
 
 		file.WriteFile(pbData, (DWORD)nLength);	
 		file.CloseFile();
 	}
     static void WriteDataToFile(std::wstring& sFilename, std::wstring& sData)
 	{
-		NSFile::CFileBinary file;
+		CFile file;
 
-        if (file.CreateFileW(sFilename) == false) return;
+        if (file.CreateFile(sFilename) != S_OK) return;
 
         wchar_t * buf  = (wchar_t *)sData.c_str();
         size_t nLengthText	= sData.length();

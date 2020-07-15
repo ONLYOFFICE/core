@@ -30,7 +30,8 @@
  *
  */
 #pragma once
-
+#ifndef PPTX_PRESENTATION_SLDSZ_INCLUDE_H_
+#define PPTX_PRESENTATION_SLDSZ_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "./../Limit/SlideSize.h"
@@ -100,3 +101,5 @@ namespace PPTX
 		};
 	} // namespace nsPresentation
 } // namespace PPTX
+
+#endif // PPTX_PRESENTATION_SLDSZ_INCLUDE_H_

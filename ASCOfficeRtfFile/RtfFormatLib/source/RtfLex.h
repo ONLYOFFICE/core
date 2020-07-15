@@ -68,9 +68,9 @@ public:
 	{
 		Clear();
 
-		NSFile::CFileBinary srcFile;
+		CFile srcFile;
 		
-		if (srcFile.OpenFile(sPath.c_str()) == false) return;
+		if (srcFile.OpenFile(sPath.c_str()) != S_OK) return;
 
 		__int64 totalFileSize = srcFile.GetFileSize();
 
@@ -78,8 +78,9 @@ public:
 		m_aBuffer = new unsigned char[m_nSizeAbs];
 		DWORD dwBytesRead = 0;
 
-		srcFile.ReadFile(m_aBuffer, (DWORD)m_nSizeAbs, dwBytesRead);
+		srcFile.ReadFile(m_aBuffer, (DWORD)m_nSizeAbs);
 
+		dwBytesRead = (DWORD)srcFile.GetPosition();
 		srcFile.CloseFile();
 	}
     void getBytes( int nCount, BYTE** pbData )

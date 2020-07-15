@@ -914,11 +914,11 @@ mc:Ignorable=\"w14 w15 w16se wp14\">";
 	
     std::wstring sFilePath = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + sFilename;
 	
-	NSFile::CFileBinary file;
+	CFile file;
 	
-    if (file.CreateFileW(sFilePath) == true)
+    if (file.CreateFile(sFilePath) == S_OK)
 	{            
-        file.WriteFile((BYTE*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
+        file.WriteFile((void*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
 		file.CloseFile();
 	}
 

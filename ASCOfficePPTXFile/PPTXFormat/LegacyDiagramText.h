@@ -71,17 +71,15 @@ namespace PPTX
 			m_Data = NULL;
 			m_DataSize =0;
 
-			NSFile::CFileBinary file;
-			if (file.OpenFile(filename.GetPath()) == true)
+			CFile file;
+			if (file.OpenFile(filename.GetPath()) == S_OK)
 			{
 				m_DataSize = (int)file.GetFileSize();
 				m_Data = new BYTE[m_DataSize];
 
-				DWORD dwSizeRead = 0;
-
 				if (m_Data)
 				{
-					file.ReadFile(m_Data, m_DataSize, dwSizeRead);
+					file.ReadFile(m_Data, m_DataSize);
 				}
 
 				file.CloseFile();

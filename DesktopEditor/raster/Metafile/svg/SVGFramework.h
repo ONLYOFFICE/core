@@ -4548,8 +4548,7 @@ namespace SVG
 
 			if (!m_sLivePath.empty())
 			{
-                NSFile::CFileBinary file;
-               file.Remove(m_sLivePath);
+				NSFile::CFileBinary::Remove(m_sLivePath);
 			}
 		}
 

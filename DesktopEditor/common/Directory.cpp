@@ -384,8 +384,7 @@ namespace NSDirectory
             {
                 if( !( oFD.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) )
                 {
-                    NSFile::CFileBinary file;
-                    file.Copy(strSrc + L"/" + sSpec, strDst + L"/" + sSpec);
+                    NSFile::CFileBinary::Copy(strSrc + L"/" + sSpec, strDst + L"/" + sSpec);
                 }
                 else if (bIsRecursion)
                 {
@@ -483,8 +482,7 @@ namespace NSDirectory
 		std::vector<std::wstring> aFiles = GetFiles(strDirectory);
 		for(size_t i = 0; i < aFiles.size(); ++i)
 		{
-            NSFile::CFileBinary file;
-            file.Remove(aFiles[i]);
+			NSFile::CFileBinary::Remove(aFiles[i]);
 		}
 		std::vector<std::wstring> aDirectories = GetDirectories(strDirectory);
 		for(size_t i = 0; i < aDirectories.size(); ++i)

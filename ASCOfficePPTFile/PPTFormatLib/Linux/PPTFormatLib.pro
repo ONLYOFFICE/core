@@ -50,6 +50,7 @@ HEADERS += \
     ../Records/DocumentAtom.h \
     ../Records/DocumentRecords.h \
     ../Records/DocumentTextInfo.h \
+    ../Records/Drawing/ColorIndex.h \
     ../Records/EndDocument.h \
     ../Records/ExCDAudioContainer.h \
     ../Records/ExControlAtom.h \

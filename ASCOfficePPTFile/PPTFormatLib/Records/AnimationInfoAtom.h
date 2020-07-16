@@ -31,9 +31,48 @@
  */
 #pragma once
 #include "../Reader/Records.h"
+#include "Drawing/ColorIndex.h"
+
+struct SFlagsAH {
+    USHORT m_nfAH;
+    // Is masks order ok?
+    // Is shift right? May be 2, 8, 20, 80 ...
+    unsigned getA()const {return m_nfAH & 0x4000;}
+    unsigned getB()const {return m_nfAH & 0x1000;}
+    unsigned getC()const {return m_nfAH & 0x400;}
+    unsigned getD()const {return m_nfAH & 0x100;}
+    unsigned getE()const {return m_nfAH & 0x40;}
+    unsigned getF()const {return m_nfAH & 0x10;}
+    unsigned getG()const {return m_nfAH & 0x4;}
+    unsigned getH()const {return m_nfAH & 0x1;}
+
+
+
+    void ReadFromStream(POLE::Stream* pStream) {
+        m_nfAH = StreamUtils::ReadWORD(pStream);
+    }
+};
 
 class CRecordAnimationInfoAtom : public CUnknownRecord
 {
+public:
+    SColorIndex m_sDimColor;
+    SFlagsAH    m_fA_H;
+
+    USHORT      m_Reserved;
+
+    _UINT32     m_SoundIdRef;
+    _UINT32     m_DelayTime;
+
+    USHORT      m_OrderID;
+    USHORT      m_SlideCount;
+
+    BYTE        m_AnimBuildType;
+    BYTE        m_AnimEffect;
+    BYTE        m_AnimEffectDirection;
+    BYTE        m_AnimAfterEffect;
+    BYTE        m_TextBuildSubEffect;
+    BYTE        m_OleVerb;
 public:
 	
 	CRecordAnimationInfoAtom()
@@ -46,6 +85,30 @@ public:
 
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
 	{
-		return CUnknownRecord::ReadFromStream(oHeader, pStream);
+        m_oHeader = oHeader;
+
+        m_sDimColor.ReadFromStream(pStream);
+        m_fA_H.ReadFromStream(pStream);
+
+        m_Reserved                  = StreamUtils::ReadWORD(pStream);
+
+        m_SoundIdRef                = StreamUtils::ReadDWORD(pStream);
+        m_DelayTime                 = StreamUtils::ReadDWORD(pStream);
+
+        m_OrderID                   = StreamUtils::ReadWORD(pStream);
+        m_SlideCount                = StreamUtils::ReadWORD(pStream);
+
+        m_AnimBuildType             = StreamUtils::ReadBYTE(pStream);
+        m_AnimEffect                = StreamUtils::ReadBYTE(pStream);
+        m_AnimEffectDirection       = StreamUtils::ReadBYTE(pStream);
+        m_AnimAfterEffect           = StreamUtils::ReadBYTE(pStream);
+        m_TextBuildSubEffect        = StreamUtils::ReadBYTE(pStream);
+        m_OleVerb                   = StreamUtils::ReadBYTE(pStream);
+
+
+        StreamUtils::StreamSkip(2, pStream);
 	}
 };
+
+
+

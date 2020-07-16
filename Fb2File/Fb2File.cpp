@@ -271,10 +271,12 @@ public:
                     // Получаем размеры картинки
                     CBgraFrame oBgraFrame;
                     oBgraFrame.OpenFile(sMediaDirectory + L"/" + sId);
+                    unsigned int nX = 4000000;
+                    unsigned int nY = oBgraFrame.get_Height() * nX / oBgraFrame.get_Width();
                     std::vector<std::wstring> vImage;
                     vImage.push_back(L"rPic" + sImageId);
-                    vImage.push_back(std::to_wstring(oBgraFrame.get_Width()));
-                    vImage.push_back(std::to_wstring(oBgraFrame.get_Height()));
+                    vImage.push_back(std::to_wstring(nX));
+                    vImage.push_back(std::to_wstring(nY));
 
                     m_mImages.insert(std::make_pair(sId, vImage));
                     // Запись картинок в рельсы
@@ -863,6 +865,18 @@ public:
             // Читаем body
             if(m_oLightReader.GetName() == L"body")
             {
+                // Пропускаем сноски
+                bool bNotes = false;
+                while(m_oLightReader.MoveToNextAttribute())
+                {
+                    if(m_oLightReader.GetName() == L"name" &&
+                       m_oLightReader.GetText() == L"notes")
+                        bNotes = true;
+                }
+                m_oLightReader.MoveToElement();
+                if(bNotes)
+                    continue;
+
                 int nBDeath = m_oLightReader.GetDepth();
                 while(m_oLightReader.ReadNextSiblingNode(nBDeath))
                 {

@@ -216,6 +216,10 @@ namespace NSOnlineOfficeBinToPdf
 		pData   += (nCount << 2);
 		nOffset += (nCount << 2);
 	}
+	inline void SkipDouble(BYTE*& pData, int& nOffset, int nCount = 1)
+	{
+		SkipInt(pData, nOffset, nCount);
+	}
 
     inline USHORT ReadUSHORT(BYTE*& pData, int& nOffset)
 	{
@@ -289,6 +293,11 @@ namespace NSOnlineOfficeBinToPdf
 	{
 		int nLen = 2 * ReadUSHORT(pData, nOffset);
 		return ReadString16(pData, nOffset, nLen);
+	}
+	inline void SkipString(BYTE*& pData, int& nOffset)
+	{
+		int nLen = 2 * ReadUSHORT(pData, nOffset);
+		SkipString16(pData, nOffset, nLen);
 	}
 
     bool ConvertBufferToRenderer(BYTE* pBuffer, LONG lBufferLen, IMetafileToRenderter* pCorrector)
@@ -838,7 +847,20 @@ namespace NSOnlineOfficeBinToPdf
 				std::wstring wsTooltip = ReadString(current, curindex);
 
 				pRenderer->AddHyperlink(dX, dY, dW, dH, wsUrl, wsTooltip);
+				break;
+			}
+			case ctLink:
+			{
+				double dX = ReadDouble(current, curindex);
+				double dY = ReadDouble(current, curindex);
+				double dW = ReadDouble(current, curindex);
+				double dH = ReadDouble(current, curindex);
 
+				double dDestX = ReadDouble(current, curindex);
+				double dDestY = ReadDouble(current, curindex);
+				int    nPage  = ReadInt(current, curindex);
+
+				pRenderer->AddLink(dX, dY, dW, dH, dDestX, dDestY, nPage);
 				break;
 			}
 			default:
@@ -1120,6 +1142,19 @@ namespace NSOnlineOfficeBinToPdf
                 // TODO: Эта команда не должна приходить
                 return;
             }
+			case ctHyperlink:
+			{
+				SkipDouble(current, curindex, 4);
+				SkipString(current, curindex);
+				SkipString(current, curindex);
+				break;
+			}
+			case ctLink:
+			{
+				SkipDouble(current, curindex, 6);
+				SkipInt(current, curindex);
+				break;
+			}
             default:
             {
                 break;

@@ -99,6 +99,8 @@ namespace PdfWriter
 		bool              IsPDFA() const;
 			              
 		CPage*            AddPage();
+		CPage*            GetPage(const unsigned int& unPage);
+		unsigned int      GetPagesCount() const;
 		void              AddPageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix);
 		void              AddPageLabel(unsigned int unPageIndex, EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix);
 		COutline*         CreateOutline(COutline* pParent, const char* sTitle);
@@ -110,7 +112,8 @@ namespace PdfWriter
 		CJbig2Global*     GetJbig2Global();
 					      
 		CAnnotation*      CreateTextAnnot(unsigned int unPageNum, TRect oRect, const char* sText);
-		CAnnotation*      CreateLinkAnnot(unsigned int unPageNum, TRect oRect, CDestination* pDest);
+		CAnnotation*      CreateLinkAnnot(const unsigned int& unPageNum, const TRect& oRect, CDestination* pDest);
+		CAnnotation*      CreateLinkAnnot(CPage* pPage, const TRect& oRect, CDestination* pDest);
 		CAnnotation*      CreateUriLinkAnnot(const unsigned int& unPageNum, const TRect& oRect, const char* sUri);
 		CAnnotation*      CreateUriLinkAnnot(CPage* pPage, const TRect& oRect, const char* sUrl);
 					      

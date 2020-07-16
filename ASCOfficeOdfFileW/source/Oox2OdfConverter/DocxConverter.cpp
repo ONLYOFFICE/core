@@ -3537,9 +3537,9 @@ void DocxConverter::convert_styles()
 
 	//nullable<OOX::CLatentStyles > m_oLatentStyles;
 
-	convert(styles->m_oDocDefaults.GetPointer());
+	convert(styles->m_oDocDefaults.GetPointer(), styles);
 
-	for (size_t i=0; i< styles->m_arrStyle.size(); i++)
+	for (size_t i = 0; i < styles->m_arrStyle.size(); i++)
 	{
 		if (styles->m_arrStyle[i] == NULL) continue;
 		
@@ -3550,31 +3550,11 @@ void DocxConverter::convert_styles()
 
 		convert(styles->m_arrStyle[i]);
 	
-		if (i == 0 && styles->m_arrStyle[i]->m_oDefault.IsInit() && styles->m_arrStyle[i]->m_oDefault->ToBool())
-		{
-			//NADIE_COMO_TU.docx тут дефолтовый стиль не прописан явно, берем тот что Normal
-			odf_writer::odf_style_state_ptr def_style_state;
+		//if (i == 0 && styles->m_arrStyle[i]->m_oDefault.IsInit() && styles->m_arrStyle[i]->m_oDefault->ToBool())
+		//{
+		//	//NADIE_COMO_TU.docx тут дефолтовый стиль не прописан явно, берем тот что Normal
 
-			odf_writer::style_paragraph_properties	* def_para_properties = NULL;
-			odf_writer::style_text_properties		* def_text_properties = NULL;
-			
-			if (odt_context->styles_context()->find_odf_default_style_state(odf_types::style_family::Paragraph, def_style_state) && def_style_state)
-			{
-				def_para_properties = def_style_state->get_paragraph_properties();
-				def_text_properties = def_style_state->get_text_properties();
-
-				odf_writer::style_paragraph_properties	* para_properties = odt_context->styles_context()->last_state()->get_paragraph_properties();
-				odf_writer::style_text_properties		* text_properties = odt_context->styles_context()->last_state()->get_text_properties();
-
-				def_para_properties->apply_from(para_properties);
-				def_text_properties->apply_from(text_properties);
-
-				if (def_text_properties->content_.fo_font_size_)
-				{
-					current_font_size.push_back(def_text_properties->content_.fo_font_size_->get_length().get_value_unit(odf_types::length::pt));
-				}
-			}
-		}
+		//}
 	}
 }
 
@@ -3619,18 +3599,35 @@ void DocxConverter::convert(OOX::Logic::CHyperlink *oox_hyperlink)
     //nullable<std::wstring                                      > m_sTooltip;
 }
 
-void DocxConverter::convert(OOX::CDocDefaults *def_style)
+void DocxConverter::convert(OOX::CDocDefaults *def_style, OOX::CStyles *styles)
 {
 	if (def_style == NULL)return;
+	if (styles == NULL)return;
 
-	if (def_style->m_oParPr.IsInit())
+	std::map<SimpleTypes::EStyleType, size_t>::iterator pFindParaDefault = styles->m_mapStyleDefaults.find(SimpleTypes::styletypeParagraph);
+	std::map<SimpleTypes::EStyleType, size_t>::iterator pFindRunDefault = styles->m_mapStyleDefaults.find(SimpleTypes::styletypeCharacter);
+
+	if (def_style->m_oParPr.IsInit() || pFindParaDefault != styles->m_mapStyleDefaults.end())
 	{
 		odt_context->styles_context()->create_default_style(odf_types::style_family::Paragraph);					
 		
 		odf_writer::style_paragraph_properties	* paragraph_properties	= odt_context->styles_context()->last_state()->get_paragraph_properties();
 		odf_writer::style_text_properties		* text_properties		= NULL;
 
-		convert(def_style->m_oParPr.GetPointer(), paragraph_properties); 
+		OOX::Logic::CParagraphProperty paraProps;
+		
+		if (def_style->m_oParPr.IsInit()) paraProps = paraProps.Merge(paraProps, def_style->m_oParPr.get());
+
+		if (pFindParaDefault != styles->m_mapStyleDefaults.end())
+		{
+			OOX::CStyle *style = styles->m_arrStyle[pFindParaDefault->second];
+			if ((style) && (style->m_oParPr.IsInit()))
+			{
+				paraProps = paraProps.Merge(paraProps, style->m_oParPr.get());
+			}
+		}
+
+		convert(&paraProps, paragraph_properties); 
 		
 		if (def_style->m_oParPr->m_oRPr.IsInit())
 		{
@@ -3648,17 +3645,29 @@ void DocxConverter::convert(OOX::CDocDefaults *def_style)
 		}
 	}
 	
-	if (def_style->m_oRunPr.IsInit())
+	if (def_style->m_oRunPr.IsInit() || pFindRunDefault != styles->m_mapStyleDefaults.end())
 	{
 		odt_context->styles_context()->create_default_style(odf_types::style_family::Text);					
-		odf_writer::style_text_properties	* text_properties = odt_context->styles_context()->last_state()->get_text_properties();
+		odf_writer::style_text_properties* text_properties = odt_context->styles_context()->last_state()->get_text_properties();
 
-		convert(def_style->m_oRunPr.GetPointer(), text_properties);
+		OOX::Logic::CRunProperty runProps;
+		
+		if (def_style->m_oRunPr.IsInit()) runProps = runProps.Merge(runProps, def_style->m_oRunPr.get());
+
+		if (pFindRunDefault != styles->m_mapStyleDefaults.end())
+		{
+			OOX::CStyle *style = styles->m_arrStyle[pFindRunDefault->second];
+			if ((style) && (style->m_oRunPr.IsInit()))
+			{
+				runProps = runProps.Merge(runProps, style->m_oRunPr.get());
+			}
+		}
+		convert(&runProps, text_properties);
 
 	///////на дефолтовый параграф - дефолтовые настройки шрифта
 		odf_writer::odf_style_state_ptr def_style_state;
 
-		odf_writer::style_text_properties		* para_text_properties = NULL;
+		odf_writer::style_text_properties* para_text_properties = NULL;
 		if (odt_context->styles_context()->find_odf_default_style_state(odf_types::style_family::Paragraph, def_style_state) && def_style_state)
 		{
 			para_text_properties = def_style_state->get_text_properties();

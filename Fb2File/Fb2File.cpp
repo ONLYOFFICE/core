@@ -96,7 +96,7 @@ struct SDocumentInfo
 
     std::wstring* m_pProgramUsed; // Использованные программы
     std::wstring* m_pSrcOcr;      // Автор текста
-    std::wstring* m_pHistory;     // История (ФОРМАТИРОВАННЫЙ ТЕКСТ)
+    std::wstring* m_pHistory;     // История
 
     SDocumentInfo()
     {
@@ -157,7 +157,6 @@ public:
     NSStringUtils::CStringBuilder m_oBuilder; // Текст
     std::wstring m_sTmpFolder;                // Рабочая папка
 
-    int m_nImageId;    // ID картинки
     int m_nFootnoteId; // ID ссылки
     int m_nContentsId; // ID оглавления
 
@@ -173,13 +172,14 @@ public:
     {
         m_pSrcTitleInfo = NULL;
         m_pPublishInfo = NULL;
-        m_nImageId = 1;
         m_nFootnoteId = 1;
         m_nContentsId = 1;
+        m_sTmpFolder = L"";
     }
 
     ~CFb2File_Private()
     {
+        NSDirectory::DeleteDirectory(m_sTmpFolder);
         m_oLightReader.Clear();
         m_mFootnotes.clear();
         m_mImages.clear();
@@ -227,12 +227,14 @@ public:
     }
 
     // Читает binary
-    void getImage(const std::wstring& sPath, const std::wstring& sMediaDirectory, NSStringUtils::CStringBuilder& oRels)
+    bool getImages(const std::wstring& sPath, const std::wstring& sMediaDirectory, NSStringUtils::CStringBuilder& oRels)
     {
         // Открывает файл
-        m_oLightReader.FromFile(sPath);
+        if (!m_oLightReader.FromFile(sPath))
+            return false;
         // Читаем FictionBook
-        isSection(L"FictionBook");
+        if(!isSection(L"FictionBook"))
+            return false;
 
         int nImageId = 1;
         int nDeath = m_oLightReader.GetDepth();
@@ -274,7 +276,7 @@ public:
                     unsigned int nX = 4000000;
                     unsigned int nY = oBgraFrame.get_Height() * nX / oBgraFrame.get_Width();
                     std::vector<std::wstring> vImage;
-                    vImage.push_back(L"rPic" + sImageId);
+                    vImage.push_back(sImageId);
                     vImage.push_back(std::to_wstring(nX));
                     vImage.push_back(std::to_wstring(nY));
 
@@ -289,6 +291,7 @@ public:
             }
         }
         m_oLightReader.Clear();
+        return true;
     }
 
     // Читает image
@@ -315,7 +318,6 @@ public:
         if(it != m_mImages.end())
         {
             // Пишем картинку в файл
-            std::wstring sImageId = std::to_wstring(m_nImageId++);
             oBuilder += L"<w:r><w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\">";
             // extent
             // РАЗМЕРЫ КАРТИНКИ
@@ -326,17 +328,17 @@ public:
             oBuilder += L"\"/>";
             // docPr
             oBuilder += L"<wp:docPr id=\"";
-            oBuilder += sImageId;
+            oBuilder += it->second[0];
             oBuilder += L"\" name=\"\"/>";
             // graphic
             oBuilder += L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">";
             // pic:nvPicPr
             oBuilder += L"<pic:nvPicPr><pic:cNvPr id=\"";
-            oBuilder += sImageId;
+            oBuilder += it->second[0];
             oBuilder += L"\" name=\"\"/><pic:cNvPicPr></pic:cNvPicPr></pic:nvPicPr>";
             // pic:blipFill
             // рельсы rPic + id
-            oBuilder += L"<pic:blipFill><a:blip r:embed=\"";
+            oBuilder += L"<pic:blipFill><a:blip r:embed=\"rPic";
             oBuilder += it->second[0];
             oBuilder += L"\"/><a:stretch/></pic:blipFill>";
             // pic:spPr
@@ -471,23 +473,21 @@ public:
                     }
                 }
                 m_oLightReader.MoveToElement();
+                // Читаем текст внутри ссылки
+                readP(sRStyle, oBuilder);
                 if(sFootnoteName == L"")
                     continue;
 
-                // Читаем текст внутри ссылки
-                readP(sRStyle, oBuilder);
-
-                // Пишем ссылку
-                std::wstring sFootnoteId = std::to_wstring(m_nFootnoteId);
-                oBuilder += L"<w:r>";
-                // Стиль ссылки
-                oBuilder += L"<w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr>";
-                oBuilder += L"<w:footnoteReference w:id=\"";
-                oBuilder += sFootnoteId;
-                oBuilder += L"\"/></w:r>";
-
-                m_mFootnotes.insert(std::make_pair(sFootnoteName, sFootnoteId));
-                m_nFootnoteId++;
+                std::map<std::wstring, std::wstring>::iterator it = m_mFootnotes.find(sFootnoteName);
+                if(it != m_mFootnotes.end())
+                {
+                    oBuilder += L"<w:r>";
+                    // Стиль ссылки
+                    oBuilder += L"<w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr>";
+                    oBuilder += L"<w:footnoteReference w:id=\"";
+                    oBuilder += it->second;
+                    oBuilder += L"\"/></w:r>";
+                }
             }
             // Читаем вычеркнутый текст
             else if(sName == L"strikethrough")
@@ -684,11 +684,7 @@ public:
                 readAnnotation();
             // Читаем вложенные section (любое)
             else if(sName == L"section")
-            {
-                m_oBuilder += L"<w:p>";
                 readSection(nLevel + 1);
-                m_oBuilder += L"</w:p>";
-            }
             // Читаем произвольный набор
             else if(sName == L"p")
             {
@@ -744,106 +740,128 @@ public:
     }
 
     // Читает body с именем notes
-    void readNotes(NSStringUtils::CStringBuilder& oFootnotes)
+    void readNotes(const std::wstring& sPath, NSStringUtils::CStringBuilder& oFootnotes)
     {
+        // Открываем файл
+        m_oLightReader.FromFile(sPath);
+        // Читаем FictionBook
+        isSection(L"FictionBook");
+
+        int nFootnoteId = 1;
         int nDepth = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nDepth))
         {
-            // Читаем section (один или более)
-            if(m_oLightReader.GetName() == L"section")
+            // Читаем body
+            if(m_oLightReader.GetName() == L"body")
             {
-                // Читаем id
-                std::wstring sFootnoteName = L"";
+                bool bNotes = false;
                 while(m_oLightReader.MoveToNextAttribute())
                 {
-                    if(m_oLightReader.GetName() == L"id")
-                    {
-                        sFootnoteName = m_oLightReader.GetText();
-                        break;
-                    }
+                    if(m_oLightReader.GetName() == L"name" &&
+                       m_oLightReader.GetText() == L"notes")
+                        bNotes = true;
                 }
                 m_oLightReader.MoveToElement();
-                if(sFootnoteName == L"")
+                if(!bNotes)
                     continue;
-
-                // Ищем сноску в списке требующихся
-                std::map<std::wstring, std::wstring>::iterator it = m_mFootnotes.find(sFootnoteName);
-                if(it != m_mFootnotes.end())
+                int nBDepth = m_oLightReader.GetDepth();
+                while(m_oLightReader.ReadNextSiblingNode(nBDepth))
                 {
-                    // Пишем сноску
-                    oFootnotes += L"<w:footnote w:id=\"";
-                    oFootnotes += it->second;
-                    oFootnotes += L"\">";
-
-                    // Читаем внутренность section
-                    int nSDepth = m_oLightReader.GetDepth();
-                    while(m_oLightReader.ReadNextSiblingNode(nSDepth))
+                    // Читаем section (один или более)
+                    if(m_oLightReader.GetName() == L"section")
                     {
-                        std::wstring sName = m_oLightReader.GetName();
-                        if(sName == L"title")
+                        // Читаем id
+                        std::wstring sFootnoteName = L"";
+                        while(m_oLightReader.MoveToNextAttribute())
                         {
-                            int nTDepth = m_oLightReader.GetDepth();
-                            while(m_oLightReader.ReadNextSiblingNode(nTDepth))
+                            if(m_oLightReader.GetName() == L"id")
                             {
-                                if(m_oLightReader.GetName() == L"p")
-                                {
-                                    // Стиль section-p
-                                    oFootnotes += L"<w:p>";
-                                    oFootnotes += L"<w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr>";
-                                    oFootnotes += L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r>";
-                                    readP(L"", oFootnotes);
-                                    oFootnotes += L"</w:p>";
-                                }
+                                sFootnoteName = m_oLightReader.GetText();
+                                break;
                             }
                         }
-                        else if(sName == L"p" || sName == L"subtitle")
+                        m_oLightReader.MoveToElement();
+                        if(sFootnoteName == L"")
+                            continue;
+
+                        std::wstring sFootnoteId = std::to_wstring(nFootnoteId++);
+                        m_mFootnotes.insert(std::make_pair(sFootnoteName, sFootnoteId));
+                        // Пишем сноску
+                        oFootnotes += L"<w:footnote w:id=\"";
+                        oFootnotes += sFootnoteId;
+                        oFootnotes += L"\">";
+
+                        // Читаем внутренность section
+                        int nSDepth = m_oLightReader.GetDepth();
+                        while(m_oLightReader.ReadNextSiblingNode(nSDepth))
                         {
-                            // Стиль section-p
-                            oFootnotes += L"<w:p>";
-                            oFootnotes += L"<w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr>";
-                            oFootnotes += L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r>";
-                            readP(L"", oFootnotes);
-                            oFootnotes += L"</w:p>";
-                        }
-                        else if(sName == L"poem")
-                        {
-                            int nPDepth = m_oLightReader.GetDepth();
-                            while(m_oLightReader.ReadNextSiblingNode(nPDepth))
+                            std::wstring sName = m_oLightReader.GetName();
+                            if(sName == L"title")
                             {
-                                std::wstring sPName = m_oLightReader.GetName();
-                                // Читаем stanza (один или более)
-                                if(sPName == L"stanza")
+                                int nTDepth = m_oLightReader.GetDepth();
+                                while(m_oLightReader.ReadNextSiblingNode(nTDepth))
                                 {
-                                    int nSDeath = m_oLightReader.GetDepth();
-                                    while(m_oLightReader.ReadNextSiblingNode(nSDeath))
+                                    if(m_oLightReader.GetName() == L"p")
                                     {
-                                        // Читаем v (один или более)
-                                        if(m_oLightReader.GetName() == L"v")
-                                        {
-                                            oFootnotes += L"<w:p>";
-                                            oFootnotes += L"<w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr>";
-                                            oFootnotes += L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r>";
-                                            readP(L"", oFootnotes);
-                                            oFootnotes += L"</w:p>";
-                                        }
+                                        // Стиль section-p
+                                        oFootnotes += L"<w:p>";
+                                        oFootnotes += L"<w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr>";
+                                        oFootnotes += L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r>";
+                                        readP(L"", oFootnotes);
+                                        oFootnotes += L"</w:p>";
                                     }
                                 }
-                                // Читаем text-author (любое)
-                                else if(sPName == L"text-author")
+                            }
+                            else if(sName == L"p" || sName == L"subtitle")
+                            {
+                                // Стиль section-p
+                                oFootnotes += L"<w:p>";
+                                oFootnotes += L"<w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr>";
+                                oFootnotes += L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r>";
+                                readP(L"", oFootnotes);
+                                oFootnotes += L"</w:p>";
+                            }
+                            else if(sName == L"poem")
+                            {
+                                int nPDepth = m_oLightReader.GetDepth();
+                                while(m_oLightReader.ReadNextSiblingNode(nPDepth))
                                 {
-                                    oFootnotes += L"<w:p>";
-                                    oFootnotes += L"<w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr>";
-                                    oFootnotes += L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r>";
-                                    readP(L"", oFootnotes);
-                                    oFootnotes += L"</w:p>";
+                                    std::wstring sPName = m_oLightReader.GetName();
+                                    // Читаем stanza (один или более)
+                                    if(sPName == L"stanza")
+                                    {
+                                        int nSDeath = m_oLightReader.GetDepth();
+                                        while(m_oLightReader.ReadNextSiblingNode(nSDeath))
+                                        {
+                                            // Читаем v (один или более)
+                                            if(m_oLightReader.GetName() == L"v")
+                                            {
+                                                oFootnotes += L"<w:p>";
+                                                oFootnotes += L"<w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr>";
+                                                oFootnotes += L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r>";
+                                                readP(L"", oFootnotes);
+                                                oFootnotes += L"</w:p>";
+                                            }
+                                        }
+                                    }
+                                    // Читаем text-author (любое)
+                                    else if(sPName == L"text-author")
+                                    {
+                                        oFootnotes += L"<w:p>";
+                                        oFootnotes += L"<w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr>";
+                                        oFootnotes += L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r>";
+                                        readP(L"", oFootnotes);
+                                        oFootnotes += L"</w:p>";
+                                    }
                                 }
                             }
                         }
+                        oFootnotes += L"</w:footnote>";
                     }
-                    oFootnotes += L"</w:footnote>";
                 }
             }
         }
+        m_oLightReader.Clear();
     }
 
     // Читает оглавление
@@ -901,6 +919,8 @@ public:
                                     // Читаем p
                                     if(m_oLightReader.GetName() == L"p")
                                         readP(L"<w:rStyle w:val=\"contents-p\"/>", oContents);
+                                    // Вставляем пробел между словами
+                                    oContents += L"<w:r><w:t xml:space=\"preserve\"> </w:t></w:r>";
                                 }
                                 oContents += L"</w:hyperlink></w:p>";
                             }
@@ -927,6 +947,7 @@ public:
             // Читаем title-info
             if(sName == L"title-info")
                 getTitleInfo(m_oTitleInfo);
+            /*
             // Читаем src-title-info (ноль или один)
             else if(sName == L"src-title-info")
             {
@@ -945,6 +966,7 @@ public:
             // Читаем custom-info (любое)
             else if(sName == L"custom-info")
                 getCustomInfo();
+            */
         }
     }
 
@@ -1080,8 +1102,29 @@ public:
         while(m_oLightReader.ReadNextSiblingNode(nDepth))
         {
             std::wstring sName = m_oLightReader.GetName();
+            // Читаем annotation (ноль или один)
+            if(sName == L"annotation")
+                readAnnotation();
+            // Читаем coverpage (ноль или один)
+            else if(sName == L"coverpage")
+            {
+                // Читаем image (один или более)
+                int nCDepth = m_oLightReader.GetDepth();
+                while(m_oLightReader.ReadNextSiblingNode(nCDepth))
+                {
+                    if(m_oLightReader.GetName() == L"image")
+                    {
+                        m_oBuilder += L"<w:p>";
+                        m_oBuilder += L"<w:pPr><w:jc w:val=\"center\"/></w:pPr>";
+                        readImage(m_oBuilder);
+                        m_oBuilder += L"</w:p>";
+                    }
+                }
+                // Разрыв страницы
+                m_oBuilder += L"<w:p><w:r><w:br w:type=\"page\"/></w:r></w:p>";
+            }
             // Читаем genre (один или более)
-            if(sName == L"genre")
+            else if(sName == L"genre")
                 oTitleInfo.m_arGenres.push_back(content());
             // Читаем author (один или более)
             else if(sName == L"author")
@@ -1089,9 +1132,6 @@ public:
             // Читаем book-title
             else if(sName == L"book-title")
                 oTitleInfo.m_sBookTitle = content();
-            // Читаем annotation (ноль или один)
-            else if(sName == L"annotation")
-                readAnnotation();
             // Читаем keywords (ноль или один)
             else if(sName == L"keywords")
             {
@@ -1114,24 +1154,6 @@ public:
                 }
                 m_oLightReader.MoveToElement();
                 *oTitleInfo.m_pDate = make_pair(sDate, content());
-            }
-            // Читаем coverpage (ноль или один)
-            else if(sName == L"coverpage")
-            {
-                // Читаем image (один или более)
-                int nCDepth = m_oLightReader.GetDepth();
-                while(m_oLightReader.ReadNextSiblingNode(nCDepth))
-                {
-                    if(m_oLightReader.GetName() == L"image")
-                    {
-                        m_oBuilder += L"<w:p>";
-                        m_oBuilder += L"<w:pPr><w:jc w:val=\"center\"/></w:pPr>";
-                        readImage(m_oBuilder);
-                        m_oBuilder += L"</w:p>";
-                    }
-                }
-                // Разрыв страницы
-                m_oBuilder += L"<w:p><w:r><w:br w:type=\"page\"/></w:r></w:p>";
             }
             // Читаем lang
             else if(sName == L"lang")
@@ -1211,15 +1233,21 @@ bool CFb2File::IsFb2File(const std::wstring& sFile)
 // Выставление рабочей папки
 void CFb2File::SetTmpDirectory(const std::wstring& sFolder)
 {
-    m_internal->m_sTmpFolder = CorrectPathW(sFolder);
+    m_internal->m_sTmpFolder = sFolder;
+    NSDirectory::DeleteDirectory(m_internal->m_sTmpFolder);
+    NSDirectory::CreateDirectory(m_internal->m_sTmpFolder);
 }
 
 // Проверяет, соответствует ли fb2 файл формату
 // sPath - путь к файлу fb2, sDirectory - директория, где формируется и создается docx
-int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory, bool bNeedDocx)
+int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory, CFb2Params* oParams)
 {
+    if(m_internal->m_sTmpFolder == L"")
+        SetTmpDirectory(sDirectory + L"/tmp");
+    std::wstring sTmp = m_internal->m_sTmpFolder;
+
     // Копирование шаблона
-    if(!ExtractTemplate(sDirectory))
+    if(!ExtractTemplate(sTmp))
         return FALSE;
 
     // Начало файла
@@ -1243,16 +1271,26 @@ int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory,
     oRels += L"<Relationship Id=\"rId5\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme1.xml\"/>";
     oRels += L"<Relationship Id=\"rId6\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes\" Target=\"footnotes.xml\"/>";
 
-    // Создаем содержание
+    // Читаем содержание
+    bool bNeedContents = false;
+    if(oParams)
+        bNeedContents = oParams->bNeedContents;
     NSStringUtils::CStringBuilder oContents;
-    if(!m_internal->readContents(sPath, oContents))
-        return FALSE;
+    if(bNeedContents)
+    {
+        if(!m_internal->readContents(sPath, oContents))
+            return FALSE;
+    }
 
     // Директория картинок
-    std::wstring sMediaDirectory = sDirectory + L"/word/media";
+    std::wstring sMediaDirectory = sTmp + L"/word/media";
     NSDirectory::CreateDirectory(sMediaDirectory);
-    // Пишем картинки
-    m_internal->getImage(sPath, sMediaDirectory, oRels);
+    // Читаем картинки
+    if(!m_internal->getImages(sPath, sMediaDirectory, oRels))
+        return FALSE;
+
+    // Читаем сноски
+    m_internal->readNotes(sPath, oFootnotes);
 
     // Открываем файл на чтение
     if(!m_internal->m_oLightReader.FromFile(sPath))
@@ -1271,7 +1309,8 @@ int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory,
         {
             m_internal->readDescription();
             // После description вставим оглавление
-            m_internal->m_oBuilder += oContents.GetData();
+            if(bNeedContents)
+                m_internal->m_oBuilder += oContents.GetData();
         }
         // Читаем body
         else if(sName == L"body")
@@ -1285,16 +1324,15 @@ int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory,
             }
             m_internal->m_oLightReader.MoveToElement();
             if(bNotes)
-                m_internal->readNotes(oFootnotes);
-            else
-                m_internal->readBody();
+                continue;
+            m_internal->readBody();
         }
     }
 
     // Конец сносок
     oFootnotes += L"</w:footnotes>";
     // Пишем сноски в файл
-    std::wstring sFootnotesDirectory = sDirectory + L"/word";
+    std::wstring sFootnotesDirectory = sTmp + L"/word";
     NSFile::CFileBinary oFootnotesWriter;
     if (oFootnotesWriter.CreateFileW(sFootnotesDirectory + L"/footnotes.xml"))
     {
@@ -1307,7 +1345,7 @@ int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory,
     m_internal->m_oBuilder += L"</w:document>";
     // Пишем документ в файл
     NSFile::CFileBinary oDocumentXmlWriter;
-    if (oDocumentXmlWriter.CreateFileW(sDirectory + L"/word/document.xml"))
+    if (oDocumentXmlWriter.CreateFileW(sTmp + L"/word/document.xml"))
     {
         oDocumentXmlWriter.WriteStringUTF8(m_internal->m_oBuilder.GetData());
         oDocumentXmlWriter.CloseFile();
@@ -1316,7 +1354,7 @@ int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory,
     // Конец рельсов
     oRels += L"</Relationships>";
     // Пишем рельсы в файл
-    std::wstring sRelsDirectory = sDirectory + L"/word/_rels";
+    std::wstring sRelsDirectory = sTmp + L"/word/_rels";
     NSFile::CFileBinary oRelsWriter;
     if (oRelsWriter.CreateFileW(sRelsDirectory + L"/document.xml.rels"))
     {
@@ -1325,7 +1363,7 @@ int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory,
     }
 
     // Директория app и core
-    std::wstring sDocPropsDirectory = sDirectory + L"/docProps";
+    std::wstring sDocPropsDirectory = sTmp + L"/docProps";
     NSDirectory::CreateDirectory(sDocPropsDirectory);
 
     // Создаем core.xml
@@ -1381,13 +1419,20 @@ int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory,
     }
 
     // Архивим в docx
+    bool bNeedDocx = false;
+    if(oParams)
+        bNeedDocx = oParams->bNeedDocx;
     if(bNeedDocx)
     {
         COfficeUtils oZip;
-        HRESULT oRes = oZip.CompressFileOrDirectory(sDirectory, sDirectory + L"/res.docx");
+        HRESULT oRes = oZip.CompressFileOrDirectory(sTmp, sDirectory + L"/" + NSFile::GetFileName(sPath) + L".docx");
         if(oRes == S_FALSE)
             return FALSE;
     }
-
+    else
+    {
+        if(!NSDirectory::CopyDirectory(sTmp, sDirectory))
+            return FALSE;
+    }
     return TRUE;
 }

@@ -10,6 +10,18 @@
 #define FB2FILE_DECL_EXPORT Q_DECL_EXPORT
 #endif
 
+struct CFb2Params
+{
+    bool bNeedDocx;
+    bool bNeedContents;
+
+    CFb2Params()
+    {
+        bNeedDocx = false;
+        bNeedContents = false;
+    }
+};
+
 class CFb2File_Private;
 class FB2FILE_DECL_EXPORT CFb2File
 {
@@ -21,7 +33,7 @@ public:
 
     bool IsFb2File(const std::wstring& sFile);
     void SetTmpDirectory(const std::wstring& sFolder);
-    int Convert(const std::wstring& sPath, const std::wstring& sDirectory, bool bNeedDocx = false);
+    int Convert(const std::wstring& sPath, const std::wstring& sDirectory, CFb2Params* oParams = NULL);
 };
 
 #endif // _FB2FILE_FB2FILE_H

@@ -122,7 +122,10 @@ namespace XmlUtils
         {
             Clear();
 
-            reader = xmlReaderForMemory((char*)sXml.c_str(), sXml.length(), NULL, NULL, 0);
+            m_lStreamLen = (LONG)sXml.length();
+            m_pStream = new BYTE[m_lStreamLen];
+            memcpy(m_pStream, sXml.c_str(), m_lStreamLen);
+            reader = xmlReaderForMemory((char*)m_pStream, m_lStreamLen, NULL, NULL, 0);
 
             return true;
         }

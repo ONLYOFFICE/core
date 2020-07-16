@@ -1,5 +1,6 @@
 #include "Fb2File.h"
 #include "../DesktopEditor/xml/include/xmlutils.h"
+#include "../DesktopEditor/xml/include/xmlencoding.h"
 #include "../DesktopEditor/common/Base64.h"
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/common/Directory.h"
@@ -190,6 +191,14 @@ public:
             delete m_pPublishInfo;
     }
 
+    // wrapper для чтения из файла
+    bool OpenFromFile(const std::wstring& sFile)
+    {
+        // считаем, что это хмл, так как проверка на формат будет раньше (x2t)
+        std::string sFileContentUtf8 = XmlUtils::GetXmlContentAsUTF8(sFile);
+        return m_oLightReader.FromStringA(sFileContentUtf8);
+    }
+
     // Читает и проверят соответствует ли текущий раздел ожиданиям
     bool isSection(const std::wstring& sName)
     {
@@ -230,7 +239,7 @@ public:
     bool getImages(const std::wstring& sPath, const std::wstring& sMediaDirectory, NSStringUtils::CStringBuilder& oRels)
     {
         // Открывает файл
-        if (!m_oLightReader.FromFile(sPath))
+        if (!OpenFromFile(sPath))
             return false;
         // Читаем FictionBook
         if(!isSection(L"FictionBook"))
@@ -743,7 +752,7 @@ public:
     void readNotes(const std::wstring& sPath, NSStringUtils::CStringBuilder& oFootnotes)
     {
         // Открываем файл
-        m_oLightReader.FromFile(sPath);
+        OpenFromFile(sPath);
         // Читаем FictionBook
         isSection(L"FictionBook");
 
@@ -868,7 +877,7 @@ public:
     bool readContents(const std::wstring& sPath, NSStringUtils::CStringBuilder& oContents)
     {
         // Открывает файл
-        if (!m_oLightReader.FromFile(sPath))
+        if (!OpenFromFile(sPath))
             return false;
         // Читаем FictionBook
         if(!isSection(L"FictionBook"))
@@ -1219,7 +1228,7 @@ CFb2File::~CFb2File()
 bool CFb2File::IsFb2File(const std::wstring& sFile)
 {
     // Открывает файл на проверку
-    if (!m_internal->m_oLightReader.FromFile(sFile))
+    if (!m_internal->OpenFromFile(sFile))
         return false;
 
     // Читаем FictionBook
@@ -1293,7 +1302,7 @@ int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory,
     m_internal->readNotes(sPath, oFootnotes);
 
     // Открываем файл на чтение
-    if(!m_internal->m_oLightReader.FromFile(sPath))
+    if(!m_internal->OpenFromFile(sPath))
         return FALSE;
 
     // Читаем FictionBook

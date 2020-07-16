@@ -5,6 +5,7 @@
 #include "../DesktopEditor/common/Directory.h"
 #include "../DesktopEditor/common/StringBuilder.h"
 #include "../DesktopEditor/common/SystemUtils.h"
+#include "../DesktopEditor/raster/BgraFrame.h"
 #include "../OfficeUtils/src/OfficeUtils.h"
 #include "./template/template.h"
 
@@ -164,7 +165,7 @@ public:
     SPublishInfo* m_pPublishInfo; // Сведения об издании книги
 
     std::map<std::wstring, std::wstring> m_mFootnotes;  // Ссылки
-    std::map<std::wstring, std::wstring> m_mImages;     // Картинки
+    std::map<std::wstring, std::vector<std::wstring>> m_mImages;     // Картинки
     std::map<std::wstring, std::wstring> m_mCustomInfo; // Произвольная информация
 
 public:
@@ -225,6 +226,69 @@ public:
         arAuthor.push_back(oAuthor);
     }
 
+    // Читает binary
+    void getImage(const std::wstring& sPath, const std::wstring& sMediaDirectory, NSStringUtils::CStringBuilder& oRels)
+    {
+        // Открывает файл
+        m_oLightReader.FromFile(sPath);
+        // Читаем FictionBook
+        isSection(L"FictionBook");
+
+        int nImageId = 1;
+        int nDeath = m_oLightReader.GetDepth();
+        while(m_oLightReader.ReadNextSiblingNode(nDeath))
+        {
+            // Читаем binary
+            if(m_oLightReader.GetName() == L"binary")
+            {
+                std::wstring sId = L"";
+
+                // Читает атрибуты
+                while(m_oLightReader.MoveToNextAttribute())
+                {
+                    // Читает id
+                    if(m_oLightReader.GetName() == L"id")
+                        sId = m_oLightReader.GetText();
+                }
+                m_oLightReader.MoveToElement();
+                if(sId == L"")
+                    continue;
+
+                std::wstring sImageId = std::to_wstring(nImageId++);
+                // Пишет картинку в файл
+                NSFile::CFileBinary oImageWriter;
+                if(oImageWriter.CreateFileW(sMediaDirectory + L"/" + sId))
+                {
+                    std::string sBase64 = contentA();
+                    int nSrcLen = (int)sBase64.length();
+                    int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
+                    BYTE* pImageData = new BYTE[nDecodeLen];
+                    if (TRUE == NSBase64::Base64Decode(sBase64.c_str(), nSrcLen, pImageData, &nDecodeLen))
+                        oImageWriter.WriteFile(pImageData, (DWORD)nDecodeLen);
+                    RELEASEARRAYOBJECTS(pImageData);
+                    oImageWriter.CloseFile();
+
+                    // Получаем размеры картинки
+                    CBgraFrame oBgraFrame;
+                    oBgraFrame.OpenFile(sMediaDirectory + L"/" + sId);
+                    std::vector<std::wstring> vImage;
+                    vImage.push_back(L"rPic" + sImageId);
+                    vImage.push_back(std::to_wstring(oBgraFrame.get_Width()));
+                    vImage.push_back(std::to_wstring(oBgraFrame.get_Height()));
+
+                    m_mImages.insert(std::make_pair(sId, vImage));
+                    // Запись картинок в рельсы
+                    oRels += L"<Relationship Id=\"rPic";
+                    oRels += sImageId;
+                    oRels += L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/";
+                    oRels += sId;
+                    oRels += L"\"/>";
+                }
+            }
+        }
+        m_oLightReader.Clear();
+    }
+
     // Читает image
     // НЕ имеет право писать p
     void readImage(NSStringUtils::CStringBuilder& oBuilder)
@@ -245,38 +309,48 @@ public:
         if(sImageName == L"")
             return;
 
-        // Пишем image в файл
-        std::wstring sImageId = std::to_wstring(m_nImageId++);
-        oBuilder += L"<w:r><w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\">";
-        // extent
-        // РАЗМЕРЫ КАРТИНКИ
-        oBuilder += L"<wp:extent cx=\"5000000\" cy=\"5000000\"/>";
-        // docPr
-        oBuilder += L"<wp:docPr id=\"";
-        oBuilder += sImageId;
-        oBuilder += L"\" name=\"\"/>";
-        // graphic
-        oBuilder += L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">";
-        // pic:nvPicPr
-        oBuilder += L"<pic:nvPicPr><pic:cNvPr id=\"";
-        oBuilder += sImageId;
-        oBuilder += L"\" name=\"\"/><pic:cNvPicPr></pic:cNvPicPr></pic:nvPicPr>";
-        // pic:blipFill
-        // рельсы rPic + id
-        oBuilder += L"<pic:blipFill><a:blip r:embed=\"rPic";
-        oBuilder += sImageId;
-        oBuilder += L"\"/><a:stretch/></pic:blipFill>";
-        // pic:spPr
-        oBuilder += L"<pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/>";
-        // РАЗМЕРЫ КАРТИНКИ
-        oBuilder += L"<a:ext cx=\"5000000\" cy=\"5000000\"/>";
-        oBuilder += L"</a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></pic:spPr>";
+        std::map<std::wstring, std::vector<std::wstring>>::iterator it = m_mImages.find(sImageName);
+        if(it != m_mImages.end())
+        {
+            // Пишем картинку в файл
+            std::wstring sImageId = std::to_wstring(m_nImageId++);
+            oBuilder += L"<w:r><w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\">";
+            // extent
+            // РАЗМЕРЫ КАРТИНКИ
+            oBuilder += L"<wp:extent cx=\"";
+            oBuilder += it->second[1];
+            oBuilder += L"\" cy=\"";
+            oBuilder += it->second[2];
+            oBuilder += L"\"/>";
+            // docPr
+            oBuilder += L"<wp:docPr id=\"";
+            oBuilder += sImageId;
+            oBuilder += L"\" name=\"\"/>";
+            // graphic
+            oBuilder += L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">";
+            // pic:nvPicPr
+            oBuilder += L"<pic:nvPicPr><pic:cNvPr id=\"";
+            oBuilder += sImageId;
+            oBuilder += L"\" name=\"\"/><pic:cNvPicPr></pic:cNvPicPr></pic:nvPicPr>";
+            // pic:blipFill
+            // рельсы rPic + id
+            oBuilder += L"<pic:blipFill><a:blip r:embed=\"";
+            oBuilder += it->second[0];
+            oBuilder += L"\"/><a:stretch/></pic:blipFill>";
+            // pic:spPr
+            oBuilder += L"<pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/>";
+            // РАЗМЕРЫ КАРТИНКИ
+            oBuilder += L"<a:ext cx=\"";
+            oBuilder += it->second[1];
+            oBuilder += L"\" cy=\"";
+            oBuilder += it->second[2];
+            oBuilder += L"\"/>";
+            oBuilder += L"</a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></pic:spPr>";
 
-        oBuilder += L"</pic:pic></a:graphicData></a:graphic>";
-        // Конец записи
-        oBuilder += L"</wp:inline></w:drawing></w:r>";
-
-        m_mImages.insert(std::make_pair(sImageName, L"rPic" + sImageId));
+            oBuilder += L"</pic:pic></a:graphicData></a:graphic>";
+            // Конец записи
+            oBuilder += L"</wp:inline></w:drawing></w:r>";
+        }
     }
 
     // Читает title
@@ -1155,16 +1229,19 @@ int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory,
     oRels += L"<Relationship Id=\"rId5\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme1.xml\"/>";
     oRels += L"<Relationship Id=\"rId6\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes\" Target=\"footnotes.xml\"/>";
 
+    // Создаем содержание
+    NSStringUtils::CStringBuilder oContents;
+    if(!m_internal->readContents(sPath, oContents))
+        return FALSE;
+
     // Директория картинок
     std::wstring sMediaDirectory = sDirectory + L"/word/media";
     NSDirectory::CreateDirectory(sMediaDirectory);
-
-    // Создаем содержание
-    NSStringUtils::CStringBuilder oContents;
-    m_internal->readContents(sPath, oContents);
+    // Пишем картинки
+    m_internal->getImage(sPath, sMediaDirectory, oRels);
 
     // Открываем файл на чтение
-    if (!m_internal->m_oLightReader.FromFile(sPath))
+    if(!m_internal->m_oLightReader.FromFile(sPath))
         return FALSE;
 
     // Читаем FictionBook
@@ -1197,48 +1274,6 @@ int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory,
                 m_internal->readNotes(oFootnotes);
             else
                 m_internal->readBody();
-        }
-        // Читаем картинки
-        else if(sName == L"binary")
-        {
-            std::wstring sId = L"";
-
-            // Читает атрибуты
-            while(m_internal->m_oLightReader.MoveToNextAttribute())
-            {
-                // Читает id
-                if(m_internal->m_oLightReader.GetName() == L"id")
-                    sId = m_internal->m_oLightReader.GetText();
-            }
-            m_internal->m_oLightReader.MoveToElement();
-            if(sId == L"")
-                continue;
-
-            // Пишет картинку в файл
-            NSFile::CFileBinary oImageWriter;
-            if(oImageWriter.CreateFileW(sMediaDirectory + L"/" + sId))
-            {
-                std::string sBase64 = m_internal->contentA();
-                int nSrcLen = (int)sBase64.length();
-                int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
-                BYTE* pImageData = new BYTE[nDecodeLen];
-                if (TRUE == NSBase64::Base64Decode(sBase64.c_str(), nSrcLen, pImageData, &nDecodeLen))
-                    oImageWriter.WriteFile(pImageData, (DWORD)nDecodeLen);
-                RELEASEARRAYOBJECTS(pImageData);
-                oImageWriter.CloseFile();
-
-                // Ищем картинку в списке требующихся
-                std::map<std::wstring, std::wstring>::iterator it = m_internal->m_mImages.find(sId);
-                if(it != m_internal->m_mImages.end())
-                {
-                    // Запись картинок в рельсы
-                    oRels += L"<Relationship Id=\"";
-                    oRels += it->second;
-                    oRels += L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/";
-                    oRels += it->first;
-                    oRels += L"\"/>";
-                }
-            }
         }
     }
 

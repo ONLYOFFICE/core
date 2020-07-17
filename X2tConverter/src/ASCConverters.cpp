@@ -2879,7 +2879,7 @@ namespace NExtractTools
 	{
 		CFb2File fb2File;
 		fb2File.SetTmpDirectory(sTemp);
-		return S_OK == fb2File.Convert(sFrom, sTo, false) ? S_OK : AVS_FILEUTILS_ERROR_CONVERT;
+		return S_OK == fb2File.Open(sFrom, sTo, false) ? S_OK : AVS_FILEUTILS_ERROR_CONVERT;
 	}
 	_UINT32 fb2docx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
 	{

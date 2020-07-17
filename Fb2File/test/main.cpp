@@ -14,7 +14,7 @@ void getDirectories(std::wstring sDirectory, std::vector<std::wstring>& arrDirec
 
 int main()
 {
-    bool bBatchMode = true;
+    bool bBatchMode = false;
     if(bBatchMode)
     {
         // Директория файлов
@@ -93,5 +93,6 @@ int main()
 
         delete[] oParams;
     }
+    std::cout << "THE END" << std::endl;
     return 0;
 }

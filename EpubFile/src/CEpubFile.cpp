@@ -12,7 +12,7 @@ CEpubFile::CEpubFile()
 
 CEpubFile::~CEpubFile()
 {
-//    NSDirectory::DeleteDirectory(m_sTempDir);
+    NSDirectory::DeleteDirectory(m_sTempDir);
 }
 
 bool CEpubFile::IsEbubFile(const std::wstring &sfileName)
@@ -36,6 +36,7 @@ void CEpubFile::SetTempDirectory(const std::wstring &sTempDir)
 bool CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& sOutputFile)
 {
     NSDirectory::CreateDirectories(m_sTempDir);
+    NSDirectory::CreateDirectory(sOutputFile);
     COfficeUtils oOfficeUtils;
 
     wchar_t* password = NULL;
@@ -95,19 +96,17 @@ bool CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& sOut
         CDocxFile oDocxFile;
         oDocxFile.CreateTempFiles(sOutputFile, m_sTempDir);
 
-        std::wstring sTempDir = m_sTempDir + L"/Docx";
-        std::wstring _sOutputFile = m_sTempDir + L"/test.docx";
+        std::wstring sTempDir = m_sTempDir + L"/docx";
+        std::wstring _sOutputFile = sOutputFile + L"/test.docx";
 
         NSFile::CFileBinary oFileBinary;
         oFileBinary.CreateFileW(_sOutputFile);
-
-
-
+        oFileBinary.CloseFile();
 
         oDocxFile.SaveToFile();
 
-        oOfficeUtils.CompressFileOrDirectory(std::wstring(L"C:/Users/kiril/Desktop/OnlyOffice/core/EpubFile/test/build/win_64/debug/tmp/docx"),
-                                             std::wstring(L"C:/Users/kiril/Desktop/OnlyOffice/core/EpubFile/test/build/win_64/debug/test.docx"));
+
+        oOfficeUtils.CompressFileOrDirectory(sTempDir, _sOutputFile);
 
     }
 

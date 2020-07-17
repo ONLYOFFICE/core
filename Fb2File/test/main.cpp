@@ -49,16 +49,13 @@ int main()
                     std::cout << "This isn't a fb2 file" << std::endl;
                     continue;
                 }
-                int nResConvert = oFile.Open(sFile, sOutputDirectory, oParams);
-                if(nResConvert)
+                HRESULT nResConvert = oFile.Open(sFile, sOutputDirectory, oParams);
+                if(nResConvert == S_OK)
                     std::cout << "Success" << std::endl;
                 else
                     std::cout << "Failure" << std::endl;
             }
-
-
         }
-
         delete[] oParams;
     }
     else
@@ -85,8 +82,8 @@ int main()
         oParams[0].bNeedDocx = true;
         oParams[0].bNeedContents = true;
 
-        int nResConvert = oFile.Open(sFile, sOutputDirectory, oParams);
-        if(nResConvert)
+        HRESULT nResConvert = oFile.Open(sFile, sOutputDirectory, oParams);
+        if(nResConvert == S_OK)
             std::cout << "Success" << std::endl;
         else
             std::cout << "Failure" << std::endl;

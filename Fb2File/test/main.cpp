@@ -18,9 +18,9 @@ int main()
     if(bBatchMode)
     {
         // Директория файлов
-        std::wstring sDirectory = L"C:/Users/Kulik/Downloads/fb2";
+        std::wstring sDirectory = NSFile::GetProcessDirectory() + L"/../../../examples/fb2";
         // Вложенные директории
-        std::vector<std::wstring> arrDirectory;// = NSDirectory::GetDirectories(sDirectory);
+        std::vector<std::wstring> arrDirectory;
         getDirectories(sDirectory, arrDirectory);
 
         // Параметры конвертации
@@ -49,7 +49,7 @@ int main()
                     std::cout << "This isn't a fb2 file" << std::endl;
                     continue;
                 }
-                int nResConvert = oFile.Convert(sFile, sOutputDirectory, oParams);
+                int nResConvert = oFile.Open(sFile, sOutputDirectory, oParams);
                 if(nResConvert)
                     std::cout << "Success" << std::endl;
                 else
@@ -85,7 +85,7 @@ int main()
         oParams[0].bNeedDocx = true;
         oParams[0].bNeedContents = true;
 
-        int nResConvert = oFile.Convert(sFile, sOutputDirectory, oParams);
+        int nResConvert = oFile.Open(sFile, sOutputDirectory, oParams);
         if(nResConvert)
             std::cout << "Success" << std::endl;
         else

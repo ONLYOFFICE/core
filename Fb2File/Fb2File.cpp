@@ -899,7 +899,6 @@ public:
         oContents += L"</w:sdtContent></w:sdt>";
         // Разрыв страницы
         oContents += L"<w:p><w:r><w:br w:type=\"page\"/></w:r></w:p>";
-        m_oLightReader.Clear();
 
         return true;
     }
@@ -1205,7 +1204,7 @@ void CFb2File::SetTmpDirectory(const std::wstring& sFolder)
 
 // Проверяет, соответствует ли fb2 файл формату
 // sPath - путь к файлу fb2, sDirectory - директория, где формируется и создается docx
-int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory, CFb2Params* oParams)
+int CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory, CFb2Params* oParams)
 {
     if(m_internal->m_sTmpFolder == L"")
         SetTmpDirectory(sDirectory + L"/tmp");
@@ -1252,7 +1251,7 @@ int CFb2File::Convert(const std::wstring& sPath, const std::wstring& sDirectory,
     if(!m_internal->readText(sPath, sMediaDirectory, oContents, oRels, oFootnotes))
         return FALSE;
 
-    if(!IsFb2File(sPath))
+    if(!m_internal->m_oLightReader.MoveToStart())
         return FALSE;
 
     int nDeath = m_internal->m_oLightReader.GetDepth();

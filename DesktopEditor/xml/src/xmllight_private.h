@@ -130,6 +130,18 @@ namespace XmlUtils
             return true;
         }
 
+        inline bool MoveToStart()
+        {
+            if (NULL != reader)
+                xmlFreeTextReader(reader);
+
+            if (NULL == m_pStream)
+                return false;
+
+            reader = xmlReaderForMemory((char*)m_pStream, m_lStreamLen, NULL, NULL, 0);
+            return true;
+        }
+
         inline bool Read(XmlNodeType &oNodeType)
         {
             if (!IsValid())

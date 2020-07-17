@@ -2,6 +2,7 @@
 #define _FB2FILE_FB2FILE_H
 
 #include <string>
+#include "../DesktopEditor/common/Types.h"
 
 #ifndef FB2FILE_USE_DYNAMIC_LIBRARY
 #define FB2FILE_DECL_EXPORT
@@ -33,7 +34,7 @@ public:
 
     bool IsFb2File(const std::wstring& sFile);
     void SetTmpDirectory(const std::wstring& sFolder);
-    int Open(const std::wstring& sPath, const std::wstring& sDirectory, CFb2Params* oParams = NULL);
+    HRESULT Open(const std::wstring& sPath, const std::wstring& sDirectory, CFb2Params* oParams = NULL);
 };
 
 #endif // _FB2FILE_FB2FILE_H

@@ -1204,7 +1204,7 @@ void CFb2File::SetTmpDirectory(const std::wstring& sFolder)
 
 // Проверяет, соответствует ли fb2 файл формату
 // sPath - путь к файлу fb2, sDirectory - директория, где формируется и создается docx
-int CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory, CFb2Params* oParams)
+HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory, CFb2Params* oParams)
 {
     if(m_internal->m_sTmpFolder == L"")
         SetTmpDirectory(sDirectory + L"/tmp");
@@ -1212,7 +1212,7 @@ int CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory, CF
 
     // Копирование шаблона
     if(!ExtractTemplate(sTmp))
-        return FALSE;
+        return S_FALSE;
 
     // Начало файла
     NSStringUtils::CStringBuilder oDocument;
@@ -1249,10 +1249,10 @@ int CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory, CF
         bNeedContents = oParams->bNeedContents;
     NSStringUtils::CStringBuilder oContents;
     if(!m_internal->readText(sPath, sMediaDirectory, oContents, oRels, oFootnotes))
-        return FALSE;
+        return S_FALSE;
 
     if(!m_internal->m_oLightReader.MoveToStart())
-        return FALSE;
+        return S_FALSE;
 
     int nDeath = m_internal->m_oLightReader.GetDepth();
     while(m_internal->m_oLightReader.ReadNextSiblingNode(nDeath))
@@ -1382,13 +1382,12 @@ int CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory, CF
     {
         COfficeUtils oZip;
         HRESULT oRes = oZip.CompressFileOrDirectory(sTmp, sDirectory + L"/" + NSFile::GetFileName(sPath) + L".docx");
-        if(oRes == S_FALSE)
-            return FALSE;
+        return oRes;
     }
     else
     {
         if(!NSDirectory::CopyDirectory(sTmp, sDirectory))
-            return FALSE;
+            return S_FALSE;
     }
-    return TRUE;
+    return S_OK;
 }

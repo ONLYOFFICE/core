@@ -33,7 +33,9 @@
 #include "../Reader/Records.h"
 #include "Drawing/ColorIndex.h"
 
+
 struct SFlagsAH {
+
     USHORT m_fA_H;
     // Is masks order ok?
 

@@ -34,22 +34,22 @@
 #include "Drawing/ColorIndex.h"
 
 struct SFlagsAH {
-    USHORT m_nfAH;
+    USHORT m_fA_H;
     // Is masks order ok?
-    // Is shift right? May be 2, 8, 20, 80 ...
-    unsigned getA()const {return m_nfAH & 0x4000;}
-    unsigned getB()const {return m_nfAH & 0x1000;}
-    unsigned getC()const {return m_nfAH & 0x400;}
-    unsigned getD()const {return m_nfAH & 0x100;}
-    unsigned getE()const {return m_nfAH & 0x40;}
-    unsigned getF()const {return m_nfAH & 0x10;}
-    unsigned getG()const {return m_nfAH & 0x4;}
-    unsigned getH()const {return m_nfAH & 0x1;}
+
+    unsigned getA()const {return (m_fA_H & 0xC000) >> 14;}
+    unsigned getB()const {return (m_fA_H & 0x3000) >> 12;}
+    unsigned getC()const {return (m_fA_H & 0xC00) >> 10;}
+    unsigned getD()const {return (m_fA_H & 0x300) >> 8;}
+    unsigned getE()const {return (m_fA_H & 0xC0) >> 6;}
+    unsigned getF()const {return (m_fA_H & 0x30) >> 4;}
+    unsigned getG()const {return (m_fA_H & 0xC) >> 2;}
+    unsigned getH()const {return (m_fA_H & 0x3) >> 0;}
 
 
 
     void ReadFromStream(POLE::Stream* pStream) {
-        m_nfAH = StreamUtils::ReadWORD(pStream);
+        m_fA_H = StreamUtils::ReadWORD(pStream);
     }
 };
 
@@ -57,7 +57,7 @@ class CRecordAnimationInfoAtom : public CUnknownRecord
 {
 public:
     SColorIndex m_sDimColor;
-    SFlagsAH    m_fA_H;
+    SFlagsAH    m_fAH;
 
     USHORT      m_Reserved;
 
@@ -88,7 +88,7 @@ public:
         m_oHeader = oHeader;
 
         m_sDimColor.ReadFromStream(pStream);
-        m_fA_H.ReadFromStream(pStream);
+        m_fAH.ReadFromStream(pStream);
 
         m_Reserved                  = StreamUtils::ReadWORD(pStream);
 

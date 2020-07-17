@@ -14,6 +14,6 @@ include($$CORE_ROOT_DIR/Common/base.pri)
 
 DESTDIR = $$PWD_ROOT_DIR/build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX
 
-ADD_DEPENDENCY(kernel, EpubFile)
+ADD_DEPENDENCY(EpubFile, kernel)
 
 SOURCES += main.cpp

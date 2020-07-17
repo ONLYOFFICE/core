@@ -7,8 +7,13 @@
 
 class CBookInfo
 {
-    std::map <std::wstring, std::wstring> m_mBookInfo;
-    void ReadManifest();
+    std::wstring m_sTitle;
+    std::wstring m_sCreator;
+    std::wstring m_sPublisher;
+    std::wstring m_sLanguage;
+    std::wstring m_sContributor;
+    std::wstring m_sDescription;
+    std::wstring m_sCoverage;
 public:
     CBookInfo();
     ~CBookInfo();

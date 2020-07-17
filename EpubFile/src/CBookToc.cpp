@@ -1,6 +1,6 @@
 #include "CBookToc.h"
 
-#include <stdio.h>
+//#include <stdio.h>
 
 CBookToc::CBookToc()
 {
@@ -37,7 +37,7 @@ bool CBookToc::ReadTitle(XmlUtils::CXmlLiteReader &oXmlLiteReader)
 
     oXmlLiteReader.ReadNextNode();
     m_sTitle = oXmlLiteReader.GetText2();
-//    std::wcout << m_sTitle << std::endl;
+
     return true;
 }
 
@@ -75,37 +75,6 @@ std::wstring CBookToc::GetAttributeValue(XmlUtils::CXmlLiteReader &oXmlLiteReade
 
     return L"";
 }
-
-//bool CBookToc::ReadPoint(XmlUtils::CXmlLiteReader &oXmlLiteReader)
-//{
-//    if (!oXmlLiteReader.IsValid() || oXmlLiteReader.IsEmptyNode())
-//        return false;
-
-//    m_structData structData;
-
-//    if (oXmlLiteReader.GetName() == L"navPoint")
-//        structData.sID = GetAttributeValue(oXmlLiteReader, L"id");
-
-//    int nParentDepth = oXmlLiteReader.GetDepth();
-//    while(oXmlLiteReader.ReadNextSiblingNode(nParentDepth))
-//    {
-//        std::wstring sName = oXmlLiteReader.GetName();
-//        if (sName == L"navLabel")
-//        {
-//            oXmlLiteReader.ReadNextNode();
-//            structData.sText = oXmlLiteReader.GetText2();
-//        }
-//        else if (sName == L"content")
-//        {
-//            structData.sRef = GetAttributeValue(oXmlLiteReader, L"src");
-//        }
-//    }
-
-
-//    m_arData.push_back(structData);
-
-//    return true;
-//}
 
 void CBookToc::AddStruct()
 {
@@ -163,7 +132,6 @@ bool CBookToc::ReadPoint(XmlUtils::CXmlLiteReader &oXmlLiteReader)
 
 void CBookToc::ShowToc()
 {
-//    FILE *fl = std::fopen("text.txt", "w");
     std::wcout << L"-----TOC-----" << std::endl;
     std::wcout << "Title - " << m_sTitle << std::endl;
     for (int i = 0; i < (int)m_arData.size(); i++)

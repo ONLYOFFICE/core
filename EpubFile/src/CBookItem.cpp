@@ -1,5 +1,4 @@
 #include "CBookItem.h"
-#include <functional>
 
 CBookItem::CBookItem()
 {

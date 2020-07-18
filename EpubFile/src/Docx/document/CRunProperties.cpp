@@ -7,6 +7,5 @@ CRunProperties::CRunProperties()
 
 void CRunProperties::SetDefoult()
 {
-    CElement *oI = new CElement(L"i", L"", L"w");
-    AddChildren(oI);
+
 }

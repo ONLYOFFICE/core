@@ -142,4 +142,16 @@ void CBookToc::ShowToc()
     }
 }
 
+int CBookToc::GetCountToc()
+{
+    return (int)m_arData.size();
+}
+
+std::pair<std::wstring, std::wstring> CBookToc::GetTextAndRef(int nIndex)
+{
+    if (nIndex < 0 || nIndex > (int)m_arData.size())
+        return std::pair<std::wstring, std::wstring>(L"", L"");
+
+    return std::pair<std::wstring, std::wstring>(m_arData[nIndex].sText, m_arData[nIndex].sRef);
+}
 

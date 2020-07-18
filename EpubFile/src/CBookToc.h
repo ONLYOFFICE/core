@@ -30,6 +30,8 @@ public:
     bool ReadToc(XmlUtils::CXmlLiteReader &oXmlLiteReader);
     ~CBookToc();
     void ShowToc();
+    int GetCountToc();
+    std::pair<std::wstring, std::wstring> GetTextAndRef(int nIndex);
 };
 
 #endif // CBOOKTOC_H

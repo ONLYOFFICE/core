@@ -5,12 +5,15 @@
 
 class CHyperlink : public CElement
 {
-    std::wstring m_sPageRef;
+    int m_nId;
 public:
     CHyperlink();
 
     void SetDefoult() override;
-    void SetText(std::wstring sText);
+    void CreateTocHyperlink(std::wstring sText);
+    void CreateFileLink(std::wstring sText);
+
+    int GetId();
 };
 
 #endif // CHYPERLINK_H

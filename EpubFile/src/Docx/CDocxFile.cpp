@@ -5,6 +5,8 @@
 #include "../../../DesktopEditor/xml/include/xmlutils.h"
 
 #include "document/CDocument.h"
+#include "sdt/CSdt.h"
+#include "hyperlink/CHyperlink.h"
 
 CDocxFile::CDocxFile()
 {
@@ -22,7 +24,7 @@ CDocxFile::CDocxFile()
 
 CDocxFile::~CDocxFile()
 {
-//    NSDirectory::DeleteDirectory(m_sTempDir);
+    NSDirectory::DeleteDirectory(m_sTempDir);
 }
 
 bool CDocxFile::AddParagraph(std::wstring sText, bool bNewPAge)
@@ -41,11 +43,29 @@ bool CDocxFile::AddParagraph(CParagraph *oParagraph)
     m_oDocumentXml->AddParagraph(oParagraph);
 }
 
-bool CDocxFile::AddBookContent(CBookToc *oBookToc)
+bool CDocxFile::AddBookToc(CBookToc *oBookToc)
 {
-    CParagraph *oFirstP = m_oDocumentXml->GetParagraph(0);
 
-    oFirstP->
+    if (oBookToc == NULL)
+        return false;
+
+    CSdt *oSdt = new CSdt;
+    oSdt->SetDefoult();
+    for (int i = 0; i < oBookToc->GetCountToc(); i++)
+        oSdt->AddHeader(oBookToc->GetTextAndRef(i), m_oDocumentXml, m_oDocRelationshipsXml);
+
+    m_oDocumentXml->AddElement(oSdt);
+
+    return true;
+}
+
+bool CDocxFile::AddRelationship(CElement *oRelationship)
+{
+    if (oRelationship == NULL)
+        return false;
+
+    m_oDocRelationshipsXml->GetXmlStructure()->AddChildren(oRelationship);
+    return true;
 }
 
 bool CDocxFile::CreateRelsDir()

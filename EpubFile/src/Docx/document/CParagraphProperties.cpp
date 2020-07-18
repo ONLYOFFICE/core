@@ -9,6 +9,5 @@ CParagraphProperties::CParagraphProperties()
 void CParagraphProperties::SetDefoult()
 {
     CRunProperties *oRunProperties = new CRunProperties;
-    oRunProperties->SetDefoult();
     AddChildren(oRunProperties);
 }

@@ -9,6 +9,8 @@ public:
     CDocRelationshipsXml();
 
     void SetDefoult() override;
+
+    void AddLinkToFile(std::wstring sFilePath, int nId);
 };
 
 #endif // CDOCRELATIONSHIPSXML_H

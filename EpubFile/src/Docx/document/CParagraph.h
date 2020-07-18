@@ -2,6 +2,7 @@
 #define CPARAGRAPH_H
 
 #include "../CElement.h"
+#include "../docRels/CDocRelationshipsXml.h"
 
 class CParagraph : public CElement
 {
@@ -13,6 +14,11 @@ public:
     void SetDefoult() override;
     void SetText(std::wstring sText, bool newPage);
     void AddText(std::wstring sText, bool newPage);
+
+    void AddHyperlinkToc(int nIdToc);
+    void AddLinkToFile(CDocRelationshipsXml *oDocRel, std::wstring sPathFile);
+
+    void SetInCenter();
 };
 
 #endif // CPARAGRAPH_H

@@ -12,7 +12,7 @@ CEpubFile::CEpubFile()
 
 CEpubFile::~CEpubFile()
 {
-    NSDirectory::DeleteDirectory(m_sTempDir);
+//    NSDirectory::DeleteDirectory(m_sTempDir);
 }
 
 bool CEpubFile::IsEbubFile(const std::wstring &sfileName)
@@ -96,6 +96,31 @@ bool CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& sOut
         CDocxFile oDocxFile;
         oDocxFile.CreateTempFiles(sOutputFile, m_sTempDir);
 
+        oDocxFile.AddBookToc(&m_oToc);
+//        CParagraph *oNewPar = new CParagraph;
+//            CElement *oHypelink = new CElement(L"hyperlink", L"", L"w", false);
+//            oHypelink->AddArgument(L"r:id", L"rId9");
+//                CElement *oRun = new CElement(L"r", L"", L"w");
+//                    CElement *oRPr = new CElement(L"rPr", L"", L"w");
+//                        CElement *oRStyle = new CElement(L"rStyle", L"", L"w");
+//                        oRStyle->AddArgument(L"val", L"Hyperlink");
+//                    oRPr->AddChildren(oRStyle);
+//                oRun->AddChildren(oRPr);
+//                    CElement *oText = new CElement(L"t", L"HYPERLINK", L"w");
+//                oRun->AddChildren(oText);
+//            oHypelink->AddChildren(oRun);
+//        oNewPar->AddChildren(oHypelink);
+
+//        oDocxFile.AddParagraph(oNewPar);
+
+//        CElement *oRelationship = new CElement(L"Relationship", L"", L"");
+//        oRelationship->AddArgument(L"Id", L"rId9");
+//        oRelationship->AddArgument(L"Type", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink");
+//        oRelationship->AddArgument(L"Target", L"http://www.google.com/");
+//        oRelationship->AddArgument(L"TargetMode", L"External");
+
+//        oDocxFile.AddRelationship(oRelationship);
+
         std::wstring sTempDir = m_sTempDir + L"/docx";
         std::wstring _sOutputFile = sOutputFile + L"/test.docx";
 
@@ -104,7 +129,6 @@ bool CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& sOut
         oFileBinary.CloseFile();
 
         oDocxFile.SaveToFile();
-
 
         oOfficeUtils.CompressFileOrDirectory(sTempDir, _sOutputFile);
 

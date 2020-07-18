@@ -72,8 +72,9 @@ public:
 
     bool AddParagraph(std::wstring sText, bool bNewPAge = false);
     bool AddParagraph(CParagraph *oParagraph);
-    bool AddBookContent(CBookToc *oBookToc);
-    bool AddHypelink(std::wstring sText, );
+    bool AddBookToc(CBookToc *oBookToc);
+    bool AddRelationship(CElement *oRelationship);
+//    bool AddHypelink(std::wstring sText, );
 //    bool OpenFile(std::wstring sPathFile);
 
     bool SaveToFile();

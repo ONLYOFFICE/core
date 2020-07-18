@@ -32,7 +32,7 @@ bool CDocumentXml::AddParagraph(std::wstring sText, bool bNewPAge)
 
 bool CDocumentXml::AddParagraph(CParagraph *oParagraph)
 {
-    if (IsEmpty())
+    if (IsEmpty() || oParagraph == NULL)
         return false;
 
     CElement* oDocumentStructure = GetXmlStructure();
@@ -43,6 +43,23 @@ bool CDocumentXml::AddParagraph(CParagraph *oParagraph)
     if (!oDocument->AddParagraph(oParagraph))
         return false;
 
+    return true;
+}
+
+bool CDocumentXml::AddElement(CElement *oElement, bool bEnd)
+{
+    if (IsEmpty() || oElement == NULL)
+        return false;
+
+    CElement* oDocumentStructure = GetXmlStructure();
+    if (oDocumentStructure->GetName() != L"document")
+        return false;
+
+    CDocument *oDocument = static_cast<CDocument*>(oDocumentStructure);
+    if (bEnd)
+        oDocument->AddChildren(oElement, oDocument->GetCountChildrens() - 1);
+    else
+        oDocument->AddChildren(oElement, 0);
     return true;
 }
 

@@ -28,6 +28,10 @@ SOURCES += src/CEpubFile.cpp \
     src/Docx/docRels/CDocRelationshipsXml.cpp \
     src/Docx/rels/CRelationships.cpp \
     src/Docx/rels/CRelationshipsXml.cpp \
+    src/Docx/sdt/CSdt.cpp \
+    src/Docx/sdt/CSdtContent.cpp \
+    src/Docx/sdt/CSdtEndPr.cpp \
+    src/Docx/sdt/CSdtPr.cpp \
     src/Docx/style/CStyle.cpp \
     src/Docx/style/CStyles.cpp \
     src/Docx/style/CStylesXml.cpp \
@@ -67,6 +71,10 @@ HEADERS += CEpubFile.h \
     src/Docx/docRels/CDocRelationshipsXml.h \
     src/Docx/rels/CRelationships.h \
     src/Docx/rels/CRelationshipsXml.h \
+    src/Docx/sdt/CSdt.h \
+    src/Docx/sdt/CSdtContent.h \
+    src/Docx/sdt/CSdtEndPr.h \
+    src/Docx/sdt/CSdtPr.h \
     src/Docx/style/CStyle.h \
     src/Docx/style/CStyles.h \
     src/Docx/style/CStylesXml.h \

@@ -39,6 +39,7 @@ public:
                const bool NameElement =   true,
                const bool Value =         true,
                const bool Arguments =     true);
+    void EditBoolNamespace(bool bNamespace);
 
 
     std::wstring GetArguments();
@@ -103,6 +104,13 @@ private:
                                                    { L"Characters",                         true },
                                                    { L"created",                            true },
                                                    { L"modified",                           true },
+                                                   { L"hyperlink",                          true },
+                                                   { L"sdt",                                true },
+                                                   { L"sdtPr",                              true },
+                                                   { L"docPartObj",                         true },
+                                                   { L"sdtEndPr",                           true },
+                                                   { L"sdtContent",                         true },
+                                                   { L"tabs",                               true },
                                                    { L"lang",                               false},
                                                    { L"bookmarkStart",                      false},
                                                    { L"bookmarkEnd",                        false},

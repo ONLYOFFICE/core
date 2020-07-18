@@ -149,6 +149,11 @@ void CElement::Clear(bool Children, bool NameElement, bool Value, bool Arguments
     m_bEmpty = true;
 }
 
+void CElement::EditBoolNamespace(bool bNamespace)
+{
+    m_bNamespaceArguments = bNamespace;
+}
+
 void CElement::AddChildren(CElement* oChildren, int nIndex)
 {
     m_bEmpty = false;

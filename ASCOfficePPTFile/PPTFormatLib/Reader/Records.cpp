@@ -309,6 +309,8 @@ IRecord* CreateByType(SRecordHeader oHeader)
     CREATE_BY_TYPE(RECORD_TYPE_SOUND						, CRecordSoundContainer)
     CREATE_BY_TYPE(RECORD_TYPE_SOUNDDATA					, CRecordSoundDataBlob)
 
+    CREATE_BY_TYPE(RECORD_TYPE_CHARTBUILDATOM               , CRecordChartBuildAtom)
+
     default:
         {
         }break;

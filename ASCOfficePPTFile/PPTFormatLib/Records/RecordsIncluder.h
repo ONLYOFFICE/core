@@ -59,6 +59,7 @@
 #include "BlipEntityAtom.h"
 #include "BookmarkEntityAtom.h"
 #include "BookmarkSeedAtom.h"
+#include "ChartBuildAtom.h"
 #include "CString.h"
 #include "ColorSchemeAtom.h"
 #include "DocRoutingSlipAtom.h"

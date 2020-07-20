@@ -95,6 +95,8 @@ namespace XmlUtils
 		bool FromString	(const std::wstring& sXml);
 		bool FromStringA(const std::string& sXml);
 
+		bool MoveToStart();
+
 		bool Read(XmlNodeType &oNodeType);
 		bool ReadNextNode();
 		bool ReadNextSiblingNode(int nDepth);

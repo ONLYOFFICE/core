@@ -737,11 +737,13 @@ public:
     // Читает содержание
     void readContents(int& nContentsId, NSStringUtils::CStringBuilder& oContents)
     {
+        bool bFirstP = true;
         int nBDeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nBDeath))
         {
+            std::wstring sName = m_oLightReader.GetName();
             // Читаем section
-            if(m_oLightReader.GetName() == L"section")
+            if(sName == L"section")
             {
                 int nSDeath = m_oLightReader.GetDepth();
                 while(m_oLightReader.ReadNextSiblingNode(nSDeath))
@@ -750,8 +752,15 @@ public:
                     if(m_oLightReader.GetName() == L"title")
                     {
                         std::wstring sContentsId = std::to_wstring(nContentsId++);
+                        oContents += L"<w:p><w:pPr><w:pStyle w:val=\"contents\"/><w:tabs><w:tab w:val=\"right\" w:pos=\"9355\" w:leader=\"none\"/></w:tabs></w:pPr>";
 
-                        oContents += L"<w:p><w:pPr><w:pStyle w:val=\"contents\"/></w:pPr><w:hyperlink w:anchor=\"_Toc";
+                        if(bFirstP)
+                        {
+                            oContents += L"<w:r><w:fldChar w:fldCharType=\"begin\"/><w:instrText xml:space=\"preserve\">TOC \\n \\h </w:instrText><w:fldChar w:fldCharType=\"separate\"/></w:r>";
+                            bFirstP = false;
+                        }
+
+                        oContents += L"<w:hyperlink w:tooltip=\"Current Document\" w:anchor=\"_Toc";
                         oContents += sContentsId;
                         oContents += L"\" w:history=\"1\">";
 
@@ -769,6 +778,8 @@ public:
                 }
             }
         }
+        if(!bFirstP)
+            oContents += L"<w:p><w:r><w:fldChar w:fldCharType=\"end\"/></w:r></w:p>";
     }
 
     // Читает сноски

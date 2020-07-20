@@ -257,11 +257,152 @@ void CFStreamCacheReader::checkAndAppendContinueData()
 	}
 }
 
-const bool CFStreamCacheReader::isEOF() const
+bool CFStreamCacheReader::isEOF()
 {
 	if (stream_ == NULL) return true;
 
 	return !records_cache.size() && stream_->isEOF();
+}
+
+
+//---------------------------------------------------------------------------------------------------------
+FileStreamCacheReader::FileStreamCacheReader(const std::wstring &file_name, GlobalWorkbookInfoPtr global_info)
+:	StreamCacheReader(global_info)
+{
+	if (file_.OpenFile(file_name))
+	{
+	}
+}
+FileStreamCacheReader::~FileStreamCacheReader()
+{
+	file_.CloseFile();
+}
+// Skip the specified number of unsigned chars without processing
+void FileStreamCacheReader::skipNunBytes(const size_t n)
+{
+	file_.SeekFile( file_.GetFilePosition()  + n );
+}
+// Reads the next CFRecord from the CFStream and if its type is not the desired one, caches it for the next call
+CFRecordPtr FileStreamCacheReader::getNextRecord(const CFRecordType::TypeId desirable_type, const bool gen_except)
+{
+	CFRecordType::TypeId what_we_actually_read = rt_NONE;	
+
+	while(readFromStream(1))
+	{
+		CFRecordType::TypeString rec_name = records_cache.front()->getTypeString();
+
+		//Log::warning(rec_name);
+
+		if (desirable_type == rt_MsoDrawingGroup)	// объединяем rt_MsoDrawingGroup + rt_Continue в один блок 
+		{
+			if (checkNextRecord(desirable_type, 1))
+			{				
+				readFromStream(2);
+
+				for(std::list<CFRecordPtr>::iterator good = records_cache.begin(), it = ++records_cache.begin();
+					it != records_cache.end(); ++it, ++good)
+				{
+					while ((it != records_cache.end()) && (desirable_type == (*it)->getTypeId()))
+					{
+						(*good)->appendRawData(*it);
+						records_cache.erase(it);
+						if (file_.GetFilePosition() < file_.GetFileSize())
+						{
+							records_cache.push_back(CFRecordPtr(new CFRecord(file_, global_info_)));
+						}
+						it = good;
+						++it;
+					}
+				}
+			}
+		}
+		
+		if(0 == rec_name.length())
+		{
+			Log::warning(L"The extracted record has obsoleted or unknown type(0x" + STR::int2hex_wstr(records_cache.front()->getTypeId(), sizeof(CFRecordType::TypeId)) + L")");
+			records_cache.pop_front();
+			continue;
+		}
+		if(skippable_records_names.end() != std::find(skippable_records_names.begin(), skippable_records_names.end(), rec_name))
+		{
+			//Log::warning("The extracted record has been skipped (" + rec_name + ")");
+			records_cache.pop_front();
+			continue;
+		}
+		break;
+	}
+
+	if(0 != records_cache.size())
+	{
+		what_we_actually_read = records_cache.front()->getTypeId();
+
+		// if we get what was requested
+		if(desirable_type == what_we_actually_read || desirable_type == CFRecordType::ANY_TYPE)
+		{
+			CFRecordPtr ret = records_cache.front();
+			records_cache.pop_front();
+			return ret;
+		}		
+	}
+
+	if(gen_except)
+	{
+		// теги разные
+		std::string inType = XLS::CFRecordType::getStringById(desirable_type);
+		std::string outType = CFRecordType::getStringById(what_we_actually_read);		
+
+		Log::warning("The extracted record is not of requested type.\nRequested: \"" + 
+			XLS::CFRecordType::getStringById(desirable_type) + "\" Extracted: \"" + CFRecordType::getStringById(what_we_actually_read) + "\"");		
+	}
+	return CFRecordPtr();
+}
+// Make sure the internal buffer has concrete number of records. Returns number of records read
+const size_t FileStreamCacheReader::readFromStream(const size_t num_of_records_min_necessary)
+{
+	const size_t current_records_num = records_cache.size();
+	if (current_records_num >= num_of_records_min_necessary)
+	{
+		return current_records_num;
+	}
+
+	while (records_cache.size() < num_of_records_min_necessary && file_.GetFilePosition() < file_.GetFileSize())
+	{
+		records_cache.push_back(CFRecordPtr(new CFRecord(file_, global_info_)));
+	}
+
+	checkAndAppendContinueData();
+	return records_cache.size();
+}
+
+// Checks whether the next record is Continue and append its data to the real record if so
+void FileStreamCacheReader::checkAndAppendContinueData()
+{
+	if (!records_cache.size())
+	{
+		return;
+	}
+
+	for (std::list<CFRecordPtr>::iterator good = records_cache.begin(), it = ++records_cache.begin();
+		it != records_cache.end(); ++it, ++good)
+	{
+		size_t typeRecord = (*it)->getTypeId();
+		while (it != records_cache.end() && (rt_Continue == (*it)->getTypeId()) )
+		{
+			(*good)->appendRawData(*it);
+			records_cache.erase(it); // now 'it' is invalid
+			if (file_.GetFilePosition() < file_.GetFileSize())
+			{
+				records_cache.push_back(CFRecordPtr(new CFRecord(file_, global_info_)));
+			}
+			it = good;
+			++it; // Now it may became end(), checked in 'for'
+		}
+	}
+}
+
+bool FileStreamCacheReader::isEOF()
+{
+	return !records_cache.size() && (file_.GetFilePosition() >= file_.GetFileSize());
 }
 
 } // namespace XLS

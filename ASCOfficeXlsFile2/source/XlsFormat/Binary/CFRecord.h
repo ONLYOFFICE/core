@@ -39,7 +39,7 @@
 #include "../../Common/common.h"
 #include "../Auxiliary/HelpFunc.h"
 #include "../../../../ASCOfficeDocFile/DocDocxConverter/OfficeDrawing/Record.h"
-
+#include "../../../../DesktopEditor/common/File.h"
 namespace XLS
 {
 
@@ -47,11 +47,10 @@ class CFRecord
 {
 public:
 	CFRecord(CFStreamPtr stream, GlobalWorkbookInfoPtr global_info); // Create a record an read its data from the stream
+	CFRecord(NSFile::CFileBinary &file, GlobalWorkbookInfoPtr global_info); // Create a record an read its data from the data stream
 	CFRecord(CFRecordType::TypeId type_id, GlobalWorkbookInfoPtr global_info); // Create an empty record
+	
 	~CFRecord();
-
-	void save(CFStreamPtr stream);
-	void commitData();
 
 	const CFRecordType::TypeId		getTypeId()		const;
 	const CFRecordType::TypeString& getTypeString() const;
@@ -73,35 +72,10 @@ public:
 	// Generates an exception
 	bool checkFitRead(const size_t size) const;
 	// Checks whether the specified number of unsigned chars fits in max size of the buffer
-	// Doesn't generate an exception
-	const bool checkFitWriteSafe(const size_t size) const;
-	// Checks whether the specified number of unsigned chars fits in max size of the buffer
 	// Generates an exception
-	void checkFitWrite(const size_t size) const;
 	void skipNunBytes(const size_t n); // Skip the specified number of unsigned chars without reading
 	void RollRdPtrBack(const size_t n); // Move read pointer back to reread some data
 	void resetPointerToBegin();
-	void reserveNunBytes(const size_t n); // Skip the specified number of unsigned chars filled them in with zeros
-	template<class DataType>
-	void reserveNunBytes(const size_t n, const DataType fill_data) // Skip the specified number of unsigned chars filled them in with specified data
-	{
-		checkFitWrite(n);
-		size_t odd_size = n / sizeof(DataType) * sizeof(DataType);
-		for(size_t offset = 0; offset < odd_size; offset += sizeof(DataType))
-		{
-			reinterpret_cast<DataType*>(&intData[size_ + offset])[0] = fill_data;
-		}
-		for(size_t i = 0; i < n % sizeof(DataType); ++i)
-		{
-			intData[size_ + odd_size + i] = 0;
-		}
-		size_ += n;
-
-	}
-	void registerDelayedDataReceiver(CFStream::DELAYED_DATA_SAVER fn, const size_t n, const CFRecordType::TypeId receiver_id = rt_NONE);
-	void registerDelayedDataSource(const unsigned int data,  const CFRecordType::TypeId receiver_id);
-	void registerDelayedFilePointerSource(const CFRecordType::TypeId receiver_id);
-	void registerDelayedFilePointerAndOffsetSource(const unsigned int offset,  const CFRecordType::TypeId receiver_id);
 
 	template<class T>
 	const T* getCurData() const
@@ -129,15 +103,6 @@ public:
     }
 
     bool loadAnyData(wchar_t & val);
-
-	template<class T>
-	void storeAnyData(const T& val)
-	{
-		checkFitWrite(sizeof(T));
-		*reinterpret_cast<T*>(&intData[size_]) = val;
-		size_ += sizeof(T);
-	}
-	void storeLongData(const char* buf, const size_t size);
 
 	GlobalWorkbookInfoPtr getGlobalWorkbookInfo() { return global_info_; }
 

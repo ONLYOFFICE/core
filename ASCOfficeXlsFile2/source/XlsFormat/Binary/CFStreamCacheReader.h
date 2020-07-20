@@ -60,7 +60,7 @@ public:
 	// Checks whether the next record is Continue and append its data to the real record if so
 	virtual void checkAndAppendContinueData() = 0;
 
-	virtual const bool isEOF() const = 0;
+	virtual bool isEOF() = 0;
 	// Skip the specified number of unsigned chars without processing
 	virtual void skipNunBytes(const size_t n) = 0;
 
@@ -93,9 +93,24 @@ public:
 	virtual CFRecordPtr getNextRecord(const CFRecordType::TypeId desirable_type, const bool gen_except = false);
 	virtual void skipNunBytes(const size_t n);
 	virtual void checkAndAppendContinueData();
-	virtual const bool isEOF() const;
+	virtual bool isEOF();
 private:
 	virtual const size_t readFromStream(const size_t num_of_records_min_necessary);
 	CFStreamPtr stream_;
+};
+
+class FileStreamCacheReader : public StreamCacheReader
+{
+public:
+	FileStreamCacheReader(const std::wstring &file_name, const GlobalWorkbookInfoPtr global_info);
+	virtual ~FileStreamCacheReader();
+
+	virtual CFRecordPtr getNextRecord(const CFRecordType::TypeId desirable_type, const bool gen_except = false);
+	virtual void skipNunBytes(const size_t n);
+	virtual void checkAndAppendContinueData();
+	virtual bool isEOF();
+private:
+	virtual const size_t readFromStream(const size_t num_of_records_min_necessary);
+	NSFile::CFileBinary file_;
 };
 } // namespace XLS

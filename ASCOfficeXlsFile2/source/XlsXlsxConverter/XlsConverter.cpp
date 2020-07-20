@@ -136,12 +136,31 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 	is_encrypted		= false;
 	output_document		= new oox::package::xlsx_document();
 
+	_UINT16 workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
+	
 	try
 	{
 		xls_file = boost::shared_ptr<XLS::CompoundFile>(new XLS::CompoundFile(xlsFileName, XLS::CompoundFile::cf_ReadMode));
 
 		if (xls_file->isError())
 		{
+			xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, this));
+			XLS::StreamCacheReaderPtr file_reader(new XLS::FileStreamCacheReader(xlsFileName, xls_global_info));
+
+			xls_document = boost::shared_ptr<XLS::WorkbookStreamObject>(new XLS::WorkbookStreamObject(workbook_code_page));
+		
+			XLS::BinReaderProcessor proc(file_reader, xls_document.get() , true);
+			//proc.mandatory(*xls_document.get());
+			
+			XLS::WorksheetSubstream worksheet_substream(1);
+            if (proc.mandatory(worksheet_substream))
+			{
+				bool WorksheetSubstream_found = true;
+				
+				//m_arWorksheetSubstream.push_back(elements_.back()); elements_.pop_back();				
+			}
+
+			
 			return;
 		}
 
@@ -151,7 +170,6 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 		summary		= xls_file->getNamedStream(L"SummaryInformation");
 		doc_summary = xls_file->getNamedStream(L"DocumentSummaryInformation");
 
-        _UINT16 workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
 		if(summary)
 		{
 			OLEPS::SummaryInformation summary_info(summary);

@@ -72,6 +72,7 @@ HEADERS += \
     ../Records/HeadersFootersAtom.h \
     ../Records/InteractiveInfoAtom.h \
     ../Records/KinsokuAtom.h \
+    ../Records/KinsokuFollowingAtom.h \
     ../Records/KinsokuLeadingAtom.h \
     ../Records/MasterPersistAtom.h \
     ../Records/MasterTextPropAtom.h \

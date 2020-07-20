@@ -32,16 +32,16 @@
 #pragma once
 #include "../Reader/Records.h"
 
-class CRecordKinsokuLeadingAtom : public CUnknownRecord
+class CRecordKinsokuFollowingAtom : public CUnknownRecord
 {
 public:
-    std::wstring m_arKinsokuLeading;
+    std::wstring m_arKinsokuFollowing;
 
-    CRecordKinsokuLeadingAtom()
+    CRecordKinsokuFollowingAtom()
     {
     }
 
-    ~CRecordKinsokuLeadingAtom()
+    ~CRecordKinsokuFollowingAtom()
     {
     }
 
@@ -49,6 +49,6 @@ public:
     {
         m_oHeader = oHeader;
 
-        m_arKinsokuLeading = StreamUtils::ReadStringW(pStream, m_oHeader.RecLen - sizeof (oHeader));
+        m_arKinsokuFollowing = StreamUtils::ReadStringW(pStream, m_oHeader.RecLen - sizeof (oHeader));
     }
 };

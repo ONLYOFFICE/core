@@ -202,9 +202,9 @@ public:
     }
 
 
-    _UINT32 GetLen()
+    size_t GetLen()
     {
-        _UINT32 dwLen = 6 * m_lCount;
+        size_t dwLen = 6 * m_lCount;
         for (size_t nIndex = 0; nIndex < m_lCount; ++nIndex)
         {
             if (m_arProperties[nIndex].m_bComplex)

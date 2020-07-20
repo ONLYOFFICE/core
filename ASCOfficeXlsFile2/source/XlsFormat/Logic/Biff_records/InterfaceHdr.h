@@ -36,7 +36,7 @@
 namespace XLS
 {
 
-class CFStreamCacheReader;
+class StreamCacheReader;
 
 // Logical representation of InterfaceHdr record in BIFF8
 class InterfaceHdr: public BiffRecord

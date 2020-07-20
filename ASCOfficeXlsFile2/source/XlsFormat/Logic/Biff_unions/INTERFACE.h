@@ -35,7 +35,7 @@
 namespace XLS
 {
 
-class CFStreamCacheReader;
+class StreamCacheReader;
 
 // Logical representation of INTERFACE union of records 
 // _T suffix is to avoid confusing with one of standard defines

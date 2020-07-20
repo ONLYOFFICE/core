@@ -174,7 +174,7 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 		xls_global_info->password		= password;
 		xls_global_info->tempDirectory	= tempPath;
 
-		XLS::CFStreamCacheReader stream_reader(xls_file->getWorkbookStream(), xls_global_info);
+		XLS::StreamCacheReaderPtr stream_reader(new XLS::CFStreamCacheReader(xls_file->getWorkbookStream(), xls_global_info));
 
 		xls_document = boost::shared_ptr<XLS::WorkbookStreamObject>(new XLS::WorkbookStreamObject(workbook_code_page));
 	
@@ -199,7 +199,7 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 				if (!pivot_cache_stream) continue;
 				//if (pivot_cache_stream->getStreamSize() < 1) continue;
 
-				XLS::CFStreamCacheReader pivot_cache_reader(pivot_cache_stream, xls_global_info);
+				XLS::StreamCacheReaderPtr pivot_cache_reader(new XLS::CFStreamCacheReader(pivot_cache_stream, xls_global_info));
 
 				XLS::BaseObjectPtr pivot_cache = boost::shared_ptr<XLS::PIVOTCACHE>(new XLS::PIVOTCACHE());
 				

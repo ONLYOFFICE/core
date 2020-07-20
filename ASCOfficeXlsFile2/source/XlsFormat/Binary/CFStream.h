@@ -40,7 +40,6 @@
 namespace XLS
 {
 
-// Binary representation of a stream in BIFF8
 class CFStream
 {
 public:

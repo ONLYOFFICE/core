@@ -37,7 +37,7 @@
 namespace XLS
 {
 
-class CFStreamCacheReader;
+class StreamCacheReader;
 
 // Logical representation of BOF record in BIFF8
 class BOF: public BiffRecord

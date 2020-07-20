@@ -42,7 +42,7 @@ static std::wstring replace_zero (const std::wstring &str, const std::wstring &d
 	if (str.empty()) return L"";
 
 	std::wstring out;
-	int pos = 0;
+	size_t pos = 0;
 	while(true)
 	{
 		if (pos >= str.size()) break;

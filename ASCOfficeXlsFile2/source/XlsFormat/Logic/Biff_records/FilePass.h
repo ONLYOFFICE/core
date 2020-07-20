@@ -39,7 +39,7 @@
 namespace XLS
 {
 
-class CFStreamCacheReader;
+class StreamCacheReader;
 
 
 class FilePass: public BiffRecord

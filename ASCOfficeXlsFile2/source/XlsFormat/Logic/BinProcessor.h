@@ -96,7 +96,7 @@ protected:
 class BinReaderProcessor : public BinProcessor
 {
 public:
-	BinReaderProcessor(CFStreamCacheReader& reader, BaseObject* parent, const bool is_mandatory);
+	BinReaderProcessor(StreamCacheReaderPtr reader, BaseObject* parent, const bool is_mandatory);
 
 	virtual const bool	optional	(BaseObject& object);
 	virtual const bool	mandatory	(BaseObject& object);
@@ -112,7 +112,7 @@ public:
 private:
 	const bool readChild(BaseObject& object, const bool is_mandatory);
 
-	CFStreamCacheReader&	reader_;
+	StreamCacheReaderPtr	reader_;
 	BaseObjectPtrList		wanted_objects;
 	bool			is_mandatory_;
 };

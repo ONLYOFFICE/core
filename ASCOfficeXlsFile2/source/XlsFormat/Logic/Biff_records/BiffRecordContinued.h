@@ -48,7 +48,7 @@ protected:
 	ContinuesMap continue_records; // All records must be removed from the list that means they are processed
 
 //-----------------------------
-	virtual void readFollowingContinue(CFStreamCacheReader& reader);
+	virtual void readFollowingContinue(StreamCacheReaderPtr reader);
 
 };
 

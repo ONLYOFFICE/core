@@ -490,7 +490,7 @@ public:
             // Читаем date (ноль или один)
             else if(sName == L"date")
             {
-                oBuilder += L"<w:p><w:r><w:t>";
+                oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"v-stanza\"/></w:pPr><w:r><w:t>";
                 oBuilder.WriteEncodeXmlString(content());
                 oBuilder += L"</w:t></w:r></w:p>";
             }
@@ -612,7 +612,7 @@ public:
             // Читаем image (ноль или один)
             else if(sName == L"image")
             {
-                oBuilder += L"<w:p><w:pPr><w:jc w:val=\"center\"/></w:pPr>";
+                oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"image\"/></w:pPr>";
                 readImage(oBuilder);
                 oBuilder += L"</w:p>";
             }
@@ -659,7 +659,7 @@ public:
             // Читаем image (ноль или один)
             if(sName == L"image")
             {
-                oBuilder += L"<w:p><w:pPr><w:jc w:val=\"center\"/></w:pPr>";
+                oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"image\"/></w:pPr>";
                 readImage(oBuilder);
                 oBuilder += L"</w:p>";
             }
@@ -676,7 +676,7 @@ public:
         }
     }
 
-    // Читает оглавление, binary, body, сноски, description
+    // Читает содержание, binary, body, сноски, description
     bool readText(const std::wstring& sPath, const std::wstring& sMediaDirectory, NSStringUtils::CStringBuilder& oContents, NSStringUtils::CStringBuilder& oRels, NSStringUtils::CStringBuilder& oFootnotes)
     {
         if(!m_oLightReader.IsValid())
@@ -734,6 +734,7 @@ public:
         return true;
     }
 
+    // Читает содержание
     void readContents(int& nContentsId, NSStringUtils::CStringBuilder& oContents)
     {
         int nBDeath = m_oLightReader.GetDepth();
@@ -770,6 +771,7 @@ public:
         }
     }
 
+    // Читает сноски
     void readNotes(const std::wstring& sFootnoteId, NSStringUtils::CStringBuilder& oFootnotes)
     {
         int nBDepth = m_oLightReader.GetDepth();
@@ -864,6 +866,7 @@ public:
         }
     }
 
+    // Читает binary
     void getImage(const std::wstring& sImageId, const std::wstring& sMediaDirectory, NSStringUtils::CStringBuilder& oRels)
     {
         std::wstring sId = L"";
@@ -893,12 +896,36 @@ public:
             // Получаем размеры картинки
             CBgraFrame oBgraFrame;
             oBgraFrame.OpenFile(sMediaDirectory + L"/" + sId);
-            unsigned int nX = 4000000;
-            unsigned int nY = oBgraFrame.get_Height() * nX / oBgraFrame.get_Width();
+            int nHy = oBgraFrame.get_Height();
+            int nWx = oBgraFrame.get_Width();
+            if(nWx > nHy)
+            {
+                int nW = nWx * 9525;
+                nW = (nW > 7000000 ? 7000000 : nW);
+                nHy = (int)((double)nHy * (double)nW / (double)nWx);
+                nWx = nW;
+            }
+            else
+            {
+                int nH = nHy * 9525;
+                nH = (nH > 9250000 ? 9250000 : nH);
+                int nW = (int)((double)nWx * (double)nH / (double)nHy);
+                if(nW > 7000000)
+                {
+                    nW = 7000000;
+                    nHy = (int)((double)nHy * (double)nW / (double)nWx);
+                    nWx = nW;
+                }
+                else
+                {
+                    nWx = nW;
+                    nHy = nH;
+                }
+            }
             std::vector<std::wstring> vImage;
             vImage.push_back(sImageId);
-            vImage.push_back(std::to_wstring(nX));
-            vImage.push_back(std::to_wstring(nY));
+            vImage.push_back(std::to_wstring(nWx));
+            vImage.push_back(std::to_wstring(nHy));
 
             m_mImages.insert(std::make_pair(sId, vImage));
             // Запись картинок в рельсы
@@ -1087,7 +1114,7 @@ public:
                 {
                     if(m_oLightReader.GetName() == L"image")
                     {
-                        oBuilder += L"<w:p><w:pPr><w:jc w:val=\"center\"/></w:pPr>";
+                        oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"image\"/></w:pPr>";
                         readImage(oBuilder);
                         oBuilder += L"</w:p>";
                     }

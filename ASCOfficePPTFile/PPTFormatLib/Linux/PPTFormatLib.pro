@@ -40,6 +40,7 @@ HEADERS += \
     ../Reader/SlideInfo.h \
     ../Reader/SlidePersist.h \
     ../Records/AnimationInfoAtom.h \
+    ../Records/AnimationInfoContainer.h \
     ../Records/BlipEntityAtom.h \
     ../Records/BookmarkEntityAtom.h \
     ../Records/BookmarkSeedAtom.h \
@@ -72,6 +73,7 @@ HEADERS += \
     ../Records/HeadersFootersAtom.h \
     ../Records/InteractiveInfoAtom.h \
     ../Records/KinsokuAtom.h \
+    ../Records/KinsokuContainer.h \
     ../Records/KinsokuFollowingAtom.h \
     ../Records/KinsokuLeadingAtom.h \
     ../Records/MasterPersistAtom.h \

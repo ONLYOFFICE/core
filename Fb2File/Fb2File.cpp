@@ -940,7 +940,7 @@ public:
             else
             {
                 int nH = nHy * 9525;
-                nH = (nH > 9250000 ? 9250000 : nH);
+                nH = (nH > 9000000 ? 9000000 : nH);
                 int nW = (int)((double)nWx * (double)nH / (double)nHy);
                 if(nW > 7000000)
                 {

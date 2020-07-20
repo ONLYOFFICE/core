@@ -266,6 +266,7 @@ IRecord* CreateByType(SRecordHeader oHeader)
     //CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN					, CRecordMouseTextInteractiveInfoAtom)
     //CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN					, CRecordRecolorInfoAtom)
     CREATE_BY_TYPE(RECORD_TYPE_ANIMATIONINFO_ATOM           , CRecordAnimationInfoAtom)
+    CREATE_BY_TYPE(RECORD_TYPE_ANIMATIONINFO                , CRecordAnimationInfoContainer)
 
     CREATE_BY_TYPE(RECORD_TYPE_EX_VIDEOCONTAINER			, CRecordExVideoContainer)
     CREATE_BY_TYPE(RECORD_TYPE_EX_OBJREF_ATOM				, CRecordExObjRefAtom)

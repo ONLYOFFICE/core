@@ -79,7 +79,7 @@ public:
     {
         return  m_oHeader.RecVersion == 0xF	&&
                 m_oHeader.RecInstance == 0x2 &&
-                m_oHeader.RecType == RT_;
+                m_oHeader.RecType == RT_Kinsoku;
     }
 
 public:

@@ -55,6 +55,7 @@
 
 // others
 #include "AnimationInfoAtom.h"
+#include "AnimationInfoContainer.h"
 #include "BlipEntityAtom.h"
 #include "BookmarkEntityAtom.h"
 #include "BookmarkSeedAtom.h"

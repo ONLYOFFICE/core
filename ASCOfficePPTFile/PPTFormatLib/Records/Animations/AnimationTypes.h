@@ -2202,7 +2202,7 @@ namespace Animations
 		}
 	};
 
-	struct TimeColorBehaviorAtom: public CUnknownRecord
+    struct TimeColorBehaviorAtom: public CUnknownRecord
 	{
 	public:
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )

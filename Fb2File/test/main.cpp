@@ -28,6 +28,9 @@ int main()
         oParams[0].bNeedDocx = true;
         oParams[0].bNeedContents = true;
 
+        int nErrorCol = 0;
+         std::vector<std::wstring> arrError;
+
         for(std::wstring sD : arrDirectory)
         {
             std::vector<std::wstring> arrFiles = NSDirectory::GetFiles(sD);
@@ -43,9 +46,12 @@ int main()
                 CFb2File oFile;
                 // Выставляем временную директорию
                 oFile.SetTmpDirectory(NSFile::GetProcessDirectory() + L"/tmp");
-                std::wcout << NSFile::GetFileName(sFile) << std::endl;
+                std::wstring sFileName = NSFile::GetFileName(sFile);
+                std::wcout << sFileName << std::endl;
                 if(!oFile.IsFb2File(sFile))
                 {
+                    nErrorCol++;
+                    arrError.push_back(sFileName);
                     std::cout << "This isn't a fb2 file" << std::endl;
                     continue;
                 }
@@ -53,10 +59,18 @@ int main()
                 if(nResConvert == S_OK)
                     std::cout << "Success" << std::endl;
                 else
+                {
+                    nErrorCol++;
+                    arrError.push_back(sFileName);
                     std::cout << "Failure" << std::endl;
+                }
             }
         }
         delete[] oParams;
+
+        std::cout << "ERRORS - "<< nErrorCol << std::endl;
+        for(std::wstring sError : arrError)
+            std::wcout << sError << std::endl;
     }
     else
     {

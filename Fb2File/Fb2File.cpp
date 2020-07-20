@@ -530,36 +530,57 @@ public:
     void readTable(NSStringUtils::CStringBuilder& oBuilder)
     {
         // Стиль таблицы
-        oBuilder += L"<w:tbl><w:tblPr><w:tblStyle w:val=\"table\"/><w:tblW w:w=\"0\" w:type=\"auto\"/></w:tblPr><w:tblGrid/>";
+        oBuilder += L"<w:tbl><w:tblPr><w:tblStyle w:val=\"table-t\"/><w:tblW w:w=\"0\" w:type=\"auto\"/><w:tblLayout w:type=\"fixed\"/></w:tblPr>";
 
+        NSStringUtils::CStringBuilder oTmpBuilder;
+        int nGridCol = 0;
         int nDeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
         {
             if(m_oLightReader.GetName() == L"tr")
             {
-                oBuilder += L"<w:tr>";
+                int nTCol = 0;
+                oTmpBuilder += L"<w:tr>";
                 int nTrDeath = m_oLightReader.GetDepth();
                 while(m_oLightReader.ReadNextSiblingNode(nTrDeath))
                 {
-                    oBuilder += L"<w:tc><w:p>";
+                    oTmpBuilder += L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/></w:tcPr><w:p>";
 
                     // Читаем th (любое)
                     if(m_oLightReader.GetName() == L"th")
                     {
-                        oBuilder += L"<w:pPr><w:jc w:val=\"center\"/></w:pPr>";
-                        readP(L"<w:b/>", oBuilder);
+                        if(++nTCol > nGridCol)
+                            nGridCol = nTCol;
+                        oTmpBuilder += L"<w:pPr><w:jc w:val=\"center\"/></w:pPr>";
+                        readP(L"<w:b/>", oTmpBuilder);
                     }
                     // Читаем td (любое)
                     else if(m_oLightReader.GetName() == L"td")
                     {
-                        oBuilder += L"<w:pPr><w:jc w:val=\"right\"/></w:pPr>";
-                        readP(L"", oBuilder);
+                        if(++nTCol > nGridCol)
+                            nGridCol = nTCol;
+                        oTmpBuilder += L"<w:pPr><w:jc w:val=\"right\"/></w:pPr>";
+                        readP(L"", oTmpBuilder);
                     }
-                    oBuilder += L"</w:p></w:tc>";
+                    oTmpBuilder += L"</w:p></w:tc>";
                 }
-                oBuilder += L"</w:tr>";
+                oTmpBuilder += L"</w:tr>";
             }
         }
+        // Размеры таблицы
+        std::wstring sGridCol = L"";
+        if(nGridCol != 0)
+            sGridCol = std::to_wstring((int)(9570.0 / (double)nGridCol));
+        oBuilder += L"<w:tblGrid>";
+        for(int i = 0; i < nGridCol; i++)
+        {
+            oBuilder += L"<w:gridCol w:w=\"";
+            oBuilder += sGridCol;
+            oBuilder += L"\"/>";
+        }
+        oBuilder += L"</w:tblGrid>";
+        // Конец таблицы
+        oBuilder += oTmpBuilder.GetData();
         oBuilder += L"</w:tbl>";
         // Пустая строка после таблицы
         oBuilder += L"<w:p></w:p>";

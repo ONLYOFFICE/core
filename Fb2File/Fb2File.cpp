@@ -733,10 +733,7 @@ public:
                 m_oLightReader.MoveToElement();
                 // Читаем сноски
                 if(bNotes)
-                {
-                    std::wstring sFootnoteId = std::to_wstring(nFootnoteId++);
-                    readNotes(sFootnoteId, oFootnotes);
-                }
+                    readNotes(nFootnoteId, oFootnotes);
                 // Читаем содержание
                 else
                     readContents(nContentsId, oContents);
@@ -804,7 +801,7 @@ public:
     }
 
     // Читает сноски
-    void readNotes(const std::wstring& sFootnoteId, NSStringUtils::CStringBuilder& oFootnotes)
+    void readNotes(int& nFootnoteId, NSStringUtils::CStringBuilder& oFootnotes)
     {
         int nBDepth = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nBDepth))
@@ -826,6 +823,7 @@ public:
                 if(sFootnoteName == L"")
                     continue;
 
+                std::wstring sFootnoteId = std::to_wstring(nFootnoteId++);
                 m_mFootnotes.insert(std::make_pair(sFootnoteName, sFootnoteId));
                 // Пишем сноску
                 oFootnotes += L"<w:footnote w:id=\"";

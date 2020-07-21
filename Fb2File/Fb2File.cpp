@@ -1270,12 +1270,12 @@ void CFb2File::SetTmpDirectory(const std::wstring& sFolder)
 // sPath - путь к файлу fb2, sDirectory - директория, где формируется и создается docx
 HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory, CFb2Params* oParams)
 {
-    if(m_internal->m_sTmpFolder == L"")
-        SetTmpDirectory(sDirectory + L"/tmp");
-    std::wstring sTmp = m_internal->m_sTmpFolder;
+    // Чистим папку назначения
+    NSDirectory::DeleteDirectory(sDirectory);
+    NSDirectory::CreateDirectory(sDirectory);
 
     // Копирование шаблона
-    if(!ExtractTemplate(sTmp))
+    if(!ExtractTemplate(sDirectory))
         return S_FALSE;
 
     // Начало файла
@@ -1301,7 +1301,7 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     oRels += L"<Relationship Id=\"rId6\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes\" Target=\"footnotes.xml\"/>";
 
     // Директория картинок
-    std::wstring sMediaDirectory = sTmp + L"/word/media";
+    std::wstring sMediaDirectory = sDirectory + L"/word/media";
     NSDirectory::CreateDirectory(sMediaDirectory);
 
     NSStringUtils::CStringBuilder oBuilder;
@@ -1345,7 +1345,7 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     // Конец сносок
     oFootnotes += L"</w:footnotes>";
     // Пишем сноски в файл
-    std::wstring sFootnotesDirectory = sTmp + L"/word";
+    std::wstring sFootnotesDirectory = sDirectory + L"/word";
     NSFile::CFileBinary oFootnotesWriter;
     if (oFootnotesWriter.CreateFileW(sFootnotesDirectory + L"/footnotes.xml"))
     {
@@ -1365,7 +1365,7 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     oDocument += L"</w:document>";
     // Пишем документ в файл
     NSFile::CFileBinary oDocumentXmlWriter;
-    if (oDocumentXmlWriter.CreateFileW(sTmp + L"/word/document.xml"))
+    if (oDocumentXmlWriter.CreateFileW(sDirectory + L"/word/document.xml"))
     {
         oDocumentXmlWriter.WriteStringUTF8(oDocument.GetData());
         oDocumentXmlWriter.CloseFile();
@@ -1374,7 +1374,7 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     // Конец рельсов
     oRels += L"</Relationships>";
     // Пишем рельсы в файл
-    std::wstring sRelsDirectory = sTmp + L"/word/_rels";
+    std::wstring sRelsDirectory = sDirectory + L"/word/_rels";
     NSFile::CFileBinary oRelsWriter;
     if (oRelsWriter.CreateFileW(sRelsDirectory + L"/document.xml.rels"))
     {
@@ -1383,7 +1383,7 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     }
 
     // Директория app и core
-    std::wstring sDocPropsDirectory = sTmp + L"/docProps";
+    std::wstring sDocPropsDirectory = sDirectory + L"/docProps";
     NSDirectory::CreateDirectory(sDocPropsDirectory);
 
     // Создаем core.xml
@@ -1445,13 +1445,9 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     if(bNeedDocx)
     {
         COfficeUtils oZip;
-        HRESULT oRes = oZip.CompressFileOrDirectory(sTmp, sDirectory + L"/" + NSFile::GetFileName(sPath) + L".docx");
+        HRESULT oRes = oZip.CompressFileOrDirectory(sDirectory, sDirectory + L"/" + NSFile::GetFileName(sPath) + L".docx");
         return oRes;
     }
-    else
-    {
-        if(!NSDirectory::CopyDirectory(sTmp, sDirectory))
-            return S_FALSE;
-    }
+
     return S_OK;
 }

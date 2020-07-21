@@ -82,8 +82,6 @@ int main()
 
         // Директория, где будем создавать docx
         std::wstring sOutputDirectory = NSFile::GetProcessDirectory() + L"/res";
-        NSDirectory::DeleteDirectory(sOutputDirectory);
-        NSDirectory::CreateDirectory(sOutputDirectory);
 
         bool bCheck = oFile.IsFb2File(sFile);
         if (!bCheck)
@@ -92,17 +90,15 @@ int main()
             return 1;
         }
 
-        CFb2Params* oParams = new CFb2Params[1];
-        oParams[0].bNeedDocx = true;
-        oParams[0].bNeedContents = true;
+        CFb2Params oParams;
+        oParams.bNeedDocx = true;
+        oParams.bNeedContents = true;
 
-        HRESULT nResConvert = oFile.Open(sFile, sOutputDirectory, oParams);
+        HRESULT nResConvert = oFile.Open(sFile, sOutputDirectory, &oParams);
         if(nResConvert == S_OK)
             std::cout << "Success" << std::endl;
         else
             std::cout << "Failure" << std::endl;
-
-        delete[] oParams;
     }
     std::cout << "THE END" << std::endl;
     return 0;

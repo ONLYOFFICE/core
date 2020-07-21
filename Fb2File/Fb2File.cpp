@@ -490,7 +490,7 @@ public:
             // Читаем date (ноль или один)
             else if(sName == L"date")
             {
-                oBuilder += L"<w:p><w:r><w:t>";
+                oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"v-stanza\"/></w:pPr><w:r><w:t>";
                 oBuilder.WriteEncodeXmlString(content());
                 oBuilder += L"</w:t></w:r></w:p>";
             }
@@ -530,36 +530,57 @@ public:
     void readTable(NSStringUtils::CStringBuilder& oBuilder)
     {
         // Стиль таблицы
-        oBuilder += L"<w:tbl><w:tblPr><w:tblStyle w:val=\"table\"/><w:tblW w:w=\"0\" w:type=\"auto\"/></w:tblPr><w:tblGrid/>";
+        oBuilder += L"<w:tbl><w:tblPr><w:tblStyle w:val=\"table-t\"/><w:tblW w:w=\"0\" w:type=\"auto\"/><w:tblLayout w:type=\"fixed\"/></w:tblPr>";
 
+        NSStringUtils::CStringBuilder oTmpBuilder;
+        int nGridCol = 0;
         int nDeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
         {
             if(m_oLightReader.GetName() == L"tr")
             {
-                oBuilder += L"<w:tr>";
+                int nTCol = 0;
+                oTmpBuilder += L"<w:tr>";
                 int nTrDeath = m_oLightReader.GetDepth();
                 while(m_oLightReader.ReadNextSiblingNode(nTrDeath))
                 {
-                    oBuilder += L"<w:tc><w:p>";
+                    oTmpBuilder += L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/></w:tcPr><w:p>";
 
                     // Читаем th (любое)
                     if(m_oLightReader.GetName() == L"th")
                     {
-                        oBuilder += L"<w:pPr><w:jc w:val=\"center\"/></w:pPr>";
-                        readP(L"<w:b/>", oBuilder);
+                        if(++nTCol > nGridCol)
+                            nGridCol = nTCol;
+                        oTmpBuilder += L"<w:pPr><w:jc w:val=\"center\"/></w:pPr>";
+                        readP(L"<w:b/>", oTmpBuilder);
                     }
                     // Читаем td (любое)
                     else if(m_oLightReader.GetName() == L"td")
                     {
-                        oBuilder += L"<w:pPr><w:jc w:val=\"right\"/></w:pPr>";
-                        readP(L"", oBuilder);
+                        if(++nTCol > nGridCol)
+                            nGridCol = nTCol;
+                        oTmpBuilder += L"<w:pPr><w:jc w:val=\"right\"/></w:pPr>";
+                        readP(L"", oTmpBuilder);
                     }
-                    oBuilder += L"</w:p></w:tc>";
+                    oTmpBuilder += L"</w:p></w:tc>";
                 }
-                oBuilder += L"</w:tr>";
+                oTmpBuilder += L"</w:tr>";
             }
         }
+        // Размеры таблицы
+        std::wstring sGridCol = L"";
+        if(nGridCol != 0)
+            sGridCol = std::to_wstring((int)(9570.0 / (double)nGridCol));
+        oBuilder += L"<w:tblGrid>";
+        for(int i = 0; i < nGridCol; i++)
+        {
+            oBuilder += L"<w:gridCol w:w=\"";
+            oBuilder += sGridCol;
+            oBuilder += L"\"/>";
+        }
+        oBuilder += L"</w:tblGrid>";
+        // Конец таблицы
+        oBuilder += oTmpBuilder.GetData();
         oBuilder += L"</w:tbl>";
         // Пустая строка после таблицы
         oBuilder += L"<w:p></w:p>";
@@ -612,7 +633,7 @@ public:
             // Читаем image (ноль или один)
             else if(sName == L"image")
             {
-                oBuilder += L"<w:p><w:pPr><w:jc w:val=\"center\"/></w:pPr>";
+                oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"image\"/></w:pPr>";
                 readImage(oBuilder);
                 oBuilder += L"</w:p>";
             }
@@ -659,7 +680,7 @@ public:
             // Читаем image (ноль или один)
             if(sName == L"image")
             {
-                oBuilder += L"<w:p><w:pPr><w:jc w:val=\"center\"/></w:pPr>";
+                oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"image\"/></w:pPr>";
                 readImage(oBuilder);
                 oBuilder += L"</w:p>";
             }
@@ -676,7 +697,7 @@ public:
         }
     }
 
-    // Читает оглавление, binary, body, сноски, description
+    // Читает содержание, binary, body, сноски, description
     bool readText(const std::wstring& sPath, const std::wstring& sMediaDirectory, NSStringUtils::CStringBuilder& oContents, NSStringUtils::CStringBuilder& oRels, NSStringUtils::CStringBuilder& oFootnotes)
     {
         if(!m_oLightReader.IsValid())
@@ -712,10 +733,7 @@ public:
                 m_oLightReader.MoveToElement();
                 // Читаем сноски
                 if(bNotes)
-                {
-                    std::wstring sFootnoteId = std::to_wstring(nFootnoteId++);
-                    readNotes(sFootnoteId, oFootnotes);
-                }
+                    readNotes(nFootnoteId, oFootnotes);
                 // Читаем содержание
                 else
                     readContents(nContentsId, oContents);
@@ -734,13 +752,16 @@ public:
         return true;
     }
 
+    // Читает содержание
     void readContents(int& nContentsId, NSStringUtils::CStringBuilder& oContents)
     {
+        bool bFirstP = true;
         int nBDeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nBDeath))
         {
+            std::wstring sName = m_oLightReader.GetName();
             // Читаем section
-            if(m_oLightReader.GetName() == L"section")
+            if(sName == L"section")
             {
                 int nSDeath = m_oLightReader.GetDepth();
                 while(m_oLightReader.ReadNextSiblingNode(nSDeath))
@@ -749,8 +770,15 @@ public:
                     if(m_oLightReader.GetName() == L"title")
                     {
                         std::wstring sContentsId = std::to_wstring(nContentsId++);
+                        oContents += L"<w:p><w:pPr><w:pStyle w:val=\"contents\"/><w:tabs><w:tab w:val=\"right\" w:pos=\"9355\" w:leader=\"none\"/></w:tabs></w:pPr>";
 
-                        oContents += L"<w:p><w:pPr><w:pStyle w:val=\"contents\"/></w:pPr><w:hyperlink w:anchor=\"_Toc";
+                        if(bFirstP)
+                        {
+                            oContents += L"<w:r><w:fldChar w:fldCharType=\"begin\"/><w:instrText xml:space=\"preserve\">TOC \\n \\h </w:instrText><w:fldChar w:fldCharType=\"separate\"/></w:r>";
+                            bFirstP = false;
+                        }
+
+                        oContents += L"<w:hyperlink w:tooltip=\"Current Document\" w:anchor=\"_Toc";
                         oContents += sContentsId;
                         oContents += L"\" w:history=\"1\">";
 
@@ -768,9 +796,12 @@ public:
                 }
             }
         }
+        if(!bFirstP)
+            oContents += L"<w:p><w:r><w:fldChar w:fldCharType=\"end\"/></w:r></w:p>";
     }
 
-    void readNotes(const std::wstring& sFootnoteId, NSStringUtils::CStringBuilder& oFootnotes)
+    // Читает сноски
+    void readNotes(int& nFootnoteId, NSStringUtils::CStringBuilder& oFootnotes)
     {
         int nBDepth = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nBDepth))
@@ -792,6 +823,7 @@ public:
                 if(sFootnoteName == L"")
                     continue;
 
+                std::wstring sFootnoteId = std::to_wstring(nFootnoteId++);
                 m_mFootnotes.insert(std::make_pair(sFootnoteName, sFootnoteId));
                 // Пишем сноску
                 oFootnotes += L"<w:footnote w:id=\"";
@@ -864,6 +896,7 @@ public:
         }
     }
 
+    // Читает binary
     void getImage(const std::wstring& sImageId, const std::wstring& sMediaDirectory, NSStringUtils::CStringBuilder& oRels)
     {
         std::wstring sId = L"";
@@ -893,12 +926,36 @@ public:
             // Получаем размеры картинки
             CBgraFrame oBgraFrame;
             oBgraFrame.OpenFile(sMediaDirectory + L"/" + sId);
-            unsigned int nX = 4000000;
-            unsigned int nY = oBgraFrame.get_Height() * nX / oBgraFrame.get_Width();
+            int nHy = oBgraFrame.get_Height();
+            int nWx = oBgraFrame.get_Width();
+            if(nWx > nHy)
+            {
+                int nW = nWx * 9525;
+                nW = (nW > 7000000 ? 7000000 : nW);
+                nHy = (int)((double)nHy * (double)nW / (double)nWx);
+                nWx = nW;
+            }
+            else
+            {
+                int nH = nHy * 9525;
+                nH = (nH > 9000000 ? 9000000 : nH);
+                int nW = (int)((double)nWx * (double)nH / (double)nHy);
+                if(nW > 7000000)
+                {
+                    nW = 7000000;
+                    nHy = (int)((double)nHy * (double)nW / (double)nWx);
+                    nWx = nW;
+                }
+                else
+                {
+                    nWx = nW;
+                    nHy = nH;
+                }
+            }
             std::vector<std::wstring> vImage;
             vImage.push_back(sImageId);
-            vImage.push_back(std::to_wstring(nX));
-            vImage.push_back(std::to_wstring(nY));
+            vImage.push_back(std::to_wstring(nWx));
+            vImage.push_back(std::to_wstring(nHy));
 
             m_mImages.insert(std::make_pair(sId, vImage));
             // Запись картинок в рельсы
@@ -1087,7 +1144,7 @@ public:
                 {
                     if(m_oLightReader.GetName() == L"image")
                     {
-                        oBuilder += L"<w:p><w:pPr><w:jc w:val=\"center\"/></w:pPr>";
+                        oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"image\"/></w:pPr>";
                         readImage(oBuilder);
                         oBuilder += L"</w:p>";
                     }
@@ -1213,12 +1270,12 @@ void CFb2File::SetTmpDirectory(const std::wstring& sFolder)
 // sPath - путь к файлу fb2, sDirectory - директория, где формируется и создается docx
 HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory, CFb2Params* oParams)
 {
-    if(m_internal->m_sTmpFolder == L"")
-        SetTmpDirectory(sDirectory + L"/tmp");
-    std::wstring sTmp = m_internal->m_sTmpFolder;
+    // Чистим папку назначения
+    NSDirectory::DeleteDirectory(sDirectory);
+    NSDirectory::CreateDirectory(sDirectory);
 
     // Копирование шаблона
-    if(!ExtractTemplate(sTmp))
+    if(!ExtractTemplate(sDirectory))
         return S_FALSE;
 
     // Начало файла
@@ -1244,7 +1301,7 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     oRels += L"<Relationship Id=\"rId6\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes\" Target=\"footnotes.xml\"/>";
 
     // Директория картинок
-    std::wstring sMediaDirectory = sTmp + L"/word/media";
+    std::wstring sMediaDirectory = sDirectory + L"/word/media";
     NSDirectory::CreateDirectory(sMediaDirectory);
 
     NSStringUtils::CStringBuilder oBuilder;
@@ -1288,7 +1345,7 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     // Конец сносок
     oFootnotes += L"</w:footnotes>";
     // Пишем сноски в файл
-    std::wstring sFootnotesDirectory = sTmp + L"/word";
+    std::wstring sFootnotesDirectory = sDirectory + L"/word";
     NSFile::CFileBinary oFootnotesWriter;
     if (oFootnotesWriter.CreateFileW(sFootnotesDirectory + L"/footnotes.xml"))
     {
@@ -1308,7 +1365,7 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     oDocument += L"</w:document>";
     // Пишем документ в файл
     NSFile::CFileBinary oDocumentXmlWriter;
-    if (oDocumentXmlWriter.CreateFileW(sTmp + L"/word/document.xml"))
+    if (oDocumentXmlWriter.CreateFileW(sDirectory + L"/word/document.xml"))
     {
         oDocumentXmlWriter.WriteStringUTF8(oDocument.GetData());
         oDocumentXmlWriter.CloseFile();
@@ -1317,7 +1374,7 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     // Конец рельсов
     oRels += L"</Relationships>";
     // Пишем рельсы в файл
-    std::wstring sRelsDirectory = sTmp + L"/word/_rels";
+    std::wstring sRelsDirectory = sDirectory + L"/word/_rels";
     NSFile::CFileBinary oRelsWriter;
     if (oRelsWriter.CreateFileW(sRelsDirectory + L"/document.xml.rels"))
     {
@@ -1326,7 +1383,7 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     }
 
     // Директория app и core
-    std::wstring sDocPropsDirectory = sTmp + L"/docProps";
+    std::wstring sDocPropsDirectory = sDirectory + L"/docProps";
     NSDirectory::CreateDirectory(sDocPropsDirectory);
 
     // Создаем core.xml
@@ -1388,13 +1445,9 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     if(bNeedDocx)
     {
         COfficeUtils oZip;
-        HRESULT oRes = oZip.CompressFileOrDirectory(sTmp, sDirectory + L"/" + NSFile::GetFileName(sPath) + L".docx");
+        HRESULT oRes = oZip.CompressFileOrDirectory(sDirectory, sDirectory + L"/" + NSFile::GetFileName(sPath) + L".docx");
         return oRes;
     }
-    else
-    {
-        if(!NSDirectory::CopyDirectory(sTmp, sDirectory))
-            return S_FALSE;
-    }
+
     return S_OK;
 }

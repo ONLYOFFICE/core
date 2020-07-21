@@ -24,9 +24,12 @@ int main()
         getDirectories(sDirectory, arrDirectory);
 
         // Параметры конвертации
-        CFb2Params* oParams = new CFb2Params[1];
-        oParams[0].bNeedDocx = true;
-        oParams[0].bNeedContents = true;
+        CFb2Params oParams;
+        oParams.bNeedDocx = true;
+        oParams.bNeedContents = true;
+
+        int nErrorCol = 0;
+        std::vector<std::wstring> arrError;
 
         for(std::wstring sD : arrDirectory)
         {
@@ -43,20 +46,30 @@ int main()
                 CFb2File oFile;
                 // Выставляем временную директорию
                 oFile.SetTmpDirectory(NSFile::GetProcessDirectory() + L"/tmp");
-                std::wcout << NSFile::GetFileName(sFile) << std::endl;
+                std::wstring sFileName = NSFile::GetFileName(sFile);
+                std::wcout << sFileName << std::endl;
                 if(!oFile.IsFb2File(sFile))
                 {
+                    nErrorCol++;
+                    arrError.push_back(sFileName);
                     std::cout << "This isn't a fb2 file" << std::endl;
                     continue;
                 }
-                HRESULT nResConvert = oFile.Open(sFile, sOutputDirectory, oParams);
+                HRESULT nResConvert = oFile.Open(sFile, sOutputDirectory, &oParams);
                 if(nResConvert == S_OK)
                     std::cout << "Success" << std::endl;
                 else
+                {
+                    nErrorCol++;
+                    arrError.push_back(sFileName);
                     std::cout << "Failure" << std::endl;
+                }
             }
         }
-        delete[] oParams;
+
+        std::cout << "ERRORS - "<< nErrorCol << std::endl;
+        for(std::wstring sError : arrError)
+            std::wcout << sError << std::endl;
     }
     else
     {
@@ -64,12 +77,10 @@ int main()
         oFile.SetTmpDirectory(NSFile::GetProcessDirectory() + L"/tmp");
 
         // Файл, который открываем
-        std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/8-sezon-groz.fb2";
+        std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test1.fb2";
 
         // Директория, где будем создавать docx
         std::wstring sOutputDirectory = NSFile::GetProcessDirectory() + L"/res";
-        NSDirectory::DeleteDirectory(sOutputDirectory);
-        NSDirectory::CreateDirectory(sOutputDirectory);
 
         bool bCheck = oFile.IsFb2File(sFile);
         if (!bCheck)
@@ -78,17 +89,15 @@ int main()
             return 1;
         }
 
-        CFb2Params* oParams = new CFb2Params[1];
-        oParams[0].bNeedDocx = true;
-        oParams[0].bNeedContents = true;
+        CFb2Params oParams;
+        oParams.bNeedDocx = true;
+        oParams.bNeedContents = true;
 
-        HRESULT nResConvert = oFile.Open(sFile, sOutputDirectory, oParams);
+        HRESULT nResConvert = oFile.Open(sFile, sOutputDirectory, &oParams);
         if(nResConvert == S_OK)
             std::cout << "Success" << std::endl;
         else
             std::cout << "Failure" << std::endl;
-
-        delete[] oParams;
     }
     std::cout << "THE END" << std::endl;
     return 0;

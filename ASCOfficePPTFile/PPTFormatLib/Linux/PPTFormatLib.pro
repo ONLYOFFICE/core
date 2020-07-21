@@ -48,6 +48,7 @@ HEADERS += \
     ../Records/ColorSchemeAtom.h \
     ../Records/CString.h \
     ../Records/CurrentUserAtom.h \
+    ../Records/DiagramBuildAtom.h \
     ../Records/DocRoutingSlipAtom.h \
     ../Records/DocumentAtom.h \
     ../Records/DocumentRecords.h \

@@ -24,12 +24,12 @@ int main()
         getDirectories(sDirectory, arrDirectory);
 
         // Параметры конвертации
-        CFb2Params* oParams = new CFb2Params[1];
-        oParams[0].bNeedDocx = true;
-        oParams[0].bNeedContents = true;
+        CFb2Params oParams;
+        oParams.bNeedDocx = true;
+        oParams.bNeedContents = true;
 
         int nErrorCol = 0;
-         std::vector<std::wstring> arrError;
+        std::vector<std::wstring> arrError;
 
         for(std::wstring sD : arrDirectory)
         {
@@ -55,7 +55,7 @@ int main()
                     std::cout << "This isn't a fb2 file" << std::endl;
                     continue;
                 }
-                HRESULT nResConvert = oFile.Open(sFile, sOutputDirectory, oParams);
+                HRESULT nResConvert = oFile.Open(sFile, sOutputDirectory, &oParams);
                 if(nResConvert == S_OK)
                     std::cout << "Success" << std::endl;
                 else
@@ -66,7 +66,6 @@ int main()
                 }
             }
         }
-        delete[] oParams;
 
         std::cout << "ERRORS - "<< nErrorCol << std::endl;
         for(std::wstring sError : arrError)

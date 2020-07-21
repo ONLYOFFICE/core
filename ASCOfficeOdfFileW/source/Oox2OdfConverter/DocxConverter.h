@@ -46,6 +46,7 @@ namespace OOX
 	class CDocDefaults;
 	class CStyle;
 	class CComment;
+	class CStyles;
 
 	namespace Logic
 	{
@@ -246,7 +247,7 @@ namespace Oox2Odf
 		void convert(SimpleTypes::CHexColor<>			*color, SimpleTypes::CThemeColor<>	*theme_color, 
 														SimpleTypes::CUcharHexNumber<>* theme_tint,
 														SimpleTypes::CUcharHexNumber<>* theme_shade, _CP_OPT(odf_types::color) & odf_color);
-		void convert(OOX::CDocDefaults					*def_style);
+		void convert(OOX::CDocDefaults					*def_style, OOX::CStyles *styles);
 		void convert(OOX::CStyle						*style);
 		void convert_table_style(OOX::CStyle			*oox_style);
 		void convert(OOX::Numbering::CAbstractNum		*oox_num_style);

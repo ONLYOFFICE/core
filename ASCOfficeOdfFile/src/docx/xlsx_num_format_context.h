@@ -62,6 +62,11 @@ public:
 
 	//std::wstring default_data_style(int type);
 	odf_reader::odf_read_context & odf_context_;
+
+	bool bDate;
+	bool bTime;
+	bool bPercent;
+	bool bCurrency;
 private:
     class Impl;
     _CP_SCOPED_PTR(Impl) impl_;

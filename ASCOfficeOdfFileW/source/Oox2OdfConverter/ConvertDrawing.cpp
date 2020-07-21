@@ -459,7 +459,7 @@ void OoxConverter::convert(PPTX::Logic::ChartRec *oox_chart)
 				odf_context()->drawing_context()->start_group();
 
 				odf_context()->drawing_context()->set_group_size (width, height, width, height);
-				odf_context()->drawing_context()->set_group_position (x, y, 0, 0);
+				odf_context()->drawing_context()->set_group_position (x, y, zero, zero);
 				
 				odf_context()->drawing_context()->start_drawing();
 				odf_context()->drawing_context()->set_position (zero, zero);

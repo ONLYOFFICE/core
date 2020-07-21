@@ -1388,7 +1388,8 @@ namespace DocFileFormat
 			}
 			if (nestingLevel == iTap_current)
 			{
-				for ( std::list<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); iter != papx->grpprl->end(); iter++ )
+				bool bPresent = false; //118854.doc
+				for ( std::list<SinglePropertyModifier>::reverse_iterator iter = papx->grpprl->rbegin(); !bPresent && iter != papx->grpprl->rend(); iter++ )
 				{
 					//find the tDef SPRM
 					DWORD code = iter->OpCode;
@@ -1419,6 +1420,7 @@ namespace DocFileFormat
 							mapBoundaries.insert(std::make_pair(boundary2, 0));
 							mapBoundaries.insert(std::make_pair(max_boundary, 0));
 							//AddBoundary(boundary2, max_boundary, mapBoundaries);
+							bPresent = true;
 						}break;
 						default:
 							break;

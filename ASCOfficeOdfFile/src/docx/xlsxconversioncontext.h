@@ -163,7 +163,7 @@ public:
         return odf_document_;
     }
 
-    std::pair<float,float> getMaxDigitSize();
+    std::pair<double, double> getMaxDigitSize();
 
     void process_styles();
 
@@ -207,7 +207,7 @@ private:
 	std::vector<std::wstring>			table_parts_;
  
     std::wstringstream                  defaultOutput_;
-    std::pair<float,float>              maxDigitSize_;
+    std::pair<double, double>              maxDigitSize_;
     num_format_context                  num_format_context_;
     size_t                              default_style_;
     mediaitems_ptr						mediaitems_;

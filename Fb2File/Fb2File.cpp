@@ -186,7 +186,6 @@ public:
 
     ~CFb2File_Private()
     {
-        NSDirectory::DeleteDirectory(m_sTmpFolder);
         m_oLightReader.Clear();
         m_mFootnotes.clear();
         m_mImages.clear();
@@ -1262,8 +1261,6 @@ bool CFb2File::IsFb2File(const std::wstring& sFile)
 void CFb2File::SetTmpDirectory(const std::wstring& sFolder)
 {
     m_internal->m_sTmpFolder = sFolder;
-    NSDirectory::DeleteDirectory(m_internal->m_sTmpFolder);
-    NSDirectory::CreateDirectory(m_internal->m_sTmpFolder);
 }
 
 // Проверяет, соответствует ли fb2 файл формату

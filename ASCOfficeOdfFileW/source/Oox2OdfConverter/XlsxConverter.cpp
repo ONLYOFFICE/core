@@ -581,48 +581,48 @@ void XlsxConverter::convert(OOX::Spreadsheet::CHeaderFooter *oox_header_footer)
 		if (true == ods_context->start_header(0))
 		{
 			convert(oox_header_footer->m_oOddHeader.GetPointer());
+			ods_context->end_header_footer();
 		}
-		ods_context->end_header_footer();
 	}
 	if (bEven ||oox_header_footer->m_oOddFooter.IsInit())
 	{
 		if (true == ods_context->start_footer(0))
 		{
 			convert(oox_header_footer->m_oOddFooter.GetPointer());
+			ods_context->end_header_footer();
 		}
-		ods_context->end_header_footer();
 	}
 	if (bEven ||oox_header_footer->m_oEvenHeader.IsInit())
 	{
 		if (true == ods_context->start_header(1))
 		{
 			convert(oox_header_footer->m_oEvenHeader.GetPointer());
+			ods_context->end_header_footer();
 		}
-		ods_context->end_header_footer();
 	}
 	if (bEven ||oox_header_footer->m_oEvenFooter.IsInit())
 	{
 		if (true == ods_context->start_footer(1))
 		{
 			convert(oox_header_footer->m_oEvenFooter.GetPointer());
+			ods_context->end_header_footer();
 		}
-		ods_context->end_header_footer();
 	}
 	if (bFirst || oox_header_footer->m_oFirstHeader.IsInit())
 	{
 		if (true == ods_context->start_header(2))
 		{
 			convert(oox_header_footer->m_oFirstHeader.GetPointer());
+			ods_context->end_header_footer();
 		}
-		ods_context->end_header_footer();
 	}
 	if (bFirst || oox_header_footer->m_oFirstFooter.IsInit())
 	{
 		if (true == ods_context->start_footer(2))
 		{
 			convert(oox_header_footer->m_oFirstFooter.GetPointer());
+			ods_context->end_header_footer();
 		}
-		ods_context->end_header_footer();
 	}
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CHeaderFooterElement	*oox_header_footer)

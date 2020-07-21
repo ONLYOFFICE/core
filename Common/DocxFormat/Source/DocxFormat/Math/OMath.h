@@ -57,9 +57,8 @@ namespace OOX
 				fromXML( oReader );
 				sNodeName	= GetMathNodeName(getType());
 			}
-			virtual ~CMathArgNodes()
-			{
-			}
+			virtual ~CMathArgNodes();
+
 			const CMathArgNodes &operator =(const XmlUtils::CXmlNode& oNode)
 			{
 				ClearItems();

@@ -665,7 +665,7 @@ int xlsx_conversion_context::get_current_cell_style_id()
     return get_table_context().get_current_cell_style_id();
 }
 
-std::pair<float,float> xlsx_conversion_context::getMaxDigitSize()
+std::pair<double, double> xlsx_conversion_context::getMaxDigitSize()
 {
     if (maxDigitSize_.first <= 0.1)
     {

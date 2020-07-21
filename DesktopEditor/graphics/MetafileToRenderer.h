@@ -156,6 +156,9 @@ namespace NSOnlineOfficeBinToPdf
 		ctCommandDouble2				= 154,
 		ctCommandString2				= 155,
 
+		ctHyperlink                     = 160,
+		ctLink                          = 161,
+
 		ctPageWidth                     = 200,
 		ctPageHeight                    = 201,
 

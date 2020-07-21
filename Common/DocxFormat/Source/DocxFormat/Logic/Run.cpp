@@ -39,6 +39,26 @@ namespace OOX
 {
 	namespace Logic
 	{
+		void CContentPart::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+			
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+				
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+				if ( L"xfrm" == sName)
+					m_oXfrm = oReader;
+				//else if (L"nvContentPartPr" == sName)
+				//	m_oNvContentPartPr = oReader;
+			}
+		}
 		void CRun::ClearItems()
 		{
 			m_oRsidDel.reset();

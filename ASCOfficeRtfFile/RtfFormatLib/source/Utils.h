@@ -253,11 +253,11 @@ public:
 			strm.imbue(std::locale(std::locale::classic(), tif));
 			strm >> date_time_;
 
-			short	Min		= date_time_.time_of_day().minutes();	
-			short	Hour	= date_time_.time_of_day().hours();		
-			short	Day		= date_time_.date().day();	
-			short	Month	= date_time_.date().month().as_number();
-			int		Year	= date_time_.date().year() - 1900;	
+			short	Min		= (short)date_time_.time_of_day().minutes();	
+			short	Hour	= (short)date_time_.time_of_day().hours();		
+			short	Day		= (short)date_time_.date().day();	
+			short	Month	= (short)date_time_.date().month().as_number();
+			int		Year	= (short)date_time_.date().year() - 1900;	
 
 			SETBITS(result, 0 , 5,  Min);
 			SETBITS(result, 6 , 10, Hour);

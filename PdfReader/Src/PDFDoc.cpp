@@ -50,6 +50,7 @@
 #include "Parser.h"
 #include "SecurityHandler.h"
 #include "Outline.h"
+#include "PageLabels.h"
 #include "PDFDoc.h"
 
 #define HeaderSearchSize 1024 // Максимальное количество байт для считывания с начала файла, в которых мы ищем запись '%PDF'
@@ -69,10 +70,11 @@ namespace PdfReader
 		m_pFile       = NULL;
 		m_pFileBuffer = NULL;
 
-		m_pStream  = NULL;
-		m_pXref    = NULL;
-		m_pCatalog = NULL;
-		m_pOutline = NULL;
+		m_pStream     = NULL;
+		m_pXref       = NULL;
+		m_pCatalog    = NULL;
+		m_pOutline    = NULL;
+		m_pPageLabels = NULL;
 
 		m_wsFileName = wsFileName;
 
@@ -166,6 +168,8 @@ namespace PdfReader
 		// Считываем объект Outline
 		m_pOutline = new Outline(m_pCatalog->GetOutline(), m_pXref);
 
+		m_pPageLabels = new PageLabels(m_pCatalog->GetPageLabels(), m_pXref);
+
 		return true;
 	}
 	PDFDoc::~PDFDoc()
@@ -174,6 +178,12 @@ namespace PdfReader
 		{
 			delete m_pOutline;
 		}
+
+		if (m_pPageLabels)
+		{
+			delete m_pPageLabels;
+		}
+
 		if (m_pCatalog)
 		{
 			delete m_pCatalog;

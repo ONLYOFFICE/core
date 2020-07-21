@@ -152,7 +152,7 @@ namespace OOX
 			COfficeArtExtension()
 			{
 			}
-			virtual ~COfficeArtExtension();
+			~COfficeArtExtension();
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{

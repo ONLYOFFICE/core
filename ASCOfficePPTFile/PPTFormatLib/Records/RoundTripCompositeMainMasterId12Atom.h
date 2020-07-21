@@ -52,3 +52,25 @@ public:
 		m_dwID = StreamUtils::ReadDWORD(pStream);
 	}
 };
+
+class CRecordRoundTripContentMasterInfo12Atom : public CUnknownRecord
+{
+public:
+	std::pair<boost::shared_array<unsigned char>, _INT32> data; //ext layout from ms office 2010 and later
+	
+	CRecordRoundTripContentMasterInfo12Atom()
+	{
+	}
+
+	~CRecordRoundTripContentMasterInfo12Atom()
+	{
+	}
+
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		m_oHeader = oHeader;
+		
+		data = std::make_pair(boost::shared_array<unsigned char>(new unsigned char[m_oHeader.RecLen]), m_oHeader.RecLen);
+		pStream->read(data.first.get(), data.second);
+	}
+};

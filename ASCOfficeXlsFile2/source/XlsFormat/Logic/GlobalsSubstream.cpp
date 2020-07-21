@@ -181,7 +181,10 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 
 		switch(type)
 		{
-			case rt_BOF:
+			case rt_BOF_BIFF8:
+			case rt_BOF_BIFF4:
+			case rt_BOF_BIFF3:
+			case rt_BOF_BIFF2:
 			{
 				if (proc.optional<BOF>())
 				{

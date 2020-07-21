@@ -52,6 +52,8 @@ public:
 	
 	~CFRecord();
 
+	bool isBOF();
+
 	const CFRecordType::TypeId		getTypeId()		const;
 	const CFRecordType::TypeString& getTypeString() const;
 

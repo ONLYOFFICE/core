@@ -60,7 +60,10 @@ CFRecord::CFRecord(CFStreamPtr stream, GlobalWorkbookInfoPtr global_info)
 
 		switch (type_id_) // this would decrease number of checks
 		{
-			case rt_BOF:
+			case rt_BOF_BIFF8:
+			case rt_BOF_BIFF4:
+			case rt_BOF_BIFF3:
+			case rt_BOF_BIFF2:
 			case rt_FilePass:
 			case rt_UsrExcl:
 			case rt_FileLock:
@@ -84,9 +87,12 @@ CFRecord::CFRecord(CFStreamPtr stream, GlobalWorkbookInfoPtr global_info)
 }
 // Create a record and read its data from the data stream
 CFRecord::CFRecord(NSFile::CFileBinary &file, GlobalWorkbookInfoPtr global_info)
-:	rdPtr(0), // seek to the start
+:	rdPtr(0),
+	size_(0),
+	data_(NULL),
 	global_info_(global_info)
 {
+	file_ptr = file.GetFilePosition();
 	if (file.GetFilePosition() + 4 < file.GetFileSize())
 	{
 		unsigned short size_short;
@@ -126,12 +132,24 @@ CFRecord::~CFRecord()
 	}
 	data_ = NULL;
 }
-
+bool CFRecord::isBOF()
+{
+	switch(type_id_)
+	{
+	case rt_BOF_BIFF8:
+	case rt_BOF_BIFF4:
+	case rt_BOF_BIFF3:
+	case rt_BOF_BIFF2:
+		return true;
+	default:
+		return false;
+	}
+	return false;
+}
 const CFRecordType::TypeId CFRecord::getTypeId() const
 {
 	return type_id_;
 }
-
 const CFRecordType::TypeString& CFRecord::getTypeString() const
 {
 	return CFRecordType::getStringById(type_id_);

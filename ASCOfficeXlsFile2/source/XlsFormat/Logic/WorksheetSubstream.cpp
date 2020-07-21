@@ -127,7 +127,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	{
 		CFRecordType::TypeId type = proc.getNextRecordType();
 		
-		if (type == rt_NONE || type == rt_BOF) //следующий пошел??
+		if (type == rt_NONE || proc.isBOF(type)) //следующий пошел??
 			break;
 		if (type == rt_EOF) 
 		{

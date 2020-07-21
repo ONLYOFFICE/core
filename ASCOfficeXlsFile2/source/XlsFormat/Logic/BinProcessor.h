@@ -85,6 +85,8 @@ public:
 	virtual void SeekToEOF() = 0;
 	virtual void SkipRecord() = 0;
 
+	bool isBOF(CFRecordType::TypeId type);
+
 	BaseObject* getParent() const { return parent_;};
 	GlobalWorkbookInfoPtr getGlobalWorkbookInfo() const { return global_info_;};
 protected:
@@ -101,7 +103,7 @@ public:
 	virtual const bool	optional	(BaseObject& object);
 	virtual const bool	mandatory	(BaseObject& object);
 
-	const bool			checkNextRecord(const CFRecordType::TypeId desirable_type, const size_t num_records_to_check);
+	const bool checkNextRecord(const CFRecordType::TypeId desirable_type, const size_t num_records_to_check);
 
 	const CFRecordType::TypeId	getNextRecordType	();
 	const bool					getNextSubstreamType(_UINT16& type);

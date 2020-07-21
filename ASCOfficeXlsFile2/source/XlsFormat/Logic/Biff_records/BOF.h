@@ -32,30 +32,32 @@
 #pragma once
 
 #include "BiffRecord.h"
-//#include <Logic/Biff_structures/FilePointer.h>
 
 namespace XLS
 {
 
 class StreamCacheReader;
 
-// Logical representation of BOF record in BIFF8
 class BOF: public BiffRecord
 {
-	BIFF_RECORD_DEFINE_TYPE_INFO(BOF)
+	//BIFF_RECORD_DEFINE_TYPE_INFO(BOF)
 	BASE_OBJECT_DEFINE_CLASS_NAME(BOF)
 public:
 	BOF();
 	~BOF();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeBOF;
+	static const ElementType type = typeBOF;
 
 	unsigned short getSubstreamType();
+
+	const CFRecordType::TypeId getTypeId() const
+	{
+		return type_id_;
+	}
 
 	typedef enum
 	{
@@ -69,10 +71,10 @@ public:
 
 
 //-----------------------------
-	_UINT16 vers;
-	_UINT16 dt;
-	_UINT16 rupBuild;
-	_UINT16 rupYear;
+	_UINT16 vers = 0;
+	_UINT16 dt = 0;
+	_UINT16 rupBuild = 0;
+	_UINT16 rupYear = 0;
 	
 	bool fWin;
 	bool fRisc;
@@ -90,7 +92,8 @@ public:
 	unsigned char	verLastXLSaved;
 	
 	ForwardOnlyParam<unsigned int> stream_ptr;
-	
+
+	CFRecordType::TypeId type_id_ = rt_BOF_BIFF8;	
 };
 
 } // namespace XLS

@@ -64,6 +64,7 @@ typedef enum CF_RECORD_TYPE
 {
 	rt_NONE						= 0x0000,
 	rt_Formula					= 0x0006,
+	rt_BOF_BIFF2				= 0x0009,
 	rt_EOF						= 0x000a,
 	rt_CalcCount				= 0x000c,
 	rt_CalcMode					= 0x000d,
@@ -257,6 +258,7 @@ typedef enum CF_RECORD_TYPE
 	rt_BoolErr					= 0x0205,
 	rt_String					= 0x0207,
 	rt_Row						= 0x0208,
+	rt_BOF_BIFF3				= 0x0209,
 	rt_Index					= 0x020b,
 	rt_Array					= 0x0221,
 	rt_DefaultRowHeight			= 0x0225,
@@ -265,6 +267,7 @@ typedef enum CF_RECORD_TYPE
 	rt_CommentText				= 0x027d,//??
 	rt_RK						= 0x027e,
 	rt_Style					= 0x0293,
+	rt_BOF_BIFF4				= 0x0409,
 	rt_BigName					= 0x0418,
 	rt_Format					= 0x041e,
 	rt_ContinueBigName			= 0x043c,
@@ -278,7 +281,7 @@ typedef enum CF_RECORD_TYPE
 	rt_Qsir						= 0x0806,
 	rt_Qsif						= 0x0807,
 	rt_RRDTQSIF					= 0x0808,
-	rt_BOF						= 0x0809,
+	rt_BOF_BIFF8				= 0x0809, //biff5-biff8
 	rt_OleDbConn				= 0x080a,
 	rt_WOpt						= 0x080b,
 	rt_SXViewEx					= 0x080c,

@@ -79,7 +79,20 @@ const int BinProcessor::repeated(BaseObject& object, const int fromN, const int 
 	return count;
 }
 
-
+bool BinProcessor::isBOF(CFRecordType::TypeId type)
+{
+	switch(type)
+	{
+	case rt_BOF_BIFF8:
+	case rt_BOF_BIFF4:
+	case rt_BOF_BIFF3:
+	case rt_BOF_BIFF2:
+		return true;
+	default:
+		return false;
+	}
+	return false;
+}
 // =========================== Reader ======================================
 
 
@@ -192,23 +205,23 @@ const bool BinReaderProcessor::getNextSubstreamType(unsigned short& type)
 	{
 		return false; // EOF
 	}
-	if(rt_BOF != record->getTypeId())
+	if (false == record->isBOF())
 	{
 		//test-file.xls
-		while(rt_Blank == record->getTypeId())
+		while (rt_Blank == record->getTypeId())
 		{
 			SkipRecord();
 			record = reader_->touchTheNextRecord();
-			if(!record)
+			if (!record)
 			{
 				return false; // EOF
 			}
-			if(rt_BOF == record->getTypeId())
+			if (true == record->isBOF())
 			{
 				break;
 			}
 		}
-		if(rt_BOF != record->getTypeId())
+		if (false == record->isBOF())
 			return false;
 	}
 	unsigned short vers;

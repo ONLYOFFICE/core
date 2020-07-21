@@ -61,7 +61,6 @@ BOF::~BOF()
 {
 }
 
-
 BaseObjectPtr BOF::clone()
 {
 	return BaseObjectPtr(new BOF(*this));
@@ -69,33 +68,58 @@ BaseObjectPtr BOF::clone()
 
 void BOF::readFields(CFRecord& record)
 {
-	record >> vers >> dt >> rupBuild >> rupYear;
-	
-	if ( record.checkFitReadSafe(8))
-	{
-		_UINT32 flags;
-		record >> flags;
-		
-		fWin		= GETBIT(flags, 0);
-		fRisc		= GETBIT(flags, 1);
-		fBeta		= GETBIT(flags, 2);
-		fWinAny		= GETBIT(flags, 3);
-		fMacAny		= GETBIT(flags, 4);
-		fBetaAny	= GETBIT(flags, 5);
-		fRiscAny	= GETBIT(flags, 8);
-		fOOM		= GETBIT(flags, 9);
-		fGlJmp		= GETBIT(flags, 10);
-		fFontLimit	= GETBIT(flags, 13);
-		
-		verXLHigh = GETBITS(flags, 14, 17);
+	type_id_ = record.getTypeId();
 
-		record >> verLowestBiff;
-		unsigned char flags2;
-		record >> flags2;
-		verLastXLSaved = GETBITS(flags2, 0, 3);
+	record >> vers >> dt;
+	
+	if (type_id_ == rt_BOF_BIFF8)
+	{
+		record >> rupBuild >> rupYear;  // biff 5 - 8
 		
-		stream_ptr = record.getStreamPointer();
-		record.skipNunBytes(2); // reserved
+		if ( record.checkFitReadSafe(8)) // biff 8
+		{
+			_UINT32 flags;
+			record >> flags;
+			
+			fWin		= GETBIT(flags, 0);
+			fRisc		= GETBIT(flags, 1);
+			fBeta		= GETBIT(flags, 2);
+			fWinAny		= GETBIT(flags, 3);
+			fMacAny		= GETBIT(flags, 4);
+			fBetaAny	= GETBIT(flags, 5);
+			fRiscAny	= GETBIT(flags, 8);
+			fOOM		= GETBIT(flags, 9);
+			fGlJmp		= GETBIT(flags, 10);
+			fFontLimit	= GETBIT(flags, 13);
+			
+			verXLHigh = GETBITS(flags, 14, 17);
+
+			record >> verLowestBiff;
+			unsigned char flags2;
+			record >> flags2;
+			verLastXLSaved = GETBITS(flags2, 0, 3);
+			
+			stream_ptr = record.getStreamPointer();
+			record.skipNunBytes(2); // reserved
+		}
+	}
+	else
+	{
+		if (type_id_ == rt_BOF_BIFF3 || type_id_ == rt_BOF_BIFF4)
+		{
+			short not_used;
+			record >> not_used;
+		}
+
+		switch(type_id_)
+		{
+		case rt_BOF_BIFF8: verLowestBiff = 6; break;
+		case rt_BOF_BIFF4: verLowestBiff = 4; break;
+		case rt_BOF_BIFF3: verLowestBiff = 3; break;
+		case rt_BOF_BIFF2: verLowestBiff = 2; break;
+		default:
+			break;
+		}		 
 	}
 }
 

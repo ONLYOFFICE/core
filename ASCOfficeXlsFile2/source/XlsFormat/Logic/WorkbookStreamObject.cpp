@@ -60,17 +60,14 @@ void WorkbookStreamObject::set_code_page(const unsigned short code_page)
 	code_page_ = code_page;
 }
 
-
 WorkbookStreamObject::~WorkbookStreamObject()
 {
 }
-
 
 BaseObjectPtr WorkbookStreamObject::clone()
 {
 	return BaseObjectPtr(new WorkbookStreamObject(*this));
 }
-
 
 const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
 {
@@ -82,7 +79,6 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
 	size_t ws_index = 0;
 
 	GlobalWorkbookInfo::_sheet_info sheet_info;
-	sheet_info.state = L"visible";
 
 	while(true)
 	{

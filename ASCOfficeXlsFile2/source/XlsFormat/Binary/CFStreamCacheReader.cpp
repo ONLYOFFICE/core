@@ -291,7 +291,7 @@ CFRecordPtr FileStreamCacheReader::getNextRecord(const CFRecordType::TypeId desi
 	{
 		CFRecordType::TypeString rec_name = records_cache.front()->getTypeString();
 
-		//Log::warning(rec_name);
+		Log::warning(rec_name);
 
 		if (desirable_type == rt_MsoDrawingGroup)	// объединяем rt_MsoDrawingGroup + rt_Continue в один блок 
 		{
@@ -337,7 +337,10 @@ CFRecordPtr FileStreamCacheReader::getNextRecord(const CFRecordType::TypeId desi
 		what_we_actually_read = records_cache.front()->getTypeId();
 
 		// if we get what was requested
-		if(desirable_type == what_we_actually_read || desirable_type == CFRecordType::ANY_TYPE)
+		if ( desirable_type == what_we_actually_read || 
+			 desirable_type == CFRecordType::ANY_TYPE ||
+			(desirable_type == rt_BOF_BIFF8 && (what_we_actually_read == rt_BOF_BIFF4 ||
+			what_we_actually_read == rt_BOF_BIFF3 || what_we_actually_read == rt_BOF_BIFF2)))
 		{
 			CFRecordPtr ret = records_cache.front();
 			records_cache.pop_front();

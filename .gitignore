@@ -70,3 +70,14 @@ X2tConverter/Common/DocxFormat/DocxFormatLib/Makefile
 *.dat
 *.txt
 *.log
+*.rc
+build-Fb2File-Desktop_Qt_5_9_0_MSVC2015_64bit-Debug/Makefile
+build-kernel-Desktop_Qt_5_9_0_MSVC2015_64bit-Debug/Makefile
+build-OfficeUtils-Desktop_Qt_5_9_0_MSVC2015_64bit-Debug/Makefile
+build-UnicodeConverter-Desktop_Qt_5_9_0_MSVC2015_64bit-Debug/Makefile
+Common/3dParty/boost/boost_1_72_0/
+Common/3dParty/openssl/openssl.data
+Common/3dParty/v8/v8.data
+DesktopEditor/graphics/build-graphics-Desktop_Qt_5_9_0_MSVC2015_64bit-Debug/Makefile
+DesktopEditor/graphics/pro/graphics.pro
+Fb2File/build-test-Desktop_Qt_5_9_0_MSVC2015_64bit-Debug/Makefile

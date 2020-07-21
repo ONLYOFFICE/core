@@ -342,9 +342,9 @@ namespace Docx2Txt
 			}
 			if (false == styleName.empty() && pStyles)
 			{
-                std::map<std::wstring, size_t>::iterator pPair = pStyles->m_arrStyleNamesMap.find(styleName);
+                std::map<std::wstring, size_t>::iterator pPair = pStyles->m_mapStyleNames.find(styleName);
 
-				if (pPair != pStyles->m_arrStyleNamesMap.end())
+				if (pPair != pStyles->m_mapStyleNames.end())
 				{
 					OOX::CStyle* style = pStyles->m_arrStyle[pPair->second];
 			
@@ -358,7 +358,7 @@ namespace Docx2Txt
 							}
 							if (style->m_oParPr->m_oNumPr->m_oIlvl.IsInit())
 							{
-								level = style->m_oParPr->m_oNumPr->m_oIlvl->m_oVal.IsInit() ? style->m_oParPr->m_oNumPr->m_oIlvl->m_oVal->GetValue() + 1 : 0;
+								level = style->m_oParPr->m_oNumPr->m_oIlvl->m_oVal.IsInit() ? *style->m_oParPr->m_oNumPr->m_oIlvl->m_oVal + 1 : 0;
 							}
 						}
 					}
@@ -369,12 +369,12 @@ namespace Docx2Txt
 				if (pParagraph->m_oParagraphProperty->m_oNumPr->m_oIlvl.IsInit())
 				{
 					level = pParagraph->m_oParagraphProperty->m_oNumPr->m_oIlvl->m_oVal.IsInit() ? 
-						pParagraph->m_oParagraphProperty->m_oNumPr->m_oIlvl->m_oVal->GetValue() + 1 : 0;
+						*pParagraph->m_oParagraphProperty->m_oNumPr->m_oIlvl->m_oVal + 1 : 0;
 				}
 				if (pParagraph->m_oParagraphProperty->m_oNumPr->m_oNumID.IsInit())
 				{
 					listNum = pParagraph->m_oParagraphProperty->m_oNumPr->m_oNumID->m_oVal.IsInit() ? 
-						pParagraph->m_oParagraphProperty->m_oNumPr->m_oNumID->m_oVal->GetValue()  : 0;
+						*pParagraph->m_oParagraphProperty->m_oNumPr->m_oNumID->m_oVal : 1;
 				}
 			}
 		}
@@ -397,7 +397,7 @@ namespace Docx2Txt
 				size_t abstractNumId = 0;
 				if ((pNumbering->m_arrNum[listNum]) && (pNumbering->m_arrNum[listNum]->m_oAbstractNumId.IsInit()) &&
 							(pNumbering->m_arrNum[listNum]->m_oAbstractNumId->m_oVal.IsInit()))
-					abstractNumId = pNumbering->m_arrNum[listNum]->m_oAbstractNumId->m_oVal->GetValue();
+					abstractNumId = *pNumbering->m_arrNum[listNum]->m_oAbstractNumId->m_oVal;
 				
 				OOX::Numbering::CAbstractNum* abstractNum = NULL;
 				if (abstractNumId < pNumbering->m_arrAbstractNum.size())
@@ -413,7 +413,7 @@ namespace Docx2Txt
 					int ind_level = - 1;
 					for (size_t i = 0; i< abstractNum->m_arrLvl.size(); i++)//??? стоит ли???
 					{
-						if ((abstractNum->m_arrLvl[i]) && (abstractNum->m_arrLvl[i]->m_oIlvl.IsInit()) && (abstractNum->m_arrLvl[i]->m_oIlvl->GetValue() == level))
+						if ((abstractNum->m_arrLvl[i]) && (abstractNum->m_arrLvl[i]->m_oIlvl.IsInit()) && (*abstractNum->m_arrLvl[i]->m_oIlvl == level))
 						{
 							ind_level = i;
 							break;

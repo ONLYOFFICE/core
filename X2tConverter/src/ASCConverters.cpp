@@ -57,6 +57,7 @@
 #include "../../XpsFile/XpsFile.h"
 #include "../../HtmlRenderer/include/HTMLRenderer3.h"
 #include "../../HtmlFile/HtmlFile.h"
+#include "../../Fb2File/Fb2File.h"
 #include "../../ASCOfficeXlsFile2/source/XlsXlsxConverter/ConvertXls2Xlsx.h"
 #include "../../OfficeCryptReader/source/ECMACryptFile.h"
 
@@ -2874,6 +2875,26 @@ namespace NExtractTools
        }
        return nRes;
    }
+	_UINT32 fb2docx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+		CFb2File fb2File;
+		fb2File.SetTmpDirectory(sTemp);
+        return S_OK == fb2File.Open(sFrom, sTo) ? S_OK : AVS_FILEUTILS_ERROR_CONVERT;
+	}
+	_UINT32 fb2docx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+		std::wstring sTempUnpackedDOCX = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
+		NSDirectory::CreateDirectory(sTempUnpackedDOCX);
+
+		_UINT32 nRes = fb2docx_dir(sFrom, sTempUnpackedDOCX, sTemp, params);
+		if(SUCCEEDED_X2T(nRes))
+		{
+			COfficeUtils oCOfficeUtils(NULL);
+			if(S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedDOCX, sTo, true))
+				return S_OK;
+		}
+		return AVS_FILEUTILS_ERROR_CONVERT;
+	}
 	// mailmerge
 	_UINT32 convertmailmerge (const InputParamsMailMerge& oMailMergeSend,const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
    {
@@ -3421,6 +3442,10 @@ namespace NExtractTools
            else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT == nFormatFrom)
            {
                nRes = txt2docx_dir(sFrom, sDocxDir, sTemp, params);
+           }
+           else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_FB2 == nFormatFrom)
+           {
+               nRes = fb2docx_dir(sFrom, sDocxDir, sTemp, params);
            }
            else
                nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
@@ -4651,8 +4676,11 @@ namespace NExtractTools
 			case TCD_HTMLZIP2DOCT_BIN:
 			{
 				result = html_zip2doct_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
-			}break;			
-			//TCD_FB22DOCX,
+			}break;
+			case TCD_FB22DOCX:
+			{
+				result = fb2docx (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
 			//TCD_FB22DOCT,
 			//TCD_FB22DOCT_BIN,
 

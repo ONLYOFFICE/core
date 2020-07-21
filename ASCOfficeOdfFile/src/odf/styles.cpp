@@ -1134,14 +1134,14 @@ void style_page_layout_properties_attlist::pptx_convert(oox::pptx_conversion_con
 		
 		if (fo_page_width_)
 		{
-			w =  fo_page_width_->get_value_unit(length::emu);
+			w =  (_INT64)fo_page_width_->get_value_unit(length::emu);
 			if (w < 914400) w = 914400;
 
 			w_w = std::to_wstring(w);
 		}
         if (fo_page_height_)
 		{
-			h = fo_page_height_->get_value_unit(length::emu);
+			h = (_INT64)fo_page_height_->get_value_unit(length::emu);
 			if (h < 914400) h = 914400;
 
 			w_h = std::to_wstring(h);
@@ -1437,14 +1437,14 @@ void style_page_layout_properties::pptx_serialize(std::wostream & strm, oox::ppt
 		
 		if (attlist_.fo_page_width_)
 		{
-			w =  attlist_.fo_page_width_->get_value_unit(length::emu);
+			w =  (_INT64)attlist_.fo_page_width_->get_value_unit(length::emu);
 			if (w < 914400) w = 914400;
 
 			w_w = std::to_wstring(w);
 		}
         if (attlist_.fo_page_height_)
 		{
-			h = attlist_.fo_page_height_->get_value_unit(length::emu);
+			h = (_INT64)attlist_.fo_page_height_->get_value_unit(length::emu);
 			if (h < 914400) h = 914400;
 
 			w_h = std::to_wstring(h);

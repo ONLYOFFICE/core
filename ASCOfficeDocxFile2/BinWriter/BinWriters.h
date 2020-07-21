@@ -75,25 +75,41 @@ namespace BinDocxRW
 		NSFontCutter::CEmbeddedFontsManager*	m_pEmbeddedFontsManager;
 
 		OOX::Document*			m_pMain;
-		OOX::CSettings*			m_oSettings;
-		PPTX::Theme*			m_poTheme;
+		OOX::CSettings*			m_pSettings;
+		PPTX::Theme*			m_pTheme;
+		
+		OOX::CStyles*			m_pStyles;
+		OOX::CNumbering*		m_pNumbering;
+
+		bool m_bLocalStyles;
+		bool m_bLocalNumbering;
+
+		OOX::CStyles*			m_pEmbeddedStyles;
+		OOX::CNumbering*		m_pEmbeddedNumbering;
 
 		OOX::IFileContainer*	m_pCurRels;
 		std::map<int, bool>		m_mapIgnoreComments;
 
 		ParamsWriter(NSBinPptxRW::CBinaryFileWriter* pCBufferedStream, DocWrapper::FontProcessor* pFontProcessor, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager):
-				m_pCBufferedStream(pCBufferedStream), m_pFontProcessor(pFontProcessor), m_pOfficeDrawingConverter(pOfficeDrawingConverter),m_pEmbeddedFontsManager(pEmbeddedFontsManager)
+				m_pCBufferedStream(pCBufferedStream), m_pFontProcessor(pFontProcessor), m_pOfficeDrawingConverter(pOfficeDrawingConverter), m_pEmbeddedFontsManager(pEmbeddedFontsManager)
 		{
 			m_pMain		= NULL;
-			m_oSettings = NULL;
-			m_poTheme	= NULL;
+			m_pSettings = NULL;
+			m_pTheme	= NULL;
 			m_pCurRels	= NULL;
+			m_pStyles	= NULL;
+			m_pNumbering = NULL;
+
+			m_pEmbeddedStyles = NULL;
+			m_pEmbeddedNumbering = NULL;
+
+			m_bLocalStyles = m_bLocalNumbering = false;
 		}
 	};
 	class ParamsDocumentWriter
 	{
 	public:
-		OOX::IFileContainer*	m_pRels;
+		OOX::IFileContainer* m_pRels;
 
 		ParamsDocumentWriter(OOX::IFileContainer* pRels) : m_pRels(pRels)
 		{
@@ -129,10 +145,7 @@ namespace BinDocxRW
 	class BinaryHeaderFooterTableWriter
 	{
 		BinaryCommonWriter				m_oBcw;
-		OOX::CSettings*					m_oSettings;
 
-		PPTX::Theme*					m_poTheme;
-		DocWrapper::FontProcessor&		m_oFontProcessor;
 		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 		std::map<int, bool>*			m_mapIgnoreComments;
 	public:
@@ -162,7 +175,7 @@ namespace BinDocxRW
 	{
 		BinaryCommonWriter m_oBcw;
 	public:
-		PPTX::Theme*					m_poTheme;
+		PPTX::Theme*					m_pTheme;
 		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 		DocWrapper::FontProcessor&		m_oFontProcessor;
 
@@ -174,7 +187,8 @@ namespace BinDocxRW
 	{
 		BinaryCommonWriter m_oBcw;
 		Binary_rPrWriter brPrs;
-		OOX::CSettings* m_oSettings;
+		
+		ParamsWriter& m_oParamsWriter;
 	public:
 		BinaryHeaderFooterTableWriter* m_oBinaryHeaderFooterTableWriter;
 
@@ -202,6 +216,9 @@ namespace BinDocxRW
 							 const nullable<ComplexTypes::Word::CDecimalNumber>& numStart, nullable<ComplexTypes::Word::CFtnPos>* ftnPos,
 							 nullable<ComplexTypes::Word::CEdnPos>* endPos, std::vector<OOX::CFtnEdnSepRef*>* refs);
 		void WriteNumFmt(const ComplexTypes::Word::CNumFmt& oNumFmt);
+
+	private:
+		std::wstring AddEmbeddedStyle(const std::wstring & styleId);
 	};
 	class Binary_tblPrWriter
 	{
@@ -292,12 +309,12 @@ namespace BinDocxRW
 	{
 	private:
 		ParamsWriter&			m_oParamsWriter;
+		
 		ParamsDocumentWriter&	m_oParamsDocumentWriter;
 		BinaryCommonWriter		m_oBcw;
 		Binary_pPrWriter		bpPrs;
 		Binary_rPrWriter		brPrs;
 		std::wstring			m_sCurParStyle;
-		OOX::CSettings*			m_oSettings;
 
 		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 		std::map<int, bool>*			m_mapIgnoreComments;
@@ -440,7 +457,7 @@ namespace BinDocxRW
 		void WriteRunContent(std::vector<OOX::WritingElement*>::iterator &start, std::vector<OOX::WritingElement*>::iterator &end, bool bHyperlink = false);
 		void WriteNoteRef(const nullable<SimpleTypes::COnOff<>>& oCustomMarkFollows, const nullable<SimpleTypes::CDecimalNumber<>>& oId);
 		void WriteText(const std::wstring& text, BYTE type);
-		void WriteDrawingPptx(OOX::WritingElement* item);
+		bool WriteDrawingPptx(OOX::WritingElement* item);
 		void WriteDrawing(std::wstring* pXml, OOX::Logic::CDrawing* pDrawing, PPTX::Logic::GraphicFrame *pGraphic);
 		void WriteNvGraphicFramePr(const PPTX::Logic::NvGraphicFramePr& oGraphicFramePr);
 		void WriteDocPr(const PPTX::Logic::CNvPr& oDocPr);

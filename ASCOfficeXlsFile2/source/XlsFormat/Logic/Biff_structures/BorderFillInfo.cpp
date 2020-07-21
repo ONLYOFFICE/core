@@ -89,6 +89,20 @@ std::size_t hash_value(FontInfo const & val)
 
 	return seed;
 }
+bool BorderInfo::operator < (const BorderInfo& right) const
+{
+	return  (dgLeft < right.dgLeft || dgLeft == right.dgLeft && 
+			(dgRight < right.dgRight || dgRight == right.dgRight &&
+			(dgTop < right.dgTop || dgTop == right.dgTop &&
+			(dgBottom < right.dgBottom || dgBottom == right.dgBottom &&
+			(dgDiag < right.dgDiag || dgDiag == right.dgDiag &&
+			(grbitDiag < right.grbitDiag || grbitDiag == right.grbitDiag &&
+			(icvLeft < right.icvLeft || icvLeft == right.icvLeft &&
+			(icvRight < right.icvRight || icvRight == right.icvRight &&
+			(icvTop < right.icvTop || icvTop == right.icvTop &&
+			(icvBottom < right.icvBottom || icvBottom == right.icvBottom &&
+			(icvDiag < right.icvDiag)))))))))));
+}
 bool FontInfo::operator == (const FontInfo & rVal) const
 {
     const bool res =     

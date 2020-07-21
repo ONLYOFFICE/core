@@ -664,11 +664,9 @@ namespace OOX
 			ComplexTypes_WriteAttribute( _T("w:default=\""),     m_oDefault );
 			if ( m_sStyleId.IsInit() )
 			{
-				sResult += _T("w:styleId=\"");
-                sResult += m_sStyleId.get2();
-				sResult += _T("\" ");
+				sResult += L"w:styleId=\"" + *m_sStyleId + L"\" ";
 			}
-			ComplexTypes_WriteAttribute( _T("w:type=\""),        m_oType );
+			ComplexTypes_WriteAttribute( _T("w:type=\""), m_oType );
 
 			sResult += _T(">");
 
@@ -714,7 +712,6 @@ namespace OOX
 
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
 			WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:customStyle"), m_oCustomStyle )
 			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:default"),     m_oDefault )
@@ -725,34 +722,33 @@ namespace OOX
 
 	public:
 
-		nullable<SimpleTypes::COnOff<>		> m_oCustomStyle;
-		nullable<SimpleTypes::COnOff<>		> m_oDefault;
-		nullable<std::wstring				> m_sStyleId;
-		nullable<SimpleTypes::CStyleType<>	> m_oType;
+		nullable<SimpleTypes::COnOff<>>		m_oCustomStyle;
+		nullable<SimpleTypes::COnOff<>>		m_oDefault;
+		nullable_string						m_sStyleId;
+		nullable<SimpleTypes::CStyleType<>> m_oType;
 
-		nullable<ComplexTypes::Word::String                       > m_oAliases;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oAutoRedefine;
-		nullable<ComplexTypes::Word::String                       > m_oBasedOn;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oHidden;
-		nullable<ComplexTypes::Word::String                       > m_oLink;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oLocked;
-		nullable<ComplexTypes::Word::String                       > m_oName;
-		nullable<ComplexTypes::Word::String                       > m_oNext;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oPersonal;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oPersonalCompose;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oPersonalReply;
-		nullable<OOX::Logic::CParagraphProperty                     > m_oParPr;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oQFormat;
-		nullable<OOX::Logic::CRunProperty                           > m_oRunPr;
-		nullable<ComplexTypes::Word::CLongHexNumber                 > m_oRsid;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oSemiHidden;
-		nullable<OOX::Logic::CTableProperty                         > m_oTblPr;		
-		std::vector<OOX::Logic::CTableStyleProperties              *> m_arrTblStylePr;
-		nullable<OOX::Logic::CTableCellProperties                   > m_oTcPr;
-		nullable<OOX::Logic::CTableRowProperties                    > m_oTrPr;
-		nullable<ComplexTypes::Word::CDecimalNumber                 > m_oUiPriority;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oUnhideWhenUsed;
-
+		nullable<ComplexTypes::Word::String>							m_oAliases;
+		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oAutoRedefine;
+		nullable<ComplexTypes::Word::String>							m_oBasedOn;
+		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oHidden;
+		nullable<ComplexTypes::Word::String>							m_oLink;
+		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oLocked;
+		nullable<ComplexTypes::Word::String>							m_oName;
+		nullable<ComplexTypes::Word::String>							m_oNext;
+		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oPersonal;
+		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oPersonalCompose;
+		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oPersonalReply;
+		nullable<OOX::Logic::CParagraphProperty>						m_oParPr;
+		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oQFormat;
+		nullable<OOX::Logic::CRunProperty>								m_oRunPr;
+		nullable<ComplexTypes::Word::CLongHexNumber>					m_oRsid;
+		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oSemiHidden;
+		nullable<OOX::Logic::CTableProperty>							m_oTblPr;		
+		std::vector<OOX::Logic::CTableStyleProperties*>					m_arrTblStylePr;
+		nullable<OOX::Logic::CTableCellProperties>						m_oTcPr;
+		nullable<OOX::Logic::CTableRowProperties>						m_oTrPr;
+		nullable<ComplexTypes::Word::CDecimalNumber>					m_oUiPriority;
+		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oUnhideWhenUsed;
 	};
 
 	//--------------------------------------------------------------------------------
@@ -790,7 +786,9 @@ namespace OOX
 			}
 			m_arrStyle.clear();
 
-			m_arrStyleNamesMap.clear();
+			m_mapStyleNames.clear();
+			m_mapStyleDefaults.clear();
+			m_mapEmbeddedStyleNames.clear();
 		}
 		const CStyles& operator =(const XmlUtils::CXmlNode& oNode)
 		{
@@ -858,7 +856,11 @@ namespace OOX
 					{
 						if (oStyle->m_sStyleId.IsInit())
 						{
-							m_arrStyleNamesMap.insert(std::make_pair(oStyle->m_sStyleId.get(), m_arrStyle.size()));
+							m_mapStyleNames.insert(std::make_pair(oStyle->m_sStyleId.get(), m_arrStyle.size()));
+						}
+						if ((oStyle->m_oType.IsInit() && oStyle->m_oDefault.IsInit()) && (oStyle->m_oDefault->ToBool()))
+						{
+							m_mapStyleDefaults.insert(std::make_pair(oStyle->m_oType->GetValue(), m_arrStyle.size()));
 						}
 						m_arrStyle.push_back( oStyle );
 					}
@@ -892,11 +894,12 @@ namespace OOX
 			return et_w_styles;
 		}
 //------------------------------------------------------------------------
-
 		nullable<OOX::CDocDefaults>		m_oDocDefaults;
 		nullable<OOX::CLatentStyles>	m_oLatentStyles;
 		std::vector<OOX::CStyle*>		m_arrStyle;
-		std::map<std::wstring, size_t>	m_arrStyleNamesMap;
-
+//------------------------------------------------------------------------
+		std::map<SimpleTypes::EStyleType, size_t>			m_mapStyleDefaults;
+		std::map<std::wstring, size_t>						m_mapStyleNames;
+		std::vector<std::map<std::wstring, std::wstring>>	m_mapEmbeddedStyleNames;
 	};
 } // namespace OOX

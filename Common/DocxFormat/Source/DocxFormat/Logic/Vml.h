@@ -1460,7 +1460,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CClientData)
-			CClientData() {}
+			CClientData(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CClientData() {}
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);

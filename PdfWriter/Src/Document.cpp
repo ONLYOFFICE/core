@@ -276,6 +276,17 @@ namespace PdfWriter
 		m_nCurPageNum++;
 		return pPage;
 	}
+	CPage* CDocument::GetPage(const unsigned int &unPage)
+	{
+		if (unPage >= m_vPages.size())
+			return NULL;
+
+		return m_vPages.at(unPage);
+	}
+	unsigned int CDocument::GetPagesCount() const
+	{
+		return m_vPages.size();
+	}
 	void CDocument::SetDocumentID(const std::wstring & documentID)
 	{
 		m_wsDocumentID = documentID;		
@@ -478,7 +489,7 @@ namespace PdfWriter
 
 	    return pAnnot;
 	}
-    CAnnotation* CDocument::CreateLinkAnnot(unsigned int unPageNum, TRect oRect, CDestination* pDest)
+	CAnnotation* CDocument::CreateLinkAnnot(const unsigned int& unPageNum, const TRect& oRect, CDestination* pDest)
 	{
 		CAnnotation* pAnnot = new CLinkAnnotation(m_pXref, oRect, pDest);
 	    
@@ -490,7 +501,16 @@ namespace PdfWriter
 	
 	    return pAnnot;
 	}	
-    CAnnotation* CDocument::CreateUriLinkAnnot(unsigned int unPageNum, TRect oRect, const char* sUri)
+	CAnnotation* CDocument::CreateLinkAnnot(CPage* pPage, const TRect& oRect, CDestination* pDest)
+	{
+		CAnnotation* pAnnot = new CLinkAnnotation(m_pXref, oRect, pDest);
+
+		if (pAnnot)
+			pPage->AddAnnotation(pAnnot);
+
+		return pAnnot;
+	}
+	CAnnotation* CDocument::CreateUriLinkAnnot(const unsigned int& unPageNum, const TRect& oRect, const char* sUri)
 	{
 		CAnnotation* pAnnot = new CUriLinkAnnotation(m_pXref, oRect, sUri);
 	
@@ -499,6 +519,15 @@ namespace PdfWriter
 			CPage* pPage = m_vPages.at(unPageNum);
 			pPage->AddAnnotation(pAnnot);
 		}
+
+		return pAnnot;
+	}
+	CAnnotation* CDocument::CreateUriLinkAnnot(CPage* pPage, const TRect& oRect, const char* sUrl)
+	{
+		CAnnotation* pAnnot = new CUriLinkAnnotation(m_pXref, oRect, sUrl);
+
+		if (pAnnot)
+			pPage->AddAnnotation(pAnnot);
 
 		return pAnnot;
 	}
@@ -744,9 +773,9 @@ namespace PdfWriter
 
 		return pShading;
 	}
-	CImageTilePattern*CDocument::CreateImageTilePattern(double dW, double dH, CImageDict* pImageDict, CMatrix* pMatrix, EImageTilePatternType eType)
+	CImageTilePattern*CDocument::CreateImageTilePattern(double dW, double dH, CImageDict* pImageDict, CMatrix* pMatrix, EImageTilePatternType eType, double dXStepSpacing, double dYStepSpacing)
 	{
-		return new CImageTilePattern(m_pXref, dW, dH, pImageDict, pMatrix, eType);
+		return new CImageTilePattern(m_pXref, dW, dH, pImageDict, pMatrix, eType, dXStepSpacing, dYStepSpacing);
 	}
 	CImageTilePattern*CDocument::CreateHatchPattern(double dW, double dH, const BYTE& nR1, const BYTE& nG1, const BYTE& nB1, const BYTE& nAlpha1, const BYTE& nR2, const BYTE& nG2, const BYTE& nB2, const BYTE& nAlpha2, const std::wstring& wsHatch)
 	{

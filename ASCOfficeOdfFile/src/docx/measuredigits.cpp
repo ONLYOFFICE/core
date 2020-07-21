@@ -34,32 +34,30 @@
 #include <boost/lexical_cast.hpp>
 #include <logging.h>
 
-#include <float.h>
-
 #include "../../../DesktopEditor/graphics/pro/Fonts.h"
 
 namespace cpdoccore {
 namespace utils {
 
-std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName, double fontSize, double dpi, long fontStyle, NSFonts::IFontManager *pFontManager)
+std::pair<double, double> GetMaxDigitSizePixelsImpl(const std::wstring & fontName, double fontSize, double dpi, long fontStyle, NSFonts::IFontManager *pFontManager)
 {
-    if (pFontManager == NULL) return std::pair<float, float>(7,8);
+    if (pFontManager == NULL) return std::pair<double, double>(7., 8.);
 
-   int hr = FALSE;
+	int hr = FALSE;
 
     if (FALSE == (hr = pFontManager->LoadFontByName(fontName, fontSize, fontStyle, dpi, dpi )))
 	{
         if (FALSE == (hr = pFontManager->LoadFontByName(L"Arial", fontSize, fontStyle, dpi, dpi )))
 		{
-            return std::pair<float, float>(7, 8);
+            return std::pair<double, double>(7, 8);
 		}
 	}
 
-    float maxWidth = 0;
-    float maxHeight = 0;
+    double maxWidth = 0;
+    double maxHeight = 0;
 
-	float minWidth = 0xffff;
-	float minHeight = 0xffff;
+	double minWidth = 0xffffffff;
+	double minHeight = 0xfffffff;
 
    // for (int i = 0; i <= 9; ++i)
     {
@@ -67,7 +65,7 @@ std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName,
 		//	return std::pair<float, float>(7,8);
 
 		if (FALSE == (hr = pFontManager->LoadString2( L"0123456789abcdefghijklmnopqrstuvwxyz" , 0, 0)))//
-			return std::pair<float, float>(7,8);
+			return std::pair<double, double>(7., 8.);
 
 		TBBox box;
 		try
@@ -75,12 +73,12 @@ std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName,
            box = pFontManager->MeasureString();
 		}catch(...)
 		{
-            return std::pair<float, float>(7,8);
+            return std::pair<double, double>(7.,8.);
 		}
 
 		if (box.fMaxX < -0xffff+1 || box.fMaxY < -0xffff+1 ||
 			box.fMinX > 0xffff-1 || box.fMinY > 0xffff-1)		
-				return std::pair<float, float>(7,8);
+				return std::pair<double, double>(7., 8. );
           
         if (box.fMaxX - box.fMinX > maxWidth)   maxWidth = box.fMaxX - box.fMinX;
         if (box.fMaxY - box.fMinY > maxHeight)  maxHeight = box.fMaxY - box.fMinY;
@@ -91,11 +89,11 @@ std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName,
 
     double width = (minWidth + 2 * maxWidth) /36. /3.;
 	//double width = (minWidth + 2 * maxWidth) / 5./*/36.*/ /3.;
-	return std::pair<float, float>(width, maxHeight);
+	return std::pair<double, double>(width, maxHeight);
 }
 
 
-std::pair<float, float> GetMaxDigitSizePixels(const std::wstring & fontName, double fontSize, double dpi, long fontStyle, NSFonts::IApplicationFonts *appFonts)
+std::pair<double, double> GetMaxDigitSizePixels(const std::wstring & fontName, double fontSize, double dpi, long fontStyle, NSFonts::IApplicationFonts *appFonts)
 {
     try 
     {
@@ -105,7 +103,7 @@ std::pair<float, float> GetMaxDigitSizePixels(const std::wstring & fontName, dou
         {
             NSFonts::IFontManager *pFontManager = appFonts->GenerateFontManager();
 
-            std::pair<float, float> val = GetMaxDigitSizePixelsImpl(fontName, fontSize, dpi, fontStyle, pFontManager);
+            std::pair<double, double> val = GetMaxDigitSizePixelsImpl(fontName, fontSize, dpi, fontStyle, pFontManager);
 
             if (pFontManager)
             {                
@@ -120,7 +118,7 @@ std::pair<float, float> GetMaxDigitSizePixels(const std::wstring & fontName, dou
     {
         // TODO: default value!
     }    
-	return std::pair<float, float>(7, 8);
+	return std::pair<double, double>(7., 8.);
 }
 
 }

@@ -1431,8 +1431,7 @@ int Binary_pPrReader::ReadFootnotePr(BYTE type, long length, void* poResult)
 	else if( c_oSerNotes::PrStart == type )
 	{
 		pFtnProps->m_oNumStart.Init();
-		pFtnProps->m_oNumStart->m_oVal.Init();
-		pFtnProps->m_oNumStart->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		pFtnProps->m_oNumStart->m_oVal = m_oBufferedStream.GetLong();
 	}
 	else if( c_oSerNotes::PrFntPos == type )
 	{
@@ -1462,8 +1461,7 @@ int Binary_pPrReader::ReadEndnotePr(BYTE type, long length, void* poResult)
 	else if( c_oSerNotes::PrStart == type )
 	{
 		pEdnProps->m_oNumStart.Init();
-		pEdnProps->m_oNumStart->m_oVal.Init();
-		pEdnProps->m_oNumStart->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		pEdnProps->m_oNumStart->m_oVal = m_oBufferedStream.GetLong();
 	}
 	else if( c_oSerNotes::PrEndPos == type )
 	{
@@ -3801,8 +3799,7 @@ int Binary_SettingsTableReader::ReadFootnotePr(BYTE type, long length, void* poR
 	else if( c_oSerNotes::PrStart == type )
 	{
 		pFtnProps->m_oNumStart.Init();
-		pFtnProps->m_oNumStart->m_oVal.Init();
-		pFtnProps->m_oNumStart->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		pFtnProps->m_oNumStart->m_oVal = m_oBufferedStream.GetLong();
 	}
 	else if( c_oSerNotes::PrFntPos == type )
 	{
@@ -3840,8 +3837,7 @@ int Binary_SettingsTableReader::ReadEndnotePr(BYTE type, long length, void* poRe
 	else if( c_oSerNotes::PrStart == type )
 	{
 		pEdnProps->m_oNumStart.Init();
-		pEdnProps->m_oNumStart->m_oVal.Init();
-		pEdnProps->m_oNumStart->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		pEdnProps->m_oNumStart->m_oVal = m_oBufferedStream.GetLong();
 	}
 	else if( c_oSerNotes::PrEndPos == type )
 	{
@@ -4770,8 +4766,7 @@ int Binary_DocumentTableReader::ReadFFData(BYTE type, long length, void* poResul
 	else if ( c_oSerFFData::Label == type )
 	{
 		pFFData->m_oLabel.Init();
-		pFFData->m_oLabel->m_oVal.Init();
-		pFFData->m_oLabel->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		pFFData->m_oLabel->m_oVal = m_oBufferedStream.GetLong();
 	}
 	else if ( c_oSerFFData::Name == type )
 	{
@@ -4836,20 +4831,18 @@ int Binary_DocumentTableReader::ReadDDList(BYTE type, long length, void* poResul
 	if ( c_oSerFFData::DLDefault == type )
 	{
 		pDDList->m_oDefault.Init();
-		pDDList->m_oDefault->m_oVal.Init();
-		pDDList->m_oDefault->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		pDDList->m_oDefault->m_oVal = m_oBufferedStream.GetLong();
 	}
 	else if ( c_oSerFFData::DLResult == type )
 	{
 		pDDList->m_oResult.Init();
-		pDDList->m_oResult->m_oVal.Init();
-		pDDList->m_oResult->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		pDDList->m_oResult->m_oVal = m_oBufferedStream.GetLong();
 	}
 	else if ( c_oSerFFData::DLListEntry == type )
 	{
 		ComplexTypes::Word::String* pVal = new ComplexTypes::Word::String();
-		pVal->m_sVal.Init();
-		pVal->m_sVal->append(m_oBufferedStream.GetString3(length));
+		pVal->m_sVal = m_oBufferedStream.GetString3(length);
+		
 		pDDList->m_arrListEntry.push_back(pVal);
 	}
 	else
@@ -4901,20 +4894,17 @@ int Binary_DocumentTableReader::ReadTextInput(BYTE type, long length, void* poRe
 	if ( c_oSerFFData::TIDefault == type )
 	{
 		pTextInput->m_oDefault.Init();
-		pTextInput->m_oDefault->m_sVal.Init();
-		pTextInput->m_oDefault->m_sVal->append(m_oBufferedStream.GetString3(length));
+		pTextInput->m_oDefault->m_sVal = m_oBufferedStream.GetString3(length);
 	}
 	else if ( c_oSerFFData::TIFormat == type )
 	{
 		pTextInput->m_oFormat.Init();
-		pTextInput->m_oFormat->m_sVal.Init();
-		pTextInput->m_oFormat->m_sVal->append(m_oBufferedStream.GetString3(length));
+		pTextInput->m_oFormat->m_sVal = m_oBufferedStream.GetString3(length);
 	}
 	else if ( c_oSerFFData::TIMaxLength == type )
 	{
 		pTextInput->m_oMaxLength.Init();
-		pTextInput->m_oMaxLength->m_oVal.Init();
-		pTextInput->m_oMaxLength->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		pTextInput->m_oMaxLength->m_oVal = m_oBufferedStream.GetLong();
 	}
 	else if ( c_oSerFFData::TIType == type )
 	{
@@ -8681,8 +8671,7 @@ int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult
 	else if (c_oSerSdt::Alias == type)
 	{
 		pSdtPr->m_oAlias.Init();
-		pSdtPr->m_oAlias->m_sVal.Init();
-		pSdtPr->m_oAlias->m_sVal->append(m_oBufferedStream.GetString3(length));
+		pSdtPr->m_oAlias->m_sVal = m_oBufferedStream.GetString3(length);
 	}
 	else if (c_oSerSdt::Appearance == type)
 	{
@@ -8730,14 +8719,12 @@ int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult
 	else if (c_oSerSdt::Id == type)
 	{
 		pSdtPr->m_oId.Init();
-		pSdtPr->m_oId->m_oVal.Init();
-		pSdtPr->m_oId->m_oVal->SetValue(m_oBufferedStream.GetULong());
+		pSdtPr->m_oId->m_oVal = m_oBufferedStream.GetULong();
 	}
 	else if (c_oSerSdt::Label == type)
 	{
 		pSdtPr->m_oLabel.Init();
-		pSdtPr->m_oLabel->m_oVal.Init();
-		pSdtPr->m_oLabel->m_oVal->SetValue(m_oBufferedStream.GetULong());
+		pSdtPr->m_oLabel->m_oVal = m_oBufferedStream.GetULong();
 	}
 	else if (c_oSerSdt::Lock == type)
 	{
@@ -8748,8 +8735,7 @@ int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult
 	{
 		pSdtPr->m_oPlaceHolder.Init();
 		pSdtPr->m_oPlaceHolder->m_oDocPart.Init();
-		pSdtPr->m_oPlaceHolder->m_oDocPart->m_sVal.Init();
-		pSdtPr->m_oPlaceHolder->m_oDocPart->m_sVal->append(m_oBufferedStream.GetString3(length));
+		pSdtPr->m_oPlaceHolder->m_oDocPart->m_sVal = m_oBufferedStream.GetString3(length);
 	}
 	else if (c_oSerSdt::RPr == type)
 	{
@@ -8770,8 +8756,7 @@ int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult
 	else if (c_oSerSdt::Tag == type)
 	{
 		pSdtPr->m_oTag.Init();
-		pSdtPr->m_oTag->m_sVal.Init();
-		pSdtPr->m_oTag->m_sVal->append(m_oBufferedStream.GetString3(length));
+		pSdtPr->m_oTag->m_sVal = m_oBufferedStream.GetString3(length);
 	}
 	else if (c_oSerSdt::Temporary == type)
 	{
@@ -8910,8 +8895,7 @@ int Binary_DocumentTableReader::ReadSdtPrDate(BYTE type, long length, void* poRe
 	else if (c_oSerSdt::DateFormat == type)
 	{
 		pDate->m_oDateFormat.Init();
-		pDate->m_oDateFormat->m_sVal.Init();
-		pDate->m_oDateFormat->m_sVal->append(m_oBufferedStream.GetString3(length));
+		pDate->m_oDateFormat->m_sVal = m_oBufferedStream.GetString3(length);
 	}
 	else if (c_oSerSdt::Lid == type)
 	{
@@ -8936,14 +8920,12 @@ int Binary_DocumentTableReader::ReadDocPartList(BYTE type, long length, void* po
 	if (c_oSerSdt::DocPartCategory == type)
 	{
 		pDocPart->m_oDocPartCategory.Init();
-		pDocPart->m_oDocPartCategory->m_sVal.Init();
-		pDocPart->m_oDocPartCategory->m_sVal->append(m_oBufferedStream.GetString3(length));
+		pDocPart->m_oDocPartCategory->m_sVal = m_oBufferedStream.GetString3(length);
 	}
 	else if (c_oSerSdt::DocPartGallery == type)
 	{
 		pDocPart->m_oDocPartGallery.Init();
-		pDocPart->m_oDocPartGallery->m_sVal.Init();
-		pDocPart->m_oDocPartGallery->m_sVal->append(m_oBufferedStream.GetString3(length));
+		pDocPart->m_oDocPartGallery->m_sVal = m_oBufferedStream.GetString3(length);
 	}
 	else if (c_oSerSdt::DocPartUnique == type)
 	{

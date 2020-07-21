@@ -73,6 +73,10 @@ public:
 
 num_format_context::num_format_context(odf_reader::odf_read_context & odfContext): odf_context_(odfContext), impl_(new Impl()), impl2_(new Impl2())
 {
+	bDate = false;
+	bTime = false;
+	bPercent = false;
+	bCurrency = false;
 }
 
 num_format_context::~num_format_context()
@@ -81,7 +85,12 @@ num_format_context::~num_format_context()
 
 void num_format_context::start_format(const std::wstring & style_name)
 {
-    impl_->reset_current();
+	bDate = false;
+	bTime = false;
+	bPercent = false;
+	bCurrency = false;
+	
+	impl_->reset_current();
     impl_->current_style_name_ = style_name;
     impl_->in_convert_style_ = true;
 }

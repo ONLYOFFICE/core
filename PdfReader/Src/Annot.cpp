@@ -640,26 +640,31 @@ namespace PdfReader
 			if (FieldLookup(pField, "V", &oValue)->IsString())
 			{
 				Object oTemp;
-				int nQuadding = 0;
-				if (FieldLookup(pField, "Q", &oTemp)->IsInt())
-				{
-					nQuadding = oTemp.GetInt();
-				}
-				else
-				{
-					nQuadding = fieldQuadLeft;
-				}
+				bool isDefault = (FieldLookup(pField, "DV", &oTemp)->IsString() && !oTemp.GetString()->Compare(oValue.GetString()));
 				oTemp.Free();
-				int nComb = 0;
-				if (nFiledFlags & fieldFlagComb)
+				if (!isDefault)
 				{
-					if (FieldLookup(pField, "MaxLen", &oTemp)->IsInt())
+					int nQuadding = 0;
+					if (FieldLookup(pField, "Q", &oTemp)->IsInt())
 					{
-						nComb = oTemp.GetInt();
+						nQuadding = oTemp.GetInt();
+					}
+					else
+					{
+						nQuadding = fieldQuadLeft;
 					}
 					oTemp.Free();
+					int nComb = 0;
+					if (nFiledFlags & fieldFlagComb)
+					{
+						if (FieldLookup(pField, "MaxLen", &oTemp)->IsInt())
+						{
+							nComb = oTemp.GetInt();
+						}
+						oTemp.Free();
+					}
+					DrawText(oValue.GetString(), seDA, pFontDict, 0 != (nFiledFlags & fieldFlagMultiline), nComb, nQuadding, true, false);
 				}
-				DrawText(oValue.GetString(), seDA, pFontDict, 0 != (nFiledFlags & fieldFlagMultiline), nComb, nQuadding, true, false);
 			}
 			oValue.Free();
 		}

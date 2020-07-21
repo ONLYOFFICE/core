@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef TXT_FILE_INCLUDE_H_
-#define TXT_FILE_INCLUDE_H_
 
 #include <vector>
 #include <string>
@@ -65,5 +63,3 @@ namespace Txt
 		bool IsUnicodeSymbol( wchar_t symbol );
 	};
 } // namespace Txt
-
-#endif // TXT_FILE_INCLUDE_H_

@@ -376,9 +376,6 @@ namespace OOX
 			CConditionalFormatting(OOX::Document *pMain = NULL) : WritingElementWithChilds<CConditionalFormattingRule>(pMain), m_bIsExtended(false), m_bIsValid(false)
 			{
 			}
-			virtual ~CConditionalFormatting()
-			{
-			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}

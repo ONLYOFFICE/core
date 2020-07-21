@@ -102,6 +102,12 @@ namespace PdfWriter
 
 		Add("BS", pBorderStyleDict);
 
+		if (::fabs(BS_DEF_WIDTH - fWidth) > 0.01)
+			pBorderStyleDict->Add("W", fWidth);
+
+		if (fWidth < 0.01)
+			return;
+
 		if (border_subtype_Dashed == eSubtype)
 		{
 			CArrayObject* pDash = new CArrayObject();
@@ -125,9 +131,6 @@ namespace PdfWriter
 		case border_subtype_Inset:      pBorderStyleDict->Add("S", "I"); break;
 		case border_subtype_Underlined: pBorderStyleDict->Add("S", "U"); break;
 		}
-
-		if (BS_DEF_WIDTH != fWidth)
-			pBorderStyleDict->Add("W", fWidth);
 	}
 	//----------------------------------------------------------------------------------------
 	// CLinkAnnotation

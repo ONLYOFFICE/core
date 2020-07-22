@@ -44,6 +44,7 @@ HEADERS += \
     ../Records/BlipEntityAtom.h \
     ../Records/BookmarkEntityAtom.h \
     ../Records/BookmarkSeedAtom.h \
+    ../Records/BuildAtom.h \
     ../Records/ChartBuildAtom.h \
     ../Records/ColorSchemeAtom.h \
     ../Records/CString.h \

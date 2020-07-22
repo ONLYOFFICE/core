@@ -1,5 +1,3 @@
-
-
 /*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
@@ -33,57 +31,43 @@
  */
 #pragma once
 #include "../Reader/Records.h"
-#include "DiagramBuildAtom.h"
 
-class CRecordDiagramBuildContainer : public CUnknownRecord
+enum BuildTypeEnum : _UINT32
+{
+    TL_BuildParagraph,
+    TL_BuildChart,
+    TL_BuildDiagram
+};
+
+class CRecordBuildAtom : public CUnknownRecord
+{
+public:
+    BuildTypeEnum   m_BuildType;
+    _UINT32         m_BuildId;
+    _UINT32         m_ShapeIdRef;
+    bool            m_fExpanded;
+    bool            m_fUIExpanded;
+public:
+
+    CRecordBuildAtom()
     {
+    }
 
-        ClientVisualElementContainer ()
-        {
-            m_bVisualPageAtom	=	false;
-            m_bVisualShapeAtom	=	false;
-        }
+    ~CRecordBuildAtom()
+    {
+    }
 
-        virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
-        {
-            m_oHeader			=	oHeader;
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+    {
+        m_oHeader = oHeader;
 
-#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-            if( IsCorrect () == false ) return;
-#endif
-            //	LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
+        m_BuildType         = (BuildTypeEnum)StreamUtils::ReadDWORD(pStream);
+        m_BuildId           = StreamUtils::ReadDWORD(pStream);
+        m_ShapeIdRef        = StreamUtils::ReadDWORD(pStream);
 
-            SRecordHeader ReadHeader;
-            if (ReadHeader.ReadFromStream(pStream) )
-            {
-                if ( RT_VisualPageAtom == ReadHeader.RecType )
-                {
-                    m_bVisualPageAtom	=	true;
-                    m_oVisualPageAtom.ReadFromStream ( ReadHeader, pStream );
-                }
+        m_fExpanded         = StreamUtils::ReadBYTE(pStream);
+        m_fUIExpanded       = StreamUtils::ReadBYTE(pStream);
 
-                if ( RT_VisualShapeAtom == ReadHeader.RecType )
-                {
-                    m_bVisualShapeAtom	=	true;
-                    m_oVisualShapeAtom.ReadFromStream ( ReadHeader, pStream );
-                }
-            }
-
-            //	StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
-        }
-
-        virtual bool IsCorrect ( )
-        {
-            return	m_oHeader.RecVersion	==	0xF	&&
-                m_oHeader.RecInstance		==	0x0 &&
-                m_oHeader.RecType			==	0xF13C;
-        }
-
-    public:
-
-        VisualPageAtom	m_oVisualPageAtom;
-        VisualShapeAtom	m_oVisualShapeAtom;
-
-        bool			m_bVisualPageAtom;
-        bool			m_bVisualShapeAtom;
-    };
+        StreamUtils::StreamSkip(2, pStream);
+    }
+};

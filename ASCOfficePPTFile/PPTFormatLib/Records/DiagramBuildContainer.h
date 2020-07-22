@@ -34,14 +34,15 @@
 #pragma once
 #include "../Reader/Records.h"
 #include "DiagramBuildAtom.h"
+#include "BuildAtom.h"
+
 
 class CRecordDiagramBuildContainer : public CUnknownRecord
     {
+public:
 
-        ClientVisualElementContainer ()
+        CRecordDiagramBuildContainer ()
         {
-            m_bVisualPageAtom	=	false;
-            m_bVisualShapeAtom	=	false;
         }
 
         virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
@@ -56,17 +57,10 @@ class CRecordDiagramBuildContainer : public CUnknownRecord
             SRecordHeader ReadHeader;
             if (ReadHeader.ReadFromStream(pStream) )
             {
-                if ( RT_VisualPageAtom == ReadHeader.RecType )
-                {
-                    m_bVisualPageAtom	=	true;
-                    m_oVisualPageAtom.ReadFromStream ( ReadHeader, pStream );
-                }
-
-                if ( RT_VisualShapeAtom == ReadHeader.RecType )
-                {
-                    m_bVisualShapeAtom	=	true;
-                    m_oVisualShapeAtom.ReadFromStream ( ReadHeader, pStream );
-                }
+                m_BuildAtom.ReadFromStream(ReadHeader, pStream);
+            }
+            if (ReadHeader.ReadFromStream(pStream)) {
+                m_DiagramBuildAtom.ReadFromStream(ReadHeader, pStream);
             }
 
             //	StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
@@ -76,14 +70,12 @@ class CRecordDiagramBuildContainer : public CUnknownRecord
         {
             return	m_oHeader.RecVersion	==	0xF	&&
                 m_oHeader.RecInstance		==	0x0 &&
-                m_oHeader.RecType			==	0xF13C;
+                m_oHeader.RecType			==	0x2B06 &&
+                m_oHeader.RecLen            ==  0x024;
         }
 
     public:
 
-        VisualPageAtom	m_oVisualPageAtom;
-        VisualShapeAtom	m_oVisualShapeAtom;
-
-        bool			m_bVisualPageAtom;
-        bool			m_bVisualShapeAtom;
+        CRecordBuildAtom        m_BuildAtom;
+        CRecordDiagramBuildAtom m_DiagramBuildAtom;
     };

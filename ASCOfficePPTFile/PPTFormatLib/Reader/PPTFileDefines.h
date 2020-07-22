@@ -190,6 +190,7 @@ typedef BYTE BOOL1;
 #define		RECORD_TYPE_GSCALING_ATOM2						10001
 #define		RECORD_TYPE_GRCOLOR_ATOM2						10002
 #define     RECORD_TYPE_CHARTBUILD_ATOM                     11013
+#define     RECORD_TYPE_DIAGRAMBUILD                        11014
 #define     RECORD_TYPE_DIAGRAMBUILD_ATOM                   11015
 
 // Records ~12000 seem to be related to the Comments used in PPT 2000/XP

@@ -63,6 +63,7 @@
 #include "CString.h"
 #include "ColorSchemeAtom.h"
 #include "DiagramBuildAtom.h"
+#include "DiagramBuildContainer.h"
 #include "DocRoutingSlipAtom.h"
 #include "DocumentAtom.h"
 #include "ExControlAtom.h"

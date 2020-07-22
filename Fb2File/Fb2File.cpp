@@ -219,6 +219,9 @@ public:
     // Читает поля автора
     void getAuthor(std::vector<SAuthor>& arAuthor)
     {
+        if(m_oLightReader.IsEmptyNode())
+            return;
+
         SAuthor oAuthor;
         int nDepth = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nDepth))
@@ -300,6 +303,9 @@ public:
     // имеет право писать p
     void readTitle(std::wstring sLevel, NSStringUtils::CStringBuilder& oBuilder)
     {
+        if(m_oLightReader.IsEmptyNode())
+            return;
+
         bool bFirstP = true;
         int nDeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
@@ -348,6 +354,9 @@ public:
     {
         readCrossReference(oBuilder);
 
+        if(m_oLightReader.IsEmptyNode())
+            return;
+
         int nDeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
         {
@@ -379,6 +388,9 @@ public:
     void readP(std::wstring sRStyle, NSStringUtils::CStringBuilder& oBuilder)
     {
         readCrossReference(oBuilder);
+
+        if(m_oLightReader.IsEmptyNode())
+            return;
 
         int nDepth = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode2(nDepth))
@@ -471,6 +483,9 @@ public:
     {
         readCrossReference(oBuilder);
 
+        if(m_oLightReader.IsEmptyNode())
+            return;
+
         int nDeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
         {
@@ -484,6 +499,9 @@ public:
             // Читаем stanza (один или более)
             else if(sName == L"stanza")
             {
+                if(m_oLightReader.IsEmptyNode())
+                    continue;
+
                 int nSDeath = m_oLightReader.GetDepth();
                 while(m_oLightReader.ReadNextSiblingNode(nSDeath))
                 {
@@ -524,6 +542,9 @@ public:
     {
         readCrossReference(oBuilder);
 
+        if(m_oLightReader.IsEmptyNode())
+            return;
+
         int nDeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
         {
@@ -554,6 +575,9 @@ public:
     {
         readCrossReference(oBuilder);
 
+        if(m_oLightReader.IsEmptyNode())
+            return;
+
         // Стиль таблицы
         oBuilder += L"<w:tbl><w:tblPr><w:tblStyle w:val=\"table-t\"/><w:tblW w:w=\"0\" w:type=\"auto\"/><w:tblLayout w:type=\"fixed\"/></w:tblPr>";
 
@@ -564,6 +588,9 @@ public:
         {
             if(m_oLightReader.GetName() == L"tr")
             {
+                if(m_oLightReader.IsEmptyNode())
+                    continue;
+
                 int nTCol = 0;
                 oTmpBuilder += L"<w:tr>";
                 int nTrDeath = m_oLightReader.GetDepth();
@@ -617,6 +644,9 @@ public:
     {
         readCrossReference(oBuilder);
 
+        if(m_oLightReader.IsEmptyNode())
+            return;
+
         int nADeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nADeath))
         {
@@ -665,6 +695,9 @@ public:
     void readSection(unsigned int nLevel, NSStringUtils::CStringBuilder& oBuilder)
     {
         readCrossReference(oBuilder);
+
+        if(m_oLightReader.IsEmptyNode())
+            return;
 
         int nDeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
@@ -724,6 +757,9 @@ public:
     // имеет право писать p
     void readBody(NSStringUtils::CStringBuilder& oBuilder)
     {
+        if(m_oLightReader.IsEmptyNode())
+            return;
+
         int nDeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
         {
@@ -760,6 +796,9 @@ public:
             if(!isSection(L"FictionBook"))
                 return false;
         }
+
+        if(m_oLightReader.IsEmptyNode())
+            return true;
 
         int nContentsId = 1;
         int nImageId = 1;
@@ -803,6 +842,9 @@ public:
     // Читает содержание
     void readContents(int& nContentsId, NSStringUtils::CStringBuilder& oContents)
     {
+        if(m_oLightReader.IsEmptyNode())
+            return;
+
         bool bFirstP = true;
         int nBDeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nBDeath))
@@ -811,12 +853,18 @@ public:
             // Читаем section
             if(sName == L"section")
             {
+                if(m_oLightReader.IsEmptyNode())
+                    continue;
+
                 int nSDeath = m_oLightReader.GetDepth();
                 while(m_oLightReader.ReadNextSiblingNode(nSDeath))
                 {
                     // Читаем title
                     if(m_oLightReader.GetName() == L"title")
                     {
+                        if(m_oLightReader.IsEmptyNode())
+                            continue;
+
                         std::wstring sContentsId = std::to_wstring(nContentsId++);
                         oContents += L"<w:p><w:pPr><w:pStyle w:val=\"contents\"/><w:tabs><w:tab w:val=\"right\" w:pos=\"9355\" w:leader=\"none\"/></w:tabs>";
                         // Абзац с новой страницы
@@ -853,6 +901,9 @@ public:
     // Читает сноски
     void readNotes(int& nFootnoteId, NSStringUtils::CStringBuilder& oFootnotes)
     {
+        if(m_oLightReader.IsEmptyNode())
+            return;
+
         int nBDepth = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nBDepth))
         {
@@ -872,6 +923,8 @@ public:
                 m_oLightReader.MoveToElement();
                 if(sFootnoteName == L"")
                     continue;
+                if(m_oLightReader.IsEmptyNode())
+                    continue;
 
                 std::wstring sFootnoteId = std::to_wstring(nFootnoteId++);
                 m_mFootnotes.insert(std::make_pair(sFootnoteName, sFootnoteId));
@@ -887,6 +940,9 @@ public:
                     std::wstring sName = m_oLightReader.GetName();
                     if(sName == L"title")
                     {
+                        if(m_oLightReader.IsEmptyNode())
+                            continue;
+
                         int nTDepth = m_oLightReader.GetDepth();
                         while(m_oLightReader.ReadNextSiblingNode(nTDepth))
                         {
@@ -910,6 +966,9 @@ public:
                     }
                     else if(sName == L"poem")
                     {
+                        if(m_oLightReader.IsEmptyNode())
+                            continue;
+
                         int nPDepth = m_oLightReader.GetDepth();
                         while(m_oLightReader.ReadNextSiblingNode(nPDepth))
                         {
@@ -917,6 +976,9 @@ public:
                             // Читаем stanza (один или более)
                             if(sPName == L"stanza")
                             {
+                                if(m_oLightReader.IsEmptyNode())
+                                    continue;
+
                                 int nSDeath = m_oLightReader.GetDepth();
                                 while(m_oLightReader.ReadNextSiblingNode(nSDeath))
                                 {
@@ -958,6 +1020,9 @@ public:
         }
         m_oLightReader.MoveToElement();
         if(sId == L"")
+            return;
+
+        if(m_oLightReader.IsEmptyNode())
             return;
 
         // Пишет картинку в файл
@@ -1020,6 +1085,9 @@ public:
     // Читает description
     void readDescription(NSStringUtils::CStringBuilder& oBuilder)
     {
+        if(m_oLightReader.IsEmptyNode())
+            return;
+
         int nDepth = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nDepth))
         {
@@ -1064,6 +1132,9 @@ public:
     // Читает publish-info
     void getPublishInfo()
     {
+        if(m_oLightReader.IsEmptyNode())
+            return;
+
         int nDepth = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nDepth))
         {
@@ -1129,6 +1200,9 @@ public:
     // Читает document-info
     void getDocumentInfo()
     {
+        if(m_oLightReader.IsEmptyNode())
+            return;
+
         int nDepth = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nDepth))
         {
@@ -1178,6 +1252,9 @@ public:
     // Читает title-info и src-title-info
     void getTitleInfo(STitleInfo& oTitleInfo, NSStringUtils::CStringBuilder& oBuilder)
     {
+        if(m_oLightReader.IsEmptyNode())
+            return;
+
         int nDepth = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nDepth))
         {
@@ -1188,6 +1265,9 @@ public:
             // Читаем coverpage (ноль или один)
             else if(sName == L"coverpage")
             {
+                if(m_oLightReader.IsEmptyNode())
+                    continue;
+
                 // Читаем image (один или более)
                 int nCDepth = m_oLightReader.GetDepth();
                 while(m_oLightReader.ReadNextSiblingNode(nCDepth))
@@ -1270,6 +1350,8 @@ public:
     std::wstring content()
     {
         std::wstring sRes = L"";
+        if(m_oLightReader.IsEmptyNode())
+            return sRes;
         if(m_oLightReader.ReadNextSiblingNode2(m_oLightReader.GetDepth()))
             sRes = m_oLightReader.GetText();
         return sRes;
@@ -1278,6 +1360,8 @@ public:
     std::string contentA()
     {
         std::string sRes = "";
+        if(m_oLightReader.IsEmptyNode())
+            return sRes;
         if(m_oLightReader.ReadNextSiblingNode2(m_oLightReader.GetDepth()))
             sRes = m_oLightReader.GetTextA();
         return sRes;

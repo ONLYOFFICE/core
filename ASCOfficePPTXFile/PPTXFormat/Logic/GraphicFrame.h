@@ -30,8 +30,7 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_GRAPHICFRAME_INCLUDE_H_
-#define PPTX_LOGIC_GRAPHICFRAME_INCLUDE_H_
+
 
 #include "./../WrapperWritingElement.h"
 #include "NvGraphicFramePr.h"
@@ -40,6 +39,7 @@
 #include "SmartArt.h"
 #include "Pic.h"
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Slicer/SlicerCacheExt.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Logic/RunContent.h"
 
 namespace PPTX
 {
@@ -98,6 +98,8 @@ namespace PPTX
 			nullable<OOX::Spreadsheet::CDrawingSlicer>		slicer;
 			nullable<OOX::Spreadsheet::CDrawingSlicer>		slicerExt;
 
+			nullable<OOX::Logic::CContentPart>				contentPart;
+
 			SpTreeElem				element;
 
 			std::wstring m_sRequires;//from mc:Choice
@@ -112,4 +114,3 @@ namespace PPTX
 	} // namespace Logic
 } // namespace PPTX
 
-#endif // PPTX_LOGIC_GRAPHICFRAME_INCLUDE_H

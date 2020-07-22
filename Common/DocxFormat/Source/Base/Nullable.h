@@ -378,7 +378,20 @@ namespace NSCommon
 				m_pPointer = new int(*oSrc);
 			return *this;
 		}
+		const bool operator==(const nullable_int& oOther) const
+		{
+            if ( !this->m_pPointer )
+				return false;
 
+            return (*this->m_pPointer) == *oOther;
+		}
+		const bool operator==(const int& oOther) const
+		{
+            if ( !this->m_pPointer )
+				return false;
+
+            return (*this->m_pPointer) == oOther;
+		}
         int get_value_or(const int& value) const
 		{
 			if (NULL == m_pPointer)
@@ -403,7 +416,7 @@ namespace NSCommon
 		{
 		}
 
-		void normalize(const int& min, const int& max)
+		void normalize(const unsigned int& min, const unsigned int& max)
 		{
 			if (IsInit())
 			{
@@ -417,7 +430,7 @@ namespace NSCommon
 		{
 			if (IsInit())
 			{
-				if (*m_pPointer < 0)
+				if ((int)(*m_pPointer) < 0)
 					*m_pPointer = 0;
 			}
 		}
@@ -756,7 +769,20 @@ namespace NSCommon
                 m_pPointer = new std::wstring(*oSrc);
 			return *this;
 		}
+		const bool operator==(const nullable_string& oOther) const
+		{
+            if ( !this->m_pPointer )
+				return false;
 
+            return (*this->m_pPointer) == *oOther;
+		}
+		const bool operator==(const std::wstring& oOther) const
+		{
+            if ( !this->m_pPointer )
+				return false;
+
+            return (*this->m_pPointer) == oOther;
+		}
         std::wstring get_value_or(const std::wstring& value) const
 		{
 			if (NULL == m_pPointer)

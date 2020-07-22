@@ -216,6 +216,11 @@ namespace PPTX
 					}
 					result = true;
 				}
+				else if (strName == L"contentPart")
+				{
+					contentPart = oReader;
+					result = true;
+				}
 				else if (strName == L"AlternateContent")
 				{
 					if ( oReader.IsEmptyNode() )

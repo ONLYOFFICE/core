@@ -39,6 +39,8 @@
 #include "Src/Image.h"
 #include "Src/Font.h"
 #include "Src/FontCidTT.h"
+#include "Src/Annotation.h"
+#include "Src/Destination.h"
 
 #include "../DesktopEditor/graphics/Image.h"
 #include "../DesktopEditor/graphics/structures.h"
@@ -46,6 +48,8 @@
 #include "../DesktopEditor/raster/ImageFileFormatChecker.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 #include "../DesktopEditor/graphics/pro/Image.h"
+
+#include "../UnicodeConverter/UnicodeConverter.h"
 
 #include "OnlineOfficeBinToPdf.h"
 
@@ -503,7 +507,7 @@ CPdfRenderer::CPdfRenderer(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA) :
 		return;
 	}
 
-    m_pDocument->SetCompressionMode(COMP_ALL);
+	m_pDocument->SetCompressionMode(COMP_ALL);
 
 	m_bValid      = true;
 	m_dPageHeight = 297;
@@ -1150,6 +1154,20 @@ HRESULT CPdfRenderer::EndCommand(const DWORD& dwType)
 			m_lClipDepth--;
 		}
 	}
+	else if (c_nPageType == dwType)
+	{
+		for (int nIndex = 0, nCount = m_vDestinations.size(); nIndex < nCount; ++nIndex)
+		{
+			TDestinationInfo& oInfo = m_vDestinations.at(nIndex);
+			if (m_nPagesCount > oInfo.unDestPage && m_nPagesCount > oInfo.unPage)
+			{
+				AddLink(oInfo.unPage, oInfo.dX, oInfo.dY, oInfo.dW, oInfo.dH, oInfo.dDestX, oInfo.dDestY, oInfo.unDestPage);
+				m_vDestinations.erase(m_vDestinations.begin() + nIndex);
+				nIndex--;
+				nCount--;
+			}
+		}
+	}
 
 	return S_OK;
 }
@@ -1455,6 +1473,30 @@ HRESULT CPdfRenderer::CommandString(const LONG& lType, const std::wstring& sComm
 {
 	return S_OK;
 }
+HRESULT CPdfRenderer::AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip)
+{
+	NSUnicodeConverter::CUnicodeConverter conv;
+	CAnnotation* pAnnot = m_pDocument->CreateUriLinkAnnot(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)), conv.SASLprepToUtf8(wsUrl).c_str());
+	pAnnot->SetBorderStyle(EBorderSubtype::border_subtype_Solid, 0);
+	return S_OK;
+}
+HRESULT CPdfRenderer::AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage)
+{
+	unsigned int unPagesCount = m_pDocument->GetPagesCount();
+	if (unPagesCount == 0)
+		return S_OK;
+
+	if (!m_pDocument->GetPage(nPage))
+	{
+		m_vDestinations.push_back(TDestinationInfo(unPagesCount - 1, dX, dY, dW, dH, dDestX, dDestY, nPage));
+	}
+	else
+	{
+		AddLink(unPagesCount - 1, dX, dY, dW, dH, dDestX, dDestY, nPage);
+	}
+
+	return S_OK;
+}
 //----------------------------------------------------------------------------------------
 // Дополнительные функции Pdf рендерера
 //----------------------------------------------------------------------------------------
@@ -1577,12 +1619,12 @@ PdfWriter::CImageDict* CPdfRenderer::LoadImage(Aggplus::CImage* pImage, const BY
 		for (int nIndex = 0, nSize = nImageW * nImageH; nIndex < nSize; nIndex++)
 		{
             // making full-transparent pixels white
-            if (pDataMem[3] == 0)
-            {
-                pDataMem[0] = 255;
-                pDataMem[1] = 255;
-                pDataMem[2] = 255;
-            }
+			if (pDataMem[3] == 0)
+			{
+				pDataMem[0] = 255;
+				pDataMem[1] = 255;
+				pDataMem[2] = 255;
+			}
 
             if (!bAlpha && (pDataMem[3] < 255))
 			{
@@ -1864,32 +1906,32 @@ void CPdfRenderer::UpdateBrush()
 			double dL, dR, dT, dB;
 			m_oPath.GetBounds(dL, dT, dR, dB);
 
+			double dXStepSpacing = 0, dYStepSpacing = 0;
 			if (c_BrushTextureModeStretch == lTextureMode)
 			{
-				// Чтобы избавиться от погрешностей из-за которых могут возникать полоски, немного увеличим границы пата.
-				dL -= 1;
-				dT -= 1;
-				dB += 1;
-				dR += 1;
-
 				// Растягиваем картинку по размерам пата
-                dW = std::max(10.0, dR - dL);
-                dH = std::max(10.0, dB - dT);
+				dW = std::max(10.0, dR - dL);
+				dH = std::max(10.0, dB - dT);
+
+				// Чтобы избавиться от погрешностей из-за которых могут возникать полоски или обрезание картинки,
+				// удвоим расстрояние между соседними тайлами. Плохого тут нет, т.к. нам нужен всего 1 тайл
+				dXStepSpacing = dW;
+				dYStepSpacing = dH;
 			}
 			else
 			{
 				// Размеры картинки заданы в пикселях. Размеры тайла - это размеры картинки в пунктах.
 				dW = nImageW * 72 / 96;
 				dH = nImageH * 72 / 96;
-			}			
+			}
 
 			// Нам нужно, чтобы левый нижний угол границ нашего пата являлся точкой переноса для матрицы преобразования.
 			CMatrix* pMatrix = m_pPage->GetTransform();
-			pMatrix->Apply(dL, dB);
+			pMatrix->Apply(dL, dT);
 			CMatrix oPatternMatrix = *pMatrix;
 			oPatternMatrix.x = dL;
-			oPatternMatrix.y = dB;
-			m_pPage->SetPatternColorSpace(m_pDocument->CreateImageTilePattern(dW, dH, pImage, &oPatternMatrix));
+			oPatternMatrix.y = dT;
+			m_pPage->SetPatternColorSpace(m_pDocument->CreateImageTilePattern(dW, dH, pImage, &oPatternMatrix, imagetilepatterntype_Default, dXStepSpacing, dYStepSpacing));
 		}
 	}
 	else if (c_BrushTypeHatch1 == lBrushType)
@@ -2132,4 +2174,19 @@ void CPdfRenderer::CBrushState::Reset()
 	m_pShadingColors      = NULL;
 	m_pShadingPoints      = NULL;
 	m_lShadingPointsCount = 0;
+}
+void CPdfRenderer::AddLink(const unsigned int& unPage, const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const unsigned int& unDestPage)
+{
+	CPage* pCurPage  = m_pDocument->GetPage(unPage);
+	CPage* pDestPage = m_pDocument->GetPage(unDestPage);
+	if (!pCurPage || !pDestPage)
+		return;
+
+	CDestination* pDestination = m_pDocument->CreateDestination(unDestPage);
+	if (!pDestination)
+		return;
+
+	pDestination->SetXYZ(MM_2_PT(dDestX), pDestPage->GetHeight() - MM_2_PT(dDestY), 0);
+	CAnnotation* pAnnot = m_pDocument->CreateLinkAnnot(pCurPage, TRect(MM_2_PT(dX), pCurPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)), pDestination);
+	pAnnot->SetBorderStyle(EBorderSubtype::border_subtype_Solid, 0);
 }

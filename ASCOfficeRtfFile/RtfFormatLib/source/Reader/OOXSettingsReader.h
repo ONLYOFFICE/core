@@ -66,7 +66,7 @@ public:
 		}
 		if (m_ooxSettings->m_oConsecutiveHyphenLimit.IsInit() && m_ooxSettings->m_oConsecutiveHyphenLimit->m_oVal.IsInit())
 		{
-			oParam.oRtf->m_oProperty.m_nMaxHypen = m_ooxSettings->m_oConsecutiveHyphenLimit->m_oVal->GetValue();
+			oParam.oRtf->m_oProperty.m_nMaxHypen = *m_ooxSettings->m_oConsecutiveHyphenLimit->m_oVal;
 		}
 		if (m_ooxSettings->m_oHyphenationZone.IsInit() && m_ooxSettings->m_oHyphenationZone->m_oVal.IsInit())
 		{
@@ -141,7 +141,7 @@ public:
 			}
 			if( m_ooxSettings->m_oFootnotePr->m_oNumStart.IsInit() && m_ooxSettings->m_oFootnotePr->m_oNumStart->m_oVal.IsInit())
 			{
-				oParam.oRtf->m_oProperty.m_nFootnoteStart = m_ooxSettings->m_oFootnotePr->m_oNumStart->m_oVal->GetValue();
+				oParam.oRtf->m_oProperty.m_nFootnoteStart = *m_ooxSettings->m_oFootnotePr->m_oNumStart->m_oVal;
 			}
 			if( m_ooxSettings->m_oFootnotePr->m_oPos.IsInit() && m_ooxSettings->m_oFootnotePr->m_oPos->m_oVal.IsInit())
 			{
@@ -186,7 +186,7 @@ public:
 			}
 			if( m_ooxSettings->m_oEndnotePr->m_oNumStart.IsInit() && m_ooxSettings->m_oEndnotePr->m_oNumStart->m_oVal.IsInit())
 			{
-				oParam.oRtf->m_oProperty.m_nEndnoteStart = m_ooxSettings->m_oEndnotePr->m_oNumStart->m_oVal->GetValue();
+				oParam.oRtf->m_oProperty.m_nEndnoteStart = *m_ooxSettings->m_oEndnotePr->m_oNumStart->m_oVal;
 			}
 			if( m_ooxSettings->m_oEndnotePr->m_oPos.IsInit() && m_ooxSettings->m_oEndnotePr->m_oPos->m_oVal.IsInit())
 			{

@@ -4,12 +4,21 @@ Microsoft Visual Studio Solution File, Format Version 9.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DocxFormat", "..\..\..\Common\DocxFormat\Projects\DocxFormat2005.vcproj", "{A100103A-353E-45E8-A9B8-90B87CC5C0B0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PPTXFormat", "..\..\..\ASCOfficePPTXFile\PPTXLib\PPTXFormat.vcproj", "{36636678-AE25-4BE6-9A34-2561D1BCF302}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A100103A-353E-45E8-A9B8-90B87CC5C0B0} = {A100103A-353E-45E8-A9B8-90B87CC5C0B0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RtfFormatLib", "..\..\..\ASCOfficeRtfFile\RtfFormatLib\Win32\RtfFormatLib.vcproj", "{AF2D00A7-A351-4700-AE88-C1D9ADE29345}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A100103A-353E-45E8-A9B8-90B87CC5C0B0} = {A100103A-353E-45E8-A9B8-90B87CC5C0B0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DocFormatLib", "..\..\..\ASCOfficeDocFile\DocFormatLib\Win32\DocFormatLib.vcproj", "{C5371405-338F-4B70-83BD-2A5CDF64F383}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TxtFormatLib", "..\..\..\ASCOfficeTxtFile\TxtXmlFormatLib\Win32\TxtXmlFormatLib.vcproj", "{DACBE6CA-E089-47D1-8CE7-C7DB59C15417}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A100103A-353E-45E8-A9B8-90B87CC5C0B0} = {A100103A-353E-45E8-A9B8-90B87CC5C0B0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PPTFormatLib", "..\..\..\ASCOfficePPTFile\PPTFormatLib\Win32\PPTFormatLib.vcproj", "{7B27E40E-F70A-4A74-A77C-0944D7931D15}"
 EndProject
@@ -36,6 +45,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XlsFormat", "..\..\..\ASCOfficeXlsFile2\source\win32\XlsFormat.vcproj", "{77DDC8D7-5B12-4FF2-9629-26AEBCA8436D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XlsXlsxConverter", "..\..\..\ASCOfficeXlsFile2\source\win32\XlsXlsxConverter.vcproj", "{CBEDD0D1-10A8-45C1-AF81-8492F40964CA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A100103A-353E-45E8-A9B8-90B87CC5C0B0} = {A100103A-353E-45E8-A9B8-90B87CC5C0B0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OdfCommon", "..\..\..\ASCOfficeOdfFile\win32\cpcommon.vcproj", "{609ED938-3CA8-4BED-B363-25096D4C4812}"
 EndProject
@@ -46,8 +58,14 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OdfFormulasConvert", "..\..\..\ASCOfficeOdfFile\win32\formulasconvert.vcproj", "{94954A67-A853-43B1-A727-6EF2774C5A6A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OdfFormatWriterLib", "..\..\..\ASCOfficeOdfFileW\source\win32\OdfFormat.vcproj", "{E5A67556-44DA-4481-8F87-0A3AEDBD20DD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A100103A-353E-45E8-A9B8-90B87CC5C0B0} = {A100103A-353E-45E8-A9B8-90B87CC5C0B0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Oox2OdfConverter", "..\..\..\ASCOfficeOdfFileW\source\win32\Oox2OdfConverter.vcproj", "{BEE01B53-244A-44E6-8947-ED9342D9247E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A100103A-353E-45E8-A9B8-90B87CC5C0B0} = {A100103A-353E-45E8-A9B8-90B87CC5C0B0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OfficeFileCrypt", "..\..\..\OfficeCryptReader\win32\ECMACryptReader.vcproj", "{C27E9A9F-3A17-4482-9C5F-BF15C01E747C}"
 EndProject

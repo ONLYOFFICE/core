@@ -39,6 +39,9 @@ namespace OOX
 {	
 	namespace Logic
 	{
+		CMathArgNodes::~CMathArgNodes()
+		{
+		}
 		void CMathArgNodes::fromXML(XmlUtils::CXmlNode& oNode)
 		{
             sNodeName = oNode.GetName();

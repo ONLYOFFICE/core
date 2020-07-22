@@ -42,7 +42,7 @@ namespace NSFonts
 namespace cpdoccore {
 namespace utils {
 
-    std::pair<float, float> GetMaxDigitSizePixels(const std::wstring & fontName, double fontSize, double dpi, long fontStyle, NSFonts::IApplicationFonts *appFonts);
+    std::pair<double, double> GetMaxDigitSizePixels(const std::wstring & fontName, double fontSize, double dpi, long fontStyle, NSFonts::IApplicationFonts *appFonts);
 
 }
 }

@@ -2814,10 +2814,10 @@ void xlsx_drawing_context::set_absolute_anchor(double x, double y, double cx, do
 
 	if (current_drawing_states->back()->type_anchor != 0) return;	
 
-	current_drawing_states->back()->absolute_anchor.x	= x;
-	current_drawing_states->back()->absolute_anchor.y	= y;
-	current_drawing_states->back()->absolute_anchor.cx	= cx;
-	current_drawing_states->back()->absolute_anchor.cy	= cy;
+	current_drawing_states->back()->absolute_anchor.x	= (int)x;
+	current_drawing_states->back()->absolute_anchor.y	= (int)y;
+	current_drawing_states->back()->absolute_anchor.cx	= (int)cx;
+	current_drawing_states->back()->absolute_anchor.cy	= (int)cy;
 
 	current_drawing_states->back()->type_anchor = 3;
 }

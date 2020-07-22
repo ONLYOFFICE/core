@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_MATHPARAWRAPPER_INCLUDE_H_
-#define PPTX_LOGIC_MATHPARAWRAPPER_INCLUDE_H_
 
 #include "RunBase.h"
 
@@ -82,4 +80,3 @@ namespace PPTX
 	} // namespace Logic
 } // namespace PPTX
 
-#endif // PPTX_LOGIC_MATHPARAWRAPPER_INCLUDE_H_

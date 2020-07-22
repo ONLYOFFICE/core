@@ -1076,7 +1076,7 @@ bool OOXpPrReader::Parse( ReaderParameter oParam, RtfParagraphProperty& oOutputP
 	//применяем все остальные свойчтва direct formating
 	if( m_ooxParaProps->m_oPStyle.IsInit() && m_ooxParaProps->m_oPStyle->m_sVal.IsInit())
 	{
-		std::wstring sStyleName = m_ooxParaProps->m_oPStyle->m_sVal.get2();
+		std::wstring sStyleName = *m_ooxParaProps->m_oPStyle->m_sVal;
 		RtfStylePtr oCurStyle;
 		if( true == oParam.oRtf->m_oStyleTable.GetStyle(sStyleName, oCurStyle) )
 		{
@@ -1115,7 +1115,7 @@ bool OOXpPrReader::Parse( ReaderParameter oParam, RtfParagraphProperty& oOutputP
 		oOutputProperty.m_bKeepNext = m_ooxParaProps->m_oKeepNext->m_oVal.ToBool() ? 1 : 0;
 
 	if (m_ooxParaProps->m_oOutlineLvl.IsInit() && m_ooxParaProps->m_oOutlineLvl->m_oVal.IsInit())
-		oOutputProperty.m_nOutlinelevel = m_ooxParaProps->m_oOutlineLvl->m_oVal->GetValue();
+		oOutputProperty.m_nOutlinelevel = *m_ooxParaProps->m_oOutlineLvl->m_oVal;
 
 	if (m_ooxParaProps->m_oPageBreakBefore.IsInit())
 		oOutputProperty.m_bPageBB = m_ooxParaProps->m_oPageBreakBefore->m_oVal.ToBool() ? 1 : 0;
@@ -1249,11 +1249,11 @@ bool OOXpPrReader::Parse( ReaderParameter oParam, RtfParagraphProperty& oOutputP
 	{
 		if( m_ooxParaProps->m_oNumPr->m_oIlvl.IsInit() && m_ooxParaProps->m_oNumPr->m_oIlvl->m_oVal.IsInit())
 		{
-			oOutputProperty.m_nListLevel = m_ooxParaProps->m_oNumPr->m_oIlvl->m_oVal->GetValue();
+			oOutputProperty.m_nListLevel = *m_ooxParaProps->m_oNumPr->m_oIlvl->m_oVal;
 		}
 		if( m_ooxParaProps->m_oNumPr->m_oNumID.IsInit() && m_ooxParaProps->m_oNumPr->m_oNumID->m_oVal.IsInit())
 		{
-			oOutputProperty.m_nListId = m_ooxParaProps->m_oNumPr->m_oNumID->m_oVal->GetValue();
+			oOutputProperty.m_nListId = *m_ooxParaProps->m_oNumPr->m_oNumID->m_oVal;
 			if( PROP_DEF == oOutputProperty.m_nListLevel )
 				oOutputProperty.m_nListLevel = 0;
 		}
@@ -1418,7 +1418,7 @@ bool OOXrPrReader::Parse( ReaderParameter oParam, RtfCharProperty& oOutputProper
 	}
 	if (m_ooxRunProps->m_oRStyle.IsInit() && m_ooxRunProps->m_oRStyle->m_sVal.IsInit())
 	{
-		std::wstring sStyleID = m_ooxRunProps->m_oRStyle->m_sVal.get2();
+		std::wstring sStyleID = *m_ooxRunProps->m_oRStyle->m_sVal;
 		RtfStylePtr oCurStyle;
 		if( true == oParam.oRtf->m_oStyleTable.GetStyle(sStyleID, oCurStyle)) 
 		{
@@ -2050,7 +2050,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 		}
 		if (m_ooxSectionProperty->m_oEndnotePr->m_oNumStart.IsInit() && 
 							m_ooxSectionProperty->m_oEndnotePr->m_oNumStart->m_oVal.IsInit())
-			oOutput.m_nEndnotesStart = m_ooxSectionProperty->m_oEndnotePr->m_oNumStart->m_oVal->GetValue();
+			oOutput.m_nEndnotesStart = *m_ooxSectionProperty->m_oEndnotePr->m_oNumStart->m_oVal;
 
 		if (m_ooxSectionProperty->m_oEndnotePr->m_oNumFmt.IsInit())
 		{
@@ -2078,7 +2078,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 		}
 		if (m_ooxSectionProperty->m_oFootnotePr->m_oNumStart.IsInit() && 
 					m_ooxSectionProperty->m_oFootnotePr->m_oNumStart->m_oVal.IsInit())
-			oOutput.m_nFootnotesStart = m_ooxSectionProperty->m_oFootnotePr->m_oNumStart->m_oVal->GetValue();
+			oOutput.m_nFootnotesStart = *m_ooxSectionProperty->m_oFootnotePr->m_oNumStart->m_oVal;
 		
 		if(m_ooxSectionProperty->m_oFootnotePr->m_oNumRestart.IsInit() &&
 			m_ooxSectionProperty->m_oFootnotePr->m_oNumRestart->m_oVal.IsInit())

@@ -47,6 +47,7 @@ namespace PdfReader
 	class LinkAction;
 	class LinkDest;
 	class Outline;
+	class PageLabels;
 	//-------------------------------------------------------------------------------------------------------------------------------
 	// PDFDoc
 	//-------------------------------------------------------------------------------------------------------------------------------
@@ -172,6 +173,10 @@ namespace PdfReader
 		{
 			return m_pOutline;
 		}
+		PageLabels *GetPageLabels()
+		{
+			return m_pPageLabels;
+		}
 		// Зашифрован ли файл?
 		bool IsEncrypted()
 		{
@@ -229,6 +234,7 @@ namespace PdfReader
 		XRef*          m_pXref;       // Таблица Xref 
 		Catalog*       m_pCatalog;    // Указатель на объект Catalog
 		Outline*       m_pOutline;    // Указатель на Outline (меню)
+		PageLabels*    m_pPageLabels; // Метки для страниц
 					   
 		bool           m_bValid;      // Нормально ли открылся PDF файл
 		EError         m_eErrorCode;  // Код ошибки

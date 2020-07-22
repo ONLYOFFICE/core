@@ -265,7 +265,13 @@ int CELLTABLE::serialize(std::wostream & stream)
 			//Уведомления об ознакомлении.xls
 						{
 							CP_XML_ATTR(L"ht", row->miyRw / 20.);
-							CP_XML_ATTR(L"customHeight", true);
+							if (row->fUnsynced)
+							{
+								CP_XML_ATTR(L"customHeight", true);
+							}
+							else
+							{
+							}
 						}
 						if (row->iOutLevel > 0)
 						{

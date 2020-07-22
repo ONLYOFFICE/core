@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_NUMBERING_FILE_INCLUDE_H_
-#define OOX_NUMBERING_FILE_INCLUDE_H_
 
 #include "File.h"
 #include "WritingElement.h"
@@ -128,13 +126,11 @@ namespace ComplexTypes
 			{
                 std::wstring sResult;
 
-				ComplexTypes_WriteAttribute( _T("w:null=\""), m_oNull );
+				ComplexTypes_WriteAttribute( L"w:null=\"", m_oNull );
 
 				if ( m_sVal.IsInit() )
 				{
-					sResult += _T("w:val=\"");
-                    sResult += m_sVal.get2();
-					sResult += _T("\" ");
+					sResult += L"w:val=\"" + *m_sVal + L"\" ";
 				}
 				return sResult;
 			}
@@ -151,7 +147,7 @@ namespace ComplexTypes
 		public:
 
 			nullable< SimpleTypes::COnOff<> >	m_oNull;
-            nullable< std::wstring >			m_sVal;
+            nullable_string						m_sVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -168,11 +164,11 @@ namespace ComplexTypes
 			{
 			}
 
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
+			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
 			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes(oReader);
 
@@ -268,8 +264,6 @@ namespace OOX
 			virtual ~CLvl()
 			{
 			}
-
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				if ( _T("w:lvl") != oNode.GetName() )
@@ -324,7 +318,9 @@ namespace OOX
 			{
                 std::wstring sResult = _T("<w:lvl ");
 
-				ComplexTypes_WriteAttribute( _T("w:ilvl=\""),      m_oIlvl );
+				if (m_oIlvl.IsInit()) 
+					sResult += L"w:ilvl=\"" + std::to_wstring(*m_oIlvl) + L"\" ";
+
 				ComplexTypes_WriteAttribute( _T("w:tentative=\""), m_oTentative );
 				ComplexTypes_WriteAttribute( _T("w:tplc=\""),      m_oTplc );
 
@@ -366,22 +362,22 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::CDecimalNumber<> > m_oIlvl;
-			nullable<SimpleTypes::COnOff<>         > m_oTentative;
-			nullable<SimpleTypes::CLongHexNumber<> > m_oTplc;
+			nullable_int								m_oIlvl;
+			nullable<SimpleTypes::COnOff<> >			m_oTentative;
+			nullable<SimpleTypes::CLongHexNumber<>>		m_oTplc;
 
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oIsLgl;
-			nullable<ComplexTypes::Word::CLvlLegacy                      > m_oLegacy;
-			nullable<ComplexTypes::Word::CJc                             > m_oLvlJc;
-			nullable<ComplexTypes::Word::CDecimalNumber                  > m_oLvlPicBulletId;
-			nullable<ComplexTypes::Word::CDecimalNumber                  > m_oLvlRestart;
-			nullable<ComplexTypes::Word::CLevelText                      > m_oLvlText;
-			nullable<ComplexTypes::Word::CNumFmt                         > m_oNumFmt;
-			nullable<OOX::Logic::CParagraphProperty                      > m_oPPr;
-			nullable<ComplexTypes::Word::String                        > m_oPStyle;
-			nullable<OOX::Logic::CRunProperty                            > m_oRPr;
-			nullable<ComplexTypes::Word::CDecimalNumber                  > m_oStart;
-			nullable<ComplexTypes::Word::CLevelSuffix                    > m_oSuffix;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oIsLgl;
+			nullable<ComplexTypes::Word::CLvlLegacy>						m_oLegacy;
+			nullable<ComplexTypes::Word::CJc>								m_oLvlJc;
+			nullable<ComplexTypes::Word::CDecimalNumber>					m_oLvlPicBulletId;
+			nullable<ComplexTypes::Word::CDecimalNumber>					m_oLvlRestart;
+			nullable<ComplexTypes::Word::CLevelText>						m_oLvlText;
+			nullable<ComplexTypes::Word::CNumFmt>							m_oNumFmt;
+			nullable<OOX::Logic::CParagraphProperty>						m_oPPr;
+			nullable<ComplexTypes::Word::String>							m_oPStyle;
+			nullable<OOX::Logic::CRunProperty>								m_oRPr;
+			nullable<ComplexTypes::Word::CDecimalNumber>					m_oStart;
+			nullable<ComplexTypes::Word::CLevelSuffix>						m_oSuffix;
 
 		};
 		//--------------------------------------------------------------------------------
@@ -463,7 +459,8 @@ namespace OOX
 			{
                 std::wstring sResult = _T("<w:abstractNum ");
 
-				ComplexTypes_WriteAttribute( _T("w:abstractNumId=\""), m_oAbstractNumId );
+				if (m_oAbstractNumId.IsInit()) 
+					sResult += L"w:abstractNumId=\"" + std::to_wstring(*m_oAbstractNumId) + L"\" ";
 
 				sResult += _T(">");
 
@@ -488,6 +485,23 @@ namespace OOX
 			{
 				return et_w_abstractNum;
 			}
+			void copy(CAbstractNum* copies)
+			{
+				if (!copies) return;
+				
+				copies->m_oAbstractNumId = m_oAbstractNumId;
+				copies->m_oMultiLevelType = m_oMultiLevelType;
+				copies->m_oName = m_oName;
+				copies->m_oNsid = m_oNsid;
+				copies->m_oNumStyleLink = m_oNumStyleLink;
+				copies->m_oStyleLink = m_oStyleLink;
+				copies->m_oTmpl = m_oTmpl;
+
+				for (size_t i = 0; i < m_arrLvl.size(); i++)
+				{
+					copies->m_arrLvl.push_back(new CLvl(*m_arrLvl[i]));
+				}
+			}
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -500,7 +514,7 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::CDecimalNumber<>>			m_oAbstractNumId;
+			nullable_int									m_oAbstractNumId;
 
 			std::vector<OOX::Numbering::CLvl*>				m_arrLvl;
 			nullable<ComplexTypes::Word::CMultiLevelType>	m_oMultiLevelType;
@@ -556,14 +570,15 @@ namespace OOX
 			{
                 std::wstring sResult = _T("<w:lvlOverride ");
 
-				ComplexTypes_WriteAttribute( _T("w:ilvl=\""), m_oIlvl );
+				if (m_oIlvl.IsInit()) 
+					sResult += L"w:ilvl=\"" + std::to_wstring(*m_oIlvl) + L"\" ";
 
-				sResult += _T(">");
+				sResult += L">";
 
 				WritingElement_WriteNode_2( m_oLvl );
-				WritingElement_WriteNode_1( _T("<w:startOverride "), m_oStartOverride );
+				WritingElement_WriteNode_1( L"<w:startOverride ", m_oStartOverride );
 	
-				sResult += _T("</w:lvlOverride>");
+				sResult += L"</w:lvlOverride>";
 
 				return sResult;
 			}
@@ -583,7 +598,7 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::CDecimalNumber<>>			m_oIlvl;
+			nullable_int									m_oIlvl;
 
 			nullable<OOX::Numbering::CLvl>					m_oLvl;
 			nullable<ComplexTypes::Word::CDecimalNumber>	m_oStartOverride;
@@ -657,13 +672,14 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-                std::wstring sResult = _T("<w:num ");
+                std::wstring sResult = L"<w:num ";
 
-				ComplexTypes_WriteAttribute( _T("w:numId=\""), m_oNumId );
+				if (m_oNumId.IsInit()) 
+					sResult += L"w:numId=\"" + std::to_wstring(*m_oNumId) + L"\" ";
 
 				sResult += _T(">");
 
-				WritingElement_WriteNode_1( _T("<w:abstractNumId "), m_oAbstractNumId );
+				WritingElement_WriteNode_1( L"<w:abstractNumId ", m_oAbstractNumId );
 
 				for (unsigned int nIndex = 0; nIndex < m_arrLvlOverride.size(); nIndex++ )
 				{
@@ -671,7 +687,7 @@ namespace OOX
 						sResult += m_arrLvlOverride[nIndex]->toXML();
 				}
 
-				sResult += _T("</w:num>");
+				sResult += L"</w:num>";
 
 				return sResult;
 			}
@@ -692,10 +708,10 @@ namespace OOX
 			}
 		public:
 
-			nullable<SimpleTypes::CDecimalNumber<> >		m_oNumId;
+			nullable_int									m_oNumId;
 
-			nullable<ComplexTypes::Word::CDecimalNumber >	m_oAbstractNumId;
-			std::vector<OOX::Numbering::CNumLvl*        >	m_arrLvlOverride;
+			nullable<ComplexTypes::Word::CDecimalNumber>	m_oAbstractNumId;
+			std::vector<OOX::Numbering::CNumLvl*>			m_arrLvlOverride;
 		};
 		//--------------------------------------------------------------------------------
 		// NumPicBullet 17.9.21 (Part 1)
@@ -741,13 +757,13 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-                std::wstring sResult = _T("<w:numPicBullet ");
+				if (false == m_oNumPicBulletId.IsInit()) return L"";
 
-				sResult += m_oNumPicBulletId.ToString() + _T(">");
-
+                std::wstring sResult = L"<w:numPicBullet ";
+				
+				sResult += std::to_wstring(*m_oNumPicBulletId) + L">";
 				sResult += m_oDrawing->toXML();
-
-				sResult += _T("</w:numPicBullet>");
+				sResult += L"</w:numPicBullet>";
 
 				return sResult;
 			}
@@ -762,15 +778,15 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:numPicBulletId"), m_oNumPicBulletId )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:numPicBulletId", m_oNumPicBulletId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 
-			SimpleTypes::CDecimalNumber<> m_oNumPicBulletId;
+			nullable_int					m_oNumPicBulletId;
 
-			nullable<OOX::Logic::CDrawing>			m_oDrawing;
-			nullable<OOX::Logic::CPicture>			m_oVmlDrawing;
+			nullable<OOX::Logic::CDrawing>	m_oDrawing;
+			nullable<OOX::Logic::CPicture>	m_oVmlDrawing;
 		};
 	} // Numbering
 } // OOX 
@@ -950,14 +966,13 @@ mc:Ignorable=\"w14 w15\">");
 		{
 			return et_w_numbering;
 		}
-	public:
 
-		std::vector<OOX::Numbering::CAbstractNum  *> m_arrAbstractNum;
-		std::vector<OOX::Numbering::CNum          *> m_arrNum;
-		nullable<ComplexTypes::Word::CDecimalNumber> m_oNumIdMacAtCleanup;
-		std::vector<OOX::Numbering::CNumPicBullet *> m_arrNumPicBullet;
+		std::vector<OOX::Numbering::CAbstractNum*>		m_arrAbstractNum;
+		std::vector<OOX::Numbering::CNum*>				m_arrNum;
+		nullable<ComplexTypes::Word::CDecimalNumber>	m_oNumIdMacAtCleanup;
+		std::vector<OOX::Numbering::CNumPicBullet*>		m_arrNumPicBullet;
+
+		std::vector<std::map<int, int>>					m_mapEmbeddedNames;
 
 	};
 } // namespace OOX
-
-#endif // OOX_NUMBERING_FILE_INCLUDE_H_

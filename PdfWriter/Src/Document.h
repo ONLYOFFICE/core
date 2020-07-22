@@ -99,6 +99,8 @@ namespace PdfWriter
 		bool              IsPDFA() const;
 			              
 		CPage*            AddPage();
+		CPage*            GetPage(const unsigned int& unPage);
+		unsigned int      GetPagesCount() const;
 		void              AddPageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix);
 		void              AddPageLabel(unsigned int unPageIndex, EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix);
 		COutline*         CreateOutline(COutline* pParent, const char* sTitle);
@@ -110,14 +112,16 @@ namespace PdfWriter
 		CJbig2Global*     GetJbig2Global();
 					      
 		CAnnotation*      CreateTextAnnot(unsigned int unPageNum, TRect oRect, const char* sText);
-		CAnnotation*      CreateLinkAnnot(unsigned int unPageNum, TRect oRect, CDestination* pDest);
-		CAnnotation*      CreateUriLinkAnnot(unsigned int unPageNum, TRect oRect, const char* sUri);
+		CAnnotation*      CreateLinkAnnot(const unsigned int& unPageNum, const TRect& oRect, CDestination* pDest);
+		CAnnotation*      CreateLinkAnnot(CPage* pPage, const TRect& oRect, CDestination* pDest);
+		CAnnotation*      CreateUriLinkAnnot(const unsigned int& unPageNum, const TRect& oRect, const char* sUri);
+		CAnnotation*      CreateUriLinkAnnot(CPage* pPage, const TRect& oRect, const char* sUrl);
 					      
 		CImageDict*       CreateImage();
 		CFont14*          CreateFont14(EStandard14Fonts eType);
 		CFontCidTrueType* CreateTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex);
 
-		CImageTilePattern*CreateImageTilePattern(double dW, double dH, CImageDict* pImageDict, CMatrix* pMatrix = NULL, EImageTilePatternType eType = imagetilepatterntype_Default);
+		CImageTilePattern*CreateImageTilePattern(double dW, double dH, CImageDict* pImageDict, CMatrix* pMatrix = NULL, EImageTilePatternType eType = imagetilepatterntype_Default, double dXStepSpacing = 0, double dYStepSpacing = 0);
 		CImageTilePattern*CreateHatchPattern(double dW, double dH, const BYTE& nR1, const BYTE& nG1, const BYTE& nB1, const BYTE& nAlpha1, const BYTE& nR2, const BYTE& nG2, const BYTE& nB2, const BYTE& nAlpha2, const std::wstring& wsHatch);
 		CShading*         CreateAxialShading(CPage* pPage, double dX0, double dY0, double dX1, double dY1, unsigned char* pColors, unsigned char* pAlphas, double* pPoints, int nCount, CExtGrState*& pExtGrState);
 		CShading*         CreateRadialShading(CPage* pPage, double dX0, double dY0, double dR0, double dX1, double dY1, double dR1, unsigned char* pColors, unsigned char* pAlphas, double* pPoints, int nCount, CExtGrState*& pExtGrState);

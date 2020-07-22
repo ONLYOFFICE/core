@@ -96,97 +96,100 @@ namespace DocFileFormat
 					break;
 			}
 		}
-		//std::list<SinglePropertyModifier>::const_reverse_iterator rend = tapx->grpprl->rend();
 
-		//for (std::list<SinglePropertyModifier>::const_reverse_iterator iter = tapx->grpprl->rbegin(); iter != rend; ++iter)
-		std::list<SinglePropertyModifier>::const_iterator end = tapx->grpprl->end();
 
-		for (std::list<SinglePropertyModifier>::const_iterator iter = tapx->grpprl->begin(); iter != end; ++iter)
+		bool bPresentDefTable = false;
+		for (std::list<SinglePropertyModifier>::reverse_iterator iter = tapx->grpprl->rbegin(); iter != tapx->grpprl->rend(); ++iter)
 		{
 			switch (iter->OpCode)
 			{				
 				case sprmOldTDefTable:	
 				case sprmTDefTable:	
 				{
-					SprmTDefTable tdef(iter->Arguments, iter->argumentsSize);
-					int cc = tdef.numberOfColumns;
-
-					_tGrid = tdef.rgdxaCenter;
-                    _tcDef = tdef.rgTc80[(std::min)(_cellIndex,  (int)tdef.rgTc80.size() - 1)];	
-
-                    appendValueElement( _tcPr, L"textDirection", FormatUtils::MapValueToWideString( _tcDef.textFlow, &Global::TextFlowMap[0][0], 6, 6 ), false );
-
-					if ( _tcDef.vertMerge == Global::fvmMerge )
+					if (!bPresentDefTable) //118854.doc
 					{
-                        appendValueElement( _tcPr, L"vMerge", L"continue", false );
-					}
-					else if ( _tcDef.vertMerge == Global::fvmRestart )
-					{
-                        appendValueElement( _tcPr, L"vMerge", L"restart", false );
-					}
+						bPresentDefTable = true;
 
-                    appendValueElement( _tcPr, L"vAlign", FormatUtils::MapValueToWideString( _tcDef.vertAlign, &Global::VerticalAlignMap[0][0], 3, 7 ), false );
+						SprmTDefTable tdef(iter->Arguments, iter->argumentsSize);
+						int cc = tdef.numberOfColumns;
 
-					if ( _tcDef.fFitText )
-					{
-                        appendValueElement( _tcPr, L"tcFitText", L"", false );
-					}
+						_tGrid = tdef.rgdxaCenter;
+						_tcDef = tdef.rgTc80[(std::min)(_cellIndex,  (int)tdef.rgTc80.size() - 1)];	
 
-					if ( _tcDef.fNoWrap )
-					{
-                        appendValueElement( _tcPr, L"noWrap", L"", true );
-					}
-					//int ind = (std::min)(_cellIndex,  (int)tdef.rgTc80.size() - 1);
-					//int ind1 = ind; 
-					//while (ind1 < tdef.rgdxaCenter.size() - 1)
-					//{
-					//	int sz = tdef.rgdxaCenter[ ind1 + 1] - tdef.rgdxaCenter[ ind1 ] ;
-					//	if (sz > 1)
-					//		break;
-					//	ind1++;
-					//}
+						appendValueElement( _tcPr, L"textDirection", FormatUtils::MapValueToWideString( _tcDef.textFlow, &Global::TextFlowMap[0][0], 6, 6 ), false );
 
-					if (tdef.rgTc80[_cellIndex].horzMerge == 1)
-					{
-						for (size_t i = _cellIndex; i < tdef.rgTc80.size(); i++)
+						if ( _tcDef.vertMerge == Global::fvmMerge )
 						{
-							if (tdef.rgTc80[i].horzMerge < 1)
-								break;
-						
-							nComputedCellWidth += tdef.rgdxaCenter[ i + 1] - tdef.rgdxaCenter[ i ] ;
-							_gridSpan++;
+							appendValueElement( _tcPr, L"vMerge", L"continue", false );
 						}
-					}
-					else if (tdef.rgTc80[_cellIndex].horzMerge == 2)
-					{//skip cover cell
-						_gridSpan = 1;
-						nComputedCellWidth = 0;
-						_bCoverCell = true;
+						else if ( _tcDef.vertMerge == Global::fvmRestart )
+						{
+							appendValueElement( _tcPr, L"vMerge", L"restart", false );
+						}
 
-					}
-					else
-					{
-						_gridSpan = 1;
+						appendValueElement( _tcPr, L"vAlign", FormatUtils::MapValueToWideString( _tcDef.vertAlign, &Global::VerticalAlignMap[0][0], 3, 7 ), false );
 
-						nComputedCellWidths +=  (tdef.rgdxaCenter[ _cellIndex + 1] - tdef.rgdxaCenter[ 0 ]);
-						nComputedCellWidth	+= tdef.rgTc80[ _cellIndex].wWidth > 1 ? tdef.rgTc80[ _cellIndex].wWidth : (tdef.rgdxaCenter[ _cellIndex + 1] - tdef.rgdxaCenter[ _cellIndex ]);
-						//Технические_Требования_1_287_ДИТ.DOC
+						if ( _tcDef.fFitText )
+						{
+							appendValueElement( _tcPr, L"tcFitText", L"", false );
+						}
 
-					}
+						if ( _tcDef.fNoWrap )
+						{
+							appendValueElement( _tcPr, L"noWrap", L"", true );
+						}
+						//int ind = (std::min)(_cellIndex,  (int)tdef.rgTc80.size() - 1);
+						//int ind1 = ind; 
+						//while (ind1 < tdef.rgdxaCenter.size() - 1)
+						//{
+						//	int sz = tdef.rgdxaCenter[ ind1 + 1] - tdef.rgdxaCenter[ ind1 ] ;
+						//	if (sz > 1)
+						//		break;
+						//	ind1++;
+						//}
 
-					if (!IsTableBordersDefined(tapx->grpprl))
-					{
-						RELEASEOBJECT(_brcTop);
-						_brcTop = new BorderCode(*_tcDef.brcTop);
+						if (tdef.rgTc80[_cellIndex].horzMerge == 1)
+						{
+							for (size_t i = _cellIndex; i < tdef.rgTc80.size(); i++)
+							{
+								if (tdef.rgTc80[i].horzMerge < 1)
+									break;
+							
+								nComputedCellWidth += tdef.rgdxaCenter[ i + 1] - tdef.rgdxaCenter[ i ] ;
+								_gridSpan++;
+							}
+						}
+						else if (tdef.rgTc80[_cellIndex].horzMerge == 2)
+						{//skip cover cell
+							_gridSpan = 1;
+							nComputedCellWidth = 0;
+							_bCoverCell = true;
 
-						RELEASEOBJECT(_brcLeft);
-						_brcLeft = new BorderCode(*_tcDef.brcLeft);
+						}
+						else
+						{
+							_gridSpan = 1;
 
-						RELEASEOBJECT(_brcRight);
-						_brcRight = new BorderCode(*_tcDef.brcRight);
+							nComputedCellWidths +=  (tdef.rgdxaCenter[ _cellIndex + 1] - tdef.rgdxaCenter[ 0 ]);
+							nComputedCellWidth	+= tdef.rgTc80[ _cellIndex].wWidth > 1 ? tdef.rgTc80[ _cellIndex].wWidth : (tdef.rgdxaCenter[ _cellIndex + 1] - tdef.rgdxaCenter[ _cellIndex ]);
+							//Технические_Требования_1_287_ДИТ.DOC
 
-						RELEASEOBJECT(_brcBottom);
-						_brcBottom = new BorderCode(*_tcDef.brcBottom);
+						}
+
+						if (!IsTableBordersDefined(tapx->grpprl))
+						{
+							RELEASEOBJECT(_brcTop);
+							_brcTop = new BorderCode(*_tcDef.brcTop);
+
+							RELEASEOBJECT(_brcLeft);
+							_brcLeft = new BorderCode(*_tcDef.brcLeft);
+
+							RELEASEOBJECT(_brcRight);
+							_brcRight = new BorderCode(*_tcDef.brcRight);
+
+							RELEASEOBJECT(_brcBottom);
+							_brcBottom = new BorderCode(*_tcDef.brcBottom);
+						}
 					}
 				}
 				break;

@@ -93,7 +93,7 @@ namespace PPTX
 
 			if (false == str.empty())
 			{
-				str += L"<a:effectLst>" + str + L"</a:effectLst>";
+				str = L"<a:effectLst>" + str + L"</a:effectLst>";
 			}
 			return str;
 		}

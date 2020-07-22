@@ -59,6 +59,8 @@ namespace PPTX
 				*this = oSrc;
 			}
 
+            virtual ~BaseLimit() {}
+
 			BaseLimit& operator=(const BaseLimit& oSrc)
 			{
 				m_strValue = oSrc.m_strValue;

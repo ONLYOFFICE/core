@@ -1,5 +1,5 @@
-#include "../Gumbo/gumbo-parser/src/gumbo.h"
-#include "../Katana/katana-parser/src/katana.h"
+#include "../gumbo-parser/src/gumbo.h"
+#include "../katana-parser/src/katana.h"
 
 #include "CGetData.h"
 

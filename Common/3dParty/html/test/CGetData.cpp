@@ -1,7 +1,7 @@
 #include "CGetData.h"
 #include <codecvt>
 
-#include "../Katana/katana-parser/src/parser.c"
+#include "../katana-parser/src/selector.h"
 
 CGetData::CGetData()
 {
@@ -113,6 +113,7 @@ std::vector<std::wstring> CGetData::GetSelectorList(KatanaParser* oParser, Katan
     std::vector<std::wstring> arSelectors;
     for (size_t i = 0; i < oSelectors->length; ++i)
         arSelectors.push_back(GetSelector(oParser, (KatanaSelector*)oSelectors->data[i]));
+    return arSelectors;
 }
 
 std::wstring CGetData::GetSelector(KatanaParser *oParser, KatanaSelector *oSelector)
@@ -125,4 +126,24 @@ std::wstring CGetData::GetSelector(KatanaParser *oParser, KatanaSelector *oSelec
     sText = stringToWstring(text);
     katana_parser_deallocate(oParser, (void*) text);
     return sText;
+}
+
+std::vector<std::pair<std::wstring, std::wstring>> CGetData::GetDeclarationList(KatanaParser* oParser, KatanaArray* oDeclarations)
+{
+    std::vector<std::pair<std::wstring, std::wstring>> ret;
+    return ret;
+}
+std::pair<std::wstring, std::wstring> CGetData::GetDeclaration(KatanaParser* oParser, KatanaDeclaration* oDecl)
+{
+    std::pair<std::wstring, std::wstring> pair;
+    return pair;
+}
+
+std::wstring CGetData::SelectorToString(KatanaSelector* oSelector)
+{
+    return L"";
+}
+
+void CGetData::Print()
+{
 }

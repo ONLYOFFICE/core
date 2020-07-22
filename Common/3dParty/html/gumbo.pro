@@ -16,6 +16,3 @@ core_windows:INCLUDEPATH += $$PWD/gumbo-parser/visualc/include
 
 HEADERS += $$files($$PWD/gumbo-parser/src/*.h, true)
 SOURCES += $$files($$PWD/gumbo-parser/src/*.c, true)
-
-MAKEFILE=$$PWD/makefiles/build.makefile_$$CORE_BUILDS_PLATFORM_PREFIX"
-core_debug:MAKEFILE=$$join(MAKEFILE, MAKEFILE, "", "_debug_")

@@ -1,8 +1,8 @@
 #ifndef CGETDATA_H
 #define CGETDATA_H
 
-#include "../Katana/katana-parser/src/katana.h"
-#include "../Katana/katana-parser/src/parser.h"
+#include "../katana-parser/src/katana.h"
+#include "../katana-parser/src/parser.h"
 #include "iostream"
 #include <vector>
 #include <map>
@@ -17,16 +17,16 @@ public:
 
     void GetOutputData(KatanaOutput* oOutput);
     void GetStylesheet(KatanaParser* oParser, KatanaStylesheet* oStylesheet);
-        void GetRule(KatanaParser* oParser, KatanaRule* oRule);
-        void GetStyleRule(KatanaParser* oParser, KatanaStyleRule* oRule);
+    void GetRule(KatanaParser* oParser, KatanaRule* oRule);
+    void GetStyleRule(KatanaParser* oParser, KatanaStyleRule* oRule);
 
-        std::vector<std::wstring> GetSelectorList(KatanaParser* oParser, KatanaArray* oSelectors);
-        std::wstring GetSelector(KatanaParser* oParser, KatanaSelector* oSelector);
+    std::vector<std::wstring> GetSelectorList(KatanaParser* oParser, KatanaArray* oSelectors);
+    std::wstring GetSelector(KatanaParser* oParser, KatanaSelector* oSelector);
 
-        std::vector<std::pair<std::wstring, std::wstring>> GetDeclarationList(KatanaParser* oParser, KatanaArray* oDeclarations);
-        std::pair<std::wstring, std::wstring> GetDeclaration(KatanaParser* oParser, KatanaDeclaration* oDecl);
+    std::vector<std::pair<std::wstring, std::wstring>> GetDeclarationList(KatanaParser* oParser, KatanaArray* oDeclarations);
+    std::pair<std::wstring, std::wstring> GetDeclaration(KatanaParser* oParser, KatanaDeclaration* oDecl);
 
-        std::wstring SelectorToString(KatanaSelector* oSelector);
+    std::wstring SelectorToString(KatanaSelector* oSelector);
 
     void Print();
 };

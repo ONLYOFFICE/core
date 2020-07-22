@@ -49,6 +49,7 @@ HEADERS += \
     ../Records/CString.h \
     ../Records/CurrentUserAtom.h \
     ../Records/DiagramBuildAtom.h \
+    ../Records/DiagramBuildContainer.h \
     ../Records/DocRoutingSlipAtom.h \
     ../Records/DocumentAtom.h \
     ../Records/DocumentRecords.h \

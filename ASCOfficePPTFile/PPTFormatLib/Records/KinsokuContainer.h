@@ -51,35 +51,7 @@ public:
     virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
     {
         m_oHeader			=	oHeader;
-
-#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-        if( IsCorrect () == false ) return;
-#endif
-        LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
-
-        UINT res = 0;
-        SRecordHeader ReadHeader;
-        if ( ReadHeader.ReadFromStream(pStream) )
-            setBehaviorAtom.ReadFromStream ( ReadHeader, pStream );
-
-        //if ( m_oSetBehaviorAtom.m_bToPropertyUsed )
-        //{
-        if ( ReadHeader.ReadFromStream(pStream) )
-            varTo.ReadFromStream ( ReadHeader, pStream );
-        //}
-
-        if ( ReadHeader.ReadFromStream(pStream) )
-            behavior.ReadFromStream ( ReadHeader, pStream );
-
-        StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
-    }
-
-
-    virtual bool IsCorrect ()
-    {
-        return  m_oHeader.RecVersion == 0xF	&&
-                m_oHeader.RecInstance == 0x2 &&
-                m_oHeader.RecType == RT_Kinsoku;
+        CUnknownRecord::ReadFromStream(m_oHeader, pStream);
     }
 
 public:

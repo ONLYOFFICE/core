@@ -41,11 +41,12 @@ int main()
             NSDirectory::DeleteDirectory(sOutputDirectory);
             NSDirectory::CreateDirectory(sOutputDirectory);
 
+            // Выставляем временную директорию
+            std::wstring sTmp = NSFile::GetProcessDirectory() + L"/tmp";
+
             for(std::wstring sFile : arrFiles)
             {
                 CFb2File oFile;
-                // Выставляем временную директорию
-                oFile.SetTmpDirectory(NSFile::GetProcessDirectory() + L"/tmp");
                 std::wstring sFileName = NSFile::GetFileName(sFile);
                 std::wcout << sFileName << std::endl;
                 if(!oFile.IsFb2File(sFile))
@@ -55,9 +56,14 @@ int main()
                     std::cout << "This isn't a fb2 file" << std::endl;
                     continue;
                 }
-                HRESULT nResConvert = oFile.Open(sFile, sOutputDirectory, &oParams);
+                NSDirectory::DeleteDirectory(sTmp);
+                NSDirectory::CreateDirectory(sTmp);
+                HRESULT nResConvert = oFile.Open(sFile, sTmp, &oParams);
                 if(nResConvert == S_OK)
+                {
                     std::cout << "Success" << std::endl;
+                    NSFile::CFileBinary::Copy(sTmp + L"/" + sFileName + L".docx", sOutputDirectory + L"/" + sFileName + L".docx");
+                }
                 else
                 {
                     nErrorCol++;
@@ -74,7 +80,6 @@ int main()
     else
     {
         CFb2File oFile;
-        oFile.SetTmpDirectory(NSFile::GetProcessDirectory() + L"/tmp");
 
         // Файл, который открываем
         std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test2.fb2";

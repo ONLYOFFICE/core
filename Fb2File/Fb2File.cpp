@@ -251,8 +251,8 @@ public:
         while(m_oLightReader.MoveToNextAttribute())
         {
             std::wstring sName = m_oLightReader.GetName();
-            size_t nLen = sName.length() - 4;
-            if(sName.substr(nLen > 0 ? nLen : 0) == L"href")
+            size_t nLen = (sName.length() > 4 ? sName.length() - 4 : 0);
+            if(sName.substr(nLen) == L"href")
                 sImageName = m_oLightReader.GetText().substr(1);
         }
         m_oLightReader.MoveToElement();
@@ -300,6 +300,7 @@ public:
     // имеет право писать p
     void readTitle(std::wstring sLevel, NSStringUtils::CStringBuilder& oBuilder)
     {
+        bool bFirstP = true;
         int nDeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
         {
@@ -309,7 +310,14 @@ public:
                 // Пишем title + sLevel
                 oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"";
                 oBuilder += sLevel;
-                oBuilder += L"\"/></w:pPr>";
+                oBuilder += L"\"/>";
+                // Заголовок книги с новой страницы
+                if(sLevel == L"title" && bFirstP)
+                {
+                    oBuilder += L"<w:pageBreakBefore/>";
+                    bFirstP = false;
+                }
+                oBuilder += L"</w:pPr>";
                 // Пишем ссылку от оглавления
                 std::wstring sContentsId;
                 if(sLevel == L"title1")
@@ -407,8 +415,8 @@ public:
                 while(m_oLightReader.MoveToNextAttribute())
                 {
                     std::wstring sTName = m_oLightReader.GetName();
-                    size_t nLen = sTName.length() - 4;
-                    if(sTName.substr(nLen > 0 ? nLen : 0) == L"href")
+                    size_t nLen = (sTName.length() > 4 ? sTName.length() - 4 : 0);
+                    if(sTName.substr(nLen) == L"href")
                     {
                         sFootnoteName = m_oLightReader.GetText().substr(1);
                         break;
@@ -789,9 +797,6 @@ public:
             }
         }
         oContents += L"</w:sdtContent></w:sdt>";
-        // Разрыв страницы
-        oContents += L"<w:p><w:r><w:br w:type=\"page\"/></w:r></w:p>";
-
         return true;
     }
 
@@ -813,14 +818,16 @@ public:
                     if(m_oLightReader.GetName() == L"title")
                     {
                         std::wstring sContentsId = std::to_wstring(nContentsId++);
-                        oContents += L"<w:p><w:pPr><w:pStyle w:val=\"contents\"/><w:tabs><w:tab w:val=\"right\" w:pos=\"9355\" w:leader=\"none\"/></w:tabs></w:pPr>";
-
+                        oContents += L"<w:p><w:pPr><w:pStyle w:val=\"contents\"/><w:tabs><w:tab w:val=\"right\" w:pos=\"9355\" w:leader=\"none\"/></w:tabs>";
+                        // Абзац с новой страницы
+                        if(bFirstP)
+                            oContents += L"<w:pageBreakBefore/>";
+                        oContents += L"</w:pPr>";
                         if(bFirstP)
                         {
                             oContents += L"<w:r><w:fldChar w:fldCharType=\"begin\"/><w:instrText xml:space=\"preserve\">TOC \\n \\h </w:instrText><w:fldChar w:fldCharType=\"separate\"/></w:r>";
                             bFirstP = false;
                         }
-
                         oContents += L"<w:hyperlink w:tooltip=\"Current Document\" w:anchor=\"_Toc";
                         oContents += sContentsId;
                         oContents += L"\" w:history=\"1\">";
@@ -1192,8 +1199,6 @@ public:
                         oBuilder += L"</w:p>";
                     }
                 }
-                // Разрыв страницы
-                oBuilder += L"<w:p><w:r><w:br w:type=\"page\"/></w:r></w:p>";
             }
             // Читаем genre (один или более)
             else if(sName == L"genre")

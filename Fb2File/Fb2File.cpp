@@ -24,10 +24,12 @@ struct SAuthor
     std::wstring first_name;
     std::wstring middle_name;
     std::wstring last_name;
+    /*
     std::wstring nickname;
     std::vector<std::wstring> home_page;
     std::vector<std::wstring> email;
     std::wstring id;
+    */
 };
 
 // Описание информации о произведении. Тэг title-info, src-title-info
@@ -35,15 +37,14 @@ struct STitleInfo
 {
     std::vector<std::wstring> m_arGenres; // Жанры
     std::vector<SAuthor> m_arAuthors;     // Авторы
+    std::wstring m_sBookTitle;            // Название
+
+    /*
     std::vector<SAuthor> m_arTranslator;  // Переводчики
-
-    std::wstring m_sBookTitle; // Название
     std::wstring m_sLang;      // Язык после перевода
-
     std::wstring* m_pKeywords;                      // Ключевые слова
     std::pair<std::wstring, std::wstring>* m_pDate; // Дата
     std::wstring* m_pSrcLang;                       // Язык до перевода
-
     std::map<std::wstring, std::wstring> m_mSequence; // Серии книг
 
     STitleInfo()
@@ -52,21 +53,23 @@ struct STitleInfo
         m_pDate = NULL;
         m_pSrcLang = NULL;
     }
+    */
 
     ~STitleInfo()
     {
         m_arGenres.clear();
         m_arAuthors.clear();
+        /*
         m_arTranslator.clear();
-
         m_mSequence.clear();
-
         RELEASEARRAYOBJECTS(m_pKeywords);
         RELEASEARRAYOBJECTS(m_pDate);
         RELEASEARRAYOBJECTS(m_pSrcLang);
+        */
     }
 
     // Преобразование закодированного жанра
+    /*
     static std::wstring definitionGenre(std::wstring sGenre)
     {
         std::wstring sRes = L"";
@@ -74,6 +77,7 @@ struct STitleInfo
             sRes = L"Фэнтези";
         return sRes;
     }
+    */
 
     // Разделитель не важен ,
     std::wstring getGenres()
@@ -238,6 +242,7 @@ public:
                 oAuthor.middle_name = content();
             else if(sName == L"last-name")
                 oAuthor.last_name = content();
+            /*
             else if(sName == L"nickname")
                 oAuthor.nickname = content();
             else if(sName == L"home-page")
@@ -246,6 +251,7 @@ public:
                 oAuthor.email.push_back(content());
             else if(sName == L"id")
                 oAuthor.id = content();
+            */
         }
         arAuthor.push_back(oAuthor);
     }

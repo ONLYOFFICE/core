@@ -17,10 +17,12 @@ core_windows:INCLUDEPATH += $$PWD/../katana-parser/visualc/include
 
 DESTDIR = $$PWD_ROOT_DIR/build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX
 
-ADD_DEPENDENCY(gumbo, katana)
+ADD_DEPENDENCY(gumbo, katana, kernel)
 
 SOURCES += main.cpp \
+    CElement.cpp \
     CGetData.cpp
 
 HEADERS += \
+    CElement.h \
     CGetData.h

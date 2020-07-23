@@ -1,6 +1,8 @@
 #include "../gumbo-parser/src/gumbo.h"
 #include "../katana-parser/src/katana.h"
 
+#include "../../../../DesktopEditor/common/File.h"
+
 #include "CGetData.h"
 
 #include <fstream>
@@ -36,14 +38,28 @@ int main(int argc, char *argv[])
 //        gumbo_destroy_output(&kGumboDefaultOptions, output);
 //        return 0;
 //    }
-    FILE *fFile = fopen("C:/Users/kiril/Desktop/OnlyOffice/core/EpubFile/test/stylesheet.css", "r");
+    std::wstring sFilePath = NSFile::GetProcessDirectory() + L"../../../../cssFiles/demo-page.css";
+
+    FILE *fFile = fopen(std::string(sFilePath.begin(), sFilePath.end()).c_str(), "r");
     KatanaOutput *output = katana_parse_in(fFile);
 
     CGetData data;
-//    data.GetOutputData(output);
+    data.GetOutputData(output);
 //    data.Print();
 
-    katana_dump_output(output);
+    std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> arDecls = data.GetDeclarations(L"#forkongithub");
+
+    for (size_t i = 0; i < arDecls.size(); i++)
+    {
+        std::wcout << arDecls[i].first << std::endl;
+        std::vector<std::pair<std::wstring, std::wstring>> arDeclarations = arDecls[i].second;
+        std::wcout << L"{\n";
+        for (size_t j = 0; j < arDeclarations.size(); j++)
+            std::wcout << "   " << arDeclarations[j].first << " : " << arDeclarations[j].second << L";" <<std::endl;
+        std::wcout << L"}\n";
+    }
+
+//    katana_dump_output(output);
     katana_destroy_output(output);
     fclose(fFile);
 }

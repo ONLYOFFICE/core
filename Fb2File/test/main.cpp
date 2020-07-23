@@ -65,6 +65,7 @@ int main()
                 {
                     std::cout << "Success" << std::endl;
                     oZip.CompressFileOrDirectory(sTmp, sOutputDirectory + L"/" + sFileName + L".docx");
+                    NSDirectory::DeleteDirectory(sTmp + L"/word/media");
                 }
                 else
                 {

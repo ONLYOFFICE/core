@@ -4,6 +4,7 @@
 #include "../Fb2File.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
 
 void getDirectories(std::wstring sDirectory, std::vector<std::wstring>& arrDirectory)
 {
@@ -25,8 +26,13 @@ int main()
 
         // Параметры конвертации
         CFb2Params oParams;
-        oParams.bNeedDocx = true;
+        oParams.bNeedDocx = false;
         oParams.bNeedContents = true;
+        COfficeUtils oZip;
+        // Выставляем временную директорию
+        std::wstring sTmp = NSFile::GetProcessDirectory() + L"/tmp";
+        NSDirectory::DeleteDirectory(sTmp);
+        NSDirectory::CreateDirectory(sTmp);
 
         int nErrorCol = 0;
         std::vector<std::wstring> arrError;
@@ -41,9 +47,6 @@ int main()
             NSDirectory::DeleteDirectory(sOutputDirectory);
             NSDirectory::CreateDirectory(sOutputDirectory);
 
-            // Выставляем временную директорию
-            std::wstring sTmp = NSFile::GetProcessDirectory() + L"/tmp";
-
             for(std::wstring sFile : arrFiles)
             {
                 CFb2File oFile;
@@ -56,13 +59,13 @@ int main()
                     std::cout << "This isn't a fb2 file" << std::endl;
                     continue;
                 }
-                NSDirectory::DeleteDirectory(sTmp);
-                NSDirectory::CreateDirectory(sTmp);
+
                 HRESULT nResConvert = oFile.Open(sFile, sTmp, &oParams);
                 if(nResConvert == S_OK)
                 {
                     std::cout << "Success" << std::endl;
-                    NSFile::CFileBinary::Copy(sTmp + L"/" + sFileName + L".docx", sOutputDirectory + L"/" + sFileName + L".docx");
+                    oZip.CompressFileOrDirectory(sTmp, sOutputDirectory + L"/" + sFileName + L".docx");
+                    NSDirectory::DeleteDirectory(sTmp + L"/word/media");
                 }
                 else
                 {

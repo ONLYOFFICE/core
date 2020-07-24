@@ -1,0 +1,25 @@
+	h1
+	{
+		color : red;
+	}
+
+	.Author
+	{
+		color: green;
+		text-decoration: underline;
+	}
+
+	#first
+	{
+		color: black;
+	}
+
+	h1, h2, h3, h4
+	{
+		color: black;
+		text-decoration: overline; 
+	}
+	#main .container article.post > header h1.giga 
+	{
+  		color: #777;
+	}

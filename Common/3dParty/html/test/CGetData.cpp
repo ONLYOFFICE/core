@@ -1,6 +1,10 @@
 #include "CGetData.h"
 #include <codecvt>
 
+#include <string>
+#include <algorithm>
+#include <vector>
+
 #include "../katana-parser/src/selector.h"
 
 static std::wstring StringifyValueList(KatanaParser* parser, KatanaArray* values);
@@ -169,6 +173,8 @@ std::pair<std::wstring, std::wstring> CGetData::GetDeclaration(KatanaParser* oPa
     std::pair<std::wstring, std::wstring> pDeclaration;
 
     std::wstring ValueList = StringifyValueList(oParser, oDecl->values);
+    if (oDecl->important)
+        ValueList += L" !important";
     pDeclaration = std::make_pair(stringToWstring(oDecl->property), ValueList);
 
     return pDeclaration;
@@ -357,6 +363,130 @@ std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wst
     return arDeclarations;
 }
 
+std::vector<int> CGetData::GetWeightSelector(std::string sSelector)
+{
+    std::vector<int> arWeight = {0, 0, 0};
+    if (sSelector.length() == 0)
+        return arWeight;
+
+    std::vector<std::string> arPseudoClasses = {    "invalid",
+                                                    "read-only",
+                                                    "-moz-placeholder",
+                                                    "-webkit-input-placeholder",
+                                                    "active",
+                                                    "checked",
+                                                    "default",
+                                                    "disabled",
+                                                    "empty",
+                                                    "enabled",
+                                                    "first-child",
+                                                    "first-of-type",
+                                                    "focus",
+                                                    "hover",
+                                                    "indeterminate",
+                                                    "lang",
+                                                    "last-child",
+                                                    "last-of-type",
+                                                    "link",
+                                                    "not",
+                                                    "nth-child",
+                                                    "nth-last-child",
+                                                    "nth-last-of-type",
+                                                    "nth-of-type",
+                                                    "only-child",
+                                                    "only-of-type",
+                                                    "optional",
+                                                    "read-write",
+                                                    "required",
+                                                    "root",
+                                                    "target",
+                                                    "valid",
+                                                    "visited"};
+
+
+    std::vector<std::string> arSel;
+    std::string sTempStr;
+
+    bool fl1 = false;
+
+    for (int i = sSelector.size(); i >= 0; i--)
+    {
+        if (sSelector[i] == ']')
+        {
+            fl1 = true;
+        }
+        else if (sSelector[i] == '[')
+        {
+            fl1 = false;
+            arSel.push_back('[' + sTempStr + ']');
+            sTempStr.clear();
+        }
+        else if ((sSelector[i] == '.' || sSelector[i] == '#' || sSelector[i] == ' ' || sSelector[i] == ':') && !fl1)
+        {
+            if (i > 0 && sSelector[i - 1] == ':')
+            {
+                sTempStr = sSelector[i - 1] + sTempStr;
+                arSel.push_back(sSelector[i] + sTempStr);
+                i--;
+            }
+            else if (sTempStr.length() > 1)
+            {
+                arSel.push_back(sSelector[i] + sTempStr);
+            }
+            sTempStr.clear();
+        }
+        else if (sSelector[i] != '+' && sSelector[i] != '>')
+            sTempStr = sSelector[i] + sTempStr;
+    }
+
+    if (sTempStr.length() != 0)
+        arSel.push_back(sTempStr);
+
+    for (size_t i = 0; i < arSel.size(); i++)
+    {
+        if (arSel[i].find('#') != std::string::npos)
+            arWeight[0]++;
+        else if (arSel[i].find(':') != std::string::npos)
+        {
+            std::string sTemp;
+            for (size_t n = 0; n < arSel[i].length(); n++)
+                if (isalpha(arSel[i][n]))
+                    sTemp += arSel[i][n];
+
+            if (std::find(arPseudoClasses.begin(), arPseudoClasses.end(), sTemp) != arPseudoClasses.end())
+            {
+                arWeight[1]++;
+            }
+            else
+                arWeight[2]++;
+        }
+        else if (arSel[i].find('.') != std::string::npos ||
+                 arSel[i].find('[') != std::string::npos ||
+                 arSel[i].find(']') != std::string::npos)
+        {
+            arWeight[1]++;
+        }
+        else
+            arWeight[2]++;
+    }
+
+//    for (size_t i = 0; i < arSel.size(); i++)
+//        std::cout << arSel[i] << " - ";
+//    std::cout << std::endl;
+
+//    for (size_t i = 0; i < arWeight.size(); i++)
+//        std::cout << arWeight[i] << " - ";
+//    std::cout << std::endl;
+
+    return arWeight;
+}
+
+std::vector<int> CGetData::GetWeightSelector(std::wstring sSelector)
+{
+    std::string sSel = std::string(sSelector.begin(), sSelector.end());
+    return GetWeightSelector(sSel);
+}
+
 void CGetData::Print()
 {
     std::wcout << m_arData.size() << std::endl;
@@ -368,6 +498,102 @@ void CGetData::Print()
 std::wstring CGetData::GetValueList(KatanaParser *parser, KatanaArray *values)
 {
     return StringifyValueList(parser, values);
+}
+
+std::map<std::string, std::string> CGetData::GetStyle(std::vector<std::string> arSelectors)
+{
+    std::map<std::string, std::string> mStyle;
+
+    std::map<std::wstring, std::wstring> mStyleW = GetStyleW(arSelectors);
+
+    for (auto iter = mStyleW.begin(); iter != mStyleW.end(); iter++)
+        mStyle.emplace(std::string(iter->first.begin(), iter->first.end()), std::string(iter->second.begin(), iter->second.end()));
+
+    return mStyle;
+}
+
+std::map<std::wstring, std::wstring> CGetData::GetStyleW(std::vector<std::string> arSelectors)
+{
+    std::map<std::wstring, std::wstring> mStyle;
+
+    std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> arDecls;
+
+    std::map<std::wstring, std::wstring> arPropSel; //мапа (свойство, что уже было использовано, селектор этого свойства)
+
+
+    for (size_t i = 0; i < arSelectors.size(); i++)
+    {
+        std::wstring sSelector = std::wstring(arSelectors[i].begin(), arSelectors[i].end());
+        std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> arTempDecls = GetDeclarations(sSelector);
+        arDecls.insert(arDecls.end(), arTempDecls.begin(), arTempDecls.end());
+        arTempDecls.clear();
+        arTempDecls = GetDeclarations(L"*");
+        arDecls.insert(arDecls.end(), arTempDecls.begin(), arTempDecls.end());
+    }
+
+
+    for (size_t i = 0; i < arDecls.size(); i++)
+    {
+        std::vector<std::pair<std::wstring, std::wstring>> arDeclarations = arDecls[i].second;
+        for (size_t j = 0; j < arDeclarations.size(); j++)
+        {
+            arPropSel.emplace(arDeclarations[j].first, arDecls[i].first);
+            if (mStyle.find(arDeclarations[j].first) == mStyle.cend())
+            {
+                mStyle.emplace(arDeclarations[j].first, arDeclarations[j].second);
+            }
+            else
+            {
+                std::vector<int> arWeightFirst = GetWeightSelector(arPropSel[arDeclarations[j].first]);
+                std::vector<int> arWeightSecond = GetWeightSelector(arDecls[i].first);
+
+                if (arWeightFirst <= arWeightSecond)
+                    mStyle[arDeclarations[j].first] = arDeclarations[j].second;
+            }
+        }
+    }
+    return  mStyle;
+}
+
+void CGetData::AddStyle(std::vector<std::string> sSelectors, std::string sStyle)
+{
+    CElement *oElement = new CElement;
+    for (size_t i = 0; i < sSelectors.size(); i++)
+        oElement->AddSelector(std::wstring(sSelectors[i].begin(), sSelectors[i].end()));
+
+//    std::vector<std::pair<std::wstring, std::wstring>> arDeclarations;
+
+
+    std::vector<std::string> sProperty;
+    std::vector<std::string> sValue;
+
+    std::string sTemp;
+
+    for (size_t i = 0; i < sStyle.length(); i++)
+    {
+        if (sStyle[i] != ' ')
+        {
+            if (sStyle[i] == ':')
+            {
+                sProperty.push_back(sTemp);
+                sTemp.clear();
+            }
+            else if (sStyle[i] == ';')
+            {
+                sValue.push_back(sTemp);
+                sTemp.clear();
+            }
+            else
+                sTemp += sStyle[i];
+        }
+    }
+
+    if (!sTemp.empty())
+        sValue.push_back(sTemp);
+
+    for (size_t i = 0; i < sProperty.size(); i++)
+        std::cout << sProperty[i] << " --- " << sValue[i] << std::endl;
+//    oElement->AddDeclarations()
 }
 
 static std::wstring StringifyValueList(KatanaParser* parser, KatanaArray* values)

@@ -43,6 +43,14 @@ public:
 
     std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> GetDeclarations(std::wstring sSelector);
 
+    std::map<std::string, std::string> GetStyle(std::vector<std::string> arSelectors);
+    std::map<std::wstring, std::wstring> GetStyleW(std::vector<std::string> arSelectors);
+
+    std::vector<int> GetWeightSelector(std::string sSelector);
+    std::vector<int> GetWeightSelector(std::wstring sSelector);
+
+    void AddStyle(std::vector<std::string> sSelectors, std::string sStyle);
+
     void Print();
 };
 

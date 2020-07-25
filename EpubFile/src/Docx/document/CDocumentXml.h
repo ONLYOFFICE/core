@@ -15,6 +15,8 @@ public:
     bool AddParagraph(std::wstring sText, bool bNewPAge = false);
     bool AddParagraph(CParagraph *oParagraph);
 
+    bool AddElement(CElement *oElement, bool bEnd = false);
+
     CParagraph* GetParagraph(int nIndex);
 };
 

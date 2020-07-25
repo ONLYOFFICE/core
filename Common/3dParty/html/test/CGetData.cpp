@@ -2,7 +2,7 @@
 #include <codecvt>
 
 #include <string>
-#include <algorithm>
+//#include <algorithm>
 #include <vector>
 
 #include "../katana-parser/src/selector.h"
@@ -411,7 +411,11 @@ std::vector<int> CGetData::GetWeightSelector(std::string sSelector)
 
     for (int i = sSelector.size(); i >= 0; i--)
     {
-        if (sSelector[i] == ']')
+        if (sSelector[i] == '*')
+        {
+            arWeight[2]++;
+        }
+        else if (sSelector[i] == ']')
         {
             fl1 = true;
         }
@@ -500,11 +504,11 @@ std::wstring CGetData::GetValueList(KatanaParser *parser, KatanaArray *values)
     return StringifyValueList(parser, values);
 }
 
-std::map<std::string, std::string> CGetData::GetStyle(std::vector<std::string> arSelectors)
+std::map<std::string, std::string> CGetData::GetStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure)
 {
     std::map<std::string, std::string> mStyle;
 
-    std::map<std::wstring, std::wstring> mStyleW = GetStyleW(arSelectors);
+    std::map<std::wstring, std::wstring> mStyleW = GetStyleW(arSelectors, unitMeasure);
 
     for (auto iter = mStyleW.begin(); iter != mStyleW.end(); iter++)
         mStyle.emplace(std::string(iter->first.begin(), iter->first.end()), std::string(iter->second.begin(), iter->second.end()));
@@ -512,11 +516,15 @@ std::map<std::string, std::string> CGetData::GetStyle(std::vector<std::string> a
     return mStyle;
 }
 
-std::map<std::wstring, std::wstring> CGetData::GetStyleW(std::vector<std::string> arSelectors)
+std::map<std::wstring, std::wstring> CGetData::GetStyleW(std::vector<std::string> arSelectors, UnitMeasure unitMeasure)
 {
+    if (unitMeasure != UnitMeasure::Defoult)
+        SetUnitMeasure(unitMeasure);
+
     std::map<std::wstring, std::wstring> mStyle;
 
-    std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> arDecls;
+    std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> arStyle;
+//                        selector      declarations
 
     std::map<std::wstring, std::wstring> arPropSel; //мапа (свойство, что уже было использовано, селектор этого свойства)
 
@@ -525,30 +533,34 @@ std::map<std::wstring, std::wstring> CGetData::GetStyleW(std::vector<std::string
     {
         std::wstring sSelector = std::wstring(arSelectors[i].begin(), arSelectors[i].end());
         std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> arTempDecls = GetDeclarations(sSelector);
-        arDecls.insert(arDecls.end(), arTempDecls.begin(), arTempDecls.end());
+        arStyle.insert(arStyle.end(), arTempDecls.begin(), arTempDecls.end());
         arTempDecls.clear();
         arTempDecls = GetDeclarations(L"*");
-        arDecls.insert(arDecls.end(), arTempDecls.begin(), arTempDecls.end());
+        arStyle.insert(arStyle.end(), arTempDecls.begin(), arTempDecls.end());
     }
 
 
-    for (size_t i = 0; i < arDecls.size(); i++)
+    for (size_t i = 0; i < arStyle.size(); i++)
     {
-        std::vector<std::pair<std::wstring, std::wstring>> arDeclarations = arDecls[i].second;
+        std::vector<std::pair<std::wstring, std::wstring>> arDeclarations = arStyle[i].second;
         for (size_t j = 0; j < arDeclarations.size(); j++)
         {
-            arPropSel.emplace(arDeclarations[j].first, arDecls[i].first);
+            arPropSel.emplace(arDeclarations[j].first, arStyle[i].first);
             if (mStyle.find(arDeclarations[j].first) == mStyle.cend())
             {
-                mStyle.emplace(arDeclarations[j].first, arDeclarations[j].second);
+                std::wstring sValue = ConvertUnitMeasure(arDeclarations[j].second);
+                mStyle.emplace(arDeclarations[j].first, sValue);
             }
             else
             {
                 std::vector<int> arWeightFirst = GetWeightSelector(arPropSel[arDeclarations[j].first]);
-                std::vector<int> arWeightSecond = GetWeightSelector(arDecls[i].first);
+                std::vector<int> arWeightSecond = GetWeightSelector(arStyle[i].first);
 
                 if (arWeightFirst <= arWeightSecond)
-                    mStyle[arDeclarations[j].first] = arDeclarations[j].second;
+                {
+                    std::wstring sValue = ConvertUnitMeasure(arDeclarations[j].second);
+                    mStyle[arDeclarations[j].first] = sValue;
+                }
             }
         }
     }
@@ -564,8 +576,8 @@ void CGetData::AddStyle(std::vector<std::string> sSelectors, std::string sStyle)
 //    std::vector<std::pair<std::wstring, std::wstring>> arDeclarations;
 
 
-    std::vector<std::string> sProperty;
-    std::vector<std::string> sValue;
+    std::vector<std::string> arProperty;
+    std::vector<std::string> arValue;
 
     std::string sTemp;
 
@@ -575,12 +587,12 @@ void CGetData::AddStyle(std::vector<std::string> sSelectors, std::string sStyle)
         {
             if (sStyle[i] == ':')
             {
-                sProperty.push_back(sTemp);
+                arProperty.push_back(sTemp);
                 sTemp.clear();
             }
             else if (sStyle[i] == ';')
             {
-                sValue.push_back(sTemp);
+                arValue.push_back(sTemp);
                 sTemp.clear();
             }
             else
@@ -589,11 +601,464 @@ void CGetData::AddStyle(std::vector<std::string> sSelectors, std::string sStyle)
     }
 
     if (!sTemp.empty())
-        sValue.push_back(sTemp);
+        arValue.push_back(sTemp);
 
-    for (size_t i = 0; i < sProperty.size(); i++)
-        std::cout << sProperty[i] << " --- " << sValue[i] << std::endl;
-//    oElement->AddDeclarations()
+    std::vector<std::pair<std::wstring, std::wstring>> arDecl;
+
+    size_t size;
+    size_t max_size;
+
+    if (arProperty.size() >= arValue.size())
+    {
+        size = arValue.size();
+        max_size = arProperty.size();
+    }
+    else
+    {
+        size = arProperty.size();
+        max_size = arValue.size();
+    }
+    for (size_t i = 0; i < size; i++)
+    {
+        std::wstring sProperty = std::wstring(arProperty[i].begin(), arProperty[i].end());
+        std::wstring sValue = std::wstring(arValue[i].begin(), arValue[i].end());
+        arDecl.push_back(std::make_pair(sProperty, sValue));
+    }
+
+
+    oElement->AddDeclarations(arDecl);
+    m_arData.push_back(oElement);
+}
+
+std::wstring CGetData::ConvertUnitMeasure(std::wstring sValue)
+{
+    std::wstring sConvertValue = sValue;
+
+    if (sConvertValue.find(L"px") != std::wstring::npos)
+    {
+        return ConvertPx(sConvertValue);
+    }
+    else if (sConvertValue.find(L"cm") != std::wstring::npos)
+    {
+        return ConvertCm(sConvertValue);
+    }
+    else if (sConvertValue.find(L"mm") != std::wstring::npos)
+    {
+        return ConvertMm(sConvertValue);
+    }
+    else if (sConvertValue.find(L"in") != std::wstring::npos)
+    {
+        return ConvertIn(sConvertValue);
+    }
+    else if (sConvertValue.find(L"pt") != std::wstring::npos)
+    {
+        return ConvertPt(sConvertValue);
+    }
+    else if (sConvertValue.find(L"pc") != std::wstring::npos)
+    {
+        return ConvertPc(sConvertValue);
+    }
+
+    return sConvertValue;
+}
+
+std::wstring CGetData::ConvertPx(std::wstring sValue)
+{
+    std::wstring sConvertValue = sValue.substr(0, sValue.find(L"px"));
+
+    double dValue;
+    try {
+        dValue = std::stod(sConvertValue);
+    } catch (std::exception& e) {
+        return sValue;
+    }
+
+    switch (m_UnitMeasure)
+    {
+        case Defoult:
+            return  ConvertPxToMm(dValue);
+        case Cantimeter:
+            return ConvertPxToCm(dValue);
+        case Inch:
+            return  ConvertPxToIn(dValue);
+        case Millimeter:
+            return  ConvertPxToMm(dValue);
+        case Pixel:
+            break;
+        case Point:
+            return ConvertPxToPt(dValue);
+        case Peak:
+            return ConvertPxToPc(dValue);
+        default:
+            break;
+    }
+    return  sValue;
+}
+
+std::wstring CGetData::ConvertPxToCm(double dValue)
+{
+    double _dValue = 2.54 / m_nDpi * dValue;
+    return  std::to_wstring(_dValue) + L"cm";
+}
+
+std::wstring CGetData::ConvertPxToIn(double dValue)
+{
+    double _dValue = 1 / m_nDpi * dValue;
+    return  std::to_wstring(_dValue) + L"in";
+}
+
+std::wstring CGetData::ConvertPxToMm(double dValue)
+{
+    double _dValue = 25.4 / m_nDpi * dValue;
+    return  std::to_wstring(_dValue) + L"mm";
+}
+
+std::wstring CGetData::ConvertPxToPc(double dValue)
+{
+    double _dValue = 1/6 / m_nDpi * dValue;
+    return std::to_wstring(_dValue) + L"pc";
+}
+
+std::wstring CGetData::ConvertPxToPt(double dValue)
+{
+    double _dValue = 1/72 / m_nDpi * dValue;
+    return std::to_wstring(_dValue) + L"pt";
+}
+
+std::wstring CGetData::ConvertCm(std::wstring sValue)
+{
+    std::wstring sConvertValue = sValue.substr(0, sValue.find(L"cm"));
+
+    double dValue;
+    try {
+        dValue = std::stod(sConvertValue);
+    } catch (std::exception& e) {
+        return sValue;
+    }
+
+    switch (m_UnitMeasure)
+    {
+        case Defoult:
+            return  ConvertCmToMm(dValue);
+        case Cantimeter:
+            break;
+        case Inch:
+            return  ConvertCmToIn(dValue);
+        case Millimeter:
+            return  ConvertCmToMm(dValue);
+        case Pixel:
+            return ConvertCmToPx(dValue);
+        case Point:
+            return ConvertCmToPt(dValue);
+        case Peak:
+            return ConvertCmToPc(dValue);
+        default:
+            break;
+    }
+    return  sValue;
+}
+
+std::wstring CGetData::ConvertCmToIn(double dValue)
+{
+    double _dValue = dValue / 2.54;
+    return std::to_wstring(_dValue) + L"in";
+}
+
+std::wstring CGetData::ConvertCmToMm(double dValue)
+{
+    double _dValue = dValue * 10;
+    return std::to_wstring(_dValue) + L"mm";
+}
+
+std::wstring CGetData::ConvertCmToPc(double dValue)
+{
+    double _dValue = 72 / 2.54 * dValue;
+    return std::to_wstring(_dValue) + L"pc";
+}
+
+std::wstring CGetData::ConvertCmToPt(double dValue)
+{
+    double _dValue = 6 / 2.54 * dValue;
+    return std::to_wstring(_dValue) + L"pt";
+}
+
+std::wstring CGetData::ConvertCmToPx(double dValue)
+{
+    double _dValue = m_nDpi / 2.54 * dValue;
+    return std::to_wstring(_dValue) + L"px";
+}
+
+std::wstring CGetData::ConvertMm(std::wstring sValue)
+{
+    std::wstring sConvertValue = sValue.substr(0, sValue.find(L"mm"));
+
+    double dValue;
+    try {
+        dValue = std::stod(sConvertValue);
+    } catch (std::exception& e) {
+        return sValue;
+    }
+
+    switch (m_UnitMeasure)
+    {
+        case Defoult:
+            break;
+        case Cantimeter:
+            return ConvertMmToCm(dValue);
+        case Inch:
+            return  ConvertMmToIn(dValue);
+        case Millimeter:
+            break;
+        case Pixel:
+            return ConvertMmToPx(dValue);
+        case Point:
+            return ConvertMmToPt(dValue);
+        case Peak:
+            return ConvertMmToPc(dValue);
+        default:
+            break;
+    }
+    return  sValue;
+}
+
+std::wstring CGetData::ConvertMmToIn(double dValue)
+{
+    double _dValue = dValue / 25.4;
+    return std::to_wstring(_dValue) + L"in";
+}
+
+std::wstring CGetData::ConvertMmToCm(double dValue)
+{
+    double _dValue = dValue / 10;
+    return std::to_wstring(_dValue) + L"cm";
+}
+
+std::wstring CGetData::ConvertMmToPc(double dValue)
+{
+    double _dValue = 72 / 25.4 * dValue;
+    return std::to_wstring(_dValue) + L"pc";
+}
+
+std::wstring CGetData::ConvertMmToPt(double dValue)
+{
+    double _dValue = 6 / 25.4 * dValue;
+    return std::to_wstring(_dValue) + L"pt";
+}
+
+std::wstring CGetData::ConvertMmToPx(double dValue)
+{
+    double _dValue = m_nDpi / 25.4 * dValue;
+    return std::to_wstring(_dValue) + L"px";
+}
+
+std::wstring CGetData::ConvertIn(std::wstring sValue)
+{
+    std::wstring sConvertValue = sValue.substr(0, sValue.find(L"in"));
+
+    double dValue;
+    try {
+        dValue = std::stod(sConvertValue);
+    } catch (std::exception& e) {
+        return sValue;
+    }
+
+    switch (m_UnitMeasure)
+    {
+        case Defoult:
+          return ConvertInToMm(dValue);
+        case Cantimeter:
+            return ConvertInToCm(dValue);
+        case Inch:
+            break;
+        case Millimeter:
+            return ConvertInToMm(dValue);
+        case Pixel:
+            return ConvertInToPx(dValue);
+        case Point:
+            return ConvertInToPt(dValue);
+        case Peak:
+            return ConvertInToPc(dValue);
+        default:
+            break;
+    }
+    return  sValue;
+}
+
+std::wstring CGetData::ConvertInToMm(double dValue)
+{
+    double _dValue = dValue * 25.4;
+    return std::to_wstring(_dValue) + L"mm";
+}
+
+std::wstring CGetData::ConvertInToCm(double dValue)
+{
+    double _dValue = dValue * 2.54;
+    return std::to_wstring(_dValue) + L"cm";
+}
+
+std::wstring CGetData::ConvertInToPc(double dValue)
+{
+    double _dValue = dValue / 72;
+    return std::to_wstring(_dValue) + L"pc";
+}
+
+std::wstring CGetData::ConvertInToPt(double dValue)
+{
+    double _dValue = dValue / 6;
+    return std::to_wstring(_dValue) + L"pt";
+}
+
+std::wstring CGetData::ConvertInToPx(double dValue)
+{
+    double _dValue = dValue * m_nDpi;
+    return std::to_wstring(_dValue) + L"px";
+}
+
+std::wstring CGetData::ConvertPt(std::wstring sValue)
+{
+    std::wstring sConvertValue = sValue.substr(0, sValue.find(L"pt"));
+
+    double dValue;
+    try {
+        dValue = std::stod(sConvertValue);
+    } catch (std::exception& e) {
+        return sValue;
+    }
+
+    switch (m_UnitMeasure)
+    {
+        case Defoult:
+            return ConvertPtToMm(dValue);
+        case Cantimeter:
+            return ConvertPtToCm(dValue);
+        case Inch:
+            return ConvertPtToIn(dValue);
+        case Millimeter:
+            return ConvertPtToMm(dValue);
+        case Pixel:
+            return ConvertPtToPx(dValue);
+        case Point:
+            break;
+        case Peak:
+            return ConvertPtToPc(dValue);
+        default:
+            break;
+    }
+    return  sValue;
+}
+
+std::wstring CGetData::ConvertPtToIn(double dValue)
+{
+    double _dValue = dValue / 72;
+    return std::to_wstring(_dValue) + L"in";
+}
+
+std::wstring CGetData::ConvertPtToCm(double dValue)
+{
+    double _dValue = dValue / 72 * 2.54;
+    return std::to_wstring(_dValue) + L"cm";
+}
+
+std::wstring CGetData::ConvertPtToPc(double dValue)
+{
+    double _dValue = dValue / 12;
+    return std::to_wstring(_dValue) + L"pc";
+}
+
+std::wstring CGetData::ConvertPtToMm(double dValue)
+{
+    double _dValue = dValue / 72 * 25.4;
+    return std::to_wstring(_dValue) + L"mm";
+}
+
+std::wstring CGetData::ConvertPtToPx(double dValue)
+{
+    double _dValue = m_nDpi / 72 * dValue;
+    return std::to_wstring(_dValue) + L"px";
+}
+
+std::wstring CGetData::ConvertPc(std::wstring sValue)
+{
+    std::wstring sConvertValue = sValue.substr(0, sValue.find(L"pc"));
+
+    double dValue;
+    try {
+        dValue = std::stod(sConvertValue);
+    } catch (std::exception& e) {
+        return sValue;
+    }
+
+    switch (m_UnitMeasure)
+    {
+        case Defoult:
+            return ConvertPcToMm(dValue);
+        case Cantimeter:
+            return ConvertPcToCm(dValue);
+        case Inch:
+            return ConvertPcToIn(dValue);
+        case Millimeter:
+            return ConvertPcToMm(dValue);
+        case Pixel:
+            return ConvertPcToPx(dValue);
+        case Point:
+            return ConvertPcToPt(dValue);
+        case Peak:
+            break;
+        default:
+            break;
+    }
+    return  sValue;
+}
+
+std::wstring CGetData::ConvertPcToIn(double dValue)
+{
+    double _dValue = dValue / 6;
+    return std::to_wstring(_dValue) + L"in";
+}
+
+std::wstring CGetData::ConvertPcToCm(double dValue)
+{
+    double _dValue = dValue / 6 * 2.54;
+    return std::to_wstring(_dValue) + L"cm";
+}
+
+std::wstring CGetData::ConvertPcToPt(double dValue)
+{
+    double _dValue = dValue * 12;
+    return std::to_wstring(_dValue) + L"pt";
+}
+
+std::wstring CGetData::ConvertPcToMm(double dValue)
+{
+    double _dValue = dValue / 6 * 25.4;
+    return std::to_wstring(_dValue) + L"mm";
+}
+
+std::wstring CGetData::ConvertPcToPx(double dValue)
+{
+    double _dValue = m_nDpi / 6 * dValue;
+    return std::to_wstring(_dValue) + L"px";
+}
+
+void CGetData::SetDpi(int nValue)
+{
+    if (nValue > 0)
+        m_nDpi = nValue;
+}
+
+void CGetData::SetUnitMeasure(UnitMeasure nType)
+{
+    m_UnitMeasure = nType;
+}
+
+int CGetData::GetDpi()
+{
+    return m_nDpi;
+}
+
+UnitMeasure CGetData::GetUnitMeasure()
+{
+    return m_UnitMeasure;
 }
 
 static std::wstring StringifyValueList(KatanaParser* parser, KatanaArray* values)

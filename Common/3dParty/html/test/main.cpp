@@ -45,10 +45,11 @@ int main(int argc, char *argv[])
 
     CGetData data;
     data.GetOutputData(output);
+//    data.SetUnitMeasure(UnitMeasure::Cantimeter);
 
-    std::vector<std::string> arSel;
-    arSel.push_back("h1");
-    data.AddStyle(arSel, "color: blue;text-decoration:overline");
+//    std::vector<std::string> arSel;
+//    arSel.push_back("h1");
+//    data.AddStyle(arSel, "color: blue;text-decoration:overline");
 
 //    data.Print();
 

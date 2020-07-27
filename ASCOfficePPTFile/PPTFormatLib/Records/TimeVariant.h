@@ -32,7 +32,7 @@
 #pragma once
 #include "TimeVariantTypeEnum.h"
 
-// Don't use this class in factory metod. The type is not unique
+// Don't use this classes in factory metod. The type is not unique. But have own enum for type
 class CRecordTimeVariantBool : public CUnknownRecord
 {
 public:
@@ -53,9 +53,90 @@ public:
     {
         m_oHeader       = oHeader;
 
-        m_eType         = (TimeVariantTypeEnum)StreamUtils::ReadDWORD(pStream);
+        m_eType         = (TimeVariantTypeEnum)StreamUtils::ReadBYTE(pStream);
 
         m_boolValue     = StreamUtils::ReadBYTE(pStream);
+    }
+
+};
+
+class CRecordTimeVariantInt : public CUnknownRecord
+{
+public:
+    TimeVariantTypeEnum     m_eType;
+    _INT32                  m_intValue;
+
+public:
+
+    CRecordTimeVariantInt()
+    {
+    }
+
+    ~CRecordTimeVariantInt()
+    {
+    }
+
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+    {
+        m_oHeader       = oHeader;
+
+        m_eType         = (TimeVariantTypeEnum)StreamUtils::ReadBYTE(pStream);
+
+        m_intValue     = StreamUtils::ReadDWORD(pStream);
+    }
+
+};
+
+class CRecordTimeVariantFloat : public CUnknownRecord
+{
+public:
+    TimeVariantTypeEnum     m_eType;
+    FLOAT                   m_floatValue;
+
+public:
+
+    CRecordTimeVariantFloat()
+    {
+    }
+
+    ~CRecordTimeVariantFloat()
+    {
+    }
+
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+    {
+        m_oHeader       = oHeader;
+
+        m_eType         = (TimeVariantTypeEnum)StreamUtils::ReadBYTE(pStream);
+
+        m_floatValue    = StreamUtils::ReadFLOAT(pStream);
+    }
+
+};
+
+class CRecordTimeVariantString : public CUnknownRecord
+{
+public:
+    TimeVariantTypeEnum     m_eType;
+    std::wstring            m_stringValue;
+
+public:
+
+    CRecordTimeVariantString()
+    {
+    }
+
+    ~CRecordTimeVariantString()
+    {
+    }
+
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+    {
+        m_oHeader       = oHeader;
+
+        m_eType         = (TimeVariantTypeEnum)StreamUtils::ReadBYTE(pStream);
+
+        m_stringValue    = StreamUtils::ReadStringW(pStream, m_oHeader.RecLen - 1);
     }
 
 };

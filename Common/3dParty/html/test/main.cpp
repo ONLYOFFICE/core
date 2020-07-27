@@ -38,51 +38,28 @@ int main(int argc, char *argv[])
 //        gumbo_destroy_output(&kGumboDefaultOptions, output);
 //        return 0;
 //    }
-    std::wstring sFilePath = NSFile::GetProcessDirectory() + L"../../../../cssFiles/test.css";
+    std::wstring sFilePath = NSFile::GetProcessDirectory() + L"../../../../cssFiles/demo-page.css";
 
-    FILE *fFile = fopen(std::string(sFilePath.begin(), sFilePath.end()).c_str(), "r");
-    KatanaOutput *output = katana_parse_in(fFile);
+    CCssCalculator oCSS;
+    oCSS.AddStyles(sFilePath);
+    oCSS.AddStyle("h1 {color : red;}"
+                  ".Author{"
+                  "color: green;"
+                  "text-decoration: underline;"
+                  "border-radius:  4.5px;}");
 
-    CGetData data;
-    data.GetOutputData(output);
-//    data.SetUnitMeasure(UnitMeasure::Cantimeter);
-
-//    std::vector<std::string> arSel;
-//    arSel.push_back("h1");
-//    data.AddStyle(arSel, "color: blue;text-decoration:overline");
-
-//    data.Print();
-
-
+//    oCSS.Print();
+    std::wcout << oCSS.GetEncoding() << std::endl;
 
     std::vector<std::string> arSelectors;
-    arSelectors.push_back("h1");
-    arSelectors.push_back(".Author");
-    arSelectors.push_back("#first");
+    arSelectors.push_back("#forkongithub");
 
     std::map<std::wstring, std::wstring> mDecl;
 
-    mDecl = data.GetStyleW(arSelectors);
+    mDecl = oCSS.GetCompiledStyleW(arSelectors, Cantimeter);
 
     for (auto iter = mDecl.begin(); iter != mDecl.end(); iter++)
     {
         std::wcout << iter->first << " : " << iter->second << std::endl;
     }
-
-//    data.GetWeightSelector(".main[data-columns]::before");
-//    std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> arDecls = data.GetDeclarations(L"div._idGenObjectLayout-1");
-
-//    for (size_t i = 0; i < arDecls.size(); i++)
-//    {
-//        std::wcout << arDecls[i].first << std::endl;
-//        std::vector<std::pair<std::wstring, std::wstring>> arDeclarations = arDecls[i].second;
-//        std::wcout << L"{\n";
-//        for (size_t j = 0; j < arDeclarations.size(); j++)
-//            std::wcout << "   " << arDeclarations[j].first << " : " << arDeclarations[j].second << L";" <<std::endl;
-//        std::wcout << L"}\n";
-//    }
-
-//    katana_dump_output(output);
-    katana_destroy_output(output);
-    fclose(fFile);
 }

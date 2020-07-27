@@ -18,103 +18,115 @@ typedef enum {
     Peak
 } UnitMeasure;
 
-class CGetData
+class CCssCalculator
 {
     std::vector<CElement*> m_arData;
 
     int m_nDpi = 96;
+    std::wstring m_sEncoding = L"UTF-8";
 
-    UnitMeasure m_UnitMeasure = Millimeter;
+    UnitMeasure m_UnitMeasure;
 
-    void GetStylesheet(KatanaParser* oParser, KatanaStylesheet* oStylesheet, CElement* elementRule = NULL);
-    void GetRule(KatanaParser* oParser, KatanaRule* oRule, CElement* elementRule = NULL);
+    void AddElement(CElement* oElement);
+    size_t GetSize();
 
-    CElement* GetStyleRule(KatanaParser* oParser, KatanaStyleRule* oRule, CElement* elementRule = NULL);
-    void GetImportRule(KatanaParser* parser, KatanaImportRule* rule, CElement* elementRule = NULL);
-    void GetFontFaceRule(KatanaParser* parser, KatanaFontFaceRule* rule, CElement* elementRule = NULL);
-    void GetKeyframesRule(KatanaParser* parser, KatanaKeyframesRule* rule, CElement* elementRule = NULL);
-    void GetMediaRule(KatanaParser* parser, KatanaMediaRule* rule, CElement* elementRule = NULL);
+    void GetStylesheet(KatanaStylesheet* oStylesheet, CElement* oElementRule = NULL);
+    void GetRule(KatanaRule* oRule, CElement* oElementRule = NULL);
 
-    std::wstring GetMediaList(KatanaParser* parser, KatanaArray* medias);
-    std::wstring GetMediaQuery(KatanaParser* parser, KatanaMediaQuery* query);
-    std::wstring GetMediaQueryExp(KatanaParser* parser, KatanaMediaQueryExp* exp);
+    CElement* GetStyleRule(KatanaStyleRule* oRule, CElement* oElementRule = NULL);
+    void GetImportRule(KatanaImportRule* oRule);
+    void GetFontFaceRule(KatanaFontFaceRule* oRule);
+    void GetKeyframesRule(KatanaKeyframesRule* oRule);
+    void GetMediaRule(KatanaMediaRule* oRule);
 
-    std::wstring GetValueList(KatanaParser* parser, KatanaArray* values);
+    CElement* GetElement(const int& nIndex);
 
-    CElement* GetKeyframe(KatanaParser* parser, KatanaKeyframe* keyframe);
+    std::wstring GetMediaList(KatanaArray* oMedias);
+    std::wstring GetMediaQuery(KatanaMediaQuery* oQuery);
+    std::wstring GetMediaQueryExp(KatanaMediaQueryExp* oExp);
 
-    std::vector<std::wstring> GetSelectorList(KatanaParser* oParser, KatanaArray* oSelectors);
-    std::wstring GetSelector(KatanaParser* oParser, KatanaSelector* oSelector);
+    std::wstring GetValueList(KatanaArray* oValues);
 
-    std::vector<std::pair<std::wstring, std::wstring>> GetDeclarationList(KatanaParser* oParser, KatanaArray* oDeclarations);
-    std::pair<std::wstring, std::wstring> GetDeclaration(KatanaParser* oParser, KatanaDeclaration* oDecl);
+    CElement* GetKeyframe(KatanaKeyframe* oKeyframe);
 
-    std::wstring ConvertUnitMeasure(std::wstring sValue);
+    std::vector<std::wstring> GetSelectorList(KatanaArray* oSelectors);
+    std::wstring GetSelector(KatanaSelector* oSelector);
 
-    std::wstring ConvertPx(std::wstring sValue);
-    std::wstring ConvertPxToCm(double dValue);
-    std::wstring ConvertPxToIn(double dValue);
-    std::wstring ConvertPxToMm(double dValue);
-    std::wstring ConvertPxToPt(double dValue);
-    std::wstring ConvertPxToPc(double dValue);
+    std::vector<std::pair<std::wstring, std::wstring>> GetDeclarationList(KatanaArray* oDeclarations);
+    std::pair<std::wstring, std::wstring> GetDeclaration(KatanaDeclaration* oDecl);
 
-    std::wstring ConvertCm(std::wstring sValue);
-    std::wstring ConvertCmToPx(double dValue);
-    std::wstring ConvertCmToIn(double dValue);
-    std::wstring ConvertCmToMm(double dValue);
-    std::wstring ConvertCmToPt(double dValue);
-    std::wstring ConvertCmToPc(double dValue);
+    std::wstring ConvertUnitMeasure(const std::wstring& sValue);
 
-    std::wstring ConvertMm(std::wstring sValue);
-    std::wstring ConvertMmToPx(double dValue);
-    std::wstring ConvertMmToIn(double dValue);
-    std::wstring ConvertMmToCm(double dValue);
-    std::wstring ConvertMmToPt(double dValue);
-    std::wstring ConvertMmToPc(double dValue);
+    std::wstring ConvertPx(const std::wstring& sValue);
+    std::wstring ConvertPxToCm(const double& dValue, bool bAddUM = false);
+    std::wstring ConvertPxToIn(const double& dValue, bool bAddUM = false);
+    std::wstring ConvertPxToMm(const double& dValue, bool bAddUM = false);
+    std::wstring ConvertPxToPt(const double& dValue, bool bAddUM = false);
+    std::wstring ConvertPxToPc(const double& dValue, bool bAddUM = false);
 
-    std::wstring ConvertIn(std::wstring sValue);
-    std::wstring ConvertInToPx(double dValue);
-    std::wstring ConvertInToMm(double dValue);
-    std::wstring ConvertInToCm(double dValue);
-    std::wstring ConvertInToPt(double dValue);
-    std::wstring ConvertInToPc(double dValue);
+    std::wstring ConvertCm(const std::wstring& sValue);
+    std::wstring ConvertCmToPx(const double& dValue, bool bAddUM = false);
+    std::wstring ConvertCmToIn(const double& dValue, bool bAddUM = false);
+    std::wstring ConvertCmToMm(const double& dValue, bool bAddUM = false);
+    std::wstring ConvertCmToPt(const double& dValue, bool bAddUM = false);
+    std::wstring ConvertCmToPc(const double& dValue, bool bAddUM = false);
 
-    std::wstring ConvertPt(std::wstring sValue);
-    std::wstring ConvertPtToPx(double dValue);
-    std::wstring ConvertPtToMm(double dValue);
-    std::wstring ConvertPtToCm(double dValue);
-    std::wstring ConvertPtToIn(double dValue);
-    std::wstring ConvertPtToPc(double dValue);
+    std::wstring ConvertMm(const std::wstring& sValue);
+    std::wstring ConvertMmToPx(const double& dValue, bool bAddUM = false);
+    std::wstring ConvertMmToIn(const double& dValue, bool bAddUM = false);
+    std::wstring ConvertMmToCm(const double& dValue, bool bAddUM = false);
+    std::wstring ConvertMmToPt(const double& dValue, bool bAddUM = false);
+    std::wstring ConvertMmToPc(const double& dValue, bool bAddUM = false);
 
-    std::wstring ConvertPc(std::wstring sValue);
-    std::wstring ConvertPcToPx(double dValue);
-    std::wstring ConvertPcToMm(double dValue);
-    std::wstring ConvertPcToCm(double dValue);
-    std::wstring ConvertPcToIn(double dValue);
-    std::wstring ConvertPcToPt(double dValue);
+    std::wstring ConvertIn(const std::wstring& sValue);
+    std::wstring ConvertInToPx(const double& dValue, bool bAddUM = false);
+    std::wstring ConvertInToMm(const double& dValue, bool bAddUM = false);
+    std::wstring ConvertInToCm(const double& dValue, bool bAddUM = false);
+    std::wstring ConvertInToPt(const double& dValue, bool bAddUM = false);
+    std::wstring ConvertInToPc(const double& dValue, bool bAddUM = false);
+
+    std::wstring ConvertPt(const std::wstring& sValue);
+    std::wstring ConvertPtToPx(const double& dValue, bool bAddUM = false);
+    std::wstring ConvertPtToMm(const double& dValue, bool bAddUM = false);
+    std::wstring ConvertPtToCm(const double& dValue, bool bAddUM = false);
+    std::wstring ConvertPtToIn(const double& dValue, bool bAddUM = false);
+    std::wstring ConvertPtToPc(const double& dValue, bool bAddUM = false);
+
+    std::wstring ConvertPc(const std::wstring& sValue);
+    std::wstring ConvertPcToPx(const double& dValue, bool bAddUM = false);
+    std::wstring ConvertPcToMm(const double& dValue, bool bAddUM = false);
+    std::wstring ConvertPcToCm(const double& dValue, bool bAddUM = false);
+    std::wstring ConvertPcToIn(const double& dValue, bool bAddUM = false);
+    std::wstring ConvertPcToPt(const double& dValue, bool bAddUM = false);
+
+    std::vector<int> GetWeightSelector(const std::string& sSelector);
+    std::vector<int> GetWeightSelector(const std::wstring& sSelector);
 public:
-    CGetData();
-    ~CGetData();
+    CCssCalculator();
+    ~CCssCalculator();
 
     void GetOutputData(KatanaOutput* oOutput);
 
-    std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> GetDeclarations(std::wstring sSelector);
+    std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> GetDeclarations(const std::wstring& sSelector);
 
-    std::map<std::string, std::string> GetStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure = Defoult);
-    std::map<std::wstring, std::wstring> GetStyleW(std::vector<std::string> arSelectors, UnitMeasure unitMeasure = Defoult);
+    std::map<std::string, std::string> GetCompiledStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure = Defoult);
+    std::map<std::wstring, std::wstring> GetCompiledStyleW(std::vector<std::string> arSelectors, UnitMeasure unitMeasure = Defoult);
 
-    std::vector<int> GetWeightSelector(std::string sSelector);
-    std::vector<int> GetWeightSelector(std::wstring sSelector);
 
-    void AddStyle(std::vector<std::string> sSelectors, std::string sStyle);
+    void AddStyle(std::vector<std::string> sSelectors, const std::string& sStyle);
+    void AddStyle(const std::string& sStyle);
+    void AddStyles(const std::wstring& sFileName);
 
-    void SetUnitMeasure(UnitMeasure nType);
-    void SetDpi(int nValue);
+    void SetUnitMeasure(const UnitMeasure nType);
+    void SetDpi(const int nValue);
 
     UnitMeasure GetUnitMeasure();
+    std::wstring GetEncoding();
     int GetDpi();
 
+
     void Print();
+
 };
 
 #endif // CGETDATA_H

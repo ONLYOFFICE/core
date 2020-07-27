@@ -129,6 +129,8 @@ HEADERS += \
     ../Records/TimeAnimateBehaviorAtom.h \
     ../Records/TimeAnimationValueAtom.h \
     ../Records/TimeNodeAtom.h \
+    ../Records/TimeVariantBool.h \
+    ../Records/TimeVariantTypeEnum.h \
     ../Records/UserEditAtom.h \
     ../Records/VBAInfoAtom.h \
     ../Records/ViewInfoAtom.h \

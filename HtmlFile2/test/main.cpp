@@ -3,6 +3,7 @@
 #include "../../Common/3dParty/html/htmltoxhtml.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/xml/include/xmlutils.h"
 
 void readFile( XmlUtils::CXmlLiteReader& oLightReader)
 {
@@ -14,7 +15,7 @@ void readFile( XmlUtils::CXmlLiteReader& oLightReader)
 int main()
 {
     // Файл, который открываем
-    std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test2.html";
+    std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test3.html";
 
     // Директория, где будем создавать xhtml
     std::wstring sOutputDirectory = NSFile::GetProcessDirectory() + L"/res";
@@ -34,8 +35,8 @@ int main()
     bool bRes = oLightReader.FromFile(sOutputDirectory + L"/res.xhtml");
     if(bRes)
     {
-        // readFile(oLightReader);
-        std::cout << (oLightReader.ReadTillEnd() ? "Success" : "Failure") << std::endl;
+        readFile(oLightReader);
+        std::cout << "Success" << std::endl;
     }
     else
         std::cout << "Failure" << std::endl;

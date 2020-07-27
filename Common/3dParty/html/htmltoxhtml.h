@@ -145,26 +145,19 @@ static void build_doctype(GumboNode* node, NSStringUtils::CStringBuilderA& oBuil
 static void build_attributes(GumboAttribute* at, bool no_entities, NSStringUtils::CStringBuilderA& atts)
 {
     std::string sVal(at->value);
-    char quote = at->original_value.data[0];
-    if ((!sVal.empty()) || (quote == '"') || (quote == '\''))
-    {
-        atts.WriteString(" ");
-        atts.WriteString(at->name);
+    char quote = '"';
+    atts.WriteString(" ");
+    atts.WriteString(at->name);
 
-        // determine original quote character used if it exists
-        std::string qs = "";
-        if (quote == '\'')
-            qs = "'";
-        else if (quote == '"')
-            qs = "\"";
+    // determine original quote character used if it exists
+    std::string qs ="\"";
 
-        atts.WriteString("=");
-        atts.WriteString(qs);
-        if(!no_entities)
-            substitute_xml_entities_into_attributes(quote, sVal);
-        atts.WriteString(sVal);
-        atts.WriteString(qs);
-    }
+    atts.WriteString("=");
+    atts.WriteString(qs);
+    if(!no_entities)
+        substitute_xml_entities_into_attributes(quote, sVal);
+    atts.WriteString(sVal);
+    atts.WriteString(qs);
 }
 
 

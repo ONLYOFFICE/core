@@ -126,6 +126,8 @@ HEADERS += \
     ../Records/TextRulerAtom.h \
     ../Records/TextSIExceptionAtom.h \
     ../Records/TextSpecInfoAtom.h \
+    ../Records/TimeAnimateBehaviorAtom.h \
+    ../Records/TimeNodeAtom.h \
     ../Records/UserEditAtom.h \
     ../Records/VBAInfoAtom.h \
     ../Records/ViewInfoAtom.h \

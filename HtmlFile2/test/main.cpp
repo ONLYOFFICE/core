@@ -6,46 +6,36 @@
 
 void readFile( XmlUtils::CXmlLiteReader& oLightReader)
 {
-    int nDeath = oLightReader.GetDepth();
-    while(oLightReader.ReadNextSiblingNode(nDeath))
+    int nDepth = oLightReader.GetDepth();
+    while(oLightReader.ReadNextSiblingNode(nDepth))
         readFile(oLightReader);
 }
 
 int main()
 {
     // Файл, который открываем
-    std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test1.html";
+    std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test2.html";
 
     // Директория, где будем создавать xhtml
     std::wstring sOutputDirectory = NSFile::GetProcessDirectory() + L"/res";
     NSDirectory::DeleteDirectory(sOutputDirectory);
     NSDirectory::CreateDirectory(sOutputDirectory);
 
-    std::string sRes = htmlToXhtml(sFile);
-
-    /*
     NSFile::CFileBinary oXhtmlWriter;
     if (oXhtmlWriter.CreateFileW(sOutputDirectory + L"/res.xhtml"))
     {
-        oXhtmlWriter.WriteStringUTF8(sRes);
+        // htmlToXhtml возвращает текст файла в кодировке UTF-8
+        oXhtmlWriter.WriteStringUTF8(htmlToXhtml(sFile));
         oXhtmlWriter.CloseFile();
     }
-    */
 
-    // Запись std::string в файл
-    std::ofstream out;
-    out.open(sOutputDirectory + L"/res.xhtml");
-    if(out.is_open())
-        out << sRes << std::endl;
-    out.close();
-
+    // Проверка на чтение
     XmlUtils::CXmlLiteReader oLightReader;
-    std::string sFileContentUtf8 = XmlUtils::GetXmlContentAsUTF8(sOutputDirectory + L"/res.xhtml");
-    bool bRes = oLightReader.FromStringA(sFileContentUtf8);
+    bool bRes = oLightReader.FromFile(sOutputDirectory + L"/res.xhtml");
     if(bRes)
     {
-        readFile(oLightReader);
-        std::cout << "Success" << std::endl;
+        // readFile(oLightReader);
+        std::cout << (oLightReader.ReadTillEnd() ? "Success" : "Failure") << std::endl;
     }
     else
         std::cout << "Failure" << std::endl;

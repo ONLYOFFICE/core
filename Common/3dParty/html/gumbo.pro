@@ -16,7 +16,7 @@ CORE_ROOT_DIR = $$PWD/../../..
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 
-ADD_DEPENDENCY()
+ADD_DEPENDENCY(kernel, UnicodeConverter)
 
 core_windows:INCLUDEPATH += $$PWD/gumbo-parser/visualc/include
 

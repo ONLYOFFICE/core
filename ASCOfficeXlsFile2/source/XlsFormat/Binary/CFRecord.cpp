@@ -93,12 +93,28 @@ CFRecord::CFRecord(NSFile::CFileBinary &file, GlobalWorkbookInfoPtr global_info)
 	global_info_(global_info)
 {
 	file_ptr = file.GetFilePosition();
+	
 	if (file.GetFilePosition() + 4 < file.GetFileSize())
 	{
 		unsigned short size_short;
 		DWORD size_read = 0;
 		
-		file.ReadFile((BYTE*)&type_id_, 2, size_read);
+		if (global_info->Version == 0x800)
+		{
+			BYTE type;
+			file.ReadFile(&type, 1, size_read);
+			type_id_ = type;
+
+			if (type > 0x80)
+			{
+				file.ReadFile(&type, 1, size_read);
+				type_id_ |= (type << 7);
+			}
+		}
+		else
+		{
+			file.ReadFile((BYTE*)&type_id_, 2, size_read);
+		}
 		file.ReadFile((BYTE*)&size_short, 2, size_read);
 		
 		file_ptr += 4;

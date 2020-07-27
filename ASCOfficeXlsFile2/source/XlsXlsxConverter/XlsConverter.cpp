@@ -125,7 +125,14 @@ typedef struct tagBITMAPCOREHEADER {
         _UINT16    bcBitCount;
 } BITMAPCOREHEADER;
 #endif
-
+XlsConverter::XlsConverter() 
+{
+	output_document		= NULL;
+	xlsx_context		= NULL;
+	
+	is_older_version	= false;
+	is_encrypted		= false;
+}
 XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring & xlsxFilePath, const std::wstring & password, const std::wstring & fontsPath, const std::wstring & tempPath, const int lcid_user, bool & bMacros) 
 {
 	xlsx_path			= xlsxFilePath;

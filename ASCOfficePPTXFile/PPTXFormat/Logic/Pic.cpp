@@ -77,6 +77,11 @@ namespace PPTX
             XmlMacroReadAttributeBase(node, L"Type",		m_oType);
             XmlMacroReadAttributeBase(node, L"UpdateMode",	m_oUpdateMode);
 
+			if (false == m_oId.IsInit())
+			{
+				XmlMacroReadAttributeBase( node, L"relationships:id", m_oId );
+			}
+
 			std::wstring ole_bin, ole_image, mspackage;
 			
             XmlMacroReadAttributeBase(node, L"pathbin", ole_bin);
@@ -1441,8 +1446,13 @@ namespace PPTX
 			oleObject.Init();
 			
             XmlMacroReadAttributeBase(node, L"progId",	oleObject->m_sProgId);
-            XmlMacroReadAttributeBase(node, L"r:id",		oleObject->m_oId);
+            XmlMacroReadAttributeBase(node, L"r:id",	oleObject->m_oId);
 			
+			if (false == oleObject->m_oId.IsInit())
+			{
+				XmlMacroReadAttributeBase( node, L"relationships:id", oleObject->m_oId );
+			}			
+
 			int imgW = node.GetAttributeInt(std::wstring(L"imgW"), 0);			
 			if(imgW > 0)
 			{

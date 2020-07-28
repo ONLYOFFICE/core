@@ -57,12 +57,11 @@ namespace OOX
 	void ActiveX_xml::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start(oReader)
-
-		WritingElement_ReadAttributes_Read_if		(oReader, L"ax:classid"		, m_oClassId)
-		WritingElement_ReadAttributes_Read_else_if	(oReader, L"ax:persistence"	, m_oPersistence)
-		WritingElement_ReadAttributes_Read_else_if	(oReader, L"r:id"			, m_oId)
-		WritingElement_ReadAttributes_Read_else_if	(oReader, L"ax:license"		, m_oLicense)
-
+			WritingElement_ReadAttributes_Read_if		(oReader, L"ax:classid"		, m_oClassId)
+			WritingElement_ReadAttributes_Read_else_if	(oReader, L"ax:persistence"	, m_oPersistence)
+			WritingElement_ReadAttributes_Read_else_if	(oReader, L"r:id"			, m_oId)
+			WritingElement_ReadAttributes_Read_else_if	(oReader, L"relationships:id", m_oId)
+			WritingElement_ReadAttributes_Read_else_if	(oReader, L"ax:license"		, m_oLicense)
 		WritingElement_ReadAttributes_End(oReader)
 	}
 	void ActiveX_xml::read(const CPath& oRootPath, const CPath& oPath)

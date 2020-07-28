@@ -1862,25 +1862,11 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
-				if ( oReader.GetAttributesCount() <= 0 )
-					return;
-				
-				if ( !oReader.MoveToFirstAttribute() )
-					return;
-				
-				std::wstring wsName = oReader.GetName();
-				while( !wsName.empty() )
-				{					
-					if      ( _T("r:id")         == wsName ) m_rId         = oReader.GetText();
-					else if ( _T("w:solutionID") == wsName ) m_sSolutionID = oReader.GetText();
-
-					if ( !oReader.MoveToNextAttribute() )
-						break;
-
-					wsName = oReader.GetName();
-				}
-				oReader.MoveToElement();
+				WritingElement_ReadAttributes_Start(oReader)
+					WritingElement_ReadAttributes_Read_if		(oReader, L"w:solutionID",	m_sSolutionID)
+					WritingElement_ReadAttributes_Read_else_if	(oReader, L"r:id",			m_rId)
+					WritingElement_ReadAttributes_Read_else_if	(oReader, L"relationships:id", m_rId)
+				WritingElement_ReadAttributes_End(oReader)
 			}
 
 		public:

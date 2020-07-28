@@ -82,22 +82,23 @@ namespace Spreadsheet
 	void CControlPr::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if		( oReader, _T("altText"),		m_oAltText )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("autoFill"),		m_oAutoFill )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("autoLine"),		m_oAutoLine )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("autoPict"),		m_oAutoPict )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("dde"),			m_oDde )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("defaultSize"),	m_oDefaultSize )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("disabled"),		m_oDisabled )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("r:id"),			m_oRid )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("locked"),		m_oLocked )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("macro"),			m_oMacro )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("print"),			m_oPrint )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("uiObject"),		m_oUiObject )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("cf"),			m_oCf )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("linkedCell"),	m_oLinkedCell )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("listFillRange"),	m_oListFillRange )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("recalcAlways"),	m_oRecalcAlways )
+			WritingElement_ReadAttributes_Read_if		( oReader, (L"altText"),		m_oAltText )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"autoFill"),		m_oAutoFill )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"autoLine"),		m_oAutoLine )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"autoPict"),		m_oAutoPict )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"dde"),			m_oDde )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"defaultSize"),	m_oDefaultSize )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"disabled"),		m_oDisabled )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"r:id"),			m_oRid )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"relationships:id"), m_oRid )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"locked"),		m_oLocked )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"macro"),			m_oMacro )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"print"),			m_oPrint )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"uiObject"),		m_oUiObject )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"cf"),			m_oCf )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"linkedCell"),	m_oLinkedCell )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"listFillRange"),	m_oListFillRange )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"recalcAlways"),	m_oRecalcAlways )
 		WritingElement_ReadAttributes_End( oReader )
 	}
 	void CControl::toXML(NSStringUtils::CStringBuilder& writer) const
@@ -186,7 +187,7 @@ namespace Spreadsheet
 		{
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-			if ( _T("controlPr") == sName )
+			if ( (L"controlPr") == sName )
 			{
 				m_oControlPr = oReader;
 			}
@@ -196,14 +197,15 @@ namespace Spreadsheet
 	void CControl::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if	 ( oReader, _T("progId"),		m_oProgId )
-			WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("name"),	m_oName )
-			WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("dvAspect"),	m_oDvAspect )
-			WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("link"),		m_oLink )
-			WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("oleUpdate"),m_oOleUpdate )
-			WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("autoLoad"),	m_oAutoLoad )
-			WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("shapeId"),	m_oShapeId )
-			WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("r:id"),		m_oRid )
+			WritingElement_ReadAttributes_Read_if	  ( oReader, (L"progId"),		m_oProgId )
+			WritingElement_ReadAttributes_Read_else_if( oReader, (L"name"),			m_oName )
+			WritingElement_ReadAttributes_Read_else_if( oReader, (L"dvAspect"),		m_oDvAspect )
+			WritingElement_ReadAttributes_Read_else_if( oReader, (L"link"),			m_oLink )
+			WritingElement_ReadAttributes_Read_else_if( oReader, (L"oleUpdate"),	m_oOleUpdate )
+			WritingElement_ReadAttributes_Read_else_if( oReader, (L"autoLoad"),		m_oAutoLoad )
+			WritingElement_ReadAttributes_Read_else_if( oReader, (L"shapeId"),		m_oShapeId )
+			WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:id"),			m_oRid )
+			WritingElement_ReadAttributes_Read_else_if( oReader, (L"relationships:id"), m_oRid )
 		WritingElement_ReadAttributes_End( oReader )
 	}
 	CControls::~CControls()
@@ -300,7 +302,7 @@ namespace Spreadsheet
 	void CListItem::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if	( oReader, _T("val"), m_oVal )
+			WritingElement_ReadAttributes_Read_if	( oReader, (L"val"), m_oVal )
 		WritingElement_ReadAttributes_End( oReader )
 	}
 //-----------------------------------------------------------------------------------------------------------------

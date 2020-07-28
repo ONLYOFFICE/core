@@ -57,12 +57,17 @@ namespace OOX
 	{
 		void CHyperlink::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-            XmlMacroReadAttributeBase( oNode, _T("w:anchor"),      m_sAnchor );
-            XmlMacroReadAttributeBase( oNode, _T("w:docLocation"), m_sDocLocation );
-            XmlMacroReadAttributeBase( oNode, _T("w:history"),     m_oHistory );
-            XmlMacroReadAttributeBase( oNode, _T("r:id"),          m_oId );
-            XmlMacroReadAttributeBase( oNode, _T("w:tgtFrame"),    m_sTgtFrame );
-            XmlMacroReadAttributeBase( oNode, _T("w:tooltip"),     m_sTooltip );
+            XmlMacroReadAttributeBase( oNode, _T("w:anchor"),		m_sAnchor );
+            XmlMacroReadAttributeBase( oNode, _T("w:docLocation"),	m_sDocLocation );
+            XmlMacroReadAttributeBase( oNode, _T("w:history"),		m_oHistory );
+            XmlMacroReadAttributeBase( oNode, _T("r:id"),			m_oId );
+            XmlMacroReadAttributeBase( oNode, _T("w:tgtFrame"),		m_sTgtFrame );
+            XmlMacroReadAttributeBase( oNode, _T("w:tooltip"),		m_sTooltip );
+
+			if (false == m_oId.IsInit())
+			{
+				XmlMacroReadAttributeBase( oNode, _T("relationships:id"), m_oId );
+			}
 
 			XmlUtils::CXmlNodes oChilds;
 			if ( oNode.GetNodes( L"*", oChilds ) )
@@ -348,6 +353,11 @@ namespace OOX
 		void CAltChunk::fromXML(XmlUtils::CXmlNode& oNode)
 		{
             XmlMacroReadAttributeBase( oNode, L"r:id", m_oId );
+			
+			if (false == m_oId.IsInit())
+			{
+				XmlMacroReadAttributeBase( oNode, L"relationships:id", m_oId );
+			}
 
 			XmlUtils::CXmlNodes oChilds;
 			if ( oNode.GetNodes( L"*", oChilds ) )

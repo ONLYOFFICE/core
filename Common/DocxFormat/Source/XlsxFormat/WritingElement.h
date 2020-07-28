@@ -52,6 +52,24 @@ namespace Spreadsheet
 		writer.WriteString(XmlUtils::DoubleToString(val)); \
 		writer.WriteString(end);
 
+#define WritingValNode(ns, name, val) \
+		writer.StartNodeWithNS(ns, name); \
+		writer.StartAttributes(); \
+		writer.WriteAttribute(L"val", val); \
+		writer.EndAttributesAndNode();
+#define WritingValNodeEncodeXml(ns, name, val) \
+		writer.StartNodeWithNS(ns, name); \
+		writer.StartAttributes(); \
+		writer.WriteAttributeEncodeXml(L"val", val); \
+		writer.EndAttributesAndNode();
+#define WritingValNodeIf(ns, name, cond, val) \
+		writer.StartNodeWithNS(ns, name); \
+		writer.StartAttributes(); \
+		if (cond) \
+		{ \
+			writer.WriteAttribute(L"val", val); \
+		} \
+		writer.EndAttributesAndNode();
 
 #define WritingStringValAttr(name, func, val) \
 		WritingStringCommon(L"<" name L" val=\"", func, val, L"\"/>")

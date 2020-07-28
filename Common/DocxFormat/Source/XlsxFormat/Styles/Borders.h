@@ -61,15 +61,17 @@ namespace OOX
 			}
 			void toXML2(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const
 			{
-				writer.WriteString(_T("<"));
-				writer.WriteString(sName);
+				toXMLWithNS(writer, L"", sName, L"");
+			}
+			void toXMLWithNS(NSStringUtils::CStringBuilder& writer, const std::wstring &node_ns, const std::wstring &node_name, const std::wstring &child_ns) const
+			{
+				writer.StartNodeWithNS(node_ns, node_name);
+				writer.StartAttributes();
 				WritingStringNullableAttrString(L"style", m_oStyle, m_oStyle->ToString());
-				writer.WriteString(_T(">"));
+				writer.EndAttributes();
 				if(m_oColor.IsInit())
-					m_oColor->toXML2(writer, _T("color"));
-				writer.WriteString(_T("</"));
-				writer.WriteString(sName);
-				writer.WriteString(_T(">"));
+					m_oColor->toXMLWithNS(writer, child_ns, L"color", child_ns);
+				writer.EndNodeWithNS(node_ns, node_name);
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -139,7 +141,12 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				writer.WriteString(_T("<border"));
+				toXMLWithNS(writer, L"", L"border", L"");
+			}
+			void toXMLWithNS(NSStringUtils::CStringBuilder& writer, const std::wstring &node_ns, const std::wstring &node_name, const std::wstring &child_ns) const
+			{
+				writer.StartNodeWithNS(node_ns, node_name);
+				writer.StartAttributes();
 				if (m_oDiagonalDown.IsInit() && SimpleTypes::onoffTrue == m_oDiagonalDown->GetValue())
 				{
 					WritingStringAttrString(L"diagonalDown", m_oDiagonalDown->ToString3(SimpleTypes::onofftostring1));
@@ -148,32 +155,32 @@ namespace OOX
 				{
 					WritingStringAttrString(L"diagonalUp", m_oDiagonalUp->ToString3(SimpleTypes::onofftostring1));
 				}
-				writer.WriteString(_T(">"));
+				writer.EndAttributes();
 				if(m_oStart.IsInit() && false == m_oStart->IsEmpty())
-					m_oStart->toXML2(writer, _T("left"));
+					m_oStart->toXMLWithNS(writer, child_ns, _T("left"), child_ns);
 				else
 					writer.WriteString(_T("<left/>"));
 				if(m_oEnd.IsInit() && false == m_oEnd->IsEmpty())
-					m_oEnd->toXML2(writer, _T("right"));
+					m_oEnd->toXMLWithNS(writer, child_ns, _T("right"), child_ns);
 				else
 					writer.WriteString(_T("<right/>"));
 				if(m_oTop.IsInit() && false == m_oTop->IsEmpty())
-					m_oTop->toXML2(writer, _T("top"));
+					m_oTop->toXMLWithNS(writer, child_ns, _T("top"), child_ns);
 				else
 					writer.WriteString(_T("<top/>"));
 				if(m_oBottom.IsInit() && false == m_oBottom->IsEmpty())
-					m_oBottom->toXML2(writer, _T("bottom"));
+					m_oBottom->toXMLWithNS(writer, child_ns, _T("bottom"), child_ns);
 				else
 					writer.WriteString(_T("<bottom/>"));
 				if(m_oDiagonal.IsInit() && false == m_oDiagonal->IsEmpty())
-					m_oDiagonal->toXML2(writer, _T("diagonal"));
+					m_oDiagonal->toXMLWithNS(writer, child_ns, _T("diagonal"), child_ns);
 				else
 					writer.WriteString(_T("<diagonal/>"));
 				if(m_oVertical.IsInit() && false == m_oVertical->IsEmpty())
-					m_oVertical->toXML2(writer, _T("vertical"));
+					m_oVertical->toXMLWithNS(writer, child_ns, _T("vertical"), child_ns);
 				if(m_oHorizontal.IsInit() && false == m_oHorizontal->IsEmpty())
-					m_oHorizontal->toXML2(writer, _T("horizontal"));
-				writer.WriteString(_T("</border>"));
+					m_oHorizontal->toXMLWithNS(writer, child_ns, _T("horizontal"), child_ns);
+				writer.EndNodeWithNS(node_ns, node_name);
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

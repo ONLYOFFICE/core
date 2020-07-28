@@ -387,7 +387,8 @@ namespace BinXlsxRW
 		SortState = 36,
 		Slicers = 37,
 		SlicersExt = 38,
-		Slicer = 39
+		Slicer = 39,
+		NamedSheetView = 40
 	};}
 	namespace c_oSerWorksheetPropTypes{enum c_oSerWorksheetPropTypes
 	{

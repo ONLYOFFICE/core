@@ -399,6 +399,19 @@ namespace NSBinPptxRW
 
 			EndRecord();
 		}
+		template<typename T>
+		void WriteRecordArrayOfPointers(int type, int subtype, const std::vector<T*>& val)
+		{
+			StartRecord(type);
+
+			_UINT32 len = (_UINT32)val.size();
+			WriteULONG(len);
+
+			for (_UINT32 i = 0; i < len; ++i)
+				WriteRecord1(subtype, *val[i]);
+
+			EndRecord();
+		}
 
 		void GetBase64File(const std::wstring& sFile, std::string& strDst64);
 

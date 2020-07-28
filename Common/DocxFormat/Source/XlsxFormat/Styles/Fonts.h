@@ -58,108 +58,81 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				writer.WriteString(L"<font>");
+				toXMLWithNS(writer, L"", L"font", L"");
+			}
+			virtual void toXMLWithNS(NSStringUtils::CStringBuilder& writer, const std::wstring &node_ns, const std::wstring &node_name, const std::wstring &child_ns) const
+			{
+				writer.StartNodeWithNS(node_ns, node_name);
+				writer.StartAttributes();
+				writer.EndAttributes();
 				if(m_oRFont.IsInit() && m_oRFont->m_sVal.IsInit())
 				{
 					//todo more complex solution
 					//if name more then 31 chars Excel wants to recover xlsx
 					if (m_oRFont->m_sVal->length() <= 31)
 					{
-						WritingStringValAttrEncodeXmlString(L"name", m_oRFont->m_sVal.get());
+						WritingValNodeEncodeXml(child_ns, L"name", m_oRFont->m_sVal.get());
 					}
 					else
 					{
-						WritingStringValAttrEncodeXmlString(L"name", m_oRFont->m_sVal->substr(0, 31));
+						WritingValNodeEncodeXml(child_ns, L"name", m_oRFont->m_sVal->substr(0, 31));
 					}
 				}			
 				if(m_oCharset.IsInit() && m_oCharset->m_oCharset.IsInit())
 				{
-					WritingStringValAttrString(L"charset", m_oCharset->m_oCharset->ToString());
+					WritingValNode(child_ns, L"charset", m_oCharset->m_oCharset->ToString());
 				}
 				if(m_oFamily.IsInit() && m_oFamily->m_oFontFamily.IsInit())
 				{
-					WritingStringValAttrString(L"family", m_oFamily->m_oFontFamily->ToString());
+					WritingValNode(child_ns, L"family", m_oFamily->m_oFontFamily->ToString());
 				}
 				if(m_oBold.IsInit())
 				{
-					if(SimpleTypes::onoffTrue == m_oBold->m_oVal.GetValue())
-						writer.WriteString(L"<b/>");
-					else
-						writer.WriteString(L"<b val=\"0\"/>");
+					WritingValNodeIf(child_ns, L"b", !m_oBold->ToBool(), L"0");
 				}
 				if(m_oItalic.IsInit())
 				{
-					if(SimpleTypes::onoffTrue == m_oItalic->m_oVal.GetValue())
-						writer.WriteString(L"<i/>");
-					else
-						writer.WriteString(L"<i val=\"0\"/>");
+					WritingValNodeIf(child_ns, L"i", !m_oItalic->ToBool(), L"0");
 				}
 				if(m_oStrike.IsInit())
 				{
-					if(SimpleTypes::onoffTrue == m_oStrike->m_oVal.GetValue())
-						writer.WriteString(L"<strike/>");
-					else
-						writer.WriteString(L"<strike val=\"0\"/>");
+					WritingValNodeIf(child_ns, L"strike", !m_oStrike->ToBool(), L"0");
 				}
 				if(m_oOutline.IsInit())
 				{
-					if(SimpleTypes::onoffTrue == m_oOutline->m_oVal.GetValue())
-						writer.WriteString(L"<outline/>");
-					else
-						writer.WriteString(L"<outline val=\"0\"/>");
+					WritingValNodeIf(child_ns, L"outline", !m_oOutline->ToBool(), L"0");
 				}
 				if(m_oShadow.IsInit())
 				{
-					if(SimpleTypes::onoffTrue == m_oShadow->m_oVal.GetValue())
-						writer.WriteString(L"<shadow/>");
-					else
-						writer.WriteString(L"<shadow val=\"0\"/>");
+					WritingValNodeIf(child_ns, L"shadow", !m_oShadow->ToBool(), L"0");
 				}
 				if(m_oCondense.IsInit())
 				{
-					if(SimpleTypes::onoffTrue == m_oCondense->m_oVal.GetValue())
-						writer.WriteString(L"<condense/>");
-					else
-						writer.WriteString(L"<condense val=\"0\"/>");
+					WritingValNodeIf(child_ns, L"condense", !m_oCondense->ToBool(), L"0");
 				}
 				if(m_oExtend.IsInit())
 				{
-					if(SimpleTypes::onoffTrue == m_oExtend->m_oVal.GetValue())
-						writer.WriteString(L"<extend/>");
-					else
-						writer.WriteString(L"<extend val=\"0\"/>");
+					WritingValNodeIf(child_ns, L"extend", !m_oExtend->ToBool(), L"0");
 				}
 				if(m_oColor.IsInit())
-					m_oColor->toXML2(writer, L"color");
+					m_oColor->toXMLWithNS(writer, child_ns, L"color", child_ns);
 				if(m_oSz.IsInit() && m_oSz->m_oVal.IsInit())
 				{
-					WritingStringValAttrDouble(L"sz", m_oSz->m_oVal->GetValue());
+					WritingValNode(child_ns, L"sz", m_oSz->m_oVal->GetValue());
 				}
 				if(m_oUnderline.IsInit() && m_oUnderline->m_oUnderline.IsInit())
 				{
-					if (SimpleTypes::underlineSingle != m_oUnderline->m_oUnderline->GetValue())
-					{
-						WritingStringValAttrString(L"u", m_oUnderline->m_oUnderline->ToString());
-					}
-					else
-					{
-						writer.WriteString(L"<u/>");
-					}
-					
+					WritingValNodeIf(child_ns, L"u", SimpleTypes::Spreadsheet::underlineSingle != m_oUnderline->m_oUnderline->GetValue(), m_oUnderline->m_oUnderline->ToString());
 				}
 				if(m_oVertAlign.IsInit() && m_oVertAlign->m_oVerticalAlign.IsInit())
 				{
-					writer.WriteString(L"<vertAlign val=\"");
-                    std::wstring sAlign = m_oVertAlign->m_oVerticalAlign->ToString();
-                    writer.WriteString(sAlign.c_str());
-
-					writer.WriteString(L"\"/>");
+					WritingValNode(child_ns, L"vertAlign", m_oVertAlign->m_oVerticalAlign->ToString());
 				}
 				if(m_oScheme.IsInit() && m_oScheme->m_oFontScheme.IsInit())
 				{
-					WritingStringValAttrString(L"scheme", m_oScheme->m_oFontScheme->ToString());
+					WritingValNode(child_ns, L"scheme", m_oScheme->m_oFontScheme->ToString());
 				}
-				writer.WriteString(L"</font>");
+				writer.EndNodeWithNS(node_ns, node_name);
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

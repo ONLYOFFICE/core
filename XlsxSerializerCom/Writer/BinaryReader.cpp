@@ -71,6 +71,7 @@
 #include "../../Common/DocxFormat/Source/XlsxFormat/Slicer/SlicerCache.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Slicer/SlicerCacheExt.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Slicer/Slicer.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/NamedSheetViews/NamedSheetViews.h"
 
 namespace BinXlsxRW 
 {
@@ -620,6 +621,13 @@ int BinaryTableReader::ReadFilterColumns(BYTE type, long length, void* poResult)
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
+int BinaryTableReader::ReadFilterColumnExternal(OOX::Spreadsheet::CFilterColumn* pFilterColumn)
+{
+	int res = c_oSerConstants::ReadOk;
+	ULONG length = m_oBufferedStream.GetULong();
+	READ1_DEF(length, res, this->ReadFilterColumn, pFilterColumn);
+	return res;
+}
 int BinaryTableReader::ReadFilterColumn(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
@@ -911,6 +919,13 @@ int BinaryTableReader::ReadSortConditions(BYTE type, long length, void* poResult
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryTableReader::ReadSortConditionExternal(OOX::Spreadsheet::CSortCondition* pSortCondition)
+{
+	int res = c_oSerConstants::ReadOk;
+	ULONG length = m_oBufferedStream.GetULong();
+	READ2_DEF_SPREADSHEET(length, res, this->ReadSortCondition, pSortCondition);
 	return res;
 }
 int BinaryTableReader::ReadSortCondition(BYTE type, long length, void* poResult)
@@ -1805,6 +1820,13 @@ int BinaryStyleTableReader::ReadDxfs(BYTE type, long length, void* poResult)
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryStyleTableReader::ReadDxfExternal(OOX::Spreadsheet::CDxf* pDxf)
+{
+	int res = c_oSerConstants::ReadOk;
+	ULONG length = m_oBufferedStream.GetULong();
+	READ1_DEF(length, res, this->ReadDxf, pDxf);
 	return res;
 }
 int BinaryStyleTableReader::ReadDxf(BYTE type, long length, void* poResult)
@@ -3914,6 +3936,14 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		{
 			RELEASEOBJECT(oPivotCachesTemp.pTable);
 		}
+	SEEK_TO_POS_END2();
+//-------------------------------------------------------------------------------------------------------------
+	SEEK_TO_POS_START(c_oSerWorksheetsTypes::NamedSheetView);
+		smart_ptr<OOX::Spreadsheet::CNamedSheetViewFile> pNamedSheetViewFile(new OOX::Spreadsheet::CNamedSheetViewFile(NULL));
+		pNamedSheetViewFile->m_oNamedSheetViews.Init();
+		pNamedSheetViewFile->m_oNamedSheetViews->fromPPTY(&m_oBufferedStream);
+		smart_ptr<OOX::File> oFile = pNamedSheetViewFile.smart_dynamic_cast<OOX::File>();
+		m_pCurWorksheet->Add(oFile);
 	SEEK_TO_POS_END2();
 //-------------------------------------------------------------------------------------------------------------
 	m_oBufferedStream.Seek(nOldPos);

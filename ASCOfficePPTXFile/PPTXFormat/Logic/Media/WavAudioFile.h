@@ -71,38 +71,38 @@ namespace PPTX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:embed"), embed )
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("name"), name )
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"embed", embed )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"name", name )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_name	= XmlUtils::GetNameNoNS(node.GetName());
 
-				embed	= node.GetAttribute(_T("r:embed"));
+				embed	= node.GetAttribute((L"r:embed"));
 				XmlMacroReadAttributeBase(node, L"name", name);
 			}
 
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("r:embed"), embed.ToString());
-				oAttr.Write(_T("name"), name);
+				oAttr.Write((L"r:embed"), embed.ToString());
+				oAttr.Write((L"name"), name);
 
-				return XmlUtils::CreateNode(_T("a:") + m_name, oAttr);
+				return XmlUtils::CreateNode((L"a:") + m_name, oAttr);
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(_T("a:") + m_name);
+				pWriter->StartNode((L"a:") + m_name);
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("r:embed"), embed.ToString());
-                pWriter->WriteAttribute2(_T("name"), name);
+				pWriter->WriteAttribute((L"r:embed"), embed.ToString());
+                pWriter->WriteAttribute2((L"name"), name);
 				pWriter->EndAttributes();
 				
-				pWriter->EndNode(_T("a:") + m_name);
+				pWriter->EndNode((L"a:") + m_name);
 			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);

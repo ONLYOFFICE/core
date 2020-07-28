@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include "../htmlfile2.h"
 #include "../../Common/3dParty/html/htmltoxhtml.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"

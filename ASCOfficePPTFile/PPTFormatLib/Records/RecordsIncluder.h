@@ -122,6 +122,8 @@
 #include "TimeAnimateBehaviorAtom.h"
 #include "TimeAnimationValueAtom.h"
 #include "TimeNodeAtom.h"
+#include "TimeVariant.h"
+#include "TimeVariant4TimeNode.h"
 #include "VBAInfoAtom.h"
 #include "ViewInfoAtom.h"
 #include "ZoomViewInfoAtom.h"

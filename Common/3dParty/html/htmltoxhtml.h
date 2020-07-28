@@ -21,7 +21,7 @@ static std::string special_handling    = "|html|body|";
 static std::string no_entity_sub       = "|script|style|";
 static std::string treat_like_inline   = "|p|";
 
-static std::string prettyprint(GumboNode*);
+static void prettyprint(GumboNode*, NSStringUtils::CStringBuilderA& oBuilder);
 
 static std::wstring htmlToXhtml(const std::wstring& sFile)
 {
@@ -56,7 +56,9 @@ static std::wstring htmlToXhtml(const std::wstring& sFile)
     GumboOutput* output = gumbo_parse_with_options(&options, sFileContent.data(), sFileContent.length());
 
     // prettyprint
-    std::string sR = prettyprint(output->document);
+    NSStringUtils::CStringBuilderA oBuilder;
+    prettyprint(output->document, oBuilder);
+    std::string sR = oBuilder.GetData();
 
     // Вставка кодировки в файл
     if(sR.length() > 5)
@@ -161,9 +163,8 @@ static void build_attributes(GumboAttribute* at, bool no_entities, NSStringUtils
 }
 
 
-static std::string prettyprint_contents(GumboNode* node)
+static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA& contents)
 {
-    NSStringUtils::CStringBuilderA contents;
     std::string key             = "|" + get_tag_name(node) + "|";
     bool no_entity_substitution = no_entity_sub.find(key) != std::string::npos;
     bool keep_whitespace        = preserve_whitespace.find(key) != std::string::npos;
@@ -184,8 +185,7 @@ static std::string prettyprint_contents(GumboNode* node)
         }
         else if ((child->type == GUMBO_NODE_ELEMENT) || (child->type == GUMBO_NODE_TEMPLATE))
         {
-            std::string val = prettyprint(child);
-            contents.WriteString(val);
+            prettyprint(child, contents);
         }
         else if (child->type == GUMBO_NODE_WHITESPACE)
         {
@@ -199,37 +199,25 @@ static std::string prettyprint_contents(GumboNode* node)
             // fprintf(stderr, "unknown element of type: %d\n", child->type);
         }
     }
-
-    return contents.GetData();
 }
 
 
-static std::string prettyprint(GumboNode* node)
+static void prettyprint(GumboNode* node, NSStringUtils::CStringBuilderA& oBuilder)
 {
-    NSStringUtils::CStringBuilderA oBuilder;
     // special case the document node
     if (node->type == GUMBO_NODE_DOCUMENT)
     {
         build_doctype(node, oBuilder);
-        oBuilder.WriteString(prettyprint_contents(node));
-        return oBuilder.GetData();
+        prettyprint_contents(node, oBuilder);
+        return;
     }
 
     std::string close              = "";
     std::string closeTag           = "";
-    NSStringUtils::CStringBuilderA atts;
     std::string tagname            = get_tag_name(node);
     std::string key                = "|" + tagname + "|";
     bool is_empty_tag              = empty_tags.find(key) != std::string::npos;
     bool no_entity_substitution    = no_entity_sub.find(key) != std::string::npos;
-
-    // build attr string
-    const GumboVector * attribs = &node->v.element.attributes;
-    for (int i = 0; i < attribs->length; ++i)
-    {
-        GumboAttribute* at = static_cast<GumboAttribute*>(attribs->data[i]);
-        build_attributes(at, no_entity_substitution, atts);
-    }
 
     // determine closing tag type
     if (is_empty_tag)
@@ -237,21 +225,21 @@ static std::string prettyprint(GumboNode* node)
     else
         closeTag = "</" + tagname + ">";
 
-    // prettyprint your contents
-    std::string contents = prettyprint_contents(node);
-
-    char last_char = ' ';
-    if (!contents.empty())
-        last_char = contents.at(contents.length() - 1);
-
     // build results
-    NSStringUtils::CStringBuilderA results;
-    results.WriteString("<" + tagname + atts.GetData() + close + ">");
-    results.WriteString(contents);
-    results.WriteString(closeTag);
+    oBuilder.WriteString("<" + tagname);
 
-    return results.GetData();
+    // build attr string
+    const GumboVector * attribs = &node->v.element.attributes;
+    for (int i = 0; i < attribs->length; ++i)
+    {
+        GumboAttribute* at = static_cast<GumboAttribute*>(attribs->data[i]);
+        build_attributes(at, no_entity_substitution, oBuilder);
+    }
+    oBuilder.WriteString(close + ">");
+
+    // prettyprint your contents
+    prettyprint_contents(node, oBuilder);
+    oBuilder.WriteString(closeTag);
 }
-
 
 #endif // HTMLTOXHTML_H

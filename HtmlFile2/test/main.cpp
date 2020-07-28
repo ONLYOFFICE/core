@@ -15,7 +15,7 @@ void readFile( XmlUtils::CXmlLiteReader& oLightReader)
 int main()
 {
     // Файл, который открываем
-    std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test3.html";
+    std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test2.html";
 
     // Директория, где будем создавать xhtml
     std::wstring sOutputDirectory = NSFile::GetProcessDirectory() + L"/res";

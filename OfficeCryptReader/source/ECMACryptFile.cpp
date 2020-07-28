@@ -976,3 +976,56 @@ bool ECMACryptFile::DecryptOfficeFile(const std::wstring &file_name_inp, const s
 
 	return result;
 }
+
+std::string ECMACryptFile::ReadAdditional(const std::wstring &file_name, const std::wstring &addit_name)
+{
+	POLE::Storage *pStorage = new POLE::Storage(file_name.c_str());
+	
+	if (!pStorage->open(false, false))
+	{
+		delete pStorage;
+		return "";
+	}
+	std::string result;
+	POLE::Stream *pStream = new POLE::Stream(pStorage, addit_name);
+	if ((pStream) && (pStream->size() > 0))
+	{
+		_UINT64 lengthData, size = pStream->size();
+
+		char* data = new char[size];
+		
+		lengthData = pStream->read((unsigned char*)data, size); 
+
+		result = std::string(data, lengthData);
+		delete []data;
+		delete pStream;
+	}
+	delete pStorage;
+	
+	return result;
+}
+bool ECMACryptFile::WriteAdditional(const std::wstring &file_name, const std::wstring &addit_name, const std::string &addit_info)
+{
+	POLE::Storage *pStorage = new POLE::Storage(file_name.c_str());
+	
+	if (!pStorage)return false;
+
+	if (!pStorage->open(true, false))
+	{
+		delete pStorage;
+		return false;
+	}
+
+	POLE::Stream *pStream = new POLE::Stream(pStorage, addit_name, true, addit_info.size());
+	
+	pStream->write((unsigned char*)addit_info.c_str(), addit_info.size());
+	pStream->setSize(addit_info.size());
+
+	pStream->flush();
+	delete pStream;
+
+	pStorage->close();
+	delete pStorage;
+
+	return true;
+}

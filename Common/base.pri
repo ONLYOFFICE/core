@@ -6,7 +6,7 @@ BUILD_NUMBER = $$(BUILD_NUMBER)
 !isEmpty(PRODUCT_VERSION){
     !isEmpty(BUILD_NUMBER){
         VERSION = $${PRODUCT_VERSION}.$${BUILD_NUMBER}
-	}
+    }
 }
 
 DEFINES += INTVER=$$VERSION
@@ -66,6 +66,8 @@ isEqual(QT_MAJOR_VERSION, 5) {
         DST_ARCH=x86
     }
 }
+
+DEFINES += INTERNAL_USE_ARRAY_AS_VECTOR
 
 ios {
     CONFIG += core_ios
@@ -158,7 +160,9 @@ core_windows {
 
 core_linux {
     equals(TEMPLATE, app) {
-        QMAKE_LFLAGS += -Wl,--rpath=./:./system
+        QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN\'"
+        QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN/system\'"
+        QMAKE_LFLAGS += -Wl,--disable-new-dtags
     }
 }
 

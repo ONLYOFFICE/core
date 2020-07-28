@@ -44,7 +44,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CImageTilePattern
 	//----------------------------------------------------------------------------------------
-	CImageTilePattern::CImageTilePattern(CXref* pXref, const double& dW, const double& dH, CImageDict* pImageDict, CMatrix* pMatrix, EImageTilePatternType eType) : CPattern(pXref)
+	CImageTilePattern::CImageTilePattern(CXref* pXref, const double& dW, const double& dH, CImageDict* pImageDict, CMatrix* pMatrix, EImageTilePatternType eType, double dXStepSpacing, double dYStepSpacing) : CPattern(pXref)
 	{
 		Add("Type", "Pattern");
 		Add("PatternType", 1);
@@ -84,9 +84,13 @@ namespace PdfWriter
 
 		if (imagetilepatterntype_Default == eType)
 		{
-			Add("BBox", CArrayObject::CreateBox(0, 0, dW, dH));
-			Add("XStep", dW);
-			Add("YStep", dH);
+			if (dXStepSpacing > 0.01 && dYStepSpacing > 0.01)
+				Add("BBox", CArrayObject::CreateBox(-dXStepSpacing / 2, -dYStepSpacing / 2, dW + dXStepSpacing / 2, dH + dYStepSpacing / 2));
+			else
+				Add("BBox", CArrayObject::CreateBox(0, 0, dW, dH));
+
+			Add("XStep", dW + dXStepSpacing);
+			Add("YStep", dH + dYStepSpacing);
 
 			pStream->WriteReal(dW);
 			pStream->WriteStr(" 0 0 ");
@@ -97,8 +101,8 @@ namespace PdfWriter
 		else if (imagetilepatterntype_InverseX == eType)
 		{
 			Add("BBox", CArrayObject::CreateBox(0, 0, 2 * dW, dH));
-			Add("XStep", 2 * dW);
-			Add("YStep", dH);
+			Add("XStep", 2 * dW + dXStepSpacing);
+			Add("YStep", dH + dYStepSpacing);
 
 			pStream->WriteStr("q\12");
 			pStream->WriteReal(dW);
@@ -119,8 +123,8 @@ namespace PdfWriter
 		else if (imagetilepatterntype_InverseY == eType)
 		{
 			Add("BBox", CArrayObject::CreateBox(0, 0, dW, 2 * dH));
-			Add("XStep", dW);
-			Add("YStep", 2 * dH);
+			Add("XStep", dW + dXStepSpacing);
+			Add("YStep", 2 * dH + dYStepSpacing);
 
 			pStream->WriteStr("q\12");
 			pStream->WriteReal(dW);
@@ -141,8 +145,8 @@ namespace PdfWriter
 		else if (imagetilepatterntype_InverseXY == eType)
 		{
 			Add("BBox", CArrayObject::CreateBox(0, 0, 2 * dW, 2 * dH));
-			Add("XStep", 2 * dW);
-			Add("YStep", 2 * dH);
+			Add("XStep", 2 * dW + dXStepSpacing);
+			Add("YStep", 2 * dH + dYStepSpacing);
 
 			pStream->WriteStr("q\12");
 			pStream->WriteReal(dW);

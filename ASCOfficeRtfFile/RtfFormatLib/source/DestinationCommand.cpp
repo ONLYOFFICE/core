@@ -1726,6 +1726,7 @@ bool RtfFieldReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, 
     else if ( "fldinst" == sCommand )
 	{
 		RtfFieldInstPtr oNewFieldInst = RtfFieldInstPtr(new RtfFieldInst());
+		oNewFieldInst->m_oCharProperty = oReader.m_oState->m_oCharProp;
 		
 		RtfFieldInstReader oFieldInstReader( *oNewFieldInst );
 		StartSubReader( oFieldInstReader, oDocument, oReader );
@@ -1740,6 +1741,7 @@ bool RtfFieldReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, 
     else if ( "fldrslt" == sCommand )
 	{
 		RtfFieldInstPtr oNewFieldInst = RtfFieldInstPtr(new RtfFieldInst());
+		oNewFieldInst->m_oCharProperty = oReader.m_oState->m_oCharProp;
 		
 		RtfFieldInstReader oFieldInstReader( *oNewFieldInst );
 		StartSubReader( oFieldInstReader, oDocument, oReader );
@@ -2528,6 +2530,11 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 	}
     else if ( "cell" == sCommand  || "nestcell" == sCommand )
 	{
+		if (oReader.m_oState->m_oParagraphProp.m_bInTable == PROP_DEF && oReader.m_oState->m_oParagraphProp.m_nItap == PROP_DEF)
+		{//пример п 9 п 12.rtf
+			oReader.m_oState->m_oParagraphProp.m_bInTable = 1;
+			oReader.m_oState->m_oParagraphProp.m_nItap = 1;	
+		}
 		if (oReader.m_oState->m_oParagraphProp.m_bInTable == 1 && 0 == oReader.m_oState->m_oParagraphProp.m_nItap )//Платежное_поручение.rtf (ели по другому сбойная строка заменяется параграфами
 				oReader.m_oState->m_oParagraphProp.m_nItap = 1;	
 
@@ -2918,7 +2925,15 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 	//	pNewChar->m_eType = RtfCharSpecial::rsc_chatn;
 	//	m_oCurParagraph->AddItem( pNewChar );
 	//}
-    else if ( "chftn" == sCommand )
+ 	else if ( "chpgn" == sCommand ) //todooo - other special
+	{//header & footer
+		RtfCharSpecialPtr pNewChar ( new RtfCharSpecial() );
+		
+		pNewChar->m_oProperty = oReader.m_oState->m_oCharProp;
+		pNewChar->m_eType = RtfCharSpecial::rsc_chpgn;
+		m_oCurParagraph->AddItem( pNewChar );
+	}
+	else if ( "chftn" == sCommand )
 	{
 		if ( 1 == oReader.m_nFootnote )
 		{

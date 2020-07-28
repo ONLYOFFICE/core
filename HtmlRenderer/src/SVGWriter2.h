@@ -39,6 +39,8 @@
 #define SVG_INLINE_MAX_SIZE		500000 // 500Kb
 #define SVG_TO_RASTER_MIN_SIZE 50000000 // 1Mb
 
+const long c_nClipType2	= 0x0021; // c_nClipType + 1
+
 namespace NSHtmlRenderer
 {
 	#define USE_SIMPLE_GRAPHICS_NOSVG
@@ -1672,7 +1674,8 @@ namespace NSHtmlRenderer
 					}
 				}
 
-				m_oClipMetafile.WriteLONG(CMetafile::ctEndCommand, c_nClipType);
+                m_oClipMetafile.WriteLONG(CMetafile::ctEndCommand, c_nClipType2);
+                m_oClipMetafile.WriteLONG(m_lClipMode);
 				m_oClipMetafile.WriteCommandType(CMetafile::ctPathCommandEnd);
 			}
 
@@ -1726,7 +1729,8 @@ namespace NSHtmlRenderer
 				}
 			}
 
-			m_oClipMetafile.WriteLONG(CMetafile::ctEndCommand, c_nClipType);
+            m_oClipMetafile.WriteLONG(CMetafile::ctEndCommand, c_nClipType2);
+            m_oClipMetafile.WriteLONG(m_lClipMode);
 			m_oClipMetafile.WriteCommandType(CMetafile::ctPathCommandEnd);
 
 			return nRet;

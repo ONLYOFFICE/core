@@ -35,7 +35,9 @@
 #include "Types.h"
 #include <string.h>
 
-#if 0 //__APPLE__
+#ifdef INTERNAL_USE_ARRAY_AS_VECTOR
+
+// Use std::vector instead this class
 
 #include <vector>
 
@@ -87,7 +89,7 @@ public:
         
         for (int i = 0; i < nAllocSize; i++)
             Add();
-        
+
         return TRUE;
     }
     
@@ -137,6 +139,11 @@ public:
         }
         return m_aT[nIndex];
     }
+
+	T* GetData()
+	{
+		return m_aT.data();
+	}
     
 private:
     

@@ -97,8 +97,8 @@ std::wstring RtfFieldInst::RenderToRtf(RenderParameter oRenderParameter)
 }
 std::wstring RtfFieldInst::RenderToOOX(RenderParameter oRenderParameter)
 {
-	RtfDocument*	poRtfDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
-	OOXWriter*		poOOXWriter		= static_cast<OOXWriter*>	(oRenderParameter.poWriter);
+	RtfDocument*	pRtfDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
+	OOXWriter*		pOOXWriter		= static_cast<OOXWriter*>	(oRenderParameter.poWriter);
 	
 	if (m_pTextItems)
 		return m_pTextItems->RenderToOOX(oRenderParameter);
@@ -145,8 +145,8 @@ std::wstring RtfField::RenderToRtf(RenderParameter oRenderParameter)
 
 std::wstring RtfField::RenderToOOX(RenderParameter oRenderParameter)
 {
-	RtfDocument*	poRtfDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
-	OOXWriter*		poOOXWriter		= static_cast<OOXWriter*>	(oRenderParameter.poWriter);
+	RtfDocument*	pRtfDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
+	OOXWriter*		pOOXWriter		= static_cast<OOXWriter*>	(oRenderParameter.poWriter);
 	
     std::wstring sResult;
 	
@@ -168,20 +168,20 @@ std::wstring RtfField::RenderToOOX(RenderParameter oRenderParameter)
 		{
 			bInsert = true;
 			
-			sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_pInsert->m_oCharProperty.m_nRevauth);
+			sAuthor = pRtfDocument->m_oRevisionTable.GetAuthor(m_pInsert->m_oCharProperty.m_nRevauth);
             sDate	= std::wstring(RtfUtility::convertDateTime(m_pInsert->m_oCharProperty.m_nRevdttm).c_str());
 			
-			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(pOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			m_pInsert->m_oCharProperty.m_nRevised = PROP_DEF;
 		}
 		if (m_pInsert->m_oCharProperty.m_nDeleted != PROP_DEF)
 		{
 			bDelete = true;
 			
-			sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_pInsert->m_oCharProperty.m_nRevauthDel);
+			sAuthor = pRtfDocument->m_oRevisionTable.GetAuthor(m_pInsert->m_oCharProperty.m_nRevauthDel);
             sDate	= std::wstring(RtfUtility::convertDateTime(m_pInsert->m_oCharProperty.m_nRevdttmDel).c_str());
 			
-			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(pOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			m_pInsert->m_oCharProperty.m_nDeleted = PROP_DEF;
 		}
 		//поверяем на наличие гиперссылки
@@ -224,7 +224,7 @@ std::wstring RtfField::RenderToOOX(RenderParameter oRenderParameter)
 			RenderParameter oNewParametr	= oRenderParameter;
 			oNewParametr.nType				= RENDER_TO_OOX_PARAM_PLAIN;
 
-            std::wstring props = m_pResult->m_oCharProperty.RenderToOOX(oRenderParameter);
+			std::wstring props = m_pResult->m_oCharProperty.RenderToOOX(oRenderParameter);
             if (!props.empty()) props = L"<w:rPr>" + props + L"</w:rPr>";
 
 	//начинаем Field
@@ -235,6 +235,8 @@ std::wstring RtfField::RenderToOOX(RenderParameter oRenderParameter)
 			sResult += L"</w:r>";
 	//-----------
             sResult += L"<w:r>";
+            if (!props.empty())
+				sResult += props;			
 			
 			sResult += L"<w:instrText xml:space=\"preserve\">";
 

@@ -503,7 +503,7 @@ CPdfRenderer::CPdfRenderer(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA) :
 		return;
 	}
 
-    m_pDocument->SetCompressionMode(COMP_ALL);
+	m_pDocument->SetCompressionMode(COMP_ALL);
 
 	m_bValid      = true;
 	m_dPageHeight = 297;
@@ -1864,32 +1864,32 @@ void CPdfRenderer::UpdateBrush()
 			double dL, dR, dT, dB;
 			m_oPath.GetBounds(dL, dT, dR, dB);
 
+			double dXStepSpacing = 0, dYStepSpacing = 0;
 			if (c_BrushTextureModeStretch == lTextureMode)
 			{
-				// Чтобы избавиться от погрешностей из-за которых могут возникать полоски, немного увеличим границы пата.
-				dL -= 1;
-				dT -= 1;
-				dB += 1;
-				dR += 1;
-
 				// Растягиваем картинку по размерам пата
-                dW = std::max(10.0, dR - dL);
-                dH = std::max(10.0, dB - dT);
+				dW = std::max(10.0, dR - dL);
+				dH = std::max(10.0, dB - dT);
+
+				// Чтобы избавиться от погрешностей из-за которых могут возникать полоски или обрезание картинки,
+				// удвоим расстрояние между соседними тайлами. Плохого тут нет, т.к. нам нужен всего 1 тайл
+				dXStepSpacing = dW;
+				dYStepSpacing = dH;
 			}
 			else
 			{
 				// Размеры картинки заданы в пикселях. Размеры тайла - это размеры картинки в пунктах.
 				dW = nImageW * 72 / 96;
 				dH = nImageH * 72 / 96;
-			}			
+			}
 
 			// Нам нужно, чтобы левый нижний угол границ нашего пата являлся точкой переноса для матрицы преобразования.
 			CMatrix* pMatrix = m_pPage->GetTransform();
-			pMatrix->Apply(dL, dB);
+			pMatrix->Apply(dL, dT);
 			CMatrix oPatternMatrix = *pMatrix;
 			oPatternMatrix.x = dL;
-			oPatternMatrix.y = dB;
-			m_pPage->SetPatternColorSpace(m_pDocument->CreateImageTilePattern(dW, dH, pImage, &oPatternMatrix));
+			oPatternMatrix.y = dT;
+			m_pPage->SetPatternColorSpace(m_pDocument->CreateImageTilePattern(dW, dH, pImage, &oPatternMatrix, imagetilepatterntype_Default, dXStepSpacing, dYStepSpacing));
 		}
 	}
 	else if (c_BrushTypeHatch1 == lBrushType)

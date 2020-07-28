@@ -40,6 +40,9 @@ public:
 	bool DecryptOfficeFile(const std::wstring &file_name_inp, const std::wstring &file_name_out, const std::wstring &password, bool & bDataIntegrity);
 	bool EncryptOfficeFile(const std::wstring &file_name_inp, const std::wstring &file_name_out, const std::wstring &password, const std::wstring &documentID = L"");
 
+	std::string ReadAdditional(const std::wstring &file_name, const std::wstring &addit_name);
+	bool WriteAdditional(const std::wstring &file_name, const std::wstring &addit_name, const std::string &addit_info);
+	
 	struct _refComponent
 	{
 		int				type;
@@ -50,5 +53,5 @@ public:
 		std::vector<_refComponent>	refComponents;
 		std::wstring				dataSpaceName;
 	};
-	std::vector<_mapEntry>		mapEntries;
+	std::vector<_mapEntry> mapEntries;
 };

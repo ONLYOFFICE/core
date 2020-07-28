@@ -1,12 +1,13 @@
-#ifndef CGETDATA_H
-#define CGETDATA_H
+#ifndef CCSSCALCULATOR_H
+#define CCSSCALCULATOR_H
 
-#include "../katana-parser/src/katana.h"
-#include "../katana-parser/src/parser.h"
-#include "iostream"
+#include "CssCalculator_global.h"
 #include <vector>
 #include <map>
 #include "CElement.h"
+
+#include "../../katana-parser/src/katana.h"
+
 
 typedef enum {
     Defoult,
@@ -18,7 +19,7 @@ typedef enum {
     Peak
 } UnitMeasure;
 
-class CCssCalculator
+class CSSCALCULATOR_EXPORT CCssCalculator
 {
     std::vector<CElement*> m_arData;
 
@@ -129,4 +130,4 @@ public:
 
 };
 
-#endif // CGETDATA_H
+#endif // CCSSCALCULATOR_H

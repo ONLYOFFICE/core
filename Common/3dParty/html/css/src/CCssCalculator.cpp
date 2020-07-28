@@ -1,11 +1,10 @@
-#include "CGetData.h"
+#include "CCssCalculator.h"
 #include <codecvt>
 
 #include <string>
 //#include <algorithm>
 #include <vector>
 #include <fstream>
-
 
 #include "../katana-parser/src/selector.h"
 
@@ -189,6 +188,7 @@ std::pair<std::wstring, std::wstring> CCssCalculator::GetDeclaration(KatanaDecla
     std::pair<std::wstring, std::wstring> pDeclaration;
 
     std::wstring sValueList = StringifyValueList(oDecl->values);
+
     if (oDecl->important)
         sValueList += L" !important";
     pDeclaration = std::make_pair(stringToWstring(oDecl->property), sValueList);
@@ -1759,11 +1759,9 @@ static std::wstring StringifyValueList(KatanaArray* oValues)
 
     std::wstring buffer;
 
-
     for (size_t i = 0; i < oValues->length; ++i) {
         KatanaValue* value = (KatanaValue*)oValues->data[i];
         std::wstring str = StringifyValue(value);
-
         buffer += str;
 
         str.clear();
@@ -1828,10 +1826,12 @@ static std::wstring StringifyValue(KatanaValue* oValue)
             break;
         }
         case KATANA_VALUE_PARSER_OPERATOR:
+            str = L" ";
             if (oValue->iValue != '=') {
-                str = (L" " + std::to_wstring(oValue->iValue));
+                str.push_back((wchar_t)static_cast<char>(oValue->iValue));
+                str += L" ";
             } else {
-                str = (L" " + std::to_wstring(oValue->iValue));
+                str.push_back((wchar_t)static_cast<char>(oValue->iValue));
             }
             break;
         case KATANA_VALUE_PARSER_LIST:

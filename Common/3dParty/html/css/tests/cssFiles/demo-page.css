@@ -1,15 +1,5 @@
-/*
- * Hover.css - Demo Page
- * Author: Ian Lunn @IanLunn
- * Author URL: http://ianlunn.co.uk/
- * Github: https://github.com/IanLunn/Hover
- * Hover.css Copyright Ian Lunn 2017.
- */
+  @charset 'windows-1251';
 
-/**
- * The following are default styles for the demo page,
- * you don't need to include these on your own site.
- */
 
 @media screen and (min-width: 640px) {
   #forkongithub {
@@ -47,7 +37,7 @@
 
 body {
   margin: 0;
-  padding: 40px 0 0 0;
+  padding: 40px 0 10px 0;
   font-family: sans-serif;
   color: #333;
   line-height: 140%;
@@ -223,7 +213,7 @@ small {
 }
 
 p,
-[class^="hvr-"] {
+ {
     font-family: 'Roboto', sans-serif;
 }
 

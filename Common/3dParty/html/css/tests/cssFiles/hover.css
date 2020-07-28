@@ -9,6 +9,8 @@
  */
 /* 2D TRANSITIONS */
 /* Grow */
+
+@charset "UTF-8";
 .hvr-grow {
   display: inline-block;
   vertical-align: middle;
@@ -26,11 +28,11 @@
 }
 
 /* Shrink */
-.hvr-shrink {
+.hvr-grow-shrink {
   display: inline-block;
   vertical-align: middle;
-  -webkit-transform: perspective(1px) translateZ(0);
-  transform: perspective(1px) translateZ(0);
+  -webkit-transform: perspective(13px) translateZ(0);
+  transform: perspective(8px) translateZ(0);
   box-shadow: 0 0 1px rgba(0, 0, 0, 0);
   -webkit-transition-duration: 0.3s;
   transition-duration: 0.3s;
@@ -68,7 +70,7 @@
   vertical-align: middle;
   -webkit-transform: perspective(1px) translateZ(0);
   transform: perspective(1px) translateZ(0);
-  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0);
 }
 .hvr-pulse:hover, .hvr-pulse:focus, .hvr-pulse:active {
   -webkit-animation-name: hvr-pulse;

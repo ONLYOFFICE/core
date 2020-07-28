@@ -56,16 +56,16 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return (L"");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				writer.WriteString(_T("<sheet"));
+				writer.WriteString((L"<sheet"));
 				WritingStringNullableAttrEncodeXmlString(L"name", m_oName, m_oName.get());
 				WritingStringNullableAttrInt(L"sheetId", m_oSheetId, m_oSheetId->GetValue());
 				WritingStringNullableAttrString(L"state", m_oState, m_oState->ToString());
 				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
-				writer.WriteString(_T("/>"));
+				writer.WriteString((L"/>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -85,10 +85,11 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"),	m_oRid )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("name"),	m_oName )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("sheetId"),	m_oSheetId )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("state"),	m_oState )
+					WritingElement_ReadAttributes_Read_if     ( oReader, (L"r:id"),				m_oRid )
+					WritingElement_ReadAttributes_Read_else_if( oReader, (L"relationships:id"),	m_oRid )
+					WritingElement_ReadAttributes_Read_else_if( oReader, (L"name"),				m_oName )
+					WritingElement_ReadAttributes_Read_else_if( oReader, (L"sheetId"),			m_oSheetId )
+					WritingElement_ReadAttributes_Read_else_if( oReader, (L"state"),			m_oState )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -115,11 +116,11 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return (L"");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				writer.WriteString(_T("<sheets>"));
+				writer.WriteString((L"<sheets>"));
 				
                 for ( size_t i = 0; i < m_arrItems.size(); ++i)
                 {
@@ -129,7 +130,7 @@ namespace OOX
                     }
                 }
 				
-				writer.WriteString(_T("</sheets>"));
+				writer.WriteString((L"</sheets>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -144,7 +145,7 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("sheet") == sName ) 
+					if ( (L"sheet") == sName ) 
 					{
 						CSheet* pSheet = new CSheet( oReader );
 						

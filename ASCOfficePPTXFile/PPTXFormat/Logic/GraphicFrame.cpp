@@ -103,10 +103,11 @@ namespace PPTX
 			if (!olePic->oleObject.IsInit())	olePic->oleObject.Init();
 
 			WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("progId"),	olePic->oleObject->m_sProgId)
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:id"),	olePic->oleObject->m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("imgW"),	olePic->oleObject->m_oDxaOrig )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("imgH"),	olePic->oleObject->m_oDyaOrig )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"progId"),	olePic->oleObject->m_sProgId)
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:id"),		olePic->oleObject->m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"relationships:id"),	olePic->oleObject->m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"imgW"),		olePic->oleObject->m_oDxaOrig )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"imgH"),		olePic->oleObject->m_oDyaOrig )
 			WritingElement_ReadAttributes_End( oReader )
 
 			if(olePic->oleObject->m_oDxaOrig.IsInit())
@@ -121,7 +122,7 @@ namespace PPTX
 		void GraphicFrame::ReadAttributes3(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("spid"), vmlSpid )
+				WritingElement_ReadAttributes_ReadSingle ( oReader, (L"spid"), vmlSpid )
 			WritingElement_ReadAttributes_End( oReader )
 		}
 		void GraphicFrame::fromXML2(XmlUtils::CXmlLiteReader& oReader)
@@ -259,7 +260,7 @@ namespace PPTX
 			bool result = false;
 			
 			XmlUtils::CXmlNodes oNodes;
-			if (node.GetNodes(_T("*"), oNodes))
+			if (node.GetNodes((L"*"), oNodes))
 			{
 				int count = oNodes.GetCount();
 				for (int i = 0; i < count; ++i)
@@ -892,7 +893,7 @@ namespace PPTX
 			smart_ptr<OOX::OleObject> pExternalXslxPackage = file.smart_dynamic_cast<OOX::OleObject>();
 			if (!pExternalXslxPackage.IsInit()) return L"";
 
-			std::wstring sUnpackedXlsx = sTempDirectory + FILE_SEPARATOR_STR + _T("xslx_unpacked");
+			std::wstring sUnpackedXlsx = sTempDirectory + FILE_SEPARATOR_STR + (L"xslx_unpacked");
 
 			NSDirectory::CreateDirectory(sUnpackedXlsx);
 
@@ -997,7 +998,7 @@ L"<Override PartName=\"/xl/chartsheets/sheet1.xml\" ContentType=\"application/vn
 			}
 			pChart->m_oChartSpace.m_externalData = keepExternalData;
 //-------------------------------------------------------
-			std::wstring sPackedXlsx = sTempDirectory + FILE_SEPARATOR_STR + _T("xlsx_package.xlsx");
+			std::wstring sPackedXlsx = sTempDirectory + FILE_SEPARATOR_STR + (L"xlsx_package.xlsx");
 
 			if (S_OK != oCOfficeUtils.CompressFileOrDirectory(sUnpackedXlsx, sPackedXlsx, true)) return L"";
 

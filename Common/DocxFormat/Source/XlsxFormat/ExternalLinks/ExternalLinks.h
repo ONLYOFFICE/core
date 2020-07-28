@@ -142,9 +142,9 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if( oReader, _T("name"), m_oName )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("refersTo"), m_oRefersTo )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("sheetId"), m_oSheetId )
+				WritingElement_ReadAttributes_Read_if( oReader, (L"name"), m_oName )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"refersTo"), m_oRefersTo )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"sheetId"), m_oSheetId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
@@ -251,7 +251,7 @@ namespace OOX
 				WritingStringNullableAttrInt(L"vm", m_oValueMetadata, m_oValueMetadata->GetValue());
 				writer.WriteString(L">");
 				if(m_oValue.IsInit())
-					m_oValue->toXML2(writer, _T("v"));
+					m_oValue->toXML2(writer, (L"v"));
 				writer.WriteString(L"</cell>");
 			}
 			virtual std::wstring      toXML() const
@@ -267,9 +267,9 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if( oReader, _T("r"), m_oRef )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("t"), m_oType )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("vm"), m_oValueMetadata )
+				WritingElement_ReadAttributes_Read_if( oReader, (L"r"), m_oRef )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"t"), m_oType )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"vm"), m_oValueMetadata )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
@@ -343,7 +343,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("r"), m_oR )
+				WritingElement_ReadAttributes_ReadSingle( oReader, (L"r"), m_oR )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
@@ -414,8 +414,8 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if( oReader, _T("sheetId"), m_oSheetId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("refreshError"), m_oRefreshError )
+				WritingElement_ReadAttributes_Read_if( oReader, (L"sheetId"), m_oSheetId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"refreshError"), m_oRefreshError )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
@@ -558,9 +558,9 @@ namespace OOX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("r:id"), m_oRid )
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"id", m_oRid )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 			}
 		public:
 
@@ -631,7 +631,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("t"), m_oType )
+				WritingElement_ReadAttributes_ReadSingle( oReader, (L"t"), m_oType )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
@@ -702,8 +702,8 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if( oReader, _T("rows"), m_oRows )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("cols"), m_oCols )
+				WritingElement_ReadAttributes_Read_if( oReader, (L"rows"), m_oRows )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"cols"), m_oCols )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
@@ -773,10 +773,10 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if( oReader, _T("name"), m_oName )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("ole"), m_oOle )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("advise"), m_oAdvise )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("preferPic"), m_oPreferPic )
+				WritingElement_ReadAttributes_Read_if( oReader, (L"name"), m_oName )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"ole"), m_oOle )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"advise"), m_oAdvise )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"preferPic"), m_oPreferPic )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
@@ -902,8 +902,8 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if( oReader, _T("ddeService"), m_oDdeService )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("ddeTopic"), m_oDdeTopic )
+				WritingElement_ReadAttributes_Read_if( oReader, (L"ddeService"), m_oDdeService )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"ddeTopic"), m_oDdeTopic )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
@@ -960,10 +960,10 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if( oReader, _T("name"), m_oName )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("icon"), m_oIcon )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("advise"), m_oAdvise )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("preferPic"), m_oPreferPic )
+				WritingElement_ReadAttributes_Read_if( oReader, (L"name"), m_oName )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"icon"), m_oIcon )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"advise"), m_oAdvise )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"preferPic"), m_oPreferPic )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
@@ -1090,11 +1090,11 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if( oReader, _T("r:id"), m_oRid )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("progId"), m_oProgId )
+				WritingElement_ReadAttributes_Read_if( oReader, (L"r:id"), m_oRid )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"relationships:id"), m_oRid )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"progId"), m_oProgId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-		public:
 
 			nullable<SimpleTypes::CRelationshipId > m_oRid;
 			nullable<std::wstring > m_oProgId;
@@ -1117,8 +1117,6 @@ namespace OOX
 			virtual ~CExternalLink()
 			{
 			}
-		public:
-
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -1139,7 +1137,7 @@ namespace OOX
 					return;
 				
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-				if ( _T("externalLink") == sName )
+				if ( (L"externalLink") == sName )
 				{
 					ReadAttributes( oReader );
 
@@ -1150,15 +1148,15 @@ namespace OOX
 						{
 							sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-							if ( _T("externalBook") == sName )
+							if ( (L"externalBook") == sName )
 							{
 								m_oExternalBook = oReader;
 							}
-							else if ( _T("oleLink") == sName )
+							else if ( (L"oleLink") == sName )
 							{
 								m_oOleLink = oReader;
 							}
-							else if ( _T("ddeLink") == sName )
+							else if ( (L"ddeLink") == sName )
 							{
 								m_oDdeLink = oReader;
 							}
@@ -1170,8 +1168,8 @@ namespace OOX
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
 				NSStringUtils::CStringBuilder sXml;
-				sXml.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
-				sXml.WriteString(_T("<externalLink xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">"));
+				sXml.WriteString((L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
+				sXml.WriteString((L"<externalLink xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">"));
 			
 				if (m_oExternalBook.IsInit())
 				{
@@ -1186,7 +1184,7 @@ namespace OOX
 					m_oDdeLink->toXML(sXml);
 				}
 				
-				sXml.WriteString(_T("</externalLink>"));
+				sXml.WriteString((L"</externalLink>"));
 
                 std::wstring sPath = oPath.GetPath();
                 NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());

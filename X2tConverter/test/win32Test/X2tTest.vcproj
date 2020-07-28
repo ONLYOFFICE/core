@@ -708,6 +708,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\build\lib\win_32\DEBUG\Fb2File.lib"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\build\lib\win_32\DEBUG\graphics.lib"
 				>
 			</File>

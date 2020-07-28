@@ -1247,11 +1247,15 @@ namespace ComplexTypes
 			{
 			}
 
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
+			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("r:id"), m_oId );
+				XmlMacroReadAttributeBase( oNode, L"r:id", m_oId );
+				if (false == m_oId.IsInit())
+				{
+					XmlMacroReadAttributeBase( oNode, L"relationships:id", m_oId );
+				}
 			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes(oReader);
 
@@ -1275,9 +1279,9 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("r:id"), m_oId )
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"id", m_oId ) //r:id  or relationships:id
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 			}
 
 		public:

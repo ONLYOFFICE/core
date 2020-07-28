@@ -80,21 +80,22 @@ namespace PPTX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start	( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"), id )
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("invalidUrl"), invalidUrl )
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("action"), action )
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("tgtFrame"), tgtFrame )
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("tooltip"), tooltip )
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("history"), history)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("highlightClick"), highlightClick )
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("endSnd"), endSnd )
+					WritingElement_ReadAttributes_Read_if     ( oReader, (L"r:id"), id )
+					WritingElement_ReadAttributes_Read_else_if( oReader, (L"relationships:id"), id )
+					WritingElement_ReadAttributes_Read_else_if( oReader, (L"invalidUrl"), invalidUrl )
+					WritingElement_ReadAttributes_Read_else_if( oReader, (L"action"), action )
+					WritingElement_ReadAttributes_Read_else_if( oReader, (L"tgtFrame"), tgtFrame )
+					WritingElement_ReadAttributes_Read_else_if( oReader, (L"tooltip"), tooltip )
+					WritingElement_ReadAttributes_Read_else_if( oReader, (L"history"), history)
+					WritingElement_ReadAttributes_Read_else_if( oReader, (L"highlightClick"), highlightClick )
+					WritingElement_ReadAttributes_Read_else_if( oReader, (L"endSnd"), endSnd )
 				WritingElement_ReadAttributes_End	( oReader )
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_name = XmlUtils::GetNameNoNS(node.GetName());
 
-                std::wstring sSndNodeName = _T("snd");
+                std::wstring sSndNodeName = (L"snd");
                 snd	= node.ReadNodeNoNS(sSndNodeName);
 
 				XmlMacroReadAttributeBase(node, L"r:id", id);
@@ -105,6 +106,11 @@ namespace PPTX
 				XmlMacroReadAttributeBase(node, L"history", history);
 				XmlMacroReadAttributeBase(node, L"highlightClick", highlightClick);
 				XmlMacroReadAttributeBase(node, L"endSnd", endSnd);
+				
+				if (false == id.IsInit())
+				{
+					XmlMacroReadAttributeBase( node, L"relationships:id", id );
+				}
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;

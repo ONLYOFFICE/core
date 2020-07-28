@@ -252,7 +252,9 @@ namespace NSDoctRenderer
      * 2) argument
      * docbuilder.exe "--argument={\"company\":\"ONLYOFFICE\",\"product\":\"ONLYOFFICE Document Builder\"}" "path-to-script.docbuilder"
      * This set the --argument property to CDocBuilder & Run (see point 1)
-     *
+     * Using in javascript:
+     * var sCompany   = Argument["company"];
+     * var sProduct = Argument["product"];
      *
      * 3) Methods of the "builder" object cannot be called with values - js variables. If necessary, then you need to
      * wrap it in an instruction "jsValue", e.g.:

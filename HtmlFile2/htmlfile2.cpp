@@ -9,6 +9,8 @@
 #include "../Common/DocxFormat/Source/DocxFormat/Core.h"
 #include "../DesktopEditor/common/SystemUtils.h"
 #include "../DesktopEditor/common/StringBuilder.h"
+#include "../DesktopEditor/common/File.h"
+#include "../DesktopEditor/common/Directory.h"
 #include "../DesktopEditor/xml/include/xmlutils.h"
 
 class CHtmlFile2_Private
@@ -114,7 +116,7 @@ public:
     }
 
     // Предварительное чтение стилей и картинок
-    bool readSrc(const std::wstring& sPath)
+    bool readSrc(const std::wstring& sPath, const std::wstring& sSrc, const std::wstring& sMedia)
     {
         if(!m_oLightReader.IsValid())
         {
@@ -126,13 +128,13 @@ public:
                 return false;
         }
 
-        readStyle();
+        readStyle(sSrc, sMedia);
 
         return true;
     }
 
     // Читает стили
-    void readStyle()
+    void readStyle(const std::wstring& sSrc, const std::wstring& sMedia)
     {
         std::wstring sName = m_oLightReader.GetName();
         // тэг style содержит стили для styles.xml
@@ -151,10 +153,10 @@ public:
                 if(m_oLightReader.GetName() == L"href")
                 {
                     std::wstring sRef = m_oLightReader.GetText();
-                    size_t nPos = sRef.rfind(L".");
                     // Если это css файл, то поведение аналогично тэгу style
                     // Кроме функции получения стилей
-                    if(sRef.substr(nPos) == L".css")
+                    sRef = NSFile::GetFileExtention(sRef);
+                    if(sRef == L"css")
                     {
                         // Получаем наборы стилей как <w:style>...</w:style>...
                         std::wstring sStyle = L""; // oCSS.GetStyleFromCSS(sRef);
@@ -164,10 +166,57 @@ public:
             }
             m_oLightReader.MoveToElement();
         }
+        // Картинки
+        else if(sName == L"img" || sName == L"image")
+        {
+            while(m_oLightReader.MoveToNextAttribute())
+            {
+                std::wstring sAName = m_oLightReader.GetName();
+                if(sAName == L"src" || sAName == L"href")
+                {
+                    std::wstring sSrcM = m_oLightReader.GetText();
+                    size_t nLen = (sSrcM.length() > 4 ? 4 : 0);
+                    // Картинка в сети
+                    if(sSrcM.substr(0, nLen) == L"http")
+                    {
+                        CFileDownloader oDownloadImg(sSrcM);
+                        oDownloadImg.SetFilePath(sMedia);
+                        bool bRes = oDownloadImg.DownloadSync();
+                    }
+                    else if(sSrcM.substr(0, nLen) == L"data")
+                    {
+                        NSFile::CFileBinary oImageWriter;
+                        if(oImageWriter.CreateFileW(sMedia + L"/img.jpg"))
+                        {
+                            size_t nBase = sSrcM.find(L"base64", nLen) + 7;
+                            std::string sBase64 = m_oLightReader.GetTextA().substr(nBase);
+                            int nSrcLen = (int)sBase64.length();
+                            int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
+                            BYTE* pImageData = new BYTE[nDecodeLen];
+                            if (TRUE == NSBase64::Base64Decode(sBase64.c_str(), nSrcLen, pImageData, &nDecodeLen))
+                                oImageWriter.WriteFile(pImageData, (DWORD)nDecodeLen);
+                            RELEASEARRAYOBJECTS(pImageData);
+                            oImageWriter.CloseFile();
+                        }
+                    }
+                    // Относительный путь до картинки
+                    else
+                    {
+                        size_t nSrcM = sSrcM.rfind(L"/");
+                        bool bRes = NSFile::CFileBinary::Copy(sSrc + L"/" + sSrcM, sMedia + sSrcM.substr(nSrcM));
+                        // Прописать рельсы
+                        if(bRes)
+                        {
+                            bool s = bRes;
+                        }
+                    }
+                }
+            }
+            m_oLightReader.MoveToElement();
+        }
         // ищем атрибут style
         else
         {
-            std::wstring sSName = m_oLightReader.GetName();
             while(m_oLightReader.MoveToNextAttribute())
             {
                 if(m_oLightReader.GetName() == L"style")
@@ -175,7 +224,7 @@ public:
                     // Получаем стиль как <w:pPr>...</w:pPr> для записи в document.xml
                     std::wstring sStyle = L""; // oCSS.GetStyleDoc(content());
 
-                    std::map<std::wstring, std::wstring>::iterator it = m_mStyles.find(sSName);
+                    std::map<std::wstring, std::wstring>::iterator it = m_mStyles.find(sName);
                     // Если для тэга уже есть стиль, то получаем среднее
                     if(it != m_mStyles.end())
                     {
@@ -183,15 +232,19 @@ public:
                     }
                     // Если впервые, то сохраняем как - имя тэга в файле и его стиль
                     else
-                        m_mStyles.insert(std::make_pair(sSName, sStyle));
+                        m_mStyles.insert(std::make_pair(sName, sStyle));
                 }
             }
             m_oLightReader.MoveToElement();
         }
+
+        if(m_oLightReader.IsEmptyNode())
+            return;
+
         // Читаем весь файл
         int nDeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
-            readStyle();
+            readStyle(sSrc, sMedia);
     }
 
     std::wstring content()
@@ -214,6 +267,7 @@ public:
             oXhtmlWriter.CloseFile();
         }
     }
+private:
 };
 
 CHtmlFile2::CHtmlFile2()
@@ -259,7 +313,8 @@ HRESULT CHtmlFile2::Open(const std::wstring& sSrc, const std::wstring& sDst, CHt
 
     m_internal->CreateDocxEmpty(sDst, pDocxWriter);
 
-    if(!m_internal->readSrc(sSource))
+    std::wstring sSrcFolder = NSSystemPath::GetDirectoryName(sSrc);
+    if(!m_internal->readSrc(sSource, sSrcFolder, sDst + L"/word/media"))
         return S_FALSE;
 
     RELEASEOBJECT(pDocxWriter);

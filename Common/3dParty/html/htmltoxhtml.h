@@ -33,22 +33,27 @@ static std::wstring htmlToXhtml(const std::wstring& sFile)
     // Распознование кодировки
     size_t posEncoding = sFileContent.find("charset=");
     if (std::string::npos == posEncoding)
-        return sRes;
-    posEncoding += 8;
-    if(sFileContent[posEncoding] == '\"')
-        posEncoding += 1;
-
-    size_t posEnd = sFileContent.find("\"", posEncoding);
-    if (std::string::npos == posEnd)
-        return sRes;
-
-    std::string sEncoding = sFileContent.substr(posEncoding, posEnd - posEncoding);
-    if (sEncoding != "utf-8" && sEncoding != "UTF-8")
     {
-        sFileContent.replace(posEncoding, posEnd - posEncoding, "UTF-8");
-        NSUnicodeConverter::CUnicodeConverter oConverter;
-        sRes = oConverter.toUnicode(sFileContent, sEncoding.c_str());
-        sFileContent = U_TO_UTF8(sRes);
+        posEncoding = sFileContent.find("encoding=");
+    }
+    if (std::string::npos != posEncoding)
+    {
+        posEncoding = sFileContent.find("=", posEncoding) + 1;
+        if(sFileContent[posEncoding] == '\"')
+            posEncoding += 1;
+
+        size_t posEnd = sFileContent.find("\"", posEncoding);
+        if (std::string::npos != posEnd)
+        {
+            std::string sEncoding = sFileContent.substr(posEncoding, posEnd - posEncoding);
+            if (sEncoding != "utf-8" && sEncoding != "UTF-8")
+            {
+                sFileContent.replace(posEncoding, posEnd - posEncoding, "UTF-8");
+                NSUnicodeConverter::CUnicodeConverter oConverter;
+                sRes = oConverter.toUnicode(sFileContent, sEncoding.c_str());
+                sFileContent = U_TO_UTF8(sRes);
+            }
+        }
     }
 
     // Gumbo
@@ -65,7 +70,7 @@ static std::wstring htmlToXhtml(const std::wstring& sFile)
     {
         std::string sSub = sR.substr(0, 5);
         if(sSub != "<?xml")
-            sR = "<?xml version=\'1.0\' encoding=\'UTF-8\'?>" + sR;
+            sR = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + sR;
     }
 
     // Конвертирование из string utf8 в wstring

@@ -1,8 +1,13 @@
 #include <iostream>
-#include <fstream>
 #include "../htmlfile2.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
+#include "../../Common/3dParty/html/htmltoxhtml.h"
+#include "../../ASCOfficeDocxFile2/BinReader/FileWriter.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Docx.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/App.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Core.h"
+#include "../../DesktopEditor/common/SystemUtils.h"
 
 int main()
 {
@@ -16,15 +21,14 @@ int main()
     NSDirectory::DeleteDirectory(sOutputDirectory);
     NSDirectory::CreateDirectory(sOutputDirectory);
 
-    bool bCheck = true; //oFile.IsHtmlFile(sFile);
-    //if (!bCheck)
-    if (bCheck)
+    bool bCheck = oFile.IsHtmlFile(sFile);
+    if (!bCheck)
     {
         std::cout << "This isn't a html file" << std::endl;
         return 1;
     }
 
-    HRESULT nResConvert = S_OK; //oFile.Open(sFile, sOutputDirectory);
+    HRESULT nResConvert = oFile.Open(sFile, sOutputDirectory);
     if(nResConvert == S_OK)
         std::cout << "Success" << std::endl;
     else

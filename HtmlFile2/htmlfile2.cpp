@@ -11,7 +11,7 @@
 class CHtmlFile2_Private
 {
 public:
-
+    XmlUtils::CXmlLiteReader m_oLightReader;
 public:
     CHtmlFile2_Private()
     {
@@ -20,9 +20,18 @@ public:
 
     ~CHtmlFile2_Private()
     {
-
+        m_oLightReader.Clear();
     }
 
+    // Проверяет наличие тэга html
+    bool isHtml()
+    {
+        if(!m_oLightReader.ReadNextNode())
+            return false;
+        if(m_oLightReader.GetName() != L"html")
+            return false;
+        return true;
+    }
 
     void CreateDocxEmpty(const std::wstring& sDst, Writers::FileWriter* pDocxWriter)
     {
@@ -95,6 +104,20 @@ public:
         oContentTypes.Registration(L"application/vnd.openxmlformats-officedocument.theme+xml",                          OOX::CPath(L"/word/theme"), OOX::CPath(L"theme1.xml"));
         oContentTypes.Write(strDirectory);
     }
+
+    bool readSrc(const std::wstring& sPath)
+    {
+        if(!m_oLightReader.IsValid())
+        {
+            // Открывает файл на проверку
+            if (!m_oLightReader.FromFile(sPath))
+                return false;
+            // Читаем html
+            if(!isHtml())
+                return false;
+        }
+        return true;
+    }
 };
 
 CHtmlFile2::CHtmlFile2()
@@ -109,7 +132,13 @@ CHtmlFile2::~CHtmlFile2()
 
 bool CHtmlFile2::IsHtmlFile(const std::wstring& sFile)
 {
-    return false;
+    // Открывает файл на проверку
+    if (!m_internal->m_oLightReader.FromFile(sFile))
+        return false;
+    // Читаем html
+    if(!m_internal->isHtml())
+        return false;
+    return true;
 }
 
 void CHtmlFile2::SetTmpDirectory(const std::wstring& sFolder)
@@ -136,6 +165,9 @@ HRESULT CHtmlFile2::Open(const std::wstring& sSrc, const std::wstring& sDst, CHt
 
     m_internal->CreateDocxEmpty(sDst, pDocxWriter);
 
+    if(!m_internal->readSrc(sSrc))
+        return S_FALSE;
+
     RELEASEOBJECT(pDocxWriter);
-    return S_FALSE;
+    return S_OK;
 }

@@ -130,7 +130,6 @@ HEADERS += \
     ../Records/TimeAnimationValueAtom.h \
     ../Records/TimeNodeAtom.h \
     ../Records/TimeVariant.h \
-    ../Records/TimeVariant4TimeNode.h \
     ../Records/TimeVariantTypeEnum.h \
     ../Records/UserEditAtom.h \
     ../Records/VBAInfoAtom.h \

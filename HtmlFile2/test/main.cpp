@@ -8,6 +8,8 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/App.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Core.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
+#include "../../DesktopEditor/common/StringBuilder.h"
+#include "../../DesktopEditor/xml/include/xmlutils.h"
 
 int main()
 {
@@ -20,6 +22,8 @@ int main()
     std::wstring sOutputDirectory = NSFile::GetProcessDirectory() + L"/res";
     NSDirectory::DeleteDirectory(sOutputDirectory);
     NSDirectory::CreateDirectory(sOutputDirectory);
+
+    oFile.SetTmpDirectory(sOutputDirectory);
 
     bool bCheck = oFile.IsHtmlFile(sFile);
     if (!bCheck)

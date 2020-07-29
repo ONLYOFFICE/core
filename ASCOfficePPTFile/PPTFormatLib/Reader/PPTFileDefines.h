@@ -251,7 +251,6 @@ typedef BYTE BOOL1;
 #define		RECORD_TYPE_ESCHER_TETRIARY_OPT								0xF122
 #define     RECORD_TYPE_TIME_NODE                                       0xF127
 #define     RECORD_TYPE_TIME_ANIMATE_BEHAVIOR                           0xF134
-#define     RECORD_TYPE_TIME_ANIMATION_VALUE                            0xF143
 
 ///		Animations defines		///
 

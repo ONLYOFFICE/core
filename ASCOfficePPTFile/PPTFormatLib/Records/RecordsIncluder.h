@@ -120,7 +120,6 @@
 #include "TextPFExceptionAtom.h"
 #include "TextSIExceptionAtom.h"
 #include "TimeAnimateBehaviorAtom.h"
-#include "TimeAnimationValueAtom.h"
 #include "TimeNodeAtom.h"
 #include "VBAInfoAtom.h"
 #include "ViewInfoAtom.h"

@@ -314,7 +314,6 @@ IRecord* CreateByType(SRecordHeader oHeader)
     CREATE_BY_TYPE(RECORD_TYPE_DIAGRAMBUILD                 , CRecordDiagramBuildContainer)
     CREATE_BY_TYPE(RECORD_TYPE_DIAGRAMBUILD_ATOM            , CRecordDiagramBuildAtom)
     CREATE_BY_TYPE(RECORD_TYPE_TIME_ANIMATE_BEHAVIOR        , CRecordTimeAnimateBehaviorAtom)
-    CREATE_BY_TYPE(RECORD_TYPE_TIME_ANIMATION_VALUE         , CRecordTimeAnimationValueAtom)
 
     default:
         {

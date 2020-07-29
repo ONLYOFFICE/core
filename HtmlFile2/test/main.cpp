@@ -1,20 +1,13 @@
 #include <iostream>
 #include <fstream>
 #include "../htmlfile2.h"
-#include "../../Common/3dParty/html/htmltoxhtml.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
-#include "../../DesktopEditor/xml/include/xmlutils.h"
-
-void readFile( XmlUtils::CXmlLiteReader& oLightReader)
-{
-    int nDepth = oLightReader.GetDepth();
-    while(oLightReader.ReadNextSiblingNode(nDepth))
-        readFile(oLightReader);
-}
 
 int main()
 {
+    CHtmlFile2 oFile;
+
     // Файл, который открываем
     std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test2.html";
 
@@ -23,24 +16,20 @@ int main()
     NSDirectory::DeleteDirectory(sOutputDirectory);
     NSDirectory::CreateDirectory(sOutputDirectory);
 
-    NSFile::CFileBinary oXhtmlWriter;
-    if (oXhtmlWriter.CreateFileW(sOutputDirectory + L"/res.xhtml"))
+    bool bCheck = true; //oFile.IsHtmlFile(sFile);
+    //if (!bCheck)
+    if (bCheck)
     {
-        // htmlToXhtml возвращает текст файла в кодировке UTF-8
-        oXhtmlWriter.WriteStringUTF8(htmlToXhtml(sFile));
-        oXhtmlWriter.CloseFile();
+        std::cout << "This isn't a html file" << std::endl;
+        return 1;
     }
 
-    // Проверка на чтение
-    XmlUtils::CXmlLiteReader oLightReader;
-    bool bRes = oLightReader.FromFile(sOutputDirectory + L"/res.xhtml");
-    if(bRes)
-    {
-        readFile(oLightReader);
+    HRESULT nResConvert = S_OK; //oFile.Open(sFile, sOutputDirectory);
+    if(nResConvert == S_OK)
         std::cout << "Success" << std::endl;
-    }
     else
         std::cout << "Failure" << std::endl;
 
+    std::cout << "THE END" << std::endl;
     return 0;
 }

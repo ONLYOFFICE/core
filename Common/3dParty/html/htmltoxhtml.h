@@ -230,7 +230,7 @@ static void prettyprint(GumboNode* node, NSStringUtils::CStringBuilderA& oBuilde
 
     // build attr string
     const GumboVector * attribs = &node->v.element.attributes;
-    for (int i = 0; i < attribs->length; ++i)
+    for (size_t i = 0; i < attribs->length; ++i)
     {
         GumboAttribute* at = static_cast<GumboAttribute*>(attribs->data[i]);
         build_attributes(at, no_entity_substitution, oBuilder);

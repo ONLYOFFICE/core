@@ -1,7 +1,9 @@
 #include <string>
 
 #include "htmlfile2.h"
+#include "../Common/3dParty/html/htmltoxhtml.h"
 #include "../ASCOfficeDocxFile2/BinReader/FileWriter.h"
+#include "../Common/DocxFormat/Source/DocxFormat/Docx.h"
 #include "../Common/DocxFormat/Source/DocxFormat/App.h"
 #include "../Common/DocxFormat/Source/DocxFormat/Core.h"
 #include "../DesktopEditor/common/SystemUtils.h"
@@ -117,6 +119,14 @@ void CHtmlFile2::SetTmpDirectory(const std::wstring& sFolder)
 
 HRESULT CHtmlFile2::Open(const std::wstring& sSrc, const std::wstring& sDst, CHtmlParams* oParams)
 {
+    NSFile::CFileBinary oXhtmlWriter;
+    if (oXhtmlWriter.CreateFileW(sDst + L"/res.xhtml"))
+    {
+        // htmlToXhtml возвращает текст файла в кодировке UTF-8
+        oXhtmlWriter.WriteStringUTF8(htmlToXhtml(sSrc));
+        oXhtmlWriter.CloseFile();
+    }
+
     // FileWriter - Писатель docx
     // sDst - место создания docx, L"" - директория fontTable для инициализации, true - директория fontTable не требуется,
     // 1 - версия стилей, false - не сохранять диаграммы как изображения, NULL - кастомный конвертор связанный с pptx, L"" - пустая тема
@@ -124,7 +134,7 @@ HRESULT CHtmlFile2::Open(const std::wstring& sSrc, const std::wstring& sDst, CHt
     if (pDocxWriter == NULL)
         return S_FALSE;
 
-    CreateDocxEmpty(sDst, pDocxWriter);
+    m_internal->CreateDocxEmpty(sDst, pDocxWriter);
 
     RELEASEOBJECT(pDocxWriter);
     return S_FALSE;

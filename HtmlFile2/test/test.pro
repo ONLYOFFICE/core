@@ -17,6 +17,6 @@ include($$CORE_ROOT_DIR/Common/base.pri)
 
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lHtmlFile2
 
-ADD_DEPENDENCY(kernel, gumbo, UnicodeConverter)
+ADD_DEPENDENCY(kernel, UnicodeConverter)
 
 DESTDIR = $$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX

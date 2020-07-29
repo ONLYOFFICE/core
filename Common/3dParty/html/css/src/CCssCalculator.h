@@ -7,7 +7,7 @@
 #include <vector>
 
 typedef enum {
-    Defoult,
+    Default,
     Cantimeter,
     Inch,
     Millimeter,
@@ -16,33 +16,36 @@ typedef enum {
     Peak
 } UnitMeasure;
 
-class CCssCalculator_Private;
-class CSSCALCULATOR_EXPORT CCssCalculator
+namespace NSCSS
 {
-protected:
-    CCssCalculator_Private* m_pInternal;
-public:
-    CCssCalculator();
-    ~CCssCalculator();
+    class CCssCalculator_Private;
+    class CSSCALCULATOR_EXPORT CCssCalculator
+    {
+    protected:
+        CCssCalculator_Private* m_pInternal;
+    public:
+        CCssCalculator();
+        ~CCssCalculator();
 
-    std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> GetDeclarations(const std::wstring& sSelector);
+        std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> GetDeclarations(const std::wstring& sSelector);
 
-    std::map<std::string, std::string> GetCompiledStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure = Defoult);
-    std::map<std::wstring, std::wstring> GetCompiledStyleW(std::vector<std::string> arSelectors, UnitMeasure unitMeasure = Defoult);
+        std::map<std::string, std::string> GetCompiledStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure = Default);
+        std::map<std::wstring, std::wstring> GetCompiledStyleW(std::vector<std::string> arSelectors, UnitMeasure unitMeasure = Default);
 
 
-    void AddStyle(std::vector<std::string> sSelectors, const std::string& sStyle);
-    void AddStyle(const std::string& sStyle);
-    void AddStyles(const std::wstring& sFileName);
+        void AddStyle(std::vector<std::string> sSelectors, const std::string& sStyle);
+        void AddStyle(const std::string& sStyle);
+        void AddStyles(const std::wstring& sFileName);
 
-    void SetUnitMeasure(const UnitMeasure nType);
-    void SetDpi(const int nValue);
+        void SetUnitMeasure(const UnitMeasure nType);
+        void SetDpi(const int nValue);
 
-    UnitMeasure GetUnitMeasure();
-    std::wstring GetEncoding();
-    int GetDpi();
+        UnitMeasure GetUnitMeasure();
+        std::wstring GetEncoding();
+        int GetDpi();
 
-    void Print();
-};
+        void Print();
+    };
+}
 
 #endif // CCSSCALCULATOR_H

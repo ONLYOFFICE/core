@@ -45,7 +45,13 @@
 
 	*
 	{
-		background: black;
+		background: black !important;
+	}
+
+	#test
+	{
+		color: yellow;
+		background: white;
 	}
 
 	

@@ -129,10 +129,10 @@ nav li {
 }
 
 .carbon-img img {
-  display: block;
+  display: inline-block !important;
   margin: 0 auto;
-  max-width: var(--width) !important;
-  width: var(--width);
+  max-width: var(--width);
+  width: 200px;
   height: auto;
 }
 

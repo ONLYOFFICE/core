@@ -30,11 +30,13 @@ ADD_DEPENDENCY(kernel)
 
 HEADERS += \
     src/CCssCalculator.h \
+    src/CCssCalculator_Private.h \
     src/CElement.h \
     src/CssCalculator_global.h
 
 SOURCES += \
     src/CCssCalculator.cpp \
+    src/CCssCalculator_Private.cpp \
     src/CElement.cpp
 
 

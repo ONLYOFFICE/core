@@ -15,7 +15,8 @@ PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 
 #BOOST
-include($$CORE_ROOT_DIR/Common/3dParty/boost/boost.pri)
+CONFIG += core_boost_regex
+include($$PWD/../Common/3dParty/boost/boost.pri)
 
 ADD_DEPENDENCY(kernel, gumbo, UnicodeConverter, graphics, DocxFormatLib)
 

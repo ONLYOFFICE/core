@@ -219,7 +219,7 @@ public:
                     std::wstring sRef = m_oLightReader.GetText();
                     size_t nLen = (sRef.length() > 4 ? 4 : 0);
                     // Ссылка на сайт
-                    if(sSrcM.substr(0, nLen) == L"http")
+                    if(sRef.substr(0, nLen) == L"http")
                     {
 
                     }

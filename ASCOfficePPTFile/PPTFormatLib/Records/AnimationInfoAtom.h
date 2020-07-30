@@ -37,16 +37,15 @@
 struct SFlagsAH {
 
     USHORT m_fA_H;
-    // Is masks order ok?
 
-    unsigned getA()const {return (m_fA_H & 0xC000) >> 14;}
-    unsigned getB()const {return (m_fA_H & 0x3000) >> 12;}
-    unsigned getC()const {return (m_fA_H & 0xC00) >> 10;}
-    unsigned getD()const {return (m_fA_H & 0x300) >> 8;}
-    unsigned getE()const {return (m_fA_H & 0xC0) >> 6;}
-    unsigned getF()const {return (m_fA_H & 0x30) >> 4;}
-    unsigned getG()const {return (m_fA_H & 0xC) >> 2;}
-    unsigned getH()const {return (m_fA_H & 0x3) >> 0;}
+    USHORT getH()const {return (m_fA_H & 0xC000) >> 14;}
+    USHORT getG()const {return (m_fA_H & 0x3000) >> 12;}
+    USHORT getF()const {return (m_fA_H & 0xC00) >> 10;}
+    USHORT getE()const {return (m_fA_H & 0x300) >> 8;}
+    USHORT getD()const {return (m_fA_H & 0xC0) >> 6;}
+    USHORT getC()const {return (m_fA_H & 0x30) >> 4;}
+    USHORT getB()const {return (m_fA_H & 0xC) >> 2;}
+    USHORT getA()const {return (m_fA_H & 0x3) >> 0;}
 
 
 
@@ -59,7 +58,15 @@ class CRecordAnimationInfoAtom : public CUnknownRecord
 {
 public:
     SColorIndex m_sDimColor;
-    SFlagsAH    m_fAH;
+
+    USHORT      m_fReverse;
+    USHORT      m_fAutomatic;
+    USHORT      m_fSound;
+    USHORT      m_fStopSound;
+    USHORT      m_fPlay;
+    USHORT      m_fSynchronous;
+    USHORT      m_fHide;
+    USHORT      m_fAnimateBg;
 
     USHORT      m_Reserved;
 
@@ -90,7 +97,18 @@ public:
         m_oHeader = oHeader;
 
         m_sDimColor.ReadFromStream(pStream);
-        m_fAH.ReadFromStream(pStream);
+
+        SFlagsAH    fAH;
+        fAH.ReadFromStream(pStream);
+
+        m_fReverse      = fAH.getA();
+        m_fAutomatic    = fAH.getB();
+        m_fSound        = fAH.getC();
+        m_fStopSound    = fAH.getD();
+        m_fPlay         = fAH.getE();
+        m_fSynchronous  = fAH.getF();
+        m_fHide         = fAH.getG();
+        m_fAnimateBg    = fAH.getH();
 
         m_Reserved                  = StreamUtils::ReadWORD(pStream);
 

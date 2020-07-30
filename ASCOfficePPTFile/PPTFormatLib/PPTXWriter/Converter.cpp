@@ -1300,6 +1300,7 @@ void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CTransitio
 	oWriter.WriteString(std::wstring(L"<p:transition"));	
         switch (transition.m_nSpeed)
 		{
+        // TODO check this moment. Always write fast
 		case 0x00:	oWriter.WriteString(L" spd=\"fast\"");	break;
 		case 0x01:	oWriter.WriteString(L" spd=\"med\"");	break;
 		case 0x02:	

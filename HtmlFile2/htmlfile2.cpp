@@ -170,11 +170,34 @@ public:
             }
             m_oLightReader.MoveToElement();
         }
+        // Стиль по атрибуту
+        while(m_oLightReader.MoveToNextAttribute())
+        {
+            if(m_oLightReader.GetName() == L"style")
+            {
+                // Получаем стиль как <w:pPr>...</w:pPr> для записи в document.xml
+                std::wstring sStyle = L""; // oCSS.GetStyleDoc(m_oLightReader.GetText());
+
+                std::map<std::wstring, std::wstring>::iterator it = m_mStyles.find(sName);
+                // Если для тэга уже есть стиль, то получаем среднее
+                if(it != m_mStyles.end())
+                {
+                    it->second = L""; // oCSS.GetStyleCompromise(it->second, sStyle);
+                }
+                // Если впервые, то сохраняем как - имя тэга в файле и его стиль
+                else
+                    m_mStyles.insert(std::make_pair(sName, sStyle));
+            }
+        }
+        m_oLightReader.MoveToElement();
+
         // Картинки
-        else if(sName == L"img" || sName == L"image")
+        if(sName == L"img" || sName == L"image")
             readImage(sSrc, sDst + L"/word/media/", oDocXmlRels);
+        // Заголовок документа
         else if(sName == L"title")
             readTitle(sDst);
+        // Базовый адрес
         else if(sName == L"base")
         {
             while(m_oLightReader.MoveToNextAttribute())
@@ -186,28 +209,34 @@ public:
             }
             m_oLightReader.MoveToElement();
         }
-        // ищем атрибут style
-        else
+        // Ссылки
+        else if(sName == L"a")
         {
             while(m_oLightReader.MoveToNextAttribute())
             {
-                if(m_oLightReader.GetName() == L"style")
+                if(m_oLightReader.GetName() == L"href")
                 {
-                    // Получаем стиль как <w:pPr>...</w:pPr> для записи в document.xml
-                    std::wstring sStyle = L""; // oCSS.GetStyleDoc(m_oLightReader.GetText());
-
-                    std::map<std::wstring, std::wstring>::iterator it = m_mStyles.find(sName);
-                    // Если для тэга уже есть стиль, то получаем среднее
-                    if(it != m_mStyles.end())
+                    std::wstring sRef = m_oLightReader.GetText();
+                    size_t nLen = (sRef.length() > 4 ? 4 : 0);
+                    // Ссылка на сайт
+                    if(sSrcM.substr(0, nLen) == L"http")
                     {
-                        it->second = L""; // oCSS.GetStyleCompromise(it->second, sStyle);
+
                     }
-                    // Если впервые, то сохраняем как - имя тэга в файле и его стиль
+                    // Ссылка на документ, который нужно обработать
                     else
-                        m_mStyles.insert(std::make_pair(sName, sStyle));
+                    {
+
+                    }
                 }
             }
             m_oLightReader.MoveToElement();
+        }
+        // Абзац текста. Содержит фразовый контент
+        else if(sName == L"p")
+        {
+            readP();
+            return;
         }
 
         // Читаем весь файл
@@ -312,6 +341,16 @@ private:
             pCore->write(OOX::CPath(sDst + L"/docProps/core.xml"), DocProps, oContentTypes);
             RELEASEOBJECT(pCore);
         }
+    }
+
+    void readP()
+    {
+        if(m_oLightReader.IsEmptyNode())
+            return;
+
+        int nDeath = m_oLightReader.GetDepth();
+        while(m_oLightReader.ReadNextSiblingNode(nDeath))
+            readP();
     }
 
     std::wstring content()

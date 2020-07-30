@@ -16,7 +16,7 @@ int main()
     CHtmlFile2 oFile;
 
     // Файл, который открываем
-    std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test4.xhtml";
+    std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test1.html";
 
     // Директория, где будем создавать xhtml
     std::wstring sOutputDirectory = NSFile::GetProcessDirectory() + L"/res";
@@ -24,15 +24,6 @@ int main()
     NSDirectory::CreateDirectory(sOutputDirectory);
 
     oFile.SetTmpDirectory(sOutputDirectory);
-
-    /*
-    bool bCheck = oFile.IsHtmlFile(sFile);
-    if (!bCheck)
-    {
-        std::cout << "This isn't a html file" << std::endl;
-        return 1;
-    }
-    */
 
     HRESULT nResConvert = oFile.Open(sFile, sOutputDirectory);
     if(nResConvert == S_OK)

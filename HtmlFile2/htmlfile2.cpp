@@ -19,18 +19,20 @@ public:
     XmlUtils::CXmlLiteReader m_oLightReader;        // SAX Reader
     std::wstring m_sTmp;                            // Temp папка для конфертации html в xhtml
     std::map<std::wstring, std::wstring> m_mStyles; // Стили в document.xml. Хранятся как (имя тэга, его стиль)
-    NSStringUtils::CStringBuilder oStylesXml;       // Внутренность styles.xml
+    NSStringUtils::CStringBuilder m_oStylesXml;       // Внутренность styles.xml
+
+    int m_nBase64Id; // ID Base64 картинки, т.к. имени у них нет
 public:
     CHtmlFile2_Private()
     {
-
+        m_nBase64Id = 1;
     }
 
     ~CHtmlFile2_Private()
     {
         m_oLightReader.Clear();
         m_mStyles.clear();
-        oStylesXml.Clear();
+        m_oStylesXml.Clear();
     }
 
     // Проверяет наличие тэга html
@@ -116,6 +118,7 @@ public:
     }
 
     // Предварительное чтение стилей и картинок
+    // sPath - файл после конвертации в xhtml
     bool readSrc(const std::wstring& sPath, const std::wstring& sSrc, const std::wstring& sMedia)
     {
         if(!m_oLightReader.IsValid())
@@ -134,6 +137,8 @@ public:
     }
 
     // Читает стили
+    // sSrc - директория с исходником до конвертации, относительно которой указываются пути до картинок
+    // sMedia - директория word/media, куда отправляются картинки
     void readStyle(const std::wstring& sSrc, const std::wstring& sMedia)
     {
         std::wstring sName = m_oLightReader.GetName();
@@ -143,7 +148,7 @@ public:
             // Получаем наборы стилей как <w:style>...</w:style>...
             std::wstring sStyle = L""; // oCSS.GetStyleXml(content());
             // Дописываем в styles.xml
-            oStylesXml += sStyle;
+            m_oStylesXml += sStyle;
         }
         // Стиль по ссылке
         else if(sName == L"link")
@@ -160,7 +165,7 @@ public:
                     {
                         // Получаем наборы стилей как <w:style>...</w:style>...
                         std::wstring sStyle = L""; // oCSS.GetStyleFromCSS(sRef);
-                        oStylesXml += sStyle;
+                        m_oStylesXml += sStyle;
                     }
                 }
             }
@@ -169,50 +174,7 @@ public:
         // Картинки
         else if(sName == L"img" || sName == L"image")
         {
-            while(m_oLightReader.MoveToNextAttribute())
-            {
-                std::wstring sAName = m_oLightReader.GetName();
-                if(sAName == L"src" || sAName == L"href")
-                {
-                    std::wstring sSrcM = m_oLightReader.GetText();
-                    size_t nLen = (sSrcM.length() > 4 ? 4 : 0);
-                    // Картинка в сети
-                    if(sSrcM.substr(0, nLen) == L"http")
-                    {
-                        CFileDownloader oDownloadImg(sSrcM);
-                        oDownloadImg.SetFilePath(sMedia);
-                        bool bRes = oDownloadImg.DownloadSync();
-                    }
-                    else if(sSrcM.substr(0, nLen) == L"data")
-                    {
-                        NSFile::CFileBinary oImageWriter;
-                        if(oImageWriter.CreateFileW(sMedia + L"/img.jpg"))
-                        {
-                            size_t nBase = sSrcM.find(L"base64", nLen) + 7;
-                            std::string sBase64 = m_oLightReader.GetTextA().substr(nBase);
-                            int nSrcLen = (int)sBase64.length();
-                            int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
-                            BYTE* pImageData = new BYTE[nDecodeLen];
-                            if (TRUE == NSBase64::Base64Decode(sBase64.c_str(), nSrcLen, pImageData, &nDecodeLen))
-                                oImageWriter.WriteFile(pImageData, (DWORD)nDecodeLen);
-                            RELEASEARRAYOBJECTS(pImageData);
-                            oImageWriter.CloseFile();
-                        }
-                    }
-                    // Относительный путь до картинки
-                    else
-                    {
-                        size_t nSrcM = sSrcM.rfind(L"/");
-                        bool bRes = NSFile::CFileBinary::Copy(sSrc + L"/" + sSrcM, sMedia + sSrcM.substr(nSrcM));
-                        // Прописать рельсы
-                        if(bRes)
-                        {
-                            bool s = bRes;
-                        }
-                    }
-                }
-            }
-            m_oLightReader.MoveToElement();
+            readImage(sSrc, sMedia);
         }
         // ищем атрибут style
         else
@@ -238,23 +200,12 @@ public:
             m_oLightReader.MoveToElement();
         }
 
+        // Читаем весь файл
         if(m_oLightReader.IsEmptyNode())
             return;
-
-        // Читаем весь файл
         int nDeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
             readStyle(sSrc, sMedia);
-    }
-
-    std::wstring content()
-    {
-        std::wstring sRes = L"";
-        if(m_oLightReader.IsEmptyNode())
-            return sRes;
-        if(m_oLightReader.ReadNextSiblingNode2(m_oLightReader.GetDepth()))
-            sRes = m_oLightReader.GetText();
-        return sRes;
     }
 
     void htmlXhtml(const std::wstring& sSrc)
@@ -268,6 +219,73 @@ public:
         }
     }
 private:
+    void readImage(const std::wstring& sSrc, const std::wstring& sMedia)
+    {
+        while(m_oLightReader.MoveToNextAttribute())
+        {
+            std::wstring sAName = m_oLightReader.GetName();
+            if(sAName == L"src" || sAName == L"href")
+            {
+                std::wstring sSrcM = m_oLightReader.GetText();
+                size_t nLen = (sSrcM.length() > 4 ? 4 : 0);
+                // Картинка в сети
+                if(sSrcM.substr(0, nLen) == L"http")
+                {
+                    CFileDownloader oDownloadImg(sSrcM, false);
+                    oDownloadImg.SetFilePath(sMedia + L"/" + NSFile::GetFileName(sSrcM));
+                    bool bRes = oDownloadImg.DownloadSync();
+                    // Прописать рельсы
+                    if(bRes)
+                    {
+                        bool s = bRes;
+                    }
+                }
+                // Картинка Base64
+                else if(sSrcM.substr(0, nLen) == L"data")
+                {
+                    size_t nBase = sSrcM.find(L"/", nLen) + 1;
+                    std::wstring sType = sSrcM.substr(nBase, sSrcM.find(L";", nBase) - nBase);
+                    NSFile::CFileBinary oImageWriter;
+                    if(oImageWriter.CreateFileW(sMedia + L"/" + std::to_wstring(m_nBase64Id++) + L"." + sType))
+                    {
+                        size_t nBase = sSrcM.find(L"base64", nLen) + 7;
+                        std::string sBase64 = m_oLightReader.GetTextA().substr(nBase);
+                        int nSrcLen = (int)sBase64.length();
+                        int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
+                        BYTE* pImageData = new BYTE[nDecodeLen];
+                        if (TRUE == NSBase64::Base64Decode(sBase64.c_str(), nSrcLen, pImageData, &nDecodeLen))
+                            oImageWriter.WriteFile(pImageData, (DWORD)nDecodeLen);
+                        RELEASEARRAYOBJECTS(pImageData);
+                        oImageWriter.CloseFile();
+                        // Прописать рельсы
+                    }
+                }
+                // Картинка по относительному пути
+                else
+                {
+                    size_t nSrcM = sSrcM.rfind(L"/");
+                    bool bRes = NSFile::CFileBinary::Copy(sSrc + L"/" + sSrcM, sMedia + sSrcM.substr(nSrcM));
+                    // Прописать рельсы
+                    if(bRes)
+                    {
+                        bool s = bRes;
+                    }
+                }
+            }
+        }
+        m_oLightReader.MoveToElement();
+    }
+
+    std::wstring content()
+    {
+        std::wstring sRes = L"";
+        if(m_oLightReader.IsEmptyNode())
+            return sRes;
+        if(m_oLightReader.ReadNextSiblingNode2(m_oLightReader.GetDepth()))
+            sRes = m_oLightReader.GetText();
+        return sRes;
+    }
+
 };
 
 CHtmlFile2::CHtmlFile2()

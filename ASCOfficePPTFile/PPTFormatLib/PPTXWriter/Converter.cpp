@@ -1115,17 +1115,17 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
 		WriteElement(oWriter, oRels, pSlide->m_arElements[i]);
 	}
 
-	oWriter.WriteString(std::wstring(L"</p:spTree></p:cSld>"));
+    oWriter.WriteString(std::wstring(L"</p:spTree></p:cSld>"));
 
-	oWriter.WriteString(std::wstring(L"<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>"));
-	
-	WriteTransition(oWriter, pSlide->m_oSlideShow.m_oTransition);
+    oWriter.WriteString(std::wstring(L"<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>"));
 
-	oWriter.WriteString(std::wstring(L"<p:timing><p:tnLst><p:par><p:cTn id=\"1\" dur=\"indefinite\" restart=\"never\" nodeType=\"tmRoot\" /></p:par></p:tnLst></p:timing>"));
-	
-	oWriter.WriteString(std::wstring(L"</p:sld>"));
+    WriteTransition(oWriter, pSlide->m_oSlideShow.m_oTransition);
 
-	oRels.CloseRels();
+    oWriter.WriteString(std::wstring(L"<p:timing><p:tnLst><p:par><p:cTn id=\"1\" dur=\"indefinite\" restart=\"never\" nodeType=\"tmRoot\" /></p:par></p:tnLst></p:timing>"));
+
+    oWriter.WriteString(std::wstring(L"</p:sld>"));
+
+    oRels.CloseRels();
 
     std::wstring strXml = oWriter.GetData();
     std::wstring strFile = L"slide" + std::to_wstring(nIndexSlide + 1) + L".xml";
@@ -1298,13 +1298,22 @@ void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CTransitio
 
 	if (type.empty()) return;
 	oWriter.WriteString(std::wstring(L"<p:transition"));	
-		switch (transition.m_nSpeed)
+        switch (transition.m_nSpeed)
 		{
 		case 0x00:	oWriter.WriteString(L" spd=\"fast\"");	break;
 		case 0x01:	oWriter.WriteString(L" spd=\"med\"");	break;
 		case 0x02:	
 		default:	oWriter.WriteString(L" spd=\"slow\"");	break;
 		}
+        if (transition.m_bAdvClick == false)
+        {
+            oWriter.WriteString(L" advClick=\"0\"");
+        }
+        if (transition.m_nAdvTm != 0)
+        {
+            std::wstring sAdvTm = std::to_wstring(transition.m_nAdvTm);
+            oWriter.WriteString(L" advTm=\"" + sAdvTm + L"\"");
+        }
 	oWriter.WriteString(L">");
 	oWriter.WriteString(L"<" + type);
 		if (!param_name.empty() && !param_value.empty())

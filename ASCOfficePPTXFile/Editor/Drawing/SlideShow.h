@@ -44,9 +44,12 @@ namespace PPT_FORMAT
 		BYTE	m_nEffectType;			// тип перехода
 
 		bool	m_bLoopSound;			// зациклить аудио
-		bool	m_bStopSound;			// перед транзишном перестать играть все аудио до этого
+                bool	m_bStopSound;			// перед транзишном перестать играть все аудио до этого
 
-		int		m_nSpeed;
+                bool            m_bAdvClick;            // Attributes for true transition
+                int             m_nAdvTm;
+                int		m_nSpeed;
+
 
 		CTransition() : m_oAudio()
 		{
@@ -58,6 +61,8 @@ namespace PPT_FORMAT
 			m_bLoopSound		= false;
 			m_bStopSound		= false;
 
+                        m_bAdvClick                     = true;
+                        m_nAdvTm                        = 0;
 			m_nSpeed			= 2;
 		}
 		~CTransition()

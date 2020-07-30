@@ -19,20 +19,18 @@ public:
     XmlUtils::CXmlLiteReader m_oLightReader;        // SAX Reader
     std::wstring m_sTmp;                            // Temp папка для конфертации html в xhtml
     std::map<std::wstring, std::wstring> m_mStyles; // Стили в document.xml. Хранятся как (имя тэга, его стиль)
-    NSStringUtils::CStringBuilder m_oStylesXml;       // Внутренность styles.xml
 
-    int m_nBase64Id; // ID Base64 картинки, т.к. имени у них нет
+    int m_nImageId; // ID картинки
 public:
     CHtmlFile2_Private()
     {
-        m_nBase64Id = 1;
+        m_nImageId = 1;
     }
 
     ~CHtmlFile2_Private()
     {
         m_oLightReader.Clear();
         m_mStyles.clear();
-        m_oStylesXml.Clear();
     }
 
     // Проверяет наличие тэга html
@@ -45,8 +43,13 @@ public:
         return true;
     }
 
-    void CreateDocxEmpty(const std::wstring& sDst, Writers::FileWriter* pDocxWriter)
+    void CreateDocxEmpty(const std::wstring& sDst)
     {
+        Writers::FileWriter* pDocxWriter; // Писатель скелета docx
+        // FileWriter - Писатель docx
+        // sDst - место создания docx, L"" - директория fontTable для инициализации, true - директория fontTable не требуется,
+        // 1 - версия стилей, false - не сохранять диаграммы как изображения, NULL - кастомный конвертор связанный с pptx, L"" - пустая тема
+        pDocxWriter =  new Writers::FileWriter(sDst, L"", true, 1, false, NULL, L"");
         // Создаем пустые папки
         std::wstring strDirectory = sDst;
         // rels
@@ -115,11 +118,13 @@ public:
         oContentTypes.Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml",     OOX::CPath(L"/word"),       OOX::CPath(L"fontTable.xml"));
         oContentTypes.Registration(L"application/vnd.openxmlformats-officedocument.theme+xml",                          OOX::CPath(L"/word/theme"), OOX::CPath(L"theme1.xml"));
         oContentTypes.Write(strDirectory);
+
+        RELEASEOBJECT(pDocxWriter);
     }
 
     // Предварительное чтение стилей и картинок
     // sPath - файл после конвертации в xhtml
-    bool readSrc(const std::wstring& sPath, const std::wstring& sSrc, const std::wstring& sMedia)
+    bool readSrc(const std::wstring& sPath, const std::wstring& sSrc, const std::wstring& sMedia, NSStringUtils::CStringBuilder& oStylesXml, NSStringUtils::CStringBuilder& oDocXmlRels)
     {
         if(!m_oLightReader.IsValid())
         {
@@ -131,7 +136,7 @@ public:
                 return false;
         }
 
-        readStyle(sSrc, sMedia);
+        readStyle(sSrc, sMedia, oStylesXml, oDocXmlRels);
 
         return true;
     }
@@ -139,7 +144,7 @@ public:
     // Читает стили
     // sSrc - директория с исходником до конвертации, относительно которой указываются пути до картинок
     // sMedia - директория word/media, куда отправляются картинки
-    void readStyle(const std::wstring& sSrc, const std::wstring& sMedia)
+    void readStyle(const std::wstring& sSrc, const std::wstring& sMedia, NSStringUtils::CStringBuilder& oStylesXml, NSStringUtils::CStringBuilder& oDocXmlRels)
     {
         std::wstring sName = m_oLightReader.GetName();
         // тэг style содержит стили для styles.xml
@@ -148,7 +153,7 @@ public:
             // Получаем наборы стилей как <w:style>...</w:style>...
             std::wstring sStyle = L""; // oCSS.GetStyleXml(content());
             // Дописываем в styles.xml
-            m_oStylesXml += sStyle;
+            oStylesXml += sStyle;
         }
         // Стиль по ссылке
         else if(sName == L"link")
@@ -165,7 +170,7 @@ public:
                     {
                         // Получаем наборы стилей как <w:style>...</w:style>...
                         std::wstring sStyle = L""; // oCSS.GetStyleFromCSS(sRef);
-                        m_oStylesXml += sStyle;
+                        oStylesXml += sStyle;
                     }
                 }
             }
@@ -174,7 +179,7 @@ public:
         // Картинки
         else if(sName == L"img" || sName == L"image")
         {
-            readImage(sSrc, sMedia);
+            readImage(sSrc, sMedia, oDocXmlRels);
         }
         // ищем атрибут style
         else
@@ -205,7 +210,7 @@ public:
             return;
         int nDeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
-            readStyle(sSrc, sMedia);
+            readStyle(sSrc, sMedia, oStylesXml, oDocXmlRels);
     }
 
     void htmlXhtml(const std::wstring& sSrc)
@@ -219,7 +224,7 @@ public:
         }
     }
 private:
-    void readImage(const std::wstring& sSrc, const std::wstring& sMedia)
+    void readImage(const std::wstring& sSrc, const std::wstring& sMedia, NSStringUtils::CStringBuilder& oDocXmlRels)
     {
         while(m_oLightReader.MoveToNextAttribute())
         {
@@ -237,7 +242,11 @@ private:
                     // Прописать рельсы
                     if(bRes)
                     {
-                        bool s = bRes;
+                        oDocXmlRels += L"<Relationship Id=\"rPic";
+                        oDocXmlRels += std::to_wstring(m_nImageId++);
+                        oDocXmlRels += L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/";
+                        oDocXmlRels += NSFile::GetFileName(sSrcM);
+                        oDocXmlRels += L"\"/>";
                     }
                 }
                 // Картинка Base64
@@ -246,7 +255,7 @@ private:
                     size_t nBase = sSrcM.find(L"/", nLen) + 1;
                     std::wstring sType = sSrcM.substr(nBase, sSrcM.find(L";", nBase) - nBase);
                     NSFile::CFileBinary oImageWriter;
-                    if(oImageWriter.CreateFileW(sMedia + L"/" + std::to_wstring(m_nBase64Id++) + L"." + sType))
+                    if(oImageWriter.CreateFileW(sMedia + L"/" + std::to_wstring(m_nImageId) + L"." + sType))
                     {
                         size_t nBase = sSrcM.find(L"base64", nLen) + 7;
                         std::string sBase64 = m_oLightReader.GetTextA().substr(nBase);
@@ -258,6 +267,11 @@ private:
                         RELEASEARRAYOBJECTS(pImageData);
                         oImageWriter.CloseFile();
                         // Прописать рельсы
+                        oDocXmlRels += L"<Relationship Id=\"rPic";
+                        oDocXmlRels += std::to_wstring(m_nImageId);
+                        oDocXmlRels += L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/";
+                        oDocXmlRels += std::to_wstring(m_nImageId++) + L"." + sType;
+                        oDocXmlRels += L"\"/>";
                     }
                 }
                 // Картинка по относительному пути
@@ -268,7 +282,11 @@ private:
                     // Прописать рельсы
                     if(bRes)
                     {
-                        bool s = bRes;
+                        oDocXmlRels += L"<Relationship Id=\"rPic";
+                        oDocXmlRels += std::to_wstring(m_nImageId++);
+                        oDocXmlRels += L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/";
+                        oDocXmlRels += sSrcM.substr(nSrcM + 1);
+                        oDocXmlRels += L"\"/>";
                     }
                 }
             }
@@ -322,19 +340,30 @@ HRESULT CHtmlFile2::Open(const std::wstring& sSrc, const std::wstring& sDst, CHt
 
     std::wstring sSource = m_internal->m_sTmp + L"/res.xhtml";
 
-    // FileWriter - Писатель docx
-    // sDst - место создания docx, L"" - директория fontTable для инициализации, true - директория fontTable не требуется,
-    // 1 - версия стилей, false - не сохранять диаграммы как изображения, NULL - кастомный конвертор связанный с pptx, L"" - пустая тема
-    Writers::FileWriter* pDocxWriter =  new Writers::FileWriter(sDst, L"", true, 1, false, NULL, L"");
-    if (pDocxWriter == NULL)
-        return S_FALSE;
 
-    m_internal->CreateDocxEmpty(sDst, pDocxWriter);
+
+    m_internal->CreateDocxEmpty(sDst);
+
+    NSStringUtils::CStringBuilder oStylesXml;  // styles.xml
+    NSStringUtils::CStringBuilder oDocXmlRels; // document.xml.rels
+    oDocXmlRels += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">";
+    oDocXmlRels += L"<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/>";
+    oDocXmlRels += L"<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings\" Target=\"settings.xml\"/>";
+    oDocXmlRels += L"<Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings\" Target=\"webSettings.xml\"/>";
+    oDocXmlRels += L"<Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable\" Target=\"fontTable.xml\"/>";
+    oDocXmlRels += L"<Relationship Id=\"rId5\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme1.xml\"/>";
 
     std::wstring sSrcFolder = NSSystemPath::GetDirectoryName(sSrc);
-    if(!m_internal->readSrc(sSource, sSrcFolder, sDst + L"/word/media"))
+    if(!m_internal->readSrc(sSource, sSrcFolder, sDst + L"/word/media", oStylesXml, oDocXmlRels))
         return S_FALSE;
 
-    RELEASEOBJECT(pDocxWriter);
+    oDocXmlRels += L"</Relationships>";
+    NSFile::CFileBinary oRelsWriter;
+    if (oRelsWriter.CreateFileW(sDst + L"/word/_rels/document.xml.rels"))
+    {
+        oRelsWriter.WriteStringUTF8(oDocXmlRels.GetData());
+        oRelsWriter.CloseFile();
+    }
+
     return S_OK;
 }

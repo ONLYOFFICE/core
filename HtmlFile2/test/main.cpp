@@ -16,7 +16,7 @@ int main()
     CHtmlFile2 oFile;
 
     // Файл, который открываем
-    std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test2.xhtml";
+    std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test4.xhtml";
 
     // Директория, где будем создавать xhtml
     std::wstring sOutputDirectory = NSFile::GetProcessDirectory() + L"/res";

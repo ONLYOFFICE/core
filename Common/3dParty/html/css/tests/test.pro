@@ -6,8 +6,6 @@ TEMPLATE = app
 CONFIG   += console
 CONFIG   -= app_bundle
 
-DEFINES += CSSCALCULATOR_USE_DYNAMIC_LIBRARY
-
 CORE_ROOT_DIR = $$PWD/../../../../..
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)

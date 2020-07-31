@@ -1,6 +1,7 @@
 #include "../../../../../DesktopEditor/common/File.h"
 
 #include "../src/CCssCalculator.h"
+#include "../src/CCompiledStyle.h"
 
 #include <fstream>
 #include <iostream>
@@ -191,16 +192,15 @@ int main(int argc, char *argv[])
 
     std::vector<std::string> arSelectors13 = {".calibre9", ".calibre10", ".calibre11", ".calibre12", ".calibre13", ".calibre14"};
     std::pair<std::vector<std::string>, std::map<std::wstring, std::wstring>> pData13 {arSelectors13,{{L"display",          L"block"},
-                                                                                                      {L"line-height",      L"1.2"},
+                                                                                                      {L"line-height",      L"normal"},
                                                                                                       {L"text-align",       L"center"},
                                                                                                       {L"height",           L"auto"},
                                                                                                       {L"width",            L"auto"},
                                                                                                       {L"font-size",        L"0.75em"},
-                                                                                                      {L"line-height",      L"normal"},
                                                                                                       {L"vertical-align",   L"super"},
                                                                                                       {L"margin",           L"1em 0.2em 1em 4em"}}};
 
-    arTestDatas.push_back(std::make_pair(L"../../../../cssFiles/hover.css", pData13));
+    arTestDatas.push_back(std::make_pair(L"../../../../cssFiles/skazki.css", pData13));
 
     std::vector<std::string> arSelectors14 = {"body", "#carbonads"};
     std::pair<std::vector<std::string>, std::map<std::wstring, std::wstring>> pData14 {arSelectors14,{{L"background-color", L"hsl(0 , 0% , 98%)"},
@@ -232,14 +232,11 @@ int main(int argc, char *argv[])
 
     arTestDatas.push_back(std::make_pair(L"../../../../cssFiles/demo-page.css", pData15));
 
-    std::vector<std::string> arSelectors16 = {"p.Title, p"};
-    std::pair<std::vector<std::string>, std::map<std::wstring, std::wstring>> pData16 {arSelectors16,{{L"border-width",     L"0"},
-                                                                                                      {L"margin",           L"0"},
-                                                                                                      {L"padding",          L"0"},
-                                                                                                      {L"epub-hyphens",     L"none"},
+    std::vector<std::string> arSelectors16 = {"p.Title", "  p"};
+    std::pair<std::vector<std::string>, std::map<std::wstring, std::wstring>> pData16 {arSelectors16,{{L"-epub-hyphens",    L"none"},
                                                                                                       {L"color",            L"#000000"},
-                                                                                                      {L"font-family",      L"\"Minion Pro Disp\", serif"},
-                                                                                                      {L"font-size",        L"0.833em"},
+                                                                                                      {L"font-family",      L"\"Minion Pro Disp\" , serif"},
+                                                                                                      {L"font-size",        L"2.5em"},
                                                                                                       {L"font-style",       L"normal"},
                                                                                                       {L"font-variant",     L"small-caps"},
                                                                                                       {L"font-weight",      L"bold"},
@@ -271,7 +268,7 @@ int main(int argc, char *argv[])
                                                                                                       {L"min-height",L"0,072338pt "},
                                                                                                       {L"margin",    L"0"}}};
 
-    arTestDatas.push_back(std::make_pair(L"../../../../cssFiles/style.css", pData18));
+    arTestDatas.push_back(std::make_pair(L"../../../../cssFiles/styles.css", pData18));
 
     std::vector<std::string> arSelectors19 = {"#_idContainer000"};
     std::pair<std::vector<std::string>, std::map<std::wstring, std::wstring>> pData19 {arSelectors19,{{L"display",  L"inline-block"},
@@ -280,21 +277,21 @@ int main(int argc, char *argv[])
 
     arTestDatas.push_back(std::make_pair(L"../../../../cssFiles/idGeneratedStyles.css", pData19));
 
-    std::vector<std::string> arSelectors20 = {".hint--always.hint--top-left:after"};
-    std::pair<std::vector<std::string>, std::map<std::wstring, std::wstring>> pData20 {arSelectors20,{{L"-webkit-transform",    L"itranslateX(-100%) translateY(-8px)"},
-                                                                                                      {L"-moz-transform",       L"translateX(-100%) translateY(-8px)"},
-                                                                                                      {L"transform",            L"translateX(-100%) translateY(-8px) "}}};
+    std::vector<std::string> arSelectors20 = {".hint--always.hint--top-left::after"};
+    std::pair<std::vector<std::string>, std::map<std::wstring, std::wstring>> pData20 {arSelectors20,{{L"-webkit-transform",    L"translateX(-100%) translateY(- 2,116667mm )"},
+                                                                                                      {L"-moz-transform",       L"translateX(-100%) translateY(- 2,116667mm )"},
+                                                                                                      {L"transform",            L"translateX(-100%) translateY(- 2,116667mm )"}}};
 
     arTestDatas.push_back(std::make_pair(L"../../../../cssFiles/hint.css", pData20));
 
 
 
 
-    std::vector<UnitMeasure> arUnitMeasure = {Cantimeter, Cantimeter, Millimeter, Cantimeter,
-                                              Cantimeter, Cantimeter, Cantimeter, Millimeter,
-                                              Millimeter, Millimeter, Default,    Default,
-                                              Pixel,      Inch,       Inch,       Point,
-                                              Default,    Point,       Peak,      Millimeter};
+    std::vector<NSCSS::UnitMeasure> arUnitMeasure = {NSCSS::Cantimeter, NSCSS::Cantimeter, NSCSS::Millimeter, NSCSS::Cantimeter,
+                                                     NSCSS::Cantimeter, NSCSS::Cantimeter, NSCSS::Cantimeter, NSCSS::Millimeter,
+                                                     NSCSS::Millimeter, NSCSS::Millimeter, NSCSS::Default,    NSCSS::Default,
+                                                     NSCSS::Pixel,      NSCSS::Inch,       NSCSS::Inch,       NSCSS::Point,
+                                                     NSCSS::Default,    NSCSS::Point,      NSCSS::Peak,       NSCSS::Millimeter};
 
     for (size_t i = 0; i < arTestDatas.size(); i++)
     {
@@ -303,17 +300,19 @@ int main(int argc, char *argv[])
         NSCSS::CCssCalculator oCSS;
         oCSS.AddStyles(sFilePath);
 
-        std::map<std::wstring, std::wstring> mDecl = oCSS.GetCompiledStyleW(arTestDatas[i].second.first, arUnitMeasure[i]);
+        NSCSS::CCompiledStyle oStyle = oCSS.GetCompiledStyle(arTestDatas[i].second.first, arUnitMeasure[i]);
 
         bool bError = false;
         std::wstring sError;
 
-        if (mDecl.size() == 0)
-            bError = false;
-        else if (mDecl.size() == arTestDatas[i].second.second.size())
+        if (oStyle.GetSize() == 0)
+        {
+            bError = true;
+        }
+        else if (oStyle.GetSize() == arTestDatas[i].second.second.size())
         {
             auto iter2 = arTestDatas[i].second.second.begin();
-            for (auto iter1 = mDecl.begin(); iter1 != mDecl.end(); iter1++)
+            for (auto iter1 = oStyle.GetBegin(); iter1 != oStyle.GetEnd(); iter1++)
             {
                 if (iter1->first != iter2->first ||
                     iter1->second != iter2->second)
@@ -328,7 +327,7 @@ int main(int argc, char *argv[])
         {
             sError = std::to_wstring(i + 1);
             sError += L"\n-----FILE(" + arTestDatas[i].first + L")-----\n";
-            for (auto iter = mDecl.begin(); iter != mDecl.end(); iter++)
+            for (auto iter = oStyle.GetBegin(); iter != oStyle.GetEnd(); iter++)
                 sError += iter->first + L" : " + iter->second + L"\n";
 
             sError += L"-----DATA-----\n";
@@ -348,11 +347,11 @@ int main(int argc, char *argv[])
 
         if (bError)
         {
-            std::cout << "FALSE" << std::endl;;
+            std::cout << "FALSE" << std::endl;
             std::wcout << sError << std::endl;
         }
         else
-            std::cout << "TRUE" << std::endl;;
+            std::cout << "TRUE" << std::endl;
 
     }
     std::cout << "END" << std::endl;

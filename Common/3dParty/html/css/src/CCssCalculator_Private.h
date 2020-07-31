@@ -13,7 +13,6 @@ namespace NSCSS
 {
     class CCssCalculator_Private
     {
-    public:
         std::vector<CElement*> m_arData;
         std::vector<std::wstring> m_arFiles;
 
@@ -21,9 +20,6 @@ namespace NSCSS
         std::wstring m_sEncoding = L"UTF-8";
 
         UnitMeasure m_UnitMeasure;
-
-        CCssCalculator_Private();
-        ~CCssCalculator_Private();
 
         void AddElement(CElement* oElement);
         size_t GetSize();
@@ -102,11 +98,14 @@ namespace NSCSS
 
         void GetOutputData(KatanaOutput* oOutput);
 
+        std::string GetContentAsUTF8(const std::wstring& sFile);
+    public:
+        CCssCalculator_Private();
+        ~CCssCalculator_Private();
+
         std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> GetDeclarations(const std::wstring& sSelector);
 
-        std::map<std::string, std::string> GetCompiledStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure = Default);
-        std::map<std::wstring, std::wstring> GetCompiledStyleW(std::vector<std::string> arSelectors, UnitMeasure unitMeasure = Default);
-
+        CCompiledStyle GetCompiledStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure = Default);
 
         void AddStyle(std::vector<std::string> sSelectors, const std::string& sStyle);
         void AddStyle(const std::string& sStyle);

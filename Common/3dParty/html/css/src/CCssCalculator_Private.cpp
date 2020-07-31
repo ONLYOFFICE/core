@@ -9,6 +9,8 @@
 #include "iostream"
 
 #include "../katana-parser/src/selector.h"
+#include "../../../../UnicodeConverter/UnicodeConverter.h"
+#include "../../../../DesktopEditor/common/File.h"
 
 #define MAX_LINE_LENGTH 80
 
@@ -35,6 +37,18 @@ namespace NSCSS
             delete m_arData[i];
 
         m_arData.clear();
+    }
+
+    inline std::string CCssCalculator_Private::GetContentAsUTF8(const std::wstring &sString)
+    {
+        std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+
+        std::string sStr = converter.to_bytes(sString);
+        std::string sEnc = converter.to_bytes(m_sEncoding);
+
+        NSUnicodeConverter::CUnicodeConverter oConverter;
+        std::wstring sUnicodeContent = oConverter.toUnicode(sStr, sEnc.c_str());
+        return U_TO_UTF8(sUnicodeContent);
     }
 
     inline CElement* CCssCalculator_Private::GetElement(const int& nIndex)
@@ -170,10 +184,12 @@ namespace NSCSS
         std::wstring sText;
         KatanaParserString * string = katana_selector_to_string(&oParser, oSelector, NULL);
         const char* text = katana_string_to_characters(&oParser, string);
+
         katana_parser_deallocate(&oParser, (void*) string->data);
         katana_parser_deallocate(&oParser, (void*) string);
         sText = stringToWstring(text);
         katana_parser_deallocate(&oParser, (void*) text);
+
         return sText;
     }
 
@@ -375,9 +391,7 @@ namespace NSCSS
         {
             std::vector<std::wstring> arParent;
             std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> _decl = m_arData[i]->GetDeclarations(sSelector, arParent);
-
-            for (size_t i = 0; i < _decl.size(); i++)
-                arDeclarations.push_back(_decl[i]);
+            arDeclarations.insert(arDeclarations.end(), _decl.begin(), _decl.end());
         }
 
         return arDeclarations;
@@ -517,21 +531,10 @@ namespace NSCSS
         return StringifyValueList(oValues);
     }
 
-    std::map<std::string, std::string> CCssCalculator_Private::GetCompiledStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure)
+    CCompiledStyle CCssCalculator_Private::GetCompiledStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure)
     {
-        std::map<std::string, std::string> mStyle;
-
-        std::map<std::wstring, std::wstring> mStyleW = GetCompiledStyleW(arSelectors, unitMeasure);
-
-        for (auto iter = mStyleW.begin(); iter != mStyleW.end(); iter++)
-            mStyle.emplace(std::string(iter->first.begin(), iter->first.end()), std::string(iter->second.begin(), iter->second.end()));
-
-        return mStyle;
-    }
-
-    inline std::map<std::wstring, std::wstring> CCssCalculator_Private::GetCompiledStyleW(std::vector<std::string> arSelectors, UnitMeasure unitMeasure)
-    {
-        SetUnitMeasure(unitMeasure);
+        if (unitMeasure != Default)
+            SetUnitMeasure(unitMeasure);
 
         std::map<std::wstring, std::wstring> mStyle;
 
@@ -543,9 +546,8 @@ namespace NSCSS
 
         for (size_t i = 0; i < arSelectors.size(); i++)
         {
-            std::wstring sSelector = std::wstring(arSelectors[i].begin(), arSelectors[i].end());
 
-
+            std::wstring sSelector = stringToWstring(arSelectors[i]);
             std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> arTempDecls = GetDeclarations(sSelector);
             arStyle.insert(arStyle.end(), arTempDecls.begin(), arTempDecls.end());
             arTempDecls.clear();
@@ -553,8 +555,6 @@ namespace NSCSS
             arStyle.insert(arStyle.end(), arTempDecls.begin(), arTempDecls.end());
 
         }
-
-
         for (size_t i = 0; i < arStyle.size(); i++)
         {
             std::vector<std::pair<std::wstring, std::wstring>> arDeclarations = arStyle[i].second;
@@ -564,7 +564,8 @@ namespace NSCSS
 
                 if (mStyle.find(arDeclarations[j].first) == mStyle.cend())
                 {
-                    std::wstring sValue = ConvertUnitMeasure(arDeclarations[j].second);
+                    std::string sTemp = GetContentAsUTF8(ConvertUnitMeasure(arDeclarations[j].second));
+                    std::wstring sValue = stringToWstring(sTemp);
                     mStyle.emplace(arDeclarations[j].first, sValue);
                 }
                 else
@@ -582,7 +583,7 @@ namespace NSCSS
                 }
             }
         }
-        return  mStyle;
+        return  CCompiledStyle(mStyle);
     }
 
     void CCssCalculator_Private::AddStyle(std::vector<std::string> sSelectors, const std::string& sStyle)

@@ -2,22 +2,23 @@
 #define CCSSCALCULATOR_H
 
 #include "CssCalculator_global.h"
+#include "CCompiledStyle.h"
 #include <iostream>
 #include <map>
 #include <vector>
 
-typedef enum {
-    Default,
-    Cantimeter,
-    Inch,
-    Millimeter,
-    Pixel,
-    Point,
-    Peak
-} UnitMeasure;
-
 namespace NSCSS
 {
+    typedef enum {
+        Default,
+        Cantimeter,
+        Inch,
+        Millimeter,
+        Pixel,
+        Point,
+        Peak
+    } UnitMeasure;
+
     class CCssCalculator_Private;
     class CSSCALCULATOR_EXPORT CCssCalculator
     {
@@ -29,9 +30,7 @@ namespace NSCSS
 
         std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> GetDeclarations(const std::wstring& sSelector);
 
-        std::map<std::string, std::string> GetCompiledStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure = Default);
-        std::map<std::wstring, std::wstring> GetCompiledStyleW(std::vector<std::string> arSelectors, UnitMeasure unitMeasure = Default);
-
+        CCompiledStyle GetCompiledStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure = Default);
 
         void AddStyle(std::vector<std::string> sSelectors, const std::string& sStyle);
         void AddStyle(const std::string& sStyle);

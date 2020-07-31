@@ -19,14 +19,10 @@ namespace NSCSS
         return m_pInternal->GetDeclarations(sSelector);
     }
 
-    std::map<std::string, std::string> CCssCalculator::GetCompiledStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure)
+
+    CCompiledStyle CCssCalculator::GetCompiledStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure)
     {
         return  m_pInternal->GetCompiledStyle(arSelectors, unitMeasure);
-    }
-
-    std::map<std::wstring, std::wstring> CCssCalculator::GetCompiledStyleW(std::vector<std::string> arSelectors, UnitMeasure unitMeasure)
-    {
-        return  m_pInternal->GetCompiledStyleW(arSelectors, unitMeasure);
     }
 
     void CCssCalculator::AddStyle(std::vector<std::string> sSelectors, const std::string &sStyle)

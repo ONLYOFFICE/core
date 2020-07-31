@@ -26,15 +26,17 @@ PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 include($$CORE_ROOT_DIR/Common/3dParty/html/katana.pri)
 
-ADD_DEPENDENCY(kernel)
+ADD_DEPENDENCY(kernel, UnicodeConverter)
 
 HEADERS += \
+    src/CCompiledStyle.h \
     src/CCssCalculator.h \
     src/CCssCalculator_Private.h \
     src/CElement.h \
     src/CssCalculator_global.h
 
 SOURCES += \
+    src/CCompiledStyle.cpp \
     src/CCssCalculator.cpp \
     src/CCssCalculator_Private.cpp \
     src/CElement.cpp

@@ -91,6 +91,7 @@ std::vector<std::pair<std::wstring, std::wstring>> CElement::GetDeclarations()
     return m_arDeclarations;
 }
 
+#include <vector>
 std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> CElement::GetDeclarations(std::wstring sSelector,
                                                                                                                    std::vector<std::wstring> pParent)
 {
@@ -117,8 +118,7 @@ std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wst
     for (int i = 0; i < GetCountChildrens(); i++)
     {
         TempArElement = m_arChildrens[i]->GetDeclarations(sSelector, GetSelectors());
-        for (size_t  j = 0; j < TempArElement.size(); j++)
-            arElement.push_back(TempArElement[j]);
+        arElement.insert(arElement.end(), TempArElement.begin(), TempArElement.end());
     }
 
     return arElement;

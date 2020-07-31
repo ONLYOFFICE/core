@@ -1,5 +1,6 @@
 #include <string>
 #include <map>
+#include <algorithm>
 
 #include "htmlfile2.h"
 #include "../Common/3dParty/html/htmltoxhtml.h"
@@ -113,7 +114,16 @@ public:
         oContentTypes.Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml",   OOX::CPath(L"/word"),       OOX::CPath(L"webSettings.xml"));
         oContentTypes.Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml",     OOX::CPath(L"/word"),       OOX::CPath(L"fontTable.xml"));
         oContentTypes.Registration(L"application/vnd.openxmlformats-officedocument.theme+xml",                          OOX::CPath(L"/word/theme"), OOX::CPath(L"theme1.xml"));
+        oContentTypes.Registration(L"application/vnd.openxmlformats-package.core-properties+xml",                       OOX::CPath(L"/docProps"),   OOX::CPath(L"core.xml"));
+        oContentTypes.Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml",     OOX::CPath(L"/word"),       OOX::CPath(L"footnotes.xml"));
         oContentTypes.Write(strDirectory);
+
+        NSFile::CFileBinary oFootnotesWriter;
+        if (oFootnotesWriter.CreateFileW(strDirectory + L"/word/_rels/footnotes.xml.rels"))
+        {
+            oFootnotesWriter.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"></Relationships>");
+            oFootnotesWriter.CloseFile();
+        }
 
         RELEASEOBJECT(pDocxWriter);
     }
@@ -147,7 +157,11 @@ public:
         std::wstring sName = m_oLightReader.GetName();
         // Картинки
         if(sName == L"img" || sName == L"image")
-            readImage(sSrc, sDst + L"/word/media/", oDocXmlRels);
+        {
+            oDocXml += L"<w:p>";
+            readImage(sSrc, sDst + L"/word/media/", oDocXml, oDocXmlRels);
+            oDocXml += L"</w:p>";
+        }
         // Заголовок документа
         else if(sName == L"title")
             readTitle(sDst);
@@ -186,7 +200,7 @@ public:
         else if(sName == L"p")
         {
             oDocXml += L"<w:p>";
-            readP(sName, oDocXml, oNoteXml);
+            readP(sSrc, sDst, sName, L"", false, oDocXmlRels, oDocXml, oNoteXml);
             oDocXml += L"</w:p>";
             return;
         }
@@ -269,23 +283,28 @@ private:
         return isStyle;
     }
 
-    void readImage(const std::wstring& sSrc, const std::wstring& sMedia, NSStringUtils::CStringBuilder& oDocXmlRels)
+    void readImage(const std::wstring& sSrc, const std::wstring& sMedia, NSStringUtils::CStringBuilder& oDocXml, NSStringUtils::CStringBuilder& oDocXmlRels)
     {
         while(m_oLightReader.MoveToNextAttribute())
         {
             std::wstring sAName = m_oLightReader.GetName();
             if(sAName == L"src" || sAName == L"href")
             {
+                bool bRes = false;
                 std::wstring sSrcM = m_oLightReader.GetText();
+                std::wstring sImageName = L"";
+                std::wstring sImageId = std::to_wstring(m_nImageId);
                 size_t nLen = (sSrcM.length() > 4 ? 4 : 0);
                 // Картинка Base64
                 if(sSrcM.substr(0, nLen) == L"data")
                 {
                     size_t nBase = sSrcM.find(L"/", nLen) + 1;
                     std::wstring sType = sSrcM.substr(nBase, sSrcM.find(L";", nBase) - nBase);
+                    sImageName = sImageId + L"." + sType;
                     NSFile::CFileBinary oImageWriter;
-                    if(oImageWriter.CreateFileW(sMedia + std::to_wstring(m_nImageId) + L"." + sType))
+                    if(oImageWriter.CreateFileW(sMedia + sImageName))
                     {
+                        bRes = true;
                         size_t nBase = sSrcM.find(L"base64", nLen) + 7;
                         std::string sBase64 = m_oLightReader.GetTextA().substr(nBase);
                         int nSrcLen = (int)sBase64.length();
@@ -295,44 +314,77 @@ private:
                             oImageWriter.WriteFile(pImageData, (DWORD)nDecodeLen);
                         RELEASEARRAYOBJECTS(pImageData);
                         oImageWriter.CloseFile();
-                        // Прописать рельсы
-                        oDocXmlRels += L"<Relationship Id=\"rPic";
-                        oDocXmlRels += std::to_wstring(m_nImageId);
-                        oDocXmlRels += L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/";
-                        oDocXmlRels += std::to_wstring(m_nImageId++) + L"." + sType;
-                        oDocXmlRels += L"\"/>";
                     }
                 }
                 // Картинка в сети
                 else if(sSrcM.substr(0, nLen) == L"http" || !m_sBase.empty())
                 {
+                    sImageName = NSFile::GetFileName(sSrcM);
                     CFileDownloader oDownloadImg(m_sBase + sSrcM, false);
-                    oDownloadImg.SetFilePath(sMedia + NSFile::GetFileName(sSrcM));
-                    bool bRes = oDownloadImg.DownloadSync();
-                    // Прописать рельсы
-                    if(bRes)
-                    {
-                        oDocXmlRels += L"<Relationship Id=\"rPic";
-                        oDocXmlRels += std::to_wstring(m_nImageId++);
-                        oDocXmlRels += L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/";
-                        oDocXmlRels += NSFile::GetFileName(sSrcM);
-                        oDocXmlRels += L"\"/>";
-                    }
+                    oDownloadImg.SetFilePath(sMedia + sImageName);
+                    bRes = oDownloadImg.DownloadSync();
                 }
                 // Картинка по относительному пути
                 else
                 {
                     size_t nSrcM = sSrcM.rfind(L"/") + 1;
-                    bool bRes = NSFile::CFileBinary::Copy(sSrc + L"/" + sSrcM, sMedia + sSrcM.substr(nSrcM));
+                    sImageName = sSrcM.substr(nSrcM);
+                    bRes = NSFile::CFileBinary::Copy(sSrc + L"/" + sSrcM, sMedia + sImageName);
+                }
+
+                if(bRes)
+                {
+                    m_nImageId++;
                     // Прописать рельсы
-                    if(bRes)
+                    oDocXmlRels += L"<Relationship Id=\"rPic";
+                    oDocXmlRels += sImageId;
+                    oDocXmlRels += L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/";
+                    oDocXmlRels += sImageName;
+                    oDocXmlRels += L"\"/>";
+
+                    // Получаем размеры картинки
+                    CBgraFrame oBgraFrame;
+                    oBgraFrame.OpenFile(sMedia + sImageName);
+                    int nHy = oBgraFrame.get_Height();
+                    int nWx = oBgraFrame.get_Width();
+                    if(nWx > nHy)
                     {
-                        oDocXmlRels += L"<Relationship Id=\"rPic";
-                        oDocXmlRels += std::to_wstring(m_nImageId++);
-                        oDocXmlRels += L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/";
-                        oDocXmlRels += sSrcM.substr(nSrcM);
-                        oDocXmlRels += L"\"/>";
+                        int nW = nWx * 9525;
+                        nW = (nW > 7000000 ? 7000000 : nW);
+                        nHy = (int)((double)nHy * (double)nW / (double)nWx);
+                        nWx = nW;
                     }
+                    else
+                    {
+                        int nH = nHy * 9525;
+                        nH = (nH > 9000000 ? 9000000 : nH);
+                        int nW = (int)((double)nWx * (double)nH / (double)nHy);
+                        if(nW > 7000000)
+                        {
+                            nW = 7000000;
+                            nHy = (int)((double)nHy * (double)nW / (double)nWx);
+                        }
+                        else
+                            nHy = nH;
+                        nWx = nW;
+                    }
+
+                    // Пишем в document.xml
+                    oDocXml += L"<w:r><w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"";
+                    oDocXml += std::to_wstring(nWx);
+                    oDocXml += L"\" cy=\"";
+                    oDocXml += std::to_wstring(nHy);
+                    oDocXml += L"\"/><wp:docPr id=\"";
+                    oDocXml += sImageId;
+                    oDocXml += L"\" name=\"\"/><a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:nvPicPr><pic:cNvPr id=\"";
+                    oDocXml += sImageId;
+                    oDocXml += L"\" name=\"\"/><pic:cNvPicPr></pic:cNvPicPr></pic:nvPicPr><pic:blipFill><a:blip r:embed=\"rPic";
+                    oDocXml += sImageId;
+                    oDocXml += L"\"/><a:stretch/></pic:blipFill><pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"";
+                    oDocXml += std::to_wstring(nWx);
+                    oDocXml += L"\" cy=\"";
+                    oDocXml += std::to_wstring(nHy);
+                    oDocXml += L"\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>";
                 }
             }
         }
@@ -354,7 +406,7 @@ private:
         }
     }
 
-    void readP(std::wstring sPName, NSStringUtils::CStringBuilder& oDocXml, NSStringUtils::CStringBuilder& oNoteXml)
+    void readP(const std::wstring& sSrc, const std::wstring& sDst, const std::wstring& sPName, std::wstring sRStyle, bool bBdo, NSStringUtils::CStringBuilder& oDocXmlRels, NSStringUtils::CStringBuilder& oDocXml, NSStringUtils::CStringBuilder& oNoteXml)
     {
         if(m_oLightReader.IsEmptyNode())
             return;
@@ -365,10 +417,14 @@ private:
             std::wstring sName = m_oLightReader.GetName();
             if(sName == L"#text")
             {
+                std::wstring sText = m_oLightReader.GetText();
+                if(bBdo)
+                    std::reverse(sText.begin(), sText.end());
+
                 oDocXml += L"<w:r><w:rPr>";
-                //oDocXml += sRStyle;
+                oDocXml += sRStyle;
                 oDocXml += L"</w:rPr><w:t xml:space=\"preserve\">";
-                oDocXml.WriteEncodeXmlString(m_oLightReader.GetText());
+                oDocXml.WriteEncodeXmlString(sText);
                 oDocXml += L"</w:t></w:r>";
 
             }
@@ -381,7 +437,7 @@ private:
                         sNote = m_oLightReader.GetText();
                 m_oLightReader.MoveToElement();
 
-                readP(sPName, oDocXml, oNoteXml);
+                readP(sSrc, sDst, sPName, sRStyle, bBdo, oDocXmlRels, oDocXml, oNoteXml);
 
                 oDocXml += L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteReference w:id=\"";
                 oDocXml += std::to_wstring(m_nFootnoteId);
@@ -393,7 +449,47 @@ private:
                 oNoteXml += sNote;
                 oNoteXml += L"</w:t></w:r></w:p></w:footnote>";
             }
-            // readP(sPName, oDocXml);
+            // Полужирный текст
+            else if(sName == L"b")
+                readP(sSrc, sDst, sPName, sRStyle + L"<w:b/>", bBdo, oDocXmlRels, oDocXml, oNoteXml);
+            // Направление текста
+            else if(sName == L"bdo")
+            {
+                std::wstring sDir = L"";
+                while(m_oLightReader.MoveToNextAttribute())
+                    if(m_oLightReader.GetName() == L"dir")
+                        sDir = m_oLightReader.GetText();
+                m_oLightReader.MoveToElement();
+
+                if(sDir == L"ltr")
+                    readP(sSrc, sDst, sPName, sRStyle, false, oDocXmlRels, oDocXml, oNoteXml);
+                else if(sDir == L"rtl")
+                    readP(sSrc, sDst, sPName, sRStyle, true, oDocXmlRels, oDocXml, oNoteXml);
+                else
+                    readP(sSrc, sDst, sPName, sRStyle, !bBdo, oDocXmlRels, oDocXml, oNoteXml);
+            }
+            // Перенос строки
+            else if(sName == L"br")
+                oDocXml += L"<w:r><w:br/></w:r>";
+            // Цитата, обычно выделяется курсивом
+            // Новый термин, обычно выделяется курсивом
+            // Акцентированный текст, обычно выделяется курсивом
+            // Курсивный текст
+            else if(sName == L"cite" || sName == L"dfn" || sName == L"em" || sName == L"i")
+                readP(sSrc, sDst, sPName, sRStyle + L"<w:i/>", bBdo, oDocXmlRels, oDocXml, oNoteXml);
+            // Код
+            else if(sName == L"code")
+                readP(sSrc, sDst, sPName, sRStyle + L"<w:rStyle w:val=\"code\"/>", bBdo, oDocXmlRels, oDocXml, oNoteXml);
+            // Ссылка
+            else if(sName == L"iframe")
+            {
+
+            }
+            // Картинки
+            else if(sName == L"img" || sName == L"image")
+                readImage(sSrc, sDst + L"/word/media/", oDocXml, oDocXmlRels);
+            else
+                readP(sSrc, sDst, sPName, sRStyle, bBdo, oDocXmlRels, oDocXml, oNoteXml);
         }
     }
 
@@ -492,6 +588,8 @@ HRESULT CHtmlFile2::Open(const std::wstring& sSrc, const std::wstring& sDst, CHt
         oFootnotesWriter.WriteStringUTF8(oNoteXml.GetData());
         oFootnotesWriter.CloseFile();
     }
+
+    NSFile::CFileBinary::Remove(m_internal->m_sTmp + L"/res.xhtml");
 
     return S_OK;
 }

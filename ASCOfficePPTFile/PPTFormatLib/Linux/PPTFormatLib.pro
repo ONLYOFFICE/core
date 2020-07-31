@@ -27,6 +27,17 @@ DEFINES +=  UNICODE \
         #DISABLE_FILE_DOWNLOADER
 
 HEADERS += \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/Animations.h \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/Attributes.h \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/AudioOverlay.h \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/Document.h \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/Effects.h \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/Interactive.h \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/Metric.h \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/SlideShow.h \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/Structures.h \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/Timing.h \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/XmlStringWriter.h \
     ../PPTFormatLib.h \
     ../Reader/ClassesAtom.h \
     ../Reader/CommonZLib.h \

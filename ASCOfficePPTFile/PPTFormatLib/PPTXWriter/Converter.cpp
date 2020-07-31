@@ -32,6 +32,7 @@
 #pragma once
 
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/Document.h"
+#include "../../../ASCOfficePPTXFile/Editor/Drawing/Timing.h"
 
 #include "../../../ASCOfficePPTXFile/Editor/DefaultNotesMaster.h"
 #include "../../../ASCOfficePPTXFile/Editor/DefaultNotesTheme.h"
@@ -1119,9 +1120,11 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
 
     oWriter.WriteString(std::wstring(L"<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>"));
 
-    WriteTransition(oWriter, pSlide->m_oSlideShow.m_oTransition);
+    WriteTransition(oWriter, pSlide->m_oSlideShow);
 
-    oWriter.WriteString(std::wstring(L"<p:timing><p:tnLst><p:par><p:cTn id=\"1\" dur=\"indefinite\" restart=\"never\" nodeType=\"tmRoot\" /></p:par></p:tnLst></p:timing>"));
+    // TODO write new method and class for timing
+    CTiming oTiming;
+    WriteTiming(oWriter, oTiming);
 
     oWriter.WriteString(std::wstring(L"</p:sld>"));
 
@@ -1140,8 +1143,10 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
 	oRels.SaveRels(strFileSlidePath + _T("_rels") + FILE_SEPARATOR_STR + strFile);
 }
 
-void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CTransition& transition)
+void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CSlideShowInfo &oSSInfo)
 {
+    CTransition& transition = oSSInfo.m_oTransition;
+
 	if (transition.m_nEffectType == 0xFF)	return;
 
 	std::wstring type;
@@ -1306,13 +1311,13 @@ void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CTransitio
 		case 0x02:	
 		default:	oWriter.WriteString(L" spd=\"slow\"");	break;
 		}
-        if (transition.m_bAdvClick == false)
+        if (oSSInfo.m_bOnlyClick == false)
         {
             oWriter.WriteString(L" advClick=\"0\"");
         }
-        if (transition.m_nAdvTm != 0)
+        if (oSSInfo.m_dSlideDuration != 0)
         {
-            std::wstring sAdvTm = std::to_wstring(transition.m_nAdvTm);
+            std::wstring sAdvTm = std::to_wstring(oSSInfo.m_bOnlyClick);
             oWriter.WriteString(L" advTm=\"" + sAdvTm + L"\"");
         }
 	oWriter.WriteString(L">");
@@ -1414,4 +1419,11 @@ void PPT_FORMAT::CPPTXWriter::WriteNotes()
 	{
 		WriteNotes((int)nIndexS);
 	}
+}
+
+
+void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, CTiming &oTiming)
+{
+    oWriter.WriteString(std::wstring(L"<p:timing><p:tnLst><p:par><p:cTn id=\"1\" dur=\"indefinite\" restart=\"never\" nodeType=\"tmRoot\" /></p:par></p:tnLst></p:timing>"));
+
 }

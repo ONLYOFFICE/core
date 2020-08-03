@@ -55,7 +55,6 @@ public:
 //-----------------------------
 	_UINT16			ifmt;
 	std::wstring	stFormat;
-
 };
 
 } // namespace XLS

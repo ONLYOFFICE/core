@@ -22,13 +22,15 @@ public:
     std::wstring m_sBase;                           // Полный базовый адрес
     std::map<std::wstring, std::wstring> m_mStyles; // Стили в document.xml. Хранятся как (имя тэга, его стиль)
 
-    int m_nImageId;    // ID картинки
-    int m_nFootnoteId; // ID сноски
+    int m_nImageId;     // ID картинки
+    int m_nFootnoteId;  // ID сноски
+    int m_nHyperlinkId; // ID ссылки
 public:
     CHtmlFile2_Private()
     {
         m_nImageId = 1;
         m_nFootnoteId = 1;
+        m_nHyperlinkId = 1;
         m_sBase = L"";
     }
 
@@ -108,6 +110,12 @@ public:
         pDocxWriter->m_oWebSettingsWriter.Write();
         pDocxWriter->m_oDocumentRelsWriter.Write();
 
+        oContentTypes.AddDefault(L"jpg");
+        oContentTypes.AddDefault(L"jfif");
+        oContentTypes.AddDefault(L"jpe");
+        oContentTypes.AddDefault(L"gif");
+        oContentTypes.AddDefault(L"svg");
+        oContentTypes.AddDefault(L"bmp");
         oContentTypes.Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml", OOX::CPath(L"/word"),       OOX::CPath(L"document.xml"));
         oContentTypes.Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml",        OOX::CPath(L"/word"),       OOX::CPath(L"styles.xml"));
         oContentTypes.Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml",      OOX::CPath(L"/word"),       OOX::CPath(L"settings.xml"));
@@ -176,25 +184,16 @@ public:
         // Ссылки
         else if(sName == L"a")
         {
-            while(m_oLightReader.MoveToNextAttribute())
-            {
-                if(m_oLightReader.GetName() == L"href")
-                {
-                    std::wstring sRef = m_oLightReader.GetText();
-                    size_t nLen = (sRef.length() > 4 ? 4 : 0);
-                    // Ссылка на сайт
-                    if(sRef.substr(0, nLen) == L"http")
-                    {
-
-                    }
-                    // Ссылка на документ, который нужно обработать
-                    else
-                    {
-
-                    }
-                }
-            }
-            m_oLightReader.MoveToElement();
+            oDocXml += L"<w:p>";
+            readLink(sSrc, sDst, sName, L"", false, oDocXmlRels, oDocXml, oNoteXml);
+            oDocXml += L"</w:p>";
+        }
+        // Абревиатура, реализована как сноски
+        else if(sName == L"abbr")
+        {
+            oDocXml += L"<w:p>";
+            readAbbr(sSrc, sDst, sName, L"", false, oDocXmlRels, oDocXml, oNoteXml);
+            oDocXml += L"</w:p>";
         }
         // Абзац текста. Содержит фразовый контент
         else if(sName == L"p")
@@ -209,7 +208,7 @@ public:
         if(m_oLightReader.IsEmptyNode())
             return;
         int nDeath = m_oLightReader.GetDepth();
-        while(m_oLightReader.ReadNextSiblingNode(nDeath))
+        while(m_oLightReader.ReadNextSiblingNode2(nDeath))
             readFile(sSrc, sDst, oStylesXml, oDocXmlRels, oDocXml, oNoteXml);
     }
 
@@ -225,6 +224,70 @@ public:
     }
 
 private:
+    void readAbbr(const std::wstring& sSrc, const std::wstring& sDst, const std::wstring& sPName, std::wstring sRStyle, bool bBdo, NSStringUtils::CStringBuilder& oDocXmlRels, NSStringUtils::CStringBuilder& oDocXml, NSStringUtils::CStringBuilder& oNoteXml)
+    {
+        std::wstring sNote = L"";
+        while(m_oLightReader.MoveToNextAttribute())
+            if(m_oLightReader.GetName() == L"title")
+                sNote = m_oLightReader.GetText();
+        m_oLightReader.MoveToElement();
+
+        readP(sSrc, sDst, sPName, sRStyle, bBdo, oDocXmlRels, oDocXml, oNoteXml);
+
+        oDocXml += L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteReference w:id=\"";
+        oDocXml += std::to_wstring(m_nFootnoteId);
+        oDocXml += L"\"/></w:r>";
+
+        oNoteXml += L"<w:footnote w:id=\"";
+        oNoteXml += std::to_wstring(m_nFootnoteId++);
+        oNoteXml += L"\"><w:p><w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr><w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r><w:r><w:t xml:space=\"preserve\">";
+        oNoteXml += sNote;
+        oNoteXml += L"</w:t></w:r></w:p></w:footnote>";
+    }
+
+    void readLink(const std::wstring& sSrc, const std::wstring& sDst, const std::wstring& sPName, std::wstring sRStyle, bool bBdo, NSStringUtils::CStringBuilder& oDocXmlRels, NSStringUtils::CStringBuilder& oDocXml, NSStringUtils::CStringBuilder& oNoteXml)
+    {
+        std::wstring sRef = L"";
+        while(m_oLightReader.MoveToNextAttribute())
+        {
+            if(m_oLightReader.GetName() == L"href")
+            {
+                sRef = m_oLightReader.GetText();
+                size_t nLen = (sRef.length() > 4 ? 4 : 0);
+                // Ссылка на сайт
+                if(sRef.substr(0, nLen) == L"http")
+                {
+
+                }
+                // Ссылка на документ, который нужно обработать
+                else
+                {
+
+                }
+            }
+        }
+        m_oLightReader.MoveToElement();
+
+        if(sRef.empty())
+            return;
+
+        // Пишем рельсы
+        oDocXmlRels += L"<Relationship Id=\"rHyp";
+        oDocXmlRels += std::to_wstring(m_nHyperlinkId);
+        oDocXmlRels += L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"";
+        oDocXmlRels += sRef;
+        oDocXmlRels += L"\" TargetMode=\"External\"/>";
+
+        // Пишем в document.xml
+        oDocXml += L"<w:hyperlink w:tooltip=\"";
+        oDocXml += sRef;
+        oDocXml += L"\" r:id=\"rHyp";
+        oDocXml += std::to_wstring(m_nHyperlinkId++);
+        oDocXml += L"\">";
+        readP(sSrc, sDst, sPName, sRStyle += L"<w:rStyle w:val=\"link\"/>", bBdo, oDocXmlRels, oDocXml, oNoteXml);
+        oDocXml += L"</w:hyperlink>";
+    }
+
     bool readStyle(NSStringUtils::CStringBuilder& oStylesXml)
     {
         bool isStyle = false;
@@ -428,29 +491,15 @@ private:
                 oDocXml += L"</w:t></w:r>";
 
             }
+            // Ссылки
+            else if(sName == L"a")
+                readLink(sSrc, sDst, sPName, sRStyle, bBdo, oDocXmlRels, oDocXml, oNoteXml);
             // Абревиатура, реализована как сноски
             else if(sName == L"abbr")
-            {
-                std::wstring sNote = L"";
-                while(m_oLightReader.MoveToNextAttribute())
-                    if(m_oLightReader.GetName() == L"title")
-                        sNote = m_oLightReader.GetText();
-                m_oLightReader.MoveToElement();
-
-                readP(sSrc, sDst, sPName, sRStyle, bBdo, oDocXmlRels, oDocXml, oNoteXml);
-
-                oDocXml += L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteReference w:id=\"";
-                oDocXml += std::to_wstring(m_nFootnoteId);
-                oDocXml += L"\"/></w:r>";
-
-                oNoteXml += L"<w:footnote w:id=\"";
-                oNoteXml += std::to_wstring(m_nFootnoteId++);
-                oNoteXml += L"\"><w:p><w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr><w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r><w:r><w:t xml:space=\"preserve\">";
-                oNoteXml += sNote;
-                oNoteXml += L"</w:t></w:r></w:p></w:footnote>";
-            }
+                readAbbr(sSrc, sDst, sPName, sRStyle, bBdo, oDocXmlRels, oDocXml, oNoteXml);
             // Полужирный текст
-            else if(sName == L"b")
+            // Акцентированный текст
+            else if(sName == L"b" || sName == L"strong")
                 readP(sSrc, sDst, sPName, sRStyle + L"<w:b/>", bBdo, oDocXmlRels, oDocXml, oNoteXml);
             // Направление текста
             else if(sName == L"bdo")
@@ -468,29 +517,112 @@ private:
                 else
                     readP(sSrc, sDst, sPName, sRStyle, !bBdo, oDocXmlRels, oDocXml, oNoteXml);
             }
+            // Увеличивает размер шрифта
+            else if(sName == L"big")
+                readP(sSrc, sDst, sPName, sRStyle + L"<w:sz w:val=\"26\"/>", bBdo, oDocXmlRels, oDocXml, oNoteXml);
             // Перенос строки
             else if(sName == L"br")
                 oDocXml += L"<w:r><w:br/></w:r>";
             // Цитата, обычно выделяется курсивом
             // Новый термин, обычно выделяется курсивом
-            // Акцентированный текст, обычно выделяется курсивом
+            // Акцентированный текст
             // Курсивный текст
-            else if(sName == L"cite" || sName == L"dfn" || sName == L"em" || sName == L"i")
+            // Переменная, обычно выделяется курсивом
+            else if(sName == L"cite" || sName == L"dfn" || sName == L"em" || sName == L"i" || sName == L"var")
                 readP(sSrc, sDst, sPName, sRStyle + L"<w:i/>", bBdo, oDocXmlRels, oDocXml, oNoteXml);
             // Код
-            else if(sName == L"code")
-                readP(sSrc, sDst, sPName, sRStyle + L"<w:rStyle w:val=\"code\"/>", bBdo, oDocXmlRels, oDocXml, oNoteXml);
+            // Моноширинный шрифт, например, Consolas
+            // Результат скрипта
+            else if(sName == L"code" || sName == L"kbd" || sName == L"samp")
+                readP(sSrc, sDst, sPName, sRStyle + L"<w:rFonts w:ascii=\"Consolas\" w:hAnsi=\"Consolas\"/>", bBdo, oDocXmlRels, oDocXml, oNoteXml);
             // Ссылка
-            else if(sName == L"iframe")
+            // Объект для обработки
+            else if(sName == L"iframe" || sName == L"object")
             {
 
             }
             // Картинки
             else if(sName == L"img" || sName == L"image")
                 readImage(sSrc, sDst + L"/word/media/", oDocXml, oDocXmlRels);
+            // Метка
+            // Скрипты не поддерживаются
+            // Выводится информация с помощью скриптов
+            else if(sName == L"label" || sName == L"noscript" || sName == L"output")
+                readP(sSrc, sDst, sPName, sRStyle, bBdo, oDocXmlRels, oDocXml, oNoteXml);
+            // Выделенный текст, обычно выделяется желтым
+            else if(sName == L"mark")
+                readP(sSrc, sDst, sPName, sRStyle + L"<w:highlight w:val=\"yellow\"/>", bBdo, oDocXmlRels, oDocXml, oNoteXml);
+            // Математическая формула
+            else if(sName == L"math")
+            {
+
+            }
+            // Цитата, выделенная кавычками, обычно выделяется курсивом
+            else if(sName == L"q")
+            {
+                oDocXml += L"<w:r><w:t xml:space=\"preserve\">«</w:t></w:r>";
+                readP(sSrc, sDst, sPName, sRStyle + L"<w:i/>", bBdo, oDocXmlRels, oDocXml, oNoteXml);
+                oDocXml += L"<w:r><w:t xml:space=\"preserve\">»</w:t></w:r>";
+            }
+            // Текст верхнего регистра
+            else if(sName == L"rt" || sName == L"sup")
+                readP(sSrc, sDst, sPName, sRStyle + L"<w:vertAlign w:val=\"superscript\"/>", bBdo, oDocXmlRels, oDocXml, oNoteXml);
+            // Текст при отсутствии поддержки rt игнорируется
+            // Скрипт игнорируется
+            else if(sName == L"rp" || sName == L"script")
+                continue;
+            // Уменьшает размер шрифта
+            else if(sName == L"small")
+                readP(sSrc, sDst, sPName, sRStyle + L"<w:sz w:val=\"18\"/>", bBdo, oDocXmlRels, oDocXml, oNoteXml);
+            // Текст нижнего регистра
+            else if(sName == L"sub")
+                readP(sSrc, sDst, sPName, sRStyle + L"<w:vertAlign w:val=\"subscript\"/>", bBdo, oDocXmlRels, oDocXml, oNoteXml);
+            // Векторная картинка
+            else if(sName == L"svg")
+                readSVG(sDst + L"/word/media/", oDocXml, oDocXmlRels);
+            // Текст с границами
+            else if(sName == L"textarea")
+            {
+                oDocXml += L"<w:pPr><w:pBdr><w:left w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:top w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:right w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr></w:pPr>";
+                readP(sSrc, sDst, sPName, sRStyle, bBdo, oDocXmlRels, oDocXml, oNoteXml);
+            }
             else
                 readP(sSrc, sDst, sPName, sRStyle, bBdo, oDocXmlRels, oDocXml, oNoteXml);
         }
+    }
+
+    void readSVG(const std::wstring& sMedia, NSStringUtils::CStringBuilder& oDocXml, NSStringUtils::CStringBuilder& oDocXmlRels)
+    {
+        // Сохранить как .svg картинку
+        NSStringUtils::CStringBuilder oSVG;
+        bool bNeedXmlns = true;
+        oSVG += L"<svg ";
+        while(m_oLightReader.MoveToNextAttribute())
+        {
+            if(m_oLightReader.GetName() == L"xmlns")
+                bNeedXmlns = false;
+            oSVG += m_oLightReader.GetName();
+            oSVG += L"=\"";
+            oSVG += m_oLightReader.GetText();
+            oSVG += L"\" ";
+        }
+        m_oLightReader.MoveToElement();
+        if(bNeedXmlns)
+            oSVG += L"xmlns=\"http://www.w3.org/2000/svg\"";
+        oSVG += L">";
+        oSVG += m_oLightReader.GetInnerXml();
+        oSVG += L"</svg>";
+
+        NSFile::CFileBinary oSVGWriter;
+        std::wstring sImageId = std::to_wstring(m_nImageId++);
+        if (oSVGWriter.CreateFileW(sMedia + sImageId + L".svg"))
+        {
+            oSVGWriter.WriteStringUTF8(oSVG.GetData());
+            oSVGWriter.CloseFile();
+        }
+
+        // Прописать рельсы
+        // Прописать в document.xml
     }
 
     std::wstring content()
@@ -536,11 +668,6 @@ void CHtmlFile2::SetTmpDirectory(const std::wstring& sFolder)
 HRESULT CHtmlFile2::Open(const std::wstring& sSrc, const std::wstring& sDst, CHtmlParams* oParams)
 {
     m_internal->htmlXhtml(sSrc);
-
-    std::wstring sSource = m_internal->m_sTmp + L"/res.xhtml";
-
-
-
     m_internal->CreateDocxEmpty(sDst);
 
     NSStringUtils::CStringBuilder oStylesXml;  // styles.xml
@@ -562,6 +689,7 @@ HRESULT CHtmlFile2::Open(const std::wstring& sSrc, const std::wstring& sDst, CHt
     oNoteXml += L"<w:footnote w:type=\"separator\" w:id=\"-1\"><w:p><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:r><w:separator/></w:r></w:p></w:footnote><w:footnote w:type=\"continuationSeparator\" w:id=\"0\"><w:p><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:r><w:continuationSeparator/></w:r></w:p></w:footnote>";
 
     std::wstring sSrcFolder = NSSystemPath::GetDirectoryName(sSrc);
+    std::wstring sSource = m_internal->m_sTmp + L"/res.xhtml";
     if(!m_internal->readSrc(sSource, sSrcFolder, sDst, oStylesXml, oDocXmlRels, oDocXml, oNoteXml))
         return S_FALSE;
 

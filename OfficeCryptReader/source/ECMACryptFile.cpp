@@ -745,7 +745,7 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 	StgCreateDocfile(file_name_out.c_str(), STGM_CREATE|STGM_SHARE_EXCLUSIVE|STGM_READWRITE,  0, &winStorage);
 	
 	IStream *winStream = NULL;
-#elif
+#else
 //-------------------------------------------------------------------
 	POLE::Storage *pStorage = new POLE::Storage(file_name_out.c_str());
 	if (!pStorage)return false;
@@ -763,7 +763,7 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 	winStorage->CreateStream(L"EncryptedPackage", STGM_CREATE | STGM_READWRITE | STGM_SHARE_EXCLUSIVE, 0, 0, &winStream);
 	winStream->Write(data_out, lengthData, &nWritten);
 	winStream->Release();
-#elif
+#else
 	pStream = new POLE::Stream(pStorage, L"EncryptedPackage", true, lengthData);
 	
 	pStream->write(data_out, lengthData);
@@ -817,7 +817,7 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 		delete []byteEncryptionInfo;
 	}
 	winStream->Release();
-#elif
+#else
 	pStream = new POLE::Stream(pStorage, L"EncryptionInfo", true);
 
 	if (cryptData.bAgile)
@@ -872,7 +872,7 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 		winStorage->CreateStream(L"DocumentID", STGM_CREATE | STGM_READWRITE | STGM_SHARE_EXCLUSIVE, 0, 0, &winStream);
 		winStream->Write((BYTE*)utfDocumentID.c_str(), utfDocumentID.length(), &nWritten);
 		winStream->Release();
-#elif
+#else
 		pStream = new POLE::Stream(pStorage, L"DocumentID", true, utfDocumentID.length());
 		
 		pStream->write((BYTE*)utfDocumentID.c_str(), utfDocumentID.length());
@@ -885,7 +885,7 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 #if defined(_WIN32) || defined(_WIN64)
 	if (winStorage)
 		winStorage->Release();
-#elif
+#else
 	pStorage->close();
 	delete pStorage;
 #endif

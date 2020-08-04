@@ -28,7 +28,7 @@ WORKDIR /home/docker
 RUN mkdir v8
 WORKDIR /home/docker/v8
 COPY ./build.sh ./build.sh
-RUN echo y | sudo ./build.sh
+RUN ./build.sh
 RUN zip -r ./build.zip ./build/*
 RUN ls -al /home/docker/v8/build.zip
 #End of docker Command

@@ -55,13 +55,13 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				return _T("");
+				return (L"");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				writer.WriteString(_T("<externalReference"));
+				writer.WriteString((L"<externalReference"));
 				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
-				writer.WriteString(_T("/>"));
+				writer.WriteString((L"/>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -80,10 +80,9 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"),      m_oRid )
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_Read_if ( oReader, L"id", m_oRid )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 			}
 
 		public:
@@ -106,13 +105,13 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				return _T("");
+				return (L"");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if (m_arrItems.empty()) return;
 
-				writer.WriteString(_T("<externalReferences>"));
+				writer.WriteString((L"<externalReferences>"));
 				
                 for ( size_t i = 0; i < m_arrItems.size(); ++i)
                 {
@@ -122,7 +121,7 @@ namespace OOX
                     }
                 }
 				
-				writer.WriteString(_T("</externalReferences>"));
+				writer.WriteString((L"</externalReferences>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -136,7 +135,7 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("externalReference") == sName )
+					if ( (L"externalReference") == sName )
 						m_arrItems.push_back( new CExternalReference( oReader ));
 
 				}

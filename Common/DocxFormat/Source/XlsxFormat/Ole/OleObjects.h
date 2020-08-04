@@ -56,7 +56,7 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return (L"");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
@@ -87,11 +87,11 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("from") == sName )
+					if ( (L"from") == sName )
 					{
 						m_oFrom = oReader;
 					}
-					else if ( _T("to") == sName )
+					else if ( (L"to") == sName )
 					{
 						m_oTo = oReader;
 					}
@@ -109,9 +109,9 @@ namespace OOX
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 
-					WritingElement_ReadAttributes_Read_if	 ( oReader, _T("moveWithCells"),	  m_oMoveWithCells )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("sizeWithCells"),	  m_oSizeWithCells )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("z-order"),	  m_oZOrder )
+					WritingElement_ReadAttributes_Read_if	 ( oReader, (L"moveWithCells"),	  m_oMoveWithCells )
+					WritingElement_ReadAttributes_Read_else_if	 ( oReader, (L"sizeWithCells"),	  m_oSizeWithCells )
+					WritingElement_ReadAttributes_Read_else_if	 ( oReader, (L"z-order"),	  m_oZOrder )
 
 					WritingElement_ReadAttributes_End( oReader )
 			}
@@ -139,7 +139,7 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return (L"");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
@@ -175,7 +175,7 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("anchor") == sName )
+					if ( (L"anchor") == sName )
 					{
 						m_oAnchor = oReader;
 					}
@@ -191,18 +191,19 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, _T("altText"),		m_oAltText )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("autoFill"),		m_oAutoFill )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("autoLine"),		m_oAutoLine )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("autoPict"),		m_oAutoPict )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("dde"),			m_oDde )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("defaultSize"),	m_oDefaultSize )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("disabled"),		m_oDisabled )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("r:id"),			m_oRid )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("locked"),		m_oLocked )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("macro"),			m_oMacro )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("print"),			m_oPrint )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("uiObject"),		m_oUiObject )
+					WritingElement_ReadAttributes_Read_if		( oReader, (L"altText"),		m_oAltText )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"autoFill"),		m_oAutoFill )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"autoLine"),		m_oAutoLine )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"autoPict"),		m_oAutoPict )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"dde"),			m_oDde )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"defaultSize"),	m_oDefaultSize )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"disabled"),		m_oDisabled )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"r:id"),			m_oRid )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"relationships:id"), m_oRid )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"locked"),			m_oLocked )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"macro"),			m_oMacro )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"print"),			m_oPrint )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"uiObject"),		m_oUiObject )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
@@ -237,7 +238,7 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return (L"");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
@@ -324,7 +325,7 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("objectPr") == sName )
+					if ( (L"objectPr") == sName )
 					{
 						m_oObjectPr = oReader;
 					}
@@ -340,13 +341,14 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if	 ( oReader, _T("progId"),		m_oProgId )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("dvAspect"),	m_oDvAspect )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("link"),		m_oLink )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("oleUpdate"),m_oOleUpdate )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("autoLoad"),	m_oAutoLoad )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("shapeId"),	m_oShapeId )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("r:id"),		m_oRid )
+					WritingElement_ReadAttributes_Read_if		( oReader, (L"progId"),		m_oProgId )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"dvAspect"),	m_oDvAspect )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"link"),		m_oLink )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"oleUpdate"),	m_oOleUpdate )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"autoLoad"),	m_oAutoLoad )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"shapeId"),	m_oShapeId )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"r:id"),		m_oRid )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"relationships:id"), m_oRid )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
@@ -383,7 +385,7 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return (L"");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
@@ -409,7 +411,7 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("oleObject") == sName )
+					if ( (L"oleObject") == sName )
 					{
 						COleObject* pOleObject = new COleObject(oReader);
 						if(pOleObject->m_oShapeId.IsInit())
@@ -421,20 +423,20 @@ namespace OOX
 							delete pOleObject;
 						}
 					}
-					else if ( _T("AlternateContent") == sName )
+					else if ( (L"AlternateContent") == sName )
 					{
 						int nSubDepth = oReader.GetDepth();
 						while( oReader.ReadNextSiblingNode( nSubDepth ) )
 						{
 							std::wstring sSubName = XmlUtils::GetNameNoNS(oReader.GetName());
-							if ( _T("Fallback") == sSubName || _T("Choice") == sSubName )
+							if ( (L"Fallback") == sSubName || (L"Choice") == sSubName )
 							{
 								bool bFound = false;
 								int nSubSubDepth = oReader.GetDepth();
 								while( oReader.ReadNextSiblingNode( nSubSubDepth ) )
 								{
 									std::wstring sSubSubName = XmlUtils::GetNameNoNS(oReader.GetName());
-									if ( _T("oleObject") == sSubSubName )
+									if ( (L"oleObject") == sSubSubName )
 									{
 										COleObject* pOleObject = new COleObject(oReader);
 										if(pOleObject->m_oShapeId.IsInit())

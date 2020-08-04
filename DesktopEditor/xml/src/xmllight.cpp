@@ -111,6 +111,10 @@ namespace XmlUtils
 	{
 		return m_pInternal->FromStringA(sXml);
 	}
+    bool CXmlLiteReader::MoveToStart()
+    {
+        return m_pInternal->MoveToStart();
+    }
 
 	bool CXmlLiteReader::Read(XmlNodeType &oNodeType)
 	{

@@ -4336,6 +4336,10 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 
 		nullable_string sRid;
         XmlMacroReadAttributeBase(oNodeFill, L"r:id", sRid);
+		if (false == sRid.IsInit())
+		{
+			XmlMacroReadAttributeBase( oNodeFill, L"relationships:id", sRid );
+		}
 		if (sRid.is_init())
 		{		
 			PPTX::Logic::BlipFill* pBlipFill = NULL;

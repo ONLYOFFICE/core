@@ -68,20 +68,26 @@ namespace OOX
 			}
 			void toXML2(NSStringUtils::CStringBuilder& writer, const std::wstring &node_name) const
 			{
-				writer.WriteString(L"<" + node_name + L">");
+				toXMLWithNS(writer, L"", node_name, L"");
+			}
+			void toXMLWithNS(NSStringUtils::CStringBuilder& writer, const std::wstring &node_ns, const std::wstring &node_name, const std::wstring &child_ns) const
+			{
+				writer.StartNodeWithNS(node_ns, node_name);
+				writer.StartAttributes();
+				writer.EndAttributes();
 				if(m_oFont.IsInit())
-					m_oFont->toXML(writer);
+					m_oFont->toXMLWithNS(writer, child_ns, L"font", child_ns);
 				if(m_oNumFmt.IsInit())
-					m_oNumFmt->toXML(writer);
+					m_oNumFmt->toXMLWithNS(writer, child_ns, L"numFmt", child_ns);
 				if(m_oFill.IsInit())
-					m_oFill->toXML(writer);
+					m_oFill->toXMLWithNS(writer, child_ns, L"fill", child_ns);
 				if(m_oAlignment.IsInit())
-					m_oAlignment->toXML(writer);
+					m_oAlignment->toXMLWithNS(writer, child_ns, L"alignment", child_ns);
 				if(m_oBorder.IsInit())
-					m_oBorder->toXML(writer);
+					m_oBorder->toXMLWithNS(writer, child_ns, L"border", child_ns);
 				if(m_oProtection.IsInit())
-					m_oProtection->toXML(writer);
-				writer.WriteString(L"</" + node_name + L">");
+					m_oProtection->toXMLWithNS(writer, child_ns, L"protection", child_ns);
+				writer.EndNodeWithNS(node_ns, node_name);
 			}
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)

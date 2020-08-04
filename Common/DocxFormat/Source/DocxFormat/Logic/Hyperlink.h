@@ -109,6 +109,7 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:docLocation"),	m_sDocLocation )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:history"),		m_oHistory )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:id"),			m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("relationships:id"),m_oId )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:tgtFrame"),		m_sTgtFrame )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:tooltip"),		m_sTooltip )
 				WritingElement_ReadAttributes_End( oReader )
@@ -171,9 +172,10 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("r:id"), m_oId )
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_Read_if( oReader, L"id", m_oId)
+				WritingElement_ReadAttributes_End_No_NS( oReader )
+
 			}
 
 		public:

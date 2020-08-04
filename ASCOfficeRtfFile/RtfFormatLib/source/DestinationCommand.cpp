@@ -2530,11 +2530,13 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 	}
     else if ( "cell" == sCommand  || "nestcell" == sCommand )
 	{
-		if (oReader.m_oState->m_oParagraphProp.m_bInTable == PROP_DEF && oReader.m_oState->m_oParagraphProp.m_nItap == PROP_DEF)
-		{//пример п 9 п 12.rtf
+		//пример п 9 п 12.rtf
+		//XXT_RV_VNP.rtf
+		if (oReader.m_oState->m_oParagraphProp.m_bInTable == PROP_DEF)
 			oReader.m_oState->m_oParagraphProp.m_bInTable = 1;
+		if (oReader.m_oState->m_oParagraphProp.m_nItap == PROP_DEF)
 			oReader.m_oState->m_oParagraphProp.m_nItap = 1;	
-		}
+
 		if (oReader.m_oState->m_oParagraphProp.m_bInTable == 1 && 0 == oReader.m_oState->m_oParagraphProp.m_nItap )//Платежное_поручение.rtf (ели по другому сбойная строка заменяется параграфами
 				oReader.m_oState->m_oParagraphProp.m_nItap = 1;	
 

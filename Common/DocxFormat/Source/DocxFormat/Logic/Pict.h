@@ -134,6 +134,11 @@ namespace OOX
 				XmlMacroReadAttributeBase( oNode, _T("r:id"),      m_rId  );
 				XmlMacroReadAttributeBase( oNode, _T("w:name"),    m_sName );
 				XmlMacroReadAttributeBase( oNode, _T("w:shapeid"), m_sShapeId );
+
+				if (false == m_rId.IsInit())
+				{
+					XmlMacroReadAttributeBase( oNode, _T("relationships:id"), m_rId );
+				}
 			}
 
             virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -166,29 +171,12 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				if ( oReader.GetAttributesCount() <= 0 )
-					return;
-
-				if ( !oReader.MoveToFirstAttribute() )
-					return;
-
-				std::wstring wsName = oReader.GetName();
-				while( !wsName.empty() )
-				{
-					if ( _T("r:id") == wsName )
-						m_rId = oReader.GetText();
-					else if ( _T("w:name") == wsName )
-						m_sName = oReader.GetText();
-					else if ( _T("w:shapeid") == wsName )
-						m_sShapeId = oReader.GetText();
-
-					if ( !oReader.MoveToNextAttribute() )
-						break;
-
-					wsName = oReader.GetName();
-				}
-
-				oReader.MoveToElement();
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"),				m_rId )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("relationships:id"),	m_rId )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:name"),				m_sName )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:shapeid"),			m_sShapeId )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
@@ -354,6 +342,7 @@ namespace OOX
 								if ( _T("v:arc") == sName )
 								{
 									m_oShapeArc =  new OOX::Vml::CArc(m_pMainDocument);
+									m_oShapeArc->fromXML(oSubReader );
 								}break;
 
 							case 'b':
@@ -366,6 +355,7 @@ namespace OOX
 								if ( _T("v:curve") == sName )
 								{
 									m_oShapeCurve =  new OOX::Vml::CCurve(m_pMainDocument);//???
+									m_oShapeCurve->fromXML(oSubReader );
 								}break;
 							case 'f':
 								if ( _T("v:fill") == sName )
@@ -379,6 +369,7 @@ namespace OOX
 								if ( _T("v:group") == sName )
 								{
 									m_oShapeGroup =  OOX::Vml::CGroup(m_pMainDocument);
+									m_oShapeGroup->fromXML(oSubReader );
 								}break;
 
 							case 'h':
@@ -391,6 +382,7 @@ namespace OOX
 								if ( _T("v:image") == sName )
 								{
 									m_oImage =  new OOX::Vml::CImage(m_pMainDocument);
+									m_oImage->fromXML(oSubReader );
 								}
 								else if ( _T("v:imagedata") == sName )
 								{
@@ -400,38 +392,57 @@ namespace OOX
 
 							case 'l':
 								if ( _T("v:line") == sName )
+								{
 									m_oShapeLine =  new OOX::Vml::CLine( m_pMainDocument );
-
+									m_oShapeLine->fromXML(oSubReader );
+								}
 								break;
 
 							case 'o':
 								if ( _T("v:oval") == sName )
+								{
 									m_oShapeOval =  new OOX::Vml::COval( m_pMainDocument );
+									m_oShapeOval->fromXML(oSubReader );
+								}
 								break;
 
 							case 'p':
 								if ( _T("v:path") == sName )
 									pItem = new OOX::Vml::CPath( m_pMainDocument );
 								else if ( _T("v:polyline") == sName )
+								{
 									m_oShapePolyLine =  new OOX::Vml::CPolyLine( m_pMainDocument );
+									m_oShapePolyLine->fromXML(oSubReader );
+								}
 
 								break;
 
 							case 'r':
 								if ( _T("v:rect") == sName )
+								{
 									m_oShapeRect =  new OOX::Vml::CRect( m_pMainDocument );
+									m_oShapeRect->fromXML(oSubReader );
+								}
 								else if ( _T("v:roundrect") == sName )
+								{
 									m_oShapeRoundRect =  new OOX::Vml::CRoundRect( m_pMainDocument );
-
+									m_oShapeRoundRect->fromXML(oSubReader );
+								}
 								break;
 
 							case 's':
 								if ( _T("v:shadow") == sName )
 									pItem = new OOX::Vml::CShadow( m_pMainDocument );
 								else if ( _T("v:shape") == sName )
+								{
 									m_oShape = new OOX::Vml::CShape( m_pMainDocument );
+									m_oShape->fromXML(oSubReader );
+								}
 								else if ( _T("v:shapetype") == sName )
+								{
 									m_oShapeType = new OOX::Vml::CShapeType( m_pMainDocument );
+									m_oShapeType->fromXML(oSubReader );
+								}
 								else if ( _T("v:stroke") == sName )
 									pItem = new OOX::Vml::CStroke( m_pMainDocument );
 
@@ -449,10 +460,14 @@ namespace OOX
 						}
 					case 'w':
 						if ( L"w:control" == sName )
+						{
 							m_oControl = new OOX::Logic::CControl( m_pMainDocument );
+							m_oControl->fromXML(oSubReader );
+					}
 						else if ( L"w:binData" == sName )
 						{
 							m_oBinData = new OOX::Logic::CBinData( m_pMainDocument );
+							m_oBinData->fromXML(oSubReader );
 						}
 
 						break;

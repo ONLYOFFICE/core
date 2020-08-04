@@ -787,6 +787,8 @@ namespace OOX
 			m_arrStyle.clear();
 
 			m_mapStyleNames.clear();
+			m_mapStyleDefaults.clear();
+			m_mapEmbeddedStyleNames.clear();
 		}
 		const CStyles& operator =(const XmlUtils::CXmlNode& oNode)
 		{
@@ -856,6 +858,10 @@ namespace OOX
 						{
 							m_mapStyleNames.insert(std::make_pair(oStyle->m_sStyleId.get(), m_arrStyle.size()));
 						}
+						if ((oStyle->m_oType.IsInit() && oStyle->m_oDefault.IsInit()) && (oStyle->m_oDefault->ToBool()))
+						{
+							m_mapStyleDefaults.insert(std::make_pair(oStyle->m_oType->GetValue(), m_arrStyle.size()));
+						}
 						m_arrStyle.push_back( oStyle );
 					}
 				}
@@ -892,6 +898,7 @@ namespace OOX
 		nullable<OOX::CLatentStyles>	m_oLatentStyles;
 		std::vector<OOX::CStyle*>		m_arrStyle;
 //------------------------------------------------------------------------
+		std::map<SimpleTypes::EStyleType, size_t>			m_mapStyleDefaults;
 		std::map<std::wstring, size_t>						m_mapStyleNames;
 		std::vector<std::map<std::wstring, std::wstring>>	m_mapEmbeddedStyleNames;
 	};

@@ -57,31 +57,36 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				writer.WriteString(L"<patternFill");
+				toXMLWithNS(writer, L"", L"patternFill", L"");
+			}
+			void toXMLWithNS(NSStringUtils::CStringBuilder& writer, const std::wstring &node_ns, const std::wstring &node_name, const std::wstring &child_ns) const
+			{
+				writer.StartNodeWithNS(node_ns, node_name);
+				writer.StartAttributes();
 				WritingStringNullableAttrString(L"patternType", m_oPatternType, m_oPatternType->ToString());
 				if(m_oBgColor.IsInit() || m_oFgColor.IsInit())
 				{
-					writer.WriteString(L">");
+					writer.EndAttributes();
 					if(m_oBgColor.IsInit() && m_oFgColor.IsInit())
 					{
-						m_oFgColor->toXML2(writer, L"fgColor");
-						m_oBgColor->toXML2(writer, L"bgColor");
+						m_oFgColor->toXMLWithNS(writer, child_ns, L"fgColor", child_ns);
+						m_oBgColor->toXMLWithNS(writer, child_ns, L"bgColor", child_ns);
 					}
 					else if(m_oFgColor.IsInit())
 					{
-						m_oFgColor->toXML2(writer, L"fgColor");
-						m_oFgColor->toXML2(writer, L"bgColor");
+						m_oFgColor->toXMLWithNS(writer, child_ns, L"fgColor", child_ns);
+						m_oFgColor->toXMLWithNS(writer, child_ns, L"bgColor", child_ns);
 					}
 					else if(m_oBgColor.IsInit())
 					{
-						m_oBgColor->toXML2(writer, L"fgColor");
-						m_oBgColor->toXML2(writer, L"bgColor");
+						m_oBgColor->toXMLWithNS(writer, child_ns, L"fgColor", child_ns);
+						m_oBgColor->toXMLWithNS(writer, child_ns, L"bgColor", child_ns);
 					}
-					
-					writer.WriteString(L"</patternFill>");
+
+					writer.EndNodeWithNS(node_ns, node_name);
 				}
 				else
-					writer.WriteString(L"/>");
+					writer.EndAttributesAndNode();
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -138,14 +143,19 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				writer.WriteString(L"<stop");
+				toXMLWithNS(writer, L"", L"stop", L"");
+			}
+			void toXMLWithNS(NSStringUtils::CStringBuilder& writer, const std::wstring &node_ns, const std::wstring &node_name, const std::wstring &child_ns) const
+			{
+				writer.StartNodeWithNS(node_ns, node_name);
+				writer.StartAttributes();
 				WritingStringNullableAttrDouble(L"position", m_oPosition, m_oPosition->GetValue());
-				writer.WriteString(L">");
+				writer.EndAttributes();
 				if (m_oColor.IsInit())
 				{
-					m_oColor->toXML(writer);
+					m_oColor->toXMLWithNS(writer, child_ns, L"color", child_ns);
 				}
-				writer.WriteString(L"</stop>");
+				writer.EndNodeWithNS(node_ns, node_name);
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -199,19 +209,24 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				writer.WriteString(L"<gradientFill");
+				toXMLWithNS(writer, L"", L"gradientFill", L"");
+			}
+			void toXMLWithNS(NSStringUtils::CStringBuilder& writer, const std::wstring &node_ns, const std::wstring &node_name, const std::wstring &child_ns) const
+			{
+				writer.StartNodeWithNS(node_ns, node_name);
+				writer.StartAttributes();
 				WritingStringNullableAttrString(L"type", m_oType, m_oType->ToString());
 				WritingStringNullableAttrDouble(L"left", m_oLeft, m_oLeft->GetValue());
 				WritingStringNullableAttrDouble(L"right", m_oRight, m_oRight->GetValue());
 				WritingStringNullableAttrDouble(L"top", m_oTop, m_oTop->GetValue());
 				WritingStringNullableAttrDouble(L"bottom", m_oBottom, m_oBottom->GetValue());
 				WritingStringNullableAttrDouble(L"degree", m_oDegree, m_oDegree->GetValue());
-				writer.WriteString(L">");
+				writer.EndAttributes();
 				for(size_t i = 0; i < m_arrItems.size(); ++i)
 				{
-					m_arrItems[i]->toXML(writer);
+					m_arrItems[i]->toXMLWithNS(writer, child_ns, L"stop", child_ns);
 				}
-				writer.WriteString(L"</gradientFill>");
+				writer.EndNodeWithNS(node_ns, node_name);
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -274,12 +289,18 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				writer.WriteString(L"<fill>");
+				toXMLWithNS(writer, L"", L"fill", L"");
+			}
+			void toXMLWithNS(NSStringUtils::CStringBuilder& writer, const std::wstring &node_ns, const std::wstring &node_name, const std::wstring &child_ns) const
+			{
+				writer.StartNodeWithNS(node_ns, node_name);
+				writer.StartAttributes();
+				writer.EndAttributes();
 				if(m_oPatternFill.IsInit())
-					m_oPatternFill->toXML(writer);
+					m_oPatternFill->toXMLWithNS(writer, child_ns, L"patternFill", child_ns);
 				if(m_oGradientFill.IsInit())
-					m_oGradientFill->toXML(writer);
-				writer.WriteString(L"</fill>");
+					m_oGradientFill->toXMLWithNS(writer, child_ns, L"gradientFill", child_ns);
+				writer.EndNodeWithNS(node_ns, node_name);
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

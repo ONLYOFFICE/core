@@ -210,6 +210,7 @@ public:
 	virtual HRESULT CommandDouble(const LONG& lType, const double& dCommand);
 	virtual HRESULT CommandString(const LONG& lType, const std::wstring& sCommand);
 	virtual HRESULT AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip);
+	virtual HRESULT AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage);
 	//----------------------------------------------------------------------------------------
 	// Дополнительные функции Pdf рендерера
 	//----------------------------------------------------------------------------------------
@@ -251,6 +252,8 @@ private:
 	{
             m_bValid = false;;
 	}
+	void AddLink(const unsigned int& unPage, const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const unsigned int& unDestPage);
+
 
 private:
 
@@ -1537,6 +1540,29 @@ private:
 		int                    nHeight;
 		PdfWriter::CImageDict* pImage;
 	};
+	struct TDestinationInfo
+	{
+		TDestinationInfo(const unsigned int& page, const double& x, const double& y, const double& w, const double& h, const double& dx, const double& dy, const unsigned int& undpage)
+		{
+			unPage     = page;
+			dX         = x;
+			dY         = y;
+			dW         = w;
+			dH         = h;
+			dDestX     = dx;
+			dDestY     = dy;
+			unDestPage = undpage;
+		}
+
+		unsigned int unPage;
+		double       dX;
+		double       dY;
+		double       dW;
+		double       dH;
+		double       dDestX;
+		double       dDestY;
+		unsigned int unDestPage;
+	};
 
 private:
 
@@ -1569,6 +1595,7 @@ private:
 	double                       m_dPageWidth;
 	LONG                         m_lClipDepth;
 	std::vector<TFontInfo>       m_vFonts;
+	std::vector<TDestinationInfo>m_vDestinations;
 								 
 	bool                         m_bValid;
 								 

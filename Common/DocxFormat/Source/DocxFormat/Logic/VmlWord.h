@@ -52,19 +52,16 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CAnchorLock)
-			CAnchorLock()
+			CAnchorLock(OOX::Document *pMain = NULL) : WritingElement(pMain) 
 			{
 			}
 			virtual ~CAnchorLock()
 			{
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
@@ -85,22 +82,19 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CBorder)
-			CBorder()
+			CBorder(OOX::Document *pMain = NULL) : WritingElement(pMain) 
 			{
 				m_eType = et_Unknown;
 			}
 			virtual ~CBorder()
 			{
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				m_eType = et_Unknown;
 				// TO DO: Реализовать CBorder::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				m_eType = et_Unknown;
 				std::wstring sName = oReader.GetName();
@@ -121,7 +115,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult;
 				switch ( m_eType )
@@ -150,24 +144,19 @@ namespace OOX
 			{
 				return m_eType;
 			}
-
 		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("wd:shadow"), m_oShadow )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("wd:type"),   m_oType )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("wd:width"),  m_oWidth )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-
 		public:
 
 			EElementType                            m_eType;
 
-			// Attributes
 			nullable<SimpleTypes::CBorderShadow<> > m_oShadow;
 			nullable<SimpleTypes::CBorderType<>   > m_oType;
 			nullable<SimpleTypes::CDecimalNumber<>> m_oWidth;
@@ -179,20 +168,17 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CWrap)
-			CWrap()
+			CWrap(OOX::Document *pMain = NULL) : WritingElement(pMain) 
 			{
 			}
 			virtual ~CWrap()
 			{
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CWrap::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -223,12 +209,10 @@ namespace OOX
 			{
 				return OOX::et_wd_wrap;
 			}
-
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("anchorx"), m_oAnchorX )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("anchory"), m_oAnchorY )
@@ -236,10 +220,7 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("type"),    m_oType )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-
 		public:
-
-			// Attributes
 			nullable<SimpleTypes::CHorizontalAnchor<> > m_oAnchorX;
 			nullable<SimpleTypes::CVerticalAnchor<>   > m_oAnchorY;
 			nullable<SimpleTypes::CWrapSide<>         > m_oSide;

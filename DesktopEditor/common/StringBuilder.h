@@ -150,9 +150,12 @@ namespace NSStringUtils
         void Skip(int nSkip);
 
         void StartNode(const std::wstring& name);
+        void StartNodeWithNS(const std::wstring& ns, const std::wstring& name);
         void StartAttributes();
         void EndAttributes();
+        void EndAttributesAndNode();
         void EndNode(const std::wstring& name);
+        void EndNodeWithNS(const std::wstring& ns, const std::wstring& name);
         void WriteNodeBegin(std::wstring strNodeName, bool bAttributed = false);
         void WriteNodeEnd(std::wstring strNodeName, bool bEmptyNode = false, bool bEndNode = true);
 

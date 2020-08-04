@@ -76,65 +76,65 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				WritingElement *pItem = NULL;
 
-				if ( _T("w:altChunk") == sName )
+				if ( (L"w:altChunk") == sName )
 					pItem = new CAltChunk( document );
-				else if ( _T("w:bookmarkEnd") == sName )
+				else if ( (L"w:bookmarkEnd") == sName )
 					pItem = new CBookmarkEnd( document );
-				else if ( _T("w:bookmarkStart") == sName )
+				else if ( (L"w:bookmarkStart") == sName )
 					pItem = new CBookmarkStart( document );
-				else if ( _T("w:commentRangeEnd") == sName )
+				else if ( (L"w:commentRangeEnd") == sName )
 					pItem = new CCommentRangeEnd( document );
-				else if ( _T("w:commentRangeStart") == sName )
+				else if ( (L"w:commentRangeStart") == sName )
 					pItem = new CCommentRangeStart( document );
-				//else if ( _T("w:customXml") == sName )
+				//else if ( (L"w:customXml") == sName )
 				//	pItem = new CCustomXml( document );
-				else if ( _T("w:customXmlDelRangeEnd") == sName )
+				else if ( (L"w:customXmlDelRangeEnd") == sName )
 					pItem = new CCustomXmlDelRangeEnd( document );
-				else if ( _T("w:customXmlDelRangeStart") == sName )
+				else if ( (L"w:customXmlDelRangeStart") == sName )
 					pItem = new CCustomXmlDelRangeStart( document );
-				else if ( _T("w:customXmlInsRangeEnd") == sName )
+				else if ( (L"w:customXmlInsRangeEnd") == sName )
 					pItem = new CCustomXmlInsRangeEnd( document );
-				else if ( _T("w:customXmlInsRangeStart") == sName )
+				else if ( (L"w:customXmlInsRangeStart") == sName )
 					pItem = new CCustomXmlInsRangeStart( document );
-				else if ( _T("w:customXmlMoveFromRangeEnd") == sName ) 
+				else if ( (L"w:customXmlMoveFromRangeEnd") == sName ) 
 					pItem = new CCustomXmlMoveFromRangeEnd( document );
-				else if ( _T("w:customXmlMoveFromRangeStart") == sName )
+				else if ( (L"w:customXmlMoveFromRangeStart") == sName )
 					pItem = new CCustomXmlMoveFromRangeStart( document );
-				else if ( _T("w:customXmlMoveToRangeEnd") == sName ) 
+				else if ( (L"w:customXmlMoveToRangeEnd") == sName ) 
 					pItem = new CCustomXmlMoveToRangeEnd( document );
-				else if ( _T("w:customXmlMoveToRangeStart") == sName )
+				else if ( (L"w:customXmlMoveToRangeStart") == sName )
 					pItem = new CCustomXmlMoveToRangeStart( document );
-				else if ( _T("w:del") == sName )
+				else if ( (L"w:del") == sName )
 					pItem = new CDel( document );
-				else if ( _T("w:ins") == sName )
+				else if ( (L"w:ins") == sName )
 					pItem = new CIns( document );
-				else if ( _T("w:moveFrom") == sName )
+				else if ( (L"w:moveFrom") == sName )
 					pItem = new CMoveFrom( document );
-				else if ( _T("w:moveFromRangeEnd") == sName )
+				else if ( (L"w:moveFromRangeEnd") == sName )
 					pItem = new CMoveFromRangeEnd( document );
-				else if ( _T("w:moveFromRangeStart") == sName )
+				else if ( (L"w:moveFromRangeStart") == sName )
 					pItem = new CMoveFromRangeStart( document );
-				else if ( _T("w:moveTo") == sName )
+				else if ( (L"w:moveTo") == sName )
 					pItem = new CMoveTo( document );
-				else if ( _T("w:moveToRangeEnd") == sName )
+				else if ( (L"w:moveToRangeEnd") == sName )
 					pItem = new CMoveToRangeEnd( document );
-				else if ( _T("w:moveToRangeStart") == sName )
+				else if ( (L"w:moveToRangeStart") == sName )
 					pItem = new CMoveToRangeStart( document );
-				else if ( _T("m:oMath") == sName )
+				else if ( (L"m:oMath") == sName )
 					pItem = new COMath( document );
-				else if ( _T("m:oMathPara") == sName )
+				else if ( (L"m:oMathPara") == sName )
 					pItem = new COMathPara( document );
-				else if ( _T("w:p") == sName )
+				else if ( (L"w:p") == sName )
 					pItem = new CParagraph( document );
-				else if ( _T("w:permEnd") == sName )
+				else if ( (L"w:permEnd") == sName )
 					pItem = new CPermEnd( document );
-				else if ( _T("w:permStart") == sName )
+				else if ( (L"w:permStart") == sName )
 					pItem = new CPermStart( document );
-				else if ( _T("w:proofErr") == sName )
+				else if ( (L"w:proofErr") == sName )
 					pItem = new CProofErr( document );
-				else if ( _T("w:sdt") == sName )
+				else if ( (L"w:sdt") == sName )
 					pItem = new CSdt( document );
-				else if ( _T("w:tbl") == sName )
+				else if ( (L"w:tbl") == sName )
 					pItem = new CTbl( document );
 
 				if ( pItem )
@@ -146,7 +146,7 @@ namespace OOX
 		}
 		std::wstring CTxbxContent::toXML() const
 		{
-			std::wstring sResult = _T("<w:txbxContent>");
+			std::wstring sResult = (L"<w:txbxContent>");
 
             for ( size_t i = 0; i < m_arrItems.size(); ++i)
             {
@@ -156,7 +156,7 @@ namespace OOX
                 }
             }
 
-			sResult += _T("</w:txbxContent>");
+			sResult += (L"</w:txbxContent>");
 
 			return sResult;
 		}
@@ -171,6 +171,10 @@ namespace OOX
 		{
 			if ( oReader.IsEmptyNode() )
 				return;
+
+			OOX::Document* document = WritingElementWithChilds<>::m_pMainDocument;
+
+			OOX::Vml::CClientData * client_data = NULL;
 
 			int nCurDepth = oReader.GetDepth();
 			while ( oReader.ReadNextSiblingNode( nCurDepth ) )
@@ -188,33 +192,33 @@ namespace OOX
 					{
 					case 'c':
 
-						if ( _T("o:callout") == sName )
-							pItem = new OOX::VmlOffice::CCallout( oReader );
-						else if ( _T("o:clippath") == sName )
-							pItem = new OOX::VmlOffice::CClipPath( oReader );
+						if ( (L"o:callout") == sName )
+							pItem = new OOX::VmlOffice::CCallout( document );
+						else if ( (L"o:clippath") == sName )
+							pItem = new OOX::VmlOffice::CClipPath( document );
 
 						break;
 
 					case 'e':
 
-						if ( _T("o:extrusion") == sName )
-							pItem = new OOX::VmlOffice::CExtrusion( oReader );
+						if ( (L"o:extrusion") == sName )
+							pItem = new OOX::VmlOffice::CExtrusion( document );
 
 						break;
 
 					case 'l':
 
-						if ( _T("o:lock") == sName )
-							pItem = new OOX::VmlOffice::CLock( oReader );
+						if ( (L"o:lock") == sName )
+							pItem = new OOX::VmlOffice::CLock( document );
 
 						break;
 
 					case 's':
 
-						if ( _T("o:signatureline") == sName )
-							pItem = new OOX::VmlOffice::CSignatureLine( oReader );
-						else if ( _T("o:skew") == sName )
-							pItem = new OOX::VmlOffice::CSkew( oReader );
+						if ( (L"o:signatureline") == sName )
+							pItem = new OOX::VmlOffice::CSignatureLine( document );
+						else if ( (L"o:skew") == sName )
+							pItem = new OOX::VmlOffice::CSkew( document );
 
 						break;
 					}
@@ -222,7 +226,7 @@ namespace OOX
 					break;
 
 				case 'p':
-					//if ( _T("ppt:textdata") == sName )
+					//if ( (L"ppt:textdata") == sName )
 					//	pItem = new OOX::Vml::CTextData( oReader );
 
 					break;
@@ -232,49 +236,49 @@ namespace OOX
 					switch ( wsChar3 )
 					{
 					case 'f':
-						if ( _T("v:fill") == sName )
-							pItem = new OOX::Vml::CFill( oReader );
-						else if ( _T("v:formulas") == sName )
-							pItem = new OOX::Vml::CFormulas( oReader );
+						if ( (L"v:fill") == sName )
+							pItem = new OOX::Vml::CFill( document );
+						else if ( (L"v:formulas") == sName )
+							pItem = new OOX::Vml::CFormulas( document );
 
 						break;
 
 					case 'h':
 
-						if ( _T("v:handles") == sName )
-							pItem = new OOX::Vml::CHandles( oReader );
+						if ( (L"v:handles") == sName )
+							pItem = new OOX::Vml::CHandles( document );
 
 						break;
 
 					case 'i':
 
-						if ( _T("v:imagedata") == sName )
-							pItem = new OOX::Vml::CImageData( oReader );
+						if ( (L"v:imagedata") == sName )
+							pItem = new OOX::Vml::CImageData( document );
 
 						break;
 
 					case 'p':
 
-						if ( _T("v:path") == sName )
-							pItem = new OOX::Vml::CPath( oReader );
+						if ( (L"v:path") == sName )
+							pItem = new OOX::Vml::CPath( document );
 
 						break;
 
 					case 's':
 
-						if ( _T("v:shadow") == sName )
-							pItem = new OOX::Vml::CShadow( oReader );
-						else if ( _T("v:stroke") == sName )
-							pItem = new OOX::Vml::CStroke( oReader );
+						if ( (L"v:shadow") == sName )
+							pItem = new OOX::Vml::CShadow( document );
+						else if ( (L"v:stroke") == sName )
+							pItem = new OOX::Vml::CStroke( document );
 
 						break;
 
 					case 't':
 
-						if ( _T("v:textbox") == sName )
-							pItem = new OOX::Vml::CTextbox( oReader );
-						else if ( _T("v:textpath") == sName )
-							pItem = new OOX::Vml::CTextPath( oReader );
+						if ( (L"v:textbox") == sName )
+							pItem = new OOX::Vml::CTextbox( document );
+						else if ( (L"v:textpath") == sName )
+							pItem = new OOX::Vml::CTextPath( document );
 
 						break;
 					}
@@ -284,41 +288,43 @@ namespace OOX
 
 				case 'w':
 
-					if ( _T("wd:anchorLock") == sName )
-						pItem = new OOX::VmlWord::CAnchorLock( oReader );
-					else if ( _T("wd:borderbottom") == sName )
-						pItem = new OOX::VmlWord::CBorder( oReader );
-					else if ( _T("wd:borderleft") == sName )
-						pItem = new OOX::VmlWord::CBorder( oReader );
-					else if ( _T("wd:borderright") == sName )
-						pItem = new OOX::VmlWord::CBorder( oReader );
-					else if ( _T("wd:bordertop") == sName )
-						pItem = new OOX::VmlWord::CBorder( oReader );
-					else if ( _T("wd:wrap") == sName )
-						pItem = new OOX::VmlWord::CWrap( oReader );
-					else if ( _T("w10:wrap") == sName )
-						pItem = new OOX::VmlWord::CWrap( oReader );
+					if ( (L"wd:anchorLock") == sName )
+						pItem = new OOX::VmlWord::CAnchorLock( document );
+					else if ( (L"wd:borderbottom") == sName )
+						pItem = new OOX::VmlWord::CBorder( document );
+					else if ( (L"wd:borderleft") == sName )
+						pItem = new OOX::VmlWord::CBorder( document );
+					else if ( (L"wd:borderright") == sName )
+						pItem = new OOX::VmlWord::CBorder( document );
+					else if ( (L"wd:bordertop") == sName )
+						pItem = new OOX::VmlWord::CBorder( document );
+					else if ( (L"wd:wrap") == sName )
+						pItem = new OOX::VmlWord::CWrap( document );
+					else if ( (L"w10:wrap") == sName )
+						pItem = new OOX::VmlWord::CWrap( document );
 
 					break;
 
 				case 'x':
 
-					if ( _T("x:ClientData") == sName )
+					if ( (L"x:ClientData") == sName )
                     {
-						pItem = new OOX::Vml::CClientData( oReader );
-                        OOX::Vml::CClientData * client_data = dynamic_cast<OOX::Vml::CClientData*>(pItem);
-                        if ((client_data) && (client_data->m_oObjectType.IsInit()))
-                               if (client_data->m_oObjectType->GetValue() == SimpleTypes::Vml::vmlclientdataobjecttypeNote)
-                                    m_bComment = true;
+						pItem = new OOX::Vml::CClientData( document );
+                        client_data = dynamic_cast<OOX::Vml::CClientData*>(pItem);
                     }
-
 					break;
 
 				}
 
 				if ( NULL != pItem )
+				{
 					m_arrItems.push_back( pItem );
+					pItem->fromXML(oReader);
+				}
 			}
+			if ((client_data) && (client_data->m_oObjectType.IsInit()))
+				   if (client_data->m_oObjectType->GetValue() == SimpleTypes::Vml::vmlclientdataobjecttypeNote)
+						m_bComment = true;
 		}
 
 		void CVmlCommonElements::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -340,28 +346,28 @@ namespace OOX
 				switch ( wsChar )
 				{
 				case 'a':
-					if      ( _T("alt") == wsName ) m_sAlt = oReader.GetText();
+					if      ( (L"alt") == wsName ) m_sAlt = oReader.GetText();
 					break;
 
 				case 'c':
-					if      ( _T("chromakey")   == wsName ) m_oChromaKey   = oReader.GetText();
-					else if ( _T("class")       == wsName ) m_sClass       = oReader.GetText();
-					else if ( _T("coordorigin") == wsName ) m_oCoordOrigin = oReader.GetText();
-					else if ( _T("coordsize")   == wsName ) m_oCoordSize   = oReader.GetText();
+					if      ( (L"chromakey")   == wsName ) m_oChromaKey   = oReader.GetText();
+					else if ( (L"class")       == wsName ) m_sClass       = oReader.GetText();
+					else if ( (L"coordorigin") == wsName ) m_oCoordOrigin = oReader.GetText();
+					else if ( (L"coordsize")   == wsName ) m_oCoordSize   = oReader.GetText();
 					break;
 
 				case 'f':
-					if      ( _T("fillcolor") == wsName ) m_oFillColor = oReader.GetText();
-					else if ( _T("filled")    == wsName ) m_oFilled    = oReader.GetText();
+					if      ( (L"fillcolor") == wsName ) m_oFillColor = oReader.GetText();
+					else if ( (L"filled")    == wsName ) m_oFilled    = oReader.GetText();
 					break;
 
 				case 'h':
-					if      ( _T("href") == wsName ) m_sHref = oReader.GetText();
+					if      ( (L"href") == wsName ) m_sHref = oReader.GetText();
 					break;
 
 				case 'i':
-					if      ( _T("id")       == wsName ) m_sId       = oReader.GetText();
-					else if ( _T("insetpen") == wsName ) m_oInsetPen = oReader.GetText();
+					if      ( (L"id")       == wsName ) m_sId       = oReader.GetText();
+					else if ( (L"insetpen") == wsName ) m_oInsetPen = oReader.GetText();
 					break;
 
 				case 'o':
@@ -370,63 +376,63 @@ namespace OOX
 						switch ( wsChar2 )
 						{
 						case 'a':
-							if      ( _T("o:allowincell")  == wsName ) m_oAllowInCell  = oReader.GetText();
-							else if ( _T("o:allowoverlap") == wsName ) m_oAllowOverlap = oReader.GetText();
-							else if ( _T("opacity")        == wsName ) m_oOpacity      = oReader.GetText();
+							if      ( (L"o:allowincell")  == wsName ) m_oAllowInCell  = oReader.GetText();
+							else if ( (L"o:allowoverlap") == wsName ) m_oAllowOverlap = oReader.GetText();
+							else if ( (L"opacity")        == wsName ) m_oOpacity      = oReader.GetText();
 							break;
 						case 'b':
-							if      ( _T("o:borderbottomcolor") == wsName ) m_oBorderBottomColor = oReader.GetText();
-							else if ( _T("o:borderleftcolor")   == wsName ) m_oBorderLeftColor   = oReader.GetText();
-							else if ( _T("o:borderrightcolor")  == wsName ) m_oBorderRightColor  = oReader.GetText();
-							else if ( _T("o:bordertopcolor")    == wsName ) m_oBorderTopColor    = oReader.GetText();
-							else if ( _T("o:bullet")            == wsName ) m_oBullet            = oReader.GetText();
-							else if ( _T("o:button")            == wsName ) m_oButton            = oReader.GetText();
-							else if ( _T("o:bwmode")            == wsName ) m_oBwMode            = oReader.GetText();
-							else if ( _T("o:bwnormal")          == wsName ) m_oBwNormal           = oReader.GetText();
-							else if ( _T("o:bwpure")            == wsName ) m_oBwPure            = oReader.GetText();
+							if      ( (L"o:borderbottomcolor") == wsName ) m_oBorderBottomColor = oReader.GetText();
+							else if ( (L"o:borderleftcolor")   == wsName ) m_oBorderLeftColor   = oReader.GetText();
+							else if ( (L"o:borderrightcolor")  == wsName ) m_oBorderRightColor  = oReader.GetText();
+							else if ( (L"o:bordertopcolor")    == wsName ) m_oBorderTopColor    = oReader.GetText();
+							else if ( (L"o:bullet")            == wsName ) m_oBullet            = oReader.GetText();
+							else if ( (L"o:button")            == wsName ) m_oButton            = oReader.GetText();
+							else if ( (L"o:bwmode")            == wsName ) m_oBwMode            = oReader.GetText();
+							else if ( (L"o:bwnormal")          == wsName ) m_oBwNormal           = oReader.GetText();
+							else if ( (L"o:bwpure")            == wsName ) m_oBwPure            = oReader.GetText();
 							break;
 						case 'c':  
-							if      ( _T("o:clip")          == wsName ) m_oClip          = oReader.GetText();
-							else if ( _T("o:cliptowrap")    == wsName ) m_oClipToWrap    = oReader.GetText();
-							else if ( _T("o:connectortype") == wsName ) m_oConnectorType = oReader.GetText();
+							if      ( (L"o:clip")          == wsName ) m_oClip          = oReader.GetText();
+							else if ( (L"o:cliptowrap")    == wsName ) m_oClipToWrap    = oReader.GetText();
+							else if ( (L"o:connectortype") == wsName ) m_oConnectorType = oReader.GetText();
 							break;
 						case 'd':
-							if      ( _T("o:doubleclicknotify") == wsName ) m_oDoubleClickNotify = oReader.GetText();
-							else if ( _T("o:dgmlayout")         == wsName ) m_oDgmLayout         = oReader.GetText();
-							else if ( _T("o:dgmlayoutmru")      == wsName ) m_oDgmLayoutMru      = oReader.GetText();
-							else if ( _T("o:dgmnodekind")       == wsName ) m_oDgmNodeKind       = oReader.GetText();
+							if      ( (L"o:doubleclicknotify") == wsName ) m_oDoubleClickNotify = oReader.GetText();
+							else if ( (L"o:dgmlayout")         == wsName ) m_oDgmLayout         = oReader.GetText();
+							else if ( (L"o:dgmlayoutmru")      == wsName ) m_oDgmLayoutMru      = oReader.GetText();
+							else if ( (L"o:dgmnodekind")       == wsName ) m_oDgmNodeKind       = oReader.GetText();
 							break;
 						case 'f':
-							if      ( _T("o:forcedash") == wsName ) m_oForceDash = oReader.GetText();
+							if      ( (L"o:forcedash") == wsName ) m_oForceDash = oReader.GetText();
 							break;
 						case 'h':  
-							if      ( _T("o:hr")        == wsName ) m_oHr        = oReader.GetText();
-							else if ( _T("o:hralign")   == wsName ) m_oHrAlign   = oReader.GetText();
-							else if ( _T("o:hrnoshade") == wsName ) m_oHrNoShade = oReader.GetText();
-							else if ( _T("o:hrpct")     == wsName ) m_oHrPct     = oReader.GetText();
-							else if ( _T("o:hrstd")     == wsName ) m_oHrStd     = oReader.GetText();
+							if      ( (L"o:hr")        == wsName ) m_oHr        = oReader.GetText();
+							else if ( (L"o:hralign")   == wsName ) m_oHrAlign   = oReader.GetText();
+							else if ( (L"o:hrnoshade") == wsName ) m_oHrNoShade = oReader.GetText();
+							else if ( (L"o:hrpct")     == wsName ) m_oHrPct     = oReader.GetText();
+							else if ( (L"o:hrstd")     == wsName ) m_oHrStd     = oReader.GetText();
 							break;
 						case 'i':
-							if      ( _T("o:insetmode") == wsName ) m_oInsetMode = oReader.GetText();
+							if      ( (L"o:insetmode") == wsName ) m_oInsetMode = oReader.GetText();
 							break;
 						case 'o':  
-							if      ( _T("o:ole")     == wsName ) m_oOle        = oReader.GetText();
-							else if ( _T("o:oleicon") == wsName ) m_oOleIcon    = oReader.GetText();
-							else if ( _T("o:oned")    == wsName ) m_oOned       = oReader.GetText();
+							if      ( (L"o:ole")     == wsName ) m_oOle        = oReader.GetText();
+							else if ( (L"o:oleicon") == wsName ) m_oOleIcon    = oReader.GetText();
+							else if ( (L"o:oned")    == wsName ) m_oOned       = oReader.GetText();
 							break;
 						case 'p':
-							if      ( _T("o:preferrelative") == wsName ) m_oPreferRelative = oReader.GetText();
+							if      ( (L"o:preferrelative") == wsName ) m_oPreferRelative = oReader.GetText();
 							break;
 						case 'r':
-							if      ( _T("o:regroupid") == wsName ) m_oRegroupId = oReader.GetText();
+							if      ( (L"o:regroupid") == wsName ) m_oRegroupId = oReader.GetText();
 							break;
 						case 's':
-							if      ( _T("o:spid") == wsName ) m_sSpId = oReader.GetText();
-							else if ( _T("o:spt")  == wsName ) m_oSpt  = oReader.GetText();
+							if      ( (L"o:spid") == wsName ) m_sSpId = oReader.GetText();
+							else if ( (L"o:spt")  == wsName ) m_oSpt  = oReader.GetText();
 							break;
 						case 'u':
-							if      ( _T("o:userdrawn")  == wsName ) m_oUserDrawn  = oReader.GetText();
-							else if ( _T("o:userhidden") == wsName ) m_oUserHidden = oReader.GetText();
+							if      ( (L"o:userdrawn")  == wsName ) m_oUserDrawn  = oReader.GetText();
+							else if ( (L"o:userhidden") == wsName ) m_oUserHidden = oReader.GetText();
 							break;
 						}
 
@@ -434,20 +440,20 @@ namespace OOX
 					}
 
 				case 'p':
-					if      ( _T("print") == wsName ) m_oPrint = oReader.GetText();
+					if      ( (L"print") == wsName ) m_oPrint = oReader.GetText();
 					break;
 				case 's':
-					if      ( _T("strokecolor")  == wsName ) m_oStrokeColor  = oReader.GetText();
-					else if ( _T("stroked")      == wsName ) m_oStroked      = oReader.GetText();
-					else if ( _T("strokeweight") == wsName ) m_oStrokeWeight = oReader.GetText();
-					else if ( _T("style")        == wsName ) m_oStyle        = oReader.GetText();
+					if      ( (L"strokecolor")  == wsName ) m_oStrokeColor  = oReader.GetText();
+					else if ( (L"stroked")      == wsName ) m_oStroked      = oReader.GetText();
+					else if ( (L"strokeweight") == wsName ) m_oStrokeWeight = oReader.GetText();
+					else if ( (L"style")        == wsName ) m_oStyle        = oReader.GetText();
 					break;
 				case 't':
-					if      ( _T("target") == wsName ) m_sTarget = oReader.GetText();
-					else if ( _T("title")  == wsName ) m_sTitle  = oReader.GetText();
+					if      ( (L"target") == wsName ) m_sTarget = oReader.GetText();
+					else if ( (L"title")  == wsName ) m_sTitle  = oReader.GetText();
 					break;
 				case 'w':
-					if      ( _T("wrapcoords") == wsName ) m_oWrapCoords = oReader.GetText();
+					if      ( (L"wrapcoords") == wsName ) m_oWrapCoords = oReader.GetText();
 					break;
 				}
 
@@ -476,126 +482,126 @@ namespace OOX
 		{
 			std::wstring sResult;
 
-			ComplexTypes_WriteAttribute3( _T("id=\""),          m_sId );
-			ComplexTypes_WriteAttribute ( _T("style=\""),       m_oStyle );
-			ComplexTypes_WriteAttribute3( _T("href=\""),        m_sHref );
-			ComplexTypes_WriteAttribute3( _T("target=\""),      m_sTarget );
-			ComplexTypes_WriteAttribute3( _T("class=\""),       m_sClass );
-			ComplexTypes_WriteAttribute3( _T("title=\""),       m_sTitle );
-			ComplexTypes_WriteAttribute3( _T("alt=\""),         m_sAlt );
+			ComplexTypes_WriteAttribute3( (L"id=\""),          m_sId );
+			ComplexTypes_WriteAttribute ( (L"style=\""),       m_oStyle );
+			ComplexTypes_WriteAttribute3( (L"href=\""),        m_sHref );
+			ComplexTypes_WriteAttribute3( (L"target=\""),      m_sTarget );
+			ComplexTypes_WriteAttribute3( (L"class=\""),       m_sClass );
+			ComplexTypes_WriteAttribute3( (L"title=\""),       m_sTitle );
+			ComplexTypes_WriteAttribute3( (L"alt=\""),         m_sAlt );
 
-			ComplexTypes_WriteAttribute ( _T("coordsize=\""),   m_oCoordSize );
-			ComplexTypes_WriteAttribute ( _T("coordorigin=\""), m_oCoordOrigin );
-			ComplexTypes_WriteAttribute ( _T("wrapcoords=\""),  m_oWrapCoords );
+			ComplexTypes_WriteAttribute ( (L"coordsize=\""),   m_oCoordSize );
+			ComplexTypes_WriteAttribute ( (L"coordorigin=\""), m_oCoordOrigin );
+			ComplexTypes_WriteAttribute ( (L"wrapcoords=\""),  m_oWrapCoords );
 
 			if ( SimpleTypes::booleanTrue != m_oPrint.GetValue() )
-				sResult += _T("print=\"false\" ");
+				sResult += (L"print=\"false\" ");
 
-			ComplexTypes_WriteAttribute3( _T("o:spid=\""),      m_sSpId );
+			ComplexTypes_WriteAttribute3( (L"o:spid=\""),      m_sSpId );
 
 			if ( SimpleTypes::booleanFalse != m_oOned.GetValue() )
-				sResult += _T("o:oned=\"true\" ");
+				sResult += (L"o:oned=\"true\" ");
 			
-			ComplexTypes_WriteAttribute ( _T("o:regroupid=\""), m_oRegroupId );
+			ComplexTypes_WriteAttribute ( (L"o:regroupid=\""), m_oRegroupId );
 
 			if ( SimpleTypes::booleanFalse != m_oDoubleClickNotify.GetValue() )
-				sResult += _T("o:doubleclicknotify=\"true\" ");
+				sResult += (L"o:doubleclicknotify=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oButton.GetValue() )
-				sResult += _T("o:button=\"true\" ");
+				sResult += (L"o:button=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oUserHidden.GetValue() )
-				sResult += _T("o:userhidden=\"true\" ");
+				sResult += (L"o:userhidden=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oBullet.GetValue() )
-				sResult += _T("o:bullet=\"true\" ");
+				sResult += (L"o:bullet=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oHr.GetValue() )
-				sResult += _T("o:hr=\"true\" ");
+				sResult += (L"o:hr=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oHrStd.GetValue() )
-				sResult += _T("o:hrstd=\"true\" ");
+				sResult += (L"o:hrstd=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oHrNoShade.GetValue() )
-				sResult += _T("o:hrnoshade=\"true\" ");
+				sResult += (L"o:hrnoshade=\"true\" ");
 
 			if ( 0 != m_oHrPct.GetValue() )
-				sResult += _T("o:hrpct=\"") + m_oHrPct.ToString() + _T("\" ");
+				sResult += (L"o:hrpct=\"") + m_oHrPct.ToString() + (L"\" ");
 
 			if ( SimpleTypes::hralignLeft != m_oHrAlign.GetValue() )
-				sResult += _T("o:hralign=\"") + m_oHrAlign.ToString() + _T("\" ");
+				sResult += (L"o:hralign=\"") + m_oHrAlign.ToString() + (L"\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oAllowInCell.GetValue() )
-				sResult += _T("o:allowincell=\"true\" ");
+				sResult += (L"o:allowincell=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oAllowOverlap.GetValue() )
-				sResult += _T("o:allowoverlap=\"true\" ");
+				sResult += (L"o:allowoverlap=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oUserDrawn.GetValue() )
-				sResult += _T("o:userdrawn=\"true\" ");
+				sResult += (L"o:userdrawn=\"true\" ");
 
-			ComplexTypes_WriteAttribute ( _T("o:bordertopcolor=\""),    m_oBorderTopColor );
-			ComplexTypes_WriteAttribute ( _T("o:borderleftcolor=\""),   m_oBorderLeftColor );
-			ComplexTypes_WriteAttribute ( _T("o:borderbottomcolor=\""), m_oBorderBottomColor );
-			ComplexTypes_WriteAttribute ( _T("o:borderrightcolor=\""),  m_oBorderRightColor );
+			ComplexTypes_WriteAttribute ( (L"o:bordertopcolor=\""),    m_oBorderTopColor );
+			ComplexTypes_WriteAttribute ( (L"o:borderleftcolor=\""),   m_oBorderLeftColor );
+			ComplexTypes_WriteAttribute ( (L"o:borderbottomcolor=\""), m_oBorderBottomColor );
+			ComplexTypes_WriteAttribute ( (L"o:borderrightcolor=\""),  m_oBorderRightColor );
 
-			ComplexTypes_WriteAttribute ( _T("o:dgmlayout=\""),     m_oDgmLayout );
-			ComplexTypes_WriteAttribute ( _T("o:dgmlayoutmru=\""),  m_oDgmLayoutMru );
-			ComplexTypes_WriteAttribute3( _T("o:dgmnodekind=\""),   m_oDgmNodeKind );
+			ComplexTypes_WriteAttribute ( (L"o:dgmlayout=\""),     m_oDgmLayout );
+			ComplexTypes_WriteAttribute ( (L"o:dgmlayoutmru=\""),  m_oDgmLayoutMru );
+			ComplexTypes_WriteAttribute3( (L"o:dgmnodekind=\""),   m_oDgmNodeKind );
 
 			if ( SimpleTypes::insetmodeCustom != m_oInsetMode.GetValue() )
-				sResult += _T("o:insetmode=\"") + m_oInsetMode.ToString() + _T("\" ");
+				sResult += (L"o:insetmode=\"") + m_oInsetMode.ToString() + (L"\" ");
 
-			ComplexTypes_WriteAttribute ( _T("chromakey=\""),  m_oChromaKey );
+			ComplexTypes_WriteAttribute ( (L"chromakey=\""),  m_oChromaKey );
 
-			ComplexTypes_WriteAttribute ( _T("filled=\""),		m_oFilled );
+			ComplexTypes_WriteAttribute ( (L"filled=\""),		m_oFilled );
 
-			ComplexTypes_WriteAttribute ( _T("fillcolor=\""),		m_oFillColor );
-			ComplexTypes_WriteAttribute ( _T("opacity=\""),			m_oOpacity );
+			ComplexTypes_WriteAttribute ( (L"fillcolor=\""),		m_oFillColor );
+			ComplexTypes_WriteAttribute ( (L"opacity=\""),			m_oOpacity );
 
-			ComplexTypes_WriteAttribute ( _T("stroked=\""), m_oStroked );
+			ComplexTypes_WriteAttribute ( (L"stroked=\""), m_oStroked );
 
-			ComplexTypes_WriteAttribute ( _T("strokecolor=\""), m_oStrokeColor);
+			ComplexTypes_WriteAttribute ( (L"strokecolor=\""), m_oStrokeColor);
 
 			if ( m_oStrokeWeight.IsInit() )
-				sResult += _T("strokeweight=\"") + m_oStrokeWeight->ToString() + _T("\" ");
+				sResult += (L"strokeweight=\"") + m_oStrokeWeight->ToString() + (L"\" ");
 
-			ComplexTypes_WriteAttribute ( _T("insetpen=\""),  m_oInsetPen );
+			ComplexTypes_WriteAttribute ( (L"insetpen=\""),  m_oInsetPen );
 
 			if ( m_oSpt.IsInit() )
-				sResult += _T("o:spt=\"") + m_oSpt->ToString() + _T("\" ");
+				sResult += (L"o:spt=\"") + m_oSpt->ToString() + (L"\" ");
 
 			if (m_oConnectorType.IsInit())
 			{
-				sResult += _T("o:connectortype=\"") + m_oConnectorType->ToString() + _T("\" ");
+				sResult += (L"o:connectortype=\"") + m_oConnectorType->ToString() + (L"\" ");
 			}
 
-			ComplexTypes_WriteAttribute ( _T("o:bwmode=\""),   m_oBwMode );
-			ComplexTypes_WriteAttribute ( _T("o:bwpure=\""),   m_oBwPure );
-			ComplexTypes_WriteAttribute ( _T("o:bwnormal=\""), m_oBwNormal );
+			ComplexTypes_WriteAttribute ( (L"o:bwmode=\""),   m_oBwMode );
+			ComplexTypes_WriteAttribute ( (L"o:bwpure=\""),   m_oBwPure );
+			ComplexTypes_WriteAttribute ( (L"o:bwnormal=\""), m_oBwNormal );
 
 			if ( SimpleTypes::booleanFalse != m_oForceDash.GetValue() )
-				sResult += _T("o:forcedash=\"true\" ");
+				sResult += (L"o:forcedash=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oOleIcon.GetValue() )
-				sResult += _T("o:oleicon=\"true\" ");
+				sResult += (L"o:oleicon=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oOle.GetValue() )
-				sResult += _T("o:ole=\"true\" ");
+				sResult += (L"o:ole=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oPreferRelative.GetValue() )
-				sResult += _T("o:preferrelative=\"true\" ");
+				sResult += (L"o:preferrelative=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oClipToWrap.GetValue() )
-				sResult += _T("o:cliptowrap=\"true\" ");
+				sResult += (L"o:cliptowrap=\"true\" ");
 
-			ComplexTypes_WriteAttribute ( _T("o:clip=\""), m_oClip );
+			ComplexTypes_WriteAttribute ( (L"o:clip=\""), m_oClip );
 
 			return sResult;
 		}
 		std::wstring CVmlCommonElements::toXML() const
 		{
-			return _T("");
+			return (L"");
 		}
 		//--------------------------------------------------------------------------------
 		// CGroup 14.1.2.6 (Part4)
@@ -610,6 +616,8 @@ namespace OOX
 
 			if ( oReader.IsEmptyNode() )
 				return;
+
+			OOX::Document* document = WritingElementWithChilds<>::m_pMainDocument;
 
 			int nCurDepth = oReader.GetDepth();
 			while ( oReader.ReadNextSiblingNode( nCurDepth ) )
@@ -627,41 +635,41 @@ namespace OOX
 					{
 					case 'c':
 
-						if ( _T("o:callout") == sName )
-							pItem = new OOX::VmlOffice::CCallout( oReader );
-						else if ( _T("o:clippath") == sName )
-							pItem = new OOX::VmlOffice::CClipPath( oReader );
+						if ( (L"o:callout") == sName )
+							pItem = new OOX::VmlOffice::CCallout( document );
+						else if ( (L"o:clippath") == sName )
+							pItem = new OOX::VmlOffice::CClipPath( document );
 
 						break;
 
 					case 'd':
 
-						if ( _T("o:diagram") == sName )
-							pItem = new OOX::VmlOffice::CDiagram( oReader );
+						if ( (L"o:diagram") == sName )
+							pItem = new OOX::VmlOffice::CDiagram( document );
 
 						break;
 
 
 					case 'e':
 
-						if ( _T("o:extrusion") == sName )
-							pItem = new OOX::VmlOffice::CExtrusion( oReader );
+						if ( (L"o:extrusion") == sName )
+							pItem = new OOX::VmlOffice::CExtrusion( document );
 
 						break;
 
 					case 'l':
 
-						if ( _T("o:lock") == sName )
-							pItem = new OOX::VmlOffice::CLock( oReader );
+						if ( (L"o:lock") == sName )
+							pItem = new OOX::VmlOffice::CLock( document );
 
 						break;
 
 					case 's':
 
-						if ( _T("o:signatureline") == sName )
-							pItem = new OOX::VmlOffice::CSignatureLine( oReader );
-						else if ( _T("o:skew") == sName )
-							pItem = new OOX::VmlOffice::CSkew( oReader );
+						if ( (L"o:signatureline") == sName )
+							pItem = new OOX::VmlOffice::CSignatureLine( document );
+						else if ( (L"o:skew") == sName )
+							pItem = new OOX::VmlOffice::CSkew( document );
 
 						break;
 					}
@@ -669,8 +677,8 @@ namespace OOX
 					break;
 
 				case 'p':
-					//if ( _T("ppt:textdata") == sName )
-					//	pItem = new OOX::Vml::CTextData( oReader );
+					//if ( (L"ppt:textdata") == sName )
+					//	pItem = new OOX::Vml::CTextData( document );
 
 					break;
 
@@ -679,96 +687,96 @@ namespace OOX
 					switch ( wsChar3 )
 					{
 					case 'a':
-						if ( _T("v:arc") == sName )
-							pItem = new OOX::Vml::CArc(oReader);
+						if ( (L"v:arc") == sName )
+							pItem = new OOX::Vml::CArc(document);
 						break;
 
 					case 'c':
-						if ( _T("v:curve") == sName )
-							pItem = new OOX::Vml::CCurve(oReader);
+						if ( (L"v:curve") == sName )
+							pItem = new OOX::Vml::CCurve(document);
 						break;
 
 					case 'f':
-						if ( _T("v:fill") == sName )
-							pItem = new OOX::Vml::CFill( oReader );
-						else if ( _T("v:formulas") == sName )
-							pItem = new OOX::Vml::CFormulas( oReader );
+						if ( (L"v:fill") == sName )
+							pItem = new OOX::Vml::CFill( document );
+						else if ( (L"v:formulas") == sName )
+							pItem = new OOX::Vml::CFormulas( document );
 
 						break;
 
 					case 'g':
-						if ( _T("v:group") == sName )
-							pItem = new OOX::Vml::CGroup(oReader);
+						if ( (L"v:group") == sName )
+							pItem = new OOX::Vml::CGroup(document);
 
 						break;
 
 					case 'h':
 
-						if ( _T("v:handles") == sName )
-							pItem = new OOX::Vml::CHandles( oReader );
+						if ( (L"v:handles") == sName )
+							pItem = new OOX::Vml::CHandles( document );
 
 						break;
 
 					case 'i':
 
-						if ( _T("v:imagedata") == sName )
-							pItem = new OOX::Vml::CImageData( oReader );
-						else if ( _T("v:image") == sName )
-							pItem = new OOX::Vml::CImage( oReader );
+						if ( (L"v:imagedata") == sName )
+							pItem = new OOX::Vml::CImageData( document );
+						else if ( (L"v:image") == sName )
+							pItem = new OOX::Vml::CImage( document );
 
 						break;
 
 					case 'l':
 
-						if ( _T("v:line") == sName )
-							pItem = new OOX::Vml::CLine (oReader);
+						if ( (L"v:line") == sName )
+							pItem = new OOX::Vml::CLine (document);
 
 						break;
 
 					case 'o':
 
-						if ( _T("v:oval") == sName )
-							pItem = new OOX::Vml::COval (oReader);
+						if ( (L"v:oval") == sName )
+							pItem = new OOX::Vml::COval (document);
 
 						break;
 
 					case 'p':
 
-						if ( _T("v:path") == sName )
-							pItem = new OOX::Vml::CPath( oReader );
-						else if ( _T("v:polyline") == sName )
-							pItem = new OOX::Vml::CPolyLine(oReader);
+						if ( (L"v:path") == sName )
+							pItem = new OOX::Vml::CPath( document );
+						else if ( (L"v:polyline") == sName )
+							pItem = new OOX::Vml::CPolyLine(document);
 
 						break;
 
 					case 'r':
 
-						if ( _T("v:rect") == sName )
-							pItem = new OOX::Vml::CRect (oReader);
-						else if ( _T("v:roundrect") == sName )
-							pItem = new OOX::Vml::CRoundRect( oReader);
+						if ( (L"v:rect") == sName )
+							pItem = new OOX::Vml::CRect (document);
+						else if ( (L"v:roundrect") == sName )
+							pItem = new OOX::Vml::CRoundRect( document);
 
 						break;
 
 					case 's':
 
-						if ( _T("v:shadow") == sName )
-							pItem = new OOX::Vml::CShadow( oReader );
-						else if ( _T("v:shape") == sName )
-							pItem = new OOX::Vml::CShape( oReader);
-						else if ( _T("v:shapetype") == sName )
-							pItem = new OOX::Vml::CShapeType( oReader);
-						else if ( _T("v:stroke") == sName )
-							pItem = new OOX::Vml::CStroke( oReader );
+						if ( (L"v:shadow") == sName )
+							pItem = new OOX::Vml::CShadow( document );
+						else if ( (L"v:shape") == sName )
+							pItem = new OOX::Vml::CShape( document);
+						else if ( (L"v:shapetype") == sName )
+							pItem = new OOX::Vml::CShapeType( document);
+						else if ( (L"v:stroke") == sName )
+							pItem = new OOX::Vml::CStroke( document );
 
 						break;
 
 					case 't':
 
-						if ( _T("v:textbox") == sName )
-							pItem = new OOX::Vml::CTextbox( oReader );
-						else if ( _T("v:textpath") == sName )
-							pItem = new OOX::Vml::CTextPath( oReader );
+						if ( (L"v:textbox") == sName )
+							pItem = new OOX::Vml::CTextbox( document );
+						else if ( (L"v:textpath") == sName )
+							pItem = new OOX::Vml::CTextPath( document );
 
 						break;
 					}
@@ -778,32 +786,35 @@ namespace OOX
 
 				case 'w':
 
-					if ( _T("wd:anchorLock") == sName )
-						pItem = new OOX::VmlWord::CAnchorLock( oReader );
-					else if ( _T("wd:borderbottom") == sName )
-						pItem = new OOX::VmlWord::CBorder( oReader );
-					else if ( _T("wd:borderleft") == sName )
-						pItem = new OOX::VmlWord::CBorder( oReader );
-					else if ( _T("wd:borderright") == sName )
-						pItem = new OOX::VmlWord::CBorder( oReader );
-					else if ( _T("wd:bordertop") == sName )
-						pItem = new OOX::VmlWord::CBorder( oReader );
-					else if ( _T("wd:wrap") == sName )
-						pItem = new OOX::VmlWord::CWrap( oReader );
+					if ( (L"wd:anchorLock") == sName )
+						pItem = new OOX::VmlWord::CAnchorLock( document );
+					else if ( (L"wd:borderbottom") == sName )
+						pItem = new OOX::VmlWord::CBorder( document );
+					else if ( (L"wd:borderleft") == sName )
+						pItem = new OOX::VmlWord::CBorder( document );
+					else if ( (L"wd:borderright") == sName )
+						pItem = new OOX::VmlWord::CBorder( document );
+					else if ( (L"wd:bordertop") == sName )
+						pItem = new OOX::VmlWord::CBorder( document );
+					else if ( (L"wd:wrap") == sName )
+						pItem = new OOX::VmlWord::CWrap( document );
 
 					break;
 
 				case 'x':
 
-					if ( _T("x:ClientData") == sName )
-						pItem = new OOX::Vml::CClientData( oReader );
+					if ( (L"x:ClientData") == sName )
+						pItem = new OOX::Vml::CClientData( document );
 
 					break;
 
 				}
 
 				if ( NULL != pItem )
+				{
 					m_arrItems.push_back( pItem );
+					pItem->fromXML(oReader);
+				}
 			}
 		}
 		void CGroup::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -825,30 +836,30 @@ namespace OOX
 				switch ( wsChar )
 				{
 				case 'a':
-					if      ( _T("alt") == wsName ) m_sAlt = oReader.GetText();
+					if      ( (L"alt") == wsName ) m_sAlt = oReader.GetText();
 					break;
 
 				case 'c':
-					if      ( _T("class")       == wsName ) m_sClass       = oReader.GetText();
-					else if ( _T("coordorigin") == wsName ) m_oCoordOrigin = oReader.GetText();
-					else if ( _T("coordsize")   == wsName ) m_oCoordSize   = oReader.GetText();
+					if      ( (L"class")       == wsName ) m_sClass       = oReader.GetText();
+					else if ( (L"coordorigin") == wsName ) m_oCoordOrigin = oReader.GetText();
+					else if ( (L"coordsize")   == wsName ) m_oCoordSize   = oReader.GetText();
 					break;
 
 				case 'e':
-					if      ( _T("editas") == wsName ) m_oEditAs = oReader.GetText();
+					if      ( (L"editas") == wsName ) m_oEditAs = oReader.GetText();
 					break;
 
 				case 'f':
-					if      ( _T("fillcolor") == wsName ) m_oFillColor = oReader.GetText();
-					else if ( _T("filled")    == wsName ) m_oFilled    = oReader.GetText();
+					if      ( (L"fillcolor") == wsName ) m_oFillColor = oReader.GetText();
+					else if ( (L"filled")    == wsName ) m_oFilled    = oReader.GetText();
 					break;
 
 				case 'h':
-					if      ( _T("href") == wsName ) m_sHref = oReader.GetText();
+					if      ( (L"href") == wsName ) m_sHref = oReader.GetText();
 					break;
 
 				case 'i':
-					if      ( _T("id")       == wsName ) m_sId       = oReader.GetText();
+					if      ( (L"id")       == wsName ) m_sId       = oReader.GetText();
 					break;
 
 				case 'o':
@@ -857,49 +868,49 @@ namespace OOX
 						switch ( wsChar2 )
 						{
 						case 'a':
-							if      ( _T("o:allowincell")  == wsName ) m_oAllowInCell  = oReader.GetText();
-							else if ( _T("o:allowoverlap") == wsName ) m_oAllowOverlap = oReader.GetText();
+							if      ( (L"o:allowincell")  == wsName ) m_oAllowInCell  = oReader.GetText();
+							else if ( (L"o:allowoverlap") == wsName ) m_oAllowOverlap = oReader.GetText();
 							break;
 						case 'b':
-							if      ( _T("o:borderbottomcolor") == wsName ) m_oBorderBottomColor = oReader.GetText();
-							else if ( _T("o:borderleftcolor")   == wsName ) m_oBorderLeftColor   = oReader.GetText();
-							else if ( _T("o:borderrightcolor")  == wsName ) m_oBorderRightColor  = oReader.GetText();
-							else if ( _T("o:bordertopcolor")    == wsName ) m_oBorderTopColor    = oReader.GetText();
-							else if ( _T("o:bullet")            == wsName ) m_oBullet            = oReader.GetText();
-							else if ( _T("o:button")            == wsName ) m_oButton            = oReader.GetText();
+							if      ( (L"o:borderbottomcolor") == wsName ) m_oBorderBottomColor = oReader.GetText();
+							else if ( (L"o:borderleftcolor")   == wsName ) m_oBorderLeftColor   = oReader.GetText();
+							else if ( (L"o:borderrightcolor")  == wsName ) m_oBorderRightColor  = oReader.GetText();
+							else if ( (L"o:bordertopcolor")    == wsName ) m_oBorderTopColor    = oReader.GetText();
+							else if ( (L"o:bullet")            == wsName ) m_oBullet            = oReader.GetText();
+							else if ( (L"o:button")            == wsName ) m_oButton            = oReader.GetText();
 							break;
 						case 'd':
-							if      ( _T("o:doubleclicknotify") == wsName ) m_oDoubleClickNotify = oReader.GetText();
-							else if ( _T("o:dgmlayout")         == wsName ) m_oDgmLayout         = oReader.GetText();
-							else if ( _T("o:dgmlayoutmru")      == wsName ) m_oDgmLayoutMru      = oReader.GetText();
-							else if ( _T("o:dgmnodekind")       == wsName ) m_oDgmNodeKind       = oReader.GetText();
+							if      ( (L"o:doubleclicknotify") == wsName ) m_oDoubleClickNotify = oReader.GetText();
+							else if ( (L"o:dgmlayout")         == wsName ) m_oDgmLayout         = oReader.GetText();
+							else if ( (L"o:dgmlayoutmru")      == wsName ) m_oDgmLayoutMru      = oReader.GetText();
+							else if ( (L"o:dgmnodekind")       == wsName ) m_oDgmNodeKind       = oReader.GetText();
 							break;
 						case 'h':  
-							if      ( _T("o:hr")        == wsName ) m_oHr        = oReader.GetText();
-							else if ( _T("o:hralign")   == wsName ) m_oHrAlign   = oReader.GetText();
-							else if ( _T("o:hrnoshade") == wsName ) m_oHrNoShade = oReader.GetText();
-							else if ( _T("o:hrpct")     == wsName ) m_oHrPct     = oReader.GetText();
-							else if ( _T("o:hrstd")     == wsName ) m_oHrStd     = oReader.GetText();
+							if      ( (L"o:hr")        == wsName ) m_oHr        = oReader.GetText();
+							else if ( (L"o:hralign")   == wsName ) m_oHrAlign   = oReader.GetText();
+							else if ( (L"o:hrnoshade") == wsName ) m_oHrNoShade = oReader.GetText();
+							else if ( (L"o:hrpct")     == wsName ) m_oHrPct     = oReader.GetText();
+							else if ( (L"o:hrstd")     == wsName ) m_oHrStd     = oReader.GetText();
 							break;
 						case 'i':
-							if      ( _T("o:insetmode") == wsName ) m_oInsetMode = oReader.GetText();
+							if      ( (L"o:insetmode") == wsName ) m_oInsetMode = oReader.GetText();
 							break;
 						case 'o':  
-							if      ( _T("o:oned")    == wsName ) m_oOned       = oReader.GetText();
+							if      ( (L"o:oned")    == wsName ) m_oOned       = oReader.GetText();
 							break;
 						case 'r':
-							if      ( _T("o:regroupid") == wsName ) m_oRegroupId = oReader.GetText();
+							if      ( (L"o:regroupid") == wsName ) m_oRegroupId = oReader.GetText();
 							break;
 						case 's':
-							if      ( _T("o:spid") == wsName ) m_sSpId = oReader.GetText();
+							if      ( (L"o:spid") == wsName ) m_sSpId = oReader.GetText();
 							break;
 						case 't':
-							if      ( _T("o:tableproperties")  == wsName ) m_oTableProperties = oReader.GetText();
-							else if ( _T("o:tablelimits")      == wsName ) m_oTableLimits     = oReader.GetText();
+							if      ( (L"o:tableproperties")  == wsName ) m_oTableProperties = oReader.GetText();
+							else if ( (L"o:tablelimits")      == wsName ) m_oTableLimits     = oReader.GetText();
 							break;
 						case 'u':
-							if      ( _T("o:userdrawn")  == wsName ) m_oUserDrawn  = oReader.GetText();
-							else if ( _T("o:userhidden") == wsName ) m_oUserHidden = oReader.GetText();
+							if      ( (L"o:userdrawn")  == wsName ) m_oUserDrawn  = oReader.GetText();
+							else if ( (L"o:userhidden") == wsName ) m_oUserHidden = oReader.GetText();
 							break;
 						}
 
@@ -907,17 +918,17 @@ namespace OOX
 					}
 
 				case 'p':
-					if      ( _T("print") == wsName ) m_oPrint = oReader.GetText();
+					if      ( (L"print") == wsName ) m_oPrint = oReader.GetText();
 					break;
 				case 's':
-					if      ( _T("style") == wsName ) m_oStyle = oReader.GetText();
+					if      ( (L"style") == wsName ) m_oStyle = oReader.GetText();
 					break;
 				case 't':
-					if      ( _T("target") == wsName ) m_sTarget = oReader.GetText();
-					else if ( _T("title")  == wsName ) m_sTitle  = oReader.GetText();
+					if      ( (L"target") == wsName ) m_sTarget = oReader.GetText();
+					else if ( (L"title")  == wsName ) m_sTitle  = oReader.GetText();
 					break;
 				case 'w':
-					if      ( _T("wrapcoords") == wsName ) m_oWrapCoords = oReader.GetText();
+					if      ( (L"wrapcoords") == wsName ) m_oWrapCoords = oReader.GetText();
 					break;
 				}
 
@@ -932,90 +943,90 @@ namespace OOX
 
 		std::wstring CGroup::toXML() const
 		{
-			std::wstring sResult = _T("<v:group ");
+			std::wstring sResult = (L"<v:group ");
 
-			ComplexTypes_WriteAttribute3( _T("id=\""),          m_sId );
-			ComplexTypes_WriteAttribute ( _T("style=\""),       m_oStyle );
-			ComplexTypes_WriteAttribute3( _T("href=\""),        m_sHref );
-			ComplexTypes_WriteAttribute3( _T("target=\""),      m_sTarget );
-			ComplexTypes_WriteAttribute3( _T("class=\""),       m_sClass );
-			ComplexTypes_WriteAttribute3( _T("title=\""),       m_sTitle );
-			ComplexTypes_WriteAttribute3( _T("alt=\""),         m_sAlt );
+			ComplexTypes_WriteAttribute3( (L"id=\""),          m_sId );
+			ComplexTypes_WriteAttribute ( (L"style=\""),       m_oStyle );
+			ComplexTypes_WriteAttribute3( (L"href=\""),        m_sHref );
+			ComplexTypes_WriteAttribute3( (L"target=\""),      m_sTarget );
+			ComplexTypes_WriteAttribute3( (L"class=\""),       m_sClass );
+			ComplexTypes_WriteAttribute3( (L"title=\""),       m_sTitle );
+			ComplexTypes_WriteAttribute3( (L"alt=\""),         m_sAlt );
 
-			ComplexTypes_WriteAttribute ( _T("coordsize=\""),   m_oCoordSize );
-			ComplexTypes_WriteAttribute ( _T("coordorigin=\""), m_oCoordOrigin );
-			ComplexTypes_WriteAttribute ( _T("wrapcoords=\""),  m_oWrapCoords );
+			ComplexTypes_WriteAttribute ( (L"coordsize=\""),   m_oCoordSize );
+			ComplexTypes_WriteAttribute ( (L"coordorigin=\""), m_oCoordOrigin );
+			ComplexTypes_WriteAttribute ( (L"wrapcoords=\""),  m_oWrapCoords );
 
 			if ( SimpleTypes::booleanTrue != m_oPrint.GetValue() )
-				sResult += _T("print=\"false\" ");
+				sResult += (L"print=\"false\" ");
 
-			ComplexTypes_WriteAttribute3( _T("o:spid=\""),      m_sSpId );
+			ComplexTypes_WriteAttribute3( (L"o:spid=\""),      m_sSpId );
 
 			if ( SimpleTypes::booleanFalse != m_oOned.GetValue() )
-				sResult += _T("o:oned=\"true\" ");
+				sResult += (L"o:oned=\"true\" ");
 
-			ComplexTypes_WriteAttribute ( _T("o:regroupid=\""), m_oRegroupId );
+			ComplexTypes_WriteAttribute ( (L"o:regroupid=\""), m_oRegroupId );
 
 			if ( SimpleTypes::booleanFalse != m_oDoubleClickNotify.GetValue() )
-				sResult += _T("o:doubleclicknotify=\"true\" ");
+				sResult += (L"o:doubleclicknotify=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oButton.GetValue() )
-				sResult += _T("o:button=\"true\" ");
+				sResult += (L"o:button=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oUserHidden.GetValue() )
-				sResult += _T("o:userhidden=\"true\" ");
+				sResult += (L"o:userhidden=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oBullet.GetValue() )
-				sResult += _T("o:bullet=\"true\" ");
+				sResult += (L"o:bullet=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oHr.GetValue() )
-				sResult += _T("o:hr=\"true\" ");
+				sResult += (L"o:hr=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oHrStd.GetValue() )
-				sResult += _T("o:hrstd=\"true\" ");
+				sResult += (L"o:hrstd=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oHrNoShade.GetValue() )
-				sResult += _T("o:hrnoshade=\"true\" ");
+				sResult += (L"o:hrnoshade=\"true\" ");
 
 			if ( 0 != m_oHrPct.GetValue() )
-				sResult += _T("o:hrpct=\"") + m_oHrPct.ToString() + _T("\" ");
+				sResult += (L"o:hrpct=\"") + m_oHrPct.ToString() + (L"\" ");
 
 			if ( SimpleTypes::hralignLeft != m_oHrAlign.GetValue() )
-				sResult += _T("o:hralign=\"") + m_oHrAlign.ToString() + _T("\" ");
+				sResult += (L"o:hralign=\"") + m_oHrAlign.ToString() + (L"\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oAllowInCell.GetValue() )
-				sResult += _T("o:allowincell=\"true\" ");
+				sResult += (L"o:allowincell=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oAllowOverlap.GetValue() )
-				sResult += _T("o:allowoverlap=\"true\" ");
+				sResult += (L"o:allowoverlap=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oUserDrawn.GetValue() )
-				sResult += _T("o:userdrawn=\"true\" ");
+				sResult += (L"o:userdrawn=\"true\" ");
 
-			ComplexTypes_WriteAttribute ( _T("o:bordertopcolor=\""),    m_oBorderTopColor );
-			ComplexTypes_WriteAttribute ( _T("o:borderleftcolor=\""),   m_oBorderLeftColor );
-			ComplexTypes_WriteAttribute ( _T("o:borderbottomcolor=\""), m_oBorderBottomColor );
-			ComplexTypes_WriteAttribute ( _T("o:borderrightcolor=\""),  m_oBorderRightColor );
+			ComplexTypes_WriteAttribute ( (L"o:bordertopcolor=\""),    m_oBorderTopColor );
+			ComplexTypes_WriteAttribute ( (L"o:borderleftcolor=\""),   m_oBorderLeftColor );
+			ComplexTypes_WriteAttribute ( (L"o:borderbottomcolor=\""), m_oBorderBottomColor );
+			ComplexTypes_WriteAttribute ( (L"o:borderrightcolor=\""),  m_oBorderRightColor );
 
-			ComplexTypes_WriteAttribute ( _T("o:dgmlayout=\""),     m_oDgmLayout );
-			ComplexTypes_WriteAttribute ( _T("o:dgmlayoutmru=\""),  m_oDgmLayoutMru );
-			ComplexTypes_WriteAttribute3( _T("o:dgmnodekind=\""),   m_oDgmNodeKind );
+			ComplexTypes_WriteAttribute ( (L"o:dgmlayout=\""),     m_oDgmLayout );
+			ComplexTypes_WriteAttribute ( (L"o:dgmlayoutmru=\""),  m_oDgmLayoutMru );
+			ComplexTypes_WriteAttribute3( (L"o:dgmnodekind=\""),   m_oDgmNodeKind );
 
 			if ( SimpleTypes::insetmodeCustom != m_oInsetMode.GetValue() )
-				sResult += _T("o:insetmode=\"") + m_oInsetMode.ToString() + _T("\" ");
+				sResult += (L"o:insetmode=\"") + m_oInsetMode.ToString() + (L"\" ");
 
 			if ( SimpleTypes::booleanTrue != m_oFilled.GetValue() )
-				sResult += _T("filled=\"false\" ");
+				sResult += (L"filled=\"false\" ");
 
-			ComplexTypes_WriteAttribute ( _T("fillcolor=\""),		m_oFillColor );
-			ComplexTypes_WriteAttribute ( _T("editas=\""),			m_oEditAs );
+			ComplexTypes_WriteAttribute ( (L"fillcolor=\""),		m_oFillColor );
+			ComplexTypes_WriteAttribute ( (L"editas=\""),			m_oEditAs );
 
 			if ( 0 != m_oTableProperties.GetValue() )
-				sResult += _T("o:tableproperties=\"") + m_oTableProperties.ToString() + _T("\" ");
+				sResult += (L"o:tableproperties=\"") + m_oTableProperties.ToString() + (L"\" ");
 
-			ComplexTypes_WriteAttribute ( _T("o:tablelimits=\""),  m_oTableLimits );
+			ComplexTypes_WriteAttribute ( (L"o:tablelimits=\""),  m_oTableLimits );
 
-			sResult += _T(">");
+			sResult += (L">");
 
             for ( size_t i = 0; i < m_arrItems.size(); ++i)
             {
@@ -1025,7 +1036,7 @@ namespace OOX
                 }
             }
 
-			sResult += _T("</v:group>");
+			sResult += (L"</v:group>");
 
 			return sResult;
 		}
@@ -1034,15 +1045,15 @@ namespace OOX
 		//--------------------------------------------------------------------------------	
 		std::wstring CPolyLine::toXML() const
 		{
-			std::wstring sResult = _T("<v:polyline ");
+			std::wstring sResult = (L"<v:polyline ");
 
 			sResult += CVmlCommonElements::WriteAttributes();
 
-			sResult += _T("points=\"") + m_oPoints.ToString() + _T("\">");
+			sResult += (L"points=\"") + m_oPoints.ToString() + (L"\">");
 
 			sResult += CVmlCommonElements::WriteElements();
 
-			sResult += _T("</v:polyline>");
+			sResult += (L"</v:polyline>");
 
 			return sResult;
 		}
@@ -1088,7 +1099,7 @@ namespace OOX
 		//--------------------------------------------------------------------------------	
 		std::wstring CShapeType::toXML() const
 		{
-			std::wstring sResult = _T("<v:shapetype ");
+			std::wstring sResult = (L"<v:shapetype ");
 
 			sResult += CVmlCommonElements::WriteAttributes();
 
@@ -1098,16 +1109,16 @@ namespace OOX
 			}
 
 			if ( m_oPath.IsInit() )
-				sResult += _T("path=\"") + m_oPath->ToString() + _T("\" ");
+				sResult += (L"path=\"") + m_oPath->ToString() + (L"\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oMaster.GetValue() )
-				sResult += _T("o:master=\"true\" ");
+				sResult += (L"o:master=\"true\" ");
 
-			sResult += _T(">");
+			sResult += (L">");
 
 			sResult += CVmlCommonElements::WriteElements();
 
-			sResult += _T("</v:shapetype>");
+			sResult += (L"</v:shapetype>");
 
 			return sResult;
 		}
@@ -1266,27 +1277,27 @@ namespace OOX
 			}			
 			if (m_oChecked.IsInit())
 			{
-				sResult += _T("<x:Checked>") + m_oChecked->ToString() + _T("</x:Checked>");
+				sResult += (L"<x:Checked>") + m_oChecked->ToString() + (L"</x:Checked>");
 			}
 			if (m_oFmlaLink.IsInit())
 			{
-				sResult += _T("<x:FmlaLink>") + *m_oFmlaLink + _T("</x:FmlaLink>");
+				sResult += (L"<x:FmlaLink>") + *m_oFmlaLink + (L"</x:FmlaLink>");
 			}
 			if (m_oFmlaRange.IsInit())
 			{
-				sResult += _T("<x:FmlaRange>") + *m_oFmlaRange + _T("</x:FmlaRange>");
+				sResult += (L"<x:FmlaRange>") + *m_oFmlaRange + (L"</x:FmlaRange>");
 			}
 			if (m_oFmlaMacro.IsInit())
 			{
-				sResult += _T("<x:FmlaMacro>") + *m_oFmlaMacro + _T("</x:FmlaMacro>");
+				sResult += (L"<x:FmlaMacro>") + *m_oFmlaMacro + (L"</x:FmlaMacro>");
 			}
 			if (m_oFmlaTxbx.IsInit())
 			{
-				sResult += _T("<x:FmlaTxbx>") + *m_oFmlaTxbx + _T("</x:FmlaTxbx>");
+				sResult += (L"<x:FmlaTxbx>") + *m_oFmlaTxbx + (L"</x:FmlaTxbx>");
 			}
 			if (m_oFmlaGroup.IsInit())
 			{
-				sResult += _T("<x:FmlaGroup>") + *m_oFmlaGroup + _T("</x:FmlaGroup>");
+				sResult += (L"<x:FmlaGroup>") + *m_oFmlaGroup + (L"</x:FmlaGroup>");
 			}
 			if (m_oMin.IsInit())
 			{
@@ -1314,7 +1325,7 @@ namespace OOX
 			}
 			if (m_oDropStyle.IsInit())
 			{
-				sResult += _T("<x:DropStyle>") + m_oDropStyle->ToString() + _T("</x:DropStyle>");
+				sResult += (L"<x:DropStyle>") + m_oDropStyle->ToString() + (L"</x:DropStyle>");
 			}
 			if (m_oDropLines.IsInit())
 			{
@@ -1493,15 +1504,15 @@ namespace OOX
 				switch ( wsChar )
 				{
 				case 'i':
-					if      ( _T("id")            == wsName ) m_oId          = oReader.GetText();
-					else if ( _T("inset")         == wsName ) m_oInset       = oReader.GetText();
-					else if ( _T("insetmode")     == wsName ) m_oInsetMode   = oReader.GetText();
+					if      ( (L"id")            == wsName ) m_oId          = oReader.GetText();
+					else if ( (L"inset")         == wsName ) m_oInset       = oReader.GetText();
+					else if ( (L"insetmode")     == wsName ) m_oInsetMode   = oReader.GetText();
 					break;
 				case 'o':
-					if      ( _T("o:singleclick") == wsName ) m_oSingleClick = oReader.GetText();
+					if      ( (L"o:singleclick") == wsName ) m_oSingleClick = oReader.GetText();
 					break;
 				case 's':
-					if      ( _T("style")         == wsName ) m_oStyle       = oReader.GetText();
+					if      ( (L"style")         == wsName ) m_oStyle       = oReader.GetText();
 					break;
 				}
 
@@ -1534,60 +1545,61 @@ namespace OOX
 				switch ( wsChar )
 				{
 				case 'a':
-					if      ( _T("aspect")     == wsName ) m_oAspect     = oReader.GetText();
-					else if ( _T("angle")      == wsName ) m_oAngle      = oReader.GetText();
-					else if ( _T("alignshape") == wsName ) m_oAlignShape = oReader.GetText();
+					if      ( (L"aspect")     == wsName ) m_oAspect     = oReader.GetText();
+					else if ( (L"angle")      == wsName ) m_oAngle      = oReader.GetText();
+					else if ( (L"alignshape") == wsName ) m_oAlignShape = oReader.GetText();
 					break;
 
 				case 'c':
-					if      ( _T("color")  == wsName ) m_oColor   = oReader.GetText();
-					else if ( _T("color2") == wsName ) m_oColor2  = oReader.GetText();
-					else if ( _T("colors") == wsName ) sColors    = oReader.GetText();
+					if      ( (L"color")  == wsName ) m_oColor   = oReader.GetText();
+					else if ( (L"color2") == wsName ) m_oColor2  = oReader.GetText();
+					else if ( (L"colors") == wsName ) sColors    = oReader.GetText();
 					break;
 
 				case 'i':
-					if      ( _T("id")   == wsName ) m_sId  = oReader.GetText();
+					if      ( (L"id")   == wsName ) m_sId  = oReader.GetText();
 					break;
 
 				case 'm':
-					if      ( _T("method")   == wsName ) m_oMethod = oReader.GetText();
+					if      ( (L"method")   == wsName ) m_oMethod = oReader.GetText();
 					break;
 
 				case 'f':
-					if      ( _T("focus")         == wsName ) m_oFocus         = oReader.GetText();
-					else if ( _T("focussize")     == wsName ) m_oFocusSize     = oReader.GetText();
-					else if ( _T("focusposition") == wsName ) m_oFocusPosition = oReader.GetText();
+					if      ( (L"focus")         == wsName ) m_oFocus         = oReader.GetText();
+					else if ( (L"focussize")     == wsName ) m_oFocusSize     = oReader.GetText();
+					else if ( (L"focusposition") == wsName ) m_oFocusPosition = oReader.GetText();
 					break;
 
 				case 'o':
-					if      ( _T("on")                 == wsName ) m_oOn               = oReader.GetText();
-					else if ( _T("opacity")            == wsName ) m_oOpacity          = oReader.GetText();
-					else if ( _T("o:href")             == wsName ) m_sHref             = oReader.GetText();
-					else if ( _T("o:althref")          == wsName ) m_sAltHref          = oReader.GetText();
-					else if ( _T("origin")             == wsName ) m_oOrigin           = oReader.GetText();
-					else if ( _T("o:detectmouseclick") == wsName ) m_oDetectMouseClick = oReader.GetText();
-					else if ( _T("o:title")            == wsName ) m_sTitle            = oReader.GetText();
-					else if ( _T("o:opacity2")         == wsName ) m_oOpacity2         = oReader.GetText();
-					else if ( _T("o:relid")            == wsName ) m_oRelId            = oReader.GetText();
+					if      ( (L"on")                 == wsName ) m_oOn               = oReader.GetText();
+					else if ( (L"opacity")            == wsName ) m_oOpacity          = oReader.GetText();
+					else if ( (L"o:href")             == wsName ) m_sHref             = oReader.GetText();
+					else if ( (L"o:althref")          == wsName ) m_sAltHref          = oReader.GetText();
+					else if ( (L"origin")             == wsName ) m_oOrigin           = oReader.GetText();
+					else if ( (L"o:detectmouseclick") == wsName ) m_oDetectMouseClick = oReader.GetText();
+					else if ( (L"o:title")            == wsName ) m_sTitle            = oReader.GetText();
+					else if ( (L"o:opacity2")         == wsName ) m_oOpacity2         = oReader.GetText();
+					else if ( (L"o:relid")            == wsName ) m_oRelId            = oReader.GetText();
 					break;
 
 				case 'p':
-					if      ( _T("position") == wsName ) m_oPosition = oReader.GetText();
+					if      ( (L"position") == wsName ) m_oPosition = oReader.GetText();
 					break;
 
 				case 'r':
-					if      ( _T("recolor") == wsName ) m_oRecolor = oReader.GetText();
-					else if ( _T("rotate")  == wsName ) m_oRotate  = oReader.GetText();
-					else if ( _T("r:id")    == wsName ) m_rId      = oReader.GetText();
+					if      ( (L"recolor") == wsName ) m_oRecolor = oReader.GetText();
+					else if ( (L"rotate")  == wsName ) m_oRotate  = oReader.GetText();
+					else if ( (L"r:id")    == wsName ) m_rId      = oReader.GetText();
+					else if ( (L"relationships:id") == wsName ) m_rId = oReader.GetText();
 					break;
 
 				case 's':
-					if      ( _T("src")   == wsName ) m_sSrc    = oReader.GetText();
-					else if ( _T("size")  == wsName ) m_oSize   = oReader.GetText();
+					if      ( (L"src")   == wsName ) m_sSrc    = oReader.GetText();
+					else if ( (L"size")  == wsName ) m_oSize   = oReader.GetText();
 					break;
 
 				case 't':
-					if      ( _T("type") == wsName ) m_oType = oReader.GetText();
+					if      ( (L"type") == wsName ) m_oType = oReader.GetText();
 					break;
 				}
 
@@ -1605,69 +1617,69 @@ namespace OOX
 
 		std::wstring CFill::toXML() const
 		{
-			std::wstring sResult = _T("<v:fill ");
+			std::wstring sResult = (L"<v:fill ");
 							
-			ComplexTypes_WriteAttribute3( _T("id=\""), m_sId );
-			sResult += _T("type=\"") + m_oType.ToString() + _T("\" ");
+			ComplexTypes_WriteAttribute3( (L"id=\""), m_sId );
+			sResult += (L"type=\"") + m_oType.ToString() + (L"\" ");
 			
 			if ( (m_oOn.IsInit()) && ( SimpleTypes::booleanTrue != m_oOn->GetValue() ))
-				sResult += _T("on=\"false\" ");
+				sResult += (L"on=\"false\" ");
 
 			if (  m_oOpacity.IsInit() )
-				sResult += _T("opacity=\"") + m_oOpacity->ToString() + _T("\" ");
+				sResult += (L"opacity=\"") + m_oOpacity->ToString() + (L"\" ");
 
-			ComplexTypes_WriteAttribute (_T("color=\""), m_oColor);
-			ComplexTypes_WriteAttribute (_T("color2=\""),	  m_oColor2);
-			ComplexTypes_WriteAttribute3( _T("src=\""),       m_sSrc );
-			ComplexTypes_WriteAttribute3( _T("o:href=\""),    m_sHref );
-			ComplexTypes_WriteAttribute3( _T("o:althref=\""), m_sAltHref );
-			ComplexTypes_WriteAttribute ( _T("size=\""),      m_oSize );
-			ComplexTypes_WriteAttribute ( _T("origin=\""),    m_oOrigin );
-			ComplexTypes_WriteAttribute ( _T("position=\""),  m_oPosition );
+			ComplexTypes_WriteAttribute ((L"color=\""), m_oColor);
+			ComplexTypes_WriteAttribute ((L"color2=\""),	  m_oColor2);
+			ComplexTypes_WriteAttribute3( (L"src=\""),       m_sSrc );
+			ComplexTypes_WriteAttribute3( (L"o:href=\""),    m_sHref );
+			ComplexTypes_WriteAttribute3( (L"o:althref=\""), m_sAltHref );
+			ComplexTypes_WriteAttribute ( (L"size=\""),      m_oSize );
+			ComplexTypes_WriteAttribute ( (L"origin=\""),    m_oOrigin );
+			ComplexTypes_WriteAttribute ( (L"position=\""),  m_oPosition );
 
 			if ((m_oAspect.IsInit()) && (SimpleTypes::imageaspectIgnore != m_oAspect->GetValue() ))
-				sResult += _T("aspect=\"") + m_oAspect->ToString() + _T("\" ");
+				sResult += (L"aspect=\"") + m_oAspect->ToString() + (L"\" ");
 
 			// TO DO: Сделать запись m_arrColors
 
-			ComplexTypes_WriteAttribute ( _T("angle=\""),         m_oAngle );
+			ComplexTypes_WriteAttribute ( (L"angle=\""),         m_oAngle );
 
 			if ( (m_oAlignShape.IsInit()) && (SimpleTypes::booleanTrue != m_oAlignShape->GetValue() ))
-				sResult += _T("alignshape=\"false\" ");
+				sResult += (L"alignshape=\"false\" ");
 
 			if ( (m_oFocus.IsInit()) && (0 != m_oFocus->GetValue() ))
-				sResult += _T("focus=\"") + m_oFocus->ToString() + _T("\" ");
+				sResult += (L"focus=\"") + m_oFocus->ToString() + (L"\" ");
 
 			if ( (m_oFocusPosition.IsInit()) && (0 != m_oFocusPosition->GetX() || 0 != m_oFocusPosition->GetY() ))
-				sResult += _T("focusposition=\"") + m_oFocusPosition->ToString() + _T("\" ");
+				sResult += (L"focusposition=\"") + m_oFocusPosition->ToString() + (L"\" ");
 
 			if ( ( m_oFocusSize.IsInit() ) && (0 != m_oFocusSize->GetX() || 0 != m_oFocusSize->GetY() ))
-				sResult += _T("focussize=\"") + m_oFocusSize->ToString() + _T("\" ");
+				sResult += (L"focussize=\"") + m_oFocusSize->ToString() + (L"\" ");
 
 			if ( (m_oMethod.IsInit() ) && (SimpleTypes::fillmethodSigma != m_oMethod->GetValue() ))
-				sResult += _T("method=\"") + m_oMethod->ToString() + _T("\" ");
+				sResult += (L"method=\"") + m_oMethod->ToString() + (L"\" ");
 
-			ComplexTypes_WriteAttribute ( _T("o:detectmouseclick=\""), m_oDetectMouseClick );
-			ComplexTypes_WriteAttribute3( _T("o:title=\""),            m_sTitle );
+			ComplexTypes_WriteAttribute ( (L"o:detectmouseclick=\""), m_oDetectMouseClick );
+			ComplexTypes_WriteAttribute3( (L"o:title=\""),            m_sTitle );
 
 			if ( m_oOpacity2.IsInit() )
-				sResult += _T("o:opacity2=\"") + m_oOpacity2->ToString() + _T("\" ");
+				sResult += (L"o:opacity2=\"") + m_oOpacity2->ToString() + (L"\" ");
 
 			if ( (m_oRecolor.IsInit()) && (SimpleTypes::booleanFalse != m_oRecolor->GetValue() ))
-				sResult += _T("recolor=\"true\" ");
+				sResult += (L"recolor=\"true\" ");
 
 			if (( m_oRotate.IsInit()) && (SimpleTypes::booleanFalse != m_oRotate->GetValue() ))
-				sResult += _T("rotate=\"true\" ");
+				sResult += (L"rotate=\"true\" ");
 
-			ComplexTypes_WriteAttribute ( _T("r:id=\""),    m_rId );
-			ComplexTypes_WriteAttribute ( _T("o:relid=\""), m_oRelId );
+			ComplexTypes_WriteAttribute ( (L"r:id=\""),    m_rId );
+			ComplexTypes_WriteAttribute ( (L"o:relid=\""), m_oRelId );
 
-			sResult += _T(">");
+			sResult += (L">");
 
 			if ( m_oFill.IsInit() )
 				sResult += m_oFill->toXML();
 
-			sResult += _T("</v:fill>");
+			sResult += (L"</v:fill>");
 
 			return sResult;
 		}
@@ -1686,57 +1698,58 @@ namespace OOX
 				switch ( wsChar )
 				{
 				case 'c':
-					if      ( _T("color")     == wsName ) m_oColor     = oReader.GetText();
-					else if ( _T("color2")    == wsName ) m_oColor2    = oReader.GetText();
+					if      ( (L"color")     == wsName ) m_oColor     = oReader.GetText();
+					else if ( (L"color2")    == wsName ) m_oColor2    = oReader.GetText();
 					break;
 				case 'd':
-					if      ( _T("dashstyle") == wsName ) m_oDahsStyle = oReader.GetText();
+					if      ( (L"dashstyle") == wsName ) m_oDahsStyle = oReader.GetText();
 					break;
 				case 'e':
-					if      ( _T("endarrow")       == wsName ) m_oEndArrow       = oReader.GetText();
-					else if ( _T("endarrowlength") == wsName ) m_oEndArrowLength = oReader.GetText();
-					else if ( _T("endarrowwidth")  == wsName ) m_oEndArrowWidth  = oReader.GetText();
-					else if ( _T("endcap")         == wsName ) m_oEndCap         = oReader.GetText();
+					if      ( (L"endarrow")       == wsName ) m_oEndArrow       = oReader.GetText();
+					else if ( (L"endarrowlength") == wsName ) m_oEndArrowLength = oReader.GetText();
+					else if ( (L"endarrowwidth")  == wsName ) m_oEndArrowWidth  = oReader.GetText();
+					else if ( (L"endcap")         == wsName ) m_oEndCap         = oReader.GetText();
 					break;
 				case 'f':
-					if      ( _T("filltype") == wsName ) m_oFillType = oReader.GetText();
+					if      ( (L"filltype") == wsName ) m_oFillType = oReader.GetText();
 					break;
 				case 'i':
-					if      ( _T("id")              == wsName ) m_oId              = oReader.GetText();
-					else if ( _T("imagealignshape") == wsName ) m_oImageAlignShape = oReader.GetText();
-					else if ( _T("imageaspect")     == wsName ) m_oImageAspect     = oReader.GetText();
-					else if ( _T("imagesize")       == wsName ) m_oImageSize       = oReader.GetText();
-					else if ( _T("insetpen")        == wsName ) m_oInsetPen        = oReader.GetText();
+					if      ( (L"id")              == wsName ) m_oId              = oReader.GetText();
+					else if ( (L"imagealignshape") == wsName ) m_oImageAlignShape = oReader.GetText();
+					else if ( (L"imageaspect")     == wsName ) m_oImageAspect     = oReader.GetText();
+					else if ( (L"imagesize")       == wsName ) m_oImageSize       = oReader.GetText();
+					else if ( (L"insetpen")        == wsName ) m_oInsetPen        = oReader.GetText();
 					break;
 				case 'j':
-					if      ( _T("joinstyle") == wsName ) m_oJoinStyle = oReader.GetText();
+					if      ( (L"joinstyle") == wsName ) m_oJoinStyle = oReader.GetText();
 					break;
 				case 'l':
-					if      ( _T("linestyle") == wsName ) m_oLineStyle = oReader.GetText();
+					if      ( (L"linestyle") == wsName ) m_oLineStyle = oReader.GetText();
 					break;
 				case 'm':
-					if      ( _T("miterlimit") == wsName ) m_oMiterLimit = oReader.GetText();
+					if      ( (L"miterlimit") == wsName ) m_oMiterLimit = oReader.GetText();
 					break;
 				case 'o':
-					if      ( _T("o:althref")   == wsName ) m_sAltHref   = oReader.GetText();
-					else if ( _T("o:forcedash") == wsName ) m_oForceDash = oReader.GetText();
-					else if ( _T("o:href")      == wsName ) m_sHref      = oReader.GetText();
-					else if ( _T("on")          == wsName ) m_oOn        = oReader.GetText();
-					else if ( _T("opacity")     == wsName ) m_oOpacity   = oReader.GetText();
-					else if ( _T("o:relid")     == wsName ) m_oRelId     = oReader.GetText();
-					else if ( _T("o:title")     == wsName ) m_sTitle     = oReader.GetText();
+					if      ( (L"o:althref")   == wsName ) m_sAltHref   = oReader.GetText();
+					else if ( (L"o:forcedash") == wsName ) m_oForceDash = oReader.GetText();
+					else if ( (L"o:href")      == wsName ) m_sHref      = oReader.GetText();
+					else if ( (L"on")          == wsName ) m_oOn        = oReader.GetText();
+					else if ( (L"opacity")     == wsName ) m_oOpacity   = oReader.GetText();
+					else if ( (L"o:relid")     == wsName ) m_oRelId     = oReader.GetText();
+					else if ( (L"o:title")     == wsName ) m_sTitle     = oReader.GetText();
 					break;
 				case 'r':
-					if      ( _T("r:id") == wsName ) m_rId = oReader.GetText();
+					if      ( (L"r:id") == wsName ) m_rId = oReader.GetText();
+					else if ( (L"relationships:id") == wsName ) m_rId = oReader.GetText();
 					break;
 				case 's':
-					if      ( _T("src")              == wsName ) m_sSrc              = oReader.GetText();
-					else if ( _T("startarrow")       == wsName ) m_oStartArrow       = oReader.GetText();
-					else if ( _T("startarrowlength") == wsName ) m_oStartArrowLength = oReader.GetText();
-					else if ( _T("startarrowwidth")  == wsName ) m_oStartArrowWidth  = oReader.GetText();
+					if      ( (L"src")              == wsName ) m_sSrc              = oReader.GetText();
+					else if ( (L"startarrow")       == wsName ) m_oStartArrow       = oReader.GetText();
+					else if ( (L"startarrowlength") == wsName ) m_oStartArrowLength = oReader.GetText();
+					else if ( (L"startarrowwidth")  == wsName ) m_oStartArrowWidth  = oReader.GetText();
 					break;
 				case 'w':
-					if      ( _T("weight") == wsName ) m_oWeight = oReader.GetText();
+					if      ( (L"weight") == wsName ) m_oWeight = oReader.GetText();
 					break;
 				}
 
@@ -1752,83 +1765,83 @@ namespace OOX
 
 		std::wstring CStroke::toXML() const
 		{
-			std::wstring sResult = _T("<v:stroke ");
+			std::wstring sResult = (L"<v:stroke ");
 
-			ComplexTypes_WriteAttribute3( _T("id=\""), m_oId );
+			ComplexTypes_WriteAttribute3( (L"id=\""), m_oId );
 			if ( SimpleTypes::booleanTrue != m_oOn.GetValue() )
-				sResult += _T("on=\"false\" ");
+				sResult += (L"on=\"false\" ");
 
 			if ( 1 != m_oWeight.GetValue() )
-				sResult += _T("weight=\"") + m_oWeight.ToString() + _T("\" ");
+				sResult += (L"weight=\"") + m_oWeight.ToString() + (L"\" ");
 
 			//if ( SimpleTypes::colortypeBlack != m_oColor.GetValue() )
-			//	sResult += _T("color=\"") + m_oColor.ToString() + _T("\" ");
-			ComplexTypes_WriteAttribute ( _T("color=\""), m_oColor );
+			//	sResult += (L"color=\"") + m_oColor.ToString() + (L"\" ");
+			ComplexTypes_WriteAttribute ( (L"color=\""), m_oColor );
 
 			if (m_oOpacity.IsInit() )
-				sResult += _T("opacity=\"") + m_oOpacity->ToString() + _T("\" ");
+				sResult += (L"opacity=\"") + m_oOpacity->ToString() + (L"\" ");
 
 			//if ( SimpleTypes::strokelinestyleSingle != m_oLineStyle.GetValue() )
-			//	sResult += _T("linestyle=\"") + m_oLineStyle.ToString() + _T("\" ");
-			ComplexTypes_WriteAttribute ( _T("linestyle=\""), m_oLineStyle );
+			//	sResult += (L"linestyle=\"") + m_oLineStyle.ToString() + (L"\" ");
+			ComplexTypes_WriteAttribute ( (L"linestyle=\""), m_oLineStyle );
 			
 			if ( 8 != m_oMiterLimit.GetValue() )
-				sResult += _T("miterlimit=\"") + m_oMiterLimit.ToString() + _T("\" ");
+				sResult += (L"miterlimit=\"") + m_oMiterLimit.ToString() + (L"\" ");
 
 			if ( SimpleTypes::strokejoinstyleRound != m_oJoinStyle.GetValue() )
-				sResult += _T("joinstyle=\"") + m_oJoinStyle.ToString() + _T("\" ");
+				sResult += (L"joinstyle=\"") + m_oJoinStyle.ToString() + (L"\" ");
 
 			if ( SimpleTypes::strokeendcapFlat != m_oEndCap.GetValue() )
-				sResult += _T("endcap=\"") + m_oEndCap.ToString() + _T("\" ");
+				sResult += (L"endcap=\"") + m_oEndCap.ToString() + (L"\" ");
 
 			if ( SimpleTypes::Vml::vmldashstyleSolid != m_oDahsStyle.GetValue() )
-				sResult += _T("dashstyle=\"") + m_oDahsStyle.ToString() + _T("\" ");
+				sResult += (L"dashstyle=\"") + m_oDahsStyle.ToString() + (L"\" ");
 
 			if ( SimpleTypes::filltypeSolid != m_oFillType.GetValue() )
-				sResult += _T("filltype=\"") + m_oFillType.ToString() + _T("\" ");
+				sResult += (L"filltype=\"") + m_oFillType.ToString() + (L"\" ");
 
-			ComplexTypes_WriteAttribute3( _T("src=\""), m_sSrc );
+			ComplexTypes_WriteAttribute3( (L"src=\""), m_sSrc );
 
 			if ( SimpleTypes::imageaspectIgnore != m_oImageAspect.GetValue() )
-				sResult += _T("imageaspect=\"") + m_oImageAspect.ToString() + _T("\" ");
+				sResult += (L"imageaspect=\"") + m_oImageAspect.ToString() + (L"\" ");
 
-			ComplexTypes_WriteAttribute ( _T("imagesize=\""), m_oImageSize );
+			ComplexTypes_WriteAttribute ( (L"imagesize=\""), m_oImageSize );
 
 			if ( SimpleTypes::booleanTrue != m_oOn.GetValue() )
-				sResult += _T("imagealignshape=\"false\" ");
+				sResult += (L"imagealignshape=\"false\" ");
 
-			ComplexTypes_WriteAttribute ( _T("color2=\""), m_oColor2 );
+			ComplexTypes_WriteAttribute ( (L"color2=\""), m_oColor2 );
 
 			if ( SimpleTypes::strokearrowtypeNone != m_oStartArrow.GetValue() )
-				sResult += _T("startarrow=\"") + m_oStartArrow.ToString() + _T("\" ");
+				sResult += (L"startarrow=\"") + m_oStartArrow.ToString() + (L"\" ");
 
 			if ( SimpleTypes::strokearrowwidthMedium != m_oStartArrowWidth.GetValue() )
-				sResult += _T("startarrowwidth=\"") + m_oStartArrowWidth.ToString() + _T("\" ");
+				sResult += (L"startarrowwidth=\"") + m_oStartArrowWidth.ToString() + (L"\" ");
 
 			if ( SimpleTypes::strokearrowlengthMedium != m_oStartArrowLength.GetValue() )
-				sResult += _T("startarrowlength=\"") + m_oStartArrowLength.ToString() + _T("\" ");
+				sResult += (L"startarrowlength=\"") + m_oStartArrowLength.ToString() + (L"\" ");
 
 			if ( SimpleTypes::strokearrowtypeNone != m_oEndArrow.GetValue() )
-				sResult += _T("endarrow=\"") + m_oEndArrow.ToString() + _T("\" ");
+				sResult += (L"endarrow=\"") + m_oEndArrow.ToString() + (L"\" ");
 
 			if ( SimpleTypes::strokearrowwidthMedium != m_oEndArrowWidth.GetValue() )
-				sResult += _T("endarrowwidth=\"") + m_oEndArrowWidth.ToString() + _T("\" ");
+				sResult += (L"endarrowwidth=\"") + m_oEndArrowWidth.ToString() + (L"\" ");
 
 			if ( SimpleTypes::strokearrowlengthMedium != m_oEndArrowLength.GetValue() )
-				sResult += _T("endarrowlength=\"") + m_oEndArrowLength.ToString() + _T("\" ");
+				sResult += (L"endarrowlength=\"") + m_oEndArrowLength.ToString() + (L"\" ");
 
-			ComplexTypes_WriteAttribute3( _T("o:href=\""),    m_sHref );
-			ComplexTypes_WriteAttribute3( _T("o:althref=\""), m_sAltHref );
-			ComplexTypes_WriteAttribute3( _T("o:title=\""),   m_sTitle );
+			ComplexTypes_WriteAttribute3( (L"o:href=\""),    m_sHref );
+			ComplexTypes_WriteAttribute3( (L"o:althref=\""), m_sAltHref );
+			ComplexTypes_WriteAttribute3( (L"o:title=\""),   m_sTitle );
 
 			if ( SimpleTypes::booleanFalse != m_oForceDash.GetValue() )
-				sResult += _T("o:forcedash=\"true\" ");
+				sResult += (L"o:forcedash=\"true\" ");
 
-			ComplexTypes_WriteAttribute ( _T("r:id=\""),     m_rId );
-			ComplexTypes_WriteAttribute ( _T("insetpen=\""), m_oInsetPen );
-			ComplexTypes_WriteAttribute ( _T("o:relid=\""),  m_oRelId );
+			ComplexTypes_WriteAttribute ( (L"r:id=\""),     m_rId );
+			ComplexTypes_WriteAttribute ( (L"insetpen=\""), m_oInsetPen );
+			ComplexTypes_WriteAttribute ( (L"o:relid=\""),  m_oRelId );
 
-			sResult += _T(">");
+			sResult += (L">");
 
 			if ( m_oLeft.IsInit() )
 				sResult += m_oLeft->toXML();
@@ -1845,7 +1858,7 @@ namespace OOX
 			if ( m_oColumn.IsInit() )
 				sResult += m_oColumn->toXML();
 
-			sResult += _T("</v:stroke>");
+			sResult += (L"</v:stroke>");
 
 			return sResult;
 		}
@@ -1867,24 +1880,24 @@ namespace OOX
 				switch ( wsChar )
 				{
 				case 'a':
-					if      ( _T("arrowok")    == wsName ) m_oArrowOk    = oReader.GetText();
+					if      ( (L"arrowok")    == wsName ) m_oArrowOk    = oReader.GetText();
 					break;
 
 				case 'f':
-					if      ( _T("fillok")     == wsName ) m_oFillOk     = oReader.GetText();
+					if      ( (L"fillok")     == wsName ) m_oFillOk     = oReader.GetText();
 					break;
 
 				case 'g':
-					if      ( _T("gradientshapeok") == wsName ) m_oGradientShapeOk = oReader.GetText();
+					if      ( (L"gradientshapeok") == wsName ) m_oGradientShapeOk = oReader.GetText();
 					break;
 
 				case 'i':
-					if      ( _T("id")         == wsName ) m_oId         = oReader.GetText();
-					else if ( _T("insetpenok") == wsName ) m_oInsetPenOk = oReader.GetText();
+					if      ( (L"id")         == wsName ) m_oId         = oReader.GetText();
+					else if ( (L"insetpenok") == wsName ) m_oInsetPenOk = oReader.GetText();
 					break;
 
 				case 'l':
-					if      ( _T("limo")       == wsName ) m_oLimo         = oReader.GetText();
+					if      ( (L"limo")       == wsName ) m_oLimo         = oReader.GetText();
 					break;
 
 				case 'o':
@@ -1893,12 +1906,12 @@ namespace OOX
 						switch ( wsChar2 )
 						{
 						case 'c':
-							if      ( _T("o:connectangles") == wsName ) m_oConnectAngles = oReader.GetText();
-							else if ( _T("o:connectlocs")   == wsName ) m_oConnectLocs   = oReader.GetText();
-							else if ( _T("o:connecttype")   == wsName ) m_oConnectType   = oReader.GetText();
+							if      ( (L"o:connectangles") == wsName ) m_oConnectAngles = oReader.GetText();
+							else if ( (L"o:connectlocs")   == wsName ) m_oConnectLocs   = oReader.GetText();
+							else if ( (L"o:connecttype")   == wsName ) m_oConnectType   = oReader.GetText();
 							break;
 						case 'e':
-							if      ( _T("o:extrusionok")   == wsName ) m_oExtrusionOk   = oReader.GetText();
+							if      ( (L"o:extrusionok")   == wsName ) m_oExtrusionOk   = oReader.GetText();
 							break;
 						}
 
@@ -1906,17 +1919,17 @@ namespace OOX
 					}
 
 				case 's':
-					if      ( _T("shadowok")    == wsName ) m_oShadowOk    = oReader.GetText();
-					else if ( _T("strokeok")    == wsName ) m_oStrokeOk    = oReader.GetText();
+					if      ( (L"shadowok")    == wsName ) m_oShadowOk    = oReader.GetText();
+					else if ( (L"strokeok")    == wsName ) m_oStrokeOk    = oReader.GetText();
 					break;
 
 				case 't':
-					if      ( _T("textboxrect") == wsName ) m_oTextBoxRect = oReader.GetText();
-					else if ( _T("textpathok")  == wsName ) m_oTextPathOk  = oReader.GetText();
+					if      ( (L"textboxrect") == wsName ) m_oTextBoxRect = oReader.GetText();
+					else if ( (L"textpathok")  == wsName ) m_oTextPathOk  = oReader.GetText();
 					break;
 
 				case 'v':
-					if      ( _T("v")           == wsName ) m_oV           = oReader.GetText();
+					if      ( (L"v")           == wsName ) m_oV           = oReader.GetText();
 					break;
 				}
 
@@ -1932,47 +1945,47 @@ namespace OOX
 
 		std::wstring CPath::toXML() const
 		{
-			std::wstring sResult = _T("<v:path ");
+			std::wstring sResult = (L"<v:path ");
 
-			ComplexTypes_WriteAttribute3( _T("id=\""), m_oId );
-			ComplexTypes_WriteAttribute ( _T("v=\""),  m_oV );
+			ComplexTypes_WriteAttribute3( (L"id=\""), m_oId );
+			ComplexTypes_WriteAttribute ( (L"v=\""),  m_oV );
 
 			if ( 0 != m_oLimo.GetX() || 0 != m_oLimo.GetY() )
-				sResult += _T("limo=\"") + m_oLimo.ToString() + _T("\" ");
+				sResult += (L"limo=\"") + m_oLimo.ToString() + (L"\" ");
 
-			ComplexTypes_WriteAttribute ( _T("textboxrect=\""), m_oTextBoxRect );
+			ComplexTypes_WriteAttribute ( (L"textboxrect=\""), m_oTextBoxRect );
 
 			if ( SimpleTypes::booleanTrue != m_oFillOk.GetValue() )
-				sResult += _T("fillok=\"false\" ");
+				sResult += (L"fillok=\"false\" ");
 
 			if ( SimpleTypes::booleanTrue != m_oStrokeOk.GetValue() )
-				sResult += _T("strokeok=\"false\" ");
+				sResult += (L"strokeok=\"false\" ");
 
 			if ( SimpleTypes::booleanTrue != m_oShadowOk.GetValue() )
-				sResult += _T("shadowok=\"false\" ");
+				sResult += (L"shadowok=\"false\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oArrowOk.GetValue() )
-				sResult += _T("arrowok=\"true\" ");
+				sResult += (L"arrowok=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oGradientShapeOk.GetValue() )
-				sResult += _T("gradientshapeok=\"true\" ");
+				sResult += (L"gradientshapeok=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oTextPathOk.GetValue() )
-				sResult += _T("textpathok=\"true\" ");
+				sResult += (L"textpathok=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oInsetPenOk.GetValue() )
-				sResult += _T("insetpenok=\"true\" ");
+				sResult += (L"insetpenok=\"true\" ");
 
 			if ( SimpleTypes::connecttypeNone != m_oConnectType.GetValue() )
-				sResult += _T("o:connecttype=\"") + m_oConnectType.ToString() + _T("\" ");
+				sResult += (L"o:connecttype=\"") + m_oConnectType.ToString() + (L"\" ");
 
-			ComplexTypes_WriteAttribute3( _T("o:connectlocs=\""),   m_oConnectLocs );
-			ComplexTypes_WriteAttribute3( _T("o:connectangles=\""), m_oConnectAngles );
+			ComplexTypes_WriteAttribute3( (L"o:connectlocs=\""),   m_oConnectLocs );
+			ComplexTypes_WriteAttribute3( (L"o:connectangles=\""), m_oConnectAngles );
 
 			if ( SimpleTypes::booleanTrue != m_oExtrusionOk.GetValue() )
-				sResult += _T("extrusionok=\"false\" ");
+				sResult += (L"extrusionok=\"false\" ");
 
-			sResult += _T("/>");
+			sResult += (L"/>");
 
 			return sResult;
 		}
@@ -1997,33 +2010,33 @@ namespace OOX
 				switch ( wsChar )
 				{
 				case 'a':
-					if      ( _T("althref")    == wsName ) m_sAltHref    = oReader.GetText();
+					if      ( (L"althref")    == wsName ) m_sAltHref    = oReader.GetText();
 					break;
 
 				case 'b':
-					if      ( _T("bilevel")    == wsName ) m_oBiLevel    = oReader.GetText();
-					else if ( _T("blacklevel") == wsName ) m_oBlackLevel = oReader.GetText();
+					if      ( (L"bilevel")    == wsName ) m_oBiLevel    = oReader.GetText();
+					else if ( (L"blacklevel") == wsName ) m_oBlackLevel = oReader.GetText();
 					break;
 
 				case 'c':
-					if      ( _T("cropleft")   == wsName ) m_oCropLeft   = oReader.GetText();
-					else if ( _T("croptop")    == wsName ) m_oCropTop    = oReader.GetText();
-					else if ( _T("cropright")  == wsName ) m_oCropRight  = oReader.GetText();
-					else if ( _T("cropbottom") == wsName ) m_oCropBottom = oReader.GetText();
+					if      ( (L"cropleft")   == wsName ) m_oCropLeft   = oReader.GetText();
+					else if ( (L"croptop")    == wsName ) m_oCropTop    = oReader.GetText();
+					else if ( (L"cropright")  == wsName ) m_oCropRight  = oReader.GetText();
+					else if ( (L"cropbottom") == wsName ) m_oCropBottom = oReader.GetText();
 					break;
 
 				case 'e':
-					if      ( _T("embosscolor")== wsName ) m_oEmbossColor= oReader.GetText();
+					if      ( (L"embosscolor")== wsName ) m_oEmbossColor= oReader.GetText();
 					break;
 
 				case 'g':
-					if      ( _T("gain")       == wsName ) m_oGain       = oReader.GetText();
-					if      ( _T("gamma")      == wsName ) m_oGamma      = oReader.GetText();
-					if      ( _T("grayscale")  == wsName ) m_oGrayscale  = oReader.GetText();
+					if      ( (L"gain")       == wsName ) m_oGain       = oReader.GetText();
+					if      ( (L"gamma")      == wsName ) m_oGamma      = oReader.GetText();
+					if      ( (L"grayscale")  == wsName ) m_oGrayscale  = oReader.GetText();
 					break;
 
 				case 'i':
-					if      ( _T("id")         == wsName ) m_oId         = oReader.GetText();
+					if      ( (L"id")         == wsName ) m_oId         = oReader.GetText();
 					break;
 
 				case 'o':
@@ -2032,22 +2045,22 @@ namespace OOX
 						switch ( wsChar2 )
 						{
 						case 'd':
-							if      ( _T("o:detectmouseclick") == wsName ) m_oDetectMouseClick = oReader.GetText();
+							if      ( (L"o:detectmouseclick") == wsName ) m_oDetectMouseClick = oReader.GetText();
 							break;
 						case 'h':
-							if      ( _T("o:href")   == wsName ) m_oHref    = oReader.GetText();
+							if      ( (L"o:href")   == wsName ) m_oHref    = oReader.GetText();
 							break;
 						case 'm':
-							if      ( _T("o:movie")  == wsName ) m_oMovie   = oReader.GetText();
+							if      ( (L"o:movie")  == wsName ) m_oMovie   = oReader.GetText();
 							break;
 						case 'o':
-							if      ( _T("o:oleid")  == wsName ) m_oOleId   = oReader.GetText();
+							if      ( (L"o:oleid")  == wsName ) m_oOleId   = oReader.GetText();
 							break;
 						case 'r':
-							if      ( _T("o:relid")  == wsName ) m_oRelId   = oReader.GetText();
+							if      ( (L"o:relid")  == wsName ) m_oRelId   = oReader.GetText();
 							break;
 						case 't':
-							if      ( _T("title")    == wsName ) m_sTitle   = oReader.GetText();
+							if      ( (L"title")    == wsName ) m_sTitle   = oReader.GetText();
 							break;
 						}
 
@@ -2055,14 +2068,15 @@ namespace OOX
 					}
 
 				case 'r':
-					if      ( _T("r:href")        == wsName ) m_rHref          = oReader.GetText();
-					else if ( _T("r:id")          == wsName ) m_rId            = oReader.GetText();
-					else if ( _T("r:pict")        == wsName ) m_rPict          = oReader.GetText();
-					else if ( _T("recolortarget") == wsName ) m_oRecolorTarget = oReader.GetText();
+					if      ( (L"r:href")        == wsName ) m_rHref          = oReader.GetText();
+					else if ( (L"r:id")          == wsName ) m_rId            = oReader.GetText();
+					else if ( (L"relationships:id") == wsName ) m_rId         = oReader.GetText();
+					else if ( (L"r:pict")        == wsName ) m_rPict          = oReader.GetText();
+					else if ( (L"recolortarget") == wsName ) m_oRecolorTarget = oReader.GetText();
 					break;
 
 				case 's':
-					if      ( _T("src")           == wsName ) m_sSrc           = oReader.GetText();
+					if      ( (L"src")           == wsName ) m_sSrc           = oReader.GetText();
 					break;
 				}
 
@@ -2082,7 +2096,7 @@ namespace OOX
 
 			ComplexTypes_WriteAttribute3(L"id=\"", m_oId );
 
-			if ( _T("") !=  m_sSrc )
+			if ( (L"") !=  m_sSrc )
 				sResult += L"src=\"" + m_sSrc + L"\" ";
 
 			ComplexTypes_WriteAttribute(L"cropleft=\"",		m_oCropLeft);
@@ -2091,36 +2105,36 @@ namespace OOX
 			ComplexTypes_WriteAttribute(L"cropbottom=\"",	m_oCropBottom);
 
 			if ( 1 != m_oGain.GetValue() )
-				sResult += _T("gain=\"") + m_oGain.ToString() + _T("\" ");
+				sResult += (L"gain=\"") + m_oGain.ToString() + (L"\" ");
 
 			if ( 0 != m_oBlackLevel.GetValue() )
-				sResult += _T("blacklevel=\"") + m_oBlackLevel.ToString() + _T("\" ");
+				sResult += (L"blacklevel=\"") + m_oBlackLevel.ToString() + (L"\" ");
 
 			if ( 1 != m_oGamma.GetValue() )
-				sResult += _T("gamma=\"") + m_oGamma.ToString() + _T("\" ");
+				sResult += (L"gamma=\"") + m_oGamma.ToString() + (L"\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oGrayscale.GetValue() )
-				sResult += _T("grayscale=\"true\" ");
+				sResult += (L"grayscale=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oBiLevel.GetValue() )
-				sResult += _T("bilevel=\"true\" ");
+				sResult += (L"bilevel=\"true\" ");
 
-			ComplexTypes_WriteAttribute ( _T("chromakey=\""),    m_oChromaKey );
-			ComplexTypes_WriteAttribute ( _T("embosscolor=\""),  m_oEmbossColor );
+			ComplexTypes_WriteAttribute ( (L"chromakey=\""),    m_oChromaKey );
+			ComplexTypes_WriteAttribute ( (L"embosscolor=\""),  m_oEmbossColor );
 
-			ComplexTypes_WriteAttribute3( _T("o:href=\""),             m_oHref );
-			ComplexTypes_WriteAttribute3( _T("o:althref=\""),          m_sAltHref );
-			ComplexTypes_WriteAttribute3( _T("o:title=\""),            m_sTitle );
-			ComplexTypes_WriteAttribute3( _T("o:oleid=\""),            m_oOleId );
-			ComplexTypes_WriteAttribute ( _T("o:detectmouseclick=\""), m_oDetectMouseClick );
-			ComplexTypes_WriteAttribute ( _T("o:movie=\""),            m_oMovie );
-			ComplexTypes_WriteAttribute ( _T("o:relid=\""),            m_oRelId );
+			ComplexTypes_WriteAttribute3( (L"o:href=\""),             m_oHref );
+			ComplexTypes_WriteAttribute3( (L"o:althref=\""),          m_sAltHref );
+			ComplexTypes_WriteAttribute3( (L"o:title=\""),            m_sTitle );
+			ComplexTypes_WriteAttribute3( (L"o:oleid=\""),            m_oOleId );
+			ComplexTypes_WriteAttribute ( (L"o:detectmouseclick=\""), m_oDetectMouseClick );
+			ComplexTypes_WriteAttribute ( (L"o:movie=\""),            m_oMovie );
+			ComplexTypes_WriteAttribute ( (L"o:relid=\""),            m_oRelId );
 
-			ComplexTypes_WriteAttribute ( _T("r:id=\""),               m_rId );
-			ComplexTypes_WriteAttribute ( _T("r:pict=\""),             m_rPict );
-			ComplexTypes_WriteAttribute ( _T("r:href=\""),             m_rHref );
+			ComplexTypes_WriteAttribute ( (L"r:id=\""),               m_rId );
+			ComplexTypes_WriteAttribute ( (L"r:pict=\""),             m_rPict );
+			ComplexTypes_WriteAttribute ( (L"r:href=\""),             m_rHref );
 
-			sResult += _T("/>");
+			sResult += (L"/>");
 
 			return sResult;
 		}
@@ -2149,26 +2163,26 @@ namespace OOX
 				switch ( wsChar )
 				{
 				case 'b':
-					if      ( _T("bilevel")    == wsName ) m_oBiLevel    = oReader.GetText();
-					else if ( _T("blacklevel") == wsName ) m_oBlackLevel = oReader.GetText();
+					if      ( (L"bilevel")    == wsName ) m_oBiLevel    = oReader.GetText();
+					else if ( (L"blacklevel") == wsName ) m_oBlackLevel = oReader.GetText();
 					break;
 
 				case 'c':
-					if      ( _T("chromakey")  == wsName ) m_oChromaKey  = oReader.GetText();
-					else if ( _T("cropleft")   == wsName ) m_oCropLeft   = oReader.GetText();
-					else if ( _T("croptop")    == wsName ) m_oCropTop    = oReader.GetText();
-					else if ( _T("cropright")  == wsName ) m_oCropRight  = oReader.GetText();
-					else if ( _T("cropbottom") == wsName ) m_oCropBottom = oReader.GetText();
+					if      ( (L"chromakey")  == wsName ) m_oChromaKey  = oReader.GetText();
+					else if ( (L"cropleft")   == wsName ) m_oCropLeft   = oReader.GetText();
+					else if ( (L"croptop")    == wsName ) m_oCropTop    = oReader.GetText();
+					else if ( (L"cropright")  == wsName ) m_oCropRight  = oReader.GetText();
+					else if ( (L"cropbottom") == wsName ) m_oCropBottom = oReader.GetText();
 					break;
 
 				case 'g':
-					if      ( _T("gain")       == wsName ) m_oGain       = oReader.GetText();
-					if      ( _T("gamma")      == wsName ) m_oGamma      = oReader.GetText();
-					if      ( _T("grayscale")  == wsName ) m_oGrayscale  = oReader.GetText();
+					if      ( (L"gain")       == wsName ) m_oGain       = oReader.GetText();
+					if      ( (L"gamma")      == wsName ) m_oGamma      = oReader.GetText();
+					if      ( (L"grayscale")  == wsName ) m_oGrayscale  = oReader.GetText();
 					break;
 
 				case 's':
-					if      ( _T("src")        == wsName ) m_sSrc       = oReader.GetText();
+					if      ( (L"src")        == wsName ) m_sSrc       = oReader.GetText();
 					break;
 				}
 
@@ -2182,45 +2196,45 @@ namespace OOX
 
 		std::wstring CImage::toXML() const
 		{
-			std::wstring sResult = _T("<v:image ");
+			std::wstring sResult = (L"<v:image ");
 
 			sResult += CVmlCommonElements::WriteAttributes();
 
-			if ( _T("") !=  m_sSrc )
-				sResult += _T("src=\"") + m_sSrc + _T("\" ");
+			if ( (L"") !=  m_sSrc )
+				sResult += (L"src=\"") + m_sSrc + (L"\" ");
 
 			if ( 0 != m_oCropLeft.GetValue() )
-				sResult += _T("cropleft=\"") + m_oCropLeft.ToString() + _T("\" ");
+				sResult += (L"cropleft=\"") + m_oCropLeft.ToString() + (L"\" ");
 
 			if ( 0 != m_oCropTop.GetValue() )
-				sResult += _T("croptop=\"") + m_oCropTop.ToString() + _T("\" ");
+				sResult += (L"croptop=\"") + m_oCropTop.ToString() + (L"\" ");
 
 			if ( 0 != m_oCropRight.GetValue() )
-				sResult += _T("cropright=\"") + m_oCropRight.ToString() + _T("\" ");
+				sResult += (L"cropright=\"") + m_oCropRight.ToString() + (L"\" ");
 
 			if ( 0 != m_oCropBottom.GetValue() )
-				sResult += _T("cropbottom=\"") + m_oCropBottom.ToString() + _T("\" ");
+				sResult += (L"cropbottom=\"") + m_oCropBottom.ToString() + (L"\" ");
 
 			if ( 1 != m_oGain.GetValue() )
-				sResult += _T("gain=\"") + m_oGain.ToString() + _T("\" ");
+				sResult += (L"gain=\"") + m_oGain.ToString() + (L"\" ");
 
 			if ( 0 != m_oBlackLevel.GetValue() )
-				sResult += _T("blacklevel=\"") + m_oBlackLevel.ToString() + _T("\" ");
+				sResult += (L"blacklevel=\"") + m_oBlackLevel.ToString() + (L"\" ");
 
 			if ( 1 != m_oGamma.GetValue() )
-				sResult += _T("gamma=\"") + m_oGamma.ToString() + _T("\" ");
+				sResult += (L"gamma=\"") + m_oGamma.ToString() + (L"\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oGrayscale.GetValue() )
-				sResult += _T("grayscale=\"true\" ");
+				sResult += (L"grayscale=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oBiLevel.GetValue() )
-				sResult += _T("bilevel=\"true\" ");
+				sResult += (L"bilevel=\"true\" ");
 
-			sResult += _T(">");
+			sResult += (L">");
 
 			sResult += CVmlCommonElements::WriteElements();
 
-			sResult += _T("</v:image>");
+			sResult += (L"</v:image>");
 
 			return sResult;
 		}
@@ -2248,32 +2262,32 @@ namespace OOX
 				switch ( wsChar )
 				{
 				case 'i':
-					if      ( _T("invx") == wsName ) m_oInvX = oReader.GetText();
-					else if ( _T("invy") == wsName ) m_oInvY = oReader.GetText();
+					if      ( (L"invx") == wsName ) m_oInvX = oReader.GetText();
+					else if ( (L"invy") == wsName ) m_oInvY = oReader.GetText();
 					break;
 
 				case 'm':
-					if      ( _T("map") == wsName ) m_oMap = oReader.GetText();
+					if      ( (L"map") == wsName ) m_oMap = oReader.GetText();
 					break;
 
 				case 'p':
-					if      ( _T("position") == wsName ) m_oPosition = oReader.GetText();
-					else if ( _T("polar")    == wsName ) m_oPolar    = oReader.GetText();
+					if      ( (L"position") == wsName ) m_oPosition = oReader.GetText();
+					else if ( (L"polar")    == wsName ) m_oPolar    = oReader.GetText();
 					break;
 
 				case 'r':
-					if      ( _T("radiusrange") == wsName ) m_oRadiusRange = oReader.GetText();
+					if      ( (L"radiusrange") == wsName ) m_oRadiusRange = oReader.GetText();
 					break;
 
 				case 's':
-					if      ( _T("switch") == wsName ) m_oSwitch = oReader.GetText();
+					if      ( (L"switch") == wsName ) m_oSwitch = oReader.GetText();
 					break;
 
 				case 'x':
-					if      ( _T("xrange") == wsName ) m_oXRange = oReader.GetText();
+					if      ( (L"xrange") == wsName ) m_oXRange = oReader.GetText();
 					break;
 				case 'y':
-					if      ( _T("yrange") == wsName ) m_oYRange = oReader.GetText();
+					if      ( (L"yrange") == wsName ) m_oYRange = oReader.GetText();
 					break;
 				}
 
@@ -2287,35 +2301,35 @@ namespace OOX
 
 		std::wstring CH::toXML() const
 		{
-			std::wstring sResult = _T("<v:h ");
+			std::wstring sResult = (L"<v:h ");
 
 			if ( SimpleTypes::Vml::vmlvector2dposConstant != m_oPosition.GetTypeX() || SimpleTypes::Vml::vmlvector2dposConstant != m_oPosition.GetTypeY() || 0 != m_oPosition.GetX() || 0 != m_oPosition.GetY() )
-				sResult += _T("position=\"") + m_oPosition.ToString() + _T("\" ");
+				sResult += (L"position=\"") + m_oPosition.ToString() + (L"\" ");
 							
-			ComplexTypes_WriteAttribute ( _T("polar=\""), m_oPolar );
+			ComplexTypes_WriteAttribute ( (L"polar=\""), m_oPolar );
 
 			if ( 0 != m_oMap.GetX() || 1000 != m_oMap.GetY() )
-				sResult += _T("map=\"") + m_oMap.ToString() + _T("\" ");
+				sResult += (L"map=\"") + m_oMap.ToString() + (L"\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oInvX.GetValue() )
-				sResult += _T("invx=\"true\" ");
+				sResult += (L"invx=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oInvY.GetValue() )
-				sResult += _T("invy=\"true\" ");
+				sResult += (L"invy=\"true\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oSwitch.GetValue() )
-				sResult += _T("switch=\"true\" ");
+				sResult += (L"switch=\"true\" ");
 
 			if ( 0 != m_oXRange.GetX() || 0 != m_oXRange.GetY() )
-				sResult += _T("xrange=\"") + m_oXRange.ToString() + _T("\" ");
+				sResult += (L"xrange=\"") + m_oXRange.ToString() + (L"\" ");
 
 			if ( 0 != m_oYRange.GetX() || 0 != m_oYRange.GetY() )
-				sResult += _T("yrange=\"") + m_oYRange.ToString() + _T("\" ");
+				sResult += (L"yrange=\"") + m_oYRange.ToString() + (L"\" ");
 
 			if ( 0 != m_oRadiusRange.GetX() || 0 != m_oRadiusRange.GetY() )
-				sResult += _T("radiusrange=\"") + m_oRadiusRange.ToString() + _T("\" ");
+				sResult += (L"radiusrange=\"") + m_oRadiusRange.ToString() + (L"\" ");
 
-			sResult += _T("/>");
+			sResult += (L"/>");
 
 			return sResult;
 		}
@@ -2336,25 +2350,25 @@ namespace OOX
 			while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
 				std::wstring sName = oReader.GetName();
-				if ( _T("v:fill") == sName )
+				if ( (L"v:fill") == sName )
 					m_oVmlFill = oReader;
-				else if ( _T("v:stroke") == sName )
+				else if ( (L"v:stroke") == sName )
 					m_oVmlStroke = oReader;
-				else if ( _T("v:textbox") == sName )
+				else if ( (L"v:textbox") == sName )
 					m_oVmlTextbox = oReader;
-				else if ( _T("v:shadow") == sName )
+				else if ( (L"v:shadow") == sName )
 					m_oVmlShadow = oReader;
-				else if ( _T("o:skew") == sName )
+				else if ( (L"o:skew") == sName )
 					m_oSkew = oReader;
-				else if ( _T("o:extrusion") == sName )
+				else if ( (L"o:extrusion") == sName )
 					m_oExtrusion = oReader;
-				else if ( _T("o:callout") == sName )
+				else if ( (L"o:callout") == sName )
 					m_oCallout = oReader;
-				else if ( _T("o:lock") == sName )
+				else if ( (L"o:lock") == sName )
 					m_oLock = oReader;
-				else if ( _T("o:colormru") == sName )
+				else if ( (L"o:colormru") == sName )
 					m_oColorMru = oReader;
-				else if ( _T("o:colormenu") == sName )
+				else if ( (L"o:colormenu") == sName )
 					m_oColorMenu = oReader;
 			}
 		}
@@ -2374,20 +2388,20 @@ namespace OOX
 				switch ( wsChar )
 				{
 				case 'f':
-					if      ( _T("fill")          == wsName ) m_oFill        = oReader.GetText();
-					else if ( _T("fillcolor")     == wsName ) m_oFillColor   = oReader.GetText();
+					if      ( (L"fill")          == wsName ) m_oFill        = oReader.GetText();
+					else if ( (L"fillcolor")     == wsName ) m_oFillColor   = oReader.GetText();
 					break;
 				case 'o':
-					if      ( _T("o:allowincell") == wsName ) m_oAllowInCell = oReader.GetText();
+					if      ( (L"o:allowincell") == wsName ) m_oAllowInCell = oReader.GetText();
 					break;
 				case 's':
-					if      ( _T("spidmax")       == wsName ) m_oSpIdMax     = oReader.GetText();
-					else if ( _T("style")         == wsName ) m_oStyle       = oReader.GetText();
-					else if ( _T("stroke")        == wsName ) m_oStroke      = oReader.GetText();
-					else if ( _T("strokecolor")   == wsName ) m_oStrokeColor = oReader.GetText();
+					if      ( (L"spidmax")       == wsName ) m_oSpIdMax     = oReader.GetText();
+					else if ( (L"style")         == wsName ) m_oStyle       = oReader.GetText();
+					else if ( (L"stroke")        == wsName ) m_oStroke      = oReader.GetText();
+					else if ( (L"strokecolor")   == wsName ) m_oStrokeColor = oReader.GetText();
 					break;
 				case 'v':
-					if      ( _T("v:ext")         == wsName ) m_oExt         = oReader.GetText();
+					if      ( (L"v:ext")         == wsName ) m_oExt         = oReader.GetText();
 					break;
 				}
 
@@ -2403,30 +2417,30 @@ namespace OOX
 
 		std::wstring CShapeDefaults::toXML() const
 		{
-			std::wstring sResult = _T("<o:shapedefaults ");
+			std::wstring sResult = (L"<o:shapedefaults ");
 
-			ComplexTypes_WriteAttribute ( _T("v:ext=\""), m_oExt );
+			ComplexTypes_WriteAttribute ( (L"v:ext=\""), m_oExt );
 
 			if ( 0 != m_oSpIdMax.GetValue() )
-				sResult += _T("spidmax=\"") + m_oSpIdMax.ToString() + _T("\" ");
+				sResult += (L"spidmax=\"") + m_oSpIdMax.ToString() + (L"\" ");
 
-			ComplexTypes_WriteAttribute ( _T("style=\""), m_oStyle );
+			ComplexTypes_WriteAttribute ( (L"style=\""), m_oStyle );
 
 			if ( SimpleTypes::booleanTrue != m_oFill.GetValue() )
-				sResult += _T("fill=\"false\" ");
+				sResult += (L"fill=\"false\" ");
 
-			ComplexTypes_WriteAttribute ( _T("fillcolor=\""), m_oFillColor );
+			ComplexTypes_WriteAttribute ( (L"fillcolor=\""), m_oFillColor );
 
 			if ( SimpleTypes::booleanTrue != m_oStroke.GetValue() )
-				sResult += _T("stroke=\"false\" ");
+				sResult += (L"stroke=\"false\" ");
 
 			if ( SimpleTypes::colortypeBlack != m_oStrokeColor.GetValue() )
-				sResult += _T("strokecolor=\"") + m_oStrokeColor.ToString() + _T("\" ");
+				sResult += (L"strokecolor=\"") + m_oStrokeColor.ToString() + (L"\" ");
 
 			if ( SimpleTypes::booleanFalse != m_oAllowInCell.GetValue() )
-				sResult += _T("o:allowincell=\"true\" ");
+				sResult += (L"o:allowincell=\"true\" ");
 
-			sResult += _T(">");
+			sResult += (L">");
 
 			if ( m_oVmlFill.IsInit() )
 				sResult += m_oVmlFill->toXML();
@@ -2458,7 +2472,7 @@ namespace OOX
 			if ( m_oColorMenu.IsInit() )
 				sResult += m_oColorMenu->toXML();
 
-			sResult += _T("</o:shapedefaults>");
+			sResult += (L"</o:shapedefaults>");
 
 			return sResult;
 		}

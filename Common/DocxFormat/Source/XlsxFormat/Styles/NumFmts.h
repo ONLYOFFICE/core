@@ -61,12 +61,16 @@ namespace OOX
 			}
 			void toXML2(NSStringUtils::CStringBuilder& writer, const wchar_t* sHeader) const
 			{
-				writer.WriteString(L"<");
-				writer.WriteString(sHeader);
+				toXMLWithNS(writer, L"", sHeader, L"");
+			}
+			void toXMLWithNS(NSStringUtils::CStringBuilder& writer, const std::wstring &node_ns, const std::wstring &node_name, const std::wstring &child_ns) const
+			{
+				writer.StartNodeWithNS(node_ns, node_name);
+				writer.StartAttributes();
 				WritingStringNullableAttrInt(L"numFmtId", m_oNumFmtId, m_oNumFmtId->GetValue());
 				WritingStringNullableAttrEncodeXmlString(L"formatCode", m_oFormatCode, *m_oFormatCode);
 				WritingStringNullableAttrBool(L"sourceLinked", m_oSourceLinked);
-				writer.WriteString(_T("/>"));
+				writer.EndAttributesAndNode();
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

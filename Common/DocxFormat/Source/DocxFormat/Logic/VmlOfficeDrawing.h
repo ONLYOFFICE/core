@@ -1633,6 +1633,10 @@ namespace OOX
 				XmlMacroReadAttributeBase( oNode, _T("Type"), m_oType );
 				XmlMacroReadAttributeBase( oNode, _T("UpdateMode"), m_oUpdateMode );
 
+				if (false == m_oId.IsInit())
+				{
+					XmlMacroReadAttributeBase( oNode, L"relationships:id", m_oId );
+				}
 				//todo FieldCodes, LinkType, LockedField
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -1690,10 +1694,10 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("DrawAspect"), m_oDrawAspect )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:id"),       m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("relationships:id"), m_oId )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("ObjectID"),   m_sObjectId )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("ProgID"),     m_sProgId )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("ShapeID"),    m_sShapeId )

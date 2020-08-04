@@ -129,7 +129,7 @@ class X2t private constructor() {
         var temp: String? = null
         var fontsDir: String? = null
         var fontsJs: String? = null
-        var theme: String? = null
+        var themes: String? = null
         var password: String? = null
         var xml: String? = null
 
@@ -235,7 +235,7 @@ class X2t private constructor() {
 
             mInputParams.to = mInputParams.to ?: cache.to
             mInputParams.temp = mInputParams.temp ?: cache.temp
-            mInputParams.theme = mInputParams.theme ?: "${cache.root}/theme"
+            mInputParams.themes = mInputParams.themes ?: "${cache.root}/themes"
             mInputParams.xml = mInputParams.xml ?: "${cache.temp}/param.xml"
 
             if (File(mInputParams.to).exists()) {
@@ -250,7 +250,7 @@ class X2t private constructor() {
             FileUtils.createPath(result.root!!)
             FileUtils.createPath(mInputParams.temp!!)
 
-            mInputParams.theme?.let { theme ->
+            mInputParams.themes?.let { theme ->
                 FileUtils.createPath(theme)
             }
 
@@ -258,7 +258,7 @@ class X2t private constructor() {
             with(mInputParams)
             {
                 setFonts(arrayOf(fontsJs), fontsDir)
-                createXmlFileTransform(xml, key, mConvertType, from, to, temp, fontsJs, theme, password,
+                createXmlFileTransform(xml, key, mConvertType, from, to, temp, fontsJs, themes, password,
                     delimiterCode.equals(
                         InputParams.DELIMITER_CODE_NONE
                     ).let {

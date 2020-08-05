@@ -220,7 +220,7 @@ public:
             if(sName == L"head")
                 readHead();
             else if(sName == L"body")
-                readBody(sName, L"", false);
+                readBody(sName, L"", false, true);
         }
         return true;
     }
@@ -317,7 +317,7 @@ private:
         }
     }
 
-    void readBody(const std::wstring& sPName, std::wstring sRStyle, bool bBdo)
+    void readBody(const std::wstring& sPName, std::wstring sRStyle, bool bBdo, bool bNeedP)
     {
         readStyle();
         if(m_oLightReader.IsEmptyNode())
@@ -333,48 +333,60 @@ private:
                 if(bBdo)
                     std::reverse(sText.begin(), sText.end());
 
-                m_oDocXml += L"<w:p><w:r><w:rPr>";
+                if(bNeedP)
+                    m_oDocXml += L"<w:p>";
+                m_oDocXml += L"<w:r><w:rPr>";
                 m_oDocXml += sRStyle;
                 m_oDocXml += L"</w:rPr><w:t xml:space=\"preserve\">";
                 m_oDocXml.WriteEncodeXmlString(sText);
-                m_oDocXml += L"</w:t></w:r></w:p>";
+                m_oDocXml += L"</w:t></w:r>";
+                if(bNeedP)
+                    m_oDocXml += L"</w:p>";
 
             }
             // Ссылки
             else if(sName == L"a")
             {
-                m_oDocXml += L"<w:p>";
+                if(bNeedP)
+                    m_oDocXml += L"<w:p>";
                 readLink(sPName, sRStyle, bBdo);
-                m_oDocXml += L"</w:p>";
+                if(bNeedP)
+                    m_oDocXml += L"</w:p>";
             }
             // Абревиатура, реализована как сноски
             else if(sName == L"abbr")
             {
-                m_oDocXml += L"<w:p>";
+                if(bNeedP)
+                    m_oDocXml += L"<w:p>";
                 readAbbr(sPName, sRStyle, bBdo);
-                m_oDocXml += L"</w:p>";
+                if(bNeedP)
+                    m_oDocXml += L"</w:p>";
             }
             // Адрес
             // Абзац текста. Содержит фразовый контент
             else if(sName == L"address" || sName == L"p")
             {
-                m_oDocXml += L"<w:p>";
+                if(bNeedP)
+                    m_oDocXml += L"<w:p>";
                 readP(sName, sRStyle, bBdo);
-                m_oDocXml += L"</w:p>";
+                if(bNeedP)
+                    m_oDocXml += L"</w:p>";
             }
             // Статья
             // Боковой блок
             else if(sName == L"article" || sName == L"aside")
-                readBody(sName, sRStyle, bBdo);
+                readBody(sName, sRStyle, bBdo, bNeedP);
             // Картинки
             else if(sName == L"img" || sName == L"image")
             {
-                m_oDocXml += L"<w:p>";
+                if(bNeedP)
+                    m_oDocXml += L"<w:p>";
                 readImage();
-                m_oDocXml += L"</w:p>";
+                if(bNeedP)
+                    m_oDocXml += L"</w:p>";
             }
             else
-                readBody(sPName, sRStyle, bBdo);
+                readBody(sPName, sRStyle, bBdo, bNeedP);
         }
     }
 
@@ -438,7 +450,7 @@ private:
         m_oDocXml += L"\" r:id=\"rHyp";
         m_oDocXml += std::to_wstring(m_nHyperlinkId++);
         m_oDocXml += L"\">";
-        readP(sPName, sRStyle += L"<w:rStyle w:val=\"link\"/>", bBdo);
+        readBody(sPName, sRStyle += L"<w:rStyle w:val=\"link\"/>", bBdo, false);
         m_oDocXml += L"</w:hyperlink>";
     }
 

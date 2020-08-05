@@ -21,5 +21,6 @@ ADD_DEPENDENCY(kernel, UnicodeConverter)
 core_windows:INCLUDEPATH += $$PWD/gumbo-parser/visualc/include
 
 HEADERS += $$files($$PWD/gumbo-parser/src/*.h, true) \
-    htmltoxhtml.h
+           htmltoxhtml.h
+
 SOURCES += $$files($$PWD/gumbo-parser/src/*.c, true)

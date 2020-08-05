@@ -14,8 +14,9 @@ DEFINES += HTMLFILE2_USE_DYNAMIC_LIBRARY
 CORE_ROOT_DIR = $$PWD/../../core
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
+include($$CORE_ROOT_DIR/Common/3dParty/html/gumbo.pri)
 
-ADD_DEPENDENCY(kernel, gumbo, UnicodeConverter, graphics)
+ADD_DEPENDENCY(kernel, UnicodeConverter, graphics)
 
 SOURCES += htmlfile2.cpp
 

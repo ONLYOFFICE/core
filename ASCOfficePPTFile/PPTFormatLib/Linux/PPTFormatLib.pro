@@ -132,6 +132,7 @@ HEADERS += \
     ../Records/TextFullSettings.h \
     ../Records/TextHeaderAtom.h \
     ../Records/TextInteractiveInfoAtom.h \
+    ../Records/TextMasterStyle9Atom.h \
     ../Records/TextMasterStyleAtom.h \
     ../Records/TextPFExceptionAtom.h \
     ../Records/TextRulerAtom.h \

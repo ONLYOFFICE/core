@@ -3725,6 +3725,29 @@ namespace Animations
 	};
 }
 
+// TODO this struct
+struct PP9SlideBinaryTagExtension : public CUnknownRecord
+{
+public:
+    PP9SlideBinaryTagExtension()
+    {
+
+    }
+
+    ~PP9SlideBinaryTagExtension()
+    {
+
+    }
+
+    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
+    {
+        m_oHeader			=	oHeader;
+
+        CUnknownRecord::ReadFromStream(m_oHeader, pStream);
+    }
+};
+
+
 struct PP10SlideBinaryTagExtension : public CUnknownRecord
 {
 public:
@@ -3860,7 +3883,19 @@ public:
 
             tagName	=	std::wstring ( Name );
 
-            if ( std::wstring ( L"___PPT10" ) == tagName )
+            if ( std::wstring ( L"___PPT9" ) == tagName )
+            {
+                SRecordHeader rhData;
+                rhData.ReadFromStream(pStream) ;
+                // TODO PP9SlideBinaryTagExtension
+                m_oBinaryTagExtension = new PP9SlideBinaryTagExtension;
+
+                if (rhData.RecType == 0x138B && rhData.RecVersion == 0x0 && rhData.RecInstance == 0x000)	//	RT_BinaryTagDataBlob - 0x138B
+                {
+                    m_oBinaryTagExtension->ReadFromStream (rhData, pStream);
+
+                }
+            } else if ( std::wstring ( L"___PPT10" ) == tagName )
 			{
 				SRecordHeader rhData;
                 rhData.ReadFromStream(pStream) ;

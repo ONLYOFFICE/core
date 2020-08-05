@@ -751,7 +751,118 @@ namespace PPT_FORMAT
 			}
 		}
 	};
+   ///////////////////////////////////////////////////////  TODO  /////////////////////////////////////
 
+//        class CTextStyle9Level
+//	{
+//	public:
+//		CTextPFRun m_oPF9Run;
+//		CTextCFRun m_oCF9Run;
+
+//	public:
+//		CTextStyle9Level()
+//		{
+//		}
+//		CTextStyle9Level(const CTextStyle9Level& oSrc)
+//		{
+//			*this = oSrc;
+//		}
+//		CTextStyle9Level& operator=(const CTextStyle9Level& oSrc)
+//		{
+//			m_oPF9Run	= oSrc.m_oPF9Run;
+//			m_oCF9Run	= oSrc.m_oCF9Run;
+
+//			return *this;
+//		}
+
+//		void ApplyAfter(const CTextStyleLevel& oSrc)
+//		{
+//			m_oPFRun.ApplyAfter(oSrc.m_oPFRun);
+//			m_oCFRun.ApplyAfter(oSrc.m_oCFRun);
+//		}
+//		void ApplyBefore(const CTextStyleLevel& oSrc)
+//		{
+//			m_oPFRun.ApplyBefore(oSrc.m_oPFRun);
+//			m_oCFRun.ApplyBefore(oSrc.m_oCFRun);
+//		}
+//	};
+
+//	class CTextStyles9
+//	{
+//	public:
+//		NSCommon::nullable_base<CTextStyleLevel> m_pLevels[10];
+
+//		CTextStyles9()
+//		{
+//			for (int i = 0; i < 10; ++i)
+//			{
+//				m_pLevels[i] = NULL;
+//			}
+//		}
+//		CTextStyles9(const CTextStyles& oSrc)
+//		{
+//			*this = oSrc;
+//		}
+//		CTextStyles9& operator=(const CTextStyles& oSrc)
+//		{
+//			for (int i = 0; i < 10; ++i)
+//			{
+//				m_pLevels[i] = oSrc.m_pLevels[i];
+//			}
+//			return *this;
+//		}
+//		void SetStyles(CTextStyles* pStyles)
+//		{
+//			for (int i = 0; i < 10; ++i)
+//			{
+//				m_pLevels[i] = pStyles->m_pLevels[i];
+//			}
+//		}
+//		void SetLanguage(nullable<WORD> & language)
+//		{
+//			if (!language.is_init()) return;
+
+//			for (int i = 0; i < 10; ++i)
+//			{
+//				if (m_pLevels[i].is_init())
+//				{
+//					m_pLevels[i]->m_oCFRun.Language = language;
+//				}
+//			}
+//		}
+//		void ApplyAfter(const CTextStyles& oSrc)
+//		{
+//			for (int i = 0; i < 10; ++i)
+//			{
+//				if (!m_pLevels[i].is_init())
+//				{
+//					m_pLevels[i] = oSrc.m_pLevels[i];
+//				}
+//				else if (oSrc.m_pLevels[i].is_init())
+//				{
+//					m_pLevels[i]->ApplyAfter(oSrc.m_pLevels[i].get());
+//				}
+
+//			}
+//		}
+//		void ApplyBefore(const CTextStyles& oSrc)
+//		{
+//			for (int i = 0; i < 10; ++i)
+//			{
+//				if (!m_pLevels[i].is_init())
+//				{
+//					m_pLevels[i] = oSrc.m_pLevels[i];
+//				}
+//				else if (oSrc.m_pLevels[i].is_init())
+//				{
+//					m_pLevels[i]->ApplyBefore(oSrc.m_pLevels[i].get());
+//				}
+
+//			}
+//		}
+//	};
+
+   ///////////////////////////////////////////////////////  TODO  /////////////////////////////////////
 	class CParagraph
 	{
 	public:

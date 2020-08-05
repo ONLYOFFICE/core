@@ -294,7 +294,6 @@ IRecord* CreateByType(SRecordHeader oHeader)
     CREATE_BY_TYPE(RECORD_TYPE_ESCHER_OPT					, CRecordShapeProperties)
     CREATE_BY_TYPE(RECORD_TYPE_ESCHER_SECONDARY_OPT			, CRecordShapeProperties)
     CREATE_BY_TYPE(RECORD_TYPE_ESCHER_TETRIARY_OPT			, CRecordShapeProperties)
-    CREATE_BY_TYPE(RECORD_TYPE_TIME_NODE                    , CRecordTimeNodeAtom)
     CREATE_BY_TYPE(RECORD_TYPE_ESCHER_REGROUPITEMS			, CRecordRegGroupItems)
     CREATE_BY_TYPE(RECORD_TYPE_ESCHER_SPLITMENUCOLORS		, CRecordSplitMenuColorRecord)
     CREATE_BY_TYPE(RECORD_TYPE_ESCHER_COLORMRU				, CRecordMostRecentlyUserColors)
@@ -320,7 +319,6 @@ IRecord* CreateByType(SRecordHeader oHeader)
     CREATE_BY_TYPE(RECORD_TYPE_CHARTBUILD_ATOM              , CRecordChartBuildAtom)
     CREATE_BY_TYPE(RECORD_TYPE_DIAGRAMBUILD                 , CRecordDiagramBuildContainer)
     CREATE_BY_TYPE(RECORD_TYPE_DIAGRAMBUILD_ATOM            , CRecordDiagramBuildAtom)
-    CREATE_BY_TYPE(RECORD_TYPE_TIME_ANIMATE_BEHAVIOR        , CRecordTimeAnimateBehaviorAtom)
 
     default:
         {

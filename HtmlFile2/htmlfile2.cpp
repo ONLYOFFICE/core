@@ -25,13 +25,12 @@ class CHtmlFile2_Private
 public:
     XmlUtils::CXmlLiteReader m_oLightReader; // SAX Reader
 
-    std::wstring m_sTmp; // Temp папка для конфертации html в xhtml
-    std::wstring m_sSrc; // Директория источника
-    std::wstring m_sDst; // Директория назначения
+    std::wstring m_sTmp;  // Temp папка для конфертации html в xhtml
+    std::wstring m_sSrc;  // Директория источника
+    std::wstring m_sDst;  // Директория назначения
+    std::wstring m_sBase; // Полный базовый адрес
 
     std::map<std::wstring, std::wstring> m_mStyles; // Стили в document.xml. Хранятся как (имя тэга, его стиль)
-
-    std::wstring m_sBase; // Полный базовый адрес
 
 private:
     int m_nImageId;     // ID картинки
@@ -186,6 +185,9 @@ public:
             oWebWriter.CloseFile();
         }
 
+        // core.xml
+        readTitle();
+
         // Начала файлов
         m_oDocXmlRels += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">";
         m_oDocXmlRels += L"<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/>";
@@ -274,7 +276,6 @@ private:
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
         {
             std::wstring sName = m_oLightReader.GetName();
-
             // Базовый адрес
             if(sName == L"base")
             {
@@ -312,9 +313,11 @@ private:
                 // Дописываем в styles.xml
                 m_oStylesXml += sStyle;
             }
+            /*
             // Заголовок документа
             else if(sName == L"title")
                 readTitle();
+            */
         }
     }
 
@@ -343,7 +346,6 @@ private:
                 m_oDocXml += L"</w:t></w:r>";
                 if(bNeedP)
                     m_oDocXml += L"</w:p>";
-
             }
             // Ссылки
             else if(sName == L"a")
@@ -364,19 +366,105 @@ private:
                     m_oDocXml += L"</w:p>";
             }
             // Адрес
-            // Абзац текста. Содержит фразовый контент
-            else if(sName == L"address" || sName == L"p")
+            else if(sName == L"address")
             {
                 if(bNeedP)
                     m_oDocXml += L"<w:p>";
-                readP(sName, sRStyle, bBdo);
+                readBody(sPName, sRStyle, bBdo, false);
                 if(bNeedP)
                     m_oDocXml += L"</w:p>";
             }
             // Статья
             // Боковой блок
-            else if(sName == L"article" || sName == L"aside")
+            // Выделенная цитата
+            // Контейнер
+            else if(sName == L"article" || sName == L"aside" || sName == L"blockquote" || sName == L"div")
                 readBody(sName, sRStyle, bBdo, bNeedP);
+            // Полужирный текст
+            else if(sName == L"b")
+            {
+                if(bNeedP)
+                    m_oDocXml += L"<w:p>";
+                readP(sPName, sRStyle + L"<w:b/>", bBdo);
+                if(bNeedP)
+                    m_oDocXml += L"</w:p>";
+            }
+            // Направление текста
+            else if(sName == L"bdo")
+            {
+                std::wstring sDir = L"";
+                while(m_oLightReader.MoveToNextAttribute())
+                    if(m_oLightReader.GetName() == L"dir")
+                        sDir = m_oLightReader.GetText();
+                m_oLightReader.MoveToElement();
+
+                if(bNeedP)
+                    m_oDocXml += L"<w:p>";
+                if(sDir == L"ltr")
+                    readP(sPName, sRStyle, false);
+                else if(sDir == L"rtl")
+                    readP(sPName, sRStyle, true);
+                else
+                    readP(sPName, sRStyle, !bBdo);
+                if(bNeedP)
+                    m_oDocXml += L"</w:p>";
+            }
+            // Отмена направления текста
+            else if(sName == L"bdi")
+            {
+                if(bNeedP)
+                    m_oDocXml += L"<w:p>";
+                readP(sPName, sRStyle, false);
+                if(bNeedP)
+                    m_oDocXml += L"</w:p>";
+            }
+            // Перенос строки
+            else if(sName == L"br")
+            {
+                if(bNeedP)
+                    m_oDocXml += L"<w:p>";
+                m_oDocXml += L"<w:r><w:br/></w:r>";
+                if(bNeedP)
+                    m_oDocXml += L"</w:p>";
+            }
+            // Кнопка
+            // Абзац текста. Содержит фразовый контент
+            else if(sName == L"button"|| sName == L"details" || sName == L"p")
+            {
+                if(bNeedP)
+                    m_oDocXml += L"<w:p>";
+                readP(sPName, sRStyle, bBdo);
+                if(bNeedP)
+                    m_oDocXml += L"</w:p>";
+            }
+            // Цитата, обычно выделяется курсивом
+            // Новый термин, обычно выделяется курсивом
+            else if(sName == L"cite" || sName == L"dfn")
+            {
+                if(bNeedP)
+                    m_oDocXml += L"<w:p>";
+                readP(sPName, sRStyle + L"<w:i/>", bBdo);
+                if(bNeedP)
+                    m_oDocXml += L"</w:p>";
+            }
+            // Код
+            else if(sName == L"code")
+            {
+                if(bNeedP)
+                    m_oDocXml += L"<w:p>";
+                readP(sPName, sRStyle + L"<w:rFonts w:ascii=\"Consolas\" w:hAnsi=\"Consolas\"/>", bBdo);
+                if(bNeedP)
+                    m_oDocXml += L"</w:p>";
+            }
+            // Зачеркнутый текст
+            else if(sName == L"del")
+            {
+                if(bNeedP)
+                    m_oDocXml += L"<w:p>";
+                readP(sPName, sRStyle + L"<w:strike/>", bBdo);
+                if(bNeedP)
+                    m_oDocXml += L"</w:p>";
+            }
             // Картинки
             else if(sName == L"img" || sName == L"image")
             {
@@ -591,7 +679,7 @@ private:
     void readTitle()
     {
         std::wstring sCore = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><cp:coreProperties xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><dc:title>";
-        sCore += content();
+        sCore += L"Aggregate"; // content();
         sCore += L"</dc:title><dc:creator/><cp:lastModifiedBy/></cp:coreProperties>";
         NSFile::CFileBinary oCoreWriter;
         if (oCoreWriter.CreateFileW(m_sDst + L"/docProps/core.xml"))
@@ -649,6 +737,9 @@ private:
                 else
                     readP(sPName, sRStyle, !bBdo);
             }
+            // Отмена направления текста
+            else if(sName == L"bdi")
+                readP(sPName, sRStyle, false);
             // Увеличивает размер шрифта
             else if(sName == L"big")
                 readP(sPName, sRStyle + L"<w:sz w:val=\"26\"/>", bBdo);
@@ -667,6 +758,9 @@ private:
             // Результат скрипта
             else if(sName == L"code" || sName == L"kbd" || sName == L"samp")
                 readP(sPName, sRStyle + L"<w:rFonts w:ascii=\"Consolas\" w:hAnsi=\"Consolas\"/>", bBdo);
+            // Зачеркнутый текст
+            else if(sName == L"del")
+                readP(sPName, sRStyle + L"<w:strike/>", bBdo);
             // Ссылка
             // Объект для обработки
             else if(sName == L"iframe" || sName == L"object")
@@ -692,9 +786,9 @@ private:
             // Цитата, выделенная кавычками, обычно выделяется курсивом
             else if(sName == L"q")
             {
-                m_oDocXml += L"<w:r><w:t xml:space=\"preserve\">«</w:t></w:r>";
+                m_oDocXml += L"<w:r><w:t xml:space=\"preserve\">\"</w:t></w:r>";
                 readP(sPName, sRStyle + L"<w:i/>", bBdo);
-                m_oDocXml += L"<w:r><w:t xml:space=\"preserve\">»</w:t></w:r>";
+                m_oDocXml += L"<w:r><w:t xml:space=\"preserve\">\"</w:t></w:r>";
             }
             // Текст верхнего регистра
             else if(sName == L"rt" || sName == L"sup")
@@ -812,7 +906,6 @@ HRESULT CHtmlFile2::Open(const std::wstring& sSrc, const std::wstring& sDst, CHt
 
 HRESULT CHtmlFile2::OpenBatch(const std::vector<std::wstring>& sSrc, const std::wstring& sDst, CHtmlParams* oParams)
 {
-
     m_internal->m_sDst = sDst;
     m_internal->CreateDocxEmpty();
 
@@ -821,12 +914,13 @@ HRESULT CHtmlFile2::OpenBatch(const std::vector<std::wstring>& sSrc, const std::
         #ifdef _DEBUG
         std::wcout << NSFile::GetFileName(sS) << std::endl;
         #endif
+
         m_internal->m_sSrc = NSSystemPath::GetDirectoryName(sS);
         m_internal->htmlXhtml(sS);
         if(!m_internal->readSrc())
             return S_FALSE;
-        NSFile::CFileBinary::Remove(m_internal->m_sTmp + L"/res.xhtml");
 
+        NSFile::CFileBinary::Remove(m_internal->m_sTmp + L"/res.xhtml");
         m_internal->m_oLightReader.Clear();
         m_internal->m_mStyles.clear();
         m_internal->m_sBase = L"";

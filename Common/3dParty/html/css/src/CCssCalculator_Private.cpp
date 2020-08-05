@@ -42,16 +42,19 @@ inline std::string GetContentAsUTF8(const std::wstring& sFileName)
     if (!NSFile::CFileBinary::ReadAllTextUtf8A(sFileName, sSource))
         return sSource;
 
-    std::string sFirstLine;
-    if (sSource.find('\n') != std::string::npos)
-        sFirstLine = sSource.substr(0, sSource.find('\n'));
-    else
-        sFirstLine = sSource;
+    std::string sTemp;
+
+    if (sSource.find('{') != std::string::npos)
+        sTemp = sSource.substr(0, sSource.find('{'));
+
+    if (sTemp.empty())
+        return sSource;
 
     std::string sEncoding;
-    if (sFirstLine.find("@charset") != std::string::npos)
+
+    if (sTemp.find("@charset") != std::string::npos)
     {
-         sEncoding = sFirstLine.substr(sFirstLine.find("@charset ") + 9);
+         sEncoding = sTemp.substr(sTemp.find("@charset ") + 9);
         if (sEncoding.find(';') != std::string::npos)
             sEncoding = sEncoding.substr(0, sEncoding.find(';'));
 
@@ -70,6 +73,8 @@ inline std::string GetContentAsUTF8(const std::wstring& sFileName)
 
     if (sEncoding == "UTF-8" || sEncoding == "utf-8")
         return sSource;
+
+    std::cout << sEncoding << std::endl;
 
     NSUnicodeConverter::CUnicodeConverter oConverter;
     std::wstring sUnicodeContent = oConverter.toUnicode(sSource, sEncoding.c_str());

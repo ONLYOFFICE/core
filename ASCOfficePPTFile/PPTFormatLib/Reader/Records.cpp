@@ -34,6 +34,7 @@
 #include "../Records/RecordsIncluder.h"
 
 #include <iostream>
+#include <iomanip>
 
 std::wstring CUnknownRecord::ReadStringW(const CFStreamPtr &pStream, int lLen)
 {
@@ -162,10 +163,16 @@ void CRecordsContainer::ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pS
 
 IRecord* CreateByType(SRecordHeader oHeader)
 {
-    // Дебагер заходит сюда при некоторых различных значениях oHeader.RecType
-    if (oHeader.RecType == (unsigned short)4081){
-        (void)(1==1);
+
+    char str[1024]={};
+    sprintf(str, "Record type: %x\t" , oHeader.RecType);
+    std::cout << str << std::setw(32) << GetRecordName((_UINT32)oHeader.RecType)
+              << "\tlen = " << oHeader.RecLen << "\n";
+
+    if ((_UINT32)oHeader.RecType == 0x1014) {
+       std::cout << "Animation!\n";
     }
+
 	IRecord* pRecord = NULL;
     switch (oHeader.RecType)
     {

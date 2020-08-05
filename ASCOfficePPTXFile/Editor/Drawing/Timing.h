@@ -35,6 +35,32 @@
 namespace PPT_FORMAT
 {
 
+class CBuildList
+{
+public:
+    CBuildList()
+    {
+
+    }
+    ~CBuildList()
+    {
+    }
+};
+
+
+class CExtensionListWithModificationFlag
+{
+
+};
+
+
+class CTimeNodeList
+{
+
+};
+
+}
+
 /*
  * This element specifies the timing information for handling all animations and timed events within the
  * corresponding slide. This information is tracked via time nodes within the timing element. More information on
@@ -44,8 +70,11 @@ namespace PPT_FORMAT
 class CTiming
 {
 public:
+    CBuildList                          m_oBldLst;
+    CExtensionListWithModificationFlag  m_oExtLst;
+    CTimeNodeList                       m_oTnLst;
 
-
+public:
 
     CTiming()
     {
@@ -66,4 +95,5 @@ public:
         *this = oSrc;
     }
 };
-}
+
+

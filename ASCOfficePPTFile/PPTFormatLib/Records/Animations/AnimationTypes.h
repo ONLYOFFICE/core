@@ -34,6 +34,10 @@
 #include <vector>
 #include <map>
 
+#include <iostream> // TODO delete
+
+#include "../HeadersFootersAtom.h"
+
 #include "../../Reader/Records.h"
 #include "../../../../ASCOfficePPTXFile/Editor/Drawing/Document.h"
 
@@ -3789,6 +3793,32 @@ public:
 	Animations::BuildListContainer*		buildListContainer;		//	OPTIONAL
 };
 
+struct PP12SlideBinaryTagExtension : public CUnknownRecord
+{
+public:
+    PP12SlideBinaryTagExtension()
+    {
+
+    }
+
+    ~PP12SlideBinaryTagExtension()
+    {
+
+    }
+
+    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
+    {
+        m_oHeader			=	oHeader;
+
+        m_oRoundTripHeaderFooterDefaultsAtom.ReadFromStream(m_oHeader, pStream);
+    }
+
+public:
+    CRecordRoundTripHeaderFooterDefaults12Atom m_oRoundTripHeaderFooterDefaultsAtom;
+
+
+};
+
 struct SlideProgTagsContainer : public CUnknownRecord
 {
 public:
@@ -3817,27 +3847,43 @@ public:
 			WCHAR Name[9];
 			if (sizeof (wchar_t) == 4)
 			{
-				//todoooo
+                for (int i = 0; i < 8; i++)
+                    Name[i] = (WCHAR)StreamUtils::ReadWORD(pStream);
+                Name[8]	=	L'\0';
 			}
 			else
 			{
+                pStream->read ((unsigned char*) Name, 16 );
+                Name[8]	=	L'\0';
 			}
-			pStream->read ((unsigned char*) Name, 16 );
-			Name[8]	=	L'\0';
+
 
             tagName	=	std::wstring ( Name );
 
             if ( std::wstring ( L"___PPT10" ) == tagName )
 			{
 				SRecordHeader rhData;
-				rhData.ReadFromStream(pStream) ;	
+                rhData.ReadFromStream(pStream) ;
+                m_oBinaryTagExtension = new PP10SlideBinaryTagExtension;
 
 				if (rhData.RecType == 0x138B && rhData.RecVersion == 0x0 && rhData.RecInstance == 0x000)	//	RT_BinaryTagDataBlob - 0x138B
 				{
-					m_PP10SlideBinaryTagExtension.ReadFromStream (rhData, pStream);
+                    m_oBinaryTagExtension->ReadFromStream (rhData, pStream);
 
 				}
-			}
+            } else if ( std::wstring ( L"___PPT12" ) == tagName )
+            {
+                SRecordHeader rhData;
+                rhData.ReadFromStream(pStream) ;
+                m_oBinaryTagExtension = new PP12SlideBinaryTagExtension;
+
+                if (rhData.RecType == 0x138B && rhData.RecVersion == 0x0 && rhData.RecInstance == 0x000)	//	RT_BinaryTagDataBlob - 0x138B
+                {
+                    m_oBinaryTagExtension->ReadFromStream (rhData, pStream);
+
+                }
+            }
+
 		}
 
 		StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
@@ -3845,12 +3891,16 @@ public:
 
 	inline Animations::CSlideTimeLine* GetTimeLine ()
 	{
-		if (m_PP10SlideBinaryTagExtension.extTimeNodeContainer)
+        if (tagName == L"___PPT10" and
+                dynamic_cast<PP10SlideBinaryTagExtension*>(m_oBinaryTagExtension)->extTimeNodeContainer)
 		{
 			Animations::CSlideTimeLine* pTimeLine = new Animations::CSlideTimeLine ();
 			if (pTimeLine)
 			{
-				if (pTimeLine->Build(m_PP10SlideBinaryTagExtension.extTimeNodeContainer))
+                if (pTimeLine->Build(
+                            dynamic_cast<PP10SlideBinaryTagExtension*>
+                            (m_oBinaryTagExtension)->extTimeNodeContainer))
+
 					return pTimeLine;
 
 				RELEASEOBJECT (pTimeLine);
@@ -3864,7 +3914,7 @@ public:
 
     std::wstring					tagName;
 
-	PP10SlideBinaryTagExtension	m_PP10SlideBinaryTagExtension;
+    IRecord*	m_oBinaryTagExtension;
 
 	SRecordHeader				m_oHeaderChild;
 };

@@ -357,6 +357,7 @@ static std::string GetRecordName(_UINT32 dwType)
 	case RECORD_TYPE_EXQUICKTIMEMOVIEDATA				: { strName = ("ExQuicktimeMovieData"); break; }
 	case RECORD_TYPE_EXCONTROL							: { strName = ("ExControl"); break; }
 	case RECORD_TYPE_SLIDELISTWITHTEXT					: { strName = ("SlidelistWithText"); break; }
+    case RECORD_TYPE_ANIMATIONINFO_ATOM                 : { strName = ("AnimationInfoAtom"); break; }
 	case RECORD_TYPE_INTERACTIVEINFO					: { strName = ("InteractiveInfo"); break; }
 	case RECORD_TYPE_INTERACTIVEINFO_ATOM				: { strName = ("InteractiveInfoAtom"); break; }
 	case RECORD_TYPE_USER_EDIT_ATOM						: { strName = ("UserEditAtom"); break; }
@@ -377,7 +378,6 @@ static std::string GetRecordName(_UINT32 dwType)
 	case RECORD_TYPE_EX_CDAUDIO_ATOM					: { strName = ("ExCDAudioAtom"); break; }
 	case RECORD_TYPE_EXWAVAUDIOEMBEDDED_ATOM			: { strName = ("ExWavAudioEmbeddedAtom"); break; }
 	case RECORD_TYPE_ANIMATIONINFO						: { strName = ("AnimationInfo"); break; }
-	case RECORD_TYPE_ANIMATIONINFO_ATOM					: { strName = ("AnimationInfoAtom"); break; }
 	case RECORD_TYPE_RTFDATETIME_META_ATOM				: { strName = ("RtfDateTimeMCAtom"); break; }
 	case RECORD_TYPE_PROGTAGS							: { strName = ("ProgTags"); break; }
 	case RECORD_TYPE_PROGSTRINGTAG						: { strName = ("ProgStringTag"); break; }

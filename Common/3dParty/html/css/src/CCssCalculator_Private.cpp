@@ -392,7 +392,7 @@ namespace NSCSS
             return sText;
         }
 
-        if ((NULL != oQuery->type && strcmpi(oQuery->type, "all")) ||
+        if ((NULL != oQuery->type && strcmp(oQuery->type, "all")) ||
              oQuery->restrictor != KatanaMediaQueryRestrictorNone) {
             if (NULL != oQuery->type)
                 sText += stringToWstring(oQuery->type);

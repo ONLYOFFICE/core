@@ -8,6 +8,7 @@ TEMPLATE = lib
 CONFIG += shared
 CONFIG += plugin
 CONFIG += core_static_link_libstd
+CONFIG += object_parallel_to_source
 
 DEFINES += HTMLFILE2_USE_DYNAMIC_LIBRARY
 

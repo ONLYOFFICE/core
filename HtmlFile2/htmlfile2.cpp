@@ -1,6 +1,7 @@
 #include <string>
 #include <map>
 #include <algorithm>
+#include <iostream>
 
 #include "htmlfile2.h"
 #include "../Common/3dParty/html/htmltoxhtml.h"
@@ -817,6 +818,9 @@ HRESULT CHtmlFile2::OpenBatch(const std::vector<std::wstring>& sSrc, const std::
 
     for(std::wstring sS : sSrc)
     {
+        #ifdef _DEBUG
+        std::wcout << NSFile::GetFileName(sS) << std::endl;
+        #endif
         m_internal->m_sSrc = NSSystemPath::GetDirectoryName(sS);
         m_internal->htmlXhtml(sS);
         if(!m_internal->readSrc())

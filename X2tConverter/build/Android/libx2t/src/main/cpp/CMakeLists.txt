@@ -40,10 +40,10 @@ endmacro()
 
 # ---------- Arguments ----------
 # 3dParty libs path arg
-if (NOT DEFINED ARG_PATH_LIB_3D_PARTY)
-    message(FATAL_ERROR "You must set argument \"ARG_PATH_LIB_3D_PARTY\" with path to 3d-party library...")
-elseif (NOT EXISTS ${ARG_PATH_LIB_3D_PARTY})
-    file(MAKE_DIRECTORY ${ARG_PATH_LIB_3D_PARTY})
+if (NOT DEFINED ARG_PATH_LIB_BUILD_TOOLS)
+    message(FATAL_ERROR "You must set argument \"ARG_PATH_LIB_BUILD_TOOLS\" with path to 3d-party library...")
+elseif (NOT EXISTS ${ARG_PATH_LIB_BUILD_TOOLS})
+    file(MAKE_DIRECTORY ${ARG_PATH_LIB_BUILD_TOOLS})
     message(STATUS "Destination 3dParty path doesn't exist, created!")
 endif()
 
@@ -120,6 +120,11 @@ if (NOT DEFINED ARG_NAME_LIB_XPSFILE)
     message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB_XPSFILE\" with xpsfile lib name...")
 endif()
 
+# fb2file library name
+if (NOT DEFINED ARG_NAME_LIB_FB2FILE)
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB_FB2FILE\" with fb2file lib name...")
+endif()
+
 # ---------- Names ----------
 # X2tConverter lib
 set(LIB_NAME_X2T_CONVERTER ${ARG_NAME_LIB})
@@ -145,7 +150,8 @@ set(LIB_NAME_UNICODECONVERTER ${ARG_NAME_LIB_UNICODECONVERTER})
 set(LIB_NAME_X2T ${ARG_NAME_LIB_X2T})
 # xpsfile lib
 set(LIB_NAME_XPSFILE ${ARG_NAME_LIB_XPSFILE})
-
+# fb2file lib
+set(LIB_NAME_FB2FILE ${ARG_NAME_LIB_FB2FILE})
 # ---------- Paths sources  ----------
 # Core src dir path
 set(CORE_DIR ${ARG_PATH_SRC_CORE})
@@ -157,7 +163,7 @@ set(X2T_CONVERTER_DIR ${CORE_DIR}/X2tConverter)
 message(STATUS "X2t converter source path: ${X2T_DIR_CONVERTER}")
 
 # Prebuild libraries path
-set(LIBS_DIR ${ARG_PATH_LIB_3D_PARTY})
+set(LIBS_DIR ${ARG_PATH_LIB_BUILD_TOOLS})
 message(STATUS "Prebuild libraries path: ${LIBS_DIR}")
 set(X2T_CONVERTER_LIBS ${LIBS_DIR}/${ANDROID_ABI})
 message(STATUS "Prebuild libraries path: ${X2T_CONVERTER_LIBS}")
@@ -362,6 +368,7 @@ add_library(${LIB_NAME_PDFWRITER} SHARED IMPORTED)
 add_library(${LIB_NAME_UNICODECONVERTER} SHARED IMPORTED)
 add_library(${LIB_NAME_X2T} SHARED IMPORTED)
 add_library(${LIB_NAME_XPSFILE} SHARED IMPORTED)
+add_library(${LIB_NAME_FB2FILE} SHARED IMPORTED)
 
 # Export lib to common libs path
 set_target_properties(${LIB_NAME_X2T_CONVERTER}
@@ -395,6 +402,8 @@ set_target_properties(${LIB_NAME_X2T} PROPERTIES IMPORTED_LOCATION
         ${X2T_CONVERTER_LIBS}/lib${LIB_NAME_X2T}.so)
 set_target_properties(${LIB_NAME_XPSFILE} PROPERTIES IMPORTED_LOCATION
         ${X2T_CONVERTER_LIBS}/lib${LIB_NAME_XPSFILE}.so)
+set_target_properties(${LIB_NAME_FB2FILE} PROPERTIES IMPORTED_LOCATION
+        ${X2T_CONVERTER_LIBS}/lib${LIB_NAME_FB2FILE}.so)
 
 # Add dependency library
 target_link_libraries(${LIB_NAME_X2T_CONVERTER}
@@ -411,6 +420,7 @@ target_link_libraries(${LIB_NAME_X2T_CONVERTER}
         ${LIB_NAME_UNICODECONVERTER}
         ${LIB_NAME_X2T}
         ${LIB_NAME_XPSFILE}
+        ${LIB_NAME_FB2FILE}
 )
 
 # Add include files .h

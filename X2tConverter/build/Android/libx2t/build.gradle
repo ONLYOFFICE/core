@@ -21,7 +21,7 @@ android {
                 arguments "-DANDROID_TOOLCHAIN=clang",
                           "-DANDROID_STL=c++_static",
                           "-DANDROID_ARM_NEON=TRUE",
-                          "-DARG_PATH_LIB_3D_PARTY=${getProjectPath(PATH_LIB_3D_PARTY)}",
+                          "-DARG_PATH_LIB_BUILD_TOOLS=${getProjectPath(PATH_LIB_BUILD_TOOLS)}",
                           "-DARG_PATH_LIB_DST=${getProjectPath(PATH_LIB_DST, true)}",
                           "-DARG_PATH_SRC_CORE=${getProjectPath(PATH_SRC_CORE)}",
                           "-DARG_NAME_LIB=$NAME_LIB",
@@ -35,7 +35,8 @@ android {
                           "-DARG_NAME_LIB_PDFWRITER=$NAME_LIB_PDFWRITER",
                           "-DARG_NAME_LIB_UNICODECONVERTER=$NAME_LIB_UNICODECONVERTER",
                           "-DARG_NAME_LIB_X2T=$NAME_LIB_X2T",
-                          "-DARG_NAME_LIB_XPSFILE=$NAME_LIB_XPSFILE"
+                          "-DARG_NAME_LIB_XPSFILE=$NAME_LIB_XPSFILE",
+                          "-DARG_NAME_LIB_FB2FILE=$NAME_LIB_FB2FILE"
             }
         }
 
@@ -68,7 +69,7 @@ android {
 
             jniLibs.srcDirs = [
                 PATH_LIB_DST,
-                PATH_LIB_3D_PARTY
+                PATH_LIB_BUILD_TOOLS
             ]
         }
     }
@@ -97,6 +98,7 @@ android {
             pickFirst "lib/$abi/lib${NAME_LIB_UNICODECONVERTER}.so"
             pickFirst "lib/$abi/lib${NAME_LIB_X2T}.so"
             pickFirst "lib/$abi/lib${NAME_LIB_XPSFILE}.so"
+            pickFirst "lib/$abi/lib${NAME_LIB_FB2FILE}.so"
             pickFirst "lib/$abi/lib${NAME_LIB}.so"
         }
     }

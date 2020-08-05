@@ -1,24 +1,21 @@
 QT -= core
 QT -= gui
 
+VERSION = 0.0.0.1
 TARGET = HtmlFile2
 TEMPLATE = lib
-CONFIG += staticlib
+
+CONFIG += shared
+CONFIG += plugin
+CONFIG += core_static_link_libstd
 
 DEFINES += HTMLFILE2_USE_DYNAMIC_LIBRARY
-DEFINES += UNICODE \
-          _UNICODE \
-           DONT_WRITE_EMBEDDED_FONTS
 
 CORE_ROOT_DIR = $$PWD/../../core
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 
-#BOOST
-CONFIG += core_boost_regex
-include($$PWD/../Common/3dParty/boost/boost.pri)
-
-ADD_DEPENDENCY(kernel, gumbo, UnicodeConverter, graphics, DocxFormatLib)
+ADD_DEPENDENCY(kernel, gumbo, UnicodeConverter, graphics)
 
 SOURCES += htmlfile2.cpp
 

@@ -197,14 +197,17 @@ CColor CPPTElement::CorrectSysColor(int nColorCode, CElementPtr pElement, CTheme
 
 	return color;
 }
-void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pWrapper, CSlide* pSlide, CProperties* pProperties)
+void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pWrapper, CSlide* pSlide, CProperties* pProperties, bool reset_default)
 {
 	size_t lCount = pProperties->m_lCount;
 	switch (pElement->m_etType)
 	{
 	case PPT_FORMAT::etVideo:
 		{
-			pElement->m_bLine = false;
+			if (reset_default)
+			{
+				pElement->m_bLine = false;
+			}
 			for (size_t i = 0; i < lCount; ++i)
 			{
 				SetUpPropertyVideo(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
@@ -213,8 +216,11 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
 		}
 	case PPT_FORMAT::etPicture:
 		{
-			pElement->m_oBrush.Type = c_BrushTypeTexture;
-			pElement->m_bLine = false;
+			if (reset_default)
+			{
+				pElement->m_oBrush.Type = c_BrushTypeTexture;
+				pElement->m_bLine = false;
+			}
 			for (size_t i = 0; i < lCount; ++i)
 			{
 				SetUpPropertyImage(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
@@ -223,7 +229,10 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
 		}
 	case PPT_FORMAT::etAudio:
 		{
-			pElement->m_bLine = false;
+			if (reset_default)
+			{
+				pElement->m_bLine = false;
+			}
 			for (size_t i = 0; i < lCount; ++i)
 			{
 				SetUpPropertyAudio(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
@@ -232,8 +241,11 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
 		}
 	case PPT_FORMAT::etGroup:
 		{
-			pElement->m_bLine = false;
-			pElement->m_bIsFilled = false;
+			if (reset_default)
+			{
+				pElement->m_bLine = false;
+				pElement->m_bIsFilled = false;
+			}
 			for (size_t i = 0; i < lCount; ++i)
 			{
 				SetUpProperty(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
@@ -588,6 +600,8 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 	}break;
 	case lineColor:
 	{
+		pElement->m_bLine = true;	
+		
 		SColorAtom oAtom;
 		oAtom.FromValue(pProperty->m_lValue);
 		
@@ -1850,7 +1864,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
 		CPPTElement oElement;
 		for (size_t nIndexProp = 0; nIndexProp < oArrayOptions.size(); ++nIndexProp)
 		{
-			oElement.SetUpProperties(pElement, pTheme, pSlideWrapper, pSlide, &oArrayOptions[nIndexProp]->m_oProperties);
+			oElement.SetUpProperties(pElement, pTheme, pSlideWrapper, pSlide, &oArrayOptions[nIndexProp]->m_oProperties, (nIndexProp == 0));
 		}
 
 		std::vector<CRecordStyleTextPropAtom*> oArrayTextStyle;
@@ -1981,10 +1995,10 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
 	}
 	else
 	{//image, audio, video ....
-		CPPTElement oElement;
+		CPPTElement oElement; 
 		for (size_t nIndexProp = 0; nIndexProp < oArrayOptions.size(); ++nIndexProp)
 		{
-			oElement.SetUpProperties(pElement, pTheme, pSlideWrapper, pSlide, &oArrayOptions[nIndexProp]->m_oProperties);
+			oElement.SetUpProperties(pElement, pTheme, pSlideWrapper, pSlide, &oArrayOptions[nIndexProp]->m_oProperties, (nIndexProp == 0));
 		}
 
 		pElement->m_lLayoutID = lMasterID;

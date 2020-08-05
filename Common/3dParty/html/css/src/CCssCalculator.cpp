@@ -30,14 +30,14 @@ namespace NSCSS
         m_pInternal->AddStyle(sSelectors, sStyle);
     }
 
-    void CCssCalculator::AddStyle(const std::string &sStyle)
+    void CCssCalculator::AddStyles(const std::string &sStyle)
     {
-        m_pInternal->AddStyle(sStyle);
+        m_pInternal->AddStyles(sStyle);
     }
 
-    void CCssCalculator::AddStyles(const std::wstring &sFileName)
+    void CCssCalculator::AddStylesFromFile(const std::wstring &sFileName)
     {
-        m_pInternal->AddStyles(sFileName);
+        m_pInternal->AddStylesFromFile(sFileName);
     }
 
     void CCssCalculator::SetUnitMeasure(const UnitMeasure nType)

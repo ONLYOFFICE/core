@@ -30,6 +30,8 @@ public:
     std::vector<CElement*> GetChildrens();
 
     std::wstring GetText();
+
+    CElement& operator= (const CElement& oElement);
 };
 
 #endif // CELEMENT_H

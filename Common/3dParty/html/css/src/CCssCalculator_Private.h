@@ -97,8 +97,6 @@ namespace NSCSS
         std::vector<int> GetWeightSelector(const std::wstring& sSelector);
 
         void GetOutputData(KatanaOutput* oOutput);
-
-        std::string GetContentAsUTF8(const std::wstring& sFile);
     public:
         CCssCalculator_Private();
         ~CCssCalculator_Private();
@@ -108,8 +106,8 @@ namespace NSCSS
         CCompiledStyle GetCompiledStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure = Default);
 
         void AddStyle(std::vector<std::string> sSelectors, const std::string& sStyle);
-        void AddStyle(const std::string& sStyle);
-        void AddStyles(const std::wstring& sFileName);
+        void AddStyles(const std::string& sStyle);
+        void AddStylesFromFile(const std::wstring& sFileName);
 
         void SetUnitMeasure(const UnitMeasure nType);
         void SetDpi(const int nValue);

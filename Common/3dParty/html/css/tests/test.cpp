@@ -17,6 +17,8 @@ int main(int argc, char *argv[])
     setlocale(LC_ALL,"Russian");
     SetConsoleOutputCP( CP_UTF8 );
 
+    std::wcout << L"-----BEGIN-----" << std::endl;
+
     std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
 
     std::vector<std::pair<std::wstring, std::pair<std::vector<std::string>, std::map<std::wstring, std::wstring>>>> arTestDatas;
@@ -296,9 +298,8 @@ int main(int argc, char *argv[])
     for (size_t i = 0; i < arTestDatas.size(); i++)
     {
         std::wstring sFilePath = NSFile::GetProcessDirectory() + arTestDatas[i].first;
-
         NSCSS::CCssCalculator oCSS;
-        oCSS.AddStyles(sFilePath);
+        oCSS.AddStylesFromFile(sFilePath);
 
         NSCSS::CCompiledStyle oStyle = oCSS.GetCompiledStyle(arTestDatas[i].second.first, arUnitMeasure[i]);
 
@@ -354,6 +355,6 @@ int main(int argc, char *argv[])
             std::cout << "TRUE" << std::endl;
 
     }
-    std::cout << "END" << std::endl;
+    std::cout << "-----END-----" << std::endl;
 
 }

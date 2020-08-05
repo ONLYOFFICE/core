@@ -25,6 +25,57 @@ inline std::wstring stringToWstring(const std::string& sString)
     return converter.from_bytes(sString);
 }
 
+inline std::string GetContentAsUTF8(const std::string &sString, const std::wstring &sEncoding)
+{
+    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+
+    std::string sEnc = converter.to_bytes(sEncoding);
+
+    NSUnicodeConverter::CUnicodeConverter oConverter;
+    std::wstring sUnicodeContent = oConverter.toUnicode(sString, sEnc.c_str());
+    return U_TO_UTF8(sUnicodeContent);
+}
+
+inline std::string GetContentAsUTF8(const std::wstring& sFileName)
+{
+    std::string sSource;
+    if (!NSFile::CFileBinary::ReadAllTextUtf8A(sFileName, sSource))
+        return sSource;
+
+    std::string sFirstLine;
+    if (sSource.find('\n') != std::string::npos)
+        sFirstLine = sSource.substr(0, sSource.find('\n'));
+    else
+        sFirstLine = sSource;
+
+    std::string sEncoding;
+    if (sFirstLine.find("@charset") != std::string::npos)
+    {
+         sEncoding = sFirstLine.substr(sFirstLine.find("@charset ") + 9);
+        if (sEncoding.find(';') != std::string::npos)
+            sEncoding = sEncoding.substr(0, sEncoding.find(';'));
+
+        if (sEncoding.find('"') != std::string::npos)
+            sEncoding = sEncoding.substr(sEncoding.find('"') + 1);
+        else if (sEncoding.find("'") != std::string::npos)
+            sEncoding = sEncoding.substr(sEncoding.find("'") + 1);
+
+        if (sEncoding.find('"') != std::string::npos)
+            sEncoding = sEncoding.substr(0, sEncoding.find('"'));
+        else if (sEncoding.find("'") != std::string::npos)
+            sEncoding = sEncoding.substr(0, sEncoding.find("'"));
+    }
+    else
+        return sSource;
+
+    if (sEncoding == "UTF-8" || sEncoding == "utf-8")
+        return sSource;
+
+    NSUnicodeConverter::CUnicodeConverter oConverter;
+    std::wstring sUnicodeContent = oConverter.toUnicode(sSource, sEncoding.c_str());
+    return U_TO_UTF8(sUnicodeContent);
+}
+
 namespace NSCSS
 {
     CCssCalculator_Private::CCssCalculator_Private()
@@ -37,18 +88,6 @@ namespace NSCSS
             delete m_arData[i];
 
         m_arData.clear();
-    }
-
-    inline std::string CCssCalculator_Private::GetContentAsUTF8(const std::wstring &sString)
-    {
-        std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-
-        std::string sStr = converter.to_bytes(sString);
-        std::string sEnc = converter.to_bytes(m_sEncoding);
-
-        NSUnicodeConverter::CUnicodeConverter oConverter;
-        std::wstring sUnicodeContent = oConverter.toUnicode(sStr, sEnc.c_str());
-        return U_TO_UTF8(sUnicodeContent);
     }
 
     inline CElement* CCssCalculator_Private::GetElement(const int& nIndex)
@@ -564,8 +603,7 @@ namespace NSCSS
 
                 if (mStyle.find(arDeclarations[j].first) == mStyle.cend())
                 {
-                    std::string sTemp = GetContentAsUTF8(ConvertUnitMeasure(arDeclarations[j].second));
-                    std::wstring sValue = stringToWstring(sTemp);
+                    std::wstring sValue = ConvertUnitMeasure(arDeclarations[j].second);
                     mStyle.emplace(arDeclarations[j].first, sValue);
                 }
                 else
@@ -586,33 +624,47 @@ namespace NSCSS
         return  CCompiledStyle(mStyle);
     }
 
-    void CCssCalculator_Private::AddStyle(std::vector<std::string> sSelectors, const std::string& sStyle)
+    void CCssCalculator_Private::AddStyle(std::vector<std::string> sSelectors, const std::string& sProperties)
     {
+        std::string sPropertiesUTF8;
+        if (m_sEncoding != L"UTF-8" && m_sEncoding != L"utf-8")
+            sPropertiesUTF8 = GetContentAsUTF8(sProperties, m_sEncoding);
+        else sPropertiesUTF8 = sProperties;
+
+        std::vector<std::string> sSelectorsUTF8;
+
+        if (m_sEncoding != L"UTF-8" && m_sEncoding != L"utf-8")
+            for (size_t i = 0; i < sSelectors.size(); i++)
+                sSelectorsUTF8.push_back(GetContentAsUTF8(sSelectors[i], m_sEncoding));
+        else
+            for (size_t i = 0; i < sSelectors.size(); i++)
+                sSelectorsUTF8.push_back(sSelectors[i]);
+
         CElement *oElement = new CElement;
-        for (size_t i = 0; i < sSelectors.size(); i++)
-            oElement->AddSelector(std::wstring(sSelectors[i].begin(), sSelectors[i].end()));
+        for (size_t i = 0; i < sSelectorsUTF8.size(); i++)
+            oElement->AddSelector(std::wstring(sSelectorsUTF8[i].begin(), sSelectorsUTF8[i].end()));
 
         std::vector<std::string> arProperty;
         std::vector<std::string> arValue;
 
         std::string sTemp;
 
-        for (size_t i = 0; i < sStyle.length(); i++)
+        for (size_t i = 0; i < sPropertiesUTF8.length(); i++)
         {
-            if (sStyle[i] != ' ')
+            if (sPropertiesUTF8[i] != ' ')
             {
-                if (sStyle[i] == ':')
+                if (sPropertiesUTF8[i] == ':')
                 {
                     arProperty.push_back(sTemp);
                     sTemp.clear();
                 }
-                else if (sStyle[i] == ';')
+                else if (sPropertiesUTF8[i] == ';')
                 {
                     arValue.push_back(sTemp);
                     sTemp.clear();
                 }
                 else
-                    sTemp += sStyle[i];
+                    sTemp += sPropertiesUTF8[i];
             }
         }
 
@@ -646,9 +698,16 @@ namespace NSCSS
         m_arData.push_back(oElement);
     }
 
-    void CCssCalculator_Private::AddStyle(const std::string& sStyle)
+    void CCssCalculator_Private::AddStyles(const std::string& sStyle)
     {
-        KatanaOutput *output = katana_parse(sStyle.c_str(), sStyle.size(), KatanaParserModeStylesheet);
+        std::string sStyleUTF8;
+
+        if (m_sEncoding != L"UTF-8" && m_sEncoding != L"utf-8")
+            sStyleUTF8 = GetContentAsUTF8(sStyle, m_sEncoding);
+        else
+            sStyleUTF8 = sStyle;
+
+        KatanaOutput *output = katana_parse(sStyleUTF8.c_str(), sStyleUTF8.size(), KatanaParserModeStylesheet);
         CCssCalculator_Private data;
         data.GetOutputData(output);
 
@@ -661,54 +720,16 @@ namespace NSCSS
         katana_destroy_output(output);
     }
 
-    void CCssCalculator_Private::AddStyles(const std::wstring& sFileName)
+    void CCssCalculator_Private::AddStylesFromFile(const std::wstring& sFileName)
     {
         if (std::find(m_arFiles.begin(), m_arFiles.end(), sFileName) != m_arFiles.end())
             return;
 
         m_arFiles.push_back(sFileName);
 
-        FILE *fFile = fopen(std::string(sFileName.begin(), sFileName.end()).c_str(), "r");
+        std::string sSourceUTF8 = GetContentAsUTF8(sFileName);
 
-        if (fFile == NULL)
-            return;
-
-        KatanaOutput *output = katana_parse_in(fFile);
-
-        CCssCalculator_Private data;
-        data.GetOutputData(output);
-        for (size_t i = 0; i < data.GetSize(); i++)
-        {
-            CElement* oElement = new CElement();
-            *oElement = *data.GetElement(i);
-            AddElement(oElement);
-        }
-        data.m_arData.clear();
-        katana_destroy_output(output);
-
-        rewind(fFile);
-
-        wchar_t line[MAX_LINE_LENGTH] = {0};
-        while(std::fgetws(line, MAX_LINE_LENGTH, fFile))
-        {
-            std::wstring sTemp = line;
-            if (sTemp.find(L"@charset") != std::string::npos)
-            {
-                char сQuote;
-                if (sTemp.find(L"'") != std::string::npos)
-                    сQuote = '\'';
-                else if (sTemp.find(L'"') != std::string::npos)
-                    сQuote = '"';
-                else
-                    break;
-
-                sTemp = sTemp.substr(sTemp.find(сQuote) + 1);
-                sTemp = sTemp.substr(0, sTemp.find(сQuote));
-                m_sEncoding = sTemp;
-            }
-        }
-
-        fclose(fFile);
+        AddStyles(sSourceUTF8);
     }
 
     inline std::wstring CCssCalculator_Private::ConvertUnitMeasure(const std::wstring& sValue)

@@ -33,8 +33,8 @@ namespace NSCSS
         CCompiledStyle GetCompiledStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure = Default);
 
         void AddStyle(std::vector<std::string> sSelectors, const std::string& sStyle);
-        void AddStyle(const std::string& sStyle);
-        void AddStyles(const std::wstring& sFileName);
+        void AddStyles(const std::string& sStyle);
+        void AddStylesFromFile(const std::wstring& sFileName);
 
         void SetUnitMeasure(const UnitMeasure nType);
         void SetDpi(const int nValue);

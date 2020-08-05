@@ -128,3 +128,25 @@ std::vector<CElement*> CElement::GetChildrens()
 {
     return m_arChildrens;
 }
+
+CElement& CElement::operator= (const CElement &oElement)
+{
+    m_arChildrens.clear();
+    m_arSelectors.clear();
+    m_arDeclarations.clear();
+
+    for (size_t i = 0; i < oElement.m_arSelectors.size(); i++)
+        m_arSelectors.push_back(oElement.m_arSelectors[i]);
+
+    for (size_t i = 0; i < oElement.m_arDeclarations.size(); i++)
+        m_arDeclarations.push_back(oElement.m_arDeclarations[i]);
+
+    for (size_t i = 0; i < oElement.m_arChildrens.size(); i++)
+    {
+        CElement *oChildren = new CElement();
+        *oChildren = *oElement.m_arChildrens[i];
+        m_arChildrens.push_back(oChildren);
+    }
+
+    return *this;
+}

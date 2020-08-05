@@ -8,9 +8,9 @@
 
 #include "iostream"
 
-#include "../katana-parser/src/selector.h"
-#include "../../../../UnicodeConverter/UnicodeConverter.h"
-#include "../../../../DesktopEditor/common/File.h"
+#include "../../katana-parser/src/selector.h"
+#include "../../../../../UnicodeConverter/UnicodeConverter.h"
+#include "../../../../../DesktopEditor/common/File.h"
 
 #define MAX_LINE_LENGTH 80
 
@@ -73,8 +73,6 @@ inline std::string GetContentAsUTF8(const std::wstring& sFileName)
 
     if (sEncoding == "UTF-8" || sEncoding == "utf-8")
         return sSource;
-
-    std::cout << sEncoding << std::endl;
 
     NSUnicodeConverter::CUnicodeConverter oConverter;
     std::wstring sUnicodeContent = oConverter.toUnicode(sSource, sEncoding.c_str());

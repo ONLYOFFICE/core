@@ -15,6 +15,7 @@ CORE_ROOT_DIR = $$PWD/../../core
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 include($$CORE_ROOT_DIR/Common/3dParty/html/gumbo.pri)
+include($$CORE_ROOT_DIR/Common/3dParty/html/css/CssCalculator.pri)
 
 ADD_DEPENDENCY(kernel, UnicodeConverter, graphics)
 

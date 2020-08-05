@@ -28,11 +28,11 @@ public:
     std::wstring m_sSrc; // Директория источника
     std::wstring m_sDst; // Директория назначения
 
-private:
     std::map<std::wstring, std::wstring> m_mStyles; // Стили в document.xml. Хранятся как (имя тэга, его стиль)
 
     std::wstring m_sBase; // Полный базовый адрес
 
+private:
     int m_nImageId;     // ID картинки
     int m_nFootnoteId;  // ID сноски
     int m_nHyperlinkId; // ID ссылки
@@ -806,5 +806,28 @@ HRESULT CHtmlFile2::Open(const std::wstring& sSrc, const std::wstring& sDst, CHt
         return S_FALSE;
     m_internal->write();
     NSFile::CFileBinary::Remove(m_internal->m_sTmp + L"/res.xhtml");
+    return S_OK;
+}
+
+HRESULT CHtmlFile2::OpenBatch(const std::vector<std::wstring>& sSrc, const std::wstring& sDst, CHtmlParams* oParams)
+{
+
+    m_internal->m_sDst = sDst;
+    m_internal->CreateDocxEmpty();
+
+    for(std::wstring sS : sSrc)
+    {
+        m_internal->m_sSrc = NSSystemPath::GetDirectoryName(sS);
+        m_internal->htmlXhtml(sS);
+        if(!m_internal->readSrc())
+            return S_FALSE;
+        NSFile::CFileBinary::Remove(m_internal->m_sTmp + L"/res.xhtml");
+
+        m_internal->m_oLightReader.Clear();
+        m_internal->m_mStyles.clear();
+        m_internal->m_sBase = L"";
+    }
+
+    m_internal->write();
     return S_OK;
 }

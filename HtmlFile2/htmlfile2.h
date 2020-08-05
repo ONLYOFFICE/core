@@ -2,6 +2,7 @@
 #define _HTMLFILE2_HTMLFILE2_H
 
 #include <string>
+#include <vector>
 #include "../DesktopEditor/common/Types.h"
 
 #ifndef HTMLFILE2_USE_DYNAMIC_LIBRARY
@@ -28,6 +29,7 @@ public:
     bool IsHtmlFile(const std::wstring& sFile);
     void SetTmpDirectory(const std::wstring& sFolder);
     HRESULT Open(const std::wstring& sPath, const std::wstring& sDirectory, CHtmlParams* oParams = NULL);
+    HRESULT OpenBatch(const std::vector<std::wstring>& sPath, const std::wstring& sDirectory, CHtmlParams* oParams = NULL);
 };
 
 #endif // _HTMLFILE2_HTMLFILE2_H

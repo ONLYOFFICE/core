@@ -117,6 +117,7 @@ namespace NSCSS
         int GetDpi();
 
         void Print();
+        void Clear();
     };
 }
 #endif // CCSSCALCULATOR_PRIVATE_H

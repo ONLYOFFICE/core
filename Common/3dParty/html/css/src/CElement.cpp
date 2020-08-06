@@ -17,8 +17,13 @@ CElement::~CElement()
 std::wstring CElement::GetText()
 {
     std::wstring sText;
-    for (size_t i =0 ; i < m_arSelectors.size(); i++)
-        sText += m_arSelectors[i] + L" ";
+
+    if(m_arSelectors.size() > 0)
+    {
+        for (int i = 0; i < (int)(m_arSelectors.size() - 1); i++)
+            sText += m_arSelectors[i] + L", ";
+        sText += m_arSelectors[m_arSelectors.size() - 1];
+    }
     if (m_arDeclarations.size() != 0 ||
         m_arChildrens.size() != 0)
     {

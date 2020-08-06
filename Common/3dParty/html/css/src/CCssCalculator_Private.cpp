@@ -578,6 +578,7 @@ namespace NSCSS
         if (unitMeasure != Default)
             SetUnitMeasure(unitMeasure);
 
+
         std::map<std::wstring, std::wstring> mStyle;
 
         std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> arStyle;
@@ -624,6 +625,11 @@ namespace NSCSS
                 }
             }
         }
+
+        for (auto iter = mStyle.begin(); iter != mStyle.end(); iter++)
+            if (iter->second.find(L" !important") != std::wstring::npos)
+                mStyle[iter->first] = iter->second.substr(0, iter->second.find(L" !important"));
+
         return  CCompiledStyle(mStyle);
     }
 
@@ -1881,6 +1887,20 @@ namespace NSCSS
     std::wstring CCssCalculator_Private::GetEncoding()
     {
         return m_sEncoding;
+    }
+
+    void CCssCalculator_Private::Clear()
+    {
+        m_sEncoding     = L"UTF-8";
+        m_nDpi          = 96;
+        m_UnitMeasure   = Default;
+
+
+        for (size_t i = 0; i < m_arData.size(); i++)
+            delete m_arData[i];
+
+        m_arData.clear();
+        m_arFiles.clear();
     }
 }
 inline static std::wstring StringifyValueList(KatanaArray* oValues)

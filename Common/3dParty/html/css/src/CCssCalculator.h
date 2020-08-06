@@ -44,6 +44,7 @@ namespace NSCSS
         int GetDpi();
 
         void Print();
+        void Clear();
     };
 }
 

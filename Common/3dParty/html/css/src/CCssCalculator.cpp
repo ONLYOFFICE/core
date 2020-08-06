@@ -69,4 +69,9 @@ namespace NSCSS
     {
         m_pInternal->Print();
     }
+
+    void CCssCalculator::Clear()
+    {
+        m_pInternal->Clear();
+    }
 }

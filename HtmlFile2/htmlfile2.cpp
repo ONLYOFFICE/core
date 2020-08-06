@@ -1,10 +1,12 @@
 #include <string>
 #include <map>
+#include <vector>
 #include <algorithm>
 #include <iostream>
 
 #include "htmlfile2.h"
 #include "../Common/3dParty/html/htmltoxhtml.h"
+#include "../Common/3dParty/html/css/src/CCssCalculator.h"
 #include "../Common/FileDownloader/FileDownloader.h"
 #include "../DesktopEditor/common/Base64.h"
 #include "../DesktopEditor/common/SystemUtils.h"
@@ -23,7 +25,8 @@
 class CHtmlFile2_Private
 {
 public:
-    XmlUtils::CXmlLiteReader m_oLightReader; // SAX Reader
+    XmlUtils::CXmlLiteReader m_oLightReader;   // SAX Reader
+    NSCSS::CCssCalculator m_oStylesCalculator; // Css калькулятор
 
     std::wstring m_sTmp;  // Temp папка для конфертации html в xhtml
     std::wstring m_sSrc;  // Директория источника
@@ -36,6 +39,7 @@ private:
     int m_nImageId;     // ID картинки
     int m_nFootnoteId;  // ID сноски
     int m_nHyperlinkId; // ID ссылки
+    int m_nStyleId;     // ID стиля
 
     NSStringUtils::CStringBuilder m_oStylesXml;  // styles.xml
     NSStringUtils::CStringBuilder m_oDocXmlRels; // document.xml.rels
@@ -48,6 +52,7 @@ public:
         m_nImageId = 1;
         m_nFootnoteId = 1;
         m_nHyperlinkId = 1;
+        m_nStyleId = 1;
         m_sBase = L"";
     }
 
@@ -148,16 +153,6 @@ public:
             oFootRelsWriter.CloseFile();
         }
 
-        // styles.xml
-        m_oStylesXml += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:styles xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" mc:Ignorable=\"w14 w15\"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:asciiTheme=\"minorHAnsi\" w:eastAsiaTheme=\"minorHAnsi\" w:hAnsiTheme=\"minrHAnsi\" w:cstheme=\"minorBidi\"/><w:sz w:val=\"22\"/><w:szCs w:val=\"22\"/><w:lang w:val=\"en-US\" w:eastAsia=\"en-US\" w:bidi=\"ar-SA\"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after=\"200\" w:line=\"276\" w:lineRule=\"auto\"/></w:pPr></w:pPrDefault></w:docDefaults><w:latentStyles w:defLockedState=\"0\" w:defUIPriority=\"99\" w:defSemiHidden=\"1\" w:defUnhideWhenUsed=\"1\" w:defQFormat=\"0\" w:count=\"267\"><w:lsdException w:name=\"Normal\" w:semiHidden=\"0\" w:uiPriority=\"0\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 1\" w:semiHidden=\"0\" w:uiPriority=\"9\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 2\" w:uiPriority=\"9\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 3\" w:uiPriority=\"9\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 4\" w:uiPriority=\"9\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 5\" w:uiPriority=\"9\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 6\" w:uiPriority=\"9\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 7\" w:uiPriority=\"9\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 8\" w:uiPriority=\"9\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 9\" w:uiPriority=\"9\" w:qFormat=\"1\"/><w:lsdException w:name=\"toc 1\" w:uiPriority=\"39\"/><w:lsdException w:name=\"toc 2\" w:uiPriority=\"39\"/><w:lsdException w:name=\"toc 3\" w:uiPriority=\"39\"/><w:lsdException w:name=\"toc 4\" w:uiPriority=\"39\"/><w:lsdException w:name=\"toc 5\" w:uiPriority=\"39\"/><w:lsdException w:name=\"toc 6\" w:uiPriority=\"39\"/><w:lsdException w:name=\"toc 7\" w:uiPriority=\"39\"/><w:lsdException w:name=\"toc 8\" w:uiPriority=\"39\"/><w:lsdException w:name=\"toc 9\" w:uiPriority=\"39\"/><w:lsdException w:name=\"caption\" w:uiPriority=\"35\" w:qFormat=\"1\"/><w:lsdException w:name=\"Title\" w:semiHidden=\"0\" w:uiPriority=\"10\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"Default Paragraph Font\" w:uiPriority=\"1\"/><w:lsdException w:name=\"Subtitle\" w:semiHidden=\"0\" w:uiPriority=\"11\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"Strong\" w:semiHidden=\"0\" w:uiPriority=\"22\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"Emphasis\" w:semiHidden=\"0\" w:uiPriority=\"20\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"Table Grid\" w:semiHidden=\"0\" w:uiPriority=\"59\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Placeholder Text\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"No Spacing\" w:semiHidden=\"0\" w:uiPriority=\"1\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"Light Shading\" w:semiHidden=\"0\" w:uiPriority=\"60\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light List\" w:semiHidden=\"0\" w:uiPriority=\"61\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light Grid\" w:semiHidden=\"0\" w:uiPriority=\"62\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 1\" w:semiHidden=\"0\" w:uiPriority=\"63\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 2\" w:semiHidden=\"0\" w:uiPriority=\"64\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium List 1\" w:semiHidden=\"0\" w:uiPriority=\"65\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium List 2\" w:semiHidden=\"0\" w:uiPriority=\"66\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 1\" w:semiHidden=\"0\" w:uiPriority=\"67\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 2\" w:semiHidden=\"0\" w:uiPriority=\"68\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 3\" w:semiHidden=\"0\" w:uiPriority=\"69\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Dark List\" w:semiHidden=\"0\" w:uiPriority=\"70\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Shading\" w:semiHidden=\"0\" w:uiPriority=\"71\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful List\" w:semiHidden=\"0\" w:uiPriority=\"72\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Grid\" w:semiHidden=\"0\" w:uiPriority=\"73\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light Shading Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"60\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light List Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"61\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light Grid Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"62\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 1 Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"63\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 2 Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"64\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium List 1 Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"65\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Revision\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"List Paragraph\" w:semiHidden=\"0\" w:uiPriority=\"34\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"Quote\" w:semiHidden=\"0\" w:uiPriority=\"29\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"Intense Quote\" w:semiHidden=\"0\" w:uiPriority=\"30\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"Medium List 2 Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"66\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 1 Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"67\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 2 Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"68\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 3 Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"69\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Dark List Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"70\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Shading Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"71\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful List Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"72\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Grid Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"73\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light Shading Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"60\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light List Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"61\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light Grid Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"62\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 1 Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"63\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 2 Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"64\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium List 1 Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"65\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium List 2 Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"66\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 1 Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"67\" w:unhideWhenUsed=\"0\"/>";
-        m_oStylesXml += L"<w:lsdException w:name=\"Medium Grid 2 Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"68\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 3 Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"69\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Dark List Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"70\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Shading Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"71\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful List Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"72\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Grid Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"73\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light Shading Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"60\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light List Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"61\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light Grid Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"62\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 1 Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"63\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 2 Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"64\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium List 1 Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"65\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium List 2 Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"66\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 1 Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"67\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 2 Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"68\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 3 Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"69\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Dark List Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"70\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Shading Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"71\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful List Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"72\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Grid Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"73\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light Shading Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"60\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light List Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"61\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light Grid Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"62\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 1 Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"63\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 2 Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"64\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium List 1 Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"65\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium List 2 Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"66\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 1 Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"67\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 2 Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"68\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 3 Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"69\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Dark List Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"70\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Shading Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"71\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful List Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"72\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Grid Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"73\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light Shading Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"60\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light List Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"61\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light Grid Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"62\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 1 Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"63\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 2 Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"64\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium List 1 Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"65\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium List 2 Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"66\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 1 Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"67\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 2 Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"68\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 3 Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"69\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Dark List Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"70\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Shading Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"71\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful List Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"72\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Grid Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"73\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light Shading Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"60\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light List Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"61\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light Grid Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"62\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 1 Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"63\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 2 Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"64\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium List 1 Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"65\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium List 2 Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"66\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 1 Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"67\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 2 Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"68\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 3 Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"69\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Dark List Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"70\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Shading Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"71\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful List Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"72\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Grid Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"73\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Subtle Emphasis\" w:semiHidden=\"0\" w:uiPriority=\"19\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"Intense Emphasis\" w:semiHidden=\"0\" w:uiPriority=\"21\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"Subtle Reference\" w:semiHidden=\"0\" w:uiPriority=\"31\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"Intense Reference\" w:semiHidden=\"0\" w:uiPriority=\"32\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"Book Title\" w:semiHidden=\"0\" w:uiPriority=\"33\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"Bibliography\" w:uiPriority=\"37\"/><w:lsdException w:name=\"TOC Heading\" w:uiPriority=\"39\" w:qFormat=\"1\"/></w:latentStyles></w:styles>";
-        NSFile::CFileBinary oStylesWriter;
-        if (oStylesWriter.CreateFileW(pathWord + L"/styles.xml"))
-        {
-            oStylesWriter.WriteStringUTF8(m_oStylesXml.GetData());
-            oStylesWriter.CloseFile();
-        }
-
         // fontTable.xml
         std::wstring sFontTable = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:fonts xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" mc:Ignorable=\"w14 w15\"><w:font w:name=\"Calibri\"></w:font><w:font w:name=\"Times New Roman\"></w:font><w:font w:name=\"Cambria\"></w:font></w:fonts>";
         NSFile::CFileBinary oFontTableWriter;
@@ -202,17 +197,14 @@ public:
         m_oNoteXml += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:footnotes xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" mc:Ignorable=\"w14 w15 wp14\">";
         m_oNoteXml += L"<w:footnote w:type=\"separator\" w:id=\"-1\"><w:p><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:r><w:separator/></w:r></w:p></w:footnote><w:footnote w:type=\"continuationSeparator\" w:id=\"0\"><w:p><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:r><w:continuationSeparator/></w:r></w:p></w:footnote>";
 
+        m_oStylesXml += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:styles xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" mc:Ignorable=\"w14 w15\"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:asciiTheme=\"minorHAnsi\" w:eastAsiaTheme=\"minorHAnsi\" w:hAnsiTheme=\"minrHAnsi\" w:cstheme=\"minorBidi\"/><w:sz w:val=\"22\"/><w:szCs w:val=\"22\"/><w:lang w:val=\"en-US\" w:eastAsia=\"en-US\" w:bidi=\"ar-SA\"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after=\"200\" w:line=\"276\" w:lineRule=\"auto\"/></w:pPr></w:pPrDefault></w:docDefaults>";
     }
 
     bool readSrc()
     {
-        if(!m_oLightReader.IsValid())
-        {
-            if (!m_oLightReader.FromFile(m_sTmp + L"/res.xhtml"))
-                return false;
-            if(!isHtml())
-                return false;
-        }
+        // Читаем html
+        if(!isHtml())
+            return false;
         if(m_oLightReader.IsEmptyNode())
             return true;
 
@@ -223,7 +215,10 @@ public:
             if(sName == L"head")
                 readHead();
             else if(sName == L"body")
-                readBody(sName, L"", false, true);
+            {
+                std::vector<std::string> sSelectors;
+                readBody(sSelectors, L"", false, true);
+            }
         }
         return true;
     }
@@ -253,6 +248,17 @@ public:
             oFootnotesWriter.WriteStringUTF8(m_oNoteXml.GetData());
             oFootnotesWriter.CloseFile();
         }
+
+        // styles.xml
+        m_oStylesXml += L"<w:latentStyles w:defLockedState=\"0\" w:defUIPriority=\"99\" w:defSemiHidden=\"1\" w:defUnhideWhenUsed=\"1\" w:defQFormat=\"0\" w:count=\"267\"><w:lsdException w:name=\"Normal\" w:semiHidden=\"0\" w:uiPriority=\"0\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 1\" w:semiHidden=\"0\" w:uiPriority=\"9\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 2\" w:uiPriority=\"9\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 3\" w:uiPriority=\"9\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 4\" w:uiPriority=\"9\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 5\" w:uiPriority=\"9\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 6\" w:uiPriority=\"9\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 7\" w:uiPriority=\"9\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 8\" w:uiPriority=\"9\" w:qFormat=\"1\"/><w:lsdException w:name=\"heading 9\" w:uiPriority=\"9\" w:qFormat=\"1\"/><w:lsdException w:name=\"toc 1\" w:uiPriority=\"39\"/><w:lsdException w:name=\"toc 2\" w:uiPriority=\"39\"/><w:lsdException w:name=\"toc 3\" w:uiPriority=\"39\"/><w:lsdException w:name=\"toc 4\" w:uiPriority=\"39\"/><w:lsdException w:name=\"toc 5\" w:uiPriority=\"39\"/><w:lsdException w:name=\"toc 6\" w:uiPriority=\"39\"/><w:lsdException w:name=\"toc 7\" w:uiPriority=\"39\"/><w:lsdException w:name=\"toc 8\" w:uiPriority=\"39\"/><w:lsdException w:name=\"toc 9\" w:uiPriority=\"39\"/><w:lsdException w:name=\"caption\" w:uiPriority=\"35\" w:qFormat=\"1\"/><w:lsdException w:name=\"Title\" w:semiHidden=\"0\" w:uiPriority=\"10\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"Default Paragraph Font\" w:uiPriority=\"1\"/><w:lsdException w:name=\"Subtitle\" w:semiHidden=\"0\" w:uiPriority=\"11\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"Strong\" w:semiHidden=\"0\" w:uiPriority=\"22\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"Emphasis\" w:semiHidden=\"0\" w:uiPriority=\"20\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"Table Grid\" w:semiHidden=\"0\" w:uiPriority=\"59\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Placeholder Text\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"No Spacing\" w:semiHidden=\"0\" w:uiPriority=\"1\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"Light Shading\" w:semiHidden=\"0\" w:uiPriority=\"60\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light List\" w:semiHidden=\"0\" w:uiPriority=\"61\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light Grid\" w:semiHidden=\"0\" w:uiPriority=\"62\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 1\" w:semiHidden=\"0\" w:uiPriority=\"63\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 2\" w:semiHidden=\"0\" w:uiPriority=\"64\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium List 1\" w:semiHidden=\"0\" w:uiPriority=\"65\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium List 2\" w:semiHidden=\"0\" w:uiPriority=\"66\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 1\" w:semiHidden=\"0\" w:uiPriority=\"67\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 2\" w:semiHidden=\"0\" w:uiPriority=\"68\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 3\" w:semiHidden=\"0\" w:uiPriority=\"69\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Dark List\" w:semiHidden=\"0\" w:uiPriority=\"70\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Shading\" w:semiHidden=\"0\" w:uiPriority=\"71\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful List\" w:semiHidden=\"0\" w:uiPriority=\"72\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Grid\" w:semiHidden=\"0\" w:uiPriority=\"73\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light Shading Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"60\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light List Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"61\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light Grid Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"62\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 1 Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"63\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 2 Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"64\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium List 1 Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"65\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Revision\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"List Paragraph\" w:semiHidden=\"0\" w:uiPriority=\"34\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"Quote\" w:semiHidden=\"0\" w:uiPriority=\"29\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"Intense Quote\" w:semiHidden=\"0\" w:uiPriority=\"30\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"Medium List 2 Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"66\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 1 Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"67\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 2 Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"68\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 3 Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"69\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Dark List Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"70\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Shading Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"71\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful List Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"72\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Grid Accent 1\" w:semiHidden=\"0\" w:uiPriority=\"73\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light Shading Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"60\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light List Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"61\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light Grid Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"62\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 1 Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"63\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 2 Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"64\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium List 1 Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"65\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium List 2 Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"66\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 1 Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"67\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 2 Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"68\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 3 Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"69\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Dark List Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"70\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Shading Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"71\" w:unhideWhenUsed=\"0\"/>";
+        m_oStylesXml += L"<w:lsdException w:name=\"Colorful List Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"72\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Grid Accent 2\" w:semiHidden=\"0\" w:uiPriority=\"73\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light Shading Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"60\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light List Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"61\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light Grid Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"62\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 1 Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"63\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 2 Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"64\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium List 1 Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"65\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium List 2 Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"66\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 1 Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"67\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 2 Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"68\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 3 Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"69\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Dark List Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"70\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Shading Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"71\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful List Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"72\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Grid Accent 3\" w:semiHidden=\"0\" w:uiPriority=\"73\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light Shading Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"60\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light List Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"61\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light Grid Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"62\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 1 Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"63\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 2 Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"64\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium List 1 Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"65\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium List 2 Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"66\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 1 Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"67\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 2 Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"68\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 3 Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"69\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Dark List Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"70\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Shading Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"71\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful List Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"72\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Grid Accent 4\" w:semiHidden=\"0\" w:uiPriority=\"73\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light Shading Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"60\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light List Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"61\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light Grid Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"62\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 1 Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"63\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 2 Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"64\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium List 1 Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"65\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium List 2 Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"66\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 1 Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"67\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 2 Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"68\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 3 Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"69\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Dark List Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"70\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Shading Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"71\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful List Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"72\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Grid Accent 5\" w:semiHidden=\"0\" w:uiPriority=\"73\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light Shading Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"60\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light List Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"61\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Light Grid Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"62\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 1 Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"63\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Shading 2 Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"64\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium List 1 Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"65\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium List 2 Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"66\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 1 Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"67\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 2 Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"68\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Medium Grid 3 Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"69\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Dark List Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"70\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Shading Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"71\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful List Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"72\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Colorful Grid Accent 6\" w:semiHidden=\"0\" w:uiPriority=\"73\" w:unhideWhenUsed=\"0\"/><w:lsdException w:name=\"Subtle Emphasis\" w:semiHidden=\"0\" w:uiPriority=\"19\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"Intense Emphasis\" w:semiHidden=\"0\" w:uiPriority=\"21\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"Subtle Reference\" w:semiHidden=\"0\" w:uiPriority=\"31\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"Intense Reference\" w:semiHidden=\"0\" w:uiPriority=\"32\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"Book Title\" w:semiHidden=\"0\" w:uiPriority=\"33\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/><w:lsdException w:name=\"Bibliography\" w:uiPriority=\"37\"/><w:lsdException w:name=\"TOC Heading\" w:uiPriority=\"39\" w:qFormat=\"1\"/></w:latentStyles>";
+        m_oStylesXml += L"</w:styles>";
+        NSFile::CFileBinary oStylesWriter;
+        if (oStylesWriter.CreateFileW(m_sDst + L"/word/styles.xml"))
+        {
+            oStylesWriter.WriteStringUTF8(m_oStylesXml.GetData());
+            oStylesWriter.CloseFile();
+        }
     }
 
     void htmlXhtml(const std::wstring& sSrc)
@@ -266,7 +272,115 @@ public:
         }
     }
 
+    void readStyle(std::vector<std::string> sSelectors)
+    {
+        if(m_oLightReader.IsEmptyNode())
+            return;
+
+        int nDeath = m_oLightReader.GetDepth();
+        while(m_oLightReader.ReadNextSiblingNode(nDeath))
+        {
+            std::wstring sName = m_oLightReader.GetName();
+            // Стиль по ссылке
+            if(sName == L"link")
+            {
+                while(m_oLightReader.MoveToNextAttribute())
+                {
+                    if(m_oLightReader.GetName() == L"href")
+                    {
+                        std::wstring sRef = m_oLightReader.GetText();
+                        // Если это css файл, то поведение аналогично тэгу style
+                        // Кроме функции получения стилей
+                        std::wstring sType = NSFile::GetFileExtention(sRef);
+                        if(sType == L"css")
+                            m_oStylesCalculator.AddStylesFromFile(m_sSrc + L"/" + sRef);
+                    }
+                }
+                m_oLightReader.MoveToElement();
+            }
+            // тэг style содержит стили для styles.xml
+            else if(sName == L"style")
+                m_oStylesCalculator.AddStyles(U_TO_UTF8(content()));
+
+            std::string sClass = "";
+            std::string sStyle = "";
+            std::string sId    = "";
+            // Стиль по атрибуту
+            while(m_oLightReader.MoveToNextAttribute())
+            {
+                std::wstring sAName = m_oLightReader.GetName();
+                if(sAName == L"style")
+                    sStyle = m_oLightReader.GetTextA();
+                else if(sAName == L"class")
+                    sClass = m_oLightReader.GetTextA();
+                else if(sAName == L"id")
+                    sId = m_oLightReader.GetTextA();
+            }
+            m_oLightReader.MoveToElement();
+
+            if(!sStyle.empty())
+            {
+                std::string sSelector = "";
+                if(!sId.empty())
+                    sSelector += "#" + sId + " ";
+                if(!sClass.empty())
+                    sSelector += "." + sClass + " ";
+                sSelector += m_oLightReader.GetNameA();
+
+                std::vector<std::string> sSubClass(sSelectors);
+                sSubClass.push_back(sSelector);
+                m_oStylesCalculator.AddStyle(sSubClass, sStyle);
+
+                readStyle(sSubClass);
+            }
+            else
+                readStyle(sSelectors);
+        }
+    }
+
 private:
+    /*
+    std::vector<std::string> getStyle(std::vector<std::string> sSelectors)
+    {
+        std::string sClass = "";
+        std::string sStyle = "";
+        std::string sId    = "";
+
+        while(m_oLightReader.MoveToNextAttribute())
+        {
+            std::wstring sAName = m_oLightReader.GetName();
+            if(sAName == L"style")
+                sStyle = m_oLightReader.GetTextA();
+            else if(sAName == L"class")
+                sClass = m_oLightReader.GetTextA();
+            else if(sAName == L"id")
+                sId = m_oLightReader.GetTextA();
+        }
+        m_oLightReader.MoveToElement();
+
+        std::vector<std::string> sSubClass(sSelectors);
+        if(!sStyle.empty())
+        {
+            std::string sSelector = "";
+            if(!sId.empty())
+                sSelector += "#" + sId + " ";
+            if(!sClass.empty())
+                sSelector += "." + sClass + " ";
+            sSelector += m_oLightReader.GetNameA();
+            sSubClass.push_back(sSelector);
+
+            NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSubClass);
+            m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"";
+            m_oStylesXml += std::to_wstring(++m_nStyleId);
+            m_oStylesXml += L"\">";
+            m_oStylesXml += oStyle.GetStyleW();
+            m_oStylesXml += L"</w:style>";
+        }
+
+        return sSubClass;
+    }
+    */
+
     void readHead()
     {
         if(m_oLightReader.IsEmptyNode())
@@ -284,35 +398,6 @@ private:
                         m_sBase = m_oLightReader.GetText();
                 m_oLightReader.MoveToElement();
             }
-            // Стиль по ссылке
-            else if(sName == L"link")
-            {
-                while(m_oLightReader.MoveToNextAttribute())
-                {
-                    if(m_oLightReader.GetName() == L"href")
-                    {
-                        std::wstring sRef = m_oLightReader.GetText();
-                        // Если это css файл, то поведение аналогично тэгу style
-                        // Кроме функции получения стилей
-                        sRef = NSFile::GetFileExtention(sRef);
-                        if(sRef == L"css")
-                        {
-                            // Получаем наборы стилей как <w:style>...</w:style>...
-                            std::wstring sStyle = L""; // oCSS.GetStyleFromCSS(sRef);
-                            m_oStylesXml += sStyle;
-                        }
-                    }
-                }
-                m_oLightReader.MoveToElement();
-            }
-            // тэг style содержит стили для styles.xml
-            else if(sName == L"style")
-            {
-                // Получаем наборы стилей как <w:style>...</w:style>...
-                std::wstring sStyle = L""; // oCSS.GetStyleXml(content());
-                // Дописываем в styles.xml
-                m_oStylesXml += sStyle;
-            }
             /*
             // Заголовок документа
             else if(sName == L"title")
@@ -321,15 +406,18 @@ private:
         }
     }
 
-    void readBody(const std::wstring& sPName, std::wstring sRStyle, bool bBdo, bool bNeedP)
+    void readBody(std::vector<std::string>& sSelectors, std::wstring sRStyle, bool bBdo, bool bNeedP)
     {
-        readStyle();
+        // sSelectors = getStyle(sSelectors);
+
         if(m_oLightReader.IsEmptyNode())
             return;
 
         int nDeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode2(nDeath))
         {
+            std::vector<std::string> sSubClass; // = getStyle(sSelectors);
+
             std::wstring sName = m_oLightReader.GetName();
             if(sName == L"#text")
             {
@@ -352,7 +440,7 @@ private:
             {
                 if(bNeedP)
                     m_oDocXml += L"<w:p>";
-                readLink(sPName, sRStyle, bBdo);
+                readLink(sSubClass, sRStyle, bBdo);
                 if(bNeedP)
                     m_oDocXml += L"</w:p>";
             }
@@ -361,7 +449,7 @@ private:
             {
                 if(bNeedP)
                     m_oDocXml += L"<w:p>";
-                readAbbr(sPName, sRStyle, bBdo);
+                readAbbr(sSubClass, sRStyle, bBdo);
                 if(bNeedP)
                     m_oDocXml += L"</w:p>";
             }
@@ -370,7 +458,7 @@ private:
             {
                 if(bNeedP)
                     m_oDocXml += L"<w:p>";
-                readBody(sPName, sRStyle, bBdo, false);
+                readBody(sSubClass, sRStyle, bBdo, false);
                 if(bNeedP)
                     m_oDocXml += L"</w:p>";
             }
@@ -379,13 +467,13 @@ private:
             // Выделенная цитата
             // Контейнер
             else if(sName == L"article" || sName == L"aside" || sName == L"blockquote" || sName == L"div")
-                readBody(sName, sRStyle, bBdo, bNeedP);
+                readBody(sSubClass, sRStyle, bBdo, bNeedP);
             // Полужирный текст
             else if(sName == L"b")
             {
                 if(bNeedP)
                     m_oDocXml += L"<w:p>";
-                readP(sPName, sRStyle + L"<w:b/>", bBdo);
+                readP(sSubClass, sRStyle + L"<w:b/>", bBdo);
                 if(bNeedP)
                     m_oDocXml += L"</w:p>";
             }
@@ -401,11 +489,11 @@ private:
                 if(bNeedP)
                     m_oDocXml += L"<w:p>";
                 if(sDir == L"ltr")
-                    readP(sPName, sRStyle, false);
+                    readP(sSubClass, sRStyle, false);
                 else if(sDir == L"rtl")
-                    readP(sPName, sRStyle, true);
+                    readP(sSubClass, sRStyle, true);
                 else
-                    readP(sPName, sRStyle, !bBdo);
+                    readP(sSubClass, sRStyle, !bBdo);
                 if(bNeedP)
                     m_oDocXml += L"</w:p>";
             }
@@ -414,7 +502,7 @@ private:
             {
                 if(bNeedP)
                     m_oDocXml += L"<w:p>";
-                readP(sPName, sRStyle, false);
+                readP(sSubClass, sRStyle, false);
                 if(bNeedP)
                     m_oDocXml += L"</w:p>";
             }
@@ -433,7 +521,7 @@ private:
             {
                 if(bNeedP)
                     m_oDocXml += L"<w:p>";
-                readP(sPName, sRStyle, bBdo);
+                readP(sSubClass, sRStyle, bBdo);
                 if(bNeedP)
                     m_oDocXml += L"</w:p>";
             }
@@ -443,7 +531,7 @@ private:
             {
                 if(bNeedP)
                     m_oDocXml += L"<w:p>";
-                readP(sPName, sRStyle + L"<w:i/>", bBdo);
+                readP(sSubClass, sRStyle + L"<w:i/>", bBdo);
                 if(bNeedP)
                     m_oDocXml += L"</w:p>";
             }
@@ -452,7 +540,7 @@ private:
             {
                 if(bNeedP)
                     m_oDocXml += L"<w:p>";
-                readP(sPName, sRStyle + L"<w:rFonts w:ascii=\"Consolas\" w:hAnsi=\"Consolas\"/>", bBdo);
+                readP(sSubClass, sRStyle + L"<w:rFonts w:ascii=\"Consolas\" w:hAnsi=\"Consolas\"/>", bBdo);
                 if(bNeedP)
                     m_oDocXml += L"</w:p>";
             }
@@ -461,7 +549,7 @@ private:
             {
                 if(bNeedP)
                     m_oDocXml += L"<w:p>";
-                readP(sPName, sRStyle + L"<w:strike/>", bBdo);
+                readP(sSubClass, sRStyle + L"<w:strike/>", bBdo);
                 if(bNeedP)
                     m_oDocXml += L"</w:p>";
             }
@@ -475,11 +563,11 @@ private:
                     m_oDocXml += L"</w:p>";
             }
             else
-                readBody(sPName, sRStyle, bBdo, bNeedP);
+                readBody(sSubClass, sRStyle, bBdo, bNeedP);
         }
     }
 
-    void readAbbr(const std::wstring& sPName, std::wstring sRStyle, bool bBdo)
+    void readAbbr(std::vector<std::string>& sSelectors, std::wstring sRStyle, bool bBdo)
     {
         std::wstring sNote = L"";
         while(m_oLightReader.MoveToNextAttribute())
@@ -487,7 +575,7 @@ private:
                 sNote = m_oLightReader.GetText();
         m_oLightReader.MoveToElement();
 
-        readP(sPName, sRStyle, bBdo);
+        readP(sSelectors, sRStyle, bBdo);
 
         m_oDocXml += L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteReference w:id=\"";
         m_oDocXml += std::to_wstring(m_nFootnoteId);
@@ -500,7 +588,7 @@ private:
         m_oNoteXml += L"</w:t></w:r></w:p></w:footnote>";
     }
 
-    void readLink(const std::wstring& sPName, std::wstring sRStyle, bool bBdo)
+    void readLink(std::vector<std::string>& sSelectors, std::wstring sRStyle, bool bBdo)
     {
         std::wstring sRef = L"";
         while(m_oLightReader.MoveToNextAttribute())
@@ -539,33 +627,8 @@ private:
         m_oDocXml += L"\" r:id=\"rHyp";
         m_oDocXml += std::to_wstring(m_nHyperlinkId++);
         m_oDocXml += L"\">";
-        readBody(sPName, sRStyle += L"<w:rStyle w:val=\"link\"/>", bBdo, false);
+        readBody(sSelectors, sRStyle += L"<w:rStyle w:val=\"link\"/>", bBdo, false);
         m_oDocXml += L"</w:hyperlink>";
-    }
-
-    void readStyle()
-    {
-        std::wstring sName = m_oLightReader.GetName();
-        // Стиль по атрибуту
-        while(m_oLightReader.MoveToNextAttribute())
-        {
-            if(m_oLightReader.GetName() == L"style")
-            {
-                // Получаем стиль как внутренность <w:pPr>...</w:pPr> или внутренность <w:rPr>...</w:rPr> для записи в document.xml
-                std::wstring sStyle = L""; // oCSS.GetStyleDoc(m_oLightReader.GetText());
-
-                std::map<std::wstring, std::wstring>::iterator it = m_mStyles.find(sName);
-                // Если для тэга уже есть стиль, то получаем среднее
-                if(it != m_mStyles.end())
-                {
-                    it->second = L""; // oCSS.GetStyleCompromise(it->second, sStyle);
-                }
-                // Если впервые, то сохраняем как - имя тэга в файле и его стиль
-                else
-                    m_mStyles.insert(std::make_pair(sName, sStyle));
-            }
-        }
-        m_oLightReader.MoveToElement();
     }
 
     void readImage()
@@ -689,7 +752,7 @@ private:
         }
     }
 
-    void readP(const std::wstring& sPName, std::wstring sRStyle, bool bBdo)
+    void readP(std::vector<std::string>& sSelectors, std::wstring sRStyle, bool bBdo)
     {
         if(m_oLightReader.IsEmptyNode())
             return;
@@ -697,6 +760,8 @@ private:
         int nDepth = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode2(nDepth))
         {
+            std::vector<std::string> sSubClass; // = getStyle(sSelectors);
+
             std::wstring sName = m_oLightReader.GetName();
             if(sName == L"#text")
             {
@@ -713,14 +778,14 @@ private:
             }
             // Ссылки
             else if(sName == L"a")
-                readLink(sPName, sRStyle, bBdo);
+                readLink(sSubClass, sRStyle, bBdo);
             // Абревиатура, реализована как сноски
             else if(sName == L"abbr")
-                readAbbr(sPName, sRStyle, bBdo);
+                readAbbr(sSubClass, sRStyle, bBdo);
             // Полужирный текст
             // Акцентированный текст
             else if(sName == L"b" || sName == L"strong")
-                readP(sPName, sRStyle + L"<w:b/>", bBdo);
+                readP(sSubClass, sRStyle + L"<w:b/>", bBdo);
             // Направление текста
             else if(sName == L"bdo")
             {
@@ -731,18 +796,18 @@ private:
                 m_oLightReader.MoveToElement();
 
                 if(sDir == L"ltr")
-                    readP(sPName, sRStyle, false);
+                    readP(sSubClass, sRStyle, false);
                 else if(sDir == L"rtl")
-                    readP(sPName, sRStyle, true);
+                    readP(sSubClass, sRStyle, true);
                 else
-                    readP(sPName, sRStyle, !bBdo);
+                    readP(sSubClass, sRStyle, !bBdo);
             }
             // Отмена направления текста
             else if(sName == L"bdi")
-                readP(sPName, sRStyle, false);
+                readP(sSubClass, sRStyle, false);
             // Увеличивает размер шрифта
             else if(sName == L"big")
-                readP(sPName, sRStyle + L"<w:sz w:val=\"26\"/>", bBdo);
+                readP(sSubClass, sRStyle + L"<w:sz w:val=\"26\"/>", bBdo);
             // Перенос строки
             else if(sName == L"br")
                 m_oDocXml += L"<w:r><w:br/></w:r>";
@@ -752,15 +817,15 @@ private:
             // Курсивный текст
             // Переменная, обычно выделяется курсивом
             else if(sName == L"cite" || sName == L"dfn" || sName == L"em" || sName == L"i" || sName == L"var")
-                readP(sPName, sRStyle + L"<w:i/>", bBdo);
+                readP(sSubClass, sRStyle + L"<w:i/>", bBdo);
             // Код
             // Моноширинный шрифт, например, Consolas
             // Результат скрипта
             else if(sName == L"code" || sName == L"kbd" || sName == L"samp")
-                readP(sPName, sRStyle + L"<w:rFonts w:ascii=\"Consolas\" w:hAnsi=\"Consolas\"/>", bBdo);
+                readP(sSubClass, sRStyle + L"<w:rFonts w:ascii=\"Consolas\" w:hAnsi=\"Consolas\"/>", bBdo);
             // Зачеркнутый текст
             else if(sName == L"del")
-                readP(sPName, sRStyle + L"<w:strike/>", bBdo);
+                readP(sSubClass, sRStyle + L"<w:strike/>", bBdo);
             // Ссылка
             // Объект для обработки
             else if(sName == L"iframe" || sName == L"object")
@@ -774,10 +839,10 @@ private:
             // Скрипты не поддерживаются
             // Выводится информация с помощью скриптов
             else if(sName == L"label" || sName == L"noscript" || sName == L"output")
-                readP(sPName, sRStyle, bBdo);
+                readP(sSubClass, sRStyle, bBdo);
             // Выделенный текст, обычно выделяется желтым
             else if(sName == L"mark")
-                readP(sPName, sRStyle + L"<w:highlight w:val=\"yellow\"/>", bBdo);
+                readP(sSubClass, sRStyle + L"<w:highlight w:val=\"yellow\"/>", bBdo);
             // Математическая формула
             else if(sName == L"math")
             {
@@ -787,22 +852,22 @@ private:
             else if(sName == L"q")
             {
                 m_oDocXml += L"<w:r><w:t xml:space=\"preserve\">\"</w:t></w:r>";
-                readP(sPName, sRStyle + L"<w:i/>", bBdo);
+                readP(sSubClass, sRStyle + L"<w:i/>", bBdo);
                 m_oDocXml += L"<w:r><w:t xml:space=\"preserve\">\"</w:t></w:r>";
             }
             // Текст верхнего регистра
             else if(sName == L"rt" || sName == L"sup")
-                readP(sPName, sRStyle + L"<w:vertAlign w:val=\"superscript\"/>", bBdo);
+                readP(sSubClass, sRStyle + L"<w:vertAlign w:val=\"superscript\"/>", bBdo);
             // Текст при отсутствии поддержки rt игнорируется
             // Скрипт игнорируется
             else if(sName == L"rp" || sName == L"script")
                 continue;
             // Уменьшает размер шрифта
             else if(sName == L"small")
-                readP(sPName, sRStyle + L"<w:sz w:val=\"18\"/>", bBdo);
+                readP(sSubClass, sRStyle + L"<w:sz w:val=\"18\"/>", bBdo);
             // Текст нижнего регистра
             else if(sName == L"sub")
-                readP(sPName, sRStyle + L"<w:vertAlign w:val=\"subscript\"/>", bBdo);
+                readP(sSubClass, sRStyle + L"<w:vertAlign w:val=\"subscript\"/>", bBdo);
             // Векторная картинка
             else if(sName == L"svg")
                 readSVG();
@@ -810,10 +875,10 @@ private:
             else if(sName == L"textarea")
             {
                 m_oDocXml += L"<w:pPr><w:pBdr><w:left w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:top w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:right w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr></w:pPr>";
-                readP(sPName, sRStyle, bBdo);
+                readP(sSubClass, sRStyle, bBdo);
             }
             else
-                readP(sPName, sRStyle, bBdo);
+                readP(sSubClass, sRStyle, bBdo);
         }
     }
 
@@ -893,10 +958,20 @@ void CHtmlFile2::SetTmpDirectory(const std::wstring& sFolder)
 
 HRESULT CHtmlFile2::Open(const std::wstring& sSrc, const std::wstring& sDst, CHtmlParams* oParams)
 {
+    if(!IsHtmlFile(sSrc))
+        return S_FALSE;
+
     m_internal->m_sSrc = NSSystemPath::GetDirectoryName(sSrc);
     m_internal->m_sDst = sDst;
-    m_internal->htmlXhtml(sSrc);
     m_internal->CreateDocxEmpty();
+
+    std::vector<std::string> sStyle;
+    m_internal->readStyle(sStyle);
+
+    // Переходим в начало
+    if(!m_internal->m_oLightReader.MoveToStart())
+        return S_FALSE;
+
     if(!m_internal->readSrc())
         return S_FALSE;
     m_internal->write();
@@ -916,12 +991,22 @@ HRESULT CHtmlFile2::OpenBatch(const std::vector<std::wstring>& sSrc, const std::
         #endif
 
         m_internal->m_sSrc = NSSystemPath::GetDirectoryName(sS);
-        m_internal->htmlXhtml(sS);
+        if(!IsHtmlFile(sS))
+            return S_FALSE;
+
+        std::vector<std::string> sStyle;
+        m_internal->readStyle(sStyle);
+
+        // Переходим в начало
+        if(!m_internal->m_oLightReader.MoveToStart())
+            return S_FALSE;
+
         if(!m_internal->readSrc())
             return S_FALSE;
 
         NSFile::CFileBinary::Remove(m_internal->m_sTmp + L"/res.xhtml");
         m_internal->m_oLightReader.Clear();
+        m_internal->m_oStylesCalculator.Clear();
         m_internal->m_mStyles.clear();
         m_internal->m_sBase = L"";
     }

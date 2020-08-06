@@ -14,7 +14,13 @@ DEFINES += HTMLFILE2_USE_DYNAMIC_LIBRARY
 CORE_ROOT_DIR = $$PWD/../../core
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
+
+# equal .c names
+CONFIG += object_parallel_to_source
+core_windows:CONFIG += no_batch
+
 include($$CORE_ROOT_DIR/Common/3dParty/html/gumbo.pri)
+include($$CORE_ROOT_DIR/Common/3dParty/html/css/CssCalculator.pri)
 
 ADD_DEPENDENCY(kernel, UnicodeConverter, graphics)
 

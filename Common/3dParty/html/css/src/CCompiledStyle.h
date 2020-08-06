@@ -19,6 +19,8 @@ namespace NSCSS
         ~CCompiledStyle();
 
         std::map<std::wstring, std::wstring> GetStyleMap();
+        std::wstring GetStyleW();
+        std::string GetStyle();
 
         size_t GetSize();
         bool Empty();

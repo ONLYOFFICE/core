@@ -2,6 +2,7 @@
 
 #include <cctype>
 #include <vector>
+#include <codecvt>
 
 namespace NSCSS
 {
@@ -22,6 +23,21 @@ namespace NSCSS
     std::map<std::wstring, std::wstring> CCompiledStyle::GetStyleMap()
     {
         return m_mStyle;
+    }
+
+    std::wstring CCompiledStyle::GetStyleW()
+    {
+        std::wstring sStyle;
+        for (auto iter = m_mStyle.begin(); iter != m_mStyle.end(); iter++)
+            sStyle += iter->first + L":" + iter->second + L";";
+        return sStyle;
+    }
+
+    std::string CCompiledStyle::GetStyle()
+    {
+        std::wstring sStyle = GetStyleW();
+        std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+        return converter.to_bytes(sStyle);
     }
 
     size_t CCompiledStyle::GetSize()

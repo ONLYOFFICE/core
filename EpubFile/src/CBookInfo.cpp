@@ -112,7 +112,7 @@ std::wstring CBookInfo::GetCreators()
 
     std::wstring sCreators;
     for (int i = 0; i < (int)m_arCreators.size() - 1; i++)
-        sCreators += m_arCreators[i] + L", ";
+        sCreators += m_arCreators[i] + L"; ";
     sCreators += m_arCreators[m_arCreators.size() - 1];
 
     return sCreators;

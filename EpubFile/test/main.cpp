@@ -13,6 +13,7 @@ int main(int argc, char *argv[])
     std::wstring sOutputDirectory = NSFile::GetProcessDirectory() + L"\\OutputFiles";
     NSDirectory::CreateDirectory(sOutputDirectory);
 
+    //Русские символы в консоль не выводятся
     for (int i = 0; i < (int)arFiles.size(); i++)
     {
         std::wstring sFileName = arFiles[i];

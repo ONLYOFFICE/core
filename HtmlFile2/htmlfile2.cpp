@@ -755,9 +755,11 @@ private:
     void readLink(std::vector<std::string>& sSelectors, std::wstring sRStyle, bool bBdo, bool bNeedLi, int nLevelLi)
     {
         std::wstring sRef = L"";
+        std::wstring sTitle = L"";
         while(m_oLightReader.MoveToNextAttribute())
         {
-            if(m_oLightReader.GetName() == L"href")
+            std::wstring sName = m_oLightReader.GetName();
+            if(sName == L"href")
             {
                 sRef = m_oLightReader.GetText();
                 size_t nLen = (sRef.length() > 4 ? 4 : 0);
@@ -772,11 +774,15 @@ private:
 
                 }
             }
+            else if(sName == L"title")
+                sTitle = m_oLightReader.GetText();
         }
         m_oLightReader.MoveToElement();
 
         if(sRef.empty())
             return;
+        if(sTitle.empty())
+            sTitle = sRef;
 
         // Пишем рельсы
         m_oDocXmlRels += L"<Relationship Id=\"rHyp";
@@ -787,7 +793,7 @@ private:
 
         // Пишем в document.xml
         m_oDocXml += L"<w:hyperlink w:tooltip=\"";
-        m_oDocXml += sRef;
+        m_oDocXml += sTitle;
         m_oDocXml += L"\" r:id=\"rHyp";
         m_oDocXml += std::to_wstring(m_nHyperlinkId++);
         m_oDocXml += L"\">";

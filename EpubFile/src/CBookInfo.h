@@ -8,20 +8,33 @@
 class CBookInfo
 {
     std::wstring m_sTitle;
-    std::wstring m_sCreator;
-    std::wstring m_sPublisher;
-    std::wstring m_sLanguage;
-    std::wstring m_sContributor;
-    std::wstring m_sDescription;
+    std::vector<std::wstring> m_arCreators;
+    std::vector<std::wstring> m_arPublishers;
+    std::vector<std::wstring> m_arLanguages;
+    std::vector<std::wstring> m_arContributors;
+    std::vector<std::wstring> m_arDescriptions;
+    std::vector<std::wstring> m_arSubjects;
     std::wstring m_sCoverage;
+    std::wstring m_sIdentifier;
+    std::wstring m_sDate;
 public:
     CBookInfo();
     ~CBookInfo();
     void Clear();
 
-    std::map <std::wstring, std::wstring> GetBookInfo();
     bool ReadInfo(XmlUtils::CXmlLiteReader &oXmlLiteReader);
     void ShowInfo();
+
+    std::wstring GetTitle();
+    std::wstring GetCreators();
+    std::wstring GetPublishers();
+    std::wstring GetLanguages();
+    std::wstring GetContibutors();
+    std::wstring GetDescriptions();
+    std::wstring GetSubjects();
+    std::wstring GetCoverage();
+    std::wstring GetIndentifier();
+    std::wstring GetDate();
 };
 
 #endif // CBOOKINFO_H

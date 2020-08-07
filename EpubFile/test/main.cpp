@@ -17,9 +17,9 @@ int main(int argc, char *argv[])
     {
         std::wstring sFileName = arFiles[i];
 
-        CEpubFile *oEpub = new CEpubFile();
+        CEpubFile oEpub;
 
-        if (oEpub->IsEbubFile(sFileName) == S_OK)
+        if (oEpub.IsEbubFile(sFileName) == S_OK)
         {
             std::wstring sFile = sFileName.substr(0, sFileName.find_last_of(L'.'));
             if (sFile.find(L'\\') != std::wstring::npos)
@@ -27,9 +27,9 @@ int main(int argc, char *argv[])
 
             std::wcout << L"|----------|" << sFile << L"|----------|" << std::endl;
 
-            oEpub->SetTempDirectory(sTmp);
-            oEpub->Convert(sFileName, sOutputDirectory + L"\\" + sFile + L".docx");
-            oEpub->ShowMap();
+            oEpub.SetTempDirectory(sTmp);
+            oEpub.Convert(sFileName, sOutputDirectory + L"\\" + sFile + L".docx");
+            oEpub.ShowMap();
         }
         else
             std::wcout << sFileName << L" this is not an epub format!" << std::endl;

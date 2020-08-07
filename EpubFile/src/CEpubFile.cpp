@@ -116,6 +116,14 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
 //        oDocxFile.SaveToFile();
 
         CHtmlFile2 oFile;
+        CHtmlParams oFileParams;
+
+        if (!m_oBookInfo.GetCreators().empty())
+            oFileParams.AddAuthor(m_oBookInfo.GetCreators());
+        if (!m_oBookInfo.GetSubjects().empty())
+            oFileParams.AddGenre(m_oBookInfo.GetSubjects());
+        if (!m_oBookInfo.GetTitle().empty())
+            oFileParams.SetTitle(m_oBookInfo.GetTitle());
 
         std::wstring sDocxFileTempDir = m_sTempDir + L"\\res";
         NSDirectory::CreateDirectory(sDocxFileTempDir);
@@ -130,7 +138,7 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
 
         #ifdef _DEBUG
             std::wcout << L"---The conversion process from Epub to Docx...---" << std::endl;
-            if (oFile.OpenBatch(arFiles, sDocxFileTempDir) == S_OK)
+            if (oFile.OpenBatch(arFiles, sDocxFileTempDir, &oFileParams) == S_OK)
                 std::wcout << L"---Successful conversion of Epub to Docx---" << std::endl;
             else
                 std::wcout << L"---Failed conversion of Epub to Docx---" << std::endl;
@@ -150,6 +158,7 @@ void CEpubFile::Clear()
     m_mapRefs.clear();
     m_oToc.Clear();
     m_arContents.clear();
+    NSDirectory::DeleteDirectory(m_sTempDir);
 }
 
 void CEpubFile::ShowMap()

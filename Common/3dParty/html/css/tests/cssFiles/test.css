@@ -1,16 +1,14 @@
-	/*!
- * Hover.css (http://ianlunn.github.io/Hover/)
- * Version: 2.3.2
- * Author: Ian Lunn @IanLunn
- * Author URL: http://ianlunn.co.uk/
- * Github: https://github.com/IanLunn/Hover
 
- * Hover.css Copyright Ian Lunn 2017. Generated with Sass.
- */
-/* 2D TRANSITIONS */
-/* Grow */
 
 	@charset 'iso-8859-15';
+
+	@page
+	{
+		padding: 0pt;
+		margin:	0pt;
+	}
+	
+
 	h1
 	{
 		color : red;
@@ -48,10 +46,21 @@
 		background: black !important;
 	}
 
+	@media only screen and (min-width: 768px) {
+	  nav li {
+	    display: inline-block;
+	  }
+	}
+
+	#main .container + header h1
+	{
+		margin: 10px;
+		padding: 10%;
+	}
+
 	#test
 	{
 		color: yellow;
 		background: white;
 	}
 
-	

@@ -3,6 +3,8 @@
 #include "../src/CCssCalculator.h"
 #include "../src/CCompiledStyle.h"
 
+#include "../../katana-parser/src/katana.h"
+
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
@@ -39,7 +41,7 @@ int main(int argc, char *argv[])
                                                                                                       {L"animation-duration",                   L"calc(1s / 2)"},
                                                                                                       {L"-webkit-animation-duration",           L"calc(var(--animate-duration) / 2)"},
                                                                                                       {L"animation-duration",                   L"calc(var(--animate-duration) / 2)"},
-                                                                                                      {L"background",                           L"black !important"}}};
+                                                                                                      {L"background",                           L"black"}}};
 
     arTestDatas.push_back(std::make_pair(L"../../../../cssFiles/test.css", pData2));
 
@@ -71,7 +73,7 @@ int main(int argc, char *argv[])
     std::pair<std::vector<std::string>, std::map<std::wstring, std::wstring>> pData5 = {arSelectors5,{{L"margin",                   L"0,264583cm  2em 1cm 2%"},
                                                                                                       {L"font-family",              L"Verdana , Helvetica , \"Gill Sans\" , sans-serif"},
                                                                                                       {L"font-size",                L"0,264583cm "},
-                                                                                                      {L"color",                    L"green !important"},
+                                                                                                      {L"color",                    L"green"},
                                                                                                       {L"background-color",         L"rgba(0 , 128 , 0 , 0.7)"},
                                                                                                       {L"frequency",                L"30Hz"}}};
 
@@ -223,12 +225,12 @@ int main(int argc, char *argv[])
     arTestDatas.push_back(std::make_pair(L"../../../../cssFiles/demo-page.css", pData14));
 
     std::vector<std::string> arSelectors15 = {".carbon-img img", ".carbon-img"};
-    std::pair<std::vector<std::string>, std::map<std::wstring, std::wstring>> pData15 {arSelectors15,{{L"display",          L"inline-block !important"},
+    std::pair<std::vector<std::string>, std::map<std::wstring, std::wstring>> pData15 {arSelectors15,{{L"display",          L"inline-block"},
                                                                                                       {L"margin",           L"0"},
                                                                                                       {L"height",           L"auto"},
                                                                                                       {L"margin-bottom",    L"0,083333in "},
                                                                                                       {L"line-height",      L"1"},
-                                                                                                      {L"max-width",        L"1,354167in  !important"},
+                                                                                                      {L"max-width",        L"1,354167in "},
                                                                                                       {L"float",            L"left"},
                                                                                                       {L"width",            L"2,083333in "}}};
 
@@ -259,7 +261,7 @@ int main(int argc, char *argv[])
     arTestDatas.push_back(std::make_pair(L"../../../../cssFiles/idGeneratedStyles.css", pData16));
 
     std::vector<std::string> arSelectors17 = {"#test"};
-    std::pair<std::vector<std::string>, std::map<std::wstring, std::wstring>> pData17 {arSelectors17,{{L"background",   L"black !important"},
+    std::pair<std::vector<std::string>, std::map<std::wstring, std::wstring>> pData17 {arSelectors17,{{L"background",   L"black"},
                                                                                                       {L"color",        L"yellow"}}};
 
     arTestDatas.push_back(std::make_pair(L"../../../../cssFiles/test.css", pData17));
@@ -286,14 +288,26 @@ int main(int argc, char *argv[])
 
     arTestDatas.push_back(std::make_pair(L"../../../../cssFiles/hint.css", pData20));
 
+    std::vector<std::string> arSelectors21 = {"#main .container article.post > header h1.giga"};
+    std::pair<std::vector<std::string>, std::map<std::wstring, std::wstring>> pData21 {arSelectors21,{{L"background",    L"black"},
+                                                                                                      {L"color",         L"#777"}}};
 
+    arTestDatas.push_back(std::make_pair(L"../../../../cssFiles/test.css", pData21));
+
+    std::vector<std::string> arSelectors22 = {"#main .container + header h1"};
+    std::pair<std::vector<std::string>, std::map<std::wstring, std::wstring>> pData22 {arSelectors22,{{L"margin",    L"2,645833mm "},
+                                                                                                      {L"padding",   L"10%"},
+                                                                                                      {L"background",L"black"}}};
+
+    arTestDatas.push_back(std::make_pair(L"../../../../cssFiles/test.css", pData22));
 
 
     std::vector<NSCSS::UnitMeasure> arUnitMeasure = {NSCSS::Cantimeter, NSCSS::Cantimeter, NSCSS::Millimeter, NSCSS::Cantimeter,
                                                      NSCSS::Cantimeter, NSCSS::Cantimeter, NSCSS::Cantimeter, NSCSS::Millimeter,
                                                      NSCSS::Millimeter, NSCSS::Millimeter, NSCSS::Default,    NSCSS::Default,
                                                      NSCSS::Pixel,      NSCSS::Inch,       NSCSS::Inch,       NSCSS::Point,
-                                                     NSCSS::Default,    NSCSS::Point,      NSCSS::Peak,       NSCSS::Millimeter};
+                                                     NSCSS::Default,    NSCSS::Point,      NSCSS::Peak,       NSCSS::Millimeter,
+                                                     NSCSS::Millimeter, NSCSS::Millimeter, NSCSS::Millimeter};
 
     for (size_t i = 0; i < arTestDatas.size(); i++)
     {
@@ -357,4 +371,22 @@ int main(int argc, char *argv[])
     }
     std::cout << "-----END-----" << std::endl;
 
+// Тесты багов
+/*
+    // Стандарный katana_parser не считывает @page
+    // Также, если заккомитить всё, что было до тестов бага, то всё будет крашиться с ошибкой "-1073741819"
+
+    const char* css = "#page{margin:10px; padding:5pt} "
+                      "@page{color:white;}";
+    KatanaOutput* output = katana_parse(css, strlen(css), KatanaParserModeStylesheet);
+    katana_dump_output(output);
+    katana_destroy_output(output);
+
+    // Из-за того, что стандарный katana_parser не считывает @page, не считывает и CCssCalculator
+
+    std::wstring sFilePath = NSFile::GetProcessDirectory() + L"../../../../cssFiles/test.css";
+    NSCSS::CCssCalculator oCSS;
+    oCSS.AddStyles("@page {padding:0pt;margin:0pt;}");
+    oCSS.Print();
+*/
 }

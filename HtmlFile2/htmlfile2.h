@@ -14,7 +14,42 @@
 
 struct CHtmlParams
 {
-    CHtmlParams(){}
+    std::vector<std::wstring> m_arGenres; // Жанры
+    std::vector<std::wstring> m_arAuthors;     // Авторы
+    std::wstring m_sBookTitle;            // Название
+
+    void AddGenre(std::wstring sGenre)
+    {
+        m_arGenres.push_back(sGenre);
+    }
+
+    void AddAuthor(std::wstring sAuthor)
+    {
+        m_arAuthors.push_back(sAuthor);
+    }
+
+    void SetTitle(std::wstring sTitle)
+    {
+        m_sBookTitle = sTitle;
+    }
+
+    // Разделитель не важен ,
+    std::wstring GetGenres()
+    {
+        std::wstring sRes = L"";
+        for(std::wstring& vElem : m_arGenres)
+            sRes += vElem + L", ";
+        return sRes;
+    }
+
+    // Разделитель ;
+    std::wstring GetAuthors()
+    {
+        std::wstring sRes = L"";
+        for(std::wstring& vElem : m_arAuthors)
+            sRes += vElem + L";";
+        return sRes;
+    }
 };
 
 class CHtmlFile2_Private;

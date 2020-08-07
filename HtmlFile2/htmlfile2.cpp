@@ -76,7 +76,7 @@ public:
         return true;
     }
 
-    void CreateDocxEmpty()
+    void CreateDocxEmpty(CHtmlParams* oParams)
     {
         // Создаем пустые папки
         std::wstring strDirectory = m_sDst;
@@ -181,7 +181,24 @@ public:
         }
 
         // core.xml
-        readTitle();
+        std::wstring sCore = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><cp:coreProperties xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">";
+        if(oParams != NULL)
+        {
+            sCore += L"<dc:title>";
+            sCore += oParams->m_sBookTitle;
+            sCore += L"</dc:title><dc:creator>";
+            sCore += oParams->GetAuthors();
+            sCore += L"</dc:creator><dc:subject>";
+            sCore += oParams->GetGenres();
+            sCore += L"</dc:subject>";
+        }
+        sCore += L"<cp:lastModifiedBy/></cp:coreProperties>";
+        NSFile::CFileBinary oCoreWriter;
+        if (oCoreWriter.CreateFileW(pathDocProps + L"/core.xml"))
+        {
+            oCoreWriter.WriteStringUTF8(sCore);
+            oCoreWriter.CloseFile();
+        }
 
         // Начала файлов
         m_oDocXmlRels += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">";
@@ -739,19 +756,6 @@ private:
         m_oLightReader.MoveToElement();
     }
 
-    void readTitle()
-    {
-        std::wstring sCore = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><cp:coreProperties xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><dc:title>";
-        sCore += L"Aggregate"; // content();
-        sCore += L"</dc:title><dc:creator/><cp:lastModifiedBy/></cp:coreProperties>";
-        NSFile::CFileBinary oCoreWriter;
-        if (oCoreWriter.CreateFileW(m_sDst + L"/docProps/core.xml"))
-        {
-            oCoreWriter.WriteStringUTF8(sCore);
-            oCoreWriter.CloseFile();
-        }
-    }
-
     void readP(std::vector<std::string>& sSelectors, std::wstring sRStyle, bool bBdo)
     {
         if(m_oLightReader.IsEmptyNode())
@@ -963,7 +967,7 @@ HRESULT CHtmlFile2::Open(const std::wstring& sSrc, const std::wstring& sDst, CHt
 
     m_internal->m_sSrc = NSSystemPath::GetDirectoryName(sSrc);
     m_internal->m_sDst = sDst;
-    m_internal->CreateDocxEmpty();
+    m_internal->CreateDocxEmpty(oParams);
 
     std::vector<std::string> sStyle;
     m_internal->readStyle(sStyle);
@@ -982,7 +986,7 @@ HRESULT CHtmlFile2::Open(const std::wstring& sSrc, const std::wstring& sDst, CHt
 HRESULT CHtmlFile2::OpenBatch(const std::vector<std::wstring>& sSrc, const std::wstring& sDst, CHtmlParams* oParams)
 {
     m_internal->m_sDst = sDst;
-    m_internal->CreateDocxEmpty();
+    m_internal->CreateDocxEmpty(oParams);
 
     for(std::wstring sS : sSrc)
     {

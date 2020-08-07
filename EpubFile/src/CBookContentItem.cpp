@@ -10,6 +10,12 @@ CBookContentItem::~CBookContentItem()
 
 }
 
+void CBookContentItem::Clear()
+{
+    m_sID.clear();
+    m_sLinear.clear();
+}
+
 bool CBookContentItem::ReadContentItem(XmlUtils::CXmlLiteReader &oXmlLiteReader, int depth)
 {
     if (!oXmlLiteReader.IsValid() || oXmlLiteReader.IsEmptyNode())

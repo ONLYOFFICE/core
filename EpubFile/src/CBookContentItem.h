@@ -13,6 +13,8 @@ public:
     CBookContentItem();
     ~CBookContentItem();
 
+    void Clear();
+
     bool ReadContentItem(XmlUtils::CXmlLiteReader &oXmlLiteReader, int depth);
 
 };

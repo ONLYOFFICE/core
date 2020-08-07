@@ -336,7 +336,6 @@ namespace NSCSS
 
     inline void CCssCalculator_Private::GetMediaRule(KatanaMediaRule *oRule)
     {
-
         std::wstring sSelector = L"@" + stringToWstring(oRule->base.name) + L" ";
 
         CElement *oElement = new CElement;
@@ -716,8 +715,9 @@ namespace NSCSS
         else
             sStyleUTF8 = sStyle;
 
-        KatanaOutput *output = katana_parse(sStyleUTF8.c_str(), sStyleUTF8.size(), KatanaParserModeStylesheet);
         CCssCalculator_Private data;
+
+        KatanaOutput *output = katana_parse(sStyleUTF8.c_str(), sStyleUTF8.size(), KatanaParserModeStylesheet);
         data.GetOutputData(output);
 
         for (size_t i = 0; i < data.GetSize(); i++)
@@ -727,6 +727,7 @@ namespace NSCSS
             AddElement(oElement);
         }
         katana_destroy_output(output);
+
     }
 
     void CCssCalculator_Private::AddStylesFromFile(const std::wstring& sFileName)

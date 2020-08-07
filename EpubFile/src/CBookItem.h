@@ -9,11 +9,12 @@ class CBookItem
 {
     enum ItemType
     {
-        xhtml,
-        image,
-        toc,
-        font,
-        css
+        Default,
+        Xhtml,
+        Image,
+        Toc,
+        Font,
+        Css
     };
     std::wstring m_sID;
     std::wstring m_sRef;
@@ -23,6 +24,7 @@ class CBookItem
 public:
     CBookItem();
     ~CBookItem();
+    void Clear();
 
     bool ReadItem(XmlUtils::CXmlLiteReader &oXmlLiteReader, int depth);
     std::wstring GetID();

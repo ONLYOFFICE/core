@@ -155,3 +155,10 @@ std::pair<std::wstring, std::wstring> CBookToc::GetTextAndRef(int nIndex)
     return std::pair<std::wstring, std::wstring>(m_arData[nIndex].sText, m_arData[nIndex].sRef);
 }
 
+void CBookToc::Clear()
+{
+    m_sTitle.clear();
+    m_arMap.clear();
+    m_arData.clear();
+}
+

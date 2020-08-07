@@ -17,6 +17,7 @@ class CBookInfo
 public:
     CBookInfo();
     ~CBookInfo();
+    void Clear();
 
     std::map <std::wstring, std::wstring> GetBookInfo();
     bool ReadInfo(XmlUtils::CXmlLiteReader &oXmlLiteReader);

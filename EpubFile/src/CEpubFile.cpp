@@ -2,8 +2,8 @@
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
 #include "../../DesktopEditor/xml/include/xmlutils.h"
+#include "../../HtmlFile2/htmlfile2.h"
 #include "src/CBookInfo.h"
-#include "src/Docx/CDocxFile.h"
 #include <iostream>
 
 CEpubFile::CEpubFile()
@@ -12,20 +12,23 @@ CEpubFile::CEpubFile()
 
 CEpubFile::~CEpubFile()
 {
-//    NSDirectory::DeleteDirectory(m_sTempDir);
+    NSDirectory::DeleteDirectory(m_sTempDir);
 }
 
-bool CEpubFile::IsEbubFile(const std::wstring &sfileName)
+HRESULT CEpubFile::IsEbubFile(const std::wstring &sFileName)
 {
-    COfficeUtils oOfficeUtils;
+    if (sFileName.find_last_of(L'.') == std::wstring::npos ||
+        sFileName.substr(sFileName.find_last_of(L'.') + 1) != L"epub")
+        return S_FALSE;
 
-    if (oOfficeUtils.IsArchive(sfileName) == S_OK &&
-        oOfficeUtils.IsFileExistInArchive(sfileName, L"META-INF/container.xml") == S_OK)
+    COfficeUtils oOfficeUtils;
+    if (oOfficeUtils.IsArchive(sFileName) == S_OK &&
+        oOfficeUtils.IsFileExistInArchive(sFileName, L"META-INF/container.xml") == S_OK)
     {
-        this->m_sFileName = sfileName;
-        return true;
+        this->m_sFileName = sFileName;
+        return S_OK;
     }
-    return false;
+    return S_FALSE;
 }
 
 void CEpubFile::SetTempDirectory(const std::wstring &sTempDir)
@@ -33,15 +36,16 @@ void CEpubFile::SetTempDirectory(const std::wstring &sTempDir)
     this->m_sTempDir = sTempDir;
 }
 
-bool CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& sOutputFile)
+HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& sOutputFile)
 {
+
     NSDirectory::CreateDirectories(m_sTempDir);
-    NSDirectory::CreateDirectory(sOutputFile);
+//    NSDirectory::CreateDirectory(sOutputFile);
     COfficeUtils oOfficeUtils;
 
     wchar_t* password = NULL;
     if (oOfficeUtils.ExtractToDirectory(sInputFile, m_sTempDir.c_str(), password, 1) != S_OK)
-        return false;
+        return S_FALSE;
 
     XmlUtils::CXmlLiteReader oXmlLiteReader;
 
@@ -56,7 +60,9 @@ bool CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& sOut
             if (sName == L"metadata")
             {
                 m_oBookInfo.ReadInfo(oXmlLiteReader);
-                m_oBookInfo.ShowInfo();
+                #ifdef _DEBUG
+                    m_oBookInfo.ShowInfo();
+                #endif
             }
             else if (sName == L"manifest")
             {
@@ -85,61 +91,70 @@ bool CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& sOut
         }
     }
     else
-        return false;
+        return S_FALSE;
 
-    if (oXmlLiteReader.FromFile(m_sTempDir + L"/toc.ncx"))
+    if (oXmlLiteReader.FromFile(m_sTempDir + L"\\toc.ncx"))
     {
         oXmlLiteReader.ReadNextNode();
         m_oToc.ReadToc(oXmlLiteReader);
-        m_oToc.ShowToc();
+        #ifdef _DEBUG
+            m_oToc.ShowToc();
+        #endif
 
-        CDocxFile oDocxFile;
-        oDocxFile.CreateTempFiles(sOutputFile, m_sTempDir);
+//        CDocxFile oDocxFile;
+//        oDocxFile.CreateTempFiles(sOutputFile, m_sTempDir);
 
-        oDocxFile.AddBookToc(&m_oToc);
-//        CParagraph *oNewPar = new CParagraph;
-//            CElement *oHypelink = new CElement(L"hyperlink", L"", L"w", false);
-//            oHypelink->AddArgument(L"r:id", L"rId9");
-//                CElement *oRun = new CElement(L"r", L"", L"w");
-//                    CElement *oRPr = new CElement(L"rPr", L"", L"w");
-//                        CElement *oRStyle = new CElement(L"rStyle", L"", L"w");
-//                        oRStyle->AddArgument(L"val", L"Hyperlink");
-//                    oRPr->AddChildren(oRStyle);
-//                oRun->AddChildren(oRPr);
-//                    CElement *oText = new CElement(L"t", L"HYPERLINK", L"w");
-//                oRun->AddChildren(oText);
-//            oHypelink->AddChildren(oRun);
-//        oNewPar->AddChildren(oHypelink);
+//        oDocxFile.AddBookToc(&m_oToc);
 
-//        oDocxFile.AddParagraph(oNewPar);
+//        std::wstring sTempDir = m_sTempDir + L"/docx";
+//        std::wstring _sOutputFile = sOutputFile + L"/test.docx";
 
-//        CElement *oRelationship = new CElement(L"Relationship", L"", L"");
-//        oRelationship->AddArgument(L"Id", L"rId9");
-//        oRelationship->AddArgument(L"Type", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink");
-//        oRelationship->AddArgument(L"Target", L"http://www.google.com/");
-//        oRelationship->AddArgument(L"TargetMode", L"External");
+//        NSFile::CFileBinary oFileBinary;
+//        oFileBinary.CreateFileW(_sOutputFile);
+//        oFileBinary.CloseFile();
 
-//        oDocxFile.AddRelationship(oRelationship);
+//        oDocxFile.SaveToFile();
 
-        std::wstring sTempDir = m_sTempDir + L"/docx";
-        std::wstring _sOutputFile = sOutputFile + L"/test.docx";
+        CHtmlFile2 oFile;
 
-        NSFile::CFileBinary oFileBinary;
-        oFileBinary.CreateFileW(_sOutputFile);
-        oFileBinary.CloseFile();
+        std::wstring sDocxFileTempDir = m_sTempDir + L"\\res";
+        NSDirectory::CreateDirectory(sDocxFileTempDir);
 
-        oDocxFile.SaveToFile();
+        oFile.SetTmpDirectory(sDocxFileTempDir);
 
-        oOfficeUtils.CompressFileOrDirectory(sTempDir, _sOutputFile);
+        std::vector<std::wstring> arFiles;
 
+        for (size_t i = 0; i < m_arContents.size(); i++)
+            arFiles.push_back(m_sTempDir + L"\\" + m_mapRefs[m_arContents[i].m_sID].GetRef());
+
+
+        #ifdef _DEBUG
+            std::wcout << L"---The conversion process from Epub to Docx...---" << std::endl;
+            if (oFile.OpenBatch(arFiles, sDocxFileTempDir) == S_OK)
+                std::wcout << L"---Successful conversion of Epub to Docx---" << std::endl;
+            else
+                std::wcout << L"---Failed conversion of Epub to Docx---" << std::endl;
+        #endif
+
+        oOfficeUtils.CompressFileOrDirectory(sDocxFileTempDir, sOutputFile);
     }
 
-    return true;
+    return S_OK;
+}
+
+void CEpubFile::Clear()
+{
+    m_sFileName.clear();
+    m_sTempDir.clear();
+    m_oBookInfo.Clear();
+    m_mapRefs.clear();
+    m_oToc.Clear();
+    m_arContents.clear();
 }
 
 void CEpubFile::ShowMap()
 {
     std::cout << "-----MAP-----" << std::endl;
-    for (int i = 0; i < (int)m_arContents.size(); i++)
+    for (size_t i = 0; i < m_arContents.size(); i++)
         std::wcout << m_arContents[i].m_sID << " - " << m_mapRefs[m_arContents[i].m_sID].GetRef() << std::endl;
 }

@@ -10,6 +10,17 @@ CBookInfo::~CBookInfo()
 {
 }
 
+void CBookInfo::Clear()
+{
+    m_sTitle.clear();
+    m_sCreator.clear();
+    m_sPublisher.clear();
+    m_sLanguage.clear();
+    m_sContributor.clear();
+    m_sDescription.clear();
+    m_sCoverage.clear();
+}
+
 bool CBookInfo::ReadInfo(XmlUtils::CXmlLiteReader &oXmlLiteReader)
 {
     if (!oXmlLiteReader.IsValid() || oXmlLiteReader.IsEmptyNode())

@@ -27,8 +27,9 @@ class CBookToc
     void AddStruct();
 public:
     CBookToc();
-    bool ReadToc(XmlUtils::CXmlLiteReader &oXmlLiteReader);
     ~CBookToc();
+    void Clear();
+    bool ReadToc(XmlUtils::CXmlLiteReader &oXmlLiteReader);
     void ShowToc();
     int GetCountToc();
     std::pair<std::wstring, std::wstring> GetTextAndRef(int nIndex);

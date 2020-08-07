@@ -22,9 +22,10 @@ public:
     CEpubFile();
     ~CEpubFile();
 
-    bool IsEbubFile(const std::wstring& sfileName);
+    void Clear();
+    HRESULT IsEbubFile(const std::wstring& sfileName);
     void SetTempDirectory(const std::wstring& stempDir);
-    bool Convert(const std::wstring& sInputFile, const std::wstring& sOutputFile);
+    HRESULT Convert(const std::wstring& sInputFile, const std::wstring& sOutputFile);
     void ShowMap();
 };
 

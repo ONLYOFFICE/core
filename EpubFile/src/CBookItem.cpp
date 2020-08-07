@@ -10,6 +10,14 @@ CBookItem::~CBookItem()
 
 }
 
+void CBookItem::Clear()
+{
+    m_sID.clear();
+    m_sRef.clear();
+    m_sProperties.clear();
+    m_eType = Default;
+}
+
 bool CBookItem::ReadItem(XmlUtils::CXmlLiteReader &oXmlLiteReader, int depth)
 {
     if (!oXmlLiteReader.IsValid() || oXmlLiteReader.IsEmptyNode())
@@ -36,15 +44,15 @@ bool CBookItem::ReadItem(XmlUtils::CXmlLiteReader &oXmlLiteReader, int depth)
                 else if (sAttributeName == L"media-type")
                 {
                     if (sAttributeValue == L"image/jpeg")
-                        m_eType = ItemType::image;
+                        m_eType = ItemType::Image;
                     else if (sAttributeValue == L"application/xhtml+xml")
-                        m_eType = ItemType::xhtml;
+                        m_eType = ItemType::Xhtml;
                     else if (sAttributeValue == L"text/css")
-                        m_eType = ItemType::css;
+                        m_eType = ItemType::Css;
                     else if (sAttributeValue == L"application/x-dtbncx+xml")
-                        m_eType = ItemType::toc;
+                        m_eType = ItemType::Toc;
                     else if (sAttributeValue == L"application/x-font-ttf")
-                        m_eType = ItemType::font;
+                        m_eType = ItemType::Font;
                 }
 
                 if (!oXmlLiteReader.MoveToNextAttribute())

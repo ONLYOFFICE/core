@@ -14,9 +14,21 @@
 
 struct CHtmlParams
 {
-    std::vector<std::wstring> m_arGenres; // Жанры
-    std::vector<std::wstring> m_arAuthors;     // Авторы
-    std::wstring m_sBookTitle;            // Название
+    std::vector<std::wstring> m_arGenres;  // Жанры
+    std::vector<std::wstring> m_arAuthors; // Авторы
+    std::wstring m_sBookTitle;             // Название
+    std::wstring m_sDate;                  // Дата
+    std::wstring m_sDescription;           // описание
+
+    void SetDate(std::wstring sDate)
+    {
+        m_sDate = sDate;
+    }
+
+    void SetDescription(std::wstring sDescription)
+    {
+        m_sDescription = sDescription;
+    }
 
     void AddGenre(std::wstring sGenre)
     {

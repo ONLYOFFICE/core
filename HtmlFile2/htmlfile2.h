@@ -14,11 +14,11 @@
 
 struct CHtmlParams
 {
-    std::vector<std::wstring> m_arGenres;  // Жанры
-    std::vector<std::wstring> m_arAuthors; // Авторы
-    std::wstring m_sBookTitle;             // Название
-    std::wstring m_sDate;                  // Дата
-    std::wstring m_sDescription;           // описание
+    std::wstring m_sGenres;      // Жанры
+    std::wstring m_sAuthors;     // Авторы
+    std::wstring m_sBookTitle;   // Название
+    std::wstring m_sDate;        // Дата
+    std::wstring m_sDescription; // описание
 
     void SetDate(std::wstring sDate)
     {
@@ -30,37 +30,19 @@ struct CHtmlParams
         m_sDescription = sDescription;
     }
 
-    void AddGenre(std::wstring sGenre)
+    void SetGenres(std::wstring sGenres)
     {
-        m_arGenres.push_back(sGenre);
+        m_sGenres = sGenres;
     }
 
-    void AddAuthor(std::wstring sAuthor)
+    void SetAuthors(std::wstring sAuthors)
     {
-        m_arAuthors.push_back(sAuthor);
+        m_sAuthors = sAuthors;
     }
 
     void SetTitle(std::wstring sTitle)
     {
         m_sBookTitle = sTitle;
-    }
-
-    // Разделитель не важен ,
-    std::wstring GetGenres()
-    {
-        std::wstring sRes = L"";
-        for(std::wstring& vElem : m_arGenres)
-            sRes += vElem + L", ";
-        return sRes;
-    }
-
-    // Разделитель ;
-    std::wstring GetAuthors()
-    {
-        std::wstring sRes = L"";
-        for(std::wstring& vElem : m_arAuthors)
-            sRes += vElem + L";";
-        return sRes;
     }
 };
 

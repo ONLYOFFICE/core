@@ -19,10 +19,8 @@ int main()
     HRESULT nResConvert = S_FALSE;
 
     CHtmlParams oParams;
-    oParams.AddAuthor(L"last first middle");
-    oParams.AddAuthor(L"last2 first2 middle2");
-    oParams.AddGenre(L"fantazy");
-    oParams.AddGenre(L"drama");
+    oParams.SetAuthors(L"last first middle;last2 first2 middle2");
+    oParams.SetGenres(L"fantazy, drama");
     oParams.SetTitle(L"The Last Wish");
     oParams.SetDate(L"2010-06-03T04:00:00+00:00");
     oParams.SetDescription(L"Description");

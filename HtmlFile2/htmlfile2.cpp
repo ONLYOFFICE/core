@@ -212,16 +212,16 @@ public:
                 sCore += oParams->m_sBookTitle;
                 sCore += L"</dc:title>";
             }
-            if(!oParams->m_arAuthors.empty())
+            if(!oParams->m_sAuthors.empty())
             {
                 sCore += L"<dc:creator>";
-                sCore += oParams->GetAuthors();
+                sCore += oParams->m_sAuthors;
                 sCore += L"</dc:creator>";
             }
-            if(!oParams->m_arGenres.empty())
+            if(!oParams->m_sGenres.empty())
             {
                 sCore += L"<dc:subject>";
-                sCore += oParams->GetGenres();
+                sCore += oParams->m_sGenres;
                 sCore += L"</dc:subject>";
             }
             if(!oParams->m_sDate.empty())
@@ -269,6 +269,12 @@ public:
         m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"normal\" w:default=\"1\"><w:name w:val=\"Normal\"/><w:qFormat/></w:style>";
         // Маркированный список
         m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"li\"><w:name w:val=\"List Paragraph\"/><w:basedOn w:val=\"normal\"/><w:qFormat/><w:uiPriority w:val=\"34\"/><w:pPr><w:contextualSpacing w:val=\"true\"/><w:ind w:left=\"720\"/></w:pPr></w:style>";
+        // Заголовок 1
+        // Заголовок 2
+        // Заголовок 3
+        // Заголовок 4
+        // Заголовок 5
+        // Заголовок 6
     }
 
     bool readSrc()

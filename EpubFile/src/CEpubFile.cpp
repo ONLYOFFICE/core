@@ -124,6 +124,11 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
             oFileParams.AddGenre(m_oBookInfo.GetSubjects());
         if (!m_oBookInfo.GetTitle().empty())
             oFileParams.SetTitle(m_oBookInfo.GetTitle());
+        if (!m_oBookInfo.GetDate().empty())
+            oFileParams.SetDate(m_oBookInfo.GetDate());
+        if (!m_oBookInfo.GetDescriptions().empty())
+            oFileParams.SetDescription(m_oBookInfo.GetDescriptions());
+
 
         std::wstring sDocxFileTempDir = m_sTempDir + L"\\res";
         NSDirectory::CreateDirectory(sDocxFileTempDir);

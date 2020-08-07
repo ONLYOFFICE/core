@@ -206,17 +206,36 @@ public:
         std::wstring sCore = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><cp:coreProperties xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">";
         if(oParams != NULL)
         {
-            sCore += L"<dc:title>";
-            sCore += oParams->m_sBookTitle;
-            sCore += L"</dc:title><dc:creator>";
-            sCore += oParams->GetAuthors();
-            sCore += L"</dc:creator><dc:subject>";
-            sCore += oParams->GetGenres();
-            sCore += L"</dc:subject><dcterms:created xsi:type=\"dcterms:W3CDTF\">";
-            sCore += oParams->m_sDate;
-            sCore += L"</dcterms:created><dc:description>";
-            sCore += oParams->m_sDescription;
-            sCore += L"</dc:description>";
+            if(!oParams->m_sBookTitle.empty())
+            {
+                sCore += L"<dc:title>";
+                sCore += oParams->m_sBookTitle;
+                sCore += L"</dc:title>";
+            }
+            if(!oParams->m_arAuthors.empty())
+            {
+                sCore += L"<dc:creator>";
+                sCore += oParams->GetAuthors();
+                sCore += L"</dc:creator>";
+            }
+            if(!oParams->m_arGenres.empty())
+            {
+                sCore += L"<dc:subject>";
+                sCore += oParams->GetGenres();
+                sCore += L"</dc:subject>";
+            }
+            if(!oParams->m_sDate.empty())
+            {
+                sCore += L"<dcterms:created xsi:type=\"dcterms:W3CDTF\">";
+                sCore += oParams->m_sDate;
+                sCore += L"</dcterms:created>";
+            }
+            if(!oParams->m_sDescription.empty())
+            {
+                sCore += L"<dc:description>";
+                sCore += oParams->m_sDescription;
+                sCore += L"</dc:description>";
+            }
         }
         sCore += L"<cp:lastModifiedBy/></cp:coreProperties>";
         NSFile::CFileBinary oCoreWriter;

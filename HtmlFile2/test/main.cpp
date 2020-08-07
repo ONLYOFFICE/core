@@ -24,6 +24,8 @@ int main()
     oParams.AddGenre(L"fantazy");
     oParams.AddGenre(L"drama");
     oParams.SetTitle(L"The Last Wish");
+    oParams.SetDate(L"2010-06-03T04:00:00+00:00");
+    oParams.SetDescription(L"Description");
 
     if(bBatchMode)
     {

@@ -212,7 +212,11 @@ public:
             sCore += oParams->GetAuthors();
             sCore += L"</dc:creator><dc:subject>";
             sCore += oParams->GetGenres();
-            sCore += L"</dc:subject>";
+            sCore += L"</dc:subject><dcterms:created xsi:type=\"dcterms:W3CDTF\">";
+            sCore += oParams->m_sDate;
+            sCore += L"</dcterms:created><dc:description>";
+            sCore += oParams->m_sDescription;
+            sCore += L"</dc:description>";
         }
         sCore += L"<cp:lastModifiedBy/></cp:coreProperties>";
         NSFile::CFileBinary oCoreWriter;

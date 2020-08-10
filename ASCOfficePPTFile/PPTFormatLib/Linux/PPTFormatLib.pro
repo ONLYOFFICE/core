@@ -50,114 +50,6 @@ HEADERS += \
     ../Reader/Slide.h \
     ../Reader/SlideInfo.h \
     ../Reader/SlidePersist.h \
-    ../Records/AnimationInfoAtom.h \
-    ../Records/AnimationInfoContainer.h \
-    ../Records/BlipEntityAtom.h \
-    ../Records/BookmarkEntityAtom.h \
-    ../Records/BookmarkSeedAtom.h \
-    ../Records/BuildAtom.h \
-    ../Records/ChartBuildAtom.h \
-    ../Records/ColorSchemeAtom.h \
-    ../Records/CString.h \
-    ../Records/CurrentUserAtom.h \
-    ../Records/DiagramBuildAtom.h \
-    ../Records/DiagramBuildContainer.h \
-    ../Records/DocRoutingSlipAtom.h \
-    ../Records/DocumentAtom.h \
-    ../Records/DocumentRecords.h \
-    ../Records/DocumentTextInfo.h \
-    ../Records/Drawing/ColorIndex.h \
-    ../Records/EndDocument.h \
-    ../Records/ExCDAudioContainer.h \
-    ../Records/ExControlAtom.h \
-    ../Records/ExHyperlinkAtom.h \
-    ../Records/ExMediaAtom.h \
-    ../Records/ExMIDIAudioContainer.h \
-    ../Records/ExObjListAtom.h \
-    ../Records/ExObjListContainer.h \
-    ../Records/ExObjRefAtom.h \
-    ../Records/ExOleEmbedAtom.h \
-    ../Records/ExOleLinkAtom.h \
-    ../Records/ExOleObjAtom.h \
-    ../Records/ExVideoContainer.h \
-    ../Records/ExWAVAudioEmbeddedContainer.h \
-    ../Records/ExWAVAudioLinkContainer.h \
-    ../Records/FontEntityAtom.h \
-    ../Records/GridSpacing10Atom.h \
-    ../Records/GuideAtom.h \
-    ../Records/HeadersFootersAtom.h \
-    ../Records/InteractiveInfoAtom.h \
-    ../Records/KinsokuAtom.h \
-    ../Records/KinsokuContainer.h \
-    ../Records/KinsokuFollowingAtom.h \
-    ../Records/KinsokuLeadingAtom.h \
-    ../Records/MasterPersistAtom.h \
-    ../Records/MasterTextPropAtom.h \
-    ../Records/MetafileBlob.h \
-    ../Records/MouseTextInteractiveInfoAtom.h \
-    ../Records/NamedShowSlidesAtom.h \
-    ../Records/NormalViewSetInfoAtom.h \
-    ../Records/NotesAtom.h \
-    ../Records/NotesPersistAtom.h \
-    ../Records/NoZoomViewInfoAtom.h \
-    ../Records/OutlineTextRefAtom.h \
-    ../Records/PersistDirectoryAtom.h \
-    ../Records/PlaceHolderAtom.h \
-    ../Records/RecordsIncluder.h \
-    ../Records/RoundTripColorMappingAtom.h \
-    ../Records/RoundTripCompositeMainMasterId12Atom.h \
-    ../Records/RoundTripNewPlaceholderId12Atom.h \
-    ../Records/RoundTripOriginalMainMasterId12Atom.h \
-    ../Records/RoundTripThemeAtom.h \
-    ../Records/ShapeFlags10Atom.h \
-    ../Records/ShapeFlagsAtom.h \
-    ../Records/SlideAtom.h \
-    ../Records/SlideColorSchemeAtom.h \
-    ../Records/SlideContainer.h \
-    ../Records/SlideListWithText.h \
-    ../Records/SlidePersistAtom.h \
-    ../Records/SlideViewInfoAtom.h \
-    ../Records/SoundCollAtom.h \
-    ../Records/SoundCollectionContainer.h \
-    ../Records/SoundContainer.h \
-    ../Records/SoundDataBlob.h \
-    ../Records/SSDocInfoAtom.h \
-    ../Records/SSlideLayoutAtom.h \
-    ../Records/SSSlideInfoAtom.h \
-    ../Records/StyleTextPropAtom.h \
-    ../Records/TextBookmarkAtom.h \
-    ../Records/TextBytesAtom.h \
-    ../Records/TextCFExceptionAtom.h \
-    ../Records/TextCharsAtom.h \
-    ../Records/TextFullSettings.h \
-    ../Records/TextHeaderAtom.h \
-    ../Records/TextInteractiveInfoAtom.h \
-    ../Records/TextMasterStyle9Atom.h \
-    ../Records/TextMasterStyleAtom.h \
-    ../Records/TextPFExceptionAtom.h \
-    ../Records/TextRulerAtom.h \
-    ../Records/TextSIExceptionAtom.h \
-    ../Records/TextSpecInfoAtom.h \
-    ../Records/UserEditAtom.h \
-    ../Records/VBAInfoAtom.h \
-    ../Records/ViewInfoAtom.h \
-    ../Records/ZoomViewInfoAtom.h \
-    ../Records/Animations/AnimationTypes.h \
-    ../Records/Drawing/BlipStoreContainer.h \
-    ../Records/Drawing/BlipStoreEntry.h \
-    ../Records/Drawing/ChildAnchor.h \
-    ../Records/Drawing/ClientAnchor.h \
-    ../Records/Drawing/DrawingContainer.h \
-    ../Records/Drawing/DrawingGroup.h \
-    ../Records/Drawing/DrawingRecord.h \
-    ../Records/Drawing/GroupShape.h \
-    ../Records/Drawing/GroupShapeContainer.h \
-    ../Records/Drawing/RegGroupItems.h \
-    ../Records/Drawing/Shape.h \
-    ../Records/Drawing/ShapeContainer.h \
-    ../Records/Drawing/ShapeProperties.h \
-    ../Records/Drawing/TextBox.h \
-    ../Records/Drawing/ArtBlip.h \
     ../PPTXWriter/Converter.h \
     ../PPTXWriter/ImageManager.h \
     ../PPTXWriter/ShapeWriter.h \
@@ -169,7 +61,22 @@ HEADERS += \
     ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.h \
     ../../../ASCOfficePPTXFile/Editor/Drawing/TextStructures.h \
     ../../../ASCOfficePPTXFile/Editor/Drawing/Theme.h \
-    ../../../Common/3dParty/pole/pole.h 
+    ../../../Common/3dParty/pole/pole.h  \
+    ../Records/Enums/_includer.h \
+    ../Records/Enums/enums.h \
+    ../Records/FStreams_FStorages/_includer.h \
+    ../Records/RecordsIncluder.h \
+    ../Records/SCommon/_includer.h \
+    ../Records/TAnimation/_includer.h \
+    ../Records/TBasic/_includer.h \
+    ../Records/TDocument/_includer.h \
+    ../Records/TExternalObject/_includer.h \
+    ../Records/TFStructure/_includer.h \
+    ../Records/TOther/_includer.h \
+    ../Records/TShape/_includer.h \
+    ../Records/TSlide/_includer.h \
+    ../Records/TSlideShow/_includer.h \
+    ../Records/TText/_includer.h
 
 core_release {
 SOURCES += \
@@ -183,9 +90,6 @@ SOURCES += \
     ../Reader/Records.cpp \
     ../Reader/PPTFileReader.cpp \
     ../Reader/SlidePersist.cpp \
-    ../Records/Animations/AnimationTypes.cpp \
-    ../Records/Drawing/ArtBlip.cpp \
-    ../Records/Drawing/ShapeContainer.cpp \
     ../PPTXWriter/Converter.cpp \
     ../PPTXWriter/ShapeWriter.cpp
 }

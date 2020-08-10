@@ -30,17 +30,68 @@
  *
  */
 #pragma once
+#include "../../../DesktopEditor/common/Types.h"
 
-#include "Enums/_includer.h"
-#include "FStreams_FStorages/_includer.h"
-#include "SCommon/_includer.h"
-#include "TAnimation/_includer.h"
-#include "TBasic/_includer.h"
-#include "TDocument/_includer.h"
-#include "TExternalObject/_includer.h"
-#include "TFStructure/_includer.h"
-#include "TOther/_includer.h"
-#include "TShape/_includer.h"
-#include "TSlide/_includer.h"
-#include "TSlideShow/_includer.h"
-#include "TText/_includer.h"
+
+enum AnimAfterEffectEnum : BYTE
+{
+    AI_NoAfterEffect,
+    AI_Dim,
+    AI_Hide,
+    AI_HideImmediately
+};
+
+
+enum AnimBuildTypeEnum : BYTE
+{
+    BT_NoBuild,
+    BT_OneBuild,
+    BT_Level1Build,
+    BT_Level2Build,
+    BT_Level3Build,
+    BT_Level4Build,
+    BT_Level5Build,
+    BT_GraphBySeries,
+    BT_GraphByCategory,
+    BT_GraphByElementInSeries,
+    BT_GraphByElementInCategory,
+    BT_FollowMaster = 0xFE
+};
+
+
+enum BuildTypeEnum
+{
+    TL_BuildParagraph,
+    TL_BuildChart,
+    TL_BuildDiagram
+};
+
+
+enum ChartBuildEnum
+{
+    TLCB_AsOneObject,
+    TLCB_BySeries,
+    TLCB_ByCategory,
+    TLCB_ByElementInSeries,
+    TLCB_ByElementInCategory,
+    TLCB_Custom
+};
+
+
+enum ColorModeEnum : BYTE
+{
+    CM_BlackAndWhite,
+    CM_Grayscale,
+    CM_Color
+};
+
+// TODO add different tupes for enum
+enum ConditionEnum
+{
+    TL_CT_None,
+    TL_CT_Begin,
+    TL_CT_End,
+    TL_CT_Next,
+    TL_CT_Previous,
+    TL_CT_EndSync
+};

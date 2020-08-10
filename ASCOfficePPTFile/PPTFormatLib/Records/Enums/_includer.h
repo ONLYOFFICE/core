@@ -30,17 +30,4 @@
  *
  */
 #pragma once
-
-#include "Enums/_includer.h"
-#include "FStreams_FStorages/_includer.h"
-#include "SCommon/_includer.h"
-#include "TAnimation/_includer.h"
-#include "TBasic/_includer.h"
-#include "TDocument/_includer.h"
-#include "TExternalObject/_includer.h"
-#include "TFStructure/_includer.h"
-#include "TOther/_includer.h"
-#include "TShape/_includer.h"
-#include "TSlide/_includer.h"
-#include "TSlideShow/_includer.h"
-#include "TText/_includer.h"
+#include "enums.h"

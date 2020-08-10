@@ -487,7 +487,7 @@ private:
         }
     }
 
-    void readStream(std::vector<std::string>& sSelectors, std::wstring sRStyle, bool bBdo, bool bNeedLi, int nLevelLi)
+    void readStream(std::vector<std::string>& sSelectors, std::wstring sRStyle, bool bBdo, bool bNeedLi, int nLevelLi, bool& bWasP)
     {
         if(m_oLightReader.IsEmptyNode())
             return;
@@ -510,41 +510,58 @@ private:
                 m_oDocXml += L"</w:rPr><w:t xml:space=\"preserve\">";
                 m_oDocXml.WriteEncodeXmlString(sText);
                 m_oDocXml += L"</w:t></w:r>";
+                bWasP = false;
             }
             // Ссылки
             else if(sName == L"a")
-                readLink(sSubClass, sRStyle, bBdo, bNeedLi, nLevelLi);
+                readLink(sSubClass, sRStyle, bBdo, bNeedLi, nLevelLi, bWasP);
             // Абревиатура, реализована как сноски
             else if(sName == L"abbr")
                 readAbbr(sSubClass, sRStyle, bBdo);
             // Адрес
             else if(sName == L"address")
             {
-                m_oDocXml += L"</w:p><w:p>";
-                readStream(sSubClass, sRStyle + L"<w:i/>", bBdo, bNeedLi, nLevelLi);
-                m_oDocXml += L"</w:p><w:p>";
+                if(!bWasP)
+                {
+                    m_oDocXml += L"</w:p><w:p>";
+                    bWasP = true;
+                }
+                readStream(sSubClass, sRStyle + L"<w:i/>", bBdo, bNeedLi, nLevelLi, bWasP);
+                if(!bWasP)
+                {
+                    m_oDocXml += L"</w:p><w:p>";
+                    bWasP = true;
+                }
             }
             // Статья
             // Боковой блок
             // Выделенная цитата
             // Скрытая информация
             // Контейнер
-            else if(sName == L"article" || sName == L"aside" || sName == L"blockquote" ||
-                    sName == L"details" || sName == L"div"   || sName == L"summary")
-            {
-                m_oDocXml += L"</w:p><w:p>";
-                readStream(sSubClass, sRStyle, bBdo, bNeedLi, nLevelLi);
-            }
             // Заголовок скрытой информации
-            else if(sName == L"dl")
+            // ...
+            else if(sName == L"article" || sName == L"aside" || sName == L"blockquote" || sName == L"details" || sName == L"div" ||
+                    sName == L"summary" || sName == L"dl" || sName == L"filedset" || sName == L"figure" || sName == L"figcaption" ||
+                    sName == L"footer" || sName == L"form" || sName == L"header")
             {
-                m_oDocXml += L"</w:p><w:p>";
-                readStream(sSubClass, sRStyle, bBdo, bNeedLi, nLevelLi);
-                m_oDocXml += L"</w:p><w:p>";
+                if(!bWasP)
+                {
+                    m_oDocXml += L"</w:p><w:p>";
+                    bWasP = true;
+                }
+                readStream(sSubClass, sRStyle, bBdo, bNeedLi, nLevelLi, bWasP);
+                if(!bWasP)
+                {
+                    m_oDocXml += L"</w:p><w:p>";
+                    bWasP = true;
+                }
             }
             // Полужирный текст
             else if(sName == L"b")
+            {
                 readP(sSubClass, sRStyle + L"<w:b/>", bBdo);
+                bWasP = false;
+            }
             // Направление текста
             else if(sName == L"bdo")
             {
@@ -558,65 +575,115 @@ private:
                     readP(sSubClass, sRStyle, true);
                 else
                     readP(sSubClass, sRStyle, false);
+                bWasP = false;
             }
             // Отмена направления текста
             else if(sName == L"bdi")
+            {
                 readP(sSubClass, sRStyle, false);
+                bWasP = false;
+            }
             // Перенос строки
             else if(sName == L"br")
+            {
                 m_oDocXml += L"<w:r><w:br/></w:r>";
+                bWasP = false;
+            }
             // Кнопка
             // Данные
             // Подпись
             else if(sName == L"button" || sName == L"data" || sName == L"label")
+            {
                 readP(sSubClass, sRStyle, bBdo);
+                bWasP = false;
+            }
             // Цитата, обычно выделяется курсивом
             // Новый термин, обычно выделяется курсивом
             else if(sName == L"cite" || sName == L"dfn")
+            {
                 readP(sSubClass, sRStyle + L"<w:i/>", bBdo);
+                bWasP = false;
+            }
             // Код
             else if(sName == L"code")
+            {
                 readP(sSubClass, sRStyle + L"<w:rFonts w:ascii=\"Consolas\" w:hAnsi=\"Consolas\"/>", bBdo);
+                bWasP = false;
+            }
             // Зачеркнутый текст
             else if(sName == L"del")
-                readP(sSubClass, sRStyle + L"<w:strike/>", bBdo);
+                readStream(sSubClass, sRStyle + L"<w:strike/>", bBdo, bNeedLi, nLevelLi, bWasP);
             // Акцентированный текст
             else if(sName == L"em")
-                readStream(sSubClass, sRStyle + L"<w:i/>", bBdo, bNeedLi, nLevelLi);
-            // Абзац текста. Содержит фразовый контент
-            else if(sName == L"p")
-            {
-                m_oDocXml += L"</w:p><w:p>";
-                readP(sSubClass, sRStyle, bBdo);
-                m_oDocXml += L"</w:p><w:p>";
-            }
+                readStream(sSubClass, sRStyle + L"<w:i/>", bBdo, bNeedLi, nLevelLi, bWasP);
             // Заголовок
             else if(sName == L"h1" || sName == L"h2" || sName == L"h3" || sName == L"h4" || sName == L"h5" || sName == L"h6")
             {
-                m_oDocXml += L"</w:p><w:p><w:pPr><w:pStyle w:val=\"";
+                if(!bWasP)
+                {
+                    m_oDocXml += L"</w:p><w:p>";
+                    bWasP = true;
+                }
+                m_oDocXml += L"<w:pPr><w:pStyle w:val=\"";
                 m_oDocXml += sName;
                 m_oDocXml += L"\"/></w:pPr>";
-                readStream(sSubClass, sRStyle, bBdo, bNeedLi, nLevelLi);
-                m_oDocXml += L"</w:p><w:p>";
+                readStream(sSubClass, sRStyle, bBdo, bNeedLi, nLevelLi, bWasP);
+                if(!bWasP)
+                {
+                    m_oDocXml += L"</w:p><w:p>";
+                    bWasP = true;
+                }
             }
             // Горизонтальная линия
             else if(sName == L"hr")
-                m_oDocXml += L"</w:p><w:p><w:pPr><w:pBdr><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr></w:pPr></w:p><w:p>";
+            {
+                if(!bWasP)
+                {
+                    m_oDocXml += L"</w:p><w:p>";
+                    bWasP = true;
+                }
+                m_oDocXml += L"<w:pPr><w:pBdr><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr></w:pPr></w:p><w:p>";
+                bWasP = true;
+            }
             // Картинки
             else if(sName == L"img" || sName == L"image")
+            {
                 readImage();
+                bWasP = false;
+            }
+            // Абзац текста. Содержит фразовый контент
+            else if(sName == L"p")
+            {
+                if(!bWasP)
+                {
+                    m_oDocXml += L"</w:p><w:p>";
+                    bWasP = true;
+                }
+                readP(sSubClass, sRStyle, bBdo);
+                m_oDocXml += L"</w:p><w:p>";
+                bWasP = true;
+            }
             // Маркированный список
             else if(sName == L"ul")
-                readUl(sSubClass, sRStyle, bBdo, nLevelLi);
-            // Игнорируемые, но с отступом
-            else if(sName == L"dd" ||sName == L"dt" ||sName == L"fieldset" || sName == L"legend")
-            {
-                m_oDocXml += L"</w:p><w:p>";
-                readStream(sSubClass, sRStyle, bBdo, bNeedLi, nLevelLi);
-                m_oDocXml += L"</w:p><w:p>";
-            }
+                readUl(sSubClass, sRStyle, bBdo, nLevelLi, bWasP);
+            // Игнорируемые
+            else if(sName == L"audio" || sName == L"canvas" || sName == L"command" || sName == L"datalist" || sName == L"embed" ||
+                    sName == L"input" )
+                readStream(sSubClass, sRStyle, bBdo, bNeedLi, nLevelLi, bWasP);
             else
-                readStream(sSubClass, sRStyle, bBdo, bNeedLi, nLevelLi);
+            {
+                if(!bWasP)
+                {
+                    m_oDocXml += L"</w:p><w:p>";
+                    bWasP = true;
+                }
+                readStream(sSubClass, sRStyle, bBdo, bNeedLi, nLevelLi, bWasP);
+                if(!bWasP)
+                {
+                    m_oDocXml += L"</w:p><w:p>";
+                    bWasP = true;
+                }
+            }
         }
     }
 
@@ -624,12 +691,13 @@ private:
     {
         // sSelectors = getStyle(sSelectors);
 
+        bool bWasP = true;
         m_oDocXml += L"<w:p>";
-        readStream(sSelectors, L"", false, false, -1);
+        readStream(sSelectors, L"", false, false, -1, bWasP);
         m_oDocXml += L"</w:p>";
     }
 
-    void readUl(std::vector<std::string>& sSelectors, std::wstring sRStyle, bool bBdo, int nLevelLi)
+    void readUl(std::vector<std::string>& sSelectors, std::wstring sRStyle, bool bBdo, int nLevelLi, bool& bWasP)
     {
         if(m_oLightReader.IsEmptyNode())
             return;
@@ -639,7 +707,17 @@ private:
         {
             if(m_oLightReader.GetName() != L"li")
                 continue;
-            readStream(sSelectors, sRStyle, bBdo, true, nLevelLi + 1);
+            if(!bWasP)
+            {
+                m_oDocXml += L"</w:p><w:p>";
+                bWasP = true;
+            }
+            readStream(sSelectors, sRStyle, bBdo, true, nLevelLi + 1, bWasP);
+            if(!bWasP)
+            {
+                m_oDocXml += L"</w:p><w:p>";
+                bWasP = true;
+            }
         }
     }
 
@@ -664,7 +742,7 @@ private:
         m_oNoteXml += L"</w:t></w:r></w:p></w:footnote>";
     }
 
-    void readLink(std::vector<std::string>& sSelectors, std::wstring sRStyle, bool bBdo, bool bNeedLi, int nLevelLi)
+    void readLink(std::vector<std::string>& sSelectors, std::wstring sRStyle, bool bBdo, bool bNeedLi, int nLevelLi, bool& bWasP)
     {
         std::wstring sRef = L"";
         std::wstring sTitle = L"";
@@ -709,7 +787,7 @@ private:
         m_oDocXml += L"\" r:id=\"rHyp";
         m_oDocXml += std::to_wstring(m_nHyperlinkId++);
         m_oDocXml += L"\">";
-        readStream(sSelectors, sRStyle += L"<w:rStyle w:val=\"link\"/>", bBdo, bNeedLi, nLevelLi);
+        readStream(sSelectors, sRStyle += L"<w:rStyle w:val=\"link\"/>", bBdo, bNeedLi, nLevelLi, bWasP);
         m_oDocXml += L"</w:hyperlink>";
     }
 
@@ -760,6 +838,8 @@ private:
                     size_t nSrcM = sSrcM.rfind(L"/") + 1;
                     sImageName = sSrcM.substr(nSrcM);
                     bRes = NSFile::CFileBinary::Copy(m_sSrc + L"/" + sSrcM, m_sDst + L"/word/media/" + sImageName);
+                    if(!bRes)
+                        bRes = NSFile::CFileBinary::Copy(m_sSrc + L"/" + sImageName, m_sDst + L"/word/media/" + sImageName);
                 }
 
                 if(bRes)
@@ -847,7 +927,10 @@ private:
             }
             // Ссылки
             else if(sName == L"a")
-                readLink(sSubClass, sRStyle, bBdo, false, -1);
+            {
+                bool bWasP = true;
+                readLink(sSubClass, sRStyle, bBdo, false, -1, bWasP);
+            }
             // Абревиатура, реализована как сноски
             else if(sName == L"abbr")
                 readAbbr(sSubClass, sRStyle, bBdo);

@@ -17,6 +17,7 @@ struct CNode
     std::wstring m_sName;  // Имя тэга
     std::wstring m_sId;    // Id тэга
     std::wstring m_sClass; // Класс тэга
+    std::wstring m_sStyle; // Стиль тэга
 };
 
 struct CHtmlParams

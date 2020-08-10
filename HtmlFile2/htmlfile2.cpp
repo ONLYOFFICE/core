@@ -542,7 +542,7 @@ private:
             // ...
             else if(sName == L"article" || sName == L"aside" || sName == L"blockquote" || sName == L"details" || sName == L"div" ||
                     sName == L"summary" || sName == L"dl" || sName == L"filedset" || sName == L"figure" || sName == L"figcaption" ||
-                    sName == L"footer" || sName == L"form" || sName == L"header")
+                    sName == L"footer" || sName == L"form" || sName == L"header" || sName == L"p")
             {
                 if(!bWasP)
                 {
@@ -558,10 +558,7 @@ private:
             }
             // Полужирный текст
             else if(sName == L"b")
-            {
-                readP(sSubClass, sRStyle + L"<w:b/>", bBdo);
-                bWasP = false;
-            }
+                readStream(sSubClass, sRStyle + L"<w:b/>", bBdo, bNeedLi, nLevelLi, bWasP);
             // Направление текста
             else if(sName == L"bdo")
             {
@@ -572,17 +569,13 @@ private:
                 m_oLightReader.MoveToElement();
 
                 if(sDir == L"rtl")
-                    readP(sSubClass, sRStyle, true);
+                    readStream(sSubClass, sRStyle, true, bNeedLi, nLevelLi, bWasP);
                 else
-                    readP(sSubClass, sRStyle, false);
-                bWasP = false;
+                    readStream(sSubClass, sRStyle, false, bNeedLi, nLevelLi, bWasP);
             }
             // Отмена направления текста
             else if(sName == L"bdi")
-            {
-                readP(sSubClass, sRStyle, false);
-                bWasP = false;
-            }
+                readStream(sSubClass, sRStyle, false, bNeedLi, nLevelLi, bWasP);
             // Перенос строки
             else if(sName == L"br")
             {
@@ -593,28 +586,19 @@ private:
             // Данные
             // Подпись
             else if(sName == L"button" || sName == L"data" || sName == L"label")
-            {
-                readP(sSubClass, sRStyle, bBdo);
-                bWasP = false;
-            }
+                readStream(sSubClass, sRStyle, bBdo, bNeedLi, nLevelLi, bWasP);
             // Цитата, обычно выделяется курсивом
             // Новый термин, обычно выделяется курсивом
             else if(sName == L"cite" || sName == L"dfn")
-            {
-                readP(sSubClass, sRStyle + L"<w:i/>", bBdo);
-                bWasP = false;
-            }
+                readStream(sSubClass, sRStyle + L"<w:i/>", bBdo, bNeedLi, nLevelLi, bWasP);
             // Код
-            else if(sName == L"code")
-            {
-                readP(sSubClass, sRStyle + L"<w:rFonts w:ascii=\"Consolas\" w:hAnsi=\"Consolas\"/>", bBdo);
-                bWasP = false;
-            }
+            else if(sName == L"code" || sName == L"kbd")
+                readStream(sSubClass, sRStyle + L"<w:rFonts w:ascii=\"Consolas\" w:hAnsi=\"Consolas\"/>", bBdo, bNeedLi, nLevelLi, bWasP);
             // Зачеркнутый текст
             else if(sName == L"del")
                 readStream(sSubClass, sRStyle + L"<w:strike/>", bBdo, bNeedLi, nLevelLi, bWasP);
             // Акцентированный текст
-            else if(sName == L"em")
+            else if(sName == L"em" || sName == L"i")
                 readStream(sSubClass, sRStyle + L"<w:i/>", bBdo, bNeedLi, nLevelLi, bWasP);
             // Заголовок
             else if(sName == L"h1" || sName == L"h2" || sName == L"h3" || sName == L"h4" || sName == L"h5" || sName == L"h6")
@@ -651,24 +635,15 @@ private:
                 readImage();
                 bWasP = false;
             }
-            // Абзац текста. Содержит фразовый контент
-            else if(sName == L"p")
-            {
-                if(!bWasP)
-                {
-                    m_oDocXml += L"</w:p><w:p>";
-                    bWasP = true;
-                }
-                readP(sSubClass, sRStyle, bBdo);
-                m_oDocXml += L"</w:p><w:p>";
-                bWasP = true;
-            }
+            // Подчеркнутый
+            else if(sName == L"ins")
+                readStream(sSubClass, sRStyle + L"<w:u w:val=\"single\"/>", bBdo, bNeedLi, nLevelLi, bWasP);
             // Маркированный список
             else if(sName == L"ul")
                 readUl(sSubClass, sRStyle, bBdo, nLevelLi, bWasP);
             // Игнорируемые
             else if(sName == L"audio" || sName == L"canvas" || sName == L"command" || sName == L"datalist" || sName == L"embed" ||
-                    sName == L"input" )
+                    sName == L"input" || sName == L"iframe")
                 readStream(sSubClass, sRStyle, bBdo, bNeedLi, nLevelLi, bWasP);
             else
             {
@@ -978,12 +953,6 @@ private:
             // Зачеркнутый текст
             else if(sName == L"del")
                 readP(sSubClass, sRStyle + L"<w:strike/>", bBdo);
-            // Ссылка
-            // Объект для обработки
-            else if(sName == L"iframe" || sName == L"object")
-            {
-
-            }
             // Картинки
             else if(sName == L"img" || sName == L"image")
                 readImage();

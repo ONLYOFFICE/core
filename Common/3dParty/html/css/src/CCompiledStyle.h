@@ -23,8 +23,6 @@ namespace NSCSS
         std::map<std::wstring, std::wstring> GetStyleMap();
         std::wstring GetStyleW();
         std::string GetStyle();
-        std::wstring GetOOXMLStyleW();
-        std::wstring GetOOXMLStyle();
 
         size_t GetSize();
         bool Empty();

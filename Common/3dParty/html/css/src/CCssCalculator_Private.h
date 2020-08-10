@@ -7,8 +7,6 @@
 #include "CCssCalculator.h"
 
 #include "../../katana-parser/src/katana.h"
-#include "../../../../HtmlFile2/htmlfile2.h"
-
 
 namespace NSCSS
 {

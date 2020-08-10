@@ -3,7 +3,6 @@
 
 #include "CssCalculator_global.h"
 #include "CCompiledStyle.h"
-#include "../../../../HtmlFile2/htmlfile2.h"
 #include <iostream>
 #include <map>
 #include <vector>
@@ -19,6 +18,14 @@ namespace NSCSS
         Point,
         Peak
     } UnitMeasure;
+
+    struct CNode
+    {
+        std::wstring m_sName;  // Имя тэга
+        std::wstring m_sId;    // Id тэга
+        std::wstring m_sClass; // Класс тэга
+        std::wstring m_sStyle; // Стиль тэга
+    };
 
     class CCssCalculator_Private;
     class CSSCALCULATOR_EXPORT CCssCalculator

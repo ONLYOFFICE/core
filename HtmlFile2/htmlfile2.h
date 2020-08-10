@@ -12,6 +12,13 @@
 #define HTMLFILE2_DECL_EXPORT Q_DECL_EXPORT
 #endif
 
+struct CNode
+{
+    std::wstring m_sName;  // Имя тэга
+    std::wstring m_sId;    // Id тэга
+    std::wstring m_sClass; // Класс тэга
+};
+
 struct CHtmlParams
 {
     std::wstring m_sGenres;      // Жанры

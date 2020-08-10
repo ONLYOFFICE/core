@@ -3,6 +3,7 @@
 
 #include "CssCalculator_global.h"
 #include "CCompiledStyle.h"
+#include "../../../../HtmlFile2/htmlfile2.h"
 #include <iostream>
 #include <map>
 #include <vector>
@@ -31,6 +32,7 @@ namespace NSCSS
         std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> GetDeclarations(const std::wstring& sSelector);
 
         CCompiledStyle GetCompiledStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure = Default);
+        CCompiledStyle GetCompiledStyle(CNode oNode, UnitMeasure unitMeasure = Default);
 
         void AddStyle(std::vector<std::string> sSelectors, const std::string& sStyle);
         void AddStyles(const std::string& sStyle);

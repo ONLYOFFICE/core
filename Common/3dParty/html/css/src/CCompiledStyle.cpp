@@ -15,9 +15,33 @@ namespace NSCSS
         m_mStyle = mStyle;
     }
 
+    CCompiledStyle::CCompiledStyle(const CCompiledStyle& oStyle)
+    {
+        m_mStyle = oStyle.m_mStyle;
+        m_sId = oStyle.m_sId;
+    }
+
     CCompiledStyle::~CCompiledStyle()
     {
 
+    }
+
+    CCompiledStyle& CCompiledStyle::operator+= (const CCompiledStyle &oElement)
+    {
+        for(auto& it : oElement.m_mStyle)
+            m_mStyle[it.first] = it.second;
+
+        m_sId += L" " + oElement.m_sId;
+
+        return *this;
+    }
+
+    CCompiledStyle& CCompiledStyle::operator= (const CCompiledStyle &oElement)
+    {
+        m_mStyle  =oElement.m_mStyle;
+        m_sId = oElement.m_sId;
+
+        return *this;
     }
 
     std::map<std::wstring, std::wstring> CCompiledStyle::GetStyleMap()
@@ -38,6 +62,75 @@ namespace NSCSS
         std::wstring sStyle = GetStyleW();
         std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
         return converter.to_bytes(sStyle);
+    }
+
+    std::wstring CCompiledStyle::GetOOXMLStyleW()
+    {
+        // пофиксить появление пробелов
+        std::wstring sId = GetId();
+        if (sId.find(L" ") != std::wstring::npos)
+            sId = sId.substr(0, sId.find(L" "));
+
+        std::wstring sStyle = L"<w:style w:styleId=\"" + sId + L"\" w:type=\"paragraph\">";
+
+        sStyle += L"<w:name w:val=\"" + sId + L"\"/>";
+
+        sStyle += L"<w:pPr>";
+
+        if (!GetColor().empty())
+            sStyle += L"<w:color w:val=\"" + GetColor() + L"\"/>";
+
+        if (!GetFontSize().empty())
+        {
+            std::wstring sFontSize = GetFontSize();
+            if (isdigit(sFontSize[0]))
+                sStyle += L"<w:sz w:val=\"" + GetFontSize() + L"\"/>";
+        }
+        if (!GetFontFamily().empty())
+        {
+            std::wstring sFontFamily = GetFontFamily();
+            sStyle += L"<w:rFonts w:ascii=\"" + sFontFamily + L"\" w:hAnsi=\"" + sFontFamily + L"\"/>";
+        }
+
+        if (!GetTextAlign().empty())
+        {
+            std::wstring sTextAlign = GetTextAlign();
+            if (sTextAlign != L"justify")
+                sStyle += L"<w:jc w:val=\"" + GetTextAlign() + L"\"/>";
+            else if (sTextAlign == L"justify")
+                sStyle += L"<w:jc w:val=\"both\"/>";
+        }
+        if (!GetFontStyle().empty())
+        {
+            std::wstring sFontStyle = GetFontStyle();
+            if (sFontStyle == L"italic")
+                sStyle += L"<w:i w:val=\"true\"/>";
+        }
+
+        if (!GetFontWeight().empty())
+        {
+            std::wstring sFontWeight = GetFontWeight();
+            if (sFontWeight == L"bold")
+                sStyle += L"<w:b w:val=\"true\"/>";
+        }
+
+        if (!GetTextIndent().empty())
+            sStyle += L"<w:int w:firstLine=\"" + GetTextIndent() + L"\"/>";
+
+        if (!GetTextDecoration().empty())
+        {
+            std::wstring sTextDecoration = GetTextDecoration();
+            if (sTextDecoration == L"underline")
+                sStyle += L"<w:u w:val=\"single\"/>";
+        }
+
+        if (!GetBackgroundColor().empty())
+            sStyle += L"<w:background w:color=\"" + GetBackgroundColor() + L"\"/>";
+
+        sStyle += L"</w:pPr>";
+        sStyle += L"</w:style>";
+
+        return sStyle;
     }
 
     size_t CCompiledStyle::GetSize()
@@ -75,6 +168,16 @@ namespace NSCSS
     void CCompiledStyle::SetStyle(std::map<std::wstring, std::wstring> mStyle)
     {
         m_mStyle = mStyle;
+    }
+
+    void CCompiledStyle::SetID(std::wstring sId)
+    {
+        m_sId = sId;
+    }
+
+    std::wstring CCompiledStyle::GetId()
+    {
+        return m_sId;
     }
 
     /* FONT */
@@ -811,6 +914,28 @@ namespace NSCSS
         {
             if (m_mStyle.find(L"column-rule-color") != m_mStyle.end())
                 return m_mStyle[L"column-rule-color"];
+            return L"";
+        }
+
+    /* TEXT */
+        std::wstring CCompiledStyle::GetTextAlign()
+        {
+            if (m_mStyle.find(L"text-align") != m_mStyle.end())
+                return m_mStyle[L"text-align"];
+            return L"";
+        }
+
+        std::wstring CCompiledStyle::GetTextIndent()
+        {
+            if (m_mStyle.find(L"text-indent") != m_mStyle.end())
+                return m_mStyle[L"text-indent"];
+            return L"";
+        }
+
+        std::wstring CCompiledStyle::GetTextDecoration()
+        {
+            if (m_mStyle.find(L"text-decoration") != m_mStyle.end())
+                return m_mStyle[L"text-decoration"];
             return L"";
         }
 

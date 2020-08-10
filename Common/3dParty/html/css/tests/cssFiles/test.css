@@ -9,10 +9,6 @@
 	}
 	
 
-	h1
-	{
-		color : red;
-	}
 	.animate__animated.animate__faster {
 	  -webkit-animation-duration: calc(1s / 2);
 	  animation-duration: calc(1s / 2);
@@ -28,13 +24,20 @@
 
 	#first
 	{
-		color: black;
+		color: green;
+	}
+
+	p
+	{
+		text-indent: 1.5em;
+	    text-align: justify;
 	}
 
 	h1, h2, h3, h4
 	{
 		color: black;
 		text-decoration: overline; 
+		margin : 0pt;
 	}
 	#main .container article.post > header h1.giga 
 	{
@@ -60,6 +63,7 @@
 
 	#test
 	{
+		padding: 10px;
 		color: yellow;
 		background: white;
 	}

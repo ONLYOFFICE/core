@@ -706,6 +706,24 @@ namespace NSCSS
         m_arData.push_back(oElement);
     }
 
+    CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const CNode& oNode, UnitMeasure unitMeasure)
+    {
+        CCompiledStyle oStyle;
+        m_nCountNodes++;
+        oStyle.SetID(L"paragraph" + std::to_wstring(m_nCountNodes));
+
+        if (!oNode.m_sName.empty())
+            oStyle += GetCompiledStyle(std::vector<std::string>() = {std::string(oNode.m_sName.begin(), oNode.m_sName.end())}, unitMeasure);
+
+        if (!oNode.m_sClass.empty())
+            oStyle += GetCompiledStyle(std::vector<std::string>() = {std::string(oNode.m_sClass.begin(), oNode.m_sClass.end())}, unitMeasure);
+
+        if (!oNode.m_sId.empty())
+            oStyle += GetCompiledStyle(std::vector<std::string>() = {std::string(oNode.m_sId.begin(), oNode.m_sId.end())}, unitMeasure);
+
+        return oStyle;
+    }
+
     void CCssCalculator_Private::AddStyles(const std::string& sStyle)
     {
         std::string sStyleUTF8;

@@ -7,6 +7,7 @@
 #include "CCssCalculator.h"
 
 #include "../../katana-parser/src/katana.h"
+#include "../../../../HtmlFile2/htmlfile2.h"
 
 
 namespace NSCSS
@@ -16,8 +17,11 @@ namespace NSCSS
         std::vector<CElement*> m_arData;
         std::vector<std::wstring> m_arFiles;
 
+        std::map<std::wstring, std::wstring> m_arTagsUsed;
+
         int m_nDpi = 96;
         std::wstring m_sEncoding = L"UTF-8";
+        int m_nCountNodes = 0;
 
         UnitMeasure m_UnitMeasure;
 
@@ -104,6 +108,7 @@ namespace NSCSS
         std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> GetDeclarations(const std::wstring& sSelector);
 
         CCompiledStyle GetCompiledStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure = Default);
+        CCompiledStyle GetCompiledStyle(const CNode& oNode, UnitMeasure unitMeasure = Default);
 
         void AddStyle(std::vector<std::string> sSelectors, const std::string& sStyle);
         void AddStyles(const std::string& sStyle);

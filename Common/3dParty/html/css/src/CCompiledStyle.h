@@ -12,15 +12,19 @@ namespace NSCSS
     class CSSCALCULATOR_EXPORT CCompiledStyle
     {
         std::map<std::wstring, std::wstring> m_mStyle;
+        std::wstring m_sId;
     public:
         CCompiledStyle();
         CCompiledStyle(std::map<std::wstring, std::wstring> mStyle);
+        CCompiledStyle(const CCompiledStyle& oStyle);
 
         ~CCompiledStyle();
 
         std::map<std::wstring, std::wstring> GetStyleMap();
         std::wstring GetStyleW();
         std::string GetStyle();
+        std::wstring GetOOXMLStyleW();
+        std::wstring GetOOXMLStyle();
 
         size_t GetSize();
         bool Empty();
@@ -31,6 +35,9 @@ namespace NSCSS
         void AddPropSel(std::wstring sProperty, std::wstring sValue);
         void InsertStyle(std::map<std::wstring, std::wstring> mStyle);
         void SetStyle(std::map<std::wstring, std::wstring> mStyle);
+
+        void SetID(std::wstring sId);
+        std::wstring GetId();
 
         /* FONT */
         std::wstring GetFont();
@@ -75,7 +82,18 @@ namespace NSCSS
         std::wstring GetBordetTopColor();
         std::wstring GetOutlineColor();
         std::wstring GetColumnRuleColor();
+
+        /* TEXT */
+        std::wstring GetTextAlign();
+        std::wstring GetTextIndent();
+        std::wstring GetTextDecoration();
+
+
+        CCompiledStyle& operator+= (const CCompiledStyle& oElement);
+        CCompiledStyle& operator= (const CCompiledStyle& oElement);
     };
+
+
 }
 
 #endif // CCOMPILEDSTYLE_H

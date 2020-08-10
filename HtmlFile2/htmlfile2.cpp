@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <fstream>
 
 #include "htmlfile2.h"
 #include "../Common/3dParty/html/htmltoxhtml.h"
@@ -365,7 +366,25 @@ public:
                         // Кроме функции получения стилей
                         std::wstring sType = NSFile::GetFileExtention(sRef);
                         if(sType == L"css")
-                            m_oStylesCalculator.AddStylesFromFile(m_sSrc + L"/" + sRef);
+                        {
+                            bool bBad = false;
+                            // КОСТЫЛЬ
+                            std::ifstream in(m_sSrc + L"/" + sRef);
+                            if (in.is_open())
+                            {
+                                std::string line;
+                                while (getline(in, line))
+                                {
+                                    if(line.find("@") != std::string::npos)
+                                    {
+                                        bBad = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if(!bBad)
+                                m_oStylesCalculator.AddStylesFromFile(m_sSrc + L"/" + sRef);
+                        }
                     }
                 }
                 m_oLightReader.MoveToElement();

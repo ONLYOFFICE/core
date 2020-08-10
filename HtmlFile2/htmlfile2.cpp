@@ -7,6 +7,7 @@
 #include "htmlfile2.h"
 #include "../Common/3dParty/html/htmltoxhtml.h"
 #include "../Common/3dParty/html/css/src/CCssCalculator.h"
+#include "../Common/3dParty/html/css/src/CDocumentStyle.h"
 #include "../Common/FileDownloader/FileDownloader.h"
 #include "../DesktopEditor/common/Base64.h"
 #include "../DesktopEditor/common/SystemUtils.h"
@@ -452,6 +453,40 @@ private:
     }
     */
 
+    std::vector<std::string> getStyle(std::vector<std::string>& sSelectors)
+    {
+        std::vector<std::string> sSubClass(sSelectors);
+
+        std::string sClass = "";
+        std::string sId    = "";
+        // Стиль по атрибуту
+        while(m_oLightReader.MoveToNextAttribute())
+        {
+            std::wstring sAName = m_oLightReader.GetName();
+            if(sAName == L"class")
+                sClass = m_oLightReader.GetTextA();
+            else if(sAName == L"id")
+                sId = m_oLightReader.GetTextA();
+        }
+        m_oLightReader.MoveToElement();
+
+        std::string sSelector = "";
+        if(!sId.empty())
+            sSelector += "#" + sId + " ";
+        if(!sClass.empty())
+            sSelector += "." + sClass + " ";
+        sSelector += m_oLightReader.GetNameA();
+
+        sSubClass.push_back(sSelector);
+
+        NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSubClass);
+        NSCSS::CDocumentStyle oXmlStyle;
+        oXmlStyle.WriteStyle(oStyle);
+        m_oStylesXml += oXmlStyle.GetStyle();
+
+        return sSubClass;
+    }
+
     void readHead()
     {
         if(m_oLightReader.IsEmptyNode())
@@ -495,7 +530,7 @@ private:
         int nDeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode2(nDeath))
         {
-            std::vector<std::string> sSubClass; // = getStyle(sSelectors);
+            std::vector<std::string> sSubClass = getStyle(sSelectors);
             neadLi(bNeedLi, nLevelLi);
 
             std::wstring sName = m_oLightReader.GetName();
@@ -542,7 +577,7 @@ private:
             // ...
             else if(sName == L"article" || sName == L"aside" || sName == L"blockquote" || sName == L"details" || sName == L"div" ||
                     sName == L"summary" || sName == L"dl" || sName == L"filedset" || sName == L"figure" || sName == L"figcaption" ||
-                    sName == L"footer" || sName == L"form" || sName == L"header" || sName == L"p")
+                    sName == L"footer" || sName == L"form" || sName == L"header" || sName == L"p" || sName == L"main" || sName == L"map")
             {
                 if(!bWasP)
                 {
@@ -592,6 +627,7 @@ private:
             else if(sName == L"cite" || sName == L"dfn")
                 readStream(sSubClass, sRStyle + L"<w:i/>", bBdo, bNeedLi, nLevelLi, bWasP);
             // Код
+            // Моноширинный шрифт, например, Consolas
             else if(sName == L"code" || sName == L"kbd")
                 readStream(sSubClass, sRStyle + L"<w:rFonts w:ascii=\"Consolas\" w:hAnsi=\"Consolas\"/>", bBdo, bNeedLi, nLevelLi, bWasP);
             // Зачеркнутый текст
@@ -641,6 +677,14 @@ private:
             // Маркированный список
             else if(sName == L"ul")
                 readUl(sSubClass, sRStyle, bBdo, nLevelLi, bWasP);
+            // Выделенный текст, обычно выделяется желтым
+            else if(sName == L"mark")
+                readStream(sSubClass, sRStyle + L"<w:highlight w:val=\"yellow\"/>", bBdo, bNeedLi, nLevelLi, bWasP);
+            // Математическая формула
+            else if(sName == L"math")
+            {
+
+            }
             // Игнорируемые
             else if(sName == L"audio" || sName == L"canvas" || sName == L"command" || sName == L"datalist" || sName == L"embed" ||
                     sName == L"input" || sName == L"iframe")

@@ -763,7 +763,7 @@ namespace NSCSS
             if (sClassName[0] != L'.')
                 sClassName = L'.' + sClassName;
 
-            oStyle.SetID(sClassName + std::to_wstring(m_nCountNodes));
+            oStyle.SetID(oNode.m_sClass + std::to_wstring(m_nCountNodes));
 
             if (m_arStyleUsed.find(sClassName) != m_arStyleUsed.cend())
                 oStyle += *m_arStyleUsed[sClassName];
@@ -774,7 +774,6 @@ namespace NSCSS
                 m_arStyleUsed.emplace(sClassName, oStyleClass);
                 oStyle += *oStyleClass;
             }
-
         }
 
         if (!oNode.m_sId.empty())
@@ -785,7 +784,7 @@ namespace NSCSS
             if (sId[0] != L'#')
                 sId = L'#' + sId;
 
-            oStyle.SetID(sId + std::to_wstring(m_nCountNodes));
+            oStyle.SetID(oNode.m_sId + std::to_wstring(m_nCountNodes));
 
             if (m_arStyleUsed.find(sId) != m_arStyleUsed.cend())
                 oStyle += *m_arStyleUsed[sId];
@@ -889,6 +888,10 @@ namespace NSCSS
         else if (sConvertValue.find(L"pc") != std::wstring::npos)
         {
             return ConvertPc(sConvertValue);
+        }
+        else if (sConvertValue.find(L"em") != std::wstring::npos)
+        {
+            return ConvertEm(sConvertValue);
         }
 
         return sConvertValue;
@@ -1977,7 +1980,32 @@ namespace NSCSS
         std::wstring sValue = std::to_wstring(_dValue);
         if (bAddUM)
             sValue += L"px";
-        return sValue;}
+        return sValue;
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertEm(const std::wstring &sValue)
+    {
+        std::wstring sConvertValue = sValue.substr(0, sValue.find(L"em"));
+        double dValue = wcstod(sConvertValue.c_str(), NULL);
+        dValue *= 22;
+        sConvertValue = std::to_wstring(dValue);
+        int nPosition = 0;
+        for (int i = sConvertValue.length() - 1; i >= 0; i--)
+            if (sConvertValue[i] == L'0')
+                nPosition = i;
+            else
+                break;
+
+        if (nPosition != 0)
+        {
+            sConvertValue = sConvertValue.substr(0, nPosition);
+            if (sConvertValue[nPosition - 1] == L'.')
+                sConvertValue = sConvertValue.substr(0, nPosition - 1);
+        }
+        std::wcout << sConvertValue << std::endl;
+
+        return sConvertValue;
+    }
 
     void CCssCalculator_Private::SetDpi(const int nValue)
     {

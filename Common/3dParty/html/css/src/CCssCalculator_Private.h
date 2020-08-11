@@ -15,7 +15,6 @@ namespace NSCSS
         std::vector<CElement*> m_arData;
         std::vector<std::wstring> m_arFiles;
 
-        std::map<std::wstring, std::wstring> m_arTagsUsed;
         std::map<std::wstring, CCompiledStyle*> m_arStyleUsed;
                 //selector     //style
         int m_nDpi = 96;
@@ -95,6 +94,8 @@ namespace NSCSS
         std::wstring ConvertPcToCm(const double& dValue, bool bAddUM = false);
         std::wstring ConvertPcToIn(const double& dValue, bool bAddUM = false);
         std::wstring ConvertPcToPt(const double& dValue, bool bAddUM = false);
+
+        std::wstring ConvertEm(const std::wstring& sValue);
 
         std::vector<int> GetWeightSelector(const std::string& sSelector);
         std::vector<int> GetWeightSelector(const std::wstring& sSelector);

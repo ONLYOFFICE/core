@@ -832,13 +832,6 @@ namespace NSCSS
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetBorderColor()
-        {
-            if (m_mStyle.find(L"border-color") != m_mStyle.cend())
-                return m_mStyle[L"border-color"];
-            return L"";
-        }
-
         std::wstring CCompiledStyle::GetBorderLeftColor()
         {
             if (m_mStyle.find(L"border-left-color") != m_mStyle.cend())
@@ -850,13 +843,6 @@ namespace NSCSS
         {
             if (m_mStyle.find(L"border-right-color") != m_mStyle.cend())
                 return m_mStyle[L"border-right-color"];
-            return L"";
-        }
-
-        std::wstring CCompiledStyle::GetBordetTopColor()
-        {
-            if (m_mStyle.find(L"border-top-color") != m_mStyle.cend())
-                return m_mStyle[L"border-top-color"];
             return L"";
         }
 
@@ -894,6 +880,31 @@ namespace NSCSS
             if (m_mStyle.find(L"text-decoration") != m_mStyle.cend())
                 return m_mStyle[L"text-decoration"];
             return L"";
+        }
+
+    /* BORDER */
+
+        std::wstring CCompiledStyle::GetBorder()
+        {
+            if (m_mStyle.find(L"border") != m_mStyle.cend())
+                return m_mStyle[L"border"];
+
+//            std::wstring sBorder = GetBorderWidth()
+
+            return L"";
+        }
+
+        std::wstring CCompiledStyle::GetBorderWidth()
+        {
+            if (m_mStyle.find(L"border-width") != m_mStyle.cend())
+                return m_mStyle[L"border-width"];
+
+            std::wstring sBorder = GetBorder();
+
+            if (sBorder.empty())
+                return L"";
+
+
         }
 
 }

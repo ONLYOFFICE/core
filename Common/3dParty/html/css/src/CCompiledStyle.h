@@ -84,17 +84,30 @@ namespace NSCSS
 
         /* BORDER */
         std::wstring GetBorder();
-        std::wstring GetBorderBottom();
-        std::wstring GetBorderLeft();
-        std::wstring GetBorderRight();
-        std::wstring GetBorderTop();
         std::wstring GetBorderWidth();
         std::wstring GetBorderStyle();
         std::wstring GetBorderColor();
+
+        std::wstring GetBorderBottom();
+        std::wstring GetBordeBottomrWidth();
+        std::wstring GetBorderBottomStyle();
         std::wstring GetBorderBottomColor();
+
+        std::wstring GetBorderLeft();
+        std::wstring GetBorderLeftWidth();
+        std::wstring GetBorderLeftStyle();
         std::wstring GetBorderLeftColor();
+
+        std::wstring GetBorderRight();
+        std::wstring GetBorderRightWidth();
+        std::wstring GetBorderRightStyle();
         std::wstring GetBorderRightColor();
-        std::wstring GetBordetTopColor();
+
+        std::wstring GetBorderTop();
+        std::wstring GetBordeToprWidth();
+        std::wstring GetBorderTopStyle();
+        std::wstring GetBorderTopColor();
+
 
         CCompiledStyle& operator+= (const CCompiledStyle& oElement);
         CCompiledStyle& operator= (const CCompiledStyle& oElement);

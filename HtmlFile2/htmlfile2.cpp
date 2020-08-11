@@ -24,6 +24,13 @@
 #define VALUE2STR(x) VALUE_TO_STRING(x)
 #endif
 
+struct CLi
+{
+    bool bNeedLi; // Требуется ли маркер?
+    int nLevelLi; // Уровень вложенности маркера
+    bool bType;   // Маркированный? нет - нумерованный
+};
+
 class CHtmlFile2_Private
 {
 public:
@@ -184,6 +191,7 @@ public:
 
         // numbering.xml
         NSStringUtils::CStringBuilder oNumbering;
+        // Маркированный список
         oNumbering += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:numbering xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 w15 wp14\"><w:abstractNum w:abstractNumId=\"0\"><w:multiLevelType w:val=\"hybridMultilevel\"/><w:lvl w:ilvl=\"0\"><w:start w:val=\"1\"/><w:numFmt w:val=\"bullet\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"";
         oNumbering.AddCharSafe(183);
         oNumbering += L"\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"720\" w:hanging=\"360\"/></w:pPr><w:rPr><w:rFonts w:ascii=\"Symbol\" w:hAnsi=\"Symbol\" w:cs=\"Symbol\" w:eastAsia=\"Symbol\"/></w:rPr></w:lvl><w:lvl w:ilvl=\"1\"><w:start w:val=\"1\"/><w:numFmt w:val=\"bullet\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"o\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"1440\" w:hanging=\"360\"/></w:pPr><w:rPr><w:rFonts w:ascii=\"Courier New\" w:hAnsi=\"Courier New\" w:cs=\"Courier New\" w:eastAsia=\"Courier New\"/></w:rPr></w:lvl><w:lvl w:ilvl=\"2\"><w:start w:val=\"1\"/><w:numFmt w:val=\"bullet\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"";
@@ -196,7 +204,12 @@ public:
         oNumbering.AddCharSafe(183);
         oNumbering += L"\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"5040\" w:hanging=\"360\"/></w:pPr><w:rPr><w:rFonts w:ascii=\"Symbol\" w:hAnsi=\"Symbol\" w:cs=\"Symbol\" w:eastAsia=\"Symbol\"/></w:rPr></w:lvl><w:lvl w:ilvl=\"7\"><w:start w:val=\"1\"/><w:numFmt w:val=\"bullet\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"o\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"5760\" w:hanging=\"360\"/></w:pPr><w:rPr><w:rFonts w:ascii=\"Courier New\" w:hAnsi=\"Courier New\" w:cs=\"Courier New\" w:eastAsia=\"Courier New\"/></w:rPr></w:lvl><w:lvl w:ilvl=\"8\"><w:start w:val=\"1\"/><w:numFmt w:val=\"bullet\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"";
         oNumbering.AddCharSafe(167);
-        oNumbering += L"\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"6480\" w:hanging=\"360\"/></w:pPr><w:rPr><w:rFonts w:ascii=\"Wingdings\" w:hAnsi=\"Wingdings\" w:cs=\"Wingdings\" w:eastAsia=\"Wingdings\"/></w:rPr></w:lvl></w:abstractNum><w:num w:numId=\"1\"><w:abstractNumId w:val=\"0\"/></w:num></w:numbering>";
+        oNumbering += L"\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"6480\" w:hanging=\"360\"/></w:pPr><w:rPr><w:rFonts w:ascii=\"Wingdings\" w:hAnsi=\"Wingdings\" w:cs=\"Wingdings\" w:eastAsia=\"Wingdings\"/></w:rPr></w:lvl></w:abstractNum>";
+        // Нумерованный список
+        oNumbering += L"<w:abstractNum w:abstractNumId=\"1\"><w:multiLevelType w:val=\"hybridMultilevel\"/><w:lvl w:ilvl=\"0\"><w:start w:val=\"1\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%1.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"709\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"1\"><w:start w:val=\"1\"/><w:numFmt w:val=\"lowerLetter\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%2.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"1429\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"2\"><w:start w:val=\"1\"/><w:numFmt w:val=\"lowerRoman\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%3.\"/><w:lvlJc w:val=\"right\"/><w:pPr><w:ind w:left=\"2149\" w:hanging=\"180\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"3\"><w:start w:val=\"1\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%4.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"2869\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"4\"><w:start w:val=\"1\"/><w:numFmt w:val=\"lowerLetter\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%5.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"3589\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"5\"><w:start w:val=\"1\"/><w:numFmt w:val=\"lowerRoman\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%6.\"/><w:lvlJc w:val=\"right\"/><w:pPr><w:ind w:left=\"4309\" w:hanging=\"180\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"6\"><w:start w:val=\"1\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%7.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"5029\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"7\"><w:start w:val=\"1\"/><w:numFmt w:val=\"lowerLetter\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%8.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"5749\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"8\"><w:start w:val=\"1\"/><w:numFmt w:val=\"lowerRoman\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%9.\"/><w:lvlJc w:val=\"right\"/><w:pPr><w:ind w:left=\"6469\" w:hanging=\"180\"/></w:pPr></w:lvl></w:abstractNum>";
+        // Ссылки
+        oNumbering += L"<w:num w:numId=\"1\"><w:abstractNumId w:val=\"0\"/></w:num>";
+        oNumbering += L"<w:num w:numId=\"2\"><w:abstractNumId w:val=\"1\"/></w:num></w:numbering>";
         NSFile::CFileBinary oNumberingWriter;
         if (oNumberingWriter.CreateFileW(pathWord + L"/numbering.xml"))
         {
@@ -272,7 +285,7 @@ public:
         // Маркированный список
         m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"li\"><w:name w:val=\"List Paragraph\"/><w:basedOn w:val=\"normal\"/><w:qFormat/><w:uiPriority w:val=\"34\"/><w:pPr><w:contextualSpacing w:val=\"true\"/><w:ind w:left=\"720\"/></w:pPr></w:style>";
         // Заголовки
-        m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"h1\"><w:name w:val=\"Heading 1\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title1-c\"/><w:qFormat/><w:rPr><w:b/><w:bCs/><w:color w:val=\"000000\" w:themeColor=\"text1\"/><w:sz w:val=\"48\"/><w:szCs w:val=\"48\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"480\"/><w:outlineLvl w:val=\"0\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h2\"><w:name w:val=\"Heading 2\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title2-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:b/><w:bCs/><w:color w:val=\"000000\" w:themeColor=\"text1\"/><w:sz w:val=\"40\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"1\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h3\"><w:name w:val=\"Heading 3\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title3-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:b/><w:bCs/><w:i/><w:iCs/><w:color w:val=\"000000\" w:themeColor=\"text1\"/><w:sz w:val=\"36\"/><w:szCs w:val=\"36\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"2\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h4\"><w:name w:val=\"Heading 4\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title4-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:color w:val=\"232323\"/><w:sz w:val=\"32\"/><w:szCs w:val=\"32\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"3\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h5\"><w:name w:val=\"Heading 5\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title5-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:b/><w:bCs/><w:color w:val=\"444444\"/><w:sz w:val=\"28\"/><w:szCs w:val=\"28\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"4\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h6\"><w:name w:val=\"Heading 6\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title6-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:i/><w:iCs/><w:color w:val=\"232323\"/><w:sz w:val=\"28\"/><w:szCs w:val=\"28\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"5\"/></w:pPr></w:style><w:style w:type=\"character\" w:styleId=\"title1-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 1 Знак\"/><w:link w:val=\"title1\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:sz w:val=\"40\"/><w:szCs w:val=\"40\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title2-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 2 Знак\"/><w:link w:val=\"title2\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:sz w:val=\"34\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title3-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 3 Знак\"/><w:link w:val=\"title3\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:sz w:val=\"30\"/><w:szCs w:val=\"30\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title4-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 4 Знак\"/><w:link w:val=\"title4\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:b/><w:bCs/><w:sz w:val=\"26\"/><w:szCs w:val=\"26\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title5-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 5 Знак\"/><w:link w:val=\"title5\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:b/><w:bCs/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title6-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 6 Знак\"/><w:link w:val=\"title6\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:b/><w:bCs/><w:sz w:val=\"22\"/><w:szCs w:val=\"22\"/></w:rPr></w:style>";
+        // m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"h1\"><w:name w:val=\"Heading 1\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title1-c\"/><w:qFormat/><w:rPr><w:b/><w:bCs/><w:color w:val=\"000000\" w:themeColor=\"text1\"/><w:sz w:val=\"48\"/><w:szCs w:val=\"48\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"480\"/><w:outlineLvl w:val=\"0\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h2\"><w:name w:val=\"Heading 2\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title2-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:b/><w:bCs/><w:color w:val=\"000000\" w:themeColor=\"text1\"/><w:sz w:val=\"40\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"1\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h3\"><w:name w:val=\"Heading 3\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title3-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:b/><w:bCs/><w:i/><w:iCs/><w:color w:val=\"000000\" w:themeColor=\"text1\"/><w:sz w:val=\"36\"/><w:szCs w:val=\"36\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"2\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h4\"><w:name w:val=\"Heading 4\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title4-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:color w:val=\"232323\"/><w:sz w:val=\"32\"/><w:szCs w:val=\"32\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"3\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h5\"><w:name w:val=\"Heading 5\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title5-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:b/><w:bCs/><w:color w:val=\"444444\"/><w:sz w:val=\"28\"/><w:szCs w:val=\"28\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"4\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h6\"><w:name w:val=\"Heading 6\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title6-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:i/><w:iCs/><w:color w:val=\"232323\"/><w:sz w:val=\"28\"/><w:szCs w:val=\"28\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"5\"/></w:pPr></w:style><w:style w:type=\"character\" w:styleId=\"title1-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 1 Знак\"/><w:link w:val=\"title1\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:sz w:val=\"40\"/><w:szCs w:val=\"40\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title2-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 2 Знак\"/><w:link w:val=\"title2\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:sz w:val=\"34\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title3-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 3 Знак\"/><w:link w:val=\"title3\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:sz w:val=\"30\"/><w:szCs w:val=\"30\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title4-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 4 Знак\"/><w:link w:val=\"title4\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:b/><w:bCs/><w:sz w:val=\"26\"/><w:szCs w:val=\"26\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title5-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 5 Знак\"/><w:link w:val=\"title5\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:b/><w:bCs/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title6-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 6 Знак\"/><w:link w:val=\"title6\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:b/><w:bCs/><w:sz w:val=\"22\"/><w:szCs w:val=\"22\"/></w:rPr></w:style>";
     }
 
     bool readSrc()
@@ -469,43 +482,40 @@ private:
     }
     */
 
-    std::vector<std::string> GetSubClass(std::vector<std::string>& sSelectors)
+    std::vector<NSCSS::CNode> GetSubClass(std::vector<NSCSS::CNode>& sSelectors)
     {
-        std::vector<std::string> sSubClass(sSelectors);
+        std::vector<NSCSS::CNode> sSubClass(sSelectors);
 
-        std::string sClass = "";
-        std::string sId    = "";
+        NSCSS::CNode oNode;
+        oNode.m_sName = m_oLightReader.GetName();
+        if(oNode.m_sName == L"#text")
+            return sSubClass;
         // Стиль по атрибуту
         while(m_oLightReader.MoveToNextAttribute())
         {
             std::wstring sAName = m_oLightReader.GetName();
             if(sAName == L"class")
-                sClass = m_oLightReader.GetTextA();
+                oNode.m_sClass = m_oLightReader.GetText();
             else if(sAName == L"id")
-                sId = m_oLightReader.GetTextA();
+                oNode.m_sId = m_oLightReader.GetText();
+            else if(sAName == L"style")
+                oNode.m_sStyle = m_oLightReader.GetText();
         }
         m_oLightReader.MoveToElement();
 
-        std::string sSelector = "";
-        if(!sId.empty())
-            sSelector += "#" + sId + " ";
-        if(!sClass.empty())
-            sSelector += "." + sClass + " ";
-        std::string sName = m_oLightReader.GetNameA();
-        if(sName == "#text")
-            return sSubClass;
-        sSelector += sName;
-
-        sSubClass.push_back(sSelector);
+        sSubClass.push_back(oNode);
         return sSubClass;
     }
 
-    void getStyle(std::vector<std::string>& sSelectors)
+    std::wstring getStyle(std::vector<NSCSS::CNode>& sSelectors)
     {
-        NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
+        NSCSS::CNode oChild = sSelectors.back();
+        sSelectors.pop_back();
+        NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(oChild, sSelectors);
         NSCSS::CDocumentStyle oXmlStyle;
         oXmlStyle.WriteStyle(oStyle);
         m_oStylesXml += oXmlStyle.GetStyle();
+        return oXmlStyle.GetId();
     }
 
     void readHead()
@@ -533,17 +543,19 @@ private:
         }
     }
 
-    void neadLi(bool bNeedLi, int nLevelLi)
+    void neadLi(const CLi& oLi)
     {
-        if(bNeedLi)
+        if(oLi.bNeedLi)
         {
             m_oDocXml += L"<w:pPr><w:pStyle w:val=\"li\"/><w:numPr><w:ilvl w:val=\"";
-            m_oDocXml += std::to_wstring(nLevelLi);
-            m_oDocXml += L"\"/><w:numId w:val=\"1\"/></w:numPr></w:pPr>";
+            m_oDocXml += std::to_wstring(oLi.nLevelLi);
+            m_oDocXml += L"\"/><w:numId w:val=\"";
+            m_oDocXml += (oLi.bType ? L"1" : L"2");
+            m_oDocXml += L"\"/></w:numPr></w:pPr>";
         }
     }
 
-    void readStream(std::vector<std::string>& sSelectors, std::wstring sRStyle, bool bBdo, bool bNeedLi, int nLevelLi, bool& bWasP)
+    void readStream(std::vector<NSCSS::CNode>& sSelectors, std::wstring sRStyle, bool bBdo, const CLi& oLi, bool& bWasP)
     {
         if(m_oLightReader.IsEmptyNode())
             return;
@@ -551,13 +563,16 @@ private:
         int nDeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode2(nDeath))
         {
-            std::vector<std::string> sSubClass = GetSubClass(sSelectors);
-            neadLi(bNeedLi, nLevelLi);
+
+            std::vector<NSCSS::CNode> sSubClass = GetSubClass(sSelectors);
+            neadLi(oLi);
 
             std::wstring sName = m_oLightReader.GetName();
             if(sName == L"#text")
             {
-                getStyle(sSubClass);
+                m_oDocXml += L"<w:pPr><w:pStyle w:val=\"";
+                m_oDocXml += getStyle(sSubClass);
+                m_oDocXml += L"\"/></w:pPr>";
                 std::wstring sText = m_oLightReader.GetText();
                 if(bBdo)
                     std::reverse(sText.begin(), sText.end());
@@ -571,10 +586,10 @@ private:
             }
             // Ссылки
             else if(sName == L"a")
-                readLink(sSubClass, sRStyle, bBdo, bNeedLi, nLevelLi, bWasP);
+                readLink(sSubClass, sRStyle, bBdo, oLi, bWasP);
             // Абревиатура, реализована как сноски
             else if(sName == L"abbr")
-                readAbbr(sSubClass, sRStyle, bBdo);
+                readAbbr(sSubClass, sRStyle, bBdo, oLi, bWasP);
             // Адрес
             else if(sName == L"address")
             {
@@ -583,7 +598,7 @@ private:
                     m_oDocXml += L"</w:p><w:p>";
                     bWasP = true;
                 }
-                readStream(sSubClass, sRStyle + L"<w:i/>", bBdo, bNeedLi, nLevelLi, bWasP);
+                readStream(sSubClass, sRStyle + L"<w:i/>", bBdo, oLi, bWasP);
                 if(!bWasP)
                 {
                     m_oDocXml += L"</w:p><w:p>";
@@ -599,14 +614,15 @@ private:
             // ...
             else if(sName == L"article" || sName == L"aside" || sName == L"blockquote" || sName == L"details" || sName == L"div" ||
                     sName == L"summary" || sName == L"dl" || sName == L"filedset" || sName == L"figure" || sName == L"figcaption" ||
-                    sName == L"footer" || sName == L"form" || sName == L"header" || sName == L"p" || sName == L"main" || sName == L"map")
+                    sName == L"footer" || sName == L"form" || sName == L"header" || sName == L"p" || sName == L"main" || sName == L"map" ||
+                    sName == L"nav" || sName == L"pre" || sName == L"section" || sName == L"option")
             {
                 if(!bWasP)
                 {
                     m_oDocXml += L"</w:p><w:p>";
                     bWasP = true;
                 }
-                readStream(sSubClass, sRStyle, bBdo, bNeedLi, nLevelLi, bWasP);
+                readStream(sSubClass, sRStyle, bBdo, oLi, bWasP);
                 if(!bWasP)
                 {
                     m_oDocXml += L"</w:p><w:p>";
@@ -614,8 +630,9 @@ private:
                 }
             }
             // Полужирный текст
-            else if(sName == L"b")
-                readStream(sSubClass, sRStyle + L"<w:b/>", bBdo, bNeedLi, nLevelLi, bWasP);
+            // Акцентированный текст
+            else if(sName == L"b" || sName == L"strong")
+                readStream(sSubClass, sRStyle + L"<w:b/>", bBdo, oLi, bWasP);
             // Направление текста
             else if(sName == L"bdo")
             {
@@ -626,38 +643,37 @@ private:
                 m_oLightReader.MoveToElement();
 
                 if(sDir == L"rtl")
-                    readStream(sSubClass, sRStyle, true, bNeedLi, nLevelLi, bWasP);
+                    readStream(sSubClass, sRStyle, true, oLi, bWasP);
                 else
-                    readStream(sSubClass, sRStyle, false, bNeedLi, nLevelLi, bWasP);
+                    readStream(sSubClass, sRStyle, false, oLi, bWasP);
             }
             // Отмена направления текста
             else if(sName == L"bdi")
-                readStream(sSubClass, sRStyle, false, bNeedLi, nLevelLi, bWasP);
+                readStream(sSubClass, sRStyle, false, oLi, bWasP);
+            // Увеличивает размер шрифта
+            else if(sName == L"big")
+                readStream(sSubClass, sRStyle + L"<w:sz w:val=\"26\"/>", bBdo, oLi, bWasP);
             // Перенос строки
             else if(sName == L"br")
             {
                 m_oDocXml += L"<w:r><w:br/></w:r>";
                 bWasP = false;
             }
-            // Кнопка
-            // Данные
-            // Подпись
-            else if(sName == L"button" || sName == L"data" || sName == L"label")
-                readStream(sSubClass, sRStyle, bBdo, bNeedLi, nLevelLi, bWasP);
             // Цитата, обычно выделяется курсивом
             // Новый термин, обычно выделяется курсивом
-            else if(sName == L"cite" || sName == L"dfn")
-                readStream(sSubClass, sRStyle + L"<w:i/>", bBdo, bNeedLi, nLevelLi, bWasP);
+            // Акцентированный текст
+            // Курсивный текст
+            // Переменная, обычно выделяется курсивом
+            else if(sName == L"cite" || sName == L"dfn" || sName == L"em" || sName == L"i" || sName == L"var")
+                readStream(sSubClass, sRStyle + L"<w:i/>", bBdo, oLi, bWasP);
             // Код
             // Моноширинный шрифт, например, Consolas
-            else if(sName == L"code" || sName == L"kbd")
-                readStream(sSubClass, sRStyle + L"<w:rFonts w:ascii=\"Consolas\" w:hAnsi=\"Consolas\"/>", bBdo, bNeedLi, nLevelLi, bWasP);
+            // Результат скрипта
+            else if(sName == L"code" || sName == L"kbd" || sName == L"samp")
+                readStream(sSubClass, sRStyle + L"<w:rFonts w:ascii=\"Consolas\" w:hAnsi=\"Consolas\"/>", bBdo, oLi, bWasP);
             // Зачеркнутый текст
-            else if(sName == L"del")
-                readStream(sSubClass, sRStyle + L"<w:strike/>", bBdo, bNeedLi, nLevelLi, bWasP);
-            // Акцентированный текст
-            else if(sName == L"em" || sName == L"i")
-                readStream(sSubClass, sRStyle + L"<w:i/>", bBdo, bNeedLi, nLevelLi, bWasP);
+            else if(sName == L"del" || sName == L"s")
+                readStream(sSubClass, sRStyle + L"<w:strike/>", bBdo, oLi, bWasP);
             // Заголовок
             else if(sName == L"h1" || sName == L"h2" || sName == L"h3" || sName == L"h4" || sName == L"h5" || sName == L"h6")
             {
@@ -666,10 +682,10 @@ private:
                     m_oDocXml += L"</w:p><w:p>";
                     bWasP = true;
                 }
-                m_oDocXml += L"<w:pPr><w:pStyle w:val=\"";
-                m_oDocXml += sName;
-                m_oDocXml += L"\"/></w:pPr>";
-                readStream(sSubClass, sRStyle, bBdo, bNeedLi, nLevelLi, bWasP);
+                //m_oDocXml += L"<w:pPr><w:pStyle w:val=\"";
+                //m_oDocXml += sName;
+                //m_oDocXml += L"\"/></w:pPr>";
+                readStream(sSubClass, sRStyle, bBdo, oLi, bWasP);
                 if(!bWasP)
                 {
                     m_oDocXml += L"</w:p><w:p>";
@@ -695,22 +711,80 @@ private:
             }
             // Подчеркнутый
             else if(sName == L"ins")
-                readStream(sSubClass, sRStyle + L"<w:u w:val=\"single\"/>", bBdo, bNeedLi, nLevelLi, bWasP);
-            // Маркированный список
-            else if(sName == L"ul")
-                readUl(sSubClass, sRStyle, bBdo, nLevelLi, bWasP);
+                readStream(sSubClass, sRStyle + L"<w:u w:val=\"single\"/>", bBdo, oLi, bWasP);
             // Выделенный текст, обычно выделяется желтым
             else if(sName == L"mark")
-                readStream(sSubClass, sRStyle + L"<w:highlight w:val=\"yellow\"/>", bBdo, bNeedLi, nLevelLi, bWasP);
+                readStream(sSubClass, sRStyle + L"<w:highlight w:val=\"yellow\"/>", bBdo, oLi, bWasP);
             // Математическая формула
             else if(sName == L"math")
             {
 
             }
-            // Игнорируемые
-            else if(sName == L"audio" || sName == L"canvas" || sName == L"command" || sName == L"datalist" || sName == L"embed" ||
-                    sName == L"input" || sName == L"iframe")
-                readStream(sSubClass, sRStyle, bBdo, bNeedLi, nLevelLi, bWasP);
+            // Меню
+            // Маркированный список
+            else if(sName == L"menu" || sName == L"ul")
+                readLi(sSubClass, sRStyle, bBdo, oLi, bWasP, true);
+            // Нумерованный список
+            else if(sName == L"ol")
+                readLi(sSubClass, sRStyle, bBdo, oLi, bWasP, false);
+            // Цитата, выделенная кавычками, обычно выделяется курсивом
+            else if(sName == L"q")
+            {
+                m_oDocXml += L"<w:r><w:t xml:space=\"preserve\">&quot;</w:t></w:r>";
+                readStream(sSubClass, sRStyle + L"<w:i/>", bBdo, oLi, bWasP);
+                m_oDocXml += L"<w:r><w:t xml:space=\"preserve\">&quot;</w:t></w:r>";
+                bWasP = false;
+            }
+            // Текст верхнего регистра
+            else if(sName == L"rt" || sName == L"sup")
+                readStream(sSubClass, sRStyle + L"<w:vertAlign w:val=\"superscript\"/>", bBdo, oLi, bWasP);
+            // Уменьшает размер шрифта
+            else if(sName == L"small")
+                readStream(sSubClass, sRStyle + L"<w:sz w:val=\"18\"/>", bBdo, oLi, bWasP);
+            // Текст нижнего регистра
+            else if(sName == L"sub")
+                readStream(sSubClass, sRStyle + L"<w:vertAlign w:val=\"subscript\"/>", bBdo, oLi, bWasP);
+            // Векторная картинка
+            else if(sName == L"svg")
+            {
+                readSVG();
+                bWasP = false;
+            }
+            // Таблицы
+            else if(sName == L"table")
+            {
+
+            }
+            // Текст с границами
+            else if(sName == L"textarea")
+            {
+                if(!bWasP)
+                {
+                    m_oDocXml += L"</w:p><w:p>";
+                    bWasP = true;
+                }
+                m_oDocXml += L"<w:pPr><w:pBdr><w:left w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:top w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:right w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr></w:pPr>";
+                readStream(sSubClass, sRStyle, bBdo, oLi, bWasP);
+                if(!bWasP)
+                {
+                    m_oDocXml += L"</w:p><w:p>";
+                    bWasP = true;
+                }
+            }
+            // Текст при отсутствии поддержки rt игнорируется
+            // Скрипт игнорируется
+            // Отложеное создание контента с помощью скрипта игнорируется
+            // Возможность разрыва слова игнорируется
+            // Активная область на изображении игнорируется
+            else if(sName == L"rp" || sName == L"script" || sName == L"template" || sName == L"wbr" || sName == L"area")
+                continue;
+            // Без нового абзаца
+            else if(sName == L"button" || sName == L"data" || sName == L"label" || sName == L"audio" || sName == L"canvas" ||
+                    sName == L"command" || sName == L"datalist" || sName == L"embed" || sName == L"input" || sName == L"iframe" ||
+                    sName == L"keygen" || sName == L"map" || sName == L"meter" || sName == L"noscript" || sName == L"object" ||
+                    sName == L"hgroup" || sName == L"output" || sName == L"progress" || sName == L"ruby" || sName == L"select" ||
+                    sName == L"span" || sName == L"time" || sName == L"video")
+                readStream(sSubClass, sRStyle, bBdo, oLi, bWasP);
             else
             {
                 if(!bWasP)
@@ -718,7 +792,7 @@ private:
                     m_oDocXml += L"</w:p><w:p>";
                     bWasP = true;
                 }
-                readStream(sSubClass, sRStyle, bBdo, bNeedLi, nLevelLi, bWasP);
+                readStream(sSubClass, sRStyle, bBdo, oLi, bWasP);
                 if(!bWasP)
                 {
                     m_oDocXml += L"</w:p><w:p>";
@@ -733,14 +807,18 @@ private:
         // sSelectors = getStyle(sSelectors);
 
         bool bWasP = true;
-        m_oDocXml += L"<w:p>";
-        std::vector<std::string> sSelectors;
+        std::vector<NSCSS::CNode> sSelectors;
         sSelectors = GetSubClass(sSelectors);
-        readStream(sSelectors, L"", false, false, -1, bWasP);
+        CLi oLi;
+        oLi.bNeedLi = false;
+        oLi.nLevelLi = -1;
+        oLi.bType = true;
+        m_oDocXml += L"<w:p>";
+        readStream(sSelectors, L"", false, oLi, bWasP);
         m_oDocXml += L"</w:p>";
     }
 
-    void readUl(std::vector<std::string>& sSelectors, std::wstring sRStyle, bool bBdo, int nLevelLi, bool& bWasP)
+    void readLi(std::vector<NSCSS::CNode>& sSelectors, std::wstring sRStyle, bool bBdo, const CLi& oLi, bool& bWasP, bool bType)
     {
         if(m_oLightReader.IsEmptyNode())
             return;
@@ -755,7 +833,11 @@ private:
                 m_oDocXml += L"</w:p><w:p>";
                 bWasP = true;
             }
-            readStream(sSelectors, sRStyle, bBdo, true, nLevelLi + 1, bWasP);
+            CLi oSubLi;
+            oSubLi.bNeedLi = true;
+            oSubLi.nLevelLi = oLi.nLevelLi + 1;
+            oSubLi.bType = bType;
+            readStream(sSelectors, sRStyle, bBdo, oSubLi, bWasP);
             if(!bWasP)
             {
                 m_oDocXml += L"</w:p><w:p>";
@@ -764,7 +846,7 @@ private:
         }
     }
 
-    void readAbbr(std::vector<std::string>& sSelectors, std::wstring sRStyle, bool bBdo)
+    void readAbbr(std::vector<NSCSS::CNode>& sSelectors, std::wstring sRStyle, bool bBdo, const CLi& oLi, bool& bWasP)
     {
         std::wstring sNote = L"";
         while(m_oLightReader.MoveToNextAttribute())
@@ -772,7 +854,7 @@ private:
                 sNote = m_oLightReader.GetText();
         m_oLightReader.MoveToElement();
 
-        readP(sSelectors, sRStyle, bBdo);
+        readStream(sSelectors, sRStyle, bBdo, oLi, bWasP);
 
         m_oDocXml += L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteReference w:id=\"";
         m_oDocXml += std::to_wstring(m_nFootnoteId);
@@ -785,7 +867,7 @@ private:
         m_oNoteXml += L"</w:t></w:r></w:p></w:footnote>";
     }
 
-    void readLink(std::vector<std::string>& sSelectors, std::wstring sRStyle, bool bBdo, bool bNeedLi, int nLevelLi, bool& bWasP)
+    void readLink(std::vector<NSCSS::CNode>& sSelectors, std::wstring sRStyle, bool bBdo, const CLi& oLi, bool& bWasP)
     {
         std::wstring sRef = L"";
         std::wstring sTitle = L"";
@@ -830,7 +912,7 @@ private:
         m_oDocXml += L"\" r:id=\"rHyp";
         m_oDocXml += std::to_wstring(m_nHyperlinkId++);
         m_oDocXml += L"\">";
-        readStream(sSelectors, sRStyle += L"<w:rStyle w:val=\"link\"/>", bBdo, bNeedLi, nLevelLi, bWasP);
+        readStream(sSelectors, sRStyle += L"<w:rStyle w:val=\"link\"/>", bBdo, oLi, bWasP);
         m_oDocXml += L"</w:hyperlink>";
     }
 
@@ -942,133 +1024,6 @@ private:
             }
         }
         m_oLightReader.MoveToElement();
-    }
-
-    void readP(std::vector<std::string>& sSelectors, std::wstring sRStyle, bool bBdo)
-    {
-        if(m_oLightReader.IsEmptyNode())
-            return;
-
-        int nDepth = m_oLightReader.GetDepth();
-        while(m_oLightReader.ReadNextSiblingNode2(nDepth))
-        {
-            std::vector<std::string> sSubClass; // = getStyle(sSelectors);
-
-            std::wstring sName = m_oLightReader.GetName();
-            if(sName == L"#text")
-            {
-                std::wstring sText = m_oLightReader.GetText();
-                if(bBdo)
-                    std::reverse(sText.begin(), sText.end());
-
-                m_oDocXml += L"<w:r><w:rPr>";
-                m_oDocXml += sRStyle;
-                m_oDocXml += L"</w:rPr><w:t xml:space=\"preserve\">";
-                m_oDocXml.WriteEncodeXmlString(sText);
-                m_oDocXml += L"</w:t></w:r>";
-
-            }
-            // Ссылки
-            else if(sName == L"a")
-            {
-                bool bWasP = true;
-                readLink(sSubClass, sRStyle, bBdo, false, -1, bWasP);
-            }
-            // Абревиатура, реализована как сноски
-            else if(sName == L"abbr")
-                readAbbr(sSubClass, sRStyle, bBdo);
-            // Полужирный текст
-            // Акцентированный текст
-            else if(sName == L"b" || sName == L"strong")
-                readP(sSubClass, sRStyle + L"<w:b/>", bBdo);
-            // Направление текста
-            else if(sName == L"bdo")
-            {
-                std::wstring sDir = L"";
-                while(m_oLightReader.MoveToNextAttribute())
-                    if(m_oLightReader.GetName() == L"dir")
-                        sDir = m_oLightReader.GetText();
-                m_oLightReader.MoveToElement();
-
-                if(sDir == L"ltr")
-                    readP(sSubClass, sRStyle, false);
-                else if(sDir == L"rtl")
-                    readP(sSubClass, sRStyle, true);
-                else
-                    readP(sSubClass, sRStyle, !bBdo);
-            }
-            // Отмена направления текста
-            else if(sName == L"bdi")
-                readP(sSubClass, sRStyle, false);
-            // Увеличивает размер шрифта
-            else if(sName == L"big")
-                readP(sSubClass, sRStyle + L"<w:sz w:val=\"26\"/>", bBdo);
-            // Перенос строки
-            else if(sName == L"br")
-                m_oDocXml += L"<w:r><w:br/></w:r>";
-            // Цитата, обычно выделяется курсивом
-            // Новый термин, обычно выделяется курсивом
-            // Акцентированный текст
-            // Курсивный текст
-            // Переменная, обычно выделяется курсивом
-            else if(sName == L"cite" || sName == L"dfn" || sName == L"em" || sName == L"i" || sName == L"var")
-                readP(sSubClass, sRStyle + L"<w:i/>", bBdo);
-            // Код
-            // Моноширинный шрифт, например, Consolas
-            // Результат скрипта
-            else if(sName == L"code" || sName == L"kbd" || sName == L"samp")
-                readP(sSubClass, sRStyle + L"<w:rFonts w:ascii=\"Consolas\" w:hAnsi=\"Consolas\"/>", bBdo);
-            // Зачеркнутый текст
-            else if(sName == L"del")
-                readP(sSubClass, sRStyle + L"<w:strike/>", bBdo);
-            // Картинки
-            else if(sName == L"img" || sName == L"image")
-                readImage();
-            // Метка
-            // Скрипты не поддерживаются
-            // Выводится информация с помощью скриптов
-            else if(sName == L"label" || sName == L"noscript" || sName == L"output")
-                readP(sSubClass, sRStyle, bBdo);
-            // Выделенный текст, обычно выделяется желтым
-            else if(sName == L"mark")
-                readP(sSubClass, sRStyle + L"<w:highlight w:val=\"yellow\"/>", bBdo);
-            // Математическая формула
-            else if(sName == L"math")
-            {
-
-            }
-            // Цитата, выделенная кавычками, обычно выделяется курсивом
-            else if(sName == L"q")
-            {
-                m_oDocXml += L"<w:r><w:t xml:space=\"preserve\">&quot;</w:t></w:r>";
-                readP(sSubClass, sRStyle + L"<w:i/>", bBdo);
-                m_oDocXml += L"<w:r><w:t xml:space=\"preserve\">&quot;</w:t></w:r>";
-            }
-            // Текст верхнего регистра
-            else if(sName == L"rt" || sName == L"sup")
-                readP(sSubClass, sRStyle + L"<w:vertAlign w:val=\"superscript\"/>", bBdo);
-            // Текст при отсутствии поддержки rt игнорируется
-            // Скрипт игнорируется
-            else if(sName == L"rp" || sName == L"script")
-                continue;
-            // Уменьшает размер шрифта
-            else if(sName == L"small")
-                readP(sSubClass, sRStyle + L"<w:sz w:val=\"18\"/>", bBdo);
-            // Текст нижнего регистра
-            else if(sName == L"sub")
-                readP(sSubClass, sRStyle + L"<w:vertAlign w:val=\"subscript\"/>", bBdo);
-            // Векторная картинка
-            else if(sName == L"svg")
-                readSVG();
-            // Текст с границами
-            else if(sName == L"textarea")
-            {
-                m_oDocXml += L"<w:pPr><w:pBdr><w:left w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:top w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:right w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr></w:pPr>";
-                readP(sSubClass, sRStyle, bBdo);
-            }
-            else
-                readP(sSubClass, sRStyle, bBdo);
-        }
     }
 
     void readSVG()

@@ -1,5 +1,6 @@
 #include "CDocumentStyle.h"
 
+#include <iostream>
 namespace NSCSS
 {
     CDocumentStyle::CDocumentStyle()
@@ -8,11 +9,6 @@ namespace NSCSS
 
     CDocumentStyle::~CDocumentStyle()
     {
-    }
-
-    CDocumentStyle::CDocumentStyle(NSCSS::CCompiledStyle& oStyle)
-    {
-        WriteStyle(oStyle);
     }
 
     std::wstring CDocumentStyle::GetStyle()
@@ -75,9 +71,49 @@ namespace NSCSS
 
         if (!oStyle.GetPadding().empty())
         {
-            m_sStyle += L"<w:ind w:firstLine=\"" + oStyle.GetTextIndent() + L"\"/>";
+            std::wstring sInd = L"<w:ind ";
+            std::wstring sPaddingLeft = oStyle.GetPaddingLeft();
+            std::wstring sPaddingRight = oStyle.GetPaddingRight();
+            bool bFl = false;
 
+
+            if (sPaddingLeft != L"0")
+            {
+                bFl = true;
+                sInd += L"w:left=\"" + sPaddingLeft + L"\" ";
+            }
+            if (sPaddingRight != L"0")
+            {
+                bFl = true;
+                sInd += L"w:right=\"" + sPaddingRight + L"\"";
+            }
+            sInd += L"/>";
+
+            if (bFl)
+                m_sStyle += sInd;
         }
+
+        if (true)
+        {
+            std::wstring sSpacing = L"<w:spacing ";
+            std::wstring sBefore = oStyle.GetMarginTop();
+            std::wstring sAfter = oStyle.GetMarginBottom();
+            std::wstring sLineHeight = oStyle.GetLineHeight();
+
+            if (isdigit(sBefore[0]))
+                sSpacing += L"w:before=\"" + sBefore + L"\" ";
+
+            if (isdigit(sAfter[0]))
+                sSpacing += L"w:after=\"" + sAfter + L"\" ";
+
+            if (isdigit(sLineHeight[0]))
+                sSpacing += L"w:line=\"" + sAfter + L"\" ";
+
+            sSpacing += L"w:lineRule=\"auto\"/>";
+
+            m_sStyle += sSpacing;
+        }
+
         if (!oStyle.GetTextDecoration().empty())
         {
             std::wstring sTextDecoration = oStyle.GetTextDecoration();
@@ -91,5 +127,4 @@ namespace NSCSS
         m_sStyle += L"</w:pPr>";
         m_sStyle += L"</w:style>";
     }
-
 }

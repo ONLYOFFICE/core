@@ -11,12 +11,10 @@ namespace NSCSS
         std::wstring m_sStyle;
     public:
         CDocumentStyle();
-        CDocumentStyle(NSCSS::CCompiledStyle& oStyle);
         ~CDocumentStyle();
 
-        void WriteStyle( NSCSS::CCompiledStyle& oStyle);
+        void WriteStyle(NSCSS::CCompiledStyle& oStyle);
         std::wstring GetStyle();
-
     };
 }
 #endif // CDOCUMENTSTYLE_H

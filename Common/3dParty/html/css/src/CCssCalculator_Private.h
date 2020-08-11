@@ -16,7 +16,8 @@ namespace NSCSS
         std::vector<std::wstring> m_arFiles;
 
         std::map<std::wstring, std::wstring> m_arTagsUsed;
-
+        std::map<std::wstring, CCompiledStyle*> m_arStyleUsed;
+                //selector     //style
         int m_nDpi = 96;
         std::wstring m_sEncoding = L"UTF-8";
         int m_nCountNodes = 0;
@@ -106,7 +107,7 @@ namespace NSCSS
         std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> GetDeclarations(const std::wstring& sSelector);
 
         CCompiledStyle GetCompiledStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure = Default);
-        CCompiledStyle GetCompiledStyle(const CNode& oNode, UnitMeasure unitMeasure = Default);
+        CCompiledStyle GetCompiledStyle(const CNode& oNode, UnitMeasure unitMeasure = Default, const std::vector<CNode>& oParents = std::vector<CNode>());
 
         void AddStyle(std::vector<std::string> sSelectors, const std::string& sStyle);
         void AddStyles(const std::string& sStyle);

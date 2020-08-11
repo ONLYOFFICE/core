@@ -577,7 +577,6 @@ namespace NSCSS
         if (unitMeasure != Default)
             SetUnitMeasure(unitMeasure);
 
-
         std::map<std::wstring, std::wstring> mStyle;
 
         std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> arStyle;
@@ -588,15 +587,14 @@ namespace NSCSS
 
         for (size_t i = 0; i < arSelectors.size(); i++)
         {
-
             std::wstring sSelector = stringToWstring(arSelectors[i]);
             std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> arTempDecls = GetDeclarations(sSelector);
             arStyle.insert(arStyle.end(), arTempDecls.begin(), arTempDecls.end());
             arTempDecls.clear();
             arTempDecls = GetDeclarations(L"*");
             arStyle.insert(arStyle.end(), arTempDecls.begin(), arTempDecls.end());
-
         }
+
         for (size_t i = 0; i < arStyle.size(); i++)
         {
             std::vector<std::pair<std::wstring, std::wstring>> arDeclarations = arStyle[i].second;
@@ -706,7 +704,7 @@ namespace NSCSS
         m_arData.push_back(oElement);
     }
 
-    CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const CNode& oNode, UnitMeasure unitMeasure)
+    CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const CNode& oNode, UnitMeasure unitMeasure, const std::vector<CNode>& oParents)
     {
         CCompiledStyle oStyle;
         m_nCountNodes++;

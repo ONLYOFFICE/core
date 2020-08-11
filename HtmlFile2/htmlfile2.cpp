@@ -548,6 +548,22 @@ private:
         }
     }
 
+    void readBody()
+    {
+        // sSelectors = getStyle(sSelectors);
+
+        bool bWasP = true;
+        std::vector<NSCSS::CNode> sSelectors;
+        sSelectors = GetSubClass(sSelectors);
+        CLi oLi;
+        oLi.bNeedLi = false;
+        oLi.nLevelLi = -1;
+        oLi.bType = true;
+        m_oDocXml += L"<w:p>";
+        readStream(sSelectors, L"", false, oLi, bWasP);
+        m_oDocXml += L"</w:p>";
+    }
+
     void readStream(std::vector<NSCSS::CNode>& sSelectors, std::wstring sRStyle, bool bBdo, const CLi& oLi, bool& bWasP)
     {
         if(m_oLightReader.IsEmptyNode())
@@ -562,9 +578,9 @@ private:
             std::wstring sName = m_oLightReader.GetName();
             if(sName == L"#text")
             {
-                //m_oDocXml += L"<w:pPr><w:pStyle w:val=\"";
-                //m_oDocXml += getStyle(sSubClass);
-                //m_oDocXml += L"\"/></w:pPr>";
+                m_oDocXml += L"<w:pPr><w:pStyle w:val=\"";
+                m_oDocXml += getStyle(sSubClass);
+                m_oDocXml += L"\"/></w:pPr>";
                 std::wstring sText = m_oLightReader.GetText();
                 if(bBdo)
                     std::reverse(sText.begin(), sText.end());
@@ -614,9 +630,9 @@ private:
                     m_oDocXml += L"</w:p><w:p>";
                     bWasP = true;
                 }
-                m_oDocXml += L"<w:pPr><w:pStyle w:val=\"";
-                m_oDocXml += sName;
-                m_oDocXml += L"\"/></w:pPr>";
+                //m_oDocXml += L"<w:pPr><w:pStyle w:val=\"";
+                //m_oDocXml += sName;
+                //m_oDocXml += L"\"/></w:pPr>";
                 readStream(sSubClass, sRStyle, bBdo, oLi, bWasP);
                 if(!bWasP)
                 {
@@ -677,9 +693,9 @@ private:
                     m_oDocXml += L"</w:p><w:p>";
                     bWasP = true;
                 }
-                m_oDocXml += L"<w:pPr><w:pStyle w:val=\"";
-                m_oDocXml += sName;
-                m_oDocXml += L"\"/></w:pPr>";
+                //m_oDocXml += L"<w:pPr><w:pStyle w:val=\"";
+                //m_oDocXml += sName;
+                //m_oDocXml += L"\"/></w:pPr>";
                 readStream(sSubClass, sRStyle, bBdo, oLi, bWasP);
                 if(!bWasP)
                 {
@@ -766,19 +782,15 @@ private:
                     bWasP = true;
                 }
             }
-            // Текст при отсутствии поддержки rt игнорируется
-            // Скрипт игнорируется
-            // Отложеное создание контента с помощью скрипта игнорируется
-            // Возможность разрыва слова игнорируется
-            // Активная область на изображении игнорируется
-            else if(sName == L"rp" || sName == L"script" || sName == L"template" || sName == L"wbr" || sName == L"area")
+            // Игнорируется
+            else if(sName == L"rp" || sName == L"script" || sName == L"template" || sName == L"wbr" || sName == L"area" || sName == L"audio" ||
+                    sName == L"video" || sName == L"canvas" || sName == L"command")
                 continue;
             // Без нового абзаца
-            else if(sName == L"button" || sName == L"data" || sName == L"label" || sName == L"audio" || sName == L"canvas" ||
-                    sName == L"command" || sName == L"datalist" || sName == L"embed" || sName == L"input" || sName == L"iframe" ||
+            else if(sName == L"button" || sName == L"data" || sName == L"label" || sName == L"audio" || sName == L"time" || sName == L"span" ||
+                    sName == L"datalist" || sName == L"embed" || sName == L"input" || sName == L"iframe" || sName == L"select" ||
                     sName == L"keygen" || sName == L"map" || sName == L"meter" || sName == L"noscript" || sName == L"object" ||
-                    sName == L"hgroup" || sName == L"output" || sName == L"progress" || sName == L"ruby" || sName == L"select" ||
-                    sName == L"span" || sName == L"time" || sName == L"video")
+                    sName == L"hgroup" || sName == L"output" || sName == L"progress" || sName == L"ruby")
                 readStream(sSubClass, sRStyle, bBdo, oLi, bWasP);
             else
             {
@@ -797,23 +809,7 @@ private:
         }
     }
 
-    void readBody()
-    {
-        // sSelectors = getStyle(sSelectors);
-
-        bool bWasP = true;
-        std::vector<NSCSS::CNode> sSelectors;
-        sSelectors = GetSubClass(sSelectors);
-        CLi oLi;
-        oLi.bNeedLi = false;
-        oLi.nLevelLi = -1;
-        oLi.bType = true;
-        m_oDocXml += L"<w:p>";
-        readStream(sSelectors, L"", false, oLi, bWasP);
-        m_oDocXml += L"</w:p>";
-    }
-
-    void readLi(std::vector<NSCSS::CNode>& sSelectors, std::wstring sRStyle, bool bBdo, const CLi& oLi, bool& bWasP, bool bType)
+    void readLi    (std::vector<NSCSS::CNode>& sSelectors, std::wstring sRStyle, bool bBdo, const CLi& oLi, bool& bWasP, bool bType)
     {
         if(m_oLightReader.IsEmptyNode())
             return;
@@ -846,7 +842,7 @@ private:
         }
     }
 
-    void readAbbr(std::vector<NSCSS::CNode>& sSelectors, std::wstring sRStyle, bool bBdo, const CLi& oLi, bool& bWasP)
+    void readAbbr  (std::vector<NSCSS::CNode>& sSelectors, std::wstring sRStyle, bool bBdo, const CLi& oLi, bool& bWasP)
     {
         std::wstring sNote = L"";
         while(m_oLightReader.MoveToNextAttribute())
@@ -867,7 +863,7 @@ private:
         m_oNoteXml += L"</w:t></w:r></w:p></w:footnote>";
     }
 
-    void readLink(std::vector<NSCSS::CNode>& sSelectors, std::wstring sRStyle, bool bBdo, const CLi& oLi, bool& bWasP)
+    void readLink  (std::vector<NSCSS::CNode>& sSelectors, std::wstring sRStyle, bool bBdo, const CLi& oLi, bool& bWasP)
     {
         std::wstring sRef = L"";
         std::wstring sTitle = L"";

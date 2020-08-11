@@ -312,6 +312,8 @@ void object_odf_context::calc_cache_series(std::wstring adress, std::vector<std:
 					//{
 						if (cash_values[i].col == col && cash_values[i].row != 0) 
 						{
+							if (cash_values[i].val == L"NaN")
+								cash_values[i].val.clear();
 							cash.push_back(cash_values[i].val);
 						}
 					//}

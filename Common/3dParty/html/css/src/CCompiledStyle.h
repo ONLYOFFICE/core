@@ -33,6 +33,7 @@ namespace NSCSS
         void AddPropSel(std::wstring sProperty, std::wstring sValue);
         void InsertStyle(std::map<std::wstring, std::wstring> mStyle);
         void SetStyle(std::map<std::wstring, std::wstring> mStyle);
+        void AddStyle(std::wstring sStyle);
 
         void SetID(std::wstring sId);
         std::wstring GetId();
@@ -73,11 +74,6 @@ namespace NSCSS
         std::wstring GetTextDecorationColor();
         std::wstring GetBackgroundColor();
         std::wstring GetColor();
-        std::wstring GetBorderColor();
-        std::wstring GetBorderBottomColor();
-        std::wstring GetBorderLeftColor();
-        std::wstring GetBorderRightColor();
-        std::wstring GetBordetTopColor();
         std::wstring GetOutlineColor();
         std::wstring GetColumnRuleColor();
 
@@ -86,6 +82,19 @@ namespace NSCSS
         std::wstring GetTextIndent();
         std::wstring GetTextDecoration();
 
+        /* BORDER */
+        std::wstring GetBorder();
+        std::wstring GetBorderBottom();
+        std::wstring GetBorderLeft();
+        std::wstring GetBorderRight();
+        std::wstring GetBorderTop();
+        std::wstring GetBorderWidth();
+        std::wstring GetBorderStyle();
+        std::wstring GetBorderColor();
+        std::wstring GetBorderBottomColor();
+        std::wstring GetBorderLeftColor();
+        std::wstring GetBorderRightColor();
+        std::wstring GetBordetTopColor();
 
         CCompiledStyle& operator+= (const CCompiledStyle& oElement);
         CCompiledStyle& operator= (const CCompiledStyle& oElement);

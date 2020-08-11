@@ -236,6 +236,16 @@ namespace NSCSS
         sText = stringToWstring(text);
         katana_parser_deallocate(&oParser, (void*) text);
 
+        if (sText.find(L' ') != std::wstring::npos)
+        {
+            std::wstring sTempText;
+            for (int i = 0; i < (int)sText.length(); i++)
+                if (!isspace(sText[i]))
+                    sTempText += sText[i];
+
+            return sTempText;
+        }
+
         return sText;
     }
 
@@ -581,6 +591,21 @@ namespace NSCSS
         if (unitMeasure != Default)
             SetUnitMeasure(unitMeasure);
 
+        std::vector<std::string> _arSelectors;
+
+        for (std::string sSelector : arSelectors)
+            if (sSelector.find(' ') != std::string::npos)
+            {
+                std::string sTempSelector;
+                for (int i = 0; i < (int)sSelector.length(); i++)
+                    if (!isspace(sSelector[i]))
+                        sTempSelector += sSelector[i];
+
+                _arSelectors.push_back(sTempSelector);
+            }
+            else
+                _arSelectors.push_back(sSelector);
+
         std::map<std::wstring, std::wstring> mStyle;
 
         std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> arStyle;
@@ -588,15 +613,14 @@ namespace NSCSS
 
         std::map<std::wstring, std::wstring> arPropSel; //мапа (свойство, что уже было использовано, селектор этого свойства)
 
-
-        for (size_t i = 0; i < arSelectors.size(); i++)
+        for (size_t i = 0; i < _arSelectors.size(); i++)
         {
-            std::wstring sSelector = stringToWstring(arSelectors[i]);
+            std::wstring sSelector = stringToWstring(_arSelectors[i]);
             std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> arTempDecls = GetDeclarations(sSelector);
             arStyle.insert(arStyle.end(), arTempDecls.begin(), arTempDecls.end());
-            arTempDecls.clear();
-            arTempDecls = GetDeclarations(L"*");
-            arStyle.insert(arStyle.end(), arTempDecls.begin(), arTempDecls.end());
+//            arTempDecls.clear();
+//            arTempDecls = GetDeclarations(L"*");
+//            arStyle.insert(arStyle.end(), arTempDecls.begin(), arTempDecls.end());
         }
 
         for (size_t i = 0; i < arStyle.size(); i++)
@@ -714,6 +738,9 @@ namespace NSCSS
         m_nCountNodes++;
         oStyle.SetID(L"paragraph" + std::to_wstring(m_nCountNodes));
 
+        for (size_t i = 0; i < oParents.size(); i++)
+            oStyle += GetCompiledStyle(oParents[i], unitMeasure);
+
         if (!oNode.m_sName.empty())
         {
             if (m_arStyleUsed.find(oNode.m_sName) != m_arStyleUsed.cend())
@@ -726,35 +753,68 @@ namespace NSCSS
                 oStyle += *oStyleName;
             }
         }
+        else
+            return CCompiledStyle();
+
         if (!oNode.m_sClass.empty())
         {
-            if (m_arStyleUsed.find(oNode.m_sClass) != m_arStyleUsed.cend())
-                oStyle += *m_arStyleUsed[oNode.m_sClass];
+            std::wstring sClassName = oNode.m_sClass;
+
+            if (sClassName[0] != L'.')
+                sClassName = L'.' + sClassName;
+
+            if (m_arStyleUsed.find(sClassName) != m_arStyleUsed.cend())
+                oStyle += *m_arStyleUsed[sClassName];
             else
             {
                 CCompiledStyle *oStyleClass = new CCompiledStyle();
-                *oStyleClass = GetCompiledStyle(std::vector<std::string>() = {std::string(oNode.m_sClass.begin(), oNode.m_sClass.end())}, unitMeasure);
-                m_arStyleUsed.emplace(oNode.m_sClass, oStyleClass);
+                *oStyleClass = GetCompiledStyle(std::vector<std::string>() = {std::string(sClassName.begin(), sClassName.end())}, unitMeasure);
+                m_arStyleUsed.emplace(sClassName, oStyleClass);
                 oStyle += *oStyleClass;
             }
         }
 
         if (!oNode.m_sId.empty())
         {
-            if (m_arStyleUsed.find(oNode.m_sId) != m_arStyleUsed.cend())
-                oStyle += *m_arStyleUsed[oNode.m_sId];
+            std::wstring sId = oNode.m_sId;
+
+            if (sId[0] != L'#')
+                sId = L'#' + sId;
+
+            if (m_arStyleUsed.find(sId) != m_arStyleUsed.cend())
+                oStyle += *m_arStyleUsed[sId];
             else
             {
                 CCompiledStyle *oStyleId = new CCompiledStyle();
-                *oStyleId = GetCompiledStyle(std::vector<std::string>() = {std::string(oNode.m_sId.begin(), oNode.m_sId.end())}, unitMeasure);
-                m_arStyleUsed.emplace(oNode.m_sId, oStyleId);
+                *oStyleId = GetCompiledStyle(std::vector<std::string>() = {std::string(sId.begin(), sId.end())}, unitMeasure);
+                m_arStyleUsed.emplace(sId, oStyleId);
                 oStyle += *oStyleId;
             }
         }
 
-        for (size_t i = 0; i < oParents.size(); i++)
+        if (!oNode.m_sName.empty() && !oNode.m_sClass.empty())
         {
-            oStyle += GetCompiledStyle(oParents[i], unitMeasure);
+            std::wstring sSelector = oNode.m_sName + oNode.m_sClass;
+            oStyle += GetCompiledStyle(std::vector<std::string>() = {std::string(sSelector.begin(), sSelector.end())}, unitMeasure);
+        }
+
+        if (!oNode.m_sName.empty() && !oNode.m_sId.empty())
+        {
+            std::wstring sSelector = oNode.m_sName + oNode.m_sId;
+            oStyle += GetCompiledStyle(std::vector<std::string>() = {std::string(sSelector.begin(), sSelector.end())}, unitMeasure);
+        }
+
+        if (!oNode.m_sName.empty() && !oNode.m_sClass.empty() && !oNode.m_sId.empty())
+        {
+            std::wstring sSelector = oNode.m_sName + oNode.m_sClass + oNode.m_sId;
+            oStyle += GetCompiledStyle(std::vector<std::string>() = {std::string(sSelector.begin(), sSelector.end())}, unitMeasure);
+        }
+
+        if (!oNode.m_sStyle.empty())
+        {
+            CCompiledStyle oTempStyle;
+            oTempStyle.AddStyle(oNode.m_sStyle);
+            oStyle += oTempStyle;
         }
 
         return oStyle;

@@ -16,10 +16,16 @@ namespace NSCSS
         return m_sStyle;
     }
 
+    std::wstring CDocumentStyle::GetId()
+    {
+        return m_sId;
+    }
+
     void CDocumentStyle::WriteStyle(NSCSS::CCompiledStyle &oStyle)
     {
+        m_sId = oStyle.GetId();
         // пофиксить появление пробелов
-        std::wstring sId = oStyle.GetId();
+        std::wstring sId = m_sId;
         if (sId.find(L" ") != std::wstring::npos)
             sId = sId.substr(0, sId.find(L" "));
 

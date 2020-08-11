@@ -51,7 +51,16 @@ void CElement::AddChildren(CElement *oChildren)
 
 void CElement::AddSelector(std::wstring sSelector)
 {
-    m_arSelectors.push_back(sSelector);
+    if (sSelector.find(L' ') != std::wstring::npos)
+    {
+        std::wstring sTempSelector;
+        for (int i = 0; i < (int)sSelector.length(); i++)
+            if (!isspace(sSelector[i]))
+                sTempSelector += sSelector[i];
+        m_arSelectors.push_back(sSelector);
+    }
+    else
+        m_arSelectors.push_back(sSelector);
 }
 
 void CElement::AddDeclaration(std::pair<std::wstring, std::wstring> pDeclaration)

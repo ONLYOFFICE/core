@@ -25,9 +25,9 @@ namespace NSCSS
         return  m_pInternal->GetCompiledStyle(arSelectors, unitMeasure);
     }
 
-    CCompiledStyle CCssCalculator::GetCompiledStyle(const CNode& oNode, UnitMeasure unitMeasure, const std::vector<CNode>& oParents)
+    CCompiledStyle CCssCalculator::GetCompiledStyle(const CNode& oNode, const std::vector<CNode>& oParents, UnitMeasure unitMeasure)
     {
-        return  m_pInternal->GetCompiledStyle(oNode, unitMeasure, oParents);
+        return  m_pInternal->GetCompiledStyle(oNode, oParents, unitMeasure);
     }
 
     void CCssCalculator::AddStyle(std::vector<std::string> sSelectors, const std::string &sStyle)

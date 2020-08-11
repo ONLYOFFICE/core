@@ -732,14 +732,14 @@ namespace NSCSS
         m_arData.push_back(oElement);
     }
 
-    CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const CNode& oNode, UnitMeasure unitMeasure, const std::vector<CNode>& oParents)
+    CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const CNode& oNode, const std::vector<CNode>& oParents, UnitMeasure unitMeasure)
     {
         CCompiledStyle oStyle;
         m_nCountNodes++;
         oStyle.SetID(L"paragraph" + std::to_wstring(m_nCountNodes));
 
         for (size_t i = 0; i < oParents.size(); i++)
-            oStyle += GetCompiledStyle(oParents[i], unitMeasure);
+            oStyle += GetCompiledStyle(oParents[i],{}, unitMeasure);
 
         if (!oNode.m_sName.empty())
         {
@@ -763,6 +763,8 @@ namespace NSCSS
             if (sClassName[0] != L'.')
                 sClassName = L'.' + sClassName;
 
+            oStyle.SetID(sClassName + std::to_wstring(m_nCountNodes));
+
             if (m_arStyleUsed.find(sClassName) != m_arStyleUsed.cend())
                 oStyle += *m_arStyleUsed[sClassName];
             else
@@ -772,14 +774,18 @@ namespace NSCSS
                 m_arStyleUsed.emplace(sClassName, oStyleClass);
                 oStyle += *oStyleClass;
             }
+
         }
 
         if (!oNode.m_sId.empty())
         {
+
             std::wstring sId = oNode.m_sId;
 
             if (sId[0] != L'#')
                 sId = L'#' + sId;
+
+            oStyle.SetID(sId + std::to_wstring(m_nCountNodes));
 
             if (m_arStyleUsed.find(sId) != m_arStyleUsed.cend())
                 oStyle += *m_arStyleUsed[sId];

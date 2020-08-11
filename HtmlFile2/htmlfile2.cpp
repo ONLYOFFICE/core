@@ -622,7 +622,7 @@ private:
             // ...
             else if(sName == L"article" || sName == L"aside" || sName == L"blockquote" || sName == L"details" || sName == L"div" ||
                     sName == L"summary" || sName == L"dl" || sName == L"filedset" || sName == L"figure" || sName == L"figcaption" ||
-                    sName == L"footer" || sName == L"form" || sName == L"header" || sName == L"p" || sName == L"main" || sName == L"map" ||
+                    sName == L"footer" || sName == L"form" || sName == L"header" || sName == L"p" || sName == L"main" ||
                     sName == L"nav" || sName == L"pre" || sName == L"section" || sName == L"option")
             {
                 if(!bWasP)
@@ -784,12 +784,13 @@ private:
             }
             // Игнорируется
             else if(sName == L"rp" || sName == L"script" || sName == L"template" || sName == L"wbr" || sName == L"area" || sName == L"audio" ||
-                    sName == L"video" || sName == L"canvas" || sName == L"command")
+                    sName == L"video" || sName == L"canvas" || sName == L"command" || sName == L"map" || sName == L"embed" ||
+                    sName == L"iframe" || sName == L"keygen")
                 continue;
             // Без нового абзаца
             else if(sName == L"button" || sName == L"data" || sName == L"label" || sName == L"audio" || sName == L"time" || sName == L"span" ||
-                    sName == L"datalist" || sName == L"embed" || sName == L"input" || sName == L"iframe" || sName == L"select" ||
-                    sName == L"keygen" || sName == L"map" || sName == L"meter" || sName == L"noscript" || sName == L"object" ||
+                    sName == L"datalist" || sName == L"input" || sName == L"select" ||
+                    sName == L"meter" || sName == L"noscript" || sName == L"object" ||
                     sName == L"hgroup" || sName == L"output" || sName == L"progress" || sName == L"ruby")
                 readStream(sSubClass, sRStyle, bBdo, oLi, bWasP);
             else

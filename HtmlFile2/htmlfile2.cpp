@@ -290,10 +290,7 @@ public:
             if(sName == L"head")
                 readHead();
             else if(sName == L"body")
-            {
-                std::vector<std::string> sSelectors;
-                readBody(sSelectors);
-            }
+                readBody();
         }
         return true;
     }
@@ -472,7 +469,7 @@ private:
     }
     */
 
-    std::vector<std::string> getStyle(std::vector<std::string>& sSelectors)
+    std::vector<std::string> GetSubClass(std::vector<std::string>& sSelectors)
     {
         std::vector<std::string> sSubClass(sSelectors);
 
@@ -494,16 +491,21 @@ private:
             sSelector += "#" + sId + " ";
         if(!sClass.empty())
             sSelector += "." + sClass + " ";
-        sSelector += m_oLightReader.GetNameA();
+        std::string sName = m_oLightReader.GetNameA();
+        if(sName == "#text")
+            return sSubClass;
+        sSelector += sName;
 
         sSubClass.push_back(sSelector);
+        return sSubClass;
+    }
 
-        NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSubClass);
+    void getStyle(std::vector<std::string>& sSelectors)
+    {
+        NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
         NSCSS::CDocumentStyle oXmlStyle;
         oXmlStyle.WriteStyle(oStyle);
         m_oStylesXml += oXmlStyle.GetStyle();
-
-        return sSubClass;
     }
 
     void readHead()
@@ -549,12 +551,13 @@ private:
         int nDeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode2(nDeath))
         {
-            std::vector<std::string> sSubClass = getStyle(sSelectors);
+            std::vector<std::string> sSubClass = GetSubClass(sSelectors);
             neadLi(bNeedLi, nLevelLi);
 
             std::wstring sName = m_oLightReader.GetName();
             if(sName == L"#text")
             {
+                getStyle(sSubClass);
                 std::wstring sText = m_oLightReader.GetText();
                 if(bBdo)
                     std::reverse(sText.begin(), sText.end());
@@ -725,12 +728,14 @@ private:
         }
     }
 
-    void readBody(std::vector<std::string>& sSelectors)
+    void readBody()
     {
         // sSelectors = getStyle(sSelectors);
 
         bool bWasP = true;
         m_oDocXml += L"<w:p>";
+        std::vector<std::string> sSelectors;
+        sSelectors = GetSubClass(sSelectors);
         readStream(sSelectors, L"", false, false, -1, bWasP);
         m_oDocXml += L"</w:p>";
     }

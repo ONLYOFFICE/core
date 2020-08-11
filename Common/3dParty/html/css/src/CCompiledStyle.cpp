@@ -31,7 +31,7 @@ namespace NSCSS
         for(auto& it : oElement.m_mStyle)
             m_mStyle[it.first] = it.second;
 
-        m_sId += L" " + oElement.m_sId;
+//        m_sId += L" " + oElement.m_sId;
 
         return *this;
     }

@@ -90,6 +90,10 @@ namespace NSCSS
         for (size_t i = 0; i < m_arData.size(); i++)
             delete m_arData[i];
 
+        for (auto iter = m_arStyleUsed.begin(); iter != m_arStyleUsed.end(); iter++)
+            delete iter->second;
+
+        m_arStyleUsed.clear();
         m_arData.clear();
     }
 
@@ -711,13 +715,47 @@ namespace NSCSS
         oStyle.SetID(L"paragraph" + std::to_wstring(m_nCountNodes));
 
         if (!oNode.m_sName.empty())
-            oStyle += GetCompiledStyle(std::vector<std::string>() = {std::string(oNode.m_sName.begin(), oNode.m_sName.end())}, unitMeasure);
-
+        {
+            if (m_arStyleUsed.find(oNode.m_sName) != m_arStyleUsed.cend())
+                oStyle += *m_arStyleUsed[oNode.m_sName];
+            else
+            {
+                CCompiledStyle *oStyleName = new CCompiledStyle();
+                *oStyleName = GetCompiledStyle(std::vector<std::string>() = {std::string(oNode.m_sName.begin(), oNode.m_sName.end())}, unitMeasure);
+                m_arStyleUsed.emplace(oNode.m_sName, oStyleName);
+                oStyle += *oStyleName;
+            }
+        }
         if (!oNode.m_sClass.empty())
-            oStyle += GetCompiledStyle(std::vector<std::string>() = {std::string(oNode.m_sClass.begin(), oNode.m_sClass.end())}, unitMeasure);
+        {
+            if (m_arStyleUsed.find(oNode.m_sClass) != m_arStyleUsed.cend())
+                oStyle += *m_arStyleUsed[oNode.m_sClass];
+            else
+            {
+                CCompiledStyle *oStyleClass = new CCompiledStyle();
+                *oStyleClass = GetCompiledStyle(std::vector<std::string>() = {std::string(oNode.m_sClass.begin(), oNode.m_sClass.end())}, unitMeasure);
+                m_arStyleUsed.emplace(oNode.m_sClass, oStyleClass);
+                oStyle += *oStyleClass;
+            }
+        }
 
         if (!oNode.m_sId.empty())
-            oStyle += GetCompiledStyle(std::vector<std::string>() = {std::string(oNode.m_sId.begin(), oNode.m_sId.end())}, unitMeasure);
+        {
+            if (m_arStyleUsed.find(oNode.m_sId) != m_arStyleUsed.cend())
+                oStyle += *m_arStyleUsed[oNode.m_sId];
+            else
+            {
+                CCompiledStyle *oStyleId = new CCompiledStyle();
+                *oStyleId = GetCompiledStyle(std::vector<std::string>() = {std::string(oNode.m_sId.begin(), oNode.m_sId.end())}, unitMeasure);
+                m_arStyleUsed.emplace(oNode.m_sId, oStyleId);
+                oStyle += *oStyleId;
+            }
+        }
+
+        for (size_t i = 0; i < oParents.size(); i++)
+        {
+            oStyle += GetCompiledStyle(oParents[i], unitMeasure);
+        }
 
         return oStyle;
     }
@@ -1916,6 +1954,10 @@ namespace NSCSS
         for (size_t i = 0; i < m_arData.size(); i++)
             delete m_arData[i];
 
+        for (auto iter = m_arStyleUsed.begin(); iter != m_arStyleUsed.end(); iter++)
+            delete iter->second;
+
+        m_arStyleUsed.clear();
         m_arData.clear();
         m_arFiles.clear();
     }

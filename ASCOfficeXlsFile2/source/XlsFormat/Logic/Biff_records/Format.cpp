@@ -71,7 +71,9 @@ void Format::readFields(CFRecord& record)
 
 int Format::serialize(std::wostream & stream)
 {
-    CP_XML_WRITER(stream)    
+    if ((ifmt > 4 && ifmt < 9) || (ifmt > 40 && ifmt < 45)) return 0;
+
+	CP_XML_WRITER(stream)    
     {
         CP_XML_NODE(L"numFmt")
         {

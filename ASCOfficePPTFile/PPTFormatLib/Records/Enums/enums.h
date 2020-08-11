@@ -95,3 +95,107 @@ enum ConditionEnum
     TL_CT_Previous,
     TL_CT_EndSync
 };
+
+
+enum DiagramBuildEnum
+{
+    TLDB_AsOneObject,
+    TLDB_DepthByNode,
+    TLDB_DepthByBranch,
+    TLDB_BreadthByNode,
+    TLDB_BreadthByLevel,
+    TLDB_ClockWise,
+    TLDB_ClockWiseIn,
+    TLDB_ClockWiseOut,
+    TLDB_CounterClockWise,
+    TLDB_CounterClockWiseIn,
+    TLDB_CounterClockWiseOut,
+    TLDB_InByRing,
+    TLDB_OutByRing,
+    TLDB_Up,
+    TLDB_Down,
+    TLDB_AllAtOnce,
+    TLDB_Custom
+};
+
+
+enum DiffTypeEnum
+{
+    Diff_DocDiff,
+    Diff_SlideDiff          = 0x2,
+    Diff_MainMasterDiff,
+    Diff_SlideListDiff,
+    Diff_MasterListDiff,
+    Diff_ShapeListDiff,
+    Diff_ShapeDiff,
+    Diff_TextDiff           = 0x9,
+    Diff_NotesDiff,
+    Diff_SlideShowDiff,
+    Diff_HeaderFooterDiff,
+    Diff_NamedShowDiff      = 0xE,
+    Diff_NamedShowListDiff,
+    Diff_RecolorInfoDiff    = 0x12,
+    Diff_ExternalObjectDiff,
+    Diff_TableListDiff      = 0x15,
+    Diff_TableDiff,
+    Diff_InteractiveInfoDiff
+};
+
+
+enum ExColorFollowEnum
+{
+    ExColor_FollowNone,
+    ExColor_FollowScheme,
+    ExColor_FollowTextAndBackground
+};
+
+
+enum ExOleObjSubTypeEnum
+{
+    ExOleSub_Default,
+    ExOleSub_Clipart,
+    ExOleSub_WordDoc,
+    ExOleSub_Excel,
+    ExOleSub_Graph,
+    ExOleSub_OrgChart,
+    ExOleSub_Equation,
+    ExOleSub_WordArt,
+    ExOleSub_Sound,
+    ExOleSub_Project        = 0xC,
+    ExOleSub_NoteIt,
+    ExOleSub_ExcelChart,
+    ExOleSub_MediaPlayer,
+    ExOleSub_WordPad,
+    ExOleSub_Visio,
+    ExOleSub_WordODF,
+    ExOleSub_ExcelODF,
+    ExOleSub_PPTODF
+};
+
+
+enum ExOleObjTypeEnum
+{
+    ExOle_Embedded,
+    ExOle_Link,
+    ExOle_Control
+};
+
+
+enum InteractiveInfoActionEnum
+{
+    II_NoAction,
+    II_MacroAction,
+    II_RunProgramAction,
+    II_JumpAction,
+    II_HyperlinkAction,
+    II_OLEAction,
+    II_MediaAction,
+    II_CustomShowAction
+};
+
+
+enum InteractiveInfoJumpEnum
+{
+    II_NoJump,
+    II_NextSlideII_PreviousSlideII_FirstSlideII_LastSlideII_LastSlideViewedII_EndShow
+};

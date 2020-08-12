@@ -44,7 +44,7 @@ public:
     std::wstring m_sDst;  // Директория назначения
     std::wstring m_sBase; // Полный базовый адрес
 
-    std::map<std::wstring, std::vector<std::wstring>> m_sSrcs;   // Имена обрабатываемых файлов (имя файла, имя перекрестной ссылки)
+    std::map<std::wstring, std::vector<std::wstring>> m_sSrcs; // Имена обрабатываемых файлов (имя файла, имя перекрестной ссылки)
     std::map<std::wstring, std::wstring> m_mStyles; // Стили в document.xml. Хранятся как (имя тэга, его стиль)
 
 private:
@@ -286,16 +286,18 @@ public:
 
         // Стили по умолчанию
         // Нормальный стиль, от которого базируются
-        // m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"normal\" w:default=\"1\"><w:name w:val=\"Normal\"/><w:qFormat/></w:style>";
+        m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"normal\" w:default=\"1\"><w:name w:val=\"Normal\"/><w:qFormat/></w:style>";
         // Маркированный список
-        // m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"li\"><w:name w:val=\"List Paragraph\"/><w:basedOn w:val=\"normal\"/><w:qFormat/><w:uiPriority w:val=\"34\"/><w:pPr><w:contextualSpacing w:val=\"true\"/><w:ind w:left=\"720\"/></w:pPr></w:style>";
+        m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"li\"><w:name w:val=\"List Paragraph\"/><w:basedOn w:val=\"normal\"/><w:qFormat/><w:uiPriority w:val=\"34\"/><w:pPr><w:contextualSpacing w:val=\"true\"/><w:ind w:left=\"720\"/></w:pPr></w:style>";
         // Заголовки
-        // m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"h1\"><w:name w:val=\"Heading 1\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title1-c\"/><w:qFormat/><w:rPr><w:b/><w:bCs/><w:color w:val=\"000000\" w:themeColor=\"text1\"/><w:sz w:val=\"48\"/><w:szCs w:val=\"48\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"480\"/><w:outlineLvl w:val=\"0\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h2\"><w:name w:val=\"Heading 2\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title2-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:b/><w:bCs/><w:color w:val=\"000000\" w:themeColor=\"text1\"/><w:sz w:val=\"40\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"1\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h3\"><w:name w:val=\"Heading 3\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title3-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:b/><w:bCs/><w:i/><w:iCs/><w:color w:val=\"000000\" w:themeColor=\"text1\"/><w:sz w:val=\"36\"/><w:szCs w:val=\"36\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"2\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h4\"><w:name w:val=\"Heading 4\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title4-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:color w:val=\"232323\"/><w:sz w:val=\"32\"/><w:szCs w:val=\"32\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"3\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h5\"><w:name w:val=\"Heading 5\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title5-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:b/><w:bCs/><w:color w:val=\"444444\"/><w:sz w:val=\"28\"/><w:szCs w:val=\"28\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"4\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h6\"><w:name w:val=\"Heading 6\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title6-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:i/><w:iCs/><w:color w:val=\"232323\"/><w:sz w:val=\"28\"/><w:szCs w:val=\"28\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"5\"/></w:pPr></w:style><w:style w:type=\"character\" w:styleId=\"title1-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 1 Знак\"/><w:link w:val=\"title1\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:sz w:val=\"40\"/><w:szCs w:val=\"40\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title2-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 2 Знак\"/><w:link w:val=\"title2\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:sz w:val=\"34\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title3-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 3 Знак\"/><w:link w:val=\"title3\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:sz w:val=\"30\"/><w:szCs w:val=\"30\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title4-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 4 Знак\"/><w:link w:val=\"title4\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:b/><w:bCs/><w:sz w:val=\"26\"/><w:szCs w:val=\"26\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title5-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 5 Знак\"/><w:link w:val=\"title5\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:b/><w:bCs/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title6-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 6 Знак\"/><w:link w:val=\"title6\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:b/><w:bCs/><w:sz w:val=\"22\"/><w:szCs w:val=\"22\"/></w:rPr></w:style>";
+        m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"h1\"><w:name w:val=\"Heading 1\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title1-c\"/><w:qFormat/><w:rPr><w:b/><w:bCs/><w:color w:val=\"000000\" w:themeColor=\"text1\"/><w:sz w:val=\"48\"/><w:szCs w:val=\"48\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"480\"/><w:outlineLvl w:val=\"0\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h2\"><w:name w:val=\"Heading 2\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title2-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:b/><w:bCs/><w:color w:val=\"000000\" w:themeColor=\"text1\"/><w:sz w:val=\"40\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"1\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h3\"><w:name w:val=\"Heading 3\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title3-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:b/><w:bCs/><w:i/><w:iCs/><w:color w:val=\"000000\" w:themeColor=\"text1\"/><w:sz w:val=\"36\"/><w:szCs w:val=\"36\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"2\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h4\"><w:name w:val=\"Heading 4\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title4-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:color w:val=\"232323\"/><w:sz w:val=\"32\"/><w:szCs w:val=\"32\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"3\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h5\"><w:name w:val=\"Heading 5\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title5-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:b/><w:bCs/><w:color w:val=\"444444\"/><w:sz w:val=\"28\"/><w:szCs w:val=\"28\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"4\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h6\"><w:name w:val=\"Heading 6\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title6-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:i/><w:iCs/><w:color w:val=\"232323\"/><w:sz w:val=\"28\"/><w:szCs w:val=\"28\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"5\"/></w:pPr></w:style><w:style w:type=\"character\" w:styleId=\"title1-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 1 Знак\"/><w:link w:val=\"title1\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:sz w:val=\"40\"/><w:szCs w:val=\"40\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title2-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 2 Знак\"/><w:link w:val=\"title2\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:sz w:val=\"34\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title3-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 3 Знак\"/><w:link w:val=\"title3\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:sz w:val=\"30\"/><w:szCs w:val=\"30\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title4-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 4 Знак\"/><w:link w:val=\"title4\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:b/><w:bCs/><w:sz w:val=\"26\"/><w:szCs w:val=\"26\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title5-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 5 Знак\"/><w:link w:val=\"title5\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:b/><w:bCs/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title6-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 6 Знак\"/><w:link w:val=\"title6\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:b/><w:bCs/><w:sz w:val=\"22\"/><w:szCs w:val=\"22\"/></w:rPr></w:style>";
         // Текст: p, div
-        // m_oStylesXml += L"<w:style w:type=\"character\" w:styleId=\"section-p-c\" w:customStyle=\"1\"><w:name w:val=\"Paragraph_character\"/><w:link w:val=\"p\"/></w:style><w:style w:type=\"paragraph\" w:styleId=\"p\" w:customStyle=\"1\"><w:name w:val=\"Paragraph\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"section-p-c\"/><w:qFormat/><w:pPr><w:ind w:firstLine=\"567\"/><w:jc w:val=\"both\"/></w:pPr></w:style>";
-        // m_oStylesXml += L"<w:style w:type=\"character\" w:styleId=\"section-p-c\" w:customStyle=\"1\"><w:name w:val=\"Paragraph_character\"/><w:link w:val=\"div\"/></w:style><w:style w:type=\"paragraph\" w:styleId=\"div\" w:customStyle=\"1\"><w:name w:val=\"Paragraph\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"section-p-c\"/><w:qFormat/><w:pPr><w:ind w:firstLine=\"567\"/><w:jc w:val=\"both\"/></w:pPr></w:style>";
-        // Ссылки
-        // m_oStylesXml += L"<w:style w:type=\"character\" w:styleId=\"a\"><w:name w:val=\"Hyperlink\"/><w:uiPriority w:val=\"99\"/><w:unhideWhenUsed/><w:rPr><w:color w:val=\"0563C1\" w:themeColor=\"hyperlink\"/><w:u w:val=\"single\"/></w:rPr></w:style>";
+        m_oStylesXml += L"<w:style w:type=\"character\" w:styleId=\"section-p-c\" w:customStyle=\"1\"><w:name w:val=\"Paragraph_character\"/><w:link w:val=\"p\"/></w:style><w:style w:type=\"paragraph\" w:styleId=\"p\" w:customStyle=\"1\"><w:name w:val=\"Paragraph\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"section-p-c\"/><w:qFormat/><w:pPr><w:ind w:firstLine=\"567\"/><w:jc w:val=\"both\"/></w:pPr></w:style>";
+        m_oStylesXml += L"<w:style w:type=\"character\" w:styleId=\"section-p-c\" w:customStyle=\"1\"><w:name w:val=\"Paragraph_character\"/><w:link w:val=\"div\"/></w:style><w:style w:type=\"paragraph\" w:styleId=\"div\" w:customStyle=\"1\"><w:name w:val=\"Paragraph\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"section-p-c\"/><w:qFormat/><w:pPr><w:ind w:firstLine=\"567\"/><w:jc w:val=\"both\"/></w:pPr></w:style>";
+        // Ссылка
+        m_oStylesXml += L"<w:style w:type=\"character\" w:styleId=\"a\"><w:name w:val=\"Hyperlink\"/><w:uiPriority w:val=\"99\"/><w:unhideWhenUsed/><w:rPr><w:color w:val=\"0563C1\" w:themeColor=\"hyperlink\"/><w:u w:val=\"single\"/></w:rPr></w:style>";
+        // Таблица
+        m_oStylesXml += L"<w:style w:type=\"table\" w:default=\"1\" w:styleId=\"table-based\"><w:name w:val=\"Normal Table\"/><w:uiPriority w:val=\"99\"/><w:semiHidden/><w:unhideWhenUsed/><w:tblPr><w:tblInd w:w=\"0\" w:type=\"dxa\"/><w:tblCellMar><w:top w:w=\"0\" w:type=\"dxa\"/><w:left w:w=\"108\" w:type=\"dxa\"/><w:bottom w:w=\"0\" w:type=\"dxa\"/><w:right w:w=\"108\" w:type=\"dxa\"/></w:tblCellMar></w:tblPr></w:style><w:style w:type=\"table\" w:styleId=\"table\"><w:name w:val=\"Table Grid\"/><w:basedOn w:val=\"table-based\"/><w:uiPriority w:val=\"59\"/><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:tblPr><w:tblBorders><w:top w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/><w:left w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/><w:bottom w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/><w:right w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/><w:insideH w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/><w:insideV w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/></w:tblBorders></w:tblPr></w:style>";
     }
 
     bool readSrc(const std::wstring& sFileName)
@@ -451,7 +453,7 @@ public:
 
 private:
 
-    std::vector<NSCSS::CNode> GetSubClass(std::vector<NSCSS::CNode>& sSelectors)
+    std::vector<NSCSS::CNode> GetSubClass(const std::vector<NSCSS::CNode>& sSelectors)
     {
         std::vector<NSCSS::CNode> sSubClass(sSelectors);
 
@@ -534,11 +536,11 @@ private:
         }
 
         m_oDocXml += L"<w:p>";
-        readStream(sSelectors, L"", false, oLi, bWasP);
+        readStream(&m_oDocXml, sSelectors, L"", false, oLi, bWasP);
         m_oDocXml += L"</w:p>";
     }
 
-    void readStream(std::vector<NSCSS::CNode>& sSelectors, std::wstring sRStyle, bool bBdo, const CLi& oLi, bool& bWasP)
+    void readStream(NSStringUtils::CStringBuilder* oXml, const std::vector<NSCSS::CNode>& sSelectors, std::wstring sRStyle, bool bBdo, const CLi& oLi, bool& bWasP)
     {
         if(m_oLightReader.IsEmptyNode())
             return;
@@ -546,47 +548,45 @@ private:
         int nDeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode2(nDeath))
         {
-
             std::vector<NSCSS::CNode> sSubClass = GetSubClass(sSelectors);
-
             std::wstring sName = m_oLightReader.GetName();
             if(sName == L"#text")
             {
                 if(bWasP)
                 {
-                    m_oDocXml += L"<w:pPr><w:pStyle w:val=\"";
-                    m_oDocXml += getStyle(sSubClass);
-                    m_oDocXml += L"\"/></w:pPr>";
+                    *oXml += L"<w:pPr><w:pStyle w:val=\"";
+                    *oXml += getStyle(sSubClass);
+                    *oXml += L"\"/></w:pPr>";
                 }
                 std::wstring sText = m_oLightReader.GetText();
                 if(bBdo)
                     std::reverse(sText.begin(), sText.end());
 
-                m_oDocXml += L"<w:r><w:rPr>";
-                m_oDocXml += sRStyle;
-                m_oDocXml += L"</w:rPr><w:t xml:space=\"preserve\">";
-                m_oDocXml.WriteEncodeXmlString(sText);
-                m_oDocXml += L"</w:t></w:r>";
+                *oXml += L"<w:r><w:rPr>";
+                *oXml += sRStyle;
+                *oXml += L"</w:rPr><w:t xml:space=\"preserve\">";
+                (*oXml).WriteEncodeXmlString(sText);
+                *oXml += L"</w:t></w:r>";
                 bWasP = false;
             }
             // Ссылки
             else if(sName == L"a")
-                readLink(sSubClass, sRStyle, bBdo, oLi, bWasP);
+                readLink(oXml, sSubClass, sRStyle, bBdo, oLi, bWasP);
             // Абревиатура, реализована как сноски
             else if(sName == L"abbr")
-                readAbbr(sSubClass, sRStyle, bBdo, oLi, bWasP);
+                readAbbr(oXml, sSubClass, sRStyle, bBdo, oLi, bWasP);
             // Адрес
             else if(sName == L"address")
             {
                 if(!bWasP)
                 {
-                    m_oDocXml += L"</w:p><w:p>";
+                    *oXml += L"</w:p><w:p>";
                     bWasP = true;
                 }
-                readStream(sSubClass, sRStyle + L"<w:i/>", bBdo, oLi, bWasP);
+                readStream(oXml, sSubClass, sRStyle + L"<w:i/>", bBdo, oLi, bWasP);
                 if(!bWasP)
                 {
-                    m_oDocXml += L"</w:p><w:p>";
+                    *oXml += L"</w:p><w:p>";
                     bWasP = true;
                 }
             }
@@ -597,30 +597,27 @@ private:
             // Контейнер
             // Заголовок скрытой информации
             // ...
-            else if(sName == L"article" || sName == L"aside" || sName == L"blockquote" || sName == L"details" || sName == L"div" ||
-                    sName == L"summary" || sName == L"dl" || sName == L"filedset" || sName == L"figure" || sName == L"figcaption" ||
-                    sName == L"footer" || sName == L"form" || sName == L"header" || sName == L"p" || sName == L"main" ||
-                    sName == L"nav" || sName == L"pre" || sName == L"section" || sName == L"option")
+            else if(sName == L"article" || sName == L"header" || sName == L"div" || sName == L"blockquote" || sName == L"main" ||
+                    sName == L"summary" || sName == L"footer" || sName == L"nav" || sName == L"figcaption" || sName == L"form" ||
+                    sName == L"details" || sName == L"option" || sName == L"pre" || sName == L"fieldset"   || sName == L"p"    ||
+                    sName == L"section" || sName == L"figure" || sName == L"dl"  || sName == L"aside"      )
             {
                 if(!bWasP)
                 {
-                    m_oDocXml += L"</w:p><w:p>";
+                    *oXml += L"</w:p><w:p>";
                     bWasP = true;
                 }
-                //m_oDocXml += L"<w:pPr><w:pStyle w:val=\"";
-                //m_oDocXml += sName;
-                //m_oDocXml += L"\"/></w:pPr>";
-                readStream(sSubClass, sRStyle, bBdo, oLi, bWasP);
+                readStream(oXml, sSubClass, sRStyle, bBdo, oLi, bWasP);
                 if(!bWasP)
                 {
-                    m_oDocXml += L"</w:p><w:p>";
+                    *oXml += L"</w:p><w:p>";
                     bWasP = true;
                 }
             }
             // Полужирный текст
             // Акцентированный текст
             else if(sName == L"b" || sName == L"strong")
-                readStream(sSubClass, sRStyle + L"<w:b/>", bBdo, oLi, bWasP);
+                readStream(oXml, sSubClass, sRStyle + L"<w:b/>", bBdo, oLi, bWasP);
             // Направление текста
             else if(sName == L"bdo")
             {
@@ -631,21 +628,24 @@ private:
                 m_oLightReader.MoveToElement();
 
                 if(sDir == L"rtl")
-                    readStream(sSubClass, sRStyle, true, oLi, bWasP);
+                    readStream(oXml, sSubClass, sRStyle, true, oLi, bWasP);
                 else
-                    readStream(sSubClass, sRStyle, false, oLi, bWasP);
+                    readStream(oXml, sSubClass, sRStyle, false, oLi, bWasP);
             }
             // Отмена направления текста
             else if(sName == L"bdi")
-                readStream(sSubClass, sRStyle, false, oLi, bWasP);
+                readStream(oXml, sSubClass, sRStyle, false, oLi, bWasP);
             // Увеличивает размер шрифта
             else if(sName == L"big")
-                readStream(sSubClass, sRStyle + L"<w:sz w:val=\"26\"/>", bBdo, oLi, bWasP);
+                readStream(oXml, sSubClass, sRStyle + L"<w:sz w:val=\"26\"/>", bBdo, oLi, bWasP);
             // Перенос строки
             else if(sName == L"br")
             {
-                m_oDocXml += L"<w:r><w:br/></w:r>";
-                bWasP = false;
+                if(!bWasP)
+                {
+                    *oXml += L"</w:p><w:p>";
+                    bWasP = true;
+                }
             }
             // Цитата, обычно выделяется курсивом
             // Новый термин, обычно выделяется курсивом
@@ -653,27 +653,27 @@ private:
             // Курсивный текст
             // Переменная, обычно выделяется курсивом
             else if(sName == L"cite" || sName == L"dfn" || sName == L"em" || sName == L"i" || sName == L"var")
-                readStream(sSubClass, sRStyle + L"<w:i/>", bBdo, oLi, bWasP);
+                readStream(oXml, sSubClass, sRStyle + L"<w:i/>", bBdo, oLi, bWasP);
             // Код
             // Моноширинный шрифт, например, Consolas
             // Результат скрипта
             else if(sName == L"code" || sName == L"kbd" || sName == L"samp")
-                readStream(sSubClass, sRStyle + L"<w:rFonts w:ascii=\"Consolas\" w:hAnsi=\"Consolas\"/>", bBdo, oLi, bWasP);
+                readStream(oXml, sSubClass, sRStyle + L"<w:rFonts w:ascii=\"Consolas\" w:hAnsi=\"Consolas\"/>", bBdo, oLi, bWasP);
             // Зачеркнутый текст
             else if(sName == L"del" || sName == L"s")
-                readStream(sSubClass, sRStyle + L"<w:strike/>", bBdo, oLi, bWasP);
+                readStream(oXml, sSubClass, sRStyle + L"<w:strike/>", bBdo, oLi, bWasP);
             // Заголовок
             else if(sName == L"h1" || sName == L"h2" || sName == L"h3" || sName == L"h4" || sName == L"h5" || sName == L"h6")
             {
                 if(!bWasP)
                 {
-                    m_oDocXml += L"</w:p><w:p>";
+                    *oXml += L"</w:p><w:p>";
                     bWasP = true;
                 }
-                readStream(sSubClass, sRStyle, bBdo, oLi, bWasP);
+                readStream(oXml, sSubClass, sRStyle, bBdo, oLi, bWasP);
                 if(!bWasP)
                 {
-                    m_oDocXml += L"</w:p><w:p>";
+                    *oXml += L"</w:p><w:p>";
                     bWasP = true;
                 }
             }
@@ -682,109 +682,215 @@ private:
             {
                 if(!bWasP)
                 {
-                    m_oDocXml += L"</w:p><w:p>";
+                    *oXml += L"</w:p><w:p>";
                     bWasP = true;
                 }
-                m_oDocXml += L"<w:pPr><w:pBdr><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr></w:pPr></w:p><w:p>";
+                *oXml += L"<w:pPr><w:pBdr><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr></w:pPr></w:p><w:p>";
                 bWasP = true;
             }
             // Картинки
             else if(sName == L"img")
             {
-                readImage();
+                readImage(oXml);
                 bWasP = false;
             }
             // Подчеркнутый
             else if(sName == L"ins")
-                readStream(sSubClass, sRStyle + L"<w:u w:val=\"single\"/>", bBdo, oLi, bWasP);
+                readStream(oXml, sSubClass, sRStyle + L"<w:u w:val=\"single\"/>", bBdo, oLi, bWasP);
             // Выделенный текст, обычно выделяется желтым
             else if(sName == L"mark")
-                readStream(sSubClass, sRStyle + L"<w:highlight w:val=\"yellow\"/>", bBdo, oLi, bWasP);
-            // Математическая формула
-            else if(sName == L"math")
-            {
-
-            }
+                readStream(oXml, sSubClass, sRStyle + L"<w:highlight w:val=\"yellow\"/>", bBdo, oLi, bWasP);
             // Меню
             // Маркированный список
             else if(sName == L"menu" || sName == L"ul")
-                readLi(sSubClass, sRStyle, bBdo, oLi, bWasP, true);
+                readLi(oXml, sSubClass, sRStyle, bBdo, oLi, bWasP, true);
             // Нумерованный список
             else if(sName == L"ol")
-                readLi(sSubClass, sRStyle, bBdo, oLi, bWasP, false);
+                readLi(oXml, sSubClass, sRStyle, bBdo, oLi, bWasP, false);
             // Цитата, выделенная кавычками, обычно выделяется курсивом
             else if(sName == L"q")
             {
-                m_oDocXml += L"<w:r><w:t xml:space=\"preserve\">&quot;</w:t></w:r>";
-                readStream(sSubClass, sRStyle + L"<w:i/>", bBdo, oLi, bWasP);
-                m_oDocXml += L"<w:r><w:t xml:space=\"preserve\">&quot;</w:t></w:r>";
+                *oXml += L"<w:r><w:t xml:space=\"preserve\">&quot;</w:t></w:r>";
+                readStream(oXml, sSubClass, sRStyle + L"<w:i/>", bBdo, oLi, bWasP);
+                *oXml += L"<w:r><w:t xml:space=\"preserve\">&quot;</w:t></w:r>";
                 bWasP = false;
             }
             // Текст верхнего регистра
             else if(sName == L"rt" || sName == L"sup")
-                readStream(sSubClass, sRStyle + L"<w:vertAlign w:val=\"superscript\"/>", bBdo, oLi, bWasP);
+                readStream(oXml, sSubClass, sRStyle + L"<w:vertAlign w:val=\"superscript\"/>", bBdo, oLi, bWasP);
             // Уменьшает размер шрифта
             else if(sName == L"small")
-                readStream(sSubClass, sRStyle + L"<w:sz w:val=\"18\"/>", bBdo, oLi, bWasP);
+                readStream(oXml, sSubClass, sRStyle + L"<w:sz w:val=\"18\"/>", bBdo, oLi, bWasP);
             // Текст нижнего регистра
             else if(sName == L"sub")
-                readStream(sSubClass, sRStyle + L"<w:vertAlign w:val=\"subscript\"/>", bBdo, oLi, bWasP);
+                readStream(oXml, sSubClass, sRStyle + L"<w:vertAlign w:val=\"subscript\"/>", bBdo, oLi, bWasP);
             // Векторная картинка
             else if(sName == L"svg")
             {
-                readSVG();
+                readSVG(oXml);
                 bWasP = false;
             }
             // Таблицы
             else if(sName == L"table")
             {
-
+                *oXml += L"</w:p>";
+                readTable(oXml, sSubClass, sRStyle, bBdo, oLi, bWasP);
+                *oXml += L"<w:p>";
+                bWasP = true;
             }
             // Текст с границами
             else if(sName == L"textarea")
             {
                 if(!bWasP)
                 {
-                    m_oDocXml += L"</w:p><w:p>";
+                    *oXml += L"</w:p><w:p>";
                     bWasP = true;
                 }
-                m_oDocXml += L"<w:pPr><w:pBdr><w:left w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:top w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:right w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr></w:pPr>";
-                readStream(sSubClass, sRStyle, bBdo, oLi, bWasP);
+                *oXml += L"<w:pPr><w:pBdr><w:left w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:top w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:right w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr></w:pPr>";
+                readStream(oXml, sSubClass, sRStyle, bBdo, oLi, bWasP);
                 if(!bWasP)
                 {
-                    m_oDocXml += L"</w:p><w:p>";
+                    *oXml += L"</w:p><w:p>";
                     bWasP = true;
                 }
             }
             // Игнорируется
-            else if(sName == L"rp" || sName == L"script" || sName == L"template" || sName == L"wbr" || sName == L"area" || sName == L"audio" ||
-                    sName == L"video" || sName == L"canvas" || sName == L"command" || sName == L"map" || sName == L"embed" ||
-                    sName == L"iframe" || sName == L"keygen")
+            else if(sName == L"template" || sName == L"canvas" || sName == L"video" || sName == L"math" || sName == L"rp"  ||
+                    sName == L"command"  || sName == L"iframe" || sName == L"embed" || sName == L"area" || sName == L"map" ||
+                    sName == L"keygen"   || sName == L"script" || sName == L"audio" || sName == L"wbr"  )
                 continue;
             // Без нового абзаца
-            else if(sName == L"button" || sName == L"data" || sName == L"label" || sName == L"audio" || sName == L"time" || sName == L"span" ||
-                    sName == L"datalist" || sName == L"input" || sName == L"select" ||
-                    sName == L"meter" || sName == L"noscript" || sName == L"object" ||
-                    sName == L"hgroup" || sName == L"output" || sName == L"progress" || sName == L"ruby")
-                readStream(sSubClass, sRStyle, bBdo, oLi, bWasP);
+            else if(sName == L"datalist" || sName == L"button" || sName == L"label" || sName == L"data" || sName == L"object" ||
+                    sName == L"noscript" || sName == L"select" || sName == L"input" || sName == L"time" || sName == L"output" ||
+                    sName == L"progress" || sName == L"hgroup" || sName == L"meter" || sName == L"span" || sName == L"audio"  ||
+                    sName == L"ruby")
+                readStream(oXml, sSubClass, sRStyle, bBdo, oLi, bWasP);
             else
             {
                 if(!bWasP)
                 {
-                    m_oDocXml += L"</w:p><w:p>";
+                    *oXml += L"</w:p><w:p>";
                     bWasP = true;
                 }
-                readStream(sSubClass, sRStyle, bBdo, oLi, bWasP);
+                readStream(oXml, sSubClass, sRStyle, bBdo, oLi, bWasP);
                 if(!bWasP)
                 {
-                    m_oDocXml += L"</w:p><w:p>";
+                    *oXml += L"</w:p><w:p>";
                     bWasP = true;
                 }
             }
         }
     }
 
-    void readLi    (std::vector<NSCSS::CNode>& sSelectors, std::wstring sRStyle, bool bBdo, const CLi& oLi, bool& bWasP, bool bType)
+    int  readTr    (NSStringUtils::CStringBuilder* oXml, const std::vector<NSCSS::CNode>& sSelectors, std::wstring sRStyle, bool bBdo, const CLi& oLi, bool& bWasP, std::map<size_t, size_t>& mTable)
+    {
+        int nGridCol = 0;
+        int nDeath = m_oLightReader.GetDepth();
+        while(m_oLightReader.ReadNextSiblingNode(nDeath))
+        {
+            std::wstring sName = m_oLightReader.GetName();
+            // tr - строки в таблице
+            if(sName != L"tr")
+                continue;
+            if(m_oLightReader.IsEmptyNode())
+                continue;
+
+            int nTCol = 0;
+            *oXml += L"<w:tr>";
+            int nTrDeath = m_oLightReader.GetDepth();
+            while(m_oLightReader.ReadNextSiblingNode(nTrDeath))
+            {
+                std::wstring sColspan = L"";
+                std::wstring sRowspan = L"";
+                while(m_oLightReader.MoveToNextAttribute())
+                {
+                    if(m_oLightReader.GetName() == L"colspan")
+                        sColspan = m_oLightReader.GetText();
+                    else if(m_oLightReader.GetName() == L"rowspan")
+                        sRowspan = m_oLightReader.GetText();
+                }
+                m_oLightReader.MoveToElement();
+
+                *oXml += L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/>";
+                if(!sColspan.empty())
+                {
+                    *oXml += L"<w:gridSpan w:val=\"";
+                    *oXml += sColspan;
+                    *oXml += L"\"/>";
+                }
+                *oXml += L"</w:tcPr><w:p>";
+                if(++nTCol > nGridCol)
+                    nGridCol = nTCol;
+                // Читаем th. Ячейка заголовка таблицы. Выравнивание посередине. Выделяется полужирным
+                if(m_oLightReader.GetName() == L"th")
+                {
+                    *oXml += L"<w:pPr><w:jc w:val=\"center\"/></w:pPr>";
+                    bWasP = true;
+                    readStream(oXml, sSelectors, sRStyle + L"<w:b/>", bBdo, oLi, bWasP);
+                }
+                // Читаем td. Ячейка таблицы. Выравнивание вправо
+                else if(m_oLightReader.GetName() == L"td")
+                {
+                    *oXml += L"<w:pPr><w:jc w:val=\"right\"/></w:pPr>";
+                    readStream(oXml, sSelectors, sRStyle, bBdo, oLi, bWasP);
+                }
+                *oXml += L"</w:p></w:tc>";
+            }
+            *oXml += L"</w:tr>";
+        }
+        return nGridCol;
+    }
+
+    void readTable (NSStringUtils::CStringBuilder* oXml, const std::vector<NSCSS::CNode>& sSelectors, std::wstring sRStyle, bool bBdo, const CLi& oLi, bool& bWasP)
+    {
+        if(m_oLightReader.IsEmptyNode())
+            return;
+        // Стиль таблицы
+        *oXml += L"<w:tbl><w:tblPr><w:tblStyle w:val=\"table\"/><w:tblW w:w=\"0\" w:type=\"auto\"/><w:tblLayout w:type=\"fixed\"/></w:tblPr>";
+
+        NSStringUtils::CStringBuilder oHead;
+        NSStringUtils::CStringBuilder oBody;
+        NSStringUtils::CStringBuilder oFoot;
+        int nGridCol = 0;
+
+        int nDeath = m_oLightReader.GetDepth();
+        while(m_oLightReader.ReadNextSiblingNode(nDeath))
+        {
+            int n = 0;
+            std::map<size_t, size_t> mTable;
+            std::wstring sName = m_oLightReader.GetName();
+            if(sName == L"thead")
+                n = readTr(&oHead, sSelectors, sRStyle, bBdo, oLi, bWasP, mTable);
+            else if(sName == L"tbody")
+                n = readTr(&oBody, sSelectors, sRStyle, bBdo, oLi, bWasP, mTable);
+            else if(sName == L"tfoot")
+                n = readTr(&oFoot, sSelectors, sRStyle, bBdo, oLi, bWasP, mTable);
+            if(n > nGridCol)
+                nGridCol = n;
+        }
+
+        // Размеры таблицы
+        std::wstring sGridCol = L"";
+        if(nGridCol != 0)
+            sGridCol = std::to_wstring((int)(9570.0 / (double)nGridCol));
+        *oXml += L"<w:tblGrid>";
+        for(int i = 0; i < nGridCol; i++)
+        {
+            *oXml += L"<w:gridCol w:w=\"";
+            *oXml += sGridCol;
+            *oXml += L"\"/>";
+        }
+        *oXml += L"</w:tblGrid>";
+        // Конец таблицы
+        *oXml += oHead.GetData();
+        *oXml += oBody.GetData();
+        *oXml += oFoot.GetData();
+        *oXml += L"</w:tbl>";
+        // Пустая строка после таблицы, чтобы следующий текст не приклеивался
+        *oXml += L"<w:p></w:p>";
+    }
+
+    void readLi    (NSStringUtils::CStringBuilder* oXml, const std::vector<NSCSS::CNode>& sSelectors, std::wstring sRStyle, bool bBdo, const CLi& oLi, bool& bWasP, bool bType)
     {
         if(m_oLightReader.IsEmptyNode())
             return;
@@ -796,28 +902,28 @@ private:
                 continue;
             if(!bWasP)
             {
-                m_oDocXml += L"</w:p><w:p>";
+                *oXml += L"</w:p><w:p>";
                 bWasP = true;
             }
             CLi oSubLi;
             oSubLi.bNeedLi = true;
             oSubLi.nLevelLi = oLi.nLevelLi + 1;
             oSubLi.bType = bType;
-            m_oDocXml += L"<w:pPr><w:pStyle w:val=\"li\"/><w:numPr><w:ilvl w:val=\"";
-            m_oDocXml += std::to_wstring(oSubLi.nLevelLi);
-            m_oDocXml += L"\"/><w:numId w:val=\"";
-            m_oDocXml += (oSubLi.bType ? L"1" : L"2");
-            m_oDocXml += L"\"/></w:numPr></w:pPr>";
-            readStream(sSelectors, sRStyle, bBdo, oSubLi, bWasP);
+            *oXml += L"<w:pPr><w:pStyle w:val=\"li\"/><w:numPr><w:ilvl w:val=\"";
+            *oXml += std::to_wstring(oSubLi.nLevelLi);
+            *oXml += L"\"/><w:numId w:val=\"";
+            *oXml += (oSubLi.bType ? L"1" : L"2");
+            *oXml += L"\"/></w:numPr></w:pPr>";
+            readStream(oXml, sSelectors, sRStyle, bBdo, oSubLi, bWasP);
             if(!bWasP)
             {
-                m_oDocXml += L"</w:p><w:p>";
+                *oXml += L"</w:p><w:p>";
                 bWasP = true;
             }
         }
     }
 
-    void readAbbr  (std::vector<NSCSS::CNode>& sSelectors, std::wstring sRStyle, bool bBdo, const CLi& oLi, bool& bWasP)
+    void readAbbr  (NSStringUtils::CStringBuilder* oXml, const std::vector<NSCSS::CNode>& sSelectors, std::wstring sRStyle, bool bBdo, const CLi& oLi, bool& bWasP)
     {
         std::wstring sNote = L"";
         while(m_oLightReader.MoveToNextAttribute())
@@ -825,11 +931,11 @@ private:
                 sNote = m_oLightReader.GetText();
         m_oLightReader.MoveToElement();
 
-        readStream(sSelectors, sRStyle, bBdo, oLi, bWasP);
+        readStream(oXml, sSelectors, sRStyle, bBdo, oLi, bWasP);
 
-        m_oDocXml += L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteReference w:id=\"";
-        m_oDocXml += std::to_wstring(m_nFootnoteId);
-        m_oDocXml += L"\"/></w:r>";
+        *oXml += L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteReference w:id=\"";
+        *oXml += std::to_wstring(m_nFootnoteId);
+        *oXml += L"\"/></w:r>";
 
         m_oNoteXml += L"<w:footnote w:id=\"";
         m_oNoteXml += std::to_wstring(m_nFootnoteId++);
@@ -838,7 +944,7 @@ private:
         m_oNoteXml += L"</w:t></w:r></w:p></w:footnote>";
     }
 
-    void readLink  (std::vector<NSCSS::CNode>& sSelectors, std::wstring sRStyle, bool bBdo, const CLi& oLi, bool& bWasP)
+    void readLink  (NSStringUtils::CStringBuilder* oXml, const std::vector<NSCSS::CNode>& sSelectors, std::wstring sRStyle, bool bBdo, const CLi& oLi, bool& bWasP)
     {
         std::wstring sRef = L"";
         std::wstring sTitle = L"";
@@ -879,7 +985,7 @@ private:
 
         // Перекрестная ссылка внутри файла
         if(bCross)
-            m_oDocXml += L"<w:hyperlink w:tooltip=\"Current Document\" w:anchor=\"cHyp";
+            *oXml += L"<w:hyperlink w:tooltip=\"Current Document\" w:anchor=\"cHyp";
         // Внешняя ссылка
         else
         {
@@ -891,18 +997,18 @@ private:
             m_oDocXmlRels += L"\" TargetMode=\"External\"/>";
 
             // Пишем в document.xml
-            m_oDocXml += L"<w:hyperlink w:tooltip=\"";
-            m_oDocXml += sTitle;
-            m_oDocXml += L"\" r:id=\"rHyp";
+            *oXml += L"<w:hyperlink w:tooltip=\"";
+            *oXml += sTitle;
+            *oXml += L"\" r:id=\"rHyp";
         }
-        m_oDocXml += std::to_wstring(m_nHyperlinkId++);
-        m_oDocXml += L"\">";
+        *oXml += std::to_wstring(m_nHyperlinkId++);
+        *oXml += L"\">";
         bWasP = false;
-        readStream(sSelectors, sRStyle += L"<w:rStyle w:val=\"a\"/>", bBdo, oLi, bWasP);
-        m_oDocXml += L"</w:hyperlink>";
+        readStream(oXml, sSelectors, sRStyle += L"<w:rStyle w:val=\"a\"/>", bBdo, oLi, bWasP);
+        *oXml += L"</w:hyperlink>";
     }
 
-    void readImage()
+    void readImage (NSStringUtils::CStringBuilder* oXml)
     {
         while(m_oLightReader.MoveToNextAttribute())
         {
@@ -953,12 +1059,12 @@ private:
             }
 
             if(bRes)
-                ImageRels(sImageId, L"i" + sImageName);
+                ImageRels(oXml, sImageId, L"i" + sImageName);
         }
         m_oLightReader.MoveToElement();
     }
 
-    void ImageRels(const std::wstring& sImageId, const std::wstring& sImageName)
+    void ImageRels (NSStringUtils::CStringBuilder* oXml, const std::wstring& sImageId, const std::wstring& sImageName)
     {
         m_nImageId++;
         // Прописать рельсы
@@ -996,25 +1102,25 @@ private:
         }
 
         // Пишем в document.xml
-        m_oDocXml += L"<w:r><w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"";
-        m_oDocXml += std::to_wstring(nWx);
-        m_oDocXml += L"\" cy=\"";
-        m_oDocXml += std::to_wstring(nHy);
-        m_oDocXml += L"\"/><wp:docPr id=\"";
-        m_oDocXml += sImageId;
-        m_oDocXml += L"\" name=\"\"/><a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:nvPicPr><pic:cNvPr id=\"";
-        m_oDocXml += sImageId;
-        m_oDocXml += L"\" name=\"\"/><pic:cNvPicPr></pic:cNvPicPr></pic:nvPicPr><pic:blipFill><a:blip r:embed=\"rPic";
-        m_oDocXml += sImageId;
-        m_oDocXml += L"\"/><a:stretch/></pic:blipFill><pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"";
-        m_oDocXml += std::to_wstring(nWx);
-        m_oDocXml += L"\" cy=\"";
-        m_oDocXml += std::to_wstring(nHy);
-        m_oDocXml += L"\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>";
+        *oXml += L"<w:r><w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"";
+        *oXml += std::to_wstring(nWx);
+        *oXml += L"\" cy=\"";
+        *oXml += std::to_wstring(nHy);
+        *oXml += L"\"/><wp:docPr id=\"";
+        *oXml += sImageId;
+        *oXml += L"\" name=\"\"/><a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:nvPicPr><pic:cNvPr id=\"";
+        *oXml += sImageId;
+        *oXml += L"\" name=\"\"/><pic:cNvPicPr></pic:cNvPicPr></pic:nvPicPr><pic:blipFill><a:blip r:embed=\"rPic";
+        *oXml += sImageId;
+        *oXml += L"\"/><a:stretch/></pic:blipFill><pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"";
+        *oXml += std::to_wstring(nWx);
+        *oXml += L"\" cy=\"";
+        *oXml += std::to_wstring(nHy);
+        *oXml += L"\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>";
 
     }
 
-    void readSVG()
+    void readSVG   (NSStringUtils::CStringBuilder* oXml)
     {
         // Сохранить как .svg картинку
         NSStringUtils::CStringBuilder oSVG;
@@ -1081,7 +1187,7 @@ private:
         pMetafile->Release();
         pFonts->Release();
 
-        ImageRels(sImageId, sImageId + L".png");
+        ImageRels(oXml, sImageId, sImageId + L".png");
     }
 
     std::wstring content()

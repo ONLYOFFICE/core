@@ -42,6 +42,7 @@ public:
     std::wstring m_sDst;  // Директория назначения
     std::wstring m_sBase; // Полный базовый адрес
 
+    std::map<std::wstring, std::vector<std::wstring>> m_sSrcs;   // Имена обрабатываемых файлов (имя файла, имя перекрестной ссылки)
     std::map<std::wstring, std::wstring> m_mStyles; // Стили в document.xml. Хранятся как (имя тэга, его стиль)
 
 private:
@@ -49,6 +50,7 @@ private:
     int m_nFootnoteId;  // ID сноски
     int m_nHyperlinkId; // ID ссылки
     int m_nStyleId;     // ID стиля
+    int m_nCrossId;     // ID перекрестной ссылки
 
     NSStringUtils::CStringBuilder m_oStylesXml;  // styles.xml
     NSStringUtils::CStringBuilder m_oDocXmlRels; // document.xml.rels
@@ -62,6 +64,7 @@ public:
         m_nFootnoteId = 1;
         m_nHyperlinkId = 1;
         m_nStyleId = 1;
+        m_nCrossId = 1;
         m_sBase = L"";
     }
 
@@ -281,19 +284,19 @@ public:
 
         // Стили по умолчанию
         // Нормальный стиль, от которого базируются
-        m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"normal\" w:default=\"1\"><w:name w:val=\"Normal\"/><w:qFormat/></w:style>";
+        // m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"normal\" w:default=\"1\"><w:name w:val=\"Normal\"/><w:qFormat/></w:style>";
         // Маркированный список
-        m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"li\"><w:name w:val=\"List Paragraph\"/><w:basedOn w:val=\"normal\"/><w:qFormat/><w:uiPriority w:val=\"34\"/><w:pPr><w:contextualSpacing w:val=\"true\"/><w:ind w:left=\"720\"/></w:pPr></w:style>";
+        // m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"li\"><w:name w:val=\"List Paragraph\"/><w:basedOn w:val=\"normal\"/><w:qFormat/><w:uiPriority w:val=\"34\"/><w:pPr><w:contextualSpacing w:val=\"true\"/><w:ind w:left=\"720\"/></w:pPr></w:style>";
         // Заголовки
-        m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"h1\"><w:name w:val=\"Heading 1\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title1-c\"/><w:qFormat/><w:rPr><w:b/><w:bCs/><w:color w:val=\"000000\" w:themeColor=\"text1\"/><w:sz w:val=\"48\"/><w:szCs w:val=\"48\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"480\"/><w:outlineLvl w:val=\"0\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h2\"><w:name w:val=\"Heading 2\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title2-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:b/><w:bCs/><w:color w:val=\"000000\" w:themeColor=\"text1\"/><w:sz w:val=\"40\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"1\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h3\"><w:name w:val=\"Heading 3\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title3-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:b/><w:bCs/><w:i/><w:iCs/><w:color w:val=\"000000\" w:themeColor=\"text1\"/><w:sz w:val=\"36\"/><w:szCs w:val=\"36\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"2\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h4\"><w:name w:val=\"Heading 4\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title4-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:color w:val=\"232323\"/><w:sz w:val=\"32\"/><w:szCs w:val=\"32\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"3\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h5\"><w:name w:val=\"Heading 5\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title5-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:b/><w:bCs/><w:color w:val=\"444444\"/><w:sz w:val=\"28\"/><w:szCs w:val=\"28\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"4\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h6\"><w:name w:val=\"Heading 6\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title6-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:i/><w:iCs/><w:color w:val=\"232323\"/><w:sz w:val=\"28\"/><w:szCs w:val=\"28\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"5\"/></w:pPr></w:style><w:style w:type=\"character\" w:styleId=\"title1-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 1 Знак\"/><w:link w:val=\"title1\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:sz w:val=\"40\"/><w:szCs w:val=\"40\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title2-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 2 Знак\"/><w:link w:val=\"title2\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:sz w:val=\"34\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title3-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 3 Знак\"/><w:link w:val=\"title3\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:sz w:val=\"30\"/><w:szCs w:val=\"30\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title4-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 4 Знак\"/><w:link w:val=\"title4\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:b/><w:bCs/><w:sz w:val=\"26\"/><w:szCs w:val=\"26\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title5-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 5 Знак\"/><w:link w:val=\"title5\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:b/><w:bCs/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title6-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 6 Знак\"/><w:link w:val=\"title6\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:b/><w:bCs/><w:sz w:val=\"22\"/><w:szCs w:val=\"22\"/></w:rPr></w:style>";
+        // m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"h1\"><w:name w:val=\"Heading 1\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title1-c\"/><w:qFormat/><w:rPr><w:b/><w:bCs/><w:color w:val=\"000000\" w:themeColor=\"text1\"/><w:sz w:val=\"48\"/><w:szCs w:val=\"48\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"480\"/><w:outlineLvl w:val=\"0\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h2\"><w:name w:val=\"Heading 2\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title2-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:b/><w:bCs/><w:color w:val=\"000000\" w:themeColor=\"text1\"/><w:sz w:val=\"40\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"1\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h3\"><w:name w:val=\"Heading 3\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title3-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:b/><w:bCs/><w:i/><w:iCs/><w:color w:val=\"000000\" w:themeColor=\"text1\"/><w:sz w:val=\"36\"/><w:szCs w:val=\"36\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"2\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h4\"><w:name w:val=\"Heading 4\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title4-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:color w:val=\"232323\"/><w:sz w:val=\"32\"/><w:szCs w:val=\"32\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"3\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h5\"><w:name w:val=\"Heading 5\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title5-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:b/><w:bCs/><w:color w:val=\"444444\"/><w:sz w:val=\"28\"/><w:szCs w:val=\"28\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"4\"/></w:pPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"h6\"><w:name w:val=\"Heading 6\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"title6-c\"/><w:qFormat/><w:unhideWhenUsed/><w:rPr><w:i/><w:iCs/><w:color w:val=\"232323\"/><w:sz w:val=\"28\"/><w:szCs w:val=\"28\"/></w:rPr><w:pPr><w:keepLines/><w:keepNext/><w:spacing w:after=\"0\" w:before=\"200\"/><w:outlineLvl w:val=\"5\"/></w:pPr></w:style><w:style w:type=\"character\" w:styleId=\"title1-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 1 Знак\"/><w:link w:val=\"title1\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:sz w:val=\"40\"/><w:szCs w:val=\"40\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title2-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 2 Знак\"/><w:link w:val=\"title2\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:sz w:val=\"34\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title3-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 3 Знак\"/><w:link w:val=\"title3\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:sz w:val=\"30\"/><w:szCs w:val=\"30\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title4-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 4 Знак\"/><w:link w:val=\"title4\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:b/><w:bCs/><w:sz w:val=\"26\"/><w:szCs w:val=\"26\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title5-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 5 Знак\"/><w:link w:val=\"title5\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:b/><w:bCs/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr></w:style><w:style w:type=\"character\" w:styleId=\"title6-c\" w:customStyle=\"1\"><w:name w:val=\"Заголовок 6 Знак\"/><w:link w:val=\"title6\"/><w:uiPriority w:val=\"9\"/><w:rPr><w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/><w:b/><w:bCs/><w:sz w:val=\"22\"/><w:szCs w:val=\"22\"/></w:rPr></w:style>";
         // Текст: p, div
-        m_oStylesXml += L"<w:style w:type=\"character\" w:styleId=\"section-p-c\" w:customStyle=\"1\"><w:name w:val=\"Paragraph_character\"/><w:link w:val=\"p\"/></w:style><w:style w:type=\"paragraph\" w:styleId=\"p\" w:customStyle=\"1\"><w:name w:val=\"Paragraph\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"section-p-c\"/><w:qFormat/><w:pPr><w:ind w:firstLine=\"567\"/><w:jc w:val=\"both\"/></w:pPr></w:style>";
-        m_oStylesXml += L"<w:style w:type=\"character\" w:styleId=\"section-p-c\" w:customStyle=\"1\"><w:name w:val=\"Paragraph_character\"/><w:link w:val=\"div\"/></w:style><w:style w:type=\"paragraph\" w:styleId=\"div\" w:customStyle=\"1\"><w:name w:val=\"Paragraph\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"section-p-c\"/><w:qFormat/><w:pPr><w:ind w:firstLine=\"567\"/><w:jc w:val=\"both\"/></w:pPr></w:style>";
+        // m_oStylesXml += L"<w:style w:type=\"character\" w:styleId=\"section-p-c\" w:customStyle=\"1\"><w:name w:val=\"Paragraph_character\"/><w:link w:val=\"p\"/></w:style><w:style w:type=\"paragraph\" w:styleId=\"p\" w:customStyle=\"1\"><w:name w:val=\"Paragraph\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"section-p-c\"/><w:qFormat/><w:pPr><w:ind w:firstLine=\"567\"/><w:jc w:val=\"both\"/></w:pPr></w:style>";
+        // m_oStylesXml += L"<w:style w:type=\"character\" w:styleId=\"section-p-c\" w:customStyle=\"1\"><w:name w:val=\"Paragraph_character\"/><w:link w:val=\"div\"/></w:style><w:style w:type=\"paragraph\" w:styleId=\"div\" w:customStyle=\"1\"><w:name w:val=\"Paragraph\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"section-p-c\"/><w:qFormat/><w:pPr><w:ind w:firstLine=\"567\"/><w:jc w:val=\"both\"/></w:pPr></w:style>";
         // Ссылки
-        m_oStylesXml += L"<w:style w:type=\"character\" w:styleId=\"link\"><w:name w:val=\"Hyperlink\"/><w:uiPriority w:val=\"99\"/><w:unhideWhenUsed/><w:rPr><w:color w:val=\"0563C1\" w:themeColor=\"hyperlink\"/><w:u w:val=\"single\"/></w:rPr></w:style>";
+        // m_oStylesXml += L"<w:style w:type=\"character\" w:styleId=\"a\"><w:name w:val=\"Hyperlink\"/><w:uiPriority w:val=\"99\"/><w:unhideWhenUsed/><w:rPr><w:color w:val=\"0563C1\" w:themeColor=\"hyperlink\"/><w:u w:val=\"single\"/></w:rPr></w:style>";
     }
 
-    bool readSrc()
+    bool readSrc(const std::wstring& sFileName)
     {
         // Читаем html
         if(!isHtml())
@@ -308,7 +311,7 @@ public:
             if(sName == L"head")
                 readHead();
             else if(sName == L"body")
-                readBody();
+                readBody(sFileName);
         }
         return true;
     }
@@ -445,47 +448,6 @@ public:
     }
 
 private:
-    /*
-    std::vector<std::string> getStyle(std::vector<std::string> sSelectors)
-    {
-        std::string sClass = "";
-        std::string sStyle = "";
-        std::string sId    = "";
-
-        while(m_oLightReader.MoveToNextAttribute())
-        {
-            std::wstring sAName = m_oLightReader.GetName();
-            if(sAName == L"style")
-                sStyle = m_oLightReader.GetTextA();
-            else if(sAName == L"class")
-                sClass = m_oLightReader.GetTextA();
-            else if(sAName == L"id")
-                sId = m_oLightReader.GetTextA();
-        }
-        m_oLightReader.MoveToElement();
-
-        std::vector<std::string> sSubClass(sSelectors);
-        if(!sStyle.empty())
-        {
-            std::string sSelector = "";
-            if(!sId.empty())
-                sSelector += "#" + sId + " ";
-            if(!sClass.empty())
-                sSelector += "." + sClass + " ";
-            sSelector += m_oLightReader.GetNameA();
-            sSubClass.push_back(sSelector);
-
-            NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSubClass);
-            m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"";
-            m_oStylesXml += std::to_wstring(++m_nStyleId);
-            m_oStylesXml += L"\">";
-            m_oStylesXml += oStyle.GetStyleW();
-            m_oStylesXml += L"</w:style>";
-        }
-
-        return sSubClass;
-    }
-    */
 
     std::vector<NSCSS::CNode> GetSubClass(std::vector<NSCSS::CNode>& sSelectors)
     {
@@ -540,18 +502,11 @@ private:
                         m_sBase = m_oLightReader.GetText();
                 m_oLightReader.MoveToElement();
             }
-            /*
-            // Заголовок документа
-            else if(sName == L"title")
-                readTitle();
-            */
         }
     }
 
-    void readBody()
+    void readBody(const std::wstring& sFileName)
     {
-        // sSelectors = getStyle(sSelectors);
-
         bool bWasP = true;
         std::vector<NSCSS::CNode> sSelectors;
         sSelectors = GetSubClass(sSelectors);
@@ -559,6 +514,23 @@ private:
         oLi.bNeedLi = false;
         oLi.nLevelLi = -1;
         oLi.bType = true;
+
+        std::map<std::wstring, std::vector<std::wstring>>::iterator it = m_sSrcs.find(sFileName);
+        if(it != m_sSrcs.end())
+        {
+            for(const std::wstring& sId : it->second)
+            {
+                std::wstring sCrossId = std::to_wstring(m_nCrossId++);
+                m_oDocXml += L"<w:bookmarkStart w:id=\"";
+                m_oDocXml += sCrossId;
+                m_oDocXml += L"\" w:name=\"";
+                m_oDocXml += sId;
+                m_oDocXml += L"\"/><w:bookmarkEnd w:id=\"";
+                m_oDocXml += sCrossId;
+                m_oDocXml += L"\"/>";
+            }
+        }
+
         m_oDocXml += L"<w:p>";
         readStream(sSelectors, L"", false, oLi, bWasP);
         m_oDocXml += L"</w:p>";
@@ -578,9 +550,12 @@ private:
             std::wstring sName = m_oLightReader.GetName();
             if(sName == L"#text")
             {
-                m_oDocXml += L"<w:pPr><w:pStyle w:val=\"";
-                m_oDocXml += getStyle(sSubClass);
-                m_oDocXml += L"\"/></w:pPr>";
+                if(bWasP)
+                {
+                    m_oDocXml += L"<w:pPr><w:pStyle w:val=\"";
+                    m_oDocXml += getStyle(sSubClass);
+                    m_oDocXml += L"\"/></w:pPr>";
+                }
                 std::wstring sText = m_oLightReader.GetText();
                 if(bBdo)
                     std::reverse(sText.begin(), sText.end());
@@ -693,9 +668,6 @@ private:
                     m_oDocXml += L"</w:p><w:p>";
                     bWasP = true;
                 }
-                //m_oDocXml += L"<w:pPr><w:pStyle w:val=\"";
-                //m_oDocXml += sName;
-                //m_oDocXml += L"\"/></w:pPr>";
                 readStream(sSubClass, sRStyle, bBdo, oLi, bWasP);
                 if(!bWasP)
                 {
@@ -868,22 +840,29 @@ private:
     {
         std::wstring sRef = L"";
         std::wstring sTitle = L"";
+        bool bCross = false;
         while(m_oLightReader.MoveToNextAttribute())
         {
             std::wstring sName = m_oLightReader.GetName();
             if(sName == L"href")
             {
                 sRef = m_oLightReader.GetText();
-                size_t nLen = (sRef.length() > 4 ? 4 : 0);
-                // Ссылка на сайт
-                if(sRef.substr(0, nLen) == L"http")
-                {
-
-                }
-                // Ссылка на документ, который нужно обработать
+                size_t nSrc = sRef.rfind(L"/");
+                if(nSrc == std::wstring::npos)
+                    nSrc = 0;
                 else
+                    nSrc++;
+                size_t nLen = sRef.rfind(L"html");
+                if(nLen == std::wstring::npos)
+                    continue;
+                else
+                    nLen += 4;
+                std::wstring sFileName = sRef.substr(nSrc, nLen - nSrc);
+                std::map<std::wstring, std::vector<std::wstring>>::iterator it = m_sSrcs.find(sFileName);
+                if(it != m_sSrcs.end())
                 {
-
+                    bCross = true;
+                    it->second.push_back(L"cHyp" + std::to_wstring(m_nHyperlinkId));
                 }
             }
             else if(sName == L"title")
@@ -896,20 +875,28 @@ private:
         if(sTitle.empty())
             sTitle = sRef;
 
-        // Пишем рельсы
-        m_oDocXmlRels += L"<Relationship Id=\"rHyp";
-        m_oDocXmlRels += std::to_wstring(m_nHyperlinkId);
-        m_oDocXmlRels += L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"";
-        m_oDocXmlRels += sRef;
-        m_oDocXmlRels += L"\" TargetMode=\"External\"/>";
+        // Перекрестная ссылка внутри файла
+        if(bCross)
+            m_oDocXml += L"<w:hyperlink w:tooltip=\"Current Document\" w:anchor=\"cHyp";
+        // Внешняя ссылка
+        else
+        {
+            // Пишем рельсы
+            m_oDocXmlRels += L"<Relationship Id=\"rHyp";
+            m_oDocXmlRels += std::to_wstring(m_nHyperlinkId);
+            m_oDocXmlRels += L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"";
+            m_oDocXmlRels += sRef;
+            m_oDocXmlRels += L"\" TargetMode=\"External\"/>";
 
-        // Пишем в document.xml
-        m_oDocXml += L"<w:hyperlink w:tooltip=\"";
-        m_oDocXml += sTitle;
-        m_oDocXml += L"\" r:id=\"rHyp";
+            // Пишем в document.xml
+            m_oDocXml += L"<w:hyperlink w:tooltip=\"";
+            m_oDocXml += sTitle;
+            m_oDocXml += L"\" r:id=\"rHyp";
+        }
         m_oDocXml += std::to_wstring(m_nHyperlinkId++);
         m_oDocXml += L"\">";
-        readStream(sSelectors, sRStyle += L"<w:rStyle w:val=\"link\"/>", bBdo, oLi, bWasP);
+        bWasP = false;
+        readStream(sSelectors, sRStyle += L"<w:rStyle w:val=\"a\"/>", bBdo, oLi, bWasP);
         m_oDocXml += L"</w:hyperlink>";
     }
 
@@ -1113,7 +1100,7 @@ HRESULT CHtmlFile2::Open(const std::wstring& sSrc, const std::wstring& sDst, CHt
     if(!m_internal->m_oLightReader.MoveToStart())
         return S_FALSE;
 
-    if(!m_internal->readSrc())
+    if(!m_internal->readSrc(NSFile::GetFileName(sSrc)))
         return S_FALSE;
     m_internal->write();
     NSFile::CFileBinary::Remove(m_internal->m_sTmp + L"/res.xhtml");
@@ -1125,7 +1112,10 @@ HRESULT CHtmlFile2::OpenBatch(const std::vector<std::wstring>& sSrc, const std::
     m_internal->m_sDst = sDst;
     m_internal->CreateDocxEmpty(oParams);
 
-    for(std::wstring sS : sSrc)
+    for(const std::wstring& sS : sSrc)
+        m_internal->m_sSrcs.insert(std::make_pair(NSFile::GetFileName(sS), std::vector<std::wstring>()));
+
+    for(const std::wstring& sS : sSrc)
     {
         #ifdef _DEBUG
         std::wcout << NSFile::GetFileName(sS) << std::endl;
@@ -1142,7 +1132,7 @@ HRESULT CHtmlFile2::OpenBatch(const std::vector<std::wstring>& sSrc, const std::
         if(!m_internal->m_oLightReader.MoveToStart())
             return S_FALSE;
 
-        if(!m_internal->readSrc())
+        if(!m_internal->readSrc(NSFile::GetFileName(sS)))
             return S_FALSE;
 
         NSFile::CFileBinary::Remove(m_internal->m_sTmp + L"/res.xhtml");

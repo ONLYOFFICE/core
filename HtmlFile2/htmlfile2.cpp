@@ -18,6 +18,8 @@
 #include "../DesktopEditor/common/Path.h"
 #include "../DesktopEditor/xml/include/xmlutils.h"
 #include "../DesktopEditor/raster/BgraFrame.h"
+#include "../DesktopEditor/graphics/pro/Fonts.h"
+#include "../DesktopEditor/graphics/pro/Graphics.h"
 
 #ifndef VALUE2STR
 #define VALUE_TO_STRING(x) #x
@@ -687,7 +689,7 @@ private:
                 bWasP = true;
             }
             // Картинки
-            else if(sName == L"img" || sName == L"image")
+            else if(sName == L"img")
             {
                 readImage();
                 bWasP = false;
@@ -904,110 +906,112 @@ private:
     {
         while(m_oLightReader.MoveToNextAttribute())
         {
-            std::wstring sAName = m_oLightReader.GetName();
-            if(sAName == L"src" || sAName == L"href")
+            if(m_oLightReader.GetName() != L"src")
+                continue;
+            bool bRes = false;
+            std::wstring sSrcM = m_oLightReader.GetText();
+            std::wstring sImageName = L"";
+            std::wstring sImageId = std::to_wstring(m_nImageId);
+            size_t nLen = (sSrcM.length() > 4 ? 4 : 0);
+            // Картинка Base64
+            if(sSrcM.substr(0, nLen) == L"data")
             {
-                bool bRes = false;
-                std::wstring sSrcM = m_oLightReader.GetText();
-                std::wstring sImageName = L"";
-                std::wstring sImageId = std::to_wstring(m_nImageId);
-                size_t nLen = (sSrcM.length() > 4 ? 4 : 0);
-                // Картинка Base64
-                if(sSrcM.substr(0, nLen) == L"data")
+                size_t nBase = sSrcM.find(L"/", nLen) + 1;
+                std::wstring sType = sSrcM.substr(nBase, sSrcM.find(L";", nBase) - nBase);
+                sImageName = sImageId + L"." + sType;
+                NSFile::CFileBinary oImageWriter;
+                if(oImageWriter.CreateFileW(m_sDst + L"/word/media/i" + sImageName))
                 {
-                    size_t nBase = sSrcM.find(L"/", nLen) + 1;
-                    std::wstring sType = sSrcM.substr(nBase, sSrcM.find(L";", nBase) - nBase);
-                    sImageName = sImageId + L"." + sType;
-                    NSFile::CFileBinary oImageWriter;
-                    if(oImageWriter.CreateFileW(m_sDst + L"/word/media/" + sImageName))
-                    {
-                        bRes = true;
-                        size_t nBase = sSrcM.find(L"base64", nLen) + 7;
-                        std::string sBase64 = m_oLightReader.GetTextA().substr(nBase);
-                        int nSrcLen = (int)sBase64.length();
-                        int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
-                        BYTE* pImageData = new BYTE[nDecodeLen];
-                        if (TRUE == NSBase64::Base64Decode(sBase64.c_str(), nSrcLen, pImageData, &nDecodeLen))
-                            oImageWriter.WriteFile(pImageData, (DWORD)nDecodeLen);
-                        RELEASEARRAYOBJECTS(pImageData);
-                        oImageWriter.CloseFile();
-                    }
-                }
-                // Картинка в сети
-                else if(sSrcM.substr(0, nLen) == L"http" || !m_sBase.empty())
-                {
-                    sImageName = NSFile::GetFileName(sSrcM);
-                    CFileDownloader oDownloadImg(m_sBase + sSrcM, false);
-                    oDownloadImg.SetFilePath(m_sDst + L"/word/media/" + sImageName);
-                    bRes = oDownloadImg.DownloadSync();
-                }
-                // Картинка по относительному пути
-                else
-                {
-                    size_t nSrcM = sSrcM.rfind(L"/") + 1;
-                    sImageName = sSrcM.substr(nSrcM);
-                    bRes = NSFile::CFileBinary::Copy(m_sSrc + L"/" + sSrcM, m_sDst + L"/word/media/" + sImageName);
-                    if(!bRes)
-                        bRes = NSFile::CFileBinary::Copy(m_sSrc + L"/" + sImageName, m_sDst + L"/word/media/" + sImageName);
-                }
-
-                if(bRes)
-                {
-                    m_nImageId++;
-                    // Прописать рельсы
-                    m_oDocXmlRels += L"<Relationship Id=\"rPic";
-                    m_oDocXmlRels += sImageId;
-                    m_oDocXmlRels += L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/";
-                    m_oDocXmlRels += sImageName;
-                    m_oDocXmlRels += L"\"/>";
-
-                    // Получаем размеры картинки
-                    CBgraFrame oBgraFrame;
-                    oBgraFrame.OpenFile(m_sDst + L"/word/media/" + sImageName);
-                    int nHy = oBgraFrame.get_Height();
-                    int nWx = oBgraFrame.get_Width();
-                    if(nWx > nHy)
-                    {
-                        int nW = nWx * 9525;
-                        nW = (nW > 7000000 ? 7000000 : nW);
-                        nHy = (int)((double)nHy * (double)nW / (double)nWx);
-                        nWx = nW;
-                    }
-                    else
-                    {
-                        int nH = nHy * 9525;
-                        nH = (nH > 9000000 ? 9000000 : nH);
-                        int nW = (int)((double)nWx * (double)nH / (double)nHy);
-                        if(nW > 7000000)
-                        {
-                            nW = 7000000;
-                            nHy = (int)((double)nHy * (double)nW / (double)nWx);
-                        }
-                        else
-                            nHy = nH;
-                        nWx = nW;
-                    }
-
-                    // Пишем в document.xml
-                    m_oDocXml += L"<w:r><w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"";
-                    m_oDocXml += std::to_wstring(nWx);
-                    m_oDocXml += L"\" cy=\"";
-                    m_oDocXml += std::to_wstring(nHy);
-                    m_oDocXml += L"\"/><wp:docPr id=\"";
-                    m_oDocXml += sImageId;
-                    m_oDocXml += L"\" name=\"\"/><a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:nvPicPr><pic:cNvPr id=\"";
-                    m_oDocXml += sImageId;
-                    m_oDocXml += L"\" name=\"\"/><pic:cNvPicPr></pic:cNvPicPr></pic:nvPicPr><pic:blipFill><a:blip r:embed=\"rPic";
-                    m_oDocXml += sImageId;
-                    m_oDocXml += L"\"/><a:stretch/></pic:blipFill><pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"";
-                    m_oDocXml += std::to_wstring(nWx);
-                    m_oDocXml += L"\" cy=\"";
-                    m_oDocXml += std::to_wstring(nHy);
-                    m_oDocXml += L"\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>";
+                    bRes = true;
+                    size_t nBase = sSrcM.find(L"base64", nLen) + 7;
+                    std::string sBase64 = m_oLightReader.GetTextA().substr(nBase);
+                    int nSrcLen = (int)sBase64.length();
+                    int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
+                    BYTE* pImageData = new BYTE[nDecodeLen];
+                    if (TRUE == NSBase64::Base64Decode(sBase64.c_str(), nSrcLen, pImageData, &nDecodeLen))
+                        oImageWriter.WriteFile(pImageData, (DWORD)nDecodeLen);
+                    RELEASEARRAYOBJECTS(pImageData);
+                    oImageWriter.CloseFile();
                 }
             }
+            // Картинка в сети
+            else if(sSrcM.substr(0, nLen) == L"http" || !m_sBase.empty())
+            {
+                sImageName = NSFile::GetFileName(sSrcM);
+                CFileDownloader oDownloadImg(m_sBase + sSrcM, false);
+                oDownloadImg.SetFilePath(m_sDst + L"/word/media/i" + sImageName);
+                bRes = oDownloadImg.DownloadSync();
+            }
+            // Картинка по относительному пути
+            else
+            {
+                size_t nSrcM = sSrcM.rfind(L"/") + 1;
+                sImageName = sSrcM.substr(nSrcM);
+                bRes = NSFile::CFileBinary::Copy(m_sSrc + L"/" + sSrcM, m_sDst + L"/word/media/i" + sImageName);
+                if(!bRes)
+                    bRes = NSFile::CFileBinary::Copy(m_sSrc + L"/" + sImageName, m_sDst + L"/word/media/i" + sImageName);
+            }
+
+            if(bRes)
+                ImageRels(sImageId, L"i" + sImageName);
         }
         m_oLightReader.MoveToElement();
+    }
+
+    void ImageRels(const std::wstring& sImageId, const std::wstring& sImageName)
+    {
+        m_nImageId++;
+        // Прописать рельсы
+        m_oDocXmlRels += L"<Relationship Id=\"rPic";
+        m_oDocXmlRels += sImageId;
+        m_oDocXmlRels += L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/";
+        m_oDocXmlRels += sImageName;
+        m_oDocXmlRels += L"\"/>";
+
+        // Получаем размеры картинки
+        CBgraFrame oBgraFrame;
+        oBgraFrame.OpenFile(m_sDst + L"/word/media/" + sImageName);
+        int nHy = oBgraFrame.get_Height();
+        int nWx = oBgraFrame.get_Width();
+        if(nWx > nHy)
+        {
+            int nW = nWx * 9525;
+            nW = (nW > 7000000 ? 7000000 : nW);
+            nHy = (int)((double)nHy * (double)nW / (double)nWx);
+            nWx = nW;
+        }
+        else
+        {
+            int nH = nHy * 9525;
+            nH = (nH > 9000000 ? 9000000 : nH);
+            int nW = (int)((double)nWx * (double)nH / (double)nHy);
+            if(nW > 7000000)
+            {
+                nW = 7000000;
+                nHy = (int)((double)nHy * (double)nW / (double)nWx);
+            }
+            else
+                nHy = nH;
+            nWx = nW;
+        }
+
+        // Пишем в document.xml
+        m_oDocXml += L"<w:r><w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"";
+        m_oDocXml += std::to_wstring(nWx);
+        m_oDocXml += L"\" cy=\"";
+        m_oDocXml += std::to_wstring(nHy);
+        m_oDocXml += L"\"/><wp:docPr id=\"";
+        m_oDocXml += sImageId;
+        m_oDocXml += L"\" name=\"\"/><a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:nvPicPr><pic:cNvPr id=\"";
+        m_oDocXml += sImageId;
+        m_oDocXml += L"\" name=\"\"/><pic:cNvPicPr></pic:cNvPicPr></pic:nvPicPr><pic:blipFill><a:blip r:embed=\"rPic";
+        m_oDocXml += sImageId;
+        m_oDocXml += L"\"/><a:stretch/></pic:blipFill><pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"";
+        m_oDocXml += std::to_wstring(nWx);
+        m_oDocXml += L"\" cy=\"";
+        m_oDocXml += std::to_wstring(nHy);
+        m_oDocXml += L"\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>";
+
     }
 
     void readSVG()
@@ -1029,19 +1033,55 @@ private:
         if(bNeedXmlns)
             oSVG += L"xmlns=\"http://www.w3.org/2000/svg\"";
         oSVG += L">";
-        oSVG += m_oLightReader.GetInnerXml();
+
+        std::wstring sSVG = m_oLightReader.GetInnerXml();
+        size_t nRef = sSVG.find(L"image");
+        while(nRef != std::wstring::npos)
+        {
+            size_t nHRef = sSVG.find(L"href", nRef);
+            if(nHRef == std::wstring::npos)
+                break;
+            nHRef += 6;
+            if(sSVG.compare(nHRef, 4, L"http") == 0)
+            {
+                nRef = sSVG.find(L"image", nRef + 5);
+                continue;
+            }
+            size_t nHRefLen = sSVG.find(L"\"", nHRef);
+            std::wstring sImageName = sSVG.substr(nHRef, nHRefLen - nHRef);
+            bool bRes = NSFile::CFileBinary::Copy(m_sSrc + L"/" + sImageName, m_sDst + L"/word/media/" + NSFile::GetFileName(sImageName));
+            if(!bRes)
+                bRes = NSFile::CFileBinary::Copy(m_sSrc + L"/" + NSFile::GetFileName(sImageName), m_sDst + L"/word/media/" + NSFile::GetFileName(sImageName));
+            if(bRes)
+                sSVG.replace(nHRef, nHRefLen - nHRef, NSFile::GetFileName(sImageName));
+            nRef = sSVG.find(L"image", nRef + 5);
+        }
+
+        oSVG += sSVG;
         oSVG += L"</svg>";
 
+        std::wstring sImageId = std::to_wstring(m_nImageId);
         NSFile::CFileBinary oSVGWriter;
-        std::wstring sImageId = std::to_wstring(m_nImageId++);
-        if (oSVGWriter.CreateFileW(m_sDst + L"/word/media/" + sImageId + L".svg"))
+        std::wstring sImageFile = m_sDst + L"/word/media/" + sImageId + L".svg";
+        if (oSVGWriter.CreateFileW(sImageFile))
         {
             oSVGWriter.WriteStringUTF8(oSVG.GetData());
             oSVGWriter.CloseFile();
         }
 
-        // Прописать рельсы
-        // Прописать в document.xml
+        // Конвертация из svg в png
+        NSFonts::IApplicationFonts* pFonts = NSFonts::NSApplication::Create();
+        MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
+        bool bLoad = pMetafile->LoadFromFile(sImageFile.data());
+        if(bLoad)
+        {
+            std::wstring sPngFile = m_sDst + L"/word/media/" + sImageId + L".png";
+            pMetafile->ConvertToRaster(sPngFile.data(), 4, 1000);
+        }
+        pMetafile->Release();
+        pFonts->Release();
+
+        ImageRels(sImageId, sImageId + L".png");
     }
 
     std::wstring content()

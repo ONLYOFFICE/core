@@ -36,7 +36,7 @@ int main()
     else
     {
         // Файл, который открываем
-        std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test.xhtml";
+        std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test4.xhtml";
         nResConvert = oFile.Open(sFile, sOutputDirectory, &oParams);
 
     }

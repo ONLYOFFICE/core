@@ -325,7 +325,7 @@ enum PrintWhatEnum
 };
 
 
-enum RecordType
+enum RecordType : unsigned short
 {
     RT_Document                             = 0x03E8,
     RT_DocumentAtom,

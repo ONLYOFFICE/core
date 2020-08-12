@@ -30,3 +30,25 @@
  *
  */
 #pragma once
+
+
+#include "CryptSession10Container.h"
+#include "CurrentUserAtom.h"
+#include "PersistDirectoryAtom.h"
+#include "PersistDirectoryEntry.h"
+#include "RecordHeader.h"
+#include "UserEditAtom.h"
+
+
+/* Don't exist as a classes
+ *
+ * PersistOffsetEntry
+ *
+*/
+
+
+/* TODO
+ *
+ * CryptSession10Container
+ *
+*/

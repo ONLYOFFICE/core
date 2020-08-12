@@ -30,3 +30,17 @@
  *
  */
 #pragma once
+
+#include "DocInfoListContainer.h"               // TODO
+#include "DocInfoListSubContainerOrAtom.h"      // TODO
+#include "DocumentAtom.h"
+#include "DocumentContainer.h"                  // TODO
+#include "DrawingGroupContainer.h"              // TODO
+#include "EndDocumentAtom.h"
+#include "FilterPrivacyFlags10Atom.h"           // TODO
+#include "ModifyPasswordAtom.h"                 // TODO
+#include "PhotoAlbumInfo10Atom.h"               // TODO
+#include "PresAdvisorFlags9Atom.h"              // TODO
+#include "PrintOptionsAtom.h"                   // TODO
+#include "VBAInfoAtom.h"
+#include "VBAInfoContainer.h"                   // TODO

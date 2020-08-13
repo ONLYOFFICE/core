@@ -173,6 +173,14 @@ HEADERS += \
     ../Records/TDocument/PhotoAlbumInfo10Atom.h \
     ../Records/TDocument/PresAdvisorFlags9Atom.h \
     ../Records/TDocument/PrintOptionsAtom.h \
+    ../Records/TDocument/TSound/SoundBuiltinIdAtom.h \
+    ../Records/TDocument/TSound/SoundCollectionAtom.h \
+    ../Records/TDocument/TSound/SoundCollectionContainer.h \
+    ../Records/TDocument/TSound/SoundContainer.h \
+    ../Records/TDocument/TSound/SoundExtensionAtom.h \
+    ../Records/TDocument/TSound/SoundIdAtom.h \
+    ../Records/TDocument/TSound/SoundNameAtom.h \
+    ../Records/TDocument/TSound/_includer.h \
     ../Records/TDocument/VBAInfoAtom.h \
     ../Records/TDocument/VBAInfoContainer.h \
     ../Records/TDocument/_includer.h \

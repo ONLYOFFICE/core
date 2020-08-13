@@ -35,8 +35,16 @@
 #include "../../Reader/Records.h"
 
 
-// TODO
-//class nope : public CUnknownRecord
-//{
+struct CRecordLevelInfoAtom : public CUnknownRecord
+{
+public:
+    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
+    {
+        m_oHeader	=	oHeader;
 
-//};
+        level		=	StreamUtils::ReadDWORD ( pStream );
+    }
+
+
+    _UINT32	level;
+};

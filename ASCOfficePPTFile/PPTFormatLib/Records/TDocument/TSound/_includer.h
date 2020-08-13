@@ -32,44 +32,11 @@
 #pragma once
 
 
-#include "../../Reader/Records.h"
 
-
-class CRecordm_nParaBuildAtom : public CUnknownRecord
-{
-public:
-    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
-    {
-        m_oHeader			=	oHeader;
-
-        m_nParaBuild					=	StreamUtils::ReadDWORD ( pStream );
-        m_nBuildLevel					=	StreamUtils::ReadDWORD ( pStream );
-
-        _UINT32 Value					=	StreamUtils::ReadDWORD ( pStream );
-
-        m_fAnimBackground				=	( 0x01 == ( 0x01 & ((BYTE)Value) ) );
-        m_fReverse                      =	( 0x02 == ( 0x02 & ((BYTE)Value) ) );
-        m_fUserSetAnimBackground		=	( 0x03 == ( 0x03 & ((BYTE)Value) ) );
-        m_fAutomatic					=	( 0x04 == ( 0x04 & ((BYTE)Value) ) );
-
-        m_nDelayTime					=	StreamUtils::ReadDWORD ( pStream );
-    }
-
-public:
-
-    _UINT32	m_nParaBuild;			//	0	-	All paragraphs in the shape animate at the same time.
-    //	1	-	Paragraph levels 1 to n – 1 in the shape animate separately.
-    //			All paragraph levels n or greater animate at the same time.
-    //	2	-	Applies a custom animation paragraph build type to the
-    //			paragraphs of the shape.
-    //	3	-	The shape and all paragraphs within the shape animate as one
-    //			graphical object.
-    _UINT32	m_nBuildLevel;
-
-    bool	m_fAnimBackground;
-    bool	m_fReverse;
-    bool	m_fUserSetAnimBackground;
-    bool	m_fAutomatic;
-
-    _UINT32	m_nDelayTime;
-};
+#include "SoundCollectionContainer.h" // TODO
+#include "SoundCollectionAtom.h" // TODO
+#include "SoundContainer.h" // TODO
+#include "SoundNameAtom.h" // TODO
+#include "SoundExtensionAtom.h" // TODO
+#include "SoundIdAtom.h" // TODO
+#include "SoundBuiltinIdAtom.h" // TODO

@@ -808,72 +808,7 @@ private:
         std::vector<CTc> mTable;
         int nGridCol = 0;
         int nDeath = m_oLightReader.GetDepth();
-
-        // Чтение первой строки
-        m_oLightReader.ReadNextSiblingNode(nDeath);
-        if(m_oLightReader.GetName() != L"tr")
-            return nGridCol;
-        if(m_oLightReader.IsEmptyNode())
-            return nGridCol;
-        int j = 1; // Столбец
-        *oXml += L"<w:tr>";
-        int nTrDeath = m_oLightReader.GetDepth();
-        while(m_oLightReader.ReadNextSiblingNode(nTrDeath))
-        {
-            int nColspan = 1;
-            int nRowspan = 1;
-            while(m_oLightReader.MoveToNextAttribute())
-            {
-                if(m_oLightReader.GetName() == L"colspan")
-                    nColspan = stoi(m_oLightReader.GetText());
-                else if(m_oLightReader.GetName() == L"rowspan")
-                    nRowspan = stoi(m_oLightReader.GetText());
-            }
-            m_oLightReader.MoveToElement();
-
-            *oXml += L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/>";
-            if(nRowspan != 1)
-            {
-                *oXml += L"<w:vMerge w:val=\"restart\"/>";
-                std::wstring sColspan = std::to_wstring(nColspan);
-                if(nRowspan == 0)
-                    mTable.push_back({0, j, sColspan});
-                else
-                    for(int i = 2; i <= nRowspan; i++)
-                        mTable.push_back({i, j, sColspan});
-            }
-            if(nColspan != 1)
-            {
-                *oXml += L"<w:gridSpan w:val=\"";
-                *oXml += std::to_wstring(nColspan);
-                *oXml += L"\"/>";
-                j += nColspan - 1;
-            }
-            *oXml += L"</w:tcPr><w:p>";
-
-            // Читаем th. Ячейка заголовка таблицы. Выравнивание посередине. Выделяется полужирным
-            if(m_oLightReader.GetName() == L"th")
-            {
-                *oXml += L"<w:pPr><w:jc w:val=\"center\"/></w:pPr>";
-                bWasP = true;
-                readStream(oXml, sSelectors, sRStyle + L"<w:b/>", bBdo, oLi, bWasP);
-            }
-            // Читаем td. Ячейка таблицы. Выравнивание вправо
-            else if(m_oLightReader.GetName() == L"td")
-            {
-                *oXml += L"<w:pPr><w:jc w:val=\"right\"/></w:pPr>";
-                bWasP = true;
-                readStream(oXml, sSelectors, sRStyle, bBdo, oLi, bWasP);
-            }
-            *oXml += L"</w:p></w:tc>";
-            j++;
-        }
-        *oXml += L"</w:tr>";
-        if(--j > nGridCol)
-            nGridCol = j;
-
-        int i = 2; // Строка
-        // Чтение последующих строк
+        int i = 1; // Строка
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
         {
             // tr - строки в таблице
@@ -882,7 +817,7 @@ private:
             if(m_oLightReader.IsEmptyNode())
                 continue;
 
-            j = 1; // Столбец
+            int j = 1; // Столбец
             *oXml += L"<w:tr>";
             int nTrDeath = m_oLightReader.GetDepth();
             while(m_oLightReader.ReadNextSiblingNode(nTrDeath))
@@ -903,7 +838,7 @@ private:
                 auto it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
                 while(it1 != mTable.end() || it2 != mTable.end())
                 {
-                    *oXml += L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"";
+                    *oXml += L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:vAlign w:val=\"center\"/><w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"";
                     std::wstring sCol = (it1 != mTable.end() ? it1->sGridSpan : it2->sGridSpan);
                     *oXml += sCol;
                     *oXml += L"\"/></w:tcPr><w:p></w:p></w:tc>";
@@ -912,7 +847,7 @@ private:
                     it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
                 }
 
-                *oXml += L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/>";
+                *oXml += L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:vAlign w:val=\"center\"/>";
                 if(nRowspan != 1)
                 {
                     *oXml += L"<w:vMerge w:val=\"restart\"/>";
@@ -932,8 +867,6 @@ private:
                 }
                 *oXml += L"</w:tcPr><w:p>";
 
-
-
                 // Читаем th. Ячейка заголовка таблицы. Выравнивание посередине. Выделяется полужирным
                 if(m_oLightReader.GetName() == L"th")
                 {
@@ -944,7 +877,7 @@ private:
                 // Читаем td. Ячейка таблицы. Выравнивание вправо
                 else if(m_oLightReader.GetName() == L"td")
                 {
-                    *oXml += L"<w:pPr><w:jc w:val=\"right\"/></w:pPr>";
+                    *oXml += L"<w:pPr><w:jc w:val=\"left\"/></w:pPr>";
                     readStream(oXml, sSelectors, sRStyle, bBdo, oLi, bWasP);
                 }
                 *oXml += L"</w:p></w:tc>";
@@ -955,7 +888,7 @@ private:
                 it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
                 while(it1 != mTable.end() || it2 != mTable.end())
                 {
-                    *oXml += L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"";
+                    *oXml += L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:vAlign w:val=\"center\"/><w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"";
                     std::wstring sCol = (it1 != mTable.end() ? it1->sGridSpan : it2->sGridSpan);
                     *oXml += sCol;
                     *oXml += L"\"/></w:tcPr><w:p></w:p></w:tc>";
@@ -976,9 +909,8 @@ private:
     {
         if(m_oLightReader.IsEmptyNode())
             return;
-        // Стиль таблицы
-        *oXml += L"<w:tbl><w:tblPr><w:tblStyle w:val=\"table\"/><w:tblW w:w=\"0\" w:type=\"auto\"/><w:tblLayout w:type=\"fixed\"/></w:tblPr>";
 
+        NSStringUtils::CStringBuilder oCaption;
         NSStringUtils::CStringBuilder oHead;
         NSStringUtils::CStringBuilder oBody;
         NSStringUtils::CStringBuilder oFoot;
@@ -989,6 +921,12 @@ private:
         {
             int n = 0;
             std::wstring sName = m_oLightReader.GetName();
+            if(sName == L"caption")
+            {
+                oCaption += L"<w:p><w:pPr><w:jc w:val=\"center\"/></w:pPr>";
+                readStream(&oCaption, sSelectors, sRStyle, bBdo, oLi, bWasP);
+                oCaption += L"</w:p>";
+            }
             if(sName == L"thead")
                 n = readTr(&oHead, sSelectors, sRStyle, bBdo, oLi, bWasP);
             else if(sName == L"tbody")
@@ -999,6 +937,10 @@ private:
                 nGridCol = n;
         }
 
+        // Заголовок таблицы
+        *oXml += oCaption.GetData();
+        // Начало таблицы
+        *oXml += L"<w:tbl><w:tblPr><w:tblStyle w:val=\"table\"/><w:tblW w:w=\"0\" w:type=\"auto\"/><w:tblLayout w:type=\"fixed\"/></w:tblPr>";
         // Размеры таблицы
         std::wstring sGridCol = L"";
         if(nGridCol != 0)

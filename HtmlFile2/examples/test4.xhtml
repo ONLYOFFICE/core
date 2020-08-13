@@ -13,6 +13,35 @@
 	</head>
 	<body>
 	<table>
+		<caption>My Caption</caption>
+		<thead>
+			<tr>
+				<th>Heading 1</th>
+				<th>Heading 2</th>
+				<th>Heading 3</th>
+				<th>Heading 4</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td rowspan="4">Long column</td>
+				<td colspan="3">Long row top</td>
+			</tr>
+			<tr>
+				<td>data</td>
+				<td>data</td>
+				<td>data</td>
+			</tr>
+			<tr>
+				<td>data</td>
+				<td colspan="2">2 cols merged</td>
+			</tr>
+			<tr>
+				<td colspan="3">Long row bottom</td>
+			</tr>
+		</tbody>
+	</table>
+	<table>
   <tr>
     <th rowspan="2" colspan="2">Name</th>
     <th rowspan="2">ID</th>

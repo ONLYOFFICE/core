@@ -13,6 +13,9 @@ namespace NSCSS
     {
         std::map<std::wstring, std::wstring> m_mStyle;
         std::wstring m_sId;
+
+        std::vector<std::wstring> m_arParentsName;
+        bool m_bNeedSave;
     public:
         CCompiledStyle();
         CCompiledStyle(std::map<std::wstring, std::wstring> mStyle);
@@ -26,6 +29,7 @@ namespace NSCSS
 
         size_t GetSize();
         bool Empty();
+        void Clear();
 
         std::map<std::wstring, std::wstring>::iterator GetBegin();
         std::map<std::wstring, std::wstring>::iterator GetEnd();
@@ -34,6 +38,9 @@ namespace NSCSS
         void InsertStyle(std::map<std::wstring, std::wstring> mStyle);
         void SetStyle(std::map<std::wstring, std::wstring> mStyle);
         void AddStyle(std::wstring sStyle);
+
+        bool GetNeedSave();
+        void SetNeedSave(bool bNeedSave);
 
         void SetID(std::wstring sId);
         std::wstring GetId();
@@ -110,7 +117,13 @@ namespace NSCSS
 
 
         CCompiledStyle& operator+= (const CCompiledStyle& oElement);
+        CCompiledStyle& operator-= (const CCompiledStyle& oElement);
         CCompiledStyle& operator= (const CCompiledStyle& oElement);
+//        CCompiledStyle& operator= (const CCompiledStyle* oElement);
+        bool operator== (const CCompiledStyle& oElement);
+        bool operator!= (const CCompiledStyle& oElement);
+        bool operator> (const CCompiledStyle& oElement);
+        bool operator< (const CCompiledStyle& oElement);
     };
 
 

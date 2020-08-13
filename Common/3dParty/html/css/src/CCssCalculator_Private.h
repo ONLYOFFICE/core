@@ -15,7 +15,7 @@ namespace NSCSS
         std::vector<CElement*> m_arData;
         std::vector<std::wstring> m_arFiles;
 
-        std::map<std::wstring, CCompiledStyle*> m_arStyleUsed;
+        std::map<std::wstring, CCompiledStyle> m_arStyleUsed;
                 //selector     //style
         int m_nDpi = 96;
         std::wstring m_sEncoding = L"UTF-8";

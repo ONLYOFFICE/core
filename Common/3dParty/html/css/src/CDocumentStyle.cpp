@@ -6,6 +6,16 @@ namespace NSCSS
 {
     CDocumentStyle::CDocumentStyle()
     {
+        m_arStandardStyles = {L"normal",    L"li",
+                              L"h1",        L"h2",
+                              L"h3",        L"h4",
+                              L"h5",        L"h6",
+                              L"title1-c",  L"title2-c",
+                              L"title3-c",  L"title4-c",
+                              L"title5-c",  L"title6-c",
+                              L"p-c",       L"p",
+                              L"div-c",     L"div",
+                              L"a"};
     }
 
     CDocumentStyle::~CDocumentStyle()
@@ -14,6 +24,9 @@ namespace NSCSS
 
     std::wstring CDocumentStyle::GetStyle()
     {
+        if (m_sId.empty())
+            return L"";
+
         return m_sStyle;
     }
 
@@ -22,63 +35,120 @@ namespace NSCSS
         return m_sId;
     }
 
+    void CDocumentStyle::Clear()
+    {
+        m_sId.clear();
+        m_sStyle.clear();
+    }
+
+    void CDocumentStyle::SetStyle(const std::wstring &sStyle)
+    {
+        if (sStyle.empty())
+            return;
+        m_sStyle = sStyle;
+    }
+
+    void CDocumentStyle::SetId(const std::wstring &sId)
+    {
+        if (sId.empty())
+            return;
+        m_sId = sId;
+    }
+
     void CDocumentStyle::WriteStyle(NSCSS::CCompiledStyle &oStyle)
     {
+        if(oStyle.GetId().empty())
+        {
+            CXmlElement oXmlElement;
+            oXmlElement.CreateDefaultElement(L"normal");
+            m_sId = L"normal";
+            m_sStyle = oXmlElement.GetStyle();
+            return;
+        }
+
+        if (oStyle.GetNeedSave() == false)
+        {
+            m_sId = oStyle.GetId();
+            m_sStyle = L"";
+            return;
+        }
+
+        CXmlElement oXmlElement;
+
+        bool bIsStandard = false;
+        std::wstring sId = oStyle.GetId();
+
+        if (sId.find(L'.') != std::wstring::npos)
+            sId = sId.substr(0, sId.find(L'.'));
+
+        if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sId) != m_arStandardStyles.end())
+        {
+            bIsStandard = true;
+            oXmlElement.CreateDefaultElement(sId);
+        }
+
+        if (oStyle.Empty() && bIsStandard)
+        {
+            m_sId = oStyle.GetId();
+            m_sStyle = oXmlElement.GetStyle();
+            return;
+        }
+
+        if (oStyle.Empty() && !bIsStandard)
+        {
+            m_sId = L"normal";
+            m_sStyle = L"";
+            return;
+        }
+
         m_sId = oStyle.GetId();
-        // пофиксить появление пробелов
-        std::wstring sId = m_sId;
-        if (sId.find(L" ") != std::wstring::npos)
-            sId = sId.substr(0, sId.find(L" "));
 
-        m_sStyle = L"<w:style w:type=\"paragraph\" w:customStyle=\"1\" w:styleId=\"" + sId + L"\">";
-
-        m_sStyle += L"<w:name w:val=\"" + sId + L"\"/>";
-        m_sStyle += L"<w:qFormat/>";
-
-        std::wstring sPPr = L"<w:pPr>";
-        std::wstring sRPr = L"<w:rPr>";
+        oXmlElement.SetStyleId(m_sId);
+        oXmlElement.SetName(m_sId);
 
         if (!oStyle.GetColor().empty())
-            sRPr += L"<w:color w:val=\"" + oStyle.GetColor() + L"\"/>";
+            oXmlElement.SetColor(oStyle.GetColor());
 
         if (!oStyle.GetFontSize().empty())
         {
             std::wstring sFontSize = oStyle.GetFontSize();
             if (isdigit(sFontSize[0]))
             {
-                sRPr += L"<w:sz w:val=\"" + sFontSize + L"\"/>";
+                oXmlElement.SetSz(sFontSize);
             }
         }
         if (!oStyle.GetFontFamily().empty())
         {
             std::wstring sFontFamily = oStyle.GetFontFamily();
-            sRPr += L"<w:rFonts w:ascii=\"" + sFontFamily + L"\" w:hAnsi=\"" + sFontFamily + L"\"/>";
+            oXmlElement.SetRFonts(sFontFamily);
         }
 
         if (!oStyle.GetTextAlign().empty())
         {
+            // Сделать обработку в SetJc
             std::wstring sTextAlign = oStyle.GetTextAlign();
             if (sTextAlign != L"justify")
-                sPPr += L"<w:jc w:val=\"" + oStyle.GetTextAlign() + L"\"/>";
+                oXmlElement.SetJc(oStyle.GetTextAlign());
             else if (sTextAlign == L"justify")
-                sPPr += L"<w:jc w:val=\"both\"/>";
+                oXmlElement.SetJc(L"both");
         }
         if (!oStyle.GetFontStyle().empty())
         {
             std::wstring sFontStyle = oStyle.GetFontStyle();
             if (sFontStyle == L"italic")
-                sRPr += L"<w:i w:val=\"true\"/>";
+                oXmlElement.SetI(true);
         }
 
         if (!oStyle.GetFontWeight().empty())
         {
             std::wstring sFontWeight = oStyle.GetFontWeight();
             if (sFontWeight == L"bold")
-                sRPr += L"<w:b w:val=\"true\"/>";
+                oXmlElement.SetB(true);
         }
 
         if (!oStyle.GetTextIndent().empty())
-            sPPr += L"<w:ind w:firstLine=\"" + oStyle.GetTextIndent() + L"\"/>";
+            oXmlElement.SetInd(L"w:firstLine=\"" + oStyle.GetTextIndent() + L"\"");
+//            sPPr += L"<w:ind w:firstLine=\"" + oStyle.GetTextIndent() + L"\"/>";
 
 //        if (!oStyle.GetPadding().empty())
 //        {
@@ -135,8 +205,6 @@ namespace NSCSS
 //        if (!oStyle.GetBackgroundColor().empty())
 //            m_sStyle += L"<w:background w:color=\"" + oStyle.GetBackgroundColor() + L"\"/>";
 
-        sPPr += L"</w:pPr>";
-        sRPr += L"</w:rPr>";
-        m_sStyle += sPPr + sRPr + L"</w:style>";
+        m_sStyle = oXmlElement.GetStyle();
     }
 }

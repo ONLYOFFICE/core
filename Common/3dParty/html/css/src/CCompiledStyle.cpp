@@ -4,10 +4,13 @@
 #include <vector>
 #include <codecvt>
 
+#include <iostream>
+
 namespace NSCSS
 {
     CCompiledStyle::CCompiledStyle()
     {
+        m_bNeedSave = true;
     }
 
     CCompiledStyle::CCompiledStyle(std::map<std::wstring, std::wstring> mStyle)
@@ -19,11 +22,11 @@ namespace NSCSS
     {
         m_mStyle = oStyle.m_mStyle;
         m_sId = oStyle.m_sId;
+        m_bNeedSave = oStyle.m_bNeedSave;
     }
 
     CCompiledStyle::~CCompiledStyle()
     {
-
     }
 
     CCompiledStyle& CCompiledStyle::operator+= (const CCompiledStyle &oElement)
@@ -36,12 +39,86 @@ namespace NSCSS
         return *this;
     }
 
-    CCompiledStyle& CCompiledStyle::operator= (const CCompiledStyle &oElement)
+    CCompiledStyle& CCompiledStyle::operator-= (const CCompiledStyle &oElement)
     {
-        m_mStyle  =oElement.m_mStyle;
-        m_sId = oElement.m_sId;
+        std::map<std::wstring, std::wstring> oStyle;
+
+        for (auto item : m_mStyle)
+        {
+            if (oElement.m_mStyle.find(item.first) != oElement.m_mStyle.cend())
+                oStyle.emplace(item.first, item.second);
+        }
+        m_mStyle = oStyle;
 
         return *this;
+    }
+
+    CCompiledStyle& CCompiledStyle::operator= (const CCompiledStyle &oElement)
+    {
+        m_mStyle = oElement.m_mStyle;
+        m_sId = oElement.m_sId;
+        m_bNeedSave = oElement.m_bNeedSave;
+
+        return *this;
+    }
+
+//    CCompiledStyle& CCompiledStyle::operator= (const CCompiledStyle *oElement)
+//    {
+//        m_mStyle = oElement->m_mStyle;
+//        m_sId = oElement->m_sId;
+
+//        return *this;
+//    }
+
+    bool CCompiledStyle::operator==(const CCompiledStyle &oElement)
+    {
+//        if (this->m_sId.empty() * oElement.m_sId.empty() == 0)
+//            return false;
+
+//        if (this->m_sId != oElement.m_sId)
+//            return false;
+
+        if (this->m_mStyle.size() != oElement.m_mStyle.size())
+            return false;
+
+        if (this->m_mStyle.size() == oElement.m_mStyle.size() == 0)
+            return true;
+
+        auto iterLeft = this->m_mStyle.begin();
+        auto iterRight = oElement.m_mStyle.begin();
+
+        while (iterLeft != this->m_mStyle.end())
+        {
+            if (iterLeft->first != iterRight->first ||
+                iterLeft->second != iterRight->second)
+                return false;
+
+            iterLeft++;
+            iterRight++;
+        }
+
+        return true;
+    }
+
+    bool CCompiledStyle::operator!=(const CCompiledStyle &oElement)
+    {
+        if (*this > oElement)
+            return false;
+
+        if (*this < oElement)
+            return false;
+
+        return true;
+    }
+
+    bool CCompiledStyle::operator>(const CCompiledStyle &oElement)
+    {
+        return (m_mStyle.size() > oElement.m_mStyle.size());
+    }
+
+    bool CCompiledStyle::operator<(const CCompiledStyle &oElement)
+    {
+        return !(m_mStyle.size() > oElement.m_mStyle.size());
     }
 
     std::map<std::wstring, std::wstring> CCompiledStyle::GetStyleMap()
@@ -74,6 +151,14 @@ namespace NSCSS
         if (m_mStyle.size() == 0)
             return true;
         return false;
+    }
+
+    void CCompiledStyle::Clear()
+    {
+        m_mStyle.clear();
+        m_sId.clear();
+        m_arParentsName.clear();
+        m_bNeedSave = true;
     }
 
     std::map<std::wstring, std::wstring>::iterator CCompiledStyle::GetBegin()
@@ -109,13 +194,13 @@ namespace NSCSS
 
         while(nPosition < sStyle.length())
         {
-            while (sStyle[nPosition] != L':' && nPosition < sStyle.length())
+            while (sStyle[nPosition] != L':' && nPosition < (int)sStyle.length())
             {
                 if (!isspace(sStyle[nPosition]))
                     sProperty += sStyle[nPosition];
                 nPosition++;
             }
-            while (sStyle[nPosition] != L';' && nPosition < sStyle.length())
+            while (sStyle[nPosition] != L';' && nPosition < (int)sStyle.length())
             {
                 if (!isspace(sStyle[nPosition]))
                     sValue += sStyle[nPosition];
@@ -125,6 +210,16 @@ namespace NSCSS
             if (!sProperty.empty() && !sValue.empty())
                 AddPropSel(sProperty, sValue);
         }
+    }
+
+    bool CCompiledStyle::GetNeedSave()
+    {
+        return  m_bNeedSave;
+    }
+
+    void CCompiledStyle::SetNeedSave(bool bNeedSave)
+    {
+        m_bNeedSave = bNeedSave;
     }
 
     void CCompiledStyle::SetID(std::wstring sId)

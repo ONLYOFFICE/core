@@ -71,16 +71,11 @@ void Format::readFields(CFRecord& record)
 
 int Format::serialize(std::wostream & stream)
 {
-    if ((ifmt > 4 && ifmt < 9) || (ifmt > 40 && ifmt < 45)) return 0;
+	stream << L"<numFmt";
+		stream << L" numFmtId=\"" << ifmt << L"\"";
+		stream << L" formatCode=\"" << stFormat << L"\"";
+	stream << L"/>";
 
-	CP_XML_WRITER(stream)    
-    {
-        CP_XML_NODE(L"numFmt")
-        {
-			CP_XML_ATTR(L"numFmtId", ifmt);
-			CP_XML_ATTR(L"formatCode", stFormat);
-		}
-	}
 	return 1;
 }
 

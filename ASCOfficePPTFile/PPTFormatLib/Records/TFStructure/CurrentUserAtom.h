@@ -30,7 +30,7 @@
  *
  */
 #pragma once
-#include "../IRecord.h"
+#include "../../Reader/Records.h"
 
 #define			NO_ENCRYPT		0xE391C05F
 #define			ENCRYPT			0xF3D1C4DF

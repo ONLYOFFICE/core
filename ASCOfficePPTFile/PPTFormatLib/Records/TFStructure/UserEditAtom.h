@@ -30,7 +30,7 @@
  *
  */
 #pragma once
-#include "../IRecord.h"
+#include "../../Reader/Records.h"
 
 class CRecordUserEditAtom : public CUnknownRecord
 {

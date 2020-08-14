@@ -30,16 +30,3 @@
  *
  */
 #pragma once
-
-
-
-#include "ColorStruct.h" // TODO
-#include "ColorIndexStruct.h" // TODO
-#include "WideColorStruct.h" // TODO
-#include "DateTimeStruct.h" // TODO
-#include "PointStruct.h" // TODO
-#include "RatioStruct.h" // TODO
-#include "RectStruct.h" // TODO
-#include "SmallRectStruct.h" // TODO
-#include "ScalingStruct.h" // TODO
-#include "TmsfTimeStruct.h" // TODO

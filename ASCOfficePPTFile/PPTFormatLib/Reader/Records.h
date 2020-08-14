@@ -39,11 +39,109 @@
 #include "../../../OfficeCryptReader/source/CryptTransform.h"
 
 #include <boost/smart_ptr/shared_array.hpp>
-#include "../Records/RecordsIncluder.h"
 
 using namespace PPT_FORMAT;
 using namespace XLS;
 
+class SRecordHeader 
+{ 
+public:
+	unsigned char	RecVersion;                
+	unsigned short	RecInstance;  
+	unsigned short	RecType; 
+	_UINT32	        RecLen; 
+	
+	void Clear()
+	{
+		RecVersion = 0;
+		RecInstance = 0;
+		RecType = 0;
+		RecLen = 0;
+	}
+	SRecordHeader()
+	{
+		Clear();
+	}
+	bool ReadFromStream(const CFStreamPtr &pStream)
+	{
+		Clear();
+
+		if (pStream->isEOF()) return FALSE;
+		POLE::uint64 nRd = 0; 
+		
+		unsigned short rec =0;
+		pStream->read((unsigned char*)&(rec), 2);
+
+		RecInstance = rec >> 4;
+		RecVersion	= rec - (RecInstance << 4);
+
+		*pStream >> RecType >> RecLen;
+
+		unsigned long sz = pStream->getStreamSize() - pStream->getStreamPointer();
+
+		if (RecLen > sz )
+		{
+			RecLen = sz;
+		}
+
+        return true;
+	}
+
+    bool ReadFromStream(POLE::Stream * pStream)
+	{
+		Clear();
+		if (!pStream) return false;
+
+		POLE::uint64 nRd = 0; 
+		
+		unsigned short rec =0;
+		nRd = pStream->read((unsigned char*)&(rec), 2);
+
+		if (nRd != 2) return false;
+
+		RecInstance = rec >> 4;
+		RecVersion	= rec - (RecInstance<<4);
+
+		nRd = pStream->read((unsigned char*)&(RecType), 2);
+	
+		nRd = pStream->read((unsigned char*)&(RecLen), 4);
+
+		POLE::uint64 sz = pStream->size() - pStream->tell();
+
+		if (RecLen > sz )
+		{
+			RecLen = (UINT)sz;
+		}
+
+        return true;
+	}
+
+    bool IsContainer()
+	{
+		/*if ((RecVersion == PSFLAG_CONTAINER) || ((RecVersion & 0x0F) == 0x0F))
+		{
+			return TRUE;
+		}*/
+		if (1064 == RecType)
+            return false;
+		
+		if (RecVersion == 0x0F)
+		{
+            return true;
+		}
+        return false;
+	}
+
+	SRecordHeader& operator =(const SRecordHeader& oSrc)
+	{
+		RecVersion	= oSrc.RecVersion;
+		RecInstance = oSrc.RecInstance;
+		RecType		= oSrc.RecType;
+		RecLen		= oSrc.RecLen;
+		return (*this);
+	}
+
+};
 
 class IRecord
 {

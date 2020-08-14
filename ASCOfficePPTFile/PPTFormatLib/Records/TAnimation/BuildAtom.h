@@ -35,29 +35,8 @@
 #include "../../Reader/Records.h"
 
 
-class CRecordBuildAtom : public CUnknownRecord
-{
-public:
-    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
-    {
-        m_oHeader			=	oHeader;
+// TODO
+//class nope : public CUnknownRecord
+//{
 
-        m_nBuildType	=	StreamUtils::ReadDWORD ( pStream );
-        m_nBuildId		=	StreamUtils::ReadDWORD ( pStream );
-        m_nShapeIdRef	=	StreamUtils::ReadDWORD ( pStream );
-
-        _UINT32 Value		=	StreamUtils::ReadDWORD ( pStream );
-
-        m_fExpanded		=	( 0x01 == ( 0x01 & ((BYTE)Value) ) );
-        m_fUIExpanded	=	( 0x02 == ( 0x02 & ((BYTE)Value) ) );
-    }
-
-public:
-
-    _UINT32	m_nBuildType;			//	1	-	Paragraph build type,	2	-	Chart build type,	3	-	Diagram build type
-    _UINT32	m_nBuildId;
-    _UINT32	m_nShapeIdRef;
-
-    bool	m_fExpanded;
-    bool	m_fUIExpanded;
-};
+//};

@@ -33,27 +33,10 @@
 
 
 #include "../../Reader/Records.h"
-#include "AnimationInfoAtom.h"
 
-class CRecordAnimationInfoContainer: public CUnknownRecord
-{
-public:
-    CRecordAnimationInfoAtom    m_AnimationAtom;
-    CRecordSoundContainer       m_AnimationSound;
 
-    CRecordAnimationInfoContainer(){}
-    ~CRecordAnimationInfoContainer(){}
+// TODO
+//class nope : public CUnknownRecord
+//{
 
-    virtual void ReadFromStream(SRecordHeader & thisHeader, POLE::Stream* pStream)
-    {
-        m_oHeader = thisHeader;
-
-        SRecordHeader oHeader;
-
-        if (oHeader.ReadFromStream(pStream))
-            m_AnimationAtom.ReadFromStream ( oHeader, pStream );
-
-        if (oHeader.ReadFromStream(pStream))
-            m_AnimationSound.ReadFromStream ( oHeader, pStream );
-    }
-};
+//};

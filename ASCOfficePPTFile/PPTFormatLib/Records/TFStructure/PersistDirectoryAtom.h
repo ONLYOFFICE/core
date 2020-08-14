@@ -33,7 +33,7 @@
 
 #include <map>
 
-#include "../../Reader/Records.h"
+#include "../IRecord.h"
 #include "PersistDirectoryEntry.h"
 
 

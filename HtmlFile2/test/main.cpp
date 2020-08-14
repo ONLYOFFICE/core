@@ -14,13 +14,13 @@ void getDirectories(std::wstring sDirectory, std::vector<std::wstring>& arrDirec
 
 int main()
 {
-    setlocale(LC_ALL, "Russian");
-    bool bBatchMode = false;
+    // setlocale(LC_ALL, "Russian");
+    bool bBatchMode = true;
     if(bBatchMode)
     {
         // Директория файлов
-        // std::wstring sDirectory = NSFile::GetProcessDirectory() + L"/../../../examples/fb2";
-        std::wstring sDirectory = L"C:/Users/Svetlana.Kulikova.AVSMEDIA/Downloads/html";
+        std::wstring sDirectory = NSFile::GetProcessDirectory() + L"/../../../examples/html";
+        // std::wstring sDirectory = L"C:/Users/Svetlana.Kulikova.AVSMEDIA/Downloads/html";
         // Вложенные директории
         std::vector<std::wstring> arrDirectory;
         getDirectories(sDirectory, arrDirectory);
@@ -39,7 +39,7 @@ int main()
 
             // Директория, где будем создавать docx
             size_t nPos = sD.find(L"/html");
-            std::wstring sOutputDirectory = sD.insert(nPos + 4, L"-res");
+            std::wstring sOutputDirectory = sD.insert(nPos + 5, L"-res");
             NSDirectory::CreateDirectory(sOutputDirectory);
 
             for(std::wstring sFile : arrFiles)
@@ -91,7 +91,7 @@ int main()
         oParams.SetDescription(L"Description");
 
         // Файл, который открываем
-        std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test.html";
+        std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test4.xhtml";
         nResConvert = oFile.Open(sFile, sOutputDirectory, &oParams);
 
         if(nResConvert == S_OK)

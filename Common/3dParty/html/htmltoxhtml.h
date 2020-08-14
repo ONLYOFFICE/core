@@ -108,7 +108,6 @@ static void substitute_xml_entities_into_attributes(char quote, std::string &tex
         replace_all(text, "'", "&apos;");
 }
 
-
 static std::string handle_unknown_tag(GumboStringPiece* text)
 {
     if (text->data == NULL) {
@@ -119,7 +118,6 @@ static std::string handle_unknown_tag(GumboStringPiece* text)
     return std::string(gsp.data, gsp.length);
 }
 
-
 static std::string get_tag_name(GumboNode* node)
 {
     std::string tagname = (node->type == GUMBO_NODE_DOCUMENT ? "document" : gumbo_normalized_tagname(node->v.element.tag));
@@ -127,7 +125,6 @@ static std::string get_tag_name(GumboNode* node)
         tagname = handle_unknown_tag(&node->v.element.original_tag);
     return tagname;
 }
-
 
 static void build_doctype(GumboNode* node, NSStringUtils::CStringBuilderA& oBuilder)
 {
@@ -148,7 +145,6 @@ static void build_doctype(GumboNode* node, NSStringUtils::CStringBuilderA& oBuil
     }
 }
 
-
 static void build_attributes(GumboAttribute* at, bool no_entities, NSStringUtils::CStringBuilderA& atts)
 {
     std::string sVal(at->value);
@@ -166,7 +162,6 @@ static void build_attributes(GumboAttribute* at, bool no_entities, NSStringUtils
     atts.WriteString(sVal);
     atts.WriteString(qs);
 }
-
 
 static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA& contents)
 {
@@ -205,7 +200,6 @@ static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA
         }
     }
 }
-
 
 static void prettyprint(GumboNode* node, NSStringUtils::CStringBuilderA& oBuilder)
 {

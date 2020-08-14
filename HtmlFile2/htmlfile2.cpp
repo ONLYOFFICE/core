@@ -1,9 +1,11 @@
 #include <string>
+#include <cctype>
 #include <map>
 #include <vector>
 #include <algorithm>
 #include <iostream>
 #include <fstream>
+#include <locale>
 
 #include "htmlfile2.h"
 #include "../Common/3dParty/html/htmltoxhtml.h"
@@ -512,7 +514,7 @@ private:
         if(std::find(m_sStyles.begin(), m_sStyles.end(), sRes) == m_sStyles.end())
         {
             m_sStyles.push_back(sRes);
-            m_oStylesXml += oXmlStyle.GetStyle();
+            m_oStylesXml.WriteEncodeXmlString(oXmlStyle.GetStyle());
         }
 
         return sRes;
@@ -584,7 +586,7 @@ private:
                 if(bWasP)
                 {
                     *oXml += L"<w:pPr><w:pStyle w:val=\"";
-                    *oXml += getStyle(sSubClass);
+                    oXml->WriteString(getStyle(sSubClass));
                     *oXml += L"\"/></w:pPr>";
                 }
                 std::wstring sText = m_oLightReader.GetText();
@@ -594,7 +596,9 @@ private:
                 *oXml += L"<w:r><w:rPr>";
                 *oXml += sRStyle;
                 *oXml += L"</w:rPr><w:t xml:space=\"preserve\">";
-                (*oXml).WriteEncodeXmlString(sText);
+
+                auto end = std::unique(sText.begin(), sText.end(), [loc = std::locale{}] (wchar_t l, wchar_t r) { return std::isspace(l, loc) && std::isspace(r, loc); });
+                oXml->WriteEncodeXmlString(std::wstring(sText.begin(), end));
                 *oXml += L"</w:t></w:r>";
                 bWasP = false;
             }
@@ -706,7 +710,7 @@ private:
             // Картинки
             else if(sName == L"img")
             {
-                readImage(oXml);
+                readImage(oXml, sRStyle);
                 bWasP = false;
             }
             // Подчеркнутый
@@ -1006,7 +1010,7 @@ private:
         m_oNoteXml += L"<w:footnote w:id=\"";
         m_oNoteXml += std::to_wstring(m_nFootnoteId++);
         m_oNoteXml += L"\"><w:p><w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr><w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r><w:r><w:t xml:space=\"preserve\">";
-        m_oNoteXml += sNote;
+        m_oNoteXml.WriteEncodeXmlString(sNote);
         m_oNoteXml += L"</w:t></w:r></w:p></w:footnote>";
     }
 
@@ -1064,7 +1068,7 @@ private:
 
             // Пишем в document.xml
             *oXml += L"<w:hyperlink w:tooltip=\"";
-            (*oXml).WriteEncodeXmlString(sTitle);
+            oXml->WriteEncodeXmlString(sTitle);
             *oXml += L"\" r:id=\"rHyp";
         }
         *oXml += std::to_wstring(m_nHyperlinkId++);
@@ -1074,13 +1078,20 @@ private:
         *oXml += L"</w:hyperlink>";
     }
 
-    void readImage (NSStringUtils::CStringBuilder* oXml)
+    void readImage (NSStringUtils::CStringBuilder* oXml, std::wstring sRStyle)
     {
+        std::wstring sAlt = L"";
+        bool bRes = false;
         while(m_oLightReader.MoveToNextAttribute())
         {
-            if(m_oLightReader.GetName() != L"src")
+            if(m_oLightReader.GetName() == L"alt")
+            {
+                sAlt = m_oLightReader.GetText();
                 continue;
-            bool bRes = false;
+            }
+            else if(m_oLightReader.GetName() != L"src")
+                continue;
+
             std::wstring sSrcM = m_oLightReader.GetText();
             std::wstring sImageName = L"";
             std::wstring sImageId = std::to_wstring(m_nImageId);
@@ -1128,6 +1139,15 @@ private:
                 ImageRels(oXml, sImageId, L"i" + sImageName);
         }
         m_oLightReader.MoveToElement();
+
+        if(!bRes)
+        {
+            oXml->WriteString(L"<w:r><w:rPr>");
+            oXml->WriteString(sRStyle);
+            oXml->WriteString(L"</w:rPr><w:t xml:space=\"preserve\">");
+            oXml->WriteEncodeXmlString(sAlt);
+            oXml->WriteString(L"</w:t></w:r>");
+        }
     }
 
     void ImageRels (NSStringUtils::CStringBuilder* oXml, const std::wstring& sImageId, const std::wstring& sImageName)

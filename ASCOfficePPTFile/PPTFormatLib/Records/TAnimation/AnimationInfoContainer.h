@@ -32,7 +32,7 @@
 #pragma once
 
 
-#include "../../Reader/Records.h"
+#include "../IRecord.h"
 #include "AnimationInfoAtom.h"
 
 class CRecordAnimationInfoContainer: public CUnknownRecord

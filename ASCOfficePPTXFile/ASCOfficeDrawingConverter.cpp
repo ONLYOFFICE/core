@@ -1819,6 +1819,20 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 	{
 		pPPTShape = new CPPTShape();
 		pPPTShape->SetShapeType((PPTShapes::ShapeType)2);
+
+		std::wstring strArc = oNodeShape.GetAttribute(L"arcsize");
+		if (false == strArc.empty())
+		{
+			SimpleTypes::CUniversalMeasureOrPercent value;
+			value.FromString(strArc);
+			if (value.IsPercent())
+			{
+			}
+			else
+			{
+				pPPTShape->SetAdjustment(0, value.GetValue() / 10.);
+			}
+		}
 		pPPTShape->ReCalculate();
 	}
     else if (L"v:oval" == strNameNode)
@@ -3513,6 +3527,18 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 	m_pBinaryWriter->m_lCxCurShape = width;
 	m_pBinaryWriter->m_lCyCurShape = height;
 
+ 	bool bExtendedSize = false;
+	XmlUtils::CXmlNode oNodeShadow = oNode.ReadNode(L"v:shadow");
+    std::wstring strShadow;
+	if (oNodeShadow.IsValid())
+	{
+		OOX::Vml::CShadow shadow; shadow.fromXML(oNodeShadow);
+		if (shadow.m_oOn.GetBool())
+		{
+			bExtendedSize = true;
+		}
+
+	}
 	if (bIsInline)
 	{
 		NSBinPptxRW::CXmlWriter oWriter;
@@ -3535,10 +3561,10 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 
         oWriter.StartNode(L"wp:effectExtent");
 		oWriter.StartAttributes();
-        oWriter.WriteAttribute(L"l", 0);
-        oWriter.WriteAttribute(L"t", 0);
-        oWriter.WriteAttribute(L"r", 0);
-        oWriter.WriteAttribute(L"b", 0);
+		oWriter.WriteAttribute(L"l", bExtendedSize ? 10795 : 0);
+        oWriter.WriteAttribute(L"t", bExtendedSize ? 5080 : 0);
+        oWriter.WriteAttribute(L"r", bExtendedSize ? 28575 : 0);
+        oWriter.WriteAttribute(L"b", bExtendedSize ? 26670 : 0);
 		oWriter.EndAttributes();
         oWriter.EndNode(L"wp:effectExtent");
 
@@ -3580,7 +3606,7 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 
 		return oWriter.GetXmlString();
 	}
-
+//------------------------------------------------------------------------------------
 	NSBinPptxRW::CXmlWriter oWriter;
     oWriter.StartNode(L"wp:anchor");
 
@@ -3607,11 +3633,13 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 		oWriter.WriteAttribute(L"relativeHeight", std::to_wstring(zIndex_));
 	}
 
-    XmlUtils::CXmlNode oNodeWrap = oNode.ReadNode(L"w10:wrap");
-    std::wstring strWType;
+    
+	XmlUtils::CXmlNode oNodeWrap = oNode.ReadNode(L"w10:wrap");
+    
+	std::wstring strWrapType;
 	if (oNodeWrap.IsValid())
 	{
-        strWType = oNodeWrap.GetAttribute(L"type");
+        strWrapType = oNodeWrap.GetAttribute(L"type");
 
 		/*
 		nullable_string sAnchorX;
@@ -3676,7 +3704,7 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 		}
 	}
 
-    if ((!oNodeWrap.IsValid() || strWType == L"") && zIndex.is_init())
+    if ((!oNodeWrap.IsValid() || strWrapType.empty()) && zIndex.is_init())
 	{
 		if (*zIndex > 0)
 		{
@@ -3822,16 +3850,25 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
     oWriter.WriteAttribute(L"cy", height);
 	oWriter.EndAttributes();
     oWriter.EndNode(L"wp:extent");
+    
+	oWriter.StartNode(L"wp:effectExtent");
+	oWriter.StartAttributes();
+	oWriter.WriteAttribute(L"l", bExtendedSize ? 10795 : 0);
+    oWriter.WriteAttribute(L"t", bExtendedSize ? 5080 : 0);
+    oWriter.WriteAttribute(L"r", bExtendedSize ? 28575 : 0);
+    oWriter.WriteAttribute(L"b", bExtendedSize ? 26670 : 0);
+	oWriter.EndAttributes();
+    oWriter.EndNode(L"wp:effectExtent");
 
 	if (oNodeWrap.IsValid())
 	{		
-        if (strWType == L"none" || strWType == L"")
+        if (strWrapType == L"none" || strWrapType == L"")
             oWriter.WriteString(L"<wp:wrapNone/>");
-        else if (strWType == L"square")
+        else if (strWrapType == L"square")
             oWriter.WriteString(L"<wp:wrapSquare wrapText=\"bothSides\"/>");
-        else if (strWType == L"topAndBottom")
+        else if (strWrapType == L"topAndBottom")
             oWriter.WriteString(L"<wp:wrapTopAndBottom/>");
-        else if (strWType == L"tight")
+        else if (strWrapType == L"tight")
 		{
             if (strWrapPointsResult.empty())
 			{
@@ -3844,7 +3881,7 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
                 oWriter.WriteString(L"</wp:wrapTight>");
 			}			
 		}
-        else if (strWType == L"through")
+        else if (strWrapType == L"through")
 		{
             if (strWrapPointsResult.empty())
 			{

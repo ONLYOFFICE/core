@@ -1187,7 +1187,17 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CShadow::fromXML(XmlUtils::CXmlNode& oNode)
+				XmlMacroReadAttributeBase(oNode, L"on", m_oOn);
+				XmlMacroReadAttributeBase(oNode, L"id", m_oId);
+				XmlMacroReadAttributeBase(oNode, L"type", m_oType);
+				XmlMacroReadAttributeBase(oNode, L"color", m_oColor);
+				XmlMacroReadAttributeBase(oNode, L"opacity", m_oOpacity);
+				XmlMacroReadAttributeBase(oNode, L"offset", m_oOffset);
+				XmlMacroReadAttributeBase(oNode, L"origin", m_oOrigin);
+				XmlMacroReadAttributeBase(oNode, L"obscured", m_oObscured);
+				XmlMacroReadAttributeBase(oNode, L"color2", m_oColor2);
+				XmlMacroReadAttributeBase(oNode, L"offset2", m_oOffset2);
+				XmlMacroReadAttributeBase(oNode, L"matrix", m_oMatrix);
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1249,7 +1259,6 @@ namespace OOX
 				m_oOffset2.SetValue_Points( -2, -2 );
 				m_oOrigin.SetValue( 0, 0 );
 
-				// Читаем атрибуты
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				

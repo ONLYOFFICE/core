@@ -49,16 +49,23 @@ namespace AUX
 {
 const int normalizeColumn(const int column)
 {
-	int norm_col = column;
-	while(norm_col > 255)
+	if ((column & 0x000000ff) == 0xff)
 	{
-		norm_col -= 0x100;
+		return 0x00004000 - 1;
 	}
-	while(norm_col < 0)
+	else
 	{
-		norm_col += 0x100; // It is correct. must be on the second place after 255
+		int norm_col = column;
+		while(norm_col > 255)
+		{
+			norm_col -= 0x100;
+		}
+		while(norm_col < 0)
+		{
+			norm_col += 0x100; // It is correct. must be on the second place after 255
+		}
+		return norm_col;
 	}
-	return norm_col;
 }
 
 

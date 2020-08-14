@@ -32,19 +32,29 @@
 #pragma once
 
 
-#include "../../Reader/Records.h"
+#include "../IRecord.h"
 
 
-struct CRecordLevelInfoAtom : public CUnknownRecord
+class CRecordLevelInfoAtom : public CUnknownRecord
 {
 public:
+    CRecordLevelInfoAtom()
+    {
+
+    }
+
+    ~CRecordLevelInfoAtom()
+    {
+
+    }
+
     virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
     {
         m_oHeader	=	oHeader;
 
-        level		=	StreamUtils::ReadDWORD ( pStream );
+        m_nLevel	=	StreamUtils::ReadDWORD ( pStream );
     }
 
 
-    _UINT32	level;
+    _UINT32	m_nLevel;
 };

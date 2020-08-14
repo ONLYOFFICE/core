@@ -32,11 +32,31 @@
 #pragma once
 
 
-#include "../../Reader/Records.h"
+#include "../IRecord.h"
+#include "LevelInfoAtom.h"
 
 
-// TODO
-//class nope : public CUnknownRecord
-//{
+class ParaBuildLevel
+{
+public:
+    ParaBuildLevel ()
+    {
+        m_pTimeNode	=	NULL;
+    }
 
-//};
+    ~ParaBuildLevel()
+    {
+        RELEASEOBJECT (m_pTimeNode);
+    }
+
+    virtual void ReadFromStream ( POLE::Stream* pStream )
+    {
+        SRecordHeader oHeader;
+
+        if (oHeader.ReadFromStream(pStream))
+            m_oLevelInfoAtom.ReadFromStream ( oHeader, pStream );
+    }
+
+    CRecordLevelInfoAtom	m_oLevelInfoAtom;
+    IRecord*                m_pTimeNode;	// ExtTimeNodeContainer
+};

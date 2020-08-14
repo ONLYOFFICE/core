@@ -3944,6 +3944,8 @@ namespace SVG
 			m_sPreserveAspectRatio	=	oXml.GetAttributeOrValue(L"preserveAspectRatio", L"");
 
 			m_XLinkRef	=	oXml.GetAttribute(L"xlink:href");
+            if (m_XLinkRef.empty())
+                m_XLinkRef	=	oXml.GetAttribute(L"href");
             if (!m_XLinkRef.empty())
 			{
 				StrUtils::RemoveSpaces (m_XLinkRef);
@@ -4014,27 +4016,16 @@ namespace SVG
 
 		inline std::wstring LivePath(const std::wstring& sWorkingDirectory)
 		{
-            /*
-			if (!GetXLink().empty())
-			{	
-				std::wstring sFile = FileUtils::GetFullPathName (GetXLink());
-				if ((0 == sFile.GetLength()) || !FileUtils::FileExists (sFile))
-				{
-					sFile = sWorkingDirectory + L"/" + GetXLink());
-					if (!FileUtils::FileExists (sFile))
-					{
-						sFile = GetXLink();				
-						if (!FileUtils::FileExists (sFile))
-						{
-							return m_ImagePath;	
-						}
-					}					
-				}
+            std::wstring sFile = GetXLink();
 
-				return FileUtils::GetFullPathName(sFile);
-			}
-            */
-            // TODO
+            if (!sFile.empty())
+            {
+                if (!NSFile::CFileBinary::Exists(sFile) && NSFile::CFileBinary::Exists(sWorkingDirectory + L"/" + sFile))
+                {
+                    return sWorkingDirectory + L"/" + sFile;
+                }
+                return sFile;
+            }
 
 			return m_ImagePath;
 		}

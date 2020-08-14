@@ -32,7 +32,7 @@
 #pragma once
 
 
-#include "../IRecord.h"
+#include "../../Reader/Records.h"
 
 
 class CRecordHashCode10Atom : public CUnknownRecord

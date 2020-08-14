@@ -32,75 +32,11 @@
 #pragma once
 
 
-#include "../IRecord.h"
+#include "../../Reader/Records.h"
 
 
-struct ParaBuildContainer : public CUnknownRecord
-{
-public:
+// TODO
+//class nope : public CUnknownRecord
+//{
 
-    ParaBuildContainer()
-    {
-
-    }
-
-    virtual ~ParaBuildContainer()
-    {
-        for ( size_t i = 0; i < rgParaBuildLevel.size(); ++i )
-            RELEASEOBJECT (rgParaBuildLevel[i]);
-    }
-
-    virtual void ReadFromStream ( SRecordHeader & thisHeader, POLE::Stream* pStream )
-    {
-        m_oHeader			=	thisHeader;
-
-        SRecordHeader oHeader;
-        UINT res = 0;
-
-        if (oHeader.ReadFromStream(pStream))
-            buildAtom.ReadFromStream ( oHeader, pStream );
-
-        if (oHeader.ReadFromStream(pStream))
-            paraBuildAtom.ReadFromStream ( oHeader, pStream );
-
-        UINT lCurLen	=	0;
-
-        while ( lCurLen < m_oHeader.RecLen )
-        {
-            SRecordHeader ReadHeader;
-            if (ReadHeader.ReadFromStream(pStream) == false)
-                break;
-
-            lCurLen			+=	8 + ReadHeader.RecLen;
-
-            WORD nRecord	=	ReadHeader.RecType;
-
-            if ( RT_LevelInfoAtom	== nRecord )
-            {
-                ParaBuildLevel* pLevel = new ParaBuildLevel ();
-                if (pLevel)
-                {
-                    pLevel->levelInfoAtom.ReadFromStream  ( ReadHeader, pStream );
-
-                    if (ReadHeader.ReadFromStream(pStream) )
-                    {
-                        pLevel->timeNode	=	CAnimationFactory::BuildAnimationObject ( ReadHeader.RecType );
-                        if (pLevel->timeNode)
-                        {
-                            pLevel->timeNode->ReadFromStream  ( ReadHeader, pStream );
-                            rgParaBuildLevel.push_back ( pLevel );
-
-                            continue;
-                        }
-                    }
-                }
-            }
-            StreamUtils::StreamSkip ( ReadHeader.RecLen, pStream );
-        }
-    }
-public:
-    BuildAtom		buildAtom;
-    ParaBuildAtom	paraBuildAtom;
-
-    std::vector <ParaBuildLevel*>	rgParaBuildLevel;
-};
+//};

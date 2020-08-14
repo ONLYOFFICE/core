@@ -65,7 +65,6 @@ HEADERS += \
     ../Records/Enums/_includer.h \
     ../Records/Enums/enums.h \
     ../Records/FStreams_FStorages/_includer.h \
-    ../Records/IRecord.h \
     ../Records/RecordsIncluder.h \
     ../Records/SCommon/ColorIndexStruct.h \
     ../Records/SCommon/ColorStruct.h \
@@ -439,6 +438,5 @@ SOURCES += \
     ../PPTFormatLib.cpp \
     ../../../ASCOfficePPTXFile/Editor/Drawing/Elements.cpp \
     ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.cpp \
-    ../../../Common/3dParty/pole/pole.cpp \
-    ../Records/IRecord.cpp
+    ../../../Common/3dParty/pole/pole.cpp
 

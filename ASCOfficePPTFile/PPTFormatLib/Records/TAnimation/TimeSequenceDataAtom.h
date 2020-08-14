@@ -32,7 +32,7 @@
 #pragma once
 
 
-#include "../IRecord.h"
+#include "../../Reader/Records.h"
 
 
 struct CRecordTimeSequenceDataAtom : public CUnknownRecord

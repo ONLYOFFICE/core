@@ -1059,12 +1059,12 @@ private:
             m_oDocXmlRels += L"<Relationship Id=\"rHyp";
             m_oDocXmlRels += std::to_wstring(m_nHyperlinkId);
             m_oDocXmlRels += L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"";
-            m_oDocXmlRels += sRef;
+            m_oDocXmlRels.WriteEncodeXmlString(sRef);
             m_oDocXmlRels += L"\" TargetMode=\"External\"/>";
 
             // Пишем в document.xml
             *oXml += L"<w:hyperlink w:tooltip=\"";
-            *oXml += sTitle;
+            (*oXml).WriteEncodeXmlString(sTitle);
             *oXml += L"\" r:id=\"rHyp";
         }
         *oXml += std::to_wstring(m_nHyperlinkId++);

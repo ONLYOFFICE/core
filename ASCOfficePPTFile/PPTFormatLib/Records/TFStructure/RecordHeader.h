@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include "../IRecord.h"
+#include "../../Reader/Records.h"
 
 class SRecordHeader
 {

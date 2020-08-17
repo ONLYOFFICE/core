@@ -517,7 +517,7 @@ private:
         m_oXmlStyle.WriteStyle(oStyle);
 
         std::wstring sRes = m_oXmlStyle.GetId();
-        m_oStylesXml.WriteEncodeXmlString(m_oXmlStyle.GetStyle());
+        m_oStylesXml.WriteString(m_oXmlStyle.GetStyle());
         return sRes;
     }
 

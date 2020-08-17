@@ -26,7 +26,7 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetType(L"paragraph");
         SetStyleId(L"li");
         SetName(L"List Paragraph");
-//        SetBasedOn(L"normal");
+        SetBasedOn(L"normal");
         SetQFormat(true);
         SetUiPriority(L"34");
         SetContextualSpacing(L"true");
@@ -37,8 +37,8 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetType(L"paragraph");
         SetStyleId(L"h1");
         SetName(L"Heading 1");
-//        SetBasedOn(L"normal");
-//        SetLink(L"title1-c");
+        SetBasedOn(L"normal");
+        SetLink(L"title1-c");
         SetQFormat(true);
         SetB(true);
         SetColor(L"000000");
@@ -53,8 +53,8 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetType(L"paragraph");
         SetStyleId(L"h2");
         SetName(L"Heading 2");
-//        SetBasedOn(L"normal");
-//        SetLink(L"title2-c");
+        SetBasedOn(L"normal");
+        SetLink(L"title2-c");
         SetQFormat(true);
         SetUnhideWhenUsed(true);
         SetB(true);
@@ -70,8 +70,8 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetType(L"paragraph");
         SetStyleId(L"h3");
         SetName(L"Heading 3");
-//        SetBasedOn(L"normal");
-//        SetLink(L"title3-c");
+        SetBasedOn(L"normal");
+        SetLink(L"title3-c");
         SetQFormat(true);
         SetUnhideWhenUsed(true);
         SetB(true);
@@ -88,8 +88,8 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetType(L"paragraph");
         SetStyleId(L"h4");
         SetName(L"Heading 4");
-//        SetBasedOn(L"normal");
-//        SetLink(L"title4-c");
+        SetBasedOn(L"normal");
+        SetLink(L"title4-c");
         SetQFormat(true);
         SetUnhideWhenUsed(true);
         SetColor(L"232323");
@@ -104,8 +104,8 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetType(L"paragraph");
         SetStyleId(L"h5");
         SetName(L"Heading 5");
-//        SetBasedOn(L"normal");
-//        SetLink(L"title5-c");
+        SetBasedOn(L"normal");
+        SetLink(L"title5-c");
         SetQFormat(true);
         SetUnhideWhenUsed(true);
         SetB(true);
@@ -121,8 +121,8 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetType(L"paragraph");
         SetStyleId(L"h6");
         SetName(L"Heading 6");
-//        SetBasedOn(L"normal");
-//        SetLink(L"title6-c");
+        SetBasedOn(L"normal");
+        SetLink(L"title6-c");
         SetQFormat(true);
         SetUnhideWhenUsed(true);
         SetI(true);
@@ -138,8 +138,8 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetType(L"character");
         SetStyleId(L"title1-c");
         SetCustomStyle(L"1");
-        SetName(L"Заголовок 1 Знак");
-//        SetLink(L"title1");
+        SetName(L"Title 1 Sign");
+        SetLink(L"h1");
         SetUiPriority(L"9");;
         SetRFonts(L"Arial");
         SetSz(L"40");
@@ -149,8 +149,8 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetType(L"character");
         SetStyleId(L"title2-c");
         SetCustomStyle(L"1");
-        SetName(L"Заголовок 2 Знак");
-//        SetLink(L"title2");
+        SetName(L"Title 2 Sign");
+        SetLink(L"h2");
         SetUiPriority(L"9");;
         SetRFonts(L"Arial");
         SetSz(L"34");
@@ -160,8 +160,8 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetType(L"character");
         SetStyleId(L"title3-c");
         SetCustomStyle(L"1");
-        SetName(L"Заголовок 3 Знак");
-//        SetLink(L"title3");
+        SetName(L"Title 3 Sign");
+        SetLink(L"h3");
         SetUiPriority(L"9");;
         SetRFonts(L"Arial");
         SetSz(L"30");
@@ -171,8 +171,8 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetType(L"character");
         SetStyleId(L"title4-c");
         SetCustomStyle(L"1");
-        SetName(L"Заголовок 4 Знак");
-//        SetLink(L"title4");
+        SetName(L"Title 4 Sign");
+        SetLink(L"h4");
         SetUiPriority(L"9");;
         SetRFonts(L"Arial");
         SetSz(L"26");
@@ -182,8 +182,8 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetType(L"character");
         SetStyleId(L"title5-c");
         SetCustomStyle(L"1");
-        SetName(L"Заголовок 5 Знак");
-//        SetLink(L"title5");
+        SetName(L"Title 5 Sign");
+        SetLink(L"h5");
         SetUiPriority(L"9");;
         SetRFonts(L"Arial");
         SetSz(L"24");
@@ -193,8 +193,8 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetType(L"character");
         SetStyleId(L"title6-c");
         SetCustomStyle(L"1");
-        SetName(L"Заголовок 6 Знак");
-//        SetLink(L"title6");
+        SetName(L"Title 6 Sign");
+        SetLink(L"h6");
         SetUiPriority(L"9");;
         SetRFonts(L"Arial");
         SetSz(L"22");
@@ -206,7 +206,7 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetCustomStyle(L"1");
         SetName(L"Paragraph");
         SetBasedOn(L"normal");
-//        SetLink(L"p-c");
+        SetLink(L"p-c");
         SetQFormat(true);
         SetInd(L"w:firstLine=\"567\"");
         SetJc(L"both");
@@ -217,7 +217,7 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetStyleId(L"div-c");
         SetCustomStyle(L"1");
         SetName(L"Paragraph_character");
-//        SetLink(L"div");
+        SetLink(L"div");
     }
     else if (sNameDefaultElement == L"div")
     {
@@ -225,8 +225,8 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetStyleId(L"div");
         SetCustomStyle(L"1");
         SetName(L"Paragraph");
-//        SetBasedOn(L"normal");
-//        SetLink(L"div-c");
+        SetBasedOn(L"normal");
+        SetLink(L"div-c");
         SetQFormat(true);
         SetInd(L"w:firstLine=\"567\"");
         SetJc(L"both");

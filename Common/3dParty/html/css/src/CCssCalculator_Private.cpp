@@ -877,29 +877,33 @@ namespace NSCSS
             else
             {
                 CCompiledStyle oTempStyle = GetCompiledStyle(GetSelectorsList(sIdName), unitMeasure);
+                oTempStyle.SetID(oNode.m_sName + sClassName + sIdName);
 
-                oTempStyle.SetID(sIdName);
-                m_arStyleUsed.emplace(sIdName, oTempStyle);
+                if (!oTempStyle.Empty())
+                {
+                    oStyle += oTempStyle;
+                    oStyle.SetNeedSave(true);
+                    oStyle.SetID(oNode.m_sName + sClassName + sIdName);
 
-                oStyle += oTempStyle;
-                oStyle.SetNeedSave(true);
-                oStyle.SetID(oNode.m_sName + sClassName + sIdName);
+                    CCompiledStyle _Temp = oParentStyles;
+                    _Temp += oStyle;
+                    _Temp.SetNeedSave(true);
+                    _Temp.SetID(oStyle.GetId());
 
-                CCompiledStyle _Temp = oParentStyles;
-                _Temp += oStyle;
-                _Temp.SetNeedSave(true);
-                _Temp.SetID(oStyle.GetId());
+                    for (auto iter = m_arStyleUsed.begin(); iter != m_arStyleUsed.end(); iter++)
+                        if (iter->second == _Temp)
+                        {
+                            oStyle.Clear();
+                            oStyle.SetNeedSave(false);
+                            oStyle.SetID(m_arStyleUsed[iter->first].GetId());
+                        }
 
-                for (auto iter = m_arStyleUsed.begin(); iter != m_arStyleUsed.end(); iter++)
-                    if (iter->second == _Temp)
-                    {
-                        oStyle.Clear();
-                        oStyle.SetNeedSave(false);
-                        oStyle.SetID(m_arStyleUsed[iter->first].GetId());
-                    }
+                    if (!_Temp.Empty())
+                        m_arStyleUsed.emplace(oNode.m_sName + sClassName + sIdName, _Temp);
 
-                if (!_Temp.Empty())
-                    m_arStyleUsed.emplace(oNode.m_sName + sClassName + sIdName, _Temp);
+                    std::wcout << oStyle.GetStyleW() << std::endl;
+                }
+
             }
         }
         if (!oNode.m_sStyle.empty())
@@ -933,7 +937,8 @@ namespace NSCSS
             m_nCountNodes++;
         }
 //        std::wcout << L" 0 - " << m_arStyleUsed.size() << std::endl;
-
+        if (oStyle.GetId() == L"h1.calibre7")
+            std::wcout << oStyle.GetStyleW() << std::endl;
         return oStyle;
     }
 
@@ -1346,7 +1351,6 @@ namespace NSCSS
 
         switch (m_UnitMeasure)
         {
-            case Default:
             case Pixel:
                 break;
             case Cantimeter:
@@ -1390,6 +1394,7 @@ namespace NSCSS
 
                 return sBeforeValue + sValues + sAfterValue;
             }
+            case Default:
             case Point:
             {
                 std::wstring sValues;
@@ -1529,7 +1534,6 @@ namespace NSCSS
 
         switch (m_UnitMeasure)
         {
-            case Default:
             case Pixel:
             {
                 std::wstring sValues;
@@ -1574,6 +1578,7 @@ namespace NSCSS
 
                 return sBeforeValue + sValues + sAfterValue;
             }
+            case Default:
             case Point:
             {
                 std::wstring sValues;
@@ -1712,7 +1717,6 @@ namespace NSCSS
 
         switch (m_UnitMeasure)
         {
-            case Default:
             case Pixel:
             {
                 std::wstring sValues;
@@ -1757,6 +1761,7 @@ namespace NSCSS
             }
             case Millimeter:
                 break;
+            case Default:
             case Point:
             {
                 std::wstring sValues;
@@ -1894,7 +1899,6 @@ namespace NSCSS
 
         switch (m_UnitMeasure)
         {
-            case Default:
             case Pixel:
             {
                 std::wstring sValues;
@@ -1939,6 +1943,7 @@ namespace NSCSS
 
                 return sBeforeValue + sValues + sAfterValue;
             }
+            case Default:
             case Point:
             {
                 std::wstring sValues;
@@ -2072,7 +2077,6 @@ namespace NSCSS
 
         switch (m_UnitMeasure)
         {
-            case Default:
             case Pixel:
             {
                 std::wstring sValues;
@@ -2129,6 +2133,7 @@ namespace NSCSS
 
                 return sBeforeValue + sValues + sAfterValue;
             }
+            case Default:
             case Point:
                 break;
             case Peak:
@@ -2250,7 +2255,6 @@ namespace NSCSS
 
         switch (m_UnitMeasure)
         {
-            case Default:
             case Pixel:
             {
                 std::wstring sValues;
@@ -2307,6 +2311,7 @@ namespace NSCSS
 
                 return sBeforeValue + sValues + sAfterValue;
             }
+            case Default:
             case Point:
             {
                 std::wstring sValues;

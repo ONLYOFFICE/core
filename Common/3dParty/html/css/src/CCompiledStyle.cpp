@@ -85,8 +85,8 @@ namespace NSCSS
         if (this->m_mStyle.size() != oElement.m_mStyle.size())
             return false;
 
-        if (this->m_mStyle.size() == oElement.m_mStyle.size() == 0)
-            return true;
+//        if (this->m_mStyle.size() == oElement.m_mStyle.size() == 0)
+//            return true;
 
         auto iterLeft = this->m_mStyle.begin();
         auto iterRight = oElement.m_mStyle.begin();

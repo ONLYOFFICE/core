@@ -66,13 +66,6 @@ namespace NSCSS
             return;
         }
 
-        if (oStyle.GetNeedSave() == false ||
-            std::find(m_arUsedStyles.begin(), m_arUsedStyles.end(), oStyle.GetId()) != m_arUsedStyles.cend())
-        {
-            m_sId = oStyle.GetId();
-            m_sStyle = L"";
-            return;
-        }
 
         CXmlElement oXmlElement;
 
@@ -81,6 +74,14 @@ namespace NSCSS
 
         if (sId.find(L'.') != std::wstring::npos)
             sId = sId.substr(0, sId.find(L'.'));
+
+        if (oStyle.GetNeedSave() == false ||
+            std::find(m_arUsedStyles.begin(), m_arUsedStyles.end(), oStyle.GetId()) != m_arUsedStyles.cend())
+        {
+            m_sId = oStyle.GetId();
+            m_sStyle = L"";
+            return;
+        }
 
         if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sId) != m_arStandardStyles.end())
         {
@@ -93,14 +94,22 @@ namespace NSCSS
                 std::wstring sName = L"title";
                 sName += sId[1];
                 sName += L"-c";
-
-                oTempXmlElement.CreateDefaultElement(sName);
+                if (std::find(m_arUsedStyles.begin(), m_arUsedStyles.end(), sName) == m_arUsedStyles.cend())
+                {
+                    oTempXmlElement.CreateDefaultElement(sName);
+                    m_arUsedStyles.push_back(sName);
+                }
             }
-            else if (sId == L"p")
+            else if (sId == L"p" && std::find(m_arUsedStyles.begin(), m_arUsedStyles.end(), L"p-c") == m_arUsedStyles.cend())
+            {
                 oTempXmlElement.CreateDefaultElement(L"p-c");
-            else if (sId == L"div")
+                m_arUsedStyles.push_back(L"p-c");
+            }
+            else if (sId == L"div" && std::find(m_arUsedStyles.begin(), m_arUsedStyles.end(), L"div-c") == m_arUsedStyles.cend())
+            {
                 oTempXmlElement.CreateDefaultElement(L"div-c");
-
+                m_arUsedStyles.push_back(L"div-c");
+            }
             m_sStyle = oTempXmlElement.GetStyle();
 
             oXmlElement.CreateDefaultElement(sId);

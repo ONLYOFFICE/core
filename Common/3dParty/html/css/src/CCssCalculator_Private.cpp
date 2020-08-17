@@ -85,31 +85,6 @@ namespace NSCSS
 {
     CCssCalculator_Private::CCssCalculator_Private()
     {
-//        NSFile::CFileBinary oFile;
-//        std::wstring sFilePath = NSFile::GetProcessDirectory() + L"\\data-usedStyles.txt";
-//        if (oFile.OpenFile(sFilePath))
-//        {
-//            std::wstring sFileData;
-//            oFile.ReadAllTextUtf8(sFilePath, sFileData);
-
-//            std::wcout << sFileData << std::endl;
-
-//            while(sFileData.find_first_of(L"//") != std::wstring::npos)
-//            {
-//                std::wstring sStyleData = sFileData.substr(0, sFileData.find_first_of(L'//'));
-//                std::wstring sId = sStyleData.substr(0, sStyleData.find_first_of(L'**'));
-//                std::wstring sStyle = sStyleData.substr(sStyleData.find_first_of(sId));
-
-//                CCompiledStyle oTempStyle;
-//                oTempStyle.Clear();
-//                oTempStyle.AddStyle(sStyle);
-//                oTempStyle.SetID(sId);
-
-//                m_arStyleUsed.emplace(sId, oTempStyle);
-//            }
-
-//            oFile.CloseFile();
-//        }
     }
 
     CCssCalculator_Private::~CCssCalculator_Private()
@@ -117,18 +92,6 @@ namespace NSCSS
         for (size_t i = 0; i < m_arData.size(); i++)
             delete m_arData[i];
 
-        NSFile::CFileBinary oFile;
-        std::wstring sFilePath = NSFile::GetProcessDirectory() + L"\\data-usedStyles.txt";
-        std::wstring sFileData;
-
-
-        if (oFile.OpenFile(sFilePath) == false)
-            oFile.CreateFileW(sFilePath);
-
-        for (auto item : m_arStyleUsed)
-            oFile.WriteStringUTF8((item.first + L"**" + item.second.GetStyleW()) + L"//", true);
-
-//        oFile.CloseFile();
 //        m_arStyleUsed.clear();
 //        m_arData.clear();
     }
@@ -960,7 +923,7 @@ namespace NSCSS
 //            m_arStyleUsed.emplace(oStyle.GetId(), oStyle);
 //            m_nCountNodes++;
 //        }
-
+//        std::wcout << L" 0 - " << m_arStyleUsed.size() << std::endl;
         return oStyle;
     }
 
@@ -2477,7 +2440,7 @@ namespace NSCSS
         for (size_t i = 0; i < m_arData.size(); i++)
             delete m_arData[i];
 
-        m_arStyleUsed.clear();
+//        m_arStyleUsed.clear();
         m_arData.clear();
         m_arFiles.clear();
     }

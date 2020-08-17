@@ -1,8 +1,8 @@
 #ifndef CDOCUMENTSTYLE_H
 #define CDOCUMENTSTYLE_H
 
-#include "CssCalculator_global.h"
-#include "CCompiledStyle.h"
+#include "../CssCalculator_global.h"
+#include "../CCompiledStyle.h"
 #include "CXmlElement.h"
 
 namespace NSCSS
@@ -12,6 +12,8 @@ namespace NSCSS
         std::wstring m_sStyle;
         std::wstring m_sId;
         std::vector<std::wstring> m_arStandardStyles;
+        std::vector<std::wstring> m_arUsedStyles;
+
     public:
         CDocumentStyle();
         ~CDocumentStyle();

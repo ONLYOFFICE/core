@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 
             oEpub.SetTempDirectory(sTmp);
             oEpub.Convert(sFileName, sOutputDirectory + L"\\" + sFile + L".docx");
-            oEpub.ShowMap();
+//            oEpub.ShowMap();
         }
         else
             std::wcout << sFileName << L" this is not an epub format!" << std::endl;

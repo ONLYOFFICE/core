@@ -32,8 +32,12 @@ namespace NSCSS
     CCompiledStyle& CCompiledStyle::operator+= (const CCompiledStyle &oElement)
     {
         for(auto& item : oElement.m_mStyle)
+        {
             if (m_mStyle[item.first] != L"inherit")
                 m_mStyle[item.first] = item.second;
+            if (item.second.find(L"!important"))
+                m_mStyle[item.first] = item.second.substr(0, item.second.find(L"!important"));
+        }
 //        m_sId += L" " + oElement.m_sId;
 
         return *this;

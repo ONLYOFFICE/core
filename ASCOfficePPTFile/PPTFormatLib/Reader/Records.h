@@ -32,6 +32,7 @@
 #pragma once
 
 #include "PPTFileDefines.h"
+#include "RecordType.h"
 #include "../Reader/ReadStructures.h"
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/Enums.h"
 #include "../../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStream.h"
@@ -46,23 +47,23 @@ using namespace XLS;
 class SRecordHeader 
 { 
 public:
-	unsigned char	RecVersion;                
-	unsigned short	RecInstance;  
-	unsigned short	RecType; 
-	_UINT32	        RecLen; 
+    unsigned char           RecVersion;
+    unsigned short          RecInstance;
+    PPT_FORMAT::RecordType	RecType;
+    _UINT32                 RecLen;
 	
 	void Clear()
 	{
 		RecVersion = 0;
 		RecInstance = 0;
-		RecType = 0;
+        RecType = RT_NONE;
 		RecLen = 0;
 	}
 	SRecordHeader()
 	{
 		Clear();
 	}
-	bool ReadFromStream(const CFStreamPtr &pStream)
+    bool ReadFromStream(const CFStreamPtr &pStream)
 	{
 		Clear();
 
@@ -149,7 +150,7 @@ public:
 	SRecordHeader m_oHeader;
 
 	virtual ~IRecord(){}
-	virtual void ReadFromStream(SRecordHeader & oHeader, const CFStreamPtr &pStream) = 0;
+    virtual void ReadFromStream(SRecordHeader & oHeader, const CFStreamPtr &pStream) = 0;
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) = 0;
 };
 
@@ -166,7 +167,7 @@ public:
 	~CUnknownRecord()
 	{
 	}
-	virtual void ReadFromStream(SRecordHeader & oHeader, const CFStreamPtr &pStream)
+    virtual void ReadFromStream(SRecordHeader & oHeader, const CFStreamPtr &pStream)
 	{
 		m_oHeader = oHeader;
 		
@@ -179,8 +180,8 @@ public:
 		StreamUtils::StreamSkip((long)m_oHeader.RecLen, pStream);
 	}
 
-	std::wstring ReadStringW(const CFStreamPtr &pStream, int size);
-	std::string	 ReadStringA(const CFStreamPtr &pStream, int size);
+    std::wstring ReadStringW(const CFStreamPtr &pStream, int size);
+    std::string	 ReadStringA(const CFStreamPtr &pStream, int size);
 };
 
 IRecord* CreateByType(SRecordHeader oHeader);

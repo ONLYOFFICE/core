@@ -73,8 +73,8 @@ typedef BYTE BOOL1;
 #define		RECORD_TYPE_EXOBJLIST_ATOM						1034
 #define		RECORD_TYPE_PPDRAWING_GROUP						1035
 #define		RECORD_TYPE_PPDRAWING							1036
-#define		RT_RoundTripTheme12Atom							1038
-#define		RT_RoundTripColorMapping12Atom					1039
+#define		RECORD_TYPE_RoundTripTheme12Atom							1038
+#define		RECORD_TYPE_RoundTripColorMapping12Atom					1039
 #define		RECORD_TYPE_NAMEDSHOWS							1040
 #define		RECORD_TYPE_NAMEDSHOW							1041
 #define		RECORD_TYPE_NAMEDSHOW_SLIDES					1042

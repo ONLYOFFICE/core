@@ -46,6 +46,7 @@ HEADERS += \
     ../Reader/PPTFileDefines.h \
     ../Reader/PPTFileReader.h \
     ../Reader/ReadStructures.h \
+    ../Reader/RecordType.h \
     ../Reader/Records.h \
     ../Reader/Slide.h \
     ../Reader/SlideInfo.h \
@@ -194,5 +195,6 @@ SOURCES += \
     ../PPTFormatLib.cpp \
     ../../../ASCOfficePPTXFile/Editor/Drawing/Elements.cpp \
     ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.cpp \
-    ../../../Common/3dParty/pole/pole.cpp
+    ../../../Common/3dParty/pole/pole.cpp \
+    ../Reader/RecordType.cpp
 

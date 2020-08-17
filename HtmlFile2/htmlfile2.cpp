@@ -418,19 +418,15 @@ public:
                         // Кроме функции получения стилей
                         std::wstring sType = NSFile::GetFileExtention(sRef);
                         if(sType == L"css")
-                        {
-                            // КОСТЫЛЬ
                             m_oStylesCalculator.AddStylesFromFile(m_sSrc + L"/" + sRef);
-                        }
                     }
                 }
                 m_oLightReader.MoveToElement();
             }
             // тэг style содержит стили для styles.xml
             else if(sName == L"style")
-            {
                 m_oStylesCalculator.AddStyles(U_TO_UTF8(content()));
-            }
+
             std::string sClass = "";
             std::string sStyle = "";
             std::string sId    = "";
@@ -489,6 +485,7 @@ private:
                 oNode.m_sStyle = m_oLightReader.GetText();
         }
         m_oLightReader.MoveToElement();
+
         sSubClass.push_back(oNode);
         return sSubClass;
     }
@@ -500,7 +497,8 @@ private:
         NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(oChild, sSelectors);
         m_oXmlStyle.WriteStyle(oStyle);
         std::wstring sRes = m_oXmlStyle.GetId();
-        m_oStylesXml.WriteString(m_oXmlStyle.GetStyle());
+        std::wstring sStyle = m_oXmlStyle.GetStyle();
+        m_oStylesXml.WriteString(sStyle);
         return sRes;
     }
 
@@ -614,8 +612,9 @@ private:
             else if(sName == L"article" || sName == L"header" || sName == L"div" || sName == L"blockquote" || sName == L"main" ||
                     sName == L"summary" || sName == L"footer" || sName == L"nav" || sName == L"figcaption" || sName == L"form" ||
                     sName == L"details" || sName == L"option" || sName == L"pre" || sName == L"fieldset"   || sName == L"p"    ||
-                    sName == L"section" || sName == L"figure" || sName == L"dl"  || sName == L"aside"      || sName == L"h1"   ||
-                    sName == L"h2"      || sName == L"h3"     || sName == L"h4"  || sName == L"h5"         || sName == L"h6")
+                    sName == L"section" || sName == L"figure" || sName == L"dl"  || sName == L"legend"     || sName == L"aside"||
+                    sName == L"dt"      || sName == L"dd"     ||
+                    sName == L"h1" || sName == L"h2" || sName == L"h3" || sName == L"h4" || sName == L"h5" || sName == L"h6")
             {
                 if(!bWasP)
                 {
@@ -834,18 +833,20 @@ private:
                 }
                 *oXml += L"</w:tcPr><w:p>";
 
+                std::vector<NSCSS::CNode> sSubClass = GetSubClass(sSelectors);
                 // Читаем th. Ячейка заголовка таблицы. Выравнивание посередине. Выделяется полужирным
                 if(m_oLightReader.GetName() == L"th")
                 {
                     *oXml += L"<w:pPr><w:jc w:val=\"center\"/></w:pPr>";
-                    bWasP = true;
-                    readStream(oXml, sSelectors, sRStyle + L"<w:b/>", bBdo, oLi, bWasP);
+                    bWasP = false;
+                    readStream(oXml, sSubClass, sRStyle + L"<w:b/>", bBdo, oLi, bWasP);
                 }
                 // Читаем td. Ячейка таблицы. Выравнивание вправо
                 else if(m_oLightReader.GetName() == L"td")
                 {
                     *oXml += L"<w:pPr><w:jc w:val=\"left\"/></w:pPr>";
-                    readStream(oXml, sSelectors, sRStyle, bBdo, oLi, bWasP);
+                    bWasP = false;
+                    readStream(oXml, sSubClass, sRStyle, bBdo, oLi, bWasP);
                 }
                 *oXml += L"</w:p></w:tc>";
                 j++;

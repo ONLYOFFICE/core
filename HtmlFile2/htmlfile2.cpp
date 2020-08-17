@@ -397,7 +397,7 @@ public:
         }
     }
 
-    void readStyle(std::vector<std::string> sSelectors)
+    void readStyle()
     {
         if(m_oLightReader.IsEmptyNode())
             return;
@@ -427,39 +427,7 @@ public:
             else if(sName == L"style")
                 m_oStylesCalculator.AddStyles(U_TO_UTF8(content()));
 
-            std::string sClass = "";
-            std::string sStyle = "";
-            std::string sId    = "";
-            // Стиль по атрибуту
-            while(m_oLightReader.MoveToNextAttribute())
-            {
-                std::wstring sAName = m_oLightReader.GetName();
-                if(sAName == L"style")
-                    sStyle = m_oLightReader.GetTextA();
-                else if(sAName == L"class")
-                    sClass = m_oLightReader.GetTextA();
-                else if(sAName == L"id")
-                    sId = m_oLightReader.GetTextA();
-            }
-            m_oLightReader.MoveToElement();
-
-            if(!sStyle.empty())
-            {
-                std::string sSelector = "";
-                if(!sId.empty())
-                    sSelector += "#" + sId + " ";
-                if(!sClass.empty())
-                    sSelector += "." + sClass + " ";
-                sSelector += m_oLightReader.GetNameA();
-
-                std::vector<std::string> sSubClass(sSelectors);
-                sSubClass.push_back(sSelector);
-                m_oStylesCalculator.AddStyle(sSubClass, sStyle);
-
-                readStyle(sSubClass);
-            }
-            else
-                readStyle(sSelectors);
+            readStyle();
         }
     }
 
@@ -1325,9 +1293,7 @@ HRESULT CHtmlFile2::Open(const std::wstring& sSrc, const std::wstring& sDst, CHt
     m_internal->m_sSrc = NSSystemPath::GetDirectoryName(sSrc);
     m_internal->m_sDst = sDst;
     m_internal->CreateDocxEmpty(oParams);
-
-    std::vector<std::string> sStyle;
-    m_internal->readStyle(sStyle);
+    m_internal->readStyle();
 
     // Переходим в начало
     if(!m_internal->m_oLightReader.MoveToStart())
@@ -1357,9 +1323,7 @@ HRESULT CHtmlFile2::OpenBatch(const std::vector<std::wstring>& sSrc, const std::
         m_internal->m_sSrc = NSSystemPath::GetDirectoryName(sS);
         if(!IsHtmlFile(sS))
             return S_FALSE;
-
-        std::vector<std::string> sStyle;
-        m_internal->readStyle(sStyle);
+        m_internal->readStyle();
 
         // Переходим в начало
         if(!m_internal->m_oLightReader.MoveToStart())

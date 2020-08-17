@@ -61,6 +61,7 @@ class CHtmlFile2_Private
 public:
     XmlUtils::CXmlLiteReader m_oLightReader;   // SAX Reader
     NSCSS::CCssCalculator m_oStylesCalculator; // Css калькулятор
+    NSCSS::CDocumentStyle m_oXmlStyle;         // Ooxml стиль
 
     std::wstring m_sTmp;  // Temp папка для конфертации html в xhtml
     std::wstring m_sSrc;  // Директория источника
@@ -81,8 +82,6 @@ private:
     NSStringUtils::CStringBuilder m_oDocXml;     // document.xml
     NSStringUtils::CStringBuilder m_oNoteXml;    // footnotes.xml
 
-    std::vector<std::wstring> m_sStyles; // Стили
-
 public:
     CHtmlFile2_Private()
     {
@@ -97,7 +96,6 @@ public:
     ~CHtmlFile2_Private()
     {
         m_oLightReader.Clear();
-        m_sStyles.clear();
         m_oStylesXml.Clear();
         m_oDocXmlRels.Clear();
         m_oDocXml.Clear();
@@ -507,16 +505,11 @@ private:
         NSCSS::CNode oChild = sSelectors.back();
         sSelectors.pop_back();
         NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(oChild, sSelectors);
-        NSCSS::CDocumentStyle oXmlStyle;
-        oXmlStyle.WriteStyle(oStyle);
 
-        std::wstring sRes = oXmlStyle.GetId();
-        if(std::find(m_sStyles.begin(), m_sStyles.end(), sRes) == m_sStyles.end())
-        {
-            m_sStyles.push_back(sRes);
-            m_oStylesXml.WriteEncodeXmlString(oXmlStyle.GetStyle());
-        }
+        m_oXmlStyle.WriteStyle(oStyle);
 
+        std::wstring sRes = m_oXmlStyle.GetId();
+        m_oStylesXml.WriteEncodeXmlString(m_oXmlStyle.GetStyle());
         return sRes;
     }
 

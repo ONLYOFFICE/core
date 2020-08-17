@@ -118,6 +118,7 @@ namespace NSCSS
             bIsStandard = true;
         }
 
+
         if (oStyle.Empty() && bIsStandard)
         {
             m_sId = oStyle.GetId();
@@ -125,7 +126,7 @@ namespace NSCSS
             return;
         }
 
-        if (oStyle.Empty() && !bIsStandard)
+        if (oStyle.Empty())
         {
             m_sId = L"normal";
             m_sStyle = L"";

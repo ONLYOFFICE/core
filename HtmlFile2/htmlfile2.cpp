@@ -10,7 +10,7 @@
 #include "htmlfile2.h"
 #include "../Common/3dParty/html/htmltoxhtml.h"
 #include "../Common/3dParty/html/css/src/CCssCalculator.h"
-#include "../Common/3dParty/html/css/src/CDocumentStyle.h"
+#include "../Common/3dParty/html/css/src/xhtml/CDocumentStyle.h"
 #include "../Common/FileDownloader/FileDownloader.h"
 #include "../DesktopEditor/common/Base64.h"
 #include "../DesktopEditor/common/SystemUtils.h"
@@ -419,23 +419,8 @@ public:
                         std::wstring sType = NSFile::GetFileExtention(sRef);
                         if(sType == L"css")
                         {
-                            bool bBad = false;
                             // КОСТЫЛЬ
-                            std::ifstream in(m_sSrc + L"/" + sRef);
-                            if (in.is_open())
-                            {
-                                std::string line;
-                                while (getline(in, line))
-                                {
-                                    if(line.find("@") != std::string::npos)
-                                    {
-                                        bBad = true;
-                                        break;
-                                    }
-                                }
-                            }
-                            if(!bBad)
-                                m_oStylesCalculator.AddStylesFromFile(m_sSrc + L"/" + sRef);
+                            m_oStylesCalculator.AddStylesFromFile(m_sSrc + L"/" + sRef);
                         }
                     }
                 }
@@ -443,8 +428,9 @@ public:
             }
             // тэг style содержит стили для styles.xml
             else if(sName == L"style")
+            {
                 m_oStylesCalculator.AddStyles(U_TO_UTF8(content()));
-
+            }
             std::string sClass = "";
             std::string sStyle = "";
             std::string sId    = "";
@@ -503,7 +489,6 @@ private:
                 oNode.m_sStyle = m_oLightReader.GetText();
         }
         m_oLightReader.MoveToElement();
-
         sSubClass.push_back(oNode);
         return sSubClass;
     }
@@ -513,9 +498,7 @@ private:
         NSCSS::CNode oChild = sSelectors.back();
         sSelectors.pop_back();
         NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(oChild, sSelectors);
-
         m_oXmlStyle.WriteStyle(oStyle);
-
         std::wstring sRes = m_oXmlStyle.GetId();
         m_oStylesXml.WriteString(m_oXmlStyle.GetStyle());
         return sRes;

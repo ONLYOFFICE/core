@@ -15,7 +15,7 @@ void getDirectories(std::wstring sDirectory, std::vector<std::wstring>& arrDirec
 int main()
 {
     // setlocale(LC_ALL, "Russian");
-    bool bBatchMode = true;
+    bool bBatchMode = false;
     if(bBatchMode)
     {
         // Директория файлов

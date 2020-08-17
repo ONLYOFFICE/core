@@ -594,6 +594,8 @@ namespace NSCSS
 
         for (std::string sSelector : arSelectors)
         {
+            if (sSelector.empty())
+                continue;
             if (sSelector.find(' ') != std::string::npos)
             {
                 std::string sTempSelector;
@@ -619,6 +621,7 @@ namespace NSCSS
 
             std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> arTempDecls = GetDeclarations(sSelector);
             arStyle.insert(arStyle.end(), arTempDecls.begin(), arTempDecls.end());
+
 //            arTempDecls.clear();
 //            arTempDecls = GetDeclarations(L"*");
 //            arStyle.insert(arStyle.end(), arTempDecls.begin(), arTempDecls.end());
@@ -677,6 +680,7 @@ namespace NSCSS
         else
             for (size_t i = 0; i < sSelectors.size(); i++)
                 sSelectorsUTF8.push_back(sSelectors[i]);
+
 
         CElement *oElement = new CElement;
         for (size_t i = 0; i < sSelectorsUTF8.size(); i++)
@@ -786,6 +790,7 @@ namespace NSCSS
             else
             {
                 CCompiledStyle oTempStyle = GetCompiledStyle(GetSelectorsList(oNode.m_sName), unitMeasure);
+
                 oStyle = oTempStyle;
                 oStyle.SetID(oNode.m_sName);
                 oStyle.SetNeedSave(true);
@@ -795,7 +800,8 @@ namespace NSCSS
                 _Temp.SetID(oStyle.GetId());
                 _Temp.SetNeedSave(true);
 
-                m_arStyleUsed.emplace(oNode.m_sName, _Temp);
+                if (!_Temp.Empty())
+                    m_arStyleUsed.emplace(oNode.m_sName, _Temp);
             }
         }
         else
@@ -839,91 +845,95 @@ namespace NSCSS
                 _Temp.SetID(oStyle.GetId());
                 _Temp.SetNeedSave(true);
 
-                m_arStyleUsed.emplace(oNode.m_sName + sClassName, _Temp);
+                if (!_Temp.Empty())
+                    m_arStyleUsed.emplace(oNode.m_sName + sClassName, _Temp);
             }
         }
 
-//        if (!oNode.m_sId.empty())
-//        {
-//            std::wstring sClassName = oNode.m_sClass;
+        if (!oNode.m_sId.empty())
+        {
+            std::wstring sClassName = oNode.m_sClass;
 
-//            if (!sClassName.empty() && sClassName[0] != L'.')
-//                sClassName = L'.' + sClassName;
+            if (!sClassName.empty() && sClassName[0] != L'.')
+                sClassName = L'.' + sClassName;
 
-//            std::wstring sIdName = oNode.m_sId;
+            std::wstring sIdName = oNode.m_sId;
 
-//            if (sIdName[0] != L'#')
-//                sIdName = L'#' + sIdName;
+            if (sIdName[0] != L'#')
+                sIdName = L'#' + sIdName;
 
-//            if (m_arStyleUsed.find(oNode.m_sName + sClassName + sIdName) != m_arStyleUsed.cend())
-//            {
-//                oStyle.Clear();
-//                oStyle.SetNeedSave(false);
-//                oStyle.SetID(oNode.m_sName + sClassName + sIdName);
-//            }
-//            else if (m_arStyleUsed.find(sIdName) != m_arStyleUsed.cend())
-//            {
-//                oStyle += m_arStyleUsed[sIdName];
-//                oStyle.SetNeedSave(false);
-//                oStyle.SetID(oNode.m_sName + sClassName + sIdName);
-//            }
-//            else
-//            {
-//                CCompiledStyle oTempStyle = GetCompiledStyle(GetSelectorsList(sIdName), unitMeasure);
+            if (m_arStyleUsed.find(oNode.m_sName + sClassName + sIdName) != m_arStyleUsed.cend())
+            {
+                oStyle.Clear();
+                oStyle.SetNeedSave(false);
+                oStyle.SetID(oNode.m_sName + sClassName + sIdName);
+            }
+            else if (m_arStyleUsed.find(sIdName) != m_arStyleUsed.cend())
+            {
+                oStyle += m_arStyleUsed[sIdName];
+                oStyle.SetNeedSave(false);
+                oStyle.SetID(oNode.m_sName + sClassName + sIdName);
+            }
+            else
+            {
+                CCompiledStyle oTempStyle = GetCompiledStyle(GetSelectorsList(sIdName), unitMeasure);
 
-//                oTempStyle.SetID(sIdName);
-//                m_arStyleUsed.emplace(sIdName, oTempStyle);
+                oTempStyle.SetID(sIdName);
+                m_arStyleUsed.emplace(sIdName, oTempStyle);
 
-//                oStyle += oTempStyle;
-//                oStyle.SetNeedSave(true);
-//                oStyle.SetID(oNode.m_sName + sClassName + sIdName);
+                oStyle += oTempStyle;
+                oStyle.SetNeedSave(true);
+                oStyle.SetID(oNode.m_sName + sClassName + sIdName);
 
-//                CCompiledStyle _Temp = oParentStyles;
-//                _Temp += oStyle;
-//                _Temp.SetNeedSave(true);
-//                _Temp.SetID(oStyle.GetId());
+                CCompiledStyle _Temp = oParentStyles;
+                _Temp += oStyle;
+                _Temp.SetNeedSave(true);
+                _Temp.SetID(oStyle.GetId());
 
-//                for (auto iter = m_arStyleUsed.begin(); iter != m_arStyleUsed.end(); iter++)
-//                    if (iter->second == _Temp)
-//                    {
-//                        oStyle.Clear();
-//                        oStyle.SetNeedSave(false);
-//                        oStyle.SetID(m_arStyleUsed[iter->first].GetId());
-//                        return oStyle;
-//                    }
+                for (auto iter = m_arStyleUsed.begin(); iter != m_arStyleUsed.end(); iter++)
+                    if (iter->second == _Temp)
+                    {
+                        oStyle.Clear();
+                        oStyle.SetNeedSave(false);
+                        oStyle.SetID(m_arStyleUsed[iter->first].GetId());
+                    }
 
+                if (!_Temp.Empty())
+                    m_arStyleUsed.emplace(oNode.m_sName + sClassName + sIdName, _Temp);
+            }
+        }
+        if (!oNode.m_sStyle.empty())
+        {
 
-//                m_arStyleUsed.emplace(oNode.m_sName + sClassName + sIdName, _Temp);
-//            }
-//        }
-//        if (!oNode.m_sStyle.empty())
-//        {
+            CCompiledStyle oTempStyle;
+            oTempStyle.AddStyle(oNode.m_sStyle);
 
-//            CCompiledStyle oTempStyle;
-//            oTempStyle.AddStyle(oNode.m_sStyle);
+            oStyle += oTempStyle;
+            oStyle.SetID(oNode.m_sName + oNode.m_sClass + oNode.m_sId + std::to_wstring(m_nCountNodes));
+            oStyle.SetNeedSave(true);
 
-//            oStyle += oTempStyle;
-//            oStyle.SetID(oNode.m_sName + oNode.m_sClass + oNode.m_sId + std::to_wstring(m_nCountNodes));
-//            oStyle.SetNeedSave(true);
+            for (auto iter = m_arStyleUsed.begin(); iter != m_arStyleUsed.end(); iter++)
+                if (iter->second == oStyle)
+                {
+                    oStyle.Clear();
+                    oStyle.SetID(m_arStyleUsed[iter->first].GetId());
+                    oStyle.SetNeedSave(true);
+                    m_nCountNodes++;
+                    return oStyle;
+                }
 
-//            for (auto iter = m_arStyleUsed.begin(); iter != m_arStyleUsed.end(); iter++)
-//                if (iter->second == oStyle)
-//                {
-//                    oStyle.Clear();
-//                    oStyle.SetID(m_arStyleUsed[iter->first].GetId());
-//                    oStyle.SetNeedSave(true);
-//                    m_nCountNodes++;
-//                    return oStyle;
-//                }
+            oParentStyles += oStyle;
+            oStyle = oParentStyles;
+            oStyle.SetID(oNode.m_sName + oNode.m_sClass + oNode.m_sId + std::to_wstring(m_nCountNodes));
+            oStyle.SetNeedSave(true);
 
-//            oParentStyles += oStyle;
-//            oStyle = oParentStyles;
-//            oStyle.SetID(oNode.m_sName + oNode.m_sClass + oNode.m_sId + std::to_wstring(m_nCountNodes));
-//            oStyle.SetNeedSave(true);
-//            m_arStyleUsed.emplace(oStyle.GetId(), oStyle);
-//            m_nCountNodes++;
-//        }
+            if (!oStyle.Empty())
+                m_arStyleUsed.emplace(oStyle.GetId(), oStyle);
+
+            m_nCountNodes++;
+        }
 //        std::wcout << L" 0 - " << m_arStyleUsed.size() << std::endl;
+
         return oStyle;
     }
 

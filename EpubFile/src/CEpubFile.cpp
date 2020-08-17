@@ -60,9 +60,9 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
             if (sName == L"metadata")
             {
                 m_oBookInfo.ReadInfo(oXmlLiteReader);
-//                #ifdef _DEBUG
-//                    m_oBookInfo.ShowInfo();
-//                #endif
+                #ifdef _DEBUG
+                    m_oBookInfo.ShowInfo();
+                #endif
             }
             else if (sName == L"manifest")
             {
@@ -97,9 +97,23 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     {
         oXmlLiteReader.ReadNextNode();
         m_oToc.ReadToc(oXmlLiteReader);
-//        #ifdef _DEBUG
-//            m_oToc.ShowToc();
-//        #endif
+        #ifdef _DEBUG
+            m_oToc.ShowToc();
+        #endif
+
+//        CDocxFile oDocxFile;
+//        oDocxFile.CreateTempFiles(sOutputFile, m_sTempDir);
+
+//        oDocxFile.AddBookToc(&m_oToc);
+
+//        std::wstring sTempDir = m_sTempDir + L"/docx";
+//        std::wstring _sOutputFile = sOutputFile + L"/test.docx";
+
+//        NSFile::CFileBinary oFileBinary;
+//        oFileBinary.CreateFileW(_sOutputFile);
+//        oFileBinary.CloseFile();
+
+//        oDocxFile.SaveToFile();
 
         CHtmlFile2 oFile;
         CHtmlParams oFileParams;
@@ -110,7 +124,8 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
         oFileParams.SetDate(m_oBookInfo.GetDate());
         oFileParams.SetDescription(m_oBookInfo.GetDescriptions());
 
-        std::wstring sDocxFileTempDir = m_sTempDir + L"\\document";
+
+        std::wstring sDocxFileTempDir = m_sTempDir + L"\\res";
         NSDirectory::CreateDirectory(sDocxFileTempDir);
 
         oFile.SetTmpDirectory(sDocxFileTempDir);

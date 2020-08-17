@@ -66,8 +66,7 @@ namespace NSCSS
             return;
         }
 
-        if (oStyle.GetNeedSave() == false ||
-            std::find(m_arUsedStyles.begin(), m_arUsedStyles.end(), oStyle.GetId()) != m_arUsedStyles.cend())
+        if (oStyle.GetNeedSave() == false)
         {
             m_sId = oStyle.GetId();
             m_sStyle = L"";
@@ -85,34 +84,13 @@ namespace NSCSS
         if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sId) != m_arStandardStyles.end())
         {
             bIsStandard = true;
-
-            CXmlElement oTempXmlElement;
-
-            if (sId[0] == L'h' && isdigit(sId[1]))
-            {
-                std::wstring sName = L"title";
-                sName += sId[1];
-                sName += L"-c";
-
-                oTempXmlElement.CreateDefaultElement(sName);
-            }
-            else if (sId == L"p")
-                oTempXmlElement.CreateDefaultElement(L"p-c");
-            else if (sId == L"div")
-                oTempXmlElement.CreateDefaultElement(L"div-c");
-
-            m_sStyle = oTempXmlElement.GetStyle();
-
             oXmlElement.CreateDefaultElement(sId);
-
-            m_arUsedStyles.push_back(sId);
-            bIsStandard = true;
         }
 
         if (oStyle.Empty() && bIsStandard)
         {
             m_sId = oStyle.GetId();
-            m_sStyle += oXmlElement.GetStyle();
+            m_sStyle = oXmlElement.GetStyle();
             return;
         }
 
@@ -227,6 +205,6 @@ namespace NSCSS
 //        if (!oStyle.GetBackgroundColor().empty())
 //            m_sStyle += L"<w:background w:color=\"" + oStyle.GetBackgroundColor() + L"\"/>";
 
-        m_sStyle += oXmlElement.GetStyle();
+        m_sStyle = oXmlElement.GetStyle();
     }
 }

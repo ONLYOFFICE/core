@@ -93,6 +93,9 @@ namespace PdfWriter
 
 		Add("Type", "Annot");
 		Add("Subtype", c_sAnnotTypeNames[(int)eType]);
+
+		// Для PDFA нужно, чтобы 0, 1, 4 биты были выключены, а второй включен
+		Add("F", 4);
 	}
 	void CAnnotation::SetBorderStyle(EBorderSubtype eSubtype, float fWidth, unsigned short nDashOn, unsigned short nDashOff, unsigned short nDashPhase)
 	{

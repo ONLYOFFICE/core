@@ -425,7 +425,11 @@ public:
             }
             // тэг style содержит стили для styles.xml
             else if(sName == L"style")
-                m_oStylesCalculator.AddStyles(U_TO_UTF8(content()));
+            {
+                std::wstring sText = content();
+                std::string sConvertText = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sText.data(), (LONG)sText.length());
+                m_oStylesCalculator.AddStyles(sConvertText);
+            }
 
             readStyle();
         }

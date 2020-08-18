@@ -1,10 +1,8 @@
 #include "CCssCalculator_Private.h"
 #include <codecvt>
 
-#include <regex>
-
 #include <string>
-//#include <algorithm>
+#include <wchar.h>
 #include <vector>
 #include <fstream>
 
@@ -81,10 +79,45 @@ inline std::string GetContentAsUTF8(const std::wstring& sFileName)
     return U_TO_UTF8(sUnicodeContent);
 }
 
+inline std::wstring GetFirstNumber(std::wstring sString)
+{
+    if (sString.empty())
+        return L"";
+
+    std::wstring sValue;
+    int nPos = 0;
+
+    while(nPos < sString.length() && !isdigit(sString[nPos]))
+        nPos++;
+
+    while(nPos < sString.length() && isdigit(sString[nPos]))
+    {
+        sValue += sString[nPos];
+        nPos++;
+    }
+
+    if (sString[nPos] == L'.' || sString[nPos] == L',')
+    {
+        sValue += L'.';
+        nPos++;
+        while(nPos < sString.length() && isdigit(sString[nPos]))
+        {
+            sValue += sString[nPos];
+            nPos++;
+        }
+    }
+
+    return sValue;
+}
+
 namespace NSCSS
 {
     CCssCalculator_Private::CCssCalculator_Private()
     {
+        m_sEncoding = L"UTF-8";
+        m_nDpi = 96;
+        m_UnitMeasure = Default;
+        m_nCountNodes = 1;
     }
 
     CCssCalculator_Private::~CCssCalculator_Private()
@@ -586,7 +619,7 @@ namespace NSCSS
     }
 
     CCompiledStyle CCssCalculator_Private::GetCompiledStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure)
-    {
+    {   
         if (unitMeasure != Default)
             SetUnitMeasure(unitMeasure);
 
@@ -657,8 +690,8 @@ namespace NSCSS
 
         for (auto iter = mStyle.begin(); iter != mStyle.end(); iter++)
         {
-            if (iter->second.find(L"!important") != std::wstring::npos)
-                mStyle[iter->first] = iter->second.substr(0, iter->second.find(L"!important"));
+            if (iter->second.find(L"!") != std::wstring::npos)
+                mStyle[iter->first] = iter->second.substr(0, iter->second.find(L"!"));
         }
 
 
@@ -774,6 +807,7 @@ namespace NSCSS
 //        std::wcout << oNode.m_sName << L" - " << oNode.m_sClass << L" - " << oNode.m_sId << L" - " << oNode.m_sStyle << std::endl;
 
         CCompiledStyle oParentStyles;
+
         for (auto oParent : oParents)
         {
             oParentStyles += GetCompiledStyle(oParent, {}, unitMeasure);
@@ -900,20 +934,27 @@ namespace NSCSS
 
                     if (!_Temp.Empty())
                         m_arStyleUsed.emplace(oNode.m_sName + sClassName + sIdName, _Temp);
-
-                    std::wcout << oStyle.GetStyleW() << std::endl;
                 }
 
             }
         }
         if (!oNode.m_sStyle.empty())
         {
-
             CCompiledStyle oTempStyle;
-            oTempStyle.AddStyle(oNode.m_sStyle);
+            oTempStyle.AddStyle(ConvertUnitMeasure(oNode.m_sStyle));
+
+            std::wstring sClassName = oNode.m_sClass;
+
+            if (!sClassName.empty() && sClassName[0] != L'.')
+                sClassName = L'.' + sClassName;
+
+            std::wstring sIdName = oNode.m_sId;
+
+            if (sIdName[0] != L'#')
+                sIdName = L'#' + sIdName;
 
             oStyle += oTempStyle;
-            oStyle.SetID(oNode.m_sName + oNode.m_sClass + oNode.m_sId + std::to_wstring(m_nCountNodes));
+            oStyle.SetID(oNode.m_sName + sClassName + sIdName + L'-' + std::to_wstring(m_nCountNodes));
             oStyle.SetNeedSave(true);
 
             for (auto iter = m_arStyleUsed.begin(); iter != m_arStyleUsed.end(); iter++)
@@ -922,270 +963,22 @@ namespace NSCSS
                     oStyle.Clear();
                     oStyle.SetID(m_arStyleUsed[iter->first].GetId());
                     oStyle.SetNeedSave(true);
-                    m_nCountNodes++;
                     return oStyle;
                 }
 
             oParentStyles += oStyle;
             oStyle = oParentStyles;
-            oStyle.SetID(oNode.m_sName + oNode.m_sClass + oNode.m_sId + std::to_wstring(m_nCountNodes));
+            oStyle.SetID(oNode.m_sName + sClassName + sIdName + L'-' + std::to_wstring(m_nCountNodes));
+            m_nCountNodes++;
             oStyle.SetNeedSave(true);
 
             if (!oStyle.Empty())
                 m_arStyleUsed.emplace(oStyle.GetId(), oStyle);
 
-            m_nCountNodes++;
         }
-//        std::wcout << L" 0 - " << m_arStyleUsed.size() << std::endl;
-        if (oStyle.GetId() == L"h1.calibre7")
-            std::wcout << oStyle.GetStyleW() << std::endl;
         return oStyle;
     }
 
-
-/*
-    CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const CNode &oNode, const std::vector<CNode> &oParents, UnitMeasure unitMeasure)
-    {
-        CCompiledStyle oStyle;
-        m_nCountNodes++;
-        oStyle.SetID(L"paragraph" + std::to_wstring(m_nCountNodes));
-
-        CCompiledStyle oParentStyles;
-        for (auto oParent : oParents)
-        {
-            oParentStyles += GetCompiledStyle(oParent, {}, unitMeasure);
-        }
-
-        if (!oNode.m_sName.empty())
-        {
-            CCompiledStyle oTempStyle = GetCompiledStyle(std::vector<std::string>() = {std::string(oNode.m_sName.begin(), oNode.m_sName.end())}, unitMeasure);
-
-            if (oNode.m_sClass.empty() &&
-                oNode.m_sId.empty() &&
-                oNode.m_sStyle.empty())
-            {
-
-                if (oTempStyle.Empty())
-                {
-//                    oStyle.SetID(oNode.m_sName);
-                    oStyle = oParentStyles;
-                    oStyle.SetID(oNode.m_sName);
-                    return oStyle;
-                }
-
-                if (m_arStyleUsed.find(oNode.m_sName) != m_arStyleUsed.cend())
-                {
-                    if (oTempStyle == m_arStyleUsed[oNode.m_sName])
-                    {
-//                        oStyle = oParentStyles;
-//                        oStyle += oTempStyle;
-                        oStyle.Clear();
-                        oStyle.SetNeedSave(false);
-                        oStyle.SetID(oNode.m_sName);
-                    }
-                    else if (oTempStyle > m_arStyleUsed[oNode.m_sName])
-                    {
-                        std::wcout << L" 1 - 1 " << std::endl;
-                        m_arStyleUsed[oNode.m_sName] += oTempStyle;
-                        oStyle = oParentStyles;
-                        oStyle += m_arStyleUsed[oNode.m_sName];
-                        oStyle.SetID(oNode.m_sName);
-                    }
-                    else
-                    {
-                        std::wcout << L" 1 - 2 " << std::endl;
-                        oStyle = oParentStyles;
-                        oStyle += oTempStyle;
-                        oStyle.SetID(oNode.m_sName + std::to_wstring(m_nCountNodes));
-                    }
-                    return oStyle;
-
-                }
-                else
-                {
-                    m_arStyleUsed.emplace(oNode.m_sName, oTempStyle);
-                    oStyle = oParentStyles;
-                    oStyle += oTempStyle;
-                    return oStyle;
-                }
-            }
-            else
-            {
-                // Чтобы не повторялись части стиля, можно наследовать их через basedOn (Но нужно ли так?)
-                if (m_arStyleUsed.find(oNode.m_sName) != m_arStyleUsed.cend())
-                {
-                    oStyle =  m_arStyleUsed[oNode.m_sName];
-                }
-                oStyle += oTempStyle;
-            }
-        }
-
-        if (!oNode.m_sClass.empty())
-        {
-
-            std::wstring sClassName = oNode.m_sClass;
-
-            if (sClassName[0] != L'.')
-                sClassName = L'.' + sClassName;
-
-            CCompiledStyle oTempStyle = GetCompiledStyle(std::vector<std::string>() = {std::string(sClassName.begin(), sClassName.end())}, unitMeasure);
-            oTempStyle.SetID(oNode.m_sName + sClassName);
-            oStyle.SetID(oNode.m_sName + sClassName);
-
-
-            if (oNode.m_sId.empty() &&
-                oNode.m_sStyle.empty())
-            {
-                if (oTempStyle.Empty())
-                {
-                    oParentStyles += oStyle;
-                    oStyle = oParentStyles;
-                    oStyle.SetID(oNode.m_sName);
-                    return oStyle;
-                }
-
-                if (m_arStyleUsed.find(oNode.m_sName + sClassName) != m_arStyleUsed.cend())
-                {
-                    if (oTempStyle == m_arStyleUsed[oNode.m_sName + sClassName])
-                    {
-                        oStyle.Clear();
-                        oStyle.SetNeedSave(false);
-//                        oStyle = oParentStyles;
-                        oStyle.SetID(oNode.m_sName + sClassName);
-                    }
-                    else if (oTempStyle > m_arStyleUsed[oNode.m_sName + sClassName])
-                    {
-                        std::wcout << L" 2 - 1 " << std::endl;
-
-                        m_arStyleUsed[oNode.m_sName + sClassName] += oTempStyle;
-                        oStyle = oParentStyles;
-                        oStyle += m_arStyleUsed[oNode.m_sName + sClassName];
-                        oStyle.Clear();
-                        oStyle.SetID(oNode.m_sName + sClassName);
-                    }
-                    else
-                    {
-                        std::wcout << L" 2 - 2 " << std::endl;
-
-                        oTempStyle += oStyle;
-                        oStyle = oParentStyles;
-                        oStyle += oTempStyle;
-                        oStyle.SetID(oNode.m_sName + sClassName + std::to_wstring(m_nCountNodes));
-                    }
-                    return oStyle;
-                }
-                else
-                {
-                    oStyle += oTempStyle;
-                    m_arStyleUsed.emplace(oNode.m_sName + sClassName, oStyle);
-                    return oStyle;
-                }
-            }
-            else
-            {
-                // Чтобы не повторялись части стиля, можно наследовать их через basedOn (Но нужно ли так?)
-                oStyle += oTempStyle;
-                m_arStyleUsed.emplace(oNode.m_sName + sClassName, oStyle);
-            }
-        }
-        if (!oNode.m_sId.empty())
-        {
-            std::wstring sClassName;
-
-            if (!oNode.m_sClass.empty())
-            {
-                if (oNode.m_sClass[0] != L'.')
-                    sClassName = L'.' + oNode.m_sClass;
-            }
-            std::wstring sIdName = oNode.m_sId;
-
-            if (sIdName[0] != L'#')
-                sIdName = L'#' + sIdName;
-
-            CCompiledStyle oTempStyle = GetCompiledStyle(std::vector<std::string>() = {std::string(sIdName.begin(), sIdName.end())}, unitMeasure);
-            oTempStyle.SetID(oNode.m_sName + sClassName + sIdName);
-            oStyle.SetID(oNode.m_sName + sClassName + sIdName);
-
-            if (oNode.m_sStyle.empty())
-            {
-                if (oNode.m_sStyle.empty())
-                {
-                    if (oTempStyle.Empty())
-                    {
-                        oParentStyles += oStyle;
-                        oStyle = oParentStyles;
-                        oStyle.SetID(oNode.m_sName + sClassName);
-                        return oStyle;
-                    }
-
-                    if (oTempStyle == m_arStyleUsed[oNode.m_sName + sClassName + sIdName])
-                    {
-                        oStyle.Clear();
-                        oStyle.SetNeedSave(false);
-                        oStyle.SetID(oNode.m_sName + sClassName + sIdName);
-                    }
-                    else if (oTempStyle > m_arStyleUsed[oNode.m_sName + sClassName + sIdName])
-                    {
-                        std::wcout << L" 3 - 1 " << std::endl;
-
-                        m_arStyleUsed[oNode.m_sName + sClassName + sIdName] += oTempStyle;
-                        oStyle = oParentStyles;
-                        oStyle += m_arStyleUsed[oNode.m_sName + sClassName + sIdName];
-                        oStyle.Clear();
-                        oStyle.SetID(oNode.m_sName + sClassName + sIdName);
-                    }
-                    else
-                    {
-                        std::wcout << L" 3 - 2 " << std::endl;
-
-                        oTempStyle += oStyle;
-                        oStyle = oParentStyles;
-                        oStyle += oTempStyle;
-                        oStyle.SetID(oNode.m_sName + sClassName + sIdName + std::to_wstring(m_nCountNodes));
-                    }
-                    return oStyle;
-                }
-                else
-                {
-                    oStyle += oTempStyle;
-                    m_arStyleUsed.emplace(oNode.m_sName + sClassName + sIdName, oStyle);
-                    return oStyle;
-                }
-            }
-            else
-            {
-                oStyle += oTempStyle;
-                m_arStyleUsed.emplace(oNode.m_sName + sClassName + sIdName, oStyle);
-            }
-        }
-
-        if (!oNode.m_sStyle.empty())
-        {
-            CCompiledStyle oTempStyle;
-            oTempStyle.AddStyle(oNode.m_sStyle);
-
-            oStyle += oTempStyle;
-            oParentStyles += oStyle;
-            oStyle = oParentStyles;
-            oStyle.SetID(oNode.m_sName + oNode.m_sClass + oNode.m_sId + std::to_wstring(m_nCountNodes));
-
-            for (auto iter = m_arStyleUsed.begin(); iter != m_arStyleUsed.end(); iter++)
-                if (iter->second == oStyle)
-                {
-                    oStyle.Clear();
-                    oStyle.SetID(m_arStyleUsed[iter->first].GetId());
-                    return oStyle;
-                }
-
-            m_arStyleUsed.emplace(oStyle.GetId(), oStyle);
-            return oStyle;
-        }
-
-        oParentStyles += oStyle;
-        oStyle = oParentStyles;
-        return oStyle;
-    }
-*/
 
     void CCssCalculator_Private::AddStyles(const std::string& sStyle)
     {
@@ -1223,219 +1016,124 @@ namespace NSCSS
         AddStyles(sSourceUTF8);
     }
 
-    std::wstring GetFirstNumber(std::wstring sString)
+
+    std::wstring CCssCalculator_Private::ConvertUnitMeasure(const std::wstring &sValue)
     {
-        if (sString.empty())
-            return L"";
-
-        std::wstring sValue;
-        int nPos = 0;
-
-        while(nPos < sString.length() && !isdigit(sString[nPos]))
-            nPos++;
-
-        while(nPos < sString.length() && isdigit(sString[nPos]))
-        {
-            sValue += sString[nPos];
-            nPos++;
-        }
-
-        if (sString[nPos] == L'.' || sString[nPos] == L',')
-        {
-            sValue += L'.';
-            nPos++;
-            while(nPos < sString.length() && isdigit(sString[nPos]))
-            {
-                sValue += sString[nPos];
-                nPos++;
-            }
-        }
-
-        return sValue;
-    }
-
-    inline std::wstring CCssCalculator_Private::ConvertUnitMeasure(const std::wstring& sValue)
-    {
-        if (sValue.empty() || sValue[0] == L'#')
+        if (sValue.empty())
             return sValue;
-
-        std::wstring sConvertValue = sValue;
-
-        std::wstring sFirstNumber = GetFirstNumber(sValue);
-
-        if (!sFirstNumber.empty())
-            sConvertValue = sConvertValue.substr(sConvertValue.find(sFirstNumber));
-        else
-            return sValue;
-
-        std::wstring sBefore = sValue.substr(0, sValue.find(sConvertValue));
-        if (!sBefore.empty() && sBefore[sBefore.length() - 1] == L'.')
-            sConvertValue = L"0." + sConvertValue;
-
-        if (sConvertValue.find(L"px") != std::wstring::npos)
-        {
-            return ConvertPx(sConvertValue);
-        }
-        else if (sConvertValue.find(L"cm") != std::wstring::npos)
-        {
-            return ConvertCm(sConvertValue);
-        }
-        else if (sConvertValue.find(L"mm") != std::wstring::npos)
-        {
-            return ConvertMm(sConvertValue);
-        }
-        else if (sConvertValue.find(L"in") != std::wstring::npos)
-        {
-            return ConvertIn(sConvertValue);
-        }
-        else if (sConvertValue.find(L"pt") != std::wstring::npos)
-        {
-            return ConvertPt(sConvertValue);
-        }
-        else if (sConvertValue.find(L"pc") != std::wstring::npos)
-        {
-            return ConvertPc(sConvertValue);
-        }
-        else if (sConvertValue.find(L"em") != std::wstring::npos)
-        {
-            return ConvertEm(sConvertValue);
-        }
-
-        return sConvertValue;
-    }
-
-    inline std::wstring CCssCalculator_Private::ConvertPx(const std::wstring& sValue)
-    {
-        if (sValue.find(L"px") == std::wstring::npos)
-            return sValue;
-
-        std::wstring sConvertValue = sValue.substr(0, sValue.find(L"px"));
-        std::wstring sBeforeValue;
-        std::wstring sAfterValue = sValue.substr(sValue.find(L"px") + 2);
-
-        sAfterValue = ConvertPx(sAfterValue);
 
         std::vector<std::wstring> arValues;
 
-        std::wstring _doub;
-        for (int i = sValue.find(L"px") - 1; i >= 0; i--)
+        std::wstring sTempString;
+        for (int  i = 0; i < (int)sValue.length(); i++)
         {
-            if (isdigit(sValue[i]) || sValue[i] == '.')
-                _doub = sValue[i] +_doub;
-            else if (sValue[i] == ' ' && !_doub.empty())
+            if (!isspace(sValue[i]) && sValue[i] != L':' && sValue[i] != L';')
+                sTempString += sValue[i];
+            else if (!sTempString.empty())
             {
-                arValues.push_back(_doub);
-                _doub.clear();
-            }
-            else
-            {
-                if (!_doub.empty())
-                {
-                    arValues.push_back(_doub);
-                    _doub.clear();
-                }
-                sBeforeValue += sValue.substr(0, i + 1);
-                break;
+                sTempString += sValue[i];
+                arValues.push_back(sTempString);
+                sTempString.clear();
             }
         }
 
-        if (!_doub.empty())
-            arValues.push_back(_doub);
+        if (!sTempString.empty())
+            arValues.push_back(sTempString);
+        std::wstring sValueString;
 
-        if (arValues.empty())
-            return sValue;
+        for (int i = 0; i < (int)arValues.size(); i++)
+        {
+            if (GetFirstNumber(arValues[i]).empty() || arValues[i].find(L'#') != std::wstring::npos)
+            {
+                sValueString += arValues[i];
+                continue;
+            }
+            if (arValues[i].find(L'.') != std::wstring::npos)
+            {
+                if (arValues[i].find(L'.') == 0)
+                    arValues[i] = L"0" + arValues[i];
+            }
 
-        std::vector<double> arDoubleValues;
-        for (size_t i = 0; i < arValues.size(); i++)
-            arDoubleValues.push_back(std::stod(arValues[i]));
+            if (arValues[i].find(L"px") != std::wstring::npos)
+            {
+                sValueString += ConvertPx(arValues[i]);
+            }
+            else if (arValues[i].find(L"cm") != std::wstring::npos)
+            {
+                sValueString += ConvertCm(arValues[i]);
+            }
+            else if (arValues[i].find(L"mm") != std::wstring::npos)
+            {
+                sValueString += ConvertMm(arValues[i]);
+            }
+            else if (arValues[i].find(L"in") != std::wstring::npos)
+            {
+                sValueString += ConvertIn(arValues[i]);
+            }
+            else if (arValues[i].find(L"pt") != std::wstring::npos)
+            {
+                sValueString += ConvertPt(arValues[i]);
+            }
+            else if (arValues[i].find(L"pc") != std::wstring::npos)
+            {
+                sValueString += ConvertPc(arValues[i]);
+            }
+            else if (arValues[i].find(L"em") != std::wstring::npos)
+            {
+                sValueString += ConvertEm(arValues[i]);
+            }
+//            if (i < arValues.size() - 1)
+//                sValueString += L" ";
+        }
 
+        return sValueString;
+    }
+
+
+    inline std::wstring CCssCalculator_Private::ConvertPx(const std::wstring& sValue)
+    {
+        if (sValue.empty())
+            return L"";
+
+        std::wstring sConvertValue = sValue.substr(0, sValue.find_last_of(L"px") - 1);
+        double dValue = wcstod(sConvertValue.c_str(), NULL);
         switch (m_UnitMeasure)
         {
-            case Pixel:
-                break;
             case Cantimeter:
             {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertPxToCm(arDoubleValues[i]) + L" ";
-                sValues += ConvertPxToCm(arDoubleValues[0], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
+                return ConvertPxToCm(dValue);
             }
             case Inch:
             {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertPxToIn(arDoubleValues[i]) + L" ";
-                sValues += ConvertPxToIn(arDoubleValues[0], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
-            }
-            case Millimeter:
-            {
-                std::wstring sValues;
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertPxToMm(arDoubleValues[i]) + L" ";
-                sValues += ConvertPxToMm(arDoubleValues[0], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
+                return ConvertPxToIn(dValue);
             }
             case Default:
+            case Millimeter:
+            {
+                return ConvertPxToMm(dValue);
+            }
             case Point:
             {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertPxToPt(arDoubleValues[i]) + L" ";
-                sValues += ConvertPxToPt(arDoubleValues[arDoubleValues.size() - 1], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
+                return ConvertPxToPt(dValue);
             }
             case Peak:
             {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertPxToPc(arDoubleValues[i]) + L" ";
-                sValues += ConvertPxToPc(arDoubleValues[arDoubleValues.size() - 1], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
+                return ConvertPxToPc(dValue);
             }
+            case Pixel:
             default:
                 break;
         }
-        return  sValue;
+        return  sConvertValue;
     }
 
     inline std::wstring CCssCalculator_Private::ConvertPxToCm(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = 2.54 / (double)m_nDpi * dValue;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"cm ";
         return sValue;
@@ -1444,10 +1142,10 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::ConvertPxToIn(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = 1 / (double)m_nDpi * dValue;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"in ";
         return sValue;
@@ -1456,10 +1154,10 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::ConvertPxToMm(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = 25.4 / (double)m_nDpi * dValue;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"mm ";
 
@@ -1469,10 +1167,10 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::ConvertPxToPc(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = 1.0/6.0 / (double)m_nDpi * dValue;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"pc ";
         return sValue;
@@ -1481,10 +1179,10 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::ConvertPxToPt(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = 1.0/72.0 / (double)m_nDpi * dValue;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"pt ";
         return sValue;
@@ -1492,134 +1190,48 @@ namespace NSCSS
 
     inline std::wstring CCssCalculator_Private::ConvertCm(const std::wstring& sValue)
     {
-        std::wstring sConvertValue = sValue.substr(0, sValue.find(L"cm"));
-        std::wstring sBeforeValue;
-        std::wstring sAfterValue = sValue.substr(sValue.find(L"cm") + 2);
+        if (sValue.empty())
+            return L"";
 
-        sAfterValue = ConvertPx(sAfterValue);
-
-        std::vector<std::wstring> arValues;
-
-        std::wstring _doub;
-        for (int i = sValue.find(L"cm") - 1; i >= 0; i--)
-        {
-            if (isdigit(sValue[i]) || sValue[i] == '.')
-                _doub = sValue[i] +_doub;
-            else if (sValue[i] == ' ' && !_doub.empty())
-            {
-                arValues.push_back(_doub);
-                _doub.clear();
-            }
-            else
-            {
-                if (!_doub.empty())
-                {
-                    arValues.push_back(_doub);
-                    _doub.clear();
-                }
-                sBeforeValue += sValue.substr(0, i + 1);
-                break;
-            }
-        }
-
-        if (!_doub.empty())
-            arValues.push_back(_doub);
-
-        if (arValues.empty())
-            return sValue;
-
-        std::vector<double> arDoubleValues;
-        for (size_t i = 0; i < arValues.size(); i++)
-            arDoubleValues.push_back(std::stod(arValues[i]));
-
+        std::wstring sConvertValue = sValue.substr(0, sValue.find_last_of(L"cm") - 1);
+        double dValue = wcstod(sConvertValue.c_str(), NULL);
         switch (m_UnitMeasure)
         {
             case Pixel:
             {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertCmToPx(arDoubleValues[i]) + L" ";
-                sValues += ConvertCmToPx(arDoubleValues[0], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
+                return ConvertCmToPx(dValue);
             }
-            case Cantimeter:
-                break;
             case Inch:
             {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertCmToIn(arDoubleValues[i]) + L" ";
-                sValues += ConvertCmToIn(arDoubleValues[0], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
-            }
-            case Millimeter:
-            {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertCmToMm(arDoubleValues[i]) + L" ";
-                sValues += ConvertCmToMm(arDoubleValues[0], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
+                return ConvertCmToIn(dValue);
             }
             case Default:
+            case Millimeter:
+            {
+                return ConvertCmToMm(dValue);
+            }
             case Point:
             {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertCmToPt(arDoubleValues[i]) + L" ";
-                sValues += ConvertCmToPt(arDoubleValues[arDoubleValues.size() - 1], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
+                return ConvertCmToPt(dValue);
             }
             case Peak:
             {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertCmToPc(arDoubleValues[i]) + L" ";
-                sValues += ConvertCmToPc(arDoubleValues[arDoubleValues.size() - 1], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
+                return ConvertCmToPc(dValue);
             }
+            case Cantimeter:
             default:
                 break;
         }
-        return  sValue;
+        return  sConvertValue;
     }
 
     inline std::wstring CCssCalculator_Private::ConvertCmToIn(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = dValue / 2.54;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"in";
         return sValue;
@@ -1628,10 +1240,10 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::ConvertCmToMm(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = dValue * 10;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"mm";
         return sValue;
@@ -1640,10 +1252,10 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::ConvertCmToPc(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = 72.0 / 2.54 * dValue;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"pc";
         return sValue;
@@ -1652,10 +1264,10 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::ConvertCmToPt(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = 6.0 / 2.54 * dValue;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"pt";
         return sValue;
@@ -1664,10 +1276,10 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::ConvertCmToPx(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = (double)m_nDpi / 2.54 * dValue;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"px";
         return sValue;
@@ -1675,134 +1287,46 @@ namespace NSCSS
 
     inline std::wstring CCssCalculator_Private::ConvertMm(const std::wstring& sValue)
     {
-        std::wstring sConvertValue = sValue.substr(0, sValue.find(L"mm"));
-        std::wstring sBeforeValue;
-        std::wstring sAfterValue = sValue.substr(sValue.find(L"mm") + 2);
+        if (sValue.empty())
+            return L"";
 
-        sAfterValue = ConvertPx(sAfterValue);
-
-        std::vector<std::wstring> arValues;
-
-        std::wstring _doub;
-        for (int i = sValue.find(L"mm") - 1; i >= 0; i--)
-        {
-            if (isdigit(sValue[i]) || sValue[i] == '.')
-                _doub = sValue[i] +_doub;
-            else if (sValue[i] == ' ' && !_doub.empty())
-            {
-                arValues.push_back(_doub);
-                _doub.clear();
-            }
-            else
-            {
-                if (!_doub.empty())
-                {
-                    arValues.push_back(_doub);
-                    _doub.clear();
-                }
-                sBeforeValue += sValue.substr(0, i + 1);
-                break;
-            }
-        }
-
-        if (!_doub.empty())
-            arValues.push_back(_doub);
-
-        if (arValues.empty())
-            return sValue;
-
-        std::vector<double> arDoubleValues;
-        for (size_t i = 0; i < arValues.size(); i++)
-            arDoubleValues.push_back(std::stod(arValues[i]));
-
+        std::wstring sConvertValue = sValue.substr(0, sValue.find_last_of(L"mm") - 1);
+        double dValue = wcstod(sConvertValue.c_str(), NULL);
         switch (m_UnitMeasure)
         {
+            case Cantimeter:
+                return ConvertMmToCm(dValue);
             case Pixel:
             {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertMmToPx(arDoubleValues[i]) + L" ";
-                sValues += ConvertMmToPx(arDoubleValues[0], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
-            }
-            case Cantimeter:
-            {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertMmToCm(arDoubleValues[i]) + L" ";
-                sValues += ConvertMmToCm(arDoubleValues[0], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
+                return ConvertMmToPx(dValue);
             }
             case Inch:
             {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertMmToIn(arDoubleValues[i]) + L" ";
-                sValues += ConvertMmToIn(arDoubleValues[0], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
+                return ConvertMmToIn(dValue);
             }
-            case Millimeter:
-                break;
-            case Default:
             case Point:
             {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertMmToPt(arDoubleValues[i]) + L" ";
-                sValues += ConvertMmToPt(arDoubleValues[arDoubleValues.size() - 1], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
+                return ConvertMmToPt(dValue);
             }
             case Peak:
             {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertMmToPc(arDoubleValues[i]) + L" ";
-                sValues += ConvertMmToPc(arDoubleValues[arDoubleValues.size() - 1], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
+                return ConvertMmToPc(dValue);
             }
+            case Default:
+            case Millimeter:
             default:
                 break;
         }
-        return  sValue;
+        return  sConvertValue;
     }
 
     inline std::wstring CCssCalculator_Private::ConvertMmToIn(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = dValue / 25.4;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"in";
         return sValue;
@@ -1811,10 +1335,10 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::ConvertMmToCm(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = dValue / 10;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"cm";
         return sValue;
@@ -1823,10 +1347,10 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::ConvertMmToPc(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = 72.0 / 25.4 * dValue;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"pc";
         return sValue;
@@ -1835,10 +1359,10 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::ConvertMmToPt(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = 6.0 / 25.4 * dValue;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"pt";
         return sValue;
@@ -1847,130 +1371,45 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::ConvertMmToPx(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = (double)m_nDpi / 25.4 * dValue;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"px";
         return sValue;}
 
     inline std::wstring CCssCalculator_Private::ConvertIn(const std::wstring& sValue)
     {
-        std::wstring sConvertValue = sValue.substr(0, sValue.find_last_of(L"in"));
-        std::wstring sBeforeValue;
-        std::wstring sAfterValue = sValue.substr(sValue.find(L"in") + 2);
+        if (sValue.empty())
+            return L"";
 
-        sAfterValue = ConvertPx(sAfterValue);
-
-        std::vector<std::wstring> arValues;
-
-        std::wstring _doub;
-        for (int i = sValue.find(L"in") - 1; i >= 0; i--)
-        {
-            if (isdigit(sValue[i]) || sValue[i] == '.')
-                _doub = sValue[i] +_doub;
-            else if (sValue[i] == ' ' && !_doub.empty())
-            {
-                arValues.push_back(_doub);
-                _doub.clear();
-            }
-            else
-            {
-                if (!_doub.empty())
-                {
-                    arValues.push_back(_doub);
-                    _doub.clear();
-                }
-                sBeforeValue += sValue.substr(0, i + 1);
-                break;
-            }
-        }
-
-        if (!_doub.empty())
-            arValues.push_back(_doub);
-
-        if (arValues.empty())
-            return sValue;
-
-        std::vector<double> arDoubleValues;
-        for (size_t i = 0; i < arValues.size(); i++)
-            arDoubleValues.push_back(std::stod(arValues[i]));
-
+        std::wstring sConvertValue = sValue.substr(0, sValue.find_last_of(L"in") - 1);
+        double dValue = wcstod(sConvertValue.c_str(), NULL);
         switch (m_UnitMeasure)
         {
             case Pixel:
             {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertInToPx(arDoubleValues[i]) + L" ";
-                sValues += ConvertInToPx(arDoubleValues[0], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
+                return  ConvertInToPx(dValue);
             }
             case Cantimeter:
             {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertInToCm(arDoubleValues[i]) + L" ";
-                sValues += ConvertInToCm(arDoubleValues[0], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
+                return ConvertInToCm(dValue);
             }
             case Inch:
                 break;
+            case Default:
             case Millimeter:
             {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertInToMm(arDoubleValues[i]) + L" ";
-                sValues += ConvertInToMm(arDoubleValues[0], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
+                return ConvertInToMm(dValue);
             }
-            case Default:
             case Point:
             {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertInToPt(arDoubleValues[i]) + L" ";
-                sValues += ConvertInToPt(arDoubleValues[arDoubleValues.size() - 1], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
+                return ConvertInToPt(dValue);
             }
             case Peak:
             {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertInToPc(arDoubleValues[i]) + L" ";
-                sValues += ConvertInToPc(arDoubleValues[arDoubleValues.size() - 1], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
+                return ConvertInToPc(dValue);
             }
             default:
                 break;
@@ -1981,10 +1420,10 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::ConvertInToMm(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = dValue * 25.4;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"mm";
         return sValue;}
@@ -1992,10 +1431,10 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::ConvertInToCm(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = dValue * 2.54;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"cm";
         return sValue;}
@@ -2003,10 +1442,10 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::ConvertInToPc(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = dValue / 72.0;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"pc";
         return sValue;}
@@ -2014,10 +1453,10 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::ConvertInToPt(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = dValue / 6.0;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"pt";
         return sValue;}
@@ -2025,144 +1464,56 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::ConvertInToPx(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = dValue * (double)m_nDpi;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"px";
         return sValue;}
 
     inline std::wstring CCssCalculator_Private::ConvertPt(const std::wstring& sValue)
     {
-        std::wstring sConvertValue = sValue.substr(0, sValue.find(L"pt"));
-        std::wstring sBeforeValue;
-        std::wstring sAfterValue = sValue.substr(sValue.find(L"pt") + 2);
+        if (sValue.empty())
+            return L"";
 
-        sAfterValue = ConvertPx(sAfterValue);
-
-        std::vector<std::wstring> arValues;
-
-        std::wstring _doub;
-        for (int i = sValue.find(L"pt") - 1; i >= 0; i--)
-        {
-            if (isdigit(sValue[i]) || sValue[i] == '.')
-                _doub = sValue[i] +_doub;
-            else if (sValue[i] == ' ' && !_doub.empty())
-            {
-                arValues.push_back(_doub);
-                _doub.clear();
-            }
-            else
-            {
-                if (!_doub.empty())
-                {
-                    arValues.push_back(_doub);
-                    _doub.clear();
-                }
-                sBeforeValue += sValue.substr(0, i + 1);
-                break;
-            }
-        }
-
-        if (!_doub.empty())
-            arValues.push_back(_doub);
-
-        if (arValues.empty())
-            return sValue;
-
-        std::vector<double> arDoubleValues;
-        for (size_t i = 0; i < arValues.size(); i++)
-            arDoubleValues.push_back(std::stod(arValues[i]));
-
+        std::wstring sConvertValue = sValue.substr(0, sValue.find_last_of(L"pt") - 1);
+        double dValue = wcstod(sConvertValue.c_str(), NULL);
         switch (m_UnitMeasure)
         {
+            case Cantimeter:
+                return ConvertPtToCm(dValue);
             case Pixel:
             {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertPtToPx(arDoubleValues[i]) + L" ";
-                sValues += ConvertPtToPx(arDoubleValues[0], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
-            }
-            case Cantimeter:
-            {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertPtToCm(arDoubleValues[i]) + L" ";
-                sValues += ConvertPtToCm(arDoubleValues[0], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
+                return ConvertPtToPx(dValue);
             }
             case Inch:
             {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertPtToIn(arDoubleValues[i]) + L" ";
-                sValues += ConvertPtToIn(arDoubleValues[0], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
-            }
-            case Millimeter:
-            {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertPtToMm(arDoubleValues[i]) + L" ";
-                sValues += ConvertPtToMm(arDoubleValues[0], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
+                return ConvertPtToIn(dValue);
             }
             case Default:
-            case Point:
-                break;
+            case Millimeter:
+            {
+                return ConvertPtToMm(dValue);
+            }
             case Peak:
             {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertPtToPc(arDoubleValues[i]) + L" ";
-                sValues += ConvertPtToPc(arDoubleValues[arDoubleValues.size() - 1], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
+                return ConvertPtToPc(dValue);
             }
+            case Point:
             default:
                 break;
         }
-        return  sValue;
+        return  sConvertValue;
     }
 
     inline std::wstring CCssCalculator_Private::ConvertPtToIn(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = dValue / 72.0;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"in";
         return sValue;}
@@ -2170,10 +1521,10 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::ConvertPtToCm(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = dValue / 72.0 * 2.54;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"cm";
         return sValue;}
@@ -2181,10 +1532,10 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::ConvertPtToPc(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = dValue / 12.0;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"pc";
         return sValue;}
@@ -2192,10 +1543,10 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::ConvertPtToMm(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = dValue / 72.0 * 25.4;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"mm";
         return sValue;}
@@ -2203,144 +1554,56 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::ConvertPtToPx(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = (double)m_nDpi / 72.0 * dValue;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"px";
         return sValue;}
 
     inline std::wstring CCssCalculator_Private::ConvertPc(const std::wstring& sValue)
     {
-        std::wstring sConvertValue = sValue.substr(0, sValue.find(L"pc"));
-        std::wstring sBeforeValue;
-        std::wstring sAfterValue = sValue.substr(sValue.find(L"pc") + 2);
+        if (sValue.empty())
+            return L"";
 
-        sAfterValue = ConvertPx(sAfterValue);
-
-        std::vector<std::wstring> arValues;
-
-        std::wstring _doub;
-        for (int i = sValue.find(L"pc") - 1; i >= 0; i--)
-        {
-            if (isdigit(sValue[i]) || sValue[i] == '.')
-                _doub = sValue[i] +_doub;
-            else if (sValue[i] == ' ' && !_doub.empty())
-            {
-                arValues.push_back(_doub);
-                _doub.clear();
-            }
-            else
-            {
-                if (!_doub.empty())
-                {
-                    arValues.push_back(_doub);
-                    _doub.clear();
-                }
-                sBeforeValue += sValue.substr(0, i + 1);
-                break;
-            }
-        }
-
-        if (!_doub.empty())
-            arValues.push_back(_doub);
-
-        if (arValues.empty())
-            return sValue;
-
-        std::vector<double> arDoubleValues;
-        for (size_t i = 0; i < arValues.size(); i++)
-            arDoubleValues.push_back(std::stod(arValues[i]));
-
+        std::wstring sConvertValue = sValue.substr(0, sValue.find_last_of(L"pc") - 1);
+        double dValue = wcstod(sConvertValue.c_str(), NULL);
         switch (m_UnitMeasure)
         {
+            case Cantimeter:
+                return ConvertPcToCm(dValue);
             case Pixel:
             {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertPcToPx(arDoubleValues[i]) + L" ";
-                sValues += ConvertPcToPx(arDoubleValues[0], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
-            }
-            case Cantimeter:
-            {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertPcToCm(arDoubleValues[i]) + L" ";
-                sValues += ConvertPcToCm(arDoubleValues[0], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
+                return ConvertPcToPx(dValue);
             }
             case Inch:
             {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertPcToIn(arDoubleValues[i]) + L" ";
-                sValues += ConvertPcToIn(arDoubleValues[0], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
-            }
-            case Millimeter:
-            {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertPcToMm(arDoubleValues[i]) + L" ";
-                sValues += ConvertPcToMm(arDoubleValues[0], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
+                return ConvertPcToIn(dValue);
             }
             case Default:
+            case Millimeter:
+            {
+                return ConvertPcToMm(dValue);
+            }
             case Point:
             {
-                std::wstring sValues;
-
-                if (arDoubleValues.size() > 1)
-                    for (size_t i = arDoubleValues.size() - 1; i > 0; i--)
-                        sValues += ConvertPcToPt(arDoubleValues[i]) + L" ";
-                sValues += ConvertPcToPt(arDoubleValues[0], true);
-
-                if (!sBeforeValue.empty() && sBeforeValue[0] != L' ')
-                    sBeforeValue += L" ";
-
-                return sBeforeValue + sValues + sAfterValue;
+                return ConvertPcToPt(dValue);
             }
             case Peak:
-                break;
             default:
                 break;
         }
-        return  sValue;
+        return  sConvertValue;
     }
 
     inline std::wstring CCssCalculator_Private::ConvertPcToIn(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = dValue / 6.0;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"in";
         return sValue;}
@@ -2348,10 +1611,10 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::ConvertPcToCm(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = dValue / 6.0 * 2.54;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"cm";
         return sValue;}
@@ -2359,10 +1622,10 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::ConvertPcToPt(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = dValue * 12.0;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"pt";
         return sValue;}
@@ -2370,10 +1633,10 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::ConvertPcToMm(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = dValue / 6.0 * 25.4;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"mm";
         return sValue;}
@@ -2381,10 +1644,10 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::ConvertPcToPx(const double& dValue, bool bAddUM)
     {
         if (dValue == 0)
-            return std::to_wstring(0);
+            return L"0";
 
         double _dValue = (double)m_nDpi / 6.0 * dValue;
-        std::wstring sValue = std::to_wstring(_dValue);
+        std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"px";
         return sValue;
@@ -2392,26 +1655,15 @@ namespace NSCSS
 
     inline std::wstring CCssCalculator_Private::ConvertEm(const std::wstring &sValue)
     {
-        std::wstring sConvertValue = sValue.substr(0, sValue.find(L"em"));
+        if (sValue.empty())
+            return L"";
+
+        std::wstring sConvertValue = sValue.substr(0, sValue.find_last_of(L"em") - 1);
         double dValue = wcstod(sConvertValue.c_str(), NULL);
+
         dValue *= 22;
-        sConvertValue = std::to_wstring(dValue);
-        int nPosition = 0;
-        for (int i = sConvertValue.length() - 1; i >= 0; i--)
-            if (sConvertValue[i] == L'0')
-                nPosition = i;
-            else
-                break;
 
-        if (nPosition != 0)
-        {
-            sConvertValue = sConvertValue.substr(0, nPosition);
-            if (sConvertValue[nPosition - 1] == L'.' ||
-                    sConvertValue[nPosition - 1] == L',')
-                sConvertValue = sConvertValue.substr(0, nPosition - 1);
-        }
-
-        return sConvertValue;
+        return std::to_wstring((int)dValue);
     }
 
     void CCssCalculator_Private::SetDpi(const int nValue)

@@ -62,6 +62,8 @@ public:
     CXmlElement();
     CXmlElement(std::wstring sNameDefaultElement);
 
+    bool Empty();
+
     void CreateDefaultElement(std::wstring sNameDefaultElement);
     void Clear();
 

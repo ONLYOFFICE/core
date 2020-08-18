@@ -17,9 +17,9 @@ namespace NSCSS
 
         std::map<std::wstring, CCompiledStyle> m_arStyleUsed;
                 //selector     //style
-        int m_nDpi = 96;
-        std::wstring m_sEncoding = L"UTF-8";
-        int m_nCountNodes = 0;
+        int m_nDpi;
+        std::wstring m_sEncoding;
+        int m_nCountNodes;
 
         UnitMeasure m_UnitMeasure;
 

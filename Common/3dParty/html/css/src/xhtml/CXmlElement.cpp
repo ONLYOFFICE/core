@@ -10,6 +10,18 @@ CXmlElement::CXmlElement(std::wstring sNameDefaultElement)
     CreateDefaultElement(sNameDefaultElement);
 }
 
+bool CXmlElement::Empty()
+{
+    return m_sType.empty() && m_sStyleId.empty() && m_sDefault.empty() && m_sCustomStyle.empty() &&
+           m_sS.empty() && m_sName.empty() && m_sBasedOn.empty() && m_sLink.empty() && m_sUiPriority.empty() &&
+           !m_bQFormat && !m_bSemiHidden && !m_bUnhideWhenUsed && !m_bB && !m_bI && m_sU.empty() && m_sRFonts.empty() &&
+           m_sColor.empty() && m_sSz.empty() && !m_bKeepLines && !m_bKeepNext && m_sSpacing.empty() &&
+           m_sOutlineLvl.empty() && m_sContextualSpacing.empty() && m_sInd.empty() && m_sJc.empty() &&
+           m_sTblInd.empty() && m_sCellTop.empty() && m_sCellLeft.empty() && m_sCellBottom.empty() &&
+           m_sCellRight.empty() && m_sBorderTop.empty() && m_sBorderLeft.empty() && m_sBorderBottom.empty() &&
+           m_sBorderRight.empty() && m_sBorderInsideH.empty() && m_sBorderInsideV.empty();
+}
+
 void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
 {
     Clear();
@@ -198,6 +210,14 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetUiPriority(L"9");;
         SetRFonts(L"Arial");
         SetSz(L"22");
+    }
+    else if (sNameDefaultElement == L"p-c")
+    {
+        SetType(L"character");
+        SetStyleId(L"p-c");
+        SetCustomStyle(L"1");
+        SetName(L"Paragraph_character");
+        SetLink(L"p");
     }
     else if (sNameDefaultElement == L"p")
     {
@@ -533,7 +553,14 @@ std::wstring CXmlElement::GetStyle()
             sRPr += L"<w:u w:val=\"" + m_sU + L"\"/>";
 
         if (!m_sSz.empty())
-            sRPr += L"<w:sz w:val=\"" + m_sSz + L"\"/>" + L"<w:szCs w:val=\"" + m_sSz + L"\"/>";
+        {
+            std::wstring sSz = m_sSz;
+
+            if (sSz == L"medium")
+                sSz = L"22";
+
+            sRPr += L"<w:sz w:val=\"" + sSz + L"\"/>" + L"<w:szCs w:val=\"" + sSz + L"\"/>";
+        }
 
     sRPr += L"</w:rPr>";
 

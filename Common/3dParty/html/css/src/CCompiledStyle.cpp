@@ -196,7 +196,7 @@ namespace NSCSS
         std::wstring sValue;
         int nPosition = 0;
 
-        while(nPosition < sStyle.length())
+        while(nPosition < (int)sStyle.length())
         {
             while (sStyle[nPosition] != L':' && nPosition < (int)sStyle.length())
             {
@@ -204,15 +204,23 @@ namespace NSCSS
                     sProperty += sStyle[nPosition];
                 nPosition++;
             }
-            while (sStyle[nPosition] != L';' && nPosition < (int)sStyle.length())
+            nPosition++;
+            while (sStyle[nPosition] != L';' && nPosition < (int)sStyle.length() &&
+                   sStyle[nPosition] != L'\'' && sStyle[nPosition] != L'"')
             {
-                if (!isspace(sStyle[nPosition]))
+//                if (!isspace(sStyle[nPosition]))
                     sValue += sStyle[nPosition];
                 nPosition++;
             }
-
+            nPosition++;
             if (!sProperty.empty() && !sValue.empty())
+            {
+                if (sValue.find(L'!') != std::wstring::npos)
+                    sValue = sValue.substr(0, sValue.find(L'!') - 1);
                 AddPropSel(sProperty, sValue);
+                sProperty.clear();
+                sValue.clear();
+            }
         }
     }
 

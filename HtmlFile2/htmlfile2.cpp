@@ -1032,6 +1032,7 @@ private:
                 {
                     if(sRef[0] == L'#')
                     {
+                        bCross = true;
                         sRef = sRef.substr(1);
                         continue;
                     }
@@ -1149,6 +1150,7 @@ private:
             else if(sSrcM.substr(0, nLen) == L"http" || !m_sBase.empty())
             {
                 sImageName = NSFile::GetFileName(sSrcM);
+                sImageName.erase(std::remove_if(sImageName.begin(), sImageName.end(), [loc = std::locale{}] (wchar_t ch) { return std::isspace(ch, loc); }), sImageName.end());
                 CFileDownloader oDownloadImg(m_sBase + sSrcM, false);
                 oDownloadImg.SetFilePath(m_sDst + L"/word/media/i" + sImageName);
                 bRes = oDownloadImg.DownloadSync();
@@ -1156,11 +1158,11 @@ private:
             // Картинка по относительному пути
             else
             {
-                size_t nSrcM = sSrcM.rfind(L"/") + 1;
-                sImageName = sSrcM.substr(nSrcM);
+                sImageName = NSFile::GetFileName(sSrcM);
+                sImageName.erase(std::remove_if(sImageName.begin(), sImageName.end(), [loc = std::locale{}] (wchar_t ch) { return std::isspace(ch, loc); }), sImageName.end());
                 bRes = NSFile::CFileBinary::Copy(m_sSrc + L"/" + sSrcM, m_sDst + L"/word/media/i" + sImageName);
                 if(!bRes)
-                    bRes = NSFile::CFileBinary::Copy(m_sSrc + L"/" + sImageName, m_sDst + L"/word/media/i" + sImageName);
+                    bRes = NSFile::CFileBinary::Copy(m_sSrc + L"/" + NSFile::GetFileName(sSrcM), m_sDst + L"/word/media/i" + sImageName);
             }
 
             if(bRes)

@@ -720,6 +720,7 @@ private:
                 readTable(oXml, sSubClass, sRStyle, bBdo, oLi, bWasP, bWasPPr);
                 *oXml += L"<w:p>";
                 bWasP = true;
+                bWasPPr = false;
             }
             // Текст с границами
             else if(sName == L"textarea")
@@ -966,7 +967,10 @@ private:
                 continue;
             }
             if(sName != L"li" && sName != L"option")
+            {
+                readStream(oXml, sSelectors, sRStyle, bBdo, oLi, bWasP, bWasPPr);
                 continue;
+            }
             if(!bWasP)
             {
                 oXml->WriteString(L"</w:p><w:p>");
@@ -1024,6 +1028,15 @@ private:
             if(sName == L"href")
             {
                 sRef = m_oLightReader.GetText();
+                if(sRef.length() > 1)
+                {
+                    if(sRef[0] == L'#')
+                    {
+                        sRef = sRef.substr(1);
+                        continue;
+                    }
+                }
+
                 size_t nSrc = sRef.rfind(L"/");
                 if(nSrc == std::wstring::npos)
                     nSrc = 0;
@@ -1039,11 +1052,23 @@ private:
                 if(it != m_sSrcs.end())
                 {
                     bCross = true;
-                    it->second.push_back(L"cHyp" + std::to_wstring(m_nHyperlinkId));
+                    sRef = L"cHyp" + std::to_wstring(m_nHyperlinkId++);
+                    it->second.push_back(sRef);
                 }
             }
             else if(sName == L"title")
                 sTitle = m_oLightReader.GetText();
+            else if(sName == L"name")
+            {
+                std::wstring sCrossId = std::to_wstring(m_nCrossId++);
+                oXml->WriteString(L"<w:bookmarkStart w:id=\"");
+                oXml->WriteString(sCrossId);
+                oXml->WriteString(L"\" w:name=\"");
+                oXml->WriteString(m_oLightReader.GetText());
+                oXml->WriteString(L"\"/><w:bookmarkEnd w:id=\"");
+                oXml->WriteString(sCrossId);
+                oXml->WriteString(L"\"/>");
+            }
         }
         m_oLightReader.MoveToElement();
 
@@ -1054,7 +1079,10 @@ private:
 
         // Перекрестная ссылка внутри файла
         if(bCross)
-            *oXml += L"<w:hyperlink w:tooltip=\"Current Document\" w:anchor=\"cHyp";
+        {
+            *oXml += L"<w:hyperlink w:tooltip=\"Current Document\" w:anchor=\"";
+            *oXml += sRef;
+        }
         // Внешняя ссылка
         else
         {
@@ -1069,8 +1097,8 @@ private:
             *oXml += L"<w:hyperlink w:tooltip=\"";
             oXml->WriteEncodeXmlString(sTitle);
             *oXml += L"\" r:id=\"rHyp";
+            *oXml += std::to_wstring(m_nHyperlinkId++);
         }
-        *oXml += std::to_wstring(m_nHyperlinkId++);
         *oXml += L"\">";
         bWasP = false;
         readStream(oXml, sSelectors, sRStyle += L"<w:rStyle w:val=\"a\"/>", bBdo, oLi, bWasP, bWasPPr);

@@ -2424,43 +2424,18 @@ void BinaryStyleTableWriter::WriteStylesContent(OOX::CStyles& styles)
 	if(false != styles.m_oDocDefaults.IsInit())
 	{
 		const OOX::CDocDefaults& oDocDefaults = styles.m_oDocDefaults.get();
-
-		//выставялем в качестве default настроек, те что word выставляет если нет тегов w:docDefaults
-		//default pPr
-		OOX::Logic::CParagraphProperty oWordDefParPr;
-		oWordDefParPr.m_oSpacing.Init();
-		oWordDefParPr.m_oSpacing->m_oAfter.Init();
-		oWordDefParPr.m_oSpacing->m_oAfter->FromPoints(0);
-		oWordDefParPr.m_oSpacing->m_oBefore.Init();
-		oWordDefParPr.m_oSpacing->m_oBefore->FromPoints(0);
-		oWordDefParPr.m_oSpacing->m_oLineRule.Init();
-		oWordDefParPr.m_oSpacing->m_oLineRule->SetValue(SimpleTypes::linespacingruleAuto);
-		oWordDefParPr.m_oSpacing->m_oLine.Init();
-		oWordDefParPr.m_oSpacing->m_oLine->FromPoints(12);//240 twips
-		if(false != oDocDefaults.m_oParPr.IsInit())
-			oWordDefParPr = OOX::Logic::CParagraphProperty::Merge(oWordDefParPr, oDocDefaults.m_oParPr.get());
-
-		nCurPos = m_oBcw.WriteItemStart(c_oSer_st::DefpPr);
-		bpPrs.Write_pPr(oWordDefParPr);
-		m_oBcw.WriteItemEnd(nCurPos);
-
-		//default rPr
-		OOX::Logic::CRunProperty oWordDefTextPr;
-		oWordDefTextPr.m_oRFonts.Init();
-		oWordDefTextPr.m_oRFonts->m_sAscii.Init();
-		std::wstring sAscii = brPrs.m_oFontProcessor.getFont(std::wstring(_T("Times New Roman")));
-		oWordDefTextPr.m_oRFonts->m_sAscii = sAscii;
-		if(NULL != m_oBcw.m_pEmbeddedFontsManager)
-			m_oBcw.m_pEmbeddedFontsManager->CheckFont(sAscii, brPrs.m_oFontProcessor.getFontManager());
-		oWordDefTextPr.m_oSz.Init();
-		oWordDefTextPr.m_oSz->m_oVal.Init();
-		oWordDefTextPr.m_oSz->m_oVal->FromPoints(10);
-
-		if(false != oDocDefaults.m_oRunPr.IsInit())
-			oWordDefTextPr = OOX::Logic::CRunProperty::Merge(oWordDefTextPr, oDocDefaults.m_oRunPr.get());
-		nCurPos = m_oBcw.WriteItemStart(c_oSer_st::DefrPr);
-		brPrs.Write_rPr(&oWordDefTextPr);
-		m_oBcw.WriteItemEnd(nCurPos);
+		if (oDocDefaults.m_oParPr.IsInit())
+		{
+			nCurPos = m_oBcw.WriteItemStart(c_oSer_st::DefpPr);
+			bpPrs.Write_pPr(oDocDefaults.m_oParPr.get());
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+		if (oDocDefaults.m_oRunPr.IsInit())
+		{
+			nCurPos = m_oBcw.WriteItemStart(c_oSer_st::DefrPr);
+			brPrs.Write_rPr(oDocDefaults.m_oRunPr.GetPointer());
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
 	}
 	//styles
 	nCurPos = m_oBcw.WriteItemStart(c_oSer_st::Styles);

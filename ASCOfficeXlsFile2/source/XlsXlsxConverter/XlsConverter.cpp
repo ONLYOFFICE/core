@@ -1042,10 +1042,14 @@ void XlsConverter::convert(XLS::IMDATA * imdata)
 
 	std::wstring type_image;
 
-	if (imdata->cf == 0x09 && imdata->env == 0x01)	type_image = L".wmf";
-	if (imdata->cf == 0x09 && imdata->env == 0x02)	type_image = L".pict";
-	if (imdata->cf == 0x09)							type_image = L"dib_data";
-	if (imdata->cf == 0x0e)							type_image = L"";			//native aka unknown
+	if (imdata->cf == 0x09)
+	{
+			 if (imdata->env == 0x01)	type_image = L".wmf";
+		else if (imdata->env == 0x02)	type_image = L".pict";
+		else							type_image = L"dib_data";
+	}
+	else if (imdata->cf == 0x0e)		type_image = L"";			//native aka unknown
+	else if (imdata->cf == 0x02)		type_image = L"";			//native aka unknown
 
 	std::wstring target = WriteMediaFile(imdata->pData.get(), imdata->lcb, type_image);
 	xlsx_context->get_drawing_context().set_fill_texture(target);

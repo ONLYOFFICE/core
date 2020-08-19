@@ -55,6 +55,8 @@ public:
     void end_format();
 
     std::wstring get_last_format() const;
+	std::wstring get_last_date_format() const;
+	std::wstring get_last_time_format() const;
 
     void start_complex_format();
     void add_format(std::wstring const & cond, std::wstring const & format);

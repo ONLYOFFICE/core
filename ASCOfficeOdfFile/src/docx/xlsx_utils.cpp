@@ -165,10 +165,11 @@ bool parseBoolVal(const std::wstring & str)
 {
     std::wstring s = str;
     boost::algorithm::to_lower(s);
-    if (L"true" == str || L"1" == str)
-        return true;
-    else
+    
+	if (L"false" == str || L"0" == str)
         return false;
+    else
+        return true;
 }
 
 std::wstring cellType2Str(XlsxCellType::type type)

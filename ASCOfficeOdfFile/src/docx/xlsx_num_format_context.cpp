@@ -67,6 +67,8 @@ public:
     }
 
     std::wstring last_format_;
+	std::wstring last_date_format_ = L"yyyy.mmmm.dd";
+	std::wstring last_time_format_ = L"hh:mm:ss";
 
     bool in_convert_style_;
 };
@@ -104,13 +106,26 @@ void num_format_context::end_format()
 {    
     impl_->last_format_ = impl_->stream_.str();
     impl_->reset_current();
+
+	if (bDate)
+		impl_->last_date_format_ = impl_->last_format_;
+	
+	if (bTime)
+		impl_->last_time_format_ = impl_->last_format_;
 }
 
 std::wstring num_format_context::get_last_format() const
 {
     return impl_->last_format_;
 }
-
+std::wstring num_format_context::get_last_date_format() const
+{
+    return impl_->last_date_format_;
+}
+std::wstring num_format_context::get_last_time_format() const
+{
+    return impl_->last_time_format_;
+}
 void num_format_context::start_complex_format()
 {
     impl2_->complex_number_format_.reset();

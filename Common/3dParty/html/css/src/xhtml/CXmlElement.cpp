@@ -297,6 +297,14 @@ void CXmlElement::Clear()
         m_sInd.clear();
         m_sJc.clear();
         m_sShd.clear();
+
+        // <pBdr>
+            m_sTopBorder.clear();
+            m_sLeftBorder.clear();
+            m_sBottomBorder.clear();
+            m_sRightBorder.clear();
+        // </pBdr>
+
     // </pPr>
 
     // <tblPr>
@@ -317,6 +325,7 @@ void CXmlElement::Clear()
             m_sBorderInsideV.clear();
         // </tblBorders>
     // </tblPr>
+
 }
 
 void CXmlElement::SetType(std::wstring sType)
@@ -589,7 +598,6 @@ CXmlElement& CXmlElement::operator+=(const CXmlElement &oElement)
     return *this;
 }
 
-#include <iostream>
 std::wstring CXmlElement::GetStyle()
 {
     std::wstring sStyle = L"<w:style ";

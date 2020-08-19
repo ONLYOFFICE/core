@@ -159,6 +159,13 @@ namespace NSCSS
                             m_sStyle = oTempXmlElement.GetStyle();
 
                         m_sStyle += oXmlElement.GetStyle();
+
+                        oXmlElement.Clear();
+                        oXmlElement.SetBasedOn(sParentName);
+
+                        m_sStyle += oXmlElement.GetStyle();
+                        m_sId = oStyle.GetId();
+
                         return;
                     }
                     break;

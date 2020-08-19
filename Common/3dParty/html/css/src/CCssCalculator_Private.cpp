@@ -1051,6 +1051,7 @@ namespace NSCSS
 
         if (!sTempString.empty())
             arValues.push_back(sTempString);
+
         std::wstring sValueString;
 
         for (int i = 0; i < (int)arValues.size(); i++)
@@ -1060,6 +1061,7 @@ namespace NSCSS
                 sValueString += arValues[i];
                 continue;
             }
+
             if (arValues[i].find(L'.') != std::wstring::npos)
             {
                 if (arValues[i].find(L'.') == 0)
@@ -1122,7 +1124,6 @@ namespace NSCSS
             {
                 return ConvertPxToIn(dValue);
             }
-            case Default:
             case Millimeter:
             {
                 return ConvertPxToMm(dValue);
@@ -1135,6 +1136,7 @@ namespace NSCSS
             {
                 return ConvertPxToPc(dValue);
             }
+            case Default:
             case Pixel:
             default:
                 break;
@@ -1213,6 +1215,7 @@ namespace NSCSS
         double dValue = wcstod(sConvertValue.c_str(), NULL);
         switch (m_UnitMeasure)
         {
+            case Default:
             case Pixel:
             {
                 return ConvertCmToPx(dValue);
@@ -1221,7 +1224,6 @@ namespace NSCSS
             {
                 return ConvertCmToIn(dValue);
             }
-            case Default:
             case Millimeter:
             {
                 return ConvertCmToMm(dValue);
@@ -1312,6 +1314,7 @@ namespace NSCSS
         {
             case Cantimeter:
                 return ConvertMmToCm(dValue);
+            case Default:
             case Pixel:
             {
                 return ConvertMmToPx(dValue);
@@ -1328,7 +1331,7 @@ namespace NSCSS
             {
                 return ConvertMmToPc(dValue);
             }
-            case Default:
+
             case Millimeter:
             default:
                 break;
@@ -1404,6 +1407,7 @@ namespace NSCSS
         double dValue = wcstod(sConvertValue.c_str(), NULL);
         switch (m_UnitMeasure)
         {
+            case Default:
             case Pixel:
             {
                 return  ConvertInToPx(dValue);
@@ -1414,7 +1418,6 @@ namespace NSCSS
             }
             case Inch:
                 break;
-            case Default:
             case Millimeter:
             {
                 return ConvertInToMm(dValue);
@@ -1499,6 +1502,7 @@ namespace NSCSS
         {
             case Cantimeter:
                 return ConvertPtToCm(dValue);
+            case Default:
             case Pixel:
             {
                 return ConvertPtToPx(dValue);
@@ -1507,7 +1511,6 @@ namespace NSCSS
             {
                 return ConvertPtToIn(dValue);
             }
-            case Default:
             case Millimeter:
             {
                 return ConvertPtToMm(dValue);
@@ -1589,6 +1592,7 @@ namespace NSCSS
         {
             case Cantimeter:
                 return ConvertPcToCm(dValue);
+            case Default:
             case Pixel:
             {
                 return ConvertPcToPx(dValue);
@@ -1597,7 +1601,6 @@ namespace NSCSS
             {
                 return ConvertPcToIn(dValue);
             }
-            case Default:
             case Millimeter:
             {
                 return ConvertPcToMm(dValue);

@@ -37,6 +37,14 @@ class CXmlElement
         std::wstring m_sInd;
         std::wstring m_sJc;
         std::wstring m_sShd;
+
+        // <pBdr>
+            std::wstring m_sTopBorder;
+            std::wstring m_sLeftBorder;
+            std::wstring m_sBottomBorder;
+            std::wstring m_sRightBorder;
+        // </pBdr>
+
     // </pPr>
 
     // <tblPr>
@@ -57,13 +65,6 @@ class CXmlElement
             std::wstring m_sBorderInsideV;
         // </tblBorders>
     // </tblPr>
-
-    // <pBdr>
-        std::wstring m_sTopBorder;
-        std::wstring m_sLeftBorder;
-        std::wstring m_sBottomBorder;
-        std::wstring m_sRightBorder;
-    // </pBdr>
 
 public:
     CXmlElement();

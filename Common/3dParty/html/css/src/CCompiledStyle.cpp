@@ -198,14 +198,14 @@ namespace NSCSS
 
         while(nPosition < (int)sStyle.length())
         {
-            while (sStyle[nPosition] != L':' && nPosition < (int)sStyle.length())
+            while (nPosition < (int)sStyle.length() && sStyle[nPosition] != L':')
             {
                 if (!isspace(sStyle[nPosition]))
                     sProperty += sStyle[nPosition];
                 nPosition++;
             }
             nPosition++;
-            while (sStyle[nPosition] != L';' && nPosition < (int)sStyle.length() &&
+            while (nPosition < (int)sStyle.length() && sStyle[nPosition] != L';' &&
                    sStyle[nPosition] != L'\'' && sStyle[nPosition] != L'"')
             {
 //                if (!isspace(sStyle[nPosition]))

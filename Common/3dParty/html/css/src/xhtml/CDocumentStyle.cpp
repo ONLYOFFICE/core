@@ -59,16 +59,13 @@ namespace NSCSS
     {
         if(oStyle.GetId().empty())
         {
-            CXmlElement oXmlElement;
-            oXmlElement.CreateDefaultElement(L"normal");
             m_sId = L"normal";
-            m_sStyle = oXmlElement.GetStyle();
+            m_sStyle.clear();
             return;
         }
 
         CXmlElement oXmlElement;
 
-        bool bIsStandard = false;
         std::wstring sName = oStyle.GetId();
 
         if (sName.find(L'-') != std::wstring::npos)
@@ -80,20 +77,19 @@ namespace NSCSS
 
         if (std::find(m_arUsedStyles.begin(), m_arUsedStyles.end(), sName) != m_arUsedStyles.cend())
         {
-            if (sName == oStyle.GetId() && oStyle.Empty())
+            if (oStyle.Empty())
             {
                 m_sId = sName;
-                m_sStyle = L"";
+                m_sStyle.clear();
                 return;
             }
             oXmlElement.Clear();
             oXmlElement.SetBasedOn(sName);
         }
-        else if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sName) != m_arStandardStyles.end())
+        else if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sName) != m_arStandardStyles.cend())
         {
-            bIsStandard = true;
+            oXmlElement.CreateDefaultElement(sName);
             CXmlElement oTempXmlElement;
-            oTempXmlElement.Clear();
 
             if (sName[0] == L'h' && isdigit(sName[1]) && sName.length() == 2)
             {
@@ -118,27 +114,18 @@ namespace NSCSS
             if (!oTempXmlElement.Empty())
                 m_sStyle = oTempXmlElement.GetStyle();
 
-            oXmlElement.CreateDefaultElement(sName);
-            m_sStyle += oXmlElement.GetStyle();
+            m_sStyle += oXmlElement.GetStyle();\
+            m_sId = sName;
+
+            m_arUsedStyles.push_back(sName);
+
+            if (oStyle.Empty())
+                return;
 
             oXmlElement.Clear();
             oXmlElement.SetBasedOn(sName);
-            m_arUsedStyles.push_back(sName);
-            bIsStandard = true;
         }
-
-
-        if (oStyle.Empty() && bIsStandard)
-        {
-            m_sId = sName;
-            m_sStyle = L"";
-//            m_sId = oStyle.GetId();
-//            m_sStyle += oXmlElement.GetStyle();
-
-            return;
-        }
-
-        if (oStyle.Empty() && !bIsStandard)
+        else if (oStyle.Empty())
         {
             m_sId = L"normal";
             m_sStyle = L"";
@@ -150,6 +137,8 @@ namespace NSCSS
         oXmlElement.SetStyleId(m_sId);
         oXmlElement.SetName(m_sId);
         oXmlElement.SetQFormat(true);
+        oXmlElement.SetType(L"paragraph");
+        oXmlElement.SetCustomStyle(L"1");
 
         if (!oStyle.GetColor().empty())
             oXmlElement.SetColor(oStyle.GetColor());
@@ -246,7 +235,7 @@ namespace NSCSS
 
 //        if (!oStyle.GetBackgroundColor().empty())
 //            m_sStyle += L"<w:background w:color=\"" + oStyle.GetBackgroundColor() + L"\"/>";
-
+        m_arUsedStyles.push_back(m_sId);
         m_sStyle += oXmlElement.GetStyle();
     }
 }

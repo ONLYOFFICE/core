@@ -13,7 +13,7 @@ CXmlElement::CXmlElement(std::wstring sNameDefaultElement)
 bool CXmlElement::Empty()
 {
     return m_sType.empty() && m_sStyleId.empty() && m_sDefault.empty() && m_sCustomStyle.empty() &&
-           m_sS.empty() && m_sName.empty() && m_sBasedOn.empty() && m_sLink.empty() && m_sUiPriority.empty() &&
+           m_sS.empty() && m_sName.empty() && /*m_sBasedOn.empty() &&*/ m_sLink.empty() && m_sUiPriority.empty() &&
            !m_bQFormat && !m_bSemiHidden && !m_bUnhideWhenUsed && !m_bB && !m_bI && m_sU.empty() && m_sRFonts.empty() &&
            m_sColor.empty() && m_sSz.empty() && !m_bKeepLines && !m_bKeepNext && m_sSpacing.empty() &&
            m_sOutlineLvl.empty() && m_sContextualSpacing.empty() && m_sInd.empty() && m_sJc.empty() &&
@@ -296,6 +296,25 @@ void CXmlElement::Clear()
         m_sInd.clear();
         m_sJc.clear();
     // </pPr>
+
+    // <tblPr>
+        m_sTblInd.clear();
+        // <tblCellMar>
+            m_sCellTop.clear();
+            m_sCellLeft.clear();
+            m_sCellBottom.clear();
+            m_sCellRight.clear();
+        // <tblCellMar>
+
+        // <tblBorders>
+            m_sBorderTop.clear();
+            m_sBorderLeft.clear();
+            m_sBorderBottom.clear();
+            m_sBorderRight.clear();
+            m_sBorderInsideH.clear();
+            m_sBorderInsideV.clear();
+        // </tblBorders>
+    // </tblPr>
 }
 
 void CXmlElement::SetType(std::wstring sType)

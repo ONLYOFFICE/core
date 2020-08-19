@@ -804,7 +804,6 @@ namespace NSCSS
     CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const CNode &oNode, const std::vector<CNode> &oParents, UnitMeasure unitMeasure)
     {
         CCompiledStyle oStyle;
-//        std::wcout << oNode.m_sName << L" - " << oNode.m_sClass << L" - " << oNode.m_sId << L" - " << oNode.m_sStyle << std::endl;
 
         CCompiledStyle oParentStyles;
 
@@ -888,7 +887,7 @@ namespace NSCSS
         {
             std::wstring sClassName = oNode.m_sClass;
 
-            if (!sClassName.empty() && sClassName[0] != L'.')
+            if (sClassName[0] != L'.')
                 sClassName = L'.' + sClassName;
 
             std::wstring sIdName = oNode.m_sId;
@@ -950,7 +949,7 @@ namespace NSCSS
 
             std::wstring sIdName = oNode.m_sId;
 
-            if (sIdName[0] != L'#')
+            if (!sIdName.empty() && sIdName[0] != L'#')
                 sIdName = L'#' + sIdName;
 
             oStyle += oTempStyle;
@@ -976,6 +975,7 @@ namespace NSCSS
                 m_arStyleUsed.emplace(oStyle.GetId(), oStyle);
 
         }
+
         return oStyle;
     }
 
@@ -1082,8 +1082,11 @@ namespace NSCSS
             {
                 sValueString += ConvertEm(arValues[i]);
             }
-//            if (i < arValues.size() - 1)
-//                sValueString += L" ";
+            if (arValues[i].find(L';') != std::wstring::npos)
+                sValueString += L';';
+            else if (i < (int)arValues.size() - 1)
+                sValueString += L' ';
+
         }
 
         return sValueString;
@@ -1156,7 +1159,8 @@ namespace NSCSS
         if (dValue == 0)
             return L"0";
 
-        double _dValue = 25.4 / (double)m_nDpi * dValue;
+        double _dValue = dValue / ((double)m_nDpi / 25.4);
+//        double _dValue = 25.4 / (double)m_nDpi * dValue;
         std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"mm ";

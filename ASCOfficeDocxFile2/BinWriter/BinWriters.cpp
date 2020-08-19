@@ -886,7 +886,7 @@ void Binary_pPrWriter::Write_pPr(const OOX::Logic::CParagraphProperty& pPr)
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 		m_oBcw.m_oStream.WriteStringW(sStyleId);
 
-	}
+	} 
 	//Списки надо писать после стилей, т.к. при открытии в методах добавления списка проверяются стили
 	//Списки могут быть заданы с стилях.Это надо учитывать.
 //NumPr
@@ -1174,9 +1174,9 @@ void Binary_pPrWriter::WriteTabItem(const ComplexTypes::Word::CTabStop& TabItem,
 }
 void Binary_pPrWriter::WriteNumPr(const OOX::Logic::CNumPr& numPr, const OOX::Logic::CParagraphProperty& pPr)
 {
-	int nCurPos = 0, listNum = numPr.m_oNumID.IsInit() ? numPr.m_oNumID->m_oVal.get_value_or(0) : 0;
+	int nCurPos = 0, listNum = numPr.m_oNumID.IsInit() ? numPr.m_oNumID->m_oVal.get_value_or(0) : -1;
 	
-	if (m_oParamsWriter.m_pEmbeddedNumbering && listNum > 0)
+	if (m_oParamsWriter.m_pEmbeddedNumbering && listNum >= 0)
 	{
 		std::map<int, int>::iterator pFind = m_oParamsWriter.m_pNumbering->m_mapEmbeddedNames.back().find(listNum);
 
@@ -1224,7 +1224,7 @@ void Binary_pPrWriter::WriteNumPr(const OOX::Logic::CNumPr& numPr, const OOX::Lo
 		}
 	}
 	
-	if (listNum > 0)
+	if (listNum >= 0)
 	{
 	//pos	
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_pPrType::numPr_id);

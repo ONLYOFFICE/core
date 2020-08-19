@@ -26,8 +26,9 @@ namespace NSCSS
     {
         if (m_sId.empty())
             return L"";
-
-        return m_sStyle;
+        std::wstring sStyle = m_sStyle;
+        Clear();
+        return sStyle;
     }
 
     std::wstring CDocumentStyle::GetId()
@@ -75,6 +76,8 @@ namespace NSCSS
         if (sName.find(L'.') != std::wstring::npos)
             sName = sName.substr(0, sName.find(L'.'));
 
+
+
         if (std::find(m_arUsedStyles.begin(), m_arUsedStyles.end(), sName) != m_arUsedStyles.cend())
         {
             if (oStyle.Empty())
@@ -114,7 +117,7 @@ namespace NSCSS
             if (!oTempXmlElement.Empty())
                 m_sStyle = oTempXmlElement.GetStyle();
 
-            m_sStyle += oXmlElement.GetStyle();\
+            m_sStyle += oXmlElement.GetStyle();
             m_sId = sName;
 
             m_arUsedStyles.push_back(sName);
@@ -125,12 +128,50 @@ namespace NSCSS
             oXmlElement.Clear();
             oXmlElement.SetBasedOn(sName);
         }
+        else if (oStyle.GetParentsName().size() > 0)
+        {
+            for (std::wstring sParentName : oStyle.GetParentsName())
+            {
+                if (sParentName[0] == L'h' && isdigit(sParentName[1]) && sParentName.length() == 2)
+                {
+                    oXmlElement.Clear();
+                    oXmlElement.SetBasedOn(sParentName);
+
+                    CXmlElement oTempXmlElement;
+                    if (std::find(m_arUsedStyles.begin(), m_arUsedStyles.end(), sParentName) == m_arUsedStyles.cend())
+                    {
+
+                        std::wstring sCharName = L"title";
+                        sCharName += sName[1];
+                        sCharName += L"-c";
+                        if (std::find(m_arUsedStyles.begin(), m_arUsedStyles.end(), sCharName) == m_arUsedStyles.cend())
+                        {
+                            oTempXmlElement.CreateDefaultElement(sCharName);
+                        }
+                        oXmlElement.CreateDefaultElement(sParentName);
+                        m_arUsedStyles.push_back(sParentName);
+                    }
+
+                    if (oStyle.Empty())
+                    {
+                        m_sId = oStyle.GetId();
+                        if (!oTempXmlElement.Empty())
+                            m_sStyle = oTempXmlElement.GetStyle();
+
+                        m_sStyle += oXmlElement.GetStyle();
+                        return;
+                    }
+                    break;
+                }
+            }
+        }
         else if (oStyle.Empty())
         {
             m_sId = L"normal";
             m_sStyle = L"";
             return;
         }
+
 
         m_sId = oStyle.GetId();
 
@@ -179,7 +220,17 @@ namespace NSCSS
 
         if (!oStyle.GetTextIndent().empty())
             oXmlElement.SetInd(L"w:firstLine=\"" + oStyle.GetTextIndent() + L"\"");
-//            sPPr += L"<w:ind w:firstLine=\"" + oStyle.GetTextIndent() + L"\"/>";
+
+        if (!oStyle.GetBackgroundColor().empty())
+            oXmlElement.SetShd(oStyle.GetBackgroundColor());
+
+        if (!oStyle.GetBorder().empty())
+        {
+            oXmlElement.SetTopBorder(L"true");
+            oXmlElement.SetLeftBorder(L"true");
+            oXmlElement.SetBottomBorder(L"true");
+            oXmlElement.SetRightBorder(L"true");
+        }
 
 //        if (!oStyle.GetPadding().empty())
 //        {

@@ -36,6 +36,7 @@ class CXmlElement
         std::wstring m_sContextualSpacing;
         std::wstring m_sInd;
         std::wstring m_sJc;
+        std::wstring m_sShd;
     // </pPr>
 
     // <tblPr>
@@ -57,6 +58,12 @@ class CXmlElement
         // </tblBorders>
     // </tblPr>
 
+    // <pBdr>
+        std::wstring m_sTopBorder;
+        std::wstring m_sLeftBorder;
+        std::wstring m_sBottomBorder;
+        std::wstring m_sRightBorder;
+    // </pBdr>
 
 public:
     CXmlElement();
@@ -97,26 +104,34 @@ public:
         void SetContextualSpacing(std::wstring sContextualSpacing);
         void SetInd(std::wstring sInd);
         void SetJc(std::wstring sJc);
+        void SetShd(std::wstring sShd);
     // </pPr>
 
-        // <tblPr>
-            void SetTblInd(std::wstring sTablInd);
-            // <tblCellMar>
-                void SetCellTop(std::wstring sCellTop);
-                void SetCellLeft(std::wstring sCellLeft);
-                void SetCellBottom(std::wstring sCellBottom);
-                void SetCellRight(std::wstring sCellRight);
-            // <tblCellMar>
+    // <tblPr>
+        void SetTblInd(std::wstring sTblInd);
+        // <tblCellMar>
+            void SetCellTop(std::wstring sCellTop);
+            void SetCellLeft(std::wstring sCellLeft);
+            void SetCellBottom(std::wstring sCellBottom);
+            void SetCellRight(std::wstring sCellRight);
+        // <tblCellMar>
 
-            // <tblBorders>
-                void SetBorderTop(std::wstring sBorderTop);
-                void SetBorderLeft(std::wstring sBorderLeft);
-                void SetBorderBottom(std::wstring sBorderBottom);
-                void SetBorderRight(std::wstring sBorderRight);
-                void SetBorderInsideH(std::wstring sBorderInsideH);
-                void SetBorderInsideV(std::wstring sBorderInsideV);
-            // </tblBorders>
-        // </tblPr>
+        // <tblBorders>
+            void SetBorderTop(std::wstring sBorderTop);
+            void SetBorderLeft(std::wstring sBorderLeft);
+            void SetBorderBottom(std::wstring sBorderBottom);
+            void SetBorderRight(std::wstring sBorderRight);
+            void SetBorderInsideH(std::wstring sBorderInsideH);
+            void SetBorderInsideV(std::wstring sBorderInsideV);
+        // </tblBorders>
+    // </tblPr>
+
+    // <pBdr>
+        void SetTopBorder(std::wstring sTopBorder);
+        void SetLeftBorder(std::wstring sLeftBorder);
+        void SetBottomBorder(std::wstring sBottomBorder);
+        void SetRightBorder(std::wstring sRightBorder);
+    // </pBdr>
 
     std::wstring GetStyle();
 

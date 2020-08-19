@@ -842,6 +842,7 @@ namespace NSCSS
             // Сюда не должны никогда попадать
             return oStyle;
         }
+
         if (!oNode.m_sClass.empty())
         {
             std::wstring sClassName = oNode.m_sClass;
@@ -975,6 +976,17 @@ namespace NSCSS
                 m_arStyleUsed.emplace(oStyle.GetId(), oStyle);
 
         }
+
+        for (auto oParent : oParents)
+            oStyle.AddParent(oParent.m_sName);
+
+//        for (auto oItem : m_arStyleUsed)
+//            if (oItem.second == oStyle)
+//            {
+//                oStyle.Clear();
+//                oStyle.SetID(oItem.second.GetId());
+//                return oStyle;
+//            }
 
         return oStyle;
     }

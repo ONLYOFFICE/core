@@ -23,6 +23,7 @@ namespace NSCSS
         m_mStyle = oStyle.m_mStyle;
         m_sId = oStyle.m_sId;
         m_bNeedSave = oStyle.m_bNeedSave;
+        m_arParentsStyles = oStyle.m_arParentsStyles;
     }
 
     CCompiledStyle::~CCompiledStyle()
@@ -62,31 +63,19 @@ namespace NSCSS
         m_mStyle = oElement.m_mStyle;
         m_sId = oElement.m_sId;
         m_bNeedSave = oElement.m_bNeedSave;
+        m_arParentsStyles = oElement.m_arParentsStyles;
 
         return *this;
     }
 
-//    CCompiledStyle& CCompiledStyle::operator= (const CCompiledStyle *oElement)
-//    {
-//        m_mStyle = oElement->m_mStyle;
-//        m_sId = oElement->m_sId;
-
-//        return *this;
-//    }
 
     bool CCompiledStyle::operator==(const CCompiledStyle &oElement)
     {
-//        if (this->m_sId.empty() * oElement.m_sId.empty() == 0)
-//            return false;
-
-//        if (this->m_sId != oElement.m_sId)
-//            return false;
+        if (this->m_arParentsStyles != oElement.m_arParentsStyles)
+            return false;
 
         if (this->m_mStyle.size() != oElement.m_mStyle.size())
             return false;
-
-//        if (this->m_mStyle.size() == oElement.m_mStyle.size() == 0)
-//            return true;
 
         auto iterLeft = this->m_mStyle.begin();
         auto iterRight = oElement.m_mStyle.begin();
@@ -161,7 +150,7 @@ namespace NSCSS
     {
         m_mStyle.clear();
         m_sId.clear();
-        m_arParentsName.clear();
+//        m_arParentsStyles.clear();
         m_bNeedSave = true;
     }
 
@@ -224,6 +213,12 @@ namespace NSCSS
         }
     }
 
+    void CCompiledStyle::AddParent(std::wstring sParentName)
+    {
+        if (!sParentName.empty())
+            m_arParentsStyles.push_back(sParentName);
+    }
+
     bool CCompiledStyle::GetNeedSave()
     {
         return  m_bNeedSave;
@@ -232,6 +227,11 @@ namespace NSCSS
     void CCompiledStyle::SetNeedSave(bool bNeedSave)
     {
         m_bNeedSave = bNeedSave;
+    }
+
+    std::vector<std::wstring> CCompiledStyle::GetParentsName()
+    {
+        return m_arParentsStyles;
     }
 
     void CCompiledStyle::SetID(std::wstring sId)
@@ -922,6 +922,12 @@ namespace NSCSS
         {
             if (m_mStyle.find(L"background-color") != m_mStyle.cend())
                 return m_mStyle[L"background-color"];
+
+            std::wstring sBackground = GetBackground();
+            if (!sBackground.empty() && sBackground.find(L'#') != std::wstring::npos)
+            {
+                return sBackground.substr(sBackground.find(L"#"), sBackground.find(sBackground.find(L"#"), L' '));
+            }
             return L"";
         }
 
@@ -967,6 +973,15 @@ namespace NSCSS
             return L"";
         }
 
+        std::wstring CCompiledStyle::GetBackground()
+        {
+            std::wstring sBackground;
+            if (m_mStyle.find(L"background") != m_mStyle.cend())
+                return  m_mStyle[L"background"];
+
+            return L"";
+        }
+
     /* TEXT */
         std::wstring CCompiledStyle::GetTextAlign()
         {
@@ -996,8 +1011,6 @@ namespace NSCSS
             if (m_mStyle.find(L"border") != m_mStyle.cend())
                 return m_mStyle[L"border"];
 
-//            std::wstring sBorder = GetBorderWidth()
-
             return L"";
         }
 
@@ -1006,12 +1019,23 @@ namespace NSCSS
             if (m_mStyle.find(L"border-width") != m_mStyle.cend())
                 return m_mStyle[L"border-width"];
 
-            std::wstring sBorder = GetBorder();
+            return L"";
+        }
 
-            if (sBorder.empty())
-                return L"";
+        std::wstring CCompiledStyle::GetBorderStyle()
+        {
+            if (m_mStyle.find(L"border-style") != m_mStyle.cend())
+                return m_mStyle[L"border-style"];
 
+            return L"";
+        }
 
+        std::wstring CCompiledStyle::GetBorderColor()
+        {
+            if (m_mStyle.find(L"border-color") != m_mStyle.cend())
+                return m_mStyle[L"border-color"];
+
+            return L"";
         }
 
 }

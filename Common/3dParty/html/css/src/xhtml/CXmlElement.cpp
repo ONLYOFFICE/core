@@ -13,13 +13,14 @@ CXmlElement::CXmlElement(std::wstring sNameDefaultElement)
 bool CXmlElement::Empty()
 {
     return m_sType.empty() && m_sStyleId.empty() && m_sDefault.empty() && m_sCustomStyle.empty() &&
-           m_sS.empty() && m_sName.empty() && /*m_sBasedOn.empty() &&*/ m_sLink.empty() && m_sUiPriority.empty() &&
+           m_sS.empty() && m_sName.empty() && m_sBasedOn.empty() && m_sLink.empty() && m_sUiPriority.empty() &&
            !m_bQFormat && !m_bSemiHidden && !m_bUnhideWhenUsed && !m_bB && !m_bI && m_sU.empty() && m_sRFonts.empty() &&
            m_sColor.empty() && m_sSz.empty() && !m_bKeepLines && !m_bKeepNext && m_sSpacing.empty() &&
            m_sOutlineLvl.empty() && m_sContextualSpacing.empty() && m_sInd.empty() && m_sJc.empty() &&
            m_sTblInd.empty() && m_sCellTop.empty() && m_sCellLeft.empty() && m_sCellBottom.empty() &&
            m_sCellRight.empty() && m_sBorderTop.empty() && m_sBorderLeft.empty() && m_sBorderBottom.empty() &&
-           m_sBorderRight.empty() && m_sBorderInsideH.empty() && m_sBorderInsideV.empty();
+           m_sBorderRight.empty() && m_sBorderInsideH.empty() && m_sBorderInsideV.empty() && m_sShd.empty() &&
+           m_sTopBorder.empty() && m_sLeftBorder.empty() && m_sBottomBorder.empty() && m_sRightBorder.empty();
 }
 
 void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
@@ -295,6 +296,7 @@ void CXmlElement::Clear()
         m_sOutlineLvl.clear();
         m_sInd.clear();
         m_sJc.clear();
+        m_sShd.clear();
     // </pPr>
 
     // <tblPr>
@@ -437,6 +439,31 @@ void CXmlElement::SetJc(std::wstring sJc)
     m_sJc = sJc;
 }
 
+void CXmlElement::SetShd(std::wstring sShd)
+{
+    m_sShd = sShd;
+}
+
+void CXmlElement::SetTopBorder(std::wstring sTopBorder)
+{
+    m_sTopBorder = sTopBorder;
+}
+
+void CXmlElement::SetLeftBorder(std::wstring sLeftBorder)
+{
+    m_sLeftBorder = sLeftBorder;
+}
+
+void CXmlElement::SetBottomBorder(std::wstring sBottomBorder)
+{
+    m_sBottomBorder = sBottomBorder;
+}
+
+void CXmlElement::SetRightBorder(std::wstring sRightBorder)
+{
+    m_sRightBorder = sRightBorder;
+}
+
 CXmlElement& CXmlElement::operator+=(const CXmlElement &oElement)
 {
     if (!oElement.m_sType.empty())
@@ -511,9 +538,58 @@ CXmlElement& CXmlElement::operator+=(const CXmlElement &oElement)
     if (!oElement.m_sJc.empty())
         m_sJc = oElement.m_sJc;
 
+    if (!oElement.m_sShd.empty())
+        m_sShd = oElement.m_sShd;
+
+    if (!oElement.m_sTblInd.empty())
+        m_sTblInd = oElement.m_sTblInd;
+
+    if (!oElement.m_sCellTop.empty())
+        m_sCellTop = oElement.m_sCellTop;
+
+    if (!oElement.m_sCellLeft.empty())
+        m_sCellLeft = oElement.m_sCellLeft;
+
+    if (!oElement.m_sCellBottom.empty())
+        m_sCellBottom = oElement.m_sCellBottom;
+
+    if (!oElement.m_sCellRight.empty())
+        m_sCellRight = oElement.m_sCellRight;
+
+    if (!oElement.m_sBorderTop.empty())
+        m_sBorderTop = oElement.m_sBorderTop;
+
+    if (!oElement.m_sBorderLeft.empty())
+        m_sBorderLeft = oElement.m_sBorderLeft;
+
+    if (!oElement.m_sBorderBottom.empty())
+        m_sBorderBottom = oElement.m_sBorderBottom;
+
+    if (!oElement.m_sBorderRight.empty())
+        m_sBorderRight = oElement.m_sBorderRight;
+
+    if (!oElement.m_sBorderInsideH.empty())
+        m_sBorderInsideH = oElement.m_sBorderInsideH;
+
+    if (!oElement.m_sBorderInsideV.empty())
+        m_sBorderInsideV = oElement.m_sBorderInsideV;
+
+    if (!oElement.m_sTopBorder.empty())
+        m_sTopBorder = oElement.m_sTopBorder;
+
+    if (!oElement.m_sLeftBorder.empty())
+        m_sLeftBorder = oElement.m_sLeftBorder;
+
+    if (!oElement.m_sBottomBorder.empty())
+        m_sBottomBorder = oElement.m_sBottomBorder;
+
+    if (!oElement.m_sRightBorder.empty())
+        m_sRightBorder = oElement.m_sRightBorder;
+
     return *this;
 }
 
+#include <iostream>
 std::wstring CXmlElement::GetStyle()
 {
     std::wstring sStyle = L"<w:style ";
@@ -606,6 +682,28 @@ std::wstring CXmlElement::GetStyle()
         if (!m_sJc.empty())
             sPPr += L"<w:jc w:val=\"" + m_sJc + L"\"/>";
 
+        if (!m_sShd.empty())
+            sPPr += L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" + m_sShd + L"\"/>";
+
+        std::wstring sPBdr = L"<w:pBdr>";
+
+            if (!m_sTopBorder.empty())
+                sPBdr += L"<w:top w:val=\"single\" w:sz=\"4\" w:space=\"1\" w:color=\"auto\"/>";
+
+            if (!m_sLeftBorder.empty())
+                sPBdr += L"<w:left w:val=\"single\" w:sz=\"4\" w:space=\"1\" w:color=\"auto\"/>";
+
+            if (!m_sBottomBorder.empty())
+                sPBdr += L"<w:bottom w:val=\"single\" w:sz=\"4\" w:space=\"1\" w:color=\"auto\"/>";
+
+            if (!m_sRightBorder.empty())
+                sPBdr += L"<w:right w:val=\"single\" w:sz=\"4\" w:space=\"1\" w:color=\"auto\"/>";
+
+        sPBdr += L"</w:pBdr>";
+
+        if (sPBdr.length() > 17)
+            sPPr += sPBdr;
+
     sPPr += L"</w:pPr>";
 
 //    std::wstring sTbl
@@ -615,6 +713,7 @@ std::wstring CXmlElement::GetStyle()
 
     if (sRPr.length() > 15)
         sStyle += sRPr;
+
 
     sStyle += L"</w:style>";
     if (sStyle.length() > 15)

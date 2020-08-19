@@ -18,7 +18,7 @@ static std::string nonbreaking_inline  = "|a|abbr|acronym|b|bdo|big|cite|code|df
 static std::string empty_tags          = "|area|base|basefont|bgsound|br|command|col|embed|event-source|frame|hr|image|img|input|keygen|link|menuitem|meta|param|source|spacer|track|wbr|";
 static std::string preserve_whitespace = "|pre|textarea|script|style|";
 static std::string special_handling    = "|html|body|";
-static std::string no_entity_sub       = "|script|style|";
+static std::string no_entity_sub       = "|style|";
 static std::string treat_like_inline   = "|p|";
 
 static void prettyprint(GumboNode*, NSStringUtils::CStringBuilderA& oBuilder);

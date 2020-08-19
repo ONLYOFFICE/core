@@ -58,7 +58,19 @@ namespace Spreadsheet
 	}
 	CXlsxFlat::~CXlsxFlat()
 	{
-
+		m_pWorkbook.reset();
+		m_pStyles.reset();
+        m_pSharedStrings.reset();
+		
+		for (size_t i = 0; i < m_arWorksheets.size(); ++i)
+		{
+			if (m_arWorksheets[i])
+			{
+				delete m_arWorksheets[i];
+				m_arWorksheets[i] = NULL; 
+			}
+		}
+		m_arWorksheets.clear();
 	}
 	void CXlsxFlat::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{

@@ -273,8 +273,15 @@ namespace SVG
 {
     static double DoubleFromString(const std::wstring& strValue)
 	{
-        const wchar_t* buffer = strValue.c_str();
-        size_t nLen = strValue.length();
+        std::wstring strValueWithoutZero(strValue);
+        if(!strValueWithoutZero.empty())
+        {
+            if(strValueWithoutZero.front() == wchar_t('.'))
+                strValueWithoutZero.insert(strValueWithoutZero.begin(), wchar_t('0'));
+        }
+
+        const wchar_t* buffer = strValueWithoutZero.c_str();
+        size_t nLen = strValueWithoutZero.length();
 
         for (size_t i = 0; i < nLen; ++i)
 		{
@@ -282,7 +289,7 @@ namespace SVG
 				continue;
 			return 1.0;
 		}
-        return std::stod(strValue);
+        return std::stod(strValueWithoutZero);
 	}
 }
 
@@ -532,15 +539,21 @@ namespace SVG
                 return std::stol(value.substr(0, i));
 			}
 
-            return std::stod(value);
+            std::wstring valueWithoutZero(value);
+            if(valueWithoutZero.front() == L'.')
+                valueWithoutZero.insert(valueWithoutZero.begin(), L'0');
+            return std::stod(valueWithoutZero);
 		}
         static inline double DoubleValuePct(const std::wstring& sVal)
 		{
-            if (!sVal.empty())
+            std::wstring sValWithoutZero(sVal);
+            if (!sValWithoutZero.empty())
 			{
-                if (('%') == sVal[sVal.length() - 1])
+                if(sValWithoutZero.front() == L'.')
+                    sValWithoutZero.insert(sValWithoutZero.begin(), L'0');
+                if (('%') == sValWithoutZero[sValWithoutZero.length() - 1])
 				{
-                    return std::stod(sVal.substr(0, sVal.length() - 1)) * 0.01;
+                    return std::stod(sValWithoutZero.substr(0, sValWithoutZero.length() - 1)) * 0.01;
 				}
 			}
             else
@@ -548,7 +561,7 @@ namespace SVG
                 return 0;
             }
 
-            return std::stod(sVal);
+            return std::stod(sValWithoutZero);
 		}
         static bool DoubleValues(const std::wstring& SourceW, CArray<double>& Values)
 		{
@@ -570,7 +583,11 @@ namespace SVG
 					}
 
                     if (!number.empty())
+                    {
+                        if(number.front() == L'.')
+                            number.insert(number.begin(), L'0');
                         Values.Add(std::stod(number));
+                    }
 
                     number = L"";
 				}
@@ -582,13 +599,27 @@ namespace SVG
 				}	
 
                 if (!number.empty())
+                {
+                    if(number.front() == L'-')
+                    {
+                        if(number.length() > 1)
+                            if(number[1] == L'.')
+                                number.insert(1, L"0");
+                    }
+                    else if(number.front() == L'.')
+                        number.insert(number.begin(), L'0');
                     Values.Add(std::stod(number));
+                }
 
                 number = L"";
 			}
 
             if (!number.empty())
+            {
+                if(number.front() == L'.')
+                    number.insert(number.begin(), L'0');
                 Values.Add(std::stod(number));
+            }
 
 			return (0 != Values.GetSize());
 		}
@@ -1611,8 +1642,9 @@ namespace SVG
 				if (!sUrlRef.empty())
 				{
 					ISvgRef* pDef	=	NULL;
-					if (pStorage->GetRef(sUrlRef, pDef))
-						m_pRefFill	=	pDef;
+                    if(pStorage != NULL)
+                        if (pStorage->GetRef(sUrlRef, pDef))
+                            m_pRefFill	=	pDef;
 				}
 				else
 				{

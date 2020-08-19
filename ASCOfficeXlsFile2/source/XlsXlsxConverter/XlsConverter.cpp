@@ -232,8 +232,15 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 				output_document->get_xl_files().add_vba_project();
 			}
 		}
-		else 
-			bMacros = false;
+		else
+		{
+			bMacros = (xls_global_info->bMacrosExist & bMacros);
+
+			if (bMacros)
+			{
+				output_document->get_xl_files().set_macros_enabled();
+			}
+		}
 
 		XLS::CFStreamPtr controls = xls_file->getNamedStream(L"Ctls");
 		if(controls)

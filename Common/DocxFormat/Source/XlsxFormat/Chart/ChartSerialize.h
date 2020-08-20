@@ -932,7 +932,7 @@ namespace OOX{
 		class CT_StrRef
 		{
 		public:
-			std::wstring			* m_f;
+			std::wstring	* m_f;
 			CT_StrData		* m_strCache;
 			CT_extLst		* m_extLst;
 		/*--------------------------------------------------------------*/

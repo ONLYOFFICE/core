@@ -37,6 +37,7 @@
 #include <xml/nodetype.h>
 
 #include "common_attlists.h"
+#include "charttimeunit.h"
 
 #include "text_elements.h"
 
@@ -317,6 +318,7 @@ public:
 
     _CP_OPT(std::wstring)	chart_dimension_;
     _CP_OPT(std::wstring)	chart_name_;
+	_CP_OPT(std::wstring)	axis_type_;
 	common_chart_attlist	common_attlist_;
 };
 
@@ -624,9 +626,32 @@ public:
     common_chart_attlist		common_attlist_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(chart_stock_range_line);
 
+//chartooo:date-scale
+//////////////////////////////////////////////////////////////////////////////////////////////////
+class chart_date_scale : public office_element_impl<chart_date_scale>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeChartDateScale;
+    CPDOCCORE_DEFINE_VISITABLE();
 
+	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element( const office_element_ptr & child_element){}
+
+	virtual void serialize(std::wostream & _Wostream);
+
+	_CP_OPT(odf_types::chart_time_unit)	base_time_unit_;
+
+	_CP_OPT(unsigned int)				major_interval_value_;
+	_CP_OPT(odf_types::chart_time_unit)	major_interval_unit_;
+
+	_CP_OPT(unsigned int)				minor_interval_value_;
+ 	_CP_OPT(odf_types::chart_time_unit)	minor_interval_unit_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(chart_date_scale);
 }
 }

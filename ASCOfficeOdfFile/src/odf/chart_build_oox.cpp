@@ -1023,7 +1023,8 @@ void process_build_object::visit(chart_categories& val)
 {     
 	if (object_odf_context_.in_axis_)
 	{
-		object_odf_context_.axises_.back().type_ = 1;
+		if (object_odf_context_.axises_.back().type_ != 4)
+			object_odf_context_.axises_.back().type_ = 1;
 		object_odf_context_.axises_.back().bCategories_ = true;
 	}
 

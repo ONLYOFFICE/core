@@ -71,8 +71,8 @@ namespace NSCSS
 
     bool CCompiledStyle::operator==(const CCompiledStyle &oElement)
     {
-        if (this->m_arParentsStyles != oElement.m_arParentsStyles)
-            return false;
+//        if (this->m_arParentsStyles != oElement.m_arParentsStyles)
+//            return false;
 
         if (this->m_mStyle.size() != oElement.m_mStyle.size())
             return false;

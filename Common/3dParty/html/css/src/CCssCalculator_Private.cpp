@@ -5,6 +5,7 @@
 #include <wchar.h>
 #include <vector>
 #include <fstream>
+#include <cctype>
 
 #include "iostream"
 
@@ -272,7 +273,7 @@ namespace NSCSS
         {
             std::wstring sTempText;
             for (int i = 0; i < (int)sText.length(); i++)
-                if (!isspace(sText[i]))
+                if (!iswspace(sText[i]))
                     sTempText += sText[i];
 
             return sTempText;
@@ -633,7 +634,7 @@ namespace NSCSS
             {
                 std::string sTempSelector;
                 for (int i = 0; i < (int)sSelector.length(); i++)
-                    if (!isspace(sSelector[i]))
+                    if (!iswspace(sSelector[i]))
                         sTempSelector += sSelector[i];
                 _arSelectors.push_back(sTempSelector);
             }
@@ -780,7 +781,7 @@ namespace NSCSS
 
         for (size_t i = 0; i < sSelectors.length(); i++)
         {
-            if (isspace(sSelectors[i]))
+            if (iswspace(sSelectors[i]))
             {
                 if (!sSelector.empty())
                 {
@@ -803,13 +804,32 @@ namespace NSCSS
 
     CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const CNode &oNode, const std::vector<CNode> &oParents, UnitMeasure unitMeasure)
     {
+
+//        std::wcout << oNode.m_sName << L" - " << oNode.m_sClass << L" - " << oNode.m_sId << L" - " << oNode.m_sStyle << std::endl;
+
         CCompiledStyle oStyle;
+        oStyle.SetID(oNode.m_sName);
 
         CCompiledStyle oParentStyles;
 
         for (auto oParent : oParents)
         {
             oParentStyles += GetCompiledStyle(oParent, {}, unitMeasure);
+        }
+
+        if (!oNode.m_sName.empty() && !oNode.m_sClass.empty() &&
+             oNode.m_sId.empty() && oNode.m_sStyle.empty())
+        {
+            std::wstring sClassName = oNode.m_sClass;
+            if (sClassName[0] != L'.')
+                sClassName = L'.' + sClassName;
+
+            if (m_arStyleUsed.find(oNode.m_sName + sClassName) != m_arStyleUsed.cend())
+            {
+                oStyle.Clear();
+                oStyle.SetID(oNode.m_sName + sClassName);
+                return oStyle;
+            }
         }
 
         if (!oNode.m_sName.empty())
@@ -830,7 +850,7 @@ namespace NSCSS
 
                 CCompiledStyle _Temp = oParentStyles;
                 _Temp += oStyle;
-                _Temp.SetID(oStyle.GetId());
+                _Temp.SetID(oNode.m_sName);
                 _Temp.SetNeedSave(true);
 
                 if (!_Temp.Empty())
@@ -842,6 +862,8 @@ namespace NSCSS
             // Сюда не должны никогда попадать
             return oStyle;
         }
+
+//        std::wcout << L"Added 1: " << oNode.m_sName + L'.' + oNode.m_sClass << std::endl;
 
         if (!oNode.m_sClass.empty())
         {
@@ -861,6 +883,14 @@ namespace NSCSS
                 oStyle += m_arStyleUsed[sClassName];
                 oStyle.SetNeedSave(false);
                 oStyle.SetID(oNode.m_sName + sClassName);
+
+                CCompiledStyle _Temp = oParentStyles;
+                _Temp += oStyle;
+                _Temp.SetID(oNode.m_sName + sClassName);
+
+                if (!_Temp.Empty())
+                    m_arStyleUsed.emplace(oNode.m_sName + sClassName, _Temp);
+
             }
             else
             {
@@ -876,7 +906,7 @@ namespace NSCSS
 
                 CCompiledStyle _Temp = oParentStyles;
                 _Temp += oStyle;
-                _Temp.SetID(oStyle.GetId());
+                _Temp.SetID(oNode.m_sName + sClassName);
                 _Temp.SetNeedSave(true);
 
                 if (!_Temp.Empty())
@@ -922,7 +952,7 @@ namespace NSCSS
                     CCompiledStyle _Temp = oParentStyles;
                     _Temp += oStyle;
                     _Temp.SetNeedSave(true);
-                    _Temp.SetID(oStyle.GetId());
+                    _Temp.SetID(oNode.m_sName + sClassName + sIdName);
 
                     for (auto iter = m_arStyleUsed.begin(); iter != m_arStyleUsed.end(); iter++)
                         if (iter->second == _Temp)
@@ -987,7 +1017,6 @@ namespace NSCSS
 //                oStyle.SetID(oItem.second.GetId());
 //                return oStyle;
 //            }
-
         return oStyle;
     }
 
@@ -1039,7 +1068,7 @@ namespace NSCSS
         std::wstring sTempString;
         for (int  i = 0; i < (int)sValue.length(); i++)
         {
-            if (!isspace(sValue[i]) && sValue[i] != L':' && sValue[i] != L';')
+            if (!iswspace(sValue[i]) && sValue[i] != L':' && sValue[i] != L';')
                 sTempString += sValue[i];
             else if (!sTempString.empty())
             {

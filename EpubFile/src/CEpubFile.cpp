@@ -60,9 +60,9 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
             if (sName == L"metadata")
             {
                 m_oBookInfo.ReadInfo(oXmlLiteReader);
-                #ifdef _DEBUG
-                    m_oBookInfo.ShowInfo();
-                #endif
+//                #ifdef _DEBUG
+//                    m_oBookInfo.ShowInfo();
+//                #endif
             }
             else if (sName == L"manifest")
             {
@@ -97,9 +97,9 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     {
         oXmlLiteReader.ReadNextNode();
         m_oToc.ReadToc(oXmlLiteReader);
-        #ifdef _DEBUG
-            m_oToc.ShowToc();
-        #endif
+//        #ifdef _DEBUG
+//            m_oToc.ShowToc();
+//        #endif
 
 //        CDocxFile oDocxFile;
 //        oDocxFile.CreateTempFiles(sOutputFile, m_sTempDir);

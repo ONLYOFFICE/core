@@ -14,6 +14,8 @@ namespace NSCSS
         std::vector<std::wstring> m_arStandardStyles;
         std::vector<std::wstring> m_arUsedStyles;
 
+        CXmlElement AddParentsStyle(NSCSS::CCompiledStyle& oStyle);
+
     public:
         CDocumentStyle();
         ~CDocumentStyle();

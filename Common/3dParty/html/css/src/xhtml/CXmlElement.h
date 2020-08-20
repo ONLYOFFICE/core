@@ -106,6 +106,13 @@ public:
         void SetInd(std::wstring sInd);
         void SetJc(std::wstring sJc);
         void SetShd(std::wstring sShd);
+
+        // <pBdr>
+            void SetTopBorder(std::wstring sTopBorder);
+            void SetLeftBorder(std::wstring sLeftBorder);
+            void SetBottomBorder(std::wstring sBottomBorder);
+            void SetRightBorder(std::wstring sRightBorder);
+        // </pBdr>
     // </pPr>
 
     // <tblPr>
@@ -127,16 +134,11 @@ public:
         // </tblBorders>
     // </tblPr>
 
-    // <pBdr>
-        void SetTopBorder(std::wstring sTopBorder);
-        void SetLeftBorder(std::wstring sLeftBorder);
-        void SetBottomBorder(std::wstring sBottomBorder);
-        void SetRightBorder(std::wstring sRightBorder);
-    // </pBdr>
-
     std::wstring GetStyle();
+    std::wstring GetBasedOn();
 
     CXmlElement& operator+=(const CXmlElement& oElement);
+    CXmlElement &operator=(const CXmlElement& oelement);
 
 };
 

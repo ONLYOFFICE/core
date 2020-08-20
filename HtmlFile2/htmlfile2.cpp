@@ -1,11 +1,10 @@
 #include <string>
-#include <cctype>
+#include <cwctype>
 #include <map>
 #include <vector>
 #include <algorithm>
 #include <iostream>
 #include <fstream>
-#include <locale>
 
 #include "htmlfile2.h"
 #include "../Common/3dParty/html/htmltoxhtml.h"
@@ -441,7 +440,7 @@ public:
             // тэг style содержит стили для styles.xml
             else if(sName == L"style")
             {
-                std::wstring sText = content();
+                std::wstring sText = m_oLightReader.GetInnerXml();
                 std::string sConvertText = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sText.data(), (LONG)sText.length());
                 m_oStylesCalculator.AddStyles(sConvertText);
             }
@@ -585,64 +584,21 @@ private:
                     end = sText.end();
                 }
                 else
-                    end = std::unique(sText.begin(), sText.end(), [loc = std::locale{}] (wchar_t l, wchar_t r) { return std::isspace(l, loc) && std::isspace(r, loc); });
+                    end = std::unique(sText.begin(), sText.end(), [] (wchar_t l, wchar_t r) { return std::iswspace(l) && std::iswspace(r); });
 
                 sText = std::wstring(sText.begin(), end);
                 oXml->WriteEncodeXmlString(sText);
                 *oXml += L"</w:t></w:r>";
                 bWasP = false;
+                continue;
             }
+
             // Ссылки
-            else if(sName == L"a")
+            if(sName == L"a")
                 readLink(oXml, sSubClass, sRStyle, oTS, bWasP, bWasPPr);
             // Абревиатура, реализована как сноски
             else if(sName == L"abbr")
                 readAbbr(oXml, sSubClass, sRStyle, oTS, bWasP, bWasPPr);
-            // Адрес
-            else if(sName == L"address")
-            {
-                if(!bWasP)
-                {
-                    *oXml += L"</w:p><w:p>";
-                    bWasP = true;
-                    bWasPPr = false;
-                }
-                readStream(oXml, sSubClass, sRStyle + L"<w:i/>", oTS, bWasP, bWasPPr);
-                if(!bWasP)
-                {
-                    *oXml += L"</w:p><w:p>";
-                    bWasP = true;
-                    bWasPPr = false;
-                }
-            }
-            // Статья
-            // Боковой блок
-            // Выделенная цитата
-            // Скрытая информация
-            // Контейнер
-            // Заголовок скрытой информации
-            // ...
-            else if(sName == L"article" || sName == L"header" || sName == L"div" || sName == L"blockquote" || sName == L"main" ||
-                    sName == L"summary" || sName == L"footer" || sName == L"nav" || sName == L"figcaption" || sName == L"form" ||
-                    sName == L"details" || sName == L"option" || sName == L"dd"  || sName == L"fieldset"   || sName == L"p"    ||
-                    sName == L"section" || sName == L"figure" || sName == L"dl"  || sName == L"legend"     || sName == L"aside"||
-                    sName == L"dt"      || sName == L"map"    ||
-                    sName == L"h1" || sName == L"h2" || sName == L"h3" || sName == L"h4" || sName == L"h5" || sName == L"h6")
-            {
-                if(!bWasP)
-                {
-                    *oXml += L"</w:p><w:p>";
-                    bWasP = true;
-                    bWasPPr = false;
-                }
-                readStream(oXml, sSubClass, sRStyle, oTS, bWasP, bWasPPr);
-                if(!bWasP)
-                {
-                    *oXml += L"</w:p><w:p>";
-                    bWasP = true;
-                    bWasPPr = false;
-                }
-            }
             // Полужирный текст
             // Акцентированный текст
             else if(sName == L"b" || sName == L"strong")
@@ -696,19 +652,6 @@ private:
             // Зачеркнутый текст
             else if(sName == L"del" || sName == L"s")
                 readStream(oXml, sSubClass, sRStyle + L"<w:strike/>", oTS, bWasP, bWasPPr);
-            // Горизонтальная линия
-            else if(sName == L"hr")
-            {
-                if(!bWasP)
-                {
-                    *oXml += L"</w:p><w:p>";
-                    bWasP = true;
-                    bWasPPr = false;
-                }
-                *oXml += L"<w:pPr><w:pBdr><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr></w:pPr></w:p><w:p>";
-                bWasP = true;
-                bWasPPr = false;
-            }
             // Картинки
             else if(sName == L"img")
             {
@@ -722,6 +665,91 @@ private:
             // Выделенный текст, обычно выделяется желтым
             else if(sName == L"mark")
                 readStream(oXml, sSubClass, sRStyle + L"<w:highlight w:val=\"yellow\"/>", oTS, bWasP, bWasPPr);
+            // Цитата, выделенная кавычками, обычно выделяется курсивом
+            else if(sName == L"q")
+            {
+                *oXml += L"<w:r><w:t xml:space=\"preserve\">&quot;</w:t></w:r>";
+                readStream(oXml, sSubClass, sRStyle + L"<w:i/>", oTS, bWasP, bWasPPr);
+                *oXml += L"<w:r><w:t xml:space=\"preserve\">&quot;</w:t></w:r>";
+                bWasP = false;
+            }
+            // Текст верхнего регистра
+            else if(sName == L"rt" || sName == L"sup")
+                readStream(oXml, sSubClass, sRStyle + L"<w:vertAlign w:val=\"superscript\"/>", oTS, bWasP, bWasPPr);
+            // Уменьшает размер шрифта
+            else if(sName == L"small")
+                readStream(oXml, sSubClass, sRStyle + L"<w:sz w:val=\"18\"/>", oTS, bWasP, bWasPPr);
+            // Текст нижнего регистра
+            else if(sName == L"sub")
+                readStream(oXml, sSubClass, sRStyle + L"<w:vertAlign w:val=\"subscript\"/>", oTS, bWasP, bWasPPr);
+            // Игнорируются тэги выполняющие скрипт
+            else if(sName == L"template" || sName == L"canvas" || sName == L"video" || sName == L"math" || sName == L"rp"  ||
+                    sName == L"command"  || sName == L"iframe" || sName == L"embed" || sName == L"area" || sName == L"wbr" ||
+                    sName == L"keygen"   || sName == L"script" || sName == L"audio" )
+                continue;
+            // Без нового абзаца
+            else if(sName == L"datalist" || sName == L"button" || sName == L"label" || sName == L"data" || sName == L"object" ||
+                    sName == L"noscript" || sName == L"output" || sName == L"input" || sName == L"time" || sName == L"ruby"   ||
+                    sName == L"progress" || sName == L"hgroup" || sName == L"meter" || sName == L"span" || sName == L"audio"  )
+                readStream(oXml, sSubClass, sRStyle, oTS, bWasP, bWasPPr);
+            // Адрес
+            else if(sName == L"address")
+            {
+                if(!bWasP)
+                {
+                    *oXml += L"</w:p><w:p>";
+                    bWasP = true;
+                    bWasPPr = false;
+                }
+                readStream(oXml, sSubClass, sRStyle + L"<w:i/>", oTS, bWasP, bWasPPr);
+                if(!bWasP)
+                {
+                    *oXml += L"</w:p><w:p>";
+                    bWasP = true;
+                    bWasPPr = false;
+                }
+            }
+            // Статья
+            // Боковой блок
+            // Выделенная цитата
+            // Скрытая информация
+            // Контейнер
+            // Заголовок скрытой информации
+            // ...
+            else if(sName == L"article" || sName == L"header" || sName == L"div" || sName == L"blockquote" || sName == L"main" ||
+                    sName == L"summary" || sName == L"footer" || sName == L"nav" || sName == L"figcaption" || sName == L"form" ||
+                    sName == L"details" || sName == L"option" || sName == L"dd"  || sName == L"fieldset"   || sName == L"p"    ||
+                    sName == L"section" || sName == L"figure" || sName == L"dl"  || sName == L"legend"     || sName == L"aside"||
+                    sName == L"dt"      || sName == L"map"    ||
+                    sName == L"h1" || sName == L"h2" || sName == L"h3" || sName == L"h4" || sName == L"h5" || sName == L"h6")
+            {
+                if(!bWasP)
+                {
+                    *oXml += L"</w:p><w:p>";
+                    bWasP = true;
+                    bWasPPr = false;
+                }
+                readStream(oXml, sSubClass, sRStyle, oTS, bWasP, bWasPPr);
+                if(!bWasP)
+                {
+                    *oXml += L"</w:p><w:p>";
+                    bWasP = true;
+                    bWasPPr = false;
+                }
+            }
+            // Горизонтальная линия
+            else if(sName == L"hr")
+            {
+                if(!bWasP)
+                {
+                    *oXml += L"</w:p><w:p>";
+                    bWasP = true;
+                    bWasPPr = false;
+                }
+                *oXml += L"<w:pPr><w:pBdr><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr></w:pPr></w:p><w:p>";
+                bWasP = true;
+                bWasPPr = false;
+            }
             // Меню
             // Маркированный список
             else if(sName == L"menu" || sName == L"ul" || sName == L"select")
@@ -747,23 +775,6 @@ private:
                     bWasPPr = false;
                 }
             }
-            // Цитата, выделенная кавычками, обычно выделяется курсивом
-            else if(sName == L"q")
-            {
-                *oXml += L"<w:r><w:t xml:space=\"preserve\">&quot;</w:t></w:r>";
-                readStream(oXml, sSubClass, sRStyle + L"<w:i/>", oTS, bWasP, bWasPPr);
-                *oXml += L"<w:r><w:t xml:space=\"preserve\">&quot;</w:t></w:r>";
-                bWasP = false;
-            }
-            // Текст верхнего регистра
-            else if(sName == L"rt" || sName == L"sup")
-                readStream(oXml, sSubClass, sRStyle + L"<w:vertAlign w:val=\"superscript\"/>", oTS, bWasP, bWasPPr);
-            // Уменьшает размер шрифта
-            else if(sName == L"small")
-                readStream(oXml, sSubClass, sRStyle + L"<w:sz w:val=\"18\"/>", oTS, bWasP, bWasPPr);
-            // Текст нижнего регистра
-            else if(sName == L"sub")
-                readStream(oXml, sSubClass, sRStyle + L"<w:vertAlign w:val=\"subscript\"/>", oTS, bWasP, bWasPPr);
             // Векторная картинка
             else if(sName == L"svg")
             {
@@ -805,16 +816,6 @@ private:
                     bWasPPr = false;
                 }
             }
-            // Игнорируются тэги выполняющие скрипт
-            else if(sName == L"template" || sName == L"canvas" || sName == L"video" || sName == L"math" || sName == L"rp"  ||
-                    sName == L"command"  || sName == L"iframe" || sName == L"embed" || sName == L"area" || sName == L"wbr" ||
-                    sName == L"keygen"   || sName == L"script" || sName == L"audio" )
-                continue;
-            // Без нового абзаца
-            else if(sName == L"datalist" || sName == L"button" || sName == L"label" || sName == L"data" || sName == L"object" ||
-                    sName == L"noscript" || sName == L"output" || sName == L"input" || sName == L"time" || sName == L"ruby"   ||
-                    sName == L"progress" || sName == L"hgroup" || sName == L"meter" || sName == L"span" || sName == L"audio"  )
-                readStream(oXml, sSubClass, sRStyle, oTS, bWasP, bWasPPr);
             // Неизвестный тэг. Выделять ли его абзацем?
             else
                 readStream(oXml, sSubClass, sRStyle, oTS, bWasP, bWasPPr);
@@ -1217,7 +1218,7 @@ private:
                     continue;
 
                 sImageName = NSFile::GetFileName(sSrcM);
-                sImageName.erase(std::remove_if(sImageName.begin(), sImageName.end(), [loc = std::locale{}] (wchar_t ch) { return std::isspace(ch, loc); }), sImageName.end());
+                sImageName.erase(std::remove_if(sImageName.begin(), sImageName.end(), [] (wchar_t ch) { return std::iswspace(ch); }), sImageName.end());
                 CFileDownloader oDownloadImg(m_sBase + sSrcM, false);
                 oDownloadImg.SetFilePath(m_sDst + L"/word/media/i" + sImageName);
                 bRes = oDownloadImg.DownloadSync();
@@ -1226,7 +1227,7 @@ private:
             else
             {
                 sImageName = NSFile::GetFileName(sSrcM);
-                sImageName.erase(std::remove_if(sImageName.begin(), sImageName.end(), [loc = std::locale{}] (wchar_t ch) { return std::isspace(ch, loc); }), sImageName.end());
+                sImageName.erase(std::remove_if(sImageName.begin(), sImageName.end(), [] (wchar_t ch) { return std::iswspace(ch); }), sImageName.end());
 
                 std::wstring sExtention = NSFile::GetFileExtention(sSrcM);
                 if(sExtention != L"bmp" || sExtention != L"svg" || sExtention != L"jfif" || sExtention != L"wmf" || sExtention != L"gif" ||
@@ -1377,16 +1378,6 @@ private:
         pFonts->Release();
 
         ImageRels(oXml, sImageId, sImageId + L".png");
-    }
-
-    std::wstring content()
-    {
-        std::wstring sRes = L"";
-        if(m_oLightReader.IsEmptyNode())
-            return sRes;
-        if(m_oLightReader.ReadNextSiblingNode2(m_oLightReader.GetDepth()))
-            sRes = m_oLightReader.GetText();
-        return sRes;
     }
 
 };

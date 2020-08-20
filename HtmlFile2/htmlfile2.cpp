@@ -318,7 +318,7 @@ public:
         // m_oStylesXml += L"<w:style w:type=\"character\" w:styleId=\"p-c\" w:customStyle=\"1\"><w:name w:val=\"Paragraph_character\"/><w:link w:val=\"p\"/></w:style><w:style w:type=\"paragraph\" w:styleId=\"p\" w:customStyle=\"1\"><w:name w:val=\"Paragraph-p\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"p-c\"/><w:qFormat/><w:pPr><w:ind w:firstLine=\"567\"/><w:jc w:val=\"both\"/></w:pPr></w:style>";
         // m_oStylesXml += L"<w:style w:type=\"character\" w:styleId=\"div-c\" w:customStyle=\"1\"><w:name w:val=\"Paragraph_character\"/><w:link w:val=\"div\"/></w:style><w:style w:type=\"paragraph\" w:styleId=\"div\" w:customStyle=\"1\"><w:name w:val=\"Paragraph-div\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"div-c\"/><w:qFormat/><w:pPr><w:ind w:firstLine=\"567\"/><w:jc w:val=\"both\"/></w:pPr></w:style>";
         // Ссылки
-        // m_oStylesXml += L"<w:style w:type=\"character\" w:styleId=\"a\"><w:name w:val=\"Hyperlink\"/><w:uiPriority w:val=\"99\"/><w:unhideWhenUsed/><w:rPr><w:color w:val=\"0563C1\" w:themeColor=\"hyperlink\"/><w:u w:val=\"single\"/></w:rPr></w:style>";
+        m_oStylesXml += L"<w:style w:type=\"character\" w:styleId=\"a\"><w:name w:val=\"Hyperlink\"/><w:uiPriority w:val=\"99\"/><w:unhideWhenUsed/><w:rPr><w:color w:val=\"0563C1\" w:themeColor=\"hyperlink\"/><w:u w:val=\"single\"/></w:rPr></w:style>";
         // Таблицы
         m_oStylesXml += L"<w:style w:type=\"table\" w:default=\"1\" w:styleId=\"table-based\"><w:name w:val=\"Normal Table\"/><w:uiPriority w:val=\"99\"/><w:semiHidden/><w:unhideWhenUsed/><w:tblPr><w:tblInd w:w=\"0\" w:type=\"dxa\"/><w:tblCellMar><w:top w:w=\"0\" w:type=\"dxa\"/><w:left w:w=\"108\" w:type=\"dxa\"/><w:bottom w:w=\"0\" w:type=\"dxa\"/><w:right w:w=\"108\" w:type=\"dxa\"/></w:tblCellMar></w:tblPr></w:style><w:style w:type=\"table\" w:styleId=\"table\"><w:name w:val=\"Table Grid\"/><w:basedOn w:val=\"table-based\"/><w:uiPriority w:val=\"59\"/><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:tblPr><w:tblBorders><w:top w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/><w:left w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/><w:bottom w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/><w:right w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/><w:insideH w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/><w:insideV w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"000000\"/></w:tblBorders></w:tblPr></w:style>";
         // Сноски
@@ -587,7 +587,8 @@ private:
                 else
                     end = std::unique(sText.begin(), sText.end(), [loc = std::locale{}] (wchar_t l, wchar_t r) { return std::isspace(l, loc) && std::isspace(r, loc); });
 
-                oXml->WriteEncodeXmlString(std::wstring(sText.begin(), end));
+                sText = std::wstring(sText.begin(), end);
+                oXml->WriteEncodeXmlString(sText);
                 *oXml += L"</w:t></w:r>";
                 bWasP = false;
             }
@@ -625,7 +626,7 @@ private:
                     sName == L"summary" || sName == L"footer" || sName == L"nav" || sName == L"figcaption" || sName == L"form" ||
                     sName == L"details" || sName == L"option" || sName == L"dd"  || sName == L"fieldset"   || sName == L"p"    ||
                     sName == L"section" || sName == L"figure" || sName == L"dl"  || sName == L"legend"     || sName == L"aside"||
-                    sName == L"dt"      ||
+                    sName == L"dt"      || sName == L"map"    ||
                     sName == L"h1" || sName == L"h2" || sName == L"h3" || sName == L"h4" || sName == L"h5" || sName == L"h6")
             {
                 if(!bWasP)
@@ -772,11 +773,16 @@ private:
             // Таблицы
             else if(sName == L"table")
             {
+                auto it = std::find_if(sSubClass.begin(), sSubClass.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
+                if(it != sSubClass.end())
+                    *oXml += L"</w:hyperlink>";
                 *oXml += L"</w:p>";
                 bWasP = false;
                 bWasPPr = false;
                 readTable(oXml, sSubClass, sRStyle, oTS, bWasP, bWasPPr);
                 *oXml += L"<w:p>";
+                if(it != sSubClass.end())
+                    *oXml += L"<w:hyperlink>";
                 bWasP = true;
                 bWasPPr = false;
             }
@@ -801,8 +807,8 @@ private:
             }
             // Игнорируются тэги выполняющие скрипт
             else if(sName == L"template" || sName == L"canvas" || sName == L"video" || sName == L"math" || sName == L"rp"  ||
-                    sName == L"command"  || sName == L"iframe" || sName == L"embed" || sName == L"area" || sName == L"map" ||
-                    sName == L"keygen"   || sName == L"script" || sName == L"audio" || sName == L"wbr"  )
+                    sName == L"command"  || sName == L"iframe" || sName == L"embed" || sName == L"area" || sName == L"wbr" ||
+                    sName == L"keygen"   || sName == L"script" || sName == L"audio" )
                 continue;
             // Без нового абзаца
             else if(sName == L"datalist" || sName == L"button" || sName == L"label" || sName == L"data" || sName == L"object" ||
@@ -1157,7 +1163,7 @@ private:
             *oXml += std::to_wstring(m_nHyperlinkId++);
         }
         *oXml += L"\">";
-        bWasP = false;
+        bWasP = true;
         readStream(oXml, sSelectors, sRStyle += L"<w:rStyle w:val=\"a\"/>", oTS, bWasP, bWasPPr);
         *oXml += L"</w:hyperlink>";
         bWasP = false;
@@ -1205,6 +1211,11 @@ private:
             // Картинка в сети
             else if(sSrcM.substr(0, nLen) == L"http" || !m_sBase.empty())
             {
+                std::wstring sExtention = NSFile::GetFileExtention(sSrcM);
+                if(sExtention != L"bmp" || sExtention != L"svg" || sExtention != L"jfif" || sExtention != L"wmf" || sExtention != L"gif" ||
+                   sExtention != L"jpe" || sExtention != L"png" || sExtention != L"jpeg" || sExtention != L"jpg" )
+                    continue;
+
                 sImageName = NSFile::GetFileName(sSrcM);
                 sImageName.erase(std::remove_if(sImageName.begin(), sImageName.end(), [loc = std::locale{}] (wchar_t ch) { return std::isspace(ch, loc); }), sImageName.end());
                 CFileDownloader oDownloadImg(m_sBase + sSrcM, false);
@@ -1216,6 +1227,12 @@ private:
             {
                 sImageName = NSFile::GetFileName(sSrcM);
                 sImageName.erase(std::remove_if(sImageName.begin(), sImageName.end(), [loc = std::locale{}] (wchar_t ch) { return std::isspace(ch, loc); }), sImageName.end());
+
+                std::wstring sExtention = NSFile::GetFileExtention(sSrcM);
+                if(sExtention != L"bmp" || sExtention != L"svg" || sExtention != L"jfif" || sExtention != L"wmf" || sExtention != L"gif" ||
+                   sExtention != L"jpe" || sExtention != L"png" || sExtention != L"jpeg" || sExtention != L"jpg" )
+                    continue;
+
                 bRes = NSFile::CFileBinary::Copy(m_sSrc + L"/" + sSrcM, m_sDst + L"/word/media/i" + sImageName);
                 if(!bRes)
                     bRes = NSFile::CFileBinary::Copy(m_sSrc + L"/" + NSFile::GetFileName(sSrcM), m_sDst + L"/word/media/i" + sImageName);

@@ -626,17 +626,7 @@ private:
                 readStream(oXml, sSubClass, sRStyle + L"<w:sz w:val=\"26\"/>", oTS, bWasP, bWasPPr);
             // Перенос строки
             else if(sName == L"br")
-            {
                 oXml->WriteString(L"<w:r><w:br/></w:r>");
-                /*
-                if(!bWasP)
-                {
-                    *oXml += L"</w:p><w:p>";
-                    bWasP = true;
-                    bWasPPr = false;
-                }
-                */
-            }
             // Цитата, обычно выделяется курсивом
             // Новый термин, обычно выделяется курсивом
             // Акцентированный текст
@@ -682,6 +672,12 @@ private:
             // Текст нижнего регистра
             else if(sName == L"sub")
                 readStream(oXml, sSubClass, sRStyle + L"<w:vertAlign w:val=\"subscript\"/>", oTS, bWasP, bWasPPr);
+            // Векторная картинка
+            else if(sName == L"svg")
+            {
+                readSVG(oXml);
+                bWasP = false;
+            }
             // Игнорируются тэги выполняющие скрипт
             else if(sName == L"template" || sName == L"canvas" || sName == L"video" || sName == L"math" || sName == L"rp"  ||
                     sName == L"command"  || sName == L"iframe" || sName == L"embed" || sName == L"area" || sName == L"wbr" ||
@@ -692,133 +688,94 @@ private:
                     sName == L"noscript" || sName == L"output" || sName == L"input" || sName == L"time" || sName == L"ruby"   ||
                     sName == L"progress" || sName == L"hgroup" || sName == L"meter" || sName == L"span" || sName == L"audio"  )
                 readStream(oXml, sSubClass, sRStyle, oTS, bWasP, bWasPPr);
-            // Адрес
-            else if(sName == L"address")
-            {
-                if(!bWasP)
-                {
-                    *oXml += L"</w:p><w:p>";
-                    bWasP = true;
-                    bWasPPr = false;
-                }
-                readStream(oXml, sSubClass, sRStyle + L"<w:i/>", oTS, bWasP, bWasPPr);
-                if(!bWasP)
-                {
-                    *oXml += L"</w:p><w:p>";
-                    bWasP = true;
-                    bWasPPr = false;
-                }
-            }
-            // Статья
-            // Боковой блок
-            // Выделенная цитата
-            // Скрытая информация
-            // Контейнер
-            // Заголовок скрытой информации
-            // ...
-            else if(sName == L"article" || sName == L"header" || sName == L"div" || sName == L"blockquote" || sName == L"main" ||
-                    sName == L"summary" || sName == L"footer" || sName == L"nav" || sName == L"figcaption" || sName == L"form" ||
-                    sName == L"details" || sName == L"option" || sName == L"dd"  || sName == L"fieldset"   || sName == L"p"    ||
-                    sName == L"section" || sName == L"figure" || sName == L"dl"  || sName == L"legend"     || sName == L"aside"||
-                    sName == L"dt"      || sName == L"map"    ||
-                    sName == L"h1" || sName == L"h2" || sName == L"h3" || sName == L"h4" || sName == L"h5" || sName == L"h6")
-            {
-                if(!bWasP)
-                {
-                    *oXml += L"</w:p><w:p>";
-                    bWasP = true;
-                    bWasPPr = false;
-                }
-                readStream(oXml, sSubClass, sRStyle, oTS, bWasP, bWasPPr);
-                if(!bWasP)
-                {
-                    *oXml += L"</w:p><w:p>";
-                    bWasP = true;
-                    bWasPPr = false;
-                }
-            }
-            // Горизонтальная линия
-            else if(sName == L"hr")
-            {
-                if(!bWasP)
-                {
-                    *oXml += L"</w:p><w:p>";
-                    bWasP = true;
-                    bWasPPr = false;
-                }
-                *oXml += L"<w:pPr><w:pBdr><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr></w:pPr></w:p><w:p>";
-                bWasP = true;
-                bWasPPr = false;
-            }
-            // Меню
-            // Маркированный список
-            else if(sName == L"menu" || sName == L"ul" || sName == L"select")
-                readLi(oXml, sSubClass, sRStyle, oTS, bWasP, bWasPPr, true);
-            // Нумерованный список
-            else if(sName == L"ol")
-                readLi(oXml, sSubClass, sRStyle, oTS, bWasP, bWasPPr, false);
-            // Предварительно форматированный текст
-            else if(sName == L"pre")
-            {
-                if(!bWasP)
-                {
-                    *oXml += L"</w:p><w:p>";
-                    bWasP = true;
-                    bWasPPr = false;
-                }
-                CTextSettings oTSPre { oTS.bBdo, true, oTS.nLi };
-                readStream(oXml, sSubClass, sRStyle + L"<w:rFonts w:ascii=\"Consolas\" w:hAnsi=\"Consolas\"/>", oTSPre, bWasP, bWasPPr);
-                if(!bWasP)
-                {
-                    *oXml += L"</w:p><w:p>";
-                    bWasP = true;
-                    bWasPPr = false;
-                }
-            }
-            // Векторная картинка
-            else if(sName == L"svg")
-            {
-                readSVG(oXml);
-                bWasP = false;
-            }
-            // Таблицы
-            else if(sName == L"table")
-            {
-                auto it = std::find_if(sSubClass.begin(), sSubClass.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
-                if(it != sSubClass.end())
-                    *oXml += L"</w:hyperlink>";
-                *oXml += L"</w:p>";
-                bWasP = false;
-                bWasPPr = false;
-                readTable(oXml, sSubClass, sRStyle, oTS, bWasP, bWasPPr);
-                *oXml += L"<w:p>";
-                if(it != sSubClass.end())
-                    *oXml += L"<w:hyperlink>";
-                bWasP = true;
-                bWasPPr = false;
-            }
-            // Текст с границами
-            else if(sName == L"textarea")
-            {
-                if(!bWasP)
-                {
-                    *oXml += L"</w:p><w:p>";
-                    bWasP = true;
-                    bWasPPr = false;
-                }
-                *oXml += L"<w:pPr><w:pBdr><w:left w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:top w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:right w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr></w:pPr>";
-                bWasPPr = true;
-                readStream(oXml, sSubClass, sRStyle, oTS, bWasP, bWasPPr);
-                if(!bWasP)
-                {
-                    *oXml += L"</w:p><w:p>";
-                    bWasP = true;
-                    bWasPPr = false;
-                }
-            }
-            // Неизвестный тэг. Выделять ли его абзацем?
             else
-                readStream(oXml, sSubClass, sRStyle, oTS, bWasP, bWasPPr);
+            {
+                if(!bWasP)
+                {
+                    auto it = std::find_if(sSubClass.begin(), sSubClass.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
+                    if(it != sSubClass.end())
+                        oXml->WriteString(L"</w:hyperlink>");
+                    oXml->WriteString(L"</w:p><w:p>");
+                    if(it != sSubClass.end())
+                        oXml->WriteString(L"<w:hyperlink>");
+                    bWasP = true;
+                    bWasPPr = false;
+                }
+                // Адрес
+                if(sName == L"address")
+                    readStream(oXml, sSubClass, sRStyle + L"<w:i/>", oTS, bWasP, bWasPPr);
+                // Статья
+                // Боковой блок
+                // Выделенная цитата
+                // Скрытая информация
+                // Контейнер
+                // Заголовок скрытой информации
+                // ...
+                else if(sName == L"article" || sName == L"header" || sName == L"div" || sName == L"blockquote" || sName == L"main" ||
+                        sName == L"summary" || sName == L"footer" || sName == L"nav" || sName == L"figcaption" || sName == L"form" ||
+                        sName == L"details" || sName == L"option" || sName == L"dd"  || sName == L"fieldset"   || sName == L"p"    ||
+                        sName == L"section" || sName == L"figure" || sName == L"dl"  || sName == L"legend"     || sName == L"aside"||
+                        sName == L"dt"      || sName == L"map"    ||
+                        sName == L"h1" || sName == L"h2" || sName == L"h3" || sName == L"h4" || sName == L"h5" || sName == L"h6")
+                    readStream(oXml, sSubClass, sRStyle, oTS, bWasP, bWasPPr);
+                // Горизонтальная линия
+                else if(sName == L"hr")
+                {
+                    oXml->WriteString(L"<w:pPr><w:pBdr><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr></w:pPr>");
+                    bWasP = false;
+                    bWasPPr = true;
+                }
+                // Меню
+                // Маркированный список
+                else if(sName == L"menu" || sName == L"ul" || sName == L"select")
+                    readLi(oXml, sSubClass, sRStyle, oTS, bWasP, bWasPPr, true);
+                // Нумерованный список
+                else if(sName == L"ol")
+                    readLi(oXml, sSubClass, sRStyle, oTS, bWasP, bWasPPr, false);
+                // Предварительно форматированный текст
+                else if(sName == L"pre")
+                {
+                    CTextSettings oTSPre { oTS.bBdo, true, oTS.nLi };
+                    readStream(oXml, sSubClass, sRStyle + L"<w:rFonts w:ascii=\"Consolas\" w:hAnsi=\"Consolas\"/>", oTSPre, bWasP, bWasPPr);
+                }
+                // Таблицы
+                else if(sName == L"table")
+                {
+                    auto it = std::find_if(sSubClass.begin(), sSubClass.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
+                    if(it != sSubClass.end())
+                        *oXml += L"</w:hyperlink>";
+                    *oXml += L"</w:p>";
+                    bWasP = false;
+                    bWasPPr = false;
+                    readTable(oXml, sSubClass, sRStyle, oTS, bWasP, bWasPPr);
+                    *oXml += L"<w:p>";
+                    if(it != sSubClass.end())
+                        *oXml += L"<w:hyperlink>";
+                    bWasP = true;
+                    bWasPPr = false;
+                }
+                // Текст с границами
+                else if(sName == L"textarea")
+                {
+                    *oXml += L"<w:pPr><w:pBdr><w:left w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:top w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:right w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr></w:pPr>";
+                    bWasPPr = true;
+                    readStream(oXml, sSubClass, sRStyle, oTS, bWasP, bWasPPr);
+                }
+                // Неизвестный тэг. Выделять ли его абзацем?
+                else
+                    readStream(oXml, sSubClass, sRStyle, oTS, bWasP, bWasPPr);
+                if(!bWasP)
+                {
+                    auto it = std::find_if(sSubClass.begin(), sSubClass.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
+                    if(it != sSubClass.end())
+                        oXml->WriteString(L"</w:hyperlink>");
+                    oXml->WriteString(L"</w:p><w:p>");
+                    if(it != sSubClass.end())
+                        oXml->WriteString(L"<w:hyperlink>");
+                    bWasP = true;
+                    bWasPPr = false;
+                }
+            }
         }
     }
 
@@ -833,13 +790,13 @@ private:
             // tr - строки в таблице
             if(m_oLightReader.GetName() != L"tr")
                 continue;
-            if(m_oLightReader.IsEmptyNode())
+            int nTrDeath = m_oLightReader.GetDepth();
+            if(m_oLightReader.IsEmptyNode() || !m_oLightReader.ReadNextSiblingNode(nTrDeath))
                 continue;
 
             int j = 1; // Столбец
             *oXml += L"<w:tr>";
-            int nTrDeath = m_oLightReader.GetDepth();
-            while(m_oLightReader.ReadNextSiblingNode(nTrDeath))
+            do
             {
                 int nColspan = 1;
                 int nRowspan = 1;
@@ -919,7 +876,7 @@ private:
                     it1 = std::find_if(mTable.begin(), mTable.end(), [i, j](const CTc& item){ return item.i == i && item.j == j; });
                     it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
                 }
-            }
+            } while(m_oLightReader.ReadNextSiblingNode(nTrDeath));
             *oXml += L"</w:tr>";
             if(--j > nGridCol)
                 nGridCol = j;
@@ -1307,7 +1264,6 @@ private:
         *oXml += L"\" cy=\"";
         *oXml += std::to_wstring(nHy);
         *oXml += L"\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>";
-
     }
 
     void readSVG   (NSStringUtils::CStringBuilder* oXml)

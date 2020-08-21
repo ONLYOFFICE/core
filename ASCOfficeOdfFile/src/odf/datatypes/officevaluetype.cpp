@@ -44,7 +44,9 @@ std::wostream & operator << (std::wostream & _Wostream, const office_value_type 
         //_Wostream << "none";
         break;
     case office_value_type::Float:
-        _Wostream << "float";
+    case office_value_type::Scientific:
+	case office_value_type::Fraction:
+       _Wostream << "float";
         break;
     case office_value_type::Currency:
         _Wostream << "currency";

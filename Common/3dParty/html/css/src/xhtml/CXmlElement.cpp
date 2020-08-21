@@ -1,12 +1,15 @@
 #include "CXmlElement.h"
 
+#include <iostream>
+
 CXmlElement::CXmlElement()
 {
-
+    Clear();
 }
 
 CXmlElement::CXmlElement(std::wstring sNameDefaultElement)
 {
+    Clear();
     CreateDefaultElement(sNameDefaultElement);
 }
 
@@ -254,13 +257,32 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
     }
     else if (sNameDefaultElement == L"a")
     {
-        SetType(L"character");
+        SetType(L"paragraph");
+        SetBasedOn(L"a-c");
         SetStyleId(L"a");
         SetName(L"Hyperlink");
         SetUiPriority(L"99");
         SetUnhideWhenUsed(true);
         SetColor(L"0563C1");
         SetU(L"single");
+    }
+    else if (sNameDefaultElement == L"a-c")
+    {
+        SetType(L"character");
+        SetDefault(L"1");
+        SetStyleId(L"a-c");
+        SetName(L"Normal");
+    }
+    else if (sNameDefaultElement.find(L'-') != std::wstring::npos)
+    {
+        std::wstring sName = sNameDefaultElement.substr(0, sNameDefaultElement.find(L'-'));
+        SetType(L"character");
+        SetStyleId(sNameDefaultElement);
+        SetCustomStyle(L"1");
+        SetName(sNameDefaultElement);
+        SetLink(sName);
+        SetUiPriority(L"34");
+
     }
 }
 
@@ -600,6 +622,8 @@ CXmlElement& CXmlElement::operator+=(const CXmlElement &oElement)
 
 CXmlElement& CXmlElement::operator=(const CXmlElement &oElement)
 {
+    Clear();
+
     m_sType                 = oElement.m_sType;
     m_sStyleId              = oElement.m_sStyleId;
     m_sDefault              = oElement.m_sDefault;
@@ -770,7 +794,7 @@ std::wstring CXmlElement::GetStyle()
 
 
     sStyle += L"</w:style>";
-    if (sStyle.length() > 15)
+    if (sStyle.length() > 19)
         return sStyle;
 
     return L"";
@@ -779,5 +803,10 @@ std::wstring CXmlElement::GetStyle()
 std::wstring CXmlElement::GetBasedOn()
 {
     return m_sBasedOn;
+}
+
+std::wstring CXmlElement::GetStyleId()
+{
+    return m_sStyleId;
 }
 

@@ -136,6 +136,7 @@ public:
 
     std::wstring GetStyle();
     std::wstring GetBasedOn();
+    std::wstring GetStyleId();
 
     CXmlElement& operator+=(const CXmlElement& oElement);
     CXmlElement &operator=(const CXmlElement& oelement);

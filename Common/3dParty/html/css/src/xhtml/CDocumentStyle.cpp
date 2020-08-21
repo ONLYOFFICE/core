@@ -56,52 +56,96 @@ CDocumentStyle::CDocumentStyle()
         m_sId = sId;
     }
 
-    CXmlElement CDocumentStyle::AddParentsStyle(CCompiledStyle &oStyle)
+    CXmlElement CDocumentStyle::CombineStandardStyles(std::vector<std::wstring> arStandartedStyles)
     {
-        CXmlElement oXmlElement;
-        for (std::wstring sParentName : oStyle.GetParentsName())
+        if (arStandartedStyles.size() == 0)
+            return CXmlElement();
+
+        std::vector<std::wstring> arStyles;
+
+        for (std::wstring sStyleName : arStandartedStyles)
         {
-            if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sParentName) != m_arStandardStyles.cend() &&
-                ((sParentName[0] == L'h' && isdigit(sParentName[1]) && sParentName.length() == 2)))
+            if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sStyleName) != m_arStandardStyles.cend() &&
+                std::find(arStyles.begin(), arStyles.end(), sStyleName) == arStyles.cend())
             {
-                oXmlElement.Clear();
-                if (std::find(m_arUsedStyles.begin(), m_arUsedStyles.end(), sParentName) != m_arUsedStyles.cend())
-                {
-                    oXmlElement.SetBasedOn(sParentName);
-                    return oXmlElement;
-                }
-
-                oXmlElement.CreateDefaultElement(sParentName);
-                CXmlElement oCharXmlElement;
-                oCharXmlElement.Clear();
-                if (sParentName[0] == L'h' && isdigit(sParentName[1]) && sParentName.length() == 2)
-                {
-                    std::wstring sCharName = L"title";
-                    sCharName += sParentName[1];
-                    sCharName += L"-c";
-
-                    oCharXmlElement.CreateDefaultElement(sCharName);
-
-                }
-                else if (sParentName == L"p" )
-                {
-                    oCharXmlElement.CreateDefaultElement(L"p-c");
-                }
-                else if (sParentName == L"div")
-                {
-                    oCharXmlElement.CreateDefaultElement(L"div-c");
-                }
-
-                if (!oCharXmlElement.Empty())
-                    m_sStyle = oCharXmlElement.GetStyle();
-
-                m_sStyle += oXmlElement.GetStyle();
-                oXmlElement.Clear();
-                oXmlElement.SetBasedOn(sParentName);
-                return oXmlElement;
+                arStyles.push_back(sStyleName);
             }
         }
+
+        CXmlElement oXmlElement;
         oXmlElement.Clear();
+        std::wstring sId;
+
+        for (std::wstring sStyleName : arStyles)
+        {
+            sId += sStyleName;
+            if (sStyleName != arStyles[arStyles.size() - 1])
+                sId += L'+';
+        }
+
+//        if (std::find(m_arUsedStyles.begin(), m_arUsedStyles.end(), sId) != m_arUsedStyles.cend())
+//        {
+//            oXmlElement.SetName(sId);
+//            oXmlElement.SetStyleId(sId);
+//        }
+
+        for (std::wstring sStyleName : arStyles)
+        {
+                CXmlElement oTempXmlElement = CreateStandardStyle(sStyleName);
+                if (!oTempXmlElement.Empty())
+                {
+                    oXmlElement += oTempXmlElement;
+                    m_arUsedStyles.push_back(sStyleName);
+                }
+        }
+
+        if (!oXmlElement.Empty())
+        {
+            m_arUsedStyles.push_back(sId);
+            oXmlElement.SetName(sId);
+            oXmlElement.SetStyleId(sId);
+        }
+        return oXmlElement;
+    }
+
+    CXmlElement CDocumentStyle::CreateStandardStyle(std::wstring sNameStyle)
+    {
+        CXmlElement oXmlElement;
+
+        if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sNameStyle) == m_arStandardStyles.cend())
+        {
+            oXmlElement.Clear();
+            return oXmlElement;
+        }
+
+        CXmlElement oCharXmlElement;
+
+        oXmlElement.CreateDefaultElement(sNameStyle);
+
+        if (sNameStyle[0] == L'h' && isdigit(sNameStyle[1]) && sNameStyle.length() == 2)
+        {
+            std::wstring sCharName = L"title";
+            sCharName += sNameStyle[1];
+            sCharName += L"-c";
+
+            oCharXmlElement.CreateDefaultElement(sCharName);
+
+        }
+        else if (sNameStyle == L"p" )
+        {
+            oCharXmlElement.CreateDefaultElement(L"p-c");
+        }
+        else if (sNameStyle == L"div")
+        {
+            oCharXmlElement.CreateDefaultElement(L"div-c");
+        }
+        else if (sNameStyle == L"a")
+        {
+            oCharXmlElement.CreateDefaultElement(L"a-c");
+        }
+        if (!oCharXmlElement.Empty())
+            m_sStyle += oCharXmlElement.GetStyle();
+
         return oXmlElement;
     }
 
@@ -111,12 +155,12 @@ CDocumentStyle::CDocumentStyle()
         {
             m_sId = L"normal";
             m_sStyle.clear();
-
             return;
         }
+//        std::wcout << oStyle.GetId() << L" - " << oStyle.GetStyleW().size() << std::endl;
 
         CXmlElement oXmlElement;
-
+////        oXmlElement.Clear();
         std::wstring sName = oStyle.GetId();
 
         if (sName.find(L'-') != std::wstring::npos)
@@ -126,99 +170,126 @@ CDocumentStyle::CDocumentStyle()
         if (sName.find(L'.') != std::wstring::npos)
             sName = sName.substr(0, sName.find(L'.'));
 
-        if (std::find(m_arUsedStyles.begin(), m_arUsedStyles.end(), sName) != m_arUsedStyles.cend())
+
+        CXmlElement oParentStyle = CombineStandardStyles(oStyle.GetParentsName());
+        CXmlElement oStandardStyle = CreateStandardStyle(sName);
+        CXmlElement oCharStyle;
+        if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sName) == m_arStandardStyles.cend())
         {
-            if (oStyle.Empty())
-            {
-                m_sId = sName;
-                m_sStyle.clear();
-                oXmlElement.Clear();
-                oXmlElement = AddParentsStyle(oStyle);
-                if (!oXmlElement.Empty() && !oXmlElement.GetBasedOn().empty())
-                {
-                    sName = m_sId + L'+' + oXmlElement.GetBasedOn();
-
-//                    if (std::find(m_arUsedStyles.begin(), m_arUsedStyles.end(), sName) != m_arUsedStyles.cend())
-
-                    oXmlElement.SetStyleId(sName);
-                    oXmlElement.SetName(sName);
-                    oXmlElement.SetQFormat(true);
-                    oXmlElement.SetType(L"paragraph");
-                    oXmlElement.SetCustomStyle(L"1");
-                    m_arUsedStyles.push_back(sName);
-                    m_sStyle = oXmlElement.GetStyle();
-                }
-                return;
-            }
-            oXmlElement.Clear();
-            oXmlElement.SetBasedOn(sName);
-
+            oCharStyle.CreateDefaultElement(sName + L"-c");
         }
-        else if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sName) != m_arStandardStyles.cend())
-        {
-            oXmlElement.CreateDefaultElement(sName);
-            CXmlElement oCharXmlElement;
-            oCharXmlElement.Clear();
 
-            if (sName[0] == L'h' && isdigit(sName[1]) && sName.length() == 2)
-            {
-                std::wstring sCharName = L"title";
-                sCharName += sName[1];
-                sCharName += L"-c";
+//        if (oStandardStyle.Empty())
+//            std::wcout << L"Standard Style Empty! ";
+//        else
+//            std::wcout << L"Standard Style Filled! ";
 
-                oCharXmlElement.CreateDefaultElement(sCharName);
-            }
-            else if (sName == L"p" )
-            {
-                oCharXmlElement.CreateDefaultElement(L"p-c");
-            }
-            else if (sName == L"div")
-            {
-                oCharXmlElement.CreateDefaultElement(L"div-c");
-            }
-
-            if (!oCharXmlElement.Empty())
-                m_sStyle = oCharXmlElement.GetStyle();
-
-            m_sStyle += oXmlElement.GetStyle();
-
-            m_sId = sName;
-
-            m_arUsedStyles.push_back(sName);
-
-
-
-            if (oStyle.Empty())
-                return;
-
-
-            oXmlElement.Clear();
-//            oXmlElement = AddParentsStyle(oStyle);
-            oXmlElement.SetBasedOn(sName);
-        }
-        else if (oStyle.GetParentsName().size() > 0)
-        {
-            oXmlElement = AddParentsStyle(oStyle);
-        }
-        else if (oStyle.Empty())
-        {
-            m_sId = L"normal";
-            m_sStyle = L"";
-            return;
-        }
+//        if (oParentStyle.Empty())
+//            std::wcout << L"Parent Style Empty! ";
+//        else
+//            std::wcout << L"Parent Style Filled! ";
 
 //        if (oStyle.Empty())
+//            std::wcout << L"Style Empty! ";
+//        else
+//            std::wcout << L"Style Filled! ";
+
+//        std::wcout << std::endl;
+
+        if(!oStandardStyle.Empty() && oStyle.Empty() && !oParentStyle.Empty())
+        {
+            if (!oCharStyle.Empty())
+            {
+                m_sStyle += oCharStyle.GetStyle();
+                oStandardStyle.SetLink(oCharStyle.GetStyleId());
+            }
+            m_sStyle = oParentStyle.GetStyle();
+            oStandardStyle.SetBasedOn(oParentStyle.GetStyleId());
+            m_sStyle += oStandardStyle.GetStyle();
+            m_sId = oStandardStyle.GetStyleId();
+            return;
+        }
+        if (oStandardStyle.Empty() && !oStyle.Empty() && !oParentStyle.Empty())
+        {
+            m_sStyle += oParentStyle.GetStyle();
+            oXmlElement.SetBasedOn(oParentStyle.GetStyleId());
+            if (!oCharStyle.Empty())
+            {
+                m_sStyle += oCharStyle.GetStyle();
+                oXmlElement.SetLink(oCharStyle.GetStyleId());
+            }
+            goto unification;
+        }
+
+        if (oStandardStyle.Empty() && oStyle.Empty())
+        {
+            if (!oParentStyle.Empty())
+            {
+                m_sStyle = oParentStyle.GetStyle();
+                oXmlElement.SetBasedOn(oParentStyle.GetStyleId());
+                if (!oCharStyle.Empty())
+                {
+                    m_sStyle += oCharStyle.GetStyle();
+                    oXmlElement.SetLink(oCharStyle.GetStyleId());
+                }
+            }
+            goto unification;
+        }
+
+        if(!oStyle.Empty())
+        {
+            CXmlElement oTempXmlElement;
+            if (!oParentStyle.Empty())
+                oTempXmlElement = oParentStyle;
+            if (!oStandardStyle.Empty())
+                oTempXmlElement += oStandardStyle;
+
+            oTempXmlElement.SetName(oParentStyle.GetStyleId() + L"+" + oStandardStyle.GetStyleId());
+            oTempXmlElement.SetStyleId(oParentStyle.GetStyleId() + L"+" + oStandardStyle.GetStyleId());
+
+            m_sStyle += oTempXmlElement.GetStyle();
+            if (!oCharStyle.Empty())
+            {
+                m_sStyle += oCharStyle.GetStyle();
+                oXmlElement.SetLink(oCharStyle.GetStyleId());
+            }
+            oXmlElement.SetBasedOn(oTempXmlElement.GetStyleId());
+            goto unification;
+        }
+//        if (!oStyle.Empty())
 //        {
-//            m_sStyle += oXmlElement.GetStyle();
-//            return;
+//            if (!oParentStyle.Empty())
+//                m_sStyle += oParentStyle.GetStyle();
+
+//            if (!oStandardStyle.Empty())
+//                oXmlElement = oStandardStyle;
+
+//            oXmlElement.SetBasedOn(oParentStyle.GetStyleId());
+//            goto unification;
 //        }
 
+        if (oStandardStyle.Empty() && !oParentStyle.Empty())
+        {
+            m_sStyle += oParentStyle.GetStyle();
+            oXmlElement.SetBasedOn(oParentStyle.GetStyleId());
+            if (!oCharStyle.Empty())
+            {
+                m_sStyle += oCharStyle.GetStyle();
+                oXmlElement.SetLink(oCharStyle.GetStyleId());
+            }
+        }
+
+
+        unification:
         m_sId = oStyle.GetId();
         oXmlElement.SetStyleId(m_sId);
         oXmlElement.SetName(m_sId);
         oXmlElement.SetQFormat(true);
         oXmlElement.SetType(L"paragraph");
         oXmlElement.SetCustomStyle(L"1");
+
+        if (oStyle.Empty())
+            return;
 
         if (!oStyle.GetColor().empty())
             oXmlElement.SetColor(oStyle.GetColor());
@@ -247,7 +318,9 @@ CDocumentStyle::CDocumentStyle()
         {
             std::wstring sFontStyle = oStyle.GetFontStyle();
             if (sFontStyle == L"italic")
+            {
                 oXmlElement.SetI(true);
+            }
         }
 
         if (!oStyle.GetFontWeight().empty())
@@ -270,61 +343,6 @@ CDocumentStyle::CDocumentStyle()
             oXmlElement.SetBottomBorder(L"true");
             oXmlElement.SetRightBorder(L"true");
         }
-
-//        if (!oStyle.GetPadding().empty())
-//        {
-//            std::wstring sInd = L"<w:ind ";
-//            std::wstring sPaddingLeft = oStyle.GetPaddingLeft();
-//            std::wstring sPaddingRight = oStyle.GetPaddingRight();
-//            bool bFl = false;
-
-
-//            if (sPaddingLeft != L"0")
-//            {
-//                bFl = true;
-//                sInd += L"w:left=\"" + sPaddingLeft + L"\" ";
-//            }
-//            if (sPaddingRight != L"0")
-//            {
-//                bFl = true;
-//                sInd += L"w:right=\"" + sPaddingRight + L"\"";
-//            }
-//            sInd += L"/>";
-
-//            if (bFl)
-//                m_sStyle += sInd;
-//        }
-
-//        if (true)
-//        {
-//            std::wstring sSpacing = L"<w:spacing ";
-//            std::wstring sBefore = oStyle.GetMarginTop();
-//            std::wstring sAfter = oStyle.GetMarginBottom();
-//            std::wstring sLineHeight = oStyle.GetLineHeight();
-
-//            if (isdigit(sBefore[0]))
-//                sSpacing += L"w:before=\"" + sBefore + L"\" ";
-
-//            if (isdigit(sAfter[0]))
-//                sSpacing += L"w:after=\"" + sAfter + L"\" ";
-
-//            if (isdigit(sLineHeight[0]))
-//                sSpacing += L"w:line=\"" + sAfter + L"\" ";
-
-//            sSpacing += L"w:lineRule=\"auto\"/>";
-
-//            m_sStyle += sSpacing;
-//        }
-
-//        if (!oStyle.GetTextDecoration().empty())
-//        {
-//            std::wstring sTextDecoration = oStyle.GetTextDecoration();
-//            if (sTextDecoration == L"underline")
-//                m_sStyle += L"<w:u w:val=\"single\"/>";
-//        }
-
-//        if (!oStyle.GetBackgroundColor().empty())
-//            m_sStyle += L"<w:background w:color=\"" + oStyle.GetBackgroundColor() + L"\"/>";
 
         m_arUsedStyles.push_back(m_sId);
         m_sStyle += oXmlElement.GetStyle();

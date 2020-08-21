@@ -15,7 +15,6 @@ namespace NSCSS
         std::wstring m_sId;
 
         std::vector<std::wstring> m_arParentsStyles;
-        bool m_bNeedSave;
     public:
         CCompiledStyle();
         CCompiledStyle(std::map<std::wstring, std::wstring> mStyle);
@@ -40,8 +39,6 @@ namespace NSCSS
         void AddStyle(std::wstring sStyle);
         void AddParent(std::wstring sParentName);
 
-        bool GetNeedSave();
-        void SetNeedSave(bool bNeedSave);
         std::vector<std::wstring> GetParentsName();
 
         void SetID(std::wstring sId);

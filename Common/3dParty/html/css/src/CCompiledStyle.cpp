@@ -10,7 +10,6 @@ namespace NSCSS
 {
     CCompiledStyle::CCompiledStyle()
     {
-        m_bNeedSave = true;
     }
 
     CCompiledStyle::CCompiledStyle(std::map<std::wstring, std::wstring> mStyle)
@@ -22,7 +21,6 @@ namespace NSCSS
     {
         m_mStyle = oStyle.m_mStyle;
         m_sId = oStyle.m_sId;
-        m_bNeedSave = oStyle.m_bNeedSave;
         m_arParentsStyles = oStyle.m_arParentsStyles;
     }
 
@@ -39,7 +37,6 @@ namespace NSCSS
             if (item.second.find(L"!important"))
                 m_mStyle[item.first] = item.second.substr(0, item.second.find(L"!important"));
         }
-//        m_sId += L" " + oElement.m_sId;
 
         return *this;
     }
@@ -62,8 +59,7 @@ namespace NSCSS
     {
         m_mStyle = oElement.m_mStyle;
         m_sId = oElement.m_sId;
-        m_bNeedSave = oElement.m_bNeedSave;
-        m_arParentsStyles = oElement.m_arParentsStyles;
+//        m_arParentsStyles = oElement.m_arParentsStyles;
 
         return *this;
     }
@@ -71,8 +67,12 @@ namespace NSCSS
 
     bool CCompiledStyle::operator==(const CCompiledStyle &oElement)
     {
-//        if (this->m_arParentsStyles != oElement.m_arParentsStyles)
-//            return false;
+        if (this->m_arParentsStyles.size() != oElement.m_arParentsStyles.size())
+            return false;
+
+        for (size_t i = 0; i < this->m_arParentsStyles.size(); i++)
+            if (this->m_arParentsStyles[i] != oElement.m_arParentsStyles[i])
+                return false;
 
         if (this->m_mStyle.size() != oElement.m_mStyle.size())
             return false;
@@ -143,6 +143,10 @@ namespace NSCSS
     {
         if (m_mStyle.size() == 0)
             return true;
+
+//        if (m_arParentsStyles.size() == 0)
+//            return true;
+
         return false;
     }
 
@@ -150,8 +154,7 @@ namespace NSCSS
     {
         m_mStyle.clear();
         m_sId.clear();
-//        m_arParentsStyles.clear();
-        m_bNeedSave = true;
+        m_arParentsStyles.clear();
     }
 
     std::map<std::wstring, std::wstring>::iterator CCompiledStyle::GetBegin()
@@ -217,16 +220,6 @@ namespace NSCSS
     {
         if (!sParentName.empty())
             m_arParentsStyles.push_back(sParentName);
-    }
-
-    bool CCompiledStyle::GetNeedSave()
-    {
-        return  m_bNeedSave;
-    }
-
-    void CCompiledStyle::SetNeedSave(bool bNeedSave)
-    {
-        m_bNeedSave = bNeedSave;
     }
 
     std::vector<std::wstring> CCompiledStyle::GetParentsName()
@@ -382,7 +375,7 @@ namespace NSCSS
                 sFont = m_mStyle[L"font"];
 
             if (sFont.empty())
-                return L"normal";
+                return L"";
 
             std::vector<std::wstring> arValues = {L"italic", L"oblique"};
 

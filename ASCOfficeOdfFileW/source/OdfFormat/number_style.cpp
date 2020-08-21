@@ -270,9 +270,13 @@ void number_scientific_number::serialize(std::wostream & strm)
         {  
 			CP_XML_ATTR_OPT(L"number:min-exponent-digits", number_min_exponent_digits_);
 			CP_XML_ATTR_OPT(L"number:decimal-places", number_decimal_places_);
+			CP_XML_ATTR_OPT(L"number:min-decimal-places", number_min_decimal_places_);
+
+			CP_XML_ATTR_OPT(L"number:exponent-interval", number_exponent_interval_);
 
 			CP_XML_ATTR_OPT(L"number:min-integer-digits", number_min_integer_digits_);
 			CP_XML_ATTR_OPT(L"number:grouping", number_grouping_);
+ 			CP_XML_ATTR_OPT(L"number:forced-exponent-sign", number_forced_exponent_sign_);
 		}
 	}
 }

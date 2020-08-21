@@ -51,7 +51,9 @@ public:
         Date,
         Time,
 		Boolean,
-		String
+		String,
+		Scientific,
+		Fraction
     };
 
     office_value_type()  {type_ = String;}

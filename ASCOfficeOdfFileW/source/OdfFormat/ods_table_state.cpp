@@ -1279,6 +1279,8 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 		case office_value_type::Currency:
 		case office_value_type::Percentage:
 		case office_value_type::Float:
+		case office_value_type::Scientific:
+		case office_value_type::Fraction:
 		default:
 			cell->attlist_.common_value_and_type_attlist_->office_value_ = value;
 		}
@@ -1301,9 +1303,12 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 
 		if (cell->attlist_.common_value_and_type_attlist_->office_value_type_)
 		{
-			if (cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Float) need_test_cach = true;
- 			if (cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Currency) need_test_cach = true;
-			if (cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Percentage) need_test_cach = true;
+			if (cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Float ||
+ 				cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Currency ||  
+ 				cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Scientific ||  
+ 				cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Fraction ||  
+				cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Percentage)
+					need_test_cach = true;
 		}
 		try
 		{

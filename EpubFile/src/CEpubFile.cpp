@@ -12,7 +12,8 @@ CEpubFile::CEpubFile()
 
 CEpubFile::~CEpubFile()
 {
-    NSDirectory::DeleteDirectory(m_sTempDir);
+    if (!m_sTempDir.empty())
+        NSDirectory::DeleteDirectory(m_sTempDir);
 }
 
 HRESULT CEpubFile::IsEbubFile(const std::wstring &sFileName)
@@ -38,8 +39,16 @@ void CEpubFile::SetTempDirectory(const std::wstring &sTempDir)
 
 HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& sOutputFile)
 {
-
-    NSDirectory::CreateDirectories(m_sTempDir);
+    if (m_sTempDir.empty())
+    {
+        NSDirectory::CreateDirectories(NSFile::GetProcessDirectory() + L"\\TEMP");
+        SetTempDirectory(NSFile::GetProcessDirectory() + L"\\TEMP");
+    }
+    else
+    {
+        NSDirectory::CreateDirectories(m_sTempDir + L"\\tmp");
+        SetTempDirectory(m_sTempDir + L"\\tmp");
+    }
 //    NSDirectory::CreateDirectory(sOutputFile);
     COfficeUtils oOfficeUtils;
 

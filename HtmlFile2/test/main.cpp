@@ -14,13 +14,11 @@ void getDirectories(std::wstring sDirectory, std::vector<std::wstring>& arrDirec
 
 int main()
 {
-    // setlocale(LC_ALL, "Russian");
     bool bBatchMode = false;
     if(bBatchMode)
     {
         // Директория файлов
         std::wstring sDirectory = NSFile::GetProcessDirectory() + L"/../../../examples/html";
-        // std::wstring sDirectory = L"C:/Users/Svetlana.Kulikova.AVSMEDIA/Downloads/html";
         // Вложенные директории
         std::vector<std::wstring> arrDirectory;
         getDirectories(sDirectory, arrDirectory);

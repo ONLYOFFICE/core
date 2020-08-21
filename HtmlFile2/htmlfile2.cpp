@@ -924,8 +924,9 @@ private:
         // Заголовок таблицы
         *oXml += oCaption.GetData();
         // Начало таблицы
-        *oXml += L"<w:tbl><w:tblPr><w:tblStyle w:val=\"table\"/><w:tblW w:w=\"0\" w:type=\"auto\"/><w:tblLayout w:type=\"fixed\"/></w:tblPr>";
+        *oXml += L"<w:tbl><w:tblPr><w:tblStyle w:val=\"table\"/><w:tblW w:w=\"0\" w:type=\"auto\"/></w:tblPr>"; // <w:tblLayout w:type=\"fixed\"/></w:tblPr>";
         // Размеры таблицы
+        /*
         std::wstring sGridCol = L"";
         if(nGridCol != 0)
             sGridCol = std::to_wstring((int)(9570.0 / (double)nGridCol));
@@ -937,6 +938,7 @@ private:
             *oXml += L"\"/>";
         }
         *oXml += L"</w:tblGrid>";
+        */
         // Конец таблицы
         *oXml += oHead.GetData();
         *oXml += oBody.GetData();

@@ -18,7 +18,7 @@ static std::string nonbreaking_inline  = "|a|abbr|acronym|b|bdo|big|cite|code|df
 static std::string empty_tags          = "|area|base|basefont|bgsound|br|command|col|embed|event-source|frame|hr|image|img|input|keygen|link|menuitem|meta|param|source|spacer|track|wbr|";
 static std::string preserve_whitespace = "|pre|textarea|script|style|";
 static std::string special_handling    = "|html|body|";
-static std::string no_entity_sub       = "|style|";
+static std::string no_entity_sub       = ""; //"|style|";
 static std::string treat_like_inline   = "|p|";
 
 static void prettyprint(GumboNode*, NSStringUtils::CStringBuilderA& oBuilder);
@@ -33,9 +33,7 @@ static std::wstring htmlToXhtml(const std::wstring& sFile)
     // Распознование кодировки
     size_t posEncoding = sFileContent.find("charset=");
     if (std::string::npos == posEncoding)
-    {
         posEncoding = sFileContent.find("encoding=");
-    }
     if (std::string::npos != posEncoding)
     {
         posEncoding = sFileContent.find("=", posEncoding) + 1;
@@ -110,12 +108,18 @@ static void substitute_xml_entities_into_attributes(char quote, std::string &tex
 
 static std::string handle_unknown_tag(GumboStringPiece* text)
 {
-    if (text->data == NULL) {
+    if (text->data == NULL)
         return "";
-    }
     GumboStringPiece gsp = *text;
     gumbo_tag_from_original_text(&gsp);
-    return std::string(gsp.data, gsp.length);
+    std::string sAtr = std::string(gsp.data, gsp.length);
+    size_t found = sAtr.find_first_of("-'()+,./:=?;!*#@$_%");
+    while(found != std::string::npos)
+    {
+        sAtr.erase(found, 1);
+        found = sAtr.find_first_of("-'()+,./:=?;!*#@$_%", found);
+    }
+    return sAtr;
 }
 
 static std::string get_tag_name(GumboNode* node)
@@ -148,9 +152,12 @@ static void build_doctype(GumboNode* node, NSStringUtils::CStringBuilderA& oBuil
 static void build_attributes(GumboAttribute* at, bool no_entities, NSStringUtils::CStringBuilderA& atts)
 {
     std::string sVal(at->value);
+    std::string sName(at->name);
     char quote = '"';
     atts.WriteString(" ");
-    atts.WriteString(at->name);
+    if(sName.find_first_of("><&") != std::string::npos)
+        return;
+    atts.WriteString(sName);
 
     // determine original quote character used if it exists
     std::string qs ="\"";

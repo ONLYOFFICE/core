@@ -30,41 +30,56 @@
  *
  */
 #pragma once
+
+
 #include "../Reader/Records.h"
+#include "VisualPageAtom.h"
+#include "VisualShapeAtom.h"
 
-enum DiagramBuildEnum : _UINT32
+
+namespace PPT_FORMAT
 {
-    TLDB_AsOneObject,
-    TLDB_DepthByNode,
-    TLDB_DepthByBranch,
-    TLDB_BreadthByNode,
-    TLDB_BreadthByLevel,
-    TLDB_ClockWise,
-    TLDB_ClockWiseIn,
-    TLDB_ClockWiseOut,
-    TLDB_CounterClockWise,
-    TLDB_CounterClockWiseIn,
-    TLDB_CounterClockWiseOut,
-    TLDB_InByRing,
-    TLDB_OutByRing,
-    TLDB_Up,
-    TLDB_Down,
-    TLDB_AllAtOnce,
-    TLDB_Custom
-};
-
-class CRecordDiagramBuildAtom : public CUnknownRecord
+class CRecordClientVisualElementContainer : public CUnknownRecord
 {
 public:
-    DiagramBuildEnum  m_DiagramBuild;
-
-    CRecordDiagramBuildAtom(){}
-    ~CRecordDiagramBuildAtom(){}
-
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+    CRecordClientVisualElementContainer ()
     {
-        m_oHeader = oHeader;
-
-        m_DiagramBuild        = (DiagramBuildEnum)StreamUtils::ReadDWORD(pStream);
+        m_bVisualPageAtom	=	false;
+        m_bVisualShapeAtom	=	false;
     }
+
+    void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream ) override
+    {
+        m_oHeader			=	oHeader;
+
+        //	LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
+
+        SRecordHeader ReadHeader;
+        if (ReadHeader.ReadFromStream(pStream) )
+        {
+            if ( RT_VisualPageAtom == ReadHeader.RecType )
+            {
+                m_bVisualPageAtom	=	true;
+                m_oVisualPageAtom.ReadFromStream ( ReadHeader, pStream );
+            }
+
+            if ( RT_VisualShapeAtom == ReadHeader.RecType )
+            {
+                m_bVisualShapeAtom	=	true;
+                m_oVisualShapeAtom.ReadFromStream ( ReadHeader, pStream );
+            }
+        }
+
+        //	StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
+    }
+
+public:
+
+    CRecordVisualPageAtom	m_oVisualPageAtom;
+    CRecordVisualShapeAtom	m_oVisualShapeAtom;
+
+    bool			m_bVisualPageAtom;
+    bool			m_bVisualShapeAtom;
 };
+
+}

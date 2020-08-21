@@ -30,33 +30,20 @@
  *
  */
 #pragma once
-#include "../Reader/Records.h"
 
-enum ChartBuildEnum : _UINT32
+#include "IStruct.h"
+
+
+namespace PPT_FORMAT {
+struct PointStruct : public IStruct
 {
-    TLCB_AsOneObject,
-    TLCB_BySeries,
-    TLCB_ByCategory,
-    TLCB_ByElementInSeries,
-    TLCB_ByElementInCategory
-};
+    _UINT32 m_x;
+    _UINT32 m_y;
 
-class CRecordChartBuildAtom : public CUnknownRecord
-{
-public:
-    ChartBuildEnum  m_ChartBuild;
-    BYTE            m_fAnimBackground;
-
-    CRecordChartBuildAtom(){}
-    ~CRecordChartBuildAtom(){}
-
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+    void ReadFromStream(POLE::Stream *pStream) override
     {
-        m_oHeader = oHeader;
-
-        m_ChartBuild        = (ChartBuildEnum)StreamUtils::ReadDWORD(pStream);
-        m_fAnimBackground   = StreamUtils::ReadBYTE(pStream);
-
-        StreamUtils::StreamSkip(3, pStream);
+        m_x = StreamUtils::ReadLONG(pStream);
+        m_y = StreamUtils::ReadLONG(pStream);
     }
 };
+}

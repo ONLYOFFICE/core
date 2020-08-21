@@ -38,6 +38,9 @@ HEADERS += \
     ../../../ASCOfficePPTXFile/Editor/Drawing/Structures.h \
     ../../../ASCOfficePPTXFile/Editor/Drawing/Timing.h \
     ../../../ASCOfficePPTXFile/Editor/Drawing/XmlStringWriter.h \
+    ../Enums/RecordType.h \
+    ../Enums/_includer.h \
+    ../Enums/enums.h \
     ../PPTFormatLib.h \
     ../Reader/ClassesAtom.h \
     ../Reader/CommonZLib.h \
@@ -46,28 +49,84 @@ HEADERS += \
     ../Reader/PPTFileDefines.h \
     ../Reader/PPTFileReader.h \
     ../Reader/ReadStructures.h \
-    ../Reader/RecordType.h \
     ../Reader/Records.h \
     ../Reader/Slide.h \
     ../Reader/SlideInfo.h \
     ../Reader/SlidePersist.h \
-    ../Records/AnimationInfoAtom.h \
-    ../Records/AnimationInfoContainer.h \
+    ../Records/Animations/AnimationInfoAtom.h \
+    ../Records/Animations/AnimationInfoContainer.h \
+    ../Records/Animations/BuildAtom.h \
+    ../Records/Animations/BuildListContainer.h \
+    ../Records/Animations/ChartBuildAtom.h \
+    ../Records/Animations/ChartBuildContainer.h \
+    ../Records/Animations/ClientVisualElementContainer.h \
+    ../Records/Animations/DiagramBuildAtom.h \
+    ../Records/Animations/DiagramBuildContainer.h \
+    ../Records/Animations/ExtTimeNodeContainer.h \
+    ../Records/Animations/HashCode10Atom.h \
+    ../Records/Animations/LevelInfoAtom.h \
+    ../Records/Animations/ParaBuildAtom.h \
+    ../Records/Animations/ParaBuildContainer.h \
+    ../Records/Animations/ParaBuildLevel.h \
+    ../Records/Animations/SubEffectContainer.h \
+    ../Records/Animations/TimeAnimateBehaviorAtom.h \
+    ../Records/Animations/TimeAnimateBehaviorContainer.h \
+    ../Records/Animations/TimeAnimateColor.h \
+    ../Records/Animations/TimeAnimateColorBy.h \
+    ../Records/Animations/TimeAnimationValueAtom.h \
+    ../Records/Animations/TimeAnimationValueListContainer.h \
+    ../Records/Animations/TimeAnimationValueListEntry.h \
+    ../Records/Animations/TimeBehaviorAtom.h \
+    ../Records/Animations/TimeBehaviorContainer.h \
+    ../Records/Animations/TimeColorBehaviorAtom.h \
+    ../Records/Animations/TimeColorBehaviorContainer.h \
+    ../Records/Animations/TimeCommandBehaviorAtom.h \
+    ../Records/Animations/TimeCommandBehaviorContainer.h \
+    ../Records/Animations/TimeConditionAtom.h \
+    ../Records/Animations/TimeConditionContainer.h \
+    ../Records/Animations/TimeDisplayType.h \
+    ../Records/Animations/TimeEffectBehaviorAtom.h \
+    ../Records/Animations/TimeEffectBehaviorContainer.h \
+    ../Records/Animations/TimeEffectID.h \
+    ../Records/Animations/TimeEffectNodeType.h \
+    ../Records/Animations/TimeEffectType.h \
+    ../Records/Animations/TimeGroupID.h \
+    ../Records/Animations/TimeIterateDataAtom.h \
+    ../Records/Animations/TimeMasterRelType.h \
+    ../Records/Animations/TimeModifierAtom.h \
+    ../Records/Animations/TimeMotionBehaviorAtom.h \
+    ../Records/Animations/TimeMotionBehaviorContainer.h \
+    ../Records/Animations/TimeNodeAtom.h \
+    ../Records/Animations/TimeNodeTimeFilter.h \
+    ../Records/Animations/TimePropertyList4TimeBehavior.h \
+    ../Records/Animations/TimePropertyList4TimeNodeContainer.h \
+    ../Records/Animations/TimeRotationBehaviorAtom.h \
+    ../Records/Animations/TimeRotationBehaviorContainer.h \
+    ../Records/Animations/TimeScaleBehaviorAtom.h \
+    ../Records/Animations/TimeScaleBehaviorContainer.h \
+    ../Records/Animations/TimeSequenceDataAtom.h \
+    ../Records/Animations/TimeSetBehaviorAtom.h \
+    ../Records/Animations/TimeSetBehaviorContainer.h \
+    ../Records/Animations/TimeStringListContainer.h \
+    ../Records/Animations/TimeVariant.h \
+    ../Records/Animations/TimeVariant4Behavior.h \
+    ../Records/Animations/VisualPageAtom.h \
+    ../Records/Animations/VisualShapeAtom.h \
+    ../Records/Animations/VisualShapeChartElementAtom.h \
+    ../Records/Animations/VisualShapeGeneralAtom.h \
+    ../Records/Animations/VisualSoundAtom.h \
+    ../Records/Animations/_includer.h \
     ../Records/BlipEntityAtom.h \
     ../Records/BookmarkEntityAtom.h \
     ../Records/BookmarkSeedAtom.h \
     ../Records/BuildAtom.h \
-    ../Records/ChartBuildAtom.h \
     ../Records/ColorSchemeAtom.h \
     ../Records/CString.h \
     ../Records/CurrentUserAtom.h \
-    ../Records/DiagramBuildAtom.h \
-    ../Records/DiagramBuildContainer.h \
     ../Records/DocRoutingSlipAtom.h \
     ../Records/DocumentAtom.h \
     ../Records/DocumentRecords.h \
     ../Records/DocumentTextInfo.h \
-    ../Records/Drawing/ColorIndex.h \
     ../Records/EndDocument.h \
     ../Records/ExCDAudioContainer.h \
     ../Records/ExControlAtom.h \
@@ -117,6 +176,7 @@ HEADERS += \
     ../Records/SlideContainer.h \
     ../Records/SlideListWithText.h \
     ../Records/SlidePersistAtom.h \
+    ../Records/SlideProgTagsContainer.h \
     ../Records/SlideViewInfoAtom.h \
     ../Records/SoundCollAtom.h \
     ../Records/SoundCollectionContainer.h \
@@ -134,6 +194,7 @@ HEADERS += \
     ../Records/TextHeaderAtom.h \
     ../Records/TextInteractiveInfoAtom.h \
     ../Records/TextMasterStyle9Atom.h \
+    ../Records/TextMasterStyle9Level.h \
     ../Records/TextMasterStyleAtom.h \
     ../Records/TextPFExceptionAtom.h \
     ../Records/TextRulerAtom.h \
@@ -170,7 +231,19 @@ HEADERS += \
     ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.h \
     ../../../ASCOfficePPTXFile/Editor/Drawing/TextStructures.h \
     ../../../ASCOfficePPTXFile/Editor/Drawing/Theme.h \
-    ../../../Common/3dParty/pole/pole.h 
+    ../../../Common/3dParty/pole/pole.h  \
+    ../Structures/ColorIndex.h \
+    ../Structures/ColorStruct.h \
+    ../Structures/DateTimeStruct.h \
+    ../Structures/IStruct.h \
+    ../Structures/PointStruct.h \
+    ../Structures/RatioStruct.h \
+    ../Structures/RectStruct.h \
+    ../Structures/ScalingStruct.h \
+    ../Structures/SmallRectStruct.h \
+    ../Structures/TmsfTimeStruct.h \
+    ../Structures/WideColorStruct.h \
+    ../Structures/_includer.h
 
 core_release {
 SOURCES += \
@@ -184,7 +257,6 @@ SOURCES += \
     ../Reader/Records.cpp \
     ../Reader/PPTFileReader.cpp \
     ../Reader/SlidePersist.cpp \
-    ../Records/Animations/AnimationTypes.cpp \
     ../Records/Drawing/ArtBlip.cpp \
     ../Records/Drawing/ShapeContainer.cpp \
     ../PPTXWriter/Converter.cpp \
@@ -192,6 +264,7 @@ SOURCES += \
 }
 
 SOURCES += \
+    ../Enums/RecordType.cpp \
     ../PPTFormatLib.cpp \
     ../../../ASCOfficePPTXFile/Editor/Drawing/Elements.cpp \
     ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.cpp \

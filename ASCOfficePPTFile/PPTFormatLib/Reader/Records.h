@@ -32,7 +32,7 @@
 #pragma once
 
 #include "PPTFileDefines.h"
-#include "RecordType.h"
+#include "../Enums/RecordType.h"
 #include "../Reader/ReadStructures.h"
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/Enums.h"
 #include "../../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStream.h"

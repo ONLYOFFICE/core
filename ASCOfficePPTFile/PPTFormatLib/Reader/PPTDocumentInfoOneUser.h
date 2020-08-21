@@ -32,7 +32,7 @@
 #pragma once
 #include "ClassesAtom.h"
 
-#include "../Records/Animations/AnimationTypes.h"
+#include "../Records/Animations/_includer.h"
 #include "../Records/ExObjListContainer.h"
 #include "../Records/CryptSession10Container.h"
 

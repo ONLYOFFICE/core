@@ -29,30 +29,24 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-
 #pragma once
-#include "../Records/RecordsIncluder.h"
 
-struct SColorIndex {
 
-    BYTE m_red;
-    BYTE m_green;
-    BYTE m_blue;
-    BYTE m_index;
+#include "../Reader/Records.h"
 
-    void clear()
+
+namespace PPT_FORMAT
+{
+struct TimeAnimateColor
+{
+    _UINT32 model;			//	0	-	RGB,	2	-	IndexScheme
+    _UINT32 m_nRed;
+    _UINT32 m_nGreen;
+    _UINT32 m_nBlue;
+
+    inline unsigned long FRGB (BYTE alpha = 0xFF)
     {
-        m_red = m_green = m_blue = 0;
-        m_index = 0xFF;         // Color is undefined.
-    }
-
-    void ReadFromStream(POLE::Stream * pStream)
-    {
-        m_red       = StreamUtils::ReadBYTE(pStream);
-        m_green     = StreamUtils::ReadBYTE(pStream);
-        m_blue      = StreamUtils::ReadBYTE(pStream);
-        m_index     = StreamUtils::ReadBYTE(pStream);
+        return ((m_nBlue <<  16) |	(m_nGreen << 8) | (m_nRed <<   0) | (alpha << 24));
     }
 };
-
-
+}

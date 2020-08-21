@@ -39,6 +39,9 @@
 #include "DocumentRecords.h"
 #include "DocumentTextInfo.h"
 
+//Animation
+#include "Animations/_includer.h"
+
 // drawing records
 #include "Drawing/ChildAnchor.h"
 #include "Drawing/BlipStoreContainer.h"
@@ -54,16 +57,12 @@
 #include "Drawing/DrawingContainer.h"
 
 // others
-#include "AnimationInfoAtom.h"
-#include "AnimationInfoContainer.h"
+
 #include "BlipEntityAtom.h"
 #include "BookmarkEntityAtom.h"
 #include "BookmarkSeedAtom.h"
-#include "ChartBuildAtom.h"
 #include "CString.h"
 #include "ColorSchemeAtom.h"
-#include "DiagramBuildAtom.h"
-#include "DiagramBuildContainer.h"
 #include "DocRoutingSlipAtom.h"
 #include "DocumentAtom.h"
 #include "ExControlAtom.h"
@@ -123,7 +122,7 @@
 #include "ViewInfoAtom.h"
 #include "ZoomViewInfoAtom.h"
 
-#include "Animations/AnimationTypes.h"
+#include "Animations/_includer.h"
 #include "InteractiveInfoAtom.h"
 #include "TextInteractiveInfoAtom.h"
 

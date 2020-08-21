@@ -30,29 +30,51 @@
  *
  */
 #pragma once
-#include "../Reader/Records.h"
-#include "AnimationInfoAtom.h"
-#include "SoundContainer.h"
 
-class CRecordAnimationInfoContainer: public CUnknownRecord
+
+#include "../Reader/Records.h"
+
+
+namespace PPT_FORMAT
+{
+class CRecordTimeScaleBehaviorAtom : public CUnknownRecord
 {
 public:
-    CRecordAnimationInfoAtom    m_AnimationAtom;
-    CRecordSoundContainer       m_AnimationSound;
-
-    CRecordAnimationInfoContainer(){}
-    ~CRecordAnimationInfoContainer(){}
-
-    virtual void ReadFromStream(SRecordHeader & thisHeader, POLE::Stream* pStream)
+    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
     {
-        m_oHeader = thisHeader;
+        m_oHeader			=	oHeader;
 
-        SRecordHeader oHeader;
+        _UINT32 src						=	StreamUtils::ReadDWORD ( pStream );
 
-        if (oHeader.ReadFromStream(pStream))
-            m_AnimationAtom.ReadFromStream ( oHeader, pStream );
+        m_fByPropertyUsed				=	( 0x01 == ( 0x01 & ((BYTE)src) ) );
+        m_fFromPropertyUsed				=	( 0x02 == ( 0x02 & ((BYTE)src) ) );
+        m_fToPropertyUsed				=	( 0x03 == ( 0x03 & ((BYTE)src) ) );
+        m_fZoomContentsUsed				=	( 0x04 == ( 0x04 & ((BYTE)src) ) );
 
-        if (oHeader.ReadFromStream(pStream))
-            m_AnimationSound.ReadFromStream ( oHeader, pStream );
+        m_XBy							=	StreamUtils::ReadFLOAT ( pStream );
+        m_YBy							=	StreamUtils::ReadFLOAT ( pStream );
+        m_XFrom							=	StreamUtils::ReadFLOAT ( pStream );
+        m_YFrom							=	StreamUtils::ReadFLOAT ( pStream );
+        m_XTo							=	StreamUtils::ReadFLOAT ( pStream );
+        m_YTo							=	StreamUtils::ReadFLOAT ( pStream );
+
+        src								=	StreamUtils::ReadDWORD ( pStream );
+        m_fZoomContents					=	( 0x01 == ( 0x01 & ((BYTE)src) ) );
     }
+
+public:
+
+    bool	m_fByPropertyUsed;
+    bool	m_fFromPropertyUsed;
+    bool	m_fToPropertyUsed;
+    bool	m_fZoomContentsUsed;
+    float	m_XBy;
+    float	m_YBy;
+    float	m_XFrom;
+    float	m_YFrom;
+    float	m_XTo;
+    float	m_YTo;
+    bool	m_fZoomContents;
 };
+
+}

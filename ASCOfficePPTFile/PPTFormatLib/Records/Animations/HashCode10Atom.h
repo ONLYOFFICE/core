@@ -1,5 +1,3 @@
-
-
 /*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
@@ -32,50 +30,23 @@
  *
  */
 #pragma once
+
+
 #include "../Reader/Records.h"
-#include "DiagramBuildAtom.h"
-#include "BuildAtom.h"
 
-
-class CRecordDiagramBuildContainer : public CUnknownRecord
-    {
+namespace PPT_FORMAT
+{
+class CRecordHashCode10Atom : public CUnknownRecord
+{
 public:
+    _UINT32 m_nHash;
 
-        CRecordDiagramBuildContainer ()
-        {
-        }
+    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
+    {
+        m_oHeader	=	oHeader;
 
-        virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
-        {
-            m_oHeader			=	oHeader;
+        m_nHash = StreamUtils::ReadDWORD(pStream);
+    }
 
-#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-            if( IsCorrect () == false ) return;
-#endif
-            //	LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
-
-            SRecordHeader ReadHeader;
-            if (ReadHeader.ReadFromStream(pStream) )
-            {
-                m_BuildAtom.ReadFromStream(ReadHeader, pStream);
-            }
-            if (ReadHeader.ReadFromStream(pStream)) {
-                m_DiagramBuildAtom.ReadFromStream(ReadHeader, pStream);
-            }
-
-            //	StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
-        }
-
-        virtual bool IsCorrect ( )
-        {
-            return	m_oHeader.RecVersion	==	0xF	&&
-                m_oHeader.RecInstance		==	0x0 &&
-                m_oHeader.RecType			==	0x2B06 &&
-                m_oHeader.RecLen            ==  0x024;
-        }
-
-    public:
-
-        CRecordBuildAtom        m_BuildAtom;
-        CRecordDiagramBuildAtom m_DiagramBuildAtom;
-    };
+};
+}

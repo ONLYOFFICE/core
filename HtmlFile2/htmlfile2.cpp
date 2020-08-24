@@ -475,7 +475,7 @@ private:
         return sSubClass;
     }
 
-    std::wstring GetStyle(std::vector<NSCSS::CNode>& sSelectors, bool bP)
+    std::wstring GetStyle(std::vector<NSCSS::CNode> sSelectors, bool bP)
     {
         NSCSS::CNode oChild = sSelectors.back();
         sSelectors.pop_back();
@@ -554,10 +554,10 @@ private:
                 std::wstring sPStyle = L"";
                 if(!bWasPPr)
                 {
-                    *oXml += L"<w:pPr><w:pStyle w:val=\"";
+                    oXml->WriteString(L"<w:pPr><w:pStyle w:val=\"");
                     sPStyle = GetStyle(sSubClass, true);
                     oXml->WriteString(sPStyle);
-                    *oXml += L"\"/></w:pPr>";
+                    oXml->WriteString(L"\"/></w:pPr>");
                     bWasPPr = true;
                 }
                 oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"");
@@ -595,7 +595,7 @@ private:
 
                 sText = std::wstring(sText.begin(), end);
                 oXml->WriteEncodeXmlString(sText);
-                *oXml += L"</w:t></w:r>";
+                oXml->WriteString(L"</w:t></w:r>");
                 bWasP = false;
                 continue;
             }
@@ -761,21 +761,21 @@ private:
                 {
                     auto it = std::find_if(sSubClass.begin(), sSubClass.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
                     if(it != sSubClass.end())
-                        *oXml += L"</w:hyperlink>";
-                    *oXml += L"</w:p>";
+                        oXml->WriteString(L"</w:hyperlink>");
+                    oXml->WriteString(L"</w:p>");
                     bWasP = false;
                     bWasPPr = false;
                     readTable(oXml, sSubClass, sStyle, oTS, bWasP, bWasPPr);
-                    *oXml += L"<w:p>";
+                    oXml->WriteString(L"<w:p>");
                     if(it != sSubClass.end())
-                        *oXml += L"<w:hyperlink>";
+                        oXml->WriteString(L"<w:hyperlink>");
                     bWasP = true;
                     bWasPPr = false;
                 }
                 // Текст с границами
                 else if(sName == L"textarea")
                 {
-                    *oXml += L"<w:pPr><w:pBdr><w:left w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:top w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:right w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr></w:pPr>";
+                    oXml->WriteString(L"<w:pPr><w:pBdr><w:left w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:top w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:right w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr></w:pPr>");
                     bWasPPr = true;
                     readStream(oXml, sSubClass, sStyle, oTS, bWasP, bWasPPr);
                 }
@@ -813,7 +813,7 @@ private:
                 continue;
 
             int j = 1; // Столбец
-            *oXml += L"<w:tr>";
+            oXml->WriteString(L"<w:tr>");
             do
             {
                 int nColspan = 1;
@@ -832,16 +832,16 @@ private:
                 auto it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
                 while(it1 != mTable.end() || it2 != mTable.end())
                 {
-                    *oXml += L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:vAlign w:val=\"center\"/><w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"";
+                    oXml->WriteString(L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:vAlign w:val=\"center\"/><w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"");
                     std::wstring sCol = (it1 != mTable.end() ? it1->sGridSpan : it2->sGridSpan);
-                    *oXml += sCol;
-                    *oXml += L"\"/></w:tcPr><w:p></w:p></w:tc>";
+                    oXml->WriteString(sCol);
+                    oXml->WriteString(L"\"/></w:tcPr><w:p></w:p></w:tc>");
                     j += stoi(sCol);
                     it1 = std::find_if(mTable.begin(), mTable.end(), [i, j](const CTc& item){ return item.i == i && item.j == j; });
                     it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
                 }
 
-                *oXml += L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:vAlign w:val=\"center\"/>";
+                oXml->WriteString(L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:vAlign w:val=\"center\"/>");
                 if(nRowspan != 1)
                 {
                     *oXml += L"<w:vMerge w:val=\"restart\"/>";
@@ -854,18 +854,18 @@ private:
                 }
                 if(nColspan != 1)
                 {
-                    *oXml += L"<w:gridSpan w:val=\"";
-                    *oXml += std::to_wstring(nColspan);
-                    *oXml += L"\"/>";
+                    oXml->WriteString(L"<w:gridSpan w:val=\"");
+                    oXml->WriteString(std::to_wstring(nColspan));
+                    oXml->WriteString(L"\"/>");
                     j += nColspan - 1;
                 }
-                *oXml += L"</w:tcPr><w:p>";
+                oXml->WriteString(L"</w:tcPr><w:p>");
 
                 std::vector<NSCSS::CNode> sSubClass = GetSubClass(sSelectors);
                 // Читаем th. Ячейка заголовка таблицы. Выравнивание посередине. Выделяется полужирным
                 if(m_oLightReader.GetName() == L"th")
                 {
-                    *oXml += L"<w:pPr><w:jc w:val=\"center\"/></w:pPr>";
+                    oXml->WriteString(L"<w:pPr><w:jc w:val=\"center\"/></w:pPr>");
                     bWasP = false;
                     bWasPPr = true;
                     readStream(oXml, sSubClass, sRStyle + L"<w:b/>", oTS, bWasP, bWasPPr);

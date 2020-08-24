@@ -141,8 +141,8 @@ public:
     std::wstring GetStyleId();
 
     CXmlElement& operator+=(const CXmlElement& oElement);
-    CXmlElement &operator=(const CXmlElement& oelement);
-
+    CXmlElement& operator= (const CXmlElement& oelement);
+    bool operator== (const CXmlElement& oElement);
 };
 
 #endif // CXMLELEMENT_H

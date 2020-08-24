@@ -14,8 +14,6 @@
 #include "../../../../../UnicodeConverter/UnicodeConverter.h"
 #include "../../../../../DesktopEditor/common/File.h"
 
-#define MAX_LINE_LENGTH 80
-
 static std::wstring StringifyValueList(KatanaArray* oValues);
 static std::wstring StringifyValue(KatanaValue* oValue);
 
@@ -856,12 +854,10 @@ namespace NSCSS
         return arSelectors;
     }
 
-
-// Новый метод
     CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const CNode &oNode, const std::vector<CNode> &oParents, UnitMeasure unitMeasure)
     {
         CCompiledStyle oStyle;
-        CCompiledStyle oParentStyles;
+        oStyle.Clear();
 
         std::wstring sClassName = oNode.m_sClass;
 
@@ -876,17 +872,11 @@ namespace NSCSS
 
         for (auto oParent : oParents)
         {
-            oParentStyles += GetCompiledStyle(oParent, {}, unitMeasure);
+            oStyle += GetCompiledStyle(oParent, {}, unitMeasure);
             oStyle.AddParent(oParent.m_sName);
         }
 
-        if (!oParentStyles.Empty())
-            oStyle = oParentStyles;
-
         oStyle += GetCompiledStyle(GetSelectorsList(oNode.m_sName + sClassName + sIdName), unitMeasure);
-        oStyle.SetID(oNode.m_sName + sClassName + sIdName + L'-' + std::to_wstring(m_nCountNodes));
-        m_nCountNodes++;
-
 
         if (!oNode.m_sStyle.empty())
         {
@@ -895,162 +885,14 @@ namespace NSCSS
             if (!oTempStyle.Empty())
             {
                 oStyle += oTempStyle;
-                oStyle.SetID(oNode.m_sName + sClassName + sIdName + L'-' + std::to_wstring(m_nCountNodes));
-                m_nCountNodes++;
             }
         }
 
-//        if (oNode.m_sName == L"span")
-//            std::wcout << oStyle.GetStyleW() << std::endl;
-
-//        for (auto oItem : m_arStyleUsed)
-//        {
-//            if (oItem.second == oStyle)
-//            {
-//                oStyle.Clear();
-//                oStyle.SetID(oItem.second.GetId());
-//                return oStyle;
-//            }
-//        }
-
-        m_arStyleUsed.emplace(oStyle.GetId(), oStyle);
+        oStyle.SetID(oNode.m_sName + sClassName + sIdName + L'-' + std::to_wstring(m_nCountNodes));
+        m_nCountNodes++;
 
         return oStyle;
     }
-
-
-//    CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const CNode &oNode, const std::vector<CNode> &oParents, UnitMeasure unitMeasure)
-//    {
-////        if (oParents.size() > 0)
-////            std::wcout << oNode.m_sName << L" - " << oNode.m_sClass << L" - " << oNode.m_sId << L" - " << oNode.m_sStyle << std::endl;
-
-//        CCompiledStyle oStyle;
-//        CCompiledStyle oParentStyles;
-
-//        std::wstring sClassName = oNode.m_sClass;
-
-//        if (sClassName[0] != L'.' && !sClassName.empty())
-//            sClassName = L'.' + sClassName;
-
-//        std::wstring sIdName = oNode.m_sId;
-
-//        if (sIdName[0] != L'#' && !sIdName.empty())
-//            sIdName = L'#' + sIdName;
-
-
-//        for (auto oParent : oParents)
-//        {
-//            oParentStyles += GetCompiledStyle(oParent, {}, unitMeasure);
-//            oStyle.AddParent(oParent.m_sName);
-//        }
-
-//        if (!oParentStyles.Empty())
-//            oStyle = oParentStyles;
-
-//        if (!oNode.m_sName.empty())
-//        {
-//            CCompiledStyle oTempStyle = GetCompiledStyle(GetSelectorsList(oNode.m_sName), unitMeasure);
-
-//            if (!oTempStyle.Empty())
-//            {
-//                oStyle = oTempStyle;
-//                oStyle.SetID(oNode.m_sName);
-
-///*                if (m_arStyleUsed.find(oNode.m_sName) != m_arStyleUsed.cend() &&
-//                    m_arStyleUsed.find(oNode.m_sName)->second == oStyle)
-//                {
-//                    oStyle.Clear();
-//                    oStyle.SetID(oNode.m_sName);
-//                }
-//                else *//*if (!oStyle.Empty())
-//                    m_arStyleUsed.emplace(oNode.m_sName, oStyle);*/
-//            }
-//        }
-//        else
-//        {
-//            // Сюда не должны никогда попадать
-//            return oStyle;
-//        }
-
-//        if (!oNode.m_sClass.empty())
-//        {
-//            CCompiledStyle oTempStyle = GetCompiledStyle(GetSelectorsList(oNode.m_sName + sClassName), unitMeasure);
-
-//            if (!oTempStyle.Empty())
-//            {
-//                oStyle = oTempStyle;
-//                oStyle.SetID(oNode.m_sName + sClassName);
-
-///*                if (m_arStyleUsed.find(oNode.m_sName + sClassName) != m_arStyleUsed.cend() &&
-//                    m_arStyleUsed.find(oNode.m_sName + sClassName)->second == oStyle)
-//                {
-//                    oStyle.Clear();
-//                    oStyle.SetID(oNode.m_sName + sClassName);
-//                }
-//                else *//*if (!oStyle.Empty())
-//                    m_arStyleUsed.emplace(oNode.m_sName + sClassName, oStyle);*/
-//            }
-//        }
-
-//        if (!oNode.m_sId.empty())
-//        {
-//            CCompiledStyle oTempStyle = GetCompiledStyle(GetSelectorsList(oNode.m_sName + sClassName + sIdName), unitMeasure);
-
-//            if (!oTempStyle.Empty())
-//            {
-//                oStyle = oTempStyle;
-//                oStyle.SetID(oNode.m_sName + sClassName + sIdName);
-
-
-///*                if (m_arStyleUsed.find(oNode.m_sName + sClassName + sIdName) != m_arStyleUsed.cend() &&
-//                    m_arStyleUsed.find(oNode.m_sName + sClassName + sIdName)->second == oStyle)
-//                {
-//                    oStyle.Clear();
-//                    oStyle.SetID(oNode.m_sName + sClassName + sIdName);
-//                }
-//                else *//*if (!oStyle.Empty())
-//                    m_arStyleUsed.emplace(oNode.m_sName + sClassName + sIdName, oStyle);*/
-//            }
-//        }
-
-//        if (!oNode.m_sStyle.empty())
-//        {
-//            CCompiledStyle oTempStyle;
-//            oTempStyle.AddStyle(ConvertUnitMeasure(oNode.m_sStyle));
-
-//            if (!oTempStyle.Empty())
-//            {
-//                oStyle += oTempStyle;
-//                oStyle.SetID(oNode.m_sName + sClassName + sIdName + L'-' + std::to_wstring(m_nCountNodes));
-//                m_nCountNodes++;
-
-////                if (!oStyle.Empty())
-////                    m_arStyleUsed.emplace(oStyle.GetId(), oStyle);
-//            }
-//        }
-
-//        for (auto oItem : m_arStyleUsed)
-//        {
-//            if (oItem.second == oStyle )
-//            {
-////                std::wcout << L" 1 - " << oStyle.GetId() << std::endl;
-////                std::wcout << oStyle.GetStyleW() << std::endl;
-////                std::wcout << L" 2 - " << oItem.second.GetId() << std::endl;
-////                std::wcout << oItem.second.GetStyleW() << std::endl;
-//                oStyle.Clear();
-//                oStyle.SetID(oItem.second.GetId());
-//                break;
-//            }
-//        }
-
-//        if (!oStyle.Empty() && !oStyle.GetId().empty())
-//            m_arStyleUsed.emplace(oStyle.GetId(), oStyle);
-
-////        std::wcout << L"STYLE: " << oStyle.GetStyleW() << std::endl;
-
-//        return oStyle;
-//    }
-
 
     void CCssCalculator_Private::AddStyles(const std::string& sStyle)
     {

@@ -12,11 +12,18 @@ namespace NSCSS
         std::wstring m_sStyle;
         std::wstring m_sId;
         std::vector<std::wstring> m_arStandardStyles;
-        std::vector<std::wstring> m_arUsedStyles;
+
+        std::map<std::wstring, std::pair<CCompiledStyle, bool>> m_arStyleUsed;
+                //selector               style           IsPStyle
+        std::vector<std::wstring> m_arStandardStylesUsed;
 
         CXmlElement AddParentsStyle(NSCSS::CCompiledStyle& oStyle);
         CXmlElement CombineStandardStyles(std::vector<std::wstring> arStandartedStyles);
         CXmlElement CreateStandardStyle(std::wstring sNameStyle);
+        CXmlElement ConvertStyle(NSCSS::CCompiledStyle& oStyle, bool bIsPStyle);
+
+        void SetRStyle(NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement);
+        void SetPStyle(NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement);
 
     public:
         CDocumentStyle();

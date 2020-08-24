@@ -60,7 +60,6 @@ namespace NSCSS
         m_mStyle = oElement.m_mStyle;
         m_sId = oElement.m_sId;
 //        m_arParentsStyles = oElement.m_arParentsStyles;
-
         return *this;
     }
 

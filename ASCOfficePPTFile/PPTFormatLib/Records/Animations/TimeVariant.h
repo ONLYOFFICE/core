@@ -126,7 +126,11 @@ public:
             {
                 if (sizeof(wchar_t) == 4)
                 {
-                    //todoooo
+                    LONG lCurLen(0);
+                    while (lCurLen < m_oHeader.RecLen - 1) {
+                        m_stringValue.push_back(StreamUtils::ReadWORD(pStream));
+                        lCurLen += 2;
+                    }
                 }
                 else
                     m_stringValue		=	std::wstring ( pString );

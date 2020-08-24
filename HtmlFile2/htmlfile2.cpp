@@ -94,23 +94,26 @@ public:
 
     CHtmlFile2_Private()
     {
-        m_nImageId = 1;
-        m_nFootnoteId = 1;
+        m_nImageId     = 1;
+        m_nFootnoteId  = 1;
         m_nHyperlinkId = 1;
-        m_nStyleId = 1;
-        m_nCrossId = 1;
+        m_nStyleId     = 1;
+        m_nCrossId     = 1;
         m_nNumberingId = 1;
         m_sBase = L"";
     }
 
     ~CHtmlFile2_Private()
     {
-        m_oLightReader.Clear();
-        m_oStylesXml.Clear();
-        m_oDocXmlRels.Clear();
-        m_oDocXml.Clear();
-        m_oNoteXml.Clear();
-        m_oNumberXml.Clear();
+        m_oLightReader     .Clear();
+        m_oStylesCalculator.Clear();
+        m_oXmlStyle        .Clear();
+        m_sSrcs            .clear();
+        m_oStylesXml       .Clear();
+        m_oDocXmlRels      .Clear();
+        m_oDocXml          .Clear();
+        m_oNoteXml         .Clear();
+        m_oNumberXml       .Clear();
     }
 
     // Проверяет наличие тэга html
@@ -346,7 +349,7 @@ public:
 
     void write()
     {
-        m_oDocXmlRels += L"</Relationships>";
+        m_oDocXmlRels.WriteString(L"</Relationships>");
         NSFile::CFileBinary oRelsWriter;
         if (oRelsWriter.CreateFileW(m_sDst + L"/word/_rels/document.xml.rels"))
         {
@@ -354,7 +357,7 @@ public:
             oRelsWriter.CloseFile();
         }
 
-        m_oDocXml += L"<w:sectPr/></w:body></w:document>";
+        m_oDocXml.WriteString(L"<w:sectPr/></w:body></w:document>");
         NSFile::CFileBinary oDocumentWriter;
         if (oDocumentWriter.CreateFileW(m_sDst + L"/word/document.xml"))
         {
@@ -362,7 +365,7 @@ public:
             oDocumentWriter.CloseFile();
         }
 
-        m_oNoteXml += L"</w:footnotes>";
+        m_oNoteXml.WriteString(L"</w:footnotes>");
         NSFile::CFileBinary oFootnotesWriter;
         if (oFootnotesWriter.CreateFileW(m_sDst + L"/word/footnotes.xml"))
         {
@@ -371,7 +374,7 @@ public:
         }
 
         // styles.xml
-        m_oStylesXml += L"</w:styles>";
+        m_oStylesXml.WriteString(L"</w:styles>");
         NSFile::CFileBinary oStylesWriter;
         if (oStylesWriter.CreateFileW(m_sDst + L"/word/styles.xml"))
         {
@@ -518,25 +521,25 @@ private:
         sSelectors = GetSubClass(sSelectors);
         CTextSettings oTS { false, false, -1 };
 
-        std::map<std::wstring, std::vector<std::wstring>>::iterator it = m_sSrcs.find(sFileName);
+        auto it = m_sSrcs.find(sFileName);
         if(it != m_sSrcs.end())
         {
             for(const std::wstring& sId : it->second)
             {
                 std::wstring sCrossId = std::to_wstring(m_nCrossId++);
-                m_oDocXml += L"<w:bookmarkStart w:id=\"";
-                m_oDocXml += sCrossId;
-                m_oDocXml += L"\" w:name=\"";
-                m_oDocXml += sId;
-                m_oDocXml += L"\"/><w:bookmarkEnd w:id=\"";
-                m_oDocXml += sCrossId;
-                m_oDocXml += L"\"/>";
+                m_oDocXml.WriteString(L"<w:bookmarkStart w:id=\"");
+                m_oDocXml.WriteString(sCrossId);
+                m_oDocXml.WriteString(L"\" w:name=\"");
+                m_oDocXml.WriteString(sId);
+                m_oDocXml.WriteString(L"\"/><w:bookmarkEnd w:id=\"");
+                m_oDocXml.WriteString(sCrossId);
+                m_oDocXml.WriteString(L"\"/>");
             }
         }
 
-        m_oDocXml += L"<w:p>";
+        m_oDocXml.WriteString(L"<w:p>");
         readStream(&m_oDocXml, sSelectors, L"", oTS, bWasP, bWasPPr);
-        m_oDocXml += L"</w:p>";
+        m_oDocXml.WriteString(L"</w:p>");
     }
 
     void readStream(NSStringUtils::CStringBuilder* oXml, const std::vector<NSCSS::CNode>& sSelectors, std::wstring sStyle, const CTextSettings& oTS, bool& bWasP, bool& bWasPPr)
@@ -844,7 +847,7 @@ private:
                 oXml->WriteString(L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:vAlign w:val=\"center\"/>");
                 if(nRowspan != 1)
                 {
-                    *oXml += L"<w:vMerge w:val=\"restart\"/>";
+                    oXml->WriteString(L"<w:vMerge w:val=\"restart\"/>");
                     std::wstring sColspan = std::to_wstring(nColspan);
                     if(nRowspan == 0)
                         mTable.push_back({0, j, sColspan});
@@ -873,12 +876,12 @@ private:
                 // Читаем td. Ячейка таблицы. Выравнивание вправо
                 else if(m_oLightReader.GetName() == L"td")
                 {
-                    *oXml += L"<w:pPr><w:jc w:val=\"left\"/></w:pPr>";
+                    oXml->WriteString(L"<w:pPr><w:jc w:val=\"left\"/></w:pPr>");
                     bWasP = false;
                     bWasPPr = true;
                     readStream(oXml, sSubClass, sRStyle, oTS, bWasP, bWasPPr);
                 }
-                *oXml += L"</w:p></w:tc>";
+                oXml->WriteString(L"</w:p></w:tc>");
                 j++;
 
                 // Вставляем ячейки после
@@ -886,16 +889,16 @@ private:
                 it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
                 while(it1 != mTable.end() || it2 != mTable.end())
                 {
-                    *oXml += L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:vAlign w:val=\"center\"/><w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"";
+                    oXml->WriteString(L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:vAlign w:val=\"center\"/><w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"");
                     std::wstring sCol = (it1 != mTable.end() ? it1->sGridSpan : it2->sGridSpan);
-                    *oXml += sCol;
-                    *oXml += L"\"/></w:tcPr><w:p></w:p></w:tc>";
+                    oXml->WriteString(sCol);
+                    oXml->WriteString(L"\"/></w:tcPr><w:p></w:p></w:tc>");
                     j += stoi(sCol);
                     it1 = std::find_if(mTable.begin(), mTable.end(), [i, j](const CTc& item){ return item.i == i && item.j == j; });
                     it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
                 }
             } while(m_oLightReader.ReadNextSiblingNode(nTrDeath));
-            *oXml += L"</w:tr>";
+            oXml->WriteString(L"</w:tr>");
             if(--j > nGridCol)
                 nGridCol = j;
             i++;
@@ -921,11 +924,11 @@ private:
             std::wstring sName = m_oLightReader.GetName();
             if(sName == L"caption")
             {
-                oCaption += L"<w:p><w:pPr><w:jc w:val=\"center\"/></w:pPr>";
+                oCaption.WriteString(L"<w:p><w:pPr><w:jc w:val=\"center\"/></w:pPr>");
                 bWasP = false;
                 bWasPPr = true;
                 readStream(&oCaption, sSelectors, sRStyle, oTS, bWasP, bWasPPr);
-                oCaption += L"</w:p>";
+                oCaption.WriteString(L"</w:p>");
                 bWasP = false;
                 bWasPPr = false;
             }
@@ -940,9 +943,9 @@ private:
         }
 
         // Заголовок таблицы
-        *oXml += oCaption.GetData();
+        oXml->WriteString(oCaption.GetData());
         // Начало таблицы
-        *oXml += L"<w:tbl><w:tblPr><w:tblStyle w:val=\"table\"/><w:tblW w:w=\"0\" w:type=\"auto\"/></w:tblPr>"; // <w:tblLayout w:type=\"fixed\"/></w:tblPr>";
+        oXml->WriteString(L"<w:tbl><w:tblPr><w:tblStyle w:val=\"table\"/><w:tblW w:w=\"0\" w:type=\"auto\"/></w:tblPr>"); // <w:tblLayout w:type=\"fixed\"/></w:tblPr>";
         // Размеры таблицы
         /*
         std::wstring sGridCol = L"";
@@ -958,15 +961,15 @@ private:
         *oXml += L"</w:tblGrid>";
         */
         // Конец таблицы
-        *oXml += oHead.GetData();
-        *oXml += oBody.GetData();
-        *oXml += oFoot.GetData();
-        *oXml += L"</w:tbl>";
+        oXml->WriteString(oHead.GetData());
+        oXml->WriteString(oBody.GetData());
+        oXml->WriteString(oFoot.GetData());
+        oXml->WriteString(L"</w:tbl>");
         // Пустая строка после таблицы, чтобы следующий текст не приклеивался
-        *oXml += L"<w:p></w:p>";
+        oXml->WriteString(L"<w:p></w:p>");
     }
 
-    void readLi    (NSStringUtils::CStringBuilder* oXml, const std::vector<NSCSS::CNode>& sSelectors, std::wstring sRStyle, const CTextSettings& oTS, bool& bWasP, bool& bWasPPr, bool bType)
+    void readLi    (NSStringUtils::CStringBuilder* oXml, const std::vector<NSCSS::CNode>& sSelectors, std::wstring sStyle, const CTextSettings& oTS, bool& bWasP, bool& bWasPPr, bool bType)
     {
         if(m_oLightReader.IsEmptyNode())
             return;
@@ -991,31 +994,61 @@ private:
                     {
                         if(!bWasP)
                         {
+                            auto it = std::find_if(sSelectors.begin(), sSelectors.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
+                            if(it != sSelectors.end())
+                                oXml->WriteString(L"</w:hyperlink>");
                             oXml->WriteString(L"</w:p><w:p>");
+                            if(it != sSelectors.end())
+                                oXml->WriteString(L"<w:hyperlink>");
                             bWasP = true;
                             bWasPPr = false;
                         }
-                        oXml->WriteString(L"<w:r><w:rPr>");
+
+                        std::wstring sPStyle = L"";
+                        if(!bWasPPr)
+                        {
+                            oXml->WriteString(L"<w:pPr><w:pStyle w:val=\"");
+                            sPStyle = GetStyle(sSelectors, true);
+                            oXml->WriteString(sPStyle);
+                            oXml->WriteString(L"\"/></w:pPr>");
+                            bWasPPr = true;
+                        }
+                        oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"");
+                        std::wstring sRStyle = GetStyle(sSelectors, false);
                         oXml->WriteString(sRStyle);
+                        oXml->WriteString(L"\"/>");
+                        oXml->WriteString(sStyle);
                         oXml->WriteString(L"</w:rPr><w:t xml:space=\"preserve\">");
                         oXml->WriteEncodeXmlString(m_oLightReader.GetText());
-                        oXml->WriteString(L"</w:t></w:r></w:p><w:p>");
+                        oXml->WriteString(L"</w:t></w:r>");
+
+                        auto it = std::find_if(sSelectors.begin(), sSelectors.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
+                        if(it != sSelectors.end())
+                            oXml->WriteString(L"</w:hyperlink>");
+                        oXml->WriteString(L"</w:p><w:p>");
+                        if(it != sSelectors.end())
+                            oXml->WriteString(L"<w:hyperlink>");
                         bWasP = true;
                         bWasPPr = false;
                     }
                 }
                 m_oLightReader.MoveToElement();
-                readLi(oXml, sSelectors, sRStyle, oTS, bWasP, bWasPPr, true);
+                readLi(oXml, sSelectors, sStyle, oTS, bWasP, bWasPPr, true);
                 continue;
             }
             if(sName != L"li" && sName != L"option")
             {
-                readStream(oXml, sSelectors, sRStyle, oTS, bWasP, bWasPPr);
+                readStream(oXml, sSelectors, sStyle, oTS, bWasP, bWasPPr);
                 continue;
             }
             if(!bWasP)
             {
+                auto it = std::find_if(sSelectors.begin(), sSelectors.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
+                if(it != sSelectors.end())
+                    oXml->WriteString(L"</w:hyperlink>");
                 oXml->WriteString(L"</w:p><w:p>");
+                if(it != sSelectors.end())
+                    oXml->WriteString(L"<w:hyperlink>");
                 bWasP = true;
                 bWasPPr = false;
             }
@@ -1027,10 +1060,15 @@ private:
             oXml->WriteString(L"\"/></w:numPr></w:pPr>");
             bWasP = true;
             bWasPPr = true;
-            readStream(oXml, sSelectors, sRStyle, oTSLi, bWasP, bWasPPr);
+            readStream(oXml, sSelectors, sStyle, oTSLi, bWasP, bWasPPr);
             if(!bWasP)
             {
+                auto it = std::find_if(sSelectors.begin(), sSelectors.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
+                if(it != sSelectors.end())
+                    oXml->WriteString(L"</w:hyperlink>");
                 oXml->WriteString(L"</w:p><w:p>");
+                if(it != sSelectors.end())
+                    oXml->WriteString(L"<w:hyperlink>");
                 bWasP = true;
                 bWasPPr = false;
             }
@@ -1047,16 +1085,16 @@ private:
 
         readStream(oXml, sSelectors, sRStyle, oTS, bWasP, bWasPPr);
 
-        *oXml += L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteReference w:id=\"";
-        *oXml += std::to_wstring(m_nFootnoteId);
-        *oXml += L"\"/></w:r>";
+        oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteReference w:id=\"");
+        oXml->WriteString(std::to_wstring(m_nFootnoteId));
+        oXml->WriteString(L"\"/></w:r>");
         bWasP = false;
 
-        m_oNoteXml += L"<w:footnote w:id=\"";
-        m_oNoteXml += std::to_wstring(m_nFootnoteId++);
-        m_oNoteXml += L"\"><w:p><w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr><w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r><w:r><w:t xml:space=\"preserve\">";
+        m_oNoteXml.WriteString(L"<w:footnote w:id=\"");
+        m_oNoteXml.WriteString(std::to_wstring(m_nFootnoteId++));
+        m_oNoteXml.WriteString(L"\"><w:p><w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr><w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r><w:r><w:t xml:space=\"preserve\">");
         m_oNoteXml.WriteEncodeXmlString(sNote);
-        m_oNoteXml += L"</w:t></w:r></w:p></w:footnote>";
+        m_oNoteXml.WriteString(L"</w:t></w:r></w:p></w:footnote>");
     }
 
     void readLink  (NSStringUtils::CStringBuilder* oXml, const std::vector<NSCSS::CNode>& sSelectors, std::wstring sRStyle, const CTextSettings& oTS, bool& bWasP, bool& bWasPPr)
@@ -1072,7 +1110,7 @@ private:
                 sRef = m_oLightReader.GetText();
                 if(sRef.length() > 1)
                 {
-                    if(sRef[0] == L'#')
+                    if(sRef.front() == L'#')
                     {
                         bCross = true;
                         sRef = sRef.substr(1);
@@ -1091,7 +1129,7 @@ private:
                 else
                     nLen += 4;
                 std::wstring sFileName = sRef.substr(nSrc, nLen - nSrc);
-                std::map<std::wstring, std::vector<std::wstring>>::iterator it = m_sSrcs.find(sFileName);
+                auto it = m_sSrcs.find(sFileName);
                 if(it != m_sSrcs.end())
                 {
                     bCross = true;
@@ -1121,29 +1159,29 @@ private:
         // Перекрестная ссылка внутри файла
         if(bCross)
         {
-            *oXml += L"<w:hyperlink w:tooltip=\"Current Document\" w:anchor=\"";
-            *oXml += sRef;
+            oXml->WriteString(L"<w:hyperlink w:tooltip=\"Current Document\" w:anchor=\"");
+            oXml->WriteString(sRef);
         }
         // Внешняя ссылка
         else
         {
             // Пишем рельсы
-            m_oDocXmlRels += L"<Relationship Id=\"rHyp";
-            m_oDocXmlRels += std::to_wstring(m_nHyperlinkId);
-            m_oDocXmlRels += L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"";
+            m_oDocXmlRels.WriteString(L"<Relationship Id=\"rHyp");
+            m_oDocXmlRels.WriteString(std::to_wstring(m_nHyperlinkId));
+            m_oDocXmlRels.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"");
             m_oDocXmlRels.WriteEncodeXmlString(sRef);
-            m_oDocXmlRels += L"\" TargetMode=\"External\"/>";
+            m_oDocXmlRels.WriteString(L"\" TargetMode=\"External\"/>");
 
             // Пишем в document.xml
-            *oXml += L"<w:hyperlink w:tooltip=\"";
+            oXml->WriteString(L"<w:hyperlink w:tooltip=\"");
             oXml->WriteEncodeXmlString(sTitle);
-            *oXml += L"\" r:id=\"rHyp";
-            *oXml += std::to_wstring(m_nHyperlinkId++);
+            oXml->WriteString(L"\" r:id=\"rHyp");
+            oXml->WriteString(std::to_wstring(m_nHyperlinkId++));
         }
-        *oXml += L"\">";
+        oXml->WriteString(L"\">");
         bWasP = true;
         readStream(oXml, sSelectors, sRStyle += L"<w:rStyle w:val=\"a\"/>", oTS, bWasP, bWasPPr);
-        *oXml += L"</w:hyperlink>";
+        oXml->WriteString(L"</w:hyperlink>");
         bWasP = false;
     }
 
@@ -1168,20 +1206,33 @@ private:
             // Картинка Base64
             if(sSrcM.substr(0, nLen) == L"data")
             {
-                size_t nBase = sSrcM.find(L"/", nLen) + 1;
-                std::wstring sType = sSrcM.substr(nBase, sSrcM.find(L";", nBase) - nBase);
+                size_t nBase = sSrcM.find(L"/", nLen);
+                if(nBase == std::wstring::npos)
+                    continue;
+                nBase++;
+                size_t nEndBase = sSrcM.find(L";", nBase);
+                if(nEndBase == std::wstring::npos)
+                    continue;
+                std::wstring sType = sSrcM.substr(nBase, nEndBase - nBase);
                 sImageName = sImageId + L"." + sType;
                 NSFile::CFileBinary oImageWriter;
                 if(oImageWriter.CreateFileW(m_sDst + L"/word/media/i" + sImageName))
                 {
-                    bRes = true;
-                    size_t nBase = sSrcM.find(L"base64", nLen) + 7;
-                    std::string sBase64 = m_oLightReader.GetTextA().substr(nBase);
+
+                    nBase = sSrcM.find(L"base64", nLen);
+                    if(nBase == std::wstring::npos)
+                        continue;
+                    std::string sBase64 = m_oLightReader.GetTextA().substr(nBase + 7);
                     int nSrcLen = (int)sBase64.length();
                     int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
+                    if(nDecodeLen == 0)
+                        continue;
                     BYTE* pImageData = new BYTE[nDecodeLen];
                     if (TRUE == NSBase64::Base64Decode(sBase64.c_str(), nSrcLen, pImageData, &nDecodeLen))
+                    {
                         oImageWriter.WriteFile(pImageData, (DWORD)nDecodeLen);
+                        bRes = true;
+                    }
                     RELEASEARRAYOBJECTS(pImageData);
                     oImageWriter.CloseFile();
                 }
@@ -1235,11 +1286,11 @@ private:
     {
         m_nImageId++;
         // Прописать рельсы
-        m_oDocXmlRels += L"<Relationship Id=\"rPic";
-        m_oDocXmlRels += sImageId;
-        m_oDocXmlRels += L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/";
-        m_oDocXmlRels += sImageName;
-        m_oDocXmlRels += L"\"/>";
+        m_oDocXmlRels.WriteString(L"<Relationship Id=\"rPic");
+        m_oDocXmlRels.WriteString(sImageId);
+        m_oDocXmlRels.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/");
+        m_oDocXmlRels.WriteString(sImageName);
+        m_oDocXmlRels.WriteString(L"\"/>");
 
         // Получаем размеры картинки
         CBgraFrame oBgraFrame;
@@ -1269,21 +1320,21 @@ private:
         }
 
         // Пишем в document.xml
-        *oXml += L"<w:r><w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"";
-        *oXml += std::to_wstring(nWx);
-        *oXml += L"\" cy=\"";
-        *oXml += std::to_wstring(nHy);
-        *oXml += L"\"/><wp:docPr id=\"";
-        *oXml += sImageId;
-        *oXml += L"\" name=\"\"/><a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:nvPicPr><pic:cNvPr id=\"";
-        *oXml += sImageId;
-        *oXml += L"\" name=\"\"/><pic:cNvPicPr></pic:cNvPicPr></pic:nvPicPr><pic:blipFill><a:blip r:embed=\"rPic";
-        *oXml += sImageId;
-        *oXml += L"\"/><a:stretch/></pic:blipFill><pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"";
-        *oXml += std::to_wstring(nWx);
-        *oXml += L"\" cy=\"";
-        *oXml += std::to_wstring(nHy);
-        *oXml += L"\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>";
+        oXml->WriteString(L"<w:r><w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"");
+        oXml->WriteString(std::to_wstring(nWx));
+        oXml->WriteString(L"\" cy=\"");
+        oXml->WriteString(std::to_wstring(nHy));
+        oXml->WriteString(L"\"/><wp:docPr id=\"");
+        oXml->WriteString(sImageId);
+        oXml->WriteString(L"\" name=\"\"/><a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:nvPicPr><pic:cNvPr id=\"");
+        oXml->WriteString(sImageId);
+        oXml->WriteString(L"\" name=\"\"/><pic:cNvPicPr></pic:cNvPicPr></pic:nvPicPr><pic:blipFill><a:blip r:embed=\"rPic");
+        oXml->WriteString(sImageId);
+        oXml->WriteString(L"\"/><a:stretch/></pic:blipFill><pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"");
+        oXml->WriteString(std::to_wstring(nWx));
+        oXml->WriteString(L"\" cy=\"");
+        oXml->WriteString(std::to_wstring(nHy));
+        oXml->WriteString(L"\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>");
     }
 
     void readSVG   (NSStringUtils::CStringBuilder* oXml)
@@ -1291,20 +1342,20 @@ private:
         // Сохранить как .svg картинку
         NSStringUtils::CStringBuilder oSVG;
         bool bNeedXmlns = true;
-        oSVG += L"<svg ";
+        oSVG.WriteString(L"<svg ");
         while(m_oLightReader.MoveToNextAttribute())
         {
             if(m_oLightReader.GetName() == L"xmlns")
                 bNeedXmlns = false;
-            oSVG += m_oLightReader.GetName();
-            oSVG += L"=\"";
-            oSVG += m_oLightReader.GetText();
-            oSVG += L"\" ";
+            oSVG.WriteString(m_oLightReader.GetName());
+            oSVG.WriteString(L"=\"");
+            oSVG.WriteString(m_oLightReader.GetText());
+            oSVG.WriteString(L"\" ");
         }
         m_oLightReader.MoveToElement();
         if(bNeedXmlns)
-            oSVG += L"xmlns=\"http://www.w3.org/2000/svg\"";
-        oSVG += L">";
+            oSVG.WriteString(L"xmlns=\"http://www.w3.org/2000/svg\"");
+        oSVG.WriteString(L">");
 
         std::wstring sSVG = m_oLightReader.GetInnerXml();
         size_t nRef = sSVG.find(L"image");
@@ -1320,6 +1371,8 @@ private:
                 continue;
             }
             size_t nHRefLen = sSVG.find(L"\"", nHRef);
+            if(nHRefLen == std::wstring::npos)
+                break;
             std::wstring sImageName = sSVG.substr(nHRef, nHRefLen - nHRef);
             bool bRes = NSFile::CFileBinary::Copy(m_sSrc + L"/" + sImageName, m_sDst + L"/word/media/" + NSFile::GetFileName(sImageName));
             if(!bRes)
@@ -1329,8 +1382,8 @@ private:
             nRef = sSVG.find(L"image", nRef + 5);
         }
 
-        oSVG += sSVG;
-        oSVG += L"</svg>";
+        oSVG.WriteString(sSVG);
+        oSVG.WriteString(L"</svg>");
 
         std::wstring sImageId = std::to_wstring(m_nImageId);
         NSFile::CFileBinary oSVGWriter;

@@ -131,3 +131,4 @@
 #include "../src/odf/datatypes/stylenumformat.cpp"
 #include "../src/odf/datatypes/bibliography.cpp"
 #include "../src/odf/datatypes/styleprint.cpp"
+#include "../src/odf/datatypes/charttimeunit.cpp"

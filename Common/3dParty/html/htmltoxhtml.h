@@ -155,7 +155,7 @@ static void build_attributes(GumboAttribute* at, bool no_entities, NSStringUtils
     std::string sName(at->name);
     char quote = '"';
     atts.WriteString(" ");
-    if(sName.find_first_of("><&;") != std::string::npos)
+    if(sName.find_first_of("><&;\"") != std::string::npos)
         return;
     atts.WriteString(sName);
 

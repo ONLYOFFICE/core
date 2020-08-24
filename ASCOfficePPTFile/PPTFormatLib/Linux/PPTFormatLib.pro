@@ -171,6 +171,7 @@ HEADERS += \
     ../Records/RoundTripThemeAtom.h \
     ../Records/ShapeFlags10Atom.h \
     ../Records/ShapeFlagsAtom.h \
+    ../Records/Slide/SlideProgBinaryTagContainer.h \
     ../Records/SlideAtom.h \
     ../Records/SlideColorSchemeAtom.h \
     ../Records/SlideContainer.h \

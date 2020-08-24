@@ -441,10 +441,9 @@ public:
             else if(sName == L"style")
             {
                 std::wstring sText = m_oLightReader.GetInnerXml();
-                std::string sConvertText = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sText.data(), (LONG)sText.length());
+                std::string sConvertText = U_TO_UTF8(sText);
                 m_oStylesCalculator.AddStyles(sConvertText);
             }
-
             readStyle();
         }
     }
@@ -550,6 +549,7 @@ private:
             if(sName == L"#text")
             {
                 std::wstring sStyle = L"";
+                /*
                 if(!bWasPPr)
                 {
                     *oXml += L"<w:pPr><w:pStyle w:val=\"";
@@ -558,9 +558,13 @@ private:
                     *oXml += L"\"/></w:pPr>";
                     bWasPPr = true;
                 }
-                *oXml += L"<w:r><w:rPr>";
-                *oXml += sRStyle;
-                *oXml += L"</w:rPr><w:t xml:space=\"preserve\">";
+                */
+                oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"");
+                sStyle = getStyle(sSubClass);
+                oXml->WriteString(sStyle);
+                oXml->WriteString(L"\"/>");
+                oXml->WriteString(sRStyle);
+                oXml->WriteString(L"</w:rPr><w:t xml:space=\"preserve\">");
 
                 std::wstring sText = m_oLightReader.GetText();
                 auto end = sText.end();
@@ -574,9 +578,9 @@ private:
                         std::wstring sSubText = sText.substr(0, nAfter);
                         sText.erase(0, sSubText.length() + 1);
                         oXml->WriteEncodeXmlString(sSubText);
-                        oXml->WriteString(L"</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val=\"");
+                        oXml->WriteString(L"</w:t></w:r></w:p><w:p><w:r><w:rPr><w:rStyle w:val=\"");
                         oXml->WriteString(sStyle);
-                        oXml->WriteString(L"\"/></w:pPr><w:r><w:rPr>");
+                        oXml->WriteString(L"\"/>");
                         oXml->WriteString(sRStyle);
                         oXml->WriteString(L"</w:rPr><w:t xml:space=\"preserve\">");
                         nAfter = sText.find(L'\n');
@@ -658,9 +662,20 @@ private:
             // Цитата, выделенная кавычками, обычно выделяется курсивом
             else if(sName == L"q")
             {
-                *oXml += L"<w:r><w:t xml:space=\"preserve\">&quot;</w:t></w:r>";
+                oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"");
+                std::wstring sStyle = getStyle(sSubClass);
+                oXml->WriteString(sStyle);
+                oXml->WriteString(L"\"/>");
+                oXml->WriteString(sRStyle);
+                oXml->WriteString(L"</w:rPr><w:t xml:space=\"preserve\">&quot;</w:t></w:r>");
+
                 readStream(oXml, sSubClass, sRStyle + L"<w:i/>", oTS, bWasP, bWasPPr);
-                *oXml += L"<w:r><w:t xml:space=\"preserve\">&quot;</w:t></w:r>";
+
+                oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"");
+                oXml->WriteString(sStyle);
+                oXml->WriteString(L"\"/>");
+                oXml->WriteString(sRStyle);
+                oXml->WriteString(L"</w:rPr><w:t xml:space=\"preserve\">&quot;</w:t></w:r>");
                 bWasP = false;
             }
             // Текст верхнего регистра

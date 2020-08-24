@@ -475,26 +475,17 @@ private:
         return sSubClass;
     }
 
-    std::wstring PStyle(std::vector<NSCSS::CNode>& sSelectors)
+    std::wstring GetStyle(std::vector<NSCSS::CNode>& sSelectors, bool bP)
     {
         NSCSS::CNode oChild = sSelectors.back();
         sSelectors.pop_back();
         NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(oChild, sSelectors);
-        m_oXmlStyle.WritePStyle(oStyle);
+        if(bP)
+            m_oXmlStyle.WritePStyle(oStyle);
+        else
+            m_oXmlStyle.WriteRStyle(oStyle);
         std::wstring sRes = m_oXmlStyle.GetId();
-        std::wstring sStyle = m_oXmlStyle.GetPStyle();
-        m_oStylesXml.WriteString(sStyle);
-        return sRes;
-    }
-
-    std::wstring RStyle(std::vector<NSCSS::CNode>& sSelectors)
-    {
-        NSCSS::CNode oChild = sSelectors.back();
-        sSelectors.pop_back();
-        NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(oChild, sSelectors);
-        m_oXmlStyle.WriteRStyle(oStyle);
-        std::wstring sRes = m_oXmlStyle.GetId();
-        std::wstring sStyle = m_oXmlStyle.GetRStyle();
+        std::wstring sStyle = m_oXmlStyle.GetStyle();
         m_oStylesXml.WriteString(sStyle);
         return sRes;
     }
@@ -564,13 +555,13 @@ private:
                 if(!bWasPPr)
                 {
                     *oXml += L"<w:pPr><w:pStyle w:val=\"";
-                    sPStyle = PStyle(sSubClass);
+                    sPStyle = GetStyle(sSubClass, true);
                     oXml->WriteString(sPStyle);
                     *oXml += L"\"/></w:pPr>";
                     bWasPPr = true;
                 }
                 oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"");
-                std::wstring sRStyle = RStyle(sSubClass);
+                std::wstring sRStyle = GetStyle(sSubClass, false);
                 oXml->WriteString(sRStyle);
                 oXml->WriteString(L"\"/>");
                 oXml->WriteString(sStyle);
@@ -675,7 +666,7 @@ private:
             else if(sName == L"q")
             {
                 oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"");
-                std::wstring sStyle = RStyle(sSubClass);
+                std::wstring sStyle = GetStyle(sSubClass, false);
                 oXml->WriteString(sStyle);
                 oXml->WriteString(L"\"/>");
                 oXml->WriteString(sStyle);

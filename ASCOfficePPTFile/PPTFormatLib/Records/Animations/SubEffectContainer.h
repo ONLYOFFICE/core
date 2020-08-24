@@ -39,6 +39,8 @@
 #include "TimeSetBehaviorContainer.h"
 #include "ClientVisualElementContainer.h"
 #include "TimeConditionContainer.h"
+#include "TimeCommandBehaviorContainer.h"
+#include "TimeModifierAtom.h"
 
 
 //--------------------------------------------------------------------------------
@@ -90,6 +92,8 @@ public:
     virtual void ReadFromStream (SRecordHeader & oHeader, POLE::Stream* pStream)
     {
         m_oHeader = oHeader;
+
+        LONG lPos(0); StreamUtils::StreamPosition(lPos, pStream);
 
         SRecordHeader	ReadHeader;
 
@@ -147,6 +151,7 @@ public:
                 throw ;
             }
         }
+        StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);
 
     }
 

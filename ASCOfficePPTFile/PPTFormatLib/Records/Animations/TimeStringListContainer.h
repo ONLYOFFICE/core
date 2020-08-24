@@ -45,6 +45,8 @@ public:
     {
         m_oHeader			=	oHeader;
 
+        LONG lPos(0); StreamUtils::StreamPosition(lPos, pStream);
+
         UINT lCurLen		=	0;
         SRecordHeader ReadHeader;
 
@@ -60,6 +62,7 @@ public:
 
             m_arrRgChildRec.push_back ( Element );
         }
+        StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);
     }
 
 public:

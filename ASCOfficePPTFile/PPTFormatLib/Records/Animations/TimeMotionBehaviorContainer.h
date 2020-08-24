@@ -81,6 +81,7 @@ public:
                 throw ;
             }
         }
+        StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);
     }
 
 public:

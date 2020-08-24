@@ -58,6 +58,8 @@ public:
     {
         m_oHeader			=	thisHeader;
 
+        LONG lPos(0); StreamUtils::StreamPosition(lPos, pStream);
+
         SRecordHeader oHeader;
 //        UINT res = 0;
 
@@ -73,7 +75,9 @@ public:
             CRecordParaBuildLevel* pLevel = new CRecordParaBuildLevel();
             pLevel->ReadFromStream(pStream);
             levelCount = pLevel->m_oLevelInfoAtom.m_nLevel;
+            m_arrRgParaBuildLevel.push_back(pLevel);
         }
+        StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);
     }
 public:
     CRecordBuildAtom		m_oBuildAtom;

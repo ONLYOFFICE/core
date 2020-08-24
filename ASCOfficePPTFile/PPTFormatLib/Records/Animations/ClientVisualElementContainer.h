@@ -52,7 +52,7 @@ public:
     {
         m_oHeader			=	oHeader;
 
-        //	LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
+        LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
 
         SRecordHeader ReadHeader;
         if (ReadHeader.ReadFromStream(pStream) )
@@ -70,7 +70,7 @@ public:
             }
         }
 
-        //	StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
+        StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
     }
 
 public:

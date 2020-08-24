@@ -57,6 +57,8 @@ public:
     {
         m_oHeader			=	oHeader;
 
+        LONG lPos(0); StreamUtils::StreamPosition(lPos, pStream);
+
         _UINT32 lCurLen(0);
         SRecordHeader ReadHeader;
 
@@ -72,8 +74,7 @@ public:
             n_arrRgChildRec.push_back(pBuildListSubContainer);
         }
 
-
-
+        StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);
     }
 public:
     std::vector <IRecord*>	n_arrRgChildRec;

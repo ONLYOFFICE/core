@@ -57,7 +57,7 @@ public:
         if (oHeader.ReadFromStream(pStream))
             m_AnimationAtom.ReadFromStream ( oHeader, pStream );
 
-        if (oHeader.ReadFromStream(pStream))
+        if (m_oHeader.RecLen != 36 and oHeader.ReadFromStream(pStream))
             m_AnimationSound.ReadFromStream ( oHeader, pStream );
     }
 };

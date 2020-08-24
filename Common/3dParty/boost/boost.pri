@@ -1,5 +1,11 @@
-INCLUDEPATH += $$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX/include
-CORE_BOOST_LIBS = $$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib
+!core_freebsd {
+    INCLUDEPATH += $$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX/include
+    CORE_BOOST_LIBS = $$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib
+}
+core_freebsd {
+    INCLUDEPATH += /usr/local/include
+    CORE_BOOST_LIBS = /usr/local/lib
+}
 
 core_windows {
     core_win_64:BOOST_POSTFIX = -vc140-mt-x64-1_72

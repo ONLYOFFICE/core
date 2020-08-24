@@ -37,7 +37,7 @@
 #include <string>
 #include <stdlib.h>
 
-#ifdef __linux__
+#ifdef __linux__ || __FreeBSD__
     #include <string.h>
 #endif
 

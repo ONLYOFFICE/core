@@ -9,7 +9,7 @@
 
 #if CXIMAGE_SUPPORT_JPG
 
-#ifdef _LINUX
+#if defined(_LINUX) || defined(__FreeBSD__)
  #include <jmorecfg.h>
 #else
  #include "../jpeg/jmorecfg.h"

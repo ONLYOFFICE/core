@@ -565,7 +565,7 @@ public:
 				sResult.erase(outsize_with_0 - 1);
                 ansi = false;
             }
-#elif defined(__linux__)
+#elif defined(__linux__) || defined(__FreeBSD__)
             std::string sCodepage =  "CP" + std::to_string(nCodepage);
 
             iconv_t ic= iconv_open("WCHAR_T", sCodepage.c_str());

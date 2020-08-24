@@ -43,6 +43,11 @@
 #define _gcvt gcvt
 #endif
 
+#ifdef __FreeBSD__
+#define _gcvt(x,n,b) sprintf(b, "%.17g", x)
+#endif
+
+
 #define DBL_MAX 15
 #define DBL_MAXDIG10 17
 

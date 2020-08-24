@@ -37,7 +37,7 @@
 
 #include "WmfTypes.h"
 
-#ifdef __linux__
+#ifdef __linux__ || __FreeBSD__
     #include <string.h> //memset oO
 #endif
 namespace MetaFile

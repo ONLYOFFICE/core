@@ -10,6 +10,10 @@ ifeq ($(UNAME_M),x86_64)
 	ARCHITECTURE := 64
 	ARCH_SUFFIX := x64
 endif
+ifeq ($(UNAME_M),amd64)
+	ARCHITECTURE := 64
+	ARCH_SUFFIX := x64
+endif
 ifneq ($(filter %86,$(UNAME_M)),)
 	ARCHITECTURE := 32
 	ARCH_SUFFIX := x86
@@ -36,6 +40,18 @@ else
 		LIB_PREFIX := lib
 		ARCH_EXT := .tar.gz
 		MAKE := make
+		AR := tar -zcvf
+		PACKAGE_VERSION := $(PRODUCT_VERSION)-$(BUILD_NUMBER)
+		ARCH_REPO_DIR := linux
+	endif
+	ifeq ($(UNAME_S),FreeBSD)
+		PLATFORM := linux
+		SHARED_EXT := .so*
+		SHELL_EXT := .sh
+		LIB_EXT := .a
+		LIB_PREFIX := lib
+		ARCH_EXT := .tar.gz
+		MAKE := gmake
 		AR := tar -zcvf
 		PACKAGE_VERSION := $(PRODUCT_VERSION)-$(BUILD_NUMBER)
 		ARCH_REPO_DIR := linux

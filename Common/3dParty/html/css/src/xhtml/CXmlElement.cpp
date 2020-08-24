@@ -668,74 +668,44 @@ CXmlElement& CXmlElement::operator=(const CXmlElement &oElement)
     return *this;
 }
 
-std::wstring CXmlElement::GetStyle()
+std::wstring CXmlElement::GetPStyle()
 {
-    std::wstring sStyle = L"<w:style";
+    std::wstring sPStyle = L"<w:style";
 
     if (!m_sType.empty())
-        sStyle += L" w:type=\"" + m_sType + L"\"";
+        sPStyle += L" w:type=\"" + m_sType + L"\"";
 
     if (!m_sStyleId.empty())
-        sStyle += L" w:styleId=\"" + m_sStyleId + L"\"";
+        sPStyle += L" w:styleId=\"" + m_sStyleId + L"\"";
 
     if (!m_sDefault.empty())
-        sStyle += L" w:default=\"" + m_sDefault + L"\"";
+        sPStyle += L" w:default=\"" + m_sDefault + L"\"";
 
     if (!m_sCustomStyle.empty())
-        sStyle += L" w:customStyle=\"" + m_sCustomStyle + L"\"";
+        sPStyle += L" w:customStyle=\"" + m_sCustomStyle + L"\"";
 
     if (!m_sS.empty())
-        sStyle += L" w:S=\"" + m_sS + L"\"";
+        sPStyle += L" w:S=\"" + m_sS + L"\"";
 
-    sStyle += L">";
+    sPStyle += L">";
 
     if (!m_sName.empty())
-        sStyle += L"<w:name w:val=\"" + m_sName + L"\"/>";
+        sPStyle += L"<w:name w:val=\"" + m_sName + L"\"/>";
 
     if (!m_sBasedOn.empty())
-        sStyle += L"<w:basedOn w:val=\"" + m_sBasedOn + L"\"/>";
+        sPStyle += L"<w:basedOn w:val=\"" + m_sBasedOn + L"\"/>";
 
     if (!m_sLink.empty())
-        sStyle += L"<w:link w:val=\"" + m_sLink + L"\"/>";
+        sPStyle += L"<w:link w:val=\"" + m_sLink + L"\"/>";
 
     if (!m_sUiPriority.empty())
-        sStyle += L"<w:uiPriority w:val=\"" + m_sUiPriority + L"\"/>";
+        sPStyle += L"<w:uiPriority w:val=\"" + m_sUiPriority + L"\"/>";
 
     if (m_bQFormat)
-        sStyle += L"<w:qFormat/>";
+        sPStyle += L"<w:qFormat/>";
 
     if (m_bUnhideWhenUsed)
-        sStyle += L"<w:unhideWhenUsed/>";
-
-    std::wstring sRPr = L"<w:rPr>";
-
-        if (m_bB)
-            sRPr += L"<w:b/><w:bCs/>";
-
-        if (m_bI)
-            sRPr += L"<w:i/><w:iCs/>";
-
-        if (!m_sRFonts.empty())
-            sRPr += L"<w:rFonts w:ascii=\"" + m_sRFonts + L"\" w:hAnsi=\"" + m_sRFonts + L"\" w:cs=\"" +
-                      m_sRFonts + L"\" w:eastAsia=\"" + m_sRFonts + L"\"/>";
-
-        if (!m_sColor.empty())
-            sRPr += L"<w:color w:val=\"" + m_sColor + L"\"/>";
-
-        if (!m_sU.empty())
-            sRPr += L"<w:u w:val=\"" + m_sU + L"\"/>";
-
-        if (!m_sSz.empty())
-        {
-            std::wstring sSz = m_sSz;
-
-            if (sSz == L"medium")
-                sSz = L"22";
-
-            sRPr += L"<w:sz w:val=\"" + sSz + L"\"/>" + L"<w:szCs w:val=\"" + sSz + L"\"/>";
-        }
-
-    sRPr += L"</w:rPr>";
+        sPStyle += L"<w:unhideWhenUsed/>";
 
     std::wstring sPPr = L"<w:pPr>";
 
@@ -784,18 +754,89 @@ std::wstring CXmlElement::GetStyle()
 
     sPPr += L"</w:pPr>";
 
-//    std::wstring sTbl
-
     if (sPPr.length() > 15)
-        sStyle += sPPr;
+        sPStyle += sPPr;
+
+    sPStyle += L"</w:style>";
+    if (sPStyle.length() > 19)
+        return sPStyle;
+
+    return L"";
+}
+
+std::wstring CXmlElement::GetRStyle()
+{
+    std::wstring sRStyle = L"<w:style ";
+    if (!m_sType.empty())
+        sRStyle += L" w:type=\"" + m_sType + L"\"";
+
+    if (!m_sStyleId.empty())
+        sRStyle += L" w:styleId=\"" + m_sStyleId + L"\"";
+
+    if (!m_sDefault.empty())
+        sRStyle += L" w:default=\"" + m_sDefault + L"\"";
+
+    if (!m_sCustomStyle.empty())
+        sRStyle += L" w:customStyle=\"" + m_sCustomStyle + L"\"";
+
+    if (!m_sS.empty())
+        sRStyle += L" w:S=\"" + m_sS + L"\"";
+
+    sRStyle += L">";
+
+    if (!m_sName.empty())
+        sRStyle += L"<w:name w:val=\"" + m_sName + L"\"/>";
+
+    if (!m_sBasedOn.empty())
+        sRStyle += L"<w:basedOn w:val=\"" + m_sBasedOn + L"\"/>";
+
+    if (!m_sLink.empty())
+        sRStyle += L"<w:link w:val=\"" + m_sLink + L"\"/>";
+
+    if (!m_sUiPriority.empty())
+        sRStyle += L"<w:uiPriority w:val=\"" + m_sUiPriority + L"\"/>";
+
+    if (m_bQFormat)
+        sRStyle += L"<w:qFormat/>";
+
+    if (m_bUnhideWhenUsed)
+        sRStyle += L"<w:unhideWhenUsed/>";
+
+    std::wstring sRPr = L"<w:rPr>";
+        if (m_bB)
+            sRPr += L"<w:b/><w:bCs/>";
+
+        if (m_bI)
+            sRPr += L"<w:i/><w:iCs/>";
+
+        if (!m_sRFonts.empty())
+            sRPr += L"<w:rFonts w:ascii=\"" + m_sRFonts + L"\" w:hAnsi=\"" + m_sRFonts + L"\" w:cs=\"" +
+                      m_sRFonts + L"\" w:eastAsia=\"" + m_sRFonts + L"\"/>";
+
+        if (!m_sColor.empty())
+            sRPr += L"<w:color w:val=\"" + m_sColor + L"\"/>";
+
+        if (!m_sU.empty())
+            sRPr += L"<w:u w:val=\"" + m_sU + L"\"/>";
+
+        if (!m_sSz.empty())
+        {
+            std::wstring sSz = m_sSz;
+
+            if (sSz == L"medium")
+                sSz = L"22";
+
+            sRPr += L"<w:sz w:val=\"" + sSz + L"\"/>" + L"<w:szCs w:val=\"" + sSz + L"\"/>";
+        }
+
+    sRPr += L"</w:rPr>";
 
     if (sRPr.length() > 15)
-        sStyle += sRPr;
+        sRStyle += sRPr;
 
-
-    sStyle += L"</w:style>";
-    if (sStyle.length() > 19)
-        return sStyle;
+    sRStyle += L"</w:style>";
+    if (sRStyle.length() > 22)
+        return sRStyle;
 
     return L"";
 }

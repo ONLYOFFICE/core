@@ -22,12 +22,14 @@ namespace NSCSS
         CDocumentStyle();
         ~CDocumentStyle();
 
-        void WriteStyle(NSCSS::CCompiledStyle& oStyle);
+        void WritePStyle(NSCSS::CCompiledStyle& oStyle);
+        void WriteRStyle(NSCSS::CCompiledStyle& oStyle);
 
         void SetStyle(const std::wstring& sStyle);
         void SetId(const std::wstring& sId);
 
-        std::wstring GetStyle();
+        std::wstring GetPStyle();
+        std::wstring GetRStyle();
         std::wstring GetId();
 
         void Clear();

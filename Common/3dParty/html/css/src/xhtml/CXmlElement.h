@@ -134,7 +134,9 @@ public:
         // </tblBorders>
     // </tblPr>
 
-    std::wstring GetStyle();
+    std::wstring GetPStyle();
+    std::wstring GetRStyle();
+
     std::wstring GetBasedOn();
     std::wstring GetStyleId();
 

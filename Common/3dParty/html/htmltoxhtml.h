@@ -113,11 +113,11 @@ static std::string handle_unknown_tag(GumboStringPiece* text)
     GumboStringPiece gsp = *text;
     gumbo_tag_from_original_text(&gsp);
     std::string sAtr = std::string(gsp.data, gsp.length);
-    size_t found = sAtr.find_first_of("-'()+,./:=?;!*#@$_%");
+    size_t found = sAtr.find_first_of("-'()+,./:=?;!*#@$_%;");
     while(found != std::string::npos)
     {
         sAtr.erase(found, 1);
-        found = sAtr.find_first_of("-'()+,./:=?;!*#@$_%", found);
+        found = sAtr.find_first_of("-'()+,./:=?;!*#@$_%;", found);
     }
     return sAtr;
 }
@@ -155,7 +155,7 @@ static void build_attributes(GumboAttribute* at, bool no_entities, NSStringUtils
     std::string sName(at->name);
     char quote = '"';
     atts.WriteString(" ");
-    if(sName.find_first_of("><&") != std::string::npos)
+    if(sName.find_first_of("><&;") != std::string::npos)
         return;
     atts.WriteString(sName);
 

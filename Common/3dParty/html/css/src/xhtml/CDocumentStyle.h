@@ -28,8 +28,7 @@ namespace NSCSS
         void SetStyle(const std::wstring& sStyle);
         void SetId(const std::wstring& sId);
 
-        std::wstring GetPStyle();
-        std::wstring GetRStyle();
+        std::wstring GetStyle();
         std::wstring GetId();
 
         void Clear();

@@ -22,7 +22,7 @@ CDocumentStyle::CDocumentStyle()
     {
     }
 
-    std::wstring CDocumentStyle::GetRStyle()
+    std::wstring CDocumentStyle::GetStyle()
     {
         if (m_sId.empty())
             return L"";
@@ -355,6 +355,7 @@ CDocumentStyle::CDocumentStyle()
             std::wstring sFontSize = oStyle.GetFontSize();
                 oXmlElement.SetSz(sFontSize);
         }
+
         if (!oStyle.GetFontFamily().empty())
         {
             std::wstring sFontFamily = oStyle.GetFontFamily();
@@ -370,6 +371,7 @@ CDocumentStyle::CDocumentStyle()
             else if (sTextAlign == L"justify")
                 oXmlElement.SetJc(L"both");
         }
+
         if (!oStyle.GetFontStyle().empty())
         {
             std::wstring sFontStyle = oStyle.GetFontStyle();

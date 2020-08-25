@@ -13,8 +13,7 @@ namespace NSCSS
         std::wstring m_sId;
         std::vector<std::wstring> m_arStandardStyles;
 
-        std::map<std::wstring, std::pair<CCompiledStyle, bool>> m_arStyleUsed;
-                //selector               style           IsPStyle
+        std::vector<std::pair<CCompiledStyle, bool>> m_arStyleUsed;
         std::vector<std::wstring> m_arStandardStylesUsed;
 
         CXmlElement AddParentsStyle(NSCSS::CCompiledStyle& oStyle);

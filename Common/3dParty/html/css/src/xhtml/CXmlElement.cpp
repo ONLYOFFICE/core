@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+
 CXmlElement::CXmlElement()
 {
     Clear();
@@ -91,7 +92,7 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetQFormat(true);
         SetUnhideWhenUsed(true);
         SetB(true);
-        SetI(true);
+//        SetI(true);
         SetColor(L"000000");
         SetSz(L"36");
         SetKeepLines(true);
@@ -273,17 +274,17 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetStyleId(L"a-c");
         SetName(L"Normal");
     }
-    else if (sNameDefaultElement.find(L'-') != std::wstring::npos)
-    {
-        std::wstring sName = sNameDefaultElement.substr(0, sNameDefaultElement.find(L'-'));
-        SetType(L"character");
-        SetStyleId(sNameDefaultElement);
-        SetCustomStyle(L"1");
-        SetName(sNameDefaultElement);
-        SetLink(sName);
-        SetUiPriority(L"34");
+//    else if (sNameDefaultElement.find(L'-') != std::wstring::npos)
+//    {
+//        std::wstring sName = sNameDefaultElement.substr(0, sNameDefaultElement.find(L'-'));
+//        SetType(L"character");
+//        SetStyleId(sNameDefaultElement);
+//        SetCustomStyle(L"1");
+//        SetName(sNameDefaultElement);
+//        SetLink(sName);
+//        SetUiPriority(L"34");
 
-    }
+//    }
 }
 
 void CXmlElement::Clear()
@@ -713,26 +714,9 @@ bool CXmlElement::operator==(const CXmlElement &oElement)
             m_sRightBorder          == oElement.m_sRightBorder;
 }
 
-std::wstring CXmlElement::GetPStyle()
+std::wstring CXmlElement::ConvertPStyle()
 {
-    std::wstring sPStyle = L"<w:style";
-
-    if (!m_sType.empty())
-        sPStyle += L" w:type=\"" + m_sType + L"\"";
-
-    if (!m_sStyleId.empty())
-        sPStyle += L" w:styleId=\"" + m_sStyleId + L"\"";
-
-    if (!m_sDefault.empty())
-        sPStyle += L" w:default=\"" + m_sDefault + L"\"";
-
-    if (!m_sCustomStyle.empty())
-        sPStyle += L" w:customStyle=\"" + m_sCustomStyle + L"\"";
-
-    if (!m_sS.empty())
-        sPStyle += L" w:S=\"" + m_sS + L"\"";
-
-    sPStyle += L">";
+    std::wstring sPStyle;
 
     if (!m_sName.empty())
         sPStyle += L"<w:name w:val=\"" + m_sName + L"\"/>";
@@ -802,32 +786,14 @@ std::wstring CXmlElement::GetPStyle()
     if (sPPr.length() > 15)
         sPStyle += sPPr;
 
-    sPStyle += L"</w:style>";
-    if (sPStyle.length() > 19)
+    if (!sPStyle.empty())
         return sPStyle;
-
     return L"";
 }
 
-std::wstring CXmlElement::GetRStyle()
+std::wstring CXmlElement::ConvertRStyle()
 {
-    std::wstring sRStyle = L"<w:style ";
-    if (!m_sType.empty())
-        sRStyle += L" w:type=\"" + m_sType + L"\"";
-
-    if (!m_sStyleId.empty())
-        sRStyle += L" w:styleId=\"" + m_sStyleId + L"\"";
-
-    if (!m_sDefault.empty())
-        sRStyle += L" w:default=\"" + m_sDefault + L"\"";
-
-    if (!m_sCustomStyle.empty())
-        sRStyle += L" w:customStyle=\"" + m_sCustomStyle + L"\"";
-
-    if (!m_sS.empty())
-        sRStyle += L" w:S=\"" + m_sS + L"\"";
-
-    sRStyle += L">";
+    std::wstring sRStyle;
 
     if (!m_sName.empty())
         sRStyle += L"<w:name w:val=\"" + m_sName + L"\"/>";
@@ -878,6 +844,94 @@ std::wstring CXmlElement::GetRStyle()
 
     if (sRPr.length() > 15)
         sRStyle += sRPr;
+
+    if (!sRStyle.empty())
+        return sRStyle;
+    return L"";
+}
+
+std::wstring CXmlElement::GetStyle()
+{
+    std::wstring sStyle = L"<w:style";
+
+    if (!m_sType.empty())
+        sStyle += L" w:type=\"" + m_sType + L"\"";
+
+    if (!m_sStyleId.empty())
+        sStyle += L" w:styleId=\"" + m_sStyleId + L"\"";
+
+    if (!m_sDefault.empty())
+        sStyle += L" w:default=\"" + m_sDefault + L"\"";
+
+    if (!m_sCustomStyle.empty())
+        sStyle += L" w:customStyle=\"" + m_sCustomStyle + L"\"";
+
+    if (!m_sS.empty())
+        sStyle += L" w:S=\"" + m_sS + L"\"";
+
+    sStyle += L">";
+
+    sStyle += ConvertPStyle();
+    sStyle += ConvertRStyle();
+
+    sStyle += L"</w:style>";
+    if (sStyle.length() > 19)
+        return sStyle;
+
+    return L"";
+}
+
+std::wstring CXmlElement::GetPStyle()
+{
+    std::wstring sPStyle = L"<w:style";
+
+    if (!m_sType.empty())
+        sPStyle += L" w:type=\"" + m_sType + L"\"";
+
+    if (!m_sStyleId.empty())
+        sPStyle += L" w:styleId=\"" + m_sStyleId + L"\"";
+
+    if (!m_sDefault.empty())
+        sPStyle += L" w:default=\"" + m_sDefault + L"\"";
+
+    if (!m_sCustomStyle.empty())
+        sPStyle += L" w:customStyle=\"" + m_sCustomStyle + L"\"";
+
+    if (!m_sS.empty())
+        sPStyle += L" w:S=\"" + m_sS + L"\"";
+
+    sPStyle += L">";
+
+    sPStyle += ConvertPStyle();
+
+    sPStyle += L"</w:style>";
+    if (sPStyle.length() > 19)
+        return sPStyle;
+
+    return L"";
+}
+
+std::wstring CXmlElement::GetRStyle()
+{
+    std::wstring sRStyle = L"<w:style ";
+    if (!m_sType.empty())
+        sRStyle += L" w:type=\"" + m_sType + L"\"";
+
+    if (!m_sStyleId.empty())
+        sRStyle += L" w:styleId=\"" + m_sStyleId + L"\"";
+
+    if (!m_sDefault.empty())
+        sRStyle += L" w:default=\"" + m_sDefault + L"\"";
+
+    if (!m_sCustomStyle.empty())
+        sRStyle += L" w:customStyle=\"" + m_sCustomStyle + L"\"";
+
+    if (!m_sS.empty())
+        sRStyle += L" w:S=\"" + m_sS + L"\"";
+
+    sRStyle += L">";
+
+    sRStyle += ConvertRStyle();
 
     sRStyle += L"</w:style>";
     if (sRStyle.length() > 22)

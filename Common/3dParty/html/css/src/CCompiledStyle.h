@@ -124,6 +124,7 @@ namespace NSCSS
         bool operator!= (const CCompiledStyle& oElement);
         bool operator> (const CCompiledStyle& oElement);
         bool operator< (const CCompiledStyle& oElement);
+
     };
 
 

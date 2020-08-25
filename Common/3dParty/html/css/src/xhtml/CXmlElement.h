@@ -66,6 +66,9 @@ class CXmlElement
         // </tblBorders>
     // </tblPr>
 
+    std::wstring ConvertPStyle();
+    std::wstring ConvertRStyle();
+
 public:
     CXmlElement();
     CXmlElement(std::wstring sNameDefaultElement);
@@ -136,6 +139,7 @@ public:
 
     std::wstring GetPStyle();
     std::wstring GetRStyle();
+    std::wstring GetStyle();
 
     std::wstring GetBasedOn();
     std::wstring GetStyleId();

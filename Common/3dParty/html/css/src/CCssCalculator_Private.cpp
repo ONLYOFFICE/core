@@ -110,6 +110,14 @@ inline std::wstring GetFirstNumber(std::wstring sString)
     return sValue;
 }
 
+//void RemoveExcessFromStyles(std::string& sStyle)
+//{
+//    while (sStyle.find_first_of('<'))
+//    {
+//        sStyle.erase(sStyle.find_first_of('<', 0), sStyle.find_first_of('>', 0));
+//    }
+//}
+
 namespace NSCSS
 {
     CCssCalculator_Private::CCssCalculator_Private()
@@ -869,7 +877,6 @@ namespace NSCSS
         if (sIdName[0] != L'#' && !sIdName.empty())
             sIdName = L'#' + sIdName;
 
-
         for (auto oParent : oParents)
         {
             oStyle += GetCompiledStyle(oParent, {}, unitMeasure);
@@ -891,6 +898,8 @@ namespace NSCSS
         oStyle.SetID(oNode.m_sName + sClassName + sIdName + L'-' + std::to_wstring(m_nCountNodes));
         m_nCountNodes++;
 
+        m_arUsedNode.push_back(std::make_pair(oNode, std::make_pair(oParents, oStyle.GetId())));
+
         return oStyle;
     }
 
@@ -902,6 +911,8 @@ namespace NSCSS
             sStyleUTF8 = GetContentAsUTF8(sStyle, m_sEncoding);
         else
             sStyleUTF8 = sStyle;
+
+//        RemoveExcessFromStyles(sStyleUTF8);
 
         CCssCalculator_Private data;
 

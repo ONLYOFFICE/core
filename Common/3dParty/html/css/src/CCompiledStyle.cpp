@@ -110,7 +110,7 @@ namespace NSCSS
 
     bool CCompiledStyle::operator<(const CCompiledStyle &oElement)
     {
-        return !(m_mStyle.size() > oElement.m_mStyle.size());
+        return (m_mStyle.size() < oElement.m_mStyle.size());
     }
 
     std::map<std::wstring, std::wstring> CCompiledStyle::GetStyleMap()

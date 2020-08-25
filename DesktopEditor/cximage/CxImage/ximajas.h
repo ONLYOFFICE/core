@@ -16,7 +16,7 @@
 
 #if CXIMAGE_SUPPORT_JASPER
 
-#ifdef _LINUX
+#if defined(_LINUX) || defined(__FreeBSD__)
  #include <jasper/jasper.h>
 #else
  #include "../jasper/include/jasper/jasper.h"

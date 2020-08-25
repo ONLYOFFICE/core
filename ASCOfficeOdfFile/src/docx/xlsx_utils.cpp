@@ -51,7 +51,18 @@ bool IsNumber(const std::wstring &value)
 
 	return boost::regex_search(value/*.begin(), value.end(), results*/, rule);
 }
+std::wstring GetNumberFromString(const std::wstring &value)
+{
+	boost::wregex rule(L"^\\-{0,1}[0-9]*[.,]{0,1}[0-9]*$");
+	boost::match_results<std::wstring::const_iterator> results;
 
+    if (boost::regex_match(value, results, rule))
+    {
+        return (results[0].str());
+	}
+	else
+		return L"";
+}
 std::wstring getColAddress(size_t col)
 {
     static const size_t r = (L'Z' - L'A' + 1);

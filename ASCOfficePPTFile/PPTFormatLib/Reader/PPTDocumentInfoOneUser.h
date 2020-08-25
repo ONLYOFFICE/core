@@ -33,6 +33,7 @@
 #include "ClassesAtom.h"
 
 #include "../Records/Animations/_includer.h"
+#include "../Enums/_includer.h"
 #include "../Records/ExObjListContainer.h"
 #include "../Records/CryptSession10Container.h"
 
@@ -95,7 +96,7 @@ public:
 	CRecordVbaProjectStg*							m_VbaProjectStg;
 	int												m_lIndexThisUser;
 
-	std::map <_UINT32, Animations::CSlideTimeLine*>	m_mapAnimations;
+//	std::map <_UINT32, Animations::CSlideTimeLine*>	m_mapAnimations;
 
 	double											m_nWriteSlideTimeOffset;
 	double											m_nWriteSlideTime;
@@ -212,7 +213,7 @@ public:
 
 				int ind = 0;
 				if (layoutRecord.m_pPlaceHolderID[0] == 13 && layoutRecord.m_pPlaceHolderID[1] != 0) ind++;
-				ePlaceholderType phbody = (ePlaceholderType)layoutRecord.m_pPlaceHolderID[ind];
+                PlaceholderEnum phbody = (PlaceholderEnum)layoutRecord.m_pPlaceHolderID[ind];
 				switch (phbody)
 				{
 					case PT_MasterTitle:	type = L"title";	name = L"Title and Object Slide";		break;
@@ -230,8 +231,8 @@ public:
 		}break;
 		case SL_TwoColumns:
 		{
-			ePlaceholderType leftType  = (ePlaceholderType)layoutRecord.m_pPlaceHolderID[1];
-            ePlaceholderType rightType = (ePlaceholderType)layoutRecord.m_pPlaceHolderID[2];
+            PlaceholderEnum leftType  = (PlaceholderEnum)layoutRecord.m_pPlaceHolderID[1];
+            PlaceholderEnum rightType = (PlaceholderEnum)layoutRecord.m_pPlaceHolderID[2];
 
 			name = L"Two Objects Slide";
 			type = L"twoObj";
@@ -279,8 +280,8 @@ public:
 		}break;
 		case SL_TwoRows:
 		{
-			ePlaceholderType topType	= (ePlaceholderType)layoutRecord.m_pPlaceHolderID[1];
-            ePlaceholderType bottomType = (ePlaceholderType)layoutRecord.m_pPlaceHolderID[2];
+            PlaceholderEnum topType	= (PlaceholderEnum)layoutRecord.m_pPlaceHolderID[1];
+            PlaceholderEnum bottomType = (PlaceholderEnum)layoutRecord.m_pPlaceHolderID[2];
 
 			if (topType == PT_Body && bottomType == PT_Object)
             {
@@ -295,7 +296,7 @@ public:
 		}break;
 		case SL_ColumnTwoRows:
 		{
-			ePlaceholderType leftType = (ePlaceholderType)layoutRecord.m_pPlaceHolderID[1];
+            PlaceholderEnum leftType = (PlaceholderEnum)layoutRecord.m_pPlaceHolderID[1];
 
 			if (leftType == PT_Object)
             {
@@ -308,7 +309,7 @@ public:
 		}break;
 		case SL_TwoRowsColumn:
 		{
-			ePlaceholderType rightType = (ePlaceholderType)layoutRecord.m_pPlaceHolderID[2];
+            PlaceholderEnum rightType = (PlaceholderEnum)layoutRecord.m_pPlaceHolderID[2];
 
 			if (rightType == PT_Object)
             {

@@ -41,6 +41,7 @@
 #include "../Records/ExObjListContainer.h"
 #include "../Records/SoundCollectionContainer.h"
 #include "../Records/SoundContainer.h"
+#include "../Enums/_includer.h"
 
 
 CPPTUserInfo::CPPTUserInfo() :	CDocument(),
@@ -131,12 +132,12 @@ void CPPTUserInfo::Clear()
 	m_oExMedia.Clear();
 	m_arrFonts.clear();
 
-	for (size_t nIndex = 0; nIndex < m_mapAnimations.size(); ++nIndex)
-	{
-		RELEASEOBJECT ( m_mapAnimations[nIndex]);
-	}
+//	for (size_t nIndex = 0; nIndex < m_mapAnimations.size(); ++nIndex)
+//	{
+//		RELEASEOBJECT ( m_mapAnimations[nIndex]);
+//	}
 
-	m_mapAnimations.clear();
+//	m_mapAnimations.clear();
 	m_mapTransitions.clear ();
 	m_arOffsetPictures.clear();
 }
@@ -335,11 +336,11 @@ bool CPPTUserInfo::ReadDocumentPersists(POLE::Stream* pStream)
 
 			if ( pSlide->m_pSlideProgTagsContainer )
 			{
-				Animations::CSlideTimeLine* pEffects = pSlide->m_pSlideProgTagsContainer->GetTimeLine ();
-				if (pEffects)
-				{
-					m_mapAnimations.insert(std::pair<_UINT32, Animations::CSlideTimeLine*>((_UINT32)index, pEffects));
-				}
+//				Animations::CSlideTimeLine* pEffects = pSlide->m_pSlideProgTagsContainer->GetTimeLine ();
+//				if (pEffects)
+//				{
+//					m_mapAnimations.insert(std::pair<_UINT32, Animations::CSlideTimeLine*>((_UINT32)index, pEffects));
+//				}
 			}
 		}
 		else

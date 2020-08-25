@@ -307,7 +307,8 @@ enum PlaceholderEnum
     PT_OrgChart,
     PT_Media,
     PT_VerticalObject,
-    PT_Picture
+    PT_Picture,
+    PT_Body_Empty =  0xFFFF
 };
 
 
@@ -465,7 +466,9 @@ enum TextTypeEnum
     Tx_TYPE_CENTERBODY,
     Tx_TYPE_CENTERTITLE,
     Tx_TYPE_HALFBODY,
-    Tx_TYPE_QUARTERBODY
+    Tx_TYPE_QUARTERBODY,
+
+    NoPresent           = 0xFF
 };
 
 

@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include "RecordType.h"
+#include "../Enums/RecordType.h"
 
 
 #define RECORDNAME_BY_TYPE(RECORD_TYPE, RECORD_NAME)						\

@@ -35,6 +35,8 @@
 #include "../Animations/HashCode10Atom.h"
 
 #include "../TextMasterStyleAtom.h"
+#include "../HeadersFootersAtom.h"
+#include "../CString.h"
 
 #include "LinkedSlide10Atom.h"
 #include "LinkedShape10Atom.h"
@@ -251,11 +253,11 @@ public:
         m_oHeader			=	oHeader;
 
         StreamUtils::StreamSkip(m_oHeader.RecLen, pStream);
-        //m_oRoundTripHeaderFooterDefaultsAtom.ReadFromStream(m_oHeader, pStream);
+        m_oRoundTripHeaderFooterDefaultsAtom.ReadFromStream(m_oHeader, pStream);
     }
 
 public:
-    //CRecordRoundTripHeaderFooterDefaults12Atom m_oRoundTripHeaderFooterDefaultsAtom;
+    CRecordRoundTripHeaderFooterDefaults12Atom m_oRoundTripHeaderFooterDefaultsAtom;
 
 
 };
@@ -264,8 +266,8 @@ public:
 class CRecordSlideProgBinaryTagSubContainerOrAtom : public CUnknownRecord
 {
 public:
-    CRecordSlideProgBinaryTagSubContainerOrAtom(const std::wstring tagName) :
-        m_sTagName(tagName)
+    CRecordSlideProgBinaryTagSubContainerOrAtom(const CRecordCString tagName) :
+        m_oTagName(tagName)
     {}
     void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override
     {
@@ -275,15 +277,15 @@ public:
         if (!childHeader.ReadFromStream(pStream))
             return;
 
-        if (m_sTagName == TN_PPT9) {
+        if (m_oTagName.m_strText == TN_PPT9) {
             m_pSlideBinaryTagExtension = new CRecordPP9SlideBinaryTagExtension();
             dynamic_cast<CRecordPP9SlideBinaryTagExtension*>
                     (m_pSlideBinaryTagExtension)->ReadFromStream(childHeader, pStream);
-        } else if (m_sTagName == TN_PPT10) {
+        } else if (m_oTagName.m_strText == TN_PPT10) {
             m_pSlideBinaryTagExtension = new CRecordPP10SlideBinaryTagExtension();
             dynamic_cast<CRecordPP10SlideBinaryTagExtension*>
                     (m_pSlideBinaryTagExtension)->ReadFromStream(childHeader, pStream);
-        } else if (m_sTagName == TN_PPT12) {
+        } else if (m_oTagName.m_strText == TN_PPT12) {
             m_pSlideBinaryTagExtension = new CRecordPP12SlideBinaryTagExtension();
             dynamic_cast<CRecordPP12SlideBinaryTagExtension*>
                     (m_pSlideBinaryTagExtension)->ReadFromStream(childHeader, pStream);
@@ -294,7 +296,7 @@ public:
     }
 
 public:
-    std::wstring    m_sTagName;
+    CRecordCString  m_oTagName;
     IRecord*        m_pSlideBinaryTagExtension;
 };
 
@@ -320,7 +322,30 @@ public:
 
         LONG lPos = 0;
         StreamUtils::StreamPosition ( lPos, pStream );
-        // TODO
+
+        LONG lCurLen(0);
+        SRecordHeader ReadHeader;
+
+        while (lCurLen < m_oHeader.RecLen)
+        {
+            if ( ReadHeader.ReadFromStream(pStream) == false)
+                break;
+            lCurLen +=	8 + ReadHeader.RecLen;
+            CRecordCString oTag;
+            oTag.ReadFromStream(ReadHeader, pStream);
+
+
+            if ( ReadHeader.ReadFromStream(pStream) == false)
+                break;
+            lCurLen +=	8 + ReadHeader.RecLen;
+
+            CRecordSlideProgBinaryTagSubContainerOrAtom* pRecordTag =
+                    new CRecordSlideProgBinaryTagSubContainerOrAtom(oTag);
+            pRecordTag->ReadFromStream(ReadHeader, pStream);
+            m_arrRgChildRec.push_back(pRecordTag);
+        }
+
+
         StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);
     }
 

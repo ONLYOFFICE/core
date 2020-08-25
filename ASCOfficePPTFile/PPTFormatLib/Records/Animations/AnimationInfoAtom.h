@@ -33,7 +33,7 @@
 
 
 #include "../Reader/Records.h"
-#include "../../Structures/ColorIndex.h"
+#include "../../Structures/ColorIndexStruct.h"
 
 namespace PPT_FORMAT
 {
@@ -61,7 +61,7 @@ struct SFlagsAH {
 class CRecordAnimationInfoAtom : public CUnknownRecord
 {
 public:
-    ColorIndex m_sDimColor;
+    ColorIndexStruct m_sDimColor;
 
     USHORT      m_fReverse;
     USHORT      m_fAutomatic;

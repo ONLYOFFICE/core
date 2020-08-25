@@ -34,7 +34,8 @@
 
 #include "../Reader/Records.h"
 
-
+namespace PPT_FORMAT
+{
 class CRecordTimeIterateDataAtom: public CUnknownRecord
 {
 public:
@@ -44,7 +45,7 @@ public:
 
         m_nIterateInterval						=	StreamUtils::ReadDWORD ( pStream );
         m_nIterateType							=	StreamUtils::ReadDWORD ( pStream );
-        m_nIterateDirection					=	StreamUtils::ReadDWORD ( pStream );
+        m_nIterateDirection                     =	StreamUtils::ReadDWORD ( pStream );
         m_nIterateIntervalType					=	StreamUtils::ReadDWORD ( pStream );
 
         _UINT32 Value							=	StreamUtils::ReadDWORD ( pStream );
@@ -67,3 +68,4 @@ public:
     bool m_fIterateIntervalPropertyUsed;
     bool m_fIterateIntervalTypePropertyUsed;
 };
+}

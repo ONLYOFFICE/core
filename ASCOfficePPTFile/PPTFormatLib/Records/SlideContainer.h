@@ -31,22 +31,22 @@
  */
 #pragma once
 #include "../Reader/Records.h"
-#include "../Records/Animations/AnimationTypes.h"
+#include "../Records/Slide/SlideProgTagsContainer.h"
 
 #include "../Records/SSSlideInfoAtom.h"
 
 class CRecordSlide : public CRecordsContainer
 {
 public:
-	SSlidePersist			m_oPersist;
-	SlideProgTagsContainer*	m_pSlideProgTagsContainer;
+    SSlidePersist       			m_oPersist;
+    CRecordSlideProgTagsContainer*	m_pSlideProgTagsContainer;
 
-	bool					m_bExistsTransition;
+    bool                			m_bExistsTransition;
 	
-	CSlideShowSlideInfoAtom	m_oSlideShowSlideInfoAtom;
+    CSlideShowSlideInfoAtom     	m_oSlideShowSlideInfoAtom;
 
-	int						m_Index;
-	int						m_IndexUser;
+    int                             m_Index;
+    int                             m_IndexUser;
 	
 private:
 	_UINT32 m_lCountReferences;
@@ -108,7 +108,7 @@ public:
 
 			if ( RECORD_PROG_TAGS == oRec.RecType )
 			{
-				m_pSlideProgTagsContainer	=	new	SlideProgTagsContainer ();
+                m_pSlideProgTagsContainer	=	new	CRecordSlideProgTagsContainer ();
 				m_pSlideProgTagsContainer->ReadFromStream(oRec, pStream);
 			}
 			else

@@ -31,14 +31,35 @@
  */
 #pragma once
 
+#include "IStruct.h"
 
-#include "ColorIndexStruct.h"
-#include "ColorStruct.h"
-#include "PointStruct.h"
-#include "WideColorStruct.h"
-#include "DateTimeStruct.h"
-#include "RatioStruct.h"
-#include "RectStruct.h"
-#include "SmallRectStruct.h"
-#include "ScalingStruct.h"
-#include "TmsfTimeStruct.h"
+
+namespace PPT_FORMAT
+{
+struct ColorIndexStruct : public IStruct  {
+
+    BYTE m_red;
+    BYTE m_green;
+    BYTE m_blue;
+    BYTE m_index;
+
+    ColorIndexStruct()
+    {
+        clear();
+    }
+
+    void clear()
+    {
+        m_red = m_green = m_blue = 0;
+        m_index = 0;
+    }
+
+    void ReadFromStream(POLE::Stream * pStream)
+    {
+        m_red       = StreamUtils::ReadBYTE(pStream);
+        m_green     = StreamUtils::ReadBYTE(pStream);
+        m_blue      = StreamUtils::ReadBYTE(pStream);
+        m_index     = StreamUtils::ReadBYTE(pStream);
+    }
+};
+}

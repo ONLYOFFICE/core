@@ -239,6 +239,7 @@ HEADERS += \
     ../../../ASCOfficePPTXFile/Editor/Drawing/Theme.h \
     ../../../Common/3dParty/pole/pole.h  \
     ../Structures/ColorIndex.h \
+    ../Structures/ColorIndexStruct.h \
     ../Structures/ColorStruct.h \
     ../Structures/DateTimeStruct.h \
     ../Structures/IStruct.h \

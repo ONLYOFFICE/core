@@ -66,6 +66,27 @@ namespace NSCSS
 
     bool CCompiledStyle::operator==(const CCompiledStyle &oElement)
     {
+        std::wstring sThisName = this->GetId();
+
+        if (sThisName.find(L'-') != std::wstring::npos)
+            sThisName = sThisName.substr(0, sThisName.find(L'-'));
+        if (sThisName.find(L'#') != std::wstring::npos)
+            sThisName = sThisName.substr(0, sThisName.find(L'#'));
+        if (sThisName.find(L'.') != std::wstring::npos)
+            sThisName = sThisName.substr(0, sThisName.find(L'.'));
+
+        std::wstring sElementName = oElement.m_sId;
+
+        if (sElementName.find(L'-') != std::wstring::npos)
+            sElementName = sElementName.substr(0, sElementName.find(L'-'));
+        if (sElementName.find(L'#') != std::wstring::npos)
+            sElementName = sElementName.substr(0, sElementName.find(L'#'));
+        if (sElementName.find(L'.') != std::wstring::npos)
+            sElementName = sElementName.substr(0, sElementName.find(L'.'));
+
+        if (sThisName != sElementName)
+            return false;
+
         if (this->m_arParentsStyles.size() != oElement.m_arParentsStyles.size())
             return false;
 

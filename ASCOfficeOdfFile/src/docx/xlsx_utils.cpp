@@ -53,7 +53,7 @@ bool IsNumber(const std::wstring &value)
 }
 std::wstring GetNumberFromString(const std::wstring &value)
 {
-	boost::wregex rule(L"^\\-{0,1}[0-9]*[.,]{0,1}[0-9]*$");
+	boost::wregex rule(L"^\\s*\\-{0,1}[0-9]*[.,]{0,1}[0-9]*\\s*$");
 	boost::match_results<std::wstring::const_iterator> results;
 
     if (boost::regex_match(value, results, rule))

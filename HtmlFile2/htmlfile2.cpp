@@ -529,6 +529,38 @@ private:
         bWasP = true;
     }
 
+    void writePStyle(NSStringUtils::CStringBuilder* oXml, const std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, bool& bWasP, std::wstring& sP, std::wstring& sPStyle)
+    {
+        if(!bWasP)
+            return;
+        std::vector<NSCSS::CNode> sPSubClass(sSelectors);
+        for(size_t it = sPSubClass.size() - 1; it > 0; it--)
+        {
+            if(DoesNotFormParagraph.find(L' ' + sPSubClass[it].m_sName + L' ') != std::wstring::npos)
+                sPSubClass.pop_back();
+        }
+
+        sP = oTS.sPStyle;
+        size_t nFound = sP.find(L"<w:pStyle");
+        while(nFound != std::wstring::npos)
+        {
+            size_t nEndFound = sP.find(L'>', nFound);
+            NSCSS::CNode oNode;
+            oNode.m_sName = sP.substr(nFound + 17, nEndFound - nFound - 20);
+            sPSubClass.push_back(oNode);
+            sP.erase(nFound, nEndFound + 1 - nFound);
+            nFound = sP.find(L"<w:pStyle", nFound);
+        }
+
+        oXml->WriteString(L"<w:pPr><w:pStyle w:val=\"");
+        sPStyle = GetStyle(sPSubClass, true);
+        oXml->WriteString(sPStyle);
+        oXml->WriteString(L"\"/>");
+        oXml->WriteString(sP);
+        oXml->WriteString(L"</w:pPr>");
+        bWasP = false;
+    }
+
     void readHead()
     {
         if(m_oLightReader.IsEmptyNode())
@@ -593,36 +625,7 @@ private:
             {
                 std::wstring sP;
                 std::wstring sPStyle;
-                if(bWasP)
-                {
-                    std::vector<NSCSS::CNode> sPSubClass(sSubClass);
-                    for(size_t it = sPSubClass.size() - 1; it > 0; it--)
-                    {
-                        if(DoesNotFormParagraph.find(L' ' + sPSubClass[it].m_sName + L' ') != std::wstring::npos)
-                            sPSubClass.pop_back();
-                        else
-                            break;
-                    }
-
-                    sP = oTS.sPStyle;
-                    size_t nFound = sP.find(L"<w:pStyle");
-                    while(nFound != std::wstring::npos)
-                    {
-                        size_t nEndFound = sP.find(L'>', nFound);
-                        NSCSS::CNode oNode;
-                        oNode.m_sName = sP.substr(nFound + 17, nEndFound - nFound - 20);
-                        sPSubClass.push_back(oNode);
-                        sP.erase(nFound, nEndFound + 1 - nFound);
-                        nFound = sP.find(L"<w:pStyle", nFound);
-                    }
-
-                    oXml->WriteString(L"<w:pPr><w:pStyle w:val=\"");
-                    sPStyle = GetStyle(sPSubClass, true);
-                    oXml->WriteString(sPStyle);
-                    oXml->WriteString(L"\"/>");
-                    oXml->WriteString(sP);
-                    oXml->WriteString(L"</w:pPr>");
-                }
+                writePStyle(oXml, sSubClass, oTS, bWasP, sP, sPStyle);
 
                 oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"");
                 std::wstring sRStyle = GetStyle(sSubClass, false);
@@ -730,10 +733,7 @@ private:
             }
             // Картинки
             else if(sName == L"img")
-            {
-                readImage(oXml, sSubClass, oTS);
-                bWasP = false;
-            }
+                readImage(oXml, sSubClass, oTS, bWasP);
             // Подчеркнутый
             else if(sName == L"ins")
             {
@@ -994,21 +994,23 @@ private:
         {
             int n = 0;
             std::wstring sName = m_oLightReader.GetName();
+            std::wstring sEmpty;
+            std::vector<NSCSS::CNode> sSubClass = GetSubClass(sSelectors, sEmpty);
             if(sName == L"caption")
             {
                 bWasP = true;
                 oCaption.WriteString(L"<w:p>");
                 CTextSettings oTSP { oTS.bBdo, oTS.bPre, oTS.nLi, oTS.sRStyle, oTS.sPStyle + L"<w:jc w:val=\"center\"/>" };
-                readStream(&oCaption, sSelectors, oTSP, bWasP);
+                readStream(&oCaption, sSubClass, oTSP, bWasP);
                 oCaption.WriteString(L"</w:p>");
                 bWasP = false;
             }
             if(sName == L"thead")
-                n = readTr(&oHead, sSelectors, oTS, bWasP);
+                n = readTr(&oHead, sSubClass, oTS, bWasP);
             else if(sName == L"tbody")
-                n = readTr(&oBody, sSelectors, oTS, bWasP);
+                n = readTr(&oBody, sSubClass, oTS, bWasP);
             else if(sName == L"tfoot")
-                n = readTr(&oFoot, sSelectors, oTS, bWasP);
+                n = readTr(&oFoot, sSubClass, oTS, bWasP);
             if(n > nGridCol)
                 nGridCol = n;
         }
@@ -1058,61 +1060,46 @@ private:
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
         {
             std::wstring sName = m_oLightReader.GetName();
+            std::wstring sEmpty;
+            std::vector<NSCSS::CNode> sSubClass = GetSubClass(sSelectors, sEmpty);
             if(sName == L"optgroup")
             {
                 while(m_oLightReader.MoveToNextAttribute())
                 {
                     if(m_oLightReader.GetName() == L"label")
-                    {
-                        if(!bWasP)
-                        {
-                            auto it = std::find_if(sSelectors.begin(), sSelectors.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
-                            if(it != sSelectors.end())
-                                oXml->WriteString(L"</w:hyperlink>");
-                            oXml->WriteString(L"</w:p><w:p>");
-                            if(it != sSelectors.end())
-                                oXml->WriteString(L"<w:hyperlink>");
-                            bWasP = true;
-                        }
-
+                    {                        
+                        wasP(oXml, sSelectors, bWasP);
                         oXml->WriteString(L"<w:pPr><w:pStyle w:val=\"");
-                        std::wstring sPStyle = GetStyle(sSelectors, true);
+                        std::wstring sPStyle = GetStyle(sSubClass, true);
                         oXml->WriteString(sPStyle);
                         oXml->WriteString(L"\"/></w:pPr>");
                         oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"");
-                        std::wstring sRStyle = GetStyle(sSelectors, false);
+                        std::wstring sRStyle = GetStyle(sSubClass, false);
                         oXml->WriteString(sRStyle);
                         oXml->WriteString(L"\"/>");
                         oXml->WriteString(oTS.sRStyle);
                         oXml->WriteString(L"</w:rPr><w:t xml:space=\"preserve\">");
                         oXml->WriteEncodeXmlString(m_oLightReader.GetText());
                         oXml->WriteString(L"</w:t></w:r>");
-
-                        auto it = std::find_if(sSelectors.begin(), sSelectors.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
-                        if(it != sSelectors.end())
-                            oXml->WriteString(L"</w:hyperlink>");
-                        oXml->WriteString(L"</w:p><w:p>");
-                        if(it != sSelectors.end())
-                            oXml->WriteString(L"<w:hyperlink>");
-                        bWasP = true;
+                        bWasP = false;
+                        wasP(oXml, sSelectors, bWasP);
                     }
                 }
                 m_oLightReader.MoveToElement();
-                readLi(oXml, sSelectors, oTS, bWasP, true);
+                readLi(oXml, sSubClass, oTS, bWasP, true);
                 continue;
             }
             if(sName != L"li" && sName != L"option")
             {
-                readStream(oXml, sSelectors, oTS, bWasP);
+                readStream(oXml, sSubClass, oTS, bWasP);
                 continue;
             }
-            wasP(oXml, sSelectors, bWasP);
+            wasP(oXml, sSubClass, bWasP);
             std::wstring sPStyle = L"<w:pStyle w:val=\"li\"/><w:numPr><w:ilvl w:val=\"" + std::to_wstring(oTS.nLi + 1) + L"\"/><w:numId w:val=\"" +
                     (bType ? L"1" : std::to_wstring(m_nNumberingId)) + L"\"/></w:numPr>";
             CTextSettings oTSLi { oTS.bBdo, oTS.bPre, oTS.nLi + 1, oTS.sRStyle, oTS.sPStyle + sPStyle };
-            bWasP = true;
-            readStream(oXml, sSelectors, oTSLi, bWasP);
-            wasP(oXml, sSelectors, bWasP);
+            readStream(oXml, sSubClass, oTSLi, bWasP);
+            wasP(oXml, sSubClass, bWasP);
         }
     }
 
@@ -1178,6 +1165,9 @@ private:
         if(sTitle.empty())
             sTitle = sRef;
 
+        std::wstring sP;
+        std::wstring sPStyle;
+        writePStyle(oXml, sSelectors, oTS, bWasP, sP, sPStyle);
         // Перекрестная ссылка внутри файла
         if(bCross)
         {
@@ -1219,7 +1209,7 @@ private:
         bWasP = false;
     }
 
-    void readNote(NSStringUtils::CStringBuilder* oXml, const std::wstring& sNote)
+    void readNote  (NSStringUtils::CStringBuilder* oXml, const std::wstring& sNote)
     {
         if(sNote.empty())
             return;
@@ -1234,7 +1224,7 @@ private:
         m_oNoteXml.WriteString(L"</w:t></w:r></w:p></w:footnote>");
     }
 
-    void readImage (NSStringUtils::CStringBuilder* oXml, const std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
+    void readImage (NSStringUtils::CStringBuilder* oXml, const std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, bool& bWasP)
     {
         std::wstring sAlt = L"";
         bool bRes = false;
@@ -1323,6 +1313,9 @@ private:
 
         if(!bRes)
         {
+            std::wstring sP;
+            std::wstring sPStyle;
+            writePStyle(oXml, sSelectors, oTS, bWasP, sP, sPStyle);
             oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"");
             std::wstring sRStyle = GetStyle(sSelectors, false);
             oXml->WriteString(sRStyle);
@@ -1332,6 +1325,7 @@ private:
             oXml->WriteEncodeXmlString(sAlt);
             oXml->WriteString(L"</w:t></w:r>");
         }
+        bWasP = false;
     }
 
     void ImageRels (NSStringUtils::CStringBuilder* oXml, const std::wstring& sImageId, const std::wstring& sImageName)

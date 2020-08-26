@@ -1642,6 +1642,10 @@ void CApplicationFonts::Initialize(bool bIsCheckSelection)
 	m_oList.LoadFromFolder(L"/usr/share/fonts");
 #endif
 
+#if defined (__FreeBSD__)
+	m_oList.LoadFromFolder(L"/usr/local/share/fonts");
+#endif
+
 #if defined(_MAC) && !defined(_IOS)
 	m_oList.LoadFromFolder(L"/Library/Fonts/");
 #endif

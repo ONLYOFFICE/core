@@ -34,7 +34,7 @@
 #include "../docbuilder.h"
 #include "../../common/File.h"
 
-#ifdef LINUX
+#if defined(LINUX) || defined(__FreeBSD__)
 #include "../../../DesktopEditor/common/File.h"
 #endif
 

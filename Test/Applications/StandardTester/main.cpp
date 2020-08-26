@@ -13,7 +13,7 @@
 
 #include "../../../DesktopEditor/fontengine/application_generate_fonts.h"
 
-#ifdef LINUX
+#if defined(LINUX) || defined(__FreeBSD__)
 #include <unistd.h>
 #include <sys/wait.h>
 #include <stdio.h>
@@ -176,7 +176,7 @@ namespace NSX2T
 
 #endif
 
-#ifdef LINUX
+#if defined(LINUX) || defined(__FreeBSD__)
         pid_t pid = fork(); // create child process
         int status;
 

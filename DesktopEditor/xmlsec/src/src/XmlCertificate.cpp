@@ -19,7 +19,7 @@ namespace NSOpenSSL
 
 #include "../../../common/File.h"
 
-#if defined(_LINUX) && !defined(_MAC)
+#if (defined(_LINUX) || defined(__FreeBSD__)) && !defined(_MAC)
 #include "./XmlSigner_openssl.h"
 #define XML_CERTIFICATE_USE_OPENSSL
 #define CCertificate CCertificate_openssl

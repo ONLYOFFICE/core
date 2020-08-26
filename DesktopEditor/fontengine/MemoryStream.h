@@ -41,7 +41,7 @@
 //#define _LOGGING_NATIVE_
 #endif
 
-#ifdef _LINUX
+#if defined(_LINUX) || defined(__FreeBSD__)
 #include <stdlib.h>
 #endif
 

@@ -105,6 +105,13 @@ linux-g++:contains(DST_ARCH, arm): {
 }
 }
 
+freebsd-clang {
+    message("freebsd-clang")
+    CONFIG += core_linux
+    CONFIG += core_linux_64
+    CONFIG += core_freebsd
+}
+
 linux-g++-64 {
     message("linux-64")
     CONFIG += core_linux

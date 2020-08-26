@@ -441,7 +441,23 @@ public:
                         // Кроме функции получения стилей
                         std::wstring sType = NSFile::GetFileExtention(sRef);
                         if(sType == L"css")
-                            m_oStylesCalculator.AddStylesFromFile(m_sSrc + L"/" + sRef);
+                        {
+                            bool bRes = false;
+                            // Стиль в сети
+                            if(sRef.substr(0, 4) == L"http")
+                            {
+                                CFileDownloader oDownloadStyle(sRef, false);
+                                oDownloadStyle.SetFilePath(m_sTmp + L'/' + NSFile::GetFileName(sRef));
+                                bRes = oDownloadStyle.DownloadSync();
+                            }
+                            if(bRes)
+                            {
+                                m_oStylesCalculator.AddStylesFromFile(m_sTmp + L'/' + NSFile::GetFileName(sRef));
+                                NSFile::CFileBinary::Remove(m_sTmp + L'/' + NSFile::GetFileName(sRef));
+                            }
+                            else
+                                m_oStylesCalculator.AddStylesFromFile(m_sSrc + L'/' + sRef);
+                        }
                     }
                 }
                 m_oLightReader.MoveToElement();
@@ -449,7 +465,7 @@ public:
             // тэг style содержит стили для styles.xml
             else if(sName == L"style")
             {
-                std::string sText = m_oLightReader.GetText2A();
+                std::wstring sText = m_oLightReader.GetText2();
                 m_oStylesCalculator.AddStyles(sText);
             }
             readStyle();

@@ -13,6 +13,7 @@
 #include "../../katana-parser/src/selector.h"
 #include "../../../../../UnicodeConverter/UnicodeConverter.h"
 #include "../../../../../DesktopEditor/common/File.h"
+#include "../../../../../DesktopEditor/common/StringBuilder.h"
 
 static std::wstring StringifyValueList(KatanaArray* oValues);
 static std::wstring StringifyValue(KatanaValue* oValue);
@@ -23,6 +24,11 @@ inline std::wstring stringToWstring(const std::string& sString)
     std::wstring_convert<convert_type, wchar_t> converter;
 
     return converter.from_bytes(sString);
+}
+
+inline std::string wstringToString(const std::wstring& sWstring)
+{
+    return std::string(sWstring.begin(), sWstring.end());
 }
 
 inline std::string GetContentAsUTF8(const std::string &sString, const std::wstring &sEncoding)
@@ -87,10 +93,10 @@ inline std::wstring GetFirstNumber(std::wstring sString)
     std::wstring sValue;
     int nPos = 0;
 
-    while(nPos < sString.length() && !isdigit(sString[nPos]))
+    while(nPos < (int)sString.length() && !isdigit(sString[nPos]))
         nPos++;
 
-    while(nPos < sString.length() && isdigit(sString[nPos]))
+    while(nPos < (int)sString.length() && isdigit(sString[nPos]))
     {
         sValue += sString[nPos];
         nPos++;
@@ -100,7 +106,7 @@ inline std::wstring GetFirstNumber(std::wstring sString)
     {
         sValue += L'.';
         nPos++;
-        while(nPos < sString.length() && isdigit(sString[nPos]))
+        while(nPos < (int)sString.length() && isdigit(sString[nPos]))
         {
             sValue += sString[nPos];
             nPos++;
@@ -110,13 +116,68 @@ inline std::wstring GetFirstNumber(std::wstring sString)
     return sValue;
 }
 
-//void RemoveExcessFromStyles(std::string& sStyle)
-//{
-//    while (sStyle.find_first_of('<'))
-//    {
-//        sStyle.erase(sStyle.find_first_of('<', 0), sStyle.find_first_of('>', 0));
-//    }
-//}
+inline void RemoveExcessFromStyles(std::wstring& sStyle)
+{
+    while (sStyle.find_first_of(L'<') != std::wstring::npos || sStyle.find_first_of(L'@') != std::wstring::npos)
+    {
+        if (sStyle.find_first_of(L'<') != std::wstring::npos)
+            sStyle.erase(sStyle.find_first_of(L'<', 0), sStyle.find_first_of(L'>', 0) - sStyle.find_first_of(L'<', 0) + 1);
+        else if (sStyle.find_first_of(L'@') != std::wstring::npos)
+            sStyle.erase(sStyle.find_first_of(L'@', 0), sStyle.find_first_of(L'}', 0) - sStyle.find_first_of(L'@', 0) + 1);
+    }
+}
+
+inline void TranslateToEn(std::wstring& sStyle)
+{
+    std::map<int, std::wstring> arAlf =        {{1072, L"a"},     {1040, L"A"},
+                                                {1073, L"b"},     {1041, L"B"},
+                                                {1074, L"v"},     {1042, L"V"},
+                                                {1075, L"g"},     {1043, L"G"},
+                                                {1076, L"d"},     {1044, L"D"},
+                                                {1077, L"e"},     {1045, L"E"},
+                                                {1105, L"e"},     {1025, L"E"},
+                                                {1078, L"zh"},    {1046, L"ZH"},
+                                                {1079, L"z"},     {1047, L"Z"},
+                                                {1080, L"i"},     {1048, L"I"},
+                                                {1081, L"y"},     {1049, L"Y"},
+                                                {1082, L"k"},     {1050, L"K"},
+                                                {1083, L"l"},     {1051, L"L"},
+                                                {1084, L"m"},     {1052, L"M"},
+                                                {1085, L"n"},     {1053, L"N"},
+                                                {1086, L"o"},     {1054, L"O"},
+                                                {1087, L"p"},     {1055, L"P"},
+                                                {1088, L"r"},     {1056, L"R"},
+                                                {1089, L"s"},     {1057, L"S"},
+                                                {1090, L"t"},     {1058, L"T"},
+                                                {1091, L"u"},     {1059, L"U"},
+                                                {1092, L"f"},     {1060, L"F"},
+                                                {1093, L"kh"},    {1061, L"KH"},
+                                                {1094, L"ts"},    {1062, L"TS"},
+                                                {1095, L"ch"},    {1063, L"CH"},
+                                                {1096, L"sh"},    {1064, L"SH"},
+                                                {1097, L"shch"},  {1065, L"SHCH"},
+                                                {1098, L""},      {1066, L""},
+                                                {1099, L"y"},     {1067, L"Y"},
+                                                {1100, L""},      {1068, L""},
+                                                {1101, L"e"},     {1069, L"E"},
+                                                {1102, L"yu"},    {1070, L"YU"},
+                                                {1103, L"ya"},    {1071, L"YA"}};
+
+    std::wstring sNewStyle;
+
+    for (int i = 0; i < (int)sStyle.length(); i++)
+    {
+        if (arAlf.find((int)sStyle[i]) != arAlf.cend())
+        {
+            sNewStyle += arAlf[sStyle[i]];
+        }
+        else if (sStyle[i] != '\n')
+        {
+            sNewStyle += sStyle[i];
+        }
+    }
+    sStyle = sNewStyle;
+}
 
 namespace NSCSS
 {
@@ -627,7 +688,7 @@ namespace NSCSS
     }
 
     CCompiledStyle CCssCalculator_Private::GetCompiledStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure)
-    {   
+    {
         if (unitMeasure != Default)
             SetUnitMeasure(unitMeasure);
 
@@ -868,11 +929,13 @@ namespace NSCSS
         oStyle.Clear();
 
         std::wstring sClassName = oNode.m_sClass;
+        TranslateToEn(sClassName);
 
         if (sClassName[0] != L'.' && !sClassName.empty())
             sClassName = L'.' + sClassName;
 
         std::wstring sIdName = oNode.m_sId;
+        TranslateToEn(sIdName);
 
         if (sIdName[0] != L'#' && !sIdName.empty())
             sIdName = L'#' + sIdName;
@@ -903,7 +966,7 @@ namespace NSCSS
         return oStyle;
     }
 
-    void CCssCalculator_Private::AddStyles(const std::string& sStyle)
+    void CCssCalculator_Private::AddStyles(const std::string &sStyle)
     {
         std::string sStyleUTF8;
 
@@ -911,8 +974,6 @@ namespace NSCSS
             sStyleUTF8 = GetContentAsUTF8(sStyle, m_sEncoding);
         else
             sStyleUTF8 = sStyle;
-
-//        RemoveExcessFromStyles(sStyleUTF8);
 
         CCssCalculator_Private data;
 
@@ -927,6 +988,14 @@ namespace NSCSS
         }
         katana_destroy_output(output);
 
+    }
+
+    void CCssCalculator_Private::AddStyles(const std::wstring &sStyle)
+    {
+        std::wstring sNewStyle = sStyle;
+        RemoveExcessFromStyles(sNewStyle);
+        TranslateToEn(sNewStyle);
+        AddStyles(wstringToString(sNewStyle));
     }
 
     void CCssCalculator_Private::AddStylesFromFile(const std::wstring& sFileName)

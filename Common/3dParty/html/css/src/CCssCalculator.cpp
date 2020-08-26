@@ -40,6 +40,12 @@ namespace NSCSS
         m_pInternal->AddStyles(sStyle);
     }
 
+    void CCssCalculator::AddStyles(const std::wstring &sStyle)
+    {
+        m_pInternal->AddStyles(sStyle);
+
+    }
+
     void CCssCalculator::AddStylesFromFile(const std::wstring &sFileName)
     {
         m_pInternal->AddStylesFromFile(sFileName);

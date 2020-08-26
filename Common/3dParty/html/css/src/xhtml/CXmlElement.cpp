@@ -258,7 +258,7 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
     }
     else if (sNameDefaultElement == L"a")
     {
-        SetType(L"paragraph");
+        SetType(L"character");
         SetBasedOn(L"a-c");
         SetStyleId(L"a");
         SetName(L"Hyperlink");
@@ -266,13 +266,6 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetUnhideWhenUsed(true);
         SetColor(L"0563C1");
         SetU(L"single");
-    }
-    else if (sNameDefaultElement == L"a-c")
-    {
-        SetType(L"character");
-        SetDefault(L"1");
-        SetStyleId(L"a-c");
-        SetName(L"Normal");
     }
 //    else if (sNameDefaultElement.find(L'-') != std::wstring::npos)
 //    {
@@ -821,8 +814,8 @@ std::wstring CXmlElement::ConvertRStyle()
             sRPr += L"<w:i/><w:iCs/>";
 
         if (!m_sRFonts.empty())
-            sRPr += L"<w:rFonts w:ascii=\"" + m_sRFonts + L"\" w:hAnsi=\"" + m_sRFonts + L"\" w:cs=\"" +
-                      m_sRFonts + L"\" w:eastAsia=\"" + m_sRFonts + L"\"/>";
+            sRPr += L"<w:rFonts w:ascii=" + m_sRFonts + L" w:hAnsi=" + m_sRFonts + L" w:cs=" +
+                      m_sRFonts + L" w:eastAsia=" + m_sRFonts + L"/>";
 
         if (!m_sColor.empty())
             sRPr += L"<w:color w:val=\"" + m_sColor + L"\"/>";

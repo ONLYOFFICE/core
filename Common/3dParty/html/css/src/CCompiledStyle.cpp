@@ -79,7 +79,7 @@ namespace NSCSS
         auto iterLeft = this->m_mStyle.begin();
         auto iterRight = oElement.m_mStyle.begin();
 
-        while (iterLeft != this->m_mStyle.end())
+        while (iterLeft != this->m_mStyle.cend())
         {
             if (iterLeft->first != iterRight->first ||
                 iterLeft->second != iterRight->second)

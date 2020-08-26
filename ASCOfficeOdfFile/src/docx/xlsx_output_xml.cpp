@@ -227,6 +227,8 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 
 			CP_XML_STREAM() << impl_->header_footer_.str();
 			
+			CP_XML_STREAM() << impl_->breaks_.str();
+			
 			if (false == impl_->drawingId_.empty())
 			{
 				CP_XML_NODE(L"drawing")
@@ -263,10 +265,6 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 				}
 			}
 			CP_XML_STREAM() << impl_->picture_background_.str();
-
-			//или тут ??? headerFooter
-
-			CP_XML_STREAM() << impl_->breaks_.str();
 		}
     }
 }

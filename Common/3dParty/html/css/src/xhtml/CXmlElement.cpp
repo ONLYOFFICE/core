@@ -233,7 +233,7 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetBasedOn(L"normal");
         SetLink(L"p-c");
         SetQFormat(true);
-        SetInd(L"w:firstLine=\"567\"");
+//        SetInd(L"w:firstLine=\"567\"");
         SetJc(L"both");
     }
     else if (sNameDefaultElement == L"div-c")
@@ -253,7 +253,7 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetBasedOn(L"normal");
         SetLink(L"div-c");
         SetQFormat(true);
-        SetInd(L"w:firstLine=\"567\"");
+//        SetInd(L"w:firstLine=\"567\"");
         SetJc(L"both");
     }
     else if (sNameDefaultElement == L"a")
@@ -826,10 +826,6 @@ std::wstring CXmlElement::ConvertRStyle()
         if (!m_sSz.empty())
         {
             std::wstring sSz = m_sSz;
-
-            if (sSz == L"medium")
-                sSz = L"22";
-
             sRPr += L"<w:sz w:val=\"" + sSz + L"\"/>" + L"<w:szCs w:val=\"" + sSz + L"\"/>";
         }
 

@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <wchar.h>
 
 struct ParentStyle
 {
@@ -311,8 +312,27 @@ CDocumentStyle::CDocumentStyle()
                 oXmlElement.SetB(true);
         }
 
-        if (!oStyle.GetTextIndent().empty())
-            oXmlElement.SetInd(L"w:firstLine=\"" + oStyle.GetTextIndent() + L"\"");
+        std::wstring sValue;
+        if (!oStyle.GetTextIndent().empty() && oStyle.GetId().find(L"table") == std::wstring::npos)
+        {
+            sValue += L"w:firstLine=\"" + oStyle.GetTextIndent() + L"\" ";
+        }
+        if (!oStyle.GetMargin().empty())
+        {
+            double dLeftValue = wcstod(oStyle.GetMarginLeft().c_str(), NULL);
+            dLeftValue = dLeftValue * 2.54 / 72.0 * 1440.0;
+
+            double dRightValue = wcstod(oStyle.GetMarginRight().c_str(), NULL);
+            dRightValue = dRightValue * 2.54 / 72.0 * 1440.0;
+
+            sValue += L"w:left=\"" + std::to_wstring((int)dLeftValue) + L"\" ";
+            sValue += L"w:right=\"" + std::to_wstring((int)dRightValue) + L"\"";
+        }
+
+        if (!sValue.empty())
+        {
+            oXmlElement.SetInd(sValue);
+        }
 
         if (!oStyle.GetBackgroundColor().empty())
             oXmlElement.SetShd(oStyle.GetBackgroundColor());
@@ -339,7 +359,7 @@ CDocumentStyle::CDocumentStyle()
         if (!oStyle.GetFontSize().empty())
         {
             std::wstring sFontSize = oStyle.GetFontSize();
-                oXmlElement.SetSz(sFontSize);
+            oXmlElement.SetSz(sFontSize);
         }
         if (!oStyle.GetFontFamily().empty())
         {
@@ -363,7 +383,7 @@ CDocumentStyle::CDocumentStyle()
                 oXmlElement.SetB(true);
         }
 
-        if (!oStyle.GetBorder().empty())
+        if (!oStyle.GetBorder().empty() && oStyle.GetId().find(L"caption") == std::wstring::npos)
         {
             oXmlElement.SetTopBorder(L"true");
             oXmlElement.SetLeftBorder(L"true");

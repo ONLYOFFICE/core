@@ -287,7 +287,7 @@ namespace NSCSS
 
             int nPos1;
 
-            for (size_t i = sFont.length() - 1; i >= 0; i--)
+            for (int i = (int)sFont.length() - 1; i >= 0; i--)
             {
                 if(isdigit(sFont[i]))
                 {
@@ -296,14 +296,17 @@ namespace NSCSS
                 }
             }
 
-            std::wstring sValue = sFont.substr(nPos1);
+            std::wstring sValue = sFont.substr(nPos1 + 1);
 
-            if(sValue.find(L" ") != std::wstring::npos)
-                sValue = sValue.substr(sValue.find(L" ") + 1);
+            if (sValue.find(L',') != std::wstring::npos)
+                sValue = sValue.substr(0, sValue.find(L','));
 
             if (!sValue.empty())
-                return sValue;
-
+            {
+                if (sValue.find(L"'") != std::wstring::npos || sValue.find(L'"') != std::wstring::npos)
+                    return sValue;
+                return L'"' + sValue + L'"';
+            }
             return L"";
         }
 
@@ -318,14 +321,14 @@ namespace NSCSS
                 sFont = m_mStyle[L"font"];
 
             if (sFont.empty())
-                return L"medium";
+                return L"";
 
             std::vector<std::wstring> arValues = {  L"xx-small",L"x-small", L"small",
                                                     L"medium",  L"large",   L"x-large",
                                                     L"xx-large",L"larger",  L"smaller"};
 
             for (size_t i = 0; i < arValues.size(); i++)
-                if (sFont.find(arValues[i]))
+                if (sFont.find(arValues[i]) != std::wstring::npos)
                     return arValues[i];
 
             std::vector<std::wstring> arUnitMeasure = {L"mm", L"cm",
@@ -338,7 +341,7 @@ namespace NSCSS
 
             for (size_t i = 0; i < arUnitMeasure.size(); i++)
             {
-                if (sFont.find(arUnitMeasure[i]))
+                if (sFont.find(arUnitMeasure[i]) != std::wstring::npos)
                 {
                     nPos = sFont.find(arUnitMeasure[i]);
                     sUnitMeasure = arUnitMeasure[i];
@@ -352,7 +355,25 @@ namespace NSCSS
                 }
             }
 
-            if (nPos != 0)
+            if (nPos == 0)
+            {
+                std::wstring sValue;
+                for (int  i = sFont.length() - 1; i >= 0; i--)
+                {
+                    if (iswdigit(sFont[i]))
+                    {
+                        while (iswdigit(sFont[i]) && i >= 0)
+                        {
+                            sValue = sValue + sFont[i];
+                            i--;
+                        }
+                        break;
+                    }
+                }
+                if (!sValue.empty())
+                    return sValue;
+            }
+            else if (nPos != 0)
             {
                 int num = 0;
                 std::wstring sValue;
@@ -367,7 +388,7 @@ namespace NSCSS
                     return sValue + sUnitMeasure;
             }
 
-            return L"medium";
+            return L"";
         }
 
         std::wstring CCompiledStyle::GetFontSizeAdjust()

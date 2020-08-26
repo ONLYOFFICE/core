@@ -42,46 +42,53 @@ inline std::string GetContentAsUTF8(const std::string &sString, const std::wstri
     return U_TO_UTF8(sUnicodeContent);
 }
 
-inline std::string GetContentAsUTF8(const std::wstring& sFileName)
+inline std::wstring GetContentAsUTF8W(const std::wstring& sFileName)
 {
-    std::string sSource;
-    if (!NSFile::CFileBinary::ReadAllTextUtf8A(sFileName, sSource))
+    std::wstring sSource;
+    if (!NSFile::CFileBinary::ReadAllTextUtf8(sFileName, sSource))
         return sSource;
 
-    std::string sTemp;
+    std::wstring sTemp;
 
-    if (sSource.find('{') != std::string::npos)
-        sTemp = sSource.substr(0, sSource.find('{'));
+    if (sSource.find(L'{') != std::string::npos)
+        sTemp = sSource.substr(0, sSource.find(L'{'));
 
     if (sTemp.empty())
         return sSource;
 
-    std::string sEncoding;
+    std::wstring sEncoding;
 
-    if (sTemp.find("@charset") != std::string::npos)
+    if (sTemp.find(L"@charset") != std::string::npos)
     {
-         sEncoding = sTemp.substr(sTemp.find("@charset ") + 9);
-        if (sEncoding.find(';') != std::string::npos)
-            sEncoding = sEncoding.substr(0, sEncoding.find(';'));
+         sEncoding = sTemp.substr(sTemp.find(L"@charset ") + 9);
+        if (sEncoding.find(L';') != std::string::npos)
+            sEncoding = sEncoding.substr(0, sEncoding.find(L';'));
 
-        if (sEncoding.find('"') != std::string::npos)
-            sEncoding = sEncoding.substr(sEncoding.find('"') + 1);
-        else if (sEncoding.find("'") != std::string::npos)
-            sEncoding = sEncoding.substr(sEncoding.find("'") + 1);
+        if (sEncoding.find(L'"') != std::string::npos)
+            sEncoding = sEncoding.substr(sEncoding.find(L'"') + 1);
+        else if (sEncoding.find(L"'") != std::string::npos)
+            sEncoding = sEncoding.substr(sEncoding.find(L"'") + 1);
 
-        if (sEncoding.find('"') != std::string::npos)
-            sEncoding = sEncoding.substr(0, sEncoding.find('"'));
-        else if (sEncoding.find("'") != std::string::npos)
-            sEncoding = sEncoding.substr(0, sEncoding.find("'"));
+        if (sEncoding.find(L'"') != std::string::npos)
+            sEncoding = sEncoding.substr(0, sEncoding.find(L'"'));
+        else if (sEncoding.find(L"'") != std::string::npos)
+            sEncoding = sEncoding.substr(0, sEncoding.find(L"'"));
     }
     else
         return sSource;
 
-    if (sEncoding == "UTF-8" || sEncoding == "utf-8")
+    if (sEncoding == L"UTF-8" || sEncoding == L"utf-8")
         return sSource;
 
     NSUnicodeConverter::CUnicodeConverter oConverter;
-    std::wstring sUnicodeContent = oConverter.toUnicode(sSource, sEncoding.c_str());
+    std::string sTempSource = wstringToString(sSource);
+    std::wstring sUnicodeContent = oConverter.toUnicode(sTempSource.c_str(), wstringToString(sEncoding).c_str());
+    return sUnicodeContent;
+}
+
+inline std::string GetContentAsUTF8(const std::wstring& sFileName)
+{
+    std::wstring sUnicodeContent =GetContentAsUTF8W(sFileName);
     return U_TO_UTF8(sUnicodeContent);
 }
 
@@ -123,7 +130,9 @@ inline void RemoveExcessFromStyles(std::wstring& sStyle)
         if (sStyle.find_first_of(L'<') != std::wstring::npos)
             sStyle.erase(sStyle.find_first_of(L'<', 0), sStyle.find_first_of(L'>', 0) - sStyle.find_first_of(L'<', 0) + 1);
         else if (sStyle.find_first_of(L'@') != std::wstring::npos)
-            sStyle.erase(sStyle.find_first_of(L'@', 0), sStyle.find_first_of(L'}', 0) - sStyle.find_first_of(L'@', 0) + 1);
+        {
+            sStyle.erase(sStyle.find_first_of(L'@'), 1);
+        }
     }
 }
 
@@ -171,9 +180,12 @@ inline void TranslateToEn(std::wstring& sStyle)
         {
             sNewStyle += arAlf[sStyle[i]];
         }
-        else if (sStyle[i] != '\n')
+        else
         {
-            sNewStyle += sStyle[i];
+            if (sStyle[i] == L'}')
+                sNewStyle += L"}\n";
+            else
+                sNewStyle += sStyle[i];
         }
     }
     sStyle = sNewStyle;
@@ -687,6 +699,30 @@ namespace NSCSS
         return StringifyValueList(oValues);
     }
 
+    inline std::wstring ConvertAbsoluteValue(const std::wstring& sAbsoluteValue)
+    {
+        std::map<std::wstring, std::wstring> arAbsoluteValues = {{L"xx-small", L"9px"},  {L"x-small", L"10px"},
+                                                                 {L"small",    L"13px"}, {L"medium",  L"16px"},
+                                                                 {L"large",    L"18px"}, {L"x-large", L"24px"},
+                                                                 {L"xx-large", L"32px"}};
+
+        std::wstring sNewValue = sAbsoluteValue;
+
+        for (auto sAbsValue : arAbsoluteValues)
+        {
+            if (sNewValue.find(sAbsValue.first) != std::wstring::npos)
+            {
+                int nPos1, nPos2;
+                nPos1 = sNewValue.find(sAbsValue.first);
+                nPos2 = sNewValue.find(sAbsValue.first) + sAbsValue.first.length();
+
+                std::wcout << sNewValue.substr(nPos1, nPos2) << std::endl;;
+            }
+        }
+
+        return sAbsoluteValue;
+    }
+
     CCompiledStyle CCssCalculator_Private::GetCompiledStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure)
     {
         if (unitMeasure != Default)
@@ -707,9 +743,9 @@ namespace NSCSS
             std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> arTempDecls = GetDeclarations(sSelector);
             arStyle.insert(arStyle.end(), arTempDecls.begin(), arTempDecls.end());
 
-//            arTempDecls.clear();
-//            arTempDecls = GetDeclarations(L"*");
-//            arStyle.insert(arStyle.end(), arTempDecls.begin(), arTempDecls.end());
+            arTempDecls.clear();
+            arTempDecls = GetDeclarations(L"*");
+            arStyle.insert(arStyle.end(), arTempDecls.begin(), arTempDecls.end());
         }
 
         for (size_t i = 0; i < arStyle.size(); i++)
@@ -816,7 +852,7 @@ namespace NSCSS
         for (size_t i = 0; i < size; i++)
         {
             std::wstring sProperty = std::wstring(arProperty[i].begin(), arProperty[i].end());
-            std::wstring sValue = std::wstring(arValue[i].begin(), arValue[i].end());
+            std::wstring sValue = ConvertUnitMeasure(std::wstring(arValue[i].begin(), arValue[i].end()));
             arDecl.push_back(std::make_pair(sProperty, sValue));
         }
 
@@ -928,6 +964,9 @@ namespace NSCSS
         CCompiledStyle oStyle;
         oStyle.Clear();
 
+//        if (oParents.size() > 0)
+//            std::wcout << oNode.m_sName << std::endl;
+
         std::wstring sClassName = oNode.m_sClass;
         TranslateToEn(sClassName);
 
@@ -952,6 +991,7 @@ namespace NSCSS
         {
             CCompiledStyle oTempStyle;
             oTempStyle.AddStyle(ConvertUnitMeasure(oNode.m_sStyle));
+//            oTempStyle.AddStyle(oNode.m_sStyle);
             if (!oTempStyle.Empty())
             {
                 oStyle += oTempStyle;
@@ -1005,7 +1045,9 @@ namespace NSCSS
 
         m_arFiles.push_back(sFileName);
 
-        std::string sSourceUTF8 = GetContentAsUTF8(sFileName);
+        std::wstring sSourceUTF8 = GetContentAsUTF8W(sFileName);
+        RemoveExcessFromStyles(sSourceUTF8);
+        TranslateToEn(sSourceUTF8);
 
         AddStyles(sSourceUTF8);
     }
@@ -1019,20 +1061,47 @@ namespace NSCSS
         std::vector<std::wstring> arValues;
 
         std::wstring sTempString;
-        for (int  i = 0; i < (int)sValue.length(); i++)
+        if (sValue.find(L':') != std::wstring::npos)
         {
-            if (!iswspace(sValue[i]) && sValue[i] != L':' && sValue[i] != L';')
-                sTempString += sValue[i];
-            else if (!sTempString.empty())
+            for (int  i = 0; i < (int)sValue.length(); i++)
             {
-                sTempString += sValue[i];
-                arValues.push_back(sTempString);
-                sTempString.clear();
+                if (sValue[i] == L':' || sValue[i] == L';')
+                {
+                    if (!sTempString.empty())
+                    {
+                        sTempString += sValue[i];
+                        sTempString = ConvertAbsoluteValue(sTempString);
+                        if (sTempString.find(L'.') != std::wstring::npos)
+                        {
+                            if (sTempString.find(L'.') == 0)
+                                sTempString = L'0' + sTempString;
+                            else if (!iswdigit(sTempString[sTempString.find(L'.') - 1]))
+                                sTempString.insert(sTempString.find(L'.') - 1, L"0");
+                        }
+                        arValues.push_back(sTempString);
+                    }
+                    sTempString.clear();
+                }
+                else if (!iswspace(sValue[i]))
+                {
+                    sTempString += sValue[i];
+                }
             }
         }
+        else
+            arValues.push_back(sValue);
 
         if (!sTempString.empty())
+        {
+            if (sTempString.find(L'.') != std::wstring::npos)
+            {
+                if (sTempString.find(L'.') == 0)
+                    sTempString = L'0' + sTempString;
+                else if (!iswdigit(sTempString[sTempString.find(L'.') - 1]))
+                    sTempString.insert(sTempString.find(L'.') - 1, L"0");
+            }
             arValues.push_back(sTempString);
+        }
 
         std::wstring sValueString;
 
@@ -1041,61 +1110,54 @@ namespace NSCSS
             if (GetFirstNumber(arValues[i]).empty() || arValues[i].find(L'#') != std::wstring::npos)
             {
                 sValueString += arValues[i];
+                if (arValues[i][arValues[i].length() - 1] != L':' && arValues[i][arValues[i].length() - 1] != L';' && arValues.size() > 1)
+                    sValueString += L';';
                 continue;
             }
-
-            if (arValues[i].find(L'.') != std::wstring::npos)
-            {
-                if (arValues[i].find(L'.') == 0)
-                    arValues[i] = L"0" + arValues[i];
-            }
+            std::wstring sTempValue;
             if (arValues[i].find(L'%') != std::wstring::npos)
             {
-                std::wstring sTemp;
-                if (arValues[i].find(L';') != std::wstring::npos)
-                    sTemp = L';';
                 double dValue = wcstod(arValues[i].substr(0, arValues[i].find(L'%')).c_str(), NULL);
                 dValue /= 100;
                 dValue = 22 * dValue;
-                sValueString += std::to_wstring((int)dValue) + sTemp;
-                continue;
+                sTempValue = std::to_wstring((int)dValue);
             }
-
-            if (arValues[i].find(L"px") != std::wstring::npos)
+            else if (arValues[i].find(L"px") != std::wstring::npos)
             {
-                sValueString += ConvertPx(arValues[i]);
+                sTempValue = ConvertPx(arValues[i]);
             }
             else if (arValues[i].find(L"cm") != std::wstring::npos)
             {
-                sValueString += ConvertCm(arValues[i]);
+                sTempValue = ConvertCm(arValues[i]);
             }
             else if (arValues[i].find(L"mm") != std::wstring::npos)
             {
-                sValueString += ConvertMm(arValues[i]);
+                sTempValue = ConvertMm(arValues[i]);
             }
             else if (arValues[i].find(L"in") != std::wstring::npos)
             {
-                sValueString += ConvertIn(arValues[i]);
+                sTempValue = ConvertIn(arValues[i]);
             }
             else if (arValues[i].find(L"pt") != std::wstring::npos)
             {
-                sValueString += ConvertPt(arValues[i]);
+                sTempValue = ConvertPt(arValues[i]);
             }
             else if (arValues[i].find(L"pc") != std::wstring::npos)
             {
-                sValueString += ConvertPc(arValues[i]);
+                sTempValue = ConvertPc(arValues[i]);
             }
             else if (arValues[i].find(L"em") != std::wstring::npos)
             {
-                sValueString += ConvertEm(arValues[i]);
+                sTempValue = ConvertEm(arValues[i]);
             }
-            if (arValues[i].find(L';') != std::wstring::npos)
-                sValueString += L';';
-            else if (i < (int)arValues.size() - 1)
-                sValueString += L' ';
 
+            if (!sTempValue.empty())
+            {
+                sValueString += sTempValue;
+                if (sTempValue[sTempValue.length() - 1] != L';' && arValues.size() > 1)
+                    sValueString += L';';
+            }
         }
-
         return sValueString;
     }
 
@@ -1107,6 +1169,7 @@ namespace NSCSS
 
         std::wstring sConvertValue = sValue.substr(0, sValue.find_last_of(L"px") - 1);
         double dValue = wcstod(sConvertValue.c_str(), NULL);
+        dValue *= 2;
         switch (m_UnitMeasure)
         {
             case Cantimeter:
@@ -1121,6 +1184,7 @@ namespace NSCSS
             {
                 return ConvertPxToMm(dValue);
             }
+            case Default:
             case Point:
             {
                 return ConvertPxToPt(dValue);
@@ -1129,7 +1193,6 @@ namespace NSCSS
             {
                 return ConvertPxToPc(dValue);
             }
-            case Default:
             case Pixel:
             default:
                 break;
@@ -1142,7 +1205,7 @@ namespace NSCSS
         if (dValue == 0)
             return L"0";
 
-        double _dValue = 2.54 / (double)m_nDpi * dValue;
+        double _dValue = dValue / (double)m_nDpi * 2.54;
         std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"cm ";
@@ -1166,8 +1229,7 @@ namespace NSCSS
         if (dValue == 0)
             return L"0";
 
-        double _dValue = dValue / ((double)m_nDpi / 25.4);
-//        double _dValue = 25.4 / (double)m_nDpi * dValue;
+        double _dValue = dValue / (double)m_nDpi * 25.4;
         std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"mm ";
@@ -1192,7 +1254,7 @@ namespace NSCSS
         if (dValue == 0)
             return L"0";
 
-        double _dValue = 1.0/72.0 / (double)m_nDpi * dValue;
+        double _dValue = 72.0 / (double)m_nDpi * dValue;
         std::wstring sValue = std::to_wstring((int)_dValue);
         if (bAddUM)
             sValue += L"pt ";
@@ -1206,9 +1268,10 @@ namespace NSCSS
 
         std::wstring sConvertValue = sValue.substr(0, sValue.find_last_of(L"cm") - 1);
         double dValue = wcstod(sConvertValue.c_str(), NULL);
+        dValue *= 2;
+
         switch (m_UnitMeasure)
         {
-            case Default:
             case Pixel:
             {
                 return ConvertCmToPx(dValue);
@@ -1221,6 +1284,7 @@ namespace NSCSS
             {
                 return ConvertCmToMm(dValue);
             }
+            case Default:
             case Point:
             {
                 return ConvertCmToPt(dValue);
@@ -1303,11 +1367,12 @@ namespace NSCSS
 
         std::wstring sConvertValue = sValue.substr(0, sValue.find_last_of(L"mm") - 1);
         double dValue = wcstod(sConvertValue.c_str(), NULL);
+        dValue *= 2;
+
         switch (m_UnitMeasure)
         {
             case Cantimeter:
                 return ConvertMmToCm(dValue);
-            case Default:
             case Pixel:
             {
                 return ConvertMmToPx(dValue);
@@ -1316,6 +1381,7 @@ namespace NSCSS
             {
                 return ConvertMmToIn(dValue);
             }
+            case Default:
             case Point:
             {
                 return ConvertMmToPt(dValue);
@@ -1324,7 +1390,6 @@ namespace NSCSS
             {
                 return ConvertMmToPc(dValue);
             }
-
             case Millimeter:
             default:
                 break;
@@ -1398,9 +1463,10 @@ namespace NSCSS
 
         std::wstring sConvertValue = sValue.substr(0, sValue.find_last_of(L"in") - 1);
         double dValue = wcstod(sConvertValue.c_str(), NULL);
+        dValue *= 2;
+
         switch (m_UnitMeasure)
         {
-            case Default:
             case Pixel:
             {
                 return  ConvertInToPx(dValue);
@@ -1415,6 +1481,7 @@ namespace NSCSS
             {
                 return ConvertInToMm(dValue);
             }
+            case Default:
             case Point:
             {
                 return ConvertInToPt(dValue);
@@ -1491,11 +1558,12 @@ namespace NSCSS
 
         std::wstring sConvertValue = sValue.substr(0, sValue.find_last_of(L"pt") - 1);
         double dValue = wcstod(sConvertValue.c_str(), NULL);
+        dValue *= 2;
+
         switch (m_UnitMeasure)
         {
             case Cantimeter:
                 return ConvertPtToCm(dValue);
-            case Default:
             case Pixel:
             {
                 return ConvertPtToPx(dValue);
@@ -1512,11 +1580,12 @@ namespace NSCSS
             {
                 return ConvertPtToPc(dValue);
             }
+            case Default:
             case Point:
             default:
                 break;
         }
-        return  sConvertValue;
+        return  std::to_wstring((int)dValue);
     }
 
     inline std::wstring CCssCalculator_Private::ConvertPtToIn(const double& dValue, bool bAddUM)
@@ -1581,11 +1650,12 @@ namespace NSCSS
 
         std::wstring sConvertValue = sValue.substr(0, sValue.find_last_of(L"pc") - 1);
         double dValue = wcstod(sConvertValue.c_str(), NULL);
+        dValue *= 2;
+
         switch (m_UnitMeasure)
         {
             case Cantimeter:
                 return ConvertPcToCm(dValue);
-            case Default:
             case Pixel:
             {
                 return ConvertPcToPx(dValue);
@@ -1598,6 +1668,7 @@ namespace NSCSS
             {
                 return ConvertPcToMm(dValue);
             }
+            case Default:
             case Point:
             {
                 return ConvertPcToPt(dValue);
@@ -1673,7 +1744,7 @@ namespace NSCSS
         std::wstring sConvertValue = sValue.substr(0, sValue.find_last_of(L"em") - 1);
         double dValue = wcstod(sConvertValue.c_str(), NULL);
 
-        dValue *= 22;
+        dValue *= 44;
 
         return std::to_wstring((int)dValue);
     }

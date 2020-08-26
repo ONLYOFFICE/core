@@ -518,7 +518,7 @@ class CSvmFile : virtual public IMetaFileBase
 		}
 	}
 
-	void DrawText(std::wstring& wsString, unsigned int unCharsCount, int _nX, int _nY, int* pnDx = NULL, , unsigned int nDxSize = 0)
+        void DrawText(std::wstring& wsString, unsigned int unCharsCount, int _nX, int _nY, int* pnDx = NULL, unsigned int nDxSize = 0)
 	{
 		int nX = _nX;
 		int nY = _nY;

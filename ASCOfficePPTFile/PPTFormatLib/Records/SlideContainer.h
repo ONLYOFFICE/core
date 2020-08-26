@@ -106,7 +106,7 @@ public:
 
 			IRecord* pRecord	=	CreateByType ( oRec );
 
-			if ( RECORD_PROG_TAGS == oRec.RecType )
+            if ( RT_ProgTags == oRec.RecType )
 			{
                 m_pSlideProgTagsContainer	=	new	CRecordSlideProgTagsContainer ();
 				m_pSlideProgTagsContainer->ReadFromStream(oRec, pStream);
@@ -131,9 +131,9 @@ public:
 	{
 		for (size_t nIndex = 0; nIndex < m_arRecords.size(); ++nIndex)
 		{
-			if ((RECORD_TYPE_SLIDE			== m_arRecords[nIndex]->m_oHeader.RecType) ||
-				(RECORD_TYPE_MAINMASTER		== m_arRecords[nIndex]->m_oHeader.RecType) ||
-				(RECORD_TYPE_NOTES			== m_arRecords[nIndex]->m_oHeader.RecType))
+            if ((RT_Slide			== m_arRecords[nIndex]->m_oHeader.RecType) ||
+                (RT_MainMaster		== m_arRecords[nIndex]->m_oHeader.RecType) ||
+                (RT_Notes			== m_arRecords[nIndex]->m_oHeader.RecType))
 			{
 				return true;
 			}

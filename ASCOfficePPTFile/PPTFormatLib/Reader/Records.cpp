@@ -166,14 +166,6 @@ void CRecordsContainer::ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pS
 IRecord* CreateByType(SRecordHeader oHeader)
 {
 
-    char str[1024]={};
-    sprintf(str, "Record type: %x\t" , oHeader.RecType);
-    std::cout << str << std::setw(32) << GetRecordName((_UINT32)oHeader.RecType)
-              << "\tlen = " << oHeader.RecLen << "\n";
-
-    if ((_UINT32)oHeader.RecType == 0x1014) {
-       std::cout << "Animation!\n";
-    }
 
 	IRecord* pRecord = NULL;
     switch (oHeader.RecType)
@@ -258,6 +250,134 @@ IRecord* CreateByType(SRecordHeader oHeader)
 //    CREATE_BY_TYPE()
 //    CREATE_BY_TYPE()
 //    CREATE_BY_TYPE()
+    CREATE_BY_TYPE(RT_SlideListWithText			, CRecordSlideListWithText)
+    CREATE_BY_TYPE(RT_DocumentAtom				, CRecordDocumentAtom)
+    CREATE_BY_TYPE(RT_EndDocumentAtom			, CRecordEndDocument)
+                //CREATE_BY_TYPE(RECORD_TYPE_SSLIDE_LAYOUT_ATOM			, CRecordSSlideLayoutAtom)
+    CREATE_BY_TYPE(RT_SlideAtom					, CRecordSlideAtom)
+    CREATE_BY_TYPE(RT_NotesAtom					, CRecordNotesAtom)
+    CREATE_BY_TYPE(RT_SlidePersistAtom			, CRecordSlidePersistAtom)
+    CREATE_BY_TYPE(RT_Environment				, CRecordDocumentTextInfo)
+    CREATE_BY_TYPE(RT_FontCollection				, CRecordFontCollection)
+    CREATE_BY_TYPE(RT_FontCollection10				, CRecordFontCollection)
+                //CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN					, CRecordMasterPersistAtom)
+                //CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN					, CRecordNotesPersistAtom)
+    CREATE_BY_TYPE(RT_SlideShowSlideInfoAtom			, CSlideShowSlideInfoAtom)
+                //CREATE_BY_TYPE(RECORD_TYPE_GUIDE_ATOM					, CRecordGuideAtom)
+    CREATE_BY_TYPE(RT_ViewInfoAtom			, CRecordZoomViewInfoAtom)
+                //CREATE_BY_TYPE(RECORD_TYPE_VIEWINFO_ATOM				, CRecordNoZoomViewInfoAtom)
+//    CREATE_BY_TYPE(RECORD_TYPE_VIEWINFO_ATOM				, CRecordViewInfoAtom)
+    CREATE_BY_TYPE(RT_SlideViewInfoAtom			, CRecordSlideViewInfoAtom)
+    CREATE_BY_TYPE(RT_VbaInfoAtom					, CRecordVBAInfoAtom)
+    CREATE_BY_TYPE(RT_SlideShowDocInfoAtom				, CRecordSSDocInfoAtom)
+                //CREATE_BY_TYPE(RECORD_TYPE_DOC_ROUTING_SLIP			, CRecordDocRoutingSlipAtom)
+    CREATE_BY_TYPE(RT_ExternalObjectListAtom				, CRecordExObjListAtom)
+                //CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN					, CRecordGridSpacing10Atom)
+    CREATE_BY_TYPE(RT_RoundTripTheme12Atom					, CRecordRoundTripThemeAtom)
+    CREATE_BY_TYPE(RT_RoundTripColorMapping12Atom			, CRecordRoundTripColorMappingAtom)
+                //CREATE_BY_TYPE(RECORD_TYPE_NAMEDSHOW_SLIDES			, CRecordNamedShowSlidesAtom)
+                //CREATE_BY_TYPE(RECORD_TYPE_SHEET_PROPERTIES			, CRecordNormalViewSetInfoAtom)
+
+    CREATE_BY_TYPE(RT_ColorSchemeAtom			, CRecordColorSchemeAtom)
+
+    CREATE_BY_TYPE(RT_RoundTripOriginalMainMasterId12Atom			, CRecordTripOriginalMasterId12Atom)
+    CREATE_BY_TYPE(RT_RoundTripCompositeMasterId12Atom			, CRecordTripCompositeMasterId12Atom)
+    CREATE_BY_TYPE(RT_RoundTripContentMasterInfo12Atom	, CRecordRoundTripContentMasterInfo12Atom)			// ECMA-376 дубль
+                //CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPSHAPEID12			, CRecordRoundTripShapeId12Atom)
+    CREATE_BY_TYPE(RT_RoundTripHFPlaceholder12Atom		, CRecordRoundTripHFPlaceholder12Atom)
+                //CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPCONTENTMASTERID	, CRecordRoundTripContentMasterId12Atom)
+                //CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPOARTTEXTSTYLES12	, CRecordRoundTripOArtTextStyles12Atom)
+    CREATE_BY_TYPE(RT_RoundTripHeaderFooterDefaults12Atom	, CRecordRoundTripHeaderFooterDefaults12Atom)
+    CREATE_BY_TYPE(RT_RoundTripNotesMasterTextStyles12Atom	, CRecordRoundTripNotesMasterTextStyles12Atom)
+                //CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPDOCFLAGS12						, CRecordRoundTripDocFlags12Atom)
+                //CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPSHAPECHECKSUMFORCUSTOMLAYOUTS12	, CRecordRoundTripShapeCheckSumForCustomLayouts12Atom)
+    CREATE_BY_TYPE(RT_RoundTripCustomTableStyles12Atom			, CRecordRoundTripCustomTableStyles12Atom)
+
+                //CREATE_BY_TYPE(RECORD_TYPE_BOOKMARK_SEED_ATOM			, CRecordBookmarkSeedAtom)
+                //CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN, CRecordBlipEntityAtom)
+                //CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN, CRecordExObjRefAtom)
+    CREATE_BY_TYPE(RT_PlaceholderAtom			, CRecordPlaceHolderAtom)
+                //CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN, CRecordShapeFlagsAtom)
+                //CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN, CRecordShapeFlags10Atom)
+                //CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN, CRecordRoundTripNewPlaceholderId12Atom)
+
+    CREATE_BY_TYPE(RT_OutlineTextRefAtom			, CRecordOutlineTextRefAtom)
+    CREATE_BY_TYPE(RT_TextHeaderAtom				, CRecordTextHeaderAtom)
+    CREATE_BY_TYPE(RT_TextCharsAtom				, CRecordTextCharsAtom)
+    CREATE_BY_TYPE(RT_StyleTextPropAtom			, CRecordStyleTextPropAtom)
+    CREATE_BY_TYPE(RT_TextSpecialInfoAtom			, CRecordTextSpecInfoAtom)
+    CREATE_BY_TYPE(RT_MasterTextPropAtom			, CRecordMasterTextPropAtom)
+    CREATE_BY_TYPE(RT_TextMasterStyleAtom			, CRecordTextMasterStyleAtom)
+
+    CREATE_BY_TYPE(RT_TextCharFormatExceptionAtom				, CRecordTextCFExceptionAtom)
+    CREATE_BY_TYPE(RT_TextParagraphFormatExceptionAtom				, CRecordTextPFExceptionAtom)
+    CREATE_BY_TYPE(RT_TextSpecialInfoDefaultAtom			, CRecordTextSIExceptionAtom)
+
+    CREATE_BY_TYPE(RT_TextRulerAtom				, CRecordTextRulerAtom)
+                //CREATE_BY_TYPE(RECORD_TYPE_TEXTBOOKMARK_ATOM			, CRecordTextBookmarkAtom)
+    CREATE_BY_TYPE(RT_TextBytesAtom				, CRecordTextBytesAtom)
+                //CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN					, CRecordOutlineTextPropsHeaderExAtom)
+
+    CREATE_BY_TYPE(RT_GuideAtom					, CRecordGuideAtom)
+
+    CREATE_BY_TYPE(RT_FontEntityAtom				, CRecordFontEntityAtom)
+    CREATE_BY_TYPE(RT_FontEmbedDataBlob			, CRecordFontEmbedDataBlob)
+                //CREATE_BY_TYPE(RECORD_TYPE_METAFILE					, CRecordMetafileBlob)
+    CREATE_BY_TYPE(RT_CString						, CRecordCString)
+    CREATE_BY_TYPE(RT_SoundCollectionAtom				, CRecordSoundCollAtom)
+    CREATE_BY_TYPE(RT_ExternalOleObjectAtom				, CRecordExOleObjAtom)
+    CREATE_BY_TYPE(RT_ExternalOleEmbedAtom					, CRecordExOleEmbedAtom)
+                //CREATE_BY_TYPE(RECORD_TYPE_BOOKMARK_ENTITY_ATOM		, CRecordBookmarkEntityAtom)
+                //CREATE_BY_TYPE(RECORD_TYPE_EXLINK_ATOM				, CRecordExOleLinkAtom)
+
+    CREATE_BY_TYPE(RT_KinsokuAtom				, CRecordKinsokuAtom)
+    CREATE_BY_TYPE(RT_ExternalHyperlink					, CRecordExHyperlinkContainer)
+    CREATE_BY_TYPE(RT_ExternalHyperlinkAtom				, CRecordExHyperlinkAtom)
+
+    CREATE_BY_TYPE(RT_HeadersFooters				, CRecordHeadersFootersContainer)
+    CREATE_BY_TYPE(RT_HeadersFootersAtom			, CRecordHeadersFootersAtom)
+
+    CREATE_BY_TYPE(RT_SlideNumberMetaCharAtom		, CRecordSlideNumberMetaAtom)
+    CREATE_BY_TYPE(RT_DateTimeMetaCharAtom			, CRecordDateTimeMetaAtom)
+    CREATE_BY_TYPE(RT_HeaderMetaCharAtom				, CRecordHeaderMetaAtom)
+    CREATE_BY_TYPE(RT_FooterMetaCharAtom				, CRecordFooterMetaAtom)
+    CREATE_BY_TYPE(RT_GenericDateMetaCharAtom		, CRecordGenericDateMetaAtom)
+    CREATE_BY_TYPE(RT_RtfDateTimeMetaCharAtom		, CRecordRTFDateTimeMetaAtom)
+
+                //CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN					, CRecordMouseTextInteractiveInfoAtom)
+                //CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN					, CRecordRecolorInfoAtom)
+
+    CREATE_BY_TYPE(RT_ExternalVideo			, CRecordExVideoContainer)
+    CREATE_BY_TYPE(RT_ExternalObjectRefAtom				, CRecordExObjRefAtom)
+    CREATE_BY_TYPE(RT_ExternalMediaAtom				, CRecordExMediaAtom)
+    CREATE_BY_TYPE(RT_ExternalOleControlAtom				, CRecordExControlAtom)
+    CREATE_BY_TYPE(RT_BlipCollection9		, CRecordBlipStoreContainer)
+    CREATE_BY_TYPE(RT_BlipEntity9Atom					, CRecordBlipStoreEntry)
+
+    CREATE_BY_TYPE(RT_Drawing			, CRecordDrawingContainer)
+    CREATE_BY_TYPE(RT_DrawingGroup					, CRecordDrawingGroup)
+//    CREATE_BY_TYPE(RECORD_TYPE_ESCHER_DG					, CRecordDrawingRecord)
+    CREATE_BY_TYPE(RECORD_TYPE_ESCHER_SPGR					, CRecordGroupShape)
+    CREATE_BY_TYPE(RECORD_TYPE_ESCHER_SPGR_CONTAINER		, CRecordGroupShapeContainer)
+    CREATE_BY_TYPE(RECORD_TYPE_ESCHER_SP_CONTAINER			, CRecordShapeContainer)
+    CREATE_BY_TYPE(RECORD_TYPE_ESCHER_SP					, CRecordShape)
+    CREATE_BY_TYPE(RECORD_TYPE_ESCHER_CLIENTANCHOR			, CRecordClientAnchor)
+    CREATE_BY_TYPE(RECORD_TYPE_ESCHER_CHILDANCHOR			, CRecordChildAnchor)
+    CREATE_BY_TYPE(RECORD_TYPE_ESCHER_OPT					, CRecordShapeProperties)
+    CREATE_BY_TYPE(RECORD_TYPE_ESCHER_SECONDARY_OPT			, CRecordShapeProperties)
+    CREATE_BY_TYPE(RECORD_TYPE_ESCHER_TETRIARY_OPT			, CRecordShapeProperties)
+    CREATE_BY_TYPE(RECORD_TYPE_ESCHER_REGROUPITEMS			, CRecordRegGroupItems)
+    CREATE_BY_TYPE(RECORD_TYPE_ESCHER_SPLITMENUCOLORS		, CRecordSplitMenuColorRecord)
+    CREATE_BY_TYPE(RECORD_TYPE_ESCHER_COLORMRU				, CRecordMostRecentlyUserColors)
+
+    CREATE_BY_TYPE(RECORD_TYPE_EX_CDAUDIO					, CRecordExCDAudioContainer)
+    CREATE_BY_TYPE(RECORD_TYPE_EX_WAVAUDIOLINK				, CRecordWAVAudioLinkContainer)
+    CREATE_BY_TYPE(RECORD_TYPE_EX_WAVAUDIOEMBEDDED			, CRecordWAVAudioEmbeddedContainer)
+    CREATE_BY_TYPE(RECORD_TYPE_EX_MIDIAUDIO					, CRecordExMIDIAudioContainer)
+
+                // интерактив
+    CREATE_BY_TYPE(RECORD_TYPE_INTERACTIVEINFO_ATOM			, CRecordInteractiveInfoAtom)
+    CREATE_BY_TYPE(RECORD_TYPE_TXINTERACTIVEINFO_ATOM		, CRecordTextInteractiveInfoAtom)
 
     default:
         {

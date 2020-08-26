@@ -154,7 +154,7 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 
 	oHeader.ReadFromStream(pStream);
 
-	if (RECORD_TYPE_PERSISTPTRINCREMENTALBLOCK != oHeader.RecType)
+    if (RT_PersistDirectoryAtom != oHeader.RecType)
 	{
         return false;
 	}
@@ -170,7 +170,7 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 		StreamUtils::StreamSeek(pPair->second, pStream);
 		oHeader.ReadFromStream(pStream);
 
-		if (RECORD_TYPE_DOCUMENT_ENCRYPTION_ATOM  == oHeader.RecType)
+        if (RT_CryptSession10Container  == oHeader.RecType)
 		{
 			m_bEncrypt = true;
 			m_oEncryptionHeader.ReadFromStream(oHeader, pStream);
@@ -233,7 +233,7 @@ bool CPPTUserInfo::ReadDocumentPersists(POLE::Stream* pStream)
 		pStreamTmp = m_arStreamDecrypt.back()->stream_;
 	}
 	oHeader.ReadFromStream(pStreamTmp);
-	if (RECORD_TYPE_DOCUMENT != oHeader.RecType)
+    if (RT_Document != oHeader.RecType)
 	{
 		return false;
 	}
@@ -577,15 +577,15 @@ void CPPTUserInfo::FromDocument()
 		m_arSlides.push_back(new CSlide());
 
 		// если на слайде есть анимации
-		std::map <_UINT32, Animations::CSlideTimeLine*>::iterator pTimeLine =	m_mapAnimations.find( pPair->first);
+//		std::map <_UINT32, Animations::CSlideTimeLine*>::iterator pTimeLine =	m_mapAnimations.find( pPair->first);
 
-		if ( m_mapAnimations.end() != pTimeLine )
-		{
-			if ( (pTimeLine->second)  && (0.0 != pTimeLine->second->GetTime () ))
-			{
-				DurationSlide	=	pTimeLine->second->GetTime ();
-			}
-		}
+//		if ( m_mapAnimations.end() != pTimeLine )
+//		{
+//			if ( (pTimeLine->second)  && (0.0 != pTimeLine->second->GetTime () ))
+//			{
+//				DurationSlide	=	pTimeLine->second->GetTime ();
+//			}
+//		}
 
 		CSlide* pSlide = m_arSlides.back();
 
@@ -2438,47 +2438,47 @@ void CPPTUserInfo::LoadExAudio(CRecordsContainer* pExObject)
 	oArrayCString.clear();
 }
 
-void CPPTUserInfo::AddAnimation ( _UINT32 dwSlideID, double Width, double Height, CElementPtr pElement )
-{
-	std::map <_UINT32, Animations::CSlideTimeLine*>::iterator pPair =	m_mapAnimations.find( dwSlideID );
+//void CPPTUserInfo::AddAnimation ( _UINT32 dwSlideID, double Width, double Height, CElementPtr pElement )
+//{
+//	std::map <_UINT32, Animations::CSlideTimeLine*>::iterator pPair =	m_mapAnimations.find( dwSlideID );
 
-	if (pPair == m_mapAnimations.end()) return;
+//	if (pPair == m_mapAnimations.end()) return;
 
-	Animations::CSlideTimeLine* pTimeLine	= pPair->second;
-	if (pTimeLine == NULL) return;
+//	Animations::CSlideTimeLine* pTimeLine	= pPair->second;
+//	if (pTimeLine == NULL) return;
 
-	std::map <_UINT32, Animations::Effects*>::iterator pPairA = pTimeLine->GetAnimation().find ( pElement->m_lID );
-	if (pPairA == pTimeLine->GetAnimation().end()) return;
+//	std::map <_UINT32, Animations::Effects*>::iterator pPairA = pTimeLine->GetAnimation().find ( pElement->m_lID );
+//	if (pPairA == pTimeLine->GetAnimation().end()) return;
 	
-	Animations::Effects* arEffects = pPairA->second;
-	if (arEffects == NULL) return;
+//	Animations::Effects* arEffects = pPairA->second;
+//	if (arEffects == NULL) return;
 
-	for ( long i = 0; i < (long)arEffects->size(); ++i )
-	{								
-		CAnimationSimple oEffect	=	arEffects->at(i);
-		CAnimationSimple oAnimation	=	oEffect;
+//	for ( long i = 0; i < (long)arEffects->size(); ++i )
+//	{
+//		CAnimationSimple oEffect	=	arEffects->at(i);
+//		CAnimationSimple oAnimation	=	oEffect;
 
-		oAnimation.m_dTimeAccel		=	oEffect.m_nDuration * oEffect.m_dTimeAccel;
-		oAnimation.m_dTimeDecel		=	oEffect.m_nDuration * oEffect.m_dTimeDecel;
+//		oAnimation.m_dTimeAccel		=	oEffect.m_nDuration * oEffect.m_dTimeAccel;
+//		oAnimation.m_dTimeDecel		=	oEffect.m_nDuration * oEffect.m_dTimeDecel;
 
-		if (0 == oEffect.m_nSchemeColor)		//	RGB
-		{
-			oAnimation.m_nColorTo	=	oEffect.m_nColorTo;
-		}
-		else if (2 == oEffect.m_nSchemeColor)	//	Index From Table
-		{
-			if ((int)oAnimation.m_nColorTo >= (int)m_oSchemeColors.size())
-				continue;
+//		if (0 == oEffect.m_nSchemeColor)		//	RGB
+//		{
+//			oAnimation.m_nColorTo	=	oEffect.m_nColorTo;
+//		}
+//		else if (2 == oEffect.m_nSchemeColor)	//	Index From Table
+//		{
+//			if ((int)oAnimation.m_nColorTo >= (int)m_oSchemeColors.size())
+//				continue;
 
-			oAnimation.m_nColorTo	=	m_oSchemeColors[oEffect.m_nColorTo].GetLONG();
-		}
+//			oAnimation.m_nColorTo	=	m_oSchemeColors[oEffect.m_nColorTo].GetLONG();
+//		}
 
-		pElement->m_oAnimations.m_dSlideWidth		=	Width;
-		pElement->m_oAnimations.m_dSlideHeight		=	Height;
+//		pElement->m_oAnimations.m_dSlideWidth		=	Width;
+//		pElement->m_oAnimations.m_dSlideHeight		=	Height;
 
-		pElement->m_oAnimations.m_arAnimations.push_back ( oAnimation );
-	}
-}
+//		pElement->m_oAnimations.m_arAnimations.push_back ( oAnimation );
+//	}
+//}
 
 void CPPTUserInfo::AddAudioTransition (_UINT32 dwSlideID, CTransition* pTransition, const std::wstring& strFilePath)
 {

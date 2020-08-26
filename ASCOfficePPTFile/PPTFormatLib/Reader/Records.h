@@ -306,5 +306,5 @@ class CRecordVBAInfo					: public CRecordsContainer {};
 
 //-------------------------------------------------------------------------------
 #define CREATE_BY_TYPE(RECORD_TYPE, CLASS_RECORD_NAME)							\
-    case RECORD_TYPE: { pRecord = new PPT_FORMAT::CLASS_RECORD_NAME(); break; }				\
+    case RECORD_TYPE: { pRecord = new CLASS_RECORD_NAME(); break; }				\
 //-------------------------------------------------------------------------------

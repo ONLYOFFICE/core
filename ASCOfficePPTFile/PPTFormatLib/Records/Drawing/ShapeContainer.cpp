@@ -2132,7 +2132,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 		SRecordHeader oHeader;
 		oHeader.ReadFromStream(oElemInfo.m_pStream) ;	
 
-		if (RECORD_TYPE_STYLE_TEXTPROP_ATOM == oHeader.RecType)
+        if (RT_StyleTextPropAtom == oHeader.RecType)
 		{			
 			CRecordStyleTextPropAtom* pStyle = new CRecordStyleTextPropAtom();
 			pStyle->m_lCount = strText.length();
@@ -2373,7 +2373,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 		SRecordHeader oHeader;
 		oHeader.ReadFromStream(oElemInfo.m_pStream) ;	
 
-		if (RECORD_TYPE_TEXTSPECINFO_ATOM == oHeader.RecType)
+        if (RT_TextSpecialInfoAtom == oHeader.RecType)
 		{			
 			CRecordTextSpecInfoAtom* pSpecInfo = new CRecordTextSpecInfoAtom();
 			pSpecInfo->m_lCount = -1;

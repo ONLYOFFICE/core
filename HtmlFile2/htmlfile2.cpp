@@ -486,9 +486,11 @@ private:
             else if(sName == L"id")
                 oNode.m_sId    = m_oLightReader.GetText();
             else if(sName == L"style")
-                oNode.m_sStyle = m_oLightReader.GetText();
+                oNode.m_sStyle += m_oLightReader.GetText();
             else if(sName == L"title")
                 sNote          = m_oLightReader.GetText();
+            else if(sName == L"align")
+                oNode.m_sStyle += L"; text-align: " + m_oLightReader.GetText() + L";";
         }
         m_oLightReader.MoveToElement();
         sSubClass.push_back(oNode);
@@ -652,7 +654,12 @@ private:
             }
             // Перенос строки
             else if(sName == L"br")
+            {
+                std::wstring sP;
+                std::wstring sPStyle;
+                wrPStyle(oXml, sSubClass, oTS, bWasP, sP, sPStyle);
                 oXml->WriteString(L"<w:r><w:br/></w:r>");
+            }
             else if(sName == L"center")
             {
                 CTextSettings oTSP(oTS);
@@ -755,7 +762,7 @@ private:
             else if(sName == L"template" || sName == L"canvas" || sName == L"video" || sName == L"math" || sName == L"rp"    ||
                     sName == L"command"  || sName == L"iframe" || sName == L"embed" || sName == L"wbr"  || sName == L"audio" ||
                     sName == L"bgsound"  || sName == L"applet" || sName == L"blink" || sName == L"keygen"|| sName == L"script" ||
-                    sName == L"comment"  || sName == L"title")
+                    sName == L"comment"  || sName == L"title"  || sName == L"style")
                 continue;
             // Без нового абзаца
             else if(sName == L"basefont" || sName == L"button" || sName == L"label" || sName == L"data" || sName == L"object" ||

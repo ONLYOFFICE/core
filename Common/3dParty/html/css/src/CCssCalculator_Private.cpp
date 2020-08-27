@@ -714,7 +714,7 @@ namespace NSCSS
 
         for (auto sAbsValue : arAbsoluteValues)
         {
-            if (sNewValue.find(sAbsValue.first) != std::wstring::npos)
+            while (sNewValue.find(sAbsValue.first) != std::wstring::npos)
             {
                 int nPos1, nPos2;
                 nPos1 = sNewValue.find(sAbsValue.first);
@@ -722,8 +722,7 @@ namespace NSCSS
                 sNewValue.replace(nPos1, nPos2, sAbsValue.second);
             }
         }
-
-        return sAbsoluteValue;
+        return sNewValue;
     }
 
     inline std::wstring DeleteSpace(const std::wstring& sValue)
@@ -1120,6 +1119,7 @@ namespace NSCSS
                 sTempString = ConvertAbsoluteValue(sTempString);
                 sTempString = DeleteSpace(sTempString);
                 arValues.push_back(sTempString);
+                sTempString.clear();
             }
         }
         else
@@ -1134,7 +1134,10 @@ namespace NSCSS
                 else if (!iswdigit(sTempString[sTempString.find(L'.') - 1]))
                     sTempString.insert(sTempString.find(L'.') - 1, L"0");
             }
+            sTempString = ConvertAbsoluteValue(sTempString);
+            sTempString = DeleteSpace(sTempString);
             arValues.push_back(sTempString);
+            sTempString.clear();
         }
 
         std::wstring sValueString;

@@ -30,11 +30,14 @@ namespace NSCSS
 
     CCompiledStyle& CCompiledStyle::operator+= (const CCompiledStyle &oElement)
     {
+        if (oElement.m_mStyle.size() == 0)
+            return *this;
+
         for(auto& item : oElement.m_mStyle)
         {
-            if (m_mStyle[item.first] != L"inherit")
+            if (m_mStyle[item.first] != L"inherit" && !item.second.empty())
                 m_mStyle[item.first] = item.second;
-            if (item.second.find(L"!important"))
+            if (item.second.find(L"!important") != std::wstring::npos)
                 m_mStyle[item.first] = item.second.substr(0, item.second.find(L"!important"));
         }
 

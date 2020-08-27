@@ -266,6 +266,7 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetUnhideWhenUsed(true);
         SetColor(L"0563C1");
         SetU(L"single");
+        SetSz(L"22");
     }
 //    else if (sNameDefaultElement.find(L'-') != std::wstring::npos)
 //    {

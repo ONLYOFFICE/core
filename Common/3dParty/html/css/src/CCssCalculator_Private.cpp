@@ -1008,11 +1008,7 @@ namespace NSCSS
         {
             CCompiledStyle oTempStyle;
             oTempStyle.AddStyle(ConvertUnitMeasure(oNode.m_sStyle));
-//            oTempStyle.AddStyle(oNode.m_sStyle);
-            if (!oTempStyle.Empty())
-            {
-                oStyle += oTempStyle;
-            }
+            oStyle += oTempStyle;
         }
 
         oStyle.SetID(oNode.m_sName + sClassName + sIdName + L'-' + std::to_wstring(m_nCountNodes));
@@ -1165,7 +1161,7 @@ namespace NSCSS
                     sBeforeValue = sBeforeValue.substr(sBeforeValue.find(L'%') + 1);
                     dValue /= 100;
                     dValue = 22 * dValue;
-                    sTempValue += std::to_wstring((int)dValue) + L" ";
+                    sTempValue += std::to_wstring((int)floor(dValue + 0.5)) + L" ";
                 }
                 else if (sBeforeValue.find(L"px") != std::wstring::npos)
                 {
@@ -1264,7 +1260,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = dValue / (double)m_nDpi * 2.54;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"cm ";
         return sValue;
@@ -1276,7 +1272,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = 1 / (double)m_nDpi * dValue;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"in ";
         return sValue;
@@ -1288,7 +1284,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = dValue / (double)m_nDpi * 25.4;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"mm ";
 
@@ -1301,7 +1297,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = 1.0/6.0 / (double)m_nDpi * dValue;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"pc ";
         return sValue;
@@ -1313,7 +1309,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = 72.0 / (double)m_nDpi * dValue;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"pt ";
         return sValue;
@@ -1363,7 +1359,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = dValue / 2.54;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"in";
         return sValue;
@@ -1375,7 +1371,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = dValue * 10;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"mm";
         return sValue;
@@ -1387,7 +1383,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = (6 / 2.54) * dValue;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"pc";
         return sValue;
@@ -1399,7 +1395,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = (72.0 / 2.54) * dValue;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"pt";
 
@@ -1412,7 +1408,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = (double)m_nDpi / 2.54 * dValue;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"px";
         return sValue;
@@ -1460,7 +1456,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = dValue / 25.4;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"in";
         return sValue;
@@ -1472,7 +1468,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = dValue / 10;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"cm";
         return sValue;
@@ -1484,7 +1480,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = 72.0 / 25.4 * dValue;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"pc";
         return sValue;
@@ -1496,7 +1492,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = 6.0 / 25.4 * dValue;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"pt";
         return sValue;
@@ -1508,7 +1504,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = (double)m_nDpi / 25.4 * dValue;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"px";
         return sValue;}
@@ -1558,7 +1554,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = dValue * 25.4;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"mm";
         return sValue;}
@@ -1569,7 +1565,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = dValue * 2.54;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"cm";
         return sValue;}
@@ -1580,7 +1576,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = dValue / 72.0;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"pc";
         return sValue;}
@@ -1591,7 +1587,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = dValue / 6.0;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"pt";
         return sValue;}
@@ -1602,7 +1598,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = dValue * (double)m_nDpi;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"px";
         return sValue;}
@@ -1649,7 +1645,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = dValue / 72.0;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"in";
         return sValue;}
@@ -1660,7 +1656,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = dValue / 72.0 * 2.54;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"cm";
         return sValue;}
@@ -1671,7 +1667,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = dValue / 12.0;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"pc";
         return sValue;}
@@ -1682,7 +1678,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = dValue / 72.0 * 25.4;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"mm";
         return sValue;}
@@ -1693,7 +1689,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = (double)m_nDpi / 72.0 * dValue;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"px";
         return sValue;}
@@ -1740,7 +1736,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = dValue / 6.0;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"in";
         return sValue;}
@@ -1751,7 +1747,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = dValue / 6.0 * 2.54;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"cm";
         return sValue;}
@@ -1762,7 +1758,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = dValue * 12.0;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"pt";
         return sValue;}
@@ -1773,7 +1769,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = dValue / 6.0 * 25.4;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"mm";
         return sValue;}
@@ -1784,7 +1780,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = (double)m_nDpi / 6.0 * dValue;
-        std::wstring sValue = std::to_wstring((int)_dValue);
+        std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"px";
         return sValue;
@@ -1800,7 +1796,7 @@ namespace NSCSS
 
         dValue *= 11;
 
-        return std::to_wstring((int)dValue);
+        return std::to_wstring((int)floor(dValue + 0.5));
     }
 
     void CCssCalculator_Private::SetDpi(const int nValue)

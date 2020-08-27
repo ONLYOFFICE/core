@@ -19,7 +19,6 @@ namespace NSCSS
         return m_pInternal->GetDeclarations(sSelector);
     }
 
-
     CCompiledStyle CCssCalculator::GetCompiledStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure)
     {
         return  m_pInternal->GetCompiledStyle(arSelectors, unitMeasure);

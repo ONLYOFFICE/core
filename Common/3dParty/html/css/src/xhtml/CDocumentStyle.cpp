@@ -313,13 +313,10 @@ CDocumentStyle::CDocumentStyle()
         {
             // Сделать обработку в SetJc
             std::wstring sTextAlign = oStyle.GetTextAlign();
-            if (!sTextAlign.empty())
-            {
-                if (sTextAlign != L"justify")
-                    oXmlElement.SetJc(oStyle.GetTextAlign());
-                else if (sTextAlign == L"justify")
-                    oXmlElement.SetJc(L"both");
-            }
+            if (sTextAlign != L"justify")
+                oXmlElement.SetJc(oStyle.GetTextAlign());
+            else if (sTextAlign == L"justify")
+                oXmlElement.SetJc(L"both");
         }
 
         if (!oStyle.GetFontStyle().empty())
@@ -476,6 +473,6 @@ CDocumentStyle::CDocumentStyle()
             m_arStyleUsed.push_back(std::make_pair(oStyle, true));
 
         if (!oXmlElement.Empty())
-            m_sStyle += oXmlElement.GetRStyle();
+            m_sStyle += oXmlElement.GetStyle();
     }
 }

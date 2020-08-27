@@ -164,8 +164,8 @@ namespace NSCSS
         if (m_mStyle.size() == 0)
             return true;
 
-//        if (m_arParentsStyles.size() == 0)
-//            return true;
+        if (m_mStyle.size() == 0 && m_arParentsStyles.size() == 0)
+            return true;
 
         return false;
     }
@@ -275,8 +275,11 @@ namespace NSCSS
         std::wstring CCompiledStyle::GetFontFamily()
         {
             if (m_mStyle.find(L"font-family") != m_mStyle.cend())
-                return m_mStyle[L"font-family"];
-
+            {
+                if (m_mStyle[L"font-family"][0] == L'"' || m_mStyle[L"font-family"][0] == L'\'')
+                    return m_mStyle[L"font-family"];
+                else return L'"' + m_mStyle[L"font-family"] + L'"';
+            }
             std::wstring sFont;
 
             if (m_mStyle.find(L"font") != m_mStyle.cend())
@@ -303,7 +306,7 @@ namespace NSCSS
 
             if (!sValue.empty())
             {
-                if (sValue.find(L"'") != std::wstring::npos || sValue.find(L'"') != std::wstring::npos)
+                if (sValue[0] == L'"' || sValue[0] == L'\'')
                     return sValue;
                 return L'"' + sValue + L'"';
             }
@@ -653,7 +656,7 @@ namespace NSCSS
                 sValue = m_mStyle[L"margin"];
 
             if (sValue.empty())
-                return L"auto";
+                return L"";
 
             std::vector<std::wstring> arValues;
 
@@ -670,6 +673,7 @@ namespace NSCSS
             }
             if (!sTemp.empty())
                 arValues.push_back(sTemp);
+
 
             if (arValues.size() == 4)
                 return arValues[3];

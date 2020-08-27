@@ -18,6 +18,8 @@ public:
     void AddDeclaration(std::pair<std::wstring, std::wstring> pDeclaration);
     void AddDeclarations(std::vector<std::pair<std::wstring, std::wstring>> arDeclarations);
 
+    void SetDeclaratins(std::vector<std::pair<std::wstring, std::wstring>> arDeclarations);
+
     int GetCountSelectors();
     int GetCountDeclarations();
     int GetCountChildrens();

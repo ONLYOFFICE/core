@@ -80,6 +80,11 @@ void CElement::AddDeclarations(std::vector<std::pair<std::wstring, std::wstring>
         m_arDeclarations.push_back(arDeclarations[i]);
 }
 
+void CElement::SetDeclaratins(std::vector<std::pair<std::wstring, std::wstring> > arDeclarations)
+{
+    m_arDeclarations = arDeclarations;
+}
+
 int CElement::GetCountSelectors()
 {
     return m_arSelectors.size();

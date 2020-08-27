@@ -234,7 +234,7 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetLink(L"p-c");
         SetQFormat(true);
 //        SetInd(L"w:firstLine=\"567\"");
-        SetJc(L"both");
+//        SetJc(L"both");
     }
     else if (sNameDefaultElement == L"div-c")
     {
@@ -254,7 +254,7 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetLink(L"div-c");
         SetQFormat(true);
 //        SetInd(L"w:firstLine=\"567\"");
-        SetJc(L"both");
+//        SetJc(L"both");
     }
     else if (sNameDefaultElement == L"a")
     {
@@ -711,24 +711,6 @@ std::wstring CXmlElement::ConvertPStyle()
 {
     std::wstring sPStyle;
 
-    if (!m_sName.empty())
-        sPStyle += L"<w:name w:val=\"" + m_sName + L"\"/>";
-
-    if (!m_sBasedOn.empty())
-        sPStyle += L"<w:basedOn w:val=\"" + m_sBasedOn + L"\"/>";
-
-    if (!m_sLink.empty())
-        sPStyle += L"<w:link w:val=\"" + m_sLink + L"\"/>";
-
-    if (!m_sUiPriority.empty())
-        sPStyle += L"<w:uiPriority w:val=\"" + m_sUiPriority + L"\"/>";
-
-    if (m_bQFormat)
-        sPStyle += L"<w:qFormat/>";
-
-    if (m_bUnhideWhenUsed)
-        sPStyle += L"<w:unhideWhenUsed/>";
-
     std::wstring sPPr = L"<w:pPr>";
 
         if (m_bKeepLines)
@@ -788,24 +770,6 @@ std::wstring CXmlElement::ConvertRStyle()
 {
     std::wstring sRStyle;
 
-    if (!m_sName.empty())
-        sRStyle += L"<w:name w:val=\"" + m_sName + L"\"/>";
-
-    if (!m_sBasedOn.empty())
-        sRStyle += L"<w:basedOn w:val=\"" + m_sBasedOn + L"\"/>";
-
-    if (!m_sLink.empty())
-        sRStyle += L"<w:link w:val=\"" + m_sLink + L"\"/>";
-
-    if (!m_sUiPriority.empty())
-        sRStyle += L"<w:uiPriority w:val=\"" + m_sUiPriority + L"\"/>";
-
-    if (m_bQFormat)
-        sRStyle += L"<w:qFormat/>";
-
-    if (m_bUnhideWhenUsed)
-        sRStyle += L"<w:unhideWhenUsed/>";
-
     std::wstring sRPr = L"<w:rPr>";
         if (m_bB)
             sRPr += L"<w:b/><w:bCs/>";
@@ -839,6 +803,31 @@ std::wstring CXmlElement::ConvertRStyle()
     return L"";
 }
 
+std::wstring CXmlElement::ConvertBasicInfoStyle()
+{
+    std::wstring sBasicInfo;
+
+    if (!m_sName.empty())
+        sBasicInfo += L"<w:name w:val=\"" + m_sName + L"\"/>";
+
+    if (!m_sBasedOn.empty())
+        sBasicInfo += L"<w:basedOn w:val=\"" + m_sBasedOn + L"\"/>";
+
+    if (!m_sLink.empty())
+        sBasicInfo += L"<w:link w:val=\"" + m_sLink + L"\"/>";
+
+    if (!m_sUiPriority.empty())
+        sBasicInfo += L"<w:uiPriority w:val=\"" + m_sUiPriority + L"\"/>";
+
+    if (m_bQFormat)
+        sBasicInfo += L"<w:qFormat/>";
+
+    if (m_bUnhideWhenUsed)
+        sBasicInfo += L"<w:unhideWhenUsed/>";
+
+    return sBasicInfo;
+}
+
 std::wstring CXmlElement::GetStyle()
 {
     std::wstring sStyle = L"<w:style";
@@ -860,6 +849,7 @@ std::wstring CXmlElement::GetStyle()
 
     sStyle += L">";
 
+    sStyle += ConvertBasicInfoStyle();
     sStyle += ConvertPStyle();
     sStyle += ConvertRStyle();
 
@@ -891,6 +881,7 @@ std::wstring CXmlElement::GetPStyle()
 
     sPStyle += L">";
 
+    sPStyle += ConvertBasicInfoStyle();
     sPStyle += ConvertPStyle();
 
     sPStyle += L"</w:style>";
@@ -920,6 +911,7 @@ std::wstring CXmlElement::GetRStyle()
 
     sRStyle += L">";
 
+    sRStyle += ConvertBasicInfoStyle();
     sRStyle += ConvertRStyle();
 
     sRStyle += L"</w:style>";

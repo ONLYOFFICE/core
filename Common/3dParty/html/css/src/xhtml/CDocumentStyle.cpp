@@ -277,7 +277,10 @@ CDocumentStyle::CDocumentStyle()
         if (!oStyle.GetFontSize().empty())
         {
             std::wstring sFontSize = oStyle.GetFontSize();
-                oXmlElement.SetSz(sFontSize);
+
+            double dValue = wcstod(sFontSize.c_str(), NULL);
+            dValue *= 2;
+            oXmlElement.SetSz(std::to_wstring((int)dValue));
         }
 
         if (!oStyle.GetFontFamily().empty())
@@ -320,10 +323,10 @@ CDocumentStyle::CDocumentStyle()
         if (!oStyle.GetMargin().empty())
         {
             double dLeftValue = wcstod(oStyle.GetMarginLeft().c_str(), NULL);
-            dLeftValue = dLeftValue * 2.54 / 72.0 * 1440.0;
+            dLeftValue = dLeftValue * 1440 * 2.54 / 72;
 
             double dRightValue = wcstod(oStyle.GetMarginRight().c_str(), NULL);
-            dRightValue = dRightValue * 2.54 / 72.0 * 1440.0;
+            dRightValue = dRightValue * 1440 * 2.54 / 72;
 
             sValue += L"w:left=\"" + std::to_wstring((int)dLeftValue) + L"\" ";
             sValue += L"w:right=\"" + std::to_wstring((int)dRightValue) + L"\"";
@@ -359,7 +362,10 @@ CDocumentStyle::CDocumentStyle()
         if (!oStyle.GetFontSize().empty())
         {
             std::wstring sFontSize = oStyle.GetFontSize();
-            oXmlElement.SetSz(sFontSize);
+
+            double dValue = wcstod(sFontSize.c_str(), NULL);
+            dValue *= 2;
+            oXmlElement.SetSz(std::to_wstring((int)dValue));
         }
         if (!oStyle.GetFontFamily().empty())
         {

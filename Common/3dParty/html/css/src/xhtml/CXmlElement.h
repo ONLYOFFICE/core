@@ -68,6 +68,7 @@ class CXmlElement
 
     std::wstring ConvertPStyle();
     std::wstring ConvertRStyle();
+    std::wstring ConvertBasicInfoStyle();
 
 public:
     CXmlElement();

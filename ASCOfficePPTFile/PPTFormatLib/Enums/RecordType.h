@@ -260,6 +260,5 @@ enum RecordType : unsigned short
 };
 
 
-std::string GetRecordName(PPT_FORMAT::RecordType dwType);
-
+//std::string GetRecordName(RecordType dwType);
 }

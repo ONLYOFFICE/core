@@ -31,7 +31,7 @@
  */
 #pragma once
 #include "Element.h"
-#include "../Enums/_includer.h"
+#include "../../../ASCOfficePPTFile/PPTFormatLib/Enums/_includer.h"
 
 
 namespace PPT_FORMAT

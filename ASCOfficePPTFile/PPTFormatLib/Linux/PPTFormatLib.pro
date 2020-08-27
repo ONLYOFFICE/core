@@ -275,6 +275,5 @@ SOURCES += \
     ../PPTFormatLib.cpp \
     ../../../ASCOfficePPTXFile/Editor/Drawing/Elements.cpp \
     ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.cpp \
-    ../../../Common/3dParty/pole/pole.cpp \
-    ../Reader/RecordType.cpp
+    ../../../Common/3dParty/pole/pole.cpp
 

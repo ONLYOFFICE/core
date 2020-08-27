@@ -535,10 +535,10 @@ namespace NSCSS
                 sFont = m_mStyle[L"font"];
 
             if (sFont.empty())
-                return L"normal";
+                return L"";
 
             if (sFont.find(L"/") == std::wstring::npos)
-                return L"normal";
+                return L"";
 
             int nPos = sFont.find(L"/");
             std::wstring sValue = sFont.substr(nPos + 1);
@@ -620,6 +620,9 @@ namespace NSCSS
             if (m_mStyle.find(L"margin-top") != m_mStyle.cend())
                 return m_mStyle[L"margin-top"];
 
+            if (!GetMarginBlockStart().empty())
+                return GetMarginBlockStart();
+
             std::wstring sValue;
             if (m_mStyle.find(L"margin") != m_mStyle.cend())
                 sValue = m_mStyle[L"margin"];
@@ -649,6 +652,14 @@ namespace NSCSS
             return L"auto";
         }
 
+        std::wstring CCompiledStyle::GetMarginBlockStart()
+        {
+            if (m_mStyle.find(L"margin-block-start") != m_mStyle.cend())
+                return m_mStyle[L"margin-block-start"];
+
+            return L"";
+        }
+
         std::wstring CCompiledStyle::GetMarginLeft()
         {
             if (m_mStyle.find(L"margin-left") != m_mStyle.cend())
@@ -676,7 +687,6 @@ namespace NSCSS
             }
             if (!sTemp.empty())
                 arValues.push_back(sTemp);
-
 
             if (arValues.size() == 4)
                 return arValues[3];
@@ -729,6 +739,9 @@ namespace NSCSS
             if (m_mStyle.find(L"margin-bottom") != m_mStyle.cend())
                 return m_mStyle[L"margin-bottom"];
 
+            if (!GetMarginBlockEnd().empty())
+                return GetMarginBlockEnd();
+
             std::wstring sValue;
             if (m_mStyle.find(L"margin") != m_mStyle.cend())
                 sValue = m_mStyle[L"margin"];
@@ -758,6 +771,14 @@ namespace NSCSS
                 return arValues[0];
 
             return L"auto";
+        }
+
+        std::wstring CCompiledStyle::GetMarginBlockEnd()
+        {
+            if (m_mStyle.find(L"margin-block-end") != m_mStyle.cend())
+                return m_mStyle[L"margin-block-end"];
+
+            return L"";
         }
 
     /* PADDING */

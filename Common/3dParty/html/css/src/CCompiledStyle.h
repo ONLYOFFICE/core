@@ -60,9 +60,11 @@ namespace NSCSS
         /* MARGIN */
         std::wstring GetMargin();
         std::wstring GetMarginBottom();
+        std::wstring GetMarginBlockEnd();
         std::wstring GetMarginLeft();
         std::wstring GetMarginRight();
         std::wstring GetMarginTop();
+        std::wstring GetMarginBlockStart();
 
         /* PADDING */
         std::wstring GetPadding();

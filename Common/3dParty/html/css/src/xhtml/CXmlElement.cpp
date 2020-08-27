@@ -20,7 +20,7 @@ bool CXmlElement::Empty()
            m_sS.empty() && m_sName.empty() && m_sBasedOn.empty() && m_sLink.empty() && m_sUiPriority.empty() &&
            !m_bQFormat && !m_bSemiHidden && !m_bUnhideWhenUsed && !m_bB && !m_bI && m_sU.empty() && m_sRFonts.empty() &&
            m_sColor.empty() && m_sSz.empty() && !m_bKeepLines && !m_bKeepNext && m_sSpacing.empty() &&
-           m_sOutlineLvl.empty() && m_sContextualSpacing.empty() && m_sInd.empty() && m_sJc.empty() &&
+           m_sOutlineLvl.empty() && m_bContextualSpacing && m_sInd.empty() && m_sJc.empty() &&
            m_sTblInd.empty() && m_sCellTop.empty() && m_sCellLeft.empty() && m_sCellBottom.empty() &&
            m_sCellRight.empty() && m_sBorderTop.empty() && m_sBorderLeft.empty() && m_sBorderBottom.empty() &&
            m_sBorderRight.empty() && m_sBorderInsideH.empty() && m_sBorderInsideV.empty() && m_sShd.empty() &&
@@ -310,7 +310,7 @@ void CXmlElement::Clear()
         m_bKeepLines = false;
         m_bKeepNext = false;
         m_sSpacing.clear();
-        m_sContextualSpacing.clear();
+        m_bContextualSpacing = false;
         m_sOutlineLvl.clear();
         m_sInd.clear();
         m_sJc.clear();
@@ -451,9 +451,9 @@ void CXmlElement::SetOutlineLvl(std::wstring sOutlineLvl)
     m_sOutlineLvl = sOutlineLvl;
 }
 
-void CXmlElement::SetContextualSpacing(std::wstring sContextualSpacing)
+void CXmlElement::SetContextualSpacing(bool bContextualSpacing)
 {
-    m_sContextualSpacing = sContextualSpacing;
+    m_bContextualSpacing = bContextualSpacing;
 }
 
 void CXmlElement::SetInd(std::wstring sInd)
@@ -556,8 +556,8 @@ CXmlElement& CXmlElement::operator+=(const CXmlElement &oElement)
     if (!oElement.m_sOutlineLvl.empty())
         m_sOutlineLvl = oElement.m_sOutlineLvl;
 
-    if (!oElement.m_sContextualSpacing.empty())
-        m_sContextualSpacing = oElement.m_sContextualSpacing;
+    if (oElement.m_bContextualSpacing)
+        m_bContextualSpacing = true;
 
     if (!oElement.m_sInd.empty())
         m_sInd = oElement.m_sInd;
@@ -641,7 +641,7 @@ CXmlElement& CXmlElement::operator=(const CXmlElement &oElement)
     m_bKeepNext             = oElement.m_bKeepNext;
     m_sSpacing              = oElement.m_sSpacing;
     m_sOutlineLvl           = oElement.m_sOutlineLvl;
-    m_sContextualSpacing    = oElement.m_sContextualSpacing;
+    m_bContextualSpacing    = oElement.m_bContextualSpacing;
     m_sInd                  = oElement.m_sInd;
     m_sJc                   = oElement.m_sJc;
     m_sShd                  = oElement.m_sShd;
@@ -687,7 +687,7 @@ bool CXmlElement::operator==(const CXmlElement &oElement)
             m_bKeepNext             == oElement.m_bKeepNext             &&
             m_sSpacing              == oElement.m_sSpacing              &&
             m_sOutlineLvl           == oElement.m_sOutlineLvl           &&
-            m_sContextualSpacing    == oElement.m_sContextualSpacing    &&
+            m_bContextualSpacing    == oElement.m_bContextualSpacing    &&
             m_sInd                  == oElement.m_sInd                  &&
             m_sJc                   == oElement.m_sJc                   &&
             m_sShd                  == oElement.m_sShd                  &&
@@ -726,8 +726,8 @@ std::wstring CXmlElement::ConvertPStyle()
         if (!m_sOutlineLvl.empty())
             sPPr += L"<w:outlineLvl w:val=\"" + m_sOutlineLvl + L"\"/>";
 
-        if (!m_sContextualSpacing.empty())
-            sPPr += L"<w:contextualSpacing w:val=\"" + m_sContextualSpacing + L"\"/>";
+        if (m_bContextualSpacing)
+            sPPr += L"<w:contextualSpacing/>";
 
         if (!m_sInd.empty())
             sPPr += L"<w:ind " + m_sInd + L"/>";

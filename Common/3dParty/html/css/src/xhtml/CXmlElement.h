@@ -31,9 +31,9 @@ class CXmlElement
     // <pPr>
         bool m_bKeepLines;
         bool m_bKeepNext;
+        bool m_bContextualSpacing;
         std::wstring m_sSpacing;
         std::wstring m_sOutlineLvl;
-        std::wstring m_sContextualSpacing;
         std::wstring m_sInd;
         std::wstring m_sJc;
         std::wstring m_sShd;
@@ -104,9 +104,9 @@ public:
     // <pPr>
         void SetKeepLines(bool bKeepLines);
         void SetKeepNext(bool bKeepNext);
+        void SetContextualSpacing(bool bContextualSpacing);
         void SetSpacing(std::wstring sSpacing);
         void SetOutlineLvl(std::wstring sOutlineLvl);
-        void SetContextualSpacing(std::wstring sContextualSpacing);
         void SetInd(std::wstring sInd);
         void SetJc(std::wstring sJc);
         void SetShd(std::wstring sShd);

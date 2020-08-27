@@ -335,30 +335,61 @@ CDocumentStyle::CDocumentStyle()
                 oXmlElement.SetB(true);
         }
 
-        std::wstring sValue;
+        std::wstring sIndValue;
         if (!oStyle.GetTextIndent().empty() && oStyle.GetId().find(L"table") == std::wstring::npos)
         {
-            sValue += L"w:firstLine=\"" + oStyle.GetTextIndent() + L"\" ";
+            sIndValue += L"w:firstLine=\"" + oStyle.GetTextIndent() + L"\" ";
         }
         if (!oStyle.GetMargin().empty())
         {
             double dLeftValue = wcstod(oStyle.GetMarginLeft().c_str(), NULL);
-            dLeftValue = dLeftValue * 1440 * 2.54 / 72;
+            dLeftValue = dLeftValue * 1440 / 72;
 
             double dRightValue = wcstod(oStyle.GetMarginRight().c_str(), NULL);
-            dRightValue = dRightValue * 1440 * 2.54 / 72;
+            dRightValue = dRightValue * 1440 / 72;
 
-            sValue += L"w:left=\"" + std::to_wstring((int)dLeftValue) + L"\" ";
-            sValue += L"w:right=\"" + std::to_wstring((int)dRightValue) + L"\"";
+            sIndValue += L"w:left=\"" + std::to_wstring((int)floor(dLeftValue + 0.5)) + L"\" ";
+            sIndValue += L"w:right=\"" + std::to_wstring((int)floor(dRightValue + 0.5)) + L"\"";
         }
 
-        if (!sValue.empty())
+        if (!sIndValue.empty())
         {
-            oXmlElement.SetInd(sValue);
+            oXmlElement.SetInd(sIndValue);
         }
+
+//        std::wstring sSpacingValue;
+//        if (!oStyle.GetLineHeight().empty())
+//        {
+//            sSpacingValue += L"w:after=\"120\" w:before=\"240\" ";
+//            double dLineHeight = wcstod(oStyle.GetLineHeight().c_str(), NULL);
+//            dLineHeight *= 20;
+//            sSpacingValue += L"w:line=\"" + std::to_wstring((int)floor(dLineHeight + 0.5)) + L"\" ";
+//            sSpacingValue += L"w:lineRule=\"auto\"";
+//            oXmlElement.SetSpacing(sSpacingValue);
+//            oXmlElement.SetContextualSpacing(true);
+//        }
+
+//        if (!oStyle.GetMargin().empty())
+//        {
+//            double dAfterValue = wcstod(oStyle.GetMarginTop().c_str(), NULL);
+//            dAfterValue *= 10;
+
+//            double dBeforeValue = wcstod(oStyle.GetMarginBottom().c_str(), NULL);
+//            dBeforeValue *= 10;
+
+//            sSpacingValue += L"w:after=\"" + std::to_wstring((int)floor(dAfterValue + 0.5)) + L"\" ";
+//            sSpacingValue += L"w:before=\"" + std::to_wstring((int)floor(dBeforeValue + 0.5)) + L"\" ";
+//        }
+
+//        if (!sSpacingValue.empty())
+//        {
+//            oXmlElement.SetSpacing(sSpacingValue + L"w:line=\"240\" w:lineRule=\"auto\"");
+//            oXmlElement.SetContextualSpacing(true);
+//        }
 
         if (!oStyle.GetBackgroundColor().empty())
             oXmlElement.SetShd(oStyle.GetBackgroundColor());
+
 
         if (!oStyle.GetBorder().empty())
         {

@@ -653,6 +653,12 @@ private:
             // Перенос строки
             else if(sName == L"br")
                 oXml->WriteString(L"<w:r><w:br/></w:r>");
+            else if(sName == L"center")
+            {
+                CTextSettings oTSP(oTS);
+                oTSP.sPStyle += L"<w:jc w:val=\"center\"/>";
+                readStream(oXml, sSubClass, oTSP, bWasP);
+            }
             // Цитата, обычно выделяется курсивом
             // Новый термин, обычно выделяется курсивом
             // Акцентированный текст
@@ -749,13 +755,13 @@ private:
             else if(sName == L"template" || sName == L"canvas" || sName == L"video" || sName == L"math" || sName == L"rp"    ||
                     sName == L"command"  || sName == L"iframe" || sName == L"embed" || sName == L"wbr"  || sName == L"audio" ||
                     sName == L"bgsound"  || sName == L"applet" || sName == L"blink" || sName == L"keygen"|| sName == L"script" ||
-                    sName == L"comment")
+                    sName == L"comment"  || sName == L"title")
                 continue;
             // Без нового абзаца
             else if(sName == L"basefont" || sName == L"button" || sName == L"label" || sName == L"data" || sName == L"object" ||
                     sName == L"noscript" || sName == L"output" || sName == L"abbr"  || sName == L"time" || sName == L"ruby"   ||
                     sName == L"progress" || sName == L"hgroup" || sName == L"meter" || sName == L"span" || sName == L"font"   ||
-                    sName == L"acronym"  || sName == L"center")
+                    sName == L"acronym")
                 readStream(oXml, sSubClass, oTS, bWasP);
             // С нового абзаца
             else
@@ -1258,6 +1264,7 @@ private:
             else if(sSrcM.substr(0, nLen) == L"http" || !m_sBase.empty())
             {
                 std::wstring sExtention = NSFile::GetFileExtention(sSrcM);
+                std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
                 if(sExtention != L"bmp" && sExtention != L"svg" && sExtention != L"jfif" && sExtention != L"wmf" && sExtention != L"gif" &&
                    sExtention != L"jpe" && sExtention != L"png" && sExtention != L"jpeg" && sExtention != L"jpg" )
                     continue;

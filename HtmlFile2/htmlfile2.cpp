@@ -808,6 +808,7 @@ private:
                     CTextSettings oTSPre(oTS);
                     oTSPre.bPre = true;
                     oTSPre.sRStyle += L"<w:rFonts w:ascii=\"Consolas\" w:hAnsi=\"Consolas\"/>";
+                    oTSPre.sPStyle += L"<w:spacing w:after=\"0\"/>";
                     readStream(oXml, sSubClass, oTSPre, bWasP);
                 }
                 // Таблицы
@@ -1191,12 +1192,6 @@ private:
 
         if(!readStream(oXml, sSelectors, oTS, bWasP))
         {
-            if(sAlt.empty())
-            {
-                oXml->WriteString(L"</w:hyperlink>");
-                bWasP = true;
-                return;
-            }
             std::wstring sRStyle;
             oXml->WriteString(L"<w:r>");
             wrRStyle(oXml, sSelectors, oTS, sRStyle);

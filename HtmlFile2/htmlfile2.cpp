@@ -533,7 +533,8 @@ private:
         bool bWasP = true;
         std::wstring sEmpty;
         CTextSettings oTS { false, false, -1, sEmpty, sEmpty };
-        std::vector<NSCSS::CNode> sSelectors = GetSubClass(sSelectors, sEmpty);
+        std::vector<NSCSS::CNode> sSelectors;
+        sSelectors = GetSubClass(sSelectors, sEmpty);
         auto it = m_sSrcs.find(sFileName);
         if(it != m_sSrcs.end())
         {

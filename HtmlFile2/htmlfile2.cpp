@@ -553,6 +553,11 @@ private:
             }
         }
         m_oDocXml.WriteString(L"<w:p>");
+        std::wstring sP;
+        std::wstring sPStyle;
+        wrPStyle(&m_oDocXml, sSelectors, oTS, bWasP, sP, sPStyle);
+        m_oDocXml.WriteString(L"</w:p><w:p>");
+        bWasP = true;
         readStream(&m_oDocXml, sSelectors, oTS, bWasP);
         m_oDocXml.WriteString(L"</w:p>");
     }

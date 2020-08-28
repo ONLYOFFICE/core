@@ -1,6 +1,7 @@
 #include "CXmlElement.h"
 
-#include <iostream>
+#include <algorithm>
+#include <vector>
 
 
 CXmlElement::CXmlElement()
@@ -458,12 +459,17 @@ void CXmlElement::SetInd(std::wstring sInd)
 
 void CXmlElement::SetJc(std::wstring sJc)
 {
-    if (sJc == L"justify")
+    std::wstring sNewJc = sJc;
+    std::transform(sNewJc.begin(), sNewJc.end(), sNewJc.begin(), towlower);
+
+    std::vector<std::wstring> arValues = {L"left", L"center", L"right", L"both"};
+
+    if (sNewJc == L"justify")
         m_sJc = L"both";
-    else if (sJc == L"middle")
+    else if (sNewJc == L"middle")
         m_sJc = L"center";
-    else
-        m_sJc = sJc;
+    else if (std::find(arValues.begin(), arValues.end(), sNewJc) != arValues.cend())
+        m_sJc = sNewJc;
 }
 
 void CXmlElement::SetShd(std::wstring sShd)

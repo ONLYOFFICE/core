@@ -773,6 +773,16 @@ namespace NSCSS
                 if (mStyle.find(arDeclarations[j].first) == mStyle.cend())
                 {
                     std::wstring sValue = arDeclarations[j].second;
+
+                    if (sValue[sValue.length() - 1] == L';' || sValue[sValue.length() - 1] == L':')
+                        sValue.erase(sValue.length() - 1, 1);
+
+                    if (sValue.find(L'#') != std::wstring::npos)
+                    {
+                        if (sValue.find(L' ', sValue.find(L'#')) != std::wstring::npos)
+                            sValue = sValue.substr(sValue.find(L'#'), (sValue.find(L' ') - 1));
+                    }
+
                     mStyle.emplace(arDeclarations[j].first, sValue);
                 }
                 else
@@ -785,6 +795,16 @@ namespace NSCSS
                         arDeclarations[j].second.find(L"!important") != std::wstring::npos)
                     {
                         std::wstring sValue = arDeclarations[j].second;
+
+                        if (sValue[sValue.length() - 1] == L';' || sValue[sValue.length() - 1] == L':')
+                            sValue.erase(sValue.length() - 1, 1);
+
+                        if (sValue.find(L'#') != std::wstring::npos)
+                        {
+                            if (sValue.find(L' ', sValue.find(L'#')) != std::wstring::npos)
+                                sValue = sValue.substr(sValue.find(L'#'), (sValue.find(L' ') - 1));
+                        }
+
                         mStyle[arDeclarations[j].first] = sValue;
                     }
                 }
@@ -981,9 +1001,6 @@ namespace NSCSS
         CCompiledStyle oStyle;
         oStyle.Clear();
 
-//        if (oParents.size() > 0)
-//            std::wcout << oNode.m_sName << std::endl;
-
         std::wstring sClassName = oNode.m_sClass;
         TranslateToEn(sClassName);
 
@@ -998,8 +1015,11 @@ namespace NSCSS
 
         for (auto oParent : oParents)
         {
-            oStyle += GetCompiledStyle(oParent, {}, unitMeasure);
-            oStyle.AddParent(oParent.m_sName);
+            if (oParent.m_sName != L"body")
+            {
+                oStyle += GetCompiledStyle(oParent, {}, unitMeasure);
+                oStyle.AddParent(oParent.m_sName);
+            }
         }
 
         oStyle += GetCompiledStyle(GetSelectorsList(oNode.m_sName + sClassName + sIdName), unitMeasure);
@@ -1011,8 +1031,13 @@ namespace NSCSS
             oStyle += oTempStyle;
         }
 
-        oStyle.SetID(oNode.m_sName + sClassName + sIdName + L'-' + std::to_wstring(m_nCountNodes));
-        m_nCountNodes++;
+//        if (sClassName.empty() && sIdName.empty() && oNode.m_sStyle.empty())
+//            oStyle.SetID(oNode.m_sName);
+//        else
+//        {
+            oStyle.SetID(oNode.m_sName + sClassName + sIdName + L'-' + std::to_wstring(m_nCountNodes));
+            m_nCountNodes++;
+//        }
 
         m_arUsedNode.push_back(std::make_pair(oNode, std::make_pair(oParents, oStyle.GetId())));
 
@@ -1068,9 +1093,6 @@ namespace NSCSS
 
         if (sSourceUTF8.empty())
             return;
-
-        RemoveExcessFromStyles(sSourceUTF8);
-        TranslateToEn(sSourceUTF8);
 
         AddStyles(sSourceUTF8);
     }
@@ -1142,9 +1164,17 @@ namespace NSCSS
         {
             if (GetFirstNumber(arValues[i]).empty() || arValues[i].find(L'#') != std::wstring::npos)
             {
-                sValueString += DeleteSpace(arValues[i]);
-                if (arValues[i].length() > 1 && arValues[i][arValues[i].length() - 1] != L':' && arValues[i][arValues[i].length() - 1] != L';' && arValues.size() > 1)
+                if (arValues[i].find(L'#') != std::wstring::npos)
+                {
+                    if (arValues[i].find(L' ', arValues[i].find(L'#')) != std::wstring::npos)
+                        sValueString += arValues[i].substr((arValues[i].find(L'#'), (arValues[i].find(L' ') - 1)));
+                }
+                else sValueString += DeleteSpace(arValues[i]);
+
+                if (arValues[i].length() > 1 && arValues[i].find(L';') == std::wstring::npos &&
+                    arValues[i].find(L':') == std::wstring::npos && arValues.size() > 2)
                     sValueString += L';';
+
                 continue;
             }
 
@@ -1848,7 +1878,7 @@ namespace NSCSS
 inline static std::wstring StringifyValueList(KatanaArray* oValues)
 {
     if (NULL == oValues)
-        return NULL;
+        return L"";
 
     std::wstring buffer;
 
@@ -1919,6 +1949,9 @@ inline static std::wstring StringifyValue(KatanaValue* oValue)
         case KATANA_VALUE_PARSER_FUNCTION:
         {
             std::wstring args_str = StringifyValueList(oValue->function->args);
+            if (args_str.empty())
+                break;
+
             str = stringToWstring(oValue->function->name) + args_str + L")";
             break;
         }

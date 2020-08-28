@@ -220,8 +220,7 @@ namespace NSCSS
                 nPosition++;
             }
             nPosition++;
-            while (nPosition < (int)sStyle.length() && sStyle[nPosition] != L';' &&
-                   sStyle[nPosition] != L'\'' && sStyle[nPosition] != L'"')
+            while (nPosition < (int)sStyle.length() && sStyle[nPosition] != L';')
             {
 //                if (!isspace(sStyle[nPosition]))
                     sValue += sStyle[nPosition];
@@ -232,6 +231,13 @@ namespace NSCSS
             {
                 if (sValue.find(L'!') != std::wstring::npos)
                     sValue = sValue.substr(0, sValue.find(L'!') - 1);
+
+                if (sValue.find(L';') != std::wstring::npos)
+                    sValue = sValue.substr(0, sValue.find(L';'));
+
+                if (sValue.find(L':') != std::wstring::npos)
+                    sValue = sValue.substr(0, sValue.find(L':'));
+
                 AddPropSel(sProperty, sValue);
                 sProperty.clear();
                 sValue.clear();
@@ -279,9 +285,15 @@ namespace NSCSS
         {
             if (m_mStyle.find(L"font-family") != m_mStyle.cend())
             {
-                if (m_mStyle[L"font-family"][0] == L'"' || m_mStyle[L"font-family"][0] == L'\'')
-                    return m_mStyle[L"font-family"];
-                else return L'"' + m_mStyle[L"font-family"] + L'"';
+                std::wstring sFontFamily = m_mStyle[L"font-family"];
+                if (sFontFamily.find(L',') != std::wstring::npos)
+                    sFontFamily = sFontFamily.substr(0, sFontFamily.find(L','));
+
+                if (sFontFamily.find(L'"') != std::wstring::npos || sFontFamily.find(L'\'') != std::wstring::npos)
+                {
+                    return sFontFamily;
+                }
+                return  L'"' + sFontFamily + L'"';
             }
             std::wstring sFont;
 
@@ -305,12 +317,14 @@ namespace NSCSS
             std::wstring sValue = sFont.substr(nPos1 + 1);
 
             if (sValue.find(L',') != std::wstring::npos)
-                sValue = sValue.substr(0, sValue.find(L','));
+                sValue = sValue.substr(0, sValue.find(L',') - 1);
 
             if (!sValue.empty())
             {
-                if (sValue[0] == L'"' || sValue[0] == L'\'')
+                if (sValue.find(L'"') != std::wstring::npos || sValue.find(L'\'') != std::wstring::npos)
+                {
                     return sValue;
+                }
                 return L'"' + sValue + L'"';
             }
             return L"";

@@ -30,15 +30,7 @@ bool CXmlElement::Empty()
 void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
 {
     Clear();
-    if (sNameDefaultElement == L"normal")
-    {
-        SetType(L"paragraph");
-        SetStyleId(L"normal");
-        SetS(L"1");
-        SetName(L"Normal");
-        SetQFormat(true);
-    }
-    else if (sNameDefaultElement == L"li")
+    if (sNameDefaultElement == L"li")
     {
         SetType(L"paragraph");
         SetStyleId(L"li");
@@ -158,7 +150,7 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetName(L"Title 1 Sign");
         SetLink(L"h1");
         SetUiPriority(L"9");;
-        SetRFonts(L"Arial");
+        SetRFonts(L"\"Arial\"");
         SetSz(L"40");
     }
     else if (sNameDefaultElement == L"title2-c")
@@ -169,7 +161,7 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetName(L"Title 2 Sign");
         SetLink(L"h2");
         SetUiPriority(L"9");;
-        SetRFonts(L"Arial");
+        SetRFonts(L"\"Arial\"");
         SetSz(L"34");
     }
     else if (sNameDefaultElement == L"title3-c")
@@ -180,7 +172,7 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetName(L"Title 3 Sign");
         SetLink(L"h3");
         SetUiPriority(L"9");;
-        SetRFonts(L"Arial");
+        SetRFonts(L"\"Arial\"");
         SetSz(L"30");
     }
     else if (sNameDefaultElement == L"title4-c")
@@ -191,7 +183,7 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetName(L"Title 4 Sign");
         SetLink(L"h4");
         SetUiPriority(L"9");;
-        SetRFonts(L"Arial");
+        SetRFonts(L"\"Arial\"");
         SetSz(L"26");
     }
     else if (sNameDefaultElement == L"title5-c")
@@ -202,7 +194,7 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetName(L"Title 5 Sign");
         SetLink(L"h5");
         SetUiPriority(L"9");;
-        SetRFonts(L"Arial");
+        SetRFonts(L"\"Arial\"");
         SetSz(L"24");
     }
     else if (sNameDefaultElement == L"title6-c")
@@ -213,7 +205,7 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetName(L"Title 6 Sign");
         SetLink(L"h6");
         SetUiPriority(L"9");;
-        SetRFonts(L"Arial");
+        SetRFonts(L"\"Arial\"");
         SetSz(L"22");
     }
     else if (sNameDefaultElement == L"p-c")
@@ -223,6 +215,7 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetCustomStyle(L"1");
         SetName(L"Paragraph_character");
         SetLink(L"p");
+        SetRFonts(L"\"Arial\"");
     }
     else if (sNameDefaultElement == L"p")
     {
@@ -243,6 +236,7 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetCustomStyle(L"1");
         SetName(L"Paragraph_character");
         SetLink(L"div");
+        SetRFonts(L"\"Arial\"");
     }
     else if (sNameDefaultElement == L"div")
     {
@@ -264,9 +258,10 @@ void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
         SetName(L"Hyperlink");
         SetUiPriority(L"99");
         SetUnhideWhenUsed(true);
-        SetColor(L"0563C1");
+        SetColor(L"0000FF");
         SetU(L"single");
         SetSz(L"22");
+        SetRFonts(L"\"Arial\"");
     }
 //    else if (sNameDefaultElement.find(L'-') != std::wstring::npos)
 //    {

@@ -446,7 +446,7 @@ IRecord* CreateByType(SRecordHeader oHeader)
     char str[1024]={};
     sprintf(str, "Record type: %x\t" , oHeader.RecType);
     std::cout << str << std::setw(32) << GetRecordName(oHeader.RecType)
-              << "\tlen = " << oHeader.RecLen << "\n";
+              << "\tlen = " << oHeader.RecLen;
 
 
 	IRecord* pRecord = NULL;
@@ -496,8 +496,8 @@ IRecord* CreateByType(SRecordHeader oHeader)
     CREATE_BY_TYPE(RT_TimeConditionContainer, CRecordTimeConditionContainer)
     CREATE_BY_TYPE(RT_TimeCondition, CRecordTimeConditionAtom)
     CREATE_BY_TYPE(RT_TimeModifier, CRecordTimeModifierAtom)
-//    CREATE_BY_TYPE()
-//    CREATE_BY_TYPE()
+    CREATE_BY_TYPE(RT_ProgTags, CRecordSlideProgTagsContainer)
+    CREATE_BY_TYPE(RT_Drawing, CRecordDrawingContainer)
 
     CREATE_BY_TYPE(RT_Document                  , CRecordDocument)
     CREATE_BY_TYPE(RT_SlideListWithText			, CRecordSlideListWithText)
@@ -575,6 +575,8 @@ IRecord* CreateByType(SRecordHeader oHeader)
                 //CREATE_BY_TYPE(RECORD_TYPE_METAFILE					, CRecordMetafileBlob)
     CREATE_BY_TYPE(RT_CString						, CRecordCString)
     CREATE_BY_TYPE(RT_SoundCollectionAtom				, CRecordSoundCollAtom)
+    CREATE_BY_TYPE(RT_SoundCollection                   , CRecordSoundCollectionContainer)
+    CREATE_BY_TYPE(RT_Sound                             , CRecordSoundContainer)
     CREATE_BY_TYPE(RT_ExternalOleObjectAtom				, CRecordExOleObjAtom)
     CREATE_BY_TYPE(RT_ExternalOleEmbedAtom					, CRecordExOleEmbedAtom)
                 //CREATE_BY_TYPE(RECORD_TYPE_BOOKMARK_ENTITY_ATOM		, CRecordBookmarkEntityAtom)
@@ -629,6 +631,10 @@ IRecord* CreateByType(SRecordHeader oHeader)
     CREATE_BY_TYPE(RT_InteractiveInfoAtom       			, CRecordInteractiveInfoAtom)
     CREATE_BY_TYPE(RT_TextInteractiveInfoAtom       		, CRecordTextInteractiveInfoAtom)
 
+
+    CREATE_BY_TYPE(RT_ExternalObjectList                    , CRecordExObjListContainer)
+    CREATE_BY_TYPE(RT_SoundDataBlob                         , CRecordSoundDataBlob)
+
     default:
         {
         }break;
@@ -636,6 +642,7 @@ IRecord* CreateByType(SRecordHeader oHeader)
 
 	if (NULL == pRecord)
 	{
+        std::cout << " - not created!\n";
 		if (oHeader.IsContainer())
 		{
 			pRecord = new CRecordsContainer();
@@ -649,6 +656,9 @@ IRecord* CreateByType(SRecordHeader oHeader)
 			std::cout << str << GetRecordName((_UINT32)oHeader.RecType) << "\n"; 
 #endif
 		}
-	}
+    } else
+    {
+        std::cout << "\n";
+    }
 	return pRecord;
 }

@@ -300,7 +300,7 @@ public:
     IRecord*        m_pSlideBinaryTagExtension;
 };
 
-struct CRecordSlideProgTagsContainer : public CUnknownRecord
+class CRecordSlideProgTagsContainer : public CUnknownRecord
 {
 public:
 

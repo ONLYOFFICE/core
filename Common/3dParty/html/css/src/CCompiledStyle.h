@@ -22,16 +22,13 @@ namespace NSCSS
 
         ~CCompiledStyle();
 
-        std::map<std::wstring, std::wstring> GetStyleMap();
-        std::wstring GetStyleW();
-        std::string GetStyle();
+        std::map<std::wstring, std::wstring> GetStyleMap() const;
+        std::wstring GetStyleW() const;
+        std::string GetStyle() const;
 
-        size_t GetSize();
-        bool Empty();
+        size_t GetSize() const;
+        bool Empty() const;
         void Clear();
-
-        std::map<std::wstring, std::wstring>::iterator GetBegin();
-        std::map<std::wstring, std::wstring>::iterator GetEnd();
 
         void AddPropSel(std::wstring sProperty, std::wstring sValue);
         void InsertStyle(std::map<std::wstring, std::wstring> mStyle);
@@ -39,10 +36,10 @@ namespace NSCSS
         void AddStyle(std::wstring sStyle);
         void AddParent(std::wstring sParentName);
 
-        std::vector<std::wstring> GetParentsName();
+        std::vector<std::wstring> GetParentsName() const;
 
         void SetID(std::wstring sId);
-        std::wstring GetId();
+        std::wstring GetId() const;
 
         /* FONT */
         std::wstring GetFont();

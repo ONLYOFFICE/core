@@ -137,12 +137,12 @@ namespace NSCSS
         return (m_mStyle.size() < oElement.m_mStyle.size());
     }
 
-    std::map<std::wstring, std::wstring> CCompiledStyle::GetStyleMap()
+    std::map<std::wstring, std::wstring> CCompiledStyle::GetStyleMap() const
     {
         return m_mStyle;
     }
 
-    std::wstring CCompiledStyle::GetStyleW()
+    std::wstring CCompiledStyle::GetStyleW() const
     {
         std::wstring sStyle;
         for (auto iter = m_mStyle.begin(); iter != m_mStyle.cend(); iter++)
@@ -150,19 +150,19 @@ namespace NSCSS
         return sStyle;
     }
 
-    std::string CCompiledStyle::GetStyle()
+    std::string CCompiledStyle::GetStyle() const
     {
         std::wstring sStyle = GetStyleW();
         std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
         return converter.to_bytes(sStyle);
     }
 
-    size_t CCompiledStyle::GetSize()
+    size_t CCompiledStyle::GetSize() const
     {
         return m_mStyle.size();
     }
 
-    bool CCompiledStyle::Empty()
+    bool CCompiledStyle::Empty() const
     {
         if (m_mStyle.size() == 0)
             return true;
@@ -178,16 +178,6 @@ namespace NSCSS
         m_mStyle.clear();
         m_sId.clear();
         m_arParentsStyles.clear();
-    }
-
-    std::map<std::wstring, std::wstring>::iterator CCompiledStyle::GetBegin()
-    {
-        return m_mStyle.begin();
-    }
-
-    std::map<std::wstring, std::wstring>::iterator CCompiledStyle::GetEnd()
-    {
-        return m_mStyle.end();
     }
 
     void CCompiledStyle::AddPropSel(std::wstring sProperty, std::wstring sValue)
@@ -251,7 +241,7 @@ namespace NSCSS
             m_arParentsStyles.push_back(sParentName);
     }
 
-    std::vector<std::wstring> CCompiledStyle::GetParentsName()
+    std::vector<std::wstring> CCompiledStyle::GetParentsName() const
     {
         return m_arParentsStyles;
     }
@@ -261,7 +251,7 @@ namespace NSCSS
         m_sId = sId;
     }
 
-    std::wstring CCompiledStyle::GetId()
+    std::wstring CCompiledStyle::GetId() const
     {
         return m_sId;
     }

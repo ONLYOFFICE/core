@@ -24,7 +24,7 @@ namespace NSCSS
         UnitMeasure m_UnitMeasure;
 
         void AddElement(CElement* oElement);
-        size_t GetSize();
+        size_t GetSize() const;
 
         void GetStylesheet(KatanaStylesheet* oStylesheet, CElement* oElementRule = NULL);
         void GetRule(KatanaRule* oRule, CElement* oElementRule = NULL);
@@ -35,7 +35,7 @@ namespace NSCSS
         void GetKeyframesRule(KatanaKeyframesRule* oRule);
         void GetMediaRule(KatanaMediaRule* oRule);
 
-        CElement* GetElement(const int& nIndex);
+        CElement* GetElement(const int& nIndex) const;
 
         std::wstring GetMediaList(KatanaArray* oMedias);
         std::wstring GetMediaQuery(KatanaMediaQuery* oQuery);
@@ -45,67 +45,67 @@ namespace NSCSS
 
         CElement* GetKeyframe(KatanaKeyframe* oKeyframe);
 
-        std::vector<std::wstring> GetSelectorList(KatanaArray* oSelectors);
-        std::wstring GetSelector(KatanaSelector* oSelector);
+        std::vector<std::wstring> GetSelectorList(KatanaArray* oSelectors) const;
+        std::wstring GetSelector(KatanaSelector* oSelector) const;
 
-        std::vector<std::pair<std::wstring, std::wstring>> GetDeclarationList(KatanaArray* oDeclarations);
-        std::pair<std::wstring, std::wstring> GetDeclaration(KatanaDeclaration* oDecl);
+        std::vector<std::pair<std::wstring, std::wstring>> GetDeclarationList(KatanaArray* oDeclarations) const;
+        std::pair<std::wstring, std::wstring> GetDeclaration(KatanaDeclaration* oDecl) const;
 
-        std::wstring ConvertUnitMeasure(const std::wstring& sValue);
+        std::wstring ConvertUnitMeasure(const std::wstring& sValue) const;
 
-        std::wstring ConvertPx(const std::wstring& sValue);
-        std::wstring ConvertPxToCm(const double& dValue, bool bAddUM = false);
-        std::wstring ConvertPxToIn(const double& dValue, bool bAddUM = false);
-        std::wstring ConvertPxToMm(const double& dValue, bool bAddUM = false);
-        std::wstring ConvertPxToPt(const double& dValue, bool bAddUM = false);
-        std::wstring ConvertPxToPc(const double& dValue, bool bAddUM = false);
+        std::wstring ConvertPx(const std::wstring& sValue) const;
+        std::wstring ConvertPxToCm(const double& dValue, bool bAddUM = false) const;
+        std::wstring ConvertPxToIn(const double& dValue, bool bAddUM = false) const;
+        std::wstring ConvertPxToMm(const double& dValue, bool bAddUM = false) const;
+        std::wstring ConvertPxToPt(const double& dValue, bool bAddUM = false) const;
+        std::wstring ConvertPxToPc(const double& dValue, bool bAddUM = false) const;
 
-        std::wstring ConvertCm(const std::wstring& sValue);
-        std::wstring ConvertCmToPx(const double& dValue, bool bAddUM = false);
-        std::wstring ConvertCmToIn(const double& dValue, bool bAddUM = false);
-        std::wstring ConvertCmToMm(const double& dValue, bool bAddUM = false);
-        std::wstring ConvertCmToPt(const double& dValue, bool bAddUM = false);
-        std::wstring ConvertCmToPc(const double& dValue, bool bAddUM = false);
+        std::wstring ConvertCm(const std::wstring& sValue) const;
+        std::wstring ConvertCmToPx(const double& dValue, bool bAddUM = false) const;
+        std::wstring ConvertCmToIn(const double& dValue, bool bAddUM = false) const;
+        std::wstring ConvertCmToMm(const double& dValue, bool bAddUM = false) const;
+        std::wstring ConvertCmToPt(const double& dValue, bool bAddUM = false) const;
+        std::wstring ConvertCmToPc(const double& dValue, bool bAddUM = false) const;
 
-        std::wstring ConvertMm(const std::wstring& sValue);
-        std::wstring ConvertMmToPx(const double& dValue, bool bAddUM = false);
-        std::wstring ConvertMmToIn(const double& dValue, bool bAddUM = false);
-        std::wstring ConvertMmToCm(const double& dValue, bool bAddUM = false);
-        std::wstring ConvertMmToPt(const double& dValue, bool bAddUM = false);
-        std::wstring ConvertMmToPc(const double& dValue, bool bAddUM = false);
+        std::wstring ConvertMm(const std::wstring& sValue) const;
+        std::wstring ConvertMmToPx(const double& dValue, bool bAddUM = false) const;
+        std::wstring ConvertMmToIn(const double& dValue, bool bAddUM = false) const;
+        std::wstring ConvertMmToCm(const double& dValue, bool bAddUM = false) const;
+        std::wstring ConvertMmToPt(const double& dValue, bool bAddUM = false) const;
+        std::wstring ConvertMmToPc(const double& dValue, bool bAddUM = false) const;
 
-        std::wstring ConvertIn(const std::wstring& sValue);
-        std::wstring ConvertInToPx(const double& dValue, bool bAddUM = false);
-        std::wstring ConvertInToMm(const double& dValue, bool bAddUM = false);
-        std::wstring ConvertInToCm(const double& dValue, bool bAddUM = false);
-        std::wstring ConvertInToPt(const double& dValue, bool bAddUM = false);
-        std::wstring ConvertInToPc(const double& dValue, bool bAddUM = false);
+        std::wstring ConvertIn(const std::wstring& sValue) const;
+        std::wstring ConvertInToPx(const double& dValue, bool bAddUM = false) const;
+        std::wstring ConvertInToMm(const double& dValue, bool bAddUM = false) const;
+        std::wstring ConvertInToCm(const double& dValue, bool bAddUM = false) const;
+        std::wstring ConvertInToPt(const double& dValue, bool bAddUM = false) const;
+        std::wstring ConvertInToPc(const double& dValue, bool bAddUM = false) const;
 
-        std::wstring ConvertPt(const std::wstring& sValue);
-        std::wstring ConvertPtToPx(const double& dValue, bool bAddUM = false);
-        std::wstring ConvertPtToMm(const double& dValue, bool bAddUM = false);
-        std::wstring ConvertPtToCm(const double& dValue, bool bAddUM = false);
-        std::wstring ConvertPtToIn(const double& dValue, bool bAddUM = false);
-        std::wstring ConvertPtToPc(const double& dValue, bool bAddUM = false);
+        std::wstring ConvertPt(const std::wstring& sValue) const;
+        std::wstring ConvertPtToPx(const double& dValue, bool bAddUM = false) const;
+        std::wstring ConvertPtToMm(const double& dValue, bool bAddUM = false) const;
+        std::wstring ConvertPtToCm(const double& dValue, bool bAddUM = false) const;
+        std::wstring ConvertPtToIn(const double& dValue, bool bAddUM = false) const;
+        std::wstring ConvertPtToPc(const double& dValue, bool bAddUM = false) const;
 
-        std::wstring ConvertPc(const std::wstring& sValue);
-        std::wstring ConvertPcToPx(const double& dValue, bool bAddUM = false);
-        std::wstring ConvertPcToMm(const double& dValue, bool bAddUM = false);
-        std::wstring ConvertPcToCm(const double& dValue, bool bAddUM = false);
-        std::wstring ConvertPcToIn(const double& dValue, bool bAddUM = false);
-        std::wstring ConvertPcToPt(const double& dValue, bool bAddUM = false);
+        std::wstring ConvertPc(const std::wstring& sValue) const;
+        std::wstring ConvertPcToPx(const double& dValue, bool bAddUM = false) const;
+        std::wstring ConvertPcToMm(const double& dValue, bool bAddUM = false) const;
+        std::wstring ConvertPcToCm(const double& dValue, bool bAddUM = false) const;
+        std::wstring ConvertPcToIn(const double& dValue, bool bAddUM = false) const;
+        std::wstring ConvertPcToPt(const double& dValue, bool bAddUM = false) const;
 
-        std::wstring ConvertEm(const std::wstring& sValue);
+        std::wstring ConvertEm(const std::wstring& sValue) const;
 
-        std::vector<int> GetWeightSelector(const std::string& sSelector);
-        std::vector<int> GetWeightSelector(const std::wstring& sSelector);
+        std::vector<int> GetWeightSelector(const std::string& sSelector) const;
+        std::vector<int> GetWeightSelector(const std::wstring& sSelector) const;
 
         void GetOutputData(KatanaOutput* oOutput);
     public:
         CCssCalculator_Private();
         ~CCssCalculator_Private();
 
-        std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> GetDeclarations(const std::wstring& sSelector);
+        std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> GetDeclarations(const std::wstring& sSelector) const;
 
         CCompiledStyle GetCompiledStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure = Default);
         CCompiledStyle GetCompiledStyle(const CNode& oNode, const std::vector<CNode>& oParents = std::vector<CNode>(), UnitMeasure unitMeasure = Default);
@@ -118,11 +118,11 @@ namespace NSCSS
         void SetUnitMeasure(const UnitMeasure nType);
         void SetDpi(const int nValue);
 
-        UnitMeasure GetUnitMeasure();
-        std::wstring GetEncoding();
-        int GetDpi();
+        UnitMeasure GetUnitMeasure() const;
+        std::wstring GetEncoding() const;
+        int GetDpi() const;
 
-        void Print();
+        void Print() const;
         void Clear();
     };
 }

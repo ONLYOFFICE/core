@@ -15,178 +15,18 @@
 #include "../../../../../DesktopEditor/common/File.h"
 #include "../../../../../DesktopEditor/common/StringBuilder.h"
 
-static std::wstring StringifyValueList(KatanaArray* oValues);
-static std::wstring StringifyValue(KatanaValue* oValue);
-
-inline std::wstring stringToWstring(const std::string& sString)
-{
-    typedef std::codecvt_utf8<wchar_t> convert_type;
-    std::wstring_convert<convert_type, wchar_t> converter;
-
-    return converter.from_bytes(sString);
-}
-
-inline std::string wstringToString(const std::wstring& sWstring)
-{
-    return std::string(sWstring.begin(), sWstring.end());
-}
-
-inline std::string GetContentAsUTF8(const std::string &sString, const std::wstring &sEncoding)
-{
-    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-
-    std::string sEnc = converter.to_bytes(sEncoding);
-
-    NSUnicodeConverter::CUnicodeConverter oConverter;
-    std::wstring sUnicodeContent = oConverter.toUnicode(sString, sEnc.c_str());
-    return U_TO_UTF8(sUnicodeContent);
-}
-
-inline std::wstring GetContentAsUTF8W(const std::wstring& sFileName)
-{
-    std::wstring sSource;
-    if (!NSFile::CFileBinary::ReadAllTextUtf8(sFileName, sSource))
-        return sSource;
-
-    std::wstring sTemp;
-
-    if (sSource.find(L'{') != std::string::npos)
-        sTemp = sSource.substr(0, sSource.find(L'{'));
-
-    if (sTemp.empty())
-        return sSource;
-
-    std::wstring sEncoding;
-
-    if (sTemp.find(L"@charset") != std::string::npos)
-    {
-         sEncoding = sTemp.substr(sTemp.find(L"@charset ") + 9);
-        if (sEncoding.find(L';') != std::string::npos)
-            sEncoding = sEncoding.substr(0, sEncoding.find(L';'));
-
-        if (sEncoding.find(L'"') != std::string::npos)
-            sEncoding = sEncoding.substr(sEncoding.find(L'"') + 1);
-        else if (sEncoding.find(L"'") != std::string::npos)
-            sEncoding = sEncoding.substr(sEncoding.find(L"'") + 1);
-
-        if (sEncoding.find(L'"') != std::string::npos)
-            sEncoding = sEncoding.substr(0, sEncoding.find(L'"'));
-        else if (sEncoding.find(L"'") != std::string::npos)
-            sEncoding = sEncoding.substr(0, sEncoding.find(L"'"));
-    }
-    else
-        return sSource;
-
-    if (sEncoding == L"UTF-8" || sEncoding == L"utf-8")
-        return sSource;
-
-    NSUnicodeConverter::CUnicodeConverter oConverter;
-    std::string sTempSource = wstringToString(sSource);
-    std::wstring sUnicodeContent = oConverter.toUnicode(sTempSource.c_str(), wstringToString(sEncoding).c_str());
-    return sUnicodeContent;
-}
-
-inline std::string GetContentAsUTF8(const std::wstring& sFileName)
-{
-    std::wstring sUnicodeContent =GetContentAsUTF8W(sFileName);
-    return U_TO_UTF8(sUnicodeContent);
-}
-
-inline std::wstring GetFirstNumber(std::wstring sString)
-{
-    if (sString.empty())
-        return L"";
-
-    std::wstring sValue;
-    int nPos = 0;
-
-    while(nPos < (int)sString.length() && !isdigit(sString[nPos]))
-        nPos++;
-
-    while(nPos < (int)sString.length() && isdigit(sString[nPos]))
-    {
-        sValue += sString[nPos];
-        nPos++;
-    }
-
-    if (sString[nPos] == L'.' || sString[nPos] == L',')
-    {
-        sValue += L'.';
-        nPos++;
-        while(nPos < (int)sString.length() && isdigit(sString[nPos]))
-        {
-            sValue += sString[nPos];
-            nPos++;
-        }
-    }
-
-    return sValue;
-}
-
-inline void RemoveExcessFromStyles(std::wstring& sStyle)
-{
-    while (sStyle.find_first_of(L'<') != std::wstring::npos || sStyle.find_first_of(L'@') != std::wstring::npos)
-    {
-        if (sStyle.find_first_of(L'<') != std::wstring::npos)
-            sStyle.erase(sStyle.find_first_of(L'<', 0), sStyle.find_first_of(L'>', 0) - sStyle.find_first_of(L'<', 0) + 1);
-        else if (sStyle.find_first_of(L'@') != std::wstring::npos)
-        {
-            sStyle.erase(sStyle.find_first_of(L'@'), 1);
-        }
-    }
-}
-
-inline void TranslateToEn(std::wstring& sStyle)
-{
-    std::map<int, std::wstring> arAlf =        {{1072, L"a"},     {1040, L"A"},
-                                                {1073, L"b"},     {1041, L"B"},
-                                                {1074, L"v"},     {1042, L"V"},
-                                                {1075, L"g"},     {1043, L"G"},
-                                                {1076, L"d"},     {1044, L"D"},
-                                                {1077, L"e"},     {1045, L"E"},
-                                                {1105, L"e"},     {1025, L"E"},
-                                                {1078, L"zh"},    {1046, L"ZH"},
-                                                {1079, L"z"},     {1047, L"Z"},
-                                                {1080, L"i"},     {1048, L"I"},
-                                                {1081, L"y"},     {1049, L"Y"},
-                                                {1082, L"k"},     {1050, L"K"},
-                                                {1083, L"l"},     {1051, L"L"},
-                                                {1084, L"m"},     {1052, L"M"},
-                                                {1085, L"n"},     {1053, L"N"},
-                                                {1086, L"o"},     {1054, L"O"},
-                                                {1087, L"p"},     {1055, L"P"},
-                                                {1088, L"r"},     {1056, L"R"},
-                                                {1089, L"s"},     {1057, L"S"},
-                                                {1090, L"t"},     {1058, L"T"},
-                                                {1091, L"u"},     {1059, L"U"},
-                                                {1092, L"f"},     {1060, L"F"},
-                                                {1093, L"kh"},    {1061, L"KH"},
-                                                {1094, L"ts"},    {1062, L"TS"},
-                                                {1095, L"ch"},    {1063, L"CH"},
-                                                {1096, L"sh"},    {1064, L"SH"},
-                                                {1097, L"shch"},  {1065, L"SHCH"},
-                                                {1098, L""},      {1066, L""},
-                                                {1099, L"y"},     {1067, L"Y"},
-                                                {1100, L""},      {1068, L""},
-                                                {1101, L"e"},     {1069, L"E"},
-                                                {1102, L"yu"},    {1070, L"YU"},
-                                                {1103, L"ya"},    {1071, L"YA"}};
-
-    std::wstring sNewStyle;
-
-    for (int i = 0; i < (int)sStyle.length(); i++)
-    {
-        if (arAlf.find((int)sStyle[i]) != arAlf.cend())
-        {
-            sNewStyle += arAlf[sStyle[i]];
-        }
-        else if (sStyle[i] != L'\t' && sStyle[i] != L'\n')
-        {
-            sNewStyle += sStyle[i];
-        }
-    }
-    sStyle = sNewStyle;
-}
+inline static std::wstring  StringifyValueList(KatanaArray* oValues);
+inline static std::wstring  StringifyValue(KatanaValue* oValue);
+inline static std::wstring  stringToWstring(const std::string& sString);
+inline static std::string   wstringToString(const std::wstring& sWstring);
+inline static std::string   GetContentAsUTF8(const std::string &sString, const std::wstring &sEncoding);
+inline static std::wstring  GetContentAsUTF8W(const std::wstring& sFileName);
+inline static std::string   GetContentAsUTF8(const std::wstring& sFileName);
+inline static std::wstring  GetFirstNumber(std::wstring sString);
+inline static std::wstring  ConvertAbsoluteValue(const std::wstring& sAbsoluteValue);
+inline std::wstring         DeleteSpace(const std::wstring& sValue);
+inline static void          RemoveExcessFromStyles(std::wstring& sStyle);
+inline static void          TranslateToEn(std::wstring& sStyle);
 
 namespace NSCSS
 {
@@ -207,7 +47,7 @@ namespace NSCSS
 //        m_arData.clear();
     }
 
-    inline CElement* CCssCalculator_Private::GetElement(const int& nIndex)
+    inline CElement* CCssCalculator_Private::GetElement(const int& nIndex) const
     {
         if (nIndex < 0 || nIndex >= (int)m_arData.size())
             return NULL;
@@ -331,7 +171,7 @@ namespace NSCSS
             return oElement;
     }
 
-    inline std::vector<std::wstring> CCssCalculator_Private::GetSelectorList(KatanaArray* oSelectors)
+    inline std::vector<std::wstring> CCssCalculator_Private::GetSelectorList(KatanaArray* oSelectors) const
     {
         std::vector<std::wstring> arSelectors;
         for (size_t i = 0; i < oSelectors->length; ++i)
@@ -339,7 +179,7 @@ namespace NSCSS
         return arSelectors;
     }
 
-    inline std::wstring CCssCalculator_Private::GetSelector(KatanaSelector *oSelector)
+    inline std::wstring CCssCalculator_Private::GetSelector(KatanaSelector *oSelector) const
     {
         KatanaParser oParser;
         oParser.options = &kKatanaDefaultOptions;
@@ -366,7 +206,7 @@ namespace NSCSS
         return sText;
     }
 
-    inline std::vector<std::pair<std::wstring, std::wstring>> CCssCalculator_Private::GetDeclarationList(KatanaArray* oDeclarations)
+    inline std::vector<std::pair<std::wstring, std::wstring>> CCssCalculator_Private::GetDeclarationList(KatanaArray* oDeclarations) const
     {
         std::vector<std::pair<std::wstring, std::wstring>> arDeclarations;
 
@@ -376,7 +216,7 @@ namespace NSCSS
         return arDeclarations;
     }
 
-    inline std::pair<std::wstring, std::wstring> CCssCalculator_Private::GetDeclaration(KatanaDeclaration* oDecl)
+    inline std::pair<std::wstring, std::wstring> CCssCalculator_Private::GetDeclaration(KatanaDeclaration* oDecl) const
     {
         std::pair<std::wstring, std::wstring> pDeclaration;
 
@@ -555,7 +395,7 @@ namespace NSCSS
         return sText;
     }
 
-    inline std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> CCssCalculator_Private::GetDeclarations(const std::wstring& sSelector)
+    inline std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> CCssCalculator_Private::GetDeclarations(const std::wstring& sSelector) const
     {
         std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> arDeclarations;
 
@@ -569,13 +409,14 @@ namespace NSCSS
         return arDeclarations;
     }
 
-    inline std::vector<int> CCssCalculator_Private::GetWeightSelector(const std::string& sSelector)
+    inline std::vector<int> CCssCalculator_Private::GetWeightSelector(const std::string& sSelector) const
     {
         std::vector<int> arWeight = {0, 0, 0, 0};
         if (sSelector.empty())
             return arWeight;
 
-        std::vector<std::string> arPseudoClasses = {    "invalid",
+        const std::vector<std::string> arPseudoClasses = {
+                                                        "invalid",
                                                         "read-only",
                                                         "-moz-placeholder",
                                                         "-webkit-input-placeholder",
@@ -684,13 +525,13 @@ namespace NSCSS
         return arWeight;
     }
 
-    inline std::vector<int> CCssCalculator_Private::GetWeightSelector(const std::wstring& sSelector)
+    inline std::vector<int> CCssCalculator_Private::GetWeightSelector(const std::wstring& sSelector) const
     {
         std::string sSel = std::string(sSelector.begin(), sSelector.end());
         return GetWeightSelector(sSel);
     }
 
-    void CCssCalculator_Private::Print()
+    void CCssCalculator_Private::Print() const
     {
         std::wcout << m_arData.size() << std::endl;
 
@@ -701,41 +542,6 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::GetValueList(KatanaArray *oValues)
     {
         return StringifyValueList(oValues);
-    }
-
-    inline std::wstring ConvertAbsoluteValue(const std::wstring& sAbsoluteValue)
-    {
-        std::map<std::wstring, std::wstring> arAbsoluteValues = {{L"xx-small", L"9px"},  {L"x-small", L"10px"},
-                                                                 {L"small",    L"13px"}, {L"medium",  L"16px"},
-                                                                 {L"large",    L"18px"}, {L"x-large", L"24px"},
-                                                                 {L"xx-large", L"32px"}};
-
-        std::wstring sNewValue = sAbsoluteValue;
-
-        for (auto sAbsValue : arAbsoluteValues)
-        {
-            while (sNewValue.find(sAbsValue.first) != std::wstring::npos)
-            {
-                int nPos1, nPos2;
-                nPos1 = sNewValue.find(sAbsValue.first);
-                nPos2 = sNewValue.find(sAbsValue.first) + sAbsValue.first.length() - 1;
-                sNewValue.replace(nPos1, nPos2, sAbsValue.second);
-            }
-        }
-        return sNewValue;
-    }
-
-    inline std::wstring DeleteSpace(const std::wstring& sValue)
-    {
-        std::wstring sNewValue = sValue;
-
-        while (sNewValue.length() > 0 && iswspace(sNewValue[0]))
-            sNewValue.erase(0, 1);
-
-        while (sNewValue.length() > 0 && iswspace(sNewValue[sNewValue.length() - 1]))
-            sNewValue.erase(sNewValue.length() - 1, 1);
-
-        return sNewValue;
     }
 
     CCompiledStyle CCssCalculator_Private::GetCompiledStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure)
@@ -1098,7 +904,7 @@ namespace NSCSS
     }
 
 
-    std::wstring CCssCalculator_Private::ConvertUnitMeasure(const std::wstring &sValue)
+    std::wstring CCssCalculator_Private::ConvertUnitMeasure(const std::wstring &sValue) const
     {
         if (sValue.empty())
             return L"";
@@ -1162,17 +968,26 @@ namespace NSCSS
 
         for (int i = 0; i < (int)arValues.size(); i++)
         {
-            if (GetFirstNumber(arValues[i]).empty() || arValues[i].find(L'#') != std::wstring::npos)
-            {
-                if (arValues[i].find(L'#') != std::wstring::npos)
-                {
-                    if (arValues[i].find(L' ', arValues[i].find(L'#')) != std::wstring::npos)
-                        sValueString += arValues[i].substr((arValues[i].find(L'#'), (arValues[i].find(L' ') - 1)));
-                }
-                else sValueString += DeleteSpace(arValues[i]);
+            std::wstring sValue = arValues[i];
+            auto nPosGrid = sValue.find(L'#');
 
-                if (arValues[i].length() > 1 && arValues[i].find(L';') == std::wstring::npos &&
-                    arValues[i].find(L':') == std::wstring::npos && arValues.size() > 2)
+            if (GetFirstNumber(sValue).empty() || nPosGrid != std::wstring::npos)
+            {
+                if (nPosGrid != std::wstring::npos)
+                {
+                    auto nPosSpace = sValue.find(L' ', arValues[i].find(L'#'));
+                    if (nPosSpace != std::wstring::npos)
+                        sValueString += sValue.substr((nPosGrid, nPosSpace - 1));
+                    else
+                        sValueString += DeleteSpace(sValue);
+                }
+                else sValueString += DeleteSpace(sValue);
+
+                auto nPosSemicolon = sValue.find(L';');
+                auto nPosColon = sValue.find(L':');
+
+                if (sValue.length() > 1 && nPosSemicolon == std::wstring::npos &&
+                    nPosColon == std::wstring::npos && arValues.size() > 2)
                     sValueString += L';';
 
                 continue;
@@ -1185,10 +1000,12 @@ namespace NSCSS
             {
                 if (sBeforeValue.empty())
                     break;
-                if (sBeforeValue.find(L'%') != std::wstring::npos)
+
+                auto nPosPercent = sBeforeValue.find(L'%');
+                if (nPosPercent != std::wstring::npos)
                 {
-                    double dValue = wcstod(sBeforeValue.substr(0, sBeforeValue.find(L'%')).c_str(), NULL);
-                    sBeforeValue = sBeforeValue.substr(sBeforeValue.find(L'%') + 1);
+                    double dValue = wcstod(sBeforeValue.substr(0, nPosPercent).c_str(), NULL);
+                    sBeforeValue = sBeforeValue.substr(nPosPercent + 1);
                     dValue /= 100;
                     dValue = 22 * dValue;
                     sTempValue += std::to_wstring((int)floor(dValue + 0.5)) + L" ";
@@ -1247,7 +1064,7 @@ namespace NSCSS
     }
 
 
-    inline std::wstring CCssCalculator_Private::ConvertPx(const std::wstring& sValue)
+    inline std::wstring CCssCalculator_Private::ConvertPx(const std::wstring& sValue) const
     {
         if (sValue.empty())
             return L"";
@@ -1284,7 +1101,7 @@ namespace NSCSS
         return  sConvertValue;
     }
 
-    inline std::wstring CCssCalculator_Private::ConvertPxToCm(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertPxToCm(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1296,7 +1113,7 @@ namespace NSCSS
         return sValue;
     }
 
-    inline std::wstring CCssCalculator_Private::ConvertPxToIn(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertPxToIn(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1308,7 +1125,7 @@ namespace NSCSS
         return sValue;
     }
 
-    inline std::wstring CCssCalculator_Private::ConvertPxToMm(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertPxToMm(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1321,7 +1138,7 @@ namespace NSCSS
         return sValue;
     }
 
-    inline std::wstring CCssCalculator_Private::ConvertPxToPc(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertPxToPc(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1333,7 +1150,7 @@ namespace NSCSS
         return sValue;
     }
 
-    inline std::wstring CCssCalculator_Private::ConvertPxToPt(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertPxToPt(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1345,7 +1162,7 @@ namespace NSCSS
         return sValue;
     }
 
-    inline std::wstring CCssCalculator_Private::ConvertCm(const std::wstring& sValue)
+    inline std::wstring CCssCalculator_Private::ConvertCm(const std::wstring& sValue) const
     {
         if (sValue.empty())
             return L"";
@@ -1383,7 +1200,7 @@ namespace NSCSS
         return  sConvertValue;
     }
 
-    inline std::wstring CCssCalculator_Private::ConvertCmToIn(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertCmToIn(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1395,7 +1212,7 @@ namespace NSCSS
         return sValue;
     }
 
-    inline std::wstring CCssCalculator_Private::ConvertCmToMm(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertCmToMm(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1407,7 +1224,7 @@ namespace NSCSS
         return sValue;
     }
 
-    inline std::wstring CCssCalculator_Private::ConvertCmToPc(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertCmToPc(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1419,7 +1236,7 @@ namespace NSCSS
         return sValue;
     }
 
-    inline std::wstring CCssCalculator_Private::ConvertCmToPt(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertCmToPt(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1432,7 +1249,7 @@ namespace NSCSS
         return sValue;
     }
 
-    inline std::wstring CCssCalculator_Private::ConvertCmToPx(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertCmToPx(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1444,7 +1261,7 @@ namespace NSCSS
         return sValue;
     }
 
-    inline std::wstring CCssCalculator_Private::ConvertMm(const std::wstring& sValue)
+    inline std::wstring CCssCalculator_Private::ConvertMm(const std::wstring& sValue) const
     {
         if (sValue.empty())
             return L"";
@@ -1480,7 +1297,7 @@ namespace NSCSS
         return  sConvertValue;
     }
 
-    inline std::wstring CCssCalculator_Private::ConvertMmToIn(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertMmToIn(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1492,7 +1309,7 @@ namespace NSCSS
         return sValue;
     }
 
-    inline std::wstring CCssCalculator_Private::ConvertMmToCm(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertMmToCm(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1504,7 +1321,7 @@ namespace NSCSS
         return sValue;
     }
 
-    inline std::wstring CCssCalculator_Private::ConvertMmToPc(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertMmToPc(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1516,7 +1333,7 @@ namespace NSCSS
         return sValue;
     }
 
-    inline std::wstring CCssCalculator_Private::ConvertMmToPt(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertMmToPt(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1528,7 +1345,7 @@ namespace NSCSS
         return sValue;
     }
 
-    inline std::wstring CCssCalculator_Private::ConvertMmToPx(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertMmToPx(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1539,7 +1356,7 @@ namespace NSCSS
             sValue += L"px";
         return sValue;}
 
-    inline std::wstring CCssCalculator_Private::ConvertIn(const std::wstring& sValue)
+    inline std::wstring CCssCalculator_Private::ConvertIn(const std::wstring& sValue) const
     {
         if (sValue.empty())
             return L"";
@@ -1578,7 +1395,7 @@ namespace NSCSS
         return  sValue;
     }
 
-    inline std::wstring CCssCalculator_Private::ConvertInToMm(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertInToMm(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1589,7 +1406,7 @@ namespace NSCSS
             sValue += L"mm";
         return sValue;}
 
-    inline std::wstring CCssCalculator_Private::ConvertInToCm(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertInToCm(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1600,7 +1417,7 @@ namespace NSCSS
             sValue += L"cm";
         return sValue;}
 
-    inline std::wstring CCssCalculator_Private::ConvertInToPc(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertInToPc(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1611,7 +1428,7 @@ namespace NSCSS
             sValue += L"pc";
         return sValue;}
 
-    inline std::wstring CCssCalculator_Private::ConvertInToPt(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertInToPt(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1622,7 +1439,7 @@ namespace NSCSS
             sValue += L"pt";
         return sValue;}
 
-    inline std::wstring CCssCalculator_Private::ConvertInToPx(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertInToPx(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1633,7 +1450,7 @@ namespace NSCSS
             sValue += L"px";
         return sValue;}
 
-    inline std::wstring CCssCalculator_Private::ConvertPt(const std::wstring& sValue)
+    inline std::wstring CCssCalculator_Private::ConvertPt(const std::wstring& sValue) const
     {
         if (sValue.empty())
             return L"";
@@ -1669,7 +1486,7 @@ namespace NSCSS
         return  std::to_wstring((int)dValue);
     }
 
-    inline std::wstring CCssCalculator_Private::ConvertPtToIn(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertPtToIn(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1680,7 +1497,7 @@ namespace NSCSS
             sValue += L"in";
         return sValue;}
 
-    inline std::wstring CCssCalculator_Private::ConvertPtToCm(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertPtToCm(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1691,7 +1508,7 @@ namespace NSCSS
             sValue += L"cm";
         return sValue;}
 
-    inline std::wstring CCssCalculator_Private::ConvertPtToPc(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertPtToPc(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1702,7 +1519,7 @@ namespace NSCSS
             sValue += L"pc";
         return sValue;}
 
-    inline std::wstring CCssCalculator_Private::ConvertPtToMm(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertPtToMm(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1713,7 +1530,7 @@ namespace NSCSS
             sValue += L"mm";
         return sValue;}
 
-    inline std::wstring CCssCalculator_Private::ConvertPtToPx(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertPtToPx(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1724,7 +1541,7 @@ namespace NSCSS
             sValue += L"px";
         return sValue;}
 
-    inline std::wstring CCssCalculator_Private::ConvertPc(const std::wstring& sValue)
+    inline std::wstring CCssCalculator_Private::ConvertPc(const std::wstring& sValue) const
     {
         if (sValue.empty())
             return L"";
@@ -1760,7 +1577,7 @@ namespace NSCSS
         return  sConvertValue;
     }
 
-    inline std::wstring CCssCalculator_Private::ConvertPcToIn(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertPcToIn(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1771,7 +1588,7 @@ namespace NSCSS
             sValue += L"in";
         return sValue;}
 
-    inline std::wstring CCssCalculator_Private::ConvertPcToCm(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertPcToCm(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1782,7 +1599,7 @@ namespace NSCSS
             sValue += L"cm";
         return sValue;}
 
-    inline std::wstring CCssCalculator_Private::ConvertPcToPt(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertPcToPt(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1793,7 +1610,7 @@ namespace NSCSS
             sValue += L"pt";
         return sValue;}
 
-    inline std::wstring CCssCalculator_Private::ConvertPcToMm(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertPcToMm(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1804,7 +1621,7 @@ namespace NSCSS
             sValue += L"mm";
         return sValue;}
 
-    inline std::wstring CCssCalculator_Private::ConvertPcToPx(const double& dValue, bool bAddUM)
+    inline std::wstring CCssCalculator_Private::ConvertPcToPx(const double& dValue, bool bAddUM) const
     {
         if (dValue == 0)
             return L"0";
@@ -1816,7 +1633,7 @@ namespace NSCSS
         return sValue;
     }
 
-    inline std::wstring CCssCalculator_Private::ConvertEm(const std::wstring &sValue)
+    inline std::wstring CCssCalculator_Private::ConvertEm(const std::wstring &sValue) const
     {
         if (sValue.empty())
             return L"";
@@ -1840,22 +1657,22 @@ namespace NSCSS
         m_UnitMeasure = nType;
     }
 
-    int CCssCalculator_Private::GetDpi()
+    int CCssCalculator_Private::GetDpi() const
     {
         return m_nDpi;
     }
 
-    inline size_t CCssCalculator_Private::GetSize()
+    inline size_t CCssCalculator_Private::GetSize() const
     {
         return m_arData.size();
     }
 
-    UnitMeasure CCssCalculator_Private::GetUnitMeasure()
+    UnitMeasure CCssCalculator_Private::GetUnitMeasure() const
     {
         return m_UnitMeasure;
     }
 
-    std::wstring CCssCalculator_Private::GetEncoding()
+    std::wstring CCssCalculator_Private::GetEncoding() const
     {
         return m_sEncoding;
     }
@@ -1978,4 +1795,209 @@ inline static std::wstring StringifyValue(KatanaValue* oValue)
     }
 
     return str;
+}
+
+inline static std::wstring stringToWstring(const std::string& sString)
+{
+    typedef std::codecvt_utf8<wchar_t> convert_type;
+    std::wstring_convert<convert_type, wchar_t> converter;
+
+    return converter.from_bytes(sString);
+}
+
+inline static std::string wstringToString(const std::wstring& sWstring)
+{
+    return std::string(sWstring.begin(), sWstring.end());
+}
+
+inline static std::string GetContentAsUTF8(const std::string &sString, const std::wstring &sEncoding)
+{
+    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+
+    std::string sEnc = converter.to_bytes(sEncoding);
+
+    NSUnicodeConverter::CUnicodeConverter oConverter;
+    std::wstring sUnicodeContent = oConverter.toUnicode(sString, sEnc.c_str());
+    return U_TO_UTF8(sUnicodeContent);
+}
+
+inline static std::wstring GetContentAsUTF8W(const std::wstring& sFileName)
+{
+    std::wstring sSource;
+    if (!NSFile::CFileBinary::ReadAllTextUtf8(sFileName, sSource))
+        return sSource;
+
+    std::wstring sTemp;
+
+    if (sSource.find(L'{') != std::string::npos)
+        sTemp = sSource.substr(0, sSource.find(L'{'));
+
+    if (sTemp.empty())
+        return sSource;
+
+    std::wstring sEncoding;
+
+    if (sTemp.find(L"@charset") != std::string::npos)
+    {
+         sEncoding = sTemp.substr(sTemp.find(L"@charset ") + 9);
+        if (sEncoding.find(L';') != std::string::npos)
+            sEncoding = sEncoding.substr(0, sEncoding.find(L';'));
+
+        if (sEncoding.find(L'"') != std::string::npos)
+            sEncoding = sEncoding.substr(sEncoding.find(L'"') + 1);
+        else if (sEncoding.find(L"'") != std::string::npos)
+            sEncoding = sEncoding.substr(sEncoding.find(L"'") + 1);
+
+        if (sEncoding.find(L'"') != std::string::npos)
+            sEncoding = sEncoding.substr(0, sEncoding.find(L'"'));
+        else if (sEncoding.find(L"'") != std::string::npos)
+            sEncoding = sEncoding.substr(0, sEncoding.find(L"'"));
+    }
+    else
+        return sSource;
+
+    if (sEncoding == L"UTF-8" || sEncoding == L"utf-8")
+        return sSource;
+
+    NSUnicodeConverter::CUnicodeConverter oConverter;
+    std::string sTempSource = wstringToString(sSource);
+    std::wstring sUnicodeContent = oConverter.toUnicode(sTempSource.c_str(), wstringToString(sEncoding).c_str());
+    return sUnicodeContent;
+}
+
+inline static std::string GetContentAsUTF8(const std::wstring& sFileName)
+{
+    std::wstring sUnicodeContent =GetContentAsUTF8W(sFileName);
+    return U_TO_UTF8(sUnicodeContent);
+}
+
+inline static std::wstring GetFirstNumber(std::wstring sString)
+{
+    if (sString.empty())
+        return L"";
+
+    std::wstring sValue;
+    int nPos = 0;
+
+    while(nPos < (int)sString.length() && !isdigit(sString[nPos]))
+        nPos++;
+
+    while(nPos < (int)sString.length() && isdigit(sString[nPos]))
+    {
+        sValue += sString[nPos];
+        nPos++;
+    }
+
+    if (sString[nPos] == L'.' || sString[nPos] == L',')
+    {
+        sValue += L'.';
+        nPos++;
+        while(nPos < (int)sString.length() && isdigit(sString[nPos]))
+        {
+            sValue += sString[nPos];
+            nPos++;
+        }
+    }
+
+    return sValue;
+}
+
+inline static void RemoveExcessFromStyles(std::wstring& sStyle)
+{
+    while (sStyle.find_first_of(L'<') != std::wstring::npos || sStyle.find_first_of(L'@') != std::wstring::npos)
+    {
+        if (sStyle.find_first_of(L'<') != std::wstring::npos)
+            sStyle.erase(sStyle.find_first_of(L'<', 0), sStyle.find_first_of(L'>', 0) - sStyle.find_first_of(L'<', 0) + 1);
+        else if (sStyle.find_first_of(L'@') != std::wstring::npos)
+        {
+            sStyle.erase(sStyle.find_first_of(L'@'), 1);
+        }
+    }
+}
+
+inline static void TranslateToEn(std::wstring& sStyle)
+{
+    std::map<int, std::wstring> arAlf =        {{1072, L"a"},     {1040, L"A"},
+                                                {1073, L"b"},     {1041, L"B"},
+                                                {1074, L"v"},     {1042, L"V"},
+                                                {1075, L"g"},     {1043, L"G"},
+                                                {1076, L"d"},     {1044, L"D"},
+                                                {1077, L"e"},     {1045, L"E"},
+                                                {1105, L"e"},     {1025, L"E"},
+                                                {1078, L"zh"},    {1046, L"ZH"},
+                                                {1079, L"z"},     {1047, L"Z"},
+                                                {1080, L"i"},     {1048, L"I"},
+                                                {1081, L"y"},     {1049, L"Y"},
+                                                {1082, L"k"},     {1050, L"K"},
+                                                {1083, L"l"},     {1051, L"L"},
+                                                {1084, L"m"},     {1052, L"M"},
+                                                {1085, L"n"},     {1053, L"N"},
+                                                {1086, L"o"},     {1054, L"O"},
+                                                {1087, L"p"},     {1055, L"P"},
+                                                {1088, L"r"},     {1056, L"R"},
+                                                {1089, L"s"},     {1057, L"S"},
+                                                {1090, L"t"},     {1058, L"T"},
+                                                {1091, L"u"},     {1059, L"U"},
+                                                {1092, L"f"},     {1060, L"F"},
+                                                {1093, L"kh"},    {1061, L"KH"},
+                                                {1094, L"ts"},    {1062, L"TS"},
+                                                {1095, L"ch"},    {1063, L"CH"},
+                                                {1096, L"sh"},    {1064, L"SH"},
+                                                {1097, L"shch"},  {1065, L"SHCH"},
+                                                {1098, L""},      {1066, L""},
+                                                {1099, L"y"},     {1067, L"Y"},
+                                                {1100, L""},      {1068, L""},
+                                                {1101, L"e"},     {1069, L"E"},
+                                                {1102, L"yu"},    {1070, L"YU"},
+                                                {1103, L"ya"},    {1071, L"YA"}};
+
+    std::wstring sNewStyle;
+
+    for (int i = 0; i < (int)sStyle.length(); i++)
+    {
+        if (arAlf.find((int)sStyle[i]) != arAlf.cend())
+        {
+            sNewStyle += arAlf[sStyle[i]];
+        }
+        else if (sStyle[i] != L'\t' && sStyle[i] != L'\n')
+        {
+            sNewStyle += sStyle[i];
+        }
+    }
+    sStyle = sNewStyle;
+}
+
+inline static std::wstring ConvertAbsoluteValue(const std::wstring& sAbsoluteValue)
+{
+    std::map<std::wstring, std::wstring> arAbsoluteValues = {{L"xx-small", L"9px"},  {L"x-small", L"10px"},
+                                                             {L"small",    L"13px"}, {L"medium",  L"16px"},
+                                                             {L"large",    L"18px"}, {L"x-large", L"24px"},
+                                                             {L"xx-large", L"32px"}};
+
+    std::wstring sNewValue = sAbsoluteValue;
+
+    for (auto sAbsValue : arAbsoluteValues)
+    {
+        while (sNewValue.find(sAbsValue.first) != std::wstring::npos)
+        {
+            int nPos1, nPos2;
+            nPos1 = sNewValue.find(sAbsValue.first);
+            nPos2 = sNewValue.find(sAbsValue.first) + sAbsValue.first.length() - 1;
+            sNewValue.replace(nPos1, nPos2, sAbsValue.second);
+        }
+    }
+    return sNewValue;
+}
+
+inline std::wstring DeleteSpace(const std::wstring& sValue)
+{
+    std::wstring sNewValue = sValue;
+
+    while (sNewValue.length() > 0 && iswspace(sNewValue[0]))
+        sNewValue.erase(0, 1);
+
+    while (sNewValue.length() > 0 && iswspace(sNewValue[sNewValue.length() - 1]))
+        sNewValue.erase(sNewValue.length() - 1, 1);
+
+    return sNewValue;
 }

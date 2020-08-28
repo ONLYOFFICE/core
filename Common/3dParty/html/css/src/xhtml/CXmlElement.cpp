@@ -14,13 +14,13 @@ CXmlElement::CXmlElement(std::wstring sNameDefaultElement)
     CreateDefaultElement(sNameDefaultElement);
 }
 
-bool CXmlElement::Empty()
+bool CXmlElement::Empty() const
 {
     return m_sType.empty() && m_sStyleId.empty() && m_sDefault.empty() && m_sCustomStyle.empty() &&
            m_sS.empty() && m_sName.empty() && m_sBasedOn.empty() && m_sLink.empty() && m_sUiPriority.empty() &&
            !m_bQFormat && !m_bSemiHidden && !m_bUnhideWhenUsed && !m_bB && !m_bI && m_sU.empty() && m_sRFonts.empty() &&
            m_sColor.empty() && m_sSz.empty() && !m_bKeepLines && !m_bKeepNext && m_sSpacing.empty() &&
-           m_sOutlineLvl.empty() && m_bContextualSpacing && m_sInd.empty() && m_sJc.empty() &&
+           m_sOutlineLvl.empty() && !m_bContextualSpacing && m_sInd.empty() && m_sJc.empty() &&
            m_sTblInd.empty() && m_sCellTop.empty() && m_sCellLeft.empty() && m_sCellBottom.empty() &&
            m_sCellRight.empty() && m_sBorderTop.empty() && m_sBorderLeft.empty() && m_sBorderBottom.empty() &&
            m_sBorderRight.empty() && m_sBorderInsideH.empty() && m_sBorderInsideV.empty() && m_sShd.empty() &&
@@ -458,7 +458,10 @@ void CXmlElement::SetInd(std::wstring sInd)
 
 void CXmlElement::SetJc(std::wstring sJc)
 {
-    m_sJc = sJc;
+    if (sJc == L"justify")
+        m_sJc = L"both";
+    else
+        m_sJc = sJc;
 }
 
 void CXmlElement::SetShd(std::wstring sShd)
@@ -703,7 +706,7 @@ bool CXmlElement::operator==(const CXmlElement &oElement)
             m_sRightBorder          == oElement.m_sRightBorder;
 }
 
-std::wstring CXmlElement::ConvertPStyle()
+std::wstring CXmlElement::ConvertPStyle() const
 {
     std::wstring sPStyle;
 
@@ -762,7 +765,7 @@ std::wstring CXmlElement::ConvertPStyle()
     return L"";
 }
 
-std::wstring CXmlElement::ConvertRStyle()
+std::wstring CXmlElement::ConvertRStyle() const
 {
     std::wstring sRStyle;
 
@@ -799,7 +802,7 @@ std::wstring CXmlElement::ConvertRStyle()
     return L"";
 }
 
-std::wstring CXmlElement::ConvertBasicInfoStyle()
+std::wstring CXmlElement::ConvertBasicInfoStyle() const
 {
     std::wstring sBasicInfo;
 
@@ -824,7 +827,7 @@ std::wstring CXmlElement::ConvertBasicInfoStyle()
     return sBasicInfo;
 }
 
-std::wstring CXmlElement::GetStyle()
+std::wstring CXmlElement::GetStyle() const
 {
     std::wstring sStyle = L"<w:style";
 
@@ -856,7 +859,7 @@ std::wstring CXmlElement::GetStyle()
     return L"";
 }
 
-std::wstring CXmlElement::GetPStyle()
+std::wstring CXmlElement::GetPStyle() const
 {
     std::wstring sPStyle = L"<w:style";
 
@@ -887,7 +890,7 @@ std::wstring CXmlElement::GetPStyle()
     return L"";
 }
 
-std::wstring CXmlElement::GetRStyle()
+std::wstring CXmlElement::GetRStyle() const
 {
     std::wstring sRStyle = L"<w:style ";
     if (!m_sType.empty())
@@ -917,13 +920,18 @@ std::wstring CXmlElement::GetRStyle()
     return L"";
 }
 
-std::wstring CXmlElement::GetBasedOn()
+std::wstring CXmlElement::GetBasedOn() const
 {
     return m_sBasedOn;
 }
 
-std::wstring CXmlElement::GetStyleId()
+std::wstring CXmlElement::GetStyleId() const
 {
     return m_sStyleId;
+}
+
+std::wstring CXmlElement::GetName() const
+{
+    return m_sName;
 }
 

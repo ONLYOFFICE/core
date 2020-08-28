@@ -35,7 +35,7 @@ namespace NSCSS
         void SetId(const std::wstring& sId);
 
         std::wstring GetStyle();
-        std::wstring GetId();
+        std::wstring GetId() const;
 
         void Clear();
     };

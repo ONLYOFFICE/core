@@ -66,15 +66,15 @@ class CXmlElement
         // </tblBorders>
     // </tblPr>
 
-    std::wstring ConvertPStyle();
-    std::wstring ConvertRStyle();
-    std::wstring ConvertBasicInfoStyle();
+    std::wstring ConvertPStyle() const;
+    std::wstring ConvertRStyle() const;
+    std::wstring ConvertBasicInfoStyle() const;
 
 public:
     CXmlElement();
     CXmlElement(std::wstring sNameDefaultElement);
 
-    bool Empty();
+    bool Empty() const;
 
     void CreateDefaultElement(std::wstring sNameDefaultElement);
     void Clear();
@@ -138,12 +138,13 @@ public:
         // </tblBorders>
     // </tblPr>
 
-    std::wstring GetPStyle();
-    std::wstring GetRStyle();
-    std::wstring GetStyle();
+    std::wstring GetPStyle() const;
+    std::wstring GetRStyle() const;
+    std::wstring GetStyle() const;
 
-    std::wstring GetBasedOn();
-    std::wstring GetStyleId();
+    std::wstring GetBasedOn() const;
+    std::wstring GetStyleId() const;
+    std::wstring GetName() const;
 
     CXmlElement& operator+=(const CXmlElement& oElement);
     CXmlElement& operator= (const CXmlElement& oelement);

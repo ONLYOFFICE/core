@@ -14,17 +14,17 @@ namespace NSCSS
         delete m_pInternal;
     }
 
-    std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> CCssCalculator::GetDeclarations(const std::wstring& sSelector)
+    std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> CCssCalculator::GetDeclarations(const std::wstring& sSelector)  const
     {
         return m_pInternal->GetDeclarations(sSelector);
     }
 
-    CCompiledStyle CCssCalculator::GetCompiledStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure)
+    CCompiledStyle CCssCalculator::GetCompiledStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure) const
     {
         return  m_pInternal->GetCompiledStyle(arSelectors, unitMeasure);
     }
 
-    CCompiledStyle CCssCalculator::GetCompiledStyle(const CNode& oNode, const std::vector<CNode>& oParents, UnitMeasure unitMeasure)
+    CCompiledStyle CCssCalculator::GetCompiledStyle(const CNode& oNode, const std::vector<CNode>& oParents, UnitMeasure unitMeasure) const
     {
         return  m_pInternal->GetCompiledStyle(oNode, oParents, unitMeasure);
     }
@@ -60,22 +60,22 @@ namespace NSCSS
         m_pInternal->SetDpi(nValue);
     }
 
-    UnitMeasure CCssCalculator::GetUnitMeasure()
+    UnitMeasure CCssCalculator::GetUnitMeasure() const
     {
         return m_pInternal->GetUnitMeasure();
     }
 
-    std::wstring CCssCalculator::GetEncoding()
+    std::wstring CCssCalculator::GetEncoding() const
     {
         return m_pInternal->GetEncoding();
     }
 
-    int CCssCalculator::GetDpi()
+    int CCssCalculator::GetDpi() const
     {
         return m_pInternal->GetDpi();
     }
 
-    void CCssCalculator::Print()
+    void CCssCalculator::Print() const
     {
         m_pInternal->Print();
     }

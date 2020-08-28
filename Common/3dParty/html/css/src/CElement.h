@@ -20,18 +20,18 @@ public:
 
     void SetDeclaratins(std::vector<std::pair<std::wstring, std::wstring>> arDeclarations);
 
-    int GetCountSelectors();
-    int GetCountDeclarations();
-    int GetCountChildrens();
+    int GetCountSelectors() const;
+    int GetCountDeclarations() const;
+    int GetCountChildrens() const;
 
-    std::vector<std::wstring> GetSelectors();
-    std::vector<std::pair<std::wstring, std::wstring>> GetDeclarations();
+    std::vector<std::wstring> GetSelectors() const;
+    std::vector<std::pair<std::wstring, std::wstring>> GetDeclarations() const;
     std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> GetDeclarations(std::wstring sSelector,
-                                                                                                             std::vector<std::wstring> sParent);
+                                                                                                             std::vector<std::wstring> sParent) const;
 
-    std::vector<CElement*> GetChildrens();
+    std::vector<CElement*> GetChildrens() const;
 
-    std::wstring GetText();
+    std::wstring GetText() const;
 
     CElement& operator= (const CElement& oElement);
 };

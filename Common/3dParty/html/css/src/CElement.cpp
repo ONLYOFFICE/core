@@ -14,7 +14,7 @@ CElement::~CElement()
     m_arChildrens.clear();
 }
 
-std::wstring CElement::GetText()
+std::wstring CElement::GetText() const
 {
     std::wstring sText;
 
@@ -85,34 +85,34 @@ void CElement::SetDeclaratins(std::vector<std::pair<std::wstring, std::wstring> 
     m_arDeclarations = arDeclarations;
 }
 
-int CElement::GetCountSelectors()
+int CElement::GetCountSelectors() const
 {
     return m_arSelectors.size();
 }
 
-int CElement::GetCountDeclarations()
+int CElement::GetCountDeclarations() const
 {
     return m_arDeclarations.size();
 }
 
-int CElement::GetCountChildrens()
+int CElement::GetCountChildrens() const
 {
     return m_arChildrens.size();
 }
 
-std::vector<std::wstring> CElement::GetSelectors()
+std::vector<std::wstring> CElement::GetSelectors() const
 {
     return m_arSelectors;
 }
 
-std::vector<std::pair<std::wstring, std::wstring>> CElement::GetDeclarations()
+std::vector<std::pair<std::wstring, std::wstring>> CElement::GetDeclarations() const
 {
     return m_arDeclarations;
 }
 
 #include <vector>
 std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> CElement::GetDeclarations(std::wstring sSelector,
-                                                                                                                   std::vector<std::wstring> pParent)
+                                                                                                                   std::vector<std::wstring> pParent) const
 {
     std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> arElement;
     std::vector<std::wstring> arSelectors = GetSelectors();
@@ -143,7 +143,7 @@ std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wst
     return arElement;
 }
 
-std::vector<CElement*> CElement::GetChildrens()
+std::vector<CElement*> CElement::GetChildrens() const
 {
     return m_arChildrens;
 }

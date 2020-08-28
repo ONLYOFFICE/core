@@ -4,6 +4,18 @@
 #include <vector>
 
 
+bool IsDigit(std::wstring sValue)
+{
+    if (sValue.empty())
+        return false;
+
+    for (auto cChar : sValue)
+        if (!iswdigit(cChar))
+            return false;
+
+    return true;
+}
+
 CXmlElement::CXmlElement()
 {
     Clear();
@@ -424,7 +436,8 @@ void CXmlElement::SetColor(std::wstring sColor)
 
 void CXmlElement::SetSz(std::wstring sSz)
 {
-    m_sSz = sSz;
+    if (IsDigit(sSz))
+        m_sSz = sSz;
 }
 
 void CXmlElement::SetKeepLines(bool bKeepLines)

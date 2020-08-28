@@ -846,12 +846,11 @@ namespace NSCSS
 //        }
 
 //        m_arUsedNode.push_back(std::make_pair(oNode, std::make_pair(oParents, oStyle.GetId())));
-
         return oStyle;
     }
 
     void CCssCalculator_Private::AddStyles(const std::string &sStyle)
-    {
+    {        
         if (sStyle.empty())
             return;
 
@@ -883,8 +882,8 @@ namespace NSCSS
             return;
 
         std::wstring sNewStyle = sStyle;
-        RemoveExcessFromStyles(sNewStyle);
         TranslateToEn(sNewStyle);
+        RemoveExcessFromStyles(sNewStyle);
         AddStyles(wstringToString(sNewStyle));
     }
 
@@ -1904,13 +1903,22 @@ inline static std::wstring GetFirstNumber(std::wstring sString)
 
 inline static void RemoveExcessFromStyles(std::wstring& sStyle)
 {
-    while (sStyle.find_first_of(L'<') != std::wstring::npos || sStyle.find_first_of(L'@') != std::wstring::npos)
+    while (sStyle.find_first_of(L'<') != std::wstring::npos || sStyle.find_first_of(L'@') != std::wstring::npos ||
+           sStyle.find(L"<!--") != std::wstring::npos || sStyle.find(L"-->") != std::wstring::npos)
     {
         if (sStyle.find_first_of(L'<') != std::wstring::npos)
             sStyle.erase(sStyle.find_first_of(L'<', 0), sStyle.find_first_of(L'>', 0) - sStyle.find_first_of(L'<', 0) + 1);
         else if (sStyle.find_first_of(L'@') != std::wstring::npos)
         {
             sStyle.erase(sStyle.find_first_of(L'@'), 1);
+        }
+        else if (sStyle.find(L"<!--") != std::wstring::npos)
+        {
+            sStyle.erase(sStyle.find(L"<!--"), 4);
+        }
+        else if (sStyle.find(L"-->") != std::wstring::npos)
+        {
+            sStyle.erase(sStyle.find(L"-->"), 3);
         }
     }
 }

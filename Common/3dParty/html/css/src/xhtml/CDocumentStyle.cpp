@@ -68,7 +68,7 @@ CDocumentStyle::CDocumentStyle()
         m_sId = sId;
     }
 
-    CXmlElement CDocumentStyle::CombineStandardStyles(std::vector<std::wstring> arStandartedStyles)
+    CXmlElement CDocumentStyle::CombineStandardStyles(const std::vector<std::wstring> arStandartedStyles)
     {
         if (arStandartedStyles.size() == 0)
         {
@@ -122,7 +122,7 @@ CDocumentStyle::CDocumentStyle()
         return oXmlElement;
     }
 
-    CXmlElement CDocumentStyle::CreateStandardStyle(std::wstring sNameStyle)
+    CXmlElement CDocumentStyle::CreateStandardStyle(const std::wstring sNameStyle)
     {
         CXmlElement oXmlElement;
 
@@ -262,8 +262,6 @@ CDocumentStyle::CDocumentStyle()
 
                 m_arStandardStylesUsed.push_back(oStandardXmlElement.GetStyleId());
 
-                std::sort(m_arStandardStylesUsed.begin(), m_arStandardStylesUsed.end());
-
                 oXmlElement.SetBasedOn(oStandardXmlElement.GetStyleId());
             }
         }
@@ -278,13 +276,13 @@ CDocumentStyle::CDocumentStyle()
                 else
                 {
                     m_arStandardStylesUsed.push_back(oParentStyle.GetStyleId());
-
-                    std::sort(m_arStandardStylesUsed.begin(), m_arStandardStylesUsed.end());
-
+//                    std::sort(m_arStandardStylesUsed.begin(), m_arStandardStylesUsed.end());
                     m_sStyle = oParentStyle.GetStyle();
                     oXmlElement.SetBasedOn(oParentStyle.GetStyleId());
                 }
             }
+            else
+                oXmlElement.SetBasedOn(oParentStyle.GetStyleId());
         }
 
         if (oStyle.Empty())
@@ -297,6 +295,7 @@ CDocumentStyle::CDocumentStyle()
             oXmlElement.Clear();
             return oXmlElement;
         }
+
         m_sId = oStyle.GetId();
         oXmlElement.SetStyleId(m_sId);
         oXmlElement.SetName(m_sId);
@@ -414,6 +413,13 @@ CDocumentStyle::CDocumentStyle()
             oXmlElement.SetRFonts(sFontFamily);
         }
 
+        if (!oStyle.GetFontWeight().empty())
+        {
+            std::wstring sFontWeight = oStyle.GetFontWeight();
+            if (sFontWeight == L"bold")
+                oXmlElement.SetB(true);
+        }
+
         if (!oStyle.GetFontStyle().empty())
         {
             std::wstring sFontStyle = oStyle.GetFontStyle();
@@ -421,13 +427,6 @@ CDocumentStyle::CDocumentStyle()
             {
                 oXmlElement.SetI(true);
             }
-        }
-
-        if (!oStyle.GetFontWeight().empty())
-        {
-            std::wstring sFontWeight = oStyle.GetFontWeight();
-            if (sFontWeight == L"bold")
-                oXmlElement.SetB(true);
         }
 
         if (!oStyle.GetBorder().empty() && oStyle.GetId().find(L"caption") == std::wstring::npos)
@@ -464,6 +463,11 @@ CDocumentStyle::CDocumentStyle()
         {
             oXmlElement.SetSpacing(sSpacingValue);
             oXmlElement.SetContextualSpacing(true);
+        }
+
+        if (!oStyle.GetColor().empty())
+        {
+            oXmlElement.SetColor(oStyle.GetColor());
         }
     }
 
@@ -507,7 +511,6 @@ CDocumentStyle::CDocumentStyle()
             m_sStyle.clear();
             return;
         }
-
         for (auto oItem : m_arStyleUsed)
         {
             if(oItem.first == oStyle && oItem.second)

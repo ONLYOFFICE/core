@@ -16,7 +16,6 @@ namespace NSCSS
         std::vector<std::pair<CCompiledStyle, bool>> m_arStyleUsed;
         std::vector<std::wstring> m_arStandardStylesUsed;
 
-        CXmlElement AddParentsStyle(const NSCSS::CCompiledStyle& oStyle);
         CXmlElement CombineStandardStyles(const std::vector<std::wstring> arStandartedStyles);
         CXmlElement CreateStandardStyle(const std::wstring sNameStyle);
         CXmlElement ConvertStyle(const NSCSS::CCompiledStyle& oStyle, bool bIsPStyle);

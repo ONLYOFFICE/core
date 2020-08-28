@@ -107,10 +107,10 @@ namespace NSCSS
 
         std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> GetDeclarations(const std::wstring& sSelector) const;
 
-        CCompiledStyle GetCompiledStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure = Default);
-        CCompiledStyle GetCompiledStyle(const CNode& oNode, const std::vector<CNode>& oParents = std::vector<CNode>(), UnitMeasure unitMeasure = Default);
+        CCompiledStyle GetCompiledStyle(const std::vector<std::string> arSelectors, const UnitMeasure unitMeasure = Default);
+        CCompiledStyle GetCompiledStyle(const CNode& oNode, const std::vector<CNode>& oParents = std::vector<CNode>(), const UnitMeasure unitMeasure = Default);
 
-        void AddStyle(std::vector<std::string> sSelectors, const std::string& sStyle);
+        void AddStyle(const std::vector<std::string> sSelectors, const std::string& sStyle);
         void AddStyles(const std::string& sStyle);
         void AddStyles(const std::wstring& sStyle);
         void AddStylesFromFile(const std::wstring& sFileName);

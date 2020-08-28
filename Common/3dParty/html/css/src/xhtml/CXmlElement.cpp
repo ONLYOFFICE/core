@@ -27,7 +27,7 @@ bool CXmlElement::Empty() const
            m_sTopBorder.empty() && m_sLeftBorder.empty() && m_sBottomBorder.empty() && m_sRightBorder.empty();
 }
 
-void CXmlElement::CreateDefaultElement(std::wstring sNameDefaultElement)
+void CXmlElement::CreateDefaultElement(const std::wstring sNameDefaultElement)
 {
     Clear();
     if (sNameDefaultElement == L"li")
@@ -460,6 +460,8 @@ void CXmlElement::SetJc(std::wstring sJc)
 {
     if (sJc == L"justify")
         m_sJc = L"both";
+    else if (sJc == L"middle")
+        m_sJc = L"center";
     else
         m_sJc = sJc;
 }

@@ -72,11 +72,11 @@ class CXmlElement
 
 public:
     CXmlElement();
-    CXmlElement(std::wstring sNameDefaultElement);
+    CXmlElement(const std::wstring sNameDefaultElement);
 
     bool Empty() const;
 
-    void CreateDefaultElement(std::wstring sNameDefaultElement);
+    void CreateDefaultElement(const std::wstring sNameDefaultElement);
     void Clear();
 
     void SetType(std::wstring sType);

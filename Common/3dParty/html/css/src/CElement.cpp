@@ -49,7 +49,7 @@ void CElement::AddChildren(CElement *oChildren)
     m_arChildrens.push_back(oChildren);
 }
 
-void CElement::AddSelector(std::wstring sSelector)
+void CElement::AddSelector(const std::wstring sSelector)
 {
     if (sSelector.find(L' ') != std::wstring::npos)
     {
@@ -63,24 +63,24 @@ void CElement::AddSelector(std::wstring sSelector)
         m_arSelectors.push_back(sSelector);
 }
 
-void CElement::AddDeclaration(std::pair<std::wstring, std::wstring> pDeclaration)
+void CElement::AddDeclaration(const std::pair<std::wstring, std::wstring> pDeclaration)
 {
     m_arDeclarations.push_back(pDeclaration);
 }
 
-void CElement::AddSelectors(std::vector<std::wstring> arSelectors)
+void CElement::AddSelectors(const std::vector<std::wstring> arSelectors)
 {
     for (size_t i = 0; i < arSelectors.size(); i++)
         m_arSelectors.push_back(arSelectors[i]);
 }
 
-void CElement::AddDeclarations(std::vector<std::pair<std::wstring, std::wstring> > arDeclarations)
+void CElement::AddDeclarations(const std::vector<std::pair<std::wstring, std::wstring> > arDeclarations)
 {
     for (size_t i = 0; i < arDeclarations.size(); i++)
         m_arDeclarations.push_back(arDeclarations[i]);
 }
 
-void CElement::SetDeclaratins(std::vector<std::pair<std::wstring, std::wstring> > arDeclarations)
+void CElement::SetDeclaratins(const std::vector<std::pair<std::wstring, std::wstring> > arDeclarations)
 {
     m_arDeclarations = arDeclarations;
 }
@@ -110,9 +110,8 @@ std::vector<std::pair<std::wstring, std::wstring>> CElement::GetDeclarations() c
     return m_arDeclarations;
 }
 
-#include <vector>
-std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> CElement::GetDeclarations(std::wstring sSelector,
-                                                                                                                   std::vector<std::wstring> pParent) const
+std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> CElement::GetDeclarations(const std::wstring sSelector,
+                                                                                                                   const std::vector<std::wstring> pParent) const
 {
     std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> arElement;
     std::vector<std::wstring> arSelectors = GetSelectors();

@@ -12,13 +12,13 @@ public:
     CElement();
     ~CElement();
 
-    void AddSelector(std::wstring sSelector);
-    void AddSelectors(std::vector<std::wstring> arSelectors);
+    void AddSelector(const std::wstring sSelector);
+    void AddSelectors(const std::vector<std::wstring> arSelectors);
     void AddChildren(CElement* oChildren);
-    void AddDeclaration(std::pair<std::wstring, std::wstring> pDeclaration);
-    void AddDeclarations(std::vector<std::pair<std::wstring, std::wstring>> arDeclarations);
+    void AddDeclaration(const std::pair<std::wstring, std::wstring> pDeclaration);
+    void AddDeclarations(const std::vector<std::pair<std::wstring, std::wstring>> arDeclarations);
 
-    void SetDeclaratins(std::vector<std::pair<std::wstring, std::wstring>> arDeclarations);
+    void SetDeclaratins(const std::vector<std::pair<std::wstring, std::wstring>> arDeclarations);
 
     int GetCountSelectors() const;
     int GetCountDeclarations() const;
@@ -26,8 +26,8 @@ public:
 
     std::vector<std::wstring> GetSelectors() const;
     std::vector<std::pair<std::wstring, std::wstring>> GetDeclarations() const;
-    std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> GetDeclarations(std::wstring sSelector,
-                                                                                                             std::vector<std::wstring> sParent) const;
+    std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> GetDeclarations(const std::wstring sSelector,
+                                                                                                             const std::vector<std::wstring> sParent) const;
 
     std::vector<CElement*> GetChildrens() const;
 

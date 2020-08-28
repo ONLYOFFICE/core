@@ -17,7 +17,7 @@ namespace NSCSS
         std::vector<std::wstring> m_arParentsStyles;
     public:
         CCompiledStyle();
-        CCompiledStyle(std::map<std::wstring, std::wstring> mStyle);
+        CCompiledStyle(const std::map<std::wstring, std::wstring> mStyle);
         CCompiledStyle(const CCompiledStyle& oStyle);
 
         ~CCompiledStyle();
@@ -30,15 +30,15 @@ namespace NSCSS
         bool Empty() const;
         void Clear();
 
-        void AddPropSel(std::wstring sProperty, std::wstring sValue);
-        void InsertStyle(std::map<std::wstring, std::wstring> mStyle);
-        void SetStyle(std::map<std::wstring, std::wstring> mStyle);
-        void AddStyle(std::wstring sStyle);
-        void AddParent(std::wstring sParentName);
+        void AddPropSel(const std::wstring sProperty, const std::wstring sValue);
+        void InsertStyle(const std::map<std::wstring, std::wstring> mStyle);
+        void SetStyle(const std::map<std::wstring, std::wstring> mStyle);
+        void AddStyle(const std::wstring sStyle);
+        void AddParent(const std::wstring sParentName);
 
         std::vector<std::wstring> GetParentsName() const;
 
-        void SetID(std::wstring sId);
+        void SetID(const std::wstring sId);
         std::wstring GetId() const;
 
         /* FONT */

@@ -12,7 +12,7 @@ namespace NSCSS
     {
     }
 
-    CCompiledStyle::CCompiledStyle(std::map<std::wstring, std::wstring> mStyle)
+    CCompiledStyle::CCompiledStyle(const std::map<std::wstring, std::wstring> mStyle)
     {
         m_mStyle = mStyle;
     }
@@ -180,22 +180,22 @@ namespace NSCSS
         m_arParentsStyles.clear();
     }
 
-    void CCompiledStyle::AddPropSel(std::wstring sProperty, std::wstring sValue)
+    void CCompiledStyle::AddPropSel(const std::wstring sProperty, const std::wstring sValue)
     {
         m_mStyle.emplace(sProperty, sValue);
     }
 
-    void CCompiledStyle::InsertStyle(std::map<std::wstring, std::wstring> mStyle)
+    void CCompiledStyle::InsertStyle(const std::map<std::wstring, std::wstring> mStyle)
     {
         m_mStyle.insert(mStyle.begin(), mStyle.end());
     }
 
-    void CCompiledStyle::SetStyle(std::map<std::wstring, std::wstring> mStyle)
+    void CCompiledStyle::SetStyle(const std::map<std::wstring, std::wstring> mStyle)
     {
         m_mStyle = mStyle;
     }
 
-    void CCompiledStyle::AddStyle(std::wstring sStyle)
+    void CCompiledStyle::AddStyle(const std::wstring sStyle)
     {
         std::wstring sProperty;
         std::wstring sValue;
@@ -235,7 +235,7 @@ namespace NSCSS
         }
     }
 
-    void CCompiledStyle::AddParent(std::wstring sParentName)
+    void CCompiledStyle::AddParent(const std::wstring sParentName)
     {
         if (!sParentName.empty())
             m_arParentsStyles.push_back(sParentName);
@@ -246,7 +246,7 @@ namespace NSCSS
         return m_arParentsStyles;
     }
 
-    void CCompiledStyle::SetID(std::wstring sId)
+    void CCompiledStyle::SetID(const std::wstring sId)
     {
         m_sId = sId;
     }
@@ -333,19 +333,19 @@ namespace NSCSS
             if (sFont.empty())
                 return L"";
 
-            std::vector<std::wstring> arValues = {  L"xx-small",L"x-small", L"small",
-                                                    L"medium",  L"large",   L"x-large",
-                                                    L"xx-large",L"larger",  L"smaller"};
+            const std::vector<std::wstring> arValues = { L"xx-small",L"x-small", L"small",
+                                                         L"medium",  L"large",   L"x-large",
+                                                         L"xx-large",L"larger",  L"smaller"};
 
             for (size_t i = 0; i < arValues.size(); i++)
                 if (sFont.find(arValues[i]) != std::wstring::npos)
                     return arValues[i];
 
-            std::vector<std::wstring> arUnitMeasure = {L"mm", L"cm",
-                                                       L"in", L"pt",
-                                                       L"pc", L"%",
-                                                       L"em", L"rem",
-                                                       L"ex"};
+            const std::vector<std::wstring> arUnitMeasure = {L"mm", L"cm",
+                                                             L"in", L"pt",
+                                                             L"pc", L"%",
+                                                             L"em", L"rem",
+                                                             L"ex"};
             int nPos = 0;
             std::wstring sUnitMeasure;
 
@@ -435,7 +435,7 @@ namespace NSCSS
                     return arValues[i];
 
             if (isdigit(sFont[0]))
-                return L"normal";
+                return L"";
 
             std::wstring sValue;
             if (sFont.find(L" ") != std::wstring::npos)
@@ -444,7 +444,7 @@ namespace NSCSS
             if(!sValue.empty())
                 return sValue;
 
-            return L"normal";
+            return L"";
         }
 
         std::wstring CCompiledStyle::GetFontVariant()
@@ -458,29 +458,29 @@ namespace NSCSS
                 sFont = m_mStyle[L"font"];
 
             if (sFont.empty())
-                return L"normal";
+                return L"";
 
             if (sFont.find(L"small-caps"))
                 return L"small-caps";
 
             if (isdigit(sFont[0]))
-                return L"normal";
+                return L"";
 
             std::wstring sValue;
             if (sFont.find(L" ") != std::wstring::npos && !isdigit(sFont[0]))
                 sValue = sFont.substr(sFont.find(L" ") + 1);
             else
-                return L"normal";
+                return L"";
 
             if (sValue.find(L" ") != std::wstring::npos && !isdigit(sValue[0]))
                 sValue = sValue.substr(0, sFont.find(L" "));
             else
-                return L"normal";
+                return L"";
 
             if(!sValue.empty())
                 return sValue;
 
-            return L"normal";
+            return L"";
         }
 
         std::wstring CCompiledStyle::GetFontWeight()
@@ -494,38 +494,38 @@ namespace NSCSS
                 sFont = m_mStyle[L"font"];
 
             if (sFont.empty())
-                return L"normal";
+                return L"";
 
-            std::vector<std::wstring> arValues = {L"bold",   L"bolder",
-                                                  L"lighter"};
+            const std::vector<std::wstring> arValues = {L"bold",   L"bolder",
+                                                        L"lighter"};
 
             for (size_t i = 0; i < arValues.size(); i++)
                 if (sFont.find(arValues[i]))
                     return arValues[i];
 
             if (isdigit(sFont[0]))
-                return L"normal";
+                return L"";
 
             std::wstring sValue = sFont;
             if (sValue.find(L" ") != std::wstring::npos && !isdigit(sValue[0]))
                 sValue = sValue.substr(sValue.find(L" ") + 1);
             else
-                return L"normal";
+                return L"";
 
             if (sValue.find(L" ") != std::wstring::npos && !isdigit(sValue[0]))
                 sValue = sValue.substr(sValue.find(L" ") + 1);
             else
-                return L"normal";
+                return L"";
 
             if (sValue.find(L" ") != std::wstring::npos && !isdigit(sValue[0]))
                 sValue = sValue.substr(0, sValue.find(L" "));
             else
-                return L"normal";
+                return L"";
 
             if(!sValue.empty())
                 return sValue;
 
-            return L"normal";
+            return L"";
         }
 
         std::wstring CCompiledStyle::GetLineHeight()
@@ -616,7 +616,7 @@ namespace NSCSS
 
             return sTop + L" " + sRight + L" " + sBottom + L" " + sLeft;
 
-            return L"auto";
+            return L"";
         }
 
         std::wstring CCompiledStyle::GetMarginTop()
@@ -632,7 +632,7 @@ namespace NSCSS
                 sValue = m_mStyle[L"margin"];
 
             if (sValue.empty())
-                return L"auto";
+                return L"";
 
             std::vector<std::wstring> arValues;
 
@@ -653,7 +653,7 @@ namespace NSCSS
             if (arValues.size() != 0)
                 return arValues[0];
 
-            return L"auto";
+            return L"";
         }
 
         std::wstring CCompiledStyle::GetMarginBlockStart()
@@ -699,7 +699,7 @@ namespace NSCSS
             else if (arValues.size() == 1)
                 return arValues[0];
 
-            return L"auto";
+            return L"";
         }
 
         std::wstring CCompiledStyle::GetMarginRight()
@@ -712,7 +712,7 @@ namespace NSCSS
                 sValue = m_mStyle[L"margin"];
 
             if (sValue.empty())
-                return L"auto";
+                return L"";
 
             std::vector<std::wstring> arValues;
 
@@ -735,7 +735,7 @@ namespace NSCSS
             else if (arValues.size() == 1)
                 return arValues[0];
 
-            return L"auto";
+            return L"";
         }
 
         std::wstring CCompiledStyle::GetMarginBottom()
@@ -751,7 +751,7 @@ namespace NSCSS
                 sValue = m_mStyle[L"margin"];
 
             if (sValue.empty())
-                return L"auto";
+                return L"";
 
             std::vector<std::wstring> arValues;
 
@@ -774,7 +774,7 @@ namespace NSCSS
             else if (arValues.size() > 0)
                 return arValues[0];
 
-            return L"auto";
+            return L"";
         }
 
         std::wstring CCompiledStyle::GetMarginBlockEnd()
@@ -820,7 +820,7 @@ namespace NSCSS
                 sValue = m_mStyle[L"padding"];
 
             if (sValue.empty())
-                return L"auto";
+                return L"";
 
             std::vector<std::wstring> arValues;
 
@@ -841,7 +841,7 @@ namespace NSCSS
             if (arValues.size() != 0)
                 return arValues[0];
 
-            return L"auto";
+            return L"";
         }
 
         std::wstring CCompiledStyle::GetPaddingLeft()
@@ -854,7 +854,7 @@ namespace NSCSS
                 sValue = m_mStyle[L"padding"];
 
             if (sValue.empty())
-                return L"auto";
+                return L"";
 
             std::vector<std::wstring> arValues;
 
@@ -879,7 +879,7 @@ namespace NSCSS
             else if (arValues.size() == 1)
                 return arValues[0];
 
-            return L"auto";
+            return L"";
         }
 
         std::wstring CCompiledStyle::GetPaddingRight()
@@ -892,7 +892,7 @@ namespace NSCSS
                 sValue = m_mStyle[L"padding"];
 
             if (sValue.empty())
-                return L"auto";
+                return L"";
 
             std::vector<std::wstring> arValues;
 
@@ -915,7 +915,7 @@ namespace NSCSS
             else if (arValues.size() == 1)
                 return arValues[0];
 
-            return L"auto";
+            return L"";
         }
 
         std::wstring CCompiledStyle::GetPaddingBottom()
@@ -928,7 +928,7 @@ namespace NSCSS
                 sValue = m_mStyle[L"padding"];
 
             if (sValue.empty())
-                return L"auto";
+                return L"";
 
             std::vector<std::wstring> arValues;
 
@@ -951,7 +951,7 @@ namespace NSCSS
             else if (arValues.size() > 0)
                 return arValues[0];
 
-            return L"auto";
+            return L"";
         }
 
     /*  SPACING */
@@ -959,14 +959,14 @@ namespace NSCSS
         {
             if (m_mStyle.find(L"letter-spacing") != m_mStyle.cend())
                 return m_mStyle[L"letter-spacing"];
-            return L"normal";
+            return L"";
         }
 
         std::wstring CCompiledStyle::GetWordSpacing()
         {
             if (m_mStyle.find(L"word-spacing") != m_mStyle.cend())
                 return m_mStyle[L"word-spacing"];
-            return L"normal";
+            return L"";
         }
 
         std::wstring CCompiledStyle::GetBorderSpacing()

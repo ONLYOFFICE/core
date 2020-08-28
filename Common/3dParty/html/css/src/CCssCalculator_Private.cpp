@@ -544,7 +544,7 @@ namespace NSCSS
         return StringifyValueList(oValues);
     }
 
-    CCompiledStyle CCssCalculator_Private::GetCompiledStyle(std::vector<std::string> arSelectors, UnitMeasure unitMeasure)
+    CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const std::vector<std::string> arSelectors, const UnitMeasure unitMeasure)
     {
         if (unitMeasure != Default)
             SetUnitMeasure(unitMeasure);
@@ -629,7 +629,7 @@ namespace NSCSS
         return  CCompiledStyle(mStyle);
     }
 
-    void CCssCalculator_Private::AddStyle(std::vector<std::string> sSelectors, const std::string& sProperties)
+    void CCssCalculator_Private::AddStyle(const std::vector<std::string> sSelectors, const std::string& sProperties)
     {
         std::string sPropertiesUTF8;
         if (m_sEncoding != L"UTF-8" && m_sEncoding != L"utf-8")
@@ -802,7 +802,7 @@ namespace NSCSS
         return arSelectors;
     }
 
-    CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const CNode &oNode, const std::vector<CNode> &oParents, UnitMeasure unitMeasure)
+    CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const CNode &oNode, const std::vector<CNode> &oParents, const UnitMeasure unitMeasure)
     {
         CCompiledStyle oStyle;
         oStyle.Clear();
@@ -845,7 +845,7 @@ namespace NSCSS
             m_nCountNodes++;
 //        }
 
-        m_arUsedNode.push_back(std::make_pair(oNode, std::make_pair(oParents, oStyle.GetId())));
+//        m_arUsedNode.push_back(std::make_pair(oNode, std::make_pair(oParents, oStyle.GetId())));
 
         return oStyle;
     }
@@ -1969,10 +1969,10 @@ inline static void TranslateToEn(std::wstring& sStyle)
 
 inline static std::wstring ConvertAbsoluteValue(const std::wstring& sAbsoluteValue)
 {
-    std::map<std::wstring, std::wstring> arAbsoluteValues = {{L"xx-small", L"9px"},  {L"x-small", L"10px"},
-                                                             {L"small",    L"13px"}, {L"medium",  L"16px"},
-                                                             {L"large",    L"18px"}, {L"x-large", L"24px"},
-                                                             {L"xx-large", L"32px"}};
+    const std::map<std::wstring, std::wstring> arAbsoluteValues = {{L"xx-small", L"9px"},  {L"x-small", L"10px"},
+                                                                   {L"small",    L"13px"}, {L"medium",  L"16px"},
+                                                                   {L"large",    L"18px"}, {L"x-large", L"24px"},
+                                                                   {L"xx-large", L"32px"}};
 
     std::wstring sNewValue = sAbsoluteValue;
 

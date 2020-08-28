@@ -10,6 +10,11 @@ struct ParentStyle
     std::wstring oNameParent;
 };
 
+bool Comp(const std::pair<NSCSS::CCompiledStyle, bool> &oFirstElement, const std::pair<NSCSS::CCompiledStyle, bool> &oSecondElement)
+{
+    return oFirstElement.first.GetSize() < oSecondElement.first.GetSize();
+}
+
 namespace NSCSS
 {
 CDocumentStyle::CDocumentStyle()
@@ -166,7 +171,7 @@ CDocumentStyle::CDocumentStyle()
         return oXmlElement;
     }
 
-    CXmlElement CDocumentStyle::ConvertStyle(NSCSS::CCompiledStyle &oStyle, bool bIsPStyle)
+    CXmlElement CDocumentStyle::ConvertStyle(const NSCSS::CCompiledStyle &oStyle, bool bIsPStyle)
     {
         std::wstring sName = oStyle.GetId();
 
@@ -256,6 +261,9 @@ CDocumentStyle::CDocumentStyle()
                     m_sStyle += oStandardXmlElement.GetRStyle();
 
                 m_arStandardStylesUsed.push_back(oStandardXmlElement.GetStyleId());
+
+                std::sort(m_arStandardStylesUsed.begin(), m_arStandardStylesUsed.end());
+
                 oXmlElement.SetBasedOn(oStandardXmlElement.GetStyleId());
             }
         }
@@ -270,6 +278,9 @@ CDocumentStyle::CDocumentStyle()
                 else
                 {
                     m_arStandardStylesUsed.push_back(oParentStyle.GetStyleId());
+
+                    std::sort(m_arStandardStylesUsed.begin(), m_arStandardStylesUsed.end());
+
                     m_sStyle = oParentStyle.GetStyle();
                     oXmlElement.SetBasedOn(oParentStyle.GetStyleId());
                 }
@@ -311,7 +322,6 @@ CDocumentStyle::CDocumentStyle()
 
         if (!oStyle.GetTextAlign().empty())
         {
-            // Сделать обработку в SetJc
             std::wstring sTextAlign = oStyle.GetTextAlign();
             oXmlElement.SetJc(oStyle.GetTextAlign());
         }
@@ -480,8 +490,11 @@ CDocumentStyle::CDocumentStyle()
         SetRStyle(oStyle, oXmlElement);
 
         if (!oStyle.Empty())
+        {
             m_arStyleUsed.push_back(std::make_pair(oStyle, false));
 
+//            std::sort(m_arStyleUsed.begin(), m_arStyleUsed.end(), Comp);
+        }
         if (!oXmlElement.Empty())
             m_sStyle += oXmlElement.GetRStyle();
     }
@@ -509,8 +522,11 @@ CDocumentStyle::CDocumentStyle()
         SetPStyle(oStyle, oXmlElement);
 
         if (!oStyle.Empty())
+        {
             m_arStyleUsed.push_back(std::make_pair(oStyle, true));
 
+//            std::sort(m_arStyleUsed.begin(), m_arStyleUsed.end(), Comp);
+        }
         if (!oXmlElement.Empty())
             m_sStyle += oXmlElement.GetPStyle();
     }

@@ -154,7 +154,7 @@ enum RecordType : unsigned short
     RT_AnimationInfoAtom,
     RT_InteractiveInfo,
     RT_InteractiveInfoAtom,
-    RT_UserEditAtom,
+    RT_UserEditAtom                         = 0x0FF5,
     RT_CurrentUserAtom,
     RT_DateTimeMetaCharAtom,
     RT_GenericDateMetaCharAtom,

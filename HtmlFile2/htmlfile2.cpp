@@ -1245,7 +1245,7 @@ private:
                     continue;
 
                 sImageName = NSFile::GetFileName(sSrcM);
-                sImageName.erase(std::remove_if(sImageName.begin(), sImageName.end(), [] (wchar_t ch) { return std::iswspace(ch); }), sImageName.end());
+                sImageName.erase(std::remove_if(sImageName.begin(), sImageName.end(), [] (wchar_t ch) { return std::iswspace(ch) || (ch == L'^'); }), sImageName.end());
                 CFileDownloader oDownloadImg(m_sBase + sSrcM, false);
                 oDownloadImg.SetFilePath(m_sDst + L"/word/media/i" + sImageName);
                 bRes = oDownloadImg.DownloadSync();
@@ -1254,7 +1254,7 @@ private:
             else
             {
                 sImageName = NSFile::GetFileName(sSrcM);
-                sImageName.erase(std::remove_if(sImageName.begin(), sImageName.end(), [] (wchar_t ch) { return std::iswspace(ch); }), sImageName.end());
+                sImageName.erase(std::remove_if(sImageName.begin(), sImageName.end(), [] (wchar_t ch) { return std::iswspace(ch) || (ch == L'^'); }), sImageName.end());
 
                 std::wstring sExtention = NSFile::GetFileExtention(sSrcM);
                 if(sExtention != L"bmp" && sExtention != L"svg" && sExtention != L"jfif" && sExtention != L"wmf" && sExtention != L"gif" &&
@@ -1337,6 +1337,10 @@ private:
 
     void ImageRels (NSStringUtils::CStringBuilder* oXml, const std::wstring& sImageId, const std::wstring& sImageName)
     {
+        CBgraFrame oBgraFrame;
+        if(!oBgraFrame.OpenFile(m_sDst + L"/word/media/" + sImageName))
+            return;
+
         m_nImageId++;
         // Прописать рельсы
         m_oDocXmlRels.WriteString(L"<Relationship Id=\"rPic");
@@ -1346,8 +1350,6 @@ private:
         m_oDocXmlRels.WriteString(L"\"/>");
 
         // Получаем размеры картинки
-        CBgraFrame oBgraFrame;
-        oBgraFrame.OpenFile(m_sDst + L"/word/media/" + sImageName);
         int nHy = oBgraFrame.get_Height();
         int nWx = oBgraFrame.get_Width();
         if(nWx > nHy)
@@ -1441,11 +1443,14 @@ private:
             if(nHRefLen == std::wstring::npos)
                 break;
             std::wstring sImageName = sSVG.substr(nHRef, nHRefLen - nHRef);
-            bool bRes = NSFile::CFileBinary::Copy(m_sSrc + L"/" + sImageName, m_sDst + L"/word/media/" + NSFile::GetFileName(sImageName));
+            std::wstring sTIN(sImageName);
+            sTIN.erase(std::remove_if(sTIN.begin(), sTIN.end(), [] (wchar_t ch) { return std::iswspace(ch) || (ch == L'^'); }), sTIN.end());
+            sTIN = NSFile::GetFileName(sTIN);
+            bool bRes = NSFile::CFileBinary::Copy(m_sSrc + L"/" + sImageName, m_sDst + L"/word/media/" + sTIN);
             if(!bRes)
-                bRes = NSFile::CFileBinary::Copy(m_sSrc + L"/" + NSFile::GetFileName(sImageName), m_sDst + L"/word/media/" + NSFile::GetFileName(sImageName));
+                bRes = NSFile::CFileBinary::Copy(m_sSrc + L"/" + NSFile::GetFileName(sImageName), m_sDst + L"/word/media/" + sTIN);
             if(bRes)
-                sSVG.replace(nHRef, nHRefLen - nHRef, NSFile::GetFileName(sImageName));
+                sSVG.replace(nHRef, nHRefLen - nHRef, sTIN);
             nRef = sSVG.find(L"image", nRef + 5);
         }
 

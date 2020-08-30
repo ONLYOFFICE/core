@@ -521,6 +521,7 @@ namespace PPTX
 									pFill->tileRect = new PPTX::Logic::Rect();
 									pFill->tileRect->fromPPTY(pReader);
 									pFill->tileRect->m_name = _T("a:tileRect");
+									break;
 								}
 								default:
 								{

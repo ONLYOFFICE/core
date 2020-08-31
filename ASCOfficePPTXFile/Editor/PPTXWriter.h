@@ -192,10 +192,14 @@ namespace NSBinPptxRW
 			
 			for (LONG i = 0; i < 30/*main tables max*/; ++i)
 			{
-				BYTE _type = m_oReader.GetUChar();
-				if (0 == _type)
-					break; 
+				BYTE _type = 0;
+ 
+				if (false == m_oReader.GetUCharWithResult(&_type))
+					break;
 
+				if (0 == _type)
+					break;		
+				
 				m_mainTables.insert(std::pair<BYTE, LONG>(_type, m_oReader.GetLong()));				
 			}
 

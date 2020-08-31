@@ -1723,6 +1723,18 @@ namespace NSBinPptxRW
 	}
 
 	// 1 bytes
+	bool CBinaryFileReader::GetUCharWithResult(BYTE *value_)
+	{
+		if (!value_ || m_lPos >= m_lSize)
+		{
+			return false;
+		}
+
+		*value_ = *m_pDataCur;
+		++m_lPos;
+		++m_pDataCur;
+		return true;
+	}
 	BYTE CBinaryFileReader::GetUChar()
 	{
 		if (m_lPos >= m_lSize)

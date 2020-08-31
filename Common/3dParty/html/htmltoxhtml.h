@@ -2,17 +2,11 @@
 #define HTMLTOXHTML_H
 
 #include <string>
+#include <cctype>
 #include "gumbo-parser/src/gumbo.h"
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/common/StringBuilder.h"
 #include "../../../UnicodeConverter/UnicodeConverter.h"
-
-#ifndef HTMLTOXHTML_USE_DYNAMIC_LIBRARY
-#define HTMLTOXHTML_DECL_EXPORT
-#else
-#include "../../../DesktopEditor/common/base_export.h"
-#define HTMLTOXHTML_DECL_EXPORT Q_DECL_EXPORT
-#endif
 
 static std::string nonbreaking_inline  = "|a|abbr|acronym|b|bdo|big|cite|code|dfn|em|font|i|img|kbd|nobr|s|small|span|strike|strong|sub|sup|tt|";
 static std::string empty_tags          = "|area|base|basefont|bgsound|br|command|col|embed|event-source|frame|hr|image|img|input|keygen|link|menuitem|meta|param|source|spacer|track|wbr|";
@@ -24,6 +18,58 @@ static std::string treat_like_inline   = "|p|";
 static void prettyprint(GumboNode*, NSStringUtils::CStringBuilderA& oBuilder);
 
 static std::wstring htmlToXhtml(const std::wstring& sFile)
+{
+    std::wstring sRes;
+    std::string sFileContent;
+    if(!NSFile::CFileBinary::ReadAllTextUtf8A(sFile, sFileContent))
+        return sRes;
+
+    // Распознование кодировки
+    size_t posEncoding = sFileContent.find("charset=");
+    if (std::string::npos == posEncoding)
+        posEncoding = sFileContent.find("encoding=");
+    if (std::string::npos != posEncoding)
+    {
+        posEncoding = sFileContent.find("=", posEncoding) + 1;
+        if(sFileContent[posEncoding] == '\"')
+            posEncoding += 1;
+
+        size_t posEnd = sFileContent.find("\"", posEncoding);
+        if (std::string::npos != posEnd)
+        {
+            std::string sEncoding = sFileContent.substr(posEncoding, posEnd - posEncoding);
+            if (sEncoding != "utf-8" && sEncoding != "UTF-8")
+            {
+                sFileContent.replace(posEncoding, posEnd - posEncoding, "UTF-8");
+                NSUnicodeConverter::CUnicodeConverter oConverter;
+                sRes = oConverter.toUnicode(sFileContent, sEncoding.c_str());
+                sFileContent = U_TO_UTF8(sRes);
+            }
+        }
+    }
+
+    // Gumbo
+    GumboOptions options = kGumboDefaultOptions;
+    GumboOutput* output = gumbo_parse_with_options(&options, sFileContent.data(), sFileContent.length());
+
+    // prettyprint
+    NSStringUtils::CStringBuilderA oBuilder;
+    prettyprint(output->document, oBuilder);
+    std::string sR = oBuilder.GetData();
+
+    // Вставка кодировки в файл
+    if(sR.length() > 5)
+    {
+        std::string sSub = sR.substr(0, 5);
+        if(sSub != "<?xml")
+            sR = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + sR;
+    }
+
+    // Конвертирование из string utf8 в wstring
+    return UTF8_TO_U(sR);
+}
+
+static std::wstring mhtToXhtml(const std::wstring& sFile)
 {
     std::wstring sRes;
     std::string sFileContent;
@@ -113,11 +159,11 @@ static std::string handle_unknown_tag(GumboStringPiece* text)
     GumboStringPiece gsp = *text;
     gumbo_tag_from_original_text(&gsp);
     std::string sAtr = std::string(gsp.data, gsp.length);
-    size_t found = sAtr.find_first_of("-'()+,./:=?;!*#@$_%<>&;\"");
+    size_t found = sAtr.find_first_of("-'+,./:=?;!*#@$_%<>&;\"\'()[]{}");
     while(found != std::string::npos)
     {
         sAtr.erase(found, 1);
-        found = sAtr.find_first_of("-'()+,./:=?;!*#@$_%<>&;\"", found);
+        found = sAtr.find_first_of("-'+,./:=?;!*#@$_%<>&;\"\'()[]{}", found);
     }
     return sAtr;
 }
@@ -155,8 +201,22 @@ static void build_attributes(GumboAttribute* at, bool no_entities, NSStringUtils
     std::string sName(at->name);
     char quote = '"';
     atts.WriteString(" ");
-    if(sName.find_first_of("><&;\".") != std::string::npos)
+    if(sName.empty())
         return;
+    size_t nBad = sName.find_first_of("-'+,.:=?#%<>&;\"\'()[]{}");
+    while(nBad != std::string::npos)
+    {
+        sName.erase(nBad, 1);
+        nBad = sName.find_first_of("-'+,.:=?#%<>&;\"\'()[]{}", nBad);
+        if(sName.empty())
+            return;
+    }
+    while(std::isdigit(sName.front()))
+    {
+        sName.erase(0, 1);
+        if(sName.empty())
+            return;
+    }
     atts.WriteString(sName);
 
     // determine original quote character used if it exists

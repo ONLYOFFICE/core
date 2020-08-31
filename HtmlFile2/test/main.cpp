@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 #include "../htmlfile2.h"
+#include "../mhtfile.h"
+#include "../htmlfile_private.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
@@ -15,6 +17,7 @@ void getDirectories(std::wstring sDirectory, std::vector<std::wstring>& arrDirec
 int main()
 {
     bool bBatchMode = false;
+    bool bMhtMode = true;
     if(bBatchMode)
     {
         // Директория файлов
@@ -78,9 +81,6 @@ int main()
         NSDirectory::DeleteDirectory(sOutputDirectory);
         NSDirectory::CreateDirectory(sOutputDirectory);
 
-        CHtmlFile2 oFile;
-        oFile.SetTmpDirectory(sOutputDirectory);
-
         CHtmlParams oParams;
         oParams.SetAuthors(L"last first middle;last2 first2 middle2");
         oParams.SetGenres(L"fantazy, drama");
@@ -89,8 +89,20 @@ int main()
         oParams.SetDescription(L"Description");
 
         // Файл, который открываем
-        std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test4.xhtml";
-        nResConvert = oFile.Open(sFile, sOutputDirectory, &oParams);
+        std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test.mht";
+
+        if(bMhtMode)
+        {
+            CMhtFile oFile;
+            oFile.SetTmpDirectory(sOutputDirectory);
+            nResConvert = oFile.Open(sFile, sOutputDirectory, &oParams);
+        }
+        else
+        {
+            CHtmlFile2 oFile;
+            oFile.SetTmpDirectory(sOutputDirectory);
+            nResConvert = oFile.Open(sFile, sOutputDirectory, &oParams);
+        }
 
         if(nResConvert == S_OK)
         {

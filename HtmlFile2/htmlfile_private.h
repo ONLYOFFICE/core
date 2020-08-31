@@ -475,7 +475,7 @@ public:
         if (oXhtmlWriter.CreateFileW(m_sTmp + L"/res.xhtml"))
         {
             // htmlToXhtml возвращает текст файла в кодировке UTF-8
-            oXhtmlWriter.WriteStringUTF8(mhtToXhtml(sSrc));
+            oXhtmlWriter.WriteStringUTF8(mhtToXhtml(sSrc, m_sTmp));
             oXhtmlWriter.CloseFile();
         }
         else

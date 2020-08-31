@@ -1920,51 +1920,42 @@ inline static void RemoveExcessFromStyles(std::wstring& sStyle)
 
 inline static void TranslateToEn(std::wstring& sStyle)
 {
-    std::map<int, std::wstring> arAlf =        {{1072, L"a"},     {1040, L"A"},
-                                                {1073, L"b"},     {1041, L"B"},
-                                                {1074, L"v"},     {1042, L"V"},
-                                                {1075, L"g"},     {1043, L"G"},
-                                                {1076, L"d"},     {1044, L"D"},
-                                                {1077, L"e"},     {1045, L"E"},
-                                                {1105, L"e"},     {1025, L"E"},
-                                                {1078, L"zh"},    {1046, L"ZH"},
-                                                {1079, L"z"},     {1047, L"Z"},
-                                                {1080, L"i"},     {1048, L"I"},
-                                                {1081, L"y"},     {1049, L"Y"},
-                                                {1082, L"k"},     {1050, L"K"},
-                                                {1083, L"l"},     {1051, L"L"},
-                                                {1084, L"m"},     {1052, L"M"},
-                                                {1085, L"n"},     {1053, L"N"},
-                                                {1086, L"o"},     {1054, L"O"},
-                                                {1087, L"p"},     {1055, L"P"},
-                                                {1088, L"r"},     {1056, L"R"},
-                                                {1089, L"s"},     {1057, L"S"},
-                                                {1090, L"t"},     {1058, L"T"},
-                                                {1091, L"u"},     {1059, L"U"},
-                                                {1092, L"f"},     {1060, L"F"},
-                                                {1093, L"kh"},    {1061, L"KH"},
-                                                {1094, L"ts"},    {1062, L"TS"},
-                                                {1095, L"ch"},    {1063, L"CH"},
-                                                {1096, L"sh"},    {1064, L"SH"},
-                                                {1097, L"shch"},  {1065, L"SHCH"},
-                                                {1098, L""},      {1066, L""},
-                                                {1099, L"y"},     {1067, L"Y"},
-                                                {1100, L""},      {1068, L""},
-                                                {1101, L"e"},     {1069, L"E"},
-                                                {1102, L"yu"},    {1070, L"YU"},
-                                                {1103, L"ya"},    {1071, L"YA"}};
+    bool bCorrect = false;
+    for (std::wstring::size_type i = 0, len = sStyle.length(); i < len; ++i)
+    {
+        wchar_t wc = sStyle[i];
+        if (wc == '\t' || wc == '\n')
+        {
+            // may be change to space???
+            sStyle.erase(i, 1);
+            --i;
+            --len;
+        }
+        else if (wc > 255)
+        {
+            bCorrect = true;
+            break;
+        }
+    }
+
+    if (!bCorrect)
+        return;
 
     std::wstring sNewStyle;
-
-    for (int i = 0; i < (int)sStyle.length(); i++)
+    for (std::wstring::size_type i = 0, len = sStyle.length(); i < len; ++i)
     {
-        if (arAlf.find((int)sStyle[i]) != arAlf.cend())
+        wchar_t wc = sStyle[i];
+        if (wc == '\t' || wc == '\n')
         {
-            sNewStyle += arAlf[sStyle[i]];
+            continue;
         }
-        else if (sStyle[i] != L'\t' && sStyle[i] != L'\n')
+        else if (wc <= 255)
         {
-            sNewStyle += sStyle[i];
+            sNewStyle += wc;
+        }
+        else
+        {
+            sNewStyle += std::to_wstring((int)wc);
         }
     }
     sStyle = sNewStyle;

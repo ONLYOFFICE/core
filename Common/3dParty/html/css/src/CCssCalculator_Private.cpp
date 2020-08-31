@@ -1,5 +1,4 @@
 #include "CCssCalculator_Private.h"
-#include <codecvt>
 
 #include <string>
 #include <wchar.h>
@@ -7,6 +6,7 @@
 #include <fstream>
 #include <cctype>
 #include <algorithm>
+#include <math.h>
 
 #include <iostream>
 
@@ -1798,10 +1798,7 @@ inline static std::wstring StringifyValue(KatanaValue* oValue)
 
 inline static std::wstring stringToWstring(const std::string& sString)
 {
-    typedef std::codecvt_utf8<wchar_t> convert_type;
-    std::wstring_convert<convert_type, wchar_t> converter;
-
-    return converter.from_bytes(sString);
+    return UTF8_TO_U(sString);
 }
 
 inline static std::string wstringToString(const std::wstring& sWstring)
@@ -1811,9 +1808,7 @@ inline static std::string wstringToString(const std::wstring& sWstring)
 
 inline static std::string GetContentAsUTF8(const std::string &sString, const std::wstring &sEncoding)
 {
-    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-
-    std::string sEnc = converter.to_bytes(sEncoding);
+    std::string sEnc = U_TO_UTF8(sEncoding);
 
     NSUnicodeConverter::CUnicodeConverter oConverter;
     std::wstring sUnicodeContent = oConverter.toUnicode(sString, sEnc.c_str());

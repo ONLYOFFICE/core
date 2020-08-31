@@ -3,6 +3,7 @@
 #include <iostream>
 #include <algorithm>
 #include <wchar.h>
+#include <math.h>
 
 struct ParentStyle
 {

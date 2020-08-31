@@ -41,13 +41,13 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
 {
     if (m_sTempDir.empty())
     {
-        NSDirectory::CreateDirectories(NSFile::GetProcessDirectory() + L"\\TEMP");
-        SetTempDirectory(NSFile::GetProcessDirectory() + L"\\TEMP");
+        NSDirectory::CreateDirectories(NSFile::GetProcessDirectory() + L"/TEMP");
+        SetTempDirectory(NSFile::GetProcessDirectory() + L"/TEMP");
     }
     else
     {
-        NSDirectory::CreateDirectories(m_sTempDir + L"\\tmp");
-        SetTempDirectory(m_sTempDir + L"\\tmp");
+        NSDirectory::CreateDirectories(m_sTempDir + L"/tmp");
+        SetTempDirectory(m_sTempDir + L"/tmp");
     }
 //    NSDirectory::CreateDirectory(sOutputFile);
     COfficeUtils oOfficeUtils;
@@ -102,7 +102,7 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     else
         return S_FALSE;
 
-    if (oXmlLiteReader.FromFile(m_sTempDir + L"\\toc.ncx"))
+    if (oXmlLiteReader.FromFile(m_sTempDir + L"/toc.ncx"))
     {
         oXmlLiteReader.ReadNextNode();
         m_oToc.ReadToc(oXmlLiteReader);
@@ -134,7 +134,7 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
         oFileParams.SetDescription(m_oBookInfo.GetDescriptions());
 
 
-        std::wstring sDocxFileTempDir = m_sTempDir + L"\\res";
+        std::wstring sDocxFileTempDir = m_sTempDir + L"/res";
         NSDirectory::CreateDirectory(sDocxFileTempDir);
 
         oFile.SetTmpDirectory(sDocxFileTempDir);
@@ -142,16 +142,13 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
         std::vector<std::wstring> arFiles;
 
         for (size_t i = 0; i < m_arContents.size(); i++)
-            arFiles.push_back(m_sTempDir + L"\\" + m_mapRefs[m_arContents[i].m_sID].GetRef());
+            arFiles.push_back(m_sTempDir + L"/" + m_mapRefs[m_arContents[i].m_sID].GetRef());
 
-
-        #ifdef _DEBUG
-            std::wcout << L"---The conversion process from Epub to Docx...---" << std::endl;
-            if (oFile.OpenBatch(arFiles, sDocxFileTempDir, &oFileParams) == S_OK)
-                std::wcout << L"---Successful conversion of Epub to Docx---" << std::endl;
-            else
-                std::wcout << L"---Failed conversion of Epub to Docx---" << std::endl;
-        #endif
+        std::wcout << L"---The conversion process from Epub to Docx...---" << std::endl;
+        if (oFile.OpenBatch(arFiles, sDocxFileTempDir, &oFileParams) == S_OK)
+            std::wcout << L"---Successful conversion of Epub to Docx---" << std::endl;
+        else
+            std::wcout << L"---Failed conversion of Epub to Docx---" << std::endl;
 
         oOfficeUtils.CompressFileOrDirectory(sDocxFileTempDir, sOutputFile);
     }

@@ -1704,8 +1704,9 @@ namespace NSBinPptxRW
 	{
 		if (_pos > m_lSize)
 		{
-			std::cerr << "CBinaryFileReader out_of_range"<< std::endl;
-			throw std::out_of_range("CBinaryFileReader out_of_range");
+			_pos = m_lSize;
+			//std::cerr << "CBinaryFileReader out_of_range"<< std::endl;
+			//throw std::out_of_range("CBinaryFileReader out_of_range");
 		}
 		m_lPos = _pos;
 		m_pDataCur = m_pData + m_lPos;

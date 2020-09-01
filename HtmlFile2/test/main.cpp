@@ -45,19 +45,35 @@ int main()
 
             for(std::wstring sFile : arrFiles)
             {
-                CHtmlFile2 oFile;
-                oFile.SetTmpDirectory(sTmp);
                 std::wstring sFileName = NSFile::GetFileName(sFile);
                 std::wcout << sFileName << std::endl;
-                if(!oFile.IsHtmlFile(sFile))
+                HRESULT nResConvert;
+                if(bMhtMode)
                 {
-                    nErrorCol++;
-                    arrError.push_back(sFileName);
-                    std::cout << "This isn't a html file" << std::endl;
-                    continue;
+                    CMhtFile oFile;
+                    oFile.SetTmpDirectory(sTmp);
+                    if(!oFile.IsMhtFile(sFile))
+                    {
+                        nErrorCol++;
+                        arrError.push_back(sFileName);
+                        std::cout << "This isn't a mht file" << std::endl;
+                        continue;
+                    }
+                    nResConvert = oFile.Open(sFile, sTmp);
                 }
-
-                HRESULT nResConvert = oFile.Open(sFile, sTmp);
+                else
+                {
+                    CHtmlFile2 oFile;
+                    oFile.SetTmpDirectory(sTmp);
+                    if(!oFile.IsHtmlFile(sFile))
+                    {
+                        nErrorCol++;
+                        arrError.push_back(sFileName);
+                        std::cout << "This isn't a html file" << std::endl;
+                        continue;
+                    }
+                    nResConvert = oFile.Open(sFile, sTmp);
+                }
                 if(nResConvert == S_OK)
                 {
                     std::cout << "Success" << std::endl;

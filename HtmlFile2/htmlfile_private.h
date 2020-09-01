@@ -1329,6 +1329,8 @@ private:
                 bRes = NSFile::CFileBinary::Copy(m_sSrc + L"/" + sSrcM, m_sDst + L"/word/media/i" + sImageName);
                 if(!bRes)
                     bRes = NSFile::CFileBinary::Copy(m_sSrc + L"/" + NSFile::GetFileName(sSrcM), m_sDst + L"/word/media/i" + sImageName);
+                if(!bRes)
+                    bRes = NSFile::CFileBinary::Copy(sSrcM, m_sDst + L"/word/media/i" + sImageName);
             }
             if(bRes)
                 ImageRels(oXml, sImageId, L"i" + sImageName);

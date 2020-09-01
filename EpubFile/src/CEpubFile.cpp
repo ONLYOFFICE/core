@@ -3,6 +3,7 @@
 #include "../../OfficeUtils/src/OfficeUtils.h"
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../HtmlFile2/htmlfile2.h"
+#include "../../HtmlFile2/htmlfile_private.h"
 #include "src/CBookInfo.h"
 #include <iostream>
 
@@ -18,15 +19,17 @@ CEpubFile::~CEpubFile()
 
 HRESULT CEpubFile::IsEbubFile(const std::wstring &sFileName)
 {
-    if (sFileName.find_last_of(L'.') == std::wstring::npos ||
-        sFileName.substr(sFileName.find_last_of(L'.') + 1) != L"epub")
+    auto posPoint = sFileName.find_last_of(L'.');
+
+    if (posPoint == std::wstring::npos ||
+        sFileName.substr(posPoint + 1) != L"epub")
         return S_FALSE;
 
     COfficeUtils oOfficeUtils;
     if (oOfficeUtils.IsArchive(sFileName) == S_OK &&
         oOfficeUtils.IsFileExistInArchive(sFileName, L"META-INF/container.xml") == S_OK)
     {
-        this->m_sFileName = sFileName;
+        m_sFileName = sFileName;
         return S_OK;
     }
     return S_FALSE;
@@ -142,7 +145,7 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
         std::vector<std::wstring> arFiles;
 
         for (size_t i = 0; i < m_arContents.size(); i++)
-            arFiles.push_back(m_sTempDir + L"/" + m_mapRefs[m_arContents[i].m_sID].GetRef());
+            arFiles.push_back(m_sTempDir + L"\\" + m_mapRefs[m_arContents[i].m_sID].GetRef());
 
         std::wcout << L"---The conversion process from Epub to Docx...---" << std::endl;
         if (oFile.OpenBatch(arFiles, sDocxFileTempDir, &oFileParams) == S_OK)

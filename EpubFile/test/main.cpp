@@ -3,25 +3,30 @@
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
 
+#include <time.h>
+
 int main(int argc, char *argv[])
 {
-    std::vector<std::wstring> arFiles = NSDirectory::GetFiles(NSFile::GetProcessDirectory() + L"/../../../Files2");
+    std::vector<std::wstring> arFiles = NSDirectory::GetFiles(NSFile::GetProcessDirectory() + L"/../../../Files");
     std::wstring sTmp = NSFile::GetProcessDirectory() + L"/tmp";
     std::wstring sOutputDirectory = NSFile::GetProcessDirectory() + L"/OutputFiles";
     NSDirectory::CreateDirectory(sOutputDirectory);
 
     //Русские символы в консоль не выводятся
-    for (int i = 0; i < (int)arFiles.size(); i++)
+    for (std::wstring sFileName : arFiles)
     {
-        std::wstring sFileName = arFiles[i];
+        clock_t tTimeBegin = clock();
 
         CEpubFile oEpub;
 
         if (oEpub.IsEbubFile(sFileName) == S_OK)
         {
             std::wstring sFile = sFileName.substr(0, sFileName.find_last_of(L'.'));
-            if (sFile.find(L'/') != std::wstring::npos)
-                sFile = sFile.substr(sFile.find_last_of(L'/') + 1);
+
+            auto posLastSlash = sFile.find_last_of(L'/');
+
+            if (posLastSlash != std::wstring::npos)
+                sFile = sFile.substr(posLastSlash + 1);
 
             std::wcout << L"|----------|" << sFile << L"|----------|" << std::endl;
 
@@ -31,6 +36,9 @@ int main(int argc, char *argv[])
         }
         else
             std::wcout << sFileName << L" this is not an epub format!" << std::endl;
+        clock_t tTimeEnd = clock();
+
+        std::wcout << (double)(tTimeEnd - tTimeBegin) / CLOCKS_PER_SEC << std::endl;
     }
 
     return 0;

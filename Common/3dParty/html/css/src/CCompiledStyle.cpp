@@ -12,7 +12,7 @@ namespace NSCSS
     {
     }
 
-    CCompiledStyle::CCompiledStyle(const std::map<std::wstring, std::wstring> mStyle)
+    CCompiledStyle::CCompiledStyle(const std::map<std::wstring, std::wstring>& mStyle)
     {
         m_mStyle = mStyle;
     }
@@ -35,10 +35,15 @@ namespace NSCSS
 
         for(auto& item : oElement.m_mStyle)
         {
-            if (m_mStyle[item.first] != L"inherit" && !item.second.empty())
-                m_mStyle[item.first] = item.second;
-            if (item.second.find(L"!important") != std::wstring::npos)
-                m_mStyle[item.first] = item.second.substr(0, item.second.find(L"!important"));
+            std::wstring& sValue = m_mStyle[item.first];
+
+            if (sValue != L"inherit" && !item.second.empty())
+                sValue = item.second;
+
+            auto posImportant = item.second.find(L"!important");
+
+            if (posImportant != std::wstring::npos)
+                sValue = item.second.substr(0, posImportant);
         }
 
         return *this;
@@ -67,54 +72,70 @@ namespace NSCSS
     }
 
 
-    bool CCompiledStyle::operator==(const CCompiledStyle &oElement)
-    {
-        std::wstring sThisName = this->GetId();
+//    bool CCompiledStyle::operator==(const CCompiledStyle &oElement)
+//    {
+//        std::wstring sThisName = this->GetId();
 
-        if (sThisName.find(L'-') != std::wstring::npos)
-            sThisName = sThisName.substr(0, sThisName.find(L'-'));
-        if (sThisName.find(L'#') != std::wstring::npos)
-            sThisName = sThisName.substr(0, sThisName.find(L'#'));
-        if (sThisName.find(L'.') != std::wstring::npos)
-            sThisName = sThisName.substr(0, sThisName.find(L'.'));
+//        auto posDash = sThisName.find(L'-');
 
-        std::wstring sElementName = oElement.m_sId;
+//        if (posDash != std::wstring::npos)
+//            sThisName = sThisName.substr(0, posDash);
 
-        if (sElementName.find(L'-') != std::wstring::npos)
-            sElementName = sElementName.substr(0, sElementName.find(L'-'));
-        if (sElementName.find(L'#') != std::wstring::npos)
-            sElementName = sElementName.substr(0, sElementName.find(L'#'));
-        if (sElementName.find(L'.') != std::wstring::npos)
-            sElementName = sElementName.substr(0, sElementName.find(L'.'));
+//        auto posLattice = sThisName.find(L'#');
 
-        if (sThisName != sElementName)
-            return false;
+//        if (posLattice != std::wstring::npos)
+//            sThisName = sThisName.substr(0, posLattice);
 
-        if (this->m_arParentsStyles.size() != oElement.m_arParentsStyles.size())
-            return false;
+//        auto posPoint = sThisName.find(L'.');
 
-        for (size_t i = 0; i < this->m_arParentsStyles.size(); i++)
-            if (this->m_arParentsStyles[i] != oElement.m_arParentsStyles[i])
-                return false;
+//        if (posPoint != std::wstring::npos)
+//            sThisName = sThisName.substr(0, posPoint);
 
-        if (this->m_mStyle.size() != oElement.m_mStyle.size())
-            return false;
+//        std::wstring sElementName = oElement.m_sId;
 
-        auto iterLeft = this->m_mStyle.begin();
-        auto iterRight = oElement.m_mStyle.begin();
+//        posDash = sElementName.find(L'-');
 
-        while (iterLeft != this->m_mStyle.cend())
-        {
-            if (iterLeft->first != iterRight->first ||
-                iterLeft->second != iterRight->second)
-                return false;
+//        if (posDash != std::wstring::npos)
+//            sElementName = sElementName.substr(0, posDash);
 
-            iterLeft++;
-            iterRight++;
-        }
+//        posLattice = sElementName.find(L'#');
 
-        return true;
-    }
+//        if (posLattice != std::wstring::npos)
+//            sElementName = sElementName.substr(0, posLattice);
+
+//        posPoint = sElementName.find(L'.');
+
+//        if (posPoint != std::wstring::npos)
+//            sElementName = sElementName.substr(0, posPoint);
+
+//        if (sThisName != sElementName)
+//            return false;
+
+//        if (this->m_arParentsStyles.size() != oElement.m_arParentsStyles.size())
+//            return false;
+
+//        for (size_t i = 0; i < this->m_arParentsStyles.size(); i++)
+//            if (this->m_arParentsStyles[i] != oElement.m_arParentsStyles[i])
+//                return false;
+
+//        if (this->m_mStyle.size() != oElement.m_mStyle.size())
+//            return false;
+
+//        auto iterLeft = this->m_mStyle.begin();
+//        auto iterRight = oElement.m_mStyle.begin();
+
+//        while (iterLeft != this->m_mStyle.cend())
+//        {
+//            if (iterLeft->first != iterRight->first ||
+//                iterLeft->second != iterRight->second)
+//                return false;
+
+//            iterLeft++;
+//            iterRight++;
+//        }
+
+//        return true;
+//    }
 
     bool CCompiledStyle::operator!=(const CCompiledStyle &oElement)
     {
@@ -137,7 +158,7 @@ namespace NSCSS
         return (m_mStyle.size() < oElement.m_mStyle.size());
     }
 
-    std::map<std::wstring, std::wstring> CCompiledStyle::GetStyleMap() const
+    const std::map<std::wstring, std::wstring>& CCompiledStyle::GetStyleMap() const
     {
         return m_mStyle;
     }
@@ -157,7 +178,7 @@ namespace NSCSS
         return converter.to_bytes(sStyle);
     }
 
-    size_t CCompiledStyle::GetSize() const
+    const size_t& CCompiledStyle::GetSize() const
     {
         return m_mStyle.size();
     }
@@ -180,53 +201,63 @@ namespace NSCSS
         m_arParentsStyles.clear();
     }
 
-    void CCompiledStyle::AddPropSel(const std::wstring sProperty, const std::wstring sValue)
+    void CCompiledStyle::AddPropSel(const std::wstring& sProperty, const std::wstring& sValue)
     {
         m_mStyle.emplace(sProperty, sValue);
     }
 
-    void CCompiledStyle::InsertStyle(const std::map<std::wstring, std::wstring> mStyle)
+    void CCompiledStyle::InsertStyle(const std::map<std::wstring, std::wstring>& mStyle)
     {
         m_mStyle.insert(mStyle.begin(), mStyle.end());
     }
 
-    void CCompiledStyle::SetStyle(const std::map<std::wstring, std::wstring> mStyle)
+    void CCompiledStyle::SetStyle(const std::map<std::wstring, std::wstring>& mStyle)
     {
         m_mStyle = mStyle;
     }
 
-    void CCompiledStyle::AddStyle(const std::wstring sStyle)
+    void CCompiledStyle::AddStyle(const std::wstring& sStyle)
     {
         std::wstring sProperty;
         std::wstring sValue;
-        int nPosition = 0;
+        size_t nPosition = 0;
 
-        while(nPosition < (int)sStyle.length())
+        wchar_t wc;
+
+        while(nPosition < sStyle.length())
         {
-            while (nPosition < (int)sStyle.length() && sStyle[nPosition] != L':')
+            wc = sStyle[nPosition];
+            while (nPosition < sStyle.length() && wc != L':')
             {
-                if (!isspace(sStyle[nPosition]))
-                    sProperty += sStyle[nPosition];
-                nPosition++;
+                if (!iswspace(wc))
+                    sProperty += wc;
+                wc = sStyle[++nPosition];
             }
-            nPosition++;
-            while (nPosition < (int)sStyle.length() && sStyle[nPosition] != L';')
+            wc = sStyle[++nPosition];
+
+            while (nPosition < sStyle.length() && sStyle[nPosition] != L';')
             {
-//                if (!isspace(sStyle[nPosition]))
-                    sValue += sStyle[nPosition];
-                nPosition++;
+                sValue += sStyle[nPosition];
+                wc = sStyle[++nPosition];
             }
-            nPosition++;
+
+            if (nPosition < sStyle.length())
+                wc = sStyle[++nPosition];
+
             if (!sProperty.empty() && !sValue.empty())
             {
-                if (sValue.find(L'!') != std::wstring::npos)
-                    sValue = sValue.substr(0, sValue.find(L'!') - 1);
+                auto posExclamation = sValue.find(L'!');
+                auto posSemicolon = sValue.find(L';');
+                auto posColon = sValue.find(L':');
 
-                if (sValue.find(L';') != std::wstring::npos)
-                    sValue = sValue.substr(0, sValue.find(L';'));
+                if (posExclamation != std::wstring::npos)
+                    sValue = sValue.substr(0, posExclamation - 1);
 
-                if (sValue.find(L':') != std::wstring::npos)
-                    sValue = sValue.substr(0, sValue.find(L':'));
+                if (posSemicolon != std::wstring::npos)
+                    sValue = sValue.substr(0, posSemicolon);
+
+                if (posColon != std::wstring::npos)
+                    sValue = sValue.substr(0, posColon);
 
                 AddPropSel(sProperty, sValue);
                 sProperty.clear();
@@ -235,7 +266,7 @@ namespace NSCSS
         }
     }
 
-    void CCompiledStyle::AddParent(const std::wstring sParentName)
+    void CCompiledStyle::AddParent(const std::wstring& sParentName)
     {
         if (!sParentName.empty())
             m_arParentsStyles.push_back(sParentName);
@@ -246,14 +277,41 @@ namespace NSCSS
         return m_arParentsStyles;
     }
 
-    void CCompiledStyle::SetID(const std::wstring sId)
+    void CCompiledStyle::SetID(const std::wstring& sId)
     {
         m_sId = sId;
     }
 
-    std::wstring CCompiledStyle::GetId() const
+    const std::wstring& CCompiledStyle::GetId() const
     {
         return m_sId;
+    }
+
+    const std::map<std::wstring, std::wstring>::iterator& CCompiledStyle::GetBegin()
+    {
+        return m_mStyle.begin();
+    }
+
+    const std::map<std::wstring, std::wstring>::iterator& CCompiledStyle::GetEnd()
+    {
+        return m_mStyle.end();
+    }
+
+    const double CCompiledStyle::GetWeidth()
+    {
+        double dWidth;
+        for (auto sValue : m_mStyle)
+        {
+            dWidth += sValue.first.length();
+            dWidth += sValue.second.length();
+        }
+
+        for (std::wstring sValue : m_arParentsStyles)
+        {
+            dWidth += sValue.length() / 2;
+        }
+
+        return dWidth;
     }
 
     /* FONT */
@@ -276,13 +334,13 @@ namespace NSCSS
             if (m_mStyle.find(L"font-family") != m_mStyle.cend())
             {
                 std::wstring sFontFamily = m_mStyle[L"font-family"];
+
                 if (sFontFamily.find(L',') != std::wstring::npos)
                     sFontFamily = sFontFamily.substr(0, sFontFamily.find(L','));
 
                 if (sFontFamily.find(L'"') != std::wstring::npos || sFontFamily.find(L'\'') != std::wstring::npos)
-                {
                     return sFontFamily;
-                }
+
                 return  L'"' + sFontFamily + L'"';
             }
             std::wstring sFont;
@@ -297,7 +355,7 @@ namespace NSCSS
 
             for (int i = (int)sFont.length() - 1; i >= 0; i--)
             {
-                if(isdigit(sFont[i]))
+                if(iswdigit(sFont[i]))
                 {
                     nPos1 = i;
                     break;
@@ -306,8 +364,10 @@ namespace NSCSS
 
             std::wstring sValue = sFont.substr(nPos1 + 1);
 
-            if (sValue.find(L',') != std::wstring::npos)
-                sValue = sValue.substr(0, sValue.find(L',') - 1);
+            auto posComma = sValue.find(L',');
+
+            if (posComma != std::wstring::npos)
+                sValue = sValue.substr(0, posComma - 1);
 
             if (!sValue.empty())
             {
@@ -337,45 +397,49 @@ namespace NSCSS
                                                          L"medium",  L"large",   L"x-large",
                                                          L"xx-large",L"larger",  L"smaller"};
 
-            for (size_t i = 0; i < arValues.size(); i++)
-                if (sFont.find(arValues[i]) != std::wstring::npos)
-                    return arValues[i];
+            for (std::wstring sValue : arValues)
+                if (sFont.find(sValue) != std::wstring::npos)
+                    return sValue;
 
             const std::vector<std::wstring> arUnitMeasure = {L"mm", L"cm",
                                                              L"in", L"pt",
                                                              L"pc", L"%",
                                                              L"em", L"rem",
                                                              L"ex"};
-            int nPos = 0;
-            std::wstring sUnitMeasure;
+            std::wstring sTempUnitMeasure;
+            size_t posUnitMeasure;
 
-            for (size_t i = 0; i < arUnitMeasure.size(); i++)
+            for (std::wstring sUnitMesure : arUnitMeasure)
             {
-                if (sFont.find(arUnitMeasure[i]) != std::wstring::npos)
+                posUnitMeasure = sFont.find(sUnitMesure);
+                if (posUnitMeasure != std::wstring::npos)
                 {
-                    nPos = sFont.find(arUnitMeasure[i]);
-                    sUnitMeasure = arUnitMeasure[i];
-                    if (isdigit(sFont[nPos - 1]) || sFont[nPos - 1] == L'.')
+                    sTempUnitMeasure = sUnitMesure;
+                    wchar_t wc = sFont[posUnitMeasure - 1];
+
+                    if (iswdigit(wc) || wc == L'.')
                         break;
                     else
                     {
-                        nPos = 0;
-                        sUnitMeasure = L"";
+                        posUnitMeasure = 0;
+                        sTempUnitMeasure = L"";
                     }
                 }
             }
 
-            if (nPos == 0)
+            if (posUnitMeasure == 0)
             {
                 std::wstring sValue;
-                for (int  i = sFont.length() - 1; i >= 0; i--)
+                for (int  i = sFont.length() - 1; i >= 0; --i)
                 {
-                    if (iswdigit(sFont[i]))
+                    wchar_t wc = sFont[i];
+
+                    if (iswdigit(wc))
                     {
-                        while (iswdigit(sFont[i]) && i >= 0)
+                        while (iswdigit(wc) && i >= 0)
                         {
-                            sValue = sValue + sFont[i];
-                            i--;
+                            sValue += wc;
+                            --i;
                         }
                         break;
                     }
@@ -383,19 +447,19 @@ namespace NSCSS
                 if (!sValue.empty())
                     return sValue;
             }
-            else if (nPos != 0)
+            else if (posUnitMeasure != 0)
             {
                 int num = 0;
                 std::wstring sValue;
-                while ((nPos - num) > 0 &&
-                       (isdigit(sFont[nPos - num]) ||
-                        sFont[nPos - num] == '.'))
+                while ((posUnitMeasure - num) > 0 &&
+                       (isdigit(sFont[posUnitMeasure - num]) ||
+                        sFont[posUnitMeasure - num] == '.'))
                 {
-                    sValue = sFont[nPos - num] + sValue;
+                    sValue = sFont[posUnitMeasure - num] + sValue;
                     num++;
                 }
                 if (!sValue.empty())
-                    return sValue + sUnitMeasure;
+                    return sValue + sTempUnitMeasure;
             }
 
             return L"";
@@ -430,19 +494,21 @@ namespace NSCSS
 
             std::vector<std::wstring> arValues = {L"italic", L"oblique"};
 
-            for (size_t i = 0; i < arValues.size(); i++)
-                if (sFont.find(arValues[i]))
-                    return arValues[i];
+            for (std::wstring sValue : arValues)
+                if (sFont.find(sValue))
+                    return sValue;
 
-            if (isdigit(sFont[0]))
+            if (iswdigit(sFont[0]))
                 return L"";
 
             std::wstring sValue;
-            if (sFont.find(L" ") != std::wstring::npos)
-                sValue = sFont.substr(0, sFont.find(L" "));
+            auto posSpace = sFont.find(L' ');
+
+            if (posSpace != std::wstring::npos)
+                sValue = sFont.substr(0, posSpace);
 
             if(!sValue.empty())
-                return sValue;
+                return L"";
 
             return L"";
         }
@@ -467,18 +533,22 @@ namespace NSCSS
                 return L"";
 
             std::wstring sValue;
-            if (sFont.find(L" ") != std::wstring::npos && !isdigit(sFont[0]))
-                sValue = sFont.substr(sFont.find(L" ") + 1);
+            auto posSpace = sFont.find(L' ');
+
+            if (posSpace != std::wstring::npos && !iswdigit(sFont[0]))
+                sValue = sFont.substr(posSpace + 1);
             else
                 return L"";
 
-            if (sValue.find(L" ") != std::wstring::npos && !isdigit(sValue[0]))
-                sValue = sValue.substr(0, sFont.find(L" "));
+            posSpace = sValue.find(L' ');
+
+            if (posSpace != std::wstring::npos && !iswdigit(sValue[0]))
+                sValue = sValue.substr(0, posSpace);
             else
                 return L"";
 
             if(!sValue.empty())
-                return sValue;
+                return L"";
 
             return L"";
         }
@@ -499,31 +569,37 @@ namespace NSCSS
             const std::vector<std::wstring> arValues = {L"bold",   L"bolder",
                                                         L"lighter"};
 
-            for (size_t i = 0; i < arValues.size(); i++)
-                if (sFont.find(arValues[i]))
-                    return arValues[i];
+            for (std::wstring sValue : arValues)
+                if (sFont.find(sValue))
+                    return sValue;
 
-            if (isdigit(sFont[0]))
+            if (iswdigit(sFont[0]))
                 return L"";
 
             std::wstring sValue = sFont;
-            if (sValue.find(L" ") != std::wstring::npos && !isdigit(sValue[0]))
-                sValue = sValue.substr(sValue.find(L" ") + 1);
+            auto posSpace = sValue.find(L' ');
+
+            if (posSpace != std::wstring::npos && !iswdigit(sValue[0]))
+                sValue = sValue.substr(posSpace + 1);
             else
                 return L"";
 
-            if (sValue.find(L" ") != std::wstring::npos && !isdigit(sValue[0]))
-                sValue = sValue.substr(sValue.find(L" ") + 1);
+            posSpace = sValue.find(L' ');
+
+            if (posSpace != std::wstring::npos && !iswdigit(sValue[0]))
+                sValue = sValue.substr(posSpace + 1);
             else
                 return L"";
 
-            if (sValue.find(L" ") != std::wstring::npos && !isdigit(sValue[0]))
-                sValue = sValue.substr(0, sValue.find(L" "));
+            posSpace = sValue.find(L' ');
+
+            if (posSpace != std::wstring::npos && !iswdigit(sValue[0]))
+                sValue = sValue.substr(0, posSpace);
             else
                 return L"";
 
             if(!sValue.empty())
-                return sValue;
+                return L"";
 
             return L"";
         }
@@ -544,22 +620,27 @@ namespace NSCSS
             if (sFont.find(L"/") == std::wstring::npos)
                 return L"";
 
-            int nPos = sFont.find(L"/");
-            std::wstring sValue = sFont.substr(nPos + 1);
-            if (sValue.find(L" ") != std::wstring::npos)
-                sValue = sValue.substr(0, sValue.find(L" ") );
+            auto posSlash = sFont.find(L"/");
 
-            if (isalpha(sValue[sValue.length() - 1]))
+            std::wstring sValue = sFont.substr(posSlash + 1);
+            auto posSpace = sValue.find(L' ');
+
+            if (posSpace != std::wstring::npos)
+                sValue = sValue.substr(0, posSpace);
+
+            if (iswalpha(sValue[sValue.length() - 1]))
                 return sValue;
 
-            nPos = sFont.find(sValue) + sValue.length();
+            posSpace = sFont.find(sValue) + sValue.length();
             sValue += L" ";
-            while (nPos < (int)sFont.length() &&
-                   isalpha(sFont[nPos]))
+
+            while (posSpace < sFont.length() &&
+                   iswalpha(sFont[posSpace]))
             {
-                sValue += sFont[nPos];
-                nPos++;
+                sValue += sFont[posSpace];
+                ++posSpace;
             }
+
             return sValue;
 
         }
@@ -570,16 +651,21 @@ namespace NSCSS
             std::vector<std::wstring> arFontNames;
 
             if (sFontNames.empty())
-                return arFontNames;
+                return {};
 
-            sFontNames = sFontNames.substr(0, sFontNames.find_last_of(L","));
+            auto posLastComma = sFontNames.find_last_of(L',');
+
+            if (posLastComma != std::wstring::npos)
+                sFontNames = sFontNames.substr(0, posLastComma);
+
             std::wstring sTemp;
-            for (int i = 0; i < (int)sFontNames.length(); i++)
-            {
-                if (sFontNames[i] != L',' && sFontNames[i] != L' ')
-                    sTemp += sFontNames[i];
 
-                if (sFontNames[i] == L',')
+            for (wchar_t wc : sFontNames)
+            {
+                if (wc != L',' && wc != L' ')
+                    sTemp += wc;
+
+                if (wc == L',')
                 {
                     arFontNames.push_back(sTemp);
                     sTemp.clear();
@@ -637,11 +723,12 @@ namespace NSCSS
             std::vector<std::wstring> arValues;
 
             std::wstring sTemp;
-            for (int  i = 0; i < (int)sValue.length(); i++)
-            {
-                sTemp += sValue[i];
 
-                if (sValue[i] == L' ')
+            for (wchar_t wc : sValue)
+            {
+                sTemp += wc;
+
+                if (wc == L' ')
                 {
                     arValues.push_back(sTemp);
                     sTemp.clear();
@@ -679,11 +766,12 @@ namespace NSCSS
             std::vector<std::wstring> arValues;
 
             std::wstring sTemp;
-            for (int  i =0; i < (int)sValue.length(); i++)
-            {
-                sTemp += sValue[i];
 
-                if (sValue[i] == L' ')
+            for (wchar_t wc : sValue)
+            {
+                sTemp += wc;
+
+                if (wc == L' ')
                 {
                     arValues.push_back(sTemp);
                     sTemp.clear();
@@ -717,16 +805,18 @@ namespace NSCSS
             std::vector<std::wstring> arValues;
 
             std::wstring sTemp;
-            for (int  i =0; i < (int)sValue.length(); i++)
-            {
-                sTemp += sValue[i];
 
-                if (sValue[i] == L' ')
+            for (wchar_t wc : sValue)
+            {
+                sTemp += wc;
+
+                if (wc == L' ')
                 {
                     arValues.push_back(sTemp);
                     sTemp.clear();
                 }
             }
+
             if (!sTemp.empty())
                 arValues.push_back(sTemp);
 
@@ -756,11 +846,12 @@ namespace NSCSS
             std::vector<std::wstring> arValues;
 
             std::wstring sTemp;
-            for (int  i =0; i < (int)sValue.length(); i++)
-            {
-                sTemp += sValue[i];
 
-                if (sValue[i] == L' ')
+            for (wchar_t wc : sValue)
+            {
+                sTemp += wc;
+
+                if (wc == L' ')
                 {
                     arValues.push_back(sTemp);
                     sTemp.clear();
@@ -825,11 +916,12 @@ namespace NSCSS
             std::vector<std::wstring> arValues;
 
             std::wstring sTemp;
-            for (int  i =0; i < (int)sValue.length(); i++)
-            {
-                sTemp += sValue[i];
 
-                if (sValue[i] == L' ')
+            for (wchar_t wc : sValue)
+            {
+                sTemp += wc;
+
+                if (wc == L' ')
                 {
                     arValues.push_back(sTemp);
                     sTemp.clear();
@@ -859,16 +951,18 @@ namespace NSCSS
             std::vector<std::wstring> arValues;
 
             std::wstring sTemp;
-            for (int  i =0; i < (int)sValue.length(); i++)
-            {
-                sTemp += sValue[i];
 
-                if (sValue[i] == L' ')
+            for (wchar_t wc : sValue)
+            {
+                sTemp += wc;
+
+                if (wc == L' ')
                 {
                     arValues.push_back(sTemp);
                     sTemp.clear();
                 }
             }
+
             if (!sTemp.empty())
                 arValues.push_back(sTemp);
 
@@ -897,16 +991,18 @@ namespace NSCSS
             std::vector<std::wstring> arValues;
 
             std::wstring sTemp;
-            for (int  i =0; i < (int)sValue.length(); i++)
-            {
-                sTemp += sValue[i];
 
-                if (sValue[i] == L' ')
+            for (wchar_t wc : sValue)
+            {
+                sTemp += wc;
+
+                if (wc == L' ')
                 {
                     arValues.push_back(sTemp);
                     sTemp.clear();
                 }
             }
+
             if (!sTemp.empty())
                 arValues.push_back(sTemp);
 
@@ -933,16 +1029,18 @@ namespace NSCSS
             std::vector<std::wstring> arValues;
 
             std::wstring sTemp;
-            for (int  i =0; i < (int)sValue.length(); i++)
-            {
-                sTemp += sValue[i];
 
-                if (sValue[i] == L' ')
+            for (wchar_t wc : sValue)
+            {
+                sTemp += wc;
+
+                if (wc == L' ')
                 {
                     arValues.push_back(sTemp);
                     sTemp.clear();
                 }
             }
+
             if (!sTemp.empty())
                 arValues.push_back(sTemp);
 
@@ -990,9 +1088,15 @@ namespace NSCSS
                 return m_mStyle[L"background-color"];
 
             std::wstring sBackground = GetBackground();
-            if (!sBackground.empty() && sBackground.find(L'#') != std::wstring::npos)
+            auto posLattice = sBackground.find(L'#');
+
+            if (!sBackground.empty() && posLattice != std::wstring::npos)
             {
-                return sBackground.substr(sBackground.find(L"#"), sBackground.find(sBackground.find(L"#"), L' '));
+                auto posSpace = sBackground.find(L' ', posLattice);
+                if (posSpace != std::wstring::npos)
+                    return sBackground.substr(posLattice, posSpace);
+                else
+                    sBackground.substr(posLattice);
             }
             return L"";
         }
@@ -1001,6 +1105,7 @@ namespace NSCSS
         {
             if (m_mStyle.find(L"color") != m_mStyle.cend())
                 return m_mStyle[L"color"];
+
             return L"";
         }
 
@@ -1008,6 +1113,7 @@ namespace NSCSS
         {
             if (m_mStyle.find(L"border-bottom-color") != m_mStyle.cend())
                 return m_mStyle[L"border-bottom-color"];
+
             return L"";
         }
 
@@ -1015,6 +1121,7 @@ namespace NSCSS
         {
             if (m_mStyle.find(L"border-left-color") != m_mStyle.cend())
                 return m_mStyle[L"border-left-color"];
+
             return L"";
         }
 
@@ -1022,6 +1129,7 @@ namespace NSCSS
         {
             if (m_mStyle.find(L"border-right-color") != m_mStyle.cend())
                 return m_mStyle[L"border-right-color"];
+
             return L"";
         }
 
@@ -1029,6 +1137,7 @@ namespace NSCSS
         {
             if (m_mStyle.find(L"outline-color") != m_mStyle.cend())
                 return m_mStyle[L"outline-color"];
+
             return L"";
         }
 
@@ -1036,12 +1145,12 @@ namespace NSCSS
         {
             if (m_mStyle.find(L"column-rule-color") != m_mStyle.cend())
                 return m_mStyle[L"column-rule-color"];
+
             return L"";
         }
 
         std::wstring CCompiledStyle::GetBackground()
         {
-            std::wstring sBackground;
             if (m_mStyle.find(L"background") != m_mStyle.cend())
                 return  m_mStyle[L"background"];
 
@@ -1053,6 +1162,7 @@ namespace NSCSS
         {
             if (m_mStyle.find(L"text-align") != m_mStyle.cend())
                 return m_mStyle[L"text-align"];
+
             return L"";
         }
 
@@ -1060,6 +1170,7 @@ namespace NSCSS
         {
             if (m_mStyle.find(L"text-indent") != m_mStyle.cend())
                 return m_mStyle[L"text-indent"];
+
             return L"";
         }
 
@@ -1067,6 +1178,7 @@ namespace NSCSS
         {
             if (m_mStyle.find(L"text-decoration") != m_mStyle.cend())
                 return m_mStyle[L"text-decoration"];
+
             return L"";
         }
 

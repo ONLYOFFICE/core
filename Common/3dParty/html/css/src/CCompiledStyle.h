@@ -17,29 +17,34 @@ namespace NSCSS
         std::vector<std::wstring> m_arParentsStyles;
     public:
         CCompiledStyle();
-        CCompiledStyle(const std::map<std::wstring, std::wstring> mStyle);
+        CCompiledStyle(const std::map<std::wstring, std::wstring>& mStyle);
         CCompiledStyle(const CCompiledStyle& oStyle);
 
         ~CCompiledStyle();
 
-        std::map<std::wstring, std::wstring> GetStyleMap() const;
+        const std::map<std::wstring, std::wstring>& GetStyleMap() const;
         std::wstring GetStyleW() const;
         std::string GetStyle() const;
 
-        size_t GetSize() const;
+        const size_t& GetSize() const;
         bool Empty() const;
         void Clear();
 
-        void AddPropSel(const std::wstring sProperty, const std::wstring sValue);
-        void InsertStyle(const std::map<std::wstring, std::wstring> mStyle);
-        void SetStyle(const std::map<std::wstring, std::wstring> mStyle);
-        void AddStyle(const std::wstring sStyle);
-        void AddParent(const std::wstring sParentName);
+        void AddPropSel(const std::wstring& sProperty, const std::wstring& sValue);
+        void InsertStyle(const std::map<std::wstring, std::wstring>& mStyle);
+        void SetStyle(const std::map<std::wstring, std::wstring>& mStyle);
+        void AddStyle(const std::wstring& sStyle);
+        void AddParent(const std::wstring& sParentName);
 
         std::vector<std::wstring> GetParentsName() const;
 
-        void SetID(const std::wstring sId);
-        std::wstring GetId() const;
+        void SetID(const std::wstring& sId);
+        const std::wstring& GetId() const;
+
+        const std::map<std::wstring, std::wstring>::iterator& GetBegin();
+        const std::map<std::wstring, std::wstring>::iterator& GetEnd();
+
+        const double GetWeidth();
 
         /* FONT */
         std::wstring GetFont();
@@ -119,7 +124,73 @@ namespace NSCSS
         CCompiledStyle& operator-= (const CCompiledStyle& oElement);
         CCompiledStyle& operator= (const CCompiledStyle& oElement);
 //        CCompiledStyle& operator= (const CCompiledStyle* oElement);
-        bool operator== (const CCompiledStyle& oElement);
+//        bool operator== (const CCompiledStyle& oElement);
+
+        friend bool operator== (const CCompiledStyle& oFirst, const CCompiledStyle& oSecond)
+        {
+            std::wstring sThisName = oFirst.m_sId;
+
+            auto posDash = sThisName.find(L'-');
+
+            if (posDash != std::wstring::npos)
+                sThisName = sThisName.substr(0, posDash);
+
+            auto posLattice = sThisName.find(L'#');
+
+            if (posLattice != std::wstring::npos)
+                sThisName = sThisName.substr(0, posLattice);
+
+            auto posPoint = sThisName.find(L'.');
+
+            if (posPoint != std::wstring::npos)
+                sThisName = sThisName.substr(0, posPoint);
+
+            std::wstring sElementName = oSecond.m_sId;
+
+            posDash = sElementName.find(L'-');
+
+            if (posDash != std::wstring::npos)
+                sElementName = sElementName.substr(0, posDash);
+
+            posLattice = sElementName.find(L'#');
+
+            if (posLattice != std::wstring::npos)
+                sElementName = sElementName.substr(0, posLattice);
+
+            posPoint = sElementName.find(L'.');
+
+            if (posPoint != std::wstring::npos)
+                sElementName = sElementName.substr(0, posPoint);
+
+            if (sThisName != sElementName)
+                return false;
+
+            if (oFirst.m_arParentsStyles.size() != oSecond.m_arParentsStyles.size())
+                return false;
+
+            for (size_t i = 0; i < oFirst.m_arParentsStyles.size(); i++)
+                if (oFirst.m_arParentsStyles[i] != oSecond.m_arParentsStyles[i])
+                    return false;
+
+            if (oFirst.m_mStyle.size() != oSecond.m_mStyle.size())
+                return false;
+
+            auto iterLeft = oFirst.m_mStyle.begin();
+            auto iterRight = oSecond.m_mStyle.begin();
+
+            while (iterLeft != oFirst.m_mStyle.cend())
+            {
+                if (iterLeft->first != iterRight->first ||
+                    iterLeft->second != iterRight->second)
+                    return false;
+
+                iterLeft++;
+                iterRight++;
+            }
+
+            return true;
+        }
+
         bool operator!= (const CCompiledStyle& oElement);
         bool operator> (const CCompiledStyle& oElement);
         bool operator< (const CCompiledStyle& oElement);

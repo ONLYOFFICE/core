@@ -18,12 +18,10 @@ bool IsDigit(std::wstring sValue)
 
 CXmlElement::CXmlElement()
 {
-    Clear();
 }
 
 CXmlElement::CXmlElement(std::wstring sNameDefaultElement)
 {
-    Clear();
     CreateDefaultElement(sNameDefaultElement);
 }
 
@@ -113,6 +111,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring sNameDefaultElement)
         SetBasedOn(L"normal");
         SetLink(L"title4-c");
         SetQFormat(true);
+        SetB(true);
         SetUnhideWhenUsed(true);
         SetColor(L"232323");
         SetSz(L"32");
@@ -148,6 +147,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring sNameDefaultElement)
         SetQFormat(true);
         SetUnhideWhenUsed(true);
         SetI(true);
+        SetB(true);
         SetColor(L"232323");
         SetSz(L"28");
         SetKeepLines(true);
@@ -637,8 +637,7 @@ CXmlElement& CXmlElement::operator+=(const CXmlElement &oElement)
 
 CXmlElement& CXmlElement::operator=(const CXmlElement &oElement)
 {
-    Clear();
-
+//    Clear();
     m_sType                 = oElement.m_sType;
     m_sStyleId              = oElement.m_sStyleId;
     m_sDefault              = oElement.m_sDefault;
@@ -941,17 +940,17 @@ std::wstring CXmlElement::GetRStyle() const
     return L"";
 }
 
-std::wstring CXmlElement::GetBasedOn() const
+const std::wstring& CXmlElement::GetBasedOn() const
 {
     return m_sBasedOn;
 }
 
-std::wstring CXmlElement::GetStyleId() const
+const std::wstring& CXmlElement::GetStyleId() const
 {
     return m_sStyleId;
 }
 
-std::wstring CXmlElement::GetName() const
+const std::wstring& CXmlElement::GetName() const
 {
     return m_sName;
 }

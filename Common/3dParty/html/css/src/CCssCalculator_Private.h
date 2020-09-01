@@ -108,19 +108,19 @@ namespace NSCSS
         std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> GetDeclarations(const std::wstring& sSelector) const;
 
         CCompiledStyle GetCompiledStyle(const std::vector<std::string> arSelectors, const UnitMeasure unitMeasure = Default);
-        CCompiledStyle GetCompiledStyle(const CNode& oNode, const std::vector<CNode>& oParents = std::vector<CNode>(), const UnitMeasure unitMeasure = Default);
+        CCompiledStyle GetCompiledStyle(const CNode& oNode, const std::vector<CNode>& oParents = std::vector<CNode>(), const UnitMeasure& unitMeasure = Default);
 
-        void AddStyle(const std::vector<std::string> sSelectors, const std::string& sStyle);
+        void AddStyle(const std::vector<std::string>& sSelectors, const std::string& sStyle);
         void AddStyles(const std::string& sStyle);
         void AddStyles(const std::wstring& sStyle);
         void AddStylesFromFile(const std::wstring& sFileName);
 
-        void SetUnitMeasure(const UnitMeasure nType);
-        void SetDpi(const int nValue);
+        void SetUnitMeasure(const UnitMeasure& nType);
+        void SetDpi(const int& nValue);
 
-        UnitMeasure GetUnitMeasure() const;
-        std::wstring GetEncoding() const;
-        int GetDpi() const;
+        const UnitMeasure& GetUnitMeasure() const;
+        const std::wstring& GetEncoding() const;
+        const int& GetDpi() const;
 
         void Print() const;
         void Clear();

@@ -44,7 +44,7 @@ CDocumentStyle::CDocumentStyle()
         return sStyle;
     }
 
-    std::wstring CDocumentStyle::GetId() const
+    const std::wstring& CDocumentStyle::GetId() const
     {
         return m_sId;
     }
@@ -69,14 +69,15 @@ CDocumentStyle::CDocumentStyle()
         m_sId = sId;
     }
 
-    CXmlElement CDocumentStyle::CombineStandardStyles(const std::vector<std::wstring> arStandartedStyles)
+    CXmlElement CDocumentStyle::CombineStandardStyles(const std::vector<std::wstring>& arStandartedStyles)
     {
+        CXmlElement oXmlElement;
+
         if (arStandartedStyles.size() == 0)
         {
-            CXmlElement oEmpty;
-            oEmpty.Clear();
-            return oEmpty;
+            return oXmlElement;
         }
+
         std::vector<std::wstring> arStyles;
 
         for (std::wstring sStyleName : arStandartedStyles)
@@ -87,9 +88,6 @@ CDocumentStyle::CDocumentStyle()
                 arStyles.push_back(sStyleName);
             }
         }
-
-        CXmlElement oXmlElement;
-        oXmlElement.Clear();
 
         if (arStyles.empty())
             return oXmlElement;
@@ -118,18 +116,16 @@ CDocumentStyle::CDocumentStyle()
             oXmlElement.SetName(sId);
             oXmlElement.SetStyleId(sId);
         }
-        else oXmlElement.Clear();
 
         return oXmlElement;
     }
 
-    CXmlElement CDocumentStyle::CreateStandardStyle(const std::wstring sNameStyle)
+    CXmlElement CDocumentStyle::CreateStandardStyle(const std::wstring& sNameStyle)
     {
         CXmlElement oXmlElement;
 
         if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sNameStyle) == m_arStandardStyles.cend())
         {
-            oXmlElement.Clear();
             return oXmlElement;
         }
 
@@ -137,7 +133,7 @@ CDocumentStyle::CDocumentStyle()
 
         oXmlElement.CreateDefaultElement(sNameStyle);
 
-        if (sNameStyle[0] == L'h' && isdigit(sNameStyle[1]) && sNameStyle.length() == 2)
+        if (sNameStyle[0] == L'h' && iswdigit(sNameStyle[1]) && sNameStyle.length() == 2)
         {
             std::wstring sCharName = L"title";
             sCharName += sNameStyle[1];
@@ -176,12 +172,16 @@ CDocumentStyle::CDocumentStyle()
     {
         std::wstring sName = oStyle.GetId();
 
-        if (sName.find(L'-') != std::wstring::npos)
-            sName = sName.substr(0, sName.find(L'-'));
-        if (sName.find(L'#') != std::wstring::npos)
-            sName = sName.substr(0, sName.find(L'#'));
-        if (sName.find(L'.') != std::wstring::npos)
-            sName = sName.substr(0, sName.find(L'.'));
+        auto posDash = sName.find(L'-');
+        auto posLattice = sName.find(L'#');
+        auto posPoint = sName.find(L'.');
+
+        if (posDash != std::wstring::npos)
+            sName = sName.substr(0, posDash);
+        if (posLattice != std::wstring::npos)
+            sName = sName.substr(0, posLattice);
+        if (posPoint != std::wstring::npos)
+            sName = sName.substr(0, posPoint);
 
         CXmlElement oXmlElement;
         CXmlElement oStandardXmlElement;
@@ -242,8 +242,11 @@ CDocumentStyle::CDocumentStyle()
                     if (bIsPStyle)
                         m_sStyle = oTempXmlElement.GetPStyle();
                     else
+                    {
+                        oTempXmlElement.SetStyleId(oTempXmlElement.GetStyleId() + L"-c");
+                        oTempXmlElement.SetType(L"character");
                         m_sStyle += oTempXmlElement.GetRStyle();
-
+                    }
                     oXmlElement.SetBasedOn(oTempXmlElement.GetStyleId());
                 }
             }
@@ -259,8 +262,11 @@ CDocumentStyle::CDocumentStyle()
                 if (bIsPStyle)
                     m_sStyle = oStandardXmlElement.GetPStyle();
                 else
+                {
+                    oStandardXmlElement.SetStyleId(oStandardXmlElement.GetStyleId() + L"-c");
+                    oStandardXmlElement.SetType(L"character");
                     m_sStyle += oStandardXmlElement.GetRStyle();
-
+                }
                 m_arStandardStylesUsed.push_back(oStandardXmlElement.GetStyleId());
 
                 oXmlElement.SetBasedOn(oStandardXmlElement.GetStyleId());
@@ -278,7 +284,16 @@ CDocumentStyle::CDocumentStyle()
                 {
                     m_arStandardStylesUsed.push_back(oParentStyle.GetStyleId());
 //                    std::sort(m_arStandardStylesUsed.begin(), m_arStandardStylesUsed.end());
-                    m_sStyle = oParentStyle.GetStyle();
+
+                    if (bIsPStyle)
+                        m_sStyle = oParentStyle.GetPStyle();
+                    else
+                    {
+                        oParentStyle.SetStyleId(oParentStyle.GetStyleId() + L"-c");
+                        oParentStyle.SetType(L"character");
+                        m_sStyle += oParentStyle.GetRStyle();
+                    }
+//                    m_sStyle = oParentStyle.GetStyle();
                     oXmlElement.SetBasedOn(oParentStyle.GetStyleId());
                 }
             }
@@ -320,11 +335,7 @@ CDocumentStyle::CDocumentStyle()
         if (oStyle.Empty())
             return;
 
-        if (!oStyle.GetTextAlign().empty())
-        {
-            std::wstring sTextAlign = oStyle.GetTextAlign();
-            oXmlElement.SetJc(oStyle.GetTextAlign());
-        }
+        oXmlElement.SetJc(oStyle.GetTextAlign());
 
         std::wstring sIndValue;
         if (!oStyle.GetTextIndent().empty() && oStyle.GetId().find(L"table") == std::wstring::npos)
@@ -343,10 +354,7 @@ CDocumentStyle::CDocumentStyle()
             sIndValue += L"w:right=\"" + std::to_wstring((int)floor(dRightValue + 0.5)) + L"\"";
         }
 
-        if (!sIndValue.empty())
-        {
-            oXmlElement.SetInd(sIndValue);
-        }
+        oXmlElement.SetInd(sIndValue);
 
         std::wstring sSpacingValue;
 
@@ -362,13 +370,13 @@ CDocumentStyle::CDocumentStyle()
             sSpacingValue += L"w:before=\"" + std::to_wstring((int)floor(dBeforeValue + 0.5)) + L"\" ";
         }
 
-        if (!oStyle.GetLineHeight().empty())
-        {
-            double dLineHeight = wcstod(oStyle.GetLineHeight().c_str(), NULL);
-            dLineHeight *= 11;
-            sSpacingValue += L"w:line=\"" + std::to_wstring((int)floor(dLineHeight + 0.5)) + L"\" ";
-            sSpacingValue += L"w:lineRule=\"auto\"";
-        }
+//        if (!oStyle.GetLineHeight().empty())
+//        {
+//            double dLineHeight = wcstod(oStyle.GetLineHeight().c_str(), NULL);
+//            dLineHeight *= 22;
+//            sSpacingValue += L"w:line=\"" + std::to_wstring((int)floor(dLineHeight + 0.5)) + L"\" ";
+//            sSpacingValue += L"w:lineRule=\"auto\"";
+//        }
 
         if (!sSpacingValue.empty())
         {
@@ -376,10 +384,7 @@ CDocumentStyle::CDocumentStyle()
             oXmlElement.SetContextualSpacing(true);
         }
 
-        if (!oStyle.GetBackgroundColor().empty())
-        {
-            oXmlElement.SetShd(oStyle.GetBackgroundColor());
-        }
+        oXmlElement.SetShd(oStyle.GetBackgroundColor());
 
         if (!oStyle.GetBorder().empty())
         {
@@ -397,8 +402,7 @@ CDocumentStyle::CDocumentStyle()
         if (oStyle.Empty())
             return;
 
-        if (!oStyle.GetColor().empty())
-            oXmlElement.SetColor(oStyle.GetColor());
+        oXmlElement.SetColor(oStyle.GetColor());
 
         if (!oStyle.GetFontSize().empty())
         {
@@ -414,28 +418,12 @@ CDocumentStyle::CDocumentStyle()
             oXmlElement.SetRFonts(sFontFamily);
         }
 
-        if (!oStyle.GetFontWeight().empty())
-        {
-            std::wstring sFontWeight = oStyle.GetFontWeight();
-            if (sFontWeight == L"bold")
-                oXmlElement.SetB(true);
-        }
+        if (oStyle.GetFontWeight() == L"bold")
+            oXmlElement.SetB(true);
 
-        if (!oStyle.GetFontStyle().empty())
+        if (oStyle.GetFontStyle() == L"italic")
         {
-            std::wstring sFontStyle = oStyle.GetFontStyle();
-            if (sFontStyle == L"italic")
-            {
-                oXmlElement.SetI(true);
-            }
-        }
-
-        if (!oStyle.GetBorder().empty() && oStyle.GetId().find(L"caption") == std::wstring::npos)
-        {
-            oXmlElement.SetTopBorder(L"true");
-            oXmlElement.SetLeftBorder(L"true");
-            oXmlElement.SetBottomBorder(L"true");
-            oXmlElement.SetRightBorder(L"true");
+            oXmlElement.SetI(true);
         }
 
         std::wstring sSpacingValue;
@@ -466,10 +454,7 @@ CDocumentStyle::CDocumentStyle()
             oXmlElement.SetContextualSpacing(true);
         }
 
-        if (!oStyle.GetColor().empty())
-        {
-            oXmlElement.SetColor(oStyle.GetColor());
-        }
+        oXmlElement.SetColor(oStyle.GetColor());
     }
 
     void CDocumentStyle::WriteRStyle(NSCSS::CCompiledStyle &oStyle)
@@ -481,15 +466,25 @@ CDocumentStyle::CDocumentStyle()
             return;
         }
 
-        for (auto oItem : m_arStyleUsed)
+//        for (auto oItem : m_arStyleUsed)
+//        {
+//            if(!oItem.second && oItem.first == oStyle)
+//            {
+//                m_sId = oItem.first.GetId();
+//                m_sStyle.clear();
+//                return;
+//            }
+//        }
+
+        auto oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), std::make_pair(oStyle, false));
+
+        if (oItem != m_arStyleUsed.cend())
         {
-            if(oItem.first == oStyle && !oItem.second)
-            {
-                m_sId = oItem.first.GetId();
-                m_sStyle.clear();
-                return;
-            }
+            m_sId = oItem->first.GetId();
+            m_sStyle.clear();
+            return;
         }
+
 
         CXmlElement oXmlElement;
         SetRStyle(oStyle, oXmlElement);
@@ -512,14 +507,24 @@ CDocumentStyle::CDocumentStyle()
             m_sStyle.clear();
             return;
         }
-        for (auto oItem : m_arStyleUsed)
+
+//        for (auto oItem : m_arStyleUsed)
+//        {
+//            if(oItem.second && oItem.first == oStyle)
+//            {
+//                m_sId = oItem.first.GetId();
+//                m_sStyle.clear();
+//                return;
+//            }
+//        }
+
+        auto oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), std::make_pair(oStyle, true));
+
+        if (oItem != m_arStyleUsed.cend())
         {
-            if(oItem.first == oStyle && oItem.second)
-            {
-                m_sId = oItem.first.GetId();
-                m_sStyle.clear();
-                return;
-            }
+            m_sId = oItem->first.GetId();
+            m_sStyle.clear();
+            return;
         }
 
         CXmlElement oXmlElement;

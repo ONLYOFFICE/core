@@ -15,13 +15,13 @@ class CXmlElement
     std::wstring m_sBasedOn;
     std::wstring m_sLink;
     std::wstring m_sUiPriority;
-    bool m_bQFormat;
-    bool m_bSemiHidden;
-    bool m_bUnhideWhenUsed;
+    bool m_bQFormat = false;
+    bool m_bSemiHidden = false;
+    bool m_bUnhideWhenUsed = false;
 
     // <rPr>
-        bool m_bB;
-        bool m_bI;
+        bool m_bB = false;
+        bool m_bI = false;
         std::wstring m_sU;
         std::wstring m_sRFonts;
         std::wstring m_sColor;
@@ -29,9 +29,9 @@ class CXmlElement
     // </rPr>
 
     // <pPr>
-        bool m_bKeepLines;
-        bool m_bKeepNext;
-        bool m_bContextualSpacing;
+        bool m_bKeepLines = false;
+        bool m_bKeepNext = false;
+        bool m_bContextualSpacing = false;
         std::wstring m_sSpacing;
         std::wstring m_sOutlineLvl;
         std::wstring m_sInd;
@@ -142,9 +142,9 @@ public:
     std::wstring GetRStyle() const;
     std::wstring GetStyle() const;
 
-    std::wstring GetBasedOn() const;
-    std::wstring GetStyleId() const;
-    std::wstring GetName() const;
+    const std::wstring& GetBasedOn() const;
+    const std::wstring& GetStyleId() const;
+    const std::wstring& GetName() const;
 
     CXmlElement& operator+=(const CXmlElement& oElement);
     CXmlElement& operator= (const CXmlElement& oelement);

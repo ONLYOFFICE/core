@@ -107,17 +107,18 @@ public:
 
             IRecord* pRecord	=	CreateByType ( oRec );
 
-//            if ( RT_ProgTags == oRec.RecType )
-//			{
-//                m_pSlideProgTagsContainer	=	new	CRecordSlideProgTagsContainer ();
-//				m_pSlideProgTagsContainer->ReadFromStream(oRec, pStream);
-//			}
-//			else
-//			{
+            if ( RT_ProgTags == oRec.RecType )
+            {
+                m_pSlideProgTagsContainer =
+                        dynamic_cast<CRecordSlideProgTagsContainer*>(pRecord);
+                m_pSlideProgTagsContainer->ReadFromStream(oRec, pStream);
+            }
+            else
+            {
 
 				pRecord->ReadFromStream(oRec, pStream);
 				m_arRecords.push_back(pRecord);
-//			}
+            }
 		
 			lCurLen += (8 + oRec.RecLen);
 		}

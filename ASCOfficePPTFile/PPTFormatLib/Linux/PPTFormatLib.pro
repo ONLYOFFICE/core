@@ -163,6 +163,7 @@ HEADERS += \
     ../Records/OutlineTextRefAtom.h \
     ../Records/PersistDirectoryAtom.h \
     ../Records/PlaceHolderAtom.h \
+    ../Records/ProgStringTagContainer.h \
     ../Records/RecordsIncluder.h \
     ../Records/RoundTripColorMappingAtom.h \
     ../Records/RoundTripCompositeMainMasterId12Atom.h \

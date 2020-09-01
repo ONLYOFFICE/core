@@ -43,7 +43,7 @@
 #include "SlideFlags10Atom.h"
 #include "Comment10Container.h"
 #include "SlideTime10Atom.h"
-
+#include "../ProgStringTagContainer.h"
 
 #define TN_PPT9 L"___PPT9"
 #define TN_PPT10 L"___PPT10"
@@ -251,8 +251,9 @@ public:
     virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
     {
         m_oHeader			=	oHeader;
+        SRecordHeader ReadHeader;
 
-        StreamUtils::StreamSkip(m_oHeader.RecLen, pStream);
+        ReadHeader.ReadFromStream(pStream);
         m_oRoundTripHeaderFooterDefaultsAtom.ReadFromStream(m_oHeader, pStream);
     }
 
@@ -266,38 +267,58 @@ public:
 class CRecordSlideProgBinaryTagSubContainerOrAtom : public CUnknownRecord
 {
 public:
-    CRecordSlideProgBinaryTagSubContainerOrAtom(const CRecordCString tagName) :
-        m_oTagName(tagName)
+    CRecordSlideProgBinaryTagSubContainerOrAtom() :
+        m_pTagName(nullptr), m_pTagContainer(nullptr)
     {}
+    ~CRecordSlideProgBinaryTagSubContainerOrAtom()
+    {
+        RELEASEOBJECT(m_pTagName);
+        RELEASEOBJECT(m_pTagContainer);
+    }
     void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override
     {
         m_oHeader = oHeader;
+        LONG lPos = 0; StreamUtils::StreamPosition(lPos, pStream);
 
-        SRecordHeader childHeader;
-        if (!childHeader.ReadFromStream(pStream))
-            return;
+        SRecordHeader ReadHeader;
+        ReadHeader.ReadFromStream(pStream);
 
-        if (m_oTagName.m_strText == TN_PPT9) {
-            m_pSlideBinaryTagExtension = new CRecordPP9SlideBinaryTagExtension();
-            dynamic_cast<CRecordPP9SlideBinaryTagExtension*>
-                    (m_pSlideBinaryTagExtension)->ReadFromStream(childHeader, pStream);
-        } else if (m_oTagName.m_strText == TN_PPT10) {
-            m_pSlideBinaryTagExtension = new CRecordPP10SlideBinaryTagExtension();
-            dynamic_cast<CRecordPP10SlideBinaryTagExtension*>
-                    (m_pSlideBinaryTagExtension)->ReadFromStream(childHeader, pStream);
-        } else if (m_oTagName.m_strText == TN_PPT12) {
-            m_pSlideBinaryTagExtension = new CRecordPP12SlideBinaryTagExtension();
-            dynamic_cast<CRecordPP12SlideBinaryTagExtension*>
-                    (m_pSlideBinaryTagExtension)->ReadFromStream(childHeader, pStream);
-        } else
+        if (m_oHeader.RecType == RT_ProgBinaryTag)
         {
-            //todo UnknownBinaryTag
+            m_pTagName = new CRecordCString();
+            m_pTagName->ReadFromStream(ReadHeader, pStream);
+
+            SRecordHeader childHeader;
+            if (!childHeader.ReadFromStream(pStream))
+                return;
+
+            if (m_pTagName->m_strText == TN_PPT9) {
+                m_pTagContainer = new CRecordPP9SlideBinaryTagExtension();
+                dynamic_cast<CRecordPP9SlideBinaryTagExtension*>
+                        (m_pTagContainer)->ReadFromStream(childHeader, pStream);
+            } else if (m_pTagName->m_strText == TN_PPT10) {
+                m_pTagContainer = new CRecordPP10SlideBinaryTagExtension();
+                dynamic_cast<CRecordPP10SlideBinaryTagExtension*>
+                        (m_pTagContainer)->ReadFromStream(childHeader, pStream);
+            } else if (m_pTagName->m_strText == TN_PPT12) {
+                m_pTagContainer = new CRecordPP12SlideBinaryTagExtension();
+                dynamic_cast<CRecordPP12SlideBinaryTagExtension*>
+                        (m_pTagContainer)->ReadFromStream(childHeader, pStream);
+            }
+
+        } else if (m_oHeader.RecType == RT_ProgStringTag)
+        {
+            m_pTagContainer = new CRecordProgStringTagContainer();
+            dynamic_cast<CRecordProgStringTagContainer*>
+                    (m_pTagContainer)->ReadFromStream(ReadHeader, pStream);
         }
+        LONG lSeek = lPos + m_oHeader.RecLen;
+        StreamUtils::StreamSeek(lSeek, pStream);
     }
 
 public:
-    CRecordCString  m_oTagName;
-    IRecord*        m_pSlideBinaryTagExtension;
+    CRecordCString* m_pTagName;     // OPTIONAL
+    IRecord*        m_pTagContainer;
 };
 
 class CRecordSlideProgTagsContainer : public CUnknownRecord
@@ -331,20 +352,11 @@ public:
             if ( ReadHeader.ReadFromStream(pStream) == false)
                 break;
             lCurLen +=	8 + ReadHeader.RecLen;
-            CRecordCString oTag;
-            oTag.ReadFromStream(ReadHeader, pStream);
-
-
-            if ( ReadHeader.ReadFromStream(pStream) == false)
-                break;
-            lCurLen +=	8 + ReadHeader.RecLen;
-
-            CRecordSlideProgBinaryTagSubContainerOrAtom* pRecordTag =
-                    new CRecordSlideProgBinaryTagSubContainerOrAtom(oTag);
-            pRecordTag->ReadFromStream(ReadHeader, pStream);
-            m_arrRgChildRec.push_back(pRecordTag);
+            CRecordSlideProgBinaryTagSubContainerOrAtom* pRecord =
+                    new CRecordSlideProgBinaryTagSubContainerOrAtom();
+            pRecord->ReadFromStream(ReadHeader, pStream);
+            m_arrRgChildRec.push_back(pRecord);
         }
-
 
         StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);
     }

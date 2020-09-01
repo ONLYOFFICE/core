@@ -263,4 +263,14 @@ class CRecordTimePointsTypes : public CRecordTimeVariantString
 {
 
 };
+
+class CRecordTagNameAtom : public CRecordTimeVariantString
+{
+
+};
+
+class CRecordTagValueAtom : public CRecordTimeVariantString
+{
+
+};
 }

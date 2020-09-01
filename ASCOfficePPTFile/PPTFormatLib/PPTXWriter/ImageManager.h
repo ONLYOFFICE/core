@@ -34,6 +34,11 @@
 #ifndef DISABLE_FILE_DOWNLOADER
 #include "../../../Common/FileDownloader/FileDownloader.h"
 #endif
+#include <map>
+#include "../../../Common/DocxFormat/Source/Base/Base.h"
+#include "../../../Common/DocxFormat/Source/SystemUtility/File.h"
+#include "../../../ASCOfficePPTXFile/Editor/Drawing/XmlStringWriter.h"
+
 
 namespace PPT_FORMAT
 {
@@ -99,7 +104,7 @@ namespace PPT_FORMAT
 			if (IsNeedDownload(strInput))
 			{
 #ifndef DISABLE_FILE_DOWNLOADER
-				CFileDownloader oDownloader(strInput, TRUE);
+                CFileDownloader oDownloader(strInput, true);
 				if ( oDownloader.DownloadSync() )
 				{
 					return GenerateMedia( oDownloader.GetFilePath(), Template, Indexer, strDefaultExt);

@@ -30,9 +30,6 @@
 #define VALUE2STR(x) VALUE_TO_STRING(x)
 #endif
 
-const std::wstring DoesNotFormParagraph = L" a area b strong bdo bdi big br cite dfn em i var code kbd samp del s img ins mark q rt sup small \
- sub svg basefont button label data object noscript output input time ruby progress hgroup meter span font acronym center abbr ";
-
 // Ячейка таблицы
 struct CTc
 {

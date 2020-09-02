@@ -265,7 +265,7 @@ static std::string mhtTohtml(std::string& sFileContent, const std::wstring& sTmp
                 oRes.WriteString("<style>");
             if(sContentEncoding == "Base64" || sContentEncoding == "base64")
                 oRes.WriteString(Base64ToString(sContent, sCharset));
-            else if(sContentEncoding == "8bit")
+            else if(sContentEncoding == "8bit" || sContentEncoding.empty())
             {
                 if (sCharset != "utf-8" && sCharset != "UTF-8" && !sCharset.empty())
                 {
@@ -331,8 +331,8 @@ static std::string mhtTohtml(std::string& sFileContent, const std::wstring& sTmp
         }
         while(found != std::string::npos)
         {
-            size_t fq = sFile.find_last_of("\"\'", found) + 1;
-            size_t tq = sFile.find_first_of("\"\'", found);
+            size_t fq = sFile.find_last_of("\"\'>", found) + 1;
+            size_t tq = sFile.find_first_of("\"\'<", found);
             sFile.replace(fq, tq - fq, item.second);
             found = sFile.find(sName, fq + item.second.length());
         }

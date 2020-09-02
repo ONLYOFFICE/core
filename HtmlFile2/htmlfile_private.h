@@ -1277,6 +1277,8 @@ private:
                 if(nEndBase == std::wstring::npos)
                     continue;
                 std::wstring sType = sSrcM.substr(nBase, nEndBase - nBase);
+                if(sType == L"octet-stream")
+                    sType = L"jpg";
                 sImageName = sImageId + L"." + sType;
                 NSFile::CFileBinary oImageWriter;
                 if(oImageWriter.CreateFileW(m_sDst + L"/word/media/i" + sImageName))

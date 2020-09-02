@@ -331,13 +331,10 @@ static std::string mhtTohtml(std::string& sFileContent, const std::wstring& sTmp
     for(auto& item : sRes)
     {
         std::string sName = item.first;
-        std::string ssName;
         size_t found = sFile.find(sName);
         size_t sfound = sName.rfind('/');
-        if(sfound != std::string::npos)
-            ssName = sName.substr(0, sfound + 1);
         if(found == std::string::npos && sfound != std::string::npos)
-            found = sFile.find(ssName);
+            found = sFile.find(sName.erase(0, sfound + 1));
         while(found != std::string::npos)
         {
             size_t fq = sFile.find_last_of("\"\'>", found) + 1;
@@ -349,8 +346,6 @@ static std::string mhtTohtml(std::string& sFileContent, const std::wstring& sTmp
             }
             else
                 found = sFile.find(sName, tq);
-            if(found == std::string::npos && sfound != std::string::npos)
-                found = sFile.find(ssName);
         }
     }
     return sFile;

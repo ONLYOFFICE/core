@@ -497,7 +497,6 @@ IRecord* CreateByType(SRecordHeader oHeader)
     CREATE_BY_TYPE(RT_TimeCondition, CRecordTimeConditionAtom)
     CREATE_BY_TYPE(RT_TimeModifier, CRecordTimeModifierAtom)
     CREATE_BY_TYPE(RT_ProgTags, CRecordSlideProgTagsContainer)
-    CREATE_BY_TYPE(RT_Drawing, CRecordDrawingContainer)
 
     CREATE_BY_TYPE(RT_SlideListWithText			, CRecordSlideListWithText)
     CREATE_BY_TYPE(RT_DocumentAtom				, CRecordDocumentAtom)

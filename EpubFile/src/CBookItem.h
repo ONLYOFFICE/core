@@ -26,9 +26,9 @@ public:
     ~CBookItem();
     void Clear();
 
-    bool ReadItem(XmlUtils::CXmlLiteReader &oXmlLiteReader, int depth);
-    std::wstring GetID();
-    std::wstring GetRef();
+    bool ReadItem(XmlUtils::CXmlLiteReader &oXmlLiteReader, const int& depth);
+    const std::wstring GetID() const;
+    const std::wstring GetRef() const;
 };
 
 #endif // CBOOKITEM_H

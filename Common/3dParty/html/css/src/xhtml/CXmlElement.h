@@ -5,6 +5,8 @@
 
 class CXmlElement
 {
+    bool m_bEmpty = false;
+
     std::wstring m_sType;
     std::wstring m_sStyleId;
     std::wstring m_sDefault;
@@ -79,62 +81,62 @@ public:
     void CreateDefaultElement(const std::wstring sNameDefaultElement);
     void Clear();
 
-    void SetType(std::wstring sType);
-    void SetStyleId(std::wstring sStyleId);
-    void SetDefault(std::wstring sDefault);
-    void SetCustomStyle(std::wstring sCustomStyle);
-    void SetS(std::wstring sS);
+    void SetType(const std::wstring sType);
+    void SetStyleId(const std::wstring sStyleId);
+    void SetDefault(const std::wstring sDefault);
+    void SetCustomStyle(const std::wstring sCustomStyle);
+    void SetS(const std::wstring sS);
 
-    void SetName(std::wstring sName);
-    void SetBasedOn(std::wstring sBasedOn);
-    void SetLink(std::wstring sLink);
-    void SetUiPriority(std::wstring sUiPriority);
-    void SetQFormat(bool bQFormat);
-    void SetUnhideWhenUsed(bool bUnhideWhenUsed);
+    void SetName(const std::wstring sName);
+    void SetBasedOn(const std::wstring sBasedOn);
+    void SetLink(const std::wstring sLink);
+    void SetUiPriority(const std::wstring sUiPriority);
+    void SetQFormat(const bool bQFormat);
+    void SetUnhideWhenUsed(const bool bUnhideWhenUsed);
 
     // <rPr>
-        void SetB(bool bB);
-        void SetI(bool bI);
-        void SetU(std::wstring sU);
-        void SetRFonts(std::wstring sRFonts);
-        void SetColor(std::wstring sColor);
-        void SetSz(std::wstring sSz);
+        void SetB(const bool bB);
+        void SetI(const bool bI);
+        void SetU(const std::wstring sU);
+        void SetRFonts(const std::wstring sRFonts);
+        void SetColor(const std::wstring sColor);
+        void SetSz(const std::wstring sSz);
     // </rPr>
 
     // <pPr>
-        void SetKeepLines(bool bKeepLines);
-        void SetKeepNext(bool bKeepNext);
-        void SetContextualSpacing(bool bContextualSpacing);
-        void SetSpacing(std::wstring sSpacing);
-        void SetOutlineLvl(std::wstring sOutlineLvl);
-        void SetInd(std::wstring sInd);
-        void SetJc(std::wstring sJc);
-        void SetShd(std::wstring sShd);
+        void SetKeepLines(const bool bKeepLines);
+        void SetKeepNext(const bool bKeepNext);
+        void SetContextualSpacing(const bool bContextualSpacing);
+        void SetSpacing(const std::wstring sSpacing);
+        void SetOutlineLvl(const std::wstring sOutlineLvl);
+        void SetInd(const std::wstring sInd);
+        void SetJc(const std::wstring sJc);
+        void SetShd(const std::wstring sShd);
 
         // <pBdr>
-            void SetTopBorder(std::wstring sTopBorder);
-            void SetLeftBorder(std::wstring sLeftBorder);
-            void SetBottomBorder(std::wstring sBottomBorder);
-            void SetRightBorder(std::wstring sRightBorder);
+            void SetTopBorder(const std::wstring sTopBorder);
+            void SetLeftBorder(const std::wstring sLeftBorder);
+            void SetBottomBorder(const std::wstring sBottomBorder);
+            void SetRightBorder(const std::wstring sRightBorder);
         // </pBdr>
     // </pPr>
 
     // <tblPr>
-        void SetTblInd(std::wstring sTblInd);
+        void SetTblInd(const std::wstring sTblInd);
         // <tblCellMar>
-            void SetCellTop(std::wstring sCellTop);
-            void SetCellLeft(std::wstring sCellLeft);
-            void SetCellBottom(std::wstring sCellBottom);
-            void SetCellRight(std::wstring sCellRight);
+            void SetCellTop(const std::wstring sCellTop);
+            void SetCellLeft(const std::wstring sCellLeft);
+            void SetCellBottom(const std::wstring sCellBottom);
+            void SetCellRight(const std::wstring sCellRight);
         // <tblCellMar>
 
         // <tblBorders>
-            void SetBorderTop(std::wstring sBorderTop);
-            void SetBorderLeft(std::wstring sBorderLeft);
-            void SetBorderBottom(std::wstring sBorderBottom);
-            void SetBorderRight(std::wstring sBorderRight);
-            void SetBorderInsideH(std::wstring sBorderInsideH);
-            void SetBorderInsideV(std::wstring sBorderInsideV);
+            void SetBorderTop(const std::wstring sBorderTop);
+            void SetBorderLeft(const std::wstring sBorderLeft);
+            void SetBorderBottom(const std::wstring sBorderBottom);
+            void SetBorderRight(const std::wstring sBorderRight);
+            void SetBorderInsideH(const std::wstring sBorderInsideH);
+            void SetBorderInsideV(const std::wstring sBorderInsideV);
         // </tblBorders>
     // </tblPr>
 

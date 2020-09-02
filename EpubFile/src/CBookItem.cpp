@@ -18,7 +18,7 @@ void CBookItem::Clear()
     m_eType = Default;
 }
 
-bool CBookItem::ReadItem(XmlUtils::CXmlLiteReader &oXmlLiteReader, int depth)
+bool CBookItem::ReadItem(XmlUtils::CXmlLiteReader &oXmlLiteReader, const int& depth)
 {
     if (!oXmlLiteReader.IsValid() || oXmlLiteReader.IsEmptyNode())
         return false;
@@ -29,15 +29,19 @@ bool CBookItem::ReadItem(XmlUtils::CXmlLiteReader &oXmlLiteReader, int depth)
             oXmlLiteReader.MoveToFirstAttribute())
         {
             std::wstring sAttributeName = oXmlLiteReader.GetName();
+
             while (!sAttributeName.empty())
             {
-                std::wstring sAttributeValue = oXmlLiteReader.GetText();
+                const std::wstring& sAttributeValue = oXmlLiteReader.GetText();
+
                 if (sAttributeName == L"href")
                 {
-                    if (sAttributeValue.find(L"/") == std::wstring::npos)
+                    const auto& posLastSlash = sAttributeValue.find_last_of(L'/');
+
+                    if (posLastSlash == std::wstring::npos)
                         m_sRef = sAttributeValue;
                     else
-                        m_sRef = sAttributeValue.substr(sAttributeValue.find_last_of(L"/") + 1, sAttributeValue.length());
+                        m_sRef = sAttributeValue.substr(posLastSlash + 1, sAttributeValue.length() - 1);
                 }
                 else if (sAttributeName == L"id")
                     m_sID = sAttributeValue;
@@ -69,12 +73,12 @@ bool CBookItem::ReadItem(XmlUtils::CXmlLiteReader &oXmlLiteReader, int depth)
     return true;
 }
 
-std::wstring CBookItem::GetID()
+const std::wstring CBookItem::GetID() const
 {
     return m_sID;
 }
 
-std::wstring CBookItem::GetRef()
+const std::wstring CBookItem::GetRef() const
 {
     return m_sRef;
 }

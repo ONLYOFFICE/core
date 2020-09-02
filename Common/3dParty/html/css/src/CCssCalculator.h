@@ -25,6 +25,28 @@ namespace NSCSS
         std::wstring m_sId;    // Id тэга
         std::wstring m_sClass; // Класс тэга
         std::wstring m_sStyle; // Стиль тэга
+
+        friend bool operator> (const CNode& oLeftNode, const CNode& oRightNode)
+        {
+            return (oLeftNode.m_sId.length() + oLeftNode.m_sName.length() + oLeftNode.m_sClass.length() + oLeftNode.m_sStyle.length())
+                    >
+                   (oRightNode.m_sId.length() + oRightNode.m_sName.length() + oRightNode.m_sClass.length() + oRightNode.m_sStyle.length());
+        }
+
+        friend bool operator< (const CNode& oLeftNode, const CNode& oRightNode)
+        {
+            return (oLeftNode.m_sId.length() + oLeftNode.m_sName.length() + oLeftNode.m_sClass.length() + oLeftNode.m_sStyle.length())
+                    <
+                   (oRightNode.m_sId.length() + oRightNode.m_sName.length() + oRightNode.m_sClass.length() + oRightNode.m_sStyle.length());
+        }
+
+        friend bool operator== (const CNode& oLeftNode, const CNode& oRightNode)
+        {
+            return (oLeftNode.m_sId == oRightNode.m_sId) &&
+                   (oLeftNode.m_sName == oRightNode.m_sName) &&
+                   (oLeftNode.m_sClass == oRightNode.m_sClass) &&
+                   (oLeftNode.m_sStyle == oRightNode.m_sStyle);
+        }
     };
 
     class CCssCalculator_Private;

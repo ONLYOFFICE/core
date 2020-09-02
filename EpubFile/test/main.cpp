@@ -12,6 +12,7 @@ int main(int argc, char *argv[])
     std::wstring sOutputDirectory = NSFile::GetProcessDirectory() + L"/OutputFiles";
     NSDirectory::CreateDirectory(sOutputDirectory);
 
+    clock_t tTime1 = clock();
     //Русские символы в консоль не выводятся
     for (std::wstring sFileName : arFiles)
     {
@@ -23,7 +24,7 @@ int main(int argc, char *argv[])
         {
             std::wstring sFile = sFileName.substr(0, sFileName.find_last_of(L'.'));
 
-            auto posLastSlash = sFile.find_last_of(L'/');
+            auto posLastSlash = sFile.find_last_of(L'\\');
 
             if (posLastSlash != std::wstring::npos)
                 sFile = sFile.substr(posLastSlash + 1);
@@ -40,6 +41,10 @@ int main(int argc, char *argv[])
 
         std::wcout << (double)(tTimeEnd - tTimeBegin) / CLOCKS_PER_SEC << std::endl;
     }
+
+    clock_t tTime2 = clock();
+
+    std::wcout << (double)(tTime2 - tTime1) / CLOCKS_PER_SEC << std::endl;
 
     return 0;
 }

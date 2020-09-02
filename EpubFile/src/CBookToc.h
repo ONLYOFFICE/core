@@ -23,16 +23,16 @@ class CBookToc
     bool ReadTitle(XmlUtils::CXmlLiteReader &oXmlLiteReader);
     bool ReadMap(XmlUtils::CXmlLiteReader &oXmlLiteReader);
     bool ReadPoint(XmlUtils::CXmlLiteReader &oXmlLiteReader);
-    std::wstring GetAttributeValue(XmlUtils::CXmlLiteReader &oXmlLiteReader, std::wstring sAttributeName);
+    std::wstring GetAttributeValue(XmlUtils::CXmlLiteReader &oXmlLiteReader, const std::wstring& sAttributeName) const;
     void AddStruct();
 public:
     CBookToc();
     ~CBookToc();
     void Clear();
     bool ReadToc(XmlUtils::CXmlLiteReader &oXmlLiteReader);
-    void ShowToc();
-    int GetCountToc();
-    std::pair<std::wstring, std::wstring> GetTextAndRef(int nIndex);
+    void ShowToc() const;
+    int GetCountToc() const;
+    const std::pair<std::wstring, std::wstring> GetTextAndRef(const int& nIndex) const;
 };
 
 #endif // CBOOKTOC_H

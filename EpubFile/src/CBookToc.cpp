@@ -16,11 +16,12 @@ bool CBookToc::ReadToc(XmlUtils::CXmlLiteReader &oXmlLiteReader)
     if (!oXmlLiteReader.IsValid() || oXmlLiteReader.IsEmptyNode())
         return false;
 
-    int nParentDepth = oXmlLiteReader.GetDepth();
+    const int& nParentDepth = oXmlLiteReader.GetDepth();
 
     while(oXmlLiteReader.ReadNextSiblingNode(nParentDepth))
     {
-        std::wstring sName = oXmlLiteReader.GetName();
+        const std::wstring& sName = oXmlLiteReader.GetName();
+
         if (sName == L"docTitle")
             ReadTitle(oXmlLiteReader);
         else if(sName == L"navMap")
@@ -49,7 +50,7 @@ bool CBookToc::ReadMap(XmlUtils::CXmlLiteReader &oXmlLiteReader)
     ReadPoint(oXmlLiteReader);
 }
 
-std::wstring CBookToc::GetAttributeValue(XmlUtils::CXmlLiteReader &oXmlLiteReader, std::wstring sAttributeName)
+std::wstring CBookToc::GetAttributeValue(XmlUtils::CXmlLiteReader &oXmlLiteReader, const std::wstring& sAttributeName) const
 {
     if (oXmlLiteReader.GetAttributesCount() > 0 &&
         oXmlLiteReader.MoveToFirstAttribute())
@@ -61,7 +62,12 @@ std::wstring CBookToc::GetAttributeValue(XmlUtils::CXmlLiteReader &oXmlLiteReade
             if (_sAttributeName == sAttributeName)
             {
                 std::wstring sText = oXmlLiteReader.GetText();
-                sText = sText.substr(sText.find_last_of(L"/") + 1, sText.length());
+
+                const auto& posLastSlash = sText.find_last_of(L"/");
+
+                if (posLastSlash != std::wstring::npos)
+                    sText = sText.substr(posLastSlash + 1, sText.length() - 1);
+
                 oXmlLiteReader.MoveToElement();
                 return sText;
             }
@@ -81,17 +87,19 @@ void CBookToc::AddStruct()
     if (m_arMap.size() == 4)
     {
         m_structData structData;
-        for (int i = 0; i < (int)m_arMap.size(); i++)
+
+        for (const std::pair<std::wstring, std::wstring>& sValue : m_arMap)
         {
-            if (m_arMap[i].first == L"id")
-                structData.sID = m_arMap[i].second;
-            else if (m_arMap[i].first == L"playOrder")
-                structData.sPlayOrder = m_arMap[i].second;
-            else if (m_arMap[i].first == L"text")
-                structData.sText = m_arMap[i].second;
-            else if (m_arMap[i].first == L"src")
-                structData.sRef = m_arMap[i].second;
+            if (sValue.first == L"id")
+                structData.sID = sValue.second;
+            else if (sValue.first == L"playOrder")
+                structData.sPlayOrder = sValue.second;
+            else if (sValue.first == L"text")
+                structData.sText = sValue.second;
+            else if (sValue.first == L"src")
+                structData.sRef = sValue.second;
         }
+
         m_arData.push_back(structData);
         m_arMap.clear();
     }
@@ -102,11 +110,11 @@ bool CBookToc::ReadPoint(XmlUtils::CXmlLiteReader &oXmlLiteReader)
     if (!oXmlLiteReader.IsValid() || oXmlLiteReader.IsEmptyNode())
         return false;
 
-    int nParentDepth = oXmlLiteReader.GetDepth();
+    const int& nParentDepth = oXmlLiteReader.GetDepth();
 
     while (oXmlLiteReader.ReadNextSiblingNode(nParentDepth))
     {
-        std::wstring sName = oXmlLiteReader.GetName();
+        const std::wstring& sName = oXmlLiteReader.GetName();
 
         if (sName == L"navPoint")
         {
@@ -130,29 +138,29 @@ bool CBookToc::ReadPoint(XmlUtils::CXmlLiteReader &oXmlLiteReader)
     }
 }
 
-void CBookToc::ShowToc()
+void CBookToc::ShowToc() const
 {
     std::wcout << L"-----TOC-----" << std::endl;
     std::wcout << "Title - " << m_sTitle << std::endl;
-    for (int i = 0; i < (int)m_arData.size(); i++)
+    for (const m_structData& oData : m_arData)
     {
-        std::wcout << m_arData[i].sPlayOrder << " - " << m_arData[i].sID << " - " << m_arData[i].sText << " - " << m_arData[i].sRef << std::endl;
+        std::wcout << oData.sPlayOrder << " - " << oData.sID << " - " << oData.sText << " - " << oData.sRef << std::endl;
 //        std::wstring sl = m_arData[i].sText + L"\n";
 //        std::fputws(sl.c_str() , fl);
     }
 }
 
-int CBookToc::GetCountToc()
+int CBookToc::GetCountToc() const
 {
-    return (int)m_arData.size();
+    return m_arData.size();
 }
 
-std::pair<std::wstring, std::wstring> CBookToc::GetTextAndRef(int nIndex)
+const std::pair<std::wstring, std::wstring> CBookToc::GetTextAndRef(const int& nIndex) const
 {
-    if (nIndex < 0 || nIndex > (int)m_arData.size())
-        return std::pair<std::wstring, std::wstring>(L"", L"");
+    if (nIndex < 0 || nIndex > GetCountToc())
+        return {L"", L""};
 
-    return std::pair<std::wstring, std::wstring>(m_arData[nIndex].sText, m_arData[nIndex].sRef);
+    return {m_arData[nIndex].sText, m_arData[nIndex].sRef};
 }
 
 void CBookToc::Clear()

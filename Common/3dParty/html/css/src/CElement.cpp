@@ -31,10 +31,10 @@ std::wstring CElement::GetText() const
         sText += L"{\n";
 
         if (m_arChildrens.size() != 0)
-            for (CElement* oChildren : m_arChildrens)
+            for (const CElement* oChildren : m_arChildrens)
                 sText += oChildren->GetText();
 
-        for (std::pair<std::wstring, std::wstring> pDeclaration : m_arDeclarations)
+        for (const std::pair<std::wstring, std::wstring>& pDeclaration : m_arDeclarations)
         {
             sText += L"   " + pDeclaration.first + L": " + pDeclaration.second + L";\n";
         }
@@ -55,10 +55,11 @@ void CElement::AddSelector(const std::wstring sSelector)
     if (sSelector.find(L' ') != std::wstring::npos)
     {
         std::wstring sTempSelector;
-        for (wchar_t wc : sSelector)
-            if (!isspace(wc))
+        for (const wchar_t& wc : sSelector)
+            if (!iswspace(wc))
                 sTempSelector += wc;
-        m_arSelectors.push_back(sSelector);
+
+        m_arSelectors.push_back(sTempSelector);
     }
     else
         m_arSelectors.push_back(sSelector);
@@ -99,7 +100,7 @@ const int& CElement::GetCountChildrens() const
     return m_arChildrens.size();
 }
 
-const bool CElement::FindSelector(std::wstring sSelector)
+bool CElement::FindSelector(std::wstring sSelector)
 {
     if (std::find(m_arSelectors.begin(), m_arSelectors.end(), sSelector) != m_arSelectors.cend())
         return true;
@@ -122,13 +123,13 @@ std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wst
 {
     std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> arElement;
 
-    for (std::wstring sValueSelector : m_arSelectors)
+    for (const std::wstring& sValueSelector : m_arSelectors)
     {
         if (sValueSelector == sSelector)
         {
             std::wstring sTempSelectors;
 
-            for (std::wstring sParent : arParents)
+            for (const std::wstring& sParent : arParents)
                 sTempSelectors += sParent;
 
             if (!sTempSelectors.empty())
@@ -142,9 +143,9 @@ std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wst
 
     std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> TempArElement;
 
-    for (CElement* oElement : m_arChildrens)
+    for (const CElement* oElement : m_arChildrens)
     {
-        std::vector<std::wstring> sSelectors = oElement->GetSelectors();
+        const std::vector<std::wstring>& sSelectors = oElement->GetSelectors();
 
         if (std::find(sSelectors.begin(), sSelectors.end(), sSelector) != sSelectors.cend())
         {
@@ -171,7 +172,7 @@ CElement& CElement::operator= (const CElement &oElement)
     m_arSelectors = oElement.m_arSelectors;
     m_arDeclarations = oElement.m_arDeclarations;
 
-    for (CElement *oChildren : oElement.m_arChildrens)
+    for (const CElement *oChildren : oElement.m_arChildrens)
     {
         CElement *oTempChildren = new CElement();
         *oTempChildren = *oChildren;

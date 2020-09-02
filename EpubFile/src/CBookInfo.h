@@ -23,18 +23,18 @@ public:
     void Clear();
 
     bool ReadInfo(XmlUtils::CXmlLiteReader &oXmlLiteReader);
-    void ShowInfo();
+    void ShowInfo() const;
 
-    std::wstring GetTitle();
-    std::wstring GetCreators();
-    std::wstring GetPublishers();
-    std::wstring GetLanguages();
-    std::wstring GetContibutors();
-    std::wstring GetDescriptions();
-    std::wstring GetSubjects();
-    std::wstring GetCoverage();
-    std::wstring GetIndentifier();
-    std::wstring GetDate();
+    const std::wstring GetTitle() const;
+    const std::wstring GetCreators() const;
+    const std::wstring GetPublishers() const;
+    const std::wstring GetLanguages() const;
+    const std::wstring GetContibutors() const;
+    const std::wstring GetDescriptions() const;
+    const std::wstring GetSubjects() const;
+    const std::wstring GetCoverage() const;
+    const std::wstring GetIndentifier() const;
+    const std::wstring GetDate() const;
 };
 
 #endif // CBOOKINFO_H

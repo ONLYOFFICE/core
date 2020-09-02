@@ -16,7 +16,7 @@ void CBookContentItem::Clear()
     m_sLinear.clear();
 }
 
-bool CBookContentItem::ReadContentItem(XmlUtils::CXmlLiteReader &oXmlLiteReader, int depth)
+bool CBookContentItem::ReadContentItem(XmlUtils::CXmlLiteReader &oXmlLiteReader, const int& depth)
 {
     if (!oXmlLiteReader.IsValid() || oXmlLiteReader.IsEmptyNode())
         return false;
@@ -29,9 +29,10 @@ bool CBookContentItem::ReadContentItem(XmlUtils::CXmlLiteReader &oXmlLiteReader,
             oXmlLiteReader.MoveToFirstAttribute())
         {
             std::wstring sAttributeName = oXmlLiteReader.GetName();
+
             while (!sAttributeName.empty())
             {
-                std::wstring sAttributeValue = oXmlLiteReader.GetText();
+               const std::wstring& sAttributeValue = oXmlLiteReader.GetText();
 
                 if (sAttributeName == L"idref")
                     m_sID = sAttributeValue;

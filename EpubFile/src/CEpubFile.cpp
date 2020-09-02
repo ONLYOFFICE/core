@@ -19,13 +19,14 @@ CEpubFile::~CEpubFile()
 
 HRESULT CEpubFile::IsEbubFile(const std::wstring &sFileName)
 {
-    auto posPoint = sFileName.find_last_of(L'.');
+    const auto& posPoint = sFileName.find_last_of(L'.');
 
     if (posPoint == std::wstring::npos ||
         sFileName.substr(posPoint + 1) != L"epub")
         return S_FALSE;
 
     COfficeUtils oOfficeUtils;
+
     if (oOfficeUtils.IsArchive(sFileName) == S_OK &&
         oOfficeUtils.IsFileExistInArchive(sFileName, L"META-INF/container.xml") == S_OK)
     {
@@ -49,10 +50,10 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     }
     else
     {
-        NSDirectory::CreateDirectories(m_sTempDir + L"/tmp");
-        SetTempDirectory(m_sTempDir + L"/tmp");
+        NSDirectory::CreateDirectories(m_sTempDir);
+        SetTempDirectory(m_sTempDir);
     }
-//    NSDirectory::CreateDirectory(sOutputFile);
+
     COfficeUtils oOfficeUtils;
 
     wchar_t* password = NULL;
@@ -65,10 +66,12 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     {
         oXmlLiteReader.ReadNextNode();
 
-        int nParentDepth = oXmlLiteReader.GetDepth();
+        const int& nParentDepth = oXmlLiteReader.GetDepth();
+
         while (oXmlLiteReader.ReadNextSiblingNode(nParentDepth))
         {
-            std::wstring sName = oXmlLiteReader.GetName();
+            const std::wstring& sName = oXmlLiteReader.GetName();
+
             if (sName == L"metadata")
             {
                 m_oBookInfo.ReadInfo(oXmlLiteReader);
@@ -78,19 +81,21 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
             }
             else if (sName == L"manifest")
             {
-                int _nParentDepth = oXmlLiteReader.GetDepth();
+                const int& _nParentDepth = oXmlLiteReader.GetDepth();
+
                 while (true)
                 {
                     CBookItem oItem;
                     if (oItem.ReadItem(oXmlLiteReader, _nParentDepth))
-                        m_mapRefs[oItem.GetID()] = oItem;
+                        m_mapRefs.emplace(oItem.GetID(), oItem);
                     else
                         break;
                 }
             }
             else if (sName == L"spine")
             {
-                int _nParentDepth = oXmlLiteReader.GetDepth();
+                const int& _nParentDepth = oXmlLiteReader.GetDepth();
+
                 while (true)
                 {
                     CBookContentItem oContentItem;
@@ -113,20 +118,6 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
 //            m_oToc.ShowToc();
 //        #endif
 
-//        CDocxFile oDocxFile;
-//        oDocxFile.CreateTempFiles(sOutputFile, m_sTempDir);
-
-//        oDocxFile.AddBookToc(&m_oToc);
-
-//        std::wstring sTempDir = m_sTempDir + L"/docx";
-//        std::wstring _sOutputFile = sOutputFile + L"/test.docx";
-
-//        NSFile::CFileBinary oFileBinary;
-//        oFileBinary.CreateFileW(_sOutputFile);
-//        oFileBinary.CloseFile();
-
-//        oDocxFile.SaveToFile();
-
         CHtmlFile2 oFile;
         CHtmlParams oFileParams;
 
@@ -137,15 +128,15 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
         oFileParams.SetDescription(m_oBookInfo.GetDescriptions());
 
 
-        std::wstring sDocxFileTempDir = m_sTempDir + L"/res";
+        const std::wstring& sDocxFileTempDir = m_sTempDir + L"/res";
         NSDirectory::CreateDirectory(sDocxFileTempDir);
 
         oFile.SetTmpDirectory(sDocxFileTempDir);
 
         std::vector<std::wstring> arFiles;
 
-        for (size_t i = 0; i < m_arContents.size(); i++)
-            arFiles.push_back(m_sTempDir + L"\\" + m_mapRefs[m_arContents[i].m_sID].GetRef());
+        for (const CBookContentItem& oContent : m_arContents)
+            arFiles.push_back(m_sTempDir + L"\\" + m_mapRefs[oContent.m_sID].GetRef());
 
         std::wcout << L"---The conversion process from Epub to Docx...---" << std::endl;
         if (oFile.OpenBatch(arFiles, sDocxFileTempDir, &oFileParams) == S_OK)
@@ -167,12 +158,14 @@ void CEpubFile::Clear()
     m_mapRefs.clear();
     m_oToc.Clear();
     m_arContents.clear();
-    NSDirectory::DeleteDirectory(m_sTempDir);
+
+    if (!m_sTempDir.empty())
+        NSDirectory::DeleteDirectory(m_sTempDir);
 }
 
 void CEpubFile::ShowMap()
 {
     std::cout << "-----MAP-----" << std::endl;
-    for (size_t i = 0; i < m_arContents.size(); i++)
-        std::wcout << m_arContents[i].m_sID << " - " << m_mapRefs[m_arContents[i].m_sID].GetRef() << std::endl;
+    for (const CBookContentItem& oItem : m_arContents)
+        std::wcout << oItem.m_sID << L" - " << m_mapRefs[oItem.m_sID].GetRef() << std::endl;
 }

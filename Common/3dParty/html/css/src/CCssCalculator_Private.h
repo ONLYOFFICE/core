@@ -15,7 +15,7 @@ namespace NSCSS
         std::vector<CElement*> m_arData;
         std::vector<std::wstring> m_arFiles;
 
-        std::vector<std::pair<CNode, std::pair<std::vector<CNode>, std::wstring>>> m_arUsedNode;
+        std::map<std::pair<CNode, std::vector<CNode>>, CCompiledStyle> m_mUsedStyles;
 
         int m_nDpi;
         std::wstring m_sEncoding;

@@ -15,7 +15,7 @@ public:
 
     void Clear();
 
-    bool ReadContentItem(XmlUtils::CXmlLiteReader &oXmlLiteReader, int depth);
+    bool ReadContentItem(XmlUtils::CXmlLiteReader &oXmlLiteReader, const int& depth);
 
 };
 

@@ -15,6 +15,7 @@ namespace NSCSS
         std::wstring m_sId;
 
         std::vector<std::wstring> m_arParentsStyles;
+
     public:
         CCompiledStyle();
         CCompiledStyle(const std::map<std::wstring, std::wstring>& mStyle);
@@ -121,48 +122,50 @@ namespace NSCSS
 
 
         CCompiledStyle& operator+= (const CCompiledStyle& oElement);
-        CCompiledStyle& operator-= (const CCompiledStyle& oElement);
         CCompiledStyle& operator= (const CCompiledStyle& oElement);
 //        CCompiledStyle& operator= (const CCompiledStyle* oElement);
 //        bool operator== (const CCompiledStyle& oElement);
 
-        friend bool operator== (const CCompiledStyle& oFirst, const CCompiledStyle& oSecond)
+        inline friend bool operator== (const CCompiledStyle& oFirst, const CCompiledStyle& oSecond)
         {
-            std::wstring sThisName = oFirst.m_sId;
+//            std::wstring sThisName = oFirst.m_sId;
 
-            auto posDash = sThisName.find(L'-');
+//            auto posDash = sThisName.find(L'-');
 
-            if (posDash != std::wstring::npos)
-                sThisName = sThisName.substr(0, posDash);
+//            if (posDash != std::wstring::npos)
+//                sThisName = sThisName.substr(0, posDash);
 
-            auto posLattice = sThisName.find(L'#');
+//            auto posLattice = sThisName.find(L'#');
 
-            if (posLattice != std::wstring::npos)
-                sThisName = sThisName.substr(0, posLattice);
+//            if (posLattice != std::wstring::npos)
+//                sThisName = sThisName.substr(0, posLattice);
 
-            auto posPoint = sThisName.find(L'.');
+//            auto posPoint = sThisName.find(L'.');
 
-            if (posPoint != std::wstring::npos)
-                sThisName = sThisName.substr(0, posPoint);
+//            if (posPoint != std::wstring::npos)
+//                sThisName = sThisName.substr(0, posPoint);
 
-            std::wstring sElementName = oSecond.m_sId;
+//            std::wstring sElementName = oSecond.m_sId;
 
-            posDash = sElementName.find(L'-');
+//            posDash = sElementName.find(L'-');
 
-            if (posDash != std::wstring::npos)
-                sElementName = sElementName.substr(0, posDash);
+//            if (posDash != std::wstring::npos)
+//                sElementName = sElementName.substr(0, posDash);
 
-            posLattice = sElementName.find(L'#');
+//            posLattice = sElementName.find(L'#');
 
-            if (posLattice != std::wstring::npos)
-                sElementName = sElementName.substr(0, posLattice);
+//            if (posLattice != std::wstring::npos)
+//                sElementName = sElementName.substr(0, posLattice);
 
-            posPoint = sElementName.find(L'.');
+//            posPoint = sElementName.find(L'.');
 
-            if (posPoint != std::wstring::npos)
-                sElementName = sElementName.substr(0, posPoint);
+//            if (posPoint != std::wstring::npos)
+//                sElementName = sElementName.substr(0, posPoint);
 
-            if (sThisName != sElementName)
+//            if (sThisName != sElementName)
+//                return false;
+
+            if (oFirst.GetId()[0] != oSecond.GetId()[0])
                 return false;
 
             if (oFirst.m_arParentsStyles.size() != oSecond.m_arParentsStyles.size())

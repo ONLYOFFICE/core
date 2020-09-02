@@ -24,7 +24,7 @@ public:
     const int& GetCountDeclarations() const;
     const int& GetCountChildrens() const;
 
-    const bool FindSelector(std::wstring sSelector);
+    bool FindSelector(std::wstring sSelector);
 
     const std::vector<std::wstring>& GetSelectors() const;
     const std::vector<std::pair<std::wstring, std::wstring>>& GetDeclarations() const;

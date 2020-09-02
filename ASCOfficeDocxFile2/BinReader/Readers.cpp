@@ -3298,7 +3298,14 @@ int Binary_OtherTableReader::ReadOtherContent(BYTE type, long length, void* poRe
 	else if(c_oSerOtherTableTypes::DocxTheme == type)
 	{
 		smart_ptr<PPTX::Theme> pTheme = new PPTX::Theme(NULL);
-		pTheme->fromPPTY(&m_oBufferedStream);
+		try
+		{
+			pTheme->fromPPTY(&m_oBufferedStream);
+		}
+		catch(...)
+		{
+			//todooo в отдельный лог
+		}
 		NSBinPptxRW::CXmlWriter xmlWriter;
 		pTheme->toXmlWriter(&xmlWriter);
 		m_oFileWriter.m_oTheme.m_sContent = xmlWriter.GetXmlString();

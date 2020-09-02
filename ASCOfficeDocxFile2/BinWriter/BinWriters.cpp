@@ -5959,7 +5959,7 @@ void BinaryDocumentTableWriter::WriteDrawingPptx(OOX::WritingElement* item)
 		WriteDrawing(pXml, NULL, NULL);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	else
+	else if (pGraphicDrawing || pGraphic)
 	{
 		int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::pptxDrawing);
 		WriteDrawing(NULL, pGraphicDrawing, pGraphic);

@@ -91,7 +91,7 @@ public:
 				break;
 			}
 
-			if ( 0x03F9 == oRec.RecType )
+            if ( RT_SlideShowSlideInfoAtom == oRec.RecType )
 			{
 				m_bExistsTransition	=	true;
 				m_oSlideShowSlideInfoAtom.ReadFromStream ( oRec, pStream );
@@ -104,21 +104,24 @@ public:
 				continue;
 			}
 
-
-            IRecord* pRecord	=	CreateByType ( oRec );
-
             if ( RT_ProgTags == oRec.RecType )
             {
                 m_pSlideProgTagsContainer =
-                        dynamic_cast<CRecordSlideProgTagsContainer*>(pRecord);
+                        new CRecordSlideProgTagsContainer();
                 m_pSlideProgTagsContainer->ReadFromStream(oRec, pStream);
-            }
-            else
-            {
 
-				pRecord->ReadFromStream(oRec, pStream);
-				m_arRecords.push_back(pRecord);
+                lCurLen += (8 + oRec.RecLen);
+                continue;
             }
+
+
+            IRecord* pRecord	=	CreateByType ( oRec );
+
+
+
+            pRecord->ReadFromStream(oRec, pStream);
+            m_arRecords.push_back(pRecord);
+
 		
 			lCurLen += (8 + oRec.RecLen);
 		}

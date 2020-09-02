@@ -51,7 +51,8 @@ void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override
 {
     m_oHeader = oHeader;
 
-    pStream->read((unsigned char*)(&m_oFileTime), sizeof (FILETIME));
+    m_oFileTime.dwLowDateTime = StreamUtils::ReadDWORD(pStream);
+    m_oFileTime.dwHighDateTime = StreamUtils::ReadDWORD(pStream);
 }
 
 public:

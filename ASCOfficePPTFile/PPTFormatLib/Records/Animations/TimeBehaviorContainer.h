@@ -71,7 +71,7 @@ public:
         if ( ReadHeader.ReadFromStream(pStream) )
             m_oBehaviorAtom.ReadFromStream ( ReadHeader, pStream );
 
-        UINT lCurLen	=	0;
+        UINT lCurLen	=	8 + ReadHeader.RecLen;
 
         while ( lCurLen < m_oHeader.RecLen )
         {
@@ -106,7 +106,7 @@ public:
             }
 
             default:
-                throw ;
+                break ;
             }
         }
         StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);

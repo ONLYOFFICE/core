@@ -125,8 +125,6 @@ static std::string mhtTohtml(std::string& sFileContent, const std::wstring& sTmp
 {
     std::map<std::string, std::string> sRes;
     NSStringUtils::CStringBuilderA oRes;
-    NSDirectory::CreateDirectory(sTmp + L"/word");
-    NSDirectory::CreateDirectory(sTmp + L"/word/media");
 
     // Поиск boundary
     size_t nFound = sFileContent.find("boundary=");
@@ -259,60 +257,39 @@ static std::string mhtTohtml(std::string& sFileContent, const std::wstring& sTmp
         // Основной документ
         if(sContentType == "multipart/alternative")
             oRes.WriteString(mhtTohtml(sContent, sTmp));
-        else if(sContentType == "text/html" && (sExtention.empty() || sExtention == L"htm" || sExtention == L"html" || sExtention == L"xhtml"))
+        else if(sContentType.find("text") != std::string::npos && (sExtention.empty() || sExtention == L"htm" || sExtention == L"html" ||
+                                                                   sExtention == L"xhtml" || sExtention == L"css"))
         {
+            // Стили заключаются в тэг <style>
+            if(sContentType == "text/css" || sExtention == L"css")
+                oRes.WriteString("<style>");
             if(sContentEncoding == "Base64" || sContentEncoding == "base64")
                 oRes.WriteString(Base64ToString(sContent, sCharset));
             else if(sContentEncoding == "8bit")
             {
-                if (sCharset != "utf-8" && sCharset != "UTF-8")
+                if (sCharset != "utf-8" && sCharset != "UTF-8" && !sCharset.empty())
                 {
                     NSUnicodeConverter::CUnicodeConverter oConverter;
                     sContent = U_TO_UTF8(oConverter.toUnicode(sContent, sCharset.data()));
                 }
                 oRes.WriteString(sContent);
             }
-            else if(sContentEncoding == "quoted-printable")
+            else if(sContentEncoding == "quoted-printable" || sContentEncoding == "Quoted-Printable")
             {
                 sContent = QuotedPrintableDecode(sContent);
-                if (sCharset != "utf-8" && sCharset != "UTF-8")
+                if (sCharset != "utf-8" && sCharset != "UTF-8" && !sCharset.empty())
                 {
                     NSUnicodeConverter::CUnicodeConverter oConverter;
                     sContent = U_TO_UTF8(oConverter.toUnicode(sContent, sCharset.data()));
                 }
                 oRes.WriteString(sContent);
             }
+            if(sContentType == "text/css" || sExtention == L"css")
+                oRes.WriteString("</style>");
         }
         // Скрипты игнорируются
         else if(sContentType.find("application") != std::string::npos || sExtention == L"js")
             continue;
-        // Стили заключаются в тэг <style>
-        else if(sContentType == "text/css" || sExtention == L"css")
-        {
-            oRes.WriteString("<style>");
-            if(sContentEncoding == "Base64" || sContentEncoding == "base64")
-                oRes.WriteString(Base64ToString(sContent, sCharset));
-            else if(sContentEncoding == "8bit")
-            {
-                if (sCharset != "utf-8" && sCharset != "UTF-8")
-                {
-                    NSUnicodeConverter::CUnicodeConverter oConverter;
-                    sContent = U_TO_UTF8(oConverter.toUnicode(sContent, sCharset.data()));
-                }
-                oRes.WriteString(sContent);
-            }
-            else if(sContentEncoding == "quoted-printable")
-            {
-                sContent = QuotedPrintableDecode(sContent);
-                if (sCharset != "utf-8" && sCharset != "UTF-8")
-                {
-                    NSUnicodeConverter::CUnicodeConverter oConverter;
-                    sContent = U_TO_UTF8(oConverter.toUnicode(sContent, sCharset.data()));
-                }
-                oRes.WriteString(sContent);
-            }
-            oRes.WriteString("</style>");
-        }
         // Картинки
         else if((sContentType.find("image") != std::string::npos || sExtention == L"gif") && (sContentEncoding == "Base64" || sContentEncoding == "base64"))
         {
@@ -354,8 +331,8 @@ static std::string mhtTohtml(std::string& sFileContent, const std::wstring& sTmp
         }
         while(found != std::string::npos)
         {
-            size_t fq = sFile.rfind('\"', found) + 1;
-            size_t tq = sFile.find('\"', found);
+            size_t fq = sFile.find_last_of("\"\'", found) + 1;
+            size_t tq = sFile.find_first_of("\"\'", found);
             sFile.replace(fq, tq - fq, item.second);
             found = sFile.find(sName, fq + item.second.length());
         }
@@ -370,6 +347,8 @@ static std::wstring mhtToXhtml(const std::wstring& sFile, const std::wstring& sT
     if(!NSFile::CFileBinary::ReadAllTextUtf8A(sFile, sFileContent))
         return sRes;
 
+    NSDirectory::CreateDirectory(sTmp + L"/word");
+    NSDirectory::CreateDirectory(sTmp + L"/word/media");
     sFileContent = mhtTohtml(sFileContent, sTmp);
 
     // Gumbo
@@ -483,7 +462,7 @@ static void build_attributes(GumboAttribute* at, bool no_entities, NSStringUtils
         if(sName.empty())
             return;
     }
-    while(std::isdigit(sName.front()))
+    while(sName.front() >= '0' && sName.front() <= '9')
     {
         sName.erase(0, 1);
         if(sName.empty())

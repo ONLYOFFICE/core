@@ -18,6 +18,7 @@ static std::string no_entity_sub       = ""; //"|style|";
 static std::string treat_like_inline   = "|p|";
 
 static void prettyprint(GumboNode*, NSStringUtils::CStringBuilderA& oBuilder);
+static std::string mhtTohtml(std::string& sFileContent, const std::wstring& sTmp);
 
 static std::wstring htmlToXhtml(const std::wstring& sFile)
 {
@@ -121,6 +122,167 @@ static std::string QuotedPrintableDecode(const std::string& sContent)
     return sRes.GetData();
 }
 
+static void ReadMht(std::string& sFileContent, const std::wstring& sTmp, size_t& nFound, size_t& nNextFound, const std::string& sBoundary,
+                    std::map<std::string, std::string>& sRes, NSStringUtils::CStringBuilderA& oRes)
+{
+    // Content
+    size_t nContentTag = sFileContent.find("\n\n", nFound);
+    if(nContentTag == std::string::npos || nContentTag > nNextFound)
+        nContentTag = sFileContent.find("\n\r\n", nFound);
+    if(nContentTag == std::string::npos || nContentTag > nNextFound)
+    {
+        nFound = nNextFound;
+        return;
+    }
+
+    // Content-Type
+    size_t nTag = sFileContent.find("Content-Type: ", nFound);
+    if(nTag == std::string::npos || nTag > nContentTag)
+    {
+        nFound = nNextFound;
+        return;
+    }
+    size_t nTagEnd = sFileContent.find_first_of(";\n\r", nTag);
+    nTag += 14;
+    if(nTagEnd == std::string::npos || nTagEnd > nContentTag)
+    {
+        nFound = nNextFound;
+        return;
+    }
+    std::string sContentType = sFileContent.substr(nTag, nTagEnd - nTag);
+    if(sContentType == "multipart/alternative")
+        nContentTag = nFound;
+
+    // name
+    std::string sName;
+    nTag = sFileContent.find(" name=", nFound);
+    if(nTag != std::string::npos && nTag < nContentTag)
+    {
+        nTagEnd = sFileContent.find_first_of(";\n\r", nTag);
+        nTag += 5;
+        if(nTagEnd != std::string::npos && nTagEnd < nContentTag)
+            sName = sFileContent.substr(nTag, nTagEnd - nTag);
+    }
+
+    // charset
+    std::string sCharset;
+    nTag = sFileContent.find("charset=", nFound);
+    if(nTag != std::string::npos && nTag < nContentTag)
+    {
+        nTagEnd = sFileContent.find_first_of(";\n\r", nTag);
+        nTag += 8;
+        if(nTagEnd != std::string::npos && nTagEnd < nContentTag)
+        {
+            if(sFileContent[nTag] == '\"')
+            {
+                nTag++;
+                nTagEnd--;
+            }
+            sCharset = sFileContent.substr(nTag, nTagEnd - nTag);
+        }
+    }
+
+    // Content-Location
+    std::string sContentLocation;
+    nTag = sFileContent.find("Content-Location: ", nFound);
+    if(nTag != std::string::npos && nTag < nContentTag)
+    {
+        nTagEnd = sFileContent.find_first_of(";\n\r", nTag);
+        nTag += 18;
+        if(nTagEnd != std::string::npos && nTagEnd < nContentTag)
+            sContentLocation = sFileContent.substr(nTag, nTagEnd - nTag);
+    }
+
+    // Content-Transfer-Encoding
+    std::string sContentEncoding;
+    nTag = sFileContent.find("Content-Transfer-Encoding: ", nFound);
+    if(nTag != std::string::npos && nTag < nContentTag)
+    {
+        nTagEnd = sFileContent.find_first_of(";\n\r", nTag);
+        nTag += 27;
+        if(nTagEnd != std::string::npos && nTagEnd < nContentTag)
+            sContentEncoding = sFileContent.substr(nTag, nTagEnd - nTag);
+    }
+
+    // Content
+    nTagEnd = nNextFound - 2;
+    nContentTag += 2;
+    if(nTagEnd == std::string::npos || nTagEnd < nContentTag)
+    {
+        nFound = nNextFound;
+        return;
+    }
+    std::string sContent = sFileContent.substr(nContentTag, nTagEnd - nContentTag);
+
+    // Удаляем лишнее
+    sFileContent.erase(0, nNextFound);
+    nFound = sFileContent.find(sBoundary);
+
+    std::wstring sExtention = NSFile::GetFileExtention(UTF8_TO_U(sName));
+    std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
+    // Основной документ
+    if(sContentType == "multipart/alternative")
+        oRes.WriteString(mhtTohtml(sContent, sTmp));
+    else if((sContentType.find("text") != std::string::npos && (sExtention.empty() || sExtention == L"htm" || sExtention == L"html" || sExtention
+            == L"xhtml" || sExtention == L"css")) || (sContentType == "application/octet-stream" && (sContentLocation.find("css") !=
+            std::string::npos)))
+    {
+        // Стили заключаются в тэг <style>
+        if(sContentType == "text/css" || sExtention == L"css" || sContentLocation.find("css") != std::string::npos)
+            oRes.WriteString("<style>");
+        if(sContentEncoding == "Base64" || sContentEncoding == "base64")
+            oRes.WriteString(Base64ToString(sContent, sCharset));
+        else if(sContentEncoding == "8bit" || sContentEncoding == "7bit" || sContentEncoding.empty())
+        {
+            if (sCharset != "utf-8" && sCharset != "UTF-8" && !sCharset.empty())
+            {
+                NSUnicodeConverter::CUnicodeConverter oConverter;
+                sContent = U_TO_UTF8(oConverter.toUnicode(sContent, sCharset.data()));
+            }
+            oRes.WriteString(sContent);
+        }
+        else if(sContentEncoding == "quoted-printable" || sContentEncoding == "Quoted-Printable")
+        {
+            sContent = QuotedPrintableDecode(sContent);
+            if (sCharset != "utf-8" && sCharset != "UTF-8" && !sCharset.empty())
+            {
+                NSUnicodeConverter::CUnicodeConverter oConverter;
+                sContent = U_TO_UTF8(oConverter.toUnicode(sContent, sCharset.data()));
+            }
+            oRes.WriteString(sContent);
+        }
+        if(sContentType == "text/css" || sExtention == L"css" || sContentLocation.find("css") != std::string::npos)
+            oRes.WriteString("</style>");
+    }
+    // Картинки
+    else if((sContentType.find("image") != std::string::npos || sExtention == L"gif" || sContentType == "application/octet-stream") &&
+            (sContentEncoding == "Base64" || sContentEncoding == "base64"))
+    {
+        int nSrcLen = (int)sContent.length();
+        int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
+        if(nDecodeLen == 0)
+            return;
+        BYTE* pData = new BYTE[nDecodeLen];
+        if (TRUE == NSBase64::Base64Decode(sContent.c_str(), nSrcLen, pData, &nDecodeLen))
+        {
+            if(!sName.empty())
+            {
+                NSFile::CFileBinary oWriter;
+                std::wstring sFolder = sTmp + L"/word/media/" + UTF8_TO_U(sName);
+                if(oWriter.CreateFileW(sFolder))
+                {
+                    oWriter.WriteFile(pData, (DWORD)nDecodeLen);
+                    oWriter.CloseFile();
+                }
+                sRes.insert(std::make_pair(sContentLocation, U_TO_UTF8(sFolder)));
+            }
+            else
+                sRes.insert(std::make_pair(sContentLocation, "data:" + sContentType + ";base64," + sContent));
+        }
+        RELEASEARRAYOBJECTS(pData);
+    }
+}
+
 static std::string mhtTohtml(std::string& sFileContent, const std::wstring& sTmp)
 {
     std::map<std::string, std::string> sRes;
@@ -129,7 +291,12 @@ static std::string mhtTohtml(std::string& sFileContent, const std::wstring& sTmp
     // Поиск boundary
     size_t nFound = sFileContent.find("boundary=");
     if(nFound == std::string::npos)
-        return "";
+    {
+        size_t nFoundEnd = sFileContent.length();
+        nFound = 0;
+        ReadMht(sFileContent, sTmp, nFound, nFoundEnd, "no", sRes, oRes);
+        return oRes.GetData();
+    }
     size_t nFoundEnd = sFileContent.find_first_of(";\n\r", nFound);
     if(nFoundEnd == std::string::npos)
         return "";
@@ -155,186 +322,35 @@ static std::string mhtTohtml(std::string& sFileContent, const std::wstring& sTmp
         // Выход по --boundary--
         if(sFileContent[nFound + nBoundaryLength + 1] == '-')
             break;
-        size_t nNextFound = sFileContent.find(sBoundary, nFound + nBoundaryLength);
-        if(nNextFound == std::string::npos)
+        nFoundEnd = sFileContent.find(sBoundary, nFound + nBoundaryLength);
+        if(nFoundEnd == std::string::npos)
             break;
-
-        // Content
-        size_t nContentTag = sFileContent.find("\n\n", nFound);
-        if(nContentTag > nNextFound)
-            nContentTag = sFileContent.find("\n\r\n", nFound);
-        if(nContentTag == std::string::npos || nContentTag > nNextFound)
-        {
-            nFound = nNextFound;
-            continue;
-        }
-
-        // Content-Type
-        size_t nTag = sFileContent.find("Content-Type: ", nFound);
-        if(nTag == std::string::npos || nTag > nContentTag)
-        {
-            nFound = nNextFound;
-            continue;
-        }
-        size_t nTagEnd = sFileContent.find_first_of(";\n\r", nTag);
-        nTag += 14;
-        if(nTagEnd == std::string::npos || nTagEnd > nContentTag)
-        {
-            nFound = nNextFound;
-            continue;
-        }
-        std::string sContentType = sFileContent.substr(nTag, nTagEnd - nTag);
-        if(sContentType == "multipart/alternative")
-            nContentTag = nFound;
-
-        // name
-        std::string sName;
-        nTag = sFileContent.find("name=", nFound);
-        if(nTag != std::string::npos && nTag < nContentTag)
-        {
-            nTagEnd = sFileContent.find_first_of(";\n\r", nTag);
-            nTag += 5;
-            if(nTagEnd != std::string::npos && nTagEnd < nContentTag)
-                sName = sFileContent.substr(nTag, nTagEnd - nTag);
-        }
-
-        // charset
-        std::string sCharset;
-        nTag = sFileContent.find("charset=", nFound);
-        if(nTag != std::string::npos && nTag < nContentTag)
-        {
-            nTagEnd = sFileContent.find_first_of(";\n\r", nTag);
-            nTag += 8;
-            if(nTagEnd != std::string::npos && nTagEnd < nContentTag)
-            {
-                if(sFileContent[nTag] == '\"')
-                {
-                    nTag++;
-                    nTagEnd--;
-                }
-                sCharset = sFileContent.substr(nTag, nTagEnd - nTag);
-            }
-        }
-
-        // Content-Location
-        std::string sContentLocation;
-        nTag = sFileContent.find("Content-Location: ", nFound);
-        if(nTag != std::string::npos && nTag < nContentTag)
-        {
-            nTagEnd = sFileContent.find_first_of(";\n\r", nTag);
-            nTag += 18;
-            if(nTagEnd != std::string::npos && nTagEnd < nContentTag)
-                sContentLocation = sFileContent.substr(nTag, nTagEnd - nTag);
-        }
-
-        // Content-Transfer-Encoding
-        std::string sContentEncoding;
-        nTag = sFileContent.find("Content-Transfer-Encoding: ", nFound);
-        if(nTag != std::string::npos && nTag < nContentTag)
-        {
-            nTagEnd = sFileContent.find_first_of(";\n\r", nTag);
-            nTag += 27;
-            if(nTagEnd != std::string::npos && nTagEnd < nContentTag)
-                sContentEncoding = sFileContent.substr(nTag, nTagEnd - nTag);
-        }
-
-        // Content
-        nTagEnd = nNextFound - 2;
-        nContentTag += 2;
-        if(nTagEnd == std::string::npos || nTagEnd < nContentTag)
-        {
-            nFound = nNextFound;
-            continue;
-        }
-        std::string sContent = sFileContent.substr(nContentTag, nTagEnd - nContentTag);
-
-        // Удаляем лишнее
-        sFileContent.erase(0, nNextFound);
-        nFound = sFileContent.find(sBoundary);
-
-        std::wstring sExtention = NSFile::GetFileExtention(UTF8_TO_U(sName));
-        std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
-        // Основной документ
-        if(sContentType == "multipart/alternative")
-            oRes.WriteString(mhtTohtml(sContent, sTmp));
-        else if(sContentType.find("text") != std::string::npos && (sExtention.empty() || sExtention == L"htm" || sExtention == L"html" ||
-                                                                   sExtention == L"xhtml" || sExtention == L"css"))
-        {
-            // Стили заключаются в тэг <style>
-            if(sContentType == "text/css" || sExtention == L"css")
-                oRes.WriteString("<style>");
-            if(sContentEncoding == "Base64" || sContentEncoding == "base64")
-                oRes.WriteString(Base64ToString(sContent, sCharset));
-            else if(sContentEncoding == "8bit" || sContentEncoding.empty())
-            {
-                if (sCharset != "utf-8" && sCharset != "UTF-8" && !sCharset.empty())
-                {
-                    NSUnicodeConverter::CUnicodeConverter oConverter;
-                    sContent = U_TO_UTF8(oConverter.toUnicode(sContent, sCharset.data()));
-                }
-                oRes.WriteString(sContent);
-            }
-            else if(sContentEncoding == "quoted-printable" || sContentEncoding == "Quoted-Printable")
-            {
-                sContent = QuotedPrintableDecode(sContent);
-                if (sCharset != "utf-8" && sCharset != "UTF-8" && !sCharset.empty())
-                {
-                    NSUnicodeConverter::CUnicodeConverter oConverter;
-                    sContent = U_TO_UTF8(oConverter.toUnicode(sContent, sCharset.data()));
-                }
-                oRes.WriteString(sContent);
-            }
-            if(sContentType == "text/css" || sExtention == L"css")
-                oRes.WriteString("</style>");
-        }
-        // Скрипты игнорируются
-        else if(sContentType.find("application") != std::string::npos || sExtention == L"js")
-            continue;
-        // Картинки
-        else if((sContentType.find("image") != std::string::npos || sExtention == L"gif") && (sContentEncoding == "Base64" || sContentEncoding == "base64"))
-        {
-            int nSrcLen = (int)sContent.length();
-            int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
-            if(nDecodeLen == 0)
-                continue;
-            BYTE* pData = new BYTE[nDecodeLen];
-            if (TRUE == NSBase64::Base64Decode(sContent.c_str(), nSrcLen, pData, &nDecodeLen))
-            {
-                if(!sName.empty())
-                {
-                    NSFile::CFileBinary oWriter;
-                    std::wstring sFolder = sTmp + L"/word/media/" + UTF8_TO_U(sName);
-                    if(oWriter.CreateFileW(sFolder))
-                    {
-                        oWriter.WriteFile(pData, (DWORD)nDecodeLen);
-                        oWriter.CloseFile();
-                    }
-                    sRes.insert(std::make_pair(sContentLocation, U_TO_UTF8(sFolder)));
-                }
-                else
-                    sRes.insert(std::make_pair(sContentLocation, "data:" + sContentType + ";base64," + sContent));
-            }
-            RELEASEARRAYOBJECTS(pData);
-        }
+        ReadMht(sFileContent, sTmp, nFound, nFoundEnd, sBoundary, sRes, oRes);
     }
     std::string sFile = oRes.GetData();
     for(auto& item : sRes)
     {
         std::string sName = item.first;
+        std::string ssName;
         size_t found = sFile.find(sName);
-        if(found == std::string::npos)
-        {
-            found = sName.rfind('/');
-            if(found != std::string::npos)
-                sName.erase(0, found + 1);
-            found = sFile.find(sName);
-        }
+        size_t sfound = sName.rfind('/');
+        if(sfound != std::string::npos)
+            ssName = sName.substr(0, sfound + 1);
+        if(found == std::string::npos && sfound != std::string::npos)
+            found = sFile.find(ssName);
         while(found != std::string::npos)
         {
             size_t fq = sFile.find_last_of("\"\'>", found) + 1;
             size_t tq = sFile.find_first_of("\"\'<", found);
-            sFile.replace(fq, tq - fq, item.second);
-            found = sFile.find(sName, fq + item.second.length());
+            if(sFile[fq - 1] != '>')
+            {
+                sFile.replace(fq, tq - fq, item.second);
+                found = sFile.find(sName, fq + item.second.length());
+            }
+            else
+                found = sFile.find(sName, tq);
+            if(found == std::string::npos && sfound != std::string::npos)
+                found = sFile.find(ssName);
         }
     }
     return sFile;

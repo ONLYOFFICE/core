@@ -513,7 +513,10 @@ public:
                         }
                     }
                     else
+                    {
+                        m_oStylesCalculator.AddStylesFromFile(m_sSrc + L'/' + sFName);
                         m_oStylesCalculator.AddStylesFromFile(m_sSrc + L'/' + sRef);
+                    }
                 }
                 m_oLightReader.MoveToElement();
             }

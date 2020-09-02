@@ -159,7 +159,7 @@ static void ReadMht(std::string& sFileContent, const std::wstring& sTmp, size_t&
     if(nTag != std::string::npos && nTag < nContentTag)
     {
         nTagEnd = sFileContent.find_first_of(";\n\r", nTag);
-        nTag += 5;
+        nTag += 6;
         if(nTagEnd != std::string::npos && nTagEnd < nContentTag)
             sName = sFileContent.substr(nTag, nTagEnd - nTag);
     }
@@ -258,10 +258,15 @@ static void ReadMht(std::string& sFileContent, const std::wstring& sTmp, size_t&
     else if((sContentType.find("image") != std::string::npos || sExtention == L"gif" || sContentType == "application/octet-stream") &&
             (sContentEncoding == "Base64" || sContentEncoding == "base64"))
     {
+        if(sExtention == L"ico" || sContentType.find("ico") != std::string::npos)
+        {
+            if(!sName.empty())
+                sName = sName.substr(0, sName.rfind('.')) + ".jpg";
+            else
+                sContentType = "image/jpg";
+        }
         int nSrcLen = (int)sContent.length();
         int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
-        if(nDecodeLen == 0)
-            return;
         BYTE* pData = new BYTE[nDecodeLen];
         if (TRUE == NSBase64::Base64Decode(sContent.c_str(), nSrcLen, pData, &nDecodeLen))
         {

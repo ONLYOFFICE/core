@@ -22,10 +22,9 @@ static std::string mhtTohtml(std::string& sFileContent, const std::wstring& sTmp
 
 static std::wstring htmlToXhtml(const std::wstring& sFile)
 {
-    std::wstring sRes;
     std::string sFileContent;
     if(!NSFile::CFileBinary::ReadAllTextUtf8A(sFile, sFileContent))
-        return sRes;
+        return L"";
 
     // Распознование кодировки
     size_t posEncoding = sFileContent.find("charset=");
@@ -45,7 +44,7 @@ static std::wstring htmlToXhtml(const std::wstring& sFile)
             {
                 sFileContent.replace(posEncoding, posEnd - posEncoding, "UTF-8");
                 NSUnicodeConverter::CUnicodeConverter oConverter;
-                sRes = oConverter.toUnicode(sFileContent, sEncoding.c_str());
+                std::wstring sRes = oConverter.toUnicode(sFileContent, sEncoding.c_str());
                 sFileContent = U_TO_UTF8(sRes);
             }
         }
@@ -410,13 +409,10 @@ static void substitute_xml_entities_into_text(std::string &text)
 }
 
 // Заменяет сущности ",' в text
-static void substitute_xml_entities_into_attributes(char quote, std::string &text)
+static void substitute_xml_entities_into_attributes(std::string &text)
 {
-   substitute_xml_entities_into_text(text);
-    if (quote == '"')
-        replace_all(text, "\"", "&quot;");
-    else if (quote == '\'')
-        replace_all(text, "'", "&apos;");
+    substitute_xml_entities_into_text(text);
+    replace_all(text, "\"", "&quot;");
 }
 
 static std::string handle_unknown_tag(GumboStringPiece* text)
@@ -466,7 +462,6 @@ static void build_attributes(GumboAttribute* at, bool no_entities, NSStringUtils
 {
     std::string sVal(at->value);
     std::string sName(at->name);
-    char quote = '"';
     atts.WriteString(" ");
     if(sName.empty())
         return;
@@ -492,7 +487,7 @@ static void build_attributes(GumboAttribute* at, bool no_entities, NSStringUtils
     atts.WriteString("=");
     atts.WriteString(qs);
     if(!no_entities)
-        substitute_xml_entities_into_attributes(quote, sVal);
+        substitute_xml_entities_into_attributes(sVal);
     atts.WriteString(sVal);
     atts.WriteString(qs);
 }

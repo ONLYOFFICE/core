@@ -37,12 +37,7 @@ struct CTc
     int j;
     std::wstring sGridSpan = L"1";
 
-    CTc(int _i, int _j, std::wstring sColspan)
-    {
-        i = _i;
-        j = _j;
-        sGridSpan = sColspan;
-    }
+    CTc(const int& _i, const int& _j, const std::wstring& sColspan) : i(_i), j(_j), sGridSpan(sColspan) {}
 
     bool operator==(const CTc& c2)
     {
@@ -59,23 +54,10 @@ struct CTextSettings
     std::wstring sRStyle; // w:rStyle
     std::wstring sPStyle; // w:pStyle
 
-    CTextSettings(bool _bBdo, bool _bPre, int _nLi, const std::wstring& _sRStyle, const std::wstring& _sPStyle)
-    {
-        bBdo    = _bBdo;
-        bPre    = _bPre;
-        nLi     = _nLi;
-        sRStyle = _sRStyle;
-        sPStyle = _sPStyle;
-    }
+    CTextSettings(const bool& _bBdo, const bool& _bPre, const int& _nLi, const std::wstring& _sRStyle, const std::wstring& _sPStyle) :
+        bBdo(_bBdo), bPre(_bPre), nLi(_nLi), sRStyle(_sRStyle), sPStyle(_sPStyle) {}
 
-    CTextSettings(const CTextSettings& oTS)
-    {
-        bBdo    = oTS.bBdo;
-        bPre    = oTS.bPre;
-        nLi     = oTS.nLi;
-        sRStyle = oTS.sRStyle;
-        sPStyle = oTS.sPStyle;
-    }
+    CTextSettings(const CTextSettings& oTS) : bBdo(oTS.bBdo), bPre(oTS.bPre), nLi(oTS.nLi), sRStyle(oTS.sRStyle), sPStyle(oTS.sPStyle) {}
 };
 
 struct CHtmlParams
@@ -86,27 +68,27 @@ struct CHtmlParams
     std::wstring m_sDate;        // Дата
     std::wstring m_sDescription; // описание
 
-    void SetDate(std::wstring sDate)
+    void SetDate(const std::wstring& sDate)
     {
         m_sDate = sDate;
     }
 
-    void SetDescription(std::wstring sDescription)
+    void SetDescription(const std::wstring& sDescription)
     {
         m_sDescription = sDescription;
     }
 
-    void SetGenres(std::wstring sGenres)
+    void SetGenres(const std::wstring& sGenres)
     {
         m_sGenres = sGenres;
     }
 
-    void SetAuthors(std::wstring sAuthors)
+    void SetAuthors(const std::wstring& sAuthors)
     {
         m_sAuthors = sAuthors;
     }
 
-    void SetTitle(std::wstring sTitle)
+    void SetTitle(const std::wstring& sTitle)
     {
         m_sBookTitle = sTitle;
     }
@@ -644,7 +626,7 @@ private:
                 oXml->WriteString(L"<w:t xml:space=\"preserve\">");
 
                 std::wstring sText = m_oLightReader.GetText();
-                auto end = sText.end();
+                std::wstring::iterator end;
                 if(oTS.bBdo)
                     std::reverse(sText.begin(), sText.end());
                 if(oTS.bPre)
@@ -758,6 +740,21 @@ private:
                 oTSR.sRStyle += L"<w:strike/>";
                 readStream(oXml, sSubClass, oTSR, bWasP);
             }
+            else if(sName == L"font")
+            {
+                while(m_oLightReader.MoveToNextAttribute())
+                {
+                    std::wstring sAName = m_oLightReader.GetName();
+                    if(sAName == L"color")
+                        sSubClass.back().m_sStyle += L"; color: " + m_oLightReader.GetText();
+                    else if(sAName == L"face")
+                        sSubClass.back().m_sStyle += L"; font-family: " + m_oLightReader.GetText();
+                    else if(sAName == L"size")
+                        sSubClass.back().m_sStyle += L"; font-size: " + m_oLightReader.GetText();
+                }
+                m_oLightReader.MoveToElement();
+                readStream(oXml, sSubClass, oTS, bWasP);
+            }
             // Картинки
             else if(sName == L"img")
                 readImage(oXml, sSubClass, oTS, bWasP);
@@ -832,7 +829,7 @@ private:
             // Без нового абзаца
             else if(sName == L"basefont" || sName == L"button" || sName == L"label" || sName == L"data" || sName == L"object" ||
                     sName == L"noscript" || sName == L"output" || sName == L"abbr"  || sName == L"time" || sName == L"ruby"   ||
-                    sName == L"progress" || sName == L"hgroup" || sName == L"meter" || sName == L"span" || sName == L"font"   ||
+                    sName == L"progress" || sName == L"hgroup" || sName == L"meter" || sName == L"span" ||
                     sName == L"acronym")
                 readStream(oXml, sSubClass, oTS, bWasP);
             // С нового абзаца

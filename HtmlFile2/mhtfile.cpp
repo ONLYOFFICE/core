@@ -45,8 +45,7 @@ HRESULT CMhtFile::Open(const std::wstring& sSrc, const std::wstring& sDst, CHtml
     if(!m_internal->m_oLightReader.MoveToStart())
         return S_FALSE;
 
-    if(!m_internal->readSrc(NSFile::GetFileName(sSrc)))
-        return S_FALSE;
+    m_internal->readSrc(NSFile::GetFileName(sSrc));
     m_internal->write();
     NSFile::CFileBinary::Remove(m_internal->m_sTmp + L"/res.xhtml");
     return S_OK;

@@ -112,7 +112,6 @@ private:
     int m_nImageId;     // ID картинки
     int m_nFootnoteId;  // ID сноски
     int m_nHyperlinkId; // ID ссылки
-    int m_nStyleId;     // ID стиля
     int m_nCrossId;     // ID перекрестной ссылки
     int m_nNumberingId; // ID списка
 
@@ -124,15 +123,7 @@ private:
 
 public:
 
-    CHtmlFile2_Private()
-    {
-        m_nImageId     = 1;
-        m_nFootnoteId  = 1;
-        m_nHyperlinkId = 1;
-        m_nStyleId     = 1;
-        m_nCrossId     = 1;
-        m_nNumberingId = 1;
-    }
+    CHtmlFile2_Private() : m_nImageId(1), m_nFootnoteId(1), m_nHyperlinkId(1), m_nCrossId(1), m_nNumberingId(1) {}
 
     ~CHtmlFile2_Private()
     {
@@ -150,39 +141,24 @@ public:
     // Проверяет наличие тэга html
     bool isHtml()
     {
-        if(!m_oLightReader.ReadNextNode())
-            return false;
-        return (m_oLightReader.GetName() == L"html");
+        return (m_oLightReader.ReadNextNode() ? m_oLightReader.GetName() == L"html" : false);
     }
 
     // Создаёт основу docx
     void CreateDocxEmpty(CHtmlParams* oParams)
     {
         // Создаем пустые папки
-        std::wstring strDirectory = m_sDst;
-        // rels
-        std::wstring pathRels = strDirectory + L"/_rels";
-        NSDirectory::CreateDirectory(pathRels);
-        // docProps
-        std::wstring pathDocProps = strDirectory + L"/docProps";
-        NSDirectory::CreateDirectory(pathDocProps);
-        // word
-        std::wstring pathWord = strDirectory + L"/word";
-        NSDirectory::CreateDirectory(pathWord);
-        // documentRels
-        std::wstring pathWordRels = pathWord + L"/_rels";
-        NSDirectory::CreateDirectory(pathWordRels);
-        // media
-        std::wstring pathMedia = pathWord + L"/media";
-        NSDirectory::CreateDirectory(pathMedia);
-        // theme
-        std::wstring pathTheme = pathWord + L"/theme";
-        NSDirectory::CreateDirectory(pathTheme);
+        NSDirectory::CreateDirectory(m_sDst + L"/_rels");
+        NSDirectory::CreateDirectory(m_sDst + L"/docProps");
+        NSDirectory::CreateDirectory(m_sDst + L"/word");
+        NSDirectory::CreateDirectory(m_sDst + L"/word/_rels");
+        NSDirectory::CreateDirectory(m_sDst + L"/word/media");
+        NSDirectory::CreateDirectory(m_sDst + L"/word/theme");
 
         // theme1.xml
         std::wstring sTheme = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><a:theme xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" name=\"Office Theme\"><a:themeElements><a:clrScheme name=\"Office\"><a:dk1><a:sysClr val=\"windowText\" lastClr=\"000000\"/></a:dk1><a:lt1><a:sysClr val=\"window\" lastClr=\"FFFFFF\"/></a:lt1><a:dk2><a:srgbClr val=\"44546A\"/></a:dk2><a:lt2><a:srgbClr val=\"E7E6E6\"/></a:lt2><a:accent1><a:srgbClr val=\"5B9BD5\"/></a:accent1><a:accent2><a:srgbClr val=\"ED7D31\"/></a:accent2><a:accent3><a:srgbClr val=\"A5A5A5\"/></a:accent3><a:accent4><a:srgbClr val=\"FFC000\"/></a:accent4><a:accent5><a:srgbClr val=\"4472C4\"/></a:accent5><a:accent6><a:srgbClr val=\"70AD47\"/></a:accent6><a:hlink><a:srgbClr val=\"0563C1\"/></a:hlink><a:folHlink><a:srgbClr val=\"954F72\"/></a:folHlink></a:clrScheme><a:fontScheme name=\"Office Classic 2\"><a:majorFont><a:latin typeface=\"Arial\"/><a:ea typeface=\"Arial\"/><a:cs typeface=\"Arial\"/></a:majorFont><a:minorFont><a:latin typeface=\"Arial\"/><a:ea typeface=\"Arial\"/><a:cs typeface=\"Arial\"/></a:minorFont></a:fontScheme><a:fmtScheme name=\"Office\"><a:fillStyleLst><a:solidFill><a:schemeClr val=\"phClr\"/></a:solidFill><a:gradFill><a:gsLst><a:gs pos=\"0\"><a:schemeClr val=\"phClr\"><a:tint val=\"50000\"/><a:satMod val=\"300000\"/></a:schemeClr></a:gs><a:gs pos=\"35000\"><a:schemeClr val=\"phClr\"><a:tint val=\"37000\"/><a:satMod val=\"300000\"/></a:schemeClr></a:gs><a:gs pos=\"100000\"><a:schemeClr val=\"phClr\"><a:tint val=\"15000\"/><a:satMod val=\"350000\"/></a:schemeClr></a:gs></a:gsLst><a:lin ang=\"16200000\" scaled=\"1\"/></a:gradFill><a:gradFill><a:gsLst><a:gs pos=\"0\"><a:schemeClr val=\"phClr\"><a:shade val=\"51000\"/><a:satMod val=\"130000\"/></a:schemeClr></a:gs><a:gs pos=\"80000\"><a:schemeClr val=\"phClr\"><a:shade val=\"93000\"/><a:satMod val=\"130000\"/></a:schemeClr></a:gs><a:gs pos=\"100000\"><a:schemeClr val=\"phClr\"><a:shade val=\"94000\"/><a:satMod val=\"135000\"/></a:schemeClr></a:gs></a:gsLst><a:lin ang=\"16200000\" scaled=\"0\"/></a:gradFill></a:fillStyleLst><a:lnStyleLst><a:ln w=\"6350\" cap=\"flat\" cmpd=\"sng\" algn=\"ctr\"><a:solidFill><a:schemeClr val=\"phClr\"><a:shade val=\"95000\"/><a:satMod val=\"105000\"/></a:schemeClr></a:solidFill></a:ln><a:ln w=\"12700\" cap=\"flat\" cmpd=\"sng\" algn=\"ctr\"><a:solidFill><a:schemeClr val=\"phClr\"/></a:solidFill></a:ln><a:ln w=\"19050\" cap=\"flat\" cmpd=\"sng\" algn=\"ctr\"><a:solidFill><a:schemeClr val=\"phClr\"/></a:solidFill></a:ln></a:lnStyleLst><a:effectStyleLst><a:effectStyle><a:effectLst><a:outerShdw blurRad=\"40000\" dist=\"20000\" dir=\"5400000\" rotWithShape=\"0\"><a:srgbClr val=\"000000\"><a:alpha val=\"38000\"/></a:srgbClr></a:outerShdw></a:effectLst></a:effectStyle><a:effectStyle><a:effectLst><a:outerShdw blurRad=\"40000\" dist=\"23000\" dir=\"5400000\" rotWithShape=\"0\"><a:srgbClr val=\"000000\"><a:alpha val=\"35000\"/></a:srgbClr></a:outerShdw></a:effectLst></a:effectStyle><a:effectStyle><a:effectLst><a:outerShdw blurRad=\"40000\" dist=\"23000\" dir=\"5400000\" rotWithShape=\"0\"><a:srgbClr val=\"000000\"><a:alpha val=\"35000\"/></a:srgbClr></a:outerShdw></a:effectLst></a:effectStyle></a:effectStyleLst><a:bgFillStyleLst><a:solidFill><a:schemeClr val=\"phClr\"/></a:solidFill><a:gradFill><a:gsLst><a:gs pos=\"0\"><a:schemeClr val=\"phClr\"><a:tint val=\"40000\"/><a:satMod val=\"350000\"/></a:schemeClr></a:gs><a:gs pos=\"40000\"><a:schemeClr val=\"phClr\"><a:tint val=\"45000\"/><a:shade val=\"99000\"/><a:satMod val=\"350000\"/></a:schemeClr></a:gs><a:gs pos=\"100000\"><a:schemeClr val=\"phClr\"><a:shade val=\"20000\"/><a:satMod val=\"255000\"/></a:schemeClr></a:gs></a:gsLst><a:path path=\"circle\"/></a:gradFill><a:gradFill><a:gsLst><a:gs pos=\"0\"><a:schemeClr val=\"phClr\"><a:tint val=\"80000\"/><a:satMod val=\"300000\"/></a:schemeClr></a:gs><a:gs pos=\"100000\"><a:schemeClr val=\"phClr\"><a:shade val=\"30000\"/><a:satMod val=\"200000\"/></a:schemeClr></a:gs></a:gsLst><a:path path=\"circle\"/></a:gradFill></a:bgFillStyleLst></a:fmtScheme></a:themeElements><a:objectDefaults/></a:theme>";
         NSFile::CFileBinary oThemeWriter;
-        if (oThemeWriter.CreateFileW(pathTheme + L"/theme1.xml"))
+        if (oThemeWriter.CreateFileW(m_sDst + L"/word/theme/theme1.xml"))
         {
             oThemeWriter.WriteStringUTF8(sTheme);
             oThemeWriter.CloseFile();
@@ -195,13 +171,11 @@ public:
         #if defined(INTVER)
         std::string sVersion = VALUE2STR(INTVER);
         #endif
-        sApplication += L"/";
-        sApplication += UTF8_TO_U(sVersion);
         std::wstring sApp = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties\" xmlns:vt=\"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes\"><Application>";
-        sApp += sApplication;
+        sApp += sApplication + L"/" + UTF8_TO_U(sVersion);
         sApp += L"</Application><DocSecurity>0</DocSecurity><HyperlinksChanged>false</HyperlinksChanged><LinksUpToDate>false</LinksUpToDate><ScaleCrop>false</ScaleCrop><SharedDoc>false</SharedDoc></Properties>";
         NSFile::CFileBinary oAppWriter;
-        if (oAppWriter.CreateFileW(pathDocProps + L"/app.xml"))
+        if (oAppWriter.CreateFileW(m_sDst + L"/docProps/app.xml"))
         {
             oAppWriter.WriteStringUTF8(sApp);
             oAppWriter.CloseFile();
@@ -210,7 +184,7 @@ public:
         // .rels
         std::wstring sRels = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"word/document.xml\"/><Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties\" Target=\"docProps/core.xml\"/><Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties\" Target=\"docProps/app.xml\"/></Relationships>";
         NSFile::CFileBinary oRelsWriter;
-        if (oRelsWriter.CreateFileW(pathRels + L"/.rels"))
+        if (oRelsWriter.CreateFileW(m_sDst + L"/_rels/.rels"))
         {
             oRelsWriter.WriteStringUTF8(sRels);
             oRelsWriter.CloseFile();
@@ -219,7 +193,7 @@ public:
         // [Content_Types].xml
         std::wstring sContent = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\"><Default Extension=\"bmp\" ContentType=\"image/bmp\"/><Default Extension=\"svg\" ContentType=\"image/svg+xml\"/><Default Extension=\"jfif\" ContentType=\"image/jpeg\"/><Default Extension=\"wmf\" ContentType=\"image/x-wmf\"/><Default Extension=\"gif\" ContentType=\"image/gif\"/><Default Extension=\"jpe\" ContentType=\"image/jpeg\"/><Default Extension=\"png\" ContentType=\"image/png\"/><Default Extension=\"jpg\" ContentType=\"image/jpeg\"/><Default Extension=\"jpeg\" ContentType=\"image/jpeg\"/><Default Extension=\"xml\" ContentType=\"application/xml\"/><Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/><Default Extension=\"bin\" ContentType=\"application/vnd.openxmlformats-officedocument.oleObject\"/><Override PartName=\"/docProps/core.xml\" ContentType=\"application/vnd.openxmlformats-package.core-properties+xml\"/><Override PartName=\"/word/theme/theme1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/><Override PartName=\"/word/fontTable.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml\"/><Override PartName=\"/word/webSettings.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml\"/><Override PartName=\"/word/styles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml\"/><Override PartName=\"/word/document.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/><Override PartName=\"/word/footnotes.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml\"/><Override PartName=\"/word/settings.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml\"/><Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\"/><Override PartName=\"/word/numbering.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml\"/></Types>";
         NSFile::CFileBinary oContentWriter;
-        if (oContentWriter.CreateFileW(strDirectory + L"/[Content_Types].xml"))
+        if (oContentWriter.CreateFileW(m_sDst + L"/[Content_Types].xml"))
         {
             oContentWriter.WriteStringUTF8(sContent);
             oContentWriter.CloseFile();
@@ -227,7 +201,7 @@ public:
 
         // footnotes.xml.rels
         NSFile::CFileBinary oFootRelsWriter;
-        if (oFootRelsWriter.CreateFileW(pathWordRels + L"/footnotes.xml.rels"))
+        if (oFootRelsWriter.CreateFileW(m_sDst + L"/word/_rels/footnotes.xml.rels"))
         {
             oFootRelsWriter.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"></Relationships>");
             oFootRelsWriter.CloseFile();
@@ -236,7 +210,7 @@ public:
         // fontTable.xml
         std::wstring sFontTable = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:fonts xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" mc:Ignorable=\"w14 w15\"><w:font w:name=\"Wingdings\"><w:panose1 w:val=\"05000000000000000000\"/></w:font><w:font w:name=\"Courier New\"><w:panose1 w:val=\"02070309020205020404\"/></w:font><w:font w:name=\"Symbol\"><w:panose1 w:val=\"05050102010706020507\"/></w:font><w:font w:name=\"Arial\"><w:panose1 w:val=\"020B0604020202020204\"/></w:font><w:font w:name=\"Calibri\"><w:panose1 w:val=\"020F0502020204030204\"/></w:font><w:font w:name=\"Times New Roman\"><w:panose1 w:val=\"02020603050405020304\"/></w:font><w:font w:name=\"Cambria\"><w:panose1 w:val=\"02040503050406030204\"/></w:font></w:fonts>";
         NSFile::CFileBinary oFontTableWriter;
-        if (oFontTableWriter.CreateFileW(pathWord + L"/fontTable.xml"))
+        if (oFontTableWriter.CreateFileW(m_sDst + L"/word/fontTable.xml"))
         {
             oFontTableWriter.WriteStringUTF8(sFontTable);
             oFontTableWriter.CloseFile();
@@ -245,7 +219,7 @@ public:
         // settings.xml
         std::wstring sSettings = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?><w:settings xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:v=\"urn:schemas-microsoft-com:vml\"><w:clrSchemeMapping w:accent1=\"accent1\" w:accent2=\"accent2\" w:accent3=\"accent3\" w:accent4=\"accent4\" w:accent5=\"accent5\" w:accent6=\"accent6\" w:bg1=\"light1\" w:bg2=\"light2\" w:followedHyperlink=\"followedHyperlink\" w:hyperlink=\"hyperlink\" w:t1=\"dark1\" w:t2=\"dark2\"/><w:defaultTabStop w:val=\"708\"/><m:mathPr/><w:trackRevisions w:val=\"false\"/><w:footnotePr><w:footnote w:id=\"-1\"/><w:footnote w:id=\"0\"/><w:numFmt w:val=\"decimal\"/><w:numRestart w:val=\"continuous\"/><w:numStart w:val=\"1\"/><w:pos w:val=\"pageBottom\"/></w:footnotePr><w:decimalSymbol w:val=\".\"/><w:listSeparator w:val=\",\"/><w:compat><w:compatSetting w:name=\"compatibilityMode\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"14\"/><w:compatSetting w:name=\"overrideTableStyleFontSizeAndJustification\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"1\"/><w:compatSetting w:name=\"enableOpenTypeFeatures\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"1\"/><w:compatSetting w:name=\"doNotFlipMirrorIndents\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"1\"/></w:compat><w:zoom w:percent=\"100\"/><w:characterSpacingControl w:val=\"doNotCompress\"/><w:themeFontLang w:val=\"en-US\" w:eastAsia=\"zh-CN\"/><w:shapeDefaults><o:shapedefaults v:ext=\"edit\" spidmax=\"1026\"/><o:shapelayout v:ext=\"edit\"><o:idmap v:ext=\"edit\" data=\"1\"/></o:shapelayout></w:shapeDefaults></w:settings>";
         NSFile::CFileBinary oSettingsWriter;
-        if (oSettingsWriter.CreateFileW(pathWord + L"/settings.xml"))
+        if (oSettingsWriter.CreateFileW(m_sDst + L"/word/settings.xml"))
         {
             oSettingsWriter.WriteStringUTF8(sSettings);
             oSettingsWriter.CloseFile();
@@ -254,7 +228,7 @@ public:
         // webSettings.xml
         std::wstring sWebSettings = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:webSettings xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:optimizeForBrowser/></w:webSettings>";
         NSFile::CFileBinary oWebWriter;
-        if (oWebWriter.CreateFileW(pathWord + L"/webSettings.xml"))
+        if (oWebWriter.CreateFileW(m_sDst + L"/word/webSettings.xml"))
         {
             oWebWriter.WriteStringUTF8(sWebSettings);
             oWebWriter.CloseFile();
@@ -313,7 +287,7 @@ public:
         }
         sCore += L"<cp:lastModifiedBy/></cp:coreProperties>";
         NSFile::CFileBinary oCoreWriter;
-        if (oCoreWriter.CreateFileW(pathDocProps + L"/core.xml"))
+        if (oCoreWriter.CreateFileW(m_sDst + L"/docProps/core.xml"))
         {
             oCoreWriter.WriteStringUTF8(sCore);
             oCoreWriter.CloseFile();
@@ -347,11 +321,10 @@ public:
     }
 
     // Читает файл
-    bool readSrc(const std::wstring& sFileName)
+    void readSrc(const std::wstring& sFileName)
     {
         // Читаем html
-        if(!isHtml())
-            return false;
+        m_oLightReader.ReadNextNode();
 
         int nDeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
@@ -362,7 +335,6 @@ public:
             else if(sName == L"body")
                 readBody(sFileName);
         }
-        return true;
     }
 
     // Дописывает концы docx
@@ -480,9 +452,9 @@ public:
                     if(m_oLightReader.GetName() != L"href")
                         continue;
                     std::wstring sRef = m_oLightReader.GetText();
-                    std::wstring sFName = NSFile::GetFileName(sRef);
                     if(NSFile::GetFileExtention(sRef) != L"css")
                         continue;
+                    std::wstring sFName = NSFile::GetFileName(sRef);
                     // Стиль в сети
                     if(sRef.substr(0, 4) == L"http")
                     {
@@ -517,7 +489,6 @@ private:
         oNode.m_sName = m_oLightReader.GetName();
         if(oNode.m_sName == L"#text")
             return sSelectors;
-        std::vector<NSCSS::CNode> sSubClass(sSelectors);
         // Стиль по атрибуту
         while(m_oLightReader.MoveToNextAttribute())
         {
@@ -534,6 +505,7 @@ private:
                 oNode.m_sStyle += L"; text-align: " + m_oLightReader.GetText() + L";";
         }
         m_oLightReader.MoveToElement();
+        std::vector<NSCSS::CNode> sSubClass(sSelectors);
         sSubClass.push_back(oNode);
         return sSubClass;
     }

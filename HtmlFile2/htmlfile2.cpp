@@ -45,8 +45,7 @@ HRESULT CHtmlFile2::Open(const std::wstring& sSrc, const std::wstring& sDst, CHt
     if(!m_internal->m_oLightReader.MoveToStart())
         return S_FALSE;
 
-    if(!m_internal->readSrc(NSFile::GetFileName(sSrc)))
-        return S_FALSE;
+    m_internal->readSrc(NSFile::GetFileName(sSrc));
     m_internal->write();
     NSFile::CFileBinary::Remove(m_internal->m_sTmp + L"/res.xhtml");
     return S_OK;
@@ -74,9 +73,7 @@ HRESULT CHtmlFile2::OpenBatch(const std::vector<std::wstring>& sSrc, const std::
         // Переходим в начало
         if(!m_internal->m_oLightReader.MoveToStart())
             return S_FALSE;
-
-        if(!m_internal->readSrc(NSFile::GetFileName(sS)))
-            return S_FALSE;
+        m_internal->readSrc(NSFile::GetFileName(sS));
 
         NSFile::CFileBinary::Remove(m_internal->m_sTmp + L"/res.xhtml");
         m_internal->m_oLightReader.Clear();

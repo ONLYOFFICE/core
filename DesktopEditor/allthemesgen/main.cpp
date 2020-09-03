@@ -283,6 +283,7 @@ int main(int argc, char** argv)
     std::wstring sAllFonts = L"";
     bool bIsNeedCorrectSdkAll = false;
     std::wstring sThemesParams = L"";
+    std::wstring sPostfix = L"";
 
     for (int i = 0; i < argc; ++i)
     {
@@ -338,6 +339,10 @@ int main(int argc, char** argv)
             {
                 sThemesParams = sValue;
             }
+            else if (sKey == L"--postfix")
+            {
+                sPostfix = sValue;
+            }
         }
     }
 
@@ -352,7 +357,7 @@ int main(int argc, char** argv)
             double dKoef1 = arParams[0] / 85.0;
             double dKoef2 = arParams[1] / 38.0;
 
-            sThemesParams += (L"," + std::to_wstring((int)(6 * dKoef2/*dKoef1*/)));
+            sThemesParams += (L"," + std::to_wstring((int)(6 * dKoef1)));
             sThemesParams += (L"," + std::to_wstring((int)(3 * dKoef2)));
             sThemesParams += (L"," + std::to_wstring((int)(4 * dKoef1)));
             sThemesParams += (L"," + std::to_wstring((int)(31 * dKoef2)));
@@ -400,42 +405,46 @@ int main(int argc, char** argv)
     {
         ++nThemeIndex;
         std::wstring sOut = sSrcThemesDir + L"/theme" + std::to_wstring(nThemeIndex);
-        if (NSDirectory::Exists(sOut))
-            NSDirectory::DeleteDirectory(sOut);
-
-        NSDirectory::CreateDirectory(sOut);
 
         std::wstring sInput = *iter;
-
         NSStringUtils::CStringBuilder oBuilder;
-        oBuilder.WriteString(L"<?xml version=\"1.0\" encoding=\"utf-8\"?><TaskQueueDataConvert><m_sFileFrom>");
-        oBuilder.WriteEncodeXmlString(sInput);
-        oBuilder.WriteString(L"</m_sFileFrom><m_sFileTo>");
-        oBuilder.WriteEncodeXmlString(sOut + L"/theme.bin");
-        oBuilder.WriteString(L"</m_sFileTo><m_nFormatTo>8192</m_nFormatTo><m_sThemeDir>./</m_sThemeDir>");
-        oBuilder.WriteString(L"<m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
-        if (!sAllFonts.empty())
+
+        if (sPostfix.empty())
         {
-            oBuilder.WriteString(L"<m_sAllFontsPath>");
-            oBuilder.WriteString(sAllFonts);
-            oBuilder.WriteString(L"</m_sAllFontsPath>");
-        }
-        oBuilder.WriteString(L"</TaskQueueDataConvert>");
+            if (NSDirectory::Exists(sOut))
+                NSDirectory::DeleteDirectory(sOut);
 
-        std::wstring sXmlConvert = oBuilder.GetData();
+            NSDirectory::CreateDirectory(sOut);
 
-        std::wstring sTempFileForParams = sOut + L"/params.xml";
-        NSFile::CFileBinary::SaveToFile(sTempFileForParams, sXmlConvert, true);
+            oBuilder.WriteString(L"<?xml version=\"1.0\" encoding=\"utf-8\"?><TaskQueueDataConvert><m_sFileFrom>");
+            oBuilder.WriteEncodeXmlString(sInput);
+            oBuilder.WriteString(L"</m_sFileFrom><m_sFileTo>");
+            oBuilder.WriteEncodeXmlString(sOut + L"/theme.bin");
+            oBuilder.WriteString(L"</m_sFileTo><m_nFormatTo>8192</m_nFormatTo><m_sThemeDir>./</m_sThemeDir>");
+            oBuilder.WriteString(L"<m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
+            if (!sAllFonts.empty())
+            {
+                oBuilder.WriteString(L"<m_sAllFontsPath>");
+                oBuilder.WriteString(sAllFonts);
+                oBuilder.WriteString(L"</m_sAllFontsPath>");
+            }
+            oBuilder.WriteString(L"</TaskQueueDataConvert>");
 
-        int nReturnCode = NSX2T::Convert(sX2tPath + L"/x2t", sTempFileForParams);
-        NSFile::CFileBinary::Remove(sTempFileForParams);
+            std::wstring sXmlConvert = oBuilder.GetData();
 
-        if (0 != nReturnCode)
-        {
-            std::cout << "could not use " << U_TO_UTF8(sInput) << std::endl;
-            --nThemeIndex;
-            NSDirectory::DeleteDirectory(sOut);
-            continue;
+            std::wstring sTempFileForParams = sOut + L"/params.xml";
+            NSFile::CFileBinary::SaveToFile(sTempFileForParams, sXmlConvert, true);
+
+            int nReturnCode = NSX2T::Convert(sX2tPath + L"/x2t", sTempFileForParams);
+            NSFile::CFileBinary::Remove(sTempFileForParams);
+
+            if (0 != nReturnCode)
+            {
+                std::cout << "could not use " << U_TO_UTF8(sInput) << std::endl;
+                --nThemeIndex;
+                NSDirectory::DeleteDirectory(sOut);
+                continue;
+            }
         }
 
         oBuilder.ClearNoAttack();
@@ -508,15 +517,25 @@ int main(int argc, char** argv)
             imageWriter.SetSaveType(0);
             imageWriter.SetIsOnlyFirst(true);
 
-            imageWriter.SetRasterW(nRasterW);
-            imageWriter.SetRasterH(nRasterH);
-            imageWriter.SetFileName(sOut + L"/thumbnail.png");
-            imageWriter.ConvertBuffer(pData, nBytesCount);
+            if (sPostfix.empty())
+            {
+                imageWriter.SetRasterW(nRasterW);
+                imageWriter.SetRasterH(nRasterH);
+                imageWriter.SetFileName(sOut + L"/thumbnail.png");
+                imageWriter.ConvertBuffer(pData, nBytesCount);
 
-            imageWriter.SetRasterW(nRasterW * 2);
-            imageWriter.SetRasterH(nRasterH * 2);
-            imageWriter.SetFileName(sOut + L"/thumbnail@2x.png");
-            imageWriter.ConvertBuffer(pData, nBytesCount);
+                imageWriter.SetRasterW(nRasterW * 2);
+                imageWriter.SetRasterH(nRasterH * 2);
+                imageWriter.SetFileName(sOut + L"/thumbnail@2x.png");
+                imageWriter.ConvertBuffer(pData, nBytesCount);
+            }
+            else
+            {
+                imageWriter.SetRasterW(nRasterW);
+                imageWriter.SetRasterH(nRasterH);
+                imageWriter.SetFileName(sOut + L"/thumbnail_" + sPostfix + L".png");
+                imageWriter.ConvertBuffer(pData, nBytesCount);
+            }
 
             RELEASEARRAYOBJECTS(pData);
         }
@@ -536,114 +555,117 @@ int main(int argc, char** argv)
         oBuilderJS.WriteString(L"]");
     }
 
-    NSFile::CFileBinary::SaveToFile(sSrcThemesDir + L"/themes.js", L"AscCommon.g_defaultThemes = " + oBuilderJS.GetData() + L";");
-
-    // теперь нужно пропатчить sdk-all.js
-    std::wstring sPathDoctRendererConfig = sX2tPath + L"/DoctRenderer.config";
-    XmlUtils::CXmlNode oNode;
-    if (bIsNeedCorrectSdkAll && oNode.FromXmlFile(sPathDoctRendererConfig))
+    if (sPostfix.empty())
     {
-        XmlUtils::CXmlNodes oNodesFile = oNode.GetNode(L"PpttSdk").GetNodes(L"file");
-        for (int i = 0; i < oNodesFile.GetCount(); ++i)
+        NSFile::CFileBinary::SaveToFile(sSrcThemesDir + L"/themes.js", L"AscCommon.g_defaultThemes = " + oBuilderJS.GetData() + L";");
+
+        // теперь нужно пропатчить sdk-all.js
+        std::wstring sPathDoctRendererConfig = sX2tPath + L"/DoctRenderer.config";
+        XmlUtils::CXmlNode oNode;
+        if (bIsNeedCorrectSdkAll && oNode.FromXmlFile(sPathDoctRendererConfig))
         {
-            XmlUtils::CXmlNode oNodeFile;
-            oNodesFile.GetAt(i, oNodeFile);
-
-            std::wstring sFileSdk = oNodeFile.GetText();
-
-            if (!NSFile::CFileBinary::Exists(sFileSdk) || NSFile::CFileBinary::Exists(sX2tPath + L"/" + sFileSdk))
-                sFileSdk = sX2tPath + L"/" + sFileSdk;
-
-            std::wstring sSdkContent;
-            if (NSFile::CFileBinary::ReadAllTextUtf8(sFileSdk, sSdkContent))
+            XmlUtils::CXmlNodes oNodesFile = oNode.GetNode(L"PpttSdk").GetNodes(L"file");
+            for (int i = 0; i < oNodesFile.GetCount(); ++i)
             {
-                std::wstring sStart = L"(function(){AscCommon.g_defaultThemes=";
-                std::wstring sEnd = L";})();";
+                XmlUtils::CXmlNode oNodeFile;
+                oNodesFile.GetAt(i, oNodeFile);
 
-                std::wstring sNewContent = L"";
+                std::wstring sFileSdk = oNodeFile.GetText();
 
-                std::wstring::size_type posStart = sSdkContent.find(sStart);
-                if (posStart != std::wstring::npos)
+                if (!NSFile::CFileBinary::Exists(sFileSdk) || NSFile::CFileBinary::Exists(sX2tPath + L"/" + sFileSdk))
+                    sFileSdk = sX2tPath + L"/" + sFileSdk;
+
+                std::wstring sSdkContent;
+                if (NSFile::CFileBinary::ReadAllTextUtf8(sFileSdk, sSdkContent))
                 {
-                    std::wstring::size_type posEnd = sSdkContent.find(sEnd, posStart);
+                    std::wstring sStart = L"(function(){AscCommon.g_defaultThemes=";
+                    std::wstring sEnd = L";})();";
 
-                    sNewContent = sSdkContent.substr(0, posStart);
-                    sNewContent += (sStart + oBuilderJS.GetData() + sEnd);
-                    sNewContent += sSdkContent.substr(posEnd + sEnd.length());
-                }
-                else
-                {
-                    sNewContent = sSdkContent + L"\n" + sStart + oBuilderJS.GetData() + sEnd;
+                    std::wstring sNewContent = L"";
+
+                    std::wstring::size_type posStart = sSdkContent.find(sStart);
+                    if (posStart != std::wstring::npos)
+                    {
+                        std::wstring::size_type posEnd = sSdkContent.find(sEnd, posStart);
+
+                        sNewContent = sSdkContent.substr(0, posStart);
+                        sNewContent += (sStart + oBuilderJS.GetData() + sEnd);
+                        sNewContent += sSdkContent.substr(posEnd + sEnd.length());
+                    }
+                    else
+                    {
+                        sNewContent = sSdkContent + L"\n" + sStart + oBuilderJS.GetData() + sEnd;
+
+                        NSFile::CFileBinary::Remove(sFileSdk);
+                        NSFile::CFileBinary::SaveToFile(sFileSdk, sSdkContent);
+                    }
 
                     NSFile::CFileBinary::Remove(sFileSdk);
-                    NSFile::CFileBinary::SaveToFile(sFileSdk, sSdkContent);
+                    NSFile::CFileBinary::SaveToFile(sFileSdk, sNewContent);
                 }
-
-                NSFile::CFileBinary::Remove(sFileSdk);
-                NSFile::CFileBinary::SaveToFile(sFileSdk, sNewContent);
             }
         }
-    }
 
-    if (nThemeIndex > 0)
-    {
-        int nRasterW1 = nRasterW;
-        int nRasterH1 = nRasterH;
-
-        for (int nScale = 1; nScale <= 2; nScale++)
+        if (nThemeIndex > 0)
         {
-            nRasterW = nScale * nRasterW;
-            nRasterH = nScale * nRasterH;
+            int nRasterW1 = nRasterW;
+            int nRasterH1 = nRasterH;
 
-            int nRow = 4 * nRasterW;
-            int nSize = nRow * nRasterH;
-            BYTE* pData = new BYTE[nSize * nThemeIndex];
-            BYTE* pDataCur = pData;
-
-            for (int nIndex = 1; nIndex <= nThemeIndex; ++nIndex)
+            for (int nScale = 1; nScale <= 2; nScale++)
             {
+                nRasterW = nScale * nRasterW;
+                nRasterH = nScale * nRasterH;
+
+                int nRow = 4 * nRasterW;
+                int nSize = nRow * nRasterH;
+                BYTE* pData = new BYTE[nSize * nThemeIndex];
+                BYTE* pDataCur = pData;
+
+                for (int nIndex = 1; nIndex <= nThemeIndex; ++nIndex)
+                {
+                    CBgraFrame oFrame;
+
+                    if (1 == nScale)
+                    {
+                        oFrame.OpenFile(sSrcThemesDir + L"/theme" + std::to_wstring(nIndex) + L"/thumbnail.png");
+                    }
+                    else
+                    {
+                        oFrame.OpenFile(sSrcThemesDir + L"/theme" + std::to_wstring(nIndex) + L"/thumbnail@" + std::to_wstring(nScale) + L"x.png");
+                    }
+
+                    if (false)
+                    {
+                        // flip
+                        memcpy(pDataCur, oFrame.get_Data(), nSize);
+                        pDataCur += nSize;
+                    }
+                    else
+                    {
+                        BYTE* pTmp = oFrame.get_Data() + nRow * (nRasterH - 1);
+                        for (int nH = 0; nH < nRasterH; ++nH)
+                        {
+                            memcpy(pDataCur, pTmp, nRow);
+                            pDataCur += nRow;
+                            pTmp -= nRow;
+                        }
+                    }
+                }
+
                 CBgraFrame oFrame;
+                oFrame.put_Data(pData);
+                oFrame.put_Width(nRasterW);
+                oFrame.put_Height(nRasterH * nThemeIndex);
+                oFrame.put_Stride(nRow);
 
                 if (1 == nScale)
                 {
-                    oFrame.OpenFile(sSrcThemesDir + L"/theme" + std::to_wstring(nIndex) + L"/thumbnail.png");
+                    oFrame.SaveFile(sOutputThumbnails + L"/themes_thumbnail.png", 4);
                 }
                 else
                 {
-                    oFrame.OpenFile(sSrcThemesDir + L"/theme" + std::to_wstring(nIndex) + L"/thumbnail@" + std::to_wstring(nScale) + L"x.png");
+                    oFrame.SaveFile(sOutputThumbnails + L"/themes_thumbnail@" + std::to_wstring(nScale) + L"x.png", 4);
                 }
-
-                if (false)
-                {
-                    // flip
-                    memcpy(pDataCur, oFrame.get_Data(), nSize);
-                    pDataCur += nSize;
-                }
-                else
-                {
-                    BYTE* pTmp = oFrame.get_Data() + nRow * (nRasterH - 1);
-                    for (int nH = 0; nH < nRasterH; ++nH)
-                    {
-                        memcpy(pDataCur, pTmp, nRow);
-                        pDataCur += nRow;
-                        pTmp -= nRow;
-                    }
-                }
-            }
-
-            CBgraFrame oFrame;
-            oFrame.put_Data(pData);
-            oFrame.put_Width(nRasterW);
-            oFrame.put_Height(nRasterH * nThemeIndex);
-            oFrame.put_Stride(nRow);
-
-            if (1 == nScale)
-            {
-                oFrame.SaveFile(sOutputThumbnails + L"/themes_thumbnail.png", 4);
-            }
-            else
-            {
-                oFrame.SaveFile(sOutputThumbnails + L"/themes_thumbnail@" + std::to_wstring(nScale) + L"x.png", 4);
             }
         }
     }

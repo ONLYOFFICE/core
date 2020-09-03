@@ -948,7 +948,7 @@ private:
                 auto it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
                 while(it1 != mTable.end() || it2 != mTable.end())
                 {
-                    oXml->WriteString(L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:vAlign w:val=\"center\"/><w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"");
+                    oXml->WriteString(L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"");
                     std::wstring sCol = (it1 != mTable.end() ? it1->sGridSpan : it2->sGridSpan);
                     oXml->WriteString(sCol);
                     oXml->WriteString(L"\"/></w:tcPr><w:p></w:p></w:tc>");
@@ -957,7 +957,7 @@ private:
                     it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
                 }
 
-                oXml->WriteString(L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:vAlign w:val=\"center\"/>");
+                oXml->WriteString(L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/>");
                 if(nRowspan != 1)
                 {
                     oXml->WriteString(L"<w:vMerge w:val=\"restart\"/>");
@@ -983,18 +983,13 @@ private:
                 // Читаем th. Ячейка заголовка таблицы. Выравнивание посередине. Выделяется полужирным
                 if(m_oLightReader.GetName() == L"th")
                 {
-                    CTextSettings oTSPR(oTS);
-                    oTSPR.sRStyle += L"<w:b/>";
-                    oTSPR.sPStyle += L"<w:jc w:val=\"center\"/>";
-                    readStream(oXml, sSubClass, oTSPR, bWasP);
+                    CTextSettings oTSR(oTS);
+                    oTSR.sRStyle += L"<w:b/>";
+                    readStream(oXml, sSubClass, oTSR, bWasP);
                 }
                 // Читаем td. Ячейка таблицы. Выравнивание вправо
                 else if(m_oLightReader.GetName() == L"td")
-                {
-                    CTextSettings oTSP(oTS);
-                    oTSP.sPStyle += L"<w:jc w:val=\"left\"/>";
-                    readStream(oXml, sSubClass, oTSP, bWasP);
-                }
+                    readStream(oXml, sSubClass, oTS, bWasP);
                 oXml->WriteString(L"</w:p></w:tc>");
                 j++;
 
@@ -1003,7 +998,7 @@ private:
                 it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
                 while(it1 != mTable.end() || it2 != mTable.end())
                 {
-                    oXml->WriteString(L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:vAlign w:val=\"center\"/><w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"");
+                    oXml->WriteString(L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"");
                     std::wstring sCol = (it1 != mTable.end() ? it1->sGridSpan : it2->sGridSpan);
                     oXml->WriteString(sCol);
                     oXml->WriteString(L"\"/></w:tcPr><w:p></w:p></w:tc>");

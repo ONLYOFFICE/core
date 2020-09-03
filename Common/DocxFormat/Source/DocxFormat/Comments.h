@@ -42,6 +42,14 @@
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
+}
+
+namespace OOX
+{
 	class CComment : public WritingElementWithChilds<>
 	{
 	public:
@@ -208,6 +216,83 @@ namespace OOX
 			return FileTypes::DocumentCommentsExt;
 		}
 	};
+
+	class CCommentExtensible : public WritingElement
+	{
+	public:
+		WritingElement_AdditionConstructors(CCommentExt)
+			CCommentExtensible()
+		{
+		}
+		virtual ~CCommentExtensible()
+		{
+		}
+		virtual void fromXML(XmlUtils::CXmlNode& oNode)
+		{
+		}
+		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+		virtual std::wstring toXML() const
+		{
+			return L"";
+		}
+
+		virtual EElementType getType() const
+		{
+			return et_w16_commentExtensible;
+		}
+	private:
+		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+	public:
+		nullable<SimpleTypes::CLongHexNumber<> >	m_oDurableId;
+		nullable<SimpleTypes::CDateTime >			m_oDateUtc;
+		nullable<SimpleTypes::COnOff<> >			m_oIntelligentPlaceholder;
+
+		nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
+	};
+
+	class CCommentsExtensible : public OOX::File//, public OOX::IFileContainer
+	{
+	public:
+		CCommentsExtensible(OOX::Document *pMain);
+		CCommentsExtensible(OOX::Document *pMain, const CPath& oPath);
+		virtual ~CCommentsExtensible();
+		virtual void read(const CPath& oPath)
+		{
+			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+			CPath oRootPath;
+			read(oRootPath, oPath);
+		}
+		virtual void read(const CPath& oRootPath, const CPath& oFilePath);
+		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
+		{
+		}
+		virtual const OOX::FileType type() const
+		{
+			return FileTypes::CommentsExtensible;
+		}
+		virtual const CPath DefaultDirectory() const
+		{
+			return type().DefaultDirectory();
+		}
+		virtual const CPath DefaultFileName() const
+		{
+			return type().DefaultFileName();
+		}
+
+		std::vector<CCommentExtensible*>		m_arrComments;
+	};
+	class CDocumentCommentsExtensible : public CCommentsExtensible
+	{
+	public:
+		CDocumentCommentsExtensible(OOX::Document *pMain);
+		CDocumentCommentsExtensible(OOX::Document *pMain, const CPath& oPath);
+		virtual const OOX::FileType type() const
+		{
+			return FileTypes::DocumentCommentsExtensible;
+		}
+	};
+
 
 	class CCommentId : public WritingElement
 	{

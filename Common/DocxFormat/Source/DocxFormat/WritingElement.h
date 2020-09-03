@@ -883,6 +883,7 @@ namespace OOX
 		et_w15_commentEx, // <w15:commentEx>
 
 		et_w16_commentId, // <w16cid:commentId>
+		et_w16_commentExtensible, // <w16cex:commentExtensible>
 
 		et_w_ShapeTextBody,		//<wps:txbx>
 		et_w_Shape,				//<wps:wsp>

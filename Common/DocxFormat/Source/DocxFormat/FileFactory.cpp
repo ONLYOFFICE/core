@@ -103,6 +103,10 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CCommentsExt( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::DocumentCommentsExt )
 			return smart_ptr<OOX::File>(new CDocumentCommentsExt( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::CommentsExtensible )
+			return smart_ptr<OOX::File>(new CCommentsExtensible( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::DocumentCommentsExtensible )
+			return smart_ptr<OOX::File>(new CDocumentCommentsExtensible( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::CommentsIds )
 			return smart_ptr<OOX::File>(new CCommentsIds( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::DocumentCommentsIds )
@@ -238,6 +242,10 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CCommentsExt( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::DocumentCommentsExt )
 			return smart_ptr<OOX::File>(new CDocumentCommentsExt( pMain, oFileName ));
+		else if ( pRelation->Type() == FileTypes::CommentsExtensible )
+			return smart_ptr<OOX::File>(new CCommentsExtensible( pMain, oFileName ));
+		else if ( pRelation->Type() == FileTypes::DocumentCommentsExtensible )
+			return smart_ptr<OOX::File>(new CDocumentCommentsExtensible( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::CommentsIds)
 			return smart_ptr<OOX::File>(new CCommentsIds( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::DocumentCommentsIds)

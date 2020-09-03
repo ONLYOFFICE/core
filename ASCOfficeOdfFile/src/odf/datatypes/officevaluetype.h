@@ -75,6 +75,9 @@ private:
 
 std::wostream & operator << (std::wostream & _Wostream, const office_value_type & _Val);
 
+bool operator== (office_value_type & t1, office_value_type::type & t2);
+bool operator== (const office_value_type & t1, const office_value_type & t2);
+
 } 
 
 APPLY_PARSE_XML_ATTRIBUTES(odf_types::office_value_type);

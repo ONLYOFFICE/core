@@ -36,6 +36,8 @@
 #include <boost/noncopyable.hpp>
 #include <CPScopedPtr.h>
 
+#include "../odf/datatypes/officevaluetype.h"
+
 namespace cpdoccore {
 	namespace odf_reader
 	{
@@ -58,6 +60,9 @@ public:
 	std::wstring get_last_date_format() const;
 	std::wstring get_last_time_format() const;
 
+	odf_types::office_value_type::type type() const;
+	void type(odf_types::office_value_type::type t);
+
     void start_complex_format();
     void add_format(std::wstring const & cond, std::wstring const & format);
     void end_complex_format();
@@ -65,10 +70,7 @@ public:
 	//std::wstring default_data_style(int type);
 	odf_reader::odf_read_context & odf_context_;
 
-	bool bDate;
-	bool bTime;
-	bool bPercent;
-	bool bCurrency;
+
 private:
     class Impl;
     _CP_SCOPED_PTR(Impl) impl_;

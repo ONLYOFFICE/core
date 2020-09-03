@@ -71,7 +71,24 @@ std::wostream & operator << (std::wostream & _Wostream, const office_value_type 
     }
     return _Wostream;
 }
+bool operator == (office_value_type & t1, office_value_type::type & t2)
+{
+    if (t1.get_type() && t1.get_type()) return true;
 
+    return false;
+}
+bool operator == (const office_value_type & t1, const office_value_type & t2)
+{
+    if (t1.get_type() && t1.get_type()) return true;
+
+    return false;
+}
+bool operator == (office_value_type & t1, office_value_type & t2)
+{
+    if (t1.get_type() && t1.get_type()) return true;
+
+    return false;
+}
 office_value_type office_value_type::parse(const std::wstring & Str)
 {
     std::wstring tmp = Str;

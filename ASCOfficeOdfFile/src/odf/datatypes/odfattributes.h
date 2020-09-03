@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _CPDOCCORE_ODFATTRIBUTES_H_
-#define _CPDOCCORE_ODFATTRIBUTES_H_
+#pragma once
 
 #include <xml/attributes.h>
 #include <CPOptional.h>
@@ -81,5 +80,3 @@ public:\
 
 }
 }
-
-#endif

@@ -1234,6 +1234,7 @@ PPTX::Logic::SpTreeElem CDrawingConverter::ObjectFromXml(const std::wstring& sXm
 								if (oNodeBinData.IsValid())
 								{
 									pElem->fromXML(oNodeBinData);
+									oNodeBinData.Clear();
 								}		
 								doc_LoadShape(pElem, oNodeP, ppMainProps, true);
 
@@ -3075,17 +3076,10 @@ void CDrawingConverter::doc_LoadGroup(PPTX::Logic::SpTreeElem *result, XmlUtils:
     if (bIsTop) pTree->m_lGroupIndex = 0;
     else        pTree->m_lGroupIndex = 1;
 
-	//сначала shape type
-	XmlUtils::CXmlNode oNodeST;
-	if (oNode.GetNode(L"v:shapetype", oNodeST))
-	{
-		AddShapeType(oNodeST);
-	}
-	//binary data
-	XmlUtils::CXmlNode oNodeBinData;
-	oNode.GetNode(L"w:binData", oNodeBinData);
-
 	XmlUtils::CXmlNodes oNodes;
+	XmlUtils::CXmlNode oNodeBinData;
+	
+	//сначала shape type
     if (oNode.GetNodes(L"*", oNodes))
 	{
 		int nCount = oNodes.GetCount();
@@ -3096,7 +3090,27 @@ void CDrawingConverter::doc_LoadGroup(PPTX::Logic::SpTreeElem *result, XmlUtils:
 
 			std::wstring strNameP = XmlUtils::GetNameNoNS(oNodeT.GetName());
 
-			if (L"shape"		== strNameP ||
+			if (L"shapetype" == strNameP)
+			{
+				AddShapeType(oNodeT);
+			}
+		}
+	}
+    if (oNode.GetNodes(L"*", oNodes))
+	{
+		int nCount = oNodes.GetCount();
+		for (int i = 0; i < nCount; ++i)
+		{
+			XmlUtils::CXmlNode oNodeT;
+			oNodes.GetAt(i, oNodeT);
+
+			std::wstring strNameP = XmlUtils::GetNameNoNS(oNodeT.GetName());
+
+			if (L"binData" == strNameP)
+			{
+				oNodeBinData = oNode;
+			}
+			else if (L"shape"	== strNameP ||
                 L"rect"         == strNameP ||
                 L"oval"         == strNameP ||
                 L"line"         == strNameP ||
@@ -3108,6 +3122,7 @@ void CDrawingConverter::doc_LoadGroup(PPTX::Logic::SpTreeElem *result, XmlUtils:
 				if (oNodeBinData.IsValid())
 				{
 					_el.fromXML(oNodeBinData);
+					oNodeBinData.Clear();
 				}
 				doc_LoadShape(&_el, oNodeT, pMainProps, false);
 				
@@ -4979,130 +4994,139 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstr
 	++m_nCurrentIndexObject;
 
 	BYTE typeRec1 = m_pReader->GetUChar(); // must be 0;
-	LONG _e = m_pReader->GetPos() + m_pReader->GetLong() + 4;
+	LONG szRec1 = m_pReader->GetLong();
+	LONG _e = m_pReader->GetPos() + szRec1 + 4;
 
-	m_pReader->Skip(5); // type record (must be 1) + 4 byte - len record
-	PPTX::Logic::SpTreeElem oElem;
-
-	m_pReader->m_nDocumentType = XMLWRITER_DOC_TYPE_DOCX;
-
-	oElem.fromPPTY(m_pReader);
-	bool bOle = false;
-	if (oElem.is<PPTX::Logic::Pic>())
+	if (typeRec1 == 0 && szRec1 > 0)
 	{
-		PPTX::Logic::Pic& oPic = oElem.as<PPTX::Logic::Pic>();
-		if(oPic.oleObject.IsInit())
+		BYTE typeRec2 = m_pReader->GetUChar(); // must be 1;
+		LONG szRec2 = m_pReader->GetLong();
+
+		if (typeRec2 == 1 && szRec2 > 0)
 		{
-			bOle = oPic.oleObject->isValid();
-			if (oPic.oleObject->m_oDxaOrig.IsInit() == false)
+			PPTX::Logic::SpTreeElem oElem;
+
+			m_pReader->m_nDocumentType = XMLWRITER_DOC_TYPE_DOCX;
+
+			oElem.fromPPTY(m_pReader);
+			bool bOle = false;
+			if (oElem.is<PPTX::Logic::Pic>())
 			{
-				oPic.oleObject->m_oDxaOrig = 0;
+				PPTX::Logic::Pic& oPic = oElem.as<PPTX::Logic::Pic>();
+				if(oPic.oleObject.IsInit())
+				{
+					bOle = oPic.oleObject->isValid();
+					if (oPic.oleObject->m_oDxaOrig.IsInit() == false)
+					{
+						oPic.oleObject->m_oDxaOrig = 0;
+					}
+					if (oPic.oleObject->m_oDyaOrig.IsInit() == false)
+					{
+						oPic.oleObject->m_oDyaOrig = 0;
+					}
+				}
 			}
-			if (oPic.oleObject->m_oDyaOrig.IsInit() == false)
+			bool bSignatureLine = false;
+			if (oElem.is<PPTX::Logic::Shape>())
 			{
-				oPic.oleObject->m_oDyaOrig = 0;
+				PPTX::Logic::Shape& oShape = oElem.as<PPTX::Logic::Shape>();
+				if(oShape.signatureLine.IsInit())
+				{
+					bSignatureLine = true;
+				}
 			}
-		}
-	}
-	bool bSignatureLine = false;
-	if (oElem.is<PPTX::Logic::Shape>())
-	{
-		PPTX::Logic::Shape& oShape = oElem.as<PPTX::Logic::Shape>();
-		if(oShape.signatureLine.IsInit())
-		{
-			bSignatureLine = true;
-		}
-	}
-	
-	m_pReader->m_nDocumentType = XMLWRITER_DOC_TYPE_PPTX;
+			
+			m_pReader->m_nDocumentType = XMLWRITER_DOC_TYPE_PPTX;
 
-	NSBinPptxRW::CXmlWriter oXmlWriter(XMLWRITER_DOC_TYPE_DOCX);
-	oXmlWriter.m_lObjectIdVML = m_pXmlWriter->m_lObjectIdVML;
-	oXmlWriter.m_lObjectIdOle = m_pXmlWriter->m_lObjectIdOle;
-	oXmlWriter.m_bIsUseOffice2007 = m_bIsUseConvertion2007;
+			NSBinPptxRW::CXmlWriter oXmlWriter(XMLWRITER_DOC_TYPE_DOCX);
+			oXmlWriter.m_lObjectIdVML = m_pXmlWriter->m_lObjectIdVML;
+			oXmlWriter.m_lObjectIdOle = m_pXmlWriter->m_lObjectIdOle;
+			oXmlWriter.m_bIsUseOffice2007 = m_bIsUseConvertion2007;
 
-	oXmlWriter.m_bIsTop = (1 == m_nCurrentIndexObject) ? true : false;
+			oXmlWriter.m_bIsTop = (1 == m_nCurrentIndexObject) ? true : false;
 
-	if (NULL == m_pOOXToVMLRenderer)
-		m_pOOXToVMLRenderer = new COOXToVMLGeometry();
-	oXmlWriter.m_pOOXToVMLRenderer = m_pOOXToVMLRenderer;
+			if (NULL == m_pOOXToVMLRenderer)
+				m_pOOXToVMLRenderer = new COOXToVMLGeometry();
+			oXmlWriter.m_pOOXToVMLRenderer = m_pOOXToVMLRenderer;
 
-	if(bOle)
-	{
-		ConvertPicVML(oElem, bsMainProps, oXmlWriter);
-	}
-	else if(bSignatureLine)
-	{
-		oXmlWriter.WriteString(L"<w:pict>");
-		ConvertShapeVML(oElem, bsMainProps, oXmlWriter, true);
-		oXmlWriter.WriteString(L"</w:pict>");
-	}
-	else
-	{
-	
-		bool bIsNeedConvert2007 = false;
-
-        if (m_bIsUseConvertion2007)
-		{
-			if (oElem.is<PPTX::Logic::SpTree>()	|| 
-				oElem.is<PPTX::Logic::Shape>()	||
-				oElem.is<PPTX::Logic::Pic>())
-			{
-                oXmlWriter.WriteString(L"<mc:AlternateContent><mc:Choice Requires=\"wpg\">");
-				bIsNeedConvert2007 = true;
-			}
-		}
-
-        oXmlWriter.WriteString(L"<w:drawing>");
-		oXmlWriter.WriteString(strMainProps);
-
-		if (oElem.is<PPTX::Logic::SpTree>())
-		{
-            oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
-<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\">");
-		}
-		else if (oElem.is<PPTX::Logic::Pic>())
-		{
-            oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
-<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
-		}
-		else
-		{
-            oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
-<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
-		}
-		oElem.toXmlWriter(&oXmlWriter);
-        oXmlWriter.WriteString(L"</a:graphicData></a:graphic>");
-
-		oXmlWriter.WriteString(strMainPropsTail);
-        oXmlWriter.WriteString(bIsInline ? L"</wp:inline>" : L"</wp:anchor>");
-        oXmlWriter.WriteString(L"</w:drawing>");
-
-		if (bIsNeedConvert2007)
-		{
-            oXmlWriter.WriteString(L"</mc:Choice><mc:Fallback><w:pict>");
-
-			if (oElem.is<PPTX::Logic::SpTree>())
-			{
-				ConvertGroupVML(oElem, bsMainProps, oXmlWriter);
-			}
-			else if (oElem.is<PPTX::Logic::Shape>())
-			{
-				ConvertShapeVML(oElem, bsMainProps, oXmlWriter);
-			}
-			else if (oElem.is<PPTX::Logic::Pic>())
+			if(bOle)
 			{
 				ConvertPicVML(oElem, bsMainProps, oXmlWriter);
 			}
-            oXmlWriter.WriteString(L"</w:pict></mc:Fallback></mc:AlternateContent>");
+			else if(bSignatureLine)
+			{
+				oXmlWriter.WriteString(L"<w:pict>");
+				ConvertShapeVML(oElem, bsMainProps, oXmlWriter, true);
+				oXmlWriter.WriteString(L"</w:pict>");
+			}
+			else
+			{
+			
+				bool bIsNeedConvert2007 = false;
+
+				if (m_bIsUseConvertion2007)
+				{
+					if (oElem.is<PPTX::Logic::SpTree>()	|| 
+						oElem.is<PPTX::Logic::Shape>()	||
+						oElem.is<PPTX::Logic::Pic>())
+					{
+						oXmlWriter.WriteString(L"<mc:AlternateContent><mc:Choice Requires=\"wpg\">");
+						bIsNeedConvert2007 = true;
+					}
+				}
+
+				oXmlWriter.WriteString(L"<w:drawing>");
+				oXmlWriter.WriteString(strMainProps);
+
+				if (oElem.is<PPTX::Logic::SpTree>())
+				{
+					oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
+		<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\">");
+				}
+				else if (oElem.is<PPTX::Logic::Pic>())
+				{
+					oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
+		<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
+				}
+				else
+				{
+					oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
+		<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
+				}
+				oElem.toXmlWriter(&oXmlWriter);
+				oXmlWriter.WriteString(L"</a:graphicData></a:graphic>");
+
+				oXmlWriter.WriteString(strMainPropsTail);
+				oXmlWriter.WriteString(bIsInline ? L"</wp:inline>" : L"</wp:anchor>");
+				oXmlWriter.WriteString(L"</w:drawing>");
+
+				if (bIsNeedConvert2007)
+				{
+					oXmlWriter.WriteString(L"</mc:Choice><mc:Fallback><w:pict>");
+
+					if (oElem.is<PPTX::Logic::SpTree>())
+					{
+						ConvertGroupVML(oElem, bsMainProps, oXmlWriter);
+					}
+					else if (oElem.is<PPTX::Logic::Shape>())
+					{
+						ConvertShapeVML(oElem, bsMainProps, oXmlWriter);
+					}
+					else if (oElem.is<PPTX::Logic::Pic>())
+					{
+						ConvertPicVML(oElem, bsMainProps, oXmlWriter);
+					}
+					oXmlWriter.WriteString(L"</w:pict></mc:Fallback></mc:AlternateContent>");
+				}
+			}
+			--m_nCurrentIndexObject;
+
+			m_pXmlWriter->m_lObjectIdVML = oXmlWriter.m_lObjectIdVML;
+			m_pXmlWriter->m_lObjectIdOle = oXmlWriter.m_lObjectIdOle;
+
+			sXml = oXmlWriter.GetXmlString();
 		}
 	}
-	--m_nCurrentIndexObject;
-
-	m_pXmlWriter->m_lObjectIdVML = oXmlWriter.m_lObjectIdVML;
-	m_pXmlWriter->m_lObjectIdOle = oXmlWriter.m_lObjectIdOle;
-
-    sXml = oXmlWriter.GetXmlString();
 
 	m_pReader->Seek(_e);
 	return S_OK;

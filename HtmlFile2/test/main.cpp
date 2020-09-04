@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 #include "../htmlfile2.h"
-#include "../mhtfile.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
@@ -47,10 +46,10 @@ int main()
                 std::wstring sFileName = NSFile::GetFileName(sFile);
                 std::wcout << sFileName << std::endl;
                 HRESULT nResConvert;
+                CHtmlFile2 oFile;
+                oFile.SetTmpDirectory(sTmp);
                 if(bMhtMode)
                 {
-                    CMhtFile oFile;
-                    oFile.SetTmpDirectory(sTmp);
                     if(!oFile.IsMhtFile(sFile))
                     {
                         nErrorCol++;
@@ -58,12 +57,11 @@ int main()
                         std::cout << "This isn't a mht file" << std::endl;
                         continue;
                     }
-                    nResConvert = oFile.Open(sFile, sTmp);
+                    nResConvert = oFile.OpenMht(sFile, sTmp);
                 }
                 else
                 {
-                    CHtmlFile2 oFile;
-                    oFile.SetTmpDirectory(sTmp);
+
                     if(!oFile.IsHtmlFile(sFile))
                     {
                         nErrorCol++;
@@ -71,7 +69,7 @@ int main()
                         std::cout << "This isn't a html file" << std::endl;
                         continue;
                     }
-                    nResConvert = oFile.Open(sFile, sTmp);
+                    nResConvert = oFile.OpenHtml(sFile, sTmp);
                 }
                 if(nResConvert == S_OK)
                 {
@@ -105,18 +103,15 @@ int main()
 
         // Файл, который открываем
         std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test.mht";
-
+        CHtmlFile2 oFile;
+        oFile.SetTmpDirectory(sOutputDirectory);
         if(bMhtMode)
         {
-            CMhtFile oFile;
-            oFile.SetTmpDirectory(sOutputDirectory);
-            nResConvert = oFile.Open(sFile, sOutputDirectory, &oParams);
+            nResConvert = oFile.OpenMht(sFile, sOutputDirectory, &oParams);
         }
         else
         {
-            CHtmlFile2 oFile;
-            oFile.SetTmpDirectory(sOutputDirectory);
-            nResConvert = oFile.Open(sFile, sOutputDirectory, &oParams);
+            nResConvert = oFile.OpenHtml(sFile, sOutputDirectory, &oParams);
         }
 
         if(nResConvert == S_OK)

@@ -17,6 +17,6 @@ include($$CORE_ROOT_DIR/Common/base.pri)
 
 core_linux:include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 
-ADD_DEPENDENCY(kernel, HtmlFile2)
+ADD_DEPENDENCY(kernel, UnicodeConverter, graphics, HtmlFile2)
 
 DESTDIR = $$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX

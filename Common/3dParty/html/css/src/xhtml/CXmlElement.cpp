@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <cwctype>
 
 
 bool IsDigit(std::wstring sValue)

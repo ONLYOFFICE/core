@@ -1938,20 +1938,16 @@ inline static std::wstring ConvertAbsoluteValue(const std::wstring& sAbsoluteVal
     return sNewValue;
 }
 
-inline static std::wstring DeleteSpace(const std::wstring& sValue)
+inline std::wstring DeleteSpace(const std::wstring& sValue)
 {
-    std::wstring sNewValue = sValue;
-
-    while (sNewValue.length() > 0 && iswspace(sNewValue[0]))
-        sNewValue.erase(0, 1);
-
-    while (sNewValue.length() > 0 && iswspace(sNewValue[sNewValue.length() - 1]))
-        sNewValue.erase(sNewValue.length() - 1, 1);
-
-    return sNewValue;
+    size_t start = sValue.find_first_not_of(L" \n\r\t\f\v");
+    if (std::wstring::npos == start)
+        return L"";
+    size_t end = sValue.find_first_not_of(L" \n\r\t\f\v"); // точно >=0
+    return sValue.substr(start, end - start + 1);
 }
 
-inline static std::vector<std::string> GetSelectorsList(const std::wstring& sSelectors)
+inline std::vector<std::string> GetSelectorsList(const std::wstring& sSelectors)
 {
     std::vector<std::string> arSelectors;
 
@@ -2035,7 +2031,7 @@ inline static std::vector<std::string> GetSelectorsList(const std::wstring& sSel
     return arSelectors;
 }
 
-inline static std::vector<std::string> GetWords(const std::wstring& sLine)
+inline std::vector<std::string> GetWords(const std::wstring& sLine)
 {
     std::vector<std::string> arWords;
     std::wstring sTempWord;

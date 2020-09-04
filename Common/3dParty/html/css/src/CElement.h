@@ -2,6 +2,7 @@
 #define CELEMENT_H
 
 #include <vector>
+#include <string>
 
 class CElement
 {

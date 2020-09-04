@@ -2,7 +2,6 @@
 #include <vector>
 #include "../htmlfile2.h"
 #include "../mhtfile.h"
-#include "../htmlfile_private.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"

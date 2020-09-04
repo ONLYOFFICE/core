@@ -2,9 +2,9 @@
 
 #include <cctype>
 #include <vector>
-#include <codecvt>
 
 #include <iostream>
+#include "../../../../../DesktopEditor/common/File.h"
 
 namespace NSCSS
 {
@@ -162,9 +162,7 @@ namespace NSCSS
     std::string CCompiledStyle::GetStyle() const
     {
         std::wstring sStyle = GetStyleW();
-        std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-
-        return converter.to_bytes(sStyle);
+        return U_TO_UTF8(sStyle);
     }
 
     const size_t& CCompiledStyle::GetSize() const

@@ -24,6 +24,7 @@
 #include "../DesktopEditor/raster/BgraFrame.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 #include "../DesktopEditor/graphics/pro/Graphics.h"
+#include "htmlfile2.h"
 
 #ifndef VALUE2STR
 #define VALUE_TO_STRING(x) #x
@@ -58,40 +59,6 @@ struct CTextSettings
         bBdo(_bBdo), bPre(_bPre), nLi(_nLi), sRStyle(_sRStyle), sPStyle(_sPStyle) {}
 
     CTextSettings(const CTextSettings& oTS) : bBdo(oTS.bBdo), bPre(oTS.bPre), nLi(oTS.nLi), sRStyle(oTS.sRStyle), sPStyle(oTS.sPStyle) {}
-};
-
-struct CHtmlParams
-{
-    std::wstring m_sGenres;      // Жанры
-    std::wstring m_sAuthors;     // Авторы
-    std::wstring m_sBookTitle;   // Название
-    std::wstring m_sDate;        // Дата
-    std::wstring m_sDescription; // описание
-
-    void SetDate(const std::wstring& sDate)
-    {
-        m_sDate = sDate;
-    }
-
-    void SetDescription(const std::wstring& sDescription)
-    {
-        m_sDescription = sDescription;
-    }
-
-    void SetGenres(const std::wstring& sGenres)
-    {
-        m_sGenres = sGenres;
-    }
-
-    void SetAuthors(const std::wstring& sAuthors)
-    {
-        m_sAuthors = sAuthors;
-    }
-
-    void SetTitle(const std::wstring& sTitle)
-    {
-        m_sBookTitle = sTitle;
-    }
 };
 
 class CHtmlFile2_Private

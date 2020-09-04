@@ -12,7 +12,40 @@
 #define HTMLFILE2_DECL_EXPORT Q_DECL_EXPORT
 #endif
 
-struct CHtmlParams;
+struct CHtmlParams
+{
+    std::wstring m_sGenres;      // Жанры
+    std::wstring m_sAuthors;     // Авторы
+    std::wstring m_sBookTitle;   // Название
+    std::wstring m_sDate;        // Дата
+    std::wstring m_sDescription; // описание
+
+    void SetDate(const std::wstring& sDate)
+    {
+        m_sDate = sDate;
+    }
+
+    void SetDescription(const std::wstring& sDescription)
+    {
+        m_sDescription = sDescription;
+    }
+
+    void SetGenres(const std::wstring& sGenres)
+    {
+        m_sGenres = sGenres;
+    }
+
+    void SetAuthors(const std::wstring& sAuthors)
+    {
+        m_sAuthors = sAuthors;
+    }
+
+    void SetTitle(const std::wstring& sTitle)
+    {
+        m_sBookTitle = sTitle;
+    }
+};
+
 class CHtmlFile2_Private;
 class HTMLFILE2_DECL_EXPORT CHtmlFile2
 {

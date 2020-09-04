@@ -1,5 +1,6 @@
 #include "CElement.h"
 #include <iostream>
+#include <algorithm>
 
 CElement::CElement()
 {

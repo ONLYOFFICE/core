@@ -56,9 +56,11 @@ public:
     ~CHtmlFile2();
 
     bool IsHtmlFile(const std::wstring& sFile);
+    bool IsMhtFile (const std::wstring& sFile);
     void SetTmpDirectory(const std::wstring& sFolder);
-    HRESULT Open(const std::wstring& sPath, const std::wstring& sDirectory, CHtmlParams* oParams = NULL);
-    HRESULT OpenBatch(const std::vector<std::wstring>& sPath, const std::wstring& sDirectory, CHtmlParams* oParams = NULL);
+    HRESULT OpenHtml(const std::wstring& sPath, const std::wstring& sDirectory, CHtmlParams* oParams = NULL);
+    HRESULT OpenMht (const std::wstring& sPath, const std::wstring& sDirectory, CHtmlParams* oParams = NULL);
+    HRESULT OpenBatchHtml(const std::vector<std::wstring>& sPath, const std::wstring& sDirectory, CHtmlParams* oParams = NULL);
 };
 
 #endif // _HTMLFILE2_HTMLFILE2_H

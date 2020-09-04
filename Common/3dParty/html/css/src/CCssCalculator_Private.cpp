@@ -30,23 +30,47 @@ inline std::wstring             DeleteSpace(const std::wstring& sValue);
 inline static void              RemoveExcessFromStyles(std::wstring& sStyle);
 inline static void              TranslateToEn(std::wstring& sStyle);
 
+
+bool operator<(const std::vector<NSCSS::CNode> &arLeftSelectors, const std::vector<NSCSS::CNode> &arRightSelectors)
+{
+    const size_t sizeLeftSelectors = arLeftSelectors.size();
+    const size_t sizeRightSelectors = arRightSelectors.size();
+
+    if (sizeLeftSelectors < sizeRightSelectors)
+        return true;
+    else if (sizeLeftSelectors > sizeRightSelectors)
+        return false;
+
+    for (size_t i = 0; i < arLeftSelectors.size(); ++i)
+    {
+        if (arLeftSelectors[i] < arRightSelectors[i])
+            return true;
+    }
+
+    return false;
+}
+
 namespace NSCSS
 {
-    CCssCalculator_Private::CCssCalculator_Private()
+    CCssCalculator_Private::CCssCalculator_Private() :
+        m_nDpi(96),
+        m_sEncoding(L"UTF-8"),
+        m_nCountNodes(1),
+        m_UnitMeasure(Default)
     {
-        m_sEncoding = L"UTF-8";
-        m_nDpi = 96;
-        m_UnitMeasure = Default;
-        m_nCountNodes = 1;
     }
 
     CCssCalculator_Private::~CCssCalculator_Private()
     {
-        for (CElement* oElement : m_arData)
-            delete oElement;
+        for (size_t i = 0; i < m_arData.size(); ++i)
+        {
+            delete[] m_arData[i];
+        }
 
-//        m_arStyleUsed.clear();
-//        m_arData.clear();
+        for (std::map<std::vector<CNode>, CCompiledStyle*>::iterator iter  = m_mUsedStyles.begin(); iter != m_mUsedStyles.end(); ++iter)
+        {
+            delete iter->second;
+        }
     }
 
     inline CElement* CCssCalculator_Private::GetElement(const int& nIndex) const
@@ -104,11 +128,8 @@ namespace NSCSS
                 oElement->AddDeclarations(GetDeclarationList(oOutput->declarations));
                 break;
         }
-        if (oElement->GetCountSelectors() > 0 ||
-            oElement->GetCountDeclarations() > 0)
-            m_arData.push_back(oElement);
-        else
-            delete oElement;
+
+        (oElement->GetCountSelectors() > 0 || oElement->GetCountDeclarations() > 0) ? m_arData.push_back(oElement) : delete oElement;
     }
 
     inline void CCssCalculator_Private::GetStylesheet(KatanaStylesheet *oStylesheet, CElement *elementRule)
@@ -281,17 +302,13 @@ namespace NSCSS
 
         CElement *oElement = new CElement;
 
-        std::wstring sSelector;
         for (size_t i = 0; i < oKeyframe->selectors->length; i++)
         {
             KatanaValue* oValue = (KatanaValue*)oKeyframe->selectors->data[i];
             if (oValue->unit == KATANA_VALUE_NUMBER)
             {
+//                sSelector += stringToWstring(oValue->raw);
                 oElement->AddSelector(stringToWstring(oValue->raw));
-            }
-            if (i != oKeyframe->selectors->length - 1)
-            {
-                sSelector += L", ";
             }
         }
 
@@ -325,16 +342,15 @@ namespace NSCSS
     inline std::wstring CCssCalculator_Private::GetMediaList(KatanaArray *oMedias)
     {
         std::wstring sText;
-        bool first = true;
 
         for (size_t i = 0; i < oMedias->length; ++i)
         {
-            if (!first)
-                sText += L", ";
-            else
-                first = false;
             sText += GetMediaQuery((KatanaMediaQuery*)oMedias->data[i]);
+            sText += L", ";
         }
+
+        sText.erase(sText.length() - 2, 2);
+
         return sText;
     }
 
@@ -513,12 +529,7 @@ namespace NSCSS
                     if (iswalpha(sc))
                         sTemp += sc;
 
-                if (std::find(arPseudoClasses.begin(), arPseudoClasses.end(), sTemp) != arPseudoClasses.end())
-                {
-                    arWeight[1]++;
-                }
-                else
-                    arWeight[2]++;
+                std::find(arPseudoClasses.begin(), arPseudoClasses.end(), sTemp) != arPseudoClasses.end() ? ++arWeight[1] : ++arWeight[2];
             }
             else if (sSel.find('.') != std::string::npos ||
                      sSel.find('[') != std::string::npos ||
@@ -555,7 +566,6 @@ namespace NSCSS
     {
         if (unitMeasure != Default)
             SetUnitMeasure(unitMeasure);
-
 
         std::map<std::wstring, std::wstring> mStyle;
 
@@ -639,10 +649,7 @@ namespace NSCSS
         {
             auto posExclamatory = oIter.second.find(L"!");
 
-            if (posExclamatory != std::wstring::npos)
-                mStyle[oIter.first] = ConvertUnitMeasure(oIter.second.substr(0, posExclamatory));
-            else
-                mStyle[oIter.first] = ConvertUnitMeasure(oIter.second);
+            posExclamatory != std::wstring::npos ? mStyle[oIter.first] = ConvertUnitMeasure(oIter.second.substr(0, posExclamatory)) : mStyle[oIter.first] = ConvertUnitMeasure(oIter.second);
         }
 
         return  CCompiledStyle(mStyle);
@@ -657,9 +664,7 @@ namespace NSCSS
         if (m_sEncoding != L"UTF-8" && m_sEncoding != L"utf-8")
             bIsUTF8 = true;
 
-        if (bIsUTF8)
-            sPropertiesUTF8 = GetContentAsUTF8(sProperties, m_sEncoding);
-        else sPropertiesUTF8 = sProperties;
+        bIsUTF8 ? sPropertiesUTF8 = GetContentAsUTF8(sProperties, m_sEncoding) : sPropertiesUTF8 = sProperties;
 
         std::vector<std::string> sSelectorsUTF8;
 
@@ -667,8 +672,9 @@ namespace NSCSS
             for (std::string sSelector : sSelectors)
                 sSelectorsUTF8.push_back(GetContentAsUTF8(sSelector, m_sEncoding));
         else
-            for (std::string sSelector : sSelectors)
-                sSelectorsUTF8.push_back(sSelector);
+            sSelectorsUTF8 = sSelectors;
+//            for (std::string sSelector : sSelectors)
+//                sSelectorsUTF8.push_back(sSelector);
 
 
         CElement *oElement = new CElement;
@@ -706,18 +712,9 @@ namespace NSCSS
         std::vector<std::pair<std::wstring, std::wstring>> arDecl;
 
         size_t size;
-        size_t max_size;
 
-        if (arProperty.size() >= arValue.size())
-        {
-            size = arValue.size();
-            max_size = arProperty.size();
-        }
-        else
-        {
-            size = arProperty.size();
-            max_size = arValue.size();
-        }
+        arProperty.size() >= arValue.size() ? size = arValue.size() : size = arProperty.size();
+
         for (size_t i = 0; i < size; i++)
         {
             const std::wstring& sValue = ConvertUnitMeasure(stringToWstring(arValue[i]));
@@ -732,7 +729,16 @@ namespace NSCSS
     {
         const size_t parentSize = arSelectors.size() - 1;
 
-        CCompiledStyle oStyle;
+        if (parentSize > 0)
+        {
+            const auto& oItem = m_mUsedStyles.find(arSelectors);
+            if (oItem != m_mUsedStyles.cend())
+            {
+                return *oItem->second;
+            }
+        }
+
+        CCompiledStyle *oStyle = new CCompiledStyle;
 
         std::wstring sClassName = arSelectors.back().m_sClass;
 //        TranslateToEn(sClassName);
@@ -750,32 +756,30 @@ namespace NSCSS
         {
             if (oParent->m_sName != L"body")
             {
-                oStyle += GetCompiledStyle({*oParent}, unitMeasure);
-                oStyle.AddParent(oParent->m_sName);
+                *oStyle += GetCompiledStyle({*oParent}, unitMeasure);
+                oStyle->AddParent(oParent->m_sName);
             }
         }
 
-        oStyle += GetCompiledStyle(GetSelectorsList(arSelectors.back().m_sName + sClassName + sIdName), unitMeasure);
+        *oStyle += GetCompiledStyle(GetSelectorsList(arSelectors.back().m_sName + sClassName + sIdName), unitMeasure);
 
         if (!arSelectors.back().m_sStyle.empty())
         {
             CCompiledStyle oTempStyle;
             oTempStyle.AddStyle(ConvertUnitMeasure(arSelectors.back().m_sStyle));
-            oStyle += oTempStyle;
+            *oStyle += oTempStyle;
         }
 
 
-        oStyle.SetID(arSelectors.back().m_sName + sClassName + sIdName + L'-' + std::to_wstring(m_nCountNodes));
+        oStyle->SetID(arSelectors.back().m_sName + sClassName + sIdName + L'-' + std::to_wstring(m_nCountNodes));
         m_nCountNodes++;
 
         if (parentSize > 0)
         {
-//            structNode oItem(oNode, oParents);
-//            std::wcout << L" 2 - " << oItem.m_oChildren.m_sName << L" - " << oItem.m_oChildren.m_sStyle << std::endl;
             m_mUsedStyles.emplace(arSelectors, oStyle);
         }
 
-        return oStyle;
+        return *oStyle;
     }
 
     void CCssCalculator_Private::AddStyles(const std::string &sStyle)
@@ -785,10 +789,7 @@ namespace NSCSS
 
         std::string sStyleUTF8;
 
-        if (m_sEncoding != L"UTF-8" && m_sEncoding != L"utf-8")
-            sStyleUTF8 = GetContentAsUTF8(sStyle, m_sEncoding);
-        else
-            sStyleUTF8 = sStyle;
+        (m_sEncoding != L"UTF-8" && m_sEncoding != L"utf-8") ? sStyleUTF8 = GetContentAsUTF8(sStyle, m_sEncoding) : sStyleUTF8 = sStyle;
 
 //        CCssCalculator_Private data;
 
@@ -852,15 +853,6 @@ namespace NSCSS
                         sTempString = ConvertAbsoluteValue(sTempString);
                         std::transform(sTempString.begin(), sTempString.end(), sTempString.begin(), towlower);
 
-                        const auto& posPoint = sTempString.find(L'.');
-
-                        if (posPoint != std::wstring::npos)
-                        {
-                            if (posPoint == 0)
-                                sTempString = L'0' + sTempString;
-                            else if (!iswdigit(sTempString[posPoint - 1]))
-                                sTempString.insert(posPoint - 1, L"0");
-                        }
                         arValues.push_back(sTempString);
                     }
                     sTempString.clear();
@@ -883,44 +875,32 @@ namespace NSCSS
 
         if (!sTempString.empty())
         {
-            const auto& posPoint = sTempString.find(L'.');
-
-            if (posPoint != std::wstring::npos)
-            {
-                if (posPoint == 0)
-                    sTempString = L'0' + sTempString;
-                else if (!iswdigit(sTempString[posPoint - 1]))
-                    sTempString.insert(posPoint - 1, L"0");
-            }
             sTempString = ConvertAbsoluteValue(sTempString);
             sTempString = DeleteSpace(sTempString);
             arValues.push_back(sTempString);
-            sTempString.clear();
         }
 
         std::wstring sValueString;
 
-        for (const std::wstring& sValue : arValues)
+        for (const std::wstring& sValueTemp : arValues)
         {
-            const auto& nPosGrid = sValue.find(L'#');
+            const auto& nPosGrid = sValueTemp.find(L'#');
 
-            if (!GetFirstNumber(sValue) || nPosGrid != std::wstring::npos)
+            if (!GetFirstNumber(sValueTemp) || nPosGrid != std::wstring::npos)
             {
                 if (nPosGrid != std::wstring::npos)
                 {
-                    const auto& nPosSpace = sValue.find(L' ', nPosGrid);
+                    const auto& nPosSpace = sValueTemp.find(L' ', nPosGrid);
 
-                    if (nPosSpace != std::wstring::npos)
-                        sValueString += sValue.substr((nPosGrid, nPosSpace - 1));
-                    else
-                        sValueString += DeleteSpace(sValue);
+                    nPosSpace != std::wstring::npos ? sValueString += sValueTemp.substr((nPosGrid, nPosSpace - 1)) : sValueString += DeleteSpace(sValueTemp);
+
                 }
-                else sValueString += DeleteSpace(sValue);
+                else sValueString += DeleteSpace(sValueTemp);
 
-                const auto& nPosSemicolon = sValue.find(L';');
-                const auto& nPosColon = sValue.find(L':');
+                const auto& nPosSemicolon = sValueTemp.find(L';');
+                const auto& nPosColon = sValueTemp.find(L':');
 
-                if (sValue.length() > 1 && nPosSemicolon == std::wstring::npos &&
+                if (sValueTemp.length() > 1 && nPosSemicolon == std::wstring::npos &&
                     nPosColon == std::wstring::npos && arValues.size() > 2)
                     sValueString += L';';
 
@@ -928,11 +908,11 @@ namespace NSCSS
             }
 
             std::wstring sTempValue;
-            std::wstring sBeforeValue = sValue;
+            std::wstring sBeforeValue = sValueTemp;
 
             while (true)
             {
-                if (sBeforeValue.empty())
+                if (sBeforeValue.empty() || !GetFirstNumber(sBeforeValue))
                     break;
 
                 const auto& posPercent = sBeforeValue.find(L'%');
@@ -982,10 +962,10 @@ namespace NSCSS
                 }
                 else
                 {
-
                     double dValue = wcstod(sBeforeValue.c_str(), NULL);
                     dValue *= 4;
                     sTempValue += std::to_wstring((int)floor(dValue + 0.5)) + L" ";
+
                     break;
                 }
             }
@@ -1110,7 +1090,6 @@ namespace NSCSS
 
         std::wstring sConvertValue = sValue.substr(0, sValue.find_last_of(L"cm") - 1);
         double dValue = wcstod(sConvertValue.c_str(), NULL);
-
         switch (m_UnitMeasure)
         {
             case Pixel:
@@ -1183,6 +1162,7 @@ namespace NSCSS
             return L"0";
 
         double _dValue = (72.0 / 2.54) * dValue;
+
         std::wstring sValue = std::to_wstring((int)floor(_dValue + 0.5));
         if (bAddUM)
             sValue += L"pt";
@@ -1598,7 +1578,7 @@ namespace NSCSS
         m_UnitMeasure = nType;
     }
 
-    const int& CCssCalculator_Private::GetDpi() const
+    int CCssCalculator_Private::GetDpi() const
     {
         return m_nDpi;
     }
@@ -1608,12 +1588,12 @@ namespace NSCSS
         return m_arData.size();
     }
 
-    const UnitMeasure& CCssCalculator_Private::GetUnitMeasure() const
+    UnitMeasure CCssCalculator_Private::GetUnitMeasure() const
     {
         return m_UnitMeasure;
     }
 
-    const std::wstring& CCssCalculator_Private::GetEncoding() const
+    std::wstring CCssCalculator_Private::GetEncoding() const
     {
         return m_sEncoding;
     }
@@ -1790,15 +1770,8 @@ inline static std::wstring GetContentAsUTF8W(const std::wstring& sFileName)
         if (posSemicolon != std::string::npos)
             sEncoding = sEncoding.substr(0, posSemicolon);
 
-        if (posDoubleQuotes != std::string::npos)
-            sEncoding = sEncoding.substr(posDoubleQuotes + 1);
-        else if (posQuotes != std::string::npos)
-            sEncoding = sEncoding.substr(posQuotes + 1);
-
-        if (posDoubleQuotes != std::string::npos)
-            sEncoding = sEncoding.substr(0, posDoubleQuotes);
-        else if (posQuotes != std::string::npos)
-            sEncoding = sEncoding.substr(0, posQuotes);
+        posDoubleQuotes != std::string::npos ? sEncoding = sEncoding.substr(posDoubleQuotes + 1) : sEncoding = sEncoding.substr(posQuotes + 1);
+        posDoubleQuotes != std::string::npos ? sEncoding = sEncoding.substr(0, posDoubleQuotes) : sEncoding = sEncoding.substr(0, posQuotes);
     }
     else
         return sSource;
@@ -1942,13 +1915,16 @@ inline static std::wstring ConvertAbsoluteValue(const std::wstring& sAbsoluteVal
 inline std::wstring DeleteSpace(const std::wstring& sValue)
 {
     size_t start = sValue.find_first_not_of(L" \n\r\t\f\v");
+
     if (std::wstring::npos == start)
-        return L"";
-    size_t end = sValue.find_first_not_of(L" \n\r\t\f\v"); // точно >=0
+        return sValue;
+
+    size_t end = sValue.find_last_not_of(L" \n\r\t\f\v"); // точно >=0
+
     return sValue.substr(start, end - start + 1);
 }
 
-inline std::vector<std::string> GetSelectorsList(const std::wstring& sSelectors)
+inline static std::vector<std::string> GetSelectorsList(const std::wstring& sSelectors)
 {
     std::vector<std::string> arSelectors;
 
@@ -2032,7 +2008,7 @@ inline std::vector<std::string> GetSelectorsList(const std::wstring& sSelectors)
     return arSelectors;
 }
 
-inline std::vector<std::string> GetWords(const std::wstring& sLine)
+inline static std::vector<std::string> GetWords(const std::wstring& sLine)
 {
     std::vector<std::string> arWords;
     std::wstring sTempWord;

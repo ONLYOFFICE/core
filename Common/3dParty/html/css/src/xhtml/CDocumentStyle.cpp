@@ -5,11 +5,6 @@
 #include <wchar.h>
 #include <math.h>
 
-inline bool Comp(const std::pair<NSCSS::CCompiledStyle, bool> &oFirstElement, const std::pair<NSCSS::CCompiledStyle, bool> &oSecondElement)
-{
-    return oFirstElement.first.GetSize() > oSecondElement.first.GetSize();
-}
-
 namespace NSCSS
 {
     CDocumentStyle::CDocumentStyle()
@@ -40,7 +35,7 @@ namespace NSCSS
         return sStyle;
     }
 
-    const std::wstring& CDocumentStyle::GetId() const
+    std::wstring CDocumentStyle::GetId() const
     {
         return m_sId;
     }
@@ -244,10 +239,7 @@ namespace NSCSS
 
                 oTempElement.SetStyleId(sStandPlusParent);
 
-                if (bIsPStyle)
-                    m_sStyle += oTempElement.GetPStyle();
-                else
-                    m_sStyle += oTempElement.GetRStyle();
+                bIsPStyle ? m_sStyle += oTempElement.GetPStyle() : m_sStyle += oTempElement.GetRStyle();
 
                 oXmlElement.SetBasedOn(oTempElement.GetStyleId());
 
@@ -264,10 +256,7 @@ namespace NSCSS
             }
             else
             {
-                if (bIsPStyle)
-                    m_sStyle += oStandardXmlElement.GetPStyle();
-                else
-                    m_sStyle += oStandardXmlElement.GetRStyle();
+                bIsPStyle ? m_sStyle += oStandardXmlElement.GetPStyle() : m_sStyle += oStandardXmlElement.GetRStyle();
 
                 m_arStandardStylesUsed.push_back(sStandartStyleID);
 
@@ -284,10 +273,7 @@ namespace NSCSS
             }
             else
             {
-                if (bIsPStyle)
-                    m_sStyle += oParentStyle.GetPStyle();
-                else
-                    m_sStyle += oParentStyle.GetRStyle();
+                bIsPStyle ? m_sStyle += oParentStyle.GetPStyle() : m_sStyle += oParentStyle.GetRStyle();
 
                 oXmlElement.SetBasedOn(sParentsStyleID);
                 m_arStandardStylesUsed.push_back(sParentsStyleID);
@@ -296,10 +282,8 @@ namespace NSCSS
 
         if (oStyle.Empty())
         {
-            if (oXmlElement.GetBasedOn().empty() || (oStandardXmlElement.Empty() && oParentStyle.Empty()))
-                m_sId = L"normal";
-            else
-                m_sId = oXmlElement.GetBasedOn();
+            (oXmlElement.GetBasedOn().empty() || (oStandardXmlElement.Empty() && oParentStyle.Empty()))
+                    ? m_sId = L"normal" : m_sId = oXmlElement.GetBasedOn();
 
             oXmlElement.Clear();
 
@@ -310,25 +294,11 @@ namespace NSCSS
         if (!bIsPStyle)
             m_sId += L"-c";
 
-//        if (oXmlElement.GetBasedOn().empty())
-//        {
-//            m_sId = oStyle.GetId();
-//            if (!bIsPStyle)
-//                m_sId += L"-c";
-//        }
-//        else
-//        {
-//            m_sId = oXmlElement.GetBasedOn();
-//        }
-
         oXmlElement.SetStyleId(m_sId);
         oXmlElement.SetName(m_sId);
         oXmlElement.SetQFormat(true);
 
-        if (bIsPStyle)
-            oXmlElement.SetType(L"paragraph");
-        else
-            oXmlElement.SetType(L"character");
+        bIsPStyle ? oXmlElement.SetType(L"paragraph") : oXmlElement.SetType(L"character");
 
         oXmlElement.SetCustomStyle(L"1");
 
@@ -461,7 +431,6 @@ namespace NSCSS
             oXmlElement.SetSpacing(sSpacingValue);
             oXmlElement.SetContextualSpacing(true);
         }
-
     }
 
     void CDocumentStyle::WriteRStyle(NSCSS::CCompiledStyle &oStyle)
@@ -480,9 +449,9 @@ namespace NSCSS
 
         CStyleUsed structStyle(oStyle, false);
 
-        const auto& oItem = std::find(m_mStyleUsed.begin(), m_mStyleUsed.end(), structStyle);
+        const auto& oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), structStyle);
 
-        if (oItem != m_mStyleUsed.cend())
+        if (oItem != m_arStyleUsed.cend())
         {
             m_sId = oItem->m_sId;
             return;
@@ -494,10 +463,10 @@ namespace NSCSS
         if (!oStyle.Empty())
         {
             structStyle.m_sId = oXmlElement.GetStyleId();
-            m_mStyleUsed.push_back(structStyle);
+            m_arStyleUsed.push_back(structStyle);
 
-//            std::sort(m_arStyleUsed.begin(), m_arStyleUsed.end(), Comp);
         }
+
         m_sStyle += oXmlElement.GetRStyle();
     }
 
@@ -512,9 +481,9 @@ namespace NSCSS
 
         CStyleUsed structStyle(oStyle, true);
 
-        const auto& oItem = std::find(m_mStyleUsed.begin(), m_mStyleUsed.end(), structStyle);
+        const auto& oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), structStyle);
 
-        if (oItem != m_mStyleUsed.cend())
+        if (oItem != m_arStyleUsed.cend())
         {
             m_sId = oItem->m_sId;
             return;
@@ -527,8 +496,7 @@ namespace NSCSS
         {
             structStyle.m_sId = oXmlElement.GetStyleId();
 
-            m_mStyleUsed.push_back(structStyle);
-//            std::sort(m_arStyleUsed.begin(), m_arStyleUsed.end(), Comp); // Оптимизировать сортировку (возможно и поиск (можно попробовать бинарный))
+            m_arStyleUsed.push_back(structStyle);
         }
 
         m_sStyle += oXmlElement.GetPStyle();

@@ -21,14 +21,14 @@ public:
 
     void SetDeclaratins(const std::vector<std::pair<std::wstring, std::wstring>> arDeclarations);
 
-    const int& GetCountSelectors() const;
-    const int& GetCountDeclarations() const;
-    const int& GetCountChildrens() const;
+    int GetCountSelectors() const;
+    int GetCountDeclarations() const;
+    int GetCountChildrens() const;
 
     bool FindSelector(std::wstring sSelector);
 
-    const std::vector<std::wstring>& GetSelectors() const;
-    const std::vector<std::pair<std::wstring, std::wstring>>& GetDeclarations() const;
+    std::vector<std::wstring> GetSelectors() const;
+    std::vector<std::pair<std::wstring, std::wstring>> GetDeclarations() const;
     std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> GetDeclarations(const std::wstring sSelector,
                                                                                                              const std::vector<std::wstring> arParents) const;
 

@@ -28,9 +28,27 @@ namespace NSCSS
 
         bool operator< (const CNode& oNode) const
         {
-            return (m_sId.length() + m_sName.length() + m_sClass.length() + m_sStyle.length())
-                    <
-                   (oNode.m_sId.length() + oNode.m_sName.length() + oNode.m_sClass.length() + oNode.m_sStyle.length());
+            if (m_sName < oNode.m_sName)
+                return true;
+            else if (m_sName > oNode.m_sName)
+                return false;
+
+            if (m_sClass < oNode.m_sClass)
+                return true;
+            else if (m_sClass > oNode.m_sClass)
+                return false;
+
+            if (m_sId < oNode.m_sId)
+                return true;
+            else if (m_sId > oNode.m_sId)
+                return false;
+
+            if (m_sStyle < oNode.m_sStyle)
+                return true;
+            else if (m_sStyle > oNode.m_sStyle)
+                return false;
+
+            return false;
         }
 
         bool operator== (const CNode& oNode) const
@@ -64,9 +82,9 @@ namespace NSCSS
         void SetUnitMeasure(const UnitMeasure& nType);
         void SetDpi(const int& nValue);
 
-        const UnitMeasure& GetUnitMeasure() const;
-        const std::wstring& GetEncoding() const;
-        const int& GetDpi() const;
+        UnitMeasure GetUnitMeasure() const;
+        std::wstring GetEncoding() const;
+        int GetDpi() const;
 
         void Print() const;
         void Clear();

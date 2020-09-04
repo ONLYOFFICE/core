@@ -284,12 +284,11 @@ void CXmlElement::CreateDefaultElement(const std::wstring sNameDefaultElement)
 //        SetInd(L"w:firstLine=\"567\"");
 //        SetJc(L"both");
     }
-    else if (sNameDefaultElement == L"a")
+    else if (sNameDefaultElement == L"a-c")
     {
         m_bEmpty = false;
         SetType(L"character");
-        SetBasedOn(L"a-c");
-        SetStyleId(L"a");
+        SetStyleId(L"a-character");
         SetName(L"Hyperlink");
         SetUiPriority(L"99");
         SetUnhideWhenUsed(true);
@@ -298,17 +297,14 @@ void CXmlElement::CreateDefaultElement(const std::wstring sNameDefaultElement)
         SetSz(L"22");
         SetRFonts(L"\"Arial\"");
     }
-//    else if (sNameDefaultElement.find(L'-') != std::wstring::npos)
-//    {
-//        std::wstring sName = sNameDefaultElement.substr(0, sNameDefaultElement.find(L'-'));
-//        SetType(L"character");
-//        SetStyleId(sNameDefaultElement);
-//        SetCustomStyle(L"1");
-//        SetName(sNameDefaultElement);
-//        SetLink(sName);
-//        SetUiPriority(L"34");
-
-//    }
+    else if (sNameDefaultElement == L"a")
+    {
+        m_bEmpty = false;
+        SetType(L"character");
+        SetBasedOn(L"a-c");
+        SetStyleId(L"a");
+        SetName(L"Hyperlink");
+    }
 }
 
 void CXmlElement::Clear()
@@ -1052,17 +1048,17 @@ std::wstring CXmlElement::GetRStyle() const
     return L"";
 }
 
-const std::wstring& CXmlElement::GetBasedOn() const
+std::wstring CXmlElement::GetBasedOn() const
 {
     return m_sBasedOn;
 }
 
-const std::wstring& CXmlElement::GetStyleId() const
+std::wstring CXmlElement::GetStyleId() const
 {
     return m_sStyleId;
 }
 
-const std::wstring& CXmlElement::GetName() const
+std::wstring CXmlElement::GetName() const
 {
     return m_sName;
 }

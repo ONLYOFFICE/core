@@ -86,17 +86,17 @@ void CElement::SetDeclaratins(const std::vector<std::pair<std::wstring, std::wst
     m_arDeclarations = arDeclarations;
 }
 
-const int& CElement::GetCountSelectors() const
+int CElement::GetCountSelectors() const
 {
     return m_arSelectors.size();
 }
 
-const int& CElement::GetCountDeclarations() const
+int CElement::GetCountDeclarations() const
 {
     return m_arDeclarations.size();
 }
 
-const int& CElement::GetCountChildrens() const
+int CElement::GetCountChildrens() const
 {
     return m_arChildrens.size();
 }
@@ -109,12 +109,12 @@ bool CElement::FindSelector(std::wstring sSelector)
     return false;
 }
 
-const std::vector<std::wstring>& CElement::GetSelectors() const
+std::vector<std::wstring> CElement::GetSelectors() const
 {
     return m_arSelectors;
 }
 
-const std::vector<std::pair<std::wstring, std::wstring>>& CElement::GetDeclarations() const
+std::vector<std::pair<std::wstring, std::wstring>> CElement::GetDeclarations() const
 {
     return m_arDeclarations;
 }
@@ -133,10 +133,7 @@ std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wst
             for (const std::wstring& sParent : arParents)
                 sTempSelectors += sParent;
 
-            if (!sTempSelectors.empty())
-                sTempSelectors += L" -> " + sSelector;
-            else
-                sTempSelectors = sSelector;
+            sTempSelectors.empty() ? sTempSelectors = sSelector : sTempSelectors += L" -> " + sSelector;
 
             arElement.push_back(std::make_pair(sTempSelectors, m_arDeclarations));
         }

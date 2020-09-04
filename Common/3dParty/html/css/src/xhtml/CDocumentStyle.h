@@ -38,9 +38,7 @@ namespace NSCSS
         std::wstring m_sId;
         std::vector<std::wstring> m_arStandardStyles;
 
-//        std::vector<std::pair<CCompiledStyle, bool>> m_arStyleUsed;
-//        std::vector<std::pair<std::pair<CCompiledStyle, bool>, std::wstring>> m_arStyleUsed;
-        std::vector<CStyleUsed> m_mStyleUsed;
+        std::vector<CStyleUsed> m_arStyleUsed;
 
         std::vector<std::wstring> m_arStandardStylesUsed;
 
@@ -62,7 +60,7 @@ namespace NSCSS
         void SetId(const std::wstring& sId);
 
         std::wstring GetStyle();
-        const std::wstring& GetId() const;
+        std::wstring GetId() const;
 
         void Clear();
     };

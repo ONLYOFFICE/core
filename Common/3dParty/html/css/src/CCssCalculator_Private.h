@@ -16,7 +16,7 @@ namespace NSCSS
         std::vector<CElement*> m_arData;
         std::vector<std::wstring> m_arFiles;
 
-        std::map<std::vector<CNode>, CCompiledStyle> m_mUsedStyles;
+        std::map<std::vector<CNode>, CCompiledStyle*> m_mUsedStyles;
 
         int m_nDpi;
         std::wstring m_sEncoding;
@@ -119,9 +119,9 @@ namespace NSCSS
         void SetUnitMeasure(const UnitMeasure& nType);
         void SetDpi(const int& nValue);
 
-        const UnitMeasure& GetUnitMeasure() const;
-        const std::wstring& GetEncoding() const;
-        const int& GetDpi() const;
+        UnitMeasure GetUnitMeasure() const;
+        std::wstring GetEncoding() const;
+        int GetDpi() const;
 
         void Print() const;
         void Clear();

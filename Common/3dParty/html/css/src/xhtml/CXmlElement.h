@@ -144,9 +144,9 @@ public:
     std::wstring GetRStyle() const;
     std::wstring GetStyle() const;
 
-    const std::wstring& GetBasedOn() const;
-    const std::wstring& GetStyleId() const;
-    const std::wstring& GetName() const;
+    std::wstring GetBasedOn() const;
+    std::wstring GetStyleId() const;
+    std::wstring GetName() const;
 
     CXmlElement& operator+=(const CXmlElement& oElement);
     CXmlElement& operator= (const CXmlElement& oelement);

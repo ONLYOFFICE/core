@@ -57,71 +57,36 @@ namespace NSCSS
         return *this;
     }
 
+    bool CCompiledStyle::operator== (const CCompiledStyle& oStyle) const
+    {
+        if (GetId()[0] != oStyle.GetId()[0])
+            return false;
 
-//    bool CCompiledStyle::operator==(const CCompiledStyle &oElement)
-//    {
-//        std::wstring sThisName = this->GetId();
+        if (m_arParentsStyles.size() != oStyle.m_arParentsStyles.size())
+            return false;
 
-//        auto posDash = sThisName.find(L'-');
+        for (size_t i = 0; i < m_arParentsStyles.size(); i++)
+            if (m_arParentsStyles[i] != oStyle.m_arParentsStyles[i])
+                return false;
 
-//        if (posDash != std::wstring::npos)
-//            sThisName = sThisName.substr(0, posDash);
+        if (m_mStyle.size() != oStyle.m_mStyle.size())
+            return false;
 
-//        auto posLattice = sThisName.find(L'#');
+        auto iterLeft = m_mStyle.begin();
+        auto iterRight = oStyle.m_mStyle.begin();
 
-//        if (posLattice != std::wstring::npos)
-//            sThisName = sThisName.substr(0, posLattice);
+        while (iterLeft != m_mStyle.cend())
+        {
+            if (iterLeft->first != iterRight->first ||
+                iterLeft->second != iterRight->second)
+                return false;
 
-//        auto posPoint = sThisName.find(L'.');
+            iterLeft++;
+            iterRight++;
+        }
 
-//        if (posPoint != std::wstring::npos)
-//            sThisName = sThisName.substr(0, posPoint);
-
-//        std::wstring sElementName = oElement.m_sId;
-
-//        posDash = sElementName.find(L'-');
-
-//        if (posDash != std::wstring::npos)
-//            sElementName = sElementName.substr(0, posDash);
-
-//        posLattice = sElementName.find(L'#');
-
-//        if (posLattice != std::wstring::npos)
-//            sElementName = sElementName.substr(0, posLattice);
-
-//        posPoint = sElementName.find(L'.');
-
-//        if (posPoint != std::wstring::npos)
-//            sElementName = sElementName.substr(0, posPoint);
-
-//        if (sThisName != sElementName)
-//            return false;
-
-//        if (this->m_arParentsStyles.size() != oElement.m_arParentsStyles.size())
-//            return false;
-
-//        for (size_t i = 0; i < this->m_arParentsStyles.size(); i++)
-//            if (this->m_arParentsStyles[i] != oElement.m_arParentsStyles[i])
-//                return false;
-
-//        if (this->m_mStyle.size() != oElement.m_mStyle.size())
-//            return false;
-
-//        auto iterLeft = this->m_mStyle.begin();
-//        auto iterRight = oElement.m_mStyle.begin();
-
-//        while (iterLeft != this->m_mStyle.cend())
-//        {
-//            if (iterLeft->first != iterRight->first ||
-//                iterLeft->second != iterRight->second)
-//                return false;
-
-//            iterLeft++;
-//            iterRight++;
-//        }
-
-//        return true;
-//    }
+        return true;
+    }
 
     bool CCompiledStyle::operator!=(const CCompiledStyle &oElement) const
     {
@@ -144,7 +109,7 @@ namespace NSCSS
         return GetWeidth() < oElement.GetWeidth();
     }
 
-    const std::map<std::wstring, std::wstring>& CCompiledStyle::GetStyleMap() const
+    std::map<std::wstring, std::wstring> CCompiledStyle::GetStyleMap() const
     {
         return m_mStyle;
     }
@@ -1098,7 +1063,7 @@ namespace NSCSS
                 if (posSpace != std::wstring::npos)
                     return sBackground.substr(posLattice, posSpace);
                 else
-                    sBackground.substr(posLattice);
+                    return sBackground.substr(posLattice);
             }
             return L"";
         }

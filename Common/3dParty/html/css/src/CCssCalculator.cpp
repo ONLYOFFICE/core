@@ -60,17 +60,17 @@ namespace NSCSS
         m_pInternal->SetDpi(nValue);
     }
 
-    const UnitMeasure& CCssCalculator::GetUnitMeasure() const
+    UnitMeasure CCssCalculator::GetUnitMeasure() const
     {
         return m_pInternal->GetUnitMeasure();
     }
 
-    const std::wstring& CCssCalculator::GetEncoding() const
+    std::wstring CCssCalculator::GetEncoding() const
     {
         return m_pInternal->GetEncoding();
     }
 
-    const int& CCssCalculator::GetDpi() const
+    int CCssCalculator::GetDpi() const
     {
         return m_pInternal->GetDpi();
     }

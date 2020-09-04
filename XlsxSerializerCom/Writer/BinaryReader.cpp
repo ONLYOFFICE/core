@@ -6957,7 +6957,11 @@ int BinaryFileReader::ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW:
 		res = oBufferedStream.Peek(5) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;
 		if(c_oSerConstants::ReadOk != res)
 			return res;
-		BYTE mtiType = oBufferedStream.GetUChar();
+
+		BYTE mtiType = 0;
+		if (false == oBufferedStream.GetUCharWithResult(&mtiType))
+			break;
+
 		long mtiOffBits = oBufferedStream.GetLong();
 		if(c_oSerTableTypes::Other == mtiType)
 			nOtherOffBits = mtiOffBits;

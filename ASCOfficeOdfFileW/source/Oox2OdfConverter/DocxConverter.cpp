@@ -3629,7 +3629,7 @@ void DocxConverter::convert(OOX::CDocDefaults *def_style, OOX::CStyles *styles)
 
 		convert(&paraProps, paragraph_properties); 
 		
-		if (def_style->m_oParPr->m_oRPr.IsInit())
+		if (def_style->m_oParPr.IsInit() && def_style->m_oParPr->m_oRPr.IsInit())
 		{
 			text_properties = odt_context->styles_context()->last_state()->get_text_properties();
 			convert(def_style->m_oParPr->m_oRPr.GetPointer(), text_properties);

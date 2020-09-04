@@ -63,6 +63,8 @@ private:
 	unsigned char cparams;
 	Ftab_Cetab tab;
 	bool fCeFunc;
+
+	GlobalWorkbookInfoPtr global_info_;
 };
 
 typedef boost::shared_ptr<PtgFuncVar> PtgFuncVarPtr;

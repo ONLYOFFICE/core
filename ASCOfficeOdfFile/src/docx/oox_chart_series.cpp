@@ -167,8 +167,14 @@ void oox_chart_series::setValues(int ind, std::vector<std::wstring> & values)
 {
 	values_[ind].present = true;
 
-	if (ind == 0)	values_[ind].strRef_.present = true;
-	else			values_[ind].numRef_.present = true;
+	if (ind == 0)
+	{
+		values_[ind].strRef_.present = true;
+	}
+	else
+	{
+		values_[ind].numRef_.present = true;
+	}
 
 	for (size_t i = 0; i < values.size(); i++)
 	{

@@ -328,11 +328,24 @@ void xlsx_text_context::Impl::write_rPr(std::wostream & strm)
 		{
 			CP_XML_NODE(L"rPr")
 			{
-				if (text_properties_.fo_font_family_)
+				if (text_properties_.fo_font_weight_)
 				{
-					CP_XML_NODE(L"rFont")	
+					CP_XML_NODE(L"b")		
 					{
-						CP_XML_ATTR(L"val", text_properties_.fo_font_family_.get());
+						if (text_properties_.fo_font_weight_->get_type() > 0)
+							CP_XML_ATTR(L"val", "true");
+						else
+							CP_XML_ATTR(L"val", "false");
+					}
+				}
+				if (text_properties_.fo_font_style_)
+				{
+					CP_XML_NODE(L"i")		
+					{
+						if (text_properties_.fo_font_style_->get_type() > 0)
+							CP_XML_ATTR(L"val", "true");
+						else 
+							CP_XML_ATTR(L"val", "false");
 					}
 				}
 				if (text_properties_.fo_font_size_)
@@ -349,24 +362,11 @@ void xlsx_text_context::Impl::write_rPr(std::wostream & strm)
 						CP_XML_ATTR(L"rgb", text_properties_.fo_color_->get_hex_value());
 					}
 				}
-				if (text_properties_.fo_font_style_)
+				if (text_properties_.fo_font_family_)
 				{
-					CP_XML_NODE(L"i")		
+					CP_XML_NODE(L"rFont")	
 					{
-						if (text_properties_.fo_font_style_->get_type() > 0)
-							CP_XML_ATTR(L"val", "true");
-						else 
-							CP_XML_ATTR(L"val", "false");
-					}
-				}
-				if (text_properties_.fo_font_weight_)
-				{
-					CP_XML_NODE(L"b")		
-					{
-						if (text_properties_.fo_font_weight_->get_type() > 0)
-							CP_XML_ATTR(L"val", "true");
-						else
-							CP_XML_ATTR(L"val", "false");
+						CP_XML_ATTR(L"val", text_properties_.fo_font_family_.get());
 					}
 				}
 			}

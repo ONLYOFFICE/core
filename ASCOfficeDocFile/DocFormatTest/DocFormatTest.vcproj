@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="DocFormatTest"
 	ProjectGUID="{0F49D5D1-A8D3-4F97-8BC1-E2F65BB00C10}"
 	RootNamespace="PptFormatTest"
@@ -396,6 +396,10 @@
 						AdditionalOptions="/bigobj&#x0D;&#x0A;"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\ASCOfficeDocxFile2\BinReader\FileWriter.cpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\FontProcessor.cpp"

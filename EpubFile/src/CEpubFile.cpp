@@ -3,7 +3,6 @@
 #include "../../OfficeUtils/src/OfficeUtils.h"
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../HtmlFile2/htmlfile2.h"
-#include "../../HtmlFile2/htmlfile_private.h"
 #include "src/CBookInfo.h"
 #include <iostream>
 
@@ -139,7 +138,7 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
             arFiles.push_back(m_sTempDir + L"\\" + m_mapRefs[oContent.m_sID].GetRef());
 
         std::wcout << L"---The conversion process from Epub to Docx...---" << std::endl;
-        if (oFile.OpenBatch(arFiles, sDocxFileTempDir, &oFileParams) == S_OK)
+        if (oFile.OpenBatchHtml(arFiles, sDocxFileTempDir, &oFileParams) == S_OK)
             std::wcout << L"---Successful conversion of Epub to Docx---" << std::endl;
         else
             std::wcout << L"---Failed conversion of Epub to Docx---" << std::endl;

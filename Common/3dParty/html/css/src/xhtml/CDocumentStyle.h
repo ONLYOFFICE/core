@@ -5,15 +5,43 @@
 #include "../CCompiledStyle.h"
 #include "CXmlElement.h"
 
+#include <iostream>
 namespace NSCSS
 {
+    class CStyleUsed
+    {
+    public:
+        CCompiledStyle m_oStyle;
+        bool m_bIsPStyle;
+
+        std::wstring m_sId;
+
+        CStyleUsed(CCompiledStyle oStyle, const bool bIsPStyle) :
+            m_oStyle(oStyle),
+            m_bIsPStyle(bIsPStyle)
+        {}
+
+        bool operator==(const CStyleUsed& oUsedStyle) const
+        {
+            return ((m_oStyle == oUsedStyle.m_oStyle) && (m_bIsPStyle == oUsedStyle.m_bIsPStyle));
+        }
+
+        bool operator<(const CStyleUsed& oUsedStyle) const
+        {
+            return m_oStyle < oUsedStyle.m_oStyle;
+        }
+    };
+
     class CSSCALCULATOR_EXPORT CDocumentStyle
     {
         std::wstring m_sStyle;
         std::wstring m_sId;
         std::vector<std::wstring> m_arStandardStyles;
 
-        std::vector<std::pair<CCompiledStyle, bool>> m_arStyleUsed;
+//        std::vector<std::pair<CCompiledStyle, bool>> m_arStyleUsed;
+//        std::vector<std::pair<std::pair<CCompiledStyle, bool>, std::wstring>> m_arStyleUsed;
+        std::vector<CStyleUsed> m_mStyleUsed;
+
         std::vector<std::wstring> m_arStandardStylesUsed;
 
         CXmlElement CombineStandardStyles(const std::vector<std::wstring>& arStandartedStyles);

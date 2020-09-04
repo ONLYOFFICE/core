@@ -5,7 +5,7 @@
 
 class CXmlElement
 {
-    bool m_bEmpty = false;
+    bool m_bEmpty = true;
 
     std::wstring m_sType;
     std::wstring m_sStyleId;

@@ -728,66 +728,58 @@ namespace NSCSS
         m_arData.push_back(oElement);
     }
 
-    CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const CNode &oNode, const std::vector<CNode> &oParents, const UnitMeasure& unitMeasure)
+    CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const std::vector<CNode> &arSelectors, const UnitMeasure& unitMeasure)
     {
-        size_t parentSize = oParents.size();
-
-        if (parentSize > 0)
-        {
-            const std::pair<CNode, std::vector<CNode>>& oItem = std::make_pair(oNode, oParents);
-
-            if (m_mUsedStyles.find(oItem) != m_mUsedStyles.cend())
-            {
-                return m_mUsedStyles[oItem];
-            }
-        }
+        const size_t parentSize = arSelectors.size() - 1;
 
         CCompiledStyle oStyle;
 
-        std::wstring sClassName = oNode.m_sClass;
+        std::wstring sClassName = arSelectors.back().m_sClass;
 //        TranslateToEn(sClassName);
 
         if (!sClassName.empty() && sClassName[0] != L'.')
             sClassName = L'.' + sClassName;
 
-        std::wstring sIdName = oNode.m_sId;
+        std::wstring sIdName = arSelectors.back().m_sId;
 //        TranslateToEn(sIdName);
 
         if (!sIdName.empty() && sIdName[0] != L'#')
             sIdName = L'#' + sIdName;
 
-        for (const CNode& oParent : oParents)
+        for (std::vector<CNode>::const_iterator oParent = arSelectors.begin(); oParent != arSelectors.end() - 1; ++oParent)
         {
-            if (oParent.m_sName != L"body")
+            if (oParent->m_sName != L"body")
             {
-                oStyle += GetCompiledStyle(oParent, {}, unitMeasure);
-                oStyle.AddParent(oParent.m_sName);
+                oStyle += GetCompiledStyle({*oParent}, unitMeasure);
+                oStyle.AddParent(oParent->m_sName);
             }
         }
 
-        oStyle += GetCompiledStyle(GetSelectorsList(oNode.m_sName + sClassName + sIdName), unitMeasure);
+        oStyle += GetCompiledStyle(GetSelectorsList(arSelectors.back().m_sName + sClassName + sIdName), unitMeasure);
 
-        if (!oNode.m_sStyle.empty())
+        if (!arSelectors.back().m_sStyle.empty())
         {
             CCompiledStyle oTempStyle;
-            oTempStyle.AddStyle(ConvertUnitMeasure(oNode.m_sStyle));
+            oTempStyle.AddStyle(ConvertUnitMeasure(arSelectors.back().m_sStyle));
             oStyle += oTempStyle;
         }
 
 
-        oStyle.SetID(oNode.m_sName + sClassName + sIdName + L'-' + std::to_wstring(m_nCountNodes));
+        oStyle.SetID(arSelectors.back().m_sName + sClassName + sIdName + L'-' + std::to_wstring(m_nCountNodes));
         m_nCountNodes++;
 
         if (parentSize > 0)
         {
-            m_mUsedStyles.emplace(std::make_pair(oNode, oParents), oStyle);
+//            structNode oItem(oNode, oParents);
+//            std::wcout << L" 2 - " << oItem.m_oChildren.m_sName << L" - " << oItem.m_oChildren.m_sStyle << std::endl;
+            m_mUsedStyles.emplace(arSelectors, oStyle);
         }
 
         return oStyle;
     }
 
     void CCssCalculator_Private::AddStyles(const std::string &sStyle)
-    {        
+    {
         if (sStyle.empty())
             return;
 
@@ -840,7 +832,6 @@ namespace NSCSS
         AddStyles(sSourceUTF8);
     }
 
-
     std::wstring CCssCalculator_Private::ConvertUnitMeasure(const std::wstring &sValue) const
     {
         if (sValue.empty())
@@ -859,6 +850,7 @@ namespace NSCSS
                     {
                         sTempString += wc;
                         sTempString = ConvertAbsoluteValue(sTempString);
+                        std::transform(sTempString.begin(), sTempString.end(), sTempString.begin(), towlower);
 
                         const auto& posPoint = sTempString.find(L'.');
 
@@ -989,7 +981,13 @@ namespace NSCSS
                     sBeforeValue = sBeforeValue.substr(sBeforeValue.find(L"em") + 2);
                 }
                 else
+                {
+
+                    double dValue = wcstod(sBeforeValue.c_str(), NULL);
+                    dValue *= 4;
+                    sTempValue += std::to_wstring((int)floor(dValue + 0.5)) + L" ";
                     break;
+                }
             }
             if (!sTempValue.empty())
             {
@@ -1917,6 +1915,9 @@ inline static void TranslateToEn(std::wstring& sStyle)
 
 inline static std::wstring ConvertAbsoluteValue(const std::wstring& sAbsoluteValue)
 {
+    if (sAbsoluteValue.empty())
+        return sAbsoluteValue;
+
     const std::map<std::wstring, std::wstring> arAbsoluteValues = {{L"xx-small", L"9px"},  {L"x-small", L"10px"},
                                                                    {L"small",    L"13px"}, {L"medium",  L"16px"},
                                                                    {L"large",    L"18px"}, {L"x-large", L"24px"},

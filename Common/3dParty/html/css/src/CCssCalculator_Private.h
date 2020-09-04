@@ -8,6 +8,7 @@
 
 #include "../../katana-parser/src/katana.h"
 
+
 namespace NSCSS
 {
     class CCssCalculator_Private
@@ -15,7 +16,7 @@ namespace NSCSS
         std::vector<CElement*> m_arData;
         std::vector<std::wstring> m_arFiles;
 
-        std::map<std::pair<CNode, std::vector<CNode>>, CCompiledStyle> m_mUsedStyles;
+        std::map<std::vector<CNode>, CCompiledStyle> m_mUsedStyles;
 
         int m_nDpi;
         std::wstring m_sEncoding;
@@ -108,7 +109,7 @@ namespace NSCSS
         std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> GetDeclarations(const std::wstring& sSelector) const;
 
         CCompiledStyle GetCompiledStyle(const std::vector<std::string> arSelectors, const UnitMeasure unitMeasure = Default);
-        CCompiledStyle GetCompiledStyle(const CNode& oNode, const std::vector<CNode>& oParents = std::vector<CNode>(), const UnitMeasure& unitMeasure = Default);
+        CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors, const UnitMeasure& unitMeasure = Default);
 
         void AddStyle(const std::vector<std::string>& sSelectors, const std::string& sStyle);
         void AddStyles(const std::string& sStyle);

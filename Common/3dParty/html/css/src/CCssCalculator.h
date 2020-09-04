@@ -26,26 +26,19 @@ namespace NSCSS
         std::wstring m_sClass; // Класс тэга
         std::wstring m_sStyle; // Стиль тэга
 
-        friend bool operator> (const CNode& oLeftNode, const CNode& oRightNode)
+        bool operator< (const CNode& oNode) const
         {
-            return (oLeftNode.m_sId.length() + oLeftNode.m_sName.length() + oLeftNode.m_sClass.length() + oLeftNode.m_sStyle.length())
-                    >
-                   (oRightNode.m_sId.length() + oRightNode.m_sName.length() + oRightNode.m_sClass.length() + oRightNode.m_sStyle.length());
-        }
-
-        friend bool operator< (const CNode& oLeftNode, const CNode& oRightNode)
-        {
-            return (oLeftNode.m_sId.length() + oLeftNode.m_sName.length() + oLeftNode.m_sClass.length() + oLeftNode.m_sStyle.length())
+            return (m_sId.length() + m_sName.length() + m_sClass.length() + m_sStyle.length())
                     <
-                   (oRightNode.m_sId.length() + oRightNode.m_sName.length() + oRightNode.m_sClass.length() + oRightNode.m_sStyle.length());
+                   (oNode.m_sId.length() + oNode.m_sName.length() + oNode.m_sClass.length() + oNode.m_sStyle.length());
         }
 
-        friend bool operator== (const CNode& oLeftNode, const CNode& oRightNode)
+        bool operator== (const CNode& oNode) const
         {
-            return (oLeftNode.m_sId == oRightNode.m_sId) &&
-                   (oLeftNode.m_sName == oRightNode.m_sName) &&
-                   (oLeftNode.m_sClass == oRightNode.m_sClass) &&
-                   (oLeftNode.m_sStyle == oRightNode.m_sStyle);
+            return((m_sId == oNode.m_sId) &&
+                   (m_sName == oNode.m_sName) &&
+                   (m_sClass == oNode.m_sClass) &&
+                   (m_sStyle == oNode.m_sStyle));
         }
     };
 
@@ -61,7 +54,7 @@ namespace NSCSS
         std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> GetDeclarations(const std::wstring& sSelector) const;
 
         CCompiledStyle GetCompiledStyle(const std::vector<std::string>& arSelectors, const UnitMeasure unitMeasure = Default) const;
-        CCompiledStyle GetCompiledStyle(const CNode& oNode, const std::vector<CNode>& oParents = std::vector<CNode>(), const UnitMeasure& unitMeasure = Default) const;
+        CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors, const UnitMeasure& unitMeasure = Default) const;
 
         void AddStyle(const std::vector<std::string>& sSelectors, const std::string& sStyle);
         void AddStyles(const std::string& sStyle);

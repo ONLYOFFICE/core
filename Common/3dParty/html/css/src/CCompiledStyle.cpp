@@ -217,7 +217,9 @@ namespace NSCSS
                     sProperty += wc;
                 wc = sStyle[++nPosition];
             }
-            wc = sStyle[++nPosition];
+
+            if (++nPosition < sStyle.length())
+            wc = sStyle[nPosition];
 
             while (nPosition < sStyle.length() && sStyle[nPosition] != L';')
             {

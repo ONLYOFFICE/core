@@ -36,6 +36,7 @@
 #include "../../Common/DocxFormat/Source/Common/SimpleTypes_Shared.h"
 #include "../../Common/Base64.h"
 #include "../../DesktopEditor/common/Types.h"
+#include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 #ifndef DISABLE_FILE_DOWNLOADER
 	#include "../../Common/FileDownloader/FileDownloader.h"

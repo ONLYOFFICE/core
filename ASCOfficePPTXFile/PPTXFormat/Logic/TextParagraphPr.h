@@ -485,6 +485,7 @@ namespace PPTX
 							defRPr = new Logic::RunProperties();
 							defRPr->m_name = _T("a:defRPr");
 							defRPr->fromPPTY(pReader);
+							break;
 						}
 						default:
 						{

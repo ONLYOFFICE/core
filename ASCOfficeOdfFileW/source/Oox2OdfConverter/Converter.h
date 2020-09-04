@@ -458,7 +458,7 @@ public:
 		void convert(PPTX::Logic::Br							*oox_br);
 		
 		void convert(PPTX::Logic::TxBody						*oox_txBody, PPTX::Logic::ShapeStyle* oox_style = NULL);
-		void convert_chart_text(PPTX::Logic::TxBody				*oox_txBody);
+		void convert_chart_text(PPTX::Logic::TxBody				*oox_txBody, bool only_properties = false);
 		void convert(PPTX::Logic::BodyPr						*oox_bodyPr);
 		void convert_chart_text(PPTX::Logic::BodyPr				*oox_bodyPr);
 		

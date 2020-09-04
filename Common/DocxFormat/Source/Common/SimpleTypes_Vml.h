@@ -2996,15 +2996,15 @@ namespace SimpleTypes
 			void   SetValue(int nX, int nY, int nZ)
 			{
 				m_nX = nX;
-				m_nX = nY;
-				m_nX = nZ;
+				m_nY = nY;
+				m_nZ = nZ;
 			}
 
 			void   SetValue(double dX, double dY, double dZ)
 			{
 				m_nX = (int)(dX * 65536);
-				m_nX = (int)(dY * 65536);
-				m_nX = (int)(dZ * 65536);
+				m_nY = (int)(dY * 65536);
+				m_nZ = (int)(dZ * 65536);
 			}
 
 			virtual double FromString(std::wstring &sValue)
@@ -3085,8 +3085,8 @@ namespace SimpleTypes
 			void   SetValue(int nX, int nY, int nZ)
 			{
 				m_nX = nX;
-				m_nX = nY;
-				m_nX = nZ;
+				m_nY = nY;
+				m_nZ = nZ;
 			}
 
 			virtual double FromString(std::wstring &sValue)
@@ -3172,7 +3172,7 @@ namespace SimpleTypes
 			void   SetValue(int nX, int nY)
 			{
 				m_nX = nX;
-				m_nX = nY;
+				m_nY = nY;
 			}
 
 			virtual double FromString(std::wstring &sValue)
@@ -3242,7 +3242,7 @@ namespace SimpleTypes
 			void   SetValue(double dX, double dY)
 			{
 				m_dX = dX;
-				m_dX = dY;
+				m_dY = dY;
 			}
 
 			virtual double FromString(std::wstring &sValue)
@@ -4398,7 +4398,7 @@ namespace SimpleTypes
 			void   SetValue(double dX, double dY)
 			{
 				m_dX = dX;
-				m_dX = dY;
+				m_dY = dY;
 			}
 
 			virtual double FromString(std::wstring &sValue)
@@ -4464,7 +4464,7 @@ namespace SimpleTypes
 			void   SetValue(double dX, double dY)
 			{
 				m_dX = dX;
-				m_dX = dY;
+				m_dY = dY;
 			}
 
 			virtual double FromString(std::wstring &sValue)
@@ -4530,7 +4530,7 @@ namespace SimpleTypes
 			void   SetValue(double dX, double dY)
 			{
 				m_dX = dX;
-				m_dX = dY;
+				m_dY = dY;
 			}
 
 			virtual double FromString(std::wstring &sValue)
@@ -5337,7 +5337,7 @@ namespace SimpleTypes
 			void   SetValue_Points(double dX, double dY)
 			{
 				m_dX = dX;
-				m_dX = dY;
+				m_dY = dY;
 
 				m_bUnitsX = true;
 				m_bUnitsY = true;

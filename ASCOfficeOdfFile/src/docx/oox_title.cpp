@@ -101,13 +101,12 @@ void oox_title::oox_serialize(std::wostream & _Wostream)
 					{
 						CP_XML_NODE(L"a:pPr")
 						{
-							CP_XML_NODE(L"a:defRPr"){}
-						}
-						CP_XML_NODE(L"a:r")
-						{
-							//odf_reader::fonts_container & fonts = context.fontContainer();
-							odf_reader::fonts_container fonts;
-							content_.text_properties_->oox_serialize(CP_XML_STREAM(), true, fonts);
+							CP_XML_NODE(L"a:defRPr")
+							{
+								//odf_reader::fonts_container & fonts = context.fontContainer();
+								odf_reader::fonts_container fonts;
+								content_.text_properties_->oox_serialize(CP_XML_STREAM(), true, fonts);
+							}
 						}
 					}			
 				}

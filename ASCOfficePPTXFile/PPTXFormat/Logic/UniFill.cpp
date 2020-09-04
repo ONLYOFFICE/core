@@ -332,25 +332,33 @@ namespace PPTX
 														pDstBuffer = (BYTE*) __s.c_str();
 														dstLen = len;
 													}
-													if (sImageExtension.length() < 1) 
-													{
-														CImageFileFormatChecker checker;
-														sImageExtension = checker.DetectFormatByData(pDstBuffer, dstLen);								
-													}
-                                                    //папки media может не быть в случае, когда все картинки base64(поскольку файл временный, папку media не создаем)
-                                                    std::wstring tempFilePath = pReader->m_strFolder + FILE_SEPARATOR_STR;
-													
-													OOX::CPath pathTemp = NSFile::CFileBinary::CreateTempFileWithUniqueName(tempFilePath, _T("img")) + _T(".") + sImageExtension;
+													CImageFileFormatChecker checker;
+													std::wstring detectImageExtension = checker.DetectFormatByData(pDstBuffer, dstLen);
 
-                                                    CFile oTempFile;
-                                                    oTempFile.CreateFile(pathTemp.GetPath());
-													oTempFile.WriteFile((void*)pDstBuffer, (DWORD)dstLen);
-													oTempFile.CloseFile();
-													
-													strUrl = strTempFile =pathTemp.GetPath(); // strTempFile для удаления
-													if (bBase64)
+													if (false == detectImageExtension.empty())
 													{
-														RELEASEARRAYOBJECTS(pDstBuffer);
+														if (sImageExtension.empty())
+															sImageExtension = detectImageExtension;
+
+														//папки media может не быть в случае, когда все картинки base64(поскольку файл временный, папку media не создаем)
+														std::wstring tempFilePath = pReader->m_strFolder + FILE_SEPARATOR_STR;
+														
+														OOX::CPath pathTemp = NSFile::CFileBinary::CreateTempFileWithUniqueName(tempFilePath, _T("img")) + _T(".") + sImageExtension;
+
+														CFile oTempFile;
+														oTempFile.CreateFile(pathTemp.GetPath());
+														oTempFile.WriteFile((void*)pDstBuffer, (DWORD)dstLen);
+														oTempFile.CloseFile();
+														
+														strUrl = strTempFile =pathTemp.GetPath(); // strTempFile для удаления
+														if (bBase64)
+														{
+															RELEASEARRAYOBJECTS(pDstBuffer);
+														}
+													}
+													else
+													{// бяка
+														strUrl.clear();
 													}
 												}
 												else
@@ -521,6 +529,7 @@ namespace PPTX
 									pFill->tileRect = new PPTX::Logic::Rect();
 									pFill->tileRect->fromPPTY(pReader);
 									pFill->tileRect->m_name = _T("a:tileRect");
+									break;
 								}
 								default:
 								{

@@ -47,11 +47,11 @@ namespace codegen
     {
         Dictionary<string, GenClassPivot> m_mapGeneratedClasses = new Dictionary<string, GenClassPivot>();
 
-        //string gc_sXsd = "xlslicercache.xsd";
+        //string gc_sXsd = "xl14.xsd";
         //string[] gc_aTargetTypes = new string[] { "CT_SlicerCacheDefinition" };
         //string gc_sTargetNamespace = "http://schemas.microsoft.com/office/spreadsheetml/2009/9/main";
 
-        //string gc_sXsd = "xlslicercache.xsd";
+        //string gc_sXsd = "xl14.xsd";
         //string[] gc_aTargetTypes = new string[] { "CT_SlicerCaches", "CT_SlicerRefs", "CT_SlicerStyles", "CT_Slicers" };
         //string gc_sTargetNamespace = "http://schemas.microsoft.com/office/spreadsheetml/2009/9/main";
 
@@ -67,10 +67,13 @@ namespace codegen
         //string[] gc_aTargetTypes = new string[] { "CT_Timeline", "CT_TimelineCacheRefs" };
         //string gc_sTargetNamespace = "http://schemas.microsoft.com/office/spreadsheetml/2010/11/main";
 
-        string gc_sXsd = "xlslicercache15.xsd";
-        string[] gc_aTargetTypes = new string[] { "CT_Connection" };
-        string gc_sTargetNamespace = "http://schemas.microsoft.com/office/spreadsheetml/2010/11/main";
+        //string gc_sXsd = "xlslicercache15.xsd";
+        //string[] gc_aTargetTypes = new string[] { "CT_Connection" };
+        //string gc_sTargetNamespace = "http://schemas.microsoft.com/office/spreadsheetml/2010/11/main";
 
+        string gc_sXsd = "5.26.xsd";
+        string[] gc_aTargetTypes = new string[] { "CT_NamedSheetViews" };
+        string gc_sTargetNamespace = "http://schemas.microsoft.com/office/spreadsheetml/2019/namedsheetviews";
 
         public void Start(string sDirIn, string sDirCppXmlOut, string sDirCppBinOut, string sDirJsBinOut, ValidationEventHandler oValidationEventHandler)
         {

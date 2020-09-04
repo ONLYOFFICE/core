@@ -1,7 +1,8 @@
 <xsd:schema targetNamespace="http://schemas.microsoft.com/office/spreadsheetml/2019/namedsheetviews" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:x="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:x14="http://schemas.microsoft.com/office/spreadsheetml/2009/9/main" xmlns:xlrd2="http://schemas.microsoft.com/office/spreadsheetml/2017/richdata2" xmlns="http://schemas.microsoft.com/office/spreadsheetml/2019/namedsheetviews">
-   <xsd:import namespace="http://schemas.openxmlformats.org/spreadsheetml/2006/main" schemaLocation="xlautofilter.xsd"/>
+   <xsd:import namespace="http://schemas.openxmlformats.org/spreadsheetml/2006/main" schemaLocation="sml.xsd"/>
    <xsd:import namespace="http://schemas.openxmlformats.org/spreadsheetml/2006/main" schemaLocation="xlbasictypes.xsd"/>
    <xsd:import namespace="http://schemas.microsoft.com/office/spreadsheetml/2009/9/main" schemaLocation="xl14.xsd"/>
+   <xsd:import namespace="http://schemas.microsoft.com/office/spreadsheetml/2017/richdata2" schemaLocation="5.20.xsd"/>
    <xsd:element name="namedSheetViews" type="CT_NamedSheetViews"/>
    <xsd:complexType name="CT_NamedSheetViews">
      <xsd:sequence>

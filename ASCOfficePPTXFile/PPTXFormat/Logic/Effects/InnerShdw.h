@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_INNERSHDW_INCLUDE_H_
-#define PPTX_LOGIC_INNERSHDW_INCLUDE_H_
 
 #include "./../../WrapperWritingElement.h"
 #include "./../UniColor.h"
@@ -196,4 +194,3 @@ namespace PPTX
 	} // namespace Logic
 } // namespace PPTX
 
-#endif // PPTX_LOGIC_INNERSHDW_INCLUDE_H_

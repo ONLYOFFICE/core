@@ -138,6 +138,11 @@ namespace OOX
 												L"http://schemas.microsoft.com/office/2007/relationships/slicer",
 												L"slicers/slicer", true, true);
 
+			const FileType NamedSheetView	(L"../namedSheetViews", L"namedSheetView.xml",
+												L"application/vnd.ms-excel.namedsheetviews+xml",
+												L"http://schemas.microsoft.com/office/2019/04/relationships/namedSheetView",
+												L"namedSheetViews/namedSheetView", true, true);
+
 			//onlyoffice workbook comments
 			const FileType WorkbookComments(L"", L"workbookComments.bin",
 												L"",

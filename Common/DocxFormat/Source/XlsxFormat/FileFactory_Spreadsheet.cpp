@@ -55,6 +55,7 @@
 #include "Pivot/PivotCacheRecords.h"
 #include "Slicer/SlicerCache.h"
 #include "Slicer/Slicer.h"
+#include "NamedSheetViews/NamedSheetViews.h"
 
 #include "Table/Table.h"
 #include "Table/QueryTable.h"
@@ -112,6 +113,8 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CSlicerCacheFile( pMain, oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::Slicer )
 				return smart_ptr<OOX::File>(new CSlicerFile( pMain, oRootPath, oFileName ));
+			else if ( oRelation.Type() == FileTypes::NamedSheetView )
+				return smart_ptr<OOX::File>(new CNamedSheetViewFile( pMain, oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::Comments )
 				return smart_ptr<OOX::File>(new CComments( pMain, oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::ThreadedComments )
@@ -229,6 +232,8 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CSlicerCacheFile( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == FileTypes::Slicer )
 				return smart_ptr<OOX::File>(new CSlicerFile( pMain, oRootPath, oFileName ));
+			else if ( pRelation->Type() == FileTypes::NamedSheetView )
+				return smart_ptr<OOX::File>(new CNamedSheetViewFile( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == OOX::FileTypes::VmlDrawing )
 				return smart_ptr<OOX::File>(new CVmlDrawing( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == OOX::FileTypes::ChartDrawing)

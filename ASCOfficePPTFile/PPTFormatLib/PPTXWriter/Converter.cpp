@@ -1186,16 +1186,30 @@ void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CTransitio
 			param_value = transition.m_nEffectDirection ? L"true" : L"false";
 		}break;
 	case 4:
+		{
+			type = L"p:cover";	
+			param_name	= L"dir";
+			switch(transition.m_nEffectDirection)
+			{
+				case 0:	param_value = L"l"; break;
+				case 1:	param_value = L"u"; break;
+				case 2:	param_value = L"r"; break;
+				case 3:	param_value = L"d"; break;
+				case 4:	param_value = L"lu"; break;
+				case 5:	param_value = L"ru"; break;
+				case 6:	param_value = L"ld"; break;
+				case 7:	param_value = L"rd"; break;
+			}
+		}break;
 	case 7:
 		{
-			if (transition.m_nEffectType == 4)	type = L"p:cover";		
-			if (transition.m_nEffectType == 7)	type = L"p:pull";		
+			type = L"p:pull";		
 			param_name	= L"dir";
 			switch(transition.m_nEffectDirection)
 			{
 				case 0:	param_value = L"r"; break;
 				case 1:	param_value = L"b"; break;
-				case 2:	param_value = L"l"; break;
+				case 2:	param_value = L"lu"; break;
 				case 3:	param_value = L"t"; break;
 				case 4:	param_value = L"br"; break;
 				case 5:	param_value = L"bl"; break;

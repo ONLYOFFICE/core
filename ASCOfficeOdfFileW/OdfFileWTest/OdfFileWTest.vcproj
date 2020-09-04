@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="OdfFileWriterTest"
 	ProjectGUID="{FBA8446A-150F-4A10-B4DA-1022048D6473}"
 	RootNamespace="ASCOfficeOdfFileWTest"
@@ -399,6 +399,10 @@
 							AdditionalOptions="/bigobj"
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\ASCOfficeDocxFile2\BinReader\FileWriter.cpp"
+					>
 				</File>
 				<File
 					RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\FontProcessor.cpp"

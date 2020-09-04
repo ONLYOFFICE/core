@@ -134,8 +134,10 @@ namespace NSGuidesVML
             {
             case OOXMLShapes::sptCRect:
                 pPPTShape->m_eType = PPTShapes::sptCRect;
+                break;
             case OOXMLShapes::sptCArc:
                 pPPTShape->m_eType = PPTShapes::sptCRect;
+                break;
             default:
                 pPPTShape->m_eType = PPTShapes::sptCustom;
             }

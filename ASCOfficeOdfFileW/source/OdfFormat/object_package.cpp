@@ -435,7 +435,9 @@ CP_XML_ATTR(L"xmlns:presentation",	L"urn:oasis:names:tc:opendocument:xmlns:prese
 CP_XML_ATTR(L"xmlns:smil",			L"urn:oasis:names:tc:opendocument:xmlns:smil-compatible:1.0" );
 CP_XML_ATTR(L"xmlns:anim",			L"urn:oasis:names:tc:opendocument:xmlns:animation:1.0" );
 CP_XML_ATTR(L"xmlns:officeooo",		L"http://openoffice.org/2009/office");
-					CP_XML_ATTR(L"office:version",		L"1.2");				
+CP_XML_ATTR(L"xmlns:chartooo",		L"http://openoffice.org/2010/chart");
+CP_XML_ATTR(L"office:version",		L"1.2");		
+				
 	
 					if (content)
 					{

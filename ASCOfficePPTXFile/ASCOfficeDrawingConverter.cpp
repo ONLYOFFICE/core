@@ -5159,19 +5159,26 @@ HRESULT CDrawingConverter::SaveObjectEx(LONG lStart, LONG lLength, const std::ws
 	}
 	else
 	{
+		PPTX::Logic::SpTreeElem oElem;
+
 		m_pReader->Seek(lStart);
 
 		m_pReader->m_nDocumentType = nDocType;	
 		++m_nCurrentIndexObject;
-
-		PPTX::Logic::SpTreeElem oElem;
-
+		
 		BYTE typeRec1   = m_pReader->GetUChar();    // must be 0;
 		LONG _e         = m_pReader->GetPos()   + m_pReader->GetLong() + 4;
+		
+		try
+		{
+			m_pReader->Skip(5); // type record (must be 1) + 4 byte - len record
 
-		m_pReader->Skip(5); // type record (must be 1) + 4 byte - len record
-
-		oElem.fromPPTY(m_pReader);
+			oElem.fromPPTY(m_pReader);			
+		}
+		catch(...)
+		{
+			//todooo
+		}
 
 		bool bOle = false;
 		if (oElem.is<PPTX::Logic::Pic>())
@@ -5200,10 +5207,8 @@ HRESULT CDrawingConverter::SaveObjectEx(LONG lStart, LONG lLength, const std::ws
 		--m_nCurrentIndexObject;
 
 		SaveObjectExWriterRelease(oXmlWriter);
-
-
 		sXml = oXmlWriter.GetXmlString();
-
+	
 		m_pReader->Seek(_e);
 	}
 	return S_OK;
@@ -5215,19 +5220,24 @@ std::wstring CDrawingConverter::SaveObjectBackground(LONG lStart, LONG lLength)
 	m_pReader->Seek(lStart);
 
 	++m_nCurrentIndexObject;
-
 	BYTE typeRec1 = m_pReader->GetUChar(); // must be 0;
 	LONG _e = m_pReader->GetPos() + m_pReader->GetLong() + 4;
-
-	m_pReader->Skip(5); // type record (must be 1) + 4 byte - len record
-	PPTX::Logic::SpTreeElem oElem;
-
+	
 	m_pReader->m_nDocumentType = XMLWRITER_DOC_TYPE_DOCX;
+	
+	PPTX::Logic::SpTreeElem oElem;
+	try
+	{
+		m_pReader->Skip(5); // type record (must be 1) + 4 byte - len record
 
-	oElem.fromPPTY(m_pReader);
+		oElem.fromPPTY(m_pReader);
+	}
+	catch(...)
+	{
+		//todooo
+	}
 
 	m_pReader->m_nDocumentType = XMLWRITER_DOC_TYPE_PPTX;
-
 
 	NSBinPptxRW::CXmlWriter oXmlWriter;
 	SaveObjectExWriterInit(oXmlWriter, XMLWRITER_DOC_TYPE_DOCX);

@@ -1730,8 +1730,12 @@ namespace NSBinPptxRW
 	{
 		if (_pos > m_lSize)
 		{
-			std::cerr << "CBinaryFileReader out_of_range"<< std::endl;
-			throw std::out_of_range("CBinaryFileReader out_of_range");
+			_pos = m_lSize;
+		}
+		if (_pos < 0 )
+		{
+			_pos = 0;
+			throw;
 		}
 		m_lPos = _pos;
 		m_pDataCur = m_pData + m_lPos;
@@ -1749,12 +1753,23 @@ namespace NSBinPptxRW
 	}
 
 	// 1 bytes
+	bool CBinaryFileReader::GetUCharWithResult(BYTE *value_)
+	{
+		if (!value_ || m_lPos >= m_lSize)
+		{
+			return false;
+		}
+
+		*value_ = *m_pDataCur;
+		++m_lPos;
+		++m_pDataCur;
+		return true;
+	}
 	BYTE CBinaryFileReader::GetUChar()
 	{
-		if (m_lPos >= m_lSize)
+		if (m_lPos >= m_lSize || m_lPos < 0)
 		{
-			std::cerr << "CBinaryFileReader out_of_range"<< std::endl;
-			throw std::out_of_range("CBinaryFileReader out_of_range");
+			throw;
 		}
 
 		BYTE res = *m_pDataCur;
@@ -1764,10 +1779,9 @@ namespace NSBinPptxRW
 	}
 	signed char CBinaryFileReader::GetChar()
 	{
-		if (m_lPos >= m_lSize)
+		if (m_lPos >= m_lSize || m_lPos <0)
 		{
-			std::cerr << "CBinaryFileReader out_of_range"<< std::endl;
-			throw std::out_of_range("CBinaryFileReader out_of_range");
+			throw;
 		}
 
 		BYTE res = *m_pDataCur;
@@ -1800,8 +1814,7 @@ namespace NSBinPptxRW
 	{
 		if (m_lPos + 1 >= m_lSize)
 		{
-			std::cerr << "CBinaryFileReader out_of_range"<< std::endl;
-			throw std::out_of_range("CBinaryFileReader out_of_range");
+			throw;
 		}
 #if defined(_IOS) || defined(__ANDROID__)
         _UINT16 res = 0;
@@ -1817,8 +1830,7 @@ namespace NSBinPptxRW
 	{
 		if (m_lPos + 1 >= m_lSize)
 		{
-			std::cerr << "CBinaryFileReader out_of_range"<< std::endl;
-			throw std::out_of_range("CBinaryFileReader out_of_range");
+			throw;
 		}
 
 #if defined(_IOS) || defined(__ANDROID__)
@@ -1837,8 +1849,7 @@ namespace NSBinPptxRW
 	{
 		if (m_lPos + 3 >= m_lSize)
 		{
-			std::cerr << "CBinaryFileReader out_of_range"<< std::endl;
-			throw std::out_of_range("CBinaryFileReader out_of_range");
+			throw;
 		}
 
 #if defined(_IOS) || defined(__ANDROID__)
@@ -1855,8 +1866,7 @@ namespace NSBinPptxRW
 	{
 		if (m_lPos + 7 >= m_lSize)
 		{
-			std::cerr << "CBinaryFileReader out_of_range"<< std::endl;
-			throw std::out_of_range("CBinaryFileReader out_of_range");
+			throw;
 		}
 
 #if defined(_IOS) || defined(__ANDROID__)
@@ -1885,8 +1895,7 @@ namespace NSBinPptxRW
 	{
         if (m_lPos + (int)DOUBLE_SIZEOF > m_lSize)
 		{
-			std::cerr << "CBinaryFileReader out_of_range"<< std::endl;
-			throw std::out_of_range("CBinaryFileReader out_of_range");
+			throw;
 		}
 
 #if defined(_IOS) || defined(__ANDROID__)
@@ -1912,8 +1921,7 @@ namespace NSBinPptxRW
             return "";
         if (m_lPos + len > m_lSize)
 		{
-			std::cerr << "CBinaryFileReader out_of_range"<< std::endl;
-			throw std::out_of_range("CBinaryFileReader out_of_range");
+			throw;
 		}
 
 		std::string res((CHAR*)m_pDataCur, len);
@@ -1932,8 +1940,7 @@ namespace NSBinPptxRW
             return _T("");
         if (m_lPos + len > m_lSize)
 		{
-			std::cerr << "CBinaryFileReader out_of_range"<< std::endl;
-			throw std::out_of_range("CBinaryFileReader out_of_range");
+			throw;
 		}
 
         _UINT32 lSize = len >>1; //string in char
@@ -1964,8 +1971,7 @@ namespace NSBinPptxRW
 			return _T("");
 		if (m_lPos + len > m_lSize)
 		{
-			std::cerr << "CBinaryFileReader out_of_range"<< std::endl;
-			throw std::out_of_range("CBinaryFileReader out_of_range");
+			throw;
 		}
 
 		_UINT32 lSize = len >> 1; //string in char
@@ -2044,8 +2050,7 @@ namespace NSBinPptxRW
 
 		if (m_lPos + nSize > m_lSize)
 		{
-			std::cerr << "CBinaryFileReader out_of_range"<< std::endl;
-			throw std::out_of_range("CBinaryFileReader out_of_range");
+			throw;
 		}
 
 		BYTE* res = (BYTE*)m_pDataCur;

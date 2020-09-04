@@ -1,5 +1,4 @@
 #include "htmlfile2.h"
-#include "htmlfile_private.h"
 
 #include <string>
 #include <cwctype>

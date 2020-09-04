@@ -123,7 +123,7 @@ namespace NSCSS
 //        return true;
 //    }
 
-    bool CCompiledStyle::operator!=(const CCompiledStyle &oElement)
+    bool CCompiledStyle::operator!=(const CCompiledStyle &oElement) const
     {
         if (*this > oElement)
             return false;
@@ -134,14 +134,14 @@ namespace NSCSS
         return true;
     }
 
-    bool CCompiledStyle::operator>(const CCompiledStyle &oElement)
+    bool CCompiledStyle::operator>(const CCompiledStyle &oElement) const
     {
-        return (m_mStyle.size() > oElement.m_mStyle.size());
+        return GetWeidth() > oElement.GetWeidth();
     }
 
-    bool CCompiledStyle::operator<(const CCompiledStyle &oElement)
+    bool CCompiledStyle::operator<(const CCompiledStyle &oElement) const
     {
-        return (m_mStyle.size() < oElement.m_mStyle.size());
+        return GetWeidth() < oElement.GetWeidth();
     }
 
     const std::map<std::wstring, std::wstring>& CCompiledStyle::GetStyleMap() const
@@ -250,7 +250,7 @@ namespace NSCSS
         }
     }
 
-    void CCompiledStyle::AddParent(const std::wstring& sParentName)
+    void CCompiledStyle::AddParent(const std::wstring sParentName)
     {
         if (!sParentName.empty())
             m_arParentsStyles.push_back(sParentName);
@@ -281,7 +281,7 @@ namespace NSCSS
         return m_mStyle.end();
     }
 
-    const double CCompiledStyle::GetWeidth()
+    double CCompiledStyle::GetWeidth() const
     {
         double dWidth;
         for (const auto& sValue : m_mStyle)
@@ -400,7 +400,7 @@ namespace NSCSS
                                                              L"em", L"rem",
                                                              L"ex"};
             std::wstring sTempUnitMeasure;
-            size_t posUnitMeasure;
+            size_t posUnitMeasure = std::wstring::npos;
 
             for (std::wstring sUnitMesure : arUnitMeasure)
             {
@@ -440,7 +440,7 @@ namespace NSCSS
                 if (!sValue.empty())
                     return sValue;
             }
-            else if (posUnitMeasure != 0)
+            else if (posUnitMeasure != std::wstring::npos)
             {
                 int num = 0;
                 std::wstring sValue;

@@ -479,9 +479,9 @@ private:
 
     std::wstring GetStyle(std::vector<NSCSS::CNode> sSelectors, const bool& bP)
     {
-        NSCSS::CNode oChild = sSelectors.back();
-        sSelectors.pop_back();
-        NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(oChild, sSelectors);
+//        NSCSS::CNode oChild = sSelectors.back();
+//        sSelectors.pop_back();
+        NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
         if(bP)
             m_oXmlStyle.WritePStyle(oStyle);
         else

@@ -481,7 +481,7 @@ private:
         NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
         bP ? m_oXmlStyle.WritePStyle(oStyle) : m_oXmlStyle.WriteRStyle(oStyle);
         m_oStylesXml.WriteString(m_oXmlStyle.GetStyle());
-        return m_oXmlStyle.GetId();
+        return m_oXmlStyle.GetIdAndClear();
     }
 
     void readHead()

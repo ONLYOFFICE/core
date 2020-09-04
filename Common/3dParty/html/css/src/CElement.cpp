@@ -21,10 +21,10 @@ std::wstring CElement::GetText() const
 
     if(m_arSelectors.size() > 0)
     {
-        for (int i = 0; i < (int)(m_arSelectors.size() - 1); i++)
-            sText += m_arSelectors[i] + L", ";
+        for (const std::wstring& sSelector : m_arSelectors)
+            sText += sSelector + L", ";
 
-        sText += m_arSelectors[m_arSelectors.size() - 1];
+        sText.erase(sText.length() - 2, 2);
     }
     if (m_arDeclarations.size() != 0 ||
         m_arChildrens.size() != 0)
@@ -101,8 +101,14 @@ int CElement::GetCountChildrens() const
     return m_arChildrens.size();
 }
 
-bool CElement::FindSelector(std::wstring sSelector)
+bool CElement::FindSelector(const std::wstring& sSelector) const
 {
+    if (m_arSelectors.size() == 0)
+        return false;
+
+    if (m_arSelectors[0] == sSelector)
+        return true;
+
     if (std::find(m_arSelectors.begin(), m_arSelectors.end(), sSelector) != m_arSelectors.cend())
         return true;
 
@@ -119,8 +125,8 @@ std::vector<std::pair<std::wstring, std::wstring>> CElement::GetDeclarations() c
     return m_arDeclarations;
 }
 
-std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> CElement::GetDeclarations(const std::wstring sSelector,
-                                                                                                                   const std::vector<std::wstring> arParents) const
+std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> CElement::GetDeclarations(const std::wstring& sSelector,
+                                                                                                                   const std::vector<std::wstring>& arParents) const
 {
     std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> arElement;
 
@@ -139,17 +145,14 @@ std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wst
         }
     }
 
-    std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> TempArElement;
-
     for (const CElement* oElement : m_arChildrens)
     {
         const std::vector<std::wstring>& sSelectors = oElement->GetSelectors();
 
         if (std::find(sSelectors.begin(), sSelectors.end(), sSelector) != sSelectors.cend())
         {
-            TempArElement = oElement->GetDeclarations(sSelector, GetSelectors());
+            const std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>>& TempArElement = oElement->GetDeclarations(sSelector, GetSelectors());
             arElement.insert(arElement.end(), TempArElement.begin(), TempArElement.end());
-            TempArElement.clear();
         }
     }
 

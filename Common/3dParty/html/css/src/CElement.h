@@ -25,12 +25,12 @@ public:
     int GetCountDeclarations() const;
     int GetCountChildrens() const;
 
-    bool FindSelector(std::wstring sSelector);
+    bool FindSelector(const std::wstring& sSelector) const;
 
     std::vector<std::wstring> GetSelectors() const;
     std::vector<std::pair<std::wstring, std::wstring>> GetDeclarations() const;
-    std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> GetDeclarations(const std::wstring sSelector,
-                                                                                                             const std::vector<std::wstring> arParents) const;
+    std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> GetDeclarations(const std::wstring& sSelector,
+                                                                                                             const std::vector<std::wstring>& arParents) const;
 
     std::vector<CElement*> GetChildrens() const;
 

@@ -8,13 +8,13 @@
 
 namespace NSCSS
 {
-    CCompiledStyle::CCompiledStyle()
-    {
-    }
+    CCompiledStyle::CCompiledStyle(){}
 
-    CCompiledStyle::CCompiledStyle(const std::map<std::wstring, std::wstring>& mStyle) : m_mStyle(mStyle) {}
+    CCompiledStyle::CCompiledStyle(const std::map<std::wstring, std::wstring>& mStyle) : m_mStyle(mStyle){}
 
-    CCompiledStyle::CCompiledStyle(const CCompiledStyle& oStyle) : m_mStyle(oStyle.m_mStyle), m_sId(oStyle.m_sId), m_arParentsStyles(oStyle.m_arParentsStyles) {}
+    CCompiledStyle::CCompiledStyle(const CCompiledStyle& oStyle) : m_mStyle(oStyle.m_mStyle),
+                                                                   m_sId(oStyle.m_sId),
+                                                                   m_arParentsStyles(oStyle.m_arParentsStyles){}
 
     CCompiledStyle::~CCompiledStyle()
     {
@@ -124,7 +124,7 @@ namespace NSCSS
         return U_TO_UTF8(sStyle);
     }
 
-    const size_t CCompiledStyle::GetSize() const
+    size_t CCompiledStyle::GetSize() const
     {
         return m_mStyle.size();
     }
@@ -243,6 +243,7 @@ namespace NSCSS
     double CCompiledStyle::GetWeidth() const
     {
         double dWidth = 0.0;
+
         for (const auto& sValue : m_mStyle)
         {
             dWidth += sValue.first.length();
@@ -259,17 +260,19 @@ namespace NSCSS
 
     /* FONT */
 
-        std::wstring CCompiledStyle::GetFont()
+        std::wstring CCompiledStyle::GetFont() const
         {
-            if (m_mStyle.find(L"font") != m_mStyle.cend())
-                return m_mStyle[L"font"];
+            const auto& oFont = m_mStyle.find(L"font");
 
-            std::wstring sValue = GetFontStyle()   + L" " +
-                                  GetFontVariant() + L" " +
-                                  GetFontWeight()  + L" " +
-                                  GetFontSize()    + L"/" +
-                                  GetLineHeight()  + L" " +
-                                  GetFontFamily();
+            if (oFont != m_mStyle.cend())
+                return oFont->second;
+
+            const std::wstring sValue = GetFontStyle()   + L" " +
+                                        GetFontVariant() + L" " +
+                                        GetFontWeight()  + L" " +
+                                        GetFontSize()    + L"/" +
+                                        GetLineHeight()  + L" " +
+                                        GetFontFamily();
 
             if (sValue.length() == 5)
                 return L"";
@@ -277,11 +280,13 @@ namespace NSCSS
             return sValue;
         }
 
-        std::wstring CCompiledStyle::GetFontFamily()
+        std::wstring CCompiledStyle::GetFontFamily() const
         {
-            if (m_mStyle.find(L"font-family") != m_mStyle.cend())
+            const auto& oFontFamily = m_mStyle.find(L"font-family");
+
+            if (oFontFamily != m_mStyle.cend())
             {
-                std::wstring sFontFamily = m_mStyle[L"font-family"];
+                std::wstring sFontFamily = oFontFamily->second;
 
                 const auto& posComma = sFontFamily.find(L',');
 
@@ -296,8 +301,12 @@ namespace NSCSS
             }
             std::wstring sFont;
 
-            if (m_mStyle.find(L"font") != m_mStyle.cend())
-                sFont = m_mStyle[L"font"];
+            const auto& oFont = m_mStyle.find(L"font");
+
+            if (oFont != m_mStyle.cend())
+                sFont = oFont->second;
+            else
+                return sFont;
 
             if (sFont.empty())
                 return sFont;
@@ -332,15 +341,21 @@ namespace NSCSS
             return sValue;
         }
 
-        std::wstring CCompiledStyle::GetFontSize()
+        std::wstring CCompiledStyle::GetFontSize() const
         {
-            if (m_mStyle.find(L"font-size") != m_mStyle.cend())
-                return m_mStyle[L"font-size"];
+            const auto& oFontSize = m_mStyle.find(L"font-size");
+
+            if (oFontSize != m_mStyle.cend())
+                return oFontSize->second;
 
             std::wstring sFont;
 
-            if (m_mStyle.find(L"font") != m_mStyle.cend())
-                sFont = m_mStyle[L"font"];
+            const auto& oFont = m_mStyle.find(L"font");
+
+            if (oFont != m_mStyle.cend())
+                sFont = oFont->second;
+            else
+                return sFont;
 
             if (sFont.empty())
                 return sFont;
@@ -417,31 +432,41 @@ namespace NSCSS
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetFontSizeAdjust()
+        std::wstring CCompiledStyle::GetFontSizeAdjust() const
         {
-            if (m_mStyle.find(L"font-size-adjust") != m_mStyle.cend())
-                return m_mStyle[L"font-size-adjust"];
+            const auto& oFontSizeAdj = m_mStyle.find(L"font-size-adjust");
+
+            if (oFontSizeAdj != m_mStyle.cend())
+                return oFontSizeAdj->second;
 
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetFontStretch()
+        std::wstring CCompiledStyle::GetFontStretch() const
         {
-            if (m_mStyle.find(L"font-stretch") != m_mStyle.cend())
-                return m_mStyle[L"font-stretch"];
+            const auto& oFontStretch = m_mStyle.find(L"font-stretch");
+
+            if (oFontStretch != m_mStyle.cend())
+                return oFontStretch->second;
 
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetFontStyle()
+        std::wstring CCompiledStyle::GetFontStyle() const
         {
-            if (m_mStyle.find(L"font-style") != m_mStyle.cend())
-                return m_mStyle[L"font-style"];
+            const auto& oFontStyle = m_mStyle.find(L"font-style");
+
+            if (oFontStyle != m_mStyle.cend())
+                return oFontStyle->second;
 
             std::wstring sFont;
 
-            if (m_mStyle.find(L"font") != m_mStyle.cend())
-                sFont = m_mStyle[L"font"];
+            const auto& oFont = m_mStyle.find(L"font");
+
+            if (oFont != m_mStyle.cend())
+                sFont = oFont->second;
+            else
+                return sFont;
 
             if (sFont.empty())
                 return sFont;
@@ -464,20 +489,26 @@ namespace NSCSS
             return sValue;
         }
 
-        std::wstring CCompiledStyle::GetFontVariant()
+        std::wstring CCompiledStyle::GetFontVariant() const
         {
-            if (m_mStyle.find(L"font-variant") != m_mStyle.cend())
-                return m_mStyle[L"font-variant"];
+            const auto& oFontVariant = m_mStyle.find(L"font-variant");
+
+            if (oFontVariant != m_mStyle.cend())
+                return oFontVariant->second;
 
             std::wstring sFont;
 
-            if (m_mStyle.find(L"font") != m_mStyle.cend())
-                sFont = m_mStyle[L"font"];
+            const auto& oFont = m_mStyle.find(L"font");
+
+            if (oFont != m_mStyle.cend())
+                sFont = oFont->second;
+            else
+                return sFont;
 
             if (sFont.empty())
                 return sFont;
 
-            if (sFont.find(L"small-caps"))
+            if (sFont.find(L"small-caps") != std::wstring::npos)
                 return L"small-caps";
 
             if (iswdigit(sFont[0]))
@@ -501,15 +532,21 @@ namespace NSCSS
             return sValue;
         }
 
-        std::wstring CCompiledStyle::GetFontWeight()
+        std::wstring CCompiledStyle::GetFontWeight() const
         {
-            if (m_mStyle.find(L"font-weight") != m_mStyle.cend())
-                return m_mStyle[L"font-weight"];
+            const auto& oFontWeight = m_mStyle.find(L"font-weight");
+
+            if (oFontWeight != m_mStyle.cend())
+                return oFontWeight->second;
 
             std::wstring sFont;
 
-            if (m_mStyle.find(L"font") != m_mStyle.cend())
-                sFont = m_mStyle[L"font"];
+            const auto& oFont = m_mStyle.find(L"font");
+
+            if (oFont != m_mStyle.cend())
+                sFont = oFont->second;
+            else
+                return sFont;
 
             if (sFont.empty())
                 return L"";
@@ -517,7 +554,7 @@ namespace NSCSS
             const std::vector<std::wstring> arValues = {L"bold",   L"bolder",
                                                         L"lighter"};
 
-            for (std::wstring sValue : arValues)
+            for (const std::wstring& sValue : arValues)
                 if (sFont.find(sValue))
                     return sValue;
 
@@ -549,15 +586,21 @@ namespace NSCSS
             return sValue;
         }
 
-        std::wstring CCompiledStyle::GetLineHeight()
+        std::wstring CCompiledStyle::GetLineHeight() const
         {
-            if (m_mStyle.find(L"line-height") != m_mStyle.cend())
-                return m_mStyle[L"line-height"];
+            const auto& oLineHeight = m_mStyle.find(L"line-height");
+
+            if (oLineHeight != m_mStyle.cend())
+                return oLineHeight->second;
 
             std::wstring sFont;
 
-            if (m_mStyle.find(L"font") != m_mStyle.cend())
-                sFont = m_mStyle[L"font"];
+            const auto& oFont = m_mStyle.find(L"font");
+
+            if (oFont != m_mStyle.cend())
+                sFont = oFont->second;
+            else
+                return sFont;
 
             if (sFont.empty())
                 return sFont;
@@ -624,10 +667,12 @@ namespace NSCSS
         }
 
     /* MARGIN */
-        std::wstring CCompiledStyle::GetMargin()
+        std::wstring CCompiledStyle::GetMargin() const
         {
-            if (m_mStyle.find(L"margin") != m_mStyle.cend())
-                return m_mStyle[L"margin"];
+            const auto& oMargin = m_mStyle.find(L"margin");
+
+            if (oMargin != m_mStyle.cend())
+                return oMargin->second;
 
             const std::wstring& sTop    = GetMarginTop();
             const std::wstring& sLeft   = GetMarginLeft();
@@ -648,28 +693,34 @@ namespace NSCSS
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetMarginTop()
+        std::wstring CCompiledStyle::GetMarginTop() const
         {
-            if (m_mStyle.find(L"margin-top") != m_mStyle.cend())
-                return m_mStyle[L"margin-top"];
+            const auto& oMarginTop = m_mStyle.find(L"margin-top");
+
+            if (oMarginTop != m_mStyle.cend())
+                return oMarginTop->second;
 
             const std::wstring& sMarginBlockStart = GetMarginBlockStart();
 
             if (!sMarginBlockStart.empty())
                 return sMarginBlockStart;
 
-            std::wstring sValue;
-            if (m_mStyle.find(L"margin") != m_mStyle.cend())
-                sValue = m_mStyle[L"margin"];
+            std::wstring sMargin;
+            const auto& oMargin = m_mStyle.find(L"margin");
 
-            if (sValue.empty())
-                return sValue;
+            if (oMargin != m_mStyle.cend())
+                sMargin = oMargin->second;
+            else
+                return sMargin;
+
+            if (sMargin.empty())
+                return sMargin;
 
             std::vector<std::wstring> arValues;
 
             std::wstring sTemp;
 
-            for (const wchar_t& wc : sValue)
+            for (const wchar_t& wc : sMargin)
             {
                 sTemp += wc;
 
@@ -688,23 +739,30 @@ namespace NSCSS
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetMarginBlockStart()
+        std::wstring CCompiledStyle::GetMarginBlockStart() const
         {
-            if (m_mStyle.find(L"margin-block-start") != m_mStyle.cend())
-                return m_mStyle[L"margin-block-start"];
+            const auto& oMarginBlockStart = m_mStyle.find(L"margin-block-start");
+
+            if (oMarginBlockStart != m_mStyle.cend())
+                return oMarginBlockStart->second;
 
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetMarginLeft()
+        std::wstring CCompiledStyle::GetMarginLeft() const
         {
-            if (m_mStyle.find(L"margin-left") != m_mStyle.cend())
-                return m_mStyle[L"margin-left"];
+            const auto& oMarginLeft = m_mStyle.find(L"margin-left");
+
+            if (oMarginLeft != m_mStyle.cend())
+                return oMarginLeft->second;
 
             std::wstring sValue;
+            const auto& oMargin = m_mStyle.find(L"margin");
 
-            if (m_mStyle.find(L"margin") != m_mStyle.cend())
-                sValue = m_mStyle[L"margin"];
+            if (oMargin != m_mStyle.cend())
+                sValue = oMargin->second;
+            else
+                return sValue;
 
             if (sValue.empty())
                 return sValue;
@@ -736,15 +794,20 @@ namespace NSCSS
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetMarginRight()
+        std::wstring CCompiledStyle::GetMarginRight() const
         {
-            if (m_mStyle.find(L"margin-right") != m_mStyle.cend())
-                return m_mStyle[L"margin-right"];
+            const auto& oMarginRight = m_mStyle.find(L"margin-right");
+
+            if (oMarginRight != m_mStyle.cend())
+                return oMarginRight->second;
 
             std::wstring sValue;
+            const auto& oMargin = m_mStyle.find(L"margin");
 
-            if (m_mStyle.find(L"margin") != m_mStyle.cend())
-                sValue = m_mStyle[L"margin"];
+            if (oMargin != m_mStyle.cend())
+                sValue = oMargin->second;
+            else
+                return sValue;
 
             if (sValue.empty())
                 return sValue;
@@ -775,20 +838,25 @@ namespace NSCSS
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetMarginBottom()
+        std::wstring CCompiledStyle::GetMarginBottom() const
         {
-            if (m_mStyle.find(L"margin-bottom") != m_mStyle.cend())
-                return m_mStyle[L"margin-bottom"];
+            const auto& oMarginBottom = m_mStyle.find(L"margin-bottom");
 
-            std::wstring sMarginBlockEnd = GetMarginBlockEnd();
+            if (oMarginBottom != m_mStyle.cend())
+                return oMarginBottom->second;
+
+            const std::wstring& sMarginBlockEnd = GetMarginBlockEnd();
 
             if (!sMarginBlockEnd.empty())
                 return sMarginBlockEnd;
 
             std::wstring sValue;
+            const auto& oMargin = m_mStyle.find(L"margin");
 
-            if (m_mStyle.find(L"margin") != m_mStyle.cend())
-                sValue = m_mStyle[L"margin"];
+            if (oMargin != m_mStyle.cend())
+                sValue = oMargin->second;
+            else
+                return sValue;
 
             if (sValue.empty())
                 return sValue;
@@ -818,21 +886,23 @@ namespace NSCSS
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetMarginBlockEnd()
+        std::wstring CCompiledStyle::GetMarginBlockEnd() const
         {
-            if (m_mStyle.find(L"margin-block-end") != m_mStyle.cend())
-                return m_mStyle[L"margin-block-end"];
+            const auto& oMarginBlockEnd = m_mStyle.find(L"margin-block-end");
+
+            if (oMarginBlockEnd != m_mStyle.cend())
+                return oMarginBlockEnd->second;
 
             return L"";
         }
 
     /* PADDING */
-        std::wstring CCompiledStyle::GetPadding()
+        std::wstring CCompiledStyle::GetPadding() const
         {
-            if (m_mStyle.find(L"padding") != m_mStyle.cend())
-                return m_mStyle[L"padding"];
+            const auto& oPadding = m_mStyle.find(L"padding");
 
-            std::wstring sValue;
+            if (oPadding != m_mStyle.cend())
+                return oPadding->second;
 
             const std::wstring& sTop    = GetPaddingTop();
             const std::wstring& sLeft   = GetPaddingLeft();
@@ -851,15 +921,20 @@ namespace NSCSS
             return sTop + L" " + sRight + L" " + sBottom + L" " + sLeft;
         }
 
-        std::wstring CCompiledStyle::GetPaddingTop()
+        std::wstring CCompiledStyle::GetPaddingTop() const
         {
-            if (m_mStyle.find(L"padding-top") != m_mStyle.cend())
-                return m_mStyle[L"padding-top"];
+            const auto& oPaddingTop = m_mStyle.find(L"padding-top");
+
+            if (oPaddingTop != m_mStyle.cend())
+                return oPaddingTop->second;
 
             std::wstring sValue;
+            const auto& oPadding = m_mStyle.find(L"padding");
 
-            if (m_mStyle.find(L"padding") != m_mStyle.cend())
-                sValue = m_mStyle[L"padding"];
+            if (oPadding != m_mStyle.cend())
+                sValue = oPadding->second;
+            else
+                return sValue;
 
             if (sValue.empty())
                 return sValue;
@@ -887,15 +962,20 @@ namespace NSCSS
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetPaddingLeft()
+        std::wstring CCompiledStyle::GetPaddingLeft() const
         {
-            if (m_mStyle.find(L"padding-left") != m_mStyle.cend())
-                return m_mStyle[L"padding-left"];
+            const auto& oPaddingLeft = m_mStyle.find(L"padding-left");
+
+            if (oPaddingLeft != m_mStyle.cend())
+                return oPaddingLeft->second;
 
             std::wstring sValue;
+            const auto& oPadding = m_mStyle.find(L"padding");
 
-            if (m_mStyle.find(L"padding") != m_mStyle.cend())
-                sValue = m_mStyle[L"padding"];
+            if (oPadding != m_mStyle.cend())
+                sValue = oPadding->second;
+            else
+                return sValue;
 
             if (sValue.empty())
                 return sValue;
@@ -928,14 +1008,20 @@ namespace NSCSS
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetPaddingRight()
+        std::wstring CCompiledStyle::GetPaddingRight() const
         {
-            if (m_mStyle.find(L"padding-right") != m_mStyle.cend())
-                return m_mStyle[L"padding-right"];
+            const auto& oPaddingRight = m_mStyle.find(L"padding-right");
+
+            if (oPaddingRight != m_mStyle.cend())
+                return oPaddingRight->second;
 
             std::wstring sValue;
-            if (m_mStyle.find(L"padding") != m_mStyle.cend())
-                sValue = m_mStyle[L"padding"];
+            const auto& oPadding = m_mStyle.find(L"padding");
+
+            if (oPadding != m_mStyle.cend())
+                sValue = oPadding->second;
+            else
+                return sValue;
 
             if (sValue.empty())
                 return sValue;
@@ -966,15 +1052,20 @@ namespace NSCSS
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetPaddingBottom()
+        std::wstring CCompiledStyle::GetPaddingBottom() const
         {
-            if (m_mStyle.find(L"padding-bottom") != m_mStyle.cend())
-                return m_mStyle[L"padding-bottom"];
+            const auto& oPaddingBottom = m_mStyle.find(L"padding-bottom");
+
+            if (oPaddingBottom != m_mStyle.cend())
+                return oPaddingBottom->second;
 
             std::wstring sValue;
+            const auto& oPadding = m_mStyle.find(L"padding");
 
-            if (m_mStyle.find(L"padding") != m_mStyle.cend())
-                sValue = m_mStyle[L"padding"];
+            if (oPadding != m_mStyle.cend())
+                sValue = oPadding->second;
+            else
+                return sValue;
 
             if (sValue.empty())
                 return sValue;
@@ -1006,50 +1097,61 @@ namespace NSCSS
         }
 
     /*  SPACING */
-        std::wstring CCompiledStyle::GetLetterSpacing()
+        std::wstring CCompiledStyle::GetLetterSpacing() const
         {
-            if (m_mStyle.find(L"letter-spacing") != m_mStyle.cend())
-                return m_mStyle[L"letter-spacing"];
+            const auto& oLetterSpacing = m_mStyle.find(L"letter-spacing");
+
+            if (oLetterSpacing != m_mStyle.cend())
+                return oLetterSpacing->second;
 
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetWordSpacing()
+        std::wstring CCompiledStyle::GetWordSpacing() const
         {
-            if (m_mStyle.find(L"word-spacing") != m_mStyle.cend())
-                return m_mStyle[L"word-spacing"];
+            const auto& oWordSpacing = m_mStyle.find(L"word-spacing");
+
+            if (oWordSpacing != m_mStyle.cend())
+                return oWordSpacing->second;
 
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetBorderSpacing()
+        std::wstring CCompiledStyle::GetBorderSpacing() const
         {
-            if (m_mStyle.find(L"border-spacing") != m_mStyle.cend())
-                return m_mStyle[L"border-spacing"];
+            const auto& oBorderSpacing = m_mStyle.find(L"border-spacing");
+
+            if (oBorderSpacing != m_mStyle.cend())
+                return oBorderSpacing->second;
 
             return L"";
         }
 
     /* COLOR */
-        std::wstring CCompiledStyle::GetTextDecorationColor()
+        std::wstring CCompiledStyle::GetTextDecorationColor() const
         {
-            if (m_mStyle.find(L"text-decoration-color") != m_mStyle.cend())
-                return m_mStyle[L"text-decoration-color"];
+            const auto& oTextDecorationColor = m_mStyle.find(L"text-decoration-color");
+
+            if (oTextDecorationColor != m_mStyle.cend())
+                return oTextDecorationColor->second;
 
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetBackgroundColor()
+        std::wstring CCompiledStyle::GetBackgroundColor() const
         {
-            if (m_mStyle.find(L"background-color") != m_mStyle.cend())
-                return m_mStyle[L"background-color"];
+            const auto& oBackgroundColor = m_mStyle.find(L"background-color");
+
+            if (oBackgroundColor != m_mStyle.cend())
+                return oBackgroundColor->second;
 
             const std::wstring& sBackground = GetBackground();
             const auto& posLattice = sBackground.find(L'#');
 
             if (!sBackground.empty() && posLattice != std::wstring::npos)
             {
-                auto posSpace = sBackground.find(L' ', posLattice);
+                const auto& posSpace = sBackground.find(L' ', posLattice);
+
                 if (posSpace != std::wstring::npos)
                     return sBackground.substr(posLattice, posSpace);
                 else
@@ -1058,117 +1160,145 @@ namespace NSCSS
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetColor()
+        std::wstring CCompiledStyle::GetColor() const
         {
-            if (m_mStyle.find(L"color") != m_mStyle.cend())
-                return m_mStyle[L"color"];
+            const auto& oColor = m_mStyle.find(L"color");
+
+            if (oColor != m_mStyle.cend())
+                return oColor->second;
 
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetBorderBottomColor()
+        std::wstring CCompiledStyle::GetBorderBottomColor() const
         {
-            if (m_mStyle.find(L"border-bottom-color") != m_mStyle.cend())
-                return m_mStyle[L"border-bottom-color"];
+            const auto& oBorderBottomColor = m_mStyle.find(L"border-bottom-color");
+
+            if (oBorderBottomColor != m_mStyle.cend())
+                return oBorderBottomColor->second;
 
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetBorderLeftColor()
+        std::wstring CCompiledStyle::GetBorderLeftColor() const
         {
-            if (m_mStyle.find(L"border-left-color") != m_mStyle.cend())
-                return m_mStyle[L"border-left-color"];
+            const auto& oBorderLeftColor = m_mStyle.find(L"border-left-color");
+
+            if (oBorderLeftColor != m_mStyle.cend())
+                return oBorderLeftColor->second;
 
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetBorderRightColor()
+        std::wstring CCompiledStyle::GetBorderRightColor() const
         {
-            if (m_mStyle.find(L"border-right-color") != m_mStyle.cend())
-                return m_mStyle[L"border-right-color"];
+            const auto& oBorderRightColor = m_mStyle.find(L"border-right-color");
+
+            if (oBorderRightColor != m_mStyle.cend())
+                return oBorderRightColor->second;
 
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetOutlineColor()
+        std::wstring CCompiledStyle::GetOutlineColor() const
         {
-            if (m_mStyle.find(L"outline-color") != m_mStyle.cend())
-                return m_mStyle[L"outline-color"];
+            const auto& oOutlineColor = m_mStyle.find(L"outline-color");
+
+            if (oOutlineColor != m_mStyle.cend())
+                return oOutlineColor->second;
 
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetColumnRuleColor()
+        std::wstring CCompiledStyle::GetColumnRuleColor() const
         {
-            if (m_mStyle.find(L"column-rule-color") != m_mStyle.cend())
-                return m_mStyle[L"column-rule-color"];
+            const auto& oColumnRuleColor = m_mStyle.find(L"column-rule-color");
+
+            if (oColumnRuleColor != m_mStyle.cend())
+                return oColumnRuleColor->second;
 
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetBackground()
+        std::wstring CCompiledStyle::GetBackground() const
         {
-            if (m_mStyle.find(L"background") != m_mStyle.cend())
-                return  m_mStyle[L"background"];
+            const auto& oBackground = m_mStyle.find(L"background");
+
+            if (oBackground != m_mStyle.cend())
+                return  oBackground->second;
 
             return L"";
         }
 
     /* TEXT */
-        std::wstring CCompiledStyle::GetTextAlign()
+        std::wstring CCompiledStyle::GetTextAlign() const
         {
-            if (m_mStyle.find(L"text-align") != m_mStyle.cend())
-                return m_mStyle[L"text-align"];
+            const auto& oTextAlign = m_mStyle.find(L"text-align");
+
+            if (oTextAlign != m_mStyle.cend())
+                return oTextAlign->second;
 
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetTextIndent()
+        std::wstring CCompiledStyle::GetTextIndent() const
         {
-            if (m_mStyle.find(L"text-indent") != m_mStyle.cend())
-                return m_mStyle[L"text-indent"];
+            const auto& oTextIndent = m_mStyle.find(L"text-indent");
+
+            if (oTextIndent != m_mStyle.cend())
+                return oTextIndent->second;
 
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetTextDecoration()
+        std::wstring CCompiledStyle::GetTextDecoration() const
         {
-            if (m_mStyle.find(L"text-decoration") != m_mStyle.cend())
-                return m_mStyle[L"text-decoration"];
+            const auto& oTextDecoration = m_mStyle.find(L"text-decoration");
+
+            if (oTextDecoration != m_mStyle.cend())
+                return oTextDecoration->second;
 
             return L"";
         }
 
     /* BORDER */
 
-        std::wstring CCompiledStyle::GetBorder()
+        std::wstring CCompiledStyle::GetBorder() const
         {
-            if (m_mStyle.find(L"border") != m_mStyle.cend())
-                return m_mStyle[L"border"];
+            const auto& oBorder = m_mStyle.find(L"border");
+
+            if (oBorder != m_mStyle.cend())
+                return oBorder->second;
 
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetBorderWidth()
+        std::wstring CCompiledStyle::GetBorderWidth() const
         {
-            if (m_mStyle.find(L"border-width") != m_mStyle.cend())
-                return m_mStyle[L"border-width"];
+            const auto& oBorderWidth = m_mStyle.find(L"border-width");
+
+            if (oBorderWidth != m_mStyle.cend())
+                return oBorderWidth->second;
 
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetBorderStyle()
+        std::wstring CCompiledStyle::GetBorderStyle() const
         {
-            if (m_mStyle.find(L"border-style") != m_mStyle.cend())
-                return m_mStyle[L"border-style"];
+            const auto& oBorderStyle = m_mStyle.find(L"border-style");
+
+            if (oBorderStyle != m_mStyle.cend())
+                return oBorderStyle->second;
 
             return L"";
         }
 
-        std::wstring CCompiledStyle::GetBorderColor()
+        std::wstring CCompiledStyle::GetBorderColor() const
         {
-            if (m_mStyle.find(L"border-color") != m_mStyle.cend())
-                return m_mStyle[L"border-color"];
+            const auto& oBorderColor = m_mStyle.find(L"border-color");
+
+            if (oBorderColor != m_mStyle.cend())
+                return oBorderColor->second;
 
             return L"";
         }

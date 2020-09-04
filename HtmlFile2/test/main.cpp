@@ -29,13 +29,9 @@ int main()
         NSDirectory::DeleteDirectory(sTmp);
         NSDirectory::CreateDirectory(sTmp);
 
-        int nErrorCol = 0;
-        std::vector<std::wstring> arrError;
-
         for(std::wstring sD : arrDirectory)
         {
             std::vector<std::wstring> arrFiles = NSDirectory::GetFiles(sD);
-
             // Директория, где будем создавать docx
             size_t nPos = sD.find(L"/html");
             std::wstring sOutputDirectory = sD.insert(nPos + 5, L"-res");
@@ -52,8 +48,6 @@ int main()
                 {
                     if(!oFile.IsMhtFile(sFile))
                     {
-                        nErrorCol++;
-                        arrError.push_back(sFileName);
                         std::cout << "This isn't a mht file" << std::endl;
                         continue;
                     }
@@ -61,11 +55,8 @@ int main()
                 }
                 else
                 {
-
                     if(!oFile.IsHtmlFile(sFile))
                     {
-                        nErrorCol++;
-                        arrError.push_back(sFileName);
                         std::cout << "This isn't a html file" << std::endl;
                         continue;
                     }
@@ -78,11 +69,7 @@ int main()
                     NSDirectory::DeleteDirectory(sTmp + L"/word/media");
                 }
                 else
-                {
-                    nErrorCol++;
-                    arrError.push_back(sFileName);
                     std::cout << "Failure" << std::endl;
-                }
             }
         }
     }
@@ -105,14 +92,7 @@ int main()
         std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test.mht";
         CHtmlFile2 oFile;
         oFile.SetTmpDirectory(sOutputDirectory);
-        if(bMhtMode)
-        {
-            nResConvert = oFile.OpenMht(sFile, sOutputDirectory, &oParams);
-        }
-        else
-        {
-            nResConvert = oFile.OpenHtml(sFile, sOutputDirectory, &oParams);
-        }
+        nResConvert = (bMhtMode ? oFile.OpenMht(sFile, sOutputDirectory, &oParams) : oFile.OpenHtml(sFile, sOutputDirectory, &oParams));
 
         if(nResConvert == S_OK)
         {

@@ -476,18 +476,12 @@ private:
         return sSubClass;
     }
 
-    std::wstring GetStyle(std::vector<NSCSS::CNode> sSelectors, const bool& bP)
+    std::wstring GetStyle(const std::vector<NSCSS::CNode>& sSelectors, const bool& bP)
     {
-//        NSCSS::CNode oChild = sSelectors.back();
-//        sSelectors.pop_back();
         NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
-        if(bP)
-            m_oXmlStyle.WritePStyle(oStyle);
-        else
-            m_oXmlStyle.WriteRStyle(oStyle);
-        std::wstring sRes = m_oXmlStyle.GetId();
+        bP ? m_oXmlStyle.WritePStyle(oStyle) : m_oXmlStyle.WriteRStyle(oStyle);
         m_oStylesXml.WriteString(m_oXmlStyle.GetStyle());
-        return sRes;
+        return m_oXmlStyle.GetId();
     }
 
     void readHead()
@@ -531,13 +525,6 @@ private:
             }
         }
         m_oDocXml.WriteString(L"<w:p>");
-        /*
-        std::wstring sP;
-        std::wstring sPStyle;
-        wrPStyle(&m_oDocXml, sSelectors, oTS, bWasP, sP, sPStyle);
-        m_oDocXml.WriteString(L"</w:p><w:p>");
-        bWasP = true;
-        */
         readStream(&m_oDocXml, sSelectors, oTS, bWasP);
         m_oDocXml.WriteString(L"</w:p>");
     }

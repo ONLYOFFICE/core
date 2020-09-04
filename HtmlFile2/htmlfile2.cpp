@@ -1273,11 +1273,6 @@ private:
         if(!bWasP)
             return;
         std::vector<NSCSS::CNode> sPSubClass(sSelectors);
-        /*
-        for(size_t it = sPSubClass.size() - 1; it > 0; it--)
-            if(DoesNotFormParagraph.find(L' ' + sPSubClass[it].m_sName + L' ') != std::wstring::npos)
-                sPSubClass.erase(sPSubClass.begin() + it);
-        */
         sP = oTS.sPStyle;
         size_t nFound = sP.find(L"<w:pStyle");
         while(nFound != std::wstring::npos)

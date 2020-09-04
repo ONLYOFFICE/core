@@ -7,34 +7,28 @@
 
 namespace NSCSS
 {
-CDocumentStyle::CDocumentStyle() : m_arStandardStyles({L"a",        L"li",
-                                                      L"h1",        L"h2",
-                                                      L"h3",        L"h4",
-                                                      L"h5",        L"h6",
-                                                      L"title1-c",  L"title2-c",
-                                                      L"title3-c",  L"title4-c",
-                                                      L"title5-c",  L"title6-c",
-                                                      L"p-c",       L"p",
-                                                      L"div-c",     L"div",
-                                                      L"a-c"}) {}
+    CDocumentStyle::CDocumentStyle() : m_arStandardStyles({L"a", L"li", L"h1", L"h2", L"h3", L"h4", L"h5", L"h6", L"title1-c", L"title2-c",
+        L"title3-c", L"title4-c", L"title5-c", L"title6-c", L"p-c", L"p", L"div-c", L"div", L"a-c"}) {}
 
     CDocumentStyle::~CDocumentStyle()
     {
+        m_arStandardStyles.clear();
+        m_arStyleUsed.clear();
+        m_arStandardStylesUsed.clear();
     }
 
-    std::wstring CDocumentStyle::GetStyle()
+    const std::wstring CDocumentStyle::GetStyle() const
     {
         if (m_sId.empty())
             return m_sId;
-
-        const std::wstring sStyle = m_sStyle;
-        Clear();
-        return sStyle;
+        return m_sStyle;
     }
 
-    std::wstring CDocumentStyle::GetId() const
+    std::wstring CDocumentStyle::GetId()
     {
-        return m_sId;
+        std::wstring sId = m_sId;
+        Clear();
+        return sId;
     }
 
     void CDocumentStyle::Clear()
@@ -43,40 +37,34 @@ CDocumentStyle::CDocumentStyle() : m_arStandardStyles({L"a",        L"li",
         m_sStyle.clear();
     }
 
-    void CDocumentStyle::SetStyle(const std::wstring &sStyle)
+    /*
+    void CDocumentStyle::SetStyle(const std::wstring& sStyle)
     {
         if (sStyle.empty())
             return;
 
         m_sStyle = sStyle;
     }
-
-    void CDocumentStyle::SetId(const std::wstring &sId)
+    */
+    /*
+    void CDocumentStyle::SetId(const std::wstring& sId)
     {
         if (sId.empty())
             return;
         m_sId = sId;
     }
+    */
 
     CXmlElement CDocumentStyle::CombineStandardStyles(const std::vector<std::wstring>& arStandartedStyles)
     {
         CXmlElement oXmlElement;
-
         if (arStandartedStyles.size() == 0)
-        {
             return oXmlElement;
-        }
 
         std::vector<std::wstring> arStyles;
-
         for (const std::wstring& sStyleName : arStandartedStyles)
-        {
-            if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sStyleName) != m_arStandardStyles.cend()/* &&
-                std::find(arStyles.begin(), arStyles.end(), sStyleName) == arStyles.cend()*/)
-            {
+            if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sStyleName) != m_arStandardStyles.cend())
                 arStyles.push_back(sStyleName);
-            }
-        }
 
         if (arStyles.empty())
             return oXmlElement;
@@ -88,19 +76,9 @@ CDocumentStyle::CDocumentStyle() : m_arStandardStyles({L"a",        L"li",
             sId += sStyleName;
             if (sStyleName != arStyles[arStyles.size() - 1])
                 sId += L'+';
-        }
-
-//        if (std::find(m_arStandardStylesUsed.begin(), m_arStandardStylesUsed.end(), sId) != m_arStandardStylesUsed.cend())
-//            return oXmlElement;
-
-        for (const std::wstring& sStyleName : arStyles)
-        {
             const CXmlElement& oTempXmlElement = CreateStandardStyle(sStyleName);
             if (!oTempXmlElement.Empty())
-            {
                 oXmlElement += oTempXmlElement;
-//                m_arStandardStylesUsed.push_back(sStyleName);
-            }
         }
 
         if (!oXmlElement.Empty())
@@ -108,8 +86,6 @@ CDocumentStyle::CDocumentStyle() : m_arStandardStyles({L"a",        L"li",
             oXmlElement.SetName(sId);
             oXmlElement.SetStyleId(sId);
         }
-
-//        m_arStandardStylesUsed.push_back(oXmlElement.GetStyleId());
 
         return oXmlElement;
     }
@@ -119,9 +95,7 @@ CDocumentStyle::CDocumentStyle() : m_arStandardStyles({L"a",        L"li",
         CXmlElement oXmlElement;
 
         if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sNameStyle) == m_arStandardStyles.cend())
-        {
             return oXmlElement;
-        }
 
         CXmlElement oCharXmlElement;
 
@@ -186,9 +160,7 @@ CDocumentStyle::CDocumentStyle() : m_arStandardStyles({L"a",        L"li",
         CXmlElement oParentStyle;
 
         if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sName) != m_arStandardStyles.cend())
-        {
             oStandardXmlElement = CreateStandardStyle(sName);
-        }
 
         if (oStyle.GetParentsName().size() > 0)
         {
@@ -432,12 +404,6 @@ CDocumentStyle::CDocumentStyle() : m_arStandardStyles({L"a",        L"li",
 
     void CDocumentStyle::WriteRStyle(NSCSS::CCompiledStyle &oStyle)
     {
-//        if (!oStyle.GetBasedOn().empty())
-//        {
-//            m_sId = oStyle.GetBasedOn();
-//            return;
-//        }
-
         if(oStyle.GetId().empty())
         {
             m_sId = L"normal";
@@ -461,7 +427,6 @@ CDocumentStyle::CDocumentStyle() : m_arStandardStyles({L"a",        L"li",
         {
             structStyle.m_sId = oXmlElement.GetStyleId();
             m_arStyleUsed.push_back(structStyle);
-
         }
 
         m_sStyle += oXmlElement.GetRStyle();

@@ -51,7 +51,7 @@ void CElement::AddChildren(CElement *oChildren)
     m_arChildrens.push_back(oChildren);
 }
 
-void CElement::AddSelector(const std::wstring sSelector)
+void CElement::AddSelector(const std::wstring& sSelector)
 {
     if (sSelector.find(L' ') != std::wstring::npos)
     {
@@ -66,22 +66,22 @@ void CElement::AddSelector(const std::wstring sSelector)
         m_arSelectors.push_back(sSelector);
 }
 
-void CElement::AddDeclaration(const std::pair<std::wstring, std::wstring> pDeclaration)
+void CElement::AddDeclaration(const std::pair<std::wstring, std::wstring>& pDeclaration)
 {
     m_arDeclarations.push_back(pDeclaration);
 }
 
-void CElement::AddSelectors(const std::vector<std::wstring> arSelectors)
+void CElement::AddSelectors(const std::vector<std::wstring>& arSelectors)
 {
     m_arSelectors.insert(m_arSelectors.end(), arSelectors.begin(), arSelectors.end());
 }
 
-void CElement::AddDeclarations(const std::vector<std::pair<std::wstring, std::wstring> > arDeclarations)
+void CElement::AddDeclarations(const std::vector<std::pair<std::wstring, std::wstring>>& arDeclarations)
 {
     m_arDeclarations.insert(m_arDeclarations.end(), arDeclarations.begin(), arDeclarations.end());
 }
 
-void CElement::SetDeclaratins(const std::vector<std::pair<std::wstring, std::wstring> > arDeclarations)
+void CElement::SetDeclaratins(const std::vector<std::pair<std::wstring, std::wstring>>& arDeclarations)
 {
     m_arDeclarations = arDeclarations;
 }

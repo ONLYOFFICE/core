@@ -21,7 +21,7 @@ CXmlElement::CXmlElement()
 {
 }
 
-CXmlElement::CXmlElement(std::wstring sNameDefaultElement)
+CXmlElement::CXmlElement(const std::wstring& sNameDefaultElement)
 {
     CreateDefaultElement(sNameDefaultElement);
 }
@@ -40,7 +40,7 @@ bool CXmlElement::Empty() const
 //           m_sTopBorder.empty() && m_sLeftBorder.empty() && m_sBottomBorder.empty() && m_sRightBorder.empty();
 }
 
-void CXmlElement::CreateDefaultElement(const std::wstring sNameDefaultElement)
+void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 {
     if (!m_bEmpty)
         Clear();
@@ -373,7 +373,7 @@ void CXmlElement::Clear()
     m_bEmpty = true;
 }
 
-void CXmlElement::SetType(const std::wstring sType)
+void CXmlElement::SetType(const std::wstring& sType)
 {
     m_sType = sType;
 
@@ -381,7 +381,7 @@ void CXmlElement::SetType(const std::wstring sType)
         m_bEmpty = false;
 }
 
-void CXmlElement::SetStyleId(const std::wstring sStyleId)
+void CXmlElement::SetStyleId(const std::wstring& sStyleId)
 {
     m_sStyleId = sStyleId;
 
@@ -389,7 +389,7 @@ void CXmlElement::SetStyleId(const std::wstring sStyleId)
         m_bEmpty = false;
 }
 
-void CXmlElement::SetDefault(const std::wstring sDefault)
+void CXmlElement::SetDefault(const std::wstring& sDefault)
 {
     m_sDefault = sDefault;
 
@@ -397,111 +397,85 @@ void CXmlElement::SetDefault(const std::wstring sDefault)
         m_bEmpty = false;
 }
 
-void CXmlElement::SetCustomStyle(const std::wstring sCustomStyle)
+void CXmlElement::SetCustomStyle(const std::wstring& sCustomStyle)
 {
     m_sCustomStyle = sCustomStyle;
-
-    if (!m_sCustomStyle.empty())
-        m_bEmpty = false;
+    m_bEmpty = m_sCustomStyle.empty();
 }
 
-void CXmlElement::SetS(const std::wstring sS)
+void CXmlElement::SetS(const std::wstring& sS)
 {
     m_sS = sS;
-
-    if (!m_sS.empty())
-        m_bEmpty = false;
+    m_bEmpty = m_sS.empty();
 }
 
-void CXmlElement::SetName(const std::wstring sName)
+void CXmlElement::SetName(const std::wstring& sName)
 {
     m_sName = sName;
-
-    if (!m_sName.empty())
-        m_bEmpty = false;
+    m_bEmpty = m_sName.empty();
 }
 
-void CXmlElement::SetBasedOn(const std::wstring sBasedOn)
+void CXmlElement::SetBasedOn(const std::wstring& sBasedOn)
 {
     m_sBasedOn = sBasedOn;
-
-    if (!m_sBasedOn.empty())
-        m_bEmpty = false;
+    m_bEmpty = m_sBasedOn.empty();
 }
 
-void CXmlElement::SetLink(const std::wstring sLink)
+void CXmlElement::SetLink(const std::wstring& sLink)
 {
     m_sLink = sLink;
-
-    if (!m_sLink.empty())
-        m_bEmpty = false;
+    m_bEmpty = m_sLink.empty();
 }
 
-void CXmlElement::SetUiPriority(const std::wstring sUiPriority)
+void CXmlElement::SetUiPriority(const std::wstring& sUiPriority)
 {
     m_sUiPriority = sUiPriority;
-
-    if (!m_sUiPriority.empty())
-        m_bEmpty = false;
+    m_bEmpty = m_sUiPriority.empty();
 }
 
-void CXmlElement::SetQFormat(const bool bQFormat)
+void CXmlElement::SetQFormat(const bool& bQFormat)
 {
     m_bQFormat = bQFormat;
-
-    if (m_bQFormat)
-        m_bEmpty = false;
+    m_bEmpty = !m_bQFormat;
 }
 
-void CXmlElement::SetUnhideWhenUsed(const bool bUnhideWhenUsed)
+void CXmlElement::SetUnhideWhenUsed(const bool& bUnhideWhenUsed)
 {
     m_bUnhideWhenUsed = bUnhideWhenUsed;
-
-    if (m_bUnhideWhenUsed)
-        m_bEmpty = false;
+    m_bEmpty = !m_bUnhideWhenUsed;
 }
 
-void CXmlElement::SetB(const bool bB)
+void CXmlElement::SetB(const bool& bB)
 {
     m_bB = bB;
-
-    if (m_bB)
-        m_bEmpty = false;
+    m_bEmpty = !m_bB;
 }
 
-void CXmlElement::SetI(const bool bI)
+void CXmlElement::SetI(const bool& bI)
 {
     m_bI = bI;
-
-    if (m_bI)
-        m_bEmpty = true;
+    m_bEmpty = !m_bI;
 }
 
-void CXmlElement::SetU(const std::wstring sU)
+void CXmlElement::SetU(const std::wstring& sU)
 {
     m_sU = sU;
-
-    if (!m_sUiPriority.empty())
-        m_bEmpty = false;
+    m_bEmpty = m_sUiPriority.empty();
 }
 
-void CXmlElement::SetRFonts(const std::wstring sRFonts)
+void CXmlElement::SetRFonts(const std::wstring& sRFonts)
 {
     m_sRFonts = sRFonts;
-
-    if (!m_sRFonts.empty())
-        m_bEmpty = false;
+    m_bEmpty = m_sRFonts.empty();
 }
 
-void CXmlElement::SetColor(const std::wstring sColor)
+void CXmlElement::SetColor(const std::wstring& sColor)
 {
     m_sColor = sColor;
-
-    if (!m_sColor.empty())
-        m_bEmpty = false;
+    m_bEmpty = m_sColor.empty();
 }
 
-void CXmlElement::SetSz(const std::wstring sSz)
+void CXmlElement::SetSz(const std::wstring& sSz)
 {
     if (IsDigit(sSz))
     {
@@ -511,55 +485,43 @@ void CXmlElement::SetSz(const std::wstring sSz)
     }
 }
 
-void CXmlElement::SetKeepLines(const bool bKeepLines)
+void CXmlElement::SetKeepLines(const bool& bKeepLines)
 {
     m_bKeepLines = bKeepLines;
-
-    if (m_bKeepLines)
-        m_bEmpty = false;
+    m_bEmpty = !m_bKeepLines;
 }
 
-void CXmlElement::SetKeepNext(const bool bKeepNext)
+void CXmlElement::SetKeepNext(const bool& bKeepNext)
 {
     m_bKeepNext = bKeepNext;
-
-    if (m_bKeepNext)
-        m_bEmpty = false;
+    m_bEmpty = !m_bKeepNext;
 }
 
-void CXmlElement::SetSpacing(const std::wstring sSpacing)
+void CXmlElement::SetSpacing(const std::wstring& sSpacing)
 {
     m_sSpacing = sSpacing;
-
-    if (!m_sSpacing.empty())
-        m_bEmpty = false;
+    m_bEmpty = m_sSpacing.empty();
 }
 
-void CXmlElement::SetOutlineLvl(const std::wstring sOutlineLvl)
+void CXmlElement::SetOutlineLvl(const std::wstring& sOutlineLvl)
 {
     m_sOutlineLvl = sOutlineLvl;
-
-    if (!m_sOutlineLvl.empty())
-        m_bEmpty = false;
+    m_bEmpty = m_sOutlineLvl.empty();
 }
 
-void CXmlElement::SetContextualSpacing(const bool bContextualSpacing)
+void CXmlElement::SetContextualSpacing(const bool& bContextualSpacing)
 {
     m_bContextualSpacing = bContextualSpacing;
-
-    if (m_bContextualSpacing)
-        m_bEmpty = false;
+    m_bEmpty = !m_bContextualSpacing;
 }
 
-void CXmlElement::SetInd(const std::wstring sInd)
+void CXmlElement::SetInd(const std::wstring& sInd)
 {
     m_sInd = sInd;
-
-    if (!m_sUiPriority.empty())
-        m_bEmpty = false;
+    m_bEmpty = m_sUiPriority.empty();
 }
 
-void CXmlElement::SetJc(const std::wstring sJc)
+void CXmlElement::SetJc(const std::wstring& sJc)
 {
     std::wstring sNewJc = sJc;
     std::transform(sNewJc.begin(), sNewJc.end(), sNewJc.begin(), towlower);
@@ -572,54 +534,42 @@ void CXmlElement::SetJc(const std::wstring sJc)
         m_sJc = L"center";
     else if (std::find(arValues.begin(), arValues.end(), sNewJc) != arValues.cend())
         m_sJc = sNewJc;
-
-    if (!m_sJc.empty())
-        m_bEmpty = false;
+    m_bEmpty = m_sJc.empty();
 }
 
-void CXmlElement::SetShd(const std::wstring sShd)
+void CXmlElement::SetShd(const std::wstring& sShd)
 {
     m_sShd = sShd;
-    if (!m_sShd.empty())
-        m_bEmpty = false;
+    m_bEmpty = m_sShd.empty();
 }
 
-void CXmlElement::SetTopBorder(const std::wstring sTopBorder)
+void CXmlElement::SetTopBorder(const std::wstring& sTopBorder)
 {
     m_sTopBorder = sTopBorder;
-
-    if (!m_sTopBorder.empty())
-        m_bEmpty = false;
+    m_bEmpty = m_sTopBorder.empty();
 }
 
-void CXmlElement::SetLeftBorder(const std::wstring sLeftBorder)
+void CXmlElement::SetLeftBorder(const std::wstring& sLeftBorder)
 {
     m_sLeftBorder = sLeftBorder;
-
-    if (!m_sLeftBorder.empty())
-        m_bEmpty = true;
+    m_bEmpty = m_sLeftBorder.empty();
 }
 
-void CXmlElement::SetBottomBorder(const std::wstring sBottomBorder)
+void CXmlElement::SetBottomBorder(const std::wstring& sBottomBorder)
 {
     m_sBottomBorder = sBottomBorder;
-
-    if (!m_sBottomBorder.empty())
-        m_bEmpty = false;
+    m_bEmpty = m_sBottomBorder.empty();
 }
 
-void CXmlElement::SetRightBorder(const std::wstring sRightBorder)
+void CXmlElement::SetRightBorder(const std::wstring& sRightBorder)
 {
     m_sRightBorder = sRightBorder;
-
-    if (!m_sRightBorder.empty())
-        m_bEmpty = false;
+    m_bEmpty = m_sRightBorder.empty();
 }
 
-CXmlElement& CXmlElement::operator+=(const CXmlElement &oElement)
+CXmlElement& CXmlElement::operator+=(const CXmlElement& oElement)
 {
-    if (!oElement.Empty())
-        m_bEmpty = false;
+    m_bEmpty = oElement.Empty();
 
     if (!oElement.m_sType.empty())
         m_sType = oElement.m_sType;
@@ -648,17 +598,10 @@ CXmlElement& CXmlElement::operator+=(const CXmlElement &oElement)
     if (!oElement.m_sUiPriority.empty())
         m_sUiPriority = oElement.m_sUiPriority;
 
-    if (oElement.m_bQFormat)
-        m_bQFormat = true;
-
-    if (oElement.m_bUnhideWhenUsed)
-        m_bUnhideWhenUsed = true;
-
-    if (oElement.m_bB)
-        m_bB = true;
-
-    if (oElement.m_bI)
-        m_bI = true;
+    m_bQFormat = oElement.m_bQFormat;
+    m_bUnhideWhenUsed = oElement.m_bUnhideWhenUsed;
+    m_bB = oElement.m_bB;
+    m_bI = oElement.m_bI;
 
     if (!oElement.m_sRFonts.empty())
         m_sRFonts = oElement.m_sRFonts;
@@ -672,11 +615,8 @@ CXmlElement& CXmlElement::operator+=(const CXmlElement &oElement)
     if (!oElement.m_sSz.empty())
         m_sSz = oElement.m_sSz;
 
-    if (oElement.m_bKeepLines)
-        m_bKeepLines = true;
-
-    if (oElement.m_bKeepNext)
-        m_bKeepNext = true;
+    m_bKeepLines = oElement.m_bKeepLines;
+    m_bKeepNext = oElement.m_bKeepNext;
 
     if (!oElement.m_sSpacing.empty())
         m_sSpacing = oElement.m_sSpacing;
@@ -684,8 +624,7 @@ CXmlElement& CXmlElement::operator+=(const CXmlElement &oElement)
     if (!oElement.m_sOutlineLvl.empty())
         m_sOutlineLvl = oElement.m_sOutlineLvl;
 
-    if (oElement.m_bContextualSpacing)
-        m_bContextualSpacing = true;
+    m_bContextualSpacing = oElement.m_bContextualSpacing;
 
     if (!oElement.m_sInd.empty())
         m_sInd = oElement.m_sInd;
@@ -744,7 +683,7 @@ CXmlElement& CXmlElement::operator+=(const CXmlElement &oElement)
     return *this;
 }
 
-CXmlElement& CXmlElement::operator=(const CXmlElement &oElement)
+CXmlElement& CXmlElement::operator=(const CXmlElement& oElement)
 {
 //    Clear();
     m_bEmpty                = oElement.m_bEmpty;

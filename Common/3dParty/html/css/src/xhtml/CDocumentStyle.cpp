@@ -7,19 +7,16 @@
 
 namespace NSCSS
 {
-    CDocumentStyle::CDocumentStyle()
-    {
-        m_arStandardStyles = {L"a",         L"li",
-                              L"h1",        L"h2",
-                              L"h3",        L"h4",
-                              L"h5",        L"h6",
-                              L"title1-c",  L"title2-c",
-                              L"title3-c",  L"title4-c",
-                              L"title5-c",  L"title6-c",
-                              L"p-c",       L"p",
-                              L"div-c",     L"div",
-                              L"a-c"};
-    }
+CDocumentStyle::CDocumentStyle() : m_arStandardStyles({L"a",        L"li",
+                                                      L"h1",        L"h2",
+                                                      L"h3",        L"h4",
+                                                      L"h5",        L"h6",
+                                                      L"title1-c",  L"title2-c",
+                                                      L"title3-c",  L"title4-c",
+                                                      L"title5-c",  L"title6-c",
+                                                      L"p-c",       L"p",
+                                                      L"div-c",     L"div",
+                                                      L"a-c"}) {}
 
     CDocumentStyle::~CDocumentStyle()
     {

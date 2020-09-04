@@ -13,13 +13,13 @@ public:
     CElement();
     ~CElement();
 
-    void AddSelector(const std::wstring sSelector);
-    void AddSelectors(const std::vector<std::wstring> arSelectors);
+    void AddSelector(const std::wstring& sSelector);
+    void AddSelectors(const std::vector<std::wstring>& arSelectors);
     void AddChildren(CElement* oChildren);
-    void AddDeclaration(const std::pair<std::wstring, std::wstring> pDeclaration);
-    void AddDeclarations(const std::vector<std::pair<std::wstring, std::wstring>> arDeclarations);
+    void AddDeclaration(const std::pair<std::wstring, std::wstring>& pDeclaration);
+    void AddDeclarations(const std::vector<std::pair<std::wstring, std::wstring>>& arDeclarations);
 
-    void SetDeclaratins(const std::vector<std::pair<std::wstring, std::wstring>> arDeclarations);
+    void SetDeclaratins(const std::vector<std::pair<std::wstring, std::wstring>>& arDeclarations);
 
     int GetCountSelectors() const;
     int GetCountDeclarations() const;

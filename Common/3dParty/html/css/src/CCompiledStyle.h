@@ -27,7 +27,7 @@ namespace NSCSS
         std::wstring GetStyleW() const;
         std::string GetStyle() const;
 
-        const size_t& GetSize() const;
+        const size_t GetSize() const;
         bool Empty() const;
         void Clear();
 
@@ -35,7 +35,7 @@ namespace NSCSS
         void InsertStyle(const std::map<std::wstring, std::wstring>& mStyle);
         void SetStyle(const std::map<std::wstring, std::wstring>& mStyle);
         void AddStyle(const std::wstring& sStyle);
-        void AddParent(const std::wstring sParentName);
+        void AddParent(const std::wstring& sParentName);
 
         std::vector<std::wstring> GetParentsName() const;
 
@@ -122,12 +122,12 @@ namespace NSCSS
 
 
         CCompiledStyle& operator+= (const CCompiledStyle& oElement);
-        CCompiledStyle& operator= (const CCompiledStyle& oElement);
+        CCompiledStyle& operator=  (const CCompiledStyle& oElement);
 
-        bool operator== (const CCompiledStyle& oStyle) const;
+        bool operator== (const CCompiledStyle& oStyle)   const;
         bool operator!= (const CCompiledStyle& oElement) const;
-        bool operator> (const CCompiledStyle& oElement) const;
-        bool operator< (const CCompiledStyle& oElement) const;
+        bool operator>  (const CCompiledStyle& oElement) const;
+        bool operator<  (const CCompiledStyle& oElement) const;
 
     };
 

@@ -73,6 +73,7 @@ namespace NSCSS
         }
     }
 
+    /*
     inline CElement* CCssCalculator_Private::GetElement(const int& nIndex) const
     {
         if (nIndex < 0 || nIndex >= (int)m_arData.size())
@@ -80,7 +81,9 @@ namespace NSCSS
 
         return m_arData[nIndex];
     }
+    */
 
+    /*
     inline void CCssCalculator_Private::AddElement(CElement *oElement)
     {
         if (oElement != NULL)
@@ -94,6 +97,7 @@ namespace NSCSS
             m_arData.push_back(oElement);
         }
     }
+    */
 
     inline void CCssCalculator_Private::GetOutputData(KatanaOutput *oOutput)
     {
@@ -562,7 +566,7 @@ namespace NSCSS
         return StringifyValueList(oValues);
     }
 
-    CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const std::vector<std::string> arSelectors, const UnitMeasure unitMeasure)
+    CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const std::vector<std::string>& arSelectors, const UnitMeasure unitMeasure)
     {
         if (unitMeasure != Default)
             SetUnitMeasure(unitMeasure);
@@ -1583,10 +1587,12 @@ namespace NSCSS
         return m_nDpi;
     }
 
+    /*
     inline size_t CCssCalculator_Private::GetSize() const
     {
         return m_arData.size();
     }
+    */
 
     UnitMeasure CCssCalculator_Private::GetUnitMeasure() const
     {

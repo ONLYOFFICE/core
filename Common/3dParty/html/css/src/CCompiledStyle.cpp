@@ -12,20 +12,14 @@ namespace NSCSS
     {
     }
 
-    CCompiledStyle::CCompiledStyle(const std::map<std::wstring, std::wstring>& mStyle)
-    {
-        m_mStyle = mStyle;
-    }
+    CCompiledStyle::CCompiledStyle(const std::map<std::wstring, std::wstring>& mStyle) : m_mStyle(mStyle) {}
 
-    CCompiledStyle::CCompiledStyle(const CCompiledStyle& oStyle)
-    {
-        m_mStyle = oStyle.m_mStyle;
-        m_sId = oStyle.m_sId;
-        m_arParentsStyles = oStyle.m_arParentsStyles;
-    }
+    CCompiledStyle::CCompiledStyle(const CCompiledStyle& oStyle) : m_mStyle(oStyle.m_mStyle), m_sId(oStyle.m_sId), m_arParentsStyles(oStyle.m_arParentsStyles) {}
 
     CCompiledStyle::~CCompiledStyle()
     {
+        m_mStyle.clear();
+        m_arParentsStyles.clear();
     }
 
     CCompiledStyle& CCompiledStyle::operator+= (const CCompiledStyle &oElement)
@@ -130,7 +124,7 @@ namespace NSCSS
         return U_TO_UTF8(sStyle);
     }
 
-    const size_t& CCompiledStyle::GetSize() const
+    const size_t CCompiledStyle::GetSize() const
     {
         return m_mStyle.size();
     }
@@ -171,11 +165,9 @@ namespace NSCSS
         std::wstring sValue;
         size_t nPosition = 0;
 
-        wchar_t wc;
-
         while(nPosition < sStyle.length())
         {
-            wc = sStyle[nPosition];
+            wchar_t wc = sStyle[nPosition];
             while (nPosition < sStyle.length() && wc != L':')
             {
                 if (!iswspace(wc))
@@ -217,7 +209,7 @@ namespace NSCSS
         }
     }
 
-    void CCompiledStyle::AddParent(const std::wstring sParentName)
+    void CCompiledStyle::AddParent(const std::wstring& sParentName)
     {
         if (!sParentName.empty())
             m_arParentsStyles.push_back(sParentName);
@@ -250,7 +242,7 @@ namespace NSCSS
 
     double CCompiledStyle::GetWeidth() const
     {
-        double dWidth;
+        double dWidth = 0.0;
         for (const auto& sValue : m_mStyle)
         {
             dWidth += sValue.first.length();
@@ -310,7 +302,7 @@ namespace NSCSS
             if (sFont.empty())
                 return sFont;
 
-            int nPos1;
+            int nPos1 = -1;
 
             for (int i = (int)sFont.length() - 1; i >= 0; --i)
             {
@@ -636,8 +628,6 @@ namespace NSCSS
         {
             if (m_mStyle.find(L"margin") != m_mStyle.cend())
                 return m_mStyle[L"margin"];
-
-            std::wstring sValue;
 
             const std::wstring& sTop    = GetMarginTop();
             const std::wstring& sLeft   = GetMarginLeft();

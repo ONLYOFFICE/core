@@ -28,25 +28,17 @@ namespace NSCSS
 
         bool operator< (const CNode& oNode) const
         {
-            if (m_sName < oNode.m_sName)
-                return true;
-            else if (m_sName > oNode.m_sName)
-                return false;
+            if(m_sName != oNode.m_sName)
+                return m_sName < oNode.m_sName;
 
-            if (m_sClass < oNode.m_sClass)
-                return true;
-            else if (m_sClass > oNode.m_sClass)
-                return false;
+            if(m_sClass != oNode.m_sClass)
+                return m_sClass < oNode.m_sClass;
 
-            if (m_sId < oNode.m_sId)
-                return true;
-            else if (m_sId > oNode.m_sId)
-                return false;
+            if(m_sId != oNode.m_sId)
+                return m_sId < oNode.m_sId;
 
-            if (m_sStyle < oNode.m_sStyle)
-                return true;
-            else if (m_sStyle > oNode.m_sStyle)
-                return false;
+            if(m_sStyle != oNode.m_sStyle)
+                return m_sStyle < oNode.m_sStyle;
 
             return false;
         }

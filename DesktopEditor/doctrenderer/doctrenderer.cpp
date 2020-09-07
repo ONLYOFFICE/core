@@ -550,7 +550,21 @@ namespace NSDoctRenderer
                 if (js_func_calculate->IsFunction())
                 {
                     v8::Handle<v8::Function> func_calculate = v8::Handle<v8::Function>::Cast(js_func_calculate);
-                    func_calculate->Call(js_objectApi, 1, args);
+
+                    if (pParams->m_sJsonParams.empty())
+                        args[0] = v8::Undefined(isolate);
+                    else
+                    {
+                        std::string sTmp = U_TO_UTF8((pParams->m_sJsonParams));
+
+                    #ifndef V8_OS_XP
+                        args[0] = v8::JSON::Parse(context, v8::String::NewFromUtf8(isolate, (char*)sTmp.c_str())).FromMaybe(v8::Local<v8::Value>());
+                    #else
+                        args[0] = v8::JSON::Parse(v8::String::NewFromUtf8(isolate, (char*)sTmp.c_str()));
+                    #endif
+                    }
+
+                    v8::Local<v8::Value> js_result2 = func_calculate->Call(js_objectApi, 1, args);
 
                     if (try_catch.HasCaught())
                     {

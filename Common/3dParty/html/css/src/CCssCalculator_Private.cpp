@@ -1910,84 +1910,49 @@ inline std::wstring DeleteSpace(const std::wstring& sValue)
 
 inline static std::vector<std::string> GetSelectorsList(const std::wstring& sSelectors)
 {
-    std::vector<std::string> arSelectors;
-
     std::wstring sNames = sSelectors;
-
-    auto posLattice = sNames.find(L"#");
-    auto posPoint = sNames.find(L'.');
-
-
-    if (posPoint != std::wstring::npos)
-        sNames = sNames.substr(0, posPoint);
-    else if (posLattice != std::wstring::npos)
-        sNames = sNames.substr(0, posLattice);
-
     std::wstring sClasses;
-    posPoint = sSelectors.find(L'.');
+    std::wstring sIds;
 
+    size_t posLattice = sNames.find(L"#");
+    size_t posPoint = sNames.find(L'.');
+    if (posLattice != std::wstring::npos)
+    {
+        sNames = sSelectors.substr(0, posLattice);
+        sIds = sSelectors.substr(posLattice);
+    }
     if (posPoint != std::wstring::npos)
     {
+        sNames = sSelectors.substr(0, posPoint);
         sClasses = sSelectors.substr(posPoint);
-
         posLattice = sClasses.find(L'#');
-
         if (posLattice != std::wstring::npos)
             sClasses = sClasses.substr(0, posLattice);
     }
 
-    std::wstring sIds;
-    posLattice = sSelectors.find(L'#');
+    std::vector<std::string> arNames   = GetWords(sNames);
+    std::vector<std::string> arClasses = GetWords(sClasses);
+    std::vector<std::string> arIds     = GetWords(sIds);
+    std::vector<std::string> arSelectors(arNames);
 
-    if (posLattice != std::wstring::npos)
-        sIds = sSelectors.substr(posLattice);
-
-    const std::vector<std::string>& arNames    = GetWords(sNames);
-    std::vector<std::string> arClasses  = GetWords(sClasses);
-    std::vector<std::string> arIds      = GetWords(sIds);
-
-    arSelectors.insert(arSelectors.end(), arNames.begin(), arNames.end());
-
-    for (std::string& sClass : arClasses)
+    for (std::string sClass : arClasses)
     {
         if (sClass.find('.') == std::string::npos)
             sClass = '.' + sClass;
-
         arSelectors.push_back(sClass);
+        for (const std::string& sName : arNames)
+            arSelectors.push_back(sName + sClass);
+        for (const std::string& sId : arIds)
+            arSelectors.push_back(sClass + sId);
     }
-
-    for (std::string& sId : arIds)
+    for (std::string sId : arIds)
     {
         if (sId.find('#') == std::string::npos)
             sId = '#' + sId;
-
         arSelectors.push_back(sId);
-    }
-
-    if (arClasses.size() > 0 || arIds.size() > 0)
-    {
         for (const std::string& sName : arNames)
-        {
-            for (const std::string& sClass : arClasses)
-            {
-                arSelectors.push_back(sName + sClass);
-            }
-            for (const std::string& sId : arIds)
-            {
-                arSelectors.push_back(sName + sId);
-            }
-        }
+            arSelectors.push_back(sName + sId);
     }
-
-    if (arIds.size() > 0)
-    {
-        for (const std::string& sClass : arClasses)
-        {
-            for (const std::string& sId : arIds)
-                arSelectors.push_back(sClass + sId);
-        }
-    }
-
     return arSelectors;
 }
 
@@ -2000,17 +1965,11 @@ inline static std::vector<std::string> GetWords(const std::wstring& sLine)
     {
         if (iswspace(wc))
         {
-            if (!sLine.empty())
-            {
-                const std::string& sTempStr = wstringToString(sTempWord);
+            const std::string& sTempStr = wstringToString(sTempWord);
+            if (std::find(arWords.begin(), arWords.end(), sTempStr) == arWords.cend())
+                arWords.push_back(sTempStr);
 
-                if (std::find(arWords.begin(), arWords.end(), sTempStr) == arWords.cend())
-                {
-                    arWords.push_back(sTempStr);
-                }
-
-                sTempWord.clear();
-            }
+            sTempWord.clear();
         }
         else if (wc != L'.' && wc != L'#')
             sTempWord += wc;

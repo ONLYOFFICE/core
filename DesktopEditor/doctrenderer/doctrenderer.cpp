@@ -564,7 +564,7 @@ namespace NSDoctRenderer
                     #endif
                     }
 
-                    v8::Local<v8::Value> js_result2 = func_calculate->Call(js_objectApi, 1, args);
+                    func_calculate->Call(js_objectApi, 1, args);
 
                     if (try_catch.HasCaught())
                     {

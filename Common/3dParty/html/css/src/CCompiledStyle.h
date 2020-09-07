@@ -18,14 +18,14 @@ namespace NSCSS
 
     public:
         CCompiledStyle();
-        CCompiledStyle(const std::map<std::wstring, std::wstring>& mStyle);
+        explicit CCompiledStyle(const std::map<std::wstring, std::wstring>& mStyle);
         CCompiledStyle(const CCompiledStyle& oStyle);
 
         ~CCompiledStyle();
 
         std::map<std::wstring, std::wstring> GetStyleMap() const;
-        std::wstring GetStyleW() const;
-        std::string GetStyle() const;
+        // std::wstring GetStyleW() const;
+        // std::string GetStyle() const;
 
         size_t GetSize() const;
         bool Empty() const;
@@ -45,7 +45,7 @@ namespace NSCSS
         const std::map<std::wstring, std::wstring>::iterator& GetBegin();
         const std::map<std::wstring, std::wstring>::iterator& GetEnd();
 
-        double GetWeidth() const;
+        // double GetWeidth() const;
 
         /* FONT */
         std::wstring GetFont() const;
@@ -125,9 +125,9 @@ namespace NSCSS
         CCompiledStyle& operator = (const CCompiledStyle& oElement);
 
         bool operator == (const CCompiledStyle& oStyle)   const;
-        bool operator != (const CCompiledStyle& oElement) const;
-        bool operator >  (const CCompiledStyle& oElement) const;
-        bool operator <  (const CCompiledStyle& oElement) const;
+        // bool operator != (const CCompiledStyle& oElement) const;
+        // bool operator >  (const CCompiledStyle& oElement) const;
+        // bool operator <  (const CCompiledStyle& oElement) const;
 
     };
 

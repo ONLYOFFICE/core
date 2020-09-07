@@ -20,6 +20,18 @@ static std::string treat_like_inline   = "|p|";
 static void prettyprint(GumboNode*, NSStringUtils::CStringBuilderA& oBuilder);
 static std::string mhtTohtml(std::string& sFileContent, const std::wstring& sTmp);
 
+// Заменяет в строке s все символы s1 на s2
+static void replace_all(std::string& s, std::string s1, std::string s2)
+{
+    size_t len = s1.length();
+    size_t pos = s.find(s1);
+    while (pos != std::string::npos)
+    {
+        s.replace(pos, len, s2);
+        pos = s.find(s1, pos + len);
+    }
+}
+
 static std::wstring htmlToXhtml(const std::wstring& sFile)
 {
     std::string sFileContent;
@@ -341,12 +353,19 @@ static std::string mhtTohtml(std::string& sFileContent, const std::wstring& sTmp
             found = sFile.find(sName.erase(0, sfound + 1));
         while(found != std::string::npos)
         {
-            size_t fq = sFile.find_last_of("\"\'>", found) + 1;
-            size_t tq = sFile.find_first_of("\"\'<", found);
-            if(sFile[fq - 1] != '>')
+            size_t fq = sFile.find_last_of("\"\'>=", found);
+            char ch = sFile[fq];
+            if(ch != '\"' && ch != '\'')
+                fq++;
+            size_t tq = sFile.find_first_of("\"\'<> ", found) + 1;
+            if(sFile[tq] != '\"' && sFile[tq] != '\'')
+                tq--;
+            if(ch != '>')
             {
-                sFile.replace(fq, tq - fq, item.second);
-                found = sFile.find(sName, fq + item.second.length());
+                std::string is = item.second;
+                is = '\"' + is + '\"';
+                sFile.replace(fq, tq - fq, is);
+                found = sFile.find(sName, fq + is.length());
             }
             else
                 found = sFile.find(sName, tq);
@@ -385,18 +404,6 @@ static std::wstring mhtToXhtml(const std::wstring& sFile, const std::wstring& sT
 
     // Конвертирование из string utf8 в wstring
     return UTF8_TO_U(sR);
-}
-
-// Заменяет в строке s все символы s1 на s2
-static void replace_all(std::string& s, std::string s1, std::string s2)
-{
-    size_t len = s1.length();
-    size_t pos = s.find(s1);
-    while (pos != std::string::npos)
-    {
-        s.replace(pos, len, s2);
-        pos = s.find(s1, pos + len);
-    }
 }
 
 // Заменяет сущности &,<,> в text

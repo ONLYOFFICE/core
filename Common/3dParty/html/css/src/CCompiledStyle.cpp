@@ -2,6 +2,7 @@
 
 #include <cctype>
 #include <vector>
+#include <numeric>
 
 #include <iostream>
 #include "../../../../../DesktopEditor/common/File.h"
@@ -82,6 +83,7 @@ namespace NSCSS
         return true;
     }
 
+    /*
     bool CCompiledStyle::operator!=(const CCompiledStyle &oElement) const
     {
         if (*this > oElement)
@@ -102,20 +104,23 @@ namespace NSCSS
     {
         return GetWeidth() < oElement.GetWeidth();
     }
+    */
 
     std::map<std::wstring, std::wstring> CCompiledStyle::GetStyleMap() const
     {
         return m_mStyle;
     }
 
+    /*
     std::wstring CCompiledStyle::GetStyleW() const
     {
-        std::wstring sStyle;
-
+        std::wstring sStyle1;
         for (const auto& oIter : m_mStyle)
-            sStyle += oIter.first + L":" + oIter.second + L";";
+            sStyle1 += oIter.first + L":" + oIter.second + L";";
 
-        return sStyle;
+        std::wstring sStyle2;
+        std::accumulate(m_mStyle.begin(), m_mStyle.end(), sStyle2, [] (std::wstring& s, const auto& p) { return s + p.first + L":" + p.second + L";"; });
+        return sStyle2;
     }
 
     std::string CCompiledStyle::GetStyle() const
@@ -123,6 +128,7 @@ namespace NSCSS
         std::wstring sStyle = GetStyleW();
         return U_TO_UTF8(sStyle);
     }
+    */
 
     size_t CCompiledStyle::GetSize() const
     {
@@ -240,23 +246,17 @@ namespace NSCSS
         return m_mStyle.end();
     }
 
+    /*
     double CCompiledStyle::GetWeidth() const
     {
         double dWidth = 0.0;
-
-        for (const auto& sValue : m_mStyle)
-        {
-            dWidth += sValue.first.length();
-            dWidth += sValue.second.length();
-        }
-
-        for (const std::wstring& sValue : m_arParentsStyles)
-        {
-            dWidth += sValue.length() / 2;
-        }
-
+        dWidth = std::accumulate(m_mStyle.begin(), m_mStyle.end(), dWidth,
+            [] (double dW, const auto& sValue) { return dW + sValue.first.length() + sValue.second.length(); });
+        dWidth = std::accumulate(m_arParentsStyles.begin(), m_arParentsStyles.end(), dWidth,
+            [] (double dW, const auto& sValue) { return dW + sValue.length() / 2; });
         return dWidth;
     }
+    */
 
     /* FONT */
 
@@ -539,23 +539,18 @@ namespace NSCSS
             if (oFontWeight != m_mStyle.cend())
                 return oFontWeight->second;
 
-            std::wstring sFont;
-
             const auto& oFont = m_mStyle.find(L"font");
+            if (oFont == m_mStyle.cend())
+                return L"";
 
-            if (oFont != m_mStyle.cend())
-                sFont = oFont->second;
-            else
-                return sFont;
-
+            std::wstring sFont = oFont->second;
             if (sFont.empty())
                 return L"";
 
-            const std::vector<std::wstring> arValues = {L"bold",   L"bolder",
-                                                        L"lighter"};
+            const std::vector<std::wstring> arValues = {L"bold", L"bolder", L"lighter"};
 
             for (const std::wstring& sValue : arValues)
-                if (sFont.find(sValue))
+                if (sFont.find(sValue) != std::wstring::npos)
                     return sValue;
 
             if (iswdigit(sFont[0]))

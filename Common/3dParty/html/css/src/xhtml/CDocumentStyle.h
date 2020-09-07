@@ -25,10 +25,12 @@ namespace NSCSS
             return ((m_oStyle == oUsedStyle.m_oStyle) && (m_bIsPStyle == oUsedStyle.m_bIsPStyle));
         }
 
+        /*
         bool operator<(const CStyleUsed& oUsedStyle) const
         {
             return m_oStyle < oUsedStyle.m_oStyle;
         }
+        */
     };
 
     class CSSCALCULATOR_EXPORT CDocumentStyle

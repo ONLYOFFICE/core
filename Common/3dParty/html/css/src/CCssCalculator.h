@@ -66,7 +66,7 @@ namespace NSCSS
         CCompiledStyle GetCompiledStyle(const std::vector<std::string>& arSelectors, const UnitMeasure unitMeasure = Default) const;
         CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors, const UnitMeasure& unitMeasure = Default) const;
 
-        void AddStyle(const std::vector<std::string>& sSelectors, const std::string& sStyle);
+        // void AddStyle(const std::vector<std::string>& sSelectors, const std::string& sStyle);
         void AddStyles(const std::string& sStyle);
         void AddStyles(const std::wstring& sStyle);
         void AddStylesFromFile(const std::wstring& sFileName);

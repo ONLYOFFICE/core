@@ -24,8 +24,8 @@ namespace NSCSS
 
         UnitMeasure m_UnitMeasure;
 
-        void AddElement(CElement* oElement);
-        size_t GetSize() const;
+        // void AddElement(CElement* oElement);
+        // size_t GetSize() const;
 
         void GetStylesheet(KatanaStylesheet* oStylesheet, CElement* oElementRule = NULL);
         void GetRule(KatanaRule* oRule, CElement* oElementRule = NULL);
@@ -36,7 +36,7 @@ namespace NSCSS
         void GetKeyframesRule(KatanaKeyframesRule* oRule);
         void GetMediaRule(KatanaMediaRule* oRule);
 
-        CElement* GetElement(const int& nIndex) const;
+        // CElement* GetElement(const int& nIndex) const;
 
         std::wstring GetMediaList(KatanaArray* oMedias);
         std::wstring GetMediaQuery(KatanaMediaQuery* oQuery);
@@ -111,7 +111,7 @@ namespace NSCSS
         CCompiledStyle GetCompiledStyle(const std::vector<std::string>& arSelectors, const UnitMeasure& unitMeasure = Default);
         CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors, const UnitMeasure& unitMeasure = Default);
 
-        void AddStyle(const std::vector<std::string>& sSelectors, const std::string& sStyle);
+        // void AddStyle(const std::vector<std::string>& sSelectors, const std::string& sStyle);
         void AddStyles(const std::string& sStyle);
         void AddStyles(const std::wstring& sStyle);
         void AddStylesFromFile(const std::wstring& sFileName);

@@ -29,10 +29,12 @@ namespace NSCSS
         return  m_pInternal->GetCompiledStyle(arSelectors, unitMeasure);
     }
 
+    /*
     void CCssCalculator::AddStyle(const std::vector<std::string>& sSelectors, const std::string &sStyle)
     {
         m_pInternal->AddStyle(sSelectors, sStyle);
     }
+    */
 
     void CCssCalculator::AddStyles(const std::string &sStyle)
     {
@@ -42,7 +44,6 @@ namespace NSCSS
     void CCssCalculator::AddStyles(const std::wstring &sStyle)
     {
         m_pInternal->AddStyles(sStyle);
-
     }
 
     void CCssCalculator::AddStylesFromFile(const std::wstring &sFileName)

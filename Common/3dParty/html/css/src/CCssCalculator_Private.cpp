@@ -52,27 +52,18 @@ bool operator<(const std::vector<NSCSS::CNode> &arLeftSelectors, const std::vect
 
 namespace NSCSS
 {
-    CCssCalculator_Private::CCssCalculator_Private() :
-        m_nDpi(96),
-        m_sEncoding(L"UTF-8"),
-        m_nCountNodes(1),
-        m_UnitMeasure(Default)
-    {
-    }
+    CCssCalculator_Private::CCssCalculator_Private() : m_nDpi(96), m_sEncoding(L"UTF-8"), m_nCountNodes(1), m_UnitMeasure(Default) {}
 
     CCssCalculator_Private::~CCssCalculator_Private()
     {
         for (size_t i = 0; i < m_arData.size(); ++i)
-        {
             delete[] m_arData[i];
-        }
 
         for (std::map<std::vector<CNode>, CCompiledStyle*>::iterator iter  = m_mUsedStyles.begin(); iter != m_mUsedStyles.end(); ++iter)
-        {
             delete iter->second;
-        }
     }
 
+    /*
     inline CElement* CCssCalculator_Private::GetElement(const int& nIndex) const
     {
         if (nIndex < 0 || nIndex >= (int)m_arData.size())
@@ -94,6 +85,7 @@ namespace NSCSS
             m_arData.push_back(oElement);
         }
     }
+    */
 
     inline void CCssCalculator_Private::GetOutputData(KatanaOutput *oOutput)
     {
@@ -656,6 +648,7 @@ namespace NSCSS
         return  CCompiledStyle(mStyle);
     }
 
+    /*
     void CCssCalculator_Private::AddStyle(const std::vector<std::string>& sSelectors, const std::string& sProperties)
     {
         std::string sPropertiesUTF8;
@@ -665,7 +658,7 @@ namespace NSCSS
         if (m_sEncoding != L"UTF-8" && m_sEncoding != L"utf-8")
             bIsUTF8 = true;
 
-        bIsUTF8 ? sPropertiesUTF8 = GetContentAsUTF8(sProperties, m_sEncoding) : sPropertiesUTF8 = sProperties;
+        sPropertiesUTF8 = bIsUTF8 ? GetContentAsUTF8(sProperties, m_sEncoding) : sProperties;
 
         std::vector<std::string> sSelectorsUTF8;
 
@@ -725,6 +718,7 @@ namespace NSCSS
         oElement->AddDeclarations(arDecl);
         m_arData.push_back(oElement);
     }
+    */
 
     CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const std::vector<CNode> &arSelectors, const UnitMeasure& unitMeasure)
     {
@@ -1571,10 +1565,12 @@ namespace NSCSS
         return m_nDpi;
     }
 
+    /*
     inline size_t CCssCalculator_Private::GetSize() const
     {
         return m_arData.size();
     }
+    */
 
     UnitMeasure CCssCalculator_Private::GetUnitMeasure() const
     {

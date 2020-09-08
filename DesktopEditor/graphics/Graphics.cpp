@@ -620,8 +620,24 @@ namespace Aggplus
 
         if (DashStyleCustom == eStyle)
         {
-            if (0 == pPen->Count)
+            if (0 == pPen->Count || NULL == pPen->DashPattern)
+            {
                 eStyle = DashStyleSolid;
+            }
+            else
+            {
+                bool bFoundNormal = false;
+                for (int i = 0; i < pPen->Count; i++)
+                {
+                    if (fabs(pPen->DashPattern[i]) > 0.0001)
+                    {
+                        bFoundNormal = true;
+                        break;
+                    }
+                }
+                if (!bFoundNormal)
+                    eStyle = DashStyleSolid;
+            }
         }
 
 		agg::trans_affine* pAffine = &m_oFullTransform.m_internal->m_agg_mtx;
@@ -710,7 +726,10 @@ namespace Aggplus
 					break;
 				}
 			}
-			
+
+            if ((0 == dWidth && !m_bIntegerGrid) || dWidth < dWidthMinSize)
+                dWidth = dWidthMinSize;
+
 			pgD.line_cap(LineCap);
 			pgD.line_join(LineJoin);
 			pgD.miter_limit(dblMiterLimit);

@@ -25,7 +25,7 @@ static void replace_all(std::string& s, std::string s1, std::string s2)
 {
     size_t len = s1.length();
     size_t pos = s.find(s1);
-    while (pos != std::string::npos)
+    while(pos != std::string::npos)
     {
         s.replace(pos, len, s2);
         pos = s.find(s1, pos + len);
@@ -40,9 +40,9 @@ static std::wstring htmlToXhtml(const std::wstring& sFile)
 
     // Распознование кодировки
     size_t posEncoding = sFileContent.find("charset=");
-    if (std::string::npos == posEncoding)
+    if (posEncoding == std::string::npos)
         posEncoding = sFileContent.find("encoding=");
-    if (std::string::npos != posEncoding)
+    if (posEncoding != std::string::npos)
     {
         posEncoding = sFileContent.find("=", posEncoding) + 1;
         if(sFileContent[posEncoding] == '\"')
@@ -54,10 +54,9 @@ static std::wstring htmlToXhtml(const std::wstring& sFile)
             std::string sEncoding = sFileContent.substr(posEncoding, posEnd - posEncoding);
             if (sEncoding != "utf-8" && sEncoding != "UTF-8")
             {
-                sFileContent.replace(posEncoding, posEnd - posEncoding, "UTF-8");
+                // sFileContent.replace(posEncoding, posEnd - posEncoding, "UTF-8");
                 NSUnicodeConverter::CUnicodeConverter oConverter;
-                std::wstring sRes = oConverter.toUnicode(sFileContent, sEncoding.c_str());
-                sFileContent = U_TO_UTF8(sRes);
+                sFileContent = U_TO_UTF8(oConverter.toUnicode(sFileContent, sEncoding.c_str()));
             }
         }
     }
@@ -72,12 +71,14 @@ static std::wstring htmlToXhtml(const std::wstring& sFile)
     std::string sR = oBuilder.GetData();
 
     // Вставка кодировки в файл
+    /*
     if(sR.length() > 5)
     {
         std::string sSub = sR.substr(0, 5);
         if(sSub != "<?xml")
             sR = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + sR;
     }
+    */
 
     // Конвертирование из string utf8 в wstring
     return UTF8_TO_U(sR);
@@ -92,18 +93,12 @@ static std::string Base64ToString(const std::string& sContent, const std::string
     if (TRUE == NSBase64::Base64Decode(sContent.c_str(), nSrcLen, pData, &nDecodeLen))
     {
         std::wstring sConvert;
-        if(!sCharset.empty())
+        if(!sCharset.empty() && sCharset != "utf-8" && sCharset != "UTF-8")
         {
-            if(sCharset != "utf-8" && sCharset != "UTF-8")
-            {
-                NSUnicodeConverter::CUnicodeConverter oConverter;
-                sConvert = oConverter.toUnicode(reinterpret_cast<char *>(pData), (unsigned)nDecodeLen, sCharset.data());
-            }
+            NSUnicodeConverter::CUnicodeConverter oConverter;
+            sConvert = oConverter.toUnicode(reinterpret_cast<char *>(pData), (unsigned)nDecodeLen, sCharset.data());
         }
-        if(sConvert.empty())
-            sRes =  std::string(reinterpret_cast<char *>(pData), nDecodeLen);
-        else
-            sRes = U_TO_UTF8(sConvert);
+        sRes = sConvert.empty() ? std::string(reinterpret_cast<char *>(pData), nDecodeLen) : U_TO_UTF8(sConvert);
     }
     RELEASEARRAYOBJECTS(pData);
     return sRes;
@@ -112,24 +107,26 @@ static std::string Base64ToString(const std::string& sContent, const std::string
 static std::string QuotedPrintableDecode(const std::string& sContent)
 {
     NSStringUtils::CStringBuilderA sRes;
-    for(size_t i = 0; i < sContent.length(); i++)
+    size_t ip = 0;
+    size_t i = sContent.find('=');
+    size_t nLength = sContent.length();
+    while(i != std::string::npos && i + 2 < nLength)
     {
-        if(sContent[i] == '=' && i + 2 < sContent.length())
+        sRes.WriteString(sContent.substr(ip, i - ip));
+        std::string str = sContent.substr(i + 1, 2);
+        char * err;
+        char ch = (int)strtol(str.data(), &err, 16);
+        if(*err)
         {
-            std::string str = sContent.substr((++i)++, 2);
-            char * err;
-            char ch = (int)strtol(str.data(), &err, 16);
-            if(*err)
-            {
-                if(str != "\r\n")
-                    sRes.WriteString('=' + str);
-            }
-            else
-                sRes.WriteString(&ch, 1);
+            if(str != "\r\n")
+                sRes.WriteString(sContent.substr(i, 3));
         }
         else
-            sRes.WriteString(&sContent[i], 1);
+            sRes.WriteString(&ch, 1);
+        ip = i + 3;
+        i = sContent.find('=', ip);
     }
+    sRes.WriteString(sContent.substr(ip));
     return sRes.GetData();
 }
 
@@ -395,12 +392,14 @@ static std::wstring mhtToXhtml(const std::wstring& sFile, const std::wstring& sT
     std::string sR = oBuilder.GetData();
 
     // Вставка кодировки в файл
+    /*
     if(sR.length() > 5)
     {
         std::string sSub = sR.substr(0, 5);
         if(sSub != "<?xml")
             sR = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + sR;
     }
+    */
 
     // Конвертирование из string utf8 в wstring
     return UTF8_TO_U(sR);
@@ -415,7 +414,7 @@ static void substitute_xml_entities_into_text(std::string &text)
     replace_all(text, ">", "&gt;");
 }
 
-// Заменяет сущности ",' в text
+// Заменяет сущности " в text
 static void substitute_xml_entities_into_attributes(std::string &text)
 {
     substitute_xml_entities_into_text(text);
@@ -508,7 +507,7 @@ static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA
 
     GumboVector* children = &node->v.element.children;
 
-    for (unsigned int i = 0; i < children->length; ++i)
+    for (size_t i = 0; i < children->length; i++)
     {
         GumboNode* child = static_cast<GumboNode*> (children->data[i]);
 
@@ -518,6 +517,7 @@ static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA
             if(!no_entity_substitution)
                 substitute_xml_entities_into_text(val);
 
+            // Избавление от FF
             size_t found = val.find_first_of("\014");
             while(found != std::string::npos)
             {
@@ -528,9 +528,7 @@ static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA
             contents.WriteString(val);
         }
         else if ((child->type == GUMBO_NODE_ELEMENT) || (child->type == GUMBO_NODE_TEMPLATE))
-        {
             prettyprint(child, contents);
-        }
         else if (child->type == GUMBO_NODE_WHITESPACE)
         {
             if (keep_whitespace || is_inline)

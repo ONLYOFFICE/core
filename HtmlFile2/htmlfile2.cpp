@@ -363,31 +363,13 @@ public:
     // Конвертирует html в xhtml
     bool htmlXhtml(const std::wstring& sSrc)
     {
-        std::wstring sExtention = NSFile::GetFileExtention(sSrc);
-        std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
-        if(sExtention != L"html" && sExtention != L"xhtml" && sExtention != L"htm" )
-            return false;
-
-        NSFile::CFileBinary oXhtmlWriter;
-        if (oXhtmlWriter.CreateFileW(m_sTmp + L"/res.xhtml"))
-        {
-            // htmlToXhtml возвращает текст файла в кодировке UTF-8
-            oXhtmlWriter.WriteStringUTF8(htmlToXhtml(sSrc));
-            oXhtmlWriter.CloseFile();
-        }
-        else
-            return false;
-        return true;
+        return m_oLightReader.FromString(htmlToXhtml(sSrc));
     }
 
     // Конвертирует mht в xhtml
     bool mhtXhtml(const std::wstring& sSrc)
     {
-        std::wstring sExtention = NSFile::GetFileExtention(sSrc);
-        std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
-        if(sExtention != L"mht" && sExtention != L"mhtml")
-            return false;
-
+        /*
         NSFile::CFileBinary oXhtmlWriter;
         if (oXhtmlWriter.CreateFileW(m_sTmp + L"/res.xhtml"))
         {
@@ -398,6 +380,8 @@ public:
         else
             return false;
         return true;
+        */
+        return m_oLightReader.FromString(mhtToXhtml(sSrc, m_sTmp));
     }
 
     // Читает стили
@@ -1481,12 +1465,9 @@ bool CHtmlFile2::IsHtmlFile(const std::wstring& sFile)
     if(!m_internal->htmlXhtml(sFile))
         return false;
     // Открывает файл на проверку
-    if (!m_internal->m_oLightReader.FromFile(m_internal->m_sTmp + L"/res.xhtml"))
-        return false;
+    // m_internal->m_oLightReader.FromFile(m_internal->m_sTmp + L"/res.xhtml");
     // Читаем html
-    if(!m_internal->isHtml())
-        return false;
-    return true;
+    return m_internal->isHtml();
 }
 
 bool CHtmlFile2::IsMhtFile(const std::wstring& sFile)
@@ -1495,12 +1476,9 @@ bool CHtmlFile2::IsMhtFile(const std::wstring& sFile)
     if(!m_internal->mhtXhtml(sFile))
         return false;
     // Открывает файл на проверку
-    if (!m_internal->m_oLightReader.FromFile(m_internal->m_sTmp + L"/res.xhtml"))
-        return false;
+    // m_internal->m_oLightReader.FromFile(m_internal->m_sTmp + L"/res.xhtml");
     // Читаем html
-    if(!m_internal->isHtml())
-        return false;
-    return true;
+    return m_internal->isHtml();
 }
 
 void CHtmlFile2::SetTmpDirectory(const std::wstring& sFolder)
@@ -1525,7 +1503,7 @@ HRESULT CHtmlFile2::OpenHtml(const std::wstring& sSrc, const std::wstring& sDst,
 
     m_internal->readSrc(NSFile::GetFileName(sSrc));
     m_internal->write();
-    NSFile::CFileBinary::Remove(m_internal->m_sTmp + L"/res.xhtml");
+    // NSFile::CFileBinary::Remove(m_internal->m_sTmp + L"/res.xhtml");
     return S_OK;
 }
 
@@ -1546,7 +1524,7 @@ HRESULT CHtmlFile2::OpenMht(const std::wstring& sSrc, const std::wstring& sDst, 
 
     m_internal->readSrc(NSFile::GetFileName(sSrc));
     m_internal->write();
-    NSFile::CFileBinary::Remove(m_internal->m_sTmp + L"/res.xhtml");
+    // NSFile::CFileBinary::Remove(m_internal->m_sTmp + L"/res.xhtml");
     return S_OK;
 }
 
@@ -1574,7 +1552,7 @@ HRESULT CHtmlFile2::OpenBatchHtml(const std::vector<std::wstring>& sSrc, const s
             return S_FALSE;
         m_internal->readSrc(NSFile::GetFileName(sS));
 
-        NSFile::CFileBinary::Remove(m_internal->m_sTmp + L"/res.xhtml");
+        // NSFile::CFileBinary::Remove(m_internal->m_sTmp + L"/res.xhtml");
         m_internal->m_oLightReader.Clear();
         m_internal->m_oStylesCalculator.Clear();
         m_internal->m_sBase = L"";

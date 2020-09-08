@@ -216,7 +216,8 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, 
 			int nType = 0;
             std::string version = "";
             std::string dst_len = "";
-			while (true)
+			
+			while (nIndex < nBase64DataSize)
 			{
 				nIndex++;
 				BYTE _c = pBase64Data[nIndex];

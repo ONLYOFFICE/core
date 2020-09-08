@@ -605,6 +605,7 @@ namespace OOX
 							case 'r':
 								if ( _T("v:rect") == sName )
 									m_oShape = oSubReader;
+								break;
 							case 's':
 								if ( _T("v:shadow") == sName )
 									pItem = new OOX::Vml::CShadow( oSubReader );

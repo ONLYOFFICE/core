@@ -52,6 +52,7 @@
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
 #include "../PPTXFormat/FileContainer.h"
+#include <iostream>
 
 #define BYTE_SIZEOF		sizeof(BYTE)
 #define UINT16_SIZEOF	sizeof(_UINT16)
@@ -1531,7 +1532,7 @@ namespace NSBinPptxRW
 			
 			std::wstring strOleRelsPath;
 			
-			oRelsGeneratorInfo.nOleRId		= m_lNextRelsID++;
+			oRelsGeneratorInfo.nOleRId = m_lNextRelsID++;
 			oRelsGeneratorInfo.sFilepathOle	= oleFile->filename().GetPath();
 
 			if	(m_pManager->m_nDocumentType != XMLWRITER_DOC_TYPE_XLSX)
@@ -1561,7 +1562,7 @@ namespace NSBinPptxRW
 			
 			std::wstring strMediaRelsPath;
 			
-			oRelsGeneratorInfo.nMediaRId	= m_lNextRelsID++;
+			oRelsGeneratorInfo.nMediaRId = m_lNextRelsID++;
 			oRelsGeneratorInfo.sFilepathOle	= mediaFile->filename().GetPath();
 
 			if	(m_pManager->m_nDocumentType != XMLWRITER_DOC_TYPE_XLSX)
@@ -1702,7 +1703,14 @@ namespace NSBinPptxRW
 	int CBinaryFileReader::Seek(LONG _pos)
 	{
 		if (_pos > m_lSize)
-			return 1;
+		{
+			_pos = m_lSize;
+		}
+		if (_pos < 0 )
+		{
+			_pos = 0;
+			throw;
+		}
 		m_lPos = _pos;
 		m_pDataCur = m_pData + m_lPos;
 		return 0;
@@ -1719,10 +1727,24 @@ namespace NSBinPptxRW
 	}
 
 	// 1 bytes
+	bool CBinaryFileReader::GetUCharWithResult(BYTE *value_)
+	{
+		if (!value_ || m_lPos >= m_lSize)
+		{
+			return false;
+		}
+
+		*value_ = *m_pDataCur;
+		++m_lPos;
+		++m_pDataCur;
+		return true;
+	}
 	BYTE CBinaryFileReader::GetUChar()
 	{
-		if (m_lPos >= m_lSize)
-			return 0;
+		if (m_lPos >= m_lSize || m_lPos < 0)
+		{
+			throw;
+		}
 
 		BYTE res = *m_pDataCur;
 		++m_lPos;
@@ -1731,8 +1753,10 @@ namespace NSBinPptxRW
 	}
 	signed char CBinaryFileReader::GetChar()
 	{
-		if (m_lPos >= m_lSize)
-			return 0;
+		if (m_lPos >= m_lSize || m_lPos <0)
+		{
+			throw;
+		}
 
 		BYTE res = *m_pDataCur;
 		if (res > 127)
@@ -1763,7 +1787,9 @@ namespace NSBinPptxRW
 	_UINT16 CBinaryFileReader::GetUShort()
 	{
 		if (m_lPos + 1 >= m_lSize)
-			return 0;
+		{
+			throw;
+		}
 #if defined(_IOS) || defined(__ANDROID__)
         _UINT16 res = 0;
         memcpy(&res, m_pDataCur, sizeof(_UINT16));
@@ -1777,7 +1803,10 @@ namespace NSBinPptxRW
 	_INT16 CBinaryFileReader::GetShort()
 	{
 		if (m_lPos + 1 >= m_lSize)
-			return 0;
+		{
+			throw;
+		}
+
 #if defined(_IOS) || defined(__ANDROID__)
 		_INT16 res = 0;
 		memcpy(&res, m_pDataCur, sizeof(_INT16));
@@ -1793,7 +1822,10 @@ namespace NSBinPptxRW
 	_UINT32 CBinaryFileReader::GetULong()
 	{
 		if (m_lPos + 3 >= m_lSize)
-			return 0;
+		{
+			throw;
+		}
+
 #if defined(_IOS) || defined(__ANDROID__)
         _UINT32 res = 0;
         memcpy(&res, m_pDataCur, sizeof(_UINT32));
@@ -1807,7 +1839,10 @@ namespace NSBinPptxRW
 	_INT64 CBinaryFileReader::GetLong64()
 	{
 		if (m_lPos + 7 >= m_lSize)
-			return 0;
+		{
+			throw;
+		}
+
 #if defined(_IOS) || defined(__ANDROID__)
         _INT64 res = 0;
         memcpy(&res, m_pDataCur, sizeof(_INT64));
@@ -1833,7 +1868,10 @@ namespace NSBinPptxRW
 	double CBinaryFileReader::GetDoubleReal()
 	{
         if (m_lPos + (int)DOUBLE_SIZEOF > m_lSize)
-            return 0;
+		{
+			throw;
+		}
+
 #if defined(_IOS) || defined(__ANDROID__)
         double res = 0.0;
         memcpy(&res, m_pDataCur, sizeof(double));
@@ -1856,7 +1894,9 @@ namespace NSBinPptxRW
         if (len < 1 )
             return "";
         if (m_lPos + len > m_lSize)
-			return "";
+		{
+			throw;
+		}
 
 		std::string res((CHAR*)m_pDataCur, len);
 		m_lPos += len;
@@ -1873,7 +1913,9 @@ namespace NSBinPptxRW
         if (len < 1 )
             return _T("");
         if (m_lPos + len > m_lSize)
-            return _T("");
+		{
+			throw;
+		}
 
         _UINT32 lSize = len >>1; //string in char
 
@@ -1902,7 +1944,9 @@ namespace NSBinPptxRW
 		if (len < 1)
 			return _T("");
 		if (m_lPos + len > m_lSize)
-			return _T("");
+		{
+			throw;
+		}
 
 		_UINT32 lSize = len >> 1; //string in char
 
@@ -1979,7 +2023,9 @@ namespace NSBinPptxRW
         if (nSize < 0) return 0;
 
 		if (m_lPos + nSize > m_lSize)
-			return 0;
+		{
+			throw;
+		}
 
 		BYTE* res = (BYTE*)m_pDataCur;
 		m_lPos += nSize;

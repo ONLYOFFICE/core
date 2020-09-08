@@ -112,7 +112,9 @@ public:
 	long read1defCurPos = 0;\
 		while(read1defCurPos < (long)stLen)\
 	{\
-		BYTE read1defType = m_oBufferedStream.GetUChar();\
+		BYTE read1defType = 0;\
+		if (false == m_oBufferedStream.GetUCharWithResult(&read1defType))\
+			break;\
 		long read1defLength =  m_oBufferedStream.GetLong();\
 		res = fReadFunction(read1defType, read1defLength, arg);\
 		if(res == c_oSerConstants::ReadUnknown)\
@@ -129,7 +131,9 @@ public:
 	long read2defCurPos = 0;\
 		while(read2defCurPos < (long)stLen)\
 	{\
-		BYTE read2defType = m_oBufferedStream.GetUChar();\
+		BYTE read2defType = 0;\
+		if (false == m_oBufferedStream.GetUCharWithResult(&read2defType))\
+			break;\
 		long read2defLenType =  m_oBufferedStream.GetUChar();\
 		int read2defCurPosShift = 2;\
 		int read2defRealLen;\
@@ -3294,7 +3298,14 @@ int Binary_OtherTableReader::ReadOtherContent(BYTE type, long length, void* poRe
 	else if(c_oSerOtherTableTypes::DocxTheme == type)
 	{
 		smart_ptr<PPTX::Theme> pTheme = new PPTX::Theme(NULL);
-		pTheme->fromPPTY(&m_oBufferedStream);
+		try
+		{
+			pTheme->fromPPTY(&m_oBufferedStream);
+		}
+		catch(...)
+		{
+			//todooo в отдельный лог
+		}
 		NSBinPptxRW::CXmlWriter xmlWriter;
 		pTheme->toXmlWriter(&xmlWriter);
 		m_oFileWriter.m_oTheme.m_sContent = xmlWriter.GetXmlString();

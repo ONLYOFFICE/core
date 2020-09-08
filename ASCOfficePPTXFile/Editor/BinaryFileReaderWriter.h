@@ -512,6 +512,7 @@ namespace NSBinPptxRW
 		bool Peek	(LONG nSizeToRead);
 		
 		// 1 bytes
+		bool GetUCharWithResult(BYTE *value_);
 		BYTE GetUChar();
 		signed char GetChar();
 		bool GetBool();

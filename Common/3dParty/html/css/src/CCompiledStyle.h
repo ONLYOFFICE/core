@@ -24,7 +24,7 @@ namespace NSCSS
         ~CCompiledStyle();
 
         // std::map<std::wstring, std::wstring> GetStyleMap() const;
-        // std::wstring GetStyleW() const;
+         std::wstring GetStyleW() const;
         // std::string GetStyle() const;
 
         // size_t GetSize() const;
@@ -101,7 +101,7 @@ namespace NSCSS
         std::wstring GetBorderColor() const;
 
         std::wstring GetBorderBottom() const;
-        std::wstring GetBordeBottomrWidth() const;
+        std::wstring GetBorderBottomWidth() const;
         std::wstring GetBorderBottomStyle() const;
         std::wstring GetBorderBottomColor() const;
 
@@ -116,7 +116,7 @@ namespace NSCSS
         std::wstring GetBorderRightColor() const;
 
         std::wstring GetBorderTop() const;
-        std::wstring GetBordeToprWidth() const;
+        std::wstring GetBorderTopWidth() const;
         std::wstring GetBorderTopStyle() const;
         std::wstring GetBorderTopColor() const;
 
@@ -130,8 +130,6 @@ namespace NSCSS
         // bool operator <  (const CCompiledStyle& oElement) const;
 
     };
-
-
 }
 
 #endif // CCOMPILEDSTYLE_H

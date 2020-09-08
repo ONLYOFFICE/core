@@ -869,16 +869,16 @@ std::wstring CXmlElement::ConvertPStyle() const
         std::wstring sPBdr = L"<w:pBdr>";
 
             if (!m_sTopBorder.empty())
-                sPBdr += L"<w:top w:val=\"single\" w:sz=\"4\" w:space=\"1\" w:color=\"auto\"/>";
+                sPBdr += L"<w:top" + m_sTopBorder + L"/>";
 
             if (!m_sLeftBorder.empty())
-                sPBdr += L"<w:left w:val=\"single\" w:sz=\"4\" w:space=\"1\" w:color=\"auto\"/>";
+                sPBdr += L"<w:left" + m_sLeftBorder + L"/>";
 
             if (!m_sBottomBorder.empty())
-                sPBdr += L"<w:bottom w:val=\"single\" w:sz=\"4\" w:space=\"1\" w:color=\"auto\"/>";
+                sPBdr += L"<w:bottom" + m_sBottomBorder + L"/>";
 
             if (!m_sRightBorder.empty())
-                sPBdr += L"<w:right w:val=\"single\" w:sz=\"4\" w:space=\"1\" w:color=\"auto\"/>";
+                sPBdr += L"<w:right" + m_sRightBorder + L"/>";
 
         sPBdr += L"</w:pBdr>";
 

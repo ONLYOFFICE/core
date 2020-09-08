@@ -22,9 +22,10 @@ inline static std::string       wstringToString(const std::wstring& sWstring);
 inline static std::string       GetContentAsUTF8(const std::string &sString, const std::wstring &sEncoding);
 inline static std::wstring      GetContentAsUTF8W(const std::wstring& sFileName);
 inline static std::string       GetContentAsUTF8(const std::wstring& sFileName);
-inline static bool              GetFirstNumber(std::wstring sString);
+inline static bool              ThereIsNumber(const std::wstring& sString);
 inline static std::wstring      ConvertAbsoluteValue(const std::wstring& sAbsoluteValue);
 inline std::vector<std::string> GetWords(const std::wstring& sLine);
+inline std::vector<std::wstring> GetWordsW(const std::wstring& sLine);
 inline std::vector<std::string> GetSelectorsList(const std::wstring& sSelectors);
 inline std::wstring             DeleteSpace(const std::wstring& sValue);
 inline static void              RemoveExcessFromStyles(std::wstring& sStyle);
@@ -613,7 +614,7 @@ namespace NSCSS
                     const std::vector<int>& arWeightFirst = GetWeightSelector(arPropSel[pDeclaration.first]);
                     const std::vector<int>& arWeightSecond = GetWeightSelector(pValue.first);
 
-                    if ((arWeightFirst <= arWeightSecond &&
+                    if ((arWeightFirst < arWeightSecond &&
                          mStyle[pDeclaration.first].find(L"!important") == std::wstring::npos) ||
                         pDeclaration.second.find(L"!important") != std::wstring::npos)
                     {
@@ -823,42 +824,7 @@ namespace NSCSS
         if (sValue.empty())
             return sValue;
 
-        std::vector<std::wstring> arValues;
-        std::wstring sTempString;
-
-        if (sValue.find(L':') != std::wstring::npos)
-        {
-            for (const wchar_t& wc : sValue)
-            {
-                if (wc == L':' || wc == L';')
-                {
-                    if (!sTempString.empty())
-                    {
-                        sTempString += wc;
-                        sTempString = ConvertAbsoluteValue(sTempString);
-                        sTempString = DeleteSpace(sTempString);
-                        std::transform(sTempString.begin(), sTempString.end(), sTempString.begin(), towlower);
-
-                        arValues.push_back(sTempString);
-                        sTempString.clear();
-
-                    }
-                }
-                else /*if (!iswspace(sValue[i]))*/
-                {
-                    sTempString += wc;
-                }
-            }
-            if (!sTempString.empty())
-            {
-                sTempString = ConvertAbsoluteValue(sTempString);
-                sTempString = DeleteSpace(sTempString);
-                arValues.push_back(sTempString);
-                sTempString.clear();
-            }
-        }
-        else
-            arValues.push_back(sValue);
+        const std::vector<std::wstring>& arValues = GetWordsW(sValue);
 
         std::wstring sValueString;
 
@@ -866,101 +832,104 @@ namespace NSCSS
         {
             const auto& nPosGrid = sValueTemp.find(L'#');
 
-            if (!GetFirstNumber(sValueTemp) || nPosGrid != std::wstring::npos)
+            if (nPosGrid != std::wstring::npos || !ThereIsNumber(sValueTemp))
             {
-                if (nPosGrid != std::wstring::npos)
-                {
-                    const auto& nPosSpace = sValueTemp.find(L' ', nPosGrid);
+                sValueString += sValueTemp;
 
-                    nPosSpace != std::wstring::npos ? sValueString += sValueTemp.substr((nPosGrid, nPosSpace - 1)) : sValueString += DeleteSpace(sValueTemp);
-
-                }
-                else sValueString += DeleteSpace(sValueTemp);
-
-                const auto& nPosSemicolon = sValueTemp.find(L';');
-                const auto& nPosColon = sValueTemp.find(L':');
-
-                if (sValueTemp.length() > 1 && nPosSemicolon == std::wstring::npos &&
-                    nPosColon == std::wstring::npos && arValues.size() > 2)
-                    sValueString += L';';
+                if (arValues.size() > 1 && sValueTemp.find_first_of(L":;") == std::wstring::npos)
+                    sValueString += L' ';
 
                 continue;
             }
 
-            std::wstring sTempValue;
-            std::wstring sBeforeValue = sValueTemp;
+            const auto& posPercent = sValueTemp.find(L'%');
 
-            while (true)
+            if (posPercent != std::wstring::npos)
             {
-                if (sBeforeValue.empty() || !GetFirstNumber(sBeforeValue))
-                    break;
+                const double& dValue = wcstod(sValueTemp.substr(0, posPercent).c_str(), NULL) / 100 * 22;
 
-                const auto& posPercent = sBeforeValue.find(L'%');
+                sValueString += std::to_wstring((int)floor(dValue + 0.5));
 
-                if (posPercent != std::wstring::npos)
-                {
-                    double dValue = wcstod(sBeforeValue.substr(0, posPercent).c_str(), NULL);
-                    sBeforeValue = sBeforeValue.substr(posPercent + 1);
-                    dValue /= 100;
-                    dValue = 22 * dValue;
-                    sTempValue += std::to_wstring((int)floor(dValue + 0.5)) + L" ";
-                }
-                else if (sBeforeValue.find(L"px") != std::wstring::npos)
-                {
-                    sTempValue += ConvertPx(sBeforeValue) + L" ";
-                    sBeforeValue = sBeforeValue.substr(sBeforeValue.find(L"px") + 2);
-                }
-                else if (sBeforeValue.find(L"cm") != std::wstring::npos)
-                {
-                    sTempValue += ConvertCm(sBeforeValue) + L" ";
-                    sBeforeValue = sBeforeValue.substr(sBeforeValue.find(L"cm") + 2);
-                }
-                else if (sBeforeValue.find(L"mm") != std::wstring::npos)
-                {
-                    sTempValue += ConvertMm(sBeforeValue) + L" ";
-                    sBeforeValue = sBeforeValue.substr(sBeforeValue.find(L"mm") + 2);
-                }
-                else if (sBeforeValue.find(L"in") != std::wstring::npos)
-                {
-                    sTempValue += ConvertIn(sBeforeValue) + L" ";
-                    sBeforeValue = sBeforeValue.substr(sBeforeValue.find(L"in") + 2);
-                }
-                else if (sBeforeValue.find(L"pt") != std::wstring::npos)
-                {
-                    sTempValue += ConvertPt(sBeforeValue) + L" ";
-                    sBeforeValue = sBeforeValue.substr(sBeforeValue.find(L"pt") + 2);
-                }
-                else if (sBeforeValue.find(L"pc") != std::wstring::npos)
-                {
-                    sTempValue += ConvertPc(sBeforeValue) + L" ";
-                    sBeforeValue = sBeforeValue.substr(sBeforeValue.find(L"pc") + 2);
-                }
-                else if (sBeforeValue.find(L"em") != std::wstring::npos)
-                {
-                    sTempValue += ConvertEm(sBeforeValue) + L" ";
-                    sBeforeValue = sBeforeValue.substr(sBeforeValue.find(L"em") + 2);
-                }
-                else
-                {
-                    double dValue = wcstod(sBeforeValue.c_str(), NULL);
-                    dValue *= 4;
-                    sTempValue += std::to_wstring((int)floor(dValue + 0.5)) + L" ";
-
-                    break;
-                }
+                if (sValueTemp.find(L';') != std::wstring::npos)
+                    sValueString += L';';
+                else if (arValues.size() > 2 && sValueTemp.find(L':') == std::wstring::npos)
+                    sValueString += L' ';
             }
-            if (!sTempValue.empty())
+            else if (sValueTemp.find(L"px") != std::wstring::npos)
             {
-                sValueString += sTempValue;
-                if (sValueString[sValueString.length() - 1] != L';' && arValues.size() > 1)
-                {
-                    if (sValueString[sValueString.length() - 1] == L' ')
-                        sValueString[sValueString.length() - 1] = L';';
-                    else
-                        sValueString += L';';
-                }
+                sValueString += ConvertPx(sValueTemp);
+                if (sValueTemp.find(L';') != std::wstring::npos)
+                    sValueString += L';';
+                else if (arValues.size() > 2 && sValueTemp.find(L':') == std::wstring::npos)
+                    sValueString += L' ';
             }
+            else if (sValueTemp.find(L"cm") != std::wstring::npos)
+            {
+                sValueString += ConvertCm(sValueTemp);
+                if (sValueTemp.find(L';') != std::wstring::npos)
+                    sValueString += L';';
+                else if (arValues.size() > 2 && sValueTemp.find(L':') == std::wstring::npos)
+                    sValueString += L' ';
+            }
+            else if (sValueTemp.find(L"mm") != std::wstring::npos)
+            {
+                sValueString += ConvertMm(sValueTemp);
+
+                if (sValueTemp.find(L';') != std::wstring::npos)
+                    sValueString += L';';
+                else if (arValues.size() > 2 && sValueTemp.find(L':') == std::wstring::npos)
+                    sValueString += L' ';
+            }
+            else if (sValueTemp.find(L"in") != std::wstring::npos)
+            {
+                sValueString += ConvertIn(sValueTemp);
+
+                if (sValueTemp.find(L';') != std::wstring::npos)
+                    sValueString += L';';
+                else if (arValues.size() > 2 && sValueTemp.find(L':') == std::wstring::npos)
+                    sValueString += L' ';
+            }
+            else if (sValueTemp.find(L"pt") != std::wstring::npos)
+            {
+                sValueString += ConvertPt(sValueTemp);
+
+                if (sValueTemp.find(L';') != std::wstring::npos)
+                    sValueString += L';';
+                else if (arValues.size() > 2 && sValueTemp.find(L':') == std::wstring::npos)
+                    sValueString += L' ';
+            }
+            else if (sValueTemp.find(L"pc") != std::wstring::npos)
+            {
+                sValueString += ConvertPc(sValueTemp);
+
+                if (sValueTemp.find(L';') != std::wstring::npos)
+                    sValueString += L';';
+                else if (arValues.size() > 2 && sValueTemp.find(L':') == std::wstring::npos)
+                    sValueString += L' ';
+            }
+            else if (sValueTemp.find(L"em") != std::wstring::npos)
+            {
+                sValueString += ConvertEm(sValueTemp);
+
+                if (sValueTemp.find(L';') != std::wstring::npos)
+                    sValueString += L';';
+                else if (arValues.size() > 2 && sValueTemp.find(L':') == std::wstring::npos)
+                    sValueString += L' ';
+            }
+            else
+            {
+                const double& dValue = wcstod(sValueTemp.c_str(), NULL) * 4;
+
+                sValueString += std::to_wstring((int)floor(dValue + 0.5));
+
+                if (sValueTemp.find(L";") != std::wstring::npos)
+                    sValueString += L';';
+
+                break;
+            }
+
         }
+
         return sValueString;
     }
 
@@ -1775,12 +1744,24 @@ inline static std::string GetContentAsUTF8(const std::wstring& sFileName)
     return U_TO_UTF8(sUnicodeContent);
 }
 
-inline static bool GetFirstNumber(std::wstring sString)
+inline static bool ThereIsNumber(const std::wstring& sString)
 {
     if (sString.empty())
         return false;
 
-    return (sString.cend() != std::find_if(sString.begin(), sString.end(), ::iswdigit) ? true : false);
+    const auto& posDigit = sString.find_first_of(L"0123456789");
+    const auto& posNoDigit = sString.find_first_not_of(L" \n\r\t\f\v123456789");
+
+    if (posDigit == std::wstring::npos)
+        return false;
+
+    if (posDigit != std::wstring::npos && posNoDigit == std::wstring::npos)
+        return true;
+
+    if (posDigit != std::wstring::npos && posNoDigit != std::wstring::npos && posDigit < posNoDigit)
+        return true;
+
+    return false;
 }
 
 inline static void RemoveExcessFromStyles(std::wstring& sStyle)
@@ -1958,30 +1939,73 @@ inline static std::vector<std::string> GetSelectorsList(const std::wstring& sSel
 
 inline static std::vector<std::string> GetWords(const std::wstring& sLine)
 {
+    if (sLine.empty())
+        return {};
+
     std::vector<std::string> arWords;
-    std::wstring sTempWord;
+    std::string sTempWord = wstringToString(sLine);
 
-    for (const wchar_t& wc : sLine)
+    while (true)
     {
-        if (iswspace(wc))
-        {
-            const std::string& sTempStr = wstringToString(sTempWord);
-            if (std::find(arWords.begin(), arWords.end(), sTempStr) == arWords.cend())
-                arWords.push_back(sTempStr);
+        const auto& posFirstNotSpace = sTempWord.find_first_not_of(" \n\r\t\f\v:;");
+        const auto& posLastNotSpace = sTempWord.find_first_of(" \n\r\t\f\v", posFirstNotSpace);
+        const auto& posFirstSign = sTempWord.find_first_of(":;,", posFirstNotSpace);
 
-            sTempWord.clear();
+        if (posFirstNotSpace != std::wstring::npos && posFirstSign != std::wstring::npos)
+        {
+            arWords.push_back(sTempWord.substr(posFirstNotSpace, posFirstSign - posFirstNotSpace + 1));
+            sTempWord.erase(posFirstNotSpace, posFirstSign - posFirstNotSpace + 1);
         }
-        else if (wc != L'.' && wc != L'#')
-            sTempWord += wc;
+        else if (posFirstNotSpace != std::wstring::npos && posLastNotSpace != std::wstring::npos)
+        {
+            arWords.push_back(sTempWord.substr(posFirstNotSpace, posLastNotSpace - posFirstNotSpace));
+            sTempWord.erase(posFirstNotSpace, posLastNotSpace - posFirstNotSpace);
+        }
+        else if (posFirstNotSpace != std::wstring::npos && posLastNotSpace == std::wstring::npos)
+        {
+            arWords.push_back(sTempWord);
+            break;
+        }
+        else
+            break;
     }
 
-    if (!sTempWord.empty())
+    return arWords;
+}
+
+
+inline static std::vector<std::wstring> GetWordsW(const std::wstring& sLine)
+{
+    if (sLine.empty())
+        return {};
+
+    std::vector<std::wstring> arWords;
+    std::wstring sTempWord = sLine;
+
+    while (true)
     {
-        const std::string& sTempStr = wstringToString(sTempWord);
-        if (std::find(arWords.begin(), arWords.end(), sTempStr) == arWords.cend())
+        const auto& posFirstNotSpace = sTempWord.find_first_not_of(L" \n\r\t\f\v:;");
+        const auto& posLastNotSpace = sTempWord.find_first_of(L" \n\r\t\f\v", posFirstNotSpace);
+        const auto& posFirstSign = sTempWord.find_first_of(L":;,", posFirstNotSpace);
+
+        if (posFirstNotSpace != std::wstring::npos && posFirstSign != std::wstring::npos)
         {
-            arWords.push_back(sTempStr);
+            arWords.push_back(sTempWord.substr(posFirstNotSpace, posFirstSign - posFirstNotSpace + 1));
+            sTempWord.erase(posFirstNotSpace, posFirstSign - posFirstNotSpace + 1);
         }
+        else if (posFirstNotSpace != std::wstring::npos && posLastNotSpace != std::wstring::npos)
+        {
+            arWords.push_back(sTempWord.substr(posFirstNotSpace, posLastNotSpace - posFirstNotSpace));
+            sTempWord.erase(posFirstNotSpace, posLastNotSpace - posFirstNotSpace);
+        }
+        else if (posFirstNotSpace != std::wstring::npos && posLastNotSpace == std::wstring::npos)
+        {
+            arWords.push_back(sTempWord.substr(posFirstNotSpace));
+            break;
+        }
+        else
+            break;
     }
+
     return arWords;
 }

@@ -5,6 +5,42 @@
 #include <wchar.h>
 #include <math.h>
 
+inline static std::vector<std::wstring> GetWordsW(const std::wstring& sLine)
+{
+    if (sLine.empty())
+        return {};
+
+    std::vector<std::wstring> arWords;
+    std::wstring sTempWord = sLine;
+
+    while (true)
+    {
+        const auto& posFirstNotSpace = sTempWord.find_first_not_of(L" \n\r\t\f\v:;");
+        const auto& posLastNotSpace = sTempWord.find_first_of(L" \n\r\t\f\v", posFirstNotSpace);
+        const auto& posFirstSign = sTempWord.find_first_of(L":;,", posFirstNotSpace);
+
+        if (posFirstNotSpace != std::wstring::npos && posFirstSign != std::wstring::npos)
+        {
+            arWords.push_back(sTempWord.substr(posFirstNotSpace, posFirstSign - posFirstNotSpace + 1));
+            sTempWord.erase(posFirstNotSpace, posFirstSign - posFirstNotSpace + 1);
+        }
+        else if (posFirstNotSpace != std::wstring::npos && posLastNotSpace != std::wstring::npos)
+        {
+            arWords.push_back(sTempWord.substr(posFirstNotSpace, posLastNotSpace - posFirstNotSpace));
+            sTempWord.erase(posFirstNotSpace, posLastNotSpace - posFirstNotSpace);
+        }
+        else if (posFirstNotSpace != std::wstring::npos && posLastNotSpace == std::wstring::npos)
+        {
+            arWords.push_back(sTempWord.substr(posFirstNotSpace));
+            break;
+        }
+        else
+            break;
+    }
+
+    return arWords;
+}
+
 namespace NSCSS
 {
     CDocumentStyle::CDocumentStyle(): m_arStandardStyles({L"a",         L"li",
@@ -328,13 +364,78 @@ namespace NSCSS
 
         oXmlElement.SetShd(oStyle.GetBackgroundColor());
 
-        if (!oStyle.GetBorder().empty())
+//        if (!oStyle.GetBorder().empty() &&  oStyle.GetBorder() != L"none")
         {
-            oXmlElement.SetTopBorder(L"true");
-            oXmlElement.SetLeftBorder(L"true");
-            oXmlElement.SetBottomBorder(L"true");
-            oXmlElement.SetRightBorder(L"true");
+            const std::wstring& sBorderColor = oStyle.GetBorderColor();
+            const std::wstring& sBorderStyle = oStyle.GetBorderStyle();
+
+            const double& dValue = wcstod(oStyle.GetBorderWidth().c_str(), NULL) * 5;
+            const std::wstring& sBorderWidth = std::to_wstring((int)floor(dValue + 0.5));
+
+            const std::wstring& sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
+                                                           sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
+
+
+            if (sBorderColor.empty() + sBorderWidth.empty() + sBorderStyle.empty() == 0)
+            {
+                oXmlElement.SetTopBorder(sBorder);
+                oXmlElement.SetLeftBorder(sBorder);
+                oXmlElement.SetBottomBorder(sBorder);
+                oXmlElement.SetRightBorder(sBorder);
+                return;
+            }
         }
+//        else
+        {
+            const std::wstring& sBorderTopColor = oStyle.GetBorderTopColor();
+            const std::wstring& sBorderTopStyle = oStyle.GetBorderTopStyle();
+
+            const double& dValueTop = wcstod(oStyle.GetBorderTopWidth().c_str(), NULL) * 5;
+            const std::wstring& sBorderTopWidth = std::to_wstring((int)floor(dValueTop + 0.5));
+
+            const std::wstring& sBorderTop = L" w:color=\"" + sBorderTopColor + L"\" w:space=\"4\" w:sz=\"" +
+                                                             sBorderTopWidth + L"\" w:val=\"" + sBorderTopStyle + L"\"";
+
+            if (sBorderTopColor.empty() + sBorderTopWidth.empty() + sBorderTopStyle.empty() == 0)
+                oXmlElement.SetTopBorder(sBorderTop);
+
+            const std::wstring& sBorderLeftColor = oStyle.GetBorderLeftColor();
+            const std::wstring& sBorderLeftStyle = oStyle.GetBorderLeftStyle();
+
+            const double& dValueLeft = wcstod(oStyle.GetBorderLeftWidth().c_str(), NULL) * 5;
+            const std::wstring& sBorderLeftWidth = std::to_wstring((int)floor(dValueLeft + 0.5));
+
+            const std::wstring& sBorderLeft = L" w:color=\"" + sBorderLeftColor + L"\" w:space=\"4\" w:sz=\"" +
+                                                              sBorderLeftWidth + L"\" w:val=\"" + sBorderLeftStyle + L"\"";
+
+            if (sBorderLeftColor.empty() + sBorderLeftWidth.empty() + sBorderLeftStyle.empty() == 0)
+                oXmlElement.SetLeftBorder(sBorderLeft);
+
+            const std::wstring& sBorderBottomColor = oStyle.GetBorderBottomColor();
+            const std::wstring& sBorderBottomStyle = oStyle.GetBorderBottomStyle();
+
+            const double& dValueBottom = wcstod(oStyle.GetBorderBottomWidth().c_str(), NULL) * 5;
+            const std::wstring& sBorderBottomWidth = std::to_wstring((int)floor(dValueBottom + 0.5));
+
+            const std::wstring& sBorderBottom = L" w:color=\"" + sBorderBottomColor + L"\" w:space=\"4\" w:sz=\"" +
+                                                                 sBorderBottomWidth + L"\" w:val=\"" + sBorderBottomStyle + L"\"";
+
+            if (sBorderBottomColor.empty() + sBorderBottomWidth.empty() + sBorderBottomStyle.empty() == 0)
+                oXmlElement.SetBottomBorder(sBorderBottom);
+
+            const std::wstring& sBorderRightColor = oStyle.GetBorderRightColor();
+            const std::wstring& sBorderRightStyle = oStyle.GetBorderRightStyle();
+
+            const double& dValueRight = wcstod(oStyle.GetBorderRightWidth().c_str(), NULL) * 5;
+            const std::wstring& sBorderRightWidth = std::to_wstring((int)floor(dValueRight + 0.5));
+
+            const std::wstring& sBorderRight = L" w:color=\"" + sBorderRightColor + L"\" w:space=\"4\" w:sz=\"" +
+                                                                sBorderRightWidth + L"\" w:val=\"" + sBorderRightStyle + L"\"";
+
+            if (sBorderRightColor.empty() + sBorderRightWidth.empty() + sBorderRightStyle.empty() == 0)
+                oXmlElement.SetRightBorder(sBorderRight);
+        }
+
     }
 
     void CDocumentStyle::SetRStyle(const NSCSS::CCompiledStyle &oStyle, CXmlElement& oXmlElement)
@@ -352,6 +453,7 @@ namespace NSCSS
 
             double dValue = wcstod(sFontSize.c_str(), NULL);
             dValue *= 2;
+
             oXmlElement.SetSz(std::to_wstring((int)dValue));
         }
         if (!oStyle.GetFontFamily().empty())

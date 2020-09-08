@@ -49,7 +49,7 @@ namespace NSCSS
         std::vector<std::wstring> GetSelectorList(KatanaArray* oSelectors) const;
         std::wstring GetSelector(KatanaSelector* oSelector) const;
 
-        std::vector<std::pair<std::wstring, std::wstring>> GetDeclarationList(KatanaArray* oDeclarations) const;
+        std::map<std::wstring, std::wstring> GetDeclarationList(KatanaArray* oDeclarations) const;
         std::pair<std::wstring, std::wstring> GetDeclaration(KatanaDeclaration* oDecl) const;
 
         std::wstring ConvertUnitMeasure(const std::wstring& sValue) const;
@@ -106,7 +106,7 @@ namespace NSCSS
         CCssCalculator_Private();
         ~CCssCalculator_Private();
 
-        std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> GetDeclarations(const std::wstring& sSelector) const;
+        std::map<std::wstring, std::map<std::wstring, std::wstring>> GetDeclarations(const std::wstring& sSelector) const;
 
         CCompiledStyle GetCompiledStyle(const std::vector<std::string>& arSelectors, const UnitMeasure& unitMeasure = Default);
         CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors, const UnitMeasure& unitMeasure = Default);

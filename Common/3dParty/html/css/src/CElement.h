@@ -3,12 +3,13 @@
 
 #include <vector>
 #include <string>
+#include <map>
 
 class CElement
 {
     std::vector<CElement*> m_arChildrens;
     std::vector<std::wstring> m_arSelectors;
-    std::vector<std::pair<std::wstring, std::wstring>> m_arDeclarations;
+    std::map<std::wstring, std::wstring> m_arDeclarations;
 public:
     CElement();
     ~CElement();
@@ -17,9 +18,9 @@ public:
     void AddSelectors(const std::vector<std::wstring>& arSelectors);
     void AddChildren(CElement* oChildren);
     void AddDeclaration(const std::pair<std::wstring, std::wstring>& pDeclaration);
-    void AddDeclarations(const std::vector<std::pair<std::wstring, std::wstring>>& arDeclarations);
+    void AddDeclarations(const std::map<std::wstring, std::wstring>& arDeclarations);
 
-    void SetDeclaratins(const std::vector<std::pair<std::wstring, std::wstring>>& arDeclarations);
+    void SetDeclaratins(const std::map<std::wstring, std::wstring>& arDeclarations);
 
     int GetCountSelectors() const;
     int GetCountDeclarations() const;
@@ -28,12 +29,9 @@ public:
     bool FindSelector(const std::wstring& sSelector) const;
 
     std::vector<std::wstring> GetSelectors() const;
-    std::vector<std::pair<std::wstring, std::wstring>> GetDeclarations() const;
-    std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> GetDeclarations(const std::wstring& sSelector,
-                                                                                                             const std::vector<std::wstring>& arParents) const;
-
+    std::map<std::wstring, std::wstring> GetDeclarations() const;
+    std::map<std::wstring, std::map<std::wstring, std::wstring>> GetDeclarations(const std::wstring& sSelector, const std::vector<std::wstring>& arParents) const;
     std::vector<CElement*> GetChildrens() const;
-
     std::wstring GetText() const;
 
     CElement& operator= (const CElement& oElement);

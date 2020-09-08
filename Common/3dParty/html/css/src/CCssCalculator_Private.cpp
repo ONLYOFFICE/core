@@ -169,7 +169,7 @@ namespace NSCSS
 
     inline CElement* CCssCalculator_Private::GetStyleRule(KatanaStyleRule *oRule, CElement *oElementRule)
     {
-        std::vector<std::pair<std::wstring, std::wstring>> arDeclarations;
+        std::map<std::wstring, std::wstring> arDeclarations;
 
         if (oRule->declarations->length)
             arDeclarations = GetDeclarationList(oRule->declarations);
@@ -227,13 +227,11 @@ namespace NSCSS
         return sText;
     }
 
-    inline std::vector<std::pair<std::wstring, std::wstring>> CCssCalculator_Private::GetDeclarationList(KatanaArray* oDeclarations) const
+    inline std::map<std::wstring, std::wstring> CCssCalculator_Private::GetDeclarationList(KatanaArray* oDeclarations) const
     {
-        std::vector<std::pair<std::wstring, std::wstring>> arDeclarations;
-
+        std::map<std::wstring, std::wstring> arDeclarations;
         for (size_t i = 0; i < oDeclarations->length; ++i)
-            arDeclarations.push_back(GetDeclaration((KatanaDeclaration*)oDeclarations->data[i]));
-
+            arDeclarations.insert(GetDeclaration((KatanaDeclaration*)oDeclarations->data[i]));
         return arDeclarations;
     }
 
@@ -405,16 +403,16 @@ namespace NSCSS
         return sText;
     }
 
-    inline std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> CCssCalculator_Private::GetDeclarations(const std::wstring& sSelector) const
+    inline std::map<std::wstring, std::map<std::wstring, std::wstring>> CCssCalculator_Private::GetDeclarations(const std::wstring& sSelector) const
     {
-        std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> arDeclarations;
+        std::map<std::wstring, std::map<std::wstring, std::wstring>> arDeclarations;
 
         for (const CElement* oElement : m_arData )
         {
             if (oElement->FindSelector(sSelector))
             {
-                const std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> _decl = oElement->GetDeclarations(sSelector, {});
-                arDeclarations.insert(arDeclarations.end(), _decl.begin(), _decl.end());
+                const std::map<std::wstring, std::map<std::wstring, std::wstring>> _decl = oElement->GetDeclarations(sSelector, {});
+                arDeclarations.insert(_decl.begin(), _decl.end());
             }
         }
         return arDeclarations;
@@ -563,12 +561,12 @@ namespace NSCSS
 
         std::map<std::wstring, std::wstring> mStyle;
 
-        std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> arStyle;
+        std::map<std::wstring, std::map<std::wstring, std::wstring>> arStyle;
     //                        selector      declarations
 
         std::map<std::wstring, std::wstring> arPropSel; //мапа (свойство, что уже было использовано, селектор этого свойства)
 
-        std::vector<std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>> arTempDecls;
+        std::map<std::wstring, std::map<std::wstring, std::wstring>> arTempDecls;
 
         arTempDecls = GetDeclarations(L"*");
         arStyle = arTempDecls;
@@ -580,14 +578,14 @@ namespace NSCSS
 
             arTempDecls = GetDeclarations(sSelector);
 
-            arStyle.insert(arStyle.end(), arTempDecls.begin(), arTempDecls.end());
+            arStyle.insert(arTempDecls.begin(), arTempDecls.end());
         }
 
-        for (const std::pair<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>& pValue : arStyle)
+        for (const auto& pValue : arStyle)
         {
-            for (std::pair<std::wstring, std::wstring> pDeclaration : pValue.second)
+            for (const auto& pDeclaration : pValue.second)
             {
-                arPropSel.emplace(pDeclaration.first, pValue.first);
+                arPropSel[pDeclaration.first] = pValue.first;
 
                 if (mStyle.find(pDeclaration.first) == mStyle.cend())
                 {
@@ -606,7 +604,7 @@ namespace NSCSS
                             sValue = sValue.substr(posLattice, (posSpace - 1));
                     }
 
-                    mStyle.emplace(pDeclaration.first, sValue);
+                    mStyle[pDeclaration.first] = sValue;
                 }
                 else
                 {

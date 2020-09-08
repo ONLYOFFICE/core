@@ -1,6 +1,7 @@
 #include "CElement.h"
 #include <iostream>
 #include <algorithm>
+#include <cwctype>
 
 CElement::CElement() {}
 
@@ -14,6 +15,7 @@ CElement::~CElement()
     m_arDeclarations.clear();
 }
 
+/*
 std::wstring CElement::GetText() const
 {
     std::wstring sText;
@@ -42,6 +44,7 @@ std::wstring CElement::GetText() const
         sText += L";\n";
     return sText;
 }
+*/
 
 void CElement::AddChildren(CElement *oChildren)
 {
@@ -50,23 +53,17 @@ void CElement::AddChildren(CElement *oChildren)
 
 void CElement::AddSelector(const std::wstring& sSelector)
 {
-    if (sSelector.find(L' ') != std::wstring::npos)
-    {
-        std::wstring sTempSelector;
-        for (const wchar_t& wc : sSelector)
-            if (!iswspace(wc))
-                sTempSelector += wc;
-
-        m_arSelectors.push_back(sTempSelector);
-    }
-    else
-        m_arSelectors.push_back(sSelector);
+    std::wstring sTemp(sSelector);
+    sTemp.erase(std::remove_if(sTemp.begin(), sTemp.end(), [] (wchar_t ch) { return std::iswspace(ch); }), sTemp.end());
+    m_arSelectors.push_back(sTemp);
 }
 
+/*
 void CElement::AddDeclaration(const std::pair<std::wstring, std::wstring>& pDeclaration)
 {
     m_arDeclarations.insert(pDeclaration);
 }
+*/
 
 void CElement::AddSelectors(const std::vector<std::wstring>& arSelectors)
 {
@@ -78,10 +75,12 @@ void CElement::AddDeclarations(const std::map<std::wstring, std::wstring>& arDec
     m_arDeclarations.insert(arDeclarations.begin(), arDeclarations.end());
 }
 
+/*
 void CElement::SetDeclaratins(const std::map<std::wstring, std::wstring>& arDeclarations)
 {
     m_arDeclarations = arDeclarations;
 }
+*/
 
 int CElement::GetCountSelectors() const
 {
@@ -93,25 +92,19 @@ int CElement::GetCountDeclarations() const
     return m_arDeclarations.size();
 }
 
+/*
 int CElement::GetCountChildrens() const
 {
     return m_arChildrens.size();
 }
+*/
 
 bool CElement::FindSelector(const std::wstring& sSelector) const
 {
-    if (m_arSelectors.size() == 0)
-        return false;
-
-    if (m_arSelectors[0] == sSelector)
-        return true;
-
-    if (std::find(m_arSelectors.begin(), m_arSelectors.end(), sSelector) != m_arSelectors.cend())
-        return true;
-
-    return false;
+    return std::find(m_arSelectors.begin(), m_arSelectors.end(), sSelector) != m_arSelectors.cend();
 }
 
+/*
 std::vector<std::wstring> CElement::GetSelectors() const
 {
     return m_arSelectors;
@@ -121,55 +114,49 @@ std::map<std::wstring, std::wstring> CElement::GetDeclarations() const
 {
     return m_arDeclarations;
 }
+*/
 
 std::map<std::wstring, std::map<std::wstring, std::wstring>> CElement::GetDeclarations(const std::wstring& sSelector, const std::vector<std::wstring>& arParents) const
 {
     std::map<std::wstring, std::map<std::wstring, std::wstring>> arElement;
 
-    for (const std::wstring& sValueSelector : m_arSelectors)
+    if(std::find(m_arSelectors.begin(), m_arSelectors.end(), sSelector) != m_arSelectors.end())
     {
-        if (sValueSelector == sSelector)
-        {
-            std::wstring sTempSelectors;
-            for (const std::wstring& sParent : arParents)
-                sTempSelectors += sParent;
-            sTempSelectors = sTempSelectors.empty() ? sSelector : sTempSelectors + L" -> " + sSelector;
-            arElement.insert(std::make_pair(sTempSelectors, m_arDeclarations));
-        }
+        std::wstring sTempSelectors;
+        for (const std::wstring& sParent : arParents)
+            sTempSelectors += sParent;
+        sTempSelectors = sTempSelectors.empty() ? sSelector : sTempSelectors + L" -> " + sSelector;
+        arElement.insert(std::make_pair(sTempSelectors, m_arDeclarations));
     }
     for (const CElement* oElement : m_arChildrens)
     {
-        const std::vector<std::wstring>& sSelectors = oElement->GetSelectors();
-
+        const std::vector<std::wstring>& sSelectors = oElement->m_arSelectors;
         if (std::find(sSelectors.begin(), sSelectors.end(), sSelector) != sSelectors.cend())
         {
-            const std::map<std::wstring, std::map<std::wstring, std::wstring>>& TempArElement = oElement->GetDeclarations(sSelector, GetSelectors());
+            const std::map<std::wstring, std::map<std::wstring, std::wstring>>& TempArElement = oElement->GetDeclarations(sSelector, m_arSelectors);
             arElement.insert(TempArElement.begin(), TempArElement.end());
         }
     }
     return arElement;
 }
 
+/*
 std::vector<CElement*> CElement::GetChildrens() const
 {
     return m_arChildrens;
 }
+*/
 
 CElement& CElement::operator= (const CElement &oElement)
 {
     m_arChildrens.clear();
-//    m_arSelectors.clear();
-//    m_arDeclarations.clear();
-
     m_arSelectors = oElement.m_arSelectors;
     m_arDeclarations = oElement.m_arDeclarations;
-
     for (const CElement *oChildren : oElement.m_arChildrens)
     {
         CElement *oTempChildren = new CElement();
         *oTempChildren = *oChildren;
         m_arChildrens.push_back(oTempChildren);
     }
-
     return *this;
 }

@@ -541,6 +541,7 @@ namespace NSCSS
         return GetWeightSelector(wstringToString(sSelector));
     }
 
+    /*
     void CCssCalculator_Private::Print() const
     {
         std::wcout << m_arData.size() << std::endl;
@@ -548,6 +549,7 @@ namespace NSCSS
         for (const CElement* oElement : m_arData)
             std::wcout << oElement->GetText() << std::endl;
     }
+    */
 
     inline std::wstring CCssCalculator_Private::GetValueList(KatanaArray *oValues)
     {

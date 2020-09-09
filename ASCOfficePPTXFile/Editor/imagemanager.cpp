@@ -196,11 +196,12 @@ namespace NSShapeImageGen
 		bool result = false;
 		CImageFileFormatChecker checker;
 
-		std::wstring strFileSrc = strFileName;
 		std::wstring sTempUnpacked;
+		std::wstring strFileSrc = strFileName;
 
 		COfficeUtils officeUtils(NULL);
-		if (officeUtils.IsArchive(strFileSrc))
+		
+		while (officeUtils.IsArchive(strFileSrc))
 		{
 			sTempUnpacked = m_strTempMedia + FILE_SEPARATOR_STR + L"zip_unpacked";	   
 			NSDirectory::CreateDirectory(sTempUnpacked);
@@ -214,14 +215,14 @@ namespace NSShapeImageGen
 				}
 			}
 			else
-			{//deflate				
+			{//gzip	
 				BYTE *pData = NULL;
 				DWORD nBytesCount = 0;
 
 				NSFile::CFileBinary file;
 				if (file.ReadAllBytes(strFileSrc, &pData, nBytesCount))
 				{
-					ULONG nBytesUncompress = nBytesCount * 3;
+					ULONG nBytesUncompress = nBytesCount * 10;
 					BYTE* pDataUncompress = new BYTE[nBytesUncompress];
 					if (S_OK == officeUtils.Uncompress(pDataUncompress, &nBytesUncompress, pData, nBytesCount))
 					{

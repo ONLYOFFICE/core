@@ -1889,7 +1889,7 @@ inline std::wstring DeleteSpace(const std::wstring& sValue)
     return sValue.substr(start, end - start + 1);
 }
 
-inline static std::vector<std::string> GetSelectorsList(const std::wstring& sSelectors)
+inline std::vector<std::string> GetSelectorsList(const std::wstring& sSelectors)
 {
     std::wstring sNames = sSelectors;
     std::wstring sClasses;
@@ -1937,7 +1937,7 @@ inline static std::vector<std::string> GetSelectorsList(const std::wstring& sSel
     return arSelectors;
 }
 
-inline static std::vector<std::string> GetWords(const std::wstring& sLine)
+inline std::vector<std::string> GetWords(const std::wstring& sLine)
 {
     if (sLine.empty())
         return {};
@@ -1974,7 +1974,7 @@ inline static std::vector<std::string> GetWords(const std::wstring& sLine)
 }
 
 
-inline static std::vector<std::wstring> GetWordsW(const std::wstring& sLine)
+inline std::vector<std::wstring> GetWordsW(const std::wstring& sLine)
 {
     if (sLine.empty())
         return {};

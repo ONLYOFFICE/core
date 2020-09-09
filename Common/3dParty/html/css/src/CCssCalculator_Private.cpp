@@ -846,7 +846,7 @@ namespace NSCSS
 
             if (posPercent != std::wstring::npos)
             {
-                const double& dValue = wcstod(sValueTemp.substr(0, posPercent).c_str(), NULL) / 100 * 22;
+                const double& dValue = wcstod(sValueTemp.substr(0, posPercent).c_str(), NULL) / 100 * 24;
 
                 sValueString += std::to_wstring((int)floor(dValue + 0.5));
 
@@ -918,7 +918,7 @@ namespace NSCSS
             }
             else
             {
-                const double& dValue = wcstod(sValueTemp.c_str(), NULL) * 4;
+                const double& dValue = wcstod(sValueTemp.c_str(), NULL) * 24;
 
                 sValueString += std::to_wstring((int)floor(dValue + 0.5));
 
@@ -940,7 +940,7 @@ namespace NSCSS
             return L"";
 
         const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"px") - 1);
-        const double& dValue = wcstod(sConvertValue.c_str(), NULL);
+        const double& dValue = wcstod(sConvertValue.c_str(), NULL) * 2;
 
         switch (m_UnitMeasure)
         {
@@ -1039,7 +1039,7 @@ namespace NSCSS
             return L"";
 
         const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"cm") - 1);
-        const double& dValue = wcstod(sConvertValue.c_str(), NULL);
+        const double& dValue = wcstod(sConvertValue.c_str(), NULL) * 2;
 
         switch (m_UnitMeasure)
         {
@@ -1139,7 +1139,7 @@ namespace NSCSS
             return L"";
 
         const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"mm") - 1);
-        const double& dValue = wcstod(sConvertValue.c_str(), NULL);
+        const double& dValue = wcstod(sConvertValue.c_str(), NULL) * 2;
 
         switch (m_UnitMeasure)
         {
@@ -1234,7 +1234,7 @@ namespace NSCSS
             return L"";
 
         const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"in") - 1);
-        const double& dValue = wcstod(sConvertValue.c_str(), NULL);
+        const double& dValue = wcstod(sConvertValue.c_str(), NULL) * 2;
 
         switch (m_UnitMeasure)
         {
@@ -1328,7 +1328,7 @@ namespace NSCSS
             return L"";
 
         const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"pt") - 1);
-        const double& dValue = wcstod(sConvertValue.c_str(), NULL);
+        const double& dValue = wcstod(sConvertValue.c_str(), NULL) * 2;
 
         switch (m_UnitMeasure)
         {
@@ -1419,7 +1419,7 @@ namespace NSCSS
             return L"";
 
         const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"pc") - 1);
-        const double& dValue = wcstod(sConvertValue.c_str(), NULL);
+        const double& dValue = wcstod(sConvertValue.c_str(), NULL) * 2;
 
         switch (m_UnitMeasure)
         {
@@ -1509,11 +1509,10 @@ namespace NSCSS
     {
         if (sValue.empty())
             return L"";
-
         const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"em") - 1);
         double dValue = wcstod(sConvertValue.c_str(), NULL);
 
-        dValue *= 12;
+        dValue *= 24;
 
         return std::to_wstring((int)floor(dValue + 0.5));
     }
@@ -1651,12 +1650,13 @@ inline static std::wstring StringifyValue(KatanaValue* oValue)
         }
         case KATANA_VALUE_PARSER_OPERATOR:
             str = L" ";
-            if (oValue->iValue != '=') {
+            if (oValue->iValue != '=')
+            {
                 str.push_back((wchar_t)static_cast<char>(oValue->iValue));
                 str += L" ";
-            } else {
-                str.push_back((wchar_t)static_cast<char>(oValue->iValue));
             }
+            else
+                str.push_back((wchar_t)static_cast<char>(oValue->iValue));
             break;
         case KATANA_VALUE_PARSER_LIST:
             return StringifyValueList(oValue->list);
@@ -1686,10 +1686,10 @@ inline static std::string wstringToString(const std::wstring& sWstring)
 
 inline static std::string GetContentAsUTF8(const std::string &sString, const std::wstring &sEncoding)
 {
-    std::string sEnc = U_TO_UTF8(sEncoding);
+    const std::string& sEnc = U_TO_UTF8(sEncoding);
 
     NSUnicodeConverter::CUnicodeConverter oConverter;
-    std::wstring sUnicodeContent = oConverter.toUnicode(sString, sEnc.c_str());
+    const std::wstring& sUnicodeContent = oConverter.toUnicode(sString, sEnc.c_str());
     return U_TO_UTF8(sUnicodeContent);
 }
 
@@ -1750,7 +1750,7 @@ inline static bool ThereIsNumber(const std::wstring& sString)
         return false;
 
     const auto& posDigit = sString.find_first_of(L"0123456789");
-    const auto& posNoDigit = sString.find_first_not_of(L" \n\r\t\f\v123456789");
+    const auto& posNoDigit = sString.find_first_not_of(L" \n\r\t\f\v123456789.");
 
     if (posDigit == std::wstring::npos)
         return false;
@@ -1758,7 +1758,7 @@ inline static bool ThereIsNumber(const std::wstring& sString)
     if (posDigit != std::wstring::npos && posNoDigit == std::wstring::npos)
         return true;
 
-    if (posDigit != std::wstring::npos && posNoDigit != std::wstring::npos && posDigit < posNoDigit)
+    if ((posDigit != std::wstring::npos && posNoDigit != std::wstring::npos && posDigit < posNoDigit) || (posDigit == 0  && posNoDigit == 0))
         return true;
 
     return false;
@@ -1790,17 +1790,11 @@ inline static void RemoveExcessFromStyles(std::wstring& sStyle)
             else if (posRightAngleBracket != std::wstring::npos)
                 sStyle.erase(posRightAngleBracket, 1);
             else if (posDog != std::wstring::npos)
-            {
                 sStyle.erase(posDog, 1);
-            }
             else if (posLeftComment != std::wstring::npos)
-            {
                 sStyle.erase(posLeftComment, 4);
-            }
             else if (posRightComment != std::wstring::npos)
-            {
                 sStyle.erase(posRightComment, 3);
-            }
         }
         else
             break;
@@ -1897,6 +1891,7 @@ inline std::vector<std::string> GetSelectorsList(const std::wstring& sSelectors)
 
     size_t posLattice = sNames.find(L"#");
     size_t posPoint = sNames.find(L'.');
+
     if (posLattice != std::wstring::npos)
     {
         sNames = sSelectors.substr(0, posLattice);

@@ -194,60 +194,28 @@ namespace NSCSS
 
     void CCompiledStyle::AddStyle(const std::wstring& sStyle)
     {
-        size_t nPosition = 0;
-        size_t posColon = sStyle.find(L':', nPosition);
+        std::wstring sTempStyle = sStyle;
 
-        while(nPosition != std::wstring::npos)
+        std::wstring sTempProperty;
+        std::wstring sValue;
+
+        while (!sTempStyle.empty())
         {
-            std::wstring sProperty;
-            if(posColon != std::wstring::npos)
+            const auto& posColon = sTempStyle.find(L':');
+            const auto& posSemicolon = sTempStyle.find(L';', posColon);
+
+            if (posColon != std::wstring::npos && posSemicolon != std::wstring::npos)
             {
-                sProperty = sStyle.substr(nPosition, posColon - nPosition);
-                sProperty.erase(std::remove_if(sProperty.begin(), sProperty.end(), [] (const wchar_t& ch) { return std::iswspace(ch); }), sProperty.end());
+                AddPropSel(sTempStyle.substr(0, posColon), sTempStyle.substr(posColon + 1, posSemicolon - posColon - 1));
+                sTempStyle.erase(0, posSemicolon + 1);
             }
-            else
-                break;
-
-            nPosition = sStyle.find(L';', ++posColon);
-
-            std::wstring sValue;
-
-            if(nPosition != std::wstring::npos)
-                sValue = sStyle.substr(posColon, nPosition - posColon);
             else if (posColon != std::wstring::npos)
             {
-                sProperty = sStyle.substr(0, posColon - 1);
-                sValue = sStyle.substr(posColon);
-
-                if (!sValue.empty())
-                {
-                    AddPropSel(sProperty, sValue);
-                    break;
-                }
-            }
-            else
+                AddPropSel(sTempStyle.substr(0, posColon), sTempStyle.substr(posColon + 1));
                 break;
-
-            if(!sProperty.empty() && !sValue.empty())
-            {
-                const size_t& posExclamation = sValue.find(L'!');
-
-                if (posExclamation != std::wstring::npos)
-                    sValue.erase(posExclamation - 1);
-
-                const size_t& posSemicolon = sValue.find(L';');
-
-                if (posSemicolon != std::wstring::npos)
-                    sValue.erase(posSemicolon);
-
-                const size_t& posColon = sValue.find(L':');
-
-                if (posColon != std::wstring::npos)
-                    sValue.erase(posColon);
-
-                AddPropSel(sProperty, sValue);
             }
-            posColon = sStyle.find(L':', ++nPosition);
+            if (posColon == std::wstring::npos && posSemicolon == std::wstring::npos)
+                break;
         }
     }
 

@@ -318,15 +318,15 @@ namespace NSCSS
 
         std::wstring sIndValue;
         if (!oStyle.GetTextIndent().empty() && oStyle.GetId().find(L"table") == std::wstring::npos)
-            sIndValue += L"w:firstLine=\"" + oStyle.GetTextIndent() + L"\" ";
+        {
+            const double& dFirstLineValue = wcstod(oStyle.GetTextIndent().c_str(), NULL) * 20;
+            sIndValue += L"w:firstLine=\"" +std::to_wstring((int)floor(dFirstLineValue + 0.5)) + L"\" ";
+        }
 
         if (!oStyle.GetMargin().empty())
         {
-            double dLeftValue = wcstod(oStyle.GetMarginLeft().c_str(), NULL);
-            dLeftValue = dLeftValue * 1440 / 72;
-
-            double dRightValue = wcstod(oStyle.GetMarginRight().c_str(), NULL);
-            dRightValue = dRightValue * 1440 / 72;
+            const double& dLeftValue = wcstod(oStyle.GetMarginLeft().c_str(), NULL) * 1440 / 72;
+            const double& dRightValue = wcstod(oStyle.GetMarginRight().c_str(), NULL) * 1440 / 72;
 
             sIndValue += L"w:left=\"" + std::to_wstring((int)floor(dLeftValue + 0.5)) + L"\" ";
             sIndValue += L"w:right=\"" + std::to_wstring((int)floor(dRightValue + 0.5)) + L"\"";
@@ -338,11 +338,8 @@ namespace NSCSS
 
         if (!oStyle.GetMargin().empty())
         {
-            double dAfterValue = wcstod(oStyle.GetMarginTop().c_str(), NULL);
-            dAfterValue *= 10;
-
-            double dBeforeValue = wcstod(oStyle.GetMarginBottom().c_str(), NULL);
-            dBeforeValue *= 10;
+            const double& dAfterValue = wcstod(oStyle.GetMarginTop().c_str(), NULL);
+            const double& dBeforeValue = wcstod(oStyle.GetMarginBottom().c_str(), NULL);
 
             sSpacingValue += L"w:after=\"" + std::to_wstring((int)floor(dAfterValue + 0.5)) + L"\" ";
             sSpacingValue += L"w:before=\"" + std::to_wstring((int)floor(dBeforeValue + 0.5)) + L"\" ";
@@ -446,6 +443,7 @@ namespace NSCSS
             return;
 
         oXmlElement.SetColor(oStyle.GetColor());
+        oXmlElement.SetShd(oStyle.GetBackgroundColor());
 
         if (!oStyle.GetFontSize().empty())
         {

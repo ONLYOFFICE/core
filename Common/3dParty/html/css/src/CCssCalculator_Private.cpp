@@ -1513,7 +1513,7 @@ namespace NSCSS
         const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"em") - 1);
         double dValue = wcstod(sConvertValue.c_str(), NULL);
 
-        dValue *= 11;
+        dValue *= 12;
 
         return std::to_wstring((int)floor(dValue + 0.5));
     }

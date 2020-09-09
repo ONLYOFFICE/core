@@ -911,6 +911,9 @@ std::wstring CXmlElement::ConvertRStyle() const
         if (!m_sColor.empty())
             sRPr += L"<w:color w:val=\"" + m_sColor + L"\"/>";
 
+        if (!m_sShd.empty())
+            sRPr += L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" + m_sShd + L"\"/>";
+
         if (!m_sU.empty())
             sRPr += L"<w:u w:val=\"" + m_sU + L"\"/>";
 

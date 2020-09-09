@@ -195,39 +195,59 @@ namespace NSCSS
     void CCompiledStyle::AddStyle(const std::wstring& sStyle)
     {
         size_t nPosition = 0;
-        size_t nColon = sStyle.find(L':', nPosition);
+        size_t posColon = sStyle.find(L':', nPosition);
+
         while(nPosition != std::wstring::npos)
         {
             std::wstring sProperty;
-            if(nColon != std::wstring::npos)
+            if(posColon != std::wstring::npos)
             {
-                sProperty = sStyle.substr(nPosition, nColon - nPosition);
-                sProperty.erase(std::remove_if(sProperty.begin(), sProperty.end(), [] (wchar_t ch) { return std::iswspace(ch); }), sProperty.end());
+                sProperty = sStyle.substr(nPosition, posColon - nPosition);
+                sProperty.erase(std::remove_if(sProperty.begin(), sProperty.end(), [] (const wchar_t& ch) { return std::iswspace(ch); }), sProperty.end());
             }
             else
                 break;
 
-            nPosition = sStyle.find(L';', ++nColon);
+            nPosition = sStyle.find(L';', ++posColon);
+
             std::wstring sValue;
+
             if(nPosition != std::wstring::npos)
-                sValue = sStyle.substr(nColon, nPosition - nColon);
+                sValue = sStyle.substr(posColon, nPosition - posColon);
+            else if (posColon != std::wstring::npos)
+            {
+                sProperty = sStyle.substr(0, posColon - 1);
+                sValue = sStyle.substr(posColon);
+
+                if (!sValue.empty())
+                {
+                    AddPropSel(sProperty, sValue);
+                    break;
+                }
+            }
             else
                 break;
 
             if(!sProperty.empty() && !sValue.empty())
             {
-                size_t posExclamation = sValue.find(L'!');
+                const size_t& posExclamation = sValue.find(L'!');
+
                 if (posExclamation != std::wstring::npos)
                     sValue.erase(posExclamation - 1);
-                size_t posSemicolon = sValue.find(L';');
+
+                const size_t& posSemicolon = sValue.find(L';');
+
                 if (posSemicolon != std::wstring::npos)
                     sValue.erase(posSemicolon);
-                size_t posColon = sValue.find(L':');
+
+                const size_t& posColon = sValue.find(L':');
+
                 if (posColon != std::wstring::npos)
                     sValue.erase(posColon);
+
                 AddPropSel(sProperty, sValue);
             }
-            nColon = sStyle.find(L':', ++nPosition);
+            posColon = sStyle.find(L':', ++nPosition);
         }
     }
 
@@ -1154,17 +1174,28 @@ namespace NSCSS
                 return oBackgroundColor->second;
 
             const std::wstring& sBackground = GetBackground();
-            const auto& posLattice = sBackground.find(L'#');
 
-            if (!sBackground.empty() && posLattice != std::wstring::npos)
+            if (sBackground.empty())
+                return L"";
+
+            const std::vector<std::wstring>& arWords = GetWordsW(sBackground);
+
+            for (std::wstring sColor : arWords)
             {
-                const auto& posSpace = sBackground.find(L' ', posLattice);
+                if (sColor[0] == L'#')
+                {
+                    if (sColor.length() < 7)
+                        sColor += L"000000";
+                    return sColor.substr(1, 6);
+                }
+                std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
 
-                if (posSpace != std::wstring::npos)
-                    return sBackground.substr(posLattice, posSpace);
-                else
-                    return sBackground.substr(posLattice);
+                const auto& oHEX = NS_CONST_VALUES::mColors.find(sColor);
+
+                if (oHEX != NS_CONST_VALUES::mColors.cend())
+                    return oHEX->second;
             }
+
             return L"";
         }
 

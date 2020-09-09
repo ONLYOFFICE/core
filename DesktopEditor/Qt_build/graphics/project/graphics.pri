@@ -39,7 +39,75 @@ INCLUDEPATH += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/png \
     $$LIB_GRAPHICS_PRI_PATH/cximage/zlib
 
+core_release {
 SOURCES += $$PWD/graphics_pri.cpp
+}
+core_debug {
+SOURCES += $$PWD/../../../graphics/ArrowHead.cpp
+SOURCES += $$PWD/../../../graphics/Brush.cpp
+SOURCES += $$PWD/../../../graphics/Clip.cpp
+SOURCES += $$PWD/../../../graphics/Graphics.cpp
+SOURCES += $$PWD/../../../graphics/GraphicsPath.cpp
+SOURCES += $$PWD/../../../graphics/GraphicsRenderer.cpp
+SOURCES += $$PWD/../../../graphics/Image.cpp
+SOURCES += $$PWD/../../../graphics/Matrix.cpp
+SOURCES += $$PWD/../../../graphics/TemporaryCS.cpp
+
+SOURCES += $$PWD/../../../agg-2.4/src/agg_arc.cpp
+SOURCES += $$PWD/../../../agg-2.4/src/agg_bezier_arc.cpp
+SOURCES += $$PWD/../../../agg-2.4/src/agg_arrowhead.cpp
+SOURCES += $$PWD/../../../agg-2.4/src/ctrl/agg_cbox_ctrl.cpp
+SOURCES += $$PWD/../../../agg-2.4/src/agg_curves.cpp
+SOURCES += $$PWD/../../../agg-2.4/src/agg_gsv_text.cpp
+SOURCES += $$PWD/../../../agg-2.4/src/agg_image_filters.cpp
+SOURCES += $$PWD/../../../agg-2.4/src/agg_line_aa_basics.cpp
+SOURCES += $$PWD/../../../agg-2.4/src/agg_line_profile_aa.cpp
+SOURCES += $$PWD/../../../agg-2.4/src/agg_rounded_rect.cpp
+SOURCES += $$PWD/../../../agg-2.4/src/agg_sqrt_tables.cpp
+SOURCES += $$PWD/../../../agg-2.4/src/agg_trans_affine.cpp
+SOURCES += $$PWD/../../../agg-2.4/src/agg_bspline.cpp
+SOURCES += $$PWD/../../../agg-2.4/src/agg_vcgen_bspline.cpp
+SOURCES += $$PWD/../../../agg-2.4/src/agg_vcgen_contour.cpp
+SOURCES += $$PWD/../../../agg-2.4/src/agg_vcgen_dash.cpp
+SOURCES += $$PWD/../../../agg-2.4/src/agg_vcgen_markers_term.cpp
+SOURCES += $$PWD/../../../agg-2.4/src/agg_vcgen_smooth_poly1.cpp
+SOURCES += $$PWD/../../../agg-2.4/src/agg_vcgen_stroke.cpp
+
+SOURCES += $$PWD/../../../fontengine/ApplicationFonts.cpp
+SOURCES += $$PWD/../../../fontengine/FontFile.cpp
+SOURCES += $$PWD/../../../fontengine/FontManager.cpp
+SOURCES += $$PWD/../../../fontengine/FontPath.cpp
+SOURCES += $$PWD/../../../fontengine/GlyphString.cpp
+
+SOURCES += $$PWD/../../../fontengine/fontconverter/StringExt.cpp
+SOURCES += $$PWD/../../../fontengine/fontconverter/Hash.cpp
+SOURCES += $$PWD/../../../fontengine/fontconverter/FontConverter.cpp
+SOURCES += $$PWD/../../../fontengine/fontconverter/FontFileEncodings.cpp
+SOURCES += $$PWD/../../../fontengine/fontconverter/FontFileTrueType.cpp
+SOURCES += $$PWD/../../../fontengine/fontconverter/FontFileType1.cpp
+SOURCES += $$PWD/../../../fontengine/fontconverter/FontFileType1C.cpp
+
+SOURCES += $$PWD/../../../raster/ImageFileFormatChecker.cpp
+SOURCES += $$PWD/../../../raster/BgraFrame.cpp
+SOURCES += $$PWD/../../../raster/Jp2/J2kFile.cpp
+SOURCES += $$PWD/../../../raster/Jp2/Reader.cpp
+SOURCES += $$PWD/../../../raster/Metafile/Common/MetaFileTypes.cpp
+SOURCES += $$PWD/../../../raster/Metafile/Common/MetaFileUtils.cpp
+SOURCES += $$PWD/../../../raster/Metafile/Emf/EmfClip.cpp
+SOURCES += $$PWD/../../../raster/Metafile/Emf/EmfObjects.cpp
+SOURCES += $$PWD/../../../raster/Metafile/Emf/EmfPath.cpp
+SOURCES += $$PWD/../../../raster/Metafile/Emf/EmfPlayer.cpp
+SOURCES += $$PWD/../../../raster/Metafile/Emf/EmfFile.cpp
+SOURCES += $$PWD/../../../raster/Metafile/Wmf/WmfClip.cpp
+SOURCES += $$PWD/../../../raster/Metafile/Wmf/WmfObjects.cpp
+SOURCES += $$PWD/../../../raster/Metafile/Wmf/WmfPlayer.cpp
+SOURCES += $$PWD/../../../raster/Metafile/MetaFile.cpp
+SOURCES += $$PWD/../../../raster/JBig2/source/JBig2File.cpp
+SOURCES += $$PWD/../../../raster/Metafile/StarView/SvmClip.cpp
+SOURCES += $$PWD/../../../raster/Metafile/StarView/SvmFile.cpp
+SOURCES += $$PWD/../../../raster/Metafile/StarView/SvmObjects.cpp
+SOURCES += $$PWD/../../../raster/Metafile/StarView/SvmPlayer.cpp
+}
 
 SOURCES += $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftbbox.c \
     $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftgxval.c \

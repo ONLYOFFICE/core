@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="X2tTest"
 	ProjectGUID="{355A22F4-1394-4B82-B2F1-FF0ECFB9E3EF}"
 	RootNamespace="X2tTest"
@@ -581,6 +581,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\..\ASCOfficeDocxFile2\BinReader\FileWriter.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\..\ASCOfficeDocxFile2\BinReader\FileWriter.h"
 						>
 					</File>
@@ -705,6 +709,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\build\lib\win_32\DEBUG\doctrenderer.lib"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\build\lib\win_32\DEBUG\Fb2File.lib"
 				>
 			</File>
 			<File

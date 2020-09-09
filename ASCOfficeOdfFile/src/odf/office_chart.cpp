@@ -449,6 +449,11 @@ const wchar_t * chart_date_scale::name = L"date-scale";
 
 void chart_date_scale::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+    CP_APPLY_ATTR(L"chart:base-time-unit",			base_time_unit_);
+    CP_APPLY_ATTR(L"chart:major-interval-value",	major_interval_value_);
+    CP_APPLY_ATTR(L"chart:major-interval-unit",		major_interval_unit_);
+    CP_APPLY_ATTR(L"chart:minor-interval-value",	minor_interval_value_);
+    CP_APPLY_ATTR(L"chart:minor-interval-unit",		minor_interval_unit_);
 }
 
 }

@@ -192,8 +192,13 @@ namespace ComplexTypes
 
 			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, (L"r:id"),   m_oId );
-				XmlMacroReadAttributeBase( oNode, (L"w:type"), m_oType );
+				XmlMacroReadAttributeBase( oNode, L"r:id",   m_oId );
+				XmlMacroReadAttributeBase( oNode, L"w:type", m_oType );
+				
+				if (false == m_oId.IsInit())
+				{
+					XmlMacroReadAttributeBase( oNode, L"relationships:id", m_oId );
+				}
 			}
 			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -227,8 +232,9 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, (L"r:id"),   m_oId )
-					WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:type"), m_oType )
+					WritingElement_ReadAttributes_Read_if     ( oReader, (L"r:id"),				m_oId )
+					WritingElement_ReadAttributes_Read_else_if( oReader, (L"relationships:id"), m_oId )
+					WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:type"),			m_oType )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -414,8 +420,13 @@ namespace ComplexTypes
 				XmlMacroReadAttributeBase( oNode, (L"w:themeShade"),  m_oThemeShade );
 				XmlMacroReadAttributeBase( oNode, (L"w:themeTint"),   m_oThemeTint );
 				XmlMacroReadAttributeBase( oNode, (L"w:val"),         m_oVal );
+				
+				if (false == m_oId.IsInit())
+				{
+					XmlMacroReadAttributeBase( oNode, L"relationships:id", m_oId );
+				}
 			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes(oReader);
 
@@ -501,16 +512,17 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:color"),       m_oColor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:frame"),       m_oFrame )
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:id"),          m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:shadow"),      m_oShadow )
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:space"),       m_oSpace )
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:sz"),          m_oSz )
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:themeColor"),  m_oThemeColor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:themeShade"),  m_oThemeShade )
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:themeTint"),   m_oThemeTint )
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:val"),         m_oVal )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:color"),			m_oColor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:frame"),			m_oFrame )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:id"),				m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"relationships:id"),	m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:shadow"),			m_oShadow )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:space"),			m_oSpace )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:sz"),				m_oSz )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:themeColor"),		m_oThemeColor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:themeShade"),		m_oThemeShade )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:themeTint"),		m_oThemeTint )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:val"),			m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -544,18 +556,23 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, (L"r:bottomLeft"),  m_oBottomLeft );
-				XmlMacroReadAttributeBase( oNode, (L"r:bottomRight"), m_oBottomRight );
-				XmlMacroReadAttributeBase( oNode, (L"w:color"),       m_oColor );
-				XmlMacroReadAttributeBase( oNode, (L"w:frame"),       m_oFrame );
-				XmlMacroReadAttributeBase( oNode, (L"r:id"),          m_oId );
-				XmlMacroReadAttributeBase( oNode, (L"w:shadow"),      m_oShadow );
-				XmlMacroReadAttributeBase( oNode, (L"w:space"),       m_oSpace );
-				XmlMacroReadAttributeBase( oNode, (L"w:sz"),          m_oSz );
-				XmlMacroReadAttributeBase( oNode, (L"w:themeColor"),  m_oThemeColor );
-				XmlMacroReadAttributeBase( oNode, (L"w:themeShade"),  m_oThemeShade );
-				XmlMacroReadAttributeBase( oNode, (L"w:themeTint"),   m_oThemeTint );
-				XmlMacroReadAttributeBase( oNode, (L"w:val"),         m_oVal );
+				XmlMacroReadAttributeBase( oNode, L"r:bottomLeft",  m_oBottomLeft );
+				XmlMacroReadAttributeBase( oNode, L"r:bottomRight", m_oBottomRight );
+				XmlMacroReadAttributeBase( oNode, L"w:color",       m_oColor );
+				XmlMacroReadAttributeBase( oNode, L"w:frame",       m_oFrame );
+				XmlMacroReadAttributeBase( oNode, L"r:id",          m_oId );
+				XmlMacroReadAttributeBase( oNode, L"w:shadow",      m_oShadow );
+				XmlMacroReadAttributeBase( oNode, L"w:space",       m_oSpace );
+				XmlMacroReadAttributeBase( oNode, L"w:sz",          m_oSz );
+				XmlMacroReadAttributeBase( oNode, L"w:themeColor",  m_oThemeColor );
+				XmlMacroReadAttributeBase( oNode, L"w:themeShade",  m_oThemeShade );
+				XmlMacroReadAttributeBase( oNode, L"w:themeTint",   m_oThemeTint );
+				XmlMacroReadAttributeBase( oNode, L"w:val",         m_oVal );
+				
+				if (false == m_oId.IsInit())
+				{
+					XmlMacroReadAttributeBase( oNode, L"relationships:id", m_oId );
+				}	
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -656,13 +673,13 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, (L"r:bottomLeft"), m_oBottomLeft )
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:bottomRight"), m_oBottomRight )
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:color"),       m_oColor )
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:frame"),       m_oFrame )
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:id"),          m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"relationships:id"), m_oId )
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:shadow"),      m_oShadow )
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:space"),       m_oSpace )
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:sz"),          m_oSz )
@@ -709,6 +726,11 @@ namespace ComplexTypes
 				XmlMacroReadAttributeBase( oNode, (L"r:topLeft"),     m_oTopLeft );
 				XmlMacroReadAttributeBase( oNode, (L"r:topRight"),    m_oTopRight );
 				XmlMacroReadAttributeBase( oNode, (L"w:val"),         m_oVal );
+				
+				if (false == m_oId.IsInit())
+				{
+					XmlMacroReadAttributeBase( oNode, L"relationships:id", m_oId );
+				}
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -809,11 +831,11 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:color"),       m_oColor )
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:frame"),       m_oFrame )
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:id"),          m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"relationships:id"), m_oId )
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:shadow"),      m_oShadow )
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:space"),       m_oSpace )
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:sz"),          m_oSz )

@@ -57,6 +57,7 @@
 #include "../../Common/DocxFormat/Source/XlsxFormat/Slicer/SlicerCache.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Slicer/SlicerCacheExt.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Slicer/Slicer.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/NamedSheetViews/NamedSheetViews.h"
 
 namespace BinXlsxRW 
 {
@@ -3295,6 +3296,16 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
 		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::QueryTable);
 		oBinaryTableWriter.WriteQueryTable(pQueryTableFile->m_oQueryTable.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);		
+	}
+	pFile = oWorksheet.Find(OOX::Spreadsheet::FileTypes::NamedSheetView);
+	OOX::Spreadsheet::CNamedSheetViewFile *pNamedSheetViewFile = dynamic_cast<OOX::Spreadsheet::CNamedSheetViewFile*>(pFile.GetPointer());
+	if ((pNamedSheetViewFile) && (pNamedSheetViewFile->m_oNamedSheetViews.IsInit()))
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::NamedSheetView);
+		m_oBcw.m_oStream.StartRecord(0);
+		pNamedSheetViewFile->m_oNamedSheetViews->toPPTY(&m_oBcw.m_oStream);
+		m_oBcw.m_oStream.EndRecord();
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 	//Comments
 	if (false == oWorksheet.m_mapComments.empty())

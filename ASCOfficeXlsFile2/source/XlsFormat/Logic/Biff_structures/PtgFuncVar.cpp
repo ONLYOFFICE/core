@@ -57,6 +57,10 @@ BiffStructurePtr PtgFuncVar::clone()
 
 void PtgFuncVar::loadFields(CFRecord& record)
 {
+	global_info_ = record.getGlobalWorkbookInfo();
+	
+	global_info_->bMacrosExist = true;
+
 	record >> cparams;
 	record.loadAnyData(tab);
 	fCeFunc = tab.isMacro();

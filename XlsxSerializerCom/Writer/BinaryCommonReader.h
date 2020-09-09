@@ -53,7 +53,9 @@ namespace BinXlsxRW {
 	long read1defstart_pos = m_oBufferedStream.GetPos();\
 	while(read1defCurPos < (long)stLen)\
 	{\
-		BYTE read1defType = m_oBufferedStream.GetUChar();\
+		BYTE read1defType = 0;\
+		if (false == m_oBufferedStream.GetUCharWithResult(&read1defType))\
+			break;\
 		ULONG read1defLength = m_oBufferedStream.GetULong();\
 		if (read1defLength + read1defCurPos > (ULONG)stLen)\
 		{\
@@ -77,7 +79,9 @@ namespace BinXlsxRW {
 	long read2defCurPos = 0;\
 	while(read2defCurPos < stLen)\
 	{\
-		BYTE read2defType = m_oBufferedStream.GetUChar();\
+		BYTE read2defType = 0;\
+		if (false == m_oBufferedStream.GetUCharWithResult(&read2defType))\
+			break;\
 		long read2defLenType =  m_oBufferedStream.GetUChar();\
 		int read2defCurPosShift = 2;\
 		int read2defRealLen;\

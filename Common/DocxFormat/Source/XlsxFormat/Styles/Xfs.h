@@ -57,7 +57,12 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				writer.WriteString(_T("<alignment"));
+				toXMLWithNS(writer, L"", L"alignment", L"");
+			}
+			void toXMLWithNS(NSStringUtils::CStringBuilder& writer, const std::wstring &node_ns, const std::wstring &node_name, const std::wstring &child_ns) const
+			{
+				writer.StartNodeWithNS(node_ns, node_name);
+				writer.StartAttributes();
 				WritingStringNullableAttrString(L"horizontal", m_oHorizontal, m_oHorizontal->ToString());
 				WritingStringNullableAttrInt(L"indent", m_oIndent, m_oIndent->GetValue());
 				WritingStringNullableAttrBool(L"justifyLastLine", m_oJustifyLastLine);
@@ -67,7 +72,7 @@ namespace OOX
 				WritingStringNullableAttrInt(L"textRotation", m_oTextRotation, m_oTextRotation->GetValue());
 				WritingStringNullableAttrString(L"vertical", m_oVertical, m_oVertical->ToString());
 				WritingStringNullableAttrBool(L"wrapText", m_oWrapText);
-				writer.WriteString(_T("/>"));
+				writer.EndAttributesAndNode();
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -133,6 +138,9 @@ namespace OOX
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+			}
+			void toXMLWithNS(NSStringUtils::CStringBuilder& writer, const std::wstring &node_ns, const std::wstring &node_name, const std::wstring &child_ns) const
 			{
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)

@@ -588,7 +588,7 @@ void CSvmFile::Read_META_ARRAYTEXT()
 			tempBuffer += (wchar_t)nTemp;
 		}
 	}
-	DrawText(sText, sText.length(), startPoint.x + m_oCurrnetOffset.x, startPoint.y + m_oCurrnetOffset.y, mpDXAry);
+	DrawText(sText, sText.length(), startPoint.x + m_oCurrnetOffset.x, startPoint.y + m_oCurrnetOffset.y, mpDXAry, nArrayLen);
 
 	if (mpDXAry)
 		delete []mpDXAry;

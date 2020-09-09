@@ -825,7 +825,7 @@ namespace NSDoctRenderer
             if (-1 == m_nFileType)
             {
                 CV8RealTimeWorker::_LOGGING_ERROR_(L"error (save)", L"file not opened!");
-                return false;
+                return 1;
             }
 
             LOGGER_SPEED_START

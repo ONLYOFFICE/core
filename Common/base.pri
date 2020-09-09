@@ -150,6 +150,9 @@ core_windows {
     QMAKE_CXXFLAGS -= -Zc:strictStrings
     QMAKE_CXXFLAGS += /MP
 
+    OO_WINDOWS_IGNORE_PACKING_MISMATCH = $$(OO_WINDOWS_IGNORE_PACKING_MISMATCH)
+    isEqual(OO_WINDOWS_IGNORE_PACKING_MISMATCH, 1):QMAKE_CXXFLAGS -= /Zp
+
     equals(TEMPLATE, app) {
         console {
             core_win_64:QMAKE_LFLAGS_CONSOLE = /SUBSYSTEM:CONSOLE,5.02
@@ -402,6 +405,7 @@ defineTest(ADD_DEPENDENCY) {
             isEqual(lib, doctrenderer):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH/xp
             isEqual(lib, ascdocumentscore):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH/xp
             isEqual(lib, videoplayer):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH/xp
+            isEqual(lib, ooxmlsignature):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH/xp
         }
         !bundle_dylibs:LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH_DST -l$$lib
         bundle_dylibs:LIBS += -F$$CORE_BUILDS_LIBRARIES_PATH_DST -framework $$lib

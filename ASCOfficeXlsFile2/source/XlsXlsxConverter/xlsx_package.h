@@ -358,6 +358,7 @@ public:
     void set_drawings		(element_ptr Element);
 	void set_vml_drawings	(element_ptr Element);
 	void set_comments		(element_ptr Element);
+	void set_macros_enabled	();
    
 	void add_theme			(theme_content_ptr theme);
 	void add_chart			(chart_content_ptr chart);
@@ -394,6 +395,7 @@ private:
 	element_ptr		comments_;
 
 	bool			bVbaProject;
+	bool			bMacrosEnabled;
 	bool			bAttachedToolbars;
 
 };

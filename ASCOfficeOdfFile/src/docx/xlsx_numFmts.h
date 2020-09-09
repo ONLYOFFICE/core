@@ -46,12 +46,12 @@ namespace oox {
     public:
         xlsx_num_fmts();
         ~xlsx_num_fmts();
-    public:
-        size_t num_format_id(const std::wstring & format_code);
-        void serialize(std::wostream & _Wostream) const;
+
+        unsigned int add_or_find(const std::wstring & format_code, char format_code_type);
+        void serialize(std::wostream & strm) const;
 
     private:
-        struct Impl;
+        class Impl;
         _CP_SCOPED_PTR(Impl) impl_;
     };
 }

@@ -1355,6 +1355,13 @@ namespace OOX
 		et_x_SlicerRefs,
 		et_x_SlicerStyles,
 
+		et_x_SortRule,
+		et_x_SortRules,
+		et_x_ColumnFilter,
+		et_x_NsvFilter,
+		et_x_NamedSheetView,
+		et_x_NamedSheetViews,
+
 		et_x_SparklineGroups,
 		et_x_SparklineGroup,
 		et_x_Sparklines,

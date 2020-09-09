@@ -80,14 +80,15 @@ int download_external(const std::wstring& sUrl, const std::wstring& sOutput)
 
         case 0: // child process
         {
-            const char* nargs[7];
+            const char* nargs[8];
             nargs[0] = "/usr/bin/curl";
             nargs[1] = "--url";
             nargs[2] = sUrlA.c_str();
             nargs[3] = "--output";
             nargs[4] = sOutputA.c_str();
             nargs[5] = "--silent";
-            nargs[6] = NULL;
+            nargs[6] = "-L";
+            nargs[7] = NULL;
 
             const char* nenv[3];
             nenv[0] = "LD_PRELOAD=";

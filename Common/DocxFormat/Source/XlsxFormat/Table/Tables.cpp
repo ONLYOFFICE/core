@@ -53,8 +53,8 @@ namespace Spreadsheet
 	void CAltTextTable::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if     ( oReader, _T("altText"),      m_oAltText )
-			WritingElement_ReadAttributes_Read_if     ( oReader, _T("altTextSummary"),      m_oAltTextSummary )
+			WritingElement_ReadAttributes_Read_if     ( oReader, (L"altText"),      m_oAltText )
+			WritingElement_ReadAttributes_Read_if     ( oReader, (L"altTextSummary"),      m_oAltTextSummary )
 		WritingElement_ReadAttributes_End( oReader )
 	}
 
@@ -92,11 +92,11 @@ namespace Spreadsheet
 	{
 		WritingElement_ReadAttributes_Start( oReader )
 
-			WritingElement_ReadAttributes_Read_if     ( oReader, _T("name"),				m_oName )
-			WritingElement_ReadAttributes_Read_if     ( oReader, _T("showColumnStripes"),	m_oShowColumnStripes )
-			WritingElement_ReadAttributes_Read_if     ( oReader, _T("showFirstColumn"),		m_oShowFirstColumn )
-			WritingElement_ReadAttributes_Read_if     ( oReader, _T("showLastColumn"),		m_oShowLastColumn )
-			WritingElement_ReadAttributes_Read_if     ( oReader, _T("showRowStripes"),		m_oShowRowStripes )
+			WritingElement_ReadAttributes_Read_if     ( oReader, (L"name"),				m_oName )
+			WritingElement_ReadAttributes_Read_if     ( oReader, (L"showColumnStripes"),	m_oShowColumnStripes )
+			WritingElement_ReadAttributes_Read_if     ( oReader, (L"showFirstColumn"),		m_oShowFirstColumn )
+			WritingElement_ReadAttributes_Read_if     ( oReader, (L"showLastColumn"),		m_oShowLastColumn )
+			WritingElement_ReadAttributes_Read_if     ( oReader, (L"showRowStripes"),		m_oShowRowStripes )
 
 		WritingElement_ReadAttributes_End( oReader )
 	}
@@ -149,9 +149,9 @@ namespace Spreadsheet
 		{
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-			if ( _T("totalsRowFormula") == sName )
+			if ( (L"totalsRowFormula") == sName )
 				m_oTotalsRowFormula = oReader.GetText3();
-			else if ( _T("calculatedColumnFormula") == sName )
+			else if ( (L"calculatedColumnFormula") == sName )
 				m_oCalculatedColumnFormula = oReader.GetText3();
 		}
 	}
@@ -203,14 +203,14 @@ namespace Spreadsheet
 		{
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-			if ( _T("tableColumn") == sName )
+			if ( (L"tableColumn") == sName )
 				m_arrItems.push_back(new CTableColumn(oReader));
 		}
 	}
 	void CTableColumns::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if ( oReader, _T("count"), m_oCount )
+			WritingElement_ReadAttributes_Read_if ( oReader, (L"count"), m_oCount )
 		WritingElement_ReadAttributes_End( oReader )
 	}
 
@@ -291,15 +291,15 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 		{
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-			if ( _T("autoFilter") == sName )
+			if ( (L"autoFilter") == sName )
 				m_oAutoFilter = oReader;
-			else if ( _T("sortState") == sName )
+			else if ( (L"sortState") == sName )
 				m_oSortState = oReader;
-			else if ( _T("tableColumns") == sName )
+			else if ( (L"tableColumns") == sName )
 				m_oTableColumns = oReader;
-			else if ( _T("tableStyleInfo") == sName )
+			else if ( (L"tableStyleInfo") == sName )
 				m_oTableStyleInfo = oReader;
-			else if (_T("extLst") == sName)
+			else if ((L"extLst") == sName)
 				m_oExtLst = oReader;
 		}
 	}
@@ -349,9 +349,9 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 	}
 	void CTablePart::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
-		WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"),      m_oRId )
-		WritingElement_ReadAttributes_End( oReader )
+		WritingElement_ReadAttributes_Start_No_NS( oReader )
+			WritingElement_ReadAttributes_Read_if ( oReader, L"id", m_oRId )
+		WritingElement_ReadAttributes_End_No_NS( oReader )
 	}
 
 	void CTableParts::toXML(NSStringUtils::CStringBuilder& writer) const
@@ -384,7 +384,7 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 		{
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-			if ( _T("tablePart") == sName )
+			if ( (L"tablePart") == sName )
 				m_arrItems.push_back(new CTablePart(oReader));
 		}
 	}
@@ -392,7 +392,7 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 	void CTableParts::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if ( oReader, _T("count"), m_oCount )
+			WritingElement_ReadAttributes_Read_if ( oReader, (L"count"), m_oCount )
 		WritingElement_ReadAttributes_End( oReader )
 	}
 
@@ -453,20 +453,20 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 		{
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-			if (_T("extLst") == sName)
+			if ((L"extLst") == sName)
 				m_oExtLst = oReader;
 		}
 	}
 	void CQueryTableField::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if		( oReader, _T("id"),			m_oId )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("tableColumnId"),	m_oTableColumnId )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("name"),			m_oName )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("rowNumbers"),	m_oRowNumbers )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("fillFormulas"),	m_oFillFormulas )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("dataBound"),		m_oDataBound )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("clipped"),		m_oClipped )
+			WritingElement_ReadAttributes_Read_if		( oReader, (L"id"),			m_oId )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"tableColumnId"),	m_oTableColumnId )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"name"),			m_oName )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"rowNumbers"),	m_oRowNumbers )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"fillFormulas"),	m_oFillFormulas )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"dataBound"),		m_oDataBound )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"clipped"),		m_oClipped )
 		WritingElement_ReadAttributes_End( oReader )
 	}
 
@@ -507,7 +507,7 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 	void CQueryTableFields::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if ( oReader, _T("count"), m_oCount )
+			WritingElement_ReadAttributes_Read_if ( oReader, (L"count"), m_oCount )
 		WritingElement_ReadAttributes_End( oReader )
 	}
 	void CQueryTableDeletedField::toXML(NSStringUtils::CStringBuilder& writer) const
@@ -525,7 +525,7 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 	void CQueryTableDeletedField::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if	( oReader, _T("name"), m_oName )
+			WritingElement_ReadAttributes_Read_if	( oReader, (L"name"), m_oName )
 		WritingElement_ReadAttributes_End( oReader )
 	}
 	void CQueryTableDeletedFields::toXML(NSStringUtils::CStringBuilder& writer) const
@@ -564,7 +564,7 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 	void CQueryTableDeletedFields::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if ( oReader, _T("count"), m_oCount )
+			WritingElement_ReadAttributes_Read_if ( oReader, (L"count"), m_oCount )
 		WritingElement_ReadAttributes_End( oReader )
 	}
 	void CQueryTableRefresh::toXML(NSStringUtils::CStringBuilder& writer) const
@@ -603,26 +603,26 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 		{
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-			if (_T("queryTableFields") == sName)
+			if ((L"queryTableFields") == sName)
 				m_oQueryTableFields = oReader;
-			else if (_T("queryTableDeletedFields") == sName)
+			else if ((L"queryTableDeletedFields") == sName)
 				m_oQueryTableDeletedFields = oReader;
-			else if (_T("sortState") == sName)
+			else if ((L"sortState") == sName)
 				m_oSortState = oReader;
-			else if (_T("extLst") == sName)
+			else if ((L"extLst") == sName)
 				m_oExtLst = oReader;
 		}
 	}
 	void CQueryTableRefresh::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if		( oReader, _T("nextId"),				m_oNextId )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("minimumVersion"),		m_oMinimumVersion )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("fieldIdWrapped"),		m_FieldIdWrapped )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("headersInLastRefresh"),	m_HeadersInLastRefresh )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("preserveSortFilterLayout"),	m_PreserveSortFilterLayout )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("unboundColumnsLeft"),	m_UnboundColumnsLeft )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("unboundColumnsRight"),	m_UnboundColumnsRight )
+			WritingElement_ReadAttributes_Read_if		( oReader, (L"nextId"),				m_oNextId )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"minimumVersion"),		m_oMinimumVersion )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"fieldIdWrapped"),		m_FieldIdWrapped )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"headersInLastRefresh"),	m_HeadersInLastRefresh )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"preserveSortFilterLayout"),	m_PreserveSortFilterLayout )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"unboundColumnsLeft"),	m_UnboundColumnsLeft )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"unboundColumnsRight"),	m_UnboundColumnsRight )
 		WritingElement_ReadAttributes_End( oReader )
 	}
 	
@@ -668,7 +668,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			m_oQueryTableRefresh->toXML(writer);
 		if(m_oExtLst.IsInit())
 		{
-			writer.WriteString(m_oExtLst->toXMLWithNS(_T("")));
+			writer.WriteString(m_oExtLst->toXMLWithNS((L"")));
 		}
 		writer.WriteString(L"</queryTable>");
 	}
@@ -684,9 +684,9 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		{
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-			if ( _T("queryTableRefresh") == sName )
+			if ( (L"queryTableRefresh") == sName )
 				m_oQueryTableRefresh = oReader;
-			else if (_T("extLst") == sName)
+			else if ((L"extLst") == sName)
 				m_oExtLst = oReader;
 		}
 	}

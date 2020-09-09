@@ -53,10 +53,11 @@ BaseObjectPtr Format::clone()
 
 void Format::readFields(CFRecord& record)
 {
+	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
 	record >> ifmt;
 	
 	XLUnicodeString format;
-	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+	if (global_info->Version < 0x0600)
 	{
 		ShortXLAnsiString name;
 		record >> name;
@@ -66,11 +67,14 @@ void Format::readFields(CFRecord& record)
 	else
 		record >> format;
 
+
 	stFormat = XmlUtils::EncodeXmlString(format.value(), true);
 }
 
 int Format::serialize(std::wostream & stream)
 {
+	if ((ifmt > 4 && ifmt < 9) || (ifmt > 40 && ifmt < 45)) return 0;
+
     CP_XML_WRITER(stream)    
     {
         CP_XML_NODE(L"numFmt")

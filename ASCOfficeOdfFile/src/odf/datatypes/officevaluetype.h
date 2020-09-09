@@ -51,7 +51,9 @@ public:
         Date,
         Time,
 		Boolean,
-		String
+		String,
+		Scientific,
+		Fraction
     };
 
     office_value_type()  {type_ = String;}
@@ -72,6 +74,9 @@ private:
 };
 
 std::wostream & operator << (std::wostream & _Wostream, const office_value_type & _Val);
+
+bool operator== (office_value_type & t1, office_value_type::type & t2);
+bool operator== (const office_value_type & t1, const office_value_type & t2);
 
 } 
 

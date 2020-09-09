@@ -846,6 +846,12 @@ namespace NSStringUtils
 		WriteString(g_bstr_nodeopen);
 		WriteString(name);
 	}
+	void CStringBuilder::StartNodeWithNS(const std::wstring& ns, const std::wstring& name)
+	{
+		WriteString(g_bstr_nodeopen);
+		WriteString(ns);
+		WriteString(name);
+	}
 	void CStringBuilder::StartAttributes()
 	{
 		// none
@@ -854,9 +860,20 @@ namespace NSStringUtils
 	{
 		WriteString(g_bstr_nodeclose);
 	}
+	void CStringBuilder::EndAttributesAndNode()
+	{
+		WriteString(g_bstr_nodeclose_slash);
+	}
 	void CStringBuilder::EndNode(const std::wstring& name)
 	{
 		WriteString(g_bstr_nodeopen_slash);
+		WriteString(name);
+		WriteString(g_bstr_nodeclose);
+	}
+	void CStringBuilder::EndNodeWithNS(const std::wstring& ns, const std::wstring& name)
+	{
+		WriteString(g_bstr_nodeopen_slash);
+		WriteString(ns);
 		WriteString(name);
 		WriteString(g_bstr_nodeclose);
 	}

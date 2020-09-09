@@ -81,10 +81,10 @@ void number_style_base::oox_convert_impl(oox::num_format_context & Context)
 
 	switch(type)
 	{
-	case typeNumberCurrencyStyle:	Context.bCurrency = true;	break;
-	case typeNumberPercentageStyle:	Context.bPercent = true;	break;
-	case typeNumberDataStyle:		Context.bDate = true;		break;
-	case typeNumberTimeStyle:		Context.bTime = true;		break;
+	case typeNumberCurrencyStyle:	Context.type(odf_types::office_value_type::Currency);		break;
+	case typeNumberPercentageStyle:	Context.type(odf_types::office_value_type::Percentage);		break;
+	case typeNumberDataStyle:		Context.type(odf_types::office_value_type::Date);			break;
+	case typeNumberTimeStyle:		Context.type(odf_types::office_value_type::Time);			break;
 	}
 
 	for (size_t i = 0; i < content_.size(); i++)
@@ -92,8 +92,15 @@ void number_style_base::oox_convert_impl(oox::num_format_context & Context)
 		number_style_base	*number_style_		= dynamic_cast<number_style_base *>	(content_[i].get());
   		number_element		*number_element_	= dynamic_cast<number_element *>	(content_[i].get());
 		
-		if (number_style_)		number_style_->oox_convert(Context);
-		if (number_element_)	number_element_->oox_convert(Context);
+		if (number_style_)
+		{
+			Context.type(odf_types::office_value_type::Float);
+			number_style_->oox_convert(Context);
+		}
+		if (number_element_)
+		{
+			number_element_->oox_convert(Context);
+		}
     }
     Context.end_format();
 }
@@ -437,7 +444,10 @@ void number_text::oox_convert(oox::num_format_context & Context)
 
 	std::wstring text_ = strm.str();
 
-	if (Context.bDate || Context.bTime || Context.bCurrency || Context.bPercent)
+	if (odf_types::office_value_type::Date == Context.type() || 
+		odf_types::office_value_type::Time == Context.type() ||
+		odf_types::office_value_type::Currency == Context.type() || 
+		odf_types::office_value_type::Percentage == Context.type())
 	{
 	}
 	else
@@ -760,6 +770,8 @@ void number_fraction::add_child_element( xml::sax * Reader, const std::wstring &
 
 void number_fraction::oox_convert(oox::num_format_context & Context) 
 {
+	Context.type(odf_types::office_value_type::Fraction);
+
     std::wostream & strm = Context.output();
 
     format_number_number(strm, 
@@ -783,6 +795,8 @@ void number_fraction::oox_convert(oox::num_format_context & Context)
 
 void number_scientific_number::oox_convert(oox::num_format_context & Context) 
 {
+	Context.type(odf_types::office_value_type::Scientific);
+
     std::wostream & strm = Context.output();
     format_number_number(
         strm,

@@ -251,6 +251,7 @@ class process_build_object
 	    
 		public visitor<chart_axis>,
 		public visitor<chart_categories>,
+		public visitor<chart_date_scale>,
 		public visitor<chart_grid>,
 
 		public visitor<chart_series>,

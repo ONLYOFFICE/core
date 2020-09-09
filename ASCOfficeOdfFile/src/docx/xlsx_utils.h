@@ -41,6 +41,7 @@ namespace cpdoccore {
 namespace oox {
 
 bool IsNumber(const std::wstring &value);
+std::wstring GetNumberFromString(const std::wstring &value);
 
 std::wstring getColAddress(size_t col);
 std::wstring getRowAddress(size_t row);

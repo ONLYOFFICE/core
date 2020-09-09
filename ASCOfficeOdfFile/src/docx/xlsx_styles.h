@@ -61,13 +61,13 @@ public:
 				const odf_reader::paragraph_format_properties			* parProp,
 				const odf_reader::style_table_cell_properties_attlist	* cellProp,
 				const xlsx_cell_format * xlxsCellFormat,
-				const std::wstring &num_format,  bool  default_set,bool & is_visible);
+				const std::wstring &num_format, char num_format_type, bool  default_set, bool & is_visible);
 
     size_t xfId(const odf_reader::text_format_properties_content_ptr	textProp,
 				const odf_reader::paragraph_format_properties			* parProp,
 				const odf_reader::style_table_cell_properties_attlist	* cellProp,
 				const xlsx_cell_format * xlxsCellFormat,
-				const std::wstring &num_format, bool  default_set);
+				const std::wstring &num_format, char num_format_type, bool  default_set);
 
     size_t dxfId(const odf_reader::text_format_properties_content_ptr	textProp,
 				 const odf_reader::graphic_format_properties			* graphProp,

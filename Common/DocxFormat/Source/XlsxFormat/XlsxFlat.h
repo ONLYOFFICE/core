@@ -42,9 +42,6 @@ namespace OOX
 		class CWorksheet;
 		class CWorkbook;
 		class CSharedStrings;
-		class CStyles2003;
-		class CCalcChain;
-		class CDefinedNames;
 		class CStyles;
 
 		class CXlsxFlat : public OOX::Document, public OOX::File, public WritingElement

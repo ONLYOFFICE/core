@@ -1757,6 +1757,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Source\XlsxFormat\NamedSheetViews\NamedSheetViews.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\NamedSheetViews\NamedSheetViews.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Source\XlsxFormat\Worksheets\SheetData.cpp"
 					>
 				</File>

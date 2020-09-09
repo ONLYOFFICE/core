@@ -386,8 +386,12 @@ namespace OOX
 			}
 			void toXML2(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const
 			{
-				writer.WriteString(_T("<"));
-				writer.WriteString(sName);
+				toXMLWithNS(writer, L"", sName, L"");
+			}
+			void toXMLWithNS(NSStringUtils::CStringBuilder& writer, const std::wstring &node_ns, const std::wstring &node_name, const std::wstring &child_ns) const
+			{
+				writer.StartNodeWithNS(node_ns, node_name);
+				writer.StartAttributes();
 				WritingStringNullableAttrBool(L"auto", m_oAuto);
 				WritingStringNullableAttrInt(L"indexed", m_oIndexed, m_oIndexed->GetValue());
 				if(m_oRgb.IsInit() && !m_oIndexed.IsInit())
@@ -405,7 +409,7 @@ namespace OOX
 				WritingStringNullableAttrInt(L"theme", m_oThemeColor, m_oThemeColor->GetValue());
 				WritingStringNullableAttrDouble(L"tint", m_oTint, m_oTint->GetValue());
 
-				writer.WriteString(_T("/>"));
+				writer.EndAttributesAndNode();
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

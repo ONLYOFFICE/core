@@ -2,6 +2,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cwctype>
+#include <numeric>
 
 CElement::CElement() {}
 
@@ -46,7 +47,7 @@ std::wstring CElement::GetText() const
 }
 */
 
-void CElement::AddChildren(CElement *oChildren)
+void CElement::AddChildren(CElement* oChildren)
 {
     m_arChildrens.push_back(oChildren);
 }
@@ -101,7 +102,7 @@ int CElement::GetCountChildrens() const
 
 bool CElement::FindSelector(const std::wstring& sSelector) const
 {
-    return std::find(m_arSelectors.begin(), m_arSelectors.end(), sSelector) != m_arSelectors.cend();
+    return std::find(m_arSelectors.begin(), m_arSelectors.end(), sSelector) != m_arSelectors.end();
 }
 
 /*
@@ -123,11 +124,12 @@ std::map<std::wstring, std::map<std::wstring, std::wstring>> CElement::GetDeclar
     if(std::find(m_arSelectors.begin(), m_arSelectors.end(), sSelector) != m_arSelectors.end())
     {
         std::wstring sTempSelectors;
-        for (const std::wstring& sParent : arParents)
-            sTempSelectors += sParent;
+        sTempSelectors = std::accumulate(arParents.begin(), arParents.end(), sTempSelectors,
+            [] (std::wstring& sRes, const std::wstring& sParent) { return sRes + sParent; });
         sTempSelectors = sTempSelectors.empty() ? sSelector : sTempSelectors + L" -> " + sSelector;
         arElement.insert(std::make_pair(sTempSelectors, m_arDeclarations));
     }
+    // m_arChildrens всегда пуст в этой функции
     for (const CElement* oElement : m_arChildrens)
     {
         const std::vector<std::wstring>& sSelectors = oElement->m_arSelectors;

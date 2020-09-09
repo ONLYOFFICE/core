@@ -970,6 +970,7 @@ private:
     {
         std::wstring sValue;
         std::wstring sAlt;
+        std::wstring sType;
         while(m_oLightReader.MoveToNextAttribute())
         {
             std::wstring sName = m_oLightReader.GetName();
@@ -977,8 +978,12 @@ private:
                 sValue = m_oLightReader.GetText();
             else if(sName == L"alt")
                 sAlt = m_oLightReader.GetText();
+            else if(sName == L"type")
+                sType = m_oLightReader.GetText();
         }
         m_oLightReader.MoveToElement();
+        if(sType == L"hidden")
+            return;
         if(sValue.empty())
             sValue = sAlt;
         if(!sValue.empty())

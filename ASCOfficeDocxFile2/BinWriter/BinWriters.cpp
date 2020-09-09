@@ -45,7 +45,7 @@
 #ifndef _IOS
 	#include "../../ASCOfficeDocFile/DocFormatLib/DocFormatLib.h"
 #endif
-#include "../../HtmlFile2/HtmlFile2.h"
+#include "../../HtmlFile2/htmlfile2.h"
 #include "../../ASCOfficeRtfFile/RtfFormatLib/source/ConvertationManager.h"
 
 

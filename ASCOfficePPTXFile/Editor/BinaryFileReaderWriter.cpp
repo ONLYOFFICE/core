@@ -51,8 +51,14 @@
 
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
+
 #include "../PPTXFormat/FileContainer.h"
 #include <iostream>
+
+#ifndef DISABLE_FILE_DOWNLOADER
+#include "../../Common/FileDownloader/FileDownloader.h"
+#endif 
 
 #define BYTE_SIZEOF		sizeof(BYTE)
 #define UINT16_SIZEOF	sizeof(_UINT16)

@@ -336,7 +336,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
     } 
 	if (next_section_/* || next_end_section_*/)//remove in text::section 
 	{
-		Context.get_section_context().get().is_dump_ = true;
+		Context.get_section_context().get_last().is_dump_ = true;
 		is_empty = false;
 	}
 	std::wstringstream strm;
@@ -764,7 +764,7 @@ void section::docx_convert(oox::docx_conversion_context & Context)
     }
 	if (bAddSection)
 	{
-		Context.get_section_context().get().is_dump_ = true;
+		Context.get_section_context().get_last().is_dump_ = true;
 		Context.last_dump_page_properties(false);
 	}
 }

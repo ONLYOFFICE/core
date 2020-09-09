@@ -57,6 +57,8 @@
 #include "../../XpsFile/XpsFile.h"
 #include "../../HtmlRenderer/include/HTMLRenderer3.h"
 #include "../../Fb2File/Fb2File.h"
+#include "../../HtmlFile2/htmlfile2.h"
+#include "../../EpubFile/CEpubFile.h"
 #include "../../ASCOfficeXlsFile2/source/XlsXlsxConverter/ConvertXls2Xlsx.h"
 #include "../../OfficeCryptReader/source/ECMACryptFile.h"
 
@@ -2814,7 +2816,9 @@ namespace NExtractTools
 	//html
 	_UINT32 html_array2docx_dir (const std::vector<std::wstring> &arFiles, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
 	{
-		return S_OK;
+        CHtmlFile2 oFile;
+        oFile.SetTmpDirectory(sTemp);
+        return (S_OK == oFile.OpenBatchHtml(arFiles, sTo)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 	}
 	_UINT32 html2docx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
 	{
@@ -2859,12 +2863,16 @@ namespace NExtractTools
 	//mht
 	_UINT32 mht2docx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
 	{
-		return S_OK;
+        CHtmlFile2 oFile;
+        oFile.SetTmpDirectory(sTemp);
+        return (S_OK == oFile.OpenMht(sFrom, sTo)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 	}
 	//epub
 	_UINT32 epub2docx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
 	{
-		return S_OK;
+        CEpubFile oFile;
+        oFile.SetTempDirectory(sTemp);
+        return (S_OK == oFile.Convert(sFrom, sTo, false)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 	}
 	_UINT32 fb2docx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
 	{

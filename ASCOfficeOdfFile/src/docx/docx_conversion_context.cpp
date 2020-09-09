@@ -1201,7 +1201,7 @@ void docx_conversion_context::process_section(std::wostream & strm, odf_reader::
 	int count_columns = 1;
 	bool sep_columns = false;
 
-	oox::section_context::_section & section = get_section_context().get();
+	oox::section_context::_section & section = get_section_context().get_last();
 
 	if (!columns)
 	{
@@ -1299,7 +1299,7 @@ void docx_conversion_context::process_section(std::wostream & strm, odf_reader::
 }
 bool docx_conversion_context::process_page_properties(std::wostream & strm)
 {
-    if (is_next_dump_page_properties() || get_section_context().get().is_dump_)
+    if (is_next_dump_page_properties() || get_section_context().get_last().is_dump_)
     {
         std::wstring pageProperties = get_page_properties();
 		odf_reader::page_layout_instance * page_layout_instance_ = root()->odf_context().pageLayoutContainer().page_layout_by_name(pageProperties);
@@ -1477,14 +1477,14 @@ bool docx_conversion_context::get_page_break_before()
 
 void docx_conversion_context::add_page_properties(const std::wstring & StyleName)
 {
-	section_context::_section & s = section_context_.get();
+	section_context::_section & s = section_context_.get_last();
 	
 	s.page_properties_.push_back( StyleName);
 }
 
 std::wstring docx_conversion_context::get_page_properties()
 {
-	section_context::_section & s = section_context_.get();
+	section_context::_section & s = section_context_.get_last();
 
 	if (s.page_properties_.size() > 1)			return s.page_properties_[1];
 	else if (s.page_properties_.size() == 1)	return s.page_properties_[0];
@@ -1492,7 +1492,7 @@ std::wstring docx_conversion_context::get_page_properties()
 }
 void docx_conversion_context::remove_page_properties()
 {
-	section_context::_section & s = section_context_.get();
+	section_context::_section & s = section_context_.get_last();
 
 	if (s.page_properties_.size() > 1)
 	{
@@ -1988,7 +1988,34 @@ void section_context::add_section(const std::wstring & SectionName, const std::w
     _section newSec(SectionName, Style, PageProperties );
     sections_.push_back(newSec);
 }
+section_context::_section & section_context::get_first()		
+{ 
+	if (sections_.empty())
+		return main_section_;
+	else
+		return sections_[0]; 
+}
+section_context::_section & section_context::get_last()		
+{ 
+	if (sections_.empty())
+		return main_section_;
+	else
+		return sections_.back();
+}
+void section_context::remove_section()	
+{
+	if (sections_.empty()) return;
 
+	sections_.pop_back();
+	//sections_.erase(sections_.begin(), sections_.begin() + 1);
+	if (sections_.empty())
+	{
+		//после оканчания разметки секциями и начале (возобновлении) основного раздела нужен разрыв (хотя настройки страницы могут и не поменяться)
+		//щас разрыв на текущей странице
+		//todooo проверить - может типо если следующий будет заголовок - разорвать
+		main_section_.is_dump_ = false;
+	}
+}
 namespace 
 {
     // обработка Header/Footer

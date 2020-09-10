@@ -20,7 +20,6 @@ inline static std::wstring      StringifyValue(KatanaValue* oValue);
 inline static std::wstring      stringToWstring(const std::string& sString);
 inline static std::string       wstringToString(const std::wstring& sWstring);
 inline static std::string       GetContentAsUTF8(const std::string &sString, const std::wstring &sEncoding);
-inline static std::wstring      GetContentAsUTF8W(const std::wstring& sFileName);
 inline static std::string       GetContentAsUTF8(const std::wstring& sFileName);
 inline static bool              ThereIsNumber(const std::wstring& sString);
 inline static std::wstring      ConvertAbsoluteValue(const std::wstring& sAbsoluteValue);
@@ -783,11 +782,8 @@ namespace NSCSS
         if (sStyle.empty())
             return;
 
-        std::string sStyleUTF8;
-
-        (m_sEncoding != L"UTF-8" && m_sEncoding != L"utf-8") ? sStyleUTF8 = GetContentAsUTF8(sStyle, m_sEncoding) : sStyleUTF8 = sStyle;
-
-        KatanaOutput *output = katana_parse(sStyleUTF8.c_str(), sStyleUTF8.size(), KatanaParserModeStylesheet);
+        // тут ВСЕГДА utf-8
+        KatanaOutput *output = katana_parse(sStyle.c_str(), sStyle.length(), KatanaParserModeStylesheet);
         this->GetOutputData(output);
         katana_destroy_output(output);
 
@@ -798,10 +794,7 @@ namespace NSCSS
         if (sStyle.empty())
             return;
 
-        std::wstring sNewStyle = sStyle;
-//        RemoveExcessFromStyles(sNewStyle); //maybe put it all in katana?
-//        TranslateToEn(sNewStyle);
-        AddStyles(wstringToString(sNewStyle));
+        AddStyles(U_TO_UTF8(sStyle));
     }
 
     void CCssCalculator_Private::AddStylesFromFile(const std::wstring& sFileName)
@@ -811,12 +804,7 @@ namespace NSCSS
 
         m_arFiles.push_back(sFileName);
 
-        const std::wstring& sSourceUTF8 = GetContentAsUTF8W(sFileName);
-
-        if (sSourceUTF8.empty())
-            return;
-
-        AddStyles(sSourceUTF8);
+        AddStyles(GetContentAsUTF8(sFileName));
     }
 
     std::wstring CCssCalculator_Private::ConvertUnitMeasure(const std::wstring &sValue) const
@@ -1693,55 +1681,49 @@ inline static std::string GetContentAsUTF8(const std::string &sString, const std
     return U_TO_UTF8(sUnicodeContent);
 }
 
-inline static std::wstring GetContentAsUTF8W(const std::wstring& sFileName)
-{
-    std::wstring sSource;
-
-    if (!NSFile::CFileBinary::ReadAllTextUtf8(sFileName, sSource))
-        return sSource;
-
-    std::wstring sTemp;
-
-    const auto& posLeftBrace = sSource.find(L'{');
-
-    if (posLeftBrace != std::string::npos)
-        sTemp = sSource.substr(0, posLeftBrace);
-
-    if (sTemp.empty())
-        return sSource;
-
-    std::wstring sEncoding;
-
-    if (sTemp.find(L"@charset") != std::string::npos)
-    {
-        sEncoding = sTemp.substr(sTemp.find(L"@charset ") + 9);
-
-        const auto& posSemicolon = sEncoding.find(L';');
-        const auto& posDoubleQuotes = sEncoding.find(L'"');
-        const auto& posQuotes = sEncoding.find(L'\'');
-
-        if (posSemicolon != std::string::npos)
-            sEncoding = sEncoding.substr(0, posSemicolon);
-
-        posDoubleQuotes != std::string::npos ? sEncoding = sEncoding.substr(posDoubleQuotes + 1) : sEncoding = sEncoding.substr(posQuotes + 1);
-        posDoubleQuotes != std::string::npos ? sEncoding = sEncoding.substr(0, posDoubleQuotes) : sEncoding = sEncoding.substr(0, posQuotes);
-    }
-    else
-        return sSource;
-
-    if (sEncoding == L"UTF-8" || sEncoding == L"utf-8")
-        return sSource;
-
-    NSUnicodeConverter::CUnicodeConverter oConverter;
-    const std::string& sTempSource = wstringToString(sSource);
-    const std::wstring& sUnicodeContent = oConverter.toUnicode(sTempSource.c_str(), wstringToString(sEncoding).c_str());
-    return sUnicodeContent;
-}
-
 inline static std::string GetContentAsUTF8(const std::wstring& sFileName)
 {
-    const std::wstring& sUnicodeContent = GetContentAsUTF8W(sFileName);
-    return U_TO_UTF8(sUnicodeContent);
+    std::string sFileContent;
+
+    // читаем файл как есть. utf-8 тут просто название.
+    if(!NSFile::CFileBinary::ReadAllTextUtf8A(sFileName, sFileContent))
+        return sFileContent;
+
+    std::string sEncoding;
+    if (true)
+    {
+        // определяем кодировку
+        std::string::size_type posCharset = sFileContent.find("@charset");
+        if (std::string::npos != posCharset)
+        {
+            std::string::size_type pos1 = sFileContent.find_first_of("\"';", posCharset);
+            if (std::string::npos != pos1)
+            {
+                pos1 += 1;
+                std::string::size_type pos2 = sFileContent.find_first_of("\"';", pos1);
+                if (std::string::npos != pos2)
+                {
+                    sEncoding = sFileContent.substr(pos1, pos2 - pos1);
+                }
+
+                // check valid
+                if (std::string::npos != sEncoding.find_first_of(" \n\r\t\f\v"))
+                    sEncoding = "";
+            }
+        }
+    }
+
+    if (sEncoding.empty())
+        sEncoding = "utf-8";
+
+
+    if (!sEncoding.empty() && sEncoding != "utf-8" && sEncoding != "UTF-8")
+    {
+        NSUnicodeConverter::CUnicodeConverter oConverter;
+        sFileContent = U_TO_UTF8(oConverter.toUnicode(sFileContent, sEncoding.c_str()));
+    }
+
+    return sFileContent;
 }
 
 inline static bool ThereIsNumber(const std::wstring& sString)

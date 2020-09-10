@@ -1,0 +1,116 @@
+.calibre {
+    display: block;
+    font-size: 1em;
+    padding-left: 0;
+    padding-right: 0;
+    text-align: justify;
+    margin: 0 5pt
+    }
+.calibre1 {
+    display: block
+    }
+.calibre2 {
+    background-color: #F1F1F1;
+    display: block;
+    font-size: 1.29167em;
+    font-style: normal;
+    font-weight: bold;
+    line-height: 1.2;
+    text-align: left;
+    border: Silver solid 1px;
+    margin: 1em 0
+    }
+.calibre3 {
+    color: black;
+    display: block;
+    height: 2px;
+    border: currentColor inset 1px;
+    margin: 0.5em auto
+    }
+.calibre4 {
+    display: block;
+    list-style-type: disc;
+    margin-bottom: 1em;
+    margin-right: 0;
+    margin-top: 1em
+    }
+.calibre5 {
+    display: list-item
+    }
+.calibre6 {
+    display: block;
+    list-style-type: circle;
+    margin-bottom: 0;
+    margin-right: 0;
+    margin-top: 0
+    }
+.calibre7 {
+    display: block;
+    list-style-type: square;
+    margin-bottom: 0;
+    margin-right: 0;
+    margin-top: 0
+    }
+.calibre8 {
+    background-color: #E7E7E7;
+    display: block;
+    font-size: 1.66667em;
+    font-style: normal;
+    font-weight: bold;
+    line-height: 1.2;
+    text-align: left;
+    border: Black solid 1px;
+    margin: 0.67em 0
+    }
+.calibre9 {
+    display: block;
+    line-height: 1.2
+    }
+.calibre10 {
+    display: block;
+    text-align: center
+    }
+.calibre11 {
+    height: auto;
+    width: auto
+    }
+.calibre12 {
+    line-height: 1.2
+    }
+.calibre13 {
+    font-size: 0.75em;
+    line-height: normal;
+    vertical-align: super
+    }
+.calibre14 {
+    display: block;
+    margin: 1em 0.2em 1em 4em
+    }
+.calibre15 {
+    background-color: #EEE;
+    display: block;
+    font-size: 1.29167em;
+    font-style: normal;
+    font-weight: bold;
+    line-height: 1.2;
+    text-align: left;
+    border: Gray solid 1px;
+    margin: 0.83em 0
+    }
+.calibre16 {
+    background-color: #F4F4F4;
+    display: block;
+    font-size: 1em;
+    font-style: normal;
+    font-weight: bold;
+    text-align: center;
+    border: Gray solid 1px;
+    margin: 1.33em 0
+    }
+.calibre17 {
+    font-style: italic
+    }
+.paragraph {
+    display: block;
+    text-indent: 2em;
+    }

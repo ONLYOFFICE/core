@@ -9,17 +9,10 @@ bool IsDigit(const std::wstring& sValue)
 {
     if (sValue.empty())
         return false;
-
-    for (const wchar_t& cChar : sValue)
-        if (!iswdigit(cChar))
-            return false;
-
-    return true;
+    return std::all_of(sValue.begin(), sValue.end(), [] (const wchar_t& cChar) { return iswdigit(cChar); });
 }
 
-CXmlElement::CXmlElement()
-{
-}
+CXmlElement::CXmlElement() {}
 
 CXmlElement::CXmlElement(const std::wstring& sNameDefaultElement)
 {
@@ -357,7 +350,6 @@ void CXmlElement::Clear()
 void CXmlElement::SetType(const std::wstring& sType)
 {
     m_sType = sType;
-
     if (m_bEmpty)
         m_bEmpty =  m_sType.empty();
 }
@@ -365,7 +357,6 @@ void CXmlElement::SetType(const std::wstring& sType)
 void CXmlElement::SetStyleId(const std::wstring& sStyleId)
 {
     m_sStyleId = sStyleId;
-
     if (m_bEmpty)
         m_bEmpty =  m_sStyleId.empty();
 }
@@ -373,7 +364,6 @@ void CXmlElement::SetStyleId(const std::wstring& sStyleId)
 void CXmlElement::SetDefault(const std::wstring& sDefault)
 {
     m_sDefault = sDefault;
-
     if (m_bEmpty)
         m_bEmpty =  m_sDefault.empty();
 }
@@ -381,7 +371,6 @@ void CXmlElement::SetDefault(const std::wstring& sDefault)
 void CXmlElement::SetCustomStyle(const std::wstring& sCustomStyle)
 {
     m_sCustomStyle = sCustomStyle;
-
     if (m_bEmpty)
         m_bEmpty = m_sCustomStyle.empty();
 }
@@ -389,7 +378,6 @@ void CXmlElement::SetCustomStyle(const std::wstring& sCustomStyle)
 void CXmlElement::SetS(const std::wstring& sS)
 {
     m_sS = sS;
-
     if (m_bEmpty)
         m_bEmpty = m_sS.empty();
 }
@@ -397,7 +385,6 @@ void CXmlElement::SetS(const std::wstring& sS)
 void CXmlElement::SetName(const std::wstring& sName)
 {
     m_sName = sName;
-
     if (m_bEmpty)
         m_bEmpty = m_sName.empty();
 }
@@ -405,7 +392,6 @@ void CXmlElement::SetName(const std::wstring& sName)
 void CXmlElement::SetBasedOn(const std::wstring& sBasedOn)
 {
     m_sBasedOn = sBasedOn;
-
     if (m_bEmpty)
         m_bEmpty = m_sBasedOn.empty();
 }
@@ -413,7 +399,6 @@ void CXmlElement::SetBasedOn(const std::wstring& sBasedOn)
 void CXmlElement::SetLink(const std::wstring& sLink)
 {
     m_sLink = sLink;
-
     if (m_bEmpty)
         m_bEmpty = m_sLink.empty();
 }
@@ -421,39 +406,34 @@ void CXmlElement::SetLink(const std::wstring& sLink)
 void CXmlElement::SetUiPriority(const std::wstring& sUiPriority)
 {
     m_sUiPriority = sUiPriority;
-
     if (m_bEmpty)
         m_bEmpty = m_sUiPriority.empty();
 }
 
-void CXmlElement::SetQFormat(const bool& bQFormat)
+void CXmlElement::SetQFormat(bool bQFormat)
 {
     m_bQFormat = bQFormat;
-
-    if (m_bUnhideWhenUsed)
-        m_bEmpty = !m_bUnhideWhenUsed;
+    if (m_bQFormat)
+        m_bEmpty = !m_bQFormat;
 }
 
-void CXmlElement::SetUnhideWhenUsed(const bool& bUnhideWhenUsed)
+void CXmlElement::SetUnhideWhenUsed(bool bUnhideWhenUsed)
 {
     m_bUnhideWhenUsed = bUnhideWhenUsed;
-
     if (m_bUnhideWhenUsed)
         m_bEmpty = !m_bUnhideWhenUsed;
 }
 
-void CXmlElement::SetB(const bool& bB)
+void CXmlElement::SetB(bool bB)
 {
     m_bB = bB;
-
     if (m_bB)
         m_bEmpty = !m_bB;
 }
 
-void CXmlElement::SetI(const bool& bI)
+void CXmlElement::SetI(bool bI)
 {
     m_bI = bI;
-
     if (m_bI)
         m_bEmpty = !m_bI;
 }
@@ -461,7 +441,6 @@ void CXmlElement::SetI(const bool& bI)
 void CXmlElement::SetU(const std::wstring& sU)
 {
     m_sU = sU;
-
     if (m_bEmpty)
         m_bEmpty = m_sU.empty();
 }
@@ -469,7 +448,6 @@ void CXmlElement::SetU(const std::wstring& sU)
 void CXmlElement::SetRFonts(const std::wstring& sRFonts)
 {
     m_sRFonts = sRFonts;
-
     if (m_bEmpty)
         m_bEmpty = m_sRFonts.empty();
 }
@@ -477,7 +455,6 @@ void CXmlElement::SetRFonts(const std::wstring& sRFonts)
 void CXmlElement::SetColor(const std::wstring& sColor)
 {
     m_sColor = sColor;
-
     if (m_bEmpty)
         m_bEmpty = m_sColor.empty();
 }
@@ -487,24 +464,21 @@ void CXmlElement::SetSz(const std::wstring& sSz)
     if (IsDigit(sSz))
     {
         m_sSz = sSz;
-
         if (m_bEmpty)
             m_bEmpty = m_sSz.empty();
     }
 }
 
-void CXmlElement::SetKeepLines(const bool& bKeepLines)
+void CXmlElement::SetKeepLines(bool bKeepLines)
 {
     m_bKeepLines = bKeepLines;
-
     if (m_bKeepLines)
         m_bEmpty = !m_bKeepLines;
 }
 
-void CXmlElement::SetKeepNext(const bool& bKeepNext)
+void CXmlElement::SetKeepNext(bool bKeepNext)
 {
     m_bKeepNext = bKeepNext;
-
     if (m_bKeepNext)
         m_bEmpty = !m_bKeepNext;
 }
@@ -512,7 +486,6 @@ void CXmlElement::SetKeepNext(const bool& bKeepNext)
 void CXmlElement::SetSpacing(const std::wstring& sSpacing)
 {
     m_sSpacing = sSpacing;
-
     if (m_bEmpty)
         m_bEmpty = m_sSpacing.empty();
 }
@@ -520,15 +493,13 @@ void CXmlElement::SetSpacing(const std::wstring& sSpacing)
 void CXmlElement::SetOutlineLvl(const std::wstring& sOutlineLvl)
 {
     m_sOutlineLvl = sOutlineLvl;
-
     if (m_bEmpty)
         m_bEmpty = m_sOutlineLvl.empty();
 }
 
-void CXmlElement::SetContextualSpacing(const bool& bContextualSpacing)
+void CXmlElement::SetContextualSpacing(bool bContextualSpacing)
 {
     m_bContextualSpacing = bContextualSpacing;
-
     if (m_bContextualSpacing)
         m_bEmpty = !m_bContextualSpacing;
 }
@@ -536,7 +507,6 @@ void CXmlElement::SetContextualSpacing(const bool& bContextualSpacing)
 void CXmlElement::SetInd(const std::wstring& sInd)
 {
     m_sInd = sInd;
-
     if (m_bEmpty)
         m_bEmpty = m_sInd.empty();
 }
@@ -546,7 +516,7 @@ void CXmlElement::SetJc(const std::wstring& sJc)
     std::wstring sNewJc = sJc;
     std::transform(sNewJc.begin(), sNewJc.end(), sNewJc.begin(), towlower);
 
-    std::vector<std::wstring> arValues = {L"left", L"center", L"right", L"both"};
+    const std::vector<std::wstring> arValues = { L"left", L"center", L"right", L"both" };
 
     if (sNewJc == L"justify")
         m_sJc = L"both";
@@ -562,7 +532,6 @@ void CXmlElement::SetJc(const std::wstring& sJc)
 void CXmlElement::SetShd(const std::wstring& sShd)
 {
     m_sShd = sShd;
-
     if (m_bEmpty)
         m_bEmpty = m_sShd.empty();
 }
@@ -570,7 +539,6 @@ void CXmlElement::SetShd(const std::wstring& sShd)
 void CXmlElement::SetTopBorder(const std::wstring& sTopBorder)
 {
     m_sTopBorder = sTopBorder;
-
     if (m_bEmpty)
         m_bEmpty = m_sTopBorder.empty();
 }
@@ -578,7 +546,6 @@ void CXmlElement::SetTopBorder(const std::wstring& sTopBorder)
 void CXmlElement::SetLeftBorder(const std::wstring& sLeftBorder)
 {
     m_sLeftBorder = sLeftBorder;
-
     if (m_bEmpty)
         m_bEmpty = m_sLeftBorder.empty();
 }
@@ -586,7 +553,6 @@ void CXmlElement::SetLeftBorder(const std::wstring& sLeftBorder)
 void CXmlElement::SetBottomBorder(const std::wstring& sBottomBorder)
 {
     m_sBottomBorder = sBottomBorder;
-
     if (m_bEmpty)
         m_bEmpty = m_sBottomBorder.empty();
 }
@@ -594,7 +560,6 @@ void CXmlElement::SetBottomBorder(const std::wstring& sBottomBorder)
 void CXmlElement::SetRightBorder(const std::wstring& sRightBorder)
 {
     m_sRightBorder = sRightBorder;
-
     if (m_bEmpty)
         m_bEmpty = m_sRightBorder.empty();
 }
@@ -720,9 +685,7 @@ CXmlElement& CXmlElement::operator+=(const CXmlElement& oElement)
 
 CXmlElement& CXmlElement::operator=(const CXmlElement& oElement)
 {
-//    Clear();
     m_bEmpty                = oElement.m_bEmpty;
-
     m_sType                 = oElement.m_sType;
     m_sStyleId              = oElement.m_sStyleId;
     m_sDefault              = oElement.m_sDefault;
@@ -769,52 +732,49 @@ CXmlElement& CXmlElement::operator=(const CXmlElement& oElement)
 
 bool CXmlElement::operator==(const CXmlElement &oElement)
 {
-    if (oElement.Empty() && Empty())
+    if (oElement.Empty() || Empty())
         return false;
 
-    if (Empty() + oElement.Empty() == 1)
-        return false;
-
-    return  m_sType                 == oElement.m_sType                 &&
-            m_sStyleId              == oElement.m_sStyleId              &&
-            m_sDefault              == oElement.m_sDefault              &&
-            m_sCustomStyle          == oElement.m_sCustomStyle          &&
-            m_sS                    == oElement.m_sS                    &&
-            m_sName                 == oElement.m_sName                 &&
-            m_sBasedOn              == oElement.m_sBasedOn              &&
-            m_sLink                 == oElement.m_sLink                 &&
-            m_sUiPriority           == oElement.m_sUiPriority           &&
-            m_bQFormat              == oElement.m_bQFormat              &&
-            m_bUnhideWhenUsed       == oElement.m_bUnhideWhenUsed       &&
-            m_bB                    == oElement.m_bB                    &&
-            m_bI                    == oElement.m_bI                    &&
-            m_sRFonts               == oElement.m_sRFonts               &&
-            m_sColor                == oElement.m_sColor                &&
-            m_sU                    == oElement.m_sU                    &&
-            m_sSz                   == oElement.m_sSz                   &&
-            m_bKeepLines            == oElement.m_bKeepLines            &&
-            m_bKeepNext             == oElement.m_bKeepNext             &&
-            m_sSpacing              == oElement.m_sSpacing              &&
-            m_sOutlineLvl           == oElement.m_sOutlineLvl           &&
-            m_bContextualSpacing    == oElement.m_bContextualSpacing    &&
-            m_sInd                  == oElement.m_sInd                  &&
-            m_sJc                   == oElement.m_sJc                   &&
-            m_sShd                  == oElement.m_sShd                  &&
-            m_sTblInd               == oElement.m_sTblInd               &&
-            m_sCellTop              == oElement.m_sCellTop              &&
-            m_sCellLeft             == oElement.m_sCellLeft             &&
-            m_sCellBottom           == oElement.m_sCellBottom           &&
-            m_sCellRight            == oElement.m_sCellRight            &&
-            m_sBorderTop            == oElement.m_sBorderTop            &&
-            m_sBorderLeft           == oElement.m_sBorderLeft           &&
-            m_sBorderBottom         == oElement.m_sBorderBottom         &&
-            m_sBorderRight          == oElement.m_sBorderRight          &&
-            m_sBorderInsideH        == oElement.m_sBorderInsideH        &&
-            m_sBorderInsideV        == oElement.m_sBorderInsideV        &&
-            m_sTopBorder            == oElement.m_sTopBorder            &&
-            m_sLeftBorder           == oElement.m_sLeftBorder           &&
-            m_sBottomBorder         == oElement.m_sBottomBorder         &&
-            m_sRightBorder          == oElement.m_sRightBorder;
+    return  m_sType              == oElement.m_sType                 &&
+            m_sStyleId           == oElement.m_sStyleId              &&
+            m_sDefault           == oElement.m_sDefault              &&
+            m_sCustomStyle       == oElement.m_sCustomStyle          &&
+            m_sS                 == oElement.m_sS                    &&
+            m_sName              == oElement.m_sName                 &&
+            m_sBasedOn           == oElement.m_sBasedOn              &&
+            m_sLink              == oElement.m_sLink                 &&
+            m_sUiPriority        == oElement.m_sUiPriority           &&
+            m_bQFormat           == oElement.m_bQFormat              &&
+            m_bUnhideWhenUsed    == oElement.m_bUnhideWhenUsed       &&
+            m_bB                 == oElement.m_bB                    &&
+            m_bI                 == oElement.m_bI                    &&
+            m_sRFonts            == oElement.m_sRFonts               &&
+            m_sColor             == oElement.m_sColor                &&
+            m_sU                 == oElement.m_sU                    &&
+            m_sSz                == oElement.m_sSz                   &&
+            m_bKeepLines         == oElement.m_bKeepLines            &&
+            m_bKeepNext          == oElement.m_bKeepNext             &&
+            m_sSpacing           == oElement.m_sSpacing              &&
+            m_sOutlineLvl        == oElement.m_sOutlineLvl           &&
+            m_bContextualSpacing == oElement.m_bContextualSpacing    &&
+            m_sInd               == oElement.m_sInd                  &&
+            m_sJc                == oElement.m_sJc                   &&
+            m_sShd               == oElement.m_sShd                  &&
+            m_sTblInd            == oElement.m_sTblInd               &&
+            m_sCellTop           == oElement.m_sCellTop              &&
+            m_sCellLeft          == oElement.m_sCellLeft             &&
+            m_sCellBottom        == oElement.m_sCellBottom           &&
+            m_sCellRight         == oElement.m_sCellRight            &&
+            m_sBorderTop         == oElement.m_sBorderTop            &&
+            m_sBorderLeft        == oElement.m_sBorderLeft           &&
+            m_sBorderBottom      == oElement.m_sBorderBottom         &&
+            m_sBorderRight       == oElement.m_sBorderRight          &&
+            m_sBorderInsideH     == oElement.m_sBorderInsideH        &&
+            m_sBorderInsideV     == oElement.m_sBorderInsideV        &&
+            m_sTopBorder         == oElement.m_sTopBorder            &&
+            m_sLeftBorder        == oElement.m_sLeftBorder           &&
+            m_sBottomBorder      == oElement.m_sBottomBorder         &&
+            m_sRightBorder       == oElement.m_sRightBorder;
 }
 
 std::wstring CXmlElement::ConvertPStyle() const
@@ -879,6 +839,7 @@ std::wstring CXmlElement::ConvertRStyle() const
     std::wstring sRStyle;
 
     std::wstring sRPr = L"<w:rPr>";
+
         if (m_bB)
             sRPr += L"<w:b/><w:bCs/>";
 
@@ -899,10 +860,7 @@ std::wstring CXmlElement::ConvertRStyle() const
             sRPr += L"<w:u w:val=\"" + m_sU + L"\"/>";
 
         if (!m_sSz.empty())
-        {
-            std::wstring sSz = m_sSz;
-            sRPr += L"<w:sz w:val=\"" + sSz + L"\"/>" + L"<w:szCs w:val=\"" + sSz + L"\"/>";
-        }
+            sRPr += L"<w:sz w:val=\"" + m_sSz + L"\"/>" + L"<w:szCs w:val=\"" + m_sSz + L"\"/>";
 
     sRPr += L"</w:rPr>";
 

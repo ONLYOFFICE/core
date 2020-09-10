@@ -91,12 +91,12 @@ public:
     void SetBasedOn(const std::wstring& sBasedOn);
     void SetLink(const std::wstring& sLink);
     void SetUiPriority(const std::wstring& sUiPriority);
-    void SetQFormat(const bool& bQFormat);
-    void SetUnhideWhenUsed(const bool& bUnhideWhenUsed);
+    void SetQFormat(bool bQFormat);
+    void SetUnhideWhenUsed(bool bUnhideWhenUsed);
 
     // <rPr>
-        void SetB(const bool& bB);
-        void SetI(const bool& bI);
+        void SetB(bool bB);
+        void SetI(bool bI);
         void SetU(const std::wstring& sU);
         void SetRFonts(const std::wstring& sRFonts);
         void SetColor(const std::wstring& sColor);
@@ -104,9 +104,9 @@ public:
     // </rPr>
 
     // <pPr>
-        void SetKeepLines(const bool& bKeepLines);
-        void SetKeepNext(const bool& bKeepNext);
-        void SetContextualSpacing(const bool& bContextualSpacing);
+        void SetKeepLines(bool bKeepLines);
+        void SetKeepNext(bool bKeepNext);
+        void SetContextualSpacing(bool bContextualSpacing);
         void SetSpacing(const std::wstring& sSpacing);
         void SetOutlineLvl(const std::wstring& sOutlineLvl);
         void SetInd(const std::wstring& sInd);

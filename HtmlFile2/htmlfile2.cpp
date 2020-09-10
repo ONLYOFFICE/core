@@ -38,7 +38,7 @@ struct CTc
     int j;
     std::wstring sGridSpan = L"1";
 
-    CTc(const int& _i, const int& _j, const std::wstring& sColspan) : i(_i), j(_j), sGridSpan(sColspan) {}
+    CTc(int _i, int _j, const std::wstring& sColspan) : i(_i), j(_j), sGridSpan(sColspan) {}
 
     bool operator==(const CTc& c2)
     {
@@ -55,7 +55,7 @@ struct CTextSettings
     std::wstring sRStyle; // w:rStyle
     std::wstring sPStyle; // w:pStyle
 
-    CTextSettings(const bool& _bBdo, const bool& _bPre, const int& _nLi, const std::wstring& _sRStyle, const std::wstring& _sPStyle) :
+    CTextSettings(bool _bBdo, bool _bPre, int _nLi, const std::wstring& _sRStyle, const std::wstring& _sPStyle) :
         bBdo(_bBdo), bPre(_bPre), nLi(_nLi), sRStyle(_sRStyle), sPStyle(_sPStyle) {}
 
     CTextSettings(const CTextSettings& oTS) : bBdo(oTS.bBdo), bPre(oTS.bPre), nLi(oTS.nLi), sRStyle(oTS.sRStyle), sPStyle(oTS.sPStyle) {}
@@ -457,7 +457,7 @@ private:
         sSelectors.push_back(oNode);
     }
 
-    std::wstring GetStyle(const std::vector<NSCSS::CNode>& sSelectors, const bool& bP)
+    std::wstring GetStyle(const std::vector<NSCSS::CNode>& sSelectors, bool bP)
     {
         NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
         bP ? m_oXmlStyle.WritePStyle(oStyle) : m_oXmlStyle.WriteRStyle(oStyle);

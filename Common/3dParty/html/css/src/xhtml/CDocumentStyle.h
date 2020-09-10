@@ -13,12 +13,9 @@ namespace NSCSS
     public:
         CCompiledStyle m_oStyle;
         bool m_bIsPStyle;
-
         std::wstring m_sId;
 
-        CStyleUsed(const CCompiledStyle& oStyle, const bool& bIsPStyle) :   m_oStyle(oStyle),
-                                                                            m_bIsPStyle(bIsPStyle)
-        {}
+        CStyleUsed(const CCompiledStyle& oStyle, const bool& bIsPStyle) : m_oStyle(oStyle), m_bIsPStyle(bIsPStyle) {}
 
         bool operator==(const CStyleUsed& oUsedStyle) const
         {

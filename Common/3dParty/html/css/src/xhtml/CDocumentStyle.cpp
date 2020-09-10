@@ -88,7 +88,6 @@ namespace NSCSS
     {
         if (sStyle.empty())
             return;
-
         m_sStyle = sStyle;
     }
 
@@ -379,7 +378,6 @@ namespace NSCSS
             const std::wstring& sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
                                                            sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
 
-
             if (sBorderColor.empty() + sBorderWidth.empty() + sBorderStyle.empty() == 0)
             {
                 oXmlElement.SetTopBorder(sBorder);
@@ -542,7 +540,6 @@ namespace NSCSS
         }
 
         CStyleUsed structStyle(oStyle, true);
-
         const auto& oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), structStyle);
 
         if (oItem != m_arStyleUsed.cend())

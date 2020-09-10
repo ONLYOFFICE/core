@@ -10,39 +10,20 @@
 #include "../../../../../DesktopEditor/common/File.h"
 #include "ConstValues.h"
 
-inline static std::vector<std::wstring> GetWordsW(const std::wstring& sLine)
+static std::vector<std::wstring> GetWordsW(const std::wstring& sLine)
 {
     if (sLine.empty())
         return {};
 
     std::vector<std::wstring> arWords;
-    std::wstring sTempWord = sLine;
+    size_t posFirstNotSpace = sLine.find_first_not_of(L" \n\r\t\f\v:;,");
 
-    while (true)
+    while (posFirstNotSpace != std::wstring::npos)
     {
-        const auto& posFirstNotSpace = sTempWord.find_first_not_of(L" \n\r\t\f\v:;");
-        const auto& posLastNotSpace = sTempWord.find_first_of(L" \n\r\t\f\v", posFirstNotSpace);
-        const auto& posFirstSign = sTempWord.find_first_of(L":;,", posFirstNotSpace);
-
-        if (posFirstNotSpace != std::wstring::npos && posFirstSign != std::wstring::npos)
-        {
-            arWords.push_back(sTempWord.substr(posFirstNotSpace, posFirstSign - posFirstNotSpace + 1));
-            sTempWord.erase(posFirstNotSpace, posFirstSign - posFirstNotSpace + 1);
-        }
-        else if (posFirstNotSpace != std::wstring::npos && posLastNotSpace != std::wstring::npos)
-        {
-            arWords.push_back(sTempWord.substr(posFirstNotSpace, posLastNotSpace - posFirstNotSpace));
-            sTempWord.erase(posFirstNotSpace, posLastNotSpace - posFirstNotSpace);
-        }
-        else if (posFirstNotSpace != std::wstring::npos && posLastNotSpace == std::wstring::npos)
-        {
-            arWords.push_back(sTempWord.substr(posFirstNotSpace));
-            break;
-        }
-        else
-            break;
+        size_t posLastNotSpace = sLine.find_first_of(L" \n\r\t\f\v:;,", posFirstNotSpace);
+        arWords.push_back(sLine.substr(posFirstNotSpace, posLastNotSpace - posFirstNotSpace));
+        posFirstNotSpace = sLine.find_first_not_of(L" \n\r\t\f\v:;,", posLastNotSpace);
     }
-
     return arWords;
 }
 
@@ -52,9 +33,8 @@ namespace NSCSS
 
     CCompiledStyle::CCompiledStyle(const std::map<std::wstring, std::wstring>& mStyle) : m_mStyle(mStyle) {}
 
-    CCompiledStyle::CCompiledStyle(const CCompiledStyle& oStyle) : m_mStyle(oStyle.m_mStyle),
-                                                                   m_sId(oStyle.m_sId),
-                                                                   m_arParentsStyles(oStyle.m_arParentsStyles) {}
+    CCompiledStyle::CCompiledStyle(const CCompiledStyle& oStyle) :
+        m_mStyle(oStyle.m_mStyle), m_sId(oStyle.m_sId), m_arParentsStyles(oStyle.m_arParentsStyles) {}
 
     CCompiledStyle::~CCompiledStyle()
     {
@@ -88,36 +68,16 @@ namespace NSCSS
 
     bool CCompiledStyle::operator== (const CCompiledStyle& oStyle) const
     {
-        if (GetId()[0] != oStyle.GetId()[0])
-            return false;
-
-        if (m_arParentsStyles.size() != oStyle.m_arParentsStyles.size())
-            return false;
-        for (size_t i = 0; i < m_arParentsStyles.size(); i++)
-            if (m_arParentsStyles[i] != oStyle.m_arParentsStyles[i])
-                return false;
-
-        if (m_mStyle.size() != oStyle.m_mStyle.size())
-            return false;
-
-        auto iterLeft = m_mStyle.begin();
-        auto iterRight = oStyle.m_mStyle.begin();
-        while (iterLeft != m_mStyle.cend())
-        {
-            if (iterLeft->first != iterRight->first || iterLeft->second != iterRight->second)
-                return false;
-            iterLeft++;
-            iterRight++;
-        }
-        return true;
+        return GetId()[0]        == oStyle.GetId()[0]        &&
+               m_arParentsStyles == oStyle.m_arParentsStyles &&
+               m_mStyle          == oStyle.m_mStyle;
     }
 
     std::wstring CCompiledStyle::GetStyleW() const
     {
-        std::wstring sStyle1;
-        for (const auto& oIter : m_mStyle)
-            sStyle1 += oIter.first + L":" + oIter.second + L";";
-        return sStyle1;
+        std::wstring sStyle;
+        return std::accumulate(m_mStyle.begin(), m_mStyle.end(), sStyle,
+            [] (std::wstring& sRes, const auto& oIter) { return sRes + oIter.first + L":" + oIter.second + L";"; });
     }
 
     std::map<std::wstring, std::wstring> CCompiledStyle::GetStyleMap() const
@@ -192,28 +152,12 @@ namespace NSCSS
 
     void CCompiledStyle::AddStyle(const std::wstring& sStyle)
     {
-        std::wstring sTempStyle = sStyle;
-
-        std::wstring sTempProperty;
-        std::wstring sValue;
-
-        while (!sTempStyle.empty())
+        size_t posColon = sStyle.find(L':');
+        while (posColon != std::wstring::npos)
         {
-            const auto& posColon = sTempStyle.find(L':');
-            const auto& posSemicolon = sTempStyle.find(L';', posColon);
-
-            if (posColon != std::wstring::npos && posSemicolon != std::wstring::npos)
-            {
-                AddPropSel(sTempStyle.substr(0, posColon), sTempStyle.substr(posColon + 1, posSemicolon - posColon - 1));
-                sTempStyle.erase(0, posSemicolon + 1);
-            }
-            else if (posColon != std::wstring::npos)
-            {
-                AddPropSel(sTempStyle.substr(0, posColon), sTempStyle.substr(posColon + 1));
-                break;
-            }
-            if (posColon == std::wstring::npos && posSemicolon == std::wstring::npos)
-                break;
+            size_t posSemicolon = sStyle.find(L';', posColon);
+            AddPropSel(sStyle.substr(0, posColon), sStyle.substr(posColon + 1, posSemicolon - posColon - 1));
+            posColon = sStyle.find(L':', posSemicolon);
         }
     }
 
@@ -1140,9 +1084,6 @@ namespace NSCSS
                 return oBackgroundColor->second;
 
             const std::wstring& sBackground = GetBackground();
-
-            if (sBackground.empty())
-                return L"";
 
             const std::vector<std::wstring>& arWords = GetWordsW(sBackground);
 

@@ -5,39 +5,20 @@
 #include <wchar.h>
 #include <math.h>
 
-inline static std::vector<std::wstring> GetWordsW(const std::wstring& sLine)
+static std::vector<std::wstring> GetWordsW(const std::wstring& sLine)
 {
     if (sLine.empty())
         return {};
 
     std::vector<std::wstring> arWords;
-    std::wstring sTempWord = sLine;
+    size_t posFirstNotSpace = sLine.find_first_not_of(L" \n\r\t\f\v:;,");
 
-    while (true)
+    while (posFirstNotSpace != std::wstring::npos)
     {
-        const auto& posFirstNotSpace = sTempWord.find_first_not_of(L" \n\r\t\f\v:;");
-        const auto& posLastNotSpace = sTempWord.find_first_of(L" \n\r\t\f\v", posFirstNotSpace);
-        const auto& posFirstSign = sTempWord.find_first_of(L":;,", posFirstNotSpace);
-
-        if (posFirstNotSpace != std::wstring::npos && posFirstSign != std::wstring::npos)
-        {
-            arWords.push_back(sTempWord.substr(posFirstNotSpace, posFirstSign - posFirstNotSpace + 1));
-            sTempWord.erase(posFirstNotSpace, posFirstSign - posFirstNotSpace + 1);
-        }
-        else if (posFirstNotSpace != std::wstring::npos && posLastNotSpace != std::wstring::npos)
-        {
-            arWords.push_back(sTempWord.substr(posFirstNotSpace, posLastNotSpace - posFirstNotSpace));
-            sTempWord.erase(posFirstNotSpace, posLastNotSpace - posFirstNotSpace);
-        }
-        else if (posFirstNotSpace != std::wstring::npos && posLastNotSpace == std::wstring::npos)
-        {
-            arWords.push_back(sTempWord.substr(posFirstNotSpace));
-            break;
-        }
-        else
-            break;
+        size_t posLastNotSpace = sLine.find_first_of(L" \n\r\t\f\v:;,", posFirstNotSpace);
+        arWords.push_back(sLine.substr(posFirstNotSpace, posLastNotSpace - posFirstNotSpace));
+        posFirstNotSpace = sLine.find_first_not_of(L" \n\r\t\f\v:;,", posLastNotSpace);
     }
-
     return arWords;
 }
 

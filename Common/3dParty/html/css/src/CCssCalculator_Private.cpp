@@ -23,8 +23,8 @@ inline static std::string       GetContentAsUTF8(const std::string &sString, con
 inline static std::string       GetContentAsUTF8(const std::wstring& sFileName);
 inline static bool              ThereIsNumber(const std::wstring& sString);
 inline static std::wstring      ConvertAbsoluteValue(const std::wstring& sAbsoluteValue);
-inline std::vector<std::string> GetWords(const std::wstring& sLine);
-inline std::vector<std::wstring> GetWordsW(const std::wstring& sLine);
+static std::vector<std::string>        GetWords(const std::wstring& sLine);
+static std::vector<std::wstring>       GetWordsW(const std::wstring& sLine);
 inline std::vector<std::string> GetSelectorsList(const std::wstring& sSelectors);
 inline std::wstring             DeleteSpace(const std::wstring& sValue);
 inline static void              RemoveExcessFromStyles(std::wstring& sStyle);
@@ -1913,75 +1913,38 @@ inline std::vector<std::string> GetSelectorsList(const std::wstring& sSelectors)
     return arSelectors;
 }
 
-inline std::vector<std::string> GetWords(const std::wstring& sLine)
+static std::vector<std::string> GetWords(const std::wstring& sLine)
 {
     if (sLine.empty())
         return {};
 
     std::vector<std::string> arWords;
-    std::string sTempWord = wstringToString(sLine);
+    std::string sTemp = wstringToString(sLine);
+    size_t posFirstNotSpace = sTemp.find_first_not_of(" \n\r\t\f\v:;,");
 
-    while (true)
+    while (posFirstNotSpace != std::wstring::npos)
     {
-        const auto& posFirstNotSpace = sTempWord.find_first_not_of(" \n\r\t\f\v:;");
-        const auto& posLastNotSpace = sTempWord.find_first_of(" \n\r\t\f\v", posFirstNotSpace);
-        const auto& posFirstSign = sTempWord.find_first_of(":;,", posFirstNotSpace);
-
-        if (posFirstNotSpace != std::wstring::npos && posFirstSign != std::wstring::npos)
-        {
-            arWords.push_back(sTempWord.substr(posFirstNotSpace, posFirstSign - posFirstNotSpace + 1));
-            sTempWord.erase(posFirstNotSpace, posFirstSign - posFirstNotSpace + 1);
-        }
-        else if (posFirstNotSpace != std::wstring::npos && posLastNotSpace != std::wstring::npos)
-        {
-            arWords.push_back(sTempWord.substr(posFirstNotSpace, posLastNotSpace - posFirstNotSpace));
-            sTempWord.erase(posFirstNotSpace, posLastNotSpace - posFirstNotSpace);
-        }
-        else if (posFirstNotSpace != std::wstring::npos && posLastNotSpace == std::wstring::npos)
-        {
-            arWords.push_back(sTempWord);
-            break;
-        }
-        else
-            break;
+        size_t posLastNotSpace = sTemp.find_first_of(" \n\r\t\f\v:;,", posFirstNotSpace);
+        arWords.push_back(sTemp.substr(posFirstNotSpace, posLastNotSpace - posFirstNotSpace));
+        posFirstNotSpace = sTemp.find_first_not_of(" \n\r\t\f\v:;,", posLastNotSpace);
     }
-
     return arWords;
 }
 
 
-inline std::vector<std::wstring> GetWordsW(const std::wstring& sLine)
+static std::vector<std::wstring> GetWordsW(const std::wstring& sLine)
 {
     if (sLine.empty())
         return {};
 
     std::vector<std::wstring> arWords;
-    std::wstring sTempWord = sLine;
+    size_t posFirstNotSpace = sLine.find_first_not_of(L" \n\r\t\f\v:;,");
 
-    while (true)
+    while (posFirstNotSpace != std::wstring::npos)
     {
-        const auto& posFirstNotSpace = sTempWord.find_first_not_of(L" \n\r\t\f\v:;");
-        const auto& posLastNotSpace = sTempWord.find_first_of(L" \n\r\t\f\v", posFirstNotSpace);
-        const auto& posFirstSign = sTempWord.find_first_of(L":;,", posFirstNotSpace);
-
-        if (posFirstNotSpace != std::wstring::npos && posFirstSign != std::wstring::npos)
-        {
-            arWords.push_back(sTempWord.substr(posFirstNotSpace, posFirstSign - posFirstNotSpace + 1));
-            sTempWord.erase(posFirstNotSpace, posFirstSign - posFirstNotSpace + 1);
-        }
-        else if (posFirstNotSpace != std::wstring::npos && posLastNotSpace != std::wstring::npos)
-        {
-            arWords.push_back(sTempWord.substr(posFirstNotSpace, posLastNotSpace - posFirstNotSpace));
-            sTempWord.erase(posFirstNotSpace, posLastNotSpace - posFirstNotSpace);
-        }
-        else if (posFirstNotSpace != std::wstring::npos && posLastNotSpace == std::wstring::npos)
-        {
-            arWords.push_back(sTempWord.substr(posFirstNotSpace));
-            break;
-        }
-        else
-            break;
+        size_t posLastNotSpace = sLine.find_first_of(L" \n\r\t\f\v:;,", posFirstNotSpace);
+        arWords.push_back(sLine.substr(posFirstNotSpace, posLastNotSpace - posFirstNotSpace));
+        posFirstNotSpace = sLine.find_first_not_of(L" \n\r\t\f\v:;,", posLastNotSpace);
     }
-
     return arWords;
 }

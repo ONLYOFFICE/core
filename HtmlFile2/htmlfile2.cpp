@@ -732,7 +732,10 @@ private:
                     sName == L"command"  || sName == L"iframe" || sName == L"embed" || sName == L"wbr"  || sName == L"audio" ||
                     sName == L"bgsound"  || sName == L"applet" || sName == L"blink" || sName == L"keygen"|| sName == L"script" ||
                     sName == L"comment"  || sName == L"title"  || sName == L"style")
+            {
+                sSelectors.pop_back();
                 continue;
+            }
             // Без нового абзаца
             else if(sName == L"basefont" || sName == L"button" || sName == L"label" || sName == L"data" || sName == L"object" ||
                     sName == L"noscript" || sName == L"output" || sName == L"abbr"  || sName == L"time" || sName == L"ruby"   ||

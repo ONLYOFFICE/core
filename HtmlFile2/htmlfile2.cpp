@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iostream>
 #include <fstream>
+#include <iterator>
 
 #include "../Common/3dParty/html/htmltoxhtml.h"
 #include "../Common/3dParty/html/css/src/CCssCalculator.h"
@@ -433,12 +434,10 @@ public:
 
 private:
 
-    std::vector<NSCSS::CNode> GetSubClass(const std::vector<NSCSS::CNode>& sSelectors, std::wstring& sNote)
+    void GetSubClass(std::vector<NSCSS::CNode>& sSelectors, std::wstring& sNote)
     {
         NSCSS::CNode oNode;
         oNode.m_sName = m_oLightReader.GetName();
-        if(oNode.m_sName == L"#text")
-            return sSelectors;
         // Стиль по атрибуту
         while(m_oLightReader.MoveToNextAttribute())
         {
@@ -455,9 +454,7 @@ private:
                 oNode.m_sStyle += L"; text-align: " + m_oLightReader.GetText() + L";";
         }
         m_oLightReader.MoveToElement();
-        std::vector<NSCSS::CNode> sSubClass(sSelectors);
-        sSubClass.push_back(oNode);
-        return sSubClass;
+        sSelectors.push_back(oNode);
     }
 
     std::wstring GetStyle(const std::vector<NSCSS::CNode>& sSelectors, const bool& bP)
@@ -492,7 +489,7 @@ private:
         std::wstring sEmpty;
         CTextSettings oTS { false, false, -1, sEmpty, sEmpty };
         std::vector<NSCSS::CNode> sSelectors;
-        sSelectors = GetSubClass(sSelectors, sEmpty);
+        GetSubClass(sSelectors, sEmpty);
         auto it = m_sSrcs.find(sFileName);
         if(it != m_sSrcs.end())
         {
@@ -513,7 +510,7 @@ private:
         m_oDocXml.WriteString(L"</w:p>");
     }
 
-    bool readStream(NSStringUtils::CStringBuilder* oXml, const std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, bool& bWasP)
+    bool readStream(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, bool& bWasP)
     {
         int nDeath = m_oLightReader.GetDepth();
         if(m_oLightReader.IsEmptyNode() || !m_oLightReader.ReadNextSiblingNode2(nDeath))
@@ -521,17 +518,15 @@ private:
 
         do
         {
-            std::wstring sNote;
-            std::vector<NSCSS::CNode> sSubClass = GetSubClass(sSelectors, sNote);
             std::wstring sName = m_oLightReader.GetName();
             if(sName == L"#text")
             {
                 std::wstring sP;
                 std::wstring sPStyle;
                 std::wstring sRStyle;
-                wrPStyle(oXml, sSubClass, oTS, bWasP, sP, sPStyle);
+                wrPStyle(oXml, sSelectors, oTS, bWasP, sP, sPStyle);
                 oXml->WriteString(L"<w:r>");
-                wrRStyle(oXml, sSubClass, oTS, sRStyle);
+                wrRStyle(oXml, sSelectors, oTS, sRStyle);
                 oXml->WriteString(L"<w:t xml:space=\"preserve\">");
 
                 std::wstring sText = m_oLightReader.GetText();
@@ -569,17 +564,20 @@ private:
                 continue;
             }
 
+            std::wstring sNote;
+            GetSubClass(sSelectors, sNote);
+
             // Ссылка
             // Область ссылки
             if(sName == L"a" || sName == L"area")
-                readA(oXml, sSubClass, oTS, bWasP, sNote);
+                readA(oXml, sSelectors, oTS, bWasP, sNote);
             // Полужирный текст
             // Акцентированный текст
             else if(sName == L"b" || sName == L"strong")
             {
                 CTextSettings oTSR(oTS);
                 oTSR.sRStyle += L"<w:b/>";
-                readStream(oXml, sSubClass, oTSR, bWasP);
+                readStream(oXml, sSelectors, oTSR, bWasP);
             }
             // Направление текста
             else if(sName == L"bdo")
@@ -592,35 +590,35 @@ private:
 
                 CTextSettings oTSBdo(oTS);
                 oTSBdo.bBdo = (sDir == L"rtl");
-                readStream(oXml, sSubClass, oTSBdo, bWasP);
+                readStream(oXml, sSelectors, oTSBdo, bWasP);
             }
             // Отмена направления текста
             else if(sName == L"bdi")
             {
                 CTextSettings oTSBdo(oTS);
                 oTSBdo.bBdo = false;
-                readStream(oXml, sSubClass, oTSBdo, bWasP);
+                readStream(oXml, sSelectors, oTSBdo, bWasP);
             }
             // Увеличивает размер шрифта
             else if(sName == L"big")
             {
                 CTextSettings oTSR(oTS);
                 oTSR.sRStyle += L"<w:sz w:val=\"26\"/>";
-                readStream(oXml, sSubClass, oTSR, bWasP);
+                readStream(oXml, sSelectors, oTSR, bWasP);
             }
             // Перенос строки
             else if(sName == L"br")
             {
                 std::wstring sP;
                 std::wstring sPStyle;
-                wrPStyle(oXml, sSubClass, oTS, bWasP, sP, sPStyle);
+                wrPStyle(oXml, sSelectors, oTS, bWasP, sP, sPStyle);
                 oXml->WriteString(L"<w:r><w:br/></w:r>");
             }
             else if(sName == L"center")
             {
                 CTextSettings oTSP(oTS);
                 oTSP.sPStyle += L"<w:jc w:val=\"center\"/>";
-                readStream(oXml, sSubClass, oTSP, bWasP);
+                readStream(oXml, sSelectors, oTSP, bWasP);
             }
             // Цитата, обычно выделяется курсивом
             // Новый термин, обычно выделяется курсивом
@@ -631,7 +629,7 @@ private:
             {
                 CTextSettings oTSR(oTS);
                 oTSR.sRStyle += L"<w:i/>";
-                readStream(oXml, sSubClass, oTSR, bWasP);
+                readStream(oXml, sSelectors, oTSR, bWasP);
             }
             // Код
             // Моноширинный шрифт, например, Consolas
@@ -640,14 +638,14 @@ private:
             {
                 CTextSettings oTSR(oTS);
                 oTSR.sRStyle += L"<w:rFonts w:ascii=\"Consolas\" w:hAnsi=\"Consolas\"/>";
-                readStream(oXml, sSubClass, oTSR, bWasP);
+                readStream(oXml, sSelectors, oTSR, bWasP);
             }
             // Зачеркнутый текст
             else if(sName == L"del" || sName == L"s")
             {
                 CTextSettings oTSR(oTS);
                 oTSR.sRStyle += L"<w:strike/>";
-                readStream(oXml, sSubClass, oTSR, bWasP);
+                readStream(oXml, sSelectors, oTSR, bWasP);
             }
             else if(sName == L"font")
             {
@@ -655,43 +653,43 @@ private:
                 {
                     std::wstring sAName = m_oLightReader.GetName();
                     if(sAName == L"color")
-                        sSubClass.back().m_sStyle += L"; color: " + m_oLightReader.GetText();
+                        sSelectors.back().m_sStyle += L"; color: " + m_oLightReader.GetText();
                     else if(sAName == L"face")
-                        sSubClass.back().m_sStyle += L"; font-family: " + m_oLightReader.GetText();
+                        sSelectors.back().m_sStyle += L"; font-family: " + m_oLightReader.GetText();
                     else if(sAName == L"size")
-                        sSubClass.back().m_sStyle += L"; font-size: " + m_oLightReader.GetText();
+                        sSelectors.back().m_sStyle += L"; font-size: " + m_oLightReader.GetText();
                 }
                 m_oLightReader.MoveToElement();
-                readStream(oXml, sSubClass, oTS, bWasP);
+                readStream(oXml, sSelectors, oTS, bWasP);
             }
             // Картинки
             else if(sName == L"img")
-                readImage(oXml, sSubClass, oTS, bWasP);
+                readImage(oXml, sSelectors, oTS, bWasP);
             // Подчеркнутый
             else if(sName == L"ins")
             {
                 CTextSettings oTSR(oTS);
                 oTSR.sRStyle += L"<w:u w:val=\"single\"/>";
-                readStream(oXml, sSubClass, oTSR, bWasP);
+                readStream(oXml, sSelectors, oTSR, bWasP);
             }
             // Выделенный текст, обычно выделяется желтым
             else if(sName == L"mark")
             {
                 CTextSettings oTSR(oTS);
                 oTSR.sRStyle += L"<w:highlight w:val=\"yellow\"/>";
-                readStream(oXml, sSubClass, oTSR, bWasP);
+                readStream(oXml, sSelectors, oTSR, bWasP);
             }
             // Цитата, выделенная кавычками, обычно выделяется курсивом
             else if(sName == L"q")
             {
                 std::wstring sRStyle;
                 oXml->WriteString(L"<w:r>");
-                wrRStyle(oXml, sSubClass, oTS, sRStyle);
+                wrRStyle(oXml, sSelectors, oTS, sRStyle);
                 oXml->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t></w:r>");
 
                 CTextSettings oTSR(oTS);
                 oTSR.sRStyle += L"<w:i/>";
-                readStream(oXml, sSubClass, oTSR, bWasP);
+                readStream(oXml, sSelectors, oTSR, bWasP);
 
                 oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"");
                 oXml->WriteString(sRStyle);
@@ -705,21 +703,21 @@ private:
             {
                 CTextSettings oTSR(oTS);
                 oTSR.sRStyle += L"<w:vertAlign w:val=\"superscript\"/>";
-                readStream(oXml, sSubClass, oTSR, bWasP);
+                readStream(oXml, sSelectors, oTSR, bWasP);
             }
             // Уменьшает размер шрифта
             else if(sName == L"small")
             {
                 CTextSettings oTSR(oTS);
                 oTSR.sRStyle += L"<w:sz w:val=\"18\"/>";
-                readStream(oXml, sSubClass, oTSR, bWasP);
+                readStream(oXml, sSelectors, oTSR, bWasP);
             }
             // Текст нижнего регистра
             else if(sName == L"sub")
             {
                 CTextSettings oTSR(oTS);
                 oTSR.sRStyle += L"<w:vertAlign w:val=\"subscript\"/>";
-                readStream(oXml, sSubClass, oTSR, bWasP);
+                readStream(oXml, sSelectors, oTSR, bWasP);
             }
             // Векторная картинка
             else if(sName == L"svg")
@@ -728,7 +726,7 @@ private:
                 bWasP = false;
             }
             else if(sName == L"input")
-                readInput(oXml, sSubClass, oTS, bWasP);
+                readInput(oXml, sSelectors, oTS, bWasP);
             // Игнорируются тэги выполняющие скрипт
             else if(sName == L"template" || sName == L"canvas" || sName == L"video" || sName == L"math" || sName == L"rp"    ||
                     sName == L"command"  || sName == L"iframe" || sName == L"embed" || sName == L"wbr"  || sName == L"audio" ||
@@ -740,24 +738,24 @@ private:
                     sName == L"noscript" || sName == L"output" || sName == L"abbr"  || sName == L"time" || sName == L"ruby"   ||
                     sName == L"progress" || sName == L"hgroup" || sName == L"meter" || sName == L"span" ||
                     sName == L"acronym")
-                readStream(oXml, sSubClass, oTS, bWasP);
+                readStream(oXml, sSelectors, oTS, bWasP);
             // С нового абзаца
             else
             {
-                wasP(oXml, sSubClass, bWasP);
+                wasP(oXml, sSelectors, bWasP);
                 // Адрес
                 if(sName == L"address")
                 {
                     CTextSettings oTSR(oTS);
                     oTSR.sRStyle += L"<w:i/>";
-                    readStream(oXml, sSubClass, oTSR, bWasP);
+                    readStream(oXml, sSelectors, oTSR, bWasP);
                 }
                 // Определение термина, отступ от левого края
                 else if(sName == L"dd")
                 {
                     CTextSettings oTSP(oTS);
                     oTSP.sPStyle += L"<w:ind w:left=\"567\"/>";
-                    readStream(oXml, sSubClass, oTSP, bWasP);
+                    readStream(oXml, sSelectors, oTSP, bWasP);
                 }
                 // С нового абзаца
                 else if(sName == L"article" || sName == L"header" || sName == L"div" || sName == L"blockquote" || sName == L"main" ||
@@ -766,7 +764,7 @@ private:
                         sName == L"section" || sName == L"figure" || sName == L"dl"  || sName == L"legend"     || sName == L"map"  ||
                         sName == L"dir" ||
                         sName == L"h1" || sName == L"h2" || sName == L"h3" || sName == L"h4" || sName == L"h5" || sName == L"h6")
-                    readStream(oXml, sSubClass, oTS, bWasP);
+                    readStream(oXml, sSelectors, oTS, bWasP);
                 // Горизонтальная линия
                 else if(sName == L"hr")
                 {
@@ -776,10 +774,10 @@ private:
                 // Меню
                 // Маркированный список
                 else if(sName == L"menu" || sName == L"ul" || sName == L"select" || sName == L"datalist")
-                    readLi(oXml, sSubClass, oTS, bWasP, true);
+                    readLi(oXml, sSelectors, oTS, bWasP, true);
                 // Нумерованный список
                 else if(sName == L"ol")
-                    readLi(oXml, sSubClass, oTS, bWasP, false);
+                    readLi(oXml, sSelectors, oTS, bWasP, false);
                 // Предварительно форматированный текст
                 else if(sName == L"pre")
                 {
@@ -787,18 +785,20 @@ private:
                     oTSPre.bPre = true;
                     oTSPre.sRStyle += L"<w:rFonts w:ascii=\"Consolas\" w:hAnsi=\"Consolas\"/>";
                     oTSPre.sPStyle += L"<w:spacing w:after=\"0\"/>";
-                    readStream(oXml, sSubClass, oTSPre, bWasP);
+                    readStream(oXml, sSelectors, oTSPre, bWasP);
                 }
                 // Таблицы
                 else if(sName == L"table")
                 {
-                    auto it = std::find_if(sSubClass.begin(), sSubClass.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
-                    if(it != sSubClass.end())
+
+                    auto it = std::find_if(sSelectors.begin(), sSelectors.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
+                    bool bHyperlink = it != sSelectors.end();
+                    if(bHyperlink)
                         oXml->WriteString(L"</w:hyperlink>");
                     oXml->WriteString(L"</w:p>");
-                    readTable(oXml, sSubClass, oTS, bWasP);
+                    readTable(oXml, sSelectors, oTS, bWasP);
                     oXml->WriteString(L"<w:p>");
-                    if(it != sSubClass.end())
+                    if(bHyperlink)
                         oXml->WriteString(L"<w:hyperlink>");
                     bWasP = true;
                 }
@@ -807,21 +807,22 @@ private:
                 {
                     CTextSettings oTSP(oTS);
                     oTSP.sPStyle += L"<w:pBdr><w:left w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:top w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:right w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr>";
-                    readStream(oXml, sSubClass, oTSP, bWasP);
+                    readStream(oXml, sSelectors, oTSP, bWasP);
                 }
                 // Неизвестный тэг. Выделять ли его абзацем?
                 else
-                    readStream(oXml, sSubClass, oTS, bWasP);
+                    readStream(oXml, sSelectors, oTS, bWasP);
                 readNote(oXml, sNote);
                 sNote = L"";
-                wasP(oXml, sSubClass, bWasP);
+                wasP(oXml, sSelectors, bWasP);
             }
             readNote(oXml, sNote);
+            sSelectors.pop_back();
         } while(m_oLightReader.ReadNextSiblingNode2(nDeath));
         return true;
     }
 
-    void readTr    (NSStringUtils::CStringBuilder* oXml, const std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, bool& bWasP)
+    void readTr    (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, bool& bWasP)
     {
         std::vector<CTc> mTable;
         int nDeath = m_oLightReader.GetDepth();
@@ -888,17 +889,18 @@ private:
                 bWasP = true;
 
                 std::wstring sEmpty;
-                std::vector<NSCSS::CNode> sSubClass = GetSubClass(sSelectors, sEmpty);
+                GetSubClass(sSelectors, sEmpty);
                 // Читаем th. Ячейка заголовка таблицы. Выравнивание посередине. Выделяется полужирным
                 if(m_oLightReader.GetName() == L"th")
                 {
                     CTextSettings oTSR(oTS);
                     oTSR.sRStyle += L"<w:b/>";
-                    readStream(oXml, sSubClass, oTSR, bWasP);
+                    readStream(oXml, sSelectors, oTSR, bWasP);
                 }
                 // Читаем td. Ячейка таблицы. Выравнивание вправо
                 else if(m_oLightReader.GetName() == L"td")
-                    readStream(oXml, sSubClass, oTS, bWasP);
+                    readStream(oXml, sSelectors, oTS, bWasP);
+                sSelectors.pop_back();
                 oXml->WriteString(L"</w:p></w:tc>");
                 j++;
 
@@ -921,7 +923,7 @@ private:
         }
     }
 
-    void readTable (NSStringUtils::CStringBuilder* oXml, const std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, bool& bWasP)
+    void readTable (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, bool& bWasP)
     {
         if(m_oLightReader.IsEmptyNode())
             return;
@@ -935,23 +937,24 @@ private:
         {
             std::wstring sName = m_oLightReader.GetName();
             std::wstring sEmpty;
-            std::vector<NSCSS::CNode> sSubClass = GetSubClass(sSelectors, sEmpty);
+            GetSubClass(sSelectors, sEmpty);
             // Заголовок таблицы
             if(sName == L"caption")
             {
                 bWasP = true;
                 oXml->WriteString(L"<w:p>");
                 CTextSettings oTSP { oTS.bBdo, oTS.bPre, oTS.nLi, oTS.sRStyle, oTS.sPStyle + L"<w:jc w:val=\"center\"/>" };
-                readStream(oXml, sSubClass, oTSP, bWasP);
+                readStream(oXml, sSelectors, oTSP, bWasP);
                 oXml->WriteString(L"</w:p>");
                 bWasP = false;
             }
             if(sName == L"thead")
-                readTr(&oHead, sSubClass, oTS, bWasP);
+                readTr(&oHead, sSelectors, oTS, bWasP);
             else if(sName == L"tbody")
-                readTr(&oBody, sSubClass, oTS, bWasP);
+                readTr(&oBody, sSelectors, oTS, bWasP);
             else if(sName == L"tfoot")
-                readTr(&oFoot, sSubClass, oTS, bWasP);
+                readTr(&oFoot, sSelectors, oTS, bWasP);
+            sSelectors.pop_back();
         }
 
         // Начало таблицы
@@ -966,7 +969,7 @@ private:
         bWasP = false;
     }
 
-    void readInput (NSStringUtils::CStringBuilder* oXml, const std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, bool& bWasP)
+    void readInput (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, bool& bWasP)
     {
         std::wstring sValue;
         std::wstring sAlt;
@@ -999,7 +1002,7 @@ private:
         readStream(oXml, sSelectors, oTS, bWasP);
     }
 
-    void readLi    (NSStringUtils::CStringBuilder* oXml, const std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, bool& bWasP, bool bType)
+    void readLi    (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, bool& bWasP, bool bType)
     {
         if(m_oLightReader.IsEmptyNode())
             return;
@@ -1017,7 +1020,7 @@ private:
         {
             std::wstring sName = m_oLightReader.GetName();
             std::wstring sEmpty;
-            std::vector<NSCSS::CNode> sSubClass = GetSubClass(sSelectors, sEmpty);
+            GetSubClass(sSelectors, sEmpty);
             if(sName == L"optgroup")
             {
                 while(m_oLightReader.MoveToNextAttribute())
@@ -1028,9 +1031,9 @@ private:
                     std::wstring sP;
                     std::wstring sPStyle;
                     std::wstring sRStyle;
-                    wrPStyle(oXml, sSubClass, oTS, bWasP, sP, sPStyle);
+                    wrPStyle(oXml, sSelectors, oTS, bWasP, sP, sPStyle);
                     oXml->WriteString(L"<w:r>");
-                    wrRStyle(oXml, sSubClass, oTS, sRStyle);
+                    wrRStyle(oXml, sSelectors, oTS, sRStyle);
                     oXml->WriteString(L"<w:t xml:space=\"preserve\">");
                     oXml->WriteEncodeXmlString(m_oLightReader.GetText());
                     oXml->WriteString(L"</w:t></w:r>");
@@ -1038,25 +1041,26 @@ private:
                     wasP(oXml, sSelectors, bWasP);
                 }
                 m_oLightReader.MoveToElement();
-                readLi(oXml, sSubClass, oTS, bWasP, true);
+                readLi(oXml, sSelectors, oTS, bWasP, true);
                 continue;
             }
             if(sName != L"li" && sName != L"option")
             {
-                readStream(oXml, sSubClass, oTS, bWasP);
+                readStream(oXml, sSelectors, oTS, bWasP);
                 continue;
             }
-            wasP(oXml, sSubClass, bWasP);
+            wasP(oXml, sSelectors, bWasP);
             CTextSettings oTSLiP(oTS);
             oTSLiP.nLi++;
             oTSLiP.sPStyle += L"<w:pStyle w:val=\"li\"/><w:numPr><w:ilvl w:val=\"" + std::to_wstring(oTSLiP.nLi) + L"\"/><w:numId w:val=\"" +
                     (bType ? L"1" : std::to_wstring(m_nNumberingId)) + L"\"/></w:numPr>";
-            readStream(oXml, sSubClass, oTSLiP, bWasP);
-            wasP(oXml, sSubClass, bWasP);
+            readStream(oXml, sSelectors, oTSLiP, bWasP);
+            wasP(oXml, sSelectors, bWasP);
+            sSelectors.pop_back();
         }
     }
 
-    void readA     (NSStringUtils::CStringBuilder* oXml, const std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, bool& bWasP, std::wstring& sNote)
+    void readA     (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, bool& bWasP, std::wstring& sNote)
     {
         std::wstring sRef;
         std::wstring sAlt;
@@ -1154,7 +1158,7 @@ private:
         sNote = L"";
     }
 
-    void readImage (NSStringUtils::CStringBuilder* oXml, const std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, bool& bWasP)
+    void readImage (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, bool& bWasP)
     {
         std::wstring sAlt = L"";
         bool bRes = false;
@@ -1257,33 +1261,34 @@ private:
         bWasP = false;
     }
 
-    void wrPStyle  (NSStringUtils::CStringBuilder* oXml, const std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, bool& bWasP, std::wstring& sP, std::wstring& sPStyle)
+    void wrPStyle  (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, bool& bWasP, std::wstring& sP, std::wstring& sPStyle)
     {
         if(!bWasP)
             return;
-        std::vector<NSCSS::CNode> sPSubClass(sSelectors);
+        size_t it = sSelectors.size() - 1;
         sP = oTS.sPStyle;
         size_t nFound = sP.find(L"<w:pStyle");
         while(nFound != std::wstring::npos)
         {
             size_t nEndFound = sP.find(L'>', nFound);
             NSCSS::CNode oNode;
-            oNode.m_sName = sP.substr(nFound + 17, nEndFound - nFound - 20);
-            sPSubClass.push_back(oNode);
+            oNode.m_sName = sP.substr(nFound + 17, nEndFound - nFound - 19);
+            sSelectors.push_back(oNode);
             sP.erase(nFound, nEndFound + 1 - nFound);
             nFound = sP.find(L"<w:pStyle", nFound);
         }
 
         oXml->WriteString(L"<w:pPr><w:pStyle w:val=\"");
-        sPStyle = GetStyle(sPSubClass, true);
+        sPStyle = GetStyle(sSelectors, true);
         oXml->WriteString(sPStyle);
         oXml->WriteString(L"\"/>");
         oXml->WriteString(sP);
         oXml->WriteString(L"</w:pPr>");
         bWasP = false;
+        sSelectors.erase(sSelectors.begin() + it + 1, sSelectors.end());
     }
 
-    void wrRStyle  (NSStringUtils::CStringBuilder* oXml, const std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, std::wstring& sRStyle)
+    void wrRStyle  (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, std::wstring& sRStyle)
     {
         oXml->WriteString(L"<w:rPr><w:rStyle w:val=\"");
         sRStyle = GetStyle(sSelectors, false);
@@ -1293,15 +1298,16 @@ private:
         oXml->WriteString(L"</w:rPr>");
     }
 
-    void wasP      (NSStringUtils::CStringBuilder* oXml, const std::vector<NSCSS::CNode>& sSelectors, bool& bWasP)
+    void wasP      (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, bool& bWasP)
     {
         if(bWasP)
             return;
         auto it = std::find_if(sSelectors.begin(), sSelectors.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
-        if(it != sSelectors.end())
+        bool bHyperlink = it != sSelectors.end();
+        if(bHyperlink)
             oXml->WriteString(L"</w:hyperlink>");
         oXml->WriteString(L"</w:p><w:p>");
-        if(it != sSelectors.end())
+        if(bHyperlink)
             oXml->WriteString(L"<w:hyperlink>");
         bWasP = true;
     }

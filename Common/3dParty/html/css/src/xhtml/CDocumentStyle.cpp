@@ -153,16 +153,7 @@ namespace NSCSS
 
         oXmlElement.CreateDefaultElement(sNameStyle);
 
-        if (sNameStyle[0] == L'h' && sNameStyle.length() == 2 && iswdigit(sNameStyle[1]) )
-        {
-            std::wstring sCharName = L"title";
-            sCharName += sNameStyle[1];
-            sCharName += L"-c";
-
-            if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sCharName) != m_arStandardStyles.cend())
-                oCharXmlElement.CreateDefaultElement(sCharName);
-        }
-        else if (sNameStyle == L"p" && std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), L"p-c") != m_arStandardStyles.cend())
+        if (sNameStyle == L"p" && std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), L"p-c") != m_arStandardStyles.cend())
             oCharXmlElement.CreateDefaultElement(L"p-c");
         else if (sNameStyle == L"div" && std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), L"div-c") != m_arStandardStyles.cend())
             oCharXmlElement.CreateDefaultElement(L"div-c");
@@ -170,7 +161,11 @@ namespace NSCSS
             oCharXmlElement.CreateDefaultElement(L"a-c");
 
         if (!oCharXmlElement.Empty())
+        {
+            oXmlElement.SetLink(oCharXmlElement.GetStyleId());
+            oCharXmlElement.SetLink(oXmlElement.GetStyleId());
             m_sStyle += oCharXmlElement.GetRStyle();
+        }
 
         return oXmlElement;
     }
@@ -191,8 +186,16 @@ namespace NSCSS
             sName = sName.substr(0, posPoint);
 
         if (!bIsPStyle)
-            sName += L"-c";
-
+        {
+            if (sName[0] == L'h' && sName.length() == 2 && iswdigit(sName[1]))
+            {
+                sName = sName[1];
+                sName = L"title" + sName;
+                sName += L"-c";
+            }
+            else
+                sName += L"-c";
+        }
         CXmlElement oXmlElement;
         CXmlElement oStandardXmlElement;
         CXmlElement oParentStyle;

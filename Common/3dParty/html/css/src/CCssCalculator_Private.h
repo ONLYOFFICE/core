@@ -123,7 +123,7 @@ namespace NSCSS
         std::wstring GetEncoding() const;
         int GetDpi() const;
 
-        // void Print() const;
+        void Print() const;
         void Clear();
     };
 }

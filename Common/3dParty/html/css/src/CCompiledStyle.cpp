@@ -120,6 +120,11 @@ namespace NSCSS
         return sStyle1;
     }
 
+    std::map<std::wstring, std::wstring> CCompiledStyle::GetStyleMap() const
+    {
+        return m_mStyle;
+    }
+
     /*
     bool CCompiledStyle::operator!=(const CCompiledStyle &oElement) const
     {
@@ -141,13 +146,6 @@ namespace NSCSS
     {
         return GetWeidth() < oElement.GetWeidth();
     }
-
-    std::map<std::wstring, std::wstring> CCompiledStyle::GetStyleMap() const
-    {
-        return m_mStyle;
-    }
-
-
 
     std::string CCompiledStyle::GetStyle() const
     {

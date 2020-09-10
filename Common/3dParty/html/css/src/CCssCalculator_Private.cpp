@@ -541,7 +541,7 @@ namespace NSCSS
         return GetWeightSelector(wstringToString(sSelector));
     }
 
-    /*
+
     void CCssCalculator_Private::Print() const
     {
         std::wcout << m_arData.size() << std::endl;
@@ -549,7 +549,7 @@ namespace NSCSS
         for (const CElement* oElement : m_arData)
             std::wcout << oElement->GetText() << std::endl;
     }
-    */
+
 
     inline std::wstring CCssCalculator_Private::GetValueList(KatanaArray *oValues)
     {
@@ -786,7 +786,6 @@ namespace NSCSS
         KatanaOutput *output = katana_parse(sStyle.c_str(), sStyle.length(), KatanaParserModeStylesheet);
         this->GetOutputData(output);
         katana_destroy_output(output);
-
     }
 
     void CCssCalculator_Private::AddStyles(const std::wstring &sStyle)
@@ -794,7 +793,7 @@ namespace NSCSS
         if (sStyle.empty())
             return;
 
-        AddStyles(U_TO_UTF8(sStyle));
+        AddStyles(wstringToString(sStyle));
     }
 
     void CCssCalculator_Private::AddStylesFromFile(const std::wstring& sFileName)

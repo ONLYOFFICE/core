@@ -16,7 +16,7 @@ CElement::~CElement()
     m_arDeclarations.clear();
 }
 
-/*
+
 std::wstring CElement::GetText() const
 {
     std::wstring sText;
@@ -45,7 +45,7 @@ std::wstring CElement::GetText() const
         sText += L";\n";
     return sText;
 }
-*/
+
 
 void CElement::AddChildren(CElement* oChildren)
 {

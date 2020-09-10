@@ -23,7 +23,7 @@ namespace NSCSS
 
         ~CCompiledStyle();
 
-        // std::map<std::wstring, std::wstring> GetStyleMap() const;
+         std::map<std::wstring, std::wstring> GetStyleMap() const;
          std::wstring GetStyleW() const;
         // std::string GetStyle() const;
 

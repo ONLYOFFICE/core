@@ -16,6 +16,6 @@ core_linux:include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 
 DESTDIR = $$PWD_ROOT_DIR/build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX
 
-ADD_DEPENDENCY(kernel, EpubFile)
+ADD_DEPENDENCY(kernel, EpubFile, HtmlFile2, graphics, UnicodeConverter)
 
 SOURCES += main.cpp

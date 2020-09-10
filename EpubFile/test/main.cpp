@@ -22,12 +22,8 @@ int main(int argc, char *argv[])
 
         if (oEpub.IsEbubFile(sFileName) == S_OK)
         {
-            std::wstring sFile = sFileName.substr(0, sFileName.find_last_of(L'.'));
-
-            auto posLastSlash = sFile.find_last_of(L'\\');
-
-            if (posLastSlash != std::wstring::npos)
-                sFile = sFile.substr(posLastSlash + 1);
+            std::wstring sFile = NSFile::GetFileName(sFileName);
+            sFile = sFile.substr(0, sFile.find_last_of(L'.'));
 
             std::wcout << L"|----------|" << sFile << L"|----------|" << std::endl;
 

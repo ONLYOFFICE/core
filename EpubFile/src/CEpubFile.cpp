@@ -42,8 +42,10 @@ void CEpubFile::SetTempDirectory(const std::wstring &sTempDir)
 
 HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& sOutputFile, const bool& bIsOutCompress)
 {
+    bool bIsOwnTmp = false;
     if (m_sTempDir.empty())
     {
+        bIsOwnTmp = true;
         NSDirectory::CreateDirectories(NSFile::GetProcessDirectory() + L"/TEMP");
         SetTempDirectory(NSFile::GetProcessDirectory() + L"/TEMP");
     }
@@ -133,7 +135,7 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
 
         std::vector<std::wstring> arFiles;
         for (const CBookContentItem& oContent : m_arContents)
-            arFiles.push_back(m_sTempDir + L"\\" + m_mapRefs[oContent.m_sID].GetRef());
+            arFiles.push_back(m_sTempDir + L"/" + m_mapRefs[oContent.m_sID].GetRef());
 
 #ifdef _DEBUG
         std::wcout << L"---The conversion process from Epub to Docx...---" << std::endl;
@@ -161,6 +163,9 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
             std::wcout << L"---Failed conversion of Epub to Docx---" << std::endl;
 #endif
     }
+
+    if (!bIsOwnTmp)
+        m_sTempDir = L"";
 
     return hRes;
 }

@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 
         CEpubFile oEpub;
 
-        if (oEpub.IsEbubFile(sFileName) == S_OK)
+        if (oEpub.IsEpubFile(sFileName) == S_OK)
         {
             std::wstring sFile = NSFile::GetFileName(sFileName);
             sFile = sFile.substr(0, sFile.find_last_of(L'.'));

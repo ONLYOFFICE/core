@@ -23,7 +23,7 @@ public:
     ~CEpubFile();
 
     void Clear();
-    HRESULT IsEbubFile(const std::wstring& sfileName);
+    HRESULT IsEpubFile(const std::wstring& sfileName);
     void SetTempDirectory(const std::wstring& stempDir);
     HRESULT Convert(const std::wstring& sInputFile, const std::wstring& sOutputFile, const bool& bIsOutCompress = true);
     void ShowMap();

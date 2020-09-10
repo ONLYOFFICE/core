@@ -16,7 +16,7 @@ CEpubFile::~CEpubFile()
         NSDirectory::DeleteDirectory(m_sTempDir);
 }
 
-HRESULT CEpubFile::IsEbubFile(const std::wstring &sFileName)
+HRESULT CEpubFile::IsEpubFile(const std::wstring &sFileName)
 {
     const auto& posPoint = sFileName.find_last_of(L'.');
 

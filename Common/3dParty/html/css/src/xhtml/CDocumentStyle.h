@@ -11,9 +11,9 @@ namespace NSCSS
     class CStyleUsed
     {
     public:
-        CCompiledStyle m_oStyle;
         bool m_bIsPStyle;
         std::wstring m_sId;
+        CCompiledStyle m_oStyle;
 
         CStyleUsed(const CCompiledStyle& oStyle, const bool& bIsPStyle) : m_oStyle(oStyle), m_bIsPStyle(bIsPStyle) {}
 
@@ -34,11 +34,10 @@ namespace NSCSS
     {
         std::wstring m_sStyle;
         std::wstring m_sId;
-        std::vector<std::wstring> m_arStandardStyles;
-
-        std::vector<CStyleUsed> m_arStyleUsed;
 
         std::vector<std::wstring> m_arStandardStylesUsed;
+        std::vector<std::wstring> m_arStandardStyles;
+        std::vector<CStyleUsed> m_arStyleUsed;
 
         CXmlElement CombineStandardStyles(const std::vector<std::wstring>& arStandartedStyles);
         CXmlElement CreateStandardStyle(const std::wstring& sNameStyle);

@@ -76,7 +76,7 @@ namespace NSCSS
 
         UnitMeasure GetUnitMeasure() const;
         std::wstring GetEncoding() const;
-        int GetDpi() const;
+        unsigned int GetDpi() const;
 
         void Print() const;
         void Clear();

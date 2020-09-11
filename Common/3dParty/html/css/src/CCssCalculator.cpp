@@ -71,15 +71,17 @@ namespace NSCSS
         return m_pInternal->GetEncoding();
     }
 
-    int CCssCalculator::GetDpi() const
+    unsigned int CCssCalculator::GetDpi() const
     {
         return m_pInternal->GetDpi();
     }
+
 
     void CCssCalculator::Print() const
     {
         m_pInternal->Print();
     }
+
 
     void CCssCalculator::Clear()
     {

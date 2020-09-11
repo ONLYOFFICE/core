@@ -5,6 +5,14 @@
 
 class CXmlElement
 {
+    bool m_bQFormat;
+    bool m_bSemiHidden;
+    bool m_bUnhideWhenUsed;
+        bool m_bB;                  // <rPr>
+        bool m_bI;                  // <rPr>
+        bool m_bKeepLines;          // <pPr>
+        bool m_bKeepNext;           // <pPr>
+        bool m_bContextualSpacing;  // <pPr>
     std::wstring m_sType;
     std::wstring m_sStyleId;
     std::wstring m_sDefault;
@@ -15,13 +23,8 @@ class CXmlElement
     std::wstring m_sBasedOn;
     std::wstring m_sLink;
     std::wstring m_sUiPriority;
-    bool m_bQFormat = false;
-    bool m_bSemiHidden = false;
-    bool m_bUnhideWhenUsed = false;
 
     // <rPr>
-        bool m_bB = false;
-        bool m_bI = false;
         std::wstring m_sU;
         std::wstring m_sRFonts;
         std::wstring m_sColor;
@@ -29,9 +32,6 @@ class CXmlElement
     // </rPr>
 
     // <pPr>
-        bool m_bKeepLines = false;
-        bool m_bKeepNext = false;
-        bool m_bContextualSpacing = false;
         std::wstring m_sSpacing;
         std::wstring m_sOutlineLvl;
         std::wstring m_sInd;

@@ -7,8 +7,8 @@
 
 class CElement
 {
-    std::vector<CElement*> m_arChildrens;
     std::vector<std::wstring> m_arSelectors;
+    std::vector<CElement*> m_arChildrens;
     std::map<std::wstring, std::wstring> m_arDeclarations;
 public:
     CElement();
@@ -22,8 +22,8 @@ public:
 
     // void SetDeclaratins(const std::map<std::wstring, std::wstring>& arDeclarations);
 
-    int GetCountSelectors() const;
-    int GetCountDeclarations() const;
+    unsigned int GetCountSelectors() const;
+    unsigned int GetCountDeclarations() const;
     // int GetCountChildrens() const;
 
     bool FindSelector(const std::wstring& sSelector) const;

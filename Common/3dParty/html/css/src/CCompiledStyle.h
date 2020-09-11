@@ -11,10 +11,9 @@ namespace NSCSS
 {
     class CSSCALCULATOR_EXPORT CCompiledStyle
     {
-        std::map<std::wstring, std::wstring> m_mStyle;
         std::wstring m_sId;
-
         std::vector<std::wstring> m_arParentsStyles;
+        std::map<std::wstring, std::wstring> m_mStyle;
 
     public:
         CCompiledStyle();

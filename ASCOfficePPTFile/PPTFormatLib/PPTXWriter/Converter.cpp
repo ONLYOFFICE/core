@@ -32,7 +32,6 @@
 #pragma once
 
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/Document.h"
-#include "../../../ASCOfficePPTXFile/Editor/Drawing/Timing.h"
 
 #include "../../../ASCOfficePPTXFile/Editor/DefaultNotesMaster.h"
 #include "../../../ASCOfficePPTXFile/Editor/DefaultNotesTheme.h"
@@ -1123,8 +1122,17 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
     WriteTransition(oWriter, pSlide->m_oSlideShow);
 
     // TODO write new method and class for timing
-    CTiming oTiming;
-    WriteTiming(oWriter, oTiming);
+
+    auto slide_iter = m_pUserInfo->m_mapSlides.find(m_pUserInfo->m_arrSlidesOrder[nIndexSlide]);
+    CRecordSlideProgTagsContainer& progTag = *(slide_iter->second->m_pSlideProgTagsContainer);
+    CRecordPP10SlideBinaryTagExtension* pPP10SlideBinaryTag = progTag.getPP10SlideBinaryTagExtension();
+
+    if (pPP10SlideBinaryTag)
+    {
+        PPT_FORMAT::ConvertPP10SlideBinaryTagExtensionToTiming(*pPP10SlideBinaryTag, pSlide->m_oTiming);
+        WriteTiming(oWriter, pSlide->m_oTiming);
+    }
+
 
     oWriter.WriteString(std::wstring(L"</p:sld>"));
 
@@ -1422,8 +1430,8 @@ void PPT_FORMAT::CPPTXWriter::WriteNotes()
 }
 
 
-void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, CTiming &oTiming)
+void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, PPTX::Logic::Timing &oTiming)
 {
-    oWriter.WriteString(std::wstring(L"<p:timing><p:tnLst><p:par><p:cTn id=\"1\" dur=\"indefinite\" restart=\"never\" nodeType=\"tmRoot\" /></p:par></p:tnLst></p:timing>"));
+    //oWriter.WriteString(std::wstring(L"<p:timing><p:tnLst><p:par><p:cTn id=\"1\" dur=\"indefinite\" restart=\"never\" nodeType=\"tmRoot\" /></p:par></p:tnLst></p:timing>"));
 
 }

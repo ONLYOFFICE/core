@@ -32,7 +32,7 @@
 #pragma once
 #include "SlideShow.h"
 #include "Theme.h"
-#include "Timing.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Timing.h"
 
 namespace PPT_FORMAT
 {
@@ -45,7 +45,7 @@ namespace PPT_FORMAT
 		LONG m_lSlideID;	//for notes rels
 		LONG m_lNotesID;	//for slide rels
 
-                CTiming             m_oTiming;
+        PPTX::Logic::Timing             m_oTiming;
 
 		std::vector<CElementPtr>		m_arElements;
 		CSlideShowInfo					m_oSlideShow;

@@ -30,70 +30,12 @@
  *
  */
 #pragma once
-#include "Elements.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Timing.h"
+#include "../Records/Slide/SlideProgTagsContainer.h"
 
 namespace PPT_FORMAT
 {
 
-class CBuildList
-{
-public:
-    CBuildList()
-    {
-
-    }
-    ~CBuildList()
-    {
-    }
-};
-
-
-class CExtensionListWithModificationFlag
-{
-
-};
-
-
-class CTimeNodeList
-{
-
-};
-
+void ConvertPP10SlideBinaryTagExtensionToTiming(PPT_FORMAT::CRecordPP10SlideBinaryTagExtension &oRec, PPTX::Logic::Timing &oTm);
 }
-
-/*
- * This element specifies the timing information for handling all animations and timed events within the
- * corresponding slide. This information is tracked via time nodes within the timing element. More information on
- * the specifics of these time nodes and how they are to be defined can be found within the Animation section of
- * the PresentationML framework.
-*/
-class CTiming
-{
-public:
-    CBuildList                          m_oBldLst;
-    CExtensionListWithModificationFlag  m_oExtLst;
-    CTimeNodeList                       m_oTnLst;
-
-public:
-
-    CTiming()
-    {
-
-    }
-    ~CTiming()
-    {
-    }
-
-    CTiming& operator=(const CTiming& oSrc)
-    {
-
-        return *this;
-    }
-
-    CTiming(const CTiming& oSrc)
-    {
-        *this = oSrc;
-    }
-};
-
 

@@ -1212,7 +1212,7 @@ void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CTransitio
 				case 2:	param_value = L"lu"; break;
 				case 3:	param_value = L"t"; break;
 				case 4:	param_value = L"br"; break;
-				case 5:	param_value = L"bl"; break;
+				case 5:	param_value = L"ru"; break;
 				case 6:	param_value = L"tr"; break;
 				case 7:	param_value = L"tl"; break;
 			}

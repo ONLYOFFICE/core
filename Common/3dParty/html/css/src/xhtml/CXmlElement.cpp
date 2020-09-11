@@ -5,16 +5,7 @@
 #include <cwctype>
 
 #include <iostream>
-
-bool IsDigit(const std::wstring& sValue)
-{
-    if (sValue.empty())
-        return false;
-
-    return std::all_of(sValue.begin(), sValue.end(), [] (const wchar_t& cChar) { return iswdigit(cChar); });
-
-    return true;
-}
+#include "../StaticFunctions.h"
 
 CXmlElement::CXmlElement() : m_bB(false), m_bI(false), m_bQFormat(false),
                              m_bSemiHidden(false), m_bUnhideWhenUsed(false), m_bKeepNext(false),
@@ -416,7 +407,7 @@ void CXmlElement::SetColor(const std::wstring& sColor)
 
 void CXmlElement::SetSz(const std::wstring& sSz)
 {
-    if (IsDigit(sSz))
+    if (NSCSS::NS_STATIC_FUNCTIONS::IsDigit(sSz))
         m_sSz = sSz;
 }
 

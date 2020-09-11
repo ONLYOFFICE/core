@@ -49,7 +49,7 @@ namespace NSCSS
         /* FONT */
         std::wstring GetFont() const;
         std::wstring GetFontFamily() const;
-        std::vector<std::wstring> GetFontNames();
+        std::vector<std::wstring> GetFontNames() const;
         std::wstring GetFontSize() const;
         std::wstring GetFontSizeAdjust() const;
         std::wstring GetFontStretch() const;

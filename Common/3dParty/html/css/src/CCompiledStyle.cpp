@@ -8,28 +8,8 @@
 
 #include <iostream>
 #include "../../../../../DesktopEditor/common/File.h"
+#include "StaticFunctions.h"
 #include "ConstValues.h"
-
-static std::vector<std::wstring> GetWordsWithSigns(const std::wstring& sLine)
-{
-    if (sLine.empty())
-        return {};
-
-    std::vector<std::wstring> arWords;
-    arWords.reserve(16);
-
-    size_t posFirstNotSpace = sLine.find_first_not_of(L" \n\r\t\f\v:;,");
-
-    while (posFirstNotSpace != std::wstring::npos)
-    {
-        const size_t& posLastNotSpace = sLine.find_first_of(L" \n\r\t\f\v:;,", posFirstNotSpace);
-        arWords.push_back(sLine.substr(posFirstNotSpace, (posLastNotSpace != std::wstring::npos) ? posLastNotSpace - posFirstNotSpace + 1 : posLastNotSpace - posFirstNotSpace ));
-        posFirstNotSpace = sLine.find_first_not_of(L" \n\r\t\f\v:;,", posLastNotSpace);
-    }
-    std::vector<std::wstring>(arWords).swap(arWords);
-
-    return arWords;
-}
 
 namespace NSCSS
 {
@@ -560,12 +540,14 @@ namespace NSCSS
                 return std::wstring();
 
             std::wstring sValue = sFont.substr(posSlash + 1);
+
+
             auto posSpace = sValue.find(L' ');
 
             if (posSpace != std::wstring::npos)
                 sValue = sValue.substr(0, posSpace);
 
-            if (iswalpha(sValue[sValue.length() - 1]))
+            if (sValue.length() > 1 && iswalpha(sValue.back()))
                 return sValue;
 
             posSpace = sFont.find(sValue) + sValue.length();
@@ -582,37 +564,26 @@ namespace NSCSS
 
         }
 
-        std::vector<std::wstring> CCompiledStyle::GetFontNames()
+        std::vector<std::wstring> CCompiledStyle::GetFontNames() const
         {
-            std::wstring sFontNames = GetFontFamily();
-            std::vector<std::wstring> arFontNames;
+            std::wstring sFontFamily = GetFontFamily();
+            if (sFontFamily.empty())
+                return std::vector<std::wstring>();
 
-            if (sFontNames.empty())
-                return {};
 
-            const auto& posLastComma = sFontNames.find_last_of(L',');
+            auto posFirst = sFontFamily.find_first_of(L"'\"");
+                if (posFirst == std::wstring::npos)
+                    return std::vector<std::wstring>({sFontFamily});
 
-            if (posLastComma != std::wstring::npos)
-                sFontNames = sFontNames.substr(0, posLastComma);
-
-            std::wstring sTemp;
-
-            for (const wchar_t& wc : sFontNames)
+            std::vector<std::wstring> arWords;
+            while (posFirst != std::wstring::npos)
             {
-                if (wc != L',' && wc != L' ')
-                    sTemp += wc;
-
-                if (wc == L',')
-                {
-                    arFontNames.push_back(sTemp);
-                    sTemp.clear();
-                }
+                const auto& posSecond = sFontFamily.find_first_of(L"'\"", posFirst + 1);
+                arWords.push_back(sFontFamily.substr(posFirst, posSecond - posFirst + 1));
+                posFirst = sFontFamily.find_first_of(L"'\"", posSecond + 1);
             }
 
-            if (!sTemp.empty())
-                arFontNames.push_back(sTemp);
-
-            return arFontNames;
+            return arWords;
         }
 
     /* MARGIN */
@@ -1099,7 +1070,7 @@ namespace NSCSS
             if (sBackground.empty())
                 return std::wstring();
 
-            const std::vector<std::wstring>& arWords = GetWordsWithSigns(sBackground);
+            const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBackground);
 
             for (std::wstring sColor : arWords)
             {
@@ -1238,7 +1209,7 @@ namespace NSCSS
                         return std::wstring();
                 }
 
-                const std::vector<std::wstring>& arWords = GetWordsWithSigns(sBorder);
+                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorder);
 
                 for (const std::wstring& sWidth : arWords)
                     if (iswdigit(sWidth[0]))
@@ -1269,7 +1240,7 @@ namespace NSCSS
                         return std::wstring();
                 }
 
-                const std::vector<std::wstring>& arWords = GetWordsWithSigns(sBorder);
+                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorder);
 
                 for (std::wstring sStyle : arWords)
                 {
@@ -1305,7 +1276,7 @@ namespace NSCSS
                         return std::wstring();
                 }
 
-                const std::vector<std::wstring>& arWords = GetWordsWithSigns(sBorder);
+                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorder);
 
                 for (std::wstring sColor : arWords)
                 {
@@ -1356,7 +1327,7 @@ namespace NSCSS
                 else
                     return std::wstring();
 
-                const std::vector<std::wstring>& arWords = GetWordsWithSigns(sBorderBottom);
+                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderBottom);
 
                 for (const std::wstring& sWidth : arWords)
                     if (iswdigit(sWidth[0]))
@@ -1381,7 +1352,7 @@ namespace NSCSS
                 else
                     return std::wstring();
 
-                const std::vector<std::wstring>& arWords = GetWordsWithSigns(sBorderBottom);
+                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderBottom);
 
                 for (std::wstring sStyle : arWords)
                 {
@@ -1411,7 +1382,7 @@ namespace NSCSS
                 else
                     return std::wstring();
 
-                const std::vector<std::wstring>& arWords = GetWordsWithSigns(sBorderBottom);
+                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderBottom);
 
                 for (std::wstring sColor : arWords)
                 {
@@ -1462,7 +1433,7 @@ namespace NSCSS
                 else
                     return std::wstring();
 
-                const std::vector<std::wstring>& arWords = GetWordsWithSigns(sBorderLeft);
+                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderLeft);
 
                 for (const std::wstring& sWidth : arWords)
                     if (iswdigit(sWidth[0]))
@@ -1487,7 +1458,7 @@ namespace NSCSS
                 else
                     return std::wstring();
 
-                const std::vector<std::wstring>& arWords = GetWordsWithSigns(sBorderLeft);
+                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderLeft);
 
                 for (std::wstring sStyle : arWords)
                 {
@@ -1517,7 +1488,7 @@ namespace NSCSS
                 else
                     return std::wstring();
 
-                const std::vector<std::wstring>& arWords = GetWordsWithSigns(sBorderLeft);
+                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderLeft);
 
                 for (std::wstring sColor : arWords)
                 {
@@ -1568,7 +1539,7 @@ namespace NSCSS
                 else
                     return std::wstring();
 
-                const std::vector<std::wstring>& arWords = GetWordsWithSigns(sBorderRight);
+                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderRight);
 
                 for (const std::wstring& sWidth : arWords)
                     if (iswdigit(sWidth[0]))
@@ -1593,7 +1564,7 @@ namespace NSCSS
                 else
                     return std::wstring();
 
-                const std::vector<std::wstring>& arWords = GetWordsWithSigns(sBorderRight);
+                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderRight);
 
                 for (std::wstring sStyle : arWords)
                 {
@@ -1623,7 +1594,7 @@ namespace NSCSS
                 else
                     return std::wstring();
 
-                const std::vector<std::wstring>& arWords = GetWordsWithSigns(sBorderRight);
+                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderRight);
 
                 for (std::wstring sColor : arWords)
                 {
@@ -1674,7 +1645,7 @@ namespace NSCSS
                 else
                     return std::wstring();
 
-                const std::vector<std::wstring>& arWords = GetWordsWithSigns(sBorderTop);
+                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderTop);
 
                 for (const std::wstring& sWidth : arWords)
                     if (iswdigit(sWidth[0]))
@@ -1699,7 +1670,7 @@ namespace NSCSS
                 else
                     return std::wstring();
 
-                const std::vector<std::wstring>& arWords = GetWordsWithSigns(sBorderTop);
+                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderTop);
 
                 for (std::wstring sStyle : arWords)
                 {
@@ -1729,7 +1700,7 @@ namespace NSCSS
                 else
                     return std::wstring();
 
-                const std::vector<std::wstring>& arWords = GetWordsWithSigns(sBorderTop);
+                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderTop);
 
                 for (std::wstring sColor : arWords)
                 {

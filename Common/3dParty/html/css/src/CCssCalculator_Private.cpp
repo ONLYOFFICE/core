@@ -6,28 +6,17 @@
 #include <fstream>
 #include <cctype>
 #include <math.h>
-
+#include <algorithm>
 #include <iostream>
 
 #include "../../katana-parser/src/selector.h"
 #include "../../../../../UnicodeConverter/UnicodeConverter.h"
 #include "../../../../../DesktopEditor/common/File.h"
+#include "StaticFunctions.h"
 
 
 inline static std::wstring      StringifyValueList(const KatanaArray* oValues);
 inline static std::wstring      StringifyValue(const KatanaValue* oValue);
-inline static std::wstring      stringToWstring(const std::string& sString);
-inline static std::string       wstringToString(const std::wstring& sWstring);
-inline static std::string       GetContentAsUTF8(const std::string &sString, const std::wstring &sEncoding);
-inline static std::string       GetContentAsUTF8(const std::wstring& sFileName);
-inline static bool              ThereIsNumber(const std::wstring& sString);
-static bool                     ConvertAbsoluteValue(std::wstring& sAbsoluteValue);
-inline std::vector<std::string> GetWords(const std::wstring& sLine);
-inline std::vector<std::wstring>GetWordsWithSigns(const std::wstring& sLine);
-inline std::vector<std::string> GetSelectorsList(const std::wstring& sSelectors);
-inline std::wstring             DeleteSpace(const std::wstring& sValue);
-inline static void              RemoveExcessFromStyles(std::wstring& sStyle);
-
 
 bool operator<(const std::vector<NSCSS::CNode> &arLeftSelectors, const std::vector<NSCSS::CNode> &arRightSelectors)
 {
@@ -206,7 +195,7 @@ namespace NSCSS
         katana_parser_deallocate(&oParser, (void*) string->data);
         katana_parser_deallocate(&oParser, (void*) string);
 
-        sText = stringToWstring(text);
+        sText = NS_STATIC_FUNCTIONS::stringToWstring(text);
 
         katana_parser_deallocate(&oParser, (void*) text);
 
@@ -240,14 +229,14 @@ namespace NSCSS
         if (oDecl->important)
             sValueList += L" !important";
 
-        const std::pair<std::wstring, std::wstring>& pDeclaration = std::make_pair(stringToWstring(oDecl->property), sValueList);
+        const std::pair<std::wstring, std::wstring>& pDeclaration = std::make_pair(NS_STATIC_FUNCTIONS::stringToWstring(oDecl->property), sValueList);
 
         return pDeclaration;
     }
 
     inline void CCssCalculator_Private::GetImportRule(const KatanaImportRule *oRule)
     {
-        const std::wstring& sSelector = L"@" + stringToWstring(oRule->base.name) + L" " +  L"url(" + stringToWstring(oRule->href) + L")";
+        const std::wstring& sSelector = L"@" + NS_STATIC_FUNCTIONS::stringToWstring(oRule->base.name) + L" " +  L"url(" + NS_STATIC_FUNCTIONS::stringToWstring(oRule->href) + L")";
 
         CElement *oElement = new CElement;
 
@@ -259,7 +248,7 @@ namespace NSCSS
 
     inline void CCssCalculator_Private::GetFontFaceRule(const KatanaFontFaceRule *oRule)
     {
-        const std::wstring sSelector = L"@" + stringToWstring(oRule->base.name);
+        const std::wstring sSelector = L"@" + NS_STATIC_FUNCTIONS::stringToWstring(oRule->base.name);
 
         CElement *oElement = new CElement;
 
@@ -273,7 +262,7 @@ namespace NSCSS
     {
         CElement *oElement = new CElement;
 
-        const std::wstring& sSelector = L"@" + stringToWstring(oRule->base.name);
+        const std::wstring& sSelector = L"@" + NS_STATIC_FUNCTIONS::stringToWstring(oRule->base.name);
         oElement->AddSelector(sSelector);
 
         for (size_t i = 0; i < oRule->keyframes->length; ++i)
@@ -293,7 +282,7 @@ namespace NSCSS
         {
             const KatanaValue* oValue = (KatanaValue*)oKeyframe->selectors->data[i];
             if (oValue->unit == KATANA_VALUE_NUMBER)
-                oElement->AddSelector(stringToWstring(oValue->raw));
+                oElement->AddSelector(NS_STATIC_FUNCTIONS::stringToWstring(oValue->raw));
         }
 
         oElement->AddDeclarations(GetDeclarationList(oKeyframe->declarations));
@@ -303,7 +292,7 @@ namespace NSCSS
 
     inline void CCssCalculator_Private::GetMediaRule(const KatanaMediaRule *oRule)
     {
-        std::wstring sSelector = L"@" + stringToWstring(oRule->base.name) + L" ";
+        std::wstring sSelector = L"@" + NS_STATIC_FUNCTIONS::stringToWstring(oRule->base.name) + L" ";
 
         CElement *oElement = new CElement;
 
@@ -349,7 +338,7 @@ namespace NSCSS
         if (NULL == oQuery->expressions || 0 == oQuery->expressions->length)
         {
             if (NULL != oQuery->type)
-                sText += stringToWstring(oQuery->type);
+                sText += NS_STATIC_FUNCTIONS::stringToWstring(oQuery->type);
             return sText;
         }
 
@@ -357,7 +346,7 @@ namespace NSCSS
              oQuery->restrictor != KatanaMediaQueryRestrictorNone)
         {
             if (NULL != oQuery->type)
-                sText += stringToWstring(oQuery->type);
+                sText += NS_STATIC_FUNCTIONS::stringToWstring(oQuery->type);
 
             sText += L" and ";
         }
@@ -377,7 +366,7 @@ namespace NSCSS
         sText += L"(";
 
         if (NULL != oExp->feature)
-            sText += stringToWstring(oExp->feature);
+            sText += NS_STATIC_FUNCTIONS::stringToWstring(oExp->feature);
 
         if (oExp->values && oExp->values->length)
             sText += L": " + StringifyValueList(oExp->values);
@@ -442,7 +431,7 @@ namespace NSCSS
                                                         "visited"};
 
 
-        std::vector<std::string> arSel(GetWords(stringToWstring(sSelector)));
+        std::vector<std::string> arSel(NS_STATIC_FUNCTIONS::GetWords(NS_STATIC_FUNCTIONS::stringToWstring(sSelector)));
 
         for (const std::string& sSel : arSel)
         {
@@ -475,7 +464,7 @@ namespace NSCSS
 
     inline std::vector<unsigned int> CCssCalculator_Private::GetWeightSelector(const std::wstring& sSelector) const
     {
-        return GetWeightSelector(wstringToString(sSelector));
+        return GetWeightSelector(NS_STATIC_FUNCTIONS::wstringToString(sSelector));
     }
 
 
@@ -508,7 +497,7 @@ namespace NSCSS
         //                              selector      declarations
 
         for (const std::string& sSel : arSelectors)
-            for (const auto& oDeclaration : GetDeclarations(stringToWstring(sSel)))
+            for (const auto& oDeclaration : GetDeclarations(NS_STATIC_FUNCTIONS::stringToWstring(sSel)))
                 arStyle.emplace(oDeclaration);
 
         for (const auto& pValue : arStyle)
@@ -596,7 +585,7 @@ namespace NSCSS
         CElement *oElement = new CElement;
 
         for (const std::string& sSelectorUTF8 : sSelectorsUTF8)
-            oElement->AddSelector(stringToWstring(sSelectorUTF8));
+            oElement->AddSelector(NS_STATIC_FUNCTIONS::stringToWstring(sSelectorUTF8));
 
         std::vector<std::string> arProperty;
         std::vector<std::string> arValue;
@@ -633,8 +622,8 @@ namespace NSCSS
 
         for (size_t i = 0; i < size; ++i)
         {
-            const std::wstring& sValue = ConvertUnitMeasure(stringToWstring(arValue[i]));
-            arDecl.push_back(std::make_pair(stringToWstring(arProperty[i]), sValue));
+            const std::wstring& sValue = ConvertUnitMeasure(NS_STATIC_FUNCTIONS::stringToWstring(arValue[i]));
+            arDecl.push_back(std::make_pair(NS_STATIC_FUNCTIONS::stringToWstring(arProperty[i]), sValue));
         }
 
         oElement->AddDeclarations(arDecl);
@@ -667,7 +656,7 @@ namespace NSCSS
             }
         }
 
-        *oStyle += GetCompiledStyle(GetSelectorsList(arSelectors.back().m_sName + sClassName + sIdName), unitMeasure);
+        *oStyle += GetCompiledStyle(NS_STATIC_FUNCTIONS::GetSelectorsList(arSelectors.back().m_sName + sClassName + sIdName), unitMeasure);
 
         if (!arSelectors.back().m_sStyle.empty())
         {
@@ -711,7 +700,7 @@ namespace NSCSS
 
         m_arFiles.push_back(sFileName);
 
-        AddStyles(GetContentAsUTF8(sFileName));
+        AddStyles(NS_STATIC_FUNCTIONS::GetContentAsUTF8(sFileName));
     }
 
     std::wstring CCssCalculator_Private::ConvertUnitMeasure(const std::wstring &sValue) const
@@ -719,7 +708,7 @@ namespace NSCSS
         if (sValue.empty())
             return sValue;
 
-        std::vector<std::wstring> arValues = GetWordsWithSigns(sValue);
+        std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsWithSigns(sValue);
 
         std::wstring sValueString;
 
@@ -727,13 +716,13 @@ namespace NSCSS
         {
             const auto& nPosGrid = sValueTemp.find(L'#');
 
-            if (nPosGrid != std::wstring::npos || !ThereIsNumber(sValueTemp))
+            if (nPosGrid != std::wstring::npos || !NS_STATIC_FUNCTIONS::ThereIsNumber(sValueTemp))
             {
-                if (!ConvertAbsoluteValue(sValueTemp))
+                if (!NS_STATIC_FUNCTIONS::ConvertAbsoluteValue(sValueTemp))
                 {
                     sValueString += sValueTemp;
-                    if (arValues.size() > 2 && sValueTemp.find_first_of(L":;") == std::wstring::npos)
-                        sValueString += L' ';
+//                    if (arValues.size() > 2 && sValueTemp.find_first_of(L":;") == std::wstring::npos)
+//                        sValueString += L' ';
                     continue;
                 }
             }
@@ -815,7 +804,7 @@ namespace NSCSS
             }
             else
             {
-                const float& dValue = wcstof(sValueTemp.c_str(), NULL) * 24.0f;
+                const float& dValue = wcstof(sValueTemp.c_str(), NULL)/* * 24.0f*/;
 
                 sValueString += std::to_wstring((int)floorf(dValue + 0.5f));
 
@@ -1533,14 +1522,14 @@ inline static std::wstring StringifyValue(const KatanaValue* oValue)
         case KATANA_VALUE_HZ:
         case KATANA_VALUE_KHZ:
         case KATANA_VALUE_TURN:
-            str = stringToWstring(oValue->raw);
+            str = NSCSS::NS_STATIC_FUNCTIONS::stringToWstring(oValue->raw);
             break;
         case KATANA_VALUE_IDENT:
-            str = stringToWstring(oValue->string);
+            str = NSCSS::NS_STATIC_FUNCTIONS::stringToWstring(oValue->string);
             break;
         case KATANA_VALUE_STRING:
         {
-            str = L"\"" + stringToWstring(oValue->string) + L"\"";
+            str = L"\"" + NSCSS::NS_STATIC_FUNCTIONS::stringToWstring(oValue->string) + L"\"";
             break;
         }
         case KATANA_VALUE_PARSER_FUNCTION:
@@ -1549,7 +1538,7 @@ inline static std::wstring StringifyValue(const KatanaValue* oValue)
             if (args_str.empty())
                 break;
 
-            str = stringToWstring(oValue->function->name) + args_str + L")";
+            str = NSCSS::NS_STATIC_FUNCTIONS::stringToWstring(oValue->function->name) + args_str + L")";
             break;
         }
         case KATANA_VALUE_PARSER_OPERATOR:
@@ -1566,10 +1555,10 @@ inline static std::wstring StringifyValue(const KatanaValue* oValue)
             return StringifyValueList(oValue->list);
             break;
         case KATANA_VALUE_PARSER_HEXCOLOR:
-            str = L"#" + stringToWstring(oValue->string);
+            str = L"#" + NSCSS::NS_STATIC_FUNCTIONS::stringToWstring(oValue->string);
             break;
         case KATANA_VALUE_URI:
-            str = L"url(" + stringToWstring(oValue->string) + L")";
+            str = L"url(" + NSCSS::NS_STATIC_FUNCTIONS::stringToWstring(oValue->string) + L")";
             break;
         default:
             break;
@@ -1578,259 +1567,4 @@ inline static std::wstring StringifyValue(const KatanaValue* oValue)
     return str;
 }
 
-inline static std::wstring stringToWstring(const std::string& sString)
-{
-    return UTF8_TO_U(sString);
-}
 
-inline static std::string wstringToString(const std::wstring& sWstring)
-{
-    return U_TO_UTF8(sWstring);
-}
-
-inline static std::string GetContentAsUTF8(const std::string &sString, const std::wstring &sEncoding)
-{
-    const std::string& sEnc = U_TO_UTF8(sEncoding);
-
-    NSUnicodeConverter::CUnicodeConverter oConverter;
-    const std::wstring& sUnicodeContent = oConverter.toUnicode(sString, sEnc.c_str());
-    return U_TO_UTF8(sUnicodeContent);
-}
-
-inline static std::string GetContentAsUTF8(const std::wstring& sFileName)
-{
-    std::string sFileContent;
-
-    // читаем файл как есть. utf-8 тут просто название.
-    if(!NSFile::CFileBinary::ReadAllTextUtf8A(sFileName, sFileContent))
-        return sFileContent;
-
-    std::string sEncoding;
-    if (true)
-    {
-        // определяем кодировку
-        const std::string::size_type& posCharset = sFileContent.find("@charset");
-
-        if (std::string::npos != posCharset)
-        {
-            std::string::size_type pos1 = sFileContent.find_first_of("\"';", posCharset);
-            if (std::string::npos != pos1)
-            {
-                pos1 += 1;
-                std::string::size_type pos2 = sFileContent.find_first_of("\"';", pos1);
-                if (std::string::npos != pos2)
-                {
-                    sEncoding = sFileContent.substr(pos1, pos2 - pos1);
-                }
-
-                // check valid
-                if (std::string::npos != sEncoding.find_first_of(" \n\r\t\f\v"))
-                    sEncoding = "";
-            }
-        }
-    }
-
-    if (sEncoding.empty())
-        sEncoding = "utf-8";
-
-
-    if (!sEncoding.empty() && sEncoding != "utf-8" && sEncoding != "UTF-8")
-    {
-        NSUnicodeConverter::CUnicodeConverter oConverter;
-        sFileContent = U_TO_UTF8(oConverter.toUnicode(sFileContent, sEncoding.c_str()));
-    }
-
-    return sFileContent;
-}
-
-inline static bool ThereIsNumber(const std::wstring& sString)
-{
-    if (sString.empty())
-        return false;
-
-    const auto& posDigit = sString.find_first_of(L"0123456789");
-    const auto& posNoDigit = sString.find_first_not_of(L" \n\r\t\f\v123456789.");
-
-    if (posDigit == std::wstring::npos)
-        return false;
-
-    if (posDigit != std::wstring::npos && posNoDigit == std::wstring::npos)
-        return true;
-
-    if ((posDigit != std::wstring::npos && posNoDigit != std::wstring::npos && posDigit < posNoDigit) || (posDigit == 0  && posNoDigit == 0))
-        return true;
-
-    return false;
-}
-
-inline static void RemoveExcessFromStyles(std::wstring& sStyle)
-{
-    while (true)
-    {
-        const auto& posLeftAngleBracket = sStyle.find(L'<');
-        const auto& posRightAngleBracket = sStyle.find(L'>');
-
-        const auto& posLeftComment = sStyle.find(L"<!--");
-        const auto& posRightComment = sStyle.find(L"-->");
-
-        if (posLeftAngleBracket != std::wstring::npos || posLeftComment != std::wstring::npos || posRightComment != std::wstring::npos)
-        {
-
-            if (posLeftAngleBracket != std::wstring::npos &&
-                posRightAngleBracket != std::wstring::npos)
-            {
-                sStyle.erase(posLeftAngleBracket, posRightAngleBracket - posLeftAngleBracket + 1);
-            }
-            else if (posLeftAngleBracket != std::wstring::npos)
-                sStyle.erase(posLeftAngleBracket, 1);
-            else if (posRightAngleBracket != std::wstring::npos)
-                sStyle.erase(posRightAngleBracket, 1);
-            else if (posLeftComment != std::wstring::npos)
-                sStyle.erase(posLeftComment, 4);
-            else if (posRightComment != std::wstring::npos)
-                sStyle.erase(posRightComment, 3);
-        }
-        else
-            break;
-    }
-}
-
-inline bool ConvertAbsoluteValue(std::wstring& sAbsoluteValue)
-{
-    if (sAbsoluteValue.empty())
-        return false;
-
-    bool bIsConvert = false;
-
-    std::map<std::wstring, std::wstring> arAbsoluteValues = {{L"xx-small", L"9px"},  {L"x-small", L"10px"},
-                                                             {L"small",    L"13px"}, {L"medium",  L"16px"},
-                                                             {L"large",    L"18px"}, {L"x-large", L"24px"},
-                                                             {L"xx-large", L"32px"}};
-
-    for (const auto& sAbsValue : arAbsoluteValues)
-    {
-        while (sAbsoluteValue.find(sAbsValue.first) != std::wstring::npos)
-        {
-            const auto& nPos1 = sAbsoluteValue.find(sAbsValue.first);
-            const auto& nPos2 = nPos1 + sAbsValue.first.length() - 1;
-
-            sAbsoluteValue.replace(nPos1, nPos2, sAbsValue.second);
-            bIsConvert = true;
-        }
-    }
-    return bIsConvert;
-}
-
-inline std::wstring DeleteSpace(const std::wstring& sValue)
-{
-    if (sValue.empty())
-        return std::wstring();
-
-    const size_t& start = sValue.find_first_not_of(L" \n\r\t\f\v");
-
-    if (std::wstring::npos == start)
-        return sValue;
-
-    const size_t& end = sValue.find_last_not_of(L" \n\r\t\f\v"); // точно >=0
-
-    return sValue.substr(start, end - start + 1);
-}
-
-inline std::vector<std::string> GetSelectorsList(const std::wstring& sSelectors)
-{
-    std::wstring sNames = sSelectors;
-    std::wstring sClasses;
-    std::wstring sIds;
-
-    size_t posLattice = sNames.find(L"#");
-    size_t posPoint = sNames.find(L'.');
-
-    if (posLattice != std::wstring::npos)
-    {
-        sNames = sSelectors.substr(0, posLattice);
-        sIds = sSelectors.substr(posLattice);
-    }
-
-    if (posPoint != std::wstring::npos)
-    {
-        sNames = sSelectors.substr(0, posPoint);
-        sClasses = sSelectors.substr(posPoint);
-        posLattice = sClasses.find(L'#');
-        if (posLattice != std::wstring::npos)
-            sClasses = sClasses.substr(0, posLattice);
-    }
-
-    const std::vector<std::string> arNames   = GetWords(sNames);
-    std::vector<std::string> arClasses = GetWords(sClasses);
-    std::vector<std::string> arIds     = GetWords(sIds);
-    std::vector<std::string> arSelectors(arNames);
-
-    arSelectors.reserve(arNames.size() * arClasses.size() + arNames.size() * arIds.size() + arClasses.size() * arIds.size());
-
-    for (std::string& sClass : arClasses)
-    {
-        if (sClass.find('.') == std::string::npos)
-            sClass = '.' + sClass;
-
-        arSelectors.push_back(sClass);
-
-        for (const std::string& sName : arNames)
-            arSelectors.push_back(sName + sClass);
-        for (const std::string& sId : arIds)
-            arSelectors.push_back(sClass + sId);
-    }
-    for (std::string& sId : arIds)
-    {
-        if (sId.find('#') == std::string::npos)
-            sId = '#' + sId;
-
-        arSelectors.push_back(sId);
-
-        for (const std::string& sName : arNames)
-            arSelectors.push_back(sName + sId);
-    }
-    return arSelectors;
-}
-
-inline std::vector<std::string> GetWords(const std::wstring& sLine)
-{
-    if (sLine.empty())
-        return {};
-
-    std::vector<std::string> arWords;
-    arWords.reserve(16);
-
-    std::string sTemp = wstringToString(sLine);
-    size_t posFirstNotSpace = sTemp.find_first_not_of(" \n\r\t\f\v:;,");
-
-    while (posFirstNotSpace != std::wstring::npos)
-    {
-        const size_t& posLastNotSpace = sTemp.find_first_of(" \n\r\t\f\v:;,", posFirstNotSpace);
-        arWords.push_back(sTemp.substr(posFirstNotSpace, posLastNotSpace - posFirstNotSpace));
-        posFirstNotSpace = sTemp.find_first_not_of(" \n\r\t\f\v:;,", posLastNotSpace);
-    }
-    std::vector<std::string>(arWords).swap(arWords);
-
-    return arWords;
-}
-
-inline std::vector<std::wstring> GetWordsWithSigns(const std::wstring& sLine)
-{
-    if (sLine.empty())
-        return {};
-
-    std::vector<std::wstring> arWords;
-    arWords.reserve(16);
-
-    size_t posFirstNotSpace = sLine.find_first_not_of(L" \n\r\t\f\v:;,");
-
-    while (posFirstNotSpace != std::wstring::npos)
-    {
-        const size_t& posLastNotSpace = sLine.find_first_of(L" \n\r\t\f\v:;,", posFirstNotSpace);
-        arWords.push_back(sLine.substr(posFirstNotSpace, (posLastNotSpace != std::wstring::npos) ? posLastNotSpace - posFirstNotSpace + 1 : posLastNotSpace - posFirstNotSpace ));
-        posFirstNotSpace = sLine.find_first_not_of(L" \n\r\t\f\v:;,", posLastNotSpace);
-    }
-    std::vector<std::wstring>(arWords).swap(arWords);
-
-    return arWords;
-}

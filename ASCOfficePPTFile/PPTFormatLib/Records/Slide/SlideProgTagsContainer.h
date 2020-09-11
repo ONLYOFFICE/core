@@ -361,6 +361,14 @@ public:
         StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);
     }
 
+    CRecordPP10SlideBinaryTagExtension* getPP10SlideBinaryTagExtension()
+    {
+        for (auto* rec : m_arrRgChildRec)
+            if (rec->m_pTagName->m_strText == TN_PPT10)
+                return (CRecordPP10SlideBinaryTagExtension*)rec;
+
+        return nullptr;
+    }
 
 public:
     std::vector<CRecordSlideProgBinaryTagSubContainerOrAtom*> m_arrRgChildRec;

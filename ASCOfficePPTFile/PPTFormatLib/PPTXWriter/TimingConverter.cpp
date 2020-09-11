@@ -15,7 +15,7 @@ static inline void ConvertCRecordBuildListContainerToBldLst(
 
     for (unsigned i = 0; i < pBLC->n_arrRgChildRec.size(); i++)
     {
-        switch (pBLC->n_arrRgChildRec[i]->m_oHeader.RecType) {
+        switch ( pBLC->n_arrRgChildRec[i]->m_oHeader.RecType ) {
         case RT_ParaBuild:
         {
             CRecordParaBuildContainer* pRec =

@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <set>
 #include <wchar.h>
 #include <math.h>
 
@@ -24,18 +25,8 @@ static std::vector<std::wstring> GetWordsW(const std::wstring& sLine)
 
 namespace NSCSS
 {
-    CDocumentStyle::CDocumentStyle(): m_arStandardStyles({L"a",         L"li",
-                                                          L"h1",        L"h2",
-                                                          L"h3",        L"h4",
-                                                          L"h5",        L"h6",
-                                                          L"title1-c",  L"title2-c",
-                                                          L"title3-c",  L"title4-c",
-                                                          L"title5-c",  L"title6-c",
-                                                          L"p-c",       L"p",
-                                                          L"div-c",     L"div",
-                                                          L"a-c"})
-    {
-    }
+    CDocumentStyle::CDocumentStyle(): m_arStandardStyles({L"a", L"li", L"h1", L"h2", L"h3", L"h4", L"h5", L"h6", L"title1-c",
+        L"title2-c", L"title3-c", L"title4-c", L"title5-c", L"title6-c", L"p-c", L"p", L"div-c", L"div", L"a-c"}) {}
 
     CDocumentStyle::~CDocumentStyle()
     {
@@ -48,7 +39,6 @@ namespace NSCSS
     {
         if (m_sId.empty())
             return m_sId;
-
         return m_sStyle;
     }
 
@@ -82,42 +72,26 @@ namespace NSCSS
     CXmlElement CDocumentStyle::CombineStandardStyles(const std::vector<std::wstring>& arStandartedStyles)
     {
         CXmlElement oXmlElement;
-
-        if (arStandartedStyles.size() == 0)
-            return oXmlElement;
-
-        std::vector<std::wstring> arStyles;
+        std::set<std::wstring> arStyles;
 
         for (const std::wstring& sStyleName : arStandartedStyles)
-        {
-            if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sStyleName) != m_arStandardStyles.cend())
-                arStyles.push_back(sStyleName);
-        }
+            if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sStyleName) != m_arStandardStyles.end())
+                arStyles.insert(sStyleName);
 
         if (arStyles.empty())
             return oXmlElement;
-
         std::wstring sId;
 
         for (const std::wstring& sStyleName : arStyles)
         {
-            sId += sStyleName;
-            if (sStyleName != arStyles[arStyles.size() - 1])
-                sId += L'+';
-        }
-
-        for (const std::wstring& sStyleName : arStyles)
-        {
+            sId += sStyleName + L'+';
             const CXmlElement& oTempXmlElement = CreateStandardStyle(sStyleName);
-            if (!oTempXmlElement.Empty())
-                oXmlElement += oTempXmlElement;
+            oXmlElement += oTempXmlElement;
         }
 
-        if (!oXmlElement.Empty())
-        {
-            oXmlElement.SetName(sId);
-            oXmlElement.SetStyleId(sId);
-        }
+        sId.pop_back();
+        oXmlElement.SetName(sId);
+        oXmlElement.SetStyleId(sId);
 
         return oXmlElement;
     }
@@ -125,19 +99,15 @@ namespace NSCSS
     CXmlElement CDocumentStyle::CreateStandardStyle(const std::wstring& sNameStyle)
     {
         CXmlElement oXmlElement;
-
-        if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sNameStyle) == m_arStandardStyles.cend())
-            return oXmlElement;
-
         CXmlElement oCharXmlElement;
 
         oXmlElement.CreateDefaultElement(sNameStyle);
 
-        if (sNameStyle == L"p" && std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), L"p-c") != m_arStandardStyles.cend())
+        if (sNameStyle == L"p")
             oCharXmlElement.CreateDefaultElement(L"p-c");
-        else if (sNameStyle == L"div" && std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), L"div-c") != m_arStandardStyles.cend())
+        else if (sNameStyle == L"div")
             oCharXmlElement.CreateDefaultElement(L"div-c");
-        else if (sNameStyle == L"a" && std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), L"a-c") != m_arStandardStyles.cend())
+        else if (sNameStyle == L"a")
             oCharXmlElement.CreateDefaultElement(L"a-c");
 
         if (!oCharXmlElement.Empty())
@@ -154,25 +124,27 @@ namespace NSCSS
     {
         std::wstring sName = oStyle.GetId();
 
-        const auto& posDash = sName.find(L'-');
-        const auto& posLattice = sName.find(L'#');
-        const auto& posPoint = sName.find(L'.');
-
+        size_t posDash = sName.find(L'-');
         if (posDash != std::wstring::npos)
             sName = sName.substr(0, posDash);
-        if (posLattice != std::wstring::npos)
-            sName = sName.substr(0, posLattice);
-        if (posPoint != std::wstring::npos)
-            sName = sName.substr(0, posPoint);
+        else
+        {
+            size_t posLattice = sName.find(L'#');
+            if (posLattice != std::wstring::npos)
+                sName = sName.substr(0, posLattice);
+            else
+            {
+                size_t posPoint = sName.find(L'.');
+                if (posPoint != std::wstring::npos)
+                    sName = sName.substr(0, posPoint);
+            }
+        }
 
         if (!bIsPStyle)
         {
-            if (sName[0] == L'h' && sName.length() == 2 && iswdigit(sName[1]))
-            {
-                sName = sName[1];
-                sName = L"title" + sName;
-                sName += L"-c";
-            }
+            if (sName == L"h1" || sName == L"h2" || sName == L"h3" ||
+                sName == L"h4" || sName == L"h5" || sName == L"h6")
+                sName = L"title" + std::to_wstring(sName[1]) + L"-c";
             else
                 sName += L"-c";
         }
@@ -180,27 +152,22 @@ namespace NSCSS
         CXmlElement oStandardXmlElement;
         CXmlElement oParentStyle;
 
-        if (oStyle.GetParentsName().size() > 0)
+        std::vector<std::wstring> arParentsName = oStyle.GetParentsName();
+        if (!arParentsName.empty())
         {
-            std::vector<std::wstring> arParentsName = oStyle.GetParentsName();
-
             std::wstring sParentName;
             for (std::wstring& sParent : arParentsName)
             {
                 if(!bIsPStyle)
                     sParent += L"-c";
-
                 sParentName += sParent + L"+";
             }
-
-            sParentName.erase(sParentName.length() - 1, 1);
+            sParentName.pop_back();
 
             oParentStyle = CombineStandardStyles(arParentsName);
-
             if (!oParentStyle.Empty())
             {
                 oParentStyle.SetStyleId(L"(" + oParentStyle.GetStyleId() + L")");
-
                 if (!bIsPStyle)
                 {
                     oParentStyle.SetStyleId(oParentStyle.GetStyleId() + L"-c");
@@ -209,28 +176,22 @@ namespace NSCSS
             }
         }
 
-        if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sName) != m_arStandardStyles.cend())
-        {
+        if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sName) != m_arStandardStyles.end())
             oStandardXmlElement = CreateStandardStyle(sName);
-        }
 
         if (!oStandardXmlElement.Empty() && !oParentStyle.Empty())
         {
             const std::wstring& sStandPlusParent = oStandardXmlElement.GetStyleId() + oParentStyle.GetStyleId();
 
-            if(std::find(m_arStandardStylesUsed.begin(), m_arStandardStylesUsed.end(), sStandPlusParent) != m_arStandardStylesUsed.cend())
+            if(std::find(m_arStandardStylesUsed.begin(), m_arStandardStylesUsed.end(), sStandPlusParent) != m_arStandardStylesUsed.end())
                 oXmlElement.SetBasedOn(sStandPlusParent);
             else
             {
                 CXmlElement oTempElement = oParentStyle;
                 oTempElement += oStandardXmlElement;
-
                 oTempElement.SetStyleId(sStandPlusParent);
-
-                bIsPStyle ? m_sStyle += oTempElement.GetPStyle() : m_sStyle += oTempElement.GetRStyle();
-
-                oXmlElement.SetBasedOn(oTempElement.GetStyleId());
-
+                m_sStyle += bIsPStyle ? oTempElement.GetPStyle() : oTempElement.GetRStyle();
+                oXmlElement.SetBasedOn(sStandPlusParent);
                 m_arStandardStylesUsed.push_back(sStandPlusParent);
             }
         }
@@ -242,11 +203,9 @@ namespace NSCSS
                 oXmlElement.SetBasedOn(sStandartStyleID);
             else
             {
-                bIsPStyle ? m_sStyle += oStandardXmlElement.GetPStyle() : m_sStyle += oStandardXmlElement.GetRStyle();
-
-                m_arStandardStylesUsed.push_back(sStandartStyleID);
-
+                m_sStyle += bIsPStyle ? oStandardXmlElement.GetPStyle() : oStandardXmlElement.GetRStyle();
                 oXmlElement.SetBasedOn(sStandartStyleID);
+                m_arStandardStylesUsed.push_back(sStandartStyleID);
             }
         }
         else if (oStandardXmlElement.Empty() && !oParentStyle.Empty())
@@ -257,20 +216,17 @@ namespace NSCSS
                 oXmlElement.SetBasedOn(sParentsStyleID);
             else
             {
-                bIsPStyle ? m_sStyle += oParentStyle.GetPStyle() : m_sStyle += oParentStyle.GetRStyle();
-
-                oXmlElement.SetBasedOn(sParentsStyleID);
+                m_sStyle += bIsPStyle ? oParentStyle.GetPStyle() : oParentStyle.GetRStyle();
                 m_arStandardStylesUsed.push_back(sParentsStyleID);
+                oXmlElement.SetBasedOn(sParentsStyleID);
             }
         }
 
         if (oStyle.Empty())
         {
-            (oXmlElement.GetBasedOn().empty() || (oStandardXmlElement.Empty() && oParentStyle.Empty()))
-                    ? m_sId = L"normal" : m_sId = oXmlElement.GetBasedOn();
-
+            m_sId = (oXmlElement.GetBasedOn().empty() || (oStandardXmlElement.Empty() && oParentStyle.Empty()))
+                    ?  L"normal" : oXmlElement.GetBasedOn();
             oXmlElement.Clear();
-
             return oXmlElement;
         }
 
@@ -281,9 +237,7 @@ namespace NSCSS
         oXmlElement.SetStyleId(m_sId);
         oXmlElement.SetName(m_sId);
         oXmlElement.SetQFormat(true);
-
-        bIsPStyle ? oXmlElement.SetType(L"paragraph") : oXmlElement.SetType(L"character");
-
+        oXmlElement.SetType(bIsPStyle ? L"paragraph" : L"character");
         oXmlElement.SetCustomStyle(L"1");
 
         return oXmlElement;

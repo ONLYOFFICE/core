@@ -58,7 +58,8 @@ struct CTextSettings
     CTextSettings(bool _bBdo, bool _bPre, int _nLi, const std::wstring& _sRStyle, const std::wstring& _sPStyle) :
         bBdo(_bBdo), bPre(_bPre), nLi(_nLi), sRStyle(_sRStyle), sPStyle(_sPStyle) {}
 
-    CTextSettings(const CTextSettings& oTS) : bBdo(oTS.bBdo), bPre(oTS.bPre), nLi(oTS.nLi), sRStyle(oTS.sRStyle), sPStyle(oTS.sPStyle) {}
+    CTextSettings(const CTextSettings& oTS) :
+        bBdo(oTS.bBdo), bPre(oTS.bPre), nLi(oTS.nLi), sRStyle(oTS.sRStyle), sPStyle(oTS.sPStyle) {}
 };
 
 class CHtmlFile2_Private
@@ -441,15 +442,15 @@ private:
         // Стиль по атрибуту
         while(m_oLightReader.MoveToNextAttribute())
         {
-            std::wstring sName = m_oLightReader.GetName();
+            std::wstring sName  = m_oLightReader.GetName();
             if(sName == L"class")
-                oNode.m_sClass = m_oLightReader.GetText();
+                oNode.m_sClass  = m_oLightReader.GetText();
             else if(sName == L"id")
-                oNode.m_sId    = m_oLightReader.GetText();
+                oNode.m_sId     = m_oLightReader.GetText();
             else if(sName == L"style")
                 oNode.m_sStyle += m_oLightReader.GetText();
             else if(sName == L"title")
-                sNote          = m_oLightReader.GetText();
+                sNote           = m_oLightReader.GetText();
             else if(sName == L"align")
                 oNode.m_sStyle += L"; text-align: " + m_oLightReader.GetText() + L";";
         }
@@ -1517,7 +1518,6 @@ HRESULT CHtmlFile2::OpenHtml(const std::wstring& sSrc, const std::wstring& sDst,
 
     m_internal->readSrc(NSFile::GetFileName(sSrc));
     m_internal->write();
-    // NSFile::CFileBinary::Remove(m_internal->m_sTmp + L"/res.xhtml");
     return S_OK;
 }
 
@@ -1538,7 +1538,6 @@ HRESULT CHtmlFile2::OpenMht(const std::wstring& sSrc, const std::wstring& sDst, 
 
     m_internal->readSrc(NSFile::GetFileName(sSrc));
     m_internal->write();
-    // NSFile::CFileBinary::Remove(m_internal->m_sTmp + L"/res.xhtml");
     return S_OK;
 }
 
@@ -1566,7 +1565,6 @@ HRESULT CHtmlFile2::OpenBatchHtml(const std::vector<std::wstring>& sSrc, const s
             return S_FALSE;
         m_internal->readSrc(NSFile::GetFileName(sS));
 
-        // NSFile::CFileBinary::Remove(m_internal->m_sTmp + L"/res.xhtml");
         m_internal->m_oLightReader.Clear();
         m_internal->m_oStylesCalculator.Clear();
         m_internal->m_sBase = L"";

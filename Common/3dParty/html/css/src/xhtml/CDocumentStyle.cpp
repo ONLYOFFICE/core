@@ -25,8 +25,8 @@ static std::vector<std::wstring> GetWordsW(const std::wstring& sLine)
 
 namespace NSCSS
 {
-    CDocumentStyle::CDocumentStyle(): m_arStandardStyles({L"a", L"li", L"h1", L"h2", L"h3", L"h4", L"h5", L"h6", L"title1-c",
-        L"title2-c", L"title3-c", L"title4-c", L"title5-c", L"title6-c", L"p-c", L"p", L"div-c", L"div", L"a-c"}) {}
+    CDocumentStyle::CDocumentStyle(): m_arStandardStyles({L"a", L"li", L"h1", L"h2", L"h3", L"h4", L"h5", L"h6", L"h1-c",
+        L"h2-c", L"h3-c", L"h4-c", L"h5-c", L"h6-c", L"p-c", L"p", L"div-c", L"div", L"a-c"}) {}
 
     CDocumentStyle::~CDocumentStyle()
     {
@@ -141,13 +141,7 @@ namespace NSCSS
         }
 
         if (!bIsPStyle)
-        {
-            if (sName == L"h1" || sName == L"h2" || sName == L"h3" ||
-                sName == L"h4" || sName == L"h5" || sName == L"h6")
-                sName = L"title" + std::to_wstring(sName[1]) + L"-c";
-            else
-                sName += L"-c";
-        }
+            sName += L"-c";
         CXmlElement oXmlElement;
         CXmlElement oStandardXmlElement;
         CXmlElement oParentStyle;

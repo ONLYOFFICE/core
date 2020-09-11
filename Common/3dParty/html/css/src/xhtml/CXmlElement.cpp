@@ -102,10 +102,10 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         SetQFormat(true);
         SetOutlineLvl(L"5");
     }
-    else if (sNameDefaultElement == L"title1-c")
+    else if (sNameDefaultElement == L"h1-c")
     {
         SetType(L"character");
-        SetStyleId(L"title1-c");
+        SetStyleId(L"h1-c");
         SetCustomStyle(L"1");
         SetName(L"Title 1 Sign");
         SetUiPriority(L"9");;
@@ -117,10 +117,10 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         SetKeepNext(true);
         SetSpacing(L"w:after=\"0\" w:before=\"480\"");
     }
-    else if (sNameDefaultElement == L"title2-c")
+    else if (sNameDefaultElement == L"h2-c")
     {
         SetType(L"character");
-        SetStyleId(L"title2-c");
+        SetStyleId(L"h2-c");
         SetCustomStyle(L"1");
         SetName(L"Title 2 Sign");
         SetUiPriority(L"9");;
@@ -133,10 +133,10 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         SetKeepNext(true);
         SetSpacing(L"w:after=\"0\" w:before=\"200\"");
     }
-    else if (sNameDefaultElement == L"title3-c")
+    else if (sNameDefaultElement == L"h3-c")
     {
         SetType(L"character");
-        SetStyleId(L"title3-c");
+        SetStyleId(L"h3-c");
         SetCustomStyle(L"1");
         SetName(L"Title 3 Sign");
         SetUiPriority(L"9");;
@@ -150,10 +150,10 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         SetKeepNext(true);
         SetSpacing(L"w:after=\"0\" w:before=\"200\"");
     }
-    else if (sNameDefaultElement == L"title4-c")
+    else if (sNameDefaultElement == L"h4-c")
     {
         SetType(L"character");
-        SetStyleId(L"title4-c");
+        SetStyleId(L"h4-c");
         SetCustomStyle(L"1");
         SetName(L"Title 4 Sign");
         SetLink(L"h4");
@@ -167,10 +167,10 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         SetKeepNext(true);
         SetSpacing(L"w:after=\"0\" w:before=\"200\"");
     }
-    else if (sNameDefaultElement == L"title5-c")
+    else if (sNameDefaultElement == L"h5-c")
     {
         SetType(L"character");
-        SetStyleId(L"title5-c");
+        SetStyleId(L"h5-c");
         SetCustomStyle(L"1");
         SetName(L"Title 5 Sign");
         SetUiPriority(L"9");;
@@ -183,10 +183,10 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         SetKeepNext(true);
         SetSpacing(L"w:after=\"0\" w:before=\"200\"");
     }
-    else if (sNameDefaultElement == L"title6-c")
+    else if (sNameDefaultElement == L"h6-c")
     {
         SetType(L"character");
-        SetStyleId(L"title6-c");
+        SetStyleId(L"h6-c");
         SetCustomStyle(L"1");
         SetName(L"Title 6 Sign");
         SetUiPriority(L"9");;
@@ -600,46 +600,46 @@ CXmlElement& CXmlElement::operator+=(const CXmlElement& oElement)
 
 CXmlElement& CXmlElement::operator=(const CXmlElement& oElement)
 {
-    m_sType                 = oElement.m_sType;
-    m_sStyleId              = oElement.m_sStyleId;
-    m_sDefault              = oElement.m_sDefault;
-    m_sCustomStyle          = oElement.m_sCustomStyle;
-    m_sS                    = oElement.m_sS;
-    m_sName                 = oElement.m_sName;
-    m_sBasedOn              = oElement.m_sBasedOn;
-    m_sLink                 = oElement.m_sLink;
-    m_sUiPriority           = oElement.m_sUiPriority;
-    m_bQFormat              = oElement.m_bQFormat;
-    m_bUnhideWhenUsed       = oElement.m_bUnhideWhenUsed;
-    m_bB                    = oElement.m_bB;
-    m_bI                    = oElement.m_bI;
-    m_sRFonts               = oElement.m_sRFonts;
-    m_sColor                = oElement.m_sColor;
-    m_sU                    = oElement.m_sU;
-    m_sSz                   = oElement.m_sSz;
-    m_bKeepLines            = oElement.m_bKeepLines;
-    m_bKeepNext             = oElement.m_bKeepNext;
-    m_sSpacing              = oElement.m_sSpacing;
-    m_sOutlineLvl           = oElement.m_sOutlineLvl;
-    m_bContextualSpacing    = oElement.m_bContextualSpacing;
-    m_sInd                  = oElement.m_sInd;
-    m_sJc                   = oElement.m_sJc;
-    m_sShd                  = oElement.m_sShd;
-    m_sTblInd               = oElement.m_sTblInd;
-    m_sCellTop              = oElement.m_sCellTop;
-    m_sCellLeft             = oElement.m_sCellLeft;
-    m_sCellBottom           = oElement.m_sCellBottom;
-    m_sCellRight            = oElement.m_sCellRight;
-    m_sBorderTop            = oElement.m_sBorderTop;
-    m_sBorderLeft           = oElement.m_sBorderLeft;
-    m_sBorderBottom         = oElement.m_sBorderBottom;
-    m_sBorderRight          = oElement.m_sBorderRight;
-    m_sBorderInsideH        = oElement.m_sBorderInsideH;
-    m_sBorderInsideV        = oElement.m_sBorderInsideV;
-    m_sTopBorder            = oElement.m_sTopBorder;
-    m_sLeftBorder           = oElement.m_sLeftBorder;
-    m_sBottomBorder         = oElement.m_sBottomBorder;
-    m_sRightBorder          = oElement.m_sRightBorder;
+    m_sType              = oElement.m_sType;
+    m_sStyleId           = oElement.m_sStyleId;
+    m_sDefault           = oElement.m_sDefault;
+    m_sCustomStyle       = oElement.m_sCustomStyle;
+    m_sS                 = oElement.m_sS;
+    m_sName              = oElement.m_sName;
+    m_sBasedOn           = oElement.m_sBasedOn;
+    m_sLink              = oElement.m_sLink;
+    m_sUiPriority        = oElement.m_sUiPriority;
+    m_bQFormat           = oElement.m_bQFormat;
+    m_bUnhideWhenUsed    = oElement.m_bUnhideWhenUsed;
+    m_bB                 = oElement.m_bB;
+    m_bI                 = oElement.m_bI;
+    m_sRFonts            = oElement.m_sRFonts;
+    m_sColor             = oElement.m_sColor;
+    m_sU                 = oElement.m_sU;
+    m_sSz                = oElement.m_sSz;
+    m_bKeepLines         = oElement.m_bKeepLines;
+    m_bKeepNext          = oElement.m_bKeepNext;
+    m_sSpacing           = oElement.m_sSpacing;
+    m_sOutlineLvl        = oElement.m_sOutlineLvl;
+    m_bContextualSpacing = oElement.m_bContextualSpacing;
+    m_sInd               = oElement.m_sInd;
+    m_sJc                = oElement.m_sJc;
+    m_sShd               = oElement.m_sShd;
+    m_sTblInd            = oElement.m_sTblInd;
+    m_sCellTop           = oElement.m_sCellTop;
+    m_sCellLeft          = oElement.m_sCellLeft;
+    m_sCellBottom        = oElement.m_sCellBottom;
+    m_sCellRight         = oElement.m_sCellRight;
+    m_sBorderTop         = oElement.m_sBorderTop;
+    m_sBorderLeft        = oElement.m_sBorderLeft;
+    m_sBorderBottom      = oElement.m_sBorderBottom;
+    m_sBorderRight       = oElement.m_sBorderRight;
+    m_sBorderInsideH     = oElement.m_sBorderInsideH;
+    m_sBorderInsideV     = oElement.m_sBorderInsideV;
+    m_sTopBorder         = oElement.m_sTopBorder;
+    m_sLeftBorder        = oElement.m_sLeftBorder;
+    m_sBottomBorder      = oElement.m_sBottomBorder;
+    m_sRightBorder       = oElement.m_sRightBorder;
 
     return *this;
 }
@@ -649,45 +649,45 @@ bool CXmlElement::operator==(const CXmlElement &oElement)
     if (oElement.Empty() || Empty())
         return false;
 
-    return  m_sType              == oElement.m_sType                 &&
-            m_sStyleId           == oElement.m_sStyleId              &&
-            m_sDefault           == oElement.m_sDefault              &&
-            m_sCustomStyle       == oElement.m_sCustomStyle          &&
-            m_sS                 == oElement.m_sS                    &&
-            m_sName              == oElement.m_sName                 &&
-            m_sBasedOn           == oElement.m_sBasedOn              &&
-            m_sLink              == oElement.m_sLink                 &&
-            m_sUiPriority        == oElement.m_sUiPriority           &&
-            m_bQFormat           == oElement.m_bQFormat              &&
-            m_bUnhideWhenUsed    == oElement.m_bUnhideWhenUsed       &&
-            m_bB                 == oElement.m_bB                    &&
-            m_bI                 == oElement.m_bI                    &&
-            m_sRFonts            == oElement.m_sRFonts               &&
-            m_sColor             == oElement.m_sColor                &&
-            m_sU                 == oElement.m_sU                    &&
-            m_sSz                == oElement.m_sSz                   &&
-            m_bKeepLines         == oElement.m_bKeepLines            &&
-            m_bKeepNext          == oElement.m_bKeepNext             &&
-            m_sSpacing           == oElement.m_sSpacing              &&
-            m_sOutlineLvl        == oElement.m_sOutlineLvl           &&
-            m_bContextualSpacing == oElement.m_bContextualSpacing    &&
-            m_sInd               == oElement.m_sInd                  &&
-            m_sJc                == oElement.m_sJc                   &&
-            m_sShd               == oElement.m_sShd                  &&
-            m_sTblInd            == oElement.m_sTblInd               &&
-            m_sCellTop           == oElement.m_sCellTop              &&
-            m_sCellLeft          == oElement.m_sCellLeft             &&
-            m_sCellBottom        == oElement.m_sCellBottom           &&
-            m_sCellRight         == oElement.m_sCellRight            &&
-            m_sBorderTop         == oElement.m_sBorderTop            &&
-            m_sBorderLeft        == oElement.m_sBorderLeft           &&
-            m_sBorderBottom      == oElement.m_sBorderBottom         &&
-            m_sBorderRight       == oElement.m_sBorderRight          &&
-            m_sBorderInsideH     == oElement.m_sBorderInsideH        &&
-            m_sBorderInsideV     == oElement.m_sBorderInsideV        &&
-            m_sTopBorder         == oElement.m_sTopBorder            &&
-            m_sLeftBorder        == oElement.m_sLeftBorder           &&
-            m_sBottomBorder      == oElement.m_sBottomBorder         &&
+    return  m_sType              == oElement.m_sType              &&
+            m_sStyleId           == oElement.m_sStyleId           &&
+            m_sDefault           == oElement.m_sDefault           &&
+            m_sCustomStyle       == oElement.m_sCustomStyle       &&
+            m_sS                 == oElement.m_sS                 &&
+            m_sName              == oElement.m_sName              &&
+            m_sBasedOn           == oElement.m_sBasedOn           &&
+            m_sLink              == oElement.m_sLink              &&
+            m_sUiPriority        == oElement.m_sUiPriority        &&
+            m_bQFormat           == oElement.m_bQFormat           &&
+            m_bUnhideWhenUsed    == oElement.m_bUnhideWhenUsed    &&
+            m_bB                 == oElement.m_bB                 &&
+            m_bI                 == oElement.m_bI                 &&
+            m_sRFonts            == oElement.m_sRFonts            &&
+            m_sColor             == oElement.m_sColor             &&
+            m_sU                 == oElement.m_sU                 &&
+            m_sSz                == oElement.m_sSz                &&
+            m_bKeepLines         == oElement.m_bKeepLines         &&
+            m_bKeepNext          == oElement.m_bKeepNext          &&
+            m_sSpacing           == oElement.m_sSpacing           &&
+            m_sOutlineLvl        == oElement.m_sOutlineLvl        &&
+            m_bContextualSpacing == oElement.m_bContextualSpacing &&
+            m_sInd               == oElement.m_sInd               &&
+            m_sJc                == oElement.m_sJc                &&
+            m_sShd               == oElement.m_sShd               &&
+            m_sTblInd            == oElement.m_sTblInd            &&
+            m_sCellTop           == oElement.m_sCellTop           &&
+            m_sCellLeft          == oElement.m_sCellLeft          &&
+            m_sCellBottom        == oElement.m_sCellBottom        &&
+            m_sCellRight         == oElement.m_sCellRight         &&
+            m_sBorderTop         == oElement.m_sBorderTop         &&
+            m_sBorderLeft        == oElement.m_sBorderLeft        &&
+            m_sBorderBottom      == oElement.m_sBorderBottom      &&
+            m_sBorderRight       == oElement.m_sBorderRight       &&
+            m_sBorderInsideH     == oElement.m_sBorderInsideH     &&
+            m_sBorderInsideV     == oElement.m_sBorderInsideV     &&
+            m_sTopBorder         == oElement.m_sTopBorder         &&
+            m_sLeftBorder        == oElement.m_sLeftBorder        &&
+            m_sBottomBorder      == oElement.m_sBottomBorder      &&
             m_sRightBorder       == oElement.m_sRightBorder;
 }
 

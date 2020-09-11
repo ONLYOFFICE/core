@@ -23,8 +23,8 @@ inline static std::string       GetContentAsUTF8(const std::string &sString, con
 inline static std::string       GetContentAsUTF8(const std::wstring& sFileName);
 inline static bool              ThereIsNumber(const std::wstring& sString);
 inline static std::wstring      ConvertAbsoluteValue(const std::wstring& sAbsoluteValue);
-static std::vector<std::string>        GetWords(const std::wstring& sLine);
-static std::vector<std::wstring>       GetWordsW(const std::wstring& sLine);
+static std::vector<std::string> GetWords(const std::wstring& sLine);
+static std::vector<std::wstring>GetWordsW(const std::wstring& sLine);
 inline std::vector<std::string> GetSelectorsList(const std::wstring& sSelectors);
 inline std::wstring             DeleteSpace(const std::wstring& sValue);
 inline static void              RemoveExcessFromStyles(std::wstring& sStyle);

@@ -71,6 +71,8 @@ public:
             lCurLen += 8 + ReadHeader.RecLen;
 
             IRecord* pBuildListSubContainer = CreateByType(ReadHeader);
+            pBuildListSubContainer->ReadFromStream(ReadHeader, pStream);
+
             n_arrRgChildRec.push_back(pBuildListSubContainer);
         }
 

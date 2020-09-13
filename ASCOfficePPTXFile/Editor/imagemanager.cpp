@@ -201,7 +201,9 @@ namespace NSShapeImageGen
 
 		COfficeUtils officeUtils(NULL);
 		
-		while (officeUtils.IsArchive(strFileSrc))
+		bool bIsImage = checker.isImageFile(strFileSrc);
+		
+		if (false == bIsImage && true == officeUtils.IsArchive(strFileSrc))
 		{
 			sTempUnpacked = m_strTempMedia + FILE_SEPARATOR_STR + L"zip_unpacked";	   
 			NSDirectory::CreateDirectory(sTempUnpacked);
@@ -237,8 +239,10 @@ namespace NSShapeImageGen
 					if (pData) delete []pData; pData = NULL;
 				}
 			}
+
+			bIsImage = checker.isImageFile(strFileSrc);
 		}
-		if (true == checker.isImageFile(strFileSrc))
+		if (bIsImage)
 		{
 			if (checker.eFileType == _CXIMAGE_FORMAT_JPG)
 			{

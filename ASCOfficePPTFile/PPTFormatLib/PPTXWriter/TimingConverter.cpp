@@ -1,9 +1,15 @@
 #include "TimingConverter.h"
+
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Par.h"
-#include "../Records/Animations/ExtTimeNodeContainer.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldP.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldOleChart.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldDgm.h"
+
 #include "../../../ASCOfficePPTXFile/PPTXFormat/WrapperWritingElement.h"
 
+#include "../Records/Animations/ChartBuildContainer.h"
+#include "../Records/Animations/DiagramBuildContainer.h"
+#include "../Records/Animations/ExtTimeNodeContainer.h"
 
 using namespace PPT_FORMAT;
 
@@ -16,6 +22,7 @@ static void ConvertCRecordBuildListContainerToBldLst(
 
     for (unsigned i = 0; i < pBLC->n_arrRgChildRec.size(); i++)
     {
+        PPTX::Logic::BuildNodeBase oBuildNodeBase;
         switch ( pBLC->n_arrRgChildRec[i]->m_oHeader.RecType ) {
         case RT_ParaBuild:
         {
@@ -23,24 +30,56 @@ static void ConvertCRecordBuildListContainerToBldLst(
                     (CRecordParaBuildContainer*)pBLC->n_arrRgChildRec[i];
             PPTX::Logic::BldP* pBldP = new PPTX::Logic::BldP();
 
-            pBldP->spid = std::to_wstring(pRec->m_oBuildAtom.m_nShapeIdRef);
-            pBldP->grpId = (int)pRec->m_oBuildAtom.m_nBuildId;
+            pBldP->spid      = std::to_wstring(pRec->m_oBuildAtom.m_nShapeIdRef);
+            pBldP->grpId     = (int)pRec->m_oBuildAtom.m_nBuildId;
+            pBldP->uiExpand  = pRec->m_oBuildAtom.m_fExpanded;
 
-            pBldP->build = pRec->m_oParaBuildAtom.m_nParaBuild;
-            pBldP->advAuto = std::to_wstring(pRec->m_oParaBuildAtom.m_nDelayTime);
-            pBldP->animBg = pRec->m_oParaBuildAtom.m_fAnimBackground;
-            pBldP->rev = pRec->m_oParaBuildAtom.m_fReverse;
-            pBldP->uiExpand = pRec->m_oParaBuildAtom.m_fUserSetAnimBackground;
-            pBldP->autoUpdateAnimBg = pRec->m_oParaBuildAtom.m_fAutomatic;
+            pBldP->build             = pRec->m_oParaBuildAtom.m_nParaBuild;
+            pBldP->advAuto           = std::to_wstring(pRec->m_oParaBuildAtom.m_nDelayTime);
+            pBldP->animBg            = pRec->m_oParaBuildAtom.m_fAnimBackground;
+            pBldP->rev               = pRec->m_oParaBuildAtom.m_fReverse;
+            pBldP->autoUpdateAnimBg  = pRec->m_oParaBuildAtom.m_fAutomatic;
 
-            PPTX::Logic::BuildNodeBase oBuildNodeBase;
+
             oBuildNodeBase.m_node = pBldP;
-            oBL.list.push_back(oBuildNodeBase);
+            break;
+        }
+        case RT_ChartBuild:
+        {
+            CRecordChartBuildContainer* pRec =
+                    (CRecordChartBuildContainer*)pBLC->n_arrRgChildRec[i];
+            PPTX::Logic::BldOleChart* pBldC = new PPTX::Logic::BldOleChart();
+
+            pBldC->spid      = std::to_wstring(pRec->m_oBuildAtom.m_nShapeIdRef);
+            pBldC->grpId     = (int)pRec->m_oBuildAtom.m_nBuildId;
+            pBldC->uiExpand  = pRec->m_oBuildAtom.m_fExpanded;
+
+            pBldC->animBg    = pRec->m_oChartBuildAtom.m_fAnimBackground;
+            pBldC->bld       = pRec->m_oChartBuildAtom.m_ChartBuild;
+
+            oBuildNodeBase.m_node = pBldC;
+            break;
+        }
+
+        case RT_DiagramBuild:
+        {
+            CRecordDiagramBuildContainer* pRec =
+                    (CRecordDiagramBuildContainer*)pBLC->n_arrRgChildRec[i];
+            PPTX::Logic::BldDgm* pBldD = new PPTX::Logic::BldDgm();
+
+            pBldD->spid      = std::to_wstring(pRec->m_oBuildAtom.m_nShapeIdRef);
+            pBldD->grpId     = (int)pRec->m_oBuildAtom.m_nBuildId;
+            pBldD->uiExpand  = pRec->m_oBuildAtom.m_fExpanded;
+
+            pBldD->bld       = pRec->m_oDiagramBuildAtom.m_oDiagramBuild;
+
+            oBuildNodeBase.m_node = pBldD;
             break;
         }
         default:
             break;
         }
+        oBL.list.push_back(oBuildNodeBase);
 
     }
 

@@ -50,6 +50,7 @@ namespace NSCSS
         std::wstring GetFont() const;
         std::wstring GetFontFamily() const;
         std::vector<std::wstring> GetFontNames() const;
+        std::vector<std::wstring> GetFontNames2(const std::wstring& sFontFamily) const;
         std::wstring GetFontSize() const;
         std::wstring GetFontSizeAdjust() const;
         std::wstring GetFontStretch() const;
@@ -67,6 +68,12 @@ namespace NSCSS
         std::wstring GetMarginRight() const;
         std::wstring GetMarginTop() const;
         std::wstring GetMarginBlockStart() const;
+
+        std::map<int, std::wstring> GetMargins() const;
+        std::wstring GetMarginTop2   () const;
+        std::wstring GetMarginBottom2() const;
+        std::wstring GetMarginLeft2  () const;
+        std::wstring GetMarginRight2 () const;
 
         /* PADDING */
         std::wstring GetPadding() const;

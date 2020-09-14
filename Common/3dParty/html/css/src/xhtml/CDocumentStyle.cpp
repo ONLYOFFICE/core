@@ -285,24 +285,21 @@ namespace NSCSS
             sIndValue += L"w:firstLine=\"" +std::to_wstring((int)floor(dFirstLineValue + 0.5f)) + L"\" ";
         }
 
-        if (!oStyle.GetMargin().empty())
+        std::map<int, std::wstring> sMargins = oStyle.GetMargins();
+        if (!sMargins.empty())
         {
-            const float& dLeftValue = wcstof(oStyle.GetMarginLeft().c_str(), NULL);
-            const float& dRightValue = wcstof(oStyle.GetMarginRight().c_str(), NULL);
-
-            sIndValue += L"w:left=\"" + std::to_wstring((int)floor(dLeftValue + 0.5f)) + L"\" ";
-            sIndValue += L"w:right=\"" + std::to_wstring((int)floor(dRightValue + 0.5f)) + L"\"";
+            float dLeftValue = wcstof(sMargins[1].c_str(), NULL);
+            float dRightValue = wcstof(sMargins[3].c_str(), NULL);
+            sIndValue += L"w:left=\"" + std::to_wstring((int)floorf(dLeftValue + 0.5f)) + L"\" ";
+            sIndValue += L"w:right=\"" + std::to_wstring((int)floorf(dRightValue + 0.5f)) + L"\" ";
         }
-
         oXmlElement.SetInd(sIndValue);
 
         std::wstring sSpacingValue;
-
-        if (!oStyle.GetMargin().empty())
+        if (!sMargins.empty())
         {
-            const float& dAfterValue = wcstof(oStyle.GetMarginTop().c_str(), NULL);
-            const float& dBeforeValue = wcstof(oStyle.GetMarginBottom().c_str(), NULL);
-
+            float dAfterValue = wcstof(sMargins[0].c_str(), NULL);
+            float dBeforeValue = wcstof(sMargins[2].c_str(), NULL);
             sSpacingValue += L"w:after=\"" + std::to_wstring((int)floorf(dAfterValue + 0.5f)) + L"\" ";
             sSpacingValue += L"w:before=\"" + std::to_wstring((int)floorf(dBeforeValue + 0.5f)) + L"\" ";
         }
@@ -401,7 +398,7 @@ namespace NSCSS
 
     }
 
-    void CDocumentStyle::SetRStyle(const NSCSS::CCompiledStyle &oStyle, CXmlElement& oXmlElement)
+    void CDocumentStyle::SetRStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement)
     {
         ConvertStyle(oStyle, false, oXmlElement);
 
@@ -411,15 +408,16 @@ namespace NSCSS
         oXmlElement.SetColor(oStyle.GetColor());
         oXmlElement.SetShd(oStyle.GetBackgroundColor());
 
-        if (!oStyle.GetFontSize().empty())
+        std::wstring sFontSize = oStyle.GetFontSize();
+        if (!sFontSize.empty())
         {
-            const float& dValue = wcstof(oStyle.GetFontSize().c_str(), NULL);
-
+            float dValue = wcstof(sFontSize.c_str(), NULL);
             oXmlElement.SetSz(std::to_wstring((int)dValue));
         }
-        if (!oStyle.GetFontFamily().empty())
+        std::wstring sFontFamily = oStyle.GetFontFamily();
+        if (!sFontFamily.empty())
         {
-            const std::vector<std::wstring> sFontsFamily = oStyle.GetFontNames();
+            std::vector<std::wstring> sFontsFamily = oStyle.GetFontNames2(sFontFamily);
             if (!sFontsFamily.empty())
                 oXmlElement.SetRFonts(sFontsFamily.back());
         }
@@ -431,13 +429,11 @@ namespace NSCSS
             oXmlElement.SetI(true);
 
         std::wstring sSpacingValue;
-
-        if (!oStyle.GetMargin().empty())
+        std::map<int, std::wstring> sMargins = oStyle.GetMargins();
+        if (!sMargins.empty())
         {
-            const float& dAfterValue = wcstof(oStyle.GetMarginTop().c_str(), NULL) * 10.0f;
-
-            const float& dBeforeValue = wcstof(oStyle.GetMarginBottom().c_str(), NULL) * 10.0f;
-
+            float dAfterValue = wcstof(sMargins[0].c_str(), NULL) * 10.0f;
+            float dBeforeValue = wcstof(sMargins[2].c_str(), NULL) * 10.0f;
             sSpacingValue += L"w:after=\"" + std::to_wstring((int)floorf(dAfterValue + 0.5f)) + L"\" ";
             sSpacingValue += L"w:before=\"" + std::to_wstring((int)floorf(dBeforeValue + 0.5f)) + L"\" ";
         }

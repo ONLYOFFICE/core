@@ -5,6 +5,7 @@
 #include <numeric>
 #include <algorithm>
 #include <iterator>
+#include <map>
 
 #include <iostream>
 #include "../../../../../DesktopEditor/common/File.h"
@@ -586,11 +587,29 @@ namespace NSCSS
             return arWords;
         }
 
+        std::vector<std::wstring> CCompiledStyle::GetFontNames2(const std::wstring& sFontFamily) const
+        {
+            if (sFontFamily.empty())
+                return std::vector<std::wstring>();
+
+            size_t posFirst = sFontFamily.find_first_of(L"'\"");
+            if (posFirst == std::wstring::npos)
+                return {sFontFamily};
+
+            std::vector<std::wstring> arWords;
+            while (posFirst != std::wstring::npos)
+            {
+                const auto& posSecond = sFontFamily.find_first_of(L"'\"", posFirst + 1);
+                arWords.push_back(sFontFamily.substr(posFirst, posSecond - posFirst + 1));
+                posFirst = sFontFamily.find_first_of(L"'\"", posSecond + 1);
+            }
+            return arWords;
+        }
+
     /* MARGIN */
         std::wstring CCompiledStyle::GetMargin() const
         {
             const auto& oMargin = m_mStyle.find(L"margin");
-
             if (oMargin != m_mStyle.end())
                 return oMargin->second;
 
@@ -611,6 +630,59 @@ namespace NSCSS
             return sTop + L" " + sRight + L" " + sBottom + L" " + sLeft;
 
             return std::wstring();
+        }
+
+        std::map<int, std::wstring> CCompiledStyle::GetMargins() const
+        {
+            const auto& oMargin = m_mStyle.find(L"margin");
+            std::map<int, std::wstring> sRes;
+            std::wstring sMargin;
+            if (oMargin != m_mStyle.end())
+                sMargin = oMargin->second;
+
+            std::wstring sTop    = GetMarginTop2   ();
+            std::wstring sBottom = GetMarginBottom2();
+            std::wstring sLeft   = GetMarginLeft2  ();
+            std::wstring sRight  = GetMarginRight2 ();
+
+            if(!sMargin.empty())
+            {
+                std::vector<std::wstring> arValues;
+                size_t pre = 0;
+                size_t find = sMargin.find(' ');
+                while(find != std::wstring::npos)
+                {
+                    arValues.push_back(sMargin.substr(pre, find - pre));
+                    pre = find + 1;
+                    find = sMargin.find(' ', pre);
+                }
+                if(pre < sMargin.size())
+                    arValues.push_back(sMargin.substr(pre));
+
+                if(sTop.empty())
+                    sTop = arValues[0];
+                if(sLeft.empty())
+                    sLeft = arValues.size() == 4 ? arValues[3] : (arValues.size() > 1 ? arValues[1] : arValues[0]);
+                if(sRight.empty())
+                    sRight = arValues.size() > 1 ? arValues[1] : arValues[0];
+                if(sBottom.empty())
+                    sBottom = arValues.size() > 2 ? arValues[2] : arValues[0];
+            }
+            sRes[0] = sTop;
+            sRes[1] = sRight;
+            sRes[2] = sBottom;
+            sRes[3] = sLeft;
+            return sRes;
+        }
+
+        std::wstring CCompiledStyle::GetMarginTop2() const
+        {
+            const auto& oMarginTop = m_mStyle.find(L"margin-top");
+            if (oMarginTop != m_mStyle.end())
+                return oMarginTop->second;
+
+            const std::wstring& sMarginBlockStart = GetMarginBlockStart();
+            return sMarginBlockStart.empty() ? std::wstring() : sMarginBlockStart;
         }
 
         std::wstring CCompiledStyle::GetMarginTop() const
@@ -662,11 +734,13 @@ namespace NSCSS
         std::wstring CCompiledStyle::GetMarginBlockStart() const
         {
             const auto& oMarginBlockStart = m_mStyle.find(L"margin-block-start");
+            return oMarginBlockStart != m_mStyle.end() ? oMarginBlockStart->second : std::wstring();
+        }
 
-            if (oMarginBlockStart != m_mStyle.end())
-                return oMarginBlockStart->second;
-
-            return std::wstring();
+        std::wstring CCompiledStyle::GetMarginLeft2() const
+        {
+            const auto& oMarginLeft = m_mStyle.find(L"margin-left");
+            return oMarginLeft != m_mStyle.end() ? oMarginLeft->second : std::wstring();
         }
 
         std::wstring CCompiledStyle::GetMarginLeft() const
@@ -714,6 +788,12 @@ namespace NSCSS
             return std::wstring();
         }
 
+        std::wstring CCompiledStyle::GetMarginRight2() const
+        {
+            const auto& oMarginRight = m_mStyle.find(L"margin-right");
+            return oMarginRight != m_mStyle.end() ? oMarginRight->second : std::wstring();
+        }
+
         std::wstring CCompiledStyle::GetMarginRight() const
         {
             const auto& oMarginRight = m_mStyle.find(L"margin-right");
@@ -756,6 +836,16 @@ namespace NSCSS
                 return arValues[0];
 
             return std::wstring();
+        }
+
+        std::wstring CCompiledStyle::GetMarginBottom2() const
+        {
+            const auto& oMarginBottom = m_mStyle.find(L"margin-bottom");
+            if (oMarginBottom != m_mStyle.end())
+                return oMarginBottom->second;
+
+            const std::wstring& sMarginBlockEnd = GetMarginBlockEnd();
+            return sMarginBlockEnd.empty() ? std::wstring() : sMarginBlockEnd;
         }
 
         std::wstring CCompiledStyle::GetMarginBottom() const
@@ -809,11 +899,7 @@ namespace NSCSS
         std::wstring CCompiledStyle::GetMarginBlockEnd() const
         {
             const auto& oMarginBlockEnd = m_mStyle.find(L"margin-block-end");
-
-            if (oMarginBlockEnd != m_mStyle.end())
-                return oMarginBlockEnd->second;
-
-            return std::wstring();
+            return oMarginBlockEnd != m_mStyle.end() ? oMarginBlockEnd->second : std::wstring();
         }
 
     /* PADDING */

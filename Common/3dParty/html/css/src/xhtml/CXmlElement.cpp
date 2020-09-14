@@ -445,7 +445,6 @@ void CXmlElement::SetJc(const std::wstring& sJc)
 {
     std::wstring sNewJc = sJc;
     std::transform(sNewJc.begin(), sNewJc.end(), sNewJc.begin(), towlower);
-
     if (sNewJc == L"justify")
         m_sJc = L"both";
     else if (sNewJc == L"middle")

@@ -19,7 +19,7 @@ namespace NSCSS
 
         bool operator==(const CStyleUsed& oUsedStyle) const
         {
-            return ((m_oStyle == oUsedStyle.m_oStyle) && (m_bIsPStyle == oUsedStyle.m_bIsPStyle));
+            return (m_oStyle == oUsedStyle.m_oStyle) && (m_bIsPStyle == oUsedStyle.m_bIsPStyle);
         }
 
         /*
@@ -41,7 +41,7 @@ namespace NSCSS
 
         void CombineStandardStyles(const std::vector<std::wstring>& arStandartedStyles, CXmlElement& oElement);
         void CreateStandardStyle(const std::wstring& sNameStyle, CXmlElement& oElement);
-        void ConvertStyle(const NSCSS::CCompiledStyle& oStyle, bool bIsPStyle, CXmlElement& oElement);
+        void ConvertStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oElement, bool bIsPStyle);
 
         void SetRStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement);
         void SetPStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement);
@@ -56,7 +56,7 @@ namespace NSCSS
         void SetStyle(const std::wstring& sStyle);
         void SetId(const std::wstring& sId);
 
-        const std::wstring GetStyle() const;
+        std::wstring GetStyle() const;
         std::wstring GetIdAndClear();
 
         void Clear();

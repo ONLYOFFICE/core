@@ -39,7 +39,7 @@ namespace NSCSS
         std::vector<std::wstring> GetParentsName() const;
 
         void SetID(const std::wstring& sId);
-        const std::wstring& GetId() const;
+        std::wstring GetId() const;
 
         // const std::map<std::wstring, std::wstring>::iterator& GetBegin();
         // const std::map<std::wstring, std::wstring>::iterator& GetEnd();

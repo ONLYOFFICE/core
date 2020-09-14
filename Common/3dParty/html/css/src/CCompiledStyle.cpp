@@ -14,7 +14,7 @@
 
 namespace NSCSS
 {
-    CCompiledStyle::CCompiledStyle(){}
+    CCompiledStyle::CCompiledStyle() {}
 
     CCompiledStyle::CCompiledStyle(const std::map<std::wstring, std::wstring>& mStyle) : m_mStyle(mStyle) {}
 
@@ -23,19 +23,15 @@ namespace NSCSS
 
     CCompiledStyle::~CCompiledStyle()
     {
-        m_mStyle.clear();
+        m_mStyle.         clear();
         m_arParentsStyles.clear();
     }
 
     CCompiledStyle& CCompiledStyle::operator+= (const CCompiledStyle &oElement)
     {
-        if (oElement.m_mStyle.empty())
-            return *this;
-
         for(const auto& oItem : oElement.m_mStyle)
         {
             const auto& oFindPr = m_mStyle.find(oItem.first);
-
             if (oFindPr != m_mStyle.end())
             {
                 if (!oItem.second.empty() && oItem.second != L"inherit" && oFindPr->second.find(L"!imp") == std::wstring::npos)
@@ -50,7 +46,7 @@ namespace NSCSS
     CCompiledStyle& CCompiledStyle::operator= (const CCompiledStyle &oElement)
     {
         m_mStyle = oElement.m_mStyle;
-        m_sId = oElement.m_sId;
+        m_sId    = oElement.m_sId;
         // m_arParentsStyles = oElement.m_arParentsStyles;
         return *this;
     }
@@ -66,7 +62,6 @@ namespace NSCSS
     {
         if (m_mStyle.empty())
             return std::wstring();
-
         std::wstring sStyle;
         return std::accumulate(m_mStyle.begin(), m_mStyle.end(), sStyle,
             [] (std::wstring& sRes, const auto& oIter) { return sRes + oIter.first + L":" + oIter.second + L";"; });
@@ -148,8 +143,8 @@ namespace NSCSS
         size_t posLastSemicolon = size_t(0);
         while (posColon != std::wstring::npos)
         {
-            const size_t& posSemicolon = sStyle.find(L';', posColon);
-            AddPropSel(sStyle.substr(posLastSemicolon, posColon- posLastSemicolon), sStyle.substr(posColon + 1, posSemicolon - posColon - 1));
+            size_t posSemicolon = sStyle.find(L';', posColon);
+            AddPropSel(sStyle.substr(posLastSemicolon, posColon - posLastSemicolon), sStyle.substr(posColon + 1, posSemicolon - posColon - 1));
             posColon = sStyle.find(L':', posSemicolon);
             posLastSemicolon = posSemicolon + 1;
         }
@@ -171,7 +166,7 @@ namespace NSCSS
         m_sId = sId;
     }
 
-    const std::wstring& CCompiledStyle::GetId() const
+    std::wstring CCompiledStyle::GetId() const
     {
         return m_sId;
     }
@@ -203,78 +198,51 @@ namespace NSCSS
         std::wstring CCompiledStyle::GetFont() const
         {
             const auto& oFont = m_mStyle.find(L"font");
-
             if (oFont != m_mStyle.end())
                 return oFont->second;
 
-            const std::wstring& sValue = GetFontStyle()   + L" " +
-                                         GetFontVariant() + L" " +
-                                         GetFontWeight()  + L" " +
-                                         GetFontSize()    + L"/" +
-                                         GetLineHeight()  + L" " +
-                                         GetFontFamily();
+            std::wstring sValue = GetFontStyle()   + L" " +
+                                  GetFontVariant() + L" " +
+                                  GetFontWeight()  + L" " +
+                                  GetFontSize()    + L"/" +
+                                  GetLineHeight()  + L" " +
+                                  GetFontFamily();
 
-            return (sValue.length() == 5 ? std::wstring() : sValue);
+            return sValue.length() == 5 ? std::wstring() : sValue;
         }
 
         std::wstring CCompiledStyle::GetFontFamily() const
         {
             const auto& oFontFamily = m_mStyle.find(L"font-family");
-
             if (oFontFamily != m_mStyle.end())
             {
                 std::wstring sFontFamily = oFontFamily->second;
-
-                const auto& posComma = sFontFamily.find(L',');
-
+                size_t posComma = sFontFamily.find(L',');
                 if (posComma != std::wstring::npos)
                     sFontFamily = sFontFamily.substr(0, posComma);
-
                 if (sFontFamily.find(L'"') != std::wstring::npos || sFontFamily.find(L'\'') != std::wstring::npos)
                     return sFontFamily;
-
                 if (!sFontFamily.empty())
-                    return  L'"' + sFontFamily + L'"';
+                    return L'"' + sFontFamily + L'"';
             }
+
             std::wstring sFont;
-
             const auto& oFont = m_mStyle.find(L"font");
-
             if (oFont != m_mStyle.end())
                 sFont = oFont->second;
-            else
-                return std::wstring();
-
             if (sFont.empty())
                 return std::wstring();
 
-            int nPos1 = -1;
+            size_t nPos1 = sFont.find_last_of(L"1234567890");
+            std::wstring sValue;
+            if(nPos1 != std::wstring::npos)
+                sValue = sFont.substr(nPos1 + 1);
 
-            for (int i = (int)sFont.length() - 1; i >= 0; --i)
-            {
-                if(iswdigit(sFont[i]))
-                {
-                    nPos1 = i;
-                    break;
-                }
-            }
-
-            std::wstring sValue = sFont.substr(nPos1 + 1);
-
-            const auto& posComma = sValue.find(L',');
-
+            size_t posComma = sValue.find(L',');
             if (posComma != std::wstring::npos)
                 sValue.substr(0, posComma - 1);
 
-            if (!sValue.empty())
-            {
-                if (sValue.find(L'"') != std::wstring::npos || sValue.find(L'\'') != std::wstring::npos)
-                    return sValue;
-
-                return L'"' + sValue + L'"';
-            }
-
-            return sValue;
+            return sValue.empty() || sValue.find_first_of(L"\'\"") != std::wstring::npos ? sValue : L'"' + sValue + L'"';
         }
 
         std::wstring CCompiledStyle::GetFontSize() const

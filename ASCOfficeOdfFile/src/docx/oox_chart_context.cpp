@@ -146,9 +146,12 @@ void oox_chart_context::serialize(std::wostream & strm)
 		
 			CP_XML_NODE(L"c:lang")
 			{
-				CP_XML_ATTR(L"val",L"en-US");
+				CP_XML_ATTR(L"val", L"en-US");
 			}
-
+			CP_XML_NODE(L"c:roundedCorners")
+			{
+				CP_XML_ATTR(L"val", 0);
+			}
 			if (pivot_source_.empty() == false)
 			{
 				set_cache_only(true);

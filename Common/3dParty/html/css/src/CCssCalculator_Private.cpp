@@ -730,7 +730,7 @@ namespace NSCSS
 
             if (posPercent != std::wstring::npos)
             {
-                const float& dValue = wcstof(sValueTemp.substr(0, posPercent).c_str(), NULL) * 0.24f;
+                const float& dValue = wcstof(sValueTemp.substr(0, posPercent).c_str(), NULL) / 120.0f;
 
                 sValueString += std::to_wstring((int)floorf(dValue + 0.5f));
 

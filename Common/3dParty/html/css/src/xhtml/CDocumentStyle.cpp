@@ -81,7 +81,7 @@ namespace NSCSS
             oElement.CreateDefaultElement(sNameStyle);
     }
 
-    void CDocumentStyle::ConvertStyle(const NSCSS::CCompiledStyle &oStyle, CXmlElement& oElement, bool bIsPStyle)
+    void CDocumentStyle::ConvertStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oElement, bool bIsPStyle)
     {   
         std::wstring sName(oStyle.GetId());
         if (sName.empty())
@@ -211,7 +211,7 @@ namespace NSCSS
         oElement.SetCustomStyle(L"1");
     }
 
-    void CDocumentStyle::SetPStyle   (const NSCSS::CCompiledStyle &oStyle, CXmlElement& oXmlElement)
+    void CDocumentStyle::SetPStyle   (const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement)
     {
         ConvertStyle(oStyle, oXmlElement, true);
         if (oStyle.Empty() || oXmlElement.Empty())
@@ -380,7 +380,7 @@ namespace NSCSS
         }
     }
 
-    void CDocumentStyle::WriteRStyle (const NSCSS::CCompiledStyle &oStyle)
+    void CDocumentStyle::WriteRStyle (const NSCSS::CCompiledStyle& oStyle)
     {
         if(oStyle.GetId().empty())
         {
@@ -408,7 +408,7 @@ namespace NSCSS
         }
     }
 
-    void CDocumentStyle::WritePStyle (const NSCSS::CCompiledStyle &oStyle)
+    void CDocumentStyle::WritePStyle (const NSCSS::CCompiledStyle& oStyle)
     {   
         if(oStyle.GetId().empty())
         {

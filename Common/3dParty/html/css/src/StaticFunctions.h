@@ -83,16 +83,16 @@ namespace NSCSS
             if (sString.empty())
                 return false;
 
-            const auto& posDigit = sString.find_first_of(L"0123456789");
-            const auto& posNoDigit = sString.find_first_not_of(L" \n\r\t\f\v123456789.");
+            size_t posDigit = sString.find_first_of(L"0123456789");
+            size_t posNoDigit = sString.find_first_not_of(L" \n\r\t\f\v123456789.");
 
             if (posDigit == std::wstring::npos)
                 return false;
 
-            if (posDigit != std::wstring::npos && posNoDigit == std::wstring::npos)
+            if (posNoDigit == std::wstring::npos)
                 return true;
 
-            if ((posDigit != std::wstring::npos && posNoDigit != std::wstring::npos && posDigit < posNoDigit) || (posDigit == 0  && posNoDigit == 0))
+            if ((posDigit < posNoDigit) || (posDigit == 0  && posNoDigit == 0))
                 return true;
 
             return false;
@@ -102,11 +102,10 @@ namespace NSCSS
         {
             while (true)
             {
-                const auto& posLeftAngleBracket = sStyle.find(L'<');
-                const auto& posRightAngleBracket = sStyle.find(L'>');
-
-                const auto& posLeftComment = sStyle.find(L"<!--");
-                const auto& posRightComment = sStyle.find(L"-->");
+                size_t posLeftAngleBracket = sStyle.find(L'<');
+                size_t posRightAngleBracket = sStyle.find(L'>');
+                size_t posLeftComment = sStyle.find(L"<!--");
+                size_t posRightComment = sStyle.find(L"-->");
 
                 if (posLeftAngleBracket != std::wstring::npos || posLeftComment != std::wstring::npos || posRightComment != std::wstring::npos)
                 {
@@ -146,8 +145,8 @@ namespace NSCSS
             {
                 while (sAbsoluteValue.find(sAbsValue.first) != std::wstring::npos)
                 {
-                    const auto& nPos1 = sAbsoluteValue.find(sAbsValue.first);
-                    const auto& nPos2 = nPos1 + sAbsValue.first.length() - 1;
+                    size_t nPos1 = sAbsoluteValue.find(sAbsValue.first);
+                    size_t nPos2 = nPos1 + sAbsValue.first.length() - 1;
 
                     sAbsoluteValue.replace(nPos1, nPos2, sAbsValue.second);
                     bIsConvert = true;
@@ -161,13 +160,11 @@ namespace NSCSS
             if (sValue.empty())
                 return std::wstring();
 
-            const size_t& start = sValue.find_first_not_of(L" \n\r\t\f\v");
-
+            size_t start = sValue.find_first_not_of(L" \n\r\t\f\v");
             if (std::wstring::npos == start)
                 return sValue;
 
-            const size_t& end = sValue.find_last_not_of(L" \n\r\t\f\v"); // точно >=0
-
+            size_t end = sValue.find_last_not_of(L" \n\r\t\f\v"); // точно >=0
             return sValue.substr(start, end - start + 1);
         }
 
@@ -178,18 +175,14 @@ namespace NSCSS
 
             std::vector<std::string> arWords;
             arWords.reserve(16);
-
             std::string sTemp = wstringToString(sLine);
             size_t posFirstNotSpace = sTemp.find_first_not_of(" \n\r\t\f\v:;,");
-
             while (posFirstNotSpace != std::wstring::npos)
             {
                 const size_t& posLastNotSpace = sTemp.find_first_of(" \n\r\t\f\v:;,", posFirstNotSpace);
                 arWords.push_back(sTemp.substr(posFirstNotSpace, posLastNotSpace - posFirstNotSpace));
                 posFirstNotSpace = sTemp.find_first_not_of(" \n\r\t\f\v:;,", posLastNotSpace);
             }
-            std::vector<std::string>(arWords).swap(arWords);
-
             return arWords;
         }
 
@@ -200,17 +193,13 @@ namespace NSCSS
 
             std::vector<std::wstring> arWords;
             arWords.reserve(16);
-
             size_t posFirstNotSpace = sLine.find_first_not_of(L" \n\r\t\f\v:;,");
-
             while (posFirstNotSpace != std::wstring::npos)
             {
                 const size_t& posLastNotSpace = sLine.find_first_of(L" \n\r\t\f\v:;,", posFirstNotSpace);
                 arWords.push_back(sLine.substr(posFirstNotSpace, posLastNotSpace - posFirstNotSpace));
                 posFirstNotSpace = sLine.find_first_not_of(L" \n\r\t\f\v:;,", posLastNotSpace);
             }
-            std::vector<std::wstring>(arWords).swap(arWords);
-
             return arWords;
         }
 
@@ -221,37 +210,33 @@ namespace NSCSS
             std::wstring sIds;
 
             size_t posLattice = sNames.find(L"#");
-            size_t posPoint = sNames.find(L'.');
-
             if (posLattice != std::wstring::npos)
             {
                 sNames = sSelectors.substr(0, posLattice);
-                sIds = sSelectors.substr(posLattice);
+                sIds   = sSelectors.substr(posLattice);
             }
 
+            size_t posPoint = sNames.find(L'.');
             if (posPoint != std::wstring::npos)
             {
-                sNames = sSelectors.substr(0, posPoint);
+                sNames   = sSelectors.substr(0, posPoint);
                 sClasses = sSelectors.substr(posPoint);
                 posLattice = sClasses.find(L'#');
                 if (posLattice != std::wstring::npos)
                     sClasses = sClasses.substr(0, posLattice);
             }
 
-            const std::vector<std::string> arNames   = GetWords(sNames);
+            std::vector<std::string> arNames   = GetWords(sNames);
             std::vector<std::string> arClasses = GetWords(sClasses);
             std::vector<std::string> arIds     = GetWords(sIds);
             std::vector<std::string> arSelectors(arNames);
-
             arSelectors.reserve(arNames.size() * arClasses.size() + arNames.size() * arIds.size() + arClasses.size() * arIds.size());
 
             for (std::string& sClass : arClasses)
             {
                 if (sClass.find('.') == std::string::npos)
                     sClass = '.' + sClass;
-
                 arSelectors.push_back(sClass);
-
                 for (const std::string& sName : arNames)
                     arSelectors.push_back(sName + sClass);
                 for (const std::string& sId : arIds)
@@ -261,45 +246,33 @@ namespace NSCSS
             {
                 if (sId.find('#') == std::string::npos)
                     sId = '#' + sId;
-
                 arSelectors.push_back(sId);
-
                 for (const std::string& sName : arNames)
                     arSelectors.push_back(sName + sId);
             }
             return arSelectors;
         }
+
         inline std::vector<std::wstring> GetWordsWithSigns(const std::wstring& sLine)
         {
             if (sLine.empty())
                 return {};
-
             std::vector<std::wstring> arWords;
             arWords.reserve(16);
-
             size_t posFirstNotSpace = sLine.find_first_not_of(L" \n\r\t\f\v:;,");
-
             while (posFirstNotSpace != std::wstring::npos)
             {
-                const size_t& posLastNotSpace = sLine.find_first_of(L" \n\r\t\f\v:;,", posFirstNotSpace);
+                size_t posLastNotSpace = sLine.find_first_of(L" \n\r\t\f\v:;,", posFirstNotSpace);
                 arWords.push_back(sLine.substr(posFirstNotSpace, (posLastNotSpace != std::wstring::npos) ? posLastNotSpace - posFirstNotSpace + 1 : posLastNotSpace - posFirstNotSpace ));
                 posFirstNotSpace = sLine.find_first_not_of(L" \n\r\t\f\v:;,", posLastNotSpace);
             }
-            std::vector<std::wstring>(arWords).swap(arWords);
-
             return arWords;
         }
 
         inline bool IsDigit(const std::wstring& sValue)
         {
-            if (sValue.empty())
-                return false;
-
-            return std::all_of(sValue.begin(), sValue.end(), [] (const wchar_t& cChar) { return iswdigit(cChar); });
-
-            return true;
+            return sValue.empty() ? false : std::all_of(sValue.begin(), sValue.end(), [] (const wchar_t& cChar) { return iswdigit(cChar); });
         }
-
     }
 }
 

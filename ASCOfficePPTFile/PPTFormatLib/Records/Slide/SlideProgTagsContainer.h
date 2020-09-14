@@ -365,7 +365,7 @@ public:
     {
         for (auto* rec : m_arrRgChildRec)
             if (rec->m_pTagName->m_strText == TN_PPT10)
-                return (CRecordPP10SlideBinaryTagExtension*)rec;
+                return (CRecordPP10SlideBinaryTagExtension*)rec->m_pTagContainer;
 
         return nullptr;
     }

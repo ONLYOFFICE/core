@@ -90,7 +90,7 @@ namespace PPTX
 			nullable<TmplLst>						tmplLst;
 
 			std::wstring									spid;
-			int										grpId;
+            int										grpId;
 			nullable_bool							uiExpand;
 			nullable_limit<Limit::ParaBuildType>	build;
 			nullable_int							bldLvl;

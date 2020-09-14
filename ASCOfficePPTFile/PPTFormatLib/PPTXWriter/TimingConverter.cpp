@@ -2,12 +2,13 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Par.h"
 #include "../Records/Animations/ExtTimeNodeContainer.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldP.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/WrapperWritingElement.h"
 
 
 using namespace PPT_FORMAT;
 
-static inline void ConvertCRecordBuildListContainerToBldLst(
-                            CRecordBuildListContainer *pBLC,
+static void ConvertCRecordBuildListContainerToBldLst(
+                            PPT_FORMAT::CRecordBuildListContainer *pBLC,
                             PPTX::Logic::BldLst &oBL)
 {
     if (!pBLC)
@@ -22,8 +23,8 @@ static inline void ConvertCRecordBuildListContainerToBldLst(
                     (CRecordParaBuildContainer*)pBLC->n_arrRgChildRec[i];
             PPTX::Logic::BldP* pBldP = new PPTX::Logic::BldP();
 
-            pBldP->spid = pRec->m_oBuildAtom.m_nShapeIdRef;
-            pBldP->grpId = pRec->m_oBuildAtom.m_nBuildId;
+            pBldP->spid = std::to_wstring(pRec->m_oBuildAtom.m_nShapeIdRef);
+            pBldP->grpId = (int)pRec->m_oBuildAtom.m_nBuildId;
 
             pBldP->build = pRec->m_oParaBuildAtom.m_nParaBuild;
             pBldP->advAuto = std::to_wstring(pRec->m_oParaBuildAtom.m_nDelayTime);
@@ -32,7 +33,9 @@ static inline void ConvertCRecordBuildListContainerToBldLst(
             pBldP->uiExpand = pRec->m_oParaBuildAtom.m_fUserSetAnimBackground;
             pBldP->autoUpdateAnimBg = pRec->m_oParaBuildAtom.m_fAutomatic;
 
-            oBL.list.push_back(*dynamic_cast<PPTX::Logic::BuildNodeBase*>(pBldP));
+            PPTX::Logic::BuildNodeBase oBuildNodeBase;
+            oBuildNodeBase.m_node = pBldP;
+            oBL.list.push_back(oBuildNodeBase);
             break;
         }
         default:
@@ -52,7 +55,7 @@ static inline void ConvertCRecordBuildListContainerToBldLst(
 
 //}
 
-static inline void ConvertCRecordExtTimeNodeContainerToTnLst(
+static void ConvertCRecordExtTimeNodeContainerToTnLst(
                             PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
                             PPTX::Logic::TnLst &oTnLst)
 {

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <chrono>
 #include "../htmlfile2.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
@@ -44,6 +45,7 @@ int main()
                 HRESULT nResConvert;
                 CHtmlFile2 oFile;
                 oFile.SetTmpDirectory(sTmp);
+                auto begin = std::chrono::steady_clock::now();
                 if(bMhtMode)
                 {
                     if(!oFile.IsMhtFile(sFile))
@@ -62,9 +64,11 @@ int main()
                     }
                     nResConvert = oFile.OpenHtml(sFile, sTmp);
                 }
+                auto end = std::chrono::steady_clock::now();
+                auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
                 if(nResConvert == S_OK)
                 {
-                    std::cout << "Success" << std::endl;
+                    std::cout << "Success " << dur.count() << std::endl;
                     oZip.CompressFileOrDirectory(sTmp, sOutputDirectory + L"/" + sFileName + L".docx");
                     NSDirectory::DeleteDirectory(sTmp + L"/word/media");
                 }

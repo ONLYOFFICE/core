@@ -96,7 +96,10 @@ void oox_plot_area::add_axis(int type, odf_reader::chart::axis & content)
 
 	axis_.push_back(ax);
 }
-
+void oox_plot_area::set_no_local_table	(bool val)
+{
+	no_used_local_tables_ = val;
+} 
 void oox_plot_area::reset_cross_axis()//обязательно после всех добавлений
 {
 	for (size_t i = 0; i < axis_.size(); i++)

@@ -57,6 +57,8 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
+                XmlMacroLoadArray(node,_T("*"), childTnLst, TimeNodeBase);
+
                 XmlMacroReadAttributeBase(node, L"accel", accel);
                 XmlMacroReadAttributeBase(node, L"afterEffect", afterEffect);
                 XmlMacroReadAttributeBase(node, L"autoRev", autoRev);
@@ -85,7 +87,7 @@ namespace PPTX
 				endCondLst	= node.ReadNode(_T("p:endCondLst"));
 				endSync		= node.ReadNode(_T("p:endSync"));
 				iterate		= node.ReadNode(_T("p:iterate"));
-				childTnLst	= node.ReadNode(_T("p:childTnLst"));
+//                childTnLst	= node.ReadNode(_T("p:childTnLst"));
 				subTnLst	= node.ReadNode(_T("p:subTnLst"));
 
 				Normalize();
@@ -127,7 +129,7 @@ namespace PPTX
 				oValue.WriteNullable(endCondLst);
 				oValue.WriteNullable(endSync);
 				oValue.WriteNullable(iterate);
-				oValue.WriteNullable(childTnLst);
+                oValue.WriteArray(childTnLst);
 				oValue.WriteNullable(subTnLst);
 
 				return XmlUtils::CreateNode(_T("p:cTn"), oAttr, oValue);
@@ -139,7 +141,7 @@ namespace PPTX
 			nullable<CondLst>			endCondLst;
 			nullable<Cond>				endSync;
 			nullable<Iterate>			iterate;
-			nullable<TnLst>				childTnLst;
+            std::vector<TimeNodeBase>	childTnLst;
 			nullable<TnLst>				subTnLst;
 
 
@@ -177,9 +179,9 @@ namespace PPTX
 				if(endSync.IsInit())
 					endSync->SetParentPointer(this);
 				if(iterate.IsInit())
-					iterate->SetParentPointer(this);
-				if(childTnLst.IsInit())
-					childTnLst->SetParentPointer(this);
+                    iterate->SetParentPointer(this);
+                for (auto &child : childTnLst)
+                    child.SetParentPointer(this);
 				if(subTnLst.IsInit())
 					subTnLst->SetParentPointer(this);
 			}

@@ -1,6 +1,8 @@
 #include "TimingConverter.h"
 
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Par.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Seq.h"
+
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldP.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldOleChart.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldDgm.h"
@@ -93,7 +95,39 @@ static void ConvertCRecordBuildListContainerToBldLst(
 //{
 
 //}
+static void ConvertCRecordExtTimeNodeContainerToTimeNodeBase(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
+                                                             PPTX::Logic::TimeNodeBase &oTimeNodeBase)
+{
+    switch (pETNC->m_oTimeNodeAtom.m_dwType)
+    {
+        case TL_TNT_Parallel:
+    {
+        auto pPar = new PPTX::Logic::Par();
+        for (auto* pRecChild : pETNC->m_arrRgExtTimeNodeChildren)
+        {
+            PPTX::Logic::TimeNodeBase oChildTimeNodeBase;
+            ConvertCRecordExtTimeNodeContainerToTimeNodeBase(pRecChild, oChildTimeNodeBase);
+            pPar->cTn.childTnLst.push_back(oChildTimeNodeBase);
 
+        }
+        oTimeNodeBase.m_node = pPar;
+        break;
+    }
+    case TL_TNT_Sequential:
+    {
+        auto pSeq = new PPTX::Logic::Seq();
+        for (auto* pRecChild : pETNC->m_arrRgExtTimeNodeChildren)
+        {
+            PPTX::Logic::TimeNodeBase oChildTimeNodeBase;
+            ConvertCRecordExtTimeNodeContainerToTimeNodeBase(pRecChild, oChildTimeNodeBase);
+            pSeq->cTn.childTnLst.push_back(oChildTimeNodeBase);
+
+        }
+        oTimeNodeBase.m_node = pSeq;
+        break;
+    }
+    }
+}
 static void ConvertCRecordExtTimeNodeContainerToTnLst(
                             PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
                             PPTX::Logic::TnLst &oTnLst)
@@ -101,9 +135,11 @@ static void ConvertCRecordExtTimeNodeContainerToTnLst(
     if (!pETNC)
         return;
 
-    for (auto* child : pETNC->m_arrRgExtTimeNodeChildren)
+    for (auto* pChildETNC : pETNC->m_arrRgExtTimeNodeChildren)
     {
-
+        PPTX::Logic::TimeNodeBase oChildTimeNodeBase;
+        ConvertCRecordExtTimeNodeContainerToTimeNodeBase(pChildETNC, oChildTimeNodeBase);
+        oTnLst.list.push_back(oChildTimeNodeBase);
     }
 }
 

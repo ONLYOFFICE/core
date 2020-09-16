@@ -14,7 +14,7 @@ public:
     CElement();
     ~CElement();
 
-    void AddSelector(const std::wstring& sSelector);
+    void AddSelector(std::wstring sSelector);
     void AddSelectors(const std::vector<std::wstring>& arSelectors);
     void AddChildren(CElement* oChildren);
     // void AddDeclaration(const std::pair<std::wstring, std::wstring>& pDeclaration);

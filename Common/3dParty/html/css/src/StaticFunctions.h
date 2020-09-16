@@ -92,10 +92,7 @@ namespace NSCSS
             if (posNoDigit == std::wstring::npos)
                 return true;
 
-            if ((posDigit < posNoDigit) || (posDigit == 0  && posNoDigit == 0))
-                return true;
-
-            return false;
+            return (posDigit < posNoDigit) || (posDigit == 0  && posNoDigit == 0);
         }
 
         inline static void RemoveExcessFromStyles(std::wstring& sStyle)

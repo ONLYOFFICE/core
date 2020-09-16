@@ -33,9 +33,8 @@ std::wstring CElement::GetText() const
     {
         sText += L"{\n";
 
-        if (!m_arChildrens.empty())
-            for (const CElement* oChildren : m_arChildrens)
-                sText += oChildren->GetText();
+        for (const CElement* oChildren : m_arChildrens)
+            sText += oChildren->GetText();
 
         for (const auto& pDeclaration : m_arDeclarations)
             sText += L"   " + pDeclaration.first + L": " + pDeclaration.second + L";\n";
@@ -52,11 +51,10 @@ void CElement::AddChildren(CElement* oChildren)
     m_arChildrens.push_back(oChildren);
 }
 
-void CElement::AddSelector(const std::wstring& sSelector)
+void CElement::AddSelector(std::wstring sSelector)
 {
-    std::wstring sTemp = sSelector;
-    sTemp.erase(std::remove_if(sTemp.begin(), sTemp.end(), [] (wchar_t ch) { return std::iswspace(ch); }), sTemp.end());
-    m_arSelectors.push_back(sTemp);
+    sSelector.erase(std::remove_if(sSelector.begin(), sSelector.end(), [] (wchar_t ch) { return std::iswspace(ch); }), sSelector.end());
+    m_arSelectors.push_back(sSelector);
     std::sort(m_arSelectors.begin(), m_arSelectors.end());
 }
 
@@ -130,7 +128,7 @@ std::map<std::wstring, std::map<std::wstring, std::wstring>> CElement::GetDeclar
             [] (std::wstring& sRes, const std::wstring& sParent) { return sRes + sParent; });
 
         sTempSelectors = sTempSelectors.empty() ? sSelector : sTempSelectors + L" -> " + sSelector;
-        arElement.emplace(sTempSelectors, m_arDeclarations);
+        arElement[sTempSelectors] = m_arDeclarations;
     }
 
     for (const CElement* oElement : m_arChildrens)

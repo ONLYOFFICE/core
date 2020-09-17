@@ -839,8 +839,7 @@ private:
 
         do
         {
-            std::wstring sName = m_oLightReader.GetName();
-            readInside(oXml, sSelectors, oTS, bWasP, sName);
+            readInside(oXml, sSelectors, oTS, bWasP, m_oLightReader.GetName());
         } while(m_oLightReader.ReadNextSiblingNode2(nDeath));
         return true;
     }
@@ -1031,38 +1030,9 @@ private:
 
         std::wstring sStart = L"1";
         while(m_oLightReader.MoveToNextAttribute())
-        {
-            std::wstring sName = m_oLightReader.GetName();
-            if(sName == L"start")
+            if(m_oLightReader.GetName() == L"start")
                 sStart = m_oLightReader.GetText();
-        }
         m_oLightReader.MoveToElement();
-
-        // Нумерованный список
-        if(!bType)
-        {
-            m_oNumberXml.WriteString(L"<w:abstractNum w:abstractNumId=\"");
-            m_oNumberXml.WriteString(std::to_wstring(m_nNumberingId++));
-            m_oNumberXml.WriteString(L"\"><w:multiLevelType w:val=\"hybridMultilevel\"/><w:lvl w:ilvl=\"0\"><w:start w:val=\"");
-            m_oNumberXml.WriteString(sStart);
-            m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%1.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"709\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"1\"><w:start w:val=\"");
-            m_oNumberXml.WriteString(sStart);
-            m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"lowerLetter\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%2.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"1429\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"2\"><w:start w:val=\"");
-            m_oNumberXml.WriteString(sStart);
-            m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"lowerRoman\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%3.\"/><w:lvlJc w:val=\"right\"/><w:pPr><w:ind w:left=\"2149\" w:hanging=\"180\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"3\"><w:start w:val=\"");
-            m_oNumberXml.WriteString(sStart);
-            m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%4.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"2869\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"4\"><w:start w:val=\"");
-            m_oNumberXml.WriteString(sStart);
-            m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"lowerLetter\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%5.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"3589\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"5\"><w:start w:val=\"");
-            m_oNumberXml.WriteString(sStart);
-            m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"lowerRoman\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%6.\"/><w:lvlJc w:val=\"right\"/><w:pPr><w:ind w:left=\"4309\" w:hanging=\"180\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"6\"><w:start w:val=\"");
-            m_oNumberXml.WriteString(sStart);
-            m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%7.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"5029\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"7\"><w:start w:val=\"");
-            m_oNumberXml.WriteString(sStart);
-            m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"lowerLetter\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%8.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"5749\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"8\"><w:start w:val=\"");
-            m_oNumberXml.WriteString(sStart);
-            m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"lowerRoman\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%9.\"/><w:lvlJc w:val=\"right\"/><w:pPr><w:ind w:left=\"6469\" w:hanging=\"180\"/></w:pPr></w:lvl></w:abstractNum>");
-        }
 
         int nDeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
@@ -1096,14 +1066,45 @@ private:
                 sSelectors.pop_back();
                 continue;
             }
+
+            while(m_oLightReader.MoveToNextAttribute())
+                if(m_oLightReader.GetName() == L"value")
+                    sStart = m_oLightReader.GetText();
+            m_oLightReader.MoveToElement();
+
             wasP(oXml, sSelectors, bWasP);
             CTextSettings oTSLiP(oTS);
             oTSLiP.nLi++;
             oTSLiP.sPStyle += L"<w:numPr><w:ilvl w:val=\"" + std::to_wstring(oTSLiP.nLi) + L"\"/><w:numId w:val=\"" +
-                    (bType ? L"1" : std::to_wstring(m_nNumberingId)) + L"\"/></w:numPr>";
+                    (bType ? L"1" : std::to_wstring(m_nNumberingId + 1)) + L"\"/></w:numPr>";
             readStream(oXml, sSelectors, oTSLiP, bWasP);
             wasP(oXml, sSelectors, bWasP);
             sSelectors.pop_back();
+        }
+        // Нумерованный список
+        if(!bType)
+        {
+            m_oNumberXml.WriteString(L"<w:abstractNum w:abstractNumId=\"");
+            m_oNumberXml.WriteString(std::to_wstring(m_nNumberingId++));
+            m_oNumberXml.WriteString(L"\"><w:multiLevelType w:val=\"hybridMultilevel\"/><w:lvl w:ilvl=\"0\"><w:start w:val=\"");
+            m_oNumberXml.WriteString(sStart);
+            m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%1.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"709\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"1\"><w:start w:val=\"");
+            m_oNumberXml.WriteString(sStart);
+            m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"lowerLetter\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%2.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"1429\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"2\"><w:start w:val=\"");
+            m_oNumberXml.WriteString(sStart);
+            m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"lowerRoman\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%3.\"/><w:lvlJc w:val=\"right\"/><w:pPr><w:ind w:left=\"2149\" w:hanging=\"180\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"3\"><w:start w:val=\"");
+            m_oNumberXml.WriteString(sStart);
+            m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%4.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"2869\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"4\"><w:start w:val=\"");
+            m_oNumberXml.WriteString(sStart);
+            m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"lowerLetter\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%5.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"3589\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"5\"><w:start w:val=\"");
+            m_oNumberXml.WriteString(sStart);
+            m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"lowerRoman\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%6.\"/><w:lvlJc w:val=\"right\"/><w:pPr><w:ind w:left=\"4309\" w:hanging=\"180\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"6\"><w:start w:val=\"");
+            m_oNumberXml.WriteString(sStart);
+            m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%7.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"5029\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"7\"><w:start w:val=\"");
+            m_oNumberXml.WriteString(sStart);
+            m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"lowerLetter\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%8.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"5749\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"8\"><w:start w:val=\"");
+            m_oNumberXml.WriteString(sStart);
+            m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"lowerRoman\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%9.\"/><w:lvlJc w:val=\"right\"/><w:pPr><w:ind w:left=\"6469\" w:hanging=\"180\"/></w:pPr></w:lvl></w:abstractNum>");
         }
     }
 
@@ -1289,7 +1290,7 @@ private:
                     bRes = NSFile::CFileBinary::Copy(sSrcM, m_sDst + L"/word/media/i" + sImageName);
             }
             if(bRes)
-                ImageRels(oXml, sImageId, L"i" + sImageName);
+                bRes = ImageRels(oXml, sImageId, L"i" + sImageName);
         }
         m_oLightReader.MoveToElement();
 
@@ -1344,11 +1345,11 @@ private:
         bWasP = true;
     }
 
-    void ImageRels  (NSStringUtils::CStringBuilder* oXml, const std::wstring& sImageId, const std::wstring& sImageName)
+    bool ImageRels  (NSStringUtils::CStringBuilder* oXml, const std::wstring& sImageId, const std::wstring& sImageName)
     {
         CBgraFrame oBgraFrame;
         if(!oBgraFrame.OpenFile(m_sDst + L"/word/media/" + sImageName))
-            return;
+            return false;
 
         m_nImageId++;
         // Прописать рельсы
@@ -1399,6 +1400,7 @@ private:
         oXml->WriteString(L"\" cy=\"");
         oXml->WriteString(std::to_wstring(nHy));
         oXml->WriteString(L"\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>");
+        return true;
     }
 
     void readNote   (NSStringUtils::CStringBuilder* oXml, const std::wstring& sNote)

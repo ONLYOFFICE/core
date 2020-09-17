@@ -21,14 +21,13 @@ static void prettyprint(GumboNode*, NSStringUtils::CStringBuilderA& oBuilder);
 static std::string mhtTohtml(std::string& sFileContent, const std::wstring& sTmp);
 
 // Заменяет в строке s все символы s1 на s2
-static void replace_all(std::string& s, std::string s1, std::string s2)
+static void replace_all(std::string& s, const std::string& s1, const std::string& s2)
 {
-    size_t len = s1.length();
     size_t pos = s.find(s1);
     while(pos != std::string::npos)
     {
-        s.replace(pos, len, s2);
-        pos = s.find(s1, pos + len);
+        s.replace(pos, s1.length(), s2);
+        pos = s.find(s1, pos + s2.length());
     }
 }
 
@@ -54,7 +53,6 @@ static std::wstring htmlToXhtml(const std::wstring& sFile)
             std::string sEncoding = sFileContent.substr(posEncoding, posEnd - posEncoding);
             if (sEncoding != "utf-8" && sEncoding != "UTF-8")
             {
-                // sFileContent.replace(posEncoding, posEnd - posEncoding, "UTF-8");
                 NSUnicodeConverter::CUnicodeConverter oConverter;
                 sFileContent = U_TO_UTF8(oConverter.toUnicode(sFileContent, sEncoding.c_str()));
             }
@@ -68,20 +66,9 @@ static std::wstring htmlToXhtml(const std::wstring& sFile)
     // prettyprint
     NSStringUtils::CStringBuilderA oBuilder;
     prettyprint(output->document, oBuilder);
-    std::string sR = oBuilder.GetData();
-
-    // Вставка кодировки в файл
-    /*
-    if(sR.length() > 5)
-    {
-        std::string sSub = sR.substr(0, 5);
-        if(sSub != "<?xml")
-            sR = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + sR;
-    }
-    */
 
     // Конвертирование из string utf8 в wstring
-    return UTF8_TO_U(sR);
+    return UTF8_TO_U(oBuilder.GetData());
 }
 
 static std::string Base64ToString(const std::string& sContent, const std::string& sCharset)
@@ -109,17 +96,16 @@ static std::string QuotedPrintableDecode(const std::string& sContent)
     NSStringUtils::CStringBuilderA sRes;
     size_t ip = 0;
     size_t i = sContent.find('=');
-    size_t nLength = sContent.length();
-    while(i != std::string::npos && i + 2 < nLength)
+    while(i != std::string::npos && i + 2 < sContent.length())
     {
         sRes.WriteString(sContent.substr(ip, i - ip));
         std::string str = sContent.substr(i + 1, 2);
-        char * err;
+        char* err;
         char ch = (int)strtol(str.data(), &err, 16);
         if(*err)
         {
             if(str != "\r\n")
-                sRes.WriteString(sContent.substr(i, 3));
+                sRes.WriteString('=' + str);
         }
         else
             sRes.WriteString(&ch, 1);
@@ -134,9 +120,7 @@ static void ReadMht(std::string& sFileContent, const std::wstring& sTmp, size_t&
                     std::map<std::string, std::string>& sRes, NSStringUtils::CStringBuilderA& oRes)
 {
     // Content
-    size_t nContentTag = sFileContent.find("\n\n", nFound);
-    if(nContentTag == std::string::npos || nContentTag > nNextFound)
-        nContentTag = sFileContent.find("\n\r\n", nFound);
+    size_t nContentTag = sFileContent.find("\n\r\n", nFound);
     if(nContentTag == std::string::npos || nContentTag > nNextFound)
     {
         nFound = nNextFound;
@@ -341,7 +325,7 @@ static std::string mhtTohtml(std::string& sFileContent, const std::wstring& sTmp
         ReadMht(sFileContent, sTmp, nFound, nFoundEnd, sBoundary, sRes, oRes);
     }
     std::string sFile = oRes.GetData();
-    for(auto& item : sRes)
+    for(const auto& item : sRes)
     {
         std::string sName = item.first;
         size_t found = sFile.find(sName);
@@ -359,8 +343,7 @@ static std::string mhtTohtml(std::string& sFileContent, const std::wstring& sTmp
                 tq--;
             if(ch != '>')
             {
-                std::string is = item.second;
-                is = '\"' + is + '\"';
+                std::string is = '\"' + item.second + '\"';
                 sFile.replace(fq, tq - fq, is);
                 found = sFile.find(sName, fq + is.length());
             }
@@ -373,10 +356,9 @@ static std::string mhtTohtml(std::string& sFileContent, const std::wstring& sTmp
 
 static std::wstring mhtToXhtml(const std::wstring& sFile, const std::wstring& sTmp)
 {
-    std::wstring sRes;
     std::string sFileContent;
     if(!NSFile::CFileBinary::ReadAllTextUtf8A(sFile, sFileContent))
-        return sRes;
+        return L"";
 
     NSDirectory::CreateDirectory(sTmp + L"/word");
     NSDirectory::CreateDirectory(sTmp + L"/word/media");
@@ -389,24 +371,13 @@ static std::wstring mhtToXhtml(const std::wstring& sFile, const std::wstring& sT
     // prettyprint
     NSStringUtils::CStringBuilderA oBuilder;
     prettyprint(output->document, oBuilder);
-    std::string sR = oBuilder.GetData();
-
-    // Вставка кодировки в файл
-    /*
-    if(sR.length() > 5)
-    {
-        std::string sSub = sR.substr(0, 5);
-        if(sSub != "<?xml")
-            sR = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + sR;
-    }
-    */
 
     // Конвертирование из string utf8 в wstring
-    return UTF8_TO_U(sR);
+    return UTF8_TO_U(oBuilder.GetData());
 }
 
 // Заменяет сущности &,<,> в text
-static void substitute_xml_entities_into_text(std::string &text)
+static void substitute_xml_entities_into_text(std::string& text)
 {
     // replacing & must come first
     replace_all(text, "&", "&amp;");
@@ -415,7 +386,7 @@ static void substitute_xml_entities_into_text(std::string &text)
 }
 
 // Заменяет сущности " в text
-static void substitute_xml_entities_into_attributes(std::string &text)
+static void substitute_xml_entities_into_attributes(std::string& text)
 {
     substitute_xml_entities_into_text(text);
     replace_all(text, "\"", "&quot;");
@@ -489,7 +460,6 @@ static void build_attributes(GumboAttribute* at, bool no_entities, NSStringUtils
 
     // determine original quote character used if it exists
     std::string qs ="\"";
-
     atts.WriteString("=");
     atts.WriteString(qs);
     if(!no_entities)

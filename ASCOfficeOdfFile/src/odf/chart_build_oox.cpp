@@ -184,6 +184,8 @@ void object_odf_context::xlsx_convert(oox::xlsx_conversion_context & Context)
 		Context.start_chart(L"");
 		oox::oox_chart_context & chart = Context.current_chart();
 		
+		chart.no_used_local_tables_ = true;
+		
 		oox_convert(chart);
 
 		Context.end_chart();
@@ -433,8 +435,22 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 		calc_cache_series (series_[i].cell_range_address_,		cell_cash);
 		calc_cache_series (series_[i].label_cell_address_,		label_cash);
 		
+		if (chart_context.no_used_local_tables_ && false == table_name_.empty())
+		{//убрать ссылки на локальную таблицу кэшей
+			if (std::wstring::npos != series_[i].cell_range_address_.find(table_name_))
+			{
+				series_[i].cell_range_address_.clear();
+			}
+			if (std::wstring::npos != series_[i].label_cell_address_.find(table_name_))
+			{
+				series_[i].label_cell_address_.clear();
+			}
+		}		
+		
 		if (false == categories_.empty())
+		{//вычищать от локальных ссылок нельзя. может использоваться в последующих сериях
 			calc_cache_series (categories_[0],	cat_cash);
+		}
 
 		std::wstring			formatCode	= L"General";
 		_CP_OPT(std::wstring)	strNumFormat, strPercentFormat;
@@ -497,10 +513,19 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 			current->set_values_series(1, cell_cash);
 		}
 
-		if (categories_.empty() == false)//названия
-		{			
-			if (!bPivotChart_)
+		if (categories_.empty() == false)//названия 
+		{
+			if (chart_context.no_used_local_tables_)
+			{
+				if ( bPivotChart_ || table_name_.empty() || std::wstring::npos == categories_[0].find(table_name_))
+				{
+					current->set_formula_series(0, categories_[0], L"General", true);
+				}
+			}
+			else 
+			{
 				current->set_formula_series(0, categories_[0], L"General", true);
+			}
 			current->set_values_series(0, cat_cash);
 		}
 		current->set_name(series_[i].name_);
@@ -1034,6 +1059,7 @@ void process_build_object::visit(chart_categories& val)
 void process_build_object::visit(table_table& val)
 {        
 	object_odf_context_.table_table_ = &val;	
+    object_odf_context_.table_name_ = val.attlist_.table_name_.get_value_or(L"");
 	
 	ACCEPT_ALL_CONTENT(val.table_columns_and_groups_.content_);
 	ACCEPT_ALL_CONTENT(val.table_rows_and_groups_.content_);

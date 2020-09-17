@@ -372,6 +372,11 @@ namespace OOX
 					int nWxSectDepth = oReader.GetDepth();							
 					CreateElements(oReader, nWxSectDepth);
 				}
+				else if ( _T("wx:sub-section") == sName && !oReader.IsEmptyNode())
+				{
+					int nWxSubSectDepth = oReader.GetDepth();							
+					CreateElements(oReader, nWxSubSectDepth);
+				}
 				else if ( _T("wx:pBdrGroup") == sName && !oReader.IsEmptyNode())
 				{
 					int nWxBdrGroupDepth = oReader.GetDepth();							
@@ -592,6 +597,11 @@ namespace OOX
 				{
 					int nWxSect = oReader.GetDepth();
 					CreateElements(oReader, nWxSect);
+				}
+				else if ( L"wx:sub-section" == sName && !oReader.IsEmptyNode() )
+				{
+					int nWxSubSection = oReader.GetDepth();
+					CreateElements(oReader, nWxSubSection);
 				}
 			}
 		}

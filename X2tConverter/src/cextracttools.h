@@ -833,7 +833,17 @@ namespace NExtractTools
 				eRes = TCD_ERROR;
 			return eRes;
 		}
-        TConversionDirection processDownloadFile()
+		TConversionDirection getConversionDirectionFromExt()
+		{
+			if (NULL != m_sFileTo)
+			{
+				COfficeFileFormatChecker FileFormatChecker;
+				RELEASEOBJECT(m_nFormatTo);
+				m_nFormatTo = new int(FileFormatChecker.GetFormatByExtension(L"." + NSFile::GetFileExtention(*m_sFileTo)));
+			}
+			return getConversionDirection();
+		}
+		TConversionDirection processDownloadFile()
         {
             TConversionDirection eRes = TCD_AUTO;
             int nFormatFrom	= *m_nFormatFrom;

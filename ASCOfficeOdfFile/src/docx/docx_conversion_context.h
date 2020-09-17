@@ -324,11 +324,10 @@ public:
     
 	struct _section 
 	{
-		_section() {is_dump_ = false;}
+		_section() : is_dump_(false){}
 		
-		_section(const std::wstring & SectionName, const std::wstring & Style, const std::wstring & PageProperties) 
+		_section(const std::wstring & SectionName, const std::wstring & Style, const std::wstring & PageProperties) : is_dump_(false)
 		{ 
-			is_dump_		= false;
 			name_			= SectionName;
 			style_			= Style;
 			page_properties_.push_back(PageProperties);
@@ -340,7 +339,7 @@ public:
 		
 		std::vector<std::wstring>	page_properties_;
 
-		bool						is_dump_;
+		bool						is_dump_ = false;
 	};
   
 	void add_section(const std::wstring & SectionName, const std::wstring & Style, const std::wstring & PageProperties);
@@ -349,27 +348,12 @@ public:
 	{ 
 		return sections_.empty(); 
 	}
-    _section & get()		
-	{ 
-		if (sections_.empty())
-			return main_section_;
-		else
-			return sections_[0]; 
-	}
-	void remove_section()	
-	{
-		if (sections_.empty()) return;
+    _section & get_first();
+    _section & get_last();
 
-		sections_.erase(sections_.begin(), sections_.begin() + 1);
-		if (sections_.empty())
-		{
-			//после оканчания разметки секциями и начале (возобновлении) основного раздела нужен разрыв (хотя настройки страницы могут и не поменяться)
-			//щас разрыв на текущей странице
-			//todooo проверить - может типо если следующий будет заголовок - разорвать
-			main_section_.is_dump_ = false;
-		}
-	}
-	std::wstring			dump_;
+	void remove_section();
+
+	std::wstring dump_;
   
 private:    
 	_section				main_section_;

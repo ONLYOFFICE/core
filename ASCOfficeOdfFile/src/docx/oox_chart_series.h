@@ -62,7 +62,9 @@ public:
 	int							id_;
 	std::wstring				name_;	
 	int							iSymbolMarkerType_;
-	bool						bLocalTable_;
+
+	bool						bCacheOnly_; // used embedded or only cache values
+
 	_CP_OPT(oox_data_labels)	data_labels_;
 	
 	void setName(const std::wstring &value);

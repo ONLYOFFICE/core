@@ -32,6 +32,7 @@
 #include "UniFill.h"
 #include "../../../Common/DocxFormat/Source/SystemUtility/File.h"
 #include "../../../DesktopEditor/common/File.h"
+#include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 namespace PPTX
 {

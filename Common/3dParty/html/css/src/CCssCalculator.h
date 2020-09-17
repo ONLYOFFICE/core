@@ -10,7 +10,7 @@
 namespace NSCSS
 {
     typedef enum {
-        Default,
+        Default = 0,
         Cantimeter,
         Inch,
         Millimeter,
@@ -72,11 +72,11 @@ namespace NSCSS
         void AddStylesFromFile(const std::wstring& sFileName);
 
         void SetUnitMeasure(const UnitMeasure& nType);
-        void SetDpi(const int& nValue);
+        void SetDpi(const unsigned short int& nValue);
 
         UnitMeasure GetUnitMeasure() const;
         std::wstring GetEncoding() const;
-        unsigned int GetDpi() const;
+        unsigned short int GetDpi() const;
 
         void Print() const;
         void Clear();

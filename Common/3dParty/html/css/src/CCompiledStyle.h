@@ -69,7 +69,7 @@ namespace NSCSS
         std::wstring GetMarginTop() const;
         std::wstring GetMarginBlockStart() const;
 
-        std::map<int, std::wstring> GetMargins() const;
+        std::map<unsigned short int, std::wstring> GetMargins() const;
         std::wstring GetMarginTop2   () const;
         std::wstring GetMarginBottom2() const;
         std::wstring GetMarginLeft2  () const;

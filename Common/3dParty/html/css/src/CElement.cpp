@@ -83,12 +83,12 @@ void CElement::SetDeclaratins(const std::map<std::wstring, std::wstring>& arDecl
 }
 */
 
-unsigned int CElement::GetCountSelectors() const
+unsigned short int CElement::GetCountSelectors() const
 {
-    return m_arSelectors.size();
+    return (unsigned short int)m_arSelectors.size();
 }
 
-unsigned int CElement::GetCountDeclarations() const
+unsigned short int CElement::GetCountDeclarations() const
 {
     return m_arDeclarations.size();
 }

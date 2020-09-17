@@ -56,7 +56,7 @@ namespace NSCSS
         m_pInternal->SetUnitMeasure(nType);
     }
 
-    void CCssCalculator::SetDpi(const int& nValue)
+    void CCssCalculator::SetDpi(const unsigned short int& nValue)
     {
         m_pInternal->SetDpi(nValue);
     }
@@ -71,7 +71,7 @@ namespace NSCSS
         return m_pInternal->GetEncoding();
     }
 
-    unsigned int CCssCalculator::GetDpi() const
+    unsigned short int CCssCalculator::GetDpi() const
     {
         return m_pInternal->GetDpi();
     }

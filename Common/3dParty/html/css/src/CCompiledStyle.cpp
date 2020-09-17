@@ -317,7 +317,7 @@ namespace NSCSS
             }
             else if (posUnitMeasure != std::wstring::npos)
             {
-                unsigned int num = 0;
+                unsigned short int num = 0;
                 std::wstring sValue;
                 while ((posUnitMeasure - num) > 0 &&
                        (iswdigit(sFont[posUnitMeasure - num]) ||
@@ -589,15 +589,15 @@ namespace NSCSS
             return std::wstring();
         }
 
-        std::map<int, std::wstring> CCompiledStyle::GetMargins() const
+        std::map<unsigned short int, std::wstring> CCompiledStyle::GetMargins() const
         {
             const auto& oMargin = m_mStyle.find(L"margin");
-            std::map<int, std::wstring> sRes;
+            std::map<unsigned short int, std::wstring> sRes;
             std::wstring sMargin;
             if (oMargin != m_mStyle.end())
                 sMargin = oMargin->second;
 
-            std::wstring sTop    = GetMarginTop2   ();
+            std::wstring sTop    = GetMarginTop2();
             std::wstring sBottom = GetMarginBottom2();
             std::wstring sLeft   = GetMarginLeft2  ();
             std::wstring sRight  = GetMarginRight2 ();

@@ -22,8 +22,8 @@ public:
 
     // void SetDeclaratins(const std::map<std::wstring, std::wstring>& arDeclarations);
 
-    unsigned int GetCountSelectors() const;
-    unsigned int GetCountDeclarations() const;
+    unsigned short int GetCountSelectors() const;
+    unsigned short int GetCountDeclarations() const;
     // int GetCountChildrens() const;
 
     bool FindSelector(const std::wstring& sSelector) const;

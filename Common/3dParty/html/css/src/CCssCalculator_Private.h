@@ -12,8 +12,8 @@ namespace NSCSS
 {
     class CCssCalculator_Private
     {
-        unsigned int m_nDpi;
-        unsigned int m_nCountNodes;
+        unsigned short int m_nDpi;
+        unsigned short int m_nCountNodes;
         std::wstring m_sEncoding;
         UnitMeasure m_UnitMeasure;
 
@@ -96,8 +96,8 @@ namespace NSCSS
 
         std::wstring ConvertEm(const std::wstring& sValue) const;
 
-        std::vector<unsigned int> GetWeightSelector(const std::string& sSelector) const;
-        std::vector<unsigned int> GetWeightSelector(const std::wstring& sSelector) const;
+        std::vector<unsigned short int> GetWeightSelector(const std::string& sSelector) const;
+        std::vector<unsigned short int> GetWeightSelector(const std::wstring& sSelector) const;
 
         void GetOutputData(KatanaOutput* oOutput);
     public:
@@ -115,11 +115,11 @@ namespace NSCSS
         void AddStylesFromFile(const std::wstring& sFileName);
 
         void SetUnitMeasure(const UnitMeasure& nType);
-        void SetDpi(unsigned int nValue);
+        void SetDpi(unsigned short int nValue);
 
         UnitMeasure GetUnitMeasure() const;
         std::wstring GetEncoding() const;
-        unsigned int GetDpi() const;
+        unsigned short int GetDpi() const;
 
         void Print() const;
         void Clear();

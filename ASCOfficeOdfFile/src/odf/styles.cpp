@@ -1415,7 +1415,7 @@ void style_page_layout_properties::docx_serialize(std::wostream & strm, oox::doc
 				bool res = Context.get_headers_footers().write_sectPr(masterPageName, change_page_layout, strm);
 			}
 	
-			oox::section_context::_section & section = Context.get_section_context().get();
+			oox::section_context::_section & section = Context.get_section_context().get_last();
 
 			attlist_.docx_convert_serialize(strm, Context, section.margin_left_, section.margin_right_);
 			//todooo при появлении еще накладок - переписать !!

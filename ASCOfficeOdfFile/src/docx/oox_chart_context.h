@@ -55,8 +55,6 @@ public:
     oox_chart_context(mediaitems_ptr & mediaitems_, std::wstring name);
     ~oox_chart_context();
 
-	std::wostream & chartData();
-
 	void reset_fill(oox::_oox_fill &fill_);
 
 	void serialize(std::wostream & strm);
@@ -125,12 +123,10 @@ public:
 		plot_area_.properties_3d_	= prop_3d; 
 		plot_area_.fill_			= fill; 
 	}
+	bool no_used_local_tables_;
 
 	void set_cache_only	(bool val);
 private:
-    class Impl;
-    _CP_SCOPED_PTR(Impl) impl_;
-	
 	mediaitems_ptr						mediaitems_;
 	std::vector<_rel>					rels_;
 	
@@ -145,18 +141,6 @@ private:
 	std::vector<odf_reader::_property>	graphic_properties_;
 	_oox_fill							fill_;
 };
-//autoTitleDeleted (Auto Title Is Deleted) §21.2.2.7
-//backWall (Back Wall) §21.2.2.11
-//dispBlanksAs (Display Blanks As) §21.2.2.42
-//extLst (Chart Extensibility) §21.2.2.64
-//floor (Floor) §21.2.2.69
-//legend (Legend) §21.2.2.93
-//pivotFmts (Pivot Formats) §21.2.2.143
-//plotArea (Plot Area) §21.2.2.145
-//plotVisOnly (Plot Visible Only) §21.2.2.146
-//showDLblsOverMax (Show Data Labels over Maximum) §21.2.2.180
-//sideWall (Side Wall) §21.2.2.191
-//title (Title) §21.2.2.210
-//view3D (View In 3D)
+
 }
 }

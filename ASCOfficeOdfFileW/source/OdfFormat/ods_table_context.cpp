@@ -101,7 +101,12 @@ void ods_table_context::start_table_part(const std::wstring &name, std::wstring 
 
 	if (std::wstring::npos == ref.find(L"!") )
 	{
-		ref = table_state_list_.back()->office_table_name_ + L"!" + ref;
+		bool bQuotes = false;
+		if (std::wstring::npos != table_state_list_.back()->office_table_name_.find(L" "))
+		{
+			bQuotes = true;
+		}
+		ref = (bQuotes ? L"'" : L"" ) + table_state_list_.back()->office_table_name_ + (bQuotes ? L"'" : L"" ) + L"!" + ref;
 	}
 	std::wstring odf_range = formulas_converter.convert_named_ref(ref);
 

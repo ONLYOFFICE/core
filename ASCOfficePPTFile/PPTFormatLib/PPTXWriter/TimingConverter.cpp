@@ -1,7 +1,11 @@
 #include "TimingConverter.h"
 
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Limit/TLRestart.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Limit/TLNodeFillType.h"
+
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Par.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Seq.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Set.h"
 
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldP.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldOleChart.h"
@@ -15,6 +19,10 @@
 
 using namespace PPT_FORMAT;
 
+static void ConvertCRecordExtTimeNodeContainerToTimeNodeBase(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
+                                                             PPTX::Logic::TimeNodeBase &oTimeNodeBase);
+
+// TODO
 static void ConvertCRecordBuildListContainerToBldLst(
                             PPT_FORMAT::CRecordBuildListContainer *pBLC,
                             PPTX::Logic::BldLst &oBL)
@@ -95,6 +103,46 @@ static void ConvertCRecordBuildListContainerToBldLst(
 //{
 
 //}
+
+static void FillCTn(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
+                    PPTX::Logic::CTn &oCTn)
+{
+    if (!pETNC->m_arrRgExtTimeNodeChildren.empty()) oCTn.childTnLst = new PPTX::Logic::ChildTnLst();
+    for (auto children : pETNC->m_arrRgExtTimeNodeChildren)
+    {
+        PPTX::Logic::TimeNodeBase oTimeNodeBase;
+        ConvertCRecordExtTimeNodeContainerToTimeNodeBase(children, oTimeNodeBase);
+        oCTn.childTnLst->list.push_back(oTimeNodeBase);
+    }
+
+    // Reading TimeNodeAtom
+    const auto& oTimeNodeAtom = pETNC->m_oTimeNodeAtom;
+
+    // Write restart
+    oCTn.restart = oTimeNodeAtom.m_fRestartProperty ?
+                PPTX::Limit::TLRestart(oTimeNodeAtom.m_dwRestart) :
+                PPTX::Limit::TLRestart();
+
+
+    // Write fill
+    oCTn.fill = oTimeNodeAtom.m_fFillProperty ?
+                PPTX::Limit::TLNodeFillType(oTimeNodeAtom.m_dwFill) :
+                PPTX::Limit::TLNodeFillType();
+
+    // Write dur
+    if (oTimeNodeAtom.m_fDurationProperty)
+        oCTn.dur = std::to_wstring(oTimeNodeAtom.m_nDuration);
+
+
+}
+
+static void FillSet(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
+                    PPTX::Logic::Set *pSet)
+{
+    auto& oSetBeh = *(pETNC->m_pTimeSetBehavior);
+    // TODO
+}
+
 static void ConvertCRecordExtTimeNodeContainerToTimeNodeBase(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
                                                              PPTX::Logic::TimeNodeBase &oTimeNodeBase)
 {
@@ -103,27 +151,34 @@ static void ConvertCRecordExtTimeNodeContainerToTimeNodeBase(PPT_FORMAT::CRecord
         case TL_TNT_Parallel:
     {
         auto pPar = new PPTX::Logic::Par();
-        for (auto* pRecChild : pETNC->m_arrRgExtTimeNodeChildren)
-        {
-            PPTX::Logic::TimeNodeBase oChildTimeNodeBase;
-            ConvertCRecordExtTimeNodeContainerToTimeNodeBase(pRecChild, oChildTimeNodeBase);
-            pPar->cTn.childTnLst.push_back(oChildTimeNodeBase);
 
-        }
+        FillCTn(pETNC, pPar->cTn);
+
         oTimeNodeBase.m_node = pPar;
         break;
     }
     case TL_TNT_Sequential:
     {
         auto pSeq = new PPTX::Logic::Seq();
-        for (auto* pRecChild : pETNC->m_arrRgExtTimeNodeChildren)
-        {
-            PPTX::Logic::TimeNodeBase oChildTimeNodeBase;
-            ConvertCRecordExtTimeNodeContainerToTimeNodeBase(pRecChild, oChildTimeNodeBase);
-            pSeq->cTn.childTnLst.push_back(oChildTimeNodeBase);
 
-        }
+        FillCTn(pETNC, pSeq->cTn);
+
         oTimeNodeBase.m_node = pSeq;
+        break;
+    }
+    case TL_TNT_Behavior:
+    {
+        //TODO
+        auto pSet = new PPTX::Logic::Set();
+
+        FillSet(pETNC, pSet);
+
+        oTimeNodeBase.m_node = pSet;
+        break;
+    }
+    case TL_TNT_Media:
+    {
+        // TODO
         break;
     }
     }

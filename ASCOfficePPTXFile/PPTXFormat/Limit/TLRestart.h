@@ -48,6 +48,14 @@ namespace PPTX
 				m_strValue = _T("never");
 			}
 
+                        TLRestart(UINT restart)
+                        {
+                            if      (   restart == 0     ||
+                                        restart == 3) m_strValue = L"never";
+                            else if (   restart == 1) m_strValue = L"always";
+                            else m_strValue = L"whenNotActive";
+                        }
+
 			_USE_STRING_OPERATOR
 				
 			virtual void set(const std::wstring& strValue)

@@ -312,6 +312,7 @@ HEADERS += \
     ../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/CBhvr.h \
     ../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/CMediaNode.h \
     ../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/CTn.h \
+    ../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/ChildTnLst.h \
     ../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Cmd.h \
     ../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Cond.h \
     ../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/CondLst.h \

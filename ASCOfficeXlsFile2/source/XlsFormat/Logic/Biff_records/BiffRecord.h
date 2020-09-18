@@ -46,7 +46,7 @@ public:
 	BiffRecord();
 	~BiffRecord();
 
-	virtual const bool read(CFStreamCacheReader& reader, BaseObject* parent, const bool is_mandatory); // Read self and children
+	virtual const bool read(StreamCacheReaderPtr reader, BaseObject* parent, const bool is_mandatory); // Read self and children
 	
 	virtual void readFields(CFRecord& record) = 0;
 
@@ -55,7 +55,7 @@ public:
 	static const ElementType	type = typeBiffRecord;
 	virtual ElementType			get_type() { return type; }
 //-----------------------------
-	virtual void readFollowingContinue(CFStreamCacheReader& reader);
+	virtual void readFollowingContinue(StreamCacheReaderPtr reader);
 	virtual const bool storeRecordAndDecideProceeding(CFRecordPtr record); // This function is overridden in BiffRecordSplit
 
 protected:

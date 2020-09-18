@@ -148,7 +148,7 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 		
 		//Log::warning(CFRecordType::getStringById(type));
 
-		if (type == rt_NONE || type == rt_BOF ) break;
+		if (type == rt_NONE || proc.isBOF(type)) break;
 		if (type == rt_EOF) 
 		{
 			proc.mandatory<EOF_T>();

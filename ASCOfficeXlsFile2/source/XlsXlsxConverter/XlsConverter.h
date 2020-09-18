@@ -101,10 +101,13 @@ namespace ODRAW
 class XlsConverter
 {
 public:
+	XlsConverter();
 	XlsConverter(const std::wstring & xlsFileName, const std::wstring & xlsxFilePath, const std::wstring & password, const std::wstring & fontsPath, const std::wstring & tempPath, const int lcid_user, bool & bMacros);
 	~XlsConverter() ;
 
     oox::xlsx_conversion_context	*xlsx_context;
+	XLS::BaseObjectPtr				xls_document;	
+	XLS::GlobalWorkbookInfoPtr		xls_global_info;
 
 	void convertDocument();
 	void write();
@@ -170,8 +173,6 @@ private:
 	std::wstring					xlsx_path;
 	oox::package::xlsx_document		*output_document;
 
-	XLS::BaseObjectPtr				xls_document;	
-	XLS::GlobalWorkbookInfoPtr		xls_global_info;
-
 	XLS::CompoundFilePtr			xls_file;
 };
+typedef boost::shared_ptr<XlsConverter> XlsConverterPtr;

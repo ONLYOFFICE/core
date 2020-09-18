@@ -51,7 +51,7 @@ public:
 
 	BaseObjectPtr clone() {return BaseObjectPtr(new BaseObjectDocument(*this));}
 
-	virtual const bool read(CFStreamCacheReader& reader, BaseObject* parent, const bool mandatory){return false;}
+	virtual const bool read(StreamCacheReader& reader, BaseObject* parent, const bool mandatory){return false;}
 };
 
 typedef boost::shared_ptr<BaseObjectDocument> BaseObjectDocumentPtr;

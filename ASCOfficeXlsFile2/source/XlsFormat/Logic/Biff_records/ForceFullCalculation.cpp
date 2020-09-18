@@ -55,7 +55,7 @@ void ForceFullCalculation::readFields(CFRecord& record)
 	_UINT32 temp;
 	record >> frtHeader >> temp;
 	
-	fNoDeps = temp;
+	fNoDeps = (temp != 0);
 }
 
 } // namespace XLS

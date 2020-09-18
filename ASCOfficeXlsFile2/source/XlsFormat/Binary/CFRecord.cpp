@@ -60,7 +60,10 @@ CFRecord::CFRecord(CFStreamPtr stream, GlobalWorkbookInfoPtr global_info)
 
 		switch (type_id_) // this would decrease number of checks
 		{
-			case rt_BOF:
+			case rt_BOF_BIFF8:
+			case rt_BOF_BIFF4:
+			case rt_BOF_BIFF3:
+			case rt_BOF_BIFF2:
 			case rt_FilePass:
 			case rt_UsrExcl:
 			case rt_FileLock:
@@ -82,7 +85,49 @@ CFRecord::CFRecord(CFStreamPtr stream, GlobalWorkbookInfoPtr global_info)
 		}
 	}
 }
+// Create a record and read its data from the data stream
+CFRecord::CFRecord(NSFile::CFileBinary &file, GlobalWorkbookInfoPtr global_info)
+:	rdPtr(0),
+	size_(0),
+	data_(NULL),
+	global_info_(global_info)
+{
+	file_ptr = file.GetFilePosition();
+	
+	if (file.GetFilePosition() + 4 < file.GetFileSize())
+	{
+		unsigned short size_short;
+		DWORD size_read = 0;
+		
+		if (global_info->Version == 0x800)
+		{
+			BYTE type;
+			file.ReadFile(&type, 1, size_read);
+			type_id_ = type;
 
+			if (type > 0x80)
+			{
+				file.ReadFile(&type, 1, size_read);
+				type_id_ |= (type << 7);
+			}
+		}
+		else
+		{
+			file.ReadFile((BYTE*)&type_id_, 2, size_read);
+		}
+		file.ReadFile((BYTE*)&size_short, 2, size_read);
+		
+		file_ptr += 4;
+		
+		if (file.GetFilePosition() + size_short < file.GetFileSize())
+		{
+			size_ = size_short;
+			data_ = new char[size_];
+			
+			file.ReadFile((BYTE*)data_, size_, size_read);
+		}
+	}
+}
 
 // Create an empty record
 CFRecord::CFRecord(CFRecordType::TypeId type_id, GlobalWorkbookInfoPtr global_info)
@@ -95,52 +140,36 @@ CFRecord::CFRecord(CFRecordType::TypeId type_id, GlobalWorkbookInfoPtr global_in
 {
 }
 
-
-void CFRecord::save(CFStreamPtr stream)
-{
-	file_ptr = static_cast<unsigned int>(stream->getStreamPointer()); // Assume that files have size < 4Gb
-	*stream << type_id_;
-	unsigned short size_short = static_cast<unsigned short>(size_);
-	*stream << size_short;
-	if(data_)
-	{
-		stream->writeAndApplyDelayedItems(data_, size_, receiver_items, source_items);
-	}
-	rdPtr = 0; // seek to the start
-}
-
-
-void CFRecord::commitData()
-{
-	if(!data_)
-	{
-		if(size_ > MAX_RECORD_SIZE)
-		{
-			throw;// EXCEPT::RT::WrongBiffRecord("Too much data written to CFRecord.", getTypeString());
-		}
-		data_ = new char[size_];
-        memcpy(data_, intData, size_);
-	}
-}
-
-
 CFRecord::~CFRecord()
 {
-	delete[] data_;
+	if (data_)
+	{
+		delete[] data_;
+	}
+	data_ = NULL;
 }
-
-
+bool CFRecord::isBOF()
+{
+	switch(type_id_)
+	{
+	case rt_BOF_BIFF8:
+	case rt_BOF_BIFF4:
+	case rt_BOF_BIFF3:
+	case rt_BOF_BIFF2:
+		return true;
+	default:
+		return false;
+	}
+	return false;
+}
 const CFRecordType::TypeId CFRecord::getTypeId() const
 {
 	return type_id_;
 }
-
-
 const CFRecordType::TypeString& CFRecord::getTypeString() const
 {
 	return CFRecordType::getStringById(type_id_);
 }
-
 
 // File Pointer to the start of the record in file
 const unsigned int CFRecord::getStreamPointer() const
@@ -274,22 +303,6 @@ bool CFRecord::checkFitRead(const size_t size) const
 	return true;
 }
 
-
-const bool CFRecord::checkFitWriteSafe(const size_t size) const
-{
-	return (size_ + size <= MAX_RECORD_SIZE);
-}
-
-
-void CFRecord::checkFitWrite(const size_t size) const
-{
-	if(!checkFitWriteSafe(size))
-	{
-		throw;// EXCEPT::RT::WrongBiffRecord("Some of the stored data doesn't fit the intermediate buffer.", getTypeString());
-	}
-}
-
-
 void CFRecord::skipNunBytes(const size_t n)
 {
 	//ASSERT(data_); // This throws if we use skipNunBytes instead of reserveNunBytes
@@ -310,13 +323,6 @@ void CFRecord::RollRdPtrBack(const size_t n)
 	rdPtr -= n;
 }
 
-
-void CFRecord::reserveNunBytes(const size_t n)
-{
-	reserveNunBytes(n, static_cast<unsigned int>(0));
-}
-
-
 void CFRecord::resetPointerToBegin()
 {
 	rdPtr = 0;
@@ -328,67 +334,6 @@ CFRecord& CFRecord::operator>>(bool& val)
 	throw;// EXCEPT::LE::WrongAPIUsage("This function may only be called by mistake.", __FUNCTION__);
 }
 
-
-
-void CFRecord::registerDelayedDataReceiver(CFStream::DELAYED_DATA_SAVER fn, const size_t n, const CFRecordType::TypeId receiver_id)
-{
-	//ASSERT(!data_); // This throws if used after Commit or while reading of binary
-	CFStream::ReceiverItem item;
-	item.fn = fn;
-	item.data_place = size_ + sizeof(unsigned short)/*size_short*/ + sizeof(CFRecordType::TypeId); // set offset relative to record beginning. 
-	item.data_size = n;
-	item.receiver_id = rt_NONE == receiver_id ? getTypeId() : receiver_id;
-	receiver_items.push_back(item);
-	reserveNunBytes(n);
-}
-
-
-void CFRecord::registerDelayedDataSource(const unsigned int data,  const CFRecordType::TypeId receiver_id)
-{
-	//ASSERT(!data_); // This throws if used after Commit or while reading of binary
-	CFStream::SourceItem item;
-	item.data = data;
-	item.is_file_ptr = false;
-	item.receiver_id = receiver_id;
-	item.source_id = getTypeId();
-	source_items.push_back(item);
-}
-
-
-void CFRecord::registerDelayedFilePointerSource(const CFRecordType::TypeId receiver_id)
-{
-	//ASSERT(!data_); // This throws if used after Commit or while reading of binary
-	CFStream::SourceItem item;
-	item.data = 0;
-	item.is_file_ptr = true;
-	item.receiver_id = receiver_id;
-	item.source_id = getTypeId();
-	source_items.push_back(item);
-}
-
-
-void CFRecord::registerDelayedFilePointerAndOffsetSource(const unsigned int offset,  const CFRecordType::TypeId receiver_id)
-{
-	//ASSERT(!data_); // This throws if used after Commit or while reading of binary
-	CFStream::SourceItem item;
-	item.data = offset;
-	item.is_file_ptr = true;
-	item.receiver_id = receiver_id;
-	item.source_id = getTypeId();
-	source_items.push_back(item);
-}
-
-
-void CFRecord::storeLongData(const char* buf, const size_t size)
-{
-	checkFitWrite(size);
-
-    if (getMaxRecordSize() - size_ >= size)
-    {
-        memcpy(&intData[size_], buf, size);
-        size_ += size;
-    }
-}
 #if !defined(_WIN32) && !defined(_WIN64)
 CFRecord& operator>>(CFRecord & record, std::string & str)
 {

@@ -37,22 +37,15 @@
 namespace XLS
 {;
 
-class CFStreamCacheReader;
+class StreamCacheReader;
 
-// Logical representation of composite objects
-//
-// Another new function is to buffer objects, that had to be read but was absent in the bin stream.
-// The buffered records shall be checked for existence later.
-// This feature is specially for files saved in OpenOffice Calc those don't conform to the Microsoft specification
-// Call them "wanted objects"
-//
 class CompositeObject : public BaseObject
 {
 public:
 	CompositeObject();
 	~CompositeObject();
 
-	virtual const bool read				(CFStreamCacheReader& reader, BaseObject* parent, const bool mandatory); // Read self and children
+	virtual const bool read				(StreamCacheReaderPtr reader, BaseObject* parent, const bool mandatory); // Read self and children
 	virtual const bool loadContent		(BinProcessor& proc) = 0;
 	virtual const bool loadContentRead	(BinReaderProcessor& proc);
 
@@ -67,7 +60,7 @@ class ABNFParenthesis : public CompositeObject
 public:
 	ABNFParenthesis(){};
 
-	virtual const bool read(CFStreamCacheReader& reader, BaseObject* parent, const bool is_mandatory);
+	virtual const bool read(StreamCacheReaderPtr reader, BaseObject* parent, const bool is_mandatory);
 
 	static const ElementType	type = typeABNFParenthesis;
 	

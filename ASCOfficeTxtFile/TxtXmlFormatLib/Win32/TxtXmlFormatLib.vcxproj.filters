@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="TxtFormat">
+      <UniqueIdentifier>{a634f5fa-1c17-43da-835d-ef2223715fe7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DocxWriters">
+      <UniqueIdentifier>{cfef95db-e81b-4bdf-aef4-f9ad54cb9237}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DocxWriters\DocxWrapper">
+      <UniqueIdentifier>{bd7bb4e2-c173-4218-9759-929615ab0d41}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Source\Common\Encoding.cpp">
+      <Filter>TxtFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\TxtFormat\File.cpp">
+      <Filter>TxtFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Common\ToString.cpp">
+      <Filter>TxtFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\TxtFormat\TxtFile.cpp">
+      <Filter>TxtFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\ASCOfficeDocxFile2\DocWrapper\FontProcessor.cpp">
+      <Filter>DocxWriters\DocxWrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\ConvertDocx2Txt.cpp" />
+    <ClCompile Include="..\Source\ConvertTxt2Docx.cpp" />
+    <ClCompile Include="..\Source\TxtXmlFile.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Source\TxtFormat\File.h">
+      <Filter>TxtFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\TxtFormat\TxtFile.h">
+      <Filter>TxtFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\TxtFormat\TxtFormat.h">
+      <Filter>TxtFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\ChartWriter.h">
+      <Filter>DocxWriters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\CommentsWriter.h">
+      <Filter>DocxWriters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\ContentTypesWriter.h">
+      <Filter>DocxWriters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\DefaultThemeWriterWin.h">
+      <Filter>DocxWriters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\DocumentRelsWriter.h">
+      <Filter>DocxWriters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\DocumentWriter.h">
+      <Filter>DocxWriters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\FileWriter.h">
+      <Filter>DocxWriters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\fontTableWriter.h">
+      <Filter>DocxWriters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\HeaderFooterWriter.h">
+      <Filter>DocxWriters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\MediaWriter.h">
+      <Filter>DocxWriters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\NumberingWriter.h">
+      <Filter>DocxWriters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\SettingWriter.h">
+      <Filter>DocxWriters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\StylesWriter.h">
+      <Filter>DocxWriters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\webSettingsWriter.h">
+      <Filter>DocxWriters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\DocWrapper\FontProcessor.h">
+      <Filter>DocxWriters\DocxWrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\ConvertDocx2Txt.h" />
+    <ClInclude Include="..\Source\ConvertTxt2Docx.h" />
+    <ClInclude Include="..\Source\TxtXmlFile.h" />
+  </ItemGroup>
+</Project>

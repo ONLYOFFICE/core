@@ -32,12 +32,12 @@ namespace NSCSS
 
     class CSSCALCULATOR_EXPORT CDocumentStyle
     {
+        std::list<std::wstring> m_arStandardStylesUsed;
+        std::list<std::wstring> m_arStandardStyles;
+        std::list<CStyleUsed> m_arStyleUsed;
+
         std::wstring m_sStyle;
         std::wstring m_sId;
-
-        std::vector<std::wstring> m_arStandardStylesUsed;
-        std::vector<std::wstring> m_arStandardStyles;
-        std::vector<CStyleUsed> m_arStyleUsed;
 
         void CombineStandardStyles(const std::vector<std::wstring>& arStandartedStyles, CXmlElement& oElement);
         void CreateStandardStyle(const std::wstring& sNameStyle, CXmlElement& oElement);

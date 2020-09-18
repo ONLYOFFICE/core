@@ -11,11 +11,11 @@ namespace NSCSS
 {
     typedef enum {
         Default = 0,
-        Cantimeter,
-        Inch,
-        Millimeter,
         Pixel,
         Point,
+        Cantimeter,
+        Millimeter,
+        Inch,
         Peak
     } UnitMeasure;
 

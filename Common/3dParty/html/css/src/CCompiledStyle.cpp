@@ -72,6 +72,11 @@ namespace NSCSS
         return m_mStyle;
     }
 
+//    bool CCompiledStyle::operator<(const CCompiledStyle &oElement) const
+//    {
+//        return m_sId < oElement.m_sId;
+//    }
+
     /*
     bool CCompiledStyle::operator!=(const CCompiledStyle &oElement) const
     {
@@ -87,11 +92,6 @@ namespace NSCSS
     bool CCompiledStyle::operator>(const CCompiledStyle &oElement) const
     {
         return GetWeidth() > oElement.GetWeidth();
-    }
-
-    bool CCompiledStyle::operator<(const CCompiledStyle &oElement) const
-    {
-        return GetWeidth() < oElement.GetWeidth();
     }
 
     std::string CCompiledStyle::GetStyle() const
@@ -143,7 +143,7 @@ namespace NSCSS
         size_t posLastSemicolon = size_t(0);
         while (posColon != std::wstring::npos)
         {
-            size_t posSemicolon = sStyle.find(L';', posColon);
+            const size_t posSemicolon = sStyle.find(L';', posColon);
             AddPropSel(sStyle.substr(posLastSemicolon, posColon - posLastSemicolon), sStyle.substr(posColon + 1, posSemicolon - posColon - 1));
             posColon = sStyle.find(L':', posSemicolon);
             posLastSemicolon = posSemicolon + 1;
@@ -524,7 +524,7 @@ namespace NSCSS
 
         std::vector<std::wstring> CCompiledStyle::GetFontNames() const
         {
-            std::wstring sFontFamily = GetFontFamily();
+            const std::wstring sFontFamily = GetFontFamily();
             if (sFontFamily.empty())
                 return std::vector<std::wstring>();
 
@@ -551,7 +551,7 @@ namespace NSCSS
 
             size_t posFirst = sFontFamily.find_first_of(L"'\"");
             if (posFirst == std::wstring::npos)
-                return {sFontFamily};
+                return std::vector<std::wstring>({sFontFamily});
 
             std::vector<std::wstring> arWords;
             while (posFirst != std::wstring::npos)
@@ -589,10 +589,12 @@ namespace NSCSS
             return std::wstring();
         }
 
-        std::map<unsigned short int, std::wstring> CCompiledStyle::GetMargins() const
+        std::vector<std::wstring> CCompiledStyle::GetMargins() const
         {
             const auto& oMargin = m_mStyle.find(L"margin");
-            std::map<unsigned short int, std::wstring> sRes;
+
+            std::vector<std::wstring> sRes(4);
+
             std::wstring sMargin;
             if (oMargin != m_mStyle.end())
                 sMargin = oMargin->second;

@@ -4,11 +4,12 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <list>
 
 class CElement
 {
+    std::list<CElement*> m_arChildrens;
     std::vector<std::wstring> m_arSelectors;
-    std::vector<CElement*> m_arChildrens;
     std::map<std::wstring, std::wstring> m_arDeclarations;
 public:
     CElement();

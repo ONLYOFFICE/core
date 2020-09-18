@@ -11,9 +11,9 @@ namespace NSCSS
 {
     class CSSCALCULATOR_EXPORT CCompiledStyle
     {
-        std::wstring m_sId;
-        std::vector<std::wstring> m_arParentsStyles;
         std::map<std::wstring, std::wstring> m_mStyle;
+        std::vector<std::wstring> m_arParentsStyles;
+        std::wstring m_sId;
 
     public:
         CCompiledStyle();
@@ -69,7 +69,7 @@ namespace NSCSS
         std::wstring GetMarginTop() const;
         std::wstring GetMarginBlockStart() const;
 
-        std::map<unsigned short int, std::wstring> GetMargins() const;
+        std::vector<std::wstring> GetMargins() const;
         std::wstring GetMarginTop2   () const;
         std::wstring GetMarginBottom2() const;
         std::wstring GetMarginLeft2  () const;
@@ -133,7 +133,7 @@ namespace NSCSS
         bool operator == (const CCompiledStyle& oStyle)   const;
         // bool operator != (const CCompiledStyle& oElement) const;
         // bool operator >  (const CCompiledStyle& oElement) const;
-        // bool operator <  (const CCompiledStyle& oElement) const;
+        //bool operator <  (const CCompiledStyle& oElement) const;
 
     };
 }

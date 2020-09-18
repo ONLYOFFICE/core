@@ -5,6 +5,7 @@
 #include <map>
 #include "CElement.h"
 #include "CCssCalculator.h"
+#include <list>
 
 #include "../../katana-parser/src/katana.h"
 
@@ -14,13 +15,14 @@ namespace NSCSS
     {
         unsigned short int m_nDpi;
         unsigned short int m_nCountNodes;
-        std::wstring m_sEncoding;
         UnitMeasure m_UnitMeasure;
 
-        std::vector<CElement*> m_arData;
-        std::vector<std::wstring> m_arFiles;
+        std::list<std::wstring> m_arFiles;
+        std::list<CElement*> m_arData;
 
         std::map<std::vector<CNode>, CCompiledStyle*> m_mUsedStyles;
+
+        std::wstring m_sEncoding;
 
         // void AddElement(CElement* oElement);
         // size_t GetSize() const;
@@ -53,46 +55,46 @@ namespace NSCSS
         std::wstring ConvertUnitMeasure(const std::wstring& sValue) const;
 
         std::wstring ConvertPx(const std::wstring& sValue) const;
-        std::wstring ConvertPxToCm(float dValue, bool bAddUM = false) const;
-        std::wstring ConvertPxToIn(float dValue, bool bAddUM = false) const;
-        std::wstring ConvertPxToMm(float dValue, bool bAddUM = false) const;
-        std::wstring ConvertPxToPt(float dValue, bool bAddUM = false) const;
-        std::wstring ConvertPxToPc(float dValue, bool bAddUM = false) const;
+        std::wstring ConvertPxToCm(const float& dValue) const;
+        std::wstring ConvertPxToIn(const float& dValue) const;
+        std::wstring ConvertPxToMm(const float& dValue) const;
+        std::wstring ConvertPxToPt(const float& dValue) const;
+        std::wstring ConvertPxToPc(const float& dValue) const;
 
         std::wstring ConvertCm(const std::wstring& sValue) const;
-        std::wstring ConvertCmToPx(float dValue, bool bAddUM = false) const;
-        std::wstring ConvertCmToIn(float dValue, bool bAddUM = false) const;
-        std::wstring ConvertCmToMm(float dValue, bool bAddUM = false) const;
-        std::wstring ConvertCmToPt(float dValue, bool bAddUM = false) const;
-        std::wstring ConvertCmToPc(float dValue, bool bAddUM = false) const;
+        std::wstring ConvertCmToPx(const float& dValue) const;
+        std::wstring ConvertCmToIn(const float& dValue) const;
+        std::wstring ConvertCmToMm(const float& dValue) const;
+        std::wstring ConvertCmToPt(const float& dValue) const;
+        std::wstring ConvertCmToPc(const float& dValue) const;
 
         std::wstring ConvertMm(const std::wstring& sValue) const;
-        std::wstring ConvertMmToPx(float dValue, bool bAddUM = false) const;
-        std::wstring ConvertMmToIn(float dValue, bool bAddUM = false) const;
-        std::wstring ConvertMmToCm(float dValue, bool bAddUM = false) const;
-        std::wstring ConvertMmToPt(float dValue, bool bAddUM = false) const;
-        std::wstring ConvertMmToPc(float dValue, bool bAddUM = false) const;
+        std::wstring ConvertMmToPx(const float& dValue) const;
+        std::wstring ConvertMmToIn(const float& dValue) const;
+        std::wstring ConvertMmToCm(const float& dValue) const;
+        std::wstring ConvertMmToPt(const float& dValue) const;
+        std::wstring ConvertMmToPc(const float& dValue) const;
 
         std::wstring ConvertIn(const std::wstring& sValue) const;
-        std::wstring ConvertInToPx(float dValue, bool bAddUM = false) const;
-        std::wstring ConvertInToMm(float dValue, bool bAddUM = false) const;
-        std::wstring ConvertInToCm(float dValue, bool bAddUM = false) const;
-        std::wstring ConvertInToPt(float dValue, bool bAddUM = false) const;
-        std::wstring ConvertInToPc(float dValue, bool bAddUM = false) const;
+        std::wstring ConvertInToPx(const float& dValue) const;
+        std::wstring ConvertInToMm(const float& dValue) const;
+        std::wstring ConvertInToCm(const float& dValue) const;
+        std::wstring ConvertInToPt(const float& dValue) const;
+        std::wstring ConvertInToPc(const float& dValue) const;
 
         std::wstring ConvertPt(const std::wstring& sValue) const;
-        std::wstring ConvertPtToPx(float dValue, bool bAddUM = false) const;
-        std::wstring ConvertPtToMm(float dValue, bool bAddUM = false) const;
-        std::wstring ConvertPtToCm(float dValue, bool bAddUM = false) const;
-        std::wstring ConvertPtToIn(float dValue, bool bAddUM = false) const;
-        std::wstring ConvertPtToPc(float dValue, bool bAddUM = false) const;
+        std::wstring ConvertPtToPx(const float& dValue) const;
+        std::wstring ConvertPtToMm(const float& dValue) const;
+        std::wstring ConvertPtToCm(const float& dValue) const;
+        std::wstring ConvertPtToIn(const float& dValue) const;
+        std::wstring ConvertPtToPc(const float& dValue) const;
 
         std::wstring ConvertPc(const std::wstring& sValue) const;
-        std::wstring ConvertPcToPx(float dValue, bool bAddUM = false) const;
-        std::wstring ConvertPcToMm(float dValue, bool bAddUM = false) const;
-        std::wstring ConvertPcToCm(float dValue, bool bAddUM = false) const;
-        std::wstring ConvertPcToIn(float dValue, bool bAddUM = false) const;
-        std::wstring ConvertPcToPt(float dValue, bool bAddUM = false) const;
+        std::wstring ConvertPcToPx(const float& dValue) const;
+        std::wstring ConvertPcToMm(const float& dValue) const;
+        std::wstring ConvertPcToCm(const float& dValue) const;
+        std::wstring ConvertPcToIn(const float& dValue) const;
+        std::wstring ConvertPcToPt(const float& dValue) const;
 
         std::wstring ConvertEm(const std::wstring& sValue) const;
 

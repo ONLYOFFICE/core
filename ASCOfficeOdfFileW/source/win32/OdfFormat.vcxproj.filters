@@ -1,0 +1,510 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="package">
+      <UniqueIdentifier>{97c96c51-1935-4394-9ff5-73215c3358f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="elements">
+      <UniqueIdentifier>{8a40786a-ba51-42db-8282-aa8b7def5e49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="odf spreadsheet">
+      <UniqueIdentifier>{5636f9ab-3994-40e8-9f4e-da87a32455cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="xml_common">
+      <UniqueIdentifier>{4e40a76a-5f52-44d0-a389-750f92cd59c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="styles">
+      <UniqueIdentifier>{136db4b6-91a3-4e91-ba0b-43f9d7028b21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="styles\contexts">
+      <UniqueIdentifier>{1cd313c8-50fd-459d-946f-02da9c02553b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="odf text">
+      <UniqueIdentifier>{26eed9e4-9836-4f36-ac92-0c7d79e4fb53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="odf presentation">
+      <UniqueIdentifier>{0cb959ed-80c6-47a5-a9b1-17758c3bd84b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="odf common">
+      <UniqueIdentifier>{c5398bca-9a35-4e80-a4b9-37bdcf8291b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="odf_shapes_defines">
+      <UniqueIdentifier>{9a77342e-99d5-46ec-baf9-6877349e82bc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\OdfFormat\mediaitems.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\mediaitems_utils.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\object_package.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\odf_rels.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\anim_elements.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\calcext_elements.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\draw_base.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\draw_frame.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\draw_page.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\draw_shapes.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\list.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\office_annotation.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\office_body.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\office_chart.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\office_document.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\office_event_listeners.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\office_forms.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\office_presentation.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\office_scripts.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\office_settings.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\office_spreadsheet.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\office_text.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\paragraph_elements.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\table.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\table_data_pilot_tables.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\table_database_ranges.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\table_named_expressions.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\text_elements.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\ods_conversion_context.cpp">
+      <Filter>odf spreadsheet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\ods_table_context.cpp">
+      <Filter>odf spreadsheet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\ods_table_state.cpp">
+      <Filter>odf spreadsheet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\abstract_xml.cpp">
+      <Filter>xml_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\logging.cpp">
+      <Filter>xml_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\office_elements_create.cpp">
+      <Filter>xml_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\svg_creator.cpp">
+      <Filter>xml_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\ASCOfficeOdfFile\src\xml\utils.cpp">
+      <Filter>xml_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\ASCOfficeOdfFile\src\xml\xmlchar.cpp">
+      <Filter>xml_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\header_footer.cpp">
+      <Filter>styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\number_style.cpp">
+      <Filter>styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\style_chart_properties.cpp">
+      <Filter>styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\style_graphic_properties.cpp">
+      <Filter>styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\style_map.cpp">
+      <Filter>styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\style_page_layout_properties.cpp">
+      <Filter>styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\style_paragraph_properties.cpp">
+      <Filter>styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\style_presentation.cpp">
+      <Filter>styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\style_section_properties.cpp">
+      <Filter>styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\style_table_properties.cpp">
+      <Filter>styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\style_text_properties.cpp">
+      <Filter>styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\styles.cpp">
+      <Filter>styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\styles_list.cpp">
+      <Filter>styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\odf_lists_styles_context.cpp">
+      <Filter>styles\contexts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\odf_number_styles_context.cpp">
+      <Filter>styles\contexts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\odf_page_layout_context.cpp">
+      <Filter>styles\contexts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\odf_page_layout_state.cpp">
+      <Filter>styles\contexts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\odf_style_context.cpp">
+      <Filter>styles\contexts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\odf_style_state.cpp">
+      <Filter>styles\contexts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\odf_table_styles_context.cpp">
+      <Filter>styles\contexts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\odt_conversion_context.cpp">
+      <Filter>odf text</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\odp_conversion_context.cpp">
+      <Filter>odf presentation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\odp_page_state.cpp">
+      <Filter>odf presentation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\odp_slide_context.cpp">
+      <Filter>odf presentation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\ASCOfficeOdfFile\src\docx\measuredigits.cpp">
+      <Filter>odf common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\odf_chart_context.cpp">
+      <Filter>odf common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\odf_comment_context.cpp">
+      <Filter>odf common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\odf_controls_context.cpp">
+      <Filter>odf common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\odf_conversion_context.cpp">
+      <Filter>odf common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\odf_drawing_context.cpp">
+      <Filter>odf common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\odf_notes_context.cpp">
+      <Filter>odf common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\odf_settings_context.cpp">
+      <Filter>odf common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\odf_table_context.cpp">
+      <Filter>odf common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\odf_text_context.cpp">
+      <Filter>odf common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\utils.cpp">
+      <Filter>odf common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OdfFormat\oox_shape_defines.cpp">
+      <Filter>odf_shapes_defines</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\OdfFormat\mediaitems.h">
+      <Filter>package</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\mediaitems_utils.h">
+      <Filter>package</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\object_package.h">
+      <Filter>package</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\odf_rels.h">
+      <Filter>package</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\anim_elements.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\calcext_elements.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\draw_base.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\draw_frame.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\draw_page.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\draw_shapes.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\list.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\office_annotation.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\office_body.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\office_chart.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\office_document.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\office_event_listeners.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\office_forms.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\office_presentation.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\office_scripts.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\office_settings.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\office_spreadsheet.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\office_text.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\paragraph_elements.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\table.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\table_data_pilot_tables.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\table_database_ranges.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\table_named_expressions.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\text_elements.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\ods_conversion_context.h">
+      <Filter>odf spreadsheet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\ods_table_context.h">
+      <Filter>odf spreadsheet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\ods_table_state.h">
+      <Filter>odf spreadsheet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\abstract_xml.h">
+      <Filter>xml_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\office_elements.h">
+      <Filter>xml_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\office_elements_create.h">
+      <Filter>xml_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\svg_creator.h">
+      <Filter>xml_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\header_footer.h">
+      <Filter>styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\number_style.h">
+      <Filter>styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\style_chart_properties.h">
+      <Filter>styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\style_graphic_properties.h">
+      <Filter>styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\style_map.h">
+      <Filter>styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\style_page_layout_properties.h">
+      <Filter>styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\style_paragraph_properties.h">
+      <Filter>styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\style_presentation.h">
+      <Filter>styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\style_section_properties.h">
+      <Filter>styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\style_table_properties.h">
+      <Filter>styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\style_text_properties.h">
+      <Filter>styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\styles.h">
+      <Filter>styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\styles_list.h">
+      <Filter>styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\odf_lists_styles_context.h">
+      <Filter>styles\contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\odf_number_styles_context.h">
+      <Filter>styles\contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\odf_page_layout_context.h">
+      <Filter>styles\contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\odf_page_layout_state.h">
+      <Filter>styles\contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\odf_style_context.h">
+      <Filter>styles\contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\odf_style_state.h">
+      <Filter>styles\contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\odf_table_styles_context.h">
+      <Filter>styles\contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\odt_conversion_context.h">
+      <Filter>odf text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\odp_conversion_context.h">
+      <Filter>odf presentation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\odp_page_state.h">
+      <Filter>odf presentation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\odp_slide_context.h">
+      <Filter>odf presentation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\odf_comment_context.h">
+      <Filter>odf common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\odf_controls_context.h">
+      <Filter>odf common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\odf_conversion_context.h">
+      <Filter>odf common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\odf_drawing_context.h">
+      <Filter>odf common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\odf_notes_context.h">
+      <Filter>odf common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\odf_settings_context.h">
+      <Filter>odf common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\odf_table_context.h">
+      <Filter>odf common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\odf_text_context.h">
+      <Filter>odf common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\shapes\odf_shape_mapping.h">
+      <Filter>odf_shapes_defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\oox_shape_defines.h">
+      <Filter>odf_shapes_defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\shapes\oox_shapeAccentCallouts.h">
+      <Filter>odf_shapes_defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\shapes\oox_shapeActionButtons.h">
+      <Filter>odf_shapes_defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\shapes\oox_shapeArrows.h">
+      <Filter>odf_shapes_defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\shapes\oox_shapeBents.h">
+      <Filter>odf_shapes_defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\shapes\oox_shapeCallouts.h">
+      <Filter>odf_shapes_defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\shapes\oox_shapeCharts.h">
+      <Filter>odf_shapes_defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\Shapes\oox_shapeConnectors.h">
+      <Filter>odf_shapes_defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\shapes\oox_shapeCurvedArrows.h">
+      <Filter>odf_shapes_defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\shapes\oox_shapeCustoms.h">
+      <Filter>odf_shapes_defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\shapes\oox_shapeMaths.h">
+      <Filter>odf_shapes_defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\shapes\oox_shapePrimitives.h">
+      <Filter>odf_shapes_defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\shapes\oox_shapeRibbons.h">
+      <Filter>odf_shapes_defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\shapes\oox_shapeSnipRoundRects.h">
+      <Filter>odf_shapes_defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\shapes\oox_shapeStars.h">
+      <Filter>odf_shapes_defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OdfFormat\Shapes\oox_shapeWordArt.h">
+      <Filter>odf_shapes_defines</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -19,8 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{BEE01B53-244A-44E6-8947-ED9342D9247E}</ProjectGuid>
-    <RootNamespace>Oox2OdfConverter</RootNamespace>
+    <ProjectName>OfficeFileCrypt</ProjectName>
+    <ProjectGuid>{C27E9A9F-3A17-4482-9C5F-BF15C01E747C}</ProjectGuid>
+    <RootNamespace>ECMACryptReader</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -66,36 +67,36 @@
     <_ProjectFileVersion>14.0.23107.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
     <IncludePath>D:\_Work\core\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\_Work\core\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\..\ASCOfficeOdfFile\include;..\..\..\ASCOfficeOdfFile\src\odf\datatypes;..\..\..\DesktopEditor\freetype-2.5.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;_LIB;_USE_XMLLITE_READER_;USE_LITE_READER;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\DesktopEditor\freetype-2.5.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <DisableSpecificWarnings>4005;4311;4312;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <PrecompiledHeaderFile />
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -104,8 +105,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../../ASCOfficeOdfFile/include;../../../ASCOfficeOdfFile/src/odf/datatypes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_USE_XMLLITE_READER_;USE_LITE_READER;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;BUILD_CONFIG_FULL_VERSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -116,8 +116,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>../../../ASCOfficeOdfFile/include;../../../ASCOfficeOdfFile/src/odf/datatypes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;_LIB;_USE_XMLLITE_READER_;USE_LITE_READER;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;BUILD_CONFIG_FULL_VERSION;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
@@ -129,8 +128,7 @@
       <TargetEnvironment>X64</TargetEnvironment>
     </Midl>
     <ClCompile>
-      <AdditionalIncludeDirectories>../../../ASCOfficeOdfFile/include;../../../ASCOfficeOdfFile/src/odf/datatypes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_USE_XMLLITE_READER_;USE_LITE_READER;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;BUILD_CONFIG_FULL_VERSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
@@ -138,21 +136,17 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Oox2OdfConverter\ConvertDrawing.cpp" />
-    <ClCompile Include="..\Oox2OdfConverter\Converter.cpp" />
-    <ClCompile Include="..\Oox2OdfConverter\ConverterChart.cpp" />
-    <ClCompile Include="..\Oox2OdfConverter\ConvertVml.cpp" />
-    <ClCompile Include="..\Oox2OdfConverter\DocxConverter.cpp" />
-    <ClCompile Include="..\Oox2OdfConverter\PptxConverter.cpp" />
-    <ClCompile Include="..\Oox2OdfConverter\XlsxConverter.cpp" />
+    <ClCompile Include="..\source\CryptTransform.cpp" />
+    <ClCompile Include="..\source\ECMACryptFile.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Oox2OdfConverter\Converter.h" />
-    <ClInclude Include="..\Oox2OdfConverter\DocxConverter.h" />
-    <ClInclude Include="..\Oox2OdfConverter\Oox2OdfConverter.h" />
-    <ClInclude Include="..\Oox2OdfConverter\PptxConverter.h" />
-    <ClInclude Include="..\Oox2OdfConverter\VmlShapeTypes2Oox.h" />
-    <ClInclude Include="..\Oox2OdfConverter\XlsxConverter.h" />
+    <ClInclude Include="..\source\CryptTransform.h" />
+    <ClInclude Include="..\source\ECMACryptFile.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\3dParty\cryptopp\cryptlib.vcxproj">
+      <Project>{3423ec9a-52e4-4a4d-9753-edebc38785ef}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

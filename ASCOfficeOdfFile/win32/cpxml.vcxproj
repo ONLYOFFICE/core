@@ -19,8 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{BEE01B53-244A-44E6-8947-ED9342D9247E}</ProjectGuid>
-    <RootNamespace>Oox2OdfConverter</RootNamespace>
+    <ProjectName>xml_wrapper</ProjectName>
+    <ProjectGuid>{41BED424-4EAF-4053-8A5F-1E2A387D53D1}</ProjectGuid>
+    <RootNamespace>cpxml</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -86,17 +87,20 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\..\ASCOfficeOdfFile\include;..\..\..\ASCOfficeOdfFile\src\odf\datatypes;..\..\..\DesktopEditor\freetype-2.5.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;_LIB;_USE_XMLLITE_READER_;USE_LITE_READER;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../DesktopEditor/xml/libxml2/include;../../DesktopEditor/xml/build/vs2005;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader />
+      <PrecompiledHeaderFile />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <DisableSpecificWarnings>4005;4311;4312;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <PrecompiledHeaderFile />
     </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(ProjectName).lib</OutputFile>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
@@ -104,55 +108,78 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../../ASCOfficeOdfFile/include;../../../ASCOfficeOdfFile/src/odf/datatypes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_USE_XMLLITE_READER_;USE_LITE_READER;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;BUILD_CONFIG_FULL_VERSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader />
+      <PrecompiledHeaderFile />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4311;4267;4996;4172;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(ProjectName).lib</OutputFile>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>../../../ASCOfficeOdfFile/include;../../../ASCOfficeOdfFile/src/odf/datatypes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;_LIB;_USE_XMLLITE_READER_;USE_LITE_READER;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;BUILD_CONFIG_FULL_VERSION;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader />
+      <PrecompiledHeaderFile />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4311;4267;4996;4172;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(ProjectName)-static.lib</OutputFile>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
       <TargetEnvironment>X64</TargetEnvironment>
     </Midl>
     <ClCompile>
-      <AdditionalIncludeDirectories>../../../ASCOfficeOdfFile/include;../../../ASCOfficeOdfFile/src/odf/datatypes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_USE_XMLLITE_READER_;USE_LITE_READER;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;BUILD_CONFIG_FULL_VERSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader />
+      <PrecompiledHeaderFile />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4311;4267;4996;4172;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(ProjectName)-static.lib</OutputFile>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Oox2OdfConverter\ConvertDrawing.cpp" />
-    <ClCompile Include="..\Oox2OdfConverter\Converter.cpp" />
-    <ClCompile Include="..\Oox2OdfConverter\ConverterChart.cpp" />
-    <ClCompile Include="..\Oox2OdfConverter\ConvertVml.cpp" />
-    <ClCompile Include="..\Oox2OdfConverter\DocxConverter.cpp" />
-    <ClCompile Include="..\Oox2OdfConverter\PptxConverter.cpp" />
-    <ClCompile Include="..\Oox2OdfConverter\XlsxConverter.cpp" />
+    <ClCompile Include="..\src\xml\attributes.cpp" />
+    <ClCompile Include="..\src\xml\sax.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\src\xml\sax_xmllite.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\src\xml\utils.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\src\xml\xmlchar.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Oox2OdfConverter\Converter.h" />
-    <ClInclude Include="..\Oox2OdfConverter\DocxConverter.h" />
-    <ClInclude Include="..\Oox2OdfConverter\Oox2OdfConverter.h" />
-    <ClInclude Include="..\Oox2OdfConverter\PptxConverter.h" />
-    <ClInclude Include="..\Oox2OdfConverter\VmlShapeTypes2Oox.h" />
-    <ClInclude Include="..\Oox2OdfConverter\XlsxConverter.h" />
+    <ClInclude Include="..\include\xml\attributes.h" />
+    <ClInclude Include="..\include\xml\nodetype.h" />
+    <ClInclude Include="..\include\xml\sax.h" />
+    <ClInclude Include="..\include\xml\simple_xml_writer.h" />
+    <ClInclude Include="..\include\xml\utils.h" />
+    <ClInclude Include="..\include\xml\xmlchar.h" />
+    <ClInclude Include="..\include\xml\xmlelement.h" />
+    <ClInclude Include="..\src\xml\sax_xmllite.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

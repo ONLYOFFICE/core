@@ -86,7 +86,7 @@ namespace PPTX
 				{
 					return XmlUtils::CreateNode(_T("p:tgtEl"), spTgt->toXML());
 				}
-				return _T("<p:tgtEl><p:sldTgt></p:tgtEl>");
+                return _T("<p:tgtEl><p:sldTgt /></p:tgtEl>");
 			}
 		public:
 			nullable_string		inkTgt;

@@ -312,6 +312,7 @@ HEADERS += \
     ../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/CBhvr.h \
     ../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/CMediaNode.h \
     ../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/CTn.h \
+    ../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/ChildTnLst.h \
     ../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Cmd.h \
     ../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Cond.h \
     ../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/CondLst.h \
@@ -359,6 +360,8 @@ HEADERS += \
     ../Enums/enums.h \
     ../PPTFormatLib.h \
     ../PPTXWriter/TimingConverter.h \
+    ../PPTXWriter/TimingConverter/BldLst.h \
+    ../PPTXWriter/TimingConverter/TnLst.h \
     ../Reader/ClassesAtom.h \
     ../Reader/CommonZLib.h \
     ../Reader/PPTDocumentInfo.h \

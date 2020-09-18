@@ -32,7 +32,7 @@
 #include "ApplicationFontsWorker.h"
 #include "application_generate_fonts.h"
 
-#define ONLYOFFICE_FONTS_VERSION_ 3
+#define ONLYOFFICE_FONTS_VERSION_ 4
 
 CApplicationFontsWorker::CApplicationFontsWorker()
 {

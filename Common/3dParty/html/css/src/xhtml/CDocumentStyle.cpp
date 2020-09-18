@@ -243,7 +243,7 @@ namespace NSCSS
         if (!sTextIndent.empty() && oStyle.GetId().find(L"table") == std::wstring::npos)
         {
             const float dFirstLineValue = wcstof(sTextIndent.c_str(), NULL) * 10.0f;
-            sIndValue += L"w:firstLine=\"" + std::to_wstring((unsigned short int)floor(dFirstLineValue + 0.5f)) + L"\" ";
+            sIndValue += L"w:firstLine=\"" + std::to_wstring((short int)floor(dFirstLineValue + 0.5f)) + L"\" ";
         }
 
         std::map<unsigned short int, std::wstring> sMargins = oStyle.GetMargins();
@@ -251,8 +251,8 @@ namespace NSCSS
         {
             const float dLeftValue  = wcstof(sMargins[1].c_str(), NULL);
             const float dRightValue = wcstof(sMargins[3].c_str(), NULL);
-            sIndValue += L"w:left=\""  + std::to_wstring((unsigned short int)floorf(dLeftValue  + 0.5f)) + L"\" ";
-            sIndValue += L"w:right=\"" + std::to_wstring((unsigned short int)floorf(dRightValue + 0.5f)) + L"\" ";
+            sIndValue += L"w:left=\""  + std::to_wstring((short int)floorf(dLeftValue  + 0.5f)) + L"\" ";
+            sIndValue += L"w:right=\"" + std::to_wstring((short int)floorf(dRightValue + 0.5f)) + L"\" ";
         }
 
         oXmlElement.AddPropertiesInP(NS_CONST_VALUES::Proprties::P_Ind, sIndValue);
@@ -264,8 +264,9 @@ namespace NSCSS
         {
             const float dAfterValue  = wcstof(sMargins[0].c_str(), NULL);
             const float dBeforeValue = wcstof(sMargins[2].c_str(), NULL);
-            sSpacingValue += L"w:after=\""  + std::to_wstring((unsigned short int)floorf(dAfterValue  + 0.5f)) + L"\" ";
-            sSpacingValue += L"w:before=\"" + std::to_wstring((unsigned short int)floorf(dBeforeValue + 0.5f)) + L"\" ";
+
+            sSpacingValue += L"w:after=\""  + std::to_wstring((unsigned short int)floorf((dAfterValue > 0.0f) ? (dAfterValue  + 0.5f) : 0.0f)) + L"\" ";
+            sSpacingValue += L"w:before=\"" + std::to_wstring((unsigned short int)floorf((dBeforeValue > 0.0f) ? (dBeforeValue  + 0.5f) : 0.0f)) + L"\" ";
         }
 
         std::wstring sLineHeight = oStyle.GetLineHeight();
@@ -279,7 +280,7 @@ namespace NSCSS
 
             if (dLineHeight > 0)
             {
-                sSpacingValue += L"w:line=\"" + std::to_wstring((unsigned short int)floorf(dLineHeight + 0.5f)) + L"\" ";
+                sSpacingValue += L"w:line=\"" + std::to_wstring((unsigned short int)floorf((dLineHeight > 0.0f) ? (dLineHeight  + 0.5f) : 0.0f)) + L"\" ";
                 sSpacingValue += L"w:lineRule=\"auto\"";
             }
         }

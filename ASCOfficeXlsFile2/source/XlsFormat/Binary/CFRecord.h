@@ -198,8 +198,8 @@ CFRecord& operator<<(CFRecord & record,		_CP_OPT(T)& val)
 {
 	if (!val) return record;
 
-	T temp_val(*val);
-	record.storeAnyData(temp_val);
+//	T temp_val(*val);
+//	record.storeAnyData(temp_val);
 	return record; 
 }
 

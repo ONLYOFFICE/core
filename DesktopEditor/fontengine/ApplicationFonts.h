@@ -285,6 +285,7 @@ private:
 	int GetSigPenalty(ULONG ulCandRanges[6], ULONG ulReqRanges[6], double dRangeWeight = 1, double dRangeWeightSuferflouous = 0);
     int GetFixedPitchPenalty(INT bCandFixed, INT bReqFixed);
     int GetFaceNamePenalty(const std::wstring& sCandName, const std::wstring& sReqName, bool bIsUseNamePicker = false);
+    int GetFaceNamePenalty2(NSFonts::CFontInfo* pInfo, const std::wstring& sReqName, bool bIsUseNamePicker = false);
 	int GetFamilyUnlikelyPenalty(SHORT nCandFamilyClass, SHORT nReqFamilyClass);
 	int GetFamilyUnlikelyPenalty(int nCandFamilyClass, std::wstring sReqFamilyClass);
 	int GetWidthPenalty(USHORT usCandWidth, USHORT usReqWidth);

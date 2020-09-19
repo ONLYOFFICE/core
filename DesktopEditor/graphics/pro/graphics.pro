@@ -58,8 +58,6 @@ core_windows {
     LIBS += -lUser32
 }
 
-#DEFINES += BUILD_FONT_NAMES_DICTIONARY
-
 LIB_GRAPHICS_PRI_PATH = $$PWD/../..
 
 FREETYPE_VERSION=2.5.2

@@ -38,9 +38,6 @@
 #include "../xml/include/xmlutils.h"
 #include <iostream>
 
-#define ASC_APPLICATION_FONTS_NO_THUMBNAILS
-#include "../fontengine/application_generate_fonts.h"
-
 #include "../common/File.h"
 #include "../common/Directory.h"
 
@@ -59,6 +56,8 @@
 #ifdef BUIDLER_OPEN_DOWNLOAD_ENABLED
 #include "../../Common/FileDownloader/FileDownloader.h"
 #endif
+
+#include "../fontengine/ApplicationFontsWorker.h"
 
 #ifdef CreateFile
 #undef CreateFile
@@ -346,92 +345,18 @@ namespace NSDoctRenderer
 
         void CheckFonts(bool bIsCheckSystemFonts)
         {
-            std::vector<std::string> strFonts;
-            std::wstring strDirectory = NSCommon::GetDirectoryName(m_strAllFonts);
+            std::wstring sDirectory = NSCommon::GetDirectoryName(m_strAllFonts);
+            std::wstring strFontsSelectionBin = sDirectory + L"/font_selection.bin";
 
-            std::wstring strAllFontsJSPath = strDirectory + L"/AllFonts.js";
-            std::wstring strFontsSelectionBin = strDirectory + L"/font_selection.bin";
+            if (!bIsCheckSystemFonts && NSFile::CFileBinary::Exists(strFontsSelectionBin))
+                return;
 
-            if (true)
-            {
-                NSFile::CFileBinary oFile;
-                if (oFile.OpenFile(strDirectory + L"/fonts.log"))
-                {
-                    int nSize = oFile.GetFileSize();
-                    char* pBuffer = new char[nSize];
-                    DWORD dwReaden = 0;
-                    oFile.ReadFile((BYTE*)pBuffer, nSize, dwReaden);
-                    oFile.CloseFile();
-
-                    int nStart = 0;
-                    int nCur = nStart;
-                    for (; nCur < nSize; ++nCur)
-                    {
-                        if (pBuffer[nCur] == '\n')
-                        {
-                            int nEnd = nCur - 1;
-                            if (nEnd > nStart)
-                            {
-                                std::string s(pBuffer + nStart, nEnd - nStart + 1);
-                                strFonts.push_back(s);
-                            }
-                            nStart = nCur + 1;
-                        }
-                    }
-
-                    delete[] pBuffer;
-                }
-            }
-
-            bool bIsEqual = NSFile::CFileBinary::Exists(strFontsSelectionBin);
-
-            if (!bIsEqual || bIsCheckSystemFonts)
-            {
-                NSFonts::IApplicationFonts* pApplicationF = NSFonts::NSApplication::Create();
-                std::vector<std::wstring> strFontsW_Cur = pApplicationF->GetSetupFontFiles();
-
-                if (strFonts.size() != strFontsW_Cur.size())
-                    bIsEqual = false;
-
-                if (bIsEqual)
-                {
-                    int nCount = (int)strFonts.size();
-                    for (int i = 0; i < nCount; ++i)
-                    {
-                        if (strFonts[i] != NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(strFontsW_Cur[i].c_str(), strFontsW_Cur[i].length()))
-                        {
-                            bIsEqual = false;
-                            break;
-                        }
-                    }
-                }
-
-                if (!bIsEqual)
-                {
-                    if (NSFile::CFileBinary::Exists(strAllFontsJSPath))
-                        NSFile::CFileBinary::Remove(strAllFontsJSPath);
-                    if (NSFile::CFileBinary::Exists(strFontsSelectionBin))
-                        NSFile::CFileBinary::Remove(strFontsSelectionBin);
-
-                    if (strFonts.size() != 0)
-                        NSFile::CFileBinary::Remove(strDirectory + L"/fonts.log");
-
-                    NSFile::CFileBinary oFile;
-                    oFile.CreateFileW(strDirectory + L"/fonts.log");
-                    int nCount = (int)strFontsW_Cur.size();
-                    for (int i = 0; i < nCount; ++i)
-                    {
-                        oFile.WriteStringUTF8(strFontsW_Cur[i]);
-                        oFile.WriteFile((BYTE*)"\n", 1);
-                    }
-                    oFile.CloseFile();
-
-                    pApplicationF->InitializeFromArrayFiles(strFontsW_Cur, 2);
-                    NSCommon::SaveAllFontsJS(pApplicationF, strAllFontsJSPath, L"", strFontsSelectionBin);
-                }
-
-                RELEASEOBJECT(pApplicationF);
-            }
+            CApplicationFontsWorker oWorker;
+            oWorker.m_bIsUseSystemFonts = bIsCheckSystemFonts;
+            oWorker.m_bIsNeedThumbnails = false;
+            oWorker.m_sDirectory = sDirectory;
+            NSFonts::IApplicationFonts* pFonts = oWorker.Check();
+            pFonts->Release();
         }
 
         void CheckFileDir()

@@ -53,7 +53,8 @@ SOURCES += \
 SOURCES += \
     ../../Common/OfficeFileFormatChecker2.cpp \
     ../../Common/3dParty/pole/pole.cpp \
-    ../../Common/DocxFormat/Source/Base/unicode_util.cpp
+    ../../Common/DocxFormat/Source/Base/unicode_util.cpp \
+    ../fontengine/ApplicationFontsWorker.cpp
 
 HEADERS += \
     docbuilder_p.h \

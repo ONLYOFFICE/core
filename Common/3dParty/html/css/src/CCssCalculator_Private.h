@@ -6,7 +6,7 @@
 #include "CElement.h"
 #include "CCssCalculator.h"
 #include <list>
-
+#include <functional>
 #include "../../katana-parser/src/katana.h"
 
 namespace NSCSS
@@ -59,7 +59,7 @@ namespace NSCSS
         std::wstring ConvertPxToIn(const float& dValue) const;
         std::wstring ConvertPxToMm(const float& dValue) const;
         std::wstring ConvertPxToPt(const float& dValue) const;
-        std::wstring ConvertPxToPc(const float& dValue) const;
+        std::wstring ConvertPxToPc(const float& dValue) const;     
 
         std::wstring ConvertCm(const std::wstring& sValue) const;
         std::wstring ConvertCmToPx(const float& dValue) const;
@@ -102,6 +102,7 @@ namespace NSCSS
         std::vector<unsigned short int> GetWeightSelector(const std::wstring& sSelector) const;
 
         void GetOutputData(KatanaOutput* oOutput);
+
     public:
         CCssCalculator_Private();
         ~CCssCalculator_Private();
@@ -124,7 +125,8 @@ namespace NSCSS
         unsigned short int GetDpi() const;
 
         void Print() const;
-        void Clear();
+        void Clear();        
+
     };
 }
 #endif // CCSSCALCULATOR_PRIVATE_H

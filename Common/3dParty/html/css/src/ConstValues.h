@@ -9,67 +9,75 @@ namespace NSCSS
 {
     namespace NS_CONST_VALUES
     {
-        enum Proprties
+
+        const std::map<std::wstring, unsigned short int> m_mUnisMesure =
+        {
+            {L"px", 0}
+        };
+        enum BasicProperties
         {
             B_CustomStyle = 0,
             B_StyleId = 1,
             B_Type = 2,
-            B_Name = 3,
-            B_BasedOn = 4,
-            B_QFormat = 5,
-            B_Link = 6,
+            B_Default = 3,
 
-            // <rPr>
-                R_RFonts = 7,
-                R_Sz = 8,
-                R_B = 9,
-                R_I = 10,
-                R_Color = 11,
-                R_U = 12,
-                R_Shd = 13,
-            // </rPr>
+            B_Name = 4,
+            B_BasedOn = 5,
+            B_QFormat = 6,
+            B_Link = 7,
+            B_UnhideWhenUsed = 8,
+            B_UiPriority = 9,
+//            B_SemiHidden = 10,
+//            B_S = 11,
+        };
 
-            // <pPr>
-                P_Jc = 14,
-                P_Spacing = 15,
-                P_ContextualSpacing = 16,
-                P_Ind = 17,
-                P_OutlineLvl = 18,
-                P_Shd = 19,
-                // <pBdr>
-                    P_TopBorder = 20,
-                    P_LeftBorder = 21,
-                    P_BottomBorder = 22,
-                    P_RightBorder = 23,
-                // </pBdr>
-                P_KeepLines = 24,
-                P_KeepNext = 25,
-            // </pPr>
+        enum ParagraphProperties
+        {
+            P_Jc = 0,
+            P_Spacing = 1,
+            P_ContextualSpacing = 2,
+            P_Ind = 3,
+            P_OutlineLvl = 4,
+            P_Shd = 5,
+            // <pBdr>
+                P_TopBorder = 6,
+                P_LeftBorder = 7,
+                P_BottomBorder = 8,
+                P_RightBorder = 9,
+            // </pBdr>
+            P_KeepLines = 10,
+            P_KeepNext = 11,
+        };
 
-            B_SemiHidden = 26,
-            B_UnhideWhenUsed = 27,
-            B_Default = 28,
-            B_S = 29,
-            B_UiPriority = 30,
+        enum RunerProperties
+        {
+            R_RFonts = 0,
+            R_Sz = 1,
+            R_B = 2,
+            R_I = 3,
+            R_Color = 4,
+            R_U = 5,
+            R_Shd = 6
+        };
 
-            // <tblPr>
-                T_TblInd = 31,
-                // <tblCellMar>
-                    T_CellTop = 32,
-                    T_CellLeft = 33,
-                    T_CellBottom = 34,
-                    T_CellRight = 35,
-                // <tblCellMar>
+        enum TableProperties
+        {
+            T_TblInd = 0,
+            // <tblCellMar>
+                T_CellTop = 1,
+                T_CellLeft = 2,
+                T_CellBottom = 3,
+                T_CellRight = 4,
+            // <tblCellMar>
 
-                // <tblBorders>
-                    T_BorderTop = 36,
-                    T_BorderLeft = 37,
-                    T_BorderBottom = 38,
-                    T_BorderRight = 39,
-                    T_BorderInsideH = 40,
-                    T_BorderInsideV = 41
-                // </tblBorders>
-            // </tblPr>
+            // <tblBorders>
+                T_BorderTop = 5,
+                T_BorderLeft = 6,
+                T_BorderBottom = 7,
+                T_BorderRight = 8,
+                T_BorderInsideH = 9,
+                T_BorderInsideV = 10
+            // </tblBorders>
         };
 
         const std::map<std::wstring, std::wstring> mStyles = {

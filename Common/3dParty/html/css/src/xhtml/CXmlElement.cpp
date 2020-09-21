@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <vector>
 #include <cwctype>
+#include <functional>
 
 #include <iostream>
 #include "../StaticFunctions.h"
@@ -35,250 +36,250 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 
     if (sNameDefaultElement == L"li")
     {
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Type, L"paragraph");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_StyleId, L"li");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Name, L"List Paragraph");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_BasedOn, L"normal");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_QFormat, L"true");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_UiPriority, L"34");
-        AddPropertiesInP(NSCSS::NS_CONST_VALUES::Proprties::P_ContextualSpacing, L"true");
-        AddPropertiesInP(NSCSS::NS_CONST_VALUES::Proprties::P_Ind, L"w:left=\"720\"");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Type, L"paragraph");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"li");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"List Paragraph");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn, L"normal");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UiPriority, L"34");
+        AddPropertiesInP(NSCSS::NS_CONST_VALUES::ParagraphProperties::P_ContextualSpacing, L"true");
+        AddPropertiesInP(NSCSS::NS_CONST_VALUES::ParagraphProperties::P_Ind, L"w:left=\"720\"");
     }
     else if (sNameDefaultElement == L"h1")
     {
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Type, L"paragraph");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_StyleId, L"h1");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Name, L"Heading 1");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_BasedOn, L"normal");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_QFormat, L"true");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Link, L"h1-c");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Type, L"paragraph");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"h1");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Heading 1");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn, L"normal");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"h1-c");
 
-        AddPropertiesInP(NSCSS::NS_CONST_VALUES::Proprties::P_OutlineLvl, L"0");
-        AddPropertiesInP(NSCSS::NS_CONST_VALUES::Proprties::P_Spacing, L"w:after=\"0\" w:before=\"480\"");
+        AddPropertiesInP(NSCSS::NS_CONST_VALUES::ParagraphProperties::P_OutlineLvl, L"0");
+        AddPropertiesInP(NSCSS::NS_CONST_VALUES::ParagraphProperties::P_Spacing, L"w:after=\"0\" w:before=\"480\"");
     }
     else if (sNameDefaultElement == L"h2")
     {
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Type, L"paragraph");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_StyleId, L"h2");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Name, L"Heading 2");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_BasedOn, L"normal");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_QFormat, L"true");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Link, L"h2-c");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Type, L"paragraph");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"h2");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Heading 2");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn, L"normal");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"h2-c");
 
-        AddPropertiesInP(NSCSS::NS_CONST_VALUES::Proprties::P_OutlineLvl, L"1");
-        AddPropertiesInP(NSCSS::NS_CONST_VALUES::Proprties::P_Spacing, L"w:after=\"0\" w:before=\"400\"");
+        AddPropertiesInP(NSCSS::NS_CONST_VALUES::ParagraphProperties::P_OutlineLvl, L"1");
+        AddPropertiesInP(NSCSS::NS_CONST_VALUES::ParagraphProperties::P_Spacing, L"w:after=\"0\" w:before=\"400\"");
     }
     else if (sNameDefaultElement == L"h3")
     {
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Type, L"paragraph");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_StyleId, L"h3");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Name, L"Heading 3");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_BasedOn, L"normal");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_QFormat, L"true");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Link, L"h3-c");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Type, L"paragraph");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"h3");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Heading 3");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn, L"normal");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"h3-c");
 
-        AddPropertiesInP(NSCSS::NS_CONST_VALUES::Proprties::P_OutlineLvl, L"2");
-        AddPropertiesInP(NSCSS::NS_CONST_VALUES::Proprties::P_Spacing, L"w:after=\"0\" w:before=\"360\"");
+        AddPropertiesInP(NSCSS::NS_CONST_VALUES::ParagraphProperties::P_OutlineLvl, L"2");
+        AddPropertiesInP(NSCSS::NS_CONST_VALUES::ParagraphProperties::P_Spacing, L"w:after=\"0\" w:before=\"360\"");
     }
     else if (sNameDefaultElement == L"h4")
     {
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Type, L"paragraph");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_StyleId, L"h4");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Name, L"Heading 4");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_BasedOn, L"normal");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_QFormat, L"true");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Link, L"h4-c");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Type, L"paragraph");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"h4");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Heading 4");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn, L"normal");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"h4-c");
 
-        AddPropertiesInP(NSCSS::NS_CONST_VALUES::Proprties::P_OutlineLvl, L"3");
-        AddPropertiesInP(NSCSS::NS_CONST_VALUES::Proprties::P_Spacing, L"w:after=\"0\" w:before=\"320\"");
+        AddPropertiesInP(NSCSS::NS_CONST_VALUES::ParagraphProperties::P_OutlineLvl, L"3");
+        AddPropertiesInP(NSCSS::NS_CONST_VALUES::ParagraphProperties::P_Spacing, L"w:after=\"0\" w:before=\"320\"");
     }
     else if (sNameDefaultElement == L"h5")
     {
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Type, L"paragraph");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_StyleId, L"h5");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Name, L"Heading 5");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_BasedOn, L"normal");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_QFormat, L"true");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Link, L"h5-c");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Type, L"paragraph");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"h5");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Heading 5");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn, L"normal");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"h5-c");
 
-        AddPropertiesInP(NSCSS::NS_CONST_VALUES::Proprties::P_OutlineLvl, L"4");
-        AddPropertiesInP(NSCSS::NS_CONST_VALUES::Proprties::P_Spacing, L"w:after=\"0\" w:before=\"280\"");
+        AddPropertiesInP(NSCSS::NS_CONST_VALUES::ParagraphProperties::P_OutlineLvl, L"4");
+        AddPropertiesInP(NSCSS::NS_CONST_VALUES::ParagraphProperties::P_Spacing, L"w:after=\"0\" w:before=\"280\"");
 
     }
     else if (sNameDefaultElement == L"h6")
     {
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Type, L"paragraph");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_StyleId, L"h6");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Name, L"Heading 6");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_BasedOn, L"normal");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_QFormat, L"true");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Link, L"h6-c");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Type, L"paragraph");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"h6");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Heading 6");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn, L"normal");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"h6-c");
 
-        AddPropertiesInP(NSCSS::NS_CONST_VALUES::Proprties::P_OutlineLvl, L"5");
-        AddPropertiesInP(NSCSS::NS_CONST_VALUES::Proprties::P_Spacing, L"w:after=\"0\" w:before=\"280\"");
+        AddPropertiesInP(NSCSS::NS_CONST_VALUES::ParagraphProperties::P_OutlineLvl, L"5");
+        AddPropertiesInP(NSCSS::NS_CONST_VALUES::ParagraphProperties::P_Spacing, L"w:after=\"0\" w:before=\"280\"");
     }
     else if (sNameDefaultElement == L"h1-c")
     {
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Type, L"character");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_StyleId, L"h1-c");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Name, L"Title 1 Sign");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_QFormat, L"true");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_CustomStyle, L"1");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_UiPriority, L"9");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Link, L"h1");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Type, L"character");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"h1-c");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Title 1 Sign");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_CustomStyle, L"1");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UiPriority, L"9");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"h1");
 
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_RFonts, L"\"Arial\"");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_B, L"true");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_Color, L"000000");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_Sz, L"48");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_B, L"true");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Color, L"000000");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Sz, L"48");
     }
     else if (sNameDefaultElement == L"h2-c")
     {
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Type, L"character");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_StyleId, L"h2-c");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Name, L"Title 2 Sign");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_QFormat, L"true");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_CustomStyle, L"1");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_UiPriority, L"9");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_UnhideWhenUsed, L"true");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Link, L"h2");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Type, L"character");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"h2-c");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Title 2 Sign");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_CustomStyle, L"1");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UiPriority, L"9");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UnhideWhenUsed, L"true");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"h2");
 
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_RFonts, L"\"Arial\"");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_B, L"true");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_Color, L"000000");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_Sz, L"40");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_B, L"true");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Color, L"000000");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Sz, L"40");
     }
     else if (sNameDefaultElement == L"h3-c")
     {
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Type, L"character");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_StyleId, L"h3-c");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Name, L"Title 3 Sign");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_QFormat, L"true");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_CustomStyle, L"1");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_UiPriority, L"9");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_UnhideWhenUsed, L"true");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Link, L"h3");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Type, L"character");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"h3-c");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Title 3 Sign");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_CustomStyle, L"1");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UiPriority, L"9");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UnhideWhenUsed, L"true");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"h3");
 
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_RFonts, L"\"Arial\"");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_B, L"true");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_Color, L"000000");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_Sz, L"36");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_B, L"true");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Color, L"000000");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Sz, L"36");
     }
     else if (sNameDefaultElement == L"h4-c")
     {
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Type, L"character");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_StyleId, L"h4-c");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Name, L"Title 4 Sign");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_QFormat, L"true");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_CustomStyle, L"1");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_UiPriority, L"9");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_UnhideWhenUsed, L"true");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Link, L"h4");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Type, L"character");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"h4-c");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Title 4 Sign");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_CustomStyle, L"1");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UiPriority, L"9");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UnhideWhenUsed, L"true");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"h4");
 
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_RFonts, L"\"Arial\"");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_B, L"true");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_Color, L"232323");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_Sz, L"32");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_B, L"true");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Color, L"232323");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Sz, L"32");
     }
     else if (sNameDefaultElement == L"h5-c")
     {
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Type, L"character");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_StyleId, L"h5-c");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Name, L"Title 5 Sign");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_QFormat, L"true");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_CustomStyle, L"1");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_UiPriority, L"9");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_UnhideWhenUsed, L"true");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Link, L"h5");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Type, L"character");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"h5-c");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Title 5 Sign");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_CustomStyle, L"1");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UiPriority, L"9");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UnhideWhenUsed, L"true");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"h5");
 
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_RFonts, L"\"Arial\"");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_B, L"true");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_Color, L"444444");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_Sz, L"28");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_B, L"true");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Color, L"444444");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Sz, L"28");
     }
     else if (sNameDefaultElement == L"h6-c")
     {
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Type, L"character");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_StyleId, L"h6-c");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Name, L"Title 6 Sign");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_QFormat, L"true");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_CustomStyle, L"1");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_UiPriority, L"9");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_UnhideWhenUsed, L"true");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Link, L"h6");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Type, L"character");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"h6-c");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Title 6 Sign");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_CustomStyle, L"1");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UiPriority, L"9");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UnhideWhenUsed, L"true");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"h6");
 
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_RFonts, L"\"Arial\"");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_B, L"true");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_I, L"true");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_Color, L"232323");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_Sz, L"24");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_B, L"true");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_I, L"true");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Color, L"232323");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Sz, L"24");
     }
     else if (sNameDefaultElement == L"p-c")
     {
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Type, L"character");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_StyleId, L"p-c");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_CustomStyle, L"1");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Name, L"Paragraph character");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_QFormat, L"true");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Link, L"p");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Type, L"character");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"p-c");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_CustomStyle, L"1");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Paragraph character");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"p");
 
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_RFonts, L"\"Arial\"");
     }
     else if (sNameDefaultElement == L"p")
     {
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Type, L"paragraph");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_StyleId, L"p");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_CustomStyle, L"1");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Name, L"Paragraph");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_BasedOn, L"normal");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_QFormat, L"true");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Link, L"p-c");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Type, L"paragraph");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"p");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_CustomStyle, L"1");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Paragraph");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn, L"normal");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"p-c");
 //        SetInd(L"w:firstLine=\"567\"");
 //        SetJc(L"both");
     }
     else if (sNameDefaultElement == L"div-c")
     {
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Type, L"character");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_StyleId, L"div-c");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_CustomStyle, L"1");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Name, L"Div character");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_QFormat, L"true");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Link, L"div");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Type, L"character");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"div-c");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_CustomStyle, L"1");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Div character");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"div");
 
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_RFonts, L"\"Arial\"");
     }
     else if (sNameDefaultElement == L"div")
     {
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Type, L"paragraph");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_StyleId, L"div");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_CustomStyle, L"1");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Name, L"Div");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_QFormat, L"true");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_BasedOn, L"normal");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Link, L"div-c");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Type, L"paragraph");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"div");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_CustomStyle, L"1");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Div");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn, L"normal");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"div-c");
 //        SetInd(L"w:firstLine=\"567\"");
 //        SetJc(L"both");
     }
     else if (sNameDefaultElement == L"a-c")
     {
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Type, L"character");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_StyleId, L"a-c");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Name, L"Hyperlink character");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_UiPriority, L"99");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_UnhideWhenUsed, L"true");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Type, L"character");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"a-c");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Hyperlink character");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UiPriority, L"99");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UnhideWhenUsed, L"true");
 
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_Color, L"0000FF");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_U, L"single");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_Sz, L"24");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::Proprties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Color, L"0000FF");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_U, L"single");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Sz, L"24");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_RFonts, L"\"Arial\"");
     }
     else if (sNameDefaultElement == L"a")
     {
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Type, L"character");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_BasedOn, L"a-c");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_StyleId, L"a");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_Name, L"Hyperlink");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::Proprties::B_QFormat, L"true");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Type, L"character");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn, L"a-c");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"a");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Hyperlink");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
     }
 }
 
@@ -289,28 +290,28 @@ void CXmlElement::Clear()
     m_mRStyleValues.clear();
 }
 
-void CXmlElement::AddPropertiesInP(const NSCSS::NS_CONST_VALUES::Proprties &sProperties, const std::wstring &sValue)
+void CXmlElement::AddPropertiesInP(const NSCSS::NS_CONST_VALUES::ParagraphProperties &nProperties, const std::wstring &sValue)
 {
     if (sValue.empty())
         return;
 
-    m_mPStyleValues[sProperties] = sValue;
+    m_mPStyleValues[nProperties] = sValue;
 }
 
-void CXmlElement::AddPropertiesInR(const NSCSS::NS_CONST_VALUES::Proprties &sProperties, const std::wstring &sValue)
+void CXmlElement::AddPropertiesInR(const NSCSS::NS_CONST_VALUES::RunerProperties &nProperties, const std::wstring &sValue)
 {
     if (sValue.empty())
         return;
 
-    m_mRStyleValues[sProperties] = sValue;
+    m_mRStyleValues[nProperties] = sValue;
 }
 
-void CXmlElement::AddBasicProperties(const NSCSS::NS_CONST_VALUES::Proprties &sProperties, const std::wstring &sValue)
+void CXmlElement::AddBasicProperties(const NSCSS::NS_CONST_VALUES::BasicProperties &nProperties, const std::wstring &sValue)
 {
     if (sValue.empty())
         return;
 
-    m_mBasicValues[sProperties] = sValue;
+    m_mBasicValues[nProperties] = sValue;
 }
 
 CXmlElement& CXmlElement::operator+=(const CXmlElement& oElement)
@@ -348,7 +349,7 @@ bool CXmlElement::operator==(const CXmlElement &oElement)
 
 std::wstring CXmlElement::ConvertPStyle() const
 {
-    if (Empty())
+    if (m_mPStyleValues.empty())
         return std::wstring();
 
     std::wstring sPPr = L"<w:pPr>";
@@ -358,64 +359,64 @@ std::wstring CXmlElement::ConvertPStyle() const
     {
         switch (oItem.first)
         {
-            case NSCSS::NS_CONST_VALUES::Proprties::P_Jc:
+            case NSCSS::NS_CONST_VALUES::ParagraphProperties::P_Jc:
             {
                 sPPr += L"<w:jc w:val=\"" + oItem.second + L"\"/>";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::Proprties::P_Spacing:
+            case NSCSS::NS_CONST_VALUES::ParagraphProperties::P_Spacing:
             {
                 sPPr += L"<w:spacing " + oItem.second + L"/>";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::Proprties::P_ContextualSpacing:
+            case NSCSS::NS_CONST_VALUES::ParagraphProperties::P_ContextualSpacing:
             {
                 sPPr += L"<w:contextualSpacing/>";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::Proprties::P_Ind:
+            case NSCSS::NS_CONST_VALUES::ParagraphProperties::P_Ind:
             {
                 sPPr += L"<w:ind " + oItem.second + L"/>";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::Proprties::P_Shd:
-            {
-                sPPr += L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" + oItem.second + L"\"/>";
-                break;
-            }
-            case NSCSS::NS_CONST_VALUES::Proprties::P_OutlineLvl:
+            case NSCSS::NS_CONST_VALUES::ParagraphProperties::P_OutlineLvl:
             {
                 sPPr += L"<w:outlineLvl w:val=\"" + oItem.second + L"\"/>";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::Proprties::P_TopBorder:
+            case NSCSS::NS_CONST_VALUES::ParagraphProperties::P_Shd:
+            {
+                sPPr += L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" + oItem.second + L"\"/>";
+                break;
+            }
+            case NSCSS::NS_CONST_VALUES::ParagraphProperties::P_TopBorder:
             {
                 sPBdr += L"<w:top" + oItem.second + L"/>";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::Proprties::P_LeftBorder:
+            case NSCSS::NS_CONST_VALUES::ParagraphProperties::P_LeftBorder:
             {
                 sPBdr += L"<w:left" + oItem.second + L"/>";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::Proprties::P_BottomBorder:
+            case NSCSS::NS_CONST_VALUES::ParagraphProperties::P_BottomBorder:
             {
                 sPBdr += L"<w:bottom" + oItem.second + L"/>";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::Proprties::P_RightBorder:
+            case NSCSS::NS_CONST_VALUES::ParagraphProperties::P_RightBorder:
             {
                 sPBdr += L"<w:right" + oItem.second + L"/>";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::Proprties::P_KeepNext:
-            {
-                sPPr += L"<w:keepLines/>";
-                break;
-            }
-            case NSCSS::NS_CONST_VALUES::Proprties::P_KeepLines:
+            case NSCSS::NS_CONST_VALUES::ParagraphProperties::P_KeepLines:
             {
                 sPPr += L"<w:keepNext/>";
+                break;
+            }
+            case NSCSS::NS_CONST_VALUES::ParagraphProperties::P_KeepNext:
+            {
+                sPPr += L"<w:keepLines/>";
                 break;
             }
             default:
@@ -430,12 +431,12 @@ std::wstring CXmlElement::ConvertPStyle() const
 
     sPPr += L"</w:pPr>";
 
-    return sPPr.length() > 15 ? sPPr : std::wstring();
+    return sPPr;
 }
 
 std::wstring CXmlElement::ConvertRStyle() const
 {
-    if (Empty())
+    if (m_mRStyleValues.empty())
         return std::wstring();
 
     std::wstring sRStyle = L"<w:rPr>";
@@ -444,13 +445,7 @@ std::wstring CXmlElement::ConvertRStyle() const
     {
         switch (oItem.first)
         {
-            case NSCSS::NS_CONST_VALUES::Proprties::R_Sz:
-            {
-                sRStyle += L"<w:sz w:val=\"" + oItem.second +
-                           L"\"/>" + L"<w:szCs w:val=\"" + oItem.second + L"\"/>";
-                break;
-            }
-            case NSCSS::NS_CONST_VALUES::Proprties::R_RFonts:
+            case NSCSS::NS_CONST_VALUES::RunerProperties::R_RFonts:
             {
                 sRStyle += (oItem.second != L"\"inherit\"") ? L"<w:rFonts w:ascii=" + oItem.second +
                                                           L" w:hAnsi=" + oItem.second +
@@ -459,27 +454,33 @@ std::wstring CXmlElement::ConvertRStyle() const
                                                         : L"<w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/>";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::Proprties::R_B:
+            case NSCSS::NS_CONST_VALUES::RunerProperties::R_Sz:
+            {
+                sRStyle += L"<w:sz w:val=\"" + oItem.second +
+                           L"\"/>" + L"<w:szCs w:val=\"" + oItem.second + L"\"/>";
+                break;
+            }
+            case NSCSS::NS_CONST_VALUES::RunerProperties::R_B:
             {
                 sRStyle += L"<w:b/><w:bCs/>";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::Proprties::R_I:
+            case NSCSS::NS_CONST_VALUES::RunerProperties::R_I:
             {
                 sRStyle += L"<w:i/><w:iCs/>";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::Proprties::R_Color:
+            case NSCSS::NS_CONST_VALUES::RunerProperties::R_Color:
             {
                 sRStyle += L"<w:color w:val=\"" + oItem.second + L"\"/>";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::Proprties::R_U:
+            case NSCSS::NS_CONST_VALUES::RunerProperties::R_U:
             {
                 sRStyle += L"<w:u w:val=\"" + oItem.second + L"\"/>";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::Proprties::R_Shd:
+            case NSCSS::NS_CONST_VALUES::RunerProperties::R_Shd:
             {
                 sRStyle += L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" + oItem.second + L"\"/>";
                 break;
@@ -491,12 +492,12 @@ std::wstring CXmlElement::ConvertRStyle() const
 
     sRStyle += L"</w:rPr>";
 
-    return sRStyle.length() > 15 ? sRStyle : std::wstring();
+    return sRStyle;
 }
 
 std::wstring CXmlElement::ConvertBasicInfoStyle() const
 {
-    if (Empty())
+    if (m_mBasicValues.empty())
         return std::wstring();
 
     std::wstring sBasicInfo;
@@ -505,34 +506,34 @@ std::wstring CXmlElement::ConvertBasicInfoStyle() const
     {
         switch (oItem.first)
         {
-            case NSCSS::NS_CONST_VALUES::Proprties::B_Name:
+            case NSCSS::NS_CONST_VALUES::BasicProperties::B_Name:
             {
                 sBasicInfo += L"<w:name w:val=\"" + oItem.second + L"\"/>";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::Proprties::B_BasedOn:
+            case NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn:
             {
                 sBasicInfo += L"<w:basedOn w:val=\"" + oItem.second + L"\"/>";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::Proprties::B_Link:
-            {
-                sBasicInfo += L"<w:link w:val=\"" + oItem.second + L"\"/>";
-                break;
-            }
-            case NSCSS::NS_CONST_VALUES::Proprties::B_QFormat:
+            case NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat:
             {
                 sBasicInfo += L"<w:qFormat/>";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::Proprties::B_UiPriority:
+            case NSCSS::NS_CONST_VALUES::BasicProperties::B_Link:
             {
-                sBasicInfo += L"<w:uiPriority w:val=\"" + oItem.second + L"\"/>";
+                sBasicInfo += L"<w:link w:val=\"" + oItem.second + L"\"/>";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::Proprties::B_UnhideWhenUsed:
+            case NSCSS::NS_CONST_VALUES::BasicProperties::B_UnhideWhenUsed:
             {
                 sBasicInfo += L"<w:unhideWhenUsed/>";
+                break;
+            }
+            case NSCSS::NS_CONST_VALUES::BasicProperties::B_UiPriority:
+            {
+                sBasicInfo += L"<w:uiPriority w:val=\"" + oItem.second + L"\"/>";
                 break;
             }
             default:
@@ -554,32 +555,31 @@ std::wstring CXmlElement::GetStyle() const
     {
         switch (oItem.first)
         {
-            case NSCSS::NS_CONST_VALUES::Proprties::B_CustomStyle:
+            case NSCSS::NS_CONST_VALUES::BasicProperties::B_CustomStyle:
             {
                 sStyle += L" w:customStyle=\"" + oItem.second + L"\"";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::Proprties::B_StyleId:
+            case NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId:
             {
                 sStyle += L" w:styleId=\"" + oItem.second + L"\"";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::Proprties::B_Type:
+            case NSCSS::NS_CONST_VALUES::BasicProperties::B_Type:
             {
                 sStyle += L" w:type=\"" + oItem.second + L"\"";
                 break;
             }
-
-            case NSCSS::NS_CONST_VALUES::Proprties::B_Default:
+            case NSCSS::NS_CONST_VALUES::BasicProperties::B_Default:
             {
                 sStyle += L" w:default=\"" + oItem.second + L"\"";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::Proprties::B_S:
-            {
-                sStyle += L" w:S=\"" + oItem.second + L"\"";
-                break;
-            }
+//            case NSCSS::NS_CONST_VALUES::BasicProperties::B_S:
+//            {
+//                sStyle += L" w:S=\"" + oItem.second + L"\"";
+//                break;
+//            }
             default:
                 break;
         }
@@ -595,41 +595,40 @@ std::wstring CXmlElement::GetStyle() const
 
 std::wstring CXmlElement::GetPStyle() const
 {
-    if (Empty())
+    if (m_mBasicValues.empty() && m_mPStyleValues.empty())
         return std::wstring();
 
     std::wstring sPStyle = L"<w:style";
-
 
     for (const auto& oItem : m_mBasicValues)
     {
         switch (oItem.first)
         {
-            case NSCSS::NS_CONST_VALUES::Proprties::B_Type:
-            {
-                sPStyle += L" w:type=\"" + oItem.second + L"\"";
-                break;
-            }
-            case NSCSS::NS_CONST_VALUES::Proprties::B_StyleId:
-            {
-                sPStyle += L" w:styleId=\"" + oItem.second + L"\"";
-                break;
-            }
-            case NSCSS::NS_CONST_VALUES::Proprties::B_Default:
-            {
-                sPStyle += L" w:default=\"" + oItem.second + L"\"";
-                break;
-            }
-            case NSCSS::NS_CONST_VALUES::Proprties::B_CustomStyle:
+            case NSCSS::NS_CONST_VALUES::BasicProperties::B_CustomStyle:
             {
                 sPStyle += L" w:customStyle=\"" + oItem.second + L"\"";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::Proprties::B_S:
+            case NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId:
             {
-                sPStyle += L" w:S=\"" + oItem.second + L"\"";
+                sPStyle += L" w:styleId=\"" + oItem.second + L"\"";
                 break;
             }
+            case NSCSS::NS_CONST_VALUES::BasicProperties::B_Type:
+            {
+                sPStyle += L" w:type=\"" + oItem.second + L"\"";
+                break;
+            }
+            case NSCSS::NS_CONST_VALUES::BasicProperties::B_Default:
+            {
+                sPStyle += L" w:default=\"" + oItem.second + L"\"";
+                break;
+            }
+//            case NSCSS::NS_CONST_VALUES::BasicProperties::B_S:
+//            {
+//                sPStyle += L" w:S=\"" + oItem.second + L"\"";
+//                break;
+//            }
             default:
                 break;
         }
@@ -640,12 +639,12 @@ std::wstring CXmlElement::GetPStyle() const
     sPStyle += ConvertPStyle();
     sPStyle += L"</w:style>";
 
-    return sPStyle.length() > 19 ? sPStyle : std::wstring();
+    return sPStyle;
 }
 
 std::wstring CXmlElement::GetRStyle() const
 {
-    if (Empty())
+    if (m_mBasicValues.empty() && m_mRStyleValues.empty())
         return std::wstring();
 
     std::wstring sRStyle = L"<w:style ";
@@ -654,32 +653,32 @@ std::wstring CXmlElement::GetRStyle() const
     {
         switch (oItem.first)
         {
-            case NSCSS::NS_CONST_VALUES::Proprties::B_CustomStyle:
+            case NSCSS::NS_CONST_VALUES::BasicProperties::B_CustomStyle:
             {
                 sRStyle += L" w:customStyle=\"" + oItem.second + L"\"";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::Proprties::B_StyleId:
+            case NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId:
             {
                 sRStyle += L" w:styleId=\"" + oItem.second + L"\"";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::Proprties::B_Type:
+            case NSCSS::NS_CONST_VALUES::BasicProperties::B_Type:
             {
                 sRStyle += L" w:type=\"" + oItem.second + L"\"";
                 break;
             }
 
-            case NSCSS::NS_CONST_VALUES::Proprties::B_Default:
+            case NSCSS::NS_CONST_VALUES::BasicProperties::B_Default:
             {
                 sRStyle += L" w:default=\"" + oItem.second + L"\"";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::Proprties::B_S:
-            {
-                sRStyle += L" w:S=\"" + oItem.second + L"\"";
-                break;
-            }
+//            case NSCSS::NS_CONST_VALUES::BasicProperties::B_S:
+//            {
+//                sRStyle += L" w:S=\"" + oItem.second + L"\"";
+//                break;
+//            }
             default:
                 break;
         }
@@ -694,19 +693,19 @@ std::wstring CXmlElement::GetRStyle() const
 
 std::wstring CXmlElement::GetBasedOn() const
 {
-    const auto& posBasedOn = m_mBasicValues.find(NSCSS::NS_CONST_VALUES::Proprties::B_BasedOn);
+    const auto& posBasedOn = m_mBasicValues.find(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn);
     return  (posBasedOn != m_mBasicValues.end()) ? posBasedOn->second : std::wstring();
 }
 
 std::wstring CXmlElement::GetStyleId() const
 {
-    const auto& posStyleId = m_mBasicValues.find(NSCSS::NS_CONST_VALUES::Proprties::B_StyleId);
+    const auto& posStyleId = m_mBasicValues.find(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId);
     return  (posStyleId != m_mBasicValues.end()) ? posStyleId->second : std::wstring();
 }
 
 std::wstring CXmlElement::GetName() const
 {
-    const auto& posName = m_mBasicValues.find(NSCSS::NS_CONST_VALUES::Proprties::B_Name);
+    const auto& posName = m_mBasicValues.find(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name);
     return  (posName != m_mBasicValues.end()) ? posName->second : std::wstring();
 }
 

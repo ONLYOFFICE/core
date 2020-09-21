@@ -361,6 +361,8 @@ HEADERS += \
     ../PPTFormatLib.h \
     ../PPTXWriter/TimingConverter.h \
     ../PPTXWriter/TimingConverter/BldLst.h \
+    ../PPTXWriter/TimingConverter/Cond.h \
+    ../PPTXWriter/TimingConverter/Seq.h \
     ../PPTXWriter/TimingConverter/TnLst.h \
     ../Reader/ClassesAtom.h \
     ../Reader/CommonZLib.h \

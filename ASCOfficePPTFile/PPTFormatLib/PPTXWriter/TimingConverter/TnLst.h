@@ -42,7 +42,11 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/WrapperWritingElement.h"
 
 
-#include "../Records/Animations/ExtTimeNodeContainer.h"
+#include "../../Records/Animations/ExtTimeNodeContainer.h"
+
+
+#include "Seq.h"
+
 
 namespace PPT_FORMAT
 {
@@ -89,8 +93,6 @@ void FillCTn(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
             oCTn.dur = std::to_wstring(oTimeNodeAtom.m_nDuration);
     }
 
-
-
 }
 
 void FillSet(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
@@ -118,6 +120,7 @@ void ConvertCRecordExtTimeNodeContainerToTimeNodeBase(PPT_FORMAT::CRecordExtTime
     {
         auto pSeq = new PPTX::Logic::Seq();
 
+        FillSeq(pETNC, pSeq);
         FillCTn(pETNC, pSeq->cTn);
 
         oTimeNodeBase.m_node = pSeq;

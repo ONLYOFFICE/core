@@ -45,7 +45,8 @@ int main()
                 HRESULT nResConvert;
                 CHtmlFile2 oFile;
                 oFile.SetTmpDirectory(sTmp);
-                auto begin = std::chrono::steady_clock::now();
+                std::chrono::system_clock::time_point begin = std::chrono::system_clock::now();
+                std::chrono::system_clock::time_point end;
                 if(bMhtMode)
                 {
                     if(!oFile.IsMhtFile(sFile))
@@ -53,6 +54,7 @@ int main()
                         std::cout << "This isn't a mht file" << std::endl;
                         continue;
                     }
+                    end = std::chrono::system_clock::now();
                     nResConvert = oFile.OpenMht(sFile, sTmp);
                 }
                 else
@@ -62,13 +64,15 @@ int main()
                         std::cout << "This isn't a html file" << std::endl;
                         continue;
                     }
+                    end = std::chrono::system_clock::now();
                     nResConvert = oFile.OpenHtml(sFile, sTmp);
                 }
-                auto end = std::chrono::steady_clock::now();
-                auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
+                auto dur1 = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
+                begin = std::chrono::system_clock::now();
+                auto dur2 = std::chrono::duration_cast<std::chrono::milliseconds>(begin - end);
                 if(nResConvert == S_OK)
                 {
-                    std::cout << "Success " << dur.count() << std::endl;
+                    std::cout << "Success " << dur1.count() << " " << dur2.count() << std::endl;
                     oZip.CompressFileOrDirectory(sTmp, sOutputDirectory + L"/" + sFileName + L".docx");
                     NSDirectory::DeleteDirectory(sTmp + L"/word/media");
                 }

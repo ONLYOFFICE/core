@@ -410,12 +410,13 @@ public:
                     // Стиль в сети
                     if(sRef.substr(0, 4) == L"http")
                     {
+                        sFName = m_sTmp + L'/' + sFName;
                         CFileDownloader oDownloadStyle(sRef, false);
-                        oDownloadStyle.SetFilePath(m_sTmp + L'/' + sFName);
+                        oDownloadStyle.SetFilePath(sFName);
                         if(oDownloadStyle.DownloadSync())
                         {
-                            m_oStylesCalculator.AddStylesFromFile(m_sTmp + L'/' + sFName);
-                            NSFile::CFileBinary::Remove(m_sTmp + L'/' + sFName);
+                            m_oStylesCalculator.AddStylesFromFile(sFName);
+                            NSFile::CFileBinary::Remove(sFName);
                         }
                     }
                     else
@@ -435,9 +436,10 @@ public:
 
 private:
 
-    void GetSubClass(std::vector<NSCSS::CNode>& sSelectors, std::wstring& sNote)
+    std::wstring GetSubClass(std::vector<NSCSS::CNode>& sSelectors)
     {
         NSCSS::CNode oNode;
+        std::wstring sNote;
         oNode.m_sName = m_oLightReader.GetName();
         // Стиль по атрибуту
         while(m_oLightReader.MoveToNextAttribute())
@@ -456,6 +458,7 @@ private:
         }
         m_oLightReader.MoveToElement();
         sSelectors.push_back(oNode);
+        return sNote;
     }
 
     std::wstring GetStyle(const std::vector<NSCSS::CNode>& sSelectors, bool bP)
@@ -486,11 +489,8 @@ private:
 
     void readBody(const std::wstring& sFileName)
     {
-        bool bWasP = true;
-        std::wstring sEmpty;
-        CTextSettings oTS { false, false, -1, sEmpty, sEmpty };
         std::vector<NSCSS::CNode> sSelectors;
-        GetSubClass(sSelectors, sEmpty);
+        GetSubClass(sSelectors);
         auto it = m_sSrcs.find(sFileName);
         if(it != m_sSrcs.end())
         {
@@ -507,7 +507,8 @@ private:
             }
         }
         m_oDocXml.WriteString(L"<w:p>");
-        readStream(&m_oDocXml, sSelectors, oTS, bWasP);
+        bool bWasP = true;
+        readStream(&m_oDocXml, sSelectors, { false, false, -1, L"", L"" }, bWasP);
         m_oDocXml.WriteString(L"</w:p>");
     }
 
@@ -560,8 +561,7 @@ private:
             return;
         }
 
-        std::wstring sNote;
-        GetSubClass(sSelectors, sNote);
+        std::wstring sNote = GetSubClass(sSelectors);
 
         // Ссылка
         // Область ссылки
@@ -628,7 +628,7 @@ private:
         // Код
         // Моноширинный шрифт, например, Consolas
         // Результат скрипта
-        else if(sName == L"code" || sName == L"kbd" || sName == L"samp")
+        else if(sName == L"code" || sName == L"kbd" || sName == L"samp" || sName == L"tt")
         {
             CTextSettings oTSR(oTS);
             oTSR.sRStyle += L"<w:rFonts w:ascii=\"Consolas\" w:hAnsi=\"Consolas\"/>";
@@ -790,7 +790,7 @@ private:
             else if(sName == L"ol")
                 readLi(oXml, sSelectors, oTS, bWasP, false);
             // Предварительно форматированный текст
-            else if(sName == L"pre")
+            else if(sName == L"pre" || sName == L"xmp")
             {
                 CTextSettings oTSPre(oTS);
                 oTSPre.bPre = true;
@@ -855,9 +855,7 @@ private:
             if(m_oLightReader.GetName() != L"tr")
                 continue;
             int nTrDeath = m_oLightReader.GetDepth();
-            if(m_oLightReader.IsEmptyNode())
-                continue;
-            if(!m_oLightReader.ReadNextSiblingNode(nTrDeath))
+            if(m_oLightReader.IsEmptyNode() || !m_oLightReader.ReadNextSiblingNode(nTrDeath))
                 continue;
 
             int j = 1; // Столбец
@@ -910,8 +908,7 @@ private:
                 oXml->WriteString(L"</w:tcPr><w:p>");
                 bWasP = true;
 
-                std::wstring sEmpty;
-                GetSubClass(sSelectors, sEmpty);
+                GetSubClass(sSelectors);
                 // Читаем th. Ячейка заголовка таблицы. Выравнивание посередине. Выделяется полужирным
                 if(m_oLightReader.GetName() == L"th")
                 {
@@ -958,8 +955,7 @@ private:
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
         {
             std::wstring sName = m_oLightReader.GetName();
-            std::wstring sEmpty;
-            GetSubClass(sSelectors, sEmpty);
+            GetSubClass(sSelectors);
             // Заголовок таблицы
             if(sName == L"caption")
             {
@@ -1038,8 +1034,7 @@ private:
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
         {
             std::wstring sName = m_oLightReader.GetName();
-            std::wstring sEmpty;
-            GetSubClass(sSelectors, sEmpty);
+            GetSubClass(sSelectors);
             if(sName == L"optgroup")
             {
                 while(m_oLightReader.MoveToNextAttribute())
@@ -1136,16 +1131,9 @@ private:
                 size_t nLen = sRef.rfind(L"html");
                 if(nLen == std::wstring::npos)
                     continue;
-                else
-                    nLen += 4;
-                std::wstring sFileName = sRef.substr(nSrc, nLen - nSrc);
-                auto it = m_sSrcs.find(sFileName);
-                if(it != m_sSrcs.end())
-                {
-                    bCross = true;
-                    sRef = L"cHyp" + std::to_wstring(m_nHyperlinkId++);
-                    it->second.push_back(sRef);
-                }
+                nLen += 4;
+                bCross = true;
+                m_sSrcs[sRef.substr(nSrc, nLen - nSrc)].push_back(L"cHyp" + std::to_wstring(m_nHyperlinkId++));
             }
             else if(sName == L"name")
             {
@@ -1421,21 +1409,19 @@ private:
     {
         // Сохранить как .svg картинку
         NSStringUtils::CStringBuilder oSVG;
-        bool bNeedXmlns = true;
         oSVG.WriteString(L"<svg ");
         while(m_oLightReader.MoveToNextAttribute())
         {
-            if(m_oLightReader.GetName() == L"xmlns")
-                bNeedXmlns = false;
-            oSVG.WriteString(m_oLightReader.GetName());
+            std::wstring sName = m_oLightReader.GetName();
+            if(sName == L"xmlns")
+                continue;
+            oSVG.WriteString(sName);
             oSVG.WriteString(L"=\"");
             oSVG.WriteString(m_oLightReader.GetText());
             oSVG.WriteString(L"\" ");
         }
         m_oLightReader.MoveToElement();
-        if(bNeedXmlns)
-            oSVG.WriteString(L"xmlns=\"http://www.w3.org/2000/svg\"");
-        oSVG.WriteString(L">");
+        oSVG.WriteString(L"xmlns=\"http://www.w3.org/2000/svg\">");
 
         std::wstring sSVG = m_oLightReader.GetInnerXml();
         size_t nRef = sSVG.find(L"image");
@@ -1573,9 +1559,6 @@ HRESULT CHtmlFile2::OpenBatchHtml(const std::vector<std::wstring>& sSrc, const s
     m_internal->CreateDocxEmpty(oParams);
 
     for(const std::wstring& sS : sSrc)
-        m_internal->m_sSrcs.insert(std::make_pair(NSFile::GetFileName(sS), std::vector<std::wstring>()));
-
-    for(const std::wstring& sS : sSrc)
     {
         #ifdef _DEBUG
         std::wcout << NSFile::GetFileName(sS) << std::endl;
@@ -1583,17 +1566,17 @@ HRESULT CHtmlFile2::OpenBatchHtml(const std::vector<std::wstring>& sSrc, const s
 
         m_internal->m_sSrc = NSSystemPath::GetDirectoryName(sS);
         if(!IsHtmlFile(sS))
-            return S_FALSE;
+            continue;
         m_internal->readStyle();
 
         // Переходим в начало
-        if(!m_internal->m_oLightReader.MoveToStart())
-            return S_FALSE;
-        m_internal->readSrc(NSFile::GetFileName(sS));
-
-        m_internal->m_oLightReader.Clear();
+        if(m_internal->m_oLightReader.MoveToStart())
+        {
+            m_internal->readSrc(NSFile::GetFileName(sS));
+            m_internal->m_oLightReader.Clear();
+            m_internal->m_sBase.clear();
+        }
         m_internal->m_oStylesCalculator.Clear();
-        m_internal->m_sBase = L"";
     }
 
     m_internal->write();

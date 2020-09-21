@@ -326,7 +326,7 @@ namespace NSCommon
         }
     };
     
-    static void SaveAllFontsJS(NSFonts::IApplicationFonts* applicationFonts, std::wstring strFile, std::wstring strFolderThumbnails, std::wstring strFontSelectionBin, int nVersion = 0)
+    static void SaveAllFontsJS(NSFonts::IApplicationFonts* applicationFonts, std::wstring strFile, std::wstring strFolderThumbnails, std::wstring strFontSelectionBin, int nVersion = -1)
     {
         std::vector<NSFonts::CFontInfo*>* pList = applicationFonts->GetList()->GetFonts();
         int nCount = pList->size();
@@ -474,6 +474,12 @@ namespace NSCommon
         if (0 != strFile.length())
         {
             NSStringUtils::CStringBuilder oWriterJS;
+            int nAllFontsVersion = nVersion;
+            if (-1 == nAllFontsVersion)
+                nAllFontsVersion = 1;
+            oWriterJS.WriteString(L"window[\"__all_fonts_js_version__\"] = ");
+            oWriterJS.AddInt(nAllFontsVersion);
+            oWriterJS.WriteString(L";\n\n");
             
             // сначала все файлы
             size_t nCountFiles = mapFontFiles.size();

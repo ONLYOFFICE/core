@@ -303,7 +303,7 @@ private:
 
 public:
     static EFontFormat GetFontFormat(FT_Face pFace);
-    virtual void ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory = L"", bool bIsOnlyFileName = false, int nVersion = 0);
+    virtual void ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory = L"", bool bIsOnlyFileName = false, int nVersion = -1);
 
 public:
 	void LoadFromArrayFiles (std::vector<std::wstring>& arrFiles, int nFlag = 0);

@@ -168,7 +168,7 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
 
         if (m_bIsUseAllVersions)
         {
-            NSCommon::SaveAllFontsJS(pApplicationF, strAllFontsJSPath + L".1", L"", L"", 1);
+            NSCommon::SaveAllFontsJS(pApplicationF, strAllFontsJSPath + L".1", L"", L"", 0);
         }
     }
     

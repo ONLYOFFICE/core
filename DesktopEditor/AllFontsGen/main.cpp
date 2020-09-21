@@ -559,6 +559,9 @@ namespace NSCommon
             NSStringUtils::CStringBuilder oWriterJS;
             NSStringUtils::CStringBuilder oWriterJS2;
 
+            oWriterJS.WriteString(L"window[\"__all_fonts_js_version__\"] = 1;\n\n");
+            oWriterJS2.WriteString(L"window[\"__all_fonts_js_version__\"] = 1;\n\n");
+
             // сначала все файлы
             size_t nCountFiles = mapFontFiles.size();
             if (nCountFiles == 0)

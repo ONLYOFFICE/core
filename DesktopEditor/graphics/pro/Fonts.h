@@ -607,7 +607,7 @@ namespace NSFonts
     public:
 		virtual std::vector<NSFonts::CFontInfo*>* GetFonts() = 0;
         virtual CFontInfo* GetByParams(CFontSelectFormat& oSelect, bool bIsDictionaryUse = true) = 0;
-        virtual void ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory = L"", bool bIsOnlyFileName = false, int nVersion = 0) = 0;
+        virtual void ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory = L"", bool bIsOnlyFileName = false, int nVersion = -1) = 0;
     };
 
     class GRAPHICS_DECL IApplicationFonts : public NSBase::CBaseRefCounter

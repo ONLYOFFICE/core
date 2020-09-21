@@ -1038,7 +1038,7 @@ void CFontList::ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory,
     size_t nFontsCount = (size_t)m_pList.size();
     for (std::vector<NSFonts::CFontInfo*>::iterator iter = m_pList.begin(); iter != m_pList.end(); iter++)
     {
-        if (nVersion == 1)
+        if (nVersion == 0)
             lDataSize += NSFonts::GetBufferLen_1(*iter, strDirectory, bIsOnlyFileName);
         else
             lDataSize += NSFonts::GetBufferLen(*iter, strDirectory, bIsOnlyFileName);
@@ -1052,7 +1052,7 @@ void CFontList::ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory,
 
     for (std::vector<NSFonts::CFontInfo*>::iterator iter = m_pList.begin(); iter != m_pList.end(); iter++)
     {
-        if (nVersion == 1)
+        if (nVersion == 0)
             NSFonts::ToBuffer_1(*iter, pDataMem, strDirectory, bIsOnlyFileName);
         else
             NSFonts::ToBuffer(*iter, pDataMem, strDirectory, bIsOnlyFileName);

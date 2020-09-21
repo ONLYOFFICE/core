@@ -326,7 +326,7 @@ namespace NSCommon
         }
     };
     
-    static void SaveAllFontsJS(NSFonts::IApplicationFonts* applicationFonts, std::wstring strFile, std::wstring strFolderThumbnails, std::wstring strFontSelectionBin)
+    static void SaveAllFontsJS(NSFonts::IApplicationFonts* applicationFonts, std::wstring strFile, std::wstring strFolderThumbnails, std::wstring strFontSelectionBin, int nVersion = 0)
     {
         std::vector<NSFonts::CFontInfo*>* pList = applicationFonts->GetList()->GetFonts();
         int nCount = pList->size();
@@ -823,7 +823,7 @@ namespace NSCommon
             {
                 BYTE* pData = NULL;
                 LONG lLen = 0;
-                applicationFonts->GetList()->ToBuffer(&pData, &lLen, L"", false);
+                applicationFonts->GetList()->ToBuffer(&pData, &lLen, L"", false, nVersion);
                 
                 char* cData64 = NULL;
                 int nData64Dst = 0;

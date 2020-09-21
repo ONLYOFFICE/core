@@ -44,6 +44,7 @@ public:
     std::wstring                m_sDirectory;
     bool                        m_bIsNeedThumbnails;
     bool                        m_bIsUseOpenType;
+    bool                        m_bIsUseAllVersions;
     
 public:
     CApplicationFontsWorker();

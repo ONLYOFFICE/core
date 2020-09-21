@@ -100,12 +100,13 @@ namespace NSFonts
         pBuffer += nLen;
         return value;
     }
+
+    // new version
     int GetUtf8BufferLen(const std::wstring& value)
     {
         std::string sUtf8 = U_TO_UTF8(value);
         return (int)sUtf8.length() + sizeof(INT);
     }
-
     CFontInfo* FromBuffer(BYTE*& pBuffer, std::wstring strDir)
     {
         std::wstring sName = ReadUtf8FromBuffer(pBuffer);
@@ -269,7 +270,6 @@ namespace NSFonts
 
         return len;
     }
-
     void ToBuffer(CFontInfo* pInfo, BYTE*& pBuffer, std::wstring strDirectory, bool bIsOnlyFileName)
     {
         std::wstring sPath = pInfo->m_wsFontPath;
@@ -292,6 +292,175 @@ namespace NSFonts
             WriteUtf8ToBuffer(pBuffer, pInfo->names[i]);
 
         WriteUtf8ToBuffer(pBuffer, sPath);
+
+        // index
+        *((INT*)(pBuffer))	= (INT)pInfo->m_lIndex;
+        pBuffer += sizeof(INT);
+
+        // italic
+        *((INT*)(pBuffer))	= pInfo->m_bItalic;
+        pBuffer += sizeof(INT);
+
+        // bold
+        *((INT*)(pBuffer))	= pInfo->m_bBold;
+        pBuffer += sizeof(INT);
+
+        // FixedWidth
+        *((INT*)pBuffer) = pInfo->m_bIsFixed;
+        pBuffer += sizeof(INT);
+
+        // Panose
+        INT lLen = 10;
+
+        *((INT*)(pBuffer))	= lLen;
+        pBuffer += sizeof(INT);
+
+        memcpy( (void *)pBuffer, (const void *)pInfo->m_aPanose, lLen );
+        pBuffer += lLen;
+
+        // ulUnicodeRange1
+        *((UINT*)pBuffer) = (UINT)pInfo->m_ulUnicodeRange1;
+        pBuffer += sizeof(UINT);
+
+        // ulUnicodeRange2
+        *((UINT*)pBuffer) = (UINT)pInfo->m_ulUnicodeRange2;
+        pBuffer += sizeof(UINT);
+
+        // ulUnicodeRange3
+        *((UINT*)pBuffer) = (UINT)pInfo->m_ulUnicodeRange3;
+        pBuffer += sizeof(UINT);
+
+        // ulUnicodeRange4
+        *((UINT*)pBuffer) = (UINT)pInfo->m_ulUnicodeRange4;
+        pBuffer += sizeof(UINT);
+
+        // ulCodePageRange1
+        *((UINT*)pBuffer) = (UINT)pInfo->m_ulCodePageRange1;
+        pBuffer += sizeof(UINT);
+
+        // ulCodePageRange2
+        *((UINT*)pBuffer) = (UINT)pInfo->m_ulCodePageRange2;
+        pBuffer += sizeof(UINT);
+
+        // usWeightClass
+        *((USHORT*)pBuffer) = pInfo->m_usWeigth;
+        pBuffer += sizeof(USHORT);
+
+        // usWidthClass
+        *((USHORT*)pBuffer) = pInfo->m_usWidth;
+        pBuffer += sizeof(USHORT);
+
+        // sFamilyClass
+        *((SHORT*)pBuffer) = pInfo->m_sFamilyClass;
+        pBuffer += sizeof(SHORT);
+
+        // FontFormat
+        *((SHORT*)pBuffer) = (SHORT)pInfo->m_eFontFormat;
+        pBuffer += sizeof(SHORT);
+
+        // AvgCharWidth
+        *((SHORT*)pBuffer) = (SHORT)pInfo->m_shAvgCharWidth;
+        pBuffer += sizeof(SHORT);
+
+        // Ascent
+        *((SHORT*)pBuffer) = (SHORT)pInfo->m_shAscent;
+        pBuffer += sizeof(SHORT);
+
+        // Descent
+        *((SHORT*)pBuffer) = (SHORT)pInfo->m_shDescent;
+        pBuffer += sizeof(SHORT);
+
+        // LineGap
+        *((SHORT*)pBuffer) = (SHORT)pInfo->m_shLineGap;
+        pBuffer += sizeof(SHORT);
+
+        // XHeight
+        *((SHORT*)pBuffer) = (SHORT)pInfo->m_shXHeight;
+        pBuffer += sizeof(SHORT);
+
+        // CapHeight
+        *((SHORT*)pBuffer) = (SHORT)pInfo->m_shCapHeight;
+        pBuffer += sizeof(SHORT);
+    }
+
+    // version 1
+    int GetUtf16BufferLen(const std::wstring& value)
+    {
+        int nLen = 0;
+        if (2 == sizeof(wchar_t))
+        {
+            nLen = value.length();
+        }
+        else
+        {
+            NSFile::CStringUtf16 sUtf16;
+            NSFile::CUtf8Converter::GetUtf16StringFromUnicode_4bytes2(value.c_str(), value.length(), sUtf16);
+
+            nLen = sUtf16.Length;
+        }
+
+        return (int)(2 * (nLen + 1)) + sizeof(INT);
+    }
+    void WriteUtf16ToBuffer(BYTE*& pBuffer, const std::wstring& value)
+    {
+        if (2 == sizeof(wchar_t))
+        {
+            int nLen = (int)(2 * (value.length() + 1));
+            *((INT*)(pBuffer)) = (INT)nLen;
+            pBuffer += sizeof(INT);
+
+            memcpy(pBuffer, value.c_str(), nLen);
+            pBuffer += nLen;
+        }
+        else
+        {
+            NSFile::CStringUtf16 sUtf16;
+            NSFile::CUtf8Converter::GetUtf16StringFromUnicode_4bytes2(value.c_str(), value.length(), sUtf16);
+
+            int nLen = sUtf16.Length + 2;
+
+            *((INT*)(pBuffer)) = (INT)nLen;
+            pBuffer += sizeof(INT);
+
+            memcpy(pBuffer, sUtf16.Data, nLen);
+            pBuffer += nLen;
+        }
+    }
+    LONG GetBufferLen_1(CFontInfo* pInfo, std::wstring strDirectory, bool bIsOnlyFileName)
+    {
+        std::wstring sPath = pInfo->m_wsFontPath;
+        if (0 != strDirectory.length() && 0 == sPath.find(strDirectory))
+        {
+            sPath = sPath.substr(strDirectory.length());
+        }
+        else if (bIsOnlyFileName)
+        {
+            sPath = NSFile::GetFileName(sPath);
+        }
+
+        LONG len = 0;
+
+        len += GetUtf16BufferLen(pInfo->m_wsFontName);
+        len += GetUtf16BufferLen(sPath);
+
+        len += (4 * 4 + 4 + 10 + 6 * 4 + 10 * 2);
+
+        return len;
+    }
+    void ToBuffer_1(CFontInfo* pInfo, BYTE*& pBuffer, std::wstring strDirectory, bool bIsOnlyFileName)
+    {
+        std::wstring sPath = pInfo->m_wsFontPath;
+        if (0 != strDirectory.length() && 0 == sPath.find(strDirectory))
+        {
+            sPath = sPath.substr(strDirectory.length());
+        }
+        else if (bIsOnlyFileName)
+        {
+            sPath = NSFile::GetFileName(sPath);
+        }
+
+        WriteUtf16ToBuffer(pBuffer, pInfo->m_wsFontName);
+        WriteUtf16ToBuffer(pBuffer, sPath);
 
         // index
         *((INT*)(pBuffer))	= (INT)pInfo->m_lIndex;
@@ -863,13 +1032,16 @@ EFontFormat CFontList::GetFontFormat(FT_Face pFace)
     return fontUnknown;
 }
 
-void CFontList::ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory, bool bIsOnlyFileName)
+void CFontList::ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory, bool bIsOnlyFileName, int nVersion)
 {
     LONG lDataSize = sizeof(INT);
     size_t nFontsCount = (size_t)m_pList.size();
     for (std::vector<NSFonts::CFontInfo*>::iterator iter = m_pList.begin(); iter != m_pList.end(); iter++)
     {
-        lDataSize += NSFonts::GetBufferLen(*iter, strDirectory, bIsOnlyFileName);
+        if (nVersion == 0)
+            lDataSize += NSFonts::GetBufferLen_1(*iter, strDirectory, bIsOnlyFileName);
+        else
+            lDataSize += NSFonts::GetBufferLen(*iter, strDirectory, bIsOnlyFileName);
     }
 
     BYTE* pData = new BYTE[lDataSize];
@@ -880,7 +1052,10 @@ void CFontList::ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory,
 
     for (std::vector<NSFonts::CFontInfo*>::iterator iter = m_pList.begin(); iter != m_pList.end(); iter++)
     {
-        NSFonts::ToBuffer(*iter, pDataMem, strDirectory, bIsOnlyFileName);
+        if (nVersion == 0)
+            NSFonts::ToBuffer_1(*iter, pDataMem, strDirectory, bIsOnlyFileName);
+        else
+            NSFonts::ToBuffer(*iter, pDataMem, strDirectory, bIsOnlyFileName);
     }
 
     *pDstData = pData;

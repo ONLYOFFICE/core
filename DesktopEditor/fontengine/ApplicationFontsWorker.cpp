@@ -32,13 +32,14 @@
 #include "ApplicationFontsWorker.h"
 #include "application_generate_fonts.h"
 
-#define ONLYOFFICE_FONTS_VERSION_ 4
+#define ONLYOFFICE_FONTS_VERSION_ 5
 
 CApplicationFontsWorker::CApplicationFontsWorker()
 {
     m_bIsUseSystemFonts = true;
     m_bIsNeedThumbnails = true;
     m_bIsUseOpenType    = true;
+    m_bIsUseAllVersions = false;
 }
 CApplicationFontsWorker::~CApplicationFontsWorker()
 {
@@ -164,6 +165,11 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
         pApplicationF->InitializeFromArrayFiles(strFontsW_Cur, nFlag);
         
         NSCommon::SaveAllFontsJS(pApplicationF, strAllFontsJSPath, m_bIsNeedThumbnails ? m_sDirectory : L"", strFontsSelectionBin);
+
+        if (m_bIsUseAllVersions)
+        {
+            NSCommon::SaveAllFontsJS(pApplicationF, strAllFontsJSPath + L".1", L"", L"", 0);
+        }
     }
     
     NSFile::CFileBinary oFile;

@@ -270,7 +270,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 
         AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Color, L"0000FF");
         AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_U, L"single");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Sz, L"24");
+//        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Sz, L"24");
         AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_RFonts, L"\"Arial\"");
     }
     else if (sNameDefaultElement == L"a")

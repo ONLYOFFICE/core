@@ -277,7 +277,7 @@ namespace NSCSS
             if (dValue == 0.0f)
                 dValue = 22.0f;
 
-            const float dLineHeight = wcstof(sLineHeight.c_str(), NULL) * dValue / 2.0f;
+            const float dLineHeight = wcstof(sLineHeight.c_str(), NULL) * dValue * 5.0f;
 
             if (dLineHeight > 0)
             {

@@ -1262,7 +1262,10 @@ private:
                     bRes = NSFile::CFileBinary::Copy(sSrcM, m_sDst + L"/word/media/i" + sImageName);
             }
             if(bRes)
+            {
+                wrP(oXml, sSelectors, oTS, bWasP);
                 bRes = ImageRels(oXml, sImageId, L"i" + sImageName);
+            }
         }
         m_oLightReader.MoveToElement();
 

@@ -25,7 +25,7 @@ public:
     void Clear();
     HRESULT IsEpubFile(const std::wstring& sfileName);
     void SetTempDirectory(const std::wstring& stempDir);
-    HRESULT Convert(const std::wstring& sInputFile, const std::wstring& sOutputFile, const bool& bIsOutCompress = true);
+    HRESULT Convert(const std::wstring& sInputFile, const std::wstring& sOutputFile, bool bIsOutCompress = true);
     void ShowMap();
 };
 

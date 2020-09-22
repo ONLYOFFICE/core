@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
     std::wstring sTmp = NSFile::GetProcessDirectory() + L"/tmp";
     std::wstring sOutputDirectory = NSFile::GetProcessDirectory() + L"/OutputFiles";
     NSDirectory::CreateDirectory(sOutputDirectory);
+    NSDirectory::CreateDirectory(sTmp);
 
     clock_t tTime1 = clock();
     //Русские символы в консоль не выводятся
@@ -42,6 +43,7 @@ int main(int argc, char *argv[])
     clock_t tTime2 = clock();
 
     std::wcout << (double)(tTime2 - tTime1) / CLOCKS_PER_SEC << std::endl;
+    NSDirectory::DeleteDirectory(sTmp);
 
     return 0;
 }

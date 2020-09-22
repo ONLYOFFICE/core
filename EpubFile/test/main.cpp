@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
 
             oEpub.SetTempDirectory(sTmp);
             oEpub.Convert(sFileName, sOutputDirectory + L"/" + sFile + L".docx");
+            NSDirectory::DeleteDirectory(sTmp + L"/res/word/media");
 //            oEpub.ShowMap();
         }
         else

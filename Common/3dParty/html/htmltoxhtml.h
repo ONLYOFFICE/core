@@ -18,7 +18,7 @@ static std::string no_entity_sub       = ""; //"|style|";
 static std::string treat_like_inline   = "|p|";
 
 static void prettyprint(GumboNode*, NSStringUtils::CStringBuilderA& oBuilder);
-static std::string mhtTohtml(std::string& sFileContent, const std::wstring& sTmp);
+static std::string mhtTohtml(std::string& sFileContent);
 
 // Заменяет в строке s все символы s1 на s2
 static void replace_all(std::string& s, const std::string& s1, const std::string& s2)
@@ -116,7 +116,7 @@ static std::string QuotedPrintableDecode(const std::string& sContent)
     return sRes.GetData();
 }
 
-static void ReadMht(std::string& sFileContent, const std::wstring& sTmp, size_t& nFound, size_t& nNextFound, const std::string& sBoundary,
+static void ReadMht(std::string& sFileContent, size_t& nFound, size_t& nNextFound, const std::string& sBoundary,
                     std::map<std::string, std::string>& sRes, NSStringUtils::CStringBuilderA& oRes)
 {
     // Content
@@ -214,7 +214,7 @@ static void ReadMht(std::string& sFileContent, const std::wstring& sTmp, size_t&
     std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
     // Основной документ
     if(sContentType == "multipart/alternative")
-        oRes.WriteString(mhtTohtml(sContent, sTmp));
+        oRes.WriteString(mhtTohtml(sContent));
     else if((sContentType.find("text") != std::string::npos && (sExtention.empty() || sExtention == L"htm" || sExtention == L"html" || sExtention
             == L"xhtml" || sExtention == L"css")) || (sContentType == "application/octet-stream" && (sContentLocation.find("css") !=
             std::string::npos)))
@@ -261,26 +261,12 @@ static void ReadMht(std::string& sFileContent, const std::wstring& sTmp, size_t&
         int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
         BYTE* pData = new BYTE[nDecodeLen];
         if (TRUE == NSBase64::Base64Decode(sContent.c_str(), nSrcLen, pData, &nDecodeLen))
-        {
-            if(!sName.empty())
-            {
-                NSFile::CFileBinary oWriter;
-                std::wstring sFolder = sTmp + L"/word/media/" + UTF8_TO_U(sName);
-                if(oWriter.CreateFileW(sFolder))
-                {
-                    oWriter.WriteFile(pData, (DWORD)nDecodeLen);
-                    oWriter.CloseFile();
-                }
-                sRes.insert(std::make_pair(sContentLocation, U_TO_UTF8(sFolder)));
-            }
-            else
-                sRes.insert(std::make_pair(sContentLocation, "data:" + sContentType + ";base64," + sContent));
-        }
+            sRes.insert(std::make_pair(sContentLocation, "data:" + sContentType + ";base64," + sContent));
         RELEASEARRAYOBJECTS(pData);
     }
 }
 
-static std::string mhtTohtml(std::string& sFileContent, const std::wstring& sTmp)
+static std::string mhtTohtml(std::string& sFileContent)
 {
     std::map<std::string, std::string> sRes;
     NSStringUtils::CStringBuilderA oRes;
@@ -291,7 +277,7 @@ static std::string mhtTohtml(std::string& sFileContent, const std::wstring& sTmp
     {
         size_t nFoundEnd = sFileContent.length();
         nFound = 0;
-        ReadMht(sFileContent, sTmp, nFound, nFoundEnd, "no", sRes, oRes);
+        ReadMht(sFileContent, nFound, nFoundEnd, "no", sRes, oRes);
         return oRes.GetData();
     }
     size_t nFoundEnd = sFileContent.find_first_of(";\n\r", nFound);
@@ -322,7 +308,7 @@ static std::string mhtTohtml(std::string& sFileContent, const std::wstring& sTmp
         nFoundEnd = sFileContent.find(sBoundary, nFound + nBoundaryLength);
         if(nFoundEnd == std::string::npos)
             break;
-        ReadMht(sFileContent, sTmp, nFound, nFoundEnd, sBoundary, sRes, oRes);
+        ReadMht(sFileContent, nFound, nFoundEnd, sBoundary, sRes, oRes);
     }
     std::string sFile = oRes.GetData();
     for(const auto& item : sRes)
@@ -354,15 +340,12 @@ static std::string mhtTohtml(std::string& sFileContent, const std::wstring& sTmp
     return sFile;
 }
 
-static std::wstring mhtToXhtml(const std::wstring& sFile, const std::wstring& sTmp)
+static std::wstring mhtToXhtml(const std::wstring& sFile)
 {
     std::string sFileContent;
     if(!NSFile::CFileBinary::ReadAllTextUtf8A(sFile, sFileContent))
         return L"";
-
-    NSDirectory::CreateDirectory(sTmp + L"/word");
-    NSDirectory::CreateDirectory(sTmp + L"/word/media");
-    sFileContent = mhtTohtml(sFileContent, sTmp);
+    sFileContent = mhtTohtml(sFileContent);
 
     // Gumbo
     GumboOptions options = kGumboDefaultOptions;

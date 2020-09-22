@@ -49,11 +49,13 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
         NSDirectory::CreateDirectories(NSFile::GetProcessDirectory() + L"/TEMP");
         SetTempDirectory(NSFile::GetProcessDirectory() + L"/TEMP");
     }
+    /*
     else
     {
         NSDirectory::CreateDirectories(m_sTempDir);
         SetTempDirectory(m_sTempDir);
     }
+    */
 
     COfficeUtils oOfficeUtils;
 

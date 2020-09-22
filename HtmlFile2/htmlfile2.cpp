@@ -69,12 +69,10 @@ public:
     NSCSS::CCssCalculator m_oStylesCalculator; // Css калькулятор
     NSCSS::CDocumentStyle m_oXmlStyle;         // Ooxml стиль
 
-    std::wstring m_sTmp;  // Temp папка для конфертации html в xhtml
+    std::wstring m_sTmp;  // Temp папка
     std::wstring m_sSrc;  // Директория источника
     std::wstring m_sDst;  // Директория назначения
     std::wstring m_sBase; // Полный базовый адрес
-
-    std::map<std::wstring, std::vector<std::wstring>> m_sSrcs; // Имена обрабатываемых файлов (имя файла, имя перекрестной ссылки)
 
 private:
     int m_nImageId;     // ID картинки
@@ -98,7 +96,6 @@ public:
         m_oLightReader     .Clear();
         m_oStylesCalculator.Clear();
         m_oXmlStyle        .Clear();
-        m_sSrcs            .clear();
         m_oStylesXml       .Clear();
         m_oDocXmlRels      .Clear();
         m_oDocXml          .Clear();
@@ -383,7 +380,7 @@ public:
             return false;
         return true;
         */
-        return m_oLightReader.FromString(mhtToXhtml(sSrc, m_sTmp));
+        return m_oLightReader.FromString(mhtToXhtml(sSrc));
     }
 
     // Читает стили
@@ -436,7 +433,7 @@ public:
 
 private:
 
-    std::wstring GetSubClass(std::vector<NSCSS::CNode>& sSelectors)
+    std::wstring GetSubClass(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors)
     {
         NSCSS::CNode oNode;
         std::wstring sNote;
@@ -448,7 +445,17 @@ private:
             if(sName == L"class")
                 oNode.m_sClass  = m_oLightReader.GetText();
             else if(sName == L"id")
-                oNode.m_sId     = m_oLightReader.GetText();
+            {
+                oNode.m_sId = m_oLightReader.GetText();
+                std::wstring sCrossId = std::to_wstring(m_nCrossId++);
+                oXml->WriteString(L"<w:bookmarkStart w:id=\"");
+                oXml->WriteString(sCrossId);
+                oXml->WriteString(L"\" w:name=\"");
+                oXml->WriteString(oNode.m_sId);
+                oXml->WriteString(L"\"/><w:bookmarkEnd w:id=\"");
+                oXml->WriteString(sCrossId);
+                oXml->WriteString(L"\"/>");
+            }
             else if(sName == L"style")
                 oNode.m_sStyle += m_oLightReader.GetText();
             else if(sName == L"title")
@@ -490,22 +497,17 @@ private:
     void readBody(const std::wstring& sFileName)
     {
         std::vector<NSCSS::CNode> sSelectors;
-        GetSubClass(sSelectors);
-        auto it = m_sSrcs.find(sFileName);
-        if(it != m_sSrcs.end())
-        {
-            for(const std::wstring& sId : it->second)
-            {
-                std::wstring sCrossId = std::to_wstring(m_nCrossId++);
-                m_oDocXml.WriteString(L"<w:bookmarkStart w:id=\"");
-                m_oDocXml.WriteString(sCrossId);
-                m_oDocXml.WriteString(L"\" w:name=\"");
-                m_oDocXml.WriteString(sId);
-                m_oDocXml.WriteString(L"\"/><w:bookmarkEnd w:id=\"");
-                m_oDocXml.WriteString(sCrossId);
-                m_oDocXml.WriteString(L"\"/>");
-            }
-        }
+        GetSubClass(&m_oDocXml, sSelectors);
+
+        std::wstring sCrossId = std::to_wstring(m_nCrossId++);
+        m_oDocXml.WriteString(L"<w:bookmarkStart w:id=\"");
+        m_oDocXml.WriteString(sCrossId);
+        m_oDocXml.WriteString(L"\" w:name=\"");
+        m_oDocXml.WriteString(sFileName);
+        m_oDocXml.WriteString(L"\"/><w:bookmarkEnd w:id=\"");
+        m_oDocXml.WriteString(sCrossId);
+        m_oDocXml.WriteString(L"\"/>");
+
         m_oDocXml.WriteString(L"<w:p>");
         bool bWasP = true;
         readStream(&m_oDocXml, sSelectors, { false, false, -1, L"", L"" }, bWasP);
@@ -561,7 +563,7 @@ private:
             return;
         }
 
-        std::wstring sNote = GetSubClass(sSelectors);
+        std::wstring sNote = GetSubClass(oXml, sSelectors);
 
         // Ссылка
         // Область ссылки
@@ -908,7 +910,7 @@ private:
                 oXml->WriteString(L"</w:tcPr><w:p>");
                 bWasP = true;
 
-                GetSubClass(sSelectors);
+                GetSubClass(oXml, sSelectors);
                 // Читаем th. Ячейка заголовка таблицы. Выравнивание посередине. Выделяется полужирным
                 if(m_oLightReader.GetName() == L"th")
                 {
@@ -955,7 +957,7 @@ private:
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
         {
             std::wstring sName = m_oLightReader.GetName();
-            GetSubClass(sSelectors);
+            GetSubClass(oXml, sSelectors);
             // Заголовок таблицы
             if(sName == L"caption")
             {
@@ -1034,7 +1036,7 @@ private:
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
         {
             std::wstring sName = m_oLightReader.GetName();
-            GetSubClass(sSelectors);
+            GetSubClass(oXml, sSelectors);
             if(sName == L"optgroup")
             {
                 while(m_oLightReader.MoveToNextAttribute())
@@ -1114,26 +1116,8 @@ private:
             if(sName == L"href")
             {
                 sRef = m_oLightReader.GetText();
-                if(sRef.length() > 1)
-                {
-                    if(sRef.front() == L'#')
-                    {
-                        bCross = true;
-                        sRef = sRef.substr(1);
-                        continue;
-                    }
-                }
-                size_t nSrc = sRef.rfind(L"/");
-                if(nSrc == std::wstring::npos)
-                    nSrc = 0;
-                else
-                    nSrc++;
-                size_t nLen = sRef.rfind(L"html");
-                if(nLen == std::wstring::npos)
-                    continue;
-                nLen += 4;
-                bCross = true;
-                m_sSrcs[sRef.substr(nSrc, nLen - nSrc)].push_back(L"cHyp" + std::to_wstring(m_nHyperlinkId++));
+                if(sRef.substr(0, 4) != L"http")
+                    bCross = true;
             }
             else if(sName == L"name")
             {
@@ -1158,7 +1142,8 @@ private:
         if(bCross)
         {
             oXml->WriteString(L"<w:hyperlink w:tooltip=\"Current Document\" w:anchor=\"");
-            oXml->WriteString(sRef);
+            size_t nSharp = sRef.find('#');
+            oXml->WriteString(nSharp == std::wstring::npos ? NSFile::GetFileName(sRef) : sRef.substr(nSharp + 1));
         }
         // Внешняя ссылка
         else
@@ -1208,11 +1193,10 @@ private:
             std::wstring sSrcM = m_oLightReader.GetText();
             std::wstring sImageName;
             std::wstring sImageId = std::to_wstring(m_nImageId);
-            size_t nLen = (sSrcM.length() > 4 ? 4 : 0);
             // Картинка Base64
-            if(sSrcM.substr(0, nLen) == L"data")
+            if(sSrcM.substr(0, 4) == L"data")
             {
-                size_t nBase = sSrcM.find(L"/", nLen);
+                size_t nBase = sSrcM.find(L"/", 4);
                 if(nBase == std::wstring::npos)
                     continue;
                 nBase++;
@@ -1227,7 +1211,7 @@ private:
                 if(oImageWriter.CreateFileW(m_sDst + L"/word/media/i" + sImageName))
                 {
 
-                    nBase = sSrcM.find(L"base64", nLen);
+                    nBase = sSrcM.find(L"base64", 4);
                     if(nBase == std::wstring::npos)
                         continue;
                     std::string sBase64 = m_oLightReader.GetTextA().substr(nBase + 7);
@@ -1246,7 +1230,7 @@ private:
                 }
             }
             // Картинка в сети
-            else if(sSrcM.substr(0, nLen) == L"http" || !m_sBase.empty())
+            else if(sSrcM.substr(0, 4) == L"http" || !m_sBase.empty())
             {
                 std::wstring sExtention = NSFile::GetFileExtention(sSrcM);
                 std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);

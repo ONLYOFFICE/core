@@ -478,6 +478,8 @@ namespace NSCSS
             SetUnitMeasure(unitMeasure);
 
 
+
+
         std::map<std::wstring, std::wstring> mStyle;
         std::map<std::wstring, std::wstring> arPropSel; //мапа (свойство, что уже было использовано, селектор этого свойства)
         std::map<std::wstring, std::map<std::wstring, std::wstring>> arStyle = GetDeclarations(L"*");
@@ -783,7 +785,7 @@ namespace NSCSS
             }
             else
             {
-                sValueString += sValueTemp;
+                sValueString += wcstof(sValueTemp.c_str(), NULL) * 2.0f;
 
                 if (sValueTemp.find(L";") != std::wstring::npos)
                     sValueString += L';';

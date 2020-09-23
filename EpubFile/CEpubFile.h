@@ -6,7 +6,10 @@
 #include "src/CBookItem.h"
 #include "src/CBookToc.h"
 #include "src/CBookContentItem.h"
-#include <iostream>
+
+#include <string>
+#include <vector>
+#include <map>
 
 class EPUBFILE_EXPORT CEpubFile
 {
@@ -14,7 +17,7 @@ class EPUBFILE_EXPORT CEpubFile
     std::wstring m_sTempDir;
 
     CBookInfo m_oBookInfo;
-    std::map <std::wstring, CBookItem> m_mapRefs;
+    std::map<std::wstring, CBookItem> m_mapRefs;
     CBookToc m_oToc;
     std::vector<CBookContentItem> m_arContents;
 

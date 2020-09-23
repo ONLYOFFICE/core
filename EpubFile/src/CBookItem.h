@@ -1,7 +1,7 @@
 #ifndef CBOOKITEM_H
 #define CBOOKITEM_H
 
-#include <iostream>
+#include <string>
 
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 
@@ -24,9 +24,9 @@ class CBookItem
 public:
     CBookItem();
     ~CBookItem();
-    void Clear();
+    // void Clear();
 
-    bool ReadItem(XmlUtils::CXmlLiteReader &oXmlLiteReader, const int& depth);
+    bool ReadItem(XmlUtils::CXmlLiteReader& oXmlLiteReader, int depth);
     const std::wstring GetID() const;
     const std::wstring GetRef() const;
 };

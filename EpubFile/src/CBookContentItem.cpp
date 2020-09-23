@@ -2,54 +2,32 @@
 
 CBookContentItem::CBookContentItem()
 {
-
 }
 
 CBookContentItem::~CBookContentItem()
 {
-
 }
 
 void CBookContentItem::Clear()
 {
-    m_sID.clear();
+    m_sID    .clear();
     m_sLinear.clear();
 }
 
-bool CBookContentItem::ReadContentItem(XmlUtils::CXmlLiteReader &oXmlLiteReader, const int& depth)
+bool CBookContentItem::ReadContentItem(XmlUtils::CXmlLiteReader& oXmlLiteReader, int depth)
 {
-    if (!oXmlLiteReader.IsValid() || oXmlLiteReader.IsEmptyNode())
+    if (!oXmlLiteReader.ReadNextSiblingNode(depth) || oXmlLiteReader.GetAttributesCount() == 0)
         return false;
 
-    if (oXmlLiteReader.ReadNextSiblingNode(depth))
+    while(oXmlLiteReader.MoveToNextAttribute())
     {
-        oXmlLiteReader.MoveToElement();
-
-        if (oXmlLiteReader.GetAttributesCount() > 0 &&
-            oXmlLiteReader.MoveToFirstAttribute())
-        {
-            std::wstring sAttributeName = oXmlLiteReader.GetName();
-
-            while (!sAttributeName.empty())
-            {
-               const std::wstring& sAttributeValue = oXmlLiteReader.GetText();
-
-                if (sAttributeName == L"idref")
-                    m_sID = sAttributeValue;
-                else if (sAttributeName == L"linear")
-                    m_sLinear = sAttributeValue;
-
-                if (!oXmlLiteReader.MoveToNextAttribute())
-                    break;
-
-                sAttributeName = oXmlLiteReader.GetName();
-            }
-        }
-        else
-            return false;
+        std::wstring sAttributeName = oXmlLiteReader.GetName();
+        if (sAttributeName == L"idref")
+            m_sID = oXmlLiteReader.GetText();
+        else if (sAttributeName == L"linear")
+            m_sLinear = oXmlLiteReader.GetText();
     }
-    else
-        return false;
+    oXmlLiteReader.MoveToElement();
 
     return true;
 }

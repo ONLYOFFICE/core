@@ -4,6 +4,9 @@
 #include "../../DesktopEditor/common/Directory.h"
 
 #include <time.h>
+#include <iostream>
+#include <vector>
+#include <string>
 
 int main(int argc, char *argv[])
 {
@@ -15,7 +18,7 @@ int main(int argc, char *argv[])
 
     clock_t tTime1 = clock();
     //Русские символы в консоль не выводятся
-    for (std::wstring sFileName : arFiles)
+    for (const std::wstring& sFileName : arFiles)
     {
         clock_t tTimeBegin = clock();
 

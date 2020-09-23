@@ -14,7 +14,7 @@ CEpubFile::~CEpubFile()
 {
 }
 
-HRESULT CEpubFile::IsEpubFile(const std::wstring &sFileName)
+HRESULT CEpubFile::IsEpubFile(const std::wstring& sFileName)
 {
     if (NSFile::GetFileExtention(sFileName) != L"epub")
         return S_FALSE;
@@ -25,7 +25,7 @@ HRESULT CEpubFile::IsEpubFile(const std::wstring &sFileName)
     return oOfficeUtils.IsFileExistInArchive(sFileName, L"META-INF/container.xml") == S_OK ? S_OK : S_FALSE;
 }
 
-void CEpubFile::SetTempDirectory(const std::wstring &sTempDir)
+void CEpubFile::SetTempDirectory(const std::wstring& sTempDir)
 {
     m_sTempDir = sTempDir;
 }
@@ -83,6 +83,7 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     else
         return S_FALSE;
 
+    /*
     if (!oXmlLiteReader.FromFile(m_sTempDir + L"/toc.ncx"))
         return S_FALSE;
 
@@ -91,6 +92,7 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
 //        #ifdef _DEBUG
 //            m_oToc.ShowToc();
 //        #endif
+    */
 
     CHtmlFile2 oFile;
     CHtmlParams oFileParams;
@@ -128,11 +130,11 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
 
 void CEpubFile::Clear()
 {
-    m_sFileName.clear();
-    m_sTempDir.clear();
-    m_oBookInfo.Clear();
-    m_mapRefs.clear();
-    m_oToc.Clear();
+    m_sFileName .clear();
+    m_sTempDir  .clear();
+    m_oBookInfo .Clear();
+    m_mapRefs   .clear();
+    m_oToc      .Clear();
     m_arContents.clear();
 }
 

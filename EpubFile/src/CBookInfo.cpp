@@ -5,7 +5,6 @@ CBookInfo::CBookInfo()
 {
 }
 
-
 CBookInfo::~CBookInfo()
 {
 }
@@ -24,17 +23,15 @@ void CBookInfo::Clear()
     m_sDate.clear();
 }
 
-bool CBookInfo::ReadInfo(XmlUtils::CXmlLiteReader &oXmlLiteReader)
+void CBookInfo::ReadInfo(XmlUtils::CXmlLiteReader& oXmlLiteReader)
 {
     if (!oXmlLiteReader.IsValid() || oXmlLiteReader.IsEmptyNode())
-        return false;
+        return;
 
-    const int& nParentDepth = oXmlLiteReader.GetDepth();
-
+    int nParentDepth = oXmlLiteReader.GetDepth();
     while(oXmlLiteReader.ReadNextSiblingNode(nParentDepth))
     {
-        const std::wstring& sName = oXmlLiteReader.GetName();
-
+        std::wstring sName = oXmlLiteReader.GetName();
         if (oXmlLiteReader.GetNamespacePrefix() == L"dc")
         {
             if (sName == L"dc:title")
@@ -59,10 +56,9 @@ bool CBookInfo::ReadInfo(XmlUtils::CXmlLiteReader &oXmlLiteReader)
                 m_sDate = oXmlLiteReader.GetText2();
         }
     }
-
-    return true;
 }
 
+/*
 void CBookInfo::ShowInfo() const
 {
     std::wcout << "-----DATA-----" << std::endl;
@@ -101,6 +97,7 @@ void CBookInfo::ShowInfo() const
 //    for (int i = 0; i < (int)m_vHrefs.size(); i++)
 //        std::wcout << m_vHrefs[i] << std::endl;
 }
+*/
 
 const std::wstring CBookInfo::GetTitle() const
 {
@@ -111,14 +108,10 @@ const std::wstring CBookInfo::GetCreators() const
 {
     if (m_arCreators.empty())
         return L"";
-
     std::wstring sCreators;
-
     for (const std::wstring& sCreator : m_arCreators)
         sCreators += sCreator + L"; ";
-
     sCreators.erase(sCreators.length() - 2, 2);
-
     return sCreators;
 }
 
@@ -126,14 +119,10 @@ const std::wstring CBookInfo::GetPublishers() const
 {
     if (m_arPublishers.empty())
         return L"";
-
     std::wstring sPublishers;
-
     for (const std::wstring& sPublisher : m_arPublishers)
         sPublishers += sPublisher + L", ";
-
     sPublishers.erase(sPublishers.length() - 2, 2);
-
     return sPublishers;
 }
 
@@ -141,14 +130,10 @@ const std::wstring CBookInfo::GetLanguages() const
 {
     if (m_arLanguages.empty())
         return L"";
-
     std::wstring sLanguages;
-
     for (const std::wstring& sLanguage : m_arLanguages)
         sLanguages += sLanguage + L", ";
-
     sLanguages.erase(sLanguages.length() - 2, 2);
-
     return sLanguages;
 }
 
@@ -156,14 +141,10 @@ const std::wstring CBookInfo::GetContibutors() const
 {
     if (m_arContributors.empty())
         return L"";
-
     std::wstring sContibutors;
-
     for (const std::wstring& sContibutor : m_arContributors)
         sContibutors += sContibutor + L", ";
-
     sContibutors.erase(sContibutors.length() - 2, 2);
-
     return sContibutors;
 }
 
@@ -171,14 +152,10 @@ const std::wstring CBookInfo::GetDescriptions() const
 {
     if (m_arDescriptions.empty())
         return L"";
-
     std::wstring sDescriptions;
-
     for (const std::wstring& sDescription : m_arDescriptions)
         sDescriptions += sDescription + L", ";
-
     sDescriptions.erase(sDescriptions.length() - 2, 2);
-
     return sDescriptions;
 }
 
@@ -191,14 +168,10 @@ const std::wstring CBookInfo::GetSubjects() const
 {
     if (m_arSubjects.empty())
         return L"";
-
     std::wstring sSubjects;
-
     for (const std::wstring& sSubject : m_arSubjects)
         sSubjects += sSubject + L", ";
-
     sSubjects.erase(sSubjects.length() - 2, 2);
-
     return sSubjects;
 }
 

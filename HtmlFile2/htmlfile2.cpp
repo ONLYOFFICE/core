@@ -1116,7 +1116,7 @@ private:
             if(sName == L"href")
             {
                 sRef = m_oLightReader.GetText();
-                if(sRef.substr(0, 4) != L"http")
+                if(sRef.find('#') != std::wstring::npos)
                     bCross = true;
             }
             else if(sName == L"name")

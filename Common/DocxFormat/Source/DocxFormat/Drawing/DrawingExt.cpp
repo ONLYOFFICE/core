@@ -29,6 +29,9 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "../DocxFlat.h"
+#include "../Document.h"
+
 #include "DrawingExt.h"
 #include "Drawing.h"
 #include "../../XlsxFormat/Worksheets/Sparkline.h"
@@ -384,6 +387,28 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_else_if( oReader, _T("relativeHeight"), m_oRelativeHeight )
 			WritingElement_ReadAttributes_Read_else_if( oReader, _T("simplePos"),      m_bSimplePos )
 			WritingElement_ReadAttributes_End( oReader )
+
+			if (m_oRelativeHeight.IsInit() && m_pMainDocument)
+			{
+				CDocument *pDocument = NULL;
+				OOX::CDocx* docx = dynamic_cast<OOX::CDocx*>(m_pMainDocument);
+				if (docx)
+				{
+					pDocument = docx->m_pDocument;
+				}
+				OOX::CDocxFlat *docx_flat = dynamic_cast<OOX::CDocxFlat*>(m_pMainDocument);
+				if (docx_flat)
+				{
+					pDocument = docx_flat->m_pDocument.GetPointer();
+				}
+				if (pDocument)
+				{
+					if (m_oRelativeHeight->GetValue() > pDocument->m_nDrawingMaxZIndex)
+					{
+						pDocument->m_nDrawingMaxZIndex = m_oRelativeHeight->GetValue();
+					}
+				}
+			}
 		}
 		void CAnchor::ReadAttributes(XmlUtils::CXmlNode& oNode)
 		{

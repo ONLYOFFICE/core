@@ -33,6 +33,7 @@
 
 #include "../docx/oox_drawing_fills.h"
 #include <xml/attributes.h>
+#include "datatypes/chartclass.h"
 
 namespace cpdoccore { 
 namespace odf_reader {
@@ -43,23 +44,6 @@ namespace odf_reader {
 namespace chart {
 
 	enum oox_typeconvert {docx, xlsx, pptx};
-
-    enum class_type 
-    {
-        chart_unknown,
-        chart_line, 
-        chart_area,
-        chart_circle,
-        chart_ring,
-        chart_scatter,
-        chart_radar,
-        chart_bar,
-        chart_stock,
-        chart_bubble,
-        chart_surface,
-        chart_gantt,
-		chart_filled_radar
-    };
 
 	struct simple
 	{
@@ -131,7 +115,7 @@ namespace chart {
 		std::wstring		cell_range_address_;
 
         std::wstring		label_cell_address_;
-        class_type			class_;
+		odf_types::chart_class::type class_;
         std::wstring		attached_axis_;
         std::wstring		style_name_;  
         std::vector<point>	points_;
@@ -144,7 +128,7 @@ namespace chart {
         series(
 				std::wstring const & rangeAddress,
 				std::wstring const & labelCell,
-				class_type classType,
+				odf_types::chart_class::type classType,
 				std::wstring const & attachedAxis,
 				std::wstring const & styleName                        
             ) : 

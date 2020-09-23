@@ -42,6 +42,7 @@
 
 #include "datatypes/common_attlists.h"
 #include "datatypes/charttimeunit.h"
+#include "datatypes/chartclass.h"
 
 namespace cpdoccore {
 namespace odf_reader {
@@ -87,7 +88,7 @@ public:
 
     odf_types::common_draw_size_attlist	common_draw_size_attlist_;
     common_chart_attlist				common_attlist_;
-    std::wstring						chart_class_;
+	odf_types::chart_class				chart_class_;
     _CP_OPT(std::wstring)				chart_column_mapping_;
     _CP_OPT(std::wstring)				chart_row_mapping_;
 	_CP_OPT(std::wstring)				loext_data_pilot_source_;
@@ -360,7 +361,7 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 public:
-    _CP_OPT(std::wstring)		chart_class_;
+    _CP_OPT(std::wstring)		grid_class_;
     common_chart_attlist		common_attlist_;
     
 };
@@ -414,11 +415,11 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 public:
-    _CP_OPT(std::wstring) chart_values_cell_range_address_;
-    _CP_OPT(std::wstring) chart_label_cell_address_;
-    _CP_OPT(std::wstring) chart_class_;
-    _CP_OPT(std::wstring) chart_attached_axis_;
-    common_chart_attlist  common_attlist_;
+    _CP_OPT(std::wstring)			chart_values_cell_range_address_;
+    _CP_OPT(std::wstring)			chart_label_cell_address_;
+    _CP_OPT(odf_types::chart_class)	chart_class_;
+    _CP_OPT(std::wstring)			chart_attached_axis_;
+    common_chart_attlist			common_attlist_;
 
 };
 

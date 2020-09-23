@@ -339,6 +339,9 @@
     <ClInclude Include="..\include\cpdoccore\CPWeakPtr.h" />
     <ClInclude Include="..\..\ASCOfficeOdfFileW\source\OdfFormat\odf_chart_context.h" />
     <ClInclude Include="..\src\docx\oox_chart_axis.h" />
+    <ClInclude Include="..\src\odf\datatypes\chartclass.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\odf\datatypes\anchortype.cpp">
@@ -656,5 +659,8 @@
     <ClCompile Include="..\src\common\CPColorUtils.cpp" />
     <ClCompile Include="..\src\common\CPString.cpp" />
     <ClCompile Include="..\src\common\readdocelement.cpp" />
+    <ClCompile Include="..\src\odf\datatypes\chartclass.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

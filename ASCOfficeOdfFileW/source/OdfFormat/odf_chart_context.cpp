@@ -194,6 +194,8 @@ public:
 	chart_axis					*get_current_axis();
 	chart_series				*get_current_series();
 
+	odf_types::chart_class::type get_current_chart_class();
+
 	std::wstring convert_formula(std::wstring oox_ref);
 
 	void create_local_table();
@@ -269,6 +271,18 @@ chart_chart* odf_chart_context::Impl::get_current_chart()
 		if (chart) return chart;
 	}
 	return NULL;
+}
+odf_types::chart_class::type odf_chart_context::Impl::get_current_chart_class()
+{
+	for (long i = (long)current_level_.size() - 1; i >= 0; i--)
+	{
+		chart_chart * chart = dynamic_cast<chart_chart*>(current_level_[i].elm.get());
+		if (chart)
+		{
+			return chart->chart_chart_attlist_.chart_class_.get_type();
+		}
+	}
+	return odf_types::chart_class::none;
 }
 chart_series* odf_chart_context::Impl::get_current_series()
 {
@@ -397,12 +411,12 @@ void odf_chart_context::set_chart_size(_CP_OPT(double) width_pt, _CP_OPT(double)
 	chart->chart_chart_attlist_.common_draw_size_attlist_.svg_width_ = length(length(*width_pt,length::pt).get_value_unit(length::cm), length::cm);
 	chart->chart_chart_attlist_.common_draw_size_attlist_.svg_height_ = length(length(*height_pt,length::pt).get_value_unit(length::cm), length::cm);
 }
-void odf_chart_context::set_chart_type(const std::wstring & type)
+void odf_chart_context::set_chart_type(odf_types::chart_class::type type)
 {
 	chart_chart *chart = impl_->get_current_chart();
 	if (!chart)return;
 
-	chart->chart_chart_attlist_.chart_class_ = std::wstring(L"chart:") + type;
+	chart->chart_chart_attlist_.chart_class_ = type;
 }
 
 void odf_chart_context::set_chart_bar_type(int type)
@@ -492,7 +506,8 @@ void odf_chart_context::set_chart_radar_type(int type)
 			break;
 		case 2:	//	st_radarstyleFILLED = 2
 			chart_chart *chart = impl_->get_current_chart();
-			if (chart)chart->chart_chart_attlist_.chart_class_ = std::wstring(L"chart:filled-radar");
+			if (chart)
+				chart->chart_chart_attlist_.chart_class_ = chart_class(chart_class::filled_radar);
 			break;
 	}
 
@@ -563,6 +578,15 @@ void odf_chart_context::set_chart_3D(bool val)
 }
 void odf_chart_context::set_view3D(int rotX, int rotY, int depthPercent, int perspective, int hPercent, bool angAx)
 {
+	odf_types::chart_class::type chart_class = impl_->get_current_chart_class();
+
+	if (chart_class == chart_class::circle ||
+		chart_class == chart_class::radar ||
+		chart_class == chart_class::filled_radar ||
+		chart_class == chart_class::ring)
+	{
+		rotX += 90;
+	}
 	if (rotX < 0) rotX += 360;
 	if (rotY < 0) rotY += 360;
 
@@ -695,7 +719,7 @@ void odf_chart_context::set_chart_scatter_type(int type)
 void odf_chart_context::start_group_series()
 {
 }
-void odf_chart_context::start_series(const std::wstring & type)
+void odf_chart_context::start_series(odf_types::chart_class::type type)
 {
 	office_element_ptr elm;
 	create_element(L"chart", L"series", elm, impl_->odf_context_);
@@ -703,7 +727,7 @@ void odf_chart_context::start_series(const std::wstring & type)
 	chart_series *series = dynamic_cast<chart_series*>(elm.get());
 	if (series == NULL)return;
 //////////	
-	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
+	impl_->styles_context_->create_style(L"", style_family::Chart, true, false, -1);		
 	
 	office_element_ptr & style_elm = impl_->styles_context_->last_state()->get_office_element();
 	
@@ -714,19 +738,17 @@ void odf_chart_context::start_series(const std::wstring & type)
 	{
 		style_name = style_->style_name_;
 		series->chart_series_attlist_.common_attlist_.chart_style_name_ = style_name;
-		series->chart_series_attlist_.chart_class_ = std::wstring(L"chart:") + type;
+		series->chart_series_attlist_.chart_class_ = chart_class(type);
 
 	}
 	start_element(elm, style_elm, style_name);
 
 	impl_->group_series_.push_back(elm);
 //////////////////////////////////////////////////////////////
-	chart_chart * chart = impl_->get_current_chart();
-	if (chart) 
+	//может хранить отдельно общий класс чарта??
+	if (type == chart_class::radar || (impl_->get_current_chart_class() == chart_class::stock && type == chart_class::line))
 	{
-		//может хранить отдельно общий класс чарта??
-		if (type == L"radar" || (*chart->chart_chart_attlist_.chart_class_ == L"chart:stock" && type == L"line"))
-			series->chart_series_attlist_.chart_class_ = chart->chart_chart_attlist_.chart_class_;	
+		series->chart_series_attlist_.chart_class_ = impl_->get_current_chart_class();
 	}
 
 	if (style_)

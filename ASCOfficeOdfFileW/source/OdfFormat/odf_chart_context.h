@@ -37,6 +37,7 @@
 #include <CPOptional.h>
 
 #include "office_elements_create.h"
+#include "../../../ASCOfficeOdfFile/src/odf/datatypes/chartclass.h"
 
 namespace cpdoccore {
 namespace odf_writer
@@ -59,7 +60,7 @@ public:
 	odf_text_context	*text_context();
 
 	void start_chart (office_element_ptr & root);
-		void set_chart_type			(const std::wstring & type);
+		void set_chart_type			(odf_types::chart_class::type type);
 		void set_chart_3D			(bool Val);
 		void set_chart_size			(_CP_OPT(double) width_pt, _CP_OPT(double) height_pt);		
 		void set_chart_colored		(bool val);
@@ -83,7 +84,7 @@ public:
 
 		void start_group_series();
 			void add_axis_group_series(unsigned int id);
-				void start_series (const std::wstring & type);
+				void start_series (odf_types::chart_class::type type);
 					void set_series_value_formula	(const std::wstring & oox_ref, const std::wstring & format_code);
 					void set_series_label_formula	(const std::wstring & oox_ref);
 					void set_category_axis_formula	(const std::wstring & oox_ref, const std::wstring & format_code, int type);

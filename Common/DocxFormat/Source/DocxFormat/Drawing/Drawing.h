@@ -715,7 +715,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CAnchor)
-			CAnchor()
+			CAnchor(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CAnchor()
@@ -769,7 +769,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CInline)
-			CInline()
+			CInline(OOX::Document *pMain = NULL) : WritingElement(pMain) 
 			{
 			}
 			virtual ~CInline()
@@ -870,12 +870,14 @@ namespace OOX
                     std::wstring sName = oReader.GetName();
 					if ( _T("wp:inline") == sName )
 					{
-						m_oInline = oReader;
+						m_oInline = new OOX::Drawing::CInline(this->m_pMainDocument);
+						m_oInline->fromXML(oReader);
 						m_bAnchor = false;
 					}
 					else if ( _T("wp:anchor") == sName )
 					{
-						m_oAnchor = oReader;
+						m_oAnchor = new OOX::Drawing::CAnchor(this->m_pMainDocument);
+						m_oAnchor->fromXML(oReader);
 						m_bAnchor = true;
 					}
 				}

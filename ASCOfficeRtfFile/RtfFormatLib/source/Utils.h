@@ -596,6 +596,8 @@ public:
 //	}
     static std::wstring convert_string_icu(std::string::const_iterator start, std::string::const_iterator end, int nCodepage = 0)
     {
+		if (start == end) return L"";
+
         std::string sCodePage;
 		std::map<int, std::string>::const_iterator pFind = NSUnicodeConverter::mapEncodingsICU.find(nCodepage);
 		if (pFind != NSUnicodeConverter::mapEncodingsICU.end())

@@ -77,8 +77,8 @@
     </ClCompile>
     <ClCompile Include="..\..\src\ASCConverters.cpp" />
     <ClCompile Include="..\..\src\cextracttools.cpp" />
-    <ClCompile Include="..\..\src\main.cpp" />
     <ClCompile Include="..\..\..\Common\OfficeFileFormatChecker2.cpp" />
+    <ClCompile Include="X2tTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\DocWrapper\XlsxSerializer.h">

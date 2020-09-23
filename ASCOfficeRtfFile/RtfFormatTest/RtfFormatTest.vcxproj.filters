@@ -61,8 +61,9 @@
     <ClCompile Include="..\..\ASCOfficeDocxFile2\DocWrapper\XlsxSerializer.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="RtfFormatTest.cpp">
+    <ClCompile Include="..\..\ASCOfficeDocxFile2\BinReader\FileWriter.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="RtfFormatTest.cpp" />
   </ItemGroup>
 </Project>

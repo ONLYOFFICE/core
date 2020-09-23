@@ -8579,6 +8579,9 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 		if (pDocxFlat)	delete pDocxFlat;	pDocxFlat = NULL;
 		return;
 	}
+
+	m_oParamsWriter.m_pOfficeDrawingConverter->m_nDrawingMaxZIndex = pDocument->m_nDrawingMaxZIndex;
+
 	OOX::Logic::CSectionProperty* pFirstSectPr = pDocument->m_oSectPr.GetPointer();
 
 	this->WriteMainTableStart();

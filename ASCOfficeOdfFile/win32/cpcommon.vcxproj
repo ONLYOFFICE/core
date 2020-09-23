@@ -178,6 +178,7 @@
     <ClInclude Include="..\src\odf\datatypes\borderstyle.h" />
     <ClInclude Include="..\src\odf\datatypes\borderwidths.h" />
     <ClInclude Include="..\src\odf\datatypes\calcext_type.h" />
+    <ClInclude Include="..\src\odf\datatypes\chartclass.h" />
     <ClInclude Include="..\src\odf\datatypes\chartdatalabelnumber.h" />
     <ClInclude Include="..\src\odf\datatypes\charterrorcategory.h" />
     <ClInclude Include="..\src\odf\datatypes\chartinterpolation.h" />
@@ -303,6 +304,7 @@
     <ClCompile Include="..\src\odf\datatypes\borderstyle.cpp" />
     <ClCompile Include="..\src\odf\datatypes\borderwidths.cpp" />
     <ClCompile Include="..\src\odf\datatypes\calcext_type.cpp" />
+    <ClCompile Include="..\src\odf\datatypes\chartclass.cpp" />
     <ClCompile Include="..\src\odf\datatypes\chartdatalabelnumber.cpp" />
     <ClCompile Include="..\src\odf\datatypes\charterrorcategory.cpp" />
     <ClCompile Include="..\src\odf\datatypes\chartinterpolation.cpp" />

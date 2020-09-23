@@ -129,6 +129,7 @@ SOURCES += \
     ../src/odf/datatypes/chartregressiontype.cpp \
     ../src/odf/datatypes/chartseriessource.cpp \
     ../src/odf/datatypes/chartsolidtype.cpp \
+    ../src/odf/datatypes/chartclass.cpp \
     ../src/odf/datatypes/chartsymbol.cpp \
     ../src/odf/datatypes/clockvalue.cpp \
     ../src/odf/datatypes/color.cpp \

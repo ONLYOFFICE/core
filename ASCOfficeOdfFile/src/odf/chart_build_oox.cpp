@@ -97,11 +97,9 @@ void object_odf_context::set_height(double valPt)
     height_pt_ = valPt;
 }
 
-void object_odf_context::set_class(std::wstring const & val)
+void object_odf_context::set_class(odf_types::chart_class::type type)
 {
-    str_class_ = val;
-
-	class_= get_series_class_type(val);
+    class_ = type;
 }
 
 void object_odf_context::set_style_name(std::wstring const & val)
@@ -149,14 +147,14 @@ void object_odf_context::add_grid(std::wstring const & className, std::wstring c
 void object_odf_context::add_series(
 		std::wstring const &	cellRangeAddress,
         std::wstring const &	labelCell,
-        class_type				classType,
+		odf_types::chart_class::type classType,
         std::wstring const &	attachedAxis,
         std::wstring const &	styleName)
 {
-	if (class_ == chart_ring) classType = chart_ring; 
-	//if (class_ == chart_stock) classType = chart_stock; 
+	if (class_ == chart_class::ring) classType = chart_class::ring;
+	//if (class_ == chart_class::stock) classType = chart_stock; 
 
-    series_.push_back(series(cellRangeAddress,labelCell, classType, attachedAxis, styleName));
+    series_.push_back(series(cellRangeAddress, labelCell, classType, attachedAxis, styleName));
 }
 
 void object_odf_context::add_point(unsigned int rep)
@@ -381,7 +379,7 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 	//chart_context.set_footer(footer_);
 	//chart_context.set_chart_properties(chart_graphic_properties_);
 
-	class_type last_set_type = chart_unknown; 
+	chart_class::type last_set_class = chart_class::none;
 
 	int series_id =0;
 
@@ -392,10 +390,10 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 
  	for (size_t i = 0; i < series_.size(); i++)
 	{
-		if (series_[i].class_ != last_set_type)			//разные типы серий в диаграмме - например бар и линия.
+		if (series_[i].class_ != last_set_class)			//разные типы серий в диаграмме - например бар и линия.
 		{
 			chart_context.add_chart(series_[i].class_);
-			last_set_type = series_[i].class_;
+			last_set_class = series_[i].class_;
 		}
 		oox::oox_chart_ptr current = chart_context.get_current_chart();
 
@@ -477,9 +475,9 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 		}
 		
 		if (domain_cell_range_adress_.empty() == false || 
-			last_set_type == chart_scatter) 
+			last_set_class == chart_class::scatter) 
 		{
-			if (last_set_type == chart_bubble)
+			if (last_set_class == chart_class::bubble)
 			{	//bubble(x)
 				if (!bPivotChart_)
 					current->set_formula_series(4, domain_cell_range_adress_, formatCode, bLinkData.get_value_or(true));	
@@ -553,10 +551,10 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 
 		if	(a.dimension_ == L"x")//могут быть типы 1, 2, 3, 4
 		{			
-			if (last_set_type == chart_scatter ||
-					last_set_type == chart_bubble) a.type_ = 2;
+			if (last_set_class == chart_class::scatter ||
+				last_set_class == chart_class::bubble) a.type_ = 2;
 
-			if (class_ == chart_stock && a.type_ == 3 )		
+			if (class_ == chart_class::stock && a.type_ == 3 )		
 				a.type_ = 4; //шкала дат.
 
 			if (bIs3D.get_value_or(false))
@@ -569,7 +567,7 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 		else if (a.dimension_ == L"y")
 		{
 			a.type_ = 2;
-			if (last_set_type ==  chart_bar)
+			if (last_set_class == chart_class::bar)
 			{
 				//вот нахрена свойства относящиеся к серии и самому чарту воткнули в оси ???? (ооо писали идиеты???)
 				//или это банальная ошибка которую так никогда и не исправили???
@@ -785,7 +783,7 @@ void process_build_object::visit(chart_chart& val)
     }
 	ApplyGraphicProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.chart_graphic_properties_, object_odf_context_.chart_fill_);
 
-	object_odf_context_.set_class(val.attlist_.chart_class_);
+	object_odf_context_.set_class(val.attlist_.chart_class_.get_type());
 
 	if (val.attlist_.loext_data_pilot_source_)
 		object_odf_context_.set_pivot_source(*val.attlist_.loext_data_pilot_source_);
@@ -922,12 +920,14 @@ void process_build_object::visit(chart_series& val)
 {
     const chart_series_attlist & att = val.attlist_;
    
-	chart::class_type chartClass = get_series_class_type(att.chart_class_.get_value_or(object_odf_context_.str_class_));
+	odf_types::chart_class::type seriesClass = object_odf_context_.class_;
+
+	if (att.chart_class_) seriesClass = att.chart_class_->get_type();
 
     object_odf_context_.add_series(
 							att.chart_values_cell_range_address_.get_value_or(L""),
 							att.chart_label_cell_address_.get_value_or(L""),
-							chartClass,
+							seriesClass,
 							att.chart_attached_axis_.get_value_or(L""),
 							att.common_attlist_.chart_style_name_.get_value_or(L"")
         );
@@ -949,7 +949,7 @@ void process_build_object::visit(chart_domain& val)
 }
 void process_build_object::visit(chart_grid& val)
 {
-    object_odf_context_.add_grid(val.attlist_.chart_class_.get_value_or(L""),
+    object_odf_context_.add_grid(val.attlist_.grid_class_.get_value_or(L""),
         val.attlist_.common_attlist_.chart_style_name_.get_value_or(L"") );
 	
 	oox::_oox_fill fill;

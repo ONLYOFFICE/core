@@ -38,6 +38,7 @@
 #include "../src/odf/datatypes/calcext_type.cpp"
 #include "../src/odf/datatypes/chartdatalabelnumber.cpp"
 #include "../src/odf/datatypes/charterrorcategory.cpp"
+#include "../src/odf/datatypes/chartclass.cpp"
 #include "../src/odf/datatypes/chartinterpolation.cpp"
 #include "../src/odf/datatypes/chartlabelarrangement.cpp"
 #include "../src/odf/datatypes/chartregressiontype.cpp"

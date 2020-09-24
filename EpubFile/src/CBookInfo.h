@@ -1,7 +1,8 @@
 #ifndef CBOOKINFO_H
 #define CBOOKINFO_H
 
-#include <map>
+#include <vector>
+#include <string>
 
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 
@@ -22,8 +23,8 @@ public:
     ~CBookInfo();
     void Clear();
 
-    bool ReadInfo(XmlUtils::CXmlLiteReader &oXmlLiteReader);
-    void ShowInfo() const;
+    void ReadInfo(XmlUtils::CXmlLiteReader& oXmlLiteReader);
+    // void ShowInfo() const;
 
     const std::wstring GetTitle() const;
     const std::wstring GetCreators() const;

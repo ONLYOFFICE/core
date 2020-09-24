@@ -1,74 +1,27 @@
 #include "CDocumentStyle.h"
 
 #include <iostream>
-#include <algorithm>
+#include <set>
 #include <wchar.h>
 #include <math.h>
-
-inline static std::vector<std::wstring> GetWordsW(const std::wstring& sLine)
-{
-    if (sLine.empty())
-        return {};
-
-    std::vector<std::wstring> arWords;
-    std::wstring sTempWord = sLine;
-
-    while (true)
-    {
-        const auto& posFirstNotSpace = sTempWord.find_first_not_of(L" \n\r\t\f\v:;");
-        const auto& posLastNotSpace = sTempWord.find_first_of(L" \n\r\t\f\v", posFirstNotSpace);
-        const auto& posFirstSign = sTempWord.find_first_of(L":;,", posFirstNotSpace);
-
-        if (posFirstNotSpace != std::wstring::npos && posFirstSign != std::wstring::npos)
-        {
-            arWords.push_back(sTempWord.substr(posFirstNotSpace, posFirstSign - posFirstNotSpace + 1));
-            sTempWord.erase(posFirstNotSpace, posFirstSign - posFirstNotSpace + 1);
-        }
-        else if (posFirstNotSpace != std::wstring::npos && posLastNotSpace != std::wstring::npos)
-        {
-            arWords.push_back(sTempWord.substr(posFirstNotSpace, posLastNotSpace - posFirstNotSpace));
-            sTempWord.erase(posFirstNotSpace, posLastNotSpace - posFirstNotSpace);
-        }
-        else if (posFirstNotSpace != std::wstring::npos && posLastNotSpace == std::wstring::npos)
-        {
-            arWords.push_back(sTempWord.substr(posFirstNotSpace));
-            break;
-        }
-        else
-            break;
-    }
-
-    return arWords;
-}
+#include <algorithm>
+#include <list>
 
 namespace NSCSS
 {
-    CDocumentStyle::CDocumentStyle(): m_arStandardStyles({L"a",         L"li",
-                                                          L"h1",        L"h2",
-                                                          L"h3",        L"h4",
-                                                          L"h5",        L"h6",
-                                                          L"title1-c",  L"title2-c",
-                                                          L"title3-c",  L"title4-c",
-                                                          L"title5-c",  L"title6-c",
-                                                          L"p-c",       L"p",
-                                                          L"div-c",     L"div",
-                                                          L"a-c"})
-    {
-    }
+    CDocumentStyle::CDocumentStyle() : m_arStandardStyles({L"a", L"li", L"h1", L"h2", L"h3", L"h4", L"h5", L"h6", L"h1-c",
+        L"h2-c", L"h3-c", L"h4-c", L"h5-c", L"h6-c", L"p-c", L"p", L"div-c", L"div", L"a-c"}) {}
 
     CDocumentStyle::~CDocumentStyle()
     {
-        m_arStandardStyles.clear();
-        m_arStyleUsed.clear();
+        m_arStandardStyles.    clear();
+        m_arStyleUsed.         clear();
         m_arStandardStylesUsed.clear();
     }
 
-    const std::wstring CDocumentStyle::GetStyle() const
+    std::wstring CDocumentStyle::GetStyle() const
     {
-        if (m_sId.empty())
-            return m_sId;
-
-        return m_sStyle;
+        return m_sId.empty() ? std::wstring() : m_sStyle;
     }
 
     std::wstring CDocumentStyle::GetIdAndClear()
@@ -84,424 +37,364 @@ namespace NSCSS
         m_sStyle.clear();
     }
 
-    void CDocumentStyle::SetStyle(const std::wstring &sStyle)
+    void CDocumentStyle::SetStyle(const std::wstring& sStyle)
     {
         if (sStyle.empty())
             return;
-
         m_sStyle = sStyle;
     }
 
-    void CDocumentStyle::SetId(const std::wstring &sId)
+    void CDocumentStyle::SetId   (const std::wstring& sId)
     {
         if (sId.empty())
             return;
         m_sId = sId;
     }
 
-    CXmlElement CDocumentStyle::CombineStandardStyles(const std::vector<std::wstring>& arStandartedStyles)
+    void CDocumentStyle::CombineStandardStyles(const std::vector<std::wstring>& arStandartedStyles, CXmlElement& oElement)
     {
-        CXmlElement oXmlElement;
-
-        if (arStandartedStyles.size() == 0)
-            return oXmlElement;
-
+        if (arStandartedStyles.empty())
+            return;
         std::vector<std::wstring> arStyles;
-
         for (const std::wstring& sStyleName : arStandartedStyles)
         {
-            if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sStyleName) != m_arStandardStyles.cend())
+            if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sStyleName) != m_arStandardStyles.end())
                 arStyles.push_back(sStyleName);
         }
 
         if (arStyles.empty())
-            return oXmlElement;
+            return;
 
         std::wstring sId;
-
         for (const std::wstring& sStyleName : arStyles)
         {
-            sId += sStyleName;
-            if (sStyleName != arStyles[arStyles.size() - 1])
-                sId += L'+';
+            sId += sStyleName + L'+';
+            CXmlElement oTempElement;
+            CreateStandardStyle(sStyleName, oTempElement);
+            if (std::find(m_arStandardStylesUsed.begin(), m_arStandardStylesUsed.end(), sStyleName) == m_arStandardStylesUsed.end())
+            {
+                m_sStyle += oTempElement.GetStyle();
+                m_arStandardStylesUsed.push_back(sStyleName);
+            }
+            oElement += oTempElement;
         }
+        sId.pop_back();
 
-        for (const std::wstring& sStyleName : arStyles)
-        {
-            const CXmlElement& oTempXmlElement = CreateStandardStyle(sStyleName);
-            if (!oTempXmlElement.Empty())
-                oXmlElement += oTempXmlElement;
-        }
-
-        if (!oXmlElement.Empty())
-        {
-            oXmlElement.SetName(sId);
-            oXmlElement.SetStyleId(sId);
-        }
-
-        return oXmlElement;
+        oElement.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_Name, sId);
+        oElement.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_StyleId, sId);
     }
 
-    CXmlElement CDocumentStyle::CreateStandardStyle(const std::wstring& sNameStyle)
+    void CDocumentStyle::CreateStandardStyle(const std::wstring& sNameStyle, CXmlElement& oElement)
     {
-        CXmlElement oXmlElement;
-
-        if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sNameStyle) == m_arStandardStyles.cend())
-            return oXmlElement;
-
-        CXmlElement oCharXmlElement;
-
-        oXmlElement.CreateDefaultElement(sNameStyle);
-
-        if (sNameStyle == L"p" && std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), L"p-c") != m_arStandardStyles.cend())
-            oCharXmlElement.CreateDefaultElement(L"p-c");
-        else if (sNameStyle == L"div" && std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), L"div-c") != m_arStandardStyles.cend())
-            oCharXmlElement.CreateDefaultElement(L"div-c");
-        else if (sNameStyle == L"a" && std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), L"a-c") != m_arStandardStyles.cend())
-            oCharXmlElement.CreateDefaultElement(L"a-c");
-
-        if (!oCharXmlElement.Empty())
-        {
-            oXmlElement.SetLink(oCharXmlElement.GetStyleId());
-            oCharXmlElement.SetLink(oXmlElement.GetStyleId());
-            m_sStyle += oCharXmlElement.GetRStyle();
-        }
-
-        return oXmlElement;
+        if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sNameStyle) != m_arStandardStyles.end())
+            oElement.CreateDefaultElement(sNameStyle);
     }
 
-    CXmlElement CDocumentStyle::ConvertStyle(const NSCSS::CCompiledStyle &oStyle, bool bIsPStyle)
-    {
-        std::wstring sName = oStyle.GetId();
+    void CDocumentStyle::ConvertStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oElement, bool bIsPStyle)
+    {   
+        std::wstring sName(oStyle.GetId());
+        if (sName.empty())
+            return;
 
-        const auto& posDash = sName.find(L'-');
-        const auto& posLattice = sName.find(L'#');
-        const auto& posPoint = sName.find(L'.');
-
-        if (posDash != std::wstring::npos)
-            sName = sName.substr(0, posDash);
-        if (posLattice != std::wstring::npos)
-            sName = sName.substr(0, posLattice);
+        size_t posPoint = sName.find(L'.');
         if (posPoint != std::wstring::npos)
             sName = sName.substr(0, posPoint);
+        else
+        {
+            size_t posLattice = sName.find(L'#');
+            if (posLattice != std::wstring::npos)
+                sName = sName.substr(0, posLattice);
+            else
+            {
+                size_t posDash = sName.find(L'-');
+                if (posDash != std::wstring::npos)
+                    sName = sName.substr(0, posDash);
+            }
+        }
 
         if (!bIsPStyle)
-        {
-            if (sName[0] == L'h' && sName.length() == 2 && iswdigit(sName[1]))
-            {
-                sName = sName[1];
-                sName = L"title" + sName;
-                sName += L"-c";
-            }
-            else
-                sName += L"-c";
-        }
-        CXmlElement oXmlElement;
-        CXmlElement oStandardXmlElement;
+            sName += L"-c";
+
         CXmlElement oParentStyle;
+        std::vector<std::wstring> arParentsName = oStyle.GetParentsName();
 
-        if (oStyle.GetParentsName().size() > 0)
+        if (!bIsPStyle)
+            for (std::wstring& sParentName : arParentsName)
+                sParentName += L"-c";
+
+        if (!arParentsName.empty())
         {
-            std::vector<std::wstring> arParentsName = oStyle.GetParentsName();
-
-            std::wstring sParentName;
-            for (std::wstring& sParent : arParentsName)
-            {
-                if(!bIsPStyle)
-                    sParent += L"-c";
-
-                sParentName += sParent + L"+";
-            }
-
-            sParentName.erase(sParentName.length() - 1, 1);
-
-            oParentStyle = CombineStandardStyles(arParentsName);
+            CombineStandardStyles(arParentsName, oParentStyle);
 
             if (!oParentStyle.Empty())
             {
-                oParentStyle.SetStyleId(L"(" + oParentStyle.GetStyleId() + L")");
-
+                oParentStyle.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_StyleId, L"(" + oParentStyle.GetStyleId() + L")");
                 if (!bIsPStyle)
                 {
-                    oParentStyle.SetStyleId(oParentStyle.GetStyleId() + L"-c");
-                    oParentStyle.SetType(L"character");
+                    oParentStyle.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_StyleId, oParentStyle.GetStyleId() + L"-c");
+                    oParentStyle.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_Type, L"character");
                 }
             }
         }
 
-        if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sName) != m_arStandardStyles.cend())
-        {
-            oStandardXmlElement = CreateStandardStyle(sName);
-        }
+        CXmlElement oStandardXmlElement;
+        if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sName) != m_arStandardStyles.end())
+            CreateStandardStyle(sName, oStandardXmlElement);
 
         if (!oStandardXmlElement.Empty() && !oParentStyle.Empty())
         {
-            const std::wstring& sStandPlusParent = oStandardXmlElement.GetStyleId() + oParentStyle.GetStyleId();
-
-            if(std::find(m_arStandardStylesUsed.begin(), m_arStandardStylesUsed.end(), sStandPlusParent) != m_arStandardStylesUsed.cend())
-                oXmlElement.SetBasedOn(sStandPlusParent);
+            std::wstring sStandPlusParent = oStandardXmlElement.GetStyleId() + L"+" + oParentStyle.GetStyleId();
+            if(std::find(m_arStandardStylesUsed.begin(), m_arStandardStylesUsed.end(), sStandPlusParent) != m_arStandardStylesUsed.end())
+            {
+                if (oStyle.Empty())
+                {
+                    m_sId = sStandPlusParent;
+                    return;
+                }
+                oElement.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_BasedOn, sStandPlusParent);
+            }
             else
             {
                 CXmlElement oTempElement = oParentStyle;
                 oTempElement += oStandardXmlElement;
 
-                oTempElement.SetStyleId(sStandPlusParent);
+                oTempElement.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_StyleId, sStandPlusParent);
 
-                bIsPStyle ? m_sStyle += oTempElement.GetPStyle() : m_sStyle += oTempElement.GetRStyle();
-
-                oXmlElement.SetBasedOn(oTempElement.GetStyleId());
-
+                m_sStyle += bIsPStyle ? oTempElement.GetPStyle() :  oTempElement.GetRStyle();
                 m_arStandardStylesUsed.push_back(sStandPlusParent);
+                if (oStyle.Empty())
+                {
+                    m_sId = sStandPlusParent;
+                    return;
+                }
+                oElement.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_BasedOn, oTempElement.GetStyleId());
             }
         }
         else if (!oStandardXmlElement.Empty() && oParentStyle.Empty())
         {
-            const std::wstring& sStandartStyleID = oStandardXmlElement.GetStyleId();
-
-            if (std::find(m_arStandardStylesUsed.begin(), m_arStandardStylesUsed.end(), sStandartStyleID) != m_arStandardStylesUsed.cend())
-                oXmlElement.SetBasedOn(sStandartStyleID);
-            else
+            std::wstring sStandartStyleID = oStandardXmlElement.GetStyleId();
+            if (std::find(m_arStandardStylesUsed.begin(), m_arStandardStylesUsed.end(), sStandartStyleID) == m_arStandardStylesUsed.end())
             {
-                bIsPStyle ? m_sStyle += oStandardXmlElement.GetPStyle() : m_sStyle += oStandardXmlElement.GetRStyle();
-
+                m_sStyle += bIsPStyle ? oStandardXmlElement.GetPStyle() : oStandardXmlElement.GetRStyle();
                 m_arStandardStylesUsed.push_back(sStandartStyleID);
-
-                oXmlElement.SetBasedOn(sStandartStyleID);
             }
+            if (oStyle.Empty())
+            {
+                m_sId = sStandartStyleID;
+                return;
+            }
+            oElement.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_BasedOn, sStandartStyleID);
         }
         else if (oStandardXmlElement.Empty() && !oParentStyle.Empty())
         {
-            const std::wstring& sParentsStyleID = oParentStyle.GetStyleId();
-
-            if (std::find(m_arStandardStylesUsed.begin(), m_arStandardStylesUsed.end(), sParentsStyleID) != m_arStandardStylesUsed.cend())
-                oXmlElement.SetBasedOn(sParentsStyleID);
-            else
+            std::wstring sParentsStyleID = oParentStyle.GetStyleId();
+            if (std::find(m_arStandardStylesUsed.begin(), m_arStandardStylesUsed.end(), sParentsStyleID) == m_arStandardStylesUsed.end())
             {
-                bIsPStyle ? m_sStyle += oParentStyle.GetPStyle() : m_sStyle += oParentStyle.GetRStyle();
-
-                oXmlElement.SetBasedOn(sParentsStyleID);
+                m_sStyle += bIsPStyle ? oParentStyle.GetPStyle() : oParentStyle.GetRStyle();
                 m_arStandardStylesUsed.push_back(sParentsStyleID);
             }
+            if (oStyle.Empty())
+            {
+                m_sId = sParentsStyleID;
+                return;
+            }
+            oElement.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_BasedOn, sParentsStyleID);
         }
 
-        if (oStyle.Empty())
+        if (oStyle.Empty() && oElement.Empty())
         {
-            (oXmlElement.GetBasedOn().empty() || (oStandardXmlElement.Empty() && oParentStyle.Empty()))
-                    ? m_sId = L"normal" : m_sId = oXmlElement.GetBasedOn();
-
-            oXmlElement.Clear();
-
-            return oXmlElement;
+            m_sId = L"normal";
+//            (oXmlElement.GetBasedOn().empty() || (oStandardXmlElement.Empty() && oParentStyle.Empty()))
+//                    ? m_sId = L"normal" : m_sId = oXmlElement.GetBasedOn();
+            return;
         }
 
         m_sId = oStyle.GetId();
-        if (!bIsPStyle)
+        if(!bIsPStyle)
             m_sId += L"-c";
-
-        oXmlElement.SetStyleId(m_sId);
-        oXmlElement.SetName(m_sId);
-        oXmlElement.SetQFormat(true);
-
-        bIsPStyle ? oXmlElement.SetType(L"paragraph") : oXmlElement.SetType(L"character");
-
-        oXmlElement.SetCustomStyle(L"1");
-
-        return oXmlElement;
-
+        oElement.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_StyleId, m_sId);
+        oElement.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_Name, m_sId);
+        oElement.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
+        oElement.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_Type, bIsPStyle ? L"paragraph" : L"character");
+        oElement.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_CustomStyle, L"1");
     }
 
-    void CDocumentStyle::SetPStyle(const NSCSS::CCompiledStyle &oStyle, CXmlElement& oXmlElement)
+    void CDocumentStyle::SetPStyle   (const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement)
     {
-        oXmlElement = ConvertStyle(oStyle, true);
-
-        if (oStyle.Empty())
+        ConvertStyle(oStyle, oXmlElement, true);
+        if (oStyle.Empty() || oXmlElement.Empty())
             return;
 
-        oXmlElement.SetJc(oStyle.GetTextAlign());
+        std::wstring sTextAlign = oStyle.GetTextAlign();
+        std::transform(sTextAlign.begin(), sTextAlign.end(), sTextAlign.begin(), towlower);
+
+        if (sTextAlign == L"justify")
+            sTextAlign = L"both";
+        else if (sTextAlign == L"middle")
+            sTextAlign = L"center";
+        else if (sTextAlign != L"left" && sTextAlign != L"center" && sTextAlign != L"right" && sTextAlign != L"both")
+            sTextAlign.clear();
+
+        oXmlElement.AddPropertiesInP(NS_CONST_VALUES::ParagraphProperties::P_Jc, sTextAlign);
 
         std::wstring sIndValue;
-        if (!oStyle.GetTextIndent().empty() && oStyle.GetId().find(L"table") == std::wstring::npos)
+        sIndValue.reserve(64);
+
+        const std::wstring& sTextIndent = oStyle.GetTextIndent();
+        if (!sTextIndent.empty() && oStyle.GetId().find(L"table") == std::wstring::npos)
         {
-            const double& dFirstLineValue = wcstod(oStyle.GetTextIndent().c_str(), NULL) * 10;
-            sIndValue += L"w:firstLine=\"" +std::to_wstring((int)floor(dFirstLineValue + 0.5)) + L"\" ";
+            const float dFirstLineValue = wcstof(sTextIndent.c_str(), NULL) * 10.0f;
+            sIndValue += L"w:firstLine=\"" + std::to_wstring(static_cast<unsigned short int>(dFirstLineValue + 0.5f)) + L"\" ";
         }
 
-        if (!oStyle.GetMargin().empty())
+        const std::vector<std::wstring>& sMargins = oStyle.GetMargins();
+        if (!sMargins.empty())
         {
-            const double& dLeftValue = wcstod(oStyle.GetMarginLeft().c_str(), NULL);
-            const double& dRightValue = wcstod(oStyle.GetMarginRight().c_str(), NULL);
-
-            sIndValue += L"w:left=\"" + std::to_wstring((int)floor(dLeftValue + 0.5)) + L"\" ";
-            sIndValue += L"w:right=\"" + std::to_wstring((int)floor(dRightValue + 0.5)) + L"\"";
+            const float dLeftValue  = wcstof(sMargins[1].c_str(), NULL);
+            const float dRightValue = wcstof(sMargins[3].c_str(), NULL);
+            sIndValue += L"w:left=\""  + std::to_wstring(static_cast<short int>(dLeftValue  + 0.5f)) + L"\" ";
+            sIndValue += L"w:right=\"" + std::to_wstring(static_cast<short int>(dRightValue + 0.5f)) + L"\" ";
         }
 
-        oXmlElement.SetInd(sIndValue);
+        oXmlElement.AddPropertiesInP(NS_CONST_VALUES::ParagraphProperties::P_Ind, sIndValue);
 
         std::wstring sSpacingValue;
+        sSpacingValue.reserve(128);
 
-        if (!oStyle.GetMargin().empty())
+        if (!sMargins.empty())
         {
-            const double& dAfterValue = wcstod(oStyle.GetMarginTop().c_str(), NULL);
-            const double& dBeforeValue = wcstod(oStyle.GetMarginBottom().c_str(), NULL);
+            const float dAfterValue  = wcstof(sMargins[0].c_str(), NULL);
+            const float dBeforeValue = wcstof(sMargins[2].c_str(), NULL);
 
-            sSpacingValue += L"w:after=\"" + std::to_wstring((int)floor(dAfterValue + 0.5)) + L"\" ";
-            sSpacingValue += L"w:before=\"" + std::to_wstring((int)floor(dBeforeValue + 0.5)) + L"\" ";
+            sSpacingValue += L"w:after=\""  + std::to_wstring(static_cast<unsigned short int>((dAfterValue > 0.0f) ? (dAfterValue  + 0.5f) : 0.0f)) + L"\" ";
+            sSpacingValue += L"w:before=\"" + std::to_wstring(static_cast<unsigned short int>((dBeforeValue > 0.0f) ? (dBeforeValue  + 0.5f) : 0.0f)) + L"\" ";
         }
 
-        if (!oStyle.GetLineHeight().empty())
+        const std::wstring sLineHeight = oStyle.GetLineHeight();
+        if (!sLineHeight.empty())
         {
-            double dValue = wcstod(oStyle.GetFontSize().c_str(), NULL);
-            if (dValue == 0)
-                dValue = 24;
+            float dValue = wcstof(oStyle.GetFontSize().c_str(), NULL);
+            if (dValue == 0.0f)
+                dValue = 22.0f;
 
-            const double& dLineHeight = wcstod(oStyle.GetLineHeight().c_str(), NULL) / 24 * dValue * 10;
+            const float dLineHeight = wcstof(sLineHeight.c_str(), NULL) * dValue / 2.0f;
 
-            sSpacingValue += L"w:line=\"" + std::to_wstring((int)floor(dLineHeight + 0.5)) + L"\" ";
-            sSpacingValue += L"w:lineRule=\"auto\"";
-        }
-
-        if (!sSpacingValue.empty())
-        {
-            oXmlElement.SetSpacing(sSpacingValue);
-            oXmlElement.SetContextualSpacing(true);
-        }
-
-        oXmlElement.SetShd(oStyle.GetBackgroundColor());
-
-//        if (!oStyle.GetBorder().empty() &&  oStyle.GetBorder() != L"none")
-        {
-            const std::wstring& sBorderColor = oStyle.GetBorderColor();
-            const std::wstring& sBorderStyle = oStyle.GetBorderStyle();
-
-            const double& dValue = wcstod(oStyle.GetBorderWidth().c_str(), NULL) * 4;
-            const std::wstring& sBorderWidth = std::to_wstring((int)floor(dValue + 0.5));
-
-            const std::wstring& sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
-                                                           sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
-
-
-            if (sBorderColor.empty() + sBorderWidth.empty() + sBorderStyle.empty() == 0)
+            if (dLineHeight > 0)
             {
-                oXmlElement.SetTopBorder(sBorder);
-                oXmlElement.SetLeftBorder(sBorder);
-                oXmlElement.SetBottomBorder(sBorder);
-                oXmlElement.SetRightBorder(sBorder);
-                return;
+                sSpacingValue += L"w:line=\"" + std::to_wstring(static_cast<unsigned short int>((dLineHeight > 0.0f) ? (dLineHeight  + 0.5f) : 0.0f)) + L"\" ";
+                sSpacingValue += L"w:lineRule=\"auto\"";
             }
         }
-//        else
+        if (!sSpacingValue.empty())
         {
-            const std::wstring& sBorderTopColor = oStyle.GetBorderTopColor();
-            const std::wstring& sBorderTopStyle = oStyle.GetBorderTopStyle();
-
-            const double& dValueTop = wcstod(oStyle.GetBorderTopWidth().c_str(), NULL) * 4;
-            const std::wstring& sBorderTopWidth = std::to_wstring((int)floor(dValueTop + 0.5));
-
-            const std::wstring& sBorderTop = L" w:color=\"" + sBorderTopColor + L"\" w:space=\"4\" w:sz=\"" +
-                                                             sBorderTopWidth + L"\" w:val=\"" + sBorderTopStyle + L"\"";
-
-            if (sBorderTopColor.empty() + sBorderTopWidth.empty() + sBorderTopStyle.empty() == 0)
-                oXmlElement.SetTopBorder(sBorderTop);
-
-            const std::wstring& sBorderLeftColor = oStyle.GetBorderLeftColor();
-            const std::wstring& sBorderLeftStyle = oStyle.GetBorderLeftStyle();
-
-            const double& dValueLeft = wcstod(oStyle.GetBorderLeftWidth().c_str(), NULL) * 4;
-            const std::wstring& sBorderLeftWidth = std::to_wstring((int)floor(dValueLeft + 0.5));
-
-            const std::wstring& sBorderLeft = L" w:color=\"" + sBorderLeftColor + L"\" w:space=\"4\" w:sz=\"" +
-                                                              sBorderLeftWidth + L"\" w:val=\"" + sBorderLeftStyle + L"\"";
-
-            if (sBorderLeftColor.empty() + sBorderLeftWidth.empty() + sBorderLeftStyle.empty() == 0)
-                oXmlElement.SetLeftBorder(sBorderLeft);
-
-            const std::wstring& sBorderBottomColor = oStyle.GetBorderBottomColor();
-            const std::wstring& sBorderBottomStyle = oStyle.GetBorderBottomStyle();
-
-            const double& dValueBottom = wcstod(oStyle.GetBorderBottomWidth().c_str(), NULL) * 4;
-            const std::wstring& sBorderBottomWidth = std::to_wstring((int)floor(dValueBottom + 0.5));
-
-            const std::wstring& sBorderBottom = L" w:color=\"" + sBorderBottomColor + L"\" w:space=\"4\" w:sz=\"" +
-                                                                 sBorderBottomWidth + L"\" w:val=\"" + sBorderBottomStyle + L"\"";
-
-            if (sBorderBottomColor.empty() + sBorderBottomWidth.empty() + sBorderBottomStyle.empty() == 0)
-                oXmlElement.SetBottomBorder(sBorderBottom);
-
-            const std::wstring& sBorderRightColor = oStyle.GetBorderRightColor();
-            const std::wstring& sBorderRightStyle = oStyle.GetBorderRightStyle();
-
-            const double& dValueRight = wcstod(oStyle.GetBorderRightWidth().c_str(), NULL) * 4;
-            const std::wstring& sBorderRightWidth = std::to_wstring((int)floor(dValueRight + 0.5));
-
-            const std::wstring& sBorderRight = L" w:color=\"" + sBorderRightColor + L"\" w:space=\"4\" w:sz=\"" +
-                                                                sBorderRightWidth + L"\" w:val=\"" + sBorderRightStyle + L"\"";
-
-            if (sBorderRightColor.empty() + sBorderRightWidth.empty() + sBorderRightStyle.empty() == 0)
-                oXmlElement.SetRightBorder(sBorderRight);
+            oXmlElement.AddPropertiesInP(NS_CONST_VALUES::ParagraphProperties::P_Spacing, sSpacingValue);
+            oXmlElement.AddPropertiesInP(NS_CONST_VALUES::ParagraphProperties::P_ContextualSpacing, L"true");
         }
+
+        oXmlElement.AddPropertiesInP(NS_CONST_VALUES::ParagraphProperties::P_Shd, oStyle.GetBackgroundColor());
+
+//        if (!oStyle.GetBorder().empty() &&  oStyle.GetBorder() != L"none")
+
+        const std::wstring sBorderColor = oStyle.GetBorderColor();
+        const std::wstring sBorderStyle = oStyle.GetBorderStyle();
+        const float dValue = wcstof(oStyle.GetBorderWidth().c_str(), NULL) * 4.0f;
+        const std::wstring sBorderWidth = std::to_wstring(static_cast<short int>(dValue + 0.5f));
+        if (!sBorderColor.empty() && !sBorderWidth.empty() && !sBorderStyle.empty())
+        {
+            const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
+                    sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
+
+            oXmlElement.AddPropertiesInP(NS_CONST_VALUES::ParagraphProperties::P_TopBorder, sBorder);
+            oXmlElement.AddPropertiesInP(NS_CONST_VALUES::ParagraphProperties::P_LeftBorder, sBorder);
+            oXmlElement.AddPropertiesInP(NS_CONST_VALUES::ParagraphProperties::P_BottomBorder, sBorder);
+            oXmlElement.AddPropertiesInP(NS_CONST_VALUES::ParagraphProperties::P_RightBorder, sBorder);
+
+            return;
+        }
+
+        const std::wstring sBorderTopColor = oStyle.GetBorderTopColor();
+        const std::wstring sBorderTopStyle = oStyle.GetBorderTopStyle();
+        const float dValueTop = wcstof(oStyle.GetBorderTopWidth().c_str(), NULL) * 4.0f;
+        const std::wstring sBorderTopWidth = std::to_wstring(static_cast<unsigned short int>(dValueTop + 0.5f));
+        if (!sBorderTopColor.empty() && !sBorderTopWidth.empty() && !sBorderTopStyle.empty())
+            oXmlElement.AddPropertiesInP(NS_CONST_VALUES::ParagraphProperties::P_TopBorder,
+                                         L" w:color=\"" + sBorderTopColor + L"\" w:space=\"4\" w:sz=\"" +
+                                         sBorderTopWidth + L"\" w:val=\"" + sBorderTopStyle + L"\"");
+
+        const std::wstring sBorderLeftColor = oStyle.GetBorderLeftColor();
+        const std::wstring sBorderLeftStyle = oStyle.GetBorderLeftStyle();
+        const float dValueLeft = wcstof(oStyle.GetBorderLeftWidth().c_str(), NULL) * 4.0f;
+        const std::wstring sBorderLeftWidth = std::to_wstring(static_cast<unsigned short int>(dValueLeft + 0.5f));
+        if (!sBorderLeftColor.empty() && !sBorderLeftWidth.empty() && !sBorderLeftStyle.empty())
+            oXmlElement.AddPropertiesInP(NS_CONST_VALUES::ParagraphProperties::P_LeftBorder,
+                                         L" w:color=\"" + sBorderLeftColor + L"\" w:space=\"4\" w:sz=\"" +
+                                         sBorderLeftWidth + L"\" w:val=\"" + sBorderLeftStyle + L"\"");
+
+        const std::wstring sBorderBottomColor = oStyle.GetBorderBottomColor();
+        const std::wstring sBorderBottomStyle = oStyle.GetBorderBottomStyle();
+        const float dValueBottom = wcstof(oStyle.GetBorderBottomWidth().c_str(), NULL) * 4.0f;
+        const std::wstring sBorderBottomWidth = std::to_wstring(static_cast<unsigned short int>(dValueBottom + 0.5f));
+        if (!sBorderBottomColor.empty() && !sBorderBottomWidth.empty() && !sBorderBottomStyle.empty())
+            oXmlElement.AddPropertiesInP(NS_CONST_VALUES::ParagraphProperties::P_BottomBorder,
+                                         L" w:color=\"" + sBorderBottomColor + L"\" w:space=\"4\" w:sz=\"" +
+                                         sBorderBottomWidth + L"\" w:val=\"" + sBorderBottomStyle + L"\"");
+
+        const std::wstring sBorderRightColor = oStyle.GetBorderRightColor();
+        const std::wstring sBorderRightStyle = oStyle.GetBorderRightStyle();
+        const float dValueRight = wcstod(oStyle.GetBorderRightWidth().c_str(), NULL) * 4.0f;
+        const std::wstring sBorderRightWidth = std::to_wstring(static_cast<unsigned short int>(dValueRight + 0.5f));
+        if (!sBorderRightColor.empty() && !sBorderRightWidth.empty() && !sBorderRightStyle.empty())
+            oXmlElement.AddPropertiesInP(NS_CONST_VALUES::ParagraphProperties::P_RightBorder,
+                                         L" w:color=\"" + sBorderRightColor + L"\" w:space=\"4\" w:sz=\"" +
+                                         sBorderRightWidth + L"\" w:val=\"" + sBorderRightStyle + L"\"");
 
     }
 
-    void CDocumentStyle::SetRStyle(const NSCSS::CCompiledStyle &oStyle, CXmlElement& oXmlElement)
+    void CDocumentStyle::SetRStyle   (const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement)
     {
-        oXmlElement = ConvertStyle(oStyle, false);
-
-        if (oStyle.Empty())
+        ConvertStyle(oStyle, oXmlElement, false);
+        if (oStyle.Empty() || oXmlElement.Empty())
             return;
 
-        oXmlElement.SetColor(oStyle.GetColor());
-        oXmlElement.SetShd(oStyle.GetBackgroundColor());
+        oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunerProperties::R_Color, oStyle.GetColor());
+        oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunerProperties::R_Shd, oStyle.GetBackgroundColor());
+        oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunerProperties::R_U, oStyle.GetTextDecoration());
 
-        if (!oStyle.GetFontSize().empty())
+        const std::wstring sFontSize = oStyle.GetFontSize();
+        if (!sFontSize.empty())
         {
-            const double& dValue = wcstod(oStyle.GetFontSize().c_str(), NULL);
-
-            oXmlElement.SetSz(std::to_wstring((int)dValue));
+            const float dValue = wcstof(sFontSize.c_str(), NULL);
+            oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunerProperties::R_Sz, std::to_wstring((unsigned short int)dValue));
         }
-        if (!oStyle.GetFontFamily().empty())
+
+        const std::wstring sFontFamily = oStyle.GetFontFamily();
+        if (!sFontFamily.empty())
         {
-            const std::wstring& sFontFamily = oStyle.GetFontFamily();
-            oXmlElement.SetRFonts(sFontFamily);
+            const std::vector<std::wstring> sFontsFamily = oStyle.GetFontNames2(sFontFamily);
+            if (!sFontsFamily.empty())
+                oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunerProperties::R_RFonts, sFontsFamily.back());
         }
 
         if (oStyle.GetFontWeight() == L"bold")
-            oXmlElement.SetB(true);
+            oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunerProperties::R_B, L"true");
 
         if (oStyle.GetFontStyle() == L"italic")
-            oXmlElement.SetI(true);
+            oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunerProperties::R_I, L"true");
 
         std::wstring sSpacingValue;
-
-        if (!oStyle.GetMargin().empty())
+        const std::vector<std::wstring> sMargins = oStyle.GetMargins();
+        if (!sMargins.empty())
         {
-            const double& dAfterValue = wcstod(oStyle.GetMarginTop().c_str(), NULL) * 10;
-
-            const double& dBeforeValue = wcstod(oStyle.GetMarginBottom().c_str(), NULL) * 10;
-
-            sSpacingValue += L"w:after=\"" + std::to_wstring((int)floor(dAfterValue + 0.5)) + L"\" ";
-            sSpacingValue += L"w:before=\"" + std::to_wstring((int)floor(dBeforeValue + 0.5)) + L"\" ";
+            const float dAfterValue = wcstof(sMargins[0].c_str(), NULL) * 10.0f;
+            const float dBeforeValue = wcstof(sMargins[2].c_str(), NULL) * 10.0f;
+            sSpacingValue += L"w:after=\"" + std::to_wstring(static_cast<unsigned short int>(dAfterValue + 0.5f)) + L"\" ";
+            sSpacingValue += L"w:before=\"" + std::to_wstring(static_cast<unsigned short int>(dBeforeValue + 0.5f)) + L"\" ";
         }
 
-        if (!oStyle.GetLineHeight().empty())
-        {
-            double dValue = wcstod(oStyle.GetFontSize().c_str(), NULL);
-            if (dValue == 0)
-                dValue = 24;
-
-            const double& dLineHeight = wcstod(oStyle.GetLineHeight().c_str(), NULL) / 24 * dValue * 10;
-
-            sSpacingValue += L"w:line=\"" + std::to_wstring((int)floor(dLineHeight + 0.5)) + L"\" ";
-            sSpacingValue += L"w:lineRule=\"auto\"";
-        }
-
-        if (!sSpacingValue.empty())
-        {
-            oXmlElement.SetSpacing(sSpacingValue);
-            oXmlElement.SetContextualSpacing(true);
-        }
+        // spacing в rPr
     }
 
-    void CDocumentStyle::WriteRStyle(const NSCSS::CCompiledStyle &oStyle)
+    void CDocumentStyle::WriteRStyle (const NSCSS::CCompiledStyle& oStyle)
     {
         if(oStyle.GetId().empty())
         {
@@ -513,39 +406,34 @@ namespace NSCSS
 
         const auto& oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), structStyle);
 
-        if (oItem != m_arStyleUsed.cend())
+        if (oItem != m_arStyleUsed.end())
         {
             m_sId = oItem->m_sId;
             return;
         }
-
         CXmlElement oXmlElement;
         SetRStyle(oStyle, oXmlElement);
 
-        if (!oStyle.Empty())
+        if (!oStyle.Empty() || !oXmlElement.Empty())
         {
             structStyle.m_sId = oXmlElement.GetStyleId();
             m_arStyleUsed.push_back(structStyle);
-
+            m_sStyle += oXmlElement.GetRStyle();
         }
-
-        m_sStyle += oXmlElement.GetRStyle();
     }
 
-    void CDocumentStyle::WritePStyle(const NSCSS::CCompiledStyle &oStyle)
+    void CDocumentStyle::WritePStyle (const NSCSS::CCompiledStyle& oStyle)
     {   
         if(oStyle.GetId().empty())
         {
             m_sId = L"normal";
-            m_sStyle.clear();
             return;
         }
 
         CStyleUsed structStyle(oStyle, true);
-
         const auto& oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), structStyle);
 
-        if (oItem != m_arStyleUsed.cend())
+        if (oItem != m_arStyleUsed.end())
         {
             m_sId = oItem->m_sId;
             return;
@@ -554,12 +442,11 @@ namespace NSCSS
         CXmlElement oXmlElement;
         SetPStyle(oStyle, oXmlElement);
 
-        if (!oStyle.Empty())
+        if (!oStyle.Empty() || !oXmlElement.Empty())
         {
             structStyle.m_sId = oXmlElement.GetStyleId();
             m_arStyleUsed.push_back(structStyle);
+            m_sStyle += oXmlElement.GetPStyle();
         }
-
-        m_sStyle += oXmlElement.GetPStyle();
     }
 }

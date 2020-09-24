@@ -4,6 +4,9 @@
 #include "../../DesktopEditor/common/Directory.h"
 
 #include <time.h>
+#include <iostream>
+#include <vector>
+#include <string>
 
 int main(int argc, char *argv[])
 {
@@ -11,10 +14,11 @@ int main(int argc, char *argv[])
     std::wstring sTmp = NSFile::GetProcessDirectory() + L"/tmp";
     std::wstring sOutputDirectory = NSFile::GetProcessDirectory() + L"/OutputFiles";
     NSDirectory::CreateDirectory(sOutputDirectory);
+    NSDirectory::CreateDirectory(sTmp);
 
     clock_t tTime1 = clock();
     //Русские символы в консоль не выводятся
-    for (std::wstring sFileName : arFiles)
+    for (const std::wstring& sFileName : arFiles)
     {
         clock_t tTimeBegin = clock();
 
@@ -29,6 +33,7 @@ int main(int argc, char *argv[])
 
             oEpub.SetTempDirectory(sTmp);
             oEpub.Convert(sFileName, sOutputDirectory + L"/" + sFile + L".docx");
+            NSDirectory::DeleteDirectory(sTmp + L"/res/word/media");
 //            oEpub.ShowMap();
         }
         else
@@ -41,6 +46,7 @@ int main(int argc, char *argv[])
     clock_t tTime2 = clock();
 
     std::wcout << (double)(tTime2 - tTime1) / CLOCKS_PER_SEC << std::endl;
+    NSDirectory::DeleteDirectory(sTmp);
 
     return 0;
 }

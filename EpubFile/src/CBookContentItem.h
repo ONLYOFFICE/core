@@ -1,7 +1,7 @@
 #ifndef CBOOKCONTENTITEM_H
 #define CBOOKCONTENTITEM_H
 
-#include <iostream>
+#include <string>
 
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 
@@ -10,12 +10,11 @@ class CBookContentItem
 public:
     std::wstring m_sID;
     std::wstring m_sLinear;
+
     CBookContentItem();
     ~CBookContentItem();
-
     void Clear();
-
-    bool ReadContentItem(XmlUtils::CXmlLiteReader &oXmlLiteReader, const int& depth);
+    bool ReadContentItem(XmlUtils::CXmlLiteReader& oXmlLiteReader, int depth);
 
 };
 

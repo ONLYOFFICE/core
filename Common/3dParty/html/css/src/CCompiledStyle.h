@@ -12,9 +12,8 @@ namespace NSCSS
     class CSSCALCULATOR_EXPORT CCompiledStyle
     {
         std::map<std::wstring, std::wstring> m_mStyle;
-        std::wstring m_sId;
-
         std::vector<std::wstring> m_arParentsStyles;
+        std::wstring m_sId;
 
     public:
         CCompiledStyle();
@@ -40,7 +39,7 @@ namespace NSCSS
         std::vector<std::wstring> GetParentsName() const;
 
         void SetID(const std::wstring& sId);
-        const std::wstring& GetId() const;
+        std::wstring GetId() const;
 
         // const std::map<std::wstring, std::wstring>::iterator& GetBegin();
         // const std::map<std::wstring, std::wstring>::iterator& GetEnd();
@@ -50,7 +49,8 @@ namespace NSCSS
         /* FONT */
         std::wstring GetFont() const;
         std::wstring GetFontFamily() const;
-        std::vector<std::wstring> GetFontNames();
+        std::vector<std::wstring> GetFontNames() const;
+        std::vector<std::wstring> GetFontNames2(const std::wstring& sFontFamily) const;
         std::wstring GetFontSize() const;
         std::wstring GetFontSizeAdjust() const;
         std::wstring GetFontStretch() const;
@@ -68,6 +68,12 @@ namespace NSCSS
         std::wstring GetMarginRight() const;
         std::wstring GetMarginTop() const;
         std::wstring GetMarginBlockStart() const;
+
+        std::vector<std::wstring> GetMargins() const;
+        std::wstring GetMarginTop2   () const;
+        std::wstring GetMarginBottom2() const;
+        std::wstring GetMarginLeft2  () const;
+        std::wstring GetMarginRight2 () const;
 
         /* PADDING */
         std::wstring GetPadding() const;
@@ -127,7 +133,7 @@ namespace NSCSS
         bool operator == (const CCompiledStyle& oStyle)   const;
         // bool operator != (const CCompiledStyle& oElement) const;
         // bool operator >  (const CCompiledStyle& oElement) const;
-        // bool operator <  (const CCompiledStyle& oElement) const;
+        //bool operator <  (const CCompiledStyle& oElement) const;
 
     };
 }

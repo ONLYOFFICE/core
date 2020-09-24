@@ -9,6 +9,77 @@ namespace NSCSS
 {
     namespace NS_CONST_VALUES
     {
+
+        const std::map<std::wstring, unsigned short int> m_mUnisMesure =
+        {
+            {L"px", 0}
+        };
+        enum BasicProperties
+        {
+            B_CustomStyle = 0,
+            B_StyleId = 1,
+            B_Type = 2,
+            B_Default = 3,
+
+            B_Name = 4,
+            B_BasedOn = 5,
+            B_QFormat = 6,
+            B_Link = 7,
+            B_UnhideWhenUsed = 8,
+            B_UiPriority = 9,
+//            B_SemiHidden = 10,
+//            B_S = 11,
+        };
+
+        enum ParagraphProperties
+        {
+            P_Jc = 0,
+            P_Spacing = 1,
+            P_ContextualSpacing = 2,
+            P_Ind = 3,
+            P_OutlineLvl = 4,
+            P_Shd = 5,
+            // <pBdr>
+                P_TopBorder = 6,
+                P_LeftBorder = 7,
+                P_BottomBorder = 8,
+                P_RightBorder = 9,
+            // </pBdr>
+            P_KeepLines = 10,
+            P_KeepNext = 11,
+        };
+
+        enum RunerProperties
+        {
+            R_RFonts = 0,
+            R_Sz = 1,
+            R_B = 2,
+            R_I = 3,
+            R_Color = 4,
+            R_U = 5,
+            R_Shd = 6
+        };
+
+        enum TableProperties
+        {
+            T_TblInd = 0,
+            // <tblCellMar>
+                T_CellTop = 1,
+                T_CellLeft = 2,
+                T_CellBottom = 3,
+                T_CellRight = 4,
+            // <tblCellMar>
+
+            // <tblBorders>
+                T_BorderTop = 5,
+                T_BorderLeft = 6,
+                T_BorderBottom = 7,
+                T_BorderRight = 8,
+                T_BorderInsideH = 9,
+                T_BorderInsideV = 10
+            // </tblBorders>
+        };
+
         const std::map<std::wstring, std::wstring> mStyles = {
                 {L"dotted", L"dotted"}, {L"dashed", L"dashed"},
                 {L"solid", L"single"}, {L"double", L"double"},

@@ -55,6 +55,7 @@ namespace NSCSS
     {
         if (arStandartedStyles.empty())
             return;
+
         std::vector<std::wstring> arStyles;
         for (const std::wstring& sStyleName : arStandartedStyles)
         {
@@ -91,22 +92,23 @@ namespace NSCSS
     }
 
     void CDocumentStyle::ConvertStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oElement, bool bIsPStyle)
-    {   
-        std::wstring sName(oStyle.GetId());
-        if (sName.empty())
+    {
+        if (oStyle.GetId().empty())
             return;
 
-        size_t posPoint = sName.find(L'.');
+        std::wstring sName = oStyle.GetId();
+        const size_t posPoint = sName.find(L'.');
+
         if (posPoint != std::wstring::npos)
             sName = sName.substr(0, posPoint);
         else
         {
-            size_t posLattice = sName.find(L'#');
+            const size_t posLattice = sName.find(L'#');
             if (posLattice != std::wstring::npos)
                 sName = sName.substr(0, posLattice);
             else
             {
-                size_t posDash = sName.find(L'-');
+                const size_t posDash = sName.find(L'-');
                 if (posDash != std::wstring::npos)
                     sName = sName.substr(0, posDash);
             }
@@ -141,7 +143,22 @@ namespace NSCSS
         if (std::find(m_arStandardStyles.begin(), m_arStandardStyles.end(), sName) != m_arStandardStyles.end())
             CreateStandardStyle(sName, oStandardXmlElement);
 
-        if (!oStandardXmlElement.Empty() && !oParentStyle.Empty())
+        if (oStandardXmlElement.Empty() && !oParentStyle.Empty())
+        {
+            std::wstring sParentsStyleID = oParentStyle.GetStyleId();
+            if (std::find(m_arStandardStylesUsed.begin(), m_arStandardStylesUsed.end(), sParentsStyleID) == m_arStandardStylesUsed.end())
+            {
+                m_sStyle += bIsPStyle ? oParentStyle.GetPStyle() : oParentStyle.GetRStyle();
+                m_arStandardStylesUsed.push_back(sParentsStyleID);
+            }
+            if (oStyle.Empty())
+            {
+                m_sId = sParentsStyleID;
+                return;
+            }
+            oElement.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_BasedOn, sParentsStyleID);
+        }
+        else if (!oStandardXmlElement.Empty() && !oParentStyle.Empty())
         {
             std::wstring sStandPlusParent = oStandardXmlElement.GetStyleId() + L"+" + oParentStyle.GetStyleId();
             if(std::find(m_arStandardStylesUsed.begin(), m_arStandardStylesUsed.end(), sStandPlusParent) != m_arStandardStylesUsed.end())
@@ -184,21 +201,6 @@ namespace NSCSS
                 return;
             }
             oElement.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_BasedOn, sStandartStyleID);
-        }
-        else if (oStandardXmlElement.Empty() && !oParentStyle.Empty())
-        {
-            std::wstring sParentsStyleID = oParentStyle.GetStyleId();
-            if (std::find(m_arStandardStylesUsed.begin(), m_arStandardStylesUsed.end(), sParentsStyleID) == m_arStandardStylesUsed.end())
-            {
-                m_sStyle += bIsPStyle ? oParentStyle.GetPStyle() : oParentStyle.GetRStyle();
-                m_arStandardStylesUsed.push_back(sParentsStyleID);
-            }
-            if (oStyle.Empty())
-            {
-                m_sId = sParentsStyleID;
-                return;
-            }
-            oElement.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_BasedOn, sParentsStyleID);
         }
 
         if (oStyle.Empty() && oElement.Empty())
@@ -277,7 +279,12 @@ namespace NSCSS
             if (dValue == 0.0f)
                 dValue = 22.0f;
 
-            const float dLineHeight = wcstof(sLineHeight.c_str(), NULL) * dValue / 2.0f;
+            float dLineHeight = wcstof(sLineHeight.c_str(), NULL);
+
+            if (dLineHeight > 7.0f)
+                dLineHeight /= 22.0f;
+
+            dLineHeight *= dValue * 10.0f;
 
             if (dLineHeight > 0)
             {
@@ -363,6 +370,7 @@ namespace NSCSS
         const std::wstring sFontSize = oStyle.GetFontSize();
         if (!sFontSize.empty())
         {
+//            std::wcout << sFontSize << std::endl;
             const float dValue = wcstof(sFontSize.c_str(), NULL);
             oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunerProperties::R_Sz, std::to_wstring((unsigned short int)dValue));
         }

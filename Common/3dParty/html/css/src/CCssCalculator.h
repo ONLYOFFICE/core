@@ -61,7 +61,7 @@ namespace NSCSS
         CCssCalculator();
         ~CCssCalculator();
 
-        std::map<std::wstring, std::map<std::wstring, std::wstring>> GetDeclarations(const std::wstring& sSelector) const;
+        std::map<std::wstring, std::wstring> GetDeclarations(const std::wstring& sSelector) const;
 
         CCompiledStyle GetCompiledStyle(const std::vector<std::string>& arSelectors, const UnitMeasure unitMeasure = Default) const;
         CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors, const UnitMeasure& unitMeasure = Default) const;

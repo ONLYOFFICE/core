@@ -253,7 +253,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Type, L"paragraph");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"div");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_CustomStyle, L"1");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Div");
+        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Div paragraph");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn, L"normal");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"div-c");

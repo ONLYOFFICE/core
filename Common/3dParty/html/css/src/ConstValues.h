@@ -4,6 +4,7 @@
 #include "CssCalculator_global.h"
 
 #include <map>
+#include <vector>
 
 namespace NSCSS
 {
@@ -150,6 +151,40 @@ namespace NSCSS
             /* Outdated */
             {L"windowtext", L"#000000"}
         };
+        const std::vector<std::string> arPseudoClasses = {
+                                                        "invalid",
+                                                        "read-only",
+                                                        "-moz-placeholder",
+                                                        "-webkit-input-placeholder",
+                                                        "active",
+                                                        "checked",
+                                                        "default",
+                                                        "disabled",
+                                                        "empty",
+                                                        "enabled",
+                                                        "first-child",
+                                                        "first-of-type",
+                                                        "focus",
+                                                        "hover",
+                                                        "indeterminate",
+                                                        "lang",
+                                                        "last-child",
+                                                        "last-of-type",
+                                                        "link",
+                                                        "not",
+                                                        "nth-child",
+                                                        "nth-last-child",
+                                                        "nth-last-of-type",
+                                                        "nth-of-type",
+                                                        "only-child",
+                                                        "only-of-type",
+                                                        "optional",
+                                                        "read-write",
+                                                        "required",
+                                                        "root",
+                                                        "target",
+                                                        "valid",
+                                                        "visited"};
     }
 }
 

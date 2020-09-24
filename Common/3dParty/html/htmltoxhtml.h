@@ -251,12 +251,9 @@ static void ReadMht(std::string& sFileContent, size_t& nFound, size_t& nNextFoun
             (sContentEncoding == "Base64" || sContentEncoding == "base64"))
     {
         if(sExtention == L"ico" || sContentType.find("ico") != std::string::npos)
-        {
-            if(!sName.empty())
-                sName = sName.substr(0, sName.rfind('.')) + ".jpg";
-            else
-                sContentType = "image/jpg";
-        }
+            sContentType = "image/jpg";
+        else if(sExtention == L"gif")
+            sContentType = "image/gif";
         int nSrcLen = (int)sContent.length();
         int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
         BYTE* pData = new BYTE[nDecodeLen];

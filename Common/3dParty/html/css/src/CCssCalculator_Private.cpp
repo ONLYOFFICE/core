@@ -370,12 +370,12 @@ namespace NSCSS
         return sText;
     }
 
-    inline std::map<std::wstring, std::wstring> CCssCalculator_Private::GetDeclarations(const std::wstring& sSelector) const
+    std::map<std::wstring, std::wstring> CCssCalculator_Private::GetDeclarations(const std::wstring& sSelector)
     {
         if (sSelector.empty() || m_arData.empty())
             return std::map<std::wstring, std::wstring>();
 
-        for (const CElement* oElement : m_arData )
+        for (CElement* oElement : m_arData )
             if (oElement->FindSelector(sSelector))
                 return oElement->GetDeclarations(sSelector, {});
 

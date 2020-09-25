@@ -116,6 +116,9 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
 #endif
 
     std::wstring sOutputDir = m_sTempDir + L"/res";
+    if (!bIsOutCompress)
+        sOutputDir = sOutputFile;
+
     NSDirectory::CreateDirectory(sOutputDir);
     HRESULT hRes = oFile.OpenBatchHtml(arFiles, sOutputDir, &oFileParams);
     if (bIsOutCompress && S_OK == hRes)

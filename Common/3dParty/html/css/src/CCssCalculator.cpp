@@ -14,7 +14,7 @@ namespace NSCSS
         delete m_pInternal;
     }
 
-    std::map<std::wstring, std::map<std::wstring, std::wstring>> CCssCalculator::GetDeclarations(const std::wstring& sSelector)  const
+    std::map<std::wstring, std::wstring> CCssCalculator::GetDeclarations(const std::wstring& sSelector)  const
     {
         return m_pInternal->GetDeclarations(sSelector);
     }

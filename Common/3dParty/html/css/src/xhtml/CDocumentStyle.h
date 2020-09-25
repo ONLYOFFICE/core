@@ -19,7 +19,7 @@ namespace NSCSS
 
         bool operator==(const CStyleUsed& oUsedStyle) const
         {
-            return (m_oStyle == oUsedStyle.m_oStyle) && (m_bIsPStyle == oUsedStyle.m_bIsPStyle);
+            return (m_bIsPStyle == oUsedStyle.m_bIsPStyle) && (m_oStyle == oUsedStyle.m_oStyle);
         }
 
         /*

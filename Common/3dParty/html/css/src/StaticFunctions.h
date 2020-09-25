@@ -3,11 +3,11 @@
 
 #include "../../../../../UnicodeConverter/UnicodeConverter.h"
 #include "../../../../../DesktopEditor/common/File.h"
+#include "CCssCalculator.h"
 #include "CssCalculator_global.h"
 #include <string>
 #include <vector>
 #include <algorithm>
-
 
 namespace NSCSS
 {
@@ -126,32 +126,6 @@ namespace NSCSS
             }
         }
 
-        inline bool ConvertAbsoluteValue(std::wstring& sAbsoluteValue)
-        {
-            if (sAbsoluteValue.empty())
-                return false;
-
-            bool bIsConvert = false;
-
-            std::map<std::wstring, std::wstring> arAbsoluteValues = {{L"xx-small", L"9px"},  {L"x-small", L"10px"},
-                                                                     {L"small",    L"13px"}, {L"medium",  L"16px"},
-                                                                     {L"large",    L"18px"}, {L"x-large", L"24px"},
-                                                                     {L"xx-large", L"32px"}};
-
-            for (const auto& sAbsValue : arAbsoluteValues)
-            {
-                while (sAbsoluteValue.find(sAbsValue.first) != std::wstring::npos)
-                {
-                    size_t nPos1 = sAbsoluteValue.find(sAbsValue.first);
-                    size_t nPos2 = nPos1 + sAbsValue.first.length() - 1;
-
-                    sAbsoluteValue.replace(nPos1, nPos2, sAbsValue.second);
-                    bIsConvert = true;
-                }
-            }
-            return bIsConvert;
-        }
-
         inline std::wstring DeleteSpace(const std::wstring& sValue)
         {
             if (sValue.empty())
@@ -172,7 +146,7 @@ namespace NSCSS
 
             std::vector<std::string> arWords;
             arWords.reserve(16);
-            std::string sTemp = wstringToString(sLine);
+            const std::string sTemp = wstringToString(sLine);
             size_t posFirstNotSpace = sTemp.find_first_not_of(" \n\r\t\f\v:;,");
             while (posFirstNotSpace != std::wstring::npos)
             {
@@ -200,8 +174,51 @@ namespace NSCSS
             return arWords;
         }
 
+        inline bool ConvertAbsoluteValue(std::wstring& sAbsoluteValue)
+        {
+            if (sAbsoluteValue.empty())
+                return false;
+
+            bool bIsConvert = false;
+
+            std::map<std::wstring, std::wstring> arAbsoluteValues = {{L"xx-small", L"9px"},  {L"x-small", L"10px"},
+                                                                     {L"small",    L"13px"}, {L"medium",  L"16px"},
+                                                                     {L"large",    L"18px"}, {L"x-large", L"24px"},
+                                                                     {L"xx-large", L"32px"}};
+
+            if (sAbsoluteValue.find(L' ') == std::wstring::npos && arAbsoluteValues.find(sAbsoluteValue) != arAbsoluteValues.end())
+            {
+                sAbsoluteValue = arAbsoluteValues[sAbsoluteValue];
+                return true;
+            }
+
+            std::wstring sValue;
+            sValue.reserve(sAbsoluteValue.length() + 1);
+
+            for (const std::wstring& sWord : GetWordsW(sAbsoluteValue))
+            {
+                const auto& oFind = arAbsoluteValues.find(sWord);
+                if (oFind != arAbsoluteValues.end())
+                {
+                    bIsConvert = true;
+                    sValue += oFind->second + L' ';
+                }
+                else
+                    sValue += sWord + L' ';
+            }
+            sValue.pop_back();
+
+            if (bIsConvert)
+                sAbsoluteValue = sValue;
+
+            return bIsConvert;
+        }
+
         inline std::vector<std::string> GetSelectorsList(const std::wstring& sSelectors)
         {
+            if (sSelectors.empty())
+                return std::vector<std::string>();
+
             std::wstring sNames = sSelectors;
             std::wstring sClasses;
             std::wstring sIds;
@@ -247,6 +264,52 @@ namespace NSCSS
                 for (const std::string& sName : arNames)
                     arSelectors.push_back(sName + sId);
             }
+
+            return arSelectors;
+        }
+
+        inline std::vector<std::string> GetSelectorsListWithParents(const std::vector<CNode> &arParents)
+        {
+            if (arParents.size() < 2)
+                return std::vector<std::string>();
+
+            if (arParents.back().m_sName.empty())
+                return std::vector<std::string>();
+
+            std::vector<std::string> arSelectors;
+
+            short int nIndex = 0;
+
+            while (nIndex < static_cast<short int>(arParents.size() - 1))
+            {
+                std::wstring sSelector;
+
+                for (unsigned short int i = nIndex; i < arParents.size() - 1; ++i)
+                {
+                    if (arParents[i].m_sName.empty())
+                        continue;
+
+                    std::wstring sParentSelector = arParents[i].m_sName;
+                    if (!arParents[i].m_sClass.empty())
+                        sParentSelector += L'.' + arParents[i].m_sClass;
+                    if (!arParents[i].m_sId.empty())
+                        sParentSelector += L'#' + arParents[i].m_sId;
+
+                    sSelector += sParentSelector + L' ';
+
+                }
+
+                std::wstring sChildrenSelector = arParents.back().m_sName;
+                if (!arParents.back().m_sClass.empty())
+                    sChildrenSelector += L'.' + arParents.back().m_sClass;
+                if (!arParents.back().m_sId.empty())
+                    sChildrenSelector += L'#' + arParents.back().m_sId;
+
+                sSelector += sChildrenSelector;
+                ++nIndex;
+                arSelectors.push_back(wstringToString(sSelector));
+            }
+
             return arSelectors;
         }
 
@@ -259,7 +322,7 @@ namespace NSCSS
             size_t posFirstNotSpace = sLine.find_first_not_of(L" \n\r\t\f\v:;,");
             while (posFirstNotSpace != std::wstring::npos)
             {
-                size_t posLastNotSpace = sLine.find_first_of(L" \n\r\t\f\v:;,", posFirstNotSpace);
+                const size_t posLastNotSpace = sLine.find_first_of(L" \n\r\t\f\v:;,", posFirstNotSpace);
                 arWords.push_back(sLine.substr(posFirstNotSpace, (posLastNotSpace != std::wstring::npos) ? posLastNotSpace - posFirstNotSpace + 1 : posLastNotSpace - posFirstNotSpace ));
                 posFirstNotSpace = sLine.find_first_not_of(L" \n\r\t\f\v:;,", posLastNotSpace);
             }
@@ -269,6 +332,48 @@ namespace NSCSS
         inline bool IsDigit(const std::wstring& sValue)
         {
             return sValue.empty() ? false : std::all_of(sValue.begin(), sValue.end(), [] (const wchar_t& cChar) { return iswdigit(cChar); });
+        }
+
+        inline std::wstring ConvertRgbToHex(const std::wstring& sRgbValue)
+        {
+            size_t posFirst = sRgbValue.find_first_of(L"01234567890");
+            if (posFirst == std::wstring::npos)
+                return std::wstring();
+
+            const wchar_t cHex[17]{L"0123456789ABCDEF"};
+
+            std::wstring sValue = L"#";
+
+            while (posFirst != std::wstring::npos)
+            {
+                std::wstring sHex;
+
+                const size_t posSecond = sRgbValue.find_first_of(L", )", posFirst);
+
+                short int nValue = std::stoi(sRgbValue.substr(posFirst, posSecond - posFirst));
+
+                if (nValue < 0)
+                    sHex += L"00";
+                else if (nValue > 255)
+                    sHex += L"FF";
+                else
+                {
+                    do
+                    {
+                        sHex = cHex[nValue % 16] + sHex;
+                        nValue /= 16;
+                    }
+                    while (nValue != 0);
+                }
+
+                if (sHex.length() < 2)
+                    sHex = L"0" + sHex;
+
+                sValue += sHex;
+
+                posFirst = sRgbValue.find_first_of(L"01234567890", posSecond);
+            }
+            return sValue;
         }
     }
 }

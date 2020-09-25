@@ -29,17 +29,25 @@ namespace NSCSS
 
     CCompiledStyle& CCompiledStyle::operator+= (const CCompiledStyle &oElement)
     {
-        for(const auto& oItem : oElement.m_mStyle)
+        for (const auto& oItem : oElement.m_mStyle)
         {
-            const auto& oFindPr = m_mStyle.find(oItem.first);
-            if (oFindPr != m_mStyle.end())
+            if (!oItem.second.empty() && oItem.second != L"inherit")
             {
-                if (!oItem.second.empty() && oItem.second != L"inherit" && oFindPr->second.find(L"!imp") == std::wstring::npos)
-                    m_mStyle[oFindPr->first] = oItem.second;
-            }
-            else
                 m_mStyle[oItem.first] = oItem.second;
+            }
         }
+
+//        for(const auto& oItem : oElement.m_mStyle)
+//        {
+//            const auto& oFindPr = m_mStyle.find(oItem.first);
+//            if (oFindPr != m_mStyle.end())
+//            {
+//                if (!oItem.second.empty() && oItem.second != L"inherit" && oFindPr->second.find(L"!imp") == std::wstring::npos)
+//                    m_mStyle[oFindPr->first] = oItem.second;
+//            }
+//            else
+//                m_mStyle[oItem.first] = oItem.second;
+//        }
         return *this;
     }
 
@@ -53,6 +61,11 @@ namespace NSCSS
 
     bool CCompiledStyle::operator== (const CCompiledStyle& oStyle) const
     {
+        if (oStyle.m_mStyle.size() != m_mStyle.size() ||
+            oStyle.m_arParentsStyles.size() != m_arParentsStyles.size() ||
+            oStyle.GetId()[0] != m_sId[0])
+            return false;
+
         return GetId()[0]        == oStyle.GetId()[0]        &&
                m_arParentsStyles == oStyle.m_arParentsStyles &&
                m_mStyle          == oStyle.m_mStyle;
@@ -1108,8 +1121,20 @@ namespace NSCSS
             const auto& oBackgroundColor = m_mStyle.find(L"background-color");
 
             if (oBackgroundColor != m_mStyle.end())
-                return oBackgroundColor->second;
+            {
+                std::wstring sColor = oBackgroundColor->second;
+                if (sColor[0] == L'#')
+                {
+                    sColor += L"000000";
+                    return sColor.substr(0, 7);
+                }
+                std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
 
+                const auto& oHEX = NS_CONST_VALUES::mColors.find(sColor);
+
+                if (oHEX != NS_CONST_VALUES::mColors.end())
+                    return oHEX->second;
+            }
             const std::wstring& sBackground = GetBackground();
 
             if (sBackground.empty())
@@ -1121,9 +1146,8 @@ namespace NSCSS
             {
                 if (sColor[0] == L'#')
                 {
-                    if (sColor.length() < 7)
-                        sColor += L"000000";
-                    return sColor.substr(1, 6);
+                    sColor += L"000000";
+                    return sColor.substr(0, 7);
                 }
                 std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
 
@@ -1139,7 +1163,24 @@ namespace NSCSS
         std::wstring CCompiledStyle::GetColor() const
         {
             const auto& oColor = m_mStyle.find(L"color");
-            return oColor != m_mStyle.end() ? oColor->second : std::wstring();
+            if (oColor == m_mStyle.end())
+                return std::wstring();
+
+            std::wstring sColor = oColor->second;
+
+            if (sColor[0] == L'#')
+            {
+                sColor += L"000000";
+                return sColor.substr(0, 7);
+            }
+            std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
+
+            const auto& oHEX = NS_CONST_VALUES::mColors.find(sColor);
+
+            if (oHEX != NS_CONST_VALUES::mColors.end())
+                return oHEX->second;
+
+            return L"auto";
         }
 
         std::wstring CCompiledStyle::GetOutlineColor() const
@@ -1298,8 +1339,10 @@ namespace NSCSS
                 for (std::wstring sColor : arWords)
                 {
                     if (sColor[0] == L'#')
-                        return sColor.substr(1);
-
+                    {
+                        sColor += L"000000";
+                        return sColor.substr(0, 7);
+                    }
                     std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
 
                     const auto& oHEX = NS_CONST_VALUES::mColors.find(sColor);
@@ -1404,7 +1447,10 @@ namespace NSCSS
                 for (std::wstring sColor : arWords)
                 {
                     if (sColor[0] == L'#')
-                        return sColor.substr(1);
+                    {
+                        sColor += L"000000";
+                        return sColor.substr(0, 7);
+                    }
 
                     std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
 
@@ -1510,7 +1556,10 @@ namespace NSCSS
                 for (std::wstring sColor : arWords)
                 {
                     if (sColor[0] == L'#')
-                        return sColor.substr(1);
+                    {
+                        sColor += L"000000";
+                        return sColor.substr(0, 7);
+                    }
 
                     std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
 
@@ -1616,7 +1665,10 @@ namespace NSCSS
                 for (std::wstring sColor : arWords)
                 {
                     if (sColor[0] == L'#')
-                        return sColor.substr(1);
+                    {
+                        sColor += L"000000";
+                        return sColor.substr(0, 7);
+                    }
 
                     std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
 
@@ -1722,7 +1774,10 @@ namespace NSCSS
                 for (std::wstring sColor : arWords)
                 {
                     if (sColor[0] == L'#')
-                        return sColor.substr(1);
+                    {
+                        sColor += L"000000";
+                        return sColor.substr(0, 7);
+                    }
 
                     std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
 

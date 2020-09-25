@@ -120,17 +120,17 @@ std::map<std::wstring, std::wstring> CElement::GetDeclarations() const
 }
 */
 
-std::map<std::wstring, std::map<std::wstring, std::wstring>> CElement::GetDeclarations(const std::wstring& sSelector, const std::vector<std::wstring>& arParents) const
+std::map<std::wstring, std::wstring> CElement::GetDeclarations(const std::wstring& sSelector, const std::vector<std::wstring>& arParents) const
 {
     if (m_arSelectors.size() == 0)
-        return std::map<std::wstring, std::map<std::wstring, std::wstring>>();
+        return std::map<std::wstring, std::wstring>();
 
     switch (m_arSelectors.size())
     {
         case 0:
         {
             if (m_arChildrens.size() == 0)
-                return std::map<std::wstring, std::map<std::wstring, std::wstring>>();
+                return std::map<std::wstring, std::wstring>();
             else
             {
                 for (const CElement* oElement : m_arChildrens)
@@ -143,13 +143,13 @@ std::map<std::wstring, std::map<std::wstring, std::wstring>> CElement::GetDeclar
         }
         case 1:
             if (m_arSelectors[0] == sSelector)
-                return std::map<std::wstring, std::map<std::wstring, std::wstring>>{std::make_pair(sSelector, m_arDeclarations)};
+                return m_arDeclarations;
         case 2:
             if (m_arSelectors[0] == sSelector || m_arSelectors[1] == sSelector)
-                return std::map<std::wstring, std::map<std::wstring, std::wstring>>{std::make_pair(sSelector, m_arDeclarations)};
+                return m_arDeclarations;
         case 3:
             if (m_arSelectors[0] == sSelector || m_arSelectors[1] == sSelector || m_arSelectors[2] == sSelector)
-                return std::map<std::wstring, std::map<std::wstring, std::wstring>>{std::make_pair(sSelector, m_arDeclarations)};
+                return m_arDeclarations;
         default:
         {
             if(std::find(m_arSelectors.begin(), m_arSelectors.end(), sSelector) != m_arSelectors.end())
@@ -160,8 +160,9 @@ std::map<std::wstring, std::map<std::wstring, std::wstring>> CElement::GetDeclar
 
                 sTempSelectors = sTempSelectors.empty() ? sSelector : sTempSelectors + L" -> " + sSelector;
 
-                return std::map<std::wstring, std::map<std::wstring, std::wstring>>{std::make_pair(sTempSelectors, m_arDeclarations)};
+                return m_arDeclarations;
             }
+            return std::map<std::wstring, std::wstring>();
         }
     }
 }

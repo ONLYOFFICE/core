@@ -451,7 +451,7 @@ private:
                 oXml->WriteString(L"<w:bookmarkStart w:id=\"");
                 oXml->WriteString(sCrossId);
                 oXml->WriteString(L"\" w:name=\"");
-                oXml->WriteString(oNode.m_sId);
+                oXml->WriteEncodeXmlString(oNode.m_sId);
                 oXml->WriteString(L"\"/><w:bookmarkEnd w:id=\"");
                 oXml->WriteString(sCrossId);
                 oXml->WriteString(L"\"/>");
@@ -498,7 +498,7 @@ private:
     {
         std::vector<NSCSS::CNode> sSelectors;
         GetSubClass(&m_oDocXml, sSelectors);
-
+        /*
         std::wstring sCrossId = std::to_wstring(m_nCrossId++);
         m_oDocXml.WriteString(L"<w:bookmarkStart w:id=\"");
         m_oDocXml.WriteString(sCrossId);
@@ -507,7 +507,7 @@ private:
         m_oDocXml.WriteString(L"\"/><w:bookmarkEnd w:id=\"");
         m_oDocXml.WriteString(sCrossId);
         m_oDocXml.WriteString(L"\"/>");
-
+        */
         m_oDocXml.WriteString(L"<w:p>");
         bool bWasP = true;
         readStream(&m_oDocXml, sSelectors, { false, false, -1, L"", L"" }, bWasP);

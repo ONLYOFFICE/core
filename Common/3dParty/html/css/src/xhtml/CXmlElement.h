@@ -8,7 +8,7 @@
 
 class CXmlElement
 {
-    std::map<NSCSS::NS_CONST_VALUES::RunerProperties, std::wstring> m_mRStyleValues;
+    std::map<NSCSS::NS_CONST_VALUES::RunnerProperties, std::wstring> m_mRStyleValues;
     std::map<NSCSS::NS_CONST_VALUES::ParagraphProperties, std::wstring> m_mPStyleValues;
     std::map<NSCSS::NS_CONST_VALUES::BasicProperties, std::wstring> m_mBasicValues;
 
@@ -27,7 +27,7 @@ public:
     void Clear();
 
     void AddPropertiesInP(const NSCSS::NS_CONST_VALUES::ParagraphProperties& nProperties, const std::wstring& sValue);
-    void AddPropertiesInR(const NSCSS::NS_CONST_VALUES::RunerProperties& nProperties, const std::wstring& sValue);
+    void AddPropertiesInR(const NSCSS::NS_CONST_VALUES::RunnerProperties& nProperties, const std::wstring& sValue);
     void AddBasicProperties(const NSCSS::NS_CONST_VALUES::BasicProperties& nProperties, const std::wstring& sValue);
 
     std::wstring GetPStyle() const;

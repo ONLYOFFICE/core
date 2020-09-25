@@ -281,8 +281,11 @@ namespace NSCSS
 
             float dLineHeight = wcstof(sLineHeight.c_str(), NULL);
 
-            if (dLineHeight > 7.0f)
-                dLineHeight /= 22.0f;
+            if (dLineHeight > 7.0f || dLineHeight <= 0.0f)
+                dLineHeight /= dValue;
+
+            if (dLineHeight < 1.0f)
+                dLineHeight = 1.0f;
 
             dLineHeight *= dValue * 10.0f;
 
@@ -363,16 +366,15 @@ namespace NSCSS
         if (oStyle.Empty() || oXmlElement.Empty())
             return;
 
-        oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunerProperties::R_Color, oStyle.GetColor());
-        oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunerProperties::R_Shd, oStyle.GetBackgroundColor());
-        oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunerProperties::R_U, oStyle.GetTextDecoration());
+        oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunnerProperties::R_Color, oStyle.GetColor());
+        oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunnerProperties::R_Shd, oStyle.GetBackgroundColor());
+        oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunnerProperties::R_U, oStyle.GetTextDecoration());
 
         const std::wstring sFontSize = oStyle.GetFontSize();
         if (!sFontSize.empty())
         {
-//            std::wcout << sFontSize << std::endl;
             const float dValue = wcstof(sFontSize.c_str(), NULL);
-            oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunerProperties::R_Sz, std::to_wstring((unsigned short int)dValue));
+            oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunnerProperties::R_Sz, std::to_wstring(static_cast<unsigned short int>((dValue > 0.0f) ? dValue : 22.0f)));
         }
 
         const std::wstring sFontFamily = oStyle.GetFontFamily();
@@ -380,14 +382,14 @@ namespace NSCSS
         {
             const std::vector<std::wstring> sFontsFamily = oStyle.GetFontNames2(sFontFamily);
             if (!sFontsFamily.empty())
-                oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunerProperties::R_RFonts, sFontsFamily.back());
+                oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunnerProperties::R_RFonts, sFontsFamily.back());
         }
 
         if (oStyle.GetFontWeight() == L"bold")
-            oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunerProperties::R_B, L"true");
+            oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunnerProperties::R_B, L"true");
 
         if (oStyle.GetFontStyle() == L"italic")
-            oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunerProperties::R_I, L"true");
+            oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunnerProperties::R_I, L"true");
 
         std::wstring sSpacingValue;
         const std::vector<std::wstring> sMargins = oStyle.GetMargins();
@@ -412,7 +414,7 @@ namespace NSCSS
 
         CStyleUsed structStyle(oStyle, false);
 
-        const auto& oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), structStyle);
+        const std::_List_iterator<class std::_List_val<struct std::_List_simple_types<class NSCSS::CStyleUsed>>>& oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), structStyle);
 
         if (oItem != m_arStyleUsed.end())
         {
@@ -439,7 +441,7 @@ namespace NSCSS
         }
 
         CStyleUsed structStyle(oStyle, true);
-        const auto& oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), structStyle);
+        const std::_List_iterator<class std::_List_val<struct std::_List_simple_types<class NSCSS::CStyleUsed>>>& oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), structStyle);
 
         if (oItem != m_arStyleUsed.end())
         {

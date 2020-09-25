@@ -128,10 +128,10 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UiPriority, L"9");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"h1");
 
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_RFonts, L"\"Arial\"");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_B, L"true");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Color, L"000000");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Sz, L"48");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_B, L"true");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_Color, L"000000");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_Sz, L"48");
     }
     else if (sNameDefaultElement == L"h2-c")
     {
@@ -144,10 +144,10 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UnhideWhenUsed, L"true");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"h2");
 
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_RFonts, L"\"Arial\"");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_B, L"true");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Color, L"000000");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Sz, L"40");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_B, L"true");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_Color, L"000000");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_Sz, L"40");
     }
     else if (sNameDefaultElement == L"h3-c")
     {
@@ -160,10 +160,10 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UnhideWhenUsed, L"true");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"h3");
 
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_RFonts, L"\"Arial\"");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_B, L"true");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Color, L"000000");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Sz, L"36");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_B, L"true");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_Color, L"000000");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_Sz, L"36");
     }
     else if (sNameDefaultElement == L"h4-c")
     {
@@ -176,10 +176,10 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UnhideWhenUsed, L"true");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"h4");
 
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_RFonts, L"\"Arial\"");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_B, L"true");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Color, L"232323");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Sz, L"32");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_B, L"true");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_Color, L"232323");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_Sz, L"32");
     }
     else if (sNameDefaultElement == L"h5-c")
     {
@@ -192,10 +192,10 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UnhideWhenUsed, L"true");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"h5");
 
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_RFonts, L"\"Arial\"");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_B, L"true");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Color, L"444444");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Sz, L"28");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_B, L"true");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_Color, L"444444");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_Sz, L"28");
     }
     else if (sNameDefaultElement == L"h6-c")
     {
@@ -208,11 +208,11 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UnhideWhenUsed, L"true");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"h6");
 
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_RFonts, L"\"Arial\"");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_B, L"true");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_I, L"true");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Color, L"232323");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Sz, L"24");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_B, L"true");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_I, L"true");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_Color, L"232323");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_Sz, L"24");
     }
     else if (sNameDefaultElement == L"p-c")
     {
@@ -223,7 +223,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"p");
 
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_RFonts, L"\"Arial\"");
     }
     else if (sNameDefaultElement == L"p")
     {
@@ -246,7 +246,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"div");
 
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_RFonts, L"\"Arial\"");
     }
     else if (sNameDefaultElement == L"div")
     {
@@ -268,10 +268,10 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UiPriority, L"99");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UnhideWhenUsed, L"true");
 
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Color, L"0000FF");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_U, L"single");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_Color, L"0000FF");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_U, L"single");
 //        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Sz, L"24");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_RFonts, L"\"Arial\"");
     }
     else if (sNameDefaultElement == L"a")
     {
@@ -298,7 +298,7 @@ void CXmlElement::AddPropertiesInP(const NSCSS::NS_CONST_VALUES::ParagraphProper
     m_mPStyleValues[nProperties] = sValue;
 }
 
-void CXmlElement::AddPropertiesInR(const NSCSS::NS_CONST_VALUES::RunerProperties &nProperties, const std::wstring &sValue)
+void CXmlElement::AddPropertiesInR(const NSCSS::NS_CONST_VALUES::RunnerProperties &nProperties, const std::wstring &sValue)
 {
     if (sValue.empty())
         return;
@@ -319,13 +319,13 @@ CXmlElement& CXmlElement::operator+=(const CXmlElement& oElement)
     if (oElement.Empty())
         return *this;
 
-    for (const auto& oBasicElement : oElement.m_mBasicValues)
+    for (const  std::pair<enum NSCSS::NS_CONST_VALUES::BasicProperties const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>& oBasicElement : oElement.m_mBasicValues)
         m_mBasicValues[oBasicElement.first] = oBasicElement.second;
 
-    for (const auto& oPElement : oElement.m_mPStyleValues)
+    for (const std::pair<enum NSCSS::NS_CONST_VALUES::ParagraphProperties const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>& oPElement : oElement.m_mPStyleValues)
         m_mPStyleValues[oPElement.first] = oPElement.second;
 
-    for (const auto& oRElement : oElement.m_mRStyleValues)
+    for (const std::pair<enum NSCSS::NS_CONST_VALUES::RunnerProperties const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>& oRElement : oElement.m_mRStyleValues)
         m_mRStyleValues[oRElement.first] = oRElement.second;
 
     return *this;
@@ -355,7 +355,7 @@ std::wstring CXmlElement::ConvertPStyle() const
     std::wstring sPPr = L"<w:pPr>";
     std::wstring sPBdr = L"<w:pBdr>";
 
-    for (const auto& oItem : m_mPStyleValues)
+    for (const std::pair<enum NSCSS::NS_CONST_VALUES::ParagraphProperties const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>& oItem : m_mPStyleValues)
     {
         switch (oItem.first)
         {
@@ -441,11 +441,11 @@ std::wstring CXmlElement::ConvertRStyle() const
 
     std::wstring sRStyle = L"<w:rPr>";
 
-    for (const auto& oItem : m_mRStyleValues)
+    for (const std::pair<enum NSCSS::NS_CONST_VALUES::RunnerProperties const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>& oItem : m_mRStyleValues)
     {
         switch (oItem.first)
         {
-            case NSCSS::NS_CONST_VALUES::RunerProperties::R_RFonts:
+            case NSCSS::NS_CONST_VALUES::RunnerProperties::R_RFonts:
             {
                 sRStyle += (oItem.second != L"\"inherit\"") ? L"<w:rFonts w:ascii=" + oItem.second +
                                                           L" w:hAnsi=" + oItem.second +
@@ -454,33 +454,33 @@ std::wstring CXmlElement::ConvertRStyle() const
                                                         : L"<w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/>";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::RunerProperties::R_Sz:
+            case NSCSS::NS_CONST_VALUES::RunnerProperties::R_Sz:
             {
                 sRStyle += L"<w:sz w:val=\"" + oItem.second +
                            L"\"/>" + L"<w:szCs w:val=\"" + oItem.second + L"\"/>";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::RunerProperties::R_B:
+            case NSCSS::NS_CONST_VALUES::RunnerProperties::R_B:
             {
                 sRStyle += L"<w:b/><w:bCs/>";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::RunerProperties::R_I:
+            case NSCSS::NS_CONST_VALUES::RunnerProperties::R_I:
             {
                 sRStyle += L"<w:i/><w:iCs/>";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::RunerProperties::R_Color:
+            case NSCSS::NS_CONST_VALUES::RunnerProperties::R_Color:
             {
                 sRStyle += L"<w:color w:val=\"" + oItem.second + L"\"/>";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::RunerProperties::R_U:
+            case NSCSS::NS_CONST_VALUES::RunnerProperties::R_U:
             {
                 sRStyle += L"<w:u w:val=\"" + oItem.second + L"\"/>";
                 break;
             }
-            case NSCSS::NS_CONST_VALUES::RunerProperties::R_Shd:
+            case NSCSS::NS_CONST_VALUES::RunnerProperties::R_Shd:
             {
                 sRStyle += L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" + oItem.second + L"\"/>";
                 break;
@@ -502,7 +502,7 @@ std::wstring CXmlElement::ConvertBasicInfoStyle() const
 
     std::wstring sBasicInfo;
 
-    for (const auto& oItem : m_mBasicValues)
+    for (const std::pair<enum NSCSS::NS_CONST_VALUES::BasicProperties const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>& oItem : m_mBasicValues)
     {
         switch (oItem.first)
         {
@@ -551,7 +551,7 @@ std::wstring CXmlElement::GetStyle() const
 
     std::wstring sStyle = L"<w:style";
 
-    for (const auto& oItem : m_mBasicValues)
+    for (const std::pair<enum NSCSS::NS_CONST_VALUES::BasicProperties const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>& oItem : m_mBasicValues)
     {
         switch (oItem.first)
         {
@@ -600,7 +600,7 @@ std::wstring CXmlElement::GetPStyle() const
 
     std::wstring sPStyle = L"<w:style";
 
-    for (const auto& oItem : m_mBasicValues)
+    for (const std::pair<enum NSCSS::NS_CONST_VALUES::BasicProperties const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>& oItem : m_mBasicValues)
     {
         switch (oItem.first)
         {
@@ -649,7 +649,7 @@ std::wstring CXmlElement::GetRStyle() const
 
     std::wstring sRStyle = L"<w:style ";
 
-    for (const auto& oItem : m_mBasicValues)
+    for (const std::pair<enum NSCSS::NS_CONST_VALUES::BasicProperties const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>& oItem : m_mBasicValues)
     {
         switch (oItem.first)
         {
@@ -693,19 +693,22 @@ std::wstring CXmlElement::GetRStyle() const
 
 std::wstring CXmlElement::GetBasedOn() const
 {
-    const auto& posBasedOn = m_mBasicValues.find(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn);
+    const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<enum NSCSS::NS_CONST_VALUES::BasicProperties const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>>&
+          posBasedOn = m_mBasicValues.find(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn);
     return  (posBasedOn != m_mBasicValues.end()) ? posBasedOn->second : std::wstring();
 }
 
 std::wstring CXmlElement::GetStyleId() const
 {
-    const auto& posStyleId = m_mBasicValues.find(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId);
+    const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<enum NSCSS::NS_CONST_VALUES::BasicProperties const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>>&
+          posStyleId = m_mBasicValues.find(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId);
     return  (posStyleId != m_mBasicValues.end()) ? posStyleId->second : std::wstring();
 }
 
 std::wstring CXmlElement::GetName() const
 {
-    const auto& posName = m_mBasicValues.find(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name);
+    const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<enum NSCSS::NS_CONST_VALUES::BasicProperties const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>>&
+          posName = m_mBasicValues.find(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name);
     return  (posName != m_mBasicValues.end()) ? posName->second : std::wstring();
 }
 

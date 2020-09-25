@@ -50,7 +50,7 @@ namespace NSCSS
             P_KeepNext = 11,
         };
 
-        enum RunerProperties
+        enum RunnerProperties
         {
             R_RFonts = 0,
             R_Sz = 1,

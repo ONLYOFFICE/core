@@ -64,7 +64,7 @@ namespace NSCSS
             return std::wstring();
         std::wstring sStyle;
         return std::accumulate(m_mStyle.begin(), m_mStyle.end(), sStyle,
-            [] (std::wstring& sRes, const auto& oIter) { return sRes + oIter.first + L":" + oIter.second + L";"; });
+            [] (std::wstring& sRes, const std::map<std::wstring, std::wstring>::value_type& oIter) { return sRes + oIter.first + L":" + oIter.second + L";"; });
     }
 
     std::map<std::wstring, std::wstring> CCompiledStyle::GetStyleMap() const

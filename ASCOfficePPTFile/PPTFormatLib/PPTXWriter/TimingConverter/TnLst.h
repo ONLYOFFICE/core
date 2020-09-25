@@ -44,24 +44,23 @@
 
 #include "../../Records/Animations/ExtTimeNodeContainer.h"
 
-
+//#include "CTn.h"
+#include "Set.h"
 #include "Seq.h"
 
 
 namespace PPT_FORMAT
 {
+int gCTnID = 1;
 void ConvertCRecordExtTimeNodeContainerToTimeNodeBase(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
                                                              PPTX::Logic::TimeNodeBase &oTimeNodeBase);
-//inline void ConvertConvertCRecordExtTimeNodeContainerToPar(
-//        CRecordExtTimeNodeContainer *pETNC,
-//        PPTX::Logic::Par &oPar)
-//{
-
-//}
 
 void FillCTn(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
                     PPTX::Logic::CTn &oCTn)
 {
+    // Write Id
+    oCTn.id = gCTnID++;
+
     if (!pETNC->m_arrRgExtTimeNodeChildren.empty()) oCTn.childTnLst = new PPTX::Logic::ChildTnLst();
     for (auto children : pETNC->m_arrRgExtTimeNodeChildren)
     {
@@ -93,13 +92,53 @@ void FillCTn(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
             oCTn.dur = std::to_wstring(oTimeNodeAtom.m_nDuration);
     }
 
-}
+    // Write nodeType
+    if (pETNC->m_haveTimePropertyList)
+    {
+        std::wstring nodeType;
+        switch (pETNC->m_pTimePropertyList->m_oEffectNodeType.m_Value)
+        {
+        case 1: nodeType = L"clickEffect"; break;
+        case 2: nodeType = L"withEffect"; break;
+        case 3: nodeType = L"afterEffect"; break;
+        case 4: nodeType = L"mainSeq"; break;
+        case 5: nodeType = L"interactiveSeq"; break;
+        case 6: nodeType = L"clickPar"; break;
+        case 7: nodeType = L"withGroup"; break;
+        case 8: nodeType = L"afterGroup"; break;
+        case 9: nodeType = L"tmRoot"; break;
+        }
+        if (!nodeType.empty())
+            oCTn.nodeType = nodeType;
+    }
+    // Write condLst
+    if (!pETNC->m_arrRgBeginTimeCondition.empty())
+    {
+        oCTn.stCondLst = new PPTX::Logic::CondLst();
+        oCTn.stCondLst->name = L"stCondLst";
+    }
+    for (auto oldCond : pETNC->m_arrRgBeginTimeCondition)
+    {
+        PPTX::Logic::Cond cond;
+        cond.name = L"cond";
+        FillCond(oldCond, cond);
+        oCTn.stCondLst->list.push_back(cond);
+    }
 
-void FillSet(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
-                    PPTX::Logic::Set *pSet)
-{
-    auto& oSetBeh = *(pETNC->m_pTimeSetBehavior);
-    // TODO
+    //Write endCondLst
+    if (!pETNC->m_arrRgEndTimeCondition.empty())
+    {
+        oCTn.endCondLst = new PPTX::Logic::CondLst();
+        oCTn.endCondLst->name = L"endCondLst";
+    }
+    for (auto oldCond : pETNC->m_arrRgEndTimeCondition)
+    {
+        PPTX::Logic::Cond cond;
+        cond.name = L"cond";
+        FillCond(oldCond, cond);
+        oCTn.endCondLst->list.push_back(cond);
+    }
+
 }
 
 void ConvertCRecordExtTimeNodeContainerToTimeNodeBase(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,

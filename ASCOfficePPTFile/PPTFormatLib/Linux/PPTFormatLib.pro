@@ -363,6 +363,7 @@ HEADERS += \
     ../PPTXWriter/TimingConverter/BldLst.h \
     ../PPTXWriter/TimingConverter/Cond.h \
     ../PPTXWriter/TimingConverter/Seq.h \
+    ../PPTXWriter/TimingConverter/Set.h \
     ../PPTXWriter/TimingConverter/TnLst.h \
     ../Reader/ClassesAtom.h \
     ../Reader/CommonZLib.h \

@@ -31,51 +31,21 @@
  */
 #pragma once
 
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Seq.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Set.h"
 #include "../../Records/Animations/ExtTimeNodeContainer.h"
-#include "Cond.h"
+
 
 namespace PPT_FORMAT
 {
-void FillSeq(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
-             PPTX::Logic::Seq *pSeq)
+void FillSet(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
+                    PPTX::Logic::Set *pSet)
 {
-    if (pETNC->m_haveSequenceAtom)
-    {
-        if (pETNC->m_pTimeSequenceDataAtom->m_fConcurrencyPropertyUsed)
-            pSeq->concurrent = (bool)pETNC->m_pTimeSequenceDataAtom->m_nConcurrency;
-        if (pETNC->m_pTimeSequenceDataAtom->m_fNextActionPropertyUsed)
-            pSeq->nextAc = pETNC->m_pTimeSequenceDataAtom->m_nNextAction ? L"seek" : L"none";
-        if (pETNC->m_pTimeSequenceDataAtom->m_fPreviousActionPropertyUsed)
-            pSeq->prevAc = pETNC->m_pTimeSequenceDataAtom->m_nPreviousAction ? L"skipTimed" : L"none";
-    }
+    if (!pETNC->m_haveSetBehavior) return;
 
-    if (!pETNC->m_arrRgEndTimeCondition.empty())
-    {
-        pSeq->prevCondLst = new PPTX::Logic::CondLst();
-        pSeq->prevCondLst->name = L"prevCondLst";
-    }
-    for (auto oldCond : pETNC->m_arrRgEndTimeCondition)
-    {
-        PPTX::Logic::Cond cond;
-        cond.name = L"cond";
-        FillCond(oldCond, cond);
-        pSeq->prevCondLst->list.push_back(cond);
-    }
-
-    if (!pETNC->m_arrRgBeginTimeCondition.empty())
-    {
-        pSeq->nextCondLst = new PPTX::Logic::CondLst();
-        pSeq->nextCondLst->name = L"nextCondLst";
-    }
-    for (auto oldCond : pETNC->m_arrRgBeginTimeCondition)
-    {
-        PPTX::Logic::Cond cond;
-        cond.name = L"cond";
-        FillCond(oldCond, cond);
-        pSeq->nextCondLst->list.push_back(cond);
-    }
-
+    auto& oSetBeh = *(pETNC->m_pTimeSetBehavior);
+    // TODO
+    pSet->cBhvr.tgtEl.spTgt = new PPTX::Logic::SpTgt();
+    pSet->cBhvr.tgtEl.spTgt->spid = oSetBeh.m_oVarTo.m_stringValue;
 
 }
 }

@@ -38,7 +38,9 @@ namespace PPT_FORMAT
 {
 void FillCond(PPT_FORMAT::CRecordTimeConditionContainer *oldCond, PPTX::Logic::Cond &cond)
 {
-    cond.delay = std::to_wstring(oldCond->m_oTimeConditionAtom.m_nTimeDelay);
+    if (oldCond->m_oTimeConditionAtom.m_nTimeDelay != -1)
+        cond.delay = std::to_wstring(oldCond->m_oTimeConditionAtom.m_nTimeDelay);
+
     std::wstring str;
 
     switch (oldCond->m_oTimeConditionAtom.m_nTriggerEvent)
@@ -55,6 +57,10 @@ void FillCond(PPT_FORMAT::CRecordTimeConditionContainer *oldCond, PPTX::Logic::C
     }
 
     if (!str.empty()) cond.evt = str;
+
+    // TODO
+//    if (oldCond->m_oVisualElement.)
+//    cond.tgtEl = new PPTX::Logic::TgtEl();
 }
 }
 

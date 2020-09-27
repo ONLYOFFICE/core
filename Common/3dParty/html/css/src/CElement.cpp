@@ -36,8 +36,11 @@ std::wstring CElement::GetText() const
         for (const CElement* oChildren : m_arChildrens)
             sText += oChildren->GetText();
 
-        for (const auto& pDeclaration : m_arDeclarations)
+        for (const std::pair<const std::basic_string<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t>>, std::basic_string<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t>>>&
+             pDeclaration : m_arDeclarations)
+        {
             sText += L"   " + pDeclaration.first + L": " + pDeclaration.second + L";\n";
+        }
         sText += L"};\n";
     }
     else

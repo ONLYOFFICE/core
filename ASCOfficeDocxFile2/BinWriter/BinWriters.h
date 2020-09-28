@@ -504,6 +504,8 @@ namespace BinDocxRW
 			nullable<std::wstring> sUserId;
 			nullable<std::wstring> sProviderId;
 			nullable<SimpleTypes::CLongHexNumber<> > nDurableId;
+			nullable<std::wstring> sDateUtc;
+			nullable<std::wstring> sUserData;
 			std::vector<CCommentWriteTemp*> aReplies;
 		};
 		BinaryCommonWriter m_oBcw;
@@ -511,8 +513,8 @@ namespace BinDocxRW
 		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 	public:
 		BinaryCommentsTableWriter(ParamsWriter& oParamsWriter);
-		void Write(OOX::CComments& oComments, OOX::CCommentsExt* pCommentsExt, OOX::CCommentsExtensible* pCommentsExtensible, OOX::CPeople* pPeople, OOX::CCommentsIds* pCommentsIds, std::map<int, bool>& mapIgnoreComments);
-		void WriteCommentsContent(OOX::CComments& oComments, OOX::CCommentsExt* pCommentsExt, OOX::CCommentsExtensible* pCommentsExtensible, OOX::CPeople* pPeople, OOX::CCommentsIds* pCommentsIds, std::map<int, bool>& mapIgnoreComments, ParamsDocumentWriter& oParamsDocumentWriter);
+		void Write(OOX::CComments& oComments, OOX::CCommentsExt* pCommentsExt, OOX::CCommentsExtensible* pCommentsExtensible, OOX::CCommentsUserData* pCommentsUserData, OOX::CPeople* pPeople, OOX::CCommentsIds* pCommentsIds, std::map<int, bool>& mapIgnoreComments);
+		void WriteCommentsContent(OOX::CComments& oComments, OOX::CCommentsExt* pCommentsExt, OOX::CCommentsExtensible* pCommentsExtensible, OOX::CCommentsUserData* pCommentsUserData, OOX::CPeople* pPeople, OOX::CCommentsIds* pCommentsIds, std::map<int, bool>& mapIgnoreComments, ParamsDocumentWriter& oParamsDocumentWriter);
 		void WriteComment(CCommentWriteTemp& oComment, BinaryDocumentTableWriter & oBinaryDocumentTableWriter);
 		void WriteReplies(std::vector<CCommentWriteTemp*>& aCommentWriteTemp, BinaryDocumentTableWriter & oBinaryDocumentTableWriter);
 	};

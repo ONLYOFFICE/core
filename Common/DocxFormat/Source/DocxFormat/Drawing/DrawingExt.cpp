@@ -731,6 +731,7 @@ namespace OOX
 									  *m_sUri == L"{470722E0-AACD-4C17-9CDC-17EF765DBC7E}"	||
 									  *m_sUri == L"{46F421CA-312F-682f-3DD2-61675219B42D}"	||
 									  *m_sUri == L"{DE250136-89BD-433C-8126-D09CA5730AF9}"	||
+									  *m_sUri == L"{19B8F6BF-5375-455C-9EA6-DF929625EA0E}"	||
 									  *m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))   
 			{
 				int nCurDepth = oReader.GetDepth();

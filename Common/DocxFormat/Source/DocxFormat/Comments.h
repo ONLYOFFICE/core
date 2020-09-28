@@ -220,7 +220,7 @@ namespace OOX
 	class CCommentExtensible : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CCommentExt)
+		WritingElement_AdditionConstructors(CCommentExtensible)
 			CCommentExtensible()
 		{
 		}
@@ -290,6 +290,16 @@ namespace OOX
 		virtual const OOX::FileType type() const
 		{
 			return FileTypes::DocumentCommentsExtensible;
+		}
+	};
+	class CCommentsUserData : public CCommentsExtensible
+	{
+	public:
+		CCommentsUserData(OOX::Document *pMain);
+		CCommentsUserData(OOX::Document *pMain, const CPath& oPath);
+		virtual const OOX::FileType type() const
+		{
+			return FileTypes::CommentsUserData;
 		}
 	};
 

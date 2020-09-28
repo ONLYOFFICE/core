@@ -319,13 +319,13 @@ CXmlElement& CXmlElement::operator+=(const CXmlElement& oElement)
     if (oElement.Empty())
         return *this;
 
-    for (const  std::pair<enum NSCSS::NS_CONST_VALUES::BasicProperties const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>& oBasicElement : oElement.m_mBasicValues)
+    for (const std::map<NSCSS::NS_CONST_VALUES::BasicProperties, std::wstring>::value_type& oBasicElement : oElement.m_mBasicValues)
         m_mBasicValues[oBasicElement.first] = oBasicElement.second;
 
-    for (const std::pair<enum NSCSS::NS_CONST_VALUES::ParagraphProperties const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>& oPElement : oElement.m_mPStyleValues)
+    for (const std::map<NSCSS::NS_CONST_VALUES::ParagraphProperties, std::wstring>::value_type& oPElement : oElement.m_mPStyleValues)
         m_mPStyleValues[oPElement.first] = oPElement.second;
 
-    for (const std::pair<enum NSCSS::NS_CONST_VALUES::RunnerProperties const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>& oRElement : oElement.m_mRStyleValues)
+    for (const std::map<NSCSS::NS_CONST_VALUES::RunnerProperties, std::wstring>::value_type& oRElement : oElement.m_mRStyleValues)
         m_mRStyleValues[oRElement.first] = oRElement.second;
 
     return *this;
@@ -355,7 +355,7 @@ std::wstring CXmlElement::ConvertPStyle() const
     std::wstring sPPr = L"<w:pPr>";
     std::wstring sPBdr = L"<w:pBdr>";
 
-    for (const std::pair<enum NSCSS::NS_CONST_VALUES::ParagraphProperties const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>& oItem : m_mPStyleValues)
+    for (const std::map<NSCSS::NS_CONST_VALUES::ParagraphProperties, std::wstring>::value_type& oItem : m_mPStyleValues)
     {
         switch (oItem.first)
         {
@@ -441,7 +441,7 @@ std::wstring CXmlElement::ConvertRStyle() const
 
     std::wstring sRStyle = L"<w:rPr>";
 
-    for (const std::pair<enum NSCSS::NS_CONST_VALUES::RunnerProperties const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>& oItem : m_mRStyleValues)
+    for (const std::map<NSCSS::NS_CONST_VALUES::RunnerProperties, std::wstring>::value_type& oItem : m_mRStyleValues)
     {
         switch (oItem.first)
         {
@@ -502,7 +502,7 @@ std::wstring CXmlElement::ConvertBasicInfoStyle() const
 
     std::wstring sBasicInfo;
 
-    for (const std::pair<enum NSCSS::NS_CONST_VALUES::BasicProperties const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>& oItem : m_mBasicValues)
+    for (const std::map<NSCSS::NS_CONST_VALUES::BasicProperties, std::wstring>::value_type& oItem : m_mBasicValues)
     {
         switch (oItem.first)
         {
@@ -551,7 +551,7 @@ std::wstring CXmlElement::GetStyle() const
 
     std::wstring sStyle = L"<w:style";
 
-    for (const std::pair<enum NSCSS::NS_CONST_VALUES::BasicProperties const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>& oItem : m_mBasicValues)
+    for (const std::map<NSCSS::NS_CONST_VALUES::BasicProperties, std::wstring>::value_type& oItem : m_mBasicValues)
     {
         switch (oItem.first)
         {
@@ -600,7 +600,7 @@ std::wstring CXmlElement::GetPStyle() const
 
     std::wstring sPStyle = L"<w:style";
 
-    for (const std::pair<enum NSCSS::NS_CONST_VALUES::BasicProperties const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>& oItem : m_mBasicValues)
+    for (const std::map<NSCSS::NS_CONST_VALUES::BasicProperties, std::wstring>::value_type& oItem : m_mBasicValues)
     {
         switch (oItem.first)
         {
@@ -649,7 +649,7 @@ std::wstring CXmlElement::GetRStyle() const
 
     std::wstring sRStyle = L"<w:style ";
 
-    for (const std::pair<enum NSCSS::NS_CONST_VALUES::BasicProperties const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>& oItem : m_mBasicValues)
+    for (const std::map<NSCSS::NS_CONST_VALUES::BasicProperties, std::wstring>::value_type& oItem : m_mBasicValues)
     {
         switch (oItem.first)
         {
@@ -693,22 +693,19 @@ std::wstring CXmlElement::GetRStyle() const
 
 std::wstring CXmlElement::GetBasedOn() const
 {
-    const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<enum NSCSS::NS_CONST_VALUES::BasicProperties const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>>&
-          posBasedOn = m_mBasicValues.find(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn);
+    std::map<NSCSS::NS_CONST_VALUES::BasicProperties, std::wstring>::const_iterator posBasedOn = m_mBasicValues.find(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn);
     return  (posBasedOn != m_mBasicValues.end()) ? posBasedOn->second : std::wstring();
 }
 
 std::wstring CXmlElement::GetStyleId() const
 {
-    const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<enum NSCSS::NS_CONST_VALUES::BasicProperties const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>>&
-          posStyleId = m_mBasicValues.find(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId);
+    std::map<NSCSS::NS_CONST_VALUES::BasicProperties, std::wstring>::const_iterator posStyleId = m_mBasicValues.find(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId);
     return  (posStyleId != m_mBasicValues.end()) ? posStyleId->second : std::wstring();
 }
 
 std::wstring CXmlElement::GetName() const
 {
-    const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<enum NSCSS::NS_CONST_VALUES::BasicProperties const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>>&
-          posName = m_mBasicValues.find(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name);
+    std::map<NSCSS::NS_CONST_VALUES::BasicProperties, std::wstring>::const_iterator posName = m_mBasicValues.find(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name);
     return  (posName != m_mBasicValues.end()) ? posName->second : std::wstring();
 }
 

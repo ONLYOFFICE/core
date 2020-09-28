@@ -414,7 +414,7 @@ namespace NSCSS
 
         CStyleUsed structStyle(oStyle, false);
 
-        const std::_List_iterator<class std::_List_val<struct std::_List_simple_types<class NSCSS::CStyleUsed>>>& oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), structStyle);
+        std::list<CStyleUsed>::const_iterator oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), structStyle);
 
         if (oItem != m_arStyleUsed.end())
         {
@@ -441,7 +441,7 @@ namespace NSCSS
         }
 
         CStyleUsed structStyle(oStyle, true);
-        const std::_List_iterator<class std::_List_val<struct std::_List_simple_types<class NSCSS::CStyleUsed>>>& oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), structStyle);
+        std::list<CStyleUsed>::const_iterator oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), structStyle);
 
         if (oItem != m_arStyleUsed.end())
         {

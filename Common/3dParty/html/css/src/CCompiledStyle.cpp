@@ -14,6 +14,8 @@
 
 namespace NSCSS
 {
+    typedef std::map<std::wstring, std::wstring>::const_iterator styles_iterator;
+
     CCompiledStyle::CCompiledStyle() {}
 
     CCompiledStyle::CCompiledStyle(const std::map<std::wstring, std::wstring>& mStyle) : m_mStyle(mStyle) {}
@@ -29,8 +31,7 @@ namespace NSCSS
 
     CCompiledStyle& CCompiledStyle::operator+= (const CCompiledStyle &oElement)
     {
-        for (const std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>&
-             oItem : oElement.m_mStyle)
+        for (const std::map<std::wstring, std::wstring>::value_type& oItem : oElement.m_mStyle)
         {
             if (!oItem.second.empty() && oItem.second != L"inherit")
             {
@@ -211,8 +212,7 @@ namespace NSCSS
 
         std::wstring CCompiledStyle::GetFont() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oFont = m_mStyle.find(L"font");
+            styles_iterator oFont = m_mStyle.find(L"font");
             if (oFont != m_mStyle.end())
                 return oFont->second;
 
@@ -228,8 +228,7 @@ namespace NSCSS
 
         std::wstring CCompiledStyle::GetFontFamily() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>>&
-                  oFontFamily = m_mStyle.find(L"font-family");
+            styles_iterator oFontFamily = m_mStyle.find(L"font-family");
 
             if (oFontFamily != m_mStyle.end())
             {
@@ -244,8 +243,7 @@ namespace NSCSS
             }
 
             std::wstring sFont;
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oFont = m_mStyle.find(L"font");
+            styles_iterator oFont = m_mStyle.find(L"font");
             if (oFont != m_mStyle.end())
                 sFont = oFont->second;
             if (sFont.empty())
@@ -265,16 +263,14 @@ namespace NSCSS
 
         std::wstring CCompiledStyle::GetFontSize() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oFontSize = m_mStyle.find(L"font-size");
+            styles_iterator oFontSize = m_mStyle.find(L"font-size");
 
             if (oFontSize != m_mStyle.end())
                 return oFontSize->second;
 
             std::wstring sFont;
 
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oFont = m_mStyle.find(L"font");
+            styles_iterator oFont = m_mStyle.find(L"font");
 
             if (oFont != m_mStyle.end())
                 sFont = oFont->second;
@@ -355,30 +351,26 @@ namespace NSCSS
 
         std::wstring CCompiledStyle::GetFontSizeAdjust() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oFontSizeAdj = m_mStyle.find(L"font-size-adjust");
+            styles_iterator oFontSizeAdj = m_mStyle.find(L"font-size-adjust");
             return oFontSizeAdj != m_mStyle.end() ? oFontSizeAdj->second : std::wstring();
         }
 
         std::wstring CCompiledStyle::GetFontStretch() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oFontStretch = m_mStyle.find(L"font-stretch");
+            styles_iterator oFontStretch = m_mStyle.find(L"font-stretch");
             return oFontStretch != m_mStyle.end() ? oFontStretch->second : std::wstring();
         }
 
         std::wstring CCompiledStyle::GetFontStyle() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oFontStyle = m_mStyle.find(L"font-style");
+            styles_iterator oFontStyle = m_mStyle.find(L"font-style");
 
             if (oFontStyle != m_mStyle.end())
                 return oFontStyle->second;
 
             std::wstring sFont;
 
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oFont = m_mStyle.find(L"font");
+            styles_iterator oFont = m_mStyle.find(L"font");
 
             if (oFont != m_mStyle.end())
                 sFont = oFont->second;
@@ -407,16 +399,14 @@ namespace NSCSS
 
         std::wstring CCompiledStyle::GetFontVariant() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oFontVariant = m_mStyle.find(L"font-variant");
+            styles_iterator oFontVariant = m_mStyle.find(L"font-variant");
 
             if (oFontVariant != m_mStyle.end())
                 return oFontVariant->second;
 
             std::wstring sFont;
 
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oFont = m_mStyle.find(L"font");
+            styles_iterator oFont = m_mStyle.find(L"font");
 
             if (oFont != m_mStyle.end())
                 sFont = oFont->second;
@@ -452,14 +442,12 @@ namespace NSCSS
 
         std::wstring CCompiledStyle::GetFontWeight() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oFontWeight = m_mStyle.find(L"font-weight");
+            styles_iterator oFontWeight = m_mStyle.find(L"font-weight");
 
             if (oFontWeight != m_mStyle.end())
                 return oFontWeight->second;
 
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oFont = m_mStyle.find(L"font");
+            styles_iterator oFont = m_mStyle.find(L"font");
             if (oFont == m_mStyle.end())
                 return std::wstring();
 
@@ -503,16 +491,14 @@ namespace NSCSS
 
         std::wstring CCompiledStyle::GetLineHeight() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oLineHeight = m_mStyle.find(L"line-height");
+            styles_iterator oLineHeight = m_mStyle.find(L"line-height");
 
             if (oLineHeight != m_mStyle.end())
                 return oLineHeight->second;
 
             std::wstring sFont;
 
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oFont = m_mStyle.find(L"font");
+            styles_iterator oFont = m_mStyle.find(L"font");
 
             if (oFont != m_mStyle.end())
                 sFont = oFont->second;
@@ -596,8 +582,7 @@ namespace NSCSS
     /* MARGIN */
         std::wstring CCompiledStyle::GetMargin() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oMargin = m_mStyle.find(L"margin");
+            styles_iterator oMargin = m_mStyle.find(L"margin");
             if (oMargin != m_mStyle.end())
                 return oMargin->second;
 
@@ -622,8 +607,7 @@ namespace NSCSS
 
         std::vector<std::wstring> CCompiledStyle::GetMargins() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oMargin = m_mStyle.find(L"margin");
+            styles_iterator oMargin = m_mStyle.find(L"margin");
 
             std::vector<std::wstring> sRes(4);
 
@@ -668,8 +652,7 @@ namespace NSCSS
 
         std::wstring CCompiledStyle::GetMarginTop2() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oMarginTop = m_mStyle.find(L"margin-top");
+            styles_iterator oMarginTop = m_mStyle.find(L"margin-top");
             if (oMarginTop != m_mStyle.end())
                 return oMarginTop->second;
 
@@ -679,8 +662,7 @@ namespace NSCSS
 
         std::wstring CCompiledStyle::GetMarginTop() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oMarginTop = m_mStyle.find(L"margin-top");
+            styles_iterator oMarginTop = m_mStyle.find(L"margin-top");
 
             if (oMarginTop != m_mStyle.end())
                 return oMarginTop->second;
@@ -691,7 +673,7 @@ namespace NSCSS
                 return sMarginBlockStart;
 
             std::wstring sMargin;
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> & oMargin = m_mStyle.find(L"margin");
+            styles_iterator oMargin = m_mStyle.find(L"margin");
 
             if (oMargin != m_mStyle.end())
                 sMargin = oMargin->second;
@@ -726,29 +708,25 @@ namespace NSCSS
 
         std::wstring CCompiledStyle::GetMarginBlockStart() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oMarginBlockStart = m_mStyle.find(L"margin-block-start");
+            styles_iterator oMarginBlockStart = m_mStyle.find(L"margin-block-start");
             return oMarginBlockStart != m_mStyle.end() ? oMarginBlockStart->second : std::wstring();
         }
 
         std::wstring CCompiledStyle::GetMarginLeft2() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oMarginLeft = m_mStyle.find(L"margin-left");
+            styles_iterator oMarginLeft = m_mStyle.find(L"margin-left");
             return oMarginLeft != m_mStyle.end() ? oMarginLeft->second : std::wstring();
         }
 
         std::wstring CCompiledStyle::GetMarginLeft() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oMarginLeft = m_mStyle.find(L"margin-left");
+            styles_iterator oMarginLeft = m_mStyle.find(L"margin-left");
 
             if (oMarginLeft != m_mStyle.end())
                 return oMarginLeft->second;
 
             std::wstring sValue;
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oMargin = m_mStyle.find(L"margin");
+            styles_iterator oMargin = m_mStyle.find(L"margin");
 
             if (oMargin != m_mStyle.end())
                 sValue = oMargin->second;
@@ -787,21 +765,19 @@ namespace NSCSS
 
         std::wstring CCompiledStyle::GetMarginRight2() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oMarginRight = m_mStyle.find(L"margin-right");
+            styles_iterator oMarginRight = m_mStyle.find(L"margin-right");
             return oMarginRight != m_mStyle.end() ? oMarginRight->second : std::wstring();
         }
 
         std::wstring CCompiledStyle::GetMarginRight() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oMarginRight = m_mStyle.find(L"margin-right");
+            styles_iterator oMarginRight = m_mStyle.find(L"margin-right");
 
             if (oMarginRight != m_mStyle.end())
                 return oMarginRight->second;
 
             std::wstring sValue;
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> & oMargin = m_mStyle.find(L"margin");
+            styles_iterator oMargin = m_mStyle.find(L"margin");
 
             if (oMargin != m_mStyle.end())
                 sValue = oMargin->second;
@@ -839,8 +815,7 @@ namespace NSCSS
 
         std::wstring CCompiledStyle::GetMarginBottom2() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oMarginBottom = m_mStyle.find(L"margin-bottom");
+            styles_iterator oMarginBottom = m_mStyle.find(L"margin-bottom");
             if (oMarginBottom != m_mStyle.end())
                 return oMarginBottom->second;
 
@@ -850,8 +825,7 @@ namespace NSCSS
 
         std::wstring CCompiledStyle::GetMarginBottom() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oMarginBottom = m_mStyle.find(L"margin-bottom");
+            styles_iterator oMarginBottom = m_mStyle.find(L"margin-bottom");
 
             if (oMarginBottom != m_mStyle.end())
                 return oMarginBottom->second;
@@ -862,7 +836,7 @@ namespace NSCSS
                 return sMarginBlockEnd;
 
             std::wstring sValue;
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> & oMargin = m_mStyle.find(L"margin");
+            styles_iterator oMargin = m_mStyle.find(L"margin");
 
             if (oMargin != m_mStyle.end())
                 sValue = oMargin->second;
@@ -899,16 +873,14 @@ namespace NSCSS
 
         std::wstring CCompiledStyle::GetMarginBlockEnd() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oMarginBlockEnd = m_mStyle.find(L"margin-block-end");
+            styles_iterator oMarginBlockEnd = m_mStyle.find(L"margin-block-end");
             return oMarginBlockEnd != m_mStyle.end() ? oMarginBlockEnd->second : std::wstring();
         }
 
     /* PADDING */
         std::wstring CCompiledStyle::GetPadding() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oPadding = m_mStyle.find(L"padding");
+            styles_iterator oPadding = m_mStyle.find(L"padding");
 
             if (oPadding != m_mStyle.end())
                 return oPadding->second;
@@ -932,15 +904,13 @@ namespace NSCSS
 
         std::wstring CCompiledStyle::GetPaddingTop() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oPaddingTop = m_mStyle.find(L"padding-top");
+            styles_iterator oPaddingTop = m_mStyle.find(L"padding-top");
 
             if (oPaddingTop != m_mStyle.end())
                 return oPaddingTop->second;
 
             std::wstring sValue;
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oPadding = m_mStyle.find(L"padding");
+            styles_iterator oPadding = m_mStyle.find(L"padding");
 
             if (oPadding != m_mStyle.end())
                 sValue = oPadding->second;
@@ -975,15 +945,13 @@ namespace NSCSS
 
         std::wstring CCompiledStyle::GetPaddingLeft() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oPaddingLeft = m_mStyle.find(L"padding-left");
+            styles_iterator oPaddingLeft = m_mStyle.find(L"padding-left");
 
             if (oPaddingLeft != m_mStyle.end())
                 return oPaddingLeft->second;
 
             std::wstring sValue;
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oPadding = m_mStyle.find(L"padding");
+            styles_iterator oPadding = m_mStyle.find(L"padding");
 
             if (oPadding != m_mStyle.end())
                 sValue = oPadding->second;
@@ -1023,15 +991,14 @@ namespace NSCSS
 
         std::wstring CCompiledStyle::GetPaddingRight() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
+            styles_iterator
                   oPaddingRight = m_mStyle.find(L"padding-right");
 
             if (oPaddingRight != m_mStyle.end())
                 return oPaddingRight->second;
 
             std::wstring sValue;
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oPadding = m_mStyle.find(L"padding");
+            styles_iterator oPadding = m_mStyle.find(L"padding");
 
             if (oPadding != m_mStyle.end())
                 sValue = oPadding->second;
@@ -1069,15 +1036,13 @@ namespace NSCSS
 
         std::wstring CCompiledStyle::GetPaddingBottom() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oPaddingBottom = m_mStyle.find(L"padding-bottom");
+            styles_iterator oPaddingBottom = m_mStyle.find(L"padding-bottom");
 
             if (oPaddingBottom != m_mStyle.end())
                 return oPaddingBottom->second;
 
             std::wstring sValue;
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oPadding = m_mStyle.find(L"padding");
+            styles_iterator oPadding = m_mStyle.find(L"padding");
 
             if (oPadding != m_mStyle.end())
                 sValue = oPadding->second;
@@ -1116,8 +1081,7 @@ namespace NSCSS
     /*  SPACING */
         std::wstring CCompiledStyle::GetLetterSpacing() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oLetterSpacing = m_mStyle.find(L"letter-spacing");
+            styles_iterator oLetterSpacing = m_mStyle.find(L"letter-spacing");
 
             if (oLetterSpacing != m_mStyle.end())
                 return oLetterSpacing->second;
@@ -1127,8 +1091,7 @@ namespace NSCSS
 
         std::wstring CCompiledStyle::GetWordSpacing() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oWordSpacing = m_mStyle.find(L"word-spacing");
+            styles_iterator oWordSpacing = m_mStyle.find(L"word-spacing");
 
             if (oWordSpacing != m_mStyle.end())
                 return oWordSpacing->second;
@@ -1138,8 +1101,7 @@ namespace NSCSS
 
         std::wstring CCompiledStyle::GetBorderSpacing() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oBorderSpacing = m_mStyle.find(L"border-spacing");
+            styles_iterator oBorderSpacing = m_mStyle.find(L"border-spacing");
 
             if (oBorderSpacing != m_mStyle.end())
                 return oBorderSpacing->second;
@@ -1150,8 +1112,7 @@ namespace NSCSS
     /* COLOR */
         std::wstring CCompiledStyle::GetTextDecorationColor() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oTextDecorationColor = m_mStyle.find(L"text-decoration-color");
+            styles_iterator oTextDecorationColor = m_mStyle.find(L"text-decoration-color");
 
             if (oTextDecorationColor != m_mStyle.end())
                 return oTextDecorationColor->second;
@@ -1161,8 +1122,7 @@ namespace NSCSS
 
         std::wstring CCompiledStyle::GetBackgroundColor() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oBackgroundColor = m_mStyle.find(L"background-color");
+            styles_iterator oBackgroundColor = m_mStyle.find(L"background-color");
 
             if (oBackgroundColor != m_mStyle.end())
             {
@@ -1190,8 +1150,7 @@ namespace NSCSS
 
                 std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
 
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oHEX = NS_CONST_VALUES::mColors.find(sColor);
+                styles_iterator oHEX = NS_CONST_VALUES::mColors.find(sColor);
 
                 if (oHEX != NS_CONST_VALUES::mColors.end())
                     return oHEX->second;
@@ -1227,8 +1186,7 @@ namespace NSCSS
 
                 std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
 
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oHEX = NS_CONST_VALUES::mColors.find(sColor);
+                styles_iterator oHEX = NS_CONST_VALUES::mColors.find(sColor);
 
                 if (oHEX != NS_CONST_VALUES::mColors.end())
                     return oHEX->second;
@@ -1239,8 +1197,7 @@ namespace NSCSS
 
         std::wstring CCompiledStyle::GetColor() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oColor = m_mStyle.find(L"color");
+            styles_iterator oColor = m_mStyle.find(L"color");
             if (oColor == m_mStyle.end())
                 return std::wstring();
 
@@ -1268,8 +1225,7 @@ namespace NSCSS
 
             std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
 
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oHEX = NS_CONST_VALUES::mColors.find(sColor);
+            styles_iterator oHEX = NS_CONST_VALUES::mColors.find(sColor);
 
             if (oHEX != NS_CONST_VALUES::mColors.end())
                 return oHEX->second;
@@ -1279,44 +1235,38 @@ namespace NSCSS
 
         std::wstring CCompiledStyle::GetOutlineColor() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oOutlineColor = m_mStyle.find(L"outline-color");
+            styles_iterator oOutlineColor = m_mStyle.find(L"outline-color");
             return oOutlineColor != m_mStyle.end() ? oOutlineColor->second : std::wstring();
         }
 
         std::wstring CCompiledStyle::GetColumnRuleColor() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oColumnRuleColor = m_mStyle.find(L"column-rule-color");
+            styles_iterator oColumnRuleColor = m_mStyle.find(L"column-rule-color");
             return oColumnRuleColor != m_mStyle.end() ? oColumnRuleColor->second : std::wstring();
         }
 
         std::wstring CCompiledStyle::GetBackground() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oBackground = m_mStyle.find(L"background");
+            styles_iterator oBackground = m_mStyle.find(L"background");
             return oBackground != m_mStyle.end() ? oBackground->second : std::wstring();
         }
 
     /* TEXT */
         std::wstring CCompiledStyle::GetTextAlign() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oTextAlign = m_mStyle.find(L"text-align");
+            styles_iterator oTextAlign = m_mStyle.find(L"text-align");
             return oTextAlign != m_mStyle.end() ? oTextAlign->second : std::wstring();
         }
 
         std::wstring CCompiledStyle::GetTextIndent() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oTextIndent = m_mStyle.find(L"text-indent");
+            styles_iterator oTextIndent = m_mStyle.find(L"text-indent");
             return oTextIndent != m_mStyle.end() ? oTextIndent->second : std::wstring();
         }
 
         std::wstring CCompiledStyle::GetTextDecoration() const
         {
-            const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                  oTextDecoration = m_mStyle.find(L"text-decoration");
+            styles_iterator oTextDecoration = m_mStyle.find(L"text-decoration");
             return oTextDecoration != m_mStyle.end() ? oTextDecoration->second : std::wstring();
         }
 
@@ -1324,15 +1274,13 @@ namespace NSCSS
 
             std::wstring CCompiledStyle::GetBorder() const
             {
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorder = m_mStyle.find(L"border");
+                styles_iterator oBorder = m_mStyle.find(L"border");
 
                 if (oBorder != m_mStyle.end() && oBorder->second != L"none")
                     return oBorder->second;
                 else
                 {
-                    const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                          oMsoBorder = m_mStyle.find(L"mso-border-alt");
+                    styles_iterator oMsoBorder = m_mStyle.find(L"mso-border-alt");
                     if (oMsoBorder != m_mStyle.end() && oMsoBorder->second != L"none")
                         return oMsoBorder->second;
                 }
@@ -1349,14 +1297,12 @@ namespace NSCSS
 
             std::wstring CCompiledStyle::GetBorderWidth() const
             {
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderWidth = m_mStyle.find(L"border-width");
+                styles_iterator oBorderWidth = m_mStyle.find(L"border-width");
 
                 if (oBorderWidth != m_mStyle.end())
                     return oBorderWidth->second;
 
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorder = m_mStyle.find(L"border");
+                styles_iterator oBorder = m_mStyle.find(L"border");
 
                 std::wstring sBorder;
 
@@ -1364,8 +1310,7 @@ namespace NSCSS
                     sBorder = oBorder->second;
                 else
                 {
-                    const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                          oMsoBorder = m_mStyle.find(L"mso-border-alt");
+                    styles_iterator oMsoBorder = m_mStyle.find(L"mso-border-alt");
                     if (oMsoBorder != m_mStyle.end() && oMsoBorder->second != L"none")
                         sBorder =  oMsoBorder->second;
                     else
@@ -1383,14 +1328,12 @@ namespace NSCSS
 
             std::wstring CCompiledStyle::GetBorderStyle() const
             {
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderStyle = m_mStyle.find(L"border-style");
+                styles_iterator oBorderStyle = m_mStyle.find(L"border-style");
 
                 if (oBorderStyle != m_mStyle.end())
                     return oBorderStyle->second;
 
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorder = m_mStyle.find(L"border");
+                styles_iterator oBorder = m_mStyle.find(L"border");
 
                 std::wstring sBorder;
 
@@ -1398,8 +1341,7 @@ namespace NSCSS
                     sBorder = oBorder->second;
                 else
                 {
-                    const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                          oMsoBorder = m_mStyle.find(L"mso-border-alt");
+                    styles_iterator oMsoBorder = m_mStyle.find(L"mso-border-alt");
                     if (oMsoBorder != m_mStyle.end() && oMsoBorder->second != L"none")
                         sBorder =  oMsoBorder->second;
                     else
@@ -1411,8 +1353,7 @@ namespace NSCSS
                 for (std::wstring sStyle : arWords)
                 {
                     std::transform(sStyle.begin(), sStyle.end(), sStyle.begin(), tolower);
-                    const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                          oStyle = NS_CONST_VALUES::mStyles.find(sStyle);
+                    styles_iterator oStyle = NS_CONST_VALUES::mStyles.find(sStyle);
 
                     if (oStyle != NS_CONST_VALUES::mStyles.end())
                         return oStyle->second;
@@ -1423,14 +1364,12 @@ namespace NSCSS
 
             std::wstring CCompiledStyle::GetBorderColor() const
             {
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderColor = m_mStyle.find(L"border-color");
+                styles_iterator oBorderColor = m_mStyle.find(L"border-color");
 
                 if (oBorderColor != m_mStyle.end())
                     return oBorderColor->second;
 
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorder = m_mStyle.find(L"border");
+                styles_iterator oBorder = m_mStyle.find(L"border");
 
                 std::wstring sBorder;
 
@@ -1438,8 +1377,7 @@ namespace NSCSS
                     sBorder = oBorder->second;
                 else
                 {
-                    const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                          oMsoBorder = m_mStyle.find(L"mso-border-alt");
+                    styles_iterator oMsoBorder = m_mStyle.find(L"mso-border-alt");
                     if (oMsoBorder != m_mStyle.end() && oMsoBorder->second != L"none")
                         sBorder =  oMsoBorder->second;
                     else
@@ -1472,8 +1410,7 @@ namespace NSCSS
 
                     std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
 
-                    const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                          oHEX = NS_CONST_VALUES::mColors.find(sColor);
+                    styles_iterator oHEX = NS_CONST_VALUES::mColors.find(sColor);
 
                     if (oHEX != NS_CONST_VALUES::mColors.end())
                         return oHEX->second;
@@ -1484,8 +1421,7 @@ namespace NSCSS
 
             std::wstring CCompiledStyle::GetBorderBottom() const
             {
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderBottom = m_mStyle.find(L"border-bottom");
+                styles_iterator oBorderBottom = m_mStyle.find(L"border-bottom");
 
                 if (oBorderBottom != m_mStyle.end())
                     return oBorderBottom->second;
@@ -1502,14 +1438,12 @@ namespace NSCSS
 
             std::wstring CCompiledStyle::GetBorderBottomWidth() const
             {
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderBottomWidth = m_mStyle.find(L"border-bottom-width");
+                styles_iterator oBorderBottomWidth = m_mStyle.find(L"border-bottom-width");
 
                 if (oBorderBottomWidth != m_mStyle.end())
                     return oBorderBottomWidth->second;
 
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderBottom = m_mStyle.find(L"border-bottom");
+                styles_iterator oBorderBottom = m_mStyle.find(L"border-bottom");
 
                 std::wstring sBorderBottom;
 
@@ -1529,14 +1463,12 @@ namespace NSCSS
 
             std::wstring CCompiledStyle::GetBorderBottomStyle() const
             {
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderBottomStyle = m_mStyle.find(L"border-bottom-style");
+                styles_iterator oBorderBottomStyle = m_mStyle.find(L"border-bottom-style");
 
                 if (oBorderBottomStyle != m_mStyle.end())
                     return oBorderBottomStyle->second;
 
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderBottom = m_mStyle.find(L"border-bottom");
+                styles_iterator oBorderBottom = m_mStyle.find(L"border-bottom");
 
                 std::wstring sBorderBottom;
 
@@ -1550,8 +1482,7 @@ namespace NSCSS
                 for (std::wstring sStyle : arWords)
                 {
                     std::transform(sStyle.begin(), sStyle.end(), sStyle.begin(), tolower);
-                    const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                          oStyle = NS_CONST_VALUES::mStyles.find(sStyle);
+                    styles_iterator oStyle = NS_CONST_VALUES::mStyles.find(sStyle);
 
                     if (oStyle != NS_CONST_VALUES::mStyles.end())
                         return oStyle->second;
@@ -1562,14 +1493,12 @@ namespace NSCSS
 
             std::wstring CCompiledStyle::GetBorderBottomColor() const
             {
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderBottomColor = m_mStyle.find(L"border-bottom-color");
+                styles_iterator oBorderBottomColor = m_mStyle.find(L"border-bottom-color");
 
                 if (oBorderBottomColor != m_mStyle.end())
                     return oBorderBottomColor->second;\
 
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderBottom = m_mStyle.find(L"border-bottom");
+                styles_iterator oBorderBottom = m_mStyle.find(L"border-bottom");
 
                 std::wstring sBorderBottom;
 
@@ -1604,8 +1533,7 @@ namespace NSCSS
 
                     std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
 
-                    const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                          oHEX = NS_CONST_VALUES::mColors.find(sColor);
+                    styles_iterator oHEX = NS_CONST_VALUES::mColors.find(sColor);
 
                     if (oHEX != NS_CONST_VALUES::mColors.end())
                         return oHEX->second;
@@ -1616,8 +1544,7 @@ namespace NSCSS
 
             std::wstring CCompiledStyle::GetBorderLeft() const
             {
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderLeft = m_mStyle.find(L"border-left");
+                styles_iterator oBorderLeft = m_mStyle.find(L"border-left");
 
                 if (oBorderLeft != m_mStyle.end())
                     return oBorderLeft->second;
@@ -1634,14 +1561,12 @@ namespace NSCSS
 
             std::wstring CCompiledStyle::GetBorderLeftWidth() const
             {
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderLeftWidth = m_mStyle.find(L"border-left-width");
+                styles_iterator oBorderLeftWidth = m_mStyle.find(L"border-left-width");
 
                 if (oBorderLeftWidth != m_mStyle.end())
                     return oBorderLeftWidth->second;
 
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderLeft = m_mStyle.find(L"border-left");
+                styles_iterator oBorderLeft = m_mStyle.find(L"border-left");
 
                 std::wstring sBorderLeft;
 
@@ -1661,14 +1586,12 @@ namespace NSCSS
 
             std::wstring CCompiledStyle::GetBorderLeftStyle() const
             {
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderLeftStyle = m_mStyle.find(L"border-left-style");
+                styles_iterator oBorderLeftStyle = m_mStyle.find(L"border-left-style");
 
                 if (oBorderLeftStyle != m_mStyle.end())
                     return oBorderLeftStyle->second;
 
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderLeft = m_mStyle.find(L"border-left");
+                styles_iterator oBorderLeft = m_mStyle.find(L"border-left");
 
                 std::wstring sBorderLeft;
 
@@ -1682,8 +1605,7 @@ namespace NSCSS
                 for (std::wstring sStyle : arWords)
                 {
                     std::transform(sStyle.begin(), sStyle.end(), sStyle.begin(), tolower);
-                    const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                          oStyle = NS_CONST_VALUES::mStyles.find(sStyle);
+                    styles_iterator oStyle = NS_CONST_VALUES::mStyles.find(sStyle);
 
                     if (oStyle != NS_CONST_VALUES::mStyles.end())
                         return oStyle->second;
@@ -1694,14 +1616,12 @@ namespace NSCSS
 
             std::wstring CCompiledStyle::GetBorderLeftColor() const
             {
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderLeftColor = m_mStyle.find(L"border-left-color");
+                styles_iterator oBorderLeftColor = m_mStyle.find(L"border-left-color");
 
                 if (oBorderLeftColor != m_mStyle.end())
                     return oBorderLeftColor->second;
 
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderLeft = m_mStyle.find(L"border-left");
+                styles_iterator oBorderLeft = m_mStyle.find(L"border-left");
 
                 std::wstring sBorderLeft;
 
@@ -1736,8 +1656,7 @@ namespace NSCSS
 
                     std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
 
-                    const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                          oHEX = NS_CONST_VALUES::mColors.find(sColor);
+                    styles_iterator oHEX = NS_CONST_VALUES::mColors.find(sColor);
 
                     if (oHEX != NS_CONST_VALUES::mColors.end())
                         return oHEX->second;
@@ -1748,8 +1667,7 @@ namespace NSCSS
 
             std::wstring CCompiledStyle::GetBorderRight() const
             {
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderRight = m_mStyle.find(L"border-right");
+                styles_iterator oBorderRight = m_mStyle.find(L"border-right");
 
                 if (oBorderRight != m_mStyle.end())
                     return oBorderRight->second;
@@ -1766,14 +1684,12 @@ namespace NSCSS
 
             std::wstring CCompiledStyle::GetBorderRightWidth() const
             {
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderRightWidth = m_mStyle.find(L"border-right-width");
+                styles_iterator oBorderRightWidth = m_mStyle.find(L"border-right-width");
 
                 if (oBorderRightWidth != m_mStyle.end())
                     return oBorderRightWidth->second;
 
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderRight = m_mStyle.find(L"border-right");
+                styles_iterator oBorderRight = m_mStyle.find(L"border-right");
 
                 std::wstring sBorderRight;
 
@@ -1793,14 +1709,12 @@ namespace NSCSS
 
             std::wstring CCompiledStyle::GetBorderRightStyle() const
             {
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderRightStyle = m_mStyle.find(L"border-right-style");
+                styles_iterator oBorderRightStyle = m_mStyle.find(L"border-right-style");
 
                 if (oBorderRightStyle != m_mStyle.end())
                     return oBorderRightStyle->second;
 
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderRight = m_mStyle.find(L"border-right");
+                styles_iterator oBorderRight = m_mStyle.find(L"border-right");
 
                 std::wstring sBorderRight;
 
@@ -1814,8 +1728,7 @@ namespace NSCSS
                 for (std::wstring sStyle : arWords)
                 {
                     std::transform(sStyle.begin(), sStyle.end(), sStyle.begin(), tolower);
-                    const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                          oStyle = NS_CONST_VALUES::mStyles.find(sStyle);
+                    styles_iterator oStyle = NS_CONST_VALUES::mStyles.find(sStyle);
 
                     if (oStyle != NS_CONST_VALUES::mStyles.end())
                         return oStyle->second;
@@ -1826,14 +1739,12 @@ namespace NSCSS
 
             std::wstring CCompiledStyle::GetBorderRightColor() const
             {
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderRightColor = m_mStyle.find(L"border-right-color");
+                styles_iterator oBorderRightColor = m_mStyle.find(L"border-right-color");
 
                 if (oBorderRightColor != m_mStyle.end())
                     return oBorderRightColor->second;
 
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderRight = m_mStyle.find(L"border-right");
+                styles_iterator oBorderRight = m_mStyle.find(L"border-right");
 
                 std::wstring sBorderRight;
 
@@ -1868,8 +1779,7 @@ namespace NSCSS
 
                     std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
 
-                    const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                          oHEX = NS_CONST_VALUES::mColors.find(sColor);
+                    styles_iterator oHEX = NS_CONST_VALUES::mColors.find(sColor);
 
                     if (oHEX != NS_CONST_VALUES::mColors.end())
                         return oHEX->second;
@@ -1880,8 +1790,7 @@ namespace NSCSS
 
             std::wstring CCompiledStyle::GetBorderTop() const
             {
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderTop = m_mStyle.find(L"border-top");
+                styles_iterator oBorderTop = m_mStyle.find(L"border-top");
 
                 if (oBorderTop != m_mStyle.end())
                     return oBorderTop->second;
@@ -1898,14 +1807,12 @@ namespace NSCSS
 
             std::wstring CCompiledStyle::GetBorderTopWidth() const
             {
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderTopWidth = m_mStyle.find(L"border-top-width");
+                styles_iterator oBorderTopWidth = m_mStyle.find(L"border-top-width");
 
                 if (oBorderTopWidth != m_mStyle.end())
                     return oBorderTopWidth->second;
 
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderTop = m_mStyle.find(L"border-top");
+                styles_iterator oBorderTop = m_mStyle.find(L"border-top");
 
                 std::wstring sBorderTop;
 
@@ -1925,14 +1832,12 @@ namespace NSCSS
 
             std::wstring CCompiledStyle::GetBorderTopStyle() const
             {
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderTopStyle = m_mStyle.find(L"border-top-style");
+                styles_iterator oBorderTopStyle = m_mStyle.find(L"border-top-style");
 
                 if (oBorderTopStyle != m_mStyle.end())
                     return oBorderTopStyle->second;
 
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderTop = m_mStyle.find(L"border-top");
+                styles_iterator oBorderTop = m_mStyle.find(L"border-top");
 
                 std::wstring sBorderTop;
 
@@ -1946,8 +1851,7 @@ namespace NSCSS
                 for (std::wstring sStyle : arWords)
                 {
                     std::transform(sStyle.begin(), sStyle.end(), sStyle.begin(), tolower);
-                    const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                          oStyle = NS_CONST_VALUES::mStyles.find(sStyle);
+                    styles_iterator oStyle = NS_CONST_VALUES::mStyles.find(sStyle);
 
                     if (oStyle != NS_CONST_VALUES::mStyles.end())
                         return oStyle->second;
@@ -1958,14 +1862,12 @@ namespace NSCSS
 
             std::wstring CCompiledStyle::GetBorderTopColor() const
             {
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderTopColor = m_mStyle.find(L"border-top-color");
+                styles_iterator oBorderTopColor = m_mStyle.find(L"border-top-color");
 
                 if (oBorderTopColor != m_mStyle.end())
                     return oBorderTopColor->second;
 
-                const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                      oBorderTop = m_mStyle.find(L"border-top");
+                styles_iterator oBorderTop = m_mStyle.find(L"border-top");
 
                 std::wstring sBorderTop;
 
@@ -1999,8 +1901,7 @@ namespace NSCSS
                     }
                     std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
 
-                    const std::_Tree_const_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>>>> &
-                          oHEX = NS_CONST_VALUES::mColors.find(sColor);
+                    styles_iterator oHEX = NS_CONST_VALUES::mColors.find(sColor);
 
                     if (oHEX != NS_CONST_VALUES::mColors.end())
                         return oHEX->second;

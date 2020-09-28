@@ -46,7 +46,6 @@ namespace NSCSS
     {
         for (CElement*& item : m_arData)
             delete item;
-
         m_arData.clear();
         m_arFiles.clear();
 
@@ -371,19 +370,19 @@ namespace NSCSS
         return sText;
     }
 
-    std::map<std::wstring, std::wstring> CCssCalculator_Private::GetDeclarations(const std::wstring& sSelector)
+    std::map<std::wstring, std::wstring> CCssCalculator_Private::GetDeclarations(const std::wstring& sSelector) const
     {
         if (sSelector.empty() || m_arData.empty())
             return std::map<std::wstring, std::wstring>();
 
-        for (CElement* oElement : m_arData )
+        for (const CElement* oElement : m_arData )
             if (oElement->FindSelector(sSelector))
                 return oElement->GetDeclarations(sSelector, {});
 
         return std::map<std::wstring, std::wstring>();
     }
 
-    inline std::vector<unsigned short int> CCssCalculator_Private::GetWeightSelector(const std::string& sSelector) const
+    std::vector<unsigned short int> CCssCalculator_Private::GetWeightSelector(const std::string& sSelector) const
     {
         if (sSelector.empty())
             return std::vector<unsigned short int>{0, 0, 0, 0};
@@ -448,16 +447,14 @@ namespace NSCSS
 
         for (const std::string& sSelector : arSelectors)
         {
-            for (const std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>&
-                 oDeclarations : GetDeclarations(NS_STATIC_FUNCTIONS::stringToWstring(sSelector)))
+            for (const auto& oDeclarations : GetDeclarations(NS_STATIC_FUNCTIONS::stringToWstring(sSelector)))
             {
                 if (mStyle[oDeclarations.first].empty() || mStyle[oDeclarations.first].find(L"important") == std::wstring::npos)
                     mStyle[oDeclarations.first] = oDeclarations.second;
             }
         }
 
-        for (const struct std::pair<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > const ,class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t>>>&
-             oIter : mStyle)
+        for (const auto& oIter : mStyle)
         {
             const size_t posRgb = oIter.second.find(L"rgb");
 
@@ -558,13 +555,12 @@ namespace NSCSS
 
         if (parentSize > 0)
         {
-            const std::_Tree_iterator<class std::_Tree_val<struct std::_Tree_simple_types<struct std::pair<class std::vector<struct NSCSS::CNode,class std::allocator<struct NSCSS::CNode> > const ,class NSCSS::CCompiledStyle * __ptr64>>>>&
-                  oItem = m_mUsedStyles.find(arSelectors);
+            const auto& oItem = m_mUsedStyles.find(arSelectors);
             if (oItem != m_mUsedStyles.end())
                 return *oItem->second;
         }
 
-        CCompiledStyle *oStyle = new CCompiledStyle;
+        CCompiledStyle *oStyle = new CCompiledStyle();
 
         const std::wstring& sClassName = (!arSelectors.back().m_sClass.empty() && arSelectors.back().m_sClass.front() != L'.')
                                          ? L'.' + arSelectors.back().m_sClass
@@ -574,12 +570,9 @@ namespace NSCSS
                                       ? L'#' + arSelectors.back().m_sId
                                       : arSelectors.back().m_sId;
 
-        for (std::_Vector_const_iterator<class std::_Vector_val<struct std::_Simple_types<struct NSCSS::CNode>>> oParent = arSelectors.begin(); oParent != arSelectors.end() - 1; ++oParent)
+        for (auto oParent = arSelectors.begin(); oParent != arSelectors.end() - 1; ++oParent)
         {
-            if ((oParent->m_sName != arSelectors.back().m_sName ||
-                 oParent->m_sClass != arSelectors.back().m_sClass ||
-                 oParent->m_sId != arSelectors.back().m_sId ||
-                 oParent->m_sStyle != arSelectors.back().m_sStyle) && oParent->m_sName != L"body")
+            if (oParent->m_sName != L"body")
             {
                 *oStyle += GetCompiledStyle({*oParent}, unitMeasure);
                 oStyle->AddParent(oParent->m_sName);
@@ -601,6 +594,8 @@ namespace NSCSS
         }
 
         oStyle->SetID(arSelectors.back().m_sName + sClassName + sIdName + L'-' + std::to_wstring(m_nCountNodes++));
+
+//        std::wcout << oStyle->GetId() << L" - " << oStyle->GetStyleW() << std::endl;
 
         if (parentSize > 0)
             m_mUsedStyles[arSelectors] = oStyle;

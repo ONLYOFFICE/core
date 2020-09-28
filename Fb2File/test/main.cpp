@@ -6,10 +6,10 @@
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
-void getDirectories(std::wstring sDirectory, std::vector<std::wstring>& arrDirectory)
+void getDirectories(const std::wstring& sDirectory, std::vector<std::wstring>& arrDirectory)
 {
     arrDirectory.push_back(sDirectory);
-    for(std::wstring sT : NSDirectory::GetDirectories(sDirectory))
+    for(const std::wstring& sT : NSDirectory::GetDirectories(sDirectory))
         getDirectories(sT, arrDirectory);
 }
 
@@ -37,7 +37,7 @@ int main()
         int nErrorCol = 0;
         std::vector<std::wstring> arrError;
 
-        for(std::wstring sD : arrDirectory)
+        for(const std::wstring& sD : arrDirectory)
         {
             std::vector<std::wstring> arrFiles = NSDirectory::GetFiles(sD);
 
@@ -47,7 +47,7 @@ int main()
             NSDirectory::DeleteDirectory(sOutputDirectory);
             NSDirectory::CreateDirectory(sOutputDirectory);
 
-            for(std::wstring sFile : arrFiles)
+            for(const std::wstring& sFile : arrFiles)
             {
                 CFb2File oFile;
                 std::wstring sFileName = NSFile::GetFileName(sFile);
@@ -60,8 +60,7 @@ int main()
                     continue;
                 }
 
-                HRESULT nResConvert = oFile.Open(sFile, sTmp, &oParams);
-                if(nResConvert == S_OK)
+                if(oFile.Open(sFile, sTmp, &oParams) == S_OK)
                 {
                     std::cout << "Success" << std::endl;
                     oZip.CompressFileOrDirectory(sTmp, sOutputDirectory + L"/" + sFileName + L".docx");
@@ -77,7 +76,7 @@ int main()
         }
 
         std::cout << "ERRORS - "<< nErrorCol << std::endl;
-        for(std::wstring sError : arrError)
+        for(const std::wstring& sError : arrError)
             std::wcout << sError << std::endl;
     }
     else
@@ -92,8 +91,7 @@ int main()
         NSDirectory::DeleteDirectory(sOutputDirectory);
         NSDirectory::CreateDirectory(sOutputDirectory);
 
-        bool bCheck = oFile.IsFb2File(sFile);
-        if (!bCheck)
+        if (!oFile.IsFb2File(sFile))
         {
             std::cout << "This isn't a fb2 file" << std::endl;
             return 1;
@@ -103,11 +101,7 @@ int main()
         oParams.bNeedDocx = true;
         oParams.bNeedContents = true;
 
-        HRESULT nResConvert = oFile.Open(sFile, sOutputDirectory, &oParams);
-        if(nResConvert == S_OK)
-            std::cout << "Success" << std::endl;
-        else
-            std::cout << "Failure" << std::endl;
+        std::cout << oFile.Open(sFile, sOutputDirectory, &oParams) == S_OK ? "Success" : "Failure" << std::endl;
     }
     std::cout << "THE END" << std::endl;
     return 0;

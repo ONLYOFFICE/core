@@ -140,7 +140,7 @@ SOURCES += \
     ./../../raster/Metafile/svg/SVGTransformer.cpp
 
 core_release {
-SOURCES += \SOURCES += $$PWD/graphics_pri.cpp
+SOURCES += $$PWD/graphics_pri.cpp
 }
 
 core_debug {

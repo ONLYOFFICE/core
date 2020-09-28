@@ -551,9 +551,8 @@ namespace NSCSS
         if (arSelectors.empty())
             return CCompiledStyle();
 
-        const unsigned short int parentSize = arSelectors.size() - 1;
-
-        if (parentSize > 0)
+        bool parentSize = arSelectors.size() > 1;
+        if (parentSize)
         {
             const auto& oItem = m_mUsedStyles.find(arSelectors);
             if (oItem != m_mUsedStyles.end())
@@ -597,7 +596,7 @@ namespace NSCSS
 
 //        std::wcout << oStyle->GetId() << L" - " << oStyle->GetStyleW() << std::endl;
 
-        if (parentSize > 0)
+        if (parentSize)
             m_mUsedStyles[arSelectors] = oStyle;
 
         return *oStyle;
@@ -760,10 +759,9 @@ namespace NSCSS
 
         switch (m_UnitMeasure)
         {
-            case Default:
-                return ConvertPxToPt(dValue);
             case Pixel:
                 return std::to_wstring(static_cast<short int>(dValue));;
+            case Default:
             case Point:
                 return ConvertPxToPt(dValue);
             case Cantimeter:
@@ -775,6 +773,7 @@ namespace NSCSS
             case Peak:
                 return ConvertPxToPc(dValue);
         }
+        return ConvertPxToPt(dValue);
     }
 
     inline std::wstring CCssCalculator_Private::ConvertPxToCm(const float& dValue) const
@@ -827,10 +826,9 @@ namespace NSCSS
 
         switch (m_UnitMeasure)
         {
-            case Default:
-                return ConvertCmToPt(dValue);
             case Pixel:
                 return ConvertCmToPx(dValue);
+            case Default:
             case Point:
                 return ConvertCmToPt(dValue);
             case Cantimeter:
@@ -842,6 +840,7 @@ namespace NSCSS
             case Peak:
                 return ConvertCmToPc(dValue);
         }
+        return ConvertCmToPt(dValue);
     }
 
     inline std::wstring CCssCalculator_Private::ConvertCmToIn(const float& dValue) const
@@ -894,10 +893,9 @@ namespace NSCSS
 
         switch (m_UnitMeasure)
         {
-            case Default:
-                return ConvertMmToPt(dValue);
             case Pixel:
                 return ConvertMmToPx(dValue);
+            case Default:
             case Point:
                 return ConvertMmToPt(dValue);
             case Cantimeter:
@@ -909,6 +907,7 @@ namespace NSCSS
             case Peak:
                 return ConvertMmToPc(dValue);
         }
+        return ConvertMmToPt(dValue);
     }
 
     inline std::wstring CCssCalculator_Private::ConvertMmToIn(const float& dValue) const
@@ -961,10 +960,9 @@ namespace NSCSS
 
         switch (m_UnitMeasure)
         {
-            case Default:
-                return ConvertInToPt(dValue);
             case Pixel:
                 return  ConvertInToPx(dValue);
+            case Default:
             case Point:
                 return ConvertInToPt(dValue);
             case Cantimeter:
@@ -976,6 +974,7 @@ namespace NSCSS
             case Peak:
                 return ConvertInToPc(dValue);
         }
+        return ConvertInToPt(dValue);
     }
 
     inline std::wstring CCssCalculator_Private::ConvertInToMm(const float& dValue) const
@@ -1028,10 +1027,9 @@ namespace NSCSS
 
         switch (m_UnitMeasure)
         {
-            case Default:
-                return std::to_wstring(static_cast<short int>(dValue));
             case Pixel:
                 return ConvertPtToPx(dValue);
+            case Default:
             case Point:
                 return std::to_wstring(static_cast<short int>(dValue));
             case Cantimeter:
@@ -1043,6 +1041,7 @@ namespace NSCSS
             case Peak:
                 return ConvertPtToPc(dValue);
         }
+        return std::to_wstring(static_cast<short int>(dValue));
     }
 
     inline std::wstring CCssCalculator_Private::ConvertPtToIn(const float& dValue) const
@@ -1095,10 +1094,9 @@ namespace NSCSS
 
         switch (m_UnitMeasure)
         {
-            case Default:
-                return ConvertPcToPt(dValue);
             case Pixel:
                 return ConvertPcToPx(dValue);
+            case Default:
             case Point:
                 return ConvertPcToPt(dValue);
             case Cantimeter:
@@ -1110,6 +1108,7 @@ namespace NSCSS
             case Peak:
                 return std::to_wstring(static_cast<short int>(dValue));
         }
+        return ConvertPcToPt(dValue);
     }
 
     inline std::wstring CCssCalculator_Private::ConvertPcToIn(const float& dValue) const

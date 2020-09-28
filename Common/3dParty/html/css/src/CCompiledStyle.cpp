@@ -75,11 +75,8 @@ namespace NSCSS
 
     std::wstring CCompiledStyle::GetStyleW() const
     {
-        if (m_mStyle.empty())
-            return std::wstring();
-        std::wstring sStyle;
-        return std::accumulate(m_mStyle.begin(), m_mStyle.end(), sStyle,
-            [] (std::wstring& sRes, const std::map<std::wstring, std::wstring>::value_type& oIter) { return sRes + oIter.first + L":" + oIter.second + L";"; });
+        return std::accumulate(m_mStyle.begin(), m_mStyle.end(), std::wstring(),
+            [] (std::wstring& sRes, const std::map<std::wstring, std::wstring>::value_type& oIter) { return sRes += oIter.first + L":" + oIter.second + L";"; });
     }
 
     std::map<std::wstring, std::wstring> CCompiledStyle::GetStyleMap() const
@@ -254,9 +251,11 @@ namespace NSCSS
             if(nPos1 != std::wstring::npos)
                 sValue = sFont.substr(nPos1 + 1);
 
+            /*
             size_t posComma = sValue.find(L',');
             if (posComma != std::wstring::npos)
                 sValue.substr(0, posComma - 1);
+            */
 
             return sValue.empty() || sValue.find_first_of(L"\'\"") != std::wstring::npos ? sValue : L'"' + sValue + L'"';
         }

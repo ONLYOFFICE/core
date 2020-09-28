@@ -351,7 +351,7 @@ namespace NSCSS
 
         const std::wstring sBorderRightColor = oStyle.GetBorderRightColor();
         const std::wstring sBorderRightStyle = oStyle.GetBorderRightStyle();
-        const float dValueRight = wcstod(oStyle.GetBorderRightWidth().c_str(), NULL) * 4.0f;
+        const float dValueRight = wcstof(oStyle.GetBorderRightWidth().c_str(), NULL) * 4.0f;
         const std::wstring sBorderRightWidth = std::to_wstring(static_cast<unsigned short int>(dValueRight + 0.5f));
         if (!sBorderRightColor.empty() && !sBorderRightWidth.empty() && !sBorderRightStyle.empty())
             oXmlElement.AddPropertiesInP(NS_CONST_VALUES::ParagraphProperties::P_RightBorder,

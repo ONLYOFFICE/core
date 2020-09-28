@@ -472,7 +472,8 @@ public:
 	docRGB Color;
 	BYTE VertAlign;
 	docRGB HighLight;
-    std::wstring Shd;
+	BYTE nHighLight;
+	std::wstring Shd;
     std::wstring RStyle;
 	long Spacing;
 	bool DStrikeout;
@@ -509,7 +510,6 @@ public:
 	bool bFontSize;
 	bool bColor;
 	bool bVertAlign;
-	bool bHighLight;
 	bool bShd;
 	bool bRStyle;
 	bool bSpacing;
@@ -558,7 +558,6 @@ public:
 		bFontSize = false;
 		bColor = false;
 		bVertAlign = false;
-		bHighLight = false;
 		bShd = false;
 		bRStyle = false;
 		bSpacing = false;
@@ -579,7 +578,8 @@ public:
 		ThemeColor.Reset();
 		bVanish = false;
 
-        Outline.clear();
+		nHighLight = 0; //not set
+		Outline.clear();
         Fill.clear();
         Del.clear();
         Ins.clear();
@@ -589,7 +589,7 @@ public:
 	}
 	bool IsNoEmpty()
 	{
-		return bBold || bItalic || bUnderline || bStrikeout || bFontAscii || bFontHAnsi || bFontAE || bFontCS || bFontSize || bColor || bVertAlign || bHighLight || bShd ||
+		return bBold || bItalic || bUnderline || bStrikeout || bFontAscii || bFontHAnsi || bFontAE || bFontCS || bFontSize || bColor || bVertAlign || nHighLight > 0 || bShd ||
 			bRStyle || bSpacing || bDStrikeout || bCaps || bSmallCaps || bPosition || bFontHint || bBoldCs || bItalicCs || bFontSizeCs || bCs || bRtl || bLang || bLangBidi || bLangEA || bThemeColor || bVanish ||
 			!Outline.empty() || !Fill.empty() || !Del.empty() || !Ins.empty() || !MoveFrom.empty() || !MoveTo.empty() || !rPrChange.empty();
 	}
@@ -736,11 +736,13 @@ public:
 				pCStringWriter->WriteString(L"<w:sz w:val=\"" + std::to_wstring(FontSizeCs) + L"\"/>");
 			pCStringWriter->WriteString(L"<w:szCs w:val=\"" + std::to_wstring(FontSizeCs) + L"\"/>");
 		}
-		if(bHighLight)
+		if(nHighLight > 0)
 		{
 			docRGB& H = HighLight;
             std::wstring sColor;
-			if(0x00 == H.R && 0x00 == H.G && 0x00 == H.B )
+			if (nHighLight == 1)
+				sColor = L"none";
+			else if(0x00 == H.R && 0x00 == H.G && 0x00 == H.B )
 				sColor = _T("black");
 			else if(0x00 == H.R && 0x00 == H.G && 0xFF == H.B )
 				sColor = _T("blue");

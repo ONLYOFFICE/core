@@ -515,7 +515,7 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 		}
 	case c_oSerProp_rPrType::HighLight:
 		{
-			orPr->bHighLight = true;
+			orPr->nHighLight = 2; //color set
 			orPr->HighLight = oBinary_CommonReader2.ReadColor();
 			break;
 		}
@@ -524,7 +524,7 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 			BYTE byteHighLightTyped = m_oBufferedStream.GetUChar();
 			switch(byteHighLightTyped)
 			{
-			case c_oSer_ColorType::None:orPr->bHighLight = false;break;
+			case c_oSer_ColorType::None:orPr->nHighLight = 1; break; //type set
 			}
 			break;
 		}

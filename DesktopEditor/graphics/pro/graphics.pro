@@ -139,7 +139,62 @@ SOURCES += \
     ./../../raster/Metafile/svg/SVGFramework.cpp \
     ./../../raster/Metafile/svg/SVGTransformer.cpp
 
-SOURCES += $$PWD/graphics_pri.cpp
+core_release {
+SOURCES += \SOURCES += $$PWD/graphics_pri.cpp
+}
+
+core_debug {
+SOURCES += \
+    ./../../agg-2.4/src/agg_arc.cpp \
+    ./../../agg-2.4/src/agg_bezier_arc.cpp \
+    ./../../agg-2.4/src/agg_arrowhead.cpp \
+    ./../../agg-2.4/src/ctrl/agg_cbox_ctrl.cpp \
+    ./../../agg-2.4/src/agg_curves.cpp \
+    ./../../agg-2.4/src/agg_gsv_text.cpp \
+    ./../../agg-2.4/src/agg_image_filters.cpp \
+    ./../../agg-2.4/src/agg_line_aa_basics.cpp \
+    ./../../agg-2.4/src/agg_line_profile_aa.cpp \
+    ./../../agg-2.4/src/agg_rounded_rect.cpp \
+    ./../../agg-2.4/src/agg_sqrt_tables.cpp \
+    ./../../agg-2.4/src/agg_trans_affine.cpp \
+    ./../../agg-2.4/src/agg_bspline.cpp \
+    ./../../agg-2.4/src/agg_vcgen_bspline.cpp \
+    ./../../agg-2.4/src/agg_vcgen_contour.cpp \
+    ./../../agg-2.4/src/agg_vcgen_dash.cpp \
+    ./../../agg-2.4/src/agg_vcgen_markers_term.cpp \
+    ./../../agg-2.4/src/agg_vcgen_smooth_poly1.cpp \
+    ./../../agg-2.4/src/agg_vcgen_stroke.cpp \
+\
+    ./../../fontengine/fontconverter/StringExt.cpp \
+    ./../../fontengine/fontconverter/Hash.cpp \
+    ./../../fontengine/fontconverter/FontConverter.cpp \
+    ./../../fontengine/fontconverter/FontFileEncodings.cpp \
+    ./../../fontengine/fontconverter/FontFileTrueType.cpp \
+    ./../../fontengine/fontconverter/FontFileType1.cpp \
+    ./../../fontengine/fontconverter/FontFileType1C.cpp \
+\
+    ./../../raster/Jp2/J2kFile.cpp \
+    ./../../raster/Jp2/Reader.cpp \
+\
+    ./../../raster/Metafile/Common/MetaFileTypes.cpp \
+    ./../../raster/Metafile/Common/MetaFileUtils.cpp \
+    ./../../raster/Metafile/Emf/EmfClip.cpp \
+    ./../../raster/Metafile/Emf/EmfObjects.cpp \
+    ./../../raster/Metafile/Emf/EmfPath.cpp \
+    ./../../raster/Metafile/Emf/EmfPlayer.cpp \
+    ./../../raster/Metafile/Emf/EmfFile.cpp \
+    ./../../raster/Metafile/Wmf/WmfClip.cpp \
+    ./../../raster/Metafile/Wmf/WmfObjects.cpp \
+    ./../../raster/Metafile/Wmf/WmfPlayer.cpp \
+    ./../../raster/Metafile/MetaFile.cpp \
+\
+    ./../../raster/JBig2/source/JBig2File.cpp \
+\
+    ./../../raster/Metafile/StarView/SvmClip.cpp \
+    ./../../raster/Metafile/StarView/SvmFile.cpp \
+    ./../../raster/Metafile/StarView/SvmObjects.cpp \
+    ./../../raster/Metafile/StarView/SvmPlayer.cpp
+}
 
 SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftbbox.c \

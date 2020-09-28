@@ -2103,9 +2103,9 @@ w15:paraIdParent=\"" + pComment->sParaIdParent + L"\" w15:done=\"" + sDone + L"\
 		std::wstring sRes;
 		if(pComment->bDurableId && !pComment->UserData.empty())
 		{
-			sRes += L"<w16cex:commentExtensible w16cex:durableId=\"" + XmlUtils::IntToString(pComment->DurableId, L"%08X") + ">";
-			sRes += L"<w16cex:extLst><w16cex:ext uri=\"{00A4C25C-085E-4340-0000-A5531E510D01}\"><p15:presenceInfo xmlns:p15=\"http://schemas.microsoft.com/office/powerpoint/2012/main\" userId=\"";
-			sRes += XmlUtils::EncodeXmlString(pComment->UserData);
+			sRes += L"<w16cex:commentExtensible w16cex:durableId=\"" + XmlUtils::IntToString(pComment->DurableId, L"%08X") + L"\">";
+			sRes += L"<w16cex:extLst><w16cex:ext uri=\"{19B8F6BF-5375-455C-9EA6-DF929625EA0E}\"><p15:presenceInfo xmlns:p15=\"http://schemas.microsoft.com/office/powerpoint/2012/main\" userId=\"";
+			sRes += XmlUtils::EncodeXmlStringExtend(pComment->UserData);
 			sRes += L"\" providerId=\"AD\"/></w16cex:ext></w16cex:extLst></w16cex:commentExtensible>";
 		}
 		return sRes;

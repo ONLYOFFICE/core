@@ -7758,8 +7758,8 @@ void BinaryCommentsTableWriter::WriteCommentsContent(OOX::CComments& oComments, 
 			OOX::CCommentExtensible* pCommentExtensible = pCommentsExtensible->m_arrComments[i];
 			if(pCommentExtensible->m_oDurableId.IsInit())
 			{
-				std::map<unsigned int, CCommentWriteTemp*>::const_iterator pPair = mapParaIdToComment.find(pCommentExtensible->m_oDurableId->GetValue());
-				if(mapParaIdToComment.end() != pPair)
+				std::map<unsigned int, CCommentWriteTemp*>::const_iterator pPair = mapDurableIdToComment.find(pCommentExtensible->m_oDurableId->GetValue());
+				if(mapDurableIdToComment.end() != pPair)
 				{
 					CCommentWriteTemp* pCommentWriteTemp = pPair->second;
 					if (pCommentExtensible->m_oDateUtc.IsInit())
@@ -7777,8 +7777,8 @@ void BinaryCommentsTableWriter::WriteCommentsContent(OOX::CComments& oComments, 
 			OOX::CCommentExtensible* pCommentExtensible = pCommentsUserData->m_arrComments[i];
 			if(pCommentExtensible->m_oDurableId.IsInit())
 			{
-				std::map<unsigned int, CCommentWriteTemp*>::const_iterator pPair = mapParaIdToComment.find(pCommentExtensible->m_oDurableId->GetValue());
-				if(mapParaIdToComment.end() != pPair)
+				std::map<unsigned int, CCommentWriteTemp*>::const_iterator pPair = mapDurableIdToComment.find(pCommentExtensible->m_oDurableId->GetValue());
+				if(mapDurableIdToComment.end() != pPair)
 				{
 					CCommentWriteTemp* pCommentWriteTemp = pPair->second;
 					if(pCommentExtensible->m_oExtLst.IsInit())
@@ -8682,7 +8682,7 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 	{
 		BinDocxRW::BinaryCommentsTableWriter oBinaryCommentsTableWriter(m_oParamsWriter);
 		int nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::DocumentComments);
-		oBinaryCommentsTableWriter.Write(*pDocx->m_pDocumentComments, pDocx->m_pDocumentCommentsExt, pDocx->m_pDocumentCommentsExtensible, pDocx->m_pDocumentPeople, pDocx->m_pDocumentCommentsIds, m_oParamsWriter.m_mapIgnoreComments);
+		oBinaryCommentsTableWriter.Write(*pDocx->m_pDocumentComments, pDocx->m_pDocumentCommentsExt, pDocx->m_pDocumentCommentsExtensible, pDocx->m_pCommentsUserData, pDocx->m_pDocumentPeople, pDocx->m_pDocumentCommentsIds, m_oParamsWriter.m_mapIgnoreComments);
 		this->WriteTableEnd(nCurPos);
 	}
 

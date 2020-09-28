@@ -9367,6 +9367,7 @@ int BinaryFileReader::ReadMainTable()
 		std::wstring sDocumentPeople	= oBinary_DocumentCommentsTableReader.m_oComments.writePeople();
 
 		std::wstring sContentUserData = oComments.writeContentUserData();
+		sContentUserData += oBinary_DocumentCommentsTableReader.m_oComments.writeContentUserData();
 
 		oCommentsWriter.setElements(sContent, sContentEx, sContentExtensible, sContentsId, sPeople, sDocumentContent, sDocumentContentEx, sDocumentContentExtensible, sDocumentContentsId, sDocumentPeople, sContentUserData);
         
@@ -9385,8 +9386,8 @@ int BinaryFileReader::ReadMainTable()
 		if(false == oCommentsWriter.m_sContentExtensible.empty())
 		{
 			unsigned int rId;
-			m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::ContentExtensible.RelationType(), OOX::FileTypes::ContentExtensible.DefaultFileName().GetPath(), std::wstring(), &rId);
-			m_oFileWriter.m_pDrawingConverter->Registration(OOX::FileTypes::ContentExtensible.OverrideType(), L"/word", OOX::FileTypes::ContentExtensible.DefaultFileName().GetPath());
+			m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::CommentsExtensible.RelationType(), OOX::FileTypes::CommentsExtensible.DefaultFileName().GetPath(), std::wstring(), &rId);
+			m_oFileWriter.m_pDrawingConverter->Registration(OOX::FileTypes::CommentsExtensible.OverrideType(), L"/word", OOX::FileTypes::CommentsExtensible.DefaultFileName().GetPath());
 		}
 		if(false == oCommentsWriter.m_sCommentsIds.empty())
 		{

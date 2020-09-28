@@ -36,6 +36,7 @@
 
 namespace OOX
 {
+	class CPresenceInfo;
 	namespace Spreadsheet
 	{
 		class CSparklineGroups;
@@ -201,6 +202,8 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CSlicerCacheHideNoData>		m_oSlicerCacheHideItemsWithNoData;
 			
 			std::vector<OOX::Spreadsheet::CConditionalFormatting*>	m_arrConditionalFormatting;
+
+			nullable<OOX::CPresenceInfo>		m_oPresenceInfo;
 		};
 		//--------------------------------------------------------------------------------
 		// COfficeArtExtensionList 20.1.2.2.15 (Part 1)

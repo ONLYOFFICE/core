@@ -477,7 +477,7 @@ void CCommentsExtensible::read(const CPath& oRootPath, const CPath& oFilePath)
 		while ( oReader.ReadNextSiblingNode( nNumberingDepth ) )
 		{
 			const char* sNameSub = XmlUtils::GetNameNoNS(oReader.GetNameChar());
-			if ( L"commentExtensible" == sNameSub )
+			if ( strcmp("commentExtensible", sNameSub) )
 			{
 				m_arrComments.push_back( new CCommentExtensible(oReader) );
 			}
@@ -495,6 +495,18 @@ CDocumentCommentsExtensible::CDocumentCommentsExtensible(OOX::Document *pMain, c
 	File::m_pMainDocument = pMain;
 	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
 	if (docx) docx->m_pDocumentCommentsExtensible = this;
+}
+CCommentsUserData::CCommentsUserData(OOX::Document *pMain) : CCommentsExtensible(NULL)
+{
+	File::m_pMainDocument = pMain;
+	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+	if (docx) docx->m_pCommentsUserData = this;
+}
+CCommentsUserData::CCommentsUserData(OOX::Document *pMain, const CPath& oPath) : CCommentsExtensible(NULL, oPath)
+{
+	File::m_pMainDocument = pMain;
+	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+	if (docx) docx->m_pCommentsUserData = this;
 }
 
 void CCommentId::fromXML(XmlUtils::CXmlLiteReader& oReader)

@@ -59,6 +59,7 @@ namespace OOX
 	class CComments;
 	class CCommentsExt;
 	class CCommentsExtensible;
+	class CCommentsUserData;
 	class CCommentsIds;
 	class CPeople;
 	class CDocumentComments;
@@ -121,6 +122,7 @@ namespace OOX
 		OOX::CComments		*m_pComments;   //			         word/comments.xml
 		OOX::CCommentsExt	*m_pCommentsExt;//					word/commentsExtended.xml
 		OOX::CCommentsExtensible *m_pCommentsExtensible;//		word/commentsExtensible.xml
+		OOX::CCommentsUserData *m_pCommentsUserData;//		word/commentsUserData.xml
 		OOX::CCommentsIds	*m_pCommentsIds;//					word/commentsIds.xml
 		OOX::CPeople		*m_pPeople;		//					word/people.xml
 		OOX::CDocumentComments		*m_pDocumentComments;   //			         word/documentComments.xml

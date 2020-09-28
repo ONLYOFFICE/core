@@ -1131,11 +1131,10 @@ namespace NSCSS
                 if (sColor[0] == L'#')
                 {
                     if (sColor.length() == 7)
-                        return sColor;
+                        return sColor.substr(1, 7);
                     else if (sColor.length() == 4)
                     {
                         std::wstring sRetColor;
-                        sRetColor += sColor[0];
                         sRetColor += sColor[1];
                         sRetColor += sColor[1];
                         sRetColor += sColor[2];
@@ -1167,11 +1166,10 @@ namespace NSCSS
                 if (sColor[0] == L'#')
                 {
                     if (sColor.length() == 7)
-                        return sColor;
+                        return sColor.substr(1, 7);
                     else if (sColor.length() == 4)
                     {
                         std::wstring sRetColor;
-                        sRetColor += sColor[0];
                         sRetColor += sColor[1];
                         sRetColor += sColor[1];
                         sRetColor += sColor[2];
@@ -1206,11 +1204,10 @@ namespace NSCSS
             if (sColor[0] == L'#')
             {
                 if (sColor.length() == 7)
-                    return sColor;
+                    return sColor.substr(1, 7);
                 else if (sColor.length() == 4)
                 {
                     std::wstring sRetColor;
-                    sRetColor += sColor[0];
                     sRetColor += sColor[1];
                     sRetColor += sColor[1];
                     sRetColor += sColor[2];
@@ -1391,11 +1388,10 @@ namespace NSCSS
                     if (sColor[0] == L'#')
                     {
                         if (sColor.length() == 7)
-                            return sColor;
+                            return sColor.substr(1, 7);
                         else if (sColor.length() == 4)
                         {
                             std::wstring sRetColor;
-                            sRetColor += sColor[0];
                             sRetColor += sColor[1];
                             sRetColor += sColor[1];
                             sRetColor += sColor[2];
@@ -1514,11 +1510,10 @@ namespace NSCSS
                     if (sColor[0] == L'#')
                     {
                         if (sColor.length() == 7)
-                            return sColor;
+                            return sColor.substr(1, 7);
                         else if (sColor.length() == 4)
                         {
                             std::wstring sRetColor;
-                            sRetColor += sColor[0];
                             sRetColor += sColor[1];
                             sRetColor += sColor[1];
                             sRetColor += sColor[2];
@@ -1637,11 +1632,10 @@ namespace NSCSS
                     if (sColor[0] == L'#')
                     {
                         if (sColor.length() == 7)
-                            return sColor;
+                            return sColor.substr(1, 7);
                         else if (sColor.length() == 4)
                         {
                             std::wstring sRetColor;
-                            sRetColor += sColor[0];
                             sRetColor += sColor[1];
                             sRetColor += sColor[1];
                             sRetColor += sColor[2];
@@ -1760,11 +1754,10 @@ namespace NSCSS
                     if (sColor[0] == L'#')
                     {
                         if (sColor.length() == 7)
-                            return sColor;
+                            return sColor.substr(1, 7);
                         else if (sColor.length() == 4)
                         {
                             std::wstring sRetColor;
-                            sRetColor += sColor[0];
                             sRetColor += sColor[1];
                             sRetColor += sColor[1];
                             sRetColor += sColor[2];
@@ -1883,11 +1876,10 @@ namespace NSCSS
                     if (sColor[0] == L'#')
                     {
                         if (sColor.length() == 7)
-                            return sColor;
+                            return sColor.substr(1, 7);
                         else if (sColor.length() == 4)
                         {
                             std::wstring sRetColor;
-                            sRetColor += sColor[0];
                             sRetColor += sColor[1];
                             sRetColor += sColor[1];
                             sRetColor += sColor[2];

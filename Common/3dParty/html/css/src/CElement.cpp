@@ -16,6 +16,11 @@ CElement::~CElement()
     m_arDeclarations.clear();
 }
 
+bool CElement::Empty()
+{
+    return m_arSelectors.empty() && m_arDeclarations.empty();
+}
+
 
 std::wstring CElement::GetText() const
 {

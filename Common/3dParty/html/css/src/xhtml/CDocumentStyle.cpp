@@ -379,11 +379,7 @@ namespace NSCSS
 
         const std::wstring sFontFamily = oStyle.GetFontFamily();
         if (!sFontFamily.empty())
-        {
-            const std::vector<std::wstring> sFontsFamily = oStyle.GetFontNames2(sFontFamily);
-            if (!sFontsFamily.empty())
-                oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunnerProperties::R_RFonts, sFontsFamily.back());
-        }
+            oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunnerProperties::R_RFonts, sFontFamily);
 
         if (oStyle.GetFontWeight() == L"bold")
             oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunnerProperties::R_B, L"true");

@@ -10,12 +10,7 @@ namespace NSCSS
 {
     namespace NS_CONST_VALUES
     {
-
-        const std::map<std::wstring, unsigned short int> m_mUnisMesure =
-        {
-            {L"px", 0}
-        };
-        enum BasicProperties
+        typedef enum
         {
             B_CustomStyle = 0,
             B_StyleId = 1,
@@ -30,9 +25,9 @@ namespace NSCSS
             B_UiPriority = 9,
 //            B_SemiHidden = 10,
 //            B_S = 11,
-        };
+        } BasicProperties;
 
-        enum ParagraphProperties
+        typedef enum ParagraphProperties
         {
             P_Jc = 0,
             P_Spacing = 1,
@@ -48,9 +43,9 @@ namespace NSCSS
             // </pBdr>
             P_KeepLines = 10,
             P_KeepNext = 11,
-        };
+        } ParagraphProperties;
 
-        enum RunnerProperties
+        typedef enum
         {
             R_RFonts = 0,
             R_Sz = 1,
@@ -59,9 +54,9 @@ namespace NSCSS
             R_Color = 4,
             R_U = 5,
             R_Shd = 6
-        };
+        } RunnerProperties;
 
-        enum TableProperties
+        typedef enum
         {
             T_TblInd = 0,
             // <tblCellMar>
@@ -79,15 +74,15 @@ namespace NSCSS
                 T_BorderInsideH = 9,
                 T_BorderInsideV = 10
             // </tblBorders>
-        };
+        } TableProperties;
 
-        const std::map<std::wstring, std::wstring> mStyles = {
+        const std::map<std::wstring, std::wstring> mStyles {
                 {L"dotted", L"dotted"}, {L"dashed", L"dashed"},
                 {L"solid", L"single"}, {L"double", L"double"},
                 {L"groove", L"threeDEmboss"}, {L"ridge", L"threeDEngrave"},
                 {L"inset", L"thinThickMediumGap"}, {L"outset", L"thickThinMediumGap"}};
 
-        const std::map<std::wstring, std::wstring> mColors = {
+        const std::map<std::wstring, std::wstring> mColors {
             /* Red tones */
             {L"indianeed",          L"CD5C5C"}, {L"lightcoral",            L"F08080"}, {L"salmon",        L"FA8072"},
             {L"darksalmon",         L"E9967A"}, {L"lightsalmon",           L"FFA07A"}, {L"crimson",       L"DC143C"},
@@ -151,7 +146,7 @@ namespace NSCSS
             /* Outdated */
             {L"windowtext",         L"000000"}
         };
-        const std::vector<std::string> arPseudoClasses = {
+        const std::vector<std::string> arPseudoClasses {
                                                         "invalid",
                                                         "read-only",
                                                         "-moz-placeholder",

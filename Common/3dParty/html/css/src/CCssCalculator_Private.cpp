@@ -40,7 +40,7 @@ bool operator<(const std::vector<NSCSS::CNode> &arLeftSelectors, const std::vect
 
 namespace NSCSS
 {
-    CCssCalculator_Private::CCssCalculator_Private() : m_nDpi(96), m_sEncoding(L"UTF-8"), m_nCountNodes(1), m_UnitMeasure(Default) {}
+    CCssCalculator_Private::CCssCalculator_Private() : m_nDpi(96), m_nCountNodes(1), m_UnitMeasure(Default), m_sEncoding(L"UTF-8") {}
 
     CCssCalculator_Private::~CCssCalculator_Private()
     {
@@ -113,7 +113,7 @@ namespace NSCSS
                 break;
         }
 
-        (oElement->GetCountSelectors() > 0 || oElement->GetCountDeclarations() > 0) ? m_arData.push_back(oElement) : delete oElement;
+        (oElement->Empty()) ? delete oElement : m_arData.push_back(oElement);
     }
 
     inline void CCssCalculator_Private::GetStylesheet(const KatanaStylesheet *oStylesheet, CElement *elementRule)
@@ -635,8 +635,6 @@ namespace NSCSS
         if (sValue.empty())
             return sValue;
 
-//        std::wcout << L"INPUT : " << sValue << std::endl;
-
         std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsWithSigns(sValue);
 
         std::wstring sValueString;
@@ -744,8 +742,6 @@ namespace NSCSS
                 sValueTemp += L' ';
         }
 
-//        std::wcout << L"RETURN : " << sValueString << std::endl;
-
         return sValueString;
     }
 
@@ -773,7 +769,8 @@ namespace NSCSS
             case Peak:
                 return ConvertPxToPc(dValue);
         }
-        return ConvertPxToPt(dValue);
+
+        return std::wstring();
     }
 
     inline std::wstring CCssCalculator_Private::ConvertPxToCm(const float& dValue) const
@@ -826,9 +823,10 @@ namespace NSCSS
 
         switch (m_UnitMeasure)
         {
+            case Default:
+                ConvertCmToPt(dValue);
             case Pixel:
                 return ConvertCmToPx(dValue);
-            case Default:
             case Point:
                 return ConvertCmToPt(dValue);
             case Cantimeter:
@@ -840,7 +838,8 @@ namespace NSCSS
             case Peak:
                 return ConvertCmToPc(dValue);
         }
-        return ConvertCmToPt(dValue);
+
+        return std::wstring();
     }
 
     inline std::wstring CCssCalculator_Private::ConvertCmToIn(const float& dValue) const
@@ -907,7 +906,7 @@ namespace NSCSS
             case Peak:
                 return ConvertMmToPc(dValue);
         }
-        return ConvertMmToPt(dValue);
+        return std::wstring();
     }
 
     inline std::wstring CCssCalculator_Private::ConvertMmToIn(const float& dValue) const
@@ -974,7 +973,7 @@ namespace NSCSS
             case Peak:
                 return ConvertInToPc(dValue);
         }
-        return ConvertInToPt(dValue);
+        return std::wstring();
     }
 
     inline std::wstring CCssCalculator_Private::ConvertInToMm(const float& dValue) const
@@ -1041,7 +1040,8 @@ namespace NSCSS
             case Peak:
                 return ConvertPtToPc(dValue);
         }
-        return std::to_wstring(static_cast<short int>(dValue));
+
+        return std::wstring();
     }
 
     inline std::wstring CCssCalculator_Private::ConvertPtToIn(const float& dValue) const
@@ -1108,7 +1108,8 @@ namespace NSCSS
             case Peak:
                 return std::to_wstring(static_cast<short int>(dValue));
         }
-        return ConvertPcToPt(dValue);
+
+        return std::wstring();
     }
 
     inline std::wstring CCssCalculator_Private::ConvertPcToIn(const float& dValue) const

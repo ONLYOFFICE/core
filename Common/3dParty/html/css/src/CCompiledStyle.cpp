@@ -230,7 +230,7 @@ namespace NSCSS
             if (oFontFamily != m_mStyle.end())
             {
                 std::wstring sFontFamily = oFontFamily->second;
-                size_t posComma = sFontFamily.find(L',');
+                const size_t posComma = sFontFamily.find(L',');
                 if (posComma != std::wstring::npos)
                     sFontFamily = sFontFamily.substr(0, posComma);
                 if (sFontFamily.find(L'"') != std::wstring::npos || sFontFamily.find(L'\'') != std::wstring::npos)
@@ -241,23 +241,24 @@ namespace NSCSS
 
             std::wstring sFont;
             styles_iterator oFont = m_mStyle.find(L"font");
+
             if (oFont != m_mStyle.end())
                 sFont = oFont->second;
+
             if (sFont.empty())
                 return std::wstring();
 
-            size_t nPos1 = sFont.find_last_of(L"1234567890");
-            std::wstring sValue;
-            if(nPos1 != std::wstring::npos)
-                sValue = sFont.substr(nPos1 + 1);
+            size_t nLeftQuote = sFont.find_first_of(L"'\"");
+            while (nLeftQuote != std::wstring::npos)
+            {
+                const size_t nRightQuote = sFont.find_first_of(L"'\"", nLeftQuote + 1);
+                const size_t nNewLeftQuote = sFont.find_first_of(L"'\"", nRightQuote + 1);
+                if (nNewLeftQuote == std::wstring::npos)
+                    return sFont.substr(nLeftQuote, nRightQuote - nLeftQuote + 1);
+                nLeftQuote = nNewLeftQuote;
+            }
 
-            /*
-            size_t posComma = sValue.find(L',');
-            if (posComma != std::wstring::npos)
-                sValue.substr(0, posComma - 1);
-            */
-
-            return sValue.empty() || sValue.find_first_of(L"\'\"") != std::wstring::npos ? sValue : L'"' + sValue + L'"';
+            return std::wstring();
         }
 
         std::wstring CCompiledStyle::GetFontSize() const
@@ -273,79 +274,21 @@ namespace NSCSS
 
             if (oFont != m_mStyle.end())
                 sFont = oFont->second;
+
             if (sFont.empty())
                 return std::wstring();
 
-            const std::vector<std::wstring> arValues = { L"xx-small",L"x-small", L"small",
-                                                         L"medium",  L"large",   L"x-large",
-                                                         L"xx-large",L"larger",  L"smaller"};
+            const std::vector<std::wstring> arWords = NS_STATIC_FUNCTIONS::GetWordsW(sFont);
 
-            for (const std::wstring& sValue : arValues)
-                if (sFont.find(sValue) != std::wstring::npos)
+            std::wstring sValue;
+
+            for (const std::wstring& sWord : arWords)
+                if (isdigit(sWord[0]))
+                    sValue = sWord;
+                else if (sWord == L"/")
                     return sValue;
 
-            const std::vector<std::wstring> arUnitMeasure = {L"mm", L"cm",
-                                                             L"in", L"pt",
-                                                             L"pc", L"%",
-                                                             L"em", L"rem",
-                                                             L"ex"};
-            std::wstring sTempUnitMeasure;
-            size_t posUnitMeasure = std::wstring::npos;
-
-            for (std::wstring sUnitMesure : arUnitMeasure)
-            {
-                posUnitMeasure = sFont.find(sUnitMesure);
-                if (posUnitMeasure != std::wstring::npos)
-                {
-                    sTempUnitMeasure = sUnitMesure;
-                    const wchar_t& wc = sFont[posUnitMeasure - 1];
-
-                    if (iswdigit(wc) || wc == L'.')
-                        break;
-                    else
-                    {
-                        posUnitMeasure = 0;
-                        sTempUnitMeasure.clear();
-                    }
-                }
-            }
-
-            if (posUnitMeasure == 0)
-            {
-                std::wstring sValue;
-                for (size_t i = sFont.length() - 1; i >= 0; --i)
-                {
-                    const wchar_t& wc = sFont[i];
-
-                    if (iswdigit(wc))
-                    {
-                        while (iswdigit(wc) && i >= 0)
-                        {
-                            sValue += wc;
-                            --i;
-                        }
-                        break;
-                    }
-                }
-                if (!sValue.empty())
-                    return sValue;
-            }
-            else if (posUnitMeasure != std::wstring::npos)
-            {
-                unsigned short int num = 0;
-                std::wstring sValue;
-                while ((posUnitMeasure - num) > 0 &&
-                       (iswdigit(sFont[posUnitMeasure - num]) ||
-                        sFont[posUnitMeasure - num] == '.'))
-                {
-                    sValue = sFont[posUnitMeasure - num] + sValue;
-                    ++num;
-                }
-                if (!sValue.empty())
-                    return sValue + sTempUnitMeasure;
-            }
-
-            return std::wstring();
+            return sValue;
         }
 
         std::wstring CCompiledStyle::GetFontSizeAdjust() const
@@ -373,27 +316,17 @@ namespace NSCSS
 
             if (oFont != m_mStyle.end())
                 sFont = oFont->second;
-            else
-                return std::wstring();
 
             if (sFont.empty())
                 return std::wstring();
 
-            //const std::vector<std::wstring>& arValues = {L"italic", L"oblique"};
+            const std::vector<std::wstring> arWords = NS_STATIC_FUNCTIONS::GetWordsW(sFont);
 
-            if (sFont == L"italic" || sFont == L"oblique")
-                return sFont;
+            for (const std::wstring& sWord : arWords)
+                if (sWord == L"italic" || sWord == L"oblique")
+                    return sWord;
 
-            if (iswdigit(sFont[0]))
-                return std::wstring();
-
-            std::wstring sValue;
-            const size_t& posSpace = sFont.find(L' ');
-
-            if (posSpace != std::wstring::npos)
-                sValue = sFont.substr(0, posSpace);
-
-            return sValue;
+            return std::wstring();
         }
 
         std::wstring CCompiledStyle::GetFontVariant() const
@@ -403,40 +336,22 @@ namespace NSCSS
             if (oFontVariant != m_mStyle.end())
                 return oFontVariant->second;
 
-            std::wstring sFont;
-
             styles_iterator oFont = m_mStyle.find(L"font");
+            std::wstring sFont;
 
             if (oFont != m_mStyle.end())
                 sFont = oFont->second;
-            else
-                return std::wstring();
 
             if (sFont.empty())
                 return std::wstring();
 
-            if (sFont.find(L"small-caps") != std::wstring::npos)
-                return L"small-caps";
+            const std::vector<std::wstring> arWords = NS_STATIC_FUNCTIONS::GetWordsW(sFont);
 
-            if (iswdigit(sFont[0]))
-                return std::wstring();
+            for (const std::wstring& sWord : arWords)
+                if (sWord == L"small-caps")
+                    return sWord;
 
-            std::wstring sValue;
-            size_t posSpace = sFont.find(L' ');
-
-            if (posSpace != std::wstring::npos && !iswdigit(sFont[0]))
-                sValue = sFont.substr(posSpace + 1);
-            else
-                return std::wstring();
-
-            posSpace = sValue.find(L' ');
-
-            if (posSpace != std::wstring::npos && !iswdigit(sValue[0]))
-                sValue = sValue.substr(0, posSpace);
-            else
-                return std::wstring();
-
-            return sValue;
+            return std::wstring();
         }
 
         std::wstring CCompiledStyle::GetFontWeight() const
@@ -447,45 +362,21 @@ namespace NSCSS
                 return oFontWeight->second;
 
             styles_iterator oFont = m_mStyle.find(L"font");
-            if (oFont == m_mStyle.end())
-                return std::wstring();
+            std::wstring sFont;
 
-            const std::wstring& sFont = oFont->second;
+            if (oFont != m_mStyle.end())
+                sFont = oFont->second;
+
             if (sFont.empty())
                 return std::wstring();
 
-            const std::vector<std::wstring> arValues = {L"bold", L"bolder", L"lighter"};
+            const std::vector<std::wstring> arWords = NS_STATIC_FUNCTIONS::GetWordsW(sFont);
 
-            for (const std::wstring& sValue : arValues)
-                if (sFont.find(sValue) != std::wstring::npos)
-                    return sValue;
+            for (const std::wstring& sWord : arWords)
+                if (sWord == L"bold" || sWord == L"bolder" || L"lighter" || (sWord.length() == 3 && isdigit(sWord[0]) && isdigit(sWord[1]) && isdigit(sWord[2])))
+                    return std::wstring(L"bold");
 
-            if (iswdigit(sFont[0]))
-                return std::wstring();
-
-            std::wstring sValue = sFont;
-            size_t posSpace = sValue.find(L' ');
-
-            if (posSpace != std::wstring::npos && !iswdigit(sValue[0]))
-                sValue = sValue.substr(posSpace + 1);
-            else
-                return std::wstring();
-
-            posSpace = sValue.find(L' ');
-
-            if (posSpace != std::wstring::npos && !iswdigit(sValue[0]))
-                sValue = sValue.substr(posSpace + 1);
-            else
-                return std::wstring();
-
-            posSpace = sValue.find(L' ');
-
-            if (posSpace != std::wstring::npos && !iswdigit(sValue[0]))
-                sValue = sValue.substr(0, posSpace);
-            else
-                return std::wstring();
-
-            return sValue;
+            return std::wstring();
         }
 
         std::wstring CCompiledStyle::GetLineHeight() const
@@ -501,39 +392,19 @@ namespace NSCSS
 
             if (oFont != m_mStyle.end())
                 sFont = oFont->second;
-            else
-                return std::wstring();
 
             if (sFont.empty())
                 return std::wstring();
 
-            const size_t& posSlash = sFont.find(L'/');
+            const std::vector<std::wstring> arWords = NS_STATIC_FUNCTIONS::GetWordsW(sFont);
 
-            if (posSlash == std::wstring::npos)
-                return std::wstring();
+            std::wstring sValue;
 
-            std::wstring sValue = sFont.substr(posSlash + 1);
+            for (size_t i = 0; i < arWords.size() - 1; ++i)
+                if (arWords[i] == L"/" && i < arWords.size() - 2)
+                    return arWords[i + 1];
 
-
-            size_t posSpace = sValue.find(L' ');
-
-            if (posSpace != std::wstring::npos)
-                sValue = sValue.substr(0, posSpace);
-
-            if (sValue.length() > 1 && iswalpha(sValue.back()))
-                return sValue;
-
-            posSpace = sFont.find(sValue) + sValue.length();
-            sValue += L" ";
-
-            while (posSpace < sFont.length() &&
-                   iswalpha(sFont[posSpace]))
-            {
-                sValue += sFont[posSpace];
-                ++posSpace;
-            }
-
-            return sValue;
+            return std::wstring();
 
         }
 

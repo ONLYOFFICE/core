@@ -42,6 +42,7 @@
 #include "../../XlsxFormat/Worksheets/DataValidation.h"
 #include "../../XlsxFormat/Slicer/SlicerCache.h"
 #include "../../XlsxFormat/Slicer/SlicerCacheExt.h"
+#include "../Comments.h"
 
 namespace OOX
 {
@@ -825,6 +826,10 @@ namespace OOX
 					else if (sName == L"id")
 					{
 						m_oId = oReader.GetText2();
+					}
+					else if (sName == L"presenceInfo")
+					{
+						m_oPresenceInfo = oReader;
 					}
 				}
 			}

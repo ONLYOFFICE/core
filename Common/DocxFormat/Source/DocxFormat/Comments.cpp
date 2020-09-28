@@ -477,7 +477,7 @@ void CCommentsExtensible::read(const CPath& oRootPath, const CPath& oFilePath)
 		while ( oReader.ReadNextSiblingNode( nNumberingDepth ) )
 		{
 			const char* sNameSub = XmlUtils::GetNameNoNS(oReader.GetNameChar());
-			if ( strcmp("commentExtensible", sNameSub) )
+			if (strcmp("commentExtensible", sNameSub) == 0)
 			{
 				m_arrComments.push_back( new CCommentExtensible(oReader) );
 			}
@@ -596,10 +596,10 @@ void CPresenceInfo::fromXML(XmlUtils::CXmlLiteReader& oReader)
 
 void CPresenceInfo::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
-	WritingElement_ReadAttributes_Start( oReader )
-		WritingElement_ReadAttributes_Read_if     ( oReader, L"w15:providerId",		m_oProviderId )
-		WritingElement_ReadAttributes_Read_else_if( oReader, L"w15:userId",			m_oUserId )
-	WritingElement_ReadAttributes_End( oReader )
+	WritingElement_ReadAttributes_StartChar_No_NS( oReader )
+		WritingElement_ReadAttributes_Read_ifChar     ( oReader, "providerId", m_oProviderId )
+		WritingElement_ReadAttributes_Read_else_ifChar( oReader, "userId",	m_oUserId )
+	WritingElement_ReadAttributes_EndChar_No_NS( oReader )
 }
 
 void CPerson::fromXML(XmlUtils::CXmlLiteReader& oReader) 

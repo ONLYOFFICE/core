@@ -118,32 +118,21 @@ public:
 
         m_Type				=	( TimeVariantTypeEnum )StreamUtils::ReadBYTE ( pStream );	//	MUST be TL_TVT_String
 
-        if ( WCHAR* pString = new WCHAR [ m_oHeader.RecLen / 2 ] )
-        {
-            POLE::uint64 res = pStream->read ((unsigned char*) pString, ( m_oHeader.RecLen / 2 ) * 2) ;
 
-            if (res > 0)
-            {
-                if (sizeof(wchar_t) == 4)
-                {
-                    LONG lCurLen(0);
-                    while (lCurLen < m_oHeader.RecLen - 1) {
-                        m_stringValue.push_back(StreamUtils::ReadWORD(pStream));
-                        lCurLen += 2;
-                    }
-                }
-                else
-                    m_stringValue		=	std::wstring ( pString );
-            }
-
-            RELEASEARRAYOBJECTS ( pString );
+        LONG lCurLen(0);
+        while (lCurLen < m_oHeader.RecLen - 1) {
+            m_stringValue.push_back(StreamUtils::ReadWORD(pStream));
+            lCurLen += 2;
         }
+        m_stringValue.pop_back();
+
     }
+
 
 public:
 
     TimeVariantTypeEnum		m_Type;
-    std::wstring                    m_stringValue;
+    std::wstring            m_stringValue;
 };
 
 

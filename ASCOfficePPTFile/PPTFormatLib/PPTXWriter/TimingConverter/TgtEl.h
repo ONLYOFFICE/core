@@ -31,23 +31,11 @@
  */
 #pragma once
 
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Set.h"
-#include "CBhvr.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/TgtEl.h"
+#include "../../Records/Animations/ExtTimeNodeContainer.h"
 
 
 namespace PPT_FORMAT
 {
-void FillSet(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
-                    PPTX::Logic::Set *pSet)
-{
-    if (!pETNC->m_haveSetBehavior) return;
-
-    // TODO
-    ConvertCRecordTimeSetBehaviorContainerToCBhvr(pETNC->m_pTimeSetBehavior, pSet->cBhvr);
-    pSet->to = new PPTX::Logic::AnimVariant();
-    pSet->to->name = L"to";
-    pSet->to->strVal =
-            pETNC->m_pTimeSetBehavior->m_oVarTo.m_stringValue;
-
-}
+//    Convert
 }

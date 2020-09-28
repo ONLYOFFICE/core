@@ -47,6 +47,7 @@
 //#include "CTn.h"
 #include "Set.h"
 #include "Seq.h"
+#include "AnimEffect.h"
 
 
 namespace PPT_FORMAT
@@ -168,11 +169,20 @@ void ConvertCRecordExtTimeNodeContainerToTimeNodeBase(PPT_FORMAT::CRecordExtTime
     case TL_TNT_Behavior:
     {
         //TODO
-        auto pSet = new PPTX::Logic::Set();
 
-        FillSet(pETNC, pSet);
 
-        oTimeNodeBase.m_node = pSet;
+        if (pETNC->m_haveEffectBehavior)
+        {
+            auto pAnimEffect = new PPTX::Logic::AnimEffect();
+            FillAnimEffect(pETNC, *pAnimEffect);
+            oTimeNodeBase.m_node = pAnimEffect;
+        } else{
+            auto pSet = new PPTX::Logic::Set();
+            FillSet(pETNC, pSet);
+            oTimeNodeBase.m_node = pSet;
+        }
+
+
         break;
     }
     case TL_TNT_Media:

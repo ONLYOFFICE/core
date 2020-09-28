@@ -31,23 +31,43 @@
  */
 #pragma once
 
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Set.h"
-#include "CBhvr.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/CBhvr.h"
+#include "TgtEl.h"
 
 
 namespace PPT_FORMAT
 {
-void FillSet(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
-                    PPTX::Logic::Set *pSet)
-{
-    if (!pETNC->m_haveSetBehavior) return;
+    void ConvertCRecordTimeSetBehaviorContainerToCBhvr(CRecordTimeSetBehaviorContainer *pOld, PPTX::Logic::CBhvr &oBhvr)
+    {
+        if (!pOld) return;
 
-    // TODO
-    ConvertCRecordTimeSetBehaviorContainerToCBhvr(pETNC->m_pTimeSetBehavior, pSet->cBhvr);
-    pSet->to = new PPTX::Logic::AnimVariant();
-    pSet->to->name = L"to";
-    pSet->to->strVal =
-            pETNC->m_pTimeSetBehavior->m_oVarTo.m_stringValue;
+        if (!pOld->m_oBehavior.m_pStringList->m_arrRgChildRec.empty())
+        {
+            oBhvr.attrNameLst = new PPTX::Logic::AttrNameLst();
+        }
+        for (const auto& oldAttr : pOld->m_oBehavior.m_pStringList->m_arrRgChildRec)
+        {
+            PPTX::Logic::AttrName addAttr;
+            addAttr.text = oldAttr.m_stringValue;
+            oBhvr.attrNameLst->list.push_back(addAttr);
 
-}
+        }
+
+        oBhvr.tgtEl.spTgt = new PPTX::Logic::SpTgt();
+        oBhvr.tgtEl.spTgt->spid =
+                std::to_wstring(pOld->m_oBehavior.
+                                m_oClientVisualElement.
+                                m_oVisualShapeAtom.m_nObjectIdRef);
+    }
+
+    void FillCBhvr(CRecordExtTimeNodeContainer *pRec, PPTX::Logic::CBhvr &oBhvr)
+    {
+        oBhvr.cTn.dur = std::to_wstring(pRec->m_oTimeNodeAtom.m_nDuration);
+
+        oBhvr.tgtEl.spTgt = new PPTX::Logic::SpTgt();
+        oBhvr.tgtEl.spTgt->spid =
+                std::to_wstring(pRec->m_pTimeEffectBehavior->m_oBehavior.
+                                m_oClientVisualElement.
+                                m_oVisualShapeAtom.m_nObjectIdRef);
+    }
 }

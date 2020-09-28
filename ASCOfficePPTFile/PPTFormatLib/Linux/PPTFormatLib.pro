@@ -360,10 +360,13 @@ HEADERS += \
     ../Enums/enums.h \
     ../PPTFormatLib.h \
     ../PPTXWriter/TimingConverter.h \
+    ../PPTXWriter/TimingConverter/AnimEffect.h \
     ../PPTXWriter/TimingConverter/BldLst.h \
+    ../PPTXWriter/TimingConverter/CBhvr.h \
     ../PPTXWriter/TimingConverter/Cond.h \
     ../PPTXWriter/TimingConverter/Seq.h \
     ../PPTXWriter/TimingConverter/Set.h \
+    ../PPTXWriter/TimingConverter/TgtEl.h \
     ../PPTXWriter/TimingConverter/TnLst.h \
     ../Reader/ClassesAtom.h \
     ../Reader/CommonZLib.h \

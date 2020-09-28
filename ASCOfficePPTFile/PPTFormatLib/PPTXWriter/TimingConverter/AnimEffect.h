@@ -31,23 +31,24 @@
  */
 #pragma once
 
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Set.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/AnimEffect.h"
+#include "../../Records/Animations/ExtTimeNodeContainer.h"
 #include "CBhvr.h"
-
 
 namespace PPT_FORMAT
 {
-void FillSet(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
-                    PPTX::Logic::Set *pSet)
-{
-    if (!pETNC->m_haveSetBehavior) return;
+    void FillAnimEffect(
+            CRecordExtTimeNodeContainer* pETNC,
+            PPTX::Logic::AnimEffect & oAnim)
+    {
+        oAnim.filter = pETNC->m_pTimeEffectBehavior->m_oVarType.m_stringValue;
+        if (pETNC->m_pTimeEffectBehavior->m_effectBehaviorAtom.m_bTransitionPropertyUsed)
+        {
+            oAnim.transition = pETNC->m_pTimeEffectBehavior->m_effectBehaviorAtom.m_nEffectTransition ?
+                        L"out" : L"in";
+        }
 
-    // TODO
-    ConvertCRecordTimeSetBehaviorContainerToCBhvr(pETNC->m_pTimeSetBehavior, pSet->cBhvr);
-    pSet->to = new PPTX::Logic::AnimVariant();
-    pSet->to->name = L"to";
-    pSet->to->strVal =
-            pETNC->m_pTimeSetBehavior->m_oVarTo.m_stringValue;
+        FillCBhvr(pETNC, oAnim.cBhvr);
 
-}
+    }
 }

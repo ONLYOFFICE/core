@@ -207,6 +207,7 @@ namespace BinDocxRW
 		void WritePageMargin(OOX::Logic::CSectionProperty* pSectPr);
 		void WriteHeaderFooter(OOX::Logic::CSectionProperty* pSectPr, std::vector<ComplexTypes::Word::CHdrFtrRef*>& aRefs, bool bHdr);
 		void WritePageNumType(const ComplexTypes::Word::CPageNumber& pPageNumber);
+		void WriteLineNumType(const ComplexTypes::Word::CLineNumber& pLineNumber);
 		void WriteSectPrChange(const OOX::Logic::CSectPrChange& sectPrChange);
 		void WriteColumns(const OOX::Logic::CColumns& columns);
 		void WriteColumn(const ComplexTypes::Word::CColumn& column);

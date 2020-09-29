@@ -39,12 +39,13 @@ namespace PPT_FORMAT
 {
     void FillAnimEffect(
             CRecordExtTimeNodeContainer* pETNC,
-            PPTX::Logic::AnimEffect & oAnim)
+            PPTX::Logic::AnimEffect& oAnim)
     {
-        oAnim.filter = pETNC->m_pTimeEffectBehavior->m_oVarType.m_stringValue;
-        if (pETNC->m_pTimeEffectBehavior->m_effectBehaviorAtom.m_bTransitionPropertyUsed)
+        auto* bhvr = pETNC->m_pTimeEffectBehavior;
+        oAnim.filter = bhvr->m_oVarType.m_stringValue;
+        if (bhvr->m_effectBehaviorAtom.m_bTransitionPropertyUsed)
         {
-            oAnim.transition = pETNC->m_pTimeEffectBehavior->m_effectBehaviorAtom.m_nEffectTransition ?
+            oAnim.transition = bhvr->m_effectBehaviorAtom.m_nEffectTransition ?
                         L"out" : L"in";
         }
 

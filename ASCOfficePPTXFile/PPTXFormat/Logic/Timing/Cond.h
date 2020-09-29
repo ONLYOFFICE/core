@@ -51,9 +51,10 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				name	= XmlUtils::GetNameNoNS(node.GetName());
-		
-                XmlMacroReadAttributeBase(node, L"delay", delay);
+
                 XmlMacroReadAttributeBase(node, L"evt", evt);
+                XmlMacroReadAttributeBase(node, L"delay", delay);
+
 
 				XmlUtils::CXmlNode oNode;
 				if (node.GetNode(_T("p:tn"), oNode))
@@ -70,8 +71,9 @@ namespace PPTX
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
+                oAttr.WriteLimitNullable(_T("evt"), evt);
 				oAttr.Write(_T("delay"), delay);
-				oAttr.WriteLimitNullable(_T("evt"), evt);
+
 
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteNullable(tgtEl);

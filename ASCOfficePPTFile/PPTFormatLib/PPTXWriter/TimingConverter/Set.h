@@ -38,16 +38,15 @@
 namespace PPT_FORMAT
 {
 void FillSet(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
-                    PPTX::Logic::Set *pSet)
+                    PPTX::Logic::Set& oSet)
 {
     if (!pETNC->m_haveSetBehavior) return;
 
     // TODO
-    ConvertCRecordTimeSetBehaviorContainerToCBhvr(pETNC->m_pTimeSetBehavior, pSet->cBhvr);
-    pSet->to = new PPTX::Logic::AnimVariant();
-    pSet->to->name = L"to";
-    pSet->to->strVal =
-            pETNC->m_pTimeSetBehavior->m_oVarTo.m_stringValue;
+    FillCBhvr(pETNC, oSet.cBhvr);
+    oSet.to = new PPTX::Logic::AnimVariant();
+    oSet.to->name = L"to";
+    oSet.to->strVal = pETNC->m_pTimeSetBehavior->m_oVarTo.m_stringValue;
 
 }
 }

@@ -31,52 +31,11 @@
  */
 #pragma once
 
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Seq.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/AnimScale.h"
 #include "../../Records/Animations/ExtTimeNodeContainer.h"
-#include "CTn.h"
+
 
 namespace PPT_FORMAT
 {
-void FillSeq(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
-             PPTX::Logic::Seq& oSec)
-{
-    if (pETNC->m_haveSequenceAtom)
-    {
-        if (pETNC->m_pTimeSequenceDataAtom->m_fConcurrencyPropertyUsed)
-            oSec.concurrent = (bool)pETNC->m_pTimeSequenceDataAtom->m_nConcurrency;
-        if (pETNC->m_pTimeSequenceDataAtom->m_fNextActionPropertyUsed)
-            oSec.nextAc = pETNC->m_pTimeSequenceDataAtom->m_nNextAction ? L"seek" : L"none";
-        if (pETNC->m_pTimeSequenceDataAtom->m_fPreviousActionPropertyUsed)
-            oSec.prevAc = pETNC->m_pTimeSequenceDataAtom->m_nPreviousAction ? L"skipTimed" : L"none";
-    }
-    FillCTn(pETNC, oSec.cTn);
 
-//    if (!pETNC->m_arrRgEndTimeCondition.empty())
-//    {
-//        oSec.prevCondLst = new PPTX::Logic::CondLst();
-//        oSec.prevCondLst->name = L"prevCondLst";
-//    }
-//    for (auto oldCond : pETNC->m_arrRgEndTimeCondition)
-//    {
-//        PPTX::Logic::Cond cond;
-//        cond.name = L"cond";
-//        FillCond(oldCond, cond);
-//        oSec.prevCondLst->list.push_back(cond);
-//    }
-
-//    if (!pETNC->m_arrRgBeginTimeCondition.empty())
-//    {
-//        oSec.nextCondLst = new PPTX::Logic::CondLst();
-//        oSec.nextCondLst->name = L"nextCondLst";
-//    }
-//    for (auto oldCond : pETNC->m_arrRgBeginTimeCondition)
-//    {
-//        PPTX::Logic::Cond cond;
-//        cond.name = L"cond";
-//        FillCond(oldCond, cond);
-//        oSec.nextCondLst->list.push_back(cond);
-//    }
-
-
-}
 }

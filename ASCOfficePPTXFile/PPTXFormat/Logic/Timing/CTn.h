@@ -82,12 +82,13 @@ namespace PPTX
                 XmlMacroReadAttributeBase(node, L"syncBehavior", syncBehavior);
                 XmlMacroReadAttributeBase(node, L"tmFilter", tmFilter);
 
-				stCondLst	= node.ReadNode(_T("p:stCondLst"));
-				endCondLst	= node.ReadNode(_T("p:endCondLst"));
-				endSync		= node.ReadNode(_T("p:endSync"));
-				iterate		= node.ReadNode(_T("p:iterate"));
-                childTnLst	= node.ReadNode(_T("p:childTnLst"));
-				subTnLst	= node.ReadNode(_T("p:subTnLst"));
+                                stCondLst	= node.ReadNode(_T("p:stCondLst"));
+                                childTnLst	= node.ReadNode(_T("p:childTnLst"));
+                                endCondLst	= node.ReadNode(_T("p:endCondLst"));
+                                endSync		= node.ReadNode(_T("p:endSync"));
+                                iterate		= node.ReadNode(_T("p:iterate"));
+
+                                subTnLst	= node.ReadNode(_T("p:subTnLst"));
 
 				Normalize();
 
@@ -124,12 +125,13 @@ namespace PPTX
 
 
 				XmlUtils::CNodeValue oValue;
-				oValue.WriteNullable(stCondLst);
-				oValue.WriteNullable(endCondLst);
-				oValue.WriteNullable(endSync);
-				oValue.WriteNullable(iterate);
-                oValue.WriteNullable(childTnLst);
-				oValue.WriteNullable(subTnLst);
+
+                                oValue.WriteNullable(stCondLst);
+                                oValue.WriteNullable(childTnLst);
+                                oValue.WriteNullable(endCondLst);
+                                oValue.WriteNullable(endSync);
+                                oValue.WriteNullable(iterate);
+                                oValue.WriteNullable(subTnLst);
 
 				return XmlUtils::CreateNode(_T("p:cTn"), oAttr, oValue);
 			}

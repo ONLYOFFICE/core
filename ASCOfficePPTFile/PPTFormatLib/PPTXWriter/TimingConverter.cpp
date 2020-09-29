@@ -11,7 +11,7 @@ void PPT_FORMAT::ConvertPP10SlideBinaryTagExtensionToTiming(PPT_FORMAT::CRecordP
 {
     if (oRec.m_haveExtTime)
     {
-        gCTnID = 1;
+//        gCTnID = 1;
         oTm.tnLst = new PPTX::Logic::TnLst();
         ConvertCRecordExtTimeNodeContainerToTnLst(oRec.m_pExtTimeNodeContainer, *(oTm.tnLst));
     }

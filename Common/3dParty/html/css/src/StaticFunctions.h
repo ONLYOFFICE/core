@@ -375,6 +375,58 @@ namespace NSCSS
             }
             return sValue;
         }
+
+        inline std::vector<CNode> ConvertSelectorsToNode(const std::wstring& sSelectors)
+        {
+            if (sSelectors.empty())
+                return  std::vector<CNode>{};
+
+            std::vector<CNode> arNodes;
+
+            size_t posSpace = sSelectors.find_first_of(L", ");
+            size_t posPrevSpace = 0;
+
+            do
+            {
+                const std::wstring sSelector = sSelectors.substr(posPrevSpace, posSpace - posPrevSpace);
+
+                const size_t posPoint = sSelector.find(L'.');
+                const size_t posLettice = sSelector.find(L'#');
+
+                CNode oNode;
+
+                if (posPoint != std::wstring::npos)
+                    oNode.m_sName = sSelector.substr(0, posPoint);
+                else if (posLettice != std::wstring::npos)
+                    oNode.m_sName = sSelector.substr(0, posLettice);
+                else
+                {
+                    oNode.m_sName = sSelector;
+                    goto next;
+                }
+
+                if (posPoint != std::wstring::npos)
+                {
+                    if (posLettice != std::wstring::npos)
+                        oNode.m_sClass = sSelector.substr(posPoint + 1, posLettice - posPoint - 1);
+                    else
+                    {
+                        oNode.m_sClass = sSelector.substr(posPoint + 1, sSelector.length());
+                        goto next;
+                    }
+                }
+
+                if (posLettice != std::wstring::npos)
+                    oNode.m_sId = sSelector.substr(posLettice + 1, sSelector.length());
+
+                next:
+                posPrevSpace = sSelectors.find_first_not_of(L", ", posSpace);
+                posSpace = sSelectors.find_first_of(L", ", posPrevSpace);
+                arNodes.push_back(oNode);
+            }while (posPrevSpace != std::wstring::npos);
+
+            return arNodes;
+        }
     }
 }
 

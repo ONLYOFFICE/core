@@ -438,7 +438,6 @@ namespace NSCSS
         if (unitMeasure != Default)
             SetUnitMeasure(unitMeasure);
 
-
         std::map<std::wstring, std::wstring> mStyle = GetDeclarations(L"*");
 
         for (const std::string& sSelector : arSelectors)

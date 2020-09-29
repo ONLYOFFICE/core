@@ -22,10 +22,12 @@ namespace NSCSS
     struct CNode
     {
         std::wstring m_sName;  // Имя тэга
-        std::wstring m_sId;    // Id тэга
         std::wstring m_sClass; // Класс тэга
+        std::wstring m_sId;    // Id тэга
         std::wstring m_sStyle; // Стиль тэга
 
+        CNode(){};
+        CNode(std::wstring sName, std::wstring sClass, std::wstring sId) : m_sName(sName), m_sClass(sClass), m_sId(sId){};
         bool operator< (const CNode& oNode) const
         {
             if(m_sName != oNode.m_sName)

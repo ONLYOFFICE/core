@@ -51,22 +51,21 @@ namespace NSCSS
         std::wstring GetFontFamily() const;
         std::vector<std::wstring> GetFontNames() const;
         std::vector<std::wstring> GetFontNames2(const std::wstring& sFontFamily) const;
-        std::wstring GetFontSize() const;
+        std::wstring GetFontSize()       const;
         std::wstring GetFontSizeAdjust() const;
-        std::wstring GetFontStretch() const;
-        std::wstring GetFontStyle() const;
-        std::wstring GetFontVariant() const;
-        std::wstring GetFontWeight() const;
-
-        std::wstring GetLineHeight() const;
+        std::wstring GetFontStretch()    const;
+        std::wstring GetFontStyle()      const;
+        std::wstring GetFontVariant()    const;
+        std::wstring GetFontWeight()     const;
+        std::wstring GetLineHeight()     const;
 
         /* MARGIN */
-        std::wstring GetMargin() const;
-        std::wstring GetMarginBottom() const;
-        std::wstring GetMarginBlockEnd() const;
-        std::wstring GetMarginLeft() const;
-        std::wstring GetMarginRight() const;
-        std::wstring GetMarginTop() const;
+        std::wstring GetMargin()           const;
+        std::wstring GetMarginBottom()     const;
+        std::wstring GetMarginBlockEnd()   const;
+        std::wstring GetMarginLeft()       const;
+        std::wstring GetMarginRight()      const;
+        std::wstring GetMarginTop()        const;
         std::wstring GetMarginBlockStart() const;
 
         std::vector<std::wstring> GetMargins() const;
@@ -76,61 +75,60 @@ namespace NSCSS
         std::wstring GetMarginRight2 () const;
 
         /* PADDING */
-        std::wstring GetPadding() const;
+        std::wstring GetPadding()       const;
         std::wstring GetPaddingBottom() const;
-        std::wstring GetPaddingLeft() const;
-        std::wstring GetPaddingRight() const;
-        std::wstring GetPaddingTop() const;
+        std::wstring GetPaddingLeft()   const;
+        std::wstring GetPaddingRight()  const;
+        std::wstring GetPaddingTop()    const;
 
         /*  SPACING */
         std::wstring GetLetterSpacing() const;
-        std::wstring GetWordSpacing() const;
+        std::wstring GetWordSpacing()   const;
         std::wstring GetBorderSpacing() const;
 
         /* COLOR */
         std::wstring GetTextDecorationColor() const;
-        std::wstring GetBackgroundColor() const;
-        std::wstring GetColor() const;
-        std::wstring GetOutlineColor() const;
-        std::wstring GetColumnRuleColor() const;
-        std::wstring GetBackground() const;
+        std::wstring GetBackgroundColor()     const;
+        std::wstring GetColor()               const;
+        std::wstring GetOutlineColor()        const;
+        std::wstring GetColumnRuleColor()     const;
+        std::wstring GetBackground()          const;
 
         /* TEXT */
-        std::wstring GetTextAlign() const;
-        std::wstring GetTextIndent() const;
+        std::wstring GetTextAlign()      const;
+        std::wstring GetTextIndent()     const;
         std::wstring GetTextDecoration() const;
 
         /* BORDER */
-        std::wstring GetBorder() const;
+        std::wstring GetBorder()      const;
         std::wstring GetBorderWidth() const;
         std::wstring GetBorderStyle() const;
         std::wstring GetBorderColor() const;
 
-        std::wstring GetBorderBottom() const;
+        std::wstring GetBorderBottom()      const;
         std::wstring GetBorderBottomWidth() const;
         std::wstring GetBorderBottomStyle() const;
         std::wstring GetBorderBottomColor() const;
 
-        std::wstring GetBorderLeft() const;
+        std::wstring GetBorderLeft()      const;
         std::wstring GetBorderLeftWidth() const;
         std::wstring GetBorderLeftStyle() const;
         std::wstring GetBorderLeftColor() const;
 
-        std::wstring GetBorderRight() const;
+        std::wstring GetBorderRight()      const;
         std::wstring GetBorderRightWidth() const;
         std::wstring GetBorderRightStyle() const;
         std::wstring GetBorderRightColor() const;
 
-        std::wstring GetBorderTop() const;
+        std::wstring GetBorderTop()      const;
         std::wstring GetBorderTopWidth() const;
         std::wstring GetBorderTopStyle() const;
         std::wstring GetBorderTopColor() const;
 
 
-        CCompiledStyle& operator += (const CCompiledStyle& oElement);
-        CCompiledStyle& operator = (const CCompiledStyle& oElement);
-
-        bool operator == (const CCompiledStyle& oStyle)   const;
+        CCompiledStyle& operator+= (const CCompiledStyle& oElement);
+        CCompiledStyle& operator=  (const CCompiledStyle& oElement);
+        bool operator==            (const CCompiledStyle& oElement) const;
         // bool operator != (const CCompiledStyle& oElement) const;
         // bool operator >  (const CCompiledStyle& oElement) const;
         //bool operator <  (const CCompiledStyle& oElement) const;

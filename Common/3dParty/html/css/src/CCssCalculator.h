@@ -45,8 +45,8 @@ namespace NSCSS
 
         bool operator== (const CNode& oNode) const
         {
-            return((m_sId == oNode.m_sId) &&
-                   (m_sName == oNode.m_sName) &&
+            return((m_sId == oNode.m_sId)       &&
+                   (m_sName == oNode.m_sName)   &&
                    (m_sClass == oNode.m_sClass) &&
                    (m_sStyle == oNode.m_sStyle));
         }
@@ -67,16 +67,16 @@ namespace NSCSS
         CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors, const UnitMeasure& unitMeasure = Default) const;
 
         // void AddStyle(const std::vector<std::string>& sSelectors, const std::string& sStyle);
-        void AddStyles(const std::string& sStyle);
-        void AddStyles(const std::wstring& sStyle);
+        void AddStyles        (const std::string&  sStyle);
+        void AddStyles        (const std::wstring& sStyle);
         void AddStylesFromFile(const std::wstring& sFileName);
 
         void SetUnitMeasure(const UnitMeasure& nType);
         void SetDpi(const unsigned short int& nValue);
 
         UnitMeasure GetUnitMeasure() const;
-        std::wstring GetEncoding() const;
-        unsigned short int GetDpi() const;
+        std::wstring GetEncoding()   const;
+        unsigned short int GetDpi()  const;
 
         void Print() const;
         void Clear();

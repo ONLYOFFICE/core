@@ -10,12 +10,12 @@ namespace NSCSS
 {
     class CStyleUsed
     {
+        CCompiledStyle m_oStyle;
         bool m_bIsPStyle;
         std::wstring m_sId;
-        CCompiledStyle m_oStyle;
 
     public:
-        CStyleUsed(const CCompiledStyle& oStyle, const bool& bIsPStyle) : m_oStyle(oStyle), m_bIsPStyle(bIsPStyle) {}
+        CStyleUsed(const CCompiledStyle& oStyle, bool bIsPStyle) : m_oStyle(oStyle), m_bIsPStyle(bIsPStyle) {}
 
         bool operator==(const CStyleUsed& oUsedStyle) const
         {

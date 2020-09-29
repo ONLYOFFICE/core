@@ -25,8 +25,8 @@ public:
 
     // void SetDeclaratins(const std::map<std::wstring, std::wstring>& arDeclarations);
 
-    unsigned short int GetCountSelectors() const;
-    unsigned short int GetCountDeclarations() const;
+    size_t GetCountSelectors() const;
+    size_t GetCountDeclarations() const;
     // int GetCountChildrens() const;
 
     bool FindSelector(const std::wstring& sSelector) const;
@@ -35,7 +35,7 @@ public:
     // std::map<std::wstring, std::wstring> GetDeclarations() const;
     std::map<std::wstring, std::wstring> GetDeclarations(const std::wstring& sSelector, const std::vector<std::wstring>& arParents) const;
     // std::vector<CElement*> GetChildrens() const;
-     std::wstring GetText() const;
+    std::wstring GetText() const;
 
     CElement& operator= (const CElement& oElement);
 };

@@ -303,6 +303,9 @@ namespace NSUnicodeConverter
             bool ansi = true;
             std::wstring sResult;
 
+            size_t insize = (size_t)nInputLen;
+            char* inptr = (char*)sInput;
+
             if (nCodepage > 0)
             {
 #if defined (_WIN32) || defined (_WIN64)

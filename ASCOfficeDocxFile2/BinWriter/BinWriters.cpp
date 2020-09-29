@@ -1375,6 +1375,12 @@ void Binary_pPrWriter::WriteSectPr (OOX::Logic::CSectionProperty* pSectPr)
 			WritePageNumType(pSectPr->m_oPgNumType.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if(pSectPr->m_oLnNumType.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrType::lnNumType);
+			WriteLineNumType(pSectPr->m_oLnNumType.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 	if(pSectPr->m_oSectPrChange.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrType::sectPrChange);
@@ -1580,6 +1586,34 @@ void Binary_pPrWriter::WritePageNumType(const ComplexTypes::Word::CPageNumber& p
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrPageNumType::start);
 		m_oBcw.m_oStream.WriteLONG(pPageNumber.m_oStart->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+}
+void Binary_pPrWriter::WriteLineNumType(const ComplexTypes::Word::CLineNumber& pLineNumber)
+{
+	int nCurPos = 0;
+	if(pLineNumber.m_oCountBy.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrLineNumType::CountBy);
+		m_oBcw.m_oStream.WriteLONG(pLineNumber.m_oCountBy->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(pLineNumber.m_oDistance.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrLineNumType::Distance);
+		m_oBcw.m_oStream.WriteLONG(pLineNumber.m_oDistance->ToTwips());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(pLineNumber.m_oRestart.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrLineNumType::Restart);
+		m_oBcw.m_oStream.WriteBYTE(pLineNumber.m_oRestart->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(pLineNumber.m_oStart.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrLineNumType::Start);
+		m_oBcw.m_oStream.WriteLONG(pLineNumber.m_oStart->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }

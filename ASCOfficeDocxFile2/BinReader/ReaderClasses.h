@@ -62,6 +62,7 @@ public:
     std::wstring pgBorders;
     std::wstring footnotePr;
     std::wstring endnotePr;
+	std::wstring lineNum;
 	bool RtlGutter;
 	long Gutter;
 
@@ -164,6 +165,9 @@ public:
 		}
         if(!pgBorders.empty())
             sRes += pgBorders;
+
+		if(!lineNum.empty())
+			sRes += lineNum;
 
         if(bPageNumStart)
             sRes += L"<w:pgNumType w:start=\"" + std::to_wstring(PageNumStart) + L"\"/>";

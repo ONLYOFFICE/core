@@ -1378,6 +1378,12 @@ int Binary_pPrReader::Read_SecPr(BYTE type, long length, void* poResult)
 	{
 		READ1_DEF(length, res, this->Read_pageNumType, poResult);
 	}
+	else if( c_oSerProp_secPrType::lnNumType == type )
+	{
+		ComplexTypes::Word::CLineNumber lineNumber;
+		READ1_DEF(length, res, this->Read_lineNumType, &lineNumber);
+		pSectPr->lineNum = L"<w:lnNumType " + lineNumber.ToString() + L"/>";
+	}
 	else if( c_oSerProp_secPrType::sectPrChange == type )
 	{
 		TrackRevision sectPrChange;
@@ -1696,6 +1702,34 @@ int Binary_pPrReader::Read_pageNumType(BYTE type, long length, void* poResult)
 	{
 		pSectPr->bPageNumStart = true;
 		pSectPr->PageNumStart = m_oBufferedStream.GetLong();
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int Binary_pPrReader::Read_lineNumType(BYTE type, long length, void* poResult)
+{
+	ComplexTypes::Word::CLineNumber* pLineNumber = static_cast<ComplexTypes::Word::CLineNumber*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+	if( c_oSerProp_secPrLineNumType::CountBy == type )
+	{
+		pLineNumber->m_oCountBy.Init();
+		pLineNumber->m_oCountBy->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if( c_oSerProp_secPrLineNumType::Distance == type )
+	{
+		pLineNumber->m_oDistance.Init();
+		pLineNumber->m_oDistance->FromTwips(m_oBufferedStream.GetLong());
+	}
+	else if( c_oSerProp_secPrLineNumType::Restart == type )
+	{
+		pLineNumber->m_oRestart.Init();
+		pLineNumber->m_oRestart->SetValue((SimpleTypes::ELineNumberRestart)m_oBufferedStream.GetUChar());
+	}
+	else if( c_oSerProp_secPrLineNumType::Start == type )
+	{
+		pLineNumber->m_oStart.Init();
+		pLineNumber->m_oStart->SetValue(m_oBufferedStream.GetLong());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

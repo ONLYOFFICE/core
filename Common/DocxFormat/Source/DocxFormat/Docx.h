@@ -159,6 +159,7 @@ private:
 			m_pDocumentCommentsExtensible	= NULL;
 			m_pDocumentPeople		= NULL;
 			m_pDocumentCommentsIds = NULL;
+			m_pCommentsUserData = NULL;
 			m_pVbaProject	= NULL;
 			m_pJsaProject	= NULL;
 		}

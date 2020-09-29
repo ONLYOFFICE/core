@@ -94,13 +94,13 @@ namespace NSUnicodeConverter
 
             int32_t nUCharCapacity = (int32_t)nInputLen;// UTF-16 uses 2 code-points per char
 
-            UChar* pUChar = new UChar[nUCharCapacity * sizeof(UChar)];
+            UChar* pUChar = new UChar[(uint32_t)nUCharCapacity * sizeof(UChar)];
             if (pUChar)
             {
                 const UChar* pUCharStart = pUChar;
                 int32_t nUCharLength = 0;
 
-                u_strFromWCS(pUChar, nUCharCapacity, &nUCharLength, sInput, nInputLen, &status);
+                u_strFromWCS(pUChar, nUCharCapacity, &nUCharLength, sInput, (int32_t)nInputLen, &status);
                 if (U_SUCCESS(status))
                 {
                     UStringPrepProfile *profile = usprep_openByType(USPREP_RFC4013_SASLPREP, &status);
@@ -110,7 +110,7 @@ namespace NSUnicodeConverter
                     int32_t nOutputLen = nUCharLength * 2;
                     if (U_SUCCESS(status))
                     {
-                        UChar* pOutput = new UChar[nOutputLen * sizeof(UChar) * 3];
+                        UChar* pOutput = new UChar[(uint32_t)nOutputLen * sizeof(UChar) * 3];
                         nOutputLen = usprep_prepare(profile, pUCharStart, nUCharLength, pOutput, nOutputLen, 0, &parseError, &status );
 
                         if (U_SUCCESS(status))
@@ -130,7 +130,7 @@ namespace NSUnicodeConverter
                                 {
                                     sRes = std::string(sResStart, sResCur - sResStart);
                                 }
-                                delete sResStart;
+                                delete []sResStart;
                                 ucnv_close(conv);
                             }
                         }
@@ -159,17 +159,17 @@ namespace NSUnicodeConverter
                 int32_t nUCharCapacity = (int32_t)nInputLen;// UTF-16 uses 2 code-points per char
 
                 //UChar* pUChar = new UChar[nUCharCapacity];
-                UChar* pUChar = (UChar*)malloc(nUCharCapacity * sizeof(UChar));
+                UChar* pUChar = (UChar*)malloc((uint32_t)nUCharCapacity * sizeof(UChar));
                 if (pUChar)
                 {
                     const UChar* pUCharStart = pUChar;
                     int32_t nUCharLength = 0;
 
-                    u_strFromWCS(pUChar, nUCharCapacity, &nUCharLength, sInput, nInputLen, &status);
+                    u_strFromWCS(pUChar, nUCharCapacity, &nUCharLength, sInput, (int32_t)nInputLen, &status);
                     if (U_SUCCESS(status))
                     {
                         const UChar* pUCharLimit = pUCharStart + nUCharLength;
-                        sRes.resize(nUCharLength * ucnv_getMaxCharSize(conv));// UTF-16 uses 2 code-points per char
+                        sRes.resize((uint32_t)nUCharLength * (uint8_t)ucnv_getMaxCharSize(conv));// UTF-16 uses 2 code-points per char
                         char *sResStart = &sRes[0];
                         char *sResCur = sResStart;
                         const char *sResLimit = sResCur + sRes.size();
@@ -203,34 +203,31 @@ namespace NSUnicodeConverter
             UConverter* conv = ucnv_openCCSID(nCodePage, UCNV_UNKNOWN, &status);
             if (U_SUCCESS(status))
             {
-                std::string sss = ucnv_getName(conv, &status);
-                int iii = ucnv_getCCSID(conv, &status);
-
                 //UConverter* conv = ucnv_openCCSID(5347, UCNV_IBM, &status);
                 if (U_SUCCESS(status))
                 {
                     const char* source = sInput;
                     const char* sourceLimit = source + nInputLen;
 
-                    unsigned int uBufSize = (nInputLen / ucnv_getMinCharSize(conv));
+                    unsigned int uBufSize = (nInputLen / (uint8_t)ucnv_getMinCharSize(conv));
 
                     UChar* targetStart = new UChar[uBufSize * sizeof(UChar)];
                     if (targetStart)
-                        {
+                    {
                         UChar* target = targetStart;
                         UChar* targetLimit = target + uBufSize;
 
                         ucnv_toUnicode(conv, &target, targetLimit, &source, sourceLimit, NULL, TRUE, &status);
                         if (U_SUCCESS(status))
                         {
-                            unsigned int nTargetSize = target - targetStart;
+                            size_t nTargetSize = target - targetStart;
                             sRes.resize(nTargetSize * 2);// UTF-16 uses 2 code-points per char
                             int32_t nResLen = 0;
 
-                            u_strToWCS(&sRes[0], sRes.size(), &nResLen, targetStart, nTargetSize, &status);
+                            u_strToWCS(&sRes[0], (int32_t)sRes.size(), &nResLen, targetStart, (int32_t)nTargetSize, &status);
                             if (U_SUCCESS(status))
                             {
-                                sRes.resize(nResLen);
+                                sRes.resize((size_t)nResLen);
                             }
                             else
                             {
@@ -257,16 +254,13 @@ namespace NSUnicodeConverter
             UConverter* conv = ucnv_open(converterName, &status);
             if (U_SUCCESS(status))
             {
-                std::string sss = ucnv_getName(conv, &status);
-                int iii = ucnv_getCCSID(conv, &status);
-
                 //UConverter* conv = ucnv_openCCSID(5347, UCNV_IBM, &status);
                 if (U_SUCCESS(status))
                 {
                     const char* source = sInput;
                     const char* sourceLimit = source + nInputLen;
 
-                    unsigned int uBufSize = (nInputLen / ucnv_getMinCharSize(conv));
+                    unsigned int uBufSize = (nInputLen / (uint8_t)ucnv_getMinCharSize(conv));
                     
                     UChar* targetStart = new UChar[uBufSize * sizeof(UChar)];
                     if (targetStart)
@@ -277,14 +271,14 @@ namespace NSUnicodeConverter
                         ucnv_toUnicode(conv, &target, targetLimit, &source, sourceLimit, NULL, TRUE, &status);
                         if (U_SUCCESS(status))
                         {
-                            unsigned int nTargetSize = target - targetStart;
+                            size_t nTargetSize = target - targetStart;
                             sRes.resize(nTargetSize * 2);// UTF-16 uses 2 code-points per char
                             int32_t nResLen = 0;
 
-                            u_strToWCS(&sRes[0], sRes.size(), &nResLen, targetStart, nTargetSize, &status);
+                            u_strToWCS(&sRes[0], (int32_t)sRes.size(), &nResLen, targetStart, (int32_t)nTargetSize, &status);
                             if (U_SUCCESS(status))
                             {
-                                sRes.resize(nResLen);
+                                sRes.resize((size_t)nResLen);
                             }
                             else
                             {
@@ -308,9 +302,6 @@ namespace NSUnicodeConverter
         {
             bool ansi = true;
             std::wstring sResult;
-
-            size_t insize = nInputLen;
-            char* inptr = (char*)sInput;
 
             if (nCodepage > 0)
             {

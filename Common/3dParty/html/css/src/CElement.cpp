@@ -109,7 +109,10 @@ int CElement::GetCountChildrens() const
 
 bool CElement::FindSelector(const std::wstring& sSelector) const
 {
-    return std::find(m_arSelectors.begin(), m_arSelectors.end(), sSelector) != m_arSelectors.end();
+    return (m_arSelectors.size() == 1) ? m_arSelectors[0] == sSelector :
+           (m_arSelectors.size() == 2) ? m_arSelectors[0] == sSelector || m_arSelectors[1] == sSelector :
+           (m_arSelectors.size() == 3) ? m_arSelectors[0] == sSelector || m_arSelectors[1] == sSelector || m_arSelectors[2] == sSelector :
+           std::find(m_arSelectors.begin(), m_arSelectors.end(), sSelector) != m_arSelectors.end();
 }
 
 /*
@@ -126,28 +129,11 @@ std::map<std::wstring, std::wstring> CElement::GetDeclarations() const
 
 std::map<std::wstring, std::wstring> CElement::GetDeclarations(const std::wstring& sSelector, const std::vector<std::wstring>& arParents) const
 {
-    return std::find(m_arSelectors.begin(), m_arSelectors.end(), sSelector) != m_arSelectors.end() ? m_arDeclarations : std::map<std::wstring, std::wstring>();
-    /*
     if (m_arSelectors.size() == 0)
         return std::map<std::wstring, std::wstring>();
 
     switch (m_arSelectors.size())
     {
-        case 0:
-        {
-            if (m_arChildrens.size() == 0)
-                return std::map<std::wstring, std::wstring>();
-            else
-            {
-                for (const CElement* oElement : m_arChildrens)
-                {
-                    const std::vector<std::wstring>& sSelectors = oElement->m_arSelectors;
-                    if (std::find(sSelectors.begin(), sSelectors.end(), sSelector) != sSelectors.end())
-                        return oElement->GetDeclarations(sSelector, m_arSelectors);
-                }
-            }
-            break;
-        }
         case 1:
             if (m_arSelectors[0] == sSelector)
                 return m_arDeclarations;
@@ -163,20 +149,12 @@ std::map<std::wstring, std::wstring> CElement::GetDeclarations(const std::wstrin
         default:
         {
             if(std::find(m_arSelectors.begin(), m_arSelectors.end(), sSelector) != m_arSelectors.end())
-            {
-                std::wstring sTempSelectors;
-                sTempSelectors = std::accumulate(arParents.begin(), arParents.end(), sTempSelectors,
-                    [] (const std::wstring& sRes, const std::wstring& sParent) { return sRes + sParent; });
-
-                sTempSelectors = sTempSelectors.empty() ? sSelector : sTempSelectors + L" -> " + sSelector;
-
                 return m_arDeclarations;
-            }
             break;
         }
     }
     return std::map<std::wstring, std::wstring>();
-    */
+
 }
 
 /*

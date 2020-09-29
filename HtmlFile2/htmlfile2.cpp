@@ -803,7 +803,7 @@ private:
             else if(sName == L"table")
             {
 
-                auto it = std::find_if(sSelectors.begin(), sSelectors.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
+                std::vector<NSCSS::CNode>::iterator it = std::find_if(sSelectors.begin(), sSelectors.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
                 bool bHyperlink = it != sSelectors.end();
                 if(bHyperlink)
                     oXml->WriteString(L"</w:hyperlink>");
@@ -875,8 +875,8 @@ private:
                 m_oLightReader.MoveToElement();
 
                 // Вставляем ячейки до
-                auto it1 = std::find_if(mTable.begin(), mTable.end(), [i, j](const CTc& item){ return item.i == i && item.j == j; });
-                auto it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
+                std::vector<CTc>::iterator it1 = std::find_if(mTable.begin(), mTable.end(), [i, j](const CTc& item){ return item.i == i && item.j == j; });
+                std::vector<CTc>::iterator it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
                 while(it1 != mTable.end() || it2 != mTable.end())
                 {
                     oXml->WriteString(L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:tcBorders><w:left w:val=\"none\" w:color=\"000000\"/><w:top w:val=\"none\" w:color=\"000000\"/><w:right w:val=\"none\" w:color=\"000000\"/><w:bottom w:val=\"none\" w:color=\"000000\"/></w:tcBorders><w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"");
@@ -1309,7 +1309,7 @@ private:
     {
         if(bWasP)
             return;
-        auto it = std::find_if(sSelectors.begin(), sSelectors.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
+        std::vector<NSCSS::CNode>::iterator it = std::find_if(sSelectors.begin(), sSelectors.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
         bool bHyperlink = it != sSelectors.end();
         if(bHyperlink)
             oXml->WriteString(L"</w:hyperlink>");

@@ -447,14 +447,14 @@ namespace NSCSS
 
         for (const std::string& sSelector : arSelectors)
         {
-            for (const auto& oDeclarations : GetDeclarations(NS_STATIC_FUNCTIONS::stringToWstring(sSelector)))
+            for (const std::pair<std::wstring, std::wstring>& oDeclarations : GetDeclarations(NS_STATIC_FUNCTIONS::stringToWstring(sSelector)))
             {
                 if (mStyle[oDeclarations.first].empty() || mStyle[oDeclarations.first].find(L"important") == std::wstring::npos)
                     mStyle[oDeclarations.first] = oDeclarations.second;
             }
         }
 
-        for (const auto& oIter : mStyle)
+        for (const std::pair<std::wstring, std::wstring>& oIter : mStyle)
         {
             const size_t posRgb = oIter.second.find(L"rgb");
 
@@ -546,7 +546,7 @@ namespace NSCSS
     }
     */
 
-    CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const std::vector<CNode> &arSelectors, const UnitMeasure& unitMeasure)
+    CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const std::vector<CNode>& arSelectors, const UnitMeasure& unitMeasure)
     {
         if (arSelectors.empty())
             return CCompiledStyle();
@@ -554,7 +554,7 @@ namespace NSCSS
         bool parentSize = arSelectors.size() > 1;
         if (parentSize)
         {
-            const auto& oItem = m_mUsedStyles.find(arSelectors);
+            std::map<std::vector<CNode>, CCompiledStyle*>::iterator oItem = m_mUsedStyles.find(arSelectors);
             if (oItem != m_mUsedStyles.end())
                 return *oItem->second;
         }
@@ -569,7 +569,7 @@ namespace NSCSS
                                       ? L'#' + arSelectors.back().m_sId
                                       : arSelectors.back().m_sId;
 
-        for (auto oParent = arSelectors.begin(); oParent != arSelectors.end() - 1; ++oParent)
+        for (std::vector<CNode>::const_iterator oParent = arSelectors.begin(); oParent != arSelectors.end() - 1; ++oParent)
         {
             if (oParent->m_sName != L"body")
             {

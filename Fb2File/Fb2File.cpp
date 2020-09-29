@@ -271,7 +271,7 @@ public:
 
         readCrossReference(oBuilder);
 
-        auto it = m_mImages.find(sImageName);
+        std::map<std::wstring, std::vector<std::wstring>>::iterator it = m_mImages.find(sImageName);
         if(it != m_mImages.end())
         {
             // Пишем картинку в файл
@@ -437,7 +437,7 @@ public:
                 }
                 m_oLightReader.MoveToElement();
 
-                auto it = m_mFootnotes.find(sFootnoteName);
+                std::map<std::wstring, std::wstring>::iterator it = m_mFootnotes.find(sFootnoteName);
                 if(it != m_mFootnotes.end())
                 {
                     // Пробел перед текстом внутри сноски

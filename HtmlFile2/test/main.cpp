@@ -67,9 +67,9 @@ int main()
                     end = std::chrono::system_clock::now();
                     nResConvert = oFile.OpenHtml(sFile, sTmp);
                 }
-                auto dur1 = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
+                std::chrono::duration<long, std::milli> dur1 = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
                 begin = std::chrono::system_clock::now();
-                auto dur2 = std::chrono::duration_cast<std::chrono::milliseconds>(begin - end);
+                std::chrono::duration<long, std::milli> dur2 = std::chrono::duration_cast<std::chrono::milliseconds>(begin - end);
                 if(nResConvert == S_OK)
                 {
                     std::cout << "Success " << dur1.count() << " " << dur2.count() << std::endl;

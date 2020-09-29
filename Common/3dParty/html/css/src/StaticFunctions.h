@@ -197,7 +197,7 @@ namespace NSCSS
 
             for (const std::wstring& sWord : GetWordsW(sAbsoluteValue))
             {
-                const auto& oFind = arAbsoluteValues.find(sWord);
+                std::map<std::wstring, std::wstring>::iterator oFind = arAbsoluteValues.find(sWord);
                 if (oFind != arAbsoluteValues.end())
                 {
                     bIsConvert = true;

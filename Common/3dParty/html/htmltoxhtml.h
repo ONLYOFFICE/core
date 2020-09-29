@@ -308,7 +308,7 @@ static std::string mhtTohtml(std::string& sFileContent)
         ReadMht(sFileContent, nFound, nFoundEnd, sBoundary, sRes, oRes);
     }
     std::string sFile = oRes.GetData();
-    for(const auto& item : sRes)
+    for(const std::pair<std::string, std::string>& item : sRes)
     {
         std::string sName = item.first;
         size_t found = sFile.find(sName);

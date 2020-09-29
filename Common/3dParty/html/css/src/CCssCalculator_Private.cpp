@@ -94,7 +94,6 @@ namespace NSCSS
                 break;
             case KatanaParserModeKeyframeRule:
                 oElement = GetKeyframe(oOutput->keyframe);
-
                 break;
             case KatanaParserModeKeyframeKeyList:
                 oElement->AddSelector(GetValueList(oOutput->keyframe_keys));
@@ -147,10 +146,7 @@ namespace NSCSS
                 GetMediaRule((KatanaMediaRule*)oRule);
                 break;
             case KatanaRuleSupports:
-                break;
             case KatanaRuleUnkown:
-                break;
-
             default:
                 break;
         }
@@ -824,11 +820,10 @@ namespace NSCSS
         switch (m_UnitMeasure)
         {
             case Default:
-                ConvertCmToPt(dValue);
-            case Pixel:
-                return ConvertCmToPx(dValue);
             case Point:
                 return ConvertCmToPt(dValue);
+            case Pixel:
+                return ConvertCmToPx(dValue);
             case Cantimeter:
                 return std::to_wstring(static_cast<short int>(dValue));;
             case Millimeter:

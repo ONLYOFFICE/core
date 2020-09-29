@@ -10,16 +10,26 @@ namespace NSCSS
 {
     class CStyleUsed
     {
-    public:
         bool m_bIsPStyle;
         std::wstring m_sId;
         CCompiledStyle m_oStyle;
 
+    public:
         CStyleUsed(const CCompiledStyle& oStyle, const bool& bIsPStyle) : m_oStyle(oStyle), m_bIsPStyle(bIsPStyle) {}
 
         bool operator==(const CStyleUsed& oUsedStyle) const
         {
             return (m_bIsPStyle == oUsedStyle.m_bIsPStyle) && (m_oStyle == oUsedStyle.m_oStyle);
+        }
+
+        std::wstring getId()
+        {
+            return m_sId;
+        }
+
+        void setId(const std::wstring& sId)
+        {
+            m_sId = sId;
         }
 
         /*

@@ -410,11 +410,11 @@ namespace NSCSS
 
         CStyleUsed structStyle(oStyle, false);
 
-        std::list<CStyleUsed>::const_iterator oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), structStyle);
+        std::list<CStyleUsed>::iterator oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), structStyle);
 
         if (oItem != m_arStyleUsed.end())
         {
-            m_sId = oItem->m_sId;
+            m_sId = (*oItem).getId();
             return;
         }
         CXmlElement oXmlElement;
@@ -422,7 +422,7 @@ namespace NSCSS
 
         if (!oStyle.Empty() || !oXmlElement.Empty())
         {
-            structStyle.m_sId = oXmlElement.GetStyleId();
+            structStyle.setId(oXmlElement.GetStyleId());
             m_arStyleUsed.push_back(structStyle);
             m_sStyle += oXmlElement.GetRStyle();
         }
@@ -437,11 +437,11 @@ namespace NSCSS
         }
 
         CStyleUsed structStyle(oStyle, true);
-        std::list<CStyleUsed>::const_iterator oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), structStyle);
+        std::list<CStyleUsed>::iterator oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), structStyle);
 
         if (oItem != m_arStyleUsed.end())
         {
-            m_sId = oItem->m_sId;
+            m_sId = (*oItem).getId();
             return;
         }
 
@@ -450,7 +450,7 @@ namespace NSCSS
 
         if (!oStyle.Empty() || !oXmlElement.Empty())
         {
-            structStyle.m_sId = oXmlElement.GetStyleId();
+            structStyle.setId(oXmlElement.GetStyleId());
             m_arStyleUsed.push_back(structStyle);
             m_sStyle += oXmlElement.GetPStyle();
         }

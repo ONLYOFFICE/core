@@ -147,16 +147,20 @@ std::map<std::wstring, std::wstring> CElement::GetDeclarations(const std::wstrin
                         return oElement->GetDeclarations(sSelector, m_arSelectors);
                 }
             }
+            break;
         }
         case 1:
             if (m_arSelectors[0] == sSelector)
                 return m_arDeclarations;
+            break;
         case 2:
             if (m_arSelectors[0] == sSelector || m_arSelectors[1] == sSelector)
                 return m_arDeclarations;
+            break;
         case 3:
             if (m_arSelectors[0] == sSelector || m_arSelectors[1] == sSelector || m_arSelectors[2] == sSelector)
                 return m_arDeclarations;
+            break;
         default:
         {
             if(std::find(m_arSelectors.begin(), m_arSelectors.end(), sSelector) != m_arSelectors.end())
@@ -169,9 +173,10 @@ std::map<std::wstring, std::wstring> CElement::GetDeclarations(const std::wstrin
 
                 return m_arDeclarations;
             }
-            return std::map<std::wstring, std::wstring>();
+            break;
         }
     }
+    return std::map<std::wstring, std::wstring>();
 }
 
 /*

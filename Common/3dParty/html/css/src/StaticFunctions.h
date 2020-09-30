@@ -7,6 +7,7 @@
 #include "CssCalculator_global.h"
 #include <string>
 #include <vector>
+#include <list>
 #include <algorithm>
 
 namespace NSCSS

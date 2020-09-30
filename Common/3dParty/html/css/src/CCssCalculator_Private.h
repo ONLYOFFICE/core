@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <map>
-#include "CElement.h"
 #include "CCssCalculator.h"
 #include <list>
 #include <functional>
@@ -18,7 +17,7 @@ namespace NSCSS
         UnitMeasure m_UnitMeasure;
 
         std::list<std::wstring> m_arFiles;
-        std::list<CElement*> m_arData;
+        std::map<std::vector<CNode>, std::map<std::wstring, std::wstring>> m_arData;
 
         std::map<std::vector<CNode>, CCompiledStyle*> m_mUsedStyles;
 
@@ -27,10 +26,10 @@ namespace NSCSS
         // void AddElement(CElement* oElement);
         // size_t GetSize() const;
 
-        void GetStylesheet(const KatanaStylesheet* oStylesheet, CElement* oElementRule = NULL);
-        void GetRule(const KatanaRule* oRule, CElement* oElementRule = NULL);
+        void GetStylesheet(const KatanaStylesheet* oStylesheet);
+        void GetRule(const KatanaRule* oRule);
 
-        CElement* GetStyleRule(const KatanaStyleRule* oRule, CElement* oElementRule = NULL);
+        void GetStyleRule(const KatanaStyleRule* oRule);
         void GetImportRule(const KatanaImportRule* oRule);
         void GetFontFaceRule(const KatanaFontFaceRule* oRule);
         void GetKeyframesRule(const KatanaKeyframesRule* oRule);
@@ -44,7 +43,7 @@ namespace NSCSS
 
         std::wstring GetValueList(const KatanaArray* oValues);
 
-        CElement* GetKeyframe(const KatanaKeyframe* oKeyframe);
+        void GetKeyframe(const KatanaKeyframe* oKeyframe);
 
         std::vector<std::wstring> GetSelectorList(const KatanaArray* oSelectors) const;
         std::wstring GetSelector(const KatanaSelector* oSelector) const;

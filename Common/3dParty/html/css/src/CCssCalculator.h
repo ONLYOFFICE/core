@@ -28,6 +28,12 @@ namespace NSCSS
 
         CNode(){};
         CNode(std::wstring sName, std::wstring sClass, std::wstring sId) : m_sName(sName), m_sClass(sClass), m_sId(sId){};
+
+        bool Empty() const
+        {
+            return m_sName.empty() && m_sClass.empty() && m_sId.empty() && m_sStyle.empty();
+        }
+
         bool operator< (const CNode& oNode) const
         {
             if(m_sName != oNode.m_sName)

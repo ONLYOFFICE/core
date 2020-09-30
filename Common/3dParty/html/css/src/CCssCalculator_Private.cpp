@@ -44,8 +44,6 @@ namespace NSCSS
 
     CCssCalculator_Private::~CCssCalculator_Private()
     {
-        for (CElement*& item : m_arData)
-            delete item;
         m_arData.clear();
         m_arFiles.clear();
 
@@ -81,9 +79,7 @@ namespace NSCSS
     inline void CCssCalculator_Private::GetOutputData(KatanaOutput *oOutput)
     {
         if ( NULL == oOutput )
-            return;
-
-        CElement *oElement = new CElement;
+            return;        
 
         switch (oOutput->mode) {
             case KatanaParserModeStylesheet:
@@ -93,58 +89,38 @@ namespace NSCSS
                 GetRule(oOutput->rule);
                 break;
             case KatanaParserModeKeyframeRule:
-                oElement = GetKeyframe(oOutput->keyframe);
-                break;
             case KatanaParserModeKeyframeKeyList:
-                oElement->AddSelector(GetValueList(oOutput->keyframe_keys));
-                break;
             case KatanaParserModeMediaList:
-                oElement->AddSelector(GetMediaList(oOutput->medias));
-                break;
             case KatanaParserModeValue:
-                oElement->AddSelector(GetValueList(oOutput->values));
-                break;
             case KatanaParserModeSelector:
-                oElement->AddSelectors(GetSelectorList(oOutput->selectors));
-                break;
             case KatanaParserModeDeclarationList:
-                oElement->AddDeclarations(GetDeclarationList(oOutput->declarations));
                 break;
         }
 
-        (oElement->Empty()) ? delete oElement : m_arData.push_back(oElement);
     }
 
-    inline void CCssCalculator_Private::GetStylesheet(const KatanaStylesheet *oStylesheet, CElement *elementRule)
+    inline void CCssCalculator_Private::GetStylesheet(const KatanaStylesheet *oStylesheet)
     {
         for (size_t i = 0; i < oStylesheet->imports.length; ++i)
-            GetRule((KatanaRule*)oStylesheet->imports.data[i], elementRule);
+            GetRule((KatanaRule*)oStylesheet->imports.data[i]);
 
         for (size_t i = 0; i < oStylesheet->rules.length; ++i)
-            GetRule((KatanaRule*)oStylesheet->rules.data[i], elementRule);
+            GetRule((KatanaRule*)oStylesheet->rules.data[i]);
     }
 
-    inline void CCssCalculator_Private::GetRule(const KatanaRule *oRule, CElement *oElementRule)
+    inline void CCssCalculator_Private::GetRule(const KatanaRule *oRule)
     {
         if ( NULL == oRule )
             return;
 
         switch (oRule->type) {
             case KatanaRuleStyle:
-                GetStyleRule((KatanaStyleRule*)oRule, oElementRule);
+                GetStyleRule((KatanaStyleRule*)oRule);
                 break;
             case KatanaRuleImport:
-                GetImportRule((KatanaImportRule*)oRule);
-                break;
             case KatanaRuleFontFace:
-                GetFontFaceRule((KatanaFontFaceRule*)oRule);
-                break;
             case KatanaRuleKeyframes:
-                GetKeyframesRule((KatanaKeyframesRule*)oRule);
-                break;
             case KatanaRuleMedia:
-                GetMediaRule((KatanaMediaRule*)oRule);
-                break;
             case KatanaRuleSupports:
             case KatanaRuleUnkown:
             default:
@@ -152,25 +128,21 @@ namespace NSCSS
         }
     }
 
-    inline CElement* CCssCalculator_Private::GetStyleRule(const KatanaStyleRule *oRule, CElement *oElementRule)
+    inline void CCssCalculator_Private::GetStyleRule(const KatanaStyleRule *oRule)
     {
-        std::map<std::wstring, std::wstring> arDeclarations;
+        if (oRule->declarations->length == 0)
+            return;
 
-        if (oRule->declarations->length)
-            arDeclarations = GetDeclarationList(oRule->declarations);
-
-        CElement *oElement = new CElement;
-
-        oElement->AddSelectors(GetSelectorList(oRule->selectors));
-        oElement->AddDeclarations(arDeclarations);
-
-        if (oElementRule == NULL)
+        for (const std::wstring sSelector : GetSelectorList(oRule->selectors))
         {
-            m_arData.push_back(oElement);
-            return NULL;
+            std::map<std::wstring, std::wstring>& oStyle = m_arData[NS_STATIC_FUNCTIONS::ConvertSelectorsToNode(sSelector)];
+
+            for (const std::pair<std::wstring, std::wstring> oItem : GetDeclarationList(oRule->declarations))
+                oStyle[oItem.first] = oItem.second;
+
+//            m_arData[oNodes] = oStyle;
         }
-        else
-            return oElement;
+
     }
 
     inline std::vector<std::wstring> CCssCalculator_Private::GetSelectorList(const KatanaArray* oSelectors) const
@@ -228,74 +200,68 @@ namespace NSCSS
     {
         const std::wstring& sSelector = L"@" + NS_STATIC_FUNCTIONS::stringToWstring(oRule->base.name) + L" " +  L"url(" + NS_STATIC_FUNCTIONS::stringToWstring(oRule->href) + L")";
 
-        CElement *oElement = new CElement;
+        std::vector<CNode> oNodes = NS_STATIC_FUNCTIONS::ConvertSelectorsToNode(sSelector);
 
-        oElement->AddSelectors({sSelector});
-        oElement->AddDeclarations({});
-
-        m_arData.push_back(oElement);
+        m_arData[oNodes] = {};
     }
 
     inline void CCssCalculator_Private::GetFontFaceRule(const KatanaFontFaceRule *oRule)
     {
         const std::wstring sSelector = L"@" + NS_STATIC_FUNCTIONS::stringToWstring(oRule->base.name);
 
-        CElement *oElement = new CElement;
+        std::map<std::wstring, std::wstring>& oStyle = m_arData[NS_STATIC_FUNCTIONS::ConvertSelectorsToNode(sSelector)];
 
-        oElement->AddSelectors({sSelector});
-        oElement->AddDeclarations(GetDeclarationList(oRule->declarations));
-
-        m_arData.push_back(oElement);
+        for (const std::pair<std::wstring, std::wstring> oItem : GetDeclarationList(oRule->declarations))
+            oStyle[oItem.first] = oItem.second;
     }
 
     inline void CCssCalculator_Private::GetKeyframesRule(const KatanaKeyframesRule *oRule)
     {
-        CElement *oElement = new CElement;
-
         const std::wstring& sSelector = L"@" + NS_STATIC_FUNCTIONS::stringToWstring(oRule->base.name);
-        oElement->AddSelector(sSelector);
 
-        for (size_t i = 0; i < oRule->keyframes->length; ++i)
-            oElement->AddChildren(GetKeyframe((KatanaKeyframe*)oRule->keyframes->data[i]));
+//        oElement->AddSelector(sSelector);
 
-        m_arData.push_back(oElement);
+//        for (size_t i = 0; i < oRule->keyframes->length; ++i)
+//            oElement->AddChildren(GetKeyframe((KatanaKeyframe*)oRule->keyframes->data[i]));
+
+//        m_arData.push_back(oElement);
     }
 
-    inline CElement* CCssCalculator_Private::GetKeyframe(const KatanaKeyframe *oKeyframe)
+    inline void CCssCalculator_Private::GetKeyframe(const KatanaKeyframe *oKeyframe)
     {
-        if (oKeyframe == NULL)
-            return NULL;
+//        if (oKeyframe == NULL)
+//            return NULL;
 
-        CElement *oElement = new CElement;
+//        CElement *oElement = new CElement;
 
-        for (size_t i = 0; i < oKeyframe->selectors->length; ++i)
-        {
-            const KatanaValue* oValue = (KatanaValue*)oKeyframe->selectors->data[i];
-            if (oValue->unit == KATANA_VALUE_NUMBER)
-                oElement->AddSelector(NS_STATIC_FUNCTIONS::stringToWstring(oValue->raw));
-        }
+//        for (size_t i = 0; i < oKeyframe->selectors->length; ++i)
+//        {
+//            const KatanaValue* oValue = (KatanaValue*)oKeyframe->selectors->data[i];
+//            if (oValue->unit == KATANA_VALUE_NUMBER)
+//                oElement->AddSelector(NS_STATIC_FUNCTIONS::stringToWstring(oValue->raw));
+//        }
 
-        oElement->AddDeclarations(GetDeclarationList(oKeyframe->declarations));
+//        oElement->AddDeclarations(GetDeclarationList(oKeyframe->declarations));
 
-        return oElement;
+//        return oElement;
     }
 
     inline void CCssCalculator_Private::GetMediaRule(const KatanaMediaRule *oRule)
     {
         std::wstring sSelector = L"@" + NS_STATIC_FUNCTIONS::stringToWstring(oRule->base.name) + L" ";
 
-        CElement *oElement = new CElement;
+//        CElement *oElement = new CElement;
 
-        if (oRule->medias->length)
-            sSelector += GetMediaList(oRule->medias);
+//        if (oRule->medias->length)
+//            sSelector += GetMediaList(oRule->medias);
 
-        oElement->AddSelector(sSelector);
+//        oElement->AddSelector(sSelector);
 
-        if (oRule->medias->length)
-            for (size_t i = 0; i < oRule->rules->length; ++i)
-                oElement->AddChildren(GetStyleRule((KatanaStyleRule*)oRule->rules->data[i], oElement));
+//        if (oRule->medias->length)
+//            for (size_t i = 0; i < oRule->rules->length; ++i)
+//                oElement->AddChildren(GetStyleRule((KatanaStyleRule*)oRule->rules->data[i], oElement));
 
-        m_arData.push_back(oElement);
+//        m_arData.push_back(oElement);
     }
 
     inline std::wstring CCssCalculator_Private::GetMediaList(const KatanaArray *oMedias)
@@ -371,9 +337,14 @@ namespace NSCSS
         if (sSelector.empty() || m_arData.empty())
             return std::map<std::wstring, std::wstring>();
 
-        for (const CElement* oElement : m_arData )
-            if (oElement->FindSelector(sSelector))
-                return oElement->GetDeclarations(sSelector, {});
+        const std::map<std::vector<CNode>, std::map<std::wstring, std::wstring>>::const_iterator oFind = m_arData.find(NS_STATIC_FUNCTIONS::ConvertSelectorsToNode(sSelector));
+
+        if (oFind != m_arData.end())
+            return oFind->second;
+
+//        for (const CElement* oElement : m_arData )
+//            if (oElement->FindSelector(sSelector))
+//                return oElement->GetDeclarations(sSelector, {});
 
         return std::map<std::wstring, std::wstring>();
     }
@@ -420,8 +391,8 @@ namespace NSCSS
     {
         std::wcout << m_arData.size() << std::endl;
 
-        for (const CElement* oElement : m_arData)
-            std::wcout << oElement->GetText() << std::endl;
+//        for (const CElement* oElement : m_arData)
+//            std::wcout << oElement->GetText() << std::endl;
     }
 
 
@@ -574,11 +545,6 @@ namespace NSCSS
         }
 
         *oStyle += GetCompiledStyle(NS_STATIC_FUNCTIONS::GetSelectorsList(arSelectors.back().m_sName + sClassName + sIdName), unitMeasure);
-
-        // подумать, что с этим делать (замедляет прилично, но без него могут пропасть некоторые стили (в некоторых случаях))
-//        if (arSelectors.size() > 3)
-//            *oStyle += GetCompiledStyle(NS_STATIC_FUNCTIONS::GetSelectorsListWithParents(arSelectors), unitMeasure);
-
 
         if (!arSelectors.back().m_sStyle.empty())
         {
@@ -1195,8 +1161,8 @@ namespace NSCSS
         m_nDpi          = 96;
         m_UnitMeasure   = Default;
 
-        for (CElement* oElement : m_arData)
-            delete oElement;
+//        for (CElement* oElement : m_arData)
+//            delete oElement;
 
 //        m_arStyleUsed.clear();
         m_arData.clear();

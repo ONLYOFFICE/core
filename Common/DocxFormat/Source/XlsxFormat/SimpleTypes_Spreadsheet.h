@@ -48,6 +48,7 @@ namespace SimpleTypes
 			{
 				m_eValue = val;
 			}
+            virtual ~CSimpleType() {}
 
 			virtual E GetValue() const
 			{
@@ -747,8 +748,12 @@ namespace SimpleTypes
 			}
 		private:
 
-            void Parse(const std::wstring& sValue)
+            void Parse(std::wstring sValue)
 			{
+				if (0 == sValue.find(L"#"))
+				{
+					sValue = sValue.substr(1);
+				}
                 int nValueLength = (int)sValue.length();
 
                 if(3 == nValueLength)
@@ -968,11 +973,11 @@ namespace SimpleTypes
                     this->m_eValue = borderstyleDashDot;
 				else if(_T("dashDotDot") == sValue)
                     this->m_eValue = borderstyleDashDotDot;
-				else if(_T("dashed") == sValue)
+				else if(_T("dashed") == sValue || _T("Dash") == sValue)
                     this->m_eValue = borderstyleDashed;
-				else if(_T("dotted") == sValue)
+				else if(_T("dotted") == sValue || _T("Dot") == sValue)
                     this->m_eValue = borderstyleDotted;
-				else if(_T("double") == sValue)
+				else if(_T("double") == sValue || _T("Double") == sValue)
                     this->m_eValue = borderstyleDouble;
 				else if(_T("hair") == sValue)
                     this->m_eValue = borderstyleHair;
@@ -1210,19 +1215,19 @@ namespace SimpleTypes
                     this->m_eValue = patterntypeDarkTrellis;
 				else if(_T("darkUp") == sValue)
                     this->m_eValue = patterntypeDarkUp;
-				else if(_T("darkVertical") == sValue)
+				else if(_T("darkVertical") == sValue || L"VertStripe" == sValue)
                     this->m_eValue = patterntypeDarkVertical;
-				else if(_T("gray0625") == sValue)
+				else if(_T("gray0625") == sValue || L"Gray0625" == sValue )
                     this->m_eValue = patterntypeGray0625;
-				else if(_T("gray125") == sValue)
+				else if(_T("gray125") == sValue || L"Gray125" == sValue)
                     this->m_eValue = patterntypeGray125;
 				else if(_T("lightDown") == sValue)
                     this->m_eValue = patterntypeLightDown;
 				else if(_T("lightGray") == sValue)
                     this->m_eValue = patterntypeLightGray;
-				else if(_T("lightGrid") == sValue)
+				else if(_T("lightGrid") == sValue || L"ThinHorzCross" == sValue)
                     this->m_eValue = patterntypeLightGrid;
-				else if(_T("lightHorizontal") == sValue)
+				else if(_T("lightHorizontal") == sValue || L"HorzStripe" == sValue)
                     this->m_eValue = patterntypeLightHorizontal;
 				else if(_T("lightTrellis") == sValue)
                     this->m_eValue = patterntypeLightTrellis;
@@ -1230,18 +1235,18 @@ namespace SimpleTypes
                     this->m_eValue = patterntypeLightUp;
 				else if(_T("lightVertical") == sValue)
                     this->m_eValue = patterntypeLightVertical;
-				else if(_T("mediumGray") == sValue)
+				else if(_T("mediumGray") == sValue || L"Gray50" == sValue)
                     this->m_eValue = patterntypeMediumGray;
-				else if(_T("none") == sValue)
+				else if(_T("none") == sValue || L"None" == sValue)
                     this->m_eValue = patterntypeNone;
-				else if(_T("solid") == sValue)
+				else if(_T("solid") == sValue || L"Solid" == sValue)
                     this->m_eValue = patterntypeSolid;
 				else
                     this->m_eValue = eDefValue;
                 return this->m_eValue;
 			}
 
-			virtual std::wstring     ToString  () const 
+			virtual std::wstring ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
@@ -1534,17 +1539,17 @@ namespace SimpleTypes
 			{
 				if(_T("b") == sValue)
                     this->m_eValue = celltypeBool;
-				else if(_T("d") == sValue)
+				else if(_T("d") == sValue || L"DateTime" == sValue)
                     this->m_eValue = celltypeDate;
 				else if(_T("e") == sValue)
                     this->m_eValue = celltypeError;
 				else if(_T("inlineStr") == sValue)
                     this->m_eValue = celltypeInlineStr;
-				else if(_T("n") == sValue)
+				else if(_T("n") == sValue || L"Number" == sValue)
                     this->m_eValue = celltypeNumber;
 				else if(_T("s") == sValue)
                     this->m_eValue = celltypeSharedString;
-				else if(_T("str") == sValue)
+				else if(L"str" == sValue || L"String" == sValue)
                     this->m_eValue = celltypeStr;
 				else
                     this->m_eValue = eDefValue;
@@ -4387,14 +4392,15 @@ namespace SimpleTypes
 
 			virtual EDataValidationType FromString(std::wstring &sValue)
 			{
-				if      ( _T("custom")		== sValue )	this->m_eValue = validationTypeCustom;
-				else if ( _T("date")		== sValue ) this->m_eValue = validationTypeDate;
-				else if ( _T("decimal")		== sValue ) this->m_eValue = validationTypeDecimal;
-				else if ( _T("list")		== sValue ) this->m_eValue = validationTypeList;
-				else if ( _T("none")		== sValue ) this->m_eValue = validationTypeNone;
-				else if ( _T("textLength")	== sValue ) this->m_eValue = validationTypeTextLength;
-				else if ( _T("time")		== sValue ) this->m_eValue = validationTypeTime;
-				else if ( _T("whole")		== sValue ) this->m_eValue = validationTypeWhole;
+				if      ( L"custom"		== sValue )	this->m_eValue = validationTypeCustom;
+				else if ( L"date"		== sValue ) this->m_eValue = validationTypeDate;
+				else if ( L"decimal"	== sValue ) this->m_eValue = validationTypeDecimal;
+				else if (	L"list"		== sValue ||
+							L"List"	== sValue)		this->m_eValue = validationTypeList;
+				else if ( L"none"		== sValue ) this->m_eValue = validationTypeNone;
+				else if ( L"textLength"	== sValue ) this->m_eValue = validationTypeTextLength;
+				else if ( L"time"		== sValue ) this->m_eValue = validationTypeTime;
+				else if ( L"whole"		== sValue ) this->m_eValue = validationTypeWhole;
 				else									this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
@@ -4403,15 +4409,15 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case validationTypeCustom	:	return _T("custom");
-					case validationTypeDate	:		return _T("date");
-					case validationTypeDecimal :	return _T("decimal");
-					case validationTypeList :		return _T("list");
-					case validationTypeNone :		return _T("none");
-					case validationTypeTextLength :	return _T("textLength");
-					case validationTypeTime:		return _T("time");
-					case validationTypeWhole:		return _T("whole");
-					default :						return _T("none");
+					case validationTypeCustom	:	return L"custom";
+					case validationTypeDate	:		return L"date";
+					case validationTypeDecimal :	return L"decimal";
+					case validationTypeList :		return L"list";
+					case validationTypeNone :		return L"none";
+					case validationTypeTextLength :	return L"textLength";
+					case validationTypeTime:		return L"time";
+					case validationTypeWhole:		return L"whole";
+					default :						return L"none";
 				}
 			}
 
@@ -4776,5 +4782,228 @@ namespace SimpleTypes
 			SimpleType_FromString     (EEditValidation)
 			SimpleType_Operator_Equal (CEditValidation)
 		};
-	};// Spreadsheet
+
+		enum ETabularSlicerCacheSortOrder
+		{
+			ctabularslicercachesortorderAscending = 0,
+			ctabularslicercachesortorderDescending = 1
+		};
+
+		template<ETabularSlicerCacheSortOrder eDefValue = ctabularslicercachesortorderAscending>
+		class CTabularSlicerCacheSortOrder : public CSimpleType<ETabularSlicerCacheSortOrder, eDefValue>
+		{
+		public:
+			CTabularSlicerCacheSortOrder(){}
+			virtual ETabularSlicerCacheSortOrder FromString(std::wstring &sValue)
+			{
+				if(L"ascending" == sValue)
+					this->m_eValue = ctabularslicercachesortorderAscending;
+				else if(L"descending" == sValue)
+					this->m_eValue = ctabularslicercachesortorderDescending;
+				else
+					this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+			ETabularSlicerCacheSortOrder FromStringA(const char* sValue)
+			{
+				if(strcmp("ascending", sValue) == 0)
+					this->m_eValue = ctabularslicercachesortorderAscending;
+				else if(strcmp("descending", sValue) == 0)
+					this->m_eValue = ctabularslicercachesortorderDescending;
+				else
+					this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+			virtual std::wstring ToString() const
+			{
+				switch(this->m_eValue)
+				{
+				case ctabularslicercachesortorderAscending : return L"ascending";break;
+				case ctabularslicercachesortorderDescending : return L"descending";break;
+				}
+				return L"ascending";
+			}
+			SimpleType_FromString(ETabularSlicerCacheSortOrder)
+			SimpleType_Operator_Equal(CTabularSlicerCacheSortOrder)
+		};
+		enum ESlicerCacheCrossFilter
+		{
+			cslicercachecrossfilterNone = 0,
+			cslicercachecrossfilterShowItemsWithDataAtTop = 1,
+			cslicercachecrossfilterShowItemsWithNoData = 2
+		};
+
+		template<ESlicerCacheCrossFilter eDefValue = cslicercachecrossfilterNone>
+		class CSlicerCacheCrossFilter : public CSimpleType<ESlicerCacheCrossFilter, eDefValue>
+		{
+		public:
+			CSlicerCacheCrossFilter(){}
+			virtual ESlicerCacheCrossFilter FromString(std::wstring &sValue)
+			{
+				if(L"none" == sValue)
+					this->m_eValue = cslicercachecrossfilterNone;
+				else if(L"showItemsWithDataAtTop" == sValue)
+					this->m_eValue = cslicercachecrossfilterShowItemsWithDataAtTop;
+				else if(L"showItemsWithNoData" == sValue)
+					this->m_eValue = cslicercachecrossfilterShowItemsWithNoData;
+				else
+					this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+			ESlicerCacheCrossFilter FromStringA(const char* sValue)
+			{
+				if(strcmp("none", sValue) == 0)
+					this->m_eValue = cslicercachecrossfilterNone;
+				else if(strcmp("showItemsWithDataAtTop", sValue) == 0)
+					this->m_eValue = cslicercachecrossfilterShowItemsWithDataAtTop;
+				else if(strcmp("showItemsWithNoData", sValue) == 0)
+					this->m_eValue = cslicercachecrossfilterShowItemsWithNoData;
+				else
+					this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+			virtual std::wstring ToString() const
+			{
+				switch(this->m_eValue)
+				{
+				case cslicercachecrossfilterNone : return L"none";break;
+				case cslicercachecrossfilterShowItemsWithDataAtTop : return L"showItemsWithDataAtTop";break;
+				case cslicercachecrossfilterShowItemsWithNoData : return L"showItemsWithNoData";break;
+				}
+				return L"none";
+			}
+			SimpleType_FromString(ESlicerCacheCrossFilter)
+			SimpleType_Operator_Equal(CSlicerCacheCrossFilter)
+		};
+		enum EOlapSlicerCacheSortOrder
+		{
+			colapslicercachesortorderNatural = 0,
+			colapslicercachesortorderAscending = 1,
+			colapslicercachesortorderDescending = 2
+		};
+
+		template<EOlapSlicerCacheSortOrder eDefValue = colapslicercachesortorderNatural>
+		class COlapSlicerCacheSortOrder : public CSimpleType<EOlapSlicerCacheSortOrder, eDefValue>
+		{
+		public:
+			COlapSlicerCacheSortOrder(){}
+			virtual EOlapSlicerCacheSortOrder FromString(std::wstring &sValue)
+			{
+				if(L"natural" == sValue)
+					this->m_eValue = colapslicercachesortorderNatural;
+				else if(L"ascending" == sValue)
+					this->m_eValue = colapslicercachesortorderAscending;
+				else if(L"descending" == sValue)
+					this->m_eValue = colapslicercachesortorderDescending;
+				else
+					this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+			EOlapSlicerCacheSortOrder FromStringA(const char* sValue)
+			{
+				if(strcmp("natural", sValue) == 0)
+					this->m_eValue = colapslicercachesortorderNatural;
+				else if(strcmp("ascending", sValue) == 0)
+					this->m_eValue = colapslicercachesortorderAscending;
+				else if(strcmp("descending", sValue) == 0)
+					this->m_eValue = colapslicercachesortorderDescending;
+				else
+					this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+			virtual std::wstring ToString() const
+			{
+				switch(this->m_eValue)
+				{
+				case colapslicercachesortorderNatural : return L"natural";break;
+				case colapslicercachesortorderAscending : return L"ascending";break;
+				case colapslicercachesortorderDescending : return L"descending";break;
+				}
+				return L"natural";
+			}
+			SimpleType_FromString(EOlapSlicerCacheSortOrder)
+			SimpleType_Operator_Equal(COlapSlicerCacheSortOrder)
+		};
+
+		enum ESlicerStyleType
+		{
+			cslicerstyletypeUnselectedItemWithData = 0,
+			cslicerstyletypeSelectedItemWithData = 1,
+			cslicerstyletypeUnselectedItemWithNoData = 2,
+			cslicerstyletypeSelectedItemWithNoData = 3,
+			cslicerstyletypeHoveredUnselectedItemWithData = 4,
+			cslicerstyletypeHoveredSelectedItemWithData = 5,
+			cslicerstyletypeHoveredUnselectedItemWithNoData = 6,
+			cslicerstyletypeHoveredSelectedItemWithNoData = 7
+		};
+
+		template<ESlicerStyleType eDefValue = cslicerstyletypeUnselectedItemWithData>
+		class CSlicerStyleType : public CSimpleType<ESlicerStyleType, eDefValue>
+		{
+		public:
+			CSlicerStyleType(){}
+			virtual ESlicerStyleType FromString(std::wstring &sValue)
+			{
+				if(L"unselectedItemWithData" == sValue)
+					this->m_eValue = cslicerstyletypeUnselectedItemWithData;
+				else if(L"selectedItemWithData" == sValue)
+					this->m_eValue = cslicerstyletypeSelectedItemWithData;
+				else if(L"unselectedItemWithNoData" == sValue)
+					this->m_eValue = cslicerstyletypeUnselectedItemWithNoData;
+				else if(L"selectedItemWithNoData" == sValue)
+					this->m_eValue = cslicerstyletypeSelectedItemWithNoData;
+				else if(L"hoveredUnselectedItemWithData" == sValue)
+					this->m_eValue = cslicerstyletypeHoveredUnselectedItemWithData;
+				else if(L"hoveredSelectedItemWithData" == sValue)
+					this->m_eValue = cslicerstyletypeHoveredSelectedItemWithData;
+				else if(L"hoveredUnselectedItemWithNoData" == sValue)
+					this->m_eValue = cslicerstyletypeHoveredUnselectedItemWithNoData;
+				else if(L"hoveredSelectedItemWithNoData" == sValue)
+					this->m_eValue = cslicerstyletypeHoveredSelectedItemWithNoData;
+				else
+					this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+			ESlicerStyleType FromStringA(const char* sValue)
+			{
+				if(strcmp("unselectedItemWithData", sValue) == 0)
+					this->m_eValue = cslicerstyletypeUnselectedItemWithData;
+				else if(strcmp("selectedItemWithData", sValue) == 0)
+					this->m_eValue = cslicerstyletypeSelectedItemWithData;
+				else if(strcmp("unselectedItemWithNoData", sValue) == 0)
+					this->m_eValue = cslicerstyletypeUnselectedItemWithNoData;
+				else if(strcmp("selectedItemWithNoData", sValue) == 0)
+					this->m_eValue = cslicerstyletypeSelectedItemWithNoData;
+				else if(strcmp("hoveredUnselectedItemWithData", sValue) == 0)
+					this->m_eValue = cslicerstyletypeHoveredUnselectedItemWithData;
+				else if(strcmp("hoveredSelectedItemWithData", sValue) == 0)
+					this->m_eValue = cslicerstyletypeHoveredSelectedItemWithData;
+				else if(strcmp("hoveredUnselectedItemWithNoData", sValue) == 0)
+					this->m_eValue = cslicerstyletypeHoveredUnselectedItemWithNoData;
+				else if(strcmp("hoveredSelectedItemWithNoData", sValue) == 0)
+					this->m_eValue = cslicerstyletypeHoveredSelectedItemWithNoData;
+				else
+					this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+			virtual std::wstring ToString() const
+			{
+				switch(this->m_eValue)
+				{
+				case cslicerstyletypeUnselectedItemWithData : return L"unselectedItemWithData";break;
+				case cslicerstyletypeSelectedItemWithData : return L"selectedItemWithData";break;
+				case cslicerstyletypeUnselectedItemWithNoData : return L"unselectedItemWithNoData";break;
+				case cslicerstyletypeSelectedItemWithNoData : return L"selectedItemWithNoData";break;
+				case cslicerstyletypeHoveredUnselectedItemWithData : return L"hoveredUnselectedItemWithData";break;
+				case cslicerstyletypeHoveredSelectedItemWithData : return L"hoveredSelectedItemWithData";break;
+				case cslicerstyletypeHoveredUnselectedItemWithNoData : return L"hoveredUnselectedItemWithNoData";break;
+				case cslicerstyletypeHoveredSelectedItemWithNoData : return L"hoveredSelectedItemWithNoData";break;
+				}
+				return L"unselectedItemWithData";
+			}
+			SimpleType_FromString(ESlicerStyleType)
+			SimpleType_Operator_Equal(CSlicerStyleType)
+		};
+
+	}// Spreadsheet
 } // SimpleTypes

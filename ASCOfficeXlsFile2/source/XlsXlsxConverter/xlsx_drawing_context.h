@@ -192,7 +192,7 @@ public:
 //----------------------------------------------	
 	bool					flipV = false;
 	bool					flipH = false;
-	int						rotation = 0;
+	double					rotation = 0;
 //-----------------------------------------------
 	std::vector<ODRAW::MSOPATHINFO>	custom_segments;
 	std::vector<ODRAW::MSOSG>		custom_guides;

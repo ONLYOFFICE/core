@@ -228,8 +228,7 @@ namespace OOX
 				}
 			}
 			m_oRFont.Init();
-			m_oRFont->m_sVal.Init();
-			m_oRFont->m_sVal->append(oStream.GetString2());
+			m_oRFont->m_sVal = oStream.GetString2();
 
 			//oStream.Seek(nEnd);
 		}

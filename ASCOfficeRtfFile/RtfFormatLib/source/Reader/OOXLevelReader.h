@@ -48,7 +48,7 @@ public:
 		if (m_ooxLvlNum == NULL) return false;
 
 		if (m_ooxLvlNum->m_oIlvl.IsInit())
-			oLevelProperty.m_nLevel = m_ooxLvlNum->m_oIlvl->GetValue();
+			oLevelProperty.m_nLevel = *m_ooxLvlNum->m_oIlvl;
 		
 		if (m_ooxLvlNum->m_oTentative.IsInit())
 			oLevelProperty.m_bTentative = m_ooxLvlNum->m_oTentative->ToBool();
@@ -66,7 +66,7 @@ public:
 		}
 		if (m_ooxLvlNum->m_oLvlRestart.IsInit() && m_ooxLvlNum->m_oLvlRestart->m_oVal.IsInit())
 		{
-			int nVal = m_ooxLvlNum->m_oLvlRestart->m_oVal->GetValue();
+			int nVal = *m_ooxLvlNum->m_oLvlRestart->m_oVal;
 			if( 0 == nVal )
 				oLevelProperty.m_nNoRestart = 0;
 			//todooo непонятка что будет если рестарт списка с не "0"
@@ -76,7 +76,7 @@ public:
 
 		if (m_ooxLvlNum->m_oLvlText.IsInit() && m_ooxLvlNum->m_oLvlText->m_sVal.IsInit())
 		{
-			oLevelProperty.SetLevelTextOOX( m_ooxLvlNum->m_oLvlText->m_sVal.get2() );
+			oLevelProperty.SetLevelTextOOX( *m_ooxLvlNum->m_oLvlText->m_sVal);
 				//null???? todooo
 		}
 		if (m_ooxLvlNum->m_oNumFmt.IsInit() && m_ooxLvlNum->m_oNumFmt->m_oVal.IsInit())
@@ -86,7 +86,7 @@ public:
 		
 		if (m_ooxLvlNum->m_oLvlPicBulletId.IsInit() && m_ooxLvlNum->m_oLvlPicBulletId->m_oVal.IsInit())
 		{
-			int nID = m_ooxLvlNum->m_oLvlPicBulletId->m_oVal->GetValue();
+			int nID = *m_ooxLvlNum->m_oLvlPicBulletId->m_oVal;
 			std::map<int, int>::iterator poPair =  oParam.oReader->m_mapPictureBullet.find( nID );
 			
 			if( oParam.oReader->m_mapPictureBullet.end() != poPair )
@@ -96,7 +96,7 @@ public:
 		}
 
 		if (m_ooxLvlNum->m_oStart.IsInit() && m_ooxLvlNum->m_oStart->m_oVal.IsInit())
-			oLevelProperty.m_nStart = m_ooxLvlNum->m_oStart->m_oVal->GetValue();
+			oLevelProperty.m_nStart = *m_ooxLvlNum->m_oStart->m_oVal;
 
 		if (m_ooxLvlNum->m_oSuffix.IsInit() && m_ooxLvlNum->m_oSuffix->m_oVal.IsInit())
 		{

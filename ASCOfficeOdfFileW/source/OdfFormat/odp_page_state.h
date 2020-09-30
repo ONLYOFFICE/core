@@ -37,6 +37,7 @@
 
 #include "odf_drawing_context.h"
 #include "odf_comment_context.h"
+#include "odf_controls_context.h"
 #include "style_presentation.h"
 
 namespace cpdoccore {
@@ -81,8 +82,9 @@ public:
 	void add_child_element( const office_element_ptr & child_element);
 	void finalize_page();
 ///////////////////////////////
-	odf_drawing_context   *	drawing_context(){return  &drawing_context_;}
-	odf_comment_context   *	comment_context(){return  &comment_context_;}
+	odf_drawing_context		*drawing_context(){return  &drawing_context_;}
+	odf_comment_context		*comment_context(){return  &comment_context_;}
+	odf_controls_context	*controls_context(){return  &controls_context_;}
 
 	std::wstring			page_name_;
 	int						page_id_;
@@ -118,6 +120,7 @@ private:
     odf_conversion_context *		context_;   
 	
 	odf_drawing_context				drawing_context_;	
+	odf_controls_context			controls_context_;
 	odf_comment_context				comment_context_;	
 	
 	style_drawing_page_properties*	page_properties_;

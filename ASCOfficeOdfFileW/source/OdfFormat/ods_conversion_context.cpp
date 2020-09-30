@@ -221,8 +221,11 @@ void ods_conversion_context::start_row(int _start_row, int repeated, int level, 
 			if (comment_idx < 0) break;
 			int rows = current_table()->comments_[comment_idx].row - current_table()->current_row() - 1;
 
-			start_row(current_table()->current_row() + 1, rows, 0, true);
-			end_row();
+			if (rows > 0)
+			{
+				start_row(current_table()->current_row() + 1, rows, 0, true);
+				end_row();
+			}
 			
 			start_row(current_table()->current_row() + 1, 1, 0, true);
 			end_row();
@@ -552,8 +555,11 @@ void ods_conversion_context::end_rows()
 		if (comment_idx < 0) break;
 		int rows = current_table()->comments_[comment_idx].row - current_table()->current_row() - 1;
 
-		start_row(current_table()->current_row() + 1, rows, 0, true);
-		end_row();
+		if (rows > 0)
+		{
+			start_row(current_table()->current_row() + 1, rows, 0, true);
+			end_row();
+		}
 		
 		start_row(current_table()->current_row() + 1, 1, 0, true);
 		end_row();
@@ -680,7 +686,7 @@ void ods_conversion_context::start_cell_text()
 	start_text_context();
 ////////////
 	office_element_ptr paragr_elm;
-	create_element(L"text", L"p",paragr_elm,this);
+	create_element(L"text", L"p", paragr_elm, this);
 	
 	current_text_context_->start_paragraph(paragr_elm);
 
@@ -698,6 +704,9 @@ void ods_conversion_context::start_cell_text()
 		text_a_->common_xlink_attlist_.href_ = state.link;
 		
 		current_text_context_->start_element(text_a_elm); // может быть стоит сделать собственый???
+		// libra дурит если в табличках будет вложенный span в гиперлинк ... оО (хотя это разрешено в спецификации!!!)
+
+		current_text_context_->single_paragraph_ = true;
 	}
 }
 

@@ -59,7 +59,9 @@ namespace TestDocsWithChart
             //getCustomXml();
             //getKeywords();
             //getMath();
-            getExternal2();
+            //getFullCalcOnLoad();
+            //getGradientPos();
+            getCAFiles();
         }
         static void getFilesPivot()
         {
@@ -243,11 +245,11 @@ namespace TestDocsWithChart
                 catch { }
             }
         }
-        static void getExternal2()
+        static void getFullCalcOnLoad()
         {
             string sDirInput = @"\\192.168.5.3\files\Files\xlsx";
-            string sDirOutput = @"D:\Files\ExternalReferences";
-            string sFindText = "CUBEMEMBER";
+            string sDirOutput = @"D:\Files\fullCalcOnLoad";
+            string sFindText = "fullCalcOnLoad";
             String[] allfiles = System.IO.Directory.GetFiles(sDirInput, "*.*", System.IO.SearchOption.AllDirectories);
             for (var i = 0; i < allfiles.Length; ++i)
             {
@@ -257,17 +259,17 @@ namespace TestDocsWithChart
                     ZipArchive zip = ZipFile.OpenRead(file);
                     foreach (ZipArchiveEntry entry in zip.Entries)
                     {
-                        if (entry.FullName.Contains("sheet"))
+                        if (entry.FullName.EndsWith("workbook.xml", StringComparison.OrdinalIgnoreCase))
                         {
                             using (StreamReader reader = new StreamReader(entry.Open(), Encoding.UTF8))
                             {
                                 string sXml = reader.ReadToEnd();
-                                if (-1 != sXml.IndexOf(sFindText,StringComparison.OrdinalIgnoreCase))
+                                if (-1 != sXml.IndexOf(sFindText))
                                 {
                                     System.IO.File.Copy(file, Path.Combine(sDirOutput, Path.GetFileName(file)), true);
-                                    break;
                                 }
                             }
+                            break;
                         }
                     }
                 }
@@ -275,6 +277,101 @@ namespace TestDocsWithChart
 
             }
         }
+        static void getGradientPos()
+        {
+            string sDirInput = @"\\192.168.5.3\files\Files\xlsx";
+            string sDirOutput = @"D:\Files\GradientPos";
+            string sFindText = "stop position=\"";
+            string sFindNoText1 = "0\"";
+            string sFindNoText2 = "1\"";
+            string sFindNoText3 = "0.5\"";
+            String[] allfiles = System.IO.Directory.GetFiles(sDirInput, "*.*", System.IO.SearchOption.AllDirectories);
+            for (var i = 0; i < allfiles.Length; ++i)
+            {
+                string file = allfiles[i];
+                try
+                {
+                    ZipArchive zip = ZipFile.OpenRead(file);
+                    foreach (ZipArchiveEntry entry in zip.Entries)
+                    {
+                        if (entry.FullName.EndsWith("styles.xml", StringComparison.OrdinalIgnoreCase))
+                        {
+                            using (StreamReader reader = new StreamReader(entry.Open(), Encoding.UTF8))
+                            {
+                                string sXml = reader.ReadToEnd();
+                                int indexStart = -1;
+                                while(-1 != (indexStart = sXml.IndexOf(sFindText, indexStart + 1)))
+                                {
+                                    string substring1 = sXml.Substring(indexStart + sFindText.Length, sFindNoText1.Length);
+                                    string substring2 = sXml.Substring(indexStart + sFindText.Length, sFindNoText2.Length);
+                                    string substring3 = sXml.Substring(indexStart + sFindText.Length, sFindNoText3.Length);
+                                    if (sFindNoText1 != substring1 && sFindNoText2 != substring2)
+                                    {
+                                        if (sFindNoText3 != substring3)
+                                        {
+                                            System.IO.File.Copy(file, Path.Combine(sDirOutput, Path.GetFileName(file)), true);
+                                            break;
+                                        }
+                                    }
+                                }
+                                
+                            }
+                            break;
+                        }
+                    }
+                }
+                catch { }
+
+            }
+        }
+        static void getCAFiles()
+        {
+            string sDirInput = @"\\192.168.5.3\files\Files\xlsx";
+            string sDirOutput = @"D:\Files\ca";
+            string sFindText = " ca=\"1\"";
+            int nThreshold = 100;
+            String[] allfiles = System.IO.Directory.GetFiles(sDirInput, "*.*", System.IO.SearchOption.AllDirectories);
+            List<Tuple<int, string>> files = new List<Tuple<int,string>>();
+            for (var i = 0; i < allfiles.Length; ++i)
+            {
+                string file = allfiles[i];
+                try
+                {
+                    ZipArchive zip = ZipFile.OpenRead(file);
+                    int nCounter = 0;
+                    foreach (ZipArchiveEntry entry in zip.Entries)
+                    {
+                        if (entry.FullName.StartsWith("xl/worksheets/sheet", StringComparison.OrdinalIgnoreCase) && entry.FullName.EndsWith(".xml", StringComparison.OrdinalIgnoreCase))
+                        {
+                            using (StreamReader reader = new StreamReader(entry.Open(), Encoding.UTF8)){
+                                string sXml = reader.ReadToEnd();
+                                int indexStart = -1;
+                                while (-1 != (indexStart = sXml.IndexOf(sFindText, indexStart + 1)))
+                                {
+                                    nCounter++;
+                                }
+                            }
+                        }
+                    }
+                    if (nCounter > nThreshold)
+                    {
+                        files.Add(new Tuple<int, string>(nCounter, file));
+                        //if (files.Count >= 3)
+                        //{
+                        //    break;
+                        //}
+                    }
+                }
+                catch (Exception e){ }
+            }
+            files.Sort();
+            for (int i = files.Count - 1; i >= 0; --i)
+            {
+                Tuple<int, string> tuple = files[i];
+                System.IO.File.Copy(tuple.Item2, Path.Combine(sDirOutput, tuple.Item1.ToString("D6") + "_" + Path.GetFileName(tuple.Item2)), true);
+            }
+        }
+        
         static void getFilesConditional()
         {
             //string sFindText = "conditionalFormatting";

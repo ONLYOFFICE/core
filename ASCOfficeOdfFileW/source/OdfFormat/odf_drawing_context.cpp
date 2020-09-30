@@ -789,7 +789,7 @@ void odf_drawing_context::Impl::create_draw_base(int type)
 
 	current_level_.push_back(draw_elm);
 
-	odf_element_state state={draw_elm, style_name, style_shape_elm, level};
+	odf_element_state state(draw_elm, style_name, style_shape_elm, level);
 
 	if (current_drawing_state_.index_base < 0)
 	{
@@ -1268,7 +1268,7 @@ void odf_drawing_context::start_element(office_element_ptr elm, office_element_p
 		}
 	}
 
-	odf_element_state state = {elm, style_name, style_elm, level};
+	odf_element_state state(elm, style_name, style_elm, level);
 	impl_->current_drawing_state_.elements_.push_back(state);
 
 	impl_->current_level_.push_back(elm);
@@ -2143,7 +2143,7 @@ void odf_drawing_context::get_size( _CP_OPT(double) & width_pt, _CP_OPT(double) 
 		height_pt	= impl_->anchor_settings_.svg_height_->get_value_unit(length::pt);
 	}
 }
-void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt)
+void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt, bool reset_always)
 {
 	impl_->current_drawing_state_.cx_ = width_pt;
 	impl_->current_drawing_state_.cy_ = height_pt;
@@ -2167,12 +2167,13 @@ void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) 
 			}
 			impl_->current_drawing_state_.svg_height_= length(length(*height_pt,length::pt).get_value_unit(length::cm), length::cm);	
 		}
-	}else
+	}
+	else
 	{
-        if (!impl_->current_drawing_state_.svg_width_   && width_pt) 
+        if ((!impl_->current_drawing_state_.svg_width_ || reset_always) && width_pt) 
 			impl_->current_drawing_state_.svg_width_ = length(length(*width_pt,length::pt).get_value_unit(length::cm), length::cm);
 
-        if (!impl_->current_drawing_state_.svg_height_  && height_pt) 
+        if ((!impl_->current_drawing_state_.svg_height_ || reset_always) && height_pt) 
 			impl_->current_drawing_state_.svg_height_= length(length(*height_pt,length::pt).get_value_unit(length::cm), length::cm);
 	}
 }
@@ -2325,6 +2326,36 @@ void odf_drawing_context::set_line_dash_preset(int style)
 			impl_->current_graphic_properties->draw_stroke_=line_style(line_style::Solid);		break;
 	}
 }
+void odf_drawing_context::set_text_properties(style_text_properties *text_properties)
+{
+	if (impl_->current_drawing_state_.elements_.empty()) return;
+
+	if (!impl_->current_text_properties)
+	{
+		draw_base* draw = dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[0].elm.get());
+		if (draw)
+		{
+			if(!draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_)
+			{
+				impl_->styles_context_->create_style(L"", style_family::Paragraph, true, false, -1);		
+			
+				office_element_ptr & style_shape_elm = impl_->styles_context_->last_state()->get_office_element();
+				style* style_ = dynamic_cast<style*>(style_shape_elm.get());
+				if (style_)
+				{
+					impl_->current_text_properties = style_->content_.get_style_text_properties();
+					draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_ = style_->style_name_;
+				}
+			}
+			else
+			{
+				//??? find by name
+			}
+		}
+	}
+	if (impl_->current_text_properties)
+		impl_->current_text_properties ->apply_from(text_properties);
+}
 void odf_drawing_context::set_paragraph_properties(style_paragraph_properties *paragraph_properties)
 {
 	if (impl_->current_drawing_state_.elements_.empty()) return;
@@ -2354,6 +2385,15 @@ void odf_drawing_context::set_paragraph_properties(style_paragraph_properties *p
 	}
 	if (impl_->current_paragraph_properties)
 		impl_->current_paragraph_properties ->apply_from(paragraph_properties);
+}
+void odf_drawing_context::set_graphic_properties(style_graphic_properties *graphic_properties)
+{
+	if (impl_->current_graphic_properties && graphic_properties)
+		impl_->current_graphic_properties->apply_from(graphic_properties->content_);
+}
+graphic_format_properties* odf_drawing_context::get_graphic_properties()
+{
+	return impl_->current_graphic_properties;
 }
 
 void odf_drawing_context::set_textarea_vertical_align(int align)
@@ -2618,6 +2658,8 @@ void odf_drawing_context::start_control(const std::wstring& id)
 	draw_control* control = dynamic_cast<draw_control*>(control_elm.get());
 	if (control == NULL)return;
 
+	if (impl_->root_element_ == NULL) impl_->root_element_ = control_elm;
+	
 	control->control_id_ = id;
 //--------------------	
 	impl_->styles_context_->create_style(L"", style_family::Graphic, true, false, -1);		
@@ -2797,7 +2839,7 @@ void odf_drawing_context::start_link_object(std::wstring href)
 
 	impl_->current_level_.push_back(element);
 
-	odf_element_state state={element, L"", style, level};
+	odf_element_state state(element, L"", style, level);
 	impl_->current_drawing_state_.elements_.push_back(state);
 
 	if (impl_->root_element_ == NULL)

@@ -30,11 +30,7 @@
  *
  */
 #pragma once
-#ifndef OOX_MERGECELLS_FILE_INCLUDE_H_
-#define OOX_MERGECELLS_FILE_INCLUDE_H_
-
 #include "../CommonInclude.h"
-
 
 namespace OOX
 {
@@ -46,7 +42,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CMergeCell)
-			CMergeCell()
+			CMergeCell(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CMergeCell()
@@ -82,23 +78,20 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ref"),      m_oRef )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ref"), m_oRef )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
-				nullable<std::wstring>						m_oRef;
+			nullable_string m_oRef;
 		};
 
 		class CMergeCells  : public WritingElementWithChilds<CMergeCell>
 		{
 		public:
 			WritingElement_AdditionConstructors(CMergeCells)
-			CMergeCells()
+			CMergeCells(OOX::Document *pMain = NULL) : WritingElementWithChilds<CMergeCell>(pMain)
 			{
 			}
 			virtual ~CMergeCells()
@@ -142,7 +135,12 @@ namespace OOX
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("mergeCell") == sName )
-						m_arrItems.push_back( new CMergeCell( oReader ));
+					{
+						CMergeCell *pMergeCell = new CMergeCell(m_pMainDocument);
+						m_arrItems.push_back(pMergeCell);
+						
+						pMergeCell->fromXML(oReader);						
+					}
 				}
 			}
 
@@ -154,17 +152,12 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"),      m_oCount )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"), m_oCount )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCount;
 		};
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_MERGECELLS_FILE_INCLUDE_H_

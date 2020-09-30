@@ -53,6 +53,9 @@ class odf_conversion_context;
 class odf_style_context;
 class odf_text_context;
 class style_paragraph_properties;
+class style_text_properties;
+class style_graphic_properties;
+class graphic_format_properties;
 
 class odf_drawing_context
 {
@@ -136,7 +139,12 @@ public:
 	
 	bool change_text_box_2_wordart	();
 	bool is_wordart					();
+	
+	graphic_format_properties*	get_graphic_properties();
+
+	void set_graphic_properties		(style_graphic_properties *graphic_properties);	
 	void set_paragraph_properties	(style_paragraph_properties *paragraph_properties);
+	void set_text_properties		(style_text_properties *text_properties);
 	
 	void start_text_box					();
 		void set_text_box_min_size		(bool val);
@@ -195,7 +203,7 @@ public:
 	void set_position_line	(_CP_OPT(double) & x_pt, _CP_OPT(double) & y_pt, _CP_OPT(double) & x1_pt, _CP_OPT(double) & y1_pt); 
 	
 	void get_size			( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt);
-	void set_size			( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt);
+	void set_size			( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt, bool reset_always = false);
 	
 	void set_name			(const std::wstring & name);
 	void set_description	(const std::wstring & descr);

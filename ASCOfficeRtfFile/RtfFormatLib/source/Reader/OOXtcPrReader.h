@@ -205,7 +205,7 @@ public:
 			}
 		}
 		if (m_ooxTableCellProps->m_oGridSpan.IsInit() && m_ooxTableCellProps->m_oGridSpan->m_oVal.IsInit())
-			oOutputProperty.m_nSpan = m_ooxTableCellProps->m_oGridSpan->m_oVal->GetValue();
+			oOutputProperty.m_nSpan = *m_ooxTableCellProps->m_oGridSpan->m_oVal;
 
 		return true;
 	}

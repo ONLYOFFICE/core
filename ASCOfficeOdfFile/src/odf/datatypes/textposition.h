@@ -29,17 +29,12 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _CPDOCCORE_ODF_TEXTPOSITION_H_
-#define _CPDOCCORE_ODF_TEXTPOSITION_H_
 
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #include <string>
 #include <iosfwd>
 #include "percent.h"
-
 
 namespace cpdoccore { namespace odf_types { 
 
@@ -115,5 +110,3 @@ std::wostream & operator << (std::wostream & _Wostream, const text_position & _V
 APPLY_PARSE_XML_ATTRIBUTES(odf_types::text_position);
 
 }
-
-#endif

@@ -196,6 +196,86 @@ void _docx_drawing::serialize_text(std::wostream & strm)
 }
 
 //--------------------------------------------------------------------
+void docx_serialize_media_child(std::wostream & strm, _docx_drawing & val)
+{
+    CP_XML_WRITER(strm)    
+    {
+		CP_XML_NODE(L"pic:pic")
+		{
+			CP_XML_ATTR(L"xmlns:pic",L"http://schemas.openxmlformats.org/drawingml/2006/picture");
+			{
+				CP_XML_NODE(L"pic:nvPicPr")
+				{
+					CP_XML_NODE(L"pic:cNvPr")
+					{
+						CP_XML_ATTR(L"id", val.id + 1);
+						CP_XML_ATTR(L"name", val.name);
+					
+						//oox_serialize_action(CP_XML_STREAM(), val.action);
+					}
+					CP_XML_NODE(L"pic:cNvPicPr")
+					{
+						CP_XML_NODE(L"a:picLocks") CP_XML_ATTR(L"noChangeAspect",1);
+					}
+					CP_XML_NODE(L"pic:nvPr")
+					{
+						std::wstring strNode; 
+						
+						if		(val.type == typeVideo)	strNode = L"a:videoFile"; 
+						else if (val.type == typeAudio) strNode = L"a:audioFile"; 
+
+						if (false == strNode.empty())
+						{
+							CP_XML_NODE(strNode)
+							{
+								CP_XML_ATTR(L"r:link",	val.objectId);
+							}
+						}
+						if (false == val.extId.empty())
+						{
+							CP_XML_NODE(L"a:extLst")
+							{
+								CP_XML_NODE(L"a:ext")
+								{
+									CP_XML_ATTR(L"uri",	L"{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}");
+									CP_XML_NODE(L"wp15:media")
+									{	
+										CP_XML_ATTR(L"xmlns:wp15", L"http://schemas.microsoft.com/office/word/2012/wordprocessingDrawing");
+										if (val.extExternal)
+										{
+											CP_XML_ATTR(L"r:link",	val.extId);
+										}
+										else
+										{
+											CP_XML_ATTR(L"r:embed",	val.extId);
+										}
+									}
+								}
+							}
+						}
+					}
+				}    
+			}
+			val.fill.bitmap->name_space = L"pic";
+			oox_serialize_fill(CP_XML_STREAM(), val.fill);
+
+			CP_XML_NODE(L"pic:spPr")
+			{
+				val.serialize_xfrm(CP_XML_STREAM());
+
+				CP_XML_NODE(L"a:prstGeom")
+				{
+					CP_XML_ATTR(L"prst", L"rect");
+					CP_XML_NODE(L"a:avLst");
+				}
+
+				oox_serialize_ln(CP_XML_STREAM(), val.additional);
+				oox_serialize_effects(CP_XML_STREAM(), val.additional);
+			}
+		}
+	}
+}
+//--------------------------------------------------------------------
 void docx_serialize_image_child(std::wostream & strm, _docx_drawing & val)
 {
     CP_XML_WRITER(strm)    
@@ -211,6 +291,8 @@ void docx_serialize_image_child(std::wostream & strm, _docx_drawing & val)
 						//CP_XML_ATTR(L"desc text",L"");
 						CP_XML_ATTR(L"id", val.id + 1);
 						CP_XML_ATTR(L"name", val.name);
+					
+						//oox_serialize_action(CP_XML_STREAM(), val.action);
 					}
 					CP_XML_NODE(L"pic:cNvPicPr")
 					{
@@ -346,6 +428,11 @@ void docx_serialize_common(std::wostream & strm, _docx_drawing & val)
 					CP_XML_ATTR(L"uri", L"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup");
 					docx_serialize_group_child(CP_XML_STREAM(), val);
 				}				
+				else if (val.type == typeAudio || val.type == typeVideo || val.type == typeMedia)
+				{
+					CP_XML_ATTR(L"uri",L"http://schemas.openxmlformats.org/drawingml/2006/picture");
+					docx_serialize_media_child(CP_XML_STREAM(), val);
+				}
 				else if (val.type == typeImage)
 				{
 					CP_XML_ATTR(L"uri",L"http://schemas.openxmlformats.org/drawingml/2006/picture");

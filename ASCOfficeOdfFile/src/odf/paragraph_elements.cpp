@@ -347,6 +347,11 @@ std::wostream & bookmark::text_to_stream(std::wostream & _Wostream, bool bXmlEnc
 {
     return _Wostream;
 }
+void bookmark::docx_convert(oox::docx_conversion_context & Context)
+{
+	Context.start_bookmark(text_name_);
+	Context.end_bookmark(text_name_);
+}
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * bookmark_start::ns = L"text";
 const wchar_t * bookmark_start::name = L"bookmark-start";
@@ -485,10 +490,10 @@ void span::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 	CP_APPLY_ATTR(L"text:style-name", text_style_name_, std::wstring(L""));
     
-    const std::wstring classNames = Attributes->get_val< std::wstring >(L"text:class-names").get_value_or(L"");
+    std::wstring classNames = Attributes->get_val< std::wstring >(L"text:class-names").get_value_or(L"");
     std::vector< std::wstring > classNamesArray;
 
-    if (classNames.size())
+    if (false == classNames.empty())
     {
         boost::algorithm::split(classNamesArray, classNames, boost::algorithm::is_any_of(L" "));
 

@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_OUTERSHDW_INCLUDE_H_
-#define PPTX_LOGIC_OUTERSHDW_INCLUDE_H_
 
 #include "./../../WrapperWritingElement.h"
 #include "./../UniColor.h"
@@ -125,8 +123,8 @@ namespace PPTX
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("blurRad"), blurRad);
-				oAttr.Write(_T("dir"), dist);
-				oAttr.Write(_T("dist"), dir);
+				oAttr.Write(_T("dir"), dir);
+				oAttr.Write(_T("dist"), dist);
 				oAttr.Write(_T("sx"), sx);
 				oAttr.Write(_T("sy"), sy);
 				oAttr.Write(_T("kx"), kx);
@@ -256,5 +254,3 @@ namespace PPTX
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_OUTERSHDW_INCLUDE_H_

@@ -107,6 +107,8 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 
 	_CP_OPT(int) anchor_type_x, anchor_type_y;
 
+	bool bPosition = false;
+
 	for (size_t i = 0; i < vml_style->m_arrProperties.size(); i++)
 	{
 		if (vml_style->m_arrProperties[i] == NULL) continue;
@@ -238,6 +240,7 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 				case SimpleTypes::Vml::csspositionAbsolute:	break;
 				case SimpleTypes::Vml::csspositionRelative:	break;
 				}
+				bPosition = true;
 			}break;
 		case SimpleTypes::Vml::cssptRotation:
 			{
@@ -313,6 +316,9 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 			odf_context()->drawing_context()->set_anchor(*anchor_type_x);
 		else if (x && y)
 			odf_context()->drawing_context()->set_anchor(2);
+		else if (false == bPosition)
+			odf_context()->drawing_context()->set_anchor(4);
+
 
 		//if (x && y && !anchor_set) 
 		//	odf_context()->drawing_context()->set_anchor(2);

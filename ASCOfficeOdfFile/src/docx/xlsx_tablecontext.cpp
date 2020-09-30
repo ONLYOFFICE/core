@@ -137,7 +137,7 @@ void xlsx_table_context::end_database_range()
 
 void xlsx_table_context::set_database_range_value(int index, const std::wstring& value)
 {
-	if (index < 0 || index > xlsx_data_ranges_.size()) return;
+	if (index < 0 || index > (int)xlsx_data_ranges_.size()) return;
 
 	size_t col = state()->current_column();
 	size_t row = state()->current_row();

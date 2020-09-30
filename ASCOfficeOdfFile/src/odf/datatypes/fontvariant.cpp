@@ -63,7 +63,6 @@ font_variant font_variant::parse(const std::wstring & Str)
         return font_variant( SmallCaps );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return font_variant( Normal );
     }
 }

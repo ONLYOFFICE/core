@@ -50,6 +50,7 @@
 
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/DocxFlat.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Presentation.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/Logic/Vml.h"
@@ -91,22 +92,24 @@ namespace Oox2Odf
 		if (impl_ )delete impl_ ;
 	}
 
-    void Converter::convert()
+    bool Converter::convert()
     {
-		if (!impl_)return;
-		impl_->convertDocument();
+		if (!impl_)return false;
+		
+		return impl_->convertDocument();
     }
-    void Converter::write(const std::wstring & out_path, const std::wstring & temp_path, const std::wstring & password, const std::wstring & documentID) const
+    bool Converter::write(const std::wstring & out_path, const std::wstring & temp_path, const std::wstring & password, const std::wstring & documentID) const
     {
-		if (!impl_)return;
+		if (!impl_)return false;
+		
 		return impl_->write(out_path, temp_path, password, documentID);
     }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void OoxConverter::write(const std::wstring & out_path, const std::wstring & temp_path, const std::wstring & password, const std::wstring & documentID)
+bool OoxConverter::write(const std::wstring & out_path, const std::wstring & temp_path, const std::wstring & password, const std::wstring & documentID)
 {
-	if (!output_document)return;
+	if (!output_document)return false;
 
 	if (false == documentID.empty())
 	{
@@ -129,6 +132,8 @@ void OoxConverter::write(const std::wstring & out_path, const std::wstring & tem
 		
 		NSDirectory::DeleteDirectory(temp_folder);
 	}
+
+	return true;
 }
 std::wstring EncodeBase64(const std::string & value)
 {

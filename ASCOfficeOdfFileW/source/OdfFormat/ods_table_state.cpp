@@ -46,6 +46,7 @@
 #include "calcext_elements.h"
 #include "table_data_pilot_tables.h"
 #include "styles.h"
+#include "paragraph_elements.h"
 
 #include "style_table_properties.h"
 #include "style_text_properties.h"
@@ -1241,7 +1242,7 @@ void ods_table_state::set_cell_text(odf_text_context* text_context, bool cash_va
 
 	//if (table_cell_properties && cash_value == false)
 	//{
-	//	table_cell_properties->style_table_cell_properties_attlist_.style_text_align_source_ = odf_writer::text_align_source(odf_writer::text_align_source::Fix);
+	//	table_cell_properties->content_.style_text_align_source_ = odf_writer::text_align_source(odf_writer::text_align_source::Fix);
 	//}	
 }
 void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
@@ -1278,6 +1279,8 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 		case office_value_type::Currency:
 		case office_value_type::Percentage:
 		case office_value_type::Float:
+		case office_value_type::Scientific:
+		case office_value_type::Fraction:
 		default:
 			cell->attlist_.common_value_and_type_attlist_->office_value_ = value;
 		}
@@ -1288,22 +1291,31 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 	}
 	
 	//кэшированные значения
-	if (value.length() >0)
+	if (false == value.empty())
 	{
+		if (is_cell_hyperlink())
+		{
+			need_cash = true;
+			cell->attlist_.common_value_and_type_attlist_->office_string_value_ = boost::none;
+		}
+
 		bool need_test_cach = false;
 
 		if (cell->attlist_.common_value_and_type_attlist_->office_value_type_)
 		{
-			if (cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Float) need_test_cach = true;
- 			if (cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Currency) need_test_cach = true;
-			if (cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Percentage) need_test_cach = true;
+			if (cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Float ||
+ 				cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Currency ||  
+ 				cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Scientific ||  
+ 				cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Fraction ||  
+				cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Percentage)
+					need_test_cach = true;
 		}
 		try
 		{
 			if (need_test_cach)
 			{
 				double test = boost::lexical_cast<double>(value);			
-				need_cash =true;
+				need_cash = true;
 			}
 		}
 		catch(...)
@@ -1314,19 +1326,71 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 				cell->attlist_.common_value_and_type_attlist_->office_value_type_ = office_value_type(office_value_type::String);
 			}
 		}
+
 		if (need_cash)
 		{
-			context_->start_text_context();
-				context_->text_context()->start_paragraph();
-					context_->text_context()->add_text_content(value);
-				context_->text_context()->end_paragraph();
+			ods_conversion_context* ods_context = dynamic_cast<ods_conversion_context*>(context_);
 
-				set_cell_text(context_->text_context(), true);
-			context_->end_text_context();
+			if (ods_context)
+			{
+				ods_context->start_cell_text();
+					ods_context->text_context()->add_text_content(value);
+				ods_context->end_cell_text();
+					
+				set_cell_text( ods_context->text_context(), true);
+			}
+			else
+			{
+				context_->start_text_context();
+				
+				start_cell_text();
+					context_->text_context()->add_text_content(value);
+				end_cell_text();
+					
+				set_cell_text( context_->text_context(), true);
+				
+				context_->end_text_context();
+			}
 		}
 	}
 }
+void ods_table_state::start_cell_text()
+{
+////////////
+	office_element_ptr paragr_elm;
+	create_element(L"text", L"p", paragr_elm, context_);
+	
+	context_->text_context()->start_paragraph(paragr_elm);
 
+	if (is_cell_hyperlink())
+	{
+		ods_hyperlink_state & state = current_hyperlink();
+		
+		office_element_ptr text_a_elm;
+		create_element(L"text", L"a", text_a_elm, context_);
+
+		text_a* text_a_ = dynamic_cast<text_a*>(text_a_elm.get());
+		if (text_a_ == NULL)return;
+
+		text_a_->common_xlink_attlist_.type_ = xlink_type(xlink_type::Simple);
+		text_a_->common_xlink_attlist_.href_ = state.link;
+		
+		context_->text_context()->start_element(text_a_elm); // может быть стоит сделать собственый???
+		// libra дурит если в табличках будет вложенный span в гиперлинк ... оО (хотя это разрешено в спецификации!!!)
+
+		context_->text_context()->single_paragraph_ = true;
+	}
+}
+
+void ods_table_state::end_cell_text()
+{
+	if (context_->text_context())
+	{
+		if (is_cell_hyperlink())	context_->text_context()->end_element();
+		
+		context_->text_context()->end_paragraph();
+	}
+}
 void ods_table_state::end_cell()
 {
 	if ( cells_size_  < 1)return;

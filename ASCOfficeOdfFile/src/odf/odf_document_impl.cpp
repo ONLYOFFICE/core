@@ -759,6 +759,7 @@ void odf_document::Impl::parse_styles(office_element *element)
 						styleInst->style_parent_style_name_.get_value_or(L""),
 						styleInst->style_next_style_name_.get_value_or(L""),
 						styleInst->style_data_style_name_.get_value_or(L""),
+						styleInst->style_percentage_data_style_name_.get_value_or(L""),
 						styleInst->style_class_.get_value_or(L""),
 						styleInst->style_list_style_name_,
 						styleInst->style_list_level_,
@@ -840,6 +841,7 @@ void odf_document::Impl::parse_styles(office_element *element)
                     true,
                     L"",
                     L"",
+					L"",
                     L"",
 					L"");                                            
             }
@@ -879,6 +881,7 @@ void odf_document::Impl::parse_styles(office_element *element)
                     styleInst->style_parent_style_name_.get_value_or(L""),
                     styleInst->style_next_style_name_.get_value_or(L""),
                     styleInst->style_data_style_name_.get_value_or(L""),
+					styleInst->style_percentage_data_style_name_.get_value_or(L""),
 					styleInst->style_class_.get_value_or(L""),
 					styleInst->style_list_style_name_,
 					styleInst->style_list_level_,
@@ -1054,6 +1057,7 @@ void odf_document::Impl::parse_styles(office_element *element)
                     styleInst->style_parent_style_name_.get_value_or(L""),
                     styleInst->style_next_style_name_.get_value_or(L""),
                     styleInst->style_data_style_name_.get_value_or(L""),
+					styleInst->style_percentage_data_style_name_.get_value_or(L""),
 					styleInst->style_class_.get_value_or(L""),
 					styleInst->style_list_style_name_,
 					styleInst->style_list_level_,

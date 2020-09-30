@@ -125,11 +125,11 @@ std::wstring RtfAbstractReader::ExecuteTextInternalCodePage( std::string& sCharS
 
         sResult = RtfUtility::convert_string_icu(sCharString.begin(), sCharString.end(), nCodepage);
 
-		if (!sCharString.empty() && sResult.empty())
-		{
-			//code page not support in icu !!!
-			sResult = RtfUtility::convert_string(sCharString.begin(), sCharString.end(), nCodepage);
-		}
+		//if (!sCharString.empty() && sResult.empty())
+		//{
+		//	//code page not support in icu !!!
+		//	sResult = RtfUtility::convert_string(sCharString.begin(), sCharString.end(), nCodepage); .. to UnicodeConverter
+		//}
     }
     return sResult;
 }

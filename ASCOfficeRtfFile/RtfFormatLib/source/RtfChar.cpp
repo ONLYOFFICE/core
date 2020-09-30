@@ -212,16 +212,15 @@ std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, int 
 		return sResult;
 	}
 
-	ansiStr = RtfUtility::convert_string(unicodeStr.begin(), unicodeStr.end(), nCodePage);
+	//ansiStr = RtfUtility::convert_string(unicodeStr.begin(), unicodeStr.end(), nCodePage);
 
-    // std::wstring sTextBack  = RtfUtility::convert_string(ansiStr.begin(), ansiStr.end(), nCodePage);
     std::wstring sTextBack  = RtfUtility::convert_string_icu(ansiStr.begin(), ansiStr.end(), nCodePage);
 
-	if (!ansiStr.empty() && sTextBack.empty())
-	{
-		//code page not support in icu !!!
-        sTextBack = RtfUtility::convert_string(ansiStr.begin(), ansiStr.end(), nCodePage);
-	}
+	//if (!ansiStr.empty() && sTextBack.empty())
+	//{
+	//	//code page not support in icu !!!
+	//	sTextBack = RtfUtility::convert_string(ansiStr.begin(), ansiStr.end(), nCodePage); .. to UnicodeConverter
+	//}
 
     //обратное преобразование чтобы понять какие символы свонвертировались неправильно
     while (sTextBack.length() < sText.length())
@@ -237,7 +236,7 @@ std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, int 
 
             //делаем Ansi строку sUniChar
             // -> sTempAnsiChars
-            std::string sTempAnsiChars = RtfUtility::convert_string(unicodeStr.begin()+i, unicodeStr.begin() + i + 1, nCodePage);
+            std::string sTempAnsiChars = RtfUtility::convert_string_icu(unicodeStr.begin() + i, unicodeStr.begin() + i + 1, nCodePage); 
 
             for( size_t k = 0; k < sTempAnsiChars.length(); k++ )
             {

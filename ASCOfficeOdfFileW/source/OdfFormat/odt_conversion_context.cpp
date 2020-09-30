@@ -75,7 +75,7 @@ double calculate_size_font_symbols(std::wstring str_test, std::wstring font_name
 }
 odt_conversion_context::odt_conversion_context(package::odf_document * outputDocument) 
 	:	odf_conversion_context (TextDocument, outputDocument),
-		comment_context_(this), notes_context_(this), main_text_context_(NULL), table_context_(this)	
+		comment_context_(this), notes_context_(this), main_text_context_(NULL), table_context_(this), controls_context_(this)
 {
 
 	is_hyperlink_				= false;
@@ -133,7 +133,15 @@ void odt_conversion_context::end_document()
 		}
 		root_document_->add_child_element(seq_decls);
 	}
+	if (controls_context()->is_exist_content())
+	{
+		office_element_ptr forms_root_elm;
+		create_element(L"office", L"forms", forms_root_elm, this);
 
+		controls_context()->finalize(forms_root_elm);
+		
+		root_document_->add_child_element(forms_root_elm);
+	}
 	//add sections to root
 	for (size_t i = 0; i < sections_.size(); i++)
 	{
@@ -150,6 +158,10 @@ void odt_conversion_context::end_document()
 	
 	odf_conversion_context::end_document();
 } 
+odf_controls_context* odt_conversion_context::controls_context()
+{
+	return  &controls_context_;
+}
 
 odf_drawing_context* odt_conversion_context::drawing_context()	
 {
@@ -1265,7 +1277,7 @@ bool odt_conversion_context::start_comment(int oox_comm_id)
 		if (text_context()->current_level_.size() > 0)
 			text_context()->current_level_.back().elm->add_child_element(comm_elm);
 
-		odf_element_state state={comm_elm, L"", office_element_ptr(), text_context()->current_level_.size()};
+		odf_element_state state(comm_elm, L"", office_element_ptr(), text_context()->current_level_.size());
 		text_context()->current_level_.push_back(state);
 
 		return false; //типо новый
@@ -1318,7 +1330,7 @@ void odt_conversion_context::start_note(int oox_ref_id, int type)
 	if (text_context()->current_level_.size() > 0)
 		text_context()->current_level_.back().elm->add_child_element(note_elm);
 
-	odf_element_state state = {note_elm, L"", office_element_ptr(), text_context()->current_level_.size()};
+	odf_element_state state(note_elm, L"", office_element_ptr(), text_context()->current_level_.size());
 	text_context()->current_level_.push_back(state);
 }
 void odt_conversion_context::start_note_content()
@@ -1327,7 +1339,7 @@ void odt_conversion_context::start_note_content()
 
     office_element_ptr note_content_element = notes_context_.get_note_content();
 
-	odf_element_state state = {note_content_element, L"", office_element_ptr(), text_context()->current_level_.size()};
+	odf_element_state state(note_content_element, L"", office_element_ptr(), text_context()->current_level_.size());
 	text_context()->current_level_.push_back(state);
 
 	start_text_context();
@@ -1571,7 +1583,7 @@ void odt_conversion_context::start_table_columns()
 void odt_conversion_context::add_table_column(double width)
 {
 	office_element_ptr elm;
-	create_element(L"table", L"table-column",elm,this);
+	create_element(L"table", L"table-column", elm, this);
 
 	styles_context()->create_style(L"", style_family::TableColumn, true, false, -1);
 

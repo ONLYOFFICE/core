@@ -646,23 +646,30 @@ void docx_conversion_context::add_new_run(std::wstring parentStyleId)
 
 std::wstring docx_conversion_context::add_hyperlink(const std::wstring & href, bool draw)
 {
-	hyperlinks::_type_place type = hyperlinks::document_place;
-	
-		 if (current_process_comment_ == true)												type = hyperlinks::comment_place;
-	else if	(current_process_note_ == footNote	|| current_process_note_ == footNoteRefSet)	type = hyperlinks::footnote_place;
-	else if	(current_process_note_ == endNote	|| current_process_note_ == endNoteRefSet )	type = hyperlinks::endnote_place;
-	
+	oox::_rels_type_place type_place = get_type_place();
+		
 	std::wstring href_correct = xml::utils::replace_text_to_xml(href);
     XmlUtils::replace_all( href_correct, L" .", L".");//1 (130).odt
 	
-	return hyperlinks_.add(href_correct, type, draw);
+	return hyperlinks_.add(href_correct, type_place, draw);
 }
 hyperlinks::_ref  docx_conversion_context::last_hyperlink()
 {
 	return hyperlinks_.last();
 }
+_rels_type_place docx_conversion_context::get_type_place()
+{
+	if (current_process_comment_)					return oox::comment_place;
+	if (current_process_note_ == footNote || 
+		current_process_note_ == footNoteRefSet)	return oox::footnote_place;
+	if (current_process_note_ == endNote ||
+		current_process_note_ == endNoteRefSet )	return oox::endnote_place;
+	
+	if (process_headers_footers_)					return oox::header_footer_place;
 
-void docx_conversion_context::dump_hyperlinks(rels & Rels, hyperlinks::_type_place type)
+	return oox::document_place;
+}
+void docx_conversion_context::dump_hyperlinks(rels & Rels, _rels_type_place type)
 {
     hyperlinks_.dump_rels(Rels, type);
 }
@@ -728,9 +735,12 @@ void docx_conversion_context::end_document()
 
 ////////////////////////////////////////////////////////////////////////////
 	dump_bibliography();
-	dump_hyperlinks (notes_context_.footnotesRels(), hyperlinks::footnote_place);
-	dump_hyperlinks (notes_context_.endnotesRels(), hyperlinks::endnote_place);
-   
+	dump_hyperlinks (notes_context_.footnotesRels(), oox::footnote_place);
+	dump_hyperlinks (notes_context_.endnotesRels(), oox::endnote_place);
+
+	get_mediaitems()->dump_rels(notes_context_.footnotesRels(), oox::footnote_place);
+ 	get_mediaitems()->dump_rels(notes_context_.endnotesRels(), oox::endnote_place);
+  
 	output_document_->get_word_files().set_notes(notes_context_);
 ////////////////////////	
 	for (size_t i = 0; i < charts_.size(); i++)
@@ -898,21 +908,25 @@ namespace
         }
     }
 
-    std::wstring StyleDisplayName(const std::wstring & Name, const std::wstring & DisplayName, odf_types::style_family::type Type)
+    std::wstring StyleDisplayName(const std::wstring & Name, const std::wstring & DisplayName, odf_types::style_family::type Type, bool &bDisplayed)
     {
-        if (!DisplayName.empty())
+		bDisplayed = true;
+        if (false == DisplayName.empty())
             return DisplayName;
 
-		if (!Name.empty())
+		if (false == Name.empty())
+		{
+			bDisplayed = false;
             return Name;
+		}
         else
         {
             switch(Type)
             {
             case odf_types::style_family::Paragraph:
                 return L"Normal";
-                break;
             default:
+				bDisplayed = false;
                 return std::wstring(L"DStyle_") + boost::lexical_cast<std::wstring>(odf_types::style_family( Type) );
             }
         }
@@ -1113,11 +1127,9 @@ void docx_conversion_context::process_styles()
 
 		for (size_t i = 0; i < arStyles.size(); i++)
 		{
-            if (!arStyles[i]->is_automatic() && 
-					(
-					arStyles[i]->type() == odf_types::style_family::Paragraph ||
-					arStyles[i]->type() == odf_types::style_family::Text
-					))
+            if (false == arStyles[i]->is_automatic() && 
+					(arStyles[i]->type() == odf_types::style_family::Paragraph ||
+					 arStyles[i]->type() == odf_types::style_family::Text))
             {
                 const std::wstring id = styles_map_.get(arStyles[i]->name(), arStyles[i]->type());
                 _Wostream << L"<w:style w:styleId=\"" << id << L"\" w:type=\"" << StyleTypeOdf2Docx(arStyles[i]->type()) << L"\""; 
@@ -1127,7 +1139,8 @@ void docx_conversion_context::process_styles()
 				}
 				_Wostream << L">";
 
-                const std::wstring displayName = StyleDisplayName(arStyles[i]->name(), arStyles[i]->display_name(), arStyles[i]->type());
+				bool bDisplayed = (arStyles[i]->type() == odf_types::style_family::Paragraph);
+                const std::wstring displayName = StyleDisplayName(arStyles[i]->name(), arStyles[i]->display_name(), arStyles[i]->type(), bDisplayed);
 
 				_Wostream << L"<w:name w:val=\"" << XmlUtils::EncodeXmlString(displayName) << L"\"/>";
 
@@ -1136,12 +1149,13 @@ void docx_conversion_context::process_styles()
                     const std::wstring basedOnId = styles_map_.get(baseOn->name(), baseOn->type());
                     _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\"/>";
                 }
-                else if (!arStyles[i]->is_default() && styles_map_.check(L"", arStyles[i]->type()))
+                else if (false == arStyles[i]->is_default() && styles_map_.check(L"", arStyles[i]->type()))
                 {
+					bDisplayed = false;
                     const std::wstring basedOnId = styles_map_.get(L"", arStyles[i]->type());
                     _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\"/>";
                 }
-				else
+				if (bDisplayed)
 				{
 					_Wostream << L"<w:qFormat/>";
 				}
@@ -1187,7 +1201,7 @@ void docx_conversion_context::process_section(std::wostream & strm, odf_reader::
 	int count_columns = 1;
 	bool sep_columns = false;
 
-	oox::section_context::_section & section = get_section_context().get();
+	oox::section_context::_section & section = get_section_context().get_last();
 
 	if (!columns)
 	{
@@ -1285,7 +1299,7 @@ void docx_conversion_context::process_section(std::wostream & strm, odf_reader::
 }
 bool docx_conversion_context::process_page_properties(std::wostream & strm)
 {
-    if (is_next_dump_page_properties() || get_section_context().get().is_dump_)
+    if (is_next_dump_page_properties() || get_section_context().get_last().is_dump_)
     {
         std::wstring pageProperties = get_page_properties();
 		odf_reader::page_layout_instance * page_layout_instance_ = root()->odf_context().pageLayoutContainer().page_layout_by_name(pageProperties);
@@ -1463,14 +1477,14 @@ bool docx_conversion_context::get_page_break_before()
 
 void docx_conversion_context::add_page_properties(const std::wstring & StyleName)
 {
-	section_context::_section & s = section_context_.get();
+	section_context::_section & s = section_context_.get_last();
 	
 	s.page_properties_.push_back( StyleName);
 }
 
 std::wstring docx_conversion_context::get_page_properties()
 {
-	section_context::_section & s = section_context_.get();
+	section_context::_section & s = section_context_.get_last();
 
 	if (s.page_properties_.size() > 1)			return s.page_properties_[1];
 	else if (s.page_properties_.size() == 1)	return s.page_properties_[0];
@@ -1478,7 +1492,7 @@ std::wstring docx_conversion_context::get_page_properties()
 }
 void docx_conversion_context::remove_page_properties()
 {
-	section_context::_section & s = section_context_.get();
+	section_context::_section & s = section_context_.get_last();
 
 	if (s.page_properties_.size() > 1)
 	{
@@ -1974,7 +1988,34 @@ void section_context::add_section(const std::wstring & SectionName, const std::w
     _section newSec(SectionName, Style, PageProperties );
     sections_.push_back(newSec);
 }
+section_context::_section & section_context::get_first()		
+{ 
+	if (sections_.empty())
+		return main_section_;
+	else
+		return sections_[0]; 
+}
+section_context::_section & section_context::get_last()		
+{ 
+	if (sections_.empty())
+		return main_section_;
+	else
+		return sections_.back();
+}
+void section_context::remove_section()	
+{
+	if (sections_.empty()) return;
 
+	sections_.pop_back();
+	//sections_.erase(sections_.begin(), sections_.begin() + 1);
+	if (sections_.empty())
+	{
+		//после оканчания разметки секциями и начале (возобновлении) основного раздела нужен разрыв (хотя настройки страницы могут и не поменяться)
+		//щас разрыв на текущей странице
+		//todooo проверить - может типо если следующий будет заголовок - разорвать
+		main_section_.is_dump_ = false;
+	}
+}
 namespace 
 {
     // обработка Header/Footer
@@ -1993,8 +2034,8 @@ namespace
 		//слить если есть mediaitems, добавить релсы и обнулить их для основного документа.
 		rels internal_rels;
 
-		Context.get_mediaitems()->dump_rels(internal_rels);
-		Context.dump_hyperlinks(internal_rels, hyperlinks::document_place);
+		Context.get_mediaitems()->dump_rels(internal_rels, oox::header_footer_place);
+		Context.dump_hyperlinks(internal_rels, oox::header_footer_place);
 
 		Context.get_headers_footers().add(styleName, dbgStr, type, internal_rels);
 	}

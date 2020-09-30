@@ -65,6 +65,7 @@ style_instance::style_instance(
 		const std::wstring		& ParentStyleName,
 		const std::wstring		& NextStyleName,
 		const std::wstring		& DataStyleName,
+		const std::wstring		& PercentageDataStyleName,
 		const std::wstring		& StyleClass,
 		_CP_OPT(std::wstring)	ListStyleName,
 		_CP_OPT(int)			ListLevel,
@@ -81,6 +82,7 @@ style_instance::style_instance(
 	style_class_	(StyleClass),
     next_			(Container->style_by_name(NextStyleName, style_type_, false)),
     data_style_name_(DataStyleName),
+	percentage_data_style_name_(PercentageDataStyleName),
 	list_style_name_(ListStyleName),
 	list_level_		(ListLevel),
 	outline_level_	(OutlineLevel)
@@ -110,6 +112,7 @@ void styles_container::add_style(	const std::wstring & Name,
 									const std::wstring		& ParentStyleName_,
 									const std::wstring		& NextStyleName,
 									const std::wstring		& DataStyleName,
+									const std::wstring		& PercentageDataStyleName,
 									const std::wstring		& StyleClass,
 									_CP_OPT(std::wstring)	ListStyleName,
 									_CP_OPT(int)			ListLevel,
@@ -122,7 +125,7 @@ void styles_container::add_style(	const std::wstring & Name,
 		ParentStyleName = L"";//иначе в коде возможно зацикливание.
 	}
     style_instance_ptr newStyle = style_instance_ptr( new style_instance(this, Name, DisplayName, Type, Content, IsAutomatic, IsDefault, 
-							ParentStyleName, NextStyleName, DataStyleName, StyleClass, ListStyleName, ListLevel, OutlineLevel));
+							ParentStyleName, NextStyleName, DataStyleName, PercentageDataStyleName, StyleClass, ListStyleName, ListLevel, OutlineLevel));
 
     instances_.push_back(newStyle);
     int pos = static_cast<int>(instances_.size() - 1);
@@ -207,7 +210,10 @@ bool style_instance::is_default() const
 {
     return is_default_;
 }
-
+const std::wstring & style_instance::percentage_data_style_name() const
+{
+    return percentage_data_style_name_;
+}
 const std::wstring & style_instance::data_style_name() const
 {
     return data_style_name_;

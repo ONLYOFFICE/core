@@ -378,7 +378,20 @@ namespace NSCommon
 				m_pPointer = new int(*oSrc);
 			return *this;
 		}
+		const bool operator==(const nullable_int& oOther) const
+		{
+            if ( !this->m_pPointer )
+				return false;
 
+            return (*this->m_pPointer) == *oOther;
+		}
+		const bool operator==(const int& oOther) const
+		{
+            if ( !this->m_pPointer )
+				return false;
+
+            return (*this->m_pPointer) == oOther;
+		}
         int get_value_or(const int& value) const
 		{
 			if (NULL == m_pPointer)
@@ -395,6 +408,77 @@ namespace NSCommon
         int* operator->() const { return  m_pPointer; }
 
         const int& get()const { return  *m_pPointer; }
+	};
+	class nullable_uint : public nullable_base<unsigned int>
+	{
+	public:
+		nullable_uint() : nullable_base<unsigned int>()
+		{
+		}
+
+		void normalize(const unsigned int& min, const unsigned int& max)
+		{
+			if (IsInit())
+			{
+				if (*m_pPointer < min)
+					*m_pPointer = min;
+				else if (*m_pPointer > max)
+					*m_pPointer = max;
+			}
+		}
+		void normalize_positive()
+		{
+			if (IsInit())
+			{
+				if ((int)(*m_pPointer) < 0)
+					*m_pPointer = 0;
+			}
+		}
+		nullable_uint& operator=(const wchar_t* cwsValue)
+		{
+			RELEASEOBJECT(m_pPointer);
+
+			if ( NULL != cwsValue )
+				m_pPointer = new unsigned int(XmlUtils::GetInteger(cwsValue));
+
+			return *this;
+		}
+		void operator=(const std::wstring& value)
+		{
+			RELEASEOBJECT(this->m_pPointer);
+			this->m_pPointer = new unsigned int(XmlUtils::GetInteger(value));
+		}
+		void operator=(const unsigned int& value)
+		{
+			RELEASEOBJECT(this->m_pPointer);
+			this->m_pPointer = new unsigned int(value);
+		}
+
+		nullable_uint& operator=(const nullable_uint& oSrc)
+		{
+			RELEASEOBJECT(m_pPointer);
+
+			if (NULL != oSrc.m_pPointer )
+				m_pPointer = new unsigned int(*oSrc);
+			return *this;
+		}
+
+		unsigned int get_value_or(const unsigned int& value) const
+		{
+			if (NULL == m_pPointer)
+			{
+				unsigned int ret = value;
+				return ret;
+			}
+			return *m_pPointer;
+		}
+		unsigned int& operator*()  { return *m_pPointer; }
+		unsigned int* operator->() { return  m_pPointer; }
+
+		unsigned int& operator*() const  { return *m_pPointer; }
+		unsigned int* operator->() const { return  m_pPointer; }
+
+		const unsigned int& get()const { return  *m_pPointer; }
 	};
     class nullable_int64 : public nullable_base<_INT64>
 	{
@@ -685,7 +769,20 @@ namespace NSCommon
                 m_pPointer = new std::wstring(*oSrc);
 			return *this;
 		}
+		const bool operator==(const nullable_string& oOther) const
+		{
+            if ( !this->m_pPointer )
+				return false;
 
+            return (*this->m_pPointer) == *oOther;
+		}
+		const bool operator==(const std::wstring& oOther) const
+		{
+            if ( !this->m_pPointer )
+				return false;
+
+            return (*this->m_pPointer) == oOther;
+		}
         std::wstring get_value_or(const std::wstring& value) const
 		{
 			if (NULL == m_pPointer)

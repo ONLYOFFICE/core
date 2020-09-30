@@ -102,7 +102,9 @@ namespace BinXlsxRW
 		TableStyles = 12,
 		CellStyleXfs = 14,
 		CellStyles = 15,
-		CellStyle = 16
+		CellStyle = 16,
+		SlicerStyles = 17,
+		ExtDxfs = 18
 	};}
 	namespace c_oSerBorderTypes{enum c_oSerBorderTypes
 	{
@@ -213,7 +215,10 @@ namespace BinXlsxRW
 		Comments = 14,
 		CalcPr = 15,
 		Connections = 16,
-		AppName = 17
+		AppName = 17,
+		SlicerCaches = 18,
+		SlicerCachesExt = 19,
+		SlicerCache = 20
 	};}	
 	namespace c_oSerDbPrTypes{enum c_oSerDbPrTypes
 	{
@@ -268,6 +273,10 @@ namespace BinXlsxRW
 		HtmlFormat = 11,
 		Tables = 12
 	};}
+	namespace c_oSerRangePrTypes{enum c_oSerRangePrTypes
+	{
+		SourceName = 0
+	};}
 	namespace c_oSerConnectionsTypes{enum c_oSerConnectionsTypes
 	{
 		Connection = 0,
@@ -294,7 +303,9 @@ namespace BinXlsxRW
 		DbPr = 21,
 		OlapPr = 22,
 		TextPr = 23,
-		WebPr = 24
+		WebPr = 24,
+		RangePr = 25,
+		IdExt = 26
 	};}
 	namespace c_oSerWorkbookVbaProjectTypes{enum c_oSerWorkbookVbaProjectTypes
 	{
@@ -373,7 +384,10 @@ namespace BinXlsxRW
 		QueryTable = 33,
 		Controls = 34,
 		XlsbPos = 35,
-		SortState = 36
+		SortState = 36,
+		Slicers = 37,
+		SlicersExt = 38,
+		Slicer = 39
 	};}
 	namespace c_oSerWorksheetPropTypes{enum c_oSerWorksheetPropTypes
 	{

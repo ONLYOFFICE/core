@@ -94,7 +94,7 @@ void text_list_style::create_child_element( const std::wstring & Ns, const std::
 }
 void text_list_style::add_child_element( const office_element_ptr & child)
 {
- 	ElementType type = child->get_type();
+ 	ElementType type_ = child->get_type();
 	
 	text_list_style_content_.push_back(child);
 }
@@ -134,11 +134,11 @@ void text_list_level_style_number::create_child_element(const std::wstring & Ns,
 }
 void text_list_level_style_number::add_child_element( const office_element_ptr & child)
 {
- 	ElementType type = child->get_type();
+ 	ElementType type_ = child->get_type();
 	
-	if (type == typeStyleListLevelProperties)
+	if (type_ == typeStyleListLevelProperties)
 		style_list_level_properties_ = child;
-    else if (type == typeStyleTextProperties)
+    else if (type_ == typeStyleTextProperties)
        style_text_properties_ = child;    
     else
     {
@@ -176,9 +176,9 @@ void style_list_level_properties::create_child_element( const std::wstring & Ns,
 }
 void style_list_level_properties::add_child_element( const office_element_ptr & child)
 {
- 	ElementType type = child->get_type();
+ 	ElementType type_ = child->get_type();
 	
-	if (type == typeStyleListLevelProperties)
+	if (type_ == typeStyleListLevelProperties)
 		style_list_level_label_alignment_ = child;
     else
     {
@@ -256,11 +256,11 @@ void text_list_level_style_bullet::create_child_element(  const std::wstring & N
 }
 void text_list_level_style_bullet::add_child_element( const office_element_ptr & child)
 {
- 	ElementType type = child->get_type();
+ 	ElementType type_ = child->get_type();
 	
-	if (type == typeStyleListLevelProperties)
+	if (type_ == typeStyleListLevelProperties)
 		style_list_level_properties_ = child;
-    else if (type == typeStyleTextProperties)
+    else if (type_ == typeStyleTextProperties)
        style_text_properties_ = child;    
     else
     {
@@ -300,11 +300,11 @@ void text_list_level_style_image::create_child_element(  const std::wstring & Ns
 }
 void text_list_level_style_image::add_child_element( const office_element_ptr & child)
 {
- 	ElementType type = child->get_type();
+ 	ElementType type_ = child->get_type();
 	
-	if (type == typeStyleListLevelProperties)
+	if (type_ == typeStyleListLevelProperties)
 		style_list_level_properties_ = child;
-    else if (type == typeStyleTextProperties)
+    else if (type_ == typeStyleTextProperties)
        style_text_properties_ = child;    
     else
     {

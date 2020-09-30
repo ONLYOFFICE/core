@@ -66,7 +66,7 @@ namespace PPTX
 	class WrapperWritingElement : public OOX::WritingElement
 	{
 	public:
-		WrapperWritingElement() : parentElement(NULL), parentFile(NULL)
+		WrapperWritingElement(OOX::Document *pMain = NULL) :  OOX::WritingElement(pMain), parentElement(NULL), parentFile(NULL)
 		{
 		}
 		virtual ~WrapperWritingElement()

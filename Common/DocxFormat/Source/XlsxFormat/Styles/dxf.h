@@ -161,6 +161,25 @@ namespace OOX
 
 				writer.WriteString(_T("</dxfs>"));
 			}
+			void toXML2(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const
+			{
+				writer.WriteString(_T("<"));
+				writer.WriteString(sName);
+				WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
+				writer.WriteString(_T(">"));
+
+				for ( size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if (  m_arrItems[i] )
+					{
+						m_arrItems[i]->toXML(writer);
+					}
+				}
+
+				writer.WriteString(L"</");
+				writer.WriteString(sName);
+				writer.WriteString(L">");
+			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );

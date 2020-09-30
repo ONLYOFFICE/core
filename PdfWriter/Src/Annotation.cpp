@@ -93,6 +93,9 @@ namespace PdfWriter
 
 		Add("Type", "Annot");
 		Add("Subtype", c_sAnnotTypeNames[(int)eType]);
+
+		// Для PDFA нужно, чтобы 0, 1, 4 биты были выключены, а второй включен
+		Add("F", 4);
 	}
 	void CAnnotation::SetBorderStyle(EBorderSubtype eSubtype, float fWidth, unsigned short nDashOn, unsigned short nDashOff, unsigned short nDashPhase)
 	{
@@ -101,6 +104,12 @@ namespace PdfWriter
 			return;
 
 		Add("BS", pBorderStyleDict);
+
+		if (::fabs(BS_DEF_WIDTH - fWidth) > 0.01)
+			pBorderStyleDict->Add("W", fWidth);
+
+		if (fWidth < 0.01)
+			return;
 
 		if (border_subtype_Dashed == eSubtype)
 		{
@@ -125,9 +134,6 @@ namespace PdfWriter
 		case border_subtype_Inset:      pBorderStyleDict->Add("S", "I"); break;
 		case border_subtype_Underlined: pBorderStyleDict->Add("S", "U"); break;
 		}
-
-		if (BS_DEF_WIDTH != fWidth)
-			pBorderStyleDict->Add("W", fWidth);
 	}
 	//----------------------------------------------------------------------------------------
 	// CLinkAnnotation

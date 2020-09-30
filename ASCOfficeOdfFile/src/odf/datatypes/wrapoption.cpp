@@ -63,9 +63,8 @@ wrap_option wrap_option::parse(const std::wstring & Str)
     else if (tmp == L"wrap")
         return wrap_option( Wrap );
     else
-    {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
-        return wrap_option( NoWrap );
+	{
+		return wrap_option( NoWrap );
     }
 }
 

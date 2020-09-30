@@ -122,31 +122,8 @@ void CDataValidation::toXML2(NSStringUtils::CStringBuilder& writer, bool bExtend
 	writer.WriteString(L"</" + node_name + L">");
 }
 
-void CDataValidation::fromXML(XmlUtils::CXmlLiteReader& oReader)
-{
-	ReadAttributes( oReader );
+//void CDataValidation::fromXML(XmlUtils::CXmlLiteReader& oReader) -> SheetData.cpp
 
-	if ( oReader.IsEmptyNode() )
-		return;
-
-	int nCurDepth = oReader.GetDepth();
-	while (oReader.ReadNextSiblingNode(nCurDepth))
-	{
-		std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-		if (L"formula1" == sName)
-		{
-			m_oFormula1 = oReader;
-		}
-		else if (L"formula2" == sName)
-		{
-			m_oFormula2 = oReader;
-		}
-		else if (L"sqref" == sName)
-		{
-			m_oSqRef = oReader.GetText2();
-		}
-	}
-}
 bool CDataValidation::IsExtended()
 {
 	bool result = true;

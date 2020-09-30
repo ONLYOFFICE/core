@@ -65,7 +65,7 @@ xlsx_dxfs::~xlsx_dxfs()
 {
 }
 
-size_t xlsx_dxfs::dxfId(	const odf_reader::text_format_properties_content		* textProp,
+size_t xlsx_dxfs::dxfId(	const odf_reader::text_format_properties_content_ptr	textProp,
 							const odf_reader::graphic_format_properties				* graphProp,
 							const odf_reader::style_table_cell_properties_attlist	* cellProp)
 {

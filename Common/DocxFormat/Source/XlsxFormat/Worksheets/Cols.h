@@ -46,7 +46,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCol)
-			CCol()
+			CCol(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CCol()
@@ -74,7 +74,7 @@ namespace OOX
 				WritingStringNullableAttrDouble(L"width", m_oWidth, m_oWidth->GetValue());
 				writer.WriteString(_T("/>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -91,9 +91,10 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+				nullable_double ptWidth;
+				nullable_bool bAutoFit;
 
+				WritingElement_ReadAttributes_Start( oReader )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("bestFit"),		m_oBestFit)
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("collapsed"),	m_oCollapsed )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("customWidth"),	m_oCustomWidth )
@@ -105,7 +106,29 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("style"),		m_oStyle )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("width"),		m_oWidth )
 
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:Width"),	ptWidth )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:AutoFitWidth"),	bAutoFit )
+				WritingElement_ReadAttributes_End( oReader )
+
+				if (ptWidth.IsInit())
+				{
+					m_oWidth.Init();
+					const double pixDpi = *ptWidth / 72.0 * 96.;
+					double maxDigitSize = 4.25;
+					m_oWidth->SetValue((int(( pixDpi /*/ 0.75*/ - 5)/ maxDigitSize * 100. + 0.5)) /100. * 0.9);
+					
+					m_oCustomWidth.Init();
+					m_oCustomWidth->FromBool(true);
+				}
+
+				if (bAutoFit.IsInit() && (*bAutoFit == false))
+				{
+				}
+				else
+				{
+					m_oBestFit.Init();
+					m_oBestFit->FromBool(true);
+				}
 			}
 
 		public:
@@ -125,7 +148,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCols)
-			CCols()
+			CCols(OOX::Document *pMain = NULL) : WritingElementWithChilds<CCol>(pMain)
 			{
 			}
 			virtual ~CCols()
@@ -167,7 +190,12 @@ namespace OOX
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("col") == sName )
-						m_arrItems.push_back( new CCol( oReader ));
+					{
+						CCol *pCol = new CCol(m_pMainDocument);
+						pCol->fromXML(oReader);
+
+						m_arrItems.push_back(pCol);
+					}
 				}
 			}
 

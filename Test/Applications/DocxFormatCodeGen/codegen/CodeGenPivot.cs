@@ -101,6 +101,18 @@ namespace codegen
             if (!bQualified.HasValue)
                 bQualified = true;
         }
+        public bool isArray()
+        {
+            return null != aArrayTypes;
+        }
+        public bool isArrayChoice()
+        {
+            return !this.nArrayRank.HasValue;
+        }
+        public GenMemberPivot getArrayTypeIfSimple()
+        {
+            return 0 == this.nArrayRank && 1 == this.aArrayTypes.Count ? this.aArrayTypes[0] : null;
+        }
     }
 
     //[System.Xml.Serialization.XmlElementAttribute("c")]

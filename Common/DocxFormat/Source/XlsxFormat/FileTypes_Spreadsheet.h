@@ -128,10 +128,22 @@ namespace OOX
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheRecords",
 												L"pivotCache/pivotCacheRecords", true, true);
 
+			const FileType SlicerCache		(L"slicerCaches", L"slicerCache.xml",
+												L"application/vnd.ms-excel.slicerCache+xml",
+												L"http://schemas.microsoft.com/office/2007/relationships/slicerCache",
+												L"slicerCaches/slicerCache", true);
+
+			const FileType Slicer			(L"../slicers", L"slicer.xml",
+												L"application/vnd.ms-excel.slicer+xml",
+												L"http://schemas.microsoft.com/office/2007/relationships/slicer",
+												L"slicers/slicer", true, true);
+
 			//onlyoffice workbook comments
 			const FileType WorkbookComments(L"", L"workbookComments.bin",
 												L"",
 												L"http://schemas.onlyoffice.com/workbookComments");
+
+			const FileType SpreadsheetFlat(L"", L"", L"", L"");
 		
 
 		} // namespace FileTypes

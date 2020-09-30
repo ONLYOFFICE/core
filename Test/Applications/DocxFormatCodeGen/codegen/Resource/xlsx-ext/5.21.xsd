@@ -1,0 +1,72 @@
+<xsd:schema targetNamespace="http://schemas.microsoft.com/office/spreadsheetml/2017/richdata" elementFormDefault="qualified" xmlns:x="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns="http://schemas.microsoft.com/office/spreadsheetml/2017/richdata" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:import namespace="http://schemas.openxmlformats.org/spreadsheetml/2006/main" schemaLocation="xlbasictypes.xsd"/>
+   <xsd:element name="rvData" type="CT_RichValueData"/>
+   <xsd:complexType name="CT_RichValueData">
+     <xsd:sequence>
+       <xsd:element name="rv" minOccurs="0" maxOccurs="unbounded" type="CT_RichValue"/>
+       <xsd:element name="extLst" type="x:CT_ExtensionList" minOccurs="0" maxOccurs="1"/>
+     </xsd:sequence>
+     <xsd:attribute name="count" type="xsd:unsignedInt" use="required"/>
+   </xsd:complexType>
+   <xsd:complexType name="CT_RichValue">
+     <xsd:sequence>
+       <xsd:element name="fb" minOccurs="0" maxOccurs="1" type="CT_RichValueFallback"/>
+       <xsd:element name="v" minOccurs="1" maxOccurs="unbounded" type="CT_Value"/>
+     </xsd:sequence>
+     <xsd:attribute name="s" type="xsd:unsignedInt" use="required"/>
+   </xsd:complexType>
+   <xsd:complexType name="CT_Value">
+     <xsd:simpleContent>
+       <xsd:extension base="x:ST_Xstring"/>
+     </xsd:simpleContent>
+   </xsd:complexType>
+   <xsd:element name="rvStructures" type="CT_RichValueStructures"/>
+   <xsd:complexType name="CT_RichValueFallback">
+     <xsd:simpleContent>
+       <xsd:extension base="xsd:string">
+         <xsd:attribute name="t" type="ST_RichValueFallbackType" use="optional" default="n"/>
+       </xsd:extension>
+     </xsd:simpleContent>
+   </xsd:complexType>
+   <xsd:simpleType name="ST_RichValueFallbackType">
+     <xsd:restriction base="x:ST_Xstring">
+       <xsd:enumeration value="b"/>
+       <xsd:enumeration value="n"/>
+       <xsd:enumeration value="e"/>
+       <xsd:enumeration value="s"/>
+     </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:complexType name="CT_RichValueStructures">
+     <xsd:sequence>
+       <xsd:element name="s" minOccurs="0" maxOccurs="unbounded" type="CT_RichValueStructure"/>
+       <xsd:element name="extLst" type="x:CT_ExtensionList" minOccurs="0" maxOccurs="1"/>
+     </xsd:sequence>
+     <xsd:attribute name="count" type="xsd:unsignedInt" use="required"/>
+   </xsd:complexType>
+   <xsd:complexType name="CT_RichValueStructure">
+     <xsd:sequence>
+       <xsd:element name="k" minOccurs="1" maxOccurs="unbounded" type="CT_Key"/>
+     </xsd:sequence>
+     <xsd:attribute name="t" type="xsd:string" use="required"/>
+   </xsd:complexType>
+   <xsd:complexType name="CT_Key">
+     <xsd:attribute name="n" type="x:ST_Xstring" use="required"/>
+     <xsd:attribute name="t" type="ST_RichValueValueType" use="optional" default="d"/>
+   </xsd:complexType>
+   <xsd:simpleType name="ST_RichValueValueType">
+     <xsd:restriction base="x:ST_Xstring">
+       <xsd:enumeration value="d"/>
+       <xsd:enumeration value="i"/>
+       <xsd:enumeration value="b"/>
+       <xsd:enumeration value="e"/>
+       <xsd:enumeration value="s"/>
+       <xsd:enumeration value="r"/>
+       <xsd:enumeration value="a"/>
+       <xsd:enumeration value="spb"/>
+     </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:element name="rvb" type="CT_RichValueBlock"/>
+   <xsd:complexType name="CT_RichValueBlock">
+     <xsd:attribute name="i" type="xsd:unsignedInt" use="required"/>
+   </xsd:complexType>
+ </xsd:schema>

@@ -94,6 +94,7 @@ SOURCES += pptxformatlib.cpp \
     ../../../Editor/Drawing/TextAttributesEx.cpp \
     ../../../Editor/Drawing/Elements.cpp \
     ../../../../HtmlRenderer/src/ASCSVGWriter.cpp \
+    ../../../Editor/imagemanager.cpp \
     ../../../Editor/Drawing/Shapes/BaseShape/PPTXShape/PptxShape.cpp
 
 HEADERS += pptxformatlib.h \

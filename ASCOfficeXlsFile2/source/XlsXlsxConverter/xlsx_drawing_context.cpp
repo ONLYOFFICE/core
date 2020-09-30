@@ -2814,10 +2814,10 @@ void xlsx_drawing_context::set_absolute_anchor(double x, double y, double cx, do
 
 	if (current_drawing_states->back()->type_anchor != 0) return;	
 
-	current_drawing_states->back()->absolute_anchor.x	= x;
-	current_drawing_states->back()->absolute_anchor.y	= y;
-	current_drawing_states->back()->absolute_anchor.cx	= cx;
-	current_drawing_states->back()->absolute_anchor.cy	= cy;
+	current_drawing_states->back()->absolute_anchor.x	= (int)x;
+	current_drawing_states->back()->absolute_anchor.y	= (int)y;
+	current_drawing_states->back()->absolute_anchor.cx	= (int)cx;
+	current_drawing_states->back()->absolute_anchor.cy	= (int)cy;
 
 	current_drawing_states->back()->type_anchor = 3;
 }
@@ -2944,13 +2944,23 @@ void xlsx_drawing_context::set_rotation (double val)
 {
 	if (current_drawing_states == NULL) return;	
 	if (current_drawing_states->empty()) return;
-	if (val < 0.001) return;
 
-	if (current_drawing_states->back()->flipH && current_level > 0)
+	val -= (int)(val / 360.) * 360;
+
+	if (current_drawing_states->back()->flipH && current_drawing_states->back()->flipV/* && current_level > 0*/)
 	{
-		val += 180.;
+		val = 180 - val;
 	}
-	if (val > 360) val -= 360;
+	else if (current_drawing_states->back()->flipH/* && current_level > 0*/)
+	{
+		val = 180 + val;
+	}
+	else if (current_drawing_states->back()->flipV/* && current_level > 0*/)
+	{
+		val = 360 - val;
+	}
+	val -= (int)(val / 360.) * 360;
+	//if (val > 360) val -= 360;
 
 	current_drawing_states->back()->rotation = val;
 }

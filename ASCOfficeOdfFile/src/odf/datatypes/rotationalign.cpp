@@ -74,7 +74,6 @@ rotation_align rotation_align::parse(const std::wstring & Str)
         return rotation_align( Center );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return rotation_align( None );
     }
 }

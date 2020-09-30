@@ -390,7 +390,7 @@ void draw_object_ole::pptx_convert(oox::pptx_conversion_context & Context)
 	if (!href.empty()) 
 	{
 		std::wstring prog, extension;
-		oox::RelsType relsType;
+		oox::_rels_type relsType;
 		detectObject(objectPath, prog, extension, relsType);
 		
 		NSFile::CFileBinary::Copy(objectPath, objectPath + extension);

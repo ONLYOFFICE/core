@@ -47,9 +47,8 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CAlternateContent)
-			CAlternateContent()
-			{
-			}
+			CAlternateContent(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
+
 			virtual ~CAlternateContent()
 			{
 				Clear();

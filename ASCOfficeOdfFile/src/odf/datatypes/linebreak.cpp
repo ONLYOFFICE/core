@@ -63,7 +63,6 @@ line_break line_break::parse(const std::wstring & Str)
         return line_break( Strict );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return line_break( Normal );
     }
 }

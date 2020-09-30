@@ -55,7 +55,6 @@ public:
     Impl(): in_convert_style_(false)
     {}
 
-public:
     std::wstring current_style_name_;
     std::wstringstream stream_;
 
@@ -64,9 +63,14 @@ public:
         current_style_name_ = L"";
         stream_.str(std::wstring());  
         in_convert_style_ = false;
+		type_ = odf_types::office_value_type::Custom;
     }
 
     std::wstring last_format_;
+	std::wstring last_date_format_ = L"yyyy.mmmm.dd";
+	std::wstring last_time_format_ = L"hh:mm:ss";
+
+	odf_types::office_value_type type_ = odf_types::office_value_type::Custom;
 
     bool in_convert_style_;
 };
@@ -81,7 +85,7 @@ num_format_context::~num_format_context()
 
 void num_format_context::start_format(const std::wstring & style_name)
 {
-    impl_->reset_current();
+	impl_->reset_current();
     impl_->current_style_name_ = style_name;
     impl_->in_convert_style_ = true;
 }
@@ -94,19 +98,38 @@ std::wostream & num_format_context::output()
 void num_format_context::end_format()
 {    
     impl_->last_format_ = impl_->stream_.str();
-    impl_->reset_current();
+
+	if (impl_->type_ == odf_types::office_value_type::Date)
+		impl_->last_date_format_ = impl_->last_format_;
+	
+	if (impl_->type_ == odf_types::office_value_type::Time)
+		impl_->last_time_format_ = impl_->last_format_;
 }
 
 std::wstring num_format_context::get_last_format() const
 {
     return impl_->last_format_;
 }
-
+std::wstring num_format_context::get_last_date_format() const
+{
+    return impl_->last_date_format_;
+}
+std::wstring num_format_context::get_last_time_format() const
+{
+    return impl_->last_time_format_;
+}
 void num_format_context::start_complex_format()
 {
     impl2_->complex_number_format_.reset();
 }
-
+odf_types::office_value_type::type num_format_context::type() const
+{
+    return impl_->type_.get_type();
+}
+void num_format_context::type(odf_types::office_value_type::type t)
+{
+    impl_->type_ = t;
+}
 void num_format_context::add_format(std::wstring const & cond, std::wstring const & format)
 {
     impl2_->complex_number_format_.add_format(cond, format);

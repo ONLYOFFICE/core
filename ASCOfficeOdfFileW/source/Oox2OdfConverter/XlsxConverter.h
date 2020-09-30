@@ -44,6 +44,7 @@ namespace OOX
 	namespace Spreadsheet
 	{
 		class CXlsx;
+		class CXlsxFlat;
 		class WritingElement;
 
 		class CWorksheet;
@@ -146,7 +147,7 @@ namespace Oox2Odf
 		XlsxConverter(const std::wstring & path, bool bTemplate);
 		~XlsxConverter();
 
-		virtual void convertDocument();
+		virtual bool convertDocument();
 		
 		virtual OOX::IFileContainer					*current_document();
 		virtual odf_writer::odf_conversion_context	*odf_context();		
@@ -156,6 +157,7 @@ namespace Oox2Odf
 
 		void convert(OOX::Spreadsheet::WritingElement	*oox_unknown);
     private:		
+		OOX::Spreadsheet::CXlsxFlat				*xlsx_flat_document;
 		OOX::Spreadsheet::CXlsx					*xlsx_document;
 		OOX::IFileContainer						*xlsx_current_container; 
 		

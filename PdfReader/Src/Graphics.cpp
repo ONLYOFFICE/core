@@ -401,7 +401,7 @@ namespace PdfReader
 	Graphics::Graphics(GlobalParams *pGlobalParams, XRef *pXref, OutputDev *pOut, int nPageNumber, Dict *pResorcesDict, double dHorDPI, double dVerDPI, PDFRectangle *pBox, PDFRectangle *pCropBox, int nRotate, bool(*pAbortCheckCallBack)(void *pData), void *pAbortCheckData)
 	{
 #ifdef _DEBUG
-		std::wstring wsFileName = L"D:\\Output\\PDF Dump\\DumpPDF_Page" + std::to_wstring(nPageNumber) + L".bin";
+		std::wstring wsFileName = L"E:\\Ilya\\Work\\Test\\PdfDump\\Dump" + std::to_wstring(nPageNumber) + L".bin";
 		m_pDumpFile = NSFile::CFileBinary::OpenFileNative(wsFileName, L"wb");
 #endif
 
@@ -1909,6 +1909,12 @@ namespace PdfReader
 			return;
 		}
 
+		// TODO: Обводка по паттерну работает неправильно. Она не учитывает, ни пунктирность, ни тип соединения,
+		//       ни тип окончания. Либо надо строить здесь внешний пат для обводки через заливку, либо
+		//       ждать, когда будет реализация внутри Renderer
+		m_pOut->Stroke(m_pGState);
+		return;
+
 		GrPattern *pPattern = NULL;
 		if (!(pPattern = m_pGState->GetStrokePattern()))
 		{
@@ -2757,6 +2763,7 @@ namespace PdfReader
 			m_pGState->LineTo(dStartX1, dStartY1);
 			m_pGState->ClosePath();
 			m_pOut->Fill(m_pGState);
+
 			m_pGState->ClearPath();
 
 			// Начальные значения для следующего полигона
@@ -4160,6 +4167,9 @@ namespace PdfReader
 			bool bMaskInvert = false;
 			GrImageColorMap *pMaskColorMap = NULL;
 			int arrMaskColors[2 * GrColorMaxComps];
+			unsigned char arrMatteColor[GrColorMaxComps];
+			bool bMatte = false;
+
 
 			Object oMask, oSMask;
 			pDict->Search("Mask", &oMask);
@@ -4271,6 +4281,19 @@ namespace PdfReader
 					return;
 				}
 
+				pMaskDict->Search("Matte", &oDictItem);
+				if (oDictItem.IsArray())
+				{
+					bMatte = true;
+					for (int nMatteIndex = 0, nMatteCount = oDictItem.ArrayGetLength(); nMatteIndex < nMatteCount; ++nMatteIndex)
+					{
+						Object oTemp;
+						oDictItem.ArrayGet(nMatteIndex, &oTemp);
+						arrMatteColor[nMatteIndex] = fmin(255, fmax(0, (int)(oTemp.GetNum() * 255)));
+						oTemp.Free();
+					}
+				}
+
 				bHaveSoftMask = true;
 			}
 			else if (oMask.IsArray())
@@ -4372,7 +4395,7 @@ namespace PdfReader
 			// Рисуем
 			if (bHaveSoftMask)
 			{
-				m_pOut->DrawSoftMaskedImage(m_pGState, pRef, pStream, nWidth, nHeight, pColorMap, pMaskStream, nMaskWidth, nMaskHeight, pMaskColorMap);
+				m_pOut->DrawSoftMaskedImage(m_pGState, pRef, pStream, nWidth, nHeight, pColorMap, pMaskStream, nMaskWidth, nMaskHeight, pMaskColorMap, bMatte ? arrMatteColor : NULL);
 				delete pMaskColorMap;
 			}
 			else if (bHaveExplicitMask)

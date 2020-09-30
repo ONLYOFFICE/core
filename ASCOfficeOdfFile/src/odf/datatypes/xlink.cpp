@@ -85,16 +85,7 @@ std::wostream & operator << (std::wostream & _Wostream, const xlink_show & _Show
 
 xlink_type xlink_type::parse(const std::wstring & Str)
 {
-    std::wstring tmp = Str;
-    boost::algorithm::to_lower(tmp);
-
-    if (tmp == L"simple")
-        return xlink_type( Simple );
-    else
-    {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
-        return xlink_type( Simple );
-    }
+	return xlink_type( Simple );
 }
 
 xlink_actuate xlink_actuate::parse(const std::wstring & Str)
@@ -108,7 +99,6 @@ xlink_actuate xlink_actuate::parse(const std::wstring & Str)
         return xlink_actuate( OnLoad );   
 	else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return xlink_actuate( OnRequest );
     }
 }
@@ -126,7 +116,6 @@ xlink_show xlink_show::parse(const std::wstring & Str)
         return xlink_show( Embed );
 	else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return xlink_show( New );
     }
 }

@@ -78,7 +78,6 @@ anchor_type anchor_type::parse(const std::wstring & Str)
         return anchor_type( AsChar );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return anchor_type( Page );
     }
 }

@@ -68,6 +68,9 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Core.h"
 
 #include "../../Common/DocxFormat/Source/XlsxFormat/Comments/ThreadedComments.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Slicer/SlicerCache.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Slicer/SlicerCacheExt.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Slicer/Slicer.h"
 
 namespace BinXlsxRW 
 {
@@ -1164,8 +1167,7 @@ int BinarySharedStringTableReader::ReadRPr(BYTE type, long length, void* poResul
 	else if(c_oSerFontTypes::RFont == type)
 	{
 		pFont->m_oRFont.Init();
-		pFont->m_oRFont->m_sVal.Init();
-		pFont->m_oRFont->m_sVal->append(m_oBufferedStream.GetString4(length));
+		pFont->m_oRFont->m_sVal = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSerFontTypes::Scheme == type)
 	{
@@ -1290,6 +1292,40 @@ int BinaryStyleTableReader::ReadStyleTableContent(BYTE type, long length, void* 
 			m_oStyles.m_oTableStyles->m_oCount.Init();
 			m_oStyles.m_oTableStyles->m_oCount->SetValue(0);
 		}
+	}
+	else if(c_oSerStylesTypes::ExtDxfs == type)
+	{
+		OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+
+		pOfficeArtExtension->m_oDxfs.Init();
+		READ1_DEF(length, res, this->ReadDxfs, pOfficeArtExtension->m_oDxfs.GetPointer());
+
+		pOfficeArtExtension->m_oDxfs->m_oCount.Init();
+		pOfficeArtExtension->m_oDxfs->m_oCount->SetValue((unsigned int)pOfficeArtExtension->m_oDxfs->m_arrItems.size());
+
+		pOfficeArtExtension->m_sUri.Init();
+		pOfficeArtExtension->m_sUri = L"{46F421CA-312F-682f-3DD2-61675219B42D}";
+		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
+
+		if (m_oStyles.m_oExtLst.IsInit() == false)
+			m_oStyles.m_oExtLst.Init();
+		m_oStyles.m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
+	}
+	else if(c_oSerStylesTypes::SlicerStyles == type)
+	{
+		OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+		pOfficeArtExtension->m_oSlicerStyles.Init();
+
+		m_oBufferedStream.GetUChar();//type
+		pOfficeArtExtension->m_oSlicerStyles->fromPPTY(&m_oBufferedStream);
+
+		pOfficeArtExtension->m_sUri.Init();
+		pOfficeArtExtension->m_sUri = L"{EB79DEF2-80B8-43e5-95BD-54CBDDF9020C}";
+		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
+
+		if (m_oStyles.m_oExtLst.IsInit() == false)
+			m_oStyles.m_oExtLst.Init();
+		m_oStyles.m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -1550,8 +1586,7 @@ int BinaryStyleTableReader::ReadFont(BYTE type, long length, void* poResult)
 	{
 		std::wstring sFontName(m_oBufferedStream.GetString4(length));
 		pFont->m_oRFont.Init();
-		pFont->m_oRFont->m_sVal.Init();
-		pFont->m_oRFont->m_sVal->append(sFontName);
+		pFont->m_oRFont->m_sVal = sFontName;
 	}
 	else if(c_oSerFontTypes::Scheme == type)
 	{
@@ -1605,9 +1640,7 @@ int BinaryStyleTableReader::ReadNumFmt(BYTE type, long length, void* poResult)
 	int res = c_oSerConstants::ReadOk;
 	if(c_oSerNumFmtTypes::FormatCode == type)
 	{
-		std::wstring sFormatCode(m_oBufferedStream.GetString4(length));
-		pNumFmt->m_oFormatCode.Init();
-		pNumFmt->m_oFormatCode->append(sFormatCode);
+		pNumFmt->m_oFormatCode = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSerNumFmtTypes::NumFmtId == type)
 	{
@@ -1846,8 +1879,7 @@ int BinaryStyleTableReader::ReadCellStyle(BYTE type, long length, void* poResult
 	}
 	else if(c_oSer_CellStyle::Name == type)
 	{
-		pCellStyle->m_oName.Init();
-		pCellStyle->m_oName->append(m_oBufferedStream.GetString4(length));
+		pCellStyle->m_oName = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSer_CellStyle::XfId == type)
 	{
@@ -2062,6 +2094,36 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 		smart_ptr<OOX::File> oFile = oConnection.smart_dynamic_cast<OOX::File>();
 		m_oWorkbook.Add(oFile);
 	}
+	else if(c_oSerWorkbookTypes::SlicerCaches == type)
+	{
+		OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+		pOfficeArtExtension->m_oSlicerCaches.Init();
+
+		READ1_DEF(length, res, this->ReadSlicerCaches, pOfficeArtExtension->m_oSlicerCaches.GetPointer());
+
+		pOfficeArtExtension->m_sUri.Init();
+		pOfficeArtExtension->m_sUri = L"{BBE1A952-AA13-448e-AADC-164F8A28A991}";
+		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
+
+		if (m_oWorkbook.m_oExtLst.IsInit() == false)
+			m_oWorkbook.m_oExtLst.Init();
+		m_oWorkbook.m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
+	}
+	else if(c_oSerWorkbookTypes::SlicerCachesExt == type)
+	{
+		OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+		pOfficeArtExtension->m_oSlicerCachesExt.Init();
+
+		READ1_DEF(length, res, this->ReadSlicerCaches, pOfficeArtExtension->m_oSlicerCachesExt.GetPointer());
+
+		pOfficeArtExtension->m_sUri.Init();
+		pOfficeArtExtension->m_sUri = L"{46BE6895-7355-4a93-B00E-2C351335B9C9}";
+		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\"";
+
+		if (m_oWorkbook.m_oExtLst.IsInit() == false)
+			m_oWorkbook.m_oExtLst.Init();
+		m_oWorkbook.m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -2188,6 +2250,15 @@ int BinaryWorkbookTableReader::ReadConnection(BYTE type, long length, void* poRe
 		pConnection->m_oWebPr.Init();
 		READ1_DEF(length, res, this->ReadConnectionWebPr, pConnection->m_oWebPr.GetPointer());
 	}
+	else if(c_oSerConnectionsTypes::IdExt == type)
+	{
+		pConnection->m_oIdExt = m_oBufferedStream.GetString4(length);
+	}
+	else if(c_oSerConnectionsTypes::RangePr == type)
+	{
+		pConnection->m_oRangePr.Init();
+		READ1_DEF(length, res, this->ReadConnectionRangePr, pConnection->m_oRangePr.GetPointer());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -2258,7 +2329,17 @@ int BinaryWorkbookTableReader::ReadConnectionOlapPr(BYTE type, long length, void
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
-
+int BinaryWorkbookTableReader::ReadConnectionRangePr(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CRangePr* pRangePr = static_cast<OOX::Spreadsheet::CRangePr*>(poResult);
+	
+	int res = c_oSerConstants::ReadOk;
+	if(c_oSerRangePrTypes::SourceName == type)
+	{
+		pRangePr->m_oSourceName = m_oBufferedStream.GetString4(length);
+	}
+	return res;
+}
 int BinaryWorkbookTableReader::ReadConnectionTextPr(BYTE type, long length, void* poResult)
 {
 	OOX::Spreadsheet::CTextPr* pTextPr = static_cast<OOX::Spreadsheet::CTextPr*>(poResult);
@@ -2525,13 +2606,11 @@ int BinaryWorkbookTableReader::ReadDefinedName(BYTE type, long length, void* poR
 	int res = c_oSerConstants::ReadOk;
 	if(c_oSerDefinedNameTypes::Name == type)
 	{
-		pDefinedName->m_oName.Init();
-		pDefinedName->m_oName->append(m_oBufferedStream.GetString4(length));
+		pDefinedName->m_oName = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSerDefinedNameTypes::Ref == type)
 	{
-		pDefinedName->m_oRef.Init();
-		pDefinedName->m_oRef->append(m_oBufferedStream.GetString4(length));
+		pDefinedName->m_oRef = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSerDefinedNameTypes::LocalSheetId == type)
 	{
@@ -2545,8 +2624,7 @@ int BinaryWorkbookTableReader::ReadDefinedName(BYTE type, long length, void* poR
     }
 	else if(c_oSerDefinedNameTypes::Comment == type)
     {
-		pDefinedName->m_oComment.Init();
-		pDefinedName->m_oComment->append(m_oBufferedStream.GetString4(length));
+		pDefinedName->m_oComment = m_oBufferedStream.GetString4(length);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -2664,8 +2742,7 @@ int BinaryWorkbookTableReader::ReadExternalSheetNames(BYTE type, long length, vo
 	if(c_oSer_ExternalLinkTypes::SheetName == type)
 	{
 		ComplexTypes::Spreadsheet::String* pSheetName = new ComplexTypes::Spreadsheet::String();
-		pSheetName->m_sVal.Init();
-		pSheetName->m_sVal->append(m_oBufferedStream.GetString4(length));
+		pSheetName->m_sVal = m_oBufferedStream.GetString4(length);
 		pSheetNames->m_arrItems.push_back(pSheetName);
 	}
 	else
@@ -3016,6 +3093,30 @@ int BinaryWorkbookTableReader::ReadPivotCache(BYTE type, long length, void* poRe
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
+int BinaryWorkbookTableReader::ReadSlicerCaches(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CSlicerCaches* pSlicerCaches = static_cast<OOX::Spreadsheet::CSlicerCaches*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+	if(c_oSerWorkbookTypes::SlicerCache == type)
+	{
+		OOX::Spreadsheet::CSlicerCacheFile* pSlicerCache = new OOX::Spreadsheet::CSlicerCacheFile(NULL);
+		pSlicerCache->m_oSlicerCacheDefinition.Init();
+
+		m_oBufferedStream.GetUChar();//type
+		pSlicerCache->m_oSlicerCacheDefinition->fromPPTY(&m_oBufferedStream);
+
+		NSCommon::smart_ptr<OOX::File> pSlicerCacheFile(pSlicerCache);
+		const OOX::RId oRId = m_oWorkbook.Add(pSlicerCacheFile);
+
+		pSlicerCaches->m_oSlicerCache.emplace_back();
+		pSlicerCaches->m_oSlicerCache.back().m_oRId.Init();
+		pSlicerCaches->m_oSlicerCache.back().m_oRId->SetValue(oRId.get());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+
 BinaryCommentReader::BinaryCommentReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorksheet* pCurWorksheet) 
 	: Binary_CommonReader(oBufferedStream), m_pCurWorksheet(pCurWorksheet)
 {
@@ -3321,8 +3422,7 @@ void BinaryCommentReader::addCommentRun(OOX::Spreadsheet::CSi& oSi, const std::w
 		pRPr.m_oBold->m_oVal.FromBool(true);
 	}
 	pRPr.m_oRFont.Init();
-	pRPr.m_oRFont->m_sVal.Init();
-	pRPr.m_oRFont->m_sVal->append(_T("Tahoma"));
+	pRPr.m_oRFont->m_sVal = L"Tahoma";
 	pRPr.m_oSz.Init();
 	pRPr.m_oSz->m_oVal.Init();
 	pRPr.m_oSz->m_oVal->SetValue(9);
@@ -3760,7 +3860,35 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		m_pCurWorksheet->m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
 
 	SEEK_TO_POS_END2();
-	
+//-------------------------------------------------------------------------------------------------------------
+	SEEK_TO_POS_START(c_oSerWorksheetsTypes::Slicers);
+		OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+		pOfficeArtExtension->m_oSlicerList.Init();
+		READ1_DEF(length, res, this->ReadSlicers, pOfficeArtExtension->m_oSlicerList.GetPointer());
+
+		pOfficeArtExtension->m_sUri.Init();
+		pOfficeArtExtension->m_sUri = L"{A8765BA9-456A-4dab-B4F3-ACF838C121DE}";
+		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
+
+		if (m_pCurWorksheet->m_oExtLst.IsInit() == false)
+			m_pCurWorksheet->m_oExtLst.Init();
+		m_pCurWorksheet->m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
+	SEEK_TO_POS_END2();
+
+	SEEK_TO_POS_START(c_oSerWorksheetsTypes::SlicersExt);
+		OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+		pOfficeArtExtension->m_oSlicerListExt.Init();
+		READ1_DEF(length, res, this->ReadSlicers, pOfficeArtExtension->m_oSlicerListExt.GetPointer());
+
+		pOfficeArtExtension->m_sUri.Init();
+		pOfficeArtExtension->m_sUri = L"{3A4CF648-6AED-40f4-86FF-DC5316D8AED3}";
+		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\"";
+
+		if (m_pCurWorksheet->m_oExtLst.IsInit() == false)
+			m_pCurWorksheet->m_oExtLst.Init();
+		m_pCurWorksheet->m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
+	SEEK_TO_POS_END2();
+
 	if (m_pCurWorksheet->m_oExtLst.IsInit())
 	{
 		oStreamWriter.WriteString(m_pCurWorksheet->m_oExtLst->toXMLWithNS(L""));
@@ -3916,8 +4044,7 @@ int BinaryWorksheetsTableReader::ReadWorksheetProp(BYTE type, long length, void*
 	int res = c_oSerConstants::ReadOk;
 	if(c_oSerWorksheetPropTypes::Name == type)
 	{
-		m_pCurSheet->m_oName.Init();
-		m_pCurSheet->m_oName->append(m_oBufferedStream.GetString4(length));
+		m_pCurSheet->m_oName = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSerWorksheetPropTypes::SheetId == type)
 	{
@@ -4078,8 +4205,7 @@ int BinaryWorksheetsTableReader::ReadSheetView(BYTE type, long length, void* poR
 	}
 	else if(c_oSer_SheetView::TopLeftCell == type)
 	{
-		pSheetView->m_oTopLeftCell.Init();
-		pSheetView->m_oTopLeftCell->append(m_oBufferedStream.GetString4(length));
+		pSheetView->m_oTopLeftCell = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSer_SheetView::View == type)
 	{
@@ -4148,8 +4274,7 @@ int BinaryWorksheetsTableReader::ReadPane(BYTE type, long length, void* poResult
 	}
 	else if(c_oSer_Pane::TopLeftCell == type)
 	{
-		pPane->m_oTopLeftCell.Init();
-		pPane->m_oTopLeftCell->append(m_oBufferedStream.GetString4(length));
+		pPane->m_oTopLeftCell = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSer_Pane::XSplit == type)
 	{
@@ -4171,8 +4296,7 @@ int BinaryWorksheetsTableReader::ReadSelection(BYTE type, long length, void* poR
 	int res = c_oSerConstants::ReadOk;
 	if(c_oSer_Selection::ActiveCell == type)
 	{
-		pSelection->m_oActiveCell.Init();
-		pSelection->m_oActiveCell->append(m_oBufferedStream.GetString4(length));
+		pSelection->m_oActiveCell = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSer_Selection::ActiveCellId == type)
 	{
@@ -4181,8 +4305,7 @@ int BinaryWorksheetsTableReader::ReadSelection(BYTE type, long length, void* poR
 	}
 	else if(c_oSer_Selection::Sqref == type)
 	{
-		pSelection->m_oSqref.Init();
-		pSelection->m_oSqref->append(m_oBufferedStream.GetString4(length));
+		pSelection->m_oSqref = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSer_Selection::Pane == type)
 	{
@@ -4199,8 +4322,7 @@ int BinaryWorksheetsTableReader::ReadSheetPr(BYTE type, long length, void* poRes
 	int res = c_oSerConstants::ReadOk;
 	if(c_oSer_SheetPr::CodeName == type)
 	{
-		pSheetPr->m_oCodeName.Init();
-		pSheetPr->m_oCodeName->append(m_oBufferedStream.GetString4(length));
+		pSheetPr->m_oCodeName = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSer_SheetPr::EnableFormatConditionsCalculation == type)
 	{
@@ -4224,8 +4346,7 @@ int BinaryWorksheetsTableReader::ReadSheetPr(BYTE type, long length, void* poRes
 	}
 	else if(c_oSer_SheetPr::SyncRef == type)
 	{
-		pSheetPr->m_oSyncRef.Init();
-		pSheetPr->m_oSyncRef->append(m_oBufferedStream.GetString4(length));
+		pSheetPr->m_oSyncRef = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSer_SheetPr::SyncVertical == type)
 	{
@@ -4645,13 +4766,11 @@ int BinaryWorksheetsTableReader::ReadHyperlink(BYTE type, long length, void* poR
 	int res = c_oSerConstants::ReadOk;
 	if(c_oSerHyperlinkTypes::Ref == type)
 	{
-		pHyperlink->m_oRef.Init();
-		pHyperlink->m_oRef->append(m_oBufferedStream.GetString4(length));
+		pHyperlink->m_oRef = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSerHyperlinkTypes::Display == type)
 	{
-		pHyperlink->m_oDisplay.Init();
-		pHyperlink->m_oDisplay->append(m_oBufferedStream.GetString4(length));
+		pHyperlink->m_oDisplay = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSerHyperlinkTypes::Hyperlink == type)
 	{
@@ -4662,13 +4781,11 @@ int BinaryWorksheetsTableReader::ReadHyperlink(BYTE type, long length, void* poR
 	}
 	else if(c_oSerHyperlinkTypes::Location == type)
 	{
-		pHyperlink->m_oLocation.Init();
-		pHyperlink->m_oLocation->append(m_oBufferedStream.GetString4(length));
+		pHyperlink->m_oLocation = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSerHyperlinkTypes::Tooltip == type)
 	{
-		pHyperlink->m_oTooltip.Init();
-		pHyperlink->m_oTooltip->append(m_oBufferedStream.GetString4(length));
+		pHyperlink->m_oTooltip = m_oBufferedStream.GetString4(length);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -4681,8 +4798,7 @@ int BinaryWorksheetsTableReader::ReadMergeCells(BYTE type, long length, void* po
 	if(c_oSerWorksheetsTypes::MergeCell == type)
 	{
 		OOX::Spreadsheet::CMergeCell* pMergeCell = new OOX::Spreadsheet::CMergeCell();
-		pMergeCell->m_oRef.Init();
-		pMergeCell->m_oRef->append(m_oBufferedStream.GetString4(length));
+		pMergeCell->m_oRef = m_oBufferedStream.GetString4(length);
 		pMergeCells->m_arrItems.push_back(pMergeCell);
 	}
 	else
@@ -6400,6 +6516,29 @@ int BinaryWorksheetsTableReader::ReadSparkline(BYTE type, long length, void* poR
         res = c_oSerConstants::ReadUnknown;
     return res;
 }
+int BinaryWorksheetsTableReader::ReadSlicers(BYTE type, long length, void* poResult)
+{
+    OOX::Spreadsheet::CSlicerRefs* pSlicerRefs = static_cast<OOX::Spreadsheet::CSlicerRefs*>(poResult);
+    int res = c_oSerConstants::ReadOk;
+    if(c_oSerWorksheetsTypes::Slicer == type)
+    {
+		OOX::Spreadsheet::CSlicerFile* pSlicer = new OOX::Spreadsheet::CSlicerFile(NULL);
+		pSlicer->m_oSlicers.Init();
+		
+		m_oBufferedStream.GetUChar();//type
+		pSlicer->m_oSlicers->fromPPTY(&m_oBufferedStream);
+		
+		NSCommon::smart_ptr<OOX::File> pSlicerFile(pSlicer);
+		const OOX::RId oRId = m_pCurWorksheet->Add(pSlicerFile);
+        
+		pSlicerRefs->m_oSlicer.emplace_back();
+		pSlicerRefs->m_oSlicer.back().m_oRId.Init();
+		pSlicerRefs->m_oSlicer.back().m_oRId->SetValue(oRId.get());	
+    }
+    else
+        res = c_oSerConstants::ReadUnknown;
+    return res;
+}
 
 void BinaryWorksheetsTableReader::AddLineBreak(OOX::Spreadsheet::CSi& oSi)
 {
@@ -6407,8 +6546,7 @@ void BinaryWorksheetsTableReader::AddLineBreak(OOX::Spreadsheet::CSi& oSi)
 	pRun->m_oRPr.Init();
 	OOX::Spreadsheet::CRPr& pRPr = pRun->m_oRPr.get2();
 	pRPr.m_oRFont.Init();
-	pRPr.m_oRFont->m_sVal.Init();
-	pRPr.m_oRFont->m_sVal->append(_T("Tahoma"));
+	pRPr.m_oRFont->m_sVal = L"Tahoma";
 	pRPr.m_oSz.Init();
 	pRPr.m_oSz->m_oVal.Init();
 	pRPr.m_oSz->m_oVal->SetValue(9);

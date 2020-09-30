@@ -230,7 +230,11 @@ namespace PPTX
 			}
 
 			std::wstring imagePath;
-			if(!oleFilepathImage.empty())
+			if(!dataFilepathImage.empty())
+			{
+				imagePath = dataFilepathImage;
+			}
+			else if(!oleFilepathImage.empty())
 			{
 				imagePath = oleFilepathImage;
 			}

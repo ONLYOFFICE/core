@@ -66,7 +66,6 @@ letter_spacing letter_spacing::parse(const std::wstring & Str)
     } 
     catch(errors::invalid_attribute & ) {}
 
-    BOOST_THROW_EXCEPTION( errors::invalid_attribute() );
     return letter_spacing( Normal );
 }
 

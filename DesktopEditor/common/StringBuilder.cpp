@@ -35,6 +35,17 @@
 namespace NSStringUtils
 {
 	const wchar_t g_hex_values[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+	static std::wstring	g_bstr_nodeopen		= L"<";
+	static std::wstring	g_bstr_nodeclose	= L">";
+	static std::wstring	g_bstr_nodeopen_slash	= L"</";
+	static std::wstring	g_bstr_nodeclose_slash	= L"/>";
+	static std::wstring	g_bstr_node_space	= L" ";
+	static std::wstring	g_bstr_node_equal	= L"=";
+	static std::wstring	g_bstr_node_quote	= L"\"";
+	static std::wstring	g_bstr_boolean_true	= L"true";
+	static std::wstring	g_bstr_boolean_false	= L"false";
+	static std::wstring	g_bstr_boolean_true2	= L"1";
+	static std::wstring	g_bstr_boolean_false2	= L"0";
 
 	CStringBuilderA::CStringBuilderA()
 	{
@@ -593,10 +604,22 @@ namespace NSStringUtils
 		return (wchar_t(' ') == *m_pData);
 	}
 
+	void CStringBuilder::AddBool2(bool val)
+	{
+		if (val)
+			WriteString(g_bstr_boolean_true2);
+		else
+			WriteString(g_bstr_boolean_false2);
+	}
 	void CStringBuilder::AddInt(int val)
 	{
 		AddSize(10);
 		AddIntNoCheck(val);
+	}
+	void CStringBuilder::AddUInt(unsigned int val)
+	{
+		//todo AddIntNoCheck
+		WriteString(std::to_wstring(val));
 	}
 	void CStringBuilder::AddIntDel10(int val)
 	{
@@ -818,6 +841,170 @@ namespace NSStringUtils
         m_pDataCur += nSkip;
         m_lSizeCur += nSkip;
     }
+	void CStringBuilder::StartNode(const std::wstring& name)
+	{
+		WriteString(g_bstr_nodeopen);
+		WriteString(name);
+	}
+	void CStringBuilder::StartAttributes()
+	{
+		// none
+	}
+	void CStringBuilder::EndAttributes()
+	{
+		WriteString(g_bstr_nodeclose);
+	}
+	void CStringBuilder::EndNode(const std::wstring& name)
+	{
+		WriteString(g_bstr_nodeopen_slash);
+		WriteString(name);
+		WriteString(g_bstr_nodeclose);
+	}
+	void CStringBuilder::WriteNodeBegin(std::wstring strNodeName, bool bAttributed)
+	{
+		WriteString(g_bstr_nodeopen);
+		WriteString(strNodeName);
+
+		if (!bAttributed)
+			WriteString(g_bstr_nodeclose);
+	}
+	void CStringBuilder::WriteNodeEnd(std::wstring strNodeName, bool bEmptyNode, bool bEndNode)
+	{
+		if (bEmptyNode)
+		{
+			if (bEndNode)
+				WriteString(g_bstr_nodeclose_slash);
+			else
+				WriteString(g_bstr_nodeclose);
+		}
+		else
+		{
+			WriteString(g_bstr_nodeopen_slash);
+			WriteString(strNodeName);
+			WriteString(g_bstr_nodeclose);
+		}
+	}
+	void CStringBuilder::WriteAttribute(const std::wstring& strAttributeName, bool value)
+	{
+		WriteString(g_bstr_node_space);
+		WriteString(strAttributeName);
+		WriteString(g_bstr_node_equal);
+		WriteString(g_bstr_node_quote);
+		AddBool2(value);
+		WriteString(g_bstr_node_quote);
+	}
+	void CStringBuilder::WriteAttribute(const std::wstring& strAttributeName, int value)
+	{
+		WriteString(g_bstr_node_space);
+		WriteString(strAttributeName);
+		WriteString(g_bstr_node_equal);
+		WriteString(g_bstr_node_quote);
+		AddInt(value);
+		WriteString(g_bstr_node_quote);
+	}
+	void CStringBuilder::WriteAttribute(const std::wstring& strAttributeName, unsigned int value)
+	{
+		WriteString(g_bstr_node_space);
+		WriteString(strAttributeName);
+		WriteString(g_bstr_node_equal);
+		WriteString(g_bstr_node_quote);
+		AddUInt(value);
+		WriteString(g_bstr_node_quote);
+	}
+	void CStringBuilder::WriteAttribute(const std::wstring& strAttributeName, double value)
+	{
+		WriteString(g_bstr_node_space);
+		WriteString(strAttributeName);
+		WriteString(g_bstr_node_equal);
+		WriteString(g_bstr_node_quote);
+		AddDouble(value, -1);
+		WriteString(g_bstr_node_quote);
+	}
+	void CStringBuilder::WriteAttribute(const std::wstring& strAttributeName, const std::wstring& value)
+	{
+		WriteString(g_bstr_node_space);
+		WriteString(strAttributeName);
+		WriteString(g_bstr_node_equal);
+		WriteString(g_bstr_node_quote);
+		WriteString(value);
+		WriteString(g_bstr_node_quote);
+	}
+	void CStringBuilder::WriteAttribute(const std::wstring& strAttributeName, const wchar_t* value)
+	{
+		WriteString(g_bstr_node_space);
+		WriteString(strAttributeName);
+		WriteString(g_bstr_node_equal);
+		WriteString(g_bstr_node_quote);
+		WriteString(value);
+		WriteString(g_bstr_node_quote);
+	}
+	void CStringBuilder::WriteAttributeEncodeXml(const std::wstring& strAttributeName, const std::wstring& value)
+	{
+		WriteString(g_bstr_node_space);
+		WriteString(strAttributeName);
+		WriteString(g_bstr_node_equal);
+		WriteString(g_bstr_node_quote);
+		WriteEncodeXmlString(value);
+		WriteString(g_bstr_node_quote);
+	}
+	void CStringBuilder::WriteAttributeEncodeXml(const std::wstring& strAttributeName, const wchar_t* value)
+	{
+		WriteString(g_bstr_node_space);
+		WriteString(strAttributeName);
+		WriteString(g_bstr_node_equal);
+		WriteString(g_bstr_node_quote);
+		WriteEncodeXmlString(value);
+		WriteString(g_bstr_node_quote);
+	}
+	void CStringBuilder::WriteNodeValue(const std::wstring& strNodeName, bool value)
+	{
+		WriteNodeBegin(strNodeName);
+		AddBool2(value);
+		WriteNodeEnd(strNodeName);
+	}
+	void CStringBuilder::WriteNodeValue(const std::wstring& strNodeName, int value)
+	{
+		WriteNodeBegin(strNodeName);
+		AddInt(value);
+		WriteNodeEnd(strNodeName);
+	}
+	void CStringBuilder::WriteNodeValue(const std::wstring& strNodeName, unsigned int value)
+	{
+		WriteNodeBegin(strNodeName);
+		AddUInt(value);
+		WriteNodeEnd(strNodeName);
+	}
+	void CStringBuilder::WriteNodeValue(const std::wstring& strNodeName, double value)
+	{
+		WriteNodeBegin(strNodeName);
+		AddDouble(value, -1);
+		WriteNodeEnd(strNodeName);
+	}
+	void CStringBuilder::WriteNodeValue(const std::wstring& strNodeName, const std::wstring& value)
+	{
+		WriteNodeBegin(strNodeName);
+		WriteString(value);
+		WriteNodeEnd(strNodeName);
+	}
+	void CStringBuilder::WriteNodeValue(const std::wstring& strNodeName, const wchar_t* value)
+	{
+		WriteNodeBegin(strNodeName);
+		WriteString(value);
+		WriteNodeEnd(strNodeName);
+	}
+	void CStringBuilder::WriteNodeValueEncodeXml(const std::wstring& strNodeName, const std::wstring& value)
+	{
+		WriteNodeBegin(strNodeName);
+		WriteEncodeXmlString(value);
+		WriteNodeEnd(strNodeName);
+	}
+	void CStringBuilder::WriteNodeValueEncodeXml(const std::wstring& strNodeName, const wchar_t* value)
+	{
+		WriteNodeBegin(strNodeName);
+		WriteEncodeXmlString(value);
+		WriteNodeEnd(strNodeName);
+	}
+
 
 	unsigned char CStringBuilder::CheckXmlCode(unsigned int c)
 	{

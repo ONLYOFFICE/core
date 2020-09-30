@@ -106,7 +106,7 @@ namespace OOX
 				writer.WriteString(name);
 				writer.WriteString(_T(">"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -122,7 +122,7 @@ namespace OOX
 						std::string sTemp = oReader.GetTextA();
 						wchar_t* pUnicodes = NULL;
 						LONG lOutputCount = 0;
-						NSFile::CUtf8Converter::GetUnicodeStringFromUTF8WithHHHH((BYTE*)sTemp.c_str(), sTemp.length(), pUnicodes, lOutputCount);
+						NSFile::CUtf8Converter::GetUnicodeStringFromUTF8WithHHHH((BYTE*)sTemp.c_str(), (LONG)sTemp.length(), pUnicodes, lOutputCount);
 						m_sText.append(pUnicodes);
 						RELEASEARRAYOBJECTS(pUnicodes);
 					}

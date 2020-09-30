@@ -39,13 +39,13 @@
     #include <windows.h>
 #endif
 
-#if defined(__linux__) || defined(_MAC) && !defined(_IOS)
+#ifdef _LINUX
 #include <unistd.h>
 #include <string.h>
+#include <sys/stat.h>
 #endif
 
 #ifdef _IOS
-    #include <unistd.h>
     const char* fileSystemRepresentation(const std::wstring& sFileName);
 #endif
 
@@ -1162,6 +1162,12 @@ namespace NSFile
 
             oFile.CloseFile();
         }
+        else
+        {
+#ifdef _WIN32
+            return (0 != ::CopyFileW(strSrc.c_str(), strDst.c_str(), 1));
+#endif
+        }
 
         char* pBuffer_in = NULL;
         char* pBuffer_out = NULL;
@@ -1414,6 +1420,41 @@ namespace NSFile
     void CFileBinary::SetTempPath(const std::wstring& strTempPath)
     {
         g_overrideTmpPath = strTempPath;
+    }
+
+    unsigned long CFileBinary::GetDateTime(const std::wstring & inputFile)
+    {
+        unsigned long result = 0;
+#if defined(_WIN32) || defined (_WIN64)
+        HANDLE hFile;
+        hFile = ::CreateFileW(inputFile.c_str(), GENERIC_READ, FILE_SHARE_READ,  NULL,  OPEN_EXISTING,  FILE_ATTRIBUTE_NORMAL, NULL);
+
+        if (hFile)
+        {
+            FILETIME ft; ft.dwLowDateTime = ft.dwHighDateTime = 0;
+            if (GetFileTime(hFile, NULL, NULL, &ft))
+            {
+                WORD fatDate = 0, fatTime = 0;
+                if (FileTimeToDosDateTime(&ft, &fatDate,  &fatTime))
+                {
+                    result = (fatDate << 16) + fatTime;
+                }
+            }
+            CloseHandle(hFile);
+        }
+#else
+        std::string inputFileA = U_TO_UTF8(inputFile);
+#if defined(__linux__) && !defined(_MAC)
+        struct stat attrib;
+        stat(inputFileA.c_str(), &attrib);
+        result = attrib.st_mtim.tv_nsec;
+#else
+        struct stat attrib;
+        stat(inputFileA.c_str(), &attrib);
+        result = (unsigned long)attrib.st_mtimespec.tv_nsec;
+#endif
+#endif
+        return result;
     }
 }
 

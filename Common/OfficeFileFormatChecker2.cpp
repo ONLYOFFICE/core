@@ -408,7 +408,11 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
         file.ReadFile(buffer, MIN_SIZE_BUFFER, dwReadBytes);
         int sizeRead = (int)dwReadBytes;
 
-		if ( isRtfFormatFile(buffer,sizeRead) ) // min size - 5
+		if ( isOOXFlatFormatFile(buffer,sizeRead) )
+		{
+			//nFileType;
+		}
+		else if ( isRtfFormatFile(buffer,sizeRead) ) // min size - 5
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF;
 		}
@@ -777,7 +781,26 @@ bool COfficeFileFormatChecker::isOpenOfficeFlatFormatFile(unsigned char* pBuffer
 
 	return false;
 }
+bool COfficeFileFormatChecker::isOOXFlatFormatFile(unsigned char* pBuffer,int dwBytes)
+{
+	std::string xml_string((char*)pBuffer, dwBytes);
 
+    const char *docxFormatLine = "xmlns:w=\"http://schemas.microsoft.com/office/word/2003/wordml\"";
+    const char *xlsxFormatLine = "xmlns:ss=\"urn:schemas-microsoft-com:office:spreadsheet\"";
+
+	if (std::string::npos != xml_string.find(docxFormatLine))
+	{
+		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_FLAT;
+	}
+	else if (std::string::npos != xml_string.find(xlsxFormatLine))
+	{
+		nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_FLAT;
+	}
+
+	if (nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN) return true;
+
+	return false;
+}
 std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
 {
     switch (type)

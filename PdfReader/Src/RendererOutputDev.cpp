@@ -492,9 +492,14 @@ namespace PdfReader
 		}
 		else
 		{
+			for (int nIndex = 0; nIndex < nSize; ++nIndex)
+			{
+				pDash[nIndex] = PDFCoordsToMM(pDash[nIndex]);
+			}
+
 			m_pRenderer->PenDashPattern(pDash, (long)nSize);
 			m_pRenderer->put_PenDashStyle(Aggplus::DashStyleCustom);
-			m_pRenderer->put_PenDashOffset(dStart);
+			m_pRenderer->put_PenDashOffset(PDFCoordsToMM(dStart));
 		}
 	}
 	void RendererOutputDev::UpdateFlatness(GrState *pGState)
@@ -2449,7 +2454,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
@@ -2462,7 +2467,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
@@ -2475,7 +2480,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
@@ -2488,7 +2493,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
@@ -2501,7 +2506,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
@@ -2809,7 +2814,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		int nClipFlag = bEO ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
@@ -2826,7 +2831,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		m_pRenderer->put_FontName(wsFontName);
@@ -2864,7 +2869,7 @@ namespace PdfReader
     }
 	void RendererOutputDev::BeginStringOperator(GrState *pGState)
 	{
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		m_pRenderer->BeginCommand(c_nTextType);
@@ -2894,7 +2899,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::EndStringOperator(GrState *pGState)
 	{
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		int nRenderMode = pGState->GetRenderMode();
@@ -2920,7 +2925,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::DrawString(GrState *pGState, StringExt *seString)
 	{
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		// Проверяем наличие списка со шрифтами
@@ -2969,7 +2974,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::DrawChar(GrState *pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY, CharCode nCode, int nBytesCount, Unicode *pUnicode, int nUnicodeLen)
 	{
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		// Проверяем наличие списка со шрифтами
@@ -3206,6 +3211,14 @@ namespace PdfReader
 
 		pImageStream->Reset();
 
+		GrColorSpace* pColorSpace = pGState->GetFillColorSpace();
+		GrRGB oRGB;
+		pColorSpace->GetRGB(pGState->GetFillColor(), &oRGB);
+
+		unsigned char r = ColorToByte(oRGB.r);
+		unsigned char g = ColorToByte(oRGB.g);
+		unsigned char b = ColorToByte(oRGB.b);
+
 		unsigned char unAlpha = m_bTransparentGroup ? 255.0 * pGState->GetFillOpacity() : 255;
 		unsigned char unPixel = 0;
 		int nInvert = (bInvert ? 1 : 0);
@@ -3217,9 +3230,9 @@ namespace PdfReader
 			{
 				int nIndex = 4 * (nX + nY * nWidth);
 				unsigned char unPixel = *pMask++ ^ nInvert;
-				pBufferPtr[nIndex + 0] = unPixel ? 255 : 0;
-				pBufferPtr[nIndex + 1] = unPixel ? 255 : 0;
-				pBufferPtr[nIndex + 2] = unPixel ? 255 : 0;
+				pBufferPtr[nIndex + 0] = unPixel ? 255 : b;
+				pBufferPtr[nIndex + 1] = unPixel ? 255 : g;
+				pBufferPtr[nIndex + 2] = unPixel ? 255 : r;
 				pBufferPtr[nIndex + 3] = unPixel ? 0 : unAlpha;
 			}
 		}
@@ -3448,7 +3461,7 @@ namespace PdfReader
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 		m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
 	}
-	void RendererOutputDev::DrawSoftMaskedImage(GrState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GrImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GrImageColorMap *pMaskColorMap)
+	void RendererOutputDev::DrawSoftMaskedImage(GrState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GrImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GrImageColorMap *pMaskColorMap, unsigned char *pMatteColor)
 	{
         if (m_bDrawOnlyText)
             return;
@@ -3623,6 +3636,36 @@ namespace PdfReader
 			delete pSMaskStream;
 		}
 
+		// Undo preblend
+		if (pMatteColor)
+		{
+			GrRGB oMatteRGB;
+			pColorMap->GetRGB(pMatteColor, &oMatteRGB);
+
+			unsigned char unMatteR = ColorToByte(oMatteRGB.r);
+			unsigned char unMatteG = ColorToByte(oMatteRGB.g);
+			unsigned char unMatteB = ColorToByte(oMatteRGB.b);
+
+			for (int nIndex = 0; nIndex < nHeight * nWidth * 4; nIndex += 4)
+			{
+				unsigned char unA = pBufferPtr[nIndex + 3];
+
+				if (0 == unA)
+				{
+					pBufferPtr[nIndex + 0] = 255;
+					pBufferPtr[nIndex + 1] = 255;
+					pBufferPtr[nIndex + 2] = 255;
+					continue;
+				}
+
+				double dK = 255.0 / unA;
+
+				pBufferPtr[nIndex + 0] = max(0, min(255, int((pBufferPtr[nIndex + 0] - unMatteB) * dK + unMatteB)));
+				pBufferPtr[nIndex + 1] = max(0, min(255, int((pBufferPtr[nIndex + 1] - unMatteG) * dK + unMatteG)));
+				pBufferPtr[nIndex + 2] = max(0, min(255, int((pBufferPtr[nIndex + 2] - unMatteR) * dK + unMatteR)));
+			}
+		}
+
 		double arrMatrix[6];
 		double *pCTM = pGState->GetCTM();
 		//  Исходное предобразование
@@ -3676,9 +3719,9 @@ namespace PdfReader
 	void RendererOutputDev::DoPath(GrState *pGState, GrPath *pPath, double dPageHeight, double *pCTM)
 	{
         if (m_bDrawOnlyText)
-            return;
+			return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		double arrMatrix[6];
@@ -3730,7 +3773,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-		if (m_bTransparentGroup)
+		if (m_bTransparentGroupSoftMask)
 			return;
 
 		if (m_bTiling)
@@ -3753,22 +3796,22 @@ namespace PdfReader
         m_pRenderer->BeginCommand(c_nResetClipType);
         m_pRenderer->EndCommand(c_nResetClipType);
 
-        for (int nIndex = nPathIndexStart; nIndex < pClip->GetPathsCount(); nIndex++)
-        {
-            GrPath *pPath   = pClip->GetPath(nIndex);
-            int     nFlag   = pClip->GetFlag(nIndex);
-            double *pMatrix = pClip->GetMatrix(nIndex);
+		for (int nIndex = nPathIndexStart; nIndex < pClip->GetPathsCount(); nIndex++)
+		{
+			GrPath *pPath   = pClip->GetPath(nIndex);
+			int     nFlag   = pClip->GetFlag(nIndex);
+			double *pMatrix = pClip->GetMatrix(nIndex);
 
-            int     nClipFlag = GrClipEOFlag == nFlag ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
-            nClipFlag |= c_nClipRegionIntersect;
+			int     nClipFlag = GrClipEOFlag == nFlag ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
+			nClipFlag |= c_nClipRegionIntersect;
 
-            m_pRenderer->BeginCommand(c_nClipType);
-            m_pRenderer->put_ClipMode(nClipFlag);
-            DoPath(pGState, pPath, pGState->GetPageHeight(), pMatrix);
-            m_pRenderer->EndCommand(c_nPathType);
-            m_pRenderer->EndCommand(c_nClipType);
-            m_pRenderer->PathCommandEnd();
-        }
+			m_pRenderer->BeginCommand(c_nClipType);
+			m_pRenderer->put_ClipMode(nClipFlag);
+			DoPath(pGState, pPath, pGState->GetPageHeight(), pMatrix);
+			m_pRenderer->EndCommand(c_nPathType);
+			m_pRenderer->EndCommand(c_nClipType);
+			m_pRenderer->PathCommandEnd();
+		}
 
         int nTextClipCount = pClip->GetTextsCount();
         if (-1 == nPathIndex && nTextClipCount > 0)

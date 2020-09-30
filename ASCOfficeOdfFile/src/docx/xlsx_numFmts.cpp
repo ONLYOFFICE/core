@@ -30,62 +30,160 @@
  *
  */
 #include <vector>
+#include <map>
 #include <xml/utils.h>
+#include <xml/simple_xml_writer.h>
 
 #include "xlsx_numFmts.h"
+#include "../odf/datatypes/officevaluetype.h"
 
 namespace cpdoccore {
 namespace oox {
 
-struct xlsx_num_fmts::Impl
+class xlsx_num_fmts::Impl
 {
-    std::vector<std::wstring> formats_;
+private:
+	struct _desc
+	{
+		std::wstring code;
+		unsigned int id;
+	};
+    std::vector<_desc> arrFormats;
+	std::map<unsigned int, size_t> mapIdsFormat;
+	std::map<std::wstring, size_t> mapFormatsCode;
 
-    static size_t transform_id(size_t id)
-    {
-        return id + 164;
-    }
+	unsigned int last_custom_id = 164;
 
-    size_t num_format_id(const std::wstring & format_code);
+	unsigned int add(const std::wstring & format_code, unsigned int id);
+public:   
+	unsigned int add_or_find(const std::wstring & format_code, char type);
+	void serialize(std::wostream & _Wostream) const;
 };
-
-size_t xlsx_num_fmts::Impl::num_format_id(const std::wstring & format_code)
+unsigned int xlsx_num_fmts::Impl::add(const std::wstring & format_code, unsigned int id)
 {
-    for (size_t i = 0; i < formats_.size(); ++i)
-    {
-        if (formats_[i] == format_code)
-            return transform_id(i);
-    }
+	std::map<unsigned int, size_t>::iterator pFind = mapIdsFormat.find(id);
 
-    formats_.push_back(format_code);
-    return transform_id(formats_.size() - 1);            
+	if (pFind == mapIdsFormat.end())
+	{
+		mapIdsFormat.insert(std::make_pair(id, arrFormats.size()));
+		mapFormatsCode.insert(std::make_pair(format_code, arrFormats.size()));
+
+		_desc desc = {format_code, id};
+		arrFormats.push_back(desc);
+
+	}
+	else
+	{
+		//занято id для format_code -> следующий если есть берем
+		id = add(format_code, ++id);
+	}
+	return id;
+}
+unsigned int xlsx_num_fmts::Impl::add_or_find(const std::wstring & format_code, char format_code_type)
+{
+	if (format_code.empty()) return 0;
+
+	std::map<std::wstring, size_t>::iterator pFind = mapFormatsCode.find(format_code);
+
+	if (pFind != mapFormatsCode.end())
+	{
+		return arrFormats[pFind->second].id;
+	}
+	else
+	{ 
+		unsigned int id = 0;
+		if (format_code_type == odf_types::office_value_type::Currency)
+		{
+			if (std::wstring::npos != format_code.find(L"#,##0.00"))
+			{
+				if (std::wstring::npos != format_code.find(L"[Red]"))			id = 8; // "€"#,##0.00;[Red]\-"€"#,##0.00
+				else															id = 7; // "€"#,##0.00;\-"€"#,##0.00
+			}
+			else
+				id = last_custom_id++;
+		}
+		else if (format_code_type == odf_types::office_value_type::Date)
+		{
+			if (std::wstring::npos != format_code.find(L"mm-dd-yy"))			id = 14; 
+			else if (std::wstring::npos != format_code.find(L"d-mmm-yy"))		id = 15; 
+			else if (std::wstring::npos != format_code.find(L"d-mmm"))			id = 16; 
+			else if (std::wstring::npos != format_code.find(L"mmm-yy"))			id = 17; 
+			else if (std::wstring::npos != format_code.find(L"m/d/yy h:mm"))	id = 22; 
+			else
+				id = last_custom_id++;
+		}
+		else if (format_code_type == odf_types::office_value_type::Time)
+		{
+			if (std::wstring::npos != format_code.find(L"h:mm AM/PM"))			id = 18; 
+			else if (std::wstring::npos != format_code.find(L"h:mm:ss AM/PM"))	id = 19; 
+			else if (std::wstring::npos != format_code.find(L"h:mm"))			id = 20; 
+			else if (std::wstring::npos != format_code.find(L"h:mm:ss"))		id = 21; 
+			else if (std::wstring::npos != format_code.find(L"m/d/yy h:mm"))	id = 22; 
+			else
+				id = last_custom_id++;
+		}
+		else if (format_code_type == odf_types::office_value_type::Scientific)
+		{
+			if (std::wstring::npos != format_code.find(L"0.00E+00"))			id = 11;
+			else
+				id = last_custom_id++;
+		}
+		else if (format_code_type == odf_types::office_value_type::Fraction)
+		{
+			if (std::wstring::npos != format_code.find(L"??/??"))				id = 13;
+			else if (std::wstring::npos != format_code.find(L"?/?"))			id = 12; 
+			else
+				id = last_custom_id++;
+		}
+		else if (format_code_type == odf_types::office_value_type::Percentage)
+		{
+			if (std::wstring::npos != format_code.find(L"0.00%"))				id = 10;
+			else if (std::wstring::npos != format_code.find(L"0%"))				id = 9;
+			else
+				id = last_custom_id++;
+		}
+		else
+		{
+			id = last_custom_id++;
+		}
+		return add(format_code, id);
+	}
+}
+void xlsx_num_fmts::Impl::serialize(std::wostream & strm) const
+{
+    CP_XML_WRITER(strm)
+    {
+        CP_XML_NODE (L"numFmts")
+        {
+            CP_XML_ATTR (L"formatCode", arrFormats.size());
+			
+			for (size_t i = 0; i < arrFormats.size(); ++i)
+			{
+				CP_XML_NODE(L"numFmt")
+				{	
+					CP_XML_ATTR (L"numFmtId", arrFormats[i].id);
+					CP_XML_ATTR (L"formatCode", arrFormats[i].code);
+				}
+			}
+		}
+	}
 }
 
+//-----------------------------------------------------------------------------------------------------------------
 xlsx_num_fmts::xlsx_num_fmts() : impl_(new xlsx_num_fmts::Impl())
 {
 }
-
 xlsx_num_fmts::~xlsx_num_fmts()
-{}
-
-size_t xlsx_num_fmts::num_format_id(const std::wstring & format_code)
 {
-    return impl_->num_format_id(format_code);
 }
-
-void xlsx_num_fmts::serialize(std::wostream & _Wostream) const
+unsigned int xlsx_num_fmts::add_or_find(const std::wstring & format_code, char format_code_type)
 {
-    _Wostream << L"<numFmts count=\"" << impl_->formats_.size() << L"\">";
-    for (size_t i = 0; i < impl_->formats_.size(); ++i)
-    {
-        _Wostream << L"<numFmt formatCode=\"" << xml::utils::replace_text_to_xml(impl_->formats_[i]) <<
-            L"\" numFmtId=\"" << impl_->transform_id(i) << "\" />";
-    }
-        
-    _Wostream << L"</numFmts>";
+    return impl_->add_or_find(format_code, format_code_type);
 }
-
-
+void xlsx_num_fmts::serialize(std::wostream & strm) const
+{
+	impl_->serialize(strm);
+}
    
 }
 }

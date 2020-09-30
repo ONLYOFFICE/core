@@ -2831,6 +2831,7 @@ namespace NSEditorApi
     private:
         int m_nId;
         int m_nLevel;
+        std::wstring m_sMessage;
         
     public:
         
@@ -2843,6 +2844,7 @@ namespace NSEditorApi
         
         LINK_PROPERTY_INT(Id)
         LINK_PROPERTY_INT(Level)
+        LINK_PROPERTY_STRING(Message)
     };
 }
 

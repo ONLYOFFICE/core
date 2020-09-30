@@ -69,7 +69,7 @@ namespace OOX
 		//<smartTags>
 		//<webPublishItems>
 
-		class CWorksheet : public OOX::File, public OOX::IFileContainer
+		class CWorksheet : public OOX::File, public OOX::IFileContainer, public WritingElement
 		{
 		public:
 			CWorksheet(OOX::Document* pMain);
@@ -82,9 +82,20 @@ namespace OOX
 				read(oRootPath, oPath);
 			}
 			virtual void read(const CPath& oRootPath, const CPath& oPath);
-			void read(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 			
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
+			
 			void toXMLStart(NSStringUtils::CStringBuilder& writer) const;
 			void toXMLEnd(NSStringUtils::CStringBuilder& writer) const;
 			virtual const OOX::FileType type() const
@@ -112,6 +123,8 @@ namespace OOX
 			void PrepareConditionalFormatting();
 			void PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::Spreadsheet::CThreadedComments* pThreadedComments, OOX::Spreadsheet::CLegacyDrawingWorksheet* pLegacyDrawing);
 			void PrepareToWrite();
+
+			void ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader);
 
 			CPath	m_oReadPath;
 			

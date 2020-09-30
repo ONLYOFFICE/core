@@ -69,7 +69,6 @@ text_combine text_combine::parse(const std::wstring & Str)
         return text_combine( Lines );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return text_combine( None );
     }
 }

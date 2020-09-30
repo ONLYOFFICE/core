@@ -40,14 +40,11 @@
 
 namespace OOX
 {
-	
-void CComment::fromXML(XmlUtils::CXmlLiteReader& oReader) 
+void CComment::fromXML2(XmlUtils::CXmlLiteReader& oReader) 
 {
-	ReadAttributes( oReader );
-
 	if ( oReader.IsEmptyNode() )
 		return;
-
+	
 	int nParentDepth = oReader.GetDepth();
 	while( oReader.ReadNextSiblingNode( nParentDepth ) )
 	{
@@ -114,10 +111,26 @@ void CComment::fromXML(XmlUtils::CXmlLiteReader& oReader)
 			pItem = new Logic::CSdt( oReader );
 		else if ( L"w:tbl" ==sName )
 			pItem = new Logic::CTbl( oReader );
+		else if ( L"w:tbl" ==sName )
+			pItem = new Logic::CTbl( oReader );
+		else if ( L"aml:content" ==sName )
+		{
+			fromXML2(oReader);
+			break;
+		}
 
 		if ( pItem )
 			m_arrItems.push_back( pItem );
 	}
+}
+void CComment::fromXML(XmlUtils::CXmlLiteReader& oReader) 
+{
+	ReadAttributes( oReader );
+
+	if ( oReader.IsEmptyNode() )
+		return;
+
+	fromXML2(oReader);
 }
 
 std::wstring CComment::getText() const
@@ -242,20 +255,25 @@ std::wstring CComment::getTextArr(const std::vector<WritingElement* > & arrItems
 void CComment::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
 	WritingElement_ReadAttributes_Start( oReader )
-        WritingElement_ReadAttributes_Read_if     ( oReader, L"w:author",        m_oAuthor )
-        WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date",          m_oDate )
-		WritingElement_ReadAttributes_Read_else_if( oReader, L"oodata",          m_oOOData )
-        WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",            m_oId )
+        WritingElement_ReadAttributes_Read_if     ( oReader, L"w:author",		m_oAuthor )
+        WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date",			m_oDate )
+		WritingElement_ReadAttributes_Read_else_if( oReader, L"oodata",			m_oOOData )
+        WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",			m_oId )
 		WritingElement_ReadAttributes_Read_else_if( oReader, L"w:initials",      m_oInitials )
+		
+        WritingElement_ReadAttributes_Read_if     ( oReader, L"aml:author",		m_oAuthor )
+        WritingElement_ReadAttributes_Read_else_if( oReader, L"aml:createdate",	m_oDate )
+		WritingElement_ReadAttributes_Read_else_if( oReader, L"aml:id",			m_oId )
+		WritingElement_ReadAttributes_Read_else_if( oReader, L"aml:initials",	m_oInitials )
 	WritingElement_ReadAttributes_End( oReader )
 }
 
-CComments::CComments(OOX::Document *pMain) : OOX::File(pMain)
+CComments::CComments(OOX::Document *pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 {
 	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
 	if (docx) docx->m_pComments = this;			
 }
-CComments::CComments(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain)
+CComments::CComments(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 {
 	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
 	if (docx) docx->m_pComments = this;			
@@ -271,8 +289,10 @@ CComments::~CComments()
 	}
 	m_arrComments.clear();
 }
-void CComments::read(const CPath& oFilePath)
+void CComments::read(const CPath& oRootPath, const CPath& oFilePath)
 {
+	IFileContainer::Read( oRootPath, oFilePath );
+
 	XmlUtils::CXmlLiteReader oReader;
 	
 	if ( !oReader.FromFile( oFilePath.GetPath() ) )
@@ -329,12 +349,12 @@ void CCommentExt::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		WritingElement_ReadAttributes_Read_else_if( oReader, L"w15:done",			m_oDone )
 	WritingElement_ReadAttributes_End( oReader )
 }
-CCommentsExt::CCommentsExt(OOX::Document *pMain) : OOX::File(pMain)
+CCommentsExt::CCommentsExt(OOX::Document *pMain) : OOX::File(pMain)//, OOX::IFileContainer(pMain)
 {
 	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
 	if (docx) docx->m_pCommentsExt = this;			
 }
-CCommentsExt::CCommentsExt(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain)
+CCommentsExt::CCommentsExt(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain)//, OOX::IFileContainer(pMain)
 {
 	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
 	if (docx) docx->m_pCommentsExt = this;			
@@ -350,8 +370,10 @@ CCommentsExt::~CCommentsExt()
 	}
 	m_arrComments.clear();
 }
-void CCommentsExt::read(const CPath& oFilePath)
+void CCommentsExt::read(const CPath& oRootPath, const CPath& oFilePath)
 {
+	//IFileContainer::Read( oRootPath, oFilePath );
+	
 	XmlUtils::CXmlLiteReader oReader;
 
 	if ( !oReader.FromFile( oFilePath.GetPath() ) )

@@ -69,7 +69,6 @@ text_display text_display::parse(const std::wstring & Str)
         return text_display( Condition );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return text_display( True );
     }
 }

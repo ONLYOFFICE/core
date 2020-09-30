@@ -815,6 +815,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 69880ED71F4D79BB00E4C541;
@@ -1089,12 +1090,12 @@
 					CRYPTOPP_DISABLE_ASM,
 					_IOS,
 				);
-				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../Common/3dParty/boost/boost_1_58_0";
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../Common/3dParty/boost/boost_1_72_0";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				VALID_ARCHS = "arm64 armv7 armv7s i386 x86_64";
+				VALID_ARCHS = "arm64 armv7 armv7s x86_64";
 			};
 			name = Debug;
 		};
@@ -1109,12 +1110,12 @@
 					CRYPTOPP_DISABLE_ASM,
 					_IOS,
 				);
-				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../Common/3dParty/boost/boost_1_58_0";
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../Common/3dParty/boost/boost_1_72_0";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				VALID_ARCHS = "arm64 armv7 armv7s i386 x86_64";
+				VALID_ARCHS = "arm64 armv7 armv7s x86_64";
 			};
 			name = Release;
 		};

@@ -192,107 +192,158 @@ public:
 		oScheme  = oArrayMem;
 	}
 	
-	std::wstring ConvertLayoutType(INT nGeom, BYTE* pPlaceholders)
+	void ConvertLayoutType(SSlideLayoutAtom & layoutRecord, std::wstring & type, std::wstring & name)
 	{
-		switch (nGeom)
+		name = L"Blank Slide";
+		type = L"blank";
+
+		switch (layoutRecord.m_nGeom)
 		{
 		case SL_TitleSlide:
-		case SL_MasterTitle:				return L"title";
+		case SL_MasterTitle:
+		{
+			name = L"Title Slide";
+			type = L"title";
+		}break;
 		case SL_TitleBody:
 			{
+				name = L"Title and Object Slide";
+				type = L"obj";
+
 				int ind = 0;
-				if (pPlaceholders[0] == 13 && pPlaceholders[1] != 0) ind++;
-				ePlaceholderType phbody = (ePlaceholderType)pPlaceholders[ind];
+				if (layoutRecord.m_pPlaceHolderID[0] == 13 && layoutRecord.m_pPlaceHolderID[1] != 0) ind++;
+				ePlaceholderType phbody = (ePlaceholderType)layoutRecord.m_pPlaceHolderID[ind];
 				switch (phbody)
 				{
-					case PT_MasterTitle:	return L"title";
-					case PT_Table:			return L"tbl";
-					case PT_OrgChart:		return L"dgm";
-					case PT_Graph:			return L"chart";
-				default:
-					break;
+					case PT_MasterTitle:	type = L"title";	name = L"Title and Object Slide";		break;
+					case PT_Table:			type = L"tbl";		name = L"Title and Table Slide";		break;
+					case PT_OrgChart:		type = L"dgm";		name = L"Title and Diagramma Slide";	break;
+					case PT_Graph:			type = L"chart";	name = L"Title and Chart Slide";		break;
+					default:
+						break;
 				}
-				return L"obj";
-			}
-		case SL_TitleOnly:					return L"titleOnly";
+			}break;
+		case SL_TitleOnly:
+		{
+			name = L"Title Only Slide";
+			type = L"titleOnly";
+		}break;
 		case SL_TwoColumns:
-			{
-				ePlaceholderType leftType  = (ePlaceholderType)pPlaceholders[1];
-                ePlaceholderType rightType = (ePlaceholderType)pPlaceholders[2];
+		{
+			ePlaceholderType leftType  = (ePlaceholderType)layoutRecord.m_pPlaceHolderID[1];
+            ePlaceholderType rightType = (ePlaceholderType)layoutRecord.m_pPlaceHolderID[2];
 
-				if (leftType == PT_Body && rightType == PT_Object)
-                {
-                    return L"txAndObj";
-                }
-				else if (leftType == PT_Object && rightType == PT_Body)
-                {
-                    return L"objAndTx";
-                }
-				else if (leftType == PT_Body && rightType == PT_ClipArt)
-                {
-                    return L"txAndClipArt";
-                }
-				else if (leftType == PT_ClipArt && rightType == PT_Body)
-                {
-                    return L"clipArtAndTx";
-                }
-				else if (leftType == PT_Body && rightType == PT_Graph)
-                {
-                    return L"txAndChart";
-                }
-				else if (leftType == PT_Graph && rightType == PT_Body)
-                {
-                    return L"chartAndTx";
-                }
-				else if (leftType == PT_Body && rightType == PT_Media)
-                {
-                    return L"txAndMedia";
-                }
-				else if (leftType == PT_Media && rightType == PT_Body)
-                {
-                    return L"mediaAndTx";
-                }
-                return L"twoObj";
-			}
+			name = L"Two Objects Slide";
+			type = L"twoObj";
+
+			if (leftType == PT_Body && rightType == PT_Object)
+            {
+				name = L"Text And Object Slide";
+				type = L"txAndObj";
+            }
+			else if (leftType == PT_Object && rightType == PT_Body)
+            {
+				name = L"Object And Text Slide";
+				type = L"objAndTx";
+            }
+			else if (leftType == PT_Body && rightType == PT_ClipArt)
+            {
+				name = L"Text And ClipArt Slide";
+				type = L"txAndClipArt";
+            }
+			else if (leftType == PT_ClipArt && rightType == PT_Body)
+            {
+				name = L"ClipArt And Text Slide";
+				type = L"clipArtAndTx";
+            }
+			else if (leftType == PT_Body && rightType == PT_Graph)
+            {
+				name = L"Text And Chart Slide";
+				type = L"txAndChart";
+            }
+			else if (leftType == PT_Graph && rightType == PT_Body)
+            {
+				name = L"Chart And Text Slide";
+				type = L"chartAndTx";
+            }
+			else if (leftType == PT_Body && rightType == PT_Media)
+            {
+				name = L"Text And Media Slide";
+				type = L"txAndMedia";
+            }
+			else if (leftType == PT_Media && rightType == PT_Body)
+            {
+				name = L"Media And Text Slide";
+				type = L"mediaAndTx";
+            }
+		}break;
 		case SL_TwoRows:
-			{
-				ePlaceholderType topType	= (ePlaceholderType)pPlaceholders[1];
-                ePlaceholderType bottomType = (ePlaceholderType)pPlaceholders[2];
+		{
+			ePlaceholderType topType	= (ePlaceholderType)layoutRecord.m_pPlaceHolderID[1];
+            ePlaceholderType bottomType = (ePlaceholderType)layoutRecord.m_pPlaceHolderID[2];
 
-				if (topType == PT_Body && bottomType == PT_Object)
-                {
-                    return L"txOverObj";
-                }
-                return L"objOverTx";
+			if (topType == PT_Body && bottomType == PT_Object)
+            {
+				name = L"Text Over Object Slide";
+				type = L"txOverObj";
+            }
+			else
+			{
+				name = L"Object Over Text Slide";
+				type = L"objOverTx";
 			}
+		}break;
 		case SL_ColumnTwoRows:
-			{
-				ePlaceholderType leftType = (ePlaceholderType)pPlaceholders[1];
+		{
+			ePlaceholderType leftType = (ePlaceholderType)layoutRecord.m_pPlaceHolderID[1];
 
-				if (leftType == PT_Object)
-                {
-                    return L"objAndTwoObj";
-                }
-                return L"txAndTwoObj";
+			if (leftType == PT_Object)
+            {
+				type = L"objAndTwoObj";
+            }
+			else
+			{
+				type = L"txAndTwoObj";
 			}
+		}break;
 		case SL_TwoRowsColumn:
-			{
-				ePlaceholderType rightType = (ePlaceholderType)pPlaceholders[2];
+		{
+			ePlaceholderType rightType = (ePlaceholderType)layoutRecord.m_pPlaceHolderID[2];
 
-				if (rightType == PT_Object)
-                {
-					return L"twoObjAndObj";
-                }
-                return L"twoObjAndTx";
+			if (rightType == PT_Object)
+            {
+				type = L"twoObjAndObj";
+            }
+			else
+			{
+				type = L"twoObjAndTx";
 			}
-		case SL_TwoColumnsRow:		return L"twoObjOverTx";
-		case SL_FourObjects:		return L"fourObj";		
-		case SL_BigObject:			return L"objOnly";
-		case SL_Blank:				return L"blank";
-		case SL_VerticalTitleBody:	return L"vertTitleAndTx";
-		case SL_VerticalTwoRows:	return L"vertTx";
+		}break;
+		case SL_TwoColumnsRow:
+		{
+			type = L"twoObjOverTx";
+		}break;
+		case SL_FourObjects:
+		{
+			type = L"fourObj";		
+		}break;
+		case SL_BigObject:
+		{
+			name = L"Object Only Slide";
+			type = L"objOnly";		
+		}break;
+		case SL_VerticalTitleBody:
+		{
+			type = L"vertTitleAndTx";		
+		}break;
+		case SL_VerticalTwoRows:
+		{
+			type = L"vertTx";		
+		}break;
+		case SL_Blank:
+		default:
+			break;
 		}
-		return L"blank";
 	}
 	
 	void AddAnimation		(_UINT32 dwSlideID, double Width, double Height, CElementPtr pElement);

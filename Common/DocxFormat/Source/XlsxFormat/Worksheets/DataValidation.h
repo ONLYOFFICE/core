@@ -31,7 +31,6 @@
  */
 #pragma once
 
-//#include "../CommonInclude.h"
 #include "../ComplexTypes_Spreadsheet.h"
 #include "../WritingElement.h"
 #include "../SimpleTypes_Spreadsheet.h"
@@ -45,7 +44,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDataValidationFormula)
-			CDataValidationFormula()
+			CDataValidationFormula(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CDataValidationFormula()
@@ -76,7 +75,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDataValidation)
-			CDataValidation()
+			CDataValidation(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CDataValidation()
@@ -126,7 +125,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDataValidations)
-			CDataValidations()
+			CDataValidations(OOX::Document *pMain = NULL) : WritingElementWithChilds<CDataValidation>(pMain)
 			{
 			}
 			virtual ~CDataValidations()

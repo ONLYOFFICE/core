@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_XFRM_INCLUDE_H_
-#define PPTX_LOGIC_XFRM_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 
@@ -44,7 +42,7 @@ namespace PPTX
 		public:
 			Xfrm()	
 			{
-				m_ns = _T("a");
+				m_ns = L"a";
 			}
 			virtual ~Xfrm() {}
 			explicit Xfrm(XmlUtils::CXmlNode& node)			{ fromXML(node); }
@@ -146,15 +144,15 @@ namespace PPTX
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("rot"), rot);
-				oAttr.Write(_T("flipH"), flipH);
-				oAttr.Write(_T("flipV"), flipV);
+				oAttr.Write(L"rot", rot);
+				oAttr.Write(L"flipH", flipH);
+				oAttr.Write(L"flipV", flipV);
 
 				XmlUtils::CNodeValue oValue;
 				
 				XmlUtils::CAttribute oAttr1;
-				oAttr1.Write(_T("x"), offX);
-				oAttr1.Write(_T("y"), offY);
+				oAttr1.Write(L"x", offX);
+				oAttr1.Write(L"y", offY);
 
 				XmlUtils::CAttribute oAttr2;
 				oAttr2.Write(_T("cx"), extX);
@@ -184,7 +182,7 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(m_ns + _T(":xfrm"));
+				pWriter->StartNode(m_ns + L":xfrm");
 
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(_T("rot"), rot);
@@ -237,7 +235,7 @@ namespace PPTX
 
 			void toXmlWriter2(const std::wstring& strNS, NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(strNS + _T(":xfrm"));
+				pWriter->StartNode(strNS + L":xfrm");
 
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(_T("rot"), rot);
@@ -438,5 +436,3 @@ namespace PPTX
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_XFRM_INCLUDE_H

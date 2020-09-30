@@ -2512,22 +2512,23 @@ namespace SimpleTypes
 
         virtual EHdrFtr FromString(std::wstring &sValue)
 		{
-            if      ( (L"default") == sValue ) this->m_eValue = hdrftrDefault;
-            else if ( (L"even")    == sValue ) this->m_eValue = hdrftrEven;
-            else if ( (L"first")   == sValue ) this->m_eValue = hdrftrFirst;
-            else                                this->m_eValue = eDefValue;
+            if      ( L"default" == sValue ||
+					  L"odd"	 == sValue ) this->m_eValue = hdrftrDefault;
+            else if ( L"even"    == sValue ) this->m_eValue = hdrftrEven;
+            else if ( L"first"   == sValue ) this->m_eValue = hdrftrFirst;
+            else							 this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}
 
-        virtual std::wstring ToString  () const
+        virtual std::wstring ToString() const
 		{
             switch(this->m_eValue)
 			{
-			case hdrftrDefault : return (L"default");
-			case hdrftrEven    : return (L"even");
-			case hdrftrFirst   : return (L"first");
-			default            : return (L"default");
+			case hdrftrDefault : return L"default";
+			case hdrftrEven    : return L"even";
+			case hdrftrFirst   : return L"first";
+			default            : return L"default";
 			}
 		}
 
@@ -3850,10 +3851,13 @@ namespace SimpleTypes
 
         virtual EMultiLevelType FromString(std::wstring &sValue)
 		{
-            if      ( (L"hybridMultilevel") == sValue ) this->m_eValue = emultileveltypeHybridMultilevel;
-            else if ( (L"multilevel")       == sValue ) this->m_eValue = emultileveltypeMultilevel;
-            else if ( (L"singleLevel")      == sValue ) this->m_eValue = emultileveltypeSingleLevel;
-            else                                         this->m_eValue = eDefValue;
+            if      (	L"hybridMultilevel" == sValue ||
+						L"HybridMultilevel" == sValue)	this->m_eValue = emultileveltypeHybridMultilevel;
+            else if (	L"multilevel"       == sValue ||
+						L"Multilevel"       == sValue )	this->m_eValue = emultileveltypeMultilevel;
+            else if (	L"singleLevel"      == sValue ||
+						L"SingleLevel"      == sValue)	this->m_eValue = emultileveltypeSingleLevel;
+            else										this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}

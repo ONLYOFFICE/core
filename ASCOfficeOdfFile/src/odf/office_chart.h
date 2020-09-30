@@ -41,6 +41,7 @@
 #include "text_elements.h"
 
 #include "datatypes/common_attlists.h"
+#include "datatypes/charttimeunit.h"
 
 namespace cpdoccore {
 namespace odf_reader {
@@ -397,7 +398,8 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+	{}
 
 public:
     _CP_OPT(std::wstring) table_cell_range_address_;
@@ -454,7 +456,8 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+	{}
 
 public:
     _CP_OPT(std::wstring) table_cell_range_address_;
@@ -485,7 +488,8 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+	{}
 
 public:
     chart_data_point_attlist attlist_;
@@ -506,10 +510,11 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+	{}
 
 public:
-    common_chart_attlist		common_attlist_;
+    common_chart_attlist common_attlist_;
 
 };
 
@@ -528,10 +533,11 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+	{}
 
 public:
-    common_chart_attlist		common_attlist_;
+    common_chart_attlist common_attlist_;
 
 };
 
@@ -549,7 +555,8 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+	{}
 
 public:
     common_chart_attlist	common_attlist_;
@@ -575,8 +582,8 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    common_chart_attlist		common_attlist_;
-	office_element_ptr			chart_equation_;
+    common_chart_attlist	common_attlist_;
+	office_element_ptr		chart_equation_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(chart_regression_curve);
@@ -595,7 +602,8 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+	{}
 
 public:
     common_chart_attlist common_attlist_;
@@ -617,13 +625,13 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+	{}
 
 public:
     common_chart_attlist		common_attlist_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(chart_stock_loss_marker);
 
 //  chart:stock-range-line
@@ -638,15 +646,39 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+	{}
 
 public:
-    common_chart_attlist		common_attlist_;
+    common_chart_attlist common_attlist_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(chart_stock_range_line);
 
+//chartooo:date-scale
+class chart_date_scale : public office_element_impl<chart_date_scale>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeChartDateScale;
+    CPDOCCORE_DEFINE_VISITABLE();
 
+private:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+	{}
+
+public:
+	_CP_OPT(odf_types::chart_time_unit)	base_time_unit_;
+
+	_CP_OPT(unsigned int)				major_interval_value_;
+	_CP_OPT(odf_types::chart_time_unit)	major_interval_unit_;
+
+	_CP_OPT(unsigned int)				minor_interval_value_;
+ 	_CP_OPT(odf_types::chart_time_unit)	minor_interval_unit_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(chart_date_scale);
 }
 }

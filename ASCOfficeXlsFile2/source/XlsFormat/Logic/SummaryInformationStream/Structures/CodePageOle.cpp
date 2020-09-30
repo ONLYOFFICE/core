@@ -30,6 +30,8 @@
  *
  */
 
+#include <string>
+
 #include "CodePageOle.h"
 #include <Binary/CFStream.h>
 #include <Auxiliary/HelpFunc.h>
@@ -64,15 +66,7 @@ bool PropertyStr::Read (XLS::CFStreamPtr stream)
 				if ( s[i] == 0 ) size--;
 			}
 
-			try
-			{
-				value  = size > 0 ? STR::toStdWString(std::string(s, size), code_page) : L"";
-		
-			}
-			catch(...)
-			{
-				value  = size > 0 ? STR::toStdWStringSystem(std::string(s, size), code_page) : L"";
-			}
+			value  = size > 0 ? STR::toStdWString(std::string(s, size), code_page) : L"";
 			delete []s;
 		}
 	}

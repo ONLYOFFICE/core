@@ -259,7 +259,7 @@ namespace codegen
                     GenMemberPivot oGenMember = aAttributes[i];
                     if (!string.IsNullOrEmpty(oGenMember.sDefAttribute))
                     {
-                        sb.AppendFormat("this.{0} = null;//{1}\r\n", oGenMember.sName, oGenMember.sDefAttribute.ToLower());
+                        sb.AppendFormat("this.{0} = {1};\r\n", oGenMember.sName, oGenMember.sDefAttribute.ToLower());
                     }
                     else
                     {
@@ -289,7 +289,7 @@ namespace codegen
                                 GenMemberPivot oTempMember = oGenMember.aArrayTypes[j];
                                 if (!string.IsNullOrEmpty(oTempMember.sDefAttribute))
                                 {
-                                    sb.AppendFormat("this.{0} = null;//{1}\r\n", oTempMember.sName, oTempMember.sDefAttribute.ToLower());
+                                    sb.AppendFormat("this.{0} = {1};\r\n", oTempMember.sName, oTempMember.sDefAttribute.ToLower());
                                 }
                                 else
                                 {
@@ -301,7 +301,7 @@ namespace codegen
                         {
                             if (!string.IsNullOrEmpty(oGenMember.sDefAttribute))
                             {
-                                sb.AppendFormat("this.{0} = null;//{1}\r\n", oGenMember.sName, oGenMember.sDefAttribute.ToLower());
+                                sb.AppendFormat("this.{0} = {1};\r\n", oGenMember.sName, oGenMember.sDefAttribute.ToLower());
                             }
                             else
                             {
@@ -712,7 +712,15 @@ namespace codegen
 
             if (checkNull)
             {
-                sb.AppendFormat("if(null !== {0}){{\r\n", sElemName);
+                if (!string.IsNullOrEmpty(oGenMember.sDefAttribute))
+                {
+                    sb.AppendFormat("if({0} !== {1}){{\r\n", oGenMember.sDefAttribute.ToLower(), sElemName);
+                }
+                else
+                {
+                    sb.AppendFormat("if(null !== {0}){{\r\n", sElemName);
+                }
+                
             }
 
             if (null != oGenMember.oSystemType)

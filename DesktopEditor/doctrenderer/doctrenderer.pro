@@ -31,6 +31,9 @@ ADD_DEPENDENCY(graphics, kernel, UnicodeConverter)
 core_ios {
     CONFIG += doct_renderer_empty
 }
+core_android {
+    CONFIG += doct_renderer_empty
+}
 
 doct_renderer_empty {
 SOURCES += doctrenderer_empty.cpp
@@ -50,7 +53,8 @@ SOURCES += \
 SOURCES += \
     ../../Common/OfficeFileFormatChecker2.cpp \
     ../../Common/3dParty/pole/pole.cpp \
-    ../../Common/DocxFormat/Source/Base/unicode_util.cpp
+    ../../Common/DocxFormat/Source/Base/unicode_util.cpp \
+    ../fontengine/ApplicationFontsWorker.cpp
 
 HEADERS += \
     docbuilder_p.h \

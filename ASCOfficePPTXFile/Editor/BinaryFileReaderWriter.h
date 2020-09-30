@@ -60,6 +60,7 @@ namespace NSCommon
 	class nullable_string;
 	class nullable_bool;
 	class nullable_int;
+	class nullable_uint;
 	class nullable_double;
 	class nullable_sizet;
 }
@@ -336,11 +337,19 @@ namespace NSBinPptxRW
 		void WriteBool1(int type, const bool& val);
 		void WriteBool2(int type, const NSCommon::nullable_bool& val);
 
+		void WriteByte1(int type, const BYTE& val);
+
 		void WriteInt1(int type, const int& val);
 		void WriteInt2(int type, const NSCommon::nullable_int& val);
 
+		void WriteUInt1(int type, const unsigned int& val);
+		void WriteUInt2(int type, const NSCommon::nullable_uint& val);
+
 		void WriteDouble1(int type, const double& val);
 		void WriteDouble2(int type, const NSCommon::nullable_double& val);
+
+		void WriteDoubleReal1(int type, const double& val);
+		void WriteDoubleReal2(int type, const NSCommon::nullable_double& val);
 
 		void WriteSize_t1(int type, const size_t& val);
 		void WriteSize_t2(int type, const NSCommon::nullable_sizet& val);

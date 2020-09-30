@@ -1134,14 +1134,14 @@ void style_page_layout_properties_attlist::pptx_convert(oox::pptx_conversion_con
 		
 		if (fo_page_width_)
 		{
-			w =  fo_page_width_->get_value_unit(length::emu);
+			w =  (_INT64)fo_page_width_->get_value_unit(length::emu);
 			if (w < 914400) w = 914400;
 
 			w_w = std::to_wstring(w);
 		}
         if (fo_page_height_)
 		{
-			h = fo_page_height_->get_value_unit(length::emu);
+			h = (_INT64)fo_page_height_->get_value_unit(length::emu);
 			if (h < 914400) h = 914400;
 
 			w_h = std::to_wstring(h);
@@ -1368,7 +1368,7 @@ void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xls
 			if ( fill.bitmap->rId.empty())
 			{
 				std::wstring href	= fill.bitmap->xlink_href_;
-				fill.bitmap->rId	= Context.get_mediaitems()->add_or_find(href, oox::typeImage, fill.bitmap->isInternal, href);
+				fill.bitmap->rId	= Context.get_mediaitems()->add_or_find(href, oox::typeImage, fill.bitmap->isInternal, href, oox::document_place);
 
 				Context.get_drawing_context().get_drawings()->add(fill.bitmap->isInternal, fill.bitmap->rId, href, oox::typeImage, true, false);
 			}
@@ -1415,7 +1415,7 @@ void style_page_layout_properties::docx_serialize(std::wostream & strm, oox::doc
 				bool res = Context.get_headers_footers().write_sectPr(masterPageName, change_page_layout, strm);
 			}
 	
-			oox::section_context::_section & section = Context.get_section_context().get();
+			oox::section_context::_section & section = Context.get_section_context().get_last();
 
 			attlist_.docx_convert_serialize(strm, Context, section.margin_left_, section.margin_right_);
 			//todooo при появлении еще накладок - переписать !!
@@ -1437,14 +1437,14 @@ void style_page_layout_properties::pptx_serialize(std::wostream & strm, oox::ppt
 		
 		if (attlist_.fo_page_width_)
 		{
-			w =  attlist_.fo_page_width_->get_value_unit(length::emu);
+			w =  (_INT64)attlist_.fo_page_width_->get_value_unit(length::emu);
 			if (w < 914400) w = 914400;
 
 			w_w = std::to_wstring(w);
 		}
         if (attlist_.fo_page_height_)
 		{
-			h = attlist_.fo_page_height_->get_value_unit(length::emu);
+			h = (_INT64)attlist_.fo_page_height_->get_value_unit(length::emu);
 			if (h < 914400) h = 914400;
 
 			w_h = std::to_wstring(h);
@@ -1501,24 +1501,19 @@ void style_master_page::add_attributes( const xml::attributes_wc_ptr & Attribute
 
 void style_master_page::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    if (L"style" == Ns && L"header" == Name)
-        CP_CREATE_ELEMENT(style_header_);
-	else if (L"style" == Ns && L"header-first" == Name)
-        CP_CREATE_ELEMENT(style_header_first_);
-	else if (L"style" == Ns && L"header-left" == Name)
-        CP_CREATE_ELEMENT(style_header_left_);
-
-	else if (L"style" == Ns && L"footer" == Name)
-        CP_CREATE_ELEMENT(style_footer_);
-	else if (L"style" == Ns && L"footer-first" == Name)
-        CP_CREATE_ELEMENT(style_footer_first_);
-	else if (L"style" == Ns && L"footer-left" == Name)
-        CP_CREATE_ELEMENT(style_footer_left_);
-
-    else if (L"office" == Ns && L"forms" == Name)
-        CP_CREATE_ELEMENT(office_forms_);
-    else if (L"style" == Ns && L"style" == Name)
-        CP_CREATE_ELEMENT(style_style_);
+	if (L"style" == Ns || L"loext" == Ns)
+	{
+			 if (L"header" == Name)			CP_CREATE_ELEMENT(style_header_);
+		else if (L"header-first" == Name)	CP_CREATE_ELEMENT(style_header_first_);
+		else if (L"header-left" == Name)	CP_CREATE_ELEMENT(style_header_left_);
+		else if (L"footer" == Name)			CP_CREATE_ELEMENT(style_footer_);
+		else if (L"footer-first" == Name)	CP_CREATE_ELEMENT(style_footer_first_);
+		else if (L"footer-left" == Name)	CP_CREATE_ELEMENT(style_footer_left_);
+	}
+	else if (L"style" == Ns && L"style" == Name)
+		CP_CREATE_ELEMENT(style_style_);
+	else if (L"office" == Ns && L"forms" == Name)
+		CP_CREATE_ELEMENT(office_forms_);
     else if (L"presentation" == Ns && L"notes" == Name)
         CP_CREATE_ELEMENT(presentation_notes_); 
     else
@@ -1686,6 +1681,9 @@ void style_footer::xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_con
 const wchar_t * style_header_first::ns = L"style";
 const wchar_t * style_header_first::name = L"header-first";
 
+const wchar_t * loext_header_first::ns = L"loext";
+const wchar_t * loext_header_first::name = L"header-first";
+
 void style_header_first::docx_convert(oox::docx_conversion_context & Context)
 {
     std::wostream & strm = Context.output_stream();
@@ -1709,6 +1707,9 @@ void style_header_first::xlsx_serialize(std::wostream & strm, oox::xlsx_conversi
 //------------------------------------------------------------------------------------------------------
 const wchar_t * style_footer_first::ns = L"style";
 const wchar_t * style_footer_first::name = L"footer-first";
+
+const wchar_t * loext_footer_first::ns = L"loext";
+const wchar_t * loext_footer_first::name = L"footer-first";
 
 void style_footer_first::docx_convert(oox::docx_conversion_context & Context)
 {

@@ -60,16 +60,15 @@ namespace ComplexTypes
 			{
 			}
 
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
+			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, _T("val"), m_oVal );
 			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 			virtual std::wstring ToString() const
 			{
@@ -89,9 +88,6 @@ namespace ComplexTypes
 			{
 				return m_oVal.ToBool();
 			}
-			
-		public:
-
 			SimpleTypes::COnOff<eDefValue> m_oVal;
 
 		};
@@ -99,18 +95,18 @@ namespace ComplexTypes
 		{
 		public:
             ComplexTypes_AdditionConstructors(String)
-                String()
+			String()
 			{
 			}
             virtual ~String()
 			{
 			}
 
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
+			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, _T("val"), m_sVal );
 			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes(oReader);
 
@@ -124,7 +120,7 @@ namespace ComplexTypes
 				if ( m_sVal.IsInit() )
 				{
 					sResult += _T("val=\"");
-					sResult += m_sVal.get();
+					sResult += *m_sVal;
 					sResult += _T("\" ");
 				}
 
@@ -135,7 +131,7 @@ namespace ComplexTypes
 				std::wstring sResult;
 
 				if ( m_sVal.IsInit() )
-					sResult += m_sVal.get();
+					sResult += *m_sVal;
 
 				return sResult;
 			}
@@ -150,13 +146,13 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<std::wstring> m_sVal;
+			nullable_string m_sVal;
 		};
 		class CDouble : public ComplexType
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CDouble)
-				CDouble()
+			CDouble()
 			{
 			}
 			virtual ~CDouble()
@@ -188,13 +184,12 @@ namespace ComplexTypes
 				return sResult;
 			}
 		private:
-
+		
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
@@ -205,7 +200,7 @@ namespace ComplexTypes
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CPointMeasure)
-				CPointMeasure()
+			CPointMeasure()
 			{
 			}
 			virtual ~CPointMeasure()
@@ -240,10 +235,9 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:

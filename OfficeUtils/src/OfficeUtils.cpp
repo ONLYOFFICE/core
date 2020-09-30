@@ -60,7 +60,7 @@ HRESULT COfficeUtils::ExtractToDirectory(const std::wstring& _zipFile, const std
 }
 
 
-HRESULT COfficeUtils::CompressFileOrDirectory(const std::wstring& _name, const std::wstring& _outputFile, bool bSorted, int method, short level)
+HRESULT COfficeUtils::CompressFileOrDirectory(const std::wstring& _name, const std::wstring& _outputFile, bool bSorted, int method, short level, bool bDateTime)
 {
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
     std::wstring name = _name;//CorrectPathW(_name);
@@ -73,7 +73,7 @@ HRESULT COfficeUtils::CompressFileOrDirectory(const std::wstring& _name, const s
 	HRESULT result = S_FALSE;
 	if(NSDirectory::Exists(name))
 	{
-        if ( ZLibZipUtils::ZipDir( name.c_str(), outputFile.c_str(), m_fCallback, bSorted, method, level ) == 0 )
+        if ( ZLibZipUtils::ZipDir( name.c_str(), outputFile.c_str(), m_fCallback, bSorted, method, level, bDateTime ) == 0 )
 		{
 			result = S_OK;
 		}
@@ -84,7 +84,7 @@ HRESULT COfficeUtils::CompressFileOrDirectory(const std::wstring& _name, const s
 	}
 	else if(NSFile::CFileBinary::Exists(name))
 	{
-        if ( ZLibZipUtils::ZipFile( name.c_str(), outputFile.c_str(), method, level ) == 0 )
+        if ( ZLibZipUtils::ZipFile( name.c_str(), outputFile.c_str(), method, level, bDateTime ) == 0 )
 		{
 			result = S_OK;
 		}

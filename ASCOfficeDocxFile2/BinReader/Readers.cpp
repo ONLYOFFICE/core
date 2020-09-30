@@ -1435,8 +1435,7 @@ int Binary_pPrReader::ReadFootnotePr(BYTE type, long length, void* poResult)
 	else if( c_oSerNotes::PrStart == type )
 	{
 		pFtnProps->m_oNumStart.Init();
-		pFtnProps->m_oNumStart->m_oVal.Init();
-		pFtnProps->m_oNumStart->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		pFtnProps->m_oNumStart->m_oVal = m_oBufferedStream.GetLong();
 	}
 	else if( c_oSerNotes::PrFntPos == type )
 	{
@@ -1466,8 +1465,7 @@ int Binary_pPrReader::ReadEndnotePr(BYTE type, long length, void* poResult)
 	else if( c_oSerNotes::PrStart == type )
 	{
 		pEdnProps->m_oNumStart.Init();
-		pEdnProps->m_oNumStart->m_oVal.Init();
-		pEdnProps->m_oNumStart->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		pEdnProps->m_oNumStart->m_oVal = m_oBufferedStream.GetLong();
 	}
 	else if( c_oSerNotes::PrEndPos == type )
 	{
@@ -3364,22 +3362,40 @@ int Binary_OtherTableReader::ReadImageMapContent(BYTE type, long length, void* p
 }
 
 
-Binary_CommentsTableReader::Binary_CommentsTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter):Binary_CommonReader(poBufferedStream)
+Binary_CommentsTableReader::Binary_CommentsTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter) 
+	: Binary_CommonReader(poBufferedStream), m_oFileWriter(oFileWriter)
 {
 }
 int Binary_CommentsTableReader::Read()
 {
+	m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
+    
+	Writers::ContentWriter oContentWriter;
+	Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, oContentWriter, &m_oComments);
+
+	oBinary_DocumentTableReader.m_bUsedParaIdCounter = true;
+
 	int res = c_oSerConstants::ReadOk;
-	READ_TABLE_DEF(res, this->ReadComments, NULL);
+	READ_TABLE_DEF(res, this->ReadComments, &oBinary_DocumentTableReader);
+
+	OOX::CPath fileRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir +	FILE_SEPARATOR_STR + L"word" +
+																		FILE_SEPARATOR_STR + L"_rels"+
+																		FILE_SEPARATOR_STR + m_oFileWriter.m_oCommentsWriter.getFilename() + L".rels";
+
+	m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(fileRelsPath.GetPath());
+	
 	return res;
-};
+}
 int Binary_CommentsTableReader::ReadComments(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_CommentsType::Comment == type )
 	{
 		CComment* pComment = new CComment(m_oComments.m_oParaIdCounter, m_oComments.m_oFormatIdCounter);
+		pComment->pBinary_DocumentTableReader = poResult;
+		
 		READ1_DEF(length, res, this->ReadCommentContent, pComment);
+
 		if(pComment->bIdOpen && NULL == m_oComments.get(pComment->IdOpen))
 			m_oComments.add(pComment);
 		else
@@ -3388,11 +3404,12 @@ int Binary_CommentsTableReader::ReadComments(BYTE type, long length, void* poRes
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
-};
+}
 int Binary_CommentsTableReader::ReadCommentContent(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
 	CComment* pComment = static_cast<CComment*>(poResult);
+	
 	if ( c_oSer_CommentsType::Id == type )
 	{
 		pComment->bIdOpen = true;
@@ -3442,28 +3459,55 @@ int Binary_CommentsTableReader::ReadCommentContent(BYTE type, long length, void*
 		pComment->bDurableId = true;
 		pComment->DurableId = m_oBufferedStream.GetULong();
 	}
+	else if ( c_oSer_CommentsType::CommentContent == type )
+	{
+		READ1_DEF(length, res, this->ReadCommentContentExt, pComment->pBinary_DocumentTableReader);
+
+		Binary_DocumentTableReader* doc_reader = (Binary_DocumentTableReader*)pComment->pBinary_DocumentTableReader;
+		
+		pComment->sContent = doc_reader->m_oDocumentWriter.m_oContent.GetData();
+		doc_reader->m_oDocumentWriter.m_oContent.Clear();
+
+		int nId = doc_reader->m_pComments->m_oParaIdCounter.getCurrentId();
+		pComment->sParaId = XmlUtils::IntToString(nId, L"%08X");
+
+	}
 	else if ( c_oSer_CommentsType::Replies == type )
 	{
-		READ1_DEF(length, res, this->ReadReplies, &pComment->replies);
+		READ1_DEF(length, res, this->ReadReplies, pComment);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
-};
+}
+int Binary_CommentsTableReader::ReadCommentContentExt(BYTE type, long length, void* poResult)
+{
+	Binary_DocumentTableReader* pBinary_DocumentTableReader = static_cast<Binary_DocumentTableReader*>(poResult);
+
+	if (!pBinary_DocumentTableReader) return c_oSerConstants::ReadOk;
+
+	return pBinary_DocumentTableReader->ReadDocumentContent(type, length, NULL);
+}
 int Binary_CommentsTableReader::ReadReplies(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	std::vector<CComment*>* paComments = static_cast<std::vector<CComment*>*>(poResult);
+
+	CComment* pCommentParent = static_cast<CComment*>(poResult);
+	
 	if ( c_oSer_CommentsType::Comment == type )
 	{
 		CComment* pNewComment = new CComment(m_oComments.m_oParaIdCounter, m_oComments.m_oFormatIdCounter);
+		pNewComment->pBinary_DocumentTableReader = pCommentParent->pBinary_DocumentTableReader;
+
 		READ1_DEF(length, res, this->ReadCommentContent, pNewComment);
-		paComments->push_back(pNewComment);
+
+		pNewComment->sParaIdParent = pCommentParent->sParaId;
+		pCommentParent->replies.push_back(pNewComment);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
-};
+}
 
 
 Binary_SettingsTableReader::Binary_SettingsTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, OOX::CSettingsCustom& oSettingsCustom):
@@ -3766,8 +3810,7 @@ int Binary_SettingsTableReader::ReadFootnotePr(BYTE type, long length, void* poR
 	else if( c_oSerNotes::PrStart == type )
 	{
 		pFtnProps->m_oNumStart.Init();
-		pFtnProps->m_oNumStart->m_oVal.Init();
-		pFtnProps->m_oNumStart->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		pFtnProps->m_oNumStart->m_oVal = m_oBufferedStream.GetLong();
 	}
 	else if( c_oSerNotes::PrFntPos == type )
 	{
@@ -3805,8 +3848,7 @@ int Binary_SettingsTableReader::ReadEndnotePr(BYTE type, long length, void* poRe
 	else if( c_oSerNotes::PrStart == type )
 	{
 		pEdnProps->m_oNumStart.Init();
-		pEdnProps->m_oNumStart->m_oVal.Init();
-		pEdnProps->m_oNumStart->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		pEdnProps->m_oNumStart->m_oVal = m_oBufferedStream.GetLong();
 	}
 	else if( c_oSerNotes::PrEndPos == type )
 	{
@@ -4215,6 +4257,7 @@ Binary_DocumentTableReader::Binary_DocumentTableReader(NSBinPptxRW::CBinaryFileR
         , m_oMath_rPr(m_oFontTableWriter.m_mapFonts)
         , m_pComments(pComments)
 {
+	m_bUsedParaIdCounter = false;
 	m_byteLastElemType = c_oSerParType::Content;
 	m_pCurWriter = NULL;
 }
@@ -4248,9 +4291,19 @@ int Binary_DocumentTableReader::ReadDocumentContent(BYTE type, long length, void
 		m_byteLastElemType = c_oSerParType::Par;
 		m_oCur_pPr.ClearNoAttack();
 
-        m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<w:p>")));
+		if (m_bUsedParaIdCounter && m_pComments)
+		{
+			int nId = m_pComments->m_oParaIdCounter.getNextId();
+			std::wstring sParaId = XmlUtils::IntToString(nId, L"%08X");
+
+			m_oDocumentWriter.m_oContent.WriteString(L"<w:p w14:paraId=\"" + sParaId + L"\" w14:textId=\"" + sParaId + L"\">");
+		}
+		else
+		{
+			m_oDocumentWriter.m_oContent.WriteString(std::wstring(L"<w:p>"));
+		}
 		READ1_DEF(length, res, this->ReadParagraph, NULL);
-        m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("</w:p>")));
+        m_oDocumentWriter.m_oContent.WriteString(std::wstring(L"</w:p>"));
 	}
 	else if(c_oSerParType::Table == type)
 	{
@@ -4724,8 +4777,7 @@ int Binary_DocumentTableReader::ReadFFData(BYTE type, long length, void* poResul
 	else if ( c_oSerFFData::Label == type )
 	{
 		pFFData->m_oLabel.Init();
-		pFFData->m_oLabel->m_oVal.Init();
-		pFFData->m_oLabel->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		pFFData->m_oLabel->m_oVal = m_oBufferedStream.GetLong();
 	}
 	else if ( c_oSerFFData::Name == type )
 	{
@@ -4790,20 +4842,18 @@ int Binary_DocumentTableReader::ReadDDList(BYTE type, long length, void* poResul
 	if ( c_oSerFFData::DLDefault == type )
 	{
 		pDDList->m_oDefault.Init();
-		pDDList->m_oDefault->m_oVal.Init();
-		pDDList->m_oDefault->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		pDDList->m_oDefault->m_oVal = m_oBufferedStream.GetLong();
 	}
 	else if ( c_oSerFFData::DLResult == type )
 	{
 		pDDList->m_oResult.Init();
-		pDDList->m_oResult->m_oVal.Init();
-		pDDList->m_oResult->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		pDDList->m_oResult->m_oVal = m_oBufferedStream.GetLong();
 	}
 	else if ( c_oSerFFData::DLListEntry == type )
 	{
 		ComplexTypes::Word::String* pVal = new ComplexTypes::Word::String();
-		pVal->m_sVal.Init();
-		pVal->m_sVal->append(m_oBufferedStream.GetString3(length));
+		pVal->m_sVal = m_oBufferedStream.GetString3(length);
+		
 		pDDList->m_arrListEntry.push_back(pVal);
 	}
 	else
@@ -4855,20 +4905,17 @@ int Binary_DocumentTableReader::ReadTextInput(BYTE type, long length, void* poRe
 	if ( c_oSerFFData::TIDefault == type )
 	{
 		pTextInput->m_oDefault.Init();
-		pTextInput->m_oDefault->m_sVal.Init();
-		pTextInput->m_oDefault->m_sVal->append(m_oBufferedStream.GetString3(length));
+		pTextInput->m_oDefault->m_sVal = m_oBufferedStream.GetString3(length);
 	}
 	else if ( c_oSerFFData::TIFormat == type )
 	{
 		pTextInput->m_oFormat.Init();
-		pTextInput->m_oFormat->m_sVal.Init();
-		pTextInput->m_oFormat->m_sVal->append(m_oBufferedStream.GetString3(length));
+		pTextInput->m_oFormat->m_sVal = m_oBufferedStream.GetString3(length);
 	}
 	else if ( c_oSerFFData::TIMaxLength == type )
 	{
 		pTextInput->m_oMaxLength.Init();
-		pTextInput->m_oMaxLength->m_oVal.Init();
-		pTextInput->m_oMaxLength->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		pTextInput->m_oMaxLength->m_oVal = m_oBufferedStream.GetLong();
 	}
 	else if ( c_oSerFFData::TIType == type )
 	{
@@ -7378,17 +7425,27 @@ int Binary_DocumentTableReader::ReadRunContent(BYTE type, long length, void* poR
 	else if(c_oSerRunType::table == type)
 	{
 		//todo
-        m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("</w:p>")));
-        m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<w:tbl>")));
+        m_oDocumentWriter.m_oContent.WriteString(std::wstring(L"</w:p>"));
+        m_oDocumentWriter.m_oContent.WriteString(std::wstring(L"<w:tbl>"));
 		READ1_DEF(length, res, this->ReadDocTable, &m_oDocumentWriter.m_oContent);
-        m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("</w:tbl>")));
-        m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<w:p>")));
+        m_oDocumentWriter.m_oContent.WriteString(std::wstring(L"</w:tbl>"));
 
+		if (m_bUsedParaIdCounter && m_pComments)
+		{
+			int nId = m_pComments->m_oParaIdCounter.getNextId();
+			std::wstring sParaId = XmlUtils::IntToString(nId, L"%08X");
+
+			m_oDocumentWriter.m_oContent.WriteString(L"<w:p w14:paraId=\"" + sParaId + L"\" w14:textId=\"" + sParaId + L"\">");
+		}
+		else
+		{
+			m_oDocumentWriter.m_oContent.WriteString(std::wstring(L"<w:p>"));
+		}
         if(m_oCur_pPr.GetCurSize() > 0)
 		{
-            m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<w:pPr>")));
+            m_oDocumentWriter.m_oContent.WriteString(std::wstring(L"<w:pPr>"));
 			m_oDocumentWriter.m_oContent.Write(m_oCur_pPr);
-            m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("</w:pPr>")));
+            m_oDocumentWriter.m_oContent.WriteString(std::wstring(L"</w:pPr>"));
 		}
 	}
 	else if(c_oSerRunType::fldstart_deprecated == type)
@@ -7780,7 +7837,7 @@ int Binary_DocumentTableReader::ReadCell(BYTE type, long length, void* poResult)
 		//Потому что если перед </tc> не идет <p>, то документ считается невалидным
 		if(c_oSerParType::Par != oBinary_DocumentTableReader.m_byteLastElemType)
 		{
-            m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<w:p />")));
+            m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<w:p/>")));
 		}
 	}
 	else
@@ -8625,8 +8682,7 @@ int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult
 	else if (c_oSerSdt::Alias == type)
 	{
 		pSdtPr->m_oAlias.Init();
-		pSdtPr->m_oAlias->m_sVal.Init();
-		pSdtPr->m_oAlias->m_sVal->append(m_oBufferedStream.GetString3(length));
+		pSdtPr->m_oAlias->m_sVal = m_oBufferedStream.GetString3(length);
 	}
 	else if (c_oSerSdt::Appearance == type)
 	{
@@ -8674,14 +8730,12 @@ int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult
 	else if (c_oSerSdt::Id == type)
 	{
 		pSdtPr->m_oId.Init();
-		pSdtPr->m_oId->m_oVal.Init();
-		pSdtPr->m_oId->m_oVal->SetValue(m_oBufferedStream.GetULong());
+		pSdtPr->m_oId->m_oVal = m_oBufferedStream.GetULong();
 	}
 	else if (c_oSerSdt::Label == type)
 	{
 		pSdtPr->m_oLabel.Init();
-		pSdtPr->m_oLabel->m_oVal.Init();
-		pSdtPr->m_oLabel->m_oVal->SetValue(m_oBufferedStream.GetULong());
+		pSdtPr->m_oLabel->m_oVal = m_oBufferedStream.GetULong();
 	}
 	else if (c_oSerSdt::Lock == type)
 	{
@@ -8692,8 +8746,7 @@ int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult
 	{
 		pSdtPr->m_oPlaceHolder.Init();
 		pSdtPr->m_oPlaceHolder->m_oDocPart.Init();
-		pSdtPr->m_oPlaceHolder->m_oDocPart->m_sVal.Init();
-		pSdtPr->m_oPlaceHolder->m_oDocPart->m_sVal->append(m_oBufferedStream.GetString3(length));
+		pSdtPr->m_oPlaceHolder->m_oDocPart->m_sVal = m_oBufferedStream.GetString3(length);
 	}
 	else if (c_oSerSdt::RPr == type)
 	{
@@ -8714,8 +8767,7 @@ int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult
 	else if (c_oSerSdt::Tag == type)
 	{
 		pSdtPr->m_oTag.Init();
-		pSdtPr->m_oTag->m_sVal.Init();
-		pSdtPr->m_oTag->m_sVal->append(m_oBufferedStream.GetString3(length));
+		pSdtPr->m_oTag->m_sVal = m_oBufferedStream.GetString3(length);
 	}
 	else if (c_oSerSdt::Temporary == type)
 	{
@@ -8854,8 +8906,7 @@ int Binary_DocumentTableReader::ReadSdtPrDate(BYTE type, long length, void* poRe
 	else if (c_oSerSdt::DateFormat == type)
 	{
 		pDate->m_oDateFormat.Init();
-		pDate->m_oDateFormat->m_sVal.Init();
-		pDate->m_oDateFormat->m_sVal->append(m_oBufferedStream.GetString3(length));
+		pDate->m_oDateFormat->m_sVal = m_oBufferedStream.GetString3(length);
 	}
 	else if (c_oSerSdt::Lid == type)
 	{
@@ -8880,14 +8931,12 @@ int Binary_DocumentTableReader::ReadDocPartList(BYTE type, long length, void* po
 	if (c_oSerSdt::DocPartCategory == type)
 	{
 		pDocPart->m_oDocPartCategory.Init();
-		pDocPart->m_oDocPartCategory->m_sVal.Init();
-		pDocPart->m_oDocPartCategory->m_sVal->append(m_oBufferedStream.GetString3(length));
+		pDocPart->m_oDocPartCategory->m_sVal = m_oBufferedStream.GetString3(length);
 	}
 	else if (c_oSerSdt::DocPartGallery == type)
 	{
 		pDocPart->m_oDocPartGallery.Init();
-		pDocPart->m_oDocPartGallery->m_sVal.Init();
-		pDocPart->m_oDocPartGallery->m_sVal->append(m_oBufferedStream.GetString3(length));
+		pDocPart->m_oDocPartGallery->m_sVal = m_oBufferedStream.GetString3(length);
 	}
 	else if (c_oSerSdt::DocPartUnique == type)
 	{
@@ -8918,14 +8967,15 @@ int Binary_DocumentTableReader::ReadDropDownList(BYTE type, long length, void* p
 }
 
 
-Binary_NotesTableReader::Binary_NotesTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, CComments* pComments, bool bIsFootnote):
-	Binary_CommonReader(poBufferedStream),m_oFileWriter(oFileWriter),m_pComments(pComments),m_bIsFootnote(bIsFootnote)
+Binary_NotesTableReader::Binary_NotesTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, CComments* pComments, bool bIsFootnote)
+	: Binary_CommonReader(poBufferedStream), m_oFileWriter(oFileWriter), m_pComments(pComments), m_bIsFootnote(bIsFootnote)
 {
 }
 int Binary_NotesTableReader::Read()
 {
 	m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
-    std::wstring sFilename;
+    
+	std::wstring sFilename;
 	Writers::ContentWriter* pContentWriter = NULL;
 	if(m_bIsFootnote)
 	{

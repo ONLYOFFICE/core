@@ -44,14 +44,14 @@ namespace OOX
 		class CTxbxContent : public WritingElementWithChilds<>
 		{
 		public:
-			CTxbxContent()
+			CTxbxContent(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain) 
 			{
 			}
-			CTxbxContent(XmlUtils::CXmlNode &oNode)
+			CTxbxContent(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
 			{
 				fromXML( oNode );
 			}
-			CTxbxContent(XmlUtils::CXmlLiteReader& oReader)
+			CTxbxContent(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
 			{
 				fromXML( oReader );
 			}

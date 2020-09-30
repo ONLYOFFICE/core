@@ -1,0 +1,12 @@
+<xsd:schema targetNamespace="http://schemas.microsoft.com/office/spreadsheetml/2018/calcfeatures" elementFormDefault="qualified" xmlns:x="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns="http://schemas.microsoft.com/office/spreadsheetml/2018/calcfeatures" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:import namespace="http://schemas.openxmlformats.org/spreadsheetml/2006/main" schemaLocation="xlbasictypes.xsd"/>
+   <xsd:element name="calcFeatures" type="CT_CalcFeatures"/>
+   <xsd:complexType name="CT_CalcFeatures">
+     <xsd:sequence>
+       <xsd:element name="feature" minOccurs="1" maxOccurs="unbounded" type="CT_CalcFeature"/>
+     </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="CT_CalcFeature">
+     <xsd:attribute name="name" type="xsd:string" use="required"/>
+   </xsd:complexType>
+ </xsd:schema>

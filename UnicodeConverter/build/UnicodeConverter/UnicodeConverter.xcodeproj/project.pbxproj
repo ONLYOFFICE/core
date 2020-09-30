@@ -250,9 +250,9 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/include/,
-					"$(PROJECT_DIR)/../../../Common/3dParty/icu/mac_64/icu/source/common/**",
-					"$(PROJECT_DIR)/../../../Common/3dParty/icu/mac_64/icu/source/i18n",
-					"$(PROJECT_DIR)/../../../Common/3dParty/icu/mac_64/icu/source/io",
+					"$(PROJECT_DIR)/../../../Common/3dParty/icu/icu/source/common/**",
+					"$(PROJECT_DIR)/../../../Common/3dParty/icu/icu/source/i18n",
+					"$(PROJECT_DIR)/../../../Common/3dParty/icu/icu/source/io",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -275,9 +275,9 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/include/,
-					"$(PROJECT_DIR)/../../../Common/3dParty/icu/mac_64/icu/source/common/**",
-					"$(PROJECT_DIR)/../../../Common/3dParty/icu/mac_64/icu/source/i18n",
-					"$(PROJECT_DIR)/../../../Common/3dParty/icu/mac_64/icu/source/io",
+					"$(PROJECT_DIR)/../../../Common/3dParty/icu/icu/source/common/**",
+					"$(PROJECT_DIR)/../../../Common/3dParty/icu/icu/source/i18n",
+					"$(PROJECT_DIR)/../../../Common/3dParty/icu/icu/source/io",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";

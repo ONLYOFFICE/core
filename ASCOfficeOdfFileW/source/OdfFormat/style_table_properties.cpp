@@ -195,12 +195,12 @@ void style_table_cell_properties::apply_from(const style_table_cell_properties *
 {
 	if (Other == NULL)return;
 
-	style_table_cell_properties_attlist_.apply_from(Other->style_table_cell_properties_attlist_);
+	content_.apply_from(Other->content_);
 
 }
 void style_table_cell_properties::serialize(std::wostream & strm)
 {
-	style_table_cell_properties_attlist_.serialize(strm,ns,name);
+	content_.serialize(strm,ns,name);
 	if (style_background_image_)style_background_image_->serialize(strm);
 }
 

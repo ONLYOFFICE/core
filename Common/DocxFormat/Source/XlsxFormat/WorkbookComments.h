@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_ONLY_WORKBOOK_COMMENTS_INCLUDE_H_
-#define OOX_ONLY_WORKBOOK_COMMENTS_INCLUDE_H_
 
 #include "CommonInclude.h"
 #include "Xlsx.h"
@@ -94,5 +92,3 @@ namespace OOX
 	};
     }
 } // namespace OOX
-
-#endif // OOX_ONLY_WORKBOOK_COMMENTS_INCLUDE_H_

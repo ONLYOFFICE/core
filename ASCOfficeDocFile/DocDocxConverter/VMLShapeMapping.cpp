@@ -1116,7 +1116,14 @@ namespace DocFileFormat
 
 			m_context->_doc->Convert(&textboxMapping);
 
-			m_pXmlWriter->WriteString(textboxMapping.getOLEObject());
+			std::wstring sOleXml = textboxMapping.getOLEObject();
+			
+			if (false == sOleXml.empty())
+				m_pXmlWriter->WriteString(sOleXml);
+			else
+			{
+				m_pXmlWriter->WriteString(txtBoxWrapper.GetXmlString());
+			}
 		}
 
 //ShapeType 
@@ -1791,6 +1798,9 @@ namespace DocFileFormat
 
 				if (dAngle < -360.0)
 					dAngle += 360.0;
+
+				if (dAngle > 360.0)
+					dAngle -= 360.0;
 
 				if ((dAngle >= 45.0 && dAngle <= 135.0) || (dAngle >= 225.0 && dAngle <= 315.0) || (dAngle <= -45.0 && dAngle >= -135.0) || (dAngle <= -225.0 && dAngle >= -315.0))
 					twistDimensions	=	true;

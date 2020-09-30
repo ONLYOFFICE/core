@@ -169,6 +169,8 @@ namespace PdfReader
 		// AcroForm
 		oCatalogDict.DictLookup("AcroForm", &m_oAcroForm);
 
+		oCatalogDict.DictLookup("PageLabels", &m_oPageLabels);
+
 		oCatalogDict.Free();
 		return;
 	}
@@ -199,6 +201,7 @@ namespace PdfReader
 		m_oStructTreeRoot.Free();
 		m_oOutline.Free();
 		m_oAcroForm.Free();
+		m_oPageLabels.Free();
 	}
 
 	StringExt *Catalog::ReadMetadata()

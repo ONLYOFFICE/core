@@ -111,9 +111,9 @@ void draw_image::add_child_element( const office_element_ptr & child_element)
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeOfficeBinaryData)
+    if (type_ == typeOfficeBinaryData)
     {
 		office_binary_data_ = child_element;
     } 
@@ -247,18 +247,18 @@ void draw_frame::add_child_element( const office_element_ptr & child_element)
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeDrawImage		|| 
-		type == typeDrawTextBox		|| 
-		type == typeDrawObject		|| 
-		type == typeDrawObjectOle	|| 
-		type == typeDrawPlugin	|| 
-		type == typeTableTable)
+    if (type_ == typeDrawImage		|| 
+		type_ == typeDrawTextBox	|| 
+		type_ == typeDrawObject		|| 
+		type_ == typeDrawObjectOle	|| 
+		type_ == typeDrawPlugin		|| 
+		type_ == typeTableTable)
     {
 		draw_base::add_child_element(child_element);
     } 
-	else if (type == typeOfficeEventListeners)
+	else if (type_ == typeOfficeEventListeners)
 	{
 		office_event_listeners_ = child_element;
 	}

@@ -79,7 +79,6 @@ vertical_pos vertical_pos::parse(const std::wstring & Str)
         return vertical_pos( Below );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return vertical_pos( Top );
     }
 }

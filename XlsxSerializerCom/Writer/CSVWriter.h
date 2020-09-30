@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef CSV_WRITER
-#define CSV_WRITER
+#pragma once
 
 #include "../../DesktopEditor/common/File.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
@@ -77,4 +76,3 @@ namespace CSVWriter
 	void WriteFromXlsxToCsv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const std::wstring& wcDelimiter, bool bJSON);
 }
 
-#endif //CSV_WRITER

@@ -103,14 +103,19 @@ void graphic_format_properties::apply_from(const graphic_format_properties & Oth
     common_border_line_width_attlist_.apply_from(Other.common_border_line_width_attlist_);
     common_padding_attlist_.apply_from(Other.common_padding_attlist_);
     common_shadow_attlist_.apply_from(Other.common_shadow_attlist_);
-    common_background_color_attlist_.apply_from(Other.common_background_color_attlist_);
-     
-
-    _CP_APPLY_PROP(style_background_image_, Other.style_background_image_);
+	common_background_color_attlist_.apply_from(Other.common_background_color_attlist_);
+	
+	_CP_APPLY_PROP(style_background_image_, Other.style_background_image_);
 }
 
 void graphic_format_properties::serialize(std::wostream & _Wostream ,const wchar_t * ns, const wchar_t * name )
 {
+	if (common_draw_fill_attlist_.draw_fill_gradient_name_ || 
+		common_draw_fill_attlist_.draw_fill_image_name_)
+	{
+		common_draw_fill_attlist_.draw_opacity_ = boost::none;
+	}
+
 	CP_XML_WRITER(_Wostream)
     {
 		CP_XML_NODE_SIMPLE()

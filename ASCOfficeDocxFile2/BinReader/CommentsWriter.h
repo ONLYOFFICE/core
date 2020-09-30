@@ -29,10 +29,9 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef COMMENTS_WRITER
-#define COMMENTS_WRITER
+#pragma once
 
-#include "../../XlsxSerializerCom/Common/Common.h"
+#include "HeaderFooterWriter.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/FileTypes.h"
 
 namespace Writers
@@ -49,8 +48,9 @@ namespace Writers
 	class CommentsWriter
 	{
         std::wstring	m_sDir;
+		std::wstring	m_sFileName;
 	public:
-        std::wstring	m_sComment;
+		std::wstring	m_sComment;
         std::wstring	m_sCommentExt;
 		std::wstring	m_sCommentsIds;
         std::wstring	m_sPeople;
@@ -72,6 +72,10 @@ namespace Writers
 			m_sDocumentCommentExt	= sDocumentCommentExt;
 			m_sDocumentCommentsIds	= sDocumentCommentsIds;
 			m_sDocumentPeople		= sDocumentPeople;
+		}
+		std::wstring getFilename()
+		{
+			return OOX::FileTypes::Comments.DefaultFileName().GetPath();
 		}
 		void Write()
 		{
@@ -157,4 +161,3 @@ namespace Writers
 		}
 	};
 }
-#endif	// #ifndef COMMENTS_WRITER

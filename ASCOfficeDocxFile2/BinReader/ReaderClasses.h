@@ -31,8 +31,7 @@
  */
 #pragma once
 
-#ifndef READER_CLASSES
-#define READER_CLASSES
+#include "HeaderFooterWriter.h"
 
 #include "../../Common/DocxFormat/Source/XML/Utils.h"
 #include "../../Common/DocxFormat/Source/Common/SimpleTypes_Word.h"
@@ -731,12 +730,12 @@ public:
 		{
             pCStringWriter->WriteString(L"<w:sz w:val=\"" + std::to_wstring(FontSize) + L"\"/>");
 		}
-        if(bFontSizeCs)
-        {
-            if(false == bFontSize)
-                pCStringWriter->WriteString(L"<w:sz w:val=\"" + std::to_wstring(FontSizeCs) + L"\"/>");
-            pCStringWriter->WriteString(L"<w:szCs w:val=\"" + std::to_wstring(FontSizeCs) + L"\"/>");
-        }
+		if(bFontSizeCs)
+		{
+			if(false == bFontSize)
+				pCStringWriter->WriteString(L"<w:sz w:val=\"" + std::to_wstring(FontSizeCs) + L"\"/>");
+			pCStringWriter->WriteString(L"<w:szCs w:val=\"" + std::to_wstring(FontSizeCs) + L"\"/>");
+		}
 		if(bHighLight)
 		{
 			docRGB& H = HighLight;
@@ -1772,9 +1771,9 @@ public:
 		if(bGridAfter && nGridAfter > 0)
 		{
             writer.WriteString(L"<w:grid" + sName + L" w:val=\"" + std::to_wstring(nGridAfter) + L"\"/>");
-			if(oAfterWidth.bW)
-				oAfterWidth.Write(writer, _T("w:w") + sName);
 		}
+		if(oAfterWidth.bW)
+			oAfterWidth.Write(writer, _T("w:w") + sName);
 	}
 };
 class WriteHyperlink
@@ -1906,12 +1905,19 @@ public:
 		m_nId += nCount;
 		return nRes;
 	}
+	int getCurrentId()
+	{
+		return m_nId;
+	}
 };
-class CComment{
+class CComment
+{
 private:
 	IdCounter& m_oParaIdCounter;
 	IdCounter& m_oFormatIdCounter;
 public:
+	void *pBinary_DocumentTableReader;
+
 	int IdOpen;
 	int IdFormat;
     std::wstring UserName;
@@ -1923,8 +1929,10 @@ public:
 	bool Solved;
 	unsigned int DurableId;
     std::wstring Text;
-    std::wstring m_sParaId;
-    std::wstring m_sParaIdParent;
+	std::wstring sContent;
+    
+	std::wstring sParaId;
+    std::wstring sParaIdParent;
 	std::vector<CComment*> replies;
 
 	bool bIdOpen;
@@ -1995,8 +2003,8 @@ public:
 
         int nId = pComment->m_oParaIdCounter.getNextId();
 
-		pComment->m_sParaId = XmlUtils::IntToString(nId, L"%08X");
-		sRes += L"<w:p w14:paraId=\"" + pComment->m_sParaId + L"\" w14:textId=\"" + pComment->m_sParaId + L"\">";
+		pComment->sParaId = XmlUtils::IntToString(nId, L"%08X");
+		sRes += L"<w:p w14:paraId=\"" + pComment->sParaId + L"\" w14:textId=\"" + pComment->sParaId + L"\">";
         sRes += L"<w:pPr><w:spacing w:line=\"240\" w:after=\"0\" w:lineRule=\"auto\" w:before=\"0\"/><w:ind w:firstLine=\"0\" w:left=\"0\" w:right=\"0\"/><w:jc w:val=\"left\"/></w:pPr><w:r><w:rPr><w:rFonts w:eastAsia=\"Arial\" w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\"/><w:sz w:val=\"22\"/></w:rPr><w:t xml:space=\"preserve\">";
         sRes += sPart;
         sRes += L"</w:t></w:r></w:p>";
@@ -2038,49 +2046,58 @@ public:
             sRes += L"\"";
 		}
         sRes += L">";
-		std::wstring sText = pComment->Text;
 
-		XmlUtils::replace_all(sText, L"\r", L"");
-
-		int nPrevIndex = 0;
-		for (int i = 0; i < (int)sText.length(); i++)
+		if (false == pComment->sContent.empty())
 		{
-			wchar_t cToken = sText[i];
-			if('\n' == cToken)
-			{
-				writeContentWritePart(pComment, sText, nPrevIndex, i, sRes);
-				nPrevIndex = i + 1;
-			}
+			sRes += pComment->sContent;
 		}
-		writeContentWritePart(pComment, sText, nPrevIndex, (int)sText.length(), sRes);
-        sRes += L"</w:comment>";
+		else
+		{
+	//old comments
+			std::wstring sText = pComment->Text;
+
+			XmlUtils::replace_all(sText, L"\r", L"");
+
+			int nPrevIndex = 0;
+			for (int i = 0; i < (int)sText.length(); i++)
+			{
+				wchar_t cToken = sText[i];
+				if('\n' == cToken)
+				{
+					writeContentWritePart(pComment, sText, nPrevIndex, i, sRes);
+					nPrevIndex = i + 1;
+				}
+			}
+			writeContentWritePart(pComment, sText, nPrevIndex, (int)sText.length(), sRes);
+		}     
+		sRes += L"</w:comment>";
 		return sRes;
 	}
     static std::wstring writeContentExt(CComment* pComment)
 	{
         std::wstring sRes;
-        if(!pComment->m_sParaId.empty())
+        if(false == pComment->sParaId.empty())
 		{
             std::wstring sDone(L"0");
 			if(pComment->bSolved && pComment->Solved)
 				sDone = _T("1");
-            if(!pComment->m_sParaIdParent.empty())
-                sRes += L"<w15:commentEx w15:paraId=\"" + pComment->m_sParaId + L"\" \
-w15:paraIdParent=\"" + pComment->m_sParaIdParent + L"\" w15:done=\"" + sDone + L"\"/>";
+            if(!pComment->sParaIdParent.empty())
+                sRes += L"<w15:commentEx w15:paraId=\"" + pComment->sParaId + L"\" \
+w15:paraIdParent=\"" + pComment->sParaIdParent + L"\" w15:done=\"" + sDone + L"\"/>";
 			else
-                sRes += L"<w15:commentEx w15:paraId=\"" + pComment->m_sParaId + L"\" w15:done=\"" + sDone + L"\"/>";
+                sRes += L"<w15:commentEx w15:paraId=\"" + pComment->sParaId + L"\" w15:done=\"" + sDone + L"\"/>";
 			//расставляем paraIdParent
 			for(size_t i = 0; i < pComment->replies.size(); i++)
-				pComment->replies[i]->m_sParaIdParent = pComment->m_sParaId;
+				pComment->replies[i]->sParaIdParent = pComment->sParaId;
 		}
 		return sRes;
 	}
 	static std::wstring writeContentsIds(CComment* pComment)
 	{
 		std::wstring sRes;
-		if(!pComment->m_sParaId.empty() && pComment->bDurableId)
+		if(!pComment->sParaId.empty() && pComment->bDurableId)
 		{
-			sRes += L"<w16cid:commentId w16cid:paraId=\"" + pComment->m_sParaId + L"\" w16cid:durableId=\"" + XmlUtils::IntToString(pComment->DurableId, L"%08X") + L"\"/>";
+			sRes += L"<w16cid:commentId w16cid:paraId=\"" + pComment->sParaId + L"\" w16cid:durableId=\"" + XmlUtils::IntToString(pComment->DurableId, L"%08X") + L"\"/>";
 		}
 		return sRes;
 	}
@@ -2112,8 +2129,8 @@ class CComments
 public:
 	IdCounter m_oFormatIdCounter;
 	IdCounter m_oParaIdCounter;
-public:
-	CComments():m_oParaIdCounter(1)
+
+	CComments() : m_oParaIdCounter(1)
 	{
 	}
 	~CComments()
@@ -3130,4 +3147,3 @@ public:
 	}
 };
 }
-#endif	// #ifndef READER_CLASSES

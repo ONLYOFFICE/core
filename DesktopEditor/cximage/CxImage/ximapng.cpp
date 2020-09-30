@@ -41,6 +41,8 @@ bool CxImagePNG::Decode(CxFile *hFile)
 	png_info *info_ptr;
 	uint8_t *row_pointers=NULL;
 	CImageIterator iter(this);
+    bool is_read_end_start = false;
+    bool is_read_end = false;
 
   cx_try
   {
@@ -296,15 +298,23 @@ bool CxImagePNG::Decode(CxFile *hFile)
 	row_pointers = NULL;
 
 	/* read the rest of the file, getting any additional chunks in info_ptr - REQUIRED */
-	png_read_end(png_ptr, info_ptr);
+    is_read_end_start = true;
+    png_read_end(png_ptr, info_ptr);
+    is_read_end = true;
 
 	/* clean up after the read, and free any memory allocated - REQUIRED */
 	png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 
   } cx_catch {
-	if (strcmp(message,"")) strncpy(info.szLastError,message,255);
-	if (info.nEscape == -1 && info.dwType == CXIMAGE_FORMAT_PNG) return true;
-	return false;
+      if (!is_read_end_start || is_read_end) {
+        if (strcmp(message,"")) strncpy(info.szLastError,message,255);
+        if (info.nEscape == -1 && info.dwType == CXIMAGE_FORMAT_PNG) return true;
+        return false;
+      }
+      else {
+        /* clean up after the read, and free any memory allocated - REQUIRED */
+        png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
+      }
   }
 	/* that's it */
 	return true;

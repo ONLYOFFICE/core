@@ -29,12 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _CPDOCCORE_ODF_LINEWIDTH_H_
-#define _CPDOCCORE_ODF_LINEWIDTH_H_
 
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #include <iosfwd>
 #include <string>
@@ -113,5 +109,3 @@ std::wostream & operator << (std::wostream & _Wostream, const line_width & _Val)
 APPLY_PARSE_XML_ATTRIBUTES(odf_types::line_width);
 
 }
-
-#endif

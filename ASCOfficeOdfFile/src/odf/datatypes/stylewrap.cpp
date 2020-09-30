@@ -90,7 +90,6 @@ style_wrap style_wrap::parse(const std::wstring & Str)
 
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return style_wrap( None );
     }
 }

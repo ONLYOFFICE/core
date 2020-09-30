@@ -529,17 +529,18 @@ void CPPTUserInfo::FromDocument()
 
 	if (0 != oArrayHeadersFootersInfo.size())
 	{
+		for (int i = 0 ; i < 3; i++) m_PlaceholdersReplaceString[i] = oArrayHeadersFootersInfo[0]->m_HeadersFootersString[i];
+		
 		if (oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom)
 		{
-			m_bHasDate			=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasDate ||
+			m_bHasDate			=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasDate/* ||
 									oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasTodayDate || 
-									oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate;
+									oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate*/;
 			m_bHasFooter		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasFooter;
 			m_bHasSlideNumber	=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasSlideNumber;
 
 			if (oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate)	m_nFormatDate = 2;
 		}
-		for (int i = 0 ; i < 3; i++) m_PlaceholdersReplaceString[i] = oArrayHeadersFootersInfo[0]->m_HeadersFootersString[i];
 	}
 
 	double master_to_emu = 1./576. ;//inch
@@ -727,9 +728,9 @@ void CPPTUserInfo::LoadNotes(_UINT32 dwNoteID, CSlide* pNotes)
 	{
 		if (oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom)
 		{
-			bHasDate		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasDate ||
+			bHasDate		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasDate/* ||
 								oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasTodayDate || 
-								oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate;
+								oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate*/;
 			bHasFooter		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasFooter;
 			bHasSlideNumber	=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasSlideNumber;
 
@@ -957,9 +958,9 @@ void CPPTUserInfo::LoadSlide(_UINT32 dwSlideID, CSlide* pSlide)
 	{
 		if (oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom)
 		{
-			bHasDate		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasDate ||
+			bHasDate		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasDate/* ||
 								oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasTodayDate || 
-								oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate;
+								oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate*/;
 			bHasFooter		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasFooter;
 			bHasSlideNumber	=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasSlideNumber;
 
@@ -1245,8 +1246,11 @@ int CPPTUserInfo::AddNewLayout(CTheme* pTheme, CRecordSlide* pRecordSlide, bool 
 	pLayout->m_bUseThemeColorScheme = true;
 	pLayout->m_bShowMasterShapes	= true;
 
-	pLayout->m_strLayoutType = ConvertLayoutType(layoutRecord.m_nGeom, layoutRecord.m_pPlaceHolderID);
+	ConvertLayoutType(layoutRecord, pLayout->m_strLayoutType, pLayout->m_sName);
 
+	std::vector<CRecordCString*> oArrayStrings;
+	pRecordSlide->GetRecordsByType(&oArrayStrings, false, false);
+	
 	if (false == addShapes && false == bMasterObjects) return ind;
 //далее только для типовых шаблонов
 	pTheme->m_mapGeomToLayout.insert(std::pair<_UINT64, LONG>(layoutRecord.m_hash, ind));
@@ -1271,6 +1275,8 @@ int CPPTUserInfo::AddNewLayout(CTheme* pTheme, CRecordSlide* pRecordSlide, bool 
 		case 0x11:	//SL_VerticalTitleBody
 		case 0x12:	//SL_VerticalTwoRows
 			defObjSize = 0; break;
+		case 0x10 : // SL_Blank
+			break;
 	}
 
 	for (int i = 0 ; i < 8; i ++)
@@ -1285,6 +1291,14 @@ int CPPTUserInfo::AddNewLayout(CTheme* pTheme, CRecordSlide* pRecordSlide, bool 
 		case PT_MasterSubTitle:
 		case PT_MasterNotesSlideImage:
 		case PT_MasterNotesBody:
+			{
+				int usualType = layoutRecord.m_pPlaceHolderID[i];
+				CorrectPlaceholderType(usualType);
+
+				if (!AddThemeLayoutPlaceholder(pLayout, usualType, pTheme))
+				{
+				}					
+			}break;
 		case PT_MasterDate:
 		case PT_MasterSlideNumber:
 		case PT_MasterFooter:
@@ -1612,7 +1626,7 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
 	if (lLayoutID >= 0 && false == pTheme->m_arLayouts.empty())
 	{
 		CLayout *pLayout_ = pTheme->m_arLayouts.back().get();
-		pLayout_->m_strLayoutType = L"obj";
+		//pLayout_->m_strLayoutType = L"obj";
 	}
 }
 
@@ -1896,8 +1910,9 @@ void CPPTUserInfo::LoadNoMainMaster(_UINT32 dwMasterID)
 	CSlideInfo	* pThemeWrapper	= &m_arMasterWrapper[pPairTheme->second];
 	CTheme		* pTheme		= m_arThemes		[pPairTheme->second].get();
 
-	std::wstring strLayoutType = ConvertLayoutType(oArraySlideAtoms[0]->m_oLayout.m_nGeom, oArraySlideAtoms[0]->m_oLayout.m_pPlaceHolderID);
-	
+	std::wstring strLayoutType, strLayoutName;
+	ConvertLayoutType(oArraySlideAtoms[0]->m_oLayout, strLayoutType, strLayoutName);
+
 	CLayout* pLayout = NULL;
 
 	int lLayoutID = AddNewLayout(pTheme, pCurMaster, false, false);
@@ -1983,6 +1998,8 @@ void CPPTUserInfo::LoadNoMainMaster(_UINT32 dwMasterID)
 			pLayout->m_sName = oArrayStrings[i]->m_strText;
 		}
 	}
+	if (pLayout->m_sName.empty()) pLayout->m_sName = strLayoutName; 
+
 //-------------------------------------------------------------------------------------------------------
 	std::vector<CRecordDrawingContainer*> oArrayDrawing;
 	pCurMaster->GetRecordsByType(&oArrayDrawing, true);

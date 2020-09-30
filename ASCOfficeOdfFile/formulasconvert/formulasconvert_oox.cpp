@@ -148,7 +148,7 @@ public:
 			{
 				case 'M':
 				{
-					if ((pos + 5 < size) && (expr.substr(pos, 5) == L"MINYS"))
+					if ((pos + 5 <= size) && (expr.substr(pos, 5) == L"MINYS"))
 					{
 						result += L"-"; pos += 5;
 					}
@@ -159,7 +159,7 @@ public:
 				}break;
 				case 'T':
 				{	
-					if ((pos + 6 < size) && (expr.substr(pos, 6) == L"ТОСHKA"))
+					if ((pos + 6 <= size) && (expr.substr(pos, 6) == L"ТОСHKA"))
 					{
 						result += L"."; pos += 6;
 					}
@@ -170,7 +170,7 @@ public:
 				}break;
 				case 'V':
 				{
-					if ((pos + 5 < size) && (expr.substr(pos, 5) == L"VOSKL"))
+					if ((pos + 5 <= size) && (expr.substr(pos, 5) == L"VOSKL"))
 					{
 						result += L"!"; pos += 5;
 					}
@@ -181,11 +181,11 @@ public:
 				}break;
 				case 'S':
 				{
-					if ((pos + 8 < size) && (expr.substr(pos, 8) == L"SCOBCAIN"))
+					if ((pos + 8 <= size) && (expr.substr(pos, 8) == L"SCOBCAIN"))
 					{
 						result += L"("; pos += 8;
 					}
-					else if ((pos + 9 < size) && (expr.substr(pos, 9) == L"SCOBCAOUT"))
+					else if ((pos + 9 <= size) && (expr.substr(pos, 9) == L"SCOBCAOUT"))
 					{
 						result += L")"; pos += 9;
 					}
@@ -196,15 +196,15 @@ public:
 				}break;
 				case 'K':
 				{
-					if ((pos + 9 < size) && (expr.substr(pos, 9) == L"KVADRATIN"))
+					if ((pos + 9 <= size) && (expr.substr(pos, 9) == L"KVADRATIN"))
 					{
 						result += L"["; pos += 9;
 					}
-					else if ((pos + 10 < size) && (expr.substr(pos, 10) == L"KVADRATOUT"))
+					else if ((pos + 10 <= size) && (expr.substr(pos, 10) == L"KVADRATOUT"))
 					{
 						result += L"]"; pos += 10;
 					}
-					else if ((pos + 8 < size) && (expr.substr(pos, 8) == L"KAVYCHKA"))
+					else if ((pos + 8 <= size) && (expr.substr(pos, 8) == L"KAVYCHKA"))
 					{
 						result += L"\""; pos += 8;
 					}
@@ -215,7 +215,7 @@ public:
 				}break;
 				case 'P':
 				{
-					if ((pos + 6 < size) && (expr.substr(pos, 6) == L"PROBEL"))
+					if ((pos + 6 <= size) && (expr.substr(pos, 6) == L"PROBEL"))
 					{
 						result += L" "; pos += 6;
 					}
@@ -226,7 +226,7 @@ public:
 				}break;
 				case 'A':
 				{
-					if ((pos + 8 < size) && (expr.substr(pos, 8) == L"APOSTROF"))
+					if ((pos + 8 <= size) && (expr.substr(pos, 8) == L"APOSTROF"))
 					{
 						result += L"'"; pos += 8;
 					}

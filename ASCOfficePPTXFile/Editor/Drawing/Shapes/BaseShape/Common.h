@@ -91,7 +91,7 @@ namespace NSStringUtils
     {
         return std::to_wstring(val);
     }
-	static void ParseString(std::wstring strDelimeters, std::wstring strSource, 
+	static void ParseString(const std::wstring & strDelimeters, const std::wstring & strSource, 
 		std::vector<std::wstring>& pArrayResults, bool bIsCleared = true)
 	{
 		if (bIsCleared)
@@ -100,7 +100,7 @@ namespace NSStringUtils
 
 		boost::algorithm::split(pArrayResults, strSource, boost::algorithm::is_any_of(strDelimeters.c_str()), boost::algorithm::token_compress_on);
 		
-		while (pArrayResults.size() > 0)
+		while (false == pArrayResults.empty())
 		{
 			if (pArrayResults[pArrayResults.size() - 1].empty())
 				pArrayResults.erase(pArrayResults.begin() + pArrayResults.size() - 1);
@@ -110,7 +110,7 @@ namespace NSStringUtils
 
 	}
 
-    static void ParsePath(std::wstring strSource, std::vector<std::wstring>& ArrayResults)
+    static void ParsePath(const std::wstring & strSource, std::vector<std::wstring>& ArrayResults)
     {
         std::wstring strPath = strSource;
 
@@ -198,7 +198,7 @@ namespace NSStringUtils
         return;
     }
 
-	static void ParsePath2(std::wstring strSource, std::vector<std::wstring>* pArrayResults, bool bIsCleared = true)
+	static void ParsePath2(const std::wstring & strSource, std::vector<std::wstring>* pArrayResults, bool bIsCleared = true)
     {
         if (NULL == pArrayResults)
             return;

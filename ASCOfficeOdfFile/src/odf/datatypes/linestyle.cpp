@@ -93,7 +93,6 @@ line_style line_style::parse(const std::wstring & Str)
         return line_style( Wave );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return None;
     }
 }

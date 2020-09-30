@@ -81,7 +81,6 @@ draw_fill draw_fill::parse(const std::wstring & Str)
         return draw_fill( hatch );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return draw_fill( solid );
     }
 }

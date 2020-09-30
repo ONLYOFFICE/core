@@ -159,7 +159,6 @@ length length::parse(const std::wstring & Str)
         u = length::emu;
     else
     {
-       // BOOST_THROW_EXCEPTION( errors::invalid_attribute() );    
     }
 
     return length(v, u);

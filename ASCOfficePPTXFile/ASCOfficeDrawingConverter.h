@@ -222,6 +222,7 @@ namespace NSBinPptxRW
 
         void SetSrcPath         (const std::wstring& sPath, int nDocType = 1/*XMLWRITER_DOC_TYPE_DOCX*/);
         void SetDstPath         (const std::wstring& sPath);
+		void SetTempPath		(const std::wstring& sPath);
 
         void SetMediaDstPath    (const std::wstring& sMediaPath);
         void SetEmbedDstPath    (const std::wstring& sEmbedPath);

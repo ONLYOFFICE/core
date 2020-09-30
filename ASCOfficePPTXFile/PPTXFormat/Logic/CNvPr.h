@@ -198,7 +198,7 @@ namespace PPTX
 				}
 				else
 				{
-					if (pWriter->m_lObjectId <= _id)
+					if (pWriter->m_lObjectId <= (unsigned int)_id)
 					{
 						pWriter->m_lObjectId = _id + 1;
 					}

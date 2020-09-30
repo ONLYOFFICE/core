@@ -58,8 +58,6 @@ core_windows {
     LIBS += -lUser32
 }
 
-#DEFINES += BUILD_FONT_NAMES_DICTIONARY
-
 LIB_GRAPHICS_PRI_PATH = $$PWD/../..
 
 FREETYPE_VERSION=2.5.2
@@ -471,6 +469,15 @@ SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/LeptonLib/skew.cpp
 
 core_ios {
-OBJECTIVE_SOURCES += ./../../fontengine/ApplicationFonts_ios.mm
-LIBS += -framework Foundation
+
+    HEADERS += \
+        ./../../fontengine/ApplicationFontsWorker.h \
+        ./../../fontengine/FontsAssistant.h
+
+    OBJECTIVE_SOURCES += \
+        ./../../fontengine/ApplicationFonts_ios.mm \
+        ./../../fontengine/ApplicationFontsWorker.cpp \
+        ./../../fontengine/FontsAssistant.cpp
+
+    LIBS += -framework Foundation
 }

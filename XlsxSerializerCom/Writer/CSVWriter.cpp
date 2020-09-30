@@ -140,7 +140,7 @@ namespace CSVWriter
 				{
 					pSheet =  oXlsx.m_pWorkbook->m_oSheets->m_arrItems.front();
 				}
-				sSheetRId = bJSON ? pSheet->m_oRid->GetValue() : pSheet->m_oName.get2();
+				sSheetRId = bJSON ? pSheet->m_oRid->GetValue() : *pSheet->m_oName;
 			}
 
 			std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>::const_iterator pFind = oXlsx.m_mapWorksheets.find(sSheetRId);

@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_FOOTNOTE_INCLUDE_H_
-#define OOX_FOOTNOTE_INCLUDE_H_
 
 #include "File.h"
 #include "IFileContainer.h"
@@ -63,11 +61,11 @@ namespace OOX
 		{
             for (size_t nIndex = 0; nIndex < m_arrFootnote.size(); nIndex++ )
 			{
-				if ( m_arrFootnote[nIndex] )
-					delete m_arrFootnote[nIndex];
+				if ( m_arrFootnote[nIndex] ) delete m_arrFootnote[nIndex]; m_arrFootnote[nIndex] = NULL;
 			}
 
 			m_arrFootnote.clear();
+			m_mapFootnote.clear();
 		}
 		virtual void read(const CPath& oPath)
 		{
@@ -98,7 +96,14 @@ namespace OOX
 					if ( _T("w:footnote") == sName )
 					{
 						CFtnEdn *pFootnote = new CFtnEdn( oReader );
-						if (pFootnote) m_arrFootnote.push_back( pFootnote );
+						if (pFootnote)
+						{
+							m_arrFootnote.push_back( pFootnote );
+							if (pFootnote->m_oId.IsInit())
+							{
+								m_mapFootnote.insert(std::make_pair(pFootnote->m_oId->GetValue(), pFootnote));
+							}
+						}
 
 					}
 				}
@@ -111,7 +116,9 @@ namespace OOX
             for (size_t nIndex = 0; nIndex < m_arrFootnote.size(); nIndex++ )
 			{
 				if ( m_arrFootnote[nIndex] )
+				{
 					sXml += m_arrFootnote[nIndex]->toXML();
+				}
 			}
 			sXml += _T("</w:footnotes>");
 			CDirectory::SaveToFile( oPath.GetPath(), sXml );
@@ -132,22 +139,29 @@ namespace OOX
 			return type().DefaultFileName();
 		}
 
-		OOX::CFtnEdn* Find(const OOX::Logic::CFootnoteReference& oReference) const
+		OOX::CFtnEdn* Find(const OOX::Logic::CFootnoteReference& oReference)
 		{
 			if ( !oReference.m_oId.IsInit() )
 				return NULL;
 
-            for ( size_t nIndex = 0; nIndex < m_arrFootnote.size(); nIndex++ )
-			{
-				if ( m_arrFootnote[nIndex]->m_oId.IsInit() && ( m_arrFootnote[nIndex]->m_oId == oReference.m_oId ) )
-					return m_arrFootnote[nIndex];
-			}
+			//for ( size_t nIndex = 0; nIndex < m_arrFootnote.size(); nIndex++ )
+			//{
+			//	if ( m_arrFootnote[nIndex]->m_oId.IsInit() && ( m_arrFootnote[nIndex]->m_oId == oReference.m_oId ) )
+			//		return m_arrFootnote[nIndex];
+			//}
 
-			return NULL;
+			std::map<int, OOX::CFtnEdn*>::iterator pFind = m_mapFootnote.find(oReference.m_oId->GetValue());
+
+			if (pFind != m_mapFootnote.end())	return pFind->second;
+			else								return NULL;
 		}
 		void Add(OOX::CFtnEdn* pFootnote)
 		{
+			if (!pFootnote) return;
+			if (!pFootnote->m_oId.IsInit()) return;
+
 			m_arrFootnote.push_back( pFootnote );
+			m_mapFootnote.insert(std::make_pair(pFootnote->m_oId->GetValue(), pFootnote));
 		}		
 		const unsigned int  GetCount() const
 		{
@@ -156,7 +170,7 @@ namespace OOX
 
 		CPath						m_oReadPath;
         std::vector<OOX::CFtnEdn*>	m_arrFootnote;
+//------------------------------------------
+		std::map<int, OOX::CFtnEdn*> m_mapFootnote;
 	};
 } // namespace OOX
-
-#endif // OOX_FOOTNOTE_INCLUDE_H_

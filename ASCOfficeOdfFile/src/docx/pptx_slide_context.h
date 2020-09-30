@@ -91,7 +91,7 @@ public:
 	void end_frame();
 
 	void start_action	(std::wstring action);
-		void set_link	(std::wstring link, RelsType typeRels = typeHyperlink); 
+		void set_link	(std::wstring link, _rels_type typeRels = typeHyperlink); 
 	void end_action		();
 
  	void start_table();
@@ -123,7 +123,7 @@ public:
 	void add_rels( bool isInternal,
         std::wstring const & rid,
         std::wstring const & ref,
-        RelsType type);
+        _rels_type type);
 
 	void set_footer();
 	void set_header();

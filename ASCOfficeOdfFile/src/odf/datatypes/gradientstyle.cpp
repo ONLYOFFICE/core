@@ -82,7 +82,6 @@ gradient_style gradient_style::parse(const std::wstring & Str)
         return gradient_style( rectangular );   
 	else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return gradient_style( linear );
     }
 }

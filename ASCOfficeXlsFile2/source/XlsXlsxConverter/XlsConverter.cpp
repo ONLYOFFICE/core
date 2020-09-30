@@ -232,8 +232,15 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 				output_document->get_xl_files().add_vba_project();
 			}
 		}
-		else 
-			bMacros = false;
+		else
+		{
+			bMacros = (xls_global_info->bMacrosExist & bMacros);
+
+			if (bMacros)
+			{
+				output_document->get_xl_files().set_macros_enabled();
+			}
+		}
 
 		XLS::CFStreamPtr controls = xls_file->getNamedStream(L"Ctls");
 		if(controls)
@@ -1042,10 +1049,14 @@ void XlsConverter::convert(XLS::IMDATA * imdata)
 
 	std::wstring type_image;
 
-	if (imdata->cf == 0x09 && imdata->env == 0x01)	type_image = L".wmf";
-	if (imdata->cf == 0x09 && imdata->env == 0x02)	type_image = L".pict";
-	if (imdata->cf == 0x09)							type_image = L"dib_data";
-	if (imdata->cf == 0x0e)							type_image = L"";			//native aka unknown
+	if (imdata->cf == 0x09)
+	{
+			 if (imdata->env == 0x01)	type_image = L".wmf";
+		else if (imdata->env == 0x02)	type_image = L".pict";
+		else							type_image = L"dib_data";
+	}
+	else if (imdata->cf == 0x0e)		type_image = L"";			//native aka unknown
+	else if (imdata->cf == 0x02)		type_image = L"";			//native aka unknown
 
 	std::wstring target = WriteMediaFile(imdata->pData.get(), imdata->lcb, type_image);
 	xlsx_context->get_drawing_context().set_fill_texture(target);
@@ -2227,10 +2238,8 @@ void XlsConverter::convert_transform(std::vector<ODRAW::OfficeArtFOPTEPtr> & pro
 		{
 			case 0x0004:
 			{
-				double d = props[i]->op / 65536.;				
-				if (d < 0) d += 360;
-
-				xlsx_context->get_drawing_context().set_rotation(d);
+				ODRAW::FixedPoint * fixed_point = static_cast<ODRAW::FixedPoint *>(props[i].get());
+				xlsx_context->get_drawing_context().set_rotation(fixed_point->dVal);
 			}break;
 		}
 	}

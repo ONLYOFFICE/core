@@ -64,7 +64,7 @@ BinDocxRW::CDocxSerializer::~CDocxSerializer()
 	RELEASEOBJECT(m_pParamsWriter);
 	RELEASEOBJECT(m_pCurFileWriter);
 }
-bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions)
+bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sTempPath)
 {
 	OOX::CPath pathMain(sSrcFileName);
     
@@ -105,6 +105,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sSrcFileName, co
 
     oDrawingConverter.SetDstPath(pathMain.GetDirectory() + FILE_SEPARATOR_STR + L"word");
 	oDrawingConverter.SetMediaDstPath(pathMedia.GetPath());
+	oDrawingConverter.SetTempPath(sTempPath);
 	
 	m_pParamsWriter = new ParamsWriter(&oBufferedStream, &fp, &oDrawingConverter, pEmbeddedFontsManager);
 

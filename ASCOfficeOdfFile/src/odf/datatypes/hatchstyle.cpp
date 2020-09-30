@@ -66,7 +66,6 @@ hatch_style hatch_style::parse(const std::wstring & Str)
 
 	else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return hatch_style(single);
     }
 }

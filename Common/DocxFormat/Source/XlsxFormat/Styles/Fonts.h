@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_FONTS_FILE_INCLUDE_H_
-#define OOX_FONTS_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
 
@@ -163,7 +161,7 @@ namespace OOX
 				}
 				writer.WriteString(L"</font>");
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -216,6 +214,66 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
+				if ( oReader.GetAttributesCount() <= 0) return;
+
+				nullable_bool bItalic, bBold;
+				nullable_string sColor, sFamily, sFont;
+				nullable<SimpleTypes::Spreadsheet::CFontFamily<>> oFamily;
+				nullable<SimpleTypes::Spreadsheet::CUnderline<>> oUnderline;
+				nullable<SimpleTypes::Spreadsheet::CFontCharset<>> oCharset;
+				nullable_double dSz;
+
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:FontName"),	sFont )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("x:Family"),	oFamily )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("x:CharSet"),	oCharset )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:Size"),		dSz )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:Color"),	sColor )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:Underline"),oUnderline )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:Bold"),		bBold )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:Italic"),	bItalic )
+				WritingElement_ReadAttributes_End( oReader )
+				
+				if (sColor.IsInit())
+				{
+					m_oColor.Init(); m_oColor->m_oRgb.Init();
+					m_oColor->m_oRgb->FromString(*sColor);
+				}
+				if (oUnderline.IsInit())
+				{
+					m_oUnderline.Init();
+					m_oUnderline->m_oUnderline = oUnderline;
+				}
+				if (sFont.IsInit())
+				{
+					m_oRFont.Init();
+					m_oRFont->m_sVal = sFont;
+				}
+				if (sFamily.IsInit())
+				{
+					m_oFamily.Init();
+					m_oFamily->m_oFontFamily = oFamily;
+				}
+				if (dSz.IsInit())
+				{
+					m_oSz.Init(); m_oSz->m_oVal.Init();
+					m_oSz->m_oVal->SetValue(*dSz);
+				}
+				if (oCharset.IsInit())
+				{
+					m_oCharset.Init();
+					m_oCharset->m_oCharset = oCharset;
+				}
+				if (bBold.IsInit())
+				{
+					m_oBold.Init();
+					m_oBold->m_oVal.FromBool(*bBold);
+				}
+				if (bItalic.IsInit())
+				{
+					m_oItalic.Init();
+					m_oItalic->m_oVal.FromBool(*bItalic);
+				}
 			}
 		public:
 			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oBold;
@@ -314,4 +372,3 @@ namespace OOX
 	} //Spreadsheet
 } // namespace OOX
 
-#endif // OOX_FONTS_FILE_INCLUDE_H_

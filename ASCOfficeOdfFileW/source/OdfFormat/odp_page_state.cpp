@@ -59,7 +59,7 @@ namespace odf_writer {
 ///////////////////////////////////////////////////////////////
 
 odp_page_state::odp_page_state(odf_conversion_context * Context, office_element_ptr & elm) 
-		 : context_(Context), drawing_context_(Context), comment_context_(Context)
+		 : context_(Context), drawing_context_(Context), comment_context_(Context), controls_context_(Context)
 {     
 	page_elm_			= elm;
 	page_properties_	= NULL;
@@ -161,6 +161,15 @@ void odp_page_state::finalize_page()
 				set_anim_type(L"tmRoot");
 			end_timing_par();
 		end_timing();
+	}
+	if (controls_context()->is_exist_content())
+	{
+		office_element_ptr forms_root_elm;
+		create_element(L"office", L"forms", forms_root_elm, context_);
+
+		controls_context()->finalize(forms_root_elm);
+		
+		page_elm_->add_child_element(forms_root_elm);
 	}
 }
 void odp_page_state::set_anim_type(std::wstring val)

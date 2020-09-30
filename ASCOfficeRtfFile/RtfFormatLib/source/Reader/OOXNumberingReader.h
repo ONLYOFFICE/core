@@ -50,8 +50,9 @@ public:
         for (size_t i=0; i < m_ooxNumbering->m_arrNumPicBullet.size(); i++)
 		{
 			if (m_ooxNumbering->m_arrNumPicBullet[i] == NULL) continue;
+			if (false == m_ooxNumbering->m_arrNumPicBullet[i]->m_oNumPicBulletId.IsInit()) continue;
 			
-			int nID = m_ooxNumbering->m_arrNumPicBullet[i]->m_oNumPicBulletId.GetValue();
+			int nID = *m_ooxNumbering->m_arrNumPicBullet[i]->m_oNumPicBulletId;
 					
 			if (m_ooxNumbering->m_arrNumPicBullet[i]->m_oVmlDrawing.IsInit())
 			{

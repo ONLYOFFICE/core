@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_STYLES_INCLUDE_H_
-#define OOX_STYLES_INCLUDE_H_
 
 #include "File.h"
 #include "WritingElement.h"
@@ -265,9 +263,6 @@ namespace OOX
 		};
 
 	}
-} // OOX
-namespace OOX
-{
 	//--------------------------------------------------------------------------------
 	// DocDefaults 17.7.5.1 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -536,7 +531,7 @@ namespace OOX
 	{
 	public:
 
-		CStyle()
+		CStyle(OOX::Document *pMain = NULL) : WritingElement(pMain) 
 		{
 		}
 		CStyle(XmlUtils::CXmlNode &oNode)
@@ -572,9 +567,7 @@ namespace OOX
 			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 			return *this;
 		}
-	public:
-
-		virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+		virtual void fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			if ( _T("w:style") != oNode.GetName() )
 				return;
@@ -623,7 +616,7 @@ namespace OOX
 			WritingElement_ReadNode( oNode, oChild, _T("w:uiPriority"),      m_oUiPriority );
 			WritingElement_ReadNode( oNode, oChild, _T("w:unhideWhenUsed"),  m_oUnhideWhenUsed );
 		}
-		virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
 
@@ -663,7 +656,7 @@ namespace OOX
 				else if ( _T("w:unhideWhenUsed") == sName ) m_oUnhideWhenUsed = oReader;
 			}
 		}
-        virtual std::wstring      toXML() const
+        virtual std::wstring toXML() const
 		{
 			std::wstring sResult = _T("<w:style ");
 
@@ -671,11 +664,9 @@ namespace OOX
 			ComplexTypes_WriteAttribute( _T("w:default=\""),     m_oDefault );
 			if ( m_sStyleId.IsInit() )
 			{
-				sResult += _T("w:styleId=\"");
-                sResult += m_sStyleId.get2();
-				sResult += _T("\" ");
+				sResult += L"w:styleId=\"" + *m_sStyleId + L"\" ";
 			}
-			ComplexTypes_WriteAttribute( _T("w:type=\""),        m_oType );
+			ComplexTypes_WriteAttribute( _T("w:type=\""), m_oType );
 
 			sResult += _T(">");
 
@@ -721,7 +712,6 @@ namespace OOX
 
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
 			WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:customStyle"), m_oCustomStyle )
 			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:default"),     m_oDefault )
@@ -732,71 +722,85 @@ namespace OOX
 
 	public:
 
-		// Attributes
+		nullable<SimpleTypes::COnOff<>>		m_oCustomStyle;
+		nullable<SimpleTypes::COnOff<>>		m_oDefault;
+		nullable_string						m_sStyleId;
+		nullable<SimpleTypes::CStyleType<>> m_oType;
 
-		nullable<SimpleTypes::COnOff<>		> m_oCustomStyle;
-		nullable<SimpleTypes::COnOff<>		> m_oDefault;
-		nullable<std::wstring				> m_sStyleId;
-		nullable<SimpleTypes::CStyleType<>	> m_oType;
-
-		// Childs
-		nullable<ComplexTypes::Word::String                       > m_oAliases;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oAutoRedefine;
-		nullable<ComplexTypes::Word::String                       > m_oBasedOn;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oHidden;
-		nullable<ComplexTypes::Word::String                       > m_oLink;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oLocked;
-		nullable<ComplexTypes::Word::String                       > m_oName;
-		nullable<ComplexTypes::Word::String                       > m_oNext;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oPersonal;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oPersonalCompose;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oPersonalReply;
-		nullable<OOX::Logic::CParagraphProperty                     > m_oParPr;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oQFormat;
-		nullable<OOX::Logic::CRunProperty                           > m_oRunPr;
-		nullable<ComplexTypes::Word::CLongHexNumber                 > m_oRsid;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oSemiHidden;
-		nullable<OOX::Logic::CTableProperty                         > m_oTblPr;		
-		std::vector<OOX::Logic::CTableStyleProperties              *> m_arrTblStylePr;
-		nullable<OOX::Logic::CTableCellProperties                   > m_oTcPr;
-		nullable<OOX::Logic::CTableRowProperties                    > m_oTrPr;
-		nullable<ComplexTypes::Word::CDecimalNumber                 > m_oUiPriority;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oUnhideWhenUsed;
-
+		nullable<ComplexTypes::Word::String>							m_oAliases;
+		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oAutoRedefine;
+		nullable<ComplexTypes::Word::String>							m_oBasedOn;
+		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oHidden;
+		nullable<ComplexTypes::Word::String>							m_oLink;
+		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oLocked;
+		nullable<ComplexTypes::Word::String>							m_oName;
+		nullable<ComplexTypes::Word::String>							m_oNext;
+		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oPersonal;
+		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oPersonalCompose;
+		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oPersonalReply;
+		nullable<OOX::Logic::CParagraphProperty>						m_oParPr;
+		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oQFormat;
+		nullable<OOX::Logic::CRunProperty>								m_oRunPr;
+		nullable<ComplexTypes::Word::CLongHexNumber>					m_oRsid;
+		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oSemiHidden;
+		nullable<OOX::Logic::CTableProperty>							m_oTblPr;		
+		std::vector<OOX::Logic::CTableStyleProperties*>					m_arrTblStylePr;
+		nullable<OOX::Logic::CTableCellProperties>						m_oTcPr;
+		nullable<OOX::Logic::CTableRowProperties>						m_oTrPr;
+		nullable<ComplexTypes::Word::CDecimalNumber>					m_oUiPriority;
+		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oUnhideWhenUsed;
 	};
 
 	//--------------------------------------------------------------------------------
 	// Styles 17.7.4.18 (Part 1)
 	//--------------------------------------------------------------------------------
-	class CStyles : public OOX::File
+	class CStyles : public OOX::File, public WritingElement
 	{
 	public:
-		
-		CStyles(OOX::Document *pMain) : OOX::File(pMain)
+		CStyles(OOX::Document *pMain) : OOX::File(pMain), WritingElement(pMain)
 		{
 			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
 			if (docx) docx->m_pStyles = this;			
 		}
-		CStyles(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain)
+		CStyles(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain), WritingElement(pMain)
 		{
 			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
 			if (docx) docx->m_pStyles = this;			
 
 			read( oPath );
 		}
+		CStyles(XmlUtils::CXmlNode& oNode) : File(NULL), WritingElement(NULL)
+		{
+			fromXML( oNode );
+		}
+		CStyles(XmlUtils::CXmlLiteReader& oReader) : File(NULL), WritingElement(NULL)
+		{
+			fromXML( oReader );
+		}
 		virtual ~CStyles()
 		{
-			for (unsigned int nIndex = 0; nIndex < m_arrStyle.size(); nIndex++ )
+			for (size_t nIndex = 0; nIndex < m_arrStyle.size(); nIndex++ )
 			{
 				if ( m_arrStyle[nIndex] )delete m_arrStyle[nIndex];
 				m_arrStyle[nIndex] = NULL;
 			}
 			m_arrStyle.clear();
 
-			m_arrStyleNamesMap.clear();
+			m_mapStyleNames.clear();
+			m_mapStyleDefaults.clear();
+			m_mapEmbeddedStyleNames.clear();
+		}
+		const CStyles& operator =(const XmlUtils::CXmlNode& oNode)
+		{
+			fromXML( (XmlUtils::CXmlNode&)oNode );
+			return *this;
 		}
 
-	public:
+		const CStyles& operator =(const XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
+			return *this;
+		}
 		virtual void read(const CPath& oFilePath)
 		{
 			XmlUtils::CXmlLiteReader oReader;
@@ -808,54 +812,18 @@ namespace OOX
 				return;
 
 			std::wstring sName = oReader.GetName();
-			if ( _T("w:styles") == sName && !oReader.IsEmptyNode() )
+			if ( _T("w:styles") == sName)
 			{
-				int nStylesDepth = oReader.GetDepth();
-				while ( oReader.ReadNextSiblingNode( nStylesDepth ) )
-				{
-					sName = oReader.GetName();
-
-					if ( _T("w:style") == sName )
-					{
-						OOX::CStyle *oStyle = new OOX::CStyle (oReader);
-						if (oStyle)
-						{
-							if (oStyle->m_oName.IsInit())
-							{
-								m_arrStyleNamesMap[oStyle->m_oName->ToString()] = (int)m_arrStyle.size();
-							}
-							m_arrStyle.push_back( oStyle );
-						}
-					}
-					else if ( _T("w:docDefaults") == sName )
-						m_oDocDefaults = oReader;
-					else if ( _T("w:latentStyles") == sName )
-						m_oLatentStyles = oReader;
-				}
+				fromXML(oReader);
 			}
 		}
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
-			std::wstring sXml;
-			sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:styles xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" mc:Ignorable=\"w14 w15\">");
-
-			if ( m_oDocDefaults.IsInit() )
-				sXml += m_oDocDefaults->toXML();
-
-			if ( m_oLatentStyles.IsInit() )
-				sXml += m_oLatentStyles->toXML();
-
-			for (unsigned int nIndex = 0; nIndex < m_arrStyle.size(); nIndex++ )
-			{
-				if (m_arrStyle[nIndex])
-					sXml += m_arrStyle[nIndex]->toXML();
-			}
-			sXml += _T("</w:styles>");
+			std::wstring sXml = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+			sXml  += toXML();
 
 			CDirectory::SaveToFile( oFilePath.GetPath(), sXml );
 		}
-
-	public:
 		virtual const OOX::FileType type() const
 		{
 			return FileTypes::Style;
@@ -868,15 +836,70 @@ namespace OOX
 		{
 			return type().DefaultFileName();
 		}
+		virtual void fromXML(XmlUtils::CXmlNode& oNode)
+		{
+		}
+		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
 
-	public:
+			int nStylesDepth = oReader.GetDepth();
+			while ( oReader.ReadNextSiblingNode( nStylesDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
 
-		nullable<OOX::CDocDefaults  >	m_oDocDefaults;
-		nullable<OOX::CLatentStyles >	m_oLatentStyles;
-		std::vector<OOX::CStyle    *>	m_arrStyle;
-		std::map<std::wstring, int>			m_arrStyleNamesMap;
+				if ( L"w:style" == sName )
+				{
+					OOX::CStyle *oStyle = new OOX::CStyle (oReader);
+					if (oStyle)
+					{
+						if (oStyle->m_sStyleId.IsInit())
+						{
+							m_mapStyleNames.insert(std::make_pair(oStyle->m_sStyleId.get(), m_arrStyle.size()));
+						}
+						if ((oStyle->m_oType.IsInit() && oStyle->m_oDefault.IsInit()) && (oStyle->m_oDefault->ToBool()))
+						{
+							m_mapStyleDefaults.insert(std::make_pair(oStyle->m_oType->GetValue(), m_arrStyle.size()));
+						}
+						m_arrStyle.push_back( oStyle );
+					}
+				}
+				else if ( L"w:docDefaults" == sName )
+					m_oDocDefaults = oReader;
+				else if ( L"w:latentStyles" == sName )
+					m_oLatentStyles = oReader;
+			}
+		}
+        virtual std::wstring toXML() const
+		{
+			std::wstring sXml = L"<w:styles xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" mc:Ignorable=\"w14 w15\">";
 
+			if ( m_oDocDefaults.IsInit() )
+				sXml += m_oDocDefaults->toXML();
+
+			if ( m_oLatentStyles.IsInit() )
+				sXml += m_oLatentStyles->toXML();
+
+			for (size_t nIndex = 0; nIndex < m_arrStyle.size(); nIndex++ )
+			{
+				if (m_arrStyle[nIndex])
+					sXml += m_arrStyle[nIndex]->toXML();
+			}
+			sXml += _T("</w:styles>");
+			return sXml;
+		}
+		virtual EElementType getType() const
+		{
+			return et_w_styles;
+		}
+//------------------------------------------------------------------------
+		nullable<OOX::CDocDefaults>		m_oDocDefaults;
+		nullable<OOX::CLatentStyles>	m_oLatentStyles;
+		std::vector<OOX::CStyle*>		m_arrStyle;
+//------------------------------------------------------------------------
+		std::map<SimpleTypes::EStyleType, size_t>			m_mapStyleDefaults;
+		std::map<std::wstring, size_t>						m_mapStyleNames;
+		std::vector<std::map<std::wstring, std::wstring>>	m_mapEmbeddedStyleNames;
 	};
 } // namespace OOX
-
-#endif // OOX_STYLES_INCLUDE_H_

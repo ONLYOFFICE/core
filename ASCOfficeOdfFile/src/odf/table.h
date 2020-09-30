@@ -380,7 +380,7 @@ public:
     void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
     
     bool	docx_convert(oox::docx_conversion_context & Context) ;
-    int		xlsx_convert(oox::xlsx_conversion_context & Context, text_format_properties_content *text_properties) ;
+    int		xlsx_convert(oox::xlsx_conversion_context & Context, text_format_properties_content_ptr text_properties) ;
     bool	pptx_convert(oox::pptx_conversion_context & Context) ;
 
     office_element_ptr_array	elements_; 
@@ -399,7 +399,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-	table_table_cell() : last_cell_(false) { }
+	table_table_cell() : last_cell_(false), is_present_hyperlink_(false) { }
 
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
@@ -413,6 +413,7 @@ private:
     virtual void add_text(const std::wstring & Text);
 
 public:
+	bool is_present_hyperlink_;
 	bool last_cell_;
 	bool empty(bool bWithStyle = true);
 
@@ -421,7 +422,6 @@ public:
     table_table_cell_content		content_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(table_table_cell);
 
 class table_covered_table_cell : public office_element_impl<table_covered_table_cell>

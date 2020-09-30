@@ -124,7 +124,7 @@ namespace ComplexTypes
 
 			if ( m_oVal.IsInit() )
 			{
-				sResult += L"val=\"" + m_oVal->ToString() + L"\"" ;
+				sResult += L"val=\"" + std::to_wstring(*m_oVal) + L"\"" ;
 			}
 
 			return sResult;
@@ -140,7 +140,7 @@ namespace ComplexTypes
 
 	public:
 
-		nullable<SimpleTypes::CDecimalNumber<> > m_oVal;
+		nullable_int m_oVal;
 	};
 
 	namespace Word
@@ -746,11 +746,11 @@ namespace ComplexTypes
 			{
 			}
 
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
+			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_sVal );
 			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes(oReader);
 
@@ -764,7 +764,7 @@ namespace ComplexTypes
 				if ( m_sVal.IsInit() )
 				{
 					sResult += _T("w:val=\"");
-					sResult += XmlUtils::EncodeXmlString(m_sVal.get2(), false);
+					sResult += XmlUtils::EncodeXmlString(*m_sVal, false);
 					sResult += _T("\" ");
 				}
 
@@ -775,7 +775,7 @@ namespace ComplexTypes
                 std::wstring sResult;
 
 				if ( m_sVal.IsInit() )
-					sResult += m_sVal.get();
+					sResult += *m_sVal;
 
 				return sResult;
 			}
@@ -783,15 +783,13 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_sVal )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
-
-            nullable<std::wstring> m_sVal;
+            nullable_string m_sVal;
 		};
 		//--------------------------------------------------------------------------------
 		// Spacing (SignedTwipsMeasure) 17.3.2.19 (Part 1)
@@ -1178,7 +1176,7 @@ namespace ComplexTypes
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += L"w:val=\"" + m_oVal->ToString() + L"\" ";
+					sResult += L"w:val=\"" + std::to_wstring(*m_oVal) + L"\" ";
 				}
 
 				return sResult;

@@ -73,7 +73,6 @@ font_size font_size::parse(const std::wstring & Str)
     } 
     catch(errors::invalid_attribute & ) {}
 
-    BOOST_THROW_EXCEPTION( errors::invalid_attribute() );
     return font_size( percent(100.0) );
 }
 

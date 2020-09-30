@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef UNICODEUTIL_H
-#define UNICODEUTIL_H
+#pragma once
 
 /*
  * Copyright 2001-2004 Unicode, Inc.
@@ -182,6 +181,4 @@ Boolean isLegalUTF8Sequence(const UTF8 *source, const UTF8 *sourceEnd);
 #endif
 
 /* --------------------------------------------------------------------- */
-
-#endif // UNICODEUTIL_H
 

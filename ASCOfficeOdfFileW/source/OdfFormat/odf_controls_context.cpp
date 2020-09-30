@@ -47,7 +47,7 @@ namespace odf_writer {
 struct 	odf_control_state
 {
 	office_element_ptr	elm;
-	odf_writer::form_element* form_elm;
+	odf_writer::form_element* form_elm = NULL;
 	
 	_CP_OPT(double) cx;
 	_CP_OPT(double) cy;
@@ -148,6 +148,11 @@ std::wstring odf_controls_context::Impl::start_control(int type, bool items_set)
 			create_element(L"form", L"date", element, odf_context_);
 			control_implementation = L"ooo:com.sun.star.form.component.DateField";
 		}break;
+		case 12: // image
+		{
+			create_element(L"form", L"image-frame", element, odf_context_);
+			control_implementation = L"ooo:com.sun.star.form.component.DatabaseImageControl";
+		}break;
 	}
 	odf_writer::form_element* form_element = dynamic_cast<odf_writer::form_element*>(element.get());
 
@@ -172,10 +177,51 @@ std::wstring odf_controls_context::start_control(int type, bool items_set)
 {
 	return impl_->start_control(type, items_set);
 }
+std::wstring odf_controls_context::start_control_sdt(int type)
+{
+	switch(type)
+	{
+	case 2:		return impl_->start_control(2, true);	//sdttypeComboBox
+	case 3:		return impl_->start_control(11, false);	//sdttypeDate	
+	case 6:		return impl_->start_control(2, true);	//sdttypeDropDownList
+	case 9:		return impl_->start_control(12, false);	//sdttypePicture
+	case 10:	return impl_->start_control(9, false);	//sdttypeRichText 
+	case 11:	return impl_->start_control(4, false);	//sdttypeText 
+	case 12:	return impl_->start_control(1, false);	//sdttypeCheckBox
+	}
+
+	return L"";
+}
 void odf_controls_context::end_control()
 {
 }
+void odf_controls_context::add_property(const std::wstring & name, odf_types::office_value_type::type  type, const std::wstring & value)
+{
+	if (impl_->controls_.empty()) return;
 
+	office_element_ptr element;
+	create_element(L"form", L"property", element, impl_->odf_context_);
+
+	odf_writer::form_property* prop = dynamic_cast<odf_writer::form_property*>(element.get());
+	
+	if (prop)
+	{
+		prop->property_name_ = name;
+		prop->value_and_type_.office_value_type_ = type;
+
+		switch(type)
+		{
+		case odf_types::office_value_type::String:
+			prop->value_and_type_.office_string_value_ = value; break;
+		case odf_types::office_value_type::Boolean:
+			prop->value_and_type_.office_boolean_value_ = value; break;
+		default:
+			prop->value_and_type_.office_value_ = value;
+		}			
+		
+		impl_->controls_.back().properties.push_back(element);
+	}
+}
 void odf_controls_context::set_name(const std::wstring & val)
 {
 	if (val.empty()) return;
@@ -218,6 +264,22 @@ void odf_controls_context::set_drop_size(int val)
 	
 	odf_writer::form_combobox *combobox  = dynamic_cast<odf_writer::form_combobox*>(impl_->controls_.back().form_elm);
 	if (combobox ) combobox ->size_ = val;
+}
+void odf_controls_context::add_item(const std::wstring & val)
+{
+	if (impl_->controls_.empty()) return;
+	
+	odf_writer::form_combobox *combobox  = dynamic_cast<odf_writer::form_combobox*>(impl_->controls_.back().form_elm);
+	if (combobox)
+	{
+		office_element_ptr elm;
+		create_element(L"form", L"item", elm, impl_->odf_context_);
+		
+		combobox->add_child_element(elm);
+	
+		odf_writer::form_item *item  = dynamic_cast<odf_writer::form_item*>(elm.get());
+		item->label_ = val;
+	}
 }
 void odf_controls_context::set_macro(const std::wstring & val)
 {
@@ -311,6 +373,9 @@ void odf_controls_context::set_value(const std::wstring & val)
 	if (impl_->controls_.empty()) return;
 
 	impl_->controls_.back().form_elm->value_ = val;
+	impl_->controls_.back().form_elm->current_value_ = val;
+
+	add_property(L"Text", odf_types::office_value_type::String, val);
 }
 void odf_controls_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt)
 {
@@ -351,6 +416,7 @@ void odf_controls_context::finalize(office_element_ptr & root_elm)//для пр�
 				elm->add_child_element(impl_->controls_[i].properties[j]);
 			}
 			impl_->controls_[i].elm->add_child_element(elm);
+			impl_->controls_[i].properties.clear();
 		}
 		if (false == impl_->controls_[i].events.empty())
 		{
@@ -364,6 +430,7 @@ void odf_controls_context::finalize(office_element_ptr & root_elm)//для пр�
 			impl_->controls_[i].elm->add_child_element(elm);
 		}
 		elm_form->add_child_element(impl_->controls_[i].elm);
+		impl_->controls_[i].events.clear();
 	}	
 	root_elm->add_child_element(elm_form);
 }

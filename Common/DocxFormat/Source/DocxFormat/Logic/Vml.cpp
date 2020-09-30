@@ -68,6 +68,8 @@ namespace OOX
 			if ( oReader.IsEmptyNode() )
 				return;
 
+			OOX::Document* document = WritingElement::m_pMainDocument;
+
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
@@ -75,68 +77,71 @@ namespace OOX
 				WritingElement *pItem = NULL;
 
 				if ( _T("w:altChunk") == sName )
-					pItem = new CAltChunk( oReader );
+					pItem = new CAltChunk( document );
 				else if ( _T("w:bookmarkEnd") == sName )
-					pItem = new CBookmarkEnd( oReader );
+					pItem = new CBookmarkEnd( document );
 				else if ( _T("w:bookmarkStart") == sName )
-					pItem = new CBookmarkStart( oReader );
+					pItem = new CBookmarkStart( document );
 				else if ( _T("w:commentRangeEnd") == sName )
-					pItem = new CCommentRangeEnd( oReader );
+					pItem = new CCommentRangeEnd( document );
 				else if ( _T("w:commentRangeStart") == sName )
-					pItem = new CCommentRangeStart( oReader );
+					pItem = new CCommentRangeStart( document );
 				//else if ( _T("w:customXml") == sName )
-				//	pItem = new CCustomXml( oReader );
+				//	pItem = new CCustomXml( document );
 				else if ( _T("w:customXmlDelRangeEnd") == sName )
-					pItem = new CCustomXmlDelRangeEnd( oReader );
+					pItem = new CCustomXmlDelRangeEnd( document );
 				else if ( _T("w:customXmlDelRangeStart") == sName )
-					pItem = new CCustomXmlDelRangeStart( oReader );
+					pItem = new CCustomXmlDelRangeStart( document );
 				else if ( _T("w:customXmlInsRangeEnd") == sName )
-					pItem = new CCustomXmlInsRangeEnd( oReader );
+					pItem = new CCustomXmlInsRangeEnd( document );
 				else if ( _T("w:customXmlInsRangeStart") == sName )
-					pItem = new CCustomXmlInsRangeStart( oReader );
+					pItem = new CCustomXmlInsRangeStart( document );
 				else if ( _T("w:customXmlMoveFromRangeEnd") == sName ) 
-					pItem = new CCustomXmlMoveFromRangeEnd( oReader );
+					pItem = new CCustomXmlMoveFromRangeEnd( document );
 				else if ( _T("w:customXmlMoveFromRangeStart") == sName )
-					pItem = new CCustomXmlMoveFromRangeStart( oReader );
+					pItem = new CCustomXmlMoveFromRangeStart( document );
 				else if ( _T("w:customXmlMoveToRangeEnd") == sName ) 
-					pItem = new CCustomXmlMoveToRangeEnd( oReader );
+					pItem = new CCustomXmlMoveToRangeEnd( document );
 				else if ( _T("w:customXmlMoveToRangeStart") == sName )
-					pItem = new CCustomXmlMoveToRangeStart( oReader );
+					pItem = new CCustomXmlMoveToRangeStart( document );
 				else if ( _T("w:del") == sName )
-					pItem = new CDel( oReader );
+					pItem = new CDel( document );
 				else if ( _T("w:ins") == sName )
-					pItem = new CIns( oReader );
+					pItem = new CIns( document );
 				else if ( _T("w:moveFrom") == sName )
-					pItem = new CMoveFrom( oReader );
+					pItem = new CMoveFrom( document );
 				else if ( _T("w:moveFromRangeEnd") == sName )
-					pItem = new CMoveFromRangeEnd( oReader );
+					pItem = new CMoveFromRangeEnd( document );
 				else if ( _T("w:moveFromRangeStart") == sName )
-					pItem = new CMoveFromRangeStart( oReader );
+					pItem = new CMoveFromRangeStart( document );
 				else if ( _T("w:moveTo") == sName )
-					pItem = new CMoveTo( oReader );
+					pItem = new CMoveTo( document );
 				else if ( _T("w:moveToRangeEnd") == sName )
-					pItem = new CMoveToRangeEnd( oReader );
+					pItem = new CMoveToRangeEnd( document );
 				else if ( _T("w:moveToRangeStart") == sName )
-					pItem = new CMoveToRangeStart( oReader );
+					pItem = new CMoveToRangeStart( document );
 				else if ( _T("m:oMath") == sName )
-					pItem = new COMath( oReader );
+					pItem = new COMath( document );
 				else if ( _T("m:oMathPara") == sName )
-					pItem = new COMathPara( oReader );
+					pItem = new COMathPara( document );
 				else if ( _T("w:p") == sName )
-					pItem = new CParagraph( oReader );
+					pItem = new CParagraph( document );
 				else if ( _T("w:permEnd") == sName )
-					pItem = new CPermEnd( oReader );
+					pItem = new CPermEnd( document );
 				else if ( _T("w:permStart") == sName )
-					pItem = new CPermStart( oReader );
+					pItem = new CPermStart( document );
 				else if ( _T("w:proofErr") == sName )
-					pItem = new CProofErr( oReader );
+					pItem = new CProofErr( document );
 				else if ( _T("w:sdt") == sName )
-					pItem = new CSdt( oReader );
+					pItem = new CSdt( document );
 				else if ( _T("w:tbl") == sName )
-					pItem = new CTbl( oReader );
+					pItem = new CTbl( document );
 
 				if ( pItem )
+				{
 					m_arrItems.push_back( pItem );
+					pItem->fromXML(oReader);
+				}
 			}
 		}
 		std::wstring CTxbxContent::toXML() const
@@ -167,6 +172,10 @@ namespace OOX
 			if ( oReader.IsEmptyNode() )
 				return;
 
+			OOX::Document* document = WritingElementWithChilds<>::m_pMainDocument;
+
+			OOX::Vml::CClientData * client_data = NULL;
+
 			int nCurDepth = oReader.GetDepth();
 			while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
@@ -184,32 +193,32 @@ namespace OOX
 					case 'c':
 
 						if ( _T("o:callout") == sName )
-							pItem = new OOX::VmlOffice::CCallout( oReader );
+							pItem = new OOX::VmlOffice::CCallout( document );
 						else if ( _T("o:clippath") == sName )
-							pItem = new OOX::VmlOffice::CClipPath( oReader );
+							pItem = new OOX::VmlOffice::CClipPath( document );
 
 						break;
 
 					case 'e':
 
 						if ( _T("o:extrusion") == sName )
-							pItem = new OOX::VmlOffice::CExtrusion( oReader );
+							pItem = new OOX::VmlOffice::CExtrusion( document );
 
 						break;
 
 					case 'l':
 
 						if ( _T("o:lock") == sName )
-							pItem = new OOX::VmlOffice::CLock( oReader );
+							pItem = new OOX::VmlOffice::CLock( document );
 
 						break;
 
 					case 's':
 
 						if ( _T("o:signatureline") == sName )
-							pItem = new OOX::VmlOffice::CSignatureLine( oReader );
+							pItem = new OOX::VmlOffice::CSignatureLine( document );
 						else if ( _T("o:skew") == sName )
-							pItem = new OOX::VmlOffice::CSkew( oReader );
+							pItem = new OOX::VmlOffice::CSkew( document );
 
 						break;
 					}
@@ -228,48 +237,48 @@ namespace OOX
 					{
 					case 'f':
 						if ( _T("v:fill") == sName )
-							pItem = new OOX::Vml::CFill( oReader );
+							pItem = new OOX::Vml::CFill( document );
 						else if ( _T("v:formulas") == sName )
-							pItem = new OOX::Vml::CFormulas( oReader );
+							pItem = new OOX::Vml::CFormulas( document );
 
 						break;
 
 					case 'h':
 
 						if ( _T("v:handles") == sName )
-							pItem = new OOX::Vml::CHandles( oReader );
+							pItem = new OOX::Vml::CHandles( document );
 
 						break;
 
 					case 'i':
 
 						if ( _T("v:imagedata") == sName )
-							pItem = new OOX::Vml::CImageData( oReader );
+							pItem = new OOX::Vml::CImageData( document );
 
 						break;
 
 					case 'p':
 
 						if ( _T("v:path") == sName )
-							pItem = new OOX::Vml::CPath( oReader );
+							pItem = new OOX::Vml::CPath( document );
 
 						break;
 
 					case 's':
 
 						if ( _T("v:shadow") == sName )
-							pItem = new OOX::Vml::CShadow( oReader );
+							pItem = new OOX::Vml::CShadow( document );
 						else if ( _T("v:stroke") == sName )
-							pItem = new OOX::Vml::CStroke( oReader );
+							pItem = new OOX::Vml::CStroke( document );
 
 						break;
 
 					case 't':
 
 						if ( _T("v:textbox") == sName )
-							pItem = new OOX::Vml::CTextbox( oReader );
+							pItem = new OOX::Vml::CTextbox( document );
 						else if ( _T("v:textpath") == sName )
-							pItem = new OOX::Vml::CTextPath( oReader );
+							pItem = new OOX::Vml::CTextPath( document );
 
 						break;
 					}
@@ -280,19 +289,19 @@ namespace OOX
 				case 'w':
 
 					if ( _T("wd:anchorLock") == sName )
-						pItem = new OOX::VmlWord::CAnchorLock( oReader );
+						pItem = new OOX::VmlWord::CAnchorLock( document );
 					else if ( _T("wd:borderbottom") == sName )
-						pItem = new OOX::VmlWord::CBorder( oReader );
+						pItem = new OOX::VmlWord::CBorder( document );
 					else if ( _T("wd:borderleft") == sName )
-						pItem = new OOX::VmlWord::CBorder( oReader );
+						pItem = new OOX::VmlWord::CBorder( document );
 					else if ( _T("wd:borderright") == sName )
-						pItem = new OOX::VmlWord::CBorder( oReader );
+						pItem = new OOX::VmlWord::CBorder( document );
 					else if ( _T("wd:bordertop") == sName )
-						pItem = new OOX::VmlWord::CBorder( oReader );
+						pItem = new OOX::VmlWord::CBorder( document );
 					else if ( _T("wd:wrap") == sName )
-						pItem = new OOX::VmlWord::CWrap( oReader );
+						pItem = new OOX::VmlWord::CWrap( document );
 					else if ( _T("w10:wrap") == sName )
-						pItem = new OOX::VmlWord::CWrap( oReader );
+						pItem = new OOX::VmlWord::CWrap( document );
 
 					break;
 
@@ -300,20 +309,22 @@ namespace OOX
 
 					if ( _T("x:ClientData") == sName )
                     {
-						pItem = new OOX::Vml::CClientData( oReader );
-                        OOX::Vml::CClientData * client_data = dynamic_cast<OOX::Vml::CClientData*>(pItem);
-                        if ((client_data) && (client_data->m_oObjectType.IsInit()))
-                               if (client_data->m_oObjectType->GetValue() == SimpleTypes::Vml::vmlclientdataobjecttypeNote)
-                                    m_bComment = true;
+						pItem = new OOX::Vml::CClientData( document );
+                        client_data = dynamic_cast<OOX::Vml::CClientData*>(pItem);
                     }
-
 					break;
 
 				}
 
 				if ( NULL != pItem )
+				{
 					m_arrItems.push_back( pItem );
+					pItem->fromXML(oReader);
+				}
 			}
+			if ((client_data) && (client_data->m_oObjectType.IsInit()))
+				   if (client_data->m_oObjectType->GetValue() == SimpleTypes::Vml::vmlclientdataobjecttypeNote)
+						m_bComment = true;
 		}
 
 		void CVmlCommonElements::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -606,6 +617,8 @@ namespace OOX
 			if ( oReader.IsEmptyNode() )
 				return;
 
+			OOX::Document* document = WritingElementWithChilds<>::m_pMainDocument;
+
 			int nCurDepth = oReader.GetDepth();
 			while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
@@ -623,16 +636,16 @@ namespace OOX
 					case 'c':
 
 						if ( _T("o:callout") == sName )
-							pItem = new OOX::VmlOffice::CCallout( oReader );
+							pItem = new OOX::VmlOffice::CCallout( document );
 						else if ( _T("o:clippath") == sName )
-							pItem = new OOX::VmlOffice::CClipPath( oReader );
+							pItem = new OOX::VmlOffice::CClipPath( document );
 
 						break;
 
 					case 'd':
 
 						if ( _T("o:diagram") == sName )
-							pItem = new OOX::VmlOffice::CDiagram( oReader );
+							pItem = new OOX::VmlOffice::CDiagram( document );
 
 						break;
 
@@ -640,23 +653,23 @@ namespace OOX
 					case 'e':
 
 						if ( _T("o:extrusion") == sName )
-							pItem = new OOX::VmlOffice::CExtrusion( oReader );
+							pItem = new OOX::VmlOffice::CExtrusion( document );
 
 						break;
 
 					case 'l':
 
 						if ( _T("o:lock") == sName )
-							pItem = new OOX::VmlOffice::CLock( oReader );
+							pItem = new OOX::VmlOffice::CLock( document );
 
 						break;
 
 					case 's':
 
 						if ( _T("o:signatureline") == sName )
-							pItem = new OOX::VmlOffice::CSignatureLine( oReader );
+							pItem = new OOX::VmlOffice::CSignatureLine( document );
 						else if ( _T("o:skew") == sName )
-							pItem = new OOX::VmlOffice::CSkew( oReader );
+							pItem = new OOX::VmlOffice::CSkew( document );
 
 						break;
 					}
@@ -665,7 +678,7 @@ namespace OOX
 
 				case 'p':
 					//if ( _T("ppt:textdata") == sName )
-					//	pItem = new OOX::Vml::CTextData( oReader );
+					//	pItem = new OOX::Vml::CTextData( document );
 
 					break;
 
@@ -675,95 +688,95 @@ namespace OOX
 					{
 					case 'a':
 						if ( _T("v:arc") == sName )
-							pItem = new OOX::Vml::CArc(oReader);
+							pItem = new OOX::Vml::CArc(document);
 						break;
 
 					case 'c':
 						if ( _T("v:curve") == sName )
-							pItem = new OOX::Vml::CCurve(oReader);
+							pItem = new OOX::Vml::CCurve(document);
 						break;
 
 					case 'f':
 						if ( _T("v:fill") == sName )
-							pItem = new OOX::Vml::CFill( oReader );
+							pItem = new OOX::Vml::CFill( document );
 						else if ( _T("v:formulas") == sName )
-							pItem = new OOX::Vml::CFormulas( oReader );
+							pItem = new OOX::Vml::CFormulas( document );
 
 						break;
 
 					case 'g':
 						if ( _T("v:group") == sName )
-							pItem = new OOX::Vml::CGroup(oReader);
+							pItem = new OOX::Vml::CGroup(document);
 
 						break;
 
 					case 'h':
 
 						if ( _T("v:handles") == sName )
-							pItem = new OOX::Vml::CHandles( oReader );
+							pItem = new OOX::Vml::CHandles( document );
 
 						break;
 
 					case 'i':
 
 						if ( _T("v:imagedata") == sName )
-							pItem = new OOX::Vml::CImageData( oReader );
+							pItem = new OOX::Vml::CImageData( document );
 						else if ( _T("v:image") == sName )
-							pItem = new OOX::Vml::CImage( oReader );
+							pItem = new OOX::Vml::CImage( document );
 
 						break;
 
 					case 'l':
 
 						if ( _T("v:line") == sName )
-							pItem = new OOX::Vml::CLine (oReader);
+							pItem = new OOX::Vml::CLine (document);
 
 						break;
 
 					case 'o':
 
 						if ( _T("v:oval") == sName )
-							pItem = new OOX::Vml::COval (oReader);
+							pItem = new OOX::Vml::COval (document);
 
 						break;
 
 					case 'p':
 
 						if ( _T("v:path") == sName )
-							pItem = new OOX::Vml::CPath( oReader );
+							pItem = new OOX::Vml::CPath( document );
 						else if ( _T("v:polyline") == sName )
-							pItem = new OOX::Vml::CPolyLine(oReader);
+							pItem = new OOX::Vml::CPolyLine(document);
 
 						break;
 
 					case 'r':
 
 						if ( _T("v:rect") == sName )
-							pItem = new OOX::Vml::CRect (oReader);
+							pItem = new OOX::Vml::CRect (document);
 						else if ( _T("v:roundrect") == sName )
-							pItem = new OOX::Vml::CRoundRect( oReader);
+							pItem = new OOX::Vml::CRoundRect( document);
 
 						break;
 
 					case 's':
 
 						if ( _T("v:shadow") == sName )
-							pItem = new OOX::Vml::CShadow( oReader );
+							pItem = new OOX::Vml::CShadow( document );
 						else if ( _T("v:shape") == sName )
-							pItem = new OOX::Vml::CShape( oReader);
+							pItem = new OOX::Vml::CShape( document);
 						else if ( _T("v:shapetype") == sName )
-							pItem = new OOX::Vml::CShapeType( oReader);
+							pItem = new OOX::Vml::CShapeType( document);
 						else if ( _T("v:stroke") == sName )
-							pItem = new OOX::Vml::CStroke( oReader );
+							pItem = new OOX::Vml::CStroke( document );
 
 						break;
 
 					case 't':
 
 						if ( _T("v:textbox") == sName )
-							pItem = new OOX::Vml::CTextbox( oReader );
+							pItem = new OOX::Vml::CTextbox( document );
 						else if ( _T("v:textpath") == sName )
-							pItem = new OOX::Vml::CTextPath( oReader );
+							pItem = new OOX::Vml::CTextPath( document );
 
 						break;
 					}
@@ -774,31 +787,34 @@ namespace OOX
 				case 'w':
 
 					if ( _T("wd:anchorLock") == sName )
-						pItem = new OOX::VmlWord::CAnchorLock( oReader );
+						pItem = new OOX::VmlWord::CAnchorLock( document );
 					else if ( _T("wd:borderbottom") == sName )
-						pItem = new OOX::VmlWord::CBorder( oReader );
+						pItem = new OOX::VmlWord::CBorder( document );
 					else if ( _T("wd:borderleft") == sName )
-						pItem = new OOX::VmlWord::CBorder( oReader );
+						pItem = new OOX::VmlWord::CBorder( document );
 					else if ( _T("wd:borderright") == sName )
-						pItem = new OOX::VmlWord::CBorder( oReader );
+						pItem = new OOX::VmlWord::CBorder( document );
 					else if ( _T("wd:bordertop") == sName )
-						pItem = new OOX::VmlWord::CBorder( oReader );
+						pItem = new OOX::VmlWord::CBorder( document );
 					else if ( _T("wd:wrap") == sName )
-						pItem = new OOX::VmlWord::CWrap( oReader );
+						pItem = new OOX::VmlWord::CWrap( document );
 
 					break;
 
 				case 'x':
 
 					if ( _T("x:ClientData") == sName )
-						pItem = new OOX::Vml::CClientData( oReader );
+						pItem = new OOX::Vml::CClientData( document );
 
 					break;
 
 				}
 
 				if ( NULL != pItem )
+				{
 					m_arrItems.push_back( pItem );
+					pItem->fromXML(oReader);
+				}
 			}
 		}
 		void CGroup::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -1425,7 +1441,10 @@ namespace OOX
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 				if ( L"txbxContent" == sName ) //namespaces w & wne
-					m_oTxtbxContent = oReader;
+				{
+					m_oTxtbxContent = new OOX::Logic::CTxbxContent(m_pMainDocument);
+					m_oTxtbxContent->fromXML(oReader);
+				}
 				else if (L"div" == sName)
 				{
 					m_oText = oReader.GetText3();

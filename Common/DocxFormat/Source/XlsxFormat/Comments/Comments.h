@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_XLSXCOMMENTS_FILE_INCLUDE_H_
-#define OOX_XLSXCOMMENTS_FILE_INCLUDE_H_
 
 #include "../Xlsx.h"
 #include "../Worksheets/Worksheet.h"
@@ -432,5 +430,3 @@ namespace OOX
 		};
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_XLSXCOMMENTS_FILE_INCLUDE_H_

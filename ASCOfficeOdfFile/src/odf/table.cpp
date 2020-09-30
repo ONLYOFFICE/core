@@ -31,6 +31,7 @@
  */
 
 #include "table.h"
+#include "text_elements.h"
 
 #include <boost/make_shared.hpp>
 #include <xml/xmlchar.h>
@@ -398,6 +399,15 @@ void table_table_cell::add_attributes( const xml::attributes_wc_ptr & Attributes
 void table_table_cell::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     content_.add_child_element(Reader, Ns, Name, getContext());
+
+	if CP_CHECK_NAME(L"text", L"p")
+	{
+		text::p *p = dynamic_cast<text::p*>(content_.elements_.back().get());
+		if (p)
+		{
+			is_present_hyperlink_ = p->paragraph_.is_present_hyperlink_;
+		}
+	}
 }
 
 void table_table_cell::add_text(const std::wstring & Text)

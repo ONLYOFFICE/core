@@ -31,18 +31,18 @@
  */
 #pragma once
 
-#include <xml/attributes.h>
 #include "../docx/oox_drawing_fills.h"
-//описание всяких графических объектов ( вложенная мелочевка) которые используются в xlsx & odf_reader - 
+#include <xml/attributes.h>
 
 namespace cpdoccore { 
 namespace odf_reader {
 
-class text_format_properties_content;
+	class text_format_properties_content;
+	typedef boost::shared_ptr<text_format_properties_content> text_format_properties_content_ptr;
 
 namespace chart {
 
-	enum oox_typeconvert {docx,xlsx,pptx};
+	enum oox_typeconvert {docx, xlsx, pptx};
 
     enum class_type 
     {
@@ -61,37 +61,29 @@ namespace chart {
 		chart_filled_radar
     };
 
-	struct title
-	{
-		title() : bEnabled(false), pos_x(0), pos_y(0) {}
-		bool					bEnabled;
-		
-		std::wstring			content_;
-		std::vector<_property>	text_properties_;
-		
-		double					pos_x;
-		double					pos_y;
-		
-	} ; 
 	struct simple
 	{
-		simple() : bEnabled(false) {}
-		
-		bool					bEnabled;
+		bool					bEnabled = false;
 		std::vector<_property>	properties_; 
- 		std::vector<_property>	text_properties_;
-		std::vector<_property>	graphic_properties_;
-		oox::_oox_fill			fill_;
+ 		
+		text_format_properties_content_ptr	text_properties_;
+		std::vector<_property>			graphic_properties_;
+		oox::_oox_fill					fill_;
 	};
+	struct title : public simple
+	{
+		std::wstring			content_;
+		
+		double					pos_x = 0;
+		double					pos_y = 0;		
+	}; 
+
 	struct treadline
 	{
-		bool					bEquation;
-		bool					bREquation;
+		bool					bEquation = false;
+		bool					bREquation = false;
 		std::vector<_property>	line_properties_;
 		simple					equation_properties_;
-
-		treadline(){bEquation = false; bREquation = false;}
-
 	};
 	struct legend : public simple
     {
@@ -107,17 +99,16 @@ namespace chart {
 	};
 	struct axis: public simple
     {
-		axis() : bCategories_(false), type_(3) {}
         struct grid
         {
             enum grid_type {major, minor};
 
-            grid_type				type_;
+            grid_type				type_ = major;
             std::wstring			style_name_;
  			
 			std::vector<_property>	graphic_properties_;
        };
-		bool				bCategories_;
+		bool				bCategories_ = false;
 		
 		title title_;
         
@@ -125,7 +116,7 @@ namespace chart {
         std::wstring		chart_name_;
         std::wstring		style_name_;
         std::vector<grid>	grids_;
-		int					type_;		
+		int					type_ = 3;		
 	};
     struct series : public simple
     {

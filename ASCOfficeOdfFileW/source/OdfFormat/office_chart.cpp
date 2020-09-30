@@ -326,7 +326,9 @@ void chart_axis_attlist::serialize(CP_ATTR_NODE)
 {
     CP_XML_ATTR_OPT(L"chart:dimension", chart_dimension_);
     CP_XML_ATTR_OPT(L"chart:name", chart_name_);
-    common_attlist_.serialize(CP_GET_XML_NODE());
+    CP_XML_ATTR_OPT(L"chartooo:axis-type", axis_type_);
+    
+	common_attlist_.serialize(CP_GET_XML_NODE());
 }
 
 // chart:axis
@@ -356,6 +358,8 @@ void chart_axis::serialize(std::wostream & _Wostream)
 }
 void chart_axis::add_child_element( const office_element_ptr & child_element)
 {
+	if (!child_element) return;
+		
 	content_.push_back(child_element);
 }
 //////
@@ -594,6 +598,24 @@ void chart_stock_range_line::serialize(std::wostream & _Wostream)
 		}
 	}
 }
+// chartooo:date-scale
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * chart_date_scale::ns = L"chartooo";
+const wchar_t * chart_date_scale::name = L"date-scale";
 
+void chart_date_scale::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			CP_XML_ATTR_OPT(L"chart:base-time-unit",		base_time_unit_);
+			CP_XML_ATTR_OPT(L"chart:major-interval-value",	major_interval_value_);
+			CP_XML_ATTR_OPT(L"chart:major-interval-unit",	major_interval_unit_);
+			CP_XML_ATTR_OPT(L"chart:minor-interval-value",	minor_interval_value_);
+			CP_XML_ATTR_OPT(L"chart:minor-interval-unit",	minor_interval_unit_);
+		}
+	}
+}
 }
 }

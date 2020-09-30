@@ -39,6 +39,7 @@
 
 #include "../../ASCOfficeDrawingConverter.h"
 #include "../../../OfficeUtils/src/OfficeUtils.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Slicer/SlicerCacheExt.h"
 
 namespace PPTX
 {
@@ -203,6 +204,23 @@ namespace PPTX
 					ReadAttributes3(oReader);
 					result = true;
 				}
+				else if (strName == L"slicer")
+				{
+					if(L"a14" == m_sRequires)
+					{
+						slicer = oReader;
+					}
+					else
+					{
+						slicerExt = oReader;
+					}
+					result = true;
+				}
+				else if (strName == L"contentPart")
+				{
+					contentPart = oReader;
+					result = true;
+				}
 				else if (strName == L"AlternateContent")
 				{
 					if ( oReader.IsEmptyNode() )
@@ -298,6 +316,18 @@ namespace PPTX
 						chartRec = oNode;
 						result = true;
 					}
+					else if (L"slicer" == strName)
+					{
+						if(L"a14" == m_sRequires)
+						{
+							slicer = oNode;
+						}
+						else
+						{
+							slicerExt = oNode;
+						}
+						result = true;
+					}
 					else if (L"legacyDrawing" == strName)
 					{
                         XmlMacroReadAttributeBase(oNode, L"spid", vmlSpid);
@@ -371,6 +401,18 @@ namespace PPTX
 				chartRec->toXmlWriter(pWriter);
 				pWriter->WriteString(L"</a:graphicData></a:graphic>");
 			}
+			else if (slicer.is_init())
+			{
+				pWriter->WriteString(L"<a:graphic><a:graphicData uri=\"http://schemas.microsoft.com/office/drawing/2010/slicer\">");
+				slicer->toXML(*pWriter, L"sle:slicer");
+				pWriter->WriteString(L"</a:graphicData></a:graphic>");
+			}
+			else if (slicerExt.is_init())
+			{
+				pWriter->WriteString(L"<a:graphic><a:graphicData uri=\"http://schemas.microsoft.com/office/drawing/2010/slicer\">");
+				slicerExt->toXML(*pWriter, L"sle:slicer");
+				pWriter->WriteString(L"</a:graphicData></a:graphic>");
+			}
 		}
 		void GraphicFrame::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
@@ -392,7 +434,7 @@ namespace PPTX
 
 		bool GraphicFrame::IsEmpty() const
 		{
-			return !olePic.is_init() && !smartArt.is_init() && !table.is_init() && !chartRec.is_init() && !vmlSpid.is_init() && !element.is_init();
+			return !olePic.is_init() && !smartArt.is_init() && !table.is_init() && !chartRec.is_init() && !vmlSpid.is_init() && !slicer.is_init() && !slicerExt.is_init() && !element.is_init();
 		}
 
 		void GraphicFrame::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -414,7 +456,7 @@ namespace PPTX
 				xml_object_vml = GetVmlXmlBySpid(xml_object_rels);
 			}
 
-            if (smartArt.is_init() && !table.is_init() && !chartRec.is_init() && !vmlSpid.is_init())
+			if (smartArt.is_init() && !table.is_init() && !chartRec.is_init() && !slicer.is_init() && !slicerExt.is_init() && !vmlSpid.is_init())
 			{
 				smartArt->LoadDrawing(pWriter);
 				
@@ -469,7 +511,7 @@ namespace PPTX
 				return;
 			}
 
-            if (!table.is_init() && !chartRec.is_init() && xml_object_vml.empty() == false)
+			if (!table.is_init() && !chartRec.is_init() && !slicer.is_init() && !slicerExt.is_init() && xml_object_vml.empty() == false)
 			{
 				std::wstring temp = L"<v:object>";
                 temp += xml_object_vml;
@@ -517,6 +559,14 @@ namespace PPTX
 				{
 					pWriter->WriteRecord2(3, chartRec);
 				}
+			}
+			else if (slicer.is_init())
+			{
+					pWriter->WriteRecord2(5, slicer);
+			}
+			else if (slicerExt.is_init())
+			{
+					pWriter->WriteRecord2(6, slicerExt);
 			}
 			else if (element.is_init())
 			{
@@ -585,8 +635,19 @@ namespace PPTX
 						chartRec = new Logic::ChartRec();
 						chartRec->m_bChartEx = true;
 						chartRec->fromPPTY(pReader);
-					}break;			
+					}break;
+					case 5:
+					{
+						slicer = new OOX::Spreadsheet::CDrawingSlicer();
+						slicer->fromPPTY(pReader);
+					}break;
+					case 6:
+					{
+						slicerExt = new OOX::Spreadsheet::CDrawingSlicer();
+						slicerExt->fromPPTY(pReader);
+					}break;
 					default:
+						pReader->SkipRecord();
 						break;
 				}
 			}				
@@ -632,6 +693,18 @@ namespace PPTX
 			{
 				sXml += L"<a:graphic><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\">";
 				sXml += chartRec->toXML();
+				sXml += L"</a:graphicData></a:graphic>";
+			}
+			else if (slicer.IsInit())
+			{
+				sXml += L"<a:graphic><a:graphicData uri=\"http://schemas.microsoft.com/office/drawing/2010/slicer\">";
+				sXml += slicer->toXML();
+				sXml += L"</a:graphicData></a:graphic>";
+			}
+			else if (slicerExt.IsInit())
+			{
+				sXml += L"<a:graphic><a:graphicData uri=\"http://schemas.microsoft.com/office/drawing/2010/slicer\">";
+				sXml += slicerExt->toXML();
 				sXml += L"</a:graphicData></a:graphic>";
 			}
 			return sXml;

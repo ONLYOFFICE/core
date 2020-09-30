@@ -40,6 +40,7 @@
 
 #include "odf_drawing_context.h"
 #include "odf_chart_context.h"
+#include "odf_controls_context.h"
 
 #include "mediaitems.h"
 
@@ -95,9 +96,9 @@ public:
     package::odf_document			*output_document_;
     NSFonts::IApplicationFonts		*applicationFonts_;
 
-
 	virtual odf_drawing_context		* drawing_context()		= 0;
 	virtual odf_text_context		* text_context()		= 0;
+	virtual odf_controls_context	* controls_context()	= 0;
 
 	virtual void					start_text_context()	= 0;
 	virtual void					end_text_context()		= 0;

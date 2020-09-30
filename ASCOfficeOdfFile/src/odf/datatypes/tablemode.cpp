@@ -64,7 +64,6 @@ table_mode table_mode::parse(const std::wstring & Str)
         return table_mode( CopyResultsOnly );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return table_mode( CopyAll );
     }
 }

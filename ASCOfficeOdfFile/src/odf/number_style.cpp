@@ -77,13 +77,30 @@ void number_style_base::oox_convert_impl(oox::num_format_context & Context)
         }
     }
 
+	ElementType type = this->get_type();
+
+	switch(type)
+	{
+	case typeNumberCurrencyStyle:	Context.type(odf_types::office_value_type::Currency);		break;
+	case typeNumberPercentageStyle:	Context.type(odf_types::office_value_type::Percentage);		break;
+	case typeNumberDataStyle:		Context.type(odf_types::office_value_type::Date);			break;
+	case typeNumberTimeStyle:		Context.type(odf_types::office_value_type::Time);			break;
+	}
+
 	for (size_t i = 0; i < content_.size(); i++)
     {
 		number_style_base	*number_style_		= dynamic_cast<number_style_base *>	(content_[i].get());
   		number_element		*number_element_	= dynamic_cast<number_element *>	(content_[i].get());
 		
-		if (number_style_)		number_style_->oox_convert(Context);
-		if (number_element_)	number_element_->oox_convert(Context);
+		if (number_style_)
+		{
+			Context.type(odf_types::office_value_type::Float);
+			number_style_->oox_convert(Context);
+		}
+		if (number_element_)
+		{
+			number_element_->oox_convert(Context);
+		}
     }
     Context.end_format();
 }
@@ -427,7 +444,10 @@ void number_text::oox_convert(oox::num_format_context & Context)
 
 	std::wstring text_ = strm.str();
 
-	if (text_ == L"%")
+	if (odf_types::office_value_type::Date == Context.type() || 
+		odf_types::office_value_type::Time == Context.type() ||
+		odf_types::office_value_type::Currency == Context.type() || 
+		odf_types::office_value_type::Percentage == Context.type())
 	{
 	}
 	else
@@ -458,11 +478,11 @@ void number_day::oox_convert(oox::num_format_context & Context)
     std::wostream & strm = Context.output();
     if (number_style_.get_value_or(L"short") == L"long")
     {
-        strm << L"DD";
+        strm << L"dd";
     }
     else
     {
-        strm << L"D";
+        strm << L"d";
     }
 }
 
@@ -488,11 +508,11 @@ void number_day_of_week::oox_convert(oox::num_format_context & Context)
     std::wostream & strm = Context.output();
     if (number_style_.get_value_or(L"short") == L"long")
     {
-        strm << L"DDDD";
+        strm << L"dddd";
     }
     else
     {
-        strm << L"DDD";
+        strm << L"ddd";
     }
 }
 
@@ -552,22 +572,22 @@ void number_month::oox_convert(oox::num_format_context & Context)
     {
         if (number_style_.get_value_or(L"short") == L"long")
         {
-            strm << L"MM";
+            strm << L"mm";
         }
         else
         {
-            strm << L"M";
+            strm << L"m";
         }
     }
     else
     {
         if (number_style_.get_value_or(L"short") == L"long")
         {
-            strm << L"MMMM";
+            strm << L"mmmm";
         }
         else
         {
-            strm << L"MMM";
+            strm << L"mmm";
         }
     }
 }
@@ -593,11 +613,11 @@ void number_year::oox_convert(oox::num_format_context & Context)
     std::wostream & strm = Context.output();
     if (number_style_.get_value_or(L"short") == L"long")
     {
-        strm << L"YYYY";
+        strm << L"yyyy";
     }
     else
     {
-        strm << L"YY";
+        strm << L"yy";
     }
 }
 
@@ -632,12 +652,12 @@ void number_hours::oox_convert(oox::num_format_context & Context)
     std::wostream & strm = Context.output();
     if (number_style_.get_value_or(L"short") == L"long")
     {
-        strm << L"HH";
+        strm << L"hh";
     }
     else
     {
         // TODO
-        strm << L"HH";
+        strm << L"hh";
     }
 }
 
@@ -662,12 +682,12 @@ void number_minutes::oox_convert(oox::num_format_context & Context)
     std::wostream & strm = Context.output();
     if (number_style_.get_value_or(L"short") == L"long")
     {
-        strm << L"MM";
+        strm << L"mm";
     }
     else
     {
         // TODO
-        strm << L"MM";
+        strm << L"mm";
     }
 }
 
@@ -693,12 +713,12 @@ void number_seconds::oox_convert(oox::num_format_context & Context)
     std::wostream & strm = Context.output();
     if (number_style_.get_value_or(L"short") == L"long")
     {
-        strm << L"SS";
+        strm << L"ss";
     }
     else
     {
         // TODO
-        strm << L"SS";
+        strm << L"ss";
     }
 
     if (int dec = number_decimal_places_.get_value_or(0))
@@ -750,6 +770,8 @@ void number_fraction::add_child_element( xml::sax * Reader, const std::wstring &
 
 void number_fraction::oox_convert(oox::num_format_context & Context) 
 {
+	Context.type(odf_types::office_value_type::Fraction);
+
     std::wostream & strm = Context.output();
 
     format_number_number(strm, 
@@ -773,6 +795,8 @@ void number_fraction::oox_convert(oox::num_format_context & Context)
 
 void number_scientific_number::oox_convert(oox::num_format_context & Context) 
 {
+	Context.type(odf_types::office_value_type::Scientific);
+
     std::wostream & strm = Context.output();
     format_number_number(
         strm,

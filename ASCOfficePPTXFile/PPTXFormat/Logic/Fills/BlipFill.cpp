@@ -33,6 +33,8 @@
 
 #include "../../../../Common/DocxFormat/Source/SystemUtility/File.h"
 #include "../../../../DesktopEditor/common/File.h"
+#include "../../../../DesktopEditor/raster/ImageFileFormatChecker.h"
+
 namespace PPTX
 {
 	namespace Logic
@@ -268,10 +270,14 @@ namespace PPTX
 								std::wstring strOrigBase64;
                                 std::wstring strTempFile ;
 
-								bool bIsUrl = false;
-								
+								bool bIsUrl = false;								
+
+								if (!blip.is_init())
+									blip = new PPTX::Logic::Blip();
+
 								if (0 == strImagePath.find(_T("data:")))
 								{
+									blip->dataFilepathImage = strImagePath;
 									bool bBase64 = false;
 									
 									strOrigBase64 = strImagePath;
@@ -378,10 +384,6 @@ namespace PPTX
                                     CDirectory::DeleteFile(strTempFile);
 								}
 								// -------------------
-
-								if (!blip.is_init())
-									blip = new PPTX::Logic::Blip();
-
 								if (oRelsGeneratorInfo.nImageRId > 0)
 								{
 									blip->embed = new OOX::RId(oRelsGeneratorInfo.nImageRId);

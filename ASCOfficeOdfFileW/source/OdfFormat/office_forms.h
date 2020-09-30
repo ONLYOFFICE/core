@@ -266,6 +266,22 @@ public:
 };
 CP_REGISTER_OFFICE_ELEMENT2(form_button);
 //--------------------------------------------------------------------------------------------
+//  form:image-frame 
+class form_image_frame : public form_element
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeFormImageFrame;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+    virtual void serialize(std::wostream & _Wostream);
+
+	_CP_OPT(std::wstring)	image_data_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(form_image_frame);
+//--------------------------------------------------------------------------------------------
 //  form:text
 class form_text : public form_element
 {
@@ -329,12 +345,12 @@ public:
     static const ElementType type = typeFormCheckbox;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	form_checkbox() : current_state_(false) {}
+	form_checkbox() : current_state_(false), image_position_(L"center") {}
     virtual void serialize(std::wostream & _Wostream);
 
 	bool current_state_;
+	std::wstring image_position_;
 	//form:image-align
-	//form:image-position
 	//form:is-tristate
 	//form:visual-effect
 };

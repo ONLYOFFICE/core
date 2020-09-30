@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_BORDERS_FILE_INCLUDE_H_
-#define OOX_BORDERS_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
 
@@ -101,16 +99,25 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				nullable_string sColor;
 				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("style"), m_oStyle )
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("style"),      m_oStyle )
+					WritingElement_ReadAttributes_Read_else_if ( oReader, _T("ss:Color"), sColor )
+					WritingElement_ReadAttributes_Read_else_if ( oReader, _T("ss:LineStyle"), m_oStyle )
+					WritingElement_ReadAttributes_Read_else_if ( oReader, _T("ss:Position"), m_oType )
+				WritingElement_ReadAttributes_End( oReader )
 
-					WritingElement_ReadAttributes_End( oReader )
+				if (sColor.IsInit())
+				{
+					m_oColor.Init(); m_oColor->m_oRgb.Init();
+					m_oColor->m_oRgb->FromString(*sColor);
+				}
 			}
 		public:
 			nullable<SimpleTypes::Spreadsheet::CBorderStyle<>>	m_oStyle;
 			nullable<CColor>									m_oColor;
+			nullable_string										m_oType;
 		};
 
 		class CBorder : public WritingElement
@@ -168,7 +175,7 @@ namespace OOX
 					m_oHorizontal->toXML2(writer, _T("horizontal"));
 				writer.WriteString(_T("</border>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -194,6 +201,21 @@ namespace OOX
 						m_oTop = oReader;
 					else if ( _T("vertical") == sName )
 						m_oVertical = oReader;
+					else if (L"Border")
+					{
+						CBorderProp* border = new CBorderProp(oReader);
+						if ((border) && (border->m_oType.IsInit()))
+						{
+							if (*border->m_oType == L"Bottom")		m_oBottom	= border;
+							else if (*border->m_oType == L"Top")	m_oTop		= border;
+							else if (*border->m_oType == L"Left")	m_oStart	= border;
+							else if (*border->m_oType == L"Right")	m_oEnd		= border;
+						}
+						else
+						{
+							delete border;
+						}
+					}
 
 				}
 			}
@@ -258,7 +280,7 @@ namespace OOX
 				
 				writer.WriteString(L"</borders>");
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -272,7 +294,7 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( L"border" == sName )
+					if ( L"border" == sName || L"Border" == sName)
 					{
 						CBorder *pBorder = new CBorder( oReader );
 						m_arrItems.push_back( pBorder );
@@ -299,5 +321,3 @@ namespace OOX
 		};
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_BORDERS_FILE_INCLUDE_H_

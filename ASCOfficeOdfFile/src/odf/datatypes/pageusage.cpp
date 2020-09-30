@@ -74,7 +74,6 @@ page_usage page_usage::parse(const std::wstring & Str)
         return page_usage( Mirrored );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return page_usage( All );
     }
 }

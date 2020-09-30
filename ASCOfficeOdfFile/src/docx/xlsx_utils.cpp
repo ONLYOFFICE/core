@@ -51,7 +51,18 @@ bool IsNumber(const std::wstring &value)
 
 	return boost::regex_search(value/*.begin(), value.end(), results*/, rule);
 }
+std::wstring GetNumberFromString(const std::wstring &value)
+{
+	boost::wregex rule(L"^\\s*\\-{0,1}[0-9]*[.,]{0,1}[0-9]*\\s*$");
+	boost::match_results<std::wstring::const_iterator> results;
 
+    if (boost::regex_match(value, results, rule))
+    {
+        return (results[0].str());
+	}
+	else
+		return L"";
+}
 std::wstring getColAddress(size_t col)
 {
     static const size_t r = (L'Z' - L'A' + 1);
@@ -165,17 +176,20 @@ bool parseBoolVal(const std::wstring & str)
 {
     std::wstring s = str;
     boost::algorithm::to_lower(s);
-    if (L"true" == str || L"1" == str)
-        return true;
-    else
+    
+	if (L"false" == str || L"0" == str)
         return false;
+    else
+        return true;
 }
 
 std::wstring cellType2Str(XlsxCellType::type type)
 {
     switch(type)
     {
-    case XlsxCellType::b:
+	case XlsxCellType::d:
+        return L"d";
+	case XlsxCellType::b:
         return L"b";
     case XlsxCellType::n:
         return L"n";

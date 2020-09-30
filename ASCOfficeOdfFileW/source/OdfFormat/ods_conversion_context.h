@@ -117,6 +117,7 @@ public:
 
 	virtual odf_drawing_context		* drawing_context()	{return current_table()->drawing_context();}
 	virtual odf_text_context		* text_context()	{return current_text_context_;}
+	virtual odf_controls_context	* controls_context(){return current_table()->controls_context();}
 	
 	void start_drawings();
 	void end_drawings();

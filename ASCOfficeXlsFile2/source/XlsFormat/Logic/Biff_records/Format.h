@@ -37,8 +37,6 @@
 namespace XLS
 {
 
-
-// Logical representation of Format record in BIFF8
 class Format: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Format)
@@ -48,16 +46,15 @@ public:
 	~Format();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeFormat;
+	static const ElementType type = typeFormat;
 
 	int serialize(std::wostream & stream);
 //-----------------------------
-	_UINT16 ifmt;
-	XLUnicodeString stFormat;
+	_UINT16			ifmt;
+	std::wstring	stFormat;
 
 };
 

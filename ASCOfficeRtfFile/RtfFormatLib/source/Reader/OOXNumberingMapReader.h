@@ -49,10 +49,10 @@ public:
 			
 		RtfListOverrideProperty oNewOverride;
 		if (m_ooxNum->m_oNumId.IsInit())
-			oNewOverride.m_nIndex = m_ooxNum->m_oNumId->GetValue();
+			oNewOverride.m_nIndex = *m_ooxNum->m_oNumId;
 
 		if (m_ooxNum->m_oAbstractNumId.IsInit() && m_ooxNum->m_oAbstractNumId->m_oVal.IsInit())
-			oNewOverride.m_nListID = m_ooxNum->m_oAbstractNumId->m_oVal->GetValue();
+			oNewOverride.m_nListID = *m_ooxNum->m_oAbstractNumId->m_oVal;
 
 		for (size_t i = 0 ; i < m_ooxNum->m_arrLvlOverride.size(); i++)
 		{
@@ -61,13 +61,13 @@ public:
 			RtfListOverrideProperty::ListOverrideLevels::ListOverrideLevel oOverrideLevel;
 			
 			if (m_ooxNum->m_arrLvlOverride[i]->m_oIlvl.IsInit())
-				oOverrideLevel.m_nLevelIndex = m_ooxNum->m_arrLvlOverride[i]->m_oIlvl->GetValue();
+				oOverrideLevel.m_nLevelIndex = *m_ooxNum->m_arrLvlOverride[i]->m_oIlvl;
 			else
 				oOverrideLevel.m_nLevelIndex = 0;	
 
 			if (m_ooxNum->m_arrLvlOverride[i]->m_oStartOverride.IsInit() && m_ooxNum->m_arrLvlOverride[i]->m_oStartOverride->m_oVal.IsInit())
 			{
-				oOverrideLevel.m_nStart = m_ooxNum->m_arrLvlOverride[i]->m_oStartOverride->m_oVal->GetValue();
+				oOverrideLevel.m_nStart = *m_ooxNum->m_arrLvlOverride[i]->m_oStartOverride->m_oVal;
 			}
 
 			if (m_ooxNum->m_arrLvlOverride[i]->m_oLvl.IsInit())

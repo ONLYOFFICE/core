@@ -260,6 +260,9 @@ enum ElementType
     typeStyleFooterLeft,
     typeStyleFootnoteSep,
 
+	typeLoextHeaderFirst,
+	typeLoextFooterFirst,
+
     typeStyleSectionProperties,
     typeStyleHeaderStyle,
     typeStyleFooterStyle,
@@ -598,6 +601,7 @@ enum ElementType
     typeChartStockRangeLine,
 	typeChartRegressionCurve,
 	typeChartEquation,
+	typeChartDateScale,
 
 	typeStyleChartProperties,
 

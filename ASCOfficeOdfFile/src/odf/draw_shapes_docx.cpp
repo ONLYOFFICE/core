@@ -102,7 +102,7 @@ void draw_shape::common_docx_convert(oox::docx_conversion_context & Context)
 			if ((fill.bitmap) && (fill.bitmap->rId.empty()))
 			{
 				std::wstring href = fill.bitmap->xlink_href_;
-				fill.bitmap->rId = Context.get_mediaitems()->add_or_find(href, oox::typeImage, fill.bitmap->isInternal, href);
+				fill.bitmap->rId = Context.get_mediaitems()->add_or_find(href, oox::typeImage, fill.bitmap->isInternal, href, Context.get_type_place());
 				fill.bitmap->name_space = L"w14";
 			}
 
@@ -374,6 +374,20 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 				//	int h_shape = shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_->get_value();
 				//	if (h_shape < 1) shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_ = length(1, length::pt);
 				//}
+			}
+			else if (svg_viewbox_)
+			{
+				std::vector< std::wstring > splitted;			    
+				boost::algorithm::split(splitted, *svg_viewbox_, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+				
+				if (splitted.size() == 4)
+				{
+					int w = boost::lexical_cast<int>(splitted[2]);
+					int h = boost::lexical_cast<int>(splitted[3]);
+					
+					shape->additional_.push_back(odf_reader::_property(L"custom_path_w", w));
+					shape->additional_.push_back(odf_reader::_property(L"custom_path_h", h));
+				}
 			}
 		}
 	}

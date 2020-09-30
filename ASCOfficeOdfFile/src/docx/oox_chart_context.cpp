@@ -41,22 +41,8 @@
 namespace cpdoccore {
 namespace oox {
 
-class oox_chart_context::Impl
+oox_chart_context::oox_chart_context(mediaitems_ptr & m, std::wstring name) : mediaitems_(m), no_used_local_tables_(false)
 {
-public:
-    Impl(std::wstring name){}
-    std::wstring name_;
-
-    std::wstringstream  chartData_;
-
-    std::wstring drawingName_;
-    std::wstring drawingId_;
-};
-
-oox_chart_context::oox_chart_context(mediaitems_ptr & m, std::wstring name) :
-		impl_(new oox_chart_context::Impl( name)), mediaitems_(m)
-{
-	
 }
 
 void oox_chart_context::reset_fill(oox::_oox_fill &f)
@@ -65,7 +51,7 @@ void oox_chart_context::reset_fill(oox::_oox_fill &f)
 	{
 		bool isInternal = true;
 		std::wstring ref;
-		f.bitmap->rId = mediaitems_->add_or_find(f.bitmap->xlink_href_, typeImage, isInternal, ref); 
+		f.bitmap->rId = mediaitems_->add_or_find(f.bitmap->xlink_href_, typeImage, isInternal, ref, oox::chart_place); 
 
 		rels_.push_back(_rel(isInternal, f.bitmap->rId, ref, typeImage));
 	}
@@ -75,7 +61,7 @@ void oox_chart_context::set_externalData(const std::wstring & href)
 	bool isInternal = true;
 	std::wstring href_out;
 	
-	externalDataId_ = mediaitems_->add_or_find(href, typeMsObject, isInternal, href_out);
+	externalDataId_ = mediaitems_->add_or_find(href, typeMsObject, isInternal, href_out, oox::chart_place);
 	rels_.push_back(_rel(isInternal, externalDataId_, href_out, typeMsObject));
 }
 void oox_chart_context::set_userShapes(std::pair<std::wstring, std::wstring> &link)
@@ -83,10 +69,6 @@ void oox_chart_context::set_userShapes(std::pair<std::wstring, std::wstring> &li
 	bool isInternal = true;
 	userShapesId_ = link.second;
 	rels_.push_back(_rel(isInternal, userShapesId_, link.first, typeChartUserShapes));
-}
-std::wostream & oox_chart_context::chartData()
-{
-    return impl_->chartData_;
 }
 
 void oox_chart_context::dump_rels(rels & Rels)
@@ -146,9 +128,12 @@ void oox_chart_context::serialize(std::wostream & strm)
 		
 			CP_XML_NODE(L"c:lang")
 			{
-				CP_XML_ATTR(L"val",L"en-US");
+				CP_XML_ATTR(L"val", L"en-US");
 			}
-
+			CP_XML_NODE(L"c:roundedCorners")
+			{
+				CP_XML_ATTR(L"val", 0);
+			}
 			if (pivot_source_.empty() == false)
 			{
 				set_cache_only(true);

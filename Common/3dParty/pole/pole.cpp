@@ -1007,7 +1007,7 @@ void DirTree::load( unsigned char* buffer, uint64 size )
     
     // sanity checks
     if( (type != 2) && (type != 1 ) && (type != 5 ) ) e.valid = false;
-    if( name_len < 1 ) e.valid = false;
+    if( name_len < 1 && false == entries.empty()) e.valid = false;	//conv_WiwbV5sztXdFmZC6XhI__xlsx.xls
     
     entries.push_back( e );
   }  

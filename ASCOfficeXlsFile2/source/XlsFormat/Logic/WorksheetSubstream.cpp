@@ -232,6 +232,9 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 			case rt_ScenMan:		proc.optional<SCENARIOS>();			break;	
 			case rt_Sort:
 			case rt_AutoFilterInfo:
+			case rt_FilterMode:
+			case rt_SortData:
+			case rt_DropDownObjIds:
 			{
 				if (proc.optional<SORTANDFILTER>())// Let it be optional
 				{

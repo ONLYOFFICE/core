@@ -57,8 +57,7 @@ odf_page_layout_context::odf_page_layout_context(odf_conversion_context * Contex
 	local_style_context_ =  boost::shared_ptr<odf_style_context>(new odf_style_context());
 	local_style_context_->set_odf_context(odf_context_);
 
-
-	even_and_left_headers_ = true;
+	even_and_left_headers_ = false;
 
 	current_page_width_ = 0;
 }

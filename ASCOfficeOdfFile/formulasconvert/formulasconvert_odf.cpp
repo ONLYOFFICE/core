@@ -615,10 +615,8 @@ namespace formulasconvert {
 				cells_out.append(cells[j]);
 				cells_out.append(L":");
 			}
-			size_t res1 = sheet.find(L"-");
-			size_t res2 = sheet.find(L"'");
 			
-			if (res1 != std::wstring::npos && res2 != std::wstring::npos && !(res2 == 0))
+			if (sheet.find(L"-") != std::wstring::npos && sheet.find(L"'") == std::wstring::npos && sheet.find(L"\"") == std::wstring::npos)
 			{
 				sheet = L"'" + sheet + L"'";
 			}

@@ -42,9 +42,9 @@
 #include <xml/utils.h>
 
 #include "../odf/odfcontext.h"
-#include "../odf/style_text_properties.h"
 #include "../odf/calcs_styles.h"
 
+#include "../odf/style_text_properties.h"
 
 namespace cpdoccore {
 namespace oox {
@@ -269,7 +269,11 @@ void pptx_text_context::Impl::ApplyTextProperties(std::wstring style_name, std::
 	else if (para_style)	get_styles_context().start_process_style(para_style);
 	else					get_styles_context().start_process_style(baseStyle);
 
-	propertiesOut.apply_from(calc_text_properties_content(instances));
+	odf_reader::text_format_properties_content_ptr text_props = calc_text_properties_content(instances);
+	if (text_props)
+	{
+		propertiesOut.apply_from(*text_props.get());
+	}
 }
 
 void pptx_text_context::Impl::ApplyListProperties(odf_reader::paragraph_format_properties & propertiesOut, int Level)

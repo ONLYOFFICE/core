@@ -123,12 +123,19 @@ namespace Spreadsheet
 #define WritingStringNullableAttrEncodeXmlString2(name, elem) \
 		WritingStringNullableAttrEncodeXmlString(name, elem, *elem)
 
+#define WritingNullable(elem, action) \
+		if(elem.IsInit()) \
+		{ \
+			action \
+		}
+
 	const double c_ag_Inch_to_MM	= 25.4;
 	const double c_ag_1pxWidth		= 25.4 / 96;
 
 	class WritingElement : public OOX::WritingElement
 	{
 	public:
+		WritingElement(OOX::Document *pMain = NULL) : OOX::WritingElement(pMain) {}
         virtual EElementType    getType()   const
 		{
 			return OOX::et_x_Unknown;
@@ -140,9 +147,8 @@ namespace Spreadsheet
 	class WritingElementWithChilds : public WritingElement
 	{
 	public:
-        std::vector<ElemType *>  m_arrItems;
+		WritingElementWithChilds(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 		
-		WritingElementWithChilds() {}
 		virtual ~WritingElementWithChilds() 
 		{
 			ClearItems();
@@ -155,6 +161,7 @@ namespace Spreadsheet
             }
 			m_arrItems.clear();
 		}
+        std::vector<ElemType *>  m_arrItems;
 	};
 }
 }

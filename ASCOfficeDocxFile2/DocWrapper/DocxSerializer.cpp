@@ -202,7 +202,8 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, 
 		bool bValidFormat = false;
         std::wstring sSignature(g_sFormatSignature);
         int nSigLength = (int)sSignature.length();
-		if((int)nBase64DataSize > nSigLength)
+		
+		if ((int)nBase64DataSize > nSigLength)
 		{
             std::string sCurSig((char*)pBase64Data, nSigLength);
             if(sSignature == std::wstring(sCurSig.begin(), sCurSig.end()))

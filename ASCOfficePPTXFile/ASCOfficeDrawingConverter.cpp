@@ -5786,6 +5786,9 @@ xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"";
 
 HRESULT CDrawingConverter::GetRecordXml(LONG lStart, LONG lLength, LONG lRecType, int nDocType, std::wstring & sXml)
 {
+	if (NULL == m_pReader)
+		return S_FALSE;
+
 	m_pReader->m_pRels->m_pManager->m_nDocumentType = nDocType;
 
 	m_pReader->Seek(lStart);

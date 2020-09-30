@@ -246,6 +246,9 @@ namespace NSFontConverter
             else if (nSize > (m_nLen - m_nPos))
                 nSize = m_nLen - m_nPos;
 
+            if (0 == nSize)
+                return nSize;
+
             memcpy( pDestBuffer, (m_sFile + m_nPos), nSize );
             m_nPos += nSize;
 

@@ -371,11 +371,17 @@ namespace NSCSS
         if (sSelector.empty() || m_arData.empty())
             return std::map<std::wstring, std::wstring>();
 
+        std::map<std::wstring, std::wstring> mData;
+
         for (const CElement* oElement : m_arData )
             if (oElement->FindSelector(sSelector))
-                return oElement->GetDeclarations(sSelector, {});
+            {
+                for (const std::pair<std::wstring, std::wstring>& oIter : oElement->GetDeclarations(sSelector, {}))
+                    mData[oIter.first] = oIter.second;
+            }
+//                return oElement->GetDeclarations(sSelector, {});
 
-        return std::map<std::wstring, std::wstring>();
+        return mData;
     }
 
     std::vector<unsigned short int> CCssCalculator_Private::GetWeightSelector(const std::string& sSelector) const
@@ -437,7 +443,6 @@ namespace NSCSS
 
         if (unitMeasure != Default)
             SetUnitMeasure(unitMeasure);
-
 
         std::map<std::wstring, std::wstring> mStyle = GetDeclarations(L"*");
 
@@ -547,7 +552,8 @@ namespace NSCSS
         if (arSelectors.empty())
             return CCompiledStyle();
 
-        bool parentSize = arSelectors.size() > 1;
+        const bool parentSize = arSelectors.size() > 1;
+
         if (parentSize)
         {
             std::map<std::vector<CNode>, CCompiledStyle*>::iterator oItem = m_mUsedStyles.find(arSelectors);
@@ -567,19 +573,11 @@ namespace NSCSS
 
         for (std::vector<CNode>::const_iterator oParent = arSelectors.begin(); oParent != arSelectors.end() - 1; ++oParent)
         {
-            if (oParent->m_sName != L"body")
-            {
-                *oStyle += GetCompiledStyle({*oParent}, unitMeasure);
-                oStyle->AddParent(oParent->m_sName);
-            }
+            *oStyle += GetCompiledStyle({*oParent}, unitMeasure);
+            oStyle->AddParent(oParent->m_sName);
         }
 
         *oStyle += GetCompiledStyle(NS_STATIC_FUNCTIONS::GetSelectorsList(arSelectors.back().m_sName + sClassName + sIdName), unitMeasure);
-
-        // подумать, что с этим делать (замедляет прилично, но без него могут пропасть некоторые стили (в некоторых случаях))
-//        if (arSelectors.size() > 3)
-//            *oStyle += GetCompiledStyle(NS_STATIC_FUNCTIONS::GetSelectorsListWithParents(arSelectors), unitMeasure);
-
 
         if (!arSelectors.back().m_sStyle.empty())
         {
@@ -589,8 +587,6 @@ namespace NSCSS
         }
 
         oStyle->SetID(arSelectors.back().m_sName + sClassName + sIdName + L'-' + std::to_wstring(m_nCountNodes++));
-
-//        std::wcout << oStyle->GetId() << L" - " << oStyle->GetStyleW() << std::endl;
 
         if (parentSize)
             m_mUsedStyles[arSelectors] = oStyle;
@@ -605,6 +601,7 @@ namespace NSCSS
 
         KatanaOutput *output = katana_parse(sStyle.c_str(), sStyle.length(), KatanaParserModeStylesheet);
         this->GetOutputData(output);
+
         katana_destroy_output(output);
     }
 

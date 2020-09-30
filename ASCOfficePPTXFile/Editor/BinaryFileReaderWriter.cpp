@@ -575,10 +575,16 @@ namespace NSBinPptxRW
 
 		if ( oDownloader.DownloadSync() )
 		{
-			return oDownloader.GetFilePath();
+			std::wstring file_name = oDownloader.GetFilePath();
+			
+			CImageFileFormatChecker checker;
+			if (checker.isImageFile(file_name))
+			{
+				return file_name;
+			}
 		}
 #endif
-		return _T("");
+		return L"";
 	}
 
 	CBinaryFileWriter::CSeekTableEntry::CSeekTableEntry()

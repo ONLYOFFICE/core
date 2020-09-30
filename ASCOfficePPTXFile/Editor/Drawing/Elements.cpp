@@ -32,6 +32,28 @@
 
 #include "Slide.h"
 
+#ifndef DISABLE_FILE_DOWNLOADER
+    #include "../../../Common/FileDownloader/FileDownloader.h"
+	#include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
+#endif
+
+std::wstring PPT_FORMAT::CImageElement::DownloadImage(const std::wstring& strFile)
+{
+#ifndef DISABLE_FILE_DOWNLOADER
+	CFileDownloader oDownloader(strFile, true);
+	if ( oDownloader.DownloadSync() )
+	{
+		m_strImageFileName = oDownloader.GetFilePath();
+		
+		CImageFileFormatChecker checker;
+		if (false == checker.isImageFile(m_strImageFileName))
+		{
+			m_strImageFileName.clear();
+		}
+	}
+#endif
+    return m_strImageFileName;
+}
 void PPT_FORMAT::CShapeElement::CalculateColor(CColor& oColor, CSlide* pSlide, CTheme* pTheme, CLayout* pLayout)
 {
 	LONG lOldIndex = oColor.m_lSchemeIndex;

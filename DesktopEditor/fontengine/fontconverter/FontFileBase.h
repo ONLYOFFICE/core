@@ -61,9 +61,9 @@ namespace NSFontConverter
         CFontFileBase(char *sFile, int nLen, bool bFreeFileData)
         {
             m_sFileData = m_sFile = (unsigned char *)sFile;
-            m_nLen = nLen;
-            m_bFreeFileData = bFreeFileData;
+            m_nLen = (nLen > 0) ? 0 : (unsigned int)nLen;
             m_nPos = 0;
+            m_bFreeFileData = bFreeFileData;            
         }
 
         void         Reset()
@@ -94,11 +94,11 @@ namespace NSFontConverter
         // S = signed / U = unsigned
         // 8/16/32/Var = word length, in bytes
         // BE = big endian
-        int          GetS8    (int nPos, bool *pbSuccess)
+        int          GetS8    (const unsigned int& nPos, bool *pbSuccess)
         {
             //*pbSuccess = true;
 
-            if ( nPos < 0 || nPos >= m_nLen )
+            if ( nPos >= m_nLen )
             {
                 *pbSuccess = false;
                 return 0;
@@ -109,10 +109,10 @@ namespace NSFontConverter
             return nRes;
         }
 
-        int          GetU8    (int nPos, bool *pbSuccess)
+        int          GetU8    (const unsigned int& nPos, bool *pbSuccess)
         {
             //*pbSuccess = true;
-            if ( nPos < 0 || nPos >= m_nLen )
+            if ( nPos >= m_nLen )
             {
                 *pbSuccess = false;
                 return 0;
@@ -120,11 +120,11 @@ namespace NSFontConverter
             return m_sFile[ nPos ];
         }
 
-        int          GetS16BE (int nPos, bool *pbSuccess)
+        int          GetS16BE (const unsigned int& nPos, bool *pbSuccess)
         {
             //*pbSuccess = true;
 
-            if ( nPos < 0 || nPos + 1 >= m_nLen )
+            if ( m_nLen < 2 || nPos > (m_nLen - 2) )
             {
                 *pbSuccess = false;
                 return 0;
@@ -136,11 +136,11 @@ namespace NSFontConverter
             return nRes;
         }
 
-        int          GetU16BE (int nPos, bool *pbSuccess)
+        int          GetU16BE (const unsigned int& nPos, bool *pbSuccess)
         {
             //*pbSuccess = true;
 
-            if ( nPos < 0 || nPos + 1 >= m_nLen)
+            if ( m_nLen < 2 || nPos > (m_nLen - 2) )
             {
                 *pbSuccess = false;
                 return 0;
@@ -150,11 +150,11 @@ namespace NSFontConverter
             return nRes;
         }
 
-        int          GetS32BE (int nPos, bool *pbSuccess)
+        int          GetS32BE (const unsigned int& nPos, bool *pbSuccess)
         {
             //*pbSuccess = true;
 
-            if ( nPos < 0 || nPos + 3 >= m_nLen )
+            if ( m_nLen < 4 || nPos > (m_nLen - 4) )
             {
                 *pbSuccess = false;
                 return 0;
@@ -169,11 +169,11 @@ namespace NSFontConverter
             return nRes;
         }
 
-        unsigned int GetU32BE (int nPos, bool *pbSuccess)
+        unsigned int GetU32BE (const unsigned int& nPos, bool *pbSuccess)
         {
             //*pbSuccess = true;
 
-            if ( nPos < 0 || nPos + 3 >= m_nLen )
+            if ( m_nLen < 4 || nPos > (m_nLen - 4) )
             {
                 *pbSuccess = false;
                 return 0;
@@ -184,11 +184,11 @@ namespace NSFontConverter
             nRes = (nRes << 8) + m_sFile[nPos + 3];
             return nRes;
         }
-        unsigned int GetU32LE (int nPos, bool *pbSuccess)
+        unsigned int GetU32LE (const unsigned int& nPos, bool *pbSuccess)
         {
             //*pbSuccess = true;
 
-            if ( nPos < 0 || nPos + 3 >= m_nLen )
+            if ( m_nLen < 4 || nPos > (m_nLen - 4) )
             {
                 *pbSuccess = false;
                 return 0;
@@ -199,11 +199,11 @@ namespace NSFontConverter
             nRes = (nRes << 8) + m_sFile[nPos + 0];
             return nRes;
         }
-        unsigned int GetUVarBE(int nPos, int nSize, bool *pbSuccess)
+        unsigned int GetUVarBE(const unsigned int& nPos, const unsigned int& nSize, bool *pbSuccess)
         {
             //*pbSuccess = true;
 
-            if ( nPos < 0 || nPos + nSize > m_nLen )
+            if ( m_nLen < nSize || nPos > (m_nLen - nSize) )
             {
                 *pbSuccess = false;
                 return 0;
@@ -215,9 +215,9 @@ namespace NSFontConverter
             return nRes;
         }
 
-        bool         CheckRegion(int nPos, int nSize)
+        bool         CheckRegion(const unsigned int& nPos, const unsigned int& nSize)
         {
-            return (nPos >= 0 && nPos + nSize >= nPos && nPos + nSize <= m_nLen);
+            return (m_nLen >= nSize && nPos <= (m_nLen - nSize));
         }
         int          ReadS8   (bool *pbSuccess)
         {
@@ -239,10 +239,12 @@ namespace NSFontConverter
             m_nPos += 4;
             return unResult;
         }
-        int          Read(void* pDestBuffer, int nSize)
+        int          Read(void* pDestBuffer, unsigned int nSize)
         {
-            if ( m_nPos + nSize >= m_nLen )
-                nSize = m_nLen - m_nPos - 1;
+            if (m_nPos >= m_nLen)
+                nSize = 0;
+            else if (nSize > (m_nLen - m_nPos))
+                nSize = m_nLen - m_nPos;
 
             memcpy( pDestBuffer, (m_sFile + m_nPos), nSize );
             m_nPos += nSize;
@@ -254,10 +256,9 @@ namespace NSFontConverter
 
         unsigned char *m_sFileData;
         unsigned char *m_sFile;
-        int            m_nLen;
+        unsigned int   m_nLen;
+        unsigned int   m_nPos;
         bool           m_bFreeFileData;
-        int            m_nPos;
-
     };
 }
 

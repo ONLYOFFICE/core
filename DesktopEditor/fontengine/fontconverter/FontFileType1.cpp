@@ -397,6 +397,7 @@ namespace NSFontConverter
                             char nChar = *pTemp;
                             *pTemp = '\0';
                             nCode = atoi( pCur );
+							if (nCode < 0) nCode = 0;								
                             *pTemp = nChar;
                             if ( nCode == 8 && *pTemp == '#')
                             {
@@ -612,7 +613,7 @@ namespace NSFontConverter
                         sToken.clear();
                         sGlyph.clear();
 
-                        while ( ( nChar = sEexec[++nIndex] ) != ' ' )
+                        while ( nIndex < nEexecLen && ( nChar = sEexec[++nIndex] ) != ' ' )
                             sGlyph.push_back( (wchar_t)nChar );
                     }
                 }
@@ -656,7 +657,7 @@ namespace NSFontConverter
         int nChar = 0;
 
         unsigned char *sBuffer = NULL;
-        int nBufLen = 0;
+        unsigned int nBufLen = 0;
 
         while ( nBlockType != PFB_DONE )
         {

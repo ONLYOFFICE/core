@@ -230,13 +230,15 @@ namespace NSCSS
             if (oFontFamily != m_mStyle.end())
             {
                 std::wstring sFontFamily = oFontFamily->second;
-                const size_t posComma = sFontFamily.find(L',');
-                if (posComma != std::wstring::npos)
-                    sFontFamily = sFontFamily.substr(0, posComma);
-                if (sFontFamily.find(L'"') != std::wstring::npos || sFontFamily.find(L'\'') != std::wstring::npos)
-                    return sFontFamily;
-                if (!sFontFamily.empty())
-                    return L'"' + sFontFamily + L'"';
+                size_t nLeftQuote = sFontFamily.find_first_of(L"'\"");
+                while (nLeftQuote != std::wstring::npos)
+                {
+                    const size_t nRightQuote = sFontFamily.find_first_of(L"'\"", nLeftQuote + 1);
+                    const size_t nNewLeftQuote = sFontFamily.find_first_of(L"'\"", nRightQuote + 1);
+                    if (nNewLeftQuote == std::wstring::npos)
+                        return sFontFamily.substr(nLeftQuote, nRightQuote - nLeftQuote + 1);
+                    nLeftQuote = nNewLeftQuote;
+                }
             }
 
             std::wstring sFont;

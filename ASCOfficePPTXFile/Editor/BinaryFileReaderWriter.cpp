@@ -1885,6 +1885,16 @@ namespace NSBinPptxRW
 		m_pDataCur += 8;
         return res;			
 	}
+	_INT32 CBinaryFileReader::GetRecordSize()
+	{
+		_INT32 sz = (_INT32)GetULong();
+		if (m_lPos + sz > m_lSize)
+		{
+			//todooo - переделать
+			throw;
+		}
+		return sz;
+	}
 	_INT32 CBinaryFileReader::GetLong()
 	{
 		return (_INT32)GetULong();			

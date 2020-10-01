@@ -237,14 +237,12 @@ public:
                 sCore += oParams->m_sGenres;
                 sCore += L"</dc:subject>";
             }
-            /*
             if(!oParams->m_sDate.empty())
             {
                 sCore += L"<dcterms:created xsi:type=\"dcterms:W3CDTF\">";
                 sCore += oParams->m_sDate;
                 sCore += L"</dcterms:created>";
             }
-            */
             if(!oParams->m_sDescription.empty())
             {
                 sCore += L"<dc:description>";

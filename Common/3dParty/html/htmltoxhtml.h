@@ -44,10 +44,19 @@ static std::wstring htmlToXhtml(const std::wstring& sFile)
     if (posEncoding != std::string::npos)
     {
         posEncoding = sFileContent.find("=", posEncoding) + 1;
-        if(sFileContent[posEncoding] == '\"')
+        size_t posEnd;
+        if(sFileContent[posEncoding] == '\'')
+        {
             posEncoding += 1;
+            posEnd = sFileContent.find('\'', posEncoding);
+        }
+        else
+        {
+            if(sFileContent[posEncoding] == '\"')
+                posEncoding += 1;
+            posEnd = sFileContent.find('\"', posEncoding);
+        }
 
-        size_t posEnd = sFileContent.find("\"", posEncoding);
         if (std::string::npos != posEnd)
         {
             std::string sEncoding = sFileContent.substr(posEncoding, posEnd - posEncoding);

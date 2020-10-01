@@ -237,12 +237,14 @@ public:
                 sCore += oParams->m_sGenres;
                 sCore += L"</dc:subject>";
             }
+            /*
             if(!oParams->m_sDate.empty())
             {
                 sCore += L"<dcterms:created xsi:type=\"dcterms:W3CDTF\">";
                 sCore += oParams->m_sDate;
                 sCore += L"</dcterms:created>";
             }
+            */
             if(!oParams->m_sDescription.empty())
             {
                 sCore += L"<dc:description>";
@@ -363,14 +365,26 @@ public:
     bool htmlXhtml(const std::wstring& sSrc)
     {
         if(NSFile::GetFileExtention(sSrc) != L"xhtml")
-            return m_oLightReader.FromString(htmlToXhtml(sSrc));
+        {
+            std::wstring sRes = htmlToXhtml(sSrc);
+            /*
+            NSFile::CFileBinary oRes;
+            if(oRes.CreateFileW(m_sTmp + L'/' + NSFile::GetFileName(sSrc)))
+            {
+                oRes.WriteStringUTF8(sRes);
+                oRes.CloseFile();
+            }
+            */
+            return m_oLightReader.FromString(sRes);
+        }
         return m_oLightReader.FromFile(sSrc);
     }
 
     // Конвертирует mht в xhtml
     bool mhtXhtml(const std::wstring& sSrc)
     {
-        if(NSFile::GetFileExtention(sSrc) == L"mht")
+        std::wstring sExtention = NSFile::GetFileExtention(sSrc);
+        if(sExtention == L"mht" || sExtention == L"mhtml")
             return m_oLightReader.FromString(mhtToXhtml(sSrc));
         return htmlXhtml(sSrc);
     }
@@ -846,6 +860,10 @@ private:
         std::vector<CTc> mTable;
         int nDeath = m_oLightReader.GetDepth();
         int i = 1; // Строка
+
+        std::vector<NSCSS::CNode>::iterator it = std::find_if(sSelectors.begin(), sSelectors.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
+        bool bHyperlink = it != sSelectors.end();
+
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
         {
             // tr - строки в таблице
@@ -903,6 +921,8 @@ private:
                     j += nColspan - 1;
                 }
                 oXml->WriteString(L"</w:tcPr><w:p>");
+                if(bHyperlink)
+                    oXml->WriteString(L"<w:hyperlink>");
                 bWasP = true;
 
                 GetSubClass(oXml, sSelectors);
@@ -917,6 +937,8 @@ private:
                 else if(m_oLightReader.GetName() == L"td")
                     readStream(oXml, sSelectors, oTS, bWasP);
                 sSelectors.pop_back();
+                if(bHyperlink)
+                    oXml->WriteString(L"</w:hyperlink>");
                 oXml->WriteString(L"</w:p></w:tc>");
                 j++;
 
@@ -957,9 +979,15 @@ private:
             if(sName == L"caption")
             {
                 bWasP = true;
+                std::vector<NSCSS::CNode>::iterator it = std::find_if(sSelectors.begin(), sSelectors.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
+                bool bHyperlink = it != sSelectors.end();
                 oXml->WriteString(L"<w:p>");
+                if(bHyperlink)
+                    oXml->WriteString(L"<w:hyperlink>");
                 CTextSettings oTSP { oTS.bBdo, oTS.bPre, oTS.nLi, oTS.sRStyle, oTS.sPStyle + L"<w:jc w:val=\"center\"/>" };
                 readStream(oXml, sSelectors, oTSP, bWasP);
+                if(bHyperlink)
+                    oXml->WriteString(L"</w:hyperlink>");
                 oXml->WriteString(L"</w:p>");
                 bWasP = false;
             }

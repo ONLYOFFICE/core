@@ -57,6 +57,7 @@ namespace PPTX
 			b	(L"b",		L"http://schemas.openxmlformats.org/officeDocument/2006/bibliography"),
 			cdr	(L"cdr",	L"http://schemas.openxmlformats.org/drawingml/2006/chartDrawing"),
 			cp	(L"cp",		L"http://schemas.openxmlformats.org/package/2006/metadata/core-properties"),
+			cup	(L"cp",		L"http://schemas.openxmlformats.org/officeDocument/2006/custom-properties"),
 			dc	(L"dc",		L"http://purl.org/dc/elements/1.1/"),
 			dchrt(L"dchrt", L"http://schemas.openxmlformats.org/drawingml/2006/chart"),
 			dcmitype(L"dcmitype", L"http://purl.org/dc/dcmitype/"),
@@ -96,6 +97,7 @@ namespace PPTX
 		const Namespace b;
 		const Namespace cdr;
 		const Namespace cp;
+		const Namespace cup;
 		const Namespace dc;
 		const Namespace dchrt;
 		const Namespace dcmitype;

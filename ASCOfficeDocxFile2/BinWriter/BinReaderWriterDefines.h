@@ -144,7 +144,8 @@ extern int g_nCurFormatVersion;
 		VbaProject	= 13,
 		App			= 15,
 		Core		= 16,
-		DocumentComments	= 17
+		DocumentComments	= 17,
+		CustomProperties	= 18
 	};}
 	namespace c_oSerSigTypes{enum c_oSerSigTypes
 	{

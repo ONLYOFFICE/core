@@ -48,6 +48,7 @@
 #include "../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/toVmlConvert.h"
 #include "../../ASCOfficePPTXFile/PPTXFormat/App.h"
 #include "../../ASCOfficePPTXFile/PPTXFormat/Core.h"
+#include "../../ASCOfficePPTXFile/PPTXFormat/Logic/HeadingVariant.h"
 
 #include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Sparkline.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Drawing/Drawing.h"
@@ -3325,6 +3326,10 @@ int BinaryCommentReader::ReadCommentData(BYTE type, long length, void* poResult)
 	{
 		pComments->bDocument = true;
 		pComments->Document = m_oBufferedStream.GetBool();
+	}
+	else if ( c_oSer_CommentData::UserData == type )
+	{
+		pComments->sUserData = m_oBufferedStream.GetString4(length);
 	}
 	else if ( c_oSer_CommentData::Replies == type ) {
 		READ1_DEF(length, res, this->ReadCommentReplies, &pComments->aReplies);
@@ -7036,6 +7041,14 @@ int BinaryFileReader::ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW:
 				pCore->SetRequiredDefaults();
 				oXlsx.m_pCore = pCore;
 				smart_ptr<OOX::File> oCurFile(pCore);
+				oXlsx.Add(oCurFile);
+			}
+			break;
+		case c_oSerTableTypes::CustomProperties:
+			{
+				PPTX::CustomProperties* oCustomProperties = new PPTX::CustomProperties(NULL);
+				oCustomProperties->fromPPTY(&oBufferedStream);
+				smart_ptr<OOX::File> oCurFile(oCustomProperties);
 				oXlsx.Add(oCurFile);
 			}
 			break;

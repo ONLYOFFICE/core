@@ -63,6 +63,7 @@
 
 #include "../XlsxFormat/Chart/Chart.h"
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
+#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/HeadingVariant.h"
 
 namespace OOX
 {
@@ -126,6 +127,11 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CApp( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::Core)
 			return smart_ptr<OOX::File>(new CCore( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::CustomProperties)
+		{
+			PPTX::FileMap tmp;
+			return smart_ptr<OOX::File>(new PPTX::CustomProperties( pMain, oFileName, tmp));
+		}
 		else if ( oRelation.Type() == FileTypes::Theme)
 			return smart_ptr<OOX::File>(new PPTX::Theme( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::ThemeOverride)
@@ -191,6 +197,11 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CApp( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::Core)
 			return smart_ptr<OOX::File>(new CCore( pMain, oFileName ));
+		else if ( pRelation->Type() == FileTypes::CustomProperties)
+		{
+			PPTX::FileMap tmp;
+			return smart_ptr<OOX::File>(new PPTX::CustomProperties( pMain, oFileName, tmp ));
+		}
 		else if ( pRelation->Type() == FileTypes::Document || pRelation->Type() == FileTypes::DocumentMacro)
 			return smart_ptr<OOX::File>(new CDocument( pMain, oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::Theme)

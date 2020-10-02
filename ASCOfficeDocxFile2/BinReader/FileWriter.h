@@ -62,6 +62,10 @@ namespace OOX
 	class CApp;
 	class CCore;
 }
+namespace PPTX
+{
+	class CustomProperties;
+}
 
 namespace Writers
 {
@@ -93,6 +97,7 @@ namespace Writers
 		BinDocxRW::CComments*			m_pComments;
 		OOX::CApp*						m_pApp;
 		OOX::CCore*						m_pCore;
+		PPTX::CustomProperties*			m_pCustomProperties;
 
         FileWriter (std::wstring sDirOutput,std::wstring sFontDir, bool bNoFontDir, int nVersion, bool bSaveChartAsImg, NSBinPptxRW::CDrawingConverter* pDrawingConverter, std::wstring sThemePath);
 

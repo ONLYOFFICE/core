@@ -127,7 +127,7 @@ std::map<std::wstring, std::wstring> CElement::GetDeclarations() const
 }
 */
 
-std::map<std::wstring, std::wstring> CElement::GetDeclarations(const std::wstring& sSelector, const std::vector<std::wstring>& arParents) const
+std::map<std::wstring, std::wstring> CElement::GetDeclarations(const std::wstring& sSelector) const
 {
     if (m_arSelectors.size() == 0)
         return std::map<std::wstring, std::wstring>();

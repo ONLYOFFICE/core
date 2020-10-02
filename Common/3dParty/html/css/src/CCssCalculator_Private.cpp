@@ -376,7 +376,7 @@ namespace NSCSS
         for (const CElement* oElement : m_arData )
             if (oElement->FindSelector(sSelector))
             {
-                for (const std::pair<std::wstring, std::wstring>& oIter : oElement->GetDeclarations(sSelector, {}))
+                for (const std::pair<std::wstring, std::wstring>& oIter : oElement->GetDeclarations(sSelector))
                     mData[oIter.first] = oIter.second;
             }
 //                return oElement->GetDeclarations(sSelector, {});

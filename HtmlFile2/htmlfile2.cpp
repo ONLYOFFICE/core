@@ -363,7 +363,7 @@ public:
     bool htmlXhtml(const std::wstring& sSrc)
     {
         std::wstring sExtention = NSFile::GetFileExtention(sSrc);
-        if(sExtention != L"xhtml")
+        if(sExtention != L"xhtml" || sExtention != L"xml")
         {
             std::wstring sRes = htmlToXhtml(sSrc);
             /*

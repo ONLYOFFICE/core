@@ -33,7 +33,7 @@ public:
 
     // std::vector<std::wstring> GetSelectors() const;
     // std::map<std::wstring, std::wstring> GetDeclarations() const;
-    std::map<std::wstring, std::wstring> GetDeclarations(const std::wstring& sSelector, const std::vector<std::wstring>& arParents) const;
+    std::map<std::wstring, std::wstring> GetDeclarations(const std::wstring& sSelector) const;
     // std::vector<CElement*> GetChildrens() const;
     std::wstring GetText() const;
 

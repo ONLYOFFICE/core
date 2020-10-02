@@ -38,6 +38,7 @@
 
 #include "../../ASCOfficePPTXFile/PPTXFormat/App.h"
 #include "../../ASCOfficePPTXFile/PPTXFormat/Core.h"
+#include "../../ASCOfficePPTXFile/PPTXFormat/Logic/HeadingVariant.h"
 
 #include "../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Document.h"
@@ -9269,6 +9270,14 @@ int BinaryFileReader::ReadMainTable()
 					pCore->FromPptxCore(&oCore);
 					pCore->SetRequiredDefaults();
 					m_oFileWriter.m_pCore = pCore;
+				}
+				break;
+			case c_oSerTableTypes::CustomProperties:
+				{
+					PPTX::CustomProperties* pCustomProperties = new PPTX::CustomProperties(NULL);
+					pCustomProperties->fromPPTY(&m_oBufferedStream);
+					m_oFileWriter.m_pCustomProperties = pCustomProperties;
+					m_oFileWriter.m_oDocumentRelsWriter.m_bHasCustom = true;
 				}
 				break;
 			case c_oSerTableTypes::HdrFtr:

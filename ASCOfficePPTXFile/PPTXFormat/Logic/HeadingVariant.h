@@ -33,6 +33,8 @@
 #ifndef PPTX_LOGIC_HEADING_VARIANT_INCLUDE_H_
 #define PPTX_LOGIC_HEADING_VARIANT_INCLUDE_H_
 
+#include "./../WrapperFile.h"
+#include "./../FileContainer.h"
 #include "./../WrapperWritingElement.h"
 #include "./../Limit/VariantType.h"
 
@@ -40,6 +42,12 @@ namespace PPTX
 {
 	namespace Logic
 	{
+		class CVariantVector;
+		class CVariantArray;
+
+		enum eVariantType {vtUnknown = 0, vtEmpty, vtNull, vtVariant, vtVector, vtArray, vtVStream, vtBlob, vtOBlob, vtI1, vtI2,
+		vtI4, vtI8, vtInt, vtUi1, vtUi2, vtUi4, vtUi8, vtUint, vtR4, vtR8, vtDecimal, vtLpstr, vtLpwstr, vtBstr,
+		vtDate, vtFiletime, vtBool, vtCy, vtError, vtStream, vtOStream, vtStorage, vtOStorage, vtClsid};
 
 		class HeadingVariant : public WrapperWritingElement
 		{
@@ -93,7 +101,138 @@ namespace PPTX
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};
+		class CVariantVStream : public WrapperWritingElement
+		{
+		public:
+			PPTX_LOGIC_BASE(CVariantVStream)
+
+		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+
+		public:
+			nullable_string				m_strVersion;
+			nullable_string				m_strContent;
+		protected:
+			virtual void FillParentPointersForChilds(){};
+		};
+		class CVariant : public WrapperWritingElement
+		{
+		public:
+			PPTX_LOGIC_BASE(CVariant)
+
+		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			void toXmlWriterContent(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			static eVariantType getTypeByString(const std::wstring& sName);
+			static std::wstring getStringByType(const eVariantType& eType);
+		public:
+			eVariantType							m_eType;
+			nullable_string							m_strContent;
+			nullable_int							m_iContent;
+			nullable_uint							m_uContent;
+			nullable_double							m_dContent;
+			nullable_bool							m_bContent;
+			nullable<CVariant>						m_oVariant;
+			nullable<CVariantVector>				m_oVector;
+			nullable<CVariantArray>					m_oArray;
+			nullable<CVariantVStream>				m_oVStream;
+		protected:
+			virtual void FillParentPointersForChilds(){};
+		};
+		class CVariantVector : public WrapperWritingElement
+		{
+		public:
+			PPTX_LOGIC_BASE(CVariantVector)
+
+		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+
+		public:
+			eVariantType							m_eBaseType;
+			nullable_int							m_nSize;
+
+			std::vector<CVariant>					arrVariants;
+		protected:
+			virtual void FillParentPointersForChilds(){};
+		};
+		class CVariantArray : public WrapperWritingElement
+		{
+		public:
+			PPTX_LOGIC_BASE(CVariantArray)
+
+		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+
+		public:
+			eVariantType							m_eBaseType;
+			nullable_string							m_strLBounds;
+			nullable_string							m_strUBounds;
+
+			std::vector<CVariant>					arrVariants;
+		protected:
+			virtual void FillParentPointersForChilds(){};
+		};
+
+		class CustomProperty : public WrapperWritingElement
+		{
+		public:
+			PPTX_LOGIC_BASE(CustomProperty)
+
+		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+
+		public:
+			nullable_string							m_strFmtid;
+			nullable_string							m_strLinkTarget;
+			nullable_string							m_strName;
+			nullable_int							m_strPid;
+
+			nullable<CVariant>						m_oContent;
+		protected:
+			virtual void FillParentPointersForChilds(){};
+		};
 	} // namespace Logic
+} // namespace PPTX
+
+namespace PPTX
+{
+	class CustomProperties : public WrapperFile
+	{
+	public:
+		CustomProperties(OOX::Document* pMain);
+		CustomProperties(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map);
+		virtual ~CustomProperties();
+		virtual void read(const OOX::CPath& filename, FileMap& map);
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const;
+		virtual const OOX::FileType type() const;
+		virtual const OOX::CPath DefaultDirectory() const;
+		virtual const OOX::CPath DefaultFileName() const;
+		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+		public:
+			std::vector<PPTX::Logic::CustomProperty>	arrProperties;
+	};
 } // namespace PPTX
 
 #endif // PPTX_LOGIC_HEADING_VARIANT_INCLUDE_H_

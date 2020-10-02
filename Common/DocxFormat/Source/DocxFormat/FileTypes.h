@@ -48,6 +48,10 @@ namespace OOX
 												L"application/vnd.openxmlformats-package.core-properties+xml",
 												L"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties");
 
+		const FileType CustomProperties	(L"docProps", L"custom.xml",
+												L"application/vnd.openxmlformats-officedocument.custom-properties+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/custom-properties");
+
 		const FileType Document			(L"word", L"document.xml",
 												L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument");

@@ -38,6 +38,7 @@
 #include "../../ASCOfficePPTXFile/Editor/FontCutter.h"
 #include "../../ASCOfficePPTXFile/PPTXFormat/App.h"
 #include "../../ASCOfficePPTXFile/PPTXFormat/Core.h"
+#include "../../ASCOfficePPTXFile/PPTXFormat/Logic/HeadingVariant.h"
 #include "../../XlsxSerializerCom/Reader/BinaryWriter.h"
 #include "BinEquationWriter.h"
 
@@ -8749,6 +8750,18 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 		nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Core);
 		pDocx->m_pCore->ToPptxCore()->toPPTY(&oBufferedStream);
 		this->WriteTableEnd(nCurPos);
+	}
+
+	if(pDocx)
+	{
+		smart_ptr<OOX::File> pFile = pDocx->Find(OOX::FileTypes::CustomProperties);
+		PPTX::CustomProperties *pCustomProperties = dynamic_cast<PPTX::CustomProperties*>(pFile.GetPointer());
+		if (pCustomProperties)
+		{
+			nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::CustomProperties);
+			pCustomProperties->toPPTY(&m_oBcw.m_oStream);
+			this->WriteTableEnd(nCurPos);
+		}
 	}
 
 	BinDocxRW::BinaryHeaderFooterTableWriter oBinaryHeaderFooterTableWriter(m_oParamsWriter, pDocument, &m_oParamsWriter.m_mapIgnoreComments);

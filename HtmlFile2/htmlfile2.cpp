@@ -362,7 +362,8 @@ public:
     // Конвертирует html в xhtml
     bool htmlXhtml(const std::wstring& sSrc)
     {
-        if(NSFile::GetFileExtention(sSrc) != L"xhtml")
+        std::wstring sExtention = NSFile::GetFileExtention(sSrc);
+        if(sExtention != L"xhtml")
         {
             std::wstring sRes = htmlToXhtml(sSrc);
             /*

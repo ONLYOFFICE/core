@@ -52,9 +52,24 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     if (oOfficeUtils.ExtractToDirectory(sInputFile, m_sTempDir.c_str(), password, 1) != S_OK)
         return S_FALSE;
 
-    XmlUtils::CXmlLiteReader oXmlLiteReader;
+    std::wstring sFileContent;
+    std::wstring sContent;
+    if(!NSFile::CFileBinary::ReadAllTextUtf8(m_sTempDir + L"/container.xml", sFileContent))
+        return S_FALSE;
+    size_t nContent = sFileContent.find(L"full-path");
+    if(nContent != std::wstring::npos)
+    {
+        nContent += 11;
+        sContent = sFileContent.substr(nContent, sFileContent.find(L'\"', nContent) - nContent);
+        size_t posLastSlash = sContent.rfind(L'/');
+        if (posLastSlash != std::wstring::npos)
+            sContent = sContent.substr(posLastSlash + 1);
+    }
+    sContent = m_sTempDir + (sContent.empty() ? L"/content.opf" : L'/' + sContent);
 
-    if (oXmlLiteReader.FromFile(m_sTempDir + L"/content.opf"))
+
+    XmlUtils::CXmlLiteReader oXmlLiteReader;
+    if (oXmlLiteReader.FromFile(sContent))
     {
         oXmlLiteReader.ReadNextNode();
         int nParentDepth = oXmlLiteReader.GetDepth();

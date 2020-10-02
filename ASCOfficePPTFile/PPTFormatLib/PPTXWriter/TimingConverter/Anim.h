@@ -34,9 +34,75 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Anim.h"
 #include "../../Records/Animations/ExtTimeNodeContainer.h"
 #include "CBhvr.h"
+#include "../Enums/_includer.h"
 
 
 namespace PPT_FORMAT
 {
+    void FillAnim(CRecordExtTimeNodeContainer* pETNC, PPTX::Logic::Anim& oAnim)
+    {
+        auto& oldAnim = pETNC->m_pTimeAnimateBehavior;
 
+        if (oldAnim->m_oAnimateBehaviorAtom.m_bCalcModePropertyUsed)
+        {
+            std::wstring calcmode;
+            switch (oldAnim->m_oAnimateBehaviorAtom.m_nCalcMode) {
+            case 0: calcmode = L"discrete"; break;
+            case 1: calcmode = L"lin"; break;
+            case 2: calcmode = L"fmla"; break;
+            }
+            oAnim.calcmode = new PPTX::Limit::TLCalcMode;
+            oAnim.calcmode = calcmode;
+        }
+
+        if (oldAnim->m_oAnimateBehaviorAtom.m_bValueTypePropertyUsed)
+        {
+            std::wstring valueType;
+            switch (oldAnim->m_oAnimateBehaviorAtom.m_ValueType) {
+            case TL_TABVT_Color: valueType = L"Color"; break;
+            case TL_TABVT_Number: valueType = L"Number"; break;
+            case TL_TABVT_String: valueType = L"String"; break;
+            }
+            if (!valueType.empty())
+            {
+                oAnim.valueType = new PPTX::Limit::TLValueType;
+                oAnim.valueType = valueType;
+            }
+        }
+
+        // By
+        if (oldAnim->m_oAnimateBehaviorAtom.m_bByPropertyUsed)
+        {
+            oAnim.by = oldAnim->m_oVarBy.m_stringValue;
+        }
+        // To
+        if (oldAnim->m_oAnimateBehaviorAtom.m_bToPropertyUsed)
+        {
+            oAnim.to = oldAnim->m_oVarTo.m_stringValue;
+        }
+        //From
+        if (oldAnim->m_oAnimateBehaviorAtom.m_bFromPropertyUsed)
+        {
+            oAnim.from = oldAnim->m_oVarFrom.m_stringValue;
+        }
+
+        //// Writing childs
+
+        for (auto& animValue : oldAnim->m_oAnimateValueList.m_arrEntry)
+        {
+            auto tav = new PPTX::Logic::Tav;
+            if (!animValue.m_VarValue.m_stringValue.empty())
+                tav->val = new PPTX::Logic::AnimVariant;
+                tav->val->name = L"val";
+                // TODO!!
+                switch (animValue.m_VarValue.m_Type) {
+                case TL_TVT_String: {
+                    tav->val->strVal = animValue.m_VarValue.m_stringValue;
+                    break;
+                }
+                }
+        }
+
+        FillCBhvr(pETNC, oAnim.cBhvr);
+    }
 }

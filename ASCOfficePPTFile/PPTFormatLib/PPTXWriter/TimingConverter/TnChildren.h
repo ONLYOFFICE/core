@@ -66,7 +66,9 @@ namespace PPT_FORMAT
         }
         else if (pETNC->m_haveAnimateBehavior)
         {
-            // Anim
+            auto anim = new PPTX::Logic::Anim;
+            FillAnim(pETNC, *anim);
+            oChild.m_node = anim;
         }
         else if (pETNC->m_haveColorBehavior)
         {

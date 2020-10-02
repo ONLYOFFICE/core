@@ -40,10 +40,14 @@
 
 namespace PPT_FORMAT
 {
+unsigned gcTn_ID = 1;
+
 void ConvertTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::TimeNodeBase &oChild);
 
     void FillCTn(CRecordExtTimeNodeContainer* pETNC, PPTX::Logic::CTn &oCTn)
     {
+        oCTn.id = gcTn_ID++;
+
         if (pETNC->m_haveTimePropertyList)
         {
             for (auto* pTimePropertyID4TimeNode : pETNC->m_pTimePropertyList->m_arrElements)
@@ -65,22 +69,24 @@ void ConvertTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::TimeNodeBas
             case 9: nodeType = L"tmRoot"; break;
             }
             if (!nodeType.empty())
+            {
+                oCTn.nodeType = new PPTX::Limit::TLNodeType;
                 oCTn.nodeType = nodeType;
+            }
+
     }
 
         // Reading TimeNodeAtom
         const auto& oTimeNodeAtom = pETNC->m_oTimeNodeAtom;
 
         // Write restart
-        oCTn.restart = oTimeNodeAtom.m_fRestartProperty ?
-                    PPTX::Limit::TLRestart(oTimeNodeAtom.m_dwRestart) :
-                    PPTX::Limit::TLRestart();
+        if (oTimeNodeAtom.m_fRestartProperty)
+            oCTn.restart = PPTX::Limit::TLRestart(oTimeNodeAtom.m_dwRestart) ;
 
 
         // Write fill
-        oCTn.fill = oTimeNodeAtom.m_fFillProperty ?
-                    PPTX::Limit::TLNodeFillType(oTimeNodeAtom.m_dwFill) :
-                    PPTX::Limit::TLNodeFillType();
+        if (oTimeNodeAtom.m_fFillProperty)
+            oCTn.fill = PPTX::Limit::TLNodeFillType(oTimeNodeAtom.m_dwFill);
 
         // Write dur
         if (oTimeNodeAtom.m_fDurationProperty)
@@ -94,17 +100,35 @@ void ConvertTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::TimeNodeBas
 
         //// Write Children ////
 
-        // Write stCondLst
-        if (pETNC->m_arrRgBeginTimeCondition.empty() == false)
+
+        if (!pETNC->m_haveSequenceAtom)
         {
-            oCTn.stCondLst = new PPTX::Logic::CondLst;
-            oCTn.stCondLst->name = L"stCondLst";
-        }
-        for (auto* oldCond : pETNC->m_arrRgBeginTimeCondition) {
-                    PPTX::Logic::Cond cond;
-                    cond.name = L"cond";
-                    FillCond(oldCond, cond);
-                    oCTn.stCondLst->list.push_back(cond);
+            // Write stCondLst
+            if (pETNC->m_arrRgBeginTimeCondition.empty() == false)
+            {
+                oCTn.stCondLst = new PPTX::Logic::CondLst;
+                oCTn.stCondLst->name = L"stCondLst";
+            }
+            for (auto* oldCond : pETNC->m_arrRgBeginTimeCondition) {
+                PPTX::Logic::Cond cond;
+                cond.name = L"cond";
+                FillCond(oldCond, cond);
+                oCTn.stCondLst->list.push_back(cond);
+            }
+
+
+            // Write endCondLst
+            if (pETNC->m_arrRgEndTimeCondition.empty() == false)
+            {
+                oCTn.endCondLst = new PPTX::Logic::CondLst;
+                oCTn.endCondLst->name = L"endCondLst";
+            }
+            for (auto* oldCond : pETNC->m_arrRgEndTimeCondition) {
+                        PPTX::Logic::Cond cond;
+                        cond.name = L"cond";
+                        FillCond(oldCond, cond);
+                        oCTn.endCondLst->list.push_back(cond);
+            }
         }
 
 
@@ -114,23 +138,9 @@ void ConvertTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::TimeNodeBas
             oCTn.childTnLst = new PPTX::Logic::ChildTnLst;
         }
         for (auto* oldChild : pETNC->m_arrRgExtTimeNodeChildren) {
-                    PPTX::Logic::TimeNodeBase child;
-                    ConvertTnChild(oldChild, child);
-                    oCTn.childTnLst->list.push_back(child);
-        }
-
-
-        // Write endCondLst
-        if (pETNC->m_arrRgEndTimeCondition.empty() == false)
-        {
-            oCTn.endCondLst = new PPTX::Logic::CondLst;
-            oCTn.endCondLst->name = L"endCondLst";
-        }
-        for (auto* oldCond : pETNC->m_arrRgEndTimeCondition) {
-                    PPTX::Logic::Cond cond;
-                    cond.name = L"cond";
-                    FillCond(oldCond, cond);
-                    oCTn.endCondLst->list.push_back(cond);
+            PPTX::Logic::TimeNodeBase child;
+            ConvertTnChild(oldChild, child);
+            oCTn.childTnLst->list.push_back(child);
         }
 
 

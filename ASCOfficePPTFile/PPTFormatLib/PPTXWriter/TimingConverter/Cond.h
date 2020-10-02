@@ -40,6 +40,13 @@ void FillCond(PPT_FORMAT::CRecordTimeConditionContainer *oldCond, PPTX::Logic::C
 {
     if (oldCond->m_oTimeConditionAtom.m_nTimeDelay != -1)
         cond.delay = std::to_wstring(oldCond->m_oTimeConditionAtom.m_nTimeDelay);
+    else
+        cond.delay = L"indefinite";
+
+    if (oldCond->m_oTimeConditionAtom.m_TriggerObject == TL_TOT_RuntimeNodeRef)
+    {
+        cond.tn = std::to_wstring(oldCond->m_oTimeConditionAtom.m_nID);
+    }
 
     std::wstring str;
 

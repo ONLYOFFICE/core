@@ -32,6 +32,7 @@
 #pragma once
 
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/TimeNodeBase.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/WrapperWritingElement.h"
 
 #include "Anim.h"
 #include "AnimClr.h"
@@ -53,13 +54,15 @@ namespace PPT_FORMAT
     {
         if (pETNC->m_haveSequenceAtom)
         {
-            auto& seq = dynamic_cast<PPTX::Logic::Seq&>(oChild);
-            FillSeq(pETNC, seq);
+            auto seq = new PPTX::Logic::Seq;
+            FillSeq(pETNC, *seq);
+            oChild.m_node = seq;
         }
         else if (pETNC->m_haveSetBehavior)
         {
-            auto& set = dynamic_cast<PPTX::Logic::Set&>(oChild);
-            FillSet(pETNC, set);
+            auto set = new PPTX::Logic::Set;
+            FillSet(pETNC, *set);
+            oChild.m_node = set;
         }
         else if (pETNC->m_haveAnimateBehavior)
         {
@@ -71,8 +74,9 @@ namespace PPT_FORMAT
         }
         else if (pETNC->m_haveEffectBehavior)
         {
-            auto& animEffect = dynamic_cast<PPTX::Logic::AnimEffect&>(oChild);
-            FillAnimEffect(pETNC, animEffect);
+            auto animEffect = new PPTX::Logic::AnimEffect;
+            FillAnimEffect(pETNC, *animEffect);
+            oChild.m_node = animEffect;
         }
         else if (pETNC->m_haveMotionBehavior)
         {
@@ -92,8 +96,9 @@ namespace PPT_FORMAT
         }
         else if (pETNC->m_oTimeNodeAtom.m_dwType == TL_TNT_Parallel)
         {
-            auto& par = dynamic_cast<PPTX::Logic::Par&>(oChild);
-            FillPar(pETNC, par);
+            auto par = new PPTX::Logic::Par;
+            FillPar(pETNC, *par);
+            oChild.m_node = par;
         }
         else
         {

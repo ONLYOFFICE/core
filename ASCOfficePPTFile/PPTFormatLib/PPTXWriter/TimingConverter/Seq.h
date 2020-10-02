@@ -51,31 +51,32 @@ void FillSeq(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
     }
     FillCTn(pETNC, oSec.cTn);
 
-//    if (!pETNC->m_arrRgEndTimeCondition.empty())
-//    {
-//        oSec.prevCondLst = new PPTX::Logic::CondLst();
-//        oSec.prevCondLst->name = L"prevCondLst";
-//    }
-//    for (auto oldCond : pETNC->m_arrRgEndTimeCondition)
-//    {
-//        PPTX::Logic::Cond cond;
-//        cond.name = L"cond";
-//        FillCond(oldCond, cond);
-//        oSec.prevCondLst->list.push_back(cond);
-//    }
+    // Fill cond lists
+    if (!pETNC->m_arrRgEndTimeCondition.empty())
+    {
+        oSec.prevCondLst = new PPTX::Logic::CondLst();
+        oSec.prevCondLst->name = L"prevCondLst";
+    }
+    for (auto oldCond : pETNC->m_arrRgEndTimeCondition)
+    {
+        PPTX::Logic::Cond cond;
+        cond.name = L"cond";
+        FillCond(oldCond, cond);
+        oSec.prevCondLst->list.push_back(cond);
+    }
 
-//    if (!pETNC->m_arrRgBeginTimeCondition.empty())
-//    {
-//        oSec.nextCondLst = new PPTX::Logic::CondLst();
-//        oSec.nextCondLst->name = L"nextCondLst";
-//    }
-//    for (auto oldCond : pETNC->m_arrRgBeginTimeCondition)
-//    {
-//        PPTX::Logic::Cond cond;
-//        cond.name = L"cond";
-//        FillCond(oldCond, cond);
-//        oSec.nextCondLst->list.push_back(cond);
-//    }
+    if (!pETNC->m_arrRgBeginTimeCondition.empty())
+    {
+        oSec.nextCondLst = new PPTX::Logic::CondLst();
+        oSec.nextCondLst->name = L"nextCondLst";
+    }
+    for (auto oldCond : pETNC->m_arrRgBeginTimeCondition)
+    {
+        PPTX::Logic::Cond cond;
+        cond.name = L"cond";
+        FillCond(oldCond, cond);
+        oSec.nextCondLst->list.push_back(cond);
+    }
 
 
 }

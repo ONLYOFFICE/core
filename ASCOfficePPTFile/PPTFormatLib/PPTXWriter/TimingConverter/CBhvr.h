@@ -64,26 +64,39 @@ namespace PPT_FORMAT
     // TODO
     void FillCBhvr(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CBhvr &oBhvr)
     {
-        auto* bhvr = pETNC->m_pTimeEffectBehavior;
-        if (!bhvr->m_oBehavior.m_pStringList->m_arrRgChildRec.empty())
-        {
-            oBhvr.attrNameLst = new PPTX::Logic::AttrNameLst();
-        }
-        for (const auto& oldAttr : bhvr->m_oBehavior.m_pStringList->m_arrRgChildRec)
-        {
-            PPTX::Logic::AttrName addAttr;
-            addAttr.text = oldAttr.m_stringValue;
-            oBhvr.attrNameLst->list.push_back(addAttr);
+        CRecordTimeBehaviorContainer* bhvr = nullptr;
+        if (pETNC->m_haveSetBehavior)           bhvr = &(pETNC->m_pTimeSetBehavior->m_oBehavior);
+        else if (pETNC->m_haveEffectBehavior)   bhvr = &(pETNC->m_pTimeEffectBehavior->m_oBehavior);
+        else if (pETNC->m_haveAnimateBehavior)  bhvr = &(pETNC->m_pTimeAnimateBehavior->m_oBehavior);
+        else if (pETNC->m_haveColorBehavior)    bhvr = &(pETNC->m_pTimeColorBehavior->m_oBehavior);
+        else if (pETNC->m_haveMotionBehavior)   bhvr = &(pETNC->m_pTimeMotionBehavior->m_oTimeBehavior);
+        else if (pETNC->m_haveRotationBehavior) bhvr = &(pETNC->m_pTimeRotationBehavior->m_oBehavior);
+        else if (pETNC->m_haveScaleBehavior)    bhvr = &(pETNC->m_pTimeScaleBehavior->m_oBehavior);
+        else                                    bhvr = &(pETNC->m_pTimeCommandBehavior->m_oBevavior);
 
+
+        if (bhvr->m_haveStringList)
+        {
+            if (!bhvr->m_pStringList->m_arrRgChildRec.empty())
+            {
+                oBhvr.attrNameLst = new PPTX::Logic::AttrNameLst();
+            }
+            for (const auto& oldAttr : bhvr->m_pStringList->m_arrRgChildRec)
+            {
+                PPTX::Logic::AttrName addAttr;
+                addAttr.text = oldAttr.m_stringValue;
+                oBhvr.attrNameLst->list.push_back(addAttr);
+
+            }
         }
 
         FillCTn(pETNC, oBhvr.cTn);
 
-        if (bhvr->m_oBehavior.m_oClientVisualElement.m_bVisualShapeAtom)
+        if (bhvr->m_oClientVisualElement.m_bVisualShapeAtom)
         {
             oBhvr.tgtEl.spTgt = new PPTX::Logic::SpTgt();
             oBhvr.tgtEl.spTgt->spid =
-                    std::to_wstring(bhvr->m_oBehavior.
+                    std::to_wstring(bhvr->
                                     m_oClientVisualElement.
                                     m_oVisualShapeAtom.m_nObjectIdRef);
         }

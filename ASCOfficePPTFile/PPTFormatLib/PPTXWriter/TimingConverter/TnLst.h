@@ -56,6 +56,7 @@ void ConvertCRecordExtTimeNodeContainerToTnLst(
     if (!pETNC)
         return;
 
+    gcTn_ID = 1;
     PPTX::Logic::TimeNodeBase oChildTimeNodeBase;
     ConvertTnChild(pETNC, oChildTimeNodeBase);
     oTnLst.list.push_back(oChildTimeNodeBase);

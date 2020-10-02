@@ -40,12 +40,16 @@ bool operator<(const std::vector<NSCSS::CNode> &arLeftSelectors, const std::vect
 
 namespace NSCSS
 {
-    CCssCalculator_Private::CCssCalculator_Private() : m_nDpi(96), m_nCountNodes(1), m_UnitMeasure(Default), m_sEncoding(L"UTF-8") {}
+    CCssCalculator_Private::CCssCalculator_Private() : m_nDpi(96), m_nCountNodes(0), m_UnitMeasure(Default), m_sEncoding(L"UTF-8") {}
 
     CCssCalculator_Private::~CCssCalculator_Private()
     {
-        m_arData.clear();
         m_arFiles.clear();
+
+        for (std::map<std::vector<CNode>, std::map<std::wstring, std::wstring>*>::iterator iter = m_mData.begin(); iter != m_mData.end(); ++iter)
+            delete iter->second;
+
+        m_mData.clear();
 
         for (std::map<std::vector<CNode>, CCompiledStyle*>::iterator iter  = m_mUsedStyles.begin(); iter != m_mUsedStyles.end(); ++iter)
             delete iter->second;
@@ -133,23 +137,30 @@ namespace NSCSS
         if (oRule->declarations->length == 0)
             return;
 
+        std::map<std::wstring, std::wstring>* mStyle = new std::map<std::wstring, std::wstring>();
+        *mStyle = GetDeclarationList(oRule->declarations);
+
         for (const std::wstring sSelector : GetSelectorList(oRule->selectors))
         {
-            std::map<std::wstring, std::wstring>& oStyle = m_arData[NS_STATIC_FUNCTIONS::ConvertSelectorsToNode(sSelector)];
+            const std::vector<CNode>& arNodes = NS_STATIC_FUNCTIONS::ConvertSelectorsToNode(sSelector);
+            const auto& oFind = m_mData.find(arNodes);
 
-            for (const std::pair<std::wstring, std::wstring> oItem : GetDeclarationList(oRule->declarations))
-                oStyle[oItem.first] = oItem.second;
-
-//            m_arData[oNodes] = oStyle;
+            if (oFind != m_mData.end())
+                for (const std::pair<std::wstring, std::wstring>& oItem : *mStyle)
+                    (*oFind->second)[oItem.first] = oItem.second;
+            else
+                m_mData[arNodes] = mStyle;
         }
-
     }
 
     inline std::vector<std::wstring> CCssCalculator_Private::GetSelectorList(const KatanaArray* oSelectors) const
     {
+        if (oSelectors->length == 0)
+            return std::vector<std::wstring>();
+
         std::vector<std::wstring> arSelectors;
 
-        for (size_t i = 0; i < oSelectors->length; ++i)
+        for (unsigned int i = 0; i < oSelectors->length; ++i)
             arSelectors.push_back(GetSelector((KatanaSelector*)oSelectors->data[i]));
 
         return arSelectors;
@@ -178,6 +189,9 @@ namespace NSCSS
 
     inline std::map<std::wstring, std::wstring> CCssCalculator_Private::GetDeclarationList(const KatanaArray* oDeclarations) const
     {
+        if(oDeclarations->length == 0)
+            return std::map<std::wstring, std::wstring>();
+
         std::map<std::wstring, std::wstring> arDeclarations;
 
         for (size_t i = 0; i < oDeclarations->length; ++i)
@@ -202,17 +216,29 @@ namespace NSCSS
 
         std::vector<CNode> oNodes = NS_STATIC_FUNCTIONS::ConvertSelectorsToNode(sSelector);
 
-        m_arData[oNodes] = {};
+        m_mData[oNodes] = {};
     }
 
     inline void CCssCalculator_Private::GetFontFaceRule(const KatanaFontFaceRule *oRule)
     {
         const std::wstring sSelector = L"@" + NS_STATIC_FUNCTIONS::stringToWstring(oRule->base.name);
 
-        std::map<std::wstring, std::wstring>& oStyle = m_arData[NS_STATIC_FUNCTIONS::ConvertSelectorsToNode(sSelector)];
+        const std::vector<CNode>& arNodes = NS_STATIC_FUNCTIONS::ConvertSelectorsToNode(sSelector);
 
-        for (const std::pair<std::wstring, std::wstring> oItem : GetDeclarationList(oRule->declarations))
-            oStyle[oItem.first] = oItem.second;
+        const auto& oFind = m_mData.find(arNodes);
+        std::map<std::wstring, std::wstring>* mStyle = new std::map<std::wstring, std::wstring>();
+        *mStyle = GetDeclarationList(oRule->declarations);
+
+        if (oFind != m_mData.end())
+            for (const std::pair<std::wstring, std::wstring>& oItem : *mStyle)
+                (*oFind->second)[oItem.first] = oItem.second;
+        else
+            m_mData[arNodes] = mStyle;
+
+//        std::map<std::wstring, std::wstring>& oStyle = m_mData[NS_STATIC_FUNCTIONS::ConvertSelectorsToNode(sSelector)];
+
+//        for (const std::pair<std::wstring, std::wstring> oItem : GetDeclarationList(oRule->declarations))
+//            oStyle[oItem.first] = oItem.second;
     }
 
     inline void CCssCalculator_Private::GetKeyframesRule(const KatanaKeyframesRule *oRule)
@@ -334,17 +360,13 @@ namespace NSCSS
 
     std::map<std::wstring, std::wstring> CCssCalculator_Private::GetDeclarations(const std::wstring& sSelector) const
     {
-        if (sSelector.empty() || m_arData.empty())
+        if (sSelector.empty() || m_mData.empty())
             return std::map<std::wstring, std::wstring>();
 
-        const std::map<std::vector<CNode>, std::map<std::wstring, std::wstring>>::const_iterator oFind = m_arData.find(NS_STATIC_FUNCTIONS::ConvertSelectorsToNode(sSelector));
+        const std::map<std::vector<CNode>, std::map<std::wstring, std::wstring>*>::const_iterator& oFind = m_mData.find(NS_STATIC_FUNCTIONS::ConvertSelectorsToNode(sSelector));
 
-        if (oFind != m_arData.end())
-            return oFind->second;
-
-//        for (const CElement* oElement : m_arData )
-//            if (oElement->FindSelector(sSelector))
-//                return oElement->GetDeclarations(sSelector, {});
+        if (oFind != m_mData.end())
+            return *oFind->second;
 
         return std::map<std::wstring, std::wstring>();
     }
@@ -370,9 +392,10 @@ namespace NSCSS
                 sTemp.erase(std::remove_if(sTemp.begin(), sTemp.end(), [] (wchar_t ch) { return !std::iswalpha(ch); }));
                 std::find(NS_CONST_VALUES::arPseudoClasses.begin(), NS_CONST_VALUES::arPseudoClasses.end(), sTemp) != NS_CONST_VALUES::arPseudoClasses.end() ? ++arWeight[1] : ++arWeight[2];
             }
-            else if (sSel.find('.') != std::string::npos ||
+            else if (sSel.find_first_of(".[]") != std::string::npos/*
+                     sSel.find('.') != std::string::npos ||
                      sSel.find('[') != std::string::npos ||
-                     sSel.find(']') != std::string::npos)
+                     sSel.find(']') != std::string::npos*/)
                 ++arWeight[1];
             else
                 ++arWeight[2];
@@ -389,7 +412,7 @@ namespace NSCSS
 
     void CCssCalculator_Private::Print() const
     {
-        std::wcout << m_arData.size() << std::endl;
+        std::wcout << m_mData.size() << std::endl;
 
 //        for (const CElement* oElement : m_arData)
 //            std::wcout << oElement->GetText() << std::endl;
@@ -409,14 +432,41 @@ namespace NSCSS
         if (unitMeasure != Default)
             SetUnitMeasure(unitMeasure);
 
-        std::map<std::wstring, std::wstring> mStyle = GetDeclarations(L"*");
+        std::map<std::wstring, std::wstring> mStyle;
 
         for (const std::string& sSelector : arSelectors)
         {
             for (const std::pair<std::wstring, std::wstring>& oDeclarations : GetDeclarations(NS_STATIC_FUNCTIONS::stringToWstring(sSelector)))
             {
-                if (mStyle[oDeclarations.first].empty() || mStyle[oDeclarations.first].find(L"important") == std::wstring::npos)
+                if (mStyle.find(oDeclarations.first) == mStyle.end())
+                {
                     mStyle[oDeclarations.first] = oDeclarations.second;
+                    continue;
+                }
+
+                if (mStyle[oDeclarations.first].find(L"important") == std::wstring::npos)
+                {
+                    std::wcout << oDeclarations.first << L" : " << mStyle[oDeclarations.first].c_str() << " <- " << oDeclarations.second << std::endl;
+                    mStyle[oDeclarations.first] = oDeclarations.second;
+
+//                    const size_t posEm = oDeclarations.second.find(L"em");
+//                    if (posEm != std::wstring::npos)
+//                    {
+//                        std::wcout << L"INPUT: " << mStyle[oDeclarations.first] << L" - " << oDeclarations.second << std::endl;
+
+//                        const float fCurrentValue = (mStyle[oDeclarations.first].empty() || mStyle[oDeclarations.first] == L"22") ? 22.0f : wcstof(ConvertUnitMeasure(mStyle[oDeclarations.first]).c_str(), NULL);
+//                        const float fValue = wcstof(oDeclarations.second.c_str(), NULL);
+
+//                        std::wcout << fCurrentValue << L" * " << fValue << L" = " << fValue * fCurrentValue << std::endl;
+
+//                        mStyle[oDeclarations.first] = std::to_wstring(static_cast<short int>(fValue * fCurrentValue + 0.5f));
+//                        std::wcout << L"-----" << mStyle[oDeclarations.first] << std::endl;
+//                        std::wcout << L"Shipped: " << oDeclarations.second << L" + " << mStyle[oDeclarations.first] << std::endl;
+//                        mStyle[oDeclarations.first] = ConvertEm(oDeclarations.second, mStyle[oDeclarations.first]);
+//                        std::wcout << L"-----" << mStyle[oDeclarations.first] << std::endl;
+//                        continue;
+//                    }
+                }
             }
         }
 
@@ -517,48 +567,59 @@ namespace NSCSS
         if (arSelectors.empty())
             return CCompiledStyle();
 
-        bool parentSize = arSelectors.size() > 1;
-        if (parentSize)
-        {
-            std::map<std::vector<CNode>, CCompiledStyle*>::iterator oItem = m_mUsedStyles.find(arSelectors);
-            if (oItem != m_mUsedStyles.end())
-                return *oItem->second;
-        }
+//        bool parentSize = arSelectors.size() > 1;
+//        if (parentSize)
+//        {
+        const std::vector<CNode> arNodes = NS_STATIC_FUNCTIONS::NormalizationCNodes(arSelectors);
+
+        const std::map<std::vector<CNode>, CCompiledStyle*>::iterator oItem = m_mUsedStyles.find(arNodes);
+        if (oItem != m_mUsedStyles.end())
+            return *oItem->second;
+//        }
+
+        std::vector<std::vector<CNode>> arValues = NS_STATIC_FUNCTIONS::GetEnumeration(arNodes);
 
         CCompiledStyle *oStyle = new CCompiledStyle();
 
-        const std::wstring& sClassName = (!arSelectors.back().m_sClass.empty() && arSelectors.back().m_sClass.front() != L'.')
-                                         ? L'.' + arSelectors.back().m_sClass
-                                         : arSelectors.back().m_sClass;
-
-        const std::wstring& sIdName = (!arSelectors.back().m_sId.empty() && arSelectors.back().m_sId.front() != L'#')
-                                      ? L'#' + arSelectors.back().m_sId
-                                      : arSelectors.back().m_sId;
-
-        for (std::vector<CNode>::const_iterator oParent = arSelectors.begin(); oParent != arSelectors.end() - 1; ++oParent)
+        for (const std::vector<CNode> oItem : arValues)
         {
-            if (oParent->m_sName != L"body")
-            {
-                *oStyle += GetCompiledStyle({*oParent}, unitMeasure);
-                oStyle->AddParent(oParent->m_sName);
-            }
+            *oStyle += GetCompiledStyle(oItem, unitMeasure);
         }
 
-        *oStyle += GetCompiledStyle(NS_STATIC_FUNCTIONS::GetSelectorsList(arSelectors.back().m_sName + sClassName + sIdName), unitMeasure);
 
-        if (!arSelectors.back().m_sStyle.empty())
+//        const std::wstring& sClassName = (!arSelectors.back().m_sClass.empty() && arSelectors.back().m_sClass.front() != L'.')
+//                                         ? L'.' + arSelectors.back().m_sClass
+//                                         : arSelectors.back().m_sClass;
+
+//        const std::wstring& sIdName = (!arSelectors.back().m_sId.empty() && arSelectors.back().m_sId.front() != L'#')
+//                                      ? L'#' + arSelectors.back().m_sId
+//                                      : arSelectors.back().m_sId;
+
+        for (std::vector<CNode>::const_iterator oParent = arNodes.begin(); oParent != arNodes.end() - 1; ++oParent)
+        {
+//            if (oParent->m_sName != L"body")
+//            {
+//                *oStyle += GetCompiledStyle({*oParent}, unitMeasure);
+                oStyle->AddParent(oParent->m_sName);
+//            }
+        }
+
+//        *oStyle += GetCompiledStyle(NS_STATIC_FUNCTIONS::GetSelectorsList(arSelectors.back().m_sName + sClassName + sIdName), unitMeasure);
+
+        if (!arNodes.back().m_sStyle.empty())
         {
             CCompiledStyle oTempStyle;
-            oTempStyle.AddStyle(ConvertUnitMeasure(arSelectors.back().m_sStyle));
+            oTempStyle.AddStyle(ConvertUnitMeasure(arNodes.back().m_sStyle));
             *oStyle += oTempStyle;
         }
 
-        oStyle->SetID(arSelectors.back().m_sName + sClassName + sIdName + L'-' + std::to_wstring(m_nCountNodes++));
+        oStyle->SetID(arNodes.back().m_sName + L'.' + arNodes.back().m_sClass + L'#' + arNodes.back().m_sId + L'-' + std::to_wstring(++m_nCountNodes));
 
 //        std::wcout << oStyle->GetId() << L" - " << oStyle->GetStyleW() << std::endl;
+//        std::wcout << std::endl;
 
-        if (parentSize)
-            m_mUsedStyles[arSelectors] = oStyle;
+//        if (parentSize)
+            m_mUsedStyles[arNodes] = oStyle;
 
         return *oStyle;
     }
@@ -1117,10 +1178,8 @@ namespace NSCSS
         if (sValue.empty())
             return std::wstring(L"");
 
-        const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"em") - 1);
-        const float dValue = wcstof(sConvertValue.c_str(), NULL) * 22.0f;
-
-        return std::to_wstring(static_cast<short int>(dValue + 0.5f));
+        const float fValue = wcstof(sValue.c_str(), NULL) * 22.0f;
+        return std::to_wstring(static_cast<short int>(fValue + 0.5f));
     }
 
     void CCssCalculator_Private::SetDpi(unsigned short int nValue)
@@ -1165,7 +1224,7 @@ namespace NSCSS
 //            delete oElement;
 
 //        m_arStyleUsed.clear();
-        m_arData.clear();
+        m_mData.clear();
         m_arFiles.clear();
     }
 }

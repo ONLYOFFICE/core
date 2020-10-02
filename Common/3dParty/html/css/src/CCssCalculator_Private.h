@@ -17,7 +17,8 @@ namespace NSCSS
         UnitMeasure m_UnitMeasure;
 
         std::list<std::wstring> m_arFiles;
-        std::map<std::vector<CNode>, std::map<std::wstring, std::wstring>> m_arData;
+
+        std::map<std::vector<CNode>, std::map<std::wstring, std::wstring>*> m_mData;
 
         std::map<std::vector<CNode>, CCompiledStyle*> m_mUsedStyles;
 

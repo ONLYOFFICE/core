@@ -4,7 +4,21 @@
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../HtmlFile2/htmlfile2.h"
 #include "src/CBookInfo.h"
+
 #include <iostream>
+#include <string>
+
+// Заменяет в строке s все символы s1 на s2
+static void replace_all(std::wstring& s, const std::wstring& s1, const std::wstring& s2)
+{
+    size_t pos = s.find(s1);
+    size_t l = s2.length();
+    while(pos != std::string::npos)
+    {
+        s.replace(pos, s1.length(), s2);
+        pos = s.find(s1, pos + l);
+    }
+}
 
 CEpubFile::CEpubFile()
 {
@@ -109,7 +123,11 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
 
     std::vector<std::wstring> arFiles;
     for (const CBookContentItem& oContent : m_arContents)
-        arFiles.push_back(m_sTempDir + L"/" + m_mapRefs[oContent.m_sID].GetRef());
+    {
+        std::wstring sFile = m_mapRefs[oContent.m_sID].GetRef();
+        replace_all(sFile, L"%20", L" ");
+        arFiles.push_back(m_sTempDir + L"/" + sFile);
+    }
 
 #ifdef _DEBUG
     std::wcout << L"---The conversion process from Epub to Docx...---" << std::endl;

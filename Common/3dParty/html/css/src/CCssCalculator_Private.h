@@ -6,6 +6,7 @@
 #include "CCssCalculator.h"
 #include <list>
 #include <functional>
+#include "CElement.h"
 #include "../../katana-parser/src/katana.h"
 
 namespace NSCSS
@@ -18,7 +19,9 @@ namespace NSCSS
 
         std::list<std::wstring> m_arFiles;
 
-        std::map<std::vector<CNode>, std::map<std::wstring, std::wstring>*> m_mData;
+        std::map<std::wstring, CElement*> m_mData;
+
+//        std::map<std::vector<CNode>, std::map<std::wstring, std::wstring>*> m_mData;
 
         std::map<std::vector<CNode>, CCompiledStyle*> m_mUsedStyles;
 

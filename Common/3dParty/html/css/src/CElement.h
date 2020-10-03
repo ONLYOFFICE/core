@@ -1,43 +1,26 @@
 #ifndef CELEMENT_H
 #define CELEMENT_H
 
-#include <vector>
-#include <string>
 #include <map>
-#include <list>
+#include <vector>
 
-class CElement
+namespace NSCSS
 {
-    std::list<CElement*> m_arChildrens;
-    std::vector<std::wstring> m_arSelectors;
-    std::map<std::wstring, std::wstring> m_arDeclarations;
-public:
-    CElement();
-    ~CElement();
+    class CElement
+    {
+        std::map<std::wstring, std::wstring> m_mStyle;
+        std::wstring sSelector;
 
-    bool Empty();
+        std::vector<CElement*> *m_oClass;
+        std::vector<CElement*> *m_oId;
+        std::vector<CElement*> m_oNextElement;
+    public:
+        CElement();
+        ~CElement();
+        void AddPropertie(const std::wstring& sName, const std::wstring sValue);
+        void AddProperties(std::map<std::wstring, std::wstring> mProperties);
+    };
+}
 
-    void AddSelector(std::wstring sSelector);
-    void AddSelectors(const std::vector<std::wstring>& arSelectors);
-    void AddChildren(CElement* oChildren);
-    // void AddDeclaration(const std::pair<std::wstring, std::wstring>& pDeclaration);
-    void AddDeclarations(const std::map<std::wstring, std::wstring>& arDeclarations);
-
-    // void SetDeclaratins(const std::map<std::wstring, std::wstring>& arDeclarations);
-
-    size_t GetCountSelectors() const;
-    size_t GetCountDeclarations() const;
-    // int GetCountChildrens() const;
-
-    bool FindSelector(const std::wstring& sSelector) const;
-
-    // std::vector<std::wstring> GetSelectors() const;
-    // std::map<std::wstring, std::wstring> GetDeclarations() const;
-    std::map<std::wstring, std::wstring> GetDeclarations(const std::wstring& sSelector, const std::vector<std::wstring>& arParents) const;
-    // std::vector<CElement*> GetChildrens() const;
-    std::wstring GetText() const;
-
-    CElement& operator= (const CElement& oElement);
-};
 
 #endif // CELEMENT_H

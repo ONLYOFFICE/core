@@ -287,6 +287,7 @@
     <ClInclude Include="..\Source\DocxFormat\Logic\Annotations.h" />
     <ClInclude Include="..\Source\DocxFormat\Logic\Bdo.h" />
     <ClInclude Include="..\Source\DocxFormat\Logic\Dir.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\DocParts.h" />
     <ClInclude Include="..\Source\DocxFormat\Logic\FldChar.h" />
     <ClInclude Include="..\Source\DocxFormat\Logic\FldSimple.h" />
     <ClInclude Include="..\Source\DocxFormat\Logic\Hyperlink.h" />
@@ -436,6 +437,7 @@
     <ClCompile Include="..\Source\DocxFormat\App.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Comments.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Core.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Document.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Docx.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -459,6 +461,7 @@
     <ClCompile Include="..\Source\DocxFormat\Logic\Dir.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\DocParts.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Logic\FldSimple.cpp">
       <AssemblerListingLocation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</AssemblerListingLocation>
       <AssemblerListingLocation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)Docx\Logic\</AssemblerListingLocation>

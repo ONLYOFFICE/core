@@ -799,13 +799,22 @@ namespace OOX
 		CNumbering(OOX::Document *pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 		{
 			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
-			if (docx) docx->m_pNumbering = this;			
+			
+			if (docx)
+			{
+				if (docx->m_bGlossaryRead)	docx->m_oGlossary.numbering = this;
+				else						docx->m_oMain.numbering = this;
+			}
 		}
 		CNumbering(OOX::Document *pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 		{
 			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
-			if (docx) docx->m_pNumbering = this;			
-
+			
+			if (docx)
+			{
+				if (docx->m_bGlossaryRead)	docx->m_oGlossary.numbering = this;
+				else						docx->m_oMain.numbering = this;
+			}
 			read( oRootPath, oPath );
 		}
 		CNumbering(XmlUtils::CXmlNode& oNode) : File(NULL), OOX::IFileContainer(NULL)

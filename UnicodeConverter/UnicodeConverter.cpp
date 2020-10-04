@@ -47,6 +47,8 @@
     #include <windows.h>
 #endif
 
+#include <stdint.h>
+
 namespace NSUnicodeConverter
 {
     class CUnicodeConverter_Private

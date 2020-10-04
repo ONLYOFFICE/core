@@ -30,11 +30,6 @@ core_ios {
     LIBS += -framework Foundation
 }
 
-core_android {
-    CONFIG += core_disable_icu
-    SOURCES += UnicodeConverter_internal_android.cpp
-}
-
 !core_disable_icu {
     include(../Common/3dParty/icu/icu.pri)
 

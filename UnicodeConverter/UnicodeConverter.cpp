@@ -39,7 +39,10 @@
 #include "../DesktopEditor/common/File.h"
 
 #if !defined (_WIN32) && !defined (_WIN64)
+#if defined (_LINUX) && !defined(__ANDROID__) && !defined(_IOS)
+    #define USE_ICONV
     #include "iconv.h"
+#endif
 #else
     #include <windows.h>
 #endif
@@ -316,7 +319,7 @@ namespace NSUnicodeConverter
                     sResult.erase(outsize_with_0 - 1);
                     ansi = false;
                 }
-#elif defined(__linux__)
+#elif defined(USE_ICONV)
                 std::string sCodepage =  "CP" + std::to_string(nCodepage);
 
                 iconv_t ic= iconv_open("WCHAR_T", sCodepage.c_str());

@@ -48,13 +48,22 @@ namespace OOX
 		CFontTable(OOX::Document *pMain) : OOX::File(pMain)
 		{
 			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
-			if (docx) docx->m_pFontTable = this;
+			
+			if (docx)
+			{
+				if (docx->m_bGlossaryRead)	docx->m_oGlossary.fontTable = this;
+				else						docx->m_oMain.fontTable = this;
+			}
 		}
 		CFontTable(OOX::Document *pMain, const CPath &oFilePath) : OOX::File(pMain)
 		{
 			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
-			if (docx) docx->m_pFontTable = this;
 
+			if (docx)
+			{
+				if (docx->m_bGlossaryRead)	docx->m_oGlossary.fontTable = this;
+				else						docx->m_oMain.fontTable = this;
+			}
 			read( oFilePath );
 		}
 		CFontTable(XmlUtils::CXmlNode& oNode) : File(NULL)

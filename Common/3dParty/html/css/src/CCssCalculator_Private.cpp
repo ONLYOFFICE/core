@@ -7,7 +7,7 @@
 #include <cmath>
 #include <algorithm>
 #include <iostream>
-#include <array>
+#include <numeric>
 
 #include "../../katana-parser/src/selector.h"
 #include "../../../../../UnicodeConverter/UnicodeConverter.h"
@@ -46,13 +46,15 @@ namespace NSCSS
     {
         m_arFiles.clear();
 
-//        for (std::map<std::vector<CNode>, std::map<std::wstring, std::wstring>*>::iterator iter = m_mData.begin(); iter != m_mData.end(); ++iter)
-//            delete iter->second;
+        for (std::map<std::wstring, CElement*>::iterator oIter = m_mData.begin(); oIter != m_mData.end(); ++oIter)
+            if (oIter->second != NULL)
+                delete oIter->second;
 
         m_mData.clear();
 
         for (std::map<std::vector<CNode>, CCompiledStyle*>::iterator iter  = m_mUsedStyles.begin(); iter != m_mUsedStyles.end(); ++iter)
             delete iter->second;
+
         m_mUsedStyles.clear();
     }
 
@@ -137,8 +139,6 @@ namespace NSCSS
         if (oRule->declarations->length == 0)
             return;
 
-        std::map<std::wstring, std::wstring>* mStyle = new std::map<std::wstring, std::wstring>();
-        *mStyle = GetDeclarationList(oRule->declarations);
         std::vector<std::vector<std::wstring>> arValues;
 
         for (const std::wstring sSelector : GetSelectorList(oRule->selectors))
@@ -160,24 +160,103 @@ namespace NSCSS
             }
         }
 
-        for (const std::vector<std::wstring>& arItems : arValues)
+        CElement* oNameElement = NULL;
+        CElement* oClassElement = NULL;
+        CElement* oIdElement = NULL;
+
+        CElement* oLastElement = NULL;
+        CElement* oFirstElement = NULL;
+
+//        for (const std::vector<std::wstring>& arItems : arValues)
+        for (short int nIndex = arValues.size() - 1; nIndex > -1; --nIndex)
         {
+            const std::vector<std::wstring>& arItems = arValues[nIndex];
             for (unsigned short int nIndex = 0; nIndex < arItems.size(); ++nIndex)
             {
                 switch (nIndex)
                 {
-                case 0:
-                    //Name
-                    break;
-                case 1:
-                    //Classes
-                    break;
-                case 2:
-                    //Id
-                    break;
+                    case 0://Name
+                    {
+                        if (arItems[0].empty())
+                            continue;
+
+                        oNameElement = new CElement;
+                        oNameElement->SetSelector(arItems[0]);
+                        break;
+                    }
+                    case 1://Classes
+                    {
+                        if (arItems[1].empty())
+                            continue;
+
+                        oClassElement = new CElement;
+                        oClassElement->SetSelector(arItems[1]);
+                        break;
+                    }
+                    case 2://Id
+                    {
+                        if (arItems[2].empty())
+                            continue;
+
+                        oIdElement = new CElement;
+                        oIdElement->SetSelector(arItems[2]);
+
+                        break;
+                    }
                 }
             }
+
+            if (NULL != oClassElement)
+            {
+                const std::map<std::wstring, CElement*>::const_iterator& oFindClass = m_mData.find(oClassElement->GetSelector());
+
+                if (oFindClass != m_mData.end())
+                {
+                    delete oClassElement;
+                    oClassElement = oFindClass->second;
+                }
+                else if (NULL == oFirstElement)
+                    oFirstElement = oClassElement;
+
+                oLastElement = oClassElement;
+            }
+
+            if (NULL != oNameElement)
+            {
+                const std::map<std::wstring, CElement*>::const_iterator& oFindName = m_mData.find(oNameElement->GetSelector());
+
+                if (oFindName != m_mData.end())
+                {
+                    if (NULL != oClassElement)
+                        oNameElement->AddProperties(oFindName->second->GetStyle());
+//                    else
+//                    {
+//                        delete oClassElement;
+//                        oClassElement = oFindName->second;
+//                    }
+                }
+
+                if (NULL == oClassElement && NULL == oFirstElement)
+                    oFirstElement = oNameElement;
+
+                if (NULL != oClassElement)
+                    oClassElement->AddPrevElement(oNameElement);
+
+                oLastElement = oNameElement;
+
+            }
+
+            oNameElement = NULL;
+            oClassElement = NULL;
+            oIdElement = NULL;
         }
+
+
+        if (NULL != oFirstElement)
+            m_mData[oFirstElement->GetSelector()] = oFirstElement;
+
+        if (NULL != oLastElement)
+            oLastElement->AddProperties(GetDeclarationList(oRule->declarations));
     }
 
     inline std::vector<std::wstring> CCssCalculator_Private::GetSelectorList(const KatanaArray* oSelectors) const
@@ -461,7 +540,6 @@ namespace NSCSS
 
         for (const std::string& sSelector : arSelectors)
         {
-//            std::cout << sSelector << " *** ";
             for (const std::pair<std::wstring, std::wstring>& oDeclarations : GetDeclarations(NS_STATIC_FUNCTIONS::stringToWstring(sSelector)))
             {
                 if (mStyle.find(oDeclarations.first) == mStyle.end())
@@ -595,46 +673,32 @@ namespace NSCSS
         if (arSelectors.empty())
             return CCompiledStyle();
 
-//        const std::vector<CNode> arNodes = NS_STATIC_FUNCTIONS::NormalizationCNodes(arSelectors);
-
-//        const std::map<std::vector<CNode>, CCompiledStyle*>::iterator oItem = m_mUsedStyles.find(arNodes);
-//        if (oItem != m_mUsedStyles.end())
-//            return *oItem->second;
-
-////        for (const CNode& oNode : arNodes)
-////            std::wcout << oNode.m_sName << L" - " << oNode.m_sClass << L" - " << oNode.m_sId << std::endl;
-
         CCompiledStyle *oStyle = new CCompiledStyle();
-//        const std::vector<std::vector<CNode>> arValues = NS_STATIC_FUNCTIONS::GetEnumeration(arNodes);
-//        const std::vector<std::string> arSelects = NS_STATIC_FUNCTIONS::GetSelectorsList(arValues);
 
-//        *oStyle += GetCompiledStyle(arSelects, unitMeasure);
+        std::wstring sSelector;
 
-//        for (std::vector<CNode>::const_iterator oParent = arNodes.begin(); oParent != arNodes.end() - 1; ++oParent)
-//        {
-////            if (oParent->m_sName != L"body")
-////            {
-////                *oStyle += GetCompiledStyle({*oParent}, unitMeasure);
-//                oStyle->AddParent(oParent->m_sName);
-////            }
-//        }
+        for (short int nIndex = arSelectors.size() - 1; nIndex > -1; --nIndex)
+        {
+            sSelector += (arSelectors[nIndex].m_sName) + ((!arSelectors[nIndex].m_sClass.empty()) ? L"." + arSelectors[nIndex].m_sClass : L"") + L" ";
+        }
 
-////        *oStyle += GetCompiledStyle(NS_STATIC_FUNCTIONS::GetSelectorsList(arSelectors.back().m_sName + sClassName + sIdName), unitMeasure);
+        for (short int nIndex = arSelectors.size() - 1; nIndex > -1; --nIndex)
+        {
+            const std::map<std::wstring, CElement*>::const_iterator oFind = m_mData.find((!arSelectors[nIndex].m_sClass.empty()) ? arSelectors[nIndex].m_sClass : arSelectors[nIndex].m_sName);
 
-//        if (!arNodes.back().m_sStyle.empty())
-//        {
-//            CCompiledStyle oTempStyle;
-//            oTempStyle.AddStyle(ConvertUnitMeasure(arNodes.back().m_sStyle));
-//            *oStyle += oTempStyle;
-//        }
+            if (oFind != m_mData.end())
+            {
+//                std::wcout << oFind->second->GetSelector() << std::endl;
+                oStyle->AddStyle(oFind->second->GetStyle());
+            }
+            oStyle->AddStyle(arSelectors[nIndex].m_sStyle);
+        }
+        sSelector.pop_back();
 
-//        oStyle->SetID(arNodes.back().m_sName + L'.' + arNodes.back().m_sClass + L'#' + arNodes.back().m_sId + L'-' + std::to_wstring(++m_nCountNodes));
+//        std::wcout << sSelector << std::endl;
 
-//        std::wcout << oStyle->GetId() << L" - " << oStyle->GetStyleW() << std::endl;
-//        std::wcout << std::endl;
-
-//        if (parentSize)
-//            m_mUsedStyles[arNodes] = oStyle;
+        oStyle->SetID(arSelectors.back().m_sName + ((!arSelectors.back().m_sClass.empty()) ? L'.' + arSelectors.back().m_sClass : L"") + ((arSelectors.back().m_sId.empty()) ? L"" : L'.' + arSelectors.back().m_sId) + L'-' + std::to_wstring(++m_nCountNodes));
+//        std::wcout << oStyle->GetStyleW() << std::endl;
 
         return *oStyle;
     }

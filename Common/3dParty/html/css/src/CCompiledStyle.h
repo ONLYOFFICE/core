@@ -32,7 +32,7 @@ namespace NSCSS
 
         void AddPropSel(const std::wstring& sProperty, const std::wstring& sValue);
         // void InsertStyle(const std::map<std::wstring, std::wstring>& mStyle);
-        // void SetStyle(const std::map<std::wstring, std::wstring>& mStyle);
+        void AddStyle(const std::map<std::wstring, std::wstring>& mStyle);
         void AddStyle(const std::wstring& sStyle);
         void AddParent(const std::wstring& sParentName);
 

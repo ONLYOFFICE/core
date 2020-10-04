@@ -134,7 +134,8 @@ namespace NSCSS
 
     void CCompiledStyle::AddPropSel(const std::wstring& sProperty, const std::wstring& sValue)
     {
-        m_mStyle.insert(std::make_pair(sProperty, sValue));
+        m_mStyle[sProperty] = sValue;
+//        m_mStyle.insert(std::make_pair(sProperty, sValue));
     }
 
     /*
@@ -142,15 +143,18 @@ namespace NSCSS
     {
         m_mStyle.insert(mStyle.begin(), mStyle.end());
     }
-
-    void CCompiledStyle::SetStyle(const std::map<std::wstring, std::wstring>& mStyle)
-    {
-        m_mStyle = mStyle;
-    }
     */
+    void CCompiledStyle::AddStyle(const std::map<std::wstring, std::wstring>& mStyle)
+    {
+        m_mStyle.insert(mStyle.begin(), mStyle.end());
+    }
+
 
     void CCompiledStyle::AddStyle(const std::wstring& sStyle)
     {
+        if (sStyle.empty())
+            return;
+
         size_t posColon = sStyle.find(L':');
         size_t posLastSemicolon = size_t(0);
         while (posColon != std::wstring::npos)

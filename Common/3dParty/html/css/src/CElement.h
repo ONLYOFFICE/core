@@ -3,22 +3,31 @@
 
 #include <map>
 #include <vector>
+#include "CCssCalculator.h"
 
 namespace NSCSS
 {
     class CElement
     {
         std::map<std::wstring, std::wstring> m_mStyle;
-        std::wstring sSelector;
 
-        std::vector<CElement*> *m_oClass;
-        std::vector<CElement*> *m_oId;
-        std::vector<CElement*> m_oNextElement;
+        std::vector<CElement*> m_arPrevElements;
+
+        std::wstring m_sSelector;
+
     public:
         CElement();
         ~CElement();
-        void AddPropertie(const std::wstring& sName, const std::wstring sValue);
-        void AddProperties(std::map<std::wstring, std::wstring> mProperties);
+
+        std::wstring GetSelector() const;
+
+        void SetSelector(const std::wstring& sSelector);
+        void AddPropertie(const std::wstring& sName, const std::wstring& sValue);
+        void AddProperties(const std::map<std::wstring, std::wstring>& mProperties);
+        void AddPrevElement(CElement* oPrevElement);
+
+        std::map<std::wstring, std::wstring> GetStyle() const;
+        std::map<std::wstring, std::wstring> GetConvertStyle(const std::vector<CNode>& arNodes) const;
     };
 }
 

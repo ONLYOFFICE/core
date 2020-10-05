@@ -157,8 +157,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	NSFonts::IApplicationFonts *pFonts = NSFonts::NSApplication::Create();
 	pFonts->Initialize();
 
-	std::wstring	sMetafilesFolder	= L"D://test//_emf//";
-	int				nType				= MetaFile::c_lMetaEmf;
+	std::wstring	sMetafilesFolder	= L"D:\\tests\\_wmf\\";
+	int				nType				= MetaFile::c_lMetaWmf;
 	if (argc > 1)
 		sMetafilesFolder = argv[1];
 

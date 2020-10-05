@@ -1,0 +1,340 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{EE1B576A-07C5-4ACC-920F-81C41DD0C8C1}</ProjectGuid>
+    <RootNamespace>jbig2</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.25431.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <PrecompiledHeader />
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc80.pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DisableSpecificWarnings>4005;4311;4312;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\source\Encoder\jbig2arith.cpp" />
+    <ClCompile Include="..\source\Encoder\jbig2enc.cpp" />
+    <ClCompile Include="..\source\Encoder\jbig2sym.cpp" />
+    <ClCompile Include="..\source\JBig2File.cpp" />
+    <ClCompile Include="..\source\LeptonLib\adaptmap.cpp" />
+    <ClCompile Include="..\source\LeptonLib\affine.cpp" />
+    <ClCompile Include="..\source\LeptonLib\affinecompose.cpp" />
+    <ClCompile Include="..\source\LeptonLib\arithlow.cpp" />
+    <ClCompile Include="..\source\LeptonLib\arrayaccess.cpp" />
+    <ClCompile Include="..\source\LeptonLib\bardecode.cpp" />
+    <ClCompile Include="..\source\LeptonLib\baseline.cpp" />
+    <ClCompile Include="..\source\LeptonLib\bbuffer.cpp" />
+    <ClCompile Include="..\source\LeptonLib\bilinear.cpp" />
+    <ClCompile Include="..\source\LeptonLib\binarize.cpp" />
+    <ClCompile Include="..\source\LeptonLib\binexpand.cpp" />
+    <ClCompile Include="..\source\LeptonLib\binexpandlow.cpp" />
+    <ClCompile Include="..\source\LeptonLib\binreduce.cpp" />
+    <ClCompile Include="..\source\LeptonLib\binreducelow.cpp" />
+    <ClCompile Include="..\source\LeptonLib\blend1.cpp" />
+    <ClCompile Include="..\source\LeptonLib\bmf.cpp" />
+    <ClCompile Include="..\source\LeptonLib\bmpio.cpp" />
+    <ClCompile Include="..\source\LeptonLib\bmpiostub.cpp" />
+    <ClCompile Include="..\source\LeptonLib\boxbasic.cpp" />
+    <ClCompile Include="..\source\LeptonLib\boxfunc1.cpp" />
+    <ClCompile Include="..\source\LeptonLib\boxfunc2.cpp" />
+    <ClCompile Include="..\source\LeptonLib\boxfunc3.cpp" />
+    <ClCompile Include="..\source\LeptonLib\ccbord.cpp" />
+    <ClCompile Include="..\source\LeptonLib\ccthin.cpp" />
+    <ClCompile Include="..\source\LeptonLib\classapp.cpp" />
+    <ClCompile Include="..\source\LeptonLib\colorcontent.cpp" />
+    <ClCompile Include="..\source\LeptonLib\colormap.cpp" />
+    <ClCompile Include="..\source\LeptonLib\colormorph.cpp" />
+    <ClCompile Include="..\source\LeptonLib\colorquant1.cpp" />
+    <ClCompile Include="..\source\LeptonLib\colorquant2.cpp" />
+    <ClCompile Include="..\source\LeptonLib\colorseg.cpp" />
+    <ClCompile Include="..\source\LeptonLib\compare.cpp" />
+    <ClCompile Include="..\source\LeptonLib\conncomp.cpp" />
+    <ClCompile Include="..\source\LeptonLib\convertfiles.cpp" />
+    <ClCompile Include="..\source\LeptonLib\convolve.cpp" />
+    <ClCompile Include="..\source\LeptonLib\convolvelow.cpp" />
+    <ClCompile Include="..\source\LeptonLib\correlscore.cpp" />
+    <ClCompile Include="..\source\LeptonLib\dewarp.cpp" />
+    <ClCompile Include="..\source\LeptonLib\dwacomb.2.cpp" />
+    <ClCompile Include="..\source\LeptonLib\dwacomblow.2.cpp" />
+    <ClCompile Include="..\source\LeptonLib\edge.cpp" />
+    <ClCompile Include="..\source\LeptonLib\enhance.cpp" />
+    <ClCompile Include="..\source\LeptonLib\fhmtauto.cpp" />
+    <ClCompile Include="..\source\LeptonLib\fhmtgen.1.cpp" />
+    <ClCompile Include="..\source\LeptonLib\fhmtgenlow.1.cpp" />
+    <ClCompile Include="..\source\LeptonLib\finditalic.cpp" />
+    <ClCompile Include="..\source\LeptonLib\flipdetect.cpp" />
+    <ClCompile Include="..\source\LeptonLib\fliphmtgen.cpp" />
+    <ClCompile Include="..\source\LeptonLib\fmorphauto.cpp" />
+    <ClCompile Include="..\source\LeptonLib\fmorphgen.1.cpp" />
+    <ClCompile Include="..\source\LeptonLib\fmorphgenlow.1.cpp" />
+    <ClCompile Include="..\source\LeptonLib\fpix1.cpp" />
+    <ClCompile Include="..\source\LeptonLib\fpix2.cpp" />
+    <ClCompile Include="..\source\LeptonLib\freetype.cpp" />
+    <ClCompile Include="..\source\LeptonLib\gifio.cpp" />
+    <ClCompile Include="..\source\LeptonLib\gifiostub.cpp" />
+    <ClCompile Include="..\source\LeptonLib\gplot.cpp" />
+    <ClCompile Include="..\source\LeptonLib\graphics1.cpp" />
+    <ClCompile Include="..\source\LeptonLib\graymorph.cpp" />
+    <ClCompile Include="..\source\LeptonLib\graymorphlow.cpp" />
+    <ClCompile Include="..\source\LeptonLib\grayquant.cpp" />
+    <ClCompile Include="..\source\LeptonLib\grayquantlow.cpp" />
+    <ClCompile Include="..\source\LeptonLib\heap.cpp" />
+    <ClCompile Include="..\source\LeptonLib\jbclass.cpp" />
+    <ClCompile Include="..\source\LeptonLib\jpegio.cpp" />
+    <ClCompile Include="..\source\LeptonLib\jpegiostub.cpp" />
+    <ClCompile Include="..\source\LeptonLib\kernel.cpp" />
+    <ClCompile Include="..\source\LeptonLib\lepton_utils.cpp" />
+    <ClCompile Include="..\source\LeptonLib\list.cpp" />
+    <ClCompile Include="..\source\LeptonLib\maze.cpp" />
+    <ClCompile Include="..\source\LeptonLib\morph.cpp" />
+    <ClCompile Include="..\source\LeptonLib\morphapp.cpp" />
+    <ClCompile Include="..\source\LeptonLib\morphdwa.cpp" />
+    <ClCompile Include="..\source\LeptonLib\morphseq.cpp" />
+    <ClCompile Include="..\source\LeptonLib\numabasic.cpp" />
+    <ClCompile Include="..\source\LeptonLib\numafunc1.cpp" />
+    <ClCompile Include="..\source\LeptonLib\numafunc2.cpp" />
+    <ClCompile Include="..\source\LeptonLib\pageseg.cpp" />
+    <ClCompile Include="..\source\LeptonLib\paintcmap.cpp" />
+    <ClCompile Include="..\source\LeptonLib\parseprotos.cpp" />
+    <ClCompile Include="..\source\LeptonLib\partition.cpp" />
+    <ClCompile Include="..\source\LeptonLib\pix1.cpp" />
+    <ClCompile Include="..\source\LeptonLib\pix2.cpp" />
+    <ClCompile Include="..\source\LeptonLib\pix3.cpp" />
+    <ClCompile Include="..\source\LeptonLib\pix4.cpp" />
+    <ClCompile Include="..\source\LeptonLib\pix5.cpp" />
+    <ClCompile Include="..\source\LeptonLib\pixabasic.cpp" />
+    <ClCompile Include="..\source\LeptonLib\pixacc.cpp" />
+    <ClCompile Include="..\source\LeptonLib\pixafunc1.cpp" />
+    <ClCompile Include="..\source\LeptonLib\pixafunc2.cpp" />
+    <ClCompile Include="..\source\LeptonLib\pixalloc.cpp" />
+    <ClCompile Include="..\source\LeptonLib\pixarith.cpp" />
+    <ClCompile Include="..\source\LeptonLib\pixcomp.cpp" />
+    <ClCompile Include="..\source\LeptonLib\pixconv.cpp" />
+    <ClCompile Include="..\source\LeptonLib\pixtiling.cpp" />
+    <ClCompile Include="..\source\LeptonLib\pngio.cpp" />
+    <ClCompile Include="..\source\LeptonLib\pngiostub.cpp" />
+    <ClCompile Include="..\source\LeptonLib\pnmio.cpp" />
+    <ClCompile Include="..\source\LeptonLib\pnmiostub.cpp" />
+    <ClCompile Include="..\source\LeptonLib\projective.cpp" />
+    <ClCompile Include="..\source\LeptonLib\psio1.cpp" />
+    <ClCompile Include="..\source\LeptonLib\psio1stub.cpp" />
+    <ClCompile Include="..\source\LeptonLib\psio2.cpp" />
+    <ClCompile Include="..\source\LeptonLib\psio2stub.cpp" />
+    <ClCompile Include="..\source\LeptonLib\ptabasic.cpp" />
+    <ClCompile Include="..\source\LeptonLib\ptafunc1.cpp" />
+    <ClCompile Include="..\source\LeptonLib\ptra.cpp" />
+    <ClCompile Include="..\source\LeptonLib\queue.cpp" />
+    <ClCompile Include="..\source\LeptonLib\rank.cpp" />
+    <ClCompile Include="..\source\LeptonLib\readbarcode.cpp" />
+    <ClCompile Include="..\source\LeptonLib\readfile.cpp" />
+    <ClCompile Include="..\source\LeptonLib\regutils.cpp" />
+    <ClCompile Include="..\source\LeptonLib\rop.cpp" />
+    <ClCompile Include="..\source\LeptonLib\ropiplow.cpp" />
+    <ClCompile Include="..\source\LeptonLib\roplow.cpp" />
+    <ClCompile Include="..\source\LeptonLib\rotate.cpp" />
+    <ClCompile Include="..\source\LeptonLib\rotateam.cpp" />
+    <ClCompile Include="..\source\LeptonLib\rotateamlow.cpp" />
+    <ClCompile Include="..\source\LeptonLib\rotateorth.cpp" />
+    <ClCompile Include="..\source\LeptonLib\rotateorthlow.cpp" />
+    <ClCompile Include="..\source\LeptonLib\rotateshear.cpp" />
+    <ClCompile Include="..\source\LeptonLib\runlength.cpp" />
+    <ClCompile Include="..\source\LeptonLib\sarray.cpp" />
+    <ClCompile Include="..\source\LeptonLib\scale.cpp" />
+    <ClCompile Include="..\source\LeptonLib\scalelow.cpp" />
+    <ClCompile Include="..\source\LeptonLib\seedfill.cpp" />
+    <ClCompile Include="..\source\LeptonLib\seedfilllow.cpp" />
+    <ClCompile Include="..\source\LeptonLib\sel1.cpp" />
+    <ClCompile Include="..\source\LeptonLib\sel2.cpp" />
+    <ClCompile Include="..\source\LeptonLib\selgen.cpp" />
+    <ClCompile Include="..\source\LeptonLib\shear.cpp" />
+    <ClCompile Include="..\source\LeptonLib\skew.cpp" />
+    <ClCompile Include="..\source\LeptonLib\spixio.cpp" />
+    <ClCompile Include="..\source\LeptonLib\stack.cpp" />
+    <ClCompile Include="..\source\LeptonLib\sudoku.cpp" />
+    <ClCompile Include="..\source\LeptonLib\textops.cpp" />
+    <ClCompile Include="..\source\LeptonLib\tiffio.cpp" />
+    <ClCompile Include="..\source\LeptonLib\tiffiostub.cpp" />
+    <ClCompile Include="..\source\LeptonLib\warper.cpp" />
+    <ClCompile Include="..\source\LeptonLib\watershed.cpp" />
+    <ClCompile Include="..\source\LeptonLib\webpio.cpp" />
+    <ClCompile Include="..\source\LeptonLib\webpiostub.cpp" />
+    <ClCompile Include="..\source\LeptonLib\writefile.cpp" />
+    <ClCompile Include="..\source\LeptonLib\zlibmem.cpp" />
+    <ClCompile Include="..\source\LeptonLib\zlibmemstub.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\Encoder\jbig2arith.h" />
+    <ClInclude Include="..\source\Encoder\jbig2enc.h" />
+    <ClInclude Include="..\source\Encoder\jbig2encoder.h" />
+    <ClInclude Include="..\source\Encoder\jbig2segments.h" />
+    <ClInclude Include="..\source\Encoder\jbig2structs.h" />
+    <ClInclude Include="..\source\Encoder\jbig2sym.h" />
+    <ClInclude Include="..\source\JBig2File.h" />
+    <ClInclude Include="..\source\LeptonLib\additionaltypes.h" />
+    <ClInclude Include="..\source\LeptonLib\allheaders.h" />
+    <ClInclude Include="..\source\LeptonLib\alltypes.h" />
+    <ClInclude Include="..\source\LeptonLib\array.h" />
+    <ClInclude Include="..\source\LeptonLib\arrayaccess.h" />
+    <ClInclude Include="..\source\LeptonLib\bbuffer.h" />
+    <ClInclude Include="..\source\LeptonLib\bmf.h" />
+    <ClInclude Include="..\source\LeptonLib\bmp.h" />
+    <ClInclude Include="..\source\LeptonLib\ccbord.h" />
+    <ClInclude Include="..\source\LeptonLib\dewarp.h" />
+    <ClInclude Include="..\source\LeptonLib\endianness.h" />
+    <ClInclude Include="..\source\LeptonLib\environ.h" />
+    <ClInclude Include="..\source\LeptonLib\freetype.h" />
+    <ClInclude Include="..\source\LeptonLib\funcprotos.h" />
+    <ClInclude Include="..\source\LeptonLib\gplot.h" />
+    <ClInclude Include="..\source\LeptonLib\heap.h" />
+    <ClInclude Include="..\source\LeptonLib\imageio.h" />
+    <ClInclude Include="..\source\LeptonLib\jbclass.h" />
+    <ClInclude Include="..\source\LeptonLib\list.h" />
+    <ClInclude Include="..\source\LeptonLib\morph.h" />
+    <ClInclude Include="..\source\LeptonLib\pix.h" />
+    <ClInclude Include="..\source\LeptonLib\ptra.h" />
+    <ClInclude Include="..\source\LeptonLib\queue.h" />
+    <ClInclude Include="..\source\LeptonLib\readbarcode.h" />
+    <ClInclude Include="..\source\LeptonLib\regutils.h" />
+    <ClInclude Include="..\source\LeptonLib\stack.h" />
+    <ClInclude Include="..\source\LeptonLib\sudoku.h" />
+    <ClInclude Include="..\source\LeptonLib\watershed.h" />
+    <ClInclude Include="..\source\Utils.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

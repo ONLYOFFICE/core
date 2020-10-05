@@ -29,6 +29,7 @@ namespace NSCSS
         m_arParentsStyles.clear();
     }
 
+
     CCompiledStyle& CCompiledStyle::operator+= (const CCompiledStyle &oElement)
     {
         for (const std::map<std::wstring, std::wstring>::value_type& oItem : oElement.m_mStyle)
@@ -38,18 +39,6 @@ namespace NSCSS
                 m_mStyle[oItem.first] = oItem.second;
             }
         }
-
-//        for(const std::pair<std::wstring, std::wstring>& oItem : oElement.m_mStyle)
-//        {
-//            const size_t& oFindPr = m_mStyle.find(oItem.first);
-//            if (oFindPr != m_mStyle.end())
-//            {
-//                if (!oItem.second.empty() && oItem.second != L"inherit" && oFindPr->second.find(L"!imp") == std::wstring::npos)
-//                    m_mStyle[oFindPr->first] = oItem.second;
-//            }
-//            else
-//                m_mStyle[oItem.first] = oItem.second;
-//        }
         return *this;
     }
 
@@ -79,9 +68,9 @@ namespace NSCSS
             [] (std::wstring& sRes, const std::map<std::wstring, std::wstring>::value_type& oIter) { return sRes += oIter.first + L":" + oIter.second + L";"; });
     }
 
-    std::map<std::wstring, std::wstring> CCompiledStyle::GetStyleMap() const
+    std::map<std::wstring, std::wstring>* CCompiledStyle::GetStyleMap()
     {
-        return m_mStyle;
+        return &m_mStyle;
     }
 
 //    bool CCompiledStyle::operator<(const CCompiledStyle &oElement) const
@@ -134,16 +123,9 @@ namespace NSCSS
 
     void CCompiledStyle::AddPropSel(const std::wstring& sProperty, const std::wstring& sValue)
     {
-        m_mStyle[sProperty] = sValue;
-//        m_mStyle.insert(std::make_pair(sProperty, sValue));
+        m_mStyle.emplace(sProperty, sValue);
     }
 
-    /*
-    void CCompiledStyle::InsertStyle(const std::map<std::wstring, std::wstring>& mStyle)
-    {
-        m_mStyle.insert(mStyle.begin(), mStyle.end());
-    }
-    */
     void CCompiledStyle::AddStyle(const std::map<std::wstring, std::wstring>& mStyle)
     {
         m_mStyle.insert(mStyle.begin(), mStyle.end());
@@ -160,7 +142,7 @@ namespace NSCSS
         while (posColon != std::wstring::npos)
         {
             const size_t posSemicolon = sStyle.find(L';', posColon);
-            AddPropSel(sStyle.substr(posLastSemicolon, posColon - posLastSemicolon), sStyle.substr(posColon + 1, posSemicolon - posColon - 1));
+            AddPropSel(sStyle.substr(((posLastSemicolon != 0) ? ++posLastSemicolon : posLastSemicolon), posColon - posLastSemicolon), sStyle.substr(posColon + 1, posSemicolon - posColon - 1));
             posColon = sStyle.find(L':', posSemicolon);
             posLastSemicolon = posSemicolon + 1;
         }
@@ -1140,7 +1122,14 @@ namespace NSCSS
         std::wstring CCompiledStyle::GetTextDecoration() const
         {
             styles_iterator oTextDecoration = m_mStyle.find(L"text-decoration");
-            return oTextDecoration != m_mStyle.end() ? oTextDecoration->second : std::wstring();
+
+            if (oTextDecoration != m_mStyle.end())
+                if (oTextDecoration->second == L"underline")
+                    return L"single";
+
+            return L"";
+
+//            return oTextDecoration != m_mStyle.end() ? oTextDecoration->second : std::wstring();
         }
 
         /* BORDER */

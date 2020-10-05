@@ -34,6 +34,16 @@ namespace NSCSS
             return m_sName.empty() && m_sClass.empty() && m_sId.empty() && m_sStyle.empty();
         }
 
+        std::vector<std::wstring> GetData() const
+        {
+            std::vector<std::wstring> arValues;
+            if (!m_sClass.empty())
+                arValues.push_back(m_sClass);
+            if (!m_sName.empty())
+                arValues.push_back(m_sName);
+            return arValues;
+        }
+
         bool operator< (const CNode& oNode) const
         {
             if(m_sName != oNode.m_sName)

@@ -206,8 +206,6 @@ namespace NSCSS
         if (oStyle.Empty() && oElement.Empty())
         {
             m_sId = L"normal";
-//            (oXmlElement.GetBasedOn().empty() || (oStandardXmlElement.Empty() && oParentStyle.Empty()))
-//                    ? m_sId = L"normal" : m_sId = oXmlElement.GetBasedOn();
             return;
         }
 
@@ -367,7 +365,7 @@ namespace NSCSS
             return;
 
         oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunnerProperties::R_Color, oStyle.GetColor());
-        oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunnerProperties::R_Shd, oStyle.GetBackgroundColor());
+        oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunnerProperties::R_Shd, oStyle.GetBackgroundColor());        
         oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunnerProperties::R_U, oStyle.GetTextDecoration());
 
         const std::wstring sFontSize = oStyle.GetFontSize();

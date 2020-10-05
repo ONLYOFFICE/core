@@ -26,8 +26,15 @@ namespace NSCSS
         void AddProperties(const std::map<std::wstring, std::wstring>& mProperties);
         void AddPrevElement(CElement* oPrevElement);
 
+        size_t EmptyPrevElements() const;
+
         std::map<std::wstring, std::wstring> GetStyle() const;
+        std::map<std::wstring, std::wstring> GetFullStyle(const std::vector<CNode>& arSelectors) const;
         std::map<std::wstring, std::wstring> GetConvertStyle(const std::vector<CNode>& arNodes) const;
+
+        CElement *FindPrevElement(const std::wstring& sSelector) const;
+
+        void Print() const;
     };
 }
 

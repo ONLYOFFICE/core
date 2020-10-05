@@ -88,6 +88,8 @@ namespace PPT_FORMAT
 
         //// Writing childs
 
+        if (!oldAnim->m_oAnimateValueList.m_arrEntry.empty())
+            oAnim.tavLst = new PPTX::Logic::TavLst;
         for (auto& animValue : oldAnim->m_oAnimateValueList.m_arrEntry)
         {
             auto tav = new PPTX::Logic::Tav;
@@ -101,6 +103,9 @@ namespace PPT_FORMAT
                     break;
                 }
                 }
+                tav->tm = std::to_wstring(
+                            animValue.m_oTimeAnimationValueAtom.m_nTime * 100);
+                oAnim.tavLst->list.push_back(*tav);
         }
 
         FillCBhvr(pETNC, oAnim.cBhvr);

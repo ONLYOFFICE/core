@@ -52,12 +52,13 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				cTn			= node.ReadNode(_T("p:cTn"));
+                                prevCondLst = node.ReadNode(_T("p:prevCondLst"));
 				nextCondLst = node.ReadNode(_T("p:nextCondLst"));
-				prevCondLst = node.ReadNode(_T("p:prevCondLst"));
 
                 XmlMacroReadAttributeBase(node, L"concurrent", concurrent);
-                XmlMacroReadAttributeBase(node, L"nextAc", nextAc);
                 XmlMacroReadAttributeBase(node, L"prevAc", prevAc);
+                XmlMacroReadAttributeBase(node, L"nextAc", nextAc);
+
 
 				FillParentPointersForChilds();
 			}
@@ -71,8 +72,9 @@ namespace PPTX
 
 				XmlUtils::CNodeValue oValue;
 				oValue.Write(cTn);
+                                oValue.WriteNullable(prevCondLst);
 				oValue.WriteNullable(nextCondLst);
-				oValue.WriteNullable(prevCondLst);
+
 
 				return XmlUtils::CreateNode(_T("p:seg"), oAttr, oValue);
 			}

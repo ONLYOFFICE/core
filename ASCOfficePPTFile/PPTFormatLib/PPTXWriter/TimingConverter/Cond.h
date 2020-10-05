@@ -71,6 +71,12 @@ void FillCond(PPT_FORMAT::CRecordTimeConditionContainer *oldCond, PPTX::Logic::C
     // TODO
 //    if (oldCond->m_oVisualElement.)
 //    cond.tgtEl = new PPTX::Logic::TgtEl();
+
+    if (oldCond->m_oVisualElement.m_bVisualPageAtom &&
+            oldCond->m_oVisualElement.m_oVisualPageAtom.m_eType == TL_TVET_Page)
+    {
+        cond.tgtEl = new PPTX::Logic::TgtEl;
+    }
 }
 }
 

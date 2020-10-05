@@ -92,7 +92,7 @@ namespace PPT_FORMAT
 
         if (bhvr->m_oBehaviorAtom.m_bAdditivePropertyUsed) {
             oBhvr.additive = new PPTX::Limit::TLAdditive;
-            oBhvr.additive = bhvr->m_oBehaviorAtom.m_nBehaviorAdditive == 0 ?
+            oBhvr.additive = bhvr->m_oBehaviorAtom.m_nBehaviorAdditive ?
                         L"repl" : L"base";
         }
 

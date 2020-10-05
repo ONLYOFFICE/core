@@ -81,7 +81,7 @@ namespace PPTX
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("spid"), spid);
 				
-				if (bg)
+                if (bg.IsInit())
 				{
 					return XmlUtils::CreateNode(_T("p:spTgt"), oAttr, _T("<p:bg/>"));
 				}
@@ -113,7 +113,7 @@ namespace PPTX
 		public:
 			std::wstring										spid;
 
-			bool										bg;
+            nullable_bool								bg;
 			nullable_string								subSpid;
 
 			//oleChartEl

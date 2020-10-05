@@ -76,7 +76,7 @@ namespace PPTX
 				oValue.WriteNullable(nextCondLst);
 
 
-				return XmlUtils::CreateNode(_T("p:seg"), oAttr, oValue);
+                return XmlUtils::CreateNode(_T("p:seq"), oAttr, oValue);
 			}
 
 		public:

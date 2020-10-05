@@ -16,7 +16,8 @@ void PPT_FORMAT::ConvertPP10SlideBinaryTagExtensionToTiming(PPT_FORMAT::CRecordP
         ConvertCRecordExtTimeNodeContainerToTnLst(oRec.m_pExtTimeNodeContainer, *(oTm.tnLst));
     }
 
-    if (oRec.m_haveBuildList)
+    if (oRec.m_haveBuildList &&
+            !oRec.m_pBuildListContainer->n_arrRgChildRec.empty())
     {
         oTm.bldLst = new PPTX::Logic::BldLst();
         ConvertCRecordBuildListContainerToBldLst(oRec.m_pBuildListContainer, *(oTm.bldLst));

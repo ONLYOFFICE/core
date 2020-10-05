@@ -39,6 +39,25 @@
 #include "../../../HtmlRenderer/include/ASCSVGWriter.h"
 #include "MetaFile.h"
 
+#if defined(_WIN64)
+#if defined(_DEBUG)
+#pragma comment(lib, "../../../build/lib/win_64/DEBUG/kernel.lib")
+#pragma comment(lib, "../../../build/lib/win_64/DEBUG/UnicodeConverter.lib")
+#else
+#pragma comment(lib, "../../../build/lib/win_64/kernel.lib")
+#pragma comment(lib, "../../../build/lib/win_64/UnicodeConverter.lib")
+#endif
+#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
+#elif defined (_WIN32)
+#if defined(_DEBUG)
+#pragma comment(lib, "../../../build/lib/win_32/DEBUG/kernel.lib")
+#pragma comment(lib, "../../../build/lib/win_32/DEBUG/UnicodeConverter.lib")
+#else
+#pragma comment(lib, "../../../build/lib/win_32/kernel.lib")
+#pragma comment(lib, "../../../build/lib/win_32/UnicodeConverter.lib")
+#endif
+#pragma comment(lib, "../../../build/bin/icu/win_32/icuuc.lib")
+#endif
 
 std::vector<std::wstring> GetAllFilesInFolder(std::wstring wsFolder, std::wstring wsExt)
 {

@@ -5,102 +5,14 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Wmf">
-      <UniqueIdentifier>{d2706d5c-ed10-4c43-bbb2-211400bb40ac}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Emf">
-      <UniqueIdentifier>{4c9bc033-8ce8-4711-9c98-6a7605147e5f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Common">
-      <UniqueIdentifier>{3f315308-1def-4dee-98fd-79d007d99cf3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="StarView">
-      <UniqueIdentifier>{1139b56c-7880-45fe-b821-3e054d70deaf}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Wmf\WmfFile.h">
-      <Filter>Wmf</Filter>
-    </ClInclude>
-    <ClInclude Include="Wmf\WmfTypes.h">
-      <Filter>Wmf</Filter>
-    </ClInclude>
-    <ClInclude Include="MetaFile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Emf\EmfFile.h">
-      <Filter>Emf</Filter>
-    </ClInclude>
-    <ClInclude Include="Emf\EmfTypes.h">
-      <Filter>Emf</Filter>
-    </ClInclude>
-    <ClInclude Include="Emf\EmfPlayer.h">
-      <Filter>Emf</Filter>
-    </ClInclude>
-    <ClInclude Include="Emf\EmfObjects.h">
-      <Filter>Emf</Filter>
-    </ClInclude>
     <ClInclude Include="stdafx.h">
       <Filter>Resource Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Emf\EmfPath.h">
-      <Filter>Emf</Filter>
-    </ClInclude>
-    <ClInclude Include="Emf\EmfClip.h">
-      <Filter>Emf</Filter>
-    </ClInclude>
-    <ClInclude Include="Wmf\WmfPlayer.h">
-      <Filter>Wmf</Filter>
-    </ClInclude>
-    <ClInclude Include="Wmf\WmfObjects.h">
-      <Filter>Wmf</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\MetaFileObjects.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\MetaFile.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\IOutputDevice.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\MetaFileRenderer.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\MetaFileTypes.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\MetaFileClip.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Wmf\WmfClip.h">
-      <Filter>Wmf</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\MetaFileUtils.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="StarView\SvmEnums.h">
-      <Filter>StarView</Filter>
-    </ClInclude>
-    <ClInclude Include="StarView\SvmFile.h">
-      <Filter>StarView</Filter>
-    </ClInclude>
-    <ClInclude Include="StarView\SvmObjects.h">
-      <Filter>StarView</Filter>
-    </ClInclude>
-    <ClInclude Include="StarView\SvmPlayer.h">
-      <Filter>StarView</Filter>
-    </ClInclude>
-    <ClInclude Include="StarView\SvmClip.h">
-      <Filter>StarView</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -109,48 +21,6 @@
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MetaFile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Emf\EmfPlayer.cpp">
-      <Filter>Emf</Filter>
-    </ClCompile>
-    <ClCompile Include="Emf\EmfPath.cpp">
-      <Filter>Emf</Filter>
-    </ClCompile>
-    <ClCompile Include="Emf\EmfObjects.cpp">
-      <Filter>Emf</Filter>
-    </ClCompile>
-    <ClCompile Include="Emf\EmfClip.cpp">
-      <Filter>Emf</Filter>
-    </ClCompile>
-    <ClCompile Include="Wmf\WmfPlayer.cpp">
-      <Filter>Wmf</Filter>
-    </ClCompile>
-    <ClCompile Include="Wmf\WmfObjects.cpp">
-      <Filter>Wmf</Filter>
-    </ClCompile>
-    <ClCompile Include="Common\MetaFileTypes.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="Wmf\WmfClip.cpp">
-      <Filter>Wmf</Filter>
-    </ClCompile>
-    <ClCompile Include="Common\MetaFileUtils.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="StarView\SvmFile.cpp">
-      <Filter>StarView</Filter>
-    </ClCompile>
-    <ClCompile Include="StarView\SvmObjects.cpp">
-      <Filter>StarView</Filter>
-    </ClCompile>
-    <ClCompile Include="StarView\SvmPlayer.cpp">
-      <Filter>StarView</Filter>
-    </ClCompile>
-    <ClCompile Include="StarView\SvmClip.cpp">
-      <Filter>StarView</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

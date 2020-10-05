@@ -31,6 +31,8 @@
  */
 #pragma once
 
+#include "../../../Common/DocxFormat/Source/Base/Nullable.h"
+
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Seq.h"
 #include "../../Records/Animations/ExtTimeNodeContainer.h"
 
@@ -43,7 +45,8 @@ void FillCond(PPT_FORMAT::CRecordTimeConditionContainer *oldCond, PPTX::Logic::C
     else
         cond.delay = L"indefinite";
 
-    if (oldCond->m_oTimeConditionAtom.m_TriggerObject == TL_TOT_RuntimeNodeRef)
+    if (oldCond->m_oTimeConditionAtom.m_TriggerObject == TL_TOT_RuntimeNodeRef ||
+        oldCond->m_oTimeConditionAtom.m_TriggerObject == TL_TOT_TimeNode)
     {
         cond.tn = oldCond->m_oTimeConditionAtom.m_nID;
     }

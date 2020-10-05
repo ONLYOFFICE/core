@@ -193,6 +193,9 @@ public:
 
         while ( lCurLen < m_oHeader.RecLen )
         {
+            LONG lPosLoop = 0;
+            StreamUtils::StreamPosition ( lPosLoop, pStream );
+
             if ( ReadHeader.ReadFromStream(pStream) == false)
                 break;
 
@@ -341,8 +344,10 @@ public:
 
 
             default:
-                throw ;
+                break;
+//                throw ;
             }
+
         }
         StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
     }

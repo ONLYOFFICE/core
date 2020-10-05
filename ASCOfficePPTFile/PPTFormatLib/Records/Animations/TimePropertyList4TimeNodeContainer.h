@@ -47,7 +47,6 @@ public:
     CRecordTimePropertyList4TimeNodeContainer ()
     {
         m_bEmtyNode					=	false;
-        m_oEffectNodeType.m_Value	=	0;
     }
 
     virtual ~CRecordTimePropertyList4TimeNodeContainer ()
@@ -104,34 +103,7 @@ public:
             pRecord->ReadFromStream  ( ReadHeader, pStream );
             lCurLen += 8 + ReadHeader.RecLen;
 
-            if ( TL_TPID_EffectID == VariableType )
-            {
-                m_oEffectID	=	*(static_cast<CRecordTimeEffectID*> ( pRecord ) );
-                //	RELEASEOBJECT ( pRecord );
-                m_arrElements.push_back ( pRecord );
-            }
-            else if ( TL_TPID_EffectType == VariableType )
-            {
-                m_oEffectType	=	*(static_cast<CRecordTimeEffectType*> ( pRecord ) );
-                //	RELEASEOBJECT ( pRecord );
-                m_arrElements.push_back ( pRecord );
-            }
-            else if  ( TL_TPID_EffectDir == VariableType )
-            {
-                m_oEffectDir	=	*(static_cast<CRecordTimeEffectDir*> ( pRecord ) );
-                //RELEASEOBJECT ( pRecord );
-                m_arrElements.push_back ( pRecord );
-            }
-            else if ( TL_TPID_EffectNodeType == VariableType )
-            {
-                m_oEffectNodeType	=	*(static_cast<CRecordTimeEffectNodeType*> ( pRecord ) );
-                //RELEASEOBJECT ( pRecord );
-                m_arrElements.push_back ( pRecord );
-            }
-            else
-            {
-                m_arrElements.push_back ( pRecord );
-            }
+            m_arrElements.push_back ( pRecord );
         }
 
         StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
@@ -151,24 +123,12 @@ public:
         m_arrElements.clear ();
     }
 
-    // helper
-
-    inline const _UINT32& GetEffectNodeType () const
-    {
-        return m_oEffectNodeType.m_Value;
-    }
-
 public:
 
     bool                                m_bEmtyNode;
 
     std::vector <CRecordTimeVariant*>   m_arrElements;
 
-    //
-    CRecordTimeEffectNodeType			m_oEffectNodeType;
-    CRecordTimeEffectID                 m_oEffectID;
-    CRecordTimeEffectType				m_oEffectType;
-    CRecordTimeEffectDir				m_oEffectDir;
 };
 
 }

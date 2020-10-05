@@ -44,37 +44,120 @@ unsigned gcTn_ID = 1;
 
 void ConvertTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::TimeNodeBase &oChild);
 
-    void FillCTn(CRecordExtTimeNodeContainer* pETNC, PPTX::Logic::CTn &oCTn)
+    void FillCTn(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn)
     {
         oCTn.id = gcTn_ID++;
 
-        if (pETNC->m_haveTimePropertyList)
+        if (pETNC->m_haveTimePropertyList && !pETNC->m_pTimePropertyList->m_bEmtyNode)
         {
-            for (auto* pTimePropertyID4TimeNode : pETNC->m_pTimePropertyList->m_arrElements)
+            for (auto* pRec : pETNC->m_pTimePropertyList->m_arrElements)
             {
-                // TODO Unknown
-            }
+                TimePropertyID4TimeNode VariableType = ( TimePropertyID4TimeNode ) pRec->m_oHeader.RecInstance;
 
-            std::wstring nodeType;
-            switch (pETNC->m_pTimePropertyList->m_oEffectNodeType.m_Value)
-            {
-            case 1: nodeType = L"clickEffect"; break;
-            case 2: nodeType = L"withEffect"; break;
-            case 3: nodeType = L"afterEffect"; break;
-            case 4: nodeType = L"mainSeq"; break;
-            case 5: nodeType = L"interactiveSeq"; break;
-            case 6: nodeType = L"clickPar"; break;
-            case 7: nodeType = L"withGroup"; break;
-            case 8: nodeType = L"afterGroup"; break;
-            case 9: nodeType = L"tmRoot"; break;
-            }
-            if (!nodeType.empty())
-            {
-                oCTn.nodeType = new PPTX::Limit::TLNodeType;
-                oCTn.nodeType = nodeType;
-            }
+                switch ( VariableType )
+                {
+                case TL_TPID_Display:
+                {
+                    oCTn.display = (bool)dynamic_cast<CRecordTimeDisplayType*>(pRec)->m_Value;
+                    break;
+                }
+                case TL_TPID_MasterPos:
+                {
+                    oCTn.masterRel = new PPTX::Limit::TLMasterRelation;
+                    oCTn.masterRel = dynamic_cast<CRecordTimeMasterRelType*>(pRec)->m_Value ?
+                                L"sameClick" : L"nextClick";
+                    break;
+                }
+                case TL_TPID_SubType:			break;
+                case TL_TPID_EffectID:
+                {
+                    oCTn.presetID = dynamic_cast<CRecordTimeEffectID*>(pRec)->m_Value;
+                    break;
+                }
+                case TL_TPID_EffectDir:
+                {
+                    oCTn.presetSubtype = dynamic_cast<CRecordTimeEffectDir*>(pRec)->m_Value;
+                    break;
+                }
+                case TL_TPID_EffectType:
+                {
+                    // Write presetClass
+                    std::wstring presetClass;
+                    switch (dynamic_cast<CRecordTimeEffectType*>(pRec)->m_Value) {
+                    case 0: break;
+                    case 1: presetClass = L"entr";      break;
+                    case 2: presetClass = L"exit";      break;
+                    case 3: presetClass = L"emph";      break;
+                    case 4: presetClass = L"path";      break;
+                    case 5: presetClass = L"verb";      break;
+                    case 6: presetClass = L"mediacall"; break;
+                    }
+                    if (!presetClass.empty())
+                    {
+                        oCTn.presetClass = new PPTX::Limit::TLPresetClass;
+                        oCTn.presetClass = presetClass;
+                    }
+                    break;
+                }
+                case TL_TPID_AfterEffect:
+                {
+                    oCTn.afterEffect = (bool)dynamic_cast<CRecordTimeAfterEffect*>(pRec)->m_Value;
+                    break;
+                }
+                case TL_TPID_SlideCount:		break;
+                case TL_TPID_TimeFilter:
+                {
+                    oCTn.tmFilter = dynamic_cast<CRecordTimeNodeTimeFilter*>(pRec)->m_stringValue;
+                    break;
+                }
+                case TL_TPID_EventFilter:
+                {
+                    oCTn.evtFilter = dynamic_cast<CRecordTimeEventFilter*>(pRec)->m_stringValue;
+                    break;
+                }
+                case TL_TPID_HideWhenStopped:	break;
+                case TL_TPID_GroupID:
+                {
+                    oCTn.grpId = dynamic_cast<CRecordTimeGroupID*>(pRec)->m_Value;
+                    break;
+                }
+                case TL_TPID_EffectNodeType:
+                {
+                    // Write nodeType
+                    std::wstring nodeType;
+                    switch (dynamic_cast<CRecordTimeEffectNodeType*>(pRec)->m_Value)
+                    {
+                    case 1: nodeType = L"clickEffect"; break;
+                    case 2: nodeType = L"withEffect"; break;
+                    case 3: nodeType = L"afterEffect"; break;
+                    case 4: nodeType = L"mainSeq"; break;
+                    case 5: nodeType = L"interactiveSeq"; break;
+                    case 6: nodeType = L"clickPar"; break;
+                    case 7: nodeType = L"withGroup"; break;
+                    case 8: nodeType = L"afterGroup"; break;
+                    case 9: nodeType = L"tmRoot"; break;
+                    }
+                    if (!nodeType.empty())
+                    {
+                        oCTn.nodeType = new PPTX::Limit::TLNodeType;
+                        oCTn.nodeType = nodeType;
+                    }
 
-    }
+                    break;
+                }
+                case TL_TPID_PlaceholderNode:
+                {
+                    oCTn.nodePh = (bool)dynamic_cast<CRecordTimePlaceholderNode*>(pRec)->m_Value;
+                    break;
+                }
+                case TL_TPID_MediaVolume:		break;
+                case TL_TPID_MediaMute:			break;
+                case TL_TPID_ZoomToFullScreen:	break;
+                default :
+                    break;
+                }
+            }
+        }
 
         // Reading TimeNodeAtom
         const auto& oTimeNodeAtom = pETNC->m_oTimeNodeAtom;

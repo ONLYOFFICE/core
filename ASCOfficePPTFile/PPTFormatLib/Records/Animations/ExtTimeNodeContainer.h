@@ -363,13 +363,6 @@ public:
         return m_oTimeNodeAtom.m_dwType;
     }
 
-    inline unsigned long GetEffectNodeType () const
-    {
-        if (m_pTimePropertyList)
-            return m_pTimePropertyList->GetEffectNodeType ();
-
-        return 0;
-    }
 
 };
 

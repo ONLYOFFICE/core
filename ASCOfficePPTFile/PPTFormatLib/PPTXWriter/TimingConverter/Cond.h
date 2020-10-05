@@ -45,7 +45,7 @@ void FillCond(PPT_FORMAT::CRecordTimeConditionContainer *oldCond, PPTX::Logic::C
 
     if (oldCond->m_oTimeConditionAtom.m_TriggerObject == TL_TOT_RuntimeNodeRef)
     {
-        cond.tn = std::to_wstring(oldCond->m_oTimeConditionAtom.m_nID);
+        cond.tn = oldCond->m_oTimeConditionAtom.m_nID;
     }
 
     std::wstring str;

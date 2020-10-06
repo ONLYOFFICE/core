@@ -1,7 +1,6 @@
 #include "CDocumentStyle.h"
 
 #include <iostream>
-#include <set>
 #include <wchar.h>
 #include <math.h>
 #include <algorithm>
@@ -274,22 +273,16 @@ namespace NSCSS
         if (!sLineHeight.empty())
         {
             float dValue = wcstof(oStyle.GetFontSize().c_str(), NULL);
-            if (dValue == 0.0f)
-                dValue = 22.0f;
+            if (dValue <= 0.0f)
+                dValue = NS_CONST_VALUES::FONT_SIZE;
 
             float dLineHeight = wcstof(sLineHeight.c_str(), NULL);
 
-            if (dLineHeight > 7.0f || dLineHeight <= 0.0f)
-                dLineHeight /= dValue;
-
-            if (dLineHeight < 1.0f)
-                dLineHeight = 1.0f;
-
-            dLineHeight *= dValue * 10.0f;
-
-            if (dLineHeight > 0)
+            if (dLineHeight >= 1.0f)
             {
-                sSpacingValue += L"w:line=\"" + std::to_wstring(static_cast<unsigned short int>((dLineHeight > 0.0f) ? (dLineHeight  + 0.5f) : 0.0f)) + L"\" ";
+                dLineHeight *= (dLineHeight < dValue) ? 10.0f : 10.0f / dLineHeight;
+
+                sSpacingValue += L"w:line=\"" + std::to_wstring(static_cast<unsigned short int>(dLineHeight * dValue + 0.5f)) + L"\" ";
                 sSpacingValue += L"w:lineRule=\"auto\"";
             }
         }
@@ -372,7 +365,7 @@ namespace NSCSS
         if (!sFontSize.empty())
         {
             const float dValue = wcstof(sFontSize.c_str(), NULL);
-            oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunnerProperties::R_Sz, std::to_wstring(static_cast<unsigned short int>((dValue > 0.0f) ? dValue : 22.0f)));
+            oXmlElement.AddPropertiesInR(NS_CONST_VALUES::RunnerProperties::R_Sz, std::to_wstring(static_cast<unsigned short int>((dValue > 0.0f) ? dValue : NS_CONST_VALUES::FONT_SIZE)));
         }
 
         const std::wstring sFontFamily = oStyle.GetFontFamily();

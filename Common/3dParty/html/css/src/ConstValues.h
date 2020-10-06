@@ -10,6 +10,7 @@ namespace NSCSS
 {
     namespace NS_CONST_VALUES
     {
+        const unsigned short int FONT_SIZE = 22;
         typedef enum
         {
             B_CustomStyle = 0,

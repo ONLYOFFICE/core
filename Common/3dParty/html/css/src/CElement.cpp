@@ -1,5 +1,8 @@
 #include "CElement.h"
 #include <algorithm>
+#include <math.h>
+
+#include "StaticFunctions.h"
 
 namespace NSCSS
 {
@@ -37,7 +40,12 @@ namespace NSCSS
     void CElement::AddProperties(const std::map<std::wstring, std::wstring>& mProperties)
     {
         for (const std::pair<std::wstring, std::wstring>& pPropertie : mProperties)
-            m_mStyle[pPropertie.first] = pPropertie.second;
+        {
+            if (pPropertie.second.find(L"rgb") != std::wstring::npos)
+                 m_mStyle[pPropertie.first] = NSCSS::NS_STATIC_FUNCTIONS::ConvertRgbToHex(pPropertie.second);
+            else
+                 m_mStyle[pPropertie.first] = pPropertie.second;
+        }
     }
 
     void CElement::AddPrevElement(CElement *oPrevElement)
@@ -67,18 +75,22 @@ namespace NSCSS
         if (arSelectors.empty())
             return std::map<std::wstring, std::wstring>();
 
-        std::map<std::wstring, std::wstring> mStyle;
-        for (const CNode& oNode : arSelectors)
+        std::map<std::wstring, std::wstring> mStyle(m_mStyle);
+
+        for (CElement* oElement : m_arPrevElements)
         {
-            const CElement *oElement = FindPrevElement(oNode.m_sName);
-            if (NULL != oElement)
+            for (const CNode& oNode : arSelectors)
             {
-                std::wcout << L"***" << oElement->GetSelector() << std::endl;
-                const std::map<std::wstring, std::wstring>& mTempMap = oElement->GetStyle();
-                mStyle.insert(mTempMap.begin(), mTempMap.end());
+                std::map<std::wstring, std::wstring> mTempStyle;
+                if (oElement->GetSelector() == oNode.m_sName ||
+                    oElement->GetSelector() == oNode.m_sClass ||
+                    oElement->GetSelector() == oNode.m_sName + L'.' + oNode.m_sClass)
+                        for (const std::pair<std::wstring, std::wstring> pPropertie : oElement->GetStyle())
+                            mStyle[pPropertie.first] = pPropertie.second;
             }
         }
-        return m_mStyle;
+
+        return mStyle;
     }
 
     CElement *CElement::FindPrevElement(const std::wstring &sSelector) const

@@ -280,7 +280,7 @@ namespace NSCSS
 
             if (dLineHeight >= 1.0f)
             {
-                dLineHeight *= (dLineHeight < dValue) ? 10.0f : 10.0f / dLineHeight;
+                dLineHeight *= (dLineHeight < dValue / 2) ? 10.0f : 10.0f / dLineHeight;
 
                 sSpacingValue += L"w:line=\"" + std::to_wstring(static_cast<unsigned short int>(dLineHeight * dValue + 0.5f)) + L"\" ";
                 sSpacingValue += L"w:lineRule=\"auto\"";

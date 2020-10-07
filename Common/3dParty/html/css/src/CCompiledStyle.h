@@ -30,9 +30,10 @@ namespace NSCSS
         bool Empty() const;
         // void Clear();
 
-        void AddPropSel(const std::wstring& sProperty, const std::wstring& sValue);
-        void AddStyle(const std::map<std::wstring, std::wstring>& mStyle);
-        void AddStyle(const std::wstring& sStyle);
+        void AddPropSel(const std::wstring& sProperty, const std::wstring& sValue, const bool& bHardMode = false);
+        void AddStyle(const std::map<std::wstring, std::wstring>& mStyle, const bool& bHardMode = false);
+        void AddStyle(const std::wstring& sStyle, const bool& bHardMode = false);
+        void SetStyle(const std::map<std::wstring, std::wstring>& mStyle);
         void AddParent(const std::wstring& sParentName);
 
         std::vector<std::wstring> GetParentsName() const;

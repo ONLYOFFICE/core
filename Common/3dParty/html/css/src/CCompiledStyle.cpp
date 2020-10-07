@@ -46,7 +46,7 @@ namespace NSCSS
     {
         m_mStyle = oElement.m_mStyle;
         m_sId    = oElement.m_sId;
-        // m_arParentsStyles = oElement.m_arParentsStyles;
+        m_arParentsStyles = oElement.m_arParentsStyles;
         return *this;
     }
 
@@ -121,18 +121,25 @@ namespace NSCSS
     }
     */
 
-    void CCompiledStyle::AddPropSel(const std::wstring& sProperty, const std::wstring& sValue)
+    void CCompiledStyle::AddPropSel(const std::wstring& sProperty, const std::wstring& sValue, const bool& bHardMode)
     {
-        m_mStyle.emplace(sProperty, sValue);
+        if (!bHardMode)
+            m_mStyle.emplace(sProperty, sValue);
+        else
+            m_mStyle[sProperty] = sValue;
     }
 
-    void CCompiledStyle::AddStyle(const std::map<std::wstring, std::wstring>& mStyle)
+    void CCompiledStyle::AddStyle(const std::map<std::wstring, std::wstring>& mStyle, const bool& bHardMode)
     {
-        m_mStyle.insert(mStyle.begin(), mStyle.end());
+        if (!bHardMode)
+            m_mStyle.insert(mStyle.begin(), mStyle.end());
+        else
+            for (const std::pair<std::wstring, std::wstring> pPropertie : mStyle)
+                m_mStyle[pPropertie.first] = pPropertie.second;
     }
 
 
-    void CCompiledStyle::AddStyle(const std::wstring& sStyle)
+    void CCompiledStyle::AddStyle(const std::wstring& sStyle, const bool& bHardMode)
     {
         if (sStyle.empty())
             return;
@@ -142,10 +149,15 @@ namespace NSCSS
         while (posColon != std::wstring::npos)
         {
             const size_t posSemicolon = sStyle.find(L';', posColon);
-            AddPropSel(sStyle.substr(((posLastSemicolon != 0) ? ++posLastSemicolon : posLastSemicolon), posColon - posLastSemicolon), sStyle.substr(posColon + 1, posSemicolon - posColon - 1));
+            AddPropSel(sStyle.substr(((posLastSemicolon != 0) ? ++posLastSemicolon : posLastSemicolon), posColon - posLastSemicolon), sStyle.substr(posColon + 1, posSemicolon - posColon - 1), bHardMode);
             posColon = sStyle.find(L':', posSemicolon);
             posLastSemicolon = posSemicolon + 1;
         }
+    }
+
+    void CCompiledStyle::SetStyle(const std::map<std::wstring, std::wstring> &mStyle)
+    {
+        m_mStyle = mStyle;
     }
 
     void CCompiledStyle::AddParent(const std::wstring& sParentName)

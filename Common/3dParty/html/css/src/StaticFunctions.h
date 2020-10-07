@@ -5,6 +5,8 @@
 #include "../../../../../DesktopEditor/common/File.h"
 #include "CCssCalculator.h"
 #include "CssCalculator_global.h"
+#include "ConstValues.h"
+#include <cwctype>
 #include <string>
 #include <vector>
 #include <list>
@@ -131,6 +133,9 @@ namespace NSCSS
         {
             if (sLine.empty())
                 return {};
+
+            if (sLine.find_first_of(sSigns) == std::wstring::npos)
+                return std::vector<std::wstring>({sLine});
 
             std::vector<std::wstring> arWords;
             arWords.reserve(16);
@@ -287,6 +292,10 @@ namespace NSCSS
         {
             if (sLine.empty())
                 return {};
+
+            if (sLine.find_first_of(sSigns) == std::wstring::npos)
+                return std::vector<std::wstring>({sLine});
+
             std::vector<std::wstring> arWords;
             arWords.reserve(16);
             size_t posFirstNotSpace = sLine.find_first_not_of(sSigns);
@@ -344,6 +353,41 @@ namespace NSCSS
                 posFirst = sRgbValue.find_first_of(L"01234567890", posSecond);
             }
             return sValue;
+        }
+
+        inline std::vector<unsigned short int> GetWeightSelector(const std::string& sSelector)
+        {
+            if (sSelector.empty())
+                return std::vector<unsigned short int>{0, 0, 0, 0};
+
+            std::vector<unsigned short int> arWeight = {0, 0, 0, 0};
+
+            const std::vector<std::string> arSel = NS_STATIC_FUNCTIONS::GetWords(NS_STATIC_FUNCTIONS::stringToWstring(sSelector));
+
+            for (const std::string& sSel : arSel)
+            {
+                if (sSel == "*")
+                    ++arWeight[3];
+                else if (sSel.find('#') != std::string::npos)
+                    ++arWeight[0];
+                else if (sSel.find(':') != std::string::npos)
+                {
+                    std::string sTemp(sSel);
+                    sTemp.erase(std::remove_if(sTemp.begin(), sTemp.end(), [] (wchar_t ch) { return !std::iswalpha(ch); }));
+                    std::find(NS_CONST_VALUES::arPseudoClasses.begin(), NS_CONST_VALUES::arPseudoClasses.end(), sTemp) != NS_CONST_VALUES::arPseudoClasses.end() ? ++arWeight[1] : ++arWeight[2];
+                }
+                else if (sSel.find_first_of(".[]") != std::string::npos)
+                    ++arWeight[1];
+                else
+                    ++arWeight[2];
+            }
+
+            return arWeight;
+        }
+
+        inline std::vector<unsigned short int> GetWeightSelector(const std::wstring& sSelector)
+        {
+            return GetWeightSelector(NS_STATIC_FUNCTIONS::wstringToString(sSelector));
         }
 
     }

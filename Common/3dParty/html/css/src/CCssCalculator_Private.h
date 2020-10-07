@@ -101,9 +101,6 @@ namespace NSCSS
 
         std::wstring ConvertEm(const std::wstring& sValue) const;
 
-        std::vector<unsigned short int> GetWeightSelector(const std::string& sSelector) const;
-        std::vector<unsigned short int> GetWeightSelector(const std::wstring& sSelector) const;
-
         void GetOutputData(KatanaOutput* oOutput);
 
     public:

@@ -48,7 +48,7 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
 
     if (!bThereIsAFile)
     {
-        std::vector<std::wstring> arTempFiles = NSDirectory::GetFiles(m_sTempDir);
+        const std::vector<std::wstring>& arTempFiles = NSDirectory::GetFiles(m_sTempDir);
         for (const std::wstring& sFile : arTempFiles)
             if (NSFile::GetFileExtention(sFile) == L"opf")
             {

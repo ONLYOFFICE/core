@@ -45,7 +45,7 @@ namespace PPTX
 		class CVariantVector;
 		class CVariantArray;
 
-		enum eVariantType {vtUnknown = 0, vtEmpty, vtNull, vtVariant, vtVector, vtArray, vtVStream, vtBlob, vtOBlob, vtI1, vtI2,
+		enum eVariantType {vtEmpty = 0, vtNull, vtVariant, vtVector, vtArray, vtVStream, vtBlob, vtOBlob, vtI1, vtI2,
 		vtI4, vtI8, vtInt, vtUi1, vtUi2, vtUi4, vtUi8, vtUint, vtR4, vtR8, vtDecimal, vtLpstr, vtLpwstr, vtBstr,
 		vtDate, vtFiletime, vtBool, vtCy, vtError, vtStream, vtOStream, vtStorage, vtOStorage, vtClsid};
 
@@ -131,10 +131,11 @@ namespace PPTX
 			void toXmlWriterContent(NSBinPptxRW::CXmlWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			eVariantType getVariantType() const;
 			static eVariantType getTypeByString(const std::wstring& sName);
 			static std::wstring getStringByType(const eVariantType& eType);
 		public:
-			eVariantType							m_eType;
+			nullable<eVariantType>					m_eType;
 			nullable_string							m_strContent;
 			nullable_int							m_iContent;
 			nullable_uint							m_uContent;
@@ -158,9 +159,9 @@ namespace PPTX
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-
+			eVariantType getVariantType() const;
 		public:
-			eVariantType							m_eBaseType;
+			nullable<eVariantType>					m_eBaseType;
 			nullable_int							m_nSize;
 
 			std::vector<CVariant>					arrVariants;
@@ -178,9 +179,9 @@ namespace PPTX
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-
+			eVariantType getVariantType() const;
 		public:
-			eVariantType							m_eBaseType;
+			nullable<eVariantType>					m_eBaseType;
 			nullable_string							m_strLBounds;
 			nullable_string							m_strUBounds;
 
@@ -205,7 +206,7 @@ namespace PPTX
 			nullable_string							m_strFmtid;
 			nullable_string							m_strLinkTarget;
 			nullable_string							m_strName;
-			nullable_int							m_strPid;
+			nullable_int							m_nPid;
 
 			nullable<CVariant>						m_oContent;
 		protected:

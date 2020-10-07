@@ -37,23 +37,6 @@ namespace PPTX
 {
 	namespace Logic
 	{
-#define READ_VARIANT(name, fRead) \
-	oNode = node.ReadNodeNoNS(name); \
-	if (oNode.IsValid()) \
-	{ \
-		m_eType = CVariant::getTypeByString(name); \
-		fRead \
-		return;\
-	}
-#define READ_VARIANT_NULL(name) \
-	READ_VARIANT(name, ;)
-
-#define READ_VARIANT_TYPE(name, memeber) \
-	READ_VARIANT(name, memeber = oNode.GetTextExt();)
-
-#define READ_VARIANT_NODE(name, memeber) \
-	READ_VARIANT(name, memeber.Init();memeber->fromXML(oNode);)
-
 		void CVariantVStream::fromXML(XmlUtils::CXmlNode& node)
 		{
 			XmlMacroReadAttributeBase(node, _T("version"), m_strVersion);
@@ -68,7 +51,7 @@ namespace PPTX
 			pWriter->StartNode(_T("vt:vstream"));
 
 			pWriter->StartAttributes();
-			pWriter->WriteAttribute(L"version", m_strVersion);
+			pWriter->WriteAttribute2(L"version", m_strVersion);
 			pWriter->EndAttributes();
 
 			pWriter->WriteStringXML(*m_strContent);
@@ -119,7 +102,7 @@ namespace PPTX
 		void CVariant::fromXML(XmlUtils::CXmlNode& node)
 		{
 			m_eType = CVariant::getTypeByString(XmlUtils::GetNameNoNS(node.GetName()));
-			switch(m_eType)
+			switch(getVariantType())
 			{
 				case vtEmpty: break;
 				case vtNull: break;
@@ -170,53 +153,7 @@ namespace PPTX
 				case vtStorage: m_strContent = node.GetTextExt();break;
 				case vtOStorage: m_strContent = node.GetTextExt();break;
 				case vtClsid: m_strContent = node.GetTextExt();break;
-
 			}
-//			enum eVariantType {vtUnknown = 0, vtEmpty, vtNull, vtVariant, vtVector, vtArray, vtVStream, vtBlob, vtOBlob, vtI1, vtI2,
-//			vtI4, vtI8, vtInt, vtUi1, vtUi2, vtUi4, vtUi8, vtUint, vtR4, vtR8, vtDecimal, vtLpstr, vtLpwstr, vtBstr,
-//			vtDate, vtFiletime, vtBool, vtCy, vtError, vtStream, vtOStream, vtStorage, vtOStorage, vtClsid};
-//			READ_VARIANT_NULL(L"empty");
-//			READ_VARIANT_NULL(L"null");
-//			std::wstring sName = XmlUtils::GetNameNoNS(node.GetName());
-
-//			if (vtEmpty != m_eType)
-//			{
-//				m_oVariant.Init();
-//				m_oVariant->fromXML(oNode);
-//				return;\
-//			}
-//			READ_VARIANT_NODE(L"variant", m_oVariant);
-//			READ_VARIANT_NODE(L"vector", m_oVector);
-//			READ_VARIANT_NODE(L"array", m_oArray);
-//			READ_VARIANT_NODE(L"vstream", m_oVStream);
-//			READ_VARIANT_TYPE(L"blob", m_strContent);
-//			READ_VARIANT_TYPE(L"oblob", m_strContent);
-//			READ_VARIANT_TYPE(L"i1", m_iContent);
-//			READ_VARIANT_TYPE(L"i2", m_iContent);
-//			READ_VARIANT_TYPE(L"i4", m_iContent);
-//			READ_VARIANT_TYPE(L"i8", m_iContent);
-//			READ_VARIANT_TYPE(L"int", m_iContent);
-//			READ_VARIANT_TYPE(L"ui1", m_uContent);
-//			READ_VARIANT_TYPE(L"ui2", m_uContent);
-//			READ_VARIANT_TYPE(L"ui4", m_uContent);
-//			READ_VARIANT_TYPE(L"ui8", m_uContent);
-//			READ_VARIANT_TYPE(L"uint", m_uContent);
-//			READ_VARIANT_TYPE(L"r4", m_dContent);
-//			READ_VARIANT_TYPE(L"r8", m_dContent);
-//			READ_VARIANT_TYPE(L"decimal", m_dContent);
-//			READ_VARIANT_TYPE(L"lpstr", m_strContent);
-//			READ_VARIANT_TYPE(L"lpwstr", m_strContent);
-//			READ_VARIANT_TYPE(L"bstr", m_strContent);
-//			READ_VARIANT_TYPE(L"date", m_strContent);
-//			READ_VARIANT_TYPE(L"filetime", m_strContent);
-//			READ_VARIANT_TYPE(L"bool", m_bContent);
-//			READ_VARIANT_TYPE(L"cy", m_strContent);
-//			READ_VARIANT_TYPE(L"error", m_strContent);
-//			READ_VARIANT_TYPE(L"stream", m_strContent);
-//			READ_VARIANT_TYPE(L"ostream", m_strContent);
-//			READ_VARIANT_TYPE(L"storage", m_strContent);
-//			READ_VARIANT_TYPE(L"ostorage", m_strContent);
-//			READ_VARIANT_TYPE(L"clsid", m_strContent);
 		}
 		std::wstring CVariant::toXML() const
 		{
@@ -232,85 +169,45 @@ namespace PPTX
 		}
 		void CVariant::toXmlWriterContent(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-			if(vtUnknown != m_eType)
+			eVariantType eType = getVariantType();
+			std::wstring strNodeName = L"vt:" + getStringByType(eType);
+			if (vtEmpty == eType || vtNull == eType)
 			{
-				std::wstring strNodeName = L"vt:" + getStringByType(m_eType);
-//				if (vtEmpty == m_eType || vtNull == m_eType)
-//				{
-//					pWriter->WriteNodeValue(strNodeName, L"");
-//				}
-//				else if (vtVariant == m_eType)
-//				{
-//					pWriter->WriteNodeValue(strNodeName, m_oVariant);
-//				}
-//				else if (vtVector == m_eType)
-//				{
-//					pWriter->WriteNodeValue(strNodeName, m_oVector);
-//				}
-//				else if (vtArray == m_eType)
-//				{
-//					pWriter->WriteNodeValue(strNodeName, m_oArray);
-//				}
-//				else if (vtVstream == m_eType)
-//				{
-//					pWriter->WriteNodeValue(strNodeName, m_oVStream);
-//				}
-//				else if (vtI1 == m_eType || vtI2 == m_eType ||
-//						vtI4 == m_eType || vtI8 == m_eType || vtInt == m_eType)
-//				{
-//					pWriter->WriteNodeValue(strNodeName, m_iContent);
-//				}
-//				else if (vtUi1 == m_eType || vtUi2 == m_eType ||
-//						vtUi4 == m_eType || vtUi8 == m_eType || vtUint == m_eType)
-//				{
-//					pWriter->WriteNodeValue(strNodeName, m_uContent);
-//				}
-//				else if (vtR4 == m_eType || vtR8 == m_eType || vtDecimal == m_eType)
-//				{
-//					pWriter->WriteNodeValue(strNodeName, m_dContent);
-//				}
-//				else if (vtBool == m_eType)
-//				{
-//					pWriter->WriteNodeValue(strNodeName, m_bContent);
-//				}
-				if (vtEmpty == m_eType || vtNull == m_eType)
-				{
-					pWriter->StartNode(strNodeName);
-					pWriter->StartAttributes();
-					pWriter->EndAttributes();
-					pWriter->EndNode(strNodeName);
-				}
-				pWriter->WriteNodeValue(strNodeName, m_strContent);
-				pWriter->WriteNodeValue(strNodeName, m_iContent);
-				pWriter->WriteNodeValue(strNodeName, m_uContent);
-				pWriter->WriteNodeValue(strNodeName, m_dContent);
-				if (m_bContent.IsInit())
-				{
-					pWriter->StartNode(strNodeName);
-					pWriter->StartAttributes();
-					pWriter->EndAttributes();
-					if (*m_bContent)
-						pWriter->WriteString(NSBinPptxRW::g_bstr_boolean_true);
-					else
-						pWriter->WriteString(NSBinPptxRW::g_bstr_boolean_false);
-					pWriter->EndNode(strNodeName);
-				}
-				if (m_oVariant.IsInit())
-				{
-					m_oVariant->toXmlWriter(pWriter);
-				}
-				if (m_oVector.IsInit())
-				{
-					m_oVector->toXmlWriter(pWriter);
-				}
-				if (m_oArray.IsInit())
-				{
-					m_oArray->toXmlWriter(pWriter);
-				}
-				if (m_oVStream.IsInit())
-				{
-					m_oVStream->toXmlWriter(pWriter);
-				}
+				pWriter->StartNode(strNodeName);
+				pWriter->StartAttributes();
+				pWriter->EndAttributes();
+				pWriter->EndNode(strNodeName);
+			}
+			pWriter->WriteNodeValue2(strNodeName, m_strContent);
+			pWriter->WriteNodeValue(strNodeName, m_iContent);
+			pWriter->WriteNodeValue(strNodeName, m_uContent);
+			pWriter->WriteNodeValue(strNodeName, m_dContent);
+			if (m_bContent.IsInit())
+			{
+				pWriter->StartNode(strNodeName);
+				pWriter->StartAttributes();
+				pWriter->EndAttributes();
+				if (*m_bContent)
+					pWriter->WriteString(NSBinPptxRW::g_bstr_boolean_true);
+				else
+					pWriter->WriteString(NSBinPptxRW::g_bstr_boolean_false);
+				pWriter->EndNode(strNodeName);
+			}
+			if (m_oVariant.IsInit())
+			{
+				m_oVariant->toXmlWriter(pWriter);
+			}
+			if (m_oVector.IsInit())
+			{
+				m_oVector->toXmlWriter(pWriter);
+			}
+			if (m_oArray.IsInit())
+			{
+				m_oArray->toXmlWriter(pWriter);
+			}
+			if (m_oVStream.IsInit())
+			{
+				m_oVStream->toXmlWriter(pWriter);
 			}
 		}
 		void CVariant::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
@@ -353,7 +250,7 @@ namespace PPTX
 		void CVariant::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-			pWriter->WriteByte1(0, m_eType);
+			pWriter->WriteByte1(0, getVariantType());
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			pWriter->WriteString2(0, m_strContent);
@@ -366,6 +263,10 @@ namespace PPTX
 			pWriter->WriteRecord2(7, m_oArray);
 			pWriter->WriteRecord2(8, m_oVStream);
 
+		}
+		eVariantType CVariant::getVariantType() const
+		{
+			return m_eType.IsInit() ? m_eType.get() : vtEmpty;
 		}
 		eVariantType CVariant::getTypeByString(const std::wstring& sName)
 		{
@@ -437,7 +338,7 @@ namespace PPTX
 				return vtOStorage;
 			else if(L"clsid" == sName)
 				return vtClsid;
-			return vtUnknown;
+			return vtEmpty;
 		}
 		std::wstring CVariant::getStringByType(const eVariantType& eType)
 		{
@@ -541,10 +442,7 @@ namespace PPTX
 		{
 			pWriter->StartNode(_T("vt:vector"));
 			pWriter->StartAttributes();
-			if (vtUnknown != m_eBaseType)
-			{
-				pWriter->WriteAttribute(L"baseType", CVariant::getStringByType(m_eBaseType));
-			}
+			pWriter->WriteAttribute(L"baseType", CVariant::getStringByType(getVariantType()));
 			pWriter->WriteAttribute(L"size", m_nSize);
 			pWriter->EndAttributes();
 
@@ -599,11 +497,15 @@ namespace PPTX
 		void CVariantVector::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-			pWriter->WriteByte1(0, m_eBaseType);
+			pWriter->WriteByte1(0, getVariantType());
 			pWriter->WriteInt2(1, m_nSize);
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			pWriter->WriteRecordArray(0, 0, arrVariants);
+		}
+		eVariantType CVariantVector::getVariantType() const
+		{
+			return m_eBaseType.IsInit() ? m_eBaseType.get() : vtEmpty;
 		}
 
 		void CVariantArray::fromXML(XmlUtils::CXmlNode& node)
@@ -636,12 +538,9 @@ namespace PPTX
 		{
 			pWriter->StartNode(_T("vt:array"));
 			pWriter->StartAttributes();
-			pWriter->WriteAttribute(L"lBounds", m_strLBounds);
-			pWriter->WriteAttribute(L"uBounds", m_strUBounds);
-			if (vtUnknown != m_eBaseType)
-			{
-				pWriter->WriteAttribute(L"baseType", CVariant::getStringByType(m_eBaseType));
-			}
+			pWriter->WriteAttribute2(L"lBounds", m_strLBounds);
+			pWriter->WriteAttribute2(L"uBounds", m_strUBounds);
+			pWriter->WriteAttribute(L"baseType", CVariant::getStringByType(getVariantType()));
 			pWriter->EndAttributes();
 
 			for(size_t i = 0; i < arrVariants.size(); ++i)
@@ -696,19 +595,23 @@ namespace PPTX
 		void CVariantArray::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-			pWriter->WriteByte1(0, m_eBaseType);
+			pWriter->WriteByte1(0, getVariantType());
 			pWriter->WriteString2(1, m_strLBounds);
 			pWriter->WriteString2(2, m_strUBounds);
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			pWriter->WriteRecordArray(0, 0, arrVariants);
 		}
+		eVariantType CVariantArray::getVariantType() const
+		{
+			return m_eBaseType.IsInit() ? m_eBaseType.get() : vtEmpty;
+		}
 
 
 		void CustomProperty::fromXML(XmlUtils::CXmlNode& node)
 		{
 			XmlMacroReadAttributeBase(node, _T("fmtid"), m_strFmtid);
-			XmlMacroReadAttributeBase(node, _T("pid"), m_strPid);
+			XmlMacroReadAttributeBase(node, _T("pid"), m_nPid);
 			XmlMacroReadAttributeBase(node, _T("name"), m_strName);
 			XmlMacroReadAttributeBase(node, _T("linkTarget"), m_strLinkTarget);
 
@@ -733,10 +636,10 @@ namespace PPTX
 		{
 			pWriter->StartNode(_T("property"));
 			pWriter->StartAttributes();
-			pWriter->WriteAttribute(L"fmtid", m_strFmtid);
-			pWriter->WriteAttribute(L"pid", m_strPid);
-			pWriter->WriteAttribute(L"name", m_strName);
-			pWriter->WriteAttribute(L"linkTarget", m_strLinkTarget);
+			pWriter->WriteAttribute2(L"fmtid", m_strFmtid);
+			pWriter->WriteAttribute(L"pid", m_nPid);
+			pWriter->WriteAttribute2(L"name", m_strName);
+			pWriter->WriteAttribute2(L"linkTarget", m_strLinkTarget);
 			pWriter->EndAttributes();
 
 			if(m_oContent.IsInit())
@@ -758,7 +661,7 @@ namespace PPTX
 				switch (_at)
 				{
 				case 0: m_strFmtid = pReader->GetString2(); break;
-				case 1: m_strPid = pReader->GetLong(); break;
+				case 1: m_nPid = pReader->GetLong(); break;
 				case 2: m_strName = pReader->GetString2(); break;
 				case 3: m_strLinkTarget = pReader->GetString2(); break;
 				}
@@ -787,7 +690,7 @@ namespace PPTX
 		{
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 			pWriter->WriteString2(0, m_strFmtid);
-			pWriter->WriteInt2(1, m_strPid);
+			pWriter->WriteInt2(1, m_nPid);
 			pWriter->WriteString2(2, m_strName);
 			pWriter->WriteString2(3, m_strLinkTarget);
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);

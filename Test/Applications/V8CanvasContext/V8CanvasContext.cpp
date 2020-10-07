@@ -10,9 +10,25 @@
 // #include "v8.h"
 // #include "libplatform/libplatform.h"
 
-std::string to_string(v8::Isolate* isolate, const v8::Local<v8::Context>& context, const v8::Local<v8::Value>& v)
+class User
 {
-    v8::Local<v8::String> sRes = v->ToString(context).FromMaybe(v8::Local<v8::String>());
+private:
+    std::string m_sName;
+public:
+    User(const std::string& sName) : m_sName(sName) {}
+    virtual std::string sayHi() { return m_sName; }
+};
+
+User* unwrap_User(v8::Handle<v8::Object> obj)
+{
+    v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(obj->GetInternalField(0));
+    void* ptr = field->Value();
+    return static_cast<User*>(ptr);
+}
+
+std::string to_string(const v8::Local<v8::Context>& context, const v8::Local<v8::Value>& v)
+{
+    v8::Local<v8::String> sRes = v->ToString(context).ToLocalChecked();
     if(sRes.IsEmpty()) return std::string();
     v8::String::Utf8Value data(sRes);
     const char* p = *data;
@@ -53,28 +69,32 @@ HRESULT CV8CanvasContext::Run(const std::wstring& sPath)
     create_params.array_buffer_allocator = m_pAllocator;
     v8::Isolate* isolate = v8::Isolate::New(create_params);
 
-    v8::Isolate::Scope isolate_cope(isolate);
-    v8::Locker isolate_locker(isolate);
-
-    v8::HandleScope handle_scope(isolate);
-    v8::Local<v8::Context> context = v8::Context::New(isolate);
-    v8::Context::Scope context_scope(context);
-
-    v8::TryCatch try_catch(isolate);
-    v8::Local<v8::String> sSource = v8::String::NewFromUtf8(isolate, sCommands.data());
-    v8::Local<v8::Script> oScript = v8::Script::Compile(context, sSource).ToLocalChecked();
-    if(try_catch.HasCaught())
     {
-        std::cout << to_string(isolate, context, try_catch.Exception()) << std::endl;
-        return S_FALSE;
-    }
-    v8::Local<v8::Value> oRes = oScript->Run(context).ToLocalChecked();
-    if(try_catch.HasCaught())
-    {
-        std::cout << to_string(isolate, context, try_catch.Exception()) << std::endl;
-        return S_FALSE;
+        v8::Isolate::Scope isolate_scope(isolate);
+        v8::Locker isolate_locker(isolate);
+
+        v8::HandleScope handle_scope(isolate);
+        v8::Local<v8::Context> context = v8::Context::New(isolate);
+        v8::Context::Scope context_scope(context);
+
+        v8::TryCatch try_catch(isolate);
+        v8::Local<v8::String> sSource = v8::String::NewFromUtf8(isolate, sCommands.data());
+        v8::Local<v8::Script> oScript = v8::Script::Compile(context, sSource).ToLocalChecked();
+        if(try_catch.HasCaught())
+        {
+            std::cout << to_string(context, try_catch.Exception()) << std::endl;
+            return S_FALSE;
+        }
+        v8::Local<v8::Value> oRes = oScript->Run(context).ToLocalChecked();
+        if(try_catch.HasCaught())
+        {
+            std::cout << to_string(context, try_catch.Exception()) << std::endl;
+            return S_FALSE;
+        }
+
+        std::cout << to_string(context, oRes) << std::endl;
     }
 
-    std::cout << to_string(isolate, context, oRes) << std::endl;
+    isolate->Dispose();
     return S_OK;
 }

@@ -1,6 +1,13 @@
 #ifndef V8CANVASCONTEXT_H
 #define V8CANVASCONTEXT_H
 
+#include <string>
+#include <vector>
+
+#include "../../../DesktopEditor/common/Types.h"
+#include "../../../Common/3dParty/v8/v8/include/v8.h"
+// #include "v8.h"
+
 #ifndef V8CANVASCONTEXT_USE_DYNAMIC_LIBRARY
 #define V8CANVASCONTEXT_DECL_EXPORT
 #else
@@ -10,8 +17,15 @@
 
 class V8CANVASCONTEXT_DECL_EXPORT CV8CanvasContext
 {
+private:
+    v8::ArrayBuffer::Allocator* m_pAllocator;
+    v8::Platform* m_platform;
+
 public:
     CV8CanvasContext();
+    ~CV8CanvasContext();
+
+    HRESULT Run(const std::wstring& sPath);
 };
 
 #endif // V8CANVASCONTEXT_H

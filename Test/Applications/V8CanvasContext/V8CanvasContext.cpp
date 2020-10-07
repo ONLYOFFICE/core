@@ -47,10 +47,14 @@ HRESULT CV8CanvasContext::Run(const std::wstring& sPath)
     if (!bRet)
         return S_FALSE;
 
+    // Isolate
     v8::Isolate::CreateParams create_params;
     m_pAllocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
     create_params.array_buffer_allocator = m_pAllocator;
     v8::Isolate* isolate = v8::Isolate::New(create_params);
+
+    v8::Isolate::Scope isolate_cope(isolate);
+    v8::Locker isolate_locker(isolate);
 
     v8::HandleScope handle_scope(isolate);
     v8::Local<v8::Context> context = v8::Context::New(isolate);
@@ -58,13 +62,13 @@ HRESULT CV8CanvasContext::Run(const std::wstring& sPath)
 
     v8::TryCatch try_catch(isolate);
     v8::Local<v8::String> sSource = v8::String::NewFromUtf8(isolate, sCommands.data());
-    v8::Local<v8::Script> oScript = v8::Script::Compile(context, sSource).FromMaybe(v8::Local<v8::Script>());
+    v8::Local<v8::Script> oScript = v8::Script::Compile(context, sSource).ToLocalChecked();
     if(try_catch.HasCaught())
     {
         std::cout << to_string(isolate, context, try_catch.Exception()) << std::endl;
         return S_FALSE;
     }
-    v8::Local<v8::Value> oRes = oScript->Run(context).FromMaybe(v8::Local<v8::Value>());
+    v8::Local<v8::Value> oRes = oScript->Run(context).ToLocalChecked();
     if(try_catch.HasCaught())
     {
         std::cout << to_string(isolate, context, try_catch.Exception()) << std::endl;

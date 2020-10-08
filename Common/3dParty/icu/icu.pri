@@ -35,6 +35,7 @@ core_ios {
 core_android {
     INCLUDEPATH += $$PWD/android/build/include
     ICU_LIBS_PATH = $$replace(CORE_BUILDS_PLATFORM_PREFIX, "android_", "")
+    ICU_LIBS_PATH = $$replace(ICU_LIBS_PATH, "armv7", "armeabi-v7a")
 
     LIBS        += $$PWD/android/build/$$ICU_LIBS_PATH/libicuuc.so
     LIBS        += $$PWD/android/build/$$ICU_LIBS_PATH/libicudata.so

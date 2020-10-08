@@ -6800,6 +6800,7 @@ BinaryFileReader::BinaryFileReader()
 int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sDstPath, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions)
 {
 	bool bResultOk = false;
+	
 	NSFile::CFileBinary oFile;
 	
 	if (false == oFile.OpenFile(sSrcFileName)) return AVS_FILEUTILS_ERROR_CONVERT;
@@ -6906,11 +6907,20 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 			std::wstring themePath = sDstPath + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultDirectory().GetPath();
 			std::wstring drawingsPath = sDstPath + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Drawings.DefaultDirectory().GetPath();
            
+			bResultOk = true;
+			
 			if(BinXlsxRW::c_oFileTypes::XLSX == fileType)
 			{
 				SaveParams oSaveParams(drawingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), NULL);
 				
-				ReadMainTable(oXlsx, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, oSaveParams, pOfficeDrawingConverter);
+				try
+				{
+					ReadMainTable(oXlsx, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, oSaveParams, pOfficeDrawingConverter);
+				}
+				catch(...)
+				{
+					bResultOk = false;
+				}
 				
 				oXlsx.PrepareToWrite();
 				oXlsx.Write(sDstPath, *oSaveParams.pContentTypes);
@@ -6921,11 +6931,16 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 				oCSVWriter.Start(sDstPathCSV);
 				SaveParams oSaveParams(drawingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), &oCSVWriter);
 				
-				ReadMainTable(oXlsx, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, oSaveParams, pOfficeDrawingConverter);
-				
+				try
+				{
+					ReadMainTable(oXlsx, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, oSaveParams, pOfficeDrawingConverter);
+				}
+				catch(...)
+				{
+					bResultOk = false;
+				}				
 				oCSVWriter.End();
 			}
-			bResultOk = true;
 		}
 		if (!bIsNoBase64)
 		{

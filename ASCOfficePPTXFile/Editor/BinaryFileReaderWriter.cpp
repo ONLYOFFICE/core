@@ -575,10 +575,16 @@ namespace NSBinPptxRW
 
 		if ( oDownloader.DownloadSync() )
 		{
-			return oDownloader.GetFilePath();
+			std::wstring file_name = oDownloader.GetFilePath();
+			
+			CImageFileFormatChecker checker;
+			if (checker.isImageFile(file_name))
+			{
+				return file_name;
+			}
 		}
 #endif
-		return _T("");
+		return L"";
 	}
 
 	CBinaryFileWriter::CSeekTableEntry::CSeekTableEntry()
@@ -1884,6 +1890,16 @@ namespace NSBinPptxRW
         m_lPos += 8;
 		m_pDataCur += 8;
         return res;			
+	}
+	_INT32 CBinaryFileReader::GetRecordSize()
+	{
+		_INT32 sz = (_INT32)GetULong();
+		if (m_lPos + sz > m_lSize)
+		{
+			//todooo - переделать
+			throw;
+		}
+		return sz;
 	}
 	_INT32 CBinaryFileReader::GetLong()
 	{

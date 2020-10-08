@@ -31,21 +31,19 @@ public:
 CUser* unwrap_User(v8::Handle<v8::Object> obj)
 {
     v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(obj->GetInternalField(0));
-    void* ptr = field->Value();
-    return static_cast<CUser*>(ptr);
+    return static_cast<CUser*>(field->Value());
 }
 
 void sayHi(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
     CUser* pUser = unwrap_User(args.This());
-    std::string sUser = to_string(args[0]);
-    printf("%s\n", sUser.data());
-    //std::cout << sUser << std::endl;
+    std::string sHi = pUser->sayHi();
+    args.GetReturnValue().Set(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), sHi.c_str()));
 }
 
 v8::Handle<v8::ObjectTemplate> CreateUserTemplate(v8::Isolate* isolate)
 {
-    v8::HandleScope handle_scope(isolate);
+    //v8::HandleScope handle_scope(isolate);
     v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New(isolate);
     result->SetInternalFieldCount(1);
 

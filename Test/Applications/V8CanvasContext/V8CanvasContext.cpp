@@ -10,30 +10,63 @@
 // #include "v8.h"
 // #include "libplatform/libplatform.h"
 
-class User
+std::string to_string(const v8::Local<v8::Value>& v)
+{
+    v8::String::Utf8Value data(v);
+    const char* p = *data;
+    if (p == NULL) return std::string();
+    return std::string(p);
+}
+
+class CUser
 {
 private:
     std::string m_sName;
 public:
-    User(const std::string& sName) : m_sName(sName) {}
-    virtual std::string sayHi() { return m_sName; }
+    CUser() {}
+    CUser(const std::string& sName) : m_sName(sName) {}
+    std::string sayHi() { return m_sName; }
 };
 
-User* unwrap_User(v8::Handle<v8::Object> obj)
+CUser* unwrap_User(v8::Handle<v8::Object> obj)
 {
     v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(obj->GetInternalField(0));
     void* ptr = field->Value();
-    return static_cast<User*>(ptr);
+    return static_cast<CUser*>(ptr);
 }
 
-std::string to_string(const v8::Local<v8::Context>& context, const v8::Local<v8::Value>& v)
+void sayHi(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
-    v8::Local<v8::String> sRes = v->ToString(context).ToLocalChecked();
-    if(sRes.IsEmpty()) return std::string();
-    v8::String::Utf8Value data(sRes);
-    const char* p = *data;
-    if (p == NULL) return std::string();
-    return std::string(p);
+    CUser* pUser = unwrap_User(args.This());
+    std::string sUser = to_string(args[0]);
+    printf("%s\n", sUser.data());
+    //std::cout << sUser << std::endl;
+}
+
+v8::Handle<v8::ObjectTemplate> CreateUserTemplate(v8::Isolate* isolate)
+{
+    v8::HandleScope handle_scope(isolate);
+    v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New(isolate);
+    result->SetInternalFieldCount(1);
+
+    v8::Isolate* current = v8::Isolate::GetCurrent();
+
+    result->Set(current, "sayHi", v8::FunctionTemplate::New(current, sayHi));
+
+    return result;
+}
+
+void CreateUser(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    v8::Isolate* isolate = v8::Isolate::GetCurrent();
+
+    v8::Handle<v8::ObjectTemplate> oUser = CreateUserTemplate(isolate);
+    CUser* pUser = new CUser();
+
+    v8::Local<v8::Object> obj = oUser->NewInstance();
+    obj->SetInternalField(0, v8::External::New(v8::Isolate::GetCurrent(), pUser));
+
+    args.GetReturnValue().Set(obj);
 }
 
 CV8CanvasContext::CV8CanvasContext()
@@ -72,9 +105,12 @@ HRESULT CV8CanvasContext::Run(const std::wstring& sPath)
     {
         v8::Isolate::Scope isolate_scope(isolate);
         v8::Locker isolate_locker(isolate);
-
         v8::HandleScope handle_scope(isolate);
-        v8::Local<v8::Context> context = v8::Context::New(isolate);
+
+        v8::Handle<v8::ObjectTemplate> global = v8::ObjectTemplate::New(isolate);
+        global->Set(isolate, "CreateUser", v8::FunctionTemplate::New(isolate, CreateUser));
+
+        v8::Local<v8::Context> context = v8::Context::New(isolate, NULL, global);
         v8::Context::Scope context_scope(context);
 
         v8::TryCatch try_catch(isolate);
@@ -82,17 +118,17 @@ HRESULT CV8CanvasContext::Run(const std::wstring& sPath)
         v8::Local<v8::Script> oScript = v8::Script::Compile(context, sSource).ToLocalChecked();
         if(try_catch.HasCaught())
         {
-            std::cout << to_string(context, try_catch.Exception()) << std::endl;
+            std::cout << to_string(try_catch.Exception()) << std::endl;
             return S_FALSE;
         }
         v8::Local<v8::Value> oRes = oScript->Run(context).ToLocalChecked();
         if(try_catch.HasCaught())
         {
-            std::cout << to_string(context, try_catch.Exception()) << std::endl;
+            std::cout << to_string(try_catch.Exception()) << std::endl;
             return S_FALSE;
         }
 
-        std::cout << to_string(context, oRes) << std::endl;
+        std::cout << to_string(oRes) << std::endl;
     }
 
     isolate->Dispose();

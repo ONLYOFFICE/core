@@ -50,6 +50,12 @@ void SetName(const v8::FunctionCallbackInfo<v8::Value>& args)
     pUser->SetName(to_string(args[0]));
 }
 
+void name(v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CUser* pUser = unwrap_User(info.Holder());
+    info.GetReturnValue().Set(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), pUser->SayHi().data()));
+}
+
 v8::Handle<v8::ObjectTemplate> CreateUserTemplate(v8::Isolate* isolate)
 {
     //v8::HandleScope handle_scope(isolate);
@@ -58,8 +64,12 @@ v8::Handle<v8::ObjectTemplate> CreateUserTemplate(v8::Isolate* isolate)
 
     v8::Isolate* current = v8::Isolate::GetCurrent();
 
-    result->Set(current, "sayHi", v8::FunctionTemplate::New(current, SayHi));
-    result->Set(current, "name", v8::FunctionTemplate::New(current, SetName));
+    // свойства
+    result->SetAccessor(v8::String::NewFromUtf8(current, "name"), name);
+
+    // методы
+    result->Set(current, "SayHi", v8::FunctionTemplate::New(current, SayHi));
+    result->Set(current, "SetName", v8::FunctionTemplate::New(current, SetName));
 
     return result;
 }

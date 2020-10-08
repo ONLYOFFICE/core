@@ -1,1 +1,1 @@
-let user = CreateUser(); user.name("Svetlana"); user.sayHi();
+let user = CreateUser(); user.SetName("Svetlana"); user.name = "Elena"; user.SayHi();

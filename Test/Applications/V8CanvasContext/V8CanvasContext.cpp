@@ -25,7 +25,7 @@ private:
 public:
     CUser() {}
     void SetName(const std::string& sName) { m_sName = sName; }
-    std::string SayHi() { return m_sName; }
+    std::string GetName() { return m_sName; }
 };
 
 CUser* unwrap_User(v8::Handle<v8::Object> obj)
@@ -34,11 +34,10 @@ CUser* unwrap_User(v8::Handle<v8::Object> obj)
     return static_cast<CUser*>(field->Value());
 }
 
-void SayHi(const v8::FunctionCallbackInfo<v8::Value>& args)
+void GetName(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
     CUser* pUser = unwrap_User(args.This());
-    std::string sHi = pUser->SayHi();
-    args.GetReturnValue().Set(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), sHi.c_str()));
+    args.GetReturnValue().Set(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), pUser->GetName().data()));
 }
 
 void SetName(const v8::FunctionCallbackInfo<v8::Value>& args)
@@ -53,7 +52,7 @@ void SetName(const v8::FunctionCallbackInfo<v8::Value>& args)
 void nameget(v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
     CUser* pUser = unwrap_User(info.Holder());
-    info.GetReturnValue().Set(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), pUser->SayHi().data()));
+    info.GetReturnValue().Set(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), pUser->GetName().data()));
 }
 
 void nameset(v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
@@ -65,7 +64,6 @@ void nameset(v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::
 
 v8::Handle<v8::ObjectTemplate> CreateUserTemplate(v8::Isolate* isolate)
 {
-    //v8::HandleScope handle_scope(isolate);
     v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New(isolate);
     result->SetInternalFieldCount(1);
 
@@ -75,7 +73,7 @@ v8::Handle<v8::ObjectTemplate> CreateUserTemplate(v8::Isolate* isolate)
     result->SetAccessor(v8::String::NewFromUtf8(current, "name"), nameget, nameset);
 
     // методы
-    result->Set(current, "SayHi", v8::FunctionTemplate::New(current, SayHi));
+    result->Set(current, "GetName", v8::FunctionTemplate::New(current, GetName));
     result->Set(current, "SetName", v8::FunctionTemplate::New(current, SetName));
 
     return result;

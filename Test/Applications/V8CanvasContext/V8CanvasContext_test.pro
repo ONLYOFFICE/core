@@ -15,9 +15,13 @@ include($$CORE_ROOT_DIR/Common/3dParty/v8/v8.pri)
 
 ADD_DEPENDENCY(kernel, UnicodeConverter, graphics)
 
-SOURCES += main.cpp \
-    V8CanvasContext.cpp
+HEADERS += V8CanvasContext.h \
+    $$CORE_ROOT_DIR/DesktopEditor/doctrenderer/jsgraphics/graphics.h \
+    $$CORE_ROOT_DIR/DesktopEditor/doctrenderer/jsgraphics/graphics_wrapper.h
 
-HEADERS += V8CanvasContext.h
+SOURCES += main.cpp \
+    V8CanvasContext.cpp \
+    $$CORE_ROOT_DIR/DesktopEditor/doctrenderer/jsgraphics/graphics.cpp \
+    $$CORE_ROOT_DIR/DesktopEditor/doctrenderer/jsgraphics/graphics_wrapper.cpp \
 
 DESTDIR = $$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX

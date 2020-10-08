@@ -36,7 +36,8 @@ android {
                           "-DARG_NAME_LIB_UNICODECONVERTER=$NAME_LIB_UNICODECONVERTER",
                           "-DARG_NAME_LIB_X2T=$NAME_LIB_X2T",
                           "-DARG_NAME_LIB_XPSFILE=$NAME_LIB_XPSFILE",
-                          "-DARG_NAME_LIB_FB2FILE=$NAME_LIB_FB2FILE"
+                          "-DARG_NAME_LIB_FB2FILE=$NAME_LIB_FB2FILE",
+                          "-DARG_NAME_LIB_EPUBFILE=$NAME_LIB_EPUBFILE"
             }
         }
 
@@ -99,6 +100,7 @@ android {
             pickFirst "lib/$abi/lib${NAME_LIB_X2T}.so"
             pickFirst "lib/$abi/lib${NAME_LIB_XPSFILE}.so"
             pickFirst "lib/$abi/lib${NAME_LIB_FB2FILE}.so"
+            pickFirst "lib/$abi/lib${NAME_LIB_EPUBFILE}.so"
             pickFirst "lib/$abi/lib${NAME_LIB}.so"
         }
     }

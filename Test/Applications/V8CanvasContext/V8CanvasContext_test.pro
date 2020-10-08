@@ -6,15 +6,18 @@ TEMPLATE = app
 CONFIG += console
 CONFIG -= app_bundle
 
-DEFINES += V8CanvasContext_USE_DYNAMIC_LIBRARY
+DEFINES += V8CANVASCONTEXT_USE_DYNAMIC_LIBRARY
 
-CORE_ROOT_DIR = $$PWD/../../../../
+CORE_ROOT_DIR = $$PWD/../../../
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
+include($$CORE_ROOT_DIR/Common/3dParty/v8/v8.pri)
 
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lV8CanvasContext
 ADD_DEPENDENCY(kernel, UnicodeConverter, graphics)
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    V8CanvasContext.cpp
+
+HEADERS += V8CanvasContext.h
 
 DESTDIR = $$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX

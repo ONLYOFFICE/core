@@ -2,11 +2,10 @@
 #define V8CANVASCONTEXT_H
 
 #include <string>
-#include <vector>
 
 #include "../../../DesktopEditor/common/Types.h"
 #include "../../../Common/3dParty/v8/v8/include/v8.h"
-// #include "v8.h"
+#include "../../../Common/3dParty/v8/v8/include/libplatform/libplatform.h"
 
 #ifndef V8CANVASCONTEXT_USE_DYNAMIC_LIBRARY
 #define V8CANVASCONTEXT_DECL_EXPORT

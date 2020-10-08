@@ -7,9 +7,6 @@
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/common/Types.h"
 
-// #include "v8.h"
-// #include "libplatform/libplatform.h"
-
 std::string to_string(const v8::Local<v8::Value>& v)
 {
     v8::String::Utf8Value data(v);

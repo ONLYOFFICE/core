@@ -1186,7 +1186,19 @@ extern int g_nCurFormatVersion;
 		CheckboxCheckedFont = 40,
 		CheckboxCheckedVal = 41,
 		CheckboxUncheckedFont = 42,
-		CheckboxUncheckedVal = 43
+		CheckboxUncheckedVal = 43,
+		FormPr = 44,
+		FormPrKey = 45,
+		FormPrLabel = 46,
+		FormPrHelpText = 47,
+		FormPrRequired = 48,
+		CheckboxGroupKey = 59,
+		TextFormPr = 50,
+		TextFormPrComb = 51,
+		TextFormPrCombWidth = 52,
+		TextFormPrCombSym = 53,
+		TextFormPrCombFont = 54,
+		TextFormPrMaxCharacters = 55
 	};}
 	namespace c_oSerFFData{enum c_oSerFFData
 	{

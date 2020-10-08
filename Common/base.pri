@@ -141,6 +141,8 @@ core_mac {
     DEFINES += LINUX _LINUX MAC _MAC
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
     QMAKE_LFLAGS += -isysroot $$QMAKE_MAC_SDK_PATH
+
+    QMAKE_CFLAGS += "-Wno-implicit-function-declaration"
 }
 
 # PREFIXES
@@ -149,6 +151,7 @@ core_windows {
     QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
     QMAKE_CXXFLAGS -= -Zc:strictStrings
     QMAKE_CXXFLAGS += /MP
+    DEFINES += WINDOWS_IGNORE_PACKING_MISMATCH
 
     equals(TEMPLATE, app) {
         console {

@@ -1,1 +1,1 @@
-let user = new User("Svetlana"); user.sayHi();
+let user = CreateUser(); user.name("Svetlana"); user.sayHi();

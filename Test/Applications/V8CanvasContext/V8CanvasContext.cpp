@@ -24,8 +24,8 @@ private:
     std::string m_sName;
 public:
     CUser() {}
-    CUser(const std::string& sName) : m_sName(sName) {}
-    std::string sayHi() { return m_sName; }
+    void SetName(const std::string& sName) { m_sName = sName; }
+    std::string SayHi() { return m_sName; }
 };
 
 CUser* unwrap_User(v8::Handle<v8::Object> obj)
@@ -34,11 +34,20 @@ CUser* unwrap_User(v8::Handle<v8::Object> obj)
     return static_cast<CUser*>(field->Value());
 }
 
-void sayHi(const v8::FunctionCallbackInfo<v8::Value>& args)
+void SayHi(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
     CUser* pUser = unwrap_User(args.This());
-    std::string sHi = pUser->sayHi();
+    std::string sHi = pUser->SayHi();
     args.GetReturnValue().Set(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), sHi.c_str()));
+}
+
+void SetName(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
+    if (args.Length() < 1)
+        return;
+    CUser* pUser = unwrap_User(args.This());
+    pUser->SetName(to_string(args[0]));
 }
 
 v8::Handle<v8::ObjectTemplate> CreateUserTemplate(v8::Isolate* isolate)
@@ -49,7 +58,8 @@ v8::Handle<v8::ObjectTemplate> CreateUserTemplate(v8::Isolate* isolate)
 
     v8::Isolate* current = v8::Isolate::GetCurrent();
 
-    result->Set(current, "sayHi", v8::FunctionTemplate::New(current, sayHi));
+    result->Set(current, "sayHi", v8::FunctionTemplate::New(current, SayHi));
+    result->Set(current, "name", v8::FunctionTemplate::New(current, SetName));
 
     return result;
 }

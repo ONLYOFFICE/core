@@ -7489,6 +7489,18 @@ void BinaryDocumentTableWriter::WriteSdtPr(const OOX::Logic::CSdtPr& oStdPr)
 		WriteSdtCheckBox(oStdPr.m_oCheckbox.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if(oStdPr.m_oFormPr.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::FormPr);
+		WriteSdtFormPr(oStdPr.m_oFormPr.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oStdPr.m_oTextFormPr.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPr);
+		WriteSdtTextFormPr(oStdPr.m_oTextFormPr.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }
 void BinaryDocumentTableWriter::WriteSdtCheckBox(const OOX::Logic::CSdtCheckBox& oSdtCheckBox)
 {
@@ -7528,6 +7540,12 @@ void BinaryDocumentTableWriter::WriteSdtCheckBox(const OOX::Logic::CSdtCheckBox&
 			m_oBcw.m_oStream.WriteLONG(oSdtCheckBox.m_oUncheckedState->m_oVal->GetValue());
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
+	}
+	if(oSdtCheckBox.m_oGroupKey.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::CheckboxGroupKey);
+		m_oBcw.m_oStream.WriteStringW3(oSdtCheckBox.m_oGroupKey->ToString2());
+		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }
 void BinaryDocumentTableWriter::WriteSdtComboBox(const OOX::Logic::CSdtComboBox& oSdtComboBox)
@@ -7653,6 +7671,72 @@ void BinaryDocumentTableWriter::WriteDropDownList(const OOX::Logic::CSdtDropDown
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::SdtListItem);
 		WriteSdtListItem(*oDropDownList.m_arrListItem[i]);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+}
+void BinaryDocumentTableWriter::WriteSdtFormPr(const ComplexTypes::Word::CFormPr& oFormPr)
+{
+	int nCurPos = 0;
+	if(oFormPr.m_oKey.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::FormPrKey);
+		m_oBcw.m_oStream.WriteStringW3(oFormPr.m_oKey.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oFormPr.m_oLabel.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::FormPrLabel);
+		m_oBcw.m_oStream.WriteStringW3(oFormPr.m_oLabel.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oFormPr.m_oHelpText.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::FormPrHelpText);
+		m_oBcw.m_oStream.WriteStringW3(oFormPr.m_oHelpText.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oFormPr.m_oRequired.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::FormPrRequired);
+		m_oBcw.m_oStream.WriteBOOL(oFormPr.m_oRequired.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+}
+void BinaryDocumentTableWriter::WriteSdtTextFormPr(const OOX::Logic::CTextFormPr& oTextFormPr)
+{
+	int nCurPos = 0;
+	if(oTextFormPr.m_oComb.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrComb);
+		WriteSdtTextFormPrComb(oTextFormPr.m_oComb.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oTextFormPr.m_oMaxCharacters.IsInit() && oTextFormPr.m_oMaxCharacters->m_oVal.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrMaxCharacters);
+		m_oBcw.m_oStream.WriteLONG(oTextFormPr.m_oMaxCharacters->m_oVal.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+}
+void BinaryDocumentTableWriter::WriteSdtTextFormPrComb(const ComplexTypes::Word::CComb& oComb)
+{
+	int nCurPos = 0;
+	if(oComb.m_oWidth.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrCombWidth);
+		m_oBcw.m_oStream.WriteLONG(oComb.m_oWidth.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oComb.m_oSym.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrCombSym);
+		m_oBcw.m_oStream.WriteStringW3(oComb.m_oSym.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oComb.m_oFont.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrCombFont);
+		m_oBcw.m_oStream.WriteStringW3(oComb.m_oFont.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }

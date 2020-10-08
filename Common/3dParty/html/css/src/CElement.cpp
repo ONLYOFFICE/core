@@ -8,7 +8,6 @@ namespace NSCSS
 {
     CElement::CElement()
     {
-
     }
     CElement::~CElement()
     {
@@ -25,6 +24,11 @@ namespace NSCSS
     std::wstring CElement::GetSelector() const
     {
         return m_sSelector;
+    }
+
+    std::wstring CElement::GetFullSelector() const
+    {
+        return m_sFullSelector;
     }
 
     void CElement::SetSelector(const std::wstring &sSelector)
@@ -59,7 +63,10 @@ namespace NSCSS
             case 0:
             {
                 m_arPrevElements.push_back(oPrevElement);
-                oPrevElement->m_sFullSelector += m_sSelector;
+                if (m_sSelector[0] == L'.')
+                    oPrevElement->m_sFullSelector += m_sFullSelector;
+                else
+                    oPrevElement->m_sFullSelector += L' ' + m_sFullSelector;
                 return;
             }
             case 1:
@@ -67,7 +74,10 @@ namespace NSCSS
                 if (m_arPrevElements[0]->m_sSelector != oPrevElement->m_sSelector)
                 {
                     m_arPrevElements.push_back(oPrevElement);
-                    oPrevElement->m_sFullSelector += m_sSelector;
+                    if (m_sSelector[0] == L'.')
+                        oPrevElement->m_sFullSelector += m_sFullSelector;
+                    else
+                        oPrevElement->m_sFullSelector += L' ' + m_sFullSelector;
                 }
                 return;
             }
@@ -77,7 +87,10 @@ namespace NSCSS
                     m_arPrevElements[1]->m_sSelector != oPrevElement->m_sSelector)
                 {
                     m_arPrevElements.push_back(oPrevElement);
-                    oPrevElement->m_sFullSelector += m_sSelector;
+                    if (m_sSelector[0] == L'.')
+                        oPrevElement->m_sFullSelector += m_sFullSelector;
+                    else
+                        oPrevElement->m_sFullSelector += L' ' + m_sFullSelector;
                 }
                 return;
             }
@@ -88,7 +101,10 @@ namespace NSCSS
                     m_arPrevElements[2]->m_sSelector != oPrevElement->m_sSelector)
                 {
                     m_arPrevElements.push_back(oPrevElement);
-                    oPrevElement->m_sFullSelector += m_sSelector;
+                    if (m_sSelector[0] == L'.')
+                        oPrevElement->m_sFullSelector += m_sFullSelector;
+                    else
+                        oPrevElement->m_sFullSelector += L' ' + m_sFullSelector;
                 }
                 return;
             }
@@ -100,7 +116,10 @@ namespace NSCSS
                     m_arPrevElements[3]->m_sSelector != oPrevElement->m_sSelector)
                 {
                     m_arPrevElements.push_back(oPrevElement);
-                    oPrevElement->m_sFullSelector += m_sSelector;
+                    if (m_sSelector[0] == L'.')
+                        oPrevElement->m_sFullSelector += m_sFullSelector;
+                    else
+                        oPrevElement->m_sFullSelector += L' ' + m_sFullSelector;
                 }
                 return;
             }
@@ -110,7 +129,10 @@ namespace NSCSS
                                  [oPrevElement](CElement* oElement){ return  oElement->m_sSelector == oPrevElement->m_sSelector;}) == m_arPrevElements.end())
                 {
                     m_arPrevElements.push_back(oPrevElement);
-                    oPrevElement->m_sFullSelector += m_sSelector;
+                    if (m_sSelector[0] == L'.')
+                        oPrevElement->m_sFullSelector += m_sFullSelector;
+                    else
+                        oPrevElement->m_sFullSelector += L' ' + m_sFullSelector;
                 }
                 return;
             }
@@ -159,7 +181,7 @@ namespace NSCSS
 
     std::map<std::wstring, std::wstring> CElement::GetFullStyle(const std::vector<std::wstring> &arNodes) const
     {
-        if (arNodes.empty())
+        if (arNodes.empty() || (m_mStyle.empty() && m_arPrevElements.empty()))
             return std::map<std::wstring, std::wstring>();
 
 //        Print();
@@ -179,7 +201,6 @@ namespace NSCSS
                             std::vector<std::wstring> sTempNodes = arNodes;
                             sTempNodes.pop_back();
 
-//                            if (NS_STATIC_FUNCTIONS::GetWeightSelector(m_sSelector) <= NS_STATIC_FUNCTIONS::GetWeightSelector(oElement))
                             for (const std::pair<std::wstring, std::wstring> pPropertie : oElement->GetFullStyle(sTempNodes))
                                 mStyle[pPropertie.first] = pPropertie.second;
         //                    const std::map<std::wstring, std::wstring> mTempStyle = oElement->GetFullStyle((arNodes.size() > 1) ? std::vector<std::wstring>(&arNodes[1], &arNodes[arNodes.size() - 1]) : std::vector<std::wstring>());
@@ -192,7 +213,6 @@ namespace NSCSS
                     std::vector<std::wstring> sTempNodes = arNodes;
                     sTempNodes.pop_back();
                     for (const std::pair<std::wstring, std::wstring> pPropertie : oElement->GetFullStyle(sTempNodes))
-//                    for (const std::pair<std::wstring, std::wstring> pPropertie : oElement->GetFullStyle((arNodes.size() > 1) ? std::vector<std::wstring>(&arNodes[0], &arNodes[arNodes.size() - 2]) : std::vector<std::wstring>()))
                         mStyle[pPropertie.first] = pPropertie.second;
 //                    const std::map<std::wstring, std::wstring> mTempStyle = oElement->GetFullStyle((arNodes.size() > 1) ? std::vector<std::wstring>(&arNodes[1], &arNodes[arNodes.size() - 1]) : std::vector<std::wstring>());
 //                    mStyle.insert(mTempStyle.begin(), mTempStyle.end());
@@ -201,6 +221,48 @@ namespace NSCSS
         }
 
         return mStyle;
+    }
+
+    std::vector<CElement *> CElement::GetAllElements(const std::vector<std::wstring> &arNodes) const
+    {
+        if (arNodes.empty() || (m_mStyle.empty() && m_arPrevElements.empty()))
+            return std::vector<CElement *>();
+
+//        Print();
+//        std::wcout << L"++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
+
+        std::vector<CElement *> arElements;
+        if (!m_mStyle.empty())
+            arElements.push_back(const_cast<CElement*>(this));
+
+        for (const CElement* oElement : m_arPrevElements)
+        {
+            for (std::vector<std::wstring>::const_reverse_iterator sNode = arNodes.rbegin(); sNode != arNodes.rend(); ++sNode)
+            {
+                if ((*sNode)[0] == L'.')
+                {
+                    for (const std::wstring& sClass : NS_STATIC_FUNCTIONS::GetWordsW(*sNode, L" "))
+                    {
+                        if (oElement->GetSelector() == sClass)
+                        {
+                            std::vector<std::wstring> sTempNodes = arNodes;
+                            sTempNodes.pop_back();
+                            const std::vector<CElement*> arTemp = oElement->GetAllElements(sTempNodes);
+                            arElements.insert(arElements.end(), arTemp.begin(), arTemp.end());
+                        }
+                    }
+                }
+                else if (oElement->GetSelector() == *sNode)
+                {
+                    std::vector<std::wstring> sTempNodes = arNodes;
+                    sTempNodes.pop_back();
+                    const std::vector<CElement*> arTemp = oElement->GetAllElements(sTempNodes);
+                    arElements.insert(arElements.end(), arTemp.begin(), arTemp.end());
+                }
+            }
+        }
+
+        return arElements;
     }
 
     CElement *CElement::FindPrevElement(const std::wstring &sSelector) const
@@ -214,6 +276,23 @@ namespace NSCSS
                 return oElement;
         }
         return NULL;
+    }
+
+    std::vector<unsigned short> CElement::GetWeight()
+    {
+        if (m_arWeight.empty())
+            m_arWeight = NS_STATIC_FUNCTIONS::GetWeightSelector(m_sFullSelector);
+
+        return m_arWeight;
+    }
+
+    void CElement::IncreasedWeight()
+    {
+        if (!m_arWeight.empty())
+        {
+            m_arWeight = NS_STATIC_FUNCTIONS::GetWeightSelector(m_sFullSelector);
+            ++m_arWeight[3];
+        }
     }
 
     void CElement::Print() const

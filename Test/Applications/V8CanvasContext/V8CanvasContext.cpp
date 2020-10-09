@@ -128,7 +128,8 @@ HRESULT CV8CanvasContext::Run(const std::wstring& sPath)
         v8::HandleScope handle_scope(isolate);
 
         v8::Handle<v8::ObjectTemplate> global = v8::ObjectTemplate::New(isolate);
-        global->Set(isolate, "CreateUser", v8::FunctionTemplate::New(isolate, CreateUser));
+        global->Set(isolate, "User", v8::FunctionTemplate::New(isolate, CreateUser));
+        global->Set(isolate, "CGraphics", v8::FunctionTemplate::New(isolate, CreateGraphics));
 
         v8::Local<v8::Context> context = v8::Context::New(isolate, NULL, global);
         v8::Context::Scope context_scope(context);

@@ -7,6 +7,8 @@
 #include "../../../Common/3dParty/v8/v8/include/v8.h"
 #include "../../../Common/3dParty/v8/v8/include/libplatform/libplatform.h"
 
+#include "../../../DesktopEditor/doctrenderer/jsgraphics/graphics_wrapper.h"
+
 #ifndef V8CANVASCONTEXT_USE_DYNAMIC_LIBRARY
 #define V8CANVASCONTEXT_DECL_EXPORT
 #else

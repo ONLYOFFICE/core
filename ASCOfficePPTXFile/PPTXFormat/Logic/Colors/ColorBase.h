@@ -380,7 +380,7 @@ namespace PPTX
 				return 0;
 			}
 
-		protected:
+            public:
 			//origin color
 			unsigned char alpha;
 			unsigned char red;

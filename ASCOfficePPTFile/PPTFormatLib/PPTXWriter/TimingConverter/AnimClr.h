@@ -31,11 +31,116 @@
  */
 #pragma once
 
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/SchemeClr.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/SrgbClr.h"
+
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/AnimClr.h"
 #include "../../Records/Animations/ExtTimeNodeContainer.h"
+#include "../../Records/Animations/TimeVariant4Behavior.h"
+
+#include "CBhvr.h"
 
 
 namespace PPT_FORMAT
 {
+// TODO
+void FillAnimClr(
+        CRecordExtTimeNodeContainer* pETNC,
+        PPTX::Logic::AnimClr& oAnimClr)
+{
+    auto& clrAtom = pETNC->m_pTimeColorBehavior->m_oColorBehaviorAtom;
 
+
+    FillCBhvr(pETNC, oAnimClr.cBhvr);
+
+    if (pETNC->m_pTimeColorBehavior->m_oBehavior.m_havePropertyList){
+        for (auto pRec : pETNC->m_pTimeColorBehavior->m_oBehavior.m_pPropertyList->m_arRecords)
+        {
+            if (pRec->m_oHeader.RecInstance == TL_TBPID_ColorColorModel)
+            {
+                auto oTimeColorModel = dynamic_cast<CRecordTimeColorModel*>(pRec);
+                oAnimClr.clrSpc = new PPTX::Limit::TLColorSpace;
+                std::wstring clrSpc;
+                if (!clrAtom.m_fColorSpacePropertyUsed) clrSpc = L"rgb";
+                else clrSpc = oTimeColorModel->m_Value ? L"hsl" : L"rgb";
+                oAnimClr.clrSpc = clrSpc;
+            }
+            else if (pRec->m_oHeader.RecInstance == TL_TBPID_ColorDirection)
+            {
+                auto oTimeColorDirection = dynamic_cast<CRecordTimeColorDirection*>(pRec);
+                oAnimClr.dir = new PPTX::Limit::TLColorDirection;
+                std::wstring dir;
+                if (!clrAtom.m_fDirectionPropertyUsed) dir = L"cw";
+                else dir = oTimeColorDirection->m_Value ? L"ccw" : L"cw";
+                oAnimClr.dir = dir;
+            }
+        }
+    }
+
+    if (clrAtom.m_fByPropertyUsed)
+    {
+        if (clrAtom.m_sColorBy.model == 0) // RGB == 0
+        {
+            oAnimClr.byR = clrAtom.m_sColorBy.component0;
+            oAnimClr.byG = clrAtom.m_sColorBy.component1;
+            oAnimClr.byB = clrAtom.m_sColorBy.component2;
+        }
+        else if (clrAtom.m_sColorBy.model == 1) // HSL == 1
+        {
+            oAnimClr.byH = clrAtom.m_sColorBy.component0;
+            oAnimClr.byS = clrAtom.m_sColorBy.component1;
+            oAnimClr.byL = clrAtom.m_sColorBy.component2;
+        }
+    }
+
+    if (clrAtom.m_fFromPropertyUsed)
+    {
+        oAnimClr.from = *new PPTX::Logic::UniColor;
+        if (clrAtom.m_sColorFrom.model == 0)
+        {
+            auto pSrgb = new PPTX::Logic::SrgbClr;
+            pSrgb->red = clrAtom.m_sColorFrom.component0;
+            pSrgb->green = clrAtom.m_sColorFrom.component1;
+            pSrgb->blue = clrAtom.m_sColorFrom.component2;
+            oAnimClr.from.Color = pSrgb;
+        }
+        else
+        {
+            auto pScheme = new PPTX::Logic::SchemeClr;
+            std::wstring strVal;
+            UINT index = clrAtom.m_sColorFrom.component0;
+            if (index >= 4 || index < 10)
+            {
+                strVal = L"accent" + std::to_wstring(index - 3);
+            }
+            pScheme->val = strVal;
+            oAnimClr.from.Color = pScheme;
+        }
+    }
+
+    if (clrAtom.m_fToPropertyUsed)
+    {
+        oAnimClr.to = *new PPTX::Logic::UniColor;
+        if (clrAtom.m_sColorTo.model == 0)
+        {
+            auto pSrgb = new PPTX::Logic::SrgbClr;
+            pSrgb->red = clrAtom.m_sColorTo.component0;
+            pSrgb->green = clrAtom.m_sColorTo.component1;
+            pSrgb->blue = clrAtom.m_sColorTo.component2;
+            oAnimClr.to.Color = pSrgb;
+        }
+        else
+        {
+            auto pScheme = new PPTX::Logic::SchemeClr;
+            std::wstring strVal;
+            UINT index = clrAtom.m_sColorTo.component0;
+            if (index >= 4 || index < 10)
+            {
+                strVal = L"accent" + std::to_wstring(index - 3);
+            }
+            pScheme->val = strVal;
+            oAnimClr.to.Color = pScheme;
+        }
+    }
+}
 }

@@ -40,13 +40,13 @@ namespace PPT_FORMAT
 struct TimeAnimateColor
 {
     _UINT32 model;			//	0	-	RGB,	2	-	IndexScheme
-    _UINT32 m_nRed;
-    _UINT32 m_nGreen;
-    _UINT32 m_nBlue;
+    _UINT32 component0;
+    _UINT32 component1;
+    _UINT32 component2;
 
     inline unsigned long FRGB (BYTE alpha = 0xFF)
     {
-        return ((m_nBlue <<  16) |	(m_nGreen << 8) | (m_nRed <<   0) | (alpha << 24));
+        return ((component2 <<  16) |	(component1 << 8) | (component0 <<   0) | (alpha << 24));
     }
 };
 }

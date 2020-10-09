@@ -62,10 +62,10 @@ public:
 
         while (lCurLen < m_oHeader.RecLen)
         {
-            if (oHeader.ReadFromStream(pStream) == FALSE)
-            {
-                break;
-            }
+//            if (oHeader.ReadFromStream(pStream) == FALSE)
+//            {
+//                break;
+//            }
 
             if (oHeader.ReadFromStream(pStream)) {
                 lCurLen += 8 + oHeader.RecLen;

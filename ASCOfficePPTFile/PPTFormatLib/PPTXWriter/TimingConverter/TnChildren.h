@@ -72,7 +72,9 @@ namespace PPT_FORMAT
         }
         else if (pETNC->m_haveColorBehavior)
         {
-            // AnimClr
+            auto animClr = new PPTX::Logic::AnimClr;
+            FillAnimClr(pETNC, *animClr);
+            oChild.m_node = animClr;
         }
         else if (pETNC->m_haveEffectBehavior)
         {

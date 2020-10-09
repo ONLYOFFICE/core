@@ -1325,7 +1325,7 @@ void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CSlideShow
         }
         if (oSSInfo.m_dSlideDuration != 0)
         {
-            std::wstring sAdvTm = std::to_wstring(oSSInfo.m_dSlideDuration);
+            std::wstring sAdvTm = std::to_wstring((long)(oSSInfo.m_dSlideDuration));
             oWriter.WriteString(L" advTm=\"" + sAdvTm + L"\"");
         }
 	oWriter.WriteString(L">");

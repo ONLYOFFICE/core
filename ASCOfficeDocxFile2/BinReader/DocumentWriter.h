@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef DOCUMENT_WRITER
-#define DOCUMENT_WRITER
+#pragma once
 
 #include "../../XlsxSerializerCom/Common/Common.h"
 #include "../BinWriter/BinReaderWriterDefines.h"
@@ -143,4 +142,3 @@ mc:Ignorable=\"w14 w15 wp14\">")));
 		}
 	};
 }
-#endif	// #ifndef DOCUMENT_WRITER

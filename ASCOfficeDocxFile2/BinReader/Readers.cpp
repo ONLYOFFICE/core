@@ -4411,6 +4411,13 @@ int Binary_DocumentTableReader::ReadDocumentContent(BYTE type, long length, void
 		READ1_DEF(length, res, this->ReadMoveToRangeEnd, &oMoveToRangeEnd);
 		m_oDocumentWriter.m_oContent.WriteString(oMoveToRangeEnd.toXML());
 	}
+	else if (c_oSerParType::DocParts == type)
+	{
+		m_oDocumentWriter.m_oContent.WriteString(L"<w:docParts>");
+		OOX::Logic::CDocParts oDocParts;
+		READ1_DEF(length, res, this->ReadDocParts, &oDocParts);
+		m_oDocumentWriter.m_oContent.WriteString(L"</w:docParts>");
+	}
 	else if(c_oSerParType::JsaProject == type)
 	{
 		BYTE* pData = m_oBufferedStream.GetPointer(length);
@@ -4430,6 +4437,130 @@ int Binary_DocumentTableReader::ReadDocumentContent(BYTE type, long length, void
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
+int Binary_DocumentTableReader::ReadDocParts(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Logic::CDocParts* pDocParts = static_cast<OOX::Logic::CDocParts*>(poResult);
+	
+	if (c_oSerGlossary::DocPart == type)
+	{
+		m_oDocumentWriter.m_oContent.WriteString(L"<w:docPart>");
+		pDocParts->m_arrItems.push_back(new OOX::Logic::CDocPart());
+		READ1_DEF(length, res, this->ReadDocPart, pDocParts->m_arrItems.back());
+		m_oDocumentWriter.m_oContent.WriteString(L"</w:docPart>");
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int Binary_DocumentTableReader::ReadDocPart(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Logic::CDocPart* pDocPart = static_cast<OOX::Logic::CDocPart*>(poResult);
+
+	if (c_oSerGlossary::DocPartPr == type)
+	{
+		pDocPart->m_oDocPartPr = new OOX::Logic::CDocPartPr();
+		READ1_DEF(length, res, this->ReadDocPartPr, pDocPart->m_oDocPartPr.GetPointer());
+		
+		m_oDocumentWriter.m_oContent.WriteString(pDocPart->m_oDocPartPr->toXML());
+	}
+	else if (c_oSerGlossary::DocPartBody == type)
+	{
+		m_oDocumentWriter.m_oContent.WriteString(L"<w:docPartBody>");
+		READ1_DEF(length, res, this->ReadDocumentContent, this);
+		m_oDocumentWriter.m_oContent.WriteString(L"</w:docPartBody>");
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+
+int Binary_DocumentTableReader::ReadDocPartPr(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	
+	OOX::Logic::CDocPartPr* pDocPartPr = static_cast<OOX::Logic::CDocPartPr*>(poResult);
+
+	if (c_oSerGlossary::Name == type)
+	{
+		pDocPartPr->m_oName.Init();
+		pDocPartPr->m_oName->m_sVal = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSerGlossary::Style == type)
+	{
+		pDocPartPr->m_oStyle.Init();
+		pDocPartPr->m_oStyle->m_sVal = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSerGlossary::Guid == type)
+	{
+		pDocPartPr->m_oGuid.Init();
+		pDocPartPr->m_oGuid->m_sVal = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSerGlossary::Description == type)
+	{
+		pDocPartPr->m_oDescription.Init();
+		pDocPartPr->m_oDescription->m_sVal = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSerGlossary::CategoryName == type)
+	{
+		if (false == pDocPartPr->m_oCategory.IsInit()) pDocPartPr->m_oCategory.Init();
+		pDocPartPr->m_oCategory->m_oName.Init();
+		pDocPartPr->m_oCategory->m_oName->m_sVal = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSerGlossary::CategoryGallery == type)
+	{
+		if (false == pDocPartPr->m_oCategory.IsInit()) pDocPartPr->m_oCategory.Init();
+		pDocPartPr->m_oCategory->m_oGallery.Init();
+		pDocPartPr->m_oCategory->m_oGallery->m_oVal.Init();
+		pDocPartPr->m_oCategory->m_oGallery->m_oVal->SetValue((SimpleTypes::EDocPartGallery)m_oBufferedStream.GetUChar());
+	}
+	else if (c_oSerGlossary::Types == type)
+	{
+		pDocPartPr->m_oTypes = new OOX::Logic::CDocPartTypes();
+		READ1_DEF(length, res, this->ReadDocPartTypes, pDocPartPr->m_oTypes.GetPointer());
+	}
+	else if (c_oSerGlossary::Behaviors == type)
+	{
+		pDocPartPr->m_oBehaviors = new OOX::Logic::CDocPartBehaviors();
+		READ1_DEF(length, res, this->ReadDocPartBehaviors, pDocPartPr->m_oBehaviors.GetPointer());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int Binary_DocumentTableReader::ReadDocPartBehaviors(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Logic::CDocPartBehaviors* pDocPartBehaviors = static_cast<OOX::Logic::CDocPartBehaviors*>(poResult);
+
+	if (c_oSerGlossary::Behavior == type)
+	{
+		ComplexTypes::Word::CDocPartBehavior *behavior = new ComplexTypes::Word::CDocPartBehavior();
+		pDocPartBehaviors->m_arrItems.push_back(behavior);
+		behavior->m_oVal.Init();
+		behavior->m_oVal->SetValue((SimpleTypes::EDocPartBehavior)m_oBufferedStream.GetUChar());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int Binary_DocumentTableReader::ReadDocPartTypes(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Logic::CDocPartTypes* pDocPartTypes = static_cast<OOX::Logic::CDocPartTypes*>(poResult);
+
+	if (c_oSerGlossary::Type == type)
+	{
+		ComplexTypes::Word::String *type = new ComplexTypes::Word::String();
+		pDocPartTypes->m_arrItems.push_back(type);
+		type->m_sVal = m_oBufferedStream.GetString3(length);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+
 int Binary_DocumentTableReader::ReadParagraph(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
@@ -9130,8 +9261,10 @@ int BinaryFileReader::ReadMainTable()
 	long res = c_oSerConstants::ReadOk;
 
 	res = m_oBufferedStream.Peek(1) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;
+	
 	if(c_oSerConstants::ReadOk != res)
 		return res;
+	
 	long nOtherOffset		= -1;
 	long nStyleOffset		= -1;
 	long nSettingsOffset	= -1;
@@ -9143,7 +9276,7 @@ int BinaryFileReader::ReadMainTable()
 	std::vector<long> aOffBits;
 	BYTE mtLen = m_oBufferedStream.GetUChar();
 	
-	for(int i = 0; i < mtLen; ++i)
+	for (int i = 0; i < mtLen; ++i)
 	{
 		//mtItem
 		res = m_oBufferedStream.Peek(5) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;
@@ -9235,13 +9368,13 @@ int BinaryFileReader::ReadMainTable()
 			return res;
 	}
 	
-	for(size_t i = 0; i < aTypes.size(); ++i)
+	for (size_t i = 0; i < aTypes.size(); ++i)
 	{
 		BYTE mtiType = aTypes[i];
 		long mtiOffBits = aOffBits[i];
 
 		m_oBufferedStream.Seek(mtiOffBits);
-		switch(mtiType)
+		switch (mtiType)
 		{
 			//case c_oSerTableTypes::Signature:break;
 			//case c_oSerTableTypes::Info:break;
@@ -9251,49 +9384,47 @@ int BinaryFileReader::ReadMainTable()
 			//case c_oSerTableTypes::Document:
 			//	res = Binary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_oDocumentWriter).Read();
 			//	break;
-			case c_oSerTableTypes::App:
-				{
-					PPTX::App oApp(NULL);
-					oApp.fromPPTY(&m_oBufferedStream);
-					OOX::CApp* pApp = new OOX::CApp(NULL);
-					pApp->FromPptxApp(&oApp);
-					pApp->SetRequiredDefaults();
-					m_oFileWriter.m_pApp = pApp;
-				}
-				break;
-			case c_oSerTableTypes::Core:
-				{
-					PPTX::Core oCore(NULL);
-					oCore.fromPPTY(&m_oBufferedStream);
-					OOX::CCore* pCore = new OOX::CCore(NULL);
-					pCore->FromPptxCore(&oCore);
-					pCore->SetRequiredDefaults();
-					m_oFileWriter.m_pCore = pCore;
-				}
-				break;
-			case c_oSerTableTypes::HdrFtr:
-				res = Binary_HdrFtrTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_pComments).Read();
-				break;
-			case c_oSerTableTypes::Numbering:
-				res = Binary_NumberingTableReader(m_oBufferedStream, m_oFileWriter).Read();
-				break;
-			case c_oSerTableTypes::Footnotes:
-				res = Binary_NotesTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_pComments, true).Read();
-				break;
-			case c_oSerTableTypes::Endnotes:
-				res = Binary_NotesTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_pComments, false).Read();
-				break;
-			case c_oSerTableTypes::VbaProject:
-				res = Binary_VbaProjectTableReader(m_oBufferedStream, m_oFileWriter).Read();
-				break;
-
-			//Comments должны читаться раньше чем c_oSerTableTypes::Document
-			//case c_oSerTableTypes::Comments
-			//	res = oBinary_CommentsTableReader.Read();
-			//	break;
-			//case c_oSerTableTypes::Other:
-			//	res = Binary_OtherTableReader(m_sFileInDir, m_oBufferedStream, m_oFileWriter).Read();
-			//	break;
+		case c_oSerTableTypes::App:
+		{
+			PPTX::App oApp(NULL);
+			oApp.fromPPTY(&m_oBufferedStream);
+			OOX::CApp* pApp = new OOX::CApp(NULL);
+			pApp->FromPptxApp(&oApp);
+			pApp->SetRequiredDefaults();
+			m_oFileWriter.m_pApp = pApp;
+		}
+		break;
+		case c_oSerTableTypes::Core:
+		{
+			PPTX::Core oCore(NULL);
+			oCore.fromPPTY(&m_oBufferedStream);
+			OOX::CCore* pCore = new OOX::CCore(NULL);
+			pCore->FromPptxCore(&oCore);
+			pCore->SetRequiredDefaults();
+			m_oFileWriter.m_pCore = pCore;
+		}
+		break;
+		case c_oSerTableTypes::HdrFtr:
+			res = Binary_HdrFtrTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_pComments).Read();
+			break;
+		case c_oSerTableTypes::Numbering:
+			res = Binary_NumberingTableReader(m_oBufferedStream, m_oFileWriter).Read();
+			break;
+		case c_oSerTableTypes::Footnotes:
+			res = Binary_NotesTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_pComments, true).Read();
+			break;
+		case c_oSerTableTypes::Endnotes:
+			res = Binary_NotesTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_pComments, false).Read();
+			break;
+		case c_oSerTableTypes::VbaProject:
+			res = Binary_VbaProjectTableReader(m_oBufferedStream, m_oFileWriter).Read();
+			break;
+		case c_oSerTableTypes::Glossary:
+		{
+			m_oFileWriter.m_bGlossaryRead = true;
+			ReadMainTable();
+			m_oFileWriter.m_bGlossaryRead = false;
+		}break;
 		}
 		if(c_oSerConstants::ReadOk != res)
 			return res;

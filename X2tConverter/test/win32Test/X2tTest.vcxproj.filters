@@ -126,9 +126,6 @@
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\CommentsWriter.h">
       <Filter>DOCX\Reader\OOXWriter</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\ContentTypesWriter.h">
-      <Filter>DOCX\Reader\OOXWriter</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\DocumentRelsWriter.h">
       <Filter>DOCX\Reader\OOXWriter</Filter>
     </ClInclude>

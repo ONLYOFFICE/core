@@ -95,7 +95,7 @@ namespace ComplexTypes
 		
 		std::wstring ValNode(const std::wstring &node_name)
 		{
-			return L"<" + node_name + L">" + ToString() + L"</" + node_name + L">";
+			return L"<" + node_name + L" " + ToString() + L"/>";
 		}
 	};
 	//--------------------------------------------------------------------------------

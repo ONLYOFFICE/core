@@ -104,5 +104,7 @@ namespace Writers
 		}
 
         void Write();
+
+		bool m_bGlossaryRead = false;
 	};
 }

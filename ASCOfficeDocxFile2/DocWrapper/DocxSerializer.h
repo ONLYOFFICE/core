@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef DOCX_SERIALIZER
-#define DOCX_SERIALIZER
+#pragma once
 
 #include "../../Common/DocxFormat/Source/DocxFormat/WritingElement.h"
 
@@ -80,4 +79,3 @@ namespace BinDocxRW
         void setSaveChartAsImg  (bool bSaveChartAsImg);
 	};
 }
-#endif	// #ifndef DOCX_SERIALIZER

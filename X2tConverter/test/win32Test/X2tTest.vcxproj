@@ -237,7 +237,6 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\ChartWriter.h" />
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\CommentsWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\ContentTypesWriter.h" />
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\DocumentRelsWriter.h" />
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\DocumentWriter.h" />
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\FileWriter.h" />

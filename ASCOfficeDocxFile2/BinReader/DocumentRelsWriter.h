@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef DOCUMENT_RELS_WRITER
-#define DOCUMENT_RELS_WRITER
+#pragma once
 
 #include "../../XlsxSerializerCom/Common/Common.h"
 
@@ -63,4 +62,3 @@ namespace Writers
 		}
 	};
 }
-#endif	// #ifndef DOCUMENT_RELS_WRITER

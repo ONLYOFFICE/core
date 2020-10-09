@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef NUMBERING_WRITER
-#define NUMBERING_WRITER
+#pragma once
 
 #include "DocumentRelsWriter.h"
 
@@ -73,4 +72,3 @@ namespace Writers
 		}
 	};
 }
-#endif	// #ifndef NUMBERING_WRITER

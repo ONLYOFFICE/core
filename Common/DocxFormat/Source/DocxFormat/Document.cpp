@@ -122,7 +122,7 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:themeColor", m_oThemeColor)
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:themeShade", m_oThemeShade)
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:themeTint", m_oThemeTint)
-				WritingElement_ReadAttributes_End(oReader)
+			WritingElement_ReadAttributes_End(oReader)
 		}
 
 		void CBgPict::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -201,6 +201,7 @@ namespace OOX
 			else if (type == OOX::FileTypes::GlossaryDocument)
 			{
 				docx->m_oGlossary.document = this;
+				docx->m_bGlossaryRead = true;
 			}
 			else
 			{
@@ -414,8 +415,9 @@ namespace OOX
 			}
 			else if (L"w:docParts" == sName && !oReader.IsEmptyNode())
 			{
-				m_oDocParts = new OOX::Logic::CDocParts(WritingElement::m_pMainDocument);
-				m_oDocParts->fromXML(oReader);
+				WritingElement *pItem = new OOX::Logic::CDocParts(WritingElement::m_pMainDocument);
+				m_arrItems.push_back(pItem);
+				pItem->fromXML(oReader);
 			}
 		}
 	}

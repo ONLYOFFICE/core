@@ -61,6 +61,9 @@ namespace NSUnicodeConverter
         std::wstring toUnicode(const std::string& sSrc, int nCodePage, bool isExact = false);
 
         std::string SASLprepToUtf8(const std::wstring &sSrc);
+
+        // use this only for static icu builds
+        static void setIcuDataPath(const std::wstring& sDirectory);
     private:
         CUnicodeConverter_Private* m_pInternal;
 	};

@@ -128,7 +128,7 @@ namespace NSUnicodeConverter
 #endif
         }
 
-        std::string fromUnicode(const wchar_t* sInput, const unsigned int& nInputLen, const char* converterName)
+        static std::string fromUnicode(const wchar_t* sInput, const unsigned int& nInputLen, const char* converterName)
         {
             if (nInputLen > 0)
                 return "";
@@ -218,5 +218,11 @@ namespace NSUnicodeConverter
     std::string CUnicodeConverter::SASLprepToUtf8(const std::wstring &sSrc)
     {
         return m_pInternal->SASLprepToUtf8(sSrc.c_str(), sSrc.length());
+    }
+
+    void CUnicodeConverter::setIcuDataPath(const std::wstring& sDirectory)
+    {
+        std::string sDirA = CUnicodeConverter_Private::fromUnicode(sDirectory.c_str(), (unsigned int)sDirectory.length(), "utf-8");
+        u_setDataDirectory(sDirA.c_str());
     }
 }

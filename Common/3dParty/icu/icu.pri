@@ -36,6 +36,6 @@ core_android {
     INCLUDEPATH += $$PWD/android/build/include
     ICU_LIBS_PATH = $$replace(CORE_BUILDS_PLATFORM_PREFIX, "android_", "")
 
-    LIBS        += $$PWD/android/build/$$ICU_LIBS_PATH/libicuuc.so
-    LIBS        += $$PWD/android/build/$$ICU_LIBS_PATH/libicudata.so
+    LIBS        += $$PWD/android/build/$$ICU_LIBS_PATH/libicuuc.a
+    LIBS        += $$PWD/android/build/$$ICU_LIBS_PATH/libicudata.a
 }

@@ -1,0 +1,70 @@
+
+
+	@charset 'iso-8859-15';
+
+	@page
+	{
+		padding: 0pt;
+		margin:	0pt;
+	}
+	
+
+	.animate__animated.animate__faster {
+	  -webkit-animation-duration: calc(1s / 2);
+	  animation-duration: calc(1s / 2);
+	  -webkit-animation-duration: calc(var(--animate-duration) / 2);
+	  animation-duration: calc(var(--animate-duration) / 2);
+	}
+	.Author
+	{
+		color: green;
+		text-decoration: underline;
+	    border-radius:  4.5px;
+	}
+
+	#first
+	{
+		color: green;
+	}
+
+	p
+	{
+		text-indent: 1.5em;
+	    text-align: justify;
+	}
+
+	h1, h2, h3, h4
+	{
+		color: black;
+		text-decoration: overline; 
+		margin : 0pt;
+	}
+	#main .container article.post > header h1.giga 
+	{
+  		color: #777;
+	}
+
+	*
+	{
+		background: black !important;
+	}
+
+	@media only screen and (min-width: 768px) {
+	  nav li {
+	    display: inline-block;
+	  }
+	}
+
+	#main .container + header h1
+	{
+		margin: 10px;
+		padding: 10%;
+	}
+
+	#test
+	{
+		padding: 10px;
+		color: yellow;
+		background: white;
+	}
+

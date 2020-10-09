@@ -61,15 +61,15 @@ bool OOXReader::Parse()
 	oReaderParameter.oRtf		= &m_oDocument;
 	oReaderParameter.oReader	= this;
 
-	if (inputDocxFile.m_pSettings)
+	if (inputDocxFile.m_oMain.settings)
 	{ //важно чтобы первыми читались именно settings (например для footnote)
-		OOXSettingsReader oSettingsReader( inputDocxFile.m_pSettings );
+		OOXSettingsReader oSettingsReader( inputDocxFile.m_oMain.settings );
 		oSettingsReader.Parse( oReaderParameter );
 	}
 
-	if (inputDocxFile.m_pFontTable)
+	if (inputDocxFile.m_oMain.fontTable)
 	{
-		OOXFontTableReader oFontTableReader( inputDocxFile.m_pFontTable );
+		OOXFontTableReader oFontTableReader( inputDocxFile.m_oMain.fontTable );
 		oFontTableReader.Parse( oReaderParameter );
 	}
 	
@@ -79,15 +79,15 @@ bool OOXReader::Parse()
 		oThemeReader.Parse( oReaderParameter );
 	}
 
-	if (inputDocxFile.m_pNumbering)
+	if (inputDocxFile.m_oMain.numbering)
 	{
-		OOXNumberingReader oNumberingReader( inputDocxFile.m_pNumbering );
+		OOXNumberingReader oNumberingReader( inputDocxFile.m_oMain.numbering );
 		oNumberingReader.Parse(oReaderParameter );
 	}
 	
-	if (inputDocxFile.m_pStyles)
+	if (inputDocxFile.m_oMain.styles)
 	{
-		OOXStyleTableReader oStyleTableReader( inputDocxFile.m_pStyles );
+		OOXStyleTableReader oStyleTableReader( inputDocxFile.m_oMain.styles );
 		oStyleTableReader.Parse( oReaderParameter );
 	}
 	
@@ -103,23 +103,23 @@ bool OOXReader::Parse()
 		oDocPropCoreReader.Parse(oReaderParameter  );
 	}
 	
-	if (inputDocxFile.m_pFootnotes)
+	if (inputDocxFile.m_oMain.footnotes)
 	{
-		OOXFootnotesReader oFootnotesReader( inputDocxFile.m_pFootnotes );
+		OOXFootnotesReader oFootnotesReader( inputDocxFile.m_oMain.footnotes );
 		oFootnotesReader.Parse( oReaderParameter);
 	}
 
-	if (inputDocxFile.m_pEndnotes)
+	if (inputDocxFile.m_oMain.endnotes)
 	{
-		OOXFootnotesReader oEndnotesReader( inputDocxFile.m_pEndnotes );
+		OOXFootnotesReader oEndnotesReader( inputDocxFile.m_oMain.endnotes );
 		oEndnotesReader.Parse( oReaderParameter);  
 	}
 
-	if (inputDocxFile.m_pDocument)
+	if (inputDocxFile.m_oMain.document)
 	{
-		m_currentContainer = dynamic_cast<OOX::IFileContainer*>(inputDocxFile.m_pDocument);
+		m_currentContainer = dynamic_cast<OOX::IFileContainer*>(inputDocxFile.m_oMain.document);
 		
-		OOXDocumentReader oDocReader( inputDocxFile.m_pDocument );
+		OOXDocumentReader oDocReader( inputDocxFile.m_oMain.document );
 		oDocReader.Parse( oReaderParameter );
 	}
 

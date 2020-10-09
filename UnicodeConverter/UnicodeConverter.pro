@@ -20,12 +20,14 @@ core_linux {
 }
 
 core_ios {
-	CONFIG += bundle_dylibs
-}
+    CONFIG += bundle_dylibs
+    OBJECTIVE_SOURCES += UnicodeConverter_internal_ios.mm
 
-core_android {
+    # SASLprepToUtf8 TODO: remove this dependence
     CONFIG += core_disable_icu
-    SOURCES += UnicodeConverter_internal_android.cpp
+    include(../Common/3dParty/icu/icu.pri)
+
+    LIBS += -framework Foundation
 }
 
 !core_disable_icu {

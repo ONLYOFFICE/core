@@ -12,6 +12,7 @@
 
 #include <vector>
 #include <map>
+#include <numeric>
 
 #ifndef VALUE2STR
 #define VALUE_TO_STRING(x) #x
@@ -57,7 +58,7 @@ struct STitleInfo
 
     ~STitleInfo()
     {
-        m_arGenres.clear();
+        m_arGenres .clear();
         m_arAuthors.clear();
         /*
         m_arTranslator.clear();
@@ -82,19 +83,15 @@ struct STitleInfo
     // Разделитель не важен ,
     std::wstring getGenres()
     {
-        std::wstring sRes = L"";
-        for(std::wstring& vElem : m_arGenres)
-            sRes += vElem + L", ";
-        return sRes;
+        return std::accumulate(m_arGenres.begin(), m_arGenres.end(), std::wstring(),
+            [] (std::wstring& sRes, const std::wstring& vElem) { return sRes += vElem + L", "; });
     }
 
     // Разделитель ;
     std::wstring getAuthors()
     {
-        std::wstring sRes = L"";
-        for(SAuthor& vElem : m_arAuthors)
-            sRes += vElem.middle_name + L" " + vElem.first_name + L" " + vElem.last_name + L";";
-        return sRes;
+        return std::accumulate(m_arAuthors.begin(), m_arAuthors.end(), std::wstring(),
+            [] (std::wstring& sRes, const SAuthor& vElem) { return sRes += vElem.middle_name + L" " + vElem.first_name + L" " + vElem.last_name + L";"; });
     }
 };
 
@@ -174,6 +171,7 @@ public:
     // SDocumentInfo m_oDocumentInfo;         // Информация об fb2-документе
     // std::wstring m_sTmpFolder;             // Рабочая папка
 
+private:
     int m_nContentsId;       // ID содержания
     int m_nCrossReferenceId; // ID перекрестной ссылки
 
@@ -189,7 +187,7 @@ public:
     {
         // m_pSrcTitleInfo = NULL;
         // m_pPublishInfo = NULL;
-        m_nContentsId = 1;
+        m_nContentsId       = 1;
         m_nCrossReferenceId = 1;
     }
 
@@ -218,11 +216,7 @@ public:
     // Проверяет наличие тэга FictionBook
     bool isFictionBook()
     {
-        if(!m_oLightReader.ReadNextNode())
-            return false;
-        if(m_oLightReader.GetName() != L"FictionBook")
-            return false;
-        return true;
+        return m_oLightReader.ReadNextNode() ? m_oLightReader.GetName() == L"FictionBook" : false;
     }
 
     // Читает поля автора
@@ -237,11 +231,11 @@ public:
         {
             std::wstring sName = m_oLightReader.GetName();
             if(sName == L"first-name")
-                oAuthor.first_name = content();
+                oAuthor.first_name  = content();
             else if(sName == L"middle-name")
                 oAuthor.middle_name = content();
             else if(sName == L"last-name")
-                oAuthor.last_name = content();
+                oAuthor.last_name   = content();
             /*
             else if(sName == L"nickname")
                 oAuthor.nickname = content();

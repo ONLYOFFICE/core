@@ -40,10 +40,10 @@ endmacro()
 
 # ---------- Arguments ----------
 # 3dParty libs path arg
-if (NOT DEFINED ARG_PATH_LIB_SRC_3D_PARTY)
-    message(FATAL_ERROR "You must set argument \"ARG_PATH_LIB_SRC_3D_PARTY\" with path to 3d-party library...")
-elseif (NOT EXISTS ${ARG_PATH_LIB_SRC_3D_PARTY})
-    file(MAKE_DIRECTORY ${ARG_PATH_LIB_SRC_3D_PARTY})
+if (NOT DEFINED ARG_PATH_LIB_BUILD_TOOLS)
+    message(FATAL_ERROR "You must set argument \"ARG_PATH_LIB_BUILD_TOOLS\" with path to 3d-party library...")
+elseif (NOT EXISTS ${ARG_PATH_LIB_BUILD_TOOLS})
+    file(MAKE_DIRECTORY ${ARG_PATH_LIB_BUILD_TOOLS})
     message(STATUS "Destination 3dParty path doesn't exist, created!")
 endif()
 
@@ -60,39 +60,127 @@ if (NOT DEFINED ARG_PATH_SRC_CORE)
     message(FATAL_ERROR "You must set argument \"ARG_PATH_SRC_CORE\" with path to core sources...")
 endif()
 
-# X2t library name
+# X2tConverter library name
 if (NOT DEFINED ARG_NAME_LIB)
-    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB\" with x2t lib name...")
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB\" with x2tConverter lib name...")
 endif()
 
+# djvufile library name
+if (NOT DEFINED ARG_NAME_LIB_DJVUFILE)
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB_DJVUFILE\" with djvufile lib name...")
+endif()
+
+# doctrenderer library name
+if (NOT DEFINED ARG_NAME_LIB_DOCTRENDERER)
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB_DOCTRENDERER\" with doctrenderer lib name...")
+endif()
+
+# graphics library name
+if (NOT DEFINED ARG_NAME_LIB_GRAPHICS)
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB_GRAPHICS\" with graphics lib name...")
+endif()
+
+# htmlfile library name
+if (NOT DEFINED ARG_NAME_LIB_HTMLFILE)
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB_HTMLFILE\" with htmlfile lib name...")
+endif()
+
+# htmlrenderer library name
+if (NOT DEFINED ARG_NAME_LIB_HTMLRENDERER)
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB_HTMLRENDERER\" with htmlrenderer lib name...")
+endif()
+
+# kernel library name
+if (NOT DEFINED ARG_NAME_LIB_KERNEL)
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB_KERNEL\" with kernel lib name...")
+endif()
+
+# pdfreader library name
+if (NOT DEFINED ARG_NAME_LIB_PDFREADER)
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB_PDFREADER\" with pdfreader lib name...")
+endif()
+
+# pdfwriter library name
+if (NOT DEFINED ARG_NAME_LIB_PDFWRITER)
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB_PDFWRITER\" with pdfwriter lib name...")
+endif()
+
+# unicodeconverter library name
+if (NOT DEFINED ARG_NAME_LIB_UNICODECONVERTER)
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB_UNICODECONVERTER\" with unicodeconverter lib name...")
+endif()
+
+# x2t library name
+if (NOT DEFINED ARG_NAME_LIB_X2T)
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB_X2T\" with x2t lib name...")
+endif()
+
+# xpsfile library name
+if (NOT DEFINED ARG_NAME_LIB_XPSFILE)
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB_XPSFILE\" with xpsfile lib name...")
+endif()
+
+# fb2file library name
+if (NOT DEFINED ARG_NAME_LIB_FB2FILE)
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB_FB2FILE\" with fb2file lib name...")
+endif()
 
 # ---------- Names ----------
+# X2tConverter lib
+set(LIB_NAME_X2T_CONVERTER ${ARG_NAME_LIB})
+# djvufile lib
+set(LIB_NAME_DJVUFILE ${ARG_NAME_LIB_DJVUFILE})
+# doctrenderer lib
+set(LIB_NAME_DOCTRENDERER ${ARG_NAME_LIB_DOCTRENDERER})
+# graphics lib
+set(LIB_NAME_GRAPHICS ${ARG_NAME_LIB_GRAPHICS})
+# htmlfile lib
+set(LIB_NAME_HTMLFILE ${ARG_NAME_LIB_HTMLFILE})
+# htmlrenderer lib
+set(LIB_NAME_HTMLRENDERER ${ARG_NAME_LIB_HTMLRENDERER})
+# kernel lib
+set(LIB_NAME_KERNEL ${ARG_NAME_LIB_KERNEL})
+# pdfreader lib
+set(LIB_NAME_PDFREADER ${ARG_NAME_LIB_PDFREADER})
+# pdfwriter lib
+set(LIB_NAME_PDFWRITER ${ARG_NAME_LIB_PDFWRITER})
+# unicodeconverter lib
+set(LIB_NAME_UNICODECONVERTER ${ARG_NAME_LIB_UNICODECONVERTER})
 # x2t lib
-set(LIB_NAME_X2T ${ARG_NAME_LIB})
-
-# 3d party libraries
-set(LIB_NAME_ICONV iconv)
-set(LIB_NAME_BOOST boost)
-set(LIB_NAME_BOOST_REGEX boost_regex)
-set(LIB_NAME_ICU icu)
-set(LIB_NAME_ICU_DATA icudata)
-set(LIB_NAME_ICU_i18n icui18n)
-set(LIB_NAME_ICU_UC icuuc)
-
+set(LIB_NAME_X2T ${ARG_NAME_LIB_X2T})
+# xpsfile lib
+set(LIB_NAME_XPSFILE ${ARG_NAME_LIB_XPSFILE})
+# fb2file lib
+set(LIB_NAME_FB2FILE ${ARG_NAME_LIB_FB2FILE})
 # ---------- Paths sources  ----------
 # Core src dir path
 set(CORE_DIR ${ARG_PATH_SRC_CORE})
-message(STATUS "Core source path: ${CORE_DIR}")
-set(X2T_DEST ${ARG_PATH_LIB_DST}/${ANDROID_ABI})
-message(STATUS "X2t destination path: ${X2T_DEST}")
+set(X2T_CONVERTER_DEST ${ARG_PATH_LIB_DST}/${ANDROID_ABI})
+message(STATUS "X2t Converter destination path: ${X2T_CONVERTER_DEST}")
+
+# Path to source files
+set(X2T_CONVERTER_DIR ${CORE_DIR}/X2tConverter)
+message(STATUS "X2t converter source path: ${X2T_DIR_CONVERTER}")
 
 # Prebuild libraries path
-set(LIBS_DIR ${ARG_PATH_LIB_SRC_3D_PARTY})
+set(LIBS_DIR ${ARG_PATH_LIB_BUILD_TOOLS})
 message(STATUS "Prebuild libraries path: ${LIBS_DIR}")
+set(X2T_CONVERTER_LIBS ${LIBS_DIR}/${ANDROID_ABI})
+message(STATUS "Prebuild libraries path: ${X2T_CONVERTER_LIBS}")
+# configure import libs
+set(X2T_CONVERTER_INCLUDE ${CORE_DIR}/X2tConverter/src/dylib
+        ${CORE_DIR}/UnicodeConverter
+        ${CORE_DIR}/Common)
 
+# DesktopEditor
+set(DESKTOP_EDITOR_DIR ${CORE_DIR}/DesktopEditor)
+message(STATUS "Desktop editor source path: ${DESKTOP_EDITOR_DIR}")
+# Font engine
+set(FONT_ENGINE_DIR ${DESKTOP_EDITOR_DIR}/fontengine)
+message(STATUS "Font engine source path: ${FONT_ENGINE_DIR}")
 
 # Iconv libs path
-set(ICONV_INCLUDE_DIR ${LIBS_DIR}/${LIB_NAME_ICONV}/${ANDROID_ABI}/include)
+#[[set(ICONV_INCLUDE_DIR ${LIBS_DIR}/${LIB_NAME_ICONV}/${ANDROID_ABI}/include)
 message(STATUS "Iconv include path: ${ICONV_INCLUDE_DIR}")
 
 if (NOT EXISTS ${ICONV_INCLUDE_DIR})
@@ -104,11 +192,11 @@ message(STATUS "Iconv lib path: ${ICONV_LIB_DIR}")
 
 if (NOT EXISTS ${ICONV_LIB_DIR})
     message(FATAL_ERROR "Iconv path with .a files doesn't exist!")
-endif()
+endif()]]
 
 
 # Boost src dir path
-set(BOOST_INCLUDE_DIR ${CORE_DIR}/Common/3dParty/${LIB_NAME_BOOST}/boost_1_58_0)
+#[[set(BOOST_INCLUDE_DIR ${CORE_DIR}/Common/3dParty/${LIB_NAME_BOOST}/boost_1_58_0)
 message(STATUS "Boost include path: ${BOOST_INCLUDE_DIR}")
 
 if (NOT EXISTS ${BOOST_INCLUDE_DIR})
@@ -120,11 +208,11 @@ message(STATUS "Boost lib path: ${BOOST_LIB_DIR}")
 
 if (NOT EXISTS ${BOOST_LIB_DIR})
     message(FATAL_ERROR "Boost path with .a files doesn't exist!")
-endif()
+endif()]]
 
 
 # Icu src dir path
-set(ICU_INCLUDE_DIR ${LIBS_DIR}/${LIB_NAME_ICU}/${ANDROID_ABI}/include)
+#[[set(ICU_INCLUDE_DIR ${LIBS_DIR}/${LIB_NAME_ICU}/${ANDROID_ABI}/include)
 message(STATUS "Icu include path: ${ICU_INCLUDE_DIR}")
 
 if (NOT EXISTS ${ICU_INCLUDE_DIR})
@@ -136,16 +224,16 @@ message(STATUS "Icu lib path: ${ICU_LIB_DIR}")
 
 if (NOT EXISTS ${ICU_LIB_DIR})
     message(FATAL_ERROR "Icu path with .h files doesn't exist!")
-endif()
+endif()]]
 
 
 # Add global path for lib resources here
 # Workaround src dir path
-set(WORKAROUND_DIR ${CMAKE_CURRENT_SOURCE_DIR}/workaround)
+#[[set(WORKAROUND_DIR ${CMAKE_CURRENT_SOURCE_DIR}/workaround)
 message(STATUS "Workaround source path: ${WORKAROUND_DIR}")
 if (NOT EXISTS ${WORKAROUND_DIR})
     message(FATAL_ERROR "Workaround source path doesn't exist!")
-endif()
+endif()]]
 
 
 # Show default compile flags
@@ -197,31 +285,32 @@ add_compile_options(
 # Dir with headers
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${ICONV_INCLUDE_DIR}
-    ${ICU_INCLUDE_DIR}
-    ${BOOST_INCLUDE_DIR}
+   # ${ICONV_INCLUDE_DIR}
+   # ${ICU_INCLUDE_DIR}
+   # ${BOOST_INCLUDE_DIR}
 )
 
-# Dir with libraries
+#[[# Dir with libraries
 link_directories(
     ${ICONV_LIB_DIR}
     ${ICU_LIB_DIR}
     ${BOOST_LIB_DIR}
 )
-
+]]
 # Link global libraries
 link_libraries(
     android
     log
-    ${LIB_NAME_ICU_UC}
+   #[[ ${LIB_NAME_ICU_UC}
     ${LIB_NAME_ICU_i18n}
     ${LIB_NAME_ICU_DATA}
     ${LIB_NAME_ICONV}
-    ${LIB_NAME_BOOST_REGEX}
+    ${LIB_NAME_BOOST_REGEX}]]
 )
 
 
 # Add dependencies sub projects
+#[[
 add_subdirectory(sources/cpufeature x2t/cpufeature)
 
 add_subdirectory(sources/common/officeutils x2t/common/officeutils)
@@ -259,73 +348,87 @@ add_subdirectory(sources/formats/txt x2t/formats/txt)
 add_subdirectory(sources/formats/xps x2t/formats/xps)
 
 add_subdirectory(sources/x2t x2t/x2t_converter)
+]]
 
 # Add target library
-add_library(${LIB_NAME_X2T}
+add_library(${LIB_NAME_X2T_CONVERTER}
     SHARED
+        ${FONT_ENGINE_DIR}/FontsAssistant.cpp
+        ${FONT_ENGINE_DIR}/ApplicationFontsWorker.cpp
         jni/X2t.cpp
 )
+add_library(${LIB_NAME_DJVUFILE} SHARED IMPORTED)
+add_library(${LIB_NAME_DOCTRENDERER} SHARED IMPORTED)
+add_library(${LIB_NAME_GRAPHICS} SHARED IMPORTED)
+add_library(${LIB_NAME_HTMLFILE} SHARED IMPORTED)
+add_library(${LIB_NAME_HTMLRENDERER} SHARED IMPORTED)
+add_library(${LIB_NAME_KERNEL} SHARED IMPORTED)
+add_library(${LIB_NAME_PDFREADER} SHARED IMPORTED)
+add_library(${LIB_NAME_PDFWRITER} SHARED IMPORTED)
+add_library(${LIB_NAME_UNICODECONVERTER} SHARED IMPORTED)
+add_library(${LIB_NAME_X2T} SHARED IMPORTED)
+add_library(${LIB_NAME_XPSFILE} SHARED IMPORTED)
+add_library(${LIB_NAME_FB2FILE} SHARED IMPORTED)
 
 # Export lib to common libs path
-set_target_properties(${LIB_NAME_X2T}
+set_target_properties(${LIB_NAME_X2T_CONVERTER}
     PROPERTIES LIBRARY_OUTPUT_DIRECTORY
-        ${X2T_DEST}
+        ${X2T_CONVERTER_DEST}
 )
+# Searches for a specified prebuilt library and stores the path as a
+# variable. Because CMake includes system libraries in the search path by
+# default, you only need to specify the name of the public NDK library
+# you want to add. CMake verifies that the library exists before
+# completing its build.
+set_target_properties(${LIB_NAME_DJVUFILE} PROPERTIES IMPORTED_LOCATION
+        ${X2T_CONVERTER_LIBS}/lib${LIB_NAME_DJVUFILE}.so)
+set_target_properties(${LIB_NAME_DOCTRENDERER} PROPERTIES IMPORTED_LOCATION
+        ${X2T_CONVERTER_LIBS}/lib${LIB_NAME_DOCTRENDERER}.so)
+set_target_properties(${LIB_NAME_GRAPHICS} PROPERTIES IMPORTED_LOCATION
+        ${X2T_CONVERTER_LIBS}/lib${LIB_NAME_GRAPHICS}.so)
+set_target_properties(${LIB_NAME_HTMLFILE} PROPERTIES IMPORTED_LOCATION
+        ${X2T_CONVERTER_LIBS}/lib${LIB_NAME_HTMLFILE}.so)
+set_target_properties(${LIB_NAME_HTMLRENDERER} PROPERTIES IMPORTED_LOCATION
+        ${X2T_CONVERTER_LIBS}/lib${LIB_NAME_HTMLRENDERER}.so)
+set_target_properties(${LIB_NAME_KERNEL} PROPERTIES IMPORTED_LOCATION
+        ${X2T_CONVERTER_LIBS}/lib${LIB_NAME_KERNEL}.so)
+set_target_properties(${LIB_NAME_PDFREADER} PROPERTIES IMPORTED_LOCATION
+        ${X2T_CONVERTER_LIBS}/lib${LIB_NAME_PDFREADER}.so)
+set_target_properties(${LIB_NAME_PDFWRITER} PROPERTIES IMPORTED_LOCATION
+        ${X2T_CONVERTER_LIBS}/lib${LIB_NAME_PDFWRITER}.so)
+set_target_properties(${LIB_NAME_UNICODECONVERTER} PROPERTIES IMPORTED_LOCATION
+        ${X2T_CONVERTER_LIBS}/lib${LIB_NAME_UNICODECONVERTER}.so)
+set_target_properties(${LIB_NAME_X2T} PROPERTIES IMPORTED_LOCATION
+        ${X2T_CONVERTER_LIBS}/lib${LIB_NAME_X2T}.so)
+set_target_properties(${LIB_NAME_XPSFILE} PROPERTIES IMPORTED_LOCATION
+        ${X2T_CONVERTER_LIBS}/lib${LIB_NAME_XPSFILE}.so)
+set_target_properties(${LIB_NAME_FB2FILE} PROPERTIES IMPORTED_LOCATION
+        ${X2T_CONVERTER_LIBS}/lib${LIB_NAME_FB2FILE}.so)
 
 # Add dependency library
-target_link_libraries(${LIB_NAME_X2T}
-    PUBLIC
+target_link_libraries(${LIB_NAME_X2T_CONVERTER}
+
         # Converter
-        x2t-converter
-
-    PRIVATE
-        # Formats
-        pdf-writer
-        pdf-reader
-        rtf
-        odf-writer
-        odf-reader
-        djvu
-        docx
-        doc
-        xls
-        ppt
-        pptx
-        txt
-        xps
-        html-file
-        html-render
-        pole
-        docxformat
-
-        # Editors
-        downloader
-        doct-render
-        graphics
-        font-engine
-        editor-xml
-        cximage
-        agg
-        freetype
-
-        # Common
-        officeutils
-        crypto-reader
-        xlsx-serialize
-        editor-common
-        unicodeconv
-        cryptopp
-
-        # System
-        cpufeature
+        ${LIB_NAME_DJVUFILE}
+        ${LIB_NAME_DOCTRENDERER}
+        ${LIB_NAME_GRAPHICS}
+        ${LIB_NAME_HTMLFILE}
+        ${LIB_NAME_HTMLRENDERER}
+        ${LIB_NAME_KERNEL}
+        ${LIB_NAME_PDFREADER}
+        ${LIB_NAME_PDFWRITER}
+        ${LIB_NAME_UNICODECONVERTER}
+        ${LIB_NAME_X2T}
+        ${LIB_NAME_XPSFILE}
+        ${LIB_NAME_FB2FILE}
 )
 
 # Add include files .h
-target_include_directories(${LIB_NAME_X2T}
+target_include_directories(${LIB_NAME_X2T_CONVERTER}
     PUBLIC
         jni/objects
         jni/utils
+        ${X2T_CONVERTER_INCLUDE}
     PRIVATE
         ${CORE_DIR}
 )
-

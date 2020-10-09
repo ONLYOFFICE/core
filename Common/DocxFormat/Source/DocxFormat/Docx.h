@@ -58,10 +58,13 @@ namespace OOX
 	class CSettings;
 	class CComments;
 	class CCommentsExt;
+	class CCommentsExtensible;
+	class CCommentsUserData;
 	class CCommentsIds;
 	class CPeople;
 	class CDocumentComments;
 	class CDocumentCommentsExt;
+	class CDocumentCommentsExtensible;
 	class CDocumentPeople;
 	class CDocumentCommentsIds;
 	class VbaProject;
@@ -71,7 +74,29 @@ namespace OOX
 	class CDocx : public OOX::Document, public OOX::IFileContainer
 	{
 	public:
+		struct _part_summary
+		{
+			OOX::CDocument		*document = NULL;					// Основной          /document.xml
+			OOX::CFontTable		*fontTable = NULL;					// Таблица шрифтов   /fonttable.xml
+			OOX::CNumbering		*numbering = NULL;					// Нумерации         /numbering.xml
+			OOX::CStyles		*styles = NULL;						// Стили             /styles.xml
+			OOX::CFootnotes		*footnotes = NULL;					// Сноски            /footnotes.xml
+			OOX::CEndnotes		*endnotes = NULL;					// Сноски            /endnotes.xml
+			OOX::CSettings		*settings = NULL;					// Настройки         /settings.xml
+			OOX::CComments		*comments = NULL;					// Комментарии		 /comments.xml
 
+			void init()
+			{
+				document = NULL;
+				fontTable = NULL;
+				numbering = NULL;
+				styles = NULL;
+				footnotes = NULL;
+				endnotes = NULL;
+				settings = NULL;
+				comments = NULL;
+			}
+		};
 		CDocx() : OOX::IFileContainer(dynamic_cast<OOX::Document*>(this))
 		{
 			init();
@@ -103,56 +128,58 @@ namespace OOX
             return true;
 		}
 
-		OOX::CHdrFtr *GetHeaderOrFooter(const OOX::RId& rId) const;
+		OOX::CHdrFtr *GetHeaderOrFooter(const OOX::RId& rId, bool glossary = false) const;
 		const std::wstring GetCustomSettings() const;
 		
 		OOX::CApp			*m_pApp;
 		OOX::CCore			*m_pCore;
 
-		OOX::CDocument		*m_pDocument;   // Основной документ word/document.xml
-		OOX::CFontTable		*m_pFontTable;  // Таблица шрифтов   word/fonttable.xml
-		OOX::CNumbering		*m_pNumbering;  // Нумерации         word/numbering.xml
-		OOX::CStyles		*m_pStyles;     // Стили             word/styles.xml
-		OOX::CFootnotes		*m_pFootnotes;  // Сноски            word/footnotes.xml
-		OOX::CEndnotes		*m_pEndnotes;   // Сноски            word/endnotes.xml
-		OOX::CSettings		*m_pSettings;   // Настройки         word/settings.xml
-		OOX::CComments		*m_pComments;   //			         word/comments.xml
-		OOX::CCommentsExt	*m_pCommentsExt;//					word/commentsExtended.xml
-		OOX::CCommentsIds	*m_pCommentsIds;//					word/commentsIds.xml
-		OOX::CPeople		*m_pPeople;		//					word/people.xml
-		OOX::CDocumentComments		*m_pDocumentComments;   //			         word/documentComments.xml
-		OOX::CDocumentCommentsExt	*m_pDocumentCommentsExt;//					word/documentCommentsExtended.xml
-		OOX::CDocumentPeople		*m_pDocumentPeople;		//					word/documentPeople.xml
-		OOX::CDocumentCommentsIds	*m_pDocumentCommentsIds;//					word/documentCommentsIds.xml
+		_part_summary		m_oMain;			// Основной документ word/
+		_part_summary		m_oGlossary;		// Glossary Document word/glossary/
+
+		// todooo сделать структурный объект - главный документ и подчиненные - как только появится что то  кроме glossary
+		bool m_bGlossaryRead;
+
+		OOX::CCommentsExt	*m_pCommentsExt;				// word/commentsExtended.xml
+		OOX::CCommentsExtensible	*m_pCommentsExtensible;	// word/commentsExtensible.xml
+		OOX::CCommentsUserData		*m_pCommentsUserData;	// word/commentsUserData.xml
+		OOX::CCommentsIds			*m_pCommentsIds;		// word/commentsIds.xml
+		OOX::CPeople				*m_pPeople;				// word/people.xml
+		OOX::CDocumentComments		*m_pDocumentComments;   // word/documentComments.xml
+		OOX::CDocumentCommentsExt	*m_pDocumentCommentsExt;// word/documentCommentsExtended.xml
+		OOX::CDocumentCommentsExtensible	*m_pDocumentCommentsExtensible;//	word/documentCommentsExtensible.xml
+		OOX::CDocumentPeople		*m_pDocumentPeople;		// word/documentPeople.xml
+		OOX::CDocumentCommentsIds	*m_pDocumentCommentsIds;// word/documentCommentsIds.xml
 		
 		OOX::VbaProject		*m_pVbaProject;
 		OOX::JsaProject		*m_pJsaProject;
 		
 		PPTX::Theme			*m_pTheme;
-
 private:
 		void init()
 		{
-			m_pDocument  = NULL;
-			m_pFontTable = NULL;
-			m_pNumbering = NULL;
-			m_pStyles    = NULL;
+			m_oMain.init();
+			m_oGlossary.init();
+
 			m_pApp       = NULL;
 			m_pCore      = NULL;
-			m_pEndnotes  = NULL;
-			m_pFootnotes = NULL;
-			m_pSettings  = NULL;
 			m_pTheme     = NULL;
-			m_pComments  = NULL;
+
 			m_pCommentsExt	= NULL;
-			m_pCommentsIds = NULL;
+			m_pCommentsExtensible	= NULL;
+			m_pCommentsIds	= NULL;
 			m_pPeople		= NULL;
 			m_pDocumentComments  = NULL;
 			m_pDocumentCommentsExt	= NULL;
+			m_pDocumentCommentsExtensible	= NULL;
 			m_pDocumentPeople		= NULL;
-			m_pDocumentCommentsIds = NULL;
+			m_pDocumentCommentsIds	= NULL;
+			m_pCommentsUserData = NULL;
+			
 			m_pVbaProject	= NULL;
 			m_pJsaProject	= NULL;
+
+			m_bGlossaryRead = false;
 		}
 	};
 } // OOX

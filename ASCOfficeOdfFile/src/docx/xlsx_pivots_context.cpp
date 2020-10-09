@@ -1513,12 +1513,15 @@ void xlsx_pivots_context::add_field_cache(int index, std::wstring value, bool sh
 			//XmlUtils::replace_all(value, L" ", L"");
 			//XmlUtils::replace_all(value, L"\x00A0", L"");		
 		}
-		if (oox::IsNumber(value))
+		std::wstring strNumber = oox::GetNumberFromString(value);
+		if (false == strNumber.empty())
 		{
 			try
 			{	
-				XmlUtils::replace_all(value, L",", L".");
-				dVal = boost::lexical_cast<double>(value);
+				XmlUtils::replace_all(strNumber, L" ", L"");
+				XmlUtils::replace_all(strNumber, L",", L".");
+				
+				dVal = boost::lexical_cast<double>(strNumber);
 			}
 			catch(...)
 			{
@@ -1529,7 +1532,7 @@ void xlsx_pivots_context::add_field_cache(int index, std::wstring value, bool sh
 			node_name = L"n";
 
 			_INT64 iVal = *dVal;
-			if (abs(iVal - *dVal) > 0.00001)
+			if ( *dVal - iVal > 0.00001)
 			{
 				value = std::to_wstring(*dVal);
 				impl_->current_.fields.back().bNumber = true;

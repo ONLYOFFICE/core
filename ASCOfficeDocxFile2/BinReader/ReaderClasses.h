@@ -62,6 +62,7 @@ public:
     std::wstring pgBorders;
     std::wstring footnotePr;
     std::wstring endnotePr;
+	std::wstring lineNum;
 	bool RtlGutter;
 	long Gutter;
 
@@ -164,6 +165,9 @@ public:
 		}
         if(!pgBorders.empty())
             sRes += pgBorders;
+
+		if(!lineNum.empty())
+			sRes += lineNum;
 
         if(bPageNumStart)
             sRes += L"<w:pgNumType w:start=\"" + std::to_wstring(PageNumStart) + L"\"/>";
@@ -472,7 +476,8 @@ public:
 	docRGB Color;
 	BYTE VertAlign;
 	docRGB HighLight;
-    std::wstring Shd;
+	BYTE nHighLight;
+	std::wstring Shd;
     std::wstring RStyle;
 	long Spacing;
 	bool DStrikeout;
@@ -509,7 +514,6 @@ public:
 	bool bFontSize;
 	bool bColor;
 	bool bVertAlign;
-	bool bHighLight;
 	bool bShd;
 	bool bRStyle;
 	bool bSpacing;
@@ -558,7 +562,6 @@ public:
 		bFontSize = false;
 		bColor = false;
 		bVertAlign = false;
-		bHighLight = false;
 		bShd = false;
 		bRStyle = false;
 		bSpacing = false;
@@ -579,7 +582,8 @@ public:
 		ThemeColor.Reset();
 		bVanish = false;
 
-        Outline.clear();
+		nHighLight = 0; //not set
+		Outline.clear();
         Fill.clear();
         Del.clear();
         Ins.clear();
@@ -589,7 +593,7 @@ public:
 	}
 	bool IsNoEmpty()
 	{
-		return bBold || bItalic || bUnderline || bStrikeout || bFontAscii || bFontHAnsi || bFontAE || bFontCS || bFontSize || bColor || bVertAlign || bHighLight || bShd ||
+		return bBold || bItalic || bUnderline || bStrikeout || bFontAscii || bFontHAnsi || bFontAE || bFontCS || bFontSize || bColor || bVertAlign || nHighLight > 0 || bShd ||
 			bRStyle || bSpacing || bDStrikeout || bCaps || bSmallCaps || bPosition || bFontHint || bBoldCs || bItalicCs || bFontSizeCs || bCs || bRtl || bLang || bLangBidi || bLangEA || bThemeColor || bVanish ||
 			!Outline.empty() || !Fill.empty() || !Del.empty() || !Ins.empty() || !MoveFrom.empty() || !MoveTo.empty() || !rPrChange.empty();
 	}
@@ -736,11 +740,13 @@ public:
 				pCStringWriter->WriteString(L"<w:sz w:val=\"" + std::to_wstring(FontSizeCs) + L"\"/>");
 			pCStringWriter->WriteString(L"<w:szCs w:val=\"" + std::to_wstring(FontSizeCs) + L"\"/>");
 		}
-		if(bHighLight)
+		if(nHighLight > 0)
 		{
 			docRGB& H = HighLight;
             std::wstring sColor;
-			if(0x00 == H.R && 0x00 == H.G && 0x00 == H.B )
+			if (nHighLight == 1)
+				sColor = L"none";
+			else if(0x00 == H.R && 0x00 == H.G && 0x00 == H.B )
 				sColor = _T("black");
 			else if(0x00 == H.R && 0x00 == H.G && 0xFF == H.B )
 				sColor = _T("blue");
@@ -1926,6 +1932,8 @@ public:
 	std::wstring ProviderId;
     std::wstring Date;
 	std::wstring OOData;
+	std::wstring DateUtc;
+	std::wstring UserData;
 	bool Solved;
 	unsigned int DurableId;
     std::wstring Text;
@@ -2032,13 +2040,6 @@ public:
 			sRes += sDate;
             sRes += L"\"";
 		}
-		if(false == pComment->OOData.empty())
-		{
-			std::wstring sData = XmlUtils::EncodeXmlString(pComment->OOData);
-			sRes += L" oodata=\"";
-			sRes += sData;
-			sRes += L"\"";
-		}
 		if(false == pComment->Initials.empty())
 		{
             sRes += L" w:initials=\"";
@@ -2089,6 +2090,27 @@ w15:paraIdParent=\"" + pComment->sParaIdParent + L"\" w15:done=\"" + sDone + L"\
 			//расставляем paraIdParent
 			for(size_t i = 0; i < pComment->replies.size(); i++)
 				pComment->replies[i]->sParaIdParent = pComment->sParaId;
+		}
+		return sRes;
+	}
+	static std::wstring writeContentExtensible(CComment* pComment)
+	{
+		std::wstring sRes;
+		if(pComment->bDurableId && !pComment->DateUtc.empty())
+		{
+			sRes += L"<w16cex:commentExtensible w16cex:durableId=\"" + XmlUtils::IntToString(pComment->DurableId, L"%08X") + L"\" w16cex:dateUtc=\"" + pComment->DateUtc + L"\"/>";
+		}
+		return sRes;
+	}
+	static std::wstring writeContentUserData(CComment* pComment)
+	{
+		std::wstring sRes;
+		if(pComment->bDurableId && !pComment->UserData.empty())
+		{
+			sRes += L"<w16cex:commentExtensible w16cex:durableId=\"" + XmlUtils::IntToString(pComment->DurableId, L"%08X") + L"\">";
+			sRes += L"<w16cex:extLst><w16cex:ext uri=\"{19B8F6BF-5375-455C-9EA6-DF929625EA0E}\"><p15:presenceInfo xmlns:p15=\"http://schemas.microsoft.com/office/powerpoint/2012/main\" userId=\"";
+			sRes += XmlUtils::EncodeXmlStringExtend(pComment->UserData);
+			sRes += L"\" providerId=\"AD\"/></w16cex:ext></w16cex:extLst></w16cex:commentExtensible>";
 		}
 		return sRes;
 	}
@@ -2187,6 +2209,28 @@ public:
 			sRes += CComment::writeContentExt(it->second);
 			for(size_t i = 0; i < it->second->replies.size(); ++i)
 				sRes += CComment::writeContentExt(it->second->replies[i]);
+		}
+		return sRes;
+	}
+	std::wstring writeContentExtensible()
+	{
+		std::wstring sRes;
+		for (boost::unordered_map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
+		{
+			sRes += CComment::writeContentExtensible(it->second);
+			for(size_t i = 0; i < it->second->replies.size(); ++i)
+				sRes += CComment::writeContentExtensible(it->second->replies[i]);
+		}
+		return sRes;
+	}
+	std::wstring writeContentUserData()
+	{
+		std::wstring sRes;
+		for (boost::unordered_map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
+		{
+			sRes += CComment::writeContentUserData(it->second);
+			for(size_t i = 0; i < it->second->replies.size(); ++i)
+				sRes += CComment::writeContentUserData(it->second->replies[i]);
 		}
 		return sRes;
 	}

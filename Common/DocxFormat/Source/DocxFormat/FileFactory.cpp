@@ -103,16 +103,24 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CCommentsExt( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::DocumentCommentsExt )
 			return smart_ptr<OOX::File>(new CDocumentCommentsExt( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::CommentsExtensible )
+			return smart_ptr<OOX::File>(new CCommentsExtensible( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::DocumentCommentsExtensible )
+			return smart_ptr<OOX::File>(new CDocumentCommentsExtensible( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::CommentsIds )
 			return smart_ptr<OOX::File>(new CCommentsIds( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::DocumentCommentsIds )
 			return smart_ptr<OOX::File>(new CDocumentCommentsIds( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::CommentsUserData )
+			return smart_ptr<OOX::File>(new CCommentsUserData( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::People )
 			return smart_ptr<OOX::File>(new CPeople( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::DocumentPeople )
 			return smart_ptr<OOX::File>(new CDocumentPeople( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::ImportedExternalContent )
 			return smart_ptr<OOX::File>(new Media( pMain, oFileName, oRelation.IsExternal() ));
+		else if (oRelation.Type() == FileTypes::GlossaryDocument)
+			return smart_ptr<OOX::File>(new CDocument(pMain, oRootPath, oFileName));
 //common		
 		else if ( oRelation.Type() == FileTypes::Setting)
 			return smart_ptr<OOX::File>(new CSettings( pMain, oFileName ));
@@ -181,12 +189,17 @@ namespace OOX
 		else
 			oFileName = oPath / oRelationFilename;
 
-		if ( pRelation->Type() == FileTypes::App )
-			return smart_ptr<OOX::File>(new CApp( pMain, oFileName ));
-		else if ( pRelation->Type() == FileTypes::Core)
-			return smart_ptr<OOX::File>(new CCore( pMain, oFileName ));
-		else if ( pRelation->Type() == FileTypes::Document || pRelation->Type() == FileTypes::DocumentMacro)
-			return smart_ptr<OOX::File>(new CDocument( pMain, oRootPath, oFileName ));
+		if ( pRelation->Type() == FileTypes::Document)
+			return smart_ptr<OOX::File>(new CDocument( pMain, oRootPath, oFileName, FileTypes::Document));
+		else if (pRelation->Type() == FileTypes::DocumentMacro)
+			return smart_ptr<OOX::File>(new CDocument(pMain, oRootPath, oFileName, FileTypes::DocumentMacro));
+		else if (pRelation->Type() == FileTypes::GlossaryDocument)
+			return smart_ptr<OOX::File>(new CDocument(pMain, oRootPath, oFileName, FileTypes::GlossaryDocument));
+
+		else if (pRelation->Type() == FileTypes::App)
+			return smart_ptr<OOX::File>(new CApp(pMain, oFileName));
+		else if (pRelation->Type() == FileTypes::Core)
+			return smart_ptr<OOX::File>(new CCore(pMain, oFileName));
 		else if ( pRelation->Type() == FileTypes::Theme)
 		{
 			if(NSFile::CFileBinary::Exists(oFileName.GetPath()))
@@ -238,10 +251,16 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CCommentsExt( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::DocumentCommentsExt )
 			return smart_ptr<OOX::File>(new CDocumentCommentsExt( pMain, oFileName ));
+		else if ( pRelation->Type() == FileTypes::CommentsExtensible )
+			return smart_ptr<OOX::File>(new CCommentsExtensible( pMain, oFileName ));
+		else if ( pRelation->Type() == FileTypes::DocumentCommentsExtensible )
+			return smart_ptr<OOX::File>(new CDocumentCommentsExtensible( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::CommentsIds)
 			return smart_ptr<OOX::File>(new CCommentsIds( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::DocumentCommentsIds)
 			return smart_ptr<OOX::File>(new CDocumentCommentsIds( pMain, oFileName ));
+		else if ( pRelation->Type() == FileTypes::CommentsUserData)
+			return smart_ptr<OOX::File>(new CCommentsUserData( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::People )
 			return smart_ptr<OOX::File>(new CPeople( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::DocumentPeople )

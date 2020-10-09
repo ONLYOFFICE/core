@@ -853,6 +853,13 @@ namespace OOX
 		et_w_yearLong, // <w:yearLong>
 		et_w_yearShort, // <w:yearShort>
 		et_w_zoom, // <w:zoom>
+		et_w_docParts,
+		et_w_docPart,
+		et_w_docPartBody,
+		et_w_docPartPr,
+		et_w_docPartCategory,
+		et_w_docPartTypes,
+		et_w_docPartBehaviors,
 
 		et_wd_anchorLock, // <wd:anchorLock>
 		et_wd_borderbottom, // <wd:borderbottom>
@@ -883,6 +890,7 @@ namespace OOX
 		et_w15_commentEx, // <w15:commentEx>
 
 		et_w16_commentId, // <w16cid:commentId>
+		et_w16_commentExtensible, // <w16cex:commentExtensible>
 
 		et_w_ShapeTextBody,		//<wps:txbx>
 		et_w_Shape,				//<wps:wsp>

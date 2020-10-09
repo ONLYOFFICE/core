@@ -1,0 +1,158 @@
+@font-face {
+	font-family:"Minion Pro Disp";
+	font-style:normal;
+	font-weight:bold;
+	src : url("../font/MinionPro-BoldDisp.otf");
+}
+@font-face {
+	font-family:"Minion Pro Med Disp";
+	font-style:normal;
+	font-weight:500;
+	src : url("../font/MinionPro-MediumDisp.otf");
+}
+@font-face {
+	font-family:"Minion Pro";
+	font-style:normal;
+	font-weight:normal;
+	src : url("../font/MinionPro-Regular.otf");
+}
+body, div, dl, dt, dd, h1, h2, h3, h4, h5, h6, p, pre, code, blockquote {
+	margin:0;
+	padding:0;
+	border-width:0;
+}
+body {
+	-epub-hyphens:auto;
+}
+@page {
+	margin : 0px 0px 0px 0px;
+}
+div.Basic-Text-Frame {
+	border-style:solid;
+}
+p.Author {
+	-epub-hyphens:none;
+	color:#000000;
+	font-family:"Minion Pro Disp", serif;
+	font-size:30px;
+	font-style:normal;
+	font-variant:small-caps;
+	font-weight:bold;
+	line-height:1.2;
+	margin-bottom:0;
+	margin-left:0;
+	margin-right:0;
+	margin-top:0;
+	orphans:1;
+	page-break-after:auto;
+	page-break-before:auto;
+	text-align:left;
+	text-decoration:none;
+	text-indent:0;
+	text-transform:none;
+	widows:1;
+}
+p.Heading-2 {
+	-epub-hyphens:none;
+	color:#000000;
+	font-family:"Minion Pro Med Disp", serif;
+	font-size:1.667em;
+	font-style:normal;
+	font-variant:small-caps;
+	font-weight:500;
+	line-height:1.2;
+	margin-bottom:36px;
+	margin-left:0;
+	margin-right:0;
+	margin-top:0;
+	orphans:1;
+	page-break-after:auto;
+	page-break-before:always;
+	text-align:left;
+	text-decoration:none;
+	text-indent:0;
+	text-transform:none;
+	widows:1;
+}
+p.Paragraph---Indent {
+	-epub-text-align-last:left;
+	color:#000000;
+	font-family:"Minion Pro", serif;
+	font-size:0.833em;
+	font-style:normal;
+	font-variant:normal;
+	font-weight:normal;
+	line-height:1.2;
+	margin-bottom:0;
+	margin-left:0;
+	margin-right:0;
+	margin-top:0;
+	orphans:1;
+	page-break-after:auto;
+	page-break-before:auto;
+	text-align:justify;
+	text-decoration:none;
+	text-indent:12px;
+	text-transform:none;
+	widows:1;
+}
+p.Paragraph---No-Indent {
+	-epub-text-align-last:left;
+	color:#000000;
+	font-family:"Minion Pro", serif;
+	font-size:0.833em;
+	font-style:normal;
+	font-variant:normal;
+	font-weight:normal;
+	line-height:1.2;
+	margin-bottom:0;
+	margin-left:0;
+	margin-right:0;
+	margin-top:0;
+	orphans:1;
+	page-break-after:auto;
+	page-break-before:auto;
+	text-align:justify;
+	text-decoration:none;
+	text-indent:0;
+	text-transform:none;
+	widows:1;
+}
+p.Title {
+	-epub-hyphens:none;
+	color:#000000;
+	font-family:"Minion Pro Disp", serif;
+	font-size:2.5em;
+	font-style:normal;
+	font-variant:small-caps;
+	font-weight:bold;
+	line-height:1.2;
+	margin-bottom:0;
+	margin-left:0;
+	margin-right:0;
+	margin-top:0;
+	orphans:1;
+	page-break-after:auto;
+	page-break-before:auto;
+	text-align:left;
+	text-decoration:none;
+	text-indent:0;
+	text-transform:none;
+	widows:1;
+}
+#_idContainer000 {
+	display:inline-block;
+	height:254px;
+	width:328px;
+}
+img._idGenObjectAttribute-1 {
+	height:100.00%;
+	min-width:100%;
+	width:100.00%;
+}
+div._idGenObjectStyleOverride-1 {
+	border-width:0px;
+}
+div._idGenObjectLayout-1 {
+	text-align:center;
+}

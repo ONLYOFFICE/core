@@ -271,13 +271,22 @@ void CComment::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 CComments::CComments(OOX::Document *pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 {
 	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
-	if (docx) docx->m_pComments = this;			
+	
+	if (docx)
+	{
+		if (docx->m_bGlossaryRead)	docx->m_oGlossary.comments = this;
+		else						docx->m_oMain.comments = this;
+	}
 }
 CComments::CComments(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 {
 	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
-	if (docx) docx->m_pComments = this;			
 
+	if (docx)
+	{
+		if (docx->m_bGlossaryRead)	docx->m_oGlossary.comments = this;
+		else						docx->m_oMain.comments = this;
+	}
 	read( oPath );
 }
 CComments::~CComments()
@@ -413,6 +422,102 @@ CDocumentCommentsExt::CDocumentCommentsExt(OOX::Document *pMain, const CPath& oP
 	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
 	if (docx) docx->m_pDocumentCommentsExt = this;
 }
+
+void CCommentExtensible::fromXML(XmlUtils::CXmlLiteReader& oReader)
+{
+	ReadAttributes( oReader );
+
+	if ( oReader.IsEmptyNode() )
+		return;
+
+	int nParentDepth = oReader.GetDepth();
+	while( oReader.ReadNextSiblingNode( nParentDepth ) )
+	{
+		std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+		if ( L"extLst" == strName )
+			m_oExtLst = oReader;
+	}
+}
+void CCommentExtensible::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+{
+	WritingElement_ReadAttributes_StartChar_No_NS( oReader )
+		WritingElement_ReadAttributes_Read_ifChar     ( oReader, "durableId", m_oDurableId )
+		WritingElement_ReadAttributes_Read_else_ifChar( oReader, "dateUtc",	m_oDateUtc )
+		WritingElement_ReadAttributes_Read_else_ifChar( oReader, "intelligentPlaceholder", m_oIntelligentPlaceholder )
+	WritingElement_ReadAttributes_EndChar_No_NS( oReader )
+}
+CCommentsExtensible::CCommentsExtensible(OOX::Document *pMain) : OOX::File(pMain)//, OOX::IFileContainer(pMain)
+{
+	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+	if (docx) docx->m_pCommentsExtensible = this;
+}
+CCommentsExtensible::CCommentsExtensible(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain)//, OOX::IFileContainer(pMain)
+{
+	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+	if (docx) docx->m_pCommentsExtensible = this;
+
+	read( oPath );
+}
+CCommentsExtensible::~CCommentsExtensible()
+{
+	for(size_t i = 0, length = m_arrComments.size(); i < length; ++i)
+	{
+		if (m_arrComments[i]) delete m_arrComments[i];
+		m_arrComments[i] = NULL;
+	}
+	m_arrComments.clear();
+}
+void CCommentsExtensible::read(const CPath& oRootPath, const CPath& oFilePath)
+{
+	//IFileContainer::Read( oRootPath, oFilePath );
+
+	XmlUtils::CXmlLiteReader oReader;
+
+	if ( !oReader.FromFile( oFilePath.GetPath() ) )
+		return;
+
+	if ( !oReader.ReadNextNode() )
+		return;
+
+	const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
+	if (strcmp("commentsExtensible", sName) == 0)
+	{
+		int nNumberingDepth = oReader.GetDepth();
+		while ( oReader.ReadNextSiblingNode( nNumberingDepth ) )
+		{
+			const char* sNameSub = XmlUtils::GetNameNoNS(oReader.GetNameChar());
+			if (strcmp("commentExtensible", sNameSub) == 0)
+			{
+				m_arrComments.push_back( new CCommentExtensible(oReader) );
+			}
+		}
+	}
+}
+CDocumentCommentsExtensible::CDocumentCommentsExtensible(OOX::Document *pMain) : CCommentsExtensible(NULL)
+{
+	File::m_pMainDocument = pMain;
+	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+	if (docx) docx->m_pDocumentCommentsExtensible = this;
+}
+CDocumentCommentsExtensible::CDocumentCommentsExtensible(OOX::Document *pMain, const CPath& oPath) : CCommentsExtensible(NULL, oPath)
+{
+	File::m_pMainDocument = pMain;
+	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+	if (docx) docx->m_pDocumentCommentsExtensible = this;
+}
+CCommentsUserData::CCommentsUserData(OOX::Document *pMain) : CCommentsExtensible(NULL)
+{
+	File::m_pMainDocument = pMain;
+	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+	if (docx) docx->m_pCommentsUserData = this;
+}
+CCommentsUserData::CCommentsUserData(OOX::Document *pMain, const CPath& oPath) : CCommentsExtensible(NULL, oPath)
+{
+	File::m_pMainDocument = pMain;
+	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+	if (docx) docx->m_pCommentsUserData = this;
+}
+
 void CCommentId::fromXML(XmlUtils::CXmlLiteReader& oReader)
 {
 	ReadAttributes( oReader );
@@ -500,10 +605,10 @@ void CPresenceInfo::fromXML(XmlUtils::CXmlLiteReader& oReader)
 
 void CPresenceInfo::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
-	WritingElement_ReadAttributes_Start( oReader )
-		WritingElement_ReadAttributes_Read_if     ( oReader, L"w15:providerId",		m_oProviderId )
-		WritingElement_ReadAttributes_Read_else_if( oReader, L"w15:userId",			m_oUserId )
-	WritingElement_ReadAttributes_End( oReader )
+	WritingElement_ReadAttributes_StartChar_No_NS( oReader )
+		WritingElement_ReadAttributes_Read_ifChar     ( oReader, "providerId", m_oProviderId )
+		WritingElement_ReadAttributes_Read_else_ifChar( oReader, "userId",	m_oUserId )
+	WritingElement_ReadAttributes_EndChar_No_NS( oReader )
 }
 
 void CPerson::fromXML(XmlUtils::CXmlLiteReader& oReader) 

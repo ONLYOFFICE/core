@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _BUILD_IMAGE_FILE_CHECKER_
-#define _BUILD_IMAGE_FILE_CHECKER_
+#pragma once
 
 #include <string>
 #include "../common/Types.h"
@@ -72,13 +71,15 @@ public:
 	
     CImageFileFormatChecker();
     CImageFileFormatChecker(std::wstring sFileName);
-	
-	bool isImageFile(std::wstring& fileName);
-	bool isPngFile(std::wstring& fileName);
-	bool isSvmFile(std::wstring& fileName);
 
-	bool isRawFile(std::wstring& fileName);
-	bool isSvgFile(std::wstring& fileName);
+    bool isImageFileInZip(std::wstring& fileName);
+	
+    bool isImageFile(std::wstring& fileName);
+    bool isPngFile(std::wstring& fileName);
+    bool isSvmFile(std::wstring& fileName);
+
+    bool isRawFile(std::wstring& fileName);
+    bool isSvgFile(std::wstring& fileName);
 
 	bool isBmpFile(BYTE* pBuffer,DWORD dwBytes);
 	bool isGifFile(BYTE* pBuffer,DWORD dwBytes);
@@ -109,5 +110,3 @@ public:
 	std::wstring DetectFormatByData(BYTE *Data, int DataSize);
 
 };
-
-#endif //_BUILD_IMAGE_FILE_CHECKER_

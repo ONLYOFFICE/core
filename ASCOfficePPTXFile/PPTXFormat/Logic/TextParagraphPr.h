@@ -235,9 +235,10 @@ namespace PPTX
 				buSize.toXmlWriter(pWriter);
 				buTypeface.toXmlWriter(pWriter);
 				ParagraphBullet.toXmlWriter(pWriter);
-				pWriter->Write(defRPr);
-
+				
 				pWriter->WriteArray(_T("a:tabLst"), tabLst);
+				
+				pWriter->Write(defRPr);
 				
 				pWriter->EndNode(m_name);
 			}
@@ -485,6 +486,7 @@ namespace PPTX
 							defRPr = new Logic::RunProperties();
 							defRPr->m_name = _T("a:defRPr");
 							defRPr->fromPPTY(pReader);
+							break;
 						}
 						default:
 						{

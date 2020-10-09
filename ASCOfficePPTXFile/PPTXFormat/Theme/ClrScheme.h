@@ -206,11 +206,16 @@ namespace PPTX
 				while (pReader->GetPos() < _e)
 				{
 					BYTE _rec = pReader->GetUChar();
-					
-					Logic::UniColor color;
-					color.fromPPTY(pReader);
 
-					Scheme.insert(std::pair<std::wstring,Logic::UniColor>(SchemeClr_GetStringCode(_rec), color));
+					if (pReader->GetPos() + 4 < _e)
+					{					
+						Logic::UniColor color;
+						color.fromPPTY(pReader);
+
+						Scheme.insert(std::pair<std::wstring,Logic::UniColor>(SchemeClr_GetStringCode(_rec), color));
+					}
+					else
+						break;
 				}
 
 				pReader->Seek(_e);

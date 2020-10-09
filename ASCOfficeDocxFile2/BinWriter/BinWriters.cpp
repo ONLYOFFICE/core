@@ -45,7 +45,7 @@
 #ifndef _IOS
 	#include "../../ASCOfficeDocFile/DocFormatLib/DocFormatLib.h"
 #endif
-#include "../../HtmlFile/HtmlFile.h"
+#include "../../HtmlFile2/htmlfile2.h"
 #include "../../ASCOfficeRtfFile/RtfFormatLib/source/ConvertationManager.h"
 
 
@@ -886,7 +886,7 @@ void Binary_pPrWriter::Write_pPr(const OOX::Logic::CParagraphProperty& pPr)
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 		m_oBcw.m_oStream.WriteStringW(sStyleId);
 
-	}
+	} 
 	//Списки надо писать после стилей, т.к. при открытии в методах добавления списка проверяются стили
 	//Списки могут быть заданы с стилях.Это надо учитывать.
 //NumPr
@@ -1174,9 +1174,9 @@ void Binary_pPrWriter::WriteTabItem(const ComplexTypes::Word::CTabStop& TabItem,
 }
 void Binary_pPrWriter::WriteNumPr(const OOX::Logic::CNumPr& numPr, const OOX::Logic::CParagraphProperty& pPr)
 {
-	int nCurPos = 0, listNum = numPr.m_oNumID.IsInit() ? numPr.m_oNumID->m_oVal.get_value_or(0) : 0;
+	int nCurPos = 0, listNum = numPr.m_oNumID.IsInit() ? numPr.m_oNumID->m_oVal.get_value_or(0) : -1;
 	
-	if (m_oParamsWriter.m_pEmbeddedNumbering && listNum > 0)
+	if (m_oParamsWriter.m_pEmbeddedNumbering && listNum >= 0)
 	{
 		std::map<int, int>::iterator pFind = m_oParamsWriter.m_pNumbering->m_mapEmbeddedNames.back().find(listNum);
 
@@ -1224,7 +1224,7 @@ void Binary_pPrWriter::WriteNumPr(const OOX::Logic::CNumPr& numPr, const OOX::Lo
 		}
 	}
 	
-	if (listNum > 0)
+	if (listNum >= 0)
 	{
 	//pos	
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_pPrType::numPr_id);
@@ -1373,6 +1373,12 @@ void Binary_pPrWriter::WriteSectPr (OOX::Logic::CSectionProperty* pSectPr)
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrType::pageNumType);
 			WritePageNumType(pSectPr->m_oPgNumType.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(pSectPr->m_oLnNumType.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrType::lnNumType);
+			WriteLineNumType(pSectPr->m_oLnNumType.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	if(pSectPr->m_oSectPrChange.IsInit())
@@ -1580,6 +1586,34 @@ void Binary_pPrWriter::WritePageNumType(const ComplexTypes::Word::CPageNumber& p
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrPageNumType::start);
 		m_oBcw.m_oStream.WriteLONG(pPageNumber.m_oStart->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+}
+void Binary_pPrWriter::WriteLineNumType(const ComplexTypes::Word::CLineNumber& pLineNumber)
+{
+	int nCurPos = 0;
+	if(pLineNumber.m_oCountBy.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrLineNumType::CountBy);
+		m_oBcw.m_oStream.WriteLONG(pLineNumber.m_oCountBy->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(pLineNumber.m_oDistance.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrLineNumType::Distance);
+		m_oBcw.m_oStream.WriteLONG(pLineNumber.m_oDistance->ToTwips());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(pLineNumber.m_oRestart.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrLineNumType::Restart);
+		m_oBcw.m_oStream.WriteBYTE(pLineNumber.m_oRestart->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(pLineNumber.m_oStart.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrLineNumType::Start);
+		m_oBcw.m_oStream.WriteLONG(pLineNumber.m_oStart->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }
@@ -3326,32 +3360,10 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile)
             }break;
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML:
 			{
-				std::wstring sResultDoctDir = NSDirectory::CreateDirectoryWithUniqueName(oAltChunkFile.filename().GetDirectory()); 
-				std::wstring sResultDoctFileEditor = sResultDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
-				
-				std::vector<std::wstring> arFiles;
-				arFiles.push_back(file_name_inp);
-				try
-				{
-					CHtmlFile oHtmlFile;
-					if (0 == oHtmlFile.Convert(arFiles, sResultDoctDir))
-					{
-						BinDocxRW::CDocxSerializer oCDocxSerializer;
+                CHtmlFile2 htmlConvert;
+                htmlConvert.SetTmpDirectory(sTempDir);
 
-						std::wstring sXmlOptions;
-						std::wstring sThemePath;             // will be filled by 'CreateDocxFolders' method
-						std::wstring sMediaPath;             // will be filled by 'CreateDocxFolders' method
-						std::wstring sEmbedPath;             // will be filled by 'CreateDocxFolders' method
-
-						oCDocxSerializer.CreateDocxFolders (sResultDocxDir, sThemePath, sMediaPath, sEmbedPath);
-
-						result = oCDocxSerializer.loadFromFile (sResultDoctFileEditor, sResultDocxDir, sXmlOptions, sThemePath, sMediaPath, sEmbedPath);
-					}
-				}
-				catch(...)
-				{
-				}
-				NSDirectory::DeleteDirectory(sResultDoctDir);
+                result = (S_OK == htmlConvert.OpenHtml(file_name_inp, sResultDocxDir));
 			}break;
 #endif
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
@@ -3371,9 +3383,9 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile)
 	{
 		OOX::CDocx oDocx = OOX::CDocx(OOX::CPath(sResultDocxDir));
 
-		if (oDocx.m_pDocument)
+		if (oDocx.m_oMain.document)
 		{
-			ParamsDocumentWriter oParamsDocumentWriterEmb(oDocx.m_pDocument);
+			ParamsDocumentWriter oParamsDocumentWriterEmb(oDocx.m_oMain.document);
 			
 			ParamsWriter oParamsWriterEmb(	m_oParamsWriter.m_pCBufferedStream, 
 											m_oParamsWriter.m_pFontProcessor, 
@@ -3399,11 +3411,11 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile)
 			oParamsWriterEmb.m_pStyles = m_oParamsWriter.m_pStyles;
 			oParamsWriterEmb.m_pNumbering = m_oParamsWriter.m_pNumbering;
 
-			oParamsWriterEmb.m_pEmbeddedStyles = oDocx.m_pStyles;
-			oParamsWriterEmb.m_pEmbeddedNumbering = oDocx.m_pNumbering;
+			oParamsWriterEmb.m_pEmbeddedStyles = oDocx.m_oMain.styles;
+			oParamsWriterEmb.m_pEmbeddedNumbering = oDocx.m_oMain.numbering;
 
 			oParamsWriterEmb.m_pTheme = oDocx.m_pTheme;
-			oParamsWriterEmb.m_pSettings = oDocx.m_pSettings;
+			oParamsWriterEmb.m_pSettings = oDocx.m_oMain.settings;
 			oParamsWriterEmb.m_pCurRels = oParamsDocumentWriterEmb.m_pRels;
 
 			BinaryDocumentTableWriter oBinaryDocumentEmbTableWriter(oParamsWriterEmb, oParamsDocumentWriterEmb, &oParamsWriterEmb.m_mapIgnoreComments, NULL);
@@ -3412,8 +3424,8 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile)
 			//oBufferedStream.m_pTheme->AddRef();
 
 			//if(NULL != oDocx.m_pFontTable)
-			//	m_oParamsWriter.m_pFontProcessor->setFontTable(oDocx.m_pFontTable);
-			oBinaryDocumentEmbTableWriter.WriteDocumentContent(oDocx.m_pDocument->m_arrItems);
+			//	m_oParamsWriter.m_pFontProcessor->setFontTable(oDocx.m_oMain.fontTable);
+			oBinaryDocumentEmbTableWriter.WriteDocumentContent(oDocx.m_oMain.document->m_arrItems);
 		}
 		else
 		{
@@ -7649,7 +7661,7 @@ BinaryCommentsTableWriter::BinaryCommentsTableWriter(ParamsWriter& oParamsWriter
 	m_oBcw(oParamsWriter), m_oParamsWriter(oParamsWriter), m_pOfficeDrawingConverter(oParamsWriter.m_pOfficeDrawingConverter)
 {
 };
-void BinaryCommentsTableWriter::Write(OOX::CComments& oComments, OOX::CCommentsExt* pCommentsExt, OOX::CPeople* pPeople, OOX::CCommentsIds* pCommentsIds, std::map<int, bool>& mapIgnoreComments)
+void BinaryCommentsTableWriter::Write(OOX::CComments& oComments, OOX::CCommentsExt* pCommentsExt, OOX::CCommentsExtensible* pCommentsExtensible, OOX::CCommentsUserData* pCommentsUserData, OOX::CPeople* pPeople, OOX::CCommentsIds* pCommentsIds, std::map<int, bool>& mapIgnoreComments)
 {
 	ParamsDocumentWriter oParamsDocumentWriter(&oComments);
 	m_oParamsWriter.m_pCurRels = oParamsDocumentWriter.m_pRels;
@@ -7659,12 +7671,12 @@ void BinaryCommentsTableWriter::Write(OOX::CComments& oComments, OOX::CCommentsE
 	m_pOfficeDrawingConverter->ClearShapeTypes();
 
 	int nStart = m_oBcw.WriteItemWithLengthStart();
-	WriteCommentsContent(oComments, pCommentsExt, pPeople, pCommentsIds, mapIgnoreComments, oParamsDocumentWriter);
+	WriteCommentsContent(oComments, pCommentsExt, pCommentsExtensible, pCommentsUserData, pPeople, pCommentsIds, mapIgnoreComments, oParamsDocumentWriter);
 	m_oBcw.WriteItemWithLengthEnd(nStart);
 	
 	m_pOfficeDrawingConverter->SetRels(oldRels);
 }
-void BinaryCommentsTableWriter::WriteCommentsContent(OOX::CComments& oComments, OOX::CCommentsExt* pCommentsExt, OOX::CPeople* pPeople, OOX::CCommentsIds* pCommentsIds, std::map<int, bool>& mapIgnoreComments, ParamsDocumentWriter& oParamsDocumentWriter)
+void BinaryCommentsTableWriter::WriteCommentsContent(OOX::CComments& oComments, OOX::CCommentsExt* pCommentsExt, OOX::CCommentsExtensible* pCommentsExtensible, OOX::CCommentsUserData* pCommentsUserData, OOX::CPeople* pPeople, OOX::CCommentsIds* pCommentsIds, std::map<int, bool>& mapIgnoreComments, ParamsDocumentWriter& oParamsDocumentWriter)
 {
 	BinaryDocumentTableWriter oBinaryDocumentTableWriter(m_oParamsWriter, oParamsDocumentWriter, &m_oParamsWriter.m_mapIgnoreComments, NULL);
 
@@ -7674,6 +7686,7 @@ void BinaryCommentsTableWriter::WriteCommentsContent(OOX::CComments& oComments, 
 
 	std::map<std::wstring, OOX::CPerson*> mapAuthorToUserId;
 	std::map<unsigned int, CCommentWriteTemp*> mapParaIdToComment;
+	std::map<unsigned int, CCommentWriteTemp*> mapDurableIdToComment;
 	std::vector<CCommentWriteTemp*> aCommentsToWrite;
 	//map author -> userId
 	if(NULL != pPeople)
@@ -7766,6 +7779,53 @@ void BinaryCommentsTableWriter::WriteCommentsContent(OOX::CComments& oComments, 
 				{
 					CCommentWriteTemp* pCommentWriteTemp = pPair->second;
 					pCommentWriteTemp->nDurableId = pCommentId->m_oDurableId;
+					mapDurableIdToComment[pCommentWriteTemp->nDurableId->GetValue()] = pCommentWriteTemp;
+				}
+			}
+		}
+	}
+
+	if(NULL != pCommentsExtensible)
+	{
+		for(size_t i = 0, length = pCommentsExtensible->m_arrComments.size(); i < length; i++)
+		{
+			OOX::CCommentExtensible* pCommentExtensible = pCommentsExtensible->m_arrComments[i];
+			if(pCommentExtensible->m_oDurableId.IsInit())
+			{
+				std::map<unsigned int, CCommentWriteTemp*>::const_iterator pPair = mapDurableIdToComment.find(pCommentExtensible->m_oDurableId->GetValue());
+				if(mapDurableIdToComment.end() != pPair)
+				{
+					CCommentWriteTemp* pCommentWriteTemp = pPair->second;
+					if (pCommentExtensible->m_oDateUtc.IsInit())
+					{
+						pCommentWriteTemp->sDateUtc = pCommentExtensible->m_oDateUtc->GetValue();
+					}
+				}
+			}
+		}
+	}
+	if(NULL != pCommentsUserData)
+	{
+		for(size_t i = 0, length = pCommentsUserData->m_arrComments.size(); i < length; i++)
+		{
+			OOX::CCommentExtensible* pCommentExtensible = pCommentsUserData->m_arrComments[i];
+			if(pCommentExtensible->m_oDurableId.IsInit())
+			{
+				std::map<unsigned int, CCommentWriteTemp*>::const_iterator pPair = mapDurableIdToComment.find(pCommentExtensible->m_oDurableId->GetValue());
+				if(mapDurableIdToComment.end() != pPair)
+				{
+					CCommentWriteTemp* pCommentWriteTemp = pPair->second;
+					if(pCommentExtensible->m_oExtLst.IsInit())
+					{
+						for(size_t i = 0; i < pCommentExtensible->m_oExtLst->m_arrExt.size(); ++i)
+						{
+							OOX::Drawing::COfficeArtExtension* pExt = pCommentExtensible->m_oExtLst->m_arrExt[i];
+							if ( pExt->m_oPresenceInfo.IsInit() )
+							{
+								pCommentWriteTemp->sUserData = pExt->m_oPresenceInfo->m_oUserId;
+							}
+						}
+					}
 				}
 			}
 		}
@@ -7805,6 +7865,16 @@ void BinaryCommentsTableWriter::WriteComment(CCommentWriteTemp& oComment, Binary
 		{
 			m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentsType::OOData);
 			m_oBcw.m_oStream.WriteStringW(pComment->m_oOOData.get2());
+		}
+		if(oComment.sDateUtc.IsInit())
+		{
+			m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentsType::DateUtc);
+			m_oBcw.m_oStream.WriteStringW(oComment.sDateUtc.get2());
+		}
+		if(oComment.sUserData.IsInit())
+		{
+			m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentsType::UserData);
+			m_oBcw.m_oStream.WriteStringW(oComment.sUserData.get2());
 		}
 		if(pComment->m_oId.IsInit())
 		{
@@ -8554,23 +8624,23 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 	OOX::CFontTable	*pFontTable = NULL;
 	OOX::CComments	*pComments = NULL;
 	
-	if ((pDocx) && (pDocx->m_pDocument))
+	if ((pDocx) && (pDocx->m_oMain.document))
 	{
 		m_oParamsWriter.m_pTheme	= pDocx->m_pTheme;
-		m_oParamsWriter.m_pSettings = pDocx->m_pSettings;
+		m_oParamsWriter.m_pSettings = pDocx->m_oMain.settings;
 
 		*oBufferedStream.m_pTheme = smart_ptr<PPTX::Theme>(pDocx->m_pTheme);
 		oBufferedStream.m_pTheme->AddRef();
 
 		pMain		= dynamic_cast<OOX::Document*>(pDocx);
 		
-		pDocument	= pDocx->m_pDocument;
-		pFontTable	= pDocx->m_pFontTable;
-		pComments	= pDocx->m_pComments;
+		pDocument	= pDocx->m_oMain.document;
+		pFontTable	= pDocx->m_oMain.fontTable;
+		pComments	= pDocx->m_oMain.comments;
 		
-		m_oParamsWriter.m_pSettings		= pDocx->m_pSettings;		
-		m_oParamsWriter.m_pStyles		= pDocx->m_pStyles;
-		m_oParamsWriter.m_pNumbering	= pDocx->m_pNumbering;
+		m_oParamsWriter.m_pSettings		= pDocx->m_oMain.settings;
+		m_oParamsWriter.m_pStyles		= pDocx->m_oMain.styles;
+		m_oParamsWriter.m_pNumbering	= pDocx->m_oMain.numbering;
 	}
 	else
 	{
@@ -8601,6 +8671,9 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 		if (pDocxFlat)	delete pDocxFlat;	pDocxFlat = NULL;
 		return;
 	}
+
+	m_oParamsWriter.m_pOfficeDrawingConverter->m_nDrawingMaxZIndex = pDocument->m_nDrawingMaxZIndex;
+
 	OOX::Logic::CSectionProperty* pFirstSectPr = pDocument->m_oSectPr.GetPointer();
 
 	this->WriteMainTableStart();
@@ -8609,7 +8682,7 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 
 //Write Settings
 	OOX::CSettingsCustom oSettingsCustom;
-	if ((pDocx) && (pDocx->m_pSettings))
+	if ((pDocx) && (pDocx->m_oMain.settings))
 	{
 		std::wstring sSettings = pDocx->GetCustomSettings();
 		if(false == sSettings.empty())
@@ -8632,6 +8705,8 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 		BinDocxRW::BinaryCommentsTableWriter oBinaryCommentsTableWriter(m_oParamsWriter);
 		int nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Comments);
 		oBinaryCommentsTableWriter.Write(*pComments,	(pDocx ? pDocx->m_pCommentsExt : NULL), 
+														(pDocx ? pDocx->m_pCommentsExtensible : NULL),
+														(pDocx ? pDocx->m_pCommentsUserData : NULL),
 														(pDocx ? pDocx->m_pPeople : NULL), 
 														(pDocx ? pDocx->m_pCommentsIds : NULL), 
 															m_oParamsWriter.m_mapIgnoreComments);
@@ -8641,23 +8716,23 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 	{
 		BinDocxRW::BinaryCommentsTableWriter oBinaryCommentsTableWriter(m_oParamsWriter);
 		int nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::DocumentComments);
-		oBinaryCommentsTableWriter.Write(*pDocx->m_pDocumentComments, pDocx->m_pDocumentCommentsExt, pDocx->m_pDocumentPeople, pDocx->m_pDocumentCommentsIds, m_oParamsWriter.m_mapIgnoreComments);
+		oBinaryCommentsTableWriter.Write(*pDocx->m_pDocumentComments, pDocx->m_pDocumentCommentsExt, pDocx->m_pDocumentCommentsExtensible, pDocx->m_pCommentsUserData, pDocx->m_pDocumentPeople, pDocx->m_pDocumentCommentsIds, m_oParamsWriter.m_mapIgnoreComments);
 		this->WriteTableEnd(nCurPos);
 	}
 
 	BinDocxRW::BinaryNotesTableWriter oBinaryNotesWriter(m_oParamsWriter);
 //Write Footnotes
-	if ((pDocx) && (pDocx->m_pFootnotes))
+	if ((pDocx) && (pDocx->m_oMain.footnotes))
 	{
 		nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Footnotes);
-		oBinaryNotesWriter.WriteFootnotes(*pDocx->m_pFootnotes);
+		oBinaryNotesWriter.WriteFootnotes(*pDocx->m_oMain.footnotes);
 		this->WriteTableEnd(nCurPos);
 	}
 //Write Endnotes
-	if ((pDocx) && (pDocx->m_pEndnotes))
+	if ((pDocx) && (pDocx->m_oMain.endnotes))
 	{
 		nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Endnotes);
-		oBinaryNotesWriter.WriteEndnotes(*pDocx->m_pEndnotes);
+		oBinaryNotesWriter.WriteEndnotes(*pDocx->m_oMain.endnotes);
 		this->WriteTableEnd(nCurPos);
 	}
 

@@ -59,42 +59,6 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-namespace {
-
-struct class_type_pair
-{
-    chart::class_type	class_type_;
-    std::wstring		class_type_str_;
-};
-
-static const class_type_pair class_type_str[] = 
-{
-    {chart::chart_line		, L"chart:line"},
-    {chart::chart_area		, L"chart:area"},
-    {chart::chart_circle	, L"chart:circle"},
-    {chart::chart_ring		, L"chart:ring"},
-    {chart::chart_scatter	, L"chart:scatter"},
-    {chart::chart_radar		, L"chart:radar"},
-    {chart::chart_bar		, L"chart:bar"},
-    {chart::chart_stock		, L"chart:stock"},
-    {chart::chart_bubble	, L"chart:bubble"},
-    {chart::chart_surface	, L"chart:surface"},
-    {chart::chart_gantt		, L"chart:gantt"},
-	{chart::chart_filled_radar, L"chart:filled-radar"}
-};
-
-chart::class_type static get_series_class_type(std::wstring const & str)
-{
-    for (size_t i = 0; i < 12/*class_type_str.size()*/; i++)
-    {
-        if (class_type_str[i].class_type_str_ == str)
-            return class_type_str[i].class_type_;
-    }
-    return chart::chart_bar; //лучше хоть какой назначить чем никакой !!
-}
-
-}
-
 class object_odf_context 
 {
 public:
@@ -131,7 +95,7 @@ public:
 
     void set_height(double valPt);
 
-    void set_class(std::wstring const & val);
+    void set_class(odf_types::chart_class::type type);
 
     void set_style_name(std::wstring const & val);
 
@@ -141,10 +105,10 @@ public:
 
 	void add_categories(std::wstring const & cellRangeAddress);
 
-    void add_grid(std::wstring const & className, std::wstring const & styleName);
+    void add_grid(std::wstring const & gridClassName, std::wstring const & styleName);
     void add_series(std::wstring const & cellRangeAddress,
             std::wstring const & labelCell,
-			chart::class_type classType,
+			odf_types::chart_class::type classType,
             std::wstring const & attachedAxis,
             std::wstring const & styleName);
 
@@ -169,8 +133,7 @@ public:
 	int							baseFontHeight_;
 	std::wstring				baseRef_; 
 //---------------------------------------------------------------
-	std::wstring				str_class_;  
-	chart::class_type			class_;  
+	odf_types::chart_class::type class_;
 	std::wstring				style_name_;
  	std::wstring				name_;
   
@@ -251,6 +214,7 @@ class process_build_object
 	    
 		public visitor<chart_axis>,
 		public visitor<chart_categories>,
+		public visitor<chart_date_scale>,
 		public visitor<chart_grid>,
 
 		public visitor<chart_series>,

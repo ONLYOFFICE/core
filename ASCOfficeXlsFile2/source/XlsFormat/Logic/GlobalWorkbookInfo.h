@@ -166,7 +166,7 @@ public:
 
 	struct _sheet_info
 	{
-		std::wstring				state;
+		std::wstring				state = L"visible";
 		std::wstring				name;
 
 		std::map<int, double>		customColumnsWidth;

@@ -62,7 +62,7 @@ void chart_chart_attlist::add_attributes( const xml::attributes_wc_ptr & Attribu
     common_draw_size_attlist_.add_attributes(Attributes);
     common_attlist_.add_attributes(Attributes);
     
-	CP_APPLY_ATTR(L"chart:class",				chart_class_, std::wstring(L""));
+	CP_APPLY_ATTR(L"chart:class",				chart_class_, odf_types::chart_class(odf_types::chart_class::none));
 	CP_APPLY_ATTR(L"chart:column-mapping",		chart_column_mapping_);
     CP_APPLY_ATTR(L"chart:row-mapping",			chart_row_mapping_);
     CP_APPLY_ATTR(L"loext:data-pilot-source",	loext_data_pilot_source_);
@@ -279,7 +279,7 @@ void chart_axis::add_child_element( xml::sax * Reader, const std::wstring & Ns, 
 
 void chart_grid_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"chart:class", chart_class_);
+    CP_APPLY_ATTR(L"chart:class", grid_class_);
     common_attlist_.add_attributes(Attributes);
 }
 
@@ -449,6 +449,11 @@ const wchar_t * chart_date_scale::name = L"date-scale";
 
 void chart_date_scale::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+    CP_APPLY_ATTR(L"chart:base-time-unit",			base_time_unit_);
+    CP_APPLY_ATTR(L"chart:major-interval-value",	major_interval_value_);
+    CP_APPLY_ATTR(L"chart:major-interval-unit",		major_interval_unit_);
+    CP_APPLY_ATTR(L"chart:minor-interval-value",	minor_interval_value_);
+    CP_APPLY_ATTR(L"chart:minor-interval-unit",		minor_interval_unit_);
 }
 
 }

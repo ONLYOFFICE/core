@@ -39,14 +39,13 @@
     #include <windows.h>
 #endif
 
-#if defined(__linux__) || defined(_MAC) && !defined(_IOS)
+#ifdef _LINUX
 #include <unistd.h>
 #include <string.h>
 #include <sys/stat.h>
 #endif
 
 #ifdef _IOS
-    #include <unistd.h>
     const char* fileSystemRepresentation(const std::wstring& sFileName);
 #endif
 
@@ -1443,16 +1442,17 @@ namespace NSFile
             }
             CloseHandle(hFile);
         }
-#elif defined(__linux__) || defined(_MAC) && !defined(_IOS)
-        BYTE* pUtf8 = NULL;
-        LONG lLen = 0;
-        CUtf8Converter::GetUtf8StringFromUnicode(inputFile.c_str(), inputFile.length(), pUtf8, lLen, false);
-
+#else
+        std::string inputFileA = U_TO_UTF8(inputFile);
+#if defined(__linux__) && !defined(_MAC)
         struct stat attrib;
-        stat((char*)pUtf8, &attrib);
-        delete [] pUtf8;
-
+        stat(inputFileA.c_str(), &attrib);
         result = attrib.st_mtim.tv_nsec;
+#else
+        struct stat attrib;
+        stat(inputFileA.c_str(), &attrib);
+        result = (unsigned long)attrib.st_mtimespec.tv_nsec;
+#endif
 #endif
         return result;
     }

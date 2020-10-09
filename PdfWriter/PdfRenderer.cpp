@@ -53,6 +53,8 @@
 
 #include "OnlineOfficeBinToPdf.h"
 
+#include <iostream>
+
 #if defined(GetTempPath)
 #undef GetTempPath
 #endif
@@ -550,14 +552,18 @@ void CPdfRenderer::SetDocumentID(const std::wstring& wsDocumentID)
 
     m_pDocument->SetDocumentID(wsDocumentID);
 }
-void CPdfRenderer::SaveToFile(const std::wstring& wsPath)
+int CPdfRenderer::SaveToFile(const std::wstring& wsPath)
 {
+	// TODO: Переделать на код ошибки
 	if (!IsValid())
-		return;
+		return 1;
 
 	m_oCommandManager.Flush();
 
-	m_pDocument->SaveToFile(wsPath);
+	if (!m_pDocument->SaveToFile(wsPath))
+		return 1;
+
+	return 0;
 }
 void CPdfRenderer::SetTempFolder(const std::wstring& wsPath)
 {
@@ -1753,7 +1759,12 @@ void CPdfRenderer::UpdateFont()
 	if (L"" != wsFontPath)
 	{
 		// TODO: Пока мы здесь предполагаем, что шрифты только либо TrueType, либо OpenType
-		m_pFontManager->LoadFontFromFile(wsFontPath, lFaceIndex, 10, 72, 72);
+		if (!m_pFontManager->LoadFontFromFile(wsFontPath, lFaceIndex, 10, 72, 72))
+		{
+			std::wcout << L"PDF Writer: Can't load fontfile " << wsFontPath.c_str() << "\n";
+			return;
+		}
+
 		std::wstring wsFontType = m_pFontManager->GetFontType();
 		if (L"TrueType" == wsFontType || L"OpenType" == wsFontType || L"CFF" == wsFontType)
 			m_pFont = m_pDocument->CreateTrueTypeFont(wsFontPath, lFaceIndex);

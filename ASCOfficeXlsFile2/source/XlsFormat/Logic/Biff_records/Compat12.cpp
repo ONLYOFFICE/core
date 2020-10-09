@@ -61,7 +61,7 @@ void Compat12::readFields(CFRecord& record)
 	_UINT32 flag = 0;
 	record >> flag;
 	
-	fNoCompatChk = (bool)flag;
+	fNoCompatChk = (flag != 0);
 }
 
 } // namespace XLS

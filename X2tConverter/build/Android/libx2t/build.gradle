@@ -4,12 +4,12 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
 
-    buildToolsVersion '29.0.0'
-    compileSdkVersion 29
+    buildToolsVersion '30.0.2'
+    compileSdkVersion 30
 
     defaultConfig {
 
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 29
         versionCode 1
         versionName '1.0'
@@ -21,10 +21,22 @@ android {
                 arguments "-DANDROID_TOOLCHAIN=clang",
                           "-DANDROID_STL=c++_static",
                           "-DANDROID_ARM_NEON=TRUE",
-                          "-DARG_PATH_LIB_SRC_3D_PARTY=${getProjectPath(PATH_LIB_SRC_3D_PARTY)}",
+                          "-DARG_PATH_LIB_BUILD_TOOLS=${getProjectPath(PATH_LIB_BUILD_TOOLS)}",
                           "-DARG_PATH_LIB_DST=${getProjectPath(PATH_LIB_DST, true)}",
                           "-DARG_PATH_SRC_CORE=${getProjectPath(PATH_SRC_CORE)}",
-                          "-DARG_NAME_LIB=$NAME_LIB"
+                          "-DARG_NAME_LIB=$NAME_LIB",
+                          "-DARG_NAME_LIB_DJVUFILE=$NAME_LIB_DJVUFILE",
+                          "-DARG_NAME_LIB_DOCTRENDERER=$NAME_LIB_DOCTRENDERER",
+                          "-DARG_NAME_LIB_GRAPHICS=$NAME_LIB_GRAPHICS",
+                          "-DARG_NAME_LIB_HTMLFILE=$NAME_LIB_HTMLFILE",
+                          "-DARG_NAME_LIB_HTMLRENDERER=$NAME_LIB_HTMLRENDERER",
+                          "-DARG_NAME_LIB_KERNEL=$NAME_LIB_KERNEL",
+                          "-DARG_NAME_LIB_PDFREADER=$NAME_LIB_PDFREADER",
+                          "-DARG_NAME_LIB_PDFWRITER=$NAME_LIB_PDFWRITER",
+                          "-DARG_NAME_LIB_UNICODECONVERTER=$NAME_LIB_UNICODECONVERTER",
+                          "-DARG_NAME_LIB_X2T=$NAME_LIB_X2T",
+                          "-DARG_NAME_LIB_XPSFILE=$NAME_LIB_XPSFILE",
+                          "-DARG_NAME_LIB_FB2FILE=$NAME_LIB_FB2FILE"
             }
         }
 
@@ -56,7 +68,8 @@ android {
             ]
 
             jniLibs.srcDirs = [
-                PATH_LIB_DST
+                PATH_LIB_DST,
+                PATH_LIB_BUILD_TOOLS
             ]
         }
     }
@@ -73,18 +86,28 @@ android {
     }
 
     packagingOptions {
-        pickFirst "lib/x86_64/lib${NAME_LIB}.so"
-        pickFirst "lib/armeabi/lib${NAME_LIB}.so"
-        pickFirst "lib/x86/lib${NAME_LIB}.so"
-        pickFirst "lib/armeabi-v7a/lib${NAME_LIB}.so"
-        pickFirst "lib/arm64-v8a/lib${NAME_LIB}.so"
+        ['armeabi-v7a', 'x86' ,'arm64-v8a',  'x86_64' ].each { abi ->
+            pickFirst "lib/$abi/lib${NAME_LIB_DJVUFILE}.so"
+            pickFirst "lib/$abi/lib${NAME_LIB_DOCTRENDERER}.so"
+            pickFirst "lib/$abi/lib${NAME_LIB_GRAPHICS}.so"
+            pickFirst "lib/$abi/lib${NAME_LIB_HTMLFILE}.so"
+            pickFirst "lib/$abi/lib${NAME_LIB_HTMLRENDERER}.so"
+            pickFirst "lib/$abi/lib${NAME_LIB_KERNEL}.so"
+            pickFirst "lib/$abi/lib${NAME_LIB_PDFREADER}.so"
+            pickFirst "lib/$abi/lib${NAME_LIB_PDFWRITER}.so"
+            pickFirst "lib/$abi/lib${NAME_LIB_UNICODECONVERTER}.so"
+            pickFirst "lib/$abi/lib${NAME_LIB_X2T}.so"
+            pickFirst "lib/$abi/lib${NAME_LIB_XPSFILE}.so"
+            pickFirst "lib/$abi/lib${NAME_LIB_FB2FILE}.so"
+            pickFirst "lib/$abi/lib${NAME_LIB}.so"
+        }
     }
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation "androidx.appcompat:appcompat:1.1.0"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.50"
+    implementation "androidx.appcompat:appcompat:1.2.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 
 

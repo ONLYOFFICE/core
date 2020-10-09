@@ -31,9 +31,9 @@
  */
 
 #include "BinProcessor.h"
-#include <Binary/CFStream.h>
-#include <Binary/CFStreamCacheReader.h>
-#include <Logic/Biff_structures/BiffString.h>
+#include "../Binary/CFStream.h"
+#include "../Binary/CFStreamCacheReader.h"
+#include "../Logic/Biff_structures/BiffString.h"
 
 
 namespace XLS
@@ -79,18 +79,31 @@ const int BinProcessor::repeated(BaseObject& object, const int fromN, const int 
 	return count;
 }
 
-
+bool BinProcessor::isBOF(CFRecordType::TypeId type)
+{
+	switch(type)
+	{
+	case rt_BOF_BIFF8:
+	case rt_BOF_BIFF4:
+	case rt_BOF_BIFF3:
+	case rt_BOF_BIFF2:
+		return true;
+	default:
+		return false;
+	}
+	return false;
+}
 // =========================== Reader ======================================
 
 
-BinReaderProcessor::BinReaderProcessor(CFStreamCacheReader& reader, BaseObject* parent, const bool is_mandatory)
+BinReaderProcessor::BinReaderProcessor(StreamCacheReaderPtr reader, BaseObject* parent, const bool is_mandatory)
 :	reader_(reader),
-	BinProcessor(parent, reader.getGlobalWorkbookInfo()),
+	BinProcessor(parent, reader ? reader->getGlobalWorkbookInfo() : NULL),
 	is_mandatory_(is_mandatory)
 {
 }
 
-//BinReaderProcessor::BinReaderProcessor(CFStreamCacheReader& reader, const bool is_mandatory)
+//BinReaderProcessor::BinReaderProcessor(StreamCacheReader& reader, const bool is_mandatory)
 //:	reader_(reader),
 //	BinProcessor(reader.getGlobalWorkbookInfo()),
 //	is_mandatory_(is_mandatory)
@@ -130,6 +143,9 @@ const bool BinReaderProcessor::mandatory(BaseObject& object)
 // object_copy is necessary in case we haven't found the desired record and have to put it to the queue
 const bool BinReaderProcessor::readChild(BaseObject& object, const bool is_mandatory)
 {
+	if (!reader_)
+		return false;
+
 	bool ret_val = false;
 	try
 	{
@@ -170,7 +186,10 @@ const bool BinReaderProcessor::readChild(BaseObject& object, const bool is_manda
 // Check if the next read record would be of desired type
 const bool BinReaderProcessor::checkNextRecord(const CFRecordType::TypeId desirable_type, const size_t num_records_to_check)
 {
-	return reader_.checkNextRecord(desirable_type, num_records_to_check);
+	if (!reader_)
+		return false;
+
+	return reader_->checkNextRecord(desirable_type, num_records_to_check);
 }
 
 
@@ -178,28 +197,31 @@ const bool BinReaderProcessor::checkNextRecord(const CFRecordType::TypeId desira
 // In the case of stream end returns false
 const bool BinReaderProcessor::getNextSubstreamType(unsigned short& type)
 {
-	CFRecordPtr record = reader_.touchTheNextRecord();
+	if (!reader_)
+		return false;
+
+	CFRecordPtr record = reader_->touchTheNextRecord();
 	if(!record)
 	{
 		return false; // EOF
 	}
-	if(rt_BOF != record->getTypeId())
+	if (false == record->isBOF())
 	{
 		//test-file.xls
-		while(rt_Blank == record->getTypeId())
+		while (rt_Blank == record->getTypeId())
 		{
 			SkipRecord();
-			record = reader_.touchTheNextRecord();
-			if(!record)
+			record = reader_->touchTheNextRecord();
+			if (!record)
 			{
 				return false; // EOF
 			}
-			if(rt_BOF == record->getTypeId())
+			if (true == record->isBOF())
 			{
 				break;
 			}
 		}
-		if(rt_BOF != record->getTypeId())
+		if (false == record->isBOF())
 			return false;
 	}
 	unsigned short vers;
@@ -211,7 +233,10 @@ const bool BinReaderProcessor::getNextSubstreamType(unsigned short& type)
 // Check the next record type
 const CFRecordType::TypeId BinReaderProcessor::getNextRecordType()
 {
-	CFRecordPtr record = reader_.touchTheNextRecord();
+	if (!reader_)
+		return rt_NONE;
+
+	CFRecordPtr record = reader_->touchTheNextRecord();
 	if(!record)
 	{
 		return rt_NONE; // EOF
@@ -220,11 +245,13 @@ const CFRecordType::TypeId BinReaderProcessor::getNextRecordType()
 }
 void BinReaderProcessor::SeekToEOF()
 {
-	reader_.SeekToEOF();
+	if (reader_)
+		reader_->SeekToEOF();
 }
 void BinReaderProcessor::SkipRecord()
 {
-	reader_.SkipRecord();
+	if (reader_)
+		reader_->SkipRecord();
 }
 
 

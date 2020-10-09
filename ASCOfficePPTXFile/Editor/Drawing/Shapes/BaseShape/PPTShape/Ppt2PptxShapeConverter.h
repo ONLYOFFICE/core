@@ -2492,8 +2492,8 @@ namespace NSGuidesVML
                         oWriter.m_oWriter.AddIntNoCheck(lParam);
                     else
                         oWriter.m_oWriter.AddIntNoCheck(m_arIndexDst[lParam]);
-                    break;
                 }
+                break;
             case ptAdjust:
             {
                 oWriter.m_oWriter.AddCharNoCheck((WCHAR)'a');

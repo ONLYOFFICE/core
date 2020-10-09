@@ -467,7 +467,8 @@ extern int g_nCurFormatVersion;
 		pgBorders = 9,
 		footnotePr = 10,
 		endnotePr = 11,
-		rtlGutter = 12
+		rtlGutter = 12,
+		lnNumType = 13
 	};}
 	namespace c_oSerProp_secPrSettingsType{enum c_oSerProp_secPrSettingsType
 	{
@@ -478,6 +479,13 @@ extern int g_nCurFormatVersion;
 	namespace c_oSerProp_secPrPageNumType{enum c_oSerProp_secPrPageNumType
 	{
 		start = 0
+	};}
+	namespace c_oSerProp_secPrLineNumType{enum c_oSerProp_secPrLineNumType
+	{
+		CountBy = 0,
+		Distance = 1,
+		Restart = 2,
+		Start = 3
 	};}
 	namespace c_oSerParType{enum c_oSerParType
 	{
@@ -806,7 +814,9 @@ extern int g_nCurFormatVersion;
 		OOData = 10,
 		DurableId = 11,
 		ProviderId = 12,
-		CommentContent = 13
+		CommentContent = 13,
+		DateUtc = 14,
+		UserData = 15
 	};}
 	namespace c_oSer_SettingsType{enum c_oSer_SettingsType
 	{

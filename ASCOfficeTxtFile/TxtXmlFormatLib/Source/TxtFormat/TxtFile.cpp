@@ -145,7 +145,8 @@ const std::vector<std::wstring> TxtFile::readBigEndian()
 	file_binary.ReadFile((BYTE*)file_data, file_size, file_size);
 
     //swap bytes
-    for (long i = 0; i < file_size; i+=2)
+	DWORD file_size_round = (file_size / 2) * 2;
+    for (long i = 0; i < file_size_round; i+=2)
     {
         char v			= file_data[i];
         file_data[i]	= file_data[i+1];

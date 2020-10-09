@@ -55,9 +55,9 @@ oox_chart_series::oox_chart_series()
 	values_[3].type	= L"c:yVal";
 	values_[4].type	= L"c:bubbleSize";//заместо оси х!!!!
 
-	iSymbolMarkerType_	= 0;
-	bLocalTable_		= false;
-	labelPosEnabled_	= true;
+	iSymbolMarkerType_		= 0;
+	bCacheOnly_				= false;
+	labelPosEnabled_		= true;
 }
 void oox_chart_series::setName(const std::wstring &value)
 {
@@ -93,7 +93,7 @@ void oox_chart_series::setFormula(int ind, const std::wstring &value, const std:
 
 void oox_chart_series::set_cache_only (bool val)
 {
-	bLocalTable_ = val;
+	bCacheOnly_ = val;
 }
 
 void oox_chart_series::parse_properties()
@@ -167,8 +167,14 @@ void oox_chart_series::setValues(int ind, std::vector<std::wstring> & values)
 {
 	values_[ind].present = true;
 
-	if (ind == 0)	values_[ind].strRef_.present = true;
-	else			values_[ind].numRef_.present = true;
+	if (ind == 0)
+	{
+		values_[ind].strRef_.present = true;
+	}
+	else
+	{
+		values_[ind].numRef_.present = true;
+	}
 
 	for (size_t i = 0; i < values.size(); i++)
 	{
@@ -245,37 +251,45 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 		{
 			CP_XML_NODE(L"c:tx")
 			{
-				CP_XML_NODE(L"c:strRef")
+				if (false == label_.formula.empty())
 				{
-					if (!label_.formula.empty())
+					CP_XML_NODE(L"c:strRef")
 					{
 						CP_XML_NODE(L"c:f")
 						{
 							CP_XML_STREAM() << label_.formula;
 						}
-					}
-					if (false == label_.str_cache.empty())
-					{
-						CP_XML_NODE(L"c:strCache")
+						if (false == label_.str_cache.empty())
 						{
-							CP_XML_NODE(L"c:ptCount")
+							CP_XML_NODE(L"c:strCache")
 							{
-								CP_XML_ATTR(L"val", label_.str_cache.size());
-							}
-							for (size_t i = 0; i < label_.str_cache.size(); i++)
-							{
-								CP_XML_NODE(L"c:pt")
+								CP_XML_NODE(L"c:ptCount")
 								{
-									CP_XML_ATTR(L"idx", i);
-									CP_XML_NODE(L"c:v")
+									CP_XML_ATTR(L"val", label_.str_cache.size());
+								}
+								for (size_t i = 0; i < label_.str_cache.size(); i++)
+								{
+									CP_XML_NODE(L"c:pt")
 									{
-										CP_XML_STREAM() <<  label_.str_cache[i];
+										CP_XML_ATTR(L"idx", i);
+										CP_XML_NODE(L"c:v")
+										{
+											CP_XML_STREAM() <<  label_.str_cache[i];
+										}
 									}
 								}
 							}
 						}
 					}
 				}
+				else if (false == label_.str_cache.empty())
+				{
+					CP_XML_NODE(L"c:v")
+					{
+						CP_XML_STREAM() <<  label_.str_cache[0];
+					}
+				}
+
 			}
 		}
 
@@ -283,7 +297,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 		{
 			if (values_[i].present)
 			{
-				if (bLocalTable_)
+				if (bCacheOnly_)
 				{
 					if (values_[i].numRef_.present && values_[i].numRef_.num_cache_count == 0)
 					{
@@ -297,16 +311,13 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 				CP_XML_NODE(values_[i].type)
 				{
 
-					if (values_[i].numRef_.present && !bLocalTable_)
+					if (values_[i].numRef_.present && false == values_[i].numRef_.formula.empty())
 					{
 						CP_XML_NODE(L"c:numRef")
 						{
 							CP_XML_NODE(L"c:f")
 							{
-								if (values_[i].numRef_.formula.empty())
-									CP_XML_CONTENT(L"label");
-								else
-									CP_XML_CONTENT(values_[i].numRef_.formula);
+								CP_XML_CONTENT(values_[i].numRef_.formula);
 							}
 						
 							if (values_[i].numRef_.num_cache_count > 0)
@@ -382,16 +393,13 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 							}
 						}
 					}
-					else if (values_[i].strRef_.present && !bLocalTable_)
+					else if (values_[i].strRef_.present && false == values_[i].strRef_.formula.empty())
 					{
 						CP_XML_NODE(L"c:strRef")
 						{
 							CP_XML_NODE(L"c:f")
 							{
-								if (values_[i].strRef_.formula.empty())
-									CP_XML_CONTENT(L"label");
-								else
-									CP_XML_CONTENT(values_[i].strRef_.formula);
+								CP_XML_CONTENT(values_[i].strRef_.formula);
 							}
 							CP_XML_NODE(L"c:strCache")
 							{

@@ -2945,12 +2945,22 @@ namespace OOX
 		CSettings(OOX::Document *pMain) : OOX::File(pMain), OOX::WritingElement(pMain)
 		{
 			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
-			if (docx) docx->m_pSettings = this;			
+		
+			if (docx)
+			{
+				if (docx->m_bGlossaryRead)	docx->m_oGlossary.settings = this;
+				else						docx->m_oMain.settings = this;
+			}
 		}
 		CSettings(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain), OOX::WritingElement(pMain)
 		{
 			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
-			if (docx) docx->m_pSettings = this;			
+			
+			if (docx)
+			{
+				if (docx->m_bGlossaryRead)	docx->m_oGlossary.settings = this;
+				else						docx->m_oMain.settings = this;
+			}
 
 			read( oPath );
 		}

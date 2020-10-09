@@ -1,0 +1,713 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Common">
+      <UniqueIdentifier>{b71e7e8a-fe3b-470f-aecc-cd46ae338e31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\pole">
+      <UniqueIdentifier>{08f46501-29da-4691-b19d-2f230e536ee2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Doc_2_Docx">
+      <UniqueIdentifier>{0c04a0b9-7265-4e3e-af45-0a86e4d7c49c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Doc_2_Docx\OfficeDrawing">
+      <UniqueIdentifier>{bbeff7b2-a7b0-4cab-85a4-893aebfce8a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Doc_2_Docx\OfficeDrawing\Shapetypes">
+      <UniqueIdentifier>{80f3b70c-514b-444d-8a10-21c4ccbea4a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Doc_2_Docx\Mapping">
+      <UniqueIdentifier>{6640ac5f-d20f-4e15-9a1c-230e6d19266e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Common\Aggregat.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\Callback.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\FormatUtils.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\IOperand.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\IVirtualConstructor.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\LanguageCodes.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\Singleton.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\SPRMCodes.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\TargetOptions.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\TextMark.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\utf8.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\XmlTools.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\3dParty\pole\pole.h">
+      <Filter>Common\pole</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\AnnotationOwnerList.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\AnnotationReferenceDescriptor.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\AutoSummaryInfo.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\BookmarkFirst.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\BorderCode.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\ByteStructure.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\CharacterPropertyExceptions.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\CharacterRange.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\ContentTypes.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\ConversionContext.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\Converter.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\DateAndTime.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\DocumentProperties.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\DocumentTypographyInfo.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\DrawingObjectGrid.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\DrawingPrimitives.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\EmuValue.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\EncryptionHeader.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\EndnoteDescriptor.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\FieldCharacter.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\FileInformationBlock.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\FixedPointNumber.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\FontFamilyName.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\FootnoteDescriptor.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\FormattedDiskPage.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\FormattedDiskPageCHPX.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\FormattedDiskPagePAPX.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\FormFieldData.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\Global.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\HeaderAndFooterTable.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\IBinaryReader.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\IMapping.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\IVisitable.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\LanguageId.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\LineSpacingDescriptor.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\ListData.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\ListFormatOverride.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\ListFormatOverrideLevel.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\ListFormatOverrideTable.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\ListLevel.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\ListTable.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\MemoryStream.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeArtContent.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OleObject.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OpenXmlPackage.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\ParagraphHeight.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\ParagraphPropertyExceptions.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\PictureDescriptor.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\PieceDescriptor.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\PieceTable.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\Plex.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\PropertyExceptions.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\RevisionData.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\RGBColor.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\SectionDescriptor.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\SectionPropertyExceptions.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\ShadingDescriptor.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\SinglePropertyModifier.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\Spa.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\SprmTDefTable.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\StringTable.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\StructuredStorageReader.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\StyleSheet.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\StyleSheetDescription.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\StyleSheetInformation.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\TabDescriptor.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\TableInfo.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\TablePropertyExceptions.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\Tbkd.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\TwipsValue.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\VirtualStreamReader.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\WideString.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\WordDocument.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\WordprocessingDocument.h">
+      <Filter>Doc_2_Docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\BitmapBlip.h">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\BlipStoreContainer.h">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\BlipStoreEntry.h">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\ChildAnchor.h">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\ClientAnchor.h">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\ClientData.h">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\DrawingContainer.h">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\DrawingGroup.h">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\DrawingGroupRecord.h">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\DrawingRecord.h">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\GroupContainer.h">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\GroupShapeRecord.h">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\MetafilePictBlip.h">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\OfficeArtClientTextbox.h">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Record.h">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\RecordFactory.h">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\RegularContainer.h">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shape.h">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\ShapeContainer.h">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\ShapeOptions.h">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\ShapeType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\ShapeTypeFactory.h">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\SplitMenuColorContainer.h">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\threeDBooleanProperties.h">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\UnknownRecord.h">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\ArcType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\ArrowType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\BevelType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\BlockArcType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\BracketsType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\CalloutsType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\CanType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\Connector.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\CubeType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\DiamondType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\DonutType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\FlowChartType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\FoldedCornerlType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\HeartType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\HexagonType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\IsoscelesTriangleType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\LightningBoltType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\LineType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\MoonType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\NoSmokingType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\OctagonType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\OvalType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\ParallelogramType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\PentagonType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\PictureFrameType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\PlaqueType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\PlusType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\RectangleType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\RightTriangleType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\RoundedRectangleType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\SmileyFaceType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\StarType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\SunType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\TextboxType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\TrapezoidType.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\WordArtText.h">
+      <Filter>Doc_2_Docx\OfficeDrawing\Shapetypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\AbstractOpenXmlMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\CharacterPropertiesMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\CommentsMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\DocumentMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\EndnotesMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\FontTableMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\FooterMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\FootnotesMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\FormFieldDataMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\HeaderMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\LanguageIdMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\MainDocumentMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\NumberingMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\OleObjectMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\ParagraphPropertiesMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\PropertiesMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\SectionPropertiesMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\SettingsMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\StyleSheetMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\TableCellPropertiesMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\TableMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\TablePropertiesMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\TableRowPropertiesMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\TextboxMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\VMLPictureMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\VMLShapeMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DocDocxConverter\VMLShapeTypeMapping.h">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DocFormatLib.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Common\3dParty\pole\pole.cpp">
+      <Filter>Common\pole</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\AnnotationReferenceDescriptor.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\Converter.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\DocumentProperties.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\DrawingPrimitives.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\EncryptionHeader.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\FontFamilyName.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\FormattedDiskPageCHPX.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\FormattedDiskPagePAPX.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\FormFieldData.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\HeaderAndFooterTable.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\ListData.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\ListLevel.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\ListTable.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\OleObject.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\OpenXmlPackage.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\ParagraphHeight.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\ParagraphPropertyExceptions.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\PictureDescriptor.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\PieceTable.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\PropertyExceptions.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\RevisionData.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\SinglePropertyModifier.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\Spa.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\StyleSheet.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\StyleSheetDescription.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\StyleSheetInformation.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\WordDocument.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\WordprocessingDocument.cpp">
+      <Filter>Doc_2_Docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\OfficeDrawing\Record.cpp">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\OfficeDrawing\RecordFactory.cpp">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\OfficeDrawing\ShapeTypeFactory.cpp">
+      <Filter>Doc_2_Docx\OfficeDrawing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\CharacterPropertiesMapping.cpp">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\DocumentMapping.cpp">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\FontTableMapping.cpp">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\FooterMapping.cpp">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\HeaderMapping.cpp">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\LanguageIdMapping.cpp">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\MainDocumentMapping.cpp">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\NumberingMapping.cpp">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\ParagraphPropertiesMapping.cpp">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\PropertiesMapping.cpp">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\SectionPropertiesMapping.cpp">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\SettingsMapping.cpp">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\StyleSheetMapping.cpp">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\TableCellPropertiesMapping.cpp">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\TableMapping.cpp">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\TablePropertiesMapping.cpp">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\TableRowPropertiesMapping.cpp">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\TextboxMapping.cpp">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\VMLPictureMapping.cpp">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\VMLShapeMapping.cpp">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DocDocxConverter\VMLShapeTypeMapping.cpp">
+      <Filter>Doc_2_Docx\Mapping</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DocFormatLib.cpp" />
+  </ItemGroup>
+</Project>

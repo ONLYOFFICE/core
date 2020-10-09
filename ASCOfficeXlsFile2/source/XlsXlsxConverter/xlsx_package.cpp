@@ -241,6 +241,7 @@ xl_files::xl_files()
 	
 	bVbaProject = false;
 	bAttachedToolbars = false;
+	bMacrosEnabled = false;
 }
 
 void xl_files::write(const std::wstring & RootPath)
@@ -310,8 +311,10 @@ void xl_files::write(const std::wstring & RootPath)
 		if (bVbaProject)
 		{
 			rels_files_.add( relationship( L"vbId1",  L"http://schemas.microsoft.com/office/2006/relationships/vbaProject", L"vbaProject.bin" ) );
-
 			contentTypes.add_override(L"/xl/vbaProject.bin", L"application/vnd.ms-office.vbaProject");
+		}
+		if (bMacrosEnabled)
+		{
 			contentTypes.add_override(L"/xl/workbook.xml", L"application/vnd.ms-excel.sheet.macroEnabled.main+xml");
 		}
 		else
@@ -366,6 +369,7 @@ void xl_files::write(const std::wstring & RootPath)
 void xl_files::add_vba_project()
 {
 	bVbaProject = true;
+	bMacrosEnabled = true;
 }
 void xl_files::add_attachedToolbars()
 {
@@ -405,6 +409,10 @@ void xl_files::set_comments(element_ptr Element)
 void xl_files::set_drawings(element_ptr Element)
 {
     drawings_ = Element;
+}
+void xl_files::set_macros_enabled()
+{
+	bMacrosEnabled = true;
 }
 void xl_files::set_vml_drawings(element_ptr Element)
 {

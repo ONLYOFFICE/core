@@ -125,7 +125,14 @@ typedef struct tagBITMAPCOREHEADER {
         _UINT16    bcBitCount;
 } BITMAPCOREHEADER;
 #endif
-
+XlsConverter::XlsConverter() 
+{
+	output_document		= NULL;
+	xlsx_context		= NULL;
+	
+	is_older_version	= false;
+	is_encrypted		= false;
+}
 XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring & xlsxFilePath, const std::wstring & password, const std::wstring & fontsPath, const std::wstring & tempPath, const int lcid_user, bool & bMacros) 
 {
 	xlsx_path			= xlsxFilePath;
@@ -136,190 +143,215 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 	is_encrypted		= false;
 	output_document		= new oox::package::xlsx_document();
 
+	_UINT16 workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
+	
 	try
 	{
 		xls_file = boost::shared_ptr<XLS::CompoundFile>(new XLS::CompoundFile(xlsFileName, XLS::CompoundFile::cf_ReadMode));
 
 		if (xls_file->isError())
 		{
-			return;
-		}
+			xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, this));
+			
+			XLS::GlobalWorkbookInfo::_sheet_info sheet_info;
+			xls_global_info->sheets_info.push_back(sheet_info);
 
-		XLS::CFStreamPtr summary;
-		XLS::CFStreamPtr doc_summary;
-
-		summary		= xls_file->getNamedStream(L"SummaryInformation");
-		doc_summary = xls_file->getNamedStream(L"DocumentSummaryInformation");
-
-        _UINT16 workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
-		if(summary)
-		{
-			OLEPS::SummaryInformation summary_info(summary);
-			workbook_code_page = summary_info.GetCodePage(); //from software last open 
-		}
-		if(doc_summary)
-		{
-			OLEPS::SummaryInformation doc_summary_info(doc_summary);
-			workbook_code_page = doc_summary_info.GetCodePage(); 
-		}
-		if(  0/*error*/ == workbook_code_page)//|| 65001 /*UTF-8*/ == workbook_code_page || 1200/* UTF-16 */ == workbook_code_page
-		{
-			workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
-		}
-
-		xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, this));
+			XLS::StreamCacheReaderPtr file_reader(new XLS::FileStreamCacheReader(xlsFileName, xls_global_info));
+			xls_document = boost::shared_ptr<XLS::WorkbookStreamObject>(new XLS::WorkbookStreamObject(workbook_code_page));
 		
-		xls_global_info->lcid_user		= lcid_user;
-		xls_global_info->fontsDirectory = fontsPath;
-		xls_global_info->password		= password;
-		xls_global_info->tempDirectory	= tempPath;
-
-		XLS::CFStreamCacheReader stream_reader(xls_file->getWorkbookStream(), xls_global_info);
-
-		xls_document = boost::shared_ptr<XLS::WorkbookStreamObject>(new XLS::WorkbookStreamObject(workbook_code_page));
-	
-		XLS::BinReaderProcessor proc(stream_reader , xls_document.get() , true);
-		proc.mandatory(*xls_document.get());
-
-		if (xls_global_info->decryptor)
-		{
-			is_encrypted = true;
-			if (xls_global_info->decryptor->IsVerify() == false) return;
-		}
-
-		if (xls_file->storage_->isDirectory(L"_SX_DB_CUR"))
-		{
-			std::list<std::wstring> listStream = xls_file->storage_->entries(L"_SX_DB_CUR");
-
-			int last_index = 0;
-			for (std::list<std::wstring>::iterator it = listStream.begin(); it != listStream.end(); ++it)
-			{
-				XLS::CFStreamPtr pivot_cache_stream = xls_file->getNamedStream(L"_SX_DB_CUR/" + *it);
-				
-				if (!pivot_cache_stream) continue;
-				//if (pivot_cache_stream->getStreamSize() < 1) continue;
-
-				XLS::CFStreamCacheReader pivot_cache_reader(pivot_cache_stream, xls_global_info);
-
-				XLS::BaseObjectPtr pivot_cache = boost::shared_ptr<XLS::PIVOTCACHE>(new XLS::PIVOTCACHE());
-				
-				XLS::BinReaderProcessor proc(pivot_cache_reader , pivot_cache.get() , true);
-				proc.mandatory(*pivot_cache.get());
-
-				int index = XmlUtils::GetHex(*it); //hexadecimal digits uniquely identifying
-
-				xls_global_info->mapPivotCacheStream.insert(std::make_pair(index, pivot_cache));
-
-				last_index = index;
-			}
-		}
-		if (bMacros && xls_file->storage_->isDirectory(L"_VBA_PROJECT_CUR"))
-		{
-			std::wstring xl_path = xlsx_path + FILE_SEPARATOR_STR + L"xl";	
-			NSDirectory::CreateDirectory(xl_path.c_str());
-
-			std::wstring sVbaProjectFile = xl_path + FILE_SEPARATOR_STR + L"vbaProject.bin";
-
-			POLE::Storage *storageVbaProject = new POLE::Storage(sVbaProjectFile.c_str());
-
-			if ((storageVbaProject) && (storageVbaProject->open(true, true)))
-			{			
-				xls_file->copy(0, L"_VBA_PROJECT_CUR/", storageVbaProject, false);
-
-				storageVbaProject->close();
-				delete storageVbaProject;
-
-				output_document->get_xl_files().add_vba_project();
-			}
-		}
-		else 
-			bMacros = false;
-
-		XLS::CFStreamPtr controls = xls_file->getNamedStream(L"Ctls");
-		if(controls)
-		{
-			unsigned long size = controls->getStreamSize();
-			boost::shared_array<BYTE> buffer(new BYTE[size]);
+			XLS::BinReaderProcessor proc(file_reader, xls_document.get(), true);
 			
-			controls->read(buffer.get(), size);
-
-			xls_global_info->controls_data = std::make_pair(buffer, size);			
-		}
-		XLS::CFStreamPtr listdata = xls_file->getNamedStream(L"List Data");
-		if(listdata)
-		{
-			unsigned long size = listdata->getStreamSize();
-			boost::shared_array<BYTE> buffer(new BYTE[size]);
-			
-			listdata->read(buffer.get(), size);
-
-			xls_global_info->listdata_data = std::make_pair(buffer, size);			
-		}
-		if (xls_file->storage_->isDirectory(L"MsoDataStore"))
-		{
-			std::list<std::wstring> msoStores = xls_file->storage_->entries(L"MsoDataStore");
-
-			int index = 0;
-			for (std::list<std::wstring>::iterator it = msoStores.begin(); it != msoStores.end(); ++it)
+			XLS::BaseObjectPtr worksheet = XLS::BaseObjectPtr(new XLS::WorksheetSubstream(0));
+            if (proc.mandatory(*worksheet.get()))
 			{
-				XLS::CFStreamPtr item_stream  = xls_file->getNamedStream(L"MsoDataStore/" + *it + L"/Item");
-				XLS::CFStreamPtr props_stream = xls_file->getNamedStream(L"MsoDataStore/" + *it + L"/Properties");
-
-				if (!item_stream || !props_stream) continue;
-				
-				unsigned long item_size = item_stream->getStreamSize();
-				unsigned long props_size = props_stream->getStreamSize();
-
-				oox::package::customXml_content_ptr content = oox::package::customXml_content::create();
-	
-				char *item_buffer = new char[item_size];
-				if (item_buffer)
+				XLS::WorkbookStreamObject *workbook = dynamic_cast<XLS::WorkbookStreamObject*>(xls_document.get());
+				if (workbook)
 				{
-					item_stream->read(item_buffer, item_size);				
-					content->set_item(item_buffer, item_size);
-					delete []item_buffer;
+					workbook->m_arWorksheetSubstream.push_back(worksheet);			
 				}
-				char *props_buffer = new char[props_size];
-
-				if (props_buffer)
-				{
-					props_stream->read(props_buffer, props_size);
-					content->set_props(props_buffer, props_size);
-					delete []props_buffer;
-				}
-				output_document->add_customXml(content);	
+			}
+			else
+			{		
+				return;
 			}
 		}
-		XLS::CFStreamPtr toolbar_data = xls_file->getNamedStream(L"XCB");
-		if(toolbar_data)
+		else
 		{
-			std::wstring xl_path = xlsx_path + FILE_SEPARATOR_STR + L"xl";	
-			NSDirectory::CreateDirectory(xl_path.c_str());
+			XLS::CFStreamPtr summary;
+			XLS::CFStreamPtr doc_summary;
 
-			std::wstring sToolbarsFile = xl_path + FILE_SEPARATOR_STR + L"attachedToolbars.bin";
+			summary		= xls_file->getNamedStream(L"SummaryInformation");
+			doc_summary = xls_file->getNamedStream(L"DocumentSummaryInformation");
 
-			//POLE::Storage *storageToolbars = new POLE::Storage(sToolbarsFile.c_str());
-
-			//if ((storageToolbars) && (storageToolbars->open(true, true)))
-			//{			
-			//	toolbar_data->copy(L"attachedToolbars", storageToolbars);
-
-			//	storageToolbars->close();
-			//	delete storageToolbars;
-
-			//	output_document->get_xl_files().add_attachedToolbars();
-			//}		
-			NSFile::CFileBinary file;
-            if (file.CreateFileW(sToolbarsFile))
+			if(summary)
 			{
-				unsigned long size = toolbar_data->getStreamSize();
+				OLEPS::SummaryInformation summary_info(summary);
+				workbook_code_page = summary_info.GetCodePage(); //from software last open 
+			}
+			if(doc_summary)
+			{
+				OLEPS::SummaryInformation doc_summary_info(doc_summary);
+				workbook_code_page = doc_summary_info.GetCodePage(); 
+			}
+			if(  0/*error*/ == workbook_code_page)//|| 65001 /*UTF-8*/ == workbook_code_page || 1200/* UTF-16 */ == workbook_code_page
+			{
+				workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
+			}
+
+			xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, this));
+			
+			xls_global_info->lcid_user		= lcid_user;
+			xls_global_info->fontsDirectory = fontsPath;
+			xls_global_info->password		= password;
+			xls_global_info->tempDirectory	= tempPath;
+
+			XLS::StreamCacheReaderPtr stream_reader(new XLS::CFStreamCacheReader(xls_file->getWorkbookStream(), xls_global_info));
+
+			xls_document = boost::shared_ptr<XLS::WorkbookStreamObject>(new XLS::WorkbookStreamObject(workbook_code_page));
+		
+			XLS::BinReaderProcessor proc(stream_reader, xls_document.get() , true);
+			proc.mandatory(*xls_document.get());
+
+			if (xls_global_info->decryptor)
+			{
+				is_encrypted = true;
+				if (xls_global_info->decryptor->IsVerify() == false) return;
+			}
+
+			if (xls_file->storage_->isDirectory(L"_SX_DB_CUR"))
+			{
+				std::list<std::wstring> listStream = xls_file->storage_->entries(L"_SX_DB_CUR");
+
+				int last_index = 0;
+				for (std::list<std::wstring>::iterator it = listStream.begin(); it != listStream.end(); ++it)
+				{
+					XLS::CFStreamPtr pivot_cache_stream = xls_file->getNamedStream(L"_SX_DB_CUR/" + *it);
+					
+					if (!pivot_cache_stream) continue;
+					//if (pivot_cache_stream->getStreamSize() < 1) continue;
+
+					XLS::StreamCacheReaderPtr pivot_cache_reader(new XLS::CFStreamCacheReader(pivot_cache_stream, xls_global_info));
+
+					XLS::BaseObjectPtr pivot_cache = boost::shared_ptr<XLS::PIVOTCACHE>(new XLS::PIVOTCACHE());
+					
+					XLS::BinReaderProcessor proc(pivot_cache_reader , pivot_cache.get() , true);
+					proc.mandatory(*pivot_cache.get());
+
+					int index = XmlUtils::GetHex(*it); //hexadecimal digits uniquely identifying
+
+					xls_global_info->mapPivotCacheStream.insert(std::make_pair(index, pivot_cache));
+
+					last_index = index;
+				}
+			}
+			if (bMacros && xls_file->storage_->isDirectory(L"_VBA_PROJECT_CUR"))
+			{
+				std::wstring xl_path = xlsx_path + FILE_SEPARATOR_STR + L"xl";	
+				NSDirectory::CreateDirectory(xl_path.c_str());
+
+				std::wstring sVbaProjectFile = xl_path + FILE_SEPARATOR_STR + L"vbaProject.bin";
+
+				POLE::Storage *storageVbaProject = new POLE::Storage(sVbaProjectFile.c_str());
+
+				if ((storageVbaProject) && (storageVbaProject->open(true, true)))
+				{			
+					xls_file->copy(0, L"_VBA_PROJECT_CUR/", storageVbaProject, false);
+
+					storageVbaProject->close();
+					delete storageVbaProject;
+
+					output_document->get_xl_files().add_vba_project();
+				}
+			}
+			else 
+				bMacros = false;
+
+			XLS::CFStreamPtr controls = xls_file->getNamedStream(L"Ctls");
+			if(controls)
+			{
+				unsigned long size = controls->getStreamSize();
 				boost::shared_array<BYTE> buffer(new BYTE[size]);
 				
-				toolbar_data->read(buffer.get(), size);
-				file.WriteFile(buffer.get(), size);
-				file.CloseFile();
+				controls->read(buffer.get(), size);
 
-				output_document->get_xl_files().add_attachedToolbars();
+				xls_global_info->controls_data = std::make_pair(buffer, size);			
+			}
+			XLS::CFStreamPtr listdata = xls_file->getNamedStream(L"List Data");
+			if(listdata)
+			{
+				unsigned long size = listdata->getStreamSize();
+				boost::shared_array<BYTE> buffer(new BYTE[size]);
+				
+				listdata->read(buffer.get(), size);
+
+				xls_global_info->listdata_data = std::make_pair(buffer, size);			
+			}
+			if (xls_file->storage_->isDirectory(L"MsoDataStore"))
+			{
+				std::list<std::wstring> msoStores = xls_file->storage_->entries(L"MsoDataStore");
+
+				int index = 0;
+				for (std::list<std::wstring>::iterator it = msoStores.begin(); it != msoStores.end(); ++it)
+				{
+					XLS::CFStreamPtr item_stream  = xls_file->getNamedStream(L"MsoDataStore/" + *it + L"/Item");
+					XLS::CFStreamPtr props_stream = xls_file->getNamedStream(L"MsoDataStore/" + *it + L"/Properties");
+
+					if (!item_stream || !props_stream) continue;
+					
+					unsigned long item_size = item_stream->getStreamSize();
+					unsigned long props_size = props_stream->getStreamSize();
+
+					oox::package::customXml_content_ptr content = oox::package::customXml_content::create();
+		
+					char *item_buffer = new char[item_size];
+					if (item_buffer)
+					{
+						item_stream->read(item_buffer, item_size);				
+						content->set_item(item_buffer, item_size);
+						delete []item_buffer;
+					}
+					char *props_buffer = new char[props_size];
+
+					if (props_buffer)
+					{
+						props_stream->read(props_buffer, props_size);
+						content->set_props(props_buffer, props_size);
+						delete []props_buffer;
+					}
+					output_document->add_customXml(content);	
+				}
+			}
+			XLS::CFStreamPtr toolbar_data = xls_file->getNamedStream(L"XCB");
+			if(toolbar_data)
+			{
+				std::wstring xl_path = xlsx_path + FILE_SEPARATOR_STR + L"xl";	
+				NSDirectory::CreateDirectory(xl_path.c_str());
+
+				std::wstring sToolbarsFile = xl_path + FILE_SEPARATOR_STR + L"attachedToolbars.bin";
+
+				//POLE::Storage *storageToolbars = new POLE::Storage(sToolbarsFile.c_str());
+
+				//if ((storageToolbars) && (storageToolbars->open(true, true)))
+				//{			
+				//	toolbar_data->copy(L"attachedToolbars", storageToolbars);
+
+				//	storageToolbars->close();
+				//	delete storageToolbars;
+
+				//	output_document->get_xl_files().add_attachedToolbars();
+				//}		
+				NSFile::CFileBinary file;
+				if (file.CreateFileW(sToolbarsFile))
+				{
+					unsigned long size = toolbar_data->getStreamSize();
+					boost::shared_array<BYTE> buffer(new BYTE[size]);
+					
+					toolbar_data->read(buffer.get(), size);
+					file.WriteFile(buffer.get(), size);
+					file.CloseFile();
+
+					output_document->get_xl_files().add_attachedToolbars();
+				}
 			}
 		}
 	}

@@ -141,6 +141,7 @@ public:
 	int Read_pgHeader(BYTE type, long length, void* poResult);
 	int Read_pgFooter(BYTE type, long length, void* poResult);
 	int Read_pageNumType(BYTE type, long length, void* poResult);
+	int Read_lineNumType(BYTE type, long length, void* poResult);
 	int ReadCols(BYTE type, long length, void* poResult);
 	int ReadCol(BYTE type, long length, void* poResult);
 	int ReadPageBorders(BYTE type, long length, void* poResult);

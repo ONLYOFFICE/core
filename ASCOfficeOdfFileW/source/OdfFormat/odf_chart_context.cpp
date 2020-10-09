@@ -84,7 +84,7 @@ namespace odf_writer
 	struct 	odf_cash_state
 	{
 		std::wstring ref;
-		std::wstring format;
+		std::wstring format_code;
 
 		bool categories;
 		bool label;
@@ -122,6 +122,13 @@ namespace odf_writer
 		bool			cash_only;
 		std::wstring	val;
 	};
+	struct odf_category_state
+	{
+		std::wstring ref;
+		std::wstring format_code;
+		int type;
+
+	};
 class odf_chart_context::Impl
 {
 public:
@@ -146,7 +153,7 @@ public:
 	int										current_series_count_;
 	int										current_data_points_series_count_;
 	
-	std::vector<std::pair<std::wstring,int>>categories_;
+	std::vector<odf_category_state>			categories_;
 	std::vector<odf_axis_state>				axis_;
 	std::vector<office_element_ptr>			group_series_;
 	std::vector<unsigned int>				axis_group_series_;
@@ -156,11 +163,16 @@ public:
 
 	struct _range
 	{
-		_range(std::wstring &r, bool l, chart_series *s)	: label(l),		index_cash(-1), series(s), ref(r)	{}
-		_range()											: label(false), index_cash(-1), series(NULL)		{}
+		_range(const std::wstring &r, const std::wstring &fmt_code, bool l, chart_series *s)
+			: label(l),	index_cash(-1), series(s), ref(r), format_code(fmt_code)
+		{}
+		_range()											
+			: label(false), index_cash(-1), series(NULL)
+		{}
 		
 		chart_series	*series;
 		std::wstring	ref;
+		std::wstring	format_code;
 		bool			label;
 		int				index_cash;
 	};
@@ -182,7 +194,9 @@ public:
 	chart_axis					*get_current_axis();
 	chart_series				*get_current_series();
 
-	std::wstring convert_formula(std::wstring oox_formula);
+	odf_types::chart_class::type get_current_chart_class();
+
+	std::wstring convert_formula(std::wstring oox_ref);
 
 	void create_local_table();
 	int  create_local_table_rows(int current_row, ods_table_state * table_state,std::vector<_cell_cash> & cells, bool header );
@@ -190,10 +204,10 @@ public:
 
 static formulasconvert::oox2odf_converter formulas_converter_chart;
 
-std::wstring odf_chart_context::Impl::convert_formula(std::wstring oox_formula)
+std::wstring odf_chart_context::Impl::convert_formula(std::wstring oox_ref)
 {
 	std::vector<std::wstring> refs;
-	boost::algorithm::split(refs, oox_formula, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
+	boost::algorithm::split(refs, oox_ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 	
 	if (refs.empty()) return L"";
 
@@ -215,7 +229,7 @@ std::wstring odf_chart_context::Impl::convert_formula(std::wstring oox_formula)
 			if (col < 0 && row < 0)
 				return L"";
 
-			oox_formula = refs[0];
+			oox_ref = refs[0];
 			if (refs.size() > 1)
 			{
 				size_t r = refs[1].rfind(L"!");
@@ -223,7 +237,7 @@ std::wstring odf_chart_context::Impl::convert_formula(std::wstring oox_formula)
 				{
 					refs[1] = L"local-table!" + refs[1].substr(r + 1, refs[1].size() - r);
 				}
-				oox_formula += L":" + refs[1];
+				oox_ref += L":" + refs[1];
 			}	
 		}
 	}
@@ -243,10 +257,10 @@ std::wstring odf_chart_context::Impl::convert_formula(std::wstring oox_formula)
 			return L"";
 		}
 	}
-	std::wstring odf_formula = formulas_converter_chart.convert_chart_distance(oox_formula);
+	std::wstring odf_ref = formulas_converter_chart.convert_chart_distance(oox_ref);
 	
-	//XmlUtils::replace_all( odf_formula, L"$", L"");
-	return odf_formula;
+	//XmlUtils::replace_all( odf_ref, L"$", L"");
+	return odf_ref;
 }
 
 chart_chart* odf_chart_context::Impl::get_current_chart()
@@ -257,6 +271,18 @@ chart_chart* odf_chart_context::Impl::get_current_chart()
 		if (chart) return chart;
 	}
 	return NULL;
+}
+odf_types::chart_class::type odf_chart_context::Impl::get_current_chart_class()
+{
+	for (long i = (long)current_level_.size() - 1; i >= 0; i--)
+	{
+		chart_chart * chart = dynamic_cast<chart_chart*>(current_level_[i].elm.get());
+		if (chart)
+		{
+			return chart->chart_chart_attlist_.chart_class_.get_type();
+		}
+	}
+	return odf_types::chart_class::none;
 }
 chart_series* odf_chart_context::Impl::get_current_series()
 {
@@ -385,12 +411,12 @@ void odf_chart_context::set_chart_size(_CP_OPT(double) width_pt, _CP_OPT(double)
 	chart->chart_chart_attlist_.common_draw_size_attlist_.svg_width_ = length(length(*width_pt,length::pt).get_value_unit(length::cm), length::cm);
 	chart->chart_chart_attlist_.common_draw_size_attlist_.svg_height_ = length(length(*height_pt,length::pt).get_value_unit(length::cm), length::cm);
 }
-void odf_chart_context::set_chart_type(const std::wstring & type)
+void odf_chart_context::set_chart_type(odf_types::chart_class::type type)
 {
 	chart_chart *chart = impl_->get_current_chart();
 	if (!chart)return;
 
-	chart->chart_chart_attlist_.chart_class_ = std::wstring(L"chart:") + type;
+	chart->chart_chart_attlist_.chart_class_ = type;
 }
 
 void odf_chart_context::set_chart_bar_type(int type)
@@ -480,7 +506,8 @@ void odf_chart_context::set_chart_radar_type(int type)
 			break;
 		case 2:	//	st_radarstyleFILLED = 2
 			chart_chart *chart = impl_->get_current_chart();
-			if (chart)chart->chart_chart_attlist_.chart_class_ = std::wstring(L"chart:filled-radar");
+			if (chart)
+				chart->chart_chart_attlist_.chart_class_ = chart_class(chart_class::filled_radar);
 			break;
 	}
 
@@ -551,6 +578,15 @@ void odf_chart_context::set_chart_3D(bool val)
 }
 void odf_chart_context::set_view3D(int rotX, int rotY, int depthPercent, int perspective, int hPercent, bool angAx)
 {
+	odf_types::chart_class::type chart_class = impl_->get_current_chart_class();
+
+	if (chart_class == chart_class::circle ||
+		chart_class == chart_class::radar ||
+		chart_class == chart_class::filled_radar ||
+		chart_class == chart_class::ring)
+	{
+		rotX += 90;
+	}
 	if (rotX < 0) rotX += 360;
 	if (rotY < 0) rotY += 360;
 
@@ -683,7 +719,7 @@ void odf_chart_context::set_chart_scatter_type(int type)
 void odf_chart_context::start_group_series()
 {
 }
-void odf_chart_context::start_series(const std::wstring & type)
+void odf_chart_context::start_series(odf_types::chart_class::type type)
 {
 	office_element_ptr elm;
 	create_element(L"chart", L"series", elm, impl_->odf_context_);
@@ -691,7 +727,7 @@ void odf_chart_context::start_series(const std::wstring & type)
 	chart_series *series = dynamic_cast<chart_series*>(elm.get());
 	if (series == NULL)return;
 //////////	
-	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
+	impl_->styles_context_->create_style(L"", style_family::Chart, true, false, -1);		
 	
 	office_element_ptr & style_elm = impl_->styles_context_->last_state()->get_office_element();
 	
@@ -702,19 +738,17 @@ void odf_chart_context::start_series(const std::wstring & type)
 	{
 		style_name = style_->style_name_;
 		series->chart_series_attlist_.common_attlist_.chart_style_name_ = style_name;
-		series->chart_series_attlist_.chart_class_ = std::wstring(L"chart:") + type;
+		series->chart_series_attlist_.chart_class_ = chart_class(type);
 
 	}
 	start_element(elm, style_elm, style_name);
 
 	impl_->group_series_.push_back(elm);
 //////////////////////////////////////////////////////////////
-	chart_chart * chart = impl_->get_current_chart();
-	if (chart) 
+	//может хранить отдельно общий класс чарта??
+	if (type == chart_class::radar || (impl_->get_current_chart_class() == chart_class::stock && type == chart_class::line))
 	{
-		//может хранить отдельно общий класс чарта??
-		if (type == L"radar" || (*chart->chart_chart_attlist_.chart_class_ == L"chart:stock" && type == L"line"))
-			series->chart_series_attlist_.chart_class_ = chart->chart_chart_attlist_.chart_class_;	
+		series->chart_series_attlist_.chart_class_ = impl_->get_current_chart_class();
 	}
 
 	if (style_)
@@ -727,9 +761,9 @@ void odf_chart_context::start_series(const std::wstring & type)
 }
 void odf_chart_context::end_series()
 {
-	if ((impl_->categories_.size() > 0) && impl_->categories_.back().second == 2)
+	if ((false == impl_->categories_.empty()) && impl_->categories_.back().type == 2)
 	{
-		add_domain(impl_->categories_.back().first);
+		add_domain(impl_->categories_.back().ref);
 	}
 	end_element();
 }
@@ -750,11 +784,11 @@ void odf_chart_context::set_label_show_leader_line(bool val)
 void odf_chart_context::set_label_show_legend_key(bool val)
 {
 }
-void odf_chart_context::set_label_formula(const std::wstring & oox_formula) //в odf не поддерживается
+void odf_chart_context::set_label_formula(const std::wstring & oox_ref) //в odf не поддерживается
 {
-	std::wstring odf_formula = impl_->convert_formula(oox_formula);
+	std::wstring odf_ref = impl_->convert_formula(oox_ref);
 	
-	if (!odf_formula.empty())
+	if (!odf_ref.empty())
 	{
 	}
 }
@@ -778,7 +812,7 @@ void odf_chart_context::add_axis_group_series(unsigned int id)
 }
 void odf_chart_context::end_group_series()
 {
-	if (impl_->axis_.size() < 1 && impl_->categories_.size() > 0)
+	if (impl_->axis_.empty() && false == impl_->categories_.empty())
 	{//без осей нихера не понимает MS Office !!! - причем оси для MS должны идти обязательно перед сериями
 		start_axis();
 			set_axis_dimension(1);
@@ -842,7 +876,7 @@ void odf_chart_context::end_group_series()
 	impl_->axis_group_series_.clear();
 }
 
-void odf_chart_context::add_domain(const std::wstring & formula)
+void odf_chart_context::add_domain(const std::wstring & odf_ref)
 {
 	size_t level = impl_->current_level_.size();
 	if (level == 0)return;
@@ -853,27 +887,48 @@ void odf_chart_context::add_domain(const std::wstring & formula)
 	chart_domain *domain = dynamic_cast<chart_domain*>(elm.get());
 	if (domain == NULL)return;
 
-	domain->table_cell_range_address_ = formula;
+	domain->table_cell_range_address_ = odf_ref;
 	
-	if (impl_->current_level_.back().elm)impl_->current_level_.back().elm->add_child_element(elm);
+	if (impl_->current_level_.back().elm) impl_->current_level_.back().elm->add_child_element(elm);
 
 	odf_element_state state(elm, L"", office_element_ptr(), level);
 	impl_->current_chart_state_.elements_.push_back(state);
 }
 
-void odf_chart_context::add_categories(const std::wstring & odf_formula, office_element_ptr & axis)
+void odf_chart_context::add_categories(const std::wstring & odf_ref, const std::wstring & format_code, office_element_ptr & axis_elm)
 {
+	size_t level = impl_->current_level_.size();
+
+	bool bDataScale = false;
+
+	if (std::wstring::npos != format_code.find(L"mm") &&
+		std::wstring::npos != format_code.find(L"yy") &&
+		std::wstring::npos != format_code.find(L"d"))
+			bDataScale = true;
+	
+	if (bDataScale && axis_elm)
+	{
+		office_element_ptr date_elm;
+		create_element(L"chartooo", L"date-scale", date_elm, impl_->odf_context_);
+	
+		axis_elm->add_child_element(date_elm);
+		
+		odf_element_state state(date_elm, L"", office_element_ptr(), level);
+		impl_->current_chart_state_.elements_.push_back(state);
+
+		chart_axis *axis = dynamic_cast<chart_axis*>(axis_elm.get());
+		axis->chart_axis_attlist_.axis_type_ = L"auto";
+	}
+//--------------------------------------------------------------------------------------
 	office_element_ptr elm;
 	create_element(L"chart", L"categories", elm, impl_->odf_context_);
 		
 	chart_categories *categories = dynamic_cast<chart_categories*>(elm.get());
 	if (categories== NULL)return;
 
-	categories->table_cell_range_address_ = odf_formula;
-	
-	size_t level = impl_->current_level_.size();
-	
-	if (axis)axis->add_child_element(elm);
+	categories->table_cell_range_address_ = odf_ref;
+		
+	if (axis_elm) axis_elm->add_child_element(elm);
 
 	odf_element_state state(elm, L"", office_element_ptr(), level);
 	impl_->current_chart_state_.elements_.push_back(state);
@@ -1020,13 +1075,13 @@ void odf_chart_context::start_text()
 	
 	impl_->odf_context_->text_context()->set_single_object(true, impl_->current_level_.back().paragraph_properties_, impl_->current_level_.back().text_properties_);
 }
-void odf_chart_context::end_text()
+void odf_chart_context::end_text(bool only_properties)
 {
 	odf_text_context *text_context_ = text_context();
 	
 	if (text_context_ == NULL || impl_->current_level_.empty())return;
 
-	for (size_t i = 0; i < text_context_->text_elements_list_.size(); i++)
+	for (size_t i = 0; false == only_properties && i < text_context_->text_elements_list_.size(); i++)
 	{
 		if (text_context_->text_elements_list_[i].level == 0)
 		{
@@ -1556,7 +1611,7 @@ void odf_chart_context::end_chart()
 
 
 	size_t cat = 0;
-	for (size_t i = 0; i < impl_->axis_.size() && impl_->categories_.size() > 0; i++)
+	for (size_t i = 0; i < impl_->axis_.size() && false == impl_->categories_.empty(); i++)
 	{
 		if (impl_->axis_[i].elm == NULL) continue;
 		
@@ -1564,9 +1619,9 @@ void odf_chart_context::end_chart()
 		{
 			if (cat < impl_->categories_.size())
 			{
-				if (impl_->categories_[cat].second == 1) 
+				if (impl_->categories_[cat].type == 1) 
 				{
-					add_categories(impl_->categories_[cat].first, impl_->axis_[i].elm);
+					add_categories(impl_->categories_[cat].ref, impl_->categories_[cat].format_code, impl_->axis_[i].elm);
 				}
 				else
 				{
@@ -1586,47 +1641,48 @@ void odf_chart_context::end_chart()
 	impl_->clear_current();
 }
 
-void odf_chart_context::set_series_value_formula(const std::wstring & oox_formula)
+void odf_chart_context::set_series_value_formula(const std::wstring & oox_ref, const std::wstring & format_code)
 {
-	std::wstring odf_formula = impl_->convert_formula(oox_formula);
+	std::wstring odf_ref = impl_->convert_formula(oox_ref);
 
 	chart_series *series = dynamic_cast<chart_series*>(impl_->current_chart_state_.elements_.back().elm.get());
 	if (series == NULL)return;
 
-	Impl::_range r (odf_formula, false, series);
+	Impl::_range r (odf_ref, format_code, false, series);
 	impl_->data_cell_ranges_.push_back(r);
 
-	if (!odf_formula.empty())
+	if (false == odf_ref.empty())
 	{
-		series->chart_series_attlist_.chart_values_cell_range_address_ = odf_formula;
-		impl_->current_data_points_series_count_ = formulas_converter_chart.get_count_value_points(oox_formula);
+		series->chart_series_attlist_.chart_values_cell_range_address_ = odf_ref;
+		impl_->current_data_points_series_count_ = formulas_converter_chart.get_count_value_points(oox_ref);
 	}
 }
 
-void odf_chart_context::set_series_label_formula(const std::wstring & oox_formula)
+void odf_chart_context::set_series_label_formula(const std::wstring & oox_ref)
 {
-	std::wstring odf_formula = impl_->convert_formula(oox_formula);
+	std::wstring odf_ref = impl_->convert_formula(oox_ref);
 
 	chart_series *series = dynamic_cast<chart_series*>(impl_->current_chart_state_.elements_.back().elm.get());
 	if (series == NULL)return;	
 
-	Impl::_range r (odf_formula, true, series);
+	Impl::_range r (odf_ref, L"", true, series);
 	impl_->data_cell_ranges_.push_back(r);
 	
-	if (!odf_formula.empty())
+	if (!odf_ref.empty())
 	{
-		series->chart_series_attlist_.chart_label_cell_address_ = odf_formula;
+		series->chart_series_attlist_.chart_label_cell_address_ = odf_ref;
 	}
 }
 
-void odf_chart_context::set_category_axis_formula(const std::wstring & oox_formula, int type)
+void odf_chart_context::set_category_axis_formula(const std::wstring & oox_ref, const std::wstring & format_code, int type)
 {
-	std::wstring odf_formula = impl_->convert_formula(oox_formula);
+	std::wstring odf_ref = impl_->convert_formula(oox_ref);
 
-	Impl::_range r (odf_formula, true, NULL);
+	Impl::_range r (odf_ref, format_code, true, NULL);
 	impl_->data_cell_ranges_.push_back(r);
 	
-	impl_->categories_.push_back(std::pair<std::wstring,int>(odf_formula, type));
+	odf_category_state category_state = {odf_ref, format_code, type};
+	impl_->categories_.push_back(category_state);
 }
 
 void odf_chart_context::set_series_pie_explosion(int val)//или точка серии
@@ -1642,18 +1698,18 @@ void odf_chart_context::set_series_pie_bubble(bool val)
 	impl_->current_level_.back().chart_properties_->content_.pie_bubble_ = val;	
 	
 }
-//void odf_chart_context::set_cash(std::wstring format, std::vector<double> &data_double)
+//void odf_chart_context::set_cash(std::wstring format_code, std::vector<double> &data_double)
 //{
 //	if (data_double.size() <1 || impl_->data_cell_ranges_.size() < 1) return;
 //
 //	std::wstring ref = impl_->data_cell_ranges_.back();
 //	std::vector<std::wstring> data_str;
 //	
-//	odf_cash_state state = {ref, format,/*data_double,*/data_str};
+//	odf_cash_state state = {ref, format_code,/*data_double,*/data_str};
 //	impl_->cash_.push_back(state);
 //}
 
-void odf_chart_context::set_cash(std::wstring format, std::vector<std::wstring> & data_str, bool categories, bool label)
+void odf_chart_context::set_cash(std::wstring format_code, std::vector<std::wstring> & data_str, bool categories, bool label)
 {
 	if (impl_->data_cell_ranges_.empty())	return;
 	if (data_str.empty())					return;
@@ -1673,7 +1729,7 @@ void odf_chart_context::set_cash(std::wstring format, std::vector<std::wstring> 
 			{
 				ref			= impl_->cash_[i].ref;
 				data_str	= impl_->cash_[i].data_str;
-				format		= impl_->cash_[i].format;
+				format_code	= impl_->cash_[i].format_code;
 				break;
 			}
 		}
@@ -1744,7 +1800,7 @@ void odf_chart_context::set_cash(std::wstring format, std::vector<std::wstring> 
 
 	if (!ref.empty() && !data_str.empty())
 	{
-		odf_cash_state state = {ref, format, categories, label, data_str};	
+		odf_cash_state state = {ref, format_code, categories, label, data_str};	
 		impl_->cash_.push_back(state);
 		int cash_ind = (int)impl_->cash_.size() - 1;
 
@@ -1760,8 +1816,14 @@ void odf_chart_context::set_cash(std::wstring format, std::vector<std::wstring> 
 		}
 		else if (categories && !impl_->categories_.empty())
 		{
-			if (impl_->categories_.back().first.empty())
-				impl_->categories_.back().first = ref;
+			if (impl_->categories_.back().ref.empty())
+			{
+				impl_->categories_.back().ref = ref;
+			}
+			if (impl_->categories_.back().format_code.empty())
+			{
+				impl_->categories_.back().format_code = format_code;
+			}
 		}
 	}
 }

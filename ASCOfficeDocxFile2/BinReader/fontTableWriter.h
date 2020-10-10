@@ -49,7 +49,7 @@ namespace Writers
 	public:
         boost::unordered_map<std::wstring, int> m_mapFonts;
 
-		FontTableWriter(std::wstring sDir, std::wstring sFontDir, bool bNoFontDir):m_sDir(sDir)
+		FontTableWriter(std::wstring sDir, std::wstring sFontDir, bool bNoFontDir) : m_sDir(sDir)
 		{
             m_pApplicationFonts = NSFonts::NSApplication::Create();
 			m_pFontManager = NULL;
@@ -68,7 +68,7 @@ namespace Writers
             RELEASEOBJECT(m_pApplicationFonts);
 		}
 
-		void Write()
+		void Write(bool bGlossary = false)
 		{
 			m_oWriter.WriteString(g_string_ft_Start);
 
@@ -96,7 +96,7 @@ namespace Writers
 
 			m_oWriter.WriteString(g_string_ft_End);
 
-            OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR +_T("word") + FILE_SEPARATOR_STR + _T("fontTable.xml");
+            OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR +_T("word") + (bGlossary ? (FILE_SEPARATOR_STR + std::wstring(L"glossary")) : L"") + FILE_SEPARATOR_STR + _T("fontTable.xml");
 
 			NSFile::CFileBinary oFile;
 			oFile.CreateFileW(filePath.GetPath());

@@ -111,7 +111,7 @@ mc:Ignorable=\"w14 w15 wp14\">";
 				delete m_aFooters[i];
 			m_aFooters.clear();
 		}
-		void Write()
+		void Write(bool bGlossary = false)
 		{
 			for(size_t i = 0, length = m_aHeaders.size(); i < length; ++i)
 			{
@@ -152,13 +152,13 @@ mc:Ignorable=\"w14 w15 wp14\">";
         FootnotesWriter( std::wstring sDir ):m_sDir(sDir)
 		{
 		}
-		void Write()
+		void Write(bool bGlossary = false)
 		{
 			if(IsEmpty()) return;
 
 			std::wstring sFilename = getFilename();
 
-             std::wstring filePath = m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + sFilename;
+             std::wstring filePath = m_sDir + FILE_SEPARATOR_STR + L"word" + (bGlossary ? (FILE_SEPARATOR_STR + std::wstring(L"glossary")) : L"") + FILE_SEPARATOR_STR + sFilename;
 
 			NSFile::CFileBinary oFile;
 			oFile.CreateFileW (filePath);
@@ -185,13 +185,13 @@ mc:Ignorable=\"w14 w15 wp14\">";
         EndnotesWriter( std::wstring sDir ) : m_sDir(sDir) 
 		{
 		}
-		void Write()
+		void Write(bool bGlossary = false)
 		{
 			if(IsEmpty()) return;
 
 			std::wstring sFilename = getFilename();
 
-             std::wstring filePath = m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + sFilename;
+             std::wstring filePath = m_sDir + FILE_SEPARATOR_STR + L"word" + (bGlossary ? (FILE_SEPARATOR_STR + std::wstring(L"glossary")) : L"") + FILE_SEPARATOR_STR + sFilename;
 
 			NSFile::CFileBinary oFile;
 			oFile.CreateFileW(filePath);

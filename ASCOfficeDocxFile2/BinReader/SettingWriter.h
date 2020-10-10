@@ -48,10 +48,10 @@ namespace Writers
         SettingWriter(std::wstring sDir, HeaderFooterWriter& oHeaderFooterWriter):m_sDir(sDir),m_oHeaderFooterWriter(oHeaderFooterWriter)
 		{
 		}
-		void Write()
+		void Write(bool bGlossary = false)
 		{
 			Prepare();
-            OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"settings.xml";
+            OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR + L"word" + (bGlossary ? (FILE_SEPARATOR_STR + std::wstring(L"glossary")) : L"") + FILE_SEPARATOR_STR + L"settings.xml";
 
 			NSFile::CFileBinary oFile;
 			oFile.CreateFileW(filePath.GetPath());
@@ -61,7 +61,6 @@ namespace Writers
 			oFile.WriteStringUTF8(g_string_set_End);
 			oFile.CloseFile();
 		}
-		
         void AddSetting(std::wstring sSetting)
 		{
 			m_oSettingWriter.WriteString(sSetting);

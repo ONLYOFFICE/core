@@ -170,5 +170,8 @@
     </ClInclude>
     <ClInclude Include="..\..\src\ASCConverters.h" />
     <ClInclude Include="..\..\src\cextracttools.h" />
+    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\webSettingsWriter.h">
+      <Filter>DOCX\Reader\OOXWriter</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -53,7 +53,7 @@ namespace Writers
 		{
 			return 0 == m_oANum.GetCurSize();
 		}
-		void Write()
+		void Write(bool bGlossary = false)
 		{
 			if(IsEmpty()) return;
 
@@ -62,7 +62,7 @@ namespace Writers
 			m_oWriter.Write(m_oNumList);
 			m_oWriter.WriteString(g_string_n_End);
 
-            OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR +_T("word") + FILE_SEPARATOR_STR + _T("numbering.xml");
+            OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR +_T("word") + (bGlossary ? (FILE_SEPARATOR_STR + std::wstring(L"glossary")) : L"") + FILE_SEPARATOR_STR + _T("numbering.xml");
 
 			NSFile::CFileBinary oFile;
 			oFile.CreateFileW(filePath.GetPath());

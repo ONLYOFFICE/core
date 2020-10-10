@@ -38,55 +38,92 @@ namespace Writers
 {
 	class DocumentWriter : public ContentWriter
 	{
-		NSStringUtils::CStringBuilder	m_oWriter;
-		HeaderFooterWriter&		m_oHeaderFooterWriter;
+		NSStringUtils::CStringBuilder m_oWriter;
+		HeaderFooterWriter& m_oHeaderFooterWriter;
 	public:
-         std::wstring			m_sDir;
+         std::wstring m_sDir;
 
-		DocumentWriter( std::wstring sDir, HeaderFooterWriter& oHeaderFooterWriter):m_sDir(sDir), m_oHeaderFooterWriter(oHeaderFooterWriter)
+		DocumentWriter( std::wstring sDir, HeaderFooterWriter& oHeaderFooterWriter) : m_sDir(sDir), m_oHeaderFooterWriter(oHeaderFooterWriter)
 		{
 		}
-		void Write()
+		void Write(bool bGlossary = false)
 		{
-            OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR + _T("word") +FILE_SEPARATOR_STR + _T("document.xml");
+			if (bGlossary)
+			{
+				OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"glossary" + FILE_SEPARATOR_STR + L"document.xml";
 
-			NSFile::CFileBinary oFile;
-			oFile.CreateFileW(filePath.GetPath());			
-                oFile.WriteStringUTF8( std::wstring(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>")));
-                oFile.WriteStringUTF8( std::wstring(_T("<w:document \
-xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
-xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
-xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
-xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
-xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
-xmlns:v=\"urn:schemas-microsoft-com:vml\" \
-xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
-xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
-xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
-xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
-xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
-xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
-xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
-xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
-xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
-xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
-xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
-mc:Ignorable=\"w14 w15 wp14\">")));
+				NSFile::CFileBinary oFile;
+				oFile.CreateFileW(filePath.GetPath());
+				oFile.WriteStringUTF8(std::wstring(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
+				oFile.WriteStringUTF8(std::wstring(L"<w:glossaryDocument \
+	xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
+	xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+	xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
+	xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+	xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
+	xmlns:v=\"urn:schemas-microsoft-com:vml\" \
+	xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
+	xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
+	xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
+	xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
+	xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
+	xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
+	xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
+	xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
+	xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
+	xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
+	xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
+	mc:Ignorable=\"w14 w15 wp14\">"));
 
-                oFile.WriteStringUTF8(m_oBackground.GetData());
+				oFile.WriteStringUTF8(m_oBackground.GetData());
 
-                oFile.WriteStringUTF8( std::wstring(_T("<w:body>")));
-                    oFile.WriteStringUTF8(m_oContent.GetData());
+				oFile.WriteStringUTF8(m_oContent.GetData());
 
-                    oFile.WriteStringUTF8( std::wstring(_T("<w:sectPr>")));
-                        oFile.WriteStringUTF8(WriteSectPrHdrFtr());
-                        oFile.WriteStringUTF8(m_oSecPr.GetData());
-                    oFile.WriteStringUTF8( std::wstring(_T("</w:sectPr>")));
+				oFile.WriteStringUTF8(std::wstring(L"</w:glossaryDocument>"));
+				oFile.CloseFile();
+			}
+			else
+			{
+				OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"document.xml";
 
-                oFile.WriteStringUTF8( std::wstring(_T("</w:body>")));
+				NSFile::CFileBinary oFile;
+				oFile.CreateFileW(filePath.GetPath());
+				oFile.WriteStringUTF8(std::wstring(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
+				oFile.WriteStringUTF8(std::wstring(L"<w:document \
+	xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
+	xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+	xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
+	xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+	xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
+	xmlns:v=\"urn:schemas-microsoft-com:vml\" \
+	xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
+	xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
+	xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
+	xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
+	xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
+	xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
+	xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
+	xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
+	xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
+	xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
+	xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
+	mc:Ignorable=\"w14 w15 wp14\">"));
 
-                oFile.WriteStringUTF8( std::wstring(_T("</w:document>")));
-			oFile.CloseFile();
+				oFile.WriteStringUTF8(m_oBackground.GetData());
+
+				oFile.WriteStringUTF8(std::wstring(L"<w:body>"));
+				oFile.WriteStringUTF8(m_oContent.GetData());
+
+				oFile.WriteStringUTF8(std::wstring(L"<w:sectPr>"));
+				oFile.WriteStringUTF8(WriteSectPrHdrFtr());
+				oFile.WriteStringUTF8(m_oSecPr.GetData());
+				oFile.WriteStringUTF8(std::wstring(L"</w:sectPr>"));
+
+				oFile.WriteStringUTF8(std::wstring(L"</w:body>"));
+
+				oFile.WriteStringUTF8(std::wstring(L"</w:document>"));
+				oFile.CloseFile();
+			}
 		}
 		
 		std::wstring WriteSectPrHdrFtr()
@@ -102,16 +139,16 @@ mc:Ignorable=\"w14 w15 wp14\">")));
 					{
 						if(SimpleTypes::hdrftrFirst == pHeader->eType)
 						{
-							sResult += _T("<w:headerReference w:type=\"first\" r:id=\"") + pHeader->rId + _T("\"/>");
+							sResult += L"<w:headerReference w:type=\"first\" r:id=\"" + pHeader->rId + L"\"/>";
 							bTitlePage = true;
 						}
 						else if(SimpleTypes::hdrftrEven == pHeader->eType)
 						{
-							sResult += _T("<w:headerReference w:type=\"even\" r:id=\"") + pHeader->rId + _T("\"/>");
+							sResult += L"<w:headerReference w:type=\"even\" r:id=\"" + pHeader->rId + L"\"/>";
 						}
 						else
 						{
-							sResult += _T("<w:headerReference w:type=\"default\" r:id=\"") + pHeader->rId + _T("\"/>");
+							sResult += L"<w:headerReference w:type=\"default\" r:id=\"" + pHeader->rId + L"\"/>";
 						}
 					}
 				}
@@ -122,21 +159,21 @@ mc:Ignorable=\"w14 w15 wp14\">")));
 					{
 						if(SimpleTypes::hdrftrFirst == pFooter->eType)
 						{
-							sResult += _T("<w:footerReference w:type=\"first\" r:id=\"") + pFooter->rId + _T("\"/>");
+							sResult += L"<w:footerReference w:type=\"first\" r:id=\"" + pFooter->rId + L"\"/>";
 							bTitlePage = true;
 						}
 						else if(SimpleTypes::hdrftrEven == pFooter->eType)
 						{
-							sResult += _T("<w:footerReference w:type=\"even\" r:id=\"") + pFooter->rId + _T("\"/>");
+							sResult += L"<w:footerReference w:type=\"even\" r:id=\"" + pFooter->rId + L"\"/>";
 						}
 						else
 						{
-							sResult += _T("<w:footerReference w:type=\"default\" r:id=\"") + pFooter->rId + _T("\"/>");
+							sResult += L"<w:footerReference w:type=\"default\" r:id=\"" + pFooter->rId + L"\"/>";
 						}
 					}
 				}
 				if(true == bTitlePage)
-					sResult += _T("<w:titlePg/>");
+					sResult += L"<w:titlePg/>";
 			}
 			return sResult;
 		}

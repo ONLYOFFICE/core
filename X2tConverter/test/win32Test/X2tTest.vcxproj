@@ -248,6 +248,7 @@
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\Readers.h" />
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\SettingWriter.h" />
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\StylesWriter.h" />
+    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\webSettingsWriter.h" />
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinWriter\BinEquationWriter.h" />
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinWriter\BinReaderWriterDefines.h" />
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinWriter\BinWriters.h" />

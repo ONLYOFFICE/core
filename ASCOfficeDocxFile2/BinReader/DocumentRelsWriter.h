@@ -42,7 +42,7 @@ namespace Writers
         DocumentRelsWriter(std::wstring sDir):m_sDir(sDir)
 		{
 		}
-		void Write()
+		void Write(bool bGlossary = false)
 		{
             std::wstring s_Common;
 

@@ -187,13 +187,13 @@ namespace NSCSS
                 if (oElement->m_sSelector == *sNode)
                 {
                     std::vector<std::wstring> arWords = arNodes;
-                    arWords.pop_back();
+//                    for (size_t i = 0; i < arKins.size(); ++i)
+                        arWords.pop_back();
                     const std::vector<CElement*> arTemp = oElement->GetAllElements(arWords);
                     arElements.insert(arElements.end(), arTemp.begin(), arTemp.end());
                 }
             }
         }
-
 
         for (const CElement* oElement : m_arPrevElements)
         {
@@ -202,7 +202,9 @@ namespace NSCSS
                 if (oElement->m_sSelector == *sNode)
                 {
                     std::vector<std::wstring> arWords = arNodes;
-                    arWords.pop_back();
+//                    for (size_t i = 0; i < arKins.size(); ++i)
+                        arWords.pop_back();
+
                     const std::vector<CElement*> arTemp = oElement->GetAllElements(arWords);
                     arElements.insert(arElements.end(), arTemp.begin(), arTemp.end());
                 }

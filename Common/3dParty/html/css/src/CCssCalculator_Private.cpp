@@ -631,17 +631,17 @@ namespace NSCSS
             if (arWords.back()[0] == L'#')
             {
                 sId = arWords.back();
-                arWords.pop_back();
+//                arWords.pop_back();
             }
 
             if (arWords.back()[0] == L'.')
             {
                 arClasses = NS_STATIC_FUNCTIONS::GetWordsW(arWords.back(), L" ");
-                arWords.pop_back();
+//                arWords.pop_back();
             }
 
             sName = arWords.back();
-            arWords.pop_back();
+//            arWords.pop_back();
 
             const std::map<std::wstring, CElement*>::const_iterator oFindName = m_mData.find(sName);
             std::map<std::wstring, CElement*>::const_iterator oFindId;
@@ -693,10 +693,17 @@ namespace NSCSS
 
             for (const CElement* oElement : arFindElements)
             {
-//                std::wcout << oElement->GetFullSelector() << L" -> ";
+//                oElement->Print();
+                std::wcout << oElement->GetFullSelector() << L" -> ";
                 oStyle->AddStyle(oElement->GetStyle());
             }
-//            std::wcout << std::endl;
+            std::wcout << std::endl;
+
+            arWords.pop_back();
+            if (!arClasses.empty())
+                arWords.pop_back();
+            if (!sId.empty())
+                arWords.pop_back();
         }
 
         oStyle->SetID(arSelectors.back().m_sName + ((!arSelectors.back().m_sClass.empty()) ? L'.' + arSelectors.back().m_sClass : L"") + ((arSelectors.back().m_sId.empty()) ? L"" : L'#' + arSelectors.back().m_sId) + L'-' + std::to_wstring(++m_nCountNodes));

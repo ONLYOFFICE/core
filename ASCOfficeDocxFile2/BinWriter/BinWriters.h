@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef BIN_WRITERS
-#define BIN_WRITERS
 
 #include "BinReaderWriterDefines.h"
 
@@ -330,6 +328,11 @@ namespace BinDocxRW
 //---------------------------------
 		BinaryDocumentTableWriter(ParamsWriter& oParamsWriter, ParamsDocumentWriter& oParamsDocumentWriter, std::map<int, bool>* mapIgnoreComments, BinaryHeaderFooterTableWriter* oBinaryHeaderFooterTableWriter);
 	
+		void Write(OOX::Logic::CDocPartPr* pDocPartPr);
+		void Write(OOX::Logic::CDocParts* pDocParts);
+		void Write(OOX::Logic::CDocPartTypes* pDocPartTypes);
+		void Write(OOX::Logic::CDocPartBehaviors* pDocPartBehaviors);
+
 		void WriteAltChunk(OOX::Media& oAltChunk);
 		void WriteVbaProject(OOX::VbaProject& oVbaProject);
 		void Write(std::vector<OOX::WritingElement*> & aElems);
@@ -556,7 +559,7 @@ namespace BinDocxRW
 
 		BinaryFileWriter(ParamsWriter& oParamsWriter);
 		static std::wstring WriteFileHeader(long nDataSize, int version);
-		void WriteMainTableStart();
+		void WriteMainTableStart(bool bSigTable = true);
 		void WriteMainTableEnd();
 		int WriteTableStart(BYTE type, int nStartPos = -1);
 		void WriteTableEnd(int nCurPos);
@@ -565,4 +568,3 @@ namespace BinDocxRW
 	};
 
 }
-#endif	// #ifndef BIN_WRITERS

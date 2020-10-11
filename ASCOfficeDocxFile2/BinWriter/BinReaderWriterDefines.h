@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef DOCX_BIN_READER_WRITER_DEFINES
-#define DOCX_BIN_READER_WRITER_DEFINES
+#pragma once
 
 namespace BinDocxRW
 {
@@ -144,7 +143,8 @@ extern int g_nCurFormatVersion;
 		VbaProject	= 13,
 		App			= 15,
 		Core		= 16,
-		DocumentComments	= 17
+		DocumentComments = 17,
+		Glossary	= 18
 	};}
 	namespace c_oSerSigTypes{enum c_oSerSigTypes
 	{
@@ -515,7 +515,25 @@ extern int g_nCurFormatVersion;
 		BookmarkStart = 23,
 		BookmarkEnd = 24,
 		MRun = 25,
-		AltChunk = 26
+		AltChunk = 26,
+		DocParts = 27
+	};}
+	namespace c_oSerGlossary {
+		enum c_oSerGlossary
+		{
+			DocPart = 0,
+			DocPartPr = 1,
+			DocPartBody = 2,
+			Name = 3,
+			Style = 4,
+			Guid = 5,
+			Description = 6,
+			CategoryName = 7,
+			CategoryGallery = 8,
+			Types = 9,
+			Type = 10,
+			Behaviors = 11,
+			Behavior = 12
 	};}
 	namespace c_oSerDocTableType{enum c_oSerDocTableType
 	{
@@ -1245,5 +1263,3 @@ extern int g_nCurFormatVersion;
 		Flags3 = 6
 	};}
 }
-
-#endif	// #ifndef DOCX_BIN_READER_WRITER_DEFINES

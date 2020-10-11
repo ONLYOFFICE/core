@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef CHART_WRITER
-#define CHART_WRITER
+#pragma once
 
 #include "../../XlsxSerializerCom/Common/Common.h"
 
@@ -96,4 +95,3 @@ namespace Writers
 		}
 	};
 }
-#endif	// #ifndef CHART_WRITER

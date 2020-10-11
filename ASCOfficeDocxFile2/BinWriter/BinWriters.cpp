@@ -3123,6 +3123,118 @@ void BinaryDocumentTableWriter::WriteVbaProject(OOX::VbaProject& oVbaProject)
 	m_oBcw.m_oStream.EndRecord();
 
 }
+void BinaryDocumentTableWriter::Write(OOX::Logic::CDocPartPr* pDocPartPr)
+{
+	if (!pDocPartPr) return;
+
+	int nCurPos = 0;
+	if (pDocPartPr->m_oName.IsInit() && pDocPartPr->m_oName->m_sVal.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerGlossary::Name);
+		m_oBcw.m_oStream.WriteStringW3(pDocPartPr->m_oName->m_sVal.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (pDocPartPr->m_oStyle.IsInit() && pDocPartPr->m_oStyle->m_sVal.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerGlossary::Style);
+		m_oBcw.m_oStream.WriteStringW3(pDocPartPr->m_oStyle->m_sVal.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (pDocPartPr->m_oGuid.IsInit() && pDocPartPr->m_oGuid->m_sVal.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerGlossary::Guid);
+		m_oBcw.m_oStream.WriteStringW3(pDocPartPr->m_oGuid->m_sVal.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (pDocPartPr->m_oDescription.IsInit() && pDocPartPr->m_oDescription->m_sVal.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerGlossary::Description);
+		m_oBcw.m_oStream.WriteStringW3(pDocPartPr->m_oDescription->m_sVal.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (pDocPartPr->m_oCategory.IsInit())
+	{
+		if (pDocPartPr->m_oCategory->m_oName.IsInit() && pDocPartPr->m_oCategory->m_oName->m_sVal.IsInit())
+		{
+			nCurPos = m_oBcw.WriteItemStart(c_oSerGlossary::CategoryName);
+			m_oBcw.m_oStream.WriteStringW3(pDocPartPr->m_oCategory->m_oName->m_sVal.get());
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+		if (pDocPartPr->m_oCategory->m_oGallery.IsInit() && pDocPartPr->m_oCategory->m_oGallery->m_oVal.IsInit())
+		{
+			nCurPos = m_oBcw.WriteItemStart(c_oSerGlossary::CategoryGallery);
+			m_oBcw.m_oStream.WriteBYTE(pDocPartPr->m_oCategory->m_oGallery->m_oVal->GetValue());
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+	}
+
+	Write(pDocPartPr->m_oTypes.GetPointer());
+	Write(pDocPartPr->m_oBehaviors.GetPointer());
+}
+void BinaryDocumentTableWriter::Write(OOX::Logic::CDocPartTypes* pDocPartTypes)
+{
+	if (!pDocPartTypes) return;
+
+	int nCurPos = m_oBcw.WriteItemStart(c_oSerGlossary::Types);
+	for (size_t i = 0; i < pDocPartTypes->m_arrItems.size(); ++i)
+	{
+		if (pDocPartTypes->m_arrItems[i] && pDocPartTypes->m_arrItems[i]->m_sVal.IsInit())
+		{
+			int nCurPos1 = m_oBcw.WriteItemStart(c_oSerGlossary::Type);
+			m_oBcw.m_oStream.WriteStringW3(pDocPartTypes->m_arrItems[i]->m_sVal.get());
+			m_oBcw.WriteItemEnd(nCurPos1);
+		}
+	}
+	m_oBcw.WriteItemEnd(nCurPos);
+
+}
+void BinaryDocumentTableWriter::Write(OOX::Logic::CDocPartBehaviors* pDocPartBehaviors)
+{
+	if (!pDocPartBehaviors) return;
+
+	int nCurPos = m_oBcw.WriteItemStart(c_oSerGlossary::Behaviors);
+	for (size_t i = 0; i < pDocPartBehaviors->m_arrItems.size(); ++i)
+	{
+		if (pDocPartBehaviors->m_arrItems[i] && pDocPartBehaviors->m_arrItems[i]->m_oVal.IsInit())
+		{
+			int nCurPos1 = m_oBcw.WriteItemStart(c_oSerGlossary::Behavior);
+			m_oBcw.m_oStream.WriteBYTE(pDocPartBehaviors->m_arrItems[i]->m_oVal->GetValue());
+			m_oBcw.WriteItemEnd(nCurPos1);
+		}
+	}
+	m_oBcw.WriteItemEnd(nCurPos);
+}
+void BinaryDocumentTableWriter::Write(OOX::Logic::CDocParts* pDocParts)
+{
+	if (!pDocParts) return;
+
+	for (size_t i = 0; i < pDocParts->m_arrItems.size(); ++i)
+	{
+		if (pDocParts->m_arrItems[i])
+		{
+			m_oBcw.m_oStream.WriteBYTE(c_oSerGlossary::DocPart);
+			int nCurPos1 = m_oBcw.WriteItemWithLengthStart();
+			
+			if (pDocParts->m_arrItems[i]->m_oDocPartPr.IsInit())
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSerGlossary::DocPartPr);
+				int nCurPos2 = m_oBcw.WriteItemWithLengthStart();
+				Write(pDocParts->m_arrItems[i]->m_oDocPartPr.GetPointer());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos2);
+			}
+			if (pDocParts->m_arrItems[i]->m_oDocPartBody.IsInit())
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSerGlossary::DocPartBody);
+				int nCurPos2 = m_oBcw.WriteItemWithLengthStart();
+
+				WriteDocumentContent(pDocParts->m_arrItems[i]->m_oDocPartBody->m_arrItems);
+
+				m_oBcw.WriteItemWithLengthEnd(nCurPos2);
+			}
+			m_oBcw.WriteItemWithLengthEnd(nCurPos1);
+		}
+	}
+}
 void BinaryDocumentTableWriter::Write(std::vector<OOX::WritingElement*> & aElems)
 {
 	int nStart = m_oBcw.WriteItemWithLengthStart();
@@ -3234,6 +3346,13 @@ void BinaryDocumentTableWriter::WriteDocumentContent(const std::vector<OOX::Writ
 				nCurPos = m_oBcw.WriteItemStart(c_oSerParType::MoveToRangeEnd);
 				WriteMoveRangeEnd(*pMoveToRangeEnd);
 				m_oBcw.WriteItemEnd(nCurPos);
+			}break;
+			case OOX::et_w_docParts:
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSerParType::DocParts);
+				nCurPos = m_oBcw.WriteItemWithLengthStart();
+				Write(static_cast<OOX::Logic::CDocParts*>(item));
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}break;
 		default:
 			break;
@@ -3420,11 +3539,6 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile)
 
 			BinaryDocumentTableWriter oBinaryDocumentEmbTableWriter(oParamsWriterEmb, oParamsDocumentWriterEmb, &oParamsWriterEmb.m_mapIgnoreComments, NULL);
 
-			//*oBufferedStream.m_pTheme = smart_ptr<PPTX::Theme>(oDocx.m_pTheme);
-			//oBufferedStream.m_pTheme->AddRef();
-
-			//if(NULL != oDocx.m_pFontTable)
-			//	m_oParamsWriter.m_pFontProcessor->setFontTable(oDocx.m_oMain.fontTable);
 			oBinaryDocumentEmbTableWriter.WriteDocumentContent(oDocx.m_oMain.document->m_arrItems);
 		}
 		else
@@ -3497,13 +3611,18 @@ void BinaryDocumentTableWriter::WriteParagraphContent(const std::vector<OOX::Wri
 			}
 		case OOX::et_w_pPr:
 			break;
+		case OOX::et_w_br:
+		{
+			OOX::Logic::CRun oRun;
+			oRun.m_arrItems.push_back(item);
+			WriteRun(&oRun, false, false);
+			oRun.m_arrItems.clear();
+		}break;
 		case OOX::et_w_r:
 			{
 				OOX::Logic::CRun* pRun = static_cast<OOX::Logic::CRun*>(item);
-				bool bMathRun = false;
-				WriteRun(pRun, bHyperlink, bMathRun);
-				break;
-			}
+				WriteRun(pRun, bHyperlink, false);				
+			}break;
 		case OOX::et_w_sdt:
 			{
 				OOX::Logic::CSdt* pStd = static_cast<OOX::Logic::CSdt*>(item);
@@ -8561,7 +8680,7 @@ std::wstring BinaryFileWriter::WriteFileHeader(long nDataSize, int version)
 	std::wstring sHeader = std::wstring(g_sFormatSignature) + L";v" + std::to_wstring(version) + L";" + std::to_wstring(nDataSize) + L";";
 	return sHeader;
 }
-void BinaryFileWriter::WriteMainTableStart()
+void BinaryFileWriter::WriteMainTableStart(bool bSigTable)
 {
 	int nTableCount = 128;//Специально ставим большое число, чтобы не увеличивать его при добавлении очередной таблицы.
 	m_nRealTableCount = 0;
@@ -8572,11 +8691,14 @@ void BinaryFileWriter::WriteMainTableStart()
 	//Write mtLen
 	m_oBcw.m_oStream.WriteBYTE(0);
 
-	//BinarySigTableWriter
-	int nCurPos = WriteTableStart(c_oSerTableTypes::Signature);
-	BinarySigTableWriter oBinarySigTableWriter(m_oParamsWriter);
-	oBinarySigTableWriter.Write();
-	WriteTableEnd(nCurPos);
+	if (bSigTable)
+	{
+		//BinarySigTableWriter
+		int nCurPos = WriteTableStart(c_oSerTableTypes::Signature);
+		BinarySigTableWriter oBinarySigTableWriter(m_oParamsWriter);
+		oBinarySigTableWriter.Write();
+		WriteTableEnd(nCurPos);
+	}
 }
 void BinaryFileWriter::WriteMainTableEnd()
 {
@@ -8619,28 +8741,23 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 	OOX::CDocx		*pDocx = new OOX::CDocx(OOX::CPath(sDir));
 	OOX::CDocxFlat	*pDocxFlat = NULL;
 
-	OOX::Document	*pMain = NULL;
 	OOX::CDocument	*pDocument = NULL;
-	OOX::CFontTable	*pFontTable = NULL;
 	OOX::CComments	*pComments = NULL;
-	
+
 	if ((pDocx) && (pDocx->m_oMain.document))
 	{
-		m_oParamsWriter.m_pTheme	= pDocx->m_pTheme;
-		m_oParamsWriter.m_pSettings = pDocx->m_oMain.settings;
+		m_oParamsWriter.m_pTheme = pDocx->m_pTheme;
 
 		*oBufferedStream.m_pTheme = smart_ptr<PPTX::Theme>(pDocx->m_pTheme);
 		oBufferedStream.m_pTheme->AddRef();
 
-		pMain		= dynamic_cast<OOX::Document*>(pDocx);
-		
-		pDocument	= pDocx->m_oMain.document;
-		pFontTable	= pDocx->m_oMain.fontTable;
-		pComments	= pDocx->m_oMain.comments;
-		
-		m_oParamsWriter.m_pSettings		= pDocx->m_oMain.settings;
-		m_oParamsWriter.m_pStyles		= pDocx->m_oMain.styles;
-		m_oParamsWriter.m_pNumbering	= pDocx->m_oMain.numbering;
+		pDocument = pDocx->m_oMain.document;
+		pComments = pDocx->m_oMain.comments;
+
+		m_oParamsWriter.m_pSettings = pDocx->m_oMain.settings;
+		m_oParamsWriter.m_pStyles = pDocx->m_oMain.styles;
+		m_oParamsWriter.m_pNumbering = pDocx->m_oMain.numbering;
+		m_oParamsWriter.m_pMain = dynamic_cast<OOX::Document*>(pDocx);
 	}
 	else
 	{
@@ -8649,23 +8766,17 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 		pDocxFlat = new OOX::CDocxFlat(OOX::CPath(sDir));
 		if ((pDocxFlat) && (pDocxFlat->m_pDocument.IsInit()))
 		{
-			pMain		= dynamic_cast<OOX::Document*>(pDocxFlat);
-			
-			pDocument	= pDocxFlat->m_pDocument.GetPointer();
-			pFontTable	= pDocxFlat->m_pFontTable.GetPointer();
-			pComments	= &pDocxFlat->m_oComments;
-			
-			m_oParamsWriter.m_pSettings		= pDocxFlat->m_pSettings.GetPointer();			
-			m_oParamsWriter.m_pStyles		= pDocxFlat->m_pStyles.GetPointer();
-			m_oParamsWriter.m_pNumbering	= pDocxFlat->m_pNumbering.GetPointer();
+			pDocument = pDocxFlat->m_pDocument.GetPointer();
+			pComments = &pDocxFlat->m_oComments;
+
+			m_oParamsWriter.m_pSettings = pDocxFlat->m_pSettings.GetPointer();
+			m_oParamsWriter.m_pStyles = pDocxFlat->m_pStyles.GetPointer();
+			m_oParamsWriter.m_pNumbering = pDocxFlat->m_pNumbering.GetPointer();
+			m_oParamsWriter.m_pMain = dynamic_cast<OOX::Document*>(pDocxFlat);
 		}
 	}
-	if (pFontTable)
-		m_oParamsWriter.m_pFontProcessor->setFontTable(pFontTable);	
 
-//ищем первый SectPr и расставляем pageBreak
-
-	if (pDocument == NULL) 
+	if (pDocument == NULL)
 	{
 		if (pDocx)		delete pDocx;		pDocx = NULL;
 		if (pDocxFlat)	delete pDocxFlat;	pDocxFlat = NULL;
@@ -8674,42 +8785,37 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 
 	m_oParamsWriter.m_pOfficeDrawingConverter->m_nDrawingMaxZIndex = pDocument->m_nDrawingMaxZIndex;
 
-	OOX::Logic::CSectionProperty* pFirstSectPr = pDocument->m_oSectPr.GetPointer();
-
 	this->WriteMainTableStart();
 
-	int nCurPos = 0;
-
-//Write Settings
 	OOX::CSettingsCustom oSettingsCustom;
 	if ((pDocx) && (pDocx->m_oMain.settings))
 	{
 		std::wstring sSettings = pDocx->GetCustomSettings();
-		if(false == sSettings.empty())
+		if (false == sSettings.empty())
 		{
 			oSettingsCustom.FromXml(sSettings);
 		}
 	}
+	int nCurPos = 0;
 
 	if (m_oParamsWriter.m_pSettings)
 	{
 		BinDocxRW::BinarySettingsTableWriter oBinarySettingsTableWriter(m_oParamsWriter);
-		int nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Settings);
+		nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Settings);
 		oBinarySettingsTableWriter.Write(*m_oParamsWriter.m_pSettings, oSettingsCustom);
 		this->WriteTableEnd(nCurPos);
 	}
 
-//Write Comments
 	if (pComments)
 	{
 		BinDocxRW::BinaryCommentsTableWriter oBinaryCommentsTableWriter(m_oParamsWriter);
-		int nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Comments);
-		oBinaryCommentsTableWriter.Write(*pComments,	(pDocx ? pDocx->m_pCommentsExt : NULL), 
-														(pDocx ? pDocx->m_pCommentsExtensible : NULL),
-														(pDocx ? pDocx->m_pCommentsUserData : NULL),
-														(pDocx ? pDocx->m_pPeople : NULL), 
-														(pDocx ? pDocx->m_pCommentsIds : NULL), 
-															m_oParamsWriter.m_mapIgnoreComments);
+		nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Comments);
+		oBinaryCommentsTableWriter.Write(*pComments, (pDocx ? pDocx->m_pCommentsExt : NULL),
+			(pDocx ? pDocx->m_pCommentsExtensible : NULL),
+			(pDocx ? pDocx->m_pCommentsUserData : NULL),
+			(pDocx ? pDocx->m_pPeople : NULL),
+			(pDocx ? pDocx->m_pCommentsIds : NULL),
+			m_oParamsWriter.m_mapIgnoreComments);
 		this->WriteTableEnd(nCurPos);
 	}
 	if ((pDocx) && (pDocx->m_pDocumentComments))
@@ -8719,21 +8825,20 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 		oBinaryCommentsTableWriter.Write(*pDocx->m_pDocumentComments, pDocx->m_pDocumentCommentsExt, pDocx->m_pDocumentCommentsExtensible, pDocx->m_pCommentsUserData, pDocx->m_pDocumentPeople, pDocx->m_pDocumentCommentsIds, m_oParamsWriter.m_mapIgnoreComments);
 		this->WriteTableEnd(nCurPos);
 	}
-
-	BinDocxRW::BinaryNotesTableWriter oBinaryNotesWriter(m_oParamsWriter);
-//Write Footnotes
-	if ((pDocx) && (pDocx->m_oMain.footnotes))
 	{
-		nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Footnotes);
-		oBinaryNotesWriter.WriteFootnotes(*pDocx->m_oMain.footnotes);
-		this->WriteTableEnd(nCurPos);
-	}
-//Write Endnotes
-	if ((pDocx) && (pDocx->m_oMain.endnotes))
-	{
-		nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Endnotes);
-		oBinaryNotesWriter.WriteEndnotes(*pDocx->m_oMain.endnotes);
-		this->WriteTableEnd(nCurPos);
+		BinDocxRW::BinaryNotesTableWriter oBinaryNotesWriter(m_oParamsWriter);
+		if ((pDocx) && (pDocx->m_oMain.footnotes))
+		{
+			nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Footnotes);
+			oBinaryNotesWriter.WriteFootnotes(*pDocx->m_oMain.footnotes);
+			this->WriteTableEnd(nCurPos);
+		}
+		if ((pDocx) && (pDocx->m_oMain.endnotes))
+		{
+			nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Endnotes);
+			oBinaryNotesWriter.WriteEndnotes(*pDocx->m_oMain.endnotes);
+			this->WriteTableEnd(nCurPos);
+		}
 	}
 
 //Write App
@@ -8750,84 +8855,173 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 		pDocx->m_pCore->ToPptxCore()->toPPTY(&oBufferedStream);
 		this->WriteTableEnd(nCurPos);
 	}
-
-	BinDocxRW::BinaryHeaderFooterTableWriter oBinaryHeaderFooterTableWriter(m_oParamsWriter, pDocument, &m_oParamsWriter.m_mapIgnoreComments);
-
-//Write DocumentTable
-	ParamsDocumentWriter oParamsDocumentWriter(pDocument);
-	m_oParamsWriter.m_pCurRels = oParamsDocumentWriter.m_pRels;
-	m_oParamsWriter.m_pMain = pMain;
-
-//DocumentTable всегда пишем последней, чтобы сначала заполнить все вспомогательные структуры, а при заполении документа, вызывать методы типа Style_Add...
-	BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(m_oParamsWriter, oParamsDocumentWriter, &m_oParamsWriter.m_mapIgnoreComments, &oBinaryHeaderFooterTableWriter);
-
-	m_oParamsWriter.m_pOfficeDrawingConverter->SetRels(oParamsDocumentWriter.m_pRels);
-	m_oParamsWriter.m_pOfficeDrawingConverter->ClearShapeTypes();
-
-	oBinaryDocumentTableWriter.pSectPr			= pFirstSectPr;
-	oBinaryDocumentTableWriter.poDocument		= pDocument;
-	oBinaryDocumentTableWriter.pJsaProject		= pDocx ? pDocx->m_pJsaProject : NULL;
-
-	if (pDocx)
+	if (NULL != m_oParamsWriter.m_pTheme)
 	{
-		oBinaryDocumentTableWriter.pBackground = dynamic_cast<OOX::WritingElement*>(pDocument->m_oBackground.GetPointer());
-	}
-	else if (pDocxFlat)
-	{
-		oBinaryDocumentTableWriter.pBackground = dynamic_cast<OOX::WritingElement*>(pDocxFlat->m_oBgPict.GetPointer());
-	}
-	oBinaryDocumentTableWriter.m_bWriteSectPr	= true;
-
-// Write content
-	nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Document);
-	oBinaryDocumentTableWriter.Write(pDocument->m_arrItems);
-	this->WriteTableEnd(nCurPos);
-
-	nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::HdrFtr);
-	oBinaryHeaderFooterTableWriter.Write();
-	this->WriteTableEnd(nCurPos);
-
-	if(NULL != m_oParamsWriter.m_pTheme)
-	{
-		int nCurPos = WriteTableStart(c_oSerTableTypes::Other);
+		nCurPos = WriteTableStart(c_oSerTableTypes::Other);
 		BinaryOtherTableWriter oBinaryOtherTableWriter(m_oParamsWriter, m_oParamsWriter.m_pTheme);
 		oBinaryOtherTableWriter.Write();
 		WriteTableEnd(nCurPos);
 	}
-	
-//Write Vba
-	if ((pDocx) && (pDocx->m_pVbaProject))
+
 	{
-		nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::VbaProject);
-		oBinaryDocumentTableWriter.WriteVbaProject(*pDocx->m_pVbaProject);
+		ParamsDocumentWriter oParamsDocumentWriter(pDocument);
+		m_oParamsWriter.m_pCurRels = oParamsDocumentWriter.m_pRels;
+
+		BinDocxRW::BinaryHeaderFooterTableWriter oBinaryHeaderFooterTableWriter(m_oParamsWriter, pDocument, &m_oParamsWriter.m_mapIgnoreComments);
+		BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(m_oParamsWriter, oParamsDocumentWriter, &m_oParamsWriter.m_mapIgnoreComments, &oBinaryHeaderFooterTableWriter);
+
+		m_oParamsWriter.m_pOfficeDrawingConverter->SetRels(oParamsDocumentWriter.m_pRels);
+		m_oParamsWriter.m_pOfficeDrawingConverter->ClearShapeTypes();
+
+		oBinaryDocumentTableWriter.poDocument = pDocument;
+		oBinaryDocumentTableWriter.pSectPr = pDocument->m_oSectPr.GetPointer();;
+		oBinaryDocumentTableWriter.pJsaProject = pDocx ? pDocx->m_pJsaProject : NULL;
+		oBinaryDocumentTableWriter.m_bWriteSectPr = true;
+
+		if (pDocx)
+		{
+			oBinaryDocumentTableWriter.pBackground = dynamic_cast<OOX::WritingElement*>(pDocument->m_oBackground.GetPointer());
+		}
+		else if (pDocxFlat)
+		{
+			oBinaryDocumentTableWriter.pBackground = dynamic_cast<OOX::WritingElement*>(pDocxFlat->m_oBgPict.GetPointer());
+		}
+
+		// Write content
+		nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Document);
+		oBinaryDocumentTableWriter.Write(pDocument->m_arrItems);
 		this->WriteTableEnd(nCurPos);
+
+		nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::HdrFtr);
+		oBinaryHeaderFooterTableWriter.Write();
+		this->WriteTableEnd(nCurPos);
+
+		if ((pDocx) && (pDocx->m_pVbaProject))
+		{
+			nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::VbaProject);
+			oBinaryDocumentTableWriter.WriteVbaProject(*pDocx->m_pVbaProject);
+			this->WriteTableEnd(nCurPos);
+		}
 	}
 
-//Write StyleTable
-	BinDocxRW::BinaryStyleTableWriter oBinaryStyleTableWriter(m_oParamsWriter);
 	if (m_oParamsWriter.m_pStyles)
 	{
-		int nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Style);
+		BinDocxRW::BinaryStyleTableWriter oBinaryStyleTableWriter(m_oParamsWriter);
+
+		nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Style);
 		oBinaryStyleTableWriter.Write(*m_oParamsWriter.m_pStyles);
 		this->WriteTableEnd(nCurPos);
 	}
 
-//Write Numbering
-	BinDocxRW::BinaryNumberingTableWriter oBinaryNumberingTableWriter(m_oParamsWriter);
 	if (m_oParamsWriter.m_pNumbering)
 	{
+		BinDocxRW::BinaryNumberingTableWriter oBinaryNumberingTableWriter(m_oParamsWriter);
+
 		nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Numbering);
 		oBinaryNumberingTableWriter.Write(*m_oParamsWriter.m_pNumbering);
 		this->WriteTableEnd(nCurPos);
 	}
-	
-	this->WriteMainTableEnd();
 
 	if (m_oParamsWriter.m_bLocalStyles)
 		delete m_oParamsWriter.m_pStyles;
 
 	if (m_oParamsWriter.m_bLocalNumbering)
-		delete m_oParamsWriter.m_pNumbering;
+		delete m_oParamsWriter.m_pNumbering;	
+	
+	if (pDocx && pDocx->m_oGlossary.document)
+	{
+		m_oParamsWriter.m_pSettings = pDocx->m_oGlossary.settings;
+		m_oParamsWriter.m_pStyles = pDocx->m_oGlossary.styles;
+		m_oParamsWriter.m_pNumbering = pDocx->m_oGlossary.numbering;
+		
+		nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Glossary);
+
+		int nRealTableCount = m_nRealTableCount;
+		int nMainTableStart = m_nMainTableStart;
+		int nLastFilePos = m_nLastFilePos;
+		
+		this->WriteMainTableStart(false);
+		{
+			int nCurPos1 = 0;
+			if (m_oParamsWriter.m_pSettings)
+			{
+				BinDocxRW::BinarySettingsTableWriter oBinarySettingsTableWriter(m_oParamsWriter);
+				nCurPos1 = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Settings);
+				oBinarySettingsTableWriter.Write(*m_oParamsWriter.m_pSettings, oSettingsCustom);
+				this->WriteTableEnd(nCurPos1);
+			}
+
+			if (pDocx->m_oGlossary.comments)
+			{
+				BinDocxRW::BinaryCommentsTableWriter oBinaryCommentsTableWriter(m_oParamsWriter);
+				nCurPos1 = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Comments);
+				oBinaryCommentsTableWriter.Write(*pDocx->m_oGlossary.comments, NULL, NULL, NULL, NULL, NULL, m_oParamsWriter.m_mapIgnoreComments);
+				this->WriteTableEnd(nCurPos1);
+			}
+			{
+				ParamsDocumentWriter oParamsDocumentWriter(pDocx->m_oGlossary.document);
+				m_oParamsWriter.m_pCurRels = oParamsDocumentWriter.m_pRels;
+
+				BinDocxRW::BinaryHeaderFooterTableWriter oBinaryHeaderFooterTableWriter(m_oParamsWriter, pDocument, &m_oParamsWriter.m_mapIgnoreComments);
+				BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(m_oParamsWriter, oParamsDocumentWriter, &m_oParamsWriter.m_mapIgnoreComments, &oBinaryHeaderFooterTableWriter);
+
+				m_oParamsWriter.m_pOfficeDrawingConverter->SetRels(oParamsDocumentWriter.m_pRels);
+				m_oParamsWriter.m_pOfficeDrawingConverter->ClearShapeTypes();
+
+				oBinaryDocumentTableWriter.poDocument = pDocx->m_oGlossary.document;
+				oBinaryDocumentTableWriter.pSectPr = pDocx->m_oGlossary.document->m_oSectPr.GetPointer();;
+				oBinaryDocumentTableWriter.pBackground = dynamic_cast<OOX::WritingElement*>(pDocx->m_oGlossary.document->m_oBackground.GetPointer());
+				oBinaryDocumentTableWriter.m_bWriteSectPr = true;
+
+				nCurPos1 = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Document);
+					oBinaryDocumentTableWriter.Write(pDocx->m_oGlossary.document->m_arrItems);
+				this->WriteTableEnd(nCurPos1);
+
+				nCurPos1 = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::HdrFtr);
+				oBinaryHeaderFooterTableWriter.Write();
+				this->WriteTableEnd(nCurPos1);
+			}
+			{
+				BinDocxRW::BinaryNotesTableWriter oBinaryNotesWriter(m_oParamsWriter);
+				if (pDocx->m_oGlossary.footnotes)
+				{
+					nCurPos1 = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Footnotes);
+					oBinaryNotesWriter.WriteFootnotes(*pDocx->m_oGlossary.footnotes);
+					this->WriteTableEnd(nCurPos1);
+				}
+				if (pDocx->m_oGlossary.endnotes)
+				{
+					nCurPos1 = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Endnotes);
+					oBinaryNotesWriter.WriteEndnotes(*pDocx->m_oGlossary.endnotes);
+					this->WriteTableEnd(nCurPos1);
+				}
+			}
+			if (m_oParamsWriter.m_pStyles)
+			{
+				BinDocxRW::BinaryStyleTableWriter oBinaryStyleTableWriter(m_oParamsWriter);
+
+				nCurPos1 = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Style);
+				oBinaryStyleTableWriter.Write(*m_oParamsWriter.m_pStyles);
+				this->WriteTableEnd(nCurPos1);
+			}
+			if (m_oParamsWriter.m_pNumbering)
+			{
+				BinDocxRW::BinaryNumberingTableWriter oBinaryNumberingTableWriter(m_oParamsWriter);
+
+				nCurPos1 = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Numbering);
+				oBinaryNumberingTableWriter.Write(*m_oParamsWriter.m_pNumbering);
+				this->WriteTableEnd(nCurPos1);
+			}
+		}
+		this->WriteMainTableEnd();
+
+		m_nRealTableCount = nRealTableCount;
+		m_nMainTableStart = nMainTableStart;
+		m_nLastFilePos =  nLastFilePos;
+
+		this->WriteTableEnd(nCurPos);
+	}
+	this->WriteMainTableEnd();
 
 	if (pDocx)		delete pDocx;		pDocx = NULL;
 	if (pDocxFlat)	delete pDocxFlat;	pDocxFlat = NULL;

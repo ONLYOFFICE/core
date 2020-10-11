@@ -152,35 +152,35 @@ bool BinDocxRW::CDocxSerializer::CreateDocxFolders(std::wstring strDirectory, st
 {
 	bool res = true;
 	// rels
-    OOX::CPath pathRels = strDirectory + FILE_SEPARATOR_STR + _T("_rels");
+    OOX::CPath pathRels = strDirectory + FILE_SEPARATOR_STR + L"_rels";
 	if (!NSDirectory::CreateDirectory(pathRels.GetPath()))	res = false;
 
 	// word
-    OOX::CPath pathWord = strDirectory + FILE_SEPARATOR_STR + _T("word");
+    OOX::CPath pathWord = strDirectory + FILE_SEPARATOR_STR + L"word";
     if (!NSDirectory::CreateDirectory(pathWord.GetPath()))	res = false;
 
 	// documentRels
-    OOX::CPath pathWordRels = pathWord + FILE_SEPARATOR_STR + _T("_rels");
+    OOX::CPath pathWordRels = pathWord + FILE_SEPARATOR_STR + L"_rels";
     if (!NSDirectory::CreateDirectory(pathWordRels.GetPath()))res = false;
 
 	//media
-    OOX::CPath pathMedia = pathWord + FILE_SEPARATOR_STR + _T("media");
+    OOX::CPath pathMedia = pathWord + FILE_SEPARATOR_STR + L"media";
 	if (!NSDirectory::CreateDirectory(pathMedia.GetPath()))		res = false;
 	sMediaPath = pathMedia.GetPath();
 
 	//embeddings
-    OOX::CPath pathEmbeddings = pathWord + FILE_SEPARATOR_STR + _T("embeddings");
+    OOX::CPath pathEmbeddings = pathWord + FILE_SEPARATOR_STR + L"embeddings";
 	if (!NSDirectory::CreateDirectory(pathEmbeddings.GetPath()))res = false;
 	sEmbedPath = pathEmbeddings.GetPath();
 
 	// theme
-    OOX::CPath pathTheme = pathWord + FILE_SEPARATOR_STR + _T("theme");
+    OOX::CPath pathTheme = pathWord + FILE_SEPARATOR_STR + L"theme";
 	if (!NSDirectory::CreateDirectory(pathTheme.GetPath()))		res = false;
 
-    OOX::CPath pathThemeRels = pathTheme + FILE_SEPARATOR_STR + _T("_rels");
+    OOX::CPath pathThemeRels = pathTheme + FILE_SEPARATOR_STR + L"_rels";
 	if (!NSDirectory::CreateDirectory(pathThemeRels.GetPath())) res = false;
 	
-    pathTheme = pathTheme + FILE_SEPARATOR_STR + _T("theme1.xml");
+    pathTheme = pathTheme + FILE_SEPARATOR_STR + L"theme1.xml";
 	sThemePath = pathTheme.GetPath();
 
 	return res;

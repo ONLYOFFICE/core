@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef BINEQUATIONWRITER_H
-#define BINEQUATIONWRITER_H
+#pragma once
 
 #include "BinReaderWriterDefines.h"
 
@@ -2432,4 +2431,3 @@ namespace MathEquation
 			std::stack<CBaseCommand*> m_aCommandStack;
 	};
 } 
-#endif //BINEQUATIONWRITER_H

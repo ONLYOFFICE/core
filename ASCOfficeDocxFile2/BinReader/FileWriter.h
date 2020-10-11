@@ -65,25 +65,95 @@ namespace OOX
 
 namespace Writers
 {
+	struct _part_summary_writers
+	{
+		_part_summary_writers(std::wstring sDirOutput, std::wstring sFontDir, bool bNoFontDir, int nVersion)
+			:
+			font_table(sDirOutput, sFontDir, bNoFontDir),
+			document(sDirOutput, headers_footers),
+			styles(sDirOutput, nVersion),
+			numbering(sDirOutput),
+			headers_footers(sDirOutput),
+			footnotes(sDirOutput),
+			endnotes(sDirOutput),
+			settings(sDirOutput, headers_footers),
+			comments(sDirOutput),
+			web_settings(sDirOutput)
+		{}
+
+		void Write(bool bGlossary = false)
+		{
+			comments.Write(bGlossary);
+			styles.Write(bGlossary);
+			numbering.Write(bGlossary);
+			font_table.Write(bGlossary);
+			headers_footers.Write(bGlossary);
+			footnotes.Write(bGlossary);
+			endnotes.Write(bGlossary);
+			//Setting пишем после HeaderFooter, чтобы заполнить evenAndOddHeaders
+			settings.Write(bGlossary);
+			web_settings.Write(bGlossary);
+			//Document пишем после HeaderFooter, чтобы заполнить sectPr
+			document.Write(bGlossary);
+
+		}
+
+		DocumentWriter			document;
+		NumberingWriter			numbering;
+		StylesWriter			styles;
+		FootnotesWriter			footnotes;
+		EndnotesWriter			endnotes;
+		HeaderFooterWriter		headers_footers;
+		SettingWriter			settings;
+		WebSettingsWriter		web_settings;
+		FontTableWriter			font_table;
+		CommentsWriter			comments;
+	};
 	class FileWriter
 	{
-	public:		
-		FontTableWriter			m_oFontTableWriter;
-		DocumentWriter			m_oDocumentWriter;
+	private:
+		_part_summary_writers	m_oMain;
+		_part_summary_writers	m_oGlossary;
+	public:
+
+		FileWriter(std::wstring sDirOutput, std::wstring sFontDir, bool bNoFontDir, int nVersion, bool bSaveChartAsImg, NSBinPptxRW::CDrawingConverter* pDrawingConverter, std::wstring sThemePath);
+		~FileWriter();
+
+		FontTableWriter&		get_font_table_writer()		{ return m_bGlossaryMode ? m_oGlossary.font_table : m_oMain.font_table; }
+		DocumentWriter&			get_document_writer()		{ return m_bGlossaryMode ? m_oGlossary.document : m_oMain.document; }
+		FootnotesWriter&		get_footnotes_writer()		{ return m_bGlossaryMode ? m_oGlossary.footnotes : m_oMain.footnotes; }
+		EndnotesWriter&			get_endnotes_writer()		{ return m_bGlossaryMode ? m_oGlossary.endnotes : m_oMain.endnotes; }
+		HeaderFooterWriter&		get_headers_footers_writer(){ return m_bGlossaryMode ? m_oGlossary.headers_footers : m_oMain.headers_footers; }
+		SettingWriter&			get_settings_writer()		{ return m_bGlossaryMode ? m_oGlossary.settings : m_oMain.settings; }
+		CommentsWriter&			get_comments_writer()		{ return m_bGlossaryMode ? m_oGlossary.comments : m_oMain.comments; }
+		NumberingWriter&		get_numbering_writer()		{ return m_bGlossaryMode ? m_oGlossary.numbering : m_oMain.numbering; }
+		StylesWriter&			get_style_writers()			{ return m_bGlossaryMode ? m_oGlossary.styles : m_oMain.styles; }
+		WebSettingsWriter&		get_web_settings_writer()	{ return m_bGlossaryMode ? m_oGlossary.web_settings : m_oMain.web_settings; }
+
+		int getNextDocPr()
+		{
+			m_nDocPrIndex++;
+			return m_nDocPrIndex;
+		}
+		void AddSetting(std::wstring sSetting)
+		{
+			if (m_bGlossaryMode) m_oGlossary.settings.AddSetting(sSetting);
+			else m_oMain.settings.AddSetting(sSetting);
+		}
+		void Write();
+		void WriteGlossary();
+
+		bool IsEmptyGlossary()
+		{
+			return m_oGlossary.document.m_oContent.GetSize() < 1;
+		}
+
 		MediaWriter				m_oMediaWriter;
-		StylesWriter			m_oStylesWriter;
-		NumberingWriter			m_oNumberingWriter;
-		HeaderFooterWriter		m_oHeaderFooterWriter;
-		FootnotesWriter			m_oFootnotesWriter;
-		EndnotesWriter			m_oEndnotesWriter;
-		SettingWriter			m_oSettingWriter;
-		CommentsWriter			m_oCommentsWriter;
 		ChartWriter				m_oChartWriter;
-		DocumentRelsWriter		m_oDocumentRelsWriter;
-		WebSettingsWriter		m_oWebSettingsWriter;
 		DefaultThemeWriter		m_oTheme;
-		CustomXmlWriter			m_oCustomXmlWriter;
-		
+		CustomXmlWriter			m_oCustomXmlWriter;		
+		DocumentRelsWriter		m_oDocumentRels;
+
 		smart_ptr<OOX::VbaProject>		m_pVbaProject;
 	
  		NSBinPptxRW::CDrawingConverter* m_pDrawingConverter;
@@ -94,15 +164,6 @@ namespace Writers
 		OOX::CApp*						m_pApp;
 		OOX::CCore*						m_pCore;
 
-        FileWriter (std::wstring sDirOutput,std::wstring sFontDir, bool bNoFontDir, int nVersion, bool bSaveChartAsImg, NSBinPptxRW::CDrawingConverter* pDrawingConverter, std::wstring sThemePath);
-
-        ~FileWriter();
-		int getNextDocPr()
-		{
-			m_nDocPrIndex++;
-			return m_nDocPrIndex;
-		}
-
-        void Write();
+		bool m_bGlossaryMode = false;
 	};
 }

@@ -110,7 +110,8 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX && pWriter->m_lGroupIndex >= 0)
+				if ((pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+					 pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY) && pWriter->m_lGroupIndex >= 0)
 				{
 					cNvPr.toXmlWriter2(_T("wpg"), pWriter);
 					pWriter->WriteString(_T("<wpg:cNvFrPr/>"));

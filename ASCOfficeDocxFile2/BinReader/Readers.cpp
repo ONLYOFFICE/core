@@ -3440,6 +3440,7 @@ int Binary_CommentsTableReader::Read()
 
 	OOX::CPath fileRelsPath = m_oFileWriter.get_document_writer().m_sDir
 		+ FILE_SEPARATOR_STR + L"word" 
+		+ (m_oFileWriter.m_bGlossaryMode ? (FILE_SEPARATOR_STR + std::wstring(L"glossary")) : L"")
 		+ FILE_SEPARATOR_STR + L"_rels"
 		+ FILE_SEPARATOR_STR 
 		+ m_oFileWriter.get_comments_writer().getFilename()
@@ -7790,7 +7791,10 @@ void Binary_DocumentTableReader::ReadDrawing(CDrawingProperty &oCDrawingProperty
 	{
 		long nCurPos = m_oBufferedStream.GetPos();
         std::wstring sDrawingXml;
-        m_oFileWriter.m_pDrawingConverter->SaveObjectEx(oCDrawingProperty.DataPos, oCDrawingProperty.DataLength, sDrawingProperty, XMLWRITER_DOC_TYPE_DOCX, sDrawingXml);
+
+		int nDocType = m_oFileWriter.m_bGlossaryMode ? XMLWRITER_DOC_TYPE_DOCX_GLOSSARY : XMLWRITER_DOC_TYPE_DOCX;
+
+        m_oFileWriter.m_pDrawingConverter->SaveObjectEx(oCDrawingProperty.DataPos, oCDrawingProperty.DataLength, sDrawingProperty, nDocType, sDrawingXml);
 		m_oBufferedStream.Seek(nCurPos);
 
         if( false == sDrawingXml.empty())
@@ -8126,6 +8130,8 @@ int Binary_DocumentTableReader::Read_Background(BYTE type, long length, void* po
 
 		if (oCDrawingProperty.bDataPos && oCDrawingProperty.bDataLength)
 		{
+			m_oFileWriter.m_pDrawingConverter->m_pReader->m_nDocumentType = m_oFileWriter.m_bGlossaryMode ? XMLWRITER_DOC_TYPE_DOCX_GLOSSARY : XMLWRITER_DOC_TYPE_DOCX;
+		
 			long nCurPos = m_oBufferedStream.GetPos();
 			pBackground->sObject = m_oFileWriter.m_pDrawingConverter->SaveObjectBackground(oCDrawingProperty.DataPos, oCDrawingProperty.DataLength);
 			m_oBufferedStream.Seek(nCurPos);
@@ -9297,7 +9303,7 @@ int BinaryFileReader::ReadFile()
 }
 int BinaryFileReader::ReadMainTable()
 {
-	m_oBufferedStream.m_nDocumentType = XMLWRITER_DOC_TYPE_DOCX;
+	m_oBufferedStream.m_nDocumentType = m_oFileWriter.m_bGlossaryMode ? XMLWRITER_DOC_TYPE_DOCX_GLOSSARY : XMLWRITER_DOC_TYPE_DOCX;
 
 	long res = c_oSerConstants::ReadOk;
 
@@ -9462,10 +9468,17 @@ int BinaryFileReader::ReadMainTable()
 			break;
 		case c_oSerTableTypes::Glossary:
 		{
-			m_oFileWriter.m_bGlossaryMode = true;
-			ReadMainTable();
-			m_oFileWriter.WriteGlossary();
-			m_oFileWriter.m_bGlossaryMode = false;
+			OOX::CPath pathGlossary = m_oFileWriter.get_document_writer().m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"glossary";
+			OOX::CPath pathGlossaryRels = pathGlossary + FILE_SEPARATOR_STR + L"_rels";
+
+			if (NSDirectory::CreateDirectory(pathGlossary.GetPath()) && NSDirectory::CreateDirectory(pathGlossaryRels.GetPath()))
+			{
+				m_oFileWriter.m_bGlossaryMode = true;
+				ReadMainTable();
+				m_oFileWriter.WriteGlossary();
+				m_oFileWriter.m_bGlossaryMode = false;
+			}
+			else res = c_oSerConstants::ReadUnknown;
 		}break;
 		}
 		if(c_oSerConstants::ReadOk != res)
@@ -9482,14 +9495,14 @@ int BinaryFileReader::ReadMainTable()
         m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings",	L"settings.xml",	L"", &stamdartRId);
         m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings",L"webSettings.xml", L"", &stamdartRId);
         m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable",	L"fontTable.xml",	L"", &stamdartRId);
-        m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme",		L"theme/theme1.xml",L"", &stamdartRId);
        
 		if (m_oFileWriter.m_bGlossaryMode)
 		{
-			m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml", L"/word/glossary", L"document.xml");
+			m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.glossary+xml", L"/word/glossary", L"document.xml");
 		}
 		else
 		{
+			m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme", L"theme/theme1.xml", L"", &stamdartRId);
 			if (m_oFileWriter.m_pVbaProject.IsInit())
 			{
 				m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.microsoft.com/office/2006/relationships/vbaProject", L"vbaProject.bin", L"", &stamdartRId);
@@ -9512,6 +9525,11 @@ int BinaryFileReader::ReadMainTable()
 			L"/word" + (m_oFileWriter.m_bGlossaryMode ? std::wstring(std::wstring(L"/glossary")) : L""), L"fontTable.xml");
 		m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.theme+xml",	L"/word/theme", L"theme1.xml");
 
+		if (false == m_oFileWriter.m_bGlossaryMode && false == m_oFileWriter.IsEmptyGlossary())
+		{
+			unsigned int rId;
+			m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/glossaryDocument", L"glossary/document.xml", L"", &rId);
+		}
 		if (false == m_oFileWriter.get_numbering_writer().IsEmpty())
 		{
 			unsigned int rId;
@@ -9574,6 +9592,7 @@ int BinaryFileReader::ReadMainTable()
 		res = Binary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.get_document_writer(), &oBinary_CommentsTableReader.m_oComments).Read();
 
         OOX::CPath fileRelsPath = m_oFileWriter.get_document_writer().m_sDir	+ FILE_SEPARATOR_STR + L"word"
+																				+ (m_oFileWriter.m_bGlossaryMode ? (FILE_SEPARATOR_STR + std::wstring(L"glossary")) : L"")
 																				+ FILE_SEPARATOR_STR + L"_rels"
 																				+ FILE_SEPARATOR_STR + L"document.xml.rels";
 

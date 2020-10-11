@@ -70,12 +70,7 @@ void FileWriter::Write()
 }
 void FileWriter::WriteGlossary()
 {
-	OOX::CPath pathWord = m_oGlossary.document.m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"glossary";
-	
-	if (NSDirectory::CreateDirectory(pathWord.GetPath()))
-	{
-		m_oGlossary.Write(true);
-	}
+	m_oGlossary.Write(true);
 }
 }
 

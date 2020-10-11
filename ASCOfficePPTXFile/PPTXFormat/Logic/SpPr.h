@@ -83,7 +83,8 @@ namespace PPTX
 			{
 				std::wstring name_ = L"a:spPr";
 
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+					pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)
 				{
 					if (0 == (pWriter->m_lFlag & 0x01))								name_ = L"wps:spPr";
 					else															name_ = L"pic:spPr";

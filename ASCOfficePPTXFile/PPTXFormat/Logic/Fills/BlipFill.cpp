@@ -377,7 +377,7 @@ namespace PPTX
 								}
 
 								NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strImagePath, additionalFile, oleData, strOrigBase64);
-
+								
 								// -------------------
 								if (!strTempFile.empty())
 								{

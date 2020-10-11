@@ -143,6 +143,11 @@ namespace Writers
 		void Write();
 		void WriteGlossary();
 
+		bool IsEmptyGlossary()
+		{
+			return m_oGlossary.document.m_oContent.GetSize() < 1;
+		}
+
 		MediaWriter				m_oMediaWriter;
 		ChartWriter				m_oChartWriter;
 		DefaultThemeWriter		m_oTheme;

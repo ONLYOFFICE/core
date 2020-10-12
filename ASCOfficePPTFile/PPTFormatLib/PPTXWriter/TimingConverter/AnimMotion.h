@@ -37,5 +37,10 @@
 
 namespace PPT_FORMAT
 {
+    void FillAnimMotion(
+            CRecordExtTimeNodeContainer* pETNC,
+            PPTX::Logic::AnimMotion& oAnim)
+    {
 
+    }
 }

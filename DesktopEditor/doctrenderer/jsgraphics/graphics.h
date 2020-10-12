@@ -108,6 +108,58 @@ public:
     void FillTextCode(double x, double y, const v8::Local<v8::Value>& lUnicode);
     void tg(const v8::Local<v8::Value>& text, double x, double y);
     void charspace(const v8::Local<v8::Value>& space) {}
+    // private methods
+    void private_FillGlyph(const v8::Local<v8::Value>& pGlyph, const v8::Local<v8::Value>& _bounds);
+    void private_FillGlyphC(const v8::Local<v8::Value>& pGlyph, double cropX, double cropW);
+    void private_FillGlyph2(const v8::Local<v8::Value>& pGlyph);
+    void SetIntegerGrid(bool param);
+    bool GetIntegerGrid();
+    void DrawStringASCII(const std::string& name, int size, bool bold, bool italic, const v8::Local<v8::Value>& text, double x, double y, bool bIsHeader);
+    void DrawStringASCII2(const std::string& name, int size, bool bold, bool italic, const v8::Local<v8::Value>& text, double x, double y, bool bIsHeader);
+    void DrawHeaderEdit(double yPos, const v8::Local<v8::Value>& lock_type, int sectionNum, bool bIsRepeat, const v8::Local<v8::Value>& type);
+    void DrawFooterEdit(double yPos, const v8::Local<v8::Value>& lock_type, int sectionNum, bool bIsRepeat, const v8::Local<v8::Value>& type);
+    void DrawLockParagraph(const v8::Local<v8::Value>& lock_type, double x, double y1, double y2);
+    void DrawLockObjectRect(const v8::Local<v8::Value>& lock_type, double x, double y, double w, double h);
+    void DrawEmptyTableLine(double x1, double y1, double x2, double y2);
+    void DrawSpellingLine(double y0, double x0, double x1, double w);
+    // smart methods for horizontal / vertical lines
+    void drawHorLine(int align, double y, double x, double r, int penW);
+    void drawHorLine2(int align, double y, double x, double r, int penW);
+    void drawVerLine(int align, double x, double y, double b, int penW);
+    // мега крутые функции для таблиц
+    void drawHorLineExt(int align, double y, double x, double r, int penW, double leftMW, double rightMW);
+    void rect(double x, double y, double w, double h);
+    void TableRect(double x, double y, double w, double h);
+    // функции клиппирования
+    void AddClipRect(double x, double y, double w, double h);
+    void RemoveClipRect() {}
+    void SetClip(const v8::Local<v8::Value>& r);
+    void RemoveClip();
+    void drawCollaborativeChanges(double x, double y, double w, double h, const v8::Local<v8::Value>& Color);
+    void drawMailMergeField(double x, double y, double w, double h);
+    void drawSearchResult(double x, double y, double w, double h);
+    void drawFlowAnchor(double x, double y);
+    void SavePen();
+    void RestorePen();
+    void SaveBrush();
+    void RestoreBrush();
+    void SavePenBrush();
+    void RestorePenBrush();
+    void SaveGrState();
+    void RestoreGrState();
+    void StartClipPath() {}
+    void EndClipPath();
+    void StartCheckTableDraw();
+    void EndCheckTableDraw(bool bIsRestore);
+    void SetTextClipRect(double _l, double _t, double _r, double _b);
+    void AddSmartRect(double x, double y, double w, double h, int pen_w);
+    void CheckUseFonts2(const v8::Local<v8::Value>& _transform);
+    void UncheckUseFonts2();
+    void Drawing_StartCheckBounds(double x, double y, double w, double h) {}
+    void Drawing_EndCheckBounds() {}
+    void DrawPresentationComment(const v8::Local<v8::Value>& type, double x, double y, double w, double h);
+    void DrawPolygon(const v8::Local<v8::Value>& oPath, int lineWidth, double shift);
+    void DrawFootnoteRect(double x, double y, double w, double h);
 
     double m_dDpiX_get() { return m_dDpiX; }
     int globalAlpha_get() { return globalAlpha; }

@@ -50,8 +50,8 @@ public:
 
         m_fAnimBackground				=	( 0x01 == ( 0x01 & ((BYTE)Value) ) );
         m_fReverse                      =	( 0x02 == ( 0x02 & ((BYTE)Value) ) );
-        m_fUserSetAnimBackground		=	( 0x03 == ( 0x03 & ((BYTE)Value) ) );
-        m_fAutomatic					=	( 0x04 == ( 0x04 & ((BYTE)Value) ) );
+        m_fUserSetAnimBackground		=	( 0x04 == ( 0x04 & ((BYTE)Value) ) );
+        m_fAutomatic					=	( 0x08 == ( 0x08 & ((BYTE)Value) ) );
 
         m_nDelayTime					=	StreamUtils::ReadDWORD ( pStream );
     }

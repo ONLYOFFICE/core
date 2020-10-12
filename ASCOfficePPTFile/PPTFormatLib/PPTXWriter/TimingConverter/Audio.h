@@ -37,5 +37,10 @@
 
 namespace PPT_FORMAT
 {
+void FillAudio(
+        CRecordExtTimeNodeContainer* pETNC,
+        PPTX::Logic::Audio& oAudio)
+{
 
+}
 }

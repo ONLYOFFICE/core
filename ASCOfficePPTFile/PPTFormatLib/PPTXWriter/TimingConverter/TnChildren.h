@@ -84,19 +84,31 @@ namespace PPT_FORMAT
         }
         else if (pETNC->m_haveMotionBehavior)
         {
-            // AnimMotion
+            // TODO
+            auto motion = new PPTX::Logic::AnimMotion;
+            FillAnimMotion(pETNC, *motion);
+            oChild.m_node = motion;
         }
         else if (pETNC->m_haveRotationBehavior)
         {
-            // AnimRot
+            // TODO
+            auto rot = new PPTX::Logic::AnimRot;
+            FillAnimRot(pETNC, *rot);
+            oChild.m_node = rot;
         }
         else if (pETNC->m_haveScaleBehavior)
         {
-            // AnimScale
+            // TODO
+            auto scale = new PPTX::Logic::AnimScale;
+            FillAnimScale(pETNC, *scale);
+            oChild.m_node = scale;
         }
         else if (pETNC->m_haveCommandBehavior)
         {
-            // Cmd
+            // TODO
+            auto cmd = new PPTX::Logic::Cmd;
+            FillCmd(pETNC, *cmd);
+            oChild.m_node = cmd;
         }
         else if (pETNC->m_oTimeNodeAtom.m_dwType == TL_TNT_Parallel)
         {

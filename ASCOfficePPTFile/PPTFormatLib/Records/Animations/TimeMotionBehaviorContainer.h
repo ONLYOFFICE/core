@@ -61,6 +61,9 @@ public:
         while ( lCurLen < m_oHeader.RecLen )
         {
             header.ReadFromStream(pStream);
+
+            lCurLen += header.RecLen + 8;
+
             switch (header.RecType) {
             case RT_TimeVariant:
             {
@@ -71,17 +74,25 @@ public:
                     StreamUtils::StreamSkip(5, pStream);
                 } else
                     StreamUtils::StreamSkip(header.RecLen, pStream);
+                break;
             }
 
             case RT_TimeBehaviorContainer:
             {
                 m_oTimeBehavior.ReadFromStream(header, pStream);
+                break;
             }
             default:
-                throw ;
+                break;
             }
         }
         StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);
+    }
+
+
+    ~CRecordTimeMotionBehaviorContainer()
+    {
+        RELEASEOBJECT(m_pVarPath)
     }
 
 public:

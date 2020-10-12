@@ -37,5 +37,10 @@
 
 namespace PPT_FORMAT
 {
+void FillVideo(
+        CRecordExtTimeNodeContainer* pETNC,
+        PPTX::Logic::Video& oVideo)
+{
 
+}
 }

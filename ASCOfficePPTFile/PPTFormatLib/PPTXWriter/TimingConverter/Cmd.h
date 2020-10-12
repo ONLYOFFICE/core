@@ -37,5 +37,10 @@
 
 namespace PPT_FORMAT
 {
+void FillCmd(
+        CRecordExtTimeNodeContainer* pETNC,
+        PPTX::Logic::Cmd& oCmd)
+{
 
+}
 }

@@ -14,16 +14,6 @@ namespace NSCSS
         delete m_pInternal;
     }
 
-    std::map<std::wstring, std::wstring> CCssCalculator::GetDeclarations(const std::wstring& sSelector)  const
-    {
-        return m_pInternal->GetDeclarations(sSelector);
-    }
-
-    CCompiledStyle CCssCalculator::GetCompiledStyle(const std::vector<std::string>& arSelectors, UnitMeasure unitMeasure) const
-    {
-        return  m_pInternal->GetCompiledStyle(arSelectors, unitMeasure);
-    }
-
     CCompiledStyle CCssCalculator::GetCompiledStyle(const std::vector<CNode> &arSelectors, const UnitMeasure& unitMeasure) const
     {
         return  m_pInternal->GetCompiledStyle(arSelectors, unitMeasure);
@@ -75,13 +65,6 @@ namespace NSCSS
     {
         return m_pInternal->GetDpi();
     }
-
-
-    void CCssCalculator::Print() const
-    {
-        m_pInternal->Print();
-    }
-
 
     void CCssCalculator::Clear()
     {

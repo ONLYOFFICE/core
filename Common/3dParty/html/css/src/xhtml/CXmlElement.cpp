@@ -463,12 +463,18 @@ std::wstring CXmlElement::ConvertRStyle() const
             }
             case NSCSS::NS_CONST_VALUES::RunnerProperties::R_B:
             {
-                sRStyle += L"<w:b/><w:bCs/>";
+                if (oItem.second == L"true")
+                    sRStyle += L"<w:b/><w:bCs/>";
+                else if (oItem.second == L"false")
+                    sRStyle += L"<w:b w:val=\"false\"/><w:bCs w:val=\"false\"/>";
                 break;
             }
             case NSCSS::NS_CONST_VALUES::RunnerProperties::R_I:
             {
-                sRStyle += L"<w:i/><w:iCs/>";
+                if (oItem.second == L"true")
+                    sRStyle += L"<w:i/><w:iCs/>";
+                else if (oItem.second == L"false")
+                    sRStyle += L"<w:i w:val=\"false\"/><w:iCs w:val=\"false\"/>";
                 break;
             }
             case NSCSS::NS_CONST_VALUES::RunnerProperties::R_Color:

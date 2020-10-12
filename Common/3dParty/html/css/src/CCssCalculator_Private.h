@@ -34,20 +34,10 @@ namespace NSCSS
         void GetRule(const KatanaRule* oRule);
 
         void GetStyleRule(const KatanaStyleRule* oRule);
-        void GetImportRule(const KatanaImportRule* oRule);
-        void GetFontFaceRule(const KatanaFontFaceRule* oRule);
-        void GetKeyframesRule(const KatanaKeyframesRule* oRule);
-        void GetMediaRule(const KatanaMediaRule* oRule);
 
         // CElement* GetElement(const int& nIndex) const;
 
-        std::wstring GetMediaList(const KatanaArray* oMedias);
-        std::wstring GetMediaQuery(const KatanaMediaQuery* oQuery);
-        std::wstring GetMediaQueryExp(const KatanaMediaQueryExp* oExp);
-
         std::wstring GetValueList(const KatanaArray* oValues);
-
-        void GetKeyframe(const KatanaKeyframe* oKeyframe);
 
         std::vector<std::wstring> GetSelectorList(const KatanaArray* oSelectors) const;
         std::wstring GetSelector(const KatanaSelector* oSelector) const;
@@ -107,9 +97,6 @@ namespace NSCSS
         CCssCalculator_Private();
         ~CCssCalculator_Private();
 
-        std::map<std::wstring, std::wstring> GetDeclarations(const std::wstring& sSelector) const;
-
-        CCompiledStyle GetCompiledStyle(const std::vector<std::string>& arSelectors, const UnitMeasure& unitMeasure = Default);
         CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors, const UnitMeasure& unitMeasure = Default);
 
         // void AddStyle(const std::vector<std::string>& sSelectors, const std::string& sStyle);
@@ -124,7 +111,6 @@ namespace NSCSS
         std::wstring GetEncoding() const;
         unsigned short int GetDpi() const;
 
-        void Print() const;
         void Clear();        
 
     };

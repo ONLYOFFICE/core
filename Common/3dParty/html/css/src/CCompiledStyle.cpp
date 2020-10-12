@@ -123,6 +123,9 @@ namespace NSCSS
 
     void CCompiledStyle::AddPropSel(const std::wstring& sProperty, const std::wstring& sValue, const bool& bHardMode)
     {
+        if (m_mStyle[sProperty].find(L'!') != std::wstring::npos)
+            return;
+
         if (!bHardMode)
             m_mStyle.emplace(sProperty, sValue);
         else
@@ -131,11 +134,13 @@ namespace NSCSS
 
     void CCompiledStyle::AddStyle(const std::map<std::wstring, std::wstring>& mStyle, const bool& bHardMode)
     {
-        if (!bHardMode)
-            m_mStyle.insert(mStyle.begin(), mStyle.end());
-        else
-            for (const std::pair<std::wstring, std::wstring> pPropertie : mStyle)
+        for (const std::pair<std::wstring, std::wstring> pPropertie : mStyle)
+        {
+            if (m_mStyle[pPropertie.first].empty() || bHardMode)
                 m_mStyle[pPropertie.first] = pPropertie.second;
+            else if (!bHardMode || m_mStyle[pPropertie.first].find(L'!') != std::wstring::npos)
+                continue;
+        }
     }
 
 
@@ -144,15 +149,32 @@ namespace NSCSS
         if (sStyle.empty())
             return;
 
-        size_t posColon = sStyle.find(L':');
-        size_t posLastSemicolon = size_t(0);
-        while (posColon != std::wstring::npos)
-        {
-            const size_t posSemicolon = sStyle.find(L';', posColon);
-            AddPropSel(sStyle.substr(((posLastSemicolon != 0) ? ++posLastSemicolon : posLastSemicolon), posColon - posLastSemicolon), sStyle.substr(posColon + 1, posSemicolon - posColon - 1), bHardMode);
-            posColon = sStyle.find(L':', posSemicolon);
-            posLastSemicolon = posSemicolon + 1;
-        }
+        const std::vector<std::wstring> arWords = NS_STATIC_FUNCTIONS::GetWordsWithSigns(sStyle, L" :;");
+
+        std::wstring sProperty, sValue;
+
+        for (std::vector<std::wstring>::const_iterator iWord = arWords.begin(); iWord != arWords.end(); ++iWord)
+            if ((*iWord).back() == L':')
+            {
+                sProperty = *iWord;
+                sProperty.pop_back();
+            }
+            else
+            {
+                sValue += *iWord;
+                if ((*iWord).back() == L';')
+                {
+                    sValue.pop_back();
+                    std::transform(sProperty.begin(), sProperty.end(), sProperty.begin(), tolower);
+                    std::transform(sValue.begin(), sValue.end(), sValue.begin(), tolower);
+                    AddPropSel(sProperty, sValue, bHardMode);
+                    sProperty.clear();
+                    sValue.clear();
+                }
+            }
+
+        if (!sProperty.empty() && !sValue.empty())
+            AddPropSel(sProperty, sValue, bHardMode);
     }
 
     void CCompiledStyle::SetStyle(const std::map<std::wstring, std::wstring> &mStyle)
@@ -636,7 +658,11 @@ namespace NSCSS
         std::wstring CCompiledStyle::GetMarginRight2() const
         {
             styles_iterator oMarginRight = m_mStyle.find(L"margin-right");
-            return oMarginRight != m_mStyle.end() ? oMarginRight->second : std::wstring();
+
+            if (oMarginRight != m_mStyle.end())
+                return oMarginRight->second;
+
+            return L"";
         }
 
         std::wstring CCompiledStyle::GetMarginRight() const
@@ -1078,16 +1104,11 @@ namespace NSCSS
                 else if (sColor.length() == 4)
                 {
                     std::wstring sRetColor;
-                    sRetColor += sColor[1];
-                    sRetColor += sColor[1];
-                    sRetColor += sColor[2];
-                    sRetColor += sColor[2];
-                    sRetColor += sColor[3];
-                    sRetColor += sColor[3];
+                    sRetColor = sColor[1] + sColor[1] + sColor[2] + sColor[2] + sColor[3] + sColor[3];
                     return sRetColor;
                 }
                 else
-                    return L"auto";
+                    return L"";
             }
 
             std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
@@ -1097,7 +1118,7 @@ namespace NSCSS
             if (oHEX != NS_CONST_VALUES::mColors.end())
                 return oHEX->second;
 
-            return L"auto";
+            return L"";
         }
 
         std::wstring CCompiledStyle::GetOutlineColor() const
@@ -1136,8 +1157,12 @@ namespace NSCSS
             styles_iterator oTextDecoration = m_mStyle.find(L"text-decoration");
 
             if (oTextDecoration != m_mStyle.end())
+            {
                 if (oTextDecoration->second == L"underline")
-                    return L"single";
+                    return std::wstring(L"single");
+                else if (oTextDecoration->second == L"none")
+                    return oTextDecoration->second;
+            }
 
             return L"";
 
@@ -1476,7 +1501,6 @@ namespace NSCSS
 
                 for (std::wstring sStyle : arWords)
                 {
-                    std::transform(sStyle.begin(), sStyle.end(), sStyle.begin(), tolower);
                     styles_iterator oStyle = NS_CONST_VALUES::mStyles.find(sStyle);
 
                     if (oStyle != NS_CONST_VALUES::mStyles.end())
@@ -1525,9 +1549,7 @@ namespace NSCSS
                             return L"auto";
                     }
 
-                    std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
-
-                    styles_iterator oHEX = NS_CONST_VALUES::mColors.find(sColor);
+                    const styles_iterator oHEX = NS_CONST_VALUES::mColors.find(sColor);
 
                     if (oHEX != NS_CONST_VALUES::mColors.end())
                         return oHEX->second;

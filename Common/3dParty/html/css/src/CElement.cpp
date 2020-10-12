@@ -44,8 +44,14 @@ namespace NSCSS
 
     void CElement::AddProperties(const std::map<std::wstring, std::wstring>& mProperties)
     {
-        for (const std::pair<std::wstring, std::wstring>& pPropertie : mProperties)
+        for (std::pair<std::wstring, std::wstring> pPropertie : mProperties)
         {
+            std::transform(pPropertie.first.begin(), pPropertie.first.end(), pPropertie.first.begin(), tolower);
+            std::transform(pPropertie.second.begin(), pPropertie.second.end(), pPropertie.second.begin(), tolower);
+
+            if (!m_mStyle[pPropertie.first].empty() && m_mStyle[pPropertie.first].find(L'!') != std::wstring::npos)
+                continue;
+
             if (pPropertie.second.substr(0, 3) == L"rgb")
                  m_mStyle[pPropertie.first] = NSCSS::NS_STATIC_FUNCTIONS::ConvertRgbToHex(pPropertie.second);
             else
@@ -156,13 +162,6 @@ namespace NSCSS
 
     std::vector<CElement *> CElement::GetAllElements(const std::vector<std::wstring> &arNodes) const
     {
-//        std::wcout << L"---" << m_sFullSelector << L"---" << std::endl;
-
-//        Print();
-//        std::wcout << L"===========================================" << std::endl;
-//        std::wcout << L"                                           " << std::endl;
-//        std::wcout << L"===========================================" << std::endl;
-
         if (arNodes.empty())
             return std::vector<CElement*>({const_cast<CElement*>(this)});
 
@@ -187,7 +186,6 @@ namespace NSCSS
                 if (oElement->m_sSelector == *sNode)
                 {
                     std::vector<std::wstring> arWords = arNodes;
-//                    for (size_t i = 0; i < arKins.size(); ++i)
                         arWords.pop_back();
                     const std::vector<CElement*> arTemp = oElement->GetAllElements(arWords);
                     arElements.insert(arElements.end(), arTemp.begin(), arTemp.end());
@@ -202,7 +200,6 @@ namespace NSCSS
                 if (oElement->m_sSelector == *sNode)
                 {
                     std::vector<std::wstring> arWords = arNodes;
-//                    for (size_t i = 0; i < arKins.size(); ++i)
                         arWords.pop_back();
 
                     const std::vector<CElement*> arTemp = oElement->GetAllElements(arWords);

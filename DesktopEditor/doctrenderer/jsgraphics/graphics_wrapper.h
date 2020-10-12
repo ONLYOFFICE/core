@@ -3,6 +3,7 @@
 double to_double(const v8::Local<v8::Value>& v);
 bool   to_bool  (const v8::Local<v8::Value>& v);
 int    to_int   (const v8::Local<v8::Value>& v);
+int    to_uint  (const v8::Local<v8::Value>& v);
 
 CJSGraphics* unwrap_Graphics(v8::Handle<v8::Object> obj);
 
@@ -25,8 +26,30 @@ void _m_w                    (const v8::FunctionCallbackInfo<v8::Value>& args);
 void _l_w                    (const v8::FunctionCallbackInfo<v8::Value>& args);
 void _c_w                    (const v8::FunctionCallbackInfo<v8::Value>& args);
 void _c2_w                   (const v8::FunctionCallbackInfo<v8::Value>& args);
-void _ds_w                   (const v8::FunctionCallbackInfo<v8::Value>& args);
-void _df_w                   (const v8::FunctionCallbackInfo<v8::Value>& args);
+void ds_w                    (const v8::FunctionCallbackInfo<v8::Value>& args);
+void df_w                    (const v8::FunctionCallbackInfo<v8::Value>& args);
+void save_w                  (const v8::FunctionCallbackInfo<v8::Value>& args);
+void restore_w               (const v8::FunctionCallbackInfo<v8::Value>& args);
+void clip_w                  (const v8::FunctionCallbackInfo<v8::Value>& args);
+void reset_w                 (const v8::FunctionCallbackInfo<v8::Value>& args);
+void transform3_w            (const v8::FunctionCallbackInfo<v8::Value>& args);
+void FreeFont_w              (const v8::FunctionCallbackInfo<v8::Value>& args);
+void ClearLastFont_w         (const v8::FunctionCallbackInfo<v8::Value>& args);
+void drawImage2_w            (const v8::FunctionCallbackInfo<v8::Value>& args);
+void drawImage_w             (const v8::FunctionCallbackInfo<v8::Value>& args);
+void GetFont_w               (const v8::FunctionCallbackInfo<v8::Value>& args);
+void font_w                  (const v8::FunctionCallbackInfo<v8::Value>& args);
+void SetFont_w               (const v8::FunctionCallbackInfo<v8::Value>& args);
+void SetTextPr_w             (const v8::FunctionCallbackInfo<v8::Value>& args);
+void SetFontSlot_w           (const v8::FunctionCallbackInfo<v8::Value>& args);
+void GetTextPr_w             (const v8::FunctionCallbackInfo<v8::Value>& args);
+void FillText_w              (const v8::FunctionCallbackInfo<v8::Value>& args);
+void t_w                     (const v8::FunctionCallbackInfo<v8::Value>& args);
+void FillText2_w             (const v8::FunctionCallbackInfo<v8::Value>& args);
+void t2_w                    (const v8::FunctionCallbackInfo<v8::Value>& args);
+void FillTextCode_w          (const v8::FunctionCallbackInfo<v8::Value>& args);
+void tg_w                    (const v8::FunctionCallbackInfo<v8::Value>& args);
+void charspace_w             (const v8::FunctionCallbackInfo<v8::Value>& args);
 
 void m_dDpiX_get_w    (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info);
 void globalAlpha_get_w(v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info);

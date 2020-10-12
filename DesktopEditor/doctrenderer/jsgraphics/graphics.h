@@ -1,9 +1,21 @@
 #ifndef CJSGRAPHICS_H
 #define CJSGRAPHICS_H
 
+#include <string>
+
 #include "../../common/Types.h"
 #include "../../../Common/3dParty/v8/v8/include/v8.h"
 #include "../../../Common/3dParty/v8/v8/include/libplatform/libplatform.h"
+
+struct CFont
+{
+    std::string Name;
+    int FontSize;
+    bool Bold;
+    bool Italic;
+
+    CFont() : Name(""), FontSize(10), Bold(false), Italic(false) {}
+};
 
 class CJSGraphics
 {
@@ -30,6 +42,10 @@ private:
 
     v8::Local<v8::Value>* ArrayPoints;
 
+    CFont m_oCurFont;
+
+    v8::Local<v8::Value>* m_oTextPr;
+    v8::Local<v8::Value> m_oGrFonts;
     v8::Local<v8::Value> m_oLastFont;
 
     bool m_bIntegerGrid;
@@ -65,8 +81,8 @@ public:
     void _l(double x, double y);
     void _c(double x1, double y1, double x2, double y2, double x3, double y3);
     void _c2(double x1, double y1, double x2, double y2);
-    void _ds();
-    void _df();
+    void ds();
+    void df();
     // canvas state
     void save();
     void restore();
@@ -75,6 +91,23 @@ public:
     void transform3(const v8::Local<v8::Value>& m, bool isNeedInvert);
     void FreeFont();
     void ClearLastFont();
+    // images
+    void drawImage2(const v8::Local<v8::Value>& img, double x, double y, double w, double h, int alpha, const v8::Local<v8::Value>& srcRect);
+    void drawImage(const v8::Local<v8::Value>& img, double x, double y, double w, double h, int alpha, const v8::Local<v8::Value>& srcRect, const v8::Local<v8::Value>& nativeImage);
+    // text
+    CFont GetFont();
+    void font(unsigned int font_id, int font_size);
+    void SetFont(const v8::Local<v8::Value>& font);
+    void SetTextPr(v8::Local<v8::Value>* textPr, v8::Local<v8::Value>* theme);
+    void SetFontSlot(const v8::Local<v8::Value>& slot, double fontSizeKoef);
+    v8::Local<v8::Value> GetTextPr();
+    void FillText(double x, double y, const v8::Local<v8::Value>& text);
+    void t(const v8::Local<v8::Value>& text, double x, double y, bool isBounds);
+    void FillText2(double x, double y, const v8::Local<v8::Value>& text, double cropX, double cropW);
+    void t2(const v8::Local<v8::Value>& text, double x, double y, double cropX, double cropW);
+    void FillTextCode(double x, double y, const v8::Local<v8::Value>& lUnicode);
+    void tg(const v8::Local<v8::Value>& text, double x, double y);
+    void charspace(const v8::Local<v8::Value>& space) {}
 
     double m_dDpiX_get() { return m_dDpiX; }
     int globalAlpha_get() { return globalAlpha; }

@@ -5,10 +5,88 @@
 
 CJSGraphics::CJSGraphics()
 {
+    m_oContext = nullptr;
+    m_dWidthMM = 0.0;
+    m_dHeightMM = 0.0;
+    m_lWidthPix = 0.0;
+    m_lHeightPix = 0.0;
+    m_dDpiX = 96.0;
+    m_dDpiY = 96.0;
+    m_bIsBreak = false;
 
+    m_oPen = nullptr; // new AscCommon.CPen();
+    m_bPenColorInit = false;
+    m_oBrush = nullptr; // new AscCommon.CBrush();
+    m_bBrushColorInit = false;
+
+    m_oFontManager = nullptr;
+
+    m_oCoordTransform = nullptr; // new CMatrixL();
+    m_oBaseTransform = nullptr; // new CMatrixL();
+    m_oTransform = nullptr; // new CMatrixL();
+    m_oFullTransform = nullptr; // new CMatrixL();
+    m_oInvertFullTransform = nullptr; // new CMatrixL();
+
+    ArrayPoints = nullptr;
+
+    m_oTextPr = nullptr;
+    m_oGrFonts = nullptr; // new AscCommon.CGrRFonts();
+    m_oLastFont = nullptr; // new AscCommon.CFontSetup();
+
+    m_bIntegerGrid = true;
+
+    ClipManager = nullptr; // new AscCommon.CClipManager();
+    // ClipManager.BaseObject = this;
+
+    TextureFillTransformScaleX = 1;
+    TextureFillTransformScaleY = 1;
+    IsThumbnail = false;
+
+    IsDemonstrationMode = false;
+
+    GrState = nullptr; // new AscCommon.CGrState();
+    // GrState.Parent = this;
+
+    globalAlpha = 1;
+
+    TextClipRect = nullptr;
+    IsClipContext = false;
+
+    IsUseFonts2 = false;
+    m_oFontManager2 = nullptr;
+    m_oLastFont2 = nullptr;
+
+    ClearMode = false;
+    IsRetina = false;
+
+    dash_no_smart = nullptr;
 }
 
-void CJSGraphics::init(const v8::Local<v8::Value>& context, double width_px, double height_px, double width_mm, double height_mm)
+CJSGraphics::~CJSGraphics()
+{
+    if(m_oContext)                 delete m_oContext;
+    if(m_oPen)                     delete m_oPen;
+    if(m_oBrush)                   delete m_oBrush;
+    if(m_oFontManager)             delete m_oFontManager;
+    if(m_oCoordTransform)          delete m_oCoordTransform;
+    if(m_oBaseTransform)           delete m_oBaseTransform;
+    if(m_oTransform)               delete m_oTransform;
+    if(m_oFullTransform)           delete m_oFullTransform;
+    if(m_oInvertFullTransform)     delete m_oInvertFullTransform;
+    if(ArrayPoints)                delete ArrayPoints;
+    if(m_oTextPr)                  delete m_oTextPr;
+    if(m_oGrFonts)                 delete m_oGrFonts;
+    if(m_oLastFont)                delete m_oLastFont;
+    if(LastFontOriginInfo.Replace) delete LastFontOriginInfo.Replace;
+    if(ClipManager)                delete ClipManager;
+    if(GrState)                    delete GrState;
+    if(TextClipRect)               delete TextClipRect;
+    if(m_oFontManager2)            delete m_oFontManager2;
+    if(m_oLastFont2)               delete m_oLastFont2;
+    if(dash_no_smart)              delete dash_no_smart;
+}
+
+void CJSGraphics::init(v8::Local<v8::Value>* context, double width_px, double height_px, double width_mm, double height_mm)
 {
     m_oContext   = context;
     m_lHeightPix = height_px; // height_px >> 0;
@@ -765,7 +843,7 @@ void CJSGraphics::SetFont(const v8::Local<v8::Value>& font)
     */
 }
 
-void CJSGraphics::SetTextPr(v8::Local<v8::Value>* textPr, v8::Local<v8::Value>* theme)
+void CJSGraphics::SetTextPr(const v8::Local<v8::Value>& textPr, const v8::Local<v8::Value>& theme)
 {
     /*
     m_oTextPr = textPr;

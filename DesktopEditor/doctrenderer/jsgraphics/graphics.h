@@ -17,49 +17,79 @@ struct CFont
     CFont() : Name(""), FontSize(10), Bold(false), Italic(false) {}
 };
 
+struct CLastFontOriginInfo
+{
+    std::string Name;
+    v8::Local<v8::Value>* Replace;
+
+    CLastFontOriginInfo() : Name(""), Replace(nullptr) {}
+};
+
 class CJSGraphics
 {
 private:
-    v8::Local<v8::Value> m_oContext;
+    v8::Local<v8::Value>* m_oContext;
     double m_dWidthMM;
     double m_dHeightMM;
     double m_lWidthPix;
     double m_lHeightPix;
     double m_dDpiX;
     double m_dDpiY;
+    bool m_bIsBreak;
 
-    v8::Local<v8::Value> m_oPen;
+    v8::Local<v8::Value>* m_oPen;
     bool m_bPenColorInit;
-    v8::Local<v8::Value> m_oBrush;
+    v8::Local<v8::Value>* m_oBrush;
     bool m_bBrushColorInit;
 
     v8::Local<v8::Value>* m_oFontManager;
 
-    v8::Local<v8::Value> m_oCoordTransform;
-    v8::Local<v8::Value> m_oTransform;
-    v8::Local<v8::Value> m_oFullTransform;
-    v8::Local<v8::Value> m_oInvertFullTransform;
+    v8::Local<v8::Value>* m_oCoordTransform;
+    v8::Local<v8::Value>* m_oBaseTransform;
+    v8::Local<v8::Value>* m_oTransform;
+    v8::Local<v8::Value>* m_oFullTransform;
+    v8::Local<v8::Value>* m_oInvertFullTransform;
 
     v8::Local<v8::Value>* ArrayPoints;
 
     CFont m_oCurFont;
 
     v8::Local<v8::Value>* m_oTextPr;
-    v8::Local<v8::Value> m_oGrFonts;
-    v8::Local<v8::Value> m_oLastFont;
+    v8::Local<v8::Value>* m_oGrFonts;
+    v8::Local<v8::Value>* m_oLastFont;
+
+    CLastFontOriginInfo LastFontOriginInfo;
 
     bool m_bIntegerGrid;
 
+    v8::Local<v8::Value>* ClipManager;
+
     int TextureFillTransformScaleX;
     int TextureFillTransformScaleY;
+    bool IsThumbnail;
 
-    int globalAlpha = 1;
+    bool IsDemonstrationMode;
 
-    v8::Local<v8::Value> dash_no_smart;
+    v8::Local<v8::Value>* GrState;
+
+    int globalAlpha;
+
+    v8::Local<v8::Value>* TextClipRect;
+    bool IsClipContext;
+
+    bool IsUseFonts2;
+    v8::Local<v8::Value>* m_oFontManager2;
+    v8::Local<v8::Value>* m_oLastFont2;
+
+    bool ClearMode;
+    bool IsRetina;
+
+    v8::Local<v8::Value>* dash_no_smart;
 public:
     CJSGraphics();
+    ~CJSGraphics();
 
-    void init(const v8::Local<v8::Value>& context, double width_px, double height_px, double width_mm, double height_mm);
+    void init(v8::Local<v8::Value>* context, double width_px, double height_px, double width_mm, double height_mm);
     void EndDraw() {}
     void put_GlobalAlpha(bool enable, int globalAlpha);
     void Start_GlobalAlpha() {}
@@ -98,7 +128,7 @@ public:
     CFont GetFont();
     void font(unsigned int font_id, int font_size);
     void SetFont(const v8::Local<v8::Value>& font);
-    void SetTextPr(v8::Local<v8::Value>* textPr, v8::Local<v8::Value>* theme);
+    void SetTextPr(const v8::Local<v8::Value>& textPr, const v8::Local<v8::Value>& theme);
     void SetFontSlot(const v8::Local<v8::Value>& slot, double fontSizeKoef);
     v8::Local<v8::Value> GetTextPr();
     void FillText(double x, double y, const v8::Local<v8::Value>& text);
@@ -161,8 +191,87 @@ public:
     void DrawPolygon(const v8::Local<v8::Value>& oPath, int lineWidth, double shift);
     void DrawFootnoteRect(double x, double y, double w, double h);
 
+    v8::Local<v8::Value>* m_oContext_get() { return m_oContext; }
+    double m_dWidthMM_get() { return m_dWidthMM; }
+    double m_dHeightMM_get() { return m_dHeightMM; }
+    double m_lWidthPix_get() { return m_lWidthPix; }
+    double m_lHeightPix_get() { return m_lHeightPix; }
     double m_dDpiX_get() { return m_dDpiX; }
+    double m_dDpiY_get() { return m_dDpiY; }
+    bool m_bIsBreak_get() { return m_bIsBreak; }
+    v8::Local<v8::Value>* m_oPen_get() { return m_oPen; }
+    bool m_bPenColorInit_get() { return m_bPenColorInit; }
+    v8::Local<v8::Value>* m_oBrush_get() { return m_oBrush; }
+    bool m_bBrushColorInit_get() { return m_bBrushColorInit; }
+    v8::Local<v8::Value>* m_oFontManager_get() { return m_oFontManager; }
+    v8::Local<v8::Value>* m_oCoordTransform_get() { return m_oCoordTransform; }
+    v8::Local<v8::Value>* m_oBaseTransform_get() { return m_oBaseTransform; }
+    v8::Local<v8::Value>* m_oTransform_get() { return m_oTransform; }
+    v8::Local<v8::Value>* m_oFullTransform_get() { return m_oFullTransform; }
+    v8::Local<v8::Value>* m_oInvertFullTransform_get() { return m_oInvertFullTransform; }
+    v8::Local<v8::Value>* ArrayPoints_get() { return ArrayPoints; }
+    CFont m_oCurFont_get() { return m_oCurFont; }
+    v8::Local<v8::Value>* m_oTextPr_get() { return m_oTextPr; }
+    v8::Local<v8::Value>* m_oGrFonts_get() { return m_oGrFonts; }
+    v8::Local<v8::Value>* m_oLastFont_get() { return m_oLastFont; }
+    CLastFontOriginInfo LastFontOriginInfo_get() { return LastFontOriginInfo; }
+    bool m_bIntegerGrid_get() { return m_bIntegerGrid; }
+    v8::Local<v8::Value>* ClipManager_get() { return ClipManager; }
+    int TextureFillTransformScaleX_get() { return TextureFillTransformScaleX; }
+    int TextureFillTransformScaleY_get() { return TextureFillTransformScaleY; }
+    bool IsThumbnail_get() { return IsThumbnail; }
+    bool IsDemonstrationMode_get() { return IsDemonstrationMode; }
+    v8::Local<v8::Value>* GrState_get() { return GrState; }
     int globalAlpha_get() { return globalAlpha; }
+    v8::Local<v8::Value>* TextClipRect_get() { return TextClipRect; }
+    bool IsClipContext_get() { return IsClipContext; }
+    bool IsUseFonts2_get() { return IsUseFonts2; }
+    v8::Local<v8::Value>* m_oFontManager2_get() { return m_oFontManager2; }
+    v8::Local<v8::Value>* m_oLastFont2_get() { return m_oLastFont2; }
+    bool ClearMode_get() { return ClearMode; }
+    bool IsRetina_get() { return IsRetina; }
+    v8::Local<v8::Value>* dash_no_smart_get() { return dash_no_smart; }
+
+    void m_oContext_set(v8::Local<v8::Value>* a) { m_oContext = a; }
+    void m_dWidthMM_set(double a) { m_dWidthMM = a; }
+    void m_dHeightMM_set(double a) { m_dHeightMM = a; }
+    void m_lWidthPix_set(double a) { m_lWidthPix = a; }
+    void m_lHeightPix_set(double a) { m_lHeightPix = a; }
+    void m_dDpiX_set(double a) { m_dDpiX = a; }
+    void m_dDpiY_set(double a) { m_dDpiY = a; }
+    void m_bIsBreak_set(bool a) { m_bIsBreak = a; }
+    void m_oPen_set(v8::Local<v8::Value>* a) { m_oPen = a; }
+    void m_bPenColorInit_set(bool a) { m_bPenColorInit = a; }
+    void m_oBrush_set(v8::Local<v8::Value>* a) { m_oBrush = a; }
+    void m_bBrushColorInit_set(bool a) { m_bBrushColorInit = a; }
+    void m_oFontManager_set(v8::Local<v8::Value>* a) { m_oFontManager = a; }
+    void m_oCoordTransform_set(v8::Local<v8::Value>* a) { m_oCoordTransform = a; }
+    void m_oBaseTransform_set(v8::Local<v8::Value>* a) { m_oBaseTransform = a; }
+    void m_oTransform_set(v8::Local<v8::Value>* a) { m_oTransform = a; }
+    void m_oFullTransform_set(v8::Local<v8::Value>* a) { m_oFullTransform = a; }
+    void m_oInvertFullTransform_set(v8::Local<v8::Value>* a) { m_oInvertFullTransform = a; }
+    void ArrayPoints_set(v8::Local<v8::Value>* a) { ArrayPoints = a; }
+    void m_oCurFont_set(CFont a) { m_oCurFont = a; }
+    void m_oTextPr_set(v8::Local<v8::Value>* a) { m_oTextPr = a; }
+    void m_oGrFonts_set(v8::Local<v8::Value>* a) { m_oGrFonts = a; }
+    void m_oLastFont_set(v8::Local<v8::Value>* a) { m_oLastFont = a; }
+    void LastFontOriginInfo_set(CLastFontOriginInfo a) { LastFontOriginInfo = a; }
+    void m_bIntegerGrid_set(bool a) { m_bIntegerGrid = a; }
+    void ClipManager_set(v8::Local<v8::Value>* a) { ClipManager = a; }
+    void TextureFillTransformScaleX_set(int a) { TextureFillTransformScaleX = a; }
+    void TextureFillTransformScaleY_set(int a) { TextureFillTransformScaleY = a; }
+    void IsThumbnail_set(bool a) { IsThumbnail = a; }
+    void IsDemonstrationMode_set(bool a) { IsDemonstrationMode = a; }
+    void GrState_set(v8::Local<v8::Value>* a) { GrState = a; }
+    void globalAlpha_set(int a) { globalAlpha = a; }
+    void TextClipRect_set(v8::Local<v8::Value>* a) { TextClipRect = a; }
+    void IsClipContext_set(bool a) { IsClipContext = a; }
+    void IsUseFonts2_set(bool a) { IsUseFonts2 = a; }
+    void m_oFontManager2_set(v8::Local<v8::Value>* a) { m_oFontManager2 = a; }
+    void m_oLastFont2_set(v8::Local<v8::Value>* a) { m_oLastFont2 = a; }
+    void ClearMode_set(bool a) { ClearMode = a; }
+    void IsRetina_set(bool a) { IsRetina = a; }
+    void dash_no_smart_set(v8::Local<v8::Value>* a) { dash_no_smart = a; }
 };
 
 #endif // CJSGRAPHICS_H

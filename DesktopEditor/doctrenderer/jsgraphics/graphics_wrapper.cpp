@@ -2,23 +2,23 @@
 
 #include <string>
 
-static double      to_double(const v8::Local<v8::Value>& v)
+static double       to_double(const v8::Local<v8::Value>& v)
 {
     return v->ToNumber(v8::Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::Number>())->Value();
 }
-static bool        to_bool  (const v8::Local<v8::Value>& v)
+static bool         to_bool  (const v8::Local<v8::Value>& v)
 {
     return v->ToBoolean(v8::Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::Boolean>())->Value();
 }
-static int         to_int   (const v8::Local<v8::Value>& v)
+static int          to_int   (const v8::Local<v8::Value>& v)
 {
     return v->ToInt32(v8::Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::Int32>())->Value();
 }
-static int         to_uint  (const v8::Local<v8::Value>& v)
+static unsigned int to_uint  (const v8::Local<v8::Value>& v)
 {
     return v->ToUint32(v8::Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::Uint32>())->Value();
 }
-static std::string to_string(const v8::Local<v8::Value>& v)
+static std::string  to_string(const v8::Local<v8::Value>& v)
 {
     v8::String::Utf8Value data(v);
     const char* p = *data;
@@ -26,10 +26,20 @@ static std::string to_string(const v8::Local<v8::Value>& v)
     return std::string(p);
 }
 
-CJSGraphics* unwrap_Graphics(v8::Handle<v8::Object> obj)
+CJSGraphics*         unwrap_Graphics          (v8::Handle<v8::Object> obj)
 {
     v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(obj->GetInternalField(0));
     return static_cast<CJSGraphics*>(field->Value());
+}
+CFont*               unwrap_Font              (v8::Handle<v8::Object> obj)
+{
+    v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(obj->GetInternalField(0));
+    return static_cast<CFont*>(field->Value());
+}
+CLastFontOriginInfo* unwrap_LastFontOriginInfo(v8::Handle<v8::Object> obj)
+{
+    v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(obj->GetInternalField(0));
+    return static_cast<CLastFontOriginInfo*>(field->Value());
 }
 
 void init_w                    (const v8::FunctionCallbackInfo<v8::Value>& args)
@@ -38,7 +48,8 @@ void init_w                    (const v8::FunctionCallbackInfo<v8::Value>& args)
     if (args.Length() < 5)
         return;
     CJSGraphics* pGraphics = unwrap_Graphics(args.This());
-    pGraphics->init(args[0], to_double(args[1]), to_double(args[2]), to_double(args[3]), to_double(args[4]));
+    v8::Local<v8::Value> args0 = args[0];
+    pGraphics->init(&args0, to_double(args[1]), to_double(args[2]), to_double(args[3]), to_double(args[4]));
 }
 void EndDraw_w                 (const v8::FunctionCallbackInfo<v8::Value>& args)
 {
@@ -272,9 +283,7 @@ void SetTextPr_w               (const v8::FunctionCallbackInfo<v8::Value>& args)
     if (args.Length() < 2)
         return;
     CJSGraphics* pGraphics = unwrap_Graphics(args.This());
-    v8::Local<v8::Value> args0 = args[0];
-    v8::Local<v8::Value> args1 = args[1];
-    pGraphics->SetTextPr(&args0, &args1);
+    pGraphics->SetTextPr(args[0], args[1]);
 }
 void SetFontSlot_w             (const v8::FunctionCallbackInfo<v8::Value>& args)
 {
@@ -699,15 +708,448 @@ void DrawFootnoteRect_w        (const v8::FunctionCallbackInfo<v8::Value>& args)
     pGraphics->DrawFootnoteRect(to_double(args[0]), to_double(args[1]), to_double(args[2]), to_double(args[3]));
 }
 
-void m_dDpiX_get_w    (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+void m_oContext_get_w                (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(*pGraphics->m_oContext_get());
+}
+void m_dWidthMM_get_w                (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(v8::Number::New(v8::Isolate::GetCurrent(), pGraphics->m_dWidthMM_get()));
+}
+void m_dHeightMM_get_w               (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(v8::Number::New(v8::Isolate::GetCurrent(), pGraphics->m_dHeightMM_get()));
+}
+void m_lWidthPix_get_w               (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(v8::Number::New(v8::Isolate::GetCurrent(), pGraphics->m_lWidthPix_get()));
+}
+void m_lHeightPix_get_w              (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(v8::Number::New(v8::Isolate::GetCurrent(), pGraphics->m_lHeightPix_get()));
+}
+void m_dDpiX_get_w                   (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
     CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
     info.GetReturnValue().Set(v8::Number::New(v8::Isolate::GetCurrent(), pGraphics->m_dDpiX_get()));
 }
-void globalAlpha_get_w(v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+void m_dDpiY_get_w                   (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(v8::Number::New(v8::Isolate::GetCurrent(), pGraphics->m_dDpiY_get()));
+}
+void m_bIsBreak_get_w                (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(v8::Boolean::New(v8::Isolate::GetCurrent(), pGraphics->m_bIsBreak_get()));
+}
+void m_oPen_get_w                    (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(*pGraphics->m_oPen_get());
+}
+void m_bPenColorInit_get_w           (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(v8::Boolean::New(v8::Isolate::GetCurrent(), pGraphics->m_bPenColorInit_get()));
+}
+void m_oBrush_get_w                  (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(*pGraphics->m_oBrush_get());
+}
+void m_bBrushColorInit_get_w         (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(v8::Boolean::New(v8::Isolate::GetCurrent(), pGraphics->m_bBrushColorInit_get()));
+}
+void m_oFontManager_get_w            (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(*pGraphics->m_oFontManager_get());
+}
+void m_oCoordTransform_get_w         (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(*pGraphics->m_oCoordTransform_get());
+}
+void m_oBaseTransform_get_w          (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(*pGraphics->m_oBaseTransform_get());
+}
+void m_oTransform_get_w              (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(*pGraphics->m_oTransform_get());
+}
+void m_oFullTransform_get_w          (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(*pGraphics->m_oFullTransform_get());
+}
+void m_oInvertFullTransform_get_w    (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(*pGraphics->m_oInvertFullTransform_get());
+}
+void ArrayPoints_get_w               (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(*pGraphics->ArrayPoints_get());
+}
+void m_oCurFont_get_w                (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    // info.GetReturnValue().Set(v8::Number::New(v8::Isolate::GetCurrent(), pGraphics->m_oCurFont_get()));
+}
+void m_oTextPr_get_w                 (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(*pGraphics->m_oTextPr_get());
+}
+void m_oGrFonts_get_w                (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(*pGraphics->m_oGrFonts_get());
+}
+void m_oLastFont_get_w               (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(*pGraphics->m_oLastFont_get());
+}
+void LastFontOriginInfo_get_w        (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    // info.GetReturnValue().Set(v8::Number::New(v8::Isolate::GetCurrent(), pGraphics->LastFontOriginInfo_get()));
+}
+void m_bIntegerGrid_get_w            (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(v8::Boolean::New(v8::Isolate::GetCurrent(), pGraphics->m_bIntegerGrid_get()));
+}
+void ClipManager_get_w               (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(*pGraphics->ClipManager_get());
+}
+void TextureFillTransformScaleX_get_w(v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(v8::Int32::New(v8::Isolate::GetCurrent(), pGraphics->TextureFillTransformScaleX_get()));
+}
+void TextureFillTransformScaleY_get_w(v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(v8::Int32::New(v8::Isolate::GetCurrent(), pGraphics->TextureFillTransformScaleY_get()));
+}
+void IsThumbnail_get_w               (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(v8::Boolean::New(v8::Isolate::GetCurrent(), pGraphics->IsThumbnail_get()));
+}
+void IsDemonstrationMode_get_w       (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(v8::Boolean::New(v8::Isolate::GetCurrent(), pGraphics->IsDemonstrationMode_get()));
+}
+void GrState_get_w                   (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(*pGraphics->GrState_get());
+}
+void globalAlpha_get_w               (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
     CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
     info.GetReturnValue().Set(v8::Int32::New(v8::Isolate::GetCurrent(), pGraphics->globalAlpha_get()));
+}
+void TextClipRect_get_w              (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(*pGraphics->TextClipRect_get());
+}
+void IsClipContext_get_w             (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(v8::Boolean::New(v8::Isolate::GetCurrent(), pGraphics->IsClipContext_get()));
+}
+void IsUseFonts2_get_w               (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(v8::Boolean::New(v8::Isolate::GetCurrent(), pGraphics->IsUseFonts2_get()));
+}
+void m_oFontManager2_get_w           (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(*pGraphics->m_oFontManager2_get());
+}
+void m_oLastFont2_get_w              (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(*pGraphics->m_oLastFont2_get());
+}
+void ClearMode_get_w                 (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(v8::Boolean::New(v8::Isolate::GetCurrent(), pGraphics->ClearMode_get()));
+}
+void IsRetina_get_w                  (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(v8::Boolean::New(v8::Isolate::GetCurrent(), pGraphics->IsRetina_get()));
+}
+void dash_no_smart_get_w             (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    info.GetReturnValue().Set(*pGraphics->dash_no_smart_get());
+}
+
+void m_oContext_set_w                (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->m_oContext_set(&value);
+    info.GetReturnValue().Set(value);
+}
+void m_dWidthMM_set_w                (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->m_dWidthMM_set(to_double(value));
+    info.GetReturnValue().Set(value);
+}
+void m_dHeightMM_set_w               (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->m_dHeightMM_set(to_double(value));
+    info.GetReturnValue().Set(value);
+}
+void m_lWidthPix_set_w               (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->m_lWidthPix_set(to_double(value));
+    info.GetReturnValue().Set(value);
+}
+void m_lHeightPix_set_w              (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->m_lHeightPix_set(to_double(value));
+    info.GetReturnValue().Set(value);
+}
+void m_dDpiX_set_w                   (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->m_dDpiX_set(to_double(value));
+    info.GetReturnValue().Set(value);
+}
+void m_dDpiY_set_w                   (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->m_dDpiY_set(to_double(value));
+    info.GetReturnValue().Set(value);
+}
+void m_bIsBreak_set_w                (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->m_bIsBreak_set(to_bool(value));
+    info.GetReturnValue().Set(value);
+}
+void m_oPen_set_w                    (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->m_oPen_set(&value);
+    info.GetReturnValue().Set(value);
+}
+void m_bPenColorInit_set_w           (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->m_bPenColorInit_set(to_bool(value));
+    info.GetReturnValue().Set(value);
+}
+void m_oBrush_set_w                  (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->m_oBrush_set(&value);
+    info.GetReturnValue().Set(value);
+}
+void m_bBrushColorInit_set_w         (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->m_bBrushColorInit_set(to_bool(value));
+    info.GetReturnValue().Set(value);
+}
+void m_oFontManager_set_w            (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->m_oFontManager_set(&value);
+    info.GetReturnValue().Set(value);
+}
+void m_oCoordTransform_set_w         (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->m_oCoordTransform_set(&value);
+    info.GetReturnValue().Set(value);
+}
+void m_oBaseTransform_set_w          (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->m_oBaseTransform_set(&value);
+    info.GetReturnValue().Set(value);
+}
+void m_oTransform_set_w              (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->m_oTransform_set(&value);
+    info.GetReturnValue().Set(value);
+}
+void m_oFullTransform_set_w          (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->m_oFullTransform_set(&value);
+    info.GetReturnValue().Set(value);
+}
+void m_oInvertFullTransform_set_w    (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->m_oInvertFullTransform_set(&value);
+    info.GetReturnValue().Set(value);
+}
+void ArrayPoints_set_w               (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->ArrayPoints_set(&value);
+    info.GetReturnValue().Set(value);
+}
+void m_oCurFont_set_w                (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    // CFont* pFont = unwrap_Font(value);
+    // pGraphics->m_oCurFont_set(*pFont);
+    info.GetReturnValue().Set(value);
+}
+void m_oTextPr_set_w                 (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->m_oTextPr_set(&value);
+    info.GetReturnValue().Set(value);
+}
+void m_oGrFonts_set_w                (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->m_oGrFonts_set(&value);
+    info.GetReturnValue().Set(value);
+}
+void m_oLastFont_set_w               (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->m_oLastFont_set(&value);
+    info.GetReturnValue().Set(value);
+}
+void LastFontOriginInfo_set_w        (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    // CLastFontOriginInfo* pLastFontOriginInfo = unwrap_LastFontOriginInfo(value);
+    // pGraphics->LastFontOriginInfo_set(*pLastFontOriginInfo);
+    info.GetReturnValue().Set(value);
+}
+void m_bIntegerGrid_set_w            (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->m_bIntegerGrid_set(to_bool(value));
+    info.GetReturnValue().Set(value);
+}
+void ClipManager_set_w               (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->ClipManager_set(&value);
+    info.GetReturnValue().Set(value);
+}
+void TextureFillTransformScaleX_set_w(v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->TextureFillTransformScaleX_set(to_int(value));
+    info.GetReturnValue().Set(value);
+}
+void TextureFillTransformScaleY_set_w(v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->TextureFillTransformScaleY_set(to_int(value));
+    info.GetReturnValue().Set(value);
+}
+void IsThumbnail_set_w               (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->IsThumbnail_set(to_bool(value));
+    info.GetReturnValue().Set(value);
+}
+void IsDemonstrationMode_set_w       (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->IsDemonstrationMode_set(to_bool(value));
+    info.GetReturnValue().Set(value);
+}
+void GrState_set_w                   (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->GrState_set(&value);
+    info.GetReturnValue().Set(value);
+}
+void globalAlpha_set_w               (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->globalAlpha_set(to_int(value));
+    info.GetReturnValue().Set(value);
+}
+void TextClipRect_set_w              (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->TextClipRect_set(&value);
+    info.GetReturnValue().Set(value);
+}
+void IsClipContext_set_w             (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->IsClipContext_set(to_bool(value));
+    info.GetReturnValue().Set(value);
+}
+void IsUseFonts2_set_w               (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->IsUseFonts2_set(to_bool(value));
+    info.GetReturnValue().Set(value);
+}
+void m_oFontManager2_set_w           (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->m_oFontManager2_set(&value);
+    info.GetReturnValue().Set(value);
+}
+void m_oLastFont2_set_w              (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->m_oLastFont2_set(&value);
+    info.GetReturnValue().Set(value);
+}
+void ClearMode_set_w                 (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->ClearMode_set(to_bool(value));
+    info.GetReturnValue().Set(value);
+}
+void IsRetina_set_w                  (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->IsRetina_set(to_bool(value));
+    info.GetReturnValue().Set(value);
+}
+void dash_no_smart_set_w             (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+{
+    CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
+    pGraphics->dash_no_smart_set(&value);
+    info.GetReturnValue().Set(value);
 }
 
 v8::Handle<v8::ObjectTemplate> CreateGraphicsTemplate(v8::Isolate* isolate)
@@ -718,8 +1160,46 @@ v8::Handle<v8::ObjectTemplate> CreateGraphicsTemplate(v8::Isolate* isolate)
     v8::Isolate* current = v8::Isolate::GetCurrent();
 
     // свойства
-    result->SetAccessor(v8::String::NewFromUtf8(current, "m_dDpiX"), m_dDpiX_get_w);
-    result->SetAccessor(v8::String::NewFromUtf8(current, "globalAlpha"), globalAlpha_get_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "m_oContext"),                 m_oContext_get_w, m_oContext_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "m_dWidthMM"),                 m_dWidthMM_get_w, m_dWidthMM_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "m_dHeightMM"),                m_dHeightMM_get_w, m_dHeightMM_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "m_lWidthPix"),                m_lWidthPix_get_w, m_lWidthPix_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "m_lHeightPix"),               m_lHeightPix_get_w, m_lHeightPix_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "m_dDpiX"),                    m_dDpiX_get_w, m_dDpiX_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "m_dDpiY"),                    m_dDpiY_get_w, m_dDpiY_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "m_bIsBreak"),                 m_bIsBreak_get_w, m_bIsBreak_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "m_oPen"),                     m_oPen_get_w, m_oPen_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "m_bPenColorInit"),            m_bPenColorInit_get_w, m_bPenColorInit_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "m_oBrush"),                   m_oBrush_get_w, m_oBrush_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "m_bBrushColorInit"),          m_bBrushColorInit_get_w, m_bBrushColorInit_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "m_oFontManager"),             m_oFontManager_get_w, m_oFontManager_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "m_oCoordTransform"),          m_oCoordTransform_get_w, m_oCoordTransform_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "m_oBaseTransform"),           m_oBaseTransform_get_w, m_oBaseTransform_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "m_oFullTransform"),           m_oFullTransform_get_w, m_oFullTransform_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "m_oInvertFullTransform"),     m_oInvertFullTransform_get_w, m_oInvertFullTransform_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "ArrayPoints"),                ArrayPoints_get_w, ArrayPoints_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "m_oCurFont"),                 m_oCurFont_get_w, m_oCurFont_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "m_oTextPr"),                  m_oTextPr_get_w, m_oTextPr_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "m_oGrFonts"),                 m_oGrFonts_get_w, m_oGrFonts_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "m_oLastFont"),                m_oLastFont_get_w, m_oLastFont_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "LastFontOriginInfo"),         LastFontOriginInfo_get_w, LastFontOriginInfo_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "m_bIntegerGrid"),             m_bIntegerGrid_get_w, m_bIntegerGrid_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "ClipManager"),                ClipManager_get_w, ClipManager_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "TextureFillTransformScaleX"), TextureFillTransformScaleX_get_w, TextureFillTransformScaleX_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "TextureFillTransformScaleY"), TextureFillTransformScaleY_get_w, TextureFillTransformScaleY_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "IsThumbnail"),                IsThumbnail_get_w, IsThumbnail_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "IsDemonstrationMode"),        IsDemonstrationMode_get_w, IsDemonstrationMode_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "IsDemonstrationMode"),        IsDemonstrationMode_get_w, IsDemonstrationMode_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "GrState"),                    GrState_get_w, GrState_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "globalAlpha"),                globalAlpha_get_w, globalAlpha_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "TextClipRect"),               TextClipRect_get_w, TextClipRect_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "IsClipContext"),              IsClipContext_get_w, IsClipContext_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "IsUseFonts2"),                IsUseFonts2_get_w, IsUseFonts2_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "m_oFontManager2"),            m_oFontManager2_get_w, m_oFontManager2_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "m_oLastFont2"),               m_oLastFont2_get_w, m_oLastFont2_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "ClearMode"),                  ClearMode_get_w, ClearMode_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "IsRetina"),                   IsRetina_get_w, IsRetina_set_w);
+    result->SetAccessor(v8::String::NewFromUtf8(current, "dash_no_smart"),              dash_no_smart_get_w, dash_no_smart_set_w);
 
     // методы
     result->Set(current, "init",                     v8::FunctionTemplate::New(current, init_w));

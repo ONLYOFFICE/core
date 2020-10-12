@@ -1115,17 +1115,28 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
 		WriteElement(oWriter, oRels, pSlide->m_arElements[i]);
 	}
 
-	oWriter.WriteString(std::wstring(L"</p:spTree></p:cSld>"));
+    oWriter.WriteString(std::wstring(L"</p:spTree></p:cSld>"));
 
-	oWriter.WriteString(std::wstring(L"<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>"));
-	
-	WriteTransition(oWriter, pSlide->m_oSlideShow.m_oTransition);
+    oWriter.WriteString(std::wstring(L"<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>"));
 
-	oWriter.WriteString(std::wstring(L"<p:timing><p:tnLst><p:par><p:cTn id=\"1\" dur=\"indefinite\" restart=\"never\" nodeType=\"tmRoot\" /></p:par></p:tnLst></p:timing>"));
-	
-	oWriter.WriteString(std::wstring(L"</p:sld>"));
+    WriteTransition(oWriter, pSlide->m_oSlideShow);
 
-	oRels.CloseRels();
+    // TODO write new method and class for timing
+
+    auto slide_iter = m_pUserInfo->m_mapSlides.find(m_pUserInfo->m_arrSlidesOrder[nIndexSlide]);
+    CRecordSlideProgTagsContainer& progTag = *(slide_iter->second->m_pSlideProgTagsContainer);
+    CRecordPP10SlideBinaryTagExtension* pPP10SlideBinaryTag = progTag.getPP10SlideBinaryTagExtension();
+
+    if (pPP10SlideBinaryTag)
+    {
+        PPT_FORMAT::ConvertPP10SlideBinaryTagExtensionToTiming(*pPP10SlideBinaryTag, pSlide->m_oTiming);
+        WriteTiming(oWriter, pSlide->m_oTiming);
+    }
+
+
+    oWriter.WriteString(std::wstring(L"</p:sld>"));
+
+    oRels.CloseRels();
 
     std::wstring strXml = oWriter.GetData();
     std::wstring strFile = L"slide" + std::to_wstring(nIndexSlide + 1) + L".xml";
@@ -1140,8 +1151,10 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
 	oRels.SaveRels(strFileSlidePath + _T("_rels") + FILE_SEPARATOR_STR + strFile);
 }
 
-void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CTransition& transition)
+void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CSlideShowInfo &oSSInfo)
 {
+    CTransition& transition = oSSInfo.m_oTransition;
+
 	if (transition.m_nEffectType == 0xFF)	return;
 
 	std::wstring type;
@@ -1186,33 +1199,19 @@ void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CTransitio
 			param_value = transition.m_nEffectDirection ? L"true" : L"false";
 		}break;
 	case 4:
-		{
-			type = L"p:cover";	
-			param_name	= L"dir";
-			switch(transition.m_nEffectDirection)
-			{
-				case 0:	param_value = L"l"; break;
-				case 1:	param_value = L"u"; break;
-				case 2:	param_value = L"r"; break;
-				case 3:	param_value = L"d"; break;
-				case 4:	param_value = L"lu"; break;
-				case 5:	param_value = L"ru"; break;
-				case 6:	param_value = L"ld"; break;
-				case 7:	param_value = L"rd"; break;
-			}
-		}break;
 	case 7:
 		{
-			type = L"p:pull";		
+			if (transition.m_nEffectType == 4)	type = L"p:cover";		
+			if (transition.m_nEffectType == 7)	type = L"p:pull";		
 			param_name	= L"dir";
 			switch(transition.m_nEffectDirection)
 			{
 				case 0:	param_value = L"r"; break;
 				case 1:	param_value = L"b"; break;
-				case 2:	param_value = L"lu"; break;
+				case 2:	param_value = L"l"; break;
 				case 3:	param_value = L"t"; break;
 				case 4:	param_value = L"br"; break;
-				case 5:	param_value = L"ru"; break;
+				case 5:	param_value = L"bl"; break;
 				case 6:	param_value = L"tr"; break;
 				case 7:	param_value = L"tl"; break;
 			}
@@ -1312,13 +1311,23 @@ void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CTransitio
 
 	if (type.empty()) return;
 	oWriter.WriteString(std::wstring(L"<p:transition"));	
-		switch (transition.m_nSpeed)
+        switch (transition.m_nSpeed)
 		{
+        // TODO check this moment. Always write fast
 		case 0x00:	oWriter.WriteString(L" spd=\"fast\"");	break;
 		case 0x01:	oWriter.WriteString(L" spd=\"med\"");	break;
 		case 0x02:	
 		default:	oWriter.WriteString(L" spd=\"slow\"");	break;
 		}
+        if (oSSInfo.m_bOnlyClick == false)
+        {
+            oWriter.WriteString(L" advClick=\"0\"");
+        }
+        if (oSSInfo.m_dSlideDuration != 0)
+        {
+            std::wstring sAdvTm = std::to_wstring((long)(oSSInfo.m_dSlideDuration));
+            oWriter.WriteString(L" advTm=\"" + sAdvTm + L"\"");
+        }
 	oWriter.WriteString(L">");
 	oWriter.WriteString(L"<" + type);
 		if (!param_name.empty() && !param_value.empty())
@@ -1418,4 +1427,12 @@ void PPT_FORMAT::CPPTXWriter::WriteNotes()
 	{
 		WriteNotes((int)nIndexS);
 	}
+}
+
+
+void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, PPTX::Logic::Timing &oTiming)
+{
+    oWriter.WriteString(oTiming.toXML());
+    //oWriter.WriteString(std::wstring(L"<p:timing><p:tnLst><p:par><p:cTn id=\"1\" dur=\"indefinite\" restart=\"never\" nodeType=\"tmRoot\" /></p:par></p:tnLst></p:timing>"));
+
 }

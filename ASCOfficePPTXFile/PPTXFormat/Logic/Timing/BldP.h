@@ -78,7 +78,6 @@ namespace PPTX
 				oAttr.Write(_T("autoUpdateAnimBg"), autoUpdateAnimBg);
 				oAttr.Write(_T("rev"), rev);
 				oAttr.Write(_T("advAuto"), advAuto);
-				oAttr.Write(_T("spid"), spid);
 
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteNullable(tmplLst);
@@ -90,7 +89,7 @@ namespace PPTX
 			nullable<TmplLst>						tmplLst;
 
 			std::wstring									spid;
-			int										grpId;
+            int										grpId;
 			nullable_bool							uiExpand;
 			nullable_limit<Limit::ParaBuildType>	build;
 			nullable_int							bldLvl;

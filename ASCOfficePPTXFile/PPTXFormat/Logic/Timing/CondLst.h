@@ -70,7 +70,7 @@ namespace PPTX
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteArray(list);
 
-				return XmlUtils::CreateNode(_T("p:") + name, oValue);
+                return XmlUtils::CreateNode(_T("p:") + name, oValue);
 			}
 		public:
 			std::vector<Cond>			list;

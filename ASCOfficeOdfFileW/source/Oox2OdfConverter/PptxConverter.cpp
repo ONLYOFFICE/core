@@ -899,15 +899,26 @@ void PptxConverter::convert(PPTX::Logic::CTn *oox_time_common)
 	//nullable<CondLst>			endCondLst;
 	//nullable<Cond>			endSync;
 	//nullable<Iterate>			iterate;
-	if (oox_time_common->childTnLst.IsInit())
-	{
-		for (size_t i = 0; i < oox_time_common->childTnLst->list.size(); i++)
-		{
-			if (oox_time_common->childTnLst->list[i].is_init() == false) continue;
 
-			convert(&oox_time_common->childTnLst->list[i]);
-		}
-	}
+    // TODO
+//    for (auto& child : oox_time_common->childTnLst)
+//    {
+//        for (size_t i = 0; i <child.m_node. .list.size(); i++)
+//        {
+//            if (tnLst.list[i].is_init() == false) continue;
+
+//            convert(&oox_time_common->childTnLst->list[i]);
+//        }
+//    }
+//	if (oox_time_common->childTnLst.IsInit())
+//	{
+//		for (size_t i = 0; i < oox_time_common->childTnLst->list.size(); i++)
+//		{
+//			if (oox_time_common->childTnLst->list[i].is_init() == false) continue;
+
+//			convert(&oox_time_common->childTnLst->list[i]);
+//		}
+//	}
 	//if (oox_time_common->subTnLst.IsInit())
 	//{
 	//	for (size_t i = 0; i < oox_time_common->subTnLst->list.size(); i++)

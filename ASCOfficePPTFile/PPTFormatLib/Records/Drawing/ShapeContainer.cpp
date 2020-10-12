@@ -39,6 +39,7 @@
 #include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 #include "../../../../OfficeUtils/src/OfficeUtils.h"
+#include "../Enums/_includer.h"
 
 
 #define FIXED_POINT_unsigned(val) (double)((WORD)(val >> 16) + ((WORD)(val) / 65536.0))
@@ -2071,9 +2072,9 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
     bool bIsPersistPresentSettings	= false;
     bool bIsOwnPresentSettings		= false;
 
-	eTextType eTypeMaster	= NoPresent;
-	eTextType eTypePersist	= NoPresent;
-	eTextType eTypeOwn		= (eTextType)pTextSettings->m_lTextType;
+    TextTypeEnum eTypeMaster	= NoPresent;
+    TextTypeEnum eTypePersist	= NoPresent;
+    TextTypeEnum eTypeOwn		= (TextTypeEnum)pTextSettings->m_lTextType;
 
 	CShapeElement* pElementLayoutPH = NULL;
 
@@ -2095,7 +2096,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
                 if ((etShape == pPh->m_etType) && (ph_type == pPh->m_lPlaceholderType) && (/*ph_pos == pPh->m_lPlaceholderID*/true))
                 {
                     pElementLayoutPH = dynamic_cast<CShapeElement*>(pPh.get());
-                    eTypeMaster = (eTextType)pElementLayoutPH->m_pShape->m_oText.m_lTextMasterType;
+                    eTypeMaster = (TextTypeEnum)pElementLayoutPH->m_pShape->m_oText.m_lTextMasterType;
                     break;
                 }
             }
@@ -2103,7 +2104,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 	}
 	else
 	{
-		eTypeMaster = (eTextType)pTextSettings->m_lTextMasterType;
+        eTypeMaster = (TextTypeEnum)pTextSettings->m_lTextMasterType;
 	}
 
 	// ------------------------------------------------------------------------------
@@ -2121,7 +2122,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 	{
 		CTextFullSettings* pSettings = &pArrayPlaceHolders->at(lPersistIndex);
 
-		eTypePersist = (eTextType)pSettings->m_nTextType;
+        eTypePersist = (TextTypeEnum)pSettings->m_nTextType;
 		strText = pSettings->ApplyProperties(pTextSettings);
 
 		if ((0 != pSettings->m_arRanges.size()) && (0 == pShape->m_oTextActions.m_arRanges.size()))
@@ -2145,7 +2146,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 		SRecordHeader oHeader;
 		oHeader.ReadFromStream(oElemInfo.m_pStream) ;	
 
-		if (RECORD_TYPE_STYLE_TEXTPROP_ATOM == oHeader.RecType)
+        if (RT_StyleTextPropAtom == oHeader.RecType)
 		{			
 			CRecordStyleTextPropAtom* pStyle = new CRecordStyleTextPropAtom();
 			pStyle->m_lCount = strText.length();
@@ -2386,7 +2387,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 		SRecordHeader oHeader;
 		oHeader.ReadFromStream(oElemInfo.m_pStream) ;	
 
-		if (RECORD_TYPE_TEXTSPECINFO_ATOM == oHeader.RecType)
+        if (RT_TextSpecialInfoAtom == oHeader.RecType)
 		{			
 			CRecordTextSpecInfoAtom* pSpecInfo = new CRecordTextSpecInfoAtom();
 			pSpecInfo->m_lCount = -1;

@@ -57,8 +57,8 @@ namespace PPTX
 			template<class T> const T& as() const {return static_cast<const T&>(*m_node);}
 
 			virtual std::wstring toXML() const;
-		//public:
-		private:
+        public:
+//		private:
 			smart_ptr<WrapperWritingElement> m_node;
 		protected:
 			virtual void FillParentPointersForChilds(){};

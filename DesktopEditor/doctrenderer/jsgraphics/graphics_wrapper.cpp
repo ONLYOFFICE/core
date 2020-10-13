@@ -711,7 +711,9 @@ void DrawFootnoteRect_w        (const v8::FunctionCallbackInfo<v8::Value>& args)
 void m_oContext_get_w                (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
     CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
-    info.GetReturnValue().Set(*pGraphics->m_oContext_get());
+    v8::Local<v8::Value>* v = pGraphics->m_oContext_get();
+    if(v) info.GetReturnValue().Set(*v);
+    else  info.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 }
 void m_dWidthMM_get_w                (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
@@ -751,7 +753,9 @@ void m_bIsBreak_get_w                (v8::Local<v8::String> _name, const v8::Pro
 void m_oPen_get_w                    (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
     CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
-    info.GetReturnValue().Set(*pGraphics->m_oPen_get());
+    v8::Local<v8::Value>* v = pGraphics->m_oPen_get();
+    if(v) info.GetReturnValue().Set(*v);
+    else  info.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 }
 void m_bPenColorInit_get_w           (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
@@ -761,7 +765,9 @@ void m_bPenColorInit_get_w           (v8::Local<v8::String> _name, const v8::Pro
 void m_oBrush_get_w                  (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
     CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
-    info.GetReturnValue().Set(*pGraphics->m_oBrush_get());
+    v8::Local<v8::Value>* v = pGraphics->m_oBrush_get();
+    if(v) info.GetReturnValue().Set(*v);
+    else  info.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 }
 void m_bBrushColorInit_get_w         (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
@@ -771,37 +777,51 @@ void m_bBrushColorInit_get_w         (v8::Local<v8::String> _name, const v8::Pro
 void m_oFontManager_get_w            (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
     CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
-    info.GetReturnValue().Set(*pGraphics->m_oFontManager_get());
+    v8::Local<v8::Value>* v = pGraphics->m_oFontManager_get();
+    if(v) info.GetReturnValue().Set(*v);
+    else  info.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 }
 void m_oCoordTransform_get_w         (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
     CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
-    info.GetReturnValue().Set(*pGraphics->m_oCoordTransform_get());
+    v8::Local<v8::Value>* v = pGraphics->m_oCoordTransform_get();
+    if(v) info.GetReturnValue().Set(*v);
+    else  info.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 }
 void m_oBaseTransform_get_w          (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
     CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
-    info.GetReturnValue().Set(*pGraphics->m_oBaseTransform_get());
+    v8::Local<v8::Value>* v = pGraphics->m_oBaseTransform_get();
+    if(v) info.GetReturnValue().Set(*v);
+    else  info.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 }
 void m_oTransform_get_w              (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
     CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
-    info.GetReturnValue().Set(*pGraphics->m_oTransform_get());
+    v8::Local<v8::Value>* v = pGraphics->m_oTransform_get();
+    if(v) info.GetReturnValue().Set(*v);
+    else  info.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 }
 void m_oFullTransform_get_w          (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
     CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
-    info.GetReturnValue().Set(*pGraphics->m_oFullTransform_get());
+    v8::Local<v8::Value>* v = pGraphics->m_oFullTransform_get();
+    if(v) info.GetReturnValue().Set(*v);
+    else  info.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 }
 void m_oInvertFullTransform_get_w    (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
     CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
-    info.GetReturnValue().Set(*pGraphics->m_oInvertFullTransform_get());
+    v8::Local<v8::Value>* v = pGraphics->m_oInvertFullTransform_get();
+    if(v) info.GetReturnValue().Set(*v);
+    else  info.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 }
 void ArrayPoints_get_w               (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
     CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
-    info.GetReturnValue().Set(*pGraphics->ArrayPoints_get());
+    v8::Local<v8::Value>* v = pGraphics->ArrayPoints_get();
+    if(v) info.GetReturnValue().Set(*v);
+    else  info.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 }
 void m_oCurFont_get_w                (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
@@ -811,17 +831,23 @@ void m_oCurFont_get_w                (v8::Local<v8::String> _name, const v8::Pro
 void m_oTextPr_get_w                 (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
     CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
-    info.GetReturnValue().Set(*pGraphics->m_oTextPr_get());
+    v8::Local<v8::Value>* v = pGraphics->m_oTextPr_get();
+    if(v) info.GetReturnValue().Set(*v);
+    else  info.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 }
 void m_oGrFonts_get_w                (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
     CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
-    info.GetReturnValue().Set(*pGraphics->m_oGrFonts_get());
+    v8::Local<v8::Value>* v = pGraphics->m_oGrFonts_get();
+    if(v) info.GetReturnValue().Set(*v);
+    else  info.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 }
 void m_oLastFont_get_w               (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
     CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
-    info.GetReturnValue().Set(*pGraphics->m_oLastFont_get());
+    v8::Local<v8::Value>* v = pGraphics->m_oLastFont_get();
+    if(v) info.GetReturnValue().Set(*v);
+    else  info.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 }
 void LastFontOriginInfo_get_w        (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
@@ -836,7 +862,9 @@ void m_bIntegerGrid_get_w            (v8::Local<v8::String> _name, const v8::Pro
 void ClipManager_get_w               (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
     CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
-    info.GetReturnValue().Set(*pGraphics->ClipManager_get());
+    v8::Local<v8::Value>* v = pGraphics->ClipManager_get();
+    if(v) info.GetReturnValue().Set(*v);
+    else  info.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 }
 void TextureFillTransformScaleX_get_w(v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
@@ -861,7 +889,9 @@ void IsDemonstrationMode_get_w       (v8::Local<v8::String> _name, const v8::Pro
 void GrState_get_w                   (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
     CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
-    info.GetReturnValue().Set(*pGraphics->GrState_get());
+    v8::Local<v8::Value>* v = pGraphics->GrState_get();
+    if(v) info.GetReturnValue().Set(*v);
+    else  info.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 }
 void globalAlpha_get_w               (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
@@ -871,7 +901,9 @@ void globalAlpha_get_w               (v8::Local<v8::String> _name, const v8::Pro
 void TextClipRect_get_w              (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
     CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
-    info.GetReturnValue().Set(*pGraphics->TextClipRect_get());
+    v8::Local<v8::Value>* v = pGraphics->TextClipRect_get();
+    if(v) info.GetReturnValue().Set(*v);
+    else  info.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 }
 void IsClipContext_get_w             (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
@@ -886,12 +918,16 @@ void IsUseFonts2_get_w               (v8::Local<v8::String> _name, const v8::Pro
 void m_oFontManager2_get_w           (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
     CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
-    info.GetReturnValue().Set(*pGraphics->m_oFontManager2_get());
+    v8::Local<v8::Value>* v = pGraphics->m_oFontManager2_get();
+    if(v) info.GetReturnValue().Set(*v);
+    else  info.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 }
 void m_oLastFont2_get_w              (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
     CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
-    info.GetReturnValue().Set(*pGraphics->m_oLastFont2_get());
+    v8::Local<v8::Value>* v = pGraphics->m_oLastFont2_get();
+    if(v) info.GetReturnValue().Set(*v);
+    else  info.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 }
 void ClearMode_get_w                 (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
@@ -906,7 +942,9 @@ void IsRetina_get_w                  (v8::Local<v8::String> _name, const v8::Pro
 void dash_no_smart_get_w             (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
     CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
-    info.GetReturnValue().Set(*pGraphics->dash_no_smart_get());
+    v8::Local<v8::Value>* v = pGraphics->dash_no_smart_get();
+    if(v) info.GetReturnValue().Set(*v);
+    else  info.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 }
 
 void m_oContext_set_w                (v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)

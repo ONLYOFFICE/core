@@ -3,90 +3,10 @@
 #include <string>
 #include <cmath>
 
-CJSGraphics::CJSGraphics()
+namespace NSGraphics
 {
-    m_oContext = nullptr;
-    m_dWidthMM = 0.0;
-    m_dHeightMM = 0.0;
-    m_lWidthPix = 0.0;
-    m_lHeightPix = 0.0;
-    m_dDpiX = 96.0;
-    m_dDpiY = 96.0;
-    m_bIsBreak = false;
 
-    m_oPen = nullptr; // new AscCommon.CPen();
-    m_bPenColorInit = false;
-    m_oBrush = nullptr; // new AscCommon.CBrush();
-    m_bBrushColorInit = false;
-
-    m_oFontManager = nullptr;
-
-    m_oCoordTransform = nullptr; // new CMatrixL();
-    m_oBaseTransform = nullptr; // new CMatrixL();
-    m_oTransform = nullptr; // new CMatrixL();
-    m_oFullTransform = nullptr; // new CMatrixL();
-    m_oInvertFullTransform = nullptr; // new CMatrixL();
-
-    ArrayPoints = nullptr;
-
-    m_oTextPr = nullptr;
-    m_oGrFonts = nullptr; // new AscCommon.CGrRFonts();
-    m_oLastFont = nullptr; // new AscCommon.CFontSetup();
-
-    m_bIntegerGrid = true;
-
-    ClipManager = nullptr; // new AscCommon.CClipManager();
-    // ClipManager.BaseObject = this;
-
-    TextureFillTransformScaleX = 1;
-    TextureFillTransformScaleY = 1;
-    IsThumbnail = false;
-
-    IsDemonstrationMode = false;
-
-    GrState = nullptr; // new AscCommon.CGrState();
-    // GrState.Parent = this;
-
-    globalAlpha = 1;
-
-    TextClipRect = nullptr;
-    IsClipContext = false;
-
-    IsUseFonts2 = false;
-    m_oFontManager2 = nullptr;
-    m_oLastFont2 = nullptr;
-
-    ClearMode = false;
-    IsRetina = false;
-
-    dash_no_smart = nullptr;
-}
-
-CJSGraphics::~CJSGraphics()
-{
-    if(m_oContext)                 delete m_oContext;
-    if(m_oPen)                     delete m_oPen;
-    if(m_oBrush)                   delete m_oBrush;
-    if(m_oFontManager)             delete m_oFontManager;
-    if(m_oCoordTransform)          delete m_oCoordTransform;
-    if(m_oBaseTransform)           delete m_oBaseTransform;
-    if(m_oTransform)               delete m_oTransform;
-    if(m_oFullTransform)           delete m_oFullTransform;
-    if(m_oInvertFullTransform)     delete m_oInvertFullTransform;
-    if(ArrayPoints)                delete ArrayPoints;
-    if(m_oTextPr)                  delete m_oTextPr;
-    if(m_oGrFonts)                 delete m_oGrFonts;
-    if(m_oLastFont)                delete m_oLastFont;
-    if(LastFontOriginInfo.Replace) delete LastFontOriginInfo.Replace;
-    if(ClipManager)                delete ClipManager;
-    if(GrState)                    delete GrState;
-    if(TextClipRect)               delete TextClipRect;
-    if(m_oFontManager2)            delete m_oFontManager2;
-    if(m_oLastFont2)               delete m_oLastFont2;
-    if(dash_no_smart)              delete dash_no_smart;
-}
-
-void CJSGraphics::init(v8::Local<v8::Value>* context, double width_px, double height_px, double width_mm, double height_mm)
+void CGraphics::init(v8::Local<v8::Value>* context, double width_px, double height_px, double width_mm, double height_mm)
 {
     m_oContext   = context;
     m_lHeightPix = height_px; // height_px >> 0;
@@ -111,7 +31,7 @@ void CJSGraphics::init(v8::Local<v8::Value>* context, double width_px, double he
     m_bBrushColorInit = false;
 }
 
-void CJSGraphics::put_GlobalAlpha(bool enable, int alpha)
+void CGraphics::put_GlobalAlpha(bool enable, int alpha)
 {
     if(!enable)
     {
@@ -125,7 +45,7 @@ void CJSGraphics::put_GlobalAlpha(bool enable, int alpha)
     }
 }
 
-void CJSGraphics::End_GlobalAlpha()
+void CGraphics::End_GlobalAlpha()
 {
     if (!m_bIntegerGrid)
     {
@@ -147,7 +67,7 @@ void CJSGraphics::End_GlobalAlpha()
     }
 }
 
-void CJSGraphics::p_color(int r, int g, int b, int a)
+void CGraphics::p_color(int r, int g, int b, int a)
 {
     /*
     var _c = m_oPen.Color;
@@ -165,7 +85,7 @@ void CJSGraphics::p_color(int r, int g, int b, int a)
     */
 }
 
-void CJSGraphics::p_width(int w)
+void CGraphics::p_width(int w)
 {
     // m_oPen.LineWidth = static_cast<int>(static_cast<double>(w) / 1000.0);
 
@@ -208,7 +128,7 @@ void CJSGraphics::p_width(int w)
     }
 }
 
-void CJSGraphics::p_dash(const v8::Local<v8::Value>& params)
+void CGraphics::p_dash(const v8::Local<v8::Value>& params)
 {
     /*
     if (!m_oContext.setLineDash)
@@ -219,7 +139,7 @@ void CJSGraphics::p_dash(const v8::Local<v8::Value>& params)
     */
 }
 
-void CJSGraphics::b_color1(int r, int g, int b, int a)
+void CGraphics::b_color1(int r, int g, int b, int a)
 {
     /*
     var _c = m_oBrush.Color1;
@@ -238,7 +158,7 @@ void CJSGraphics::b_color1(int r, int g, int b, int a)
     */
 }
 
-void CJSGraphics::b_color2(int r, int g, int b, int a)
+void CGraphics::b_color2(int r, int g, int b, int a)
 {
     /*
     var _c = m_oBrush.Color2;
@@ -249,7 +169,7 @@ void CJSGraphics::b_color2(int r, int g, int b, int a)
     */
 }
 
-void CJSGraphics::transform(double sx, double shy, double shx, double sy, double tx, double ty)
+void CGraphics::transform(double sx, double shy, double shx, double sy, double tx, double ty)
 {
     /*
     v8::Local<v8::Value> _t = m_oTransform;
@@ -272,7 +192,7 @@ void CJSGraphics::transform(double sx, double shy, double shx, double sy, double
     */
 }
 
-void CJSGraphics::CalculateFullTransform(bool isInvertNeed)
+void CGraphics::CalculateFullTransform(bool isInvertNeed)
 {
     /*
     v8::Local<v8::Value> _ft = m_oFullTransform;
@@ -300,22 +220,22 @@ void CJSGraphics::CalculateFullTransform(bool isInvertNeed)
     */
 }
 
-void CJSGraphics::_s()
+void CGraphics::_s()
 {
     // m_oContext.beginPath();
 }
 
-void CJSGraphics::_e()
+void CGraphics::_e()
 {
     // m_oContext.beginPath();
 }
 
-void CJSGraphics::_z()
+void CGraphics::_z()
 {
     // m_oContext.closePath();
 }
 
-void CJSGraphics::_m(double x, double y)
+void CGraphics::_m(double x, double y)
 {
     /*
     if (!m_bIntegerGrid)
@@ -334,7 +254,7 @@ void CJSGraphics::_m(double x, double y)
     */
 }
 
-void CJSGraphics::_l(double x, double y)
+void CGraphics::_l(double x, double y)
 {
     /*
     if (!m_bIntegerGrid)
@@ -353,7 +273,7 @@ void CJSGraphics::_l(double x, double y)
     */
 }
 
-void CJSGraphics::_c(double x1, double y1, double x2, double y2, double x3, double y3)
+void CGraphics::_c(double x1, double y1, double x2, double y2, double x3, double y3)
 {
     /*
     if (!m_bIntegerGrid)
@@ -382,7 +302,7 @@ void CJSGraphics::_c(double x1, double y1, double x2, double y2, double x3, doub
     */
 }
 
-void CJSGraphics::_c2(double x1, double y1, double x2, double y2)
+void CGraphics::_c2(double x1, double y1, double x2, double y2)
 {
     /*
     if (!m_bIntegerGrid)
@@ -408,22 +328,22 @@ void CJSGraphics::_c2(double x1, double y1, double x2, double y2)
     */
 }
 
-void CJSGraphics::ds()
+void CGraphics::ds()
 {
     // m_oContext.stroke();
 }
 
-void CJSGraphics::df()
+void CGraphics::df()
 {
     // m_oContext.fill();
 }
 
-void CJSGraphics::save()
+void CGraphics::save()
 {
     // m_oContext.save();
 }
 
-void CJSGraphics::restore()
+void CGraphics::restore()
 {
     // m_oContext.restore();
 
@@ -431,12 +351,12 @@ void CJSGraphics::restore()
     m_bBrushColorInit = false;
 }
 
-void CJSGraphics::clip()
+void CGraphics::clip()
 {
     // m_oContext.clip();
 }
 
-void CJSGraphics::reset()
+void CGraphics::reset()
 {
     // m_oTransform.Reset();
     CalculateFullTransform(false);
@@ -447,7 +367,7 @@ void CJSGraphics::reset()
     */
 }
 
-void CJSGraphics::transform3(const v8::Local<v8::Value>& m, bool isNeedInvert)
+void CGraphics::transform3(const v8::Local<v8::Value>& m, bool isNeedInvert)
 {
     /*
     v8::Local<v8::Value> _t = m_oTransform;
@@ -469,12 +389,12 @@ void CJSGraphics::transform3(const v8::Local<v8::Value>& m, bool isNeedInvert)
     */
 }
 
-void CJSGraphics::FreeFont()
+void CGraphics::FreeFont()
 {
     // m_oFontManager.m_pFont = null;
 }
 
-void CJSGraphics::ClearLastFont()
+void CGraphics::ClearLastFont()
 {
     /*
     m_oLastFont  = new AscCommon.CFontSetup();
@@ -482,7 +402,7 @@ void CJSGraphics::ClearLastFont()
     */
 }
 
-void CJSGraphics::drawImage2(const v8::Local<v8::Value>& img, double x, double y, double w, double h, int alpha, const v8::Local<v8::Value>& srcRect)
+void CGraphics::drawImage2(const v8::Local<v8::Value>& img, double x, double y, double w, double h, int alpha, const v8::Local<v8::Value>& srcRect)
 {
     /*
     if (srcRect)
@@ -698,7 +618,7 @@ void CJSGraphics::drawImage2(const v8::Local<v8::Value>& img, double x, double y
     */
 }
 
-void CJSGraphics::drawImage(const v8::Local<v8::Value>& img, double x, double y, double w, double h, int alpha, const v8::Local<v8::Value>& srcRect, const v8::Local<v8::Value>& nativeImage)
+void CGraphics::drawImage(const v8::Local<v8::Value>& img, double x, double y, double w, double h, int alpha, const v8::Local<v8::Value>& srcRect, const v8::Local<v8::Value>& nativeImage)
 {
     /*
     if (nativeImage)
@@ -787,12 +707,12 @@ void CJSGraphics::drawImage(const v8::Local<v8::Value>& img, double x, double y,
     */
 }
 
-CFont CJSGraphics::GetFont()
+CFont CGraphics::GetFont()
 {
     return m_oCurFont;
 }
 
-void CJSGraphics::font(unsigned int font_id, int font_size)
+void CGraphics::font(unsigned int font_id, int font_size)
 {
     /*
     AscFonts.g_font_infos[AscFonts.g_map_font_index[font_id]].LoadFont(editor.FontLoader, this.IsUseFonts2 ? this.m_oFontManager2 : this.m_oFontManager,
@@ -800,7 +720,7 @@ void CJSGraphics::font(unsigned int font_id, int font_size)
     */
 }
 
-void CJSGraphics::SetFont(const v8::Local<v8::Value>& font)
+void CGraphics::SetFont(const v8::Local<v8::Value>& font)
 {
     /*
     if (null == font)
@@ -843,7 +763,7 @@ void CJSGraphics::SetFont(const v8::Local<v8::Value>& font)
     */
 }
 
-void CJSGraphics::SetTextPr(const v8::Local<v8::Value>& textPr, const v8::Local<v8::Value>& theme)
+void CGraphics::SetTextPr(const v8::Local<v8::Value>& textPr, const v8::Local<v8::Value>& theme)
 {
     /*
     m_oTextPr = textPr;
@@ -854,7 +774,7 @@ void CJSGraphics::SetTextPr(const v8::Local<v8::Value>& textPr, const v8::Local<
     */
 }
 
-void CJSGraphics::SetFontSlot(const v8::Local<v8::Value>& slot, double fontSizeKoef)
+void CGraphics::SetFontSlot(const v8::Local<v8::Value>& slot, double fontSizeKoef)
 {
     /*
     var _rfonts = this.m_oGrFonts;
@@ -949,12 +869,12 @@ void CJSGraphics::SetFontSlot(const v8::Local<v8::Value>& slot, double fontSizeK
     */
 }
 
-v8::Local<v8::Value> CJSGraphics::GetTextPr()
+v8::Local<v8::Value> CGraphics::GetTextPr()
 {
     return *m_oTextPr;
 }
 
-void CJSGraphics::FillText(double x, double y, const v8::Local<v8::Value>& text)
+void CGraphics::FillText(double x, double y, const v8::Local<v8::Value>& text)
 {
     /*
     if (this.m_bIsBreak)
@@ -998,7 +918,7 @@ void CJSGraphics::FillText(double x, double y, const v8::Local<v8::Value>& text)
     */
 }
 
-void CJSGraphics::t(const v8::Local<v8::Value>& text, double x, double y, bool isBounds)
+void CGraphics::t(const v8::Local<v8::Value>& text, double x, double y, bool isBounds)
 {
     /*
     if (this.m_bIsBreak)
@@ -1040,7 +960,7 @@ void CJSGraphics::t(const v8::Local<v8::Value>& text, double x, double y, bool i
     */
 }
 
-void CJSGraphics::FillText2(double x, double y, const v8::Local<v8::Value>& text, double cropX, double cropW)
+void CGraphics::FillText2(double x, double y, const v8::Local<v8::Value>& text, double cropX, double cropW)
 {
     /*
     if (this.m_bIsBreak)
@@ -1081,7 +1001,7 @@ void CJSGraphics::FillText2(double x, double y, const v8::Local<v8::Value>& text
     */
 }
 
-void CJSGraphics::t2(const v8::Local<v8::Value>& text, double x, double y, double cropX, double cropW)
+void CGraphics::t2(const v8::Local<v8::Value>& text, double x, double y, double cropX, double cropW)
 {
     /*
     if (this.m_bIsBreak)
@@ -1121,7 +1041,7 @@ void CJSGraphics::t2(const v8::Local<v8::Value>& text, double x, double y, doubl
     */
 }
 
-void CJSGraphics::FillTextCode(double x, double y, const v8::Local<v8::Value>& lUnicode)
+void CGraphics::FillTextCode(double x, double y, const v8::Local<v8::Value>& lUnicode)
 {
     /*
     if (this.m_bIsBreak)
@@ -1163,7 +1083,7 @@ void CJSGraphics::FillTextCode(double x, double y, const v8::Local<v8::Value>& l
     */
 }
 
-void CJSGraphics::tg(const v8::Local<v8::Value>& text, double x, double y)
+void CGraphics::tg(const v8::Local<v8::Value>& text, double x, double y)
 {
     /*
     if (this.m_bIsBreak)
@@ -1208,7 +1128,7 @@ void CJSGraphics::tg(const v8::Local<v8::Value>& text, double x, double y)
     */
 }
 
-void CJSGraphics::private_FillGlyph(const v8::Local<v8::Value>& pGlyph, const v8::Local<v8::Value>& _bounds)
+void CGraphics::private_FillGlyph(const v8::Local<v8::Value>& pGlyph, const v8::Local<v8::Value>& _bounds)
 {
     /*
     var nW = pGlyph.oBitmap.nWidth;
@@ -1245,7 +1165,7 @@ void CJSGraphics::private_FillGlyph(const v8::Local<v8::Value>& pGlyph, const v8
     */
 }
 
-void CJSGraphics::private_FillGlyphC(const v8::Local<v8::Value>& pGlyph, double cropX, double cropW)
+void CGraphics::private_FillGlyphC(const v8::Local<v8::Value>& pGlyph, double cropX, double cropW)
 {
     /*
     var nW = pGlyph.oBitmap.nWidth;
@@ -1271,7 +1191,7 @@ void CJSGraphics::private_FillGlyphC(const v8::Local<v8::Value>& pGlyph, double 
     */
 }
 
-void CJSGraphics::private_FillGlyph2(const v8::Local<v8::Value>& pGlyph)
+void CGraphics::private_FillGlyph2(const v8::Local<v8::Value>& pGlyph)
 {
     /*
     var i = 0;
@@ -1329,7 +1249,7 @@ void CJSGraphics::private_FillGlyph2(const v8::Local<v8::Value>& pGlyph)
     */
 }
 
-void CJSGraphics::SetIntegerGrid(bool param)
+void CGraphics::SetIntegerGrid(bool param)
 {
     /*
     if (true == param)
@@ -1346,12 +1266,12 @@ void CJSGraphics::SetIntegerGrid(bool param)
     */
 }
 
-bool CJSGraphics::GetIntegerGrid()
+bool CGraphics::GetIntegerGrid()
 {
     return m_bIntegerGrid;
 }
 
-void CJSGraphics::DrawStringASCII(const std::string& name, int size, bool bold, bool italic, const v8::Local<v8::Value>& text, double x, double y, bool bIsHeader)
+void CGraphics::DrawStringASCII(const std::string& name, int size, bool bold, bool italic, const v8::Local<v8::Value>& text, double x, double y, bool bIsHeader)
 {
     /*
     var _textProp = {
@@ -1413,7 +1333,7 @@ void CJSGraphics::DrawStringASCII(const std::string& name, int size, bool bold, 
     */
 }
 
-void CJSGraphics::DrawStringASCII2(const std::string& name, int size, bool bold, bool italic, const v8::Local<v8::Value>& text, double x, double y, bool bIsHeader)
+void CGraphics::DrawStringASCII2(const std::string& name, int size, bool bold, bool italic, const v8::Local<v8::Value>& text, double x, double y, bool bIsHeader)
 {
     /*
     var _textProp = {
@@ -1478,7 +1398,7 @@ void CJSGraphics::DrawStringASCII2(const std::string& name, int size, bool bold,
     */
 }
 
-void CJSGraphics::DrawHeaderEdit(double yPos, const v8::Local<v8::Value>& lock_type, int sectionNum, bool bIsRepeat, const v8::Local<v8::Value>& type)
+void CGraphics::DrawHeaderEdit(double yPos, const v8::Local<v8::Value>& lock_type, int sectionNum, bool bIsRepeat, const v8::Local<v8::Value>& type)
 {
     /*
     var _y = this.m_oFullTransform.TransformPointY(0,yPos);
@@ -1584,7 +1504,7 @@ void CJSGraphics::DrawHeaderEdit(double yPos, const v8::Local<v8::Value>& lock_t
     */
 }
 
-void CJSGraphics::DrawFooterEdit(double yPos, const v8::Local<v8::Value>& lock_type, int sectionNum, bool bIsRepeat, const v8::Local<v8::Value>& type)
+void CGraphics::DrawFooterEdit(double yPos, const v8::Local<v8::Value>& lock_type, int sectionNum, bool bIsRepeat, const v8::Local<v8::Value>& type)
 {
     /*
     var _y = this.m_oFullTransform.TransformPointY(0,yPos);
@@ -1689,7 +1609,7 @@ void CJSGraphics::DrawFooterEdit(double yPos, const v8::Local<v8::Value>& lock_t
     */
 }
 
-void CJSGraphics::DrawLockParagraph(const v8::Local<v8::Value>& lock_type, double x, double y1, double y2)
+void CGraphics::DrawLockParagraph(const v8::Local<v8::Value>& lock_type, double x, double y1, double y2)
 {
     /*
     if (lock_type == locktype_None || editor.WordControl.m_oDrawingDocument.IsLockObjectsEnable === false || editor.isViewMode || (lock_type === locktype_Mine && true === AscCommon.CollaborativeEditing.Is_Fast()))
@@ -1783,7 +1703,7 @@ void CJSGraphics::DrawLockParagraph(const v8::Local<v8::Value>& lock_type, doubl
     */
 }
 
-void CJSGraphics::DrawLockObjectRect(const v8::Local<v8::Value>& lock_type, double x, double y, double w, double h)
+void CGraphics::DrawLockObjectRect(const v8::Local<v8::Value>& lock_type, double x, double y, double w, double h)
 {
     /*
     if (editor.isViewMode || this.IsThumbnail || lock_type == locktype_None || this.IsDemonstrationMode || (lock_type === locktype_Mine && true === AscCommon.CollaborativeEditing.Is_Fast()))
@@ -1893,7 +1813,7 @@ void CJSGraphics::DrawLockObjectRect(const v8::Local<v8::Value>& lock_type, doub
     */
 }
 
-void CJSGraphics::DrawEmptyTableLine(double x1, double y1, double x2, double y2)
+void CGraphics::DrawEmptyTableLine(double x1, double y1, double x2, double y2)
 {
     /*
     if ((!editor.isShowTableEmptyLine || editor.isViewMode) && (editor.isShowTableEmptyLineAttack === false))
@@ -1992,7 +1912,7 @@ void CJSGraphics::DrawEmptyTableLine(double x1, double y1, double x2, double y2)
     */
 }
 
-void CJSGraphics::DrawSpellingLine(double y0, double x0, double x1, double w)
+void CGraphics::DrawSpellingLine(double y0, double x0, double x1, double w)
 {
     /*
     if (!editor.isViewMode)
@@ -2000,7 +1920,7 @@ void CJSGraphics::DrawSpellingLine(double y0, double x0, double x1, double w)
     */
 }
 
-void CJSGraphics::drawHorLine(int align, double y, double x, double r, int penW)
+void CGraphics::drawHorLine(int align, double y, double x, double r, int penW)
 {
     /*
     var _check_transform = global_MatrixTransformer.IsIdentity2(this.m_oTransform);
@@ -2085,7 +2005,7 @@ void CJSGraphics::drawHorLine(int align, double y, double x, double r, int penW)
     */
 }
 
-void CJSGraphics::drawHorLine2(int align, double y, double x, double r, int penW)
+void CGraphics::drawHorLine2(int align, double y, double x, double r, int penW)
 {
     /*
     var _check_transform = global_MatrixTransformer.IsIdentity2(this.m_oTransform);
@@ -2165,7 +2085,7 @@ void CJSGraphics::drawHorLine2(int align, double y, double x, double r, int penW
     */
 }
 
-void CJSGraphics::drawVerLine(int align, double x, double y, double b, int penW)
+void CGraphics::drawVerLine(int align, double x, double y, double b, int penW)
 {
     /*
     var _check_transform = global_MatrixTransformer.IsIdentity2(this.m_oTransform);
@@ -2247,7 +2167,7 @@ void CJSGraphics::drawVerLine(int align, double x, double y, double b, int penW)
     */
 }
 
-void CJSGraphics::drawHorLineExt(int align, double y, double x, double r, int penW, double leftMW, double rightMW)
+void CGraphics::drawHorLineExt(int align, double y, double x, double r, int penW, double leftMW, double rightMW)
 {
     /*
     var _check_transform = global_MatrixTransformer.IsIdentity2(this.m_oTransform);
@@ -2385,7 +2305,7 @@ void CJSGraphics::drawHorLineExt(int align, double y, double x, double r, int pe
     */
 }
 
-void CJSGraphics::rect(double x, double y, double w, double h)
+void CGraphics::rect(double x, double y, double w, double h)
 {
     /*
     var ctx = this.m_oContext;
@@ -2427,7 +2347,7 @@ void CJSGraphics::rect(double x, double y, double w, double h)
     */
 }
 
-void CJSGraphics::TableRect(double x, double y, double w, double h)
+void CGraphics::TableRect(double x, double y, double w, double h)
 {
     /*
     var ctx = this.m_oContext;
@@ -2448,7 +2368,7 @@ void CJSGraphics::TableRect(double x, double y, double w, double h)
     */
 }
 
-void CJSGraphics::AddClipRect(double x, double y, double w, double h)
+void CGraphics::AddClipRect(double x, double y, double w, double h)
 {
     /*
     var __rect = new AscCommon._rect();
@@ -2460,7 +2380,7 @@ void CJSGraphics::AddClipRect(double x, double y, double w, double h)
     */
 }
 
-void CJSGraphics::SetClip(const v8::Local<v8::Value>& r)
+void CGraphics::SetClip(const v8::Local<v8::Value>& r)
 {
     /*
     var ctx = this.m_oContext;
@@ -2486,7 +2406,7 @@ void CJSGraphics::SetClip(const v8::Local<v8::Value>& r)
     */
 }
 
-void CJSGraphics::RemoveClip()
+void CGraphics::RemoveClip()
 {
     /*
     this.m_oContext.restore();
@@ -2500,7 +2420,7 @@ void CJSGraphics::RemoveClip()
     */
 }
 
-void CJSGraphics::drawCollaborativeChanges(double x, double y, double w, double h, const v8::Local<v8::Value>& Color)
+void CGraphics::drawCollaborativeChanges(double x, double y, double w, double h, const v8::Local<v8::Value>& Color)
 {
     /*
     this.b_color1( Color.r, Color.g, Color.b, 255 );
@@ -2509,7 +2429,7 @@ void CJSGraphics::drawCollaborativeChanges(double x, double y, double w, double 
     */
 }
 
-void CJSGraphics::drawMailMergeField(double x, double y, double w, double h)
+void CGraphics::drawMailMergeField(double x, double y, double w, double h)
 {
     /*
     this.b_color1(206, 212, 223, 204);
@@ -2519,7 +2439,7 @@ void CJSGraphics::drawMailMergeField(double x, double y, double w, double h)
     */
 }
 
-void CJSGraphics::drawSearchResult(double x, double y, double w, double h)
+void CGraphics::drawSearchResult(double x, double y, double w, double h)
 {
     /*
     this.b_color1( 255, 238, 128, 255 );
@@ -2528,7 +2448,7 @@ void CJSGraphics::drawSearchResult(double x, double y, double w, double h)
     */
 }
 
-void CJSGraphics::drawFlowAnchor(double x, double y)
+void CGraphics::drawFlowAnchor(double x, double y)
 {
     /*
     if (!AscCommon.g_flow_anchor || !AscCommon.g_flow_anchor.asc_complete || (!editor || !editor.ShowParaMarks))
@@ -2552,52 +2472,52 @@ void CJSGraphics::drawFlowAnchor(double x, double y)
     */
 }
 
-void CJSGraphics::SavePen()
+void CGraphics::SavePen()
 {
     // this.GrState.SavePen();
 }
 
-void CJSGraphics::RestorePen()
+void CGraphics::RestorePen()
 {
     // this.GrState.RestorePen();
 }
 
-void CJSGraphics::SaveBrush()
+void CGraphics::SaveBrush()
 {
     // this.GrState.SaveBrush();
 }
 
-void CJSGraphics::RestoreBrush()
+void CGraphics::RestoreBrush()
 {
     // this.GrState.RestoreBrush();
 }
 
-void CJSGraphics::SavePenBrush()
+void CGraphics::SavePenBrush()
 {
     // this.GrState.SavePenBrush();
 }
 
-void CJSGraphics::RestorePenBrush()
+void CGraphics::RestorePenBrush()
 {
     // this.GrState.RestorePenBrush();
 }
 
-void CJSGraphics::SaveGrState()
+void CGraphics::SaveGrState()
 {
     // this.GrState.SaveGrState();
 }
 
-void CJSGraphics::RestoreGrState()
+void CGraphics::RestoreGrState()
 {
     // this.GrState.RestoreGrState();
 }
 
-void CJSGraphics::EndClipPath()
+void CGraphics::EndClipPath()
 {
     // this.m_oContext.clip();
 }
 
-void CJSGraphics::StartCheckTableDraw()
+void CGraphics::StartCheckTableDraw()
 {
     /*
     if (!this.m_bIntegerGrid && global_MatrixTransformer.IsIdentity2(this.m_oTransform))
@@ -2610,13 +2530,13 @@ void CJSGraphics::StartCheckTableDraw()
     */
 }
 
-void CJSGraphics::EndCheckTableDraw(bool bIsRestore)
+void CGraphics::EndCheckTableDraw(bool bIsRestore)
 {
     if (bIsRestore)
         RestoreGrState();
 }
 
-void CJSGraphics::SetTextClipRect(double _l, double _t, double _r, double _b)
+void CGraphics::SetTextClipRect(double _l, double _t, double _r, double _b)
 {
     /*
     this.TextClipRect = {
@@ -2628,7 +2548,7 @@ void CJSGraphics::SetTextClipRect(double _l, double _t, double _r, double _b)
     */
 }
 
-void CJSGraphics::AddSmartRect(double x, double y, double w, double h, int pen_w)
+void CGraphics::AddSmartRect(double x, double y, double w, double h, int pen_w)
 {
     /*
     if (!global_MatrixTransformer.IsIdentity2(this.m_oTransform))
@@ -2782,7 +2702,7 @@ void CJSGraphics::AddSmartRect(double x, double y, double w, double h, int pen_w
     */
 }
 
-void CJSGraphics::CheckUseFonts2(const v8::Local<v8::Value>& _transform)
+void CGraphics::CheckUseFonts2(const v8::Local<v8::Value>& _transform)
 {
     /*
     if (!global_MatrixTransformer.IsIdentity2(_transform))
@@ -2803,12 +2723,12 @@ void CJSGraphics::CheckUseFonts2(const v8::Local<v8::Value>& _transform)
     */
 }
 
-void CJSGraphics::UncheckUseFonts2()
+void CGraphics::UncheckUseFonts2()
 {
     // IsUseFonts2 = false;
 }
 
-void CJSGraphics::DrawPresentationComment(const v8::Local<v8::Value>& type, double x, double y, double w, double h)
+void CGraphics::DrawPresentationComment(const v8::Local<v8::Value>& type, double x, double y, double w, double h)
 {
     /*
     if (this.IsThumbnail || this.IsDemonstrationMode)
@@ -2843,7 +2763,7 @@ void CJSGraphics::DrawPresentationComment(const v8::Local<v8::Value>& type, doub
     */
 }
 
-void CJSGraphics::DrawPolygon(const v8::Local<v8::Value>& oPath, int lineWidth, double shift)
+void CGraphics::DrawPolygon(const v8::Local<v8::Value>& oPath, int lineWidth, double shift)
 {
     /*
     this.m_oContext.lineWidth = lineWidth;
@@ -2903,7 +2823,7 @@ void CJSGraphics::DrawPolygon(const v8::Local<v8::Value>& oPath, int lineWidth, 
     */
 }
 
-void CJSGraphics::DrawFootnoteRect(double x, double y, double w, double h)
+void CGraphics::DrawFootnoteRect(double x, double y, double w, double h)
 {
     /*
     var _old = this.m_bIntegerGrid;
@@ -2932,4 +2852,5 @@ void CJSGraphics::DrawFootnoteRect(double x, double y, double w, double h)
     if (!_old)
         this.SetIntegerGrid(false);
     */
+}
 }

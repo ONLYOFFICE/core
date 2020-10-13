@@ -1,47 +1,344 @@
-#include "graphics_wrapper.h"
+#include "../GraphicsEmbed.h"
+#include "../../v8/v8_base.h"
 
-#include <string>
+#define PROPERTY_GET(NAME, NAME_EMBED, TYPE)                                                                \
+    void NAME(v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)                 \
+    {                                                                                                       \
+        CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(info.Holder());                              \
+        info.GetReturnValue().Set(TYPE::New(v8::Isolate::GetCurrent(), _this->->m_pInternal->NAME_EMBED())) \
+    }
 
-static double       to_double(const v8::Local<v8::Value>& v)
+#define PROPERTY_GET_OBJECT(NAME, NAME_EMBED)                                                \
+    void NAME(v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)  \
+    {                                                                                        \
+        CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(info.Holder());               \
+        v8::Local<v8::Value>* v = _this->m_pInternal->NAME_EMBED();                          \
+        if(v) info.GetReturnValue().Set(*v);                                                 \
+        else  info.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));           \
+    }
+
+namespace NSGraphics
 {
-    return v->ToNumber(v8::Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::Number>())->Value();
-}
-static bool         to_bool  (const v8::Local<v8::Value>& v)
-{
-    return v->ToBoolean(v8::Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::Boolean>())->Value();
-}
-static int          to_int   (const v8::Local<v8::Value>& v)
-{
-    return v->ToInt32(v8::Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::Int32>())->Value();
-}
-static unsigned int to_uint  (const v8::Local<v8::Value>& v)
-{
-    return v->ToUint32(v8::Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::Uint32>())->Value();
-}
-static std::string  to_string(const v8::Local<v8::Value>& v)
-{
-    v8::String::Utf8Value data(v);
-    const char* p = *data;
-    if (p == NULL) return std::string();
-    return std::string(p);
+    #define CURRENTWRAPPER CGraphicsEmbed
+
+    // FUNCTION
+    FUNCTION_WRAPPER_V8_5(_init,              init)
+    FUNCTION_WRAPPER_V8  (_EndDraw,           EndDraw)
+    FUNCTION_WRAPPER_V8_2(_put_GlobalAlpha,   put_GlobalAlpha)
+    FUNCTION_WRAPPER_V8  (_Start_GlobalAlpha, Start_GlobalAlpha)
+    FUNCTION_WRAPPER_V8  (_End_GlobalAlpha,   End_GlobalAlpha)
+    // pen methods
+    FUNCTION_WRAPPER_V8_4(_p_color, p_color)
+    FUNCTION_WRAPPER_V8_1(_p_width, p_width)
+    FUNCTION_WRAPPER_V8_1(_p_dash,  p_dash)
+    // brush methods
+    FUNCTION_WRAPPER_V8_4(_b_color1,               b_color1)
+    FUNCTION_WRAPPER_V8_4(_b_color2,               b_color2)
+    FUNCTION_WRAPPER_V8_6(_transform,              transform)
+    FUNCTION_WRAPPER_V8_1(_CalculateFullTransform, CalculateFullTransform)
+    // path commands
+    FUNCTION_WRAPPER_V8  (__s,  _s)
+    FUNCTION_WRAPPER_V8  (__e,  _e)
+    FUNCTION_WRAPPER_V8  (__z,  _z)
+    FUNCTION_WRAPPER_V8_2(__m,  _m)
+    FUNCTION_WRAPPER_V8_2(__l,  _l)
+    FUNCTION_WRAPPER_V8_6(__c,  _c)
+    FUNCTION_WRAPPER_V8_4(__c2, _c2)
+    FUNCTION_WRAPPER_V8  (_ds,  ds)
+    FUNCTION_WRAPPER_V8  (_df,  df)
+    // canvas state
+    FUNCTION_WRAPPER_V8  (_save,          save)
+    FUNCTION_WRAPPER_V8  (_restore,       restore)
+    FUNCTION_WRAPPER_V8  (_clip,          clip)
+    FUNCTION_WRAPPER_V8  (_reset,         reset)
+    FUNCTION_WRAPPER_V8_2(_transform3,    transform3)
+    FUNCTION_WRAPPER_V8  (_FreeFont,      FreeFont)
+    FUNCTION_WRAPPER_V8  (_ClearLastFont, ClearLastFont)
+    // images
+    FUNCTION_WRAPPER_V8_7(_drawImage2, drawImage2)
+    FUNCTION_WRAPPER_V8_8(_drawImage,  drawImage)
+    // text
+    FUNCTION_WRAPPER_V8  (_GetFont,      GetFont)
+    FUNCTION_WRAPPER_V8_2(_font,         font)
+    FUNCTION_WRAPPER_V8_1(_SetFont,      SetFont)
+    FUNCTION_WRAPPER_V8_2(_SetTextPr,    SetTextPr)
+    FUNCTION_WRAPPER_V8_2(_SetFontSlot,  SetFontSlot)
+    FUNCTION_WRAPPER_V8  (_GetTextPr,    GetTextPr)
+    FUNCTION_WRAPPER_V8_3(_FillText,     FillText)
+    FUNCTION_WRAPPER_V8_4(_t,            t)
+    FUNCTION_WRAPPER_V8_5(_FillText2,    FillText2)
+    FUNCTION_WRAPPER_V8_5(_t2,           t2)
+    FUNCTION_WRAPPER_V8_3(_FillTextCode, FillTextCode)
+    FUNCTION_WRAPPER_V8_3(_tg,           tg)
+    FUNCTION_WRAPPER_V8_1(_charspace,    charspace)
+    // private methods
+    FUNCTION_WRAPPER_V8_2(_private_FillGlyph,  private_FillGlyph)
+    FUNCTION_WRAPPER_V8_3(_private_FillGlyphC, private_FillGlyphC)
+    FUNCTION_WRAPPER_V8_1(_private_FillGlyph2, private_FillGlyph2)
+    FUNCTION_WRAPPER_V8_1(_SetIntegerGrid,     SetIntegerGrid)
+    FUNCTION_WRAPPER_V8  (_GetIntegerGrid,     GetIntegerGrid)
+    FUNCTION_WRAPPER_V8_8(_DrawStringASCII,    DrawStringASCII)
+    FUNCTION_WRAPPER_V8_8(_DrawStringASCII2,   DrawStringASCII2)
+    FUNCTION_WRAPPER_V8_5(_DrawHeaderEdit,     DrawHeaderEdit)
+    FUNCTION_WRAPPER_V8_5(_DrawFooterEdit,     DrawFooterEdit)
+    FUNCTION_WRAPPER_V8_4(_DrawLockParagraph,  DrawLockParagraph)
+    FUNCTION_WRAPPER_V8_5(_DrawLockObjectRect, DrawLockObjectRect)
+    FUNCTION_WRAPPER_V8_4(_DrawEmptyTableLine, DrawEmptyTableLine)
+    FUNCTION_WRAPPER_V8_4(_DrawSpellingLine,   DrawSpellingLine)
+    // smart methods for horizontal / vertical lines
+    FUNCTION_WRAPPER_V8_5(_drawHorLine,  drawHorLine)
+    FUNCTION_WRAPPER_V8_5(_drawHorLine2, drawHorLine2)
+    FUNCTION_WRAPPER_V8_5(_drawVerLine,  drawVerLine)
+    // мега крутые функции для таблиц
+    FUNCTION_WRAPPER_V8_7(_drawHorLineExt, drawHorLineExt)
+    FUNCTION_WRAPPER_V8_4(_rect,           rect)
+    FUNCTION_WRAPPER_V8_4(_TableRect,      TableRect)
+    // функции клиппирования
+    FUNCTION_WRAPPER_V8_4(_AddClipRect,              AddClipRect)
+    FUNCTION_WRAPPER_V8  (_RemoveClipRect,           RemoveClipRect)
+    FUNCTION_WRAPPER_V8_1(_SetClip,                  SetClip)
+    FUNCTION_WRAPPER_V8  (_RemoveClip,               RemoveClip)
+    FUNCTION_WRAPPER_V8_5(_drawCollaborativeChanges, drawCollaborativeChanges)
+    FUNCTION_WRAPPER_V8_4(_drawMailMergeField,       drawMailMergeField)
+    FUNCTION_WRAPPER_V8_4(_drawSearchResult,         drawSearchResult)
+    FUNCTION_WRAPPER_V8_2(_drawFlowAnchor,           drawFlowAnchor)
+    FUNCTION_WRAPPER_V8  (_SavePen,                  SavePen)
+    FUNCTION_WRAPPER_V8  (_RestorePen,               RestorePen)
+    FUNCTION_WRAPPER_V8  (_SaveBrush,                SaveBrush)
+    FUNCTION_WRAPPER_V8  (_RestoreBrush,             RestoreBrush)
+    FUNCTION_WRAPPER_V8  (_SavePenBrush,             SavePenBrush)
+    FUNCTION_WRAPPER_V8  (_RestorePenBrush,          RestorePenBrush)
+    FUNCTION_WRAPPER_V8  (_SaveGrState,              SaveGrState)
+    FUNCTION_WRAPPER_V8  (_RestoreGrState,           RestoreGrState)
+    FUNCTION_WRAPPER_V8  (_StartClipPath,            StartClipPath)
+    FUNCTION_WRAPPER_V8  (_EndClipPath,              EndClipPath)
+    FUNCTION_WRAPPER_V8  (_StartCheckTableDraw,      StartCheckTableDraw)
+    FUNCTION_WRAPPER_V8_1(_EndCheckTableDraw,        EndCheckTableDraw)
+    FUNCTION_WRAPPER_V8_4(_SetTextClipRect,          SetTextClipRect)
+    FUNCTION_WRAPPER_V8_5(_AddSmartRect,             AddSmartRect)
+    FUNCTION_WRAPPER_V8_1(_CheckUseFonts2,           CheckUseFonts2)
+    FUNCTION_WRAPPER_V8  (_UncheckUseFonts2,         UncheckUseFonts2)
+    FUNCTION_WRAPPER_V8_4(_Drawing_StartCheckBounds, Drawing_StartCheckBounds)
+    FUNCTION_WRAPPER_V8  (_Drawing_EndCheckBounds,   Drawing_EndCheckBounds)
+    FUNCTION_WRAPPER_V8_5(_DrawPresentationComment,  DrawPresentationComment)
+    FUNCTION_WRAPPER_V8_3(_DrawPolygon,              DrawPolygon)
+    FUNCTION_WRAPPER_V8_4(_DrawFootnoteRect,         DrawFootnoteRect)
+
+    // PROPERTY GET
+    PROPERTY_GET_OBJECT(_g_m_oContext,             g_m_oContext)
+    PROPERTY_GET_OBJECT(_g_m_oPen,                 g_m_oPen)
+    PROPERTY_GET_OBJECT(_g_m_oBrush,               g_m_oBrush)
+    PROPERTY_GET_OBJECT(_g_m_oFontManager,         g_m_oFontManager)
+    PROPERTY_GET_OBJECT(_g_m_oCoordTransform,      g_m_oCoordTransform)
+    PROPERTY_GET_OBJECT(_g_m_oBaseTransform,       g_m_oBaseTransform)
+    PROPERTY_GET_OBJECT(_g_m_oTransform,           g_m_oTransform)
+    PROPERTY_GET_OBJECT(_g_m_oFullTransform,       g_m_oFullTransform)
+    PROPERTY_GET_OBJECT(_g_m_oInvertFullTransform, g_m_oInvertFullTransform)
+    PROPERTY_GET_OBJECT(_g_ArrayPoints,            g_ArrayPoints)
+    PROPERTY_GET_OBJECT(_g_m_oTextPr,              g_m_oTextPr)
+    PROPERTY_GET_OBJECT(_g_m_oGrFonts,             g_m_oGrFonts)
+    PROPERTY_GET_OBJECT(_g_m_oLastFont,            g_m_oLastFont)
+    PROPERTY_GET_OBJECT(_g_ClipManager,            g_ClipManager)
+    PROPERTY_GET_OBJECT(_g_GrState,                g_GrState)
+    PROPERTY_GET_OBJECT(_g_TextClipRect,           g_TextClipRect)
+    PROPERTY_GET_OBJECT(_g_m_oFontManager2,        g_m_oFontManager2)
+    PROPERTY_GET_OBJECT(_g_m_oLastFont2,           g_m_oLastFont2)
+    PROPERTY_GET_OBJECT(_g_dash_no_smart,          g_dash_no_smart)
+    /*
+    double m_dWidthMM_get()        { return m_dWidthMM;          }
+    double m_dHeightMM_get()       { return m_dHeightMM;         }
+    double m_lWidthPix_get()       { return m_lWidthPix;         }
+    double m_lHeightPix_get()      { return m_lHeightPix;        }
+    double m_dDpiX_get()           { return m_dDpiX;             }
+    double m_dDpiY_get()           { return m_dDpiY;             }
+    bool m_bIsBreak_get()          { return m_bIsBreak;          }
+    bool m_bPenColorInit_get()     { return m_bPenColorInit;     }
+    bool m_bBrushColorInit_get()   { return m_bBrushColorInit;   }
+    bool m_bIntegerGrid_get()      { return m_bIntegerGrid;      }
+    bool IsThumbnail_get()         { return IsThumbnail;         }
+    bool IsDemonstrationMode_get() { return IsDemonstrationMode; }
+    bool IsClipContext_get()       { return IsClipContext;       }
+    bool IsUseFonts2_get()         { return IsUseFonts2;         }
+    bool ClearMode_get()           { return ClearMode;           }
+    bool IsRetina_get()            { return IsRetina;            }
+    CFont               m_oCurFont_get()         { return m_oCurFont;         }
+    CLastFontOriginInfo LastFontOriginInfo_get() { return LastFontOriginInfo; }
+    int TextureFillTransformScaleX_get() { return TextureFillTransformScaleX; }
+    int TextureFillTransformScaleY_get() { return TextureFillTransformScaleY; }
+    int globalAlpha_get()                { return globalAlpha;                }
+    */
+
+    v8::Handle<v8::ObjectTemplate> CreateGraphicsTemplate(v8::Isolate* isolate)
+    {
+        v8::EscapableHandleScope handle_scope(isolate);
+
+        v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New();
+        result->SetInternalFieldCount(1);
+
+        v8::Isolate* current = v8::Isolate::GetCurrent();
+
+        // свойства
+        /*
+        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oContext"),                 m_oContext_get_w, m_oContext_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "m_dWidthMM"),                 m_dWidthMM_get_w, m_dWidthMM_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "m_dHeightMM"),                m_dHeightMM_get_w, m_dHeightMM_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "m_lWidthPix"),                m_lWidthPix_get_w, m_lWidthPix_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "m_lHeightPix"),               m_lHeightPix_get_w, m_lHeightPix_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "m_dDpiX"),                    m_dDpiX_get_w, m_dDpiX_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "m_dDpiY"),                    m_dDpiY_get_w, m_dDpiY_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "m_bIsBreak"),                 m_bIsBreak_get_w, m_bIsBreak_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oPen"),                     m_oPen_get_w, m_oPen_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "m_bPenColorInit"),            m_bPenColorInit_get_w, m_bPenColorInit_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oBrush"),                   m_oBrush_get_w, m_oBrush_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "m_bBrushColorInit"),          m_bBrushColorInit_get_w, m_bBrushColorInit_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oFontManager"),             m_oFontManager_get_w, m_oFontManager_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oCoordTransform"),          m_oCoordTransform_get_w, m_oCoordTransform_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oBaseTransform"),           m_oBaseTransform_get_w, m_oBaseTransform_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oFullTransform"),           m_oFullTransform_get_w, m_oFullTransform_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oInvertFullTransform"),     m_oInvertFullTransform_get_w, m_oInvertFullTransform_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "ArrayPoints"),                ArrayPoints_get_w, ArrayPoints_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oCurFont"),                 m_oCurFont_get_w, m_oCurFont_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oTextPr"),                  m_oTextPr_get_w, m_oTextPr_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oGrFonts"),                 m_oGrFonts_get_w, m_oGrFonts_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oLastFont"),                m_oLastFont_get_w, m_oLastFont_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "LastFontOriginInfo"),         LastFontOriginInfo_get_w, LastFontOriginInfo_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "m_bIntegerGrid"),             m_bIntegerGrid_get_w, m_bIntegerGrid_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "ClipManager"),                ClipManager_get_w, ClipManager_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "TextureFillTransformScaleX"), TextureFillTransformScaleX_get_w, TextureFillTransformScaleX_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "TextureFillTransformScaleY"), TextureFillTransformScaleY_get_w, TextureFillTransformScaleY_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "IsThumbnail"),                IsThumbnail_get_w, IsThumbnail_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "IsDemonstrationMode"),        IsDemonstrationMode_get_w, IsDemonstrationMode_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "IsDemonstrationMode"),        IsDemonstrationMode_get_w, IsDemonstrationMode_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "GrState"),                    GrState_get_w, GrState_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "globalAlpha"),                globalAlpha_get_w, globalAlpha_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "TextClipRect"),               TextClipRect_get_w, TextClipRect_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "IsClipContext"),              IsClipContext_get_w, IsClipContext_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "IsUseFonts2"),                IsUseFonts2_get_w, IsUseFonts2_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oFontManager2"),            m_oFontManager2_get_w, m_oFontManager2_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oLastFont2"),               m_oLastFont2_get_w, m_oLastFont2_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "ClearMode"),                  ClearMode_get_w, ClearMode_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "IsRetina"),                   IsRetina_get_w, IsRetina_set_w);
+        result->SetAccessor(v8::String::NewFromUtf8(current, "dash_no_smart"),              dash_no_smart_get_w, dash_no_smart_set_w);
+        */
+
+        // методы
+        NSV8Objects::Template_Set(result, "init",                     _init);
+        NSV8Objects::Template_Set(result, "EndDraw",                  _EndDraw);
+        NSV8Objects::Template_Set(result, "put_GlobalAlpha",          _put_GlobalAlpha);
+        NSV8Objects::Template_Set(result, "Start_GlobalAlpha",        _Start_GlobalAlpha);
+        NSV8Objects::Template_Set(result, "End_GlobalAlpha",          _End_GlobalAlpha);
+        NSV8Objects::Template_Set(result, "p_color",                  _p_color);
+        NSV8Objects::Template_Set(result, "p_width",                  _p_width);
+        NSV8Objects::Template_Set(result, "p_dash",                   _p_dash);
+        NSV8Objects::Template_Set(result, "b_color1",                 _b_color1);
+        NSV8Objects::Template_Set(result, "b_color2",                 _b_color2);
+        NSV8Objects::Template_Set(result, "transform",                _transform);
+        NSV8Objects::Template_Set(result, "CalculateFullTransform",   _CalculateFullTransform);
+        NSV8Objects::Template_Set(result, "_s",                       __s);
+        NSV8Objects::Template_Set(result, "_e",                       __e);
+        NSV8Objects::Template_Set(result, "_z",                       __z);
+        NSV8Objects::Template_Set(result, "_m",                       __m);
+        NSV8Objects::Template_Set(result, "_l",                       __l);
+        NSV8Objects::Template_Set(result, "_c",                       __c);
+        NSV8Objects::Template_Set(result, "_c2",                      __c2);
+        NSV8Objects::Template_Set(result, "ds",                       _ds);
+        NSV8Objects::Template_Set(result, "df",                       _df);
+        NSV8Objects::Template_Set(result, "save",                     _save);
+        NSV8Objects::Template_Set(result, "restore",                  _restore);
+        NSV8Objects::Template_Set(result, "clip",                     _clip);
+        NSV8Objects::Template_Set(result, "reset",                    _reset);
+        NSV8Objects::Template_Set(result, "transform3",               _transform3);
+        NSV8Objects::Template_Set(result, "FreeFont",                 _FreeFont);
+        NSV8Objects::Template_Set(result, "ClearLastFont",            _ClearLastFont);
+        NSV8Objects::Template_Set(result, "drawImage2",               _drawImage2);
+        NSV8Objects::Template_Set(result, "drawImage",                _drawImage);
+        NSV8Objects::Template_Set(result, "GetFont",                  _GetFont);
+        NSV8Objects::Template_Set(result, "font",                     _font);
+        NSV8Objects::Template_Set(result, "SetFont",                  _SetFont);
+        NSV8Objects::Template_Set(result, "SetTextPr",                _SetTextPr);
+        NSV8Objects::Template_Set(result, "SetFontSlot",              _SetFontSlot);
+        NSV8Objects::Template_Set(result, "GetTextPr",                _GetTextPr);
+        NSV8Objects::Template_Set(result, "FillText",                 _FillText);
+        NSV8Objects::Template_Set(result, "t",                        _t);
+        NSV8Objects::Template_Set(result, "FillText2",                _FillText2);
+        NSV8Objects::Template_Set(result, "t2",                       _t2);
+        NSV8Objects::Template_Set(result, "FillTextCode",             _FillTextCode);
+        NSV8Objects::Template_Set(result, "tg",                       _tg);
+        NSV8Objects::Template_Set(result, "charspace",                _charspace);
+        NSV8Objects::Template_Set(result, "private_FillGlyph",        _private_FillGlyph);
+        NSV8Objects::Template_Set(result, "private_FillGlyphC",       _private_FillGlyphC);
+        NSV8Objects::Template_Set(result, "private_FillGlyph2",       _private_FillGlyph2);
+        NSV8Objects::Template_Set(result, "SetIntegerGrid",           _SetIntegerGrid);
+        NSV8Objects::Template_Set(result, "GetIntegerGrid",           _GetIntegerGrid);
+        NSV8Objects::Template_Set(result, "DrawStringASCII",          _DrawStringASCII);
+        NSV8Objects::Template_Set(result, "DrawStringASCII2",         _DrawStringASCII2);
+        NSV8Objects::Template_Set(result, "DrawHeaderEdit",           _DrawHeaderEdit);
+        NSV8Objects::Template_Set(result, "DrawFooterEdit",           _DrawFooterEdit);
+        NSV8Objects::Template_Set(result, "DrawLockParagraph",        _DrawLockParagraph);
+        NSV8Objects::Template_Set(result, "DrawLockObjectRect",       _DrawLockObjectRect);
+        NSV8Objects::Template_Set(result, "DrawEmptyTableLine",       _DrawEmptyTableLine);
+        NSV8Objects::Template_Set(result, "DrawSpellingLine",         _DrawSpellingLine);
+        NSV8Objects::Template_Set(result, "drawHorLine",              _drawHorLine);
+        NSV8Objects::Template_Set(result, "drawHorLine2",             _drawHorLine2);
+        NSV8Objects::Template_Set(result, "drawVerLine",              _drawVerLine);
+        NSV8Objects::Template_Set(result, "drawHorLineExt",           _drawHorLineExt);
+        NSV8Objects::Template_Set(result, "rect",                     _rect);
+        NSV8Objects::Template_Set(result, "TableRect",                _TableRect);
+        NSV8Objects::Template_Set(result, "AddClipRect",              _AddClipRect);
+        NSV8Objects::Template_Set(result, "RemoveClipRect",           _RemoveClipRect);
+        NSV8Objects::Template_Set(result, "SetClip",                  _SetClip);
+        NSV8Objects::Template_Set(result, "RemoveClip",               _RemoveClip);
+        NSV8Objects::Template_Set(result, "drawCollaborativeChanges", _drawCollaborativeChanges);
+        NSV8Objects::Template_Set(result, "drawMailMergeField",       _drawMailMergeField);
+        NSV8Objects::Template_Set(result, "drawSearchResult",         _drawSearchResult);
+        NSV8Objects::Template_Set(result, "drawFlowAnchor",           _drawFlowAnchor);
+        NSV8Objects::Template_Set(result, "SavePen",                  _SavePen);
+        NSV8Objects::Template_Set(result, "RestorePen",               _RestorePen);
+        NSV8Objects::Template_Set(result, "SaveBrush",                _SaveBrush);
+        NSV8Objects::Template_Set(result, "RestoreBrush",             _RestoreBrush);
+        NSV8Objects::Template_Set(result, "SavePenBrush",             _SavePenBrush);
+        NSV8Objects::Template_Set(result, "RestorePenBrush",          _RestorePenBrush);
+        NSV8Objects::Template_Set(result, "SaveGrState",              _SaveGrState);
+        NSV8Objects::Template_Set(result, "RestoreGrState",           _RestoreGrState);
+        NSV8Objects::Template_Set(result, "StartClipPath",            _StartClipPath);
+        NSV8Objects::Template_Set(result, "EndClipPath",              _EndClipPath);
+        NSV8Objects::Template_Set(result, "StartCheckTableDraw",      _StartCheckTableDraw);
+        NSV8Objects::Template_Set(result, "EndCheckTableDraw",        _EndCheckTableDraw);
+        NSV8Objects::Template_Set(result, "SetTextClipRect",          _SetTextClipRect);
+        NSV8Objects::Template_Set(result, "AddSmartRect",             _AddSmartRect);
+        NSV8Objects::Template_Set(result, "CheckUseFonts2",           _CheckUseFonts2);
+        NSV8Objects::Template_Set(result, "UncheckUseFonts2",         _UncheckUseFonts2);
+        NSV8Objects::Template_Set(result, "Drawing_StartCheckBounds", _Drawing_StartCheckBounds);
+        NSV8Objects::Template_Set(result, "Drawing_EndCheckBounds",   _Drawing_EndCheckBounds);
+        NSV8Objects::Template_Set(result, "DrawPresentationComment",  _DrawPresentationComment);
+        NSV8Objects::Template_Set(result, "DrawPolygon",              _DrawPolygon);
+        NSV8Objects::Template_Set(result, "DrawFootnoteRect",         _DrawFootnoteRect);
+
+        return handle_scope.Escape(result);
+    }
+
+    void CreateNativeGraphics(const v8::FunctionCallbackInfo<v8::Value>& args)
+    {
+        v8::Isolate* isolate = args.GetIsolate();
+        v8::HandleScope scope(isolate);
+
+        v8::Handle<v8::ObjectTemplate> GraphicsTemplate = NSGraphics::CreateGraphicsTemplate(isolate);
+        CGraphicsEmbed* pGraphics = new CGraphicsEmbed();
+
+        v8::Local<v8::Object> obj = GraphicsTemplate->NewInstance(isolate->GetCurrentContext()).ToLocalChecked();
+        obj->SetInternalField(0, v8::External::New(CV8Worker::GetCurrent(), pGraphics));
+
+        args.GetReturnValue().Set(obj);
+    }
 }
 
-CJSGraphics*         unwrap_Graphics          (v8::Handle<v8::Object> obj)
+void CGraphicsEmbed::CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context)
 {
-    v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(obj->GetInternalField(0));
-    return static_cast<CJSGraphics*>(field->Value());
-}
-CFont*               unwrap_Font              (v8::Handle<v8::Object> obj)
-{
-    v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(obj->GetInternalField(0));
-    return static_cast<CFont*>(field->Value());
-}
-CLastFontOriginInfo* unwrap_LastFontOriginInfo(v8::Handle<v8::Object> obj)
-{
-    v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(obj->GetInternalField(0));
-    return static_cast<CLastFontOriginInfo*>(field->Value());
+    v8::Isolate* current = CV8Worker::GetCurrent();
+    context->m_internal->m_global->Set(current, name.c_str(), v8::FunctionTemplate::New(current, NSGraphics::CreateNativeGraphics));
 }
 
+/*
 void init_w                    (const v8::FunctionCallbackInfo<v8::Value>& args)
 {
     args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
@@ -707,7 +1004,8 @@ void DrawFootnoteRect_w        (const v8::FunctionCallbackInfo<v8::Value>& args)
     CJSGraphics* pGraphics = unwrap_Graphics(args.This());
     pGraphics->DrawFootnoteRect(to_double(args[0]), to_double(args[1]), to_double(args[2]), to_double(args[3]));
 }
-
+*/
+/*
 void m_oContext_get_w                (v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
     CJSGraphics* pGraphics = unwrap_Graphics(info.Holder());
@@ -1346,3 +1644,4 @@ void CreateGraphics(const v8::FunctionCallbackInfo<v8::Value>& args)
 
     args.GetReturnValue().Set(obj);
 }
+*/

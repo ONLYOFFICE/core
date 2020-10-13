@@ -165,7 +165,7 @@ bool CxImageJPG::CxExifInfo::DecodeExif(CxFile * hFile, int32_t nReadMode)
                 // Seen files from some 'U-lead' software with Vivitar scanner
                 // that uses marker 31 for non exif stuff.  Thus make sure 
                 // it says 'Exif' in the section before treating it as exif.
-                if ((nReadMode & EXIF_READ_EXIF) && memcmp(Data+2, "Exif", 4) == 0){
+                if ((nReadMode & EXIF_READ_EXIF) && itemlen >= 6 && memcmp(Data+2, "Exif", 4) == 0){
                     m_exifinfo->IsExif = process_EXIF((uint8_t *)Data+2, itemlen-2);
                 }else{
                     // Discard this section.
@@ -187,6 +187,8 @@ bool CxImageJPG::CxExifInfo::DecodeExif(CxFile * hFile, int32_t nReadMode)
             case M_SOF13:
             case M_SOF14:
             case M_SOF15:
+                if (itemlen < 8)
+                    return false;
                 process_SOFn(Data, marker);
                 break;
             default:
@@ -208,6 +210,9 @@ bool CxImageJPG::CxExifInfo::process_EXIF(uint8_t * CharBuf, uint32_t length)
     /* If it's from a digicam, and it used flash, it says so. */
     m_exifinfo->Comments[0] = '\0';  /* Initial value - null string */
 
+    if (length < 6)
+        return false;
+
     ExifImageWidth = 0;
 
     {   /* Check the EXIF header component */
@@ -217,6 +222,9 @@ bool CxImageJPG::CxExifInfo::process_EXIF(uint8_t * CharBuf, uint32_t length)
 			return false;
 		}
     }
+
+    if (length < 8)
+        return false;
 
     if (memcmp(CharBuf+6,"II",2) == 0){
         MotorolaOrder = 0;
@@ -228,6 +236,9 @@ bool CxImageJPG::CxExifInfo::process_EXIF(uint8_t * CharBuf, uint32_t length)
 			return false;
         }
     }
+
+    if (length < 14)
+        return false;
 
     /* Check the next two values for correctness. */
     if (Get16u(CharBuf+8) != 0x2a){
@@ -747,7 +758,7 @@ void CxImageJPG::CxExifInfo::process_COM (const uint8_t * Data, int32_t length)
     for (a=2;a<length;a++){
         ch = Data[a];
 
-        if (ch == '\r' && Data[a+1] == '\n') continue; // Remove cr followed by lf.
+        if (ch == '\r' && (a < (length - 1) && Data[a+1] == '\n')) continue; // Remove cr followed by lf.
 
         if (isprint(ch) || ch == '\n' || ch == '\t'){
             Comment[nch++] = (char)ch;

@@ -95,9 +95,15 @@ bool CxImageICO::Decode(CxFile *hFile)
 				// read the palette
 				RGBQUAD pal[256];
 				if (bih.biClrUsed)
-					hFile->Read(pal,bih.biClrUsed*sizeof(RGBQUAD), 1);
+                {
+                    DWORD _count = bih.biClrUsed; if (_count > 256) _count = 256;
+                    hFile->Read(pal,_count*sizeof(RGBQUAD), 1);
+                }
 				else
-					hFile->Read(pal,head.biClrUsed*sizeof(RGBQUAD), 1);
+                {
+                    DWORD _count = head.biClrUsed; if (_count > 256) _count = 256;
+                    hFile->Read(pal,_count*sizeof(RGBQUAD), 1);
+                }
 
 				SetPalette(pal,head.biClrUsed);	//palette assign
 

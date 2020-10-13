@@ -132,3 +132,47 @@ def getProjectPath(String path, Boolean isRelativeCreate = false) {
 
     throw new GradleException("getProjectPath($path) - path doesn't exist...")
 }
+
+task copyIcuDatFiles {
+    doLast {
+
+        println ""
+        println "------------------------- ICUDATFILES (task copyIcuDatFiles()) -------------------------"
+
+        def pathAssets = "${file('.').absolutePath}/src/main/assets/icu"
+        if (file(pathAssets).exists()) {
+            println "IcuDatFiles already exist."
+            println "Delete ${pathAssets} folder for update icuDatFiles."
+            return
+        }
+
+        if (!project.hasProperty('PATH_SRC_ICU_DAT_FILE')) {
+            throw new GradleException("Property PATH_SRC_ICU_DAT_FILE with core repository path doesn't exist...")
+        }
+
+        if (!project.hasProperty('PATH_SRC_ICU_V8_DAT_FILE')) {
+            throw new GradleException("Property PATH_SRC_ICU_V8_DAT_FILE with core repository path doesn't exist...")
+        }
+
+        def pathIcuDatFiles = PATH_SRC_ICU_DAT_FILE
+
+        def pathIcuV8DatFiles = PATH_SRC_ICU_V8_DAT_FILE
+
+        if (!file(pathIcuDatFiles).exists()) {
+            throw new GradleException("Path with core repository doesn't exist...")
+        }
+
+        if (!file(pathIcuV8DatFiles).exists()) {
+            throw new GradleException("Path with core repository doesn't exist...")
+        }
+
+        copy {
+            println "\nCopy dat files..."
+            eachFile { println it.file }
+            from pathIcuDatFiles, pathIcuV8DatFiles
+            into pathAssets
+        }
+    }
+}
+
+preBuild.dependsOn copyIcuDatFiles

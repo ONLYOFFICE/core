@@ -50,6 +50,9 @@ bool CxImagePCX::Decode(CxFile *hFile)
 	info.xDPI = pcxHeader.Hres;
 	info.yDPI = pcxHeader.Vres;
 
+    if (Width <= 0 || Height <= 0)
+        cx_throw("Error: Not a PCX file");
+
 	if (info.nEscape == -1){
 		head.biWidth = Width;
 		head.biHeight= Height;
@@ -76,7 +79,11 @@ bool CxImagePCX::Decode(CxFile *hFile)
 
 	//Read the image and check if it's ok
     nbytes = pcxHeader.BytesPerLine * pcxHeader.ColorPlanes * Height;
+    uint32_t pcximage_size = nbytes;
     lpHead1 = pcximage = (uint8_t*)malloc(nbytes);
+    if (!pcximage)
+        cx_throw("Cancelled");
+
     while (nbytes > 0){
 		if (hFile == NULL || hFile->Eof()) cx_throw("corrupted PCX");
 
@@ -119,6 +126,9 @@ bool CxImagePCX::Decode(CxFile *hFile)
 	for (uint32_t idx=0; idx<head.biClrUsed; idx++) SetPaletteColor((uint8_t)idx,ColorMap[idx][0],ColorMap[idx][1],ColorMap[idx][2]);
 
     lpHead2 = pcxpixels = (uint8_t *)malloc(Width + pcxHeader.BytesPerLine * 8);
+    if (!pcxpixels)
+        cx_throw("Cancelled");
+
     // Convert the image
     for (y = 0; y < Height; y++){
 
@@ -138,7 +148,11 @@ bool CxImagePCX::Decode(CxFile *hFile)
 		} else if (pcxHeader.ColorPlanes == 4 && pcxHeader.BitsPerPixel == 8){
 			for (x = 0; x < Width; x++){
 				SetPixelColor(x,y2,RGB(pcxplanes[x],pcxplanes[pcxHeader.BytesPerLine + x],pcxplanes[2*pcxHeader.BytesPerLine + x]));
-				AlphaSet(x,y2,pcxplanes[3*pcxHeader.BytesPerLine + x]);
+
+                uint32_t alphaIndex = 3*pcxHeader.BytesPerLine + x;
+
+                if (alphaIndex < pcximage_size)
+                    AlphaSet(x,y2,pcxplanes[alphaIndex]);
 			}
 			continue;
 #endif //CXIMAGE_SUPPORT_ALPHA

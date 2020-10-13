@@ -51,6 +51,12 @@ class X2t private constructor() {
         external fun convertFile(pathXml: String): Int
 
         /*
+         * SetIcuDataPath
+         * */
+        @JvmStatic
+        external fun setIcuDataPath(icuDataPath: String?)
+
+        /*
          * Builder for converter
          * */
         @JvmStatic
@@ -130,6 +136,7 @@ class X2t private constructor() {
         var fontsDir: String? = null
         var fontsJs: String? = null
         var themes: String? = null
+        var icu: String? = null
         var password: String? = null
         var xml: String? = null
 
@@ -257,6 +264,7 @@ class X2t private constructor() {
             mInputParams.key = UUID.randomUUID().toString()
             with(mInputParams)
             {
+                setIcuDataPath(icu)
                 setFonts(arrayOf(fontsJs), fontsDir)
                 createXmlFileTransform(xml, key, mConvertType, from, to, temp, fontsJs, themes, password,
                     delimiterCode.equals(

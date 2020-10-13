@@ -219,7 +219,7 @@ namespace NSBinPptxRW
 		void							SetRels(smart_ptr<OOX::IFileContainer> container);
 		smart_ptr<OOX::IFileContainer>	GetRels();
 		
-		HRESULT SetMainDocument     (BinDocxRW::CDocxSerializer* pDocument);
+		void SetMainDocument (BinDocxRW::CDocxSerializer* pDocument);
 
         void SetSrcPath         (const std::wstring& sPath, int nDocType = 1/*XMLWRITER_DOC_TYPE_DOCX*/);
         void SetDstPath         (const std::wstring& sPath);

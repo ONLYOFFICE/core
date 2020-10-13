@@ -137,7 +137,8 @@ namespace PPTX
 				std::wstring namespaceLockLink_ = PPTX::g_Namespaces.a.m_strLink;
 
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_ = L"xdr";
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+					pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)
 				{
 					namespaceLock_	= L"a";
 					namespaceLockLink_ = PPTX::g_Namespaces.a.m_strLink;

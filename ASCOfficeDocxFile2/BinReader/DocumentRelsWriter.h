@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef DOCUMENT_RELS_WRITER
-#define DOCUMENT_RELS_WRITER
+#pragma once
 
 #include "../../XlsxSerializerCom/Common/Common.h"
 
@@ -43,7 +42,7 @@ namespace Writers
         DocumentRelsWriter(std::wstring sDir):m_sDir(sDir)
 		{
 		}
-		void Write()
+		void Write(bool bGlossary = false)
 		{
             std::wstring s_Common;
 
@@ -63,4 +62,3 @@ namespace Writers
 		}
 	};
 }
-#endif	// #ifndef DOCUMENT_RELS_WRITER

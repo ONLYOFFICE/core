@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef STYLES_WRITER
-#define STYLES_WRITER
+#pragma once
 
 #include "../../XlsxSerializerCom/Common/Common.h"
 
@@ -56,7 +55,7 @@ namespace Writers
         StylesWriter(std::wstring sDir, int nVersion):m_sDir(sDir),m_nVersion(nVersion)
 		{
 		}
-		void Write()
+		void Write(bool bGlossary = false)
 		{
 			m_oWriter.WriteString(g_string_st_Start);
             m_oWriter.WriteString(std::wstring(_T("<w:docDefaults>")));
@@ -78,7 +77,7 @@ namespace Writers
 			m_oWriter.Write(m_Styles);
 			m_oWriter.WriteString(g_string_st_End);
 
-            OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR +_T("word") + FILE_SEPARATOR_STR + _T("styles.xml");
+            OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR +_T("word") + (bGlossary ? (FILE_SEPARATOR_STR + std::wstring(L"glossary")) : L"") + FILE_SEPARATOR_STR + _T("styles.xml");
 
 			NSFile::CFileBinary oFile;
 			oFile.CreateFileW(filePath.GetPath());
@@ -88,4 +87,4 @@ namespace Writers
 		}
 	};
 }
-#endif	// #ifndef STYLES_WRITER
+

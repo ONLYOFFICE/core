@@ -309,10 +309,10 @@ namespace OOX
 
 			if (m_oName.IsInit())			sResult += m_oName->ValNode(L"w:name");
 			if (m_oDescription.IsInit())	sResult += m_oDescription->ValNode(L"w:description");
-			if (m_oGuid.IsInit())			sResult += m_oGuid->ValNode(L"w:guid");
 			if (m_oCategory.IsInit())		sResult += m_oCategory->toXML();
 			if (m_oTypes.IsInit())			sResult += m_oTypes->toXML();
 			if (m_oBehaviors.IsInit())		sResult += m_oBehaviors->toXML();
+			if (m_oGuid.IsInit())			sResult += m_oGuid->ValNode(L"w:guid");
 
 			sResult += L"</w:docPartPr>";
 			return sResult;

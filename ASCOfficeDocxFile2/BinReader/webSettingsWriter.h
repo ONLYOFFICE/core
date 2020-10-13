@@ -43,7 +43,7 @@ namespace Writers
         WebSettingsWriter(std::wstring sDir):m_sDir(sDir)
 		{
 		}
-		void Write()
+		void Write(bool bGlossary = false)
 		{
             std::wstring s_Common;
 
@@ -52,7 +52,7 @@ namespace Writers
 <w:optimizeForBrowser/> \
 </w:webSettings>");
 
-            OOX::CPath fileName = m_sDir + FILE_SEPARATOR_STR +_T("word") + FILE_SEPARATOR_STR + _T("webSettings.xml");
+            OOX::CPath fileName = m_sDir + FILE_SEPARATOR_STR +_T("word") + (bGlossary ? (FILE_SEPARATOR_STR + std::wstring(L"glossary")) : L"") + FILE_SEPARATOR_STR + _T("webSettings.xml");
 
             NSFile::CFileBinary oFile;
             oFile.CreateFileW(fileName.GetPath());

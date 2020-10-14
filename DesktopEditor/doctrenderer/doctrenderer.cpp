@@ -87,7 +87,7 @@ namespace NSDoctRenderer
         std::wstring m_strSrcFilePath;
         std::wstring m_strDstFilePath;
 
-        CArray<std::wstring> m_arChanges;
+        std::vector<std::wstring> m_arChanges;
         int m_nCountChangesItems;
 
         std::wstring m_strMailMergeDatabasePath;
@@ -278,7 +278,7 @@ namespace NSDoctRenderer
 
         std::wstring m_strConfigDir;
         std::wstring m_strConfigPath;
-        CArray<std::wstring> m_arrFiles;
+        std::vector<std::wstring> m_arrFiles;
 
         std::vector<std::wstring> m_arDoctSDK;
         std::vector<std::wstring> m_arPpttSDK;

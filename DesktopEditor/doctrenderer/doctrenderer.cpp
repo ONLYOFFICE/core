@@ -741,7 +741,7 @@ namespace NSDoctRenderer
             LOGGER_SPEED_START
 
             bool bIsBreak = false;
-            v8::Isolate* isolate = CV8Worker::getInitializer()->CreateNew();
+            v8::Isolate* isolate = v8::Isolate::GetCurrent(); // CV8Worker::getInitializer()->CreateNew();
             if (true)
             {
                 v8::Isolate::Scope isolate_cope(isolate);

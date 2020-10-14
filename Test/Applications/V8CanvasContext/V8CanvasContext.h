@@ -4,10 +4,10 @@
 #include <string>
 
 #include "../../../DesktopEditor/common/Types.h"
-#include "../../../Common/3dParty/v8/v8/include/v8.h"
-#include "../../../Common/3dParty/v8/v8/include/libplatform/libplatform.h"
+#include "v8.h"
+#include "libplatform/libplatform.h"
 
-#include "../../../DesktopEditor/doctrenderer/jsgraphics/graphics_wrapper.h"
+#include "../../../DesktopEditor/doctrenderer/js_internal/embed/GraphicsEmbed.h"
 
 #ifndef V8CANVASCONTEXT_USE_DYNAMIC_LIBRARY
 #define V8CANVASCONTEXT_DECL_EXPORT

@@ -322,26 +322,26 @@ namespace NSGraphics
 
         return handle_scope.Escape(result);
     }
+}
 
-    void CreateNativeGraphics(const v8::FunctionCallbackInfo<v8::Value>& args)
-    {
-        v8::Isolate* isolate = args.GetIsolate();
-        v8::HandleScope scope(isolate);
+void CGraphicsEmbed::CreateNativeGraphics(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    v8::Isolate* isolate = args.GetIsolate();
+    v8::HandleScope scope(isolate);
 
-        v8::Handle<v8::ObjectTemplate> GraphicsTemplate = NSGraphics::CreateGraphicsTemplate(isolate);
-        CGraphicsEmbed* pGraphics = new CGraphicsEmbed();
+    v8::Handle<v8::ObjectTemplate> GraphicsTemplate = NSGraphics::CreateGraphicsTemplate(isolate);
+    CGraphicsEmbed* pGraphics = new CGraphicsEmbed();
 
-        v8::Local<v8::Object> obj = GraphicsTemplate->NewInstance(isolate->GetCurrentContext()).ToLocalChecked();
-        obj->SetInternalField(0, v8::External::New(CV8Worker::GetCurrent(), pGraphics));
+    v8::Local<v8::Object> obj = GraphicsTemplate->NewInstance(isolate->GetCurrentContext()).ToLocalChecked();
+    obj->SetInternalField(0, v8::External::New(CV8Worker::GetCurrent(), pGraphics));
 
-        args.GetReturnValue().Set(obj);
-    }
+    args.GetReturnValue().Set(obj);
 }
 
 void CGraphicsEmbed::CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context)
 {
     v8::Isolate* current = CV8Worker::GetCurrent();
-    context->m_internal->m_global->Set(current, name.c_str(), v8::FunctionTemplate::New(current, NSGraphics::CreateNativeGraphics));
+    context->m_internal->m_global->Set(current, name.c_str(), v8::FunctionTemplate::New(current, CreateNativeGraphics));
 }
 
 /*

@@ -58,7 +58,7 @@ CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder)
 {
     m_nFileType = -1;
 
-    m_isolate = CV8Worker::getInitializer()->CreateNew();
+    m_isolate = v8::Isolate::GetCurrent(); // CV8Worker::getInitializer()->CreateNew();
 
     m_isolate_scope = new v8::Isolate::Scope(m_isolate);
     m_isolate_locker = new v8::Locker(m_isolate);
@@ -933,12 +933,12 @@ namespace NSDoctRenderer
 
     void CDocBuilder::Initialize()
     {
-        CV8Worker::Initialize();
+        // CV8Worker::Initialize();
     }
 
     void CDocBuilder::Dispose()
     {
-        CV8Worker::Dispose();
+        // CV8Worker::Dispose();
     }
 
     void CDocBuilder::WriteData(const wchar_t* path, const wchar_t* value, const bool& append)

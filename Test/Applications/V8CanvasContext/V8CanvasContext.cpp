@@ -2,8 +2,9 @@
 #include <iostream>
 
 #include "V8CanvasContext.h"
-#include "../../../Common/3dParty/v8/v8/include/v8.h"
-#include "../../../Common/3dParty/v8/v8/include/libplatform/libplatform.h"
+#include "v8.h"
+#include "libplatform/libplatform.h"
+#include "../../../DesktopEditor/doctrenderer/js_internal/embed/GraphicsEmbed.h"
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/common/Types.h"
 
@@ -129,7 +130,7 @@ HRESULT CV8CanvasContext::Run(const std::wstring& sPath)
 
         v8::Handle<v8::ObjectTemplate> global = v8::ObjectTemplate::New(isolate);
         global->Set(isolate, "User", v8::FunctionTemplate::New(isolate, CreateUser));
-        global->Set(isolate, "CGraphics", v8::FunctionTemplate::New(isolate, CreateGraphics));
+        global->Set(isolate, "CGraphics", v8::FunctionTemplate::New(isolate, CGraphicsEmbed::CreateNativeGraphics));
 
         v8::Local<v8::Context> context = v8::Context::New(isolate, NULL, global);
         v8::Context::Scope context_scope(context);

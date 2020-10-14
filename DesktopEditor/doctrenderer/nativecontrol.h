@@ -1257,6 +1257,7 @@ public:
     }
 };
 
+/*
 class CV8Worker
 {
 private:
@@ -1271,6 +1272,7 @@ public:
 
     static CV8Initializer* getInitializer();
 };
+*/
 
 bool Doct_renderer_SaveFile_ForBuilder(int nFormat, const std::wstring& strDstFile,
                                CNativeControl* pNative,

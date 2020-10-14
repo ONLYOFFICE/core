@@ -119,6 +119,7 @@ public:
     JSSmart<CJSValue> DrawPolygon(JSSmart<CJSValue> oPath, JSSmart<CJSValue> lineWidth, JSSmart<CJSValue> shift);
     JSSmart<CJSValue> DrawFootnoteRect(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h);
 
+    static void CreateNativeGraphics(const v8::FunctionCallbackInfo<v8::Value>& args);
     static void CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context);
 };
 

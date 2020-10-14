@@ -53,7 +53,16 @@ void CBookInfo::ReadInfo(XmlUtils::CXmlLiteReader& oXmlLiteReader)
             else if (sName == L"dc:identifier")
                 m_sIdentifier = oXmlLiteReader.GetText2();
             else if (sName == L"dc:date")
+            {
                 m_sDate = oXmlLiteReader.GetText2();
+                const size_t posSpace = m_sDate.find(L' ');
+                if (posSpace != std::wstring::npos)
+                    m_sDate[posSpace] = L'T';
+
+                const size_t posPoint = m_sDate.find(L'.');
+                if (posPoint != std::wstring::npos)
+                    m_sDate = m_sDate.substr(0, posPoint) + L"Z";
+            }
         }
     }
 }

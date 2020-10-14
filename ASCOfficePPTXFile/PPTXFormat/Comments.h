@@ -213,7 +213,7 @@ namespace PPTX
 					pWriter->WriteString(_T("<p:ext uri=\"{19B8F6BF-5375-455C-9EA6-DF929625EA0E}\">\
 <p15:presenceInfo xmlns:p15=\"http://schemas.microsoft.com/office/powerpoint/2012/main\" userId=\""));
 
-                    std::wstring strData = XmlUtils::EncodeXmlString(additional_data.get());
+					std::wstring strData = XmlUtils::EncodeXmlStringExtend(additional_data.get());
 
 					pWriter->WriteString(strData);
 
@@ -253,7 +253,7 @@ namespace PPTX
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 				pReader->Skip(1); // start attributes
 

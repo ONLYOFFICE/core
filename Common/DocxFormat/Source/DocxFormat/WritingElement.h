@@ -707,6 +707,7 @@ namespace OOX
 		et_w_clrSchemeMapping, // <w:clrSchemeMapping>
 		et_w_cols, // <w:cols>
 		et_w_comboBox, // <w:comboBox>
+		et_w_textFormPr, // <w:textFormPr> custom!
 		et_w_comment, // <w:comment>
 		et_w_commentRangeEnd, // <w:commentRangeEnd>
 		et_w_commentRangeStart, // <w:commentRangeStart>
@@ -883,6 +884,7 @@ namespace OOX
 		et_w15_commentEx, // <w15:commentEx>
 
 		et_w16_commentId, // <w16cid:commentId>
+		et_w16_commentExtensible, // <w16cex:commentExtensible>
 
 		et_w_ShapeTextBody,		//<wps:txbx>
 		et_w_Shape,				//<wps:wsp>

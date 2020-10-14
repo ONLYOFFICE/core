@@ -59,6 +59,7 @@ SOURCES += \
     ../../../PPTXFormat/Logic/EffectStyle.cpp \
     ../../../PPTXFormat/Logic/Geometry.cpp \
     ../../../PPTXFormat/Logic/GraphicFrame.cpp \
+	../../../PPTXFormat/Logic/HeadingVariant.cpp \
     ../../../PPTXFormat/Logic/GrpSpPr.cpp \
     ../../../PPTXFormat/Logic/Hyperlink.cpp \
     ../../../PPTXFormat/Logic/NvGraphicFramePr.cpp \

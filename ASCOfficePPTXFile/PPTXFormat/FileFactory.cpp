@@ -50,6 +50,7 @@
 #include "NotesSlide.h"
 #include "NotesMaster.h"
 #include "LegacyDiagramText.h"
+#include "./Logic/HeadingVariant.h"
 
 #include "../../Common/DocxFormat/Source/DocxFormat/Rels.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/FileTypes.h"
@@ -83,6 +84,8 @@ namespace PPTX
 			return smart_ptr<OOX::File>(new PPTX::App(pMain, filename, map));
 		else if (relation.Type() == OOX::FileTypes::Core)
 			return smart_ptr<OOX::File>(new PPTX::Core(pMain, filename, map));
+		else if (relation.Type() == OOX::FileTypes::CustomProperties)
+			return smart_ptr<OOX::File>(new PPTX::CustomProperties(pMain, filename, map));
 		else if (relation.Type() == OOX::Presentation::FileTypes::Presentation || 
 				 relation.Type() == OOX::Presentation::FileTypes::PresentationMacro)
 			return smart_ptr<OOX::File>(new PPTX::Presentation(pMain, filename, map));

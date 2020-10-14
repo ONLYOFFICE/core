@@ -89,7 +89,7 @@ void COlapSlicerCacheItem::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 }
 void COlapSlicerCacheItem::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 {
-	LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+	LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 	pReader->Skip(1); // start attributes
 	while (true)
 	{
@@ -171,7 +171,7 @@ void COlapSlicerCacheItemParent::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter)
 }
 void COlapSlicerCacheItemParent::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 {
-	LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+	LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 	pReader->Skip(1); // start attributes
 	while (true)
 	{
@@ -248,7 +248,7 @@ void COlapSlicerCacheRange::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) cons
 }
 void COlapSlicerCacheRange::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 {
-	LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+	LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 	pReader->Skip(1); // start attributes
 	while (true)
 	{
@@ -326,7 +326,7 @@ void CTabularSlicerCacheItem::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) co
 }
 void CTabularSlicerCacheItem::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 {
-	LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+	LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 	pReader->Skip(1); // start attributes
 	while (true)
 	{
@@ -413,7 +413,7 @@ void COlapSlicerCacheSelection::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) 
 }
 void COlapSlicerCacheSelection::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 {
-	LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+	LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 	pReader->Skip(1); // start attributes
 	while (true)
 	{
@@ -532,7 +532,7 @@ void COlapSlicerCacheLevelData::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) 
 }
 void COlapSlicerCacheLevelData::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 {
-	LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+	LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 	pReader->Skip(1); // start attributes
 	while (true)
 	{
@@ -643,7 +643,7 @@ void CTabularSlicerCacheItems::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) c
 }
 void CTabularSlicerCacheItems::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 {
-	LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+	LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 	pReader->Skip(1); // start attributes
 	while (true)
 	{
@@ -732,7 +732,7 @@ void COlapSlicerCacheSelections::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter)
 }
 void COlapSlicerCacheSelections::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 {
-	LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+	LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 	pReader->Skip(1); // start attributes
 	while (true)
 	{
@@ -821,7 +821,7 @@ void COlapSlicerCacheLevelsData::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter)
 }
 void COlapSlicerCacheLevelsData::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 {
-	LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+	LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 	pReader->Skip(1); // start attributes
 	while (true)
 	{
@@ -923,7 +923,7 @@ void CTabularSlicerCache::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 }
 void CTabularSlicerCache::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 {
-	LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+	LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 	pReader->Skip(1); // start attributes
 	while (true)
 	{
@@ -1033,7 +1033,7 @@ void COlapSlicerCache::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 }
 void COlapSlicerCache::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 {
-	LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+	LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 	pReader->Skip(1); // start attributes
 	while (true)
 	{
@@ -1120,7 +1120,7 @@ void CSlicerCacheData::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 }
 void CSlicerCacheData::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 {
-	LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+	LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 	pReader->Skip(1); // start attributes
 	while (true)
 	{
@@ -1190,7 +1190,7 @@ void CSlicerCachePivotTable::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) con
 }
 void CSlicerCachePivotTable::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 {
-	LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+	LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 	pReader->Skip(1); // start attributes
 	while (true)
 	{
@@ -1322,7 +1322,7 @@ void CSlicerCacheDefinition::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) con
 }
 void CSlicerCacheDefinition::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 {
-	LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+	LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 	pReader->Skip(1); // start attributes
 	while (true)
 	{

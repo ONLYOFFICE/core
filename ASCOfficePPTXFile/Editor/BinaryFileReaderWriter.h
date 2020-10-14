@@ -540,6 +540,8 @@ namespace NSBinPptxRW
 		bool GetBool();
 		BYTE GetUChar_TypeNode();
 
+		_INT32 GetRecordSize();
+		
 		// 2 byte
 		_UINT16 GetUShort();
 		_INT16 GetShort();

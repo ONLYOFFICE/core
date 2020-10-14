@@ -748,7 +748,15 @@ namespace ComplexTypes
 
 			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_sVal );
+				std::vector<std::wstring > attNames, attValues;
+				oNode.GetAllAttributes(attNames,attValues);
+				for(size_t i = 0; i < attNames.size(); ++i)
+				{
+					if(XmlUtils::GetNameNoNS(attNames[i]) == L"val")
+					{
+						m_sVal = attValues[i];
+					}
+				}
 			}
 			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -759,11 +767,16 @@ namespace ComplexTypes
 			}
             virtual std::wstring ToString() const
 			{
-                std::wstring sResult;
+				return ToStringWithNS(L"w:");
+			}
+			virtual std::wstring ToStringWithNS(const std::wstring& ns) const
+			{
+				std::wstring sResult;
 
 				if ( m_sVal.IsInit() )
 				{
-					sResult += _T("w:val=\"");
+					sResult += ns;
+					sResult += _T("val=\"");
 					sResult += XmlUtils::EncodeXmlString(*m_sVal, false);
 					sResult += _T("\" ");
 				}
@@ -783,9 +796,9 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_sVal )
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_sVal )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 			}
 
 		public:

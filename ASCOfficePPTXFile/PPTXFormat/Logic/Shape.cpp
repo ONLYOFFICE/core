@@ -301,7 +301,7 @@ namespace PPTX
 		
 		void Shape::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
         {
-            LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+            LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 			pReader->Skip(1); // start attributes
 

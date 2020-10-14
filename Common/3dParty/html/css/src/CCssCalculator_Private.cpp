@@ -466,7 +466,6 @@ namespace NSCSS
                 return oFirstElement->GetWeight() < oSecondElement->GetWeight();
             });
 
-
             for (const CElement* oElement : arFindElements)
                 oStyle->AddStyle(oElement->GetStyle());
 
@@ -490,6 +489,7 @@ namespace NSCSS
 
         KatanaOutput *output = katana_parse(sStyle.c_str(), sStyle.length(), KatanaParserModeStylesheet);
         this->GetOutputData(output);
+
         katana_destroy_output(output);
     }
 

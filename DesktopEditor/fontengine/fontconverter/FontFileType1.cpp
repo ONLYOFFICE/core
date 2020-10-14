@@ -499,11 +499,11 @@ namespace NSFontConverter
                                 int nUnicode = Type1NameToUnicodeW( sGlyph.c_str() );
 
                                 if ( 0 != nUnicode )
-                                    m_arrCharstrings.Add( Type1Glyph( sGlyph, nUnicode, oCharstring )  );
+                                    m_arrCharstrings.push_back( Type1Glyph( sGlyph, nUnicode, oCharstring )  );
                             }
                             else // if ( bSubrsSection )
                             {
-                                m_arrSubrs.Add( oCharstring );
+                                m_arrSubrs.push_back( oCharstring );
                             }
                         }
 
@@ -620,7 +620,7 @@ namespace NSFontConverter
             MemUtilsFree( sEexecBuffer );
 
             // Проведем сортировку элементов m_arrCharstrings по юникодному значению
-            qsort( m_arrCharstrings.GetData(), m_arrCharstrings.GetSize(), sizeof(Type1Glyph), CompareType1Glyph );
+            qsort( m_arrCharstrings.data(), m_arrCharstrings.size(), sizeof(Type1Glyph), CompareType1Glyph );
         }
 
         m_bParsed = true;
@@ -710,7 +710,7 @@ namespace NSFontConverter
 
     Type1Charstring CFontFileType1::DecodeCharString(unsigned char *sString, int nLen)
     {
-        CArray<Type1CharstringItem> sCharString;
+        std::vector<Type1CharstringItem> sCharString;
 
         int nLSB = 0, nWidth = 0;
 
@@ -728,14 +728,14 @@ namespace NSFontConverter
 
                     if ( 16 == nNextValue )
                     {
-                        if ( sCharString.GetSize() <= 0 )
+                        if ( sCharString.size() <= 0 )
                             continue;
 
-                        int nInd = sCharString[sCharString.GetSize() - 1].nValue;
-                        sCharString.RemoveAt( sCharString.GetSize() - 1 );
+                        int nInd = sCharString[sCharString.size() - 1].nValue;
+                        sCharString.pop_back() ;
 
-                        while ( sCharString.GetSize() > 0 && false == sCharString[sCharString.GetSize() - 1].bCommand )
-                            sCharString.RemoveAt( sCharString.GetSize() - 1 );
+                        while ( sCharString.size() > 0 && false == sCharString[sCharString.size() - 1].bCommand )
+                            sCharString.pop_back( );
 
                         // If the flex mechanishm is not used in a font program, Adobe
                         // state that that entries 0, 1 and 2 can simply be replace by
@@ -747,7 +747,7 @@ namespace NSFontConverter
                         // entry 3 can be replaced by {3}
                         if ( 3 == nInd )
                         {
-                            sCharString.Add( Type1CharstringItem( 3, true ) );
+                            sCharString.push_back( Type1CharstringItem( 3, true ) );
                             nIndex++;
                             continue;
                         }
@@ -759,9 +759,9 @@ namespace NSFontConverter
                 {
                     if ( 13 == nValue )
                     {
-                        if ( 2 == sCharString.GetSize() )
+                        if ( 2 == sCharString.size() )
                             nWidth = sCharString[1].nValue;
-                        else if ( 4 == sCharString.GetSize() && 0x0C0C == sCharString[3].nValue && sCharString[3].bCommand )
+                        else if ( 4 == sCharString.size() && 0x0C0C == sCharString[3].nValue && sCharString[3].bCommand )
                             nWidth = sCharString[1].nValue / sCharString[2].nValue;
                         else
                         {
@@ -769,18 +769,18 @@ namespace NSFontConverter
                             nWidth = 0;
                         }
 
-                        if ( sCharString.GetSize() > 0 )
+                        if ( sCharString.size() > 0 )
                         {
                             nLSB = sCharString[0].nValue;
-                            sCharString.Add( Type1CharstringItem( nLSB, false ) );
-                            sCharString.Add( Type1CharstringItem( c_nType1hmoveto, true ) );
-                            sCharString.RemoveAt( 0 );
+                            sCharString.push_back( Type1CharstringItem( nLSB, false ) );
+                            sCharString.push_back( Type1CharstringItem( c_nType1hmoveto, true ) );
+                            sCharString.erase( sCharString.begin() );
                         }
                         else
                         {
                             nLSB = 0;
-                            sCharString.Add( Type1CharstringItem( nLSB, false ) );
-                            sCharString.Add( Type1CharstringItem( c_nType1hmoveto, true ) );
+                            sCharString.push_back( Type1CharstringItem( nLSB, false ) );
+                            sCharString.push_back( Type1CharstringItem( c_nType1hmoveto, true ) );
                         }
 
                         continue;
@@ -800,7 +800,7 @@ namespace NSFontConverter
                     // TO DO: обработать ошибку
                 }
 
-                sCharString.Add( Type1CharstringItem( nCommand, true ) );
+                sCharString.push_back( Type1CharstringItem( nCommand, true ) );
             }
             else
             {
@@ -813,7 +813,7 @@ namespace NSFontConverter
                 else
                     nValue = ( sString[++nIndex] & 0xff ) << 24 | ( sString[++nIndex] & 0xff ) << 16 | ( sString[++nIndex] & 0xff ) << 8 | ( sString[++nIndex] & 0xff ) << 0;
 
-                sCharString.Add( Type1CharstringItem( nValue, false ) );
+                sCharString.push_back( Type1CharstringItem( nValue, false ) );
             }
         }
 
@@ -825,7 +825,7 @@ namespace NSFontConverter
         oNew.nLSB   = oCharstring.nLSB;
         oNew.nWidth = oCharstring.nWidth;
 
-        for ( int nIndex = 0; nIndex < oCharstring.arrCharstring.GetSize(); nIndex++ )
+        for ( size_t nIndex = 0; nIndex < oCharstring.arrCharstring.size(); nIndex++ )
         {
             Type1CharstringItem oItem = oCharstring.arrCharstring[nIndex];
             int nValue = oItem.nValue;
@@ -833,19 +833,19 @@ namespace NSFontConverter
             {
                 if ( nValue == c_nType1sub )
                 {
-                    oNew.arrCharstring.Add( Type1CharstringItem( 12, true ) );
-                    oNew.arrCharstring.Add( Type1CharstringItem( 11, true ) );
+                    oNew.arrCharstring.push_back( Type1CharstringItem( 12, true ) );
+                    oNew.arrCharstring.push_back( Type1CharstringItem( 11, true ) );
                 }
                 else if ( nValue == c_nType1div )
                 {
-                    oNew.arrCharstring.Add( Type1CharstringItem( 12, true ) );
-                    oNew.arrCharstring.Add( Type1CharstringItem( 12, true ) );
+                    oNew.arrCharstring.push_back( Type1CharstringItem( 12, true ) );
+                    oNew.arrCharstring.push_back( Type1CharstringItem( 12, true ) );
                 }
                 else if ( nValue == c_nType1pop )
                 {
                     //oNew.arrCharstring.Add( Type1CharstringItem( 1, true ) );
-                    oNew.arrCharstring.Add( Type1CharstringItem( 12, true ) );
-                    oNew.arrCharstring.Add( Type1CharstringItem( 18, true ) );
+                    oNew.arrCharstring.push_back( Type1CharstringItem( 12, true ) );
+                    oNew.arrCharstring.push_back( Type1CharstringItem( 18, true ) );
                 }
                 else if ( nValue == c_nType1callsubr  )
                 {
@@ -881,10 +881,10 @@ namespace NSFontConverter
                     //	oNew.arrCharstring[nTempLen - 1].nValue = nInd & 0xFF;
                     //	oNew.arrCharstring.Add( Type1CharstringItem( oItem.nValue, true ) );
                     //}
-                    oNew.arrCharstring.Add( Type1CharstringItem( oItem.nValue, true ) );
+                    oNew.arrCharstring.push_back( Type1CharstringItem( oItem.nValue, true ) );
                 }
                 else
-                    oNew.arrCharstring.Add( Type1CharstringItem( oItem.nValue, true ) );
+                    oNew.arrCharstring.push_back( Type1CharstringItem( oItem.nValue, true ) );
             }
             else
             {
@@ -895,18 +895,18 @@ namespace NSFontConverter
                     if ( 0 != nDivisor )
                         nValue /= nDivisor;
                 }
-                oNew.arrCharstring.Add( Type1CharstringItem( 28, true ) );
-                oNew.arrCharstring.Add( Type1CharstringItem( nValue >> 8, false ) );
-                oNew.arrCharstring.Add( Type1CharstringItem( nValue & 0xFF, false ) );
+                oNew.arrCharstring.push_back( Type1CharstringItem( 28, true ) );
+                oNew.arrCharstring.push_back( Type1CharstringItem( nValue >> 8, false ) );
+                oNew.arrCharstring.push_back( Type1CharstringItem( nValue & 0xFF, false ) );
             }
         }
 
         return oNew;
     }
-    void CFontFileType1::CFFCreateIndexHeader(FontFileOutputFunc pOutputFunc, void *pOutputStream, CArray<std::wstring> aObjects)
+    void CFontFileType1::CFFCreateIndexHeader(FontFileOutputFunc pOutputFunc, void *pOutputStream, std::vector<std::wstring> aObjects)
     {
         char nChar;
-        int nCount = aObjects.GetSize();
+        size_t nCount = aObjects.size();
         if ( 0 == nCount )
         {
             pOutputFunc( pOutputStream, "\x00\x00\x00", 3 );
@@ -920,7 +920,7 @@ namespace NSFontConverter
         WriteChar( 0x04 );
 
         int nRelativeOffset = 1;
-        for ( int nIndex = 0; nIndex < nCount + 1; nIndex++ )
+        for ( size_t nIndex = 0; nIndex < nCount + 1; nIndex++ )
         {
             WriteChar( (nRelativeOffset >> 24) & 0xFF );
             WriteChar( (nRelativeOffset >> 16) & 0xFF );
@@ -931,16 +931,16 @@ namespace NSFontConverter
                 nRelativeOffset += aObjects[nIndex].length();
         }
 
-        for ( int nIndex = 0; nIndex < nCount; nIndex++ )
+        for ( size_t nIndex = 0; nIndex < nCount; nIndex++ )
         {
             std::string sCur = U_TO_UTF8((aObjects[nIndex]));
             pOutputFunc( pOutputStream, sCur.c_str(), sCur.length() );
         }
     }
-    void CFontFileType1::CFFCreateIndexHeader(FontFileOutputFunc pOutputFunc, void *pOutputStream, CArray<Type1Charstring> aObjects)
+    void CFontFileType1::CFFCreateIndexHeader(FontFileOutputFunc pOutputFunc, void *pOutputStream, std::vector<Type1Charstring> aObjects)
     {
         char nChar;
-        int nCount = aObjects.GetSize();
+        size_t nCount = aObjects.size();
         if ( 0 == nCount )
         {
             pOutputFunc( pOutputStream, "\x00\x00\x00", 3 );
@@ -954,7 +954,7 @@ namespace NSFontConverter
         WriteChar( 0x04 );
 
         int nRelativeOffset = 1;
-        for ( int nIndex = 0; nIndex < nCount + 1; nIndex++ )
+        for ( size_t nIndex = 0; nIndex < nCount + 1; nIndex++ )
         {
             WriteChar( (nRelativeOffset >> 24) & 0xFF );
             WriteChar( (nRelativeOffset >> 16) & 0xFF );
@@ -962,12 +962,12 @@ namespace NSFontConverter
             WriteChar( (nRelativeOffset)       & 0xFF );
 
             if ( nIndex < nCount )
-                nRelativeOffset += aObjects[nIndex].arrCharstring.GetSize();
+                nRelativeOffset += aObjects[nIndex].arrCharstring.size();
         }
 
-        for ( int nI = 0; nI < nCount; nI++ )
+        for ( size_t nI = 0; nI < nCount; nI++ )
         {
-            for ( int nJ = 0; nJ < aObjects[nI].arrCharstring.GetSize(); nJ++ )
+            for ( size_t nJ = 0; nJ < aObjects[nI].arrCharstring.size(); nJ++ )
             {
                 WriteChar( aObjects[nI].arrCharstring[nJ].nValue & 0xFF );
             }
@@ -999,7 +999,7 @@ namespace NSFontConverter
 
         std::wstring sValue = std::to_wstring(dValue);
         bool bFirstNibble = true;
-        for ( int nIndex = 0; nIndex < sValue.length(); nIndex++ )
+        for ( size_t nIndex = 0; nIndex < sValue.length(); nIndex++ )
         {
             int nCurChar = sValue.c_str()[ nIndex ];
             if ( '0' <= nCurChar && nCurChar <= '9' )
@@ -1033,10 +1033,10 @@ namespace NSFontConverter
     void CFontFileType1::ToCFF(FontFileOutputFunc pOutputFunc, void *pOutputStream)
     {
         std::wstring sFontName = NSFile::CUtf8Converter::GetUnicodeFromCharPtr( m_sName, (LONG)strlen(m_sName) );
-        CArray<std::wstring> aString;
+        std::vector<std::wstring> aString;
 
         int nBias = 0;
-        int nSubrsLen = m_arrSubrs.GetSize();
+        size_t nSubrsLen = m_arrSubrs.size();
         if ( nSubrsLen < 1240 )
             nBias = 107;
         else if ( nSubrsLen < 33900 )
@@ -1044,20 +1044,20 @@ namespace NSFontConverter
         else
             nBias = 32768;
 
-        CArray<Type1Charstring> arrType2Charstrings;
+        std::vector<Type1Charstring> arrType2Charstrings;
         Type1Charstring oFirstCharstring;
-        oFirstCharstring.arrCharstring.Add( Type1CharstringItem( 0x8B, false ) );
-        oFirstCharstring.arrCharstring.Add( Type1CharstringItem( 0x0E, false ) );
-        arrType2Charstrings.Add( oFirstCharstring );
-        for ( int nIndex = 0; nIndex < m_arrCharstrings.GetSize(); nIndex++ )
+        oFirstCharstring.arrCharstring.push_back( Type1CharstringItem( 0x8B, false ) );
+        oFirstCharstring.arrCharstring.push_back( Type1CharstringItem( 0x0E, false ) );
+        arrType2Charstrings.push_back( oFirstCharstring );
+        for ( size_t nIndex = 0; nIndex < m_arrCharstrings.size(); nIndex++ )
         {
             std::wstring sG = m_arrCharstrings[nIndex].sGlyph;
             if ( L"afii10090" == sG )
                 int k = 10;
-            arrType2Charstrings.Add( FlattenCharstring( m_arrCharstrings[nIndex].oData, nBias ) );
+            arrType2Charstrings.push_back( FlattenCharstring( m_arrCharstrings[nIndex].oData, nBias ) );
         }
 
-        CArray<Type1Charstring> arrType2Subrs;
+        std::vector<Type1Charstring> arrType2Subrs;
 
         //Type1Charstring oBias;
         ////oBias.arrCharstring.Add( Type1CharstringItem( 0x0B, false ) );
@@ -1065,7 +1065,7 @@ namespace NSFontConverter
         //for ( int nIndex = 0; nIndex < nBias; nIndex++ )
         //	arrType2Subrs.Add( oBias );
 
-        for ( int nIndex = 0; nIndex < nSubrsLen; nIndex++ )
+        for ( size_t nIndex = 0; nIndex < nSubrsLen; nIndex++ )
         {
             //if ( nIndex == 256 )
             //{
@@ -1074,7 +1074,7 @@ namespace NSFontConverter
             //	for ( int nIndex = 0; nIndex < nBias; nIndex++ )
             //		arrType2Subrs.Add( oBias );
             //}
-            arrType2Subrs.Add( FlattenCharstring( m_arrSubrs[nIndex], 0 ) );
+            arrType2Subrs.push_back( FlattenCharstring( m_arrSubrs[nIndex], 0 ) );
         }
 
         // Header
@@ -1083,26 +1083,26 @@ namespace NSFontConverter
 
         // Name
         TCharBuffer oName;
-        aString.RemoveAll();
-        aString.Add( sFontName );
+        aString.clear();
+        aString.push_back( sFontName );
         CFFCreateIndexHeader( CharBufferWrite, &oName, aString );
 
         // Strings
         TCharBuffer oStrings;
-        aString.RemoveAll();
+        aString.clear();
         int nNewSID = CFF_STANDARD_STRINGS_COUNT;
-        aString.Add( L"Version 0.11" );        nNewSID++; // Version
-        aString.Add( L"See original notice" ); nNewSID++; // Notice
-        aString.Add( sFontName );                 nNewSID++; // FullName
-        aString.Add( sFontName );                 nNewSID++; // FamilyName
-        aString.Add( L"Medium" );              nNewSID++; // Weight
+        aString.push_back( L"Version 0.11" );        nNewSID++; // Version
+        aString.push_back( L"See original notice" ); nNewSID++; // Notice
+        aString.push_back( sFontName );                 nNewSID++; // FullName
+        aString.push_back( sFontName );                 nNewSID++; // FamilyName
+        aString.push_back( L"Medium" );              nNewSID++; // Weight
 
-        for ( int nIndex = 0; nIndex < m_arrCharstrings.GetSize(); nIndex++ )
+        for ( size_t nIndex = 0; nIndex < m_arrCharstrings.size(); nIndex++ )
         {
             int nSID = GetCFFStringIndex( m_arrCharstrings[nIndex].sGlyph.c_str() );
             if ( nSID < 0 )
             {
-                aString.Add( m_arrCharstrings[nIndex].sGlyph );
+                aString.push_back( m_arrCharstrings[nIndex].sGlyph );
                 nSID = nNewSID;
                 nNewSID++;
             }
@@ -1114,15 +1114,15 @@ namespace NSFontConverter
 
         // GlobalSubrs
         TCharBuffer oGlobalSubrs;
-        aString.RemoveAll(); // Записываем пустой массив
+        aString.clear(); // Записываем пустой массив
         CFFCreateIndexHeader( CharBufferWrite, &oGlobalSubrs, aString );
 
         // Charset
         TCharBuffer oCharset;
         oCharset.Write( (char)0x00 ); // Encoding
 
-        int nGlyphsCount = m_arrCharstrings.GetSize();
-        for ( int nIndex = 0; nIndex < nGlyphsCount; nIndex++ )
+        size_t nGlyphsCount = m_arrCharstrings.size();
+        for ( size_t nIndex = 0; nIndex < nGlyphsCount; nIndex++ )
         {
             int nSID = m_arrCharstrings[nIndex].nReserved;
             oCharset.Write( (char)(nSID >> 8) );

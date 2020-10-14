@@ -347,11 +347,11 @@ namespace Aggplus
 
 	Status CBrushLinearGradient::SetInterpolationColors( const CColor *presetColors, const REAL *blendPositions, INT count )
 	{
-		m_subcolors.RemoveAll();
+        m_subcolors.clear();
 
 		if( count > 0 && presetColors && blendPositions )
 		{
-			m_subcolors.SetCount( count );
+            m_subcolors.reserve( count );
 
 			for( int i = 0; i < count; i++ )
 			{
@@ -365,7 +365,7 @@ namespace Aggplus
 
 	Status CBrushLinearGradient::GetInterpolationColors( CColor *presetColors, REAL *blendPositions, INT count ) const
 	{
-		if( count > 0 && count <= (INT)m_subcolors.GetCount() && presetColors && blendPositions )
+        if( count > 0 && count <= (INT)m_subcolors.size() && presetColors && blendPositions )
 		{
 			for( int i = 0; i < count; i++ )
 			{
@@ -379,7 +379,7 @@ namespace Aggplus
 
 	INT CBrushLinearGradient::GetInterpolationColorsCount() const
 	{
-		return (INT)m_subcolors.GetCount();
+        return (INT)m_subcolors.size();
 	}
 
 	// additional methods

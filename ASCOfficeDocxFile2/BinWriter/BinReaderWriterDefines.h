@@ -144,7 +144,8 @@ extern int g_nCurFormatVersion;
 		App			= 15,
 		Core		= 16,
 		DocumentComments = 17,
-		Glossary	= 18
+		CustomProperties = 18,
+		Glossary	= 19
 	};}
 	namespace c_oSerSigTypes{enum c_oSerSigTypes
 	{

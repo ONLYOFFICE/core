@@ -200,7 +200,7 @@ private:
     std::wstring m_strFileId;
 
 public:
-    CArray<std::wstring>* m_pChanges;
+    std::vector<std::wstring>* m_pChanges;
 
     std::wstring m_strFontsDirectory;
 
@@ -540,13 +540,13 @@ public:
 
 public:
 
-    void CheckFiles(CArray<std::wstring>& oFiles)
+    void CheckFiles(std::vector<std::wstring>& oFiles)
     {
         int nMax = 0;
         int nLen = 0;
 
-        int nCount = (int)oFiles.GetCount();
-        for (int i = 0; i < nCount; ++i)
+        size_t nCount = oFiles.size();
+        for (size_t i = 0; i < nCount; ++i)
         {
             NSFile::CFileBinary oFile;
             oFile.OpenFile(oFiles[i]);
@@ -578,20 +578,20 @@ public:
         m_oArrayBuffer = v8::ArrayBuffer::New(v8::Isolate::GetCurrent(), (void*)m_pData, (size_t)m_nLen);
     }
 
-    inline int Open(CArray<std::wstring>& oFiles, int nStart)
+    inline int Open(std::vector<std::wstring>& oFiles, int nStart)
     {
         return Open_excel(oFiles, nStart);
     }
 
-    int Open_docx(CArray<std::wstring>& oFiles, int nStart)
+    int Open_docx(std::vector<std::wstring>& oFiles, int nStart)
     {
         m_pDataCur = m_pData;
         m_pDataCur += 4;
         int nCountData = 0;
 
-        int nCount = oFiles.GetCount();
+        size_t nCount = oFiles.size();
         int nLenCurrect = 0;
-        int i = nStart;
+        size_t i = nStart;
         for (; i < nCount; i++)
         {
             NSFile::CFileBinary oFile;
@@ -638,15 +638,15 @@ public:
         return i;
     }
 
-    int Open_excel(CArray<std::wstring>& oFiles, int nStart)
+    int Open_excel(std::vector<std::wstring>& oFiles, int nStart)
     {
         m_pDataCur = m_pData;
         m_pDataCur += 4;
         int nCountData = 0;
 
-        int nCount = oFiles.GetCount();
+        size_t nCount = oFiles.size();
         int nLenCurrect = 0;
-        int i = nStart;
+        size_t i = nStart;
         for (; i < nCount; i++)
         {
             NSFile::CFileBinary oFile;
@@ -693,11 +693,11 @@ public:
     }
 
 public:
-    void OpenFull(CArray<std::wstring>& oFiles)
+    void OpenFull(std::vector<std::wstring>& oFiles)
     {
         // определяем размер
-        int nCount = (int)oFiles.GetCount();
-        for (int i = 0; i < nCount; ++i)
+        size_t nCount = oFiles.size();
+        for (size_t i = 0; i < nCount; ++i)
         {
             NSFile::CFileBinary oFile;
             oFile.OpenFile(oFiles[i]);
@@ -751,11 +751,11 @@ public:
         *((int*)m_pData) = nCountData;
     }
 
-    void OpenFull_excel(CArray<std::wstring>& oFiles)
+    void OpenFull_excel(std::vector<std::wstring>& oFiles)
     {
         // определяем размер
-        int nCount = (int)oFiles.GetCount();
-        for (int i = 0; i < nCount; ++i)
+        size_t nCount = oFiles.size();
+        for (size_t i = 0; i < nCount; ++i)
         {
             NSFile::CFileBinary oFile;
             oFile.OpenFile(oFiles[i]);
@@ -769,7 +769,7 @@ public:
         m_pDataCur += 4;
         int nCountData = 0;
 
-        for (int i = 0; i < nCount; i++)
+        for (size_t i = 0; i < nCount; i++)
         {
             NSFile::CFileBinary oFile;
             oFile.OpenFile(oFiles[i]);

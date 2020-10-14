@@ -50,9 +50,9 @@ void FillAnimClr(
 {
     auto& clrAtom = pETNC->m_pTimeColorBehavior->m_oColorBehaviorAtom;
 
-
     FillCBhvr(pETNC, oAnimClr.cBhvr);
 
+    // Write Attributes
     if (pETNC->m_pTimeColorBehavior->m_oBehavior.m_havePropertyList){
         for (auto pRec : pETNC->m_pTimeColorBehavior->m_oBehavior.m_pPropertyList->m_arRecords)
         {

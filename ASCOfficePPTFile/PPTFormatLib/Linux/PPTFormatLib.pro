@@ -368,6 +368,7 @@ HEADERS += \
     ../PPTXWriter/TimingConverter/AnimScale.h \
     ../PPTXWriter/TimingConverter/Audio.h \
     ../PPTXWriter/TimingConverter/BldLst.h \
+    ../PPTXWriter/TimingConverter/BldP.h \
     ../PPTXWriter/TimingConverter/CBhvr.h \
     ../PPTXWriter/TimingConverter/CTn.h \
     ../PPTXWriter/TimingConverter/Cmd.h \

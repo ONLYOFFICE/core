@@ -59,23 +59,33 @@ public:
         m_oHeader			=	thisHeader;
 
         LONG lPos(0); StreamUtils::StreamPosition(lPos, pStream);
-
+        UINT lCurLen = 0;
         SRecordHeader oHeader;
 //        UINT res = 0;
 
-        if (oHeader.ReadFromStream(pStream))
+        if (oHeader.ReadFromStream(pStream)){
             m_oBuildAtom.ReadFromStream ( oHeader, pStream );
+            lCurLen += oHeader.RecLen + 8;
+        }
 
         if (oHeader.ReadFromStream(pStream))
+        {
             m_oParaBuildAtom.ReadFromStream ( oHeader, pStream );
+            lCurLen += oHeader.RecLen + 8;
+        }
 
         // TODO may not work
-        _UINT32 levelCount = 1;
-        for (_UINT32 i = 0; i < levelCount; i++) {
+
+
+        SRecordHeader ReadHeader;
+
+        while ( lCurLen < m_oHeader.RecLen ) {
             CRecordParaBuildLevel* pLevel = new CRecordParaBuildLevel();
             pLevel->ReadFromStream(pStream);
-            levelCount = pLevel->m_oLevelInfoAtom.m_nLevel;
+
             m_arrRgParaBuildLevel.push_back(pLevel);
+
+            lCurLen += pLevel->getRecordLen();
         }
         StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);
     }

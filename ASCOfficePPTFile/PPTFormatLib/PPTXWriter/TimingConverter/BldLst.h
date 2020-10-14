@@ -31,7 +31,7 @@
  */
 #pragma once
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldLst.h"
-#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldP.h"
+#include "BldP.h"
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldOleChart.h"
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldDgm.h"
 
@@ -49,7 +49,7 @@ void ConvertCRecordBuildListContainerToBldLst(
 {
     if (!pBLC)
         return;
-
+    // Write p
     for (unsigned i = 0; i < pBLC->n_arrRgChildRec.size(); i++)
     {
         PPTX::Logic::BuildNodeBase oBuildNodeBase;
@@ -59,24 +59,7 @@ void ConvertCRecordBuildListContainerToBldLst(
             CRecordParaBuildContainer* pRec =
                     (CRecordParaBuildContainer*)pBLC->n_arrRgChildRec[i];
             PPTX::Logic::BldP* pBldP = new PPTX::Logic::BldP();
-
-            pBldP->spid      = std::to_wstring(pRec->m_oBuildAtom.m_nShapeIdRef);
-            pBldP->grpId     = (int)pRec->m_oBuildAtom.m_nBuildId;
-            pBldP->uiExpand  = pRec->m_oBuildAtom.m_fExpanded;
-
-            pBldP->advAuto           = std::to_wstring(pRec->m_oParaBuildAtom.m_nDelayTime);
-            pBldP->animBg            = pRec->m_oParaBuildAtom.m_fAnimBackground;
-            pBldP->rev               = pRec->m_oParaBuildAtom.m_fReverse;
-            pBldP->autoUpdateAnimBg  = pRec->m_oParaBuildAtom.m_fAutomatic;
-
-            std::vector<std::wstring> ST_TLParaBuildType =
-            {
-                L"allAtOnce",
-                L"p",
-                L"cust",
-                L"whole"
-            };
-            pBldP->build             = ST_TLParaBuildType[pRec->m_oParaBuildAtom.m_nParaBuild % 4];
+            FillBldP(pRec, *pBldP);
 
             oBuildNodeBase.m_node = pBldP;
             break;

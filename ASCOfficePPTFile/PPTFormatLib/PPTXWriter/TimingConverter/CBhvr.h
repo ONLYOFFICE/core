@@ -65,7 +65,7 @@ namespace PPT_FORMAT
     void FillCBhvr(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CBhvr &oBhvr)
     {
         CRecordTimeBehaviorContainer* bhvr = nullptr;
-        if (pETNC->m_haveSetBehavior)           bhvr = &(pETNC->m_pTimeSetBehavior->m_oBehavior);
+        if      (pETNC->m_haveSetBehavior)      bhvr = &(pETNC->m_pTimeSetBehavior->m_oBehavior);
         else if (pETNC->m_haveEffectBehavior)   bhvr = &(pETNC->m_pTimeEffectBehavior->m_oBehavior);
         else if (pETNC->m_haveAnimateBehavior)  bhvr = &(pETNC->m_pTimeAnimateBehavior->m_oBehavior);
         else if (pETNC->m_haveColorBehavior)    bhvr = &(pETNC->m_pTimeColorBehavior->m_oBehavior);
@@ -73,6 +73,18 @@ namespace PPT_FORMAT
         else if (pETNC->m_haveRotationBehavior) bhvr = &(pETNC->m_pTimeRotationBehavior->m_oBehavior);
         else if (pETNC->m_haveScaleBehavior)    bhvr = &(pETNC->m_pTimeScaleBehavior->m_oBehavior);
         else                                    bhvr = &(pETNC->m_pTimeCommandBehavior->m_oBevavior);
+
+        //// Atom ////
+
+        // additive
+        if (bhvr->m_oBehaviorAtom.m_bAdditivePropertyUsed) {
+            oBhvr.additive = new PPTX::Limit::TLAdditive;
+            oBhvr.additive = bhvr->m_oBehaviorAtom.m_nBehaviorAdditive ?
+                        L"repl" : L"base";
+        }
+
+        // accumulate   - MUST be 0
+        // xfrmType     - MUST be 0
 
 
         if (bhvr->m_haveStringList)
@@ -90,11 +102,7 @@ namespace PPT_FORMAT
             }
         }
 
-        if (bhvr->m_oBehaviorAtom.m_bAdditivePropertyUsed) {
-            oBhvr.additive = new PPTX::Limit::TLAdditive;
-            oBhvr.additive = bhvr->m_oBehaviorAtom.m_nBehaviorAdditive ?
-                        L"repl" : L"base";
-        }
+
 
         FillCTn(pETNC, oBhvr.cTn);
 

@@ -61,7 +61,7 @@ public:
         if ( m_effectBehaviorAtom.m_bProgressPropertyUsed )
         {
             if ( header.ReadFromStream(pStream) )
-                m_oVarProgres.ReadFromStream ( header, pStream );
+                m_oVarProgress.ReadFromStream ( header, pStream );
         }
 
         if ( m_effectBehaviorAtom.m_bRuntimeContextObsolete )
@@ -94,7 +94,7 @@ public:
     CRecordTimeEffectBehaviorAtom	m_effectBehaviorAtom;
 
     CRecordTimeVariantString		m_oVarType;
-    CRecordTimeVariantFloat         m_oVarProgres;
+    CRecordTimeVariantFloat             m_oVarProgress;
     CRecordTimeVariantString		m_oVarRuntimeContext;
     CRecordTimeBehaviorContainer	m_oBehavior;
 

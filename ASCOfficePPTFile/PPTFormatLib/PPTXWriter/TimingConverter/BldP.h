@@ -31,40 +31,37 @@
  */
 #pragma once
 
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/AnimEffect.h"
-#include "../../Records/Animations/ExtTimeNodeContainer.h"
-#include "CBhvr.h"
+#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldP.h"
+
+
+#include "../Records/Animations/BuildListContainer.h"
+#include "../Records/Animations/ChartBuildContainer.h"
+#include "../Records/Animations/DiagramBuildContainer.h"
+#include "../Records/Animations/ExtTimeNodeContainer.h"
+
 
 namespace PPT_FORMAT
 {
-    void FillAnimEffect(
-            CRecordExtTimeNodeContainer* pETNC,
-            PPTX::Logic::AnimEffect& oAnim)
+void FillBldP(PPT_FORMAT::CRecordParaBuildContainer *pPBC,
+              PPTX::Logic::BldP &oBP)
+{
+
+    oBP.spid      = std::to_wstring(pPBC->m_oBuildAtom.m_nShapeIdRef);
+    oBP.grpId     = (int)pPBC->m_oBuildAtom.m_nBuildId;
+    oBP.uiExpand  = pPBC->m_oBuildAtom.m_fExpanded;
+
+    oBP.advAuto           = std::to_wstring(pPBC->m_oParaBuildAtom.m_nDelayTime);
+    oBP.animBg            = pPBC->m_oParaBuildAtom.m_fAnimBackground;
+    oBP.rev               = pPBC->m_oParaBuildAtom.m_fReverse;
+    oBP.autoUpdateAnimBg  = pPBC->m_oParaBuildAtom.m_fAutomatic;
+
+    std::vector<std::wstring> ST_TLParaBuildType =
     {
-        auto* bhvr = pETNC->m_pTimeEffectBehavior;
-        oAnim.filter = bhvr->m_oVarType.m_stringValue;
-
-        if (bhvr->m_effectBehaviorAtom.m_bProgressPropertyUsed)
-        {
-            if (!oAnim.progress.is_init())
-                oAnim.progress = new PPTX::Logic::AnimVariant;
-            oAnim.progress->fltVal = bhvr->m_oVarProgress.m_Value;
-        }
-
-        if (bhvr->m_effectBehaviorAtom.m_bRuntimeContextObsolete)
-        {
-            if (!oAnim.progress.is_init())
-                oAnim.progress = new PPTX::Logic::AnimVariant;
-            oAnim.progress->strVal = bhvr->m_oVarRuntimeContext.m_stringValue;
-        }
-
-        if (bhvr->m_effectBehaviorAtom.m_bTransitionPropertyUsed)
-        {
-            oAnim.transition = bhvr->m_effectBehaviorAtom.m_nEffectTransition ?
-                        L"out" : L"in";
-        }
-
-        FillCBhvr(pETNC, oAnim.cBhvr);
-
-    }
+        L"allAtOnce",
+        L"p",
+        L"cust",
+        L"whole"
+    };
+    oBP.build             = ST_TLParaBuildType[pPBC->m_oParaBuildAtom.m_nParaBuild % 4];
+}
 }

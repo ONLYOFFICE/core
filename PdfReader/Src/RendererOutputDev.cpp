@@ -1294,15 +1294,15 @@ namespace PdfReader
 							if ((pTTFontFile = CFontFileTrueType::LoadFromFile((wchar_t*)wsFileName.c_str())))
 							{
 								// Ищем Unicode Cmap
-								CArray<int> arrCMapIndex;
+                                std::vector<int> arrCMapIndex;
 								for (int nCMapIndex = 0; nCMapIndex < pTTFontFile->GetCmapsCount(); ++nCMapIndex)
 								{
 									if ((pTTFontFile->GetCmapPlatform(nCMapIndex) == 3 && pTTFontFile->GetCmapEncoding(nCMapIndex) == 1) || pTTFontFile->GetCmapPlatform(nCMapIndex) == 0)
 									{
-										arrCMapIndex.Add(nCMapIndex);
+                                        arrCMapIndex.push_back(nCMapIndex);
 									}
 								}
-								if (arrCMapIndex.GetSize() > 0)
+                                if (arrCMapIndex.size() > 0)
 								{
 									// CID -> Unicode -> GID
 									nLen = pCodeToUnicode->GetLength();
@@ -1313,7 +1313,7 @@ namespace PdfReader
 										if (pCodeToUnicode->MapToUnicode(nCode, arrUnicodeBuffer, 8) > 0)
 										{
 											pCodeToGID[nCode] = pTTFontFile->MapCodeToGID(arrCMapIndex[0], arrUnicodeBuffer[0]);
-											for (int nIndex = 1; nIndex < arrCMapIndex.GetSize(); nIndex++)
+                                            for (size_t nIndex = 1; nIndex < arrCMapIndex.size(); nIndex++)
 											{
 												if (0 == pCodeToGID[nCode])
 													pCodeToGID[nCode] = pTTFontFile->MapCodeToGID(arrCMapIndex[nIndex], arrUnicodeBuffer[0]);

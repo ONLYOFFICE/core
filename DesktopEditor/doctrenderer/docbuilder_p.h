@@ -158,7 +158,7 @@ namespace NSDoctRenderer
     class CDocBuilder_Private
     {
     public:
-        CArray<std::wstring> m_arrFiles;
+        std::vector<std::wstring> m_arrFiles;
 
         std::vector<std::wstring> m_arDoctSDK;
         std::vector<std::wstring> m_arPpttSDK;

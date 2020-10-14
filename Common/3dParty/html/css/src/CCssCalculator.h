@@ -22,9 +22,27 @@ namespace NSCSS
     struct CNode
     {
         std::wstring m_sName;  // Имя тэга
-        std::wstring m_sId;    // Id тэга
         std::wstring m_sClass; // Класс тэга
+        std::wstring m_sId;    // Id тэга
         std::wstring m_sStyle; // Стиль тэга
+
+        CNode(){};
+        CNode(std::wstring sName, std::wstring sClass, std::wstring sId) : m_sName(sName), m_sClass(sClass), m_sId(sId){};
+
+        bool Empty() const
+        {
+            return m_sName.empty() && m_sClass.empty() && m_sId.empty() && m_sStyle.empty();
+        }
+
+        std::vector<std::wstring> GetData() const
+        {
+            std::vector<std::wstring> arValues;
+            if (!m_sClass.empty())
+                arValues.push_back(m_sClass);
+            if (!m_sName.empty())
+                arValues.push_back(m_sName);
+            return arValues;
+        }
 
         bool operator< (const CNode& oNode) const
         {
@@ -61,9 +79,6 @@ namespace NSCSS
         CCssCalculator();
         ~CCssCalculator();
 
-        std::map<std::wstring, std::wstring> GetDeclarations(const std::wstring& sSelector) const;
-
-        CCompiledStyle GetCompiledStyle(const std::vector<std::string>& arSelectors, const UnitMeasure unitMeasure = Default) const;
         CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors, const UnitMeasure& unitMeasure = Default) const;
 
         // void AddStyle(const std::vector<std::string>& sSelectors, const std::string& sStyle);
@@ -78,7 +93,6 @@ namespace NSCSS
         std::wstring GetEncoding()   const;
         unsigned short int GetDpi()  const;
 
-        void Print() const;
         void Clear();
     };
 }

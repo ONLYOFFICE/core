@@ -10,6 +10,7 @@ namespace NSCSS
 {
     namespace NS_CONST_VALUES
     {
+        const unsigned short int FONT_SIZE = 22;
         typedef enum
         {
             B_CustomStyle = 0,
@@ -146,40 +147,40 @@ namespace NSCSS
             /* Outdated */
             {L"windowtext",         L"000000"}
         };
-        const std::vector<std::string> arPseudoClasses {
-                                                        "invalid",
-                                                        "read-only",
-                                                        "-moz-placeholder",
-                                                        "-webkit-input-placeholder",
-                                                        "active",
-                                                        "checked",
-                                                        "default",
-                                                        "disabled",
-                                                        "empty",
-                                                        "enabled",
-                                                        "first-child",
-                                                        "first-of-type",
-                                                        "focus",
-                                                        "hover",
-                                                        "indeterminate",
-                                                        "lang",
-                                                        "last-child",
-                                                        "last-of-type",
-                                                        "link",
-                                                        "not",
-                                                        "nth-child",
-                                                        "nth-last-child",
-                                                        "nth-last-of-type",
-                                                        "nth-of-type",
-                                                        "only-child",
-                                                        "only-of-type",
-                                                        "optional",
-                                                        "read-write",
-                                                        "required",
-                                                        "root",
-                                                        "target",
-                                                        "valid",
-                                                        "visited"};
+        const std::vector<std::wstring> arPseudoClasses {
+                                                        L"invalid",
+                                                        L"read-only",
+                                                        L"-moz-placeholder",
+                                                        L"-webkit-input-placeholder",
+                                                        L"active",
+                                                        L"checked",
+                                                        L"default",
+                                                        L"disabled",
+                                                        L"empty",
+                                                        L"enabled",
+                                                        L"first-child",
+                                                        L"first-of-type",
+                                                        L"focus",
+                                                        L"hover",
+                                                        L"indeterminate",
+                                                        L"lang",
+                                                        L"last-child",
+                                                        L"last-of-type",
+                                                        L"link",
+                                                        L"not",
+                                                        L"nth-child",
+                                                        L"nth-last-child",
+                                                        L"nth-last-of-type",
+                                                        L"nth-of-type",
+                                                        L"only-child",
+                                                        L"only-of-type",
+                                                        L"optional",
+                                                        L"read-write",
+                                                        L"required",
+                                                        L"root",
+                                                        L"target",
+                                                        L"valid",
+                                                        L"visited"};
     }
 }
 

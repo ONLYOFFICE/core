@@ -1,43 +1,54 @@
 #ifndef CELEMENT_H
 #define CELEMENT_H
 
-#include <vector>
-#include <string>
 #include <map>
-#include <list>
+#include <vector>
+#include "CCssCalculator.h"
 
-class CElement
+namespace NSCSS
 {
-    std::list<CElement*> m_arChildrens;
-    std::vector<std::wstring> m_arSelectors;
-    std::map<std::wstring, std::wstring> m_arDeclarations;
-public:
-    CElement();
-    ~CElement();
+    class CElement
+    {
+        std::map<std::wstring, std::wstring> m_mStyle;
 
-    bool Empty();
+        std::vector<CElement*> m_arPrevElements;
+        std::vector<CElement*> m_arKinElements;
 
-    void AddSelector(std::wstring sSelector);
-    void AddSelectors(const std::vector<std::wstring>& arSelectors);
-    void AddChildren(CElement* oChildren);
-    // void AddDeclaration(const std::pair<std::wstring, std::wstring>& pDeclaration);
-    void AddDeclarations(const std::map<std::wstring, std::wstring>& arDeclarations);
+        std::wstring m_sSelector;
+        std::wstring m_sFullSelector;
 
-    // void SetDeclaratins(const std::map<std::wstring, std::wstring>& arDeclarations);
+        std::vector<unsigned short int> m_arWeight;
 
-    size_t GetCountSelectors() const;
-    size_t GetCountDeclarations() const;
-    // int GetCountChildrens() const;
+    public:
+        CElement();
+        ~CElement();
 
-    bool FindSelector(const std::wstring& sSelector) const;
+        std::wstring GetSelector() const;
+        std::wstring GetFullSelector() const;
 
-    // std::vector<std::wstring> GetSelectors() const;
-    // std::map<std::wstring, std::wstring> GetDeclarations() const;
-    std::map<std::wstring, std::wstring> GetDeclarations(const std::wstring& sSelector, const std::vector<std::wstring>& arParents) const;
-    // std::vector<CElement*> GetChildrens() const;
-    std::wstring GetText() const;
+        void SetSelector(const std::wstring& sSelector);
+        void AddPropertie(const std::wstring& sName, const std::wstring& sValue);
+        void AddProperties(const std::map<std::wstring, std::wstring>& mProperties);
+        void AddPrevElement(CElement* oPrevElement);
+        void AddKinElement(CElement* oKinElement);
 
-    CElement& operator= (const CElement& oElement);
-};
+        size_t EmptyPrevElements() const;
+
+        std::map<std::wstring, std::wstring> GetStyle() const;
+        std::map<std::wstring, std::wstring> GetFullStyle(const std::vector<CNode>& arSelectors) const;
+        std::map<std::wstring, std::wstring> GetFullStyle(const std::vector<std::wstring>& arNodes) const;
+        std::vector<CElement *> GetAllElements(const std::vector<std::wstring>& arNodes) const;
+        std::vector<CElement *> GetNextOfKin(const std::wstring& sName, const std::vector<std::wstring>& arClasses = {});
+        std::map<std::wstring, std::wstring> GetConvertStyle(const std::vector<CNode>& arNodes) const;
+
+        CElement *FindPrevElement(const std::wstring& sSelector) const;
+
+        std::vector<unsigned short int> GetWeight();
+        void IncreasedWeight();
+
+        void Print() const;
+    };
+}
+
 
 #endif // CELEMENT_H

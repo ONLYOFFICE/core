@@ -40,7 +40,27 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
 
     XmlUtils::CXmlLiteReader oXmlLiteReader;
 
-    if (oXmlLiteReader.FromFile(m_sTempDir + L"/content.opf"))
+    bool bThereIsAFile = false;
+    std::wstring sOpfFilePath = m_sTempDir + L"/content.opf";
+
+    if (oXmlLiteReader.FromFile(sOpfFilePath))
+        bThereIsAFile = true;
+
+    if (!bThereIsAFile)
+    {
+        const std::vector<std::wstring>& arTempFiles = NSDirectory::GetFiles(m_sTempDir);
+        for (const std::wstring& sFile : arTempFiles)
+            if (NSFile::GetFileExtention(sFile) == L"opf")
+            {
+                sOpfFilePath = sFile;
+                break;
+            }
+
+        if (sOpfFilePath.empty())
+            return S_FALSE;
+    }
+
+    if (oXmlLiteReader.FromFile(sOpfFilePath))
     {
         oXmlLiteReader.ReadNextNode();
         int nParentDepth = oXmlLiteReader.GetDepth();
@@ -82,17 +102,6 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     }
     else
         return S_FALSE;
-
-    /*
-    if (!oXmlLiteReader.FromFile(m_sTempDir + L"/toc.ncx"))
-        return S_FALSE;
-
-    oXmlLiteReader.ReadNextNode();
-    m_oToc.ReadToc(oXmlLiteReader);
-//        #ifdef _DEBUG
-//            m_oToc.ShowToc();
-//        #endif
-    */
 
     CHtmlFile2 oFile;
     CHtmlParams oFileParams;

@@ -712,7 +712,7 @@ CFont CGraphics::GetFont()
     return m_oCurFont;
 }
 
-void CGraphics::font(unsigned int font_id, int font_size)
+void CGraphics::font(int font_id, int font_size)
 {
     /*
     AscFonts.g_font_infos[AscFonts.g_map_font_index[font_id]].LoadFont(editor.FontLoader, this.IsUseFonts2 ? this.m_oFontManager2 : this.m_oFontManager,

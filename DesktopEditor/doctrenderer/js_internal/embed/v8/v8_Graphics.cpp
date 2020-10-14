@@ -1,11 +1,11 @@
 #include "../GraphicsEmbed.h"
 #include "../../v8/v8_base.h"
 
-#define PROPERTY_GET(NAME, NAME_EMBED, TYPE)                                                                \
-    void NAME(v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)                 \
-    {                                                                                                       \
-        CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(info.Holder());                              \
-        info.GetReturnValue().Set(TYPE::New(v8::Isolate::GetCurrent(), _this->->m_pInternal->NAME_EMBED())) \
+#define PROPERTY_GET(NAME, NAME_EMBED, TYPE)                                                               \
+    void NAME(v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)                \
+    {                                                                                                      \
+        CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(info.Holder());                             \
+        info.GetReturnValue().Set(TYPE::New(v8::Isolate::GetCurrent(), _this->m_pInternal->NAME_EMBED())); \
     }
 
 #define PROPERTY_GET_OBJECT(NAME, NAME_EMBED)                                                \
@@ -15,6 +15,14 @@
         v8::Local<v8::Value>* v = _this->m_pInternal->NAME_EMBED();                          \
         if(v) info.GetReturnValue().Set(*v);                                                 \
         else  info.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));           \
+    }
+
+#define PROPERTY_SET(NAME, NAME_EMBED, TYPE)                                                                            \
+    void NAME(v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<v8::Value>& info) \
+    {                                                                                                                   \
+        CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(info.Holder());                                          \
+        _this->m_pInternal->NAME_EMBED(value);                                                                          \
+        info.GetReturnValue().Set(value);                                                                               \
     }
 
 namespace NSGraphics
@@ -144,29 +152,27 @@ namespace NSGraphics
     PROPERTY_GET_OBJECT(_g_m_oFontManager2,        g_m_oFontManager2)
     PROPERTY_GET_OBJECT(_g_m_oLastFont2,           g_m_oLastFont2)
     PROPERTY_GET_OBJECT(_g_dash_no_smart,          g_dash_no_smart)
-    /*
-    double m_dWidthMM_get()        { return m_dWidthMM;          }
-    double m_dHeightMM_get()       { return m_dHeightMM;         }
-    double m_lWidthPix_get()       { return m_lWidthPix;         }
-    double m_lHeightPix_get()      { return m_lHeightPix;        }
-    double m_dDpiX_get()           { return m_dDpiX;             }
-    double m_dDpiY_get()           { return m_dDpiY;             }
-    bool m_bIsBreak_get()          { return m_bIsBreak;          }
-    bool m_bPenColorInit_get()     { return m_bPenColorInit;     }
-    bool m_bBrushColorInit_get()   { return m_bBrushColorInit;   }
-    bool m_bIntegerGrid_get()      { return m_bIntegerGrid;      }
-    bool IsThumbnail_get()         { return IsThumbnail;         }
-    bool IsDemonstrationMode_get() { return IsDemonstrationMode; }
-    bool IsClipContext_get()       { return IsClipContext;       }
-    bool IsUseFonts2_get()         { return IsUseFonts2;         }
-    bool ClearMode_get()           { return ClearMode;           }
-    bool IsRetina_get()            { return IsRetina;            }
-    CFont               m_oCurFont_get()         { return m_oCurFont;         }
-    CLastFontOriginInfo LastFontOriginInfo_get() { return LastFontOriginInfo; }
-    int TextureFillTransformScaleX_get() { return TextureFillTransformScaleX; }
-    int TextureFillTransformScaleY_get() { return TextureFillTransformScaleY; }
-    int globalAlpha_get()                { return globalAlpha;                }
-    */
+    PROPERTY_GET(_g_m_dWidthMM,   g_m_dWidthMM,   v8::Number)
+    PROPERTY_GET(_g_m_dHeightMM,  g_m_dHeightMM,  v8::Number)
+    PROPERTY_GET(_g_m_lWidthPix,  g_m_lWidthPix,  v8::Number)
+    PROPERTY_GET(_g_m_lHeightPix, g_m_lHeightPix, v8::Number)
+    PROPERTY_GET(_g_m_dDpiX,      g_m_dDpiX,      v8::Number)
+    PROPERTY_GET(_g_m_dDpiY,      g_m_dDpiY,      v8::Number)
+    PROPERTY_GET(_g_m_bIsBreak,          g_m_bIsBreak,          v8::Boolean)
+    PROPERTY_GET(_g_m_bPenColorInit,     g_m_bPenColorInit,     v8::Boolean)
+    PROPERTY_GET(_g_m_bBrushColorInit,   g_m_bBrushColorInit,   v8::Boolean)
+    PROPERTY_GET(_g_m_bIntegerGrid,      g_m_bIntegerGrid,      v8::Boolean)
+    PROPERTY_GET(_g_IsThumbnail,         g_IsThumbnail,         v8::Boolean)
+    PROPERTY_GET(_g_IsDemonstrationMode, g_IsDemonstrationMode, v8::Boolean)
+    PROPERTY_GET(_g_IsClipContext,       g_IsClipContext,       v8::Boolean)
+    PROPERTY_GET(_g_IsUseFonts2,         g_IsUseFonts2,         v8::Boolean)
+    PROPERTY_GET(_g_ClearMode,           g_ClearMode,           v8::Boolean)
+    PROPERTY_GET(_g_IsRetina,            g_IsRetina,            v8::Boolean)
+    //PROPERTY_GET_OBJECT(_g_m_oCurFont,          g_m_oCurFont)
+    //PROPERTY_GET_OBJECT(_g_LastFontOriginInfo,  g_LastFontOriginInfo)
+    PROPERTY_GET(_g_TextureFillTransformScaleX, g_TextureFillTransformScaleX, v8::Int32)
+    PROPERTY_GET(_g_TextureFillTransformScaleY, g_TextureFillTransformScaleY, v8::Int32)
+    PROPERTY_GET(_g_globalAlpha,                g_globalAlpha,                v8::Int32)
 
     v8::Handle<v8::ObjectTemplate> CreateGraphicsTemplate(v8::Isolate* isolate)
     {

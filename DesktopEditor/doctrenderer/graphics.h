@@ -207,7 +207,7 @@ namespace NSGraphics
         void drawImage(const v8::Local<v8::Value>& img, double x, double y, double w, double h, int alpha, const v8::Local<v8::Value>& srcRect, const v8::Local<v8::Value>& nativeImage);
         // text
         CFont GetFont();
-        void font(unsigned int font_id, int font_size);
+        void font(int font_id, int font_size);
         void SetFont(const v8::Local<v8::Value>& font);
         void SetTextPr(const v8::Local<v8::Value>& textPr, const v8::Local<v8::Value>& theme);
         void SetFontSlot(const v8::Local<v8::Value>& slot, double fontSizeKoef);

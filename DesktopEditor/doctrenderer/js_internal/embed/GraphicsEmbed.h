@@ -18,9 +18,9 @@ public:
 
 public:
     JSSmart<CJSValue> init(JSSmart<CJSValue> context, JSSmart<CJSValue> width_px, JSSmart<CJSValue> height_px, JSSmart<CJSValue> width_mm, JSSmart<CJSValue> height_mm);
-    JSSmart<CJSValue> EndDraw() {}
+    JSSmart<CJSValue> EndDraw();
     JSSmart<CJSValue> put_GlobalAlpha(JSSmart<CJSValue> enable, JSSmart<CJSValue> globalAlpha);
-    JSSmart<CJSValue> Start_GlobalAlpha() {}
+    JSSmart<CJSValue> Start_GlobalAlpha();
     JSSmart<CJSValue> End_GlobalAlpha();
     // pen methods
     JSSmart<CJSValue> p_color(JSSmart<CJSValue> r, JSSmart<CJSValue> g, JSSmart<CJSValue> b, JSSmart<CJSValue> a);
@@ -65,7 +65,7 @@ public:
     JSSmart<CJSValue> t2(JSSmart<CJSValue> text, JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> cropX, JSSmart<CJSValue> cropW);
     JSSmart<CJSValue> FillTextCode(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> lUnicode);
     JSSmart<CJSValue> tg(JSSmart<CJSValue> text, JSSmart<CJSValue> x, JSSmart<CJSValue> y);
-    JSSmart<CJSValue> charspace(JSSmart<CJSValue> space) {}
+    JSSmart<CJSValue> charspace(JSSmart<CJSValue> space);
     // private methods
     JSSmart<CJSValue> private_FillGlyph (JSSmart<CJSValue> pGlyph, JSSmart<CJSValue> _bounds);
     JSSmart<CJSValue> private_FillGlyphC(JSSmart<CJSValue> pGlyph, JSSmart<CJSValue> cropX, JSSmart<CJSValue> cropW);
@@ -90,7 +90,7 @@ public:
     JSSmart<CJSValue> TableRect(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h);
     // функции клиппирования
     JSSmart<CJSValue> AddClipRect(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h);
-    JSSmart<CJSValue> RemoveClipRect() {}
+    JSSmart<CJSValue> RemoveClipRect();
     JSSmart<CJSValue> SetClip(JSSmart<CJSValue> r);
     JSSmart<CJSValue> RemoveClip();
     JSSmart<CJSValue> drawCollaborativeChanges(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h, JSSmart<CJSValue> Color);
@@ -105,7 +105,7 @@ public:
     JSSmart<CJSValue> RestorePenBrush();
     JSSmart<CJSValue> SaveGrState();
     JSSmart<CJSValue> RestoreGrState();
-    JSSmart<CJSValue> StartClipPath() {}
+    JSSmart<CJSValue> StartClipPath();
     JSSmart<CJSValue> EndClipPath();
     JSSmart<CJSValue> StartCheckTableDraw();
     JSSmart<CJSValue> EndCheckTableDraw(JSSmart<CJSValue> bIsRestore);
@@ -113,8 +113,8 @@ public:
     JSSmart<CJSValue> AddSmartRect   (JSSmart<CJSValue> x,  JSSmart<CJSValue> y,  JSSmart<CJSValue> w,  JSSmart<CJSValue> h, JSSmart<CJSValue> pen_w);
     JSSmart<CJSValue> CheckUseFonts2 (JSSmart<CJSValue> _transform);
     JSSmart<CJSValue> UncheckUseFonts2();
-    JSSmart<CJSValue> Drawing_StartCheckBounds(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h) {}
-    JSSmart<CJSValue> Drawing_EndCheckBounds() {}
+    JSSmart<CJSValue> Drawing_StartCheckBounds(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h);
+    JSSmart<CJSValue> Drawing_EndCheckBounds();
     JSSmart<CJSValue> DrawPresentationComment(JSSmart<CJSValue> type, JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h);
     JSSmart<CJSValue> DrawPolygon(JSSmart<CJSValue> oPath, JSSmart<CJSValue> lineWidth, JSSmart<CJSValue> shift);
     JSSmart<CJSValue> DrawFootnoteRect(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h);

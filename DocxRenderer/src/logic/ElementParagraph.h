@@ -9,7 +9,7 @@ namespace NSDocxRenderer
 
 	// у класса T должен быть метод IsBigger, IsBiggerOrEqual
 	template<typename T> 
-    void SortElements(CArray<T*>& oArray)
+    void SortElements(std::vector<T*>& oArray)
 	{
 		int nSize = (int)oArray.GetCount();
 

@@ -30,7 +30,7 @@ namespace NSFontManager
         std::wstring					m_strFamilyName;
         std::wstring					m_strPANOSE;
 		LONG							m_lStyle;
-        CArray<DWORD>   				m_arSignature;
+        std::vector<DWORD>   			m_arSignature;
 		bool							m_bIsFixedWidth;
 		LONG							m_lAvgWidth;
 
@@ -51,7 +51,7 @@ namespace NSFontManager
             m_strFamilyName		= L"";
             m_strPANOSE			= L"";
 			m_lStyle			= 0;
-			m_arSignature.RemoveAll();
+			m_arSignature.clear();
 			m_bIsFixedWidth		= false;
 			m_lAvgWidth			= -1;
 		}
@@ -388,7 +388,7 @@ namespace NSFontManager
 
 			// Signature
 			VARIANT_BOOL vbSuccess = VARIANT_FALSE;
-			m_oFont.m_arSignature.RemoveAll();
+			m_oFont.m_arSignature.clear();
 
 			for ( unsigned int i = 0; i < 6; i++ )
 			{
@@ -404,7 +404,7 @@ namespace NSFontManager
 					}
 				}
 
-				m_oFont.m_arSignature.Add(value);
+				m_oFont.m_arSignature.push_bak(value);
 			}
 		}
 

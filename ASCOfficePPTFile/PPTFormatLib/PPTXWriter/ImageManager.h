@@ -102,7 +102,10 @@ namespace PPT_FORMAT
 				CFileDownloader oDownloader(strInput, TRUE);
 				if ( oDownloader.DownloadSync() )
 				{
-					return GenerateMedia( oDownloader.GetFilePath(), Template, Indexer, strDefaultExt);
+					std::wstring file_name = oDownloader.GetFilePath();
+					
+					//todooo - check media file
+					return GenerateMedia(file_name , Template, Indexer, strDefaultExt);
 				}
 #endif
 			}

@@ -36,6 +36,7 @@
 
 #include "../../ASCOfficePPTXFile/ASCOfficeDrawingConverter.h"
 #include "../../ASCOfficePPTXFile/Editor/FontPicker.h"
+#include "../../ASCOfficePPTXFile/PPTXFormat/Logic/HeadingVariant.h"
 
 #include "FontProcessor.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
@@ -202,7 +203,8 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, 
 		bool bValidFormat = false;
         std::wstring sSignature(g_sFormatSignature);
         int nSigLength = (int)sSignature.length();
-		if((int)nBase64DataSize > nSigLength)
+		
+		if ((int)nBase64DataSize > nSigLength)
 		{
             std::string sCurSig((char*)pBase64Data, nSigLength);
             if(sSignature == std::wstring(sCurSig.begin(), sCurSig.end()))
@@ -323,6 +325,11 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, 
 					OOX::CCore pCore(NULL);
 					pCore.SetDefaults();
 					pCore.write(pathDocProps + FILE_SEPARATOR_STR + _T("core.xml"), DocProps, *pContentTypes);
+				}
+
+				if (NULL != m_pCurFileWriter->m_pCustomProperties)
+				{
+					m_pCurFileWriter->m_pCustomProperties->write(pathDocProps + FILE_SEPARATOR_STR + _T("custom.xml"), DocProps, *pContentTypes);
 				}
 
 /////////////////////////////////////////////////////////////////////////////////////

@@ -391,7 +391,7 @@ namespace NSCSS
         }
 
         std::vector<CElement*> arElements;
-
+      
         for (std::vector<CNode>::const_reverse_iterator iNode = arSelectors.rbegin(); iNode != arSelectors.rend(); ++iNode)
         {
             std::vector<std::wstring> arKins;
@@ -460,12 +460,10 @@ namespace NSCSS
                 const std::vector<CElement*> arTemp = oFindName->second->GetAllElements(arWords);
                 arFindElements.insert(arFindElements.end(), arTemp.begin(), arTemp.end());
             }
-
             std::sort(arFindElements.rbegin(), arFindElements.rend(), [](CElement* oFirstElement, CElement* oSecondElement)
             {
                 return oFirstElement->GetWeight() < oSecondElement->GetWeight();
             });
-
 
             for (const CElement* oElement : arFindElements)
                 oStyle->AddStyle(oElement->GetStyle());
@@ -490,6 +488,7 @@ namespace NSCSS
 
         KatanaOutput *output = katana_parse(sStyle.c_str(), sStyle.length(), KatanaParserModeStylesheet);
         this->GetOutputData(output);
+
         katana_destroy_output(output);
     }
 

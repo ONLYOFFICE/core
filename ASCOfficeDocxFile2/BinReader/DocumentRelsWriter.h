@@ -40,7 +40,7 @@ namespace Writers
 	{
         std::wstring	m_sDir;
 	public:
-        DocumentRelsWriter(std::wstring sDir):m_sDir(sDir)
+		DocumentRelsWriter(std::wstring sDir):m_sDir(sDir), m_bHasCustom(false)
 		{
 		}
 		void Write()
@@ -51,8 +51,12 @@ namespace Writers
 <Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"> \
 <Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"word/document.xml\"/> \
 <Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties\" Target=\"docProps/core.xml\"/> \
-<Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties\" Target=\"docProps/app.xml\"/> \
-</Relationships>");
+<Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties\" Target=\"docProps/app.xml\"/>");
+			if(m_bHasCustom)
+			{
+				s_Common += L"<Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/custom-properties\" Target=\"docProps/custom.xml\"/>";
+			}
+			s_Common += L"</Relationships>";
 
             OOX::CPath fileName = m_sDir + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR + _T(".rels");
 
@@ -61,6 +65,8 @@ namespace Writers
             oFile.WriteStringUTF8(s_Common);
 			oFile.CloseFile();
 		}
+	public:
+		bool m_bHasCustom;
 	};
 }
 #endif	// #ifndef DOCUMENT_RELS_WRITER

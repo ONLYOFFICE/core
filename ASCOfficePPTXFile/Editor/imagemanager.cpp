@@ -119,10 +119,14 @@ namespace NSShapeImageGen
 			if (oDownloader.DownloadSync())
 			{
 				strDownload = oDownloader.GetFilePath();
+				
+				CImageFileFormatChecker checker;
+				if (false == checker.isImageFile(strDownload))
+				{
+					strDownload.clear();
+				}
 			}
-
 #endif
-
 			return GenerateImageID(strDownload, strFileUrl, (std::max)(1.0, width), (std::max)(1.0, height), strAdditionalFile, typeAdditionalFile);
 		}
 		
@@ -179,7 +183,13 @@ namespace NSShapeImageGen
             if (oDownloader.DownloadSync())
             {
                 strDownload = oDownloader.GetFilePath();
-            }
+				
+				CImageFileFormatChecker checker;
+				if (false == checker.isImageFile(strDownload))
+				{
+					strDownload.clear();
+				}           
+			}
 #endif
             return GenerateMediaID(strDownload, strFileUrl);
         }

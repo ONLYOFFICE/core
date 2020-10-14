@@ -41,6 +41,7 @@
 #include "../../ASCOfficePPTXFile/Editor/FontCutter.h"
 #include "../../ASCOfficePPTXFile/PPTXFormat/App.h"
 #include "../../ASCOfficePPTXFile/PPTXFormat/Core.h"
+#include "../../ASCOfficePPTXFile/PPTXFormat/Logic/HeadingVariant.h"
 
 #include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/XlsxFlat.h"
@@ -5506,6 +5507,11 @@ void BinaryWorksheetTableWriter::WriteCommentDataContent(OOX::Spreadsheet::CComm
 			m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::UserName);
 			m_oBcw.m_oStream.WriteStringW(pCommentData->sUserName);
 		}
+		if (!pCommentData->sUserData.empty())
+		{
+			m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::UserData);
+			m_oBcw.m_oStream.WriteStringW(pCommentData->sUserData);
+		}
 		if (!pCommentData->sQuoteText.empty())
 		{
 			m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::QuoteText);
@@ -6924,6 +6930,15 @@ void BinaryFileWriter::intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinary
 	{
 		nCurPos = this->WriteTableStart(c_oSerTableTypes::Core);
 		pXlsx->m_pCore->ToPptxCore()->toPPTY(&oBufferedStream);
+		this->WriteTableEnd(nCurPos);
+	}
+
+	smart_ptr<OOX::File> pFile = pXlsx->Find(OOX::FileTypes::CustomProperties);
+	PPTX::CustomProperties *pCustomProperties = dynamic_cast<PPTX::CustomProperties*>(pFile.GetPointer());
+	if (pCustomProperties)
+	{
+		nCurPos = this->WriteTableStart(c_oSerTableTypes::CustomProperties);
+		pCustomProperties->toPPTY(&oBufferedStream);
 		this->WriteTableEnd(nCurPos);
 	}
 

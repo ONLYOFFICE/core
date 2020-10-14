@@ -48,6 +48,7 @@
 #include "../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/toVmlConvert.h"
 #include "../../ASCOfficePPTXFile/PPTXFormat/App.h"
 #include "../../ASCOfficePPTXFile/PPTXFormat/Core.h"
+#include "../../ASCOfficePPTXFile/PPTXFormat/Logic/HeadingVariant.h"
 
 #include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Sparkline.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Drawing/Drawing.h"
@@ -3325,6 +3326,10 @@ int BinaryCommentReader::ReadCommentData(BYTE type, long length, void* poResult)
 	{
 		pComments->bDocument = true;
 		pComments->Document = m_oBufferedStream.GetBool();
+	}
+	else if ( c_oSer_CommentData::UserData == type )
+	{
+		pComments->sUserData = m_oBufferedStream.GetString4(length);
 	}
 	else if ( c_oSer_CommentData::Replies == type ) {
 		READ1_DEF(length, res, this->ReadCommentReplies, &pComments->aReplies);
@@ -6795,6 +6800,7 @@ BinaryFileReader::BinaryFileReader()
 int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sDstPath, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions)
 {
 	bool bResultOk = false;
+	
 	NSFile::CFileBinary oFile;
 	
 	if (false == oFile.OpenFile(sSrcFileName)) return AVS_FILEUTILS_ERROR_CONVERT;
@@ -6901,11 +6907,20 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 			std::wstring themePath = sDstPath + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultDirectory().GetPath();
 			std::wstring drawingsPath = sDstPath + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Drawings.DefaultDirectory().GetPath();
            
+			bResultOk = true;
+			
 			if(BinXlsxRW::c_oFileTypes::XLSX == fileType)
 			{
 				SaveParams oSaveParams(drawingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), NULL);
 				
-				ReadMainTable(oXlsx, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, oSaveParams, pOfficeDrawingConverter);
+				try
+				{
+					ReadMainTable(oXlsx, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, oSaveParams, pOfficeDrawingConverter);
+				}
+				catch(...)
+				{
+					bResultOk = false;
+				}
 				
 				oXlsx.PrepareToWrite();
 				oXlsx.Write(sDstPath, *oSaveParams.pContentTypes);
@@ -6916,11 +6931,16 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 				oCSVWriter.Start(sDstPathCSV);
 				SaveParams oSaveParams(drawingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), &oCSVWriter);
 				
-				ReadMainTable(oXlsx, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, oSaveParams, pOfficeDrawingConverter);
-				
+				try
+				{
+					ReadMainTable(oXlsx, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, oSaveParams, pOfficeDrawingConverter);
+				}
+				catch(...)
+				{
+					bResultOk = false;
+				}				
 				oCSVWriter.End();
 			}
-			bResultOk = true;
 		}
 		if (!bIsNoBase64)
 		{
@@ -7036,6 +7056,14 @@ int BinaryFileReader::ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW:
 				pCore->SetRequiredDefaults();
 				oXlsx.m_pCore = pCore;
 				smart_ptr<OOX::File> oCurFile(pCore);
+				oXlsx.Add(oCurFile);
+			}
+			break;
+		case c_oSerTableTypes::CustomProperties:
+			{
+				PPTX::CustomProperties* oCustomProperties = new PPTX::CustomProperties(NULL);
+				oCustomProperties->fromPPTY(&oBufferedStream);
+				smart_ptr<OOX::File> oCurFile(oCustomProperties);
 				oXlsx.Add(oCurFile);
 			}
 			break;

@@ -362,25 +362,17 @@ public:
     // Конвертирует html в xhtml
     bool htmlXhtml(const std::wstring& sSrc)
     {
-        return m_oLightReader.FromString(htmlToXhtml(sSrc));
+        if(NSFile::GetFileExtention(sSrc) != L"xhtml")
+            return m_oLightReader.FromString(htmlToXhtml(sSrc));
+        return m_oLightReader.FromFile(sSrc);
     }
 
     // Конвертирует mht в xhtml
     bool mhtXhtml(const std::wstring& sSrc)
     {
-        /*
-        NSFile::CFileBinary oXhtmlWriter;
-        if (oXhtmlWriter.CreateFileW(m_sTmp + L"/res.xhtml"))
-        {
-            // htmlToXhtml возвращает текст файла в кодировке UTF-8
-            oXhtmlWriter.WriteStringUTF8(mhtToXhtml(sSrc, m_sTmp));
-            oXhtmlWriter.CloseFile();
-        }
-        else
-            return false;
-        return true;
-        */
-        return m_oLightReader.FromString(mhtToXhtml(sSrc));
+        if(NSFile::GetFileExtention(sSrc) == L"mht")
+            return m_oLightReader.FromString(mhtToXhtml(sSrc));
+        return htmlXhtml(sSrc);
     }
 
     // Читает стили
@@ -517,12 +509,16 @@ private:
     {
         if(sName == L"#text")
         {
+            std::wstring sText = m_oLightReader.GetText();
+            size_t find = sText.find_first_not_of(L" \n\t\r");
+            if(find == std::wstring::npos)
+                return;
+
             std::wstring sPStyle = wrP(oXml, sSelectors, oTS, bWasP);
             oXml->WriteString(L"<w:r>");
             std::wstring sRStyle = wrR(oXml, sSelectors, oTS);
             oXml->WriteString(L"<w:t xml:space=\"preserve\">");
 
-            std::wstring sText = m_oLightReader.GetText();
             std::wstring::iterator end;
             if(oTS.bBdo)
                 std::reverse(sText.begin(), sText.end());

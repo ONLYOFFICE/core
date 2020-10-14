@@ -141,6 +141,7 @@ public:
 	int Read_pgHeader(BYTE type, long length, void* poResult);
 	int Read_pgFooter(BYTE type, long length, void* poResult);
 	int Read_pageNumType(BYTE type, long length, void* poResult);
+	int Read_lineNumType(BYTE type, long length, void* poResult);
 	int ReadCols(BYTE type, long length, void* poResult);
 	int ReadCol(BYTE type, long length, void* poResult);
 	int ReadPageBorders(BYTE type, long length, void* poResult);
@@ -466,6 +467,9 @@ public:
 	int ReadSdtPrDate(BYTE type, long length, void* poResult);
 	int ReadDocPartList(BYTE type, long length, void* poResult);
 	int ReadDropDownList(BYTE type, long length, void* poResult);
+	int ReadSdtFormPr(BYTE type, long length, void* poResult);
+	int ReadSdtTextFormPr(BYTE type, long length, void* poResult);
+	int ReadSdtTextFormPrComb(BYTE type, long length, void* poResult);
 };
 class Binary_NotesTableReader : public Binary_CommonReader
 {

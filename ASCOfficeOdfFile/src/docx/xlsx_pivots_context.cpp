@@ -1532,7 +1532,7 @@ void xlsx_pivots_context::add_field_cache(int index, std::wstring value, bool sh
 			node_name = L"n";
 
 			_INT64 iVal = *dVal;
-			if (abs(iVal - *dVal) > 0.00001)
+			if ( *dVal - iVal > 0.00001)
 			{
 				value = std::to_wstring(*dVal);
 				impl_->current_.fields.back().bNumber = true;

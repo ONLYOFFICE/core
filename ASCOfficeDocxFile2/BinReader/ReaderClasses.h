@@ -62,6 +62,7 @@ public:
     std::wstring pgBorders;
     std::wstring footnotePr;
     std::wstring endnotePr;
+	std::wstring lineNum;
 	bool RtlGutter;
 	long Gutter;
 
@@ -164,6 +165,9 @@ public:
 		}
         if(!pgBorders.empty())
             sRes += pgBorders;
+
+		if(!lineNum.empty())
+			sRes += lineNum;
 
         if(bPageNumStart)
             sRes += L"<w:pgNumType w:start=\"" + std::to_wstring(PageNumStart) + L"\"/>";
@@ -1928,6 +1932,8 @@ public:
 	std::wstring ProviderId;
     std::wstring Date;
 	std::wstring OOData;
+	std::wstring DateUtc;
+	std::wstring UserData;
 	bool Solved;
 	unsigned int DurableId;
     std::wstring Text;
@@ -2034,13 +2040,6 @@ public:
 			sRes += sDate;
             sRes += L"\"";
 		}
-		if(false == pComment->OOData.empty())
-		{
-			std::wstring sData = XmlUtils::EncodeXmlString(pComment->OOData);
-			sRes += L" oodata=\"";
-			sRes += sData;
-			sRes += L"\"";
-		}
 		if(false == pComment->Initials.empty())
 		{
             sRes += L" w:initials=\"";
@@ -2091,6 +2090,27 @@ w15:paraIdParent=\"" + pComment->sParaIdParent + L"\" w15:done=\"" + sDone + L"\
 			//расставляем paraIdParent
 			for(size_t i = 0; i < pComment->replies.size(); i++)
 				pComment->replies[i]->sParaIdParent = pComment->sParaId;
+		}
+		return sRes;
+	}
+	static std::wstring writeContentExtensible(CComment* pComment)
+	{
+		std::wstring sRes;
+		if(pComment->bDurableId && !pComment->DateUtc.empty())
+		{
+			sRes += L"<w16cex:commentExtensible w16cex:durableId=\"" + XmlUtils::IntToString(pComment->DurableId, L"%08X") + L"\" w16cex:dateUtc=\"" + pComment->DateUtc + L"\"/>";
+		}
+		return sRes;
+	}
+	static std::wstring writeContentUserData(CComment* pComment)
+	{
+		std::wstring sRes;
+		if(pComment->bDurableId && !pComment->UserData.empty())
+		{
+			sRes += L"<w16cex:commentExtensible w16cex:durableId=\"" + XmlUtils::IntToString(pComment->DurableId, L"%08X") + L"\">";
+			sRes += L"<w16cex:extLst><w16cex:ext uri=\"{19B8F6BF-5375-455C-9EA6-DF929625EA0E}\"><p15:presenceInfo xmlns:p15=\"http://schemas.microsoft.com/office/powerpoint/2012/main\" userId=\"";
+			sRes += XmlUtils::EncodeXmlStringExtend(pComment->UserData);
+			sRes += L"\" providerId=\"AD\"/></w16cex:ext></w16cex:extLst></w16cex:commentExtensible>";
 		}
 		return sRes;
 	}
@@ -2189,6 +2209,28 @@ public:
 			sRes += CComment::writeContentExt(it->second);
 			for(size_t i = 0; i < it->second->replies.size(); ++i)
 				sRes += CComment::writeContentExt(it->second->replies[i]);
+		}
+		return sRes;
+	}
+	std::wstring writeContentExtensible()
+	{
+		std::wstring sRes;
+		for (boost::unordered_map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
+		{
+			sRes += CComment::writeContentExtensible(it->second);
+			for(size_t i = 0; i < it->second->replies.size(); ++i)
+				sRes += CComment::writeContentExtensible(it->second->replies[i]);
+		}
+		return sRes;
+	}
+	std::wstring writeContentUserData()
+	{
+		std::wstring sRes;
+		for (boost::unordered_map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
+		{
+			sRes += CComment::writeContentUserData(it->second);
+			for(size_t i = 0; i < it->second->replies.size(); ++i)
+				sRes += CComment::writeContentUserData(it->second->replies[i]);
 		}
 		return sRes;
 	}

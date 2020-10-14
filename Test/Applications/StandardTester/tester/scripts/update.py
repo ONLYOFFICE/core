@@ -25,19 +25,6 @@ print("-----------------------------------------------")
 
 # 2) create new portable version
 print("- create new version --------------------------")
-shutil.copytree(git_dir + "/sdkjs/deploy/sdkjs", work_dir + "/sdkjs")
-
-if os.path.isfile(work_dir + "/sdkjs/word/sdk-all.cache"):
-  os.remove(work_dir + "/sdkjs/word/sdk-all.cache")
-if os.path.isfile(work_dir + "/sdkjs/slide/sdk-all.cache"):
-  os.remove(work_dir + "/sdkjs/slide/sdk-all.cache")
-if os.path.isfile(work_dir + "/sdkjs/cell/sdk-all.cache"):
-  os.remove(work_dir + "/sdkjs/cell/sdk-all.cache")
-  
-os.makedirs(work_dir + "/sdkjs/vendor/jquery")
-shutil.copy2(git_dir + "/web-apps/vendor/jquery/jquery.min.js", work_dir + "/sdkjs/vendor/jquery/jquery.min.js")
-os.makedirs(work_dir + "/sdkjs/vendor/xregexp")
-shutil.copy2(git_dir + "/web-apps/vendor/xregexp/xregexp-all-min.js", work_dir + "/sdkjs/vendor/xregexp/xregexp-all-min.js")
 
 base_core = git_dir + "/server/FileConverter/bin/core"
 for r, d, f in os.walk(base_core):
@@ -46,7 +33,7 @@ for r, d, f in os.walk(base_core):
   for dir in d:
     shutil.copytree(os.path.join(base_core, dir), work_dir + "/" + os.path.basename(dir))
   break
-
+  
 if os.path.isfile(work_dir + "/allfontsgen" + exe_addon):
   os.remove(work_dir + "/allfontsgen" + exe_addon)
 if os.path.isfile(work_dir + "/allthemesgen" + exe_addon):

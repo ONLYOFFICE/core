@@ -287,7 +287,7 @@ namespace ComplexTypes
 				if ( m_oDistance.IsInit() )
 				{
 					sResult += (L"w:distance=\"");
-					sResult += m_oDistance->ToString();
+					sResult += std::to_wstring(m_oDistance->ToTwips());
 					sResult += (L"\" ");
 				}
 

@@ -328,7 +328,7 @@ bool CxImage::Transfer(CxImage &from, bool bTransferFrames /*=true*/)
 	memcpy(&info,&from.info,sizeof(CXIMAGEINFO));
 
 	pDib = from.pDib;
-    pDib = from.pDibLimit;
+    pDibLimit = from.pDibLimit;
 	pSelection = from.pSelection;
 	pAlpha = from.pAlpha;
 	ppLayers = from.ppLayers;

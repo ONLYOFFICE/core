@@ -102,6 +102,55 @@ typedef struct tag_Section_t{
 } Section_t;
 
 public:
+    class CSafeReader
+    {
+    private:
+        uint8_t* data;
+        unsigned int len;
+
+    public:
+        CSafeReader(uint8_t* _data = NULL, unsigned int _len = 0)
+        {
+            data = _data;
+            len = _len;
+        }
+        CSafeReader(const CSafeReader& src)
+        {
+            data = src.data;
+            len = src.len;
+        }
+        CSafeReader& operator=(const CSafeReader& src)
+        {
+            data = src.data;
+            len = src.len;
+            return *this;
+        }
+        CSafeReader Offset(unsigned int offset)
+        {
+            if (offset > len)
+                offset = len;
+            CSafeReader reader(data, len);
+            reader.data += offset;
+            reader.len -= offset;
+            return reader;
+        }
+        bool Check(unsigned int size)
+        {
+            if (len >= size)
+                return true;
+            return false;
+        }
+        bool Check(unsigned int offset, unsigned int size)
+        {
+            return Check(offset + size);
+        }
+        uint8_t* GetData(unsigned int offset)
+        {
+            return data + offset;
+        }
+    };
+
+public:
 	EXIFINFO* m_exifinfo;
 	char m_szLastError[256];
 	CxExifInfo(EXIFINFO* info = NULL);
@@ -118,8 +167,11 @@ protected:
 	int32_t Get32s(void * Long);
 	uint32_t Get32u(void * Long);
 	double ConvertAnyFormat(void * ValuePtr, int32_t Format);
+	double ConvertAnyFormat2(CSafeReader& reader, int32_t Format);
 	void* FindSection(int32_t SectionType);
 	bool ProcessExifDir(uint8_t * DirStart, uint8_t * OffsetBase, unsigned ExifLength,
+                           EXIFINFO * const pInfo, uint8_t ** const LastExifRefdP, int32_t NestingLevel=0);
+    bool ProcessExifDir2(CSafeReader& DirStart, CSafeReader& OffsetBase, unsigned ExifLength,
                            EXIFINFO * const pInfo, uint8_t ** const LastExifRefdP, int32_t NestingLevel=0);
 	int32_t ExifImageWidth;
 	int32_t MotorolaOrder;

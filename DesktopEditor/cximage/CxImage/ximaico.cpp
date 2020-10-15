@@ -96,12 +96,12 @@ bool CxImageICO::Decode(CxFile *hFile)
 				RGBQUAD pal[256];
 				if (bih.biClrUsed)
                 {
-                    DWORD _count = bih.biClrUsed; if (_count > 256) _count = 256;
+                    uint32_t _count = bih.biClrUsed; if (_count > 256) _count = 256;
                     hFile->Read(pal,_count*sizeof(RGBQUAD), 1);
                 }
 				else
                 {
-                    DWORD _count = head.biClrUsed; if (_count > 256) _count = 256;
+                    uint32_t _count = head.biClrUsed; if (_count > 256) _count = 256;
                     hFile->Read(pal,_count*sizeof(RGBQUAD), 1);
                 }
 

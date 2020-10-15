@@ -3,11 +3,10 @@
 #include <string>
 #include <vector>
 #include <fstream>
-#include <cwctype>
 #include <cmath>
 #include <algorithm>
 #include <iostream>
-#include <array>
+#include <numeric>
 
 #include "../../katana-parser/src/selector.h"
 #include "../../../../../UnicodeConverter/UnicodeConverter.h"
@@ -40,17 +39,21 @@ bool operator<(const std::vector<NSCSS::CNode> &arLeftSelectors, const std::vect
 
 namespace NSCSS
 {
-    CCssCalculator_Private::CCssCalculator_Private() : m_nDpi(96), m_nCountNodes(1), m_UnitMeasure(Default), m_sEncoding(L"UTF-8") {}
+    CCssCalculator_Private::CCssCalculator_Private() : m_nDpi(96), m_nCountNodes(0), m_UnitMeasure(Default), m_sEncoding(L"UTF-8") {}
 
     CCssCalculator_Private::~CCssCalculator_Private()
     {
-        for (CElement*& item : m_arData)
-            delete item;
-        m_arData.clear();
         m_arFiles.clear();
+
+        for (std::map<std::wstring, CElement*>::iterator oIter = m_mData.begin(); oIter != m_mData.end(); ++oIter)
+            if (oIter->second != NULL)
+                delete oIter->second;
+
+        m_mData.clear();
 
         for (std::map<std::vector<CNode>, CCompiledStyle*>::iterator iter  = m_mUsedStyles.begin(); iter != m_mUsedStyles.end(); ++iter)
             delete iter->second;
+
         m_mUsedStyles.clear();
     }
 
@@ -81,9 +84,7 @@ namespace NSCSS
     inline void CCssCalculator_Private::GetOutputData(KatanaOutput *oOutput)
     {
         if ( NULL == oOutput )
-            return;
-
-        CElement *oElement = new CElement;
+            return;        
 
         switch (oOutput->mode) {
             case KatanaParserModeStylesheet:
@@ -93,58 +94,38 @@ namespace NSCSS
                 GetRule(oOutput->rule);
                 break;
             case KatanaParserModeKeyframeRule:
-                oElement = GetKeyframe(oOutput->keyframe);
-                break;
             case KatanaParserModeKeyframeKeyList:
-                oElement->AddSelector(GetValueList(oOutput->keyframe_keys));
-                break;
             case KatanaParserModeMediaList:
-                oElement->AddSelector(GetMediaList(oOutput->medias));
-                break;
             case KatanaParserModeValue:
-                oElement->AddSelector(GetValueList(oOutput->values));
-                break;
             case KatanaParserModeSelector:
-                oElement->AddSelectors(GetSelectorList(oOutput->selectors));
-                break;
             case KatanaParserModeDeclarationList:
-                oElement->AddDeclarations(GetDeclarationList(oOutput->declarations));
                 break;
         }
 
-        (oElement->Empty()) ? delete oElement : m_arData.push_back(oElement);
     }
 
-    inline void CCssCalculator_Private::GetStylesheet(const KatanaStylesheet *oStylesheet, CElement *elementRule)
+    inline void CCssCalculator_Private::GetStylesheet(const KatanaStylesheet *oStylesheet)
     {
         for (size_t i = 0; i < oStylesheet->imports.length; ++i)
-            GetRule((KatanaRule*)oStylesheet->imports.data[i], elementRule);
+            GetRule((KatanaRule*)oStylesheet->imports.data[i]);
 
         for (size_t i = 0; i < oStylesheet->rules.length; ++i)
-            GetRule((KatanaRule*)oStylesheet->rules.data[i], elementRule);
+            GetRule((KatanaRule*)oStylesheet->rules.data[i]);
     }
 
-    inline void CCssCalculator_Private::GetRule(const KatanaRule *oRule, CElement *oElementRule)
+    inline void CCssCalculator_Private::GetRule(const KatanaRule *oRule)
     {
         if ( NULL == oRule )
             return;
 
         switch (oRule->type) {
             case KatanaRuleStyle:
-                GetStyleRule((KatanaStyleRule*)oRule, oElementRule);
+                GetStyleRule((KatanaStyleRule*)oRule);
                 break;
             case KatanaRuleImport:
-                GetImportRule((KatanaImportRule*)oRule);
-                break;
             case KatanaRuleFontFace:
-                GetFontFaceRule((KatanaFontFaceRule*)oRule);
-                break;
             case KatanaRuleKeyframes:
-                GetKeyframesRule((KatanaKeyframesRule*)oRule);
-                break;
             case KatanaRuleMedia:
-                GetMediaRule((KatanaMediaRule*)oRule);
-                break;
             case KatanaRuleSupports:
             case KatanaRuleUnkown:
             default:
@@ -152,32 +133,146 @@ namespace NSCSS
         }
     }
 
-    inline CElement* CCssCalculator_Private::GetStyleRule(const KatanaStyleRule *oRule, CElement *oElementRule)
+    inline void CCssCalculator_Private::GetStyleRule(const KatanaStyleRule *oRule)
     {
-        std::map<std::wstring, std::wstring> arDeclarations;
+        if (oRule->declarations->length == 0)
+            return;
 
-        if (oRule->declarations->length)
-            arDeclarations = GetDeclarationList(oRule->declarations);
-
-        CElement *oElement = new CElement;
-
-        oElement->AddSelectors(GetSelectorList(oRule->selectors));
-        oElement->AddDeclarations(arDeclarations);
-
-        if (oElementRule == NULL)
+        const std::map<std::wstring, std::wstring> mStyle = GetDeclarationList(oRule->declarations);
+        for (const std::wstring sSelector : GetSelectorList(oRule->selectors))
         {
-            m_arData.push_back(oElement);
-            return NULL;
+            std::vector<std::wstring> arWords = NS_STATIC_FUNCTIONS::GetWordsW(sSelector, L" ");
+//            std::wcout << sSelector << std::endl;
+
+            CElement* oLastElement = NULL;
+            CElement* oFirstElement = NULL;
+            bool bCreateFirst = true;
+
+            for (std::vector<std::wstring>::reverse_iterator oWord = arWords.rbegin(); oWord != arWords.rend(); ++oWord)
+            {
+                    const size_t posPoint = oWord->find(L'.');
+                    const size_t posLattice = oWord->find(L'#');
+
+                    const std::wstring sName = (posPoint != std::wstring::npos) ? oWord->substr(0, posPoint) : (posLattice != std::wstring::npos) ? oWord->substr(0, posLattice) : *oWord;
+                    const std::wstring sClass = (posPoint != std::wstring::npos) ? (posLattice == std::wstring::npos) ? oWord->substr(posPoint, oWord->length()) : oWord->substr(posPoint, posLattice - posPoint) : L"";
+                    const std::wstring sId = (posLattice != std::wstring::npos) ? oWord->substr(posLattice, oWord->length()) : L"";
+
+                    CElement* oNameElement = NULL;
+                    CElement* oClassElement = NULL;
+                    CElement* oIdElement = NULL;
+                    bool bIsNewElement = true;
+
+                    if (!sId.empty())
+                    {
+                        if (NULL == oFirstElement && bCreateFirst)
+                        {
+                            const std::map<std::wstring, CElement*>::const_iterator& oFindId = m_mData.find(sId);
+                            if (oFindId != m_mData.end())
+                            {
+                                oIdElement = oFindId->second;
+                                bCreateFirst = false;
+                            }
+                            else
+                            {
+                                oIdElement = new CElement;
+                                oIdElement->SetSelector(sId);
+                                if (bCreateFirst)
+                                    oFirstElement = oIdElement;
+                            }
+                        }
+                        else
+                        {
+                            oIdElement = new CElement;
+                            oIdElement->SetSelector(sId);
+
+                            oLastElement->AddPrevElement(oIdElement);
+                        }
+                        bIsNewElement = false;
+                        oLastElement = oIdElement;
+                    }
+
+                    if (!sClass.empty())
+                    {
+                        if (NULL == oFirstElement && bCreateFirst)
+                        {
+                            const std::map<std::wstring, CElement*>::const_iterator& oFindClass = m_mData.find(sClass);
+                            if (oFindClass != m_mData.end())
+                            {
+                                oClassElement = oFindClass->second;
+                                bCreateFirst = false;
+                            }
+                            else
+                            {
+                                oClassElement = new CElement;
+                                oClassElement->SetSelector(sClass);
+                                if (bCreateFirst)
+                                    oFirstElement = oClassElement;
+                            }
+                        }
+                        else
+                        {
+                            oClassElement = new CElement;
+                            oClassElement->SetSelector(sClass);
+
+                            if (bIsNewElement)
+                                oLastElement->AddPrevElement(oClassElement);
+                            else
+                                oLastElement->AddKinElement(oClassElement);
+                        }
+
+                        bIsNewElement = false;
+                        oLastElement = oClassElement;
+                    }
+
+                    if (!sName.empty())
+                    {
+                        if (NULL == oFirstElement && bCreateFirst)
+                        {
+                            const std::map<std::wstring, CElement*>::const_iterator& oFindName = m_mData.find(sName);
+                            if (oFindName != m_mData.end())
+                            {
+                                oNameElement = oFindName->second;
+                                bCreateFirst = false;
+                            }
+                            else
+                            {
+                                oNameElement = new CElement;
+                                oNameElement->SetSelector(sName);
+                                if (bCreateFirst)
+                                    oFirstElement = oNameElement;
+                            }
+                        }
+                        else
+                        {
+                            oNameElement = new CElement;
+                            oNameElement->SetSelector(sName);
+
+                            if (bIsNewElement)
+                                oLastElement->AddPrevElement(oNameElement);
+                            else
+                                oLastElement->AddKinElement(oNameElement);
+
+                        }
+                        oLastElement = oNameElement;
+                    }
+            }
+
+            if (NULL != oLastElement)
+                oLastElement->AddProperties(mStyle);
+
+            if (NULL != oFirstElement)
+                m_mData[oFirstElement->GetSelector()] = oFirstElement;
         }
-        else
-            return oElement;
     }
 
     inline std::vector<std::wstring> CCssCalculator_Private::GetSelectorList(const KatanaArray* oSelectors) const
     {
+        if (oSelectors->length == 0)
+            return std::vector<std::wstring>();
+
         std::vector<std::wstring> arSelectors;
 
-        for (size_t i = 0; i < oSelectors->length; ++i)
+        for (unsigned int i = 0; i < oSelectors->length; ++i)
             arSelectors.push_back(GetSelector((KatanaSelector*)oSelectors->data[i]));
 
         return arSelectors;
@@ -199,13 +294,14 @@ namespace NSCSS
 
         katana_parser_deallocate(&oParser, (void*) text);
 
-        sText.erase(std::remove_if(sText.begin(), sText.end(), [] (wchar_t ch) { return std::iswspace(ch); }));
-
         return sText;
     }
 
     inline std::map<std::wstring, std::wstring> CCssCalculator_Private::GetDeclarationList(const KatanaArray* oDeclarations) const
     {
+        if(oDeclarations->length == 0)
+            return std::map<std::wstring, std::wstring>();
+
         std::map<std::wstring, std::wstring> arDeclarations;
 
         for (size_t i = 0; i < oDeclarations->length; ++i)
@@ -224,219 +320,12 @@ namespace NSCSS
         return std::make_pair(NS_STATIC_FUNCTIONS::stringToWstring(oDecl->property), sValueList);
     }
 
-    inline void CCssCalculator_Private::GetImportRule(const KatanaImportRule *oRule)
-    {
-        const std::wstring& sSelector = L"@" + NS_STATIC_FUNCTIONS::stringToWstring(oRule->base.name) + L" " +  L"url(" + NS_STATIC_FUNCTIONS::stringToWstring(oRule->href) + L")";
-
-        CElement *oElement = new CElement;
-
-        oElement->AddSelectors({sSelector});
-        oElement->AddDeclarations({});
-
-        m_arData.push_back(oElement);
-    }
-
-    inline void CCssCalculator_Private::GetFontFaceRule(const KatanaFontFaceRule *oRule)
-    {
-        const std::wstring sSelector = L"@" + NS_STATIC_FUNCTIONS::stringToWstring(oRule->base.name);
-
-        CElement *oElement = new CElement;
-
-        oElement->AddSelectors({sSelector});
-        oElement->AddDeclarations(GetDeclarationList(oRule->declarations));
-
-        m_arData.push_back(oElement);
-    }
-
-    inline void CCssCalculator_Private::GetKeyframesRule(const KatanaKeyframesRule *oRule)
-    {
-        CElement *oElement = new CElement;
-
-        const std::wstring& sSelector = L"@" + NS_STATIC_FUNCTIONS::stringToWstring(oRule->base.name);
-        oElement->AddSelector(sSelector);
-
-        for (size_t i = 0; i < oRule->keyframes->length; ++i)
-            oElement->AddChildren(GetKeyframe((KatanaKeyframe*)oRule->keyframes->data[i]));
-
-        m_arData.push_back(oElement);
-    }
-
-    inline CElement* CCssCalculator_Private::GetKeyframe(const KatanaKeyframe *oKeyframe)
-    {
-        if (oKeyframe == NULL)
-            return NULL;
-
-        CElement *oElement = new CElement;
-
-        for (size_t i = 0; i < oKeyframe->selectors->length; ++i)
-        {
-            const KatanaValue* oValue = (KatanaValue*)oKeyframe->selectors->data[i];
-            if (oValue->unit == KATANA_VALUE_NUMBER)
-                oElement->AddSelector(NS_STATIC_FUNCTIONS::stringToWstring(oValue->raw));
-        }
-
-        oElement->AddDeclarations(GetDeclarationList(oKeyframe->declarations));
-
-        return oElement;
-    }
-
-    inline void CCssCalculator_Private::GetMediaRule(const KatanaMediaRule *oRule)
-    {
-        std::wstring sSelector = L"@" + NS_STATIC_FUNCTIONS::stringToWstring(oRule->base.name) + L" ";
-
-        CElement *oElement = new CElement;
-
-        if (oRule->medias->length)
-            sSelector += GetMediaList(oRule->medias);
-
-        oElement->AddSelector(sSelector);
-
-        if (oRule->medias->length)
-            for (size_t i = 0; i < oRule->rules->length; ++i)
-                oElement->AddChildren(GetStyleRule((KatanaStyleRule*)oRule->rules->data[i], oElement));
-
-        m_arData.push_back(oElement);
-    }
-
-    inline std::wstring CCssCalculator_Private::GetMediaList(const KatanaArray *oMedias)
-    {
-        std::wstring sText;
-
-        for (size_t i = 0; i < oMedias->length; ++i)
-            sText += GetMediaQuery((KatanaMediaQuery*)oMedias->data[i]) + L", ";
-
-        sText.erase(sText.length() - 2, 2);
-
-        return sText;
-    }
-
-    inline std::wstring CCssCalculator_Private::GetMediaQuery(const KatanaMediaQuery *oQuery)
-    {
-        std::wstring sText;
-        switch (oQuery->restrictor)
-        {
-            case KatanaMediaQueryRestrictorOnly:
-                sText += L"only ";
-                break;
-            case KatanaMediaQueryRestrictorNot:
-                sText += L"not ";
-                break;
-            case KatanaMediaQueryRestrictorNone:
-                break;
-        }
-
-        if (NULL == oQuery->expressions || 0 == oQuery->expressions->length)
-        {
-            if (NULL != oQuery->type)
-                sText += NS_STATIC_FUNCTIONS::stringToWstring(oQuery->type);
-            return sText;
-        }
-
-        if ((NULL != oQuery->type && strcmp(oQuery->type, "all")) ||
-             oQuery->restrictor != KatanaMediaQueryRestrictorNone)
-        {
-            if (NULL != oQuery->type)
-                sText += NS_STATIC_FUNCTIONS::stringToWstring(oQuery->type);
-
-            sText += L" and ";
-        }
-
-        sText += GetMediaQueryExp((KatanaMediaQueryExp*)oQuery->expressions->data[0]);
-
-        for (size_t i = 1; i < oQuery->expressions->length; ++i)
-            sText += L" and " + GetMediaQueryExp((KatanaMediaQueryExp*)oQuery->expressions->data[i]);
-
-        return sText;
-    }
-
-    inline std::wstring CCssCalculator_Private::GetMediaQueryExp(const KatanaMediaQueryExp *oExp)
-    {
-        std::wstring sText;
-
-        sText += L"(";
-
-        if (NULL != oExp->feature)
-            sText += NS_STATIC_FUNCTIONS::stringToWstring(oExp->feature);
-
-        if (oExp->values && oExp->values->length)
-            sText += L": " + StringifyValueList(oExp->values);
-
-        sText += L")";
-
-        return sText;
-    }
-
-    std::map<std::wstring, std::wstring> CCssCalculator_Private::GetDeclarations(const std::wstring& sSelector) const
-    {
-        if (sSelector.empty() || m_arData.empty())
-            return std::map<std::wstring, std::wstring>();
-
-        std::map<std::wstring, std::wstring> mData;
-
-        for (const CElement* oElement : m_arData )
-            if (oElement->FindSelector(sSelector))
-            {
-                for (const std::pair<std::wstring, std::wstring>& oIter : oElement->GetDeclarations(sSelector, {}))
-                    mData[oIter.first] = oIter.second;
-            }
-//                return oElement->GetDeclarations(sSelector, {});
-
-        return mData;
-    }
-
-    std::vector<unsigned short int> CCssCalculator_Private::GetWeightSelector(const std::string& sSelector) const
-    {
-        if (sSelector.empty())
-            return std::vector<unsigned short int>{0, 0, 0, 0};
-
-        std::vector<unsigned short int> arWeight = {0, 0, 0, 0};
-
-        const std::vector<std::string> arSel = NS_STATIC_FUNCTIONS::GetWords(NS_STATIC_FUNCTIONS::stringToWstring(sSelector));
-
-        for (const std::string& sSel : arSel)
-        {
-            if (sSel == "*")
-                ++arWeight[3];
-            else if (sSel.find('#') != std::string::npos)
-                ++arWeight[0];
-            else if (sSel.find(':') != std::string::npos)
-            {
-                std::string sTemp(sSel);
-                sTemp.erase(std::remove_if(sTemp.begin(), sTemp.end(), [] (wchar_t ch) { return !std::iswalpha(ch); }));
-                std::find(NS_CONST_VALUES::arPseudoClasses.begin(), NS_CONST_VALUES::arPseudoClasses.end(), sTemp) != NS_CONST_VALUES::arPseudoClasses.end() ? ++arWeight[1] : ++arWeight[2];
-            }
-            else if (sSel.find('.') != std::string::npos ||
-                     sSel.find('[') != std::string::npos ||
-                     sSel.find(']') != std::string::npos)
-                ++arWeight[1];
-            else
-                ++arWeight[2];
-        }
-
-        return arWeight;
-    }
-
-    inline std::vector<unsigned short int> CCssCalculator_Private::GetWeightSelector(const std::wstring& sSelector) const
-    {
-        return GetWeightSelector(NS_STATIC_FUNCTIONS::wstringToString(sSelector));
-    }
-
-
-    void CCssCalculator_Private::Print() const
-    {
-        std::wcout << m_arData.size() << std::endl;
-
-        for (const CElement* oElement : m_arData)
-            std::wcout << oElement->GetText() << std::endl;
-    }
-
-
     inline std::wstring CCssCalculator_Private::GetValueList(const KatanaArray *oValues)
     {
         return StringifyValueList(oValues);
     }
 
-    CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const std::vector<std::string>& arSelectors, const UnitMeasure& unitMeasure)
+    CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const std::vector<CNode>& arSelectors, const UnitMeasure& unitMeasure)
     {
         if (arSelectors.empty())
             return CCompiledStyle();
@@ -444,152 +333,152 @@ namespace NSCSS
         if (unitMeasure != Default)
             SetUnitMeasure(unitMeasure);
 
-        std::map<std::wstring, std::wstring> mStyle = GetDeclarations(L"*");
+        const std::map<std::vector<CNode>, CCompiledStyle*>::iterator oItem = m_mUsedStyles.find(arSelectors);
 
-        for (const std::string& sSelector : arSelectors)
-        {
-            for (const std::pair<std::wstring, std::wstring>& oDeclarations : GetDeclarations(NS_STATIC_FUNCTIONS::stringToWstring(sSelector)))
-            {
-                if (mStyle[oDeclarations.first].empty() || mStyle[oDeclarations.first].find(L"important") == std::wstring::npos)
-                    mStyle[oDeclarations.first] = oDeclarations.second;
-            }
-        }
-
-        for (const std::pair<std::wstring, std::wstring>& oIter : mStyle)
-        {
-            const size_t posRgb = oIter.second.find(L"rgb");
-
-            if (posRgb != std::wstring::npos)
-            {
-                mStyle[oIter.first] = NS_STATIC_FUNCTIONS::ConvertRgbToHex(oIter.second);
-                continue;
-            }
-            const size_t posExclamatory = oIter.second.find(L"!");
-
-            if (posExclamatory != std::wstring::npos)
-                mStyle[oIter.first] = ConvertUnitMeasure(oIter.second.substr(0, posExclamatory));
-            else
-                mStyle[oIter.first] = ConvertUnitMeasure(oIter.second);
-        }
-
-        return  CCompiledStyle(mStyle);
-    }
-
-    /*
-    void CCssCalculator_Private::AddStyle(const std::vector<std::string>& sSelectors, const std::string& sProperties)
-    {
-        std::string sPropertiesUTF8;
-
-        bool bIsUTF8 = false;
-
-        if (m_sEncoding != L"UTF-8" && m_sEncoding != L"utf-8")
-            bIsUTF8 = true;
-
-        sPropertiesUTF8 = bIsUTF8 ? GetContentAsUTF8(sProperties, m_sEncoding) : sProperties;
-
-        std::vector<std::string> sSelectorsUTF8;
-
-        if (bIsUTF8)
-            for (const std::string& sSelector : sSelectors)
-                sSelectorsUTF8.push_back(GetContentAsUTF8(sSelector, m_sEncoding));
-        else
-            sSelectorsUTF8 = sSelectors;
-//            for (std::string sSelector : sSelectors)
-//                sSelectorsUTF8.push_back(sSelector);
-
-
-        CElement *oElement = new CElement;
-
-        for (const std::string& sSelectorUTF8 : sSelectorsUTF8)
-            oElement->AddSelector(NS_STATIC_FUNCTIONS::stringToWstring(sSelectorUTF8));
-
-        std::vector<std::string> arProperty;
-        std::vector<std::string> arValue;
-
-        std::string sTemp;
-
-        for (const char& sc : sPropertiesUTF8)
-        {
-            if (sc != ' ')
-            {
-                if (sc == ':')
-                {
-                    arProperty.push_back(sTemp);
-                    sTemp.clear();
-                }
-                else if (sc == ';')
-                {
-                    arValue.push_back(sTemp);
-                    sTemp.clear();
-                }
-                else
-                    sTemp += sc;
-            }
-        }
-
-        if (!sTemp.empty())
-            arValue.push_back(sTemp);
-
-        std::vector<std::pair<std::wstring, std::wstring>> arDecl;
-
-        size_t size;
-
-        arProperty.size() >= arValue.size() ? size = arValue.size() : size = arProperty.size();
-
-        for (size_t i = 0; i < size; ++i)
-        {
-            const std::wstring& sValue = ConvertUnitMeasure(NS_STATIC_FUNCTIONS::stringToWstring(arValue[i]));
-            arDecl.push_back(std::make_pair(NS_STATIC_FUNCTIONS::stringToWstring(arProperty[i]), sValue));
-        }
-
-        oElement->AddDeclarations(arDecl);
-        m_arData.push_back(oElement);
-    }
-    */
-
-    CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const std::vector<CNode>& arSelectors, const UnitMeasure& unitMeasure)
-    {
-        if (arSelectors.empty())
-            return CCompiledStyle();
-
-        const bool parentSize = arSelectors.size() > 1;
-
-        if (parentSize)
-        {
-            std::map<std::vector<CNode>, CCompiledStyle*>::iterator oItem = m_mUsedStyles.find(arSelectors);
-            if (oItem != m_mUsedStyles.end())
-                return *oItem->second;
-        }
+        if (oItem != m_mUsedStyles.end())
+            return *oItem->second;
 
         CCompiledStyle *oStyle = new CCompiledStyle();
 
-        const std::wstring& sClassName = (!arSelectors.back().m_sClass.empty() && arSelectors.back().m_sClass.front() != L'.')
-                                         ? L'.' + arSelectors.back().m_sClass
-                                         : arSelectors.back().m_sClass;
+        std::vector<std::wstring> arWords;
+        arWords.reserve(arSelectors.size() * 2);
 
-        const std::wstring& sIdName = (!arSelectors.back().m_sId.empty() && arSelectors.back().m_sId.front() != L'#')
-                                      ? L'#' + arSelectors.back().m_sId
-                                      : arSelectors.back().m_sId;
-
-        for (std::vector<CNode>::const_iterator oParent = arSelectors.begin(); oParent != arSelectors.end() - 1; ++oParent)
+        for (const CNode& oNode : arSelectors)
         {
-            *oStyle += GetCompiledStyle({*oParent}, unitMeasure);
-            oStyle->AddParent(oParent->m_sName);
+            oStyle->AddStyle(oNode.m_sStyle, true);
+
+            arWords.push_back(oNode.m_sName);
+
+            if (!oNode.m_sClass.empty())
+            {
+                if (oNode.m_sClass.find(L' ') != std::wstring::npos)
+                {
+                    std::vector<std::wstring> arClasses = NS_STATIC_FUNCTIONS::GetWordsW(oNode.m_sClass, L" ");
+
+                    if (arClasses.size() > 1)
+                        arClasses.resize(unique(arClasses.begin(),arClasses.end()) - arClasses.begin());
+                    switch (arClasses.size())
+                    {
+                        case 1:
+                        {
+                            arWords.push_back(L'.' + arClasses[0]);
+                            break;
+                        }
+                        case 2:
+                        {
+                            arWords.push_back(L'.' + arClasses[0] + L" ." + arClasses[1]);
+                            break;
+                        }
+                        case 3:
+                        {
+                            arWords.push_back(L'.' + arClasses[0] + L" ." + arClasses[1] + L" ." + arClasses[2]);
+                            break;
+                        }
+                        default:
+                        {
+                            arWords.push_back(std::accumulate(arClasses.begin(), arClasses.end(), std::wstring(),
+                                                              [](std::wstring sRes, const std::wstring& sClass)
+                                                                {return sRes += L'.' + sClass + L' ';}));
+                            break;
+                        }
+                    }
+                }
+                else
+                    arWords.push_back(L'.' + oNode.m_sClass);
+            }
+            if (!oNode.m_sId.empty())
+                arWords.push_back(L'#' + oNode.m_sId);
         }
 
-        *oStyle += GetCompiledStyle(NS_STATIC_FUNCTIONS::GetSelectorsList(arSelectors.back().m_sName + sClassName + sIdName), unitMeasure);
+        std::vector<CElement*> arElements;
 
-        if (!arSelectors.back().m_sStyle.empty())
+        for (std::vector<CNode>::const_reverse_iterator iNode = arSelectors.rbegin(); iNode != arSelectors.rend(); ++iNode)
         {
-            CCompiledStyle oTempStyle;
-            oTempStyle.AddStyle(ConvertUnitMeasure(arSelectors.back().m_sStyle));
-            *oStyle += oTempStyle;
+            std::vector<std::wstring> arKins;
+            for (std::vector<std::wstring>::const_reverse_iterator sNode = arWords.rbegin(); sNode != arWords.rend(); ++sNode)
+            {
+                arKins.push_back(*sNode);
+                if ((*sNode)[0] != L'#' && (*sNode)[0] != L'.')
+                    break;
+            }
+            std::wstring sName, sId;
+            std::vector<std::wstring> arClasses;
+
+            if (arWords.back()[0] == L'#')
+            {
+                sId = arWords.back();
+                arWords.pop_back();
+            }
+
+            if (arWords.back()[0] == L'.')
+            {
+                arClasses = NS_STATIC_FUNCTIONS::GetWordsW(arWords.back(), L" ");
+                arWords.pop_back();
+            }
+
+            sName = arWords.back();
+            oStyle->AddParent(sName);
+
+            const std::map<std::wstring, CElement*>::const_iterator oFindName = m_mData.find(sName);
+            std::map<std::wstring, CElement*>::const_iterator oFindId;
+            std::vector<CElement*> arFindElements;
+
+
+            if (!sId.empty())
+            {
+                oFindId = m_mData.find(sId);
+
+                if (oFindId != m_mData.end())
+                {
+                    const std::vector<CElement*> arTemp1 = oFindId->second->GetNextOfKin(sName, arClasses);
+                    const std::vector<CElement*> arTemp2 = oFindId->second->GetAllElements(arWords);
+
+                    arFindElements.insert(arFindElements.end(), arTemp1.begin(), arTemp1.end());
+                    arFindElements.insert(arFindElements.end(), arTemp2.begin(), arTemp2.end());
+                }
+            }
+
+            if (!arClasses.empty())
+            {
+                for (std::vector<std::wstring>::const_reverse_iterator iClass = arClasses.rbegin(); iClass != arClasses.rend(); ++iClass)
+                {
+                    const std::map<std::wstring, CElement*>::const_iterator oFindClass = m_mData.find(*iClass);
+                    if (oFindClass != m_mData.end())
+                    {
+                        arFindElements.push_back(oFindClass->second);
+                        const std::vector<CElement*> arTemp1 = oFindClass->second->GetNextOfKin(sName);
+                        const std::vector<CElement*> arTemp2 = oFindClass->second->GetAllElements(arWords);
+
+                        arFindElements.insert(arFindElements.end(), arTemp1.begin(), arTemp1.end());
+                        arFindElements.insert(arFindElements.end(), arTemp2.begin(), arTemp2.end());
+                    }
+                }
+            }
+
+            if (oFindName != m_mData.end())
+            {
+                const std::vector<CElement*> arTemp = oFindName->second->GetAllElements(arWords);
+                arFindElements.insert(arFindElements.end(), arTemp.begin(), arTemp.end());
+            }
+
+            std::sort(arFindElements.rbegin(), arFindElements.rend(), [](CElement* oFirstElement, CElement* oSecondElement)
+            {
+                return oFirstElement->GetWeight() < oSecondElement->GetWeight();
+            });
+
+
+            for (const CElement* oElement : arFindElements)
+                oStyle->AddStyle(oElement->GetStyle());
+
+            arWords.pop_back();
         }
 
-        oStyle->SetID(arSelectors.back().m_sName + sClassName + sIdName + L'-' + std::to_wstring(m_nCountNodes++));
+        oStyle->SetID(arSelectors.back().m_sName + ((!arSelectors.back().m_sClass.empty()) ? L'.' + arSelectors.back().m_sClass : L"") + ((arSelectors.back().m_sId.empty()) ? L"" : L'#' + arSelectors.back().m_sId) + L'-' + std::to_wstring(++m_nCountNodes));
 
-        if (parentSize)
-            m_mUsedStyles[arSelectors] = oStyle;
+        for (std::pair<const std::wstring, std::wstring>& pProperie : *(oStyle->GetStyleMap()))
+            pProperie.second = ConvertUnitMeasure(pProperie.second);
+
+        m_mUsedStyles[arSelectors] = oStyle;
 
         return *oStyle;
     }
@@ -601,7 +490,6 @@ namespace NSCSS
 
         KatanaOutput *output = katana_parse(sStyle.c_str(), sStyle.length(), KatanaParserModeStylesheet);
         this->GetOutputData(output);
-
         katana_destroy_output(output);
     }
 
@@ -634,6 +522,10 @@ namespace NSCSS
 
         for (std::wstring& sValueTemp : arValues)
         {
+            const size_t nPosImportant = sValueTemp.find(L'!');
+            if (nPosImportant != std::wstring::npos)
+                sValueTemp = sValueTemp.substr(0, nPosImportant);
+
             size_t nPosGrid = sValueTemp.find(L'#');
 
             if (nPosGrid != std::wstring::npos || !NS_STATIC_FUNCTIONS::ThereIsNumber(sValueTemp))
@@ -649,7 +541,7 @@ namespace NSCSS
 
             if (posPercent != std::wstring::npos)
             {
-                const float dValue = wcstof(sValueTemp.substr(0, posPercent).c_str(), NULL) * 0.22f;
+                const float dValue = wcstof(sValueTemp.substr(0, posPercent).c_str(), NULL) * NS_CONST_VALUES::FONT_SIZE / 100;
 
                 sValueString += std::to_wstring(static_cast<short int>(dValue + 0.5f));
 
@@ -1149,10 +1041,8 @@ namespace NSCSS
         if (sValue.empty())
             return std::wstring(L"");
 
-        const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"em") - 1);
-        const float dValue = wcstof(sConvertValue.c_str(), NULL) * 22.0f;
-
-        return std::to_wstring(static_cast<short int>(dValue + 0.5f));
+        const float fValue = wcstof(sValue.c_str(), NULL) * NS_CONST_VALUES::FONT_SIZE;
+        return std::to_wstring(static_cast<short int>(fValue + 0.5f));
     }
 
     void CCssCalculator_Private::SetDpi(unsigned short int nValue)
@@ -1193,11 +1083,11 @@ namespace NSCSS
         m_nDpi          = 96;
         m_UnitMeasure   = Default;
 
-        for (CElement* oElement : m_arData)
-            delete oElement;
+//        for (CElement* oElement : m_arData)
+//            delete oElement;
 
 //        m_arStyleUsed.clear();
-        m_arData.clear();
+        m_mData.clear();
         m_arFiles.clear();
     }
 }

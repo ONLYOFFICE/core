@@ -42,6 +42,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn, L"normal");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UiPriority, L"34");
+
         AddPropertiesInP(NSCSS::NS_CONST_VALUES::ParagraphProperties::P_ContextualSpacing, L"true");
         AddPropertiesInP(NSCSS::NS_CONST_VALUES::ParagraphProperties::P_Ind, L"w:left=\"720\"");
     }
@@ -178,7 +179,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 
         AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_RFonts, L"\"Arial\"");
         AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_B, L"true");
-        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_Color, L"232323");
+//        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_Color, L"232323");
         AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_Sz, L"32");
     }
     else if (sNameDefaultElement == L"h5-c")
@@ -462,12 +463,18 @@ std::wstring CXmlElement::ConvertRStyle() const
             }
             case NSCSS::NS_CONST_VALUES::RunnerProperties::R_B:
             {
-                sRStyle += L"<w:b/><w:bCs/>";
+                if (oItem.second == L"true")
+                    sRStyle += L"<w:b/><w:bCs/>";
+                else if (oItem.second == L"false")
+                    sRStyle += L"<w:b w:val=\"false\"/><w:bCs w:val=\"false\"/>";
                 break;
             }
             case NSCSS::NS_CONST_VALUES::RunnerProperties::R_I:
             {
-                sRStyle += L"<w:i/><w:iCs/>";
+                if (oItem.second == L"true")
+                    sRStyle += L"<w:i/><w:iCs/>";
+                else if (oItem.second == L"false")
+                    sRStyle += L"<w:i w:val=\"false\"/><w:iCs w:val=\"false\"/>";
                 break;
             }
             case NSCSS::NS_CONST_VALUES::RunnerProperties::R_Color:

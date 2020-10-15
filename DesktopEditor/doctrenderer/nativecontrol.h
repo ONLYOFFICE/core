@@ -41,7 +41,7 @@
 #include "../common/Array.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
-#include "memorystream.h"
+#include "js_internal/embed/MemoryStreamEmbed.h"
 #include "../fontengine/application_generate_fonts_common.h"
 
 #if defined(CreateDirectory)
@@ -193,6 +193,8 @@ public:
     std::wstring GetImage(const std::wstring& sUrl);
 };
 
+namespace NSNativeControl
+{
 class CNativeControl
 {
 private:
@@ -233,7 +235,7 @@ public:
     CImagesWorker* m_pWorker;
 
 public:
-    CMemoryStream* m_pStream;
+    CMemoryStreamEmbed* m_pStream;
 
     CNativeControl()
     {
@@ -455,56 +457,7 @@ public:
         }
     }
 };
-
-// wrap_methods -------------
-CNativeControl* unwrap_nativeobject(v8::Handle<v8::Object> obj);
-
-void _GetFilePath(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _SetFilePath(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _GetImagesPath(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _GetFontsDirectory(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _GetEditorType(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _GetChangesCount(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _GetChangesFile(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _GetFileId(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _SetFileId(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _CheckNextChange(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _GetFileArrayBuffer(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _GetFontArrayBuffer(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _GetFileString(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _Save_AllocNative(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _Save_ReAllocNative(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _Save_End(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _ConsoleLog(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _SaveChanges(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _GetImageUrl(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-/// ZIP -----
-void _zipOpenFile(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _zipOpenFileBase64(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _zipGetFileAsString(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _zipGetFileAsBinary(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _zipCloseFile(const v8::FunctionCallbackInfo<v8::Value>& args);
-/// ---------
-
-void _AddImageInChanges(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplate(v8::Isolate* isolate);
-v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplateBuilder(v8::Isolate* isolate);
-// --------------------------
+}
 
 class CChangesWorker
 {
@@ -1041,10 +994,6 @@ private:
 
 //////////////////////////////////////////////////////////////////////////////
 
-void CreateNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args);
-void CreateNativeObjectBuilder(const v8::FunctionCallbackInfo<v8::Value>& args);
-void CreateNativeMemoryStream(const v8::FunctionCallbackInfo<v8::Value>& args);
-
 #if 0
 class CLoggerSpeed
 {
@@ -1200,79 +1149,6 @@ public:
 };
 
 #endif
-
-//////////////////////////////////////////////////////////////////////////////
-class CV8Initializer
-{
-private:
-    v8::Platform* m_platform;
-    v8::ArrayBuffer::Allocator* m_pAllocator;
-
-public:
-    CV8Initializer()
-    {
-        std::wstring sPrW = NSFile::GetProcessPath();
-        std::string sPrA = U_TO_UTF8(sPrW);
-
-        m_pAllocator = NULL;
-
-#ifndef V8_OS_XP
-        v8::V8::InitializeICUDefaultLocation(sPrA.c_str());
-        v8::V8::InitializeExternalStartupData(sPrA.c_str());
-        m_platform = v8::platform::CreateDefaultPlatform();
-        v8::V8::InitializePlatform(m_platform);
-        v8::V8::Initialize();
-#else
-        m_platform = v8::platform::CreateDefaultPlatform();
-        v8::V8::InitializePlatform(m_platform);
-
-        v8::V8::Initialize();
-        v8::V8::InitializeICU();
-#endif
-    }
-    ~CV8Initializer()
-    {
-        v8::V8::Dispose();
-        v8::V8::ShutdownPlatform();
-        delete m_platform;
-        if (m_pAllocator)
-            delete m_pAllocator;
-    }
-
-    v8::ArrayBuffer::Allocator* getAllocator()
-    {
-        return m_pAllocator;
-    }
-
-    v8::Isolate* CreateNew()
-    {
-        v8::Isolate::CreateParams create_params;
-#ifndef V8_OS_XP
-        m_pAllocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
-#else
-        m_pAllocator = new ExternalMallocArrayBufferAllocator();
-#endif
-        create_params.array_buffer_allocator = m_pAllocator;
-        return v8::Isolate::New(create_params);
-    }
-};
-
-/*
-class CV8Worker
-{
-private:
-    static CV8Initializer* m_pInitializer;
-
-public:
-    CV8Worker() {}
-    ~CV8Worker() {}
-
-    static void Initialize();
-    static void Dispose();
-
-    static CV8Initializer* getInitializer();
-};
-*/
 
 bool Doct_renderer_SaveFile_ForBuilder(int nFormat, const std::wstring& strDstFile,
                                CNativeControl* pNative,

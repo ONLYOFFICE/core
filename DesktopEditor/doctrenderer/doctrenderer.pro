@@ -43,7 +43,6 @@ HEADERS += \
     docbuilder.h
 
 SOURCES += \
-    memorystream.cpp \
     nativecontrol.cpp \
     doctrenderer.cpp \
     docbuilder.cpp \
@@ -66,12 +65,20 @@ HEADERS += \
 
 HEADERS += \
     js_internal/embed/GraphicsEmbed.h \
+    js_internal/embed/MemoryStreamEmbed.h \
+    js_internal/embed/NativeControlEmbed.h \
+    js_internal/embed/NativeBuilderEmbed.h \
     js_internal/js_base.h \
     js_internal/v8/v8_base.h
 
 SOURCES += \
     js_internal/embed/GraphicsEmbed.cpp \
+    js_internal/embed/MemoryStreamEmbed.cpp \
+    js_internal/embed/NativeControlEmbed.cpp \
+    js_internal/embed/NativeBuilderEmbed.cpp \
     js_internal/embed/v8/v8_Graphics.cpp \
+    js_internal/embed/v8/v8_MemoryStream.cpp \
+    js_internal/embed/v8/v8_NativeControl.cpp \
     js_internal/v8/v8_base.cpp
 }
 

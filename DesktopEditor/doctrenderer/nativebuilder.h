@@ -34,6 +34,7 @@
 
 #include "nativecontrol.h"
 #include "docbuilder.h"
+#include "js_internal/js_base.h"
 
 namespace NSDoctRenderer
 {
@@ -75,21 +76,7 @@ public:
     void CloseFile();
 };
 
-void _builder_OpenFile(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _builder_CreateFile(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _builder_SetTmpFolder(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _builder_SaveFile(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _builder_CloseFile(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _builder_OpenTmpFile(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _builder_doc_IsValid(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _builder_doc_GetBinary(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _builder_doc_GetFolder(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _builder_doc_CloseFile(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _builder_doc_GetImageMap(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-v8::Local<v8::Value> _builder_CreateNativeTmpDoc(v8::Isolate* isolate, NSDoctRenderer::CDocBuilder* pBuilder, const std::wstring& sFile, const std::wstring& sParams);
-v8::Local<v8::Value> _builder_CreateNative(v8::Isolate* isolate, NSDoctRenderer::CDocBuilder* builder);
+void builder_CreateNative(const std::string& name, JSSmart<CJSContext> context, NSDoctRenderer::CDocBuilder* builder);
+void builder_CreateNativeTmpDoc(const std::string& name, JSSmart<CJSContext> context, NSDoctRenderer::CDocBuilder* builder, const std::wstring& sFile, const std::wstring& sParams);
 
 #endif // NATIVECONTROLBUILDER

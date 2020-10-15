@@ -31,6 +31,7 @@
  */
 #include "nativebuilder.h"
 #include "docbuilder_p.h"
+#include "js_internal/v8/v8_base.h"
 
 void CBuilderDocumentEmbed::OpenFile(const std::wstring& sFile, const std::wstring& sParams)
 {
@@ -80,7 +81,7 @@ CBuilderDocumentEmbed* unwrap_builder_doc_embed(v8::Handle<v8::Object> obj)
     return static_cast<CBuilderDocumentEmbed*>(field->Value());
 }
 
-void _builder_OpenFile(const v8::FunctionCallbackInfo<v8::Value>& args)
+JSSmart<CJSValue> builder_OpenFile(JSSmart<CJSValue> sPath, JSSmart<CJSValue> sParams)
 {
     CBuilderEmbed* builder = unwrap_builder_embed(args.This());
     std::wstring sPath = CV8Convert::ToString(args[0]);
@@ -184,6 +185,9 @@ void _builder_doc_GetImageMap(const v8::FunctionCallbackInfo<v8::Value>& args)
 }
 
 /////////////////////////////////////////////////////////////////////////////////
+
+
+
 v8::Local<v8::Value> _builder_CreateNativeTmpDoc(v8::Isolate* isolate, NSDoctRenderer::CDocBuilder* pBuilder, const std::wstring& sFile, const std::wstring& sParams)
 {
     v8::Local<v8::ObjectTemplate> _template = v8::ObjectTemplate::New(isolate);
@@ -224,3 +228,30 @@ v8::Local<v8::Value> _builder_CreateNative(v8::Isolate* isolate, NSDoctRenderer:
 
     return obj;
 }
+
+void builder_CreateNativeTmpDoc(const std::string& name, JSSmart<CJSContext> context, NSDoctRenderer::CDocBuilder* builder, const std::wstring& sFile, const std::wstring& sParams)
+{
+    v8::Isolate* current = CV8Worker::GetCurrent();
+    context->m_internal->m_global->Set(current,  v8::String::NewFromUtf8(current, name.c_str()), _builder_CreateNative(current, builder));
+}
+
+void builder_CreateNative(const std::string& name, JSSmart<CJSContext> context, NSDoctRenderer::CDocBuilder* builder)
+{
+    v8::Isolate* current = CV8Worker::GetCurrent();
+    context->m_internal->m_global->Set(current,  v8::String::NewFromUtf8(current, name.c_str()), _builder_CreateNative(current, builder));
+}
+
+FUNCTION_WRAPPER_V8_2(_builder_OpenFile, builder_OpenFile)
+void _builder_OpenFile(const v8::FunctionCallbackInfo<v8::Value>& args);
+void _builder_CreateFile(const v8::FunctionCallbackInfo<v8::Value>& args);
+void _builder_SetTmpFolder(const v8::FunctionCallbackInfo<v8::Value>& args);
+void _builder_SaveFile(const v8::FunctionCallbackInfo<v8::Value>& args);
+void _builder_CloseFile(const v8::FunctionCallbackInfo<v8::Value>& args);
+
+void _builder_OpenTmpFile(const v8::FunctionCallbackInfo<v8::Value>& args);
+
+void _builder_doc_IsValid(const v8::FunctionCallbackInfo<v8::Value>& args);
+void _builder_doc_GetBinary(const v8::FunctionCallbackInfo<v8::Value>& args);
+void _builder_doc_GetFolder(const v8::FunctionCallbackInfo<v8::Value>& args);
+void _builder_doc_CloseFile(const v8::FunctionCallbackInfo<v8::Value>& args);
+void _builder_doc_GetImageMap(const v8::FunctionCallbackInfo<v8::Value>& args);

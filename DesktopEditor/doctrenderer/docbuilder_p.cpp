@@ -42,7 +42,7 @@ namespace NSDoctRenderer
     }
     void CDocBuilderValue_Private::Clear()
     {
-        m_value.Clear();
+        m_value.Release();
     }
 }
 
@@ -54,36 +54,32 @@ void CV8RealTimeWorker::_LOGGING_ERROR_(const std::wstring& strType, const std::
     std::cerr << sT << ": " << sE << std::endl;
 }
 
+using namespace NSJSBase;
+
 CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder)
 {
     m_nFileType = -1;
 
-    m_isolate = v8::Isolate::GetCurrent(); // CV8Worker::getInitializer()->CreateNew();
+    m_context = new CJSContext();
+    m_context->Initialize();
 
-    m_isolate_scope = new v8::Isolate::Scope(m_isolate);
-    m_isolate_locker = new v8::Locker(m_isolate);
-    m_handle_scope = new CScopeWrapper<v8::HandleScope>(m_isolate);
+    m_isolate_scope = m_context->CreateIsolateScope();
+    m_handle_scope = m_context->CreateLocalScope() ;
 
-    v8::Handle<v8::ObjectTemplate> global = v8::ObjectTemplate::New(m_isolate);
-    global->Set(m_isolate, "CreateNativeEngine", v8::FunctionTemplate::New(m_isolate, CreateNativeObjectBuilder));
-    global->Set(m_isolate, "CreateNativeMemoryStream", v8::FunctionTemplate::New(m_isolate, CreateNativeMemoryStream));
-    m_context = v8::Context::New(m_isolate, NULL, global);
+    m_context->CreateGlobalForContext();
+    CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", m_context);
+    CMemoryStreamEmbed::CreateObjectInContext("CreateNativeMemoryStream", m_context);
+    m_context->CreateContext();
 
-    v8::Context::Scope context_scope(m_context);
-    v8::TryCatch try_catch(m_isolate);
+    JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
+    JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
 
-    m_context->Global()->Set(m_context, v8::String::NewFromUtf8(m_isolate, "builderJS"), _builder_CreateNative(m_isolate, pBuilder));
+    builder_CreateNative("builderJS", m_context, pBuilder);
+    // m_context->GetGlobal()->set("builderJS", _builder_CreateNative(m_isolate, pBuilder));
 }
 CV8RealTimeWorker::~CV8RealTimeWorker()
 {
-    RELEASEOBJECT(m_handle_scope);
-    m_context.Clear();
-
-    RELEASEOBJECT(m_isolate_locker);
-    RELEASEOBJECT(m_isolate_scope);
-
-    m_isolate->Dispose();
-    m_isolate = NULL;
+    m_context->Dispose();
 }
 
 bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRenderer::CDocBuilderValue* retValue)
@@ -96,46 +92,21 @@ bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRender
     std::string commandA = U_TO_UTF8(command);
     //commandA = "Api." + commandA;
 
-    v8::Context::Scope context_scope(m_context);
-
-    v8::TryCatch try_catch(m_isolate);
-
-    v8::Local<v8::String> source = v8::String::NewFromUtf8(m_isolate, commandA.c_str());
-    v8::Local<v8::Script> script = v8::Script::Compile(m_context, source).FromMaybe(v8::Local<v8::Script>());
+    JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
+    JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
+    JSSmart<CJSObject> global_js = m_context->GetGlobal();
 
     LOGGER_SPEED_LAP("compile_command")
 
-    if (try_catch.HasCaught())
-    {
-        std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
-        std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
-
-        _LOGGING_ERROR_(L"execute_compile_code", strCode);
-        _LOGGING_ERROR_(L"execute_compile", strException);
-
+    JSSmart<CJSValue> retNativeVal = m_context->runScript(commandA, try_catch);
+    if(try_catch->Check())
         return false;
-    }
-    else
+
+    if (retValue)
     {
-        v8::Local<v8::Value> retNativeVal = script->Run(m_context).FromMaybe(v8::Local<v8::Value>());
-
-        if (try_catch.HasCaught())
-        {
-            std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
-            std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
-
-            _LOGGING_ERROR_(L"execute_run_code", strCode);
-            _LOGGING_ERROR_(L"execute_run", strException);
-
-            return false;
-        }
-
-        if (retValue)
-        {
-            NSDoctRenderer::CDocBuilderValue_Private* privateRet = (NSDoctRenderer::CDocBuilderValue_Private*)retValue->private_get_internal();
-            privateRet->m_isolate = m_isolate;
-            privateRet->m_value = retNativeVal;
-        }
+        NSDoctRenderer::CDocBuilderValue_Private* privateRet = (NSDoctRenderer::CDocBuilderValue_Private*)retValue->private_get_internal();
+        privateRet->m_context = m_context;
+        privateRet->m_value = retNativeVal;
     }
 
     LOGGER_SPEED_LAP("run_command")

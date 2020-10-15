@@ -1,4 +1,4 @@
-#include "./GraphicsEmbed.h"
+#include "GraphicsEmbed.h"
 
 JSSmart<CJSValue> CGraphicsEmbed::init(JSSmart<CJSValue> context, JSSmart<CJSValue> width_px, JSSmart<CJSValue> height_px, JSSmart<CJSValue> width_mm, JSSmart<CJSValue> height_mm)
 {

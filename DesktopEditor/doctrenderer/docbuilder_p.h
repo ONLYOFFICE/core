@@ -47,6 +47,9 @@
 #include "nativebuilder.h"
 #include <list>
 
+#include "js_internal/embed/NativeControlEmbed.h"
+#include "js_internal/embed/MemoryStreamEmbed.h"
+
 #ifdef LINUX
 #include <unistd.h>
 #include <sys/wait.h>
@@ -58,6 +61,7 @@
 #endif
 
 #include "../fontengine/ApplicationFontsWorker.h"
+#include "js_internal/js_base.h"
 
 #ifdef CreateFile
 #undef CreateFile
@@ -68,8 +72,8 @@ namespace NSDoctRenderer
     class CDocBuilderValue_Private
     {
     public:
-        v8::Isolate* m_isolate;
-        v8::Local<v8::Value> m_value;
+        JSSmart<CJSContext> m_context;
+        JSSmart<CJSValue> m_value;
 
     public:
         CDocBuilderValue_Private();
@@ -78,35 +82,15 @@ namespace NSDoctRenderer
     };
 }
 
-template <typename T>
-class CScopeWrapper
-{
-private:
-    T m_handler;
-
-private:
-    CScopeWrapper(const CScopeWrapper&) {}
-    void operator=(const CScopeWrapper&) {}
-
-public:
-
-    CScopeWrapper(v8::Isolate* isolate) : m_handler(isolate) {}
-};
-
 class CV8RealTimeWorker
 {
 public:
-    v8::Isolate* m_isolate;
-
-    v8::Isolate::Scope* m_isolate_scope;
-    v8::Locker* m_isolate_locker;
-
-    CScopeWrapper<v8::HandleScope>* m_handle_scope;
-    v8::Local<v8::Context> m_context;
+    JSSmart<CJSIsolateScope> m_isolate_scope;
+    JSSmart<CJSLocalScope> m_handle_scope;
+    JSSmart<CJSContext> m_context;
 
     int m_nFileType;
     std::string m_sUtf8ArgumentJSON;
-
     std::string m_sGlobalVariable;
 
 public:

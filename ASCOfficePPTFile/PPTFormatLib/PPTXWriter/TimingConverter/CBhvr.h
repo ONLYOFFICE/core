@@ -113,6 +113,15 @@ namespace PPT_FORMAT
                     std::to_wstring(bhvr->
                                     m_oClientVisualElement.
                                     m_oVisualShapeAtom.m_nObjectIdRef);
+
+            if (bhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData2 != 0xFFFFFFFF &&
+                    bhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData1 != 0xFFFFFFFF)
+            {
+                oBhvr.tgtEl.spTgt->txEl         = new PPTX::Logic::TxEl;
+                oBhvr.tgtEl.spTgt->txEl->charRg = true;
+                oBhvr.tgtEl.spTgt->txEl->st     = bhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData1;
+                oBhvr.tgtEl.spTgt->txEl->end    = bhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData2;
+            }
         }
     }
 }

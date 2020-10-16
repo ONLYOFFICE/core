@@ -62,8 +62,7 @@ int main(int argc, char *argv[])
 #else
         std::string sParam(argv[i]);
 #endif
-        if (sParam == "-v" ||
-            sParam == "-version")
+        if (sParam == "-v" || sParam == "-version")
         {
             std::cout << "v" VALUE(INTVER) << std::endl;
             NSDoctRenderer::CDocBuilder oBuilder;

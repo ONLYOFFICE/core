@@ -76,9 +76,9 @@ namespace NSDoctRenderer
         JSSmart<CJSValue> m_value;
 
     public:
-        CDocBuilderValue_Private();
-        ~CDocBuilderValue_Private();
-        void Clear();
+        CDocBuilderValue_Private() { m_context = NULL; }
+        ~CDocBuilderValue_Private() {}
+        void Clear() { m_value.Release(); }
     };
 }
 

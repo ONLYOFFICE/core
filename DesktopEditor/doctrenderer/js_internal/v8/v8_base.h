@@ -171,6 +171,10 @@ namespace NSJSBase
         {
             return value.IsEmpty() ? false : value->IsFunction();
         }
+        virtual bool isEmpty()
+        {
+            return value.IsEmpty();
+        }
 
         virtual void doUndefined()
         {            

@@ -42,6 +42,7 @@
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
 #include "js_internal/embed/MemoryStreamEmbed.h"
+#include "js_internal/v8/v8_base.h"
 #include "../fontengine/application_generate_fonts_common.h"
 
 #if defined(CreateDirectory)
@@ -467,7 +468,7 @@ private:
     int		m_nLen;
 
     int		m_nMaxUnionSize = 100 * 1024 * 1024; // 100Mb
-    v8::Local<v8::ArrayBuffer> m_oArrayBuffer;
+    JSSmart<CJSTypedArray> m_oArrayBuffer;
 
     int		m_nFileType; // 0 - docx; 1 - excel
 
@@ -528,7 +529,7 @@ public:
         m_pData = new BYTE[m_nLen];
         m_pDataCur = m_pData;
 
-        m_oArrayBuffer = v8::ArrayBuffer::New(v8::Isolate::GetCurrent(), (void*)m_pData, (size_t)m_nLen);
+        m_oArrayBuffer = CJSContext::createUint8Array(m_pData, m_nLen);
     }
 
     inline int Open(CArray<std::wstring>& oFiles, int nStart)
@@ -638,11 +639,9 @@ public:
         return i;
     }
 
-    v8::Local<v8::Uint8Array> GetData()
+    const BYTE* GetData()
     {
-        size_t len = (size_t)(m_pDataCur - m_pData);
-        v8::Local<v8::Uint8Array> _array = v8::Uint8Array::New(m_oArrayBuffer, 0, len);
-        return _array;
+        return m_oArrayBuffer->getData();
     }
 
 public:
@@ -754,12 +753,11 @@ public:
         *((int*)m_pData) = nCountData;
     }
 
-    v8::Local<v8::Uint8Array> GetDataFull()
+    JSSmart<CJSTypedArray> GetDataFull()
     {
         size_t len = (size_t)(m_pDataCur - m_pData);
-        v8::Local<v8::ArrayBuffer> _buffer = v8::ArrayBuffer::New(v8::Isolate::GetCurrent(), (void*)m_pData, len);
-        v8::Local<v8::Uint8Array> _array = v8::Uint8Array::New(_buffer, 0, len);
-        return _array;
+        JSSmart<CJSTypedArray> _buffer = CJSContext::createUint8Array(m_pData, len);
+        return _buffer;
     }
 
     int OpenNative(std::wstring strFile)
@@ -1151,12 +1149,9 @@ public:
 #endif
 
 bool Doct_renderer_SaveFile_ForBuilder(int nFormat, const std::wstring& strDstFile,
-                               CNativeControl* pNative,
-                               v8::Isolate* isolate,
-                               v8::Local<v8::Context> context,
-                               v8::Local<v8::Object>& global_js,
-                               v8::Handle<v8::Value>* args,
-                               v8::TryCatch& try_catch,
+                               NSNativeControl::CNativeControl* pNative,
+                               JSSmart<CJSContext> context,
+                               JSSmart<CJSValue>* args,
                                std::wstring& strError);
 
 class CCacheDataScript

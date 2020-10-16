@@ -70,123 +70,23 @@ void CBuilderDocumentEmbed::CloseFile()
     m_sFolder = L"";
 }
 
-CBuilderEmbed* unwrap_builder_embed(v8::Handle<v8::Object> obj)
-{
-    v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(obj->GetInternalField(0));
-    return static_cast<CBuilderEmbed*>(field->Value());
-}
-CBuilderDocumentEmbed* unwrap_builder_doc_embed(v8::Handle<v8::Object> obj)
-{
-    v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(obj->GetInternalField(0));
-    return static_cast<CBuilderDocumentEmbed*>(field->Value());
-}
+#define CURRENTWRAPPER CBuilderEmbed
 
-JSSmart<CJSValue> builder_OpenFile(JSSmart<CJSValue> sPath, JSSmart<CJSValue> sParams)
-{
-    CBuilderEmbed* builder = unwrap_builder_embed(args.This());
-    std::wstring sPath = CV8Convert::ToString(args[0]);
-    std::wstring sParams = (args.Length() > 1) ? CV8Convert::ToString(args[1]) : L"";
-    int ret = builder->m_pBuilder->OpenFile(sPath.c_str(), sParams.c_str());
-    args.GetReturnValue().Set(v8::Int32::New(v8::Isolate::GetCurrent(), ret));
-}
-void _builder_CreateFile(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
-    CBuilderEmbed* builder = unwrap_builder_embed(args.This());
-    bool ret = builder->m_pBuilder->CreateFile(CV8Convert::ToInt(args[0]));
-    args.GetReturnValue().Set(v8::Boolean::New(v8::Isolate::GetCurrent(), ret));
-}
-void _builder_SetTmpFolder(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
-    CBuilderEmbed* builder = unwrap_builder_embed(args.This());
-    std::wstring sPath = CV8Convert::ToString(args[0]);
-    builder->m_pBuilder->SetTmpFolder(sPath.c_str());
-}
-void _builder_SaveFile(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
-    CBuilderEmbed* builder = unwrap_builder_embed(args.This());
-    int type = CV8Convert::ToInt(args[0]);
-    std::wstring sPath = CV8Convert::ToString(args[1]);
-    std::wstring sParams = (args.Length() > 2) ? CV8Convert::ToString(args[2]) : L"";
-    int ret = builder->m_pBuilder->SaveFile(type, sPath.c_str(), sParams.empty() ? NULL : sParams.c_str());
-    args.GetReturnValue().Set(v8::Int32::New(v8::Isolate::GetCurrent(), ret));
-}
-void _builder_CloseFile(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
-    CBuilderEmbed* builder = unwrap_builder_embed(args.This());
-    builder->m_pBuilder->CloseFile();
-}
+FUNCTION_WRAPPER_V8_2(_builder_OpenFile,     builder_OpenFile)
+FUNCTION_WRAPPER_V8_1(_builder_CreateFile,   builder_CreateFile)
+FUNCTION_WRAPPER_V8_1(_builder_SetTmpFolder, builder_SetTmpFolder)
+FUNCTION_WRAPPER_V8_3(_builder_SaveFile,     builder_SaveFile)
+FUNCTION_WRAPPER_V8  (_builder_CloseFile,    builder_CloseFile)
+FUNCTION_WRAPPER_V8_2(_builder_OpenTmpFile,  builder_OpenTmpFile)
 
-void _builder_OpenTmpFile(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
-    CBuilderEmbed* builder = unwrap_builder_embed(args.This());
-    std::wstring sPath = CV8Convert::ToString(args[0]);
-    std::wstring sParams = (args.Length() > 1) ? CV8Convert::ToString(args[1]) : L"";
-    v8::Local<v8::Value> obj = _builder_CreateNativeTmpDoc(v8::Isolate::GetCurrent(), builder->m_pBuilder, sPath, sParams);
-    args.GetReturnValue().Set(obj);
-}
+#undef CURRENTWRAPPER
+#define CURRENTWRAPPER CBuilderDocumentEmbed
 
-/////////////////////////////////////////////////////////////////////////////////
-void _builder_doc_IsValid(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
-    CBuilderDocumentEmbed* doc = unwrap_builder_doc_embed(args.This());
-    args.GetReturnValue().Set(v8::Boolean::New(v8::Isolate::GetCurrent(), doc->m_bIsValid));
-}
-void _builder_doc_GetBinary(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
-    CBuilderDocumentEmbed* doc = unwrap_builder_doc_embed(args.This());
-
-    BYTE* pData = NULL;
-    DWORD dwSize = 0;
-    NSFile::CFileBinary::ReadAllBytes(doc->m_sFolder + L"/Editor.bin", &pData, dwSize);
-
-    if (0 == dwSize)
-    {
-        args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
-    }
-    else
-    {
-        v8::Local<v8::ArrayBuffer> _buffer = v8::ArrayBuffer::New(v8::Isolate::GetCurrent(), (void*)pData, (size_t)dwSize);
-        v8::Local<v8::Uint8Array> _array = v8::Uint8Array::New(_buffer, 0, (size_t)dwSize);
-        args.GetReturnValue().Set(_array);
-    }
-}
-void _builder_doc_GetFolder(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
-    CBuilderDocumentEmbed* doc = unwrap_builder_doc_embed(args.This());
-    std::string sUtf8 = U_TO_UTF8((doc->m_sFolder));
-    args.GetReturnValue().Set(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), sUtf8.c_str()));
-}
-void _builder_doc_CloseFile(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
-    CBuilderDocumentEmbed* doc = unwrap_builder_doc_embed(args.This());
-    doc->CloseFile();
-}
-void _builder_doc_GetImageMap(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
-    CBuilderDocumentEmbed* doc = unwrap_builder_doc_embed(args.This());
-    std::vector<std::wstring> files = NSDirectory::GetFiles(doc->m_sFolder + L"/media");
-
-    v8::Local<v8::Object> obj = v8::Object::New(v8::Isolate::GetCurrent());
-    for (std::vector<std::wstring>::iterator i = files.begin(); i != files.end(); i++)
-    {
-        std::wstring sFile = *i; NSCommon::string_replace(sFile, L"\\", L"/");
-        std::wstring sName = L"media/" + NSFile::GetFileName(sFile);
-
-        std::string sFileA = U_TO_UTF8(sFile);
-        std::string sNameA = U_TO_UTF8(sName);
-
-        v8::Local<v8::String> _k = v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), sNameA.c_str(), v8::String::kNormalString, -1);
-        v8::Local<v8::String> _v = v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), sFileA.c_str(), v8::String::kNormalString, -1);
-
-        obj->Set(_k, _v);
-    }
-
-    args.GetReturnValue().Set(obj);
-}
-
-/////////////////////////////////////////////////////////////////////////////////
-
-
+FUNCTION_WRAPPER_V8(_builder_doc_IsValid,     builder_doc_IsValid)
+FUNCTION_WRAPPER_V8(_builder_doc_GetBinary,   builder_doc_GetBinary)
+FUNCTION_WRAPPER_V8(_builder_doc_GetFolder,   builder_doc_GetFolder)
+FUNCTION_WRAPPER_V8(_builder_doc_CloseFile,   builder_doc_CloseFile)
+FUNCTION_WRAPPER_V8(_builder_doc_GetImageMap, builder_doc_GetImageMap)
 
 v8::Local<v8::Value> _builder_CreateNativeTmpDoc(v8::Isolate* isolate, NSDoctRenderer::CDocBuilder* pBuilder, const std::wstring& sFile, const std::wstring& sParams)
 {
@@ -229,29 +129,91 @@ v8::Local<v8::Value> _builder_CreateNative(v8::Isolate* isolate, NSDoctRenderer:
     return obj;
 }
 
+JSSmart<CJSValue> CBuilderEmbed::builder_OpenFile(JSSmart<CJSValue> sPath, JSSmart<CJSValue> sParams)
+{
+    std::wstring Path = sPath->toStringW();
+    std::wstring Params = sParams->toStringW();
+    int ret = m_pBuilder->OpenFile(Path.c_str(), Params.c_str());
+    return CJSContext::createInt(ret);
+}
+JSSmart<CJSValue> CBuilderEmbed::builder_CreateFile(JSSmart<CJSValue> type)
+{
+    bool ret = m_pBuilder->CreateFile(type->toInt32());
+    return CJSContext::createBool(ret);
+}
+JSSmart<CJSValue> CBuilderEmbed::builder_SetTmpFolder(JSSmart<CJSValue> path)
+{
+    std::wstring sPath = path->toStringW();
+    m_pBuilder->SetTmpFolder(sPath.c_str());
+    return NULL;
+}
+JSSmart<CJSValue> CBuilderEmbed::builder_SaveFile(JSSmart<CJSValue> t, JSSmart<CJSValue> path, JSSmart<CJSValue> params)
+{
+    int type = t->toInt32();
+    std::wstring sPath = path->toStringW();
+    std::wstring sParams = params->toStringW();
+    int ret = m_pBuilder->SaveFile(type, sPath.c_str(), sParams.empty() ? NULL : sParams.c_str());
+    return CJSContext::createInt(ret);
+}
+JSSmart<CJSValue> CBuilderEmbed::builder_CloseFile()
+{
+    m_pBuilder->CloseFile();
+    return NULL;
+}
+JSSmart<CJSValue> CBuilderEmbed::builder_OpenTmpFile(JSSmart<CJSValue> path, JSSmart<CJSValue> params)
+{
+    std::wstring sPath = path->toStringW();
+    std::wstring sParams = params->toStringW();
+    v8::Local<v8::Value> obj = _builder_CreateNativeTmpDoc(v8::Isolate::GetCurrent(), m_pBuilder, sPath, sParams);
+    CJSValueV8* res = new CJSValueV8();
+    res->value = obj;
+    return res;
+}
+
+JSSmart<CJSValue> CBuilderDocumentEmbed::builder_doc_IsValid()
+{
+    return CJSContext::createBool(m_bIsValid);
+}
+JSSmart<CJSValue> CBuilderDocumentEmbed::builder_doc_GetBinary()
+{
+    BYTE* pData = NULL;
+    DWORD dwSize = 0;
+    NSFile::CFileBinary::ReadAllBytes(m_sFolder + L"/Editor.bin", &pData, dwSize);
+
+    return 0 == dwSize ? NULL : CJSContext::createUint8Array(pData, (int)dwSize);
+}
+JSSmart<CJSValue> CBuilderDocumentEmbed::builder_doc_GetFolder()
+{
+    return CJSContext::createString(m_sFolder);
+}
+JSSmart<CJSValue> CBuilderDocumentEmbed::builder_doc_CloseFile()
+{
+    CloseFile();
+    return NULL;
+}
+JSSmart<CJSValue> CBuilderDocumentEmbed::builder_doc_GetImageMap()
+{
+    std::vector<std::wstring> files = NSDirectory::GetFiles(m_sFolder + L"/media");
+
+    JSSmart<CJSObject> obj = CJSContext::createObject();
+    for (std::vector<std::wstring>::iterator i = files.begin(); i != files.end(); i++)
+    {
+        std::wstring sFile = *i; NSCommon::string_replace(sFile, L"\\", L"/");
+        std::wstring sName = L"media/" + NSFile::GetFileName(sFile);
+
+        obj->set(U_TO_UTF8(sName).c_str(), CJSContext::createString(sFile));
+    }
+
+    return obj->toValue();
+}
+
 void builder_CreateNativeTmpDoc(const std::string& name, JSSmart<CJSContext> context, NSDoctRenderer::CDocBuilder* builder, const std::wstring& sFile, const std::wstring& sParams)
 {
     v8::Isolate* current = CV8Worker::GetCurrent();
-    context->m_internal->m_global->Set(current,  v8::String::NewFromUtf8(current, name.c_str()), _builder_CreateNative(current, builder));
+    context->m_internal->m_global->Set(current, name.c_str(), _builder_CreateNativeTmpDoc(current, builder, sFile, sParams));
 }
-
-void builder_CreateNative(const std::string& name, JSSmart<CJSContext> context, NSDoctRenderer::CDocBuilder* builder)
+void builder_CreateNative      (const std::string& name, JSSmart<CJSContext> context, NSDoctRenderer::CDocBuilder* builder)
 {
     v8::Isolate* current = CV8Worker::GetCurrent();
-    context->m_internal->m_global->Set(current,  v8::String::NewFromUtf8(current, name.c_str()), _builder_CreateNative(current, builder));
+    context->m_internal->m_global->Set(current, name.c_str(), _builder_CreateNative(current, builder));
 }
-
-FUNCTION_WRAPPER_V8_2(_builder_OpenFile, builder_OpenFile)
-void _builder_OpenFile(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _builder_CreateFile(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _builder_SetTmpFolder(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _builder_SaveFile(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _builder_CloseFile(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _builder_OpenTmpFile(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _builder_doc_IsValid(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _builder_doc_GetBinary(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _builder_doc_GetFolder(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _builder_doc_CloseFile(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _builder_doc_GetImageMap(const v8::FunctionCallbackInfo<v8::Value>& args);

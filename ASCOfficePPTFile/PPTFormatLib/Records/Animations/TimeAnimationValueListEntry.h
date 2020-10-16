@@ -65,7 +65,7 @@ public:
     }
 
     CRecordTimeAnimationValueAtom	m_oTimeAnimationValueAtom;
-    CRecordTimeVariantString		m_VarValue;
+    CRecordTimeVariant              m_VarValue;
     CRecordTimeVariantString		m_VarFormula;
 };
 

@@ -93,21 +93,39 @@ namespace PPT_FORMAT
         for (auto& animValue : oldAnim->m_oAnimateValueList.m_arrEntry)
         {
             auto tav = new PPTX::Logic::Tav;
-            if (!animValue.m_VarValue.m_stringValue.empty())
-                tav->val = new PPTX::Logic::AnimVariant;
-                tav->val->name = L"val";
-                // TODO!!
-                switch (animValue.m_VarValue.m_Type) {
-                case TL_TVT_String: {
-                    tav->val->strVal = animValue.m_VarValue.m_stringValue;
-                    break;
-                }
-                }
-                tav->tm = std::to_wstring(
-                            animValue.m_oTimeAnimationValueAtom.m_nTime * 100);
-                oAnim.tavLst->list.push_back(*tav);
-        }
+
+            switch (animValue.m_VarValue.m_Type) {
+            case TL_TVT_String:
+            {
+                tav->val->strVal = *(animValue.m_VarValue.m_str);
+                break;
+            }
+            case TL_TVT_Bool:
+            {
+                tav->val->boolVal = *(animValue.m_VarValue.m_bool);
+                break;
+            }
+            case TL_TVT_Int:
+            {
+                tav->val->intVal = *(animValue.m_VarValue.m_int);
+                break;
+            }
+            case TL_TVT_Float:
+            {
+                tav->val->fltVal = *(animValue.m_VarValue.m_flt);
+                break;
+            }
+            }
+            tav->tm = std::to_wstring(
+                        animValue.m_oTimeAnimationValueAtom.m_nTime * 100);
+            oAnim.tavLst->list.push_back(*tav);
+
+            if (!animValue.m_VarFormula.m_stringValue.empty())
+            {
+                tav->fmla = animValue.m_VarFormula.m_stringValue;
+            }
 
         FillCBhvr(pETNC, oAnim.cBhvr);
+    }
     }
 }

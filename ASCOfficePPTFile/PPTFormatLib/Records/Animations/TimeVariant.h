@@ -42,11 +42,49 @@ namespace PPT_FORMAT
 class CRecordTimeVariant : public CUnknownRecord
 {
 public:
+
+    CRecordTimeVariant() :
+        m_bool(nullptr),
+        m_int(nullptr),
+        m_flt(nullptr),
+        m_str(nullptr)
+    {}
+
+    ~CRecordTimeVariant()
+    {
+        RELEASEOBJECT(m_bool)
+        RELEASEOBJECT(m_int)
+        RELEASEOBJECT(m_flt)
+        RELEASEOBJECT(m_str)
+    }
+
     virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
     {
         m_oHeader			=	oHeader;
 
-        m_Type				=	( TimeVariantTypeEnum )StreamUtils::ReadBYTE ( pStream );	//
+        m_Type				=	( TimeVariantTypeEnum )StreamUtils::ReadBYTE ( pStream );
+        switch (m_Type)
+        {
+        case TL_TVT_Bool:
+            m_bool = new bool((bool)StreamUtils::ReadBYTE(pStream));
+            break;
+        case TL_TVT_Int:
+            m_int = new int(StreamUtils::ReadDWORD(pStream));
+            break;
+        case TL_TVT_Float:
+            m_flt = new float(StreamUtils::ReadFLOAT(pStream));
+            break;
+        case TL_TVT_String:
+            LONG lCurLen(0);
+            m_str = new std::wstring;
+            while (lCurLen < m_oHeader.RecLen - 1) {
+                m_str->push_back(StreamUtils::ReadWORD(pStream));
+                lCurLen += 2;
+            }
+            m_str->pop_back();
+
+            break;
+        }
 
         LONG lPos		=	0;
         StreamUtils::StreamPosition ( lPos, pStream );
@@ -56,6 +94,10 @@ public:
 
 public:
     TimeVariantTypeEnum		m_Type;
+    bool*           m_bool;
+    int*            m_int;
+    float*          m_flt;
+    std::wstring*   m_str;
 };
 
 
@@ -82,7 +124,7 @@ public:
     {
         m_oHeader			=	oHeader;
 
-        m_Type				=	( TimeVariantTypeEnum )StreamUtils::ReadBYTE ( pStream );	//	MUST be TL_TVT_Bool
+        m_Type				=	( TimeVariantTypeEnum )StreamUtils::ReadBYTE ( pStream );
         m_Value				=	StreamUtils::ReadDWORD ( pStream );
     }
 
@@ -99,7 +141,7 @@ public:
     {
         m_oHeader			=	oHeader;
 
-        m_Type				=	( TimeVariantTypeEnum )StreamUtils::ReadBYTE ( pStream );	//	MUST be TL_TVT_Bool
+        m_Type				=	( TimeVariantTypeEnum )StreamUtils::ReadBYTE ( pStream );
         m_Value				=	StreamUtils::ReadFLOAT ( pStream );
     }
 

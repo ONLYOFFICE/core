@@ -226,11 +226,11 @@ namespace NSDoctRenderer
         /**
          * Initializing the ONLYOFFICE Document Builder as a library for the application to be able to work with it.
          */
-        static void Initialize();
+        // static void Initialize();
         /**
          * Unloading the ONLYOFFICE Document Builder from the application memory when it is no longer needed.
          */
-        static void Dispose();
+        // static void Dispose();
 
     private:
         CDocBuilder_Private* m_pInternal;

@@ -49,7 +49,7 @@ CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder)
     m_context->Initialize();
 
     m_isolate_scope = m_context->CreateIsolateScope();
-    m_handle_scope = m_context->CreateLocalScope() ;
+    m_handle_scope  = m_context->CreateLocalScope();
 
     m_context->CreateGlobalForContext();
     CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", m_context);
@@ -134,7 +134,7 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
     LOGGER_SPEED_START
 
     JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
-    JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
+    JSSmart<CJSTryCatch>         try_catch = m_context->GetExceptions();
 
     CCacheDataScript oCachedScript(sCachePath);
     LOGGER_SPEED_LAP("compile");
@@ -239,7 +239,7 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
         args_open[0] = oWorkerLoader.GetDataFull().get();
         args_open[1] = CJSContext::createInt(nVersion);
         std::wstring sXlsx = NSCommon::GetDirectoryName(pNative->GetFilePath()) + L"/Editor.xlsx";
-        args_open[2] = NSFile::CFileBinary::Exists(sXlsx) ? CJSContext::createString(sXlsx) : NULL;
+        args_open[2] = NSFile::CFileBinary::Exists(sXlsx) ? CJSContext::createString(sXlsx) : CJSContext::createUndefined();
 
         global_js->call_func("NativeOpenFileData", 3, args_open);
         if (try_catch->Check())
@@ -720,16 +720,6 @@ namespace NSDoctRenderer
         std::wstring sW(param);
         std::string sA = U_TO_UTF8(sW);
         return this->SetProperty(sA.c_str(), value);
-    }
-
-    void CDocBuilder::Initialize()
-    {
-        // CV8Worker::Initialize();
-    }
-
-    void CDocBuilder::Dispose()
-    {
-        // CV8Worker::Dispose();
     }
 
     void CDocBuilder::WriteData(const wchar_t* path, const wchar_t* value, const bool& append)

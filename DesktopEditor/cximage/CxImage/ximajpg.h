@@ -171,7 +171,7 @@ protected:
 	void* FindSection(int32_t SectionType);
 	bool ProcessExifDir(uint8_t * DirStart, uint8_t * OffsetBase, unsigned ExifLength,
                            EXIFINFO * const pInfo, uint8_t ** const LastExifRefdP, int32_t NestingLevel=0);
-    bool ProcessExifDir2(CSafeReader& DirStart, CSafeReader& OffsetBase, unsigned ExifLength,
+    bool ProcessExifDir2(CSafeReader DirStart, CSafeReader OffsetBase, unsigned ExifLength,
                            EXIFINFO * const pInfo, uint8_t ** const LastExifRefdP, int32_t NestingLevel=0);
 	int32_t ExifImageWidth;
 	int32_t MotorolaOrder;

@@ -716,7 +716,7 @@ bool CxImageJPG::CxExifInfo::ProcessExifDir(uint8_t * DirStart, uint8_t * Offset
 
 	return true;
 }
-bool CxImageJPG::CxExifInfo::ProcessExifDir2(CSafeReader& DirStart, CSafeReader& OffsetBase, unsigned ExifLength,
+bool CxImageJPG::CxExifInfo::ProcessExifDir2(CSafeReader DirStart, CSafeReader OffsetBase, unsigned ExifLength,
                            EXIFINFO * const m_exifinfo, uint8_t ** const LastExifRefdP, int32_t NestingLevel)
 {
     int32_t de;

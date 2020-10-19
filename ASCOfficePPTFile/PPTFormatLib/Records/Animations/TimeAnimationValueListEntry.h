@@ -39,9 +39,20 @@
 
 namespace PPT_FORMAT
 {
+
 class CRecordTimeAnimationEntry
 {
 public:
+
+    CRecordTimeAnimationEntry()
+    {
+
+    }
+
+    virtual ~CRecordTimeAnimationEntry()
+    {
+    }
+
     virtual void ReadFromStream ( UINT& CurLen, SRecordHeader & oHeader, POLE::Stream* pStream )
     {
         m_oTimeAnimationValueAtom.ReadFromStream ( oHeader, pStream );
@@ -51,7 +62,7 @@ public:
 
         if ( ReadHeader.ReadFromStream(pStream) )
         {
-            m_VarValue.ReadFromStream ( ReadHeader, pStream );
+            m_pVarValue = TimeVariantFactoryMethod( ReadHeader, pStream );
         }
 
         CurLen += 8 + ReadHeader.RecLen;
@@ -64,9 +75,9 @@ public:
         CurLen += 8 + ReadHeader.RecLen;
     }
 
-    CRecordTimeAnimationValueAtom	m_oTimeAnimationValueAtom;
-    CRecordTimeVariant              m_VarValue;
-    CRecordTimeVariantString		m_VarFormula;
+    CRecordTimeAnimationValueAtom       m_oTimeAnimationValueAtom;
+    nullable<CRecordTimeVariant>        m_pVarValue;
+    CRecordTimeVariantString            m_VarFormula;
 };
 
 }

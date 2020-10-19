@@ -29,59 +29,47 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
+#include "TimeVariant.h"
 
+using namespace PPT_FORMAT;
 
-#include "../Reader/Records.h"
-#include "TimeAnimationValueListEntry.h"
-#include <memory>
-
-
-namespace PPT_FORMAT
+CRecordTimeVariant* PPT_FORMAT::TimeVariantFactoryMethod(SRecordHeader & oHeader, POLE::Stream* pStream)
 {
-class CRecordTimeAnimationValueListContainer : public CUnknownRecord
-{
-public:
+    LONG lPos(0); StreamUtils::StreamPosition(lPos, pStream);
 
-    ~CRecordTimeAnimationValueListContainer()
+    CRecordTimeVariant* pTimeVariant(nullptr);
+    CRecordTimeVariant tempTimeVariant;
+    tempTimeVariant.ReadFromStream(oHeader, pStream);
+    StreamUtils::StreamSeek(lPos, pStream);
+
+    switch (tempTimeVariant.m_Type)
     {
-        for (auto pEntry : m_arrEntry)
-        {
-            RELEASEOBJECT(pEntry);
-        }
-    }
-    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
+    case TL_TVT_Bool:
     {
-        m_oHeader			=	oHeader;
-
-        LONG lPos		=	0;
-        StreamUtils::StreamPosition ( lPos, pStream );
-
-        UINT lCurLen	=	0;
-
-        SRecordHeader ReadHeader;
-        while ( lCurLen < m_oHeader.RecLen )
-        {
-            if ( ReadHeader.ReadFromStream(pStream) == false )
-            {
-                break;
-            }
-
-            lCurLen += 8 + ReadHeader.RecLen;
-
-            auto  Entry = new CRecordTimeAnimationEntry;
-            Entry->ReadFromStream ( lCurLen, ReadHeader, pStream );
-
-            m_arrEntry.push_back ( Entry );
-
-        }
-
-        StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
+        pTimeVariant = new CRecordTimeVariantBool;
+        pTimeVariant->ReadFromStream(oHeader, pStream);
+        break;
     }
+    case TL_TVT_Int:
+    {
+        pTimeVariant = new CRecordTimeVariantInt;
+        pTimeVariant->ReadFromStream(oHeader, pStream);
+        break;
+    }
+    case TL_TVT_Float:
+    {
+        pTimeVariant = new CRecordTimeVariantFloat;
+        pTimeVariant->ReadFromStream(oHeader, pStream);
+        break;
+    }
+    case TL_TVT_String:
+    {
+        pTimeVariant = new CRecordTimeVariantString;
+        pTimeVariant->ReadFromStream(oHeader, pStream);
+        break;
+    }
+    }
+    StreamUtils::StreamSeek(lPos + oHeader.RecLen, pStream);
 
-public:
-
-    std::vector<CRecordTimeAnimationEntry*>	m_arrEntry;
-};
-
+    return pTimeVariant;
 }

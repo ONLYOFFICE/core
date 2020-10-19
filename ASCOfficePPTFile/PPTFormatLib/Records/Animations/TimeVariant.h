@@ -43,61 +43,25 @@ class CRecordTimeVariant : public CUnknownRecord
 {
 public:
 
-    CRecordTimeVariant() :
-        m_bool(nullptr),
-        m_int(nullptr),
-        m_flt(nullptr),
-        m_str(nullptr)
-    {}
-
-    ~CRecordTimeVariant()
-    {
-        RELEASEOBJECT(m_bool)
-        RELEASEOBJECT(m_int)
-        RELEASEOBJECT(m_flt)
-        RELEASEOBJECT(m_str)
-    }
-
     virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
     {
         m_oHeader			=	oHeader;
 
         m_Type				=	( TimeVariantTypeEnum )StreamUtils::ReadBYTE ( pStream );
-        switch (m_Type)
-        {
-        case TL_TVT_Bool:
-            m_bool = new bool((bool)StreamUtils::ReadBYTE(pStream));
-            break;
-        case TL_TVT_Int:
-            m_int = new int(StreamUtils::ReadDWORD(pStream));
-            break;
-        case TL_TVT_Float:
-            m_flt = new float(StreamUtils::ReadFLOAT(pStream));
-            break;
-        case TL_TVT_String:
-            LONG lCurLen(0);
-            m_str = new std::wstring;
-            while (lCurLen < m_oHeader.RecLen - 1) {
-                m_str->push_back(StreamUtils::ReadWORD(pStream));
-                lCurLen += 2;
-            }
-            m_str->pop_back();
+    }
 
-            break;
-        }
+    virtual ~CRecordTimeVariant(){}
 
-        LONG lPos		=	0;
-        StreamUtils::StreamPosition ( lPos, pStream );
+    virtual CRecordTimeVariant& operator=(const CRecordTimeVariant& src)
+    {
+        CUnknownRecord::operator=(src);
+        m_Type = src.m_Type;
 
-        StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
+        return *this;
     }
 
 public:
     TimeVariantTypeEnum		m_Type;
-    bool*           m_bool;
-    int*            m_int;
-    float*          m_flt;
-    std::wstring*   m_str;
 };
 
 
@@ -106,14 +70,21 @@ class CRecordTimeVariantBool : public CRecordTimeVariant
 public:
     virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
     {
-        m_oHeader			=	oHeader;
-
-        m_Type				=	( TimeVariantTypeEnum )StreamUtils::ReadBYTE ( pStream );	//	MUST be TL_TVT_Bool
-        m_Value				=	( 0x1 == StreamUtils::ReadBYTE ( pStream ) );
+        CRecordTimeVariant::ReadFromStream(oHeader, pStream);
+        m_Value	= ( 0x1 == StreamUtils::ReadBYTE ( pStream ) );
     }
 
+    virtual CRecordTimeVariant& operator=(const CRecordTimeVariant& src)
+    {
+        CRecordTimeVariant::operator=(src);
+        m_Value = dynamic_cast<const CRecordTimeVariantBool&>(src).m_Value;
+
+        return *this;
+    }
+
+    virtual ~CRecordTimeVariantBool(){}
+
 public:
-    TimeVariantTypeEnum		m_Type;
     bool					m_Value;
 };
 
@@ -122,15 +93,21 @@ class CRecordTimeVariantInt : public CRecordTimeVariant
 public:
     virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
     {
-        m_oHeader			=	oHeader;
-
-        m_Type				=	( TimeVariantTypeEnum )StreamUtils::ReadBYTE ( pStream );
-        m_Value				=	StreamUtils::ReadDWORD ( pStream );
+        CRecordTimeVariant::ReadFromStream(oHeader, pStream);
+        m_Value	= StreamUtils::ReadDWORD ( pStream );
     }
 
-public:
+    virtual CRecordTimeVariant& operator=(const CRecordTimeVariant& src)
+    {
+        CRecordTimeVariant::operator=(src);
+        m_Value = dynamic_cast<const CRecordTimeVariantInt&>(src).m_Value;
 
-    TimeVariantTypeEnum		m_Type;
+        return *this;
+    }
+
+    virtual ~CRecordTimeVariantInt(){}
+
+public:
     _UINT32                         m_Value;
 };
 
@@ -139,15 +116,21 @@ class CRecordTimeVariantFloat : public CRecordTimeVariant
 public:
     virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
     {
-        m_oHeader			=	oHeader;
-
-        m_Type				=	( TimeVariantTypeEnum )StreamUtils::ReadBYTE ( pStream );
-        m_Value				=	StreamUtils::ReadFLOAT ( pStream );
+        CRecordTimeVariant::ReadFromStream(oHeader, pStream);
+        m_Value	= StreamUtils::ReadFLOAT ( pStream );
     }
 
-public:
+    virtual CRecordTimeVariant& operator=(const CRecordTimeVariant& src)
+    {
+        CRecordTimeVariant::operator=(src);
+        m_Value = dynamic_cast<const CRecordTimeVariantFloat&>(src).m_Value;
 
-    TimeVariantTypeEnum		m_Type;
+        return *this;
+    }
+
+    virtual ~CRecordTimeVariantFloat(){}
+
+public:
     FLOAT                           m_Value;
 };
 
@@ -156,25 +139,26 @@ class CRecordTimeVariantString : public CRecordTimeVariant
 public:
     virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
     {
-        m_oHeader			=	oHeader;
 
-        m_Type				=	( TimeVariantTypeEnum )StreamUtils::ReadBYTE ( pStream );	//	MUST be TL_TVT_String
+        CRecordTimeVariant::ReadFromStream(oHeader, pStream);
 
-
-        LONG lCurLen(0);
-        while (lCurLen < m_oHeader.RecLen - 1) {
-            m_stringValue.push_back(StreamUtils::ReadWORD(pStream));
-            lCurLen += 2;
-        }
-        m_stringValue.pop_back();
-
+        m_Value = StreamUtils::ReadStringW(pStream, m_oHeader.RecLen / 2 - 1);
+        StreamUtils::StreamSkip(2, pStream);
     }
+
+    virtual CRecordTimeVariant& operator=(const CRecordTimeVariant& src)
+    {
+        CRecordTimeVariant::operator=(src);
+        m_Value = dynamic_cast<const CRecordTimeVariantString&>(src).m_Value;
+
+        return *this;
+    }
+
+     virtual ~CRecordTimeVariantString(){}
 
 
 public:
-
-    TimeVariantTypeEnum		m_Type;
-    std::wstring            m_stringValue;
+    std::wstring            m_Value;
 };
 
 
@@ -304,4 +288,6 @@ class CRecordTagValueAtom : public CRecordTimeVariantString
 {
 
 };
+
+CRecordTimeVariant* TimeVariantFactoryMethod(SRecordHeader & oHeader, POLE::Stream* pStream);
 }

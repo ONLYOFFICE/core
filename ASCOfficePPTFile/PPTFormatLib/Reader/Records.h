@@ -38,11 +38,15 @@
 #include "../../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStream.h"
 #include "../../../Common/3dParty/pole/pole.h"
 #include "../../../OfficeCryptReader/source/CryptTransform.h"
+#include "../../../Common/DocxFormat/Source/Base/Nullable.h"
+
 
 #include <boost/smart_ptr/shared_array.hpp>
 
 using namespace PPT_FORMAT;
 using namespace XLS;
+
+using NSCommon::nullable;
 
 class SRecordHeader 
 { 

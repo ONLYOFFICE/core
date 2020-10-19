@@ -49,7 +49,7 @@ namespace PPT_FORMAT
         for (const auto& oldAttr : pOld->m_oBehavior.m_pStringList->m_arrRgChildRec)
         {
             PPTX::Logic::AttrName addAttr;
-            addAttr.text = oldAttr.m_stringValue;
+            addAttr.text = oldAttr.m_Value;
             oBhvr.attrNameLst->list.push_back(addAttr);
 
         }
@@ -96,7 +96,7 @@ namespace PPT_FORMAT
             for (const auto& oldAttr : bhvr->m_pStringList->m_arrRgChildRec)
             {
                 PPTX::Logic::AttrName addAttr;
-                addAttr.text = oldAttr.m_stringValue;
+                addAttr.text = oldAttr.m_Value;
                 oBhvr.attrNameLst->list.push_back(addAttr);
 
             }

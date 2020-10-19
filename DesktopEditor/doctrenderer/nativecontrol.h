@@ -639,9 +639,9 @@ public:
         return i;
     }
 
-    const BYTE* GetData()
+    JSSmart<CJSTypedArray> GetData()
     {
-        return m_oArrayBuffer->getData();
+        return m_oArrayBuffer;
     }
 
 public:

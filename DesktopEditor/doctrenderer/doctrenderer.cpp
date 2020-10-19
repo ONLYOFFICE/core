@@ -717,7 +717,7 @@ namespace NSDoctRenderer
                     int nVersion = oWorkerLoader.OpenNative(pNative->GetFilePath());
 
                     JSSmart<CJSValue> args_open[4];
-                    args_open[0] = oWorkerLoader.GetDataFull().get();
+                    args_open[0] = oWorkerLoader.GetDataFull()->toObject()->toValue();
                     args_open[1] = CJSContext::createInt(nVersion);
                     std::wstring sXlsx = NSCommon::GetDirectoryName(pNative->GetFilePath()) + L"/Editor.xlsx";
                     args_open[2] = NSFile::CFileBinary::Exists(sXlsx) ? CJSContext::createString(sXlsx) : CJSContext::createUndefined();
@@ -746,7 +746,6 @@ namespace NSDoctRenderer
                 // CHANGES
                 if (!bIsBreak)
                 {
-                    v8::Handle<v8::Value> js_func_apply_changes = js_objectApi->Get(v8::String::NewFromUtf8(isolate, "asc_nativeApplyChanges2"));
                     if (m_oParams.m_arChanges.GetCount() != 0)
                     {
                         int nCurrentIndex = 0;
@@ -764,31 +763,17 @@ namespace NSDoctRenderer
                             nCurrentIndex = oWorker.Open(m_oParams.m_arChanges, nCurrentIndex);
                             bool bIsFull = (nCurrentIndex == m_oParams.m_arChanges.GetCount()) ? true : false;
 
-                            if (js_func_apply_changes->IsFunction())
+                            JSSmart<CJSValue> args_changes[2];
+                            args_changes[0] = oWorker.GetData()->toObject()->toValue();
+                            args_changes[1] = CJSContext::createBool(bIsFull);
+                            js_objectApi->call_func("asc_nativeApplyChanges2", 2, args_changes);
+                            if (try_catch->Check())
                             {
-                                v8::Handle<v8::Function> func_apply_changes = v8::Handle<v8::Function>::Cast(js_func_apply_changes);
-                                v8::Handle<v8::Value> args_changes[2];
-                                // args_changes[0] = oWorker.GetData();
-                                args_changes[1] = v8::Boolean::New(isolate, bIsFull);
-
-                                func_apply_changes->Call(js_objectApi, 2, args_changes);
-
-                                if (try_catch.HasCaught())
-                                {
-                                    /*
-                                    std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
-                                    std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
-
-                                    _LOGGING_ERROR_(L"change_code", strCode);
-                                    _LOGGING_ERROR_(L"change", strException);
-                                    */
-
-                                    char buffer[50];
-                                    sprintf(buffer, "index=\"%d\"", pNative->m_nCurrentChangesNumber - 1);
-                                    std::string s(buffer);
-                                    strError = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)s.c_str(), (LONG)s.length());
-                                    bIsBreak = true;
-                                }
+                                char buffer[50];
+                                sprintf(buffer, "index=\"%d\"", pNative->m_nCurrentChangesNumber - 1);
+                                std::string s(buffer);
+                                strError = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)s.c_str(), (LONG)s.length());
+                                bIsBreak = true;
                             }
 
                             if (bIsFull)
@@ -850,50 +835,19 @@ namespace NSDoctRenderer
                                 }
 
                                 pBaseData[dwSizeBase] = 0;
-                                v8::Handle<v8::Value> js_func_mm_start = js_objectApi->Get(v8::String::NewFromUtf8(isolate, "asc_StartMailMergeByList"));
-
-                                if (js_func_mm_start->IsFunction())
-                                {
-                                    v8::Handle<v8::Function> func_mm_start = v8::Handle<v8::Function>::Cast(js_func_mm_start);
-                                    v8::Handle<v8::Value> args_changes[1];
-
+                                JSSmart<CJSValue> args_changes[1];
                                 #ifndef V8_OS_XP
-                                    args_changes[0] = v8::JSON::Parse(context, v8::String::NewFromUtf8(isolate, (char*)(pBaseData + nStart))).FromMaybe(v8::Local<v8::Value>());
+                                    args_changes[0] = js_value(v8::JSON::Parse(context->m_internal->m_context, v8::String::NewFromUtf8(context->m_internal->m_isolate, (char*)(pBaseData + nStart))).FromMaybe(v8::Local<v8::Value>()));
                                 #else
-                                    args_changes[0] = v8::JSON::Parse(v8::String::NewFromUtf8(isolate, (char*)(pBaseData + nStart)));
+                                    args_changes[0] = js_value(v8::JSON::Parse(v8::String::NewFromUtf8(context->m_internal->m_isolate, (char*)(pBaseData + nStart))));
                                 #endif
+                                //args_changes[0] = js_value(v8::String::NewFromUtf8(context->m_internal->m_isolate, (char*)(pBaseData + nStart)));
 
-                                    if (try_catch.HasCaught())
-                                    {
-                                        /*
-                                        std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
-                                        std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
-
-                                        _LOGGING_ERROR_(L"change_code", strCode);
-                                        _LOGGING_ERROR_(L"change", strException);
-                                        */
-
-                                        strError = L"mailmerge=\"databaseopenjs\"";
-                                        bIsBreak = true;
-                                    }
-
-                                    //args_changes[0] = v8::String::NewFromUtf8(isolate, (char*)(pBaseData + nStart));
-
-                                    func_mm_start->Call(js_objectApi, 1, args_changes);
-
-                                    if (try_catch.HasCaught())
-                                    {
-                                        /*
-                                        std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
-                                        std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
-
-                                        _LOGGING_ERROR_(L"change_code", strCode);
-                                        _LOGGING_ERROR_(L"change", strException);
-                                        */
-
-                                        strError = L"mailmerge=\"databaseopenjs\"";
-                                        bIsBreak = true;
-                                    }
+                                js_objectApi->call_func("asc_StartMailMergeByList", 1, args_changes);
+                                if (try_catch->Check())
+                                {
+                                    strError = L"mailmerge=\"databaseopenjs\"";
+                                    bIsBreak = true;
                                 }
                             }
                         }
@@ -911,29 +865,14 @@ namespace NSDoctRenderer
                             strReturnParams += L"<MailMergeFields>";
                             for (int nIndexMM  = m_oParams.m_nMailMergeIndexStart; nIndexMM <= m_oParams.m_nMailMergeIndexEnd && !bIsBreak; ++nIndexMM)
                             {
-                                v8::Handle<v8::Value> js_func_mm_preview = js_objectApi->Get(v8::String::NewFromUtf8(isolate, "asc_PreviewMailMergeResult"));
+                                JSSmart<CJSValue> args_changes[1];
+                                args_changes[0] = CJSContext::createInt(nIndexMM);
 
-                                if (js_func_mm_preview->IsFunction())
+                                js_objectApi->call_func("asc_PreviewMailMergeResult", 1, args_changes);
+                                if (try_catch->Check())
                                 {
-                                    v8::Handle<v8::Function> func_mm_preview = v8::Handle<v8::Function>::Cast(js_func_mm_preview);
-                                    v8::Handle<v8::Value> args_changes[1];
-                                    args_changes[0] = v8::Integer::New(v8::Isolate::GetCurrent(), nIndexMM);
-
-                                    func_mm_preview->Call(js_objectApi, 1, args_changes);
-
-                                    if (try_catch.HasCaught())
-                                    {
-                                        /*
-                                        std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
-                                        std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
-
-                                        _LOGGING_ERROR_(L"change_code", strCode);
-                                        _LOGGING_ERROR_(L"change", strException);
-                                        */
-
-                                        strError = L"mailmerge=\"preview" + std::to_wstring(nIndexMM) + L"\"";
-                                        bIsBreak = true;
-                                    }
+                                    strError = L"mailmerge=\"preview" + std::to_wstring(nIndexMM) + L"\"";
+                                    bIsBreak = true;
                                 }
 
                                 std::wstring sSaveFile = L"";
@@ -943,46 +882,29 @@ namespace NSDoctRenderer
                                     std::wstring sSaveOld = m_oParams.m_strDstFilePath;
                                     m_oParams.m_strDstFilePath += (L"/file" + std::to_wstring(nIndexMM));
                                     sSaveFile = m_oParams.m_strDstFilePath;
-
-                                    bIsBreak = Doct_renderer_SaveFile(&m_oParams, pNative, isolate, context, global_js,
-                                                                           args, try_catch, strError, js_objectApi);
+                                    bIsBreak = Doct_renderer_SaveFile(&m_oParams, pNative, context, args, strError, js_objectApi);
 
                                     m_oParams.m_strDstFilePath = sSaveOld;
                                 }
 
                                 if (!bIsBreak)
                                 {
-                                    v8::Handle<v8::Value> js_func_mm_field = js_objectApi->Get(v8::String::NewFromUtf8(isolate, "asc_GetMailMergeFiledValue"));
+                                    JSSmart<CJSValue> args_changes[2];
+                                    args_changes[0] = CJSContext::createInt(nIndexMM);
+                                    args_changes[1] = CJSContext::createString(sFieldUtf8);
 
-                                    if (js_func_mm_field->IsFunction())
+                                    JSSmart<CJSValue> js_result2 = js_objectApi->call_func("asc_GetMailMergeFiledValue", 2, args_changes);
+                                    if (try_catch->Check())
                                     {
-                                        v8::Handle<v8::Function> func_mm_field = v8::Handle<v8::Function>::Cast(js_func_mm_field);
-                                        v8::Handle<v8::Value> args_changes[2];
-                                        args_changes[0] = v8::Integer::New(v8::Isolate::GetCurrent(), nIndexMM);
-                                        args_changes[1] = v8::String::NewFromUtf8(isolate, (char*)sFieldUtf8.c_str());
-
-                                        v8::Local<v8::Value> js_result2 = func_mm_field->Call(js_objectApi, 2, args_changes);
-
-                                        if (try_catch.HasCaught())
-                                        {
-                                            /*
-                                            std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
-                                            std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
-
-                                            _LOGGING_ERROR_(L"change_code", strCode);
-                                            _LOGGING_ERROR_(L"change", strException);
-                                            */
-
-                                            strError = L"mailmerge=\"field" + std::to_wstring(nIndexMM) + L"\"";
-                                            bIsBreak = true;
-                                        }
-
-                                        std::wstring sField = js_value(js_result2)->toStringW();
-                                        NSDoctRenderer::replace_for_xml(sField);
-                                        NSDoctRenderer::replace_for_xml(sSaveFile);
-
-                                        strReturnParams += L"<file path=\"" + sSaveFile + L"\" field=\"" + sField + L"\" />";
+                                        strError = L"mailmerge=\"field" + std::to_wstring(nIndexMM) + L"\"";
+                                        bIsBreak = true;
                                     }
+
+                                    std::wstring sField = js_result2->toStringW();
+                                    NSDoctRenderer::replace_for_xml(sField);
+                                    NSDoctRenderer::replace_for_xml(sSaveFile);
+
+                                    strReturnParams += L"<file path=\"" + sSaveFile + L"\" field=\"" + sField + L"\" />";
                                 }
                             }
                             strReturnParams += L"</MailMergeFields>";
@@ -993,7 +915,7 @@ namespace NSDoctRenderer
                 // SAVE
                 if (!bIsBreak && !bIsMailMerge)
                 {
-                    bIsBreak = Doct_renderer_SaveFile(&m_oParams, pNative, isolate, context, global_js, args, try_catch, strError, js_objectApi);
+                    bIsBreak = Doct_renderer_SaveFile(&m_oParams, pNative, context, args, strError, js_objectApi);
                 }
 
                 LOGGER_SPEED_LAP("save")

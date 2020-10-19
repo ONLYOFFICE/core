@@ -36,18 +36,6 @@
 #include "docbuilder.h"
 #include "js_internal/js_base.h"
 
-namespace NSDoctRenderer
-{
-    class CDocBuilderJS
-    {
-    public:
-        CDocBuilderJS() {}
-        virtual ~CDocBuilderJS() {}
-    public:
-        CDocBuilder_Private* GetPrivate(NSDoctRenderer::CDocBuilder* pBuilder) { return pBuilder->m_pInternal; }
-    };
-}
-
 class CBuilderEmbed : public CJSEmbedObject
 {
 public:
@@ -79,6 +67,7 @@ public:
     ~CBuilderDocumentEmbed() { if(m_pBuilder) RELEASEOBJECT(m_pBuilder); }
 
     virtual void* getObject() { return (void*)m_pBuilder; }
+    NSDoctRenderer::CDocBuilder_Private* GetPrivate(NSDoctRenderer::CDocBuilder* pBuilder) { return pBuilder->GetPrivate(); }
 
 public:
     void OpenFile(const std::wstring& sFile, const std::wstring& sParams);

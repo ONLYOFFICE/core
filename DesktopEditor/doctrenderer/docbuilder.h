@@ -36,7 +36,7 @@
 
 namespace NSDoctRenderer
 {
-    class CDocBuilderJS;
+    // class CDocBuilderJS;
 
     /**
      * Class for getting results of called js commands
@@ -231,11 +231,12 @@ namespace NSDoctRenderer
          * Unloading the ONLYOFFICE Document Builder from the application memory when it is no longer needed.
          */
         // static void Dispose();
+        CDocBuilder_Private* GetPrivate() { return m_pInternal; }
 
     private:
         CDocBuilder_Private* m_pInternal;
 
-        friend class CDocBuilderJS;
+        friend class CBuilderDocumentEmbed;
     };
 
     /**

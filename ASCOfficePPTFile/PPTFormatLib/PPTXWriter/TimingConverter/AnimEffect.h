@@ -42,7 +42,7 @@ namespace PPT_FORMAT
             PPTX::Logic::AnimEffect& oAnim)
     {
         auto* bhvr = pETNC->m_pTimeEffectBehavior;
-        oAnim.filter = bhvr->m_oVarType.m_stringValue;
+        oAnim.filter = bhvr->m_oVarType.m_Value;
 
         if (bhvr->m_effectBehaviorAtom.m_bProgressPropertyUsed)
         {
@@ -55,7 +55,7 @@ namespace PPT_FORMAT
         {
             if (!oAnim.progress.is_init())
                 oAnim.progress = new PPTX::Logic::AnimVariant;
-            oAnim.progress->strVal = bhvr->m_oVarRuntimeContext.m_stringValue;
+            oAnim.progress->strVal = bhvr->m_oVarRuntimeContext.m_Value;
         }
 
         if (bhvr->m_effectBehaviorAtom.m_bTransitionPropertyUsed)

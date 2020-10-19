@@ -73,17 +73,17 @@ namespace PPT_FORMAT
         // By
         if (oldAnim->m_oAnimateBehaviorAtom.m_bByPropertyUsed)
         {
-            oAnim.by = oldAnim->m_oVarBy.m_stringValue;
+            oAnim.by = oldAnim->m_oVarBy.m_Value;
         }
         // To
         if (oldAnim->m_oAnimateBehaviorAtom.m_bToPropertyUsed)
         {
-            oAnim.to = oldAnim->m_oVarTo.m_stringValue;
+            oAnim.to = oldAnim->m_oVarTo.m_Value;
         }
         //From
         if (oldAnim->m_oAnimateBehaviorAtom.m_bFromPropertyUsed)
         {
-            oAnim.from = oldAnim->m_oVarFrom.m_stringValue;
+            oAnim.from = oldAnim->m_oVarFrom.m_Value;
         }
 
         //// Writing childs
@@ -92,40 +92,48 @@ namespace PPT_FORMAT
             oAnim.tavLst = new PPTX::Logic::TavLst;
         for (auto& animValue : oldAnim->m_oAnimateValueList.m_arrEntry)
         {
-            auto tav = new PPTX::Logic::Tav;
+            PPTX::Logic::Tav tav;
+            tav.val = new PPTX::Logic::AnimVariant;
 
-            switch (animValue.m_VarValue.m_Type) {
+            tav.val->name = L"val";
+
+            switch (animValue.m_pVarValue->m_Type) {
             case TL_TVT_String:
             {
-                tav->val->strVal = *(animValue.m_VarValue.m_str);
+                tav.val->strVal = dynamic_cast<CRecordTimeVariantString*>
+                        (animValue.m_pVarValue)->m_Value;
                 break;
             }
             case TL_TVT_Bool:
             {
-                tav->val->boolVal = *(animValue.m_VarValue.m_bool);
+                tav.val->boolVal = dynamic_cast<CRecordTimeVariantBool*>
+                        (animValue.m_pVarValue)->m_Value;
                 break;
             }
             case TL_TVT_Int:
             {
-                tav->val->intVal = *(animValue.m_VarValue.m_int);
+                tav.val->intVal = dynamic_cast<CRecordTimeVariantInt*>
+                        (animValue.m_pVarValue)->m_Value;
                 break;
             }
             case TL_TVT_Float:
             {
-                tav->val->fltVal = *(animValue.m_VarValue.m_flt);
+                tav.val->fltVal = dynamic_cast<CRecordTimeVariantFloat*>
+                        (animValue.m_pVarValue)->m_Value;
                 break;
             }
             }
-            tav->tm = std::to_wstring(
-                        animValue.m_oTimeAnimationValueAtom.m_nTime * 100);
-            oAnim.tavLst->list.push_back(*tav);
 
-            if (!animValue.m_VarFormula.m_stringValue.empty())
+            tav.tm = std::to_wstring(
+                        animValue.m_oTimeAnimationValueAtom.m_nTime * 100);
+
+            if (!animValue.m_VarFormula.m_Value.empty())
             {
-                tav->fmla = animValue.m_VarFormula.m_stringValue;
+                tav.fmla = animValue.m_VarFormula.m_Value;
             }
 
-        FillCBhvr(pETNC, oAnim.cBhvr);
+            oAnim.tavLst->list.push_back(tav);
     }
+        FillCBhvr(pETNC, oAnim.cBhvr);
     }
 }

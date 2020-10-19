@@ -107,12 +107,12 @@ void ConvertTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::TimeNodeBas
                 case TL_TPID_SlideCount:		break;
                 case TL_TPID_TimeFilter:
                 {
-                    oCTn.tmFilter = dynamic_cast<CRecordTimeNodeTimeFilter*>(pRec)->m_stringValue;
+                    oCTn.tmFilter = dynamic_cast<CRecordTimeNodeTimeFilter*>(pRec)->m_Value;
                     break;
                 }
                 case TL_TPID_EventFilter:
                 {
-                    oCTn.evtFilter = dynamic_cast<CRecordTimeEventFilter*>(pRec)->m_stringValue;
+                    oCTn.evtFilter = dynamic_cast<CRecordTimeEventFilter*>(pRec)->m_Value;
                     break;
                 }
                 case TL_TPID_HideWhenStopped:	break;

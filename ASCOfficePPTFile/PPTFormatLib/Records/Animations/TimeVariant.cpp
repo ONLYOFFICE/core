@@ -29,24 +29,47 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
+#include "TimeVariant.h"
 
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Set.h"
-#include "CBhvr.h"
+using namespace PPT_FORMAT;
 
-
-namespace PPT_FORMAT
+CRecordTimeVariant* PPT_FORMAT::TimeVariantFactoryMethod(SRecordHeader & oHeader, POLE::Stream* pStream)
 {
-void FillSet(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
-                    PPTX::Logic::Set& oSet)
-{
-    if (!pETNC->m_haveSetBehavior) return;
+    LONG lPos(0); StreamUtils::StreamPosition(lPos, pStream);
 
-    // TODO
-    FillCBhvr(pETNC, oSet.cBhvr);
-    oSet.to = new PPTX::Logic::AnimVariant();
-    oSet.to->name = L"to";
-    oSet.to->strVal = pETNC->m_pTimeSetBehavior->m_oVarTo.m_Value;
+    CRecordTimeVariant* pTimeVariant(nullptr);
+    CRecordTimeVariant tempTimeVariant;
+    tempTimeVariant.ReadFromStream(oHeader, pStream);
+    StreamUtils::StreamSeek(lPos, pStream);
 
-}
+    switch (tempTimeVariant.m_Type)
+    {
+    case TL_TVT_Bool:
+    {
+        pTimeVariant = new CRecordTimeVariantBool;
+        pTimeVariant->ReadFromStream(oHeader, pStream);
+        break;
+    }
+    case TL_TVT_Int:
+    {
+        pTimeVariant = new CRecordTimeVariantInt;
+        pTimeVariant->ReadFromStream(oHeader, pStream);
+        break;
+    }
+    case TL_TVT_Float:
+    {
+        pTimeVariant = new CRecordTimeVariantFloat;
+        pTimeVariant->ReadFromStream(oHeader, pStream);
+        break;
+    }
+    case TL_TVT_String:
+    {
+        pTimeVariant = new CRecordTimeVariantString;
+        pTimeVariant->ReadFromStream(oHeader, pStream);
+        break;
+    }
+    }
+    StreamUtils::StreamSeek(lPos + oHeader.RecLen, pStream);
+
+    return pTimeVariant;
 }

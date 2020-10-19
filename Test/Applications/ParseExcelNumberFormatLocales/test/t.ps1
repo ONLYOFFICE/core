@@ -1,3 +1,0 @@
-
-
-Set-Culture en-GB

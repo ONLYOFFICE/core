@@ -93,11 +93,11 @@ v8::Local<v8::Value> _builder_CreateNativeTmpDoc(v8::Isolate* isolate, NSDoctRen
     v8::Local<v8::ObjectTemplate> _template = v8::ObjectTemplate::New(isolate);
     _template->SetInternalFieldCount(1); // отводим в нем место для хранения CNativeControl
 
-    _template->Set(isolate, "IsValid", v8::FunctionTemplate::New(isolate, _builder_doc_IsValid));
-    _template->Set(isolate, "GetBinary", v8::FunctionTemplate::New(isolate, _builder_doc_GetBinary));
-    _template->Set(isolate, "GetFolder", v8::FunctionTemplate::New(isolate, _builder_doc_GetFolder));
-    _template->Set(isolate, "Close", v8::FunctionTemplate::New(isolate, _builder_doc_CloseFile));
-    _template->Set(isolate, "GetImageMap", v8::FunctionTemplate::New(isolate, _builder_doc_GetImageMap));
+    NSV8Objects::Template_Set(_template, "IsValid",     _builder_doc_IsValid);
+    NSV8Objects::Template_Set(_template, "GetBinary",   _builder_doc_GetBinary);
+    NSV8Objects::Template_Set(_template, "GetFolder",   _builder_doc_GetFolder);
+    NSV8Objects::Template_Set(_template, "Close",       _builder_doc_CloseFile);
+    NSV8Objects::Template_Set(_template, "GetImageMap", _builder_doc_GetImageMap);
 
     CBuilderDocumentEmbed* _embed = new CBuilderDocumentEmbed();
     _embed->m_pBuilder = pBuilder;
@@ -113,12 +113,12 @@ v8::Local<v8::Value> _builder_CreateNative(v8::Isolate* isolate, NSDoctRenderer:
     v8::Local<v8::ObjectTemplate> _template = v8::ObjectTemplate::New(isolate);
     _template->SetInternalFieldCount(1);
 
-    _template->Set(isolate, "OpenFile", v8::FunctionTemplate::New(isolate, _builder_OpenFile));
-    _template->Set(isolate, "CreateFile", v8::FunctionTemplate::New(isolate, _builder_CreateFile));
-    _template->Set(isolate, "SetTmpFolder", v8::FunctionTemplate::New(isolate, _builder_SetTmpFolder));
-    _template->Set(isolate, "SaveFile", v8::FunctionTemplate::New(isolate, _builder_SaveFile));
-    _template->Set(isolate, "CloseFile", v8::FunctionTemplate::New(isolate, _builder_CloseFile));
-    _template->Set(isolate, "OpenTmpFile", v8::FunctionTemplate::New(isolate, _builder_OpenTmpFile));
+    NSV8Objects::Template_Set(_template, "OpenFile",     _builder_OpenFile);
+    NSV8Objects::Template_Set(_template, "CreateFile",   _builder_CreateFile);
+    NSV8Objects::Template_Set(_template, "SetTmpFolder", _builder_SetTmpFolder);
+    NSV8Objects::Template_Set(_template, "SaveFile",     _builder_SaveFile);
+    NSV8Objects::Template_Set(_template, "CloseFile",    _builder_CloseFile);
+    NSV8Objects::Template_Set(_template, "OpenTmpFile",  _builder_OpenTmpFile);
 
     CBuilderEmbed* _embed = new CBuilderEmbed();
     _embed->m_pBuilder = builder;
@@ -164,7 +164,7 @@ JSSmart<CJSValue> CBuilderEmbed::builder_OpenTmpFile(JSSmart<CJSValue> path, JSS
 {
     std::wstring sPath = path->toStringW();
     std::wstring sParams = params->toStringW();
-    v8::Local<v8::Value> obj = _builder_CreateNativeTmpDoc(v8::Isolate::GetCurrent(), m_pBuilder, sPath, sParams);
+    v8::Local<v8::Value> obj = _builder_CreateNativeTmpDoc(CV8Worker::GetCurrent(), m_pBuilder, sPath, sParams);
     CJSValueV8* res = new CJSValueV8();
     res->value = obj;
     return res;
@@ -198,7 +198,8 @@ JSSmart<CJSValue> CBuilderDocumentEmbed::builder_doc_GetImageMap()
     JSSmart<CJSObject> obj = CJSContext::createObject();
     for (std::vector<std::wstring>::iterator i = files.begin(); i != files.end(); i++)
     {
-        std::wstring sFile = *i; NSCommon::string_replace(sFile, L"\\", L"/");
+        std::wstring sFile = *i;
+        NSCommon::string_replace(sFile, L"\\", L"/");
         std::wstring sName = L"media/" + NSFile::GetFileName(sFile);
 
         obj->set(U_TO_UTF8(sName).c_str(), CJSContext::createString(sFile));
@@ -210,11 +211,10 @@ JSSmart<CJSValue> CBuilderDocumentEmbed::builder_doc_GetImageMap()
 void builder_CreateNativeTmpDoc(const std::string& name, JSSmart<CJSContext> context, NSDoctRenderer::CDocBuilder* builder, const std::wstring& sFile, const std::wstring& sParams)
 {
     v8::Isolate* current = CV8Worker::GetCurrent();
-    context->m_internal->m_global->Set(current, name.c_str(), _builder_CreateNativeTmpDoc(current, builder, sFile, sParams));
+    context->m_internal->m_context->Global()->Set(context->m_internal->m_context, v8::String::NewFromUtf8(current, name.c_str()), _builder_CreateNativeTmpDoc(current, builder, sFile, sParams));
 }
 void builder_CreateNative      (const std::string& name, JSSmart<CJSContext> context, NSDoctRenderer::CDocBuilder* builder)
 {
     v8::Isolate* current = CV8Worker::GetCurrent();
     context->m_internal->m_context->Global()->Set(context->m_internal->m_context, v8::String::NewFromUtf8(current, name.c_str()), _builder_CreateNative(current, builder));
-    // context->m_internal->m_global->Set(current, name.c_str(), _builder_CreateNative(current, builder));
 }

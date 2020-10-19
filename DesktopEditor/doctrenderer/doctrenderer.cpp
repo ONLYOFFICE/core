@@ -44,6 +44,7 @@
 
 namespace NSDoctRenderer
 {
+    /*
     void ParseStringAsInts(const std::string& s, std::vector<int>& arr)
     {
         const char* data = s.c_str();
@@ -73,6 +74,7 @@ namespace NSDoctRenderer
         if (cur > curOld)
             arr.push_back(valCur);
     }
+    */
 
     class CExecuteParams
     {
@@ -133,6 +135,7 @@ namespace NSDoctRenderer
         }
 
     public:
+        /*
         bool FromXml(const std::wstring& strXml)
         {
             XmlUtils::CXmlNode oNode;
@@ -195,9 +198,11 @@ namespace NSDoctRenderer
 
             return true;
         }
+        */
     };
 }
 
+/*
 namespace NSDoctRenderer
 {
     std::wstring string_replaceAll(std::wstring str, const std::wstring& from, const std::wstring& to)
@@ -211,9 +216,11 @@ namespace NSDoctRenderer
         return str;
     }    
 }
+*/
 
 namespace NSDoctRenderer
 {
+    /*
     static void string_replace(std::wstring& text, const std::wstring& replaceFrom, const std::wstring& replaceTo)
     {
         size_t posn = 0;
@@ -231,6 +238,7 @@ namespace NSDoctRenderer
         string_replace(text, L">", L"&gt;");
         string_replace(text, L"\"", L"&quot;");
     }
+    */
 
     class CDoctRenderer_Private
     {
@@ -615,6 +623,7 @@ namespace NSDoctRenderer
             return bIsBreak;
         }
 
+        /*
         bool ExecuteScript(const std::string& strScript, const std::wstring& sCachePath, std::wstring& strError, std::wstring& strReturnParams)
         {
             LOGGER_SPEED_START
@@ -952,8 +961,10 @@ namespace NSDoctRenderer
             RELEASEARRAYOBJECTS(pData);
             return sReturn;
         }
+        */
     };
 
+    /*
     CDoctrenderer::CDoctrenderer(const std::wstring& sAllFontsPath)
     {
         m_pInternal = new CDoctRenderer_Private(sAllFontsPath);
@@ -1105,6 +1116,7 @@ namespace NSDoctRenderer
     {
         return m_pInternal->m_arImagesInChanges;
     }
+    */
 }
 
 bool Doct_renderer_SaveFile_ForBuilder(int nFormat, const std::wstring& strDstFile,

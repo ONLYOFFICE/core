@@ -215,5 +215,6 @@ void builder_CreateNativeTmpDoc(const std::string& name, JSSmart<CJSContext> con
 void builder_CreateNative      (const std::string& name, JSSmart<CJSContext> context, NSDoctRenderer::CDocBuilder* builder)
 {
     v8::Isolate* current = CV8Worker::GetCurrent();
-    context->m_internal->m_global->Set(current, name.c_str(), _builder_CreateNative(current, builder));
+    context->m_internal->m_context->Global()->Set(context->m_internal->m_context, v8::String::NewFromUtf8(current, name.c_str()), _builder_CreateNative(current, builder));
+    // context->m_internal->m_global->Set(current, name.c_str(), _builder_CreateNative(current, builder));
 }

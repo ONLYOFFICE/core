@@ -340,7 +340,8 @@ namespace NSDoctRenderer
             oWorker.m_bIsNeedThumbnails = false;
             oWorker.m_sDirectory = sDirectory;
             NSFonts::IApplicationFonts* pFonts = oWorker.Check();
-            pFonts->Release();
+            if(pFonts)
+                pFonts->Release();
         }
 
         void CheckFileDir()

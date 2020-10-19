@@ -14,7 +14,7 @@ public:
     CMemoryStreamEmbed() : m_pInternal(new NSMemoryStream::CMemoryStream()) {}
     ~CMemoryStreamEmbed() { RELEASEOBJECT(m_pInternal); }
 
-    virtual void* getObject() { return (void*)m_pInternal; }
+    virtual void* getObject() override { return (void*)m_pInternal; }
 
 public:
     JSSmart<CJSValue> Copy(JSSmart<CJSValue> stream, JSSmart<CJSValue> pos, JSSmart<CJSValue> len);

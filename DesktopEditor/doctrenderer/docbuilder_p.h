@@ -76,7 +76,7 @@ namespace NSDoctRenderer
         JSSmart<CJSValue> m_value;
 
     public:
-        CDocBuilderValue_Private() { m_context = NULL; }
+        CDocBuilderValue_Private() : m_context(NULL) {}
         ~CDocBuilderValue_Private() {}
         void Clear() { m_value.Release(); }
     };
@@ -124,13 +124,7 @@ namespace NSDoctRenderer
     class CDocBuilderParams
     {
     public:
-        CDocBuilderParams()
-        {
-            m_bCheckFonts = false;
-            m_sWorkDir = L"";
-            m_bSaveWithDoctrendererMode = false;
-            m_sArgumentJSON = "";
-        }
+        CDocBuilderParams() : m_bCheckFonts(false), m_sWorkDir(L""), m_bSaveWithDoctrendererMode(false), m_sArgumentJSON("") {}
 
     public:
         bool m_bCheckFonts;
@@ -177,28 +171,13 @@ namespace NSDoctRenderer
 
         NSDoctRenderer::CDocBuilder* m_pParent;
     public:
-        CDocBuilder_Private()
-        {
-            m_pParent = NULL;
-            m_pWorker = NULL;
-
-            m_nFileType = -1;
-
-            m_sTmpFolder = NSFile::CFileBinary::GetTempPath();
-
+        CDocBuilder_Private() : m_bIsNotUseConfigAllFontsDir(false), m_sTmpFolder(NSFile::CFileBinary::GetTempPath()), m_nFileType(-1),
+            m_pWorker(NULL), m_pAdditionalData(NULL), m_bIsInit(false), m_bIsCacheScript(true), m_bIsServerSafeVersion(false),
+            m_sGlobalVariable(""), m_bIsGlobalVariableUse(false), m_pParent(NULL)
+        {            
             // под линуксом предыдущая функция создает файл!!!
             if (NSFile::CFileBinary::Exists(m_sTmpFolder))
                 NSFile::CFileBinary::Remove(m_sTmpFolder);
-
-            m_pAdditionalData = NULL;
-            m_bIsInit = false;
-            m_bIsCacheScript = true;
-
-            m_sGlobalVariable = "";
-            m_bIsGlobalVariableUse = false;
-
-            m_bIsNotUseConfigAllFontsDir = false;
-            m_bIsServerSafeVersion = false;
         }
 
         void Init()
@@ -444,7 +423,7 @@ namespace NSDoctRenderer
 
                         BYTE* pDataDst = NULL;
                         int nDataDstLen = 0;
-                        if (NSFile::CBase64Converter::Decode(sBase64.c_str(), (int)sBase64.length(), pDataDst, nDataLen))
+                        if (NSFile::CBase64Converter::Decode(sBase64.c_str(), (int)sBase64.length(), pDataDst, nDataDstLen))
                         {
                             NSFile::CFileBinary oFileDst;
                             if (oFileDst.CreateFileW(to))
@@ -951,7 +930,6 @@ namespace NSDoctRenderer
         {
             std::vector<std::wstring>* arSdkFiles = NULL;
 
-            std::wstring sResourceFile;
             switch (m_nFileType)
             {
             case 0:
@@ -982,9 +960,9 @@ namespace NSDoctRenderer
 
             if (NULL != arSdkFiles)
             {
-                for (std::vector<std::wstring>::iterator i = arSdkFiles->begin(); i != arSdkFiles->end(); i++)
+                for (const std::wstring& i : *arSdkFiles)
                 {
-                    strScript += ReadScriptFile(*i);
+                    strScript += ReadScriptFile(i);
                     strScript += "\n\n";
                 }
             }

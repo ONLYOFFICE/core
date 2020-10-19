@@ -14,7 +14,7 @@ public:
     CNativeControlEmbed() : m_pInternal(new NSNativeControl::CNativeControl()) {}
     ~CNativeControlEmbed() { RELEASEOBJECT(m_pInternal); }
 
-    virtual void* getObject() { return (void*)m_pInternal; }
+    virtual void* getObject() override { return (void*)m_pInternal; }
 
 public:
 

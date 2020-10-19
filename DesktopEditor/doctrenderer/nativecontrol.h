@@ -68,10 +68,7 @@ public:
 
 public:
 
-    CZipWorker()
-    {
-        m_sWorkerFolder = L"";
-    }
+    CZipWorker() : m_sWorkerFolder(L"") {}
 
     ~CZipWorker()
     {
@@ -137,9 +134,9 @@ public:
 
         url_correct2(m_sTmpFolder);
         int nStart = (int)m_sTmpFolder.length();
-        for (std::vector<std::wstring>::iterator i = arFiles.begin(); i != arFiles.end(); i++)
+        for (const std::wstring& i : arFiles)
         {
-            std::wstring sTmp = *i;
+            std::wstring sTmp = i;
             url_correct2(sTmp);
 
             m_arFiles.push_back(sTmp.substr(nStart + 1));
@@ -235,27 +232,21 @@ public:
     // для добавления картинок -------------------------------------
     CImagesWorker* m_pWorker;
 
-public:
     CMemoryStreamEmbed* m_pStream;
 
-    CNativeControl()
-    {
-        m_pStream = NULL;
-        m_pChanges = NULL;
-
-        m_nCurrentChangesNumber = -1;
-        m_nMaxChangesNumber = -1;
-
-        m_pSaveBinary = NULL;
-        m_nSaveLen = 0;
-        m_nSaveBinaryLen = 0;
-
-        m_sConsoleLogFile = L"";
-
-        m_nCurrentChangesBuilderIndex = 0;
-
-        m_pWorker = NULL;
-    }
+public:
+    CNativeControl() :
+        m_pChanges(NULL),
+        m_nCurrentChangesNumber(-1),
+        m_nMaxChangesNumber(-1),
+        m_pSaveBinary(NULL),
+        m_nSaveLen(0),
+        m_nSaveBinaryLen(0),
+        m_sConsoleLogFile(L""),
+        m_nCurrentChangesBuilderIndex(0),
+        m_pWorker(NULL),
+        m_pStream(NULL)
+    {}
     ~CNativeControl()
     {
         RELEASEOBJECT(m_pStream);
@@ -415,9 +406,9 @@ public:
 
             std::vector<NSFonts::CFontInfo*>* pFonts = pApplication->GetList()->GetFonts();
 
-            for (std::vector<NSFonts::CFontInfo*>::iterator i = pFonts->begin(); i < pFonts->end(); i++)
+            for (NSFonts::CFontInfo* i : *pFonts)
             {
-                NSFonts::CFontInfo* pCurrent = *i;
+                NSFonts::CFontInfo* pCurrent = i;
 
                 size_t pos1 = pCurrent->m_wsFontPath.find_last_of(wchar_t('/'));
                 size_t pos2 = pCurrent->m_wsFontPath.find_last_of(wchar_t('\\'));
@@ -494,7 +485,7 @@ public:
 
 public:
 
-    void CheckFiles(CArray<std::wstring>& oFiles)
+    void CheckFiles(const CArray<std::wstring>& oFiles)
     {
         int nMax = 0;
         int nLen = 0;
@@ -537,7 +528,7 @@ public:
         return Open_excel(oFiles, nStart);
     }
 
-    int Open_docx(CArray<std::wstring>& oFiles, int nStart)
+    int Open_docx(const CArray<std::wstring>& oFiles, int nStart)
     {
         m_pDataCur = m_pData;
         m_pDataCur += 4;
@@ -592,7 +583,7 @@ public:
         return i;
     }
 
-    int Open_excel(CArray<std::wstring>& oFiles, int nStart)
+    int Open_excel(const CArray<std::wstring>& oFiles, int nStart)
     {
         m_pDataCur = m_pData;
         m_pDataCur += 4;
@@ -645,7 +636,7 @@ public:
     }
 
 public:
-    void OpenFull(CArray<std::wstring>& oFiles)
+    void OpenFull(const CArray<std::wstring>& oFiles)
     {
         // определяем размер
         int nCount = (int)oFiles.GetCount();
@@ -703,7 +694,7 @@ public:
         *((int*)m_pData) = nCountData;
     }
 
-    void OpenFull_excel(CArray<std::wstring>& oFiles)
+    void OpenFull_excel(const CArray<std::wstring>& oFiles)
     {
         // определяем размер
         int nCount = (int)oFiles.GetCount();

@@ -14,7 +14,7 @@ public:
     CGraphicsEmbed() : m_pInternal(new NSGraphics::CGraphics()) {}
     ~CGraphicsEmbed() { RELEASEOBJECT(m_pInternal); }
 
-    virtual void* getObject() { return (void*)m_pInternal; }
+    virtual void* getObject() override { return (void*)m_pInternal; }
 
 public:
     JSSmart<CJSValue> init(JSSmart<CJSValue> context, JSSmart<CJSValue> width_px, JSSmart<CJSValue> height_px, JSSmart<CJSValue> width_mm, JSSmart<CJSValue> height_mm);

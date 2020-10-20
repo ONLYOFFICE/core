@@ -311,7 +311,7 @@ namespace PPTX
 					{
 						pReader->Skip(6); // len + start attributes + type
 
-						std::wstring strImagePath = pReader->GetString2();
+						std::wstring strImagePath = pReader->GetString2(true);
 
 						if (0 != strImagePath.find(_T("http:")) &&
 							0 != strImagePath.find(_T("https:")) &&

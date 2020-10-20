@@ -1652,7 +1652,7 @@ int Binary_pPrReader::Read_pgHeader(BYTE type, long length, void* poResult)
 	if( c_oSerProp_secPrType::hdrftrelem == type )
 	{
 		int nHdrFtrIndex = m_oBufferedStream.GetLong();
-		if(nHdrFtrIndex >= 0 && nHdrFtrIndex <= (int)m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders.size())
+		if(nHdrFtrIndex >= 0 && nHdrFtrIndex < (int)m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders.size())
 		{
 			Writers::HdrFtrItem* pHdrFtrItem = m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders[nHdrFtrIndex];
 			pHdrFtrItem->m_sFilename;

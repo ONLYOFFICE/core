@@ -841,7 +841,6 @@ namespace NSDoctRenderer
                                 #else
                                     args_changes[0] = js_value(v8::JSON::Parse(v8::String::NewFromUtf8(context->m_internal->m_isolate, (char*)(pBaseData + nStart))));
                                 #endif
-                                //args_changes[0] = js_value(v8::String::NewFromUtf8(context->m_internal->m_isolate, (char*)(pBaseData + nStart)));
 
                                 js_objectApi->call_func("asc_StartMailMergeByList", 1, args_changes);
                                 if (try_catch->Check())

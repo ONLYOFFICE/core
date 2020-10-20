@@ -1116,29 +1116,6 @@ public:
 };
 #endif
 
-#ifdef V8_OS_XP
-
-class ExternalMallocArrayBufferAllocator : public v8::ArrayBuffer::Allocator
-{
-public:
-    virtual void* Allocate(size_t length)
-    {
-        void* ret = malloc(length);
-        memset(ret, 0, length);
-        return ret;
-    }
-    virtual void* AllocateUninitialized(size_t length)
-    {
-        return malloc(length);
-    }
-    virtual void Free(void* data, size_t length)
-    {
-        free(data);
-    }
-};
-
-#endif
-
 bool Doct_renderer_SaveFile_ForBuilder(int nFormat, const std::wstring& strDstFile,
                                NSNativeControl::CNativeControl* pNative,
                                JSSmart<CJSContext> context,

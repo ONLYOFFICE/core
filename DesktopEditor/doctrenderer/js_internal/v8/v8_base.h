@@ -10,6 +10,7 @@
     #include <JniLogUtils.h>
 #endif
 
+#ifdef V8_OS_XP
 class MallocArrayBufferAllocator : public v8::ArrayBuffer::Allocator
 {
 public:
@@ -28,6 +29,7 @@ public:
         free(data);
     }
 };
+#endif
 
 class CV8Initializer
 {
@@ -43,11 +45,18 @@ public:
 
         m_pAllocator = NULL;
 
+    #ifndef V8_OS_XP
         v8::V8::InitializeICUDefaultLocation(sPrA.c_str());
         v8::V8::InitializeExternalStartupData(sPrA.c_str());
         m_platform = v8::platform::CreateDefaultPlatform();
         v8::V8::InitializePlatform(m_platform);
         v8::V8::Initialize();
+    #else
+        m_platform = v8::platform::CreateDefaultPlatform();
+        v8::V8::InitializePlatform(m_platform);
+        v8::V8::Initialize();
+        v8::V8::InitializeICU();
+    #endif
     }
     ~CV8Initializer()
     {
@@ -66,7 +75,11 @@ public:
     v8::Isolate* CreateNew()
     {
         v8::Isolate::CreateParams create_params;
+    #ifndef V8_OS_XP
         m_pAllocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
+    #else
+        m_pAllocator = new MallocArrayBufferAllocator();
+    #endif
         create_params.array_buffer_allocator = m_pAllocator;
         return v8::Isolate::New(create_params);
     }

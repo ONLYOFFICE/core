@@ -54,7 +54,6 @@ namespace NSDoctRenderer
     }
 }
 
-/*
 namespace NSDoctRenderer
 {
     class CDoctRenderer_Private;
@@ -73,6 +72,5 @@ namespace NSDoctRenderer
         CDoctRenderer_Private* m_pInternal;
     };
 }
-*/
 
 #endif // DOCTRENDERER_H

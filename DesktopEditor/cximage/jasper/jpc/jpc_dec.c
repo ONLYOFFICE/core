@@ -2171,7 +2171,12 @@ int jpc_ppxstab_insert(jpc_ppxstab_t *tab, jpc_ppxstabent_t *ent)
 	int inspt;
 	int i;
 
-	for (i = 0; i < tab->numents; ++i) {
+    // check on MAX_INT
+    int correct_num_ents = tab->numents;
+    if (correct_num_ents > 0x7FFFFFFE)
+        correct_num_ents = 0x7FFFFFFE;
+
+    for (i = 0; i < correct_num_ents; ++i) {
 		if (tab->ents[i]->ind > ent->ind) {
 			break;
 		}

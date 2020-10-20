@@ -2019,8 +2019,8 @@ extern int ZEXPORT unzCloseCurrentFile (unzFile file)
     if ((pfile_in_zip_read_info->rest_read_uncompressed == 0) &&
         (!pfile_in_zip_read_info->raw))
     {
-        if (pfile_in_zip_read_info->crc32 != pfile_in_zip_read_info->crc32_wait)
-            err=UNZ_CRCERROR;
+//        if (pfile_in_zip_read_info->crc32 != pfile_in_zip_read_info->crc32_wait)
+//            err=UNZ_CRCERROR;
     }
 
 

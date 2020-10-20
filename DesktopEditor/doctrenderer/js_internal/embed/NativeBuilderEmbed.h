@@ -32,10 +32,10 @@
 #ifndef NATIVECONTROLBUILDER
 #define NATIVECONTROLBUILDER
 
-#include "nativecontrol.h"
-#include "docbuilder.h"
-#include "js_internal/js_base.h"
+#include "../../docbuilder.h"
+#include "../js_base.h"
 
+using namespace NSJSBase;
 class CBuilderEmbed : public CJSEmbedObject
 {
 public:

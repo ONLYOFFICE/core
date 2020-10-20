@@ -130,7 +130,6 @@ namespace NSJSBase
         virtual bool Check() = 0;
     };
 
-
     class CJSIsolateScope
     {
     public:

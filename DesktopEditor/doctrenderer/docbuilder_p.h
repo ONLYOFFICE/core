@@ -37,6 +37,7 @@
 
 #include "../xml/include/xmlutils.h"
 #include <iostream>
+#include <list>
 
 #include "../common/File.h"
 #include "../common/Directory.h"
@@ -44,9 +45,8 @@
 #include "../../Common/OfficeFileFormats.h"
 #include "../../Common/OfficeFileFormatChecker.h"
 
-#include "nativebuilder.h"
-#include <list>
-
+#include "js_internal/js_base.h"
+#include "js_internal/embed/NativeBuilderEmbed.h"
 #include "js_internal/embed/NativeControlEmbed.h"
 #include "js_internal/embed/MemoryStreamEmbed.h"
 
@@ -61,7 +61,6 @@
 #endif
 
 #include "../fontengine/ApplicationFontsWorker.h"
-#include "js_internal/js_base.h"
 
 #ifdef CreateFile
 #undef CreateFile

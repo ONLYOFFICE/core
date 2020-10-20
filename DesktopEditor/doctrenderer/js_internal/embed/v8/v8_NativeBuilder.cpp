@@ -29,9 +29,9 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "nativebuilder.h"
-#include "docbuilder_p.h"
-#include "js_internal/v8/v8_base.h"
+#include "../NativeBuilderEmbed.h"
+#include "../../../docbuilder_p.h"
+#include "../../v8/v8_base.h"
 
 void CBuilderDocumentEmbed::OpenFile(const std::wstring& sFile, const std::wstring& sParams)
 {
@@ -129,85 +129,6 @@ v8::Local<v8::Value> _builder_CreateNative(v8::Isolate* isolate, NSDoctRenderer:
     return obj;
 }
 
-JSSmart<CJSValue> CBuilderEmbed::builder_OpenFile(JSSmart<CJSValue> sPath, JSSmart<CJSValue> sParams)
-{
-    std::wstring Path = sPath->toStringW();
-    std::wstring Params = sParams->toStringW();
-    int ret = m_pBuilder->OpenFile(Path.c_str(), Params.c_str());
-    return CJSContext::createInt(ret);
-}
-JSSmart<CJSValue> CBuilderEmbed::builder_CreateFile(JSSmart<CJSValue> type)
-{
-    bool ret = m_pBuilder->CreateFile(type->toInt32());
-    return CJSContext::createBool(ret);
-}
-JSSmart<CJSValue> CBuilderEmbed::builder_SetTmpFolder(JSSmart<CJSValue> path)
-{
-    std::wstring sPath = path->toStringW();
-    m_pBuilder->SetTmpFolder(sPath.c_str());
-    return NULL;
-}
-JSSmart<CJSValue> CBuilderEmbed::builder_SaveFile(JSSmart<CJSValue> t, JSSmart<CJSValue> path, JSSmart<CJSValue> params)
-{
-    int type = t->toInt32();
-    std::wstring sPath = path->toStringW();
-    std::wstring sParams = params->toStringW();
-    int ret = m_pBuilder->SaveFile(type, sPath.c_str(), sParams.empty() ? NULL : sParams.c_str());
-    return CJSContext::createInt(ret);
-}
-JSSmart<CJSValue> CBuilderEmbed::builder_CloseFile()
-{
-    m_pBuilder->CloseFile();
-    return NULL;
-}
-JSSmart<CJSValue> CBuilderEmbed::builder_OpenTmpFile(JSSmart<CJSValue> path, JSSmart<CJSValue> params)
-{
-    std::wstring sPath = path->toStringW();
-    std::wstring sParams = params->toStringW();
-    v8::Local<v8::Value> obj = _builder_CreateNativeTmpDoc(CV8Worker::GetCurrent(), m_pBuilder, sPath, sParams);
-    CJSValueV8* res = new CJSValueV8();
-    res->value = obj;
-    return res;
-}
-
-JSSmart<CJSValue> CBuilderDocumentEmbed::builder_doc_IsValid()
-{
-    return CJSContext::createBool(m_bIsValid);
-}
-JSSmart<CJSValue> CBuilderDocumentEmbed::builder_doc_GetBinary()
-{
-    BYTE* pData = NULL;
-    DWORD dwSize = 0;
-    NSFile::CFileBinary::ReadAllBytes(m_sFolder + L"/Editor.bin", &pData, dwSize);
-
-    return 0 == dwSize ? NULL : CJSContext::createUint8Array(pData, (int)dwSize);
-}
-JSSmart<CJSValue> CBuilderDocumentEmbed::builder_doc_GetFolder()
-{
-    return CJSContext::createString(m_sFolder);
-}
-JSSmart<CJSValue> CBuilderDocumentEmbed::builder_doc_CloseFile()
-{
-    CloseFile();
-    return NULL;
-}
-JSSmart<CJSValue> CBuilderDocumentEmbed::builder_doc_GetImageMap()
-{
-    std::vector<std::wstring> files = NSDirectory::GetFiles(m_sFolder + L"/media");
-
-    JSSmart<CJSObject> obj = CJSContext::createObject();
-    for (std::vector<std::wstring>::iterator i = files.begin(); i != files.end(); i++)
-    {
-        std::wstring sFile = *i;
-        NSCommon::string_replace(sFile, L"\\", L"/");
-        std::wstring sName = L"media/" + NSFile::GetFileName(sFile);
-
-        obj->set(U_TO_UTF8(sName).c_str(), CJSContext::createString(sFile));
-    }
-
-    return obj->toValue();
-}
-
 void builder_CreateNativeTmpDoc(const std::string& name, JSSmart<CJSContext> context, NSDoctRenderer::CDocBuilder* builder, const std::wstring& sFile, const std::wstring& sParams)
 {
     v8::Isolate* current = CV8Worker::GetCurrent();
@@ -217,4 +138,14 @@ void builder_CreateNative      (const std::string& name, JSSmart<CJSContext> con
 {
     v8::Isolate* current = CV8Worker::GetCurrent();
     context->m_internal->m_context->Global()->Set(context->m_internal->m_context, v8::String::NewFromUtf8(current, name.c_str()), _builder_CreateNative(current, builder));
+}
+
+JSSmart<CJSValue> CBuilderEmbed::builder_OpenTmpFile(JSSmart<CJSValue> path, JSSmart<CJSValue> params)
+{
+    std::wstring sPath = path->toStringW();
+    std::wstring sParams = params->toStringW();
+    v8::Local<v8::Value> obj = _builder_CreateNativeTmpDoc(CV8Worker::GetCurrent(), m_pBuilder, sPath, sParams);
+    CJSValueV8* res = new CJSValueV8();
+    res->value = obj;
+    return res;
 }

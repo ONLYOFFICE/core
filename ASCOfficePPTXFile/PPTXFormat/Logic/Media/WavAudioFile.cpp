@@ -101,7 +101,7 @@ namespace PPTX
 				{
 					case 0:
 					{
-						strSoundPath = pReader->GetString2();
+						strSoundPath = pReader->GetString2(true);
 						break;
 					}
 					case 1:

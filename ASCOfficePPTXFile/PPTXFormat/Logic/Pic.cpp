@@ -282,7 +282,7 @@ namespace PPTX
 				else if (7 == _at)//OleObject Binary FileName (bin, xls, doc, ... other stream file)
 				{
 					m_OleObjectFile = new OOX::OleObject(NULL, false, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
-					std::wstring strOlePath = pReader->GetString2();
+					std::wstring strOlePath = pReader->GetString2(true);
 					m_OleObjectFile->set_filename(strOlePath, false); //temp !!! for ImageManager original file name
 				}
 				else
@@ -330,7 +330,7 @@ namespace PPTX
 							m_OleObjectFile = new OOX::OleObject(NULL, true, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
 							
 							BYTE type = pReader->GetUChar();
-							std::wstring strOlePath = pReader->GetString2();
+							std::wstring strOlePath = pReader->GetString2(true);
 							m_OleObjectFile->set_filename(strOlePath, false); //temp !!! for ImageManager original file name
 						}
 						else if (embedded_type == 4)

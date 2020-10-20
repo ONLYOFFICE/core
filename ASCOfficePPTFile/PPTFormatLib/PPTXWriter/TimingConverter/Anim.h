@@ -97,28 +97,47 @@ namespace PPT_FORMAT
 
             tav.val->name = L"val";
 
+<<<<<<< HEAD
             if (animValue->m_pVarValue.is_init())
             switch (animValue->m_pVarValue->m_Type) {
             case TL_TVT_String:
             {
                 tav.val->strVal = dynamic_cast<const CRecordTimeVariantString&>
                         (animValue->m_pVarValue.get()).m_Value;
+=======
+            switch (animValue.m_pVarValue->m_Type) {
+            case TL_TVT_String:
+            {
+                tav.val->strVal = dynamic_cast<CRecordTimeVariantString*>
+                        (animValue.m_pVarValue)->m_Value;
+>>>>>>> 883dda0f3f5c184ddedd4af6243a78aa6274526a
                 break;
             }
             case TL_TVT_Bool:
             {
+<<<<<<< HEAD
                 tav.val->boolVal = dynamic_cast<const CRecordTimeVariantBool&>
                         (animValue->m_pVarValue.get()).m_Value;
+=======
+                tav.val->boolVal = dynamic_cast<CRecordTimeVariantBool*>
+                        (animValue.m_pVarValue)->m_Value;
+>>>>>>> 883dda0f3f5c184ddedd4af6243a78aa6274526a
                 break;
             }
             case TL_TVT_Int:
             {
+<<<<<<< HEAD
                 tav.val->intVal = dynamic_cast<const CRecordTimeVariantInt&>
                         (animValue->m_pVarValue.get()).m_Value;
+=======
+                tav.val->intVal = dynamic_cast<CRecordTimeVariantInt*>
+                        (animValue.m_pVarValue)->m_Value;
+>>>>>>> 883dda0f3f5c184ddedd4af6243a78aa6274526a
                 break;
             }
             case TL_TVT_Float:
             {
+<<<<<<< HEAD
                 tav.val->fltVal = dynamic_cast<const CRecordTimeVariantFloat&>
                         (animValue->m_pVarValue.get()).m_Value;
                 break;
@@ -131,6 +150,20 @@ namespace PPT_FORMAT
             if (!animValue->m_VarFormula.m_Value.empty())
             {
                 tav.fmla = animValue->m_VarFormula.m_Value;
+=======
+                tav.val->fltVal = dynamic_cast<CRecordTimeVariantFloat*>
+                        (animValue.m_pVarValue)->m_Value;
+                break;
+            }
+            }
+
+            tav.tm = std::to_wstring(
+                        animValue.m_oTimeAnimationValueAtom.m_nTime * 100);
+
+            if (!animValue.m_VarFormula.m_Value.empty())
+            {
+                tav.fmla = animValue.m_VarFormula.m_Value;
+>>>>>>> 883dda0f3f5c184ddedd4af6243a78aa6274526a
             }
 
             oAnim.tavLst->list.push_back(tav);

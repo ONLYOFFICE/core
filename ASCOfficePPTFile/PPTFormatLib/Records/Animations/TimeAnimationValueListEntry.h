@@ -44,13 +44,40 @@ class CRecordTimeAnimationEntry
 {
 public:
 
+<<<<<<< HEAD
     CRecordTimeAnimationEntry()
+=======
+    CRecordTimeAnimationEntry() : m_pVarValue(nullptr)
+>>>>>>> 883dda0f3f5c184ddedd4af6243a78aa6274526a
     {
 
     }
 
+<<<<<<< HEAD
     virtual ~CRecordTimeAnimationEntry()
     {
+=======
+    CRecordTimeAnimationEntry& operator=(const CRecordTimeAnimationEntry& src)
+    {
+        RELEASEOBJECT(m_pVarValue)
+
+        m_VarFormula = src.m_VarFormula;
+        m_oTimeAnimationValueAtom = src.m_oTimeAnimationValueAtom;
+        m_pVarValue = new CRecordTimeVariant;
+        m_pVarValue = src.m_pVarValue;
+
+        return *this;
+    }
+
+    CRecordTimeAnimationEntry(const CRecordTimeAnimationEntry& src) : m_pVarValue(nullptr)
+    {
+        operator=(src);
+    }
+
+    ~CRecordTimeAnimationEntry()
+    {
+        RELEASEOBJECT(m_pVarValue)
+>>>>>>> 883dda0f3f5c184ddedd4af6243a78aa6274526a
     }
 
     virtual void ReadFromStream ( UINT& CurLen, SRecordHeader & oHeader, POLE::Stream* pStream )
@@ -76,7 +103,11 @@ public:
     }
 
     CRecordTimeAnimationValueAtom       m_oTimeAnimationValueAtom;
+<<<<<<< HEAD
     nullable<CRecordTimeVariant>        m_pVarValue;
+=======
+    CRecordTimeVariant*                 m_pVarValue;
+>>>>>>> 883dda0f3f5c184ddedd4af6243a78aa6274526a
     CRecordTimeVariantString            m_VarFormula;
 };
 

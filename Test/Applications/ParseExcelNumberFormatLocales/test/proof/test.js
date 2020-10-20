@@ -14,24 +14,37 @@ function test(re, str) {
     }
     console.log(str + midstring + re);
 }
+//____________________________________________readingpath___________________________________________________
+let inputnum = "../numbers/"
+let inputdata = "../data/"
+let inputDec = "../DecSep/"
+let inputGr = "../GrSep/";
+let input = "../numbers";
+let etalon1input = "../data/en-US.txt";
+let elanon2input = "../numbers/en-US.txt";
+let outputdata = "../Outputdata.txt";
+let outputnum = "../Outputnum.txt";
+let outputetalon1 = "../Outputetalonfordata.txt";
+let outputetalon2 = "../Outputetalonfornum.txt";
 //_________________________________________input_count______________________________________________________________________
-let numbersforDec = fs.readdirSync('C:/Users/maxim/Downloads/Telegram Desktop/DecSep/',"utf-8",function(err,data){
+
+let numbersforDec = fs.readdirSync(inputDec,"utf-8",function(err,data){
     if (err) return console.log(err);
     console.log('err > helloworld.txt');
 });
-let numbersforGr = fs.readdirSync('C:/Users/maxim/Downloads/Telegram Desktop/GrSep/',"utf-8",function(err,data){
+let numbersforGr = fs.readdirSync(inputGr,"utf-8",function(err,data){
     if (err) return console.log(err);
     console.log('err > helloworld.txt');
 });
-let numbers = fs.readdirSync('C:/Users/maxim/Downloads/Telegram Desktop/data/',"utf-8",function(err,data){
+let numbers = fs.readdirSync(input,"utf-8",function(err,data){
     if (err) return console.log(err);
     console.log('err > helloworld.txt');
 });
-let etalon1 = fs.readFileSync('C:/Users/maxim/Downloads/Telegram Desktop/data/en-US.txt',"utf-8",function(err,data){
+let etalon1 = fs.readFileSync(etalon1input,"utf-8",function(err,data){
     if (err) return console.log(err);
     console.log('err > helloworld.txt');
 });
-let etalon2 = fs.readFileSync('C:/Users/maxim/Downloads/Telegram Desktop/numbers/en-US.txt',"utf-8",function(err,data){
+let etalon2 = fs.readFileSync(elanon2input,"utf-8",function(err,data){
     if (err) return console.log(err);
     console.log('err > .txt');
 });
@@ -61,18 +74,17 @@ let etalarr1 = etalon1.split(("\r\n"));
 let etalarr2 = etalon2.split(("\r\n"));
 let memarr1 = [];
 let memarr2 = [];
-let strofgrrepack = [];
 //____________________________________________initialisating_____________________________________________________
 //_______________________________________readingfromfiles______________________________________
 for(let i =0;i<numbersforDec.length;i++){
-    strofdec[i] =fs.readFileSync('C:/Users/maxim/Downloads/Telegram Desktop/DecSep/'+numbersforDec[i],"utf-8",function(err,data){
+    strofdec[i] =fs.readFileSync(inputDec + numbersforDec[i],"utf-8",function(err,data){
         if (err) return console.log(err);
         console.log('err > helloworld.txt');
     });
 };
 
 for(let i =0;i<numbersforGr.length;i++){
-    strofgr[i] =fs.readFileSync('C:/Users/maxim/Downloads/Telegram Desktop/GrSep/'+numbersforGr[i],"utf-8",function(err,data){
+    strofgr[i] =fs.readFileSync(inputGr + numbersforGr[i],"utf-8",function(err,data){
         if (err) return console.log(err);
         console.log('err > ');
     });
@@ -80,13 +92,13 @@ for(let i =0;i<numbersforGr.length;i++){
 };
 
 for(let i =0;i<numbers.length;i++) {
-    str2[i] =fs.readFileSync('C:/Users/maxim/Downloads/Telegram Desktop/numbers/'+numbers[i],"utf-8",function(err,data){
+    str2[i] =fs.readFileSync(inputnum+numbers[i],"utf-8",function(err,data){
         if (err) return console.log(err);
         console.log('err > .txt');
     })};
 
 for(let i =0;i<numbers.length;i++) {
-    str1[i] =fs.readFileSync('C:/Users/maxim/Downloads/Telegram Desktop/data/'+numbers[i],"utf-8",function(err,data){
+    str1[i] =fs.readFileSync(inputdata+numbers[i],"utf-8",function(err,data){
         if (err) return console.log(err);
         console.log('err > .txt');
     })};
@@ -104,19 +116,19 @@ for(let i =0; i<numbers.length; i++){
         substrdec2.push(numbers[i-1]);
     }
 };
-//_______________________________________writingtothefile_and_specialinput_____________________
+//_______________________________________writingtothefile_and_specialinput_______________________
 for(let i =0; i<substr1.length; i++){
-    substrinputs[i] = fs.readFileSync('C:/Users/maxim/Downloads/Telegram Desktop/numbers/'+substr2[i],"utf-8",function(err,data){
+    substrinputs[i] = fs.readFileSync(inputnum+substr2[i],"utf-8",function(err,data){
         if (err) return console.log(err);
         console.log('err > .txt');
     })};
 
-for(let i =0; i<substr1.length; i++){
+//for(let i =0; i<substr1.length; i++){
 
  //   fs.writeFileSync('C:/Users/maxim/Downloads/Telegram Desktop/numbers/'+substr1[i], substrinputs[i], function (err) {
    //     if (err) return console.log(err);
     //});
-};
+//};
 //__________________________________________proof__________________________________________________________________
 for(let i =0;i<etalon2.length;i++){
 
@@ -217,22 +229,22 @@ for(let i = 0; i < arru2.length; i++) {
 //__________________________________________________proofcheck________________________________________________________
 for(let i =0 ; i< str2.length;i++) if (str2[i]==etalon2) { }else{ console.log("F "+ i);};
 //_____________________________________________output_________________________________________________________________
-fs.writeFileSync('C:/Users/maxim/Downloads/Telegram Desktop/Alld.txt', repackarr1 + memarr1, function (err) {
+fs.writeFileSync(outputdata, repackarr1 + memarr1, function (err) {
     if (err) return console.log(err);
 
 });
 
-fs.writeFileSync('C:/Users/maxim/Downloads/Telegram Desktop/Alln.txt', repackarr2+memarr2, function (err) {
+fs.writeFileSync(outputnum, repackarr2+memarr2, function (err) {
     if (err) return console.log(err);
 
 });
 
-fs.writeFileSync('C:/Users/maxim/Downloads/Telegram Desktop/Allt.txt', etalarr1, function (err) {
+fs.writeFileSync(outputetalon1, etalarr1, function (err) {
     if (err) return console.log(err);
 
 });
 
-fs.writeFileSync('C:/Users/maxim/Downloads/Telegram Desktop/Allnn.txt', etalarr2, function (err) {
+fs.writeFileSync(outputetalon2, etalarr2, function (err) {
     if (err) return console.log(err);
 
 });

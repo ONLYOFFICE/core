@@ -614,13 +614,13 @@ namespace NSHtmlRenderer
         if (m_pInternal->m_bIsGraphicsDumperMode)
             return m_pInternal->m_oDumper.put_BrushGradientColors(lColors, pPositions, nCount);
 
-        m_pInternal->m_oBrush.m_arrSubColors.RemoveAll();
+        m_pInternal->m_oBrush.m_arrSubColors.clear();
         for (LONG i = 0; i < nCount; ++i)
         {
             NSStructures::CBrush::TSubColor color;
             color.color		= lColors[i];
             color.position	= (long)(pPositions[i] * 65536);
-            m_pInternal->m_oBrush.m_arrSubColors.Add(color);
+            m_pInternal->m_oBrush.m_arrSubColors.push_back(color);
         }
         return S_OK;
     }

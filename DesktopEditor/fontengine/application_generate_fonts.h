@@ -329,7 +329,7 @@ namespace NSCommon
     static void SaveAllFontsJS(NSFonts::IApplicationFonts* applicationFonts, std::wstring strFile, std::wstring strFolderThumbnails, std::wstring strFontSelectionBin, int nVersion = -1)
     {
         std::vector<NSFonts::CFontInfo*>* pList = applicationFonts->GetList()->GetFonts();
-        int nCount = pList->size();
+        int nCount = (int)pList->size();
         
         // сначала строим массив всех файлов шрифтов
         std::map<std::wstring, LONG> mapFontFiles;

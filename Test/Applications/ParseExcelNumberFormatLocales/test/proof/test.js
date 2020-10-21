@@ -116,19 +116,26 @@ for(let i =0; i<numbers.length; i++){
         substrdec2.push(numbers[i-1]);
     }
 };
+let substrdateinputs = [];
 //_______________________________________writingtothefile_and_specialinput_______________________
 for(let i =0; i<substr1.length; i++){
     substrinputs[i] = fs.readFileSync(inputnum+substr2[i],"utf-8",function(err,data){
         if (err) return console.log(err);
         console.log('err > .txt');
-    })};
+    })
+    substrdateinputs[i] = fs.readFileSync(inputdata+substr2[i],"utf-8",function(err,data){
+        if (err) return console.log(err);
+        console.log('err > .txt');
+    })
 
-//for(let i =0; i<substr1.length; i++){
+};
 
- //   fs.writeFileSync('C:/Users/maxim/Downloads/Telegram Desktop/numbers/'+substr1[i], substrinputs[i], function (err) {
-   //     if (err) return console.log(err);
-    //});
-//};
+for(let i =0; i<substr1.length; i++){
+
+   fs.writeFileSync('C:/Users/maxim/Downloads/Telegram Desktop/data/'+substr1[i], etalon1, function (err) {
+      if (err) return console.log(err);
+    });
+};
 //__________________________________________proof__________________________________________________________________
 for(let i =0;i<etalon2.length;i++){
 

@@ -186,7 +186,6 @@ SOURCES += \
     ./../../raster/Metafile/Wmf/WmfClip.cpp \
     ./../../raster/Metafile/Wmf/WmfObjects.cpp \
     ./../../raster/Metafile/Wmf/WmfPlayer.cpp \
-    ./../../raster/Metafile/MetaFile.cpp \
 \
     ./../../raster/JBig2/source/JBig2File.cpp \
 \

@@ -226,25 +226,19 @@ for(let i = 0; i < arru2.length; i++) {
         }
     }
 };
-//__________________________________________________proofcheck________________________________________________________
+//_______________________________________________________proofcheck________________________________________________________
 for(let i =0 ; i< str2.length;i++) if (str2[i]==etalon2) { }else{ console.log("F "+ i);};
-//_____________________________________________output_________________________________________________________________
-fs.writeFileSync(outputdata, repackarr1 + memarr1, function (err) {
-    if (err) return console.log(err);
+//__________________________________________________output_________________________________________________________________
 
-});
+let outputarr1 = [];
+for(let i=0;i<repackarr1.length;i++){
 
-fs.writeFileSync(outputnum, repackarr2+memarr2, function (err) {
-    if (err) return console.log(err);
+    outputarr1[i] = repackarr1[i]+" "+ memarr1[i]+"\r\n";
+}
+fs.writeFileSync(outputdata, outputarr1, "utf-8");
 
-});
+fs.writeFileSync(outputnum, repackarr2+memarr2,"utf-8");
 
-fs.writeFileSync(outputetalon1, etalarr1, function (err) {
-    if (err) return console.log(err);
+fs.writeFileSync(outputetalon1, etalarr1, "utf-8");
 
-});
-
-fs.writeFileSync(outputetalon2, etalarr2, function (err) {
-    if (err) return console.log(err);
-
-});
+fs.writeFileSync(outputetalon2, etalarr2, "utf-8");

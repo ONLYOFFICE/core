@@ -45,29 +45,29 @@ namespace NSJSBase
         }
 
         v8::Local<v8::Script> Compile(const v8::Local<v8::Context>& _context, const v8::Local<v8::String>& source)
+        {
+            v8::Local<v8::Script> script;
+            if (NULL == Data)
             {
-                v8::Local<v8::Script> script;
-                if (NULL == Data)
-                {
-                    Source = new v8::ScriptCompiler::Source(source);
-                    script = v8::ScriptCompiler::Compile(_context, Source, v8::ScriptCompiler::kProduceCodeCache).ToLocalChecked();
+                Source = new v8::ScriptCompiler::Source(source);
+                script = v8::ScriptCompiler::Compile(_context, Source, v8::ScriptCompiler::kProduceCodeCache).ToLocalChecked();
 
-                    const v8::ScriptCompiler::CachedData* _cachedData = Source->GetCachedData();
-                    NSFile::CFileBinary oFileTest;
-                    if (oFileTest.CreateFileW(Path))
-                    {
-                        oFileTest.WriteFile(_cachedData->data, (DWORD)_cachedData->length);
-                        oFileTest.CloseFile();
-                    }
-                }
-                else
+                const v8::ScriptCompiler::CachedData* _cachedData = Source->GetCachedData();
+                NSFile::CFileBinary oFileTest;
+                if (oFileTest.CreateFileW(Path))
                 {
-                    CachedData = new v8::ScriptCompiler::CachedData(Data, Length);
-                    Source = new v8::ScriptCompiler::Source(source, CachedData);
-                    script = v8::ScriptCompiler::Compile(_context, Source, v8::ScriptCompiler::kConsumeCodeCache).ToLocalChecked();
+                    oFileTest.WriteFile(_cachedData->data, (DWORD)_cachedData->length);
+                    oFileTest.CloseFile();
                 }
-                return script;
             }
+            else
+            {
+                CachedData = new v8::ScriptCompiler::CachedData(Data, Length);
+                Source = new v8::ScriptCompiler::Source(source, CachedData);
+                script = v8::ScriptCompiler::Compile(_context, Source, v8::ScriptCompiler::kConsumeCodeCache).ToLocalChecked();
+            }
+            return script;
+        }
 
         bool IsInit()
         {

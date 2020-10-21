@@ -256,6 +256,12 @@ namespace NSJSBase
         ret->m_internal->context = _getCurrentContext();
         return ret;
     }
+
+    CJSValue* CJSContext::JSON_Parse(const char *sTmp)
+    {
+        // TODO:
+        return CJSContext::createUndefined();
+    }
 }
 
 namespace NSJSBase

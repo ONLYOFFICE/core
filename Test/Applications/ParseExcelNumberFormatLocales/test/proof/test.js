@@ -130,12 +130,6 @@ for(let i =0; i<substr1.length; i++){
 
 };
 
-for(let i =0; i<substr1.length; i++){
-
-   fs.writeFileSync('C:/Users/maxim/Downloads/Telegram Desktop/data/'+substr1[i], etalon1, function (err) {
-      if (err) return console.log(err);
-    });
-};
 //__________________________________________proof__________________________________________________________________
 for(let i =0;i<etalon2.length;i++){
 

@@ -1,0 +1,345 @@
+﻿[$-F800]dddd, mmmm dd, aaaa ast-ES.txt
+,Estándar ast-ES.txt
+,﻿[$-F800]dddd, mmmm dd, aaaa az-Cyrl.txt
+,Estándar az-Cyrl.txt
+,﻿[$-F800]dddd, mmmm dd, aaaa az.txt
+,Estándar az.txt
+,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ ba-RU.txt
+,[$-F400]ч:мм:сс AM/PM ba-RU.txt
+,Основной ba-RU.txt
+,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ bas.txt
+,[$-F400]ч:мм:сс AM/PM bas.txt
+,Основной bas.txt
+,[$-F400]h.mm.ss AM/PM bn-IN.txt
+,G/通用格式 bo-CN.txt
+,[$-F400]h.mm.ss AM/PM bo.txt
+,﻿[$-F800]jjjj, mmmm jj, aaaa br-FR.txt
+,Standard br-FR.txt
+,﻿[$-F800]jjjj, mmmm jj, aaaa brx.txt
+,Standard brx.txt
+,﻿[$-F800]dddd, mmmm dd, aaaa ca-ES-valencia.txt
+,Estándar ca-ES-valencia.txt
+,﻿[$-F800]dddd, mmmm dd, aaaa ca-ES.txt
+,Estándar ca-ES.txt
+,﻿[$-F800]jjjj, mmmm jj, aaaa ca-FR.txt
+,Standard ca-FR.txt
+,﻿[$-F800]gggg, mmmm gg, aaaa ca-IT.txt
+,Standard ca-IT.txt
+,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ ce-RU.txt
+,[$-F400]ч:мм:сс AM/PM ce-RU.txt
+,Основной ce-RU.txt
+,﻿[$-F800]gggg, mmmm gg, aaaa ce.txt
+,Standard ce.txt
+,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ cgg.txt
+,[$-F400]ч:мм:сс AM/PM cgg.txt
+,Основной cgg.txt
+,﻿[$-F800]jjjj, mmmm jj, aaaa co-FR.txt
+,Standard co-FR.txt
+,﻿[$-F800]dddd, mmmm dd, rrrr cs-CZ.txt
+,Vęeobecný cs-CZ.txt
+,﻿[$-F800]jjjj, mmmm jj, aaaa cs.txt
+,Standard cs.txt
+,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ cu-RU.txt
+,[$-F400]ч:мм:сс AM/PM cu-RU.txt
+,Основной cu-RU.txt
+,﻿[$-F800]dddd, mmmm dd, rrrr cu.txt
+,Vęeobecný cu.txt
+,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ cy.txt
+,[$-F400]ч:мм:сс AM/PM cy.txt
+,Основной cy.txt
+,﻿[$-F800]dddd, mmmm dd, åååå da-DK.txt
+,[$-F400]t:mm:ss AM/PM da-DK.txt
+,Standard da-DK.txt
+,﻿[$-F800]TTTT, MMMM TT, JJJJ de-AT.txt
+,Standard de-AT.txt
+,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ de-BE.txt
+,[$-F400]ч:мм:сс AM/PM de-BE.txt
+,Основной de-BE.txt
+,﻿[$-F800]TTTT, MMMM TT, JJJJ de-CH.txt
+,Standard de-CH.txt
+,﻿[$-F800]TTTT, MMMM TT, JJJJ de-DE.txt
+,Standard de-DE.txt
+,﻿[$-F800]gggg, mmmm gg, aaaa de-IT.txt
+,Standard de-IT.txt
+,﻿[$-F800]TTTT, MMMM TT, JJJJ dsb-DE.txt
+,Standard dsb-DE.txt
+,﻿[$-F800]TTTT, MMMM TT, JJJJ dua.txt
+,Standard dua.txt
+,﻿[$-F800]ηηηη, μμμμ ηη, εεεε el-GR.txt
+,[$-F400]ω:λλ:δδ AM/PM el-GR.txt
+,Γενικός τύπος el-GR.txt
+,﻿[$-F800]TTTT, MMMM TT, JJJJ en-AT.txt
+,Standard en-AT.txt
+,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ en-BE.txt
+,[$-F400]ч:мм:сс AM/PM en-BE.txt
+,Основной en-BE.txt
+,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ en-CH.txt
+,[$-F400]ч:мм:сс AM/PM en-CH.txt
+,Основной en-CH.txt
+,﻿[$-F800]TTTT, MMMM TT, JJJJ en-DE.txt
+,Standard en-DE.txt
+,﻿[$-F800]dddd, mmmm dd, åååå en-DK.txt
+,[$-F400]t.mm.ss AM/PM en-DK.txt
+,Standard en-DK.txt
+,﻿[$-F800]pppp, kkkk pp, vvvv en-FI.txt
+,[$-F400]t.mm.ss AM/PM en-FI.txt
+,Yleinen en-FI.txt
+,﻿[$-F800]dddd, mmmm dd, jjjj en-NL.txt
+,[$-F400]u:mm:ss AM/PM en-NL.txt
+,Standaard en-NL.txt
+,﻿[$-F800]DDDD, MMMM DD, ÅÅÅÅ en-SE.txt
+,[$-F400]t:mm:ss AM/PM en-SE.txt
+,Standard en-SE.txt
+,﻿[$-F800]ηηηη, μμμμ ηη, εεεε en.txt
+,[$-F400]ω:λλ:δδ AM/PM en.txt
+,Γενικός τύπος en.txt
+,﻿[$-F800]dddd, mmmm dd, aaaa es-BR.txt
+,Geral es-BR.txt
+,﻿[$-F800]dddd, mmmm dd, aaaa es-ES.txt
+,Estándar es-ES.txt
+,﻿[$-F800]dddd, mmmm dd, aaaa es-MX.txt
+,Estándar es-MX.txt
+,﻿[$-F800]dddd, mmmm dd, aaaa eu-ES.txt
+,Estándar eu-ES.txt
+,﻿[$-F800]dddd, mmmm dd, aaaa ewo.txt
+,Estándar ewo.txt
+,﻿[$-F800]pppp, kkkk pp, vvvv fi-FI.txt
+,[$-F400]t:mm:ss AM/PM fi-FI.txt
+,Yleinen fi-FI.txt
+,﻿[$-F800]pppp, kkkk pp, vvvv fil.txt
+,[$-F400]t:mm:ss AM/PM fil.txt
+,Yleinen fil.txt
+,﻿[$-F800]dddd, mmmm dd, åååå fo-DK.txt
+,[$-F400]t:mm:ss AM/PM fo-DK.txt
+,Standard fo-DK.txt
+,﻿[$-F800]jjjj, mmmm jj, aaaa fr-BE.txt
+,Standard fr-BE.txt
+,﻿[$-F800]jjjj, mmmm jj, aaaa fr-CA.txt
+,Standard fr-CA.txt
+,﻿[$-F800]jjjj, mmmm jj, aaaa fr-CH.txt
+,Standard fr-CH.txt
+,﻿[$-F800]jjjj, mmmm jj, aaaa fr-FR.txt
+,Standard fr-FR.txt
+,﻿[$-F800]gggg, mmmm gg, aaaa fur-IT.txt
+,Standard fur-IT.txt
+,﻿[$-F800]dddd, mmmm dd, jjjj fy-NL.txt
+,[$-F400]u:mm:ss AM/PM fy-NL.txt
+,Standaard fy-NL.txt
+,﻿[$-F800]gggg, mmmm gg, aaaa fy.txt
+,Standard fy.txt
+,﻿[$-F800]dddd, mmmm dd, jjjj ga.txt
+,[$-F400]u:mm:ss AM/PM ga.txt
+,Standaard ga.txt
+,﻿[$-F800]dddd, mmmm dd, aaaa gl-ES.txt
+,Estándar gl-ES.txt
+,﻿[$-F800]dddd, mmmm dd, aaaa gn.txt
+,Estándar gn.txt
+,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ gsw-CH.txt
+,[$-F400]ч:мм:сс AM/PM gsw-CH.txt
+,Основной gsw-CH.txt
+,﻿[$-F800]jjjj, mmmm jj, aaaa gsw-FR.txt
+,Standard gsw-FR.txt
+,﻿[$-F800]TTTT, MMMM TT, JJJJ hsb-DE.txt
+,Standard hsb-DE.txt
+,﻿[$-F800]nnnn, hhhh nn, éééé hu-HU.txt
+,[$-F400]ó:pp:mm AM/PM hu-HU.txt
+,Normál hu-HU.txt
+,﻿[$-F800]TTTT, MMMM TT, JJJJ hu.txt
+,Standard hu.txt
+,﻿[$-F800]nnnn, hhhh nn, éééé hy.txt
+,[$-F400]ó:pp:mm AM/PM hy.txt
+,Normál hy.txt
+,[$-F400]h.mm.ss AM/PM id-ID.txt
+,[$-F400]h.mm.ss AM/PM ig.txt
+,G/通用格式 ii-CN.txt
+,G/通用格式 is.txt
+,﻿[$-F800]gggg, mmmm gg, aaaa it-CH.txt
+,Standard it-CH.txt
+,﻿[$-F800]gggg, mmmm gg, aaaa it-IT.txt
+,Standard it-IT.txt
+,﻿[$-F800]gggg, mmmm gg, aaaa it-VA.txt
+,Standard it-VA.txt
+,﻿[$-F800]gggg, mmmm gg, aaaa iu-Cans.txt
+,Standard iu-Cans.txt
+,﻿[$-F800]gggg, mmmm gg, aaaa iu.txt
+,Standard iu.txt
+,G/標準 ja-JP.txt
+,G/標準 jgo.txt
+,[$-F400]h.mm.ss AM/PM jv-Java-ID.txt
+,[$-F400]h.mm.ss AM/PM jv-Latn-ID.txt
+,[$-F400]h.mm.ss AM/PM jv-Latn.txt
+,[$-F400]h.mm.ss AM/PM ka.txt
+,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ kk-KZ.txt
+,[$-F400]ч:мм:сс AM/PM kk-KZ.txt
+,Основной kk-KZ.txt
+,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ kkj.txt
+,[$-F400]ч:мм:сс AM/PM kkj.txt
+,Основной kkj.txt
+,G/표준 ko-KR.txt
+,G/표준 kok.txt
+,﻿[$-F800]TTTT, MMMM TT, JJJJ ksh-DE.txt
+,Standard ksh-DE.txt
+,﻿[$-F800]TTTT, MMMM TT, JJJJ ksh.txt
+,Standard ksh.txt
+,﻿[$-F800]TTTT, MMMM TT, JJJJ ku-Arab.txt
+,Standard ku-Arab.txt
+,﻿[$-F800]TTTT, MMMM TT, JJJJ ku.txt
+,Standard ku.txt
+,G/通用格式 mn-Mong-CN.txt
+,﻿[$-F800]dddd, mmmm dd, åååå nb-NO.txt
+,[$-F400]t:mm:ss AM/PM nb-NO.txt
+,Standard nb-NO.txt
+,﻿[$-F800]dddd, mmmm dd, åååå nb-SJ.txt
+,[$-F400]t:mm:ss AM/PM nb-SJ.txt
+,Standard nb-SJ.txt
+,﻿[$-F800]TTTT, MMMM TT, JJJJ nds-DE.txt
+,Standard nds-DE.txt
+,﻿[$-F800]dddd, mmmm dd, jjjj nds-NL.txt
+,[$-F400]u:mm:ss AM/PM nds-NL.txt
+,Standaard nds-NL.txt
+,﻿[$-F800]dddd, mmmm dd, jjjj ne.txt
+,[$-F400]u:mm:ss AM/PM ne.txt
+,Standaard ne.txt
+,﻿[$-F800]dddd, mmmm dd, jjjj nl-BE.txt
+,[$-F400]u:mm:ss AM/PM nl-BE.txt
+,Standaard nl-BE.txt
+,﻿[$-F800]dddd, mmmm dd, jjjj nl-NL.txt
+,[$-F400]u:mm:ss AM/PM nl-NL.txt
+,Standaard nl-NL.txt
+,﻿[$-F800]dddd, mmmm dd, åååå nn-NO.txt
+,[$-F400]t:mm:ss AM/PM nn-NO.txt
+,Standard nn-NO.txt
+,﻿[$-F800]dddd, mmmm dd, åååå nnh.txt
+,[$-F400]t:mm:ss AM/PM nnh.txt
+,Standard nnh.txt
+,﻿[$-F800]jjjj, mmmm jj, aaaa oc-FR.txt
+,[$-F400]h.mm.ss AM/PM oc-FR.txt
+,Standard oc-FR.txt
+,﻿[$-F800]jjjj, mmmm jj, aaaa om.txt
+,[$-F400]h.mm.ss AM/PM om.txt
+,Standard om.txt
+,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ os-RU.txt
+,[$-F400]ч:мм:сс AM/PM os-RU.txt
+,Основной os-RU.txt
+,[$-F400]h.mm.ss AM/PM pa-Arab-PK.txt
+,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ pa-Arab.txt
+,[$-F400]ч:мм:сс AM/PM pa-Arab.txt
+,Основной pa-Arab.txt
+,[$-F400]h.mm.ss AM/PM pa-Guru.txt
+,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ pa.txt
+,[$-F400]ч:мм:сс AM/PM pa.txt
+,Основной pa.txt
+,﻿[$-F800]dddd, mmmm dd, rrrr pl-PL.txt
+,[$-F400]g:mm:ss AM/PM pl-PL.txt
+,Standardowy pl-PL.txt
+,﻿[$-F800]dddd, mmmm dd, rrrr prg.txt
+,[$-F400]g:mm:ss AM/PM prg.txt
+,Standardowy prg.txt
+,﻿[$-F800]dddd, mmmm dd, aaaa pt-BR.txt
+,Geral pt-BR.txt
+,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ pt-CH.txt
+,[$-F400]ч:мм:сс AM/PM pt-CH.txt
+,Основной pt-CH.txt
+,﻿[$-F800]dddd, mmmm dd, aaaa pt-PT.txt
+,Estandar pt-PT.txt
+,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ rm-CH.txt
+,[$-F400]ч:мм:сс AM/PM rm-CH.txt
+,Основной rm-CH.txt
+,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ rn.txt
+,[$-F400]ч:мм:сс AM/PM rn.txt
+,Основной rn.txt
+,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ ru-KZ.txt
+,[$-F400]ч:мм:сс AM/PM ru-KZ.txt
+,Основной ru-KZ.txt
+,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ ru-RU.txt
+,[$-F400]ч:мм:сс AM/PM ru-RU.txt
+,Основной ru-RU.txt
+,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ sah-RU.txt
+,[$-F400]ч:мм:сс AM/PM sah-RU.txt
+,Основной sah-RU.txt
+,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ saq.txt
+,[$-F400]ч:мм:сс AM/PM saq.txt
+,Основной saq.txt
+,﻿[$-F800]pppp, kkkk pp, vvvv se-FI.txt
+,[$-F400]t:mm:ss AM/PM se-FI.txt
+,Yleinen se-FI.txt
+,﻿[$-F800]dddd, mmmm dd, åååå se-NO.txt
+,[$-F400]t:mm:ss AM/PM se-NO.txt
+,Standard se-NO.txt
+,﻿[$-F800]DDDD, MMMM DD, ÅÅÅÅ se-SE.txt
+,[$-F400]t:mm:ss AM/PM se-SE.txt
+,Standard se-SE.txt
+,﻿[$-F800]DDDD, MMMM DD, ÅÅÅÅ seh.txt
+,[$-F400]t:mm:ss AM/PM seh.txt
+,Standard seh.txt
+,[$-F400]h.mm.ss AM/PM si-LK.txt
+,[$-F400]h.mm.ss AM/PM sk.txt
+,﻿[$-F800]dddd, mmmm dd, åååå sma-NO.txt
+,[$-F400]t:mm:ss AM/PM sma-NO.txt
+,Standard sma-NO.txt
+,﻿[$-F800]DDDD, MMMM DD, ÅÅÅÅ sma-SE.txt
+,[$-F400]t:mm:ss AM/PM sma-SE.txt
+,Standard sma-SE.txt
+,﻿[$-F800]dddd, mmmm dd, åååå smj-NO.txt
+,[$-F400]t:mm:ss AM/PM smj-NO.txt
+,Standard smj-NO.txt
+,﻿[$-F800]DDDD, MMMM DD, ÅÅÅÅ smj-SE.txt
+,[$-F400]t:mm:ss AM/PM smj-SE.txt
+,Standard smj-SE.txt
+,﻿[$-F800]DDDD, MMMM DD, ÅÅÅÅ smj.txt
+,[$-F400]t:mm:ss AM/PM smj.txt
+,Standard smj.txt
+,﻿[$-F800]pppp, kkkk pp, vvvv smn-FI.txt
+,[$-F400]t:mm:ss AM/PM smn-FI.txt
+,Yleinen smn-FI.txt
+,﻿[$-F800]DDDD, MMMM DD, ÅÅÅÅ smn.txt
+,[$-F400]t:mm:ss AM/PM smn.txt
+,Standard smn.txt
+,﻿[$-F800]pppp, kkkk pp, vvvv sms-FI.txt
+,[$-F400]t:mm:ss AM/PM sms-FI.txt
+,Yleinen sms-FI.txt
+,﻿[$-F800]pppp, kkkk pp, vvvv sms.txt
+,[$-F400]t:mm:ss AM/PM sms.txt
+,Yleinen sms.txt
+,﻿[$-F800]pppp, kkkk pp, vvvv sn-Latn.txt
+,[$-F400]t:mm:ss AM/PM sn-Latn.txt
+,Yleinen sn-Latn.txt
+,﻿[$-F800]pppp, kkkk pp, vvvv sn.txt
+,[$-F400]t:mm:ss AM/PM sn.txt
+,Yleinen sn.txt
+,﻿[$-F800]pppp, kkkk pp, vvvv sv-AX.txt
+,[$-F400]t:mm:ss AM/PM sv-AX.txt
+,Yleinen sv-AX.txt
+,﻿[$-F800]pppp, kkkk pp, vvvv sv-FI.txt
+,[$-F400]t:mm:ss AM/PM sv-FI.txt
+,Yleinen sv-FI.txt
+,﻿[$-F800]DDDD, MMMM DD, ÅÅÅÅ sv-SE.txt
+,[$-F400]t:mm:ss AM/PM sv-SE.txt
+,Standard sv-SE.txt
+,﻿[$-F800]DDDD, MMMM DD, ÅÅÅÅ sw.txt
+,[$-F400]t:mm:ss AM/PM sw.txt
+,Standard sw.txt
+,﻿[$-F800]gggg, aaaa gg, yyyy tr-TR.txt
+,[$-F400]s:dd:nn AM/PM tr-TR.txt
+,Genel tr-TR.txt
+,﻿[$-F800]gggg, aaaa gg, yyyy ts.txt
+,[$-F400]s:dd:nn AM/PM ts.txt
+,Genel ts.txt
+,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ tt-RU.txt
+,[$-F400]ч:мм:сс AM/PM tt-RU.txt
+,Основной tt-RU.txt
+,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ twq.txt
+,[$-F400]ч:мм:сс AM/PM twq.txt
+,Основной twq.txt
+,G/通用格式 ug-CN.txt
+,G/通用格式 uk.txt
+,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ wae-CH.txt
+,[$-F400]ч:мм:сс AM/PM wae-CH.txt
+,Основной wae-CH.txt
+,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ wal.txt
+,[$-F400]ч:мм:сс AM/PM wal.txt
+,Основной wal.txt
+,G/通用格式 zh-CN.txt
+,G/通用格式 zh-Hans.txt
+,G/通用格式 zh-TW.txt
+,G/通用格式 zu.txt

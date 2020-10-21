@@ -59,7 +59,6 @@ HEADERS += \
     docbuilder_p.h \
     memorystream.h \
     nativecontrol.h \
-
     graphics.h
 
 HEADERS += \

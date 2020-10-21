@@ -136,26 +136,11 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
     JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
     JSSmart<CJSTryCatch>         try_catch = m_context->GetExceptions();
 
-    CCacheDataScript oCachedScript(sCachePath);
     LOGGER_SPEED_LAP("compile");
-    if (!sCachePath.empty())
-    {
-        v8::Local<v8::Script> script = oCachedScript.Compile(m_context->m_internal->m_context, v8::String::NewFromUtf8(m_context->m_internal->m_isolate, sString.c_str()));
-        if(try_catch->Check())
-            return false;
-        else
-        {
-            script->Run(m_context->m_internal->m_context);
-            if(try_catch->Check())
-                return false;
-        }
-    }
-    else
-    {
-        m_context->runScript(sString, try_catch);
-        if(try_catch->Check())
-            return false;
-    }
+
+    m_context->runScript(sString, try_catch, sCachePath);
+    if(try_catch->Check())
+        return false;
 
     LOGGER_SPEED_LAP("run")
 

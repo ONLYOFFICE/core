@@ -41,8 +41,7 @@
 #include "../common/Array.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
-#include "js_internal/embed/MemoryStreamEmbed.h"
-#include "js_internal/v8/v8_base.h"
+#include "js_internal/js_base.h"
 #include "../fontengine/application_generate_fonts_common.h"
 
 #if defined(CreateDirectory)
@@ -191,6 +190,7 @@ public:
     std::wstring GetImage(const std::wstring& sUrl);
 };
 
+using namespace NSJSBase;
 namespace NSNativeControl
 {
 class CNativeControl
@@ -232,8 +232,6 @@ public:
     // для добавления картинок -------------------------------------
     CImagesWorker* m_pWorker;
 
-    CMemoryStreamEmbed* m_pStream;
-
 public:
     CNativeControl() :
         m_pChanges(NULL),
@@ -244,12 +242,10 @@ public:
         m_nSaveBinaryLen(0),
         m_sConsoleLogFile(L""),
         m_nCurrentChangesBuilderIndex(0),
-        m_pWorker(NULL),
-        m_pStream(NULL)
+        m_pWorker(NULL)
     {}
     ~CNativeControl()
     {
-        RELEASEOBJECT(m_pStream);
         m_pChanges = NULL;
 
         RELEASEARRAYOBJECTS(m_pSaveBinary);
@@ -1121,70 +1117,5 @@ bool Doct_renderer_SaveFile_ForBuilder(int nFormat, const std::wstring& strDstFi
                                JSSmart<CJSContext> context,
                                JSSmart<CJSValue>* args,
                                std::wstring& strError);
-
-class CCacheDataScript
-{
-private:
-    BYTE* Data;
-    int Length;
-
-    v8::ScriptCompiler::Source* Source;
-    v8::ScriptCompiler::CachedData* CachedData;
-
-    std::wstring Path;
-
-public:
-    CCacheDataScript(const std::wstring& sPath)
-    {
-        Data = NULL;
-        Length = 0;
-
-        if (!sPath.empty())
-        {
-            BYTE* _data = NULL;
-            DWORD _data_length = 0;
-            if (NSFile::CFileBinary::ReadAllBytes(sPath, &_data, _data_length))
-            {
-                Data = _data;
-                Length = (int)_data_length;
-            }
-        }
-
-        Source      = NULL;
-        CachedData  = NULL;
-        Path        = sPath;
-    }
-    ~CCacheDataScript()
-    {
-        //RELEASEOBJECT(Source);
-        //RELEASEOBJECT(CachedData);
-        RELEASEARRAYOBJECTS(Data);
-    }
-
-    v8::Local<v8::Script> Compile(const v8::Local<v8::Context>& _context, const v8::Local<v8::String>& source)
-    {
-        v8::Local<v8::Script> script;
-        if (NULL == Data)
-        {
-            Source = new v8::ScriptCompiler::Source(source);
-            script = v8::ScriptCompiler::Compile(_context, Source, v8::ScriptCompiler::kProduceCodeCache).ToLocalChecked();
-
-            const v8::ScriptCompiler::CachedData* _cachedData = Source->GetCachedData();
-            NSFile::CFileBinary oFileTest;
-            if (oFileTest.CreateFileW(Path))
-            {
-                oFileTest.WriteFile(_cachedData->data, (DWORD)_cachedData->length);
-                oFileTest.CloseFile();
-            }
-        }
-        else
-        {
-            CachedData = new v8::ScriptCompiler::CachedData(Data, Length);
-            Source = new v8::ScriptCompiler::Source(source, CachedData);
-            script = v8::ScriptCompiler::Compile(_context, Source, v8::ScriptCompiler::kConsumeCodeCache).ToLocalChecked();
-        }
-        return script;
-    }
-};
 
 #endif // NATIVECONTROL

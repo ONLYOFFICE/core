@@ -37,6 +37,7 @@
 #endif
 
 #include "js_internal/embed/NativeControlEmbed.h"
+#include "js_internal/embed/MemoryStreamEmbed.h"
 
 #include "../xml/include/xmlutils.h"
 
@@ -485,12 +486,7 @@ namespace NSDoctRenderer
                 else
                 {
                     std::string sTmp = U_TO_UTF8((pParams->m_sJsonParams));
-
-                #ifndef V8_OS_XP
-                    args[0] = js_value(v8::JSON::Parse(context->m_internal->m_context, v8::String::NewFromUtf8(context->m_internal->m_isolate, sTmp.c_str())).FromMaybe(v8::Local<v8::Value>()));
-                #else
-                    args[0] = js_value(v8::JSON::Parse(v8::String::NewFromUtf8(context->m_internal->m_isolate, sTmp.c_str())));
-                #endif
+                    args[0] = context->JSON_Parse(sTmp.c_str());
                 }
 
                 JSSmart<CJSValue> js_result2 = js_objectApi->call_func("asc_nativeCalculateFile", 1, args);
@@ -522,12 +518,7 @@ namespace NSDoctRenderer
                     else
                     {
                         std::string sTmp = U_TO_UTF8((pParams->m_sJsonParams));
-
-                    #ifndef V8_OS_XP
-                        args[0] = js_value(v8::JSON::Parse(context->m_internal->m_context, v8::String::NewFromUtf8(context->m_internal->m_isolate, sTmp.c_str())).FromMaybe(v8::Local<v8::Value>()));
-                    #else
-                        args[0] = js_value(v8::JSON::Parse(v8::String::NewFromUtf8(context->m_internal->m_isolate, sTmp.c_str())));
-                    #endif
+                        args[0] = context->JSON_Parse(sTmp.c_str());
                     }
 
                     JSSmart<CJSValue> js_result2 = js_objectApi->call_func("asc_nativeGetPDF", 1, args);
@@ -636,37 +627,15 @@ namespace NSDoctRenderer
                 JSSmart<CJSContextScope> context_scope = context->CreateContextScope();
                 JSSmart<CJSTryCatch>         try_catch = context->GetExceptions();
 
-                LOGGER_SPEED_LAP("pre_compile")
-
-                CCacheDataScript oCachedScript(sCachePath);
                 LOGGER_SPEED_LAP("compile")
-                if (!sCachePath.empty())
+
+                context->runScript(strScript, try_catch, sCachePath);
+                if(try_catch->Check())
                 {
-                    v8::Local<v8::Script> script = oCachedScript.Compile(context->m_internal->m_context, v8::String::NewFromUtf8(context->m_internal->m_isolate, strScript.c_str()));
-                    if(try_catch->Check())
-                    {
-                        strError = L"code=\"compile\"";
-                        bIsBreak = true;
-                    }
-                    else
-                    {
-                        script->Run(context->m_internal->m_context);
-                        if(try_catch->Check())
-                        {
-                            strError = L"code=\"run\"";
-                            bIsBreak = true;
-                        }
-                    }
+                    strError = L"code=\"run\"";
+                    bIsBreak = true;
                 }
-                else
-                {
-                    context->runScript(strScript, try_catch);
-                    if(try_catch->Check())
-                    {
-                        strError = L"code=\"run\"";
-                        bIsBreak = true;
-                    }
-                }
+
                 LOGGER_SPEED_LAP("run")
 
                 //---------------------------------------------------------------
@@ -836,11 +805,7 @@ namespace NSDoctRenderer
 
                                 pBaseData[dwSizeBase] = 0;
                                 JSSmart<CJSValue> args_changes[1];
-                                #ifndef V8_OS_XP
-                                    args_changes[0] = js_value(v8::JSON::Parse(context->m_internal->m_context, v8::String::NewFromUtf8(context->m_internal->m_isolate, (char*)(pBaseData + nStart))).FromMaybe(v8::Local<v8::Value>()));
-                                #else
-                                    args_changes[0] = js_value(v8::JSON::Parse(v8::String::NewFromUtf8(context->m_internal->m_isolate, (char*)(pBaseData + nStart))));
-                                #endif
+                                args_changes[0] = context->JSON_Parse((char*)(pBaseData + nStart));
 
                                 js_objectApi->call_func("asc_StartMailMergeByList", 1, args_changes);
                                 if (try_catch->Check())

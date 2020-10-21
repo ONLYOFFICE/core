@@ -187,6 +187,7 @@ namespace NSJSBase
         CJSLocalScope* CreateLocalScope();
 
         JSSmart<CJSValue> runScript(const std::string& script, JSSmart<CJSTryCatch> exception = NULL, const std::wstring& scriptPath = std::wstring(L""));
+        CJSValue* JSON_Parse(const char* sTmp);
 
     public:
         static CJSValue* createUndefined();

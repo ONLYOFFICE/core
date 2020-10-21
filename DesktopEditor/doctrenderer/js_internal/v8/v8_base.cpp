@@ -259,7 +259,7 @@ namespace NSJSBase
         v8::Local<v8::String> _source = v8::String::NewFromUtf8(CV8Worker::GetCurrent(), script.c_str());
         
         v8::Local<v8::Script> _script;
-        if(scriptPath.length() > 0)
+        if(!scriptPath.empty())
         {
             std::wstring sCachePath = scriptPath.substr(0, scriptPath.find(L".")) + L".cache";
             CCacheDataScript oCachedScript(sCachePath);
@@ -299,5 +299,16 @@ namespace NSJSBase
         ret->m_internal->m_context = ret->m_internal->m_isolate->GetCurrentContext();
         // global???
         return ret;
+    }
+
+    CJSValue* CJSContext::JSON_Parse(const char *sTmp)
+    {
+        CJSValueV8* _value = new CJSValueV8();
+    #ifndef V8_OS_XP
+        _value->value = v8::JSON::Parse(m_internal->m_context, v8::String::NewFromUtf8(CV8Worker::GetCurrent(), sTmp)).FromMaybe(v8::Local<v8::Value>());
+    #else
+        _value->value = v8::JSON::Parse(v8::String::NewFromUtf8(CV8Worker::GetCurrent(), sTmp));
+    #endif
+        return _value;
     }
 }

@@ -35,10 +35,10 @@
 #include "docbuilder.h"
 #include "doctrenderer.h"
 
-#include "../xml/include/xmlutils.h"
 #include <iostream>
 #include <list>
 
+#include "../xml/include/xmlutils.h"
 #include "../common/File.h"
 #include "../common/Directory.h"
 

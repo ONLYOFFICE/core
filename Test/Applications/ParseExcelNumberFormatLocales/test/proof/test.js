@@ -129,15 +129,15 @@ for(let i =0; i<substr1.length; i++){
     })
 
 };
-for(let i =0; i<substr1.length; i++){
-
- fs.writeFileSync(inputdata+substr1[i], etalon1, function (err) {
-  if (err) return console.log(err);
-});
-fs.writeFileSync(inputnum+substr1[i], substrinputs, function (err) {
-   if (err) return console.log(err);
-});
-};
+//for(let i =0; i<substr1.length; i++){
+//
+ //fs.writeFileSync(inputdata+substr1[i], etalon1, function (err) {
+ // if (err) return console.log(err);
+//});
+//fs.writeFileSync(inputnum+substr1[i], substrinputs, function (err) {
+ //  if (err) return console.log(err);
+//});
+//};
 
 //__________________________________________proof__________________________________________________________________
 for(let i =0;i<etalon2.length;i++){

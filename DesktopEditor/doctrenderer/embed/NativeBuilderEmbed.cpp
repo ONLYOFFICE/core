@@ -1,7 +1,7 @@
 #include "NativeBuilderEmbed.h"
 
-#include "../../../common/Directory.h"
-#include "../../../fontengine/application_generate_fonts_common.h"
+#include "../../common/Directory.h"
+#include "../../fontengine/application_generate_fonts_common.h"
 
 JSSmart<CJSValue> CBuilderEmbed::builder_OpenFile(JSSmart<CJSValue> sPath, JSSmart<CJSValue> sParams)
 {

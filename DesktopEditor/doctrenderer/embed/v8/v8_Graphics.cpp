@@ -1,5 +1,5 @@
 #include "../GraphicsEmbed.h"
-#include "../../v8/v8_base.h"
+#include "../../js_internal/v8/v8_base.h"
 
 #define PROPERTY_GET(NAME, NAME_EMBED, TYPE)                                                               \
     void NAME(v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)                \

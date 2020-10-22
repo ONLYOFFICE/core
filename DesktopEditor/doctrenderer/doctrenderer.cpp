@@ -36,8 +36,8 @@
 #undef BOOL
 #endif
 
-#include "js_internal/embed/NativeControlEmbed.h"
-#include "js_internal/embed/MemoryStreamEmbed.h"
+#include "embed/NativeControlEmbed.h"
+#include "embed/MemoryStreamEmbed.h"
 
 #include "../xml/include/xmlutils.h"
 

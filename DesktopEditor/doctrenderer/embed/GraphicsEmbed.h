@@ -1,8 +1,8 @@
 #ifndef _BUILD_NATIVE_GRAPHICS_EMBED_H_
 #define _BUILD_NATIVE_GRAPHICS_EMBED_H_
 
-#include "../../graphics.h"
-#include "../js_base.h"
+#include "../graphics.h"
+#include "../js_internal/js_base.h"
 
 using namespace NSJSBase;
 class CGraphicsEmbed : public CJSEmbedObject

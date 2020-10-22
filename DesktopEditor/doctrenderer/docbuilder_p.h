@@ -46,9 +46,9 @@
 #include "../../Common/OfficeFileFormatChecker.h"
 
 #include "js_internal/js_base.h"
-#include "js_internal/embed/NativeBuilderEmbed.h"
-#include "js_internal/embed/NativeControlEmbed.h"
-#include "js_internal/embed/MemoryStreamEmbed.h"
+#include "embed/NativeBuilderEmbed.h"
+#include "embed/NativeControlEmbed.h"
+#include "embed/MemoryStreamEmbed.h"
 
 #ifdef LINUX
 #include <unistd.h>

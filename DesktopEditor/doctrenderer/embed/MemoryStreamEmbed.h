@@ -1,8 +1,8 @@
 #ifndef _BUILD_NATIVE_MEMORYSTREAM_EMBED_H_
 #define _BUILD_NATIVE_MEMORYSTREAM_EMBED_H_
 
-#include "../../memorystream.h"
-#include "../js_base.h"
+#include "../memorystream.h"
+#include "../js_internal/js_base.h"
 
 using namespace NSJSBase;
 class CMemoryStreamEmbed : public CJSEmbedObject

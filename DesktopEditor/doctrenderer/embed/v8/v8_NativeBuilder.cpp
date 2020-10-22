@@ -30,8 +30,8 @@
  *
  */
 #include "../NativeBuilderEmbed.h"
-#include "../../../docbuilder_p.h"
-#include "../../v8/v8_base.h"
+#include "../../docbuilder_p.h"
+#include "../../js_internal/v8/v8_base.h"
 
 void CBuilderDocumentEmbed::OpenFile(const std::wstring& sFile, const std::wstring& sParams)
 {

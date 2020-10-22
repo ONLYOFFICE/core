@@ -156,7 +156,7 @@ namespace PPTX
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 				std::wstring arr_names[10] = {_T("a:lvl1pPr"), _T("a:lvl2pPr"), _T("a:lvl3pPr"), _T("a:lvl4pPr"), _T("a:lvl5pPr"), 
 					_T("a:lvl6pPr"), _T("a:lvl7pPr"), _T("a:lvl8pPr"), _T("a:lvl9pPr"), _T("a:defPPr")};
@@ -164,6 +164,10 @@ namespace PPTX
 				while (pReader->GetPos() < _end_rec)
 				{
 					BYTE _at = pReader->GetUChar();
+
+					if (_at < 0 || _at > 9)
+						break;
+
 					levels[_at] = new TextParagraphPr();
 					levels[_at]->m_name = arr_names[_at];
 					levels[_at]->fromPPTY(pReader);
@@ -194,7 +198,7 @@ namespace PPTX
 					if(levels[i].is_init())
 						levels[i]->Merge(lstStyle->levels[i]);
 			}
-		public:
+
 			nullable<TextParagraphPr>	levels[10];
 			mutable std::wstring		m_name;
 		protected:

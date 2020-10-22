@@ -259,6 +259,8 @@ namespace NSFontConverter
                 }
 
                 sBuffer[nBufPos++] = unChar;
+                if (nBufPos >= c_nNumLimit)
+                    break;
             }
 
             if ( 0 != sBuffer[0] && nCount > 0 )

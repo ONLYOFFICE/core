@@ -71,6 +71,7 @@ namespace NSBinPptxRW
 		OOX::CVmlDrawing				m_oVmlDrawing;
 		PPTX::App						m_oApp;
 		PPTX::Core						m_oCore;
+		nullable<PPTX::CustomProperties>m_oCustomProperties;
 		PPTX::ViewProps					m_oViewProps;
 		PPTX::PresProps					m_oPresProps;
 		PPTX::NotesSlide				m_oDefaultNote;
@@ -734,6 +735,20 @@ namespace NSBinPptxRW
 				}
 				SetRequiredDefaultsCore();
 			}
+
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::CustomProperties);
+			if (m_mainTables.end()  != pPair)
+			{
+				m_oReader.Seek(pPair->second);
+				try
+				{
+					m_oCustomProperties = new PPTX::CustomProperties(&m_oDocument);
+					m_oCustomProperties->fromPPTY(&m_oReader);
+				}
+				catch(...)
+				{
+				}
+			}
             if (false)
 			{
 				// tableStyles
@@ -835,6 +850,16 @@ namespace NSBinPptxRW
 
             OOX::CPath pathCore = m_strDstFolder + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("core.xml");
 			oXmlWriter.SaveToFile(pathCore.GetPath());
+
+	// customProperies
+			if(m_oCustomProperties.IsInit())
+			{
+				oXmlWriter.ClearNoAttack();
+				m_oCustomProperties->toXmlWriter(&oXmlWriter);
+
+				OOX::CPath pathCore = m_strDstFolder + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + OOX::FileTypes::CustomProperties.DefaultFileName().GetPath();
+				oXmlWriter.SaveToFile(pathCore.GetPath());
+			}
 
 	// presProps
 			oXmlWriter.ClearNoAttack();
@@ -984,6 +1009,10 @@ namespace NSBinPptxRW
 
 			pContentTypes->Registration(L"application/vnd.openxmlformats-package.core-properties+xml",				L"/docProps", L"core.xml");
 			pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.extended-properties+xml",	L"/docProps", L"app.xml");
+			if(m_oCustomProperties.IsInit())
+			{
+				pContentTypes->Registration(OOX::FileTypes::CustomProperties.OverrideType(),	L"/docProps", OOX::FileTypes::CustomProperties.DefaultFileName().GetPath());
+			}
 
 	// themes
 			for (size_t i = 0; i < m_arThemes.size(); ++i)
@@ -1038,8 +1067,12 @@ namespace NSBinPptxRW
 <Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
 <Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties\" Target=\"docProps/core.xml\"/>\
 <Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"ppt/presentation.xml\"/>\
-<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties\" Target=\"docProps/app.xml\"/>\
-</Relationships>");
+<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties\" Target=\"docProps/app.xml\"/>");
+			if(m_oCustomProperties.IsInit())
+			{
+				strRELS += L"<Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/custom-properties\" Target=\"docProps/custom.xml\"/>";
+			}
+			strRELS += L"</Relationships>";
 
             OOX::CPath filePathRels = m_strDstFolder + FILE_SEPARATOR_STR + _T("_rels");
             NSDirectory::CreateDirectory (filePathRels.GetPath());
@@ -1058,7 +1091,7 @@ namespace NSBinPptxRW
 		void ReadMasterInfo(LONG nIndexMaster)
 		{
 			LONG _rec_start = m_oReader.GetPos();
-			LONG _end_rec = _rec_start + m_oReader.GetLong() + 4;
+			LONG _end_rec = _rec_start + m_oReader.GetRecordSize() + 4;
 
 			_slideMasterInfo& oMaster = m_arSlideMasters_Theme[nIndexMaster];			
 			

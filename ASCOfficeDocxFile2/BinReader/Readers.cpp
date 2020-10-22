@@ -38,6 +38,7 @@
 
 #include "../../ASCOfficePPTXFile/PPTXFormat/App.h"
 #include "../../ASCOfficePPTXFile/PPTXFormat/Core.h"
+#include "../../ASCOfficePPTXFile/PPTXFormat/Logic/HeadingVariant.h"
 
 #include "../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Document.h"
@@ -1664,7 +1665,7 @@ int Binary_pPrReader::Read_pgHeader(BYTE type, long length, void* poResult)
 	if( c_oSerProp_secPrType::hdrftrelem == type )
 	{
 		int nHdrFtrIndex = m_oBufferedStream.GetLong();
-		if(nHdrFtrIndex >= 0 && nHdrFtrIndex <= (int)m_oFileWriter.get_headers_footers_writer().m_aHeaders.size())
+		if(nHdrFtrIndex >= 0 && nHdrFtrIndex < (int)m_oFileWriter.get_headers_footers_writer().m_aHeaders.size())
 		{
 			Writers::HdrFtrItem* pHdrFtrItem = m_oFileWriter.get_headers_footers_writer().m_aHeaders[nHdrFtrIndex];
 			pHdrFtrItem->m_sFilename;
@@ -9001,6 +9002,16 @@ int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult
 		pSdtPr->m_oCheckbox.Init();
 		READ1_DEF(length, res, this->ReadSdtCheckBox, pSdtPr->m_oCheckbox.GetPointer());
 	}
+	else if (c_oSerSdt::FormPr == type)
+	{
+		pSdtPr->m_oFormPr.Init();
+		READ1_DEF(length, res, this->ReadSdtFormPr, pSdtPr->m_oFormPr.GetPointer());
+	}
+	else if (c_oSerSdt::TextFormPr == type)
+	{
+		pSdtPr->m_oTextFormPr.Init();
+		READ1_DEF(length, res, this->ReadSdtTextFormPr, pSdtPr->m_oTextFormPr.GetPointer());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -9041,6 +9052,11 @@ int Binary_DocumentTableReader::ReadSdtCheckBox(BYTE type, long length, void* po
 			pSdtCheckBox->m_oUncheckedState.Init();
 		pSdtCheckBox->m_oUncheckedState->m_oVal.Init();
 		pSdtCheckBox->m_oUncheckedState->m_oVal->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSerSdt::CheckboxGroupKey == type)
+	{
+		pSdtCheckBox->m_oGroupKey.Init();
+		pSdtCheckBox->m_oGroupKey->m_sVal = m_oBufferedStream.GetString3(length);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -9181,6 +9197,68 @@ int Binary_DocumentTableReader::ReadDropDownList(BYTE type, long length, void* p
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
+int Binary_DocumentTableReader::ReadSdtFormPr(BYTE type, long length, void* poResult)
+{
+	int res = 0;
+	ComplexTypes::Word::CFormPr* pFormPr = static_cast<ComplexTypes::Word::CFormPr*>(poResult);
+	if (c_oSerSdt::FormPrKey == type)
+	{
+		pFormPr->m_oKey = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSerSdt::FormPrLabel == type)
+	{
+		pFormPr->m_oLabel = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSerSdt::FormPrHelpText == type)
+	{
+		pFormPr->m_oHelpText = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSerSdt::FormPrRequired == type)
+	{
+		pFormPr->m_oRequired = m_oBufferedStream.GetBool();
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int Binary_DocumentTableReader::ReadSdtTextFormPr(BYTE type, long length, void* poResult)
+{
+	int res = 0;
+	OOX::Logic::CTextFormPr* pTextFormPr = static_cast<OOX::Logic::CTextFormPr*>(poResult);
+	if (c_oSerSdt::TextFormPrComb == type)
+	{
+		pTextFormPr->m_oComb.Init();
+		READ1_DEF(length, res, this->ReadSdtTextFormPrComb, pTextFormPr->m_oComb.GetPointer());
+	}
+	else if (c_oSerSdt::TextFormPrMaxCharacters == type)
+	{
+		pTextFormPr->m_oMaxCharacters.Init();
+		pTextFormPr->m_oMaxCharacters->m_oVal = m_oBufferedStream.GetLong();
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int Binary_DocumentTableReader::ReadSdtTextFormPrComb(BYTE type, long length, void* poResult)
+{
+	int res = 0;
+	ComplexTypes::Word::CComb* pComb = static_cast<ComplexTypes::Word::CComb*>(poResult);
+	if (c_oSerSdt::TextFormPrCombWidth == type)
+	{
+		pComb->m_oWidth = m_oBufferedStream.GetLong();
+	}
+	else if (c_oSerSdt::TextFormPrCombSym == type)
+	{
+		pComb->m_oSym = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSerSdt::TextFormPrCombFont == type)
+	{
+		pComb->m_oFont = m_oBufferedStream.GetString3(length);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
 
 
 Binary_NotesTableReader::Binary_NotesTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, CComments* pComments, bool bIsFootnote)
@@ -9299,7 +9377,18 @@ BinaryFileReader::BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinar
 }
 int BinaryFileReader::ReadFile()
 {
-	return ReadMainTable();
+	long res = c_oSerConstants::ReadOk;
+
+	try
+	{
+		res = ReadMainTable();
+	}
+	catch(...)
+	{
+		res = c_oSerConstants::ErrorStream;
+	}
+
+	return res;
 }
 int BinaryFileReader::ReadMainTable()
 {
@@ -9451,6 +9540,13 @@ int BinaryFileReader::ReadMainTable()
 			m_oFileWriter.m_pCore = pCore;
 		}
 		break;
+		case c_oSerTableTypes::CustomProperties:
+		{
+			PPTX::CustomProperties* pCustomProperties = new PPTX::CustomProperties(NULL);
+			pCustomProperties->fromPPTY(&m_oBufferedStream);
+			m_oFileWriter.m_pCustomProperties = pCustomProperties;
+			m_oFileWriter.m_oDocumentRelsWriter.m_bHasCustom = true;
+		}break;			
 		case c_oSerTableTypes::HdrFtr:
 			res = Binary_HdrFtrTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_pComments).Read();
 			break;

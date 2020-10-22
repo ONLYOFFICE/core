@@ -498,6 +498,9 @@ namespace BinDocxRW
 		void WriteSdtPrDate(const OOX::Logic::CDate& oDate);
 		void WriteDocPartList(const OOX::Logic::CSdtDocPart& oSdtDocPart);
 		void WriteDropDownList(const OOX::Logic::CSdtDropDownList& oDropDownList);
+		void WriteSdtFormPr(const ComplexTypes::Word::CFormPr& oFormPr);
+		void WriteSdtTextFormPr(const OOX::Logic::CTextFormPr& oTextFormPr);
+		void WriteSdtTextFormPrComb(const ComplexTypes::Word::CComb& oComb);
 	};
 	class BinaryCommentsTableWriter
 	{

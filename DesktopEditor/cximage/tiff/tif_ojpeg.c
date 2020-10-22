@@ -1920,7 +1920,9 @@ OJPEGReadBufferFill(OJPEGState* sp)
 							sp->in_buffer_file_pos=0;
 						else
 						{
-							sp->in_buffer_file_togo=sp->tif->tif_dir.td_stripbytecount[sp->in_buffer_next_strile];  
+                            sp->in_buffer_file_togo=0;
+                            if (sp->tif->tif_dir.td_stripbytecount)
+                                sp->in_buffer_file_togo=sp->tif->tif_dir.td_stripbytecount[sp->in_buffer_next_strile];
 							if (sp->in_buffer_file_togo==0)
 								sp->in_buffer_file_pos=0;
 							else if (sp->in_buffer_file_pos+sp->in_buffer_file_togo>sp->file_size)

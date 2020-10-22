@@ -289,10 +289,11 @@ public:
 //@}
 
 /** \addtogroup Attributes */ //@{
-	int32_t	GetSize();
+	uint32_t	GetSize();
 	uint8_t*	GetBits(uint32_t row = 0);
 	uint8_t	GetColorType();
 	void*	GetDIB() const;
+	void*	GetDIBLimit() const;
 	uint32_t	GetHeight() const;
 	uint32_t	GetWidth() const;
 	uint32_t	GetEffWidth() const;
@@ -796,6 +797,8 @@ protected:
 	void bihtoh(BITMAPINFOHEADER* bih);
 
 	void*				pDib; //contains the header, the palette, the pixels
+	void*				pDibLimit;
+
     BITMAPINFOHEADER    head; //standard header
 	CXIMAGEINFO			info; //extended information
 	uint8_t*			pSelection;	//selected region

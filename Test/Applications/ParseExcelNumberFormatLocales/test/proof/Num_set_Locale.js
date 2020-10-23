@@ -34,10 +34,10 @@ let inputGr = "../GrSep/";
 let input = "../numbers";
 let etalon1input = "../data/en-US.txt";
 let elanon2input = "../numbers/en-US.txt";
-let outputdata = "../Outputdata.txt";
-let outputnum = "../Outputnum.txt";
-let outputetalon1 = "../Outputetalonfordata.txt";
-let outputetalon2 = "../Outputetalonfornum.txt";
+let outputdata = "../output/Outputdata.txt";
+let outputnum = "../output/Outputnum.txt";
+let outputetalon1 = "../output/Outputetalonfordata.txt";
+let outputetalon2 = "../output/Outputetalonfornum.txt";
 //_________________________________________input_count______________________________________________________________________
 
 let numbersforDec = fs.readdirSync(inputDec,"utf-8",function(err,data){

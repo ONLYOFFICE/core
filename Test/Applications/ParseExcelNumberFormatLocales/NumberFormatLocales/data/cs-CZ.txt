@@ -1,0 +1,3 @@
+﻿[$-F800]dddd, mmmm dd, rrrr
+[$-F400]h:mm:ss AM/PM
+Vęeobecný

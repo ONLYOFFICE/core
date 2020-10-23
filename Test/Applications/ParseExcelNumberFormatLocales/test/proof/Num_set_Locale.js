@@ -6,13 +6,13 @@ function setCharAt(str,index,chr) {
 }
 
 function num_set_Locale(re, str) {
-    var midstrinarr_idx;
+    var midstring;
     if (str.search(re) != -1) {
         return true
     } else {
         return false
     }
-    console.log(str + midstrinarr_idx + re);
+    console.log(str + midstring + re);
 }
 
 function alghoritm_of_changing_dates_and_numbes(){
@@ -25,7 +25,7 @@ function alghoritm_of_changing_dates_and_numbes(){
         });
     };
 }
-
+module.exports.alghoritm_of_changing_dates_and_numbes = alghoritm_of_changing_dates_and_numbes;
 //____________________________________________readinarr_idxpath___________________________________________________
 let inputnum = "../numbers/"
 let inputdata = "../data/"
@@ -249,4 +249,3 @@ fs.writeFileSync(outputnum, repackarr_for_numbers+names_of_repacked_numbers,"utf
 fs.writeFileSync(outputetalon1, etalarr_for_dates, "utf-8");
 
 fs.writeFileSync(outputetalon2, etalarr_for_numbers, "utf-8");
- 

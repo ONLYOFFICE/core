@@ -9,7 +9,7 @@ class CNativeControlEmbed : public CJSEmbedObject
 {
 public:
     NSNativeControl::CNativeControl* m_pInternal;
-    // ASC::CZipWorker m_oZipWorker;
+    CZipWorker m_oZipWorker;
 public:
     CNativeControlEmbed() : m_pInternal(new NSNativeControl::CNativeControl()) {}
     ~CNativeControlEmbed() { RELEASEOBJECT(m_pInternal); }

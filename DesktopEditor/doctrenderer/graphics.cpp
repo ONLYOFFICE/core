@@ -5,33 +5,7 @@
 
 namespace NSGraphics
 {
-
-void CGraphics::init(v8::Local<v8::Value>* context, double width_px, double height_px, double width_mm, double height_mm)
-{
-    m_oContext   = context;
-    m_lHeightPix = height_px; // height_px >> 0;
-    m_lWidthPix  = width_px; // width_px >> 0;
-    m_dWidthMM   = width_mm;
-    m_dHeightMM  = height_mm;
-    m_dDpiX      = 25.4 * m_lWidthPix / m_dWidthMM;
-    m_dDpiY      = 25.4 * m_lHeightPix / m_dHeightMM;
-
-    /*
-    m_oCoordTransform.sx = m_dDpiX / 25.4;
-    m_oCoordTransform.sy = m_dDpiY / 25.4;
-
-    TextureFillTransformScaleX = 1 / m_oCoordTransform.sx;
-    TextureFillTransformScaleY = 1 / m_oCoordTransform.sy;
-
-    m_oLastFont.Clear();
-    m_oContext.save();
-    */
-
-    m_bPenColorInit = false;
-    m_bBrushColorInit = false;
-}
-
-void CGraphics::put_GlobalAlpha(bool enable, int alpha)
+void CGraphics::put_GlobalAlpha(bool enable, double alpha)
 {
     if(!enable)
     {

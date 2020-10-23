@@ -2,10 +2,104 @@
 #define CGRAPHICS_H
 
 #include <string>
+#include <vector>
 
 #include "../common/Types.h"
+#include "../graphics/Graphics.h"
+
 #include "v8.h"
 #include "libplatform/libplatform.h"
+
+#define GRAPHICS_NATIVE_COMMAND_EndDraw                  1
+#define GRAPHICS_NATIVE_COMMAND_put_GlobalAlpha          2
+#define GRAPHICS_NATIVE_COMMAND_Start_GlobalAlpha        3
+#define GRAPHICS_NATIVE_COMMAND_End_GlobalAlpha          4
+#define GRAPHICS_NATIVE_COMMAND_p_color                  5
+#define GRAPHICS_NATIVE_COMMAND_p_width                  6
+#define GRAPHICS_NATIVE_COMMAND_p_dash                   7
+#define GRAPHICS_NATIVE_COMMAND_b_color1                 8
+#define GRAPHICS_NATIVE_COMMAND_b_color2                 9
+#define GRAPHICS_NATIVE_COMMAND_transform                10
+#define GRAPHICS_NATIVE_COMMAND_CalculateFullTransform   11
+#define GRAPHICS_NATIVE_COMMAND__s                       12
+#define GRAPHICS_NATIVE_COMMAND__e                       13
+#define GRAPHICS_NATIVE_COMMAND__z                       14
+#define GRAPHICS_NATIVE_COMMAND__m                       15
+#define GRAPHICS_NATIVE_COMMAND__l                       16
+#define GRAPHICS_NATIVE_COMMAND__c                       17
+#define GRAPHICS_NATIVE_COMMAND__c2                      18
+#define GRAPHICS_NATIVE_COMMAND_ds                       19
+#define GRAPHICS_NATIVE_COMMAND_df                       20
+#define GRAPHICS_NATIVE_COMMAND_save                     21
+#define GRAPHICS_NATIVE_COMMAND_restore                  22
+#define GRAPHICS_NATIVE_COMMAND_clip                     23
+#define GRAPHICS_NATIVE_COMMAND_reset                    24
+#define GRAPHICS_NATIVE_COMMAND_transform3               25
+#define GRAPHICS_NATIVE_COMMAND_FreeFont                 26
+#define GRAPHICS_NATIVE_COMMAND_ClearLastFont            27
+#define GRAPHICS_NATIVE_COMMAND_drawImage2               28
+#define GRAPHICS_NATIVE_COMMAND_drawImage                29
+#define GRAPHICS_NATIVE_COMMAND_GetFont                  30
+#define GRAPHICS_NATIVE_COMMAND_font                     31
+#define GRAPHICS_NATIVE_COMMAND_SetFont                  32
+#define GRAPHICS_NATIVE_COMMAND_SetTextPr                33
+#define GRAPHICS_NATIVE_COMMAND_SetFontSlot              34
+#define GRAPHICS_NATIVE_COMMAND_GetTextPr                35
+#define GRAPHICS_NATIVE_COMMAND_FillText                 36
+#define GRAPHICS_NATIVE_COMMAND_t                        37
+#define GRAPHICS_NATIVE_COMMAND_FillText2                38
+#define GRAPHICS_NATIVE_COMMAND_t2                       39
+#define GRAPHICS_NATIVE_COMMAND_FillTextCode             40
+#define GRAPHICS_NATIVE_COMMAND_tg                       41
+#define GRAPHICS_NATIVE_COMMAND_charspace                42
+#define GRAPHICS_NATIVE_COMMAND_private_FillGlyph        43
+#define GRAPHICS_NATIVE_COMMAND_private_FillGlyphC       44
+#define GRAPHICS_NATIVE_COMMAND_private_FillGlyph2       45
+#define GRAPHICS_NATIVE_COMMAND_SetIntegerGrid           46
+#define GRAPHICS_NATIVE_COMMAND_GetIntegerGrid           47
+#define GRAPHICS_NATIVE_COMMAND_DrawStringASCII          48
+#define GRAPHICS_NATIVE_COMMAND_DrawStringASCII2         49
+#define GRAPHICS_NATIVE_COMMAND_DrawHeaderEdit           50
+#define GRAPHICS_NATIVE_COMMAND_DrawFooterEdit           51
+#define GRAPHICS_NATIVE_COMMAND_DrawLockParagraph        52
+#define GRAPHICS_NATIVE_COMMAND_DrawLockObjectRect       53
+#define GRAPHICS_NATIVE_COMMAND_DrawEmptyTableLine       54
+#define GRAPHICS_NATIVE_COMMAND_DrawSpellingLine         55
+#define GRAPHICS_NATIVE_COMMAND_drawHorLine              56
+#define GRAPHICS_NATIVE_COMMAND_drawHorLine2             57
+#define GRAPHICS_NATIVE_COMMAND_drawVerLine              58
+#define GRAPHICS_NATIVE_COMMAND_drawHorLineExt           59
+#define GRAPHICS_NATIVE_COMMAND_rect                     60
+#define GRAPHICS_NATIVE_COMMAND_TableRect                61
+#define GRAPHICS_NATIVE_COMMAND_AddClipRect              62
+#define GRAPHICS_NATIVE_COMMAND_RemoveClipRect           63
+#define GRAPHICS_NATIVE_COMMAND_SetClip                  64
+#define GRAPHICS_NATIVE_COMMAND_RemoveClip               65
+#define GRAPHICS_NATIVE_COMMAND_drawCollaborativeChanges 66
+#define GRAPHICS_NATIVE_COMMAND_drawMailMergeField       67
+#define GRAPHICS_NATIVE_COMMAND_drawSearchResult         68
+#define GRAPHICS_NATIVE_COMMAND_drawFlowAnchor           69
+#define GRAPHICS_NATIVE_COMMAND_SavePen                  70
+#define GRAPHICS_NATIVE_COMMAND_RestorePen               71
+#define GRAPHICS_NATIVE_COMMAND_SaveBrush                72
+#define GRAPHICS_NATIVE_COMMAND_RestoreBrush             73
+#define GRAPHICS_NATIVE_COMMAND_SavePenBrush             74
+#define GRAPHICS_NATIVE_COMMAND_RestorePenBrush          75
+#define GRAPHICS_NATIVE_COMMAND_SaveGrState              76
+#define GRAPHICS_NATIVE_COMMAND_RestoreGrState           77
+#define GRAPHICS_NATIVE_COMMAND_StartClipPath            78
+#define GRAPHICS_NATIVE_COMMAND_EndClipPath              79
+#define GRAPHICS_NATIVE_COMMAND_StartCheckTableDraw      80
+#define GRAPHICS_NATIVE_COMMAND_EndCheckTableDraw        81
+#define GRAPHICS_NATIVE_COMMAND_SetTextClipRect          82
+#define GRAPHICS_NATIVE_COMMAND_AddSmartRect             83
+#define GRAPHICS_NATIVE_COMMAND_CheckUseFonts2           84
+#define GRAPHICS_NATIVE_COMMAND_UncheckUseFonts2         85
+#define GRAPHICS_NATIVE_COMMAND_Drawing_StartCheckBounds 86
+#define GRAPHICS_NATIVE_COMMAND_Drawing_EndCheckBounds   87
+#define GRAPHICS_NATIVE_COMMAND_DrawPresentationComment  88
+#define GRAPHICS_NATIVE_COMMAND_DrawPolygon              89
+#define GRAPHICS_NATIVE_COMMAND_DrawFootnoteRect         90
 
 struct CFont
 {
@@ -39,20 +133,20 @@ namespace NSGraphics
         double m_dDpiY;
         bool m_bIsBreak;
 
-        v8::Local<v8::Value>* m_oPen;
+        NSStructures::CPen m_oPen;
         bool m_bPenColorInit;
-        v8::Local<v8::Value>* m_oBrush;
+        NSStructures::CBrush m_oBrush;
         bool m_bBrushColorInit;
 
         v8::Local<v8::Value>* m_oFontManager;
 
-        v8::Local<v8::Value>* m_oCoordTransform;
-        v8::Local<v8::Value>* m_oBaseTransform;
-        v8::Local<v8::Value>* m_oTransform;
-        v8::Local<v8::Value>* m_oFullTransform;
-        v8::Local<v8::Value>* m_oInvertFullTransform;
+        Aggplus::CMatrix m_oCoordTransform;
+        Aggplus::CMatrix m_oBaseTransform;
+        Aggplus::CMatrix m_oTransform;
+        Aggplus::CMatrix m_oFullTransform;
+        Aggplus::CMatrix m_oInvertFullTransform;
 
-        v8::Local<v8::Value>* ArrayPoints;
+        std::vector<std::pair<double, double>> ArrayPoints;
 
         CFont m_oCurFont;
 
@@ -74,7 +168,7 @@ namespace NSGraphics
 
         v8::Local<v8::Value>* GrState;
 
-        int globalAlpha;
+        double globalAlpha;
 
         v8::Local<v8::Value>* TextClipRect;
         bool IsClipContext;
@@ -170,9 +264,8 @@ namespace NSGraphics
             if(dash_no_smart)              delete dash_no_smart;
         }
 
-        void init(v8::Local<v8::Value>* context, double width_px, double height_px, double width_mm, double height_mm);
         void EndDraw() {}
-        void put_GlobalAlpha(bool enable, int globalAlpha);
+        void put_GlobalAlpha(bool enable, double globalAlpha);
         void Start_GlobalAlpha() {}
         void End_GlobalAlpha();
         // pen methods

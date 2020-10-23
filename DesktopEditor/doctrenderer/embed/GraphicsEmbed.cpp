@@ -1,10 +1,5 @@
 #include "GraphicsEmbed.h"
 
-JSSmart<CJSValue> CGraphicsEmbed::init(JSSmart<CJSValue> context, JSSmart<CJSValue> width_px, JSSmart<CJSValue> height_px, JSSmart<CJSValue> width_mm, JSSmart<CJSValue> height_mm)
-{
-    //m_pInternal->init(context->toObject(), width_px->toDouble(), height_px->toDouble(), width_mm->toDouble(), height_mm->toDouble());
-    return NULL;
-}
 JSSmart<CJSValue> CGraphicsEmbed::EndDraw()
 {
     m_pInternal->EndDraw();
@@ -12,7 +7,7 @@ JSSmart<CJSValue> CGraphicsEmbed::EndDraw()
 }
 JSSmart<CJSValue> CGraphicsEmbed::put_GlobalAlpha(JSSmart<CJSValue> enable, JSSmart<CJSValue> globalAlpha)
 {
-    m_pInternal->put_GlobalAlpha(enable->toBool(), globalAlpha->toInt32());
+    m_pInternal->put_GlobalAlpha(enable->toBool(), globalAlpha->toDouble());
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::Start_GlobalAlpha()

@@ -239,7 +239,7 @@ for(let i =0 ; i< string_locale_numbers_separators.length;i++) if (string_locale
 
 for(let i=0;i<repackarr_for_dates.length;i++){
 
-    outputarr1[i] = repackarr_for_dates[i]+" "+ names_of_repacked_dates[i]+"\r\n";
+    Clasified_array_of_the_no_eng_locales[i] = repackarr_for_dates[i]+" "+ names_of_repacked_dates[i]+"\r\n";
 }
 
 fs.writeFileSync(outputdata, Clasified_array_of_the_no_eng_locales, "utf-8");

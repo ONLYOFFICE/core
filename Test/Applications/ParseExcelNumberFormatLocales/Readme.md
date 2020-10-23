@@ -1,9 +1,17 @@
 Instruction for the starting:
-Step1: Start the test2.ps1, write there the path, and begin it with mspowershell, when the process's been ended start the lcids.ps1, in the folder would be create 2 folders: data, numbers and 2 folders DecSep and GrSep would have been full.
-Step2: Delete files ".txt" in DecSep and GrSep and start the program proof/test.js
-Step3: there'll be the algoritm, witch change the some files which set-culture of mspowershell doesnt work. You would start it and change this files.
-Step4: The alghoritn cant change the files :
-"az-Cyrl.txt, az-Latn.txt, ff-Latn.txt, iu-Cans.txt, ku-Arab.txt, pa-Arab.txt, quc-Latn.txt, shi-Latn.txt, sn-Latn.txt, sr-Cyrl.txt, uz-Latn.txt, vai-Latn.txt" by yourself or don't change the numbers and data.
-Step5: Start the programm. The result of the programm working is fourth files: "Outputdata.txt" out of dates locales, "Outputnum.txt" out of numberlocales,
-"Outputetalonfordata.txt", "Outputetalonfornum.txt" 
-references for dateslocales and numberlocales respectively.
+
+
+Step1: run "run-Set_Culture_and_run-macros-datae.js" with mspowershell 
+notes:
+The error on the first locale is OK
+Start-Sleep is needed for excel gracefull shutdown. increase it in case of slow PC or other error
+
+Step2: run get_names_of_the_separators_from_system.ps1 with mspowershell
+
+Step3: run "alghoritm_of_changing_dates_and_numbes.js" to change the files with the short names for example(aa.txt,az.txt) using node
+
+Step4: run proof/Num_set_locale.js using node
+
+Step5: open /numbers and change the files: "az-Cyrl.txt, az-Latn.txt, ff-Latn.txt, iu-Cans.txt, ku-Arab.txt, pa-Arab.txt, quc-Latn.txt, shi-Latn.txt, sn-Latn.txt, sr-Cyrl.txt, uz-Latn.txt, vai-Latn.txt"
+
+Step6: open /data and change the files"az-Cyrl.txt, az-Latn.txt, ff-Latn.txt, iu-Cans.txt, ku-Arab.txt, pa-Arab.txt, quc-Latn.txt, shi-Latn.txt, sn-Latn.txt, sr-Cyrl.txt, uz-Latn.txt, vai-Latn.txt"

@@ -25,6 +25,7 @@ function alghoritm_of_changing_dates_and_numbes(){
         });
     };
 }
+
 module.exports.alghoritm_of_changing_dates_and_numbes = alghoritm_of_changing_dates_and_numbes;
 //____________________________________________readinarr_idxpath___________________________________________________
 let inputnum = "../numbers/"
@@ -39,7 +40,6 @@ let outputnum = "../output/Outputnum.txt";
 let outputetalon1 = "../output/Outputetalonfordata.txt";
 let outputetalon2 = "../output/Outputetalonfornum.txt";
 //_________________________________________input_count______________________________________________________________________
-
 let numbersforDec = fs.readdirSync(inputDec,"utf-8",function(err,data){
     if (err) return console.log(err);
     console.log('err > helloworld.txt');
@@ -86,7 +86,9 @@ let repackarr_for_numbers = [];
 let etalarr_for_dates = etalon1.split(("\r\n"));
 let etalarr_for_numbers = etalon2.split(("\r\n"));
 let names_of_repacked_dates = [];
-let names_of_repacked_numbers = [];//____________________________________________initialisating_____________________________________________________
+let names_of_repacked_numbers = [];
+let substrdateinputs = [];
+//____________________________________________initialisating_____________________________________________________
 //_______________________________________readingfromfiles______________________________________
 for(let i =0;i<numbersforDec.length;i++){
     string_of_decimal_separators[i] =fs.readFileSync(inputDec + numbersforDec[i],"utf-8",function(err,data){
@@ -128,8 +130,6 @@ for(let i =0; i<numbers.length; i++){
         substrdec2.push(numbers[i-1]);
     }
 };
-
-let substrdateinputs = [];
 //_______________________________________writingtothefile_and_specialinput_______________________
 for(let i =0; i<substring_locale_dates.length; i++){
     substrinputs[i] = fs.readFileSync(inputnum+substring_locale_numbers_separators[i],"utf-8",function(err,data){
@@ -142,7 +142,6 @@ for(let i =0; i<substring_locale_dates.length; i++){
     })
 
 };
-
 //__________________________________________proof__________________________________________________________________
 for(let i =0;i<etalon2.length;i++){
 
@@ -235,8 +234,6 @@ for(let i = 0; i < splited_repacked_arr_of_numbers.length; i++) {
 //_______________________________________________________proofcheck________________________________________________________
 for(let i =0 ; i< string_locale_numbers_separators.length;i++) if (string_locale_numbers_separators[i]==etalon2) { }else{ console.log("F "+ i);};
 //__________________________________________________output_________________________________________________________________
-
-
 for(let i=0;i<repackarr_for_dates.length;i++){
 
     Clasified_array_of_the_no_eng_locales[i] = repackarr_for_dates[i]+" "+ names_of_repacked_dates[i]+"\r\n";

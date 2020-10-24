@@ -148,7 +148,7 @@ namespace BinDocxRW
 		std::map<int, bool>*			m_mapIgnoreComments;
 	public:
 		ParamsWriter&								m_oParamsWriter;
-		OOX::IFileContainer*						m_oDocumentRels;
+		OOX::IFileContainer*						m_oDocumentRelsWriter;
 
 		std::vector<OOX::CHdrFtr*>					m_aHeaders;
 		std::vector<SimpleTypes::EHdrFtr>			m_aHeaderTypes;

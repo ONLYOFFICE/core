@@ -372,7 +372,7 @@ BinaryHeaderFooterTableWriter::BinaryHeaderFooterTableWriter(ParamsWriter& oPara
 																m_oBcw(oParamsWriter), 
 																m_oParamsWriter(oParamsWriter), 
 																m_pOfficeDrawingConverter(oParamsWriter.m_pOfficeDrawingConverter), 
-																m_oDocumentRels(oDocumentRels), 
+																m_oDocumentRelsWriter(oDocumentRels), 
 																m_mapIgnoreComments(mapIgnoreComments)
 {
 }
@@ -1550,7 +1550,7 @@ void Binary_pPrWriter::WriteHeaderFooter(OOX::Logic::CSectionProperty* pSectPr, 
 			}
 			else
 			{
-				smart_ptr<OOX::File> oFile = m_oBinaryHeaderFooterTableWriter->m_oDocumentRels->Find(oRef.m_oId->GetValue());
+				smart_ptr<OOX::File> oFile = m_oBinaryHeaderFooterTableWriter->m_oDocumentRelsWriter->Find(oRef.m_oId->GetValue());
 				if (oFile.IsInit() && (OOX::FileTypes::Header == oFile->type() || OOX::FileTypes::Footer == oFile->type()))
 				{
 					pHdrFtr = (OOX::CHdrFtr*)oFile.GetPointer();

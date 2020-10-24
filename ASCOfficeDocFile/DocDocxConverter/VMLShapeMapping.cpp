@@ -1113,6 +1113,7 @@ namespace DocFileFormat
 			TextboxMapping textboxMapping(m_context, (indexOLE >> 16) - 1, &txtBoxWrapper, m_pCaller);
 
 			textboxMapping.m_shapeIdOwner = m_shapeId;
+			textboxMapping.m_bOleInPicture = pContainer->m_bOleInPicture;
 
 			m_context->_doc->Convert(&textboxMapping);
 

@@ -256,6 +256,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="..\PPTXFormat\Logic\GrpSpPr.cpp" />
+    <ClCompile Include="..\PPTXFormat\Logic\HeadingVariant.cpp" />
     <ClCompile Include="..\PPTXFormat\Logic\Hyperlink.cpp" />
     <ClCompile Include="..\PPTXFormat\Logic\Media\WavAudioFile.cpp" />
     <ClCompile Include="..\PPTXFormat\Logic\NvGraphicFramePr.cpp" />

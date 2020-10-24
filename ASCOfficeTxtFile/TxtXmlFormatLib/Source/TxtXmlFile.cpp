@@ -253,7 +253,7 @@ void CTxtXmlFile::CreateDocxEmpty(const std::wstring & _strDirectory, Writers::F
 	
 	pDocxWriter->get_document_writer().Write();
 	
-	pDocxWriter->m_oDocumentRels.Write();
+	pDocxWriter->m_oDocumentRelsWriter.Write();
 
 	oContentTypes.Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml",	OOX::CPath(L"/word"),		OOX::CPath(L"document.xml"));
 	oContentTypes.Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml",		OOX::CPath(L"/word"),		OOX::CPath(L"styles.xml"));

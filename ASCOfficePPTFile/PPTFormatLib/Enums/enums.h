@@ -378,7 +378,7 @@ enum TextAlignmentEnum
 };
 
 
-enum TextAutoNumberSchemeEnum
+enum TextAutoNumberSchemeEnum : USHORT
 {
     ANM_AlphaLcPeriod,
     ANM_AlphaUcPeriod,

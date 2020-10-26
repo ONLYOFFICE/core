@@ -30,54 +30,52 @@
  *
  */
 #pragma once
-
-
 #include "../Reader/Records.h"
-#include "TimeVariant.h"
-#include "TimeAnimationValueAtom.h"
+#include "PFMasks.h"
 
 
 namespace PPT_FORMAT
 {
 
-class CRecordTimeAnimationEntry
+struct STextAutoNumberScheme
 {
-public:
+    TextAutoNumberSchemeEnum    m_eScheme;
+    SHORT                       m_nStartNum;
 
-    CRecordTimeAnimationEntry()
-    {
 
+    void ReadFromStream(POLE::Stream* pStream){
+        m_eScheme   = (TextAutoNumberSchemeEnum)StreamUtils::ReadSHORT(pStream);
+        m_nStartNum = StreamUtils::ReadSHORT(pStream);
     }
-
-    virtual ~CRecordTimeAnimationEntry()
-    {
-    }
-
-    virtual void ReadFromStream ( UINT& CurLen, SRecordHeader & oHeader, POLE::Stream* pStream )
-    {
-        m_oTimeAnimationValueAtom.ReadFromStream ( oHeader, pStream );
-
-//        UINT res = 0;
-        SRecordHeader ReadHeader;
-
-        if ( ReadHeader.ReadFromStream(pStream) )
-        {
-            m_pVarValue = TimeVariantFactoryMethod( ReadHeader, pStream );
-        }
-
-        CurLen += 8 + ReadHeader.RecLen;
-
-        if ( ReadHeader.ReadFromStream(pStream) )
-        {
-            m_VarFormula.ReadFromStream ( ReadHeader, pStream );
-        }
-
-        CurLen += 8 + ReadHeader.RecLen;
-    }
-
-    CRecordTimeAnimationValueAtom       m_oTimeAnimationValueAtom;
-    nullable<CRecordTimeVariant>        m_pVarValue;
-    CRecordTimeVariantString            m_VarFormula;
 };
 
+
+class CRecordTextPFException9
+{
+public:
+    PFMasks m_masks;
+
+    nullable<SHORT>                 m_optBulletBlipRef;
+    nullable_bool                   m_optfBulletHasAutoNumber;
+    nullable<STextAutoNumberScheme> m_optBulletAutoNumberScheme;
+
+
+    void ReadFromStream(POLE::Stream* pStream){
+        m_masks.ReadFromStream(pStream);
+
+        if (m_masks.m_bulletBlip)
+            m_optBulletBlipRef = StreamUtils::ReadSHORT(pStream);
+
+        if (m_masks.m_bulletHasScheme)
+            m_optfBulletHasAutoNumber = (bool)StreamUtils::ReadSHORT(pStream);
+
+        if(m_masks.m_bulletScheme)
+        {
+            auto pBulletAutoNumberScheme = new STextAutoNumberScheme;
+            pBulletAutoNumberScheme->ReadFromStream(pStream);
+            m_optBulletAutoNumberScheme = pBulletAutoNumberScheme;
+        }
+
+    }
+};
 }

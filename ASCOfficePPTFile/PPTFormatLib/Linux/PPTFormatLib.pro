@@ -499,6 +499,7 @@ HEADERS += \
     ../Records/NotesPersistAtom.h \
     ../Records/NoZoomViewInfoAtom.h \
     ../Records/OutlineTextRefAtom.h \
+    ../Records/PFMasks.h \
     ../Records/PersistDirectoryAtom.h \
     ../Records/PlaceHolderAtom.h \
     ../Records/ProgStringTagContainer.h \
@@ -541,6 +542,7 @@ HEADERS += \
     ../Records/TextMasterStyle9Atom.h \
     ../Records/TextMasterStyle9Level.h \
     ../Records/TextMasterStyleAtom.h \
+    ../Records/TextPFException9.h \
     ../Records/TextPFExceptionAtom.h \
     ../Records/TextRulerAtom.h \
     ../Records/TextSIExceptionAtom.h \

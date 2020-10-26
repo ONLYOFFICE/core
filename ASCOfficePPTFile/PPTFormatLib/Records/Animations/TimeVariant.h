@@ -138,18 +138,12 @@ class CRecordTimeVariantString : public CRecordTimeVariant
 {
 public:
     virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
-<<<<<<< HEAD
     {
 
         CRecordTimeVariant::ReadFromStream(oHeader, pStream);
 
         m_Value = StreamUtils::ReadStringW(pStream, m_oHeader.RecLen / 2 - 1);
         StreamUtils::StreamSkip(2, pStream);
-=======
-    {      
-        CRecordTimeVariant::ReadFromStream(oHeader, pStream);
-        m_Value = StreamUtils::ReadStringW(pStream, m_oHeader.RecLen - 1);
->>>>>>> 883dda0f3f5c184ddedd4af6243a78aa6274526a
     }
 
     virtual CRecordTimeVariant& operator=(const CRecordTimeVariant& src)

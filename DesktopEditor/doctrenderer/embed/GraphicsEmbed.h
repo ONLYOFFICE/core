@@ -46,7 +46,7 @@ public:
     JSSmart<CJSValue> restore();
     JSSmart<CJSValue> clip();
     JSSmart<CJSValue> reset();
-    JSSmart<CJSValue> transform3(JSSmart<CJSValue> m, JSSmart<CJSValue> isNeedInvert);
+    JSSmart<CJSValue> transform3(JSSmart<CJSValue> sx, JSSmart<CJSValue> shy, JSSmart<CJSValue> shx, JSSmart<CJSValue> sy, JSSmart<CJSValue> tx, JSSmart<CJSValue> ty, JSSmart<CJSValue> isNeedInvert);
     JSSmart<CJSValue> FreeFont();
     JSSmart<CJSValue> ClearLastFont();
     // images
@@ -55,12 +55,12 @@ public:
     // text
     JSSmart<CJSValue> GetFont();
     JSSmart<CJSValue> font(JSSmart<CJSValue> font_id, JSSmart<CJSValue> font_size);
-    JSSmart<CJSValue> SetFont(JSSmart<CJSValue> font);
+    JSSmart<CJSValue> SetFont(JSSmart<CJSValue> path, JSSmart<CJSValue> face, JSSmart<CJSValue> size, JSSmart<CJSValue> style);
     JSSmart<CJSValue> SetTextPr(JSSmart<CJSValue> textPr, JSSmart<CJSValue> theme);
-    JSSmart<CJSValue> SetFontSlot(JSSmart<CJSValue> slot, JSSmart<CJSValue> fontSizeKoef);
+    JSSmart<CJSValue> SetFontSlot(JSSmart<CJSValue> path, JSSmart<CJSValue> face, JSSmart<CJSValue> size, JSSmart<CJSValue> style);
     JSSmart<CJSValue> GetTextPr();
     JSSmart<CJSValue> FillText(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> text);
-    JSSmart<CJSValue> t(JSSmart<CJSValue> text, JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> isBounds);
+    JSSmart<CJSValue> t(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> _arr);
     JSSmart<CJSValue> FillText2(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> text, JSSmart<CJSValue> cropX, JSSmart<CJSValue> cropW);
     JSSmart<CJSValue> t2(JSSmart<CJSValue> text, JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> cropX, JSSmart<CJSValue> cropW);
     JSSmart<CJSValue> FillTextCode(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> lUnicode);

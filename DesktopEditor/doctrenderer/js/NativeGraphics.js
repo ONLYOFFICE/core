@@ -859,7 +859,7 @@ CNativeGraphics.prototype =
     {
         if (false === this.m_bIntegerGrid)
         {
-            this.m_oContext.bezierCurveTo(x1,y1,x2,y2,x3,y3);
+            this.Native["_c"](x1, y1, x2, y2, x3, y3);
 
             if (this.ArrayPoints != null)
             {
@@ -870,24 +870,23 @@ CNativeGraphics.prototype =
         }
         else
         {
-            var _x1 = (this.m_oFullTransform.TransformPointX(x1,y1)) >> 0;
-            var _y1 = (this.m_oFullTransform.TransformPointY(x1,y1)) >> 0;
+            var _x1 = (this.m_oFullTransform.TransformPointX(x1, y1)) >> 0;
+            var _y1 = (this.m_oFullTransform.TransformPointY(x1, y1)) >> 0;
 
-            var _x2 = (this.m_oFullTransform.TransformPointX(x2,y2)) >> 0;
-            var _y2 = (this.m_oFullTransform.TransformPointY(x2,y2)) >> 0;
+            var _x2 = (this.m_oFullTransform.TransformPointX(x2, y2)) >> 0;
+            var _y2 = (this.m_oFullTransform.TransformPointY(x2, y2)) >> 0;
 
-            var _x3 = (this.m_oFullTransform.TransformPointX(x3,y3)) >> 0;
-            var _y3 = (this.m_oFullTransform.TransformPointY(x3,y3)) >> 0;
-            this.m_oContext.bezierCurveTo(_x1 + 0.5,_y1 + 0.5,_x2 + 0.5,_y2 + 0.5,_x3 + 0.5,_y3 + 0.5);
+            var _x3 = (this.m_oFullTransform.TransformPointX(x3, y3)) >> 0;
+            var _y3 = (this.m_oFullTransform.TransformPointY(x3, y3)) >> 0;
+
+            this.Native["_c"](_x1 + 0.5, _y1 + 0.5, _x2 + 0.5, _y2 + 0.5, _x3 + 0.5, _y3 + 0.5);
         }
-
-        this.Native["_c"](x1, y1, x2, y2, x3, y3);
     },
     _c2 : function(x1, y1, x2, y2)
     {
          if (false === this.m_bIntegerGrid)
          {
-             this.m_oContext.quadraticCurveTo(x1,y1,x2,y2);
+             this.Native["_c2"](x1, y1, x2, y2);
 
              if (this.ArrayPoints != null)
              {
@@ -897,49 +896,34 @@ CNativeGraphics.prototype =
          }
         else
         {
-            var _x1 = (this.m_oFullTransform.TransformPointX(x1,y1)) >> 0;
-            var _y1 = (this.m_oFullTransform.TransformPointY(x1,y1)) >> 0;
+            var _x1 = (this.m_oFullTransform.TransformPointX(x1, y1)) >> 0;
+            var _y1 = (this.m_oFullTransform.TransformPointY(x1, y1)) >> 0;
 
-            var _x2 = (this.m_oFullTransform.TransformPointX(x2,y2)) >> 0;
-            var _y2 = (this.m_oFullTransform.TransformPointY(x2,y2)) >> 0;
+            var _x2 = (this.m_oFullTransform.TransformPointX(x2, y2)) >> 0;
+            var _y2 = (this.m_oFullTransform.TransformPointY(x2, y2)) >> 0;
 
-            this.m_oContext.quadraticCurveTo(_x1 + 0.5,_y1 + 0.5,_x2 + 0.5,_y2 + 0.5);
+            this.Native["_c2"](_x1 + 0.5, _y1 + 0.5, _x2 + 0.5, _y2 + 0.5);
         }
-
-        this.Native["_c2"](x1, y1, x2, y2);
     },
     ds : function()
     {
-        this.m_oContext.stroke();
-
         this.Native["ds"]();
     },
     df : function()
     {
-        this.m_oContext.fill();
-
         this.Native["df"]();
     },
     // canvas state
     save : function()
     {
-        this.m_oContext.save();
-
         this.Native["save"]();
     },
     restore : function()
     {
-        this.m_oContext.restore();
-
-        this.m_bPenColorInit = false;
-        this.m_bBrushColorInit = false;
-
         this.Native["restore"]();
     },
     clip : function()
     {
-        this.m_oContext.clip();
-
         this.Native["clip"]();
     },
     reset : function()
@@ -948,372 +932,49 @@ CNativeGraphics.prototype =
         this.CalculateFullTransform(false);
 
         if (!this.m_bIntegerGrid)
-            this.m_oContext.setTransform(this.m_oCoordTransform.sx,0,0,this.m_oCoordTransform.sy,0, 0);
+            this.Native["transform"](this.m_oCoordTransform.sx, 0, 0, this.m_oCoordTransform.sy, 0, 0);
 
         this.Native["reset"]();
     },
     transform3 : function(m, isNeedInvert)
     {
-        var _t = this.m_oTransform;
-        _t.sx = m.sx;
-        _t.shx = m.shx;
-        _t.shy = m.shy;
-        _t.sy = m.sy;
-        _t.tx = m.tx;
-        _t.ty = m.ty;
-        this.CalculateFullTransform(isNeedInvert);
-
-        if (!this.m_bIntegerGrid)
-        {
-            var _ft = this.m_oFullTransform;
-            this.m_oContext.setTransform(_ft.sx,_ft.shy,_ft.shx,_ft.sy,_ft.tx,_ft.ty);
-        }
-        else
-        {
-            this.SetIntegerGrid(false);
-        }
-
-        // теперь трансформ выставляется ТОЛЬКО при загрузке шрифта. Здесь другого быть и не может
+        this.Native["transform3"](m.sx, m.shy, m.shx, m.sy, m.tx, m.ty, isNeedInvert);
         /*
         if (null != this.m_oFontManager && false !== isNeedInvert)
         {
-		    this.m_oFontManager.SetTextMatrix(this.m_oTransform.sx,this.m_oTransform.shy,this.m_oTransform.shx,
-                this.m_oTransform.sy,this.m_oTransform.tx,this.m_oTransform.ty);
+		    this.m_oFontManager.SetTextMatrix(this.m_oTransform.sx, this.m_oTransform.shy, this.m_oTransform.shx,
+                                              this.m_oTransform.sy, this.m_oTransform.tx,  this.m_oTransform.ty);
         }
         */
-
-        this.Native["transform3"](m, isNeedInvert);
     },
     FreeFont : function()
     {
-        // это чтобы не сбросился кэш при отрисовке следующего шейпа
-        this.m_oFontManager.m_pFont = null;
-
         this.Native["FreeFont"]();
     },
     ClearLastFont : function()
     {
-        this.m_oLastFont    = new AscCommon.CFontSetup();
-        this.m_oLastFont2   = null;
+        this.m_oLastFont  = new AscCommon.CFontSetup();
+        this.m_oLastFont2 = null;
 
         this.Native["ClearLastFont"]();
     },
     // images
     drawImage2 : function(img, x, y, w, h, alpha, srcRect)
     {
-        if (srcRect)
-        {
-            // test on need draw:
-            if (srcRect.l >= 100 || srcRect.t >= 100)
-                return;
-			if (srcRect.r <= 0 || srcRect.b <= 0)
-				return;
-        }
-
-        var isA = (undefined !== alpha && null != alpha && 255 != alpha);
-        var _oldGA = 0;
-        if (isA)
-        {
-            _oldGA = this.m_oContext.globalAlpha;
-            this.m_oContext.globalAlpha = alpha / 255;
-        }
-
-        if (false === this.m_bIntegerGrid)
-        {
-            if (!srcRect)
-            {
-                // тут нужно проверить, можно ли нарисовать точно. т.е. может картинка ровно такая, какая нужна.
-                if (!global_MatrixTransformer.IsIdentity2(this.m_oTransform))
-                {
-                    this.m_oContext.drawImage(img,x,y,w,h);
-                }
-                else
-                {
-                    var xx = this.m_oFullTransform.TransformPointX(x, y);
-                    var yy = this.m_oFullTransform.TransformPointY(x, y);
-                    var rr = this.m_oFullTransform.TransformPointX(x + w, y + h);
-                    var bb = this.m_oFullTransform.TransformPointY(x + w, y + h);
-                    var ww = rr - xx;
-                    var hh = bb - yy;
-
-                    if (Math.abs(img.width - ww) < 2 && Math.abs(img.height - hh) < 2)
-                    {
-                        // рисуем точно
-                        this.m_oContext.setTransform(1, 0, 0, 1, 0, 0);
-                        this.m_oContext.drawImage(img, xx >> 0, yy >> 0);
-
-                        var _ft = this.m_oFullTransform;
-                        this.m_oContext.setTransform(_ft.sx,_ft.shy,_ft.shx,_ft.sy,_ft.tx,_ft.ty);
-
-                    }
-                    else
-                    {
-                        this.m_oContext.drawImage(img,x,y,w,h);
-                    }
-                }
-            }
-            else
-            {
-                var _w = img.width;
-                var _h = img.height;
-                if (_w > 0 && _h > 0)
-                {
-                    var _sx = 0;
-                    var _sy = 0;
-                    var _sr = _w;
-                    var _sb = _h;
-
-                    var _l = srcRect.l;
-                    var _t = srcRect.t;
-                    var _r = 100 - srcRect.r;
-                    var _b = 100 - srcRect.b;
-
-                    _sx += _l * _w / 100;
-                    _sr -= _r * _w / 100;
-                    _sy += _t * _h / 100;
-                    _sb -= _b * _h / 100;
-
-                    var naturalW = _w;
-                    naturalW -= _sx;
-                    naturalW += (_sr - _w);
-
-                    var naturalH = _h;
-                    naturalH -= _sy;
-                    naturalH += (_sb - _h);
-
-                    var tmpW = w;
-                    var tmpH = h;
-                    if (_sx < 0)
-                    {
-                        x += (-_sx * tmpW / naturalW);
-                        w -= (-_sx * tmpW / naturalW);
-                        _sx = 0;
-                    }
-                    if (_sy < 0)
-                    {
-                        y += (-_sy * tmpH / naturalH);
-                        h -= (-_sy * tmpH / naturalH);
-                        _sy = 0;
-                    }
-                    if (_sr > _w)
-                    {
-                        w -= ((_sr - _w) * tmpW / naturalW);
-                        _sr = _w;
-                    }
-                    if (_sb > _h)
-                    {
-                        h -= ((_sb - _h) * tmpH / naturalH);
-                        _sb = _h;
-                    }
-
-                    if (_sx >= _sr || _sx >= _w || _sr <= 0 || w <= 0)
-                        return;
-                    if (_sy >= _sb || _sy >= _h || _sb <= 0 || h <= 0)
-                        return;
-
-                    this.m_oContext.drawImage(img,_sx,_sy,_sr-_sx,_sb-_sy,x,y,w,h);
-                }
-                else
-                {
-                    this.m_oContext.drawImage(img,x,y,w,h);
-                }
-            }
-        }
-        else
-        {
-            var _x1 = (this.m_oFullTransform.TransformPointX(x,y)) >> 0;
-            var _y1 = (this.m_oFullTransform.TransformPointY(x,y)) >> 0;
-            var _x2 = (this.m_oFullTransform.TransformPointX(x+w,y+h)) >> 0;
-            var _y2 = (this.m_oFullTransform.TransformPointY(x+w,y+h)) >> 0;
-
-            x = _x1;
-            y = _y1;
-            w = _x2 - _x1;
-            h = _y2 - _y1;
-
-            if (!srcRect)
-            {
-                // тут нужно проверить, можно ли нарисовать точно. т.е. может картинка ровно такая, какая нужна.
-                if (!global_MatrixTransformer.IsIdentity2(this.m_oTransform))
-                {
-                    this.m_oContext.drawImage(img,_x1,_y1,w,h);
-                }
-                else
-                {
-                    if (Math.abs(img.width - w) < 2 && Math.abs(img.height - h) < 2)
-                    {
-                        // рисуем точно
-                        this.m_oContext.drawImage(img, x, y);
-                    }
-                    else
-                    {
-                        this.m_oContext.drawImage(img,_x1,_y1,w,h);
-                    }
-                }
-            }
-            else
-            {
-                var _w = img.width;
-                var _h = img.height;
-                if (_w > 0 && _h > 0)
-                {
-                    var __w = w;
-                    var __h = h;
-                    var _delW = Math.max(0, -srcRect.l) + Math.max(0, srcRect.r - 100) + 100;
-                    var _delH = Math.max(0, -srcRect.t) + Math.max(0, srcRect.b - 100) + 100;
-
-                    var _sx = 0;
-                    if (srcRect.l > 0 && srcRect.l < 100)
-                        _sx = Math.min((_w * srcRect.l / 100) >> 0, _w - 1);
-                    else if (srcRect.l < 0)
-                    {
-                        var _off = ((-srcRect.l / _delW) * __w);
-                        x += _off;
-                        w -= _off;
-                    }
-                    var _sy = 0;
-                    if (srcRect.t > 0 && srcRect.t < 100)
-                        _sy = Math.min((_h * srcRect.t / 100) >> 0, _h - 1);
-                    else if (srcRect.t < 0)
-                    {
-                        var _off = ((-srcRect.t / _delH) * __h);
-                        y += _off;
-                        h -= _off;
-                    }
-                    var _sr = _w;
-                    if (srcRect.r > 0 && srcRect.r < 100)
-                        _sr = Math.max(Math.min((_w * srcRect.r / 100) >> 0, _w - 1), _sx);
-                    else if (srcRect.r > 100)
-                    {
-                        var _off = ((srcRect.r - 100) / _delW) * __w;
-                        w -= _off;
-                    }
-                    var _sb = _h;
-                    if (srcRect.b > 0 && srcRect.b < 100)
-                        _sb = Math.max(Math.min((_h * srcRect.b / 100) >> 0, _h - 1), _sy);
-                    else if (srcRect.b > 100)
-                    {
-                        var _off = ((srcRect.b - 100) / _delH) * __h;
-                        h -= _off;
-                    }
-
-                    if ((_sr-_sx) > 0 && (_sb-_sy) > 0 && w > 0 && h > 0)
-                        this.m_oContext.drawImage(img,_sx,_sy,_sr-_sx,_sb-_sy,x,y,w,h);
-                }
-                else
-                {
-                    this.m_oContext.drawImage(img,x,y,w,h);
-                }
-            }
-        }
-
-        if (isA)
-        {
-            this.m_oContext.globalAlpha = _oldGA;
-        }
-
         this.Native["drawImage2"](img, x, y, w, h, alpha, srcRect);
     },
     drawImage : function(img, x, y, w, h, alpha, srcRect, nativeImage)
     {
-        if (nativeImage)
-        {
-            this.drawImage2(nativeImage,x,y,w,h,alpha,srcRect);
-            return;
-        }
-
-        var _img = editor.ImageLoader.map_image_index[img];
-        if (_img != undefined && _img.Status == AscFonts.ImageLoadStatus.Loading)
-        {
-            // TODO: IMAGE_LOADING
-        }
-        else if (_img != undefined && _img.Image != null)
-        {
-            this.drawImage2(_img.Image,x,y,w,h,alpha,srcRect);
-        }
-        else
-        {
-            var _x = x;
-            var _y = y;
-            var _r = x+w;
-            var _b = y+h;
-
-            var ctx = this.m_oContext;
-            var old_p = ctx.lineWidth;
-
-            var bIsNoIntGrid = false;
-
-            if (this.m_bIntegerGrid)
-            {
-                _x = (this.m_oFullTransform.TransformPointX(x,y) >> 0) + 0.5;
-                _y = (this.m_oFullTransform.TransformPointY(x,y) >> 0) + 0.5;
-                _r = (this.m_oFullTransform.TransformPointX(x+w,y+h) >> 0) + 0.5;
-                _b = (this.m_oFullTransform.TransformPointY(x+w,y+h) >> 0) + 0.5;
-
-                ctx.lineWidth = 1;
-            }
-            else
-            {
-                if (global_MatrixTransformer.IsIdentity2(this.m_oTransform))
-                {
-                    bIsNoIntGrid = true;
-
-                    this.SetIntegerGrid(true);
-                    _x = (this.m_oFullTransform.TransformPointX(x,y) >> 0) + 0.5;
-                    _y = (this.m_oFullTransform.TransformPointY(x,y) >> 0) + 0.5;
-                    _r = (this.m_oFullTransform.TransformPointX(x+w,y+h) >> 0) + 0.5;
-                    _b = (this.m_oFullTransform.TransformPointY(x+w,y+h) >> 0) + 0.5;
-
-                    ctx.lineWidth = 1;
-                }
-                else
-                {
-                    ctx.lineWidth = 1 / this.m_oCoordTransform.sx;
-                }
-            }
-
-            //ctx.strokeStyle = "#FF0000";
-            ctx.strokeStyle = "#F98C76";
-
-            ctx.beginPath();
-            ctx.moveTo(_x,_y);
-            ctx.lineTo(_r,_b);
-            ctx.moveTo(_r,_y);
-            ctx.lineTo(_x,_b);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.moveTo(_x,_y);
-            ctx.lineTo(_r,_y);
-            ctx.lineTo(_r,_b);
-            ctx.lineTo(_x,_b);
-            ctx.closePath();
-
-            ctx.stroke();
-            ctx.beginPath();
-
-            if (bIsNoIntGrid)
-                this.SetIntegerGrid(false);
-
-            ctx.lineWidth = old_p;
-            ctx.strokeStyle = "rgba(" + this.m_oPen.Color.R + "," + this.m_oPen.Color.G + "," +
-                this.m_oPen.Color.B + "," + (this.m_oPen.Color.A / 255) + ")";
-        }
-
         this.Native["drawImage"](img, x, y, w, h, alpha, srcRect, nativeImage);
     },
     // text
     GetFont : function()
     {
         this.Native["GetFont"]();
-
         return this.m_oCurFont;
     },
     font : function(font_id, font_size)
     {
-        AscFonts.g_font_infos[AscFonts.g_map_font_index[font_id]].LoadFont(editor.FontLoader, this.IsUseFonts2 ? this.m_oFontManager2 : this.m_oFontManager,
-            Math.max(font_size, 1), 0, this.m_dDpiX, this.m_dDpiY, this.m_oTransform);
-
         this.Native["font"](font_id, font_size);
     },
     SetFont : function(font)
@@ -1321,10 +982,17 @@ CNativeGraphics.prototype =
         if (null == font)
             return;
 
-        this.m_oCurFont.Name        = font.FontFamily.Name;
-        this.m_oCurFont.FontSize    = font.FontSize;
-        this.m_oCurFont.Bold        = font.Bold;
-        this.m_oCurFont.Italic      = font.Italic;
+        this.m_oCurFont =
+        {
+            FontFamily :
+            {
+                Index  : font.FontFamily.Index,
+                Name   : font.FontFamily.Name
+            },
+            FontSize   : font.FontSize,
+            Bold       : font.Bold,
+            Italic     : font.Italic
+        };
 
         var bItalic = true === font.Italic;
         var bBold   = true === font.Bold;
@@ -1337,29 +1005,16 @@ CNativeGraphics.prototype =
         else if ( bItalic && bBold )
             oFontStyle = FontStyle.FontStyleBoldItalic;
 
-        var _last_font = this.IsUseFonts2 ? this.m_oLastFont2 : this.m_oLastFont;
-        var _font_manager = this.IsUseFonts2 ? this.m_oFontManager2 : this.m_oFontManager;
+        var _fontinfo = AscFonts.g_fontApplication.GetFontInfo(font.FontFamily.Name, oFontStyle, this.LastFontOriginInfo);
+        var _info = GetLoadInfoForMeasurer(_fontinfo, oFontStyle);
 
-        _last_font.SetUpName = font.FontFamily.Name;
-        _last_font.SetUpSize = font.FontSize;
-        _last_font.SetUpStyle = oFontStyle;
+        var flag = 0;
+        if (_info.NeedBold)   flag |= 0x01;
+        if (_info.NeedItalic) flag |= 0x02;
+        if (_info.SrcBold)    flag |= 0x04;
+        if (_info.SrcItalic)  flag |= 0x08;
 
-        g_fontApplication.LoadFont(_last_font.SetUpName, AscCommon.g_font_loader, _font_manager, font.FontSize, oFontStyle, this.m_dDpiX, this.m_dDpiY, this.m_oTransform, this.LastFontOriginInfo);
-
-        var _mD = _last_font.SetUpMatrix;
-        var _mS = this.m_oTransform;
-
-        _mD.sx = _mS.sx;
-        _mD.sy = _mS.sy;
-        _mD.shx = _mS.shx;
-        _mD.shy = _mS.shy;
-        _mD.tx = _mS.tx;
-        _mD.ty = _mS.ty;
-
-        //_font_manager.SetTextMatrix(this.m_oTransform.sx,this.m_oTransform.shy,this.m_oTransform.shx,
-        //    this.m_oTransform.sy,this.m_oTransform.tx,this.m_oTransform.ty);
-
-        this.Native["SetFont"](font);
+        this.Native["SetFont"](_info.Path, _info.FaceIndex, font.FontSize, flag);
     },
     SetTextPr : function(textPr, theme)
     {
@@ -1368,7 +1023,6 @@ CNativeGraphics.prototype =
             this.m_oGrFonts.checkFromTheme(theme.themeElements.fontScheme, this.m_oTextPr.RFonts);
         else
             this.m_oGrFonts = this.m_oTextPr.RFonts;
-
         this.Native["SetTextPr"](textPr, theme);
     },
     SetFontSlot : function(slot, fontSizeKoef)
@@ -1381,8 +1035,8 @@ CNativeGraphics.prototype =
             case fontslot_ASCII:
             {
                 _lastFont.Name   = _rfonts.Ascii.Name;
-                _lastFont.Size = this.m_oTextPr.FontSize;
-                _lastFont.Bold = this.m_oTextPr.Bold;
+                _lastFont.Size   = this.m_oTextPr.FontSize;
+                _lastFont.Bold   = this.m_oTextPr.Bold;
                 _lastFont.Italic = this.m_oTextPr.Italic;
 
                 break;
@@ -1390,8 +1044,8 @@ CNativeGraphics.prototype =
             case fontslot_CS:
             {
                 _lastFont.Name   = _rfonts.CS.Name;
-                _lastFont.Size = this.m_oTextPr.FontSizeCS;
-                _lastFont.Bold = this.m_oTextPr.BoldCS;
+                _lastFont.Size   = this.m_oTextPr.FontSizeCS;
+                _lastFont.Bold   = this.m_oTextPr.BoldCS;
                 _lastFont.Italic = this.m_oTextPr.ItalicCS;
 
                 break;
@@ -1399,8 +1053,8 @@ CNativeGraphics.prototype =
             case fontslot_EastAsia:
             {
                 _lastFont.Name   = _rfonts.EastAsia.Name;
-                _lastFont.Size = this.m_oTextPr.FontSize;
-                _lastFont.Bold = this.m_oTextPr.Bold;
+                _lastFont.Size   = this.m_oTextPr.FontSize;
+                _lastFont.Bold   = this.m_oTextPr.Bold;
                 _lastFont.Italic = this.m_oTextPr.Italic;
 
                 break;
@@ -1409,8 +1063,8 @@ CNativeGraphics.prototype =
             default:
             {
                 _lastFont.Name   = _rfonts.HAnsi.Name;
-                _lastFont.Size = this.m_oTextPr.FontSize;
-                _lastFont.Bold = this.m_oTextPr.Bold;
+                _lastFont.Size   = this.m_oTextPr.FontSize;
+                _lastFont.Bold   = this.m_oTextPr.Bold;
                 _lastFont.Italic = this.m_oTextPr.Italic;
 
                 break;
@@ -1426,303 +1080,72 @@ CNativeGraphics.prototype =
         if (_lastFont.Bold)
             _style += 1;
 
-        var _font_manager = this.IsUseFonts2 ? this.m_oFontManager2 : this.m_oFontManager;
-
-        if (_lastFont.Name != _lastFont.SetUpName || _lastFont.Size != _lastFont.SetUpSize || _style != _lastFont.SetUpStyle || !_font_manager.m_pFont)
+        if (_lastFont.Name != _lastFont.SetUpName || _lastFont.Size != _lastFont.SetUpSize || _style != _lastFont.SetUpStyle)
         {
-            _lastFont.SetUpName = _lastFont.Name;
-            _lastFont.SetUpSize = _lastFont.Size;
+            _lastFont.SetUpName  = _lastFont.Name;
+            _lastFont.SetUpSize  = _lastFont.Size;
             _lastFont.SetUpStyle = _style;
 
-            g_fontApplication.LoadFont(_lastFont.SetUpName, AscCommon.g_font_loader, _font_manager, _lastFont.SetUpSize, _lastFont.SetUpStyle, this.m_dDpiX, this.m_dDpiY, this.m_oTransform, this.LastFontOriginInfo);
+            var _fontinfo = AscFonts.g_fontApplication.GetFontInfo(_lastFont.SetUpName, _lastFont.SetUpStyle, this.LastFontOriginInfo);
+            var _info = GetLoadInfoForMeasurer(_fontinfo, _lastFont.SetUpStyle);
 
-            var _mD = _lastFont.SetUpMatrix;
-            var _mS = this.m_oTransform;
-            _mD.sx = _mS.sx;
-            _mD.sy = _mS.sy;
-            _mD.shx = _mS.shx;
-            _mD.shy = _mS.shy;
-            _mD.tx = _mS.tx;
-            _mD.ty = _mS.ty;
+            var flag = 0;
+            if (_info.NeedBold)     flag |= 0x01;
+            if (_info.NeedItalic)   flag |= 0x02;
+            if (_info.SrcBold)      flag |= 0x04;
+            if (_info.SrcItalic)    flag |= 0x08;
+
+            this.Native["SetFontSlot"](_info.Path, _info.FaceIndex, _lastFont.SetUpSize, flag);
         }
-        else
-        {
-            var _mD = _lastFont.SetUpMatrix;
-            var _mS = this.m_oTransform;
-
-            if (_mD.sx != _mS.sx || _mD.sy != _mS.sy || _mD.shx != _mS.shx || _mD.shy != _mS.shy || _mD.tx != _mS.tx || _mD.ty != _mS.ty)
-            {
-                _mD.sx = _mS.sx;
-                _mD.sy = _mS.sy;
-                _mD.shx = _mS.shx;
-                _mD.shy = _mS.shy;
-                _mD.tx = _mS.tx;
-                _mD.ty = _mS.ty;
-
-                _font_manager.SetTextMatrix(_mD.sx,_mD.shy,_mD.shx,_mD.sy,_mD.tx,_mD.ty);
-            }
-        }
-
-        //_font_manager.SetTextMatrix(this.m_oTransform.sx,this.m_oTransform.shy,this.m_oTransform.shx,
-        //    this.m_oTransform.sy,this.m_oTransform.tx,this.m_oTransform.ty);
-
-        this.Native["SetFontSlot"](slot, fontSizeKoef);
     },
     GetTextPr : function()
     {
         this.Native["GetTextPr"]();
-
         return this.m_oTextPr;
     },
     FillText : function(x, y, text)
     {
-        // убыстеренный вариант. здесь везде заточка на то, что приходит одна буква
-        if (this.m_bIsBreak)
-            return;
+        var _code = text.charCodeAt(0);
+        if (null != this.LastFontOriginInfo.Replace)
+            _code = AscFonts.g_fontApplication.GetReplaceGlyph(_code, this.LastFontOriginInfo.Replace);
 
-        var _x = this.m_oInvertFullTransform.TransformPointX(x,y);
-        var _y = this.m_oInvertFullTransform.TransformPointY(x,y);
-
-        var _font_manager = this.IsUseFonts2 ? this.m_oFontManager2 : this.m_oFontManager;
-
-        try
-        {
-            var _code = text.charCodeAt(0);
-
-            if (null != this.LastFontOriginInfo.Replace)
-                _code = g_fontApplication.GetReplaceGlyph(_code, this.LastFontOriginInfo.Replace);
-
-            _font_manager.LoadString4C(_code,_x,_y);
-        }
-        catch(err)
-        {
-        }
-
-        if (false === this.m_bIntegerGrid)
-        {
-            this.m_oContext.setTransform(1,0,0,1,0,0);
-        }
-        var pGlyph = _font_manager.m_oGlyphString.m_pGlyphsBuffer[0];
-        if (null == pGlyph)
-            return;
-
-        if (null != pGlyph.oBitmap)
-        {
-            this.private_FillGlyph(pGlyph);
-        }
-        if (false === this.m_bIntegerGrid)
-        {
-            this.m_oContext.setTransform(this.m_oFullTransform.sx,this.m_oFullTransform.shy,this.m_oFullTransform.shx,
-                this.m_oFullTransform.sy,this.m_oFullTransform.tx,this.m_oFullTransform.ty);
-        }
-
-        this.Native["FillText"](x, y, text);
+        this.Native["FillText"](x, y, _code);
     },
     t : function(text, x, y, isBounds)
     {
-		if (this.m_bIsBreak)
-			return;
+		var _arr = [];
+        var _len = text.length;
+        for (var i = 0; i < _len; i++)
+            _arr.push(text.charCodeAt(i));
 
-		var _x = this.m_oInvertFullTransform.TransformPointX(x,y);
-		var _y = this.m_oInvertFullTransform.TransformPointY(x,y);
-
-        var _font_manager = this.IsUseFonts2 ? this.m_oFontManager2 : this.m_oFontManager;
-
-		try
-		{
-			_font_manager.LoadString2(text,_x,_y);
-		}
-		catch(err)
-		{
-		}
-
-	    this.m_oContext.setTransform(1,0,0,1,0,0);
-		var _bounds = isBounds ? {x:100000, y:100000, r:-100000, b:-100000} : null;
-        while (true)
-        {
-            var pGlyph = _font_manager.GetNextChar2();
-            if (null == pGlyph)
-                break;
-
-            if (null != pGlyph.oBitmap)
-            {
-                this.private_FillGlyph(pGlyph, _bounds);
-            }
-        }
-        if (false === this.m_bIntegerGrid)
-        {
-            this.m_oContext.setTransform(this.m_oFullTransform.sx,this.m_oFullTransform.shy,this.m_oFullTransform.shx,
-                this.m_oFullTransform.sy,this.m_oFullTransform.tx,this.m_oFullTransform.ty);
-        }
-
-        this.Native["t"](text, x, y, isBounds);
-
-        return _bounds;
+        this.Native["t"](x, y, _arr);
     },
     FillText2 : function(x, y, text, cropX, cropW)
     {
-        // убыстеренный вариант. здесь везде заточка на то, что приходит одна буква
-        if (this.m_bIsBreak)
-            return;
+        var _code = text.charCodeAt(0);
+        if (null != this.LastFontOriginInfo.Replace)
+            _code = AscFonts.g_fontApplication.GetReplaceGlyph(_code, this.LastFontOriginInfo.Replace);
 
-        var _x = this.m_oInvertFullTransform.TransformPointX(x,y);
-        var _y = this.m_oInvertFullTransform.TransformPointY(x,y);
-
-        var _font_manager = this.IsUseFonts2 ? this.m_oFontManager2 : this.m_oFontManager;
-
-        try
-        {
-            var _code = text.charCodeAt(0);
-
-            if (null != this.LastFontOriginInfo.Replace)
-                _code = g_fontApplication.GetReplaceGlyph(_code, this.LastFontOriginInfo.Replace);
-
-            _font_manager.LoadString4C(_code,_x,_y);
-        }
-        catch(err)
-        {
-        }
-
-        this.m_oContext.setTransform(1,0,0,1,0,0);
-        var pGlyph = _font_manager.m_oGlyphString.m_pGlyphsBuffer[0];
-        if (null == pGlyph)
-            return;
-
-        if (null != pGlyph.oBitmap)
-        {
-            this.private_FillGlyphC(pGlyph,cropX,cropW);
-        }
-        if (false === this.m_bIntegerGrid)
-        {
-            this.m_oContext.setTransform(this.m_oFullTransform.sx,this.m_oFullTransform.shy,this.m_oFullTransform.shx,
-                this.m_oFullTransform.sy,this.m_oFullTransform.tx,this.m_oFullTransform.ty);
-        }
-
-        this.Native["FillText2"](x, y, text, cropX, cropW);
+        this.Native["FillText2"](x, y, _code, cropX, cropW);
     },
     t2 : function(text, x, y, cropX, cropW)
     {
-        if (this.m_bIsBreak)
-            return;
+        var _arr = [];
+        var _len = text.length;
+        for (var i = 0; i < _len; i++)
+            _arr.push(text.charCodeAt(i));
 
-        var _x = this.m_oInvertFullTransform.TransformPointX(x,y);
-        var _y = this.m_oInvertFullTransform.TransformPointY(x,y);
-
-        var _font_manager = this.IsUseFonts2 ? this.m_oFontManager2 : this.m_oFontManager;
-
-        try
-        {
-            _font_manager.LoadString2(text,_x,_y);
-        }
-        catch(err)
-        {
-        }
-
-        this.m_oContext.setTransform(1,0,0,1,0,0);
-        while (true)
-        {
-            var pGlyph = _font_manager.GetNextChar2();
-            if (null == pGlyph)
-                break;
-
-            if (null != pGlyph.oBitmap)
-            {
-                this.private_FillGlyphC(pGlyph,cropX,cropW);
-            }
-        }
-
-        if (false === this.m_bIntegerGrid)
-        {
-            this.m_oContext.setTransform(this.m_oFullTransform.sx,this.m_oFullTransform.shy,this.m_oFullTransform.shx,
-                this.m_oFullTransform.sy,this.m_oFullTransform.tx,this.m_oFullTransform.ty);
-        }
-
-        this.Native["t2"](text, x, y, cropX, cropW);
+        this.Native["t2"](x, y, _arr, cropX, cropW);
     },
     FillTextCode : function(x, y, lUnicode)
     {
-        // убыстеренный вариант. здесь везде заточка на то, что приходит одна буква
-        if (this.m_bIsBreak)
-            return;
-
-        var _x = this.m_oInvertFullTransform.TransformPointX(x,y);
-        var _y = this.m_oInvertFullTransform.TransformPointY(x,y);
-
-        var _font_manager = this.IsUseFonts2 ? this.m_oFontManager2 : this.m_oFontManager;
-
-        try
-        {
-            if (null != this.LastFontOriginInfo.Replace)
-                lUnicode = g_fontApplication.GetReplaceGlyph(lUnicode, this.LastFontOriginInfo.Replace);
-
-            _font_manager.LoadString4C(lUnicode,_x,_y);
-        }
-        catch(err)
-        {
-        }
-
-        if (false === this.m_bIntegerGrid)
-        {
-            this.m_oContext.setTransform(1,0,0,1,0,0);
-        }
-        var pGlyph = _font_manager.m_oGlyphString.m_pGlyphsBuffer[0];
-        if (null == pGlyph)
-            return;
-
-        if (null != pGlyph.oBitmap)
-        {
-            this.private_FillGlyph(pGlyph);
-        }
-        if (false === this.m_bIntegerGrid)
-        {
-            this.m_oContext.setTransform(this.m_oFullTransform.sx,this.m_oFullTransform.shy,this.m_oFullTransform.shx,
-                this.m_oFullTransform.sy,this.m_oFullTransform.tx,this.m_oFullTransform.ty);
-        }
+        if (null != this.LastFontOriginInfo.Replace)
+            lUnicode = AscFonts.g_fontApplication.GetReplaceGlyph(lUnicode, this.LastFontOriginInfo.Replace);
 
         this.Native["FillTextCode"](x, y, lUnicode);
     },
     tg : function(text, x, y)
     {
-        if (this.m_bIsBreak)
-            return;
-
-        var _x = this.m_oInvertFullTransform.TransformPointX(x,y);
-        var _y = this.m_oInvertFullTransform.TransformPointY(x,y);
-
-        var _font_manager = this.IsUseFonts2 ? this.m_oFontManager2 : this.m_oFontManager;
-
-        try
-        {
-            _font_manager.LoadString3C(text,_x,_y);
-        }
-        catch(err)
-        {
-        }
-
-        if (false === this.m_bIntegerGrid)
-        {
-            this.m_oContext.setTransform(1,0,0,1,0,0);
-        }
-        var pGlyph = _font_manager.m_oGlyphString.m_pGlyphsBuffer[0];
-        if (null == pGlyph)
-            return;
-
-        if (null != pGlyph.oBitmap)
-        {
-            var _a = this.m_oBrush.Color1.A;
-            if (255 != _a)
-                this.m_oContext.globalAlpha = _a / 255;
-            this.private_FillGlyph(pGlyph);
-
-            if (255 != _a)
-                this.m_oContext.globalAlpha = 1.0;
-        }
-        if (false === this.m_bIntegerGrid)
-        {
-            this.m_oContext.setTransform(this.m_oFullTransform.sx,this.m_oFullTransform.shy,this.m_oFullTransform.shx,
-                this.m_oFullTransform.sy,this.m_oFullTransform.tx,this.m_oFullTransform.ty);
-        }
-
         this.Native["tg"](text, x, y);
     },
     charspace : function(space)
@@ -1793,7 +1216,6 @@ CNativeGraphics.prototype =
 
         this.Native["private_FillGlyphC"](pGlyph, cropX, cropW);
     },
-
     private_FillGlyph2 : function(pGlyph)
     {
         var i = 0;
@@ -1853,24 +1275,12 @@ CNativeGraphics.prototype =
     },
     SetIntegerGrid : function(param)
     {
-        if (true == param)
-        {
-            this.m_bIntegerGrid = true;
-            this.m_oContext.setTransform(1,0,0,1,0,0);
-        }
-        else
-        {
-            this.m_bIntegerGrid = false;
-            this.m_oContext.setTransform(this.m_oFullTransform.sx,this.m_oFullTransform.shy,this.m_oFullTransform.shx,
-                this.m_oFullTransform.sy,this.m_oFullTransform.tx,this.m_oFullTransform.ty);
-        }
-
+        this.m_bIntegerGrid = true;
         this.Native["SetIntegerGrid"](param);
     },
     GetIntegerGrid : function()
     {
         this.Native["GetIntegerGrid"]();
-
         return this.m_bIntegerGrid;
     },
     DrawStringASCII : function(name, size, bold, italic, text, x, y, bIsHeader)

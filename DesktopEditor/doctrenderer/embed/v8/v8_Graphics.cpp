@@ -86,7 +86,7 @@ namespace NSGraphics
     FUNCTION_WRAPPER_V8  (_restore,       restore)
     FUNCTION_WRAPPER_V8  (_clip,          clip)
     FUNCTION_WRAPPER_V8  (_reset,         reset)
-    FUNCTION_WRAPPER_V8_2(_transform3,    transform3)
+    FUNCTION_WRAPPER_V8_7(_transform3,    transform3)
     FUNCTION_WRAPPER_V8  (_FreeFont,      FreeFont)
     FUNCTION_WRAPPER_V8  (_ClearLastFont, ClearLastFont)
     // images
@@ -95,12 +95,12 @@ namespace NSGraphics
     // text
     FUNCTION_WRAPPER_V8  (_GetFont,      GetFont)
     FUNCTION_WRAPPER_V8_2(_font,         font)
-    FUNCTION_WRAPPER_V8_1(_SetFont,      SetFont)
+    FUNCTION_WRAPPER_V8_4(_SetFont,      SetFont)
     FUNCTION_WRAPPER_V8_2(_SetTextPr,    SetTextPr)
-    FUNCTION_WRAPPER_V8_2(_SetFontSlot,  SetFontSlot)
+    FUNCTION_WRAPPER_V8_4(_SetFontSlot,  SetFontSlot)
     FUNCTION_WRAPPER_V8  (_GetTextPr,    GetTextPr)
     FUNCTION_WRAPPER_V8_3(_FillText,     FillText)
-    FUNCTION_WRAPPER_V8_4(_t,            t)
+    FUNCTION_WRAPPER_V8_3(_t,            t)
     FUNCTION_WRAPPER_V8_5(_FillText2,    FillText2)
     FUNCTION_WRAPPER_V8_5(_t2,           t2)
     FUNCTION_WRAPPER_V8_3(_FillTextCode, FillTextCode)
@@ -159,6 +159,7 @@ namespace NSGraphics
     FUNCTION_WRAPPER_V8_3(_DrawPolygon,              DrawPolygon)
     FUNCTION_WRAPPER_V8_4(_DrawFootnoteRect,         DrawFootnoteRect)
 
+    /*
     // PROPERTY GET
     PROPERTY_GET_OBJECT(_g_m_oContext,             g_m_oContext)
     PROPERTY_GET_OBJECT(_g_m_oPen,                 g_m_oPen)
@@ -242,6 +243,7 @@ namespace NSGraphics
     PROPERTY_SET_INT(_s_TextureFillTransformScaleX, s_TextureFillTransformScaleX)
     PROPERTY_SET_INT(_s_TextureFillTransformScaleY, s_TextureFillTransformScaleY)
     PROPERTY_SET_INT(_s_globalAlpha,                s_globalAlpha)
+    */
 
     v8::Handle<v8::ObjectTemplate> CreateGraphicsTemplate(v8::Isolate* isolate)
     {
@@ -252,6 +254,7 @@ namespace NSGraphics
 
         v8::Isolate* current = v8::Isolate::GetCurrent();
 
+        /*
         // свойства
         result->SetAccessor(v8::String::NewFromUtf8(current, "m_oContext"),                 _g_m_oContext,                 _s_m_oContext);
         result->SetAccessor(v8::String::NewFromUtf8(current, "m_dWidthMM"),                 _g_m_dWidthMM,                 _s_m_dWidthMM);
@@ -293,6 +296,7 @@ namespace NSGraphics
         result->SetAccessor(v8::String::NewFromUtf8(current, "ClearMode"),                  _g_ClearMode,                  _s_ClearMode);
         result->SetAccessor(v8::String::NewFromUtf8(current, "IsRetina"),                   _g_IsRetina,                   _s_IsRetina);
         result->SetAccessor(v8::String::NewFromUtf8(current, "dash_no_smart"),              _g_dash_no_smart,              _s_dash_no_smart);
+        */
 
         // методы
         NSV8Objects::Template_Set(result, "init",                     _init);

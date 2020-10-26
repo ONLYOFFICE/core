@@ -5,9 +5,7 @@
 #include <vector>
 
 #include "../common/Types.h"
-#include "../graphics/Graphics.h"
 #include "../graphics/GraphicsRenderer.h"
-#include "../raster/BgraFrame.h"
 
 #include "v8.h"
 #include "libplatform/libplatform.h"
@@ -129,7 +127,10 @@ namespace NSGraphics
     {
     private:
         CGraphicsRenderer* pRenderer;
-        CBgraFrame* pFrame;
+        std::wstring m_sFontsDirectory;
+        std::wstring m_sImagesDirectory;
+        std::wstring m_sThemesDirectory;
+
     private:
         v8::Local<v8::Value>* m_oContext;
         double m_dWidthMM;
@@ -296,38 +297,36 @@ namespace NSGraphics
         void ds();
         void df();
         // canvas state
-        void save();
+        void save() {}
         void restore();
         void clip();
         void reset();
-        void transform3(const v8::Local<v8::Value>& m, bool isNeedInvert);
-        void FreeFont();
-        void ClearLastFont();
+        void transform3(double sx, double shy, double shx, double sy, double tx, double ty, bool isNeedInvert);
+        void FreeFont() {}
+        void ClearLastFont() {}
         // images
-        void drawImage2(const v8::Local<v8::Value>& img, double x, double y, double w, double h, int alpha, const v8::Local<v8::Value>& srcRect);
-        void drawImage(const v8::Local<v8::Value>& img, double x, double y, double w, double h, int alpha, const v8::Local<v8::Value>& srcRect, const v8::Local<v8::Value>& nativeImage);
+        void drawImage(const std::wstring& img, double x, double y, double w, double h, BYTE alpha);
         // text
-        CFont GetFont();
-        void font(int font_id, int font_size);
-        void SetFont(const v8::Local<v8::Value>& font);
-        void SetTextPr(const v8::Local<v8::Value>& textPr, const v8::Local<v8::Value>& theme);
-        void SetFontSlot(const v8::Local<v8::Value>& slot, double fontSizeKoef);
-        v8::Local<v8::Value> GetTextPr();
-        void FillText(double x, double y, const v8::Local<v8::Value>& text);
-        void t(const v8::Local<v8::Value>& text, double x, double y, bool isBounds);
-        void FillText2(double x, double y, const v8::Local<v8::Value>& text, double cropX, double cropW);
-        void t2(const v8::Local<v8::Value>& text, double x, double y, double cropX, double cropW);
-        void FillTextCode(double x, double y, const v8::Local<v8::Value>& lUnicode);
-        void tg(const v8::Local<v8::Value>& text, double x, double y);
-        void charspace(const v8::Local<v8::Value>& space) {}
+        void GetFont() {}
+        void font(int font_id, int font_size) {}
+        void SetFont(const std::wstring& path, int face, double size, int style);
+        void SetTextPr() {}
+        void GetTextPr() {}
+        void FillText(double x, double y, int text);
+        void t() {}
+        void FillText2(double x, double y, int text, double cropX, double cropW);
+        void t2() {}
+        void FillTextCode(double x, double y, int lUnicode);
+        void tg(int text, double x, double y);
+        void charspace() {}
         // private methods
-        void private_FillGlyph(const v8::Local<v8::Value>& pGlyph, const v8::Local<v8::Value>& _bounds);
-        void private_FillGlyphC(const v8::Local<v8::Value>& pGlyph, double cropX, double cropW);
-        void private_FillGlyph2(const v8::Local<v8::Value>& pGlyph);
+        void private_FillGlyph()  {}
+        void private_FillGlyphC() {}
+        void private_FillGlyph2() {}
         void SetIntegerGrid(bool param);
-        bool GetIntegerGrid();
-        void DrawStringASCII(const std::string& name, int size, bool bold, bool italic, const v8::Local<v8::Value>& text, double x, double y, bool bIsHeader);
-        void DrawStringASCII2(const std::string& name, int size, bool bold, bool italic, const v8::Local<v8::Value>& text, double x, double y, bool bIsHeader);
+        bool GetIntegerGrid() {}
+        void DrawStringASCII() {}
+        void DrawStringASCII2() {}
         void DrawHeaderEdit(double yPos, const v8::Local<v8::Value>& lock_type, int sectionNum, bool bIsRepeat, const v8::Local<v8::Value>& type);
         void DrawFooterEdit(double yPos, const v8::Local<v8::Value>& lock_type, int sectionNum, bool bIsRepeat, const v8::Local<v8::Value>& type);
         void DrawLockParagraph(const v8::Local<v8::Value>& lock_type, double x, double y1, double y2);
@@ -373,6 +372,7 @@ namespace NSGraphics
         void DrawPolygon(const v8::Local<v8::Value>& oPath, int lineWidth, double shift);
         void DrawFootnoteRect(double x, double y, double w, double h);
 
+        /*
         v8::Local<v8::Value>* g_m_oContext()             { return m_oContext;             }
         v8::Local<v8::Value>* g_m_oPen()                 { return m_oPen;                 }
         v8::Local<v8::Value>* g_m_oBrush()               { return m_oBrush;               }
@@ -454,6 +454,7 @@ namespace NSGraphics
         void s_TextureFillTransformScaleX(int a) { TextureFillTransformScaleX = a; }
         void s_TextureFillTransformScaleY(int a) { TextureFillTransformScaleY = a; }
         void s_globalAlpha               (int a) { globalAlpha                = a; }
+        */
     };
 }
 

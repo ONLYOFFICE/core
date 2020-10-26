@@ -57,6 +57,7 @@ namespace NSGraphics
     #define CURRENTWRAPPER CGraphicsEmbed
 
     // FUNCTION
+    FUNCTION_WRAPPER_V8_5(_init,              init)
     FUNCTION_WRAPPER_V8  (_EndDraw,           EndDraw)
     FUNCTION_WRAPPER_V8_2(_put_GlobalAlpha,   put_GlobalAlpha)
     FUNCTION_WRAPPER_V8  (_Start_GlobalAlpha, Start_GlobalAlpha)
@@ -294,6 +295,7 @@ namespace NSGraphics
         result->SetAccessor(v8::String::NewFromUtf8(current, "dash_no_smart"),              _g_dash_no_smart,              _s_dash_no_smart);
 
         // методы
+        NSV8Objects::Template_Set(result, "init",                     _init);
         NSV8Objects::Template_Set(result, "EndDraw",                  _EndDraw);
         NSV8Objects::Template_Set(result, "put_GlobalAlpha",          _put_GlobalAlpha);
         NSV8Objects::Template_Set(result, "Start_GlobalAlpha",        _Start_GlobalAlpha);

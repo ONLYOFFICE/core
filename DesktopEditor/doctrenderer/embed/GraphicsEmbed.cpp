@@ -1,5 +1,10 @@
 #include "GraphicsEmbed.h"
 
+JSSmart<CJSValue> CGraphicsEmbed::init(JSSmart<CJSValue> context, JSSmart<CJSValue> width_px, JSSmart<CJSValue> height_px, JSSmart<CJSValue> width_mm, JSSmart<CJSValue> height_mm)
+{
+    m_pInternal->init(width_px->toDouble(), height_px->toDouble(), width_mm->toDouble(), height_mm->toDouble());
+    return NULL;
+}
 JSSmart<CJSValue> CGraphicsEmbed::EndDraw()
 {
     m_pInternal->EndDraw();
@@ -27,12 +32,20 @@ JSSmart<CJSValue> CGraphicsEmbed::p_color(JSSmart<CJSValue> r, JSSmart<CJSValue>
 }
 JSSmart<CJSValue> CGraphicsEmbed::p_width(JSSmart<CJSValue> w)
 {
-    m_pInternal->p_width(w->toInt32());
+    m_pInternal->p_width(w->toDouble());
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::p_dash(JSSmart<CJSValue> params)
 {
-    //m_pInternal->p_dash(params->toObject());
+    JSSmart<CJSArray> items = params->toArray();
+    size_t length = items->getCount();
+    double* dash = NULL;
+    if(length > 0)
+        dash = new double[length];
+    for(size_t i = 0; i < length; i++)
+        dash[i] = items->get(i)->toDouble();
+    m_pInternal->p_dash(length, dash);
+    RELEASEARRAYOBJECTS(dash);
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::b_color1(JSSmart<CJSValue> r, JSSmart<CJSValue> g, JSSmart<CJSValue> b, JSSmart<CJSValue> a)

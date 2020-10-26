@@ -5,246 +5,109 @@
 
 namespace NSGraphics
 {
+void CGraphics::init(double width_px, double height_px, double width_mm, double height_mm)
+{
+
+}
+
 void CGraphics::put_GlobalAlpha(bool enable, double alpha)
 {
-    if(!enable)
-    {
-        globalAlpha = 1;
-        // m_oContext.globalAlpha = 1;
-    }
-    else
-    {
-        globalAlpha = alpha;
-        // m_oContext.globalAlpha = alpha;
-    }
+    pRenderer->put_GlobalAlphaEnabled(enable, alpha);
 }
 
 void CGraphics::End_GlobalAlpha()
 {
-    if (!m_bIntegerGrid)
-    {
-        // m_oContext.setTransform(1,0,0,1,0,0);
-    }
+    bool bIsInteger = pRenderer->get_IntegerGrid();
+    pRenderer->put_IntegerGrid(true);
 
-    // ДРУГОЙ МЕТОД КЛАССА
-    // b_color1(255, 255, 255, 140);
+    pRenderer->PathCommandEnd();
+    b_color1(255, 255, 255, 140);
 
-    // m_oContext.fillRect(0, 0, m_lWidthPix, m_lHeightPix);
-    // m_oContext.beginPath();
+    pRenderer->AddRect(0.0, 0.0, pRenderer->GetPixW(), pRenderer->GetPixH());
+    pRenderer->Fill();
+    pRenderer->PathCommandEnd();
 
-    if (!m_bIntegerGrid)
-    {
-        /*
-        m_oContext.setTransform(m_oFullTransform.sx, m_oFullTransform.shy, m_oFullTransform.shx,
-                                m_oFullTransform.sy, m_oFullTransform.tx, m_oFullTransform.ty);
-        */
-    }
+    pRenderer->put_IntegerGrid(bIsInteger);
 }
 
 void CGraphics::p_color(int r, int g, int b, int a)
 {
-    /*
-    var _c = m_oPen.Color;
-    if (m_bPenColorInit && _c.R == r && _c.G == g && _c.B == b && _c.A == a)
-        return;
-
-    m_bPenColorInit = true;
-    _c.R = r;
-    _c.G = g;
-    _c.B = b;
-    _c.A = a;
-
-    m_oContext.strokeStyle = "rgba(" + std::to_string(_c.R) + "," + std::to_string(_c.G) + "," + std::to_string(_c.B) +
-                             "," + std::to_string(static_cast<int>(static_cast<double>(_c.A) / 255.0)) + ")";
-    */
+    pRenderer->put_PenColor(r | (g << 8) | (b << 16));
+    pRenderer->put_PenAlpha(a);
 }
 
-void CGraphics::p_width(int w)
+void CGraphics::p_width(double w)
 {
-    // m_oPen.LineWidth = static_cast<int>(static_cast<double>(w) / 1000.0);
+    pRenderer->put_PenSize(w / 1000.0);
+}
 
-    if (!m_bIntegerGrid)
+void CGraphics::p_dash(size_t length, double* dash)
+{
+    if(length > 0)
     {
-        /*
-        if (0 != m_oPen.LineWidth)
-        {
-            m_oContext.lineWidth = m_oPen.LineWidth;
-        }
-        else
-        {
-            double _x1 = m_oFullTransform.TransformPointX(0, 0);
-            double _y1 = m_oFullTransform.TransformPointY(0, 0);
-            double _x2 = m_oFullTransform.TransformPointX(1, 1);
-            double _y2 = m_oFullTransform.TransformPointY(1, 1);
+        for(size_t i = 0; i < length; i++)
+            dash[i] = dash[i] * 72.0 / 25.4 * 2;
 
-            double _koef = sqrt(((_x2 - _x1) * (_x2 - _x1) + (_y2 - _y1) * (_y2 - _y1)) / 2);
-            m_oContext.lineWidth = static_cast<int>(1.0 / _koef);
-        }
-        */
+        pRenderer->put_PenDashStyle(Aggplus::DashStyleCustom);
+        pRenderer->PenDashPattern(dash, length);
     }
     else
-    {
-        /*
-        if (0 != m_oPen.LineWidth)
-        {
-            v8::Local<v8::Value> _m = m_oFullTransform;
-            double x = _m.sx + _m.shx;
-            double y = _m.sy + _m.shy;
-
-            double koef = sqrt((x * x + y * y) / 2);
-            m_oContext.lineWidth = static_cast<int>(m_oPen.LineWidth * koef);
-        }
-        else
-        {
-            m_oContext.lineWidth = 1;
-        }
-        */
-    }
-}
-
-void CGraphics::p_dash(const v8::Local<v8::Value>& params)
-{
-    /*
-    if (!m_oContext.setLineDash)
-        return;
-
-    dash_no_smart = params ? params.slice() : null;
-    m_oContext.setLineDash(params ? params : []);
-    */
+        pRenderer->put_PenDashStyle(Aggplus::DashStyleSolid);
 }
 
 void CGraphics::b_color1(int r, int g, int b, int a)
-{
-    /*
-    var _c = m_oBrush.Color1;
-    if (m_bBrushColorInit && _c.R == r && _c.G == g && _c.B == b && _c.A == a)
-        return;
-
-    m_bBrushColorInit = true;
-
-    _c.R = r;
-    _c.G = g;
-    _c.B = b;
-    _c.A = a;
-
-    m_oContext.fillStyle = "rgba(" + std::to_string(_c.R) + "," + std::to_string(_c.G) + "," + std::to_string(_c.B) +
-                           "," + std::to_string(static_cast<int>(static_cast<double>(_c.A) / 255.0)) + ")";
-    */
+{    
+    pRenderer->put_BrushType(c_BrushTypeSolid);
+    pRenderer->put_BrushColor1(r | (g << 8) | (b << 16));
+    pRenderer->put_BrushAlpha1(a);
 }
 
 void CGraphics::b_color2(int r, int g, int b, int a)
 {
-    /*
-    var _c = m_oBrush.Color2;
-    _c.R = r;
-    _c.G = g;
-    _c.B = b;
-    _c.A = a;
-    */
+    pRenderer->put_BrushColor2(r | (g << 8) | (b << 16));
+    pRenderer->put_BrushAlpha2(a);
 }
 
 void CGraphics::transform(double sx, double shy, double shx, double sy, double tx, double ty)
 {
-    /*
-    v8::Local<v8::Value> _t = m_oTransform;
-    _t.sx    = sx;
-    _t.shx   = shx;
-    _t.shy   = shy;
-    _t.sy    = sy;
-    _t.tx    = tx;
-    _t.ty    = ty;
-
-    CalculateFullTransform();
-    if (!m_bIntegerGrid)
-    {
-        v8::Local<v8::Value> _ft = m_oFullTransform;
-        m_oContext.setTransform(_ft.sx, _ft.shy, _ft.shx, _ft.sy, _ft.tx, s_ft.ty);
-    }
-
-    if (NULL != m_oFontManager)
-        m_oFontManager.SetTextMatrix(_t.sx, _t.shy, _t.shx, _t.sy, _t.tx, _t.ty);
-    */
-}
-
-void CGraphics::CalculateFullTransform(bool isInvertNeed)
-{
-    /*
-    v8::Local<v8::Value> _ft = m_oFullTransform;
-    v8::Local<v8::Value> _t  = m_oTransform;
-    _ft.sx  = _t.sx;
-    _ft.shx = _t.shx;
-    _ft.shy = _t.shy;
-    _ft.sy  = _t.sy;
-    _ft.tx  = _t.tx;
-    _ft.ty  = _t.ty;
-    global_MatrixTransformer.MultiplyAppend(_ft, m_oCoordTransform);
-
-    v8::Local<v8::Value> _it = m_oInvertFullTransform;
-    _it.sx = _ft.sx;
-    _it.shx = _ft.shx;
-    _it.shy = _ft.shy;
-    _it.sy = _ft.sy;
-    _it.tx = _ft.tx;
-    _it.ty = _ft.ty;
-
-    if (!isInvertNeed)
-    {
-        global_MatrixTransformer.MultiplyAppendInvert(_it, _t);
-    }
-    */
+    pRenderer->SetTransform(sx, shy, shx, sy, tx, ty);
 }
 
 void CGraphics::_s()
 {
-    // m_oContext.beginPath();
+    pRenderer->PathCommandEnd();
 }
 
 void CGraphics::_e()
 {
-    // m_oContext.beginPath();
+    pRenderer->PathCommandEnd();
 }
 
 void CGraphics::_z()
 {
-    // m_oContext.closePath();
+    pRenderer->PathCommandClose();
 }
 
 void CGraphics::_m(double x, double y)
 {
-    /*
-    if (!m_bIntegerGrid)
-    {
-        m_oContext.moveTo(x, y);
-
-        if (ArrayPoints != NULL)
-            ArrayPoints[ArrayPoints.length] = {x: x, y: y};
-    }
+    if (!pRenderer->get_IntegerGrid())
+        pRenderer->PathCommandMoveTo(x, y);
     else
     {
-        var _x = (m_oFullTransform.TransformPointX(x, y)) >> 0;
-        var _y = (m_oFullTransform.TransformPointY(x, y)) >> 0;
-        m_oContext.moveTo(_x + 0.5, _y + 0.5);
+        pRenderer->GetFullTransform()->TransformPoint(x, y);
+        pRenderer->PathCommandMoveTo((int)x + 0.5, (int)y + 0.5);
     }
-    */
 }
 
 void CGraphics::_l(double x, double y)
 {
-    /*
-    if (!m_bIntegerGrid)
-    {
-        m_oContext.lineTo(x, y);
-
-        if (ArrayPoints != NULL)
-            ArrayPoints[ArrayPoints.length] = {x: x, y: y};
-    }
+    if (!pRenderer->get_IntegerGrid())
+        pRenderer->PathCommandLineTo(x, y);
     else
     {
-        var _x = (m_oFullTransform.TransformPointX(x, y)) >> 0;
-        var _y = (m_oFullTransform.TransformPointY(x, y)) >> 0;
-        m_oContext.lineTo(_x + 0.5, _y + 0.5);
+        pRenderer->GetFullTransform()->TransformPoint(x, y);
+        pRenderer->PathCommandLineTo((int)x + 0.5, (int)y + 0.5);
     }
-    */
 }
 
 void CGraphics::_c(double x1, double y1, double x2, double y2, double x3, double y3)

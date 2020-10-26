@@ -6,10 +6,13 @@
 
 #include "../common/Types.h"
 #include "../graphics/Graphics.h"
+#include "../graphics/GraphicsRenderer.h"
+#include "../raster/BgraFrame.h"
 
 #include "v8.h"
 #include "libplatform/libplatform.h"
 
+/*
 #define GRAPHICS_NATIVE_COMMAND_EndDraw                  1
 #define GRAPHICS_NATIVE_COMMAND_put_GlobalAlpha          2
 #define GRAPHICS_NATIVE_COMMAND_Start_GlobalAlpha        3
@@ -100,6 +103,7 @@
 #define GRAPHICS_NATIVE_COMMAND_DrawPresentationComment  88
 #define GRAPHICS_NATIVE_COMMAND_DrawPolygon              89
 #define GRAPHICS_NATIVE_COMMAND_DrawFootnoteRect         90
+*/
 
 struct CFont
 {
@@ -124,6 +128,9 @@ namespace NSGraphics
     class CGraphics
     {
     private:
+        CGraphicsRenderer* pRenderer;
+        CBgraFrame* pFrame;
+    private:
         v8::Local<v8::Value>* m_oContext;
         double m_dWidthMM;
         double m_dHeightMM;
@@ -133,18 +140,18 @@ namespace NSGraphics
         double m_dDpiY;
         bool m_bIsBreak;
 
-        NSStructures::CPen m_oPen;
+        NSStructures::CPen* m_oPen;
         bool m_bPenColorInit;
-        NSStructures::CBrush m_oBrush;
+        NSStructures::CBrush* m_oBrush;
         bool m_bBrushColorInit;
 
         v8::Local<v8::Value>* m_oFontManager;
 
-        Aggplus::CMatrix m_oCoordTransform;
-        Aggplus::CMatrix m_oBaseTransform;
-        Aggplus::CMatrix m_oTransform;
-        Aggplus::CMatrix m_oFullTransform;
-        Aggplus::CMatrix m_oInvertFullTransform;
+        Aggplus::CMatrix* m_oCoordTransform;
+        Aggplus::CMatrix* m_oBaseTransform;
+        Aggplus::CMatrix* m_oTransform;
+        Aggplus::CMatrix* m_oFullTransform;
+        Aggplus::CMatrix* m_oInvertFullTransform;
 
         std::vector<std::pair<double, double>> ArrayPoints;
 
@@ -264,19 +271,20 @@ namespace NSGraphics
             if(dash_no_smart)              delete dash_no_smart;
         }
 
+        void init(double width_px, double height_px, double width_mm, double height_mm);
         void EndDraw() {}
         void put_GlobalAlpha(bool enable, double globalAlpha);
         void Start_GlobalAlpha() {}
         void End_GlobalAlpha();
         // pen methods
         void p_color(int r, int g, int b, int a);
-        void p_width(int w);
-        void p_dash(const v8::Local<v8::Value>& params);
+        void p_width(double w);
+        void p_dash(size_t length, double* dash);
         // brush methods
         void b_color1(int r, int g, int b, int a);
         void b_color2(int r, int g, int b, int a);
         void transform(double sx, double shy, double shx, double sy, double tx, double ty);
-        void CalculateFullTransform(bool isInvertNeed);
+        void CalculateFullTransform(bool isInvertNeed) {}
         // path commands
         void _s();
         void _e();

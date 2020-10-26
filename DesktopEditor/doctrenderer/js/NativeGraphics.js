@@ -1,4 +1,5 @@
 
+/*
 function CNativeGraphicsSerializer()
 {
     this.Memory = [];
@@ -588,6 +589,7 @@ CNativeGraphicsSerializer.prototype =
         this.Memory.push(h);
     }
 };
+*/
 
 function CNativeGraphics(_writer)
 {
@@ -709,12 +711,10 @@ CNativeGraphics.prototype =
         if (false === enable)
         {
             this.globalAlpha = 1;
-            this.m_oContext.globalAlpha = 1;
         }
         else
         {
             this.globalAlpha = alpha;
-            this.m_oContext.globalAlpha = alpha;
         }
 
         this.Native["put_GlobalAlpha"](enable, alpha);
@@ -725,162 +725,83 @@ CNativeGraphics.prototype =
     },
     End_GlobalAlpha : function()
     {
-        if (false === this.m_bIntegerGrid)
-        {
-            this.m_oContext.setTransform(1,0,0,1,0,0);
-        }
-
-        this.b_color1(255, 255, 255, 140);
-
-        this.m_oContext.fillRect(0, 0, this.m_lWidthPix, this.m_lHeightPix);
-        this.m_oContext.beginPath();
-
-        if (false === this.m_bIntegerGrid)
-        {
-            this.m_oContext.setTransform(this.m_oFullTransform.sx,this.m_oFullTransform.shy,this.m_oFullTransform.shx,
-                this.m_oFullTransform.sy,this.m_oFullTransform.tx,this.m_oFullTransform.ty);
-        }
-
         this.Native["End_GlobalAlpha"]();
     },
     // pen methods
     p_color : function(r, g, b, a)
     {
         var _c = this.m_oPen.Color;
-        if (this.m_bPenColorInit && _c.R === r && _c.G === g && _c.B === b && _c.A === a)
-            return;
-
-        this.m_bPenColorInit = true;
         _c.R = r;
         _c.G = g;
         _c.B = b;
         _c.A = a;
-
-        this.m_oContext.strokeStyle = "rgba(" + _c.R + "," + _c.G + "," + _c.B + "," + (_c.A / 255) + ")";
 
         this.Native["p_color"](r, g, b, a);
     },
     p_width : function(w)
     {
-        this.m_oPen.LineWidth = w / 1000;
-
-        if (!this.m_bIntegerGrid)
-        {
-            if (0 != this.m_oPen.LineWidth)
-            {
-                this.m_oContext.lineWidth = this.m_oPen.LineWidth;
-            }
-            else
-            {
-                var _x1 = this.m_oFullTransform.TransformPointX(0, 0);
-                var _y1 = this.m_oFullTransform.TransformPointY(0, 0);
-                var _x2 = this.m_oFullTransform.TransformPointX(1, 1);
-                var _y2 = this.m_oFullTransform.TransformPointY(1, 1);
-
-                var _koef = Math.sqrt(((_x2 - _x1)*(_x2 - _x1) + (_y2 - _y1)*(_y2 - _y1)) / 2);
-                this.m_oContext.lineWidth = 1 / _koef;
-            }
-        }
-        else
-        {
-            if (0 != this.m_oPen.LineWidth)
-            {
-                var _m = this.m_oFullTransform;
-                var x = _m.sx + _m.shx;
-                var y = _m.sy + _m.shy;
-
-                var koef = Math.sqrt((x * x + y * y) / 2);
-                this.m_oContext.lineWidth = this.m_oPen.LineWidth * koef;
-            }
-            else
-            {
-                this.m_oContext.lineWidth = 1;
-            }
-        }
-
         this.Native["p_width"](w);
     },
     p_dash : function(params)
     {
-        if (!this.m_oContext.setLineDash)
-            return;
-
-	    this.dash_no_smart = params ? params.slice() : null;
-        this.m_oContext.setLineDash(params ? params : []);
-
-        this.Native["p_dash"](params);
+        this.Native["p_dash"](params ? params : []);
     },
     // brush methods
     b_color1 : function(r, g, b, a)
     {
         var _c = this.m_oBrush.Color1;
-        if (this.m_bBrushColorInit && _c.R === r && _c.G === g && _c.B === b && _c.A === a)
-            return;
-
-        this.m_bBrushColorInit = true;
-
         _c.R = r;
         _c.G = g;
         _c.B = b;
         _c.A = a;
-
-        this.m_oContext.fillStyle = "rgba(" + _c.R + "," + _c.G + "," + _c.B + "," + (_c.A / 255) + ")";
 
         this.Native["b_color1"](r, g, b, a);
     },
     b_color2 : function(r, g, b, a)
     {
-        var _c = this.m_oBrush.Color2;
-        _c.R = r;
-        _c.G = g;
-        _c.B = b;
-        _c.A = a;
-
         this.Native["b_color2"](r, g, b, a);
     },
     transform : function(sx, shy, shx, sy, tx, ty)
     {
         var _t = this.m_oTransform;
-        _t.sx    = sx;
-        _t.shx   = shx;
-        _t.shy   = shy;
-        _t.sy    = sy;
-        _t.tx    = tx;
-        _t.ty    = ty;
+        _t.sx  = sx;
+        _t.shx = shx;
+        _t.shy = shy;
+        _t.sy  = sy;
+        _t.tx  = tx;
+        _t.ty  = ty;
 
         this.CalculateFullTransform();
         if (false === this.m_bIntegerGrid)
         {
             var _ft = this.m_oFullTransform;
-            this.m_oContext.setTransform(_ft.sx,_ft.shy,_ft.shx,_ft.sy,_ft.tx,_ft.ty);
+            this.Native["transform"](_ft.sx, _ft.shy, _ft.shx, _ft.sy, _ft.tx, _ft.ty);
         }
 
-        if (null != this.m_oFontManager)
-        {
-            this.m_oFontManager.SetTextMatrix(_t.sx,_t.shy,_t.shx,_t.sy,_t.tx,_t.ty);
-        }
-
-        this.Native["transform"](sx, shy, shx, sy, tx, ty);
+        //if (null != this.m_oFontManager)
+        //{
+        //    this.m_oFontManager.SetTextMatrix(_t.sx, _t.shy, _t.shx, _t.sy, _t.tx, _t.ty);
+        //}
     },
     CalculateFullTransform : function(isInvertNeed)
     {
         var _ft = this.m_oFullTransform;
-        var _t = this.m_oTransform;
-        _ft.sx = _t.sx;
+        var _t  = this.m_oTransform;
+        _ft.sx  = _t.sx;
         _ft.shx = _t.shx;
         _ft.shy = _t.shy;
-        _ft.sy = _t.sy;
-        _ft.tx = _t.tx;
-        _ft.ty = _t.ty;
+        _ft.sy  = _t.sy;
+        _ft.tx  = _t.tx;
+        _ft.ty  = _t.ty;
         global_MatrixTransformer.MultiplyAppend(_ft, this.m_oCoordTransform);
 
         var _it = this.m_oInvertFullTransform;
-        _it.sx = _ft.sx;
+        _it.sx  = _ft.sx;
         _it.shx = _ft.shx;
         _it.shy = _ft.shy;
-        _it.sy = _ft.sy;
-        _it.tx = _ft.tx;
-        _it.ty = _ft.ty;
+        _it.sy  = _ft.sy;
+        _it.tx  = _ft.tx;
+        _it.ty  = _ft.ty;
 
         if (false !== isInvertNeed)
         {
@@ -892,57 +813,47 @@ CNativeGraphics.prototype =
     // path commands
     _s : function()
     {
-        this.m_oContext.beginPath();
-
         this.Native["_s"]();
     },
     _e : function()
     {
-        this.m_oContext.beginPath();
-
         this.Native["_e"]();
     },
     _z : function()
     {
-        this.m_oContext.closePath();
-
         this.Native["_z"]();
     },
     _m : function(x, y)
     {
         if (false === this.m_bIntegerGrid)
         {
-            this.m_oContext.moveTo(x,y);
+            this.Native["_m"](x, y);
 
             if (this.ArrayPoints != null)
                 this.ArrayPoints[this.ArrayPoints.length] = {x: x, y: y};
         }
         else
         {
-            var _x = (this.m_oFullTransform.TransformPointX(x,y)) >> 0;
-            var _y = (this.m_oFullTransform.TransformPointY(x,y)) >> 0;
-            this.m_oContext.moveTo(_x + 0.5,_y + 0.5);
+            var _x = (this.m_oFullTransform.TransformPointX(x, y)) >> 0;
+            var _y = (this.m_oFullTransform.TransformPointY(x, y)) >> 0;
+            this.Native["_m"](_x + 0.5, _y + 0.5);
         }
-
-        this.Native["_m"](x, y);
     },
     _l : function(x, y)
     {
         if (false === this.m_bIntegerGrid)
         {
-            this.m_oContext.lineTo(x,y);
+            this.Native["_l"](x, y);
 
             if (this.ArrayPoints != null)
                 this.ArrayPoints[this.ArrayPoints.length] = {x: x, y: y};
         }
         else
         {
-            var _x = (this.m_oFullTransform.TransformPointX(x,y)) >> 0;
-            var _y = (this.m_oFullTransform.TransformPointY(x,y)) >> 0;
-            this.m_oContext.lineTo(_x + 0.5,_y + 0.5);
+            var _x = (this.m_oFullTransform.TransformPointX(x, y)) >> 0;
+            var _y = (this.m_oFullTransform.TransformPointY(x, y)) >> 0;
+            this.Native["_l"](_x + 0.5, _y + 0.5);
         }
-
-        this.Native["_l"](x, y);
     },
     _c : function(x1, y1, x2, y2, x3, y3)
     {

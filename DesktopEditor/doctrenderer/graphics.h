@@ -214,8 +214,6 @@ namespace NSGraphics
             m_oFullTransform = nullptr; // new CMatrixL();
             m_oInvertFullTransform = nullptr; // new CMatrixL();
 
-            ArrayPoints = nullptr;
-
             m_oTextPr = nullptr;
             m_oGrFonts = nullptr; // new AscCommon.CGrRFonts();
             m_oLastFont = nullptr; // new AscCommon.CFontSetup();
@@ -259,7 +257,6 @@ namespace NSGraphics
             if(m_oTransform)               delete m_oTransform;
             if(m_oFullTransform)           delete m_oFullTransform;
             if(m_oInvertFullTransform)     delete m_oInvertFullTransform;
-            if(ArrayPoints)                delete ArrayPoints;
             if(m_oTextPr)                  delete m_oTextPr;
             if(m_oGrFonts)                 delete m_oGrFonts;
             if(m_oLastFont)                delete m_oLastFont;

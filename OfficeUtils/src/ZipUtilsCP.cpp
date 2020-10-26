@@ -598,6 +598,10 @@ int oneZipFile(zipFile & zf, zip_fileinfo* zi, std::wstring & file_name, std::ws
 
     zip_fileinfo zinfo;
     zinfo.dosDate = zinfo.external_fa = zinfo.internal_fa = 0;
+    zinfo.tmz_date.tm_sec = zinfo.tmz_date.tm_min = zinfo.tmz_date.tm_hour = 0;
+    zinfo.tmz_date.tm_mday = 1;
+    zinfo.tmz_date.tm_mon = 0;
+    zinfo.tmz_date.tm_year = 1980;
 
     zip_fileinfo* zi_new = zi ? zi : &zinfo;
     if (bDateTime )

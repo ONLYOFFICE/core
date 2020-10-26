@@ -7,7 +7,33 @@ namespace NSGraphics
 {
 void CGraphics::init(double width_px, double height_px, double width_mm, double height_mm)
 {
+    NSFonts::IFontManager* pManager = m_pApplicationFonts->GenerateFontManager();
 
+    m_pRenderer = NSGraphics::Create();
+    m_pRenderer->SetFontManager(pManager);
+
+    int nRasterW = (int)width_px;
+    int nRasterH = (int)height_px;
+    BYTE* pData = new BYTE[4 * nRasterW * nRasterH];
+
+    unsigned int back = 0xffffff;
+    unsigned int* pData32 = (unsigned int*)pData;
+    unsigned int* pData32End = pData32 + nRasterW * nRasterH;
+    // дефолтный фон должен быть прозрачным, а не белым
+    while (pData32 < pData32End)
+        *pData32++ = back;
+
+    CBgraFrame oFrame;
+    oFrame.put_Data(pData);
+    oFrame.put_Width(nRasterW);
+    oFrame.put_Height(nRasterH);
+    oFrame.put_Stride(4 * nRasterW);
+
+    m_pRenderer->CreateFromBgraFrame(&oFrame);
+    m_pRenderer->SetSwapRGB(false);
+
+    m_pRenderer->put_Width(width_mm);
+    m_pRenderer->put_Height(height_mm);
 }
 
 void CGraphics::put_GlobalAlpha(bool enable, double alpha)

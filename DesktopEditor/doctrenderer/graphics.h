@@ -5,10 +5,7 @@
 #include <vector>
 
 #include "../common/Types.h"
-#include "../graphics/GraphicsRenderer.h"
-
-#include "v8.h"
-#include "libplatform/libplatform.h"
+#include "../graphics/pro/Graphics.h"
 
 /*
 #define GRAPHICS_NATIVE_COMMAND_EndDraw                  1
@@ -103,6 +100,7 @@
 #define GRAPHICS_NATIVE_COMMAND_DrawFootnoteRect         90
 */
 
+/*
 struct CFont
 {
     std::string Name;
@@ -116,37 +114,37 @@ struct CFont
 struct CLastFontOriginInfo
 {
     std::string Name;
-    v8::Local<v8::Value>* Replace;
-
     CLastFontOriginInfo() : Name(""), Replace(nullptr) {}
 };
+*/
 
 namespace NSGraphics
 {
     class CGraphics
     {
     private:
-        CGraphicsRenderer* pRenderer;
+        NSFonts::IApplicationFonts* m_pApplicationFonts;    // этот объект - один на приложение
+        NSGraphics::IGraphicsRenderer* m_pRenderer;         // drawer interface
+        CBgraFrame m_oFrame;                                // image data
+
         std::wstring m_sFontsDirectory;
         std::wstring m_sImagesDirectory;
         std::wstring m_sThemesDirectory;
 
     private:
-        v8::Local<v8::Value>* m_oContext;
         double m_dWidthMM;
         double m_dHeightMM;
         double m_lWidthPix;
         double m_lHeightPix;
         double m_dDpiX;
         double m_dDpiY;
-        bool m_bIsBreak;
 
+        /*
         NSStructures::CPen* m_oPen;
         bool m_bPenColorInit;
         NSStructures::CBrush* m_oBrush;
         bool m_bBrushColorInit;
 
-        v8::Local<v8::Value>* m_oFontManager;
 
         Aggplus::CMatrix* m_oCoordTransform;
         Aggplus::CMatrix* m_oBaseTransform;
@@ -189,16 +187,18 @@ namespace NSGraphics
         bool IsRetina;
 
         v8::Local<v8::Value>* dash_no_smart;
+        */
     public:
         CGraphics()
         {
-            m_oContext = nullptr;
             m_dWidthMM = 0.0;
             m_dHeightMM = 0.0;
             m_lWidthPix = 0.0;
             m_lHeightPix = 0.0;
             m_dDpiX = 96.0;
             m_dDpiY = 96.0;
+
+            /*
             m_bIsBreak = false;
 
             m_oPen = nullptr; // new AscCommon.CPen();
@@ -245,9 +245,11 @@ namespace NSGraphics
             IsRetina = false;
 
             dash_no_smart = nullptr;
+            */
         }
         ~CGraphics()
         {
+            /*
             if(m_oContext)                 delete m_oContext;
             if(m_oPen)                     delete m_oPen;
             if(m_oBrush)                   delete m_oBrush;
@@ -267,6 +269,7 @@ namespace NSGraphics
             if(m_oFontManager2)            delete m_oFontManager2;
             if(m_oLastFont2)               delete m_oLastFont2;
             if(dash_no_smart)              delete dash_no_smart;
+            */
         }
 
         void init(double width_px, double height_px, double width_mm, double height_mm);
@@ -324,12 +327,16 @@ namespace NSGraphics
         bool GetIntegerGrid() {}
         void DrawStringASCII() {}
         void DrawStringASCII2() {}
-        void DrawHeaderEdit(double yPos, const v8::Local<v8::Value>& lock_type, int sectionNum, bool bIsRepeat, const v8::Local<v8::Value>& type);
-        void DrawFooterEdit(double yPos, const v8::Local<v8::Value>& lock_type, int sectionNum, bool bIsRepeat, const v8::Local<v8::Value>& type);
-        void DrawLockParagraph(const v8::Local<v8::Value>& lock_type, double x, double y1, double y2);
-        void DrawLockObjectRect(const v8::Local<v8::Value>& lock_type, double x, double y, double w, double h);
+
+        /*
+        void DrawHeaderEdit(double yPos, const int& lock_type, int sectionNum, bool bIsRepeat, const int& type);
+        void DrawFooterEdit(double yPos, const int& lock_type, int sectionNum, bool bIsRepeat, const int& type);
+        void DrawLockParagraph(const int& lock_type, double x, double y1, double y2);
+        void DrawLockObjectRect(const int& lock_type, double x, double y, double w, double h);
         void DrawEmptyTableLine(double x1, double y1, double x2, double y2);
         void DrawSpellingLine(double y0, double x0, double x1, double w);
+        */
+
         // smart methods for horizontal / vertical lines
         void drawHorLine(int align, double y, double x, double r, int penW);
         void drawHorLine2(int align, double y, double x, double r, int penW);
@@ -341,12 +348,19 @@ namespace NSGraphics
         // функции клиппирования
         void AddClipRect(double x, double y, double w, double h);
         void RemoveClipRect() {}
+
+        /*
         void SetClip(const v8::Local<v8::Value>& r);
         void RemoveClip();
+        */
+
+        /*
         void drawCollaborativeChanges(double x, double y, double w, double h, const v8::Local<v8::Value>& Color);
         void drawMailMergeField(double x, double y, double w, double h);
         void drawSearchResult(double x, double y, double w, double h);
         void drawFlowAnchor(double x, double y);
+        */
+
         void SavePen();
         void RestorePen();
         void SaveBrush();
@@ -361,13 +375,20 @@ namespace NSGraphics
         void EndCheckTableDraw(bool bIsRestore);
         void SetTextClipRect(double _l, double _t, double _r, double _b);
         void AddSmartRect(double x, double y, double w, double h, int pen_w);
+
+        /*
         void CheckUseFonts2(const v8::Local<v8::Value>& _transform);
         void UncheckUseFonts2();
+        */
+
         void Drawing_StartCheckBounds(double x, double y, double w, double h) {}
         void Drawing_EndCheckBounds() {}
+
+        /*
         void DrawPresentationComment(const v8::Local<v8::Value>& type, double x, double y, double w, double h);
         void DrawPolygon(const v8::Local<v8::Value>& oPath, int lineWidth, double shift);
         void DrawFootnoteRect(double x, double y, double w, double h);
+        */
 
         /*
         v8::Local<v8::Value>* g_m_oContext()             { return m_oContext;             }

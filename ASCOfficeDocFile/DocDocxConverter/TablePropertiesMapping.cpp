@@ -64,7 +64,7 @@ namespace DocFileFormat
         XMLTools::XMLElement	tblCellMar	( L"w:tblCellMar");
         XMLTools::XMLElement	tblLayout	( L"w:tblLayout");
         XMLTools::XMLElement	tblpPr		( L"w:tblpPr");
-        XMLTools::XMLAttribute layoutType	( L"w:type", L"fixed");
+        XMLTools::XMLAttribute	layoutType	( L"w:type", L"");
 		bool bLayoutFixed = true;
 
 		_CP_OPT(short) tblIndent;
@@ -183,18 +183,16 @@ namespace DocFileFormat
                     appendValueElement( _tblPr, L"tblLook", FormatUtils::IntToFormattedWideString( FormatUtils::BytesToInt16( iter->Arguments, 2, iter->argumentsSize ), L"%04x" ), true );
 				}
 				break;
-
 				case sprmTFAutofit:
-				{				//autofit
+				{//autofit
 
+					layoutType.SetValue(L"fixed");
 					if ( iter->Arguments[0] == 1 )
 					{
                         layoutType.SetValue( L"auto" );
 						bLayoutFixed = false;
 					}
-				}
-				break;
-
+				}break;	
 				case sprmTCellPadding:
 				case sprmTCellPaddingDefault:
 				case sprmTCellPaddingOuter:
@@ -470,11 +468,12 @@ namespace DocFileFormat
 			_tblPr->AppendChild( *_tblBorders );
 		}
 
-		//append layout type
-		tblLayout.AppendAttribute( layoutType );
+		if (false == layoutType.GetValue().empty())
+		{
+			tblLayout.AppendAttribute(layoutType);
+		}
 		_tblPr->AppendChild( tblLayout );
 
-		//append margins
 		if ( ( marginLeft == 0 ) && ( gabHalf != 0 ) )
 		{
             appendDxaElement( &tblCellMar, L"left", FormatUtils::IntToWideString( gabHalf ), true );
@@ -505,8 +504,9 @@ namespace DocFileFormat
         _tblGrid = new XMLTools::XMLElement( L"w:tblGrid");
 
 		//Если _grid состоит из одних DocFormatUtils::gc_nZeroWidth и layout != "fixed", значит это doc полученный нами при конвертации из html. Таблицу размеров писать не нужно
+		
 		bool bWriteGridCol = false;
-		if(true == bLayoutFixed)
+		if (true == bLayoutFixed)
 			bWriteGridCol = true;
 		else
 		{
@@ -519,7 +519,7 @@ namespace DocFileFormat
 				}
 			}
 		}
-		if(true == bWriteGridCol)
+		if (true == bWriteGridCol)
 		{
 			for ( size_t i = 0; i < _grid->size(); i++ )		
 			{

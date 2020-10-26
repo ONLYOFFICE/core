@@ -58,10 +58,9 @@ namespace NExtractTools
 			nSeparator2Pos = sFile2.rfind(_T('\\'));
 		}
 
-
 		// check for directory in name
-		bool bIsFile1Directory = ((std::wstring::npos != nSeparator1Pos) && (nExt1Pos < nSeparator1Pos));   // i.e: /root1/child1.lalala/folder
-		bool bIsFile2Directory = ((std::wstring::npos != nSeparator2Pos) && (nExt2Pos < nSeparator2Pos));
+		bool bIsFile1Directory = (std::wstring::npos != nExt1Pos) ? ((std::wstring::npos != nSeparator1Pos) && (nExt1Pos < nSeparator1Pos)) : (std::wstring::npos != nSeparator1Pos);   // i.e: /root1/child1.lalala/folder
+		bool bIsFile2Directory = (std::wstring::npos != nExt2Pos) ? ((std::wstring::npos != nSeparator2Pos) && (nExt2Pos < nSeparator2Pos)) : (std::wstring::npos != nSeparator2Pos);
 
 		// automatic zip/unzip task detection
 		if (bIsFile1Directory)

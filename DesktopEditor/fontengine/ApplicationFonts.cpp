@@ -1536,11 +1536,11 @@ void CFontList::LoadFromArrayFiles(std::vector<std::wstring>& oArray, int nFlag)
                 TT_Face pTTFace = (TT_Face)pFace;
 
                 int nNamesCount = (int)pTTFace->num_names;
-                TT_NameEntryRec* pNameRecs = pTTFace->name_table.names;
+                TT_NameRec* pNameRecs = pTTFace->name_table.names;
 
                 for (int nNameIndex = 0; nNameIndex < nNamesCount; ++nNameIndex)
                 {
-                    TT_NameEntryRec* rec = pNameRecs + nNameIndex;
+                    TT_NameRec* rec = pNameRecs + nNameIndex;
 
                     if (rec->nameID != TT_NAME_ID_FONT_FAMILY || rec->stringLength <= 0)
                         continue;

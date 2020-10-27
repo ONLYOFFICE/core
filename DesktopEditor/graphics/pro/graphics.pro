@@ -35,14 +35,12 @@ DEFINES += \
 DEFINES += FT_SUPPORT_UTF8_IN_NAMES
 
 core_linux {
-    DEFINES += \
-    HAVE_UNISTD_H
+    DEFINES += HAVE_UNISTD_H HAVE_FCNTL_H
     QMAKE_CXXFLAGS += -Wno-narrowing
 }
 
 core_mac {
-    DEFINES += \
-    HAVE_UNISTD_H
+    DEFINES += HAVE_UNISTD_H HAVE_FCNTL_H
 }
 
 core_windows {

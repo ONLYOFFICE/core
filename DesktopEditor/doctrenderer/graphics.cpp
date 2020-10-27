@@ -218,6 +218,11 @@ void CGraphics::SetIntegerGrid(bool param)
     m_pRenderer->put_IntegerGrid(param);
 }
 
+bool CGraphics::GetIntegerGrid()
+{
+    return m_pRenderer->get_IntegerGrid();
+}
+
 void CGraphics::DrawHeaderEdit(double yPos, BYTE lock_type)
 {
     m_pRenderer->PathCommandEnd();

@@ -48,7 +48,6 @@ namespace NSGraphics
         CGrStatePenBrush() { m_eType = gstPenBrush; }
     };
 
-    class CGraphics;
     class CHist_Clip
     {
     public:
@@ -61,44 +60,32 @@ namespace NSGraphics
 
     public:
         CHist_Clip() : IsPath(false), Path(NULL), IsIntegerGrid(false) {}
-
-        void ToRenderer(CGraphics* pRenderer);
     };
 
     class CGrStateState : public IGrState
+    {
+    public:
+        Aggplus::CMatrix	        Transform;
+        bool				        IsIntegerGrid;
+        std::vector<CHist_Clip*>	Clips;
+
+    public:
+        CGrStateState()
         {
-        public:
-            Aggplus::CMatrix	        Transform;
-            bool				        IsIntegerGrid;
-            std::vector<CHist_Clip*>	Clips;
-
-        public:
-            CGrStateState()
+            m_eType = gstState;
+            IsIntegerGrid = false;
+        }
+        ~CGrStateState()
+        {
+            size_t nCount = Clips.size();
+            for (size_t i = 0; i < nCount; ++i)
             {
-                m_eType = gstState;
-                IsIntegerGrid = false;
+                CHist_Clip* pClip = Clips[i];
+                RELEASEOBJECT(pClip);
             }
-            ~CGrStateState()
-            {
-                size_t nCount = Clips.size();
-                for (size_t i = 0; i < nCount; ++i)
-                {
-                    CHist_Clip* pClip = Clips[i];
-                    RELEASEOBJECT(pClip);
-                }
-                Clips.clear();
-            }
-
-            template <typename T>
-            void ApplyClips(T* pRenderer)
-            {
-                size_t nCount = Clips.size();
-                for (size_t i = 0; i < nCount; ++i)
-                {
-                    Clips[i]->ToRenderer(pRenderer);
-                }
-            }
-        };
+            Clips.clear();
+        }
+    };
 
     class CGrState
     {
@@ -117,28 +104,6 @@ namespace NSGraphics
             for(CHist_Clip* pState : Clips)
                 RELEASEOBJECT(pState);
             Clips.clear();
-        }
-
-        void Save()
-        {
-            SavePen();
-            SaveBrush();
-            SaveGrState();
-        }
-        void Restore()
-        {
-            RestoreGrState();
-            RestoreBrush();
-            RestorePen();
-        }
-
-        void StartClipPath()
-        {
-            // реализовать, как понадобится
-        }
-        void EndClipPath()
-        {
-            // реализовать, как понадобится
         }
     };
 
@@ -214,7 +179,7 @@ namespace NSGraphics
         void private_FillGlyphC() {}
         void private_FillGlyph2() {}
         void SetIntegerGrid(bool param);
-        bool GetIntegerGrid() {}
+        bool GetIntegerGrid();
         void DrawStringASCII() {}
         void DrawStringASCII2() {}
         void DrawHeaderEdit(double yPos, BYTE lock_type);
@@ -262,16 +227,6 @@ namespace NSGraphics
         void DrawPolygon() {}
         void DrawFootnoteRect() {}
     };
-
-    void CHist_Clip::ToRenderer(CGraphics* pRenderer)
-    {
-        if (!IsPath)
-        {
-            pRenderer->StartClipPath();
-            pRenderer->rect(Rect.left, Rect.top, Rect.GetWidth(), Rect.GetHeight());
-            pRenderer->EndClipPath();
-        }
-    }
 }
 
 #endif // CGRAPHICS_H

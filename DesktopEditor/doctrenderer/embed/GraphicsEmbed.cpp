@@ -176,6 +176,7 @@ JSSmart<CJSValue> CGraphicsEmbed::SetFont(JSSmart<CJSValue> path, JSSmart<CJSVal
 JSSmart<CJSValue> CGraphicsEmbed::SetTextPr(JSSmart<CJSValue> textPr, JSSmart<CJSValue> theme)
 {
     m_pInternal->SetTextPr();
+    return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::SetFontSlot(JSSmart<CJSValue> path, JSSmart<CJSValue> face, JSSmart<CJSValue> size, JSSmart<CJSValue> style)
 {

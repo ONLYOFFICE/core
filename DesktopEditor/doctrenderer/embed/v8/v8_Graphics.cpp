@@ -228,8 +228,6 @@ namespace NSGraphics
     }
 }
 
-
-
 void CGraphicsEmbed::CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context)
 {
     v8::Isolate* current = CV8Worker::GetCurrent();

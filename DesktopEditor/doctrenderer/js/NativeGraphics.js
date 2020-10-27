@@ -103,7 +103,7 @@ CNativeGraphics.prototype =
         */
 
         this.m_oLastFont.Clear();
-        this.m_oContext.save();
+        // this.m_oContext.save();
 
         this.m_bPenColorInit   = false;
         this.m_bBrushColorInit = false;
@@ -112,24 +112,16 @@ CNativeGraphics.prototype =
     },
     EndDraw : function()
     {
-        this.Native["EndDraw"]();
+        // this.Native["EndDraw"]();
     },
     put_GlobalAlpha : function(enable, alpha)
     {
-        if (false === enable)
-        {
-            this.globalAlpha = 1;
-        }
-        else
-        {
-            this.globalAlpha = alpha;
-        }
-
+        this.globalAlpha = (false === enable ? 1 : alpha);
         this.Native["put_GlobalAlpha"](enable, alpha);
     },
     Start_GlobalAlpha : function()
     {
-        this.Native["Start_GlobalAlpha"]();
+        // this.Native["Start_GlobalAlpha"]();
     },
     End_GlobalAlpha : function()
     {
@@ -143,12 +135,11 @@ CNativeGraphics.prototype =
         _c.G = g;
         _c.B = b;
         _c.A = a;
-
         this.Native["p_color"](r, g, b, a);
     },
     p_width : function(w)
     {
-        this.Native["p_width"](w);
+        this.Native["p_width"](w / 1000);
     },
     p_dash : function(params)
     {
@@ -162,7 +153,6 @@ CNativeGraphics.prototype =
         _c.G = g;
         _c.B = b;
         _c.A = a;
-
         this.Native["b_color1"](r, g, b, a);
     },
     b_color2 : function(r, g, b, a)
@@ -185,11 +175,6 @@ CNativeGraphics.prototype =
             var _ft = this.m_oFullTransform;
             this.Native["transform"](_ft.sx, _ft.shy, _ft.shx, _ft.sy, _ft.tx, _ft.ty);
         }
-
-        //if (null != this.m_oFontManager)
-        //{
-        //    this.m_oFontManager.SetTextMatrix(_t.sx, _t.shy, _t.shx, _t.sy, _t.tx, _t.ty);
-        //}
     },
     CalculateFullTransform : function(isInvertNeed)
     {
@@ -201,7 +186,7 @@ CNativeGraphics.prototype =
         _ft.sy  = _t.sy;
         _ft.tx  = _t.tx;
         _ft.ty  = _t.ty;
-        global_MatrixTransformer.MultiplyAppend(_ft, this.m_oCoordTransform);
+        AscCommon.global_MatrixTransformer.MultiplyAppend(_ft, this.m_oCoordTransform);
 
         var _it = this.m_oInvertFullTransform;
         _it.sx  = _ft.sx;
@@ -213,10 +198,9 @@ CNativeGraphics.prototype =
 
         if (false !== isInvertNeed)
         {
-            global_MatrixTransformer.MultiplyAppendInvert(_it, _t);
+            AscCommon.global_MatrixTransformer.MultiplyAppendInvert(_it, _t);
         }
-
-        this.Native["CalculateFullTransform"](isInvertNeed);
+        // this.Native["CalculateFullTransform"](isInvertNeed);
     },
     // path commands
     _s : function()
@@ -1013,36 +997,6 @@ CNativeGraphics.prototype =
     },
     DrawPresentationComment : function(type, x, y, w, h)
     {
-        if (this.IsThumbnail || this.IsDemonstrationMode)
-            return;
-
-        if (this.m_bIntegerGrid)
-        {
-            if (AscCommon.g_comment_image && AscCommon.g_comment_image.asc_complete === true)
-            {
-                var _x = (this.m_oFullTransform.TransformPointX(x,y) >> 0);
-                var _y = (this.m_oFullTransform.TransformPointY(x,y) >> 0);
-
-                var _index = 0;
-                if ((type & 0x02) == 0x02)
-                    _index = 2;
-                if ((type & 0x01) == 0x01)
-                    _index += 1;
-
-                if (this.IsRetina)
-                    _index += 4;
-
-                var _offset = AscCommon.g_comment_image_offsets[_index];
-                this.m_oContext.drawImage(AscCommon.g_comment_image, _offset[0], _offset[1], _offset[2], _offset[3], _x, _y, _offset[2], _offset[3]);
-            }
-        }
-        else
-        {
-            this.SetIntegerGrid(true);
-            this.DrawPresentationComment(type, x, y, w, h);
-            this.SetIntegerGrid(false);
-        }
-
         this.Native["DrawPresentationComment"](type, x, y, w, h);
     },
     DrawPolygon : function(oPath, lineWidth, shift)

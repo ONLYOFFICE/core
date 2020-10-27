@@ -39,12 +39,10 @@ void CGraphics::init(double width_px, double height_px, double width_mm, double 
     m_pRenderer->put_Width(width_mm);
     m_pRenderer->put_Height(height_mm);
 }
-
 void CGraphics::put_GlobalAlpha(bool enable, double alpha)
 {
     m_pRenderer->put_GlobalAlphaEnabled(enable, alpha);
 }
-
 void CGraphics::End_GlobalAlpha()
 {
     bool bIsInteger = m_pRenderer->get_IntegerGrid();
@@ -59,24 +57,21 @@ void CGraphics::End_GlobalAlpha()
 
     m_pRenderer->put_IntegerGrid(bIsInteger);
 }
-
 void CGraphics::p_color(int r, int g, int b, int a)
 {
     m_pRenderer->put_PenColor(r | (g << 8) | (b << 16));
     m_pRenderer->put_PenAlpha(a);
 }
-
 void CGraphics::p_width(double w)
 {
-    m_pRenderer->put_PenSize(w / 1000.0);
+    m_pRenderer->put_PenSize(w);
 }
-
 void CGraphics::p_dash(size_t length, double* dash)
 {
     if(length > 0)
     {
         for(size_t i = 0; i < length; i++)
-            dash[i] = dash[i] * 72.0 / 25.4 * 2;
+            dash[i] = dash[i] * 72.0 / 25.4 * 2.0;
 
         m_pRenderer->put_PenDashStyle(Aggplus::DashStyleCustom);
         m_pRenderer->PenDashPattern(dash, length);
@@ -84,40 +79,33 @@ void CGraphics::p_dash(size_t length, double* dash)
     else
         m_pRenderer->put_PenDashStyle(Aggplus::DashStyleSolid);
 }
-
 void CGraphics::b_color1(int r, int g, int b, int a)
 {    
     m_pRenderer->put_BrushType(c_BrushTypeSolid);
     m_pRenderer->put_BrushColor1(r | (g << 8) | (b << 16));
     m_pRenderer->put_BrushAlpha1(a);
 }
-
 void CGraphics::b_color2(int r, int g, int b, int a)
 {
     m_pRenderer->put_BrushColor2(r | (g << 8) | (b << 16));
     m_pRenderer->put_BrushAlpha2(a);
 }
-
 void CGraphics::transform(double sx, double shy, double shx, double sy, double tx, double ty)
 {
     m_pRenderer->SetTransform(sx, shy, shx, sy, tx, ty);
 }
-
 void CGraphics::_s()
 {
     m_pRenderer->PathCommandEnd();
 }
-
 void CGraphics::_e()
 {
     m_pRenderer->PathCommandEnd();
 }
-
 void CGraphics::_z()
 {
     m_pRenderer->PathCommandClose();
 }
-
 void CGraphics::_m(double x, double y)
 {
     if (!m_pRenderer->get_IntegerGrid())
@@ -128,7 +116,6 @@ void CGraphics::_m(double x, double y)
         m_pRenderer->PathCommandMoveTo((int)x + 0.5, (int)y + 0.5);
     }
 }
-
 void CGraphics::_l(double x, double y)
 {
     if (!m_pRenderer->get_IntegerGrid())
@@ -139,22 +126,18 @@ void CGraphics::_l(double x, double y)
         m_pRenderer->PathCommandLineTo((int)x + 0.5, (int)y + 0.5);
     }
 }
-
 void CGraphics::_c(double x1, double y1, double x2, double y2, double x3, double y3)
 {
     m_pRenderer->PathCommandCurveTo(x1, y1, x2, y2, x3, y3);
 }
-
 void CGraphics::_c2(double x1, double y1, double x2, double y2)
 {
     m_pRenderer->PathCommandCurveTo(x1, y1, x1, y1, x2, y2);
 }
-
 void CGraphics::ds()
 {
     m_pRenderer->Stroke();
 }
-
 void CGraphics::df()
 {
     m_pRenderer->Fill();

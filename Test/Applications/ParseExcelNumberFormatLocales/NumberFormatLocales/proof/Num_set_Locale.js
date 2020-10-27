@@ -80,6 +80,7 @@ function ParseLocalFormatSymbol(Name){
         case("asa"):{console.log(Name);}break;
         case("ast"):{console.log(Name);}break;
         case("az-Cyrl-AZ"):{console.log(Name);}break;
+        case("az-Cyrl"):{console.log(Name);}break;
         case("az-Latn-AZ"):{console.log(Name);}break;
         case("az-Latn"):{console.log(Name);}break;
         case("az"):{console.log(Name);}break;
@@ -780,106 +781,126 @@ function ParseLocalFormatSymbol(Name){
         case("zh"):{console.log(Name);}break;
         case("zu-ZA"):{console.log(Name);}break;
         case("zu"):{console.log(Name);}break;
+//_________________________________________________________________________________________
+        case("ast-ES"):{console.log(Name);}break;
+        case("ca-ES-valencia"):{console.log(Name);}break;
+        case("ca-ES"):{console.log(Name);}break;
+        case("es-ES"):{console.log(Name);}break;
+        case("es-MX"):{console.log(Name);}break;
+        case("eu-ES"):{console.log(Name);}break;
+        case("gl-ES"):{console.log(Name);}break;
+//_________________________________________________________________________________________
+        case("ba-RU"):{console.log(Name);}break;
+        case("ce-RU"):{console.log(Name);}break;
+        case("cu-RU"):{console.log(Name);}break;
+        case("de-BE"):{console.log(Name);}break;
+        case("en-BE"):{console.log(Name);}break;
+        case("en-CH"):{console.log(Name);}break;
+        case("gsw-CH"):{console.log(Name);}break;
+        case("kk-KZ"):{console.log(Name);}break;
+        case("os-RU"):{console.log(Name);}break;
+        case("pt-CH"):{console.log(Name);}break;
+        case("rm-CH"):{console.log(Name);}break;
+        case("ru-KZ"):{console.log(Name);}break;
+        case("ru-RU"):{console.log(Name);}break;
+        case("sah-RU"):{console.log(Name);}break;
+        case("tt-RU"):{console.log(Name);}break;
+        case("wae-CH"):{console.log(Name);}break;
+//_________________________________________________________________________________________
+        case("br-FR"):{console.log(Name);}break;
+        case("ca-FR"):{console.log(Name);}break;
+        case("co-FR"):{console.log(Name);}break;
+        case("fr-BE"):{console.log(Name);}break;
+        case("fr-CA"):{console.log(Name);}break;
+        case("fr-CH"):{console.log(Name);}break;
+        case("fr-FR"):{console.log(Name);}break;
+        case("gsw-FR"):{console.log(Name);}break;
+//_________________________________________________________________________________________
+        case("de-AT"):{console.log(Name);}break;
+        case("de-CH"):{console.log(Name);}break;
+        case("de-DE"):{console.log(Name);}break;
+        case("dsb-DE"):{console.log(Name);}break;
+        case("en-AT"):{console.log(Name);}break;
+        case("en-DE"):{console.log(Name);}break;
+        case("hsb-DE"):{console.log(Name);}break;
+        case("ksh-DE"):{console.log(Name);}break;
+        case("nds-DE"):{console.log(Name);}break;
+//_________________________________________________________________________________________
+//_________________________________________________________________________________________
+        case("da-DK"):{console.log(Name);}break;
+        case("fo-DK"):{console.log(Name);}break;
+        case("nb-NO"):{console.log(Name);}break;
+        case("nb-SJ"):{console.log(Name);}break;
+        case("nn-NO"):{console.log(Name);}break;
+        case("se-NO"):{console.log(Name);}break;
+        case("sma-NO"):{console.log(Name);}break;
+        case("smj-NO"):{console.log(Name);}break;
+//_________________________________________________________________________________________
+        case("bn-IN"):{console.log(Name);}break;
+        case("id-ID"):{console.log(Name);}break;
+        case("jv-Java-ID"):{console.log(Name);}break;
+        case("jv-Latn-ID"):{console.log(Name);}break;
+        case("jv-Latn"):{console.log(Name);}break;
+        case("pa-Arab-PK"):{console.log(Name);}break;
+        case("pa-Arab"):{console.log(Name);}break;
+        case("pa-Guru"):{console.log(Name);}break;
+        case("si-LK"):{console.log(Name);}break;
+//_________________________________________________________________________________________
+        case("bo-CN"):{console.log(Name);}break;
+        case("ii-CN"):{console.log(Name);}break;
+        case("mn-Mong-CN"):{console.log(Name);}break;
+        case("ug-CN"):{console.log(Name);}break;
+        case("zh-CN"):{console.log(Name);}break;
+        case("zh-Hans"):{console.log(Name);}break;
+        case("zh-TW"):{console.log(Name);}break;
+//_________________________________________________________________________________________
+        case("fi-FI"):{console.log(Name);}break;
+        case("se-FI"):{console.log(Name);}break;
+        case("smn-FI"):{console.log(Name);}break;
+        case("sms-FI"):{console.log(Name);}break;
+        case("sv-AX"):{console.log(Name);}break;
+        case("sv-FI"):{console.log(Name);}break;
+//_________________________________________________________________________________________
+        case("en-SE"):{console.log(Name);}break;
+        case("se-SE"):{console.log(Name);}break;
+        case("sma-SE"):{console.log(Name);}break;
+        case("smj-SE"):{console.log(Name);}break;
+        case("sv-SE"):{console.log(Name);}break;
+//_________________________________________________________________________________________
+        case("en-NL"):{console.log(Name);}break;
+        case("fy-NL"):{console.log(Name);}break;
+        case("nds-NL"):{console.log(Name);}break;
+        case("nl-BE"):{console.log(Name);}break;
+        case("nl-NL"):{console.log(Name);}break;
+//_________________________________________________________________________________________
+        case("cs-CZ"):{console.log(Name);}break;
+//_________________________________________________________________________________________
+        case("el-GR"):{console.log(Name);}break;
+//_________________________________________________________________________________________
+        case("en-DK"):{console.log(Name);}break;
+//_________________________________________________________________________________________
+        case("en-FI"):{console.log(Name);}break;
+//_________________________________________________________________________________________
+        case("es-BR"):{console.log(Name);}break;
+//_________________________________________________________________________________________
+        case("hu-HU"):{console.log(Name);}break;
+//_________________________________________________________________________________________
+        case("ja-JP"):{console.log(Name);}break;
+//_________________________________________________________________________________________
+        case("ko-KR"):{console.log(Name);}break;
+//_________________________________________________________________________________________
+        case("oc-FR"):{console.log(Name);}break;
+//_________________________________________________________________________________________
+        case("pl-PL"):{console.log(Name);}break;
+//_________________________________________________________________________________________
+        case("pt-BR"):{console.log(Name);}break;
+//_________________________________________________________________________________________
+        case("pt-PT"):{console.log(Name);}break;
+//_________________________________________________________________________________________
+        case("tr-TR"):{console.log(Name);}break;
+//_________________________________________________________________________________________
 
-        case ("aa-DJ")||("aa-ER")||("aa-ET"||"aa"||"af-NA"||"af-ZA"||"af"||"agq-CM"||"agq"||"ak-GH"||"ak"||"am-ET"||
-            "am"||
-            "ar-00"||
-            "ar-AE"||
-            "ar-BH"||
-            "ar-DJ"||
-            "ar-DZ"||
-            "ar-EG"||
-            "ar-ER"||
-            "ar-IL"||
-            "ar-IQ"||
-            "ar-JO"||
-            "ar-KM"||
-            "ar-KW"||
-            "ar-LB"||
-            "ar-LY"||
-            "ar-MA"||
-            "ar-MR"||
-            "ar-OM"||
-            "ar-PS"||
-            "ar-QA"||
-            "ar-SA"||
-            "ar-SD"||
-            "ar-SO"||
-            "ar-SS"||
-            "ar-SY"||
-            "ar-TD"||
-            "ar-TN"||
-            "ar-YE"||
-            "ar"||
-            "arn-CL"||
-            "arn"||
-            "as-IN"||
-            "as.txt"||
-            "asa-TZ"||
-            "asa"):
-        {
-            console.log(Name);
-        }break;
-        case ("ast-ES"||"ca-ES-valencia"||"ca-ES"||"es-BR"||"es-ES"||"es-MX"||"eu-ES"||"gl-ES"||"pt-BR"||"pt-PT"):
-        {
 
-        }break;
-        case ("cs-CZ"||"pl-PL"):
-        {
-
-        }break;
-        case ("hu-HU"):
-        {
-
-
-        }break;
-        case ("bo-CN"||"ii-CN"||"mn-Mong-CN"||"ug-CN"||"zn-CN"||"zn-Hans"||"zn-TW"||"ja-JP"):
-        {
-            //G/通用格式
-
-        }break;
-        case ("en-FI"||"fi-FI"||"se-FI"||"smn-FI"||"sms-FI"||"sv-AX"||"sv-FI"):
-        {
-
-        }break;
-        case("da-DK"||"en-DK"||"en-SE"||"fo-DK"||"nb-NO"||"nb-SJ"||"nn-NO"||"se-NO"||"se-SE"||"sma-NO"||"sma-SE"||"smj-NO"||"smj-SE"||"sv-SE"):
-        {
-
-        }break;
-        case("de-AT"||"de-CH"||"de-DE"||"dsb-DE"||"en-AT"||"en-DE"||"hsb-DE"||"ksh-DE"||"nds-DE"):
-        {
-
-        }break;
-
-        case ("el-GR"):
-        {
-
-
-        }break;
-        case("en-NL"||"fy-NL"||"nds-NL"||"nl-BE"||"nl-NL"):
-        {
-
-        }break;
-        case ("ca-IT"||"de-IT"||"fur-IT"||"it-CH"||"it-IT"||"it-VA"):
-        {
-
-        }break;
-        case ("br-FR"||"ca-FR"||"co-FR"||"fr-BE"||"fr-CA"||"fr-CH"||"fr-FR"||"gsw-FR"||"oc-FR"):
-        {
-
-
-        }break;
-        //Ru
-        case ("ru-RU"||"ce-RU"||"cu-RU"||"de-BE"||"en-BE"||"en-CH"||"gsw-CH"||"kk-KZ"||"os-RU"||"pt-CH"||"rm-CH"||"ru-KZ"||"sah-RU"||"tt-RU"||"wae-CH"||"ba-RU"):
-        {
-
-        }break;
-
-        //TUR
-        case ("tr-TR"):
-        { // Tur
-
-        }break;
     }
     return true;
 }
@@ -1078,6 +1099,162 @@ for(let i = 0; i < splited_repacked_arr_of_dates.length; i++) {
     }
 };
 
+let ethalon_es_array_names = [];
+let not_es_ethalon_array = [];
+let not_es_ethalon_array_names =[];
+for(let i = 0; i < repacked_array_of_dates_without_eng_etalon.length; i++) {
+    let subethalon = repacked_array_of_dates_without_eng_etalon[0];
+
+    if(repacked_array_of_dates_without_eng_etalon[i]==subethalon){
+
+        ethalon_es_array_names.push(names_of_not_etalon_dates[i]);
+      //  ethalon_es_array.push(repacked_array_of_dates_without_eng_etalon[i]);
+    } else{
+        not_es_ethalon_array.push(repacked_array_of_dates_without_eng_etalon[i]);
+        not_es_ethalon_array_names.push(names_of_not_etalon_dates[i]);
+    }
+};
+
+let ethalon_ru_array_names = [];
+let not_ru_ethalon_array = [];
+let not_ru_ethalon_array_names =[];
+for(let i = 0; i < not_es_ethalon_array.length; i++) {
+    let subethalon = not_es_ethalon_array[0];
+
+    if(not_es_ethalon_array[i]==subethalon){
+        ethalon_ru_array_names.push(not_es_ethalon_array_names[i]);
+    } else{
+        not_ru_ethalon_array.push(not_es_ethalon_array[i]);
+        not_ru_ethalon_array_names.push(not_es_ethalon_array_names[i]);
+    }
+};
+
+let ethalon_fr_array_names = [];
+let not_fr_ethalon_array = [];
+let not_fr_ethalon_array_names =[];
+for(let i = 0; i < not_ru_ethalon_array.length; i++) {
+    let subethalon = not_ru_ethalon_array[2];
+
+    if(not_ru_ethalon_array[i]==subethalon){
+        ethalon_fr_array_names.push(not_ru_ethalon_array_names[i]);
+    } else{
+        not_fr_ethalon_array.push(not_ru_ethalon_array[i]);
+        not_fr_ethalon_array_names.push(not_ru_ethalon_array_names[i]);
+    }
+};
+
+let ethalon_de_array_names = [];
+let not_de_ethalon_array = [];
+let not_de_ethalon_array_names =[];
+for(let i = 0; i < not_fr_ethalon_array.length; i++) {
+    let subethalon = not_fr_ethalon_array[5];
+
+    if(not_fr_ethalon_array[i]==subethalon){
+        ethalon_de_array_names.push(not_fr_ethalon_array_names[i]);
+    } else{
+        not_de_ethalon_array.push(not_fr_ethalon_array[i]);
+        not_de_ethalon_array_names.push(not_fr_ethalon_array_names[i]);
+    }
+};
+
+let ethalon_it_array_names = [];
+let not_it_ethalon_array = [];
+let not_it_ethalon_array_names =[];
+for(let i = 0; i < not_de_ethalon_array.length; i++) {
+    let subethalon = not_de_ethalon_array[2];
+
+    if(not_de_ethalon_array[i]==subethalon){
+        ethalon_it_array_names.push(not_de_ethalon_array_names[i]);
+    } else{
+        not_it_ethalon_array.push(not_de_ethalon_array[i]);
+        not_it_ethalon_array_names.push(not_de_ethalon_array_names[i]);
+    }
+};
+
+let ethalon_da_array_names = [];
+let not_da_ethalon_array = [];
+let not_da_ethalon_array_names =[];
+for(let i = 0; i < not_it_ethalon_array.length; i++) {
+    let subethalon = not_it_ethalon_array[3];
+
+    if(not_it_ethalon_array[i]==subethalon){
+        ethalon_da_array_names.push(not_it_ethalon_array_names[i]);
+    } else{
+        not_da_ethalon_array.push(not_it_ethalon_array[i]);
+        not_da_ethalon_array_names.push(not_it_ethalon_array_names[i]);
+    }
+};
+
+let ethalon_pointen_array_names = [];
+let not_pointen_ethalon_array = [];
+let not_pointen_ethalon_array_names =[];
+for(let i = 0; i < not_da_ethalon_array.length; i++) {
+    let subethalon = not_da_ethalon_array[0];
+
+    if(not_da_ethalon_array[i]==subethalon){
+        ethalon_pointen_array_names.push(not_da_ethalon_array_names[i]);
+    } else{
+        not_pointen_ethalon_array.push(not_da_ethalon_array[i]);
+        not_pointen_ethalon_array_names.push(not_da_ethalon_array_names[i]);
+    }
+};
+
+let ethalon_ch_array_names = [];
+let not_ch_ethalon_array = [];
+let not_ch_ethalon_array_names =[];
+for(let i = 0; i < not_pointen_ethalon_array.length; i++) {
+    let subethalon = not_pointen_ethalon_array[0];
+
+    if(not_pointen_ethalon_array[i]==subethalon){
+        ethalon_ch_array_names.push(not_pointen_ethalon_array_names[i]);
+    } else{
+        not_ch_ethalon_array.push(not_pointen_ethalon_array[i]);
+        not_ch_ethalon_array_names.push(not_pointen_ethalon_array_names[i]);
+    }
+};
+
+let ethalon_fi_array_names = [];
+let not_fi_ethalon_array = [];
+let not_fi_ethalon_array_names =[];
+for(let i = 0; i < not_ch_ethalon_array.length; i++) {
+    let subethalon = not_ch_ethalon_array[7];
+
+    if(not_ch_ethalon_array[i]==subethalon){
+        ethalon_fi_array_names.push(not_ch_ethalon_array_names[i]);
+    } else{
+        not_fi_ethalon_array.push(not_ch_ethalon_array[i]);
+        not_fi_ethalon_array_names.push(not_ch_ethalon_array_names[i]);
+    }
+};
+
+let ethalon_DA_array_names = [];
+let not_DA_ethalon_array = [];
+let not_DA_ethalon_array_names =[];
+for(let i = 0; i < not_fi_ethalon_array.length; i++) {
+    let subethalon = not_fi_ethalon_array[18];
+
+    if(not_fi_ethalon_array[i]==subethalon){
+        ethalon_DA_array_names.push(not_fi_ethalon_array_names[i]);
+    } else{
+        not_DA_ethalon_array.push(not_fi_ethalon_array[i]);
+        not_DA_ethalon_array_names.push(not_fi_ethalon_array_names[i]);
+    }
+};
+
+let ethalon_fy_array_names = [];
+let not_fy_ethalon_array = [];
+let not_fy_ethalon_array_names =[];
+for(let i = 0; i < not_DA_ethalon_array.length; i++) {
+    let subethalon = not_DA_ethalon_array[4];
+
+    if(not_DA_ethalon_array[i]==subethalon){
+        ethalon_fy_array_names.push(not_DA_ethalon_array_names[i]);
+    } else{
+        not_fy_ethalon_array.push(not_DA_ethalon_array[i]);
+        not_fy_ethalon_array_names.push(not_DA_ethalon_array_names[i]);
+    }
+};
+
 for(let i = 0; i < splited_repacked_arr_of_numbers.length; i++) {
     for (let j = 0; j < etalarr_for_numbers.length; j++) {
 
@@ -1110,10 +1287,85 @@ fs.writeFileSync(outputetalon2, etalarr_for_numbers, "utf-8");
 //____________________________________________________________________________________
 let splited_names_of_etalon_dates =[];
 let builder_of_splited_names_of_etalon_dates = [];
-    for(let i =0;i<names_of_etalon_dates.length;i++) {
-        builder_of_splited_names_of_etalon_dates[i] = "case("+'"'+(names_of_etalon_dates[i]).replace(".txt","")+'"'+"):{ LocaleFormatSymbol['Y'] = 'Y'; LocaleFormatSymbol['y'] ='y';LocaleFormatSymbol['M'] = 'M';LocaleFormatSymbol['m'] ='m';LocaleFormatSymbol['D'] = 'D';LocaleFormatSymbol['d'] ='d'; LocaleFormatSymbol['H'] = 'H';LocaleFormatSymbol['h'] ='h';LocaleFormatSymbol['S'] = 'S';LocaleFormatSymbol['s'] ='s';}break;"
+let builder_of_splited_es_names_of_etalon_dates =[];
+let builder_of_splited_ru_names_of_etalon_dates =[];
+let builder_of_splited_fr_names_of_etalon_dates =[];
+let builder_of_splited_de_names_of_etalon_dates =[];
+let builder_of_splited_it_names_of_etalon_dates =[];
+let builder_of_splited_da_names_of_etalon_dates = [];
+let builder_of_splited_pointen_names_of_etalon_dates = [];
+let builder_of_splited_ch_names_of_etalon_dates = [];
+let builder_of_splited_fi_names_of_etalon_dates = [];
+let builder_of_splited_DA_names_of_etalon_dates = [];
+let builder_of_splited_fy_names_of_etalon_dates = [];
+let special_builder = [];
+for(let i =0;i<names_of_etalon_dates.length;i++) {
+     //   builder_of_splited_names_of_etalon_dates[i] = "case("+'"'+(names_of_etalon_dates[i]).replace(".txt","")+'"'+"):{ LocaleFormatSymbol['Y'] = 'Y'; LocaleFormatSymbol['y'] ='y';LocaleFormatSymbol['M'] = 'M';LocaleFormatSymbol['m'] ='m';LocaleFormatSymbol['D'] = 'D';LocaleFormatSymbol['d'] ='d'; LocaleFormatSymbol['H'] = 'H';LocaleFormatSymbol['h'] ='h';LocaleFormatSymbol['S'] = 'S';LocaleFormatSymbol['s'] ='s';}break;"
+    builder_of_splited_names_of_etalon_dates[i] = "case("+'"'+(names_of_etalon_dates[i]).replace(".txt","")+'"'+"):{console.log(Name);}break;"
         splited_names_of_etalon_dates[i] = (names_of_etalon_dates[i]).replace(".txt","");
-    //    console.log(builder_of_splited_names_of_etalon_dates[i]);
-    ParseLocalFormatSymbol(splited_names_of_etalon_dates[i])
+
+        console.log(builder_of_splited_names_of_etalon_dates[i]);
+ //   ParseLocalFormatSymbol(splited_names_of_etalon_dates[i])
+}
+console.log("//____________________________________________________ES_____________________________________");
+for(let i =0;i<ethalon_es_array_names.length;i++){
+    builder_of_splited_es_names_of_etalon_dates[i]="case("+'"'+(ethalon_es_array_names[i]).replace(".txt","")+'"'+"):{LocaleFormatSymbol['Y'] = 'A';LocaleFormatSymbol['y'] ='a';}break;"
+    console.log(builder_of_splited_es_names_of_etalon_dates[i]);
+}
+console.log("//______________________________________________________ru___________________________________");
+for(let i =0;i<ethalon_ru_array_names.length;i++){
+    builder_of_splited_ru_names_of_etalon_dates[i]="case("+'"'+(ethalon_ru_array_names[i]).replace(".txt","")+'"'+"):{LocaleFormatSymbol['Y'] = 'Г';LocaleFormatSymbol['y'] = 'г';LocaleFormatSymbol['M'] = 'М';LocaleFormatSymbol['m'] = 'м';LocaleFormatSymbol['D'] = 'Д';LocaleFormatSymbol['d'] = 'д';LocaleFormatSymbol['H'] = 'Ч';LocaleFormatSymbol['h'] = 'ч';LocaleFormatSymbol['S'] = 'C';LocaleFormatSymbol['s'] = 'с';}break;"
+    console.log(builder_of_splited_ru_names_of_etalon_dates[i]);
+}
+console.log("//________________________________________________________fr_________________________________");
+for(let i =0;i<ethalon_fr_array_names.length;i++){
+    builder_of_splited_fr_names_of_etalon_dates[i]="case("+'"'+(ethalon_fr_array_names[i]).replace(".txt","")+'"'+"):{LocaleFormatSymbol['Y'] = 'J';LocaleFormatSymbol['y'] ='j';}break;LocaleFormatSymbol['D'] = 'A';LocaleFormatSymbol['d'] ='a';"
+    console.log(builder_of_splited_fr_names_of_etalon_dates[i]);
+}
+console.log("//__________________________________________________________de_______________________________");
+for(let i =0;i<ethalon_de_array_names.length;i++){
+    builder_of_splited_de_names_of_etalon_dates[i]="case("+'"'+(ethalon_de_array_names[i]).replace(".txt","")+'"'+"):{LocaleFormatSymbol['Y'] = 'J';LocaleFormatSymbol['y'] = 'j';LocaleFormatSymbol['D'] = 'T';LocaleFormatSymbol['d'] = 't';}break;"
+    console.log(builder_of_splited_de_names_of_etalon_dates[i]);
+}
+console.log("//____________________________________________________________it_____________________________");
+for(let i =0;i<ethalon_it_array_names.length;i++){
+    builder_of_splited_it_names_of_etalon_dates[i]="case("+'"'+(ethalon_it_array_names[i]).replace(".txt","")+'"'+"):{LocaleFormatSymbol['Y'] = 'G';LocaleFormatSymbol['y'] ='g';LocaleFormatSymbol['D'] = 'A';LocaleFormatSymbol['d'] ='a';}break;"
+    console.log(builder_of_splited_it_names_of_etalon_dates[i]);
+}
+console.log("//______________________________________________________________da___________________________");
+for(let i =0;i<ethalon_da_array_names.length;i++){
+    builder_of_splited_da_names_of_etalon_dates[i]="case("+'"'+(ethalon_da_array_names[i]).replace(".txt","")+'"'+"):{LocaleFormatSymbol['Y'] = 'Å';LocaleFormatSymbol['y'] ='å';LocaleFormatSymbol['H'] = 'T';LocaleFormatSymbol['h'] ='t';}break;"
+    console.log(builder_of_splited_da_names_of_etalon_dates[i]);
+}
+console.log("//________________________________________________________________pointen_________________________");
+for(let i =0;i<ethalon_pointen_array_names.length;i++){
+    builder_of_splited_pointen_names_of_etalon_dates[i]="case("+'"'+(ethalon_pointen_array_names[i]).replace(".txt","")+'"'+"):{console.log(Name);}break;"
+    console.log(builder_of_splited_pointen_names_of_etalon_dates[i]);
+}
+console.log("//_______________________________________________________________________ch__________________");
+for(let i =0;i<ethalon_ch_array_names.length;i++){
+    builder_of_splited_ch_names_of_etalon_dates[i]="case("+'"'+(ethalon_ch_array_names[i]).replace(".txt","")+'"'+"):{console.log(Name);}break;"
+    console.log(builder_of_splited_ch_names_of_etalon_dates[i]);
+}
+console.log("//________________________________________________________fi_________________________________");
+for(let i =0;i<ethalon_fi_array_names.length;i++){
+    builder_of_splited_fi_names_of_etalon_dates[i]="case("+'"'+(ethalon_fi_array_names[i]).replace(".txt","")+'"'+"):{LocaleFormatSymbol['Y'] = 'V';LocaleFormatSymbol['y'] ='v';LocaleFormatSymbol['d'] ='p';LocaleFormatSymbol['H'] = 'T';LocaleFormatSymbol['h'] ='t';}break;"
+    console.log(builder_of_splited_fi_names_of_etalon_dates[i]);
+}
+console.log("//__________________________________________________________DA_______________________________");
+for(let i =0;i<ethalon_DA_array_names.length;i++){
+    builder_of_splited_DA_names_of_etalon_dates[i]="case("+'"'+(ethalon_DA_array_names[i]).replace(".txt","")+'"'+"):{LocaleFormatSymbol['Y'] = 'Å';LocaleFormatSymbol['y'] ='å';LocaleFormatSymbol['H'] = 'T';LocaleFormatSymbol['h'] ='t';}break;"
+    console.log(builder_of_splited_DA_names_of_etalon_dates[i]);
+}
+console.log("//____________________________________________________________fy_____________________________");
+for(let i =0;i<ethalon_fy_array_names.length;i++){
+    builder_of_splited_fy_names_of_etalon_dates[i]="case("+'"'+(ethalon_fy_array_names[i]).replace(".txt","")+'"'+"):{LocaleFormatSymbol['Y'] = 'J';LocaleFormatSymbol['y'] ='j';LocaleFormatSymbol['H'] = 'U'; LocaleFormatSymbol['h'] ='u';}break;"
+    console.log(builder_of_splited_fy_names_of_etalon_dates[i]);
+}
+console.log("//______________________________________________________________special___________________________");
+for(let i =0;i<not_fy_ethalon_array_names.length;i++){
+    special_builder[i]="case("+'"'+(not_fy_ethalon_array_names[i]).replace(".txt","")+'"'+"):{console.log(Name);}break;"
+    console.log(special_builder[i]);
+    console.log("//_________________________________________________________________________________________");
 }
 console.log("end");

@@ -1,3 +1,0 @@
-﻿[$-F800]nnnn, hhhh nn, éééé
-[$-F400]ó:pp:mm AM/PM
-Normál

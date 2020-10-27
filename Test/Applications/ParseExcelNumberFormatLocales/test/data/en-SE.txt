@@ -1,3 +1,0 @@
-﻿[$-F800]DDDD, MMMM DD, ÅÅÅÅ
-[$-F400]t:mm:ss AM/PM
-Standard

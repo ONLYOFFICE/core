@@ -18,7 +18,7 @@ namespace NSGraphics
         gstNone		= 4
     };
 
-    class IGrState
+    struct IGrState
     {
     public:
         EGrStateType m_eType;
@@ -26,50 +26,41 @@ namespace NSGraphics
         virtual ~IGrState() {}
     };
 
-    class CGrStatePen : public IGrState
+    struct CGrStatePen : public IGrState
     {
-    public:
         NSStructures::CPen m_oPen;
         CGrStatePen() { m_eType = gstPen; }
     };
 
-    class CGrStateBrush : public IGrState
+    struct CGrStateBrush : public IGrState
     {
-    public:
         NSStructures::CBrush m_oBrush;
         CGrStateBrush() { m_eType = gstBrush; }
     };
 
-    class CGrStatePenBrush : public IGrState
+    struct CGrStatePenBrush : public IGrState
     {
-    public:
         NSStructures::CPen   m_oPen;
         NSStructures::CBrush m_oBrush;
+
         CGrStatePenBrush() { m_eType = gstPenBrush; }
     };
 
-    class CHist_Clip
+    struct CHist_Clip
     {
-    public:
-        bool  IsPath;
-        void* Path;
-
         Aggplus::CDoubleRect Rect;
         bool				 IsIntegerGrid;
         Aggplus::CMatrix	 Transform;
 
-    public:
-        CHist_Clip() : IsPath(false), Path(NULL), IsIntegerGrid(false) {}
+        CHist_Clip() : IsIntegerGrid(false) {}
     };
 
-    class CGrStateState : public IGrState
+    struct CGrStateState : public IGrState
     {
-    public:
-        Aggplus::CMatrix	        Transform;
-        bool				        IsIntegerGrid;
-        std::vector<CHist_Clip*>	Clips;
+        Aggplus::CMatrix	     Transform;
+        bool				     IsIntegerGrid;
+        std::vector<CHist_Clip*> Clips;
 
-    public:
         CGrStateState()
         {
             m_eType = gstState;
@@ -77,23 +68,17 @@ namespace NSGraphics
         }
         ~CGrStateState()
         {
-            size_t nCount = Clips.size();
-            for (size_t i = 0; i < nCount; ++i)
-            {
-                CHist_Clip* pClip = Clips[i];
+            for(CHist_Clip* pClip : Clips)
                 RELEASEOBJECT(pClip);
-            }
             Clips.clear();
         }
     };
 
-    class CGrState
+    struct CGrState
     {
-    public:
         std::vector<IGrState*>   States;
         std::vector<CHist_Clip*> Clips;
 
-    public:
         CGrState() {}
         ~CGrState()
         {
@@ -125,6 +110,8 @@ namespace NSGraphics
         }
         ~CGraphics()
         {
+            RELEASEOBJECT(m_pApplicationFonts);
+            RELEASEOBJECT(m_pRenderer);
         }
 
         void init(double width_px, double height_px, double width_mm, double height_mm);

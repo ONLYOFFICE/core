@@ -1,6 +1,5 @@
 ﻿[$-F800]dddd, mmmm dd, aaaa ast-ES.txt
 ,Estándar ast-ES.txt
-,undefined az-Cyrl.txt
 ,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ ba-RU.txt
 ,[$-F400]ч:мм:сс AM/PM ba-RU.txt
 ,Основной ba-RU.txt
@@ -153,7 +152,6 @@
 ,Основной os-RU.txt
 ,[$-F400]h.mm.ss AM/PM pa-Arab-PK.txt
 ,[$-F400]h.mm.ss AM/PM pa-Arab.txt
-,undefined pa-Arab.txt
 ,[$-F400]h.mm.ss AM/PM pa-Guru.txt
 ,﻿[$-F800]dddd, mmmm dd, rrrr pl-PL.txt
 ,[$-F400]g:mm:ss AM/PM pl-PL.txt

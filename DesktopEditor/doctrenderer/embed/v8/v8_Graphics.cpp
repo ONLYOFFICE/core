@@ -1,57 +1,6 @@
 #include "../GraphicsEmbed.h"
 #include "../../js_internal/v8/v8_base.h"
 
-#define PROPERTY_GET(NAME, NAME_EMBED, TYPE)                                                               \
-    void NAME(v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)                \
-    {                                                                                                      \
-        CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(info.Holder());                             \
-        info.GetReturnValue().Set(TYPE::New(v8::Isolate::GetCurrent(), _this->m_pInternal->NAME_EMBED())); \
-    }
-
-#define PROPERTY_GET_OBJECT(NAME, NAME_EMBED)                                                \
-    void NAME(v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info)  \
-    {                                                                                        \
-        CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(info.Holder());               \
-        v8::Local<v8::Value>* v = _this->m_pInternal->NAME_EMBED();                          \
-        if(v) info.GetReturnValue().Set(*v);                                                 \
-        else  info.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));           \
-    }
-
-#define PROPERTY_SET_DOUBLE(NAME, NAME_EMBED)                                                                      \
-    void NAME(v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info) \
-    {                                                                                                              \
-        CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(info.Holder());                                     \
-        JSSmart<NSJSBase::CJSValue> v = js_value(value);                                                           \
-        _this->m_pInternal->NAME_EMBED(v->toDouble());                                                             \
-        info.GetReturnValue().Set(value);                                                                          \
-    }
-
-#define PROPERTY_SET_INT(NAME, NAME_EMBED)                                                                         \
-    void NAME(v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info) \
-    {                                                                                                              \
-        CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(info.Holder());                                     \
-        JSSmart<NSJSBase::CJSValue> v = js_value(value);                                                           \
-        _this->m_pInternal->NAME_EMBED(v->toInt32());                                                              \
-        info.GetReturnValue().Set(value);                                                                          \
-    }
-
-#define PROPERTY_SET_BOOL(NAME, NAME_EMBED)                                                                        \
-    void NAME(v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info) \
-    {                                                                                                              \
-        CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(info.Holder());                                     \
-        JSSmart<NSJSBase::CJSValue> v = js_value(value);                                                           \
-        _this->m_pInternal->NAME_EMBED(v->toBool());                                                               \
-        info.GetReturnValue().Set(value);                                                                          \
-    }
-
-#define PROPERTY_SET_OBJECT(NAME, NAME_EMBED)                                                                      \
-    void NAME(v8::Local<v8::String> _name, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info) \
-    {                                                                                                              \
-        CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(info.Holder());                                     \
-        _this->m_pInternal->NAME_EMBED(&value);                                                                    \
-        info.GetReturnValue().Set(value);                                                                          \
-    }
-
 namespace NSGraphics
 {
     #define CURRENTWRAPPER CGraphicsEmbed
@@ -131,9 +80,9 @@ namespace NSGraphics
     // функции клиппирования
     FUNCTION_WRAPPER_V8_4(_AddClipRect,              AddClipRect)
     FUNCTION_WRAPPER_V8  (_RemoveClipRect,           RemoveClipRect)
-    FUNCTION_WRAPPER_V8_1(_SetClip,                  SetClip)
+    FUNCTION_WRAPPER_V8_4(_SetClip,                  SetClip)
     FUNCTION_WRAPPER_V8  (_RemoveClip,               RemoveClip)
-    FUNCTION_WRAPPER_V8_5(_drawCollaborativeChanges, drawCollaborativeChanges)
+    FUNCTION_WRAPPER_V8_8(_drawCollaborativeChanges, drawCollaborativeChanges)
     FUNCTION_WRAPPER_V8_4(_drawMailMergeField,       drawMailMergeField)
     FUNCTION_WRAPPER_V8_4(_drawSearchResult,         drawSearchResult)
     FUNCTION_WRAPPER_V8_2(_drawFlowAnchor,           drawFlowAnchor)
@@ -159,92 +108,6 @@ namespace NSGraphics
     FUNCTION_WRAPPER_V8_3(_DrawPolygon,              DrawPolygon)
     FUNCTION_WRAPPER_V8_4(_DrawFootnoteRect,         DrawFootnoteRect)
 
-    /*
-    // PROPERTY GET
-    PROPERTY_GET_OBJECT(_g_m_oContext,             g_m_oContext)
-    PROPERTY_GET_OBJECT(_g_m_oPen,                 g_m_oPen)
-    PROPERTY_GET_OBJECT(_g_m_oBrush,               g_m_oBrush)
-    PROPERTY_GET_OBJECT(_g_m_oFontManager,         g_m_oFontManager)
-    PROPERTY_GET_OBJECT(_g_m_oCoordTransform,      g_m_oCoordTransform)
-    PROPERTY_GET_OBJECT(_g_m_oBaseTransform,       g_m_oBaseTransform)
-    PROPERTY_GET_OBJECT(_g_m_oTransform,           g_m_oTransform)
-    PROPERTY_GET_OBJECT(_g_m_oFullTransform,       g_m_oFullTransform)
-    PROPERTY_GET_OBJECT(_g_m_oInvertFullTransform, g_m_oInvertFullTransform)
-    PROPERTY_GET_OBJECT(_g_ArrayPoints,            g_ArrayPoints)
-    PROPERTY_GET_OBJECT(_g_m_oTextPr,              g_m_oTextPr)
-    PROPERTY_GET_OBJECT(_g_m_oGrFonts,             g_m_oGrFonts)
-    PROPERTY_GET_OBJECT(_g_m_oLastFont,            g_m_oLastFont)
-    PROPERTY_GET_OBJECT(_g_ClipManager,            g_ClipManager)
-    PROPERTY_GET_OBJECT(_g_GrState,                g_GrState)
-    PROPERTY_GET_OBJECT(_g_TextClipRect,           g_TextClipRect)
-    PROPERTY_GET_OBJECT(_g_m_oFontManager2,        g_m_oFontManager2)
-    PROPERTY_GET_OBJECT(_g_m_oLastFont2,           g_m_oLastFont2)
-    PROPERTY_GET_OBJECT(_g_dash_no_smart,          g_dash_no_smart)
-    PROPERTY_GET(_g_m_dWidthMM,   g_m_dWidthMM,   v8::Number)
-    PROPERTY_GET(_g_m_dHeightMM,  g_m_dHeightMM,  v8::Number)
-    PROPERTY_GET(_g_m_lWidthPix,  g_m_lWidthPix,  v8::Number)
-    PROPERTY_GET(_g_m_lHeightPix, g_m_lHeightPix, v8::Number)
-    PROPERTY_GET(_g_m_dDpiX,      g_m_dDpiX,      v8::Number)
-    PROPERTY_GET(_g_m_dDpiY,      g_m_dDpiY,      v8::Number)
-    PROPERTY_GET(_g_m_bIsBreak,          g_m_bIsBreak,          v8::Boolean)
-    PROPERTY_GET(_g_m_bPenColorInit,     g_m_bPenColorInit,     v8::Boolean)
-    PROPERTY_GET(_g_m_bBrushColorInit,   g_m_bBrushColorInit,   v8::Boolean)
-    PROPERTY_GET(_g_m_bIntegerGrid,      g_m_bIntegerGrid,      v8::Boolean)
-    PROPERTY_GET(_g_IsThumbnail,         g_IsThumbnail,         v8::Boolean)
-    PROPERTY_GET(_g_IsDemonstrationMode, g_IsDemonstrationMode, v8::Boolean)
-    PROPERTY_GET(_g_IsClipContext,       g_IsClipContext,       v8::Boolean)
-    PROPERTY_GET(_g_IsUseFonts2,         g_IsUseFonts2,         v8::Boolean)
-    PROPERTY_GET(_g_ClearMode,           g_ClearMode,           v8::Boolean)
-    PROPERTY_GET(_g_IsRetina,            g_IsRetina,            v8::Boolean)
-    // PROPERTY_GET_OBJECT(_g_m_oCurFont,          g_m_oCurFont)
-    // PROPERTY_GET_OBJECT(_g_LastFontOriginInfo,  g_LastFontOriginInfo)
-    PROPERTY_GET(_g_TextureFillTransformScaleX, g_TextureFillTransformScaleX, v8::Int32)
-    PROPERTY_GET(_g_TextureFillTransformScaleY, g_TextureFillTransformScaleY, v8::Int32)
-    PROPERTY_GET(_g_globalAlpha,                g_globalAlpha,                v8::Int32)
-
-    // PROPERTY SET
-    PROPERTY_SET_OBJECT(_s_m_oContext,             s_m_oContext)
-    PROPERTY_SET_OBJECT(_s_m_oPen,                 s_m_oPen)
-    PROPERTY_SET_OBJECT(_s_m_oBrush,               s_m_oBrush)
-    PROPERTY_SET_OBJECT(_s_m_oFontManager,         s_m_oFontManager)
-    PROPERTY_SET_OBJECT(_s_m_oCoordTransform,      s_m_oCoordTransform)
-    PROPERTY_SET_OBJECT(_s_m_oBaseTransform,       s_m_oBaseTransform)
-    PROPERTY_SET_OBJECT(_s_m_oTransform,           s_m_oTransform)
-    PROPERTY_SET_OBJECT(_s_m_oFullTransform,       s_m_oFullTransform)
-    PROPERTY_SET_OBJECT(_s_m_oInvertFullTransform, s_m_oInvertFullTransform)
-    PROPERTY_SET_OBJECT(_s_ArrayPoints,            s_ArrayPoints)
-    PROPERTY_SET_OBJECT(_s_m_oTextPr,              s_m_oTextPr)
-    PROPERTY_SET_OBJECT(_s_m_oGrFonts,             s_m_oGrFonts)
-    PROPERTY_SET_OBJECT(_s_m_oLastFont,            s_m_oLastFont)
-    PROPERTY_SET_OBJECT(_s_ClipManager,            s_ClipManager)
-    PROPERTY_SET_OBJECT(_s_GrState,                s_GrState)
-    PROPERTY_SET_OBJECT(_s_TextClipRect,           s_TextClipRect)
-    PROPERTY_SET_OBJECT(_s_m_oFontManager2,        s_m_oFontManager2)
-    PROPERTY_SET_OBJECT(_s_m_oLastFont2,           s_m_oLastFont2)
-    PROPERTY_SET_OBJECT(_s_dash_no_smart,          s_dash_no_smart)
-    PROPERTY_SET_DOUBLE(_s_m_dWidthMM,   s_m_dWidthMM)
-    PROPERTY_SET_DOUBLE(_s_m_dHeightMM,  s_m_dHeightMM)
-    PROPERTY_SET_DOUBLE(_s_m_lWidthPix,  s_m_lWidthPix)
-    PROPERTY_SET_DOUBLE(_s_m_lHeightPix, s_m_lHeightPix)
-    PROPERTY_SET_DOUBLE(_s_m_dDpiX,      s_m_dDpiX)
-    PROPERTY_SET_DOUBLE(_s_m_dDpiY,      s_m_dDpiY)
-    PROPERTY_SET_BOOL(_s_m_bIsBreak,          s_m_bIsBreak)
-    PROPERTY_SET_BOOL(_s_m_bPenColorInit,     s_m_bPenColorInit)
-    PROPERTY_SET_BOOL(_s_m_bBrushColorInit,   s_m_bBrushColorInit)
-    PROPERTY_SET_BOOL(_s_m_bIntegerGrid,      s_m_bIntegerGrid)
-    PROPERTY_SET_BOOL(_s_IsThumbnail,         s_IsThumbnail)
-    PROPERTY_SET_BOOL(_s_IsDemonstrationMode, s_IsDemonstrationMode)
-    PROPERTY_SET_BOOL(_s_IsClipContext,       s_IsClipContext)
-    PROPERTY_SET_BOOL(_s_IsUseFonts2,         s_IsUseFonts2)
-    PROPERTY_SET_BOOL(_s_ClearMode,           s_ClearMode)
-    PROPERTY_SET_BOOL(_s_IsRetina,            s_IsRetina)
-    // PROPERTY_SET_OBJECT(_s_m_oCurFont,          s_m_oCurFont)
-    // PROPERTY_SET_OBJECT(_s_LastFontOriginInfo,  s_LastFontOriginInfo)
-    PROPERTY_SET_INT(_s_TextureFillTransformScaleX, s_TextureFillTransformScaleX)
-    PROPERTY_SET_INT(_s_TextureFillTransformScaleY, s_TextureFillTransformScaleY)
-    PROPERTY_SET_INT(_s_globalAlpha,                s_globalAlpha)
-    */
-
     v8::Handle<v8::ObjectTemplate> CreateGraphicsTemplate(v8::Isolate* isolate)
     {
         v8::EscapableHandleScope handle_scope(isolate);
@@ -253,50 +116,6 @@ namespace NSGraphics
         result->SetInternalFieldCount(1);
 
         v8::Isolate* current = v8::Isolate::GetCurrent();
-
-        /*
-        // свойства
-        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oContext"),                 _g_m_oContext,                 _s_m_oContext);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "m_dWidthMM"),                 _g_m_dWidthMM,                 _s_m_dWidthMM);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "m_dHeightMM"),                _g_m_dHeightMM,                _s_m_dHeightMM);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "m_lWidthPix"),                _g_m_lWidthPix,                _s_m_lWidthPix);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "m_lHeightPix"),               _g_m_lHeightPix,               _s_m_lHeightPix);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "m_dDpiX"),                    _g_m_dDpiX,                    _s_m_dDpiX);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "m_dDpiY"),                    _g_m_dDpiY,                    _s_m_dDpiY);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "m_bIsBreak"),                 _g_m_bIsBreak,                 _s_m_bIsBreak);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oPen"),                     _g_m_oPen,                     _s_m_oPen);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "m_bPenColorInit"),            _g_m_bPenColorInit,            _s_m_bPenColorInit);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oBrush"),                   _g_m_oBrush,                   _s_m_oBrush);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "m_bBrushColorInit"),          _g_m_bBrushColorInit,          _s_m_bBrushColorInit);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oFontManager"),             _g_m_oFontManager,             _s_m_oFontManager);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oCoordTransform"),          _g_m_oCoordTransform,          _s_m_oCoordTransform);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oBaseTransform"),           _g_m_oBaseTransform,           _s_m_oBaseTransform);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oFullTransform"),           _g_m_oFullTransform,           _s_m_oFullTransform);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oInvertFullTransform"),     _g_m_oInvertFullTransform,     _s_m_oInvertFullTransform);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "ArrayPoints"),                _g_ArrayPoints,                _s_ArrayPoints);
-        // result->SetAccessor(v8::String::NewFromUtf8(current, "m_oCurFont"),                 _g_m_oCurFont,                 _s_m_oCurFont);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oTextPr"),                  _g_m_oTextPr,                  _s_m_oTextPr);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oGrFonts"),                 _g_m_oGrFonts,                 _s_m_oGrFonts);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oLastFont"),                _g_m_oLastFont,                _s_m_oLastFont);
-        // result->SetAccessor(v8::String::NewFromUtf8(current, "LastFontOriginInfo"),         _g_LastFontOriginInfo,         _s_LastFontOriginInfo);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "m_bIntegerGrid"),             _g_m_bIntegerGrid,             _s_m_bIntegerGrid);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "ClipManager"),                _g_ClipManager,                _s_ClipManager);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "TextureFillTransformScaleX"), _g_TextureFillTransformScaleX, _s_TextureFillTransformScaleX);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "TextureFillTransformScaleY"), _g_TextureFillTransformScaleY, _s_TextureFillTransformScaleY);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "IsThumbnail"),                _g_IsThumbnail,                _s_IsThumbnail);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "IsDemonstrationMode"),        _g_IsDemonstrationMode,        _s_IsDemonstrationMode);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "IsDemonstrationMode"),        _g_IsDemonstrationMode,        _s_IsDemonstrationMode);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "GrState"),                    _g_GrState,                    _s_GrState);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "globalAlpha"),                _g_globalAlpha,                _s_globalAlpha);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "TextClipRect"),               _g_TextClipRect,               _s_TextClipRect);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "IsClipContext"),              _g_IsClipContext,              _s_IsClipContext);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "IsUseFonts2"),                _g_IsUseFonts2,                _s_IsUseFonts2);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oFontManager2"),            _g_m_oFontManager2,            _s_m_oFontManager2);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "m_oLastFont2"),               _g_m_oLastFont2,               _s_m_oLastFont2);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "ClearMode"),                  _g_ClearMode,                  _s_ClearMode);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "IsRetina"),                   _g_IsRetina,                   _s_IsRetina);
-        result->SetAccessor(v8::String::NewFromUtf8(current, "dash_no_smart"),              _g_dash_no_smart,              _s_dash_no_smart);
-        */
 
         // методы
         NSV8Objects::Template_Set(result, "init",                     _init);
@@ -393,24 +212,26 @@ namespace NSGraphics
 
         return handle_scope.Escape(result);
     }
+
+    void CreateNativeGraphics(const v8::FunctionCallbackInfo<v8::Value>& args)
+    {
+        v8::Isolate* isolate = args.GetIsolate();
+        v8::HandleScope scope(isolate);
+
+        v8::Handle<v8::ObjectTemplate> GraphicsTemplate = NSGraphics::CreateGraphicsTemplate(isolate);
+        CGraphicsEmbed* pGraphics = new CGraphicsEmbed();
+
+        v8::Local<v8::Object> obj = GraphicsTemplate->NewInstance(isolate->GetCurrentContext()).ToLocalChecked();
+        obj->SetInternalField(0, v8::External::New(CV8Worker::GetCurrent(), pGraphics));
+
+        args.GetReturnValue().Set(obj);
+    }
 }
 
-void CGraphicsEmbed::CreateNativeGraphics(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
-    v8::Isolate* isolate = args.GetIsolate();
-    v8::HandleScope scope(isolate);
 
-    v8::Handle<v8::ObjectTemplate> GraphicsTemplate = NSGraphics::CreateGraphicsTemplate(isolate);
-    CGraphicsEmbed* pGraphics = new CGraphicsEmbed();
-
-    v8::Local<v8::Object> obj = GraphicsTemplate->NewInstance(isolate->GetCurrentContext()).ToLocalChecked();
-    obj->SetInternalField(0, v8::External::New(CV8Worker::GetCurrent(), pGraphics));
-
-    args.GetReturnValue().Set(obj);
-}
 
 void CGraphicsEmbed::CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context)
 {
     v8::Isolate* current = CV8Worker::GetCurrent();
-    context->m_internal->m_global->Set(current, name.c_str(), v8::FunctionTemplate::New(current, CreateNativeGraphics));
+    context->m_internal->m_global->Set(current, name.c_str(), v8::FunctionTemplate::New(current, NSGraphics::CreateNativeGraphics));
 }

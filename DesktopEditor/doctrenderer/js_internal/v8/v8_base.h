@@ -756,6 +756,14 @@ void NAME(const v8::FunctionCallbackInfo<v8::Value>& args)                      
                                                    js_value(args[5]), js_value(args[6]), js_value(args[7]));                                        \
         js_return(args, ret);                                                                                                                       \
     }
+#define FUNCTION_WRAPPER_V8_9(NAME, NAME_EMBED)                                                                                                     \
+void NAME(const v8::FunctionCallbackInfo<v8::Value>& args)                                                                                          \
+    {                                                                                                                                               \
+        CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(args.This());                                                                        \
+        JSSmart<CJSValue> ret = _this->NAME_EMBED(js_value(args[0]), js_value(args[1]), js_value(args[2]), js_value(args[3]), js_value(args[4]),    \
+                                                   js_value(args[5]), js_value(args[6]), js_value(args[7]), js_value(args[8]));                     \
+        js_return(args, ret);                                                                                                                       \
+    }
 #define FUNCTION_WRAPPER_V8_10(NAME, NAME_EMBED)                                                                                                    \
     void NAME(const v8::FunctionCallbackInfo<v8::Value>& args)                                                                                      \
     {                                                                                                                                               \

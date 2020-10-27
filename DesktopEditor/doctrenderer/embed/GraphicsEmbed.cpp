@@ -135,7 +135,7 @@ JSSmart<CJSValue> CGraphicsEmbed::reset()
 }
 JSSmart<CJSValue> CGraphicsEmbed::transform3(JSSmart<CJSValue> sx, JSSmart<CJSValue> shy, JSSmart<CJSValue> shx, JSSmart<CJSValue> sy, JSSmart<CJSValue> tx, JSSmart<CJSValue> ty, JSSmart<CJSValue> isNeedInvert)
 {
-    m_pInternal->transform3(sx->toDouble(), shy->toDouble(), shx->toDouble(), sy->toDouble(), tx->toDouble(), ty->toDouble(), isNeedInvert->toBool());
+    m_pInternal->transform3(sx->toDouble(), shy->toDouble(), shx->toDouble(), sy->toDouble(), tx->toDouble(), ty->toDouble());
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::FreeFont()
@@ -259,22 +259,22 @@ JSSmart<CJSValue> CGraphicsEmbed::DrawStringASCII2(JSSmart<CJSValue> name, JSSma
 }
 JSSmart<CJSValue> CGraphicsEmbed::DrawHeaderEdit(JSSmart<CJSValue> yPos, JSSmart<CJSValue> lock_type, JSSmart<CJSValue> sectionNum, JSSmart<CJSValue> bIsRepeat, JSSmart<CJSValue> type)
 {
-    // m_pInternal->DrawHeaderEdit(yPos->toDouble(), lock_type->toObject(), sectionNum->toInt32(), bIsRepeat->toBool(), type->toObject());
+    m_pInternal->DrawHeaderEdit(yPos->toDouble(), lock_type->toInt32());
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::DrawFooterEdit(JSSmart<CJSValue> yPos, JSSmart<CJSValue> lock_type, JSSmart<CJSValue> sectionNum, JSSmart<CJSValue> bIsRepeat, JSSmart<CJSValue> type)
 {
-    // m_pInternal->DrawFooterEdit(yPos->toDouble(), lock_type->toObject(), sectionNum->toInt32(), bIsRepeat->toBool(), type->toObject());
+    m_pInternal->DrawFooterEdit(yPos->toDouble(), lock_type->toInt32());
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::DrawLockParagraph (JSSmart<CJSValue> lock_type, JSSmart<CJSValue> x, JSSmart<CJSValue> y1, JSSmart<CJSValue> y2)
 {
-    // m_pInternal->DrawLockParagraph(lock_type->toObject(), x->toDouble(), y1->toDouble(), y2->toDouble());
+    m_pInternal->DrawLockParagraph(lock_type->toInt32(), x->toDouble(), y1->toDouble(), y2->toDouble());
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::DrawLockObjectRect(JSSmart<CJSValue> lock_type, JSSmart<CJSValue> x, JSSmart<CJSValue> y,  JSSmart<CJSValue> w, JSSmart<CJSValue> h)
 {
-    // m_pInternal->DrawLockObjectRect(lock_type->toObject(), x->toDouble(), y->toDouble(), w->toDouble(), h->toDouble());
+    m_pInternal->DrawLockObjectRect(lock_type->toInt32(), x->toDouble(), y->toDouble(), w->toDouble(), h->toDouble());
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::DrawEmptyTableLine(JSSmart<CJSValue> x1, JSSmart<CJSValue> y1, JSSmart<CJSValue> x2, JSSmart<CJSValue> y2)
@@ -289,22 +289,22 @@ JSSmart<CJSValue> CGraphicsEmbed::DrawSpellingLine  (JSSmart<CJSValue> y0, JSSma
 }
 JSSmart<CJSValue> CGraphicsEmbed::drawHorLine (JSSmart<CJSValue> align, JSSmart<CJSValue> y, JSSmart<CJSValue> x, JSSmart<CJSValue> r, JSSmart<CJSValue> penW)
 {
-    m_pInternal->drawHorLine(align->toInt32(), y->toDouble(), x->toDouble(), r->toDouble(), penW->toInt32());
+    m_pInternal->drawHorLine(align->toInt32(), y->toDouble(), x->toDouble(), r->toDouble(), penW->toDouble());
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::drawHorLine2(JSSmart<CJSValue> align, JSSmart<CJSValue> y, JSSmart<CJSValue> x, JSSmart<CJSValue> r, JSSmart<CJSValue> penW)
 {
-    m_pInternal->drawHorLine2(align->toInt32(), y->toDouble(), x->toDouble(), r->toDouble(), penW->toInt32());
+    m_pInternal->drawHorLine2(align->toInt32(), y->toDouble(), x->toDouble(), r->toDouble(), penW->toDouble());
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::drawVerLine (JSSmart<CJSValue> align, JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> b, JSSmart<CJSValue> penW)
 {
-    m_pInternal->drawVerLine(align->toInt32(), x->toDouble(), y->toDouble(), b->toDouble(), penW->toInt32());
+    m_pInternal->drawVerLine(align->toInt32(), x->toDouble(), y->toDouble(), b->toDouble(), penW->toDouble());
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::drawHorLineExt(JSSmart<CJSValue> align, JSSmart<CJSValue> y, JSSmart<CJSValue> x, JSSmart<CJSValue> r, JSSmart<CJSValue> penW, JSSmart<CJSValue> leftMW, JSSmart<CJSValue> rightMW)
 {
-    m_pInternal->drawHorLineExt(align->toInt32(), y->toDouble(), x->toDouble(), r->toDouble(), penW->toInt32(), leftMW->toDouble(), rightMW->toDouble());
+    m_pInternal->drawHorLineExt(align->toInt32(), y->toDouble(), x->toDouble(), r->toDouble(), penW->toDouble(), leftMW->toDouble(), rightMW->toDouble());
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::rect     (JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h)
@@ -327,9 +327,9 @@ JSSmart<CJSValue> CGraphicsEmbed::RemoveClipRect()
     m_pInternal->RemoveClipRect();
     return NULL;
 }
-JSSmart<CJSValue> CGraphicsEmbed::SetClip(JSSmart<CJSValue> r)
+JSSmart<CJSValue> CGraphicsEmbed::SetClip(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h)
 {
-    // m_pInternal->SetClip(r->toObject());
+    m_pInternal->SetClip(x->toDouble(), y->toDouble(), w->toDouble(), h->toDouble());
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::RemoveClip()
@@ -337,9 +337,9 @@ JSSmart<CJSValue> CGraphicsEmbed::RemoveClip()
     m_pInternal->RemoveClip();
     return NULL;
 }
-JSSmart<CJSValue> CGraphicsEmbed::drawCollaborativeChanges(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h, JSSmart<CJSValue> Color)
+JSSmart<CJSValue> CGraphicsEmbed::drawCollaborativeChanges(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h, JSSmart<CJSValue> r, JSSmart<CJSValue> g, JSSmart<CJSValue> b, JSSmart<CJSValue> a)
 {
-    // m_pInternal->drawCollaborativeChanges(x->toDouble(), y->toDouble(), w->toDouble(), h->toDouble(), Color->toObject());
+    m_pInternal->drawCollaborativeChanges(x->toDouble(), y->toDouble(), w->toDouble(), h->toDouble(), r->toInt32(), g->toInt32(), b->toInt32(), a->toInt32());
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::drawMailMergeField(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h)
@@ -424,12 +424,12 @@ JSSmart<CJSValue> CGraphicsEmbed::SetTextClipRect(JSSmart<CJSValue> _l, JSSmart<
 }
 JSSmart<CJSValue> CGraphicsEmbed::AddSmartRect   (JSSmart<CJSValue> x,  JSSmart<CJSValue> y,  JSSmart<CJSValue> w,  JSSmart<CJSValue> h, JSSmart<CJSValue> pen_w)
 {
-    // m_pInternal->AddSmartRect(x->toDouble(), y->toDouble(), w->toDouble(), h->toDouble(), pen_w->toObject());
+    m_pInternal->AddSmartRect(x->toDouble(), y->toDouble(), w->toDouble(), h->toDouble(), pen_w->toDouble());
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::CheckUseFonts2 (JSSmart<CJSValue> _transform)
 {
-    // m_pInternal->CheckUseFonts2(_transform->toObject());
+    m_pInternal->CheckUseFonts2();
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::UncheckUseFonts2()
@@ -439,7 +439,7 @@ JSSmart<CJSValue> CGraphicsEmbed::UncheckUseFonts2()
 }
 JSSmart<CJSValue> CGraphicsEmbed::Drawing_StartCheckBounds(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h)
 {
-    m_pInternal->Drawing_StartCheckBounds(x->toDouble(), y->toDouble(), w->toDouble(), h->toDouble());
+    m_pInternal->Drawing_StartCheckBounds();
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::Drawing_EndCheckBounds()
@@ -449,16 +449,16 @@ JSSmart<CJSValue> CGraphicsEmbed::Drawing_EndCheckBounds()
 }
 JSSmart<CJSValue> CGraphicsEmbed::DrawPresentationComment(JSSmart<CJSValue> type, JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h)
 {
-    // m_pInternal->DrawPresentationComment(type->toObject(), x->toDouble(), y->toDouble(), w->toDouble(), h->toDouble());
+    m_pInternal->DrawPresentationComment();
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::DrawPolygon(JSSmart<CJSValue> oPath, JSSmart<CJSValue> lineWidth, JSSmart<CJSValue> shift)
 {
-    // m_pInternal->DrawPolygon(oPath->toObject(), lineWidth->toInt32(), shift->toDouble());
+    m_pInternal->DrawPolygon();
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::DrawFootnoteRect(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h)
 {
-    m_pInternal->DrawFootnoteRect(x->toDouble(), y->toDouble(), w->toDouble(), h->toDouble());
+    m_pInternal->DrawFootnoteRect();
     return NULL;
 }

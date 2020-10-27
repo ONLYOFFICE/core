@@ -1,3 +1,0 @@
-﻿[$-F800]pppp, kkkk pp, vvvv
-[$-F400]t.mm.ss AM/PM
-Yleinen

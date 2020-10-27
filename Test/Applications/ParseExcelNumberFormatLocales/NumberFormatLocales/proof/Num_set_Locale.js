@@ -1271,9 +1271,9 @@ for(let i = 0; i < splited_repacked_arr_of_numbers.length; i++) {
 //_______________________________________________________proofcheck________________________________________________________
 for(let i =0 ; i< string_locale_numbers_separators.length;i++) if (string_locale_numbers_separators[i]==etalonnumbers) { }else{ console.log("F "+ i);};
 //__________________________________________________output_________________________________________________________________
-for(let i=0;i<repackarr_for_dates.length;i++){
+for(let i=0;i<not_fy_ethalon_array.length;i++){
 
-    Clasified_array_of_the_no_eng_locales[i] = repackarr_for_dates[i]+" "+ names_of_repacked_dates[i]+"\r\n";
+    Clasified_array_of_the_no_eng_locales[i] = not_fy_ethalon_array[i]+" "+ not_fy_ethalon_array_names[i]+"\r\n";
 }
 
 fs.writeFileSync(outputdata, Clasified_array_of_the_no_eng_locales, "utf-8");

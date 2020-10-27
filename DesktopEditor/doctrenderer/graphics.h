@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "../common/Types.h"
+#include "../common/File.h"
 #include "../graphics/pro/Graphics.h"
 
 namespace NSGraphics
@@ -94,10 +95,13 @@ namespace NSGraphics
 
     class CGraphics
     {
+    public:
+        static std::wstring m_sApplicvationFontsDirectory;
+
     private:
-        NSFonts   ::IApplicationFonts* m_pApplicationFonts; // этот объект - один на приложение
-        NSGraphics::IGraphicsRenderer* m_pRenderer;         // drawer interface
-        CBgraFrame m_oFrame;                                // image data
+        NSFonts::IApplicationFonts* m_pApplicationFonts;
+        NSGraphics::IGraphicsRenderer* m_pRenderer;
+        CBgraFrame m_oFrame;
         CGrState oGrState;
 
         std::wstring m_sFontsDirectory;
@@ -110,7 +114,6 @@ namespace NSGraphics
         }
         ~CGraphics()
         {
-            RELEASEOBJECT(m_pApplicationFonts);
             RELEASEOBJECT(m_pRenderer);
         }
 

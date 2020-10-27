@@ -3,10 +3,15 @@
 #include <string>
 #include <cmath>
 
+std::wstring NSGraphics::CGraphics::m_sApplicvationFontsDirectory;
+
 namespace NSGraphics
 {
 void CGraphics::init(double width_px, double height_px, double width_mm, double height_mm)
 {
+    m_pApplicationFonts = NSFonts::NSApplication::Create();
+    m_pApplicationFonts->InitializeFromFolder(m_sApplicvationFontsDirectory.empty() ? NSFile::GetProcessDirectory() : m_sApplicvationFontsDirectory);
+
     NSFonts::IFontManager* pManager = m_pApplicationFonts->GenerateFontManager();
 
     m_pRenderer = NSGraphics::Create();

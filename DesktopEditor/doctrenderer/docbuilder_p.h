@@ -49,6 +49,7 @@
 #include "embed/NativeBuilderEmbed.h"
 #include "embed/NativeControlEmbed.h"
 #include "embed/MemoryStreamEmbed.h"
+#include "embed/GraphicsEmbed.h"
 
 #ifdef LINUX
 #include <unistd.h>
@@ -317,6 +318,7 @@ namespace NSDoctRenderer
             oWorker.m_bIsUseSystemFonts = bIsCheckSystemFonts;
             oWorker.m_bIsNeedThumbnails = false;
             oWorker.m_sDirectory = sDirectory;
+            NSGraphics::CGraphics::m_sApplicvationFontsDirectory = sDirectory;
             NSFonts::IApplicationFonts* pFonts = oWorker.Check();
             if(pFonts)
                 pFonts->Release();

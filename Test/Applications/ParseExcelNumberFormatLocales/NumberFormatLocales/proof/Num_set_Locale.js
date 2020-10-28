@@ -17,10 +17,10 @@ function num_set_Locale(re, str) {
 
 function alghoritm_of_changing_dates_and_numbes(){
     for(let i =0; i<substring_locale_dates.length; i++){
-        fs.writeFileSync(inputdata+substring_locale_dates[i], etalondates, function (err) {
+        fs.writeFileSync(inputdata+substring_locale_dates[i], substrdateinputs[i], function (err) {
             if (err) return console.log(err);
         });
-        fs.writeFileSync(inputnum+substring_locale_dates[i], substrinputs, function (err) {
+        fs.writeFileSync(inputnum+substring_locale_dates[i], substrinputs[i], function (err) {
             if (err) return console.log(err);
         });
     };

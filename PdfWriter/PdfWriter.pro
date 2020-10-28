@@ -23,6 +23,7 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
 DEFINES += NOMINMAX
 
 core_linux {
+    DEFINES += HAVE_UNISTD_H HAVE_FCNTL_H
     QMAKE_CXXFLAGS += -Wno-narrowing
 }
 core_android {

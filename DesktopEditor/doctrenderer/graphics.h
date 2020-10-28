@@ -2,7 +2,6 @@
 #define CGRAPHICS_H
 
 #include <string>
-#include <vector>
 
 #include "../common/Types.h"
 #include "../common/File.h"
@@ -96,25 +95,24 @@ namespace NSGraphics
     class CGraphics
     {
     public:
-        static std::wstring m_sApplicvationFontsDirectory;
+        static std::wstring m_sApplicationFontsDirectory;
 
     private:
-        NSFonts::IApplicationFonts* m_pApplicationFonts;
+        NSFonts   ::IApplicationFonts* m_pApplicationFonts;
         NSGraphics::IGraphicsRenderer* m_pRenderer;
         CBgraFrame m_oFrame;
-        CGrState oGrState;
+        CGrState   m_oGrState;
 
         std::wstring m_sFontsDirectory;
         std::wstring m_sImagesDirectory;
         std::wstring m_sThemesDirectory;
 
     public:
-        CGraphics()
-        {
-        }
+        CGraphics() {}
         ~CGraphics()
         {
-            RELEASEOBJECT(m_pRenderer);
+            RELEASEINTERFACE(m_pRenderer);
+            RELEASEINTERFACE(m_pApplicationFonts);
         }
 
         void init(double width_px, double height_px, double width_mm, double height_mm);
@@ -130,7 +128,7 @@ namespace NSGraphics
         void b_color1(int r, int g, int b, int a);
         void b_color2(int r, int g, int b, int a);
         void transform(double sx, double shy, double shx, double sy, double tx, double ty);
-        void CalculateFullTransform(bool isInvertNeed) {}
+        void CalculateFullTransform() {}
         // path commands
         void _s();
         void _e();
@@ -153,15 +151,13 @@ namespace NSGraphics
         void drawImage(const std::wstring& img, double x, double y, double w, double h, BYTE alpha);
         // text
         void GetFont() {}
-        void font(int font_id, int font_size) {}
+        void font() {}
         void SetFont(const std::wstring& path, int face, double size, int style);
         void SetTextPr() {}
         void GetTextPr() {}
         void FillText(double x, double y, int text);
         void t() {}
-        void FillText2(double x, double y, int text, double cropX, double cropW);
         void t2() {}
-        void FillTextCode(double x, double y, int lUnicode);
         void tg(int text, double x, double y);
         void charspace() {}
         // private methods
@@ -172,29 +168,29 @@ namespace NSGraphics
         bool GetIntegerGrid();
         void DrawStringASCII() {}
         void DrawStringASCII2() {}
-        void DrawHeaderEdit(double yPos, BYTE lock_type);
-        void DrawFooterEdit(double yPos, BYTE lock_type);
-        void DrawLockParagraph (BYTE lock_type, double x, double y1, double y2) {}
-        void DrawLockObjectRect(BYTE lock_type, double x, double y,  double w, double h) {}
+        void DrawHeaderEdit(double yPos);
+        void DrawFooterEdit(double yPos);
+        void DrawLockParagraph () {}
+        void DrawLockObjectRect() {}
         void DrawEmptyTableLine(double x1, double y1, double x2, double y2);
-        void DrawSpellingLine(double y0, double x0, double x1, double w);
+        void DrawSpellingLine  (double y0, double x0, double x1, double w);
         // smart methods for horizontal / vertical lines
         void drawHorLine (BYTE align, double y, double x, double r, double penW);
         void drawHorLine2(BYTE align, double y, double x, double r, double penW);
         void drawVerLine (BYTE align, double x, double y, double b, double penW);
         // мега крутые функции для таблиц
         void drawHorLineExt(BYTE align, double y, double x, double r, double penW, double leftMW, double rightMW);
-        void rect(double x, double y, double w, double h);
+        void rect     (double x, double y, double w, double h);
         void TableRect(double x, double y, double w, double h);
         // функции клиппирования
         void AddClipRect(double x, double y, double w, double h);
         void RemoveClipRect() {}
-        void SetClip(double x, double y, double w, double h) {}
+        void SetClip    (double x, double y, double w, double h) {}
         void RemoveClip() {}
         void drawCollaborativeChanges(double x, double y, double w, double h, int r, int g, int b, int a);
-        void drawMailMergeField(double x, double y, double w, double h);
-        void drawSearchResult(double x, double y, double w, double h);
-        void drawFlowAnchor(double x, double y) {}
+        void drawMailMergeField      (double x, double y, double w, double h);
+        void drawSearchResult        (double x, double y, double w, double h);
+        void drawFlowAnchor          (double x, double y) {}
         void SavePen();
         void RestorePen();
         void SaveBrush();

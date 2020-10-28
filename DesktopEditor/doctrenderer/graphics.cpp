@@ -3,14 +3,14 @@
 #include <string>
 #include <cmath>
 
-std::wstring NSGraphics::CGraphics::m_sApplicvationFontsDirectory;
+std::wstring NSGraphics::CGraphics::m_sApplicationFontsDirectory;
 
 namespace NSGraphics
 {
 void CGraphics::init(double width_px, double height_px, double width_mm, double height_mm)
 {
     m_pApplicationFonts = NSFonts::NSApplication::Create();
-    m_pApplicationFonts->InitializeFromFolder(m_sApplicvationFontsDirectory.empty() ? NSFile::GetProcessDirectory() : m_sApplicvationFontsDirectory);
+    m_pApplicationFonts->InitializeFromFolder(m_sApplicationFontsDirectory.empty() ? NSFile::GetProcessDirectory() : m_sApplicationFontsDirectory);
 
     NSFonts::IFontManager* pManager = m_pApplicationFonts->GenerateFontManager();
 
@@ -126,7 +126,7 @@ void CGraphics::_l(double x, double y)
         m_pRenderer->PathCommandLineTo((int)x + 0.5, (int)y + 0.5);
     }
 }
-void CGraphics::_c(double x1, double y1, double x2, double y2, double x3, double y3)
+void CGraphics::_c (double x1, double y1, double x2, double y2, double x3, double y3)
 {
     m_pRenderer->PathCommandCurveTo(x1, y1, x2, y2, x3, y3);
 }
@@ -142,76 +142,95 @@ void CGraphics::df()
 {
     m_pRenderer->Fill();
 }
-
 void CGraphics::restore()
 {
     m_pRenderer->BeginCommand(c_nResetClipType);
-    m_pRenderer->EndCommand(c_nResetClipType);
+    m_pRenderer->EndCommand  (c_nResetClipType);
 }
-
 void CGraphics::clip()
 {
     m_pRenderer->BeginCommand(c_nClipType);
-    m_pRenderer->EndCommand(c_nClipType);
+    m_pRenderer->EndCommand  (c_nClipType);
 }
-
 void CGraphics::reset()
 {
     m_pRenderer->ResetTransform();
 }
-
 void CGraphics::transform3(double sx, double shy, double shx, double sy, double tx, double ty)
 {
     m_pRenderer->SetTransform(sx, shy, shx, sy, tx, ty);
 }
-
 void CGraphics::drawImage(const std::wstring& img, double x, double y, double w, double h, BYTE alpha)
 {
     std::wstring strImage = (0 == img.find(L"theme") ? m_sThemesDirectory : m_sImagesDirectory) + img;
     m_pRenderer->DrawImageFromFile(strImage, x, y, w, h, alpha);
 }
-
 void CGraphics::SetFont(const std::wstring& path, int face, double size, int style)
 {
     m_pRenderer->put_FontPath((std::string::npos == path.find(L'/') ? m_sFontsDirectory : L"") + path);
     m_pRenderer->put_FontFaceIndex(face);
-    m_pRenderer->put_FontSize(size);
-    m_pRenderer->put_FontStyle(style);
+    m_pRenderer->put_FontSize     (size);
+    m_pRenderer->put_FontStyle    (style);
 }
-
 void CGraphics::FillText(double x, double y, int text)
 {
     m_pRenderer->CommandDrawTextCHAR(text, x, y, 0, 0);
 }
-
-void CGraphics::FillText2(double x, double y, int text, double cropX, double cropW)
-{
-    m_pRenderer->CommandDrawTextCHAR(text, x, y, 0, 0);
-}
-
-void CGraphics::FillTextCode(double x, double y, int lUnicode)
-{
-    m_pRenderer->CommandDrawTextCHAR(lUnicode, x, y, 0, 0);
-}
-
 void CGraphics::tg(int text, double x, double y)
 {
     m_pRenderer->put_FontStringGID(TRUE);
     m_pRenderer->CommandDrawTextCHAR(text, x, y, 0, 0);
     m_pRenderer->put_FontStringGID(FALSE);
 }
-
 void CGraphics::SetIntegerGrid(bool param)
 {
     m_pRenderer->put_IntegerGrid(param);
 }
-
 bool CGraphics::GetIntegerGrid()
 {
     return m_pRenderer->get_IntegerGrid();
 }
+void CGraphics::DrawHeaderEdit(double yPos)
+{
+    m_pRenderer->PathCommandEnd();
 
-void CGraphics::DrawHeaderEdit(double yPos, BYTE lock_type)
+    Aggplus::CMatrix* pFull = m_pRenderer->GetFullTransform();
+    double dPenSize = 0;
+    m_pRenderer->get_PenSize(&dPenSize);
+
+    double _width;
+    m_pRenderer->get_Width(&_width);
+    pFull->TransformPoint(_width, yPos);
+
+    BYTE nPenDashStyle = 0;
+    m_pRenderer->get_PenDashStyle(&nPenDashStyle);
+
+    bool bIsIntegerGrid = m_pRenderer->get_IntegerGrid();
+    if (!bIsIntegerGrid)
+        m_pRenderer->put_IntegerGrid(true);
+
+    m_pRenderer->put_PenSize(2);
+    m_pRenderer->PathCommandStart();
+
+    double dash[2] = { 6, 3 };
+    m_pRenderer->put_PenDashStyle(Aggplus::DashStyleCustom);
+    m_pRenderer->PenDashPattern(dash, 2);
+
+    m_pRenderer->put_PenColor(0xBBBEC2);
+
+    m_pRenderer->PathCommandMoveTo(0,      (int)(yPos));
+    m_pRenderer->PathCommandLineTo(_width, (int)(yPos));
+
+    m_pRenderer->Stroke();
+    m_pRenderer->PathCommandEnd();
+
+    if (!bIsIntegerGrid)
+        m_pRenderer->put_IntegerGrid(false);
+
+    m_pRenderer->put_PenSize(dPenSize);
+    m_pRenderer->put_PenDashStyle(nPenDashStyle);
+}
+void CGraphics::DrawFooterEdit(double yPos)
 {
     m_pRenderer->PathCommandEnd();
 
@@ -251,48 +270,6 @@ void CGraphics::DrawHeaderEdit(double yPos, BYTE lock_type)
     m_pRenderer->put_PenSize(dPenSize);
     m_pRenderer->put_PenDashStyle(nPenDashStyle);
 }
-
-void CGraphics::DrawFooterEdit(double yPos, BYTE lock_type)
-{
-    m_pRenderer->PathCommandEnd();
-
-    Aggplus::CMatrix* pFull = m_pRenderer->GetFullTransform();
-    double dPenSize = 0;
-    m_pRenderer->get_PenSize(&dPenSize);
-
-    double _width;
-    m_pRenderer->get_Width(&_width);
-    pFull->TransformPoint(_width, yPos);
-
-    BYTE nPenDashStyle = 0;
-    m_pRenderer->get_PenDashStyle(&nPenDashStyle);
-
-    bool bIsIntegerGrid = m_pRenderer->get_IntegerGrid();
-    if (!bIsIntegerGrid)
-        m_pRenderer->put_IntegerGrid(true);
-
-    m_pRenderer->put_PenSize(2);
-    m_pRenderer->PathCommandStart();
-
-    double dash[2] = { 6, 3 };
-    m_pRenderer->put_PenDashStyle(Aggplus::DashStyleCustom);
-    m_pRenderer->PenDashPattern(dash, 2);
-
-    m_pRenderer->put_PenColor(0xBBBEC2);
-
-    m_pRenderer->PathCommandMoveTo(0, (int)(yPos));
-    m_pRenderer->PathCommandLineTo(_width, (int)(yPos));
-
-    m_pRenderer->Stroke();
-    m_pRenderer->PathCommandEnd();
-
-    if (!bIsIntegerGrid)
-        m_pRenderer->put_IntegerGrid(false);
-
-    m_pRenderer->put_PenSize(dPenSize);
-    m_pRenderer->put_PenDashStyle(nPenDashStyle);
-}
-
 void CGraphics::DrawEmptyTableLine(double x1, double y1, double x2, double y2)
 {
     m_pRenderer->PathCommandEnd();
@@ -375,8 +352,7 @@ void CGraphics::DrawEmptyTableLine(double x1, double y1, double x2, double y2)
     m_pRenderer->put_PenSize(dPenSize);
     m_pRenderer->put_PenDashStyle(nPenDashStyle);
 }
-
-void CGraphics::DrawSpellingLine(double y0, double x0, double x1, double w)
+void CGraphics::DrawSpellingLine  (double y0, double x0, double x1, double w)
 {
     Aggplus::CMatrix* pMatrix = m_pRenderer->GetTransformMatrix();
     if (!m_pRenderer->get_IntegerGrid())
@@ -415,8 +391,7 @@ void CGraphics::DrawSpellingLine(double y0, double x0, double x1, double w)
 
     }
 }
-
-void CGraphics::drawHorLine(BYTE align, double y, double x, double r, double penW)
+void CGraphics::drawHorLine   (BYTE align, double y, double x, double r, double penW)
 {
     Aggplus::CMatrix* pMatrix = m_pRenderer->GetTransformMatrix();
     if (!m_pRenderer->get_IntegerGrid())
@@ -455,8 +430,7 @@ void CGraphics::drawHorLine(BYTE align, double y, double x, double r, double pen
 
     }
 }
-
-void CGraphics::drawHorLine2(BYTE align, double y, double x, double r, double penW)
+void CGraphics::drawHorLine2  (BYTE align, double y, double x, double r, double penW)
 {
     Aggplus::CMatrix* pMatrix = m_pRenderer->GetTransformMatrix();
     if (!m_pRenderer->get_IntegerGrid())
@@ -510,8 +484,7 @@ void CGraphics::drawHorLine2(BYTE align, double y, double x, double r, double pe
         }
     }
 }
-
-void CGraphics::drawVerLine(BYTE align, double x, double y, double b, double penW)
+void CGraphics::drawVerLine   (BYTE align, double x, double y, double b, double penW)
 {
     if (!m_pRenderer->get_IntegerGrid())
     {
@@ -536,7 +509,6 @@ void CGraphics::drawVerLine(BYTE align, double x, double y, double b, double pen
         m_pRenderer->drawVerLine(align, x, y, b, penW);
     }
 }
-
 void CGraphics::drawHorLineExt(BYTE align, double y, double x, double r, double penW, double leftMW, double rightMW)
 {
     if (!m_pRenderer->get_IntegerGrid())
@@ -562,8 +534,7 @@ void CGraphics::drawHorLineExt(BYTE align, double y, double x, double r, double 
         m_pRenderer->drawHorLineExt(align, y, x, r, penW, leftMW, rightMW);
     }
 }
-
-void CGraphics::rect(double x, double y, double w, double h)
+void CGraphics::rect     (double x, double y, double w, double h)
 {
     m_pRenderer->PathCommandEnd();
     if (m_pRenderer->get_IntegerGrid())
@@ -586,7 +557,6 @@ void CGraphics::rect(double x, double y, double w, double h)
         m_pRenderer->AddRect(x, y, w, h);
     }
 }
-
 void CGraphics::TableRect(double x, double y, double w, double h)
 {
     m_pRenderer->PathCommandEnd();
@@ -626,7 +596,7 @@ void CGraphics::AddClipRect(double x, double y, double w, double h)
     _histClip->Rect.right	 = x + w;
     _histClip->Rect.bottom	 = y + h;
 
-    oGrState.Clips.push_back(_histClip);
+    m_oGrState.Clips.push_back(_histClip);
 
     StartClipPath();
 
@@ -668,19 +638,19 @@ void CGraphics::SavePen()
 {
     CGrStatePen* pState = new CGrStatePen();
     m_pRenderer->SavePen(pState->m_oPen);
-    oGrState.States.push_back(pState);
+    m_oGrState.States.push_back(pState);
 }
 
 void CGraphics::RestorePen()
 {
-    if (oGrState.States.empty())
+    if (m_oGrState.States.empty())
         return;
 
-    IGrState* pState = oGrState.States.back();
+    IGrState* pState = m_oGrState.States.back();
     if (pState->m_eType == gstPen)
     {
         m_pRenderer->RestorePen(((CGrStatePen*)pState)->m_oPen);
-        oGrState.States.pop_back();
+        m_oGrState.States.pop_back();
         RELEASEOBJECT(pState);
     }
 }
@@ -689,19 +659,19 @@ void CGraphics::SaveBrush()
 {
     CGrStateBrush* pState = new CGrStateBrush();
     m_pRenderer->SaveBrush(pState->m_oBrush);
-    oGrState.States.push_back(pState);
+    m_oGrState.States.push_back(pState);
 }
 
 void CGraphics::RestoreBrush()
 {
-    if (oGrState.States.empty())
+    if (m_oGrState.States.empty())
         return;
 
-    IGrState* pState = oGrState.States.back();
+    IGrState* pState = m_oGrState.States.back();
     if (pState->m_eType == gstBrush)
     {
         m_pRenderer->RestoreBrush(((CGrStateBrush*)pState)->m_oBrush);
-        oGrState.States.pop_back();
+        m_oGrState.States.pop_back();
         RELEASEOBJECT(pState);
     }
 }
@@ -711,20 +681,20 @@ void CGraphics::SavePenBrush()
     CGrStatePenBrush* pState = new CGrStatePenBrush();
     m_pRenderer->SavePen(pState->m_oPen);
     m_pRenderer->SaveBrush(pState->m_oBrush);
-    oGrState.States.push_back(pState);
+    m_oGrState.States.push_back(pState);
 }
 
 void CGraphics::RestorePenBrush()
 {
-    if (oGrState.States.empty())
+    if (m_oGrState.States.empty())
         return;
 
-    IGrState* pState = oGrState.States.back();
+    IGrState* pState = m_oGrState.States.back();
     if (pState->m_eType == gstPenBrush)
     {
         m_pRenderer->RestorePen(((CGrStatePenBrush*)pState)->m_oPen);
         m_pRenderer->RestoreBrush(((CGrStatePenBrush*)pState)->m_oBrush);
-        oGrState.States.pop_back();
+        m_oGrState.States.pop_back();
         RELEASEOBJECT(pState);
     }
 }
@@ -733,32 +703,32 @@ void CGraphics::SaveGrState()
 {
     CGrStateState* pState = new CGrStateState();
     pState->IsIntegerGrid = m_pRenderer->get_IntegerGrid();
-    pState->Clips = oGrState.Clips;
+    pState->Clips = m_oGrState.Clips;
 
     double sx, shy, shx, sy, tx, ty;
     m_pRenderer->GetTransform(&sx, &shy, &shx, &sy, &tx, &ty);
     pState->Transform.SetElements(sx, shy, shx, sy, tx, ty);
 
-    oGrState.Clips.clear();
-    oGrState.States.push_back(pState);
+    m_oGrState.Clips.clear();
+    m_oGrState.States.push_back(pState);
 }
 
 void CGraphics::RestoreGrState()
 {
-    if (oGrState.States.empty())
+    if (m_oGrState.States.empty())
         return;
 
-    IGrState* pState = oGrState.States.back();
+    IGrState* pState = m_oGrState.States.back();
     if (pState->m_eType != gstState)
         return;
 
     CGrStateState* pGrState = (CGrStateState*)pState;
 
-    if (!oGrState.Clips.empty())
+    if (!m_oGrState.Clips.empty())
     {
         RemoveClip();
 
-        for (IGrState* i : oGrState.States)
+        for (IGrState* i : m_oGrState.States)
         {
             if (i->m_eType == gstState)
             {
@@ -790,13 +760,13 @@ void CGraphics::RestoreGrState()
         }
     }
 
-    for (CHist_Clip* pClip : oGrState.Clips)
+    for (CHist_Clip* pClip : m_oGrState.Clips)
         RELEASEOBJECT(pClip);
-    oGrState.Clips.clear();
+    m_oGrState.Clips.clear();
 
-    oGrState.Clips = pGrState->Clips;
+    m_oGrState.Clips = pGrState->Clips;
     pGrState->Clips.clear();
-    oGrState.States.pop_back();
+    m_oGrState.States.pop_back();
 
     Aggplus::CMatrix& oMatrix = pGrState->Transform;
     transform3(oMatrix.sx(), oMatrix.shy(), oMatrix.shx(), oMatrix.sy(), oMatrix.tx(), oMatrix.ty());

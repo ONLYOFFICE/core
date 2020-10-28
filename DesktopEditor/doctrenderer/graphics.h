@@ -96,16 +96,14 @@ namespace NSGraphics
     {
     public:
         static std::wstring m_sApplicationFontsDirectory;
+        static std::wstring m_sApplicationImagesDirectory;
+        static std::wstring m_sApplicationThemesDirectory;
 
     private:
         NSFonts   ::IApplicationFonts* m_pApplicationFonts;
         NSGraphics::IGraphicsRenderer* m_pRenderer;
         CBgraFrame m_oFrame;
         CGrState   m_oGrState;
-
-        std::wstring m_sFontsDirectory;
-        std::wstring m_sImagesDirectory;
-        std::wstring m_sThemesDirectory;
 
     public:
         CGraphics() {}

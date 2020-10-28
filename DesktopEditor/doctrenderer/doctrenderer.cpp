@@ -38,6 +38,7 @@
 
 #include "embed/NativeControlEmbed.h"
 #include "embed/MemoryStreamEmbed.h"
+#include "embed/GraphicsEmbed.h"
 
 #include "../xml/include/xmlutils.h"
 
@@ -610,6 +611,10 @@ namespace NSDoctRenderer
         {
             LOGGER_SPEED_START
 
+            NSGraphics::CGraphics::m_sApplicationFontsDirectory  = m_oParams.m_strFontsDirectory;
+            NSGraphics::CGraphics::m_sApplicationThemesDirectory = m_oParams.m_strThemesDirectory;
+            NSGraphics::CGraphics::m_sApplicationImagesDirectory = m_oParams.m_strImagesDirectory;
+
             bool bIsBreak = false;
             JSSmart<CJSContext> context = new CJSContext();
             context->Initialize();
@@ -622,6 +627,7 @@ namespace NSDoctRenderer
                 context->CreateGlobalForContext();
                 CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", context);
                 CMemoryStreamEmbed::CreateObjectInContext  ("CreateNativeMemoryStream", context);
+                CGraphicsEmbed::CreateObjectInContext          ("CreateNativeGraphics", context);
                 context->CreateContext();
 
                 JSSmart<CJSContextScope> context_scope = context->CreateContextScope();

@@ -4,6 +4,8 @@
 #include <cmath>
 
 std::wstring NSGraphics::CGraphics::m_sApplicationFontsDirectory;
+std::wstring NSGraphics::CGraphics::m_sApplicationThemesDirectory;
+std::wstring NSGraphics::CGraphics::m_sApplicationImagesDirectory;
 
 namespace NSGraphics
 {
@@ -162,12 +164,12 @@ void CGraphics::transform3(double sx, double shy, double shx, double sy, double 
 }
 void CGraphics::drawImage(const std::wstring& img, double x, double y, double w, double h, BYTE alpha)
 {
-    std::wstring strImage = (0 == img.find(L"theme") ? m_sThemesDirectory : m_sImagesDirectory) + img;
+    std::wstring strImage = (0 == img.find(L"theme") ? m_sApplicationThemesDirectory : m_sApplicationImagesDirectory) + img;
     m_pRenderer->DrawImageFromFile(strImage, x, y, w, h, alpha);
 }
 void CGraphics::SetFont(const std::wstring& path, int face, double size, int style)
 {
-    m_pRenderer->put_FontPath((std::string::npos == path.find(L'/') ? m_sFontsDirectory : L"") + path);
+    m_pRenderer->put_FontPath((std::string::npos == path.find(L'/') ? m_sApplicationFontsDirectory : L"") + path);
     m_pRenderer->put_FontFaceIndex(face);
     m_pRenderer->put_FontSize     (size);
     m_pRenderer->put_FontStyle    (style);

@@ -536,7 +536,7 @@ void CGraphics::drawHorLineExt(BYTE align, double y, double x, double r, double 
         m_pRenderer->drawHorLineExt(align, y, x, r, penW, leftMW, rightMW);
     }
 }
-void CGraphics::rect     (double x, double y, double w, double h)
+void CGraphics::rect       (double x, double y, double w, double h)
 {
     m_pRenderer->PathCommandEnd();
     if (m_pRenderer->get_IntegerGrid())
@@ -559,7 +559,7 @@ void CGraphics::rect     (double x, double y, double w, double h)
         m_pRenderer->AddRect(x, y, w, h);
     }
 }
-void CGraphics::TableRect(double x, double y, double w, double h)
+void CGraphics::TableRect  (double x, double y, double w, double h)
 {
     m_pRenderer->PathCommandEnd();
     if (m_pRenderer->get_IntegerGrid())
@@ -583,7 +583,6 @@ void CGraphics::TableRect(double x, double y, double w, double h)
     }
     m_pRenderer->Fill();
 }
-
 void CGraphics::AddClipRect(double x, double y, double w, double h)
 {
     CHist_Clip* _histClip = new CHist_Clip();

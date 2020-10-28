@@ -1120,7 +1120,7 @@ CNativeGraphics.prototype =
     },
     RemoveClipRect : function()
     {
-        this.Native["RemoveClipRect"]();
+        // this.Native["RemoveClipRect"]();
     },
     SetClip : function(r)
     {

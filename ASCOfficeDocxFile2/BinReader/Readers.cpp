@@ -9077,7 +9077,18 @@ BinaryFileReader::BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinar
 }
 int BinaryFileReader::ReadFile()
 {
-	return ReadMainTable();
+	long res = c_oSerConstants::ReadOk;
+
+	try
+	{
+		res = ReadMainTable();
+	}
+	catch(...)
+	{
+		res = c_oSerConstants::ErrorStream;
+	}
+
+	return res;
 }
 int BinaryFileReader::ReadMainTable()
 {

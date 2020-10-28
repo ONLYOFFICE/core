@@ -174,8 +174,15 @@ namespace BinXlsxRW{
 		BinXlsxRW::SaveParams			oSaveParams(sDrawingsPath, sThemePath, m_pExternalDrawingConverter->GetContentTypes());
 		OOX::Spreadsheet::CChartSpace	oChartSpace(NULL);
 		BinXlsxRW::BinaryChartReader	oBinaryChartReader(*pReader, oSaveParams, m_pExternalDrawingConverter);
-		
-		oBinaryChartReader.ReadCT_ChartSpace(lLength, &oChartSpace);
+	
+		try
+		{
+			oBinaryChartReader.ReadCT_ChartSpace(lLength, &oChartSpace);
+		}
+		catch(...)
+		{
+			//todooo
+		}
 
 		if(oChartSpace.isValid())
 		{

@@ -59,9 +59,10 @@ public:
 		return (bool)(iErr==0);
 	}
 //////////////////////////////////////////////////////////
-	virtual size_t	Read(void *buffer, size_t size, size_t count)
+	virtual size_t	Read(void *buffer, size_t size, size_t count, void* limit_start = NULL, void* limit_end = NULL)
 	{
 		if (!m_fp) return 0;
+		clamp_buffer(buffer, size, limit_start, limit_end);
 		return fread(buffer, size, count, m_fp);
 	}
 //////////////////////////////////////////////////////////

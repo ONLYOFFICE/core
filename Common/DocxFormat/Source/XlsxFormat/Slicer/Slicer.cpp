@@ -80,7 +80,7 @@ void CSlicers::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 }
 void CSlicers::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 {
-	LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+	LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 	pReader->Skip(1); // start attributes
 	while (true)
 	{
@@ -185,7 +185,7 @@ void CSlicer::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 }
 void CSlicer::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 {
-	LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+	LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 	pReader->Skip(1); // start attributes
 	while (true)
 	{

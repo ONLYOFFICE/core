@@ -1058,7 +1058,7 @@ namespace NSBinPptxRW
 		void ReadMasterInfo(LONG nIndexMaster)
 		{
 			LONG _rec_start = m_oReader.GetPos();
-			LONG _end_rec = _rec_start + m_oReader.GetLong() + 4;
+			LONG _end_rec = _rec_start + m_oReader.GetRecordSize() + 4;
 
 			_slideMasterInfo& oMaster = m_arSlideMasters_Theme[nIndexMaster];			
 			

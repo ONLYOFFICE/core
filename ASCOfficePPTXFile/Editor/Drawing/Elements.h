@@ -33,10 +33,6 @@
 #include "Theme.h"
 #include "Shapes/Shape.h"
 
-#ifndef DISABLE_FILE_DOWNLOADER
-    #include "../../../Common/FileDownloader/FileDownloader.h"
-#endif
-
 #include "Shapes/BaseShape/PPTShape/Ppt2PptxShapeConverter.h"
 
 namespace PPTX2EditorAdvanced
@@ -378,17 +374,7 @@ namespace PPT_FORMAT
 			return strXmlPPTX;
 		}
 
-		AVSINLINE std::wstring DownloadImage(const std::wstring& strFile)
-		{
-#ifndef DISABLE_FILE_DOWNLOADER
-			CFileDownloader oDownloader(strFile, true);
-			if ( oDownloader.DownloadSync() )
-			{
-				m_strImageFileName = oDownloader.GetFilePath();
-			}
-#endif
-            return m_strImageFileName;
-		}
+		AVSINLINE std::wstring DownloadImage(const std::wstring& strFile);
 	};
 
 	class CShapeElement : public CElement

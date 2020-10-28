@@ -159,60 +159,90 @@ namespace NSFile
             else if (0x00 == (byteMain & 0x20))
             {
                 // 2 byte
-                int val = (int)(((byteMain & 0x1F) << 6) |
-                    (pBuffer[lIndex + 1] & 0x3F));
+                int val = 0;
+                if ((lIndex + 1) < lCount)
+                {
+                    val = (int)(((byteMain & 0x1F) << 6) |
+                                (pBuffer[lIndex + 1] & 0x3F));
+                }
+
                 pUnicodeString[lIndexUnicode++] = (WCHAR)(val);
                 lIndex += 2;
             }
             else if (0x00 == (byteMain & 0x10))
             {
                 // 3 byte
-                int val = (int)(((byteMain & 0x0F) << 12) |
-                    ((pBuffer[lIndex + 1] & 0x3F) << 6) |
-                    (pBuffer[lIndex + 2] & 0x3F));
+                int val = 0;
+                if ((lIndex + 2) < lCount)
+                {
+                    val = (int)(((byteMain & 0x0F) << 12) |
+                                ((pBuffer[lIndex + 1] & 0x3F) << 6) |
+                                (pBuffer[lIndex + 2] & 0x3F));
+                }
+
                 pUnicodeString[lIndexUnicode++] = (WCHAR)(val);
                 lIndex += 3;
             }
             else if (0x00 == (byteMain & 0x0F))
             {
                 // 4 byte
-                int val = (int)(((byteMain & 0x07) << 18) |
-                    ((pBuffer[lIndex + 1] & 0x3F) << 12) |
-                    ((pBuffer[lIndex + 2] & 0x3F) << 6) |
-                    (pBuffer[lIndex + 3] & 0x3F));
+                int val = 0;
+                if ((lIndex + 3) < lCount)
+                {
+                    val = (int)(((byteMain & 0x07) << 18) |
+                                ((pBuffer[lIndex + 1] & 0x3F) << 12) |
+                                ((pBuffer[lIndex + 2] & 0x3F) << 6) |
+                                (pBuffer[lIndex + 3] & 0x3F));
+                }
+
                 pUnicodeString[lIndexUnicode++] = (WCHAR)(val);
                 lIndex += 4;
             }
             else if (0x00 == (byteMain & 0x08))
             {
                 // 4 byte
-                int val = (int)(((byteMain & 0x07) << 18) |
-                    ((pBuffer[lIndex + 1] & 0x3F) << 12) |
-                    ((pBuffer[lIndex + 2] & 0x3F) << 6) |
-                    (pBuffer[lIndex + 3] & 0x3F));
+                int val = 0;
+                if ((lIndex + 3) < lCount)
+                {
+                    val = (int)(((byteMain & 0x07) << 18) |
+                                ((pBuffer[lIndex + 1] & 0x3F) << 12) |
+                                ((pBuffer[lIndex + 2] & 0x3F) << 6) |
+                                (pBuffer[lIndex + 3] & 0x3F));
+                }
+
                 pUnicodeString[lIndexUnicode++] = (WCHAR)(val);
                 lIndex += 4;
             }
             else if (0x00 == (byteMain & 0x04))
             {
                 // 5 byte
-                int val = (int)(((byteMain & 0x03) << 24) |
-                    ((pBuffer[lIndex + 1] & 0x3F) << 18) |
-                    ((pBuffer[lIndex + 2] & 0x3F) << 12) |
-                    ((pBuffer[lIndex + 3] & 0x3F) << 6) |
-                    (pBuffer[lIndex + 4] & 0x3F));
+                int val = 0;
+                if ((lIndex + 4) < lCount)
+                {
+                    val = (int)(((byteMain & 0x03) << 24) |
+                                ((pBuffer[lIndex + 1] & 0x3F) << 18) |
+                                ((pBuffer[lIndex + 2] & 0x3F) << 12) |
+                                ((pBuffer[lIndex + 3] & 0x3F) << 6) |
+                                (pBuffer[lIndex + 4] & 0x3F));
+                }
+
                 pUnicodeString[lIndexUnicode++] = (WCHAR)(val);
                 lIndex += 5;
             }
             else
             {
                 // 6 byte
-                int val = (int)(((byteMain & 0x01) << 30) |
-                    ((pBuffer[lIndex + 1] & 0x3F) << 24) |
-                    ((pBuffer[lIndex + 2] & 0x3F) << 18) |
-                    ((pBuffer[lIndex + 3] & 0x3F) << 12) |
-                    ((pBuffer[lIndex + 4] & 0x3F) << 6) |
-                    (pBuffer[lIndex + 5] & 0x3F));
+                int val = 0;
+                if ((lIndex + 5) < lCount)
+                {
+                    val = (int)(((byteMain & 0x01) << 30) |
+                                ((pBuffer[lIndex + 1] & 0x3F) << 24) |
+                                ((pBuffer[lIndex + 2] & 0x3F) << 18) |
+                                ((pBuffer[lIndex + 3] & 0x3F) << 12) |
+                                ((pBuffer[lIndex + 4] & 0x3F) << 6) |
+                                (pBuffer[lIndex + 5] & 0x3F));
+                }
+
                 pUnicodeString[lIndexUnicode++] = (WCHAR)(val);
                 lIndex += 5;
             }
@@ -242,17 +272,26 @@ namespace NSFile
             else if (0x00 == (byteMain & 0x20))
             {
                 // 2 byte
-                int val = (int)(((byteMain & 0x1F) << 6) |
-                    (pBuffer[lIndex + 1] & 0x3F));
+                int val = 0;
+                if ((lIndex + 1) < lCount)
+                {
+                    val = (int)(((byteMain & 0x1F) << 6) |
+                                (pBuffer[lIndex + 1] & 0x3F));
+                }
+
                 *pUnicodeString++ = (WCHAR)(val);
                 lIndex += 2;
             }
             else if (0x00 == (byteMain & 0x10))
             {
                 // 3 byte
-                int val = (int)(((byteMain & 0x0F) << 12) |
-                    ((pBuffer[lIndex + 1] & 0x3F) << 6) |
-                    (pBuffer[lIndex + 2] & 0x3F));
+                int val = 0;
+                if ((lIndex + 2) < lCount)
+                {
+                    val = (int)(((byteMain & 0x0F) << 12) |
+                                ((pBuffer[lIndex + 1] & 0x3F) << 6) |
+                                (pBuffer[lIndex + 2] & 0x3F));
+                }
 
                 WriteUtf16_WCHAR(val, pUnicodeString);
                 lIndex += 3;
@@ -260,10 +299,14 @@ namespace NSFile
             else if (0x00 == (byteMain & 0x0F))
             {
                 // 4 byte
-                int val = (int)(((byteMain & 0x07) << 18) |
-                    ((pBuffer[lIndex + 1] & 0x3F) << 12) |
-                    ((pBuffer[lIndex + 2] & 0x3F) << 6) |
-                    (pBuffer[lIndex + 3] & 0x3F));
+                int val = 0;
+                if ((lIndex + 3) < lCount)
+                {
+                    val = (int)(((byteMain & 0x07) << 18) |
+                                ((pBuffer[lIndex + 1] & 0x3F) << 12) |
+                                ((pBuffer[lIndex + 2] & 0x3F) << 6) |
+                                (pBuffer[lIndex + 3] & 0x3F));
+                }
 
                 WriteUtf16_WCHAR(val, pUnicodeString);
                 lIndex += 4;
@@ -271,10 +314,14 @@ namespace NSFile
             else if (0x00 == (byteMain & 0x08))
             {
                 // 4 byte
-                int val = (int)(((byteMain & 0x07) << 18) |
-                    ((pBuffer[lIndex + 1] & 0x3F) << 12) |
-                    ((pBuffer[lIndex + 2] & 0x3F) << 6) |
-                    (pBuffer[lIndex + 3] & 0x3F));
+                int val = 0;
+                if ((lIndex + 3) < lCount)
+                {
+                    val = (int)(((byteMain & 0x07) << 18) |
+                                ((pBuffer[lIndex + 1] & 0x3F) << 12) |
+                                ((pBuffer[lIndex + 2] & 0x3F) << 6) |
+                                (pBuffer[lIndex + 3] & 0x3F));
+                }
 
                 WriteUtf16_WCHAR(val, pUnicodeString);
                 lIndex += 4;
@@ -282,11 +329,15 @@ namespace NSFile
             else if (0x00 == (byteMain & 0x04))
             {
                 // 5 byte
-                int val = (int)(((byteMain & 0x03) << 24) |
-                    ((pBuffer[lIndex + 1] & 0x3F) << 18) |
-                    ((pBuffer[lIndex + 2] & 0x3F) << 12) |
-                    ((pBuffer[lIndex + 3] & 0x3F) << 6) |
-                    (pBuffer[lIndex + 4] & 0x3F));
+                int val = 0;
+                if ((lIndex + 4) < lCount)
+                {
+                    val = (int)(((byteMain & 0x03) << 24) |
+                                ((pBuffer[lIndex + 1] & 0x3F) << 18) |
+                                ((pBuffer[lIndex + 2] & 0x3F) << 12) |
+                                ((pBuffer[lIndex + 3] & 0x3F) << 6) |
+                                (pBuffer[lIndex + 4] & 0x3F));
+                }
 
                 WriteUtf16_WCHAR(val, pUnicodeString);
                 lIndex += 5;
@@ -294,12 +345,16 @@ namespace NSFile
             else
             {
                 // 6 byte
-                int val = (int)(((byteMain & 0x01) << 30) |
-                    ((pBuffer[lIndex + 1] & 0x3F) << 24) |
-                    ((pBuffer[lIndex + 2] & 0x3F) << 18) |
-                    ((pBuffer[lIndex + 3] & 0x3F) << 12) |
-                    ((pBuffer[lIndex + 4] & 0x3F) << 6) |
-                    (pBuffer[lIndex + 5] & 0x3F));
+                int val = 0;
+                if ((lIndex + 5) < lCount)
+                {
+                    val = (int)(((byteMain & 0x01) << 30) |
+                                ((pBuffer[lIndex + 1] & 0x3F) << 24) |
+                                ((pBuffer[lIndex + 2] & 0x3F) << 18) |
+                                ((pBuffer[lIndex + 3] & 0x3F) << 12) |
+                                ((pBuffer[lIndex + 4] & 0x3F) << 6) |
+                                (pBuffer[lIndex + 5] & 0x3F));
+                }
 
                 WriteUtf16_WCHAR(val, pUnicodeString);
                 lIndex += 5;

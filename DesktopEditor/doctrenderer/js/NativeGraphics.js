@@ -12,18 +12,18 @@ function CNativeGraphics(_writer)
     this.m_dDpiY      = 96.0;
     this.m_bIsBreak   = false;
 
-    this.m_oPen            = new AscCommon.CPen();
+    //this.m_oPen            = new AscCommon.CPen();
     this.m_bPenColorInit   = false;
-    this.m_oBrush          = new AscCommon.CBrush();
+    //this.m_oBrush          = new AscCommon.CBrush();
     this.m_bBrushColorInit = false;
 
     this.m_oFontManager = null;
 
-    this.m_oCoordTransform      = new AscCommon.CMatrixL();
-    this.m_oBaseTransform       = new AscCommon.CMatrixL();
-    this.m_oTransform           = new AscCommon.CMatrixL();
-    this.m_oFullTransform       = new AscCommon.CMatrixL();
-    this.m_oInvertFullTransform = new AscCommon.CMatrixL();
+    //this.m_oCoordTransform      = new AscCommon.CMatrixL();
+    //this.m_oBaseTransform       = new AscCommon.CMatrixL();
+    //this.m_oTransform           = new AscCommon.CMatrixL();
+    //this.m_oFullTransform       = new AscCommon.CMatrixL();
+    //this.m_oInvertFullTransform = new AscCommon.CMatrixL();
 
     this.ArrayPoints = null;
 
@@ -37,15 +37,15 @@ function CNativeGraphics(_writer)
 
     // RFonts
     this.m_oTextPr      = null;
-    this.m_oGrFonts     = new AscCommon.CGrRFonts();
-    this.m_oLastFont    = new AscCommon.CFontSetup();
+    //this.m_oGrFonts     = new AscCommon.CGrRFonts();
+    //this.m_oLastFont    = new AscCommon.CFontSetup();
 
     this.LastFontOriginInfo = { Name : "", Replace : null };
 
     this.m_bIntegerGrid = true;
 
-    this.ClipManager = new AscCommon.CClipManager();
-    this.ClipManager.BaseObject = this;
+    //this.ClipManager = new AscCommon.CClipManager();
+    //this.ClipManager.BaseObject = this;
 
     this.TextureFillTransformScaleX = 1;
     this.TextureFillTransformScaleY = 1;
@@ -53,8 +53,8 @@ function CNativeGraphics(_writer)
 
     this.IsDemonstrationMode = false;
 
-    this.GrState = new AscCommon.CGrState();
-    this.GrState.Parent = this;
+    //this.GrState = new AscCommon.CGrState();
+    //this.GrState.Parent = this;
 
     this.globalAlpha = 1;
 
@@ -1349,3 +1349,16 @@ CNativeGraphics.prototype =
         this.Native["DrawFootnoteRect"](x, y, w, h);
     }
 };
+
+function CTest()
+{
+    this.a = 10;
+}
+
+CTest.prototype =
+{
+    getA : function()
+    {
+        return this.a;
+    }
+}

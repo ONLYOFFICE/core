@@ -318,7 +318,6 @@ namespace NSDoctRenderer
             oWorker.m_bIsUseSystemFonts = bIsCheckSystemFonts;
             oWorker.m_bIsNeedThumbnails = false;
             oWorker.m_sDirectory = sDirectory;
-            NSGraphics::CGraphics::m_sApplicationFontsDirectory = sDirectory;
             NSFonts::IApplicationFonts* pFonts = oWorker.Check();
             if(pFonts)
                 pFonts->Release();

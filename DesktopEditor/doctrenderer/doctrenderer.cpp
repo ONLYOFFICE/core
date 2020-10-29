@@ -635,12 +635,17 @@ namespace NSDoctRenderer
 
                 LOGGER_SPEED_LAP("compile")
 
-                context->runScript(strScript, try_catch, sCachePath);
+                JSSmart<CJSValue> res = context->runScript(strScript, try_catch, sCachePath);
                 if(try_catch->Check())
                 {
                     strError = L"code=\"run\"";
                     bIsBreak = true;
                 }
+
+#ifdef _DEBUG
+                std::string sRes = res->toStringA();
+                std::cout << sRes << std::endl;
+#endif
 
                 LOGGER_SPEED_LAP("run")
 

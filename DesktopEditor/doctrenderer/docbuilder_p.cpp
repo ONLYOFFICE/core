@@ -199,6 +199,10 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
         pNative->m_strFontsDirectory = sBasePath + L"/sdkjs/common";
         pNative->m_strImagesDirectory = path + L"/media";
 
+        NSGraphics::CGraphics::m_sApplicationFontsDirectory = pNative->m_strFontsDirectory;
+        NSGraphics::CGraphics::m_sApplicationImagesDirectory = pNative->m_strImagesDirectory;
+        NSGraphics::CGraphics::m_sApplicationThemesDirectory = sBasePath + L"/sdkjs/slide/themes";
+
         pNative->CheckFonts();
 
         if (0 == m_nFileType)

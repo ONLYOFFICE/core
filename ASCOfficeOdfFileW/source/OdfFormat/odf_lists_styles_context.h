@@ -52,6 +52,7 @@ typedef shared_ptr<office_element>::Type office_element_ptr;
 struct list_format_state
 {
 	int								oox_based_number;
+	int								restart_number = 0;
 	std::vector<office_element_ptr> elements;
 
 	std::wstring					odf_list_style_name;
@@ -64,7 +65,7 @@ public:
     odf_lists_styles_context();
 	void set_odf_context(odf_conversion_context * Context);
 
-	void start_style(bool bMaster, int abstract_number = -1);
+	void start_style(bool bMaster, int number = -1);
 		int start_style_level(int level, int type);
 			style_list_level_properties			* get_list_level_properties();
 			style_list_level_label_alignment	* get_list_level_alignment_properties();
@@ -78,28 +79,20 @@ public:
 			void set_numeric_format (std::wstring val);
 			
 			void set_start_number	(int val);
+			void set_restart_number (int val);
 			void set_text_style_name(std::wstring val);
 		void end_style_level();
 	void end_style();
 
-	void add_style(int oox_style_num, int oox_based_num);
-	
 	void process_styles(office_element_ptr root, bool automatic);
 
 	std::wstring get_style_name(int oox_style_num = -1);
-	std::wstring get_style_name1(int oox_style_num);
 private:
-	std::vector<list_format_state>			lists_format_array_;	
-	boost::unordered_map<int, std::wstring>	link_format_map_;
+	std::vector<list_format_state> lists_format_array_;	
+	std::map<int, size_t> lists_format_map_;
 
-	//void create(int oox_num_fmt, std::wstring formatCode = L""); 	
-	//void create_default(int oox_num_fmt, std::wstring formatCode = L"");
-	//void create_style(number_format_state & state);	
-
-	//void detect_format(number_format_state & state);
-
-////////////////
-	odf_conversion_context			*odf_context_;
+//-----------------------------------
+	odf_conversion_context *odf_context_;
 };
 }
 }

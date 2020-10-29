@@ -52,7 +52,7 @@ std::wostream & operator << (std::wostream & _Wostream, const chart_class & _Val
 		case chart_class::scatter:		_Wostream << L"chart:scatter";	break;
 		case chart_class::stock:		_Wostream << L"chart:stock";	break;
 		case chart_class::surface:		_Wostream << L"chart:surface";	break;
-		case chart_class::bar:			_Wostream << L"chart:bar";
+		case chart_class::bar:
 		default:						_Wostream << L"chart:bar";
 	}
     return _Wostream;

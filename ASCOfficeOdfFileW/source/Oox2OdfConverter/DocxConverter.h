@@ -109,6 +109,7 @@ namespace OOX
 	{
 		class CAbstractNum;
 		class CLvl;
+		class CNumLvl;
 	}
 }
 namespace ComplexTypes
@@ -250,8 +251,7 @@ namespace Oox2Odf
 		void convert(OOX::CDocDefaults					*def_style, OOX::CStyles *styles);
 		void convert(OOX::CStyle						*style);
 		void convert_table_style(OOX::CStyle			*oox_style);
-		void convert(OOX::Numbering::CAbstractNum		*oox_num_style);
-		void convert(OOX::Numbering::CLvl				*oox_num_lvl);
+		void convert(OOX::Numbering::CLvl *oox_num_lvl, OOX::Numbering::CNumLvl *oox_num_lvl_over, int lvl);
 
 		void convert(OOX::Logic::CCommentRangeStart		*oox_comm_start);
 		void convert(OOX::Logic::CCommentRangeEnd		*oox_comm_end);

@@ -403,21 +403,20 @@ namespace Docx2Txt
 				{
 					abstractNumId = *pNumbering->m_arrNum[listNum]->m_oAbstractNumId->m_oVal;
 
-					for (size_t i = 0; i < pNumbering->m_arrNum[listNum]->m_arrLvlOverride.size(); i++)
+					std::map<int, size_t>::iterator pFind = pNumbering->m_arrNum[listNum]->m_mapLvlOverride.find(level);
+					if (pFind != pNumbering->m_arrNum[listNum]->m_mapLvlOverride.end())
 					{
-						OOX::Numbering::CNumLvl* numLvl = pNumbering->m_arrNum[listNum]->m_arrLvlOverride[i];
-						if (!numLvl) continue;
-						if (!numLvl->m_oIlvl.IsInit()) continue;
-						if (*numLvl->m_oIlvl != level) continue;
-
-						if (numLvl->m_oStartOverride.IsInit())
-							startLvl = numLvl->m_oStartOverride->m_oVal;
-						if (numLvl->m_oLvl.IsInit())
+						OOX::Numbering::CNumLvl* numLvl = pNumbering->m_arrNum[listNum]->m_arrLvlOverride[pFind->second];
+						if (numLvl)
 						{
-							if (numLvl->m_oLvl->m_oLvlRestart.IsInit())
-								restartLvl = numLvl->m_oLvl->m_oLvlRestart->m_oVal;
+							if (numLvl->m_oStartOverride.IsInit())
+								startLvl = numLvl->m_oStartOverride->m_oVal;
+							if (numLvl->m_oLvl.IsInit())
+							{
+								if (numLvl->m_oLvl->m_oLvlRestart.IsInit())
+									restartLvl = numLvl->m_oLvl->m_oLvlRestart->m_oVal;
+							}
 						}
-						break;
 					}
 				}
 				
@@ -428,19 +427,18 @@ namespace Docx2Txt
 				if (abstractNum)
 				{
 					int ind_level = - 1;
-					for (size_t i = 0; i< abstractNum->m_arrLvl.size(); i++)
+					std::map<int, size_t>::iterator pFind = abstractNum->m_mapLvl.find(level);
+					if (pFind != abstractNum->m_mapLvl.end())
 					{
-						OOX::Numbering::CLvl* lvl = abstractNum->m_arrLvl[i];
-						if (!lvl) continue;
-						if (!lvl->m_oIlvl.IsInit()) continue;
-						if (*lvl->m_oIlvl != level) continue;
-
-						ind_level = i;
-						if (false == startLvl.IsInit() && lvl->m_oStart.IsInit())
-							startLvl = lvl->m_oStart->m_oVal;
-						if (false == restartLvl.IsInit() && lvl->m_oLvlRestart.IsInit())
-							restartLvl = lvl->m_oLvlRestart->m_oVal;
-						break;
+						OOX::Numbering::CLvl* lvl = abstractNum->m_arrLvl[pFind->second];
+						if (lvl)
+						{
+							ind_level = pFind->second;
+							if (false == startLvl.IsInit() && lvl->m_oStart.IsInit())
+								startLvl = lvl->m_oStart->m_oVal;
+							if (false == restartLvl.IsInit() && lvl->m_oLvlRestart.IsInit())
+								restartLvl = lvl->m_oLvlRestart->m_oVal;
+						}
 					}
 					bool reset = true;
 					if (restartLvl.IsInit())

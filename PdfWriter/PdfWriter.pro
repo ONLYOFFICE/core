@@ -26,6 +26,9 @@ core_linux {
     DEFINES += HAVE_UNISTD_H HAVE_FCNTL_H
     QMAKE_CXXFLAGS += -Wno-narrowing
 }
+core_mac {
+    DEFINES += HAVE_UNISTD_H HAVE_FCNTL_H
+}
 core_android {
     QMAKE_CXXFLAGS += -Wno-narrowing
 }

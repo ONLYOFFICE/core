@@ -100,8 +100,6 @@ int main(int argc, char *argv[])
     std::wstring sBuildFile = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sBuildFileA.c_str(), (LONG)sBuildFileA.length());
 #endif
 
-    // NSDoctRenderer::CDocBuilder::Initialize();
-
     if (true)
     {
         NSDoctRenderer::CDocBuilder oBuilder;
@@ -138,8 +136,6 @@ int main(int argc, char *argv[])
 
         oBuilder.Run(sBuildFile.c_str());
     }
-
-    // NSDoctRenderer::CDocBuilder::Dispose();
 
     return 0;
 }

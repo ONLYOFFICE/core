@@ -403,7 +403,7 @@ namespace NSDoctRenderer
             JSSmart<CJSObject>   global_js = context->GetGlobal();
 
             JSSmart<CJSObject> js_objectApi = api_js_maybe_null;
-            if (js_objectApi->isUndefined())
+            if (!js_objectApi.IsInit() || js_objectApi->isUndefined())
                 js_objectApi = global_js->get("Api")->toObject();
 
             bool bIsBreak = false;

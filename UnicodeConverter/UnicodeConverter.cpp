@@ -39,7 +39,7 @@
 #include "../DesktopEditor/common/File.h"
 
 #if !defined (_WIN32) && !defined (_WIN64)
-#if defined (_LINUX) && !defined(__ANDROID__) && !defined(_IOS)
+#if defined (_LINUX) && !defined(__ANDROID__) && !defined(_IOS) && !defined(_MAC)
     #define USE_ICONV
     #include "iconv.h"
 #endif

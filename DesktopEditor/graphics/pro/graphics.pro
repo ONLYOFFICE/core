@@ -371,16 +371,16 @@ SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/libpsd_pri3.c
 
 !build_cximage_zlib_disable {
 SOURCES += \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/crc32.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/adler32.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/deflate.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/inffast.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/inflate.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/inftrees.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/trees.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/zutil.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/uncompr.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/compress.c \
+    $$CORE_ROOT_DIR/OfficeUtils/src/zlib-1.2.11/crc32.c \
+    $$CORE_ROOT_DIR/OfficeUtils/src/zlib-1.2.11/adler32.c \
+    $$CORE_ROOT_DIR/OfficeUtils/src/zlib-1.2.11/deflate.c \
+    $$CORE_ROOT_DIR/OfficeUtils/src/zlib-1.2.11/inffast.c \
+    $$CORE_ROOT_DIR/OfficeUtils/src/zlib-1.2.11/inflate.c \
+    $$CORE_ROOT_DIR/OfficeUtils/src/zlib-1.2.11/inftrees.c \
+    $$CORE_ROOT_DIR/OfficeUtils/src/zlib-1.2.11/trees.c \
+    $$CORE_ROOT_DIR/OfficeUtils/src/zlib-1.2.11/zutil.c \
+    $$CORE_ROOT_DIR/OfficeUtils/src/zlib-1.2.11/uncompr.c \
+    $$CORE_ROOT_DIR/OfficeUtils/src/zlib-1.2.11/compress.c \
 }
 
 SOURCES += \

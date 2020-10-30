@@ -17,7 +17,7 @@ public:
     virtual void* getObject() override { return (void*)m_pInternal; }
 
 public:
-    JSSmart<CJSValue> init(JSSmart<CJSValue> context, JSSmart<CJSValue> width_px, JSSmart<CJSValue> height_px, JSSmart<CJSValue> width_mm, JSSmart<CJSValue> height_mm);
+    JSSmart<CJSValue> init(JSSmart<CJSValue> width_px, JSSmart<CJSValue> height_px, JSSmart<CJSValue> width_mm, JSSmart<CJSValue> height_mm);
     JSSmart<CJSValue> EndDraw();
     JSSmart<CJSValue> put_GlobalAlpha(JSSmart<CJSValue> enable, JSSmart<CJSValue> globalAlpha);
     JSSmart<CJSValue> Start_GlobalAlpha();
@@ -118,6 +118,8 @@ public:
     JSSmart<CJSValue> DrawPresentationComment(JSSmart<CJSValue> type, JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h);
     JSSmart<CJSValue> DrawPolygon(JSSmart<CJSValue> oPath, JSSmart<CJSValue> lineWidth, JSSmart<CJSValue> shift);
     JSSmart<CJSValue> DrawFootnoteRect(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h);
+    // new methods
+    JSSmart<CJSValue> toDataURL(JSSmart<CJSValue> type);
 
     static void CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context);
 };

@@ -1,6 +1,6 @@
 #include "GraphicsEmbed.h"
 
-JSSmart<CJSValue> CGraphicsEmbed::init(JSSmart<CJSValue> context, JSSmart<CJSValue> width_px, JSSmart<CJSValue> height_px, JSSmart<CJSValue> width_mm, JSSmart<CJSValue> height_mm)
+JSSmart<CJSValue> CGraphicsEmbed::init(JSSmart<CJSValue> width_px, JSSmart<CJSValue> height_px, JSSmart<CJSValue> width_mm, JSSmart<CJSValue> height_mm)
 {
     m_pInternal->init(width_px->toDouble(), height_px->toDouble(), width_mm->toDouble(), height_mm->toDouble());
     return NULL;
@@ -462,4 +462,8 @@ JSSmart<CJSValue> CGraphicsEmbed::DrawFootnoteRect(JSSmart<CJSValue> x, JSSmart<
 {
     m_pInternal->DrawFootnoteRect();
     return NULL;
+}
+JSSmart<CJSValue> CGraphicsEmbed::toDataURL(JSSmart<CJSValue> type)
+{
+    return CJSContext::createString(m_pInternal->toDataURL(type->toStringW()));
 }

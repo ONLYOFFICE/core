@@ -1,7 +1,7 @@
 
-function CNativeGraphics(_writer)
+function CNativeGraphics()
 {
-    this.Native = (undefined === _writer) ? window["native"] : _writer;
+    this.Native = CreateNativeGraphics();
 
     this.m_oContext   = null;
     this.m_dWidthMM   = 0;
@@ -56,8 +56,6 @@ function CNativeGraphics(_writer)
     //this.GrState = new AscCommon.CGrState();
     //this.GrState.Parent = this;
 
-    this.globalAlpha = 1;
-
     this.TextClipRect  = null;
     this.IsClipContext = false;
 
@@ -75,40 +73,7 @@ CNativeGraphics.prototype =
 {
     init : function(context, width_px, height_px, width_mm, height_mm)
     {
-        this.m_oContext   = context;
-        this.m_lHeightPix = height_px >> 0;
-        this.m_lWidthPix  = width_px >> 0;
-        this.m_dWidthMM   = width_mm;
-        this.m_dHeightMM  = height_mm;
-        this.m_dDpiX      = 25.4 * this.m_lWidthPix  / this.m_dWidthMM;
-        this.m_dDpiY      = 25.4 * this.m_lHeightPix / this.m_dHeightMM;
-
-        this.m_oCoordTransform.sx = this.m_dDpiX / 25.4;
-        this.m_oCoordTransform.sy = this.m_dDpiY / 25.4;
-
-        this.TextureFillTransformScaleX = 1 / this.m_oCoordTransform.sx;
-        this.TextureFillTransformScaleY = 1 / this.m_oCoordTransform.sy;
-
-        /*
-        if (this.IsThumbnail)
-        {
-            this.TextureFillTransformScaleX *= (width_px / (width_mm * g_dKoef_mm_to_pix));
-            this.TextureFillTransformScaleY *= (height_px / (height_mm * g_dKoef_mm_to_pix))
-        }
-        */
-
-        /*
-		if (true == this.m_oContext.mozImageSmoothingEnabled)
-			this.m_oContext.mozImageSmoothingEnabled = false;
-        */
-
-        this.m_oLastFont.Clear();
-        // this.m_oContext.save();
-
-        this.m_bPenColorInit   = false;
-        this.m_bBrushColorInit = false;
-
-        this.Native["init"](context, width_px, height_px, width_mm, height_mm);
+        this.Native["init"](width_px, height_px, width_mm, height_mm);
     },
     EndDraw : function()
     {
@@ -116,7 +81,6 @@ CNativeGraphics.prototype =
     },
     put_GlobalAlpha : function(enable, alpha)
     {
-        this.globalAlpha = (false === enable ? 1 : alpha);
         this.Native["put_GlobalAlpha"](enable, alpha);
     },
     Start_GlobalAlpha : function()
@@ -130,11 +94,6 @@ CNativeGraphics.prototype =
     // pen methods
     p_color : function(r, g, b, a)
     {
-        var _c = this.m_oPen.Color;
-        _c.R = r;
-        _c.G = g;
-        _c.B = b;
-        _c.A = a;
         this.Native["p_color"](r, g, b, a);
     },
     p_width : function(w)
@@ -148,11 +107,6 @@ CNativeGraphics.prototype =
     // brush methods
     b_color1 : function(r, g, b, a)
     {
-        var _c = this.m_oBrush.Color1;
-        _c.R = r;
-        _c.G = g;
-        _c.B = b;
-        _c.A = a;
         this.Native["b_color1"](r, g, b, a);
     },
     b_color2 : function(r, g, b, a)
@@ -217,62 +171,15 @@ CNativeGraphics.prototype =
     },
     _m : function(x, y)
     {
-        if (false === this.m_bIntegerGrid)
-        {
-            this.Native["_m"](x, y);
-
-            if (this.ArrayPoints != null)
-                this.ArrayPoints[this.ArrayPoints.length] = {x: x, y: y};
-        }
-        else
-        {
-            var _x = (this.m_oFullTransform.TransformPointX(x, y)) >> 0;
-            var _y = (this.m_oFullTransform.TransformPointY(x, y)) >> 0;
-            this.Native["_m"](_x + 0.5, _y + 0.5);
-        }
+        this.Native["_m"](x, y);
     },
     _l : function(x, y)
     {
-        if (false === this.m_bIntegerGrid)
-        {
-            this.Native["_l"](x, y);
-
-            if (this.ArrayPoints != null)
-                this.ArrayPoints[this.ArrayPoints.length] = {x: x, y: y};
-        }
-        else
-        {
-            var _x = (this.m_oFullTransform.TransformPointX(x, y)) >> 0;
-            var _y = (this.m_oFullTransform.TransformPointY(x, y)) >> 0;
-            this.Native["_l"](_x + 0.5, _y + 0.5);
-        }
+        this.Native["_l"](x, y);
     },
     _c : function(x1, y1, x2, y2, x3, y3)
     {
-        if (false === this.m_bIntegerGrid)
-        {
-            this.Native["_c"](x1, y1, x2, y2, x3, y3);
-
-            if (this.ArrayPoints != null)
-            {
-                this.ArrayPoints[this.ArrayPoints.length] = {x: x1, y: y1};
-                this.ArrayPoints[this.ArrayPoints.length] = {x: x2, y: y2};
-                this.ArrayPoints[this.ArrayPoints.length] = {x: x3, y: y3};
-            }
-        }
-        else
-        {
-            var _x1 = (this.m_oFullTransform.TransformPointX(x1, y1)) >> 0;
-            var _y1 = (this.m_oFullTransform.TransformPointY(x1, y1)) >> 0;
-
-            var _x2 = (this.m_oFullTransform.TransformPointX(x2, y2)) >> 0;
-            var _y2 = (this.m_oFullTransform.TransformPointY(x2, y2)) >> 0;
-
-            var _x3 = (this.m_oFullTransform.TransformPointX(x3, y3)) >> 0;
-            var _y3 = (this.m_oFullTransform.TransformPointY(x3, y3)) >> 0;
-
-            this.Native["_c"](_x1 + 0.5, _y1 + 0.5, _x2 + 0.5, _y2 + 0.5, _x3 + 0.5, _y3 + 0.5);
-        }
+        this.Native["_c"](x1, y1, x2, y2, x3, y3);
     },
     _c2 : function(x1, y1, x2, y2)
     {
@@ -1347,18 +1254,10 @@ CNativeGraphics.prototype =
             this.SetIntegerGrid(false);
 
         this.Native["DrawFootnoteRect"](x, y, w, h);
+    },
+    // new methods
+    toDataURL : function(type)
+    {
+        return this.Native["toDataURL"](type);
     }
 };
-
-function CTest()
-{
-    this.a = 10;
-}
-
-CTest.prototype =
-{
-    getA : function()
-    {
-        return this.a;
-    }
-}

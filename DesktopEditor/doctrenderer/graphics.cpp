@@ -1,7 +1,8 @@
 #include "graphics.h"
 
 #include <string>
-#include <cmath>
+
+#include "../common/Base64.h"
 
 std::wstring NSGraphics::CGraphics::m_sApplicationFontsDirectory;
 std::wstring NSGraphics::CGraphics::m_sApplicationThemesDirectory;
@@ -29,13 +30,12 @@ void CGraphics::init(double width_px, double height_px, double width_mm, double 
     while (pData32 < pData32End)
         *pData32++ = back;
 
-    CBgraFrame oFrame;
-    oFrame.put_Data(pData);
-    oFrame.put_Width(nRasterW);
-    oFrame.put_Height(nRasterH);
-    oFrame.put_Stride(4 * nRasterW);
+    m_oFrame.put_Data(pData);
+    m_oFrame.put_Width(nRasterW);
+    m_oFrame.put_Height(nRasterH);
+    m_oFrame.put_Stride(4 * nRasterW);
 
-    m_pRenderer->CreateFromBgraFrame(&oFrame);
+    m_pRenderer->CreateFromBgraFrame(&m_oFrame);
     m_pRenderer->SetSwapRGB(false);
 
     m_pRenderer->put_Width(width_mm);
@@ -130,7 +130,15 @@ void CGraphics::_l(double x, double y)
 }
 void CGraphics::_c (double x1, double y1, double x2, double y2, double x3, double y3)
 {
-    m_pRenderer->PathCommandCurveTo(x1, y1, x2, y2, x3, y3);
+    if (!m_pRenderer->get_IntegerGrid())
+        m_pRenderer->PathCommandCurveTo(x1, y1, x2, y2, x3, y3);
+    else
+    {
+        m_pRenderer->GetFullTransform()->TransformPoint(x1, y1);
+        m_pRenderer->GetFullTransform()->TransformPoint(x2, y2);
+        m_pRenderer->GetFullTransform()->TransformPoint(x3, y3);
+        m_pRenderer->PathCommandCurveTo((int)x1 + 0.5, (int)y1 + 0.5, (int)x2 + 0.5, (int)y2 + 0.5, (int)x3 + 0.5, (int)y3 + 0.5);
+    }
 }
 void CGraphics::_c2(double x1, double y1, double x2, double y2)
 {
@@ -164,7 +172,7 @@ void CGraphics::transform3(double sx, double shy, double shx, double sy, double 
 }
 void CGraphics::drawImage(const std::wstring& img, double x, double y, double w, double h, BYTE alpha)
 {
-    std::wstring strImage = (0 == img.find(L"theme") ? m_sApplicationThemesDirectory : m_sApplicationImagesDirectory) + img;
+    std::wstring strImage = (0 == img.find(L"theme") ? m_sApplicationThemesDirectory : m_sApplicationImagesDirectory) + L'/' + img;
     m_pRenderer->DrawImageFromFile(strImage, x, y, w, h, alpha);
 }
 void CGraphics::SetFont(const std::wstring& path, int face, double size, int style)
@@ -789,5 +797,26 @@ void CGraphics::EndClipPath()
 void CGraphics::AddSmartRect(double x, double y, double w, double h, double pen_w)
 {
     m_pRenderer->AddRect(x, y, w, h);
+}
+
+std::string CGraphics::toDataURL(std::wstring type)
+{
+    m_oFrame.SaveFile(m_sApplicationImagesDirectory + L"/img." + type, _CXIMAGE_FORMAT_PNG);
+
+    NSFile::CFileBinary oReader;
+    if(oReader.OpenFile(m_sApplicationImagesDirectory + L"/img." + type))
+    {
+        DWORD dwFileSize = oReader.GetFileSize();
+        BYTE* pFileContent = new BYTE[dwFileSize];
+        DWORD dwReaded;
+        oReader.ReadFile(pFileContent, dwFileSize, dwReaded);
+        oReader.CloseFile();
+
+        int nEncodeLen = NSBase64::Base64EncodeGetRequiredLength(dwFileSize);
+        BYTE* pImageData = new BYTE[nEncodeLen];
+        if(TRUE == NSBase64::Base64Encode(pFileContent, dwFileSize, pImageData, &nEncodeLen))
+            return std::string((char*)pImageData, nEncodeLen);
+    }
+    return "";
 }
 }

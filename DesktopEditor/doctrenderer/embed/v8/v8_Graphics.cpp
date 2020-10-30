@@ -6,7 +6,7 @@ namespace NSGraphics
     #define CURRENTWRAPPER CGraphicsEmbed
 
     // FUNCTION
-    FUNCTION_WRAPPER_V8_5(_init,              init)
+    FUNCTION_WRAPPER_V8_4(_init,              init)
     FUNCTION_WRAPPER_V8  (_EndDraw,           EndDraw)
     FUNCTION_WRAPPER_V8_2(_put_GlobalAlpha,   put_GlobalAlpha)
     FUNCTION_WRAPPER_V8  (_Start_GlobalAlpha, Start_GlobalAlpha)
@@ -107,6 +107,8 @@ namespace NSGraphics
     FUNCTION_WRAPPER_V8_5(_DrawPresentationComment,  DrawPresentationComment)
     FUNCTION_WRAPPER_V8_3(_DrawPolygon,              DrawPolygon)
     FUNCTION_WRAPPER_V8_4(_DrawFootnoteRect,         DrawFootnoteRect)
+    // new methods
+    FUNCTION_WRAPPER_V8_1(_toDataURL, toDataURL)
 
     v8::Handle<v8::ObjectTemplate> CreateGraphicsTemplate(v8::Isolate* isolate)
     {
@@ -209,6 +211,7 @@ namespace NSGraphics
         NSV8Objects::Template_Set(result, "DrawPresentationComment",  _DrawPresentationComment);
         NSV8Objects::Template_Set(result, "DrawPolygon",              _DrawPolygon);
         NSV8Objects::Template_Set(result, "DrawFootnoteRect",         _DrawFootnoteRect);
+        NSV8Objects::Template_Set(result, "toDataURL",                _toDataURL);
 
         return handle_scope.Escape(result);
     }

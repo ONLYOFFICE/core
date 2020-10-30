@@ -210,6 +210,8 @@ namespace NSGraphics
         void DrawPresentationComment() {}
         void DrawPolygon() {}
         void DrawFootnoteRect() {}
+        // new methods
+        std::string toDataURL(std::wstring type);
     };
 }
 

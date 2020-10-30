@@ -126,7 +126,7 @@ namespace NSGraphics
         void b_color1(int r, int g, int b, int a);
         void b_color2(int r, int g, int b, int a);
         void transform(double sx, double shy, double shx, double sy, double tx, double ty);
-        void CalculateFullTransform() {}
+        void CalculateFullTransform();
         // path commands
         void _s();
         void _e();

@@ -98,7 +98,7 @@ CNativeGraphics.prototype =
     },
     p_width : function(w)
     {
-        this.Native["p_width"](w / 1000);
+        this.Native["p_width"](w);
     },
     p_dash : function(params)
     {
@@ -115,46 +115,11 @@ CNativeGraphics.prototype =
     },
     transform : function(sx, shy, shx, sy, tx, ty)
     {
-        var _t = this.m_oTransform;
-        _t.sx  = sx;
-        _t.shx = shx;
-        _t.shy = shy;
-        _t.sy  = sy;
-        _t.tx  = tx;
-        _t.ty  = ty;
-
-        this.CalculateFullTransform();
-        if (false === this.m_bIntegerGrid)
-        {
-            var _ft = this.m_oFullTransform;
-            this.Native["transform"](_ft.sx, _ft.shy, _ft.shx, _ft.sy, _ft.tx, _ft.ty);
-        }
+        this.Native["transform"](sx, shy, shx, sy, tx, ty);
     },
     CalculateFullTransform : function(isInvertNeed)
     {
-        var _ft = this.m_oFullTransform;
-        var _t  = this.m_oTransform;
-        _ft.sx  = _t.sx;
-        _ft.shx = _t.shx;
-        _ft.shy = _t.shy;
-        _ft.sy  = _t.sy;
-        _ft.tx  = _t.tx;
-        _ft.ty  = _t.ty;
-        AscCommon.global_MatrixTransformer.MultiplyAppend(_ft, this.m_oCoordTransform);
-
-        var _it = this.m_oInvertFullTransform;
-        _it.sx  = _ft.sx;
-        _it.shx = _ft.shx;
-        _it.shy = _ft.shy;
-        _it.sy  = _ft.sy;
-        _it.tx  = _ft.tx;
-        _it.ty  = _ft.ty;
-
-        if (false !== isInvertNeed)
-        {
-            AscCommon.global_MatrixTransformer.MultiplyAppendInvert(_it, _t);
-        }
-        // this.Native["CalculateFullTransform"](isInvertNeed);
+        this.Native["CalculateFullTransform"](isInvertNeed);
     },
     // path commands
     _s : function()
@@ -183,26 +148,7 @@ CNativeGraphics.prototype =
     },
     _c2 : function(x1, y1, x2, y2)
     {
-         if (false === this.m_bIntegerGrid)
-         {
-             this.Native["_c2"](x1, y1, x2, y2);
-
-             if (this.ArrayPoints != null)
-             {
-                 this.ArrayPoints[this.ArrayPoints.length] = {x: x1, y: y1};
-                 this.ArrayPoints[this.ArrayPoints.length] = {x: x2, y: y2};
-             }
-         }
-        else
-        {
-            var _x1 = (this.m_oFullTransform.TransformPointX(x1, y1)) >> 0;
-            var _y1 = (this.m_oFullTransform.TransformPointY(x1, y1)) >> 0;
-
-            var _x2 = (this.m_oFullTransform.TransformPointX(x2, y2)) >> 0;
-            var _y2 = (this.m_oFullTransform.TransformPointY(x2, y2)) >> 0;
-
-            this.Native["_c2"](_x1 + 0.5, _y1 + 0.5, _x2 + 0.5, _y2 + 0.5);
-        }
+        this.Native["_c2"](x1, y1, x2, y2);
     },
     ds : function()
     {
@@ -227,12 +173,6 @@ CNativeGraphics.prototype =
     },
     reset : function()
     {
-        this.m_oTransform.Reset();
-        this.CalculateFullTransform(false);
-
-        if (!this.m_bIntegerGrid)
-            this.Native["transform"](this.m_oCoordTransform.sx, 0, 0, this.m_oCoordTransform.sy, 0, 0);
-
         this.Native["reset"]();
     },
     transform3 : function(m, isNeedInvert)
@@ -245,9 +185,6 @@ CNativeGraphics.prototype =
     },
     ClearLastFont : function()
     {
-        this.m_oLastFont  = new AscCommon.CFontSetup();
-        this.m_oLastFont2 = null;
-
         this.Native["ClearLastFont"]();
     },
     // images
@@ -262,8 +199,7 @@ CNativeGraphics.prototype =
     // text
     GetFont : function()
     {
-        // this.Native["GetFont"]();
-        return this.m_oCurFont;
+        return this.Native["GetFont"]();
     },
     font : function(font_id, font_size)
     {
@@ -671,9 +607,6 @@ CNativeGraphics.prototype =
     FillText : function(x, y, text)
     {
         var _code = text.charCodeAt(0);
-        if (null != this.LastFontOriginInfo.Replace)
-            _code = AscFonts.g_fontApplication.GetReplaceGlyph(_code, this.LastFontOriginInfo.Replace);
-
         this.Native["FillText"](x, y, _code);
     },
     t : function(text, x, y, isBounds)

@@ -96,6 +96,10 @@ void CGraphics::transform(double sx, double shy, double shx, double sy, double t
 {
     m_pRenderer->SetTransform(sx, shy, shx, sy, tx, ty);
 }
+void CGraphics::CalculateFullTransform()
+{
+    m_pRenderer->CalculateFullTransform();
+}
 void CGraphics::_s()
 {
     m_pRenderer->PathCommandEnd();
@@ -142,7 +146,14 @@ void CGraphics::_c (double x1, double y1, double x2, double y2, double x3, doubl
 }
 void CGraphics::_c2(double x1, double y1, double x2, double y2)
 {
-    m_pRenderer->PathCommandCurveTo(x1, y1, x1, y1, x2, y2);
+    if (!m_pRenderer->get_IntegerGrid())
+        m_pRenderer->PathCommandCurveTo(x1, y1, x1, y1, x2, y2);
+    else
+    {
+        m_pRenderer->GetFullTransform()->TransformPoint(x1, y1);
+        m_pRenderer->GetFullTransform()->TransformPoint(x2, y2);
+        m_pRenderer->PathCommandCurveTo((int)x1 + 0.5, (int)y1 + 0.5, (int)x1 + 0.5, (int)y1 + 0.5, (int)x2 + 0.5, (int)y2 + 0.5);
+    }
 }
 void CGraphics::ds()
 {

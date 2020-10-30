@@ -30,52 +30,25 @@
  *
  */
 #pragma once
-#include "../Reader/Records.h"
-#include "PFMasks.h"
+#include "../../Reader/Records.h"
+#include "CFMasks.h"
 
 
 namespace PPT_FORMAT
 {
 
-struct STextAutoNumberScheme
+struct STextCFException9
 {
-    TextAutoNumberSchemeEnum    m_eScheme;
-    SHORT                       m_nStartNum;
+    SCFMasks        m_masks;
+    nullable_uint   m_pp10runid;    // 4 bits
 
 
-    void ReadFromStream(POLE::Stream* pStream){
-        m_eScheme   = (TextAutoNumberSchemeEnum)StreamUtils::ReadSHORT(pStream);
-        m_nStartNum = StreamUtils::ReadSHORT(pStream);
-    }
-};
-
-
-class CRecordTextPFException9
-{
-public:
-    PFMasks m_masks;
-
-    nullable<SHORT>                 m_optBulletBlipRef;
-    nullable_bool                   m_optfBulletHasAutoNumber;
-    nullable<STextAutoNumberScheme> m_optBulletAutoNumberScheme;
-
-
-    void ReadFromStream(POLE::Stream* pStream){
+    void ReadFromStream(POLE::Stream* pStream)
+    {
         m_masks.ReadFromStream(pStream);
 
-        if (m_masks.m_bulletBlip)
-            m_optBulletBlipRef = StreamUtils::ReadSHORT(pStream);
-
-        if (m_masks.m_bulletHasScheme)
-            m_optfBulletHasAutoNumber = (bool)StreamUtils::ReadSHORT(pStream);
-
-        if(m_masks.m_bulletScheme)
-        {
-            auto pBulletAutoNumberScheme = new STextAutoNumberScheme;
-            pBulletAutoNumberScheme->ReadFromStream(pStream);
-            m_optBulletAutoNumberScheme = pBulletAutoNumberScheme;
-        }
-
+        if (m_masks.m_pp10ext)
+            m_pp10runid = 0xF & StreamUtils::ReadDWORD(pStream);
     }
 };
 }

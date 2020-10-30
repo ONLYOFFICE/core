@@ -458,6 +458,7 @@ HEADERS += \
     ../Records/BookmarkEntityAtom.h \
     ../Records/BookmarkSeedAtom.h \
     ../Records/BuildAtom.h \
+    ../Records/Text/CFMasks.h \
     ../Records/ColorSchemeAtom.h \
     ../Records/CString.h \
     ../Records/CurrentUserAtom.h \
@@ -499,7 +500,7 @@ HEADERS += \
     ../Records/NotesPersistAtom.h \
     ../Records/NoZoomViewInfoAtom.h \
     ../Records/OutlineTextRefAtom.h \
-    ../Records/PFMasks.h \
+    ../Records/Text/PFMasks.h \
     ../Records/PersistDirectoryAtom.h \
     ../Records/PlaceHolderAtom.h \
     ../Records/ProgStringTagContainer.h \
@@ -532,6 +533,9 @@ HEADERS += \
     ../Records/SSlideLayoutAtom.h \
     ../Records/SSSlideInfoAtom.h \
     ../Records/StyleTextPropAtom.h \
+    ../Records/Text/TextCFException9.h \
+    ../Records/Text/TextMasterStyle9Atom.h \
+    ../Records/Text/TextMasterStyle9Level.h \
     ../Records/TextBookmarkAtom.h \
     ../Records/TextBytesAtom.h \
     ../Records/TextCFExceptionAtom.h \
@@ -542,7 +546,7 @@ HEADERS += \
     ../Records/TextMasterStyle9Atom.h \
     ../Records/TextMasterStyle9Level.h \
     ../Records/TextMasterStyleAtom.h \
-    ../Records/TextPFException9.h \
+    ../Records/Text/TextPFException9.h \
     ../Records/TextPFExceptionAtom.h \
     ../Records/TextRulerAtom.h \
     ../Records/TextSIExceptionAtom.h \

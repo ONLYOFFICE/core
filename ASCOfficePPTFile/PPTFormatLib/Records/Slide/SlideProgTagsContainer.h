@@ -45,17 +45,21 @@
 #include "SlideTime10Atom.h"
 #include "../ProgStringTagContainer.h"
 
+#include "../Text/TextMasterStyle9Atom.h"
+
 #define TN_PPT9 L"___PPT9"
 #define TN_PPT10 L"___PPT10"
 #define TN_PPT12 L"___PPT12"
 
 
-namespace PPT_FORMAT {
+namespace PPT_FORMAT
+{
 
-// TODO this struct
 class CRecordPP9SlideBinaryTagExtension : public CUnknownRecord
 {
 public:
+    std::vector<CRecordTextMasterStyle9Atom*> m_rgTextMasterStyleAtom;
+
     CRecordPP9SlideBinaryTagExtension()
     {
 
@@ -63,14 +67,34 @@ public:
 
     ~CRecordPP9SlideBinaryTagExtension()
     {
-
+        for (auto pEl : m_rgTextMasterStyleAtom)
+        {
+            RELEASEOBJECT(pEl)
+        }
     }
 
     virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
     {
         m_oHeader			=	oHeader;
+        LONG lPos			=	0;
+        StreamUtils::StreamPosition ( lPos, pStream );
 
-        CUnknownRecord::ReadFromStream(m_oHeader, pStream);
+        UINT lCurLen		=	0;
+
+        SRecordHeader ReadHeader;
+
+        while ( lCurLen < m_oHeader.RecLen )
+        {
+            if ( ReadHeader.ReadFromStream(pStream) == false)
+                break;
+
+            lCurLen += 8 + ReadHeader.RecLen;
+            auto pStyle = new CRecordTextMasterStyle9Atom;
+            pStyle->ReadFromStream(ReadHeader, pStream);
+            m_rgTextMasterStyleAtom.push_back(pStyle);
+        }
+
+        StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
     }
 };
 

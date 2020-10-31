@@ -60,7 +60,7 @@ void CProcessEditor::StartEditor()
 #endif
 
 #ifdef Q_OS_LINUX
-    return "onlyoffice-desktopeditors";
+    sApplicationPath = "onlyoffice-desktopeditors";
 #endif
 
     start(sApplicationPath, args);

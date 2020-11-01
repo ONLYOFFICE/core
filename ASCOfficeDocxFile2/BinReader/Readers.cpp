@@ -987,6 +987,13 @@ int Binary_pPrReader::ReadContent( BYTE type, long length, void* poResult)
 			long outlineLvl = m_oBufferedStream.GetLong();
 			pCStringWriter->WriteString(L"<w:outlineLvl w:val=\"" + std::to_wstring(outlineLvl) + L"\"/>");
 		}break;
+	case c_oSerProp_pPrType::SuppressLineNumbers:
+		{
+			if(m_oBufferedStream.GetBool())
+				pCStringWriter->WriteString(std::wstring(L"<w:suppressLineNumbers/>"));
+			else
+				pCStringWriter->WriteString(std::wstring(L"<w:suppressLineNumbers w:val=\"0\"/>"));
+		}break;
 	default:
 		res = c_oSerConstants::ReadUnknown;
 		break;

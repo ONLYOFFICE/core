@@ -367,7 +367,8 @@ extern int g_nCurFormatVersion;
 		Spacing_BeforeTwips = 40,
 		Spacing_AfterTwips = 41,
 		Tab_Item_PosTwips = 42,
-		Tab_Item_Val = 43
+		Tab_Item_Val = 43,
+		SuppressLineNumbers = 44
 	};}
 	namespace c_oSerProp_rPrType{enum c_oSerProp_rPrType
 	{

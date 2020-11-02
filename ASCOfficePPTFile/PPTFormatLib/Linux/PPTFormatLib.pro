@@ -458,6 +458,8 @@ HEADERS += \
     ../Records/BookmarkEntityAtom.h \
     ../Records/BookmarkSeedAtom.h \
     ../Records/BuildAtom.h \
+    ../Records/DocInfoListContainer.h \
+    ../Records/DocProgTagsContainer.h \
     ../Records/Text/CFMasks.h \
     ../Records/ColorSchemeAtom.h \
     ../Records/CString.h \
@@ -500,6 +502,8 @@ HEADERS += \
     ../Records/NotesPersistAtom.h \
     ../Records/NoZoomViewInfoAtom.h \
     ../Records/OutlineTextRefAtom.h \
+    ../Records/Text/OutlineTextProps9Container.h \
+    ../Records/Text/OutlineTextPropsHeaderExAtom.h \
     ../Records/Text/PFMasks.h \
     ../Records/PersistDirectoryAtom.h \
     ../Records/PlaceHolderAtom.h \
@@ -533,9 +537,12 @@ HEADERS += \
     ../Records/SSlideLayoutAtom.h \
     ../Records/SSSlideInfoAtom.h \
     ../Records/StyleTextPropAtom.h \
+    ../Records/Text/StyleTextProp9Atom.h \
     ../Records/Text/TextCFException9.h \
+    ../Records/Text/TextDefaults9Atom.h \
     ../Records/Text/TextMasterStyle9Atom.h \
     ../Records/Text/TextMasterStyle9Level.h \
+    ../Records/Text/TextSIException.h \
     ../Records/TextBookmarkAtom.h \
     ../Records/TextBytesAtom.h \
     ../Records/TextCFExceptionAtom.h \

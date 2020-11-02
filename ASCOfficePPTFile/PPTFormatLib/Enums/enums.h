@@ -457,7 +457,7 @@ enum TextTabTypeEnum
 };
 
 
-enum TextTypeEnum
+enum TextTypeEnum : unsigned
 {
     Tx_TYPE_TITLE,
     Tx_TYPE_BODY,

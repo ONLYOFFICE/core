@@ -65,6 +65,7 @@
 #include "ColorSchemeAtom.h"
 #include "DocRoutingSlipAtom.h"
 #include "DocumentAtom.h"
+#include "DocInfoListContainer.h"
 #include "ExControlAtom.h"
 #include "EndDocument.h"
 #include "ExHyperlinkAtom.h"

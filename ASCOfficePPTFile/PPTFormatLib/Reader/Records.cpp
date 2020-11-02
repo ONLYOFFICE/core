@@ -623,6 +623,8 @@ IRecord* CreateByType(SRecordHeader oHeader)
     CREATE_BY_TYPE(RT_ExternalWavAudioEmbedded  			, CRecordWAVAudioEmbeddedContainer)
     CREATE_BY_TYPE(RT_ExternalMidiAudio 					, CRecordExMIDIAudioContainer)
 
+    CREATE_BY_TYPE(RT_List                                  , CRecordDocInfoListContainer)
+
             // интерактив
     CREATE_BY_TYPE(RT_InteractiveInfoAtom       			, CRecordInteractiveInfoAtom)
     CREATE_BY_TYPE(RT_TextInteractiveInfoAtom       		, CRecordTextInteractiveInfoAtom)

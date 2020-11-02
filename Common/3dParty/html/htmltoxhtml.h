@@ -438,6 +438,8 @@ static void build_attributes(const GumboVector* attribs, bool no_entities, NSStr
                 break;
             bCheck = true;
         }
+        if(sName.empty())
+            continue;
         while(sName.front() >= '0' && sName.front() <= '9')
         {
             sName.erase(0, 1);

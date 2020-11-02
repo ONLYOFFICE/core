@@ -4,6 +4,9 @@
 #include <string>
 #include <map>
 #include <cctype>
+#include <vector>
+#include <algorithm>
+
 #include "gumbo-parser/src/gumbo.h"
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/common/Directory.h"
@@ -415,37 +418,57 @@ static void build_doctype(GumboNode* node, NSStringUtils::CStringBuilderA& oBuil
     }
 }
 
-static void build_attributes(GumboAttribute* at, bool no_entities, NSStringUtils::CStringBuilderA& atts)
+static void build_attributes(const GumboVector* attribs, bool no_entities, NSStringUtils::CStringBuilderA& atts)
 {
-    std::string sVal(at->value);
-    std::string sName(at->name);
-    atts.WriteString(" ");
-    if(sName.empty())
-        return;
-    size_t nBad = sName.find_first_of("-'+,.:=?#%<>&;\"\'()[]{}");
-    while(nBad != std::string::npos)
+    std::vector<std::string> arrRepeat;
+    for (size_t i = 0; i < attribs->length; ++i)
     {
-        sName.erase(nBad, 1);
-        nBad = sName.find_first_of("-'+,.:=?#%<>&;\"\'()[]{}", nBad);
-        if(sName.empty())
-            return;
-    }
-    while(sName.front() >= '0' && sName.front() <= '9')
-    {
-        sName.erase(0, 1);
-        if(sName.empty())
-            return;
-    }
-    atts.WriteString(sName);
+        GumboAttribute* at = static_cast<GumboAttribute*>(attribs->data[i]);
+        std::string sVal(at->value);
+        std::string sName(at->name);
+        atts.WriteString(" ");
 
-    // determine original quote character used if it exists
-    std::string qs ="\"";
-    atts.WriteString("=");
-    atts.WriteString(qs);
-    if(!no_entities)
-        substitute_xml_entities_into_attributes(sVal);
-    atts.WriteString(sVal);
-    atts.WriteString(qs);
+        bool bCheck = false;
+        size_t nBad = sName.find_first_of("-'+,.:=?#%<>&;\"\'()[]{}");
+        while(nBad != std::string::npos)
+        {
+            sName.erase(nBad, 1);
+            nBad = sName.find_first_of("-'+,.:=?#%<>&;\"\'()[]{}", nBad);
+            if(sName.empty())
+                break;
+            bCheck = true;
+        }
+        if(sName.empty())
+            continue;
+        while(sName.front() >= '0' && sName.front() <= '9')
+        {
+            sName.erase(0, 1);
+            if(sName.empty())
+                break;
+            bCheck = true;
+        }
+        if(bCheck)
+        {
+            GumboAttribute* check = gumbo_get_attribute(attribs, sName.c_str());
+            if(check || std::find(arrRepeat.begin(), arrRepeat.end(), sName) != arrRepeat.end())
+                continue;
+            else
+                arrRepeat.push_back(sName);
+        }
+
+        if(sName.empty())
+            continue;
+        atts.WriteString(sName);
+
+        // determine original quote character used if it exists
+        std::string qs ="\"";
+        atts.WriteString("=");
+        atts.WriteString(qs);
+        if(!no_entities)
+            substitute_xml_entities_into_attributes(sVal);
+        atts.WriteString(sVal);
+        atts.WriteString(qs);
+    }
 }
 
 static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA& contents)
@@ -520,12 +543,8 @@ static void prettyprint(GumboNode* node, NSStringUtils::CStringBuilderA& oBuilde
     oBuilder.WriteString("<" + tagname);
 
     // build attr string
-    const GumboVector * attribs = &node->v.element.attributes;
-    for (size_t i = 0; i < attribs->length; ++i)
-    {
-        GumboAttribute* at = static_cast<GumboAttribute*>(attribs->data[i]);
-        build_attributes(at, no_entity_substitution, oBuilder);
-    }
+    const GumboVector* attribs = &node->v.element.attributes;
+    build_attributes(attribs, no_entity_substitution, oBuilder);
     oBuilder.WriteString(close + ">");
 
     // prettyprint your contents

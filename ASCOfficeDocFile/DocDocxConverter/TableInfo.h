@@ -57,6 +57,8 @@ namespace DocFileFormat
 						case sprmPFInTable:
 						{
 							fInTable = ( iter->Arguments[0] == 1 ) ? (true) : (false);
+
+							if (iTap < 1 && fInTable) iTap = 1;
 						}break;
 		          
 						//case sprmOldPFTtp:
@@ -92,7 +94,6 @@ namespace DocFileFormat
 	          
 					if ( (int)( iter->OpCode ) == sprmTCnf )//66a
 					{
-						//add value!
 						iTap = FormatUtils::BytesToUInt32( iter->Arguments, 0, iter->argumentsSize );
 
 						if ( iTap > 0 )

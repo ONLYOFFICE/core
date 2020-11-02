@@ -272,9 +272,6 @@
     </ClCompile>
     <ClCompile Include="..\ASCOfficeDrawingConverter.cpp" />
     <ClCompile Include="..\ASCOfficePPTXFileRealization.cpp" />
-    <ClCompile Include="..\..\DesktopEditor\raster\exif.cpp">
-      <Filter>BinaryReaderWriter</Filter>
-    </ClCompile>
     <ClCompile Include="..\PPTXFormat\Logic\HeadingVariant.cpp">
       <Filter>PPTX\Logic</Filter>
     </ClCompile>

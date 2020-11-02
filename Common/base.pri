@@ -247,7 +247,7 @@ core_ios {
     }
 
     !core_ios_no_unistd {
-        DEFINES += HAVE_UNISTD_H
+        DEFINES += HAVE_UNISTD_H HAVE_FCNTL_H
     }
 }
 
@@ -269,7 +269,7 @@ core_android {
     }
 
     !core_android_no_unistd {
-        DEFINES += HAVE_UNISTD_H
+        DEFINES += HAVE_UNISTD_H HAVE_FCNTL_H
     }
 }
 

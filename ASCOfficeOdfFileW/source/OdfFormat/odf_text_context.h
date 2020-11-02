@@ -143,9 +143,10 @@ public:
 	std::vector<odf_element_state>	text_elements_list_;	//параграфы, списки , ... 
 	struct _list_state
 	{
-		bool				started_list;
+		bool				started_list = false;
 		std::vector<bool>	levels;
 		std::wstring		style_name;
+		int					prevNumID = -1;
 	}list_state_;
 	bool					single_paragraph_;
 private:

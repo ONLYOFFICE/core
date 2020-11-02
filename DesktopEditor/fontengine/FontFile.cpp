@@ -30,7 +30,6 @@
  *
  */
 #include "FontManager.h"
-#include "internal/internal.h"
 #include "internal/ftobjs.h"
 #include "../common/Types.h"
 #include "../common/File.h"

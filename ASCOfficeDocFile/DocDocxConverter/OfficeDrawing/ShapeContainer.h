@@ -47,10 +47,11 @@ namespace DocFileFormat
 		unsigned int	m_nShapeType;
 		bool			m_bBackground;
 		bool			m_bOLE;
+		bool			m_bOleInPicture;
 		bool			m_bSkip;
 
 		ShapeContainer():
-		RegularContainer(), m_nIndex(0), m_nShapeType(0), m_bSkip(false), m_bBackground(false), m_bOLE(false)
+		RegularContainer(), m_nIndex(0), m_nShapeType(0), m_bSkip(false), m_bBackground(false), m_bOLE(false), m_bOleInPicture(false)
 		{
 		}
 

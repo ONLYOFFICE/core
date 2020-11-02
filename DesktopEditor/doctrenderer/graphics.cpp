@@ -1,6 +1,7 @@
 #include "graphics.h"
 
 #include <string>
+#include <iostream>
 
 #include "../common/Base64.h"
 
@@ -186,9 +187,13 @@ void CGraphics::drawImage(const std::wstring& img, double x, double y, double w,
     std::wstring strImage = (0 == img.find(L"theme") ? m_sApplicationThemesDirectory : m_sApplicationImagesDirectory) + L'/' + img;
     m_pRenderer->DrawImageFromFile(strImage, x, y, w, h, alpha);
 }
-void CGraphics::SetFont(const std::wstring& path, int face, double size, int style)
+void CGraphics::SetFont(const std::wstring& name, int face, double size, int style)
 {
-    m_pRenderer->put_FontPath((std::string::npos == path.find(L'/') ? m_sApplicationFontsDirectory : L"") + path);
+    double DpiX, DpiY;
+    m_pRenderer->get_DpiX(&DpiX);
+    m_pRenderer->get_DpiY(&DpiY);
+    m_pRenderer->GetFontManager()->LoadFontByName(name, size, style, DpiX, DpiY);
+
     m_pRenderer->put_FontFaceIndex(face);
     m_pRenderer->put_FontSize     (size);
     m_pRenderer->put_FontStyle    (style);

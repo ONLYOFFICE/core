@@ -3,6 +3,10 @@ var MyGraphics = new CNativeGraphics();
 
 // Задаём размеры холста и всё будет полупрозрачное
 MyGraphics.init(null, 1000, 1000, 1000 * 25.4 / 96, 1000 * 25.4 / 96);
+
+MyGraphics.DrawHeaderEdit(10);
+MyGraphics.DrawFooterEdit(250);
+
 MyGraphics.put_GlobalAlpha(true, 0.5);
 
 // Рисуем желтый квадрат с красной пунктирной обводкой и толщиной 2
@@ -34,6 +38,9 @@ MyGraphics.ds();
 // Восстанавливаем плоскость рисования до нормальной и убираем полупрозрачность
 MyGraphics.reset();
 MyGraphics.put_GlobalAlpha(true, 1);
+
+MyGraphics.SetFont({FontFamily : {Name : "Arial", Index : -1}, FontSize : 12, Italic : false, Bold : false});
+MyGraphics.FillText(10, 110, "A");
 
 // Рисуем кривую с одной контрольной точкой
 MyGraphics.b_color1(66, 255, 158, 255);

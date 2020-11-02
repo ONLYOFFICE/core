@@ -150,7 +150,7 @@ namespace NSGraphics
         // text
         void GetFont() {}
         void font() {}
-        void SetFont(const std::wstring& path, int face, double size, int style);
+        void SetFont(const std::wstring& name, int face, double size, int style);
         void SetTextPr() {}
         void GetTextPr() {}
         void FillText(double x, double y, int text);

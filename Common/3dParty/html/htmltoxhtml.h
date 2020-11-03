@@ -34,12 +34,8 @@ static void replace_all(std::string& s, const std::string& s1, const std::string
     }
 }
 
-static std::wstring htmlToXhtml(const std::wstring& sFile)
+static std::wstring htmlToXhtml(std::string& sFileContent)
 {
-    std::string sFileContent;
-    if(!NSFile::CFileBinary::ReadAllTextUtf8A(sFile, sFileContent))
-        return L"";
-
     // Распознование кодировки
     size_t posEncoding = sFileContent.find("charset=");
     if (posEncoding == std::string::npos)

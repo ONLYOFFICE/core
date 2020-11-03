@@ -362,9 +362,22 @@ public:
     // Конвертирует html в xhtml
     bool htmlXhtml(const std::wstring& sSrc)
     {
+        std::string sFileContent;
+        if(!NSFile::CFileBinary::ReadAllTextUtf8A(sSrc, sFileContent))
+            return false;
+
+        size_t nFind = sFileContent.find("version=\"");
+        if(nFind != std::string::npos)
+        {
+            nFind += 9;
+            size_t nFindEnd = sFileContent.find("\"", nFind);
+            if(nFindEnd != std::string::npos)
+                sFileContent.replace(nFind, nFindEnd - nFind, "1.0");
+        }
+
         if(NSFile::GetFileExtention(sSrc) != L"xhtml")
-            return m_oLightReader.FromString(htmlToXhtml(sSrc));
-        return m_oLightReader.FromFile(sSrc);
+            return m_oLightReader.FromString(htmlToXhtml(sFileContent));
+        return m_oLightReader.FromStringA(sFileContent);
     }
 
     // Конвертирует mht в xhtml
@@ -1246,6 +1259,7 @@ private:
                 sImageName.erase(std::remove_if(sImageName.begin(), sImageName.end(), [] (wchar_t ch) { return std::iswspace(ch) || (ch == L'^'); }), sImageName.end());
 
                 std::wstring sExtention = NSFile::GetFileExtention(sSrcM);
+                std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
                 if(sExtention != L"bmp" && sExtention != L"svg" && sExtention != L"jfif" && sExtention != L"wmf" && sExtention != L"gif" &&
                    sExtention != L"jpe" && sExtention != L"png" && sExtention != L"jpeg" && sExtention != L"jpg" )
                     continue;
@@ -1281,7 +1295,24 @@ private:
         if(!bWasP)
             return L"";
         oXml->WriteString(L"<w:pPr><w:pStyle w:val=\"");
+
+        std::vector<NSCSS::CNode> stock;
+        std::vector<NSCSS::CNode>::iterator it = std::find_if(sSelectors.begin(), sSelectors.end(), [] (NSCSS::CNode& oNode) { return oNode.m_sName == L"a"; });
+        while(it != sSelectors.end())
+        {
+            stock.push_back(*it);
+            sSelectors.erase(it);
+            it = std::find_if(sSelectors.begin(), sSelectors.end(), [] (NSCSS::CNode& oNode) { return oNode.m_sName == L"a"; });
+        }
+
         std::wstring sPStyle = GetStyle(sSelectors, true);
+
+        if(!stock.empty())
+        {
+            sSelectors.reserve(sSelectors.size() + stock.size());
+            sSelectors.insert(sSelectors.end(), stock.begin(), stock.end());
+        }
+
         oXml->WriteString(sPStyle);
         oXml->WriteString(L"\"/>");
         oXml->WriteString(oTS.sPStyle);

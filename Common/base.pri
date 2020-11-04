@@ -74,11 +74,11 @@ DEFINES += INTERNAL_USE_ARRAY_AS_VECTOR
 
 ios {
     CONFIG += core_ios
-    DEFINES += _IOS IOS LINUX _LINUX MAC _MAC _XCODE
+    DEFINES += _IOS IOS LINUX _LINUX MAC _MAC _XCODE _ARM_ALIGN_
 }
 android {
     CONFIG += core_android
-    DEFINES += __ANDROID__ LINUX _LINUX
+    DEFINES += __ANDROID__ LINUX _LINUX _ARM_ALIGN_
 }
 
 win32:contains(QMAKE_TARGET.arch, x86_64): {

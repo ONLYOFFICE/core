@@ -306,364 +306,380 @@ namespace DocFileFormat
 			ODRAW::OfficeArtFOPTEPtr & iter = options[i];
 			switch (iter->opid)
 			{
-	//BOOLEANS
+				//BOOLEANS
 			case ODRAW::geometryBooleanProperties:
+			{
+				ODRAW::GeometryBooleanProperties *booleans = dynamic_cast<ODRAW::GeometryBooleanProperties*>(iter.get());
+				if (booleans->fUsefLineOK && !booleans->fLineOK)
 				{
-					ODRAW::GeometryBooleanProperties *booleans = dynamic_cast<ODRAW::GeometryBooleanProperties*>(iter.get());
-					if (booleans->fUsefLineOK && !booleans->fLineOK)
-					{
-						bStroked	=	false;
-					}
-					if (booleans->fUsefFillOK && !booleans->fFillOK)
-					{
-						bFilled	=	false;
-					}
-					if (booleans->fUsef3DOK && booleans->f3DOK)
-					{
-						b3D	=	true;
-					}
-					if (booleans->fUsefShadowOK && booleans->fShadowOK)
-					{
-						bShadow	=	true;
-					}
+					bStroked = false;
 				}
-				break;
+				if (booleans->fUsefFillOK && !booleans->fFillOK)
+				{
+					bFilled = false;
+				}
+				if (booleans->fUsef3DOK && booleans->f3DOK)
+				{
+					b3D = true;
+				}
+				if (booleans->fUsefShadowOK && booleans->fShadowOK)
+				{
+					bShadow = true;
+				}
+			}
+			break;
 			case ODRAW::fillStyleBooleanProperties:
+			{
+				ODRAW::FillStyleBooleanProperties *booleans = dynamic_cast<ODRAW::FillStyleBooleanProperties *>(iter.get());
+				if (booleans->fUsefFilled && !booleans->fFilled)
 				{
-					ODRAW::FillStyleBooleanProperties *booleans = dynamic_cast<ODRAW::FillStyleBooleanProperties *>(iter.get());
-					if (booleans->fUsefFilled && !booleans->fFilled)
-					{
-						bFilled = false;
-					}
+					bFilled = false;
+				}
 
-					if (booleans->fUsefUseShapeAnchor && booleans->fUseShapeAnchor)
-					{
-						appendValueAttribute(&m_fill, L"rotate", L"t");
-					}
-				}break;
+				if (booleans->fUsefUseShapeAnchor && booleans->fUseShapeAnchor)
+				{
+					appendValueAttribute(&m_fill, L"rotate", L"t");
+				}
+			}break;
 			case ODRAW::lineStyleBooleanProperties:
+			{
+				ODRAW::LineStyleBooleanProperties *booleans = dynamic_cast<ODRAW::LineStyleBooleanProperties *>(iter.get());
+				if (booleans->fUsefLine && !booleans->fLine)
 				{
-					ODRAW::LineStyleBooleanProperties *booleans = dynamic_cast<ODRAW::LineStyleBooleanProperties *>(iter.get());
-					if (booleans->fUsefLine && !booleans->fLine)
-					{
-						bStroked = false;
-					}
+					bStroked = false;
 				}
-				break;
+			}
+			break;
 			case ODRAW::protectionBooleanProperties:
-				{
-					//ProtectionBooleanProperties booleans(iter->op);
-				}
-				break;
+			{
+				//ProtectionBooleanProperties booleans(iter->op);
+			}
+			break;
 			case ODRAW::diagramBooleanProperties:
-				{
-				}
-				break;
+			{
+			}
+			break;
 			case ODRAW::groupShapeBooleanProperties:
+			{
+				ODRAW::GroupShapeBooleanProperties *booleans = dynamic_cast<ODRAW::GroupShapeBooleanProperties *>(iter.get());
+				if (booleans->fUsefLayoutInCell)
 				{
-					ODRAW::GroupShapeBooleanProperties *booleans = dynamic_cast<ODRAW::GroupShapeBooleanProperties *>(iter.get());
-					if (booleans->fUsefLayoutInCell)
-					{
-						layoutInCell = booleans->fLayoutInCell;
-					}
+					layoutInCell = booleans->fLayoutInCell;
 				}
-				break;
-// GEOMETRY
-			case ODRAW::shapePath :
-				{
-					bHavePath =	true;
-					nShapePath = iter->op;
-				}break;
+			}
+			break;
+			// GEOMETRY
+			case ODRAW::shapePath:
+			{
+				bHavePath = true;
+				nShapePath = iter->op;
+			}break;
 			case ODRAW::pVertices:
-				{
-					opVerticles = iter;
-				}break;
+			{
+				opVerticles = iter;
+			}break;
 			case ODRAW::pSegmentInfo:
-				{
-					opSegmentInfo = iter;
-				}break;
+			{
+				opSegmentInfo = iter;
+			}break;
 			case ODRAW::pGuides:
-				{
-					GetGuides(iter);
-				}break;
+			{
+				GetGuides(iter);
+			}break;
 			case ODRAW::pConnectionSites:
-				{
-					opConnectLocs = iter;
-				}break;
+			{
+				opConnectLocs = iter;
+			}break;
 			case ODRAW::pConnectionSitesDir:
-				{
-					opConnectAngles	= iter;
-				}break;
+			{
+				opConnectAngles = iter;
+			}break;
 			case ODRAW::pInscribe:
-				{
-					opInscribe	= iter;
-				}break;
+			{
+				opInscribe = iter;
+			}break;
 			case ODRAW::adjustValue:
-				{
-					m_nAdjValues[0] = (int)iter->op;
-                    nAdjValues		= (std::max)(nAdjValues,1);
-				}
-				break;
+			{
+				m_nAdjValues[0] = (int)iter->op;
+				nAdjValues = (std::max)(nAdjValues, 1);
+			}
+			break;
 			case ODRAW::adjust2Value:
-				{
-					m_nAdjValues[1] = (int)iter->op;
-                    nAdjValues		= (std::max)(nAdjValues, 2);
-				}
-				break;
+			{
+				m_nAdjValues[1] = (int)iter->op;
+				nAdjValues = (std::max)(nAdjValues, 2);
+			}
+			break;
 			case ODRAW::adjust3Value:
-				{
-					m_nAdjValues[2] = (int)iter->op;
-                    nAdjValues		=(std::max)(nAdjValues, 3);
-				}break;
+			{
+				m_nAdjValues[2] = (int)iter->op;
+				nAdjValues = (std::max)(nAdjValues, 3);
+			}break;
 			case ODRAW::adjust4Value:
-				{
-					m_nAdjValues[3] = (int)iter->op;
-                    nAdjValues		= (std::max)(nAdjValues, 4);
-				}break;
+			{
+				m_nAdjValues[3] = (int)iter->op;
+				nAdjValues = (std::max)(nAdjValues, 4);
+			}break;
 			case ODRAW::adjust5Value:
-				{
-					m_nAdjValues[4] = (int)iter->op;
-                    nAdjValues		= (std::max)(nAdjValues, 5);
-				}break;
+			{
+				m_nAdjValues[4] = (int)iter->op;
+				nAdjValues = (std::max)(nAdjValues, 5);
+			}break;
 			case ODRAW::adjust6Value:
-				{
-					m_nAdjValues[5] = (int)iter->op;
-                    nAdjValues		= (std::max)(nAdjValues, 6);
-				}break;
+			{
+				m_nAdjValues[5] = (int)iter->op;
+				nAdjValues = (std::max)(nAdjValues, 6);
+			}break;
 			case ODRAW::adjust7Value:
-				{
-					m_nAdjValues[6] = (int)iter->op;
-                    nAdjValues		= (std::max)(nAdjValues, 7);
-				}break;
+			{
+				m_nAdjValues[6] = (int)iter->op;
+				nAdjValues = (std::max)(nAdjValues, 7);
+			}break;
 			case ODRAW::adjust8Value:
-				{
-					m_nAdjValues[7] = (int)iter->op;
-                    nAdjValues		= (std::max)(nAdjValues, 8);
-				}break;
+			{
+				m_nAdjValues[7] = (int)iter->op;
+				nAdjValues = (std::max)(nAdjValues, 8);
+			}break;
 			case ODRAW::pWrapPolygonVertices:
-				{
-					std::wstring wrapCoords = GetWrapCoords(iter);
+			{
+				std::wstring wrapCoords = GetWrapCoords(iter);
 
-					if (!wrapCoords.empty())
-					{
-						m_pXmlWriter->WriteAttribute( L"wrapcoords", wrapCoords);
-					}
-				}break;
-			case ODRAW::geoRight:
+				if (!wrapCoords.empty())
 				{
-					xCoord = iter->op;
-				}break;
-			case ODRAW::geoBottom:
-				{
-					yCoord = iter->op;
-				}break;
-// LINE
-			case ODRAW::lineColor:
-				{
-					RGBColor lineColor((int)iter->op, RedFirst);
-					if ( !pShape->fBackground )
-						m_pXmlWriter->WriteAttribute( L"strokecolor", (std::wstring(L"#") + lineColor.SixDigitHexCode));
-				}break;
-			case ODRAW::lineWidth:
-				{
-					if (iter->op > 0)
-					{
-						EmuValue eLineWidth ((int)iter->op );
-						m_pXmlWriter->WriteAttribute(L"strokeweight", FormatUtils::DoubleToWideString(eLineWidth.ToPoints()) + L"pt");
-					}
-				}break;
-			case ODRAW::lineDashing:
-				{
-					appendValueAttribute(&m_stroke, L"dashstyle", FormatUtils::MapValueToWideString( iter->op, &Global::DashStyleMap[0][0], 11, 16 ) );
-				}break;
-			case ODRAW::lineStyle:
-				{
-					appendValueAttribute(&m_stroke, L"linestyle", getLineStyle( iter->op ));
-				}break;
-			case ODRAW::lineEndArrowhead:
-				{
-					appendValueAttribute(&m_stroke, L"endarrow", getArrowStyle( iter->op ));
-				}break;
-			case ODRAW::lineEndArrowLength:
-				{
-					appendValueAttribute(&m_stroke, L"endarrowlength", getArrowLength( iter->op ));
-				}break;
-			case ODRAW::lineEndArrowWidth:
-				{
-					appendValueAttribute(&m_stroke, L"endarrowwidth", getArrowWidth( iter->op ));
-				}break;
-			case ODRAW::lineStartArrowhead:
-				{
-					appendValueAttribute(&m_stroke, L"startarrow", getArrowStyle( iter->op ));
-				}break;
-			case ODRAW::lineStartArrowLength:
-				{
-					appendValueAttribute(&m_stroke, L"startarrowlength", getArrowLength( iter->op ));
-				}break;
-			case ODRAW::lineStartArrowWidth:
-				{
-					appendValueAttribute(&m_stroke, L"startarrowwidth", getArrowWidth( iter->op ));
-				}break;
-			case ODRAW::cxstyle:
-				{
-					if (pShape->GetShapeType() == NULL)
-					{
-						freeform = false;
-						m_pXmlWriter->WriteAttribute(L"type", L"#_x0000_t32");
-					}
-					switch(iter->op)
-					{
-						case 0:	m_pXmlWriter->WriteAttribute(L"o:connectortype", L"straight");	break;
-						case 1:	m_pXmlWriter->WriteAttribute(L"o:connectortype", L"elbow");		break;
-						case 2:	m_pXmlWriter->WriteAttribute(L"o:connectortype", L"curved");	break;
-						case 3:	m_pXmlWriter->WriteAttribute(L"o:connectortype", L"none");		break;
-					}
-				}break;
-// FILL
-			case ODRAW::fillColor:
-				{
-					RGBColor fillColor((int)iter->op, RedFirst);
-					m_pXmlWriter->WriteAttribute(L"fillcolor", ( std::wstring( L"#" )  + fillColor.SixDigitHexCode ));
-				}break;
-			case ODRAW::fillBackColor:
-				{
-					RGBColor fillBackColor( (int)iter->op, RedFirst );
-					appendValueAttribute(&m_fill, L"color2", ( std::wstring( L"#" )  + fillBackColor.SixDigitHexCode ));
-				}break;
-			case ODRAW::fillAngle:
-				{
-					ODRAW::FixedPoint* point = dynamic_cast<ODRAW::FixedPoint*>(iter.get());
-					if (point) appendValueAttribute(&m_fill, L"angle", FormatUtils::DoubleToWideString( point->dVal ));
-				}break;
-			case ODRAW::fillShadeType:
-				{
-					appendValueAttribute(&m_fill, L"method", getFillMethod( iter->op ));
-				}break;
-			case ODRAW::fillShadeColors:
-				{
-					appendValueAttribute(&m_fill, L"colors", getFillColorString( iter ));
-				}break;
-			case ODRAW::fillFocus:
-				{
-					appendValueAttribute(&m_fill, L"focus", ( FormatUtils::IntToWideString( iter->op ) + L"%"  ));
-					appendValueAttribute(&m_fill, L"focussize", L"");
-				}break;
-			case ODRAW::fillType:
-				{
-					appendValueAttribute(&m_fill, L"type", getFillType( iter->op ));
-				}break;
-			case ODRAW::fillBlip:
-				{
-					BlipStoreEntry* pFillBlip = NULL;
-
-					if ((m_pict != NULL ) && (m_pict->blipStoreEntry != NULL ))
-					{
-						// Word Art Texture
-						//fillBlip = this->_pict->BlipStoreEntry;
-					}
-					else if ( (m_pBlipStore != NULL) && ( (iter->op - 1) < m_pBlipStore->Children.size() ) )
-					{
-						pFillBlip = static_cast<BlipStoreEntry*>(m_pBlipStore->Children[iter->op - 1]);
-					}
-
-					if ( (pFillBlip != NULL) && copyPicture(pFillBlip) )
-					{
-						appendValueAttribute(&m_fill, L"r:id", std::wstring(( L"rId" ) + FormatUtils::IntToWideString(m_nImageId) ));
-					}
-
-					bPicturePresent = true;
-				}break;
-			case ODRAW::fillBlipName:
-				{
-					ODRAW::AnyString* str = dynamic_cast<ODRAW::AnyString*>(iter.get());
-					if ((str) && (!str->string_.empty()))
-					{
-						appendValueAttribute(&m_fill, L"o:title", str->string_);
-					}
-				}break;
-			case ODRAW::fillOpacity:
-				{
-					appendValueAttribute(&m_fill, L"opacity", ( FormatUtils::IntToWideString( iter->op ) + L"f" ));
+					m_pXmlWriter->WriteAttribute(L"wrapcoords", wrapCoords);
 				}
-				break;
+			}break;
+			case ODRAW::geoRight:
+			{
+				xCoord = iter->op;
+			}break;
+			case ODRAW::geoBottom:
+			{
+				yCoord = iter->op;
+			}break;
+			// LINE
+			case ODRAW::lineColor:
+			{
+				RGBColor lineColor((int)iter->op, RedFirst);
+				if (!pShape->fBackground)
+					m_pXmlWriter->WriteAttribute(L"strokecolor", (std::wstring(L"#") + lineColor.SixDigitHexCode));
+			}break;
+			case ODRAW::lineWidth:
+			{
+				if (iter->op > 0)
+				{
+					EmuValue eLineWidth((int)iter->op);
+					m_pXmlWriter->WriteAttribute(L"strokeweight", FormatUtils::DoubleToWideString(eLineWidth.ToPoints()) + L"pt");
+				}
+			}break;
+			case ODRAW::lineDashing:
+			{
+				appendValueAttribute(&m_stroke, L"dashstyle", FormatUtils::MapValueToWideString(iter->op, &Global::DashStyleMap[0][0], 11, 16));
+			}break;
+			case ODRAW::lineStyle:
+			{
+				appendValueAttribute(&m_stroke, L"linestyle", getLineStyle(iter->op));
+			}break;
+			case ODRAW::lineEndArrowhead:
+			{
+				appendValueAttribute(&m_stroke, L"endarrow", getArrowStyle(iter->op));
+			}break;
+			case ODRAW::lineEndArrowLength:
+			{
+				appendValueAttribute(&m_stroke, L"endarrowlength", getArrowLength(iter->op));
+			}break;
+			case ODRAW::lineEndArrowWidth:
+			{
+				appendValueAttribute(&m_stroke, L"endarrowwidth", getArrowWidth(iter->op));
+			}break;
+			case ODRAW::lineStartArrowhead:
+			{
+				appendValueAttribute(&m_stroke, L"startarrow", getArrowStyle(iter->op));
+			}break;
+			case ODRAW::lineStartArrowLength:
+			{
+				appendValueAttribute(&m_stroke, L"startarrowlength", getArrowLength(iter->op));
+			}break;
+			case ODRAW::lineStartArrowWidth:
+			{
+				appendValueAttribute(&m_stroke, L"startarrowwidth", getArrowWidth(iter->op));
+			}break;
+			case ODRAW::cxstyle:
+			{
+				if (pShape->GetShapeType() == NULL)
+				{
+					freeform = false;
+					m_pXmlWriter->WriteAttribute(L"type", L"#_x0000_t32");
+				}
+				switch (iter->op)
+				{
+				case 0:	m_pXmlWriter->WriteAttribute(L"o:connectortype", L"straight");	break;
+				case 1:	m_pXmlWriter->WriteAttribute(L"o:connectortype", L"elbow");		break;
+				case 2:	m_pXmlWriter->WriteAttribute(L"o:connectortype", L"curved");	break;
+				case 3:	m_pXmlWriter->WriteAttribute(L"o:connectortype", L"none");		break;
+				}
+			}break;
+			// FILL
+			case ODRAW::fillColor:
+			{
+				RGBColor fillColor((int)iter->op, RedFirst);
+				m_pXmlWriter->WriteAttribute(L"fillcolor", (std::wstring(L"#") + fillColor.SixDigitHexCode));
+			}break;
+			case ODRAW::fillBackColor:
+			{
+				RGBColor fillBackColor((int)iter->op, RedFirst);
+				appendValueAttribute(&m_fill, L"color2", (std::wstring(L"#") + fillBackColor.SixDigitHexCode));
+			}break;
+			case ODRAW::fillAngle:
+			{
+				ODRAW::FixedPoint* point = dynamic_cast<ODRAW::FixedPoint*>(iter.get());
+				if (point) appendValueAttribute(&m_fill, L"angle", FormatUtils::DoubleToWideString(point->dVal));
+			}break;
+			case ODRAW::fillShadeType:
+			{
+				appendValueAttribute(&m_fill, L"method", getFillMethod(iter->op));
+			}break;
+			case ODRAW::fillShadeColors:
+			{
+				appendValueAttribute(&m_fill, L"colors", getFillColorString(iter));
+			}break;
+			case ODRAW::fillFocus:
+			{
+				appendValueAttribute(&m_fill, L"focus", (FormatUtils::IntToWideString(iter->op) + L"%"));
+				appendValueAttribute(&m_fill, L"focussize", L"");
+			}break;
+			case ODRAW::fillType:
+			{
+				appendValueAttribute(&m_fill, L"type", getFillType(iter->op));
+			}break;
+			case ODRAW::fillBlip:
+			{
+				BlipStoreEntry* pFillBlip = NULL;
+
+				if ((m_pict != NULL) && (m_pict->blipStoreEntry != NULL))
+				{
+					// Word Art Texture
+					//fillBlip = this->_pict->BlipStoreEntry;
+				}
+				else if ((m_pBlipStore != NULL) && ((iter->op - 1) < m_pBlipStore->Children.size()))
+				{
+					pFillBlip = static_cast<BlipStoreEntry*>(m_pBlipStore->Children[iter->op - 1]);
+				}
+
+				if ((pFillBlip != NULL) && copyPicture(pFillBlip))
+				{
+					appendValueAttribute(&m_fill, L"r:id", std::wstring((L"rId") + FormatUtils::IntToWideString(m_nImageId)));
+				}
+
+				bPicturePresent = true;
+			}break;
+			case ODRAW::fillBlipName:
+			{
+				ODRAW::AnyString* str = dynamic_cast<ODRAW::AnyString*>(iter.get());
+				if ((str) && (!str->string_.empty()))
+				{
+					appendValueAttribute(&m_fill, L"o:title", str->string_);
+				}
+			}break;
+			case ODRAW::fillOpacity:
+			{
+				appendValueAttribute(&m_fill, L"opacity", (FormatUtils::IntToWideString(iter->op) + L"f"));
+			}
+			break;
 			case ODRAW::fillBackOpacity:
-				{
-					appendValueAttribute(&m_fill, L"o:opacity2", (FormatUtils::IntToWideString(iter->op) + L"f"));
-				}break;
-// SHADOW
+			{
+				appendValueAttribute(&m_fill, L"o:opacity2", (FormatUtils::IntToWideString(iter->op) + L"f"));
+			}break;
+			// SHADOW
 			case ODRAW::shadowType:
-				{
-					appendValueAttribute(&m_shadow, L"type", getShadowType(iter->op));
-				}break;
+			{
+				appendValueAttribute(&m_shadow, L"type", getShadowType(iter->op));
+			}break;
 
 			case ODRAW::shadowColor:
-				{
-					RGBColor shadowColor((int)iter->op, RedFirst);
-					appendValueAttribute(&m_shadow, L"color", ( std::wstring( L"#" ) + shadowColor.SixDigitHexCode ));
-				}break;
+			{
+				RGBColor shadowColor((int)iter->op, RedFirst);
+				appendValueAttribute(&m_shadow, L"color", (std::wstring(L"#") + shadowColor.SixDigitHexCode));
+			}break;
 			case ODRAW::shadowOffsetX:
-				{
-					ShadowOffsetX = EmuValue( (int)iter->op );
-				}break;
+			{
+				ShadowOffsetX = EmuValue((int)iter->op);
+			}break;
 			case ODRAW::shadowSecondOffsetX:
-				{
-					SecondShadowOffsetX = EmuValue( (int)iter->op );
-				}break;
+			{
+				SecondShadowOffsetX = EmuValue((int)iter->op);
+			}break;
 			case ODRAW::shadowOffsetY:
-				{
-					ShadowOffsetY = EmuValue( (int)iter->op );
-				}break;
+			{
+				ShadowOffsetY = EmuValue((int)iter->op);
+			}break;
 			case ODRAW::shadowSecondOffsetY:
-				{
-					SecondShadowOffsetY = EmuValue( (int)iter->op );
-				}break;
+			{
+				SecondShadowOffsetY = EmuValue((int)iter->op);
+			}break;
 			case ODRAW::shadowOriginX:
-				{
-					ShadowOriginX = ( iter->op / pow( (double)2, (double)16 ) );
-				}break;
+			{
+				ShadowOriginX = (iter->op / pow((double)2, (double)16));
+			}break;
 			case ODRAW::shadowOriginY:
-				{
-					ShadowOriginY = (iter->op / pow( (double)2, (double)16));
-				}break;
+			{
+				ShadowOriginY = (iter->op / pow((double)2, (double)16));
+			}break;
 			case ODRAW::shadowOpacity:
-				{
-					double shadowOpa = (iter->op / pow( (double)2, (double)16));
+			{
+				double shadowOpa = (iter->op / pow((double)2, (double)16));
 
-					appendValueAttribute(&m_shadow, L"opacity", FormatUtils::DoubleToFormattedWideString( shadowOpa, L"%.2f" ));
-				}break;
+				appendValueAttribute(&m_shadow, L"opacity", FormatUtils::DoubleToFormattedWideString(shadowOpa, L"%.2f"));
+			}break;
 			case ODRAW::shadowStyleBooleanProperties:
-				{
-					//ODRAW::ShadowStyleBooleanProperties
+			{
+				//ODRAW::ShadowStyleBooleanProperties
 
-				}break;
-// OLE
+			}break;
+			// OLE
 			case ODRAW::pictureId:
-				{
-					indexOLE = iter->op;
-				}break;
-// PICTURE
+			{
+				indexOLE = iter->op;
+			}break;
+			// PICTURE
 			case ODRAW::pib:
-				{
-					int index = (int)( iter->op - 1 );
+			{
+				int index = (int)(iter->op - 1);
 
-					if ((m_pBlipStore != NULL) && (index < (int)m_pBlipStore->Children.size()))
-					{
-						BlipStoreEntry* oBlip = static_cast<BlipStoreEntry*>(m_pBlipStore->Children[index]);
-						if (copyPicture(oBlip))
-						{
-							appendValueAttribute(&m_imagedata, L"r:id", ( std::wstring( L"rId" ) + FormatUtils::IntToWideString(m_nImageId) ));
-						}
-					}
-					bPicturePresent = true;
-				}break;
-			case ODRAW::pibName:
+				if ((m_pBlipStore != NULL) && (index < (int)m_pBlipStore->Children.size()))
 				{
-					ODRAW::AnyString* str = dynamic_cast<ODRAW::AnyString*>(iter.get());
-					if ((str) && (!str->string_.empty()))
+					BlipStoreEntry* oBlip = static_cast<BlipStoreEntry*>(m_pBlipStore->Children[index]);
+					if (copyPicture(oBlip))
 					{
-						appendValueAttribute(&m_imagedata, L"o:title", str->string_);
+						appendValueAttribute(&m_imagedata, L"r:id", (std::wstring(L"rId") + FormatUtils::IntToWideString(m_nImageId)));
 					}
-				}break;
+				}
+				bPicturePresent = true;
+			}break;
+			case ODRAW::pibName:
+			{
+				ODRAW::AnyString* str = dynamic_cast<ODRAW::AnyString*>(iter.get());
+				if ((str) && (!str->string_.empty()))
+				{
+					appendValueAttribute(&m_imagedata, L"o:title", str->string_);
+				}
+			}break;
+			case ODRAW::pictureTransparent:
+			{
+
+			}break;
+			case ODRAW::pictureContrast:
+			{
+				appendValueAttribute(&m_imagedata, L"gain", (FormatUtils::IntToWideString(iter->op) + L"f"));
+			}break;
+			case ODRAW::pictureBrightness:
+			{
+				appendValueAttribute(&m_imagedata, L"blacklevel", (FormatUtils::IntToWideString(iter->op) + L"f"));
+			}break;
+			case ODRAW::pictureGamma:
+			{
+				appendValueAttribute(&m_imagedata, L"gamma", (FormatUtils::IntToWideString(iter->op) + L"f"));
+			}break;
 // 3D STYLE
 			case ODRAW::threeDStyleBooleanProperties:
 				{
@@ -1725,10 +1741,10 @@ namespace DocFileFormat
 		
 		if (nRelH < 0 && m_pSpa)
 		{
-			if (m_pSpa->bx == TEXT && bZIndex)
-			{
-				m_pSpa->bx = PAGE;
-			}
+			//if (m_pSpa->bx == TEXT && bZIndex)
+			//{
+			//	m_pSpa->bx = PAGE;
+			//}04012010post.doc
 			if (m_pSpa->bx == MARGIN) 
 				appendStyleProperty(oStyle, L"mso-position-horizontal-relative", mapHorizontalPositionRelative(msoprhMargin));
 			else if (m_pSpa->bx == PAGE)
@@ -1738,10 +1754,10 @@ namespace DocFileFormat
 		}
 		if (nRelV < 0 && m_pSpa)
 		{
-			if (m_pSpa->by == TEXT && bZIndex) 
-			{
-				m_pSpa->by = PAGE;
-			}
+			//if (m_pSpa->by == TEXT && bZIndex) 
+			//{
+			//	m_pSpa->by = PAGE;
+			//}04012010post.doc
 			if (m_pSpa->by == MARGIN)
 				appendStyleProperty(oStyle, L"mso-position-vertical-relative", mapHorizontalPositionRelative(msoprvMargin));
 			else if (m_pSpa->by == PAGE)

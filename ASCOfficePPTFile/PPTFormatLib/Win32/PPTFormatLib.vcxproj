@@ -394,12 +394,6 @@
     <ClCompile Include="..\Records\Drawing\ArtBlip.cpp" />
     <ClCompile Include="..\Records\Drawing\ShapeContainer.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\ASCOfficePPTXFile\PPTXLib\PPTXFormat.vcxproj">
-      <Project>{36636678-ae25-4be6-9a34-2561d1bcf302}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

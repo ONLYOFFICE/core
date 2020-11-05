@@ -38,6 +38,7 @@
 #include "../../ASCOfficePPTXFile/Editor/FontCutter.h"
 #include "../../ASCOfficePPTXFile/PPTXFormat/App.h"
 #include "../../ASCOfficePPTXFile/PPTXFormat/Core.h"
+#include "../../ASCOfficePPTXFile/PPTXFormat/Logic/HeadingVariant.h"
 #include "../../XlsxSerializerCom/Reader/BinaryWriter.h"
 #include "BinEquationWriter.h"
 
@@ -371,7 +372,7 @@ BinaryHeaderFooterTableWriter::BinaryHeaderFooterTableWriter(ParamsWriter& oPara
 																m_oBcw(oParamsWriter), 
 																m_oParamsWriter(oParamsWriter), 
 																m_pOfficeDrawingConverter(oParamsWriter.m_pOfficeDrawingConverter), 
-																m_oDocumentRels(oDocumentRels), 
+																m_oDocumentRelsWriter(oDocumentRels), 
 																m_mapIgnoreComments(mapIgnoreComments)
 {
 }
@@ -1033,6 +1034,13 @@ void Binary_pPrWriter::Write_pPr(const OOX::Logic::CParagraphProperty& pPr)
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 		m_oBcw.m_oStream.WriteLONG(*pPr.m_oOutlineLvl->m_oVal);
 	}
+	if(pPr.m_oSuppressLineNumbers.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_pPrType::SuppressLineNumbers);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(pPr.m_oSuppressLineNumbers->m_oVal.ToBool());
+	}
+
 	//SectPr
 	if(NULL != m_oBinaryHeaderFooterTableWriter && pPr.m_oSectPr.IsInit())
 	{
@@ -1549,7 +1557,7 @@ void Binary_pPrWriter::WriteHeaderFooter(OOX::Logic::CSectionProperty* pSectPr, 
 			}
 			else
 			{
-				smart_ptr<OOX::File> oFile = m_oBinaryHeaderFooterTableWriter->m_oDocumentRels->Find(oRef.m_oId->GetValue());
+				smart_ptr<OOX::File> oFile = m_oBinaryHeaderFooterTableWriter->m_oDocumentRelsWriter->Find(oRef.m_oId->GetValue());
 				if (oFile.IsInit() && (OOX::FileTypes::Header == oFile->type() || OOX::FileTypes::Footer == oFile->type()))
 				{
 					pHdrFtr = (OOX::CHdrFtr*)oFile.GetPointer();
@@ -7607,6 +7615,18 @@ void BinaryDocumentTableWriter::WriteSdtPr(const OOX::Logic::CSdtPr& oStdPr)
 		WriteSdtCheckBox(oStdPr.m_oCheckbox.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if(oStdPr.m_oFormPr.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::FormPr);
+		WriteSdtFormPr(oStdPr.m_oFormPr.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oStdPr.m_oTextFormPr.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPr);
+		WriteSdtTextFormPr(oStdPr.m_oTextFormPr.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }
 void BinaryDocumentTableWriter::WriteSdtCheckBox(const OOX::Logic::CSdtCheckBox& oSdtCheckBox)
 {
@@ -7646,6 +7666,12 @@ void BinaryDocumentTableWriter::WriteSdtCheckBox(const OOX::Logic::CSdtCheckBox&
 			m_oBcw.m_oStream.WriteLONG(oSdtCheckBox.m_oUncheckedState->m_oVal->GetValue());
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
+	}
+	if(oSdtCheckBox.m_oGroupKey.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::CheckboxGroupKey);
+		m_oBcw.m_oStream.WriteStringW3(oSdtCheckBox.m_oGroupKey->ToString2());
+		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }
 void BinaryDocumentTableWriter::WriteSdtComboBox(const OOX::Logic::CSdtComboBox& oSdtComboBox)
@@ -7771,6 +7797,72 @@ void BinaryDocumentTableWriter::WriteDropDownList(const OOX::Logic::CSdtDropDown
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::SdtListItem);
 		WriteSdtListItem(*oDropDownList.m_arrListItem[i]);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+}
+void BinaryDocumentTableWriter::WriteSdtFormPr(const ComplexTypes::Word::CFormPr& oFormPr)
+{
+	int nCurPos = 0;
+	if(oFormPr.m_oKey.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::FormPrKey);
+		m_oBcw.m_oStream.WriteStringW3(oFormPr.m_oKey.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oFormPr.m_oLabel.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::FormPrLabel);
+		m_oBcw.m_oStream.WriteStringW3(oFormPr.m_oLabel.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oFormPr.m_oHelpText.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::FormPrHelpText);
+		m_oBcw.m_oStream.WriteStringW3(oFormPr.m_oHelpText.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oFormPr.m_oRequired.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::FormPrRequired);
+		m_oBcw.m_oStream.WriteBOOL(oFormPr.m_oRequired.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+}
+void BinaryDocumentTableWriter::WriteSdtTextFormPr(const OOX::Logic::CTextFormPr& oTextFormPr)
+{
+	int nCurPos = 0;
+	if(oTextFormPr.m_oComb.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrComb);
+		WriteSdtTextFormPrComb(oTextFormPr.m_oComb.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oTextFormPr.m_oMaxCharacters.IsInit() && oTextFormPr.m_oMaxCharacters->m_oVal.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrMaxCharacters);
+		m_oBcw.m_oStream.WriteLONG(oTextFormPr.m_oMaxCharacters->m_oVal.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+}
+void BinaryDocumentTableWriter::WriteSdtTextFormPrComb(const ComplexTypes::Word::CComb& oComb)
+{
+	int nCurPos = 0;
+	if(oComb.m_oWidth.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrCombWidth);
+		m_oBcw.m_oStream.WriteLONG(oComb.m_oWidth.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oComb.m_oSym.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrCombSym);
+		m_oBcw.m_oStream.WriteStringW3(oComb.m_oSym.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oComb.m_oFont.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrCombFont);
+		m_oBcw.m_oStream.WriteStringW3(oComb.m_oFont.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }
@@ -8862,7 +8954,17 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 		oBinaryOtherTableWriter.Write();
 		WriteTableEnd(nCurPos);
 	}
-
+	if(pDocx)
+	{
+		smart_ptr<OOX::File> pFile = pDocx->Find(OOX::FileTypes::CustomProperties);
+		PPTX::CustomProperties *pCustomProperties = dynamic_cast<PPTX::CustomProperties*>(pFile.GetPointer());
+		if (pCustomProperties)
+		{
+			nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::CustomProperties);
+			pCustomProperties->toPPTY(&m_oBcw.m_oStream);
+			this->WriteTableEnd(nCurPos);
+		}
+	}
 	{
 		ParamsDocumentWriter oParamsDocumentWriter(pDocument);
 		m_oParamsWriter.m_pCurRels = oParamsDocumentWriter.m_pRels;

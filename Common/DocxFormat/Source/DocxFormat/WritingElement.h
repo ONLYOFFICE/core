@@ -707,6 +707,7 @@ namespace OOX
 		et_w_clrSchemeMapping, // <w:clrSchemeMapping>
 		et_w_cols, // <w:cols>
 		et_w_comboBox, // <w:comboBox>
+		et_w_textFormPr, // <w:textFormPr> custom!
 		et_w_comment, // <w:comment>
 		et_w_commentRangeEnd, // <w:commentRangeEnd>
 		et_w_commentRangeStart, // <w:commentRangeStart>

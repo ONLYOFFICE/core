@@ -45,7 +45,7 @@ uint8_t* CxMemFile::GetBuffer(bool bDetachBuffer)
 	return m_pBuffer;
 }
 //////////////////////////////////////////////////////////
-size_t CxMemFile::Read(void *buffer, size_t size, size_t count)
+size_t CxMemFile::Read(void *buffer, size_t size, size_t count, void* limit_start, void* limit_end)
 {
 	if (buffer==NULL) return 0;
 
@@ -53,7 +53,7 @@ size_t CxMemFile::Read(void *buffer, size_t size, size_t count)
 	if (m_Position >= (int32_t)m_Size){
 		m_bEOF = true;
 		return 0;
-	}
+    }
 
 	int32_t nCount = (int32_t)(count*size);
 	if (nCount == 0) return 0;

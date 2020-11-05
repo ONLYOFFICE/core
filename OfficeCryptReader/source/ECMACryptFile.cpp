@@ -732,13 +732,14 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 	
 	lengthData = cryptor.Encrypt(data, lengthData, data_out);
 
-	cryptor.UpdateDataIntegrity(data_out, lengthData);
-	
-	if (!data_out)
+	if (NULL == data_out)
 	{
 		delete []data;
 		return false;
 	}
+	cryptor.UpdateDataIntegrity(data_out, lengthData);
+	
+
 //-------------------------------------------------------------------
 #if defined(_WIN32) || defined(_WIN64)
 	IStorage *winStorage = NULL;
@@ -772,6 +773,13 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 	delete pStream;
 #endif
 //-------------------------------------------------------------------
+
+	if (data_out)
+	{
+		delete []data_out;
+		data_out = NULL;
+	}	
+	
 	cryptor.GetCryptData(cryptData);
 
 #if defined(_WIN32) || defined(_WIN64)

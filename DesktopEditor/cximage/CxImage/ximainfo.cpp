@@ -181,6 +181,10 @@ void* CxImage::GetDIB() const
 {
 	return pDib;
 }
+void* CxImage::GetDIBLimit() const
+{
+    return pDibLimit;
+}
 ////////////////////////////////////////////////////////////////////////////////
 uint32_t CxImage::GetHeight() const
 {

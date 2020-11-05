@@ -272,6 +272,9 @@
     </ClCompile>
     <ClCompile Include="..\ASCOfficeDrawingConverter.cpp" />
     <ClCompile Include="..\ASCOfficePPTXFileRealization.cpp" />
+    <ClCompile Include="..\PPTXFormat\Logic\HeadingVariant.cpp">
+      <Filter>PPTX\Logic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Editor\BinaryFileReaderWriter.h">
@@ -1476,5 +1479,8 @@
     </ClInclude>
     <ClInclude Include="..\ASCOfficeDrawingConverter.h" />
     <ClInclude Include="..\ASCOfficePPTXFile.h" />
+    <ClInclude Include="..\..\DesktopEditor\raster\exif.h">
+      <Filter>BinaryReaderWriter</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

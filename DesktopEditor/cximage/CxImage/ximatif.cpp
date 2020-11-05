@@ -301,7 +301,8 @@ bool CxImageTIF::Decode(CxFile * hFile)
 			tilebuf = (uint8_t*)malloc(TIFFTileSize(m_tif));
 		}
 		
-		bits = (uint8_t*)malloc(bitspersample==16? bitsize*2 : bitsize); // * VK
+        int32_t bitsize_correct = bitspersample==16? bitsize*2 : bitsize;
+        bits = (uint8_t*)malloc(bitsize_correct); // * VK
 		uint8_t * bits16 = NULL;										  // + VK
 		int32_t line16    = 0;											  // + VK
 
@@ -309,6 +310,7 @@ bool CxImageTIF::Decode(CxFile * hFile)
 			line16 = line;
 			line   = CalculateLine(width, 8 * samplesperpixel);
 			bits16 = bits;
+            bitsize_correct = bitsize;
 			bits   = (uint8_t*)malloc(bitsize);
 		}
 
@@ -454,9 +456,18 @@ bool CxImageTIF::Decode(CxFile * hFile)
 					double p,cx,cy,cz,cr,cg,cb;
 					while (ii</*line*/width){		// * VK
 						bitsoffset = ii*samplesperpixel+offset;
-						l=bits[bitsoffset];
-						a=bits[bitsoffset+1];
-						b=bits[bitsoffset+2];
+                        if (bitsoffset + 2 < bitsize_correct)
+                        {
+                            l=bits[bitsoffset];
+                            a=bits[bitsoffset+1];
+                            b=bits[bitsoffset+2];
+                        }
+                        else
+                        {
+                            l=0;
+                            a=0;
+                            b=0;
+                        }
 						if (a>127) a-=256;
 						if (b>127) b-=256;
 						// lab to xyz

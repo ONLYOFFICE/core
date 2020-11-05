@@ -76,7 +76,6 @@ namespace DocFileFormat
 			if ( tai.fInTable )
 			{
 				//this PAPX is for a table
-				//cp = writeTable( cp, tai.iTap );
 				int start_table_cp = cp;
 				
 				Table table( this, cp, ( ( tai.iTap > 0 ) ? ( 1 ) : ( 0 ) ) );

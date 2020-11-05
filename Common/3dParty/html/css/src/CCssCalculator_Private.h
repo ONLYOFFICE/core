@@ -3,10 +3,10 @@
 
 #include <vector>
 #include <map>
-#include "CElement.h"
 #include "CCssCalculator.h"
 #include <list>
 #include <functional>
+#include "CElement.h"
 #include "../../katana-parser/src/katana.h"
 
 namespace NSCSS
@@ -18,7 +18,10 @@ namespace NSCSS
         UnitMeasure m_UnitMeasure;
 
         std::list<std::wstring> m_arFiles;
-        std::list<CElement*> m_arData;
+
+        std::map<std::wstring, CElement*> m_mData;
+
+//        std::map<std::vector<CNode>, std::map<std::wstring, std::wstring>*> m_mData;
 
         std::map<std::vector<CNode>, CCompiledStyle*> m_mUsedStyles;
 
@@ -27,24 +30,14 @@ namespace NSCSS
         // void AddElement(CElement* oElement);
         // size_t GetSize() const;
 
-        void GetStylesheet(const KatanaStylesheet* oStylesheet, CElement* oElementRule = NULL);
-        void GetRule(const KatanaRule* oRule, CElement* oElementRule = NULL);
+        void GetStylesheet(const KatanaStylesheet* oStylesheet);
+        void GetRule(const KatanaRule* oRule);
 
-        CElement* GetStyleRule(const KatanaStyleRule* oRule, CElement* oElementRule = NULL);
-        void GetImportRule(const KatanaImportRule* oRule);
-        void GetFontFaceRule(const KatanaFontFaceRule* oRule);
-        void GetKeyframesRule(const KatanaKeyframesRule* oRule);
-        void GetMediaRule(const KatanaMediaRule* oRule);
+        void GetStyleRule(const KatanaStyleRule* oRule);
 
         // CElement* GetElement(const int& nIndex) const;
 
-        std::wstring GetMediaList(const KatanaArray* oMedias);
-        std::wstring GetMediaQuery(const KatanaMediaQuery* oQuery);
-        std::wstring GetMediaQueryExp(const KatanaMediaQueryExp* oExp);
-
         std::wstring GetValueList(const KatanaArray* oValues);
-
-        CElement* GetKeyframe(const KatanaKeyframe* oKeyframe);
 
         std::vector<std::wstring> GetSelectorList(const KatanaArray* oSelectors) const;
         std::wstring GetSelector(const KatanaSelector* oSelector) const;
@@ -98,18 +91,12 @@ namespace NSCSS
 
         std::wstring ConvertEm(const std::wstring& sValue) const;
 
-        std::vector<unsigned short int> GetWeightSelector(const std::string& sSelector) const;
-        std::vector<unsigned short int> GetWeightSelector(const std::wstring& sSelector) const;
-
         void GetOutputData(KatanaOutput* oOutput);
 
     public:
         CCssCalculator_Private();
         ~CCssCalculator_Private();
 
-        std::map<std::wstring, std::wstring> GetDeclarations(const std::wstring& sSelector) const;
-
-        CCompiledStyle GetCompiledStyle(const std::vector<std::string>& arSelectors, const UnitMeasure& unitMeasure = Default);
         CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors, const UnitMeasure& unitMeasure = Default);
 
         // void AddStyle(const std::vector<std::string>& sSelectors, const std::string& sStyle);
@@ -124,7 +111,6 @@ namespace NSCSS
         std::wstring GetEncoding() const;
         unsigned short int GetDpi() const;
 
-        void Print() const;
         void Clear();        
 
     };

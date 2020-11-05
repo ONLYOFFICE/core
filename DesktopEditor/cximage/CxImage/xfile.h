@@ -49,11 +49,11 @@
 class DLL_EXP CxFile
 {
 public:
-	CxFile(void) { };
-	virtual ~CxFile() { };
+	CxFile(void) { }
+	virtual ~CxFile() { }
 
 	virtual bool	Close() = 0;
-	virtual size_t	Read(void *buffer, size_t size, size_t count) = 0;
+	virtual size_t	Read(void *buffer, size_t size, size_t count, void* limit_start = NULL, void* limit_end = NULL) = 0;
 	virtual size_t	Write(const void *buffer, size_t size, size_t count) = 0;
 	virtual bool	Seek(int32_t offset, int32_t origin) = 0;
 	virtual int32_t	Tell() = 0;
@@ -71,5 +71,28 @@ public:
 	virtual char *	GetS(char *string, int32_t n) = 0;
 	virtual int32_t	Scanf(const char *format, void* output) = 0;
 };
+
+static void clamp_buffer(void*& buffer, size_t& size, void* limit_start, void* limit_end)
+{
+	if (NULL == limit_start || NULL == limit_end)
+		return;
+
+	uint8_t* _buffer = (uint8_t*)buffer;
+	uint8_t* _limit_start = (uint8_t*)limit_start;
+	uint8_t* _limit_end = (uint8_t*)limit_end;
+
+	if (_buffer > _limit_end)
+	{
+		buffer = limit_end;
+		size = 0;
+		return;
+	}
+
+	if (_buffer < _limit_start)
+		_buffer = _limit_start;
+
+	if ((_buffer + size) > _limit_end)
+		size = (_limit_end - _buffer);
+}
 
 #endif //__xfile_h

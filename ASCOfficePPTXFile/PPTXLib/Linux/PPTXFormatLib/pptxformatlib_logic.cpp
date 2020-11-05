@@ -47,6 +47,7 @@
 #include "../../../PPTXFormat/Logic/EffectStyle.cpp"
 #include "../../../PPTXFormat/Logic/Geometry.cpp"
 #include "../../../PPTXFormat/Logic/GraphicFrame.cpp"
+#include "../../../PPTXFormat/Logic/HeadingVariant.cpp"
 #include "../../../PPTXFormat/Logic/GrpSpPr.cpp"
 #include "../../../PPTXFormat/Logic/Hyperlink.cpp"
 #include "../../../PPTXFormat/Logic/NvGraphicFramePr.cpp"

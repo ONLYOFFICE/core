@@ -5,8 +5,11 @@
 #include "../../../../../DesktopEditor/common/File.h"
 #include "CCssCalculator.h"
 #include "CssCalculator_global.h"
+#include "ConstValues.h"
+#include <cwctype>
 #include <string>
 #include <vector>
+#include <list>
 #include <algorithm>
 
 namespace NSCSS
@@ -95,37 +98,6 @@ namespace NSCSS
             return (posDigit < posNoDigit) || (posDigit == 0  && posNoDigit == 0);
         }
 
-        inline static void RemoveExcessFromStyles(std::wstring& sStyle)
-        {
-            while (true)
-            {
-                size_t posLeftAngleBracket = sStyle.find(L'<');
-                size_t posRightAngleBracket = sStyle.find(L'>');
-                size_t posLeftComment = sStyle.find(L"<!--");
-                size_t posRightComment = sStyle.find(L"-->");
-
-                if (posLeftAngleBracket != std::wstring::npos || posLeftComment != std::wstring::npos || posRightComment != std::wstring::npos)
-                {
-
-                    if (posLeftAngleBracket != std::wstring::npos &&
-                        posRightAngleBracket != std::wstring::npos)
-                    {
-                        sStyle.erase(posLeftAngleBracket, posRightAngleBracket - posLeftAngleBracket + 1);
-                    }
-                    else if (posLeftAngleBracket != std::wstring::npos)
-                        sStyle.erase(posLeftAngleBracket, 1);
-                    else if (posRightAngleBracket != std::wstring::npos)
-                        sStyle.erase(posRightAngleBracket, 1);
-                    else if (posLeftComment != std::wstring::npos)
-                        sStyle.erase(posLeftComment, 4);
-                    else if (posRightComment != std::wstring::npos)
-                        sStyle.erase(posRightComment, 3);
-                }
-                else
-                    break;
-            }
-        }
-
         inline std::wstring DeleteSpace(const std::wstring& sValue)
         {
             if (sValue.empty())
@@ -157,19 +129,22 @@ namespace NSCSS
             return arWords;
         }
 
-        inline std::vector<std::wstring> GetWordsW(const std::wstring& sLine)
+        inline std::vector<std::wstring> GetWordsW(const std::wstring& sLine, const std::wstring& sSigns = L" \n\r\t\f\v:;,")
         {
             if (sLine.empty())
                 return {};
 
+            if (sLine.find_first_of(sSigns) == std::wstring::npos)
+                return std::vector<std::wstring>({sLine});
+
             std::vector<std::wstring> arWords;
             arWords.reserve(16);
-            size_t posFirstNotSpace = sLine.find_first_not_of(L" \n\r\t\f\v:;,");
+            size_t posFirstNotSpace = sLine.find_first_not_of(sSigns);
             while (posFirstNotSpace != std::wstring::npos)
             {
-                const size_t& posLastNotSpace = sLine.find_first_of(L" \n\r\t\f\v:;,", posFirstNotSpace);
+                const size_t& posLastNotSpace = sLine.find_first_of(sSigns, posFirstNotSpace);
                 arWords.push_back(sLine.substr(posFirstNotSpace, posLastNotSpace - posFirstNotSpace));
-                posFirstNotSpace = sLine.find_first_not_of(L" \n\r\t\f\v:;,", posLastNotSpace);
+                posFirstNotSpace = sLine.find_first_not_of(sSigns, posLastNotSpace);
             }
             return arWords;
         }
@@ -313,18 +288,22 @@ namespace NSCSS
             return arSelectors;
         }
 
-        inline std::vector<std::wstring> GetWordsWithSigns(const std::wstring& sLine)
+        inline std::vector<std::wstring> GetWordsWithSigns(const std::wstring& sLine, const std::wstring& sSigns = L" \n\r\t\f\v:;,")
         {
             if (sLine.empty())
                 return {};
+
+            if (sLine.find_first_of(sSigns) == std::wstring::npos)
+                return std::vector<std::wstring>({sLine});
+
             std::vector<std::wstring> arWords;
             arWords.reserve(16);
-            size_t posFirstNotSpace = sLine.find_first_not_of(L" \n\r\t\f\v:;,");
+            size_t posFirstNotSpace = sLine.find_first_not_of(sSigns);
             while (posFirstNotSpace != std::wstring::npos)
             {
-                const size_t posLastNotSpace = sLine.find_first_of(L" \n\r\t\f\v:;,", posFirstNotSpace);
+                const size_t posLastNotSpace = sLine.find_first_of(sSigns, posFirstNotSpace);
                 arWords.push_back(sLine.substr(posFirstNotSpace, (posLastNotSpace != std::wstring::npos) ? posLastNotSpace - posFirstNotSpace + 1 : posLastNotSpace - posFirstNotSpace ));
-                posFirstNotSpace = sLine.find_first_not_of(L" \n\r\t\f\v:;,", posLastNotSpace);
+                posFirstNotSpace = sLine.find_first_not_of(sSigns, posLastNotSpace);
             }
             return arWords;
         }
@@ -375,6 +354,41 @@ namespace NSCSS
             }
             return sValue;
         }
+
+        inline std::vector<unsigned short int> GetWeightSelector(const std::wstring& sSelector)
+        {
+            if (sSelector.empty())
+                return std::vector<unsigned short int>{0, 0, 0, 0};
+
+            std::vector<unsigned short int> arWeight = {0, 0, 0, 0};
+
+            std::wstring sReverseSelector = sSelector;
+            std::reverse(sReverseSelector.begin(), sReverseSelector.end());
+
+            const std::vector<std::wstring> arSelectors = NS_STATIC_FUNCTIONS::GetWordsWithSigns(sReverseSelector, L" .#:");
+
+            for (const std::wstring& sSel : arSelectors)
+            {
+                if (sSel == L"*")
+                    ++arWeight[3];
+                else if (sSel.rfind(L'#') != std::wstring::npos)
+                    ++arWeight[0];
+                else if (sSel.rfind(L':') != std::wstring::npos)
+                {
+                    std::wstring sTemp(sSel);
+                    sTemp.erase(std::remove_if(sTemp.begin(), sTemp.end(), [] (const wchar_t& wc) { return !std::iswalpha(wc);}));
+                    std::find(NS_CONST_VALUES::arPseudoClasses.begin(), NS_CONST_VALUES::arPseudoClasses.end(), sTemp) != NS_CONST_VALUES::arPseudoClasses.end() ? ++arWeight[1] : ++arWeight[2];
+                }
+                else if (sSel.find_last_of(L".[]") != std::wstring::npos)
+                    ++arWeight[1];
+                else
+                    ++arWeight[2];
+            }
+
+            return arWeight;
+        }
+
+
     }
 }
 

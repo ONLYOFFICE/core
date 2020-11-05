@@ -327,7 +327,6 @@ namespace DocFileFormat
 
 		TableInfo tai( papx, documentMapping->m_document->nWordVersion );
 
-
 		return ( ( tai.fInTable ) && ( ( ( documentMapping->m_document->Text->at( _cp ) == 0x0007 ) && ( tai.iTap <= 1 ) && 
 			( !tai.fTtp ) ) ||
 			( ( documentMapping->m_document->Text->at( _cp ) == 0x000D ) && ( tai.iTap > 1 ) && 

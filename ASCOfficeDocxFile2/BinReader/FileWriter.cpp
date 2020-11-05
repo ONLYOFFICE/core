@@ -49,24 +49,26 @@ FileWriter::FileWriter(std::wstring sDirOutput,std::wstring sFontDir, bool bNoFo
 	m_pDrawingConverter	(pDrawingConverter),
 	m_bSaveChartAsImg	(bSaveChartAsImg),
 	m_sThemePath		(sThemePath),
-	m_oDocumentRels		(sDirOutput),
+	m_oDocumentRelsWriter		(sDirOutput),
 	m_nDocPrIndex		(0),
 	m_pComments			(NULL),
 	m_pApp				(NULL),
-	m_pCore				(NULL)
+	m_pCore				(NULL),
+	m_pCustomProperties	(NULL)
 {
 }
 FileWriter::~FileWriter()
 {
     RELEASEOBJECT(m_pApp);
     RELEASEOBJECT(m_pCore);
+	RELEASEOBJECT(m_pCustomProperties);
 }
 void FileWriter::Write()
 {
 	m_oMain.Write();
     m_oChartWriter.Write();
 	//Rels и ContentTypes пишем в конце
-	m_oDocumentRels.Write();
+	m_oDocumentRelsWriter.Write();
 }
 void FileWriter::WriteGlossary()
 {

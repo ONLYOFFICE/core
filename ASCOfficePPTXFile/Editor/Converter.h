@@ -268,6 +268,14 @@ namespace PPTX2EditorAdvanced
 			core->toPPTY(&oBinaryWriter);
 		}
 
+		// CustomProperties
+		smart_ptr<PPTX::CustomProperties> customProperties = oFolder.Get(OOX::FileTypes::CustomProperties).smart_dynamic_cast<PPTX::CustomProperties>();
+		if (customProperties.is_init())
+		{
+			oBinaryWriter.StartMainRecord(NSBinPptxRW::NSMainTables::CustomProperties);
+			customProperties->toPPTY(&oBinaryWriter);
+		}
+
 		// PresProps
 		smart_ptr<PPTX::PresProps> presProps = presentation->Get(OOX::Presentation::FileTypes::PresProps).smart_dynamic_cast<PPTX::PresProps>();
 		if (presProps.is_init())

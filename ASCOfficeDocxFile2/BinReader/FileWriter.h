@@ -62,6 +62,10 @@ namespace OOX
 	class CApp;
 	class CCore;
 }
+namespace PPTX
+{
+	class CustomProperties;
+}
 
 namespace Writers
 {
@@ -152,7 +156,7 @@ namespace Writers
 		ChartWriter				m_oChartWriter;
 		DefaultThemeWriter		m_oTheme;
 		CustomXmlWriter			m_oCustomXmlWriter;		
-		DocumentRelsWriter		m_oDocumentRels;
+		DocumentRelsWriter		m_oDocumentRelsWriter;
 
 		smart_ptr<OOX::VbaProject>		m_pVbaProject;
 	
@@ -163,6 +167,7 @@ namespace Writers
 		BinDocxRW::CComments*			m_pComments;
 		OOX::CApp*						m_pApp;
 		OOX::CCore*						m_pCore;
+		PPTX::CustomProperties*			m_pCustomProperties;
 
 		bool m_bGlossaryMode = false;
 	};

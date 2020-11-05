@@ -540,6 +540,8 @@ namespace NSBinPptxRW
 		bool GetBool();
 		BYTE GetUChar_TypeNode();
 
+		_INT32 GetRecordSize();
+		
 		// 2 byte
 		_UINT16 GetUShort();
 		_INT16 GetShort();
@@ -554,10 +556,10 @@ namespace NSBinPptxRW
 		double GetDouble64();
 		double GetDoubleReal();
 		//String
-		std::wstring GetString(_INT32 len);
+		std::wstring GetString(_INT32 len, bool bDeleteZero = false);
 		std::string GetString1(_INT32 len);
-		std::wstring GetString2();
-		std::wstring GetString3(_INT32 len);
+		std::wstring GetString2(bool bDeleteZero = false);
+		std::wstring GetString3(_INT32 len, bool bDeleteZero = false);
 		std::wstring GetString4(_INT32 len);
 
         bool GetArray(BYTE **pBuffer, _INT32 len);

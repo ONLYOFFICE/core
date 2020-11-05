@@ -255,7 +255,7 @@ namespace PPTX
 			BYTE type = pReader->GetUChar();
 
 			LONG _rec_start = pReader->GetPos();
-			LONG _end_rec = _rec_start + pReader->GetULong() + 4;
+			LONG _end_rec = _rec_start + pReader->GetRecordSize() + 4;
 
 			pReader->Skip(1); // start attributes
 

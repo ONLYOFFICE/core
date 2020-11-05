@@ -1,179 +1,291 @@
 #include "CElement.h"
-#include <iostream>
 #include <algorithm>
-#include <cwctype>
-#include <numeric>
+#include <math.h>
 
-CElement::CElement() {}
+#include "StaticFunctions.h"
 
-CElement::~CElement()
+namespace NSCSS
 {
-    for (CElement* oChildren : m_arChildrens)
-        delete oChildren;
-
-    m_arChildrens.clear();
-    m_arSelectors.clear();
-    m_arDeclarations.clear();
-}
-
-bool CElement::Empty()
-{
-    return m_arSelectors.empty() && m_arDeclarations.empty();
-}
-
-
-std::wstring CElement::GetText() const
-{
-    std::wstring sText;
-
-    if(m_arSelectors.size() > 0)
+    CElement::CElement()
     {
-        for (const std::wstring& sSelector : m_arSelectors)
-            sText += sSelector + L", ";
-
-        sText.erase(sText.length() - 2, 2);
     }
-    if (!m_arDeclarations.empty() ||
-        !m_arChildrens.empty())
+    CElement::~CElement()
     {
-        sText += L"{\n";
+        for (CElement* oElement : m_arPrevElements)
+            if (oElement != NULL)
+                delete oElement;
+            else
+                continue;
 
-        for (const CElement* oChildren : m_arChildrens)
-            sText += oChildren->GetText();
+        m_mStyle.clear();
 
-        for (const std::map<std::wstring, std::wstring>::value_type& pDeclaration : m_arDeclarations)
-        {
-            sText += L"   " + pDeclaration.first + L": " + pDeclaration.second + L";\n";
-        }
-        sText += L"};\n";
     }
-    else
-        sText += L";\n";
-    return sText;
-}
 
-
-void CElement::AddChildren(CElement* oChildren)
-{
-    m_arChildrens.push_back(oChildren);
-}
-
-void CElement::AddSelector(std::wstring sSelector)
-{
-    sSelector.erase(std::remove_if(sSelector.begin(), sSelector.end(), [] (wchar_t ch) { return std::iswspace(ch); }), sSelector.end());
-    m_arSelectors.push_back(sSelector);
-    std::sort(m_arSelectors.begin(), m_arSelectors.end());
-}
-
-/*
-void CElement::AddDeclaration(const std::pair<std::wstring, std::wstring>& pDeclaration)
-{
-    m_arDeclarations.insert(pDeclaration);
-}
-*/
-
-void CElement::AddSelectors(const std::vector<std::wstring>& arSelectors)
-{
-    m_arSelectors.insert(m_arSelectors.end(), arSelectors.begin(), arSelectors.end());
-    std::sort(m_arSelectors.begin(), m_arSelectors.end());
-}
-
-void CElement::AddDeclarations(const std::map<std::wstring, std::wstring>& arDeclarations)
-{
-    m_arDeclarations.insert(arDeclarations.begin(), arDeclarations.end());
-}
-
-/*
-void CElement::SetDeclaratins(const std::map<std::wstring, std::wstring>& arDeclarations)
-{
-    m_arDeclarations = arDeclarations;
-}
-*/
-
-size_t CElement::GetCountSelectors() const
-{
-    return m_arSelectors.size();
-}
-
-size_t CElement::GetCountDeclarations() const
-{
-    return m_arDeclarations.size();
-}
-
-/*
-int CElement::GetCountChildrens() const
-{
-    return m_arChildrens.size();
-}
-*/
-
-bool CElement::FindSelector(const std::wstring& sSelector) const
-{
-    return (m_arSelectors.size() == 1) ? m_arSelectors[0] == sSelector :
-           (m_arSelectors.size() == 2) ? m_arSelectors[0] == sSelector || m_arSelectors[1] == sSelector :
-           (m_arSelectors.size() == 3) ? m_arSelectors[0] == sSelector || m_arSelectors[1] == sSelector || m_arSelectors[2] == sSelector :
-           std::find(m_arSelectors.begin(), m_arSelectors.end(), sSelector) != m_arSelectors.end();
-}
-
-/*
-std::vector<std::wstring> CElement::GetSelectors() const
-{
-    return m_arSelectors;
-}
-
-std::map<std::wstring, std::wstring> CElement::GetDeclarations() const
-{
-    return m_arDeclarations;
-}
-*/
-
-std::map<std::wstring, std::wstring> CElement::GetDeclarations(const std::wstring& sSelector) const
-{
-    if (m_arSelectors.size() == 0)
-        return std::map<std::wstring, std::wstring>();
-
-    switch (m_arSelectors.size())
+    std::wstring CElement::GetSelector() const
     {
-        case 1:
-            if (m_arSelectors[0] == sSelector)
-                return m_arDeclarations;
-            break;
-        case 2:
-            if (m_arSelectors[0] == sSelector || m_arSelectors[1] == sSelector)
-                return m_arDeclarations;
-            break;
-        case 3:
-            if (m_arSelectors[0] == sSelector || m_arSelectors[1] == sSelector || m_arSelectors[2] == sSelector)
-                return m_arDeclarations;
-            break;
-        default:
+        return m_sSelector;
+    }
+
+    std::wstring CElement::GetFullSelector() const
+    {
+        return m_sFullSelector;
+    }
+
+    void CElement::SetSelector(const std::wstring &sSelector)
+    {
+        m_sSelector = sSelector;
+        m_sFullSelector = m_sSelector;
+    }
+
+    void NSCSS::CElement::AddPropertie(const std::wstring &sName, const std::wstring& sValue)
+    {
+        m_mStyle[sName] = sValue;
+    }
+
+    void CElement::AddProperties(const std::map<std::wstring, std::wstring>& mProperties)
+    {
+        for (std::pair<std::wstring, std::wstring> pPropertie : mProperties)
         {
-            if(std::find(m_arSelectors.begin(), m_arSelectors.end(), sSelector) != m_arSelectors.end())
-                return m_arDeclarations;
-            break;
+            std::transform(pPropertie.first.begin(), pPropertie.first.end(), pPropertie.first.begin(), tolower);
+            std::transform(pPropertie.second.begin(), pPropertie.second.end(), pPropertie.second.begin(), tolower);
+
+            if (!m_mStyle[pPropertie.first].empty() && m_mStyle[pPropertie.first].find(L'!') != std::wstring::npos)
+                continue;
+
+            if (pPropertie.second.substr(0, 3) == L"rgb")
+                 m_mStyle[pPropertie.first] = NSCSS::NS_STATIC_FUNCTIONS::ConvertRgbToHex(pPropertie.second);
+            else
+                 m_mStyle[pPropertie.first] = pPropertie.second;
         }
     }
-    return std::map<std::wstring, std::wstring>();
 
-}
-
-/*
-std::vector<CElement*> CElement::GetChildrens() const
-{
-    return m_arChildrens;
-}
-*/
-
-CElement& CElement::operator= (const CElement &oElement)
-{
-    m_arChildrens.clear();
-    m_arSelectors = oElement.m_arSelectors;
-    m_arDeclarations = oElement.m_arDeclarations;
-    for (const CElement *oChildren : oElement.m_arChildrens)
+    void CElement::AddPrevElement(CElement *oPrevElement)
     {
-        CElement *oTempChildren = new CElement();
-        *oTempChildren = *oChildren;
-        m_arChildrens.push_back(oTempChildren);
+        if (NULL == oPrevElement)
+            return;
+
+        m_arPrevElements.push_back(oPrevElement);
+        oPrevElement->m_sFullSelector += L' ' + m_sFullSelector;
     }
-    return *this;
+
+    void CElement::AddKinElement(CElement *oKinElement)
+    {
+        if (NULL == oKinElement)
+            return;
+
+        m_arKinElements.push_back(oKinElement);
+        oKinElement->m_sFullSelector += m_sFullSelector;
+    }
+
+    size_t CElement::EmptyPrevElements() const
+    {
+        return m_arPrevElements.empty();
+    }
+
+    std::map<std::wstring, std::wstring> CElement::GetStyle() const
+    {
+        return m_mStyle;
+    }
+
+    std::map<std::wstring, std::wstring> CElement::GetFullStyle(const std::vector<CNode>& arSelectors) const
+    {
+        if (arSelectors.empty())
+            return std::map<std::wstring, std::wstring>();
+
+        std::map<std::wstring, std::wstring> mStyle(m_mStyle);
+
+//        Print();
+//        std::wcout << L"++++++++++++++++++++++++++++++++++++++++" << std::endl;
+
+        for (const CElement* oElement : m_arPrevElements)
+        {
+            for (std::vector<CNode>::const_reverse_iterator oNode = arSelectors.rbegin(); oNode != arSelectors.rend(); ++oNode)
+            {
+                std::map<std::wstring, std::wstring> mTempStyle;
+                if (oElement->GetSelector() == L'.' + oNode->m_sClass ||
+                    oElement->GetSelector() == oNode->m_sName)
+                {
+                    for (const std::pair<std::wstring, std::wstring> pPropertie : oElement->GetFullStyle(arSelectors))
+                        mStyle[pPropertie.first] = pPropertie.second;
+//                    const std::map<std::wstring, std::wstring> mTempStyle = oElement->GetFullStyle(arSelectors);
+//                    mStyle.insert(mTempStyle.begin(), mTempStyle.end());
+                }
+            }
+        }
+
+        return mStyle;
+    }
+
+    std::map<std::wstring, std::wstring> CElement::GetFullStyle(const std::vector<std::wstring> &arNodes) const
+    {
+        if (arNodes.empty() || (m_mStyle.empty() && m_arPrevElements.empty()))
+            return std::map<std::wstring, std::wstring>();
+
+//        Print();
+//        std::wcout << L"++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
+        std::map<std::wstring, std::wstring> mStyle(m_mStyle);
+
+        for (const CElement* oElement : m_arPrevElements)
+        {
+            for (std::vector<std::wstring>::const_reverse_iterator sNode = arNodes.rbegin(); sNode != arNodes.rend(); ++sNode)
+            {
+                if ((*sNode)[0] == L'.')
+                {
+                    for (const std::wstring& sClass : NS_STATIC_FUNCTIONS::GetWordsW(*sNode, L" "))
+                    {
+                        if (oElement->GetSelector() == sClass)
+                        {
+                            std::vector<std::wstring> sTempNodes = arNodes;
+                            sTempNodes.pop_back();
+
+                            for (const std::pair<std::wstring, std::wstring> pPropertie : oElement->GetFullStyle(sTempNodes))
+                                mStyle[pPropertie.first] = pPropertie.second;
+        //                    const std::map<std::wstring, std::wstring> mTempStyle = oElement->GetFullStyle((arNodes.size() > 1) ? std::vector<std::wstring>(&arNodes[1], &arNodes[arNodes.size() - 1]) : std::vector<std::wstring>());
+        //                    mStyle.insert(mTempStyle.begin(), mTempStyle.end());
+                        }
+                    }
+                }
+                else if (oElement->GetSelector() == *sNode)
+                {
+                    std::vector<std::wstring> sTempNodes = arNodes;
+                    sTempNodes.pop_back();
+                    for (const std::pair<std::wstring, std::wstring> pPropertie : oElement->GetFullStyle(sTempNodes))
+                        mStyle[pPropertie.first] = pPropertie.second;
+//                    const std::map<std::wstring, std::wstring> mTempStyle = oElement->GetFullStyle((arNodes.size() > 1) ? std::vector<std::wstring>(&arNodes[1], &arNodes[arNodes.size() - 1]) : std::vector<std::wstring>());
+//                    mStyle.insert(mTempStyle.begin(), mTempStyle.end());
+                }
+            }
+        }
+
+        return mStyle;
+    }
+
+    std::vector<CElement *> CElement::GetAllElements(const std::vector<std::wstring> &arNodes) const
+    {
+        if (arNodes.empty())
+            return std::vector<CElement*>({const_cast<CElement*>(this)});
+
+        std::vector<CElement *> arElements;
+
+        if (!m_mStyle.empty())
+            arElements.push_back(const_cast<CElement*>(this));
+
+
+        std::vector<std::wstring> arKins;
+        for (std::vector<std::wstring>::const_reverse_iterator sNode = arNodes.rbegin(); sNode != arNodes.rend(); ++sNode)
+        {
+            arKins.push_back(*sNode);
+            if ((*sNode)[0] != L'#' && (*sNode)[0] != L'.')
+                break;
+        }
+
+        for (const CElement* oElement : m_arKinElements)
+        {
+            for (std::vector<std::wstring>::const_reverse_iterator sNode = arKins.rbegin(); sNode != arKins.rend(); ++sNode)
+            {
+                if (oElement->m_sSelector == *sNode)
+                {
+                    std::vector<std::wstring> arWords = arNodes;
+                        arWords.pop_back();
+                    const std::vector<CElement*> arTemp = oElement->GetAllElements(arWords);
+                    arElements.insert(arElements.end(), arTemp.begin(), arTemp.end());
+                }
+            }
+        }
+
+        for (const CElement* oElement : m_arPrevElements)
+        {
+            for (std::vector<std::wstring>::const_reverse_iterator sNode = arNodes.rbegin(); sNode != arNodes.rend(); ++sNode)
+            {
+                if (oElement->m_sSelector == *sNode)
+                {
+                    std::vector<std::wstring> arWords = arNodes;
+                        arWords.pop_back();
+
+                    const std::vector<CElement*> arTemp = oElement->GetAllElements(arWords);
+                    arElements.insert(arElements.end(), arTemp.begin(), arTemp.end());
+                }
+            }
+        }
+
+        return arElements;
+    }
+
+    std::vector<CElement *> CElement::GetNextOfKin(const std::wstring &sName, const std::vector<std::wstring>& arClasses)
+    {
+        if (m_arKinElements.empty())
+            return std::vector<CElement*>();
+
+        std::vector<CElement*> arElements;
+        for (CElement* oElement : m_arKinElements)
+        {
+            if (!sName.empty() && oElement->m_sSelector == sName)
+            {
+                arElements.push_back(oElement);
+                continue;
+            }
+
+            for (const std::wstring& sClass : arClasses)
+            {
+                if (oElement->m_sSelector == sClass)
+                    arElements.push_back(oElement);
+            }
+        }
+        return arElements;
+    }
+
+    CElement *CElement::FindPrevElement(const std::wstring &sSelector) const
+    {
+        if (sSelector.empty())
+            return NULL;
+
+        for (CElement* oElement : m_arPrevElements)
+        {
+            if (oElement->m_sSelector == sSelector)
+                return oElement;
+        }
+        return NULL;
+    }
+
+    std::vector<unsigned short> CElement::GetWeight()
+    {
+        if (m_arWeight.empty())
+            m_arWeight = NS_STATIC_FUNCTIONS::GetWeightSelector(m_sFullSelector);
+
+        return m_arWeight;
+    }
+
+    void CElement::IncreasedWeight()
+    {
+        if (!m_arWeight.empty())
+        {
+            m_arWeight = NS_STATIC_FUNCTIONS::GetWeightSelector(m_sFullSelector);
+            ++m_arWeight[3];
+        }
+    }
+
+    void CElement::Print() const
+    {
+        std::wcout << L"Selector: " << m_sSelector << std::endl;
+        std::wcout << L"Full Selector: " << m_sFullSelector << std::endl;
+        std::wcout << L"===========STYLE(" << m_mStyle.size() << ")===========" << std::endl;
+        for (const std::pair<std::wstring, std::wstring>& oPropertie : m_mStyle)
+            std::wcout << oPropertie.first << L" - " << oPropertie.second << std::endl;
+        std::wcout << L"===========================" << std::endl;
+
+        std::wcout << m_arKinElements.size() << L" --- " << m_arPrevElements.size() << std::endl;
+
+        if (!m_arKinElements.empty())
+        {
+            std::wcout << L"\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/" << std::endl;
+            for (CElement* oElement : m_arKinElements)
+                oElement->Print();
+            std::wcout << L"/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\" << std::endl;
+        }
+        for (CElement* oElement : m_arPrevElements)
+            oElement->Print();
+
+    }
+
 }
+

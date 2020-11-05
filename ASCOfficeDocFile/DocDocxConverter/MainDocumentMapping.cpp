@@ -84,7 +84,6 @@ namespace DocFileFormat
 		if ((m_document->GetOfficeArt()) && (m_document->GetOfficeArt()->GetShapeBackgound()))
 		{
 			bool bFilled = true;
-			m_document->DocProperties->bDisplayBackgroundShape = true;
 			ShapeContainer* pShape = m_document->GetOfficeArt()->GetShapeBackgound();
 
 			ODRAW::OfficeArtFOPTEPtr boolFill = pShape->ExtractOption(ODRAW::fillStyleBooleanProperties);

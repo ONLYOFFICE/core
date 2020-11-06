@@ -423,7 +423,7 @@ namespace NSDoctRenderer
 
                         BYTE* pDataDst = NULL;
                         int nDataDstLen = 0;
-                        if (NSFile::CBase64Converter::Decode(sBase64.c_str(), (int)sBase64.length(), pDataDst, nDataDstLen))
+                        if (NSFile::CBase64Converter::Decode(sBase64.c_str(), (int)sBase64.length(), pDataDst, nDataLen))
                         {
                             NSFile::CFileBinary oFileDst;
                             if (oFileDst.CreateFileW(to))

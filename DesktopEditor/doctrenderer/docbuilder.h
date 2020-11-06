@@ -36,7 +36,6 @@
 
 namespace NSDoctRenderer
 {
-    // class CDocBuilderJS;
 
     /**
      * Class for getting results of called js commands

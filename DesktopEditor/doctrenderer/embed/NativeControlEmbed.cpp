@@ -117,7 +117,7 @@ JSSmart<CJSValue> CNativeControlEmbed::GetCountChanges()
     int nCount = 0;
     if (m_pInternal->m_pChanges != NULL)
     {
-        nCount = (int)m_pInternal->m_pChanges->GetCount();
+        nCount = (int)m_pInternal->m_pChanges->size();
     }
 
     return CJSContext::createInt(nCount);

@@ -381,10 +381,12 @@ namespace PPTX
 		{
 			nvGraphicFramePr.toXmlWriter(pWriter);
             
-			if (xfrm.IsInit() && (pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX || pWriter->m_lGroupIndex >= 0))
+			if (xfrm.IsInit() && (!(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+									pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY) || pWriter->m_lGroupIndex >= 0))
 			{				
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && pWriter->m_lGroupIndex >= 0)	xfrm->m_ns = L"xdr";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX && pWriter->m_lGroupIndex >= 0) xfrm->m_ns = L"wpg";
+				else if ((pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+						pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY) && pWriter->m_lGroupIndex >= 0) xfrm->m_ns = L"wpg";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)						xfrm->m_ns = L"a";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)					xfrm->m_ns = L"cdr";
 				
@@ -419,10 +421,11 @@ namespace PPTX
 		{
 			std::wstring namespace_ = m_namespace;
 			
-			if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX && pWriter->m_lGroupIndex >= 0)	namespace_ = L"wpg";
-			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && pWriter->m_lGroupIndex >= 0) namespace_ = L"xdr";
-			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)							namespace_ = L"a";
-			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)						namespace_ = L"cdr";
+			if ((pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+				 pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY) && pWriter->m_lGroupIndex >= 0)		namespace_ = L"wpg";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && pWriter->m_lGroupIndex >= 0)				namespace_ = L"xdr";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)										namespace_ = L"a";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)									namespace_ = L"cdr";
 
 			pWriter->StartNode(namespace_ + L":graphicFrame");
 
@@ -583,7 +586,7 @@ namespace PPTX
 
 		void GraphicFrame::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
-			LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 			pReader->Skip(1); // start attributes
 
 			while (true)

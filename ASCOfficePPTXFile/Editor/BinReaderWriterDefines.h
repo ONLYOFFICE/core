@@ -85,7 +85,8 @@ namespace NSBinPptxRW
 			FontsEmbedded	= 44,
 			SlideNotesRels	= 45,
 			NotesRels		= 46,
-			NotesMastersRels= 47
+			NotesMastersRels= 47,
+			CustomProperties= 48
 		};
 	}
 }
@@ -279,6 +280,7 @@ static std::wstring SchemeClr_GetStringCode(const BYTE& val)
 #define XMLWRITER_DOC_TYPE_WORDART			4
 #define XMLWRITER_DOC_TYPE_GRAPHICS			5
 #define XMLWRITER_DOC_TYPE_CHART_DRAWING	6
+#define XMLWRITER_DOC_TYPE_DOCX_GLOSSARY	7
 
 #define XMLWRITER_RECORD_TYPE_SPPR			0
 #define XMLWRITER_RECORD_TYPE_CLRMAPOVR		1

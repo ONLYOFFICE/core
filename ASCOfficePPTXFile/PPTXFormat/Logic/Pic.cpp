@@ -250,7 +250,7 @@ namespace PPTX
 
 		void COLEObject::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
-			LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 			pReader->Skip(1); // start attributes
 
@@ -282,7 +282,7 @@ namespace PPTX
 				else if (7 == _at)//OleObject Binary FileName (bin, xls, doc, ... other stream file)
 				{
 					m_OleObjectFile = new OOX::OleObject(NULL, false, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
-					std::wstring strOlePath = pReader->GetString2();
+					std::wstring strOlePath = pReader->GetString2(true);
 					m_OleObjectFile->set_filename(strOlePath, false); //temp !!! for ImageManager original file name
 				}
 				else
@@ -330,7 +330,7 @@ namespace PPTX
 							m_OleObjectFile = new OOX::OleObject(NULL, true, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
 							
 							BYTE type = pReader->GetUChar();
-							std::wstring strOlePath = pReader->GetString2();
+							std::wstring strOlePath = pReader->GetString2(true);
 							m_OleObjectFile->set_filename(strOlePath, false); //temp !!! for ImageManager original file name
 						}
 						else if (embedded_type == 4)
@@ -762,12 +762,14 @@ namespace PPTX
 			bool bOle = false;
 			
 			if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			namespace_ = L"xdr";
-			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)			namespace_ = L"pic";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+					 pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)	namespace_ = L"pic";
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		namespace_ = L"a";
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	namespace_ = L"cdr";
 
 			if (pWriter->m_lDocType != XMLWRITER_DOC_TYPE_XLSX && 
-				pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX)
+				pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX &&
+				pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)
 			{
 				if(oleObject.IsInit() && oleObject->isValid())
 				{
@@ -806,7 +808,8 @@ namespace PPTX
 			}
 			pWriter->StartNode(namespace_ + L":pic");
 
-			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+				pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)
 			{
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(_T("xmlns:pic"), (std::wstring)_T("http://schemas.openxmlformats.org/drawingml/2006/picture"));
@@ -827,7 +830,8 @@ namespace PPTX
 			pWriter->EndNode(namespace_ + L":pic");
 			
 			if (pWriter->m_lDocType != XMLWRITER_DOC_TYPE_XLSX &&
-				pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX)
+				pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX && 
+				pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)
 			{
 				if(bOle)
 				{
@@ -839,7 +843,7 @@ namespace PPTX
 
 		void Pic::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
-			LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 			nvPicPr.cNvPr.id = -1;
 			while (pReader->GetPos() < _end_rec)

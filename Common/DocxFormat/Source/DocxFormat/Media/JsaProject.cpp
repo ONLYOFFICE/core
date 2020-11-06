@@ -89,7 +89,7 @@ namespace OOX
 	}
 	void JsaProject::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
-		LONG _length = pReader->GetLong();
+		LONG _length = pReader->GetRecordSize();
 		LONG _end_rec = pReader->GetPos() + _length;
 
 		if (_length > 0)

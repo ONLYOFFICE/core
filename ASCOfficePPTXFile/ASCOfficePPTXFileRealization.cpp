@@ -366,11 +366,19 @@ _UINT32 CPPTXFile::ConvertPPTYToPPTX(std::wstring bsInput, std::wstring bsOutput
 	std::wstring strBsInput = bsInput;
     std::wstring srcFolder = NSDirectory::GetFolderPath(strBsInput);
 
-	oWriter.OpenPPTY(pSrcBuffer, lFileSize, srcFolder, bsThemesFolder);
+	_UINT32 hRes = S_OK;
+	
+	try
+	{
+		oWriter.OpenPPTY(pSrcBuffer, lFileSize, srcFolder, bsThemesFolder);
+	}
+	catch(...)
+	{
+		hRes = S_FALSE;
+	}
 	
 	RELEASEARRAYOBJECTS(pSrcBuffer);
 	
-	_UINT32 hRes = 0;
 
 	if (m_fCallbackCompress)
 	{

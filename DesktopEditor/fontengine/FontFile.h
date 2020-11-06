@@ -121,26 +121,26 @@ public:
 	}
 	inline void Init()
 	{
-		m_arrSizes.RemoveAll();
+        m_arrSizes.clear();
 	}
 	inline void Clear(bool bIsFree = false)
 	{
 		if (bIsFree)
 		{
-			int nCount = m_arrSizes.GetCount();
-			for (int i = 0; i < nCount; ++i)
+            size_t nCount = m_arrSizes.size();
+            for (size_t i = 0; i < nCount; ++i)
 			{
 				m_arrSizes[i].oBitmap.bFreeData = TRUE;
 			}
 		}
 
-		m_arrSizes.RemoveAll();
+        m_arrSizes.clear();
 	}
 
 	int Add(const TFontCacheSizes& oSizes)
 	{
-		m_arrSizes.Add( oSizes );
-		return m_arrSizes.GetSize() - 1;
+        m_arrSizes.push_back( oSizes );
+        return m_arrSizes.size() - 1;
 	}
 
 	inline TFontCacheSizes& Get(int nIndex)
@@ -157,7 +157,7 @@ public:
 	}
 
 private:
-	CArray<TFontCacheSizes> m_arrSizes;
+    std::vector<TFontCacheSizes> m_arrSizes;
 };
 
 #define LOAD_MODE FT_LOAD_NO_HINTING | FT_LOAD_NO_AUTOHINT | FT_LOAD_NO_BITMAP | FT_LOAD_LINEAR_DESIGN

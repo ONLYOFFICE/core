@@ -136,7 +136,7 @@ namespace NSDoctRenderer
     class CDocBuilder_Private
     {
     public:
-        CArray<std::wstring> m_arrFiles;
+        std::vector<std::wstring> m_arrFiles;
 
         std::vector<std::wstring> m_arDoctSDK;
         std::vector<std::wstring> m_arPpttSDK;
@@ -238,15 +238,15 @@ namespace NSDoctRenderer
                             }
                             else
                             {
-                                m_arrFiles.Add(m_strAllFonts);
+                                m_arrFiles.push_back(m_strAllFonts);
                                 continue;
                             }
                         }
 
                         if (NSFile::CFileBinary::Exists(strFilePath) && !NSFile::CFileBinary::Exists(sConfigDir + strFilePath))
-                            m_arrFiles.Add(strFilePath);
+                            m_arrFiles.push_back(strFilePath);
                         else
-                            m_arrFiles.Add(sConfigDir + strFilePath);
+                            m_arrFiles.push_back(sConfigDir + strFilePath);
                     }
                 }
             }
@@ -952,7 +952,7 @@ namespace NSDoctRenderer
             }
 
             std::string strScript = "";
-            for (size_t i = 0; i < m_arrFiles.GetCount(); ++i)
+            for (size_t i = 0; i < m_arrFiles.size(); ++i)
             {
                 strScript += ReadScriptFile(m_arrFiles[i]);
                 strScript += "\n\n";

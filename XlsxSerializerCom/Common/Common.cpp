@@ -48,11 +48,18 @@ namespace SerializeCommon
     std::wstring DownloadImage(const std::wstring& strFile)
 	{
 #ifndef DISABLE_FILE_DOWNLOADER
-        CFileDownloader oDownloader(strFile, false);
         std::wstring strFileName;
+		
+        CFileDownloader oDownloader(strFile, false);
 		if ( oDownloader.DownloadSync() )
 		{
 			strFileName = oDownloader.GetFilePath();
+			
+			CImageFileFormatChecker checker;
+			if (false == checker.isImageFile(strFileName))
+			{
+				strFileName.clear();
+			}  
 		}
 		return strFileName;
 #else

@@ -148,8 +148,9 @@ namespace PPTX
             virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
             {
                 std::wstring namespace_ = m_namespace;
-                if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	namespace_= L"pic";
-                else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_= L"xdr";
+                if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+						 pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)	namespace_= L"pic";
+                else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			namespace_= L"xdr";
 
                 toXmlWriter2(namespace_, pWriter);
             }
@@ -183,7 +184,7 @@ namespace PPTX
 
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 				pReader->Skip(1); // start attributes
 

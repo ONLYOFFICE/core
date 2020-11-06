@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef DOCX_BIN_READER_WRITER_DEFINES
-#define DOCX_BIN_READER_WRITER_DEFINES
+#pragma once
 
 namespace BinDocxRW
 {
@@ -144,7 +143,9 @@ extern int g_nCurFormatVersion;
 		VbaProject	= 13,
 		App			= 15,
 		Core		= 16,
-		DocumentComments	= 17
+		DocumentComments = 17,
+		CustomProperties = 18,
+		Glossary	= 19
 	};}
 	namespace c_oSerSigTypes{enum c_oSerSigTypes
 	{
@@ -366,7 +367,8 @@ extern int g_nCurFormatVersion;
 		Spacing_BeforeTwips = 40,
 		Spacing_AfterTwips = 41,
 		Tab_Item_PosTwips = 42,
-		Tab_Item_Val = 43
+		Tab_Item_Val = 43,
+		SuppressLineNumbers = 44
 	};}
 	namespace c_oSerProp_rPrType{enum c_oSerProp_rPrType
 	{
@@ -515,7 +517,25 @@ extern int g_nCurFormatVersion;
 		BookmarkStart = 23,
 		BookmarkEnd = 24,
 		MRun = 25,
-		AltChunk = 26
+		AltChunk = 26,
+		DocParts = 27
+	};}
+	namespace c_oSerGlossary {
+		enum c_oSerGlossary
+		{
+			DocPart = 0,
+			DocPartPr = 1,
+			DocPartBody = 2,
+			Name = 3,
+			Style = 4,
+			Guid = 5,
+			Description = 6,
+			CategoryName = 7,
+			CategoryGallery = 8,
+			Types = 9,
+			Type = 10,
+			Behaviors = 11,
+			Behavior = 12
 	};}
 	namespace c_oSerDocTableType{enum c_oSerDocTableType
 	{
@@ -1185,7 +1205,19 @@ extern int g_nCurFormatVersion;
 		CheckboxCheckedFont = 40,
 		CheckboxCheckedVal = 41,
 		CheckboxUncheckedFont = 42,
-		CheckboxUncheckedVal = 43
+		CheckboxUncheckedVal = 43,
+		FormPr = 44,
+		FormPrKey = 45,
+		FormPrLabel = 46,
+		FormPrHelpText = 47,
+		FormPrRequired = 48,
+		CheckboxGroupKey = 59,
+		TextFormPr = 50,
+		TextFormPrComb = 51,
+		TextFormPrCombWidth = 52,
+		TextFormPrCombSym = 53,
+		TextFormPrCombFont = 54,
+		TextFormPrMaxCharacters = 55
 	};}
 	namespace c_oSerFFData{enum c_oSerFFData
 	{
@@ -1245,5 +1277,3 @@ extern int g_nCurFormatVersion;
 		Flags3 = 6
 	};}
 }
-
-#endif	// #ifndef DOCX_BIN_READER_WRITER_DEFINES

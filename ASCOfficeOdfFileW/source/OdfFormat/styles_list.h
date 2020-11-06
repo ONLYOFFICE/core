@@ -89,7 +89,7 @@ public:
 	_CP_OPT(std::wstring) text_style_name_;
     
 	odf_types::common_num_format_attlist				common_num_format_attlist_;
-    odf_types::common_num_format_prefix_suffix_attlist common_num_format_prefix_suffix_attlist_;
+    odf_types::common_num_format_prefix_suffix_attlist	common_num_format_prefix_suffix_attlist_;
     
 	_CP_OPT(unsigned int)	text_display_levels_;
     _CP_OPT(unsigned int)	text_start_value_;

@@ -666,7 +666,7 @@ namespace DocFileFormat
 				
 				VMLPictureMapping	oVmlMapper (m_context, &oleWriter, true, _caller);
 
-				if (!m_shapeIdOwner.empty())		//4571833.doc
+				if (false == m_shapeIdOwner.empty())		//4571833.doc
 					oVmlMapper.m_shapeId = m_shapeIdOwner;
 
 				if (m_document->nWordVersion > 0)
@@ -721,7 +721,11 @@ namespace DocFileFormat
 						RELEASEOBJECT( chpxs );
 					}
 				}
-				oleWriter.WriteString( _lastOLEObject ); _lastOLEObject.clear();
+				oleWriter.WriteString( _lastOLEObject );
+				
+				if (false == m_bOleInPicture)
+					_lastOLEObject.clear();
+
                 oleWriter.WriteNodeEnd( L"w:object" );
 
 				if (!oVmlMapper.m_isEmbedded && oVmlMapper.m_isEquation)
@@ -806,8 +810,9 @@ namespace DocFileFormat
 				}
 				XMLTools::XMLElement elem(L"w:br");
 				//СЗ в МРФ Техноград о предоставлении ТП 1 квартал 2019_MO_Q31.doc
-                //elem.AppendAttribute(L"w:type", L"textWrapping");
-                //elem.AppendAttribute(L"w:clear", L"all");
+				//Документ на бланке 2.doc
+                elem.AppendAttribute(L"w:type", L"textWrapping");
+                elem.AppendAttribute(L"w:clear", L"all");
 
 				m_pXmlWriter->WriteString(elem.GetXMLString());
 			}
@@ -928,14 +933,17 @@ namespace DocFileFormat
 					PictureDescriptor pictDiscr(chpx, m_document->WordDocumentStream, 0x7fffffff, m_document->nWordVersion);
 					ShapeContainer* pShape = m_document->GetOfficeArt()->GetShapeContainer(pSpa->GetShapeID());
 
-					if ((pShape) /*&& (false == pShape->isLastIdentify())*/)
+					if (pShape) ///*&& (false == pShape->isLastIdentify())
 					{
 						VMLShapeMapping oVmlWriter (m_context, m_pXmlWriter, pSpa, &pictDiscr,  _caller);
 						
-						m_pXmlWriter->WriteNodeBegin (L"w:pict");
+						std::wstring strNode = pShape->m_bOLE ? L"w:object" : L"w:pict";
+
+						pShape->m_bOleInPicture = pShape->m_bOLE ? true : false;
+						m_pXmlWriter->WriteNodeBegin (strNode);
 							
 						pShape->Convert(&oVmlWriter);
-						m_pXmlWriter->WriteNodeEnd (L"w:pict");
+						m_pXmlWriter->WriteNodeEnd (strNode);
 
 						bPicture = true;
 					}
@@ -1387,7 +1395,7 @@ namespace DocFileFormat
 				}
 			}
 			if (nestingLevel == iTap_current)
-			{
+			{ 
 				bool bPresent = false; //118854.doc
 				for ( std::list<SinglePropertyModifier>::reverse_iterator iter = papx->grpprl->rbegin(); !bPresent && iter != papx->grpprl->rend(); iter++ )
 				{
@@ -1715,20 +1723,9 @@ namespace DocFileFormat
 			ParagraphPropertyExceptions* papx = findValidPapx( fc );
 			TableInfo tai( papx, m_document->nWordVersion );
 
-			//cp = writeParagraph(cp);
-
-			//!!!TODO: Inner Tables!!!
 			if ( tai.iTap > nestingLevel )
 			{
-				//write the inner table if this is not a inner table (endless loop)
 				cp = writeTable( cp, tai.iTap );
-
-				//after a inner table must be at least one paragraph
-				/*if ( cp >= cpCellEnd )
-				{
-                m_pXmlWriter->WriteNodeBegin( L"w:p" );
-                m_pXmlWriter->WriteNodeEnd( L"w:p" );
-				}*/
 			}
 			else
 			{

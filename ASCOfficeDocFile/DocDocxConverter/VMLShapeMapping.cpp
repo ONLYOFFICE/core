@@ -1113,6 +1113,7 @@ namespace DocFileFormat
 			TextboxMapping textboxMapping(m_context, (indexOLE >> 16) - 1, &txtBoxWrapper, m_pCaller);
 
 			textboxMapping.m_shapeIdOwner = m_shapeId;
+			textboxMapping.m_bOleInPicture = pContainer->m_bOleInPicture;
 
 			m_context->_doc->Convert(&textboxMapping);
 
@@ -1674,11 +1675,11 @@ namespace DocFileFormat
 						}
 					}
 					
-					if (!m_isInlineShape && !bZIndex)
-					{
-						appendStyleProperty( oStyle, L"z-index", FormatUtils::IntToWideString(zIndex + 0x7ffff));
-						bZIndex = true;
-					}
+					//if (!m_isInlineShape && !bZIndex)
+					//{
+					//	appendStyleProperty( oStyle, L"z-index", FormatUtils::IntToWideString(zIndex + 0x7ffff));
+					//	bZIndex = true;
+					//}
 
 					if (booleans->fHidden && booleans->fUsefHidden)
 					{
@@ -1728,9 +1729,12 @@ namespace DocFileFormat
 			{
 				m_pSpa->bx = PAGE;
 			}
-			else
-			{//rel column
-			}
+			if (m_pSpa->bx == MARGIN) 
+				appendStyleProperty(oStyle, L"mso-position-horizontal-relative", mapHorizontalPositionRelative(msoprhMargin));
+			else if (m_pSpa->bx == PAGE)
+				appendStyleProperty(oStyle, L"mso-position-horizontal-relative", mapHorizontalPositionRelative(msoprhPage));
+			else if (m_pSpa->bx == TEXT)
+				appendStyleProperty(oStyle, L"mso-position-horizontal-relative", mapHorizontalPositionRelative(msoprhText));
 		}
 		if (nRelV < 0 && m_pSpa)
 		{
@@ -1738,37 +1742,33 @@ namespace DocFileFormat
 			{
 				m_pSpa->by = PAGE;
 			}
-			else
-			{//rel paragraph
-			}
+			if (m_pSpa->by == MARGIN)
+				appendStyleProperty(oStyle, L"mso-position-vertical-relative", mapHorizontalPositionRelative(msoprvMargin));
+			else if (m_pSpa->by == PAGE)
+				appendStyleProperty(oStyle, L"mso-position-vertical-relative", mapHorizontalPositionRelative(msoprvPage));
+			else if (m_pSpa->by == TEXT)
+				appendStyleProperty(oStyle, L"mso-position-vertical-relative", mapHorizontalPositionRelative(msoprvText));
 		}
+		if (nRelH == 3 && nRelV == 3)
+		{
+			m_isInlineShape = true;
+		}	
 		if (!m_isInlineShape && !bZIndex)
 		{
 			appendStyleProperty( oStyle, L"z-index", FormatUtils::IntToWideString(zIndex + 0x7ffff));
 			bZIndex = true;
 		}
-
-		if (nRelH == 3 && nRelV == 3)
+		if (false == m_isInlineShape)
 		{
-			m_isInlineShape = true;
+			if (nPosH >= 0)
+			{
+				appendStyleProperty(oStyle, L"mso-position-horizontal", mapHorizontalPosition((PositionHorizontal)nPosH));
+			}
+			if (nPosV >= 0)
+			{
+				appendStyleProperty(oStyle, L"mso-position-vertical", mapVerticalPosition((PositionVertical)nPosV));
+			}
 		}
-
-		if (nPosH >= 0 && !m_isInlineShape)
-		{
-			appendStyleProperty(oStyle, L"mso-position-horizontal", mapHorizontalPosition((PositionHorizontal)nPosH));
-		}
-		if (nPosV >= 0 && !m_isInlineShape)
-		{
-			appendStyleProperty(oStyle, L"mso-position-vertical", mapVerticalPosition((PositionVertical)nPosV));
-		}
-		//if (!bPosH)
-		//{
-		//	appendStyleProperty(oStyle, L"mso-position-horizontal", L"absolute" );
-		//}
-		//if (!bPosV)
-		//{
-		//	appendStyleProperty(oStyle, L"mso-position-vertical", L"absolute" );
-		//}
 	}
 
 	//
@@ -1821,7 +1821,7 @@ namespace DocFileFormat
 		
 		//don't append the dimension info to lines, 
 		// because they have "from" and "to" attributes to decline the dimension
-		if(false == shape->is<LineType>())
+		if (false == shape->is<LineType>())
 		{
 			if ( (m_pSpa != NULL) && ( anchor == NULL ) )
 			{

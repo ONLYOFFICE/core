@@ -2888,15 +2888,21 @@ namespace NSFontConverter
         if (m_oTopDict.nCharsetOffset == 0)
         {
             m_pnCharset = c_arrnFontFileType1CISOAdobeCharset;
+			if (m_nGlyphsCount > 229)
+				m_nGlyphsCount = 229;
         }
         else if (m_oTopDict.nCharsetOffset == 1)
         {
             m_pnCharset = c_arrnFontFileType1CExpertCharset;
-        }
+			if (m_nGlyphsCount > 166)
+				m_nGlyphsCount = 166;
+		}
         else if (m_oTopDict.nCharsetOffset == 2)
         {
             m_pnCharset = c_arrnFontFileType1CExpertSubsetCharset;
-        }
+			if (m_nGlyphsCount > 87)
+				m_nGlyphsCount = 87;
+		}
         else
         {
             m_pnCharset = (unsigned short *)MemUtilsMallocArray( m_nGlyphsCount, sizeof(unsigned short));

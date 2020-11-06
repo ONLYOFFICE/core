@@ -12,7 +12,7 @@ CONFIG += core_static_link_libstd
 DEFINES += HTMLFILE2_USE_DYNAMIC_LIBRARY
 DEFINES += CSSCALCULATOR_LIBRARY_STATIC
 
-CORE_ROOT_DIR = $$PWD/../../core
+CORE_ROOT_DIR = $$PWD/..
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 

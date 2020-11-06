@@ -29,6 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "stdint.h"
 #include "./UnicodeConverter.h"
 
 #include "unicode/utypes.h"
@@ -39,7 +40,7 @@
 #include "../DesktopEditor/common/File.h"
 
 #if !defined (_WIN32) && !defined (_WIN64)
-#if defined (_LINUX) && !defined(__ANDROID__) && !defined(_IOS)
+#if defined (_LINUX) && !defined(__ANDROID__) && !defined(_IOS) && !defined(_MAC)
     #define USE_ICONV
     #include "iconv.h"
 #endif
@@ -47,7 +48,7 @@
     #include <windows.h>
 #endif
 
-#include <stdint.h>
+std::string g_overrideIcuDataPath = "";
 
 namespace NSUnicodeConverter
 {
@@ -154,7 +155,7 @@ namespace NSUnicodeConverter
 #endif
         }
 
-        std::string fromUnicode(const wchar_t* sInput, const unsigned int& nInputLen, const char* converterName)
+        static std::string fromUnicode(const wchar_t* sInput, const unsigned int& nInputLen, const char* converterName)
         {
             std::string sRes = "";
             UErrorCode status = U_ZERO_ERROR;
@@ -266,7 +267,7 @@ namespace NSUnicodeConverter
                     const char* sourceLimit = source + nInputLen;
 
                     unsigned int uBufSize = (nInputLen / (uint8_t)ucnv_getMinCharSize(conv));
-                    
+
                     UChar* targetStart = new UChar[uBufSize * sizeof(UChar)];
                     if (targetStart)
                     {
@@ -403,5 +404,13 @@ namespace NSUnicodeConverter
     std::string CUnicodeConverter::SASLprepToUtf8(const std::wstring &sSrc)
     {
         return m_pInternal->SASLprepToUtf8(sSrc.c_str(), sSrc.length());
+    }
+
+    void CUnicodeConverter::setIcuDataPath(const std::wstring& sDirectory)
+    {
+        if (!g_overrideIcuDataPath.empty())
+            return;
+        g_overrideIcuDataPath = U_TO_UTF8(sDirectory);
+        u_setDataDirectory(g_overrideIcuDataPath.c_str());
     }
 }

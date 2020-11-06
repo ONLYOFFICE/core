@@ -5,6 +5,7 @@
 #include <OfficeFileFormats.h>
 #include <x2t.h>
 #include <DesktopEditor/fontengine/FontsAssistant.h>
+#include <UnicodeConverter.h>
 
 #define JNI_FUNC(RTYPE, NAME) JNIEXPORT RTYPE JNICALL Java_lib_x2t_X2t_##NAME
 
@@ -154,6 +155,16 @@ extern "C" {
             retVal = X2T_Convert(2, argv);
             return retVal;
         //})
+    }
+
+    /*
+     * setIcuDataPath
+     * */
+    JNI_FUNC(void, setIcuDataPath)(JNIEnv* env, jclass type, jstring jIcuDatPath) {
+        TRY_JNI(env, {
+            auto icuDataPath = JniBaseObjects::jstringToWString(env, jIcuDatPath);
+            NSUnicodeConverter::CUnicodeConverter::setIcuDataPath(icuDataPath);
+        })
     }
 
 

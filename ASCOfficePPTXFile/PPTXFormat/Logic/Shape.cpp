@@ -205,7 +205,8 @@ namespace PPTX
 		{
 			std::wstring name_ = m_name;
 
-			if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)			name_ = L"wps:wsp";
+			if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+					 pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)	name_ = L"wps:wsp";
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			name_ = L"xdr:sp";
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		name_ = L"a:sp";
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	name_ = L"cdr:sp";
@@ -216,7 +217,8 @@ namespace PPTX
 			pWriter->WriteAttribute(_T("useBgFill"), attrUseBgFill);
 			pWriter->EndAttributes();
 
-			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+				pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)
 			{
 				nvSpPr.cNvSpPr.toXmlWriter2(_T("wps"), pWriter);
 			}
@@ -239,14 +241,16 @@ namespace PPTX
 			}
 			if (style.is_init())
 			{
-				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)			style->m_namespace = L"wps";
+				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+						 pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)	style->m_namespace = L"wps";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			style->m_namespace = L"xdr";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		style->m_namespace = L"a";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	style->m_namespace = L"cdr";
 
                 pWriter->Write(style);
             }
-			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+				pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)
 			{	
 				bool bIsWritedBodyPr = false;
 				if (strTextBoxShape.is_init())
@@ -301,7 +305,7 @@ namespace PPTX
 		
 		void Shape::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
         {
-            LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+            LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 			pReader->Skip(1); // start attributes
 

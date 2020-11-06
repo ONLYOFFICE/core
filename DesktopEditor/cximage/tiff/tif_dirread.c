@@ -205,7 +205,7 @@ TIFFReadDirectory(TIFF* tif)
 		    && fix < tif->tif_nfields) {
 			if (fip->field_type == TIFF_ANY)	/* wildcard */
 				break;
-			fip = tif->tif_fieldinfo[++fix];
+            ++fix; fip = (fix >= tif->tif_nfields) ? 0 : tif->tif_fieldinfo[fix];
 			if (fix >= tif->tif_nfields ||
 			    fip->field_tag != dp->tdir_tag) {
 				TIFFWarningExt(tif->tif_clientdata, module,
@@ -333,7 +333,7 @@ TIFFReadDirectory(TIFF* tif)
 		    && fix < tif->tif_nfields) {
 			if (fip->field_type == TIFF_ANY)	/* wildcard */
 				break;
-			fip = tif->tif_fieldinfo[++fix];
+            ++fix; fip = (fix >= tif->tif_nfields) ? 0 : tif->tif_fieldinfo[fix];
 			if (fix >= tif->tif_nfields ||
 			    fip->field_tag != dp->tdir_tag) {
 				TIFFWarningExt(tif->tif_clientdata, module,
@@ -887,7 +887,7 @@ TIFFReadCustomDirectory(TIFF* tif, toff_t diroff,
                        && fix < tif->tif_nfields) {
 			if (fip->field_type == TIFF_ANY)	/* wildcard */
 				break;
-                        fip = tif->tif_fieldinfo[++fix];
+            ++fix; fip = (fix >= tif->tif_nfields) ? 0 : tif->tif_fieldinfo[fix];
 			if (fix >= tif->tif_nfields ||
 			    fip->field_tag != dp->tdir_tag) {
 				TIFFWarningExt(tif->tif_clientdata, module,

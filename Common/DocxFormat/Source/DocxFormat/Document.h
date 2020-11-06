@@ -201,8 +201,6 @@ namespace OOX
 		nullable<OOX::Logic::CSectionProperty>	m_oSectPr;
 		nullable<OOX::Logic::CBackground>		m_oBackground;
 
-		nullable<OOX::Logic::CDocParts>			m_oDocParts;
-
         std::vector<WritingElement*>			m_arrItems;
 	};
 } // namespace OOX

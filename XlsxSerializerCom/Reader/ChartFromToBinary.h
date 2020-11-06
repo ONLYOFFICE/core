@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef CHART_FROM_TO_BINARY
-#define CHART_FROM_TO_BINARY
+#pragma once
 
 #include "CommonWriter.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Chart/ChartSerialize.h"
@@ -379,4 +378,3 @@ namespace BinXlsxRW
 		void toBin(OOX::Spreadsheet::ItemsChoiceType3 eType, void* pVal);
 	};
 }
-#endif	// #ifndef CHART_FROM_TO_BINARY

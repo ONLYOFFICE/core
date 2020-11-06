@@ -48,9 +48,12 @@ namespace OOX
 		CFootnotes(OOX::Document *pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 		{
 			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
-			
-			if (docx->m_bGlossaryRead)	docx->m_oGlossary.footnotes = this;
-			else						docx->m_oMain.footnotes = this;
+
+			if (docx)
+			{
+				if (docx->m_bGlossaryRead)	docx->m_oGlossary.footnotes = this;
+				else						docx->m_oMain.footnotes = this;
+			}
 		}
 		CFootnotes(OOX::Document *pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 		{

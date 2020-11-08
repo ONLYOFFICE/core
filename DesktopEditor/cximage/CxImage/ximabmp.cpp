@@ -165,7 +165,7 @@ bool CxImageBMP::Decode(CxFile * hFile)
 				int32_t imagesize=4*head.biHeight*head.biWidth;
 				uint8_t* buff32=(uint8_t*)malloc(imagesize);
 				if (buff32){
-                    hFile->Read(buff32, imagesize,1,GetDIB(),GetDIBLimit()); // read in the pixels
+                    hFile->Read(buff32, imagesize,1); // read in the pixels
 
 #if CXIMAGE_SUPPORT_ALPHA
 					if (dwCompression == BI_RGB){

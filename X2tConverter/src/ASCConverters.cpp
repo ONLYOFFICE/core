@@ -131,6 +131,67 @@ namespace NExtractTools
 		}
 		return hRes;
 	}
+	_UINT32 package2docx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+		std::wstring sResultDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
+
+		NSDirectory::CreateDirectory(sResultDocxDir);
+
+		_UINT32 nRes = package2docx_dir(sFrom, sResultDocxDir, sTemp, params);
+
+		if (SUCCEEDED_X2T(nRes))
+		{
+			COfficeUtils oCOfficeUtils(NULL);
+			nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultDocxDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+		}
+
+		return nRes;
+	}
+	_UINT32 package2doct(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+		std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
+		std::wstring sResultDoctFileEditor = sResultDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
+
+		NSDirectory::CreateDirectory(sResultDoctDir);
+
+		_UINT32 nRes = package2doct_bin(sFrom, sResultDoctFileEditor, sTemp, params);
+
+		if (SUCCEEDED_X2T(nRes))
+		{
+			COfficeUtils oCOfficeUtils(NULL);
+			nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultDoctDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+		}
+
+		return nRes;
+	}
+	_UINT32 package2doct_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+		std::wstring sResultDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
+
+		NSDirectory::CreateDirectory(sResultDocxDir);
+
+		_UINT32 nRes = package2docx_dir(sFrom, sResultDocxDir, sTemp, params);
+
+		if (SUCCEEDED_X2T(nRes))
+		{
+			BinDocxRW::CDocxSerializer m_oCDocxSerializer;
+
+			m_oCDocxSerializer.setIsNoBase64(params.getIsNoBase64());
+			m_oCDocxSerializer.setFontDir(params.getFontPath());
+
+			nRes = m_oCDocxSerializer.saveToFile(sTo, sResultDocxDir, params.getXmlOptions(), sTemp) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+		}
+
+		return nRes;
+	}
+	_UINT32 package2docx_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+		BinDocxRW::CDocxSerializer m_oCDocxSerializer;
+		
+		_UINT32 nRes = m_oCDocxSerializer.unpackageFile(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+		
+		return nRes;
+	}
 	// docxflat -> bin
     _UINT32 docxflat2doct_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
@@ -2739,6 +2800,19 @@ namespace NExtractTools
 				case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM:
 				{
 					return pptx2pptt_bin(sResultDecryptFile, sTo, sTemp,params);
+				}break;
+				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_FLAT:
+				{
+					return docxflat2doct_bin(sResultDecryptFile, sTo, sTemp, params);
+				}break;
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_FLAT:
+				{
+					const std::wstring & sXmlOptions = params.getXmlOptions();
+					return xlsxflat2xlst_bin(sResultDecryptFile, sTo, sTemp, params);
+				}break;
+				case AVS_OFFICESTUDIO_FILE_DOCUMENT_PACKAGE:
+				{
+					return package2doct_bin(sResultDecryptFile, sTo, sTemp, params);
 				}break;
 			}
 		}

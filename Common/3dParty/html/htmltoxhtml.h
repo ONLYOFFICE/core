@@ -137,8 +137,10 @@ static void ReadMht(std::string& sFileContent, size_t& nFound, size_t& nNextFoun
     // Content
 #if WIN32 || WIN64
     size_t nContentTag = sFileContent.find("\n\r\n", nFound);
+    nContentTag += 3;
 #else
     size_t nContentTag = sFileContent.find("\n\n", nFound);
+    nContentTag += 2;
 #endif
     if(nContentTag == std::string::npos || nContentTag > nNextFound)
     {
@@ -217,7 +219,6 @@ static void ReadMht(std::string& sFileContent, size_t& nFound, size_t& nNextFoun
 
     // Content
     nTagEnd = nNextFound - 2;
-    nContentTag += 2;
     if(nTagEnd == std::string::npos || nTagEnd < nContentTag)
     {
         nFound = nNextFound;

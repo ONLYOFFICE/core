@@ -103,8 +103,13 @@ static std::string QuotedPrintableDecode(const std::string& sContent)
         char ch = (int)strtol(str.data(), &err, 16);
         if(*err)
         {
+#if WIN32 || WIN64
             if(str != "\r\n")
                 sRes.WriteString('=' + str);
+#else
+            if(str.front() != "\n")
+                sRes.WriteString('=' + str);
+#endif
         }
         else
             sRes.WriteString(&ch, 1);
@@ -119,7 +124,11 @@ static void ReadMht(std::string& sFileContent, size_t& nFound, size_t& nNextFoun
                     std::map<std::string, std::string>& sRes, NSStringUtils::CStringBuilderA& oRes)
 {
     // Content
+#if WIN32 || WIN64
     size_t nContentTag = sFileContent.find("\n\r\n", nFound);
+#else
+    size_t nContentTag = sFileContent.find("\n\n", nFound);
+#endif
     if(nContentTag == std::string::npos || nContentTag > nNextFound)
     {
         nFound = nNextFound;

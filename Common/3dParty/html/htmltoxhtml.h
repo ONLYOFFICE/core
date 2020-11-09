@@ -105,7 +105,7 @@ static std::string QuotedPrintableDecode(const std::string& sContent)
         if(*err)
         {
             if(str == "\r\n")
-                sRes.WriteString('\n', 1);
+                sRes.WriteString(str);
             else
                 sRes.WriteString('=' + str);
         }

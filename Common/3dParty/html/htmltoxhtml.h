@@ -103,12 +103,7 @@ static std::string QuotedPrintableDecode(const std::string& sContent)
         char* err;
         char ch = (int)strtol(str.data(), &err, 16);
         if(*err)
-        {
-            if(str == "\r\n")
-                sRes.WriteString(str);
-            else
-                sRes.WriteString('=' + str);
-        }
+            sRes.WriteString((str == "\r\n" ? "" : "=") + str);
         else
             sRes.WriteString(&ch, 1);
 #else

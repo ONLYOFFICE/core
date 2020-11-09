@@ -99,20 +99,31 @@ static std::string QuotedPrintableDecode(const std::string& sContent)
     {
         sRes.WriteString(sContent.substr(ip, i - ip));
         std::string str = sContent.substr(i + 1, 2);
+#if WIN32 || WIN64
         char* err;
         char ch = (int)strtol(str.data(), &err, 16);
         if(*err)
         {
-#if WIN32 || WIN64
-            if(str != "\r\n")
+            if(str == "\r\n")
+                sRes.WriteString('\n', 1);
+            else
                 sRes.WriteString('=' + str);
-#else
-            if(str.front() != "\n")
-                sRes.WriteString('=' + str);
-#endif
         }
         else
             sRes.WriteString(&ch, 1);
+#else
+        if(str.front() == '\n')
+            sRes.WriteString(str);
+        else
+        {
+            char* err;
+            char ch = (int)strtol(str.data(), &err, 16);
+            if(*err)
+                sRes.WriteString('=' + str);
+            else
+                sRes.WriteString(&ch, 1);
+        }
+#endif
         ip = i + 3;
         i = sContent.find('=', ip);
     }

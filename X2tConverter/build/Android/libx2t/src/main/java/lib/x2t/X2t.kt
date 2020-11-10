@@ -40,12 +40,6 @@ class X2t private constructor() {
         @JvmStatic
         external fun getOfficeFileFormats(): HashMap<String, String>
 
-        /*
-        * SetFonts
-        * */
-        @JvmStatic
-        external fun setFonts(fontsPaths: Array<String?>, cacheFontsPath: String?)
-
         @RequiresPermission(allOf = [READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE])
         @JvmStatic
         external fun convertFile(pathXml: String): Int
@@ -265,7 +259,6 @@ class X2t private constructor() {
             with(mInputParams)
             {
                 setIcuDataPath(icu)
-                setFonts(arrayOf(fontsJs), fontsDir)
                 createXmlFileTransform(xml, key, mConvertType, from, to, temp, fontsJs, themes, password,
                     delimiterCode.equals(
                         InputParams.DELIMITER_CODE_NONE

@@ -1322,22 +1322,7 @@ private:
             return L"";
         oXml->WriteString(L"<w:pPr><w:pStyle w:val=\"");
 
-        std::vector<NSCSS::CNode> stock;
-        std::vector<NSCSS::CNode>::iterator it = std::find_if(sSelectors.begin(), sSelectors.end(), [] (NSCSS::CNode& oNode) { return oNode.m_sName == L"a"; });
-        while(it != sSelectors.end())
-        {
-            stock.push_back(*it);
-            sSelectors.erase(it);
-            it = std::find_if(sSelectors.begin(), sSelectors.end(), [] (NSCSS::CNode& oNode) { return oNode.m_sName == L"a"; });
-        }
-
         std::wstring sPStyle = GetStyle(sSelectors, true);
-
-        if(!stock.empty())
-        {
-            sSelectors.reserve(sSelectors.size() + stock.size());
-            sSelectors.insert(sSelectors.end(), stock.begin(), stock.end());
-        }
 
         oXml->WriteString(sPStyle);
         oXml->WriteString(L"\"/>");

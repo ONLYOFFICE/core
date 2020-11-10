@@ -538,7 +538,7 @@ private:
                 std::reverse(sText.begin(), sText.end());
             if(oTS.bPre)
             {
-                size_t nAfter = sText.find(L'\n');
+                size_t nAfter = sText.find_first_of(L"\n\r");
                 while(nAfter != std::wstring::npos)
                 {
                     std::wstring sSubText = sText.substr(0, nAfter);
@@ -558,7 +558,7 @@ private:
                     oXml->WriteString(L"\"/>");
                     oXml->WriteString(oTS.sRStyle);
                     oXml->WriteString(L"</w:rPr><w:t xml:space=\"preserve\">");
-                    nAfter = sText.find(L'\n');
+                    nAfter = sText.find_first_of(L"\n\r");
                 }
                 end = sText.end();
             }
@@ -1322,22 +1322,7 @@ private:
             return L"";
         oXml->WriteString(L"<w:pPr><w:pStyle w:val=\"");
 
-        std::vector<NSCSS::CNode> stock;
-        std::vector<NSCSS::CNode>::iterator it = std::find_if(sSelectors.begin(), sSelectors.end(), [] (NSCSS::CNode& oNode) { return oNode.m_sName == L"a"; });
-        while(it != sSelectors.end())
-        {
-            stock.push_back(*it);
-            sSelectors.erase(it);
-            it = std::find_if(sSelectors.begin(), sSelectors.end(), [] (NSCSS::CNode& oNode) { return oNode.m_sName == L"a"; });
-        }
-
         std::wstring sPStyle = GetStyle(sSelectors, true);
-
-        if(!stock.empty())
-        {
-            sSelectors.reserve(sSelectors.size() + stock.size());
-            sSelectors.insert(sSelectors.end(), stock.begin(), stock.end());
-        }
 
         oXml->WriteString(sPStyle);
         oXml->WriteString(L"\"/>");

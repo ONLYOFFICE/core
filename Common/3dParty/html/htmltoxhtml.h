@@ -99,15 +99,7 @@ static std::string QuotedPrintableDecode(const std::string& sContent)
     {
         sRes.WriteString(sContent.substr(ip, i - ip));
         std::string str = sContent.substr(i + 1, 2);
-#if WIN32 || WIN64
-        char* err;
-        char ch = (int)strtol(str.data(), &err, 16);
-        if(*err)
-            sRes.WriteString((str == "\r\n" ? "" : "=") + str);
-        else
-            sRes.WriteString(&ch, 1);
-#else
-        if(str.front() == '\n')
+        if(str.front() == '\n' || str.front() == '\r')
             sRes.WriteString(str);
         else
         {
@@ -118,7 +110,6 @@ static std::string QuotedPrintableDecode(const std::string& sContent)
             else
                 sRes.WriteString(&ch, 1);
         }
-#endif
         ip = i + 3;
         i = sContent.find('=', ip);
     }
@@ -130,18 +121,26 @@ static void ReadMht(std::string& sFileContent, size_t& nFound, size_t& nNextFoun
                     std::map<std::string, std::string>& sRes, NSStringUtils::CStringBuilderA& oRes)
 {
     // Content
-#if WIN32 || WIN64
-    size_t nContentTag = sFileContent.find("\n\r\n", nFound);
-    nContentTag += 3;
-#else
     size_t nContentTag = sFileContent.find("\n\n", nFound);
-    nContentTag += 2;
-#endif
     if(nContentTag == std::string::npos || nContentTag > nNextFound)
     {
-        nFound = nNextFound;
-        return;
+        nContentTag = sFileContent.find("\r\r", nFound);
+        if(nContentTag == std::string::npos || nContentTag > nNextFound)
+        {
+            nContentTag = sFileContent.find("\r\n\r\n", nFound);
+            if(nContentTag == std::string::npos || nContentTag > nNextFound)
+            {
+                nFound = nNextFound;
+                return;
+            }
+            else
+                nContentTag += 4;
+        }
+        else
+            nContentTag += 2;
     }
+    else
+        nContentTag += 2;
 
     // Content-Type
     size_t nTag = sFileContent.find("Content-Type: ", nFound);

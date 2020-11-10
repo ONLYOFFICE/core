@@ -3523,7 +3523,7 @@ void DocxConverter::convert_lists_styles()
 
 	oox_current_child_document = dynamic_cast<OOX::IFileContainer*>(lists_styles);
 
-	for (size_t i=0; i < lists_styles->m_arrNum.size(); i++)
+	for (size_t i = 0; i < lists_styles->m_arrNum.size(); i++)
 	{
 		if (lists_styles->m_arrNum[i] == NULL) continue;
 
@@ -3538,13 +3538,13 @@ void DocxConverter::convert_lists_styles()
 		if (!num_style) continue;
 
 		odt_context->styles_context()->lists_styles().start_style(true, *lists_styles->m_arrNum[i]->m_oNumId);
-		for (int i = 0; i < 9; ++i)
+		for (int j = 0; j < 9; ++j)
 		{
 			OOX::Numbering::CLvl* pLvl = NULL;
 			OOX::Numbering::CNumLvl* pOverrideLvl = NULL;
 
-			std::map<int, size_t>::iterator pFindLvl = num_style->m_mapLvl.find(i);
-			std::map<int, size_t>::iterator pFindOverrideLvl = lists_styles->m_arrNum[i]->m_mapLvlOverride.find(i);			
+			std::map<int, size_t>::iterator pFindLvl = num_style->m_mapLvl.find(j);
+			std::map<int, size_t>::iterator pFindOverrideLvl = lists_styles->m_arrNum[i]->m_mapLvlOverride.find(j);			
 
 			if (pFindLvl != num_style->m_mapLvl.end())
 				pLvl = num_style->m_arrLvl[pFindLvl->second];
@@ -3552,7 +3552,7 @@ void DocxConverter::convert_lists_styles()
 			if (pFindOverrideLvl != lists_styles->m_arrNum[i]->m_mapLvlOverride.end())
 				pOverrideLvl = lists_styles->m_arrNum[i]->m_arrLvlOverride[pFindOverrideLvl->second];
 
-			convert(pLvl, pOverrideLvl, i);
+			convert(pLvl, pOverrideLvl, j);
 		}
 
 		odt_context->styles_context()->lists_styles().end_style();

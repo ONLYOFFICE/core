@@ -74,25 +74,26 @@ bool read_doc_element::read_sax( xml::sax * Reader )
 		switch( nodeType )
         {
 			case xml::typeElement:
-				{
-					const std::wstring namespacePrefix	= Reader->namespacePrefix();
-					const std::wstring localName		= Reader->nodeLocalName();
+			{
+				const std::wstring namespacePrefix	= Reader->namespacePrefix();
+				const std::wstring localName		= Reader->nodeLocalName();
 					
-					add_child_element(Reader, namespacePrefix, localName);
-				}
-				break;
+				add_child_element(Reader, namespacePrefix, localName);
+			}
+			break;
 			case xml::typeWhitespace:
-				{
-					const std::wstring value = Reader->value();
-					add_space(value);
-				}
-				break;
+			{
+				const std::wstring value = Reader->value();
+				add_space(value);
+			}
+			break;
+			case xml::typeCDATA:
 			case xml::typeText:
-				{
-					const std::wstring value = Reader->value();
-					add_text(value);
-				}
-				break;
+			{
+				const std::wstring value = Reader->value();
+				add_text(value);
+			}
+			break;
         }
     }
     return true;

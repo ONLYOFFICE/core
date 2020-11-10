@@ -362,21 +362,22 @@ public:
     // Конвертирует html в xhtml
     bool htmlXhtml(const std::wstring& sSrc)
     {
-        std::wstring sExtention = NSFile::GetFileExtention(sSrc);
-        if(sExtention != L"xhtml" || sExtention != L"xml")
+        std::string sFileContent;
+        if(!NSFile::CFileBinary::ReadAllTextUtf8A(sSrc, sFileContent))
+            return false;
+
+        size_t nFind = sFileContent.find("version=\"");
+        if(nFind != std::string::npos)
         {
-            std::wstring sRes = htmlToXhtml(sSrc);
-            /*
-            NSFile::CFileBinary oRes;
-            if(oRes.CreateFileW(m_sTmp + L'/' + NSFile::GetFileName(sSrc)))
-            {
-                oRes.WriteStringUTF8(sRes);
-                oRes.CloseFile();
-            }
-            */
-            return m_oLightReader.FromString(sRes);
+            nFind += 9;
+            size_t nFindEnd = sFileContent.find("\"", nFind);
+            if(nFindEnd != std::string::npos)
+                sFileContent.replace(nFind, nFindEnd - nFind, "1.0");
         }
-        return m_oLightReader.FromFile(sSrc);
+
+        if(NSFile::GetFileExtention(sSrc) != L"xhtml")
+            return m_oLightReader.FromString(htmlToXhtml(sFileContent));
+        return m_oLightReader.FromStringA(sFileContent);
     }
 
     // Конвертирует mht в xhtml
@@ -537,7 +538,7 @@ private:
                 std::reverse(sText.begin(), sText.end());
             if(oTS.bPre)
             {
-                size_t nAfter = sText.find(L'\n');
+                size_t nAfter = sText.find_first_of(L"\n\r");
                 while(nAfter != std::wstring::npos)
                 {
                     std::wstring sSubText = sText.substr(0, nAfter);
@@ -557,7 +558,7 @@ private:
                     oXml->WriteString(L"\"/>");
                     oXml->WriteString(oTS.sRStyle);
                     oXml->WriteString(L"</w:rPr><w:t xml:space=\"preserve\">");
-                    nAfter = sText.find(L'\n');
+                    nAfter = sText.find_first_of(L"\n\r");
                 }
                 end = sText.end();
             }
@@ -811,15 +812,19 @@ private:
             // Таблицы
             else if(sName == L"table")
             {
-
-                std::vector<NSCSS::CNode>::iterator it = std::find_if(sSelectors.begin(), sSelectors.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
-                bool bHyperlink = it != sSelectors.end();
-                if(bHyperlink)
-                    oXml->WriteString(L"</w:hyperlink>");
+                size_t nHyp = 0;
+                for(const NSCSS::CNode& item : sSelectors)
+                {
+                    if(item.m_sName == L"a")
+                    {
+                        oXml->WriteString(L"</w:hyperlink>");
+                        nHyp++;
+                    }
+                }
                 oXml->WriteString(L"</w:p>");
                 readTable(oXml, sSelectors, oTS, bWasP);
                 oXml->WriteString(L"<w:p>");
-                if(bHyperlink)
+                for(size_t i = 0; i < nHyp; i++)
                     oXml->WriteString(L"<w:hyperlink>");
                 bWasP = true;
             }
@@ -860,8 +865,10 @@ private:
         int nDeath = m_oLightReader.GetDepth();
         int i = 1; // Строка
 
-        std::vector<NSCSS::CNode>::iterator it = std::find_if(sSelectors.begin(), sSelectors.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
-        bool bHyperlink = it != sSelectors.end();
+        size_t nHyp = 0;
+        for(const NSCSS::CNode& item : sSelectors)
+            if(item.m_sName == L"a")
+                nHyp++;
 
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
         {
@@ -920,7 +927,7 @@ private:
                     j += nColspan - 1;
                 }
                 oXml->WriteString(L"</w:tcPr><w:p>");
-                if(bHyperlink)
+                for(size_t i = 0; i < nHyp; i++)
                     oXml->WriteString(L"<w:hyperlink>");
                 bWasP = true;
 
@@ -936,7 +943,7 @@ private:
                 else if(m_oLightReader.GetName() == L"td")
                     readStream(oXml, sSelectors, oTS, bWasP);
                 sSelectors.pop_back();
-                if(bHyperlink)
+                for(size_t i = 0; i < nHyp; i++)
                     oXml->WriteString(L"</w:hyperlink>");
                 oXml->WriteString(L"</w:p></w:tc>");
                 j++;
@@ -978,14 +985,19 @@ private:
             if(sName == L"caption")
             {
                 bWasP = true;
-                std::vector<NSCSS::CNode>::iterator it = std::find_if(sSelectors.begin(), sSelectors.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
-                bool bHyperlink = it != sSelectors.end();
                 oXml->WriteString(L"<w:p>");
-                if(bHyperlink)
-                    oXml->WriteString(L"<w:hyperlink>");
+                size_t nHyp = 0;
+                for(const NSCSS::CNode& item : sSelectors)
+                {
+                    if(item.m_sName == L"a")
+                    {
+                        oXml->WriteString(L"<w:hyperlink>");
+                        nHyp++;
+                    }
+                }
                 CTextSettings oTSP { oTS.bBdo, oTS.bPre, oTS.nLi, oTS.sRStyle, oTS.sPStyle + L"<w:jc w:val=\"center\"/>" };
                 readStream(oXml, sSelectors, oTSP, bWasP);
-                if(bHyperlink)
+                for(size_t i = 0; i < nHyp; i++)
                     oXml->WriteString(L"</w:hyperlink>");
                 oXml->WriteString(L"</w:p>");
                 bWasP = false;
@@ -1273,6 +1285,7 @@ private:
                 sImageName.erase(std::remove_if(sImageName.begin(), sImageName.end(), [] (wchar_t ch) { return std::iswspace(ch) || (ch == L'^'); }), sImageName.end());
 
                 std::wstring sExtention = NSFile::GetFileExtention(sSrcM);
+                std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
                 if(sExtention != L"bmp" && sExtention != L"svg" && sExtention != L"jfif" && sExtention != L"wmf" && sExtention != L"gif" &&
                    sExtention != L"jpe" && sExtention != L"png" && sExtention != L"jpeg" && sExtention != L"jpg" )
                     continue;
@@ -1308,7 +1321,9 @@ private:
         if(!bWasP)
             return L"";
         oXml->WriteString(L"<w:pPr><w:pStyle w:val=\"");
+
         std::wstring sPStyle = GetStyle(sSelectors, true);
+
         oXml->WriteString(sPStyle);
         oXml->WriteString(L"\"/>");
         oXml->WriteString(oTS.sPStyle);
@@ -1332,12 +1347,17 @@ private:
     {
         if(bWasP)
             return;
-        std::vector<NSCSS::CNode>::iterator it = std::find_if(sSelectors.begin(), sSelectors.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
-        bool bHyperlink = it != sSelectors.end();
-        if(bHyperlink)
-            oXml->WriteString(L"</w:hyperlink>");
+        size_t nHyp = 0;
+        for(const NSCSS::CNode& item : sSelectors)
+        {
+            if(item.m_sName == L"a")
+            {
+                oXml->WriteString(L"</w:hyperlink>");
+                nHyp++;
+            }
+        }
         oXml->WriteString(L"</w:p><w:p>");
-        if(bHyperlink)
+        for(size_t i = 0; i < nHyp; i++)
             oXml->WriteString(L"<w:hyperlink>");
         bWasP = true;
     }

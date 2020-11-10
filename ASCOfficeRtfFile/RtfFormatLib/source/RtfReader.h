@@ -314,6 +314,7 @@ public:
     /*static */std::wstring ExecuteTextInternalCodePage( std::string & sCharString, RtfDocument & oDocument, RtfReader & oReader);
 	
 	bool		m_bUseGlobalCodepage;
+	bool		m_bStopReader;
 
 private:
 	RtfToken	m_oTok;
@@ -321,7 +322,6 @@ private:
 
 	int			m_nSkipChars;
 	bool		m_bSkip;
-	bool		m_bStopReader;
 
 protected: 
 	int			m_nCurGroups;

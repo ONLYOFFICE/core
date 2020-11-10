@@ -2575,7 +2575,7 @@ public:
 	}
 	void ExitReader(RtfDocument& oDocument, RtfReader& oReader)
 	{
-		oParagraphReaderDestination.m_bPar = true;
+		oParagraphReaderDestination.m_bPar = m_bStopReader ? false : true;
 		oParagraphReaderDestination.Finalize( oReader );
 		
 		_section section;

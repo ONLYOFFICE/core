@@ -183,11 +183,6 @@
     <ClInclude Include="..\Source\TxtFormat\TxtFormat.h" />
     <ClInclude Include="..\Source\TxtXmlFile.h" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\ASCOfficePPTXFile\PPTXLib\PPTXFormat.vcxproj">
-      <Project>{36636678-ae25-4be6-9a34-2561d1bcf302}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

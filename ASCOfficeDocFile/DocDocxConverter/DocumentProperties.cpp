@@ -44,7 +44,7 @@ namespace DocFileFormat
 		/*========================================================================================================*/
 		
 	WordDocumentProperties::WordDocumentProperties(FileInformationBlock* fib, POLE::Stream* tableStream) : 
-			doptypography(NULL), dogrid(NULL), asumyi(NULL), bDisplayBackgroundShape(false)
+			doptypography(NULL), dogrid(NULL), asumyi(NULL)
 	{
 		Initialize();
 		
@@ -801,7 +801,7 @@ namespace DocFileFormat
       fFilterDttm = false;
       fEnforceDocProt = false;
       iDocProtCur = 0;
-      fDispBkSpSaved = false;
+      fDispBkSpSaved = true;
       dxaPageLock = 0;
       dyaPageLock = 0;
       pctFontLock = 0;

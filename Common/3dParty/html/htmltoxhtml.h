@@ -99,15 +99,26 @@ static std::string QuotedPrintableDecode(const std::string& sContent)
     {
         sRes.WriteString(sContent.substr(ip, i - ip));
         std::string str = sContent.substr(i + 1, 2);
+#if WIN32 || WIN64
         char* err;
         char ch = (int)strtol(str.data(), &err, 16);
         if(*err)
-        {
-            if(str != "\r\n")
-                sRes.WriteString('=' + str);
-        }
+            sRes.WriteString((str == "\r\n" ? "" : "=") + str);
         else
             sRes.WriteString(&ch, 1);
+#else
+        if(str.front() == '\n')
+            sRes.WriteString(str);
+        else
+        {
+            char* err;
+            char ch = (int)strtol(str.data(), &err, 16);
+            if(*err)
+                sRes.WriteString('=' + str);
+            else
+                sRes.WriteString(&ch, 1);
+        }
+#endif
         ip = i + 3;
         i = sContent.find('=', ip);
     }
@@ -119,7 +130,13 @@ static void ReadMht(std::string& sFileContent, size_t& nFound, size_t& nNextFoun
                     std::map<std::string, std::string>& sRes, NSStringUtils::CStringBuilderA& oRes)
 {
     // Content
+#if WIN32 || WIN64
     size_t nContentTag = sFileContent.find("\n\r\n", nFound);
+    nContentTag += 3;
+#else
+    size_t nContentTag = sFileContent.find("\n\n", nFound);
+    nContentTag += 2;
+#endif
     if(nContentTag == std::string::npos || nContentTag > nNextFound)
     {
         nFound = nNextFound;
@@ -197,7 +214,6 @@ static void ReadMht(std::string& sFileContent, size_t& nFound, size_t& nNextFoun
 
     // Content
     nTagEnd = nNextFound - 2;
-    nContentTag += 2;
     if(nTagEnd == std::string::npos || nTagEnd < nContentTag)
     {
         nFound = nNextFound;

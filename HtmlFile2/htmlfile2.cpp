@@ -383,7 +383,8 @@ public:
     // Конвертирует mht в xhtml
     bool mhtXhtml(const std::wstring& sSrc)
     {
-        if(NSFile::GetFileExtention(sSrc) == L"mht")
+        std::wstring sExtention = NSFile::GetFileExtention(sSrc);
+        if(sExtention == L"mht" || sExtention == L"mhtml")
             return m_oLightReader.FromString(mhtToXhtml(sSrc));
         return htmlXhtml(sSrc);
     }
@@ -811,15 +812,19 @@ private:
             // Таблицы
             else if(sName == L"table")
             {
-
-                std::vector<NSCSS::CNode>::iterator it = std::find_if(sSelectors.begin(), sSelectors.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
-                bool bHyperlink = it != sSelectors.end();
-                if(bHyperlink)
-                    oXml->WriteString(L"</w:hyperlink>");
+                size_t nHyp = 0;
+                for(const NSCSS::CNode& item : sSelectors)
+                {
+                    if(item.m_sName == L"a")
+                    {
+                        oXml->WriteString(L"</w:hyperlink>");
+                        nHyp++;
+                    }
+                }
                 oXml->WriteString(L"</w:p>");
                 readTable(oXml, sSelectors, oTS, bWasP);
                 oXml->WriteString(L"<w:p>");
-                if(bHyperlink)
+                for(size_t i = 0; i < nHyp; i++)
                     oXml->WriteString(L"<w:hyperlink>");
                 bWasP = true;
             }
@@ -859,6 +864,12 @@ private:
         std::vector<CTc> mTable;
         int nDeath = m_oLightReader.GetDepth();
         int i = 1; // Строка
+
+        size_t nHyp = 0;
+        for(const NSCSS::CNode& item : sSelectors)
+            if(item.m_sName == L"a")
+                nHyp++;
+
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
         {
             // tr - строки в таблице
@@ -916,6 +927,8 @@ private:
                     j += nColspan - 1;
                 }
                 oXml->WriteString(L"</w:tcPr><w:p>");
+                for(size_t i = 0; i < nHyp; i++)
+                    oXml->WriteString(L"<w:hyperlink>");
                 bWasP = true;
 
                 GetSubClass(oXml, sSelectors);
@@ -930,6 +943,8 @@ private:
                 else if(m_oLightReader.GetName() == L"td")
                     readStream(oXml, sSelectors, oTS, bWasP);
                 sSelectors.pop_back();
+                for(size_t i = 0; i < nHyp; i++)
+                    oXml->WriteString(L"</w:hyperlink>");
                 oXml->WriteString(L"</w:p></w:tc>");
                 j++;
 
@@ -971,8 +986,19 @@ private:
             {
                 bWasP = true;
                 oXml->WriteString(L"<w:p>");
+                size_t nHyp = 0;
+                for(const NSCSS::CNode& item : sSelectors)
+                {
+                    if(item.m_sName == L"a")
+                    {
+                        oXml->WriteString(L"<w:hyperlink>");
+                        nHyp++;
+                    }
+                }
                 CTextSettings oTSP { oTS.bBdo, oTS.bPre, oTS.nLi, oTS.sRStyle, oTS.sPStyle + L"<w:jc w:val=\"center\"/>" };
                 readStream(oXml, sSelectors, oTSP, bWasP);
+                for(size_t i = 0; i < nHyp; i++)
+                    oXml->WriteString(L"</w:hyperlink>");
                 oXml->WriteString(L"</w:p>");
                 bWasP = false;
             }
@@ -1336,12 +1362,17 @@ private:
     {
         if(bWasP)
             return;
-        std::vector<NSCSS::CNode>::iterator it = std::find_if(sSelectors.begin(), sSelectors.end(), [](const NSCSS::CNode& item){ return item.m_sName == L"a"; });
-        bool bHyperlink = it != sSelectors.end();
-        if(bHyperlink)
-            oXml->WriteString(L"</w:hyperlink>");
+        size_t nHyp = 0;
+        for(const NSCSS::CNode& item : sSelectors)
+        {
+            if(item.m_sName == L"a")
+            {
+                oXml->WriteString(L"</w:hyperlink>");
+                nHyp++;
+            }
+        }
         oXml->WriteString(L"</w:p><w:p>");
-        if(bHyperlink)
+        for(size_t i = 0; i < nHyp; i++)
             oXml->WriteString(L"<w:hyperlink>");
         bWasP = true;
     }

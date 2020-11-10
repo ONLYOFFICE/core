@@ -538,7 +538,7 @@ private:
                 std::reverse(sText.begin(), sText.end());
             if(oTS.bPre)
             {
-                size_t nAfter = sText.find(L'\n');
+                size_t nAfter = sText.find_first_of(L"\n\r");
                 while(nAfter != std::wstring::npos)
                 {
                     std::wstring sSubText = sText.substr(0, nAfter);
@@ -558,7 +558,7 @@ private:
                     oXml->WriteString(L"\"/>");
                     oXml->WriteString(oTS.sRStyle);
                     oXml->WriteString(L"</w:rPr><w:t xml:space=\"preserve\">");
-                    nAfter = sText.find(L'\n');
+                    nAfter = sText.find_first_of(L"\n\r");
                 }
                 end = sText.end();
             }

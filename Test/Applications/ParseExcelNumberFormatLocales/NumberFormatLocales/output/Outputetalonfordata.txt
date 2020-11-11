@@ -1,1 +1,1 @@
-﻿[$-F800]dddd, mmmm dd, yyyy,[$-F400]h:mm:ss AM/PM,General,
+﻿[$]dd/mm/yyyy;@,[$]h:mm:ss AM/PM,General,

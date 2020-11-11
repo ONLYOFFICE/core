@@ -1103,7 +1103,7 @@ let ethalon_es_array_names = [];
 let not_es_ethalon_array = [];
 let not_es_ethalon_array_names =[];
 for(let i = 0; i < repacked_array_of_dates_without_eng_etalon.length; i++) {
-    let subethalon = repacked_array_of_dates_without_eng_etalon[0];
+    let subethalon = repacked_array_of_dates_without_eng_etalon[10];
 
     if(repacked_array_of_dates_without_eng_etalon[i]==subethalon){
 
@@ -1119,9 +1119,9 @@ let ethalon_ru_array_names = [];
 let not_ru_ethalon_array = [];
 let not_ru_ethalon_array_names =[];
 for(let i = 0; i < not_es_ethalon_array.length; i++) {
-    let subethalon = not_es_ethalon_array[0];
-
-    if(not_es_ethalon_array[i]==subethalon){
+    let subethalon = not_es_ethalon_array[35];
+    let subethalon1 = not_es_ethalon_array[41];
+    if(not_es_ethalon_array[i]==subethalon || not_es_ethalon_array[i]==subethalon1){
         ethalon_ru_array_names.push(not_es_ethalon_array_names[i]);
     } else{
         not_ru_ethalon_array.push(not_es_ethalon_array[i]);
@@ -1133,9 +1133,10 @@ let ethalon_fr_array_names = [];
 let not_fr_ethalon_array = [];
 let not_fr_ethalon_array_names =[];
 for(let i = 0; i < not_ru_ethalon_array.length; i++) {
-    let subethalon = not_ru_ethalon_array[2];
-
-    if(not_ru_ethalon_array[i]==subethalon){
+    let subethalon = not_ru_ethalon_array[24];
+    let subethalon1 = not_ru_ethalon_array[74];
+    let subethalon2 = not_ru_ethalon_array[76]
+    if(not_ru_ethalon_array[i]==subethalon || not_ru_ethalon_array[i]==subethalon1 || not_ru_ethalon_array[i]==subethalon2){
         ethalon_fr_array_names.push(not_ru_ethalon_array_names[i]);
     } else{
         not_fr_ethalon_array.push(not_ru_ethalon_array[i]);
@@ -1147,7 +1148,7 @@ let ethalon_de_array_names = [];
 let not_de_ethalon_array = [];
 let not_de_ethalon_array_names =[];
 for(let i = 0; i < not_fr_ethalon_array.length; i++) {
-    let subethalon = not_fr_ethalon_array[5];
+    let subethalon = not_fr_ethalon_array[43];
 
     if(not_fr_ethalon_array[i]==subethalon){
         ethalon_de_array_names.push(not_fr_ethalon_array_names[i]);
@@ -1161,9 +1162,9 @@ let ethalon_it_array_names = [];
 let not_it_ethalon_array = [];
 let not_it_ethalon_array_names =[];
 for(let i = 0; i < not_de_ethalon_array.length; i++) {
-    let subethalon = not_de_ethalon_array[2];
-
-    if(not_de_ethalon_array[i]==subethalon){
+    let subethalon = not_de_ethalon_array[28];
+    let subethalon1 = not_de_ethalon_array[36];
+    if(not_de_ethalon_array[i]==subethalon || not_de_ethalon_array[i]==subethalon1){
         ethalon_it_array_names.push(not_de_ethalon_array_names[i]);
     } else{
         not_it_ethalon_array.push(not_de_ethalon_array[i]);
@@ -1175,9 +1176,9 @@ let ethalon_da_array_names = [];
 let not_da_ethalon_array = [];
 let not_da_ethalon_array_names =[];
 for(let i = 0; i < not_it_ethalon_array.length; i++) {
-    let subethalon = not_it_ethalon_array[3];
-
-    if(not_it_ethalon_array[i]==subethalon){
+    let subethalon = not_it_ethalon_array[30];
+    let subethalon1 = not_it_ethalon_array[44];
+    if(not_it_ethalon_array[i]==subethalon || not_it_ethalon_array[i]==subethalon1){
         ethalon_da_array_names.push(not_it_ethalon_array_names[i]);
     } else{
         not_da_ethalon_array.push(not_it_ethalon_array[i]);
@@ -1189,9 +1190,9 @@ let ethalon_pointen_array_names = [];
 let not_pointen_ethalon_array = [];
 let not_pointen_ethalon_array_names =[];
 for(let i = 0; i < not_da_ethalon_array.length; i++) {
-    let subethalon = not_da_ethalon_array[0];
-
-    if(not_da_ethalon_array[i]==subethalon){
+    let subethalon = not_da_ethalon_array[55];
+    let subethalon1 = not_da_ethalon_array[0];
+    if(not_da_ethalon_array[i]==subethalon|| not_da_ethalon_array[i]==subethalon1){
         ethalon_pointen_array_names.push(not_da_ethalon_array_names[i]);
     } else{
         not_pointen_ethalon_array.push(not_da_ethalon_array[i]);
@@ -1203,9 +1204,9 @@ let ethalon_ch_array_names = [];
 let not_ch_ethalon_array = [];
 let not_ch_ethalon_array_names =[];
 for(let i = 0; i < not_pointen_ethalon_array.length; i++) {
-    let subethalon = not_pointen_ethalon_array[0];
-
-    if(not_pointen_ethalon_array[i]==subethalon){
+    let subethalon = not_pointen_ethalon_array[2];
+    let subethalon1 = not_pointen_ethalon_array[72];
+    if(not_pointen_ethalon_array[i]==subethalon||not_pointen_ethalon_array[i]==subethalon1){
         ethalon_ch_array_names.push(not_pointen_ethalon_array_names[i]);
     } else{
         not_ch_ethalon_array.push(not_pointen_ethalon_array[i]);
@@ -1217,7 +1218,7 @@ let ethalon_fi_array_names = [];
 let not_fi_ethalon_array = [];
 let not_fi_ethalon_array_names =[];
 for(let i = 0; i < not_ch_ethalon_array.length; i++) {
-    let subethalon = not_ch_ethalon_array[7];
+    let subethalon = not_ch_ethalon_array[14];
 
     if(not_ch_ethalon_array[i]==subethalon){
         ethalon_fi_array_names.push(not_ch_ethalon_array_names[i]);
@@ -1231,7 +1232,7 @@ let ethalon_DA_array_names = [];
 let not_DA_ethalon_array = [];
 let not_DA_ethalon_array_names =[];
 for(let i = 0; i < not_fi_ethalon_array.length; i++) {
-    let subethalon = not_fi_ethalon_array[18];
+    let subethalon = not_fi_ethalon_array[11];
 
     if(not_fi_ethalon_array[i]==subethalon){
         ethalon_DA_array_names.push(not_fi_ethalon_array_names[i]);
@@ -1245,16 +1246,16 @@ let ethalon_fy_array_names = [];
 let not_fy_ethalon_array = [];
 let not_fy_ethalon_array_names =[];
 for(let i = 0; i < not_DA_ethalon_array.length; i++) {
-    let subethalon = not_DA_ethalon_array[4];
-
-    if(not_DA_ethalon_array[i]==subethalon){
+    let subethalon = not_DA_ethalon_array[15];
+    let subethalon1 = not_DA_ethalon_array[11];
+    let subethalon2 = not_DA_ethalon_array[33];
+    if(not_DA_ethalon_array[i]==subethalon || not_DA_ethalon_array[i]==subethalon1 || not_DA_ethalon_array[i]==subethalon2){
         ethalon_fy_array_names.push(not_DA_ethalon_array_names[i]);
     } else{
         not_fy_ethalon_array.push(not_DA_ethalon_array[i]);
         not_fy_ethalon_array_names.push(not_DA_ethalon_array_names[i]);
     }
 };
-
 for(let i = 0; i < splited_repacked_arr_of_numbers.length; i++) {
     for (let j = 0; j < etalarr_for_numbers.length; j++) {
 

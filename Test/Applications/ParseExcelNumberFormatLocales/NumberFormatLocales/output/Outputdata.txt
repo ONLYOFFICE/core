@@ -1,827 +1,213 @@
-﻿[$-F800]ηηηη, μμμμ ηη, εεεε
-[$-F400]ω:λλ:δδ AM/PM
+﻿[$]dd-mm-yyyy;@
+[$]h.mm.ss AM/PM
+General
+ bn-IN.txt
+,﻿[$]dd-mm-yyyy;@
+[$]h.mm.ss AM/PM
+General
+ bn.txt
+,﻿[$]ДД-ММ-ГГГГ;@
+[$]ч:мм:сс AM/PM
+Основной
+ ce-RU.txt
+,﻿[$]ДД-ММ-ГГГГ;@
+[$]ч:мм:сс AM/PM
+Основной
+ ce.txt
+,﻿[$]dd.mm.rrrr;@
+[$]h:mm:ss AM/PM
+Vęeobecný
+ cs-CZ.txt
+,﻿[$]dd.mm.rrrr;@
+[$]h:mm:ss AM/PM
+Vęeobecný
+ cs.txt
+,﻿[$]dd-mm-åååå;@
+[$]t:mm:ss AM/PM
+Standard
+ da-DK.txt
+,﻿[$]gg.mm.aaaa;@
+[$]h:mm:ss AM/PM
+Standard
+ de-IT.txt
+,﻿[$]ηη/μμ/εεεε;@
+[$]ω:λλ:δδ AM/PM
 Γενικός τύπος
  el-GR.txt
-,﻿[$-F800]ηηηη, μμμμ ηη, εεεε
-[$-F400]ω:λλ:δδ AM/PM
+,﻿[$]ηη/μμ/εεεε;@
+[$]ω:λλ:δδ AM/PM
 Γενικός τύπος
  el.txt
-,﻿[$-F800]dddd, mmmm dd, åååå
-[$-F400]t.mm.ss AM/PM
-Standard
- en-DK.txt
-,﻿[$-F800]pppp, kkkk pp, vvvv
-[$-F400]t.mm.ss AM/PM
+,﻿[$]pp/kk/vvvv;@
+[$]t.mm.ss AM/PM
 Yleinen
  en-FI.txt
-,﻿[$-F800]dddd, mmmm dd, aaaa
-[$-F400]h:mm:ss AM/PM
+,﻿[$]DD-MM-ÅÅÅÅ;@
+[$]t:mm:ss AM/PM
+Standard
+ en-SE.txt
+,﻿[$]dd/mm/aaaa;@
+[$]h:mm:ss AM/PM
 Geral
  es-BR.txt
-,﻿[$-F800]pppp, kkkk pp, vvvv
-[$-F400]t:mm:ss AM/PM
-Yleinen
- fi-FI.txt
-,﻿[$-F800]pppp, kkkk pp, vvvv
-[$-F400]t:mm:ss AM/PM
-Yleinen
- fi.txt
-,﻿[$-F800]nnnn, hhhh nn, éééé
-[$-F400]ó:pp:mm AM/PM
+,﻿[$]jj.mm.aaaa;@
+[$]h:mm:ss AM/PM
+Standard
+ fr-CH.txt
+,﻿[$]dd-mm-jjjj;@
+[$]u:mm:ss AM/PM
+Standaard
+ fy-NL.txt
+,﻿[$]dd-mm-jjjj;@
+[$]u:mm:ss AM/PM
+Standaard
+ fy.txt
+,﻿[$]nn.hh.éééé;@
+[$]ó:pp:mm AM/PM
 Normál
  hu-HU.txt
-,﻿[$-F800]nnnn, hhhh nn, éééé
-[$-F400]ó:pp:mm AM/PM
+,﻿[$]nn.hh.éééé;@
+[$]ó:pp:mm AM/PM
 Normál
  hu.txt
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
+,﻿[$]gg.mm.aaaa;@
+[$]h:mm:ss AM/PM
+Standard
+ it-CH.txt
+,﻿[$]dd/mm/yyyy;@
+[$]h:mm:ss AM/PM
 G/標準
  ja-JP.txt
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
+,﻿[$]dd/mm/yyyy;@
+[$]h:mm:ss AM/PM
 G/標準
  ja.txt
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
+,﻿[$]dd-mm-yyyy;@
+[$]h:mm:ss AM/PM
 G/표준
  ko-KR.txt
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
+,﻿[$]dd-mm-yyyy;@
+[$]h:mm:ss AM/PM
 G/표준
  ko.txt
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, aaaa
-[$-F400]h:mm:ss AM/PM
-Estándar
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ
-[$-F400]ч:мм:сс AM/PM
-Основной
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h.mm.ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]jjjj, mmmm jj, aaaa
-[$-F400]h:mm:ss AM/PM
-Standard
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]gggg, mmmm gg, aaaa
-[$-F400]h:mm:ss AM/PM
-Standard
-,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ
-[$-F400]ч:мм:сс AM/PM
-Основной
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]jjjj, mmmm jj, aaaa
-[$-F400]h:mm:ss AM/PM
-Standard
-,﻿[$-F800]dddd, mmmm dd, rrrr
-[$-F400]h:mm:ss AM/PM
-Vęeobecný
-,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ
-[$-F400]ч:мм:сс AM/PM
-Основной
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]TTTT, MMMM TT, JJJJ
-[$-F400]h:mm:ss AM/PM
-Standard
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]ηηηη, μμμμ ηη, εεεε
-[$-F400]ω:λλ:δδ AM/PM
-Γενικός τύπος
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, aaaa
-[$-F400]h:mm:ss AM/PM
-Estándar
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]pppp, kkkk pp, vvvv
-[$-F400]t:mm:ss AM/PM
-Yleinen
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]gggg, mmmm gg, aaaa
-[$-F400]h:mm:ss AM/PM
-Standard
-,﻿[$-F800]dddd, mmmm dd, jjjj
-[$-F400]u:mm:ss AM/PM
+,﻿[$]dd.mm.jjjj;@
+[$]u:mm:ss AM/PM
 Standaard
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, aaaa
-[$-F400]h:mm:ss AM/PM
-Estándar
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]TTTT, MMMM TT, JJJJ
-[$-F400]h:mm:ss AM/PM
-Standard
-,﻿[$-F800]nnnn, hhhh nn, éééé
-[$-F400]ó:pp:mm AM/PM
-Normál
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h.mm.ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-G/通用格式
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]gggg, mmmm gg, aaaa
-[$-F400]h:mm:ss AM/PM
-Standard
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-G/標準
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h.mm.ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ
-[$-F400]ч:мм:сс AM/PM
-Основной
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-G/표준
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]TTTT, MMMM TT, JJJJ
-[$-F400]h:mm:ss AM/PM
-Standard
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, åååå
-[$-F400]t:mm:ss AM/PM
-Standard
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, jjjj
-[$-F400]u:mm:ss AM/PM
+ nds-NL.txt
+,﻿[$]dd.mm.jjjj;@
+[$]u:mm:ss AM/PM
 Standaard
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, åååå
-[$-F400]t:mm:ss AM/PM
-Standard
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]jjjj, mmmm jj, aaaa
-[$-F400]h.mm.ss AM/PM
-Standard
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ
-[$-F400]ч:мм:сс AM/PM
-Основной
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, rrrr
-[$-F400]g:mm:ss AM/PM
-Standardowy
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ
-[$-F400]ч:мм:сс AM/PM
-Основной
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ
-[$-F400]ч:мм:сс AM/PM
-Основной
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]DDDD, MMMM DD, ÅÅÅÅ
-[$-F400]t:mm:ss AM/PM
-Standard
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h.mm.ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]DDDD, MMMM DD, ÅÅÅÅ
-[$-F400]t:mm:ss AM/PM
-Standard
-,﻿[$-F800]DDDD, MMMM DD, ÅÅÅÅ
-[$-F400]t:mm:ss AM/PM
-Standard
-,﻿[$-F800]pppp, kkkk pp, vvvv
-[$-F400]t:mm:ss AM/PM
-Yleinen
-,﻿[$-F800]pppp, kkkk pp, vvvv
-[$-F400]t:mm:ss AM/PM
-Yleinen
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]DDDD, MMMM DD, ÅÅÅÅ
-[$-F400]t:mm:ss AM/PM
-Standard
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]gggg, aaaa gg, yyyy
-[$-F400]s:dd:nn AM/PM
-Genel
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ
-[$-F400]ч:мм:сс AM/PM
-Основной
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-G/通用格式
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]ДДДД, ММММ ДД, ГГГГ
-[$-F400]ч:мм:сс AM/PM
-Основной
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-G/通用格式
-,﻿[$-F800]dddd, mmmm dd, yyyy
-[$-F400]h:mm:ss AM/PM
-General
- no.txt
-,﻿[$-F800]jjjj, mmmm jj, aaaa
-[$-F400]h.mm.ss AM/PM
+ nds.txt
+,﻿[$]dd-mm-jjjj;@
+[$]u:mm:ss AM/PM
+Standaard
+ nl-NL.txt
+,﻿[$]jj/mm/aaaa;@
+[$]h.mm.ss AM/PM
 Standard
  oc-FR.txt
-,﻿[$-F800]jjjj, mmmm jj, aaaa
-[$-F400]h.mm.ss AM/PM
+,﻿[$]jj/mm/aaaa;@
+[$]h.mm.ss AM/PM
 Standard
  oc.txt
-,﻿[$-F800]dddd, mmmm dd, rrrr
-[$-F400]g:mm:ss AM/PM
+,﻿[$]dd-mm-yyyy;@
+[$]h.mm.ss AM/PM
+General
+ pa-Arab-PK.txt
+,﻿[$]dd-mm-yyyy;@
+[$]h.mm.ss AM/PM
+General
+ pa-Arab.txt
+,﻿[$]dd-mm-yyyy;@
+[$]h.mm.ss AM/PM
+General
+ pa-Guru.txt
+,﻿[$]dd.mm.rrrr;@
+[$]g:mm:ss AM/PM
 Standardowy
  pl-PL.txt
-,﻿[$-F800]dddd, mmmm dd, rrrr
-[$-F400]g:mm:ss AM/PM
+,﻿[$]dd.mm.rrrr;@
+[$]g:mm:ss AM/PM
 Standardowy
  pl.txt
-,﻿[$-F800]dddd, mmmm dd, aaaa
-[$-F400]h:mm:ss AM/PM
+,﻿[$]dd/mm/aaaa;@
+[$]h:mm:ss AM/PM
 Geral
  pt-BR.txt
-,﻿[$-F800]dddd, mmmm dd, aaaa
-[$-F400]h:mm:ss AM/PM
+,﻿[$]dd/mm/aaaa;@
+[$]h:mm:ss AM/PM
 Estandar
  pt-PT.txt
-,﻿[$-F800]pppp, kkkk pp, vvvv
-[$-F400]t:mm:ss AM/PM
-Yleinen
- se-FI.txt
-,﻿[$-F800]pppp, kkkk pp, vvvv
-[$-F400]t:mm:ss AM/PM
-Yleinen
- smn-FI.txt
-,﻿[$-F800]pppp, kkkk pp, vvvv
-[$-F400]t:mm:ss AM/PM
-Yleinen
- smn.txt
-,﻿[$-F800]pppp, kkkk pp, vvvv
-[$-F400]t:mm:ss AM/PM
-Yleinen
- sms-FI.txt
-,﻿[$-F800]pppp, kkkk pp, vvvv
-[$-F400]t:mm:ss AM/PM
-Yleinen
- sms.txt
-,﻿[$-F800]pppp, kkkk pp, vvvv
-[$-F400]t:mm:ss AM/PM
+,﻿[$]dd/mm/yyyy;@
+[$]h:mm:ss AM/PM
+General
+
+ quc-Latn.txt
+,﻿[$]dd-mm-åååå;@
+[$]t:mm:ss AM/PM
+Standard
+ se-NO.txt
+,﻿[$]DD-MM-ÅÅÅÅ;@
+[$]t:mm:ss AM/PM
+Standard
+ se-SE.txt
+,﻿[$]DD-MM-ÅÅÅÅ;@
+[$]t:mm:ss AM/PM
+Standard
+ se.txt
+,﻿[$]dd-mm-yyyy;@
+[$]h.mm.ss AM/PM
+General
+ si-LK.txt
+,﻿[$]dd-mm-yyyy;@
+[$]h.mm.ss AM/PM
+General
+ si.txt
+,﻿[$]DD-MM-ÅÅÅÅ;@
+[$]t:mm:ss AM/PM
+Standard
+ sma-SE.txt
+,﻿[$]DD-MM-ÅÅÅÅ;@
+[$]t:mm:ss AM/PM
+Standard
+ sma.txt
+,﻿[$]DD-MM-ÅÅÅÅ;@
+[$]t:mm:ss AM/PM
+Standard
+ smj-SE.txt
+,﻿[$]DD-MM-ÅÅÅÅ;@
+[$]t:mm:ss AM/PM
+Standard
+ smj.txt
+,﻿[$]pp-kk-vvvv;@
+[$]t:mm:ss AM/PM
 Yleinen
  sv-AX.txt
-,﻿[$-F800]pppp, kkkk pp, vvvv
-[$-F400]t:mm:ss AM/PM
+,﻿[$]pp-kk-vvvv;@
+[$]t:mm:ss AM/PM
 Yleinen
  sv-FI.txt
-,﻿[$-F800]gggg, aaaa gg, yyyy
-[$-F400]s:dd:nn AM/PM
+,﻿[$]DD-MM-ÅÅÅÅ;@
+[$]t:mm:ss AM/PM
+Standard
+ sv-SE.txt
+,﻿[$]DD-MM-ÅÅÅÅ;@
+[$]t:mm:ss AM/PM
+Standard
+ sv.txt
+,﻿[$]gg.aa.yyyy;@
+[$]s:dd:nn AM/PM
 Genel
  tr-TR.txt
-,﻿[$-F800]gggg, aaaa gg, yyyy
-[$-F400]s:dd:nn AM/PM
+,﻿[$]gg.aa.yyyy;@
+[$]s:dd:nn AM/PM
 Genel
  tr.txt
+,﻿[$]dd-mm-yyyy;@
+[$]h:mm:ss AM/PM
+G/通用格式
+ ug-CN.txt
+,﻿[$]dd-mm-yyyy;@
+[$]h:mm:ss AM/PM
+G/通用格式
+ ug.txt

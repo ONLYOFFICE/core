@@ -249,8 +249,8 @@ namespace NSCSS
         const std::vector<std::wstring>& sMargins = oStyle.GetMargins();
         if (!sMargins.empty())
         {
-            const float fLeftValue  = wcstof(sMargins[1].c_str(), NULL);
-            const float fRightValue = wcstof(sMargins[3].c_str(), NULL);
+            const float fLeftValue  = wcstof(sMargins[3].c_str(), NULL) * 10.0f;
+            const float fRightValue = wcstof(sMargins[1].c_str(), NULL) * 10.0f;
             sInfValue += L"w:left=\""  + std::to_wstring(static_cast<short int>(fLeftValue  + 0.5f)) + L"\" ";
             sInfValue += L"w:right=\"" + std::to_wstring(static_cast<short int>(fRightValue + 0.5f)) + L"\" ";
         }
@@ -280,9 +280,10 @@ namespace NSCSS
 
             if (fLineHeight >= 1.0f)
             {
-                fLineHeight *= (fLineHeight < fValue / 2) ? 10.0f : 10.0f / fLineHeight;
+                fLineHeight *= (fLineHeight < fValue / 2) ? 10.0f : (10.0f / fLineHeight);
+                float fLine = fLineHeight * fValue;
 
-                sSpacingValue += L"w:line=\"" + std::to_wstring(static_cast<unsigned short int>(fLineHeight * fValue + 0.5f)) + L"\" ";
+                sSpacingValue += L"w:line=\"" + std::to_wstring(static_cast<unsigned short int>((fLine < fValue * 20.0f) ? fLine : fValue * 5.0f + 0.5f)) + L"\" ";
                 sSpacingValue += L"w:lineRule=\"auto\"";
             }
         }

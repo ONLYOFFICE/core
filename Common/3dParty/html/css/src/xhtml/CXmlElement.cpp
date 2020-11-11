@@ -40,7 +40,6 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"li");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"List Paragraph");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn, L"normal");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UiPriority, L"34");
 
         AddPropertiesInP(NSCSS::NS_CONST_VALUES::ParagraphProperties::P_ContextualSpacing, L"true");
@@ -52,7 +51,6 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"h1");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Heading 1");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn, L"normal");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"h1-c");
 
         AddPropertiesInP(NSCSS::NS_CONST_VALUES::ParagraphProperties::P_OutlineLvl, L"0");
@@ -64,7 +62,6 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"h2");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Heading 2");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn, L"normal");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"h2-c");
 
         AddPropertiesInP(NSCSS::NS_CONST_VALUES::ParagraphProperties::P_OutlineLvl, L"1");
@@ -76,7 +73,6 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"h3");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Heading 3");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn, L"normal");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"h3-c");
 
         AddPropertiesInP(NSCSS::NS_CONST_VALUES::ParagraphProperties::P_OutlineLvl, L"2");
@@ -88,7 +84,6 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"h4");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Heading 4");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn, L"normal");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"h4-c");
 
         AddPropertiesInP(NSCSS::NS_CONST_VALUES::ParagraphProperties::P_OutlineLvl, L"3");
@@ -100,7 +95,6 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"h5");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Heading 5");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn, L"normal");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"h5-c");
 
         AddPropertiesInP(NSCSS::NS_CONST_VALUES::ParagraphProperties::P_OutlineLvl, L"4");
@@ -113,7 +107,6 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"h6");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Heading 6");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn, L"normal");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"h6-c");
 
         AddPropertiesInP(NSCSS::NS_CONST_VALUES::ParagraphProperties::P_OutlineLvl, L"5");
@@ -124,7 +117,6 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Type, L"character");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"h1-c");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Title 1 Sign");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_CustomStyle, L"1");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UiPriority, L"9");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"h1");
@@ -139,7 +131,6 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Type, L"character");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"h2-c");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Title 2 Sign");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_CustomStyle, L"1");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UiPriority, L"9");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UnhideWhenUsed, L"true");
@@ -155,7 +146,6 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Type, L"character");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"h3-c");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Title 3 Sign");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_CustomStyle, L"1");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UiPriority, L"9");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UnhideWhenUsed, L"true");
@@ -171,7 +161,6 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Type, L"character");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"h4-c");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Title 4 Sign");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_CustomStyle, L"1");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UiPriority, L"9");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UnhideWhenUsed, L"true");
@@ -187,7 +176,6 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Type, L"character");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"h5-c");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Title 5 Sign");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_CustomStyle, L"1");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UiPriority, L"9");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UnhideWhenUsed, L"true");
@@ -203,7 +191,6 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Type, L"character");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"h6-c");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Title 6 Sign");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_CustomStyle, L"1");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UiPriority, L"9");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_UnhideWhenUsed, L"true");
@@ -221,7 +208,6 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"p-c");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_CustomStyle, L"1");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Paragraph character");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"p");
 
         AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_RFonts, L"\"Arial\"");
@@ -233,7 +219,6 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_CustomStyle, L"1");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Paragraph");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn, L"normal");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"p-c");
 //        SetInd(L"w:firstLine=\"567\"");
 //        SetJc(L"both");
@@ -244,7 +229,6 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"div-c");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_CustomStyle, L"1");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Div character");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"div");
 
         AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_RFonts, L"\"Arial\"");
@@ -255,7 +239,6 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"div");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_CustomStyle, L"1");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Div paragraph");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn, L"normal");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Link, L"div-c");
 //        SetInd(L"w:firstLine=\"567\"");
@@ -280,7 +263,6 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_BasedOn, L"a-c");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_StyleId, L"a");
         AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_Name, L"Hyperlink");
-        AddBasicProperties(NSCSS::NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
     }
 }
 

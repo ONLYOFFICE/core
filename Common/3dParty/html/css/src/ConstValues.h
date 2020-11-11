@@ -28,7 +28,7 @@ namespace NSCSS
 //            B_S = 11,
         } BasicProperties;
 
-        typedef enum ParagraphProperties
+        typedef enum
         {
             P_Jc = 0,
             P_Spacing = 1,

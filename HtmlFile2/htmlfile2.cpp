@@ -31,6 +31,8 @@
 #define VALUE2STR(x) VALUE_TO_STRING(x)
 #endif
 
+std::wstring rStyle = L"a area b strong bdo bdi big br center cite dfn em i var code kbd samp tt del s font img ins u mark q rt sup small sub svg input basefont button label data object noscript output abbr time ruby progress hgroup meter span acronym";
+
 // Ячейка таблицы
 struct CTc
 {
@@ -1321,8 +1323,24 @@ private:
         if(!bWasP)
             return L"";
         oXml->WriteString(L"<w:pPr><w:pStyle w:val=\"");
+        
+        std::vector<std::pair<size_t, NSCSS::CNode>> temporary;
+		size_t i = 0;
+		while(i != sSelectors.size())
+		{
+			if(rStyle.find(sSelectors[i].m_sName) != std::wstring::npos)
+			{
+				temporary.push_back(std::make_pair(i, sSelectors[i]));
+				sSelectors.erase(sSelectors.begin() + i);
+			}
+			else
+				i++;
+		}
 
         std::wstring sPStyle = GetStyle(sSelectors, true);
+        
+        for(size_t i = temporary.size() - 1; i >= 0; i--)
+			sSelectors.insert(sSelectors.begin() + temporary[i].first, temporary[i].second);
 
         oXml->WriteString(sPStyle);
         oXml->WriteString(L"\"/>");

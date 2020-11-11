@@ -147,6 +147,8 @@ link_libraries(
 # Add target library
 add_library(${LIB_NAME_X2T_CONVERTER}
     SHARED
+        ${CORE_DIR}/DesktopEditor/fontengine/FontsAssistant.cpp
+        ${CORE_DIR}/DesktopEditor/fontengine/ApplicationFontsWorker.cpp
         jni/X2t.cpp
 )
 

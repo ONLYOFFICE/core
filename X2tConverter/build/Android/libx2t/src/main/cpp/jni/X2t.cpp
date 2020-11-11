@@ -5,6 +5,7 @@
 #include "../../../../../../../../Common/OfficeFileFormats.h"
 #include "../../../../../../../X2tConverter/src/dylib/x2t.h"
 #include "../../../../../../../../UnicodeConverter/UnicodeConverter.h"
+#include "../../../../../../../../DesktopEditor/fontengine/FontsAssistant.h"
 
 #define JNI_FUNC(RTYPE, NAME) JNIEXPORT RTYPE JNICALL Java_lib_x2t_X2t_##NAME
 
@@ -29,7 +30,7 @@ extern "C" {
     * OfficeFileFormats
     * */
     JNI_FUNC(jobject, getOfficeFileFormats)(JNIEnv* env, jclass type) {
-        //TRY_JNI(env, {
+        TRY_JNI(env, {
             JniHashMap jjniHashMap;
             if (jjniHashMap.init(env)) {
                 jjniHashMap.put(env, "AVS_OFFICESTUDIO_FILE_UNKNOWN", AVS_OFFICESTUDIO_FILE_UNKNOWN);
@@ -129,9 +130,18 @@ extern "C" {
                 return res;
             }
             return NULL;
- //       })
+        })
     }
 
+    /*
+    * setFonts
+    * */
+    JNI_FUNC(void, setFonts)(JNIEnv* env, jclass type, jobjectArray fontsPaths, jstring cacheFontsPath) {
+        TRY_JNI(env, {
+            ASC::CFontsAssistant oFontsAssistant(JniBaseObjects::objectArrayToVectorWString(env, fontsPaths), JniBaseObjects::jstringToWString(env, cacheFontsPath));
+            oFontsAssistant.Check();
+        })
+    }
 
     /*
      * convert

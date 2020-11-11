@@ -1339,7 +1339,7 @@ private:
 
         std::wstring sPStyle = GetStyle(sSelectors, true);
         
-        for(size_t i = temporary.size() - 1; i >= 0; i--)
+        for(int i = temporary.size() - 1; i >= 0; i--)
 			sSelectors.insert(sSelectors.begin() + temporary[i].first, temporary[i].second);
 
         oXml->WriteString(sPStyle);

@@ -541,9 +541,7 @@ private:
                 size_t nAfter = sText.find_first_of(L"\n\r");
                 while(nAfter != std::wstring::npos)
                 {
-                    std::wstring sSubText = sText.substr(0, nAfter);
-                    sText.erase(0, sSubText.length() + 1);
-                    oXml->WriteEncodeXmlString(sSubText);
+                    oXml->WriteEncodeXmlString(sText.c_str(), nAfter);
                     oXml->WriteString(L"</w:t></w:r></w:p><w:p>");
                     if(!sPStyle.empty())
                     {
@@ -558,6 +556,7 @@ private:
                     oXml->WriteString(L"\"/>");
                     oXml->WriteString(oTS.sRStyle);
                     oXml->WriteString(L"</w:rPr><w:t xml:space=\"preserve\">");
+                    sText.erase(0, nAfter + 1);
                     nAfter = sText.find_first_of(L"\n\r");
                 }
                 end = sText.end();
@@ -663,17 +662,16 @@ private:
                     sSelectors.back().m_sStyle += L"; font-family: " + m_oLightReader.GetText();
                 else if(sAName == L"size")
                 {
-                    size_t sz;
                     int nSize = 3;
                     std::wstring sSize = m_oLightReader.GetText();
                     if(!sSize.empty())
                     {
                         if(sSize.front() == L'+')
-                            nSize += std::stoi(sSize.substr(1), &sz);
+                            nSize += std::stoi(sSize.substr(1));
                         else if(sSize.front() == L'-')
-                            nSize -= std::stoi(sSize.substr(1), &sz);
+                            nSize -= std::stoi(sSize.substr(1));
                         else
-                            nSize = std::stoi(sSize, &sz);
+                            nSize = std::stoi(sSize);
                     }
                     sSize = nSize >= 1 && nSize <= 7 ? std::to_wstring(10 + nSize * 5) : L"22";
                     sSelectors.back().m_sStyle += L"; font-size: " + sSize;
@@ -1177,7 +1175,10 @@ private:
         {
             oXml->WriteString(L"<w:hyperlink w:tooltip=\"Current Document\" w:anchor=\"");
             size_t nSharp = sRef.find('#');
-            oXml->WriteString(nSharp == std::wstring::npos ? NSFile::GetFileName(sRef) : sRef.substr(nSharp + 1));
+            if(nSharp == std::wstring::npos)
+                oXml->WriteString(NSFile::GetFileName(sRef));
+            else
+                oXml->WriteString(sRef.c_str() + nSharp + 1);
         }
         // Внешняя ссылка
         else

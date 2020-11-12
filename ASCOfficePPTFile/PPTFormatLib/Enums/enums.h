@@ -279,7 +279,7 @@ enum PhotoAlbumLayoutEnum
 };
 
 
-enum PlaceholderEnum
+enum PlaceholderEnum : BYTE
 {
     PT_None,
     PT_MasterTitle,
@@ -308,7 +308,7 @@ enum PlaceholderEnum
     PT_Media,
     PT_VerticalObject,
     PT_Picture,
-    PT_Body_Empty =  0xFFFF
+    PT_Body_Empty =  0xFF
 };
 
 

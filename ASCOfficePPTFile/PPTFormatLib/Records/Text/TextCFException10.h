@@ -30,57 +30,27 @@
  *
  */
 #pragma once
-#include "TextPFException9.h"
-#include "TextCFException9.h"
-#include "TextSIException.h"
+#include "CFMasks.h"
 
 namespace PPT_FORMAT
 {
-
-struct SStyleTextProp9
+struct STextCFException10
 {
-    STextPFException9 m_pf9;
-    STextCFException9 m_cf9;
-    STextSIException  m_si;
+    SCFMasks            m_masks;
+    nullable<USHORT>    m_newEAFontRef;
+    nullable<USHORT>    m_csFontRef;
+    nullable<_UINT32>     m_pp11ext;
 
-
-    void ReadFromStream(POLE::Stream* pStream)
+    virtual void ReadFromStream(POLE::Stream* pStream)
     {
-        m_pf9.ReadFromStream(pStream);
-        m_cf9.ReadFromStream(pStream);
-         m_si.ReadFromStream(pStream);
+        m_masks.ReadFromStream(pStream);
+
+        if (m_masks.m_newEATypeface)
+            m_newEAFontRef  = new USHORT(StreamUtils::ReadSHORT(pStream));
+        if (m_masks.m_csTypeface)
+            m_newEAFontRef  = new USHORT(StreamUtils::ReadSHORT(pStream));
+        if (m_masks.m_pp11ext)
+            m_pp11ext       = new _UINT32(StreamUtils::ReadDWORD(pStream));
     }
-};
-
-
-class CRecordStyleTextProp9Atom : public CUnknownRecord
-{
-public:
-    virtual ~CRecordStyleTextProp9Atom()
-    {
-        for (auto pEl : m_rgStyleTextProp9)
-            RELEASEOBJECT(pEl)
-    }
-
-    virtual void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
-    {
-        m_oHeader = oHeader;
-
-        LONG lCurPos; StreamUtils::StreamPosition(lCurPos, pStream);
-        LONG lEndPos = lCurPos + m_oHeader.RecLen;
-
-        while(lCurPos < lEndPos)
-        {
-            auto pRec = new SStyleTextProp9;
-            pRec->ReadFromStream(pStream);
-            m_rgStyleTextProp9.push_back(pRec);
-
-            StreamUtils::StreamPosition(lCurPos, pStream);
-        }
-        StreamUtils::StreamPosition(lCurPos, pStream);
-    }
-
-public:
-    std::vector<SStyleTextProp9* > m_rgStyleTextProp9;
 };
 }

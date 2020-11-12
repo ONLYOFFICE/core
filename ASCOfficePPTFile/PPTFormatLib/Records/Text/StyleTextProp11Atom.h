@@ -30,57 +30,41 @@
  *
  */
 #pragma once
-#include "TextPFException9.h"
-#include "TextCFException9.h"
+
+#include "../Reader/Records.h"
 #include "TextSIException.h"
+
 
 namespace PPT_FORMAT
 {
-
-struct SStyleTextProp9
+struct SStyleTextProp11 : public STextSIException
 {
-    STextPFException9 m_pf9;
-    STextCFException9 m_cf9;
-    STextSIException  m_si;
 
-
-    void ReadFromStream(POLE::Stream* pStream)
-    {
-        m_pf9.ReadFromStream(pStream);
-        m_cf9.ReadFromStream(pStream);
-         m_si.ReadFromStream(pStream);
-    }
 };
 
-
-class CRecordStyleTextProp9Atom : public CUnknownRecord
+class CRecordStyleTextProp11Atom : public CUnknownRecord
 {
 public:
-    virtual ~CRecordStyleTextProp9Atom()
-    {
-        for (auto pEl : m_rgStyleTextProp9)
-            RELEASEOBJECT(pEl)
-    }
+    std::vector<SStyleTextProp11> m_rgStyleTextProp11;
 
     virtual void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
     {
-        m_oHeader = oHeader;
+        m_oHeader			=	oHeader;
+        LONG lPos			=	0;
+        StreamUtils::StreamPosition ( lPos, pStream );
 
-        LONG lCurPos; StreamUtils::StreamPosition(lCurPos, pStream);
-        LONG lEndPos = lCurPos + m_oHeader.RecLen;
+        LONG lCurPos		=	0;
+        StreamUtils::StreamPosition ( lCurPos, pStream );
 
-        while(lCurPos < lEndPos)
+        while ( lPos + m_oHeader.RecLen > lCurPos)
         {
-            auto pRec = new SStyleTextProp9;
-            pRec->ReadFromStream(pStream);
-            m_rgStyleTextProp9.push_back(pRec);
+            SStyleTextProp11 style;
+            style.ReadFromStream(pStream);
+            m_rgStyleTextProp11.push_back(style);
 
-            StreamUtils::StreamPosition(lCurPos, pStream);
+            StreamUtils::StreamPosition ( lCurPos, pStream );
         }
-        StreamUtils::StreamPosition(lCurPos, pStream);
+        StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);
     }
-
-public:
-    std::vector<SStyleTextProp9* > m_rgStyleTextProp9;
 };
 }

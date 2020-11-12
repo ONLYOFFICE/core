@@ -56,6 +56,8 @@
 #include "Drawing/RegGroupItems.h"
 #include "Drawing/DrawingContainer.h"
 
+#include "OfficeArtClientData.h"
+
 // others
 
 #include "BlipEntityAtom.h"

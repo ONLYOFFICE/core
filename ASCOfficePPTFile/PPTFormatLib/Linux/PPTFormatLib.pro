@@ -460,6 +460,9 @@ HEADERS += \
     ../Records/BuildAtom.h \
     ../Records/DocInfoListContainer.h \
     ../Records/DocProgTagsContainer.h \
+    ../Records/OfficeArtClientData.h \
+    ../Records/PlaceholderAtom.h \
+    ../Records/ShapeProgBinaryTagSubContainerOrAtom.h \
     ../Records/Text/CFMasks.h \
     ../Records/ColorSchemeAtom.h \
     ../Records/CString.h \
@@ -502,6 +505,8 @@ HEADERS += \
     ../Records/NotesPersistAtom.h \
     ../Records/NoZoomViewInfoAtom.h \
     ../Records/OutlineTextRefAtom.h \
+    ../Records/Text/FontCollection10Container.h \
+    ../Records/Text/FontEmbedFlags10Atom.h \
     ../Records/Text/OutlineTextProps9Container.h \
     ../Records/Text/OutlineTextPropsHeaderExAtom.h \
     ../Records/Text/PFMasks.h \
@@ -537,7 +542,10 @@ HEADERS += \
     ../Records/SSlideLayoutAtom.h \
     ../Records/SSSlideInfoAtom.h \
     ../Records/StyleTextPropAtom.h \
+    ../Records/Text/StyleTextProp10Atom.h \
+    ../Records/Text/StyleTextProp11Atom.h \
     ../Records/Text/StyleTextProp9Atom.h \
+    ../Records/Text/TextCFException10.h \
     ../Records/Text/TextCFException9.h \
     ../Records/Text/TextDefaults9Atom.h \
     ../Records/Text/TextMasterStyle9Atom.h \

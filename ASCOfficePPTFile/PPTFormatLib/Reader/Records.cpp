@@ -617,6 +617,7 @@ IRecord* CreateByType(SRecordHeader oHeader)
     CREATE_BY_TYPE(RTE_REGROUPITEMS			, CRecordRegGroupItems)
     CREATE_BY_TYPE(RTE_SPLITMENUCOLORS		, CRecordSplitMenuColorRecord)
     CREATE_BY_TYPE(RTE_COLORMRU				, CRecordMostRecentlyUserColors)
+    CREATE_BY_TYPE(RTE_CLIENTDATA           , CRecordOfficeArtClientData)
 
     CREATE_BY_TYPE(RT_ExternalCdAudio   					, CRecordExCDAudioContainer)
     CREATE_BY_TYPE(RT_ExternalWavAudioLink  				, CRecordWAVAudioLinkContainer)

@@ -30,57 +30,48 @@
  *
  */
 #pragma once
-#include "TextPFException9.h"
-#include "TextCFException9.h"
-#include "TextSIException.h"
+
+#include "FontCollectionEntry.h"
+
 
 namespace PPT_FORMAT
 {
-
-struct SStyleTextProp9
-{
-    STextPFException9 m_pf9;
-    STextCFException9 m_cf9;
-    STextSIException  m_si;
-
-
-    void ReadFromStream(POLE::Stream* pStream)
-    {
-        m_pf9.ReadFromStream(pStream);
-        m_cf9.ReadFromStream(pStream);
-         m_si.ReadFromStream(pStream);
-    }
-};
-
-
-class CRecordStyleTextProp9Atom : public CUnknownRecord
+class CRecordFontCollection10Container : public CUnknownRecord
 {
 public:
-    virtual ~CRecordStyleTextProp9Atom()
+    std::vector<CRecordFontCollectionEntry*> m_rgFontCollectionEntry;
+
+public:
+    virtual ~CRecordFontCollection10Container()
     {
-        for (auto pEl : m_rgStyleTextProp9)
+        for (auto pEl : m_rgFontCollectionEntry)
+        {
             RELEASEOBJECT(pEl)
+        }
     }
 
     virtual void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
     {
-        m_oHeader = oHeader;
+        m_oHeader			=	oHeader;
+        LONG lPos			=	0;
+        StreamUtils::StreamPosition ( lPos, pStream );
 
-        LONG lCurPos; StreamUtils::StreamPosition(lCurPos, pStream);
-        LONG lEndPos = lCurPos + m_oHeader.RecLen;
+        UINT lCurLen		=	0;
 
-        while(lCurPos < lEndPos)
+        SRecordHeader ReadHeader;
+
+        while ( lCurLen < m_oHeader.RecLen )
         {
-            auto pRec = new SStyleTextProp9;
-            pRec->ReadFromStream(pStream);
-            m_rgStyleTextProp9.push_back(pRec);
+            if ( ReadHeader.ReadFromStream(pStream) == false)
+                break;
 
-            StreamUtils::StreamPosition(lCurPos, pStream);
+            lCurLen += 8 + ReadHeader.RecLen;
+
+            auto pRec = new CRecordFontCollectionEntry;
+            pRec->ReadFromStream(ReadHeader, pStream);
+            m_rgFontCollectionEntry.push_back(pRec);
         }
-        StreamUtils::StreamPosition(lCurPos, pStream);
+        StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);
     }
-
-public:
-    std::vector<SStyleTextProp9* > m_rgStyleTextProp9;
 };
 }

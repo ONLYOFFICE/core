@@ -30,57 +30,26 @@
  *
  */
 #pragma once
-#include "TextPFException9.h"
-#include "TextCFException9.h"
-#include "TextSIException.h"
+
+#include "../Reader/Records.h"
+
 
 namespace PPT_FORMAT
 {
-
-struct SStyleTextProp9
-{
-    STextPFException9 m_pf9;
-    STextCFException9 m_cf9;
-    STextSIException  m_si;
-
-
-    void ReadFromStream(POLE::Stream* pStream)
-    {
-        m_pf9.ReadFromStream(pStream);
-        m_cf9.ReadFromStream(pStream);
-         m_si.ReadFromStream(pStream);
-    }
-};
-
-
-class CRecordStyleTextProp9Atom : public CUnknownRecord
+class CRecordFontEmbedFlags10Atom : public CUnknownRecord
 {
 public:
-    virtual ~CRecordStyleTextProp9Atom()
-    {
-        for (auto pEl : m_rgStyleTextProp9)
-            RELEASEOBJECT(pEl)
-    }
+    bool m_fSubset;
+    bool m_fSubsetOptionConfirmed;
 
-    virtual void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
     {
         m_oHeader = oHeader;
 
-        LONG lCurPos; StreamUtils::StreamPosition(lCurPos, pStream);
-        LONG lEndPos = lCurPos + m_oHeader.RecLen;
-
-        while(lCurPos < lEndPos)
-        {
-            auto pRec = new SStyleTextProp9;
-            pRec->ReadFromStream(pStream);
-            m_rgStyleTextProp9.push_back(pRec);
-
-            StreamUtils::StreamPosition(lCurPos, pStream);
-        }
-        StreamUtils::StreamPosition(lCurPos, pStream);
+        _UINT32 flags = StreamUtils::ReadDWORD(pStream);
+        m_fSubset                   = 0x1 & flags;
+        m_fSubsetOptionConfirmed    = 0x2 & flags;
     }
 
-public:
-    std::vector<SStyleTextProp9* > m_rgStyleTextProp9;
 };
 }

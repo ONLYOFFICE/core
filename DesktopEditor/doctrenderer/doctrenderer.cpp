@@ -483,7 +483,7 @@ namespace NSDoctRenderer
             {
                 // CALCULATE
                 if (pParams->m_sJsonParams.empty())
-                    args[0] = NULL;
+                    args[0] = CJSContext::createNull();
                 else
                 {
                     std::string sTmp = U_TO_UTF8((pParams->m_sJsonParams));
@@ -515,7 +515,7 @@ namespace NSDoctRenderer
                 if (!bIsBreak && DoctRendererFormat::PDF == pParams->m_eDstFormat)
                 {
                     if (pParams->m_sJsonParams.empty())
-                        args[0] = NULL;
+                        args[0] = CJSContext::createNull();
                     else
                     {
                         std::string sTmp = U_TO_UTF8((pParams->m_sJsonParams));

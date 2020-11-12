@@ -114,7 +114,7 @@ static std::string QuotedPrintableDecode(const std::string& sContent, std::strin
         else
         {
             nIgnore -= 3;
-            charset = charset.substr(0, nIgnore);
+            charset.erase(nIgnore);
             if(charset == "=EF=BB=BF")
                 sCharset = "UTF-8";
             else if(charset == "=F7=64=4C")
@@ -126,7 +126,7 @@ static std::string QuotedPrintableDecode(const std::string& sContent, std::strin
             else
             {
                 nIgnore -= 3;
-                charset = charset.substr(0, nIgnore);
+                charset.erase(nIgnore);
                 if(charset == "=FE=FF")
                     sCharset = "UTF-16BE";
                 else if(charset == "=FF=FE")
@@ -142,7 +142,7 @@ static std::string QuotedPrintableDecode(const std::string& sContent, std::strin
 
     while(i != std::string::npos && i + 2 < sContent.length())
     {
-        sRes.WriteString(sContent.substr(ip, i - ip));
+        sRes.WriteString(sContent.c_str() + ip, i - ip);
         std::string str = sContent.substr(i + 1, 2);
         if(str.front() == '\n' || str.front() == '\r')
         {
@@ -162,7 +162,8 @@ static std::string QuotedPrintableDecode(const std::string& sContent, std::strin
         ip = i + 3;
         i = sContent.find('=', ip);
     }
-    sRes.WriteString(sContent.substr(ip));
+    if(ip != std::string::npos)
+        sRes.WriteString(sContent.c_str() + ip);
     return sRes.GetData();
 }
 

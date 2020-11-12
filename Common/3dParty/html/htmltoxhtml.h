@@ -107,7 +107,7 @@ static std::string QuotedPrintableDecode(const std::string& sContent)
             char ch = (int)strtol(str.data(), &err, 16);
             if(*err)
                 sRes.WriteString('=' + str);
-            else
+            else if(ch > 0)
                 sRes.WriteString(&ch, 1);
         }
         ip = i + 3;

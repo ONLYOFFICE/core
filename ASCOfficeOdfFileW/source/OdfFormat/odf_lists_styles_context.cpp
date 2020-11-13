@@ -69,7 +69,10 @@ std::wstring odf_lists_styles_context::get_style_name(int oox_style_num)
 {
 	if (oox_style_num < 0)
 	{
-		return lists_format_array_.back().odf_list_style_name;
+		if (false == lists_format_array_.empty())
+			return lists_format_array_.back().odf_list_style_name;
+		else
+			return L"";
 	}
 	else
 	{

@@ -513,8 +513,25 @@ void PptxConverter::convert(PPTX::NotesMaster *oox_notes)
 	current_clrMap	= &oox_notes->clrMap;
 	
 	current_slide	= dynamic_cast<OOX::IFileContainer*>(oox_notes);
-	//PPTX::Logic::TxStyles* current_txStyles = oox_notes->notesStyle.GetPointer();
-	
+
+	NSCommon::nullable<PPTX::Logic::TxStyles> current_txStyles;
+	if (oox_notes->notesStyle.IsInit())
+	{
+		current_txStyles.Init();
+		current_txStyles->otherStyle = oox_notes->notesStyle;
+		
+		_CP_OPT(int) inStyles = odf_context()->drawing_context()->get_presentation();
+
+		odf_context()->styles_context()->lists_styles().start_style(inStyles && *inStyles > 0);
+		for (int i = 0; i < 10; i++)
+		{
+			if (oox_notes->notesStyle->levels[i].IsInit())
+			{
+				convert_list_level(oox_notes->notesStyle->levels[i].GetPointer(), i /*- 1*/);
+			}
+		}
+		odf_context()->styles_context()->lists_styles().end_style();
+	}
 	if (presentation->notesSz.IsInit())
 	{
 		_CP_OPT(odf_types::length) width	= odf_types::length(presentation->notesSz->cx / 12700., odf_types::length::pt);
@@ -522,7 +539,7 @@ void PptxConverter::convert(PPTX::NotesMaster *oox_notes)
 		
 		odf_context()->page_layout_context()->set_page_size(width, height);
 	}
-	convert_slide(&oox_notes->cSld, NULL, true, true, NotesMaster);
+	convert_slide(&oox_notes->cSld, current_txStyles.GetPointer(), true, true, NotesMaster);
 	
 	odp_context->end_note();
 

@@ -219,7 +219,7 @@ namespace MetaFile
 
 			m_pRenderer->put_FontStyle(lStyle);
 
-			double dTheta = -((((double)pFont->GetEscapement()) / 10) * M_PI / 180);
+			double dTheta = ((((double)pFont->GetEscapement()) / 10) * M_PI / 180);
 
 			double dCosTheta = (float)cos(dTheta);
 			double dSinTheta = (float)sin(dTheta);
@@ -235,7 +235,7 @@ namespace MetaFile
 				pFontManager->LoadFontByName(wsFaceName, dFontHeight, lStyle, 72, 72);
 				pFontManager->SetCharSpacing(dFontCharSpace * 72 / 25.4);
 
-                double dMmToPt = 25.4 / 72;
+				double dMmToPt = 25.4 / 72;
 
                 double dFHeight = dFontHeight;
                 double dFDescent = dFontHeight;
@@ -357,11 +357,11 @@ namespace MetaFile
 
 					if (m_pFile->IsWindowFlippedX())
 					{
-						dShiftX = (2 * dX + fabs(fW)) * dM11;
+						dShiftX = (2 * dX - fabs(fW)) * dM11;
 					}
 					else
 					{
-						dShiftX = (2 * dX - fabs(fW)) * dM11;
+						dShiftX = (2 * dX + fabs(fW)) * dM11;
 					}
 				}
 
@@ -370,11 +370,11 @@ namespace MetaFile
 					dY -= fabs(fH);
 					if (m_pFile->IsWindowFlippedY())
 					{
-						dShiftY = (2 * dY + fabs(fH)) * dM22;
+						dShiftY = (2 * dY - fabs(fH)) * dM22;
 					}
 					else
 					{
-						dShiftY = (2 * dY - fabs(fH)) * dM22;
+						dShiftY = (2 * dY + fabs(fH)) * dM22;
 					}
 				}
 

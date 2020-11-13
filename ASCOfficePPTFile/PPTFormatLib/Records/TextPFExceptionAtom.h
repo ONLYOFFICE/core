@@ -38,7 +38,7 @@ public:
 	CTextPFRunRecord m_oPFRun;
 	
 	CRecordTextPFExceptionAtom()
-	{
+    {
 	}
 
 	~CRecordTextPFExceptionAtom()

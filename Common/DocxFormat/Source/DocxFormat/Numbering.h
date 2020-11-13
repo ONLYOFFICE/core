@@ -924,8 +924,12 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				if ( L"w:abstractNum" == sName || L"w:listDef" == sName)
 				{
-					OOX::Numbering::CAbstractNum *oAbstractNum = new OOX::Numbering::CAbstractNum(oReader);
-					if (oAbstractNum) m_arrAbstractNum.push_back( oAbstractNum );
+					OOX::Numbering::CAbstractNum *pAbstractNum = new OOX::Numbering::CAbstractNum(oReader);
+					if ((pAbstractNum) && (pAbstractNum->m_oAbstractNumId.IsInit()))
+					{
+						m_mapAbstractNum.insert(std::make_pair(*pAbstractNum->m_oAbstractNumId, m_arrAbstractNum.size()));
+						m_arrAbstractNum.push_back(pAbstractNum);
+					}
 				}
 				else if ( L"w:num" == sName || L"w:list" == sName)
 				{
@@ -997,6 +1001,7 @@ mc:Ignorable=\"w14 w15\">");
 			return et_w_numbering;
 		}
 
+		std::map<int, size_t>							m_mapAbstractNum; //abstractNumId, index m_arrAbstractNum
 		std::vector<OOX::Numbering::CAbstractNum*>		m_arrAbstractNum;
 		std::vector<OOX::Numbering::CNum*>				m_arrNum;
 		nullable<ComplexTypes::Word::CDecimalNumber>	m_oNumIdMacAtCleanup;

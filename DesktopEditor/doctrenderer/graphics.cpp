@@ -15,7 +15,6 @@ void CGraphics::init(double width_px, double height_px, double width_mm, double 
 {
     m_pApplicationFonts = NSFonts::NSApplication::Create();
     m_pApplicationFonts->InitializeFromFolder(m_sApplicationFontsDirectory.empty() ? NSFile::GetProcessDirectory() : m_sApplicationFontsDirectory);
-
     NSFonts::IFontManager* pManager = m_pApplicationFonts->GenerateFontManager();
 
     m_pRenderer = NSGraphics::Create();
@@ -164,6 +163,10 @@ void CGraphics::df()
 {
     m_pRenderer->Fill();
 }
+void CGraphics::save()
+{
+    m_oFrame.SaveFile(m_sApplicationImagesDirectory + L"/img.png", _CXIMAGE_FORMAT_PNG);
+}
 void CGraphics::restore()
 {
     m_pRenderer->BeginCommand(c_nResetClipType);
@@ -187,6 +190,10 @@ void CGraphics::drawImage(const std::wstring& img, double x, double y, double w,
     std::wstring strImage = (0 == img.find(L"theme") ? m_sApplicationThemesDirectory : m_sApplicationImagesDirectory) + L'/' + img;
     m_pRenderer->DrawImageFromFile(strImage, x, y, w, h, alpha);
 }
+std::wstring CGraphics::GetFont()
+{
+    return m_pRenderer->GetFontManager()->GetName();
+}
 void CGraphics::SetFont(const std::wstring& name, int face, double size, int style)
 {
     double DpiX, DpiY;
@@ -201,6 +208,10 @@ void CGraphics::SetFont(const std::wstring& name, int face, double size, int sty
 void CGraphics::FillText(double x, double y, int text)
 {
     m_pRenderer->CommandDrawTextCHAR(text, x, y, 0, 0);
+}
+void CGraphics::t(double x, double y, const std::wstring& text)
+{
+    m_pRenderer->CommandDrawText(text, x, y, 0, 0);
 }
 void CGraphics::tg(int text, double x, double y)
 {
@@ -827,6 +838,7 @@ std::string CGraphics::toDataURL(std::wstring type)
         DWORD dwReaded;
         oReader.ReadFile(pFileContent, dwFileSize, dwReaded);
         oReader.CloseFile();
+        NSFile::CFileBinary::Remove(m_sApplicationImagesDirectory + L"/img." + type);
 
         int nEncodeLen = NSBase64::Base64EncodeGetRequiredLength(dwFileSize);
         BYTE* pImageData = new BYTE[nEncodeLen];

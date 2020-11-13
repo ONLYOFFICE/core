@@ -160,8 +160,7 @@ JSSmart<CJSValue> CGraphicsEmbed::drawImage (JSSmart<CJSValue> img, JSSmart<CJSV
 }
 JSSmart<CJSValue> CGraphicsEmbed::GetFont()
 {
-    m_pInternal->GetFont();
-    return NULL;
+    return CJSContext::createString(m_pInternal->GetFont());
 }
 JSSmart<CJSValue> CGraphicsEmbed::font(JSSmart<CJSValue> font_id, JSSmart<CJSValue> font_size)
 {
@@ -195,7 +194,7 @@ JSSmart<CJSValue> CGraphicsEmbed::FillText(JSSmart<CJSValue> x, JSSmart<CJSValue
 }
 JSSmart<CJSValue> CGraphicsEmbed::t(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> _arr)
 {
-    m_pInternal->t();
+    m_pInternal->t(x->toDouble(), y->toDouble(), _arr->toStringW());
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::FillText2(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> text, JSSmart<CJSValue> cropX, JSSmart<CJSValue> cropW)

@@ -39,8 +39,10 @@ MyGraphics.ds();
 MyGraphics.reset();
 MyGraphics.put_GlobalAlpha(true, 1);
 
-MyGraphics.SetFont({FontFamily : {Name : "Arial", Index : -1}, FontSize : 12, Italic : false, Bold : false});
+MyGraphics.SetFont({FontFamily : {Name : "Arial", Index : -1}, FontSize : 16, Italic : true, Bold : true});
 MyGraphics.FillText(10, 110, "A");
+MyGraphics.tg("A", 10, 130);
+MyGraphics.t("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 10, 230, false);
 
 // Рисуем кривую с одной контрольной точкой
 MyGraphics.b_color1(66, 255, 158, 255);
@@ -72,4 +74,5 @@ MyGraphics.transform3({ sx : 1, shy : 0.5, shx : 0.1, sy : 1, tx : 0, ty : 0 }, 
 MyGraphics.drawImage2("image1.png", 95, 76, 60, 48, 0, null);
 
 var imageBase64 = MyGraphics.toDataURL("png");
-imageBase64;
+MyGraphics.save();
+MyGraphics.GetFont();

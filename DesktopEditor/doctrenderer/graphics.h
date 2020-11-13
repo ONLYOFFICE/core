@@ -138,7 +138,7 @@ namespace NSGraphics
         void ds();
         void df();
         // canvas state
-        void save() {}
+        void save();
         void restore();
         void clip();
         void reset();
@@ -148,13 +148,13 @@ namespace NSGraphics
         // images
         void drawImage(const std::wstring& img, double x, double y, double w, double h, BYTE alpha);
         // text
-        void GetFont() {}
+        std::wstring GetFont();
         void font() {}
         void SetFont(const std::wstring& name, int face, double size, int style);
         void SetTextPr() {}
         void GetTextPr() {}
         void FillText(double x, double y, int text);
-        void t() {}
+        void t(double x, double y, const std::wstring& text);
         void t2() {}
         void tg(int text, double x, double y);
         void charspace() {}

@@ -181,11 +181,11 @@ CNativeGraphics.prototype =
     },
     FreeFont : function()
     {
-        this.Native["FreeFont"]();
+        // this.Native["FreeFont"]();
     },
     ClearLastFont : function()
     {
-        this.Native["ClearLastFont"]();
+        // this.Native["ClearLastFont"]();
     },
     // images
     drawImage2 : function(img, x, y, w, h, alpha, srcRect)
@@ -453,12 +453,7 @@ CNativeGraphics.prototype =
     },
     t : function(text, x, y, isBounds)
     {
-		var _arr = [];
-        var _len = text.length;
-        for (var i = 0; i < _len; i++)
-            _arr.push(text.charCodeAt(i));
-
-        this.Native["t"](x, y, _arr);
+        this.Native["t"](x, y, text);
     },
     FillText2 : function(x, y, text, cropX, cropW)
     {
@@ -486,7 +481,8 @@ CNativeGraphics.prototype =
     },
     tg : function(text, x, y)
     {
-        this.Native["tg"](text, x, y);
+		var _code = text.charCodeAt(0);
+        this.Native["tg"](_code, x, y);
     },
     charspace : function(space)
     {

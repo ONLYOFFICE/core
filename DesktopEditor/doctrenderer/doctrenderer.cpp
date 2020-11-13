@@ -642,11 +642,6 @@ namespace NSDoctRenderer
                     bIsBreak = true;
                 }
 
-#ifdef _DEBUG
-                std::string sRes = res->toStringA();
-                std::cout << sRes << std::endl;
-#endif
-
                 LOGGER_SPEED_LAP("run")
 
                 //---------------------------------------------------------------

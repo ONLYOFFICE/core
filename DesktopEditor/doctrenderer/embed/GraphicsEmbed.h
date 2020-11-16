@@ -57,7 +57,7 @@ public:
     JSSmart<CJSValue> font(JSSmart<CJSValue> font_id, JSSmart<CJSValue> font_size);
     JSSmart<CJSValue> SetFont(JSSmart<CJSValue> path, JSSmart<CJSValue> face, JSSmart<CJSValue> size, JSSmart<CJSValue> style);
     JSSmart<CJSValue> SetTextPr(JSSmart<CJSValue> textPr, JSSmart<CJSValue> theme);
-    JSSmart<CJSValue> SetFontSlot(JSSmart<CJSValue> path, JSSmart<CJSValue> face, JSSmart<CJSValue> size, JSSmart<CJSValue> style);
+    JSSmart<CJSValue> SetFontSlot(JSSmart<CJSValue> slot, JSSmart<CJSValue> fontSizeKoef);
     JSSmart<CJSValue> GetTextPr();
     JSSmart<CJSValue> FillText(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> text);
     JSSmart<CJSValue> t(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> _arr);
@@ -72,7 +72,7 @@ public:
     JSSmart<CJSValue> private_FillGlyph2(JSSmart<CJSValue> pGlyph);
     JSSmart<CJSValue> SetIntegerGrid(JSSmart<CJSValue> param);
     JSSmart<CJSValue> GetIntegerGrid();
-    JSSmart<CJSValue> DrawStringASCII (JSSmart<CJSValue> name, JSSmart<CJSValue> size, JSSmart<CJSValue> bold, JSSmart<CJSValue> italic, JSSmart<CJSValue> text, JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> bIsHeader);
+    JSSmart<CJSValue> DrawStringASCII (JSSmart<CJSValue> text, JSSmart<CJSValue> x, JSSmart<CJSValue> y);
     JSSmart<CJSValue> DrawStringASCII2(JSSmart<CJSValue> name, JSSmart<CJSValue> size, JSSmart<CJSValue> bold, JSSmart<CJSValue> italic, JSSmart<CJSValue> text, JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> bIsHeader);
     JSSmart<CJSValue> DrawHeaderEdit(JSSmart<CJSValue> yPos, JSSmart<CJSValue> lock_type, JSSmart<CJSValue> sectionNum, JSSmart<CJSValue> bIsRepeat, JSSmart<CJSValue> type);
     JSSmart<CJSValue> DrawFooterEdit(JSSmart<CJSValue> yPos, JSSmart<CJSValue> lock_type, JSSmart<CJSValue> sectionNum, JSSmart<CJSValue> bIsRepeat, JSSmart<CJSValue> type);

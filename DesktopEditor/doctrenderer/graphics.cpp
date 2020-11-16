@@ -227,6 +227,15 @@ bool CGraphics::GetIntegerGrid()
 {
     return m_pRenderer->get_IntegerGrid();
 }
+void CGraphics::DrawStringASCII(const std::wstring& text, double x, double y)
+{
+    b_color1(225, 225, 225, 255);
+    m_pRenderer->GetFontManager()->LoadString2(text, x, y);
+    TBBox oBox = m_pRenderer->GetFontManager()->MeasureString2();
+    rect(x, y, oBox.fMaxX, oBox.fMaxY);
+    df();
+    ds();
+}
 void CGraphics::DrawHeaderEdit(double yPos)
 {
     m_pRenderer->PathCommandEnd();
@@ -645,7 +654,6 @@ void CGraphics::AddClipRect(double x, double y, double w, double h)
 
     EndClipPath();
 }
-
 void CGraphics::drawCollaborativeChanges(double x, double y, double w, double h, int r, int g, int b, int a)
 {
     b_color1(r, g, b, a);
@@ -653,7 +661,6 @@ void CGraphics::drawCollaborativeChanges(double x, double y, double w, double h,
     df();
     m_pRenderer->PathCommandEnd();
 }
-
 void CGraphics::drawMailMergeField(double x, double y, double w, double h)
 {
     b_color1(206, 212, 223, 204);
@@ -661,7 +668,6 @@ void CGraphics::drawMailMergeField(double x, double y, double w, double h)
     df();
     m_pRenderer->PathCommandEnd();
 }
-
 void CGraphics::drawSearchResult(double x, double y, double w, double h)
 {
     b_color1(255, 238, 128, 255);
@@ -669,14 +675,12 @@ void CGraphics::drawSearchResult(double x, double y, double w, double h)
     df();
     m_pRenderer->PathCommandEnd();
 }
-
 void CGraphics::SavePen()
 {
     CGrStatePen* pState = new CGrStatePen();
     m_pRenderer->SavePen(pState->m_oPen);
     m_oGrState.States.push_back(pState);
 }
-
 void CGraphics::RestorePen()
 {
     if (m_oGrState.States.empty())
@@ -690,14 +694,12 @@ void CGraphics::RestorePen()
         RELEASEOBJECT(pState);
     }
 }
-
 void CGraphics::SaveBrush()
 {
     CGrStateBrush* pState = new CGrStateBrush();
     m_pRenderer->SaveBrush(pState->m_oBrush);
     m_oGrState.States.push_back(pState);
 }
-
 void CGraphics::RestoreBrush()
 {
     if (m_oGrState.States.empty())
@@ -711,7 +713,6 @@ void CGraphics::RestoreBrush()
         RELEASEOBJECT(pState);
     }
 }
-
 void CGraphics::SavePenBrush()
 {
     CGrStatePenBrush* pState = new CGrStatePenBrush();
@@ -719,7 +720,6 @@ void CGraphics::SavePenBrush()
     m_pRenderer->SaveBrush(pState->m_oBrush);
     m_oGrState.States.push_back(pState);
 }
-
 void CGraphics::RestorePenBrush()
 {
     if (m_oGrState.States.empty())
@@ -734,7 +734,6 @@ void CGraphics::RestorePenBrush()
         RELEASEOBJECT(pState);
     }
 }
-
 void CGraphics::SaveGrState()
 {
     CGrStateState* pState = new CGrStateState();
@@ -748,7 +747,6 @@ void CGraphics::SaveGrState()
     m_oGrState.Clips.clear();
     m_oGrState.States.push_back(pState);
 }
-
 void CGraphics::RestoreGrState()
 {
     if (m_oGrState.States.empty())
@@ -810,22 +808,18 @@ void CGraphics::RestoreGrState()
 
     RELEASEOBJECT(pState);
 }
-
 void CGraphics::StartClipPath()
 {
     m_pRenderer->BeginCommand(c_nClipType);
 }
-
 void CGraphics::EndClipPath()
 {
     m_pRenderer->EndCommand(c_nClipType);
 }
-
 void CGraphics::AddSmartRect(double x, double y, double w, double h, double pen_w)
 {
     m_pRenderer->AddRect(x, y, w, h);
 }
-
 std::string CGraphics::toDataURL(std::wstring type)
 {
     m_oFrame.SaveFile(m_sApplicationImagesDirectory + L"/img." + type, _CXIMAGE_FORMAT_PNG);

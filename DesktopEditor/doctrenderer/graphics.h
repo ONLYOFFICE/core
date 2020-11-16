@@ -152,10 +152,10 @@ namespace NSGraphics
         void font() {}
         void SetFont(const std::wstring& name, int face, double size, int style);
         void SetTextPr() {}
+        void SetFontSlot() {}
         void GetTextPr() {}
         void FillText(double x, double y, int text);
         void t(double x, double y, const std::wstring& text);
-        void t2() {}
         void tg(int text, double x, double y);
         void charspace() {}
         // private methods
@@ -164,7 +164,7 @@ namespace NSGraphics
         void private_FillGlyph2() {}
         void SetIntegerGrid(bool param);
         bool GetIntegerGrid();
-        void DrawStringASCII() {}
+        void DrawStringASCII(const std::wstring& text, double x, double y);
         void DrawStringASCII2() {}
         void DrawHeaderEdit(double yPos);
         void DrawFooterEdit(double yPos);

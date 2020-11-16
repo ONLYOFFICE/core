@@ -177,9 +177,9 @@ JSSmart<CJSValue> CGraphicsEmbed::SetTextPr(JSSmart<CJSValue> textPr, JSSmart<CJ
     m_pInternal->SetTextPr();
     return NULL;
 }
-JSSmart<CJSValue> CGraphicsEmbed::SetFontSlot(JSSmart<CJSValue> path, JSSmart<CJSValue> face, JSSmart<CJSValue> size, JSSmart<CJSValue> style)
+JSSmart<CJSValue> CGraphicsEmbed::SetFontSlot(JSSmart<CJSValue> slot, JSSmart<CJSValue> fontSizeKoef)
 {
-    m_pInternal->SetFont(path->toStringW(), face->toInt32(), size->toDouble(), style->toInt32());
+    m_pInternal->SetFontSlot();
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::GetTextPr()
@@ -204,7 +204,7 @@ JSSmart<CJSValue> CGraphicsEmbed::FillText2(JSSmart<CJSValue> x, JSSmart<CJSValu
 }
 JSSmart<CJSValue> CGraphicsEmbed::t2(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> _arr, JSSmart<CJSValue> cropX, JSSmart<CJSValue> cropW)
 {
-    m_pInternal->t2();
+    m_pInternal->t(x->toDouble(), y->toDouble(), _arr->toStringW());
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::FillTextCode(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> lUnicode)
@@ -244,12 +244,11 @@ JSSmart<CJSValue> CGraphicsEmbed::SetIntegerGrid(JSSmart<CJSValue> param)
 }
 JSSmart<CJSValue> CGraphicsEmbed::GetIntegerGrid()
 {
-    m_pInternal->GetIntegerGrid();
-    return NULL;
+    return CJSContext::createBool(m_pInternal->GetIntegerGrid());
 }
-JSSmart<CJSValue> CGraphicsEmbed::DrawStringASCII (JSSmart<CJSValue> name, JSSmart<CJSValue> size, JSSmart<CJSValue> bold, JSSmart<CJSValue> italic, JSSmart<CJSValue> text, JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> bIsHeader)
+JSSmart<CJSValue> CGraphicsEmbed::DrawStringASCII (JSSmart<CJSValue> text, JSSmart<CJSValue> x, JSSmart<CJSValue> y)
 {
-    m_pInternal->DrawStringASCII();
+    m_pInternal->DrawStringASCII(text->toStringW(), x->toDouble(), y->toDouble());
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::DrawStringASCII2(JSSmart<CJSValue> name, JSSmart<CJSValue> size, JSSmart<CJSValue> bold, JSSmart<CJSValue> italic, JSSmart<CJSValue> text, JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> bIsHeader)

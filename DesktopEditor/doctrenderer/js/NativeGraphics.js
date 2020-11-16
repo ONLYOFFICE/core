@@ -220,231 +220,15 @@ CNativeGraphics.prototype =
     },
     SetTextPr : function(textPr, theme)
     {
-        this.m_oTextPr = textPr;
-        if (theme)
-            this.m_oGrFonts.checkFromTheme(theme.themeElements.fontScheme, this.m_oTextPr.RFonts);
-        else
-            this.m_oGrFonts = this.m_oTextPr.RFonts;
         // this.Native["SetTextPr"](textPr, theme);
     },
     SetFontSlot : function(slot, fontSizeKoef)
     {
-        var _rfonts   = this.m_oGrFonts;
-        var _lastFont = this.IsUseFonts2 ? this.m_oLastFont2 : this.m_oLastFont;
-
-        switch (slot)
-        {
-            case fontslot_ASCII:
-            {
-                _lastFont.Name   = _rfonts.Ascii.Name;
-                _lastFont.Size   = this.m_oTextPr.FontSize;
-                _lastFont.Bold   = this.m_oTextPr.Bold;
-                _lastFont.Italic = this.m_oTextPr.Italic;
-
-                break;
-            }
-            case fontslot_CS:
-            {
-                _lastFont.Name   = _rfonts.CS.Name;
-                _lastFont.Size   = this.m_oTextPr.FontSizeCS;
-                _lastFont.Bold   = this.m_oTextPr.BoldCS;
-                _lastFont.Italic = this.m_oTextPr.ItalicCS;
-
-                break;
-            }
-            case fontslot_EastAsia:
-            {
-                _lastFont.Name   = _rfonts.EastAsia.Name;
-                _lastFont.Size   = this.m_oTextPr.FontSize;
-                _lastFont.Bold   = this.m_oTextPr.Bold;
-                _lastFont.Italic = this.m_oTextPr.Italic;
-
-                break;
-            }
-            case fontslot_HAnsi:
-            default:
-            {
-                _lastFont.Name   = _rfonts.HAnsi.Name;
-                _lastFont.Size   = this.m_oTextPr.FontSize;
-                _lastFont.Bold   = this.m_oTextPr.Bold;
-                _lastFont.Italic = this.m_oTextPr.Italic;
-
-                break;
-            }
-        }
-
-        if (undefined !== fontSizeKoef)
-            _lastFont.Size *= fontSizeKoef;
-
-        var _style = 0;
-        if (_lastFont.Italic)
-            _style += 2;
-        if (_lastFont.Bold)
-            _style += 1;
-
-        var _font_manager = this.IsUseFonts2 ? this.m_oFontManager2 : this.m_oFontManager;
-
-        if (_lastFont.Name != _lastFont.SetUpName || _lastFont.Size != _lastFont.SetUpSize || _style != _lastFont.SetUpStyle || !_font_manager.m_pFont)
-        {
-            _lastFont.SetUpName  = _lastFont.Name;
-            _lastFont.SetUpSize  = _lastFont.Size;
-            _lastFont.SetUpStyle = _style;
-
-            var _fontinfo = AscFonts.g_fontApplication.GetFontInfo(_lastFont.SetUpName, _lastFont.SetUpStyle, this.LastFontOriginInfo);
-
-            // подбираем шрифт по стилю
-            var bNeedBold   = false;
-            var bNeedItalic = false;
-            var index       = -1;
-            var faceIndex   = 0;
-            var bSrcItalic  = false;
-            var bSrcBold    = false;
-        
-            switch (_lastFont.SetUpStyle)
-            {
-                case AscFonts.FontStyle.FontStyleBoldItalic:
-                {
-                    bSrcItalic  = true;
-                    bSrcBold    = true;
-        
-                    bNeedBold   = true;
-                    bNeedItalic = true;
-                    if (-1 != _fontinfo.indexBI)
-                    {
-                        index = _fontinfo.indexBI;
-                        faceIndex = _fontinfo.faceIndexBI;
-                        bNeedBold   = false;
-                        bNeedItalic = false;
-                    }
-                    else if (-1 != _fontinfo.indexB)
-                    {
-                        index = _fontinfo.indexB;
-                        faceIndex = _fontinfo.faceIndexB;
-                        bNeedBold = false;
-                    }
-                    else if (-1 != _fontinfo.indexI)
-                    {
-                        index = _fontinfo.indexI;
-                        faceIndex = _fontinfo.faceIndexI;
-                        bNeedItalic = false;
-                    }
-                    else
-                    {
-                        index = _fontinfo.indexR;
-                        faceIndex = _fontinfo.faceIndexR;
-                    }
-                    break;
-                }
-                case AscFonts.FontStyle.FontStyleBold:
-                {
-                    bSrcBold    = true;
-        
-                    bNeedBold   = true;
-                    bNeedItalic = false;
-                    if (-1 != _fontinfo.indexB)
-                    {
-                        index = _fontinfo.indexB;
-                        faceIndex = _fontinfo.faceIndexB;
-                        bNeedBold = false;
-                    }
-                    else if (-1 != _fontinfo.indexR)
-                    {
-                        index = _fontinfo.indexR;
-                        faceIndex = _fontinfo.faceIndexR;
-                    }
-                    else if (-1 != _fontinfo.indexBI)
-                    {
-                        index = _fontinfo.indexBI;
-                        faceIndex = _fontinfo.faceIndexBI;
-                        bNeedBold = false;
-                    }
-                    else
-                    {
-                        index = _fontinfo.indexI;
-                        faceIndex = _fontinfo.faceIndexI;
-                    }
-                    break;
-                }
-                case AscFonts.FontStyle.FontStyleItalic:
-                {
-                    bSrcItalic  = true;
-        
-                    bNeedBold   = false;
-                    bNeedItalic = true;
-                    if (-1 != _fontinfo.indexI)
-                    {
-                        index = _fontinfo.indexI;
-                        faceIndex = _fontinfo.faceIndexI;
-                        bNeedItalic = false;
-                    }
-                    else if (-1 != _fontinfo.indexR)
-                    {
-                        index = _fontinfo.indexR;
-                        faceIndex = _fontinfo.faceIndexR;
-                    }
-                    else if (-1 != _fontinfo.indexBI)
-                    {
-                        index = _fontinfo.indexBI;
-                        faceIndex = _fontinfo.faceIndexBI;
-                        bNeedItalic = false;
-                    }
-                    else
-                    {
-                        index = _fontinfo.indexB;
-                        faceIndex = _fontinfo.faceIndexB;
-                    }
-                    break;
-                }
-                case AscFonts.FontStyle.FontStyleRegular:
-                {
-                    bNeedBold   = false;
-                    bNeedItalic = false;
-                    if (-1 != _fontinfo.indexR)
-                    {
-                        index = _fontinfo.indexR;
-                        faceIndex = _fontinfo.faceIndexR;
-                    }
-                    else if (-1 != _fontinfo.indexI)
-                    {
-                        index = _fontinfo.indexI;
-                        faceIndex = _fontinfo.faceIndexI;
-                    }
-                    else if (-1 != _fontinfo.indexB)
-                    {
-                        index = _fontinfo.indexB;
-                        faceIndex = _fontinfo.faceIndexB;
-                    }
-                    else
-                    {
-                        index = _fontinfo.indexBI;
-                        faceIndex = _fontinfo.faceIndexBI;
-                    }
-                }
-            }
-        
-            var _info = 
-            {
-                Path        : AscFonts.g_font_files[index].Id,
-                FaceIndex   : faceIndex,
-                NeedBold    : bNeedBold,
-                NeedItalic  : bNeedItalic,
-                SrcBold     : bSrcBold,
-                SrcItalic   : bSrcItalic
-            };
-
-            var flag = 0;
-            if (_info.NeedBold)     flag |= 0x01;
-            if (_info.NeedItalic)   flag |= 0x02;
-            if (_info.SrcBold)      flag |= 0x04;
-            if (_info.SrcItalic)    flag |= 0x08;
-
-            this.Native["SetFont"](_info.Path, _info.FaceIndex, _lastFont.SetUpSize, flag);
-        }
+        // this.Native["SetFontSlot"](slot, fontSizeKoef);
     },
     GetTextPr : function()
     {
-        // this.Native["GetTextPr"]();
-        return this.m_oTextPr;
+        // return this.Native["GetTextPr"]();
     },
     FillText : function(x, y, text)
     {
@@ -458,26 +242,16 @@ CNativeGraphics.prototype =
     FillText2 : function(x, y, text, cropX, cropW)
     {
         var _code = text.charCodeAt(0);
-        if (null != this.LastFontOriginInfo.Replace)
-            _code = AscFonts.g_fontApplication.GetReplaceGlyph(_code, this.LastFontOriginInfo.Replace);
-
         this.Native["FillText2"](x, y, _code, cropX, cropW);
     },
     t2 : function(text, x, y, cropX, cropW)
     {
-        var _arr = [];
-        var _len = text.length;
-        for (var i = 0; i < _len; i++)
-            _arr.push(text.charCodeAt(i));
-
-        this.Native["t2"](x, y, _arr, cropX, cropW);
+        this.Native["t2"](x, y, text, cropX, cropW);
     },
     FillTextCode : function(x, y, lUnicode)
     {
-        if (null != this.LastFontOriginInfo.Replace)
-            lUnicode = AscFonts.g_fontApplication.GetReplaceGlyph(lUnicode, this.LastFontOriginInfo.Replace);
-
-        this.Native["FillTextCode"](x, y, lUnicode);
+        var _code = lUnicode.charCodeAt(0);
+        this.Native["FillTextCode"](x, y, _code);
     },
     tg : function(text, x, y)
     {
@@ -491,191 +265,28 @@ CNativeGraphics.prototype =
     // private methods
     private_FillGlyph : function(pGlyph, _bounds)
     {
-        // new scheme
-        var nW = pGlyph.oBitmap.nWidth;
-        var nH = pGlyph.oBitmap.nHeight;
-
-        if (0 == nW || 0 == nH)
-            return;
-
-        var _font_manager = this.IsUseFonts2 ? this.m_oFontManager2 : this.m_oFontManager;
-
-		var nX = (_font_manager.m_oGlyphString.m_fX >> 0) + (pGlyph.fX + pGlyph.oBitmap.nX) >> 0;
-		var nY = (_font_manager.m_oGlyphString.m_fY >> 0) + (pGlyph.fY - pGlyph.oBitmap.nY) >> 0;
-
-        pGlyph.oBitmap.oGlyphData.checkColor(this.m_oBrush.Color1.R, this.m_oBrush.Color1.G, this.m_oBrush.Color1.B, nW, nH);
-
-        if (null == this.TextClipRect)
-            pGlyph.oBitmap.draw(this.m_oContext, nX, nY, this.TextClipRect);
-        else
-            pGlyph.oBitmap.drawCropInRect(this.m_oContext, nX, nY, this.TextClipRect);
-
-        if (_bounds)
-        {
-            var _r = nX + pGlyph.oBitmap.nWidth;
-            var _b = nY + pGlyph.oBitmap.nHeight;
-            if (_bounds.x > nX)
-                _bounds.x = nX;
-			if (_bounds.y > nY)
-				_bounds.y = nY;
-			if (_bounds.r < _r)
-				_bounds.r = _r;
-			if (_bounds.b < _b)
-				_bounds.b = _b;
-        }
-
-        this.Native["private_FillGlyph"](pGlyph, _bounds);
+        // this.Native["private_FillGlyph"](pGlyph, _bounds);
     },
     private_FillGlyphC : function(pGlyph, cropX, cropW)
     {
-        // new scheme
-        var nW = pGlyph.oBitmap.nWidth;
-        var nH = pGlyph.oBitmap.nHeight;
-
-        if (0 == nW || 0 == nH)
-            return;
-
-        var _font_manager = this.IsUseFonts2 ? this.m_oFontManager2 : this.m_oFontManager;
-
-        var nX = (_font_manager.m_oGlyphString.m_fX + pGlyph.fX + pGlyph.oBitmap.nX) >> 0;
-        var nY = (_font_manager.m_oGlyphString.m_fY + pGlyph.fY - pGlyph.oBitmap.nY) >> 0;
-
-        var d_koef = this.m_dDpiX / 25.4;
-
-        var cX = Math.max((cropX * d_koef) >> 0, 0);
-        var cW = Math.min((cropW * d_koef) >> 0, nW);
-        if (cW <= 0)
-            cW = 1;
-
-        pGlyph.oBitmap.oGlyphData.checkColor(this.m_oBrush.Color1.R, this.m_oBrush.Color1.G, this.m_oBrush.Color1.B, nW, nH);
-        pGlyph.oBitmap.drawCrop(this.m_oContext, nX, nY, cW, nH, cX);
-
-        this.Native["private_FillGlyphC"](pGlyph, cropX, cropW);
+        // this.Native["private_FillGlyphC"](pGlyph, cropX, cropW);
     },
     private_FillGlyph2 : function(pGlyph)
     {
-        var i = 0;
-        var j = 0;
-
-        var nW = pGlyph.oBitmap.nWidth;
-        var nH = pGlyph.oBitmap.nHeight;
-
-        if (0 == nW || 0 == nH)
-            return;
-
-        var _font_manager = this.IsUseFonts2 ? this.m_oFontManager2 : this.m_oFontManager;
-
-        var nX = (_font_manager.m_oGlyphString.m_fX + pGlyph.fX + pGlyph.oBitmap.nX) >> 0;
-        var nY = (_font_manager.m_oGlyphString.m_fY + pGlyph.fY - pGlyph.oBitmap.nY) >> 0;
-
-        var imageData = this.m_oContext.getImageData(nX, nY, nW, nH);
-        var pPixels = imageData.data;
-
-        var _r = this.m_oBrush.Color1.R;
-        var _g = this.m_oBrush.Color1.G;
-        var _b = this.m_oBrush.Color1.B;
-
-        for (; j < nH; ++j)
-        {
-            var indx = 4 * j * nW;
-            for (i = 0; i < nW; ++i)
-            {
-                var weight  = pGlyph.oBitmap.pData[j * pGlyph.oBitmap.nWidth + i];
-
-                if (255 == weight)
-                {
-                    pPixels[indx]     = _r;
-                    pPixels[indx + 1] = _g;
-                    pPixels[indx + 2] = _b;
-                    pPixels[indx + 3] = 255;
-                }
-                else
-                {
-                    var r = pPixels[indx];
-                    var g = pPixels[indx + 1];
-                    var b = pPixels[indx + 2];
-                    var a = pPixels[indx + 3];
-
-                    pPixels[indx]     = ((_r - r) * weight + (r << 8)) >>> 8;
-                    pPixels[indx + 1] = ((_g - g) * weight + (g << 8)) >>> 8;
-                    pPixels[indx + 2] = ((_b - b) * weight + (b << 8)) >>> 8;
-                    pPixels[indx + 3] = (weight + a) - ((weight * a + 256) >>> 8);
-                }
-
-                indx += 4;
-            }
-        }
-        this.m_oContext.putImageData(imageData, nX, nY);
-
-        this.Native["private_FillGlyph2"](pGlyph);
+        // this.Native["private_FillGlyph2"](pGlyph);
     },
     SetIntegerGrid : function(param)
     {
-        this.m_bIntegerGrid = param;
         this.Native["SetIntegerGrid"](param);
     },
     GetIntegerGrid : function()
     {
-        // this.Native["GetIntegerGrid"]();
-        return this.m_bIntegerGrid;
+        return this.Native["GetIntegerGrid"]();
     },
     DrawStringASCII : function(name, size, bold, italic, text, x, y, bIsHeader)
     {
-        var _textProp = {
-            RFonts   : { Ascii : { Name : name, Index : -1 } },
-            FontSize : (((size * 2 * 96 / this.m_dDpiY) + 0.5) >> 0) / 2,
-            Bold     : false,
-            Italic   : false
-        };
-
-        this.m_oTextPr = _textProp;
-        this.m_oGrFonts.Ascii.Name = this.m_oTextPr.RFonts.Ascii.Name;
-        this.m_oGrFonts.Ascii.Index = -1;
-
-        this.SetFontSlot(fontslot_ASCII, 1);
-
-        this.m_oFontManager.LoadString2(text, 0, 0);
-        var measure = this.m_oFontManager.MeasureString2();
-
-        var _ctx = this.m_oContext;
-        _ctx.beginPath();
-        _ctx.fillStyle = "#E1E1E1";
-        _ctx.strokeStyle = GlobalSkin.RulerOutline;
-        this.m_bBrushColorInit = false;
-        this.m_bPenColorInit   = false;
-
-        var _xPxOffset = 10;
-        var _yPxOffset = 5;
-        if (AscCommon.AscBrowser.isRetina)
-        {
-            _xPxOffset = (_xPxOffset * AscCommon.AscBrowser.retinaPixelRatio) >> 0;
-            _yPxOffset = (_yPxOffset * AscCommon.AscBrowser.retinaPixelRatio) >> 0;
-        }
-
-        var __x = this.m_oFullTransform.TransformPointX(x, y) >> 0;
-        var __y = this.m_oFullTransform.TransformPointY(x, y) >> 0;
-        var __w = (measure.fWidth >> 0) + 2 * _xPxOffset;
-        var __h = (Math.abs(measure.fY) >> 0) + 2 * _yPxOffset;
-
-        if (!bIsHeader)
-            __y -= __h;
-
-        if (!AscCommon.AscBrowser.isRetina)
-            _ctx.rect(__x + 0.5, __y + 0.5, __w, __h);
-        else
-            _ctx.rect(__x, __y, __w, __h);
-
-        _ctx.fill();
-        _ctx.stroke();
-        _ctx.beginPath();
-
-        this.b_color1(68, 68, 68, 255);
-
-        var _koef_px_to_mm = 25.4 / this.m_dDpiY;
-
-        this.t(text, x + _xPxOffset * _koef_px_to_mm, y + ((bIsHeader ? __h : 0) - _yPxOffset) * _koef_px_to_mm);
-
-        this.Native["DrawStringASCII"](name, size, bold, italic, text, x, y, bIsHeader);
+		this.SetFont({FontFamily : {Name : name, Index : -1}, FontSize : size, Italic : italic, Bold : bold});
+		this.Native["DrawStringASCII"](text, x, y);
     },
     DrawStringASCII2 : function(name, size, bold, italic, text, x, y, bIsHeader)
     {
@@ -752,9 +363,6 @@ CNativeGraphics.prototype =
     },
     DrawLockObjectRect : function(lock_type, x, y, w, h)
     {
-        if (this.IsThumbnail || lock_type == AscCommon.locktype_None || this.IsDemonstrationMode)
-            return;
-
         this.Native["DrawLockObjectRect"](lock_type, x, y, w, h);
     },
     DrawEmptyTableLine : function(x1, y1, x2, y2)

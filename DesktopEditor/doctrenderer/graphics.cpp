@@ -229,12 +229,22 @@ bool CGraphics::GetIntegerGrid()
 }
 void CGraphics::DrawStringASCII(const std::wstring& text, double x, double y)
 {
+    double DpiY;
+    m_pRenderer->get_DpiY(&DpiY);
+
+    SavePenBrush();
+
     b_color1(225, 225, 225, 255);
     m_pRenderer->GetFontManager()->LoadString2(text, x, y);
     TBBox oBox = m_pRenderer->GetFontManager()->MeasureString2();
-    rect(x, y, oBox.fMaxX, oBox.fMaxY);
+    rect(x, y, oBox.fMaxY - y, oBox.fMinX);
     df();
     ds();
+
+    b_color1(68, 68, 68, 255);
+    t(x + 10.0 * 25.4 / DpiY, y - 5.0 * 25.4 / DpiY, text);
+
+    RestorePenBrush();
 }
 void CGraphics::DrawHeaderEdit(double yPos)
 {

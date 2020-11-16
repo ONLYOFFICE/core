@@ -74,7 +74,9 @@ MyGraphics.transform3({ sx : 1, shy : 0.5, shx : 0.1, sy : 1, tx : 0, ty : 0 }, 
 MyGraphics.drawImage2("image1.png", 95, 76, 60, 48, 0, null);
 
 MyGraphics.reset();
-MyGraphics.DrawStringASCII("Times New Roman", 16, false, false, "Test TEXT", 10, 210, false);
+MyGraphics.DrawStringASCII("Times New Roman", 16, false, false, "Test TEXT TEXT TEXT TEXT", 10, 210, false);
+MyGraphics.DrawEmptyTableLine(10, 110, 110, 210);
+MyGraphics.DrawSpellingLine(120, 10, 100, 5);
 
 var imageBase64 = MyGraphics.toDataURL("png");
 MyGraphics.save();

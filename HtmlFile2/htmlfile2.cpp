@@ -437,6 +437,11 @@ public:
         }
     }
 
+    void PageBreakBefore()
+    {
+        m_oDocXml.WriteString(L"<w:pPr><w:pageBreakBefore/></w:pPr>");
+    }
+
 private:
 
     std::wstring GetSubClass(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors)
@@ -515,7 +520,6 @@ private:
         m_oDocXml.WriteString(L"\"/>");
         */
         bool bWasP = true;
-        m_oDocXml.WriteString(L"<w:pPr><w:pageBreakBefore/></w:pPr>");
         readStream(&m_oDocXml, sSelectors, { false, false, -1, L"", L"" }, bWasP);
     }
 
@@ -1601,6 +1605,7 @@ HRESULT CHtmlFile2::OpenBatchHtml(const std::vector<std::wstring>& sSrc, const s
         // Переходим в начало
         if(m_internal->m_oLightReader.MoveToStart())
         {
+            m_internal->PageBreakBefore();
             m_internal->readSrc();
             m_internal->m_oLightReader.Clear();
             m_internal->m_sBase.clear();

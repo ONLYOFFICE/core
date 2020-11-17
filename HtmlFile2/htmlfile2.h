@@ -19,6 +19,12 @@ struct CHtmlParams
     std::wstring m_sBookTitle;   // Название
     std::wstring m_sDate;        // Дата
     std::wstring m_sDescription; // описание
+    bool m_bNeedPageBreakBefore; // Новый html с новой страницы
+
+    void SetPageBreakBefore(bool bNeed)
+    {
+        m_bNeedPageBreakBefore = bNeed;
+    }
 
     void SetDate(const std::wstring& sDate)
     {

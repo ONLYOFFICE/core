@@ -1605,7 +1605,8 @@ HRESULT CHtmlFile2::OpenBatchHtml(const std::vector<std::wstring>& sSrc, const s
         // Переходим в начало
         if(m_internal->m_oLightReader.MoveToStart())
         {
-            m_internal->PageBreakBefore();
+            if(oParams && oParams->m_bNeedPageBreakBefore)
+                m_internal->PageBreakBefore();
             m_internal->readSrc();
             m_internal->m_oLightReader.Clear();
             m_internal->m_sBase.clear();

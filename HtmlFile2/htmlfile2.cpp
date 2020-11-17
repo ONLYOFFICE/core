@@ -530,14 +530,7 @@ private:
             std::wstring sText = m_oLightReader.GetText();
             size_t find = sText.find_first_not_of(L" \n\t\r");
             if(find == std::wstring::npos)
-            {
-                if(sText.find(L' ') != std::wstring::npos)
-                    sText = L" ";
-                else
-                    return;
-            }
-            else if(!(find == 1 && sText.front() == L' '))
-                sText.erase(0, find);
+                return;
 
             std::wstring sPStyle = wrP(oXml, sSelectors, oTS, bWasP);
             oXml->WriteString(L"<w:r>");
@@ -1057,7 +1050,7 @@ private:
             oXml->WriteString(L"<w:r>");
             wrR(oXml, sSelectors, oTS);
             oXml->WriteString(L"<w:t xml:space=\"preserve\">");
-            oXml->WriteEncodeXmlString(sValue + L' ');
+            oXml->WriteEncodeXmlString(sValue);
             oXml->WriteString(L"</w:t></w:r>");
             bWasP = false;
         }

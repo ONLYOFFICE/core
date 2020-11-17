@@ -217,7 +217,7 @@ public:
 
         // core.xml
         std::wstring sCore = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><cp:coreProperties xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">";
-        if(oParams != NULL)
+        if(oParams)
         {
             if(!oParams->m_sBookTitle.empty())
             {
@@ -1561,6 +1561,8 @@ HRESULT CHtmlFile2::OpenHtml(const std::wstring& sSrc, const std::wstring& sDst,
     if(!m_internal->m_oLightReader.MoveToStart())
         return S_FALSE;
 
+    if(oParams && oParams->m_bNeedPageBreakBefore)
+        m_internal->PageBreakBefore();
     m_internal->readSrc();
     m_internal->write();
     return S_OK;
@@ -1581,6 +1583,8 @@ HRESULT CHtmlFile2::OpenMht(const std::wstring& sSrc, const std::wstring& sDst, 
     if(!m_internal->m_oLightReader.MoveToStart())
         return S_FALSE;
 
+    if(oParams && oParams->m_bNeedPageBreakBefore)
+        m_internal->PageBreakBefore();
     m_internal->readSrc();
     m_internal->write();
     return S_OK;

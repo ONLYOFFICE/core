@@ -58,6 +58,7 @@ core_windows {
 
 LIB_GRAPHICS_PRI_PATH = $$PWD/../..
 
+DEFINES += FT_CONFIG_OPTION_SYSTEM_ZLIB
 FREETYPE_VERSION=2.10.4
 
 INCLUDEPATH += \
@@ -67,7 +68,7 @@ INCLUDEPATH += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jasper/include \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jpeg \
     $$LIB_GRAPHICS_PRI_PATH/cximage/png \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib
+    $$CORE_ROOT_DIR/OfficeUtils/src/zlib-1.2.11
 
 HEADERS += \
     ./../config.h \
@@ -380,7 +381,7 @@ SOURCES += \
     $$CORE_ROOT_DIR/OfficeUtils/src/zlib-1.2.11/trees.c \
     $$CORE_ROOT_DIR/OfficeUtils/src/zlib-1.2.11/zutil.c \
     $$CORE_ROOT_DIR/OfficeUtils/src/zlib-1.2.11/uncompr.c \
-    $$CORE_ROOT_DIR/OfficeUtils/src/zlib-1.2.11/compress.c \
+    $$CORE_ROOT_DIR/OfficeUtils/src/zlib-1.2.11/compress.c
 }
 
 SOURCES += \

@@ -147,7 +147,14 @@ namespace NSCSS
             const std::wstring sParentsStyleID = oParentStyle.GetStyleId();
             if (std::find(m_arStandardStylesUsed.begin(), m_arStandardStylesUsed.end(), sParentsStyleID) == m_arStandardStylesUsed.end())
             {
-                m_sStyle += bIsPStyle ? oParentStyle.GetPStyle() : oParentStyle.GetRStyle();
+                if (bIsPStyle)
+                {
+                    oParentStyle.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
+                    m_sStyle += oParentStyle.GetPStyle();
+                }
+                else
+                    m_sStyle += oParentStyle.GetRStyle();
+
                 m_arStandardStylesUsed.push_back(sParentsStyleID);
             }
             if (oStyle.Empty())
@@ -177,7 +184,14 @@ namespace NSCSS
 
                 oTempElement.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_StyleId, sStandPlusParent);
 
-                m_sStyle += bIsPStyle ? oTempElement.GetPStyle() :  oTempElement.GetRStyle();
+                if (bIsPStyle)
+                {
+                    oTempElement.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
+                    m_sStyle += oTempElement.GetPStyle();
+                }
+                else
+                    m_sStyle += oTempElement.GetRStyle();
+
                 m_arStandardStylesUsed.push_back(sStandPlusParent);
                 if (oStyle.Empty())
                 {
@@ -192,7 +206,14 @@ namespace NSCSS
             std::wstring sStandartStyleID = oStandardXmlElement.GetStyleId();
             if (std::find(m_arStandardStylesUsed.begin(), m_arStandardStylesUsed.end(), sStandartStyleID) == m_arStandardStylesUsed.end())
             {
-                m_sStyle += bIsPStyle ? oStandardXmlElement.GetPStyle() : oStandardXmlElement.GetRStyle();
+                if (bIsPStyle)
+                {
+                    oStandardXmlElement.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
+                    m_sStyle += oStandardXmlElement.GetPStyle();
+                }
+                else
+                    m_sStyle += oStandardXmlElement.GetRStyle();
+
                 m_arStandardStylesUsed.push_back(sStandartStyleID);
             }
             if (oStyle.Empty())
@@ -212,9 +233,11 @@ namespace NSCSS
         m_sId = oStyle.GetId();
         if(!bIsPStyle)
             m_sId += L"-c";
+        else
+            oElement.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
+
         oElement.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_StyleId, m_sId);
         oElement.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_Name, m_sId);
-        oElement.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_QFormat, L"true");
         oElement.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_Type, bIsPStyle ? L"paragraph" : L"character");
         oElement.AddBasicProperties(NS_CONST_VALUES::BasicProperties::B_CustomStyle, L"1");
     }
@@ -249,8 +272,8 @@ namespace NSCSS
         const std::vector<std::wstring>& sMargins = oStyle.GetMargins();
         if (!sMargins.empty())
         {
-            const float fLeftValue  = wcstof(sMargins[1].c_str(), NULL);
-            const float fRightValue = wcstof(sMargins[3].c_str(), NULL);
+            const float fLeftValue  = wcstof(sMargins[3].c_str(), NULL) * 10.0f;
+            const float fRightValue = wcstof(sMargins[1].c_str(), NULL) * 10.0f;
             sInfValue += L"w:left=\""  + std::to_wstring(static_cast<short int>(fLeftValue  + 0.5f)) + L"\" ";
             sInfValue += L"w:right=\"" + std::to_wstring(static_cast<short int>(fRightValue + 0.5f)) + L"\" ";
         }
@@ -280,9 +303,10 @@ namespace NSCSS
 
             if (fLineHeight >= 1.0f)
             {
-                fLineHeight *= (fLineHeight < fValue / 2) ? 10.0f : 10.0f / fLineHeight;
+                fLineHeight *= (fLineHeight < fValue / 2) ? 10.0f : (10.0f / fLineHeight);
+                float fLine = fLineHeight * fValue;
 
-                sSpacingValue += L"w:line=\"" + std::to_wstring(static_cast<unsigned short int>(fLineHeight * fValue + 0.5f)) + L"\" ";
+                sSpacingValue += L"w:line=\"" + std::to_wstring(static_cast<unsigned short int>((fLine < fValue * 20.0f) ? fLine : fValue * 5.0f + 0.5f)) + L"\" ";
                 sSpacingValue += L"w:lineRule=\"auto\"";
             }
         }

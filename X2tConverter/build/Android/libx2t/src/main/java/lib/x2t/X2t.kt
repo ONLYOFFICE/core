@@ -20,8 +20,8 @@ class X2t private constructor() {
         const val CONVERTER_CODE_FAIL = -1
         const val CONVERTER_CODE_SUCCESS = 0
         const val CONVERTER_CODE_EXIST = 1
-        const val CONVERTED_CODE_PASSWORD = -2147216550
-        const val CONVERTER_CODE_INVALID_PASSWORD = -2147216549
+        const val CONVERTED_CODE_PASSWORD = 90
+        const val CONVERTER_CODE_INVALID_PASSWORD = 91
 
         init {
             System.loadLibrary(BuildConfig.LIB_X2T)

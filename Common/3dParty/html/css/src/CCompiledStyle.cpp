@@ -126,10 +126,14 @@ namespace NSCSS
         if (m_mStyle[sProperty].find(L'!') != std::wstring::npos)
             return;
 
+        std::wstring sNetValue = sValue;
+        if (sNetValue.substr(0, 3) == L"rgb")
+            sNetValue = NSCSS::NS_STATIC_FUNCTIONS::ConvertRgbToHex(sNetValue);
+
         if (!bHardMode)
-            m_mStyle.emplace(sProperty, sValue);
+            m_mStyle.emplace(sProperty, sNetValue);
         else
-            m_mStyle[sProperty] = sValue;
+            m_mStyle[sProperty] = sNetValue;
     }
 
     void CCompiledStyle::AddStyle(const std::map<std::wstring, std::wstring>& mStyle, const bool& bHardMode)

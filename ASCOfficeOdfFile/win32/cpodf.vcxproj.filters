@@ -912,9 +912,6 @@
     <ClInclude Include="..\src\odf\office_text.h">
       <Filter>elements</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\odf\paragraph_content.h">
-      <Filter>elements</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\odf\paragraph_elements.h">
       <Filter>elements</Filter>
     </ClInclude>

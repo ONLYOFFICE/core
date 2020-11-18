@@ -62,6 +62,7 @@
 #include "datatypes/gradientstyle.h"
 #include "datatypes/hatchstyle.h"
 #include "datatypes/styleprint.h"
+#include "datatypes/drawangle.h"
 
 #include "header_footer.h"
 
@@ -232,8 +233,8 @@ public:
 	_CP_OPT(odf_types::percent)	draw_cy_;//%
 	_CP_OPT(odf_types::percent)	draw_cx_;
 	
-	_CP_OPT(odf_types::percent)	draw_border_;
-	_CP_OPT(int)		draw_angle_;
+	_CP_OPT(odf_types::percent)		draw_border_;
+	_CP_OPT(odf_types::draw_angle)	draw_angle_;
 	_CP_OPT(odf_types::gradient_style)		draw_style_;
 
 
@@ -293,7 +294,7 @@ public:
 	std::wstring	get_style_name(){return draw_name_.get_value_or(L"");}
 
 	_CP_OPT(odf_types::gradient_style)	draw_style_;//linear, radial, ..
-	_CP_OPT(int)			draw_angle_;
+	_CP_OPT(odf_types::draw_angle)		draw_angle_;
 
 	_CP_OPT(odf_types::percent)		draw_start_;
 	_CP_OPT(odf_types::percent)		draw_end_;

@@ -251,9 +251,9 @@ JSSmart<CJSValue> CGraphicsEmbed::DrawStringASCII (JSSmart<CJSValue> text, JSSma
     m_pInternal->DrawStringASCII(text->toStringW(), x->toDouble(), y->toDouble());
     return NULL;
 }
-JSSmart<CJSValue> CGraphicsEmbed::DrawStringASCII2(JSSmart<CJSValue> name, JSSmart<CJSValue> size, JSSmart<CJSValue> bold, JSSmart<CJSValue> italic, JSSmart<CJSValue> text, JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> bIsHeader)
+JSSmart<CJSValue> CGraphicsEmbed::DrawStringASCII2(JSSmart<CJSValue> text, JSSmart<CJSValue> x, JSSmart<CJSValue> y)
 {
-    m_pInternal->DrawStringASCII2();
+    m_pInternal->DrawStringASCII2(text->toStringW(), x->toDouble(), y->toDouble());
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::DrawHeaderEdit(JSSmart<CJSValue> yPos, JSSmart<CJSValue> lock_type, JSSmart<CJSValue> sectionNum, JSSmart<CJSValue> bIsRepeat, JSSmart<CJSValue> type)
@@ -266,9 +266,9 @@ JSSmart<CJSValue> CGraphicsEmbed::DrawFooterEdit(JSSmart<CJSValue> yPos, JSSmart
     m_pInternal->DrawFooterEdit(yPos->toDouble());
     return NULL;
 }
-JSSmart<CJSValue> CGraphicsEmbed::DrawLockParagraph (JSSmart<CJSValue> lock_type, JSSmart<CJSValue> x, JSSmart<CJSValue> y1, JSSmart<CJSValue> y2)
+JSSmart<CJSValue> CGraphicsEmbed::DrawLockParagraph (JSSmart<CJSValue> x, JSSmart<CJSValue> y1, JSSmart<CJSValue> y2)
 {
-    m_pInternal->DrawLockParagraph();
+    m_pInternal->DrawLockParagraph(x->toDouble(), y1->toDouble(), y2->toDouble());
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::DrawLockObjectRect(JSSmart<CJSValue> lock_type, JSSmart<CJSValue> x, JSSmart<CJSValue> y,  JSSmart<CJSValue> w, JSSmart<CJSValue> h)

@@ -237,7 +237,26 @@ void CGraphics::DrawStringASCII(const std::wstring& text, double x, double y)
     b_color1(225, 225, 225, 255);
     m_pRenderer->GetFontManager()->LoadString2(text, x, y);
     TBBox oBox = m_pRenderer->GetFontManager()->MeasureString2();
-    rect(x, y, oBox.fMaxY - y, oBox.fMinX);
+    rect(x, y, oBox.fMinX, oBox.fMinY);
+    df();
+    ds();
+
+    b_color1(68, 68, 68, 255);
+    t(x + 10.0 * 25.4 / DpiY, y - 5.0 * 25.4 / DpiY, text);
+
+    RestorePenBrush();
+}
+void CGraphics::DrawStringASCII2(const std::wstring& text, double x, double y)
+{
+    double DpiY;
+    m_pRenderer->get_DpiY(&DpiY);
+
+    SavePenBrush();
+
+    b_color1(225, 225, 225, 255);
+    m_pRenderer->GetFontManager()->LoadString2(text, x, y);
+    TBBox oBox = m_pRenderer->GetFontManager()->MeasureString2();
+    rect(x, y, oBox.fMinX, oBox.fMinY);
     df();
     ds();
 
@@ -322,6 +341,75 @@ void CGraphics::DrawFooterEdit(double yPos)
 
     if (!bIsIntegerGrid)
         m_pRenderer->put_IntegerGrid(false);
+
+    m_pRenderer->put_PenSize(dPenSize);
+    m_pRenderer->put_PenDashStyle(nPenDashStyle);
+}
+void CGraphics::DrawLockParagraph (double x, double y1, double y2)
+{
+    m_pRenderer->PathCommandEnd();
+
+    Aggplus::CMatrix* pFull = m_pRenderer->GetFullTransform();
+    double dPenSize = 0.0;
+    m_pRenderer->get_PenSize(&dPenSize);
+    BYTE nPenDashStyle = 0;
+    m_pRenderer->get_PenDashStyle(&nPenDashStyle);
+    m_pRenderer->put_PenColor(0x009C16);
+
+    double _x  = x;
+    double _xT = x;
+    double _y1 = y1;
+    double _y2 = y2;
+    pFull->TransformPoint(_x, _y1);
+    pFull->TransformPoint(_xT, _y2);
+
+    _x  = ((int)_x);
+    _xT = ((int)_xT);
+    _y1 = ((int)_y1) + 0.5;
+    _y2 = ((int)_y2) - 1.5;
+
+    m_pRenderer->put_PenSize(1);
+    m_pRenderer->PathCommandStart();
+
+    double dash[2] = { 2.0, 2.0 };
+    m_pRenderer->put_PenDashStyle(Aggplus::DashStyleCustom);
+    m_pRenderer->PenDashPattern(dash, 2);
+
+    if(fabs(_x - _xT) > 0.001)
+    {
+        m_pRenderer->PathCommandMoveTo(x, y1);
+        m_pRenderer->PathCommandLineTo(x, y2);
+
+        m_pRenderer->PathCommandMoveTo(x,       y1);
+        m_pRenderer->PathCommandLineTo(x + 3.0, y1);
+
+        m_pRenderer->PathCommandMoveTo(x,       y2);
+        m_pRenderer->PathCommandLineTo(x + 3.0, y2);
+
+        m_pRenderer->Stroke();
+        m_pRenderer->PathCommandEnd();
+    }
+    else
+    {
+        bool bIsIntegerGrid = m_pRenderer->get_IntegerGrid();
+        if (!bIsIntegerGrid)
+            m_pRenderer->put_IntegerGrid(true);
+
+        m_pRenderer->PathCommandMoveTo(_x + 0.5, _y1 - 0.5);
+        m_pRenderer->PathCommandLineTo(_x + 0.5, _y2 - 2.0);
+
+        m_pRenderer->PathCommandMoveTo(_x,       _y1);
+        m_pRenderer->PathCommandLineTo(_x + 3.0, _y1);
+
+        m_pRenderer->PathCommandMoveTo(_x,       _y2);
+        m_pRenderer->PathCommandLineTo(_x + 3.0, _y2);
+
+        m_pRenderer->Stroke();
+        m_pRenderer->PathCommandEnd();
+
+        if (!bIsIntegerGrid)
+            m_pRenderer->put_IntegerGrid(false);
+    }
 
     m_pRenderer->put_PenSize(dPenSize);
     m_pRenderer->put_PenDashStyle(nPenDashStyle);

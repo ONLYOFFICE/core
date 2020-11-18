@@ -73,10 +73,10 @@ public:
     JSSmart<CJSValue> SetIntegerGrid(JSSmart<CJSValue> param);
     JSSmart<CJSValue> GetIntegerGrid();
     JSSmart<CJSValue> DrawStringASCII (JSSmart<CJSValue> text, JSSmart<CJSValue> x, JSSmart<CJSValue> y);
-    JSSmart<CJSValue> DrawStringASCII2(JSSmart<CJSValue> name, JSSmart<CJSValue> size, JSSmart<CJSValue> bold, JSSmart<CJSValue> italic, JSSmart<CJSValue> text, JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> bIsHeader);
+    JSSmart<CJSValue> DrawStringASCII2(JSSmart<CJSValue> text, JSSmart<CJSValue> x, JSSmart<CJSValue> y);
     JSSmart<CJSValue> DrawHeaderEdit(JSSmart<CJSValue> yPos, JSSmart<CJSValue> lock_type, JSSmart<CJSValue> sectionNum, JSSmart<CJSValue> bIsRepeat, JSSmart<CJSValue> type);
     JSSmart<CJSValue> DrawFooterEdit(JSSmart<CJSValue> yPos, JSSmart<CJSValue> lock_type, JSSmart<CJSValue> sectionNum, JSSmart<CJSValue> bIsRepeat, JSSmart<CJSValue> type);
-    JSSmart<CJSValue> DrawLockParagraph (JSSmart<CJSValue> lock_type, JSSmart<CJSValue> x, JSSmart<CJSValue> y1, JSSmart<CJSValue> y2);
+    JSSmart<CJSValue> DrawLockParagraph (JSSmart<CJSValue> x, JSSmart<CJSValue> y1, JSSmart<CJSValue> y2);
     JSSmart<CJSValue> DrawLockObjectRect(JSSmart<CJSValue> lock_type, JSSmart<CJSValue> x, JSSmart<CJSValue> y,  JSSmart<CJSValue> w, JSSmart<CJSValue> h);
     JSSmart<CJSValue> DrawEmptyTableLine(JSSmart<CJSValue> x1, JSSmart<CJSValue> y1, JSSmart<CJSValue> x2, JSSmart<CJSValue> y2);
     JSSmart<CJSValue> DrawSpellingLine  (JSSmart<CJSValue> y0, JSSmart<CJSValue> x0, JSSmart<CJSValue> x1, JSSmart<CJSValue> w);

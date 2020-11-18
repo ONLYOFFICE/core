@@ -165,10 +165,10 @@ namespace NSGraphics
         void SetIntegerGrid(bool param);
         bool GetIntegerGrid();
         void DrawStringASCII(const std::wstring& text, double x, double y);
-        void DrawStringASCII2() {}
+        void DrawStringASCII2(const std::wstring& text, double x, double y);
         void DrawHeaderEdit(double yPos);
         void DrawFooterEdit(double yPos);
-        void DrawLockParagraph () {}
+        void DrawLockParagraph (double x, double y1, double y2);
         void DrawLockObjectRect() {}
         void DrawEmptyTableLine(double x1, double y1, double x2, double y2);
         void DrawSpellingLine  (double y0, double x0, double x1, double w);

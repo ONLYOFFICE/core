@@ -290,64 +290,8 @@ CNativeGraphics.prototype =
     },
     DrawStringASCII2 : function(name, size, bold, italic, text, x, y, bIsHeader)
     {
-        var _textProp = {
-            RFonts   : { Ascii : { Name : name, Index : -1 } },
-            FontSize : (((size * 2 * 96 / this.m_dDpiY) + 0.5) >> 0) / 2,
-            Bold     : false,
-            Italic   : false
-        };
-
-        this.m_oTextPr = _textProp;
-        this.m_oGrFonts.Ascii.Name = this.m_oTextPr.RFonts.Ascii.Name;
-        this.m_oGrFonts.Ascii.Index = -1;
-
-        this.SetFontSlot(fontslot_ASCII, 1);
-
-        this.m_oFontManager.LoadString2(text, 0, 0);
-        var measure = this.m_oFontManager.MeasureString2();
-
-        var _ctx = this.m_oContext;
-        _ctx.beginPath();
-        _ctx.fillStyle = "#E1E1E1";
-        _ctx.strokeStyle = GlobalSkin.RulerOutline;
-        this.m_bBrushColorInit = false;
-        this.m_bPenColorInit   = false;
-
-        var _xPxOffset = 10;
-        var _yPxOffset = 5;
-        if (AscCommon.AscBrowser.isRetina)
-        {
-			_xPxOffset = (_xPxOffset * AscCommon.AscBrowser.retinaPixelRatio) >> 0;
-			_yPxOffset = (_yPxOffset * AscCommon.AscBrowser.retinaPixelRatio) >> 0;
-        }
-
-        var __x = this.m_oFullTransform.TransformPointX(this.m_dWidthMM - x, y) >> 0;
-        var __y = this.m_oFullTransform.TransformPointY(this.m_dWidthMM - x, y) >> 0;
-        var __w = (measure.fWidth >> 0) + 2 * _xPxOffset;
-        var __h = (Math.abs(measure.fY) >> 0) + 2 * _yPxOffset;
-        __x -= __w;
-
-        if (!bIsHeader)
-            __y -= __h;
-
-        if (!AscCommon.AscBrowser.isRetina)
-            _ctx.rect(__x + 0.5, __y + 0.5, __w, __h);
-        else
-            _ctx.rect(__x, __y, __w, __h);
-
-        _ctx.fill();
-        _ctx.stroke();
-        _ctx.beginPath();
-
-        this.b_color1(68, 68, 68, 255);
-
-        var _koef_px_to_mm = 25.4 / this.m_dDpiY;
-
-        var xPos = this.m_dWidthMM - x - (__w - _xPxOffset) * _koef_px_to_mm;
-
-        this.t(text, xPos, y + ((bIsHeader ? __h : 0) - _yPxOffset) * _koef_px_to_mm);
-
-        this.Native["DrawStringASCII2"](name, size, bold, italic, text, x, y, bIsHeader);
+        this.SetFont({FontFamily : {Name : name, Index : -1}, FontSize : size, Italic : italic, Bold : bold});
+		this.Native["DrawStringASCII2"](text, x, y);
     },
     DrawHeaderEdit : function(yPos, lock_type, sectionNum, bIsRepeat, type)
     {
@@ -359,7 +303,7 @@ CNativeGraphics.prototype =
     },
     DrawLockParagraph : function(lock_type, x, y1, y2)
     {
-        this.Native["DrawLockParagraph"](lock_type, x, y1, y2);
+        this.Native["DrawLockParagraph"](x, y1, y2);
     },
     DrawLockObjectRect : function(lock_type, x, y, w, h)
     {

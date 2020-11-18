@@ -108,57 +108,7 @@ namespace PPT_FORMAT
 		}
 	};
 
-//#define CASE_TextAutoNumberSchemeEnum(num, str) \
-//    case num:{ return str; break;}
 
-//    std::wstring TextAutoNumberSchemeEnumTOTextAutonumberScheme(const PPT_FORMAT::TextAutoNumberSchemeEnum oldEnum)
-//    {
-//        switch (oldEnum)
-//        {
-//        CASE_TextAutoNumberSchemeEnum(ANM_AlphaLcPeriod,             L"alphaLcPeriod")
-//        CASE_TextAutoNumberSchemeEnum(ANM_AlphaUcPeriod,             L"alphaUcPeriod")
-//        CASE_TextAutoNumberSchemeEnum(ANM_ArabicParenRight,          L"arabicParenR")
-//        CASE_TextAutoNumberSchemeEnum(ANM_ArabicPeriod,              L"arabicPeriod")
-//        CASE_TextAutoNumberSchemeEnum(ANM_RomanLcParenBoth,          L"romanLcParenBoth")
-//        CASE_TextAutoNumberSchemeEnum(ANM_RomanLcParenRight,         L"romanLcParenR")
-//        CASE_TextAutoNumberSchemeEnum(ANM_RomanLcPeriod,             L"romanLcPeriod")
-//        CASE_TextAutoNumberSchemeEnum(ANM_RomanUcPeriod,             L"romanUcPeriod")
-//        CASE_TextAutoNumberSchemeEnum(ANM_AlphaLcParenBoth,          L"alphaLcParenBoth")
-//        CASE_TextAutoNumberSchemeEnum(ANM_AlphaLcParenRight,         L"alphaLcParenR")
-//        CASE_TextAutoNumberSchemeEnum(ANM_AlphaUcParenBoth,          L"alphaUcParenBoth")
-//        CASE_TextAutoNumberSchemeEnum(ANM_AlphaUcParenRight,         L"alphaUcParenR")
-//        CASE_TextAutoNumberSchemeEnum(ANM_ArabicParenBoth,           L"arabicParenBoth")
-//        CASE_TextAutoNumberSchemeEnum(ANM_ArabicPlain,               L"arabicPlain")
-//        CASE_TextAutoNumberSchemeEnum(ANM_RomanUcParenBoth,          L"romanUcParenBoth")
-//        CASE_TextAutoNumberSchemeEnum(ANM_RomanUcParenRight,         L"romanUcParenR")
-//        CASE_TextAutoNumberSchemeEnum(ANM_ChsPlain,                  L"ea1ChsPlain")
-//        CASE_TextAutoNumberSchemeEnum(ANM_ChsPeriod,                 L"ea1ChsPeriod")
-//        CASE_TextAutoNumberSchemeEnum(ANM_CircleNumDBPlain,          L"circleNumDbPlain")
-//        CASE_TextAutoNumberSchemeEnum(ANM_CircleNumWDBWhitePlain,    L"circleNumWdWhitePlain")
-//        CASE_TextAutoNumberSchemeEnum(ANM_CircleNumWDBBlackPlain,    L"circleNumWdBlackPlain")
-//        CASE_TextAutoNumberSchemeEnum(ANM_ChtPlain,                  L"ea1ChtPlain")
-//        CASE_TextAutoNumberSchemeEnum(ANM_ChtPeriod,                 L"ea1ChtPeriod")
-//        CASE_TextAutoNumberSchemeEnum(ANM_Arabic1Minus,              L"arabic1Minus")
-//        CASE_TextAutoNumberSchemeEnum(ANM_Arabic2Minus,              L"arabic2Minus")
-//        CASE_TextAutoNumberSchemeEnum(ANM_Hebrew2Minus,              L"hebrew2Minus")
-//        CASE_TextAutoNumberSchemeEnum(ANM_JpnKorPlain,               L"ea1JpnKorPlain")
-//        CASE_TextAutoNumberSchemeEnum(ANM_JpnKorPeriod,              L"ea1JpnKorPeriod")
-//        CASE_TextAutoNumberSchemeEnum(ANM_ArabicDbPlain,             L"arabicDbPlain")
-//        CASE_TextAutoNumberSchemeEnum(ANM_ArabicDbPeriod,            L"arabicDbPeriod")
-//        CASE_TextAutoNumberSchemeEnum(ANM_ThaiAlphaPeriod,           L"thaiAlphaPeriod")
-//        CASE_TextAutoNumberSchemeEnum(ANM_ThaiAlphaParenRight,       L"thaiAlphaParenR")
-//        CASE_TextAutoNumberSchemeEnum(ANM_ThaiAlphaParenBoth,        L"thaiAlphaParenBoth")
-//        CASE_TextAutoNumberSchemeEnum(ANM_ThaiNumPeriod,             L"thaiNumPeriod")
-//        CASE_TextAutoNumberSchemeEnum(ANM_ThaiNumParenRight,         L"thaiNumParenR")
-//        CASE_TextAutoNumberSchemeEnum(ANM_ThaiNumParenBoth,          L"thaiNumParenBoth")
-//        CASE_TextAutoNumberSchemeEnum(ANM_HindiAlphaPeriod,          L"hindiAlphaPeriod")
-//        CASE_TextAutoNumberSchemeEnum(ANM_HindiNumPeriod,            L"hindiNumPeriod")
-//        CASE_TextAutoNumberSchemeEnum(ANM_JpnChsDBPeriod,            L"ea1JpnChsDbPeriod")
-//        CASE_TextAutoNumberSchemeEnum(ANM_HindiNumParenRight,        L"hindiNumParenR")
-//        CASE_TextAutoNumberSchemeEnum(ANM_HindiAlpha1Period,         L"hindiAlpha1Period")
-
-//        }
-//    }
 
     class CBulletAutoNum
     {
@@ -329,7 +279,6 @@ namespace PPT_FORMAT
 		NSCommon::nullable_base<WCHAR>			bulletChar;
 		NSCommon::nullable_base<CColor>			bulletColor;
         NSCommon::nullable_base<CFontProperty>          bulletFontProperties;
-                NSCommon::nullable_base<CBulletAutoNum>         bulletAutoNum;
 
 		NSCommon::nullable_base<WORD>			textAlignment;
 		NSCommon::nullable_base<LONG>			lineSpacing;
@@ -366,8 +315,6 @@ namespace PPT_FORMAT
 			bulletChar			= oSrc.bulletChar;
 			bulletColor			= oSrc.bulletColor;
 			bulletFontProperties = oSrc.bulletFontProperties;
-            bulletAutoNum       = oSrc.bulletAutoNum;
-
 			textAlignment		= oSrc.textAlignment;
 			lineSpacing			= oSrc.lineSpacing;
 			spaceBefore			= oSrc.spaceBefore;
@@ -407,7 +354,6 @@ namespace PPT_FORMAT
 				bulletColor			= oSrc.bulletColor;				
 			}
 			bulletFontProperties.reset();
-            bulletAutoNum.reset();
 
 			if (!textAlignment.is_init())			textAlignment = oSrc.textAlignment;
 			if (!lineSpacing.is_init())				lineSpacing = oSrc.lineSpacing;
@@ -439,7 +385,6 @@ namespace PPT_FORMAT
 				bulletColor		= oSrc.bulletColor;
 
 				bulletFontProperties.reset();
-                bulletAutoNum.reset();
 			}
 
 			if (oSrc.textAlignment.is_init())		textAlignment	= oSrc.textAlignment;
@@ -938,6 +883,7 @@ namespace PPT_FORMAT
 
 		CTextPFRun			m_oPFRun;
 		std::vector<CSpan>	m_arSpans;
+        nullable<CBulletAutoNum> m_autoBuNum;
 
 	public:
 		CParagraph() 

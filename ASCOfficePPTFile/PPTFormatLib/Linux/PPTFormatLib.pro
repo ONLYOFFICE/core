@@ -509,6 +509,7 @@ HEADERS += \
     ../Records/Text/FontEmbedFlags10Atom.h \
     ../Records/Text/OutlineTextProps9Container.h \
     ../Records/Text/OutlineTextPropsHeaderExAtom.h \
+    ../Records/Text/OfficeArtClientTextbox.h \
     ../Records/Text/PFMasks.h \
     ../Records/PersistDirectoryAtom.h \
     ../Records/PlaceHolderAtom.h \

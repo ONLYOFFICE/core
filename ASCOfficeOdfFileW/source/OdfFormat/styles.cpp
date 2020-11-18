@@ -329,8 +329,8 @@ void draw_gradient::serialize(std::wostream & strm)
 			CP_XML_ATTR_OPT(L"draw:cy",		draw_cx_);
 			
 			CP_XML_ATTR_OPT(L"draw:border",	draw_border_);
-			CP_XML_ATTR_OPT(L"draw:angle",	draw_angle_);
-			CP_XML_ATTR_OPT(L"draw:style",	draw_style_);
+			CP_XML_ATTR_OPT(L"draw:angle", draw_angle_);
+			CP_XML_ATTR_OPT(L"draw:style", draw_style_);
 
  			CP_XML_ATTR_OPT(L"draw:name",	draw_name_);
 			CP_XML_ATTR_OPT(L"draw:display_name",draw_display_name_);
@@ -383,8 +383,8 @@ void draw_opacity::serialize(std::wostream & strm)
 			CP_XML_ATTR_OPT(L"draw:cy",		draw_cy_);
 
 			CP_XML_ATTR_OPT(L"draw:border",	draw_border_);
-			CP_XML_ATTR_OPT(L"draw:angle",	draw_angle_);
-			CP_XML_ATTR_OPT(L"draw:style",	draw_style_);
+			CP_XML_ATTR_OPT(L"draw:angle", draw_angle_);
+			CP_XML_ATTR_OPT(L"draw:style", draw_style_);
 
  			CP_XML_ATTR_OPT(L"draw:name",			draw_name_);
 			CP_XML_ATTR_OPT(L"draw:display_name",	draw_display_name_);

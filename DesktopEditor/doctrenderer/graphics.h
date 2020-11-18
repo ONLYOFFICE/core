@@ -168,8 +168,8 @@ namespace NSGraphics
         void DrawStringASCII2(const std::wstring& text, double x, double y);
         void DrawHeaderEdit(double yPos);
         void DrawFooterEdit(double yPos);
-        void DrawLockParagraph (double x, double y1, double y2);
-        void DrawLockObjectRect() {}
+        void DrawLockParagraph (double x,  double y1, double y2);
+        void DrawLockObjectRect(double x,  double y,  double w,  double h);
         void DrawEmptyTableLine(double x1, double y1, double x2, double y2);
         void DrawSpellingLine  (double y0, double x0, double x1, double w);
         // smart methods for horizontal / vertical lines

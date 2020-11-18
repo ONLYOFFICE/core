@@ -77,6 +77,7 @@ MyGraphics.reset();
 MyGraphics.DrawStringASCII("Times New Roman", 16, false, false, "Test TEXT TEXT TEXT TEXT", 10, 210, false);
 MyGraphics.DrawEmptyTableLine(10, 110, 110, 210);
 MyGraphics.DrawSpellingLine(120, 10, 100, 5);
+MyGraphics.DrawLockObjectRect(null, 20, 110, 90, 90);
 MyGraphics.DrawLockParagraph(null, 10, 110, 200);
 
 var imageBase64 = MyGraphics.toDataURL("png");

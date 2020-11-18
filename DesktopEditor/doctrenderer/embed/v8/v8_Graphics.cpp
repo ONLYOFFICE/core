@@ -66,7 +66,7 @@ namespace NSGraphics
     FUNCTION_WRAPPER_V8_5(_DrawHeaderEdit,     DrawHeaderEdit)
     FUNCTION_WRAPPER_V8_5(_DrawFooterEdit,     DrawFooterEdit)
     FUNCTION_WRAPPER_V8_3(_DrawLockParagraph,  DrawLockParagraph)
-    FUNCTION_WRAPPER_V8_5(_DrawLockObjectRect, DrawLockObjectRect)
+    FUNCTION_WRAPPER_V8_4(_DrawLockObjectRect, DrawLockObjectRect)
     FUNCTION_WRAPPER_V8_4(_DrawEmptyTableLine, DrawEmptyTableLine)
     FUNCTION_WRAPPER_V8_4(_DrawSpellingLine,   DrawSpellingLine)
     // smart methods for horizontal / vertical lines

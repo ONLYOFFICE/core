@@ -414,6 +414,29 @@ void CGraphics::DrawLockParagraph (double x, double y1, double y2)
     m_pRenderer->put_PenSize(dPenSize);
     m_pRenderer->put_PenDashStyle(nPenDashStyle);
 }
+void CGraphics::DrawLockObjectRect(double x,  double y,  double w,  double h)
+{
+    m_pRenderer->PathCommandEnd();
+
+    double dPenSize = 0.0;
+    m_pRenderer->get_PenSize(&dPenSize);
+    BYTE nPenDashStyle = 0;
+    m_pRenderer->get_PenDashStyle(&nPenDashStyle);
+    m_pRenderer->put_PenColor(0x009C16);
+
+    m_pRenderer->put_PenSize(1);
+
+    double dash[2] = { 2.0, 2.0 };
+    m_pRenderer->put_PenDashStyle(Aggplus::DashStyleCustom);
+    m_pRenderer->PenDashPattern(dash, 2);
+
+    double eps = 5.0;
+    rect(x - eps, y - eps, w + eps, h + eps);
+
+    m_pRenderer->Stroke();
+    m_pRenderer->put_PenSize(dPenSize);
+    m_pRenderer->put_PenDashStyle(nPenDashStyle);
+}
 void CGraphics::DrawEmptyTableLine(double x1, double y1, double x2, double y2)
 {
     m_pRenderer->PathCommandEnd();

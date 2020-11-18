@@ -271,9 +271,9 @@ JSSmart<CJSValue> CGraphicsEmbed::DrawLockParagraph (JSSmart<CJSValue> x, JSSmar
     m_pInternal->DrawLockParagraph(x->toDouble(), y1->toDouble(), y2->toDouble());
     return NULL;
 }
-JSSmart<CJSValue> CGraphicsEmbed::DrawLockObjectRect(JSSmart<CJSValue> lock_type, JSSmart<CJSValue> x, JSSmart<CJSValue> y,  JSSmart<CJSValue> w, JSSmart<CJSValue> h)
+JSSmart<CJSValue> CGraphicsEmbed::DrawLockObjectRect(JSSmart<CJSValue> x, JSSmart<CJSValue> y,  JSSmart<CJSValue> w, JSSmart<CJSValue> h)
 {
-    m_pInternal->DrawLockObjectRect();
+    m_pInternal->DrawLockObjectRect(x->toDouble(), y->toDouble(), w->toDouble(), h->toDouble());
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::DrawEmptyTableLine(JSSmart<CJSValue> x1, JSSmart<CJSValue> y1, JSSmart<CJSValue> x2, JSSmart<CJSValue> y2)

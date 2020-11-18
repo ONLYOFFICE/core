@@ -307,7 +307,7 @@ CNativeGraphics.prototype =
     },
     DrawLockObjectRect : function(lock_type, x, y, w, h)
     {
-        this.Native["DrawLockObjectRect"](lock_type, x, y, w, h);
+        this.Native["DrawLockObjectRect"](x, y, w, h);
     },
     DrawEmptyTableLine : function(x1, y1, x2, y2)
     {

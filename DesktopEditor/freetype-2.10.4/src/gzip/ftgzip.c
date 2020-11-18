@@ -42,7 +42,7 @@
 
 #ifdef FT_CONFIG_OPTION_SYSTEM_ZLIB
 
-#include <zlib.h>
+#include "zlib.h"
 
 #else /* !FT_CONFIG_OPTION_SYSTEM_ZLIB */
 
@@ -94,13 +94,13 @@
 #undef  NO_INFLATE_MASK
 
   /* infutil.c must be included before infcodes.c */
-#include "zutil.c"
-#include "inftrees.c"
-#include "infutil.c"
-#include "infcodes.c"
-#include "infblock.c"
-#include "inflate.c"
-#include "adler32.c"
+//#include "zutil.c"
+//#include "inftrees.c"
+//#include "infutil.c"
+//#include "infcodes.c"
+//#include "infblock.c"
+//#include "inflate.c"
+//#include "adler32.c"
 
 #if defined( _MSC_VER )
 #pragma warning( pop )

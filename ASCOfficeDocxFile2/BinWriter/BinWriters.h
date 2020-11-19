@@ -105,6 +105,7 @@ namespace BinDocxRW
 
 			m_bLocalStyles = m_bLocalNumbering = false;
 		}
+		std::wstring AddEmbeddedStyle(const std::wstring & styleId);
 	};
 	class ParamsDocumentWriter
 	{
@@ -175,9 +176,7 @@ namespace BinDocxRW
 	{
 		BinaryCommonWriter m_oBcw;
 	public:
-		PPTX::Theme*					m_pTheme;
-		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
-		DocWrapper::FontProcessor&		m_oFontProcessor;
+		ParamsWriter& m_oParamsWriter;
 
 		Binary_rPrWriter(ParamsWriter& oParamsWriter);
 		void Write_rPr(OOX::Logic::CRunProperty* rPr);
@@ -217,9 +216,6 @@ namespace BinDocxRW
 							 const nullable<ComplexTypes::Word::CDecimalNumber>& numStart, nullable<ComplexTypes::Word::CFtnPos>* ftnPos,
 							 nullable<ComplexTypes::Word::CEdnPos>* endPos, std::vector<OOX::CFtnEdnSepRef*>* refs);
 		void WriteNumFmt(const ComplexTypes::Word::CNumFmt& oNumFmt);
-
-	private:
-		std::wstring AddEmbeddedStyle(const std::wstring & styleId);
 	};
 	class Binary_tblPrWriter
 	{

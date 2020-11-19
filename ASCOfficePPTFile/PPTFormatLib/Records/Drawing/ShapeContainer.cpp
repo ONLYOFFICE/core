@@ -1864,9 +1864,10 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
         // Нумерация
         std::vector<CRecordOfficeArtClientData*> oArrayArtData;
         GetRecordsByType(&oArrayArtData, true, true);
+        CRecordOfficeArtClientData* pArtData;
         if (0 < oArrayArtData.size() && !oArrayArtData[0]->m_rgShapeClientRoundtripData.empty())
         {
-//            strShapeText = oArrayTextBytes[0]->m_strText;
+            pArtData = oArrayArtData[0];
         }
 
 //------ shape properties ----------------------------------------------------------------------------------------
@@ -2000,7 +2001,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
 
 		pSlideWrapper->m_mapElements.insert(std::pair<LONG, CElementInfo>(pShapeElem->m_lID, oElementInfo));
 		
-		SetUpTextStyle(strShapeText, pTheme, pLayout, pElement, pThemeWrapper, pSlideWrapper, pSlide, master_level);
+        SetUpTextStyle(strShapeText, pTheme, pLayout, pElement, pThemeWrapper, pSlideWrapper, pSlide, master_level, pArtData);
 	}
 	else
 	{//image, audio, video ....
@@ -2124,7 +2125,7 @@ void CRecordShapeContainer::ApplyTextProp9(CElementPtr pElem, CRecordStyleTextPr
         }
     }
 }
-void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme, CLayout* pLayout, CElementPtr pElem, CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide, CRecordMasterTextPropAtom* master_levels)
+void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme, CLayout* pLayout, CElementPtr pElem, CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide, CRecordMasterTextPropAtom* master_levels, CRecordOfficeArtClientData* pArtData)
 {
 	// сначала проверяем на shape
 	// затем применяем все настройки по-очереди
@@ -2234,7 +2235,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 
 			pStyle->ReadFromStream(oHeader, oElemInfo.m_pStream);
 
-			PPT_FORMAT::ConvertPPTTextToEditorStructure(pStyle->m_arrPFs, pStyle->m_arrCFs, strText, pShape->m_pShape->m_oText);
+            PPT_FORMAT::ConvertPPTTextToEditorStructure(pStyle->m_arrPFs, pStyle->m_arrCFs, strText, pShape->m_pShape->m_oText, pArtData);
 
 			bIsOwnPresentSettings = (0 < pStyle->m_lCount);
 
@@ -2455,7 +2456,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 		
 		oArrayCF.push_back(elm1);
 		
-		PPT_FORMAT::ConvertPPTTextToEditorStructure(oArrayPF, oArrayCF, strText, *pTextSettings);
+        PPT_FORMAT::ConvertPPTTextToEditorStructure(oArrayPF, oArrayCF, strText, *pTextSettings, pArtData);
 	}
 
 	if (NULL != oElemInfo.m_pStream && -1 != oElemInfo.m_lOffsetTextProp)

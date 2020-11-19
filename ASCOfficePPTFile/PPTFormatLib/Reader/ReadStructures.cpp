@@ -517,7 +517,7 @@ void CTextCFRunRecord::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation
 namespace PPT_FORMAT
 {
 	void ConvertPPTTextToEditorStructure(std::vector<CTextPFRunRecord>& oArrayPF, std::vector<CTextCFRunRecord>& oArrayCF, 
-		std::wstring& strText, PPT_FORMAT::CTextAttributesEx& oAttributes)
+        std::wstring& strText, PPT_FORMAT::CTextAttributesEx& oAttributes, CRecordOfficeArtClientData* pArt)
 	{
 		int nCountPFs = (int)oArrayPF.size();
 		int nCountCFs = (int)oArrayCF.size();
@@ -545,13 +545,13 @@ namespace PPT_FORMAT
 			int nCountInPF = oArrayPF[nIndexPF].m_lCount;
 
 			while (true)
-			{
-				if (nCurrentCF >= nCountCFs)
-					break;
+            {
+                if (nCurrentCF >= nCountCFs)
+                    break;
 
-				int nCountAdd = oArrayCF[nCurrentCF].m_lCount - nOffsetCF;
-				
-				int nCountAddTrue = nCountAdd;
+                int nCountAdd = oArrayCF[nCurrentCF].m_lCount - nOffsetCF;
+
+                int nCountAddTrue = nCountAdd;
 				if (nIndexText +  nCountAdd > nIndexLast)
 				{
 					nCountAddTrue = nIndexLast - nIndexText;

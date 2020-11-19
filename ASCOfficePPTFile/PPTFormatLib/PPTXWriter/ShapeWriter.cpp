@@ -1215,10 +1215,10 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
 		//	if (pParagraph->m_arSpans.size() == 1 && pParagraph->m_arSpans[0].m_strText.empty()) break;
 		//}
 
-		std::wstring _str1 = std::to_wstring(pParagraph->m_lTextLevel);
-		m_oWriter.WriteString(L"<a:p><a:pPr lvl=\"" + _str1 + L"\"");
+        std::wstring _str1 = std::to_wstring(pParagraph->m_lTextLevel);
+        m_oWriter.WriteString(L"<a:p><a:pPr lvl=\"" + _str1 + L"\"");
 
-		PPT_FORMAT::CTextPFRun* pPF = &pParagraph->m_oPFRun;
+        PPT_FORMAT::CTextPFRun* pPF = &pParagraph->m_oPFRun;
 
 		if (pPF->textDirection.is_init())
 		{
@@ -1539,8 +1539,8 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                 std::wstring strT2 = _T("</a:t>");
 				m_oWriter.WriteString(strT2);
 				
-				if ((pShapeElement->m_lPlaceholderType == PT_MasterSlideNumber || 
-					(pShapeElement->m_lPlaceholderType == PT_MasterDate && pShapeElement->m_nFormatDate == 1))/* &&  pParagraph->m_arSpans[nSpan].m_bField*/)
+                if ((pShapeElement->m_lPlaceholderType == PT_MasterSlideNumber ||
+                    (pShapeElement->m_lPlaceholderType == PT_MasterDate && pShapeElement->m_nFormatDate == 1))/* &&  pParagraph->m_arSpans[nSpan].m_bField*/)
 				{
 					m_oWriter.WriteString(std::wstring(L"</a:fld>"));
 				}

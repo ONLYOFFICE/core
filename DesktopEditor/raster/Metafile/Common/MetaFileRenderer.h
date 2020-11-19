@@ -50,6 +50,13 @@
 	#define M_PI 3.1415926
 #endif
 
+#ifdef _DEBUG
+    #include <iostream>
+    #define LOGGING(_value) std::wcout << _value << std::endl;
+#else
+    #define LOGGING(_value)
+#endif
+
 namespace MetaFile
 {
 	class CEmfClip;
@@ -187,7 +194,6 @@ namespace MetaFile
 		void DrawString(std::wstring& wsText, unsigned int unCharsCount, double _dX, double _dY, double* pDx, int iGraphicsMode)
 		{
 			CheckEndPath();
-
 			IFont* pFont = m_pFile->GetFont();
 			if (!pFont)
 				return;
@@ -353,28 +359,28 @@ namespace MetaFile
 				// Нам нужно знать в следствие чего происходит флип, из-за Window или Viewport
 				if (dM11 < -0.00001)
 				{
-					dX -= fabs(fW);
+					dX += fabs(fW);
 
 					if (m_pFile->IsWindowFlippedX())
 					{
-						dShiftX = (2 * dX - fabs(fW)) * dM11;
+						dShiftX = (2 * dX + fabs(fW)) * dM11;
 					}
 					else
 					{
-						dShiftX = (2 * dX + fabs(fW)) * dM11;
+						dShiftX = (2 * dX - fabs(fW)) * dM11;
 					}
 				}
 
 				if (dM22 < - 0.00001)
 				{
-					dY -= fabs(fH);
+					dY += fabs(fH);
 					if (m_pFile->IsWindowFlippedY())
 					{
-						dShiftY = (2 * dY - fabs(fH)) * dM22;
+						dShiftY = (2 * dY + fabs(fH)) * dM22;
 					}
 					else
 					{
-						dShiftY = (2 * dY + fabs(fH)) * dM22;
+						dShiftY = (2 * dY - fabs(fH)) * dM22;
 					}
 				}
 
@@ -387,7 +393,14 @@ namespace MetaFile
 			if (0 != pFont->GetEscapement())
 			{
 				// TODO: тут реализован только параметр shEscapement, еще нужно реализовать параметр Orientation
-				m_pRenderer->SetTransform(dCosTheta, dSinTheta, -dSinTheta, dCosTheta, dX - dX * dCosTheta + dY * dSinTheta, dY - dX * dSinTheta - dY * dCosTheta);
+				double dM11, dM12, dM21, dM22, dRx, dRy;
+				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
+				double dOldX = dX;
+				dX = dX * dCosTheta - dY * dSinTheta;
+				dY = -(dOldX * dSinTheta + dY * dCosTheta);
+				//Нужно дальше продолжить искать прафильную формулу
+				m_pRenderer->SetTransform(dCosTheta, dSinTheta * fabs(dM11), -dSinTheta * fabs(dM22), -dCosTheta, dRx - dY * dCosTheta, dRy - dX * dSinTheta + fH);
+
 				bChangeCTM = true;
 			}
 
@@ -404,7 +417,6 @@ namespace MetaFile
 				m_pRenderer->PathCommandLineTo(dX + fL + fW, dY + fT);
 				m_pRenderer->PathCommandLineTo(dX + fL + fW, dY + fT + fH);
 				m_pRenderer->PathCommandLineTo(dX + fL, dY + fT + fH);
-				m_pRenderer->PathCommandClose();
 				m_pRenderer->DrawPath(c_nWindingFillMode);
 				m_pRenderer->EndCommand(c_nPathType);
 				m_pRenderer->PathCommandEnd();
@@ -441,8 +453,9 @@ namespace MetaFile
 			{
 				unsigned int unUnicodeLen = 0;
 				unsigned int* pUnicode = NSStringExt::CConverter::GetUtf32FromUnicode(wsText, unUnicodeLen);
+				LOGGING(wsText)
 				if (pUnicode && unUnicodeLen)
-				{
+				{					
 					double dOffset = 0;
 					double dKoefX = m_dScaleX;
 					for (unsigned int unCharIndex = 0; unCharIndex < unUnicodeLen; unCharIndex++)

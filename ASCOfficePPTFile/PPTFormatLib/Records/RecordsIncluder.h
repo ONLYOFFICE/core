@@ -57,7 +57,6 @@
 #include "Drawing/DrawingContainer.h"
 
 #include "OfficeArtClientData.h"
-#include "Text/OfficeArtClientTextbox.h"
 
 // others
 

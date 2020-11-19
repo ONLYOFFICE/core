@@ -602,10 +602,9 @@ IRecord* CreateByType(SRecordHeader oHeader)
     CREATE_BY_TYPE(RTE_BSTORE_CONTAINER		, CRecordBlipStoreContainer)
     CREATE_BY_TYPE(RTE_BSE					, CRecordBlipStoreEntry)
 
-//    CREATE_BY_TYPE(RT_Drawing               , CRecordDrawingContainer ) f*ck up all text records
+    CREATE_BY_TYPE(RT_Drawing               , CRecordDrawingContainer )
     CREATE_BY_TYPE(RTE_DG_CONTAINER			, CRecordDrawingContainer)
     CREATE_BY_TYPE(RTE_DGG					, CRecordDrawingGroup)
-    CREATE_BY_TYPE(RTE_CLIENTTEXTBOX		, CRecordOfficeArtClientTextbox)
     CREATE_BY_TYPE(RTE_DG					, CRecordDrawingRecord)
     CREATE_BY_TYPE(RTE_SPGR					, CRecordGroupShape)
     CREATE_BY_TYPE(RTE_SPGR_CONTAINER		, CRecordGroupShapeContainer)

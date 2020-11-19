@@ -45,7 +45,6 @@
 #include "../TextInteractiveInfoAtom.h"
 #include "../MasterTextPropAtom.h"
 #include "../HeadersFootersAtom.h"
-#include "../Text/StyleTextProp9Atom.h"
 
 #include "../../Reader/ClassesAtom.h"
 #include "../../Reader/SlideInfo.h"
@@ -144,5 +143,4 @@ protected:
 	void ApplyThemeStyle(CElementPtr pElem, CTheme* pTheme, CRecordMasterTextPropAtom* master_levels);
 	void SetUpTextStyle(std::wstring& strText, CTheme* pTheme, CLayout* pLayout, CElementPtr pElem, CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide, CRecordMasterTextPropAtom* master_levels);
 	void ApplyHyperlink(CShapeElement* pShape, CColor& oColor);
-    void ApplyTextProp9(CElementPtr pElem, CRecordStyleTextProp9Atom* prop);
 };

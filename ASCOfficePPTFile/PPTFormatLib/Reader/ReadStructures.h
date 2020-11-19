@@ -34,7 +34,7 @@
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.h"
 #include "SlidePersist.h"
 #include "../../../OfficeUtils/src/OfficeUtils.h"
-#include "../Records/OfficeArtClientData.h"
+
 
 using namespace PPT_FORMAT;
 
@@ -343,5 +343,5 @@ public:
 namespace PPT_FORMAT
 {
 	void ConvertPPTTextToEditorStructure(std::vector<CTextPFRunRecord>& oArrayPF, std::vector<CTextCFRunRecord>& oArrayCF, 
-        std::wstring& strText, PPT_FORMAT::CTextAttributesEx& oAttributes, CRecordOfficeArtClientData* pArt);
+		std::wstring& strText, PPT_FORMAT::CTextAttributesEx& oAttributes);
 }

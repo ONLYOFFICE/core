@@ -100,17 +100,66 @@ static std::string Base64ToString(const std::string& sContent, const std::string
     return sRes;
 }
 
-static std::string QuotedPrintableDecode(const std::string& sContent)
+static std::string QuotedPrintableDecode(const std::string& sContent, std::string& sCharset)
 {
     NSStringUtils::CStringBuilderA sRes;
     size_t ip = 0;
-    size_t i = sContent.find('=');
+    size_t i  = sContent.find('=');
+
+    if(i == 0)
+    {
+        size_t nIgnore = 12;
+        std::string charset = sContent.substr(0, nIgnore);
+        if(charset == "=00=00=FE=FF")
+            sCharset = "UTF-32BE";
+        else if(charset == "=FF=FE=00=00")
+            sCharset = "UTF-32LE";
+        else if(charset == "=2B=2F=76=38" || charset == "=2B=2F=76=39" ||
+                charset == "=2B=2F=76=2B" || charset == "=2B=2F=76=2F")
+            sCharset = "UTF-7";
+        else if(charset == "=DD=73=66=73")
+            sCharset = "UTF-EBCDIC";
+        else if(charset == "=84=31=95=33")
+            sCharset = "GB-18030";
+        else
+        {
+            nIgnore -= 3;
+            charset.erase(nIgnore);
+            if(charset == "=EF=BB=BF")
+                sCharset = "UTF-8";
+            else if(charset == "=F7=64=4C")
+                sCharset = "UTF-1";
+            else if(charset == "=0E=FE=FF")
+                sCharset = "SCSU";
+            else if(charset == "=FB=EE=28")
+                sCharset = "BOCU-1";
+            else
+            {
+                nIgnore -= 3;
+                charset.erase(nIgnore);
+                if(charset == "=FE=FF")
+                    sCharset = "UTF-16BE";
+                else if(charset == "=FF=FE")
+                    sCharset = "UTF-16LE";
+                else
+                    nIgnore -= 6;
+            }
+        }
+
+        ip = nIgnore;
+        i  = sContent.find('=', ip);
+    }
+
     while(i != std::string::npos && i + 2 < sContent.length())
     {
-        sRes.WriteString(sContent.substr(ip, i - ip));
+        sRes.WriteString(sContent.c_str() + ip, i - ip);
         std::string str = sContent.substr(i + 1, 2);
         if(str.front() == '\n' || str.front() == '\r')
-            sRes.WriteString(str);
+        {
+            char ch = str[1];
+            if(ch != '\n' && ch != '\r')
+                sRes.WriteString(&ch, 1);
+        }
         else
         {
             char* err;
@@ -123,7 +172,8 @@ static std::string QuotedPrintableDecode(const std::string& sContent)
         ip = i + 3;
         i = sContent.find('=', ip);
     }
-    sRes.WriteString(sContent.substr(ip));
+    if(ip != std::string::npos)
+        sRes.WriteString(sContent.c_str() + ip);
     return sRes.GetData();
 }
 
@@ -259,7 +309,7 @@ static void ReadMht(std::string& sFileContent, size_t& nFound, size_t& nNextFoun
         }
         else if(sContentEncoding == "quoted-printable" || sContentEncoding == "Quoted-Printable")
         {
-            sContent = QuotedPrintableDecode(sContent);
+            sContent = QuotedPrintableDecode(sContent, sCharset);
             if (sCharset != "utf-8" && sCharset != "UTF-8" && !sCharset.empty())
             {
                 NSUnicodeConverter::CUnicodeConverter oConverter;

@@ -195,6 +195,7 @@
     <ClInclude Include="..\src\odf\datatypes\common_attlists.h" />
     <ClInclude Include="..\src\odf\datatypes\dategroup.h" />
     <ClInclude Include="..\src\odf\datatypes\direction.h" />
+    <ClInclude Include="..\src\odf\datatypes\drawangle.h" />
     <ClInclude Include="..\src\odf\datatypes\drawfill.h" />
     <ClInclude Include="..\src\odf\datatypes\dropcaplength.h" />
     <ClInclude Include="..\src\odf\datatypes\errors.h" />
@@ -321,6 +322,7 @@
     <ClCompile Include="..\src\odf\datatypes\common_attlists.cpp" />
     <ClCompile Include="..\src\odf\datatypes\dategroup.cpp" />
     <ClCompile Include="..\src\odf\datatypes\direction.cpp" />
+    <ClCompile Include="..\src\odf\datatypes\drawangle.cpp" />
     <ClCompile Include="..\src\odf\datatypes\drawfill.cpp" />
     <ClCompile Include="..\src\odf\datatypes\dropcaplength.cpp" />
     <ClCompile Include="..\src\odf\datatypes\fillimagerefpoint.cpp" />

@@ -42,61 +42,7 @@ core_windows {
     LIBS += -lUser32
 }
 
-# FREETYPE ------------------------------------
-DEFINES += FT2_BUILD_LIBRARY
-FREETYPE_VERSION=2.10.4
-
-INCLUDEPATH += \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/include \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/include/freetype
-
-SOURCES += \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/autofit/autofit.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/base/ftbase.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/base/ftbbox.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/base/ftbdf.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/base/ftbitmap.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/base/ftcid.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/base/ftfstype.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/base/ftgasp.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/base/ftglyph.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/base/ftgxval.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/base/ftinit.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/base/ftmm.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/base/ftotval.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/base/ftpatent.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/base/ftpfr.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/base/ftstroke.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/base/ftsynth.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/base/fttype1.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/base/ftwinfnt.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/bdf/bdf.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/bzip2/ftbzip2.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/cache/ftcache.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/cff/cff.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/cid/type1cid.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/gzip/ftgzip.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/lzw/ftlzw.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/pcf/pcf.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/pfr/pfr.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/psaux/psaux.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/pshinter/pshinter.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/psnames/psnames.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/raster/raster.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/sfnt/sfnt.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/smooth/smooth.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/truetype/truetype.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/type1/type1.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/type42/type42.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/winfonts/winfnt.c \
-    ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/base/ftdebug.c
-
-    core_windows {
-        SOURCES += ../DesktopEditor/freetype-$$FREETYPE_VERSION/src/base/ftsystem.c
-    } else {
-        SOURCES += ../DesktopEditor/freetype-$$FREETYPE_VERSION/builds/unix/ftsystem.c
-    }
-# ---------------------------------------------
+include(../DesktopEditor/graphics/pro/freetype.pri)
 
 core_windows {
 

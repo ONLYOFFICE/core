@@ -3492,6 +3492,13 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile)
 
                 result = (S_OK == htmlConvert.OpenHtml(file_name_inp, sResultDocxDir));
 			}break;
+			case AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT:
+			{
+				CHtmlFile2 htmlConvert;
+				htmlConvert.SetTmpDirectory(sTempDir);
+
+				result = (S_OK == htmlConvert.OpenMht(file_name_inp, sResultDocxDir));
+			}break; 
 #endif
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:

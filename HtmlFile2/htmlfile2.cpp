@@ -31,6 +31,8 @@
 #define VALUE2STR(x) VALUE_TO_STRING(x)
 #endif
 
+std::wstring rStyle = L"a area b strong bdo bdi big br center cite dfn em i var code kbd samp tt del s font img ins u mark q rt sup small sub svg input basefont button label data object noscript output abbr time ruby progress hgroup meter span acronym";
+
 // Ячейка таблицы
 struct CTc
 {
@@ -217,7 +219,7 @@ public:
 
         // core.xml
         std::wstring sCore = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><cp:coreProperties xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">";
-        if(oParams != NULL)
+        if(oParams)
         {
             if(!oParams->m_sBookTitle.empty())
             {
@@ -437,6 +439,11 @@ public:
         }
     }
 
+    void PageBreakBefore()
+    {
+        m_oDocXml.WriteString(L"<w:pPr><w:pageBreakBefore/></w:pPr>");
+    }
+
 private:
 
     std::wstring GetSubClass(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors)
@@ -515,7 +522,6 @@ private:
         m_oDocXml.WriteString(L"\"/>");
         */
         bool bWasP = true;
-        m_oDocXml.WriteString(L"<w:pPr><w:pageBreakBefore/></w:pPr>");
         readStream(&m_oDocXml, sSelectors, { false, false, -1, L"", L"" }, bWasP);
     }
 
@@ -526,7 +532,14 @@ private:
             std::wstring sText = m_oLightReader.GetText();
             size_t find = sText.find_first_not_of(L" \n\t\r");
             if(find == std::wstring::npos)
-                return;
+            {
+                if(sText.find(L' ') != std::wstring::npos)
+                    sText = L" ";
+                else
+                    return;
+            }
+            else if(!(find == 1 && sText.front() == L' '))
+                sText.erase(0, find);
 
             std::wstring sPStyle = wrP(oXml, sSelectors, oTS, bWasP);
             oXml->WriteString(L"<w:r>");
@@ -541,9 +554,7 @@ private:
                 size_t nAfter = sText.find_first_of(L"\n\r");
                 while(nAfter != std::wstring::npos)
                 {
-                    std::wstring sSubText = sText.substr(0, nAfter);
-                    sText.erase(0, sSubText.length() + 1);
-                    oXml->WriteEncodeXmlString(sSubText);
+                    oXml->WriteEncodeXmlString(sText.c_str(), nAfter);
                     oXml->WriteString(L"</w:t></w:r></w:p><w:p>");
                     if(!sPStyle.empty())
                     {
@@ -558,6 +569,7 @@ private:
                     oXml->WriteString(L"\"/>");
                     oXml->WriteString(oTS.sRStyle);
                     oXml->WriteString(L"</w:rPr><w:t xml:space=\"preserve\">");
+                    sText.erase(0, nAfter + 1);
                     nAfter = sText.find_first_of(L"\n\r");
                 }
                 end = sText.end();
@@ -663,17 +675,16 @@ private:
                     sSelectors.back().m_sStyle += L"; font-family: " + m_oLightReader.GetText();
                 else if(sAName == L"size")
                 {
-                    size_t sz;
                     int nSize = 3;
                     std::wstring sSize = m_oLightReader.GetText();
                     if(!sSize.empty())
                     {
                         if(sSize.front() == L'+')
-                            nSize += std::stoi(sSize.substr(1), &sz);
+                            nSize += std::stoi(sSize.substr(1));
                         else if(sSize.front() == L'-')
-                            nSize -= std::stoi(sSize.substr(1), &sz);
+                            nSize -= std::stoi(sSize.substr(1));
                         else
-                            nSize = std::stoi(sSize, &sz);
+                            nSize = std::stoi(sSize);
                     }
                     sSize = nSize >= 1 && nSize <= 7 ? std::to_wstring(10 + nSize * 5) : L"22";
                     sSelectors.back().m_sStyle += L"; font-size: " + sSize;
@@ -1048,7 +1059,7 @@ private:
             oXml->WriteString(L"<w:r>");
             wrR(oXml, sSelectors, oTS);
             oXml->WriteString(L"<w:t xml:space=\"preserve\">");
-            oXml->WriteEncodeXmlString(sValue);
+            oXml->WriteEncodeXmlString(sValue + L' ');
             oXml->WriteString(L"</w:t></w:r>");
             bWasP = false;
         }
@@ -1177,7 +1188,10 @@ private:
         {
             oXml->WriteString(L"<w:hyperlink w:tooltip=\"Current Document\" w:anchor=\"");
             size_t nSharp = sRef.find('#');
-            oXml->WriteString(nSharp == std::wstring::npos ? NSFile::GetFileName(sRef) : sRef.substr(nSharp + 1));
+            if(nSharp == std::wstring::npos)
+                oXml->WriteString(NSFile::GetFileName(sRef));
+            else
+                oXml->WriteString(sRef.c_str() + nSharp + 1);
         }
         // Внешняя ссылка
         else
@@ -1321,8 +1335,24 @@ private:
         if(!bWasP)
             return L"";
         oXml->WriteString(L"<w:pPr><w:pStyle w:val=\"");
+        
+        std::vector<std::pair<size_t, NSCSS::CNode>> temporary;
+		size_t i = 0;
+		while(i != sSelectors.size())
+		{
+			if(rStyle.find(sSelectors[i].m_sName) != std::wstring::npos)
+			{
+				temporary.push_back(std::make_pair(i, sSelectors[i]));
+				sSelectors.erase(sSelectors.begin() + i);
+			}
+			else
+				i++;
+		}
 
         std::wstring sPStyle = GetStyle(sSelectors, true);
+        
+        for(int i = temporary.size() - 1; i >= 0; i--)
+			sSelectors.insert(sSelectors.begin() + temporary[i].first, temporary[i].second);
 
         oXml->WriteString(sPStyle);
         oXml->WriteString(L"\"/>");
@@ -1556,6 +1586,8 @@ HRESULT CHtmlFile2::OpenHtml(const std::wstring& sSrc, const std::wstring& sDst,
     if(!m_internal->m_oLightReader.MoveToStart())
         return S_FALSE;
 
+    if(oParams && oParams->m_bNeedPageBreakBefore)
+        m_internal->PageBreakBefore();
     m_internal->readSrc();
     m_internal->write();
     return S_OK;
@@ -1576,6 +1608,8 @@ HRESULT CHtmlFile2::OpenMht(const std::wstring& sSrc, const std::wstring& sDst, 
     if(!m_internal->m_oLightReader.MoveToStart())
         return S_FALSE;
 
+    if(oParams && oParams->m_bNeedPageBreakBefore)
+        m_internal->PageBreakBefore();
     m_internal->readSrc();
     m_internal->write();
     return S_OK;
@@ -1600,6 +1634,8 @@ HRESULT CHtmlFile2::OpenBatchHtml(const std::vector<std::wstring>& sSrc, const s
         // Переходим в начало
         if(m_internal->m_oLightReader.MoveToStart())
         {
+            if(oParams && oParams->m_bNeedPageBreakBefore)
+                m_internal->PageBreakBefore();
             m_internal->readSrc();
             m_internal->m_oLightReader.Clear();
             m_internal->m_sBase.clear();

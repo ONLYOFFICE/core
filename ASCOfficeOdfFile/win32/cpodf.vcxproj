@@ -500,7 +500,6 @@
     <ClInclude Include="..\src\odf\office_settings.h" />
     <ClInclude Include="..\src\odf\office_spreadsheet.h" />
     <ClInclude Include="..\src\odf\office_text.h" />
-    <ClInclude Include="..\src\odf\paragraph_content.h" />
     <ClInclude Include="..\src\odf\paragraph_elements.h" />
     <ClInclude Include="..\src\odf\search_table_cell.h" />
     <ClInclude Include="..\src\odf\serialize_elements.h" />
@@ -527,6 +526,20 @@
     <ClInclude Include="..\src\odf\text_content.h" />
     <ClInclude Include="..\src\odf\text_elements.h" />
     <ClInclude Include="..\src\odf\visitor.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="cpcommon.vcxproj">
+      <Project>{609ed938-3ca8-4bed-b363-25096d4c4812}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="cpxml.vcxproj">
+      <Project>{41bed424-4eaf-4053-8a5f-1e2a387d53d1}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="formulasconvert.vcxproj">
+      <Project>{94954a67-a853-43b1-a727-6ef2774c5a6a}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

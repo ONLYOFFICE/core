@@ -3534,7 +3534,10 @@ void DocxConverter::convert_lists_styles()
 		if (lists_styles->m_arrNum[i]->m_oAbstractNumId.IsInit() &&  lists_styles->m_arrNum[i]->m_oAbstractNumId->m_oVal.IsInit())
 			abstr_num = *lists_styles->m_arrNum[i]->m_oAbstractNumId->m_oVal;			
 
-		OOX::Numbering::CAbstractNum* num_style = lists_styles->m_arrAbstractNum[abstr_num];		
+		std::map<int, size_t>::iterator pFindAbstractNum = lists_styles->m_mapAbstractNum.find(abstr_num);		
+		if (pFindAbstractNum == lists_styles->m_mapAbstractNum.end()) continue;
+		
+		OOX::Numbering::CAbstractNum* num_style = lists_styles->m_arrAbstractNum[pFindAbstractNum->second];
 		if (!num_style) continue;
 
 		odt_context->styles_context()->lists_styles().start_style(true, *lists_styles->m_arrNum[i]->m_oNumId);

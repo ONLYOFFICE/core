@@ -2809,16 +2809,19 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 	}
 	if (oox_run_pr->m_oHighlight.IsInit() && oox_run_pr->m_oHighlight->m_oVal.IsInit())
 	{
-		BYTE ucR = oox_run_pr->m_oHighlight->m_oVal->Get_R(); 
-		BYTE ucB = oox_run_pr->m_oHighlight->m_oVal->Get_B(); 
-		BYTE ucG = oox_run_pr->m_oHighlight->m_oVal->Get_G(); 
-		SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR,ucG,ucB);
-
-        if (oRgbColor)
+		if (oox_run_pr->m_oHighlight->m_oVal->GetValue() != SimpleTypes::highlightcolorNone)
 		{
-            std::wstring strColor = L"#" + oRgbColor->ToString().substr(2);//.Right(6);
-			text_properties->content_.fo_background_color_ = odf_types::color(strColor);
-			delete oRgbColor;
+			BYTE ucR = oox_run_pr->m_oHighlight->m_oVal->Get_R();
+			BYTE ucB = oox_run_pr->m_oHighlight->m_oVal->Get_B();
+			BYTE ucG = oox_run_pr->m_oHighlight->m_oVal->Get_G();
+			SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR, ucG, ucB);
+
+			if (oRgbColor)
+			{
+				std::wstring strColor = L"#" + oRgbColor->ToString().substr(2);//.Right(6);
+				text_properties->content_.fo_background_color_ = odf_types::color(strColor);
+				delete oRgbColor;
+			}
 		}
 	}
 	

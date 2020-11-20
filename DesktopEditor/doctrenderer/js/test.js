@@ -3,10 +3,6 @@ var MyGraphics = new CNativeGraphics();
 
 // Задаём размеры холста и всё будет полупрозрачное
 MyGraphics.init(null, 1000, 1000, 1000 * 25.4 / 96, 1000 * 25.4 / 96);
-
-MyGraphics.DrawHeaderEdit(10);
-MyGraphics.DrawFooterEdit(250);
-
 MyGraphics.put_GlobalAlpha(true, 0.5);
 
 // Рисуем желтый квадрат с красной пунктирной обводкой и толщиной 2
@@ -75,10 +71,32 @@ MyGraphics.drawImage2("image1.png", 95, 76, 60, 48, 0, null);
 
 MyGraphics.reset();
 MyGraphics.DrawStringASCII("Times New Roman", 16, false, false, "Test TEXT TEXT TEXT TEXT", 10, 210, false);
+MyGraphics.DrawHeaderEdit(10);
+MyGraphics.DrawFooterEdit(250);
+MyGraphics.DrawLockParagraph(null, 10, 110, 200);
+MyGraphics.DrawLockObjectRect(null, 20, 110, 90, 90);
 MyGraphics.DrawEmptyTableLine(10, 110, 110, 210);
 MyGraphics.DrawSpellingLine(120, 10, 100, 5);
-MyGraphics.DrawLockObjectRect(null, 20, 110, 90, 90);
-MyGraphics.DrawLockParagraph(null, 10, 110, 200);
+MyGraphics.drawHorLine(1, 130, 10, 110, 10);
+MyGraphics.drawVerLine(1, 30, 110, 200, 10);
+MyGraphics.drawHorLineExt(1, 170, 20, 110, 5, 20, 0);
+
+MyGraphics.p_color(111, 0, 53, 255);
+MyGraphics.p_width(3);
+MyGraphics.b_color1(222, 155, 176, 255);
+MyGraphics._s();
+MyGraphics.TableRect(110, 10, 90, 90);
+MyGraphics._z();
+
+MyGraphics.b_color1(255, 0, 0, 255);
+MyGraphics._s();
+MyGraphics.AddClipRect(210, 10, 50, 50);
+MyGraphics.ds();
+MyGraphics._z();
+MyGraphics.RemoveClipRect();
+
+MyGraphics.SetClip({ x : 210, y : 70, w : 50, h : 50});
+MyGraphics.RemoveClip();
 
 var imageBase64 = MyGraphics.toDataURL("png");
 MyGraphics.save();

@@ -775,6 +775,19 @@ void CGraphics::AddClipRect(double x, double y, double w, double h)
 
     EndClipPath();
 }
+void CGraphics::RemoveClipRect()
+{
+    restore();
+}
+void CGraphics::SetClip    (double x, double y, double w, double h)
+{
+    rect(x, y, w, h);
+    clip();
+}
+void CGraphics::RemoveClip()
+{
+    restore();
+}
 void CGraphics::drawCollaborativeChanges(double x, double y, double w, double h, int r, int g, int b, int a)
 {
     b_color1(r, g, b, a);

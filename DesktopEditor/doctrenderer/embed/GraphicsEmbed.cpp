@@ -408,13 +408,7 @@ JSSmart<CJSValue> CGraphicsEmbed::EndClipPath()
 }
 JSSmart<CJSValue> CGraphicsEmbed::StartCheckTableDraw()
 {
-    m_pInternal->StartCheckTableDraw();
-    return NULL;
-}
-JSSmart<CJSValue> CGraphicsEmbed::EndCheckTableDraw(JSSmart<CJSValue> bIsRestore)
-{
-    m_pInternal->EndCheckTableDraw(bIsRestore->toBool());
-    return NULL;
+    return CJSContext::createBool(m_pInternal->StartCheckTableDraw());
 }
 JSSmart<CJSValue> CGraphicsEmbed::SetTextClipRect(JSSmart<CJSValue> _l, JSSmart<CJSValue> _t, JSSmart<CJSValue> _r, JSSmart<CJSValue> _b)
 {

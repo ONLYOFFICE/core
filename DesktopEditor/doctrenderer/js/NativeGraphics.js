@@ -374,25 +374,6 @@ CNativeGraphics.prototype =
     },
     drawFlowAnchor : function(x, y)
     {
-        if (!AscCommon.g_flow_anchor || !AscCommon.g_flow_anchor.asc_complete || (!editor || !editor.ShowParaMarks))
-            return;
-
-        if (false === this.m_bIntegerGrid)
-        {
-            this.m_oContext.setTransform(1,0,0,1,0,0);
-        }
-
-        var _x = this.m_oFullTransform.TransformPointX(x,y) >> 0;
-        var _y = this.m_oFullTransform.TransformPointY(x,y) >> 0;
-
-        this.m_oContext.drawImage(AscCommon.g_flow_anchor, _x, _y);
-
-        if (false === this.m_bIntegerGrid)
-        {
-            this.m_oContext.setTransform(this.m_oFullTransform.sx,this.m_oFullTransform.shy,this.m_oFullTransform.shx,
-                this.m_oFullTransform.sy,this.m_oFullTransform.tx,this.m_oFullTransform.ty);
-        }
-
         this.Native["drawFlowAnchor"](x, y);
     },
     SavePen : function()
@@ -441,67 +422,48 @@ CNativeGraphics.prototype =
     },
     EndCheckTableDraw : function(bIsRestore)
     {
-        return this.Native["EndCheckTableDraw"](bIsRestore);
+        if(bIsRestore)
+            this.RestoreGrState();
     },
     SetTextClipRect : function(_l, _t, _r, _b)
     {
-        return this.Native["SetTextClipRect"](_l, _t, _r, _b);
+        this.Native["SetTextClipRect"](_l, _t, _r, _b);
     },
     AddSmartRect : function(x, y, w, h, pen_w)
     {
-        return this.Native["AddSmartRect"](x, y, w, h, pen_w);
+        this.Native["AddSmartRect"](x, y, w, h, pen_w);
     },
     CheckUseFonts2 : function(_transform)
     {
-        if (!global_MatrixTransformer.IsIdentity2(_transform))
-        {
-            if (!AscCommon.g_fontManager2)
-            {
-                AscCommon.g_fontManager2 = new AscFonts.CFontManager();
-                AscCommon.g_fontManager2.Initialize(true);
-            }
-
-            this.m_oFontManager2 = AscCommon.g_fontManager2;
-
-            if (null == this.m_oLastFont2)
-                this.m_oLastFont2 = new AscCommon.CFontSetup();
-
-            this.IsUseFonts2 = true;
-        }
-
-        this.Native["CheckUseFonts2"](_transform);
+        // this.Native["CheckUseFonts2"](_transform);
     },
     UncheckUseFonts2 : function()
     {
-        this.IsUseFonts2 = false;
-
-        this.Native["UncheckUseFonts2"]();
+        // this.Native["UncheckUseFonts2"]();
     },
     Drawing_StartCheckBounds : function(x, y, w, h)
     {
-        this.Native["Drawing_StartCheckBounds"](x, y, w, h);
+        // this.Native["Drawing_StartCheckBounds"](x, y, w, h);
     },
     Drawing_EndCheckBounds : function()
     {
-        this.Native["Drawing_EndCheckBounds"]();
+        // this.Native["Drawing_EndCheckBounds"]();
     },
     DrawPresentationComment : function(type, x, y, w, h)
     {
-        this.Native["DrawPresentationComment"](type, x, y, w, h);
+        // this.Native["DrawPresentationComment"](type, x, y, w, h);
     },
     DrawPolygon : function(oPath, lineWidth, shift)
     {
-        this.m_oContext.lineWidth = lineWidth;
-        this.m_oContext.beginPath();
+		this.p_width(lineWidth);
+		this._s();
 
-        var Points    = oPath.Points;
-
+        var Points = oPath.Points;
         var nCount = Points.length;
         // берем предпоследнюю точку, т.к. последняя совпадает с первой
         var PrevX = Points[nCount - 2].X, PrevY = Points[nCount - 2].Y;
-        var _x = Points[nCount - 2].X,
-            _y = Points[nCount - 2].Y;
-        var StartX, StartY ;
+        var _x    = Points[nCount - 2].X,    _y = Points[nCount - 2].Y;
+        var StartX, StartY;
 
         for (var nIndex = 0; nIndex < nCount; nIndex++)
         {
@@ -542,11 +504,8 @@ CNativeGraphics.prototype =
         }
 
         this._l(StartX, StartY);
-        this.m_oContext.closePath();
-        this.m_oContext.stroke();
-        this.m_oContext.beginPath();
-
-        this.Native["DrawPolygon"](oPath, lineWidth, shift);
+		this._z();
+		this.ds();
     },
     DrawFootnoteRect : function(x, y, w, h)
     {

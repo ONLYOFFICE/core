@@ -777,6 +777,11 @@ void CGraphics::AddClipRect(double x, double y, double w, double h)
 }
 void CGraphics::RemoveClipRect()
 {
+    if(m_oGrState.Clips.back())
+    {
+        delete m_oGrState.Clips.back();
+        m_oGrState.Clips.pop_back();
+    }
     restore();
 }
 void CGraphics::SetClip    (double x, double y, double w, double h)
@@ -949,6 +954,24 @@ void CGraphics::StartClipPath()
 void CGraphics::EndClipPath()
 {
     m_pRenderer->EndCommand(c_nClipType);
+}
+bool CGraphics::StartCheckTableDraw()
+{
+    if(!m_pRenderer->get_IntegerGrid())
+    {
+        Aggplus::CMatrix* pMatrix = m_pRenderer->GetTransformMatrix();
+        if(pMatrix->IsIdentity2())
+        {
+            SaveGrState();
+            m_pRenderer->put_IntegerGrid(true);
+            return true;
+        }
+    }
+    return false;
+}
+void CGraphics::SetTextClipRect(double _l, double _t, double _r, double _b)
+{
+    AddClipRect(_l, _t, _r - _l, _b - _t);
 }
 void CGraphics::AddSmartRect(double x, double y, double w, double h, double pen_w)
 {

@@ -97,7 +97,6 @@ namespace NSGraphics
     FUNCTION_WRAPPER_V8  (_StartClipPath,            StartClipPath)
     FUNCTION_WRAPPER_V8  (_EndClipPath,              EndClipPath)
     FUNCTION_WRAPPER_V8  (_StartCheckTableDraw,      StartCheckTableDraw)
-    FUNCTION_WRAPPER_V8_1(_EndCheckTableDraw,        EndCheckTableDraw)
     FUNCTION_WRAPPER_V8_4(_SetTextClipRect,          SetTextClipRect)
     FUNCTION_WRAPPER_V8_5(_AddSmartRect,             AddSmartRect)
     FUNCTION_WRAPPER_V8_1(_CheckUseFonts2,           CheckUseFonts2)
@@ -201,7 +200,6 @@ namespace NSGraphics
         NSV8Objects::Template_Set(result, "StartClipPath",            _StartClipPath);
         NSV8Objects::Template_Set(result, "EndClipPath",              _EndClipPath);
         NSV8Objects::Template_Set(result, "StartCheckTableDraw",      _StartCheckTableDraw);
-        NSV8Objects::Template_Set(result, "EndCheckTableDraw",        _EndCheckTableDraw);
         NSV8Objects::Template_Set(result, "SetTextClipRect",          _SetTextClipRect);
         NSV8Objects::Template_Set(result, "AddSmartRect",             _AddSmartRect);
         NSV8Objects::Template_Set(result, "CheckUseFonts2",           _CheckUseFonts2);

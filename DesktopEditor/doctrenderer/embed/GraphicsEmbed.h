@@ -108,7 +108,6 @@ public:
     JSSmart<CJSValue> StartClipPath();
     JSSmart<CJSValue> EndClipPath();
     JSSmart<CJSValue> StartCheckTableDraw();
-    JSSmart<CJSValue> EndCheckTableDraw(JSSmart<CJSValue> bIsRestore);
     JSSmart<CJSValue> SetTextClipRect(JSSmart<CJSValue> _l, JSSmart<CJSValue> _t, JSSmart<CJSValue> _r, JSSmart<CJSValue> _b);
     JSSmart<CJSValue> AddSmartRect   (JSSmart<CJSValue> x,  JSSmart<CJSValue> y,  JSSmart<CJSValue> w,  JSSmart<CJSValue> h, JSSmart<CJSValue> pen_w);
     JSSmart<CJSValue> CheckUseFonts2 (JSSmart<CJSValue> _transform);

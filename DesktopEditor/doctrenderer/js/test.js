@@ -88,6 +88,9 @@ MyGraphics._s();
 MyGraphics.TableRect(110, 10, 90, 90);
 MyGraphics._z();
 
+// Рисует замыкание со второй до предпоследней точки
+MyGraphics.DrawPolygon({Points : [{X : 10, Y : 10}, {X : 20, Y : 20}, {X : 20, Y : 30}, {X : 10, Y : 40}, {X : 0, Y : 30}]}, 3, 0);
+
 MyGraphics.b_color1(255, 0, 0, 255);
 MyGraphics._s();
 MyGraphics.AddClipRect(210, 10, 50, 50);

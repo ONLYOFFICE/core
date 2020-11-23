@@ -199,9 +199,8 @@ namespace NSGraphics
         void RestoreGrState();
         void StartClipPath();
         void EndClipPath();
-        void StartCheckTableDraw() {}
-        void EndCheckTableDraw(bool bIsRestore) {}
-        void SetTextClipRect(double _l, double _t, double _r, double _b) {}
+        bool StartCheckTableDraw();
+        void SetTextClipRect(double _l, double _t, double _r, double _b);
         void AddSmartRect   (double x,  double y,  double w,  double h, double pen_w);
         void CheckUseFonts2() {}
         void UncheckUseFonts2() {}

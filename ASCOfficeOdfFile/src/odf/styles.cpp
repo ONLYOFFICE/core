@@ -528,7 +528,7 @@ void styles::add_child_element( xml::sax * Reader, const std::wstring & Ns, cons
     {
         CP_CREATE_ELEMENT_SIMPLE(number_styles_);
     }   
-    else
+	else
     {
         CP_NOT_APPLICABLE_ELM_SIMPLE(L"styles");
     }
@@ -1398,10 +1398,10 @@ void style_page_layout_properties::docx_serialize(std::wostream & strm, oox::doc
 				}
 				else			
 					CP_XML_ATTR(L"w:val", L"continuous");
-			}			
+			}		
 
 			std::wstring masterPageName = Context.get_master_page_name();
-			bool res = Context.get_headers_footers().write_sectPr(masterPageName, change_page_layout, strm);
+			bool res = Context.get_headers_footers().write_sectPr(masterPageName, change_page_layout, CP_XML_STREAM());
 			
 			if (res == false)
 			{
@@ -1417,7 +1417,7 @@ void style_page_layout_properties::docx_serialize(std::wostream & strm, oox::doc
 	
 			oox::section_context::_section & section = Context.get_section_context().get_last();
 
-			attlist_.docx_convert_serialize(strm, Context, section.margin_left_, section.margin_right_);
+			attlist_.docx_convert_serialize(CP_XML_STREAM(), Context, section.margin_left_, section.margin_right_);
 			//todooo при появлении еще накладок - переписать !!
 		}
 	}
@@ -1824,8 +1824,8 @@ void header_footer_impl::xlsx_serialize(std::wostream & _Wostream, oox::xlsx_con
 		}
     }
 }
-/// text:notes-configuration
-//////////////////////////////////////////////////////////////////////////////////////////////////
+// text:notes-configuration
+//-------------------------------------------------------------------------------------------------------
 const wchar_t * text_notes_configuration::ns = L"text";
 const wchar_t * text_notes_configuration::name = L"notes-configuration";
 
@@ -1844,10 +1844,8 @@ void text_notes_configuration::add_attributes( const xml::attributes_wc_ptr & At
     CP_APPLY_ATTR(L"text:footnotes-position", text_footnotes_position_);
 
 }
-
 void text_notes_configuration::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    
     if CP_CHECK_NAME(L"text", L"note-continuation-notice-forward")
         CP_CREATE_ELEMENT(text_note_continuation_notice_forward_);
     else if CP_CHECK_NAME(L"text", L"note-continuation-notice-backward")
@@ -1855,9 +1853,73 @@ void text_notes_configuration::add_child_element( xml::sax * Reader, const std::
     else
         CP_NOT_APPLICABLE_ELM();    
 }
+// text:linenumbering-configuration
+//-------------------------------------------------------------------------------------------------------
+const wchar_t * text_linenumbering_configuration::ns = L"text";
+const wchar_t * text_linenumbering_configuration::name = L"linenumbering-configuration";
 
-/// style:presentation-page-layout
-//////////////////////////////////////////////////////////////////////////////////////////////////
+void text_linenumbering_configuration::add_attributes(const xml::attributes_wc_ptr & Attributes)
+{
+	CP_APPLY_ATTR(L"text:style-name", text_style_name_);
+	CP_APPLY_ATTR(L"text:number-lines", text_number_lines_, true);
+	CP_APPLY_ATTR(L"style:num-format", style_num_format_);
+	CP_APPLY_ATTR(L"style:num-letter-sync", style_num_letter_sync_);
+	CP_APPLY_ATTR(L"text:count-empty-lines", text_count_empty_lines_);
+	CP_APPLY_ATTR(L"text:count-in-text-boxes", text_count_in_text_boxes_);
+	CP_APPLY_ATTR(L"text:increment", text_increment_);
+	CP_APPLY_ATTR(L"text:number-position", text_number_position_); //inner, left, outer, right
+	CP_APPLY_ATTR(L"text:offset", text_offset_);
+	CP_APPLY_ATTR(L"text:restart-on-page", text_restart_on_page_);
+}
+void text_linenumbering_configuration::add_child_element(xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+	if CP_CHECK_NAME(L"text", L"linenumbering-separator")
+		CP_CREATE_ELEMENT(text_linenumbering_separator_);
+}
+
+void text_linenumbering_configuration::docx_serialize(std::wostream & strm, oox::docx_conversion_context & Context)
+{
+	if (!text_number_lines_) return;
+
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"w:lnNumType")
+		{
+			if (text_increment_)
+			{
+				CP_XML_ATTR(L"w:countBy", *text_increment_);
+			}
+			if (text_restart_on_page_ && (*text_restart_on_page_))
+			{
+				CP_XML_ATTR(L"w:restart", L"newPage");
+			}
+			else
+			{
+				CP_XML_ATTR(L"w:restart", L"continuous");
+			}
+			if (text_offset_)
+			{
+				CP_XML_ATTR(L"w:distance", 20. * text_offset_->get_value_unit(length::pt));
+			}
+		}
+	}
+}
+// text:linenumbering-separator
+//-------------------------------------------------------------------------------------------------------
+const wchar_t * text_linenumbering_separator::ns = L"text";
+const wchar_t * text_linenumbering_separator::name = L"linenumbering-separator";
+
+void text_linenumbering_separator::add_attributes(const xml::attributes_wc_ptr & Attributes)
+{
+	CP_APPLY_ATTR(L"text:increment", text_increment_);
+}
+void text_linenumbering_separator::add_text(const std::wstring & Text)
+{
+	text_ = Text;
+}
+
+// style:presentation-page-layout
+//-------------------------------------------------------------------------------------------------------
 const wchar_t * style_presentation_page_layout::ns = L"style";
 const wchar_t * style_presentation_page_layout::name = L"presentation-page-layout";
 

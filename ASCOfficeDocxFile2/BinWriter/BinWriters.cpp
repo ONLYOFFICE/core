@@ -3174,7 +3174,7 @@ void BinaryDocumentTableWriter::WriteDocumentContent(const std::vector<OOX::Writ
 					{
 						OOX::Media* pAltChunkFile = static_cast<OOX::Media*>(pFile.operator ->());
 						
-						WriteAltChunk(*pAltChunkFile);
+						WriteAltChunk(*pAltChunkFile, m_oParamsWriter.m_pStyles);
 					}
 				}
 			}break;
@@ -3344,7 +3344,7 @@ void BinaryDocumentTableWriter::WriteBackground (OOX::WritingElement* pElement)
 	}
 }
 						
-void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile)
+void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile, OOX::CStyles* styles)
 {
 	if (false == oAltChunkFile.IsExist()) return;
 
@@ -3386,9 +3386,31 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile)
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML:
 			{
                 CHtmlFile2 htmlConvert;
-                htmlConvert.SetTmpDirectory(sTempDir);
+  				CHtmlParams	paramsHtml;
 
-                result = (S_OK == htmlConvert.OpenHtml(file_name_inp, sResultDocxDir));
+				htmlConvert.SetTmpDirectory(sTempDir);
+
+				if (styles)
+				{
+					if (styles->m_oDocDefaults.IsInit())
+					{
+						paramsHtml.m_sdocDefaults = styles->m_oDocDefaults->toXML();
+					}
+					std::map<SimpleTypes::EStyleType, size_t>::iterator pFind = styles->m_mapStyleDefaults.find(SimpleTypes::styletypeParagraph);
+					if (pFind != styles->m_mapStyleDefaults.end())
+					{
+						if (styles->m_arrStyle[pFind->second])
+						{
+							//change styleId
+
+							OOX::CStyle updateStyle (*styles->m_arrStyle[pFind->second]);
+							updateStyle.m_sStyleId = L"normal";
+							paramsHtml.m_sNormal = updateStyle.toXML();
+						}
+					}
+				}
+
+                result = (S_OK == htmlConvert.OpenHtml(file_name_inp, sResultDocxDir, &paramsHtml));
 			}break;
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT:
 			{

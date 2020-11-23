@@ -208,7 +208,7 @@ namespace NSGraphics
         void Drawing_EndCheckBounds() {}
         void DrawPresentationComment() {}
         void DrawPolygon() {}
-        void DrawFootnoteRect() {}
+        void DrawFootnoteRect(double x,  double y,  double w,  double h);
         // new methods
         std::string toDataURL(std::wstring type);
     };

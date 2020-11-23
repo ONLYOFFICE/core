@@ -452,7 +452,7 @@ JSSmart<CJSValue> CGraphicsEmbed::DrawPolygon(JSSmart<CJSValue> oPath, JSSmart<C
 }
 JSSmart<CJSValue> CGraphicsEmbed::DrawFootnoteRect(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h)
 {
-    m_pInternal->DrawFootnoteRect();
+    m_pInternal->DrawFootnoteRect(x->toDouble(), y->toDouble(), w->toDouble(), h->toDouble());
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::toDataURL(JSSmart<CJSValue> type)

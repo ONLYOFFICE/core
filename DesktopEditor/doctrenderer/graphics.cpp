@@ -977,6 +977,39 @@ void CGraphics::AddSmartRect(double x, double y, double w, double h, double pen_
 {
     m_pRenderer->AddRect(x, y, w, h);
 }
+void CGraphics::DrawFootnoteRect(double x,  double y,  double w,  double h)
+{
+    BYTE nPenDashStyle = 0;
+    m_pRenderer->get_PenDashStyle(&nPenDashStyle);
+
+    bool bIsIntegerGrid = m_pRenderer->get_IntegerGrid();
+    if (!bIsIntegerGrid)
+        m_pRenderer->put_IntegerGrid(true);
+
+    double dash[2] = { 2.0, 2.0 };
+    m_pRenderer->put_PenDashStyle(Aggplus::DashStyleCustom);
+    m_pRenderer->PenDashPattern(dash, 2);
+
+    m_pRenderer->PathCommandEnd();
+
+    double l = x;
+    double t = y;
+    double r = x + w;
+    double b = y + h;
+
+    drawHorLineExt(1, t, l, r, 0, 0, 0);
+    drawVerLine   (1, l, t, b, 0);
+    drawVerLine   (1, r, t, b, 0);
+    drawHorLineExt(1, b, l, r, 0, 0, 0);
+
+    m_pRenderer->PathCommandEnd();
+    m_pRenderer->Stroke();
+
+    if (!bIsIntegerGrid)
+        m_pRenderer->put_IntegerGrid(false);
+
+    m_pRenderer->put_PenDashStyle(nPenDashStyle);
+}
 std::string CGraphics::toDataURL(std::wstring type)
 {
     m_oFrame.SaveFile(m_sApplicationImagesDirectory + L"/img." + type, _CXIMAGE_FORMAT_PNG);

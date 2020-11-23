@@ -20,8 +20,14 @@ struct CHtmlParams
     std::wstring m_sDate;        // Дата
     std::wstring m_sDescription; // описание
     bool m_bNeedPageBreakBefore; // Новый html с новой страницы
+    std::wstring m_sStyle;       // Стили
 
     CHtmlParams() : m_bNeedPageBreakBefore(false) {}
+
+    void SetStyle(const std::wstring& sStyle)
+    {
+        m_sStyle = sStyle;
+    }
 
     void SetPageBreakBefore(bool bNeed)
     {

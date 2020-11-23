@@ -552,13 +552,12 @@ public:
 	office_element_ptr_array	style_default_style_;
 	office_element_ptr_array	style_presentation_page_layout_;
     
-	office_element_ptr			text_outline_style_; // < TODO
-    office_element_ptr_array	text_notes_configuration_; // < TODO
+	office_element_ptr			text_outline_style_; 
+    office_element_ptr_array	text_notes_configuration_;
     office_element_ptr			text_bibliography_configuration_; // < TODO
-    office_element_ptr			text_linenumbering_configuration_; // < TODO
+	office_element_ptr_array	text_linenumbering_configuration_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(office_styles)
 
 //----------------------------------------------------------------------------------------------------
@@ -841,9 +840,51 @@ public:
     office_element_ptr text_note_continuation_notice_backward_;
     
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_notes_configuration)
+//-------------------------------------------------------------------------------------------------------------------------
+class text_linenumbering_configuration : public office_element_impl<text_linenumbering_configuration>
+{
+public:
+	static const wchar_t * ns;
+	static const wchar_t * name;
+	static const xml::NodeType xml_type = xml::typeElement;
+	static const ElementType type = typeTextLinenumberingConfiguration;
+	CPDOCCORE_DEFINE_VISITABLE();
 
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+	virtual void serialize(std::wostream & strm);
+
+	bool								text_number_lines_;
+	_CP_OPT(std::wstring)				text_style_name_;
+	_CP_OPT(odf_types::style_numformat)	style_num_format_;
+	_CP_OPT(std::wstring)				style_num_letter_sync_;
+	_CP_OPT(odf_types::Bool)			text_count_empty_lines_;
+	_CP_OPT(odf_types::Bool)			text_count_in_text_boxes_;
+	_CP_OPT(unsigned int)				text_increment_;
+	_CP_OPT(std::wstring)				text_number_position_; //inner, left, outer, right
+	_CP_OPT(odf_types::length)			text_offset_;
+	_CP_OPT(odf_types::Bool)			text_restart_on_page_;
+
+	office_element_ptr text_linenumbering_separator_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_linenumbering_configuration);
+//-------------------------------------------------------------------------------------------------------------------------
+class text_linenumbering_separator : public office_element_impl<text_linenumbering_separator>
+{
+public:
+	static const wchar_t * ns;
+	static const wchar_t * name;
+	static const xml::NodeType xml_type = xml::typeElement;
+	static const ElementType type = typeTextLinenumberingSeparator;
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name) {}
+	virtual void serialize(std::wostream & strm);
+
+	_CP_OPT(unsigned int)	text_increment_;
+	_CP_OPT(std::wstring)	text_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_linenumbering_separator);
 //----------------------------------------------------------------------------------------------------
 class style_presentation_page_layout;
 typedef boost::shared_ptr<style_presentation_page_layout> style_presentation_page_layout_ptr;

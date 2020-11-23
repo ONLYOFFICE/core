@@ -326,7 +326,7 @@ namespace BinDocxRW
 //---------------------------------
 		BinaryDocumentTableWriter(ParamsWriter& oParamsWriter, ParamsDocumentWriter& oParamsDocumentWriter, std::map<int, bool>* mapIgnoreComments, BinaryHeaderFooterTableWriter* oBinaryHeaderFooterTableWriter);
 	
-		void WriteAltChunk(OOX::Media& oAltChunk);
+		void WriteAltChunk(OOX::Media& oAltChunk, OOX::CStyles* styles);
 		void WriteVbaProject(OOX::VbaProject& oVbaProject);
 		void Write(std::vector<OOX::WritingElement*> & aElems);
 		void WriteDocumentContent(const std::vector<OOX::WritingElement*> & aElems);

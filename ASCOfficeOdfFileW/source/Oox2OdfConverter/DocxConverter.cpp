@@ -63,7 +63,6 @@
 #include "../OdfFormat/style_graphic_properties.h"
 #include "../OdfFormat/styles_list.h"
 
-
 using namespace cpdoccore;
 
 std::vector<double> current_font_size;
@@ -2052,8 +2051,43 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 		//odt_context->set_master_page_name(odt_context->page_layout_context()->last_master() ?
 		//									  odt_context->page_layout_context()->last_master()->get_name() : L"");
 	}
+	if (oox_section_pr->m_oLnNumType.IsInit())
+	{//linenumbering-configuration один для всех секций и всех разметок страниц ((( - хуевый OpenOffice (также не начала нумерации)
+		//Ms Office тоже фуфло - нет нумерации алфавитами и римскими, нет разделителей
+		odf_writer::office_element_ptr lnNum_elm;
+		odf_writer::create_element(L"text", L"linenumbering-configuration", lnNum_elm, odf_context());
 
-//--------------------------------------------------------------------------------------------------------------------------------------------		
+		odf_writer::text_linenumbering_configuration *linenumbering = dynamic_cast<odf_writer::text_linenumbering_configuration *>(lnNum_elm.get());
+		if (!linenumbering) return;
+
+		linenumbering->text_style_name_ = odt_context->styles_context()->find_free_name(style_family::LineNumbering);
+		linenumbering->text_number_lines_ = true;
+
+		if (oox_section_pr->m_oLnNumType->m_oCountBy.IsInit())
+		{
+			linenumbering->text_increment_ = oox_section_pr->m_oLnNumType->m_oCountBy->GetValue();
+		}
+		if (oox_section_pr->m_oLnNumType->m_oDistance.IsInit())
+		{
+			linenumbering->text_offset_ = odf_types::length(oox_section_pr->m_oLnNumType->m_oDistance->ToPoints(), odf_types::length::pt);
+					}
+		if (oox_section_pr->m_oLnNumType->m_oRestart.IsInit())
+		{
+			if (oox_section_pr->m_oLnNumType->m_oRestart->GetValue() == SimpleTypes::linenumberrestartNewPage)
+			{
+				linenumbering->text_restart_on_page_ = true;
+			}
+			else
+			{
+			}
+		}
+		if (oox_section_pr->m_oLnNumType->m_oStart.IsInit())
+		{
+		}
+		odt_context->styles_context()->add_style(lnNum_elm, false, true, style_family::LineNumbering);
+
+	}
+//------------------------------------------------------------------------------------------------------------------------------------------		
 	// то что относится собственно к секциям-разделам
 
 			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oBidi;
@@ -2062,7 +2096,6 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 			//nullable<OOX::Logic::CFtnProps                               > m_oFootnotePr;
 			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oFormProt;
 
-			//nullable<ComplexTypes::Word::CLineNumber                     > m_oLnNumType;
 			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oNoEndnote;
 			//nullable<ComplexTypes::Word::CPaperSource                    > m_oPaperSrc;
 

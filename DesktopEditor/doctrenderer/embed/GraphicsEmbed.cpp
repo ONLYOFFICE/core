@@ -353,7 +353,6 @@ JSSmart<CJSValue> CGraphicsEmbed::drawSearchResult  (JSSmart<CJSValue> x, JSSmar
 }
 JSSmart<CJSValue> CGraphicsEmbed::drawFlowAnchor    (JSSmart<CJSValue> x, JSSmart<CJSValue> y)
 {
-    m_pInternal->drawFlowAnchor(x->toDouble(), y->toDouble());
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::SavePen()
@@ -422,32 +421,26 @@ JSSmart<CJSValue> CGraphicsEmbed::AddSmartRect   (JSSmart<CJSValue> x,  JSSmart<
 }
 JSSmart<CJSValue> CGraphicsEmbed::CheckUseFonts2 (JSSmart<CJSValue> _transform)
 {
-    m_pInternal->CheckUseFonts2();
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::UncheckUseFonts2()
 {
-    m_pInternal->UncheckUseFonts2();
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::Drawing_StartCheckBounds(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h)
 {
-    m_pInternal->Drawing_StartCheckBounds();
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::Drawing_EndCheckBounds()
 {
-    m_pInternal->Drawing_EndCheckBounds();
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::DrawPresentationComment(JSSmart<CJSValue> type, JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h)
 {
-    m_pInternal->DrawPresentationComment();
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::DrawPolygon(JSSmart<CJSValue> oPath, JSSmart<CJSValue> lineWidth, JSSmart<CJSValue> shift)
 {
-    m_pInternal->DrawPolygon();
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::DrawFootnoteRect(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h)

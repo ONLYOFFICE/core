@@ -185,6 +185,14 @@ void CGraphics::transform3(double sx, double shy, double shx, double sy, double 
 {
     m_pRenderer->SetTransform(sx, shy, shx, sy, tx, ty);
 }
+void CGraphics::FreeFont()
+{
+    m_pRenderer->CloseFont();
+}
+void CGraphics::ClearLastFont()
+{
+    m_pRenderer->ClearInstallFont();
+}
 void CGraphics::drawImage(const std::wstring& img, double x, double y, double w, double h, BYTE alpha)
 {
     std::wstring strImage = (0 == img.find(L"theme") ? m_sApplicationThemesDirectory : m_sApplicationImagesDirectory) + L'/' + img;

@@ -143,8 +143,8 @@ namespace NSGraphics
         void clip();
         void reset();
         void transform3(double sx, double shy, double shx, double sy, double tx, double ty);
-        void FreeFont() {}
-        void ClearLastFont() {}
+        void FreeFont();
+        void ClearLastFont();
         // images
         void drawImage(const std::wstring& img, double x, double y, double w, double h, BYTE alpha);
         // text
@@ -188,7 +188,6 @@ namespace NSGraphics
         void drawCollaborativeChanges(double x, double y, double w, double h, int r, int g, int b, int a);
         void drawMailMergeField      (double x, double y, double w, double h);
         void drawSearchResult        (double x, double y, double w, double h);
-        void drawFlowAnchor          (double x, double y) {}
         void SavePen();
         void RestorePen();
         void SaveBrush();
@@ -202,12 +201,6 @@ namespace NSGraphics
         bool StartCheckTableDraw();
         void SetTextClipRect(double _l, double _t, double _r, double _b);
         void AddSmartRect   (double x,  double y,  double w,  double h, double pen_w);
-        void CheckUseFonts2() {}
-        void UncheckUseFonts2() {}
-        void Drawing_StartCheckBounds() {}
-        void Drawing_EndCheckBounds() {}
-        void DrawPresentationComment() {}
-        void DrawPolygon() {}
         void DrawFootnoteRect(double x,  double y,  double w,  double h);
         // new methods
         std::string toDataURL(std::wstring type);

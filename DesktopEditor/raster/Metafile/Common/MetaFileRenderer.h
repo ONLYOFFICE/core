@@ -399,7 +399,7 @@ namespace MetaFile
 				dX = dX * dCosTheta - dY * dSinTheta;
 				dY = -(dOldX * dSinTheta + dY * dCosTheta);
 				//Нужно дальше продолжить искать прафильную формулу
-				m_pRenderer->SetTransform(dCosTheta, dSinTheta * fabs(dM11), -dSinTheta * fabs(dM22), -dCosTheta, dRx - dY * dCosTheta, dRy - dX * dSinTheta + fH);
+				m_pRenderer->SetTransform(dCosTheta, dSinTheta * fabs(dM11), -dSinTheta * fabs(dM22), -dCosTheta, dRx - dY * dCosTheta, dRy - dX * dSinTheta);
 
 				bChangeCTM = true;
 			}
@@ -453,7 +453,6 @@ namespace MetaFile
 			{
 				unsigned int unUnicodeLen = 0;
 				unsigned int* pUnicode = NSStringExt::CConverter::GetUtf32FromUnicode(wsText, unUnicodeLen);
-				LOGGING(wsText)
 				if (pUnicode && unUnicodeLen)
 				{					
 					double dOffset = 0;
@@ -528,8 +527,8 @@ namespace MetaFile
 		{
 			CheckStartPath(false);
 
-			TPointD oTL = TranslatePoint(dLeft, dTop);
-			TPointD oBR = TranslatePoint(dRight, dBottom);
+			TPointD oTL = TranslatePoint(dLeft, dBottom);
+			TPointD oBR = TranslatePoint(dRight, dTop);
 			m_pRenderer->PathCommandArcTo(oTL.x, oTL.y, oBR.x - oTL.x, oBR.y - oTL.y, dStart, dSweep);
 		}
 		void ClosePath()

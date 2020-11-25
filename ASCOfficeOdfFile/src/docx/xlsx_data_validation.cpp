@@ -66,16 +66,88 @@ struct xlsx_dataValidation
 
 	std::wstring promt_text;
 	std::wstring promt_title;
+
+	std::wstring activate_ref;
 };
 typedef shared_ptr<xlsx_dataValidation>::Type xlsx_dataValidation_ptr;
 
 class xlsx_dataValidations_context::Impl
 {
+private:
+	void prepare()
+	{
+		for (std::map<std::wstring, xlsx_dataValidation_ptr>::iterator it = mapActivateDataValidations.begin();
+			it != mapActivateDataValidations.end(); ++it)
+		{
+			if (it->second->activate_ref.empty())
+			{
+				//prepare
+				std::map<int, std::vector<std::pair<int, int>>> mapCells;
+				for (std::map<int, std::vector<int>>::iterator jt = it->second->mapCells.begin(); jt != it->second->mapCells.end(); ++jt)
+				{
+					std::sort(jt->second.begin(), jt->second.end());
+					std::vector<std::pair<int, int>> arr;
+					MakePairVector(jt->second, arr);
+
+					mapCells.insert(std::make_pair(jt->first, arr));
+				}
+
+				std::wstring activate_ref;
+				std::map<int, std::vector<std::pair<int, int>>>::iterator jt1 = mapCells.begin();
+				while (jt1 != mapCells.end())
+				{
+					for (size_t i = 0; i < jt1->second.size(); i++)
+					{
+						std::map<int, std::vector<std::pair<int, int>>>::iterator jt2 = jt1;
+						while (jt2 != mapCells.end())
+						{
+							std::map<int, std::vector<std::pair<int, int>>>::iterator jt2_next = jt2; ++jt2_next;
+							if (jt2_next == mapCells.end() || jt2->first + 1 != jt2_next->first)
+								break;
+
+							//size_t j = 0; 
+							bool bFound = false;
+
+							for (std::vector<std::pair<int, int>>::iterator v_jt2 = jt2_next->second.begin();
+								v_jt2 != jt2_next->second.end(); ++v_jt2)
+							{
+								if (jt1->second[i].first == v_jt2->first ||
+									jt1->second[i].second == v_jt2->second)
+								{
+									bFound = true;
+									jt2_next->second.erase(v_jt2);
+									break;
+								}
+							}
+							if (false == bFound)
+								break;
+
+							jt2 = jt2_next;
+						}
+						if (!activate_ref.empty())
+						{
+							activate_ref += L" ";
+						}
+						activate_ref += oox::getCellAddress(jt1->first, jt1->second[i].first);
+
+						if (jt1->first != jt2->first || jt1->second[i].first != jt1->second[i].second)
+							activate_ref += L":" + oox::getCellAddress(jt2->first, jt1->second[i].second);
+					}
+					++jt1;
+				}
+				it->second->activate_ref = activate_ref;
+			}
+		}
+	}
 public:
 
     void serialize(std::wostream & _Wostream)
     {
+		return;
+
         if (mapActivateDataValidations.empty()) return;
+
+		prepare();
  		
         CP_XML_WRITER(_Wostream)
         {
@@ -86,60 +158,11 @@ public:
 				for (std::map<std::wstring, xlsx_dataValidation_ptr>::iterator it = mapActivateDataValidations.begin();
 					it != mapActivateDataValidations.end(); ++it)
                 {
-			//prepare
-					std::map<int, std::vector<std::pair<int, int>>> mapCells;
-					for (std::map<int, std::vector<int>>::iterator jt = it->second->mapCells.begin(); jt != it->second->mapCells.end(); ++jt)
-					{
-						std::sort(jt->second.begin(), jt->second.end());
-						std::vector<std::pair<int, int>> arr;
-						MakePairVector(jt->second, arr);
+					if (std::wstring::npos != it->second->activate_ref.find(L" ")) continue;
 
-						mapCells.insert(std::make_pair(jt->first, arr));
-					}
-					std::wstring activate_ref;
-
-					std::map<int, std::vector<std::pair<int, int>>>::iterator jt1 = mapCells.begin();
-					while ( jt1 != mapCells.end() )
-					{
-						for (size_t i = 0; i < jt1->second.size(); i++)
-						{
-							std::map<int, std::vector<std::pair<int, int>>>::iterator jt2 = jt1; 
-							while(jt2 != mapCells.end())
-							{
-								std::map<int, std::vector<std::pair<int, int>>>::iterator jt2_next = jt2; ++jt2_next;
-								if (jt2_next == mapCells.end() || jt2->first + 1 != jt2_next->first)
-									break;
-								
-								//size_t j = 0; 
-								bool bFound = false;
-
-								for (std::vector<std::pair<int, int>>::iterator v_jt2 = jt2_next->second.begin();
-									v_jt2 != jt2_next->second.end(); ++v_jt2)
-								{
-									if (jt1->second[i].first == v_jt2->first || 
-										jt1->second[i].second == v_jt2->second)
-									{
-										bFound = true;
-										jt2_next->second.erase(v_jt2);
-										break;
-									}
-								}
-								if (false == bFound)
-									break;
-
-								jt2 = jt2_next;
-							}
-							if (!activate_ref.empty()) activate_ref += L" ";
-							activate_ref += oox::getCellAddress(jt1->first, jt1->second[i].first);
-							
-							if (jt1->first != jt2->first || jt1->second[i].first != jt1->second[i].second)
-								activate_ref += L":" + oox::getCellAddress(jt2->first, jt1->second[i].second);
-						}
-						++jt1;
-					}
 					CP_XML_NODE(L"dataValidation")
                     {
- 						CP_XML_ATTR(L"sqref", activate_ref);
+ 						CP_XML_ATTR(L"sqref", it->second->activate_ref);
  						CP_XML_ATTR(L"allowBlank", it->second->allowBlank);
 						if (!it->second->operator_.empty())
 						{
@@ -188,10 +211,83 @@ public:
                 }        
             }
         }
-
-		mapActivateDataValidations.clear();
     }
 
+	void serialize_x14(std::wostream & _Wostream)
+	{
+		if (mapActivateDataValidations.empty()) return;
+		
+		prepare();
+		
+		CP_XML_WRITER(_Wostream)
+		{
+			CP_XML_NODE(L"x14:dataValidations")
+			{
+				CP_XML_ATTR(L"count", mapActivateDataValidations.size());
+				CP_XML_ATTR(L"xmlns:xm", L"http://schemas.microsoft.com/office/excel/2006/main");
+
+				for (std::map<std::wstring, xlsx_dataValidation_ptr>::iterator it = mapActivateDataValidations.begin();
+					it != mapActivateDataValidations.end(); ++it)
+				{
+					CP_XML_NODE(L"x14:dataValidation")
+					{
+						CP_XML_ATTR(L"allowBlank", it->second->allowBlank);
+						if (!it->second->operator_.empty())
+						{
+							CP_XML_ATTR(L"operator", it->second->operator_);
+						}
+						CP_XML_ATTR(L"showDropDown", it->second->showDropDown);
+						CP_XML_ATTR(L"showErrorMessage", it->second->showErrorMessage);
+						CP_XML_ATTR(L"showInputMessage", it->second->showInputMessage);
+						if (!it->second->type.empty())
+						{
+							CP_XML_ATTR(L"type", it->second->type);
+						}
+						if (!it->second->error_title.empty())
+						{
+							CP_XML_ATTR(L"errorTitle", it->second->error_title);
+						}
+						if (!it->second->error_text.empty())
+						{
+							CP_XML_ATTR(L"error", it->second->error_text);
+						}
+						if (!it->second->promt_title.empty())
+						{
+							CP_XML_ATTR(L"promptTitle", it->second->promt_title);
+						}
+						if (!it->second->promt_text.empty())
+						{
+							CP_XML_ATTR(L"prompt", it->second->promt_text);
+						}
+						if (!it->second->formula1.empty())
+						{
+							CP_XML_NODE(L"x14:formula1")
+							{
+								CP_XML_NODE(L"xm:f")
+								{
+									CP_XML_STREAM() << it->second->formula1;
+								}
+							}
+						}
+						if (!it->second->formula2.empty())
+						{
+							CP_XML_NODE(L"x14:formula2")
+							{
+								CP_XML_NODE(L"xm:f")
+								{
+									CP_XML_STREAM() << it->second->formula2;
+								}
+							}
+						}
+						CP_XML_NODE(L"xm:sqref")
+						{
+							CP_XML_STREAM() << it->second->activate_ref;
+						}
+					}
+				}
+			}
+		}
+	}
 	std::map<std::wstring, xlsx_dataValidation_ptr>		mapDataValidations;			//for all tables
 	std::map<std::wstring, xlsx_dataValidation_ptr>		mapActivateDataValidations; //in current table
 
@@ -218,9 +314,17 @@ xlsx_dataValidations_context::xlsx_dataValidations_context() :
 xlsx_dataValidations_context::~xlsx_dataValidations_context()
 {
 }
+void xlsx_dataValidations_context::clear()
+{
+	impl_->mapActivateDataValidations.clear();
+}
 void xlsx_dataValidations_context::serialize(std::wostream & _Wostream)
 {
     return impl_->serialize(_Wostream);
+}
+void xlsx_dataValidations_context::serialize_x14(std::wostream & _Wostream)
+{
+	return impl_->serialize_x14(_Wostream);
 }
 void xlsx_dataValidations_context::activate(const std::wstring & name, int col, int row/*const std::wstring & ref*/)
 {

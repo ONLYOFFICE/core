@@ -334,6 +334,7 @@ enum ElementType
     typeTableTableColumns,
     typeTableTableHeaderColumns,
     typeTableTableColumnGroup,
+	typeTableTableColumnNoGroup,
     typeTableTableRow,
     typeTableTableCell,
     typeTableCoveredTableCell,

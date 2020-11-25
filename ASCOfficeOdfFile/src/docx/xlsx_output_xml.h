@@ -64,6 +64,7 @@ public:
 	std::wostream & conditionalFormatting();
 	std::wostream & picture_background();
 	std::wostream & dataValidations();
+	std::wostream & dataValidationsX14();
 	std::wostream & sort();
 	std::wostream & ole_objects();
 	std::wostream & page_properties();

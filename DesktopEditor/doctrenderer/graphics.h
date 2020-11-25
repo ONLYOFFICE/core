@@ -131,9 +131,9 @@ namespace NSGraphics
         void _s();
         void _e();
         void _z();
-        void _m(double x, double y);
-        void _l(double x, double y);
-        void _c(double x1, double y1, double x2, double y2, double x3, double y3);
+        void _m (double x,  double y);
+        void _l (double x,  double y);
+        void _c (double x1, double y1, double x2, double y2, double x3, double y3);
         void _c2(double x1, double y1, double x2, double y2);
         void ds();
         void df();
@@ -201,7 +201,7 @@ namespace NSGraphics
         bool StartCheckTableDraw();
         void SetTextClipRect(double _l, double _t, double _r, double _b);
         void AddSmartRect   (double x,  double y,  double w,  double h, double pen_w);
-        void DrawFootnoteRect(double x,  double y,  double w,  double h);
+        void DrawFootnoteRect(double x, double y,  double w,  double h);
         // new methods
         std::string toDataURL(std::wstring type);
     };

@@ -67,6 +67,8 @@ function CNativeGraphics()
     this.IsRetina  = false;
 
     this.dash_no_smart = null;
+	
+	this.RENDERER_PDF_FLAG = true;
 }
 
 CNativeGraphics.prototype =

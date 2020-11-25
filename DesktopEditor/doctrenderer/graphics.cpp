@@ -59,7 +59,7 @@ void CGraphics::End_GlobalAlpha()
 
     m_pRenderer->put_IntegerGrid(bIsInteger);
 }
-void CGraphics::p_color(int r, int g, int b, int a)
+void CGraphics::p_color (int r, int g, int b, int a)
 {
     m_pRenderer->put_PenColor(r | (g << 8) | (b << 16));
     m_pRenderer->put_PenAlpha(a);

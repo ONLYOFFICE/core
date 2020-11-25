@@ -689,6 +689,22 @@ inline void js_return(const v8::FunctionCallbackInfo<v8::Value>& args, JSSmart<N
         args.GetReturnValue().Set(_value->value);
     }
 }
+inline void js_return(const v8::PropertyCallbackInfo<v8::Value>& info, JSSmart<NSJSBase::CJSValue>& value)
+{
+    if (value.is_init())
+    {
+        NSJSBase::CJSValueV8* _value = (NSJSBase::CJSValueV8*)(value.operator ->());
+        info.GetReturnValue().Set(_value->value);
+    }
+}
+
+#define PROPERTY_GET(NAME, NAME_EMBED)                                                      \
+    void NAME(v8::Local<v8::String> _name, const v8::PropertyCallbackInfo<v8::Value>& info) \
+    {                                                                                       \
+        CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(info.Holder());              \
+        JSSmart<CJSValue> ret = _this->NAME_EMBED();                                        \
+        js_return(info, ret);                                                               \
+    }
 
 #define FUNCTION_WRAPPER_V8(NAME, NAME_EMBED)                                       \
     void NAME(const v8::FunctionCallbackInfo<v8::Value>& args)                      \

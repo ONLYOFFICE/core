@@ -541,12 +541,7 @@ private:
             std::wstring sText = m_oLightReader.GetText();
             size_t find = sText.find_first_not_of(L" \n\t\r");
             if(find == std::wstring::npos)
-            {
-                if(sText.find(L' ') != std::wstring::npos)
-                    sText = L" ";
-                else
-                    return;
-            }
+                return;
             else if(!(find == 1 && sText.front() == L' '))
                 sText.erase(0, find);
 
@@ -638,7 +633,7 @@ private:
         else if(sName == L"br")
         {
             wrP(oXml, sSelectors, oTS, bWasP);
-            oXml->WriteString(L"<w:r><w:br/></w:r>");
+            oXml->WriteString(L"<w:r><w:tab/><w:br/></w:r>");
         }
         else if(sName == L"center")
         {

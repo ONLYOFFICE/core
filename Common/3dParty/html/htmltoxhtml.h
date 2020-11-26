@@ -58,6 +58,17 @@ static std::wstring htmlToXhtml(std::string& sFileContent)
         }
     }
 
+    // Избавление от <a/>
+    size_t posA = sFileContent.find("<a ");
+    while(posA != std::string::npos)
+    {
+        size_t nBegin = sFileContent.find('<',  posA + 1);
+        size_t nEnd   = sFileContent.find("/>", posA);
+        if(nEnd < nBegin)
+            sFileContent.replace(nEnd, 2, "></a>");
+        posA = sFileContent.find("<a ", nBegin);
+    }
+
     // Gumbo
     GumboOptions options = kGumboDefaultOptions;
     GumboOutput* output = gumbo_parse_with_options(&options, sFileContent.data(), sFileContent.length());

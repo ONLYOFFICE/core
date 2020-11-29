@@ -38,28 +38,45 @@ else
 
 //module
 
-self.onmessage = function(message)
+self.spellchecker = null;
+function onMessageEvent(data, port)
 {
-	var data = message.data;
-	if (data.type == "init")
-	{
-		self.spellchecker = new Spellchecker();
-		self.spellchecker.languagesPath = data.dictionaries_path;
-		self.spellchecker.init();
-		return;
-	}
+    if (data.type == "init")
+    {
+        if (self.spellchecker)
+            return;
+        self.spellchecker = new Spellchecker();
+        self.spellchecker.languagesPath = data.dictionaries_path;
+        self.spellchecker.init();
+        return;
+    }
 
-	if (!self.spellchecker)
-		return;
+    if (!self.spellchecker)
+        return;
 
-	self.spellchecker.messages.push(data);
-	if (1 < self.spellchecker.messages.length)
-	{
-		// значит еще грузим что-то
-		return;
-	}
+    self.spellchecker.messages.push(data);
+    if (port)
+        self.spellchecker.ports.push(port);
 
-	self.spellchecker.checkMessage();
+    if (1 < self.spellchecker.messages.length)
+    {
+        // значит еще грузим что-то
+        return;
+    }
+
+    self.spellchecker.checkMessage();
+}
+
+self.onconnect = function(e)
+{
+    var port = e.ports[0];
+    port.onmessage = function(e) {
+        onMessageEvent(e.data, port);
+    }    
+};
+self.onmessage = function(e)
+{
+    onMessageEvent(e.data);
 };
 self.engineInit = false;
 self.onEngineInit = function()
@@ -137,6 +154,7 @@ function Spellchecker()
 	this.languages = {};
 	this.readyLanguages = {};
 	this.messages = [];
+	this.ports = [];
 	this.tmpStrings = new ArrayBuffer(1000);
 	this.engine = 0;
 
@@ -486,7 +504,15 @@ function Spellchecker()
 
 	this.sendAnswer = function(data)
 	{
-		self.postMessage(data);
+		if (self.spellchecker.ports.length == 0)
+		{
+            self.postMessage(data);
+        }
+        else
+        {
+            var port = self.spellchecker.ports.shift();
+            port.postMessage(data);
+        }
 
 		setTimeout(function(){
 			self.spellchecker.checkMessage();

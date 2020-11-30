@@ -36,60 +36,8 @@
 #include "../common/Types.h"
 #include "../common/File.h"
 
-#include "v8.h"
-#include "libplatform/libplatform.h"
-
-#if V8_MAJOR_VERSION < 7
-#define ISOLATE_IF_7
-#else
-#define ISOLATE_IF_7 v8::Isolate::GetCurrent(),
-#endif
-
-class CV8Convert
+namespace NSMemoryStream
 {
-public:
-	static int ToInt(const v8::Local<v8::Value>& v)
-	{
-		return v->ToInt32(v8::Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::Int32>())->Value();
-	}
-	static unsigned int ToUint(const v8::Local<v8::Value>& v)
-	{
-		return v->ToUint32(v8::Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::Uint32>())->Value();
-	}
-	static double ToDouble(const v8::Local<v8::Value>& v)
-	{
-		return v->ToNumber(v8::Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::Number>())->Value();
-	}
-	static bool ToBool(const v8::Local<v8::Value>& v)
-	{
-		return v->ToBoolean(v8::Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::Boolean>())->Value();
-	}
-	static std::wstring ToString(v8::Local<v8::Value> v)
-	{
-	    v8::String::Utf8Value data(ISOLATE_IF_7 v);
-	    if (NULL == *data)
-		return L"";
-
-	    return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)(*data), data.length());
-	}
-	static std::string ToStringA(v8::Local<v8::Value> v)
-	{
-	    v8::String::Utf8Value data(ISOLATE_IF_7 v);
-	    const char* p = (char*)*data;
-	    if (NULL == p)
-		return "";
-	    return std::string(p);
-	}
-	static std::wstring GetSourceLine(const v8::Local<v8::Message>& m)
-	{
-		return ToString(m->GetSourceLine(v8::Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
-	}
-	static std::wstring GetMessage(const v8::Local<v8::Message>& m)
-	{
-		return ToString(m->Get());
-	}
-};
-
 class CMemoryStream
 {
 private:
@@ -216,7 +164,19 @@ public:
         m_pBufferMem += sizeof(USHORT);
 
         int nLen2 = nLen << 1;
-        memcpy(m_pBufferMem, pData, nLen2);
+        if (sizeof(wchar_t) == 2)
+        {
+            memcpy(m_pBufferMem, pData, nLen2);
+        }
+        else
+        {
+            int len = nLen >> 1;
+            USHORT* mass = new USHORT[len];
+            for (int i = 0; i < len; ++i)
+                mass[i] = (USHORT)pData[i];
+            memcpy(m_pBufferMem, mass, nLen2);
+            RELEASEARRAYOBJECTS(mass);
+        }
         m_pBufferMem += nLen2;
     }
     inline void WriteString2(const wchar_t* pData, int nLen)
@@ -227,29 +187,22 @@ public:
         *((LONG*)(m_pBufferMem)) = (LONG)nLen2;
         m_pBufferMem += sizeof(LONG);
 
-        memcpy(m_pBufferMem, pData, nLen2);
+        if (sizeof(wchar_t) == 2)
+        {
+            memcpy(m_pBufferMem, pData, nLen2);
+        }
+        else
+        {
+            USHORT* mass = new USHORT[nLen];
+            for (int i = 0; i < nLen; ++i)
+                mass[i] = (USHORT)pData[i];
+            memcpy(m_pBufferMem, mass, nLen2);
+            RELEASEARRAYOBJECTS(mass);
+        }
         m_pBufferMem += nLen2;
     }
 };
-
-// wrap_methods -------------
-CMemoryStream* unwrap_memorystream(v8::Handle<v8::Object> obj);
-
-void _ms_write_byte(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _ms_write_bool(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _ms_write_long(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _ms_write_double(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _ms_writestring1(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _ms_writestring2(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _ms_copy(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _ms_clearnoattack(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _ms_pos(v8::Local<v8::String> name, const v8::PropertyCallbackInfo<v8::Value>& info);
-
-v8::Handle<v8::ObjectTemplate> CreateMemoryStreamTemplate(v8::Isolate* isolate);
+}
 
 #endif // MEMORYSTREAM
 

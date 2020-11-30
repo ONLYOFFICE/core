@@ -1,5 +1,14 @@
-CORE_V8_PATH_INCLUDE    = $$PWD/v8
-CORE_V8_PATH_LIBS       = $$CORE_V8_PATH_INCLUDE/out.gn/$$CORE_BUILDS_PLATFORM_PREFIX/obj
+CONFIG += v8_version_87
+
+v8_version_87 {
+    CORE_V8_PATH_INCLUDE    = /Users/nctdevices/Desktop/GIT_DEVELOP_MAC/v8/v8
+    CORE_V8_PATH_LIBS       = $$CORE_V8_PATH_INCLUDE/out.gn/$$CORE_BUILDS_PLATFORM_PREFIX/obj
+    CONFIG += c++14
+    DEFINES += V8_VERSION_87_PLUS
+} else {
+    CORE_V8_PATH_INCLUDE    = $$PWD/v8
+    CORE_V8_PATH_LIBS       = $$CORE_V8_PATH_INCLUDE/out.gn/$$CORE_BUILDS_PLATFORM_PREFIX/obj
+}
 
 INCLUDEPATH += \
     $$CORE_V8_PATH_INCLUDE \
@@ -30,11 +39,14 @@ core_linux {
 }
 
 core_mac {
-    LIBS += -L$$CORE_V8_PATH_LIBS -lv8_base -lv8_libplatform -lv8_libbase -lv8_snapshot -lv8_libsampler
 
-    #LIBS += -L$$CORE_V8_PATH_LIBS/third_party/icu -licui18n -licuuc
-    LIBS += $$CORE_V8_PATH_LIBS/third_party/icu/libicui18n.a
-    LIBS += $$CORE_V8_PATH_LIBS/third_party/icu/libicuuc.a
+    v8_version_87 {
+        LIBS += -L$$CORE_V8_PATH_LIBS -lv8_monolith
+    } else {
+        LIBS += -L$$CORE_V8_PATH_LIBS -lv8_base -lv8_libplatform -lv8_libbase -lv8_snapshot -lv8_libsampler
+        LIBS += $$CORE_V8_PATH_LIBS/third_party/icu/libicui18n.a
+        LIBS += $$CORE_V8_PATH_LIBS/third_party/icu/libicuuc.a
+    }
 
     QMAKE_CXXFLAGS += -Wall -Wno-inconsistent-missing-override
     QMAKE_CFLAGS += -Wall -Wno-inconsistent-missing-override

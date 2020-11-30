@@ -33,6 +33,12 @@
 
 std::wstring rStyle = L"a area b strong bdo bdi big br center cite dfn em i var code kbd samp tt del s font img ins u mark q rt sup small sub svg input basefont button label data object noscript output abbr time ruby progress hgroup meter span acronym";
 
+struct CTree
+{
+    NSCSS::CNode m_oNode;
+    std::vector<CTree> m_arrChild;
+};
+
 // Ячейка таблицы
 struct CTc
 {
@@ -88,6 +94,8 @@ private:
     NSStringUtils::CStringBuilder m_oDocXml;     // document.xml
     NSStringUtils::CStringBuilder m_oNoteXml;    // footnotes.xml
     NSStringUtils::CStringBuilder m_oNumberXml;  // numbering.xml
+
+    CTree m_oTree; // Дерево body html-файла
 
 public:
 
@@ -410,6 +418,80 @@ public:
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
         {
             std::wstring sName = m_oLightReader.GetName();
+            if(sName == L"body")
+            {
+                NSCSS::CNode oNode;
+
+                oNode.m_sName = sName;
+                // Стиль по атрибуту
+                while(m_oLightReader.MoveToNextAttribute())
+                {
+                    std::wstring sNameA  = m_oLightReader.GetName();
+                    if(sNameA == L"class")
+                        oNode.m_sClass  = m_oLightReader.GetText();
+                    else if(sNameA == L"id")
+                        oNode.m_sId = m_oLightReader.GetText();
+                    else if(sNameA == L"style")
+                        oNode.m_sStyle += m_oLightReader.GetText();
+                    else if(sNameA == L"align")
+                        oNode.m_sStyle += L"; text-align: " + m_oLightReader.GetText() + L";";
+                }
+                m_oLightReader.MoveToElement();
+                m_oTree.m_oNode = oNode;
+
+                readStyle2(m_oTree.m_arrChild);
+            }
+            else
+            {
+                // Стиль по ссылке
+                if(sName == L"link")
+                {
+                    while(m_oLightReader.MoveToNextAttribute())
+                    {
+                        if(m_oLightReader.GetName() != L"href")
+                            continue;
+                        std::wstring sRef = m_oLightReader.GetText();
+                        if(NSFile::GetFileExtention(sRef) != L"css")
+                            continue;
+                        std::wstring sFName = NSFile::GetFileName(sRef);
+                        // Стиль в сети
+                        if(sRef.substr(0, 4) == L"http")
+                        {
+                            sFName = m_sTmp + L'/' + sFName;
+                            CFileDownloader oDownloadStyle(sRef, false);
+                            oDownloadStyle.SetFilePath(sFName);
+                            if(oDownloadStyle.DownloadSync())
+                            {
+                                m_oStylesCalculator.AddStylesFromFile(sFName);
+                                NSFile::CFileBinary::Remove(sFName);
+                            }
+                        }
+                        else
+                        {
+                            m_oStylesCalculator.AddStylesFromFile(m_sSrc + L'/' + sFName);
+                            m_oStylesCalculator.AddStylesFromFile(m_sSrc + L'/' + sRef);
+                        }
+                    }
+                    m_oLightReader.MoveToElement();
+                }
+                // тэг style содержит стили для styles.xml
+                else if(sName == L"style")
+                    m_oStylesCalculator.AddStyles(m_oLightReader.GetText2());
+                readStyle();
+            }
+        }
+    }
+
+    void readStyle2(std::vector<CTree>& arrChild)
+    {
+        if(m_oLightReader.IsEmptyNode())
+            return;
+
+        int nDeath = m_oLightReader.GetDepth();
+        while(m_oLightReader.ReadNextSiblingNode(nDeath))
+        {
+            CTree oTree;
+            std::wstring sName = m_oLightReader.GetName();
             // Стиль по ссылке
             if(sName == L"link")
             {
@@ -444,7 +526,30 @@ public:
             // тэг style содержит стили для styles.xml
             else if(sName == L"style")
                 m_oStylesCalculator.AddStyles(m_oLightReader.GetText2());
-            readStyle();
+            else
+            {
+                NSCSS::CNode oNode;
+
+                oNode.m_sName = sName;
+                // Стиль по атрибуту
+                while(m_oLightReader.MoveToNextAttribute())
+                {
+                    std::wstring sNameA  = m_oLightReader.GetName();
+                    if(sNameA == L"class")
+                        oNode.m_sClass  = m_oLightReader.GetText();
+                    else if(sNameA == L"id")
+                        oNode.m_sId = m_oLightReader.GetText();
+                    else if(sNameA == L"style")
+                        oNode.m_sStyle += m_oLightReader.GetText();
+                    else if(sNameA == L"align")
+                        oNode.m_sStyle += L"; text-align: " + m_oLightReader.GetText() + L";";
+                }
+                m_oLightReader.MoveToElement();
+
+                oTree.m_oNode = oNode;
+                arrChild.push_back(oTree);
+            }
+            readStyle2(oTree.m_arrChild);
         }
     }
 

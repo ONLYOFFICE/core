@@ -2,6 +2,7 @@
 #define CCOMPILEDSTYLE_H
 
 #include "CssCalculator_global.h"
+#include "CssProperties.h"
 
 #include <map>
 #include <vector>
@@ -14,6 +15,12 @@ namespace NSCSS
         std::map<std::wstring, std::wstring> m_mStyle;
         std::vector<std::wstring> m_arParentsStyles;
         std::wstring m_sId;
+
+//        struct Font *m_pFont;
+//        struct Margin *m_pMargin;
+//        std::wstring *m_sBackgroundColor; //HEX color
+//        struct Text *m_pText;
+//        struct Border *m_pBorder;
 
     public:
         CCompiledStyle();

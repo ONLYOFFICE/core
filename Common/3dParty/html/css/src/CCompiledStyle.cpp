@@ -16,7 +16,7 @@ namespace NSCSS
 {
     typedef std::map<std::wstring, std::wstring>::const_iterator styles_iterator;
 
-    CCompiledStyle::CCompiledStyle() {}
+    CCompiledStyle::CCompiledStyle(){}
 
     CCompiledStyle::CCompiledStyle(const std::map<std::wstring, std::wstring>& mStyle) : m_mStyle(mStyle) {}
 
@@ -27,6 +27,22 @@ namespace NSCSS
     {
         m_mStyle.         clear();
         m_arParentsStyles.clear();
+
+
+//        if (NULL != m_pFont)
+//            delete m_pFont;
+
+//        if (NULL != m_pMargin)
+//            delete m_pMargin;
+
+//        if (NULL != m_sBackgroundColor)
+//            delete m_sBackgroundColor;
+
+//        if (NULL != m_pText)
+//            delete m_pText;
+
+//        if (NULL != m_pBorder)
+//            delete m_pBorder;
     }
 
 
@@ -126,20 +142,168 @@ namespace NSCSS
         if (m_mStyle[sProperty].find(L'!') != std::wstring::npos)
             return;
 
-        std::wstring sNetValue = sValue;
-        if (sNetValue.substr(0, 3) == L"rgb")
-            sNetValue = NSCSS::NS_STATIC_FUNCTIONS::ConvertRgbToHex(sNetValue);
-
         if (!bHardMode)
-            m_mStyle.emplace(sProperty, sNetValue);
+            m_mStyle.emplace(sProperty, sValue);
         else
-            m_mStyle[sProperty] = sNetValue;
+            m_mStyle[sProperty] = sValue;
     }
 
     void CCompiledStyle::AddStyle(const std::map<std::wstring, std::wstring>& mStyle, const bool& bHardMode)
     {
-        for (const std::pair<std::wstring, std::wstring> pPropertie : mStyle)
+        for (std::pair<std::wstring, std::wstring> pPropertie : mStyle)
         {
+//            SWITCH(pPropertie.first)
+//            {
+//                //FONT
+//                CASE(L"font"):
+//                {
+//                    if (NULL == m_pFont)
+//                        m_pFont = new Font();
+//                    break;
+//                }
+//                CASE(L"font-size"):
+//                {
+//                    if (NULL == m_pFont)
+//                        m_pFont = new Font();
+//                    break;
+//                }
+//                CASE(L"font-size-adjust"):
+//                {
+//                    if (NULL == m_pFont)
+//                        m_pFont = new Font();
+//                    break;
+//                }
+//                CASE(L"font-stretch"):
+//                {
+//                    if (NULL == m_pFont)
+//                        m_pFont = new Font();
+//                    break;
+//                }
+//                CASE(L"font-style"):
+//                {
+//                    if (NULL == m_pFont)
+//                        m_pFont = new Font();
+//                    break;
+//                }
+//                CASE(L"font-variant"):
+//                {
+//                    if (NULL == m_pFont)
+//                        m_pFont = new Font();
+//                    break;
+//                }
+//                CASE(L"font-weight"):
+//                {
+//                    if (NULL == m_pFont)
+//                        m_pFont = new Font();
+//                    break;
+//                }
+//                // MARGIN
+//                CASE(L"margin"):
+//                {
+//                    if (NULL == m_pMargin)
+//                        m_pMargin = new Margin();
+
+//                    m_pMargin->AddMargin(pPropertie.second);
+//                    break;
+//                }
+//                CASE(L"margin-top"):
+//                {
+//                    if (NULL == m_pMargin)
+//                        m_pMargin = new Margin();
+
+//                    m_pMargin->fTopSide += wcstof(pPropertie.second.c_str(), NULL);
+//                    break;
+//                }
+//                CASE(L"margin-right"):
+//                CASE(L"margin-block-end"):
+//                {
+//                    if (NULL == m_pMargin)
+//                        m_pMargin = new Margin();
+
+//                    m_pMargin->fRightSide += wcstof(pPropertie.second.c_str(), NULL);
+
+//                    break;
+//                }
+//                CASE(L"margin-bottom"):
+//                {
+//                    if (NULL == m_pMargin)
+//                        m_pMargin = new Margin();
+
+//                    m_pMargin->fBottomSide += wcstof(pPropertie.second.c_str(), NULL);
+//                    break;
+//                }
+//                CASE(L"margin-left"):
+//                CASE(L"margin-block-start"):
+//                {
+//                    if (NULL == m_pMargin)
+//                        m_pMargin = new Margin();
+
+//                    m_pMargin->fLeftSide += wcstof(pPropertie.second.c_str(), NULL);
+
+//                    break;
+//                }
+//                // TEXT
+//                CASE(L"text-align"):
+//                    break;
+//                CASE(L"text-indent"):
+//                    break;
+//                CASE(L"text-decoration"):
+//                    break;
+//                //BORDER
+//                CASE(L"border"):
+//                    break;
+//                CASE(L"mso-border-alt"):
+//                    break;
+//                CASE(L"border-width"):
+//                    break;
+//                CASE(L"border-style"):
+//                    break;
+//                CASE(L"border-color"):
+//                    break;
+//                //BORDER TOP
+//                CASE(L"border-top"):
+//                    break;
+//                CASE(L"border-top-width"):
+//                    break;
+//                CASE(L"border-top-style"):
+//                    break;
+//                CASE(L"border-top-color"):
+//                    break;
+//                //BORDER RIGHT
+//                CASE(L"border-right"):
+//                    break;
+//                CASE(L"border-right-width"):
+//                    break;
+//                CASE(L"border-right-style"):
+//                    break;
+//                CASE(L"border-right-color"):
+//                    break;
+//                //BORDER bottom
+//                CASE(L"border-bottom"):
+//                    break;
+//                CASE(L"border-bottom-width"):
+//                    break;
+//                CASE(L"border-bottom-style"):
+//                    break;
+//                CASE(L"border-bottom-color"):
+//                    break;
+//                //BORDER LEFT
+//                CASE(L"border-left"):
+//                    break;
+//                CASE(L"border-left-width"):
+//                    break;
+//                CASE(L"border-left-style"):
+//                    break;
+//                CASE(L"border-left-color"):
+//                    break;
+//                // OTHER
+//                CASE(L"line-height"):
+//                    break;
+//                CASE(L"color "):
+//                    break;
+//                CASE(L"background-color"):
+//                    break;
+//            }
             if (m_mStyle[pPropertie.first].empty() || bHardMode)
                 m_mStyle[pPropertie.first] = pPropertie.second;
             else if (!bHardMode || m_mStyle[pPropertie.first].find(L'!') != std::wstring::npos)
@@ -505,8 +669,6 @@ namespace NSCSS
         {
             styles_iterator oMargin = m_mStyle.find(L"margin");
 
-            std::vector<std::wstring> sRes(4);
-
             std::wstring sMargin;
             if (oMargin != m_mStyle.end())
                 sMargin = oMargin->second;
@@ -539,11 +701,10 @@ namespace NSCSS
                 if(sBottom.empty())
                     sBottom = arValues.size() > 2 ? arValues[2] : arValues[0];
             }
-            sRes[0] = sTop;
-            sRes[1] = sRight;
-            sRes[2] = sBottom;
-            sRes[3] = sLeft;
-            return sRes;
+            else if (sTop.empty() && sRight.empty() && sBottom.empty() && sLeft.empty())
+                return std::vector<std::wstring>();
+
+            return {sTop, sRight, sBottom, sLeft};
         }
 
         std::wstring CCompiledStyle::GetMarginTop2() const

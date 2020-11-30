@@ -84,7 +84,7 @@ namespace NSCSS
     inline void CCssCalculator_Private::GetOutputData(KatanaOutput *oOutput)
     {
         if ( NULL == oOutput )
-            return;        
+            return;
 
         switch (oOutput->mode) {
             case KatanaParserModeStylesheet:
@@ -479,6 +479,9 @@ namespace NSCSS
             pProperie.second = ConvertUnitMeasure(pProperie.second);
 
         m_mUsedStyles[arSelectors] = oStyle;
+
+        std::wcout << oStyle->GetId() << std::endl;
+        std::wcout << oStyle->GetStyleW() << std::endl << std::endl;
 
         return *oStyle;
     }

@@ -3,8 +3,7 @@
 
 #include "../../../../../UnicodeConverter/UnicodeConverter.h"
 #include "../../../../../DesktopEditor/common/File.h"
-#include "CCssCalculator.h"
-#include "CssCalculator_global.h"
+//#include "CCssCalculator.h"
 #include "ConstValues.h"
 #include <cwctype>
 #include <string>

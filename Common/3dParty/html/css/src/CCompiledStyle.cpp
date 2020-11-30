@@ -16,33 +16,47 @@ namespace NSCSS
 {
     typedef std::map<std::wstring, std::wstring>::const_iterator styles_iterator;
 
-    CCompiledStyle::CCompiledStyle(){}
+    CCompiledStyle::CCompiledStyle() : m_pFont(NULL), m_pMargin(NULL), m_pBackgroundColor(NULL),
+        m_pText(NULL), m_pBorder(NULL)
+    {
+        std::wcout << L"Init" << std::endl;
+    }
 
-    CCompiledStyle::CCompiledStyle(const std::map<std::wstring, std::wstring>& mStyle) : m_mStyle(mStyle) {}
+    CCompiledStyle::CCompiledStyle(const std::map<std::wstring, std::wstring>& mStyle) :
+        m_mStyle(mStyle){
+        std::wcout << L"MAP INIT" << std::endl;
+
+    }
 
     CCompiledStyle::CCompiledStyle(const CCompiledStyle& oStyle) :
-        m_mStyle(oStyle.m_mStyle), m_arParentsStyles(oStyle.m_arParentsStyles), m_sId(oStyle.m_sId) {}
+        m_mStyle(oStyle.m_mStyle), m_arParentsStyles(oStyle.m_arParentsStyles), m_sId(oStyle.m_sId),
+        m_pFont(oStyle.m_pFont), m_pMargin(oStyle.m_pMargin), m_pBackgroundColor(oStyle.m_pBackgroundColor),
+        m_pText(oStyle.m_pText), m_pBorder(oStyle.m_pBorder){
+        std::wcout << L"COPY" << std::endl;
+
+    }
 
     CCompiledStyle::~CCompiledStyle()
     {
         m_mStyle.         clear();
         m_arParentsStyles.clear();
 
+        if (NULL != m_pFont)
+            delete m_pFont;
 
-//        if (NULL != m_pFont)
-//            delete m_pFont;
+        if (NULL != m_pMargin)
+        {
+            delete m_pMargin;
+            m_pMargin = NULL;
+        }
+        if (NULL != m_pBackgroundColor)
+            delete m_pBackgroundColor;
 
-//        if (NULL != m_pMargin)
-//            delete m_pMargin;
+        if (NULL != m_pText)
+            delete m_pText;
 
-//        if (NULL != m_sBackgroundColor)
-//            delete m_sBackgroundColor;
-
-//        if (NULL != m_pText)
-//            delete m_pText;
-
-//        if (NULL != m_pBorder)
-//            delete m_pBorder;
+        if (NULL != m_pBorder)
+            delete m_pBorder;
     }
 
 
@@ -63,6 +77,12 @@ namespace NSCSS
         m_mStyle = oElement.m_mStyle;
         m_sId    = oElement.m_sId;
         m_arParentsStyles = oElement.m_arParentsStyles;
+
+        m_pBackgroundColor = oElement.m_pBackgroundColor;
+        m_pBorder = oElement.m_pBorder;
+        m_pFont = oElement.m_pFont;
+        m_pMargin = oElement.m_pMargin;
+        m_pText = oElement.m_pText;
         return *this;
     }
 
@@ -152,158 +172,6 @@ namespace NSCSS
     {
         for (std::pair<std::wstring, std::wstring> pPropertie : mStyle)
         {
-//            SWITCH(pPropertie.first)
-//            {
-//                //FONT
-//                CASE(L"font"):
-//                {
-//                    if (NULL == m_pFont)
-//                        m_pFont = new Font();
-//                    break;
-//                }
-//                CASE(L"font-size"):
-//                {
-//                    if (NULL == m_pFont)
-//                        m_pFont = new Font();
-//                    break;
-//                }
-//                CASE(L"font-size-adjust"):
-//                {
-//                    if (NULL == m_pFont)
-//                        m_pFont = new Font();
-//                    break;
-//                }
-//                CASE(L"font-stretch"):
-//                {
-//                    if (NULL == m_pFont)
-//                        m_pFont = new Font();
-//                    break;
-//                }
-//                CASE(L"font-style"):
-//                {
-//                    if (NULL == m_pFont)
-//                        m_pFont = new Font();
-//                    break;
-//                }
-//                CASE(L"font-variant"):
-//                {
-//                    if (NULL == m_pFont)
-//                        m_pFont = new Font();
-//                    break;
-//                }
-//                CASE(L"font-weight"):
-//                {
-//                    if (NULL == m_pFont)
-//                        m_pFont = new Font();
-//                    break;
-//                }
-//                // MARGIN
-//                CASE(L"margin"):
-//                {
-//                    if (NULL == m_pMargin)
-//                        m_pMargin = new Margin();
-
-//                    m_pMargin->AddMargin(pPropertie.second);
-//                    break;
-//                }
-//                CASE(L"margin-top"):
-//                {
-//                    if (NULL == m_pMargin)
-//                        m_pMargin = new Margin();
-
-//                    m_pMargin->fTopSide += wcstof(pPropertie.second.c_str(), NULL);
-//                    break;
-//                }
-//                CASE(L"margin-right"):
-//                CASE(L"margin-block-end"):
-//                {
-//                    if (NULL == m_pMargin)
-//                        m_pMargin = new Margin();
-
-//                    m_pMargin->fRightSide += wcstof(pPropertie.second.c_str(), NULL);
-
-//                    break;
-//                }
-//                CASE(L"margin-bottom"):
-//                {
-//                    if (NULL == m_pMargin)
-//                        m_pMargin = new Margin();
-
-//                    m_pMargin->fBottomSide += wcstof(pPropertie.second.c_str(), NULL);
-//                    break;
-//                }
-//                CASE(L"margin-left"):
-//                CASE(L"margin-block-start"):
-//                {
-//                    if (NULL == m_pMargin)
-//                        m_pMargin = new Margin();
-
-//                    m_pMargin->fLeftSide += wcstof(pPropertie.second.c_str(), NULL);
-
-//                    break;
-//                }
-//                // TEXT
-//                CASE(L"text-align"):
-//                    break;
-//                CASE(L"text-indent"):
-//                    break;
-//                CASE(L"text-decoration"):
-//                    break;
-//                //BORDER
-//                CASE(L"border"):
-//                    break;
-//                CASE(L"mso-border-alt"):
-//                    break;
-//                CASE(L"border-width"):
-//                    break;
-//                CASE(L"border-style"):
-//                    break;
-//                CASE(L"border-color"):
-//                    break;
-//                //BORDER TOP
-//                CASE(L"border-top"):
-//                    break;
-//                CASE(L"border-top-width"):
-//                    break;
-//                CASE(L"border-top-style"):
-//                    break;
-//                CASE(L"border-top-color"):
-//                    break;
-//                //BORDER RIGHT
-//                CASE(L"border-right"):
-//                    break;
-//                CASE(L"border-right-width"):
-//                    break;
-//                CASE(L"border-right-style"):
-//                    break;
-//                CASE(L"border-right-color"):
-//                    break;
-//                //BORDER bottom
-//                CASE(L"border-bottom"):
-//                    break;
-//                CASE(L"border-bottom-width"):
-//                    break;
-//                CASE(L"border-bottom-style"):
-//                    break;
-//                CASE(L"border-bottom-color"):
-//                    break;
-//                //BORDER LEFT
-//                CASE(L"border-left"):
-//                    break;
-//                CASE(L"border-left-width"):
-//                    break;
-//                CASE(L"border-left-style"):
-//                    break;
-//                CASE(L"border-left-color"):
-//                    break;
-//                // OTHER
-//                CASE(L"line-height"):
-//                    break;
-//                CASE(L"color "):
-//                    break;
-//                CASE(L"background-color"):
-//                    break;
-//            }
             if (m_mStyle[pPropertie.first].empty() || bHardMode)
                 m_mStyle[pPropertie.first] = pPropertie.second;
             else if (!bHardMode || m_mStyle[pPropertie.first].find(L'!') != std::wstring::npos)
@@ -667,6 +535,11 @@ namespace NSCSS
 
         std::vector<std::wstring> CCompiledStyle::GetMargins() const
         {
+            if (NULL != m_pMargin)
+            {
+                std::wcout << L"_____________________________" << std::endl;
+                return {std::to_wstring(m_pMargin->fTopSide), std::to_wstring(m_pMargin->fRightSide), std::to_wstring(m_pMargin->fBottomSide), std::to_wstring(m_pMargin->fRightSide)};
+            }
             styles_iterator oMargin = m_mStyle.find(L"margin");
 
             std::wstring sMargin;

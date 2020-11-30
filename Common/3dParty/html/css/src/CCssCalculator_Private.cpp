@@ -470,6 +470,169 @@ namespace NSCSS
             for (const CElement* oElement : arFindElements)
                 oStyle->AddStyle(oElement->GetStyle());
 
+            for (const CElement* oElement : arFindElements)
+            {
+                for (std::pair<std::wstring, std::wstring> pPropertie : oElement->GetStyle())
+                {
+                    SWITCH(pPropertie.first)
+                    {
+                        //FONT
+                        CASE(L"font"):
+                        {
+                            break;
+                        }
+                        CASE(L"font-size"):
+                        {
+                            break;
+                        }
+                        CASE(L"font-size-adjust"):
+                        {
+                            break;
+                        }
+                        CASE(L"font-stretch"):
+                        {
+                            break;
+                        }
+                        CASE(L"font-style"):
+                        {
+                            break;
+                        }
+                        CASE(L"font-variant"):
+                        {
+                            break;
+                        }
+                        CASE(L"font-weight"):
+                        {
+                            break;
+                        }
+                        //MARGIN
+                        CASE(L"margin"):
+                        {
+                            const std::wstring sValue = ConvertUnitMeasure(pPropertie.second);
+                            if (!sValue.empty() && sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            {
+                                if (NULL == oStyle->m_pMargin)
+                                    oStyle->m_pMargin = new CssProperties::Margin();
+
+                                oStyle->m_pMargin->AddMargin(sValue);
+                            }
+                            break;
+                        }
+                        CASE(L"margin-top"):
+                        {
+                            const std::wstring sValue = ConvertUnitMeasure(pPropertie.second);
+                            if (!sValue.empty() && sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            {
+                                if (NULL == oStyle->m_pMargin)
+                                    oStyle->m_pMargin = new CssProperties::Margin();
+
+                                oStyle->m_pMargin->fTopSide += wcstof(ConvertUnitMeasure(pPropertie.second).c_str(), NULL);
+                            }
+                            break;
+                        }
+                        CASE(L"margin-right"):
+                        CASE(L"margin-block-end"):
+                        {
+                            const std::wstring sValue = ConvertUnitMeasure(pPropertie.second);
+                            if (!sValue.empty() && sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            {
+                                if (NULL == oStyle->m_pMargin)
+                                    oStyle->m_pMargin = new CssProperties::Margin();
+
+                                oStyle->m_pMargin->fRightSide += wcstof(ConvertUnitMeasure(pPropertie.second).c_str(), NULL);
+                            }
+                            break;
+                        }
+                        CASE(L"margin-bottom"):
+                        {
+                            const std::wstring sValue = ConvertUnitMeasure(pPropertie.second);
+                            if (!sValue.empty() && sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            {
+                                if (NULL == oStyle->m_pMargin)
+                                    oStyle->m_pMargin = new CssProperties::Margin();
+
+                                oStyle->m_pMargin->fBottomSide += wcstof(ConvertUnitMeasure(pPropertie.second).c_str(), NULL);
+                            }
+                            break;
+                        }
+                        CASE(L"margin-left"):
+                        CASE(L"margin-block-start"):
+                        {
+                            const std::wstring sValue = ConvertUnitMeasure(pPropertie.second);
+                            if (!sValue.empty() && sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            {
+                                if (NULL == oStyle->m_pMargin)
+                                    oStyle->m_pMargin = new CssProperties::Margin();
+
+                                oStyle->m_pMargin->fLeftSide += wcstof(ConvertUnitMeasure(pPropertie.second).c_str(), NULL);
+                            }
+                            break;
+                        }
+                        // TEXT
+                        CASE(L"text-align"):
+                            break;
+                        CASE(L"text-indent"):
+                            break;
+                        CASE(L"text-decoration"):
+                            break;
+                        //BORDER
+                        CASE(L"border"):
+                            break;
+                        CASE(L"mso-border-alt"):
+                            break;
+                        CASE(L"border-width"):
+                            break;
+                        CASE(L"border-style"):
+                            break;
+                        CASE(L"border-color"):
+                            break;
+                        //BORDER TOP
+                        CASE(L"border-top"):
+                            break;
+                        CASE(L"border-top-width"):
+                            break;
+                        CASE(L"border-top-style"):
+                            break;
+                        CASE(L"border-top-color"):
+                            break;
+                        //BORDER RIGHT
+                        CASE(L"border-right"):
+                            break;
+                        CASE(L"border-right-width"):
+                            break;
+                        CASE(L"border-right-style"):
+                            break;
+                        CASE(L"border-right-color"):
+                            break;
+                        //BORDER bottom
+                        CASE(L"border-bottom"):
+                            break;
+                        CASE(L"border-bottom-width"):
+                            break;
+                        CASE(L"border-bottom-style"):
+                            break;
+                        CASE(L"border-bottom-color"):
+                            break;
+                        //BORDER LEFT
+                        CASE(L"border-left"):
+                            break;
+                        CASE(L"border-left-width"):
+                            break;
+                        CASE(L"border-left-style"):
+                            break;
+                        CASE(L"border-left-color"):
+                            break;
+                        // OTHER
+                        CASE(L"line-height"):
+                            break;
+                        CASE(L"color "):
+                            break;
+                        CASE(L"background-color"):
+                            break;
+                    }
+                }
+            }
+
             arWords.pop_back();
         }
 
@@ -529,7 +692,7 @@ namespace NSCSS
             if (nPosImportant != std::wstring::npos)
                 sValueTemp = sValueTemp.substr(0, nPosImportant);
 
-            size_t nPosGrid = sValueTemp.find(L'#');
+            const size_t nPosGrid = sValueTemp.find(L'#');
 
             if (nPosGrid != std::wstring::npos || !NS_STATIC_FUNCTIONS::ThereIsNumber(sValueTemp))
             {
@@ -623,7 +786,7 @@ namespace NSCSS
                 if (sValueTemp.find(L";") != std::wstring::npos)
                     sValueString += L';';
 
-                break;
+                continue;
             }
 
             if (sValueTemp.back() != L';' && sValueTemp.back() != L':' && sValueTemp.back() != L' ')

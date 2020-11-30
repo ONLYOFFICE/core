@@ -1,7 +1,6 @@
 #ifndef CSSPROPERTIES_H
 #define CSSPROPERTIES_H
 
-#include <string>
 #include "StaticFunctions.h"
 
 namespace NSCSS
@@ -48,6 +47,12 @@ namespace NSCSS
             FontVariant enVariant;
             bool bWeight; //true - font-weight:bold;
             float fLineHeight;
+
+            Font() : fSize(0), enStretch(FontStretch::normal), enStyle(FontStyle::normal),
+                     enVariant(FontVariant::normal), bWeight(0), fLineHeight(0) {};
+
+            Font(const Font& oFont) : fSize(oFont.fSize), enStretch(oFont.enStretch), enStyle(oFont.enStyle),
+                                      enVariant(oFont.enVariant), bWeight(oFont.bWeight), fLineHeight(oFont.fLineHeight){};
         };
 
         struct Margin
@@ -57,11 +62,17 @@ namespace NSCSS
             float fBottomSide;
             float fLeftSide;
 
-            void AddMargin(const std::wstring &sMargin)
+            Margin() : fTopSide(0), fRightSide(0), fBottomSide(0), fLeftSide(0){};
+            Margin(const Margin &oMargin) : fTopSide(oMargin.fTopSide), fRightSide(oMargin.fRightSide),
+                                            fBottomSide(oMargin.fBottomSide), fLeftSide(oMargin.fLeftSide){};
+
+            void AddMargin(const std::wstring& sMargin)
             {
                 const std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(sMargin, L" ");
                 switch (arValues.size())
                 {
+                    case 0:
+                        return;
                     case 1:
                     {
                         const float fValue = wcstof(arValues[0].c_str(), NULL);
@@ -116,7 +127,11 @@ namespace NSCSS
             float fAlign;
             float fIndent;
             TextDecoration enDecoration;
-            std::wstring *m_sColor; //HEX color
+            std::wstring sColor; //HEX color
+
+            Text(): fAlign(0), fIndent(0), enDecoration(TextDecoration::none), sColor(L""){};
+            Text(const Text &oText) : fAlign(oText.fAlign), fIndent(oText.fIndent),
+                                      enDecoration(oText.enDecoration), sColor(oText.sColor){};
         };
 
         enum BorderStyle
@@ -138,6 +153,10 @@ namespace NSCSS
             float fWidth;
             BorderStyle enStyle;
             std::wstring sColor; //HEX color
+
+            BorderSide() : fWidth(0), enStyle(BorderStyle::none), sColor(L""){};
+            BorderSide(const BorderSide& oBorderSide) : fWidth(oBorderSide.fWidth), enStyle(oBorderSide.enStyle),
+                                                        sColor(oBorderSide.sColor){};
         };
 
         struct Border
@@ -146,6 +165,10 @@ namespace NSCSS
             BorderSide stRight;
             BorderSide stBottom;
             BorderSide stLeft;
+
+            Border(){};
+            Border(const Border &oBorder) : stTop(oBorder.stTop), stRight(oBorder.stRight),
+                                            stBottom(oBorder.stBottom), stLeft(oBorder.stLeft){};
         };
     }
 }

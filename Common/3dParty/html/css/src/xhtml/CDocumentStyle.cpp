@@ -318,8 +318,6 @@ namespace NSCSS
 
         oXmlElement.AddPropertiesInP(NS_CONST_VALUES::ParagraphProperties::P_Shd, oStyle.GetBackgroundColor());
 
-//        if (!oStyle.GetBorder().empty() &&  oStyle.GetBorder() != L"none")
-
         const std::wstring sBorderColor = oStyle.GetBorderColor();
         const std::wstring sBorderStyle = oStyle.GetBorderStyle();
         const float fValue = wcstof(oStyle.GetBorderWidth().c_str(), NULL) * 4.0f;

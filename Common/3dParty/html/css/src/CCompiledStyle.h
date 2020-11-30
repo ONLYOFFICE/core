@@ -16,13 +16,14 @@ namespace NSCSS
         std::vector<std::wstring> m_arParentsStyles;
         std::wstring m_sId;
 
-//        struct Font *m_pFont;
-//        struct Margin *m_pMargin;
-//        std::wstring *m_sBackgroundColor; //HEX color
-//        struct Text *m_pText;
-//        struct Border *m_pBorder;
-
     public:
+
+        CssProperties::Font *m_pFont = NULL;
+        CssProperties::Margin *m_pMargin = NULL;
+        std::wstring *m_pBackgroundColor = NULL; //HEX color
+        CssProperties::Text *m_pText = NULL;
+        CssProperties::Border *m_pBorder = NULL;
+
         CCompiledStyle();
         explicit CCompiledStyle(const std::map<std::wstring, std::wstring>& mStyle);
         CCompiledStyle(const CCompiledStyle& oStyle);

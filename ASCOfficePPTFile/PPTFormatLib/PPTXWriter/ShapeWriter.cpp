@@ -156,6 +156,12 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
 				oWriter.WriteStringXML(std::wstring(&bu, 1));
 				oWriter.WriteString(L"\"/>");	
 			}
+//            if (!pPF->bulletAutoNum.is_init())
+//            {
+//                oWriter.WriteString(L"<a:buAutoNum type=\"");
+//                oWriter.WriteString(L"arabicPeriod");
+//                oWriter.WriteString(L"\"/>");
+//            }
 		}
 		else
 		{
@@ -1337,6 +1343,12 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
 					}
 					m_oWriter.WriteString(std::wstring(L"/>"));
 				}
+                if (pPF->bulletAutoNum.is_init())  // TODO Numbering
+                {
+                    m_oWriter.WriteString(L"<a:buAutoNum type=\"");
+                    m_oWriter.WriteString(pPF->bulletAutoNum->type.get());
+                    m_oWriter.WriteString(L"\"/>");
+                }
 
 				bool set = true;
 				if (pPF->bulletFontProperties.is_init() == false && pPF->bulletSize.is_init() == false)

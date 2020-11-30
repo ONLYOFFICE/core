@@ -34,7 +34,7 @@
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.h"
 #include "SlidePersist.h"
 #include "../../../OfficeUtils/src/OfficeUtils.h"
-#include "../Records/OfficeArtClientData.h"
+//#include "../Records/OfficeArtClientData.h"
 
 using namespace PPT_FORMAT;
 

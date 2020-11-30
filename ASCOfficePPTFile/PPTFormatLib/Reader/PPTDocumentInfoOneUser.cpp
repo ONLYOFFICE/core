@@ -1006,7 +1006,7 @@ void CPPTUserInfo::LoadSlide(_UINT32 dwSlideID, CSlide* pSlide)
 
 			if (pGroup)
 			{
-				LoadGroupShapeContainer(pGroup, NULL, pTheme, pLayout, pThemeWrapper, pSlideWrapper, pSlide);
+                LoadGroupShapeContainer(pGroup, NULL, pTheme, pLayout, pThemeWrapper, pSlideWrapper, pSlide);
 			}
 			else
 			{
@@ -1051,6 +1051,10 @@ void CPPTUserInfo::LoadGroupShapeContainer(CRecordGroupShapeContainer* pGroupCon
 	if (!pGroupContainer) return;
 	if (pGroupContainer->m_arRecords.empty()) return;
 
+    std::vector<CRecordOfficeArtClientData*> arrOfficeArtClientData;
+    pGroupContainer->GetRecordsByType(&arrOfficeArtClientData, true);
+
+
 	CRecordShapeContainer* pShapeGroup = dynamic_cast<CRecordShapeContainer*>(pGroupContainer->m_arRecords[0]);
 	
 	CElementPtr pElement;
@@ -1093,8 +1097,40 @@ void CPPTUserInfo::LoadGroupShapeContainer(CRecordGroupShapeContainer* pGroupCon
 
 					//	AddAnimation ( dwSlideID, pSlide->m_lOriginalWidth, pSlide->m_lOriginalHeight, pElement );
 
-					if (NULL != pShape)
-						pShape->SetupProperties(pSlide, pTheme, pLayout);
+                    if (NULL != pShape)
+                    {
+                        pShape->SetupProperties(pSlide, pTheme, pLayout);
+
+                        if (!arrOfficeArtClientData.empty() && pSlide)
+                        {
+                            std::vector<STextPFException9*> arrPFE9;
+                            for (auto prog : arrOfficeArtClientData[0]->m_rgShapeClientRoundtripData)
+                            {
+                                if (prog->m_pTagName->m_strText == ___PPT9){
+                                    auto styleTextPropAtom = dynamic_cast<CRecordPP9ShapeBinaryTagExtension*>(prog->m_pTagContainer.GetPointer())->m_styleTextPropAtom;
+                                    for (auto pTextProp9 : styleTextPropAtom.m_rgStyleTextProp9)
+                                        arrPFE9.push_back(&(pTextProp9->m_pf9));
+                                }
+                            }
+                            if (!arrPFE9.empty()){
+                                bool hasSheme = arrPFE9[0]->m_masks.m_bulletHasScheme;
+                                unsigned index = 0;
+                                for (auto& para : pShape->m_pShape->m_oText.m_arParagraphs)
+                                {
+                                    if (hasSheme)
+                                    {
+                                        para.m_oPFRun.bulletAutoNum = new CBulletAutoNum;
+                                        para.m_oPFRun.bulletAutoNum->type =
+                                                TextAutoNumberSchemeEnumTOTextAutonumberScheme(arrPFE9[index]->m_optBulletAutoNumberScheme.get().m_eScheme);
+                                    }/*if (){
+                                        hasSheme = hasSheme ? false : true;
+                                        index++;
+                                    }*/
+                                }
+                            }
+
+                        }
+                    }
 
 					if ( pElement->m_lPlaceholderType > 0)
 					{

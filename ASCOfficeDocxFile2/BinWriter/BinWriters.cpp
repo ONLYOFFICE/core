@@ -57,6 +57,34 @@
 
 namespace BinDocxRW
 {
+std::wstring ParamsWriter::AddEmbeddedStyle(const std::wstring & sStyleId)
+{
+	if (!m_pEmbeddedStyles) return L"";
+	if (sStyleId.empty()) return L"";
+
+	std::wstring sNewStyleId;
+	std::map<std::wstring, size_t>::iterator pPair = m_pEmbeddedStyles->m_mapStyleNames.find(sStyleId);
+
+	if (pPair != m_pEmbeddedStyles->m_mapStyleNames.end())
+	{
+		OOX::CStyle* style = m_pEmbeddedStyles->m_arrStyle[pPair->second];
+
+		sNewStyleId = L"EmbeddedStyle" + std::to_wstring(m_pEmbeddedStyles->m_mapEmbeddedStyleNames.size() + 1) + L"_" + sStyleId;
+
+		m_pStyles->m_mapStyleNames.insert(std::make_pair(sNewStyleId, m_pStyles->m_arrStyle.size()));
+		m_pStyles->m_arrStyle.push_back(new OOX::CStyle(*style));
+
+		style = m_pStyles->m_arrStyle.back();
+
+		style->m_sStyleId = sNewStyleId;
+
+		if (style->m_oBasedOn.IsInit() && style->m_oBasedOn->m_sVal.IsInit())
+			style->m_oBasedOn->m_sVal = AddEmbeddedStyle(*style->m_oBasedOn->m_sVal);
+
+		m_pStyles->m_mapEmbeddedStyleNames.back().insert(std::make_pair(sStyleId, sNewStyleId));
+	}
+	return sNewStyleId;
+}
 BinaryCommonWriter::BinaryCommonWriter(ParamsWriter& oParamsWriter) :	m_oStream(*oParamsWriter.m_pCBufferedStream),
 													m_pEmbeddedFontsManager(oParamsWriter.m_pEmbeddedFontsManager)
 {
@@ -447,7 +475,7 @@ void BinaryHeaderFooterTableWriter::WriteHdrFtrItem(OOX::Logic::CSectionProperty
 			m_oBcw.m_oStream.WriteLONG(g_nFormatVersion);
 		}
 
-Binary_rPrWriter::Binary_rPrWriter(ParamsWriter& oParamsWriter) :m_oBcw(oParamsWriter), m_pTheme(oParamsWriter.m_pTheme), m_oFontProcessor(*oParamsWriter.m_pFontProcessor), m_pOfficeDrawingConverter(oParamsWriter.m_pOfficeDrawingConverter)
+Binary_rPrWriter::Binary_rPrWriter(ParamsWriter& oParamsWriter) : m_oBcw(oParamsWriter), m_oParamsWriter(oParamsWriter)
 {
 }
 void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
@@ -498,7 +526,7 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 		std::wstring sFontCS;
 		const ComplexTypes::Word::CFonts& oFont = rPr->m_oRFonts.get();
 
-		if(NULL != m_pTheme && oFont.m_oAsciiTheme.IsInit())
+		if(NULL != m_oParamsWriter.m_pTheme && oFont.m_oAsciiTheme.IsInit())
 		{
 			const SimpleTypes::ETheme& eTheme = oFont.m_oAsciiTheme.get().GetValue();
 			switch(eTheme)
@@ -506,11 +534,11 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 			case SimpleTypes::themeMajorAscii:
 			case SimpleTypes::themeMajorBidi:
 			case SimpleTypes::themeMajorEastAsia:
-			case SimpleTypes::themeMajorHAnsi:		sFontAscii = m_pTheme->themeElements.fontScheme.majorFont.latin.typeface;	break;
+			case SimpleTypes::themeMajorHAnsi:		sFontAscii = m_oParamsWriter.m_pTheme->themeElements.fontScheme.majorFont.latin.typeface;	break;
 			case SimpleTypes::themeMinorAscii:
 			case SimpleTypes::themeMinorBidi:
 			case SimpleTypes::themeMinorEastAsia:
-			case SimpleTypes::themeMinorHAnsi:		sFontAscii = m_pTheme->themeElements.fontScheme.minorFont.latin.typeface;	break;
+			case SimpleTypes::themeMinorHAnsi:		sFontAscii = m_oParamsWriter.m_pTheme->themeElements.fontScheme.minorFont.latin.typeface;	break;
 			default:
 				break;
 			}
@@ -518,7 +546,7 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 		else if(oFont.m_sAscii.IsInit())
 				sFontAscii = oFont.m_sAscii.get();
 
-		if(NULL != m_pTheme && oFont.m_oHAnsiTheme.IsInit())
+		if(NULL != m_oParamsWriter.m_pTheme && oFont.m_oHAnsiTheme.IsInit())
 		{
 			const SimpleTypes::ETheme& eTheme = oFont.m_oHAnsiTheme.get().GetValue();
 			switch(eTheme)
@@ -526,18 +554,18 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 			case SimpleTypes::themeMajorAscii:
 			case SimpleTypes::themeMajorBidi:
 			case SimpleTypes::themeMajorEastAsia:
-			case SimpleTypes::themeMajorHAnsi:		sFontHAnsi = m_pTheme->themeElements.fontScheme.majorFont.latin.typeface;	break;
+			case SimpleTypes::themeMajorHAnsi:		sFontHAnsi = m_oParamsWriter.m_pTheme->themeElements.fontScheme.majorFont.latin.typeface;	break;
 			case SimpleTypes::themeMinorAscii:
 			case SimpleTypes::themeMinorBidi:
 			case SimpleTypes::themeMinorEastAsia:
-			case SimpleTypes::themeMinorHAnsi:		sFontHAnsi = m_pTheme->themeElements.fontScheme.minorFont.latin.typeface;	break;
+			case SimpleTypes::themeMinorHAnsi:		sFontHAnsi = m_oParamsWriter.m_pTheme->themeElements.fontScheme.minorFont.latin.typeface;	break;
 			default:
 				break;
 			}
 		}
 		else if(oFont.m_sHAnsi.IsInit())
 			sFontHAnsi = oFont.m_sHAnsi.get();
-		if(NULL != m_pTheme && oFont.m_oCsTheme.IsInit())
+		if(NULL != m_oParamsWriter.m_pTheme && oFont.m_oCsTheme.IsInit())
 		{
 			const SimpleTypes::ETheme& eTheme = oFont.m_oCsTheme.get().GetValue();
 			switch(eTheme)
@@ -545,17 +573,17 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 			case SimpleTypes::themeMajorAscii:
 			case SimpleTypes::themeMajorBidi:
 			case SimpleTypes::themeMajorEastAsia:
-			case SimpleTypes::themeMajorHAnsi:		sFontCS = m_pTheme->themeElements.fontScheme.majorFont.latin.typeface;	break;
+			case SimpleTypes::themeMajorHAnsi:		sFontCS = m_oParamsWriter.m_pTheme->themeElements.fontScheme.majorFont.latin.typeface;	break;
 			case SimpleTypes::themeMinorAscii:
 			case SimpleTypes::themeMinorBidi:
 			case SimpleTypes::themeMinorEastAsia:
-			case SimpleTypes::themeMinorHAnsi:		sFontCS = m_pTheme->themeElements.fontScheme.minorFont.latin.typeface;	break;
+			case SimpleTypes::themeMinorHAnsi:		sFontCS = m_oParamsWriter.m_pTheme->themeElements.fontScheme.minorFont.latin.typeface;	break;
 			default: break;
 			}
 		}
 		else if(oFont.m_sCs.IsInit())
 			sFontCS = oFont.m_sCs.get();
-		if(NULL != m_pTheme && oFont.m_oEastAsiaTheme.IsInit())
+		if(NULL != m_oParamsWriter.m_pTheme && oFont.m_oEastAsiaTheme.IsInit())
 		{
 			const SimpleTypes::ETheme& eTheme = oFont.m_oEastAsiaTheme.get().GetValue();
 			switch(eTheme)
@@ -563,20 +591,20 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 			case SimpleTypes::themeMajorAscii:
 			case SimpleTypes::themeMajorBidi:
 			case SimpleTypes::themeMajorEastAsia:
-			case SimpleTypes::themeMajorHAnsi:		sFontAE = m_pTheme->themeElements.fontScheme.majorFont.latin.typeface;	break;
+			case SimpleTypes::themeMajorHAnsi:		sFontAE = m_oParamsWriter.m_pTheme->themeElements.fontScheme.majorFont.latin.typeface;	break;
 			case SimpleTypes::themeMinorAscii:
 			case SimpleTypes::themeMinorBidi:
 			case SimpleTypes::themeMinorEastAsia:
-			case SimpleTypes::themeMinorHAnsi:		sFontAE = m_pTheme->themeElements.fontScheme.minorFont.latin.typeface;	break;
+			case SimpleTypes::themeMinorHAnsi:		sFontAE = m_oParamsWriter.m_pTheme->themeElements.fontScheme.minorFont.latin.typeface;	break;
 			default: break;
 			}
 		}
 		else if(oFont.m_sEastAsia.IsInit())
 			sFontAE = oFont.m_sEastAsia.get();
-		m_oBcw.WriteFont(sFontAscii, c_oSerProp_rPrType::FontAscii, m_oFontProcessor);
-		m_oBcw.WriteFont(sFontHAnsi, c_oSerProp_rPrType::FontHAnsi, m_oFontProcessor);
-		m_oBcw.WriteFont(sFontAE, c_oSerProp_rPrType::FontAE, m_oFontProcessor);
-		m_oBcw.WriteFont(sFontCS, c_oSerProp_rPrType::FontCS, m_oFontProcessor);
+		m_oBcw.WriteFont(sFontAscii, c_oSerProp_rPrType::FontAscii, *m_oParamsWriter.m_pFontProcessor);
+		m_oBcw.WriteFont(sFontHAnsi, c_oSerProp_rPrType::FontHAnsi, *m_oParamsWriter.m_pFontProcessor);
+		m_oBcw.WriteFont(sFontAE, c_oSerProp_rPrType::FontAE, *m_oParamsWriter.m_pFontProcessor);
+		m_oBcw.WriteFont(sFontCS, c_oSerProp_rPrType::FontCS, *m_oParamsWriter.m_pFontProcessor);
 
 		//Hint
 		if(false != oFont.m_oHint.IsInit())
@@ -614,7 +642,7 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 		}
 	}
 	//HighLight
-	if(false != rPr->m_oHighlight.IsInit() || false != rPr->m_oShd.IsInit())
+	if (false != rPr->m_oHighlight.IsInit() || false != rPr->m_oShd.IsInit())
 	{
 		if(false != rPr->m_oHighlight.IsInit())
 		{
@@ -637,7 +665,7 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 		}
 	}
 	//Shd
-	if(false != rPr->m_oShd.IsInit())
+	if (false != rPr->m_oShd.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::Shd);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
@@ -646,11 +674,27 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 	//RStyle
-	if(false != rPr->m_oRStyle.IsInit())
+	if ((false != rPr->m_oRStyle.IsInit()) && (rPr->m_oRStyle->m_sVal.IsInit()))
 	{
+		std::wstring sStyleId = *rPr->m_oRStyle->m_sVal;
+
+		if (m_oParamsWriter.m_pEmbeddedStyles)
+		{
+			std::map<std::wstring, std::wstring>::iterator pFind = m_oParamsWriter.m_pStyles->m_mapEmbeddedStyleNames.back().find(sStyleId);
+
+			if (pFind == m_oParamsWriter.m_pStyles->m_mapEmbeddedStyleNames.back().end())
+			{
+				sStyleId = m_oParamsWriter.AddEmbeddedStyle(sStyleId);
+			}
+			else
+			{
+				sStyleId = pFind->second;
+			}
+
+		}
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::RStyle);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-		m_oBcw.m_oStream.WriteStringW(rPr->m_oRStyle->ToString2());
+		m_oBcw.m_oStream.WriteStringW(sStyleId);
 	}
 	//Spacing
 	if(false != rPr->m_oSpacing.IsInit() && false != rPr->m_oSpacing->m_oVal.IsInit())
@@ -832,33 +876,6 @@ Binary_pPrWriter::Binary_pPrWriter(ParamsWriter& oParamsWriter, BinaryHeaderFoot
 		m_oBinaryHeaderFooterTableWriter(oBinaryHeaderFooterTableWriter)
 {
 }
-std::wstring Binary_pPrWriter::AddEmbeddedStyle(const std::wstring & sStyleId)
-{
-	if (sStyleId.empty()) return L"";
-
-	std::wstring sNewStyleId;
-	std::map<std::wstring, size_t>::iterator pPair = m_oParamsWriter.m_pEmbeddedStyles->m_mapStyleNames.find(sStyleId);
-	
-	if (pPair != m_oParamsWriter.m_pEmbeddedStyles->m_mapStyleNames.end())
-	{
-		OOX::CStyle* style = m_oParamsWriter.m_pEmbeddedStyles->m_arrStyle[pPair->second];
-
-		sNewStyleId = L"EmbeddedStyle" + std::to_wstring(m_oParamsWriter.m_pEmbeddedStyles->m_mapEmbeddedStyleNames.size() + 1) + L"_" + sStyleId;
-
-		m_oParamsWriter.m_pStyles->m_mapStyleNames.insert(std::make_pair(sNewStyleId, m_oParamsWriter.m_pStyles->m_arrStyle.size()));
-		m_oParamsWriter.m_pStyles->m_arrStyle.push_back(new OOX::CStyle(*style));
-		
-		style = m_oParamsWriter.m_pStyles->m_arrStyle.back();
-
-		style->m_sStyleId = sNewStyleId;
-
-		if (style->m_oBasedOn.IsInit() && style->m_oBasedOn->m_sVal.IsInit())
-			style->m_oBasedOn->m_sVal = AddEmbeddedStyle(*style->m_oBasedOn->m_sVal);
-
-		m_oParamsWriter.m_pStyles->m_mapEmbeddedStyleNames.back().insert(std::make_pair(sStyleId, sNewStyleId));
-	}
-	return sNewStyleId;
-}
 void Binary_pPrWriter::Write_pPr(const OOX::Logic::CParagraphProperty& pPr)
 {
 	int nCurPos = 0;
@@ -875,7 +892,7 @@ void Binary_pPrWriter::Write_pPr(const OOX::Logic::CParagraphProperty& pPr)
 
 			if (pFind == m_oParamsWriter.m_pStyles->m_mapEmbeddedStyleNames.back().end())
 			{
-				sStyleId = AddEmbeddedStyle(sStyleId);
+				sStyleId = m_oParamsWriter.AddEmbeddedStyle(sStyleId);
 			}
 			else
 			{
@@ -3269,7 +3286,7 @@ void BinaryDocumentTableWriter::WriteDocumentContent(const std::vector<OOX::Writ
 					{
 						OOX::Media* pAltChunkFile = static_cast<OOX::Media*>(pFile.operator ->());
 						
-						WriteAltChunk(*pAltChunkFile);
+						WriteAltChunk(*pAltChunkFile, m_oParamsWriter.m_pStyles);
 					}
 				}
 			}break;
@@ -3446,7 +3463,7 @@ void BinaryDocumentTableWriter::WriteBackground (OOX::WritingElement* pElement)
 	}
 }
 						
-void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile)
+void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile, OOX::CStyles* styles)
 {
 	if (false == oAltChunkFile.IsExist()) return;
 
@@ -3488,9 +3505,31 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile)
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML:
 			{
                 CHtmlFile2 htmlConvert;
-                htmlConvert.SetTmpDirectory(sTempDir);
+  				CHtmlParams	paramsHtml;
 
-                result = (S_OK == htmlConvert.OpenHtml(file_name_inp, sResultDocxDir));
+				htmlConvert.SetTmpDirectory(sTempDir);
+
+				if (styles)
+				{
+					if (styles->m_oDocDefaults.IsInit())
+					{
+						paramsHtml.m_sdocDefaults = styles->m_oDocDefaults->toXML();
+					}
+					std::map<SimpleTypes::EStyleType, size_t>::iterator pFind = styles->m_mapStyleDefaults.find(SimpleTypes::styletypeParagraph);
+					if (pFind != styles->m_mapStyleDefaults.end())
+					{
+						if (styles->m_arrStyle[pFind->second])
+						{
+							//change styleId
+
+							OOX::CStyle updateStyle (*styles->m_arrStyle[pFind->second]);
+							updateStyle.m_sStyleId = L"normal";
+							paramsHtml.m_sNormal = updateStyle.toXML();
+						}
+					}
+				}
+
+                result = (S_OK == htmlConvert.OpenHtml(file_name_inp, sResultDocxDir, &paramsHtml));
 			}break;
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT:
 			{

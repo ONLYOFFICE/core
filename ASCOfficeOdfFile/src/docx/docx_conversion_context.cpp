@@ -1198,6 +1198,11 @@ void docx_conversion_context::start_process_style_content()
 
 void docx_conversion_context::process_section(std::wostream & strm, odf_reader::style_columns * columns)//from page layout
 {
+	if (root()->odf_context().pageLayoutContainer().linenumbering())
+	{
+		root()->odf_context().pageLayoutContainer().linenumbering()->docx_serialize(strm, *this);
+	}	
+
 	int count_columns = 1;
 	bool sep_columns = false;
 
@@ -1277,8 +1282,9 @@ void docx_conversion_context::process_section(std::wostream & strm, odf_reader::
 			}
 		}
 	}
+
 	CP_XML_WRITER(strm)
-	{
+	{			
 		CP_XML_NODE(L"w:cols")
 		{
 			CP_XML_ATTR(L"w:equalWidth", width_space.empty());

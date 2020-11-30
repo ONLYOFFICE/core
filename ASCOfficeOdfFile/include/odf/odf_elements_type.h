@@ -293,6 +293,8 @@ enum ElementType
 	typeTextIndexTitleTemplate,
 
     typeTextNotesConfiguration,
+	typeTextLinenumberingConfiguration,
+	typeTextLinenumberingSeparator,
 
     typeStyleFontFace,
 
@@ -332,6 +334,7 @@ enum ElementType
     typeTableTableColumns,
     typeTableTableHeaderColumns,
     typeTableTableColumnGroup,
+	typeTableTableColumnNoGroup,
     typeTableTableRow,
     typeTableTableCell,
     typeTableCoveredTableCell,

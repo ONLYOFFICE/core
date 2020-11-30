@@ -80,7 +80,7 @@ int download_external(const std::wstring& sUrl, const std::wstring& sOutput)
 
         case 0: // child process
         {
-            const char* nargs[8];
+            const char* nargs[10];
             nargs[0] = "/usr/bin/curl";
             nargs[1] = "--url";
             nargs[2] = sUrlA.c_str();
@@ -88,7 +88,9 @@ int download_external(const std::wstring& sUrl, const std::wstring& sOutput)
             nargs[4] = sOutputA.c_str();
             nargs[5] = "--silent";
             nargs[6] = "-L";
-            nargs[7] = NULL;
+            nargs[7] = "--connect-timeout";
+            nargs[8] = "10";
+            nargs[9] = NULL;
 
             const char* nenv[3];
             nenv[0] = "LD_PRELOAD=";
@@ -123,13 +125,15 @@ int download_external(const std::wstring& sUrl, const std::wstring& sOutput)
 
         case 0: // child process
         {
-            const char* nargs[6];
+            const char* nargs[8];
             nargs[0] = "/usr/bin/wget";
             nargs[1] = sUrlValidateA.c_str();
             nargs[2] = "-O";
             nargs[3] = sOutputA.c_str();
             nargs[4] = "-q";
-            nargs[5] = NULL;
+            nargs[5] = "--connect-timeout=10";
+            nargs[6] = "--tries=2";
+            nargs[7] = NULL;
 
             const char* nenv[2];
             nenv[0] = "LD_PRELOAD=";

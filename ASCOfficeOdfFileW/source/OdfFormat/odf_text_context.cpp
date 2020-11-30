@@ -340,7 +340,18 @@ void odf_text_context::end_paragraph()
 	paragraph_properties_ = NULL;
 	text_properties_ = NULL;
 }
-
+void odf_text_context::add_element_in_span_or_par(office_element_ptr & elm)
+{
+	for (int i = (int)current_level_.size() - 1; i >= 0; i--)
+	{
+		ElementType type_ = current_level_[i].elm->get_type();
+		if (type_ == typeTextSpan || type_ == typeTextA || type_ == typeTextH || type_ == typeTextP)
+		{
+			current_level_[i].elm->add_child_element(elm);
+			break;
+		}
+	}
+}
 void odf_text_context::start_element(office_element_ptr & elm, office_element_ptr style_elm, std::wstring style_name)
 {
 	size_t level = current_level_.size();
@@ -365,7 +376,6 @@ void odf_text_context::end_element()
 		int t = 0;
 	}
 }
-
 void odf_text_context::start_span(bool styled)
 {
 	if (styles_context_ == NULL || single_paragraph_)return;

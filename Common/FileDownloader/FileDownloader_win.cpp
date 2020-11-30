@@ -76,8 +76,9 @@ public :
 
             if (S_OK != hrResultAll)
             {
+                hrResultAll = (true == DownloadFilePS(m_sFileUrl, m_sFilePath)) ? S_OK : S_FALSE;
                 CoUninitialize ();
-                return S_FALSE;
+                return hrResultAll;
             }
         }
 
@@ -308,7 +309,7 @@ protected:
         try
         {
             // Ищем индекс размера данных в строке
-            INT nStartIndex = strResult.find ( CONTENT_RANGE );
+            INT nStartIndex = (INT)strResult.find ( CONTENT_RANGE );
             if ( -1 == nStartIndex )
                 return -1;
 
@@ -339,6 +340,56 @@ protected:
         }
         // Скачиваем файл
         return URLDownloadToFileW (NULL, sFileURL.c_str(), strFileOutput.c_str(), NULL, NULL);
+    }
+
+    bool DownloadFilePS(const std::wstring& sFileURL, const std::wstring& strFileOutput)
+    {
+        STARTUPINFO sturtupinfo;
+        ZeroMemory(&sturtupinfo,sizeof(STARTUPINFO));
+        sturtupinfo.cb = sizeof(STARTUPINFO);
+
+        std::wstring sFileDst = strFileOutput;
+        size_t posn = 0;
+        while (std::wstring::npos != (posn = sFileDst.find('\\', posn)))
+        {
+            sFileDst.replace(posn, 1, L"/");
+            posn += 1;
+        }
+
+        std::wstring sApp = L"powershell.exe –c \"(new-object System.Net.WebClient).DownloadFile('" + sFileURL + L"','" + sFileDst + L"')\"";
+        wchar_t* pCommandLine = new wchar_t[sApp.length() + 1];
+        memcpy(pCommandLine, sApp.c_str(), sApp.length() * sizeof(wchar_t));
+        pCommandLine[sApp.length()] = (wchar_t)'\0';
+
+        HANDLE ghJob = CreateJobObject(NULL, NULL);
+
+        if (ghJob)
+        {
+            JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = { 0 };
+
+            // Configure all child processes associated with the job to terminate when the
+            jeli.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+            if ( 0 == SetInformationJobObject( ghJob, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli)))
+            {
+                CloseHandle(ghJob);
+                ghJob = NULL;
+            }
+        }
+
+        PROCESS_INFORMATION processinfo;
+        ZeroMemory(&processinfo,sizeof(PROCESS_INFORMATION));
+        BOOL bResult = CreateProcessW(NULL, pCommandLine, NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &sturtupinfo, &processinfo);
+
+        if (bResult && ghJob)
+        {
+            AssignProcessToJobObject(ghJob, processinfo.hProcess);
+        }
+
+        ::WaitForSingleObject(processinfo.hProcess, INFINITE);
+
+        RELEASEARRAYOBJECTS(pCommandLine);
+
+        return NSFile::CFileBinary::Exists(sFileDst);
     }
 };
 

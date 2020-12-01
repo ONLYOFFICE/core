@@ -20,6 +20,8 @@ ADD_DEPENDENCY(graphics, kernel, UnicodeConverter)
 
 #CONFIG += build_xp
 
+#core_mac:CONFIG += use_javascript_core
+
 core_ios {
     CONFIG += doct_renderer_empty
 }
@@ -81,6 +83,7 @@ SOURCES += \
 } else {
     HEADERS += js_internal/jsc/jsc_base.h
     OBJECTIVE_SOURCES += js_internal/jsc/jsc_base.mm
+    OBJECTIVE_SOURCES += ../common/Mac/NSString+StringUtils.mm
     OBJECTIVE_SOURCES += \
         embed/jsc/jsc_MemoryStream.mm \
         embed/jsc/jsc_NativeControl.mm \

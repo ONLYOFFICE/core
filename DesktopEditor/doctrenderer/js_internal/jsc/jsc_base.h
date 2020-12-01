@@ -1,4 +1,4 @@
-﻿#ifndef _BUILD_NATIVE_CONTROL_JSC_BASE_H_
+#ifndef _BUILD_NATIVE_CONTROL_JSC_BASE_H_
 #define _BUILD_NATIVE_CONTROL_JSC_BASE_H_
 
 #include "../js_base.h"
@@ -8,7 +8,7 @@
 #include <JavaScriptCore/JSTypedArray.h>
 #include <JavaScriptCore/JSValueRef.h>
 
-#import "../../../../core/DesktopEditor/common/Mac/NSString+StringUtils.h"
+#import "../../../../DesktopEditor/common/Mac/NSString+StringUtils.h"
 
 @protocol JSEmbedObjectProtocol
 - (void*) getNative;

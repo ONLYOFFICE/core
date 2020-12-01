@@ -1,10 +1,11 @@
-CONFIG += v8_version_87
+#CONFIG += v8_version_87
 
 v8_version_87 {
     CORE_V8_PATH_INCLUDE    = /Users/nctdevices/Desktop/GIT_DEVELOP_MAC/v8/v8
     CORE_V8_PATH_LIBS       = $$CORE_V8_PATH_INCLUDE/out.gn/$$CORE_BUILDS_PLATFORM_PREFIX/obj
     CONFIG += c++14
     DEFINES += V8_VERSION_87_PLUS
+    DEFINES += V8_COMPRESS_POINTERS
 } else {
     CORE_V8_PATH_INCLUDE    = $$PWD/v8
     CORE_V8_PATH_LIBS       = $$CORE_V8_PATH_INCLUDE/out.gn/$$CORE_BUILDS_PLATFORM_PREFIX/obj

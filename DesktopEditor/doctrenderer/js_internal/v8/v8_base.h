@@ -13,6 +13,7 @@
 #define V8ContextOneArg CV8Worker::GetCurrentContext()
 #define V8IsolateFirstArg CV8Worker::GetCurrent(),
 #define V8IsolateOneArg CV8Worker::GetCurrent()
+#define V8ToChecked ToChecked
 #else
 #define kV8NormalString v8::NewStringType::kNormal
 #define kV8ProduceCodeCache v8::ScriptCompiler::kProduceCodeCache
@@ -20,6 +21,11 @@
 #define V8ContextOneArg CV8Worker::GetCurrentContext()
 #define V8IsolateFirstArg
 #define V8IsolateOneArg CV8Worker::GetCurrent()
+#ifdef V8_OS_XP
+#define V8ToChecked FromJust
+#else
+#define V8ToChecked ToChecked
+#endif
 #endif
 
 v8::Local<v8::String> CreateV8String(v8::Isolate* i, const char* str, const int& len = -1);
@@ -292,18 +298,18 @@ namespace NSJSBase
 #ifdef V8_VERSION_87_PLUS
             return value.IsEmpty() ? false : value->BooleanValue(V8IsolateOneArg);
 #else
-            return value.IsEmpty() ? false : value->BooleanValue(V8ContextOneArg).ToChecked();
+            return value.IsEmpty() ? false : value->BooleanValue(V8ContextOneArg).V8ToChecked();
 #endif
         }
 
         virtual int toInt32()
         {
-            return value.IsEmpty() ? 0 : value->Int32Value(V8ContextOneArg).ToChecked();
+            return value.IsEmpty() ? 0 : value->Int32Value(V8ContextOneArg).V8ToChecked();
         }
 
         virtual double toDouble()
         {
-            return value.IsEmpty() ? 0 : value->NumberValue(V8ContextOneArg).ToChecked();
+            return value.IsEmpty() ? 0 : value->NumberValue(V8ContextOneArg).V8ToChecked();
         }
 
         virtual std::string toStringA()
@@ -636,7 +642,7 @@ namespace NSJSBase
         {
             if (try_catch.HasCaught())
             {
-                int nLineNumber             = try_catch.Message()->GetLineNumber(V8ContextOneArg).ToChecked();
+                int nLineNumber             = try_catch.Message()->GetLineNumber(V8ContextOneArg).V8ToChecked();
 
                 JSSmart<CJSValueV8> _line = new CJSValueV8();
                 _line->value = try_catch.Message()->GetSourceLine(V8ContextOneArg).ToLocalChecked();

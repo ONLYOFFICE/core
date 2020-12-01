@@ -33,43 +33,6 @@
 #include "../../docbuilder_p.h"
 #include "../../js_internal/v8/v8_base.h"
 
-void CBuilderDocumentEmbed::OpenFile(const std::wstring& sFile, const std::wstring& sParams)
-{
-    NSDoctRenderer::CDocBuilder_Private* pBuilder = GetPrivate(m_pBuilder);
-
-    std::wstring sTmpDir = pBuilder->m_sTmpFolder;
-
-    m_sFolder = NSFile::CFileBinary::CreateTempFileWithUniqueName(sTmpDir, L"DE_");
-    if (NSFile::CFileBinary::Exists(m_sFolder))
-        NSFile::CFileBinary::Remove(m_sFolder);
-
-    NSCommon::string_replace(m_sFolder, L"\\", L"/");
-
-    std::wstring::size_type nPosPoint = m_sFolder.rfind('.');
-    if (nPosPoint != std::wstring::npos && nPosPoint > sTmpDir.length())
-    {
-        m_sFolder = m_sFolder.substr(0, nPosPoint);
-    }
-
-    NSDirectory::CreateDirectory(m_sFolder);
-
-    std::wstring sExtCopy = pBuilder->GetFileCopyExt(sFile);
-    std::wstring sFileCopy = m_sFolder + L"/origin." + sExtCopy;
-
-    pBuilder->MoveFileOpen(sFile, sFileCopy);
-    int nConvertResult = pBuilder->ConvertToInternalFormat(m_sFolder, sFileCopy, sParams);
-
-    if (0 == nConvertResult)
-        m_bIsValid = true;
-}
-void CBuilderDocumentEmbed::CloseFile()
-{
-    if (!m_sFolder.empty())
-        NSDirectory::DeleteDirectory(m_sFolder);
-    m_bIsValid = false;
-    m_sFolder = L"";
-}
-
 #define CURRENTWRAPPER CBuilderEmbed
 
 FUNCTION_WRAPPER_V8_2(_builder_OpenFile,     builder_OpenFile)

@@ -81,6 +81,7 @@ namespace NSJSBase
         virtual bool isTypedArray();
         virtual bool isObject();
         virtual bool isFunction();
+        virtual bool isEmpty();
 
         virtual void doUndefined();
         virtual void doNull();

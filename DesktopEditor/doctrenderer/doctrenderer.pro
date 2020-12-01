@@ -55,20 +55,21 @@ HEADERS += \
     embed/MemoryStreamEmbed.h \
     embed/NativeControlEmbed.h \
     embed/NativeBuilderEmbed.h \
-    js_internal/js_base.h \
-    js_internal/v8/v8_base.h
+    js_internal/js_base.h
 
 SOURCES += \
     embed/MemoryStreamEmbed.cpp \
     embed/NativeControlEmbed.cpp \
-    embed/NativeBuilderEmbed.cpp \
-    embed/v8/v8_MemoryStream.cpp \
-    embed/v8/v8_NativeControl.cpp \
-    embed/v8/v8_NativeBuilder.cpp
+    embed/NativeBuilderEmbed.cpp
 }
 
 !use_javascript_core {
+    HEADERS += js_internal/v8/v8_base.h
     SOURCES += js_internal/v8/v8_base.cpp
+    SOURCES += \
+        embed/v8/v8_MemoryStream.cpp \
+        embed/v8/v8_NativeControl.cpp \
+        embed/v8/v8_NativeBuilder.cpp
 
     !build_xp {
         include(../../Common/3dParty/v8/v8.pri)
@@ -78,7 +79,14 @@ SOURCES += \
         include(../../Common/3dParty/v8/v8_xp/v8.pri)
     }
 } else {
+    HEADERS += js_internal/jsc/jsc_base.h
     OBJECTIVE_SOURCES += js_internal/jsc/jsc_base.mm
+    OBJECTIVE_SOURCES += \
+        embed/jsc/jsc_MemoryStream.mm \
+        embed/jsc/jsc_NativeControl.mm \
+        embed/jsc/jsc_NativeBuilder.mm
+
+    LIBS += -framework Foundation
     LIBS += -framework JavaScriptCore
 }
 

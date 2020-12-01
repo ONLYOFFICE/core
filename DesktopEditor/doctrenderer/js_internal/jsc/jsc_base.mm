@@ -50,6 +50,11 @@ bool CJSValueJSCTemplate<T>::isFunction()
     return true; // TODO!!!
 }
 template<typename T>
+bool CJSValueJSCTemplate<T>::isEmpty()
+{
+    return (value == nil) ? true : false;
+}
+template<typename T>
 void CJSValueJSCTemplate<T>::doUndefined()
 {
     value = [JSValue valueWithUndefinedInContext:context];
@@ -102,7 +107,7 @@ namespace NSJSBase
         return new CJSCTryCatch();
     }
 
-    void CJSContext::Initialize(bool bIsGlobal)
+    void CJSContext::Initialize()
     {
         m_internal->context = [[JSContext alloc] init];
     }

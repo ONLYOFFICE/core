@@ -25,8 +25,6 @@ function CNativeGraphics()
     //this.m_oFullTransform       = new AscCommon.CMatrixL();
     //this.m_oInvertFullTransform = new AscCommon.CMatrixL();
 
-    this.ArrayPoints = null;
-
     this.m_oCurFont =
     {
         Name     : "",
@@ -47,10 +45,6 @@ function CNativeGraphics()
     //this.ClipManager = new AscCommon.CClipManager();
     //this.ClipManager.BaseObject = this;
 
-    this.TextureFillTransformScaleX = 1;
-    this.TextureFillTransformScaleY = 1;
-    this.IsThumbnail = false;
-
     this.IsDemonstrationMode = false;
 
     //this.GrState = new AscCommon.CGrState();
@@ -62,19 +56,28 @@ function CNativeGraphics()
     this.IsUseFonts2     = false;
     this.m_oFontManager2 = null;
     this.m_oLastFont2    = null;
-
-    this.ClearMode = false;
     this.IsRetina  = false;
 
     this.dash_no_smart = null;
-	
-	this.RENDERER_PDF_FLAG = true;
+
+
+    this.ArrayPoints = null;
+
+    this.TextureFillTransformScaleX = 1;
+    this.TextureFillTransformScaleY = 1;
+
+    this.IsThumbnail       = false;
+    this.ClearMode         = false;
+    this.RENDERER_PDF_FLAG = true;
 }
 
 CNativeGraphics.prototype =
 {
     init : function(context, width_px, height_px, width_mm, height_mm)
     {
+        this.TextureFillTransformScaleX = width_mm  / (width_px  >> 0);
+        this.TextureFillTransformScaleY = height_mm / (height_px >> 0);
+
         this.Native["init"](width_px, height_px, width_mm, height_mm);
     },
     EndDraw : function()
@@ -139,18 +142,37 @@ CNativeGraphics.prototype =
     _m : function(x, y)
     {
         this.Native["_m"](x, y);
+        
+        if (false === this.GetIntegerGrid() && this.ArrayPoints != null)
+            this.ArrayPoints[this.ArrayPoints.length] = {x: x, y: y};
     },
     _l : function(x, y)
     {
         this.Native["_l"](x, y);
+        
+        if (false === this.GetIntegerGrid() && this.ArrayPoints != null)
+            this.ArrayPoints[this.ArrayPoints.length] = {x: x, y: y};
     },
     _c : function(x1, y1, x2, y2, x3, y3)
     {
         this.Native["_c"](x1, y1, x2, y2, x3, y3);
+        
+        if (false === this.GetIntegerGrid() && this.ArrayPoints != null)
+        {
+            this.ArrayPoints[this.ArrayPoints.length] = {x: x1, y: y1};
+            this.ArrayPoints[this.ArrayPoints.length] = {x: x2, y: y2};
+            this.ArrayPoints[this.ArrayPoints.length] = {x: x3, y: y3};
+        }
     },
     _c2 : function(x1, y1, x2, y2)
     {
         this.Native["_c2"](x1, y1, x2, y2);
+        
+        if (false === this.GetIntegerGrid() && this.ArrayPoints != null)
+        {
+            this.ArrayPoints[this.ArrayPoints.length] = {x: x1, y: y1};
+            this.ArrayPoints[this.ArrayPoints.length] = {x: x2, y: y2};
+        }
     },
     ds : function()
     {
@@ -257,7 +279,7 @@ CNativeGraphics.prototype =
     },
     tg : function(text, x, y)
     {
-		var _code = text.charCodeAt(0);
+        var _code = text.charCodeAt(0);
         this.Native["tg"](_code, x, y);
     },
     charspace : function(space)
@@ -287,13 +309,13 @@ CNativeGraphics.prototype =
     },
     DrawStringASCII : function(name, size, bold, italic, text, x, y, bIsHeader)
     {
-		this.SetFont({FontFamily : {Name : name, Index : -1}, FontSize : size, Italic : italic, Bold : bold});
-		this.Native["DrawStringASCII"](text, x, y);
+        this.SetFont({FontFamily : {Name : name, Index : -1}, FontSize : size, Italic : italic, Bold : bold});
+        this.Native["DrawStringASCII"](text, x, y);
     },
     DrawStringASCII2 : function(name, size, bold, italic, text, x, y, bIsHeader)
     {
         this.SetFont({FontFamily : {Name : name, Index : -1}, FontSize : size, Italic : italic, Bold : bold});
-		this.Native["DrawStringASCII2"](text, x, y);
+        this.Native["DrawStringASCII2"](text, x, y);
     },
     DrawHeaderEdit : function(yPos, lock_type, sectionNum, bIsRepeat, type)
     {
@@ -309,6 +331,9 @@ CNativeGraphics.prototype =
     },
     DrawLockObjectRect : function(lock_type, x, y, w, h)
     {
+        if (this.IsThumbnail)
+            return;
+
         this.Native["DrawLockObjectRect"](x, y, w, h);
     },
     DrawEmptyTableLine : function(x1, y1, x2, y2)
@@ -323,19 +348,48 @@ CNativeGraphics.prototype =
     drawHorLine : function(align, y, x, r, penW)
     {
         this.Native["drawHorLine"](align, y, x, r, penW);
+        
+        if (false === this.GetIntegerGrid() && this.ArrayPoints != null)
+        {
+            this.ArrayPoints[this.ArrayPoints.length] = {x: x, y: y};
+            this.ArrayPoints[this.ArrayPoints.length] = {x: r, y: y};
+        }
     },
     drawHorLine2 : function(align, y, x, r, penW)
     {
         this.Native["drawHorLine2"](align, y, x, r, penW);
+        
+        if (false === this.GetIntegerGrid() && this.ArrayPoints != null)
+        {
+            var _y1 = y - penW / 2;
+            var _y2 = _y1 + 2 * penW;
+            
+            this.ArrayPoints[this.ArrayPoints.length] = {x: x, y: _y1};
+            this.ArrayPoints[this.ArrayPoints.length] = {x: r, y: _y1};
+            this.ArrayPoints[this.ArrayPoints.length] = {x: x, y: _y2};
+            this.ArrayPoints[this.ArrayPoints.length] = {x: r, y: _y2};
+        }
     },
     drawVerLine : function(align, x, y, b, penW)
     {
         this.Native["drawVerLine"](align, x, y, b, penW);
+		
+		if (false === this.GetIntegerGrid() && this.ArrayPoints != null)
+        {
+            this.ArrayPoints[this.ArrayPoints.length] = {x: x, y: y};
+            this.ArrayPoints[this.ArrayPoints.length] = {x: x, y: b};
+        }
     },
     // мега крутые функции для таблиц
     drawHorLineExt : function(align, y, x, r, penW, leftMW, rightMW)
     {
         this.Native["drawHorLineExt"](align, y, x, r, penW, leftMW, rightMW);
+		
+		if (false === this.GetIntegerGrid() && this.ArrayPoints != null)
+        {
+            this.ArrayPoints[this.ArrayPoints.length] = {x: x, y: y};
+            this.ArrayPoints[this.ArrayPoints.length] = {x: r, y: y};
+        }
     },
     rect : function(x, y, w, h)
     {
@@ -457,8 +511,8 @@ CNativeGraphics.prototype =
     },
     DrawPolygon : function(oPath, lineWidth, shift)
     {
-		this.p_width(lineWidth);
-		this._s();
+        this.p_width(lineWidth);
+        this._s();
 
         var Points = oPath.Points;
         var nCount = Points.length;
@@ -506,8 +560,8 @@ CNativeGraphics.prototype =
         }
 
         this._l(StartX, StartY);
-		this._z();
-		this.ds();
+        this._z();
+        this.ds();
     },
     DrawFootnoteRect : function(x, y, w, h)
     {

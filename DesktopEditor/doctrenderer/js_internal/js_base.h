@@ -173,7 +173,7 @@ namespace NSJSBase
         CJSContext();
         ~CJSContext();
 
-        void Initialize(bool bIsGlobal = false);
+        void Initialize();
         void Dispose();
 
         CJSTryCatch* GetExceptions();
@@ -207,6 +207,10 @@ namespace NSJSBase
 
     public:
         static CJSContext* GetCurrent();
+
+    public:
+        static void ExternalInitialize();
+        static void ExternalDispose();
     };
 }
 

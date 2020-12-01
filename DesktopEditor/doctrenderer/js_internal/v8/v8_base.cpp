@@ -10,6 +10,7 @@ v8::Local<v8::String> CreateV8String(v8::Isolate* i, const std::string& str)
 }
 
 CV8Initializer* CV8Worker::m_pInitializer = NULL;
+bool CV8Worker::m_bUseExternalInitialize = false;
 
 namespace NSJSBase
 {
@@ -63,7 +64,7 @@ namespace NSJSBase
 
                 const v8::ScriptCompiler::CachedData* _cachedData = Source->GetCachedData();
                 NSFile::CFileBinary oFileTest;
-                if (oFileTest.CreateFileW(Path))
+                if (_cachedData && oFileTest.CreateFileW(Path))
                 {
                     oFileTest.WriteFile(_cachedData->data, (DWORD)_cachedData->length);
                     oFileTest.CloseFile();
@@ -144,17 +145,16 @@ namespace NSJSBase
         return new CV8TryCatch();
     }
 
-    void CJSContext::Initialize(bool bIsGlobal)
+    void CJSContext::Initialize()
     {
         CV8Worker::Initialize();
-        if (!bIsGlobal)
-            m_internal->m_isolate = CV8Worker::getInitializer()->CreateNew();
+        m_internal->m_isolate = CV8Worker::getInitializer()->CreateNew();
     }
     void CJSContext::Dispose()
     {
-        if (m_internal->m_isolate)
-            m_internal->m_isolate->Dispose();
-        CV8Worker::Dispose();
+        if (!CV8Worker::IsUseExternalInitialize())
+            CV8Worker::Dispose();
+        m_internal->m_isolate->Dispose();
     }
 
     void CJSContext::CreateContext()
@@ -321,5 +321,14 @@ namespace NSJSBase
         _value->value = v8::JSON::Parse(CreateV8String(CV8Worker::GetCurrent(), sTmp));
     #endif
         return _value;
+    }
+
+    void CJSContext::ExternalInitialize()
+    {
+        CV8Worker::SetUseExetralInitialize();
+    }
+    void CJSContext::ExternalDispose()
+    {
+        CV8Worker::Dispose();
     }
 }

@@ -709,14 +709,12 @@ namespace NSDoctRenderer
 
     void CDocBuilder::Initialize()
     {
-        CJSContext context;
-        context.Initialize(true);
+        CJSContext::ExternalInitialize();
     }
 
     void CDocBuilder::Dispose()
     {
-        CJSContext context;
-        context.Dispose();
+        CJSContext::ExternalDispose();
     }
 
     void CDocBuilder::WriteData(const wchar_t* path, const wchar_t* value, const bool& append)

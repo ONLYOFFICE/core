@@ -257,6 +257,13 @@ namespace NSJSBase
         return ret;
     }
 
+    void CJSContext::ExternalInitialize()
+    {
+    }
+    void CJSContext::ExternalDispose()
+    {
+    }
+
     CJSValue* CJSContext::JSON_Parse(const char *sTmp)
     {
         // TODO:

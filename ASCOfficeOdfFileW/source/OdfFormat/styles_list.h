@@ -89,7 +89,7 @@ public:
 	_CP_OPT(std::wstring) text_style_name_;
     
 	odf_types::common_num_format_attlist				common_num_format_attlist_;
-    odf_types::common_num_format_prefix_suffix_attlist common_num_format_prefix_suffix_attlist_;
+    odf_types::common_num_format_prefix_suffix_attlist	common_num_format_prefix_suffix_attlist_;
     
 	_CP_OPT(unsigned int)	text_display_levels_;
     _CP_OPT(unsigned int)	text_start_value_;
@@ -269,7 +269,54 @@ public:
     office_element_ptr					style_text_properties_;
 	office_element_ptr					style_list_level_properties_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_list_level_style_image);
+// text:outline-style
+class text_outline_style : public office_element_impl<text_outline_style>
+{
+public:
+	static const wchar_t * ns;
+	static const wchar_t * name;
+	static const xml::NodeType xml_type = xml::typeElement;
+	static const ElementType type = typeTextOutlineStyle;
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element(const office_element_ptr & child);
+
+	virtual void serialize(std::wostream & strm);
+
+	std::wstring					style_name_;
+	office_element_ptr_array		content_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_outline_style);
+
+// text:outline-level-style
+class text_outline_level_style : public office_element_impl<text_outline_level_style>
+{
+public:
+	static const wchar_t * ns;
+	static const wchar_t * name;
+	static const xml::NodeType xml_type = xml::typeElement;
+	static const ElementType type = typeTextOutlineLevelStyle;
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element(const office_element_ptr & child);
+
+	virtual void serialize(std::wostream & strm);
+
+	std::wstring										text_style_name_;
+	odf_types::common_num_format_attlist				common_num_format_attlist_;
+	odf_types::common_num_format_prefix_suffix_attlist	common_num_format_prefix_suffix_attlist_;
+
+	unsigned int text_level_;
+	unsigned int text_display_levels_;
+	unsigned int text_start_value_;
+
+	office_element_ptr	list_level_properties_;
+	office_element_ptr	text_properties_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_outline_level_style);
+
 } 
 }

@@ -41,6 +41,7 @@
 #include "../../ASCOfficePPTXFile/Editor/FontCutter.h"
 #include "../../ASCOfficePPTXFile/PPTXFormat/App.h"
 #include "../../ASCOfficePPTXFile/PPTXFormat/Core.h"
+#include "../../ASCOfficePPTXFile/PPTXFormat/Logic/HeadingVariant.h"
 
 #include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/XlsxFlat.h"
@@ -57,6 +58,7 @@
 #include "../../Common/DocxFormat/Source/XlsxFormat/Slicer/SlicerCache.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Slicer/SlicerCacheExt.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Slicer/Slicer.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/NamedSheetViews/NamedSheetViews.h"
 
 namespace BinXlsxRW 
 {
@@ -3296,6 +3298,16 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
 		oBinaryTableWriter.WriteQueryTable(pQueryTableFile->m_oQueryTable.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);		
 	}
+	pFile = oWorksheet.Find(OOX::Spreadsheet::FileTypes::NamedSheetView);
+	OOX::Spreadsheet::CNamedSheetViewFile *pNamedSheetViewFile = dynamic_cast<OOX::Spreadsheet::CNamedSheetViewFile*>(pFile.GetPointer());
+	if ((pNamedSheetViewFile) && (pNamedSheetViewFile->m_oNamedSheetViews.IsInit()))
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::NamedSheetView);
+		m_oBcw.m_oStream.StartRecord(0);
+		pNamedSheetViewFile->m_oNamedSheetViews->toPPTY(&m_oBcw.m_oStream);
+		m_oBcw.m_oStream.EndRecord();
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
 	//Comments
 	if (false == oWorksheet.m_mapComments.empty())
 	{
@@ -5495,6 +5507,11 @@ void BinaryWorksheetTableWriter::WriteCommentDataContent(OOX::Spreadsheet::CComm
 			m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::UserName);
 			m_oBcw.m_oStream.WriteStringW(pCommentData->sUserName);
 		}
+		if (!pCommentData->sUserData.empty())
+		{
+			m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::UserData);
+			m_oBcw.m_oStream.WriteStringW(pCommentData->sUserData);
+		}
 		if (!pCommentData->sQuoteText.empty())
 		{
 			m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::QuoteText);
@@ -6913,6 +6930,15 @@ void BinaryFileWriter::intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinary
 	{
 		nCurPos = this->WriteTableStart(c_oSerTableTypes::Core);
 		pXlsx->m_pCore->ToPptxCore()->toPPTY(&oBufferedStream);
+		this->WriteTableEnd(nCurPos);
+	}
+
+	smart_ptr<OOX::File> pFile = pXlsx->Find(OOX::FileTypes::CustomProperties);
+	PPTX::CustomProperties *pCustomProperties = dynamic_cast<PPTX::CustomProperties*>(pFile.GetPointer());
+	if (pCustomProperties)
+	{
+		nCurPos = this->WriteTableStart(c_oSerTableTypes::CustomProperties);
+		pCustomProperties->toPPTY(&oBufferedStream);
 		this->WriteTableEnd(nCurPos);
 	}
 

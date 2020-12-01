@@ -51,6 +51,9 @@ namespace OOX
 	{
 		class CPersonList;
 		class CThreadedComment;
+		class CDxf;
+		class CSortCondition;
+		class CFilterColumn;
 	}
 }
 
@@ -115,6 +118,7 @@ namespace BinXlsxRW
 		int ReadAutoFilter(BYTE type, long length, void* poResult);
 		int ReadFilterColumns(BYTE type, long length, void* poResult);
 		int ReadFilterColumn(BYTE type, long length, void* poResult);
+		int ReadFilterColumnExternal(OOX::Spreadsheet::CFilterColumn* pFilterColumn);
 		int ReadFilterFilters(BYTE type, long length, void* poResult);
 		int ReadFilterFilter(BYTE type, long length, void* poResult);
 		int ReadDateGroupItem(BYTE type, long length, void* poResult);
@@ -127,6 +131,7 @@ namespace BinXlsxRW
 		int ReadSortState(BYTE type, long length, void* poResult);
 		int ReadSortConditions(BYTE type, long length, void* poResult);
 		int ReadSortCondition(BYTE type, long length, void* poResult);
+		int ReadSortConditionExternal(OOX::Spreadsheet::CSortCondition* pSortCondition);
 		int ReadTableColumns(BYTE type, long length, void* poResult);
 		int ReadTableColumn(BYTE type, long length, void* poResult);
 		int ReadTableStyleInfo(BYTE type, long length, void* poResult);
@@ -177,6 +182,7 @@ namespace BinXlsxRW
 		int ReadAligment(BYTE type, long length, void* poResult);
 		int ReadDxfs(BYTE type, long length, void* poResult);
 		int ReadDxf(BYTE type, long length, void* poResult);
+		int ReadDxfExternal(OOX::Spreadsheet::CDxf* pDxf);
 		int ReadCellStyles(BYTE type, long length, void* poResult);
 		int ReadCellStyle(BYTE type, long length, void* poResult);
 		int ReadTableStyles(BYTE type, long length, void* poResult);

@@ -49,20 +49,23 @@ namespace CSVWriter
 	protected:
 		NSFile::CFileBinary m_oFile;
 		OOX::Spreadsheet::CXlsx& m_oXlsx;
-		UINT m_nCodePage;
+		unsigned int m_nCodePage;
 		const std::wstring& m_sDelimiter;
 		bool m_bJSON;
 
-		WCHAR* m_pWriteBuffer;
-		INT m_nCurrentIndex;
+		wchar_t* m_pWriteBuffer;
+		int m_nCurrentIndex;
 		std::wstring m_sEscape;
-		INT m_nRowCurrent;
-		INT m_nColCurrent;
+		int m_nRowCurrent;
+		int m_nColCurrent;
+		
+		int m_nColDimension;
+
 		bool m_bIsWriteCell; // Нужно только для записи JSON-а
 		bool m_bStartRow;
 		bool m_bStartCell;
 	public:
-		CCSVWriter(OOX::Spreadsheet::CXlsx &oXlsx, UINT m_nCodePage, const std::wstring& sDelimiter, bool m_bJSON);
+		CCSVWriter(OOX::Spreadsheet::CXlsx &oXlsx, unsigned int m_nCodePage, const std::wstring& sDelimiter, bool m_bJSON);
 		~CCSVWriter();
 		void Start(const std::wstring &sFileDst);
 		void WriteSheetStart(OOX::Spreadsheet::CWorksheet* pWorksheet);
@@ -73,6 +76,6 @@ namespace CSVWriter
 		void End();
 		void Close();
 	};
-	void WriteFromXlsxToCsv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const std::wstring& wcDelimiter, bool bJSON);
+	void WriteFromXlsxToCsv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, unsigned int nCodePage, const std::wstring& wcDelimiter, bool bJSON);
 }
 

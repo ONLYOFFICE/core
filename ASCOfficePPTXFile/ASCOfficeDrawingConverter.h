@@ -195,6 +195,7 @@ namespace NSBinPptxRW
 
         NSBinPptxRW::CBinaryFileWriter*                     m_pBinaryWriter;
         int                                                 m_lNextId;
+		unsigned int										m_nDrawingMaxZIndex = 0; // для смешанных записей pict & Drawing 
 
         int                                                 m_lCurrentObjectTop;
 

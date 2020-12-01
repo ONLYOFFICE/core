@@ -53,7 +53,7 @@ namespace CSVWriter
 		//http://stackoverflow.com/questions/7724448/simple-json-string-escape-for-c
 		for (size_t i = 0; i < sInput.length(); ++i)
 		{
-			WCHAR c = sInput[i];
+			wchar_t c = sInput[i];
 			switch (c)
 			{
 			case '"': oBuilder.WriteString(_T("\\\"")); break;
@@ -76,7 +76,7 @@ namespace CSVWriter
 			}
 		}
 	}
-	void WriteFile(NSFile::CFileBinary *pFile, WCHAR **pWriteBuffer, INT &nCurrentIndex, const std::wstring &sWriteString, UINT &nCodePage, bool bIsEnd = false)
+	void WriteFile(NSFile::CFileBinary *pFile, wchar_t **pWriteBuffer, int &nCurrentIndex, const std::wstring &sWriteString, unsigned int &nCodePage, bool bIsEnd = false)
 	{
 		if (NULL == pFile || NULL == pWriteBuffer)
 			return;
@@ -85,11 +85,11 @@ namespace CSVWriter
 			return;
 
         const size_t c_nSize = 1048576; // 1024 * 1024
-        const size_t nSizeWchar = sizeof(WCHAR);
+        const size_t nSizeWchar = sizeof(wchar_t);
 		
 		if (NULL == *pWriteBuffer)
 		{
-			*pWriteBuffer = new WCHAR[c_nSize];
+			*pWriteBuffer = new wchar_t[c_nSize];
 			memset(*pWriteBuffer, 0, nSizeWchar * c_nSize);
 			nCurrentIndex = 0;
 		}
@@ -99,7 +99,7 @@ namespace CSVWriter
 			// Буффер заполнился, пишем
 			if (nCodePage == 48 && 2 == sizeof(wchar_t))//todo 48 временно CP_UTF16
 			{
-				pFile->WriteFile((BYTE*)*pWriteBuffer, sizeof (WCHAR) * nCurrentIndex);
+				pFile->WriteFile((BYTE*)*pWriteBuffer, sizeof (wchar_t) * nCurrentIndex);
 			}
 			else
 			{
@@ -119,7 +119,7 @@ namespace CSVWriter
 			nCurrentIndex += (int)nCountChars;
 		}
 	}
-	void WriteFromXlsxToCsv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const std::wstring& sDelimiter, bool bJSON)
+	void WriteFromXlsxToCsv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, unsigned int nCodePage, const std::wstring& sDelimiter, bool bJSON)
 	{
 		CCSVWriter oWriter(oXlsx, nCodePage, sDelimiter, bJSON);
 		oWriter.Start(sFileDst);
@@ -150,6 +150,7 @@ namespace CSVWriter
 				if (NULL != pWorksheet && pWorksheet->m_oSheetData.IsInit())
 				{
 					oWriter.WriteSheetStart(pWorksheet);
+
 					for (size_t i = 0; i < pWorksheet->m_oSheetData->m_arrItems.size(); ++i)
 					{
 						OOX::Spreadsheet::CRow *pRow = pWorksheet->m_oSheetData->m_arrItems[i];
@@ -166,7 +167,7 @@ namespace CSVWriter
 		}
 		oWriter.End();
 	}
-	CCSVWriter::CCSVWriter(OOX::Spreadsheet::CXlsx &m_oXlsx, UINT m_nCodePage, const std::wstring& m_sDelimiter, bool m_bJSON): m_oXlsx(m_oXlsx), m_nCodePage(m_nCodePage), m_sDelimiter(m_sDelimiter), m_bJSON(m_bJSON)
+	CCSVWriter::CCSVWriter(OOX::Spreadsheet::CXlsx &m_oXlsx, unsigned int m_nCodePage, const std::wstring& m_sDelimiter, bool m_bJSON): m_oXlsx(m_oXlsx), m_nCodePage(m_nCodePage), m_sDelimiter(m_sDelimiter), m_bJSON(m_bJSON)
 	{
 		m_pWriteBuffer = NULL;
 		m_nCurrentIndex = 0;
@@ -177,6 +178,8 @@ namespace CSVWriter
 		m_bIsWriteCell = false;
 		m_bStartRow = true;
 		m_bStartCell = true;
+		
+		m_nColDimension = 1;
 	}
 	CCSVWriter::~CCSVWriter()
 	{
@@ -205,13 +208,14 @@ namespace CSVWriter
 	}
 	void CCSVWriter::WriteSheetStart(OOX::Spreadsheet::CWorksheet* pWorksheet)
 	{
+		m_nColDimension = 1;
 		m_nRowCurrent = 1;
 		if (m_bJSON)
 			CSVWriter::WriteFile(&m_oFile, &m_pWriteBuffer, m_nCurrentIndex, g_sBkt, m_nCodePage);
 	}
 	void CCSVWriter::WriteRowStart(OOX::Spreadsheet::CRow *pRow)
 	{
-		INT nRow = pRow->m_oR.IsInit() ? pRow->m_oR->GetValue() : m_bStartRow ? m_nRowCurrent : m_nRowCurrent + 1;
+		int nRow = pRow->m_oR.IsInit() ? pRow->m_oR->GetValue() : m_bStartRow ? m_nRowCurrent : m_nRowCurrent + 1;
 
 		if (m_bJSON)
 			CSVWriter::WriteFile(&m_oFile, &m_pWriteBuffer, m_nCurrentIndex, (m_bStartRow ? g_sBkt: g_sBktComma), m_nCodePage);
@@ -231,8 +235,8 @@ namespace CSVWriter
 	}
 	void CCSVWriter::WriteCell(OOX::Spreadsheet::CCell *pCell)
 	{
-		INT nRowTmp = 0;
-		INT nCol = 0;
+		int nRowTmp = 0;
+		int nCol = 0;
 
 		if (pCell->isInitRef() && pCell->getRowCol(nRowTmp, nCol))
 		{
@@ -256,6 +260,9 @@ namespace CSVWriter
 			WriteFile(&m_oFile, &m_pWriteBuffer, m_nCurrentIndex, m_sDelimiter, m_nCodePage);
 			m_bIsWriteCell = false;
 		}
+
+		if (m_nColDimension < m_nColCurrent)
+			m_nColDimension = m_nColCurrent;
 
 		// Get cell value
 		std::wstring sCellValue = _T("");
@@ -308,6 +315,19 @@ namespace CSVWriter
 	}
 	void CCSVWriter::WriteRowEnd(OOX::Spreadsheet::CRow* pWorksheet)
 	{
+		while (m_nColDimension > m_nColCurrent) // todooo - прописывать в бинарнике dimension - и данные брать оттуда
+		{
+			if (m_bJSON && false == m_bIsWriteCell)
+			{
+				// Запишем пустые строки (для JSON-а)
+				WriteFile(&m_oFile, &m_pWriteBuffer, m_nCurrentIndex, g_sDoubleQuote, m_nCodePage);
+			}
+			// Write delimiter
+			++m_nColCurrent;
+			WriteFile(&m_oFile, &m_pWriteBuffer, m_nCurrentIndex, m_sDelimiter, m_nCodePage);
+			m_bIsWriteCell = false;
+		}
+
 		if (m_bJSON)
 			WriteFile(&m_oFile, &m_pWriteBuffer, m_nCurrentIndex, g_sEndJson, m_nCodePage);
 	}

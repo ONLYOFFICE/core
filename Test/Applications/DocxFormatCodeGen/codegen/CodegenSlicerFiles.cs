@@ -558,7 +558,7 @@ namespace codegen
                     GenMemberPivot oGenMemberTmp = aMembers[i].getArrayTypeIfSimple();
                     if (null != oGenMemberTmp)
                     {
-                        sb.AppendFormat("pWriter->WriteRecordArray4({0}, 0, {1});\n", i, GetMemberName(aMembers[i].sName));
+                        sb.AppendFormat("pWriter->WriteRecordArray({0}, 0, {1});\n", i, GetMemberName(aMembers[i].sName));
                     }
                     else
                     {
@@ -567,7 +567,7 @@ namespace codegen
                 }
                 else
                 {
-                    sb.AppendFormat("pWriter->WriteRecord4({0}, {1});\n", i, GetMemberName(aMembers[i].sName));
+                    sb.AppendFormat("pWriter->WriteRecord2({0}, {1});\n", i, GetMemberName(aMembers[i].sName));
                 }
             }
             sb.AppendFormat(gc_sToPPTYEnd);

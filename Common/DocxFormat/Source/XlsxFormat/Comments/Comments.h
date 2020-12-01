@@ -421,9 +421,9 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if ( oReader, L"r:id", m_oId )
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_Read_if ( oReader, L"id", m_oId )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 			}
 		public:
 			nullable<SimpleTypes::CRelationshipId > m_oId;

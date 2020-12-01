@@ -38,6 +38,7 @@
 
 #include "../../ASCOfficePPTXFile/PPTXFormat/App.h"
 #include "../../ASCOfficePPTXFile/PPTXFormat/Core.h"
+#include "../../ASCOfficePPTXFile/PPTXFormat/Logic/HeadingVariant.h"
 
 #include "../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Document.h"
@@ -515,7 +516,7 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 		}
 	case c_oSerProp_rPrType::HighLight:
 		{
-			orPr->bHighLight = true;
+			orPr->nHighLight = 2; //color set
 			orPr->HighLight = oBinary_CommonReader2.ReadColor();
 			break;
 		}
@@ -524,7 +525,7 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 			BYTE byteHighLightTyped = m_oBufferedStream.GetUChar();
 			switch(byteHighLightTyped)
 			{
-			case c_oSer_ColorType::None:orPr->bHighLight = false;break;
+			case c_oSer_ColorType::None:orPr->nHighLight = 1; break; //type set
 			}
 			break;
 		}
@@ -986,6 +987,13 @@ int Binary_pPrReader::ReadContent( BYTE type, long length, void* poResult)
 			long outlineLvl = m_oBufferedStream.GetLong();
 			pCStringWriter->WriteString(L"<w:outlineLvl w:val=\"" + std::to_wstring(outlineLvl) + L"\"/>");
 		}break;
+	case c_oSerProp_pPrType::SuppressLineNumbers:
+		{
+			if(m_oBufferedStream.GetBool())
+				pCStringWriter->WriteString(std::wstring(L"<w:suppressLineNumbers/>"));
+			else
+				pCStringWriter->WriteString(std::wstring(L"<w:suppressLineNumbers w:val=\"0\"/>"));
+		}break;
 	default:
 		res = c_oSerConstants::ReadUnknown;
 		break;
@@ -1378,6 +1386,12 @@ int Binary_pPrReader::Read_SecPr(BYTE type, long length, void* poResult)
 	{
 		READ1_DEF(length, res, this->Read_pageNumType, poResult);
 	}
+	else if( c_oSerProp_secPrType::lnNumType == type )
+	{
+		ComplexTypes::Word::CLineNumber lineNumber;
+		READ1_DEF(length, res, this->Read_lineNumType, &lineNumber);
+		pSectPr->lineNum = L"<w:lnNumType " + lineNumber.ToString() + L"/>";
+	}
 	else if( c_oSerProp_secPrType::sectPrChange == type )
 	{
 		TrackRevision sectPrChange;
@@ -1645,7 +1659,7 @@ int Binary_pPrReader::Read_pgHeader(BYTE type, long length, void* poResult)
 	if( c_oSerProp_secPrType::hdrftrelem == type )
 	{
 		int nHdrFtrIndex = m_oBufferedStream.GetLong();
-		if(nHdrFtrIndex >= 0 && nHdrFtrIndex <= (int)m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders.size())
+		if(nHdrFtrIndex >= 0 && nHdrFtrIndex < (int)m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders.size())
 		{
 			Writers::HdrFtrItem* pHdrFtrItem = m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders[nHdrFtrIndex];
 			pHdrFtrItem->m_sFilename;
@@ -1696,6 +1710,34 @@ int Binary_pPrReader::Read_pageNumType(BYTE type, long length, void* poResult)
 	{
 		pSectPr->bPageNumStart = true;
 		pSectPr->PageNumStart = m_oBufferedStream.GetLong();
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int Binary_pPrReader::Read_lineNumType(BYTE type, long length, void* poResult)
+{
+	ComplexTypes::Word::CLineNumber* pLineNumber = static_cast<ComplexTypes::Word::CLineNumber*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+	if( c_oSerProp_secPrLineNumType::CountBy == type )
+	{
+		pLineNumber->m_oCountBy.Init();
+		pLineNumber->m_oCountBy->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if( c_oSerProp_secPrLineNumType::Distance == type )
+	{
+		pLineNumber->m_oDistance.Init();
+		pLineNumber->m_oDistance->FromTwips(m_oBufferedStream.GetLong());
+	}
+	else if( c_oSerProp_secPrLineNumType::Restart == type )
+	{
+		pLineNumber->m_oRestart.Init();
+		pLineNumber->m_oRestart->SetValue((SimpleTypes::ELineNumberRestart)m_oBufferedStream.GetUChar());
+	}
+	else if( c_oSerProp_secPrLineNumType::Start == type )
+	{
+		pLineNumber->m_oStart.Init();
+		pLineNumber->m_oStart->SetValue(m_oBufferedStream.GetLong());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -3443,6 +3485,16 @@ int Binary_CommentsTableReader::ReadCommentContent(BYTE type, long length, void*
 	{
 		std::wstring Data(m_oBufferedStream.GetString3(length));
 		pComment->OOData = Data;
+	}
+	else if ( c_oSer_CommentsType::DateUtc == type )
+	{
+		std::wstring Data(m_oBufferedStream.GetString3(length));
+		pComment->DateUtc = Data;
+	}
+	else if ( c_oSer_CommentsType::UserData == type )
+	{
+		std::wstring Data(m_oBufferedStream.GetString3(length));
+		pComment->UserData = Data;
 	}
 	else if ( c_oSer_CommentsType::Text == type )
 	{
@@ -8785,6 +8837,16 @@ int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult
 		pSdtPr->m_oCheckbox.Init();
 		READ1_DEF(length, res, this->ReadSdtCheckBox, pSdtPr->m_oCheckbox.GetPointer());
 	}
+	else if (c_oSerSdt::FormPr == type)
+	{
+		pSdtPr->m_oFormPr.Init();
+		READ1_DEF(length, res, this->ReadSdtFormPr, pSdtPr->m_oFormPr.GetPointer());
+	}
+	else if (c_oSerSdt::TextFormPr == type)
+	{
+		pSdtPr->m_oTextFormPr.Init();
+		READ1_DEF(length, res, this->ReadSdtTextFormPr, pSdtPr->m_oTextFormPr.GetPointer());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -8825,6 +8887,11 @@ int Binary_DocumentTableReader::ReadSdtCheckBox(BYTE type, long length, void* po
 			pSdtCheckBox->m_oUncheckedState.Init();
 		pSdtCheckBox->m_oUncheckedState->m_oVal.Init();
 		pSdtCheckBox->m_oUncheckedState->m_oVal->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSerSdt::CheckboxGroupKey == type)
+	{
+		pSdtCheckBox->m_oGroupKey.Init();
+		pSdtCheckBox->m_oGroupKey->m_sVal = m_oBufferedStream.GetString3(length);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -8960,6 +9027,68 @@ int Binary_DocumentTableReader::ReadDropDownList(BYTE type, long length, void* p
 		ComplexTypes::Word::CSdtListItem* pSdtListItem = new ComplexTypes::Word::CSdtListItem();
 		READ1_DEF(length, res, this->ReadSdtListItem, pSdtListItem);
 		pDropDownList->m_arrListItem.push_back(pSdtListItem);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int Binary_DocumentTableReader::ReadSdtFormPr(BYTE type, long length, void* poResult)
+{
+	int res = 0;
+	ComplexTypes::Word::CFormPr* pFormPr = static_cast<ComplexTypes::Word::CFormPr*>(poResult);
+	if (c_oSerSdt::FormPrKey == type)
+	{
+		pFormPr->m_oKey = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSerSdt::FormPrLabel == type)
+	{
+		pFormPr->m_oLabel = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSerSdt::FormPrHelpText == type)
+	{
+		pFormPr->m_oHelpText = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSerSdt::FormPrRequired == type)
+	{
+		pFormPr->m_oRequired = m_oBufferedStream.GetBool();
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int Binary_DocumentTableReader::ReadSdtTextFormPr(BYTE type, long length, void* poResult)
+{
+	int res = 0;
+	OOX::Logic::CTextFormPr* pTextFormPr = static_cast<OOX::Logic::CTextFormPr*>(poResult);
+	if (c_oSerSdt::TextFormPrComb == type)
+	{
+		pTextFormPr->m_oComb.Init();
+		READ1_DEF(length, res, this->ReadSdtTextFormPrComb, pTextFormPr->m_oComb.GetPointer());
+	}
+	else if (c_oSerSdt::TextFormPrMaxCharacters == type)
+	{
+		pTextFormPr->m_oMaxCharacters.Init();
+		pTextFormPr->m_oMaxCharacters->m_oVal = m_oBufferedStream.GetLong();
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int Binary_DocumentTableReader::ReadSdtTextFormPrComb(BYTE type, long length, void* poResult)
+{
+	int res = 0;
+	ComplexTypes::Word::CComb* pComb = static_cast<ComplexTypes::Word::CComb*>(poResult);
+	if (c_oSerSdt::TextFormPrCombWidth == type)
+	{
+		pComb->m_oWidth = m_oBufferedStream.GetLong();
+	}
+	else if (c_oSerSdt::TextFormPrCombSym == type)
+	{
+		pComb->m_oSym = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSerSdt::TextFormPrCombFont == type)
+	{
+		pComb->m_oFont = m_oBufferedStream.GetString3(length);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -9238,6 +9367,14 @@ int BinaryFileReader::ReadMainTable()
 					m_oFileWriter.m_pCore = pCore;
 				}
 				break;
+			case c_oSerTableTypes::CustomProperties:
+				{
+					PPTX::CustomProperties* pCustomProperties = new PPTX::CustomProperties(NULL);
+					pCustomProperties->fromPPTY(&m_oBufferedStream);
+					m_oFileWriter.m_pCustomProperties = pCustomProperties;
+					m_oFileWriter.m_oDocumentRelsWriter.m_bHasCustom = true;
+				}
+				break;
 			case c_oSerTableTypes::HdrFtr:
 				res = Binary_HdrFtrTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_pComments).Read();
 				break;
@@ -9357,15 +9494,20 @@ int BinaryFileReader::ReadMainTable()
         
 		std::wstring sContent	= oComments.writeContent();
         std::wstring sContentEx = oComments.writeContentExt();	//важно чтобы writeContentExt вызывался после writeContent
+		std::wstring sContentExtensible = oComments.writeContentExtensible();
 		std::wstring sContentsId = oComments.writeContentsIds();
         std::wstring sPeople	= oComments.writePeople();
 
 		std::wstring sDocumentContent	= oBinary_DocumentCommentsTableReader.m_oComments.writeContent();
 		std::wstring sDocumentContentEx = oBinary_DocumentCommentsTableReader.m_oComments.writeContentExt();	//важно чтобы writeContentExt вызывался после writeContent
+		std::wstring sDocumentContentExtensible = oBinary_DocumentCommentsTableReader.m_oComments.writeContentExtensible();
 		std::wstring sDocumentContentsId = oBinary_DocumentCommentsTableReader.m_oComments.writeContentsIds();
 		std::wstring sDocumentPeople	= oBinary_DocumentCommentsTableReader.m_oComments.writePeople();
 
-		oCommentsWriter.setElements(sContent, sContentEx, sContentsId, sPeople, sDocumentContent, sDocumentContentEx, sDocumentContentsId, sDocumentPeople);
+		std::wstring sContentUserData = oComments.writeContentUserData();
+		sContentUserData += oBinary_DocumentCommentsTableReader.m_oComments.writeContentUserData();
+
+		oCommentsWriter.setElements(sContent, sContentEx, sContentExtensible, sContentsId, sPeople, sDocumentContent, sDocumentContentEx, sDocumentContentExtensible, sDocumentContentsId, sDocumentPeople, sContentUserData);
         
 		if(false == oCommentsWriter.m_sComment.empty())
 		{
@@ -9378,6 +9520,12 @@ int BinaryFileReader::ReadMainTable()
 			unsigned int rId;
 			m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::CommentsExt.RelationType(), OOX::FileTypes::CommentsExt.DefaultFileName().GetPath(), std::wstring(), &rId);
 			m_oFileWriter.m_pDrawingConverter->Registration(OOX::FileTypes::CommentsExt.OverrideType(), L"/word", OOX::FileTypes::CommentsExt.DefaultFileName().GetPath());
+		}
+		if(false == oCommentsWriter.m_sContentExtensible.empty())
+		{
+			unsigned int rId;
+			m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::CommentsExtensible.RelationType(), OOX::FileTypes::CommentsExtensible.DefaultFileName().GetPath(), std::wstring(), &rId);
+			m_oFileWriter.m_pDrawingConverter->Registration(OOX::FileTypes::CommentsExtensible.OverrideType(), L"/word", OOX::FileTypes::CommentsExtensible.DefaultFileName().GetPath());
 		}
 		if(false == oCommentsWriter.m_sCommentsIds.empty())
 		{
@@ -9403,6 +9551,12 @@ int BinaryFileReader::ReadMainTable()
 			m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::DocumentCommentsExt.RelationType(), OOX::FileTypes::DocumentCommentsExt.DefaultFileName().GetPath(), std::wstring(), &rId);
 			m_oFileWriter.m_pDrawingConverter->Registration(OOX::FileTypes::DocumentCommentsExt.OverrideType(), L"/word", OOX::FileTypes::DocumentCommentsExt.DefaultFileName().GetPath());
 		}
+		if(false == oCommentsWriter.m_sDocumentContentExtensible.empty())
+		{
+			unsigned int rId;
+			m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::DocumentCommentsExtensible.RelationType(), OOX::FileTypes::DocumentCommentsExtensible.DefaultFileName().GetPath(), std::wstring(), &rId);
+			m_oFileWriter.m_pDrawingConverter->Registration(OOX::FileTypes::DocumentCommentsExtensible.OverrideType(), L"/word", OOX::FileTypes::DocumentCommentsExtensible.DefaultFileName().GetPath());
+		}
 		if(false == oCommentsWriter.m_sDocumentCommentsIds.empty())
 		{
 			unsigned int rId;
@@ -9414,6 +9568,12 @@ int BinaryFileReader::ReadMainTable()
 			unsigned int rId;
 			m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::DocumentPeople.RelationType(), OOX::FileTypes::DocumentPeople.DefaultFileName().GetPath(), std::wstring(), &rId);
 			m_oFileWriter.m_pDrawingConverter->Registration(OOX::FileTypes::DocumentPeople.OverrideType(), L"/word", OOX::FileTypes::DocumentPeople.DefaultFileName().GetPath());
+		}
+		if(false == oCommentsWriter.m_sContentUserData.empty())
+		{
+			unsigned int rId;
+			m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::CommentsUserData.RelationType(), OOX::FileTypes::CommentsUserData.DefaultFileName().GetPath(), std::wstring(), &rId);
+			m_oFileWriter.m_pDrawingConverter->Registration(OOX::FileTypes::CommentsUserData.OverrideType(), L"/word", OOX::FileTypes::CommentsUserData.DefaultFileName().GetPath());
 		}
 
         m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(fileRelsPath.GetPath());

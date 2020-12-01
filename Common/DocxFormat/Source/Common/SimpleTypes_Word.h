@@ -3300,9 +3300,9 @@ namespace SimpleTypes
 
 	enum ELineNumberRestart
 	{
-		linenumberrestartContinious = 0,
-		linenumberrestartNewPage    = 1,
-		linenumberrestartNewSection = 2
+		linenumberrestartContinious = 1,
+		linenumberrestartNewPage    = 2,
+		linenumberrestartNewSection = 3
 	};
 
 	template<ELineNumberRestart eDefValue = linenumberrestartNewPage>

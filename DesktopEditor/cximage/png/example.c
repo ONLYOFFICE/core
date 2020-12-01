@@ -2,11 +2,10 @@
 #if 0 /* in case someone actually tries to compile this */
 
 /* example.c - an example of using libpng
- * Last changed in libpng 1.5.0 [January 6, 2011]
- * This file has been placed in the public domain by the authors.
- * Maintained 1998-2011 Glenn Randers-Pehrson
- * Maintained 1996, 1997 Andreas Dilger)
- * Written 1995, 1996 Guy Eric Schalnat, Group 42, Inc.)
+ * Last changed in libpng 1.5.19 [August 21, 2014]
+ * Maintained 1998-2014 Glenn Randers-Pehrson
+ * Maintained 1996, 1997 Andreas Dilger
+ * Written 1995, 1996 Guy Eric Schalnat, Group 42, Inc.
  */
 
 /* This is an example of how to use libpng to read and write PNG files.
@@ -14,6 +13,8 @@
  * read it, do so first.  This was designed to be a starting point of an
  * implementation.  This is not officially part of libpng, is hereby placed
  * in the public domain, and therefore does not require a copyright notice.
+ * To the extent possible under law, the authors have waived all copyright and
+ * related or neighboring rights to this file.
  *
  * This file does not currently compile, because it is missing certain
  * parts, like allocating memory to hold an image.  You will have to
@@ -21,6 +22,10 @@
  * working PNG reader/writer, see pngtest.c, included in this distribution;
  * see also the programs in the contrib directory.
  */
+
+#define _POSIX_SOURCE 1  /* libpng and zlib are POSIX-compliant.  You may
+                          * change this if your application uses non-POSIX
+                          * extensions. */
 
 #include "png.h"
 
@@ -84,7 +89,7 @@ void read_png(char *file_name)  /* We need to open the file */
 {
    png_structp png_ptr;
    png_infop info_ptr;
-   unsigned int sig_read = 0;
+   int sig_read = 0;
    png_uint_32 width, height;
    int bit_depth, color_type, interlace_type;
    FILE *fp;
@@ -93,7 +98,7 @@ void read_png(char *file_name)  /* We need to open the file */
       return (ERROR);
 
 #else no_open_file /* prototype 2 */
-void read_png(FILE *fp, unsigned int sig_read)  /* File is already open */
+void read_png(FILE *fp, int sig_read)  /* File is already open */
 {
    png_structp png_ptr;
    png_infop info_ptr;
@@ -183,8 +188,15 @@ void read_png(FILE *fp, unsigned int sig_read)  /* File is already open */
     * are mutually exclusive.
     */
 
-   /* Tell libpng to strip 16 bit/color files down to 8 bits/color */
+   /* Tell libpng to strip 16 bits/color files down to 8 bits/color.
+    * Use accurate scaling if it's available, otherwise just chop off the
+    * low byte.
+    */
+#ifdef PNG_READ_SCALE_16_TO_8_SUPPORTED
+    png_set_scale_16(png_ptr);
+#else
    png_set_strip_16(png_ptr);
+#endif
 
    /* Strip alpha bytes from the input data without combining with the
     * background (not recommended).
@@ -247,9 +259,9 @@ void read_png(FILE *fp, unsigned int sig_read)  /* File is already open */
    /* If we don't have another value */
    else
    {
-      screen_gamma = 2.2;  /* A good guess for a PC monitor in a dimly
-                              lit room */
-      screen_gamma = 1.7 or 1.0;  /* A good guess for Mac systems */
+      screen_gamma = PNG_DEFAULT_sRGB;  /* A good guess for a PC monitor
+                                           in a dimly lit room */
+      screen_gamma = PNG_GAMMA_MAC_18 or 1.0; /* Good guesses for Mac systems */
    }
 
    /* Tell libpng to handle the gamma conversion for you.  The final call
@@ -261,7 +273,7 @@ void read_png(FILE *fp, unsigned int sig_read)  /* File is already open */
    int intent;
 
    if (png_get_sRGB(png_ptr, info_ptr, &intent))
-      png_set_gamma(png_ptr, screen_gamma, 0.45455);
+      png_set_gamma(png_ptr, screen_gamma, PNG_DEFAULT_sRGB);
    else
    {
       double image_gamma;
@@ -272,7 +284,7 @@ void read_png(FILE *fp, unsigned int sig_read)  /* File is already open */
    }
 
 #ifdef PNG_READ_QUANTIZE_SUPPORTED
-   /* Quantize RGB files down to 8 bit palette or reduce palettes
+   /* Quantize RGB files down to 8-bit palette or reduce palettes
     * to the number of colors available on your screen.
     */
    if (color_type & PNG_COLOR_MASK_COLOR)
@@ -324,17 +336,22 @@ void read_png(FILE *fp, unsigned int sig_read)  /* File is already open */
    /* Swap the RGBA or GA data to ARGB or AG (or BGRA to ABGR) */
    png_set_swap_alpha(png_ptr);
 
-   /* Swap bytes of 16 bit files to least significant byte first */
+   /* Swap bytes of 16-bit files to least significant byte first */
    png_set_swap(png_ptr);
 
    /* Add filler (or alpha) byte (before/after each RGB triplet) */
    png_set_filler(png_ptr, 0xff, PNG_FILLER_AFTER);
 
+#ifdef PNG_READ_INTERLACING_SUPPORTED
    /* Turn on interlace handling.  REQUIRED if you are not using
     * png_read_image().  To see how to handle interlacing passes,
     * see the png_read_row() method below:
     */
    number_passes = png_set_interlace_handling(png_ptr);
+#else
+   number_passes = 1;
+#endif /* PNG_READ_INTERLACING_SUPPORTED */
+
 
    /* Optional call to gamma correct and add the background to the palette
     * and update info structure.  REQUIRED if you are expecting libpng to
@@ -516,6 +533,7 @@ row_callback(png_structp png_ptr, png_bytep new_row,
     */
    png_bytep old_row = ((png_bytep *)our_data)[row_num];
 
+#ifdef PNG_READ_INTERLACING_SUPPORTED
    /* If both rows are allocated then copy the new row
     * data to the corresponding row data.
     */
@@ -544,6 +562,7 @@ row_callback(png_structp png_ptr, png_bytep new_row,
     * to pass the current row as new_row, and the function will combine
     * the old row and the new row.
     */
+#endif /* PNG_READ_INTERLACING_SUPPORTED */
 }
 
 end_callback(png_structp png_ptr, png_infop info)
@@ -676,25 +695,38 @@ void write_png(char *file_name /* , ... other image information ... */)
    png_set_gAMA(png_ptr, info_ptr, gamma);
 
    /* Optionally write comments into the image */
-   text_ptr[0].key = "Title";
-   text_ptr[0].text = "Mona Lisa";
-   text_ptr[0].compression = PNG_TEXT_COMPRESSION_NONE;
-   text_ptr[0].itxt_length = 0;
-   text_ptr[0].lang = NULL;
-   text_ptr[0].lang_key = NULL;
-   text_ptr[1].key = "Author";
-   text_ptr[1].text = "Leonardo DaVinci";
-   text_ptr[1].compression = PNG_TEXT_COMPRESSION_NONE;
-   text_ptr[1].itxt_length = 0;
-   text_ptr[1].lang = NULL;
-   text_ptr[1].lang_key = NULL;
-   text_ptr[2].key = "Description";
-   text_ptr[2].text = "<long text>";
-   text_ptr[2].compression = PNG_TEXT_COMPRESSION_zTXt;
-   text_ptr[2].itxt_length = 0;
-   text_ptr[2].lang = NULL;
-   text_ptr[2].lang_key = NULL;
-   png_set_text(png_ptr, info_ptr, text_ptr, 3);
+   {
+      png_text text_ptr[3];
+
+      char key0[]="Title";
+      char text0[]="Mona Lisa";
+      text_ptr[0].key = key0;
+      text_ptr[0].text = text0;
+      text_ptr[0].compression = PNG_TEXT_COMPRESSION_NONE;
+      text_ptr[0].itxt_length = 0;
+      text_ptr[0].lang = NULL;
+      text_ptr[0].lang_key = NULL;
+
+      char key1[]="Author";
+      char text1[]="Leonardo DaVinci";
+      text_ptr[1].key = key1;
+      text_ptr[1].text = text1;
+      text_ptr[1].compression = PNG_TEXT_COMPRESSION_NONE;
+      text_ptr[1].itxt_length = 0;
+      text_ptr[1].lang = NULL;
+      text_ptr[1].lang_key = NULL;
+
+      char key2[]="Description";
+      char text2[]="<long text>";
+      text_ptr[2].key = key2;
+      text_ptr[2].text = text2;
+      text_ptr[2].compression = PNG_TEXT_COMPRESSION_zTXt;
+      text_ptr[2].itxt_length = 0;
+      text_ptr[2].lang = NULL;
+      text_ptr[2].lang_key = NULL;
+
+      png_set_text(write_ptr, write_info_ptr, text_ptr, 3);
+   }
 
    /* Other optional chunks like cHRM, bKGD, tRNS, tIME, oFFs, pHYs */
 
@@ -718,7 +750,7 @@ void write_png(char *file_name /* , ... other image information ... */)
     */
 
    /* Once we write out the header, the compression type on the text
-    * chunks gets changed to PNG_TEXT_COMPRESSION_NONE_WR or
+    * chunk gets changed to PNG_TEXT_COMPRESSION_NONE_WR or
     * PNG_TEXT_COMPRESSION_zTXt_WR, so it doesn't get written out again
     * at the end.
     */
@@ -752,11 +784,11 @@ void write_png(char *file_name /* , ... other image information ... */)
    /* Swap bytes of 16-bit files to most significant byte first */
    png_set_swap(png_ptr);
 
-   /* Swap bits of 1, 2, 4 bit packed pixel formats */
+   /* Swap bits of 1-bit, 2-bit, 4-bit packed pixel formats */
    png_set_packswap(png_ptr);
 
    /* Turn on interlace handling if you are not using png_write_image() */
-   if (interlacing)
+   if (interlacing != 0)
       number_passes = png_set_interlace_handling(png_ptr);
 
    else
@@ -767,12 +799,16 @@ void write_png(char *file_name /* , ... other image information ... */)
     * use the first method if you aren't handling interlacing yourself.
     */
    png_uint_32 k, height, width;
-   png_byte image[height][width*bytes_per_pixel];
+
+   /* In this example, "image" is a one-dimensional array of bytes */
+   png_byte image[height*width*bytes_per_pixel];
+
    png_bytep row_pointers[height];
 
    if (height > PNG_UINT_32_MAX/png_sizeof(png_bytep))
      png_error (png_ptr, "Image is too tall to process in memory");
 
+   /* Set up pointers into your "image" byte array */
    for (k = 0; k < height; k++)
      row_pointers[k] = image + k*width*bytes_per_pixel;
 

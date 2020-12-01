@@ -40,6 +40,8 @@ namespace Writers
     static std::wstring g_string_comment_End = _T("</w:comments>");
     static std::wstring g_string_commentExt_Start = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w15:commentsEx xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 w15 wp14\">");
     static std::wstring g_string_commentExt_End = _T("</w15:commentsEx>");
+	static std::wstring g_string_commentExtensible_Start = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w16cex:commentsExtensible xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:cx=\"http://schemas.microsoft.com/office/drawing/2014/chartex\" xmlns:cx1=\"http://schemas.microsoft.com/office/drawing/2015/9/8/chartex\" xmlns:cx2=\"http://schemas.microsoft.com/office/drawing/2015/10/21/chartex\" xmlns:cx3=\"http://schemas.microsoft.com/office/drawing/2016/5/9/chartex\" xmlns:cx4=\"http://schemas.microsoft.com/office/drawing/2016/5/10/chartex\" xmlns:cx5=\"http://schemas.microsoft.com/office/drawing/2016/5/11/chartex\" xmlns:cx6=\"http://schemas.microsoft.com/office/drawing/2016/5/12/chartex\" xmlns:cx7=\"http://schemas.microsoft.com/office/drawing/2016/5/13/chartex\" xmlns:cx8=\"http://schemas.microsoft.com/office/drawing/2016/5/14/chartex\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:aink=\"http://schemas.microsoft.com/office/drawing/2016/ink\" xmlns:am3d=\"http://schemas.microsoft.com/office/drawing/2017/model3d\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:w16cex=\"http://schemas.microsoft.com/office/word/2018/wordml/cex\" xmlns:w16cid=\"http://schemas.microsoft.com/office/word/2016/wordml/cid\" xmlns:w16=\"http://schemas.microsoft.com/office/word/2018/wordml\" xmlns:w16se=\"http://schemas.microsoft.com/office/word/2015/wordml/symex\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 w15 w16se w16cid w16 w16cex wp14\">");
+	static std::wstring g_string_commentExtensible_End = _T("</w16cex:commentsExtensible>");
 	static std::wstring g_string_commentsIds_Start = _T("<w16cid:commentsIds mc:Ignorable=\"w16cid\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:w16cid=\"http://schemas.microsoft.com/office/word/2016/wordml/cid\">");
 	static std::wstring g_string_commentsIds_End = _T("</w16cid:commentsIds>");
     static std::wstring g_string_people_Start = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w15:people xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 w15 wp14\">");
@@ -52,26 +54,32 @@ namespace Writers
 	public:
 		std::wstring	m_sComment;
         std::wstring	m_sCommentExt;
+		std::wstring	m_sContentExtensible;
 		std::wstring	m_sCommentsIds;
         std::wstring	m_sPeople;
 		std::wstring	m_sDocumentComment;
 		std::wstring	m_sDocumentCommentExt;
+		std::wstring	m_sDocumentContentExtensible;
 		std::wstring	m_sDocumentCommentsIds;
 		std::wstring	m_sDocumentPeople;
+		std::wstring	m_sContentUserData;
 
 		CommentsWriter(std::wstring sDir) : m_sDir(sDir)
 		{
 		}
-		void setElements(std::wstring& sComment, std::wstring& sCommentExt, std::wstring& sCommentsIds, std::wstring& sPeople, std::wstring& sDocumentComment, std::wstring& sDocumentCommentExt, std::wstring& sDocumentCommentsIds, std::wstring& sDocumentPeople)
+		void setElements(std::wstring& sComment, std::wstring& sCommentExt, std::wstring& sContentExtensible, std::wstring& sCommentsIds, std::wstring& sPeople, std::wstring& sDocumentComment, std::wstring& sDocumentCommentExt, std::wstring& sDocumentContentExtensible, std::wstring& sDocumentCommentsIds, std::wstring& sDocumentPeople,std::wstring&  sContentUserData)
 		{
 			m_sComment		= sComment;
 			m_sCommentExt	= sCommentExt;
+			m_sContentExtensible	= sContentExtensible;
 			m_sCommentsIds	= sCommentsIds;
 			m_sPeople		= sPeople;
 			m_sDocumentComment		= sDocumentComment;
 			m_sDocumentCommentExt	= sDocumentCommentExt;
+			m_sDocumentContentExtensible	= sDocumentContentExtensible;
 			m_sDocumentCommentsIds	= sDocumentCommentsIds;
 			m_sDocumentPeople		= sDocumentPeople;
+			m_sContentUserData		= sContentUserData;
 		}
 		std::wstring getFilename()
 		{
@@ -91,13 +99,22 @@ namespace Writers
 					oFile.WriteStringUTF8(g_string_comment_End);
 				oFile.CloseFile();
 			}
-            if(false == m_sCommentExt.empty())
+			if(false == m_sCommentExt.empty())
 			{
 				NSFile::CFileBinary oFile;
 				oFile.CreateFileW(sDir + OOX::FileTypes::CommentsExt.DefaultFileName().GetPath());
 				oFile.WriteStringUTF8(g_string_commentExt_Start);
 				oFile.WriteStringUTF8(m_sCommentExt);
 				oFile.WriteStringUTF8(g_string_commentExt_End);
+				oFile.CloseFile();
+			}
+			if(false == m_sContentExtensible.empty())
+			{
+				NSFile::CFileBinary oFile;
+				oFile.CreateFileW(sDir + OOX::FileTypes::CommentsExtensible.DefaultFileName().GetPath());
+				oFile.WriteStringUTF8(g_string_commentExtensible_Start);
+				oFile.WriteStringUTF8(m_sContentExtensible);
+				oFile.WriteStringUTF8(g_string_commentExtensible_End);
 				oFile.CloseFile();
 			}
 			if(false == m_sCommentsIds.empty())
@@ -139,6 +156,15 @@ namespace Writers
 				oFile.WriteStringUTF8(g_string_commentExt_End);
 				oFile.CloseFile();
 			}
+			if(false == m_sDocumentContentExtensible.empty())
+			{
+				NSFile::CFileBinary oFile;
+				oFile.CreateFileW(sDir + OOX::FileTypes::DocumentCommentsExtensible.DefaultFileName().GetPath());
+				oFile.WriteStringUTF8(g_string_commentExtensible_Start);
+				oFile.WriteStringUTF8(m_sDocumentContentExtensible);
+				oFile.WriteStringUTF8(g_string_commentExtensible_End);
+				oFile.CloseFile();
+			}
 			if(false == m_sDocumentCommentsIds.empty())
 			{
 				NSFile::CFileBinary oFile;
@@ -157,7 +183,15 @@ namespace Writers
 				oFile.WriteStringUTF8(g_string_people_End);
 				oFile.CloseFile();
 			}
-
+			if(false == m_sContentUserData.empty())
+			{
+				NSFile::CFileBinary oFile;
+				oFile.CreateFileW(sDir + OOX::FileTypes::CommentsUserData.DefaultFileName().GetPath());
+				oFile.WriteStringUTF8(g_string_commentExtensible_Start);
+				oFile.WriteStringUTF8(m_sContentUserData);
+				oFile.WriteStringUTF8(g_string_commentExtensible_End);
+				oFile.CloseFile();
+			}
 		}
 	};
 }

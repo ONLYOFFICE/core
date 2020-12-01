@@ -397,7 +397,7 @@ namespace PPT_FORMAT
 			m_pShape->m_rcBounds	= m_bChildAnchorEnabled ? m_rcChildAnchor : m_rcAnchor;
 
 			m_pShape->m_dStartTime	= m_dStartTime;
-			m_pShape->m_dStartTime	= m_dEndTime;
+			m_pShape->m_dEndTime	= m_dEndTime;
 
 			m_bShapePreset			= false;
 

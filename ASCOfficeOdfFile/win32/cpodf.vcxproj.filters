@@ -1,0 +1,953 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="utility">
+      <UniqueIdentifier>{ecbc1bb6-05af-4043-8b7f-731cde436676}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="style">
+      <UniqueIdentifier>{d2b29d16-77b4-4633-bb04-8098ca248b97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="oox">
+      <UniqueIdentifier>{e8d90800-7021-4032-8d17-274da4aa8e51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="oox\docx">
+      <UniqueIdentifier>{9727d03b-cbbc-4826-8201-33a7efbe18ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="oox\xlsx">
+      <UniqueIdentifier>{be7ec2fb-7bd5-4d53-b95d-c8fdc54ce7e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="oox\xlsx\styles">
+      <UniqueIdentifier>{cd06f6d0-4dca-49f4-9dd1-f3ef8bc9ccad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="oox\oox">
+      <UniqueIdentifier>{364be721-ed85-4b58-a882-46ad3b9fa58e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="oox\oox\chart">
+      <UniqueIdentifier>{deeff4dd-2ea3-4438-a021-54ddc8f67f16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="oox\pptx">
+      <UniqueIdentifier>{ebc99137-74a5-4b8c-9e31-56190141e2bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="elements">
+      <UniqueIdentifier>{67b2bf43-5673-4a6f-82cb-fe4be01aee5f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\odf\abstract_xml.cpp">
+      <Filter>utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\createandread.cpp">
+      <Filter>utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\logging.cpp">
+      <Filter>utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\office_elements_create.cpp">
+      <Filter>utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\svg_parser.cpp">
+      <Filter>utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\calcs_styles.cpp">
+      <Filter>style</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\header_footer.cpp">
+      <Filter>style</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\number_style.cpp">
+      <Filter>style</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\style_chart_properties.cpp">
+      <Filter>style</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\style_graphic_properties.cpp">
+      <Filter>style</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\style_map.cpp">
+      <Filter>style</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\style_paragraph_properties.cpp">
+      <Filter>style</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\style_paragraph_properties_docx.cpp">
+      <Filter>style</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\style_paragraph_properties_pptx.cpp">
+      <Filter>style</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\style_presentation.cpp">
+      <Filter>style</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\style_regions.cpp">
+      <Filter>style</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\style_table_properties.cpp">
+      <Filter>style</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\style_text_properties.cpp">
+      <Filter>style</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\styles.cpp">
+      <Filter>style</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\styles_list.cpp">
+      <Filter>style</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\styles_lite_container.cpp">
+      <Filter>style</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\templates.cpp">
+      <Filter>style</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\docx_content_type.cpp">
+      <Filter>oox\docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\docx_conversion_context.cpp">
+      <Filter>oox\docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\docx_drawing.cpp">
+      <Filter>oox\docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\docx_package.cpp">
+      <Filter>oox\docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\docx_table_context.cpp">
+      <Filter>oox\docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\headers_footers.cpp">
+      <Filter>oox\docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\hyperlinks.cpp">
+      <Filter>oox\docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\namespaces.cpp">
+      <Filter>oox\docx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_cell_format.cpp">
+      <Filter>oox\xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_cell_style.cpp">
+      <Filter>oox\xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_cell_styles.cpp">
+      <Filter>oox\xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_comments.cpp">
+      <Filter>oox\xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_comments_context.cpp">
+      <Filter>oox\xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_complex_number_format.cpp">
+      <Filter>oox\xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_conditionalFormatting.cpp">
+      <Filter>oox\xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_data_validation.cpp">
+      <Filter>oox\xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_defined_names.cpp">
+      <Filter>oox\xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_drawing.cpp">
+      <Filter>oox\xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_drawing_context.cpp">
+      <Filter>oox\xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_drawings.cpp">
+      <Filter>oox\xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_hyperlinks.cpp">
+      <Filter>oox\xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_merge_cells.cpp">
+      <Filter>oox\xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_num_format_context.cpp">
+      <Filter>oox\xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_output_xml.cpp">
+      <Filter>oox\xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_package.cpp">
+      <Filter>oox\xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_pivots_context.cpp">
+      <Filter>oox\xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_sharedstrings.cpp">
+      <Filter>oox\xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_styles.cpp">
+      <Filter>oox\xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_table_metrics.cpp">
+      <Filter>oox\xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_table_state.cpp">
+      <Filter>oox\xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_tablecontext.cpp">
+      <Filter>oox\xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_textcontext.cpp">
+      <Filter>oox\xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_utils.cpp">
+      <Filter>oox\xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsxconversioncontext.cpp">
+      <Filter>oox\xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_alignment.cpp">
+      <Filter>oox\xlsx\styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_border.cpp">
+      <Filter>oox\xlsx\styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_borders.cpp">
+      <Filter>oox\xlsx\styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_color.cpp">
+      <Filter>oox\xlsx\styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_dxfs.cpp">
+      <Filter>oox\xlsx\styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_fill.cpp">
+      <Filter>oox\xlsx\styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_fills.cpp">
+      <Filter>oox\xlsx\styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_font.cpp">
+      <Filter>oox\xlsx\styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_fonts.cpp">
+      <Filter>oox\xlsx\styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_numFmts.cpp">
+      <Filter>oox\xlsx\styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_protection.cpp">
+      <Filter>oox\xlsx\styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\xlsx_xf.cpp">
+      <Filter>oox\xlsx\styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\conversionelement.cpp">
+      <Filter>oox\oox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\measuredigits.cpp">
+      <Filter>oox\oox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\mediaitems.cpp">
+      <Filter>oox\oox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\oox_conversion_context.cpp">
+      <Filter>oox\oox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\oox_drawing.cpp">
+      <Filter>oox\oox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\oox_drawing_fills.cpp">
+      <Filter>oox\oox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\oox_package.cpp">
+      <Filter>oox\oox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\oox_rels.cpp">
+      <Filter>oox\oox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\oox_chart_axis.cpp">
+      <Filter>oox\oox\chart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\oox_chart_context.cpp">
+      <Filter>oox\oox\chart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\oox_chart_legend.cpp">
+      <Filter>oox\oox\chart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\oox_chart_series.cpp">
+      <Filter>oox\oox\chart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\oox_chart_shape.cpp">
+      <Filter>oox\oox\chart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\oox_data_labels.cpp">
+      <Filter>oox\oox\chart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\oox_layout.cpp">
+      <Filter>oox\oox\chart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\oox_plot_area.cpp">
+      <Filter>oox\oox\chart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\oox_title.cpp">
+      <Filter>oox\oox\chart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\oox_types_chart.cpp">
+      <Filter>oox\oox\chart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\pptx_comments.cpp">
+      <Filter>oox\pptx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\pptx_comments_context.cpp">
+      <Filter>oox\pptx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\pptx_conversion_context.cpp">
+      <Filter>oox\pptx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\pptx_drawing.cpp">
+      <Filter>oox\pptx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\pptx_drawings.cpp">
+      <Filter>oox\pptx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\pptx_output_xml.cpp">
+      <Filter>oox\pptx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\pptx_package.cpp">
+      <Filter>oox\pptx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\pptx_slide_context.cpp">
+      <Filter>oox\pptx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\pptx_table_context.cpp">
+      <Filter>oox\pptx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\docx\pptx_text_context.cpp">
+      <Filter>oox\pptx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\anim_elements.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\calcext_elements.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\chart_build_oox.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\documentcontext.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\draw_common.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\draw_frame.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\draw_frame_docx.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\draw_frame_pptx.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\draw_frame_xlsx.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\draw_page.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\draw_shapes.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\draw_shapes_docx.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\draw_shapes_pptx.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\draw_shapes_xlsx.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\font_face.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\list.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\math_elementaries.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\math_elements.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\math_layout_elements.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\math_limit_elements.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\math_table_elements.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\math_token_elements.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\note.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\odf_content_xml.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\odf_document.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\odf_document_impl.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\odfcontext.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\office_annotation.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\office_binary_data.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\office_body.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\office_chart.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\office_document.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\office_event_listeners.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\office_forms.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\office_meta.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\office_presentation.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\office_scripts.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\office_settings.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\office_spreadsheet.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\office_text.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\paragraph_elements.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\ruby.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\skipelement.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\table.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\table_calculation_settings.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\table_data_pilot_tables.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\table_database_ranges.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\table_docx.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\table_named_expressions.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\table_pptx.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\table_xlsx.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\datatypes\tablefunction.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\text_content.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\text_elements.cpp">
+      <Filter>elements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ConvertOO2OOX.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\odf\abstract_xml.h">
+      <Filter>utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\errors.h">
+      <Filter>utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\logging.h">
+      <Filter>utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\odfattributes.h">
+      <Filter>utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\office_elements_create.h">
+      <Filter>utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\serialize_elements.h">
+      <Filter>utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\svg_parser.h">
+      <Filter>utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\calcs_styles.h">
+      <Filter>style</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\header_footer.h">
+      <Filter>style</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\number_style.h">
+      <Filter>style</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\style_chart_properties.h">
+      <Filter>style</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\style_graphic_properties.h">
+      <Filter>style</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\style_map.h">
+      <Filter>style</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\style_paragraph_properties.h">
+      <Filter>style</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\style_presentation.h">
+      <Filter>style</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\style_ref.h">
+      <Filter>style</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\style_regions.h">
+      <Filter>style</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\style_table_properties.h">
+      <Filter>style</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\style_text_properties.h">
+      <Filter>style</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\styles.h">
+      <Filter>style</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\styles_list.h">
+      <Filter>style</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\styles_lite_container.h">
+      <Filter>style</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\templates.h">
+      <Filter>style</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\docx_content_type.h">
+      <Filter>oox\docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\docx_conversion_context.h">
+      <Filter>oox\docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\docx_drawing.h">
+      <Filter>oox\docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\docx_package.h">
+      <Filter>oox\docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\docx_table_context.h">
+      <Filter>oox\docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\headers_footers.h">
+      <Filter>oox\docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\hyperlinks.h">
+      <Filter>oox\docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\namespaces.h">
+      <Filter>oox\docx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_cell_format.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_cell_style.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_cell_styles.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_comments.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_comments_context.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_complex_number_format.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_conditionalFormatting.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_data_validation.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_defined_names.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_drawing.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_drawing_context.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_drawings.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_formula.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_hyperlinks.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_merge_cells.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_num_format_context.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_output_xml.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_package.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_pivots_context.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_row_spanned.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_sharedstrings.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_styles.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_table_metrics.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_table_position.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_table_state.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_tablecontext.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_textcontext.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_utils.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsxconversioncontext.h">
+      <Filter>oox\xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_alignment.h">
+      <Filter>oox\xlsx\styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_border.h">
+      <Filter>oox\xlsx\styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_borders.h">
+      <Filter>oox\xlsx\styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_color.h">
+      <Filter>oox\xlsx\styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_dxfs.h">
+      <Filter>oox\xlsx\styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_fill.h">
+      <Filter>oox\xlsx\styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_fills.h">
+      <Filter>oox\xlsx\styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_font.h">
+      <Filter>oox\xlsx\styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_fonts.h">
+      <Filter>oox\xlsx\styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_numFmts.h">
+      <Filter>oox\xlsx\styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_protection.h">
+      <Filter>oox\xlsx\styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\xlsx_xf.h">
+      <Filter>oox\xlsx\styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\conversionelement.h">
+      <Filter>oox\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\drawing_object_description.h">
+      <Filter>oox\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\measuredigits.h">
+      <Filter>oox\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\mediaitems.h">
+      <Filter>oox\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\oox_conversion_context.h">
+      <Filter>oox\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\oox_drawing.h">
+      <Filter>oox\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\oox_drawing_fills.h">
+      <Filter>oox\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\oox_package.h">
+      <Filter>oox\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\oox_rels.h">
+      <Filter>oox\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\ooxtablerowspanned.h">
+      <Filter>oox\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\oox_chart_context.h">
+      <Filter>oox\oox\chart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\oox_chart_legend.h">
+      <Filter>oox\oox\chart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\oox_chart_series.h">
+      <Filter>oox\oox\chart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\oox_chart_shape.h">
+      <Filter>oox\oox\chart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\oox_chart_values.h">
+      <Filter>oox\oox\chart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\oox_data_labels.h">
+      <Filter>oox\oox\chart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\oox_layout.h">
+      <Filter>oox\oox\chart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\oox_plot_area.h">
+      <Filter>oox\oox\chart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\oox_title.h">
+      <Filter>oox\oox\chart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\oox_types_chart.h">
+      <Filter>oox\oox\chart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\pptx_comments.h">
+      <Filter>oox\pptx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\pptx_comments_context.h">
+      <Filter>oox\pptx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\pptx_conversion_context.h">
+      <Filter>oox\pptx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\pptx_default_serializes.h">
+      <Filter>oox\pptx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\pptx_drawing.h">
+      <Filter>oox\pptx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\pptx_drawings.h">
+      <Filter>oox\pptx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\pptx_output_xml.h">
+      <Filter>oox\pptx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\pptx_package.h">
+      <Filter>oox\pptx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\pptx_slide_context.h">
+      <Filter>oox\pptx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\pptx_table_context.h">
+      <Filter>oox\pptx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\docx\pptx_text_context.h">
+      <Filter>oox\pptx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\all_elements.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\anim_elements.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\calcext_elements.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\chart_build_oox.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\chart_objects.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\datatypes\custom_shape_types_convert.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\documentcontext.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\draw_common.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\draw_frame.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\draw_page.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\draw_shapes.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\font_face.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\list.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\math_elementaries.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\math_elements.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\math_layout_elements.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\math_limit_elements.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\math_table_elements.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\math_token_elements.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\note.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\odf_content_xml.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cpdoccore\odf\odf_document.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\odf_document_impl.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\odf\odf_elements_type.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\odfcontext.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\office_annotation.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\office_binary_data.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\office_body.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\office_chart.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\office_document.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\office_elements.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\office_event_listeners.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\office_forms.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\office_meta.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\office_presentation.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\office_scripts.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\office_settings.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\office_spreadsheet.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\office_text.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\paragraph_elements.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\search_table_cell.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\skipelement.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\table.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\table_calculation_settings.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\table_data_pilot_tables.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\table_database_ranges.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\table_named_expressions.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\datatypes\tablefunction.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\text_content.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\text_elements.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\odf\visitor.h">
+      <Filter>elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ConvertOO2OOX.h" />
+  </ItemGroup>
+</Project>

@@ -147,6 +147,7 @@ namespace DocFileFormat
 						//		break;
 						//	ind1++;
 						//}
+						_ftsWidth = (Global::CellWidthType)(_tcDef.ftsWidth);
 
 						if (tdef.rgTc80[_cellIndex].horzMerge == 1)
 						{
@@ -351,8 +352,7 @@ namespace DocFileFormat
 		
 
 		XMLTools::XMLAttribute  tcWVal  ( L"w:w", FormatUtils::IntToWideString( _width > 1 ? _width : nComputedCellWidth) );
-		XMLTools::XMLAttribute  tcWType ( L"w:type",  _width > 1 ? FormatUtils::MapValueToWideString( _ftsWidth, &Global::CellWidthTypeMap[0][0], 4, 5 ) :
-			(nComputedCellWidth > 0 ? L"dxa" : L"auto"));
+		XMLTools::XMLAttribute  tcWType ( L"w:type",  (_width > 1 || nComputedCellWidth > 0) ? FormatUtils::MapValueToWideString( _ftsWidth, &Global::CellWidthTypeMap[0][0], 4, 5 ) : L"auto");
 
 		tcW.AppendAttribute( tcWType );
 		tcW.AppendAttribute( tcWVal );

@@ -57,7 +57,7 @@ CFStreamCacheWriter::~CFStreamCacheWriter()
 // Returns whether the record was saved to file or stored for later saving
 bool CFStreamCacheWriter::storeNextRecord(CFRecordPtr record)
 {
-	record->save(stream_);
+    //record->save(stream_);
 	return true;
 }
 

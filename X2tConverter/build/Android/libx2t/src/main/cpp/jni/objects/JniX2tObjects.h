@@ -64,4 +64,53 @@ class EncodingsJniObject : public JniBaseObjects {
         }
 };
 
+
+class JniHashMap: public JniBaseObjects
+{
+    public:
+
+        static constexpr const char * CLASS_PATH_HASH_MAP = "java/util/HashMap";
+
+    public:
+        jobject m_oHashMap;
+        jmethodID m_mPut;
+
+        JniHashMap() {
+            m_sClassPackage = CLASS_PATH_HASH_MAP;
+            m_sConstructorSignature = "()V";
+            m_oHashMap = NULL;
+            m_mPut = NULL;
+        }
+    public:
+
+        bool init(JNIEnv *jEnv) override {
+            bool res = JniBaseObjects::init(jEnv);
+            if(res)
+                m_oHashMap = JniBaseObjects::toJniObject(jEnv);
+            return res;
+        }
+        jobject toJniObject(JNIEnv * jEnv) {
+            return m_oHashMap;
+        }
+
+        void put(JNIEnv * jEnv, const char* key, int value)
+        {
+            if(m_oHashMap == NULL)
+                return;
+            if(m_mPut == NULL)
+                m_mPut = jEnv->GetMethodID(getClass(), "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+
+            auto jkey = charToJString(jEnv, key);
+            auto jvalue = wStringToJString(jEnv,to_wstring(value));
+
+            if (m_mPut != NULL) {
+                jEnv->CallObjectMethod(m_oHashMap, m_mPut, jkey, jvalue);
+            }
+
+            DELETE_LOCAL_REF(jEnv, jkey)
+            DELETE_LOCAL_REF(jEnv, jvalue)
+
+        }
+};
+
 #endif

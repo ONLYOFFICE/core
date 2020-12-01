@@ -1,6 +1,6 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:x14="http://schemas.microsoft.com/office/spreadsheetml/2009/9/main" xmlns:x="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns="http://schemas.microsoft.com/office/spreadsheetml/2010/11/main" targetNamespace="http://schemas.microsoft.com/office/spreadsheetml/2010/11/main" elementFormDefault="qualified" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:xm="http://schemas.microsoft.com/office/excel/2006/main" xmlns:xr10="http://schemas.microsoft.com/office/spreadsheetml/2016/revision10">
    <xsd:import namespace="http://schemas.openxmlformats.org/spreadsheetml/2006/main" schemaLocation="xlbasictypes.xsd"/>
-   <xsd:import namespace="http://schemas.microsoft.com/office/spreadsheetml/2009/9/main" schemaLocation="xlslicercache.xsd"/>
+   <xsd:import namespace="http://schemas.microsoft.com/office/spreadsheetml/2009/9/main" schemaLocation="xl14.xsd"/>
    <xsd:import namespace="http://schemas.openxmlformats.org/spreadsheetml/2006/main" schemaLocation="xlworkbook.xsd"/>
    <xsd:import namespace="http://schemas.microsoft.com/office/excel/2006/main" schemaLocation="xlmbasictypes.xsd"/>
    <xsd:import namespace="http://schemas.openxmlformats.org/spreadsheetml/2006/main" schemaLocation="xlsheet.xsd"/>

@@ -4,12 +4,13 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
 
-    buildToolsVersion '29.0.0'
-    compileSdkVersion 29
+    buildToolsVersion '30.0.2'
+    compileSdkVersion 30
+    ndkVersion = NDK_VERSION
 
     defaultConfig {
 
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 29
         versionCode 1
         versionName '1.0'
@@ -21,7 +22,7 @@ android {
                 arguments "-DANDROID_TOOLCHAIN=clang",
                           "-DANDROID_STL=c++_static",
                           "-DANDROID_ARM_NEON=TRUE",
-                          "-DARG_PATH_LIB_SRC_3D_PARTY=${getProjectPath(PATH_LIB_SRC_3D_PARTY)}",
+                          "-DARG_PATH_LIB_BUILD_TOOLS=${getProjectPath(PATH_LIB_BUILD_TOOLS)}",
                           "-DARG_PATH_LIB_DST=${getProjectPath(PATH_LIB_DST, true)}",
                           "-DARG_PATH_SRC_CORE=${getProjectPath(PATH_SRC_CORE)}",
                           "-DARG_NAME_LIB=$NAME_LIB"
@@ -56,7 +57,8 @@ android {
             ]
 
             jniLibs.srcDirs = [
-                PATH_LIB_DST
+                PATH_LIB_DST,
+                PATH_LIB_BUILD_TOOLS
             ]
         }
     }
@@ -73,18 +75,21 @@ android {
     }
 
     packagingOptions {
-        pickFirst "lib/x86_64/lib${NAME_LIB}.so"
-        pickFirst "lib/armeabi/lib${NAME_LIB}.so"
-        pickFirst "lib/x86/lib${NAME_LIB}.so"
-        pickFirst "lib/armeabi-v7a/lib${NAME_LIB}.so"
-        pickFirst "lib/arm64-v8a/lib${NAME_LIB}.so"
+        ['armeabi-v7a', 'x86' ,'arm64-v8a',  'x86_64' ].each { abi ->
+            def dh = file("$PATH_LIB_BUILD_TOOLS/$abi")
+            dh.eachFile {
+                if(it.getName().contains(".so"))
+                    pickFirst "lib/$abi/${it.getName()}"
+            }
+            pickFirst "lib/$abi/lib${NAME_LIB}.so"
+        }
     }
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation "androidx.appcompat:appcompat:1.1.0"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.50"
+    implementation "androidx.appcompat:appcompat:1.2.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 
 
@@ -107,3 +112,47 @@ def getProjectPath(String path, Boolean isRelativeCreate = false) {
 
     throw new GradleException("getProjectPath($path) - path doesn't exist...")
 }
+
+task copyIcuDatFiles {
+    doLast {
+
+        println ""
+        println "------------------------- ICUDATFILES (task copyIcuDatFiles()) -------------------------"
+
+        def pathAssets = "${file('.').absolutePath}/src/main/assets/icu"
+        if (file(pathAssets).exists()) {
+            println "IcuDatFiles already exist."
+            println "Delete ${pathAssets} folder for update icuDatFiles."
+            return
+        }
+
+        if (!project.hasProperty('PATH_SRC_ICU_DAT_FILE')) {
+            throw new GradleException("Property PATH_SRC_ICU_DAT_FILE with core repository path doesn't exist...")
+        }
+
+        if (!project.hasProperty('PATH_SRC_ICU_V8_DAT_FILE')) {
+            throw new GradleException("Property PATH_SRC_ICU_V8_DAT_FILE with core repository path doesn't exist...")
+        }
+
+        def pathIcuDatFiles = PATH_SRC_ICU_DAT_FILE
+
+        def pathIcuV8DatFiles = PATH_SRC_ICU_V8_DAT_FILE
+
+        if (!file(pathIcuDatFiles).exists()) {
+            throw new GradleException("Path with core repository doesn't exist...")
+        }
+
+        if (!file(pathIcuV8DatFiles).exists()) {
+            throw new GradleException("Path with core repository doesn't exist...")
+        }
+
+        copy {
+            println "\nCopy dat files..."
+            eachFile { println it.file }
+            from pathIcuDatFiles, pathIcuV8DatFiles
+            into pathAssets
+        }
+    }
+}
+
+preBuild.dependsOn copyIcuDatFiles

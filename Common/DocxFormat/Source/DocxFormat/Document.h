@@ -659,8 +659,9 @@ mc:Ignorable=\"w14 w15 wp14\">";
 			return et_w_document;
 		}
 //---------------------------------------------------------------------------------------------
-		bool									m_bMacroEnabled;
+		bool									m_bMacroEnabled = false;
 		CPath									m_oReadPath;
+		unsigned int							m_nDrawingMaxZIndex = 0;
 
 		SimpleTypes::CConformanceClass<SimpleTypes::conformanceclassTransitional> m_oConformance;
 

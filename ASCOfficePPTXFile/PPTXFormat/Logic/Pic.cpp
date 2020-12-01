@@ -77,6 +77,11 @@ namespace PPTX
             XmlMacroReadAttributeBase(node, L"Type",		m_oType);
             XmlMacroReadAttributeBase(node, L"UpdateMode",	m_oUpdateMode);
 
+			if (false == m_oId.IsInit())
+			{
+				XmlMacroReadAttributeBase( node, L"relationships:id", m_oId );
+			}
+
 			std::wstring ole_bin, ole_image, mspackage;
 			
             XmlMacroReadAttributeBase(node, L"pathbin", ole_bin);
@@ -277,7 +282,7 @@ namespace PPTX
 				else if (7 == _at)//OleObject Binary FileName (bin, xls, doc, ... other stream file)
 				{
 					m_OleObjectFile = new OOX::OleObject(NULL, false, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
-					std::wstring strOlePath = pReader->GetString2();
+					std::wstring strOlePath = pReader->GetString2(true);
 					m_OleObjectFile->set_filename(strOlePath, false); //temp !!! for ImageManager original file name
 				}
 				else
@@ -325,7 +330,7 @@ namespace PPTX
 							m_OleObjectFile = new OOX::OleObject(NULL, true, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
 							
 							BYTE type = pReader->GetUChar();
-							std::wstring strOlePath = pReader->GetString2();
+							std::wstring strOlePath = pReader->GetString2(true);
 							m_OleObjectFile->set_filename(strOlePath, false); //temp !!! for ImageManager original file name
 						}
 						else if (embedded_type == 4)
@@ -1441,8 +1446,13 @@ namespace PPTX
 			oleObject.Init();
 			
             XmlMacroReadAttributeBase(node, L"progId",	oleObject->m_sProgId);
-            XmlMacroReadAttributeBase(node, L"r:id",		oleObject->m_oId);
+            XmlMacroReadAttributeBase(node, L"r:id",	oleObject->m_oId);
 			
+			if (false == oleObject->m_oId.IsInit())
+			{
+				XmlMacroReadAttributeBase( node, L"relationships:id", oleObject->m_oId );
+			}			
+
 			int imgW = node.GetAttributeInt(std::wstring(L"imgW"), 0);			
 			if(imgW > 0)
 			{

@@ -121,7 +121,7 @@ namespace DocFileFormat
 		}
 		m_oXmlWriter.WriteNodeEnd( L"",  TRUE );
 
-		if (dop->bDisplayBackgroundShape)
+		if (dop->fDispBkSpSaved)
 		{
 			m_oXmlWriter.WriteNodeBegin	( L"w:displayBackgroundShape",  TRUE );
 			m_oXmlWriter.WriteNodeEnd	( L"",  TRUE );

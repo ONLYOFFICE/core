@@ -31,3 +31,11 @@ core_ios {
     LIBS        += $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/build/libicui18n.a
     LIBS        += $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/build/libicuuc.a
 }
+
+core_android {
+    INCLUDEPATH += $$PWD/android/build/include
+    ICU_LIBS_PATH = $$replace(CORE_BUILDS_PLATFORM_PREFIX, "android_", "")
+
+    LIBS        += $$PWD/android/build/$$ICU_LIBS_PATH/libicuuc.a
+    LIBS        += $$PWD/android/build/$$ICU_LIBS_PATH/libicudata.a
+}

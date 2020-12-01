@@ -35,20 +35,21 @@
 #include <list>
 #include <sstream>
 
-#include "Logging/Log.h"
+#include "../Logging/Log.h"
 #include "XlsElementsType.h" 
-#include <simple_xml_writer.h>
-
+#include "../../Common/simple_xml_writer.h"
 
 namespace XLS
 {
 
 class CFStream;
 class BinProcessor;
-class CFStreamCacheReader;
+
+class StreamCacheReader;
+typedef boost::shared_ptr<StreamCacheReader> StreamCacheReaderPtr;
 
 class BaseObject;
-typedef boost::shared_ptr<BaseObject>	BaseObjectPtr;
+typedef boost::shared_ptr<BaseObject> BaseObjectPtr;
 
 class BaseObject 
 {
@@ -58,7 +59,7 @@ public:
 
 	virtual boost::shared_ptr<BaseObject> clone() = 0;
 
-	virtual const bool read(CFStreamCacheReader& reader, BaseObject* parent, const bool mandatory) = 0; // Read self and children
+	virtual const bool read(StreamCacheReaderPtr reader, BaseObject* parent, const bool mandatory) = 0; // Read self and children
 
 	virtual const std::string & getClassName() const = 0; // Must be overridden in every deriver. The return value must be a reference to a static variable inside the getter
 

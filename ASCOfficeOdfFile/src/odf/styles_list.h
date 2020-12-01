@@ -303,7 +303,6 @@ public:
     office_element_ptr_array		content_;
     friend class odf_document;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_outline_style);
 
 // text:outline-level-style
@@ -335,7 +334,6 @@ public:
 
    friend class odf_document;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_outline_level_style);
 
 } 

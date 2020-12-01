@@ -3988,13 +3988,25 @@ namespace PdfReader
 			oDictItem.Free();
 			pDict->Search("W", &oDictItem);
 		}
+
+		int nWidth = 0;
 		if (!oDictItem.IsInt())
 		{
-			oDictItem.Free();
-			// TO DO: Error "Bad image parameters"
-			return;
+			if (oDictItem.IsNum())
+			{
+				nWidth = (int)oDictItem.GetNum();
+			}
+			else
+			{
+				oDictItem.Free();
+				// TO DO: Error "Bad image parameters"
+				return;
+			}
 		}
-		int nWidth = oDictItem.GetInt();
+		else
+		{
+			nWidth = oDictItem.GetInt();
+		}
 		oDictItem.Free();
 
 		// Height
@@ -4004,13 +4016,25 @@ namespace PdfReader
 			oDictItem.Free();
 			pDict->Search("H", &oDictItem);
 		}
+
+		int nHeight = 0;
 		if (!oDictItem.IsInt())
 		{
-			oDictItem.Free();
-			// TO DO: Error "Bad image parameters"
-			return;
+			if (oDictItem.IsNum())
+			{
+				nHeight = (int)oDictItem.GetNum();
+			}
+			else
+			{
+				oDictItem.Free();
+				// TO DO: Error "Bad image parameters"
+				return;
+			}
 		}
-		int nHeight = oDictItem.GetInt();
+		else
+		{
+			nHeight = oDictItem.GetInt();
+		}
 		oDictItem.Free();
 
 		// Проверяем: может быть это маска?
@@ -4195,13 +4219,24 @@ namespace PdfReader
 					oDictItem.Free();
 					pMaskDict->Search("W", &oDictItem);
 				}
+
 				if (!oDictItem.IsInt())
 				{
-					oDictItem.Free();
-					// TO DO: Error "Bad image parameters"
-					return;
+					if (oDictItem.IsNum())
+					{
+						nMaskWidth = (int)oDictItem.GetNum();
+					}
+					else
+					{
+						oDictItem.Free();
+						// TO DO: Error "Bad image parameters"
+						return;
+					}
 				}
-				nMaskWidth = oDictItem.GetInt();
+				else
+				{
+					nMaskWidth = oDictItem.GetInt();
+				}
 				oDictItem.Free();
 
 				// Height
@@ -4211,13 +4246,24 @@ namespace PdfReader
 					oDictItem.Free();
 					pMaskDict->Search("H", &oDictItem);
 				}
+
 				if (!oDictItem.IsInt())
 				{
-					oDictItem.Free();
-					// TO DO: Error "Bad image parameters"
-					return;
+					if (oDictItem.IsNum())
+					{
+						nMaskHeight = (int)oDictItem.GetNum();
+					}
+					else
+					{
+						oDictItem.Free();
+						// TO DO: Error "Bad image parameters"
+						return;
+					}
 				}
-				nMaskHeight = oDictItem.GetInt();
+				else
+				{
+					nMaskHeight = oDictItem.GetInt();
+				}
 				oDictItem.Free();
 
 				// BitsPerComponent

@@ -35,8 +35,8 @@
 	#include <windows.h>
 #endif
 
-#include "../../../DesktopEditor/common/File.h"
-#include "../../../DesktopEditor/common/Directory.h"
+#include "../../../../DesktopEditor/common/File.h"
+#include "../../../../DesktopEditor/common/Directory.h"
 
 #include "../XML/Utils.h"
 
@@ -123,7 +123,18 @@ namespace OOX
         int nCurrentW       = 0;
         bool bIsUp          = false;
 
-#if !defined(_WIN32) && !defined (_WIN64)
+#if defined(_WIN32) || defined (_WIN64)
+		std::wstring prepending = std::wstring(FILE_SEPARATOR_STR) + FILE_SEPARATOR_STR + L"?";
+		if (0 == m_strFilename.find(prepending))
+		{
+			pDataNorm[nCurrentW++] = FILE_SEPARATOR_CHAR;
+			pDataNorm[nCurrentW++] = FILE_SEPARATOR_CHAR;
+			pDataNorm[nCurrentW++] = L'?';
+			pDataNorm[nCurrentW++] = FILE_SEPARATOR_CHAR;
+
+			nStart = nCurrent = 3;
+		}
+#else
         if (pData[nCurrent] == FILE_SEPARATOR_CHAR)
             pDataNorm[nCurrentW++] = pData[nCurrent];
 #endif

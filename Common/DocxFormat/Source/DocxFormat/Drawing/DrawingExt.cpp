@@ -29,6 +29,9 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "../DocxFlat.h"
+#include "../Document.h"
+
 #include "DrawingExt.h"
 #include "Drawing.h"
 #include "../../XlsxFormat/Worksheets/Sparkline.h"
@@ -39,6 +42,7 @@
 #include "../../XlsxFormat/Worksheets/DataValidation.h"
 #include "../../XlsxFormat/Slicer/SlicerCache.h"
 #include "../../XlsxFormat/Slicer/SlicerCacheExt.h"
+#include "../Comments.h"
 
 namespace OOX
 {
@@ -384,6 +388,28 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_else_if( oReader, _T("relativeHeight"), m_oRelativeHeight )
 			WritingElement_ReadAttributes_Read_else_if( oReader, _T("simplePos"),      m_bSimplePos )
 			WritingElement_ReadAttributes_End( oReader )
+
+			if (m_oRelativeHeight.IsInit() && m_pMainDocument)
+			{
+				CDocument *pDocument = NULL;
+				OOX::CDocx* docx = dynamic_cast<OOX::CDocx*>(m_pMainDocument);
+				if (docx)
+				{
+					pDocument = docx->m_pDocument;
+				}
+				OOX::CDocxFlat *docx_flat = dynamic_cast<OOX::CDocxFlat*>(m_pMainDocument);
+				if (docx_flat)
+				{
+					pDocument = docx_flat->m_pDocument.GetPointer();
+				}
+				if (pDocument)
+				{
+					if (m_oRelativeHeight->GetValue() > pDocument->m_nDrawingMaxZIndex)
+					{
+						pDocument->m_nDrawingMaxZIndex = m_oRelativeHeight->GetValue();
+					}
+				}
+			}
 		}
 		void CAnchor::ReadAttributes(XmlUtils::CXmlNode& oNode)
 		{
@@ -706,6 +732,7 @@ namespace OOX
 									  *m_sUri == L"{470722E0-AACD-4C17-9CDC-17EF765DBC7E}"	||
 									  *m_sUri == L"{46F421CA-312F-682f-3DD2-61675219B42D}"	||
 									  *m_sUri == L"{DE250136-89BD-433C-8126-D09CA5730AF9}"	||
+									  *m_sUri == L"{19B8F6BF-5375-455C-9EA6-DF929625EA0E}"	||
 									  *m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))   
 			{
 				int nCurDepth = oReader.GetDepth();
@@ -799,6 +826,10 @@ namespace OOX
 					else if (sName == L"id")
 					{
 						m_oId = oReader.GetText2();
+					}
+					else if (sName == L"presenceInfo")
+					{
+						m_oPresenceInfo = oReader;
 					}
 				}
 			}

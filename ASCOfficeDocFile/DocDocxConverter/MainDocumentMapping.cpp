@@ -84,7 +84,6 @@ namespace DocFileFormat
 		if ((m_document->GetOfficeArt()) && (m_document->GetOfficeArt()->GetShapeBackgound()))
 		{
 			bool bFilled = true;
-			m_document->DocProperties->bDisplayBackgroundShape = true;
 			ShapeContainer* pShape = m_document->GetOfficeArt()->GetShapeBackgound();
 
 			ODRAW::OfficeArtFOPTEPtr boolFill = pShape->ExtractOption(ODRAW::fillStyleBooleanProperties);
@@ -142,7 +141,6 @@ namespace DocFileFormat
 				{
 					int cpStart = cp;
 					//this PAPX is for a table
-					//cp = writeTable( cp, tai.iTap );
 					Table table( this, cp, ( ( tai.iTap > 0 ) ? ( 1 ) : ( 0 ) ) );
 					table.Convert(this);
 					cp = table.GetCPEnd();

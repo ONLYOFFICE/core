@@ -122,8 +122,23 @@ namespace XmlUtils
         {
             Clear();
 
-            reader = xmlReaderForMemory((char*)sXml.c_str(), sXml.length(), NULL, NULL, 0);
+            m_lStreamLen = (LONG)sXml.length();
+            m_pStream = new BYTE[m_lStreamLen];
+            memcpy(m_pStream, sXml.c_str(), m_lStreamLen);
+            reader = xmlReaderForMemory((char*)m_pStream, m_lStreamLen, NULL, NULL, 0);
 
+            return true;
+        }
+
+        inline bool MoveToStart()
+        {
+            if (NULL != reader)
+                xmlFreeTextReader(reader);
+
+            if (NULL == m_pStream)
+                return false;
+
+            reader = xmlReaderForMemory((char*)m_pStream, m_lStreamLen, NULL, NULL, 0);
             return true;
         }
 
@@ -219,8 +234,9 @@ namespace XmlUtils
 
                 if ((XmlNodeType_Element == eNodeType  && nCurDepth == nDepth + 1)
                         || ((XmlNodeType_Text == eNodeType ||
-                             XmlNodeType_Whitespace == eNodeType ||
-                                                         XmlNodeType_SIGNIFICANT_WHITESPACE == eNodeType ) && nCurDepth == nDepth + 1))
+                            XmlNodeType_Whitespace == eNodeType ||
+                            XmlNodeType_SIGNIFICANT_WHITESPACE == eNodeType ||
+                            XmlNodeType_CDATA == eNodeType ) && nCurDepth == nDepth + 1))
                     return true;
                 else if (XmlNodeType_EndElement == eNodeType && nCurDepth == nDepth)
                     return false;
@@ -385,8 +401,11 @@ namespace XmlUtils
             XmlNodeType eNodeType = XmlNodeType_EndElement;
             while (Read(eNodeType) && GetDepth() >= nDepth && XmlNodeType_EndElement != eNodeType)
             {
-                if (eNodeType == XmlNodeType_Text || eNodeType == XmlNodeType_Whitespace || eNodeType == XmlNodeType_SIGNIFICANT_WHITESPACE)
-                    sResult += GetText();
+                if (eNodeType == XmlNodeType_Text ||
+                    eNodeType == XmlNodeType_Whitespace ||
+                    eNodeType == XmlNodeType_SIGNIFICANT_WHITESPACE ||
+                    eNodeType == XmlNodeType_CDATA)
+                        sResult += GetText();
             }
 
             return sResult;
@@ -405,8 +424,11 @@ namespace XmlUtils
             XmlNodeType eNodeType = XmlNodeType_EndElement;
             while (Read(eNodeType) && GetDepth() >= nDepth && XmlNodeType_EndElement != eNodeType)
             {
-                if (eNodeType == XmlNodeType_Text || eNodeType == XmlNodeType_Whitespace || eNodeType == XmlNodeType_SIGNIFICANT_WHITESPACE)
-                    sResult += GetTextA();
+                if (eNodeType == XmlNodeType_Text ||
+                    eNodeType == XmlNodeType_Whitespace ||
+                    eNodeType == XmlNodeType_SIGNIFICANT_WHITESPACE ||
+                    eNodeType == XmlNodeType_CDATA)
+                        sResult += GetTextA();
             }
 
             return sResult;
@@ -425,79 +447,85 @@ namespace XmlUtils
             XmlNodeType eNodeType = XmlNodeType_EndElement;
             while ( Read( eNodeType ) && GetDepth() >= nDepth && XmlNodeType_EndElement != eNodeType )
             {
-                if ( eNodeType == XmlNodeType_Text || eNodeType == XmlNodeType_Whitespace || eNodeType == XmlNodeType_SIGNIFICANT_WHITESPACE )
-                    sResult += GetText();
+                if ( eNodeType == XmlNodeType_Text ||
+                     eNodeType == XmlNodeType_Whitespace ||
+                     eNodeType == XmlNodeType_SIGNIFICANT_WHITESPACE  ||
+                     eNodeType == XmlNodeType_CDATA)
+                        sResult += GetText();
             }
 
             return sResult;
         }
-		void CheckBufferSize(unsigned int nOffset, unsigned int nRequired, wchar_t*& sBuffer, long& nSize)
-		{
-			if(nOffset + nRequired > nSize)
-			{
-				if(0 == nSize)
-				{
-					nSize = nOffset + nRequired;
-				}
-				while(nOffset + nRequired > nSize)
-				{
-					nSize *= 2;
-				}
-				RELEASEOBJECT(sBuffer);
-				sBuffer = new WCHAR[nSize];
-			}
-		}
-		void GetTextWithHHHH(bool bPreserve, wchar_t*& sBuffer, long& nSize, long& nLen)
-		{
-			nLen = 0;
-			if ( !IsValid() )
-				return;
+        void CheckBufferSize(unsigned int nOffset, unsigned int nRequired, wchar_t*& sBuffer, long& nSize)
+        {
+            if(nOffset + nRequired > nSize)
+            {
+                if(0 == nSize)
+                {
+                    nSize = nOffset + nRequired;
+                }
+                while(nOffset + nRequired > nSize)
+                {
+                    nSize *= 2;
+                }
+                RELEASEOBJECT(sBuffer);
+                sBuffer = new WCHAR[nSize];
+            }
+        }
+        void GetTextWithHHHH(bool bPreserve, wchar_t*& sBuffer, long& nSize, long& nLen)
+        {
+            nLen = 0;
+            if ( !IsValid() )
+                return;
 
-			if ( 0 != xmlTextReaderIsEmptyElement(reader) )
-				return;
-			bool bTrimLeft, bTrimRight;
-			bTrimLeft = bTrimRight = !bPreserve;
-			LONG lOutputCount = 0;
-			int nDepth = GetDepth();
-			XmlNodeType eNodeType = XmlNodeType_EndElement;
-			while ( Read( eNodeType ) && GetDepth() >= nDepth && XmlNodeType_EndElement != eNodeType )
-			{
-				if ( eNodeType == XmlNodeType_Text || eNodeType == XmlNodeType_Whitespace || eNodeType == XmlNodeType_SIGNIFICANT_WHITESPACE )
-				{
-					const xmlChar* pValue = xmlTextReaderConstValue(reader);
-					if(NULL != pValue)
-					{
-						const char* pValueA = (const char*)pValue;
-						if(bTrimLeft)
-						{
-							bTrimLeft = false;
-							pValueA += NSStringExt::FindFirstNotOfA(pValueA, " \n\r\t");
-						}
-						if('\0' != pValueA[0])
-						{
-							LONG nLenA = strlen((const char*)pValueA);
-							LONG nRequired = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8BufferSize(nLenA);
-							CheckBufferSize(nLen, nRequired, sBuffer, nSize);
-							wchar_t* sBufferCur = sBuffer + nLen;
-							NSFile::CUtf8Converter::GetUnicodeStringFromUTF8WithHHHH((const BYTE*)pValueA, nLenA, sBufferCur, lOutputCount);
-							nLen += lOutputCount;
-						}
-					}
-				}
-			}
-			if(bTrimRight)
-			{
-				nLen = NSStringExt::FindLastNotOf(sBuffer, nLen, L" \n\r\t") + 1;
-			}
-		}
-		std::wstring GetTextWithHHHH(bool bPreserve)
-		{
-			wchar_t* pUnicodes = NULL;
-			LONG nSize = 0;
-			LONG nLen = 0;
-			GetTextWithHHHH(bPreserve, pUnicodes, nSize, nLen);
-			return std::wstring(pUnicodes, nLen);
-		}
+            if ( 0 != xmlTextReaderIsEmptyElement(reader) )
+                return;
+            bool bTrimLeft, bTrimRight;
+            bTrimLeft = bTrimRight = !bPreserve;
+            LONG lOutputCount = 0;
+            int nDepth = GetDepth();
+            XmlNodeType eNodeType = XmlNodeType_EndElement;
+            while ( Read( eNodeType ) && GetDepth() >= nDepth && XmlNodeType_EndElement != eNodeType )
+            {
+                if ( eNodeType == XmlNodeType_Text ||
+                     eNodeType == XmlNodeType_Whitespace ||
+                     eNodeType == XmlNodeType_SIGNIFICANT_WHITESPACE ||
+                     eNodeType == XmlNodeType_CDATA )
+                {
+                    const xmlChar* pValue = xmlTextReaderConstValue(reader);
+                    if(NULL != pValue)
+                    {
+                        const char* pValueA = (const char*)pValue;
+                        if(bTrimLeft)
+                        {
+                            bTrimLeft = false;
+                            pValueA += NSStringExt::FindFirstNotOfA(pValueA, " \n\r\t");
+                        }
+                        if('\0' != pValueA[0])
+                        {
+                            LONG nLenA = strlen((const char*)pValueA);
+                            LONG nRequired = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8BufferSize(nLenA);
+                            CheckBufferSize(nLen, nRequired, sBuffer, nSize);
+                            wchar_t* sBufferCur = sBuffer + nLen;
+                            NSFile::CUtf8Converter::GetUnicodeStringFromUTF8WithHHHH((const BYTE*)pValueA, nLenA, sBufferCur, lOutputCount);
+                            nLen += lOutputCount;
+                        }
+                    }
+                }
+            }
+            if(bTrimRight)
+            {
+                nLen = NSStringExt::FindLastNotOf(sBuffer, nLen, L" \n\r\t") + 1;
+            }
+        }
+        std::wstring GetTextWithHHHH(bool bPreserve)
+        {
+            wchar_t* pUnicodes = NULL;
+            LONG nSize = 0;
+            LONG nLen = 0;
+            GetTextWithHHHH(bPreserve, pUnicodes, nSize, nLen);
+            return std::wstring(pUnicodes, nLen);
+        }
         inline std::wstring GetOuterXml()
         {
             return GetXml(false);
@@ -589,8 +617,11 @@ namespace XmlUtils
                     eNodeType = (XmlNodeType)nTempType;
 
                     nCurDepth = GetDepth();
-                    if (eNodeType == XmlNodeType_Text || eNodeType == XmlNodeType_Whitespace || eNodeType == XmlNodeType_SIGNIFICANT_WHITESPACE)
-                        oResult.WriteEncodeXmlString(GetText().c_str());
+                    if (eNodeType == XmlNodeType_Text ||
+                        eNodeType == XmlNodeType_Whitespace ||
+                        eNodeType == XmlNodeType_SIGNIFICANT_WHITESPACE ||
+                        eNodeType == XmlNodeType_CDATA)
+                            oResult.WriteEncodeXmlString(GetText().c_str());
                     else if (eNodeType == XmlNodeType_Element)
                         WriteElement(oResult);
                     else if (eNodeType == XmlNodeType_EndElement)

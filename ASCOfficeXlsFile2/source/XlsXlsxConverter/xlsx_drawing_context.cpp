@@ -2835,6 +2835,7 @@ void xlsx_drawing_context::set_fill_texture(const std::wstring & str)
 	if (current_drawing_states->empty()) return;
 	
 	if (str.empty()) return;
+	if (false == current_drawing_states->back()->fill.texture_target.empty()) return;
 
 	current_drawing_states->back()->fill.texture_target = str;
 }

@@ -63,6 +63,7 @@
 
 #include "../XlsxFormat/Chart/Chart.h"
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
+#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/HeadingVariant.h"
 
 namespace OOX
 {
@@ -103,10 +104,16 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CCommentsExt( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::DocumentCommentsExt )
 			return smart_ptr<OOX::File>(new CDocumentCommentsExt( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::CommentsExtensible )
+			return smart_ptr<OOX::File>(new CCommentsExtensible( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::DocumentCommentsExtensible )
+			return smart_ptr<OOX::File>(new CDocumentCommentsExtensible( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::CommentsIds )
 			return smart_ptr<OOX::File>(new CCommentsIds( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::DocumentCommentsIds )
 			return smart_ptr<OOX::File>(new CDocumentCommentsIds( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::CommentsUserData )
+			return smart_ptr<OOX::File>(new CCommentsUserData( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::People )
 			return smart_ptr<OOX::File>(new CPeople( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::DocumentPeople )
@@ -120,6 +127,11 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CApp( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::Core)
 			return smart_ptr<OOX::File>(new CCore( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::CustomProperties)
+		{
+			PPTX::FileMap tmp;
+			return smart_ptr<OOX::File>(new PPTX::CustomProperties( pMain, oFileName, tmp));
+		}
 		else if ( oRelation.Type() == FileTypes::Theme)
 			return smart_ptr<OOX::File>(new PPTX::Theme( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::ThemeOverride)
@@ -185,6 +197,11 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CApp( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::Core)
 			return smart_ptr<OOX::File>(new CCore( pMain, oFileName ));
+		else if ( pRelation->Type() == FileTypes::CustomProperties)
+		{
+			PPTX::FileMap tmp;
+			return smart_ptr<OOX::File>(new PPTX::CustomProperties( pMain, oFileName, tmp ));
+		}
 		else if ( pRelation->Type() == FileTypes::Document || pRelation->Type() == FileTypes::DocumentMacro)
 			return smart_ptr<OOX::File>(new CDocument( pMain, oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::Theme)
@@ -238,10 +255,16 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CCommentsExt( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::DocumentCommentsExt )
 			return smart_ptr<OOX::File>(new CDocumentCommentsExt( pMain, oFileName ));
+		else if ( pRelation->Type() == FileTypes::CommentsExtensible )
+			return smart_ptr<OOX::File>(new CCommentsExtensible( pMain, oFileName ));
+		else if ( pRelation->Type() == FileTypes::DocumentCommentsExtensible )
+			return smart_ptr<OOX::File>(new CDocumentCommentsExtensible( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::CommentsIds)
 			return smart_ptr<OOX::File>(new CCommentsIds( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::DocumentCommentsIds)
 			return smart_ptr<OOX::File>(new CDocumentCommentsIds( pMain, oFileName ));
+		else if ( pRelation->Type() == FileTypes::CommentsUserData)
+			return smart_ptr<OOX::File>(new CCommentsUserData( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::People )
 			return smart_ptr<OOX::File>(new CPeople( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::DocumentPeople )

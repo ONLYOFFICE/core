@@ -1,31 +1,27 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XlsFormat", "..\source\win32\XlsFormat.vcproj", "{77DDC8D7-5B12-4FF2-9629-26AEBCA8436D}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XlsFormatLib", "..\source\win32\XlsFormat.vcxproj", "{77DDC8D7-5B12-4FF2-9629-26AEBCA8436D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XlsXlsxConverter", "..\source\win32\XlsXlsxConverter.vcproj", "{CBEDD0D1-10A8-45C1-AF81-8492F40964CA}"
-	ProjectSection(ProjectDependencies) = postProject
-		{C27E9A9F-3A17-4482-9C5F-BF15C01E747C} = {C27E9A9F-3A17-4482-9C5F-BF15C01E747C}
-		{77DDC8D7-5B12-4FF2-9629-26AEBCA8436D} = {77DDC8D7-5B12-4FF2-9629-26AEBCA8436D}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XlsXlsxConverter", "..\source\win32\XlsXlsxConverter.vcxproj", "{CBEDD0D1-10A8-45C1-AF81-8492F40964CA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XlsFormatTest", "XlsFormatTest.vcproj", "{C2882DDD-07E6-4314-AD4B-48F43F38D722}"
-	ProjectSection(ProjectDependencies) = postProject
-		{36636678-AE25-4BE6-9A34-2561D1BCF302} = {36636678-AE25-4BE6-9A34-2561D1BCF302}
-		{A100103A-353E-45E8-A9B8-90B87CC5C0B0} = {A100103A-353E-45E8-A9B8-90B87CC5C0B0}
-		{CBEDD0D1-10A8-45C1-AF81-8492F40964CA} = {CBEDD0D1-10A8-45C1-AF81-8492F40964CA}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OfficeFileCrypt", "..\..\OfficeCryptReader\win32\ECMACryptReader.vcproj", "{C27E9A9F-3A17-4482-9C5F-BF15C01E747C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XlsFormatTest", "XlsFormatTest.vcxproj", "{C2882DDD-07E6-4314-AD4B-48F43F38D722}"
 	ProjectSection(ProjectDependencies) = postProject
 		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF} = {3423EC9A-52E4-4A4D-9753-EDEBC38785EF}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PPTXFormat", "..\..\ASCOfficePPTXFile\PPTXLib\PPTXFormat.vcproj", "{36636678-AE25-4BE6-9A34-2561D1BCF302}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OfficeFileCrypt", "..\..\OfficeCryptReader\win32\ECMACryptReader.vcxproj", "{C27E9A9F-3A17-4482-9C5F-BF15C01E747C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF} = {3423EC9A-52E4-4A4D-9753-EDEBC38785EF}
+	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DocxFormat", "..\..\Common\DocxFormat\Projects\DocxFormat2005.vcproj", "{A100103A-353E-45E8-A9B8-90B87CC5C0B0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PPTXFormatLib", "..\..\ASCOfficePPTXFile\PPTXLib\PPTXFormat.vcxproj", "{36636678-AE25-4BE6-9A34-2561D1BCF302}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cryptlib", "..\..\Common\3dParty\cryptopp\cryptlib.vcproj", "{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cryptlib", "..\..\Common\3dParty\cryptopp\cryptlib.vcxproj", "{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DocxFormatLib", "..\..\Common\DocxFormat\Projects\DocxFormatLib.vcxproj", "{A100103A-353E-45E8-A9B8-90B87CC5C0B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -134,6 +130,25 @@ Global
 		{36636678-AE25-4BE6-9A34-2561D1BCF302}.ReleaseOpenSource|Win32.ActiveCfg = Release|x64
 		{36636678-AE25-4BE6-9A34-2561D1BCF302}.ReleaseOpenSource|x64.ActiveCfg = Release|x64
 		{36636678-AE25-4BE6-9A34-2561D1BCF302}.ReleaseOpenSource|x64.Build.0 = Release|x64
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Debug|Win32.Build.0 = Debug|Win32
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Debug|x64.ActiveCfg = Debug|x64
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Debug|x64.Build.0 = Debug|x64
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.DLL-Import Debug|Win32.ActiveCfg = DLL-Import Debug|Win32
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.DLL-Import Debug|Win32.Build.0 = DLL-Import Debug|Win32
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.DLL-Import Debug|x64.ActiveCfg = DLL-Import Debug|x64
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.DLL-Import Debug|x64.Build.0 = DLL-Import Debug|x64
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.DLL-Import Release|Win32.ActiveCfg = DLL-Import Release|Win32
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.DLL-Import Release|Win32.Build.0 = DLL-Import Release|Win32
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.DLL-Import Release|x64.ActiveCfg = DLL-Import Release|x64
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.DLL-Import Release|x64.Build.0 = DLL-Import Release|x64
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Release|Win32.ActiveCfg = Release|Win32
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Release|Win32.Build.0 = Release|Win32
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Release|x64.ActiveCfg = Release|x64
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Release|x64.Build.0 = Release|x64
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.ReleaseOpenSource|Win32.ActiveCfg = Release|x64
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.ReleaseOpenSource|x64.ActiveCfg = Release|x64
+		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.ReleaseOpenSource|x64.Build.0 = Release|x64
 		{A100103A-353E-45E8-A9B8-90B87CC5C0B0}.Debug|Win32.ActiveCfg = Debug|Win32
 		{A100103A-353E-45E8-A9B8-90B87CC5C0B0}.Debug|Win32.Build.0 = Debug|Win32
 		{A100103A-353E-45E8-A9B8-90B87CC5C0B0}.Debug|x64.ActiveCfg = Debug|x64
@@ -154,25 +169,6 @@ Global
 		{A100103A-353E-45E8-A9B8-90B87CC5C0B0}.ReleaseOpenSource|Win32.Build.0 = ReleaseOpenSource|Win32
 		{A100103A-353E-45E8-A9B8-90B87CC5C0B0}.ReleaseOpenSource|x64.ActiveCfg = ReleaseOpenSource|x64
 		{A100103A-353E-45E8-A9B8-90B87CC5C0B0}.ReleaseOpenSource|x64.Build.0 = ReleaseOpenSource|x64
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Debug|Win32.ActiveCfg = Debug|Win32
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Debug|Win32.Build.0 = Debug|Win32
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Debug|x64.ActiveCfg = Debug|x64
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Debug|x64.Build.0 = Debug|x64
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.DLL-Import Debug|Win32.ActiveCfg = DLL-Import Debug|Win32
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.DLL-Import Debug|Win32.Build.0 = DLL-Import Debug|Win32
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.DLL-Import Debug|x64.ActiveCfg = DLL-Import Debug|x64
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.DLL-Import Debug|x64.Build.0 = DLL-Import Debug|x64
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.DLL-Import Release|Win32.ActiveCfg = DLL-Import Release|Win32
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.DLL-Import Release|Win32.Build.0 = DLL-Import Release|Win32
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.DLL-Import Release|x64.ActiveCfg = DLL-Import Release|x64
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.DLL-Import Release|x64.Build.0 = DLL-Import Release|x64
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Release|Win32.ActiveCfg = Release|Win32
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Release|Win32.Build.0 = Release|Win32
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Release|x64.ActiveCfg = Release|x64
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.Release|x64.Build.0 = Release|x64
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.ReleaseOpenSource|Win32.ActiveCfg = Release|x64
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.ReleaseOpenSource|x64.ActiveCfg = Release|x64
-		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}.ReleaseOpenSource|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

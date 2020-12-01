@@ -144,7 +144,8 @@ extern int g_nCurFormatVersion;
 		VbaProject	= 13,
 		App			= 15,
 		Core		= 16,
-		DocumentComments	= 17
+		DocumentComments	= 17,
+		CustomProperties	= 18
 	};}
 	namespace c_oSerSigTypes{enum c_oSerSigTypes
 	{
@@ -366,7 +367,8 @@ extern int g_nCurFormatVersion;
 		Spacing_BeforeTwips = 40,
 		Spacing_AfterTwips = 41,
 		Tab_Item_PosTwips = 42,
-		Tab_Item_Val = 43
+		Tab_Item_Val = 43,
+		SuppressLineNumbers = 44
 	};}
 	namespace c_oSerProp_rPrType{enum c_oSerProp_rPrType
 	{
@@ -467,7 +469,8 @@ extern int g_nCurFormatVersion;
 		pgBorders = 9,
 		footnotePr = 10,
 		endnotePr = 11,
-		rtlGutter = 12
+		rtlGutter = 12,
+		lnNumType = 13
 	};}
 	namespace c_oSerProp_secPrSettingsType{enum c_oSerProp_secPrSettingsType
 	{
@@ -478,6 +481,13 @@ extern int g_nCurFormatVersion;
 	namespace c_oSerProp_secPrPageNumType{enum c_oSerProp_secPrPageNumType
 	{
 		start = 0
+	};}
+	namespace c_oSerProp_secPrLineNumType{enum c_oSerProp_secPrLineNumType
+	{
+		CountBy = 0,
+		Distance = 1,
+		Restart = 2,
+		Start = 3
 	};}
 	namespace c_oSerParType{enum c_oSerParType
 	{
@@ -806,7 +816,9 @@ extern int g_nCurFormatVersion;
 		OOData = 10,
 		DurableId = 11,
 		ProviderId = 12,
-		CommentContent = 13
+		CommentContent = 13,
+		DateUtc = 14,
+		UserData = 15
 	};}
 	namespace c_oSer_SettingsType{enum c_oSer_SettingsType
 	{
@@ -1175,7 +1187,19 @@ extern int g_nCurFormatVersion;
 		CheckboxCheckedFont = 40,
 		CheckboxCheckedVal = 41,
 		CheckboxUncheckedFont = 42,
-		CheckboxUncheckedVal = 43
+		CheckboxUncheckedVal = 43,
+		FormPr = 44,
+		FormPrKey = 45,
+		FormPrLabel = 46,
+		FormPrHelpText = 47,
+		FormPrRequired = 48,
+		CheckboxGroupKey = 59,
+		TextFormPr = 50,
+		TextFormPrComb = 51,
+		TextFormPrCombWidth = 52,
+		TextFormPrCombSym = 53,
+		TextFormPrCombFont = 54,
+		TextFormPrMaxCharacters = 55
 	};}
 	namespace c_oSerFFData{enum c_oSerFFData
 	{

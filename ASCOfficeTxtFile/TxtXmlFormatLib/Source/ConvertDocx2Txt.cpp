@@ -90,7 +90,8 @@ namespace Docx2Txt
         int ListCount;
         int* Lists;
 		
-		std::wstring styleNameParagraphPrev;
+		int levelPrev;
+		int listNumPrev;
 
 		std::wstring convert(OOX::Logic::CParagraph * pParagraph, TxtXml::ITxtXmlEvent& Event,
 									OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles);
@@ -154,7 +155,7 @@ namespace Docx2Txt
 	const std::wstring Converter_Impl::m_letters = _T("abcdefghijklmnopqrstuvwxyz");
 
 	Converter_Impl::Converter_Impl()
-		:  m_lPercent(0), m_lAddition(0), m_bCancelled(false), ListCount(0), Lists(NULL), NoteCount(0)
+		:  m_lPercent(0), m_lAddition(0), m_bCancelled(false), ListCount(0), Lists(NULL), NoteCount(0), levelPrev(-1), listNumPrev(1)
 	{
 	}
 
@@ -322,7 +323,6 @@ namespace Docx2Txt
 		}
 	}
 
-
 	std::wstring Converter_Impl::convert(OOX::Logic::CParagraph* pParagraph, TxtXml::ITxtXmlEvent& Event, 
 												OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles* pStyles)
 	{
@@ -342,40 +342,40 @@ namespace Docx2Txt
 			}
 			if (false == styleName.empty() && pStyles)
 			{
-                std::map<std::wstring, size_t>::iterator pPair = pStyles->m_mapStyleNames.find(styleName);
+                std::map<std::wstring, size_t>::iterator pFind = pStyles->m_mapStyleNames.find(styleName);
 
-				if (pPair != pStyles->m_mapStyleNames.end())
+				if (pFind != pStyles->m_mapStyleNames.end())
 				{
-					OOX::CStyle* style = pStyles->m_arrStyle[pPair->second];
+					OOX::CStyle* style = pStyles->m_arrStyle[pFind->second];
 			
-					if ((style) && (style->m_oParPr.IsInit()))
+					if ((style) && (style->m_oParPr.IsInit()) && (style->m_oParPr->m_oNumPr.IsInit()))
 					{
-						if (style->m_oParPr->m_oNumPr.IsInit())
+						if (false == pParagraph->m_oParagraphProperty->m_oNumPr.IsInit())
 						{
-							if (pParagraph->m_oParagraphProperty->m_oNumPr.IsInit() == false)
-							{
-								pParagraph->m_oParagraphProperty->m_oNumPr = style->m_oParPr->m_oNumPr;
-							}
-							if (style->m_oParPr->m_oNumPr->m_oIlvl.IsInit())
-							{
-								level = style->m_oParPr->m_oNumPr->m_oIlvl->m_oVal.IsInit() ? *style->m_oParPr->m_oNumPr->m_oIlvl->m_oVal + 1 : 0;
-							}
+							pParagraph->m_oParagraphProperty->m_oNumPr = style->m_oParPr->m_oNumPr;
+						}
+						if (true == style->m_oParPr->m_oNumPr->m_oIlvl.IsInit())
+						{
+							level = style->m_oParPr->m_oNumPr->m_oIlvl->m_oVal.IsInit() ? *style->m_oParPr->m_oNumPr->m_oIlvl->m_oVal + 1 : 0;
 						}
 					}
 				}
 			}
-			if (pParagraph->m_oParagraphProperty->m_oNumPr.IsInit())
+			if (true == pParagraph->m_oParagraphProperty->m_oNumPr.IsInit())
 			{
-				if (pParagraph->m_oParagraphProperty->m_oNumPr->m_oIlvl.IsInit())
+				if (true == pParagraph->m_oParagraphProperty->m_oNumPr->m_oIlvl.IsInit())
 				{
 					level = pParagraph->m_oParagraphProperty->m_oNumPr->m_oIlvl->m_oVal.IsInit() ? 
 						*pParagraph->m_oParagraphProperty->m_oNumPr->m_oIlvl->m_oVal + 1 : 0;
 				}
-				if (pParagraph->m_oParagraphProperty->m_oNumPr->m_oNumID.IsInit())
+				if (true == pParagraph->m_oParagraphProperty->m_oNumPr->m_oNumID.IsInit())
 				{
 					listNum = pParagraph->m_oParagraphProperty->m_oNumPr->m_oNumID->m_oVal.IsInit() ? 
 						*pParagraph->m_oParagraphProperty->m_oNumPr->m_oNumID->m_oVal : 1;
+
+					listNumPrev = listNum;
 				}
+				else listNum = listNumPrev;
 			}
 		}
 	
@@ -395,9 +395,30 @@ namespace Docx2Txt
 			if ((pNumbering->m_arrNum[listNum]) && (pNumbering->m_arrNum[listNum]->m_oNumId.IsInit()))
 			{
 				size_t abstractNumId = 0;
+				nullable_int startLvl;
+				nullable_int restartLvl;
+
 				if ((pNumbering->m_arrNum[listNum]) && (pNumbering->m_arrNum[listNum]->m_oAbstractNumId.IsInit()) &&
-							(pNumbering->m_arrNum[listNum]->m_oAbstractNumId->m_oVal.IsInit()))
+					(pNumbering->m_arrNum[listNum]->m_oAbstractNumId->m_oVal.IsInit()))
+				{
 					abstractNumId = *pNumbering->m_arrNum[listNum]->m_oAbstractNumId->m_oVal;
+
+					std::map<int, size_t>::iterator pFind = pNumbering->m_arrNum[listNum]->m_mapLvlOverride.find(level);
+					if (pFind != pNumbering->m_arrNum[listNum]->m_mapLvlOverride.end())
+					{
+						OOX::Numbering::CNumLvl* numLvl = pNumbering->m_arrNum[listNum]->m_arrLvlOverride[pFind->second];
+						if (numLvl)
+						{
+							if (numLvl->m_oStartOverride.IsInit())
+								startLvl = numLvl->m_oStartOverride->m_oVal;
+							if (numLvl->m_oLvl.IsInit())
+							{
+								if (numLvl->m_oLvl->m_oLvlRestart.IsInit())
+									restartLvl = numLvl->m_oLvl->m_oLvlRestart->m_oVal;
+							}
+						}
+					}
+				}
 				
 				OOX::Numbering::CAbstractNum* abstractNum = NULL;
 				if (abstractNumId < pNumbering->m_arrAbstractNum.size())
@@ -405,22 +426,39 @@ namespace Docx2Txt
 
 				if (abstractNum)
 				{
-					if (styleName != styleNameParagraphPrev)	Lists[start + level] = 1;
-					else 										Lists[start + level]++;
-
-					styleNameParagraphPrev = styleName;
-
 					int ind_level = - 1;
-					for (size_t i = 0; i< abstractNum->m_arrLvl.size(); i++)//??? стоит ли???
+					std::map<int, size_t>::iterator pFind = abstractNum->m_mapLvl.find(level);
+					if (pFind != abstractNum->m_mapLvl.end())
 					{
-						if ((abstractNum->m_arrLvl[i]) && (abstractNum->m_arrLvl[i]->m_oIlvl.IsInit()) && (*abstractNum->m_arrLvl[i]->m_oIlvl == level))
+						OOX::Numbering::CLvl* lvl = abstractNum->m_arrLvl[pFind->second];
+						if (lvl)
 						{
-							ind_level = i;
-							break;
+							ind_level = pFind->second;
+							if (false == startLvl.IsInit() && lvl->m_oStart.IsInit())
+								startLvl = lvl->m_oStart->m_oVal;
+							if (false == restartLvl.IsInit() && lvl->m_oLvlRestart.IsInit())
+								restartLvl = lvl->m_oLvlRestart->m_oVal;
 						}
 					}
+					bool reset = true;
+					if (restartLvl.IsInit())
+					{
+						if (*restartLvl == 0) reset = false;
+						else if (*restartLvl >= Lists[start + level])
+							reset = true;
+					}
+					else if (levelPrev >= level) reset = false;
+
+					levelPrev = level;
+
+					if (reset) Lists[start + level] = startLvl.IsInit() ? *startLvl : 1;
+					else Lists[start + level]++;
+
 					if (( ind_level >= 0 ) && ( abstractNum->m_arrLvl[ind_level] ))
 					{
+						for (int tab = 0; tab < ind_level; tab++)
+							line += L"\t";
+
 						if ((abstractNum->m_arrLvl[ind_level]->m_oNumFmt.IsInit()) && (abstractNum->m_arrLvl[ind_level]->m_oNumFmt->m_oVal.IsInit()))
 						{
 							std::wstring strLevelText;
@@ -439,7 +477,7 @@ namespace Docx2Txt
 							else
 							{
 								std::wstring example = strLevelText;
-								for(int i = 0; i < 9; i++)
+								for (int i = 0; i < 9; i++)
 								{
 									std::wstring num = L"%" + ToWString(i + 1);
 									while(example.find(num) != example.npos)

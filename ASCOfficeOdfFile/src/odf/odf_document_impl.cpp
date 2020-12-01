@@ -702,6 +702,7 @@ void odf_document::Impl::parse_meta(office_element *element)
 void odf_document::Impl::parse_styles(office_element *element)
 {
 	text_outline_style *outlineStyle = NULL;
+	text_linenumbering_configuration *linenumberingStyle = NULL;
     
 	do
     {
@@ -900,9 +901,14 @@ void odf_document::Impl::parse_styles(office_element *element)
 
 			if (docStyles->text_outline_style_)
 			{
-                outlineStyle = dynamic_cast<text_outline_style *>(docStyles->text_outline_style_.get());                
+                outlineStyle = dynamic_cast<text_outline_style *>(docStyles->text_outline_style_.get());   
+				context_->listStyleContainer().add_outline_style(outlineStyle);
 			}
-
+			if (docStyles->text_linenumbering_configuration_)
+			{
+				linenumberingStyle = dynamic_cast<text_linenumbering_configuration *>(docStyles->text_linenumbering_configuration_.get());
+				context_->pageLayoutContainer().add_linenumbering(linenumberingStyle);
+			}
 			for (size_t i = 0; i < docStyles->text_notes_configuration_.size(); i++)
 			{	
 				office_element_ptr & elm = docStyles->text_notes_configuration_[i];
@@ -1096,7 +1102,6 @@ void odf_document::Impl::parse_styles(office_element *element)
     while (false);
 
 	context_->listStyleContainer().add_outline_style(outlineStyle);
-
 }
 
 bool odf_document::Impl::docx_convert(oox::docx_conversion_context & Context)

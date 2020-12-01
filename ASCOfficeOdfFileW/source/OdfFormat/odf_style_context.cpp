@@ -391,6 +391,7 @@ std::wstring odf_style_context::get_name_family(style_family::type family)
 		case style_family::HandoutMaster:			return L"Handout";
 		case style_family::LayerSet:				return L"";//нету
 		case style_family::PresentationPageLayout:	return L"AL";
+		case style_family::LineNumbering:			return L"Line_20_numbering";
 
 	}
 	return L"UnknownStyle";

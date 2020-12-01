@@ -58,13 +58,16 @@ BiffRecordContinued::~BiffRecordContinued()
 
 
 // Read all the Continue records that follow the record
-void BiffRecordContinued::readFollowingContinue(CFStreamCacheReader& reader)
+void BiffRecordContinued::readFollowingContinue(StreamCacheReaderPtr reader)
 {
+	if (!reader)
+		return;
+
 	CFRecordType::TypeId type;
 
-	while(CFRecordType::isContinue(type = reader.getNextRecordType()))
+	while(CFRecordType::isContinue(type = reader->getNextRecordType()))
 	{
-		CFRecordPtr record = reader.getNextRecord(rt_ANY_TYPE, false);
+		CFRecordPtr record = reader->getNextRecord(rt_ANY_TYPE, false);
 		if(!record)
 		{
 			return;

@@ -329,8 +329,8 @@ void draw_gradient::serialize(std::wostream & strm)
 			CP_XML_ATTR_OPT(L"draw:cy",		draw_cx_);
 			
 			CP_XML_ATTR_OPT(L"draw:border",	draw_border_);
-			CP_XML_ATTR_OPT(L"draw:angle",	draw_angle_);
-			CP_XML_ATTR_OPT(L"draw:style",	draw_style_);
+			CP_XML_ATTR_OPT(L"draw:angle", draw_angle_);
+			CP_XML_ATTR_OPT(L"draw:style", draw_style_);
 
  			CP_XML_ATTR_OPT(L"draw:name",	draw_name_);
 			CP_XML_ATTR_OPT(L"draw:display_name",draw_display_name_);
@@ -383,8 +383,8 @@ void draw_opacity::serialize(std::wostream & strm)
 			CP_XML_ATTR_OPT(L"draw:cy",		draw_cy_);
 
 			CP_XML_ATTR_OPT(L"draw:border",	draw_border_);
-			CP_XML_ATTR_OPT(L"draw:angle",	draw_angle_);
-			CP_XML_ATTR_OPT(L"draw:style",	draw_style_);
+			CP_XML_ATTR_OPT(L"draw:angle", draw_angle_);
+			CP_XML_ATTR_OPT(L"draw:style", draw_style_);
 
  			CP_XML_ATTR_OPT(L"draw:name",			draw_name_);
 			CP_XML_ATTR_OPT(L"draw:display_name",	draw_display_name_);
@@ -860,6 +860,15 @@ void office_styles::add_child_element( const office_element_ptr & child)
 	case typeTableTemplate:		
 		templates_.add_child_element(child);
 		break;
+	case typeTextOutlineStyle:
+		text_outline_style_ = child;
+		break;
+	case typeTextNotesConfiguration:
+		text_notes_configuration_.push_back(child);
+		break;
+	case typeTextLinenumberingConfiguration:
+		text_linenumbering_configuration_.push_back(child);
+		break;
 	//....
 	}
 }
@@ -868,22 +877,34 @@ void office_styles::serialize(std::wostream & strm)
     CP_XML_WRITER(strm)
     {
 		CP_XML_NODE_SIMPLE()
-        {
-			for (size_t i = 0 ; i < style_default_style_.size(); i++)
+		{
+			for (size_t i = 0; i < style_default_style_.size(); i++)
 			{
 				style_default_style_[i]->serialize(CP_XML_STREAM());
 			}
-			
+
 			draw_styles_.serialize(CP_XML_STREAM());
 
-			for (size_t i = 0 ; i < style_presentation_page_layout_.size(); i++)
+			for (size_t i = 0; i < style_presentation_page_layout_.size(); i++)
 			{
 				style_presentation_page_layout_[i]->serialize(CP_XML_STREAM());
 			}
 
 			templates_.serialize(CP_XML_STREAM());
-			
+
 			styles_.serialize(CP_XML_STREAM());
+
+			if (text_outline_style_)
+				text_outline_style_->serialize(CP_XML_STREAM());
+
+			for (size_t i = 0; i < text_notes_configuration_.size(); i++)
+			{
+				text_notes_configuration_[i]->serialize(CP_XML_STREAM());
+			}
+			for (size_t i = 0; i < text_linenumbering_configuration_.size(); i++)
+			{
+				text_linenumbering_configuration_[i]->serialize(CP_XML_STREAM());
+			}
 		}
 	}
 }
@@ -1333,7 +1354,62 @@ void text_notes_configuration::create_child_element(const std::wstring & Ns, con
     else
         CP_NOT_APPLICABLE_ELM();    
 }
+// text:linenumbering-configuration
+//-------------------------------------------------------------------------------------------------------
+const wchar_t * text_linenumbering_configuration::ns = L"text";
+const wchar_t * text_linenumbering_configuration::name = L"linenumbering-configuration";
 
+void text_linenumbering_configuration::serialize(std::wostream & strm)
+{
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			CP_XML_ATTR_OPT(L"text:style-name", text_style_name_);
+			if (false == text_number_lines_)
+			{
+				CP_XML_ATTR(L"text:number-lines", text_number_lines_);
+			}
+			CP_XML_ATTR_OPT(L"style:num-format", style_num_format_);
+			CP_XML_ATTR_OPT(L"style:num-letter-sync", style_num_letter_sync_);
+			CP_XML_ATTR_OPT(L"text:count-empty-lines", text_count_empty_lines_);
+			CP_XML_ATTR_OPT(L"text:count-in-text-boxes", text_count_in_text_boxes_);
+			CP_XML_ATTR_OPT(L"text:increment", text_increment_);
+			CP_XML_ATTR_OPT(L"text:number-position", text_number_position_); //inner, left, outer, right
+			CP_XML_ATTR_OPT(L"text:offset", text_offset_);
+			CP_XML_ATTR_OPT(L"text:restart-on-page", text_restart_on_page_);
+
+			if (text_linenumbering_separator_)
+				text_linenumbering_separator_->serialize(CP_XML_STREAM());
+		}
+	}
+}
+void text_linenumbering_configuration::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+{
+	if CP_CHECK_NAME(L"text", L"linenumbering-separator")
+		CP_CREATE_ELEMENT(text_linenumbering_separator_);
+}
+
+// text:linenumbering-separator
+//-------------------------------------------------------------------------------------------------------
+const wchar_t * text_linenumbering_separator::ns = L"text";
+const wchar_t * text_linenumbering_separator::name = L"linenumbering-separator";
+
+void text_linenumbering_separator::serialize(std::wostream & strm)
+{
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			CP_XML_ATTR_OPT(L"text:increment", text_increment_);
+
+			if (text_)
+			{
+				CP_XML_STREAM() << *text_;
+			}
+		}
+	}
+}
 /// style:presentation-page-layout
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_presentation_page_layout::ns = L"style";

@@ -1932,10 +1932,10 @@ namespace NSBinPptxRW
 	}
 
 	//String
-	std::wstring CBinaryFileReader::GetString(_INT32 len)
+	std::wstring CBinaryFileReader::GetString(_INT32 len, bool bDeleteZero)
 	{
         len *= 2;
-		return GetString3(len);		
+		return GetString3(len, bDeleteZero);
 	}
 	std::string CBinaryFileReader::GetString1(_INT32 len)
 	{
@@ -1951,24 +1951,37 @@ namespace NSBinPptxRW
 		m_pDataCur += len;
 		return res;
 	}
-	std::wstring CBinaryFileReader::GetString2()
+	std::wstring CBinaryFileReader::GetString2(bool bDeleteZero)
     {
         _INT32 len = GetLong();
-		return GetString(len);
+		return GetString(len, bDeleteZero);
 	}
-    std::wstring CBinaryFileReader::GetString3(_INT32 len)//len in byte for utf16
+    std::wstring CBinaryFileReader::GetString3(_INT32 len, bool bDeleteZero)//len in byte for utf16
 	{
         if (len < 1 )
-            return _T("");
-        if (m_lPos + len > m_lSize)
+			return L""; 
+        
+		if (m_lPos + len > m_lSize)
 		{
 			throw;
 		}
 
-        _UINT32 lSize = len >>1; //string in char
+        int lSize = len >> 1; //string in char
 
-        if (sizeof(wchar_t) == 4)
+		if (bDeleteZero)
+		{
+			while (lSize > 0)
+			{
+				if (((unsigned short*)m_pDataCur)[lSize - 1] == 0)
+					lSize--;
+				else
+					break;
+			}
+		}
+
+		if (sizeof(wchar_t) == 4)
         {
+
             std::wstring val = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)m_pDataCur, lSize);
             std::wstring res(val.c_str(), val.length());
 

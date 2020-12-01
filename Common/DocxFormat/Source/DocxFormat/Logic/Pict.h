@@ -134,6 +134,11 @@ namespace OOX
 				XmlMacroReadAttributeBase( oNode, _T("r:id"),      m_rId  );
 				XmlMacroReadAttributeBase( oNode, _T("w:name"),    m_sName );
 				XmlMacroReadAttributeBase( oNode, _T("w:shapeid"), m_sShapeId );
+
+				if (false == m_rId.IsInit())
+				{
+					XmlMacroReadAttributeBase( oNode, _T("relationships:id"), m_rId );
+				}
 			}
 
             virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -166,29 +171,12 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				if ( oReader.GetAttributesCount() <= 0 )
-					return;
-
-				if ( !oReader.MoveToFirstAttribute() )
-					return;
-
-				std::wstring wsName = oReader.GetName();
-				while( !wsName.empty() )
-				{
-					if ( _T("r:id") == wsName )
-						m_rId = oReader.GetText();
-					else if ( _T("w:name") == wsName )
-						m_sName = oReader.GetText();
-					else if ( _T("w:shapeid") == wsName )
-						m_sShapeId = oReader.GetText();
-
-					if ( !oReader.MoveToNextAttribute() )
-						break;
-
-					wsName = oReader.GetName();
-				}
-
-				oReader.MoveToElement();
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"),				m_rId )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("relationships:id"),	m_rId )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:name"),				m_sName )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:shapeid"),			m_sShapeId )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:

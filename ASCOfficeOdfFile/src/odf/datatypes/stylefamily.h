@@ -69,8 +69,9 @@ public:
 		MasterPage,
 		HandoutMaster,
 		LayerSet,
-		PresentationPageLayout
-    };
+		PresentationPageLayout,
+		LineNumbering
+	};
 
     style_family() : type_(Default) {}
 

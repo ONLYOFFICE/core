@@ -82,7 +82,8 @@ namespace BinXlsxRW
 		CalcChain = 5,
 		App = 6,
 		Core = 7,
-		PersonList = 8
+		PersonList = 8,
+		CustomProperties = 9
 	};}
 
 	namespace c_oSerStylesTypes{enum c_oSerStylesTypes
@@ -387,7 +388,8 @@ namespace BinXlsxRW
 		SortState = 36,
 		Slicers = 37,
 		SlicersExt = 38,
-		Slicer = 39
+		Slicer = 39,
+		NamedSheetView = 40
 	};}
 	namespace c_oSerWorksheetPropTypes{enum c_oSerWorksheetPropTypes
 	{
@@ -965,7 +967,8 @@ namespace BinXlsxRW
 		Replies = 7,
 		Reply = 8,
 		OOTime = 9,
-		Guid = 10
+		Guid = 10,
+		UserData = 11
 	};}
 	namespace c_oSer_ThreadedComment{enum c_oSer_ThreadedComment
 	{

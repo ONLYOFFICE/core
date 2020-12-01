@@ -102,6 +102,8 @@ public:
 
 	void start_element		(office_element_ptr & elm, office_element_ptr style_elm = office_element_ptr(),std::wstring style_name = L"");
     void end_element		();
+
+	void add_element_in_span_or_par(office_element_ptr & elm);
  	
 	bool start_field		(int type, const std::wstring& value);
 	void end_field			();
@@ -143,9 +145,10 @@ public:
 	std::vector<odf_element_state>	text_elements_list_;	//параграфы, списки , ... 
 	struct _list_state
 	{
-		bool				started_list;
+		bool				started_list = false;
 		std::vector<bool>	levels;
 		std::wstring		style_name;
+		int					prevNumID = -1;
 	}list_state_;
 	bool					single_paragraph_;
 private:

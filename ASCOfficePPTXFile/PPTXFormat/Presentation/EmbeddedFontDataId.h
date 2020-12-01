@@ -44,24 +44,20 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(EmbeddedFontDataId)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_name = XmlUtils::GetNameNoNS(node.GetName());
 
-				rid = node.GetAttribute(_T("r:id"));
+				rid = node.GetAttribute(L"r:id");
 			}
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("r:id"), rid);
+				oAttr.Write(L"r:id", rid);
 
-				return XmlUtils::CreateNode(_T("p:") + m_name, oAttr);
+				return XmlUtils::CreateNode(L"p:" + m_name, oAttr);
 			}
-		public:
 			std::wstring rid;
-		//private:
-		public:
 			std::wstring m_name;
 		protected:
 			virtual void FillParentPointersForChilds(){};

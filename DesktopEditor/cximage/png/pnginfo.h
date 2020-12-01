@@ -1,11 +1,10 @@
-﻿
+
 /* pnginfo.h - header file for PNG reference library
  *
- * Copyright (c) 1998-2011 Glenn Randers-Pehrson
+ * Last changed in libpng 1.5.0 [January 6, 2011]
+ * Copyright (c) 1998-2002,2004,2006-2011 Glenn Randers-Pehrson
  * (Version 0.96 Copyright (c) 1996, 1997 Andreas Dilger)
  * (Version 0.88 Copyright (c) 1995, 1996 Guy Eric Schalnat, Group 42, Inc.)
- *
- * Last changed in libpng 1.5.0 [January 6, 2011]
  *
  * This code is released under the libpng license.
  * For conditions of distribution and use, see the disclaimer
@@ -138,7 +137,6 @@ defined(PNG_READ_BACKGROUND_SUPPORTED)
     * single color specified that should be treated as fully transparent.
     * Data is valid if (valid & PNG_INFO_tRNS) is non-zero.
     */
-   png_bytep trans;    /* alpha values for paletted image */
    png_bytep trans_alpha;    /* alpha values for paletted image */
    png_color_16 trans_color; /* transparent color for non-palette image */
 #endif
@@ -243,7 +241,7 @@ defined(PNG_READ_BACKGROUND_SUPPORTED)
 #ifdef PNG_sPLT_SUPPORTED
    /* Data on sPLT chunks (there may be more than one). */
    png_sPLT_tp splt_palettes;
-   png_uint_32 splt_palettes_num;
+   int splt_palettes_num;
 #endif
 
 #ifdef PNG_sCAL_SUPPORTED

@@ -75,7 +75,7 @@ void chart_chart_attlist::serialize(CP_ATTR_NODE)
 	common_draw_size_attlist_.serialize(CP_GET_XML_NODE());
     common_attlist_.serialize(CP_GET_XML_NODE());
     
-    CP_XML_ATTR_OPT(L"chart:class", chart_class_);
+    CP_XML_ATTR(L"chart:class", chart_class_);
 	CP_XML_ATTR_OPT(L"chart:column-mapping", chart_column_mapping_);
     CP_XML_ATTR_OPT(L"chart:row-mapping", chart_row_mapping_);
 }

@@ -575,5 +575,9 @@ CNativeGraphics.prototype =
 	GetPenColor : function()
 	{
 		return this.Native["GetPenColor"]();
+	},
+	put_brushTexture : function(src, type)
+	{
+		this.Native["put_brushTexture"](src);
 	}
 };

@@ -120,6 +120,7 @@ public:
     // new methods
     JSSmart<CJSValue> toDataURL(JSSmart<CJSValue> type);
     JSSmart<CJSValue> GetPenColor();
+    JSSmart<CJSValue> put_brushTexture(JSSmart<CJSValue> src);
 
     static void CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context);
 };

@@ -462,3 +462,8 @@ JSSmart<CJSValue> CGraphicsEmbed::GetPenColor()
     e->set("A", res.a);
     return e->toValue();
 }
+JSSmart<CJSValue> CGraphicsEmbed::put_brushTexture(JSSmart<CJSValue> src)
+{
+    m_pInternal->put_brushTexture(src->toStringW());
+    return NULL;
+}

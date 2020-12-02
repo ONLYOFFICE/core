@@ -213,6 +213,7 @@ namespace NSGraphics
         // new methods
         std::string toDataURL(std::wstring type);
         CColor GetPenColor();
+        void put_brushTexture(std::wstring src);
     };
 }
 

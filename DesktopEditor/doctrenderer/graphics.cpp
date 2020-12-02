@@ -1047,4 +1047,8 @@ CColor CGraphics::GetPenColor()
     m_pRenderer->get_PenAlpha(&a);
     return {color & 255, (color & 65280) >> 8, (color & 16711680) >> 16, a};
 }
+void CGraphics::put_brushTexture(std::wstring src)
+{
+    m_pRenderer->put_BrushTexturePath(src);
+}
 }

@@ -107,8 +107,9 @@ namespace NSGraphics
     FUNCTION_WRAPPER_V8_3(_DrawPolygon,              DrawPolygon)
     FUNCTION_WRAPPER_V8_4(_DrawFootnoteRect,         DrawFootnoteRect)
     // new methods
-    FUNCTION_WRAPPER_V8_1(_toDataURL,   toDataURL)
-    FUNCTION_WRAPPER_V8  (_GetPenColor, GetPenColor)
+    FUNCTION_WRAPPER_V8_1(_toDataURL,        toDataURL)
+    FUNCTION_WRAPPER_V8  (_GetPenColor,      GetPenColor)
+    FUNCTION_WRAPPER_V8_1(_put_brushTexture, put_brushTexture)
 
     v8::Handle<v8::ObjectTemplate> CreateGraphicsTemplate(v8::Isolate* isolate)
     {
@@ -212,6 +213,7 @@ namespace NSGraphics
         NSV8Objects::Template_Set(result, "DrawFootnoteRect",         _DrawFootnoteRect);
         NSV8Objects::Template_Set(result, "toDataURL",                _toDataURL);
         NSV8Objects::Template_Set(result, "GetPenColor",              _GetPenColor);
+        NSV8Objects::Template_Set(result, "put_brushTexture",         _put_brushTexture);
 
         return handle_scope.Escape(result);
     }

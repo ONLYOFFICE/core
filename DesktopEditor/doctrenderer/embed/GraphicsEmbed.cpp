@@ -452,3 +452,13 @@ JSSmart<CJSValue> CGraphicsEmbed::toDataURL(JSSmart<CJSValue> type)
 {
     return CJSContext::createString(m_pInternal->toDataURL(type->toStringW()));
 }
+JSSmart<CJSValue> CGraphicsEmbed::GetPenColor()
+{
+    JSSmart<CJSObject> e = CJSContext::createObject();
+    NSGraphics::CColor res = m_pInternal->GetPenColor();
+    e->set("R", res.r);
+    e->set("G", res.g);
+    e->set("B", res.b);
+    e->set("A", res.a);
+    return e->toValue();
+}

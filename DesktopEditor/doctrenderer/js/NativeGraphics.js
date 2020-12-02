@@ -571,5 +571,9 @@ CNativeGraphics.prototype =
     toDataURL : function(type)
     {
         return this.Native["toDataURL"](type);
-    }
+    },
+	GetPenColor : function()
+	{
+		return this.Native["GetPenColor"]();
+	}
 };

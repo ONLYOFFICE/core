@@ -119,6 +119,7 @@ public:
     JSSmart<CJSValue> DrawFootnoteRect(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h);
     // new methods
     JSSmart<CJSValue> toDataURL(JSSmart<CJSValue> type);
+    JSSmart<CJSValue> GetPenColor();
 
     static void CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context);
 };

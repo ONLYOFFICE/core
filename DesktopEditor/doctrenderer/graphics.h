@@ -92,6 +92,14 @@ namespace NSGraphics
         }
     };
 
+    struct CColor
+    {
+        int r;
+        int g;
+        int b;
+        int a;
+    };
+
     class CGraphics
     {
     public:
@@ -204,6 +212,7 @@ namespace NSGraphics
         void DrawFootnoteRect(double x, double y,  double w,  double h);
         // new methods
         std::string toDataURL(std::wstring type);
+        CColor GetPenColor();
     };
 }
 

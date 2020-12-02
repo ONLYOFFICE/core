@@ -59,7 +59,7 @@ void CGraphics::End_GlobalAlpha()
 
     m_pRenderer->put_IntegerGrid(bIsInteger);
 }
-void CGraphics::p_color (int r, int g, int b, int a)
+void CGraphics::p_color(int r, int g, int b, int a)
 {
     m_pRenderer->put_PenColor(r | (g << 8) | (b << 16));
     m_pRenderer->put_PenAlpha(a);
@@ -830,11 +830,11 @@ void CGraphics::SavePen()
 }
 void CGraphics::RestorePen()
 {
-    if (m_oGrState.States.empty())
+    if(m_oGrState.States.empty())
         return;
 
     IGrState* pState = m_oGrState.States.back();
-    if (pState->m_eType == gstPen)
+    if(pState->m_eType == gstPen)
     {
         m_pRenderer->RestorePen(((CGrStatePen*)pState)->m_oPen);
         m_oGrState.States.pop_back();
@@ -1038,5 +1038,13 @@ std::string CGraphics::toDataURL(std::wstring type)
             return std::string((char*)pImageData, nEncodeLen);
     }
     return "";
+}
+CColor CGraphics::GetPenColor()
+{
+    LONG color;
+    LONG a;
+    m_pRenderer->get_PenColor(&color);
+    m_pRenderer->get_PenAlpha(&a);
+    return {color & 255, (color & 65280) >> 8, (color & 16711680) >> 16, a};
 }
 }

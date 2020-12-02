@@ -7,6 +7,10 @@ MyGraphics.put_GlobalAlpha(true, 0.5);
 
 // Рисуем желтый квадрат с красной пунктирной обводкой и толщиной 2
 MyGraphics.p_color(255, 0, 0, 255);
+
+var PenColor = MyGraphics.GetPenColor();
+MyGraphics.p_color(PenColor.R, PenColor.G, PenColor.B, PenColor.A);
+
 MyGraphics.p_width(2);
 MyGraphics.p_dash([5, 5]);
 MyGraphics.b_color1(255, 255, 0, 255);

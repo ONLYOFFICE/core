@@ -35,407 +35,411 @@
 namespace PPT_FORMAT
 {
 
-	void CTextAttributesEx::RecalcParagraphsPPT()
-	{
-		for (size_t i = 0; i < m_arParagraphs.size(); ++i)
-		{
-			bool split_paragraph = false;
-			for (size_t j = 0; j < m_arParagraphs[i].m_arSpans.size(); ++j)
-			{
-				size_t lCountCFs	= m_arParagraphs[i].m_arSpans.size();
-				size_t s_size		= m_arParagraphs[i].m_arSpans[j].m_strText.length();
-				
+    void CTextAttributesEx::RecalcParagraphsPPT()
+    {
+        for (size_t i = 0; i < m_arParagraphs.size(); ++i)
+        {
+            bool split_paragraph = false;
+            for (size_t j = 0; j < m_arParagraphs[i].m_arSpans.size(); ++j)
+            {
+                size_t lCountCFs	= m_arParagraphs[i].m_arSpans.size();
+                size_t s_size		= m_arParagraphs[i].m_arSpans[j].m_strText.length();
+
                 size_t lFoundEnter = m_arParagraphs[i].m_arSpans[j].m_strText.find((wchar_t)13);
 
-				if( !split_paragraph && lFoundEnter != std::wstring::npos && 
-						(s_size > 1 || (s_size == 1 && m_arParagraphs[i].m_arSpans.size() > 1)))
-				{
-					split_paragraph = true;
-					// разбиваем параграф
-					CParagraph oNewPar = m_arParagraphs[i];
+                if( !split_paragraph && lFoundEnter != std::wstring::npos &&
+                        (s_size > 1 || (s_size == 1 && m_arParagraphs[i].m_arSpans.size() > 1)))
+                {
+                    split_paragraph = true;
+                    // разбиваем параграф
+                    CParagraph oNewPar = m_arParagraphs[i];
 
-					if (lCountCFs - (j + 1) > 0)
-					{
-						m_arParagraphs[i].m_arSpans.erase(m_arParagraphs[i].m_arSpans.begin() + (j + 1), m_arParagraphs[i].m_arSpans.begin() + lCountCFs );
-					}
-					
-					size_t lCountTx = m_arParagraphs[i].m_arSpans[j].m_strText.length();
-					m_arParagraphs[i].m_arSpans[j].m_strText.erase(lFoundEnter, lCountTx - lFoundEnter);
+                    if (lCountCFs - (j + 1) > 0)
+                    {
+                        m_arParagraphs[i].m_arSpans.erase(m_arParagraphs[i].m_arSpans.begin() + (j + 1), m_arParagraphs[i].m_arSpans.begin() + lCountCFs );
+                    }
 
-					if (j > 0)
-						oNewPar.m_arSpans.erase(oNewPar.m_arSpans.begin(), oNewPar.m_arSpans.begin() + j);
+                    size_t lCountTx = m_arParagraphs[i].m_arSpans[j].m_strText.length();
+                    m_arParagraphs[i].m_arSpans[j].m_strText.erase(lFoundEnter, lCountTx - lFoundEnter);
 
-					if (lFoundEnter == (lCountTx - 1))
-						oNewPar.m_arSpans.erase(oNewPar.m_arSpans.begin(), oNewPar.m_arSpans.begin() + 1);
-					else
-						oNewPar.m_arSpans[0].m_strText.erase(0, lFoundEnter + 1);
+                    if (j > 0)
+                        oNewPar.m_arSpans.erase(oNewPar.m_arSpans.begin(), oNewPar.m_arSpans.begin() + j);
 
-					if (0 != oNewPar.m_arSpans.size())
-						m_arParagraphs.insert(m_arParagraphs.begin() +i + 1, oNewPar);	
-				}
+                    if (lFoundEnter == (lCountTx - 1))
+                        oNewPar.m_arSpans.erase(oNewPar.m_arSpans.begin(), oNewPar.m_arSpans.begin() + 1);
+                    else
+                        oNewPar.m_arSpans[0].m_strText.erase(0, lFoundEnter + 1);
+
+                    if (0 != oNewPar.m_arSpans.size())
+                        m_arParagraphs.insert(m_arParagraphs.begin() +i + 1, oNewPar);
+                }
 
                 size_t lFoundBreak = m_arParagraphs[i].m_arSpans[j].m_strText.find((wchar_t)11);
-				if( lFoundBreak != std::wstring::npos)
-				{
-					// разбиваем span
-					CSpan next	= m_arParagraphs[i].m_arSpans[j];
-					
-					next.m_strText								= next.m_strText.substr(lFoundBreak + 1);
-					m_arParagraphs[i].m_arSpans[j].m_strText	= m_arParagraphs[i].m_arSpans[j].m_strText.substr(0, lFoundBreak - 1);
-		
-					if( lFoundBreak == 0)
-					{
-						m_arParagraphs[i].m_arSpans[j].m_strText.clear();
-						m_arParagraphs[i].m_arSpans[j].m_bBreak	= true;
+                if( lFoundBreak != std::wstring::npos)
+                {
+                    // разбиваем span
+                    CSpan next	= m_arParagraphs[i].m_arSpans[j];
 
-						m_arParagraphs[i].m_arSpans.insert( m_arParagraphs[i].m_arSpans.begin() + j + 1 , next);
-					}
-					else
-					{
-						CSpan br		= m_arParagraphs[i].m_arSpans[j];
-						br.m_strText.clear(); 
-						br.m_bBreak		= true;
-						
-						m_arParagraphs[i].m_arSpans.insert(	m_arParagraphs[i].m_arSpans.begin() + j	+ 1	, br);
-						m_arParagraphs[i].m_arSpans.insert( m_arParagraphs[i].m_arSpans.begin() + j + 2 , next);
-						j++;
-					}
-				}
-			}
-		}
-	}
+                    next.m_strText								= next.m_strText.substr(lFoundBreak + 1);
+                    m_arParagraphs[i].m_arSpans[j].m_strText	= m_arParagraphs[i].m_arSpans[j].m_strText.substr(0, lFoundBreak - 1);
 
-	void CTextAttributesEx::ApplyThemeStyle(CTheme* pTheme)
-	{
-		if (NULL != pTheme)
-		{
-			size_t nCountPFs = m_arParagraphs.size();
-			for (size_t nIndexP = 0; nIndexP < nCountPFs; ++nIndexP)
-			{
-				LONG lLevel = m_arParagraphs[nIndexP].m_lTextLevel;
-                
-				nullable_base<bool>		hasBullet;
+                    if( lFoundBreak == 0)
+                    {
+                        m_arParagraphs[i].m_arSpans[j].m_strText.clear();
+                        m_arParagraphs[i].m_arSpans[j].m_bBreak	= true;
 
-				nullable_base<CColor>	bulletColor;
-				nullable_base<WORD>		bulletFontRef;
-				nullable_base<WORD>		bulletSize;
-				nullable_base<WCHAR>	bulletChar;
+                        m_arParagraphs[i].m_arSpans.insert( m_arParagraphs[i].m_arSpans.begin() + j + 1 , next);
+                    }
+                    else
+                    {
+                        CSpan br		= m_arParagraphs[i].m_arSpans[j];
+                        br.m_strText.clear();
+                        br.m_bBreak		= true;
 
-				nullable_base<LONG>		indent;
-				nullable_base<LONG>		margin;
-				
-				nullable_base<LONG>		spaceBefore;
+                        m_arParagraphs[i].m_arSpans.insert(	m_arParagraphs[i].m_arSpans.begin() + j	+ 1	, br);
+                        m_arParagraphs[i].m_arSpans.insert( m_arParagraphs[i].m_arSpans.begin() + j + 2 , next);
+                        j++;
+                    }
+                }
+            }
+        }
+    }
 
-				if (-1 != m_lStyleThemeIndex && m_lStyleThemeIndex < 4 && pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel].is_init())
-				{
-					if (pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.hasBullet.is_init())
-					{
-						hasBullet = pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.hasBullet;
+    void CTextAttributesEx::ApplyThemeStyle(CTheme* pTheme)
+    {
+        if (NULL != pTheme)
+        {
+            size_t nCountPFs = m_arParagraphs.size();
+            for (size_t nIndexP = 0; nIndexP < nCountPFs; ++nIndexP)
+            {
+                LONG lLevel = m_arParagraphs[nIndexP].m_lTextLevel;
 
-						if (pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.bulletColor.is_init())
-							bulletColor = pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.bulletColor;
+                nullable_base<bool>		hasBullet;
 
-						if (pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.bulletChar.is_init() )
-						{
-							bulletFontRef = pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.bulletFontRef;
-							bulletChar = pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.bulletChar;
-						}
-						
-						if (pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.bulletSize.is_init())
-							bulletSize = pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.bulletSize;
-					}
+                nullable_base<CColor>	bulletColor;
+                nullable_base<WORD>		bulletFontRef;
+                nullable_base<WORD>		bulletSize;
+                nullable_base<WCHAR>	bulletChar;
 
-					if (pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.leftMargin.is_init())
-						margin = pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.leftMargin;
+                nullable_base<LONG>		indent;
+                nullable_base<LONG>		margin;
 
-					if (pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.indent.is_init())
-						indent = pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.indent;
-		
-					if (pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.spaceBefore.is_init())
-						spaceBefore = pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.spaceBefore;
-				}
-				if (m_oLayoutStyles.m_pLevels[lLevel].is_init())
-				{
-					if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.hasBullet.is_init())
-					{
-						hasBullet = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.hasBullet;
+                nullable_base<LONG>		spaceBefore;
 
-						if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletColor.is_init())
-							bulletColor = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletColor;
+                if (-1 != m_lStyleThemeIndex && m_lStyleThemeIndex < 4 && pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel].is_init())
+                {
+                    if (pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.hasBullet.is_init())
+                    {
+                        hasBullet = pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.hasBullet;
 
-						if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletSize.is_init())
-							bulletSize = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletSize;
+                        if (pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.bulletColor.is_init())
+                            bulletColor = pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.bulletColor;
 
-						if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletChar.is_init() )
-						{
-							bulletChar = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletChar;
-							bulletFontRef = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletFontRef;
-						}
-					}
+                        if (pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.bulletChar.is_init() )
+                        {
+                            bulletFontRef = pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.bulletFontRef;
+                            bulletChar = pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.bulletChar;
+                        }
 
-					if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.leftMargin.is_init())
-						margin = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.leftMargin;
+                        if (pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.bulletSize.is_init())
+                            bulletSize = pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.bulletSize;
+                    }
 
-					if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.indent.is_init())
-						indent = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.indent;
-				
-					if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.spaceBefore.is_init())
-						spaceBefore = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.spaceBefore;	
-				}
-				if (m_oStyles.m_pLevels[lLevel].is_init())
-				{
-					if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.hasBullet.is_init())
-					{
-						hasBullet = m_oStyles.m_pLevels[lLevel]->m_oPFRun.hasBullet;
+                    if (pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.leftMargin.is_init())
+                        margin = pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.leftMargin;
 
-						if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletColor.is_init())
-							bulletColor = m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletColor;
+                    if (pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.indent.is_init())
+                        indent = pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.indent;
 
-						if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletChar.is_init())
-						{
-							bulletFontRef = m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletFontRef;
-							bulletChar = m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletChar;
-						}
+                    if (pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.spaceBefore.is_init())
+                        spaceBefore = pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.spaceBefore;
+                }
+                if (m_oLayoutStyles.m_pLevels[lLevel].is_init())
+                {
+                    if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.hasBullet.is_init())
+                    {
+                        hasBullet = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.hasBullet;
 
-						if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletSize.is_init())
-							bulletSize = m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletSize;
-					}
-					
+                        if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletColor.is_init())
+                            bulletColor = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletColor;
 
-					if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.leftMargin.is_init())
-						margin = m_oStyles.m_pLevels[lLevel]->m_oPFRun.leftMargin;
+                        if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletSize.is_init())
+                            bulletSize = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletSize;
 
-					if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.indent.is_init())
-						indent = m_oStyles.m_pLevels[lLevel]->m_oPFRun.indent;
-					
-					if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.spaceBefore.is_init())
-						spaceBefore = m_oStyles.m_pLevels[lLevel]->m_oPFRun.spaceBefore;				
-				}
+                        if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletChar.is_init() )
+                        {
+                            bulletChar = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletChar;
+                            bulletFontRef = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletFontRef;
+                        }
+                    }
 
-				if (bulletChar.is_init() && !bulletFontRef.is_init())
-				{
-					//Demo-The-Winter-Olympics.ppt
-					//стоит ли брать с предыдущего уровня?
-				}
-				
-				if (!m_arParagraphs[nIndexP].m_oPFRun.hasBullet.is_init())
-				{
-					m_arParagraphs[nIndexP].m_oPFRun.hasBullet = hasBullet;
+                    if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.leftMargin.is_init())
+                        margin = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.leftMargin;
 
-					if (!m_arParagraphs[nIndexP].m_oPFRun.bulletColor.is_init())
-						m_arParagraphs[nIndexP].m_oPFRun.bulletColor = bulletColor;
+                    if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.indent.is_init())
+                        indent = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.indent;
 
-					if (!m_arParagraphs[nIndexP].m_oPFRun.bulletSize.is_init())
-						m_arParagraphs[nIndexP].m_oPFRun.bulletSize = bulletSize;
+                    if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.spaceBefore.is_init())
+                        spaceBefore = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.spaceBefore;
+                }
+                if (m_oStyles.m_pLevels[lLevel].is_init())
+                {
+                    if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.hasBullet.is_init())
+                    {
+                        hasBullet = m_oStyles.m_pLevels[lLevel]->m_oPFRun.hasBullet;
 
-					if (!m_arParagraphs[nIndexP].m_oPFRun.bulletChar.is_init())
-					{
-						m_arParagraphs[nIndexP].m_oPFRun.bulletChar = bulletChar;
-						m_arParagraphs[nIndexP].m_oPFRun.bulletFontRef = bulletFontRef;
-					}
-				}
+                        if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletColor.is_init())
+                            bulletColor = m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletColor;
 
-				if (!m_arParagraphs[nIndexP].m_oPFRun.leftMargin.is_init())
-					m_arParagraphs[nIndexP].m_oPFRun.leftMargin = margin;
+                        if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletChar.is_init())
+                        {
+                            bulletFontRef = m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletFontRef;
+                            bulletChar = m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletChar;
+                        }
 
-				if (!m_arParagraphs[nIndexP].m_oPFRun.indent.is_init())
-					m_arParagraphs[nIndexP].m_oPFRun.indent = indent;
+                        if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletSize.is_init())
+                            bulletSize = m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletSize;
+                    }
 
-				if (!m_arParagraphs[nIndexP].m_oPFRun.spaceBefore.is_init())
-					m_arParagraphs[nIndexP].m_oPFRun.spaceBefore = spaceBefore;
 
-				if (m_arParagraphs[nIndexP].m_oPFRun.bulletFontRef.is_init())
-				{
-					int ref = m_arParagraphs[nIndexP].m_oPFRun.bulletFontRef.get();
+                    if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.leftMargin.is_init())
+                        margin = m_oStyles.m_pLevels[lLevel]->m_oPFRun.leftMargin;
 
-					if (ref < (int)pTheme->m_arFonts.size())
-					{
-						m_arParagraphs[nIndexP].m_oPFRun.bulletFontProperties.reset();				
-						m_arParagraphs[nIndexP].m_oPFRun.bulletFontProperties = new CFontProperty(pTheme->m_arFonts[ref]);
-					}
-				}
+                    if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.indent.is_init())
+                        indent = m_oStyles.m_pLevels[lLevel]->m_oPFRun.indent;
 
-			}
-		}
+                    if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.spaceBefore.is_init())
+                        spaceBefore = m_oStyles.m_pLevels[lLevel]->m_oPFRun.spaceBefore;
+                }
 
-		size_t nCount = m_arParagraphs.size();
-		for (size_t i = 0; i < nCount; ++i)
-		{
-			m_arParagraphs[i].CheckErrors();
-		}
+                if (bulletChar.is_init() && !bulletFontRef.is_init())
+                {
+                    //Demo-The-Winter-Olympics.ppt
+                    //стоит ли брать с предыдущего уровня?
+                }
 
-		ApplyRuler(pTheme);		
-	}
-	void CTextAttributesEx::ApplyRuler(CTheme* pTheme)
-	{
-		if (m_oRuler.tabsStops.size() > 0 || m_oRuler.DefaultTabSize.is_init())//presentacio1.ppt слайд 2
-		{
-			for (long i = 0; i < 9 ;i++)
-			{
-				if (m_oStyles.m_pLevels[i].is_init() == false)
-				{
-					m_oStyles.m_pLevels[i] = pTheme->m_pStyles[0].m_pLevels[i];
-				}
-				
-				if (m_oStyles.m_pLevels[i].is_init() == false) continue;
+                if (!m_arParagraphs[nIndexP].m_oPFRun.hasBullet.is_init())
+                {
+                    m_arParagraphs[nIndexP].m_oPFRun.hasBullet = hasBullet;
 
-				if (m_oRuler.tabsStops.size() > 0)
-				{
-					m_oStyles.m_pLevels[i]->m_oPFRun.tabStops = m_oRuler.tabsStops;
-				}
+                    if (!m_arParagraphs[nIndexP].m_oPFRun.bulletColor.is_init())
+                        m_arParagraphs[nIndexP].m_oPFRun.bulletColor = bulletColor;
 
-				if (m_oRuler.DefaultTabSize.is_init())
-				{
-					m_oStyles.m_pLevels[i]->m_oPFRun.defaultTabSize = m_oRuler.DefaultTabSize;
-				}	
-			}
-		}
+                    if (!m_arParagraphs[nIndexP].m_oPFRun.bulletSize.is_init())
+                        m_arParagraphs[nIndexP].m_oPFRun.bulletSize = bulletSize;
 
-		size_t lCount = m_arParagraphs.size();
-		for (size_t i = 0; i < lCount; ++i)
-		{
-			CTextPFRun* pPar = &m_arParagraphs[i].m_oPFRun;
+                    if (!m_arParagraphs[nIndexP].m_oPFRun.bulletChar.is_init())
+                    {
+                        m_arParagraphs[nIndexP].m_oPFRun.bulletChar = bulletChar;
+                        m_arParagraphs[nIndexP].m_oPFRun.bulletFontRef = bulletFontRef;
+                    }
+                }
 
-			if (m_oRuler.tabsStops.size() > 0)
-			{
-				pPar->tabStops = m_oRuler.tabsStops;
+                if (!m_arParagraphs[nIndexP].m_oPFRun.leftMargin.is_init())
+                    m_arParagraphs[nIndexP].m_oPFRun.leftMargin = margin;
 
-				//if (pPar->defaultTabSize.is_init() == false)
-				//	pPar->defaultTabSize = m_oRuler.tabsStops[0];
-			}
+                if (!m_arParagraphs[nIndexP].m_oPFRun.indent.is_init())
+                    m_arParagraphs[nIndexP].m_oPFRun.indent = indent;
 
-			if (m_oRuler.DefaultTabSize.is_init())
-			{
-				pPar->defaultTabSize = m_oRuler.DefaultTabSize;
-			}
-			WORD lIndentLevel = (WORD)m_arParagraphs[i].m_lTextLevel;
+                if (!m_arParagraphs[nIndexP].m_oPFRun.spaceBefore.is_init())
+                    m_arParagraphs[nIndexP].m_oPFRun.spaceBefore = spaceBefore;
 
-			switch (lIndentLevel)
-			{
-			case 0:
-			{
-				if (m_oRuler.LeftMargin1.is_init()) 
-					pPar->leftMargin = (LONG)m_oRuler.LeftMargin1.get();
-				if (m_oRuler.Indent1.is_init()) 
-					pPar->indent = (LONG)m_oRuler.Indent1.get();
-				
-				if (pPar->indent.is_init() && pPar->leftMargin.is_init())
-					pPar->indent = pPar->indent.get() - pPar->leftMargin.get();
-				break;
-			}
-			case 1:
-			{
-				if (m_oRuler.LeftMargin2.is_init()) 
-					pPar->leftMargin = (LONG)m_oRuler.LeftMargin2.get();
-				if (m_oRuler.Indent2.is_init()) 
-					pPar->indent  = (LONG)m_oRuler.Indent2.get();
-				
-				if (pPar->indent.is_init() && pPar->leftMargin.is_init())
-					pPar->indent = pPar->indent.get() - pPar->leftMargin.get();
-				break;
-			}
-			case 2:
-			{
-				if (m_oRuler.LeftMargin3.is_init()) 
-					pPar->leftMargin = (LONG)m_oRuler.LeftMargin3.get();
-				if (m_oRuler.Indent3.is_init()) 
-					pPar->indent  = (LONG)m_oRuler.Indent3.get();
-				
-				if (pPar->indent.is_init() && pPar->leftMargin.is_init())
-					pPar->indent = pPar->indent.get() - pPar->leftMargin.get();
-				break;
-			}
-			case 3:
-			{
-				if (m_oRuler.LeftMargin4.is_init()) 
-					pPar->leftMargin = (LONG)m_oRuler.LeftMargin4.get();
-				if (m_oRuler.Indent4.is_init()) 
-					pPar->indent  = (LONG)m_oRuler.Indent4.get();
-				
-				if (pPar->indent.is_init() && pPar->leftMargin.is_init())
-					pPar->indent = pPar->indent.get() - pPar->leftMargin.get();
-				break;
-			}
-			case 4:
-			{
-				if (m_oRuler.LeftMargin5.is_init()) 
-					pPar->leftMargin = (LONG)m_oRuler.LeftMargin5.get();
-				if (m_oRuler.Indent5.is_init()) 
-					pPar->indent  = (LONG)m_oRuler.Indent5.get();
-				
-				if (pPar->indent.is_init() && pPar->leftMargin.is_init())
-					pPar->indent = pPar->indent.get() - pPar->leftMargin.get();
-				break;
-			}
-			default:
-				break;
-			}
-		}
-	}
+                if (m_arParagraphs[nIndexP].m_oPFRun.bulletFontRef.is_init())
+                {
+                    int ref = m_arParagraphs[nIndexP].m_oPFRun.bulletFontRef.get();
 
-	void CTextAttributesEx::ApplyRuler	(CTextPFRun* pPar, WORD lIndentLevel)
-	{
-		switch (lIndentLevel)
-		{
-		case 0:
-		{
-			if (m_oRuler.LeftMargin1.is_init()) 
-				pPar->leftMargin = (LONG)m_oRuler.LeftMargin1.get();
-			if (m_oRuler.Indent1.is_init()) 
-				pPar->indent = (LONG)m_oRuler.Indent1.get();
-			
-			if (pPar->indent.is_init() && pPar->leftMargin.get())
-				pPar->indent.get() -= pPar->leftMargin.get();
-			break;
-		}
-		case 1:
-		{
-			if (m_oRuler.LeftMargin2.is_init()) 
-				pPar->leftMargin = (LONG)m_oRuler.LeftMargin2.get();
-			if (m_oRuler.Indent2.is_init()) 
-				pPar->indent  = (LONG)m_oRuler.Indent2.get();
-			
-			if (pPar->indent.is_init() && pPar->leftMargin.get())
-				pPar->indent.get() -= pPar->leftMargin.get();
-			break;
-		}
-		case 2:
-		{
-			if (m_oRuler.LeftMargin3.is_init()) 
-				pPar->leftMargin = (LONG)m_oRuler.LeftMargin3.get();
-			if (m_oRuler.Indent3.is_init()) 
-				pPar->indent  = (LONG)m_oRuler.Indent3.get();
-			
-			if (pPar->indent.is_init() && pPar->leftMargin.get())
-				pPar->indent.get() -= pPar->leftMargin.get();
-			break;
-		}
-		case 3:
-		{
-			if (m_oRuler.LeftMargin4.is_init()) 
-				pPar->leftMargin = (LONG)m_oRuler.LeftMargin4.get();
-			if (m_oRuler.Indent4.is_init()) 
-				pPar->indent  = (LONG)m_oRuler.Indent4.get();
-			
-			if (pPar->indent.is_init() && pPar->leftMargin.get())
-				pPar->indent.get() -= pPar->leftMargin.get();
-			break;
-		}
-		case 4:
-		{
-			if (m_oRuler.LeftMargin5.is_init()) 
-				pPar->leftMargin = (LONG)m_oRuler.LeftMargin5.get();
-			if (m_oRuler.Indent5.is_init()) 
-				pPar->indent  = (LONG)m_oRuler.Indent5.get();
-			
-			if (pPar->indent.is_init() && pPar->leftMargin.get())
-				pPar->indent.get() -= pPar->leftMargin.get();
-			break;
-		}
-		default:
-			break;
-		};
-	}
+                    if (ref < (int)pTheme->m_arFonts.size())
+                    {
+                        m_arParagraphs[nIndexP].m_oPFRun.bulletFontProperties.reset();
+                        m_arParagraphs[nIndexP].m_oPFRun.bulletFontProperties = new CFontProperty(pTheme->m_arFonts[ref]);
+                    }
+                    if (ref < (int)pTheme->m_arBullet.size())
+                    {
+                        m_arParagraphs[nIndexP].m_oPFRun.bulletAutoNum.reset();
+                        m_arParagraphs[nIndexP].m_oPFRun.bulletAutoNum = new CBulletAutoNum(pTheme->m_arBullet[ref]);
+                    }
+                }
+
+            }
+        }
+
+        size_t nCount = m_arParagraphs.size();
+        for (size_t i = 0; i < nCount; ++i)
+        {
+            m_arParagraphs[i].CheckErrors();
+        }
+
+        ApplyRuler(pTheme);
+    }
+    void CTextAttributesEx::ApplyRuler(CTheme* pTheme)
+    {
+        if (m_oRuler.tabsStops.size() > 0 || m_oRuler.DefaultTabSize.is_init())//presentacio1.ppt слайд 2
+        {
+            for (long i = 0; i < 9 ;i++)
+            {
+                if (m_oStyles.m_pLevels[i].is_init() == false)
+                {
+                    m_oStyles.m_pLevels[i] = pTheme->m_pStyles[0].m_pLevels[i];
+                }
+
+                if (m_oStyles.m_pLevels[i].is_init() == false) continue;
+
+                if (m_oRuler.tabsStops.size() > 0)
+                {
+                    m_oStyles.m_pLevels[i]->m_oPFRun.tabStops = m_oRuler.tabsStops;
+                }
+
+                if (m_oRuler.DefaultTabSize.is_init())
+                {
+                    m_oStyles.m_pLevels[i]->m_oPFRun.defaultTabSize = m_oRuler.DefaultTabSize;
+                }
+            }
+        }
+
+        size_t lCount = m_arParagraphs.size();
+        for (size_t i = 0; i < lCount; ++i)
+        {
+            CTextPFRun* pPar = &m_arParagraphs[i].m_oPFRun;
+
+            if (m_oRuler.tabsStops.size() > 0)
+            {
+                pPar->tabStops = m_oRuler.tabsStops;
+
+                //if (pPar->defaultTabSize.is_init() == false)
+                //	pPar->defaultTabSize = m_oRuler.tabsStops[0];
+            }
+
+            if (m_oRuler.DefaultTabSize.is_init())
+            {
+                pPar->defaultTabSize = m_oRuler.DefaultTabSize;
+            }
+            WORD lIndentLevel = (WORD)m_arParagraphs[i].m_lTextLevel;
+
+            switch (lIndentLevel)
+            {
+            case 0:
+            {
+                if (m_oRuler.LeftMargin1.is_init())
+                    pPar->leftMargin = (LONG)m_oRuler.LeftMargin1.get();
+                if (m_oRuler.Indent1.is_init())
+                    pPar->indent = (LONG)m_oRuler.Indent1.get();
+
+                if (pPar->indent.is_init() && pPar->leftMargin.is_init())
+                    pPar->indent = pPar->indent.get() - pPar->leftMargin.get();
+                break;
+            }
+            case 1:
+            {
+                if (m_oRuler.LeftMargin2.is_init())
+                    pPar->leftMargin = (LONG)m_oRuler.LeftMargin2.get();
+                if (m_oRuler.Indent2.is_init())
+                    pPar->indent  = (LONG)m_oRuler.Indent2.get();
+
+                if (pPar->indent.is_init() && pPar->leftMargin.is_init())
+                    pPar->indent = pPar->indent.get() - pPar->leftMargin.get();
+                break;
+            }
+            case 2:
+            {
+                if (m_oRuler.LeftMargin3.is_init())
+                    pPar->leftMargin = (LONG)m_oRuler.LeftMargin3.get();
+                if (m_oRuler.Indent3.is_init())
+                    pPar->indent  = (LONG)m_oRuler.Indent3.get();
+
+                if (pPar->indent.is_init() && pPar->leftMargin.is_init())
+                    pPar->indent = pPar->indent.get() - pPar->leftMargin.get();
+                break;
+            }
+            case 3:
+            {
+                if (m_oRuler.LeftMargin4.is_init())
+                    pPar->leftMargin = (LONG)m_oRuler.LeftMargin4.get();
+                if (m_oRuler.Indent4.is_init())
+                    pPar->indent  = (LONG)m_oRuler.Indent4.get();
+
+                if (pPar->indent.is_init() && pPar->leftMargin.is_init())
+                    pPar->indent = pPar->indent.get() - pPar->leftMargin.get();
+                break;
+            }
+            case 4:
+            {
+                if (m_oRuler.LeftMargin5.is_init())
+                    pPar->leftMargin = (LONG)m_oRuler.LeftMargin5.get();
+                if (m_oRuler.Indent5.is_init())
+                    pPar->indent  = (LONG)m_oRuler.Indent5.get();
+
+                if (pPar->indent.is_init() && pPar->leftMargin.is_init())
+                    pPar->indent = pPar->indent.get() - pPar->leftMargin.get();
+                break;
+            }
+            default:
+                break;
+            }
+        }
+    }
+
+    void CTextAttributesEx::ApplyRuler	(CTextPFRun* pPar, WORD lIndentLevel)
+    {
+        switch (lIndentLevel)
+        {
+        case 0:
+        {
+            if (m_oRuler.LeftMargin1.is_init())
+                pPar->leftMargin = (LONG)m_oRuler.LeftMargin1.get();
+            if (m_oRuler.Indent1.is_init())
+                pPar->indent = (LONG)m_oRuler.Indent1.get();
+
+            if (pPar->indent.is_init() && pPar->leftMargin.get())
+                pPar->indent.get() -= pPar->leftMargin.get();
+            break;
+        }
+        case 1:
+        {
+            if (m_oRuler.LeftMargin2.is_init())
+                pPar->leftMargin = (LONG)m_oRuler.LeftMargin2.get();
+            if (m_oRuler.Indent2.is_init())
+                pPar->indent  = (LONG)m_oRuler.Indent2.get();
+
+            if (pPar->indent.is_init() && pPar->leftMargin.get())
+                pPar->indent.get() -= pPar->leftMargin.get();
+            break;
+        }
+        case 2:
+        {
+            if (m_oRuler.LeftMargin3.is_init())
+                pPar->leftMargin = (LONG)m_oRuler.LeftMargin3.get();
+            if (m_oRuler.Indent3.is_init())
+                pPar->indent  = (LONG)m_oRuler.Indent3.get();
+
+            if (pPar->indent.is_init() && pPar->leftMargin.get())
+                pPar->indent.get() -= pPar->leftMargin.get();
+            break;
+        }
+        case 3:
+        {
+            if (m_oRuler.LeftMargin4.is_init())
+                pPar->leftMargin = (LONG)m_oRuler.LeftMargin4.get();
+            if (m_oRuler.Indent4.is_init())
+                pPar->indent  = (LONG)m_oRuler.Indent4.get();
+
+            if (pPar->indent.is_init() && pPar->leftMargin.get())
+                pPar->indent.get() -= pPar->leftMargin.get();
+            break;
+        }
+        case 4:
+        {
+            if (m_oRuler.LeftMargin5.is_init())
+                pPar->leftMargin = (LONG)m_oRuler.LeftMargin5.get();
+            if (m_oRuler.Indent5.is_init())
+                pPar->indent  = (LONG)m_oRuler.Indent5.get();
+
+            if (pPar->indent.is_init() && pPar->leftMargin.get())
+                pPar->indent.get() -= pPar->leftMargin.get();
+            break;
+        }
+        default:
+            break;
+        };
+    }
 
 }
-

@@ -485,6 +485,7 @@ void CPPTUserInfo::ReadExtenalObjects(std::wstring strFolderMem)
 
 		m_arrFonts.push_back(oFont);
 	}
+
 	m_oDocument.GetRecordsByType(&m_arrBlipStore, true, true);
 	if (0 < m_arrBlipStore.size())
 	{
@@ -1051,9 +1052,33 @@ void CPPTUserInfo::LoadGroupShapeContainer(CRecordGroupShapeContainer* pGroupCon
 	if (!pGroupContainer) return;
 	if (pGroupContainer->m_arRecords.empty()) return;
 
+
     std::vector<CRecordOfficeArtClientData*> arrOfficeArtClientData;
     pGroupContainer->GetRecordsByType(&arrOfficeArtClientData, true);
 
+    for (auto childOfficeArtClientData : arrOfficeArtClientData)
+    {
+        for (auto prog : childOfficeArtClientData->m_rgShapeClientRoundtripData)
+        {
+            if (prog->m_pTagName->m_strText == ___PPT9)
+            {
+                auto styleTextPropAtom = dynamic_cast<CRecordPP9ShapeBinaryTagExtension*>(prog->m_pTagContainer.GetPointer())->m_styleTextPropAtom;
+                for (auto prop9 : styleTextPropAtom.m_rgStyleTextProp9)
+                {
+                    if (prop9->m_pf9.m_optBulletAutoNumberScheme.is_init())
+                    {
+                        CBulletAutoNum bullet;
+
+                        bullet.type = prop9->m_pf9.m_optBulletAutoNumberScheme->SchemeToStr();
+                        bullet.startAt = prop9->m_pf9.m_optBulletAutoNumberScheme->m_nStartNum;
+                        m_arrBullet.push_back(bullet);
+                    }
+                }
+            }
+
+        }
+    }
+    pTheme->m_arBullet = m_arrBullet;
 
 	CRecordShapeContainer* pShapeGroup = dynamic_cast<CRecordShapeContainer*>(pGroupContainer->m_arRecords[0]);
 	
@@ -1101,35 +1126,35 @@ void CPPTUserInfo::LoadGroupShapeContainer(CRecordGroupShapeContainer* pGroupCon
                     {
                         pShape->SetupProperties(pSlide, pTheme, pLayout);
 
-                        if (!arrOfficeArtClientData.empty() && pSlide)
-                        {
-                            std::vector<STextPFException9*> arrPFE9;
-                            for (auto prog : arrOfficeArtClientData[0]->m_rgShapeClientRoundtripData)
-                            {
-                                if (prog->m_pTagName->m_strText == ___PPT9){
-                                    auto styleTextPropAtom = dynamic_cast<CRecordPP9ShapeBinaryTagExtension*>(prog->m_pTagContainer.GetPointer())->m_styleTextPropAtom;
-                                    for (auto pTextProp9 : styleTextPropAtom.m_rgStyleTextProp9)
-                                        arrPFE9.push_back(&(pTextProp9->m_pf9));
-                                }
-                            }
-                            if (!arrPFE9.empty()){
-                                bool hasSheme = arrPFE9[0]->m_masks.m_bulletHasScheme;
-                                unsigned index = 0;
-                                for (auto& para : pShape->m_pShape->m_oText.m_arParagraphs)
-                                {
-                                    if (hasSheme)
-                                    {
-                                        para.m_oPFRun.bulletAutoNum = new CBulletAutoNum;
-                                        para.m_oPFRun.bulletAutoNum->type =
-                                                TextAutoNumberSchemeEnumTOTextAutonumberScheme(arrPFE9[index]->m_optBulletAutoNumberScheme.get().m_eScheme);
-                                    }/*if (){
-                                        hasSheme = hasSheme ? false : true;
-                                        index++;
-                                    }*/
-                                }
-                            }
+//                        if (!arrOfficeArtClientData.empty() && pSlide)
+//                        {
+//                            std::vector<STextPFException9*> arrPFE9;
+//                            for (auto prog : arrOfficeArtClientData[0]->m_rgShapeClientRoundtripData)
+//                            {
+//                                if (prog->m_pTagName->m_strText == ___PPT9){
+//                                    auto styleTextPropAtom = dynamic_cast<CRecordPP9ShapeBinaryTagExtension*>(prog->m_pTagContainer.GetPointer())->m_styleTextPropAtom;
+//                                    for (auto pTextProp9 : styleTextPropAtom.m_rgStyleTextProp9)
+//                                        arrPFE9.push_back(&(pTextProp9->m_pf9));
+//                                }
+//                            }
+//                            if (!arrPFE9.empty()){
+//                                bool bulletSheme = arrPFE9[0]->m_masks.m_bulletScheme;
+//                                unsigned index = 0;
+//                                for (auto& para : pShape->m_pShape->m_oText.m_arParagraphs)
+//                                {
+//                                    if (bulletSheme)
+//                                    {
+//                                        para.m_oPFRun.bulletAutoNum = new CBulletAutoNum;
+//                                        para.m_oPFRun.bulletAutoNum->type =
+//                                                TextAutoNumberSchemeEnumTOTextAutonumberScheme(arrPFE9[index]->m_optBulletAutoNumberScheme.get().m_eScheme);
+//                                    }/*if (){
+//                                        hasSheme = hasSheme ? false : true;
+//                                        index++;
+//                                    }*/
+//                                }
+//                            }
 
-                        }
+//                        }
                     }
 
 					if ( pElement->m_lPlaceholderType > 0)

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -56,6 +56,7 @@ namespace PPT_FORMAT
 
 		std::vector<CColor>				m_arColorScheme;
 		std::vector<CFontProperty>		m_arFonts;
+        std::vector<CBulletAutoNum>     m_arBullet;
 		std::vector<CBrush>				m_arBrushes;
 		std::vector<CPen>				m_arPens;
 

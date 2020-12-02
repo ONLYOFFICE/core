@@ -82,6 +82,7 @@ public:
 
 	std::vector<CRecordBlipStoreContainer*>			m_arrBlipStore;
 	std::vector<CFontProperty>						m_arrFonts;
+    std::vector<CBulletAutoNum>						m_arrBullet;
 
 	PPT_FORMAT::CTextStyles							m_oDefaultTextStyle;
 

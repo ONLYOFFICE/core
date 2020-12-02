@@ -47,7 +47,7 @@ bool CJSValueJSCTemplate<T>::isObject()
 template<typename T>
 bool CJSValueJSCTemplate<T>::isFunction()
 {
-    return true; // TODO!!!
+    return isObject();
 }
 template<typename T>
 bool CJSValueJSCTemplate<T>::isEmpty()
@@ -271,8 +271,17 @@ namespace NSJSBase
 
     CJSValue* CJSContext::JSON_Parse(const char *sTmp)
     {
-        // TODO:
-        return CJSContext::createUndefined();
+        if (!sTmp)
+            return CJSContext::createUndefined();
+
+        NSString* sValue = [[NSString alloc] initWithUTF8String:sTmp];
+        JSStringRef sValueRef = JSStringCreateWithCFString((__bridge CFStringRef)sValue);
+        JSValueRef oValueJSRef = JSValueMakeFromJSONString(m_internal->context.JSGlobalContextRef, sValueRef);
+
+        CJSValueJSC* _value = new CJSValueJSC();
+        _value->value = [JSValue valueWithJSValueRef:oValueJSRef inContext: m_internal->context];
+        _value->context = m_internal->context;
+        return _value;
     }
 }
 

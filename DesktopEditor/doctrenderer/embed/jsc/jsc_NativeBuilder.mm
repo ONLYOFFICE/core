@@ -110,7 +110,3 @@ void builder_CreateNative(const std::string& name, JSSmart<CJSContext> context, 
         return p;
     };
 }
-void builder_CreateNativeTmpDoc(const std::string& name, JSSmart<CJSContext> context, NSDoctRenderer::CDocBuilder* builder, const std::wstring& sFile, const std::wstring& sParams)
-{
-}
-

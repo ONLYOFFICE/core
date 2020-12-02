@@ -20,7 +20,7 @@ ADD_DEPENDENCY(graphics, kernel, UnicodeConverter)
 
 #CONFIG += build_xp
 
-#core_mac:CONFIG += use_javascript_core
+core_mac:CONFIG += use_javascript_core
 
 core_ios {
     CONFIG += doct_renderer_empty
@@ -88,6 +88,8 @@ SOURCES += \
         embed/jsc/jsc_MemoryStream.mm \
         embed/jsc/jsc_NativeControl.mm \
         embed/jsc/jsc_NativeBuilder.mm
+
+    QMAKE_OBJECTIVE_CFLAGS += -fobjc-arc -fobjc-weak
 
     LIBS += -framework Foundation
     LIBS += -framework JavaScriptCore

@@ -63,7 +63,6 @@ SOURCES += \
     embed/MemoryStreamEmbed.cpp \
     embed/NativeControlEmbed.cpp \
     embed/NativeBuilderEmbed.cpp
-}
 
 !use_javascript_core {
     HEADERS += js_internal/v8/v8_base.h
@@ -94,7 +93,7 @@ SOURCES += \
     LIBS += -framework Foundation
     LIBS += -framework JavaScriptCore
 }
-
+}
 
 # downloader
 DEFINES += BUIDLER_OPEN_DOWNLOAD_ENABLED

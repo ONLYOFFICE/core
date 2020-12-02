@@ -16,47 +16,20 @@ namespace NSCSS
 {
     typedef std::map<std::wstring, std::wstring>::const_iterator styles_iterator;
 
-    CCompiledStyle::CCompiledStyle() : m_pFont(NULL), m_pMargin(NULL), m_pBackgroundColor(NULL),
-        m_pText(NULL), m_pBorder(NULL)
-    {
-        std::wcout << L"Init" << std::endl;
-    }
+    CCompiledStyle::CCompiledStyle() : m_nDpi(96), m_UnitMeasure(Default){}
 
     CCompiledStyle::CCompiledStyle(const std::map<std::wstring, std::wstring>& mStyle) :
-        m_mStyle(mStyle){
-        std::wcout << L"MAP INIT" << std::endl;
-
-    }
+        m_mStyle(mStyle){}
 
     CCompiledStyle::CCompiledStyle(const CCompiledStyle& oStyle) :
         m_mStyle(oStyle.m_mStyle), m_arParentsStyles(oStyle.m_arParentsStyles), m_sId(oStyle.m_sId),
-        m_pFont(oStyle.m_pFont), m_pMargin(oStyle.m_pMargin), m_pBackgroundColor(oStyle.m_pBackgroundColor),
-        m_pText(oStyle.m_pText), m_pBorder(oStyle.m_pBorder){
-        std::wcout << L"COPY" << std::endl;
-
-    }
+        m_pFont(oStyle.m_pFont), m_pMargin(oStyle.m_pMargin), m_pBackground(oStyle.m_pBackground),
+        m_pText(oStyle.m_pText), m_pBorder(oStyle.m_pBorder){}
 
     CCompiledStyle::~CCompiledStyle()
     {
         m_mStyle.         clear();
         m_arParentsStyles.clear();
-
-        if (NULL != m_pFont)
-            delete m_pFont;
-
-        if (NULL != m_pMargin)
-        {
-            delete m_pMargin;
-            m_pMargin = NULL;
-        }
-        if (NULL != m_pBackgroundColor)
-            delete m_pBackgroundColor;
-
-        if (NULL != m_pText)
-            delete m_pText;
-
-        if (NULL != m_pBorder)
-            delete m_pBorder;
     }
 
 
@@ -78,7 +51,7 @@ namespace NSCSS
         m_sId    = oElement.m_sId;
         m_arParentsStyles = oElement.m_arParentsStyles;
 
-        m_pBackgroundColor = oElement.m_pBackgroundColor;
+        m_pBackground = oElement.m_pBackground;
         m_pBorder = oElement.m_pBorder;
         m_pFont = oElement.m_pFont;
         m_pMargin = oElement.m_pMargin;
@@ -101,7 +74,12 @@ namespace NSCSS
     std::wstring CCompiledStyle::GetStyleW() const
     {
         return std::accumulate(m_mStyle.begin(), m_mStyle.end(), std::wstring(),
-            [] (std::wstring& sRes, const std::map<std::wstring, std::wstring>::value_type& oIter) { return sRes += oIter.first + L":" + oIter.second + L";"; });
+                               [] (std::wstring& sRes, const std::map<std::wstring, std::wstring>::value_type& oIter) { return sRes += oIter.first + L":" + oIter.second + L";"; });
+    }
+
+    void CCompiledStyle::SetDpi(const unsigned short &uiDpi)
+    {
+        m_nDpi = uiDpi;
     }
 
     std::map<std::wstring, std::wstring>* CCompiledStyle::GetStyleMap()
@@ -159,23 +137,246 @@ namespace NSCSS
 
     void CCompiledStyle::AddPropSel(const std::wstring& sProperty, const std::wstring& sValue, const bool& bHardMode)
     {
-        if (m_mStyle[sProperty].find(L'!') != std::wstring::npos)
-            return;
-
-        if (!bHardMode)
-            m_mStyle.emplace(sProperty, sValue);
-        else
-            m_mStyle[sProperty] = sValue;
+        AddStyle({{sProperty, sValue}}, bHardMode);
     }
 
     void CCompiledStyle::AddStyle(const std::map<std::wstring, std::wstring>& mStyle, const bool& bHardMode)
     {
         for (std::pair<std::wstring, std::wstring> pPropertie : mStyle)
         {
-            if (m_mStyle[pPropertie.first].empty() || bHardMode)
-                m_mStyle[pPropertie.first] = pPropertie.second;
-            else if (!bHardMode || m_mStyle[pPropertie.first].find(L'!') != std::wstring::npos)
-                continue;
+            m_mStyle[pPropertie.first] = pPropertie.second;
+            SWITCH(pPropertie.first)
+            {
+                //FONT
+                CASE(L"font"):
+                {
+                    break;
+                }
+                CASE(L"font-size"):
+                {
+                    m_pFont.fSize = wcstof(pPropertie.second.c_str(), NULL);
+                    break;
+                }
+                CASE(L"font-size-adjust"):
+                {
+                    break;
+                }
+                CASE(L"font-stretch"):
+                {
+                    break;
+                }
+                CASE(L"font-style"):
+                {
+                    break;
+                }
+                CASE(L"font-variant"):
+                {
+                    break;
+                }
+                CASE(L"font-weight"):
+                {
+                    if (pPropertie.second == L"bold" || pPropertie.second == L"bolder" ||
+                        wcstof(pPropertie.second.c_str(), NULL) > 600.0f)
+                        m_pFont.bWeight = true;
+                    else
+                        m_pFont.bWeight = false;
+                    break;
+                }
+                //MARGIN
+                CASE(L"margin"):
+                {
+                    const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                        m_pMargin.AddMargin(sValue);
+                    break;
+                }
+                CASE(L"margin-top"):
+                {
+                    const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                        m_pMargin.fTopSide += wcstof(sValue.c_str(), NULL);
+                    break;
+                }
+                CASE(L"margin-right"):
+                CASE(L"margin-block-end"):
+                {
+                    const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                        m_pMargin.fRightSide += wcstof(sValue.c_str(), NULL);
+                    break;
+                }
+                CASE(L"margin-bottom"):
+                {
+                    const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                        m_pMargin.fBottomSide += wcstof(sValue.c_str(), NULL);
+                    break;
+                }
+                CASE(L"margin-left"):
+                CASE(L"margin-block-start"):
+                {
+                    const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                        m_pMargin.fLeftSide += wcstof(sValue.c_str(), NULL);
+                    break;
+                }
+                // TEXT
+                CASE(L"text-align"):
+                {
+                    if (pPropertie.second == L"center")
+                        m_pText.enAlign = NSConstValues::NSCssProperties::TextAlign::center;
+                    else if(pPropertie.second == L"justify")
+                        m_pText.enAlign = NSConstValues::NSCssProperties::TextAlign::justify;
+                    else if(pPropertie.second == L"left" || pPropertie.second == L"start")
+                        m_pText.enAlign = NSConstValues::NSCssProperties::TextAlign::left;
+                    else if(pPropertie.second == L"right" || pPropertie.second == L"end")
+                        m_pText.enAlign = NSConstValues::NSCssProperties::TextAlign::right;
+                    break;
+                }
+                CASE(L"text-indent"):
+                {
+                    const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                        m_pText.fIndent = wcstof(sValue.c_str(), NULL);
+                    break;
+                }
+                CASE(L"text-decoration"):
+                {
+                    if (pPropertie.second == L"underline")
+                        m_pText.enDecoration = NSConstValues::NSCssProperties::TextDecoration::underline;
+                    break;
+                }
+                //BORDER
+                CASE(L"border"):
+                CASE(L"mso-border-alt"):
+                {
+                    const NSConstValues::NSCssProperties::BorderSide oBorderSide = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
+                    if (oBorderSide.fWidth != 0)
+                    {
+                        m_pBorder.stTop     = oBorderSide;
+                        m_pBorder.stRight   = oBorderSide;
+                        m_pBorder.stBottom  = oBorderSide;
+                        m_pBorder.stLeft    = oBorderSide;
+                    }
+                    break;
+                }
+                CASE(L"border-width"):
+                {
+                    const float fValue = wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL);
+                    m_pBorder.SetWidth(fValue);
+                    break;
+                }
+                CASE(L"border-style"):
+                {
+                    m_pBorder.SetStyle(pPropertie.second);
+                    break;
+                }
+                CASE(L"border-color"):
+                {
+                    m_pBorder.SetColor(pPropertie.second);
+                    break;
+                }
+                //BORDER TOP
+                CASE(L"border-top"):
+                {
+                    m_pBorder.stTop = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
+                    break;
+                }
+                CASE(L"border-top-width"):
+                {
+                    m_pBorder.stTop.fWidth = wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL);
+                    break;
+                }
+                CASE(L"border-top-style"):
+                {
+                    m_pBorder.stTop.SetStyle(pPropertie.second);
+                    break;
+                }
+                CASE(L"border-top-color"):
+                {
+                    m_pBorder.stTop.SetColor(pPropertie.second);
+                    break;
+                }
+                //BORDER RIGHT
+                CASE(L"border-right"):
+                {
+                    m_pBorder.stRight = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
+                    break;
+                }
+                CASE(L"border-right-width"):
+                {
+                    m_pBorder.stRight.fWidth = wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL);
+                    break;
+                }
+                CASE(L"border-right-style"):
+                {
+                    m_pBorder.stRight.SetStyle(pPropertie.second);
+                    break;
+                }
+                CASE(L"border-right-color"):
+                {
+                    m_pBorder.stRight.SetColor(pPropertie.second);
+                    break;
+                }
+                //BORDER bottom
+                CASE(L"border-bottom"):
+                {
+                    m_pBorder.stBottom = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
+                    break;
+                }
+                CASE(L"border-bottom-width"):
+                {
+                    m_pBorder.stBottom.fWidth = wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL);
+                    break;
+                }
+                CASE(L"border-bottom-style"):
+                {
+                    m_pBorder.stBottom.SetStyle(pPropertie.second);
+                    break;
+                }
+                CASE(L"border-bottom-color"):
+                {
+                    m_pBorder.stBottom.SetColor(pPropertie.second);
+                    break;
+                }
+                //BORDER LEFT
+                CASE(L"border-left"):
+                {
+                    m_pBorder.stLeft = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
+                    break;
+                }
+                CASE(L"border-left-width"):
+                {
+                    m_pBorder.stLeft.fWidth = wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL);
+                    break;
+                }
+                CASE(L"border-left-style"):
+                {
+                    m_pBorder.stLeft.SetStyle(pPropertie.second);
+                    break;
+                }
+                CASE(L"border-left-color"):
+                {
+                    m_pBorder.stLeft.SetColor(pPropertie.second);
+                    break;
+                }
+                // OTHER
+                CASE(L"line-height"):
+                {
+                    m_pFont.fLineHeight = wcstof(ConvertUnitMeasure(pPropertie.second, m_pFont.fLineHeight).c_str(), NULL);
+                    break;
+                }
+                CASE(L"color"):
+                {
+                    m_pText.SetColor(pPropertie.second);
+                    break;
+                }
+                CASE(L"background-color"):
+                {
+                    m_pBackground.SetColor(pPropertie.second);
+                    break;
+                }
+            }
         }
     }
 
@@ -535,10 +736,11 @@ namespace NSCSS
 
         std::vector<std::wstring> CCompiledStyle::GetMargins() const
         {
-            if (NULL != m_pMargin)
+            if (m_pMargin.fTopSide != 0 || m_pMargin.fRightSide != 0 ||
+                m_pMargin.fBottomSide != 0 || m_pMargin.fLeftSide != 0 )
             {
                 std::wcout << L"_____________________________" << std::endl;
-                return {std::to_wstring(m_pMargin->fTopSide), std::to_wstring(m_pMargin->fRightSide), std::to_wstring(m_pMargin->fBottomSide), std::to_wstring(m_pMargin->fRightSide)};
+                return {std::to_wstring(m_pMargin.fTopSide), std::to_wstring(m_pMargin.fRightSide), std::to_wstring(m_pMargin.fBottomSide), std::to_wstring(m_pMargin.fLeftSide)};
             }
             styles_iterator oMargin = m_mStyle.find(L"margin");
 
@@ -1058,71 +1260,71 @@ namespace NSCSS
         {
             styles_iterator oBackgroundColor = m_mStyle.find(L"background-color");
 
-            if (oBackgroundColor != m_mStyle.end())
-            {
-                std::wstring sColor = oBackgroundColor->second;
+//            if (oBackgroundColor != m_mStyle.end())
+//            {
+//                std::wstring sColor = oBackgroundColor->second;
 
-                if (sColor[0] == L'#')
-                {
-                    if (sColor.length() == 7)
-                        return sColor.substr(1, 7);
-                    else if (sColor.length() == 4)
-                    {
-                        std::wstring sRetColor;
-                        sRetColor += sColor[1];
-                        sRetColor += sColor[1];
-                        sRetColor += sColor[2];
-                        sRetColor += sColor[2];
-                        sRetColor += sColor[3];
-                        sRetColor += sColor[3];
-                        return sRetColor;
-                    }
-                    else
-                        return L"auto";
-                }
+//                if (sColor[0] == L'#')
+//                {
+//                    if (sColor.length() == 7)
+//                        return sColor.substr(1, 7);
+//                    else if (sColor.length() == 4)
+//                    {
+//                        std::wstring sRetColor;
+//                        sRetColor += sColor[1];
+//                        sRetColor += sColor[1];
+//                        sRetColor += sColor[2];
+//                        sRetColor += sColor[2];
+//                        sRetColor += sColor[3];
+//                        sRetColor += sColor[3];
+//                        return sRetColor;
+//                    }
+//                    else
+//                        return L"auto";
+//                }
 
-                std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
+//                std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
 
-                styles_iterator oHEX = NS_CONST_VALUES::mColors.find(sColor);
+//                styles_iterator oHEX = NSConstValues::mColors.find(sColor);
 
-                if (oHEX != NS_CONST_VALUES::mColors.end())
-                    return oHEX->second;
-            }
-            const std::wstring& sBackground = GetBackground();
+//                if (oHEX != NSConstValues::mColors.end())
+//                    return oHEX->second;
+//            }
+//            const std::wstring& sBackground = GetBackground();
 
-            if (sBackground.empty())
-                return std::wstring();
+//            if (sBackground.empty())
+//                return std::wstring();
 
-            const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBackground);
+//            const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBackground);
 
-            for (std::wstring sColor : arWords)
-            {
-                if (sColor[0] == L'#')
-                {
-                    if (sColor.length() == 7)
-                        return sColor.substr(1, 7);
-                    else if (sColor.length() == 4)
-                    {
-                        std::wstring sRetColor;
-                        sRetColor += sColor[1];
-                        sRetColor += sColor[1];
-                        sRetColor += sColor[2];
-                        sRetColor += sColor[2];
-                        sRetColor += sColor[3];
-                        sRetColor += sColor[3];
-                        return sRetColor;
-                    }
-                    else
-                        return L"auto";
-                }
+//            for (std::wstring sColor : arWords)
+//            {
+//                if (sColor[0] == L'#')
+//                {
+//                    if (sColor.length() == 7)
+//                        return sColor.substr(1, 7);
+//                    else if (sColor.length() == 4)
+//                    {
+//                        std::wstring sRetColor;
+//                        sRetColor += sColor[1];
+//                        sRetColor += sColor[1];
+//                        sRetColor += sColor[2];
+//                        sRetColor += sColor[2];
+//                        sRetColor += sColor[3];
+//                        sRetColor += sColor[3];
+//                        return sRetColor;
+//                    }
+//                    else
+//                        return L"auto";
+//                }
 
-                std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
+//                std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
 
-                styles_iterator oHEX = NS_CONST_VALUES::mColors.find(sColor);
+//                styles_iterator oHEX = NSConstValues::mColors.find(sColor);
 
-                if (oHEX != NS_CONST_VALUES::mColors.end())
-                    return oHEX->second;
-            }
+//                if (oHEX != NSConstValues::mColors.end())
+//                    return oHEX->second;
+//            }
 
             return std::wstring();
         }
@@ -1130,31 +1332,31 @@ namespace NSCSS
         std::wstring CCompiledStyle::GetColor() const
         {
             styles_iterator oColor = m_mStyle.find(L"color");
-            if (oColor == m_mStyle.end())
-                return std::wstring();
+//            if (oColor == m_mStyle.end())
+//                return std::wstring();
 
-            std::wstring sColor = oColor->second;
+//            std::wstring sColor = oColor->second;
 
-            if (sColor[0] == L'#')
-            {
-                if (sColor.length() == 7)
-                    return sColor.substr(1, 7);
-                else if (sColor.length() == 4)
-                {
-                    std::wstring sRetColor;
-                    sRetColor = sColor[1] + sColor[1] + sColor[2] + sColor[2] + sColor[3] + sColor[3];
-                    return sRetColor;
-                }
-                else
-                    return L"";
-            }
+//            if (sColor[0] == L'#')
+//            {
+//                if (sColor.length() == 7)
+//                    return sColor.substr(1, 7);
+//                else if (sColor.length() == 4)
+//                {
+//                    std::wstring sRetColor;
+//                    sRetColor = sColor[1] + sColor[1] + sColor[2] + sColor[2] + sColor[3] + sColor[3];
+//                    return sRetColor;
+//                }
+//                else
+//                    return L"";
+//            }
 
-            std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
+//            std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
 
-            styles_iterator oHEX = NS_CONST_VALUES::mColors.find(sColor);
+//            styles_iterator oHEX = NSConstValues::mColors.find(sColor);
 
-            if (oHEX != NS_CONST_VALUES::mColors.end())
-                return oHEX->second;
+//            if (oHEX != NSConstValues::mColors.end())
+//                return oHEX->second;
 
             return L"";
         }
@@ -1267,34 +1469,34 @@ namespace NSCSS
             {
                 styles_iterator oBorderStyle = m_mStyle.find(L"border-style");
 
-                if (oBorderStyle != m_mStyle.end())
-                    return oBorderStyle->second;
+//                if (oBorderStyle != m_mStyle.end())
+//                    return oBorderStyle->second;
 
-                styles_iterator oBorder = m_mStyle.find(L"border");
+//                styles_iterator oBorder = m_mStyle.find(L"border");
 
-                std::wstring sBorder;
+//                std::wstring sBorder;
 
-                if (oBorder != m_mStyle.end() && oBorder->second != L"none")
-                    sBorder = oBorder->second;
-                else
-                {
-                    styles_iterator oMsoBorder = m_mStyle.find(L"mso-border-alt");
-                    if (oMsoBorder != m_mStyle.end() && oMsoBorder->second != L"none")
-                        sBorder =  oMsoBorder->second;
-                    else
-                        return std::wstring();
-                }
+//                if (oBorder != m_mStyle.end() && oBorder->second != L"none")
+//                    sBorder = oBorder->second;
+//                else
+//                {
+//                    styles_iterator oMsoBorder = m_mStyle.find(L"mso-border-alt");
+//                    if (oMsoBorder != m_mStyle.end() && oMsoBorder->second != L"none")
+//                        sBorder =  oMsoBorder->second;
+//                    else
+//                        return std::wstring();
+//                }
 
-                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorder);
+//                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorder);
 
-                for (std::wstring sStyle : arWords)
-                {
-                    std::transform(sStyle.begin(), sStyle.end(), sStyle.begin(), tolower);
-                    styles_iterator oStyle = NS_CONST_VALUES::mStyles.find(sStyle);
+//                for (std::wstring sStyle : arWords)
+//                {
+//                    std::transform(sStyle.begin(), sStyle.end(), sStyle.begin(), tolower);
+//                    styles_iterator oStyle = NSConstValues::mStyles.find(sStyle);
 
-                    if (oStyle != NS_CONST_VALUES::mStyles.end())
-                        return oStyle->second;
-                }
+//                    if (oStyle != NSConstValues::mStyles.end())
+//                        return oStyle->second;
+//                }
 
                 return std::wstring();
             }
@@ -1303,54 +1505,54 @@ namespace NSCSS
             {
                 styles_iterator oBorderColor = m_mStyle.find(L"border-color");
 
-                if (oBorderColor != m_mStyle.end())
-                    return oBorderColor->second;
+//                if (oBorderColor != m_mStyle.end())
+//                    return oBorderColor->second;
 
-                styles_iterator oBorder = m_mStyle.find(L"border");
+//                styles_iterator oBorder = m_mStyle.find(L"border");
 
-                std::wstring sBorder;
+//                std::wstring sBorder;
 
-                if (oBorder != m_mStyle.end() && oBorder->second != L"none")
-                    sBorder = oBorder->second;
-                else
-                {
-                    styles_iterator oMsoBorder = m_mStyle.find(L"mso-border-alt");
-                    if (oMsoBorder != m_mStyle.end() && oMsoBorder->second != L"none")
-                        sBorder =  oMsoBorder->second;
-                    else
-                        return std::wstring();
-                }
+//                if (oBorder != m_mStyle.end() && oBorder->second != L"none")
+//                    sBorder = oBorder->second;
+//                else
+//                {
+//                    styles_iterator oMsoBorder = m_mStyle.find(L"mso-border-alt");
+//                    if (oMsoBorder != m_mStyle.end() && oMsoBorder->second != L"none")
+//                        sBorder =  oMsoBorder->second;
+//                    else
+//                        return std::wstring();
+//                }
 
-                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorder);
+//                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorder);
 
-                for (std::wstring sColor : arWords)
-                {
-                    if (sColor[0] == L'#')
-                    {
-                        if (sColor.length() == 7)
-                            return sColor.substr(1, 7);
-                        else if (sColor.length() == 4)
-                        {
-                            std::wstring sRetColor;
-                            sRetColor += sColor[1];
-                            sRetColor += sColor[1];
-                            sRetColor += sColor[2];
-                            sRetColor += sColor[2];
-                            sRetColor += sColor[3];
-                            sRetColor += sColor[3];
-                            return sRetColor;
-                        }
-                        else
-                            return L"auto";
-                    }
+//                for (std::wstring sColor : arWords)
+//                {
+//                    if (sColor[0] == L'#')
+//                    {
+//                        if (sColor.length() == 7)
+//                            return sColor.substr(1, 7);
+//                        else if (sColor.length() == 4)
+//                        {
+//                            std::wstring sRetColor;
+//                            sRetColor += sColor[1];
+//                            sRetColor += sColor[1];
+//                            sRetColor += sColor[2];
+//                            sRetColor += sColor[2];
+//                            sRetColor += sColor[3];
+//                            sRetColor += sColor[3];
+//                            return sRetColor;
+//                        }
+//                        else
+//                            return L"auto";
+//                    }
 
-                    std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
+//                    std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
 
-                    styles_iterator oHEX = NS_CONST_VALUES::mColors.find(sColor);
+//                    styles_iterator oHEX = NSConstValues::mColors.find(sColor);
 
-                    if (oHEX != NS_CONST_VALUES::mColors.end())
-                        return oHEX->second;
-                }
+//                    if (oHEX != NSConstValues::mColors.end())
+//                        return oHEX->second;
+//                }
 
                 return std::wstring();
             }
@@ -1401,28 +1603,28 @@ namespace NSCSS
             {
                 styles_iterator oBorderBottomStyle = m_mStyle.find(L"border-bottom-style");
 
-                if (oBorderBottomStyle != m_mStyle.end())
-                    return oBorderBottomStyle->second;
+//                if (oBorderBottomStyle != m_mStyle.end())
+//                    return oBorderBottomStyle->second;
 
-                styles_iterator oBorderBottom = m_mStyle.find(L"border-bottom");
+//                styles_iterator oBorderBottom = m_mStyle.find(L"border-bottom");
 
-                std::wstring sBorderBottom;
+//                std::wstring sBorderBottom;
 
-                if (oBorderBottom != m_mStyle.end())
-                    sBorderBottom = oBorderBottom->second;
-                else
-                    return std::wstring();
+//                if (oBorderBottom != m_mStyle.end())
+//                    sBorderBottom = oBorderBottom->second;
+//                else
+//                    return std::wstring();
 
-                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderBottom);
+//                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderBottom);
 
-                for (std::wstring sStyle : arWords)
-                {
-                    std::transform(sStyle.begin(), sStyle.end(), sStyle.begin(), tolower);
-                    styles_iterator oStyle = NS_CONST_VALUES::mStyles.find(sStyle);
+//                for (std::wstring sStyle : arWords)
+//                {
+//                    std::transform(sStyle.begin(), sStyle.end(), sStyle.begin(), tolower);
+//                    styles_iterator oStyle = mStyles.find(sStyle);
 
-                    if (oStyle != NS_CONST_VALUES::mStyles.end())
-                        return oStyle->second;
-                }
+//                    if (oStyle != NSConstValues::mStyles.end())
+//                        return oStyle->second;
+//                }
 
                 return std::wstring();
             }
@@ -1431,48 +1633,48 @@ namespace NSCSS
             {
                 styles_iterator oBorderBottomColor = m_mStyle.find(L"border-bottom-color");
 
-                if (oBorderBottomColor != m_mStyle.end())
-                    return oBorderBottomColor->second;\
+//                if (oBorderBottomColor != m_mStyle.end())
+//                    return oBorderBottomColor->second;\
 
-                styles_iterator oBorderBottom = m_mStyle.find(L"border-bottom");
+//                styles_iterator oBorderBottom = m_mStyle.find(L"border-bottom");
 
-                std::wstring sBorderBottom;
+//                std::wstring sBorderBottom;
 
-                if (oBorderBottom != m_mStyle.end())
-                    sBorderBottom = oBorderBottom->second;
-                else
-                    return std::wstring();
+//                if (oBorderBottom != m_mStyle.end())
+//                    sBorderBottom = oBorderBottom->second;
+//                else
+//                    return std::wstring();
 
-                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderBottom);
+//                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderBottom);
 
-                for (std::wstring sColor : arWords)
-                {
-                    if (sColor[0] == L'#')
-                    {
-                        if (sColor.length() == 7)
-                            return sColor.substr(1, 7);
-                        else if (sColor.length() == 4)
-                        {
-                            std::wstring sRetColor;
-                            sRetColor += sColor[1];
-                            sRetColor += sColor[1];
-                            sRetColor += sColor[2];
-                            sRetColor += sColor[2];
-                            sRetColor += sColor[3];
-                            sRetColor += sColor[3];
-                            return sRetColor;
-                        }
-                        else
-                            return L"auto";
-                    }
+//                for (std::wstring sColor : arWords)
+//                {
+//                    if (sColor[0] == L'#')
+//                    {
+//                        if (sColor.length() == 7)
+//                            return sColor.substr(1, 7);
+//                        else if (sColor.length() == 4)
+//                        {
+//                            std::wstring sRetColor;
+//                            sRetColor += sColor[1];
+//                            sRetColor += sColor[1];
+//                            sRetColor += sColor[2];
+//                            sRetColor += sColor[2];
+//                            sRetColor += sColor[3];
+//                            sRetColor += sColor[3];
+//                            return sRetColor;
+//                        }
+//                        else
+//                            return L"auto";
+//                    }
 
-                    std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
+//                    std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
 
-                    styles_iterator oHEX = NS_CONST_VALUES::mColors.find(sColor);
+//                    styles_iterator oHEX = NSConstValues::mColors.find(sColor);
 
-                    if (oHEX != NS_CONST_VALUES::mColors.end())
-                        return oHEX->second;
-                }
+//                    if (oHEX != NSConstValues::mColors.end())
+//                        return oHEX->second;
+//                }
 
                 return std::wstring();
             }
@@ -1537,13 +1739,13 @@ namespace NSCSS
 
                 const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderLeft);
 
-                for (std::wstring sStyle : arWords)
-                {
-                    styles_iterator oStyle = NS_CONST_VALUES::mStyles.find(sStyle);
+//                for (std::wstring sStyle : arWords)
+//                {
+//                    styles_iterator oStyle = NSConstValues::mStyles.find(sStyle);
 
-                    if (oStyle != NS_CONST_VALUES::mStyles.end())
-                        return oStyle->second;
-                }
+//                    if (oStyle != NSConstValues::mStyles.end())
+//                        return oStyle->second;
+//                }
 
                 return std::wstring();
             }
@@ -1587,10 +1789,10 @@ namespace NSCSS
                             return L"auto";
                     }
 
-                    const styles_iterator oHEX = NS_CONST_VALUES::mColors.find(sColor);
+//                    const styles_iterator oHEX = NSConstValues::mColors.find(sColor);
 
-                    if (oHEX != NS_CONST_VALUES::mColors.end())
-                        return oHEX->second;
+//                    if (oHEX != NSConstValues::mColors.end())
+//                        return oHEX->second;
                 }
 
                 return std::wstring();
@@ -1656,14 +1858,14 @@ namespace NSCSS
 
                 const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderRight);
 
-                for (std::wstring sStyle : arWords)
-                {
-                    std::transform(sStyle.begin(), sStyle.end(), sStyle.begin(), tolower);
-                    styles_iterator oStyle = NS_CONST_VALUES::mStyles.find(sStyle);
+//                for (std::wstring sStyle : arWords)
+//                {
+//                    std::transform(sStyle.begin(), sStyle.end(), sStyle.begin(), tolower);
+//                    styles_iterator oStyle = NSConstValues::mStyles.find(sStyle);
 
-                    if (oStyle != NS_CONST_VALUES::mStyles.end())
-                        return oStyle->second;
-                }
+//                    if (oStyle != NSConstValues::mStyles.end())
+//                        return oStyle->second;
+//                }
 
                 return std::wstring();
             }
@@ -1709,10 +1911,10 @@ namespace NSCSS
 
                     std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
 
-                    styles_iterator oHEX = NS_CONST_VALUES::mColors.find(sColor);
+//                    styles_iterator oHEX = NSConstValues::mColors.find(sColor);
 
-                    if (oHEX != NS_CONST_VALUES::mColors.end())
-                        return oHEX->second;
+//                    if (oHEX != NSConstValues::mColors.end())
+//                        return oHEX->second;
                 }
 
                 return std::wstring();
@@ -1778,14 +1980,14 @@ namespace NSCSS
 
                 const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderTop);
 
-                for (std::wstring sStyle : arWords)
-                {
-                    std::transform(sStyle.begin(), sStyle.end(), sStyle.begin(), tolower);
-                    styles_iterator oStyle = NS_CONST_VALUES::mStyles.find(sStyle);
+//                for (std::wstring sStyle : arWords)
+//                {
+//                    std::transform(sStyle.begin(), sStyle.end(), sStyle.begin(), tolower);
+//                    styles_iterator oStyle = NSConstValues::mStyles.find(sStyle);
 
-                    if (oStyle != NS_CONST_VALUES::mStyles.end())
-                        return oStyle->second;
-                }
+//                    if (oStyle != NSConstValues::mStyles.end())
+//                        return oStyle->second;
+//                }
 
                 return std::wstring();
             }
@@ -1830,13 +2032,547 @@ namespace NSCSS
                     }
                     std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
 
-                    styles_iterator oHEX = NS_CONST_VALUES::mColors.find(sColor);
+//                    styles_iterator oHEX = NSConstValues::mColors.find(sColor);
 
-                    if (oHEX != NS_CONST_VALUES::mColors.end())
-                        return oHEX->second;
+//                    if (oHEX != NSConstValues::mColors.end())
+//                        return oHEX->second;
                 }
 
                 return std::wstring();
+            }
+
+            std::wstring CCompiledStyle::ConvertUnitMeasure(const std::wstring &sValue, const float& fPreviousValue) const
+            {
+                if (sValue.empty())
+                    return sValue;
+
+                std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsWithSigns(sValue);
+
+                std::wstring sValueString;
+
+                for (std::wstring& sValueTemp : arValues)
+                {
+                    const size_t nPosImportant = sValueTemp.find(L'!');
+                    if (nPosImportant != std::wstring::npos)
+                        sValueTemp = sValueTemp.substr(0, nPosImportant);
+
+                    size_t nPosGrid = sValueTemp.find(L'#');
+
+                    if (nPosGrid != std::wstring::npos || !NS_STATIC_FUNCTIONS::ThereIsNumber(sValueTemp))
+                    {
+                        if (!NS_STATIC_FUNCTIONS::ConvertAbsoluteValue(sValueTemp))
+                        {
+                            sValueString += sValueTemp;
+                            continue;
+                        }
+                    }
+
+                    const size_t posPercent = sValueTemp.find(L'%');
+
+                    if (posPercent != std::wstring::npos)
+                    {
+                        const float dValue = wcstof(sValueTemp.substr(0, posPercent).c_str(), NULL) * fPreviousValue / 100;
+
+                        sValueString += std::to_wstring(static_cast<short int>(dValue + 0.5f));
+
+                        if (sValueTemp.find(L';') != std::wstring::npos)
+                            sValueString += L';';
+                        else if (arValues.size() > 1 && sValueTemp.find(L':') == std::wstring::npos)
+                            sValueString += L' ';
+                    }
+                    else if (sValueTemp.find(L"px") != std::wstring::npos)
+                    {
+                        sValueString += ConvertPx(sValueTemp);
+
+                        if (sValueTemp.find(L';') != std::wstring::npos)
+                            sValueString += L';';
+                        else if (arValues.size() > 1 && sValueTemp.find(L':') == std::wstring::npos)
+                            sValueString += L' ';
+                    }
+                    else if (sValueTemp.find(L"cm") != std::wstring::npos)
+                    {
+                        sValueString += ConvertCm(sValueTemp);
+
+                        if (sValueTemp.find(L';') != std::wstring::npos)
+                            sValueString += L';';
+                        else if (arValues.size() > 1 && sValueTemp.find(L':') == std::wstring::npos)
+                            sValueString += L' ';
+                    }
+                    else if (sValueTemp.find(L"mm") != std::wstring::npos)
+                    {
+                        sValueString += ConvertMm(sValueTemp);
+
+                        if (sValueTemp.find(L';') != std::wstring::npos)
+                            sValueString += L';';
+                        else if (arValues.size() > 1 && sValueTemp.find(L':') == std::wstring::npos)
+                            sValueString += L' ';
+                    }
+                    else if (sValueTemp.find(L"in") != std::wstring::npos)
+                    {
+                        sValueString += ConvertIn(sValueTemp);
+
+                        if (sValueTemp.find(L';') != std::wstring::npos)
+                            sValueString += L';';
+                        else if (arValues.size() > 1 && sValueTemp.find(L':') == std::wstring::npos)
+                            sValueString += L' ';
+                    }
+                    else if (sValueTemp.find(L"pt") != std::wstring::npos)
+                    {
+                        sValueString += ConvertPt(sValueTemp);
+
+                        if (sValueTemp.find(L';') != std::wstring::npos)
+                            sValueString += L';';
+                        else if (arValues.size() > 1 && sValueTemp.find(L':') == std::wstring::npos)
+                            sValueString += L' ';
+                    }
+                    else if (sValueTemp.find(L"pc") != std::wstring::npos)
+                    {
+                        sValueString += ConvertPc(sValueTemp);
+
+                        if (sValueTemp.find(L';') != std::wstring::npos)
+                            sValueString += L';';
+                        else if (arValues.size() > 1 && sValueTemp.find(L':') == std::wstring::npos)
+                            sValueString += L' ';
+                    }
+                    else if (sValueTemp.find(L"em") != std::wstring::npos)
+                    {
+                        sValueString += ConvertEm(sValueTemp);
+
+                        if (sValueTemp.find(L';') != std::wstring::npos)
+                            sValueString += L';';
+                        else if (arValues.size() > 1 && sValueTemp.find(L':') == std::wstring::npos)
+                            sValueString += L' ';
+                    }
+                    else
+                    {
+                        sValueString += sValueTemp;
+
+                        if (sValueTemp.find(L";") != std::wstring::npos)
+                            sValueString += L';';
+
+                        continue;
+                    }
+
+                    if (sValueTemp.back() != L';' && sValueTemp.back() != L':' && sValueTemp.back() != L' ')
+                        sValueTemp += L' ';
+                }
+
+                return sValueString;
+            }
+
+            inline std::wstring CCompiledStyle::ConvertPx(const std::wstring& sValue) const
+            {
+                if (sValue.empty())
+                    return std::wstring();
+
+                const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"px") - 1);
+                const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
+
+                switch (m_UnitMeasure)
+                {
+                    case Pixel:
+                        return std::to_wstring(static_cast<short int>(dValue));;
+                    case Default:
+                    case Point:
+                        return ConvertPxToPt(dValue);
+                    case Cantimeter:
+                        return ConvertPxToCm(dValue);
+                    case Millimeter:
+                        return ConvertPxToMm(dValue);
+                    case Inch:
+                        return ConvertPxToIn(dValue);
+                    case Peak:
+                        return ConvertPxToPc(dValue);
+                }
+
+                return std::wstring();
+            }
+
+            inline std::wstring CCompiledStyle::ConvertPxToCm(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(dValue / static_cast<float>(m_nDpi) * 2.54f + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertPxToIn(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(1.0f / static_cast<float>(m_nDpi) * dValue + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertPxToMm(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(dValue / static_cast<float>(m_nDpi) * 25.4f + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertPxToPc(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(0.16667f / static_cast<float>(m_nDpi) * dValue + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertPxToPt(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(72.0f /  static_cast<float>(m_nDpi) * dValue + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertCm(const std::wstring& sValue) const
+            {
+                if (sValue.empty())
+                    return std::wstring();
+
+                const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"cm") - 1);
+                const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
+
+                switch (m_UnitMeasure)
+                {
+                    case Default:
+                    case Point:
+                        return ConvertCmToPt(dValue);
+                    case Pixel:
+                        return ConvertCmToPx(dValue);
+                    case Cantimeter:
+                        return std::to_wstring(static_cast<short int>(dValue));;
+                    case Millimeter:
+                        return ConvertCmToMm(dValue);
+                    case Inch:
+                        return ConvertCmToIn(dValue);
+                    case Peak:
+                        return ConvertCmToPc(dValue);
+                }
+
+                return std::wstring();
+            }
+
+            inline std::wstring CCompiledStyle::ConvertCmToIn(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(dValue / 2.54f + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertCmToMm(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(dValue * 10.0f + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertCmToPc(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(2.36f * dValue + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertCmToPt(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(28.35f * dValue + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertCmToPx(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(static_cast<float>(m_nDpi) / 2.54f * dValue + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertMm(const std::wstring& sValue) const
+            {
+                if (sValue.empty())
+                    return std::wstring();
+
+                const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"mm") - 1);
+                const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
+
+                switch (m_UnitMeasure)
+                {
+                    case Pixel:
+                        return ConvertMmToPx(dValue);
+                    case Default:
+                    case Point:
+                        return ConvertMmToPt(dValue);
+                    case Cantimeter:
+                        return ConvertMmToCm(dValue);
+                    case Millimeter:
+                        return std::to_wstring(static_cast<short int>(dValue));;
+                    case Inch:
+                        return ConvertMmToIn(dValue);
+                    case Peak:
+                        return ConvertMmToPc(dValue);
+                }
+                return std::wstring();
+            }
+
+            inline std::wstring CCompiledStyle::ConvertMmToIn(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(dValue / 25.4f + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertMmToCm(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(dValue / 10.0f + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertMmToPc(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(2.8346f * dValue + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertMmToPt(const float& dValue) const
+            {
+                if (dValue == 0)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(0.23262f * dValue + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertMmToPx(const float& dValue) const
+            {
+                if (dValue == 0)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(static_cast<float>(m_nDpi) / 25.4f * dValue + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertIn(const std::wstring& sValue) const
+            {
+                if (sValue.empty())
+                    return std::wstring();
+
+                const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"in") - 1);
+                const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
+
+                switch (m_UnitMeasure)
+                {
+                    case Pixel:
+                        return  ConvertInToPx(dValue);
+                    case Default:
+                    case Point:
+                        return ConvertInToPt(dValue);
+                    case Cantimeter:
+                        return ConvertInToCm(dValue);
+                    case Millimeter:
+                        return ConvertInToMm(dValue);
+                    case Inch:
+                        return std::to_wstring(static_cast<short int>(dValue));;
+                    case Peak:
+                        return ConvertInToPc(dValue);
+                }
+                return std::wstring();
+            }
+
+            inline std::wstring CCompiledStyle::ConvertInToMm(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(dValue * 25.4f + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertInToCm(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(dValue * 2.54f + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertInToPc(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(dValue / 72.0f + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertInToPt(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(dValue / 6.0f + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertInToPx(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(dValue * static_cast<float>(m_nDpi) + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertPt(const std::wstring& sValue) const
+            {
+                if (sValue.empty())
+                    return std::wstring();
+
+                const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"pt") - 1);
+                const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
+
+                switch (m_UnitMeasure)
+                {
+                    case Pixel:
+                        return ConvertPtToPx(dValue);
+                    case Default:
+                    case Point:
+                        return std::to_wstring(static_cast<short int>(dValue));
+                    case Cantimeter:
+                        return ConvertPtToCm(dValue);
+                    case Millimeter:
+                        return ConvertPtToMm(dValue);
+                    case Inch:
+                        return ConvertPtToIn(dValue);
+                    case Peak:
+                        return ConvertPtToPc(dValue);
+                }
+
+                return std::wstring();
+            }
+
+            inline std::wstring CCompiledStyle::ConvertPtToIn(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring((dValue / 72.0f + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertPtToCm(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(dValue * 0.03528f + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertPtToPc(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(dValue / 12.0f + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertPtToMm(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring((dValue * 0.3528f + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertPtToPx(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(static_cast<float>(m_nDpi) / 72.0f * dValue + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertPc(const std::wstring& sValue) const
+            {
+                if (sValue.empty())
+                    return std::wstring();
+
+                const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"pc") - 1);
+                const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
+
+                switch (m_UnitMeasure)
+                {
+                    case Pixel:
+                        return ConvertPcToPx(dValue);
+                    case Default:
+                    case Point:
+                        return ConvertPcToPt(dValue);
+                    case Cantimeter:
+                        return ConvertPcToCm(dValue);
+                    case Millimeter:
+                        return ConvertPcToMm(dValue);
+                    case Inch:
+                        return ConvertPcToIn(dValue);
+                    case Peak:
+                        return std::to_wstring(static_cast<short int>(dValue));
+                }
+
+                return std::wstring();
+            }
+
+            inline std::wstring CCompiledStyle::ConvertPcToIn(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(dValue / 6.0f + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertPcToCm(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(dValue * 0.423f + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertPcToPt(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(dValue * 12.0f + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertPcToMm(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(dValue * 4.23f + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertPcToPx(const float& dValue) const
+            {
+                if (dValue == 0.0f)
+                    return std::wstring(L"0");
+
+                return std::to_wstring(static_cast<short int>(static_cast<float>(m_nDpi) / 6.0f * dValue + 0.5f));
+            }
+
+            inline std::wstring CCompiledStyle::ConvertEm(const std::wstring& sValue) const
+            {
+                if (sValue.empty())
+                    return std::wstring(L"");
+
+                const float fValue = wcstof(sValue.c_str(), NULL) * 22.0f;
+                return std::to_wstring(static_cast<short int>(fValue + 0.5f));
             }
     }
 

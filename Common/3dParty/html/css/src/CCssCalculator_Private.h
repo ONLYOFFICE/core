@@ -45,52 +45,6 @@ namespace NSCSS
         std::map<std::wstring, std::wstring> GetDeclarationList(const KatanaArray* oDeclarations) const;
         std::pair<std::wstring, std::wstring> GetDeclaration(const KatanaDeclaration* oDecl) const;
 
-        std::wstring ConvertUnitMeasure(const std::wstring& sValue) const;
-
-        std::wstring ConvertPx(const std::wstring& sValue) const;
-        std::wstring ConvertPxToCm(const float& dValue) const;
-        std::wstring ConvertPxToIn(const float& dValue) const;
-        std::wstring ConvertPxToMm(const float& dValue) const;
-        std::wstring ConvertPxToPt(const float& dValue) const;
-        std::wstring ConvertPxToPc(const float& dValue) const;     
-
-        std::wstring ConvertCm(const std::wstring& sValue) const;
-        std::wstring ConvertCmToPx(const float& dValue) const;
-        std::wstring ConvertCmToIn(const float& dValue) const;
-        std::wstring ConvertCmToMm(const float& dValue) const;
-        std::wstring ConvertCmToPt(const float& dValue) const;
-        std::wstring ConvertCmToPc(const float& dValue) const;
-
-        std::wstring ConvertMm(const std::wstring& sValue) const;
-        std::wstring ConvertMmToPx(const float& dValue) const;
-        std::wstring ConvertMmToIn(const float& dValue) const;
-        std::wstring ConvertMmToCm(const float& dValue) const;
-        std::wstring ConvertMmToPt(const float& dValue) const;
-        std::wstring ConvertMmToPc(const float& dValue) const;
-
-        std::wstring ConvertIn(const std::wstring& sValue) const;
-        std::wstring ConvertInToPx(const float& dValue) const;
-        std::wstring ConvertInToMm(const float& dValue) const;
-        std::wstring ConvertInToCm(const float& dValue) const;
-        std::wstring ConvertInToPt(const float& dValue) const;
-        std::wstring ConvertInToPc(const float& dValue) const;
-
-        std::wstring ConvertPt(const std::wstring& sValue) const;
-        std::wstring ConvertPtToPx(const float& dValue) const;
-        std::wstring ConvertPtToMm(const float& dValue) const;
-        std::wstring ConvertPtToCm(const float& dValue) const;
-        std::wstring ConvertPtToIn(const float& dValue) const;
-        std::wstring ConvertPtToPc(const float& dValue) const;
-
-        std::wstring ConvertPc(const std::wstring& sValue) const;
-        std::wstring ConvertPcToPx(const float& dValue) const;
-        std::wstring ConvertPcToMm(const float& dValue) const;
-        std::wstring ConvertPcToCm(const float& dValue) const;
-        std::wstring ConvertPcToIn(const float& dValue) const;
-        std::wstring ConvertPcToPt(const float& dValue) const;
-
-        std::wstring ConvertEm(const std::wstring& sValue) const;
-
         void GetOutputData(KatanaOutput* oOutput);
 
     public:

@@ -2,7 +2,7 @@
 #define CCOMPILEDSTYLE_H
 
 #include "CssCalculator_global.h"
-#include "CssProperties.h"
+#include "ConstValues.h"
 
 #include <map>
 #include <vector>
@@ -16,13 +16,62 @@ namespace NSCSS
         std::vector<std::wstring> m_arParentsStyles;
         std::wstring m_sId;
 
+        unsigned short int m_nDpi;
+        UnitMeasure m_UnitMeasure;
+
+        std::wstring ConvertUnitMeasure(const std::wstring& sValue, const float& fPreviousValue) const;
+
+        std::wstring ConvertPx(const std::wstring& sValue) const;
+        std::wstring ConvertPxToCm(const float& dValue) const;
+        std::wstring ConvertPxToIn(const float& dValue) const;
+        std::wstring ConvertPxToMm(const float& dValue) const;
+        std::wstring ConvertPxToPt(const float& dValue) const;
+        std::wstring ConvertPxToPc(const float& dValue) const;
+
+        std::wstring ConvertCm(const std::wstring& sValue) const;
+        std::wstring ConvertCmToPx(const float& dValue) const;
+        std::wstring ConvertCmToIn(const float& dValue) const;
+        std::wstring ConvertCmToMm(const float& dValue) const;
+        std::wstring ConvertCmToPt(const float& dValue) const;
+        std::wstring ConvertCmToPc(const float& dValue) const;
+
+        std::wstring ConvertMm(const std::wstring& sValue) const;
+        std::wstring ConvertMmToPx(const float& dValue) const;
+        std::wstring ConvertMmToIn(const float& dValue) const;
+        std::wstring ConvertMmToCm(const float& dValue) const;
+        std::wstring ConvertMmToPt(const float& dValue) const;
+        std::wstring ConvertMmToPc(const float& dValue) const;
+
+        std::wstring ConvertIn(const std::wstring& sValue) const;
+        std::wstring ConvertInToPx(const float& dValue) const;
+        std::wstring ConvertInToMm(const float& dValue) const;
+        std::wstring ConvertInToCm(const float& dValue) const;
+        std::wstring ConvertInToPt(const float& dValue) const;
+        std::wstring ConvertInToPc(const float& dValue) const;
+
+        std::wstring ConvertPt(const std::wstring& sValue) const;
+        std::wstring ConvertPtToPx(const float& dValue) const;
+        std::wstring ConvertPtToMm(const float& dValue) const;
+        std::wstring ConvertPtToCm(const float& dValue) const;
+        std::wstring ConvertPtToIn(const float& dValue) const;
+        std::wstring ConvertPtToPc(const float& dValue) const;
+
+        std::wstring ConvertPc(const std::wstring& sValue) const;
+        std::wstring ConvertPcToPx(const float& dValue) const;
+        std::wstring ConvertPcToMm(const float& dValue) const;
+        std::wstring ConvertPcToCm(const float& dValue) const;
+        std::wstring ConvertPcToIn(const float& dValue) const;
+        std::wstring ConvertPcToPt(const float& dValue) const;
+
+        std::wstring ConvertEm(const std::wstring& sValue) const;
+
     public:
 
-        CssProperties::Font *m_pFont = NULL;
-        CssProperties::Margin *m_pMargin = NULL;
-        std::wstring *m_pBackgroundColor = NULL; //HEX color
-        CssProperties::Text *m_pText = NULL;
-        CssProperties::Border *m_pBorder = NULL;
+        NSConstValues::NSCssProperties::Font        m_pFont;
+        NSConstValues::NSCssProperties::Margin      m_pMargin;
+        NSConstValues::NSCssProperties::Background  m_pBackground;
+        NSConstValues::NSCssProperties::Text        m_pText;
+        NSConstValues::NSCssProperties::Border      m_pBorder;
 
         CCompiledStyle();
         explicit CCompiledStyle(const std::map<std::wstring, std::wstring>& mStyle);
@@ -33,6 +82,8 @@ namespace NSCSS
          std::map<std::wstring, std::wstring>* GetStyleMap();
          std::wstring GetStyleW() const;
         // std::string GetStyle() const;
+
+         void SetDpi(const unsigned short& uiDpi);
 
         // size_t GetSize() const;
         bool Empty() const;

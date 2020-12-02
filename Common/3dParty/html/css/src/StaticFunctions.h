@@ -3,8 +3,7 @@
 
 #include "../../../../../UnicodeConverter/UnicodeConverter.h"
 #include "../../../../../DesktopEditor/common/File.h"
-//#include "CCssCalculator.h"
-#include "ConstValues.h"
+#include "CNode.h"
 #include <cwctype>
 #include <string>
 #include <vector>
@@ -318,9 +317,9 @@ namespace NSCSS
             if (posFirst == std::wstring::npos)
                 return std::wstring();
 
-            const wchar_t cHex[17]{L"0123456789ABCDEF"};
+            const wchar_t cHex[17]{L"0123456789abcdef"};
 
-            std::wstring sValue = L"#";
+            std::wstring sValue;
 
             while (posFirst != std::wstring::npos)
             {
@@ -333,7 +332,7 @@ namespace NSCSS
                 if (nValue < 0)
                     sHex += L"00";
                 else if (nValue > 255)
-                    sHex += L"FF";
+                    sHex += L"ff";
                 else
                 {
                     do
@@ -376,7 +375,7 @@ namespace NSCSS
                 {
                     std::wstring sTemp(sSel);
                     sTemp.erase(std::remove_if(sTemp.begin(), sTemp.end(), [] (const wchar_t& wc) { return !std::iswalpha(wc);}));
-                    std::find(NS_CONST_VALUES::arPseudoClasses.begin(), NS_CONST_VALUES::arPseudoClasses.end(), sTemp) != NS_CONST_VALUES::arPseudoClasses.end() ? ++arWeight[1] : ++arWeight[2];
+//                    std::find(NSConstValues::arPseudoClasses.begin(), NSConstValues::arPseudoClasses.end(), sTemp) != NSConstValues::arPseudoClasses.end() ? ++arWeight[1] : ++arWeight[2];
                 }
                 else if (sSel.find_last_of(L".[]") != std::wstring::npos)
                     ++arWeight[1];

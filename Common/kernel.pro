@@ -28,7 +28,8 @@ include(../DesktopEditor/xml/build/qt/libxml2.pri)
 # DOWNLOADER
 HEADERS += \
     ./FileDownloader/FileDownloader.h \
-    ./FileDownloader/FileDownloader_private.h
+    ./FileDownloader/FileDownloader_private.h \
+    ./FileDownloader/download_external.h
 
 SOURCES += ./FileDownloader/FileDownloader.cpp
 
@@ -54,6 +55,7 @@ core_linux {
         ./FileDownloader/FileDownloader_curl.cpp
 }
 core_mac {
+    DEFINES += USE_EXTERNAL_DOWNLOAD
     OBJECTIVE_SOURCES += \
         ./FileDownloader/FileDownloader_mac.mm
 

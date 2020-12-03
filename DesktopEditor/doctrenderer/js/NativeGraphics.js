@@ -66,9 +66,11 @@ function CNativeGraphics()
     this.TextureFillTransformScaleX = 1;
     this.TextureFillTransformScaleY = 1;
 
-    this.IsThumbnail       = false;
-    this.ClearMode         = false;
-    this.RENDERER_PDF_FLAG = true;
+    this.IsSlideBoundsCheckerType = true;
+    this.IsTrack                  = false;
+    this.IsThumbnail              = false;
+    this.ClearMode                = false;
+    this.RENDERER_PDF_FLAG        = true;
 }
 
 CNativeGraphics.prototype =
@@ -579,5 +581,13 @@ CNativeGraphics.prototype =
 	put_brushTexture : function(src, type)
 	{
 		this.Native["put_brushTexture"](src);
+	},
+    put_BrushTextureAlpha : function(a)
+	{
+		this.Native["put_BrushTextureAlpha"](a);
+	},
+	put_BrushGradient : function(gradFill, points, transparent)
+	{
+		this.Native["put_BrushGradient"](gradFill.colors, points.x0, points.x1, points.y0, points.y1, points.r0, points.r1, transparent);
 	}
 };

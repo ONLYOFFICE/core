@@ -109,6 +109,7 @@ MyGraphics.RemoveClip();
 
 var imageBase64 = MyGraphics.toDataURL("png");
 MyGraphics.save();
-MyGraphics.put_brushTexture("typetobrush", 0);
+MyGraphics.put_brushTexture("pathtobrush", 0);
+MyGraphics.put_BrushTextureAlpha(255);
 
 MyGraphics.GetFont();

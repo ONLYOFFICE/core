@@ -1018,10 +1018,12 @@ void CGraphics::DrawFootnoteRect(double x,  double y,  double w,  double h)
 
     m_pRenderer->put_PenDashStyle(nPenDashStyle);
 }
-std::string CGraphics::toDataURL(std::wstring type)
+std::wstring CGraphics::toDataURL(std::wstring type)
 {
-    m_oFrame.SaveFile(m_sApplicationImagesDirectory + L"/img." + type, _CXIMAGE_FORMAT_PNG);
-
+    std::wstring sPath = m_sApplicationImagesDirectory + L"/img." + type;
+    m_oFrame.SaveFile(sPath, _CXIMAGE_FORMAT_PNG);
+    return sPath;
+    /*
     NSFile::CFileBinary oReader;
     if(oReader.OpenFile(m_sApplicationImagesDirectory + L"/img." + type))
     {
@@ -1038,6 +1040,7 @@ std::string CGraphics::toDataURL(std::wstring type)
             return std::string((char*)pImageData, nEncodeLen);
     }
     return "";
+    */
 }
 CColor CGraphics::GetPenColor()
 {
@@ -1050,5 +1053,9 @@ CColor CGraphics::GetPenColor()
 void CGraphics::put_brushTexture(std::wstring src)
 {
     m_pRenderer->put_BrushTexturePath(src);
+}
+void CGraphics::put_BrushTextureAlpha(int a)
+{
+    m_pRenderer->put_BrushTextureAlpha(a);
 }
 }

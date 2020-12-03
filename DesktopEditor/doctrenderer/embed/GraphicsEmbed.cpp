@@ -467,3 +467,8 @@ JSSmart<CJSValue> CGraphicsEmbed::put_brushTexture(JSSmart<CJSValue> src)
     m_pInternal->put_brushTexture(src->toStringW());
     return NULL;
 }
+JSSmart<CJSValue> CGraphicsEmbed::put_BrushTextureAlpha(JSSmart<CJSValue> a)
+{
+    m_pInternal->put_BrushTextureAlpha(a->toInt32());
+    return NULL;
+}

@@ -152,9 +152,10 @@ namespace NSJSBase
     }
     void CJSContext::Dispose()
     {
-        if (!CV8Worker::IsUseExternalInitialize())
-            CV8Worker::Dispose();
         m_internal->m_isolate->Dispose();
+        m_internal->m_isolate = NULL;
+        if (!CV8Worker::IsUseExternalInitialize())
+            CV8Worker::Dispose();        
     }
 
     void CJSContext::CreateContext()
@@ -272,16 +273,9 @@ namespace NSJSBase
         v8::Local<v8::Script> _script;
         if(!scriptPath.empty())
         {
-            std::wstring sCachePath = scriptPath.substr(0, scriptPath.find(L".")) + L".cache";
+            std::wstring sCachePath = scriptPath.substr(0, scriptPath.rfind(L".")) + L".cache";
             CCacheDataScript oCachedScript(sCachePath);
-            //            if (!oCachedScript.IsInit())
-            //            {
-            //                _script = v8::Script::Compile(_source);
-            //            }
-            //            else
-            //            {
             _script = oCachedScript.Compile(m_internal->m_context, _source);
-            //            }
         }
         else
         {

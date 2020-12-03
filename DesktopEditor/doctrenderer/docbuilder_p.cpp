@@ -63,6 +63,8 @@ CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder)
 }
 CV8RealTimeWorker::~CV8RealTimeWorker()
 {
+    m_handle_scope = NULL;
+    m_isolate_scope = NULL;
     m_context->Dispose();
 }
 
@@ -661,11 +663,21 @@ namespace NSDoctRenderer
             }
             else
             {
-                bIsNoError = this->m_pInternal->ExecuteCommand(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)_data, (LONG)_len));
+                //bIsNoError = this->m_pInternal->ExecuteCommand(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)_data, (LONG)_len));
                 sJsCommands += command;
                 sJsCommands += "\n";
             }
 
+            if (!bIsNoError)
+                return false;
+        }
+
+        if (!sJsCommands.empty())
+        {
+            // Такого быть не должно!!! Так как результат никуда не сохранится. пустое действие.
+            std::wstring sUnicodeCommand = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sJsCommands.c_str(), (LONG)sJsCommands.length());
+            bool bIsNoError = this->ExecuteCommand(sUnicodeCommand.c_str());
+            sJsCommands = "";
             if (!bIsNoError)
                 return false;
         }

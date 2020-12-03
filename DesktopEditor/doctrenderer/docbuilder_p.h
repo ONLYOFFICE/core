@@ -172,7 +172,9 @@ namespace NSDoctRenderer
         CDocBuilder_Private() : m_bIsNotUseConfigAllFontsDir(false), m_sTmpFolder(NSFile::CFileBinary::GetTempPath()), m_nFileType(-1),
             m_pWorker(NULL), m_pAdditionalData(NULL), m_bIsInit(false), m_bIsCacheScript(true), m_bIsServerSafeVersion(false),
             m_sGlobalVariable(""), m_bIsGlobalVariableUse(false), m_pParent(NULL)
-        {            
+        {
+            // Do not forget call СDocBuilder::Dispose() method!!!
+            CJSContext::ExternalInitialize();
             // под линуксом предыдущая функция создает файл!!!
             if (NSFile::CFileBinary::Exists(m_sTmpFolder))
                 NSFile::CFileBinary::Remove(m_sTmpFolder);

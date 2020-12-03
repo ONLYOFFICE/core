@@ -137,5 +137,6 @@ int main(int argc, char *argv[])
         oBuilder.Run(sBuildFile.c_str());
     }
 
+    NSDoctRenderer::CDocBuilder::Dispose();
     return 0;
 }

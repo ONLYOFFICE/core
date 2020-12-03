@@ -1058,4 +1058,8 @@ void CGraphics::put_BrushTextureAlpha(int a)
 {
     m_pRenderer->put_BrushTextureAlpha(a);
 }
+void CGraphics::put_BrushGradient(int* pColors, double* pPositions, size_t nCount)
+{
+    m_pRenderer->put_BrushGradientColors((LONG *)pColors, pPositions, nCount);
+}
 }

@@ -111,5 +111,6 @@ var imageBase64 = MyGraphics.toDataURL("png");
 MyGraphics.save();
 MyGraphics.put_brushTexture("pathtobrush", 0);
 MyGraphics.put_BrushTextureAlpha(255);
+MyGraphics.put_BrushGradient({colors : [{R : 255, G : 255, B : 255, A : 255}, {R : 255, G : 255, B : 255, A : 255}, {R : 255, G : 255, B : 255, A : 255}, {R : 255, G : 255, B : 255, A : 255}, {R : 255, G : 255, B : 255, A : 255}, {R : 255, G : 255, B : 255, A : 255}]}, {x0 : 0, y0 : 0, x1 : 0, y1 : 0, r0 : 0, r1 : 0}, null);
 
 MyGraphics.GetFont();

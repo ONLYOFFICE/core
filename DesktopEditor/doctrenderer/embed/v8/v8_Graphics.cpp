@@ -111,6 +111,7 @@ namespace NSGraphics
     FUNCTION_WRAPPER_V8  (_GetPenColor,           GetPenColor)
     FUNCTION_WRAPPER_V8_1(_put_brushTexture,      put_brushTexture)
     FUNCTION_WRAPPER_V8_1(_put_BrushTextureAlpha, put_BrushTextureAlpha)
+    FUNCTION_WRAPPER_V8_3(_put_BrushGradient,     put_BrushGradient)
 
     v8::Handle<v8::ObjectTemplate> CreateGraphicsTemplate(v8::Isolate* isolate)
     {
@@ -216,6 +217,7 @@ namespace NSGraphics
         NSV8Objects::Template_Set(result, "GetPenColor",              _GetPenColor);
         NSV8Objects::Template_Set(result, "put_brushTexture",         _put_brushTexture);
         NSV8Objects::Template_Set(result, "put_BrushTextureAlpha",    _put_BrushTextureAlpha);
+        NSV8Objects::Template_Set(result, "put_BrushGradient",        _put_BrushGradient);
 
         return handle_scope.Escape(result);
     }

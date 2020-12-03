@@ -472,3 +472,37 @@ JSSmart<CJSValue> CGraphicsEmbed::put_BrushTextureAlpha(JSSmart<CJSValue> a)
     m_pInternal->put_BrushTextureAlpha(a->toInt32());
     return NULL;
 }
+JSSmart<CJSValue> CGraphicsEmbed::put_BrushGradient(JSSmart<CJSValue> colors, JSSmart<CJSValue> points, JSSmart<CJSValue> transparent)
+{
+    JSSmart<CJSArray> items = colors->toArray();
+    size_t length = items->getCount();
+    int* color = NULL;
+    if(length > 0)
+        color = new int[length];
+    for(size_t i = 0; i < length; i++)
+    {
+        JSSmart<CJSObject> item = items->get(i)->toObject();
+        int R = item->get("R")->toInt32();
+        int G = item->get("G")->toInt32();
+        int B = item->get("B")->toInt32();
+        int A = item->get("A")->toInt32();
+        if(!transparent->isNull())
+            A = transparent->toInt32();
+        color[i] = R | (G << 8) | (B << 16) | (A << 24);
+    }
+
+    JSSmart<CJSObject> point = points->toObject();
+    double* pos = new double[6];
+    pos[0] = point->get("x0")->toDouble();
+    pos[1] = point->get("y0")->toDouble();
+    pos[2] = point->get("x1")->toDouble();
+    pos[3] = point->get("y1")->toDouble();
+    pos[4] = point->get("r0")->toDouble();
+    pos[5] = point->get("r1")->toDouble();
+
+    m_pInternal->put_BrushGradient(color, pos, length);
+
+    RELEASEARRAYOBJECTS(color);
+    RELEASEARRAYOBJECTS(pos);
+    return NULL;
+}

@@ -578,6 +578,10 @@ CNativeGraphics.prototype =
 	{
 		return this.Native["GetPenColor"]();
 	},
+	GetBrushColor : function()
+	{
+		return this.Native["GetBrushColor"]();
+	},
 	put_brushTexture : function(src, type)
 	{
 		this.Native["put_brushTexture"](src);
@@ -589,5 +593,13 @@ CNativeGraphics.prototype =
 	put_BrushGradient : function(gradFill, points, transparent)
 	{
 		this.Native["put_BrushGradient"](gradFill.colors, points, transparent);
+	},
+	TransformPointX : function(x, y)
+	{
+		return this.Native["TransformPointX"](x, y);
+	},
+	TransformPointY : function(x, y)
+	{
+		return this.Native["TransformPointY"](x, y);
 	}
 };

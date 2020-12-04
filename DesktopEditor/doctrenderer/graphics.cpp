@@ -1050,6 +1050,14 @@ CColor CGraphics::GetPenColor()
     m_pRenderer->get_PenAlpha(&a);
     return {color & 255, (color & 65280) >> 8, (color & 16711680) >> 16, a};
 }
+CColor CGraphics::GetBrushColor()
+{
+    LONG color;
+    LONG a;
+    m_pRenderer->get_BrushColor1(&color);
+    m_pRenderer->get_BrushAlpha1(&a);
+    return {color & 255, (color & 65280) >> 8, (color & 16711680) >> 16, a};
+}
 void CGraphics::put_brushTexture(std::wstring src)
 {
     m_pRenderer->put_BrushTexturePath(src);
@@ -1061,5 +1069,15 @@ void CGraphics::put_BrushTextureAlpha(int a)
 void CGraphics::put_BrushGradient(int* pColors, double* pPositions, size_t nCount)
 {
     m_pRenderer->put_BrushGradientColors((LONG *)pColors, pPositions, nCount);
+}
+double CGraphics::TransformPointX(double x,  double y)
+{
+    m_pRenderer->GetFullTransform()->TransformPoint(x, y);
+    return x;
+}
+double CGraphics::TransformPointY(double x,  double y)
+{
+    m_pRenderer->GetFullTransform()->TransformPoint(x, y);
+    return y;
 }
 }

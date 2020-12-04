@@ -109,9 +109,12 @@ namespace NSGraphics
     // new methods
     FUNCTION_WRAPPER_V8_1(_toDataURL,             toDataURL)
     FUNCTION_WRAPPER_V8  (_GetPenColor,           GetPenColor)
+    FUNCTION_WRAPPER_V8  (_GetBrushColor,         GetBrushColor)
     FUNCTION_WRAPPER_V8_1(_put_brushTexture,      put_brushTexture)
     FUNCTION_WRAPPER_V8_1(_put_BrushTextureAlpha, put_BrushTextureAlpha)
     FUNCTION_WRAPPER_V8_3(_put_BrushGradient,     put_BrushGradient)
+    FUNCTION_WRAPPER_V8_2(_TransformPointX,       TransformPointX)
+    FUNCTION_WRAPPER_V8_2(_TransformPointY,       TransformPointY)
 
     v8::Handle<v8::ObjectTemplate> CreateGraphicsTemplate(v8::Isolate* isolate)
     {
@@ -215,9 +218,12 @@ namespace NSGraphics
         NSV8Objects::Template_Set(result, "DrawFootnoteRect",         _DrawFootnoteRect);
         NSV8Objects::Template_Set(result, "toDataURL",                _toDataURL);
         NSV8Objects::Template_Set(result, "GetPenColor",              _GetPenColor);
+        NSV8Objects::Template_Set(result, "GetBrushColor",            _GetBrushColor);
         NSV8Objects::Template_Set(result, "put_brushTexture",         _put_brushTexture);
         NSV8Objects::Template_Set(result, "put_BrushTextureAlpha",    _put_BrushTextureAlpha);
         NSV8Objects::Template_Set(result, "put_BrushGradient",        _put_BrushGradient);
+        NSV8Objects::Template_Set(result, "TransformPointX",          _TransformPointX);
+        NSV8Objects::Template_Set(result, "TransformPointY",          _TransformPointY);
 
         return handle_scope.Escape(result);
     }

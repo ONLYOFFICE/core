@@ -14,6 +14,10 @@ MyGraphics.p_color(PenColor.R, PenColor.G, PenColor.B, PenColor.A);
 MyGraphics.p_width(2);
 MyGraphics.p_dash([5, 5]);
 MyGraphics.b_color1(255, 255, 0, 255);
+
+var BrushColor = MyGraphics.GetBrushColor();
+MyGraphics.b_color1(BrushColor.R, BrushColor.G, BrushColor.B, BrushColor.A);
+
 MyGraphics._s();
 MyGraphics._m(10, 10);
 MyGraphics._l(100, 10);
@@ -112,5 +116,7 @@ MyGraphics.save();
 MyGraphics.put_brushTexture("pathtobrush", 0);
 MyGraphics.put_BrushTextureAlpha(255);
 MyGraphics.put_BrushGradient({colors : [{R : 255, G : 255, B : 255, A : 255}, {R : 255, G : 255, B : 255, A : 255}, {R : 255, G : 255, B : 255, A : 255}, {R : 255, G : 255, B : 255, A : 255}, {R : 255, G : 255, B : 255, A : 255}, {R : 255, G : 255, B : 255, A : 255}]}, {x0 : 0, y0 : 0, x1 : 0, y1 : 0, r0 : 0, r1 : 0}, null);
+var x = MyGraphics.TransformPointX(10, 10);
+var y = MyGraphics.TransformPointX(10, 10);
 
 MyGraphics.GetFont();

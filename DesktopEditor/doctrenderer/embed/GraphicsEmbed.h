@@ -120,9 +120,12 @@ public:
     // new methods
     JSSmart<CJSValue> toDataURL(JSSmart<CJSValue> type);
     JSSmart<CJSValue> GetPenColor();
+    JSSmart<CJSValue> GetBrushColor();
     JSSmart<CJSValue> put_brushTexture(JSSmart<CJSValue> src);
     JSSmart<CJSValue> put_BrushTextureAlpha(JSSmart<CJSValue> a);
     JSSmart<CJSValue> put_BrushGradient(JSSmart<CJSValue> colors, JSSmart<CJSValue> pos, JSSmart<CJSValue> n);
+    JSSmart<CJSValue> TransformPointX(JSSmart<CJSValue> x, JSSmart<CJSValue> y);
+    JSSmart<CJSValue> TransformPointY(JSSmart<CJSValue> x, JSSmart<CJSValue> y);
 
     static void CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context);
 };

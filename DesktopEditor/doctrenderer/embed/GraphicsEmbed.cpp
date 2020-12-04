@@ -462,6 +462,16 @@ JSSmart<CJSValue> CGraphicsEmbed::GetPenColor()
     e->set("A", res.a);
     return e->toValue();
 }
+JSSmart<CJSValue> CGraphicsEmbed::GetBrushColor()
+{
+    JSSmart<CJSObject> e = CJSContext::createObject();
+    NSGraphics::CColor res = m_pInternal->GetBrushColor();
+    e->set("R", res.r);
+    e->set("G", res.g);
+    e->set("B", res.b);
+    e->set("A", res.a);
+    return e->toValue();
+}
 JSSmart<CJSValue> CGraphicsEmbed::put_brushTexture(JSSmart<CJSValue> src)
 {
     m_pInternal->put_brushTexture(src->toStringW());
@@ -505,4 +515,12 @@ JSSmart<CJSValue> CGraphicsEmbed::put_BrushGradient(JSSmart<CJSValue> colors, JS
     RELEASEARRAYOBJECTS(color);
     RELEASEARRAYOBJECTS(pos);
     return NULL;
+}
+JSSmart<CJSValue> CGraphicsEmbed::TransformPointX(JSSmart<CJSValue> x, JSSmart<CJSValue> y)
+{
+    return CJSContext::createDouble(m_pInternal->TransformPointX(x->toDouble(), y->toDouble()));
+}
+JSSmart<CJSValue> CGraphicsEmbed::TransformPointY(JSSmart<CJSValue> x, JSSmart<CJSValue> y)
+{
+    return CJSContext::createDouble(m_pInternal->TransformPointY(x->toDouble(), y->toDouble()));
 }

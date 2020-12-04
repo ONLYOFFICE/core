@@ -213,9 +213,12 @@ namespace NSGraphics
         // new methods
         std::wstring toDataURL(std::wstring type);
         CColor GetPenColor();
+        CColor GetBrushColor();
         void put_brushTexture(std::wstring src);
         void put_BrushTextureAlpha(int a);
         void put_BrushGradient(int* pColors, double* pPositions, size_t nCount);
+        double TransformPointX(double x,  double y);
+        double TransformPointY(double x,  double y);
     };
 }
 

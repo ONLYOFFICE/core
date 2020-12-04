@@ -209,9 +209,11 @@ public:
 		size_t nCount = m_arRecords.size();
 		while(0 != nCount) 
 		{ 
-			if (NULL != m_arRecords[nCount-1])
-				delete m_arRecords[nCount-1]; 
-			
+            if (NULL != m_arRecords[nCount-1])
+            {
+                delete m_arRecords[nCount-1];
+                m_arRecords[nCount-1] = NULL;
+            }
 			m_arRecords.pop_back();
 			--nCount;
 		} 

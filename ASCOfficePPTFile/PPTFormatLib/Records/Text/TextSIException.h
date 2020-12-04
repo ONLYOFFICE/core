@@ -36,6 +36,13 @@ namespace PPT_FORMAT
 {
 struct SSmartTags
 {
+    SSmartTags(){}
+    SSmartTags(const SSmartTags& other)
+    {
+        m_count = other.m_count;
+        m_rgSmartTagIndex = other.m_rgSmartTagIndex;
+    }
+    ~SSmartTags(){}
     _UINT32                 m_count;
     std::vector<_UINT32>    m_rgSmartTagIndex;
 
@@ -53,6 +60,14 @@ struct SSmartTags
 
 struct STextSIException
 {
+    STextSIException()
+    {
+
+    }
+    ~STextSIException()
+    {
+
+    }
     bool m_spell;
     bool m_lang;
     bool m_altLang;
@@ -70,7 +85,7 @@ struct STextSIException
     nullable_uint   m_pp10runid;  // 4 bits
     nullable_bool   m_grammarError;
 
-    nullable<SSmartTags>      m_smartTags;
+//    nullable<SSmartTags>      m_smartTags;
 
     void ReadFromStream(POLE::Stream* pStream)
     {
@@ -106,8 +121,9 @@ struct STextSIException
 
         if (m_smartTag)
         {
-            m_smartTags = new SSmartTags;
-            m_smartTags->ReadFromStream(pStream);
+            StreamUtils::StreamSkip(StreamUtils::ReadDWORD(pStream) * 4, pStream);
+//            m_smartTags = new SSmartTags;
+//            m_smartTags->ReadFromStream(pStream);
         }
     }
 };

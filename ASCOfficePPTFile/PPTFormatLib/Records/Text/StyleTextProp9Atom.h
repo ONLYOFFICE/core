@@ -58,8 +58,6 @@ class CRecordStyleTextProp9Atom : public CUnknownRecord
 public:
     virtual ~CRecordStyleTextProp9Atom()
     {
-        for (auto pEl : m_rgStyleTextProp9)
-            RELEASEOBJECT(pEl)
     }
 
     virtual void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
@@ -71,16 +69,15 @@ public:
 
         while(lCurPos < lEndPos)
         {
-            auto pRec = new SStyleTextProp9;
-            pRec->ReadFromStream(pStream);
-            m_rgStyleTextProp9.push_back(pRec);
+            SStyleTextProp9 rec;
+            rec.ReadFromStream(pStream);
+            m_rgStyleTextProp9.push_back(rec);
 
             StreamUtils::StreamPosition(lCurPos, pStream);
         }
-        StreamUtils::StreamPosition(lCurPos, pStream);
     }
 
 public:
-    std::vector<SStyleTextProp9* > m_rgStyleTextProp9;
+    std::vector<SStyleTextProp9> m_rgStyleTextProp9;
 };
 }

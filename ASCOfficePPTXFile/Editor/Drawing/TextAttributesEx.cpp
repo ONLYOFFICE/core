@@ -253,10 +253,10 @@ namespace PPT_FORMAT
                         m_arParagraphs[nIndexP].m_oPFRun.bulletFontProperties.reset();
                         m_arParagraphs[nIndexP].m_oPFRun.bulletFontProperties = new CFontProperty(pTheme->m_arFonts[ref]);
                     }
-                    if (ref < (int)pTheme->m_arBullet.size())
+                    if (0 < (int)pTheme->m_arBullet.size())
                     {
                         m_arParagraphs[nIndexP].m_oPFRun.bulletAutoNum.reset();
-                        m_arParagraphs[nIndexP].m_oPFRun.bulletAutoNum = new CBulletAutoNum(pTheme->m_arBullet[ref]);
+                        m_arParagraphs[nIndexP].m_oPFRun.bulletAutoNum = new CBulletAutoNum(pTheme->m_arBullet[0]);
                     }
                 }
 

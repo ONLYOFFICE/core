@@ -43,6 +43,9 @@ exported_functions = ["_malloc",
                       "_Spellchecker_Spell",
                       "_Spellchecker_Suggest"]
 
+version_hunspell = 13
+libhunspell_src_path = "./../../hunspell"
+
 input_sources = ["affentry.cxx",
                  "affixmgr.cxx",
                  "csutil.cxx",
@@ -54,12 +57,16 @@ input_sources = ["affentry.cxx",
                  "replist.cxx",
                  "suggestmgr.cxx"]
 
-libhunspell_src_path = "./../../hunspell"
 sources = []
 for item in input_sources:
-  sources.append(libhunspell_src_path + "/" + item)
+  if base.is_file(libhunspell_src_path + "/" + item):
+    sources.append(libhunspell_src_path + "/" + item)
 
-sources.append("./src/filemgr_wrapper.cxx")
+if (13 == version_hunspell):
+  sources.append("./src/filemgr_wrapper.cxx")
+else:
+  sources.append("./src/filemgr_wrapper_new.cxx")
+
 sources.append("./src/base.cpp")
 
 compiler_flags.append("-I" + libhunspell_src_path)

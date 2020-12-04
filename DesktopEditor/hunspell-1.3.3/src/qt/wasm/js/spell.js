@@ -47,6 +47,9 @@ function onMessageEvent(data, port)
             return;
         self.spellchecker = new Spellchecker();
         self.spellchecker.languagesPath = data.dictionaries_path;
+        var languages = data.languages;
+        for (var i in languages)
+        	self.spellchecker.addDefaultLanguage(i, languages[i]);
         self.spellchecker.init();
         return;
     }
@@ -111,6 +114,9 @@ function Dictionary()
 
         xhr.onload = function()
         {
+        	if (xhr.sender.status >= 2)
+        		return;
+
         	if (this.response && this.status == 200)
             {
                 var uintData = new Uint8Array(this.response);
@@ -137,14 +143,31 @@ function Dictionary()
             	self.spellchecker.onLoadDictionary(this.sender);
             }
         };
+        xhr.onerror = function()
+        {
+        	xhr.sender.status = 2;
+        	self.spellchecker.onLoadDictionary(this.sender);
+        }
 
         xhr.send(null);
 	}
 
 	this.load = function()
 	{
+		if (!this.language)
+		{
+			this.status = 2;
+			self.spellchecker.onLoadDictionary(this);
+			return;
+		}
 		this.load_file(self.spellchecker.languagesPath + "/" + this.language.aff, "aff");
 		this.load_file(self.spellchecker.languagesPath + "/" + this.language.dic, "dic");
+	};
+
+	this.freeUnusedData = function()
+	{
+		this.dataAff = null;
+		this.dataDic = null;
 	};
 }
 
@@ -172,54 +195,14 @@ function Spellchecker()
 		};
 	};
 
-	this.addDefaultLanguage(1068, "az_Latn_AZ");
-	this.addDefaultLanguage(1026, "bg_BG");
-	this.addDefaultLanguage(1027, "ca_ES");
-	this.addDefaultLanguage(2051, "ca_ES_valencia");
-	this.addDefaultLanguage(1029, "cs_CZ");
-	this.addDefaultLanguage(1030, "da_DK");
-	this.addDefaultLanguage(3079, "de_AT");
-	this.addDefaultLanguage(2055, "de_CH");
-	this.addDefaultLanguage(1031, "de_DE");
-	this.addDefaultLanguage(1032, "el_GR");
-	this.addDefaultLanguage(3081, "en_AU");
-	this.addDefaultLanguage(4105, "en_CA");
-	this.addDefaultLanguage(2057, "en_GB");
-	this.addDefaultLanguage(1033, "en_US");
-	this.addDefaultLanguage(7177, "en_ZA");
-	this.addDefaultLanguage(3082, "es_ES");
-	this.addDefaultLanguage(1069, "eu_ES");
-	this.addDefaultLanguage(1036, "fr_FR");
-	this.addDefaultLanguage(1110, "gl_ES");
-	this.addDefaultLanguage(1050, "hr_HR");
-	this.addDefaultLanguage(1038, "hu_HU");
-	this.addDefaultLanguage(1057, "id_ID");
-	this.addDefaultLanguage(1040, "it_IT");
-	this.addDefaultLanguage(1087, "kk_KZ");
-	this.addDefaultLanguage(1042, "ko_KR");
-	this.addDefaultLanguage(1134, "lb_LU");
-	this.addDefaultLanguage(1063, "lt_LT");
-	this.addDefaultLanguage(1062, "lv_LV");
-	this.addDefaultLanguage(1104, "mn_MN");
-	this.addDefaultLanguage(1044, "nb_NO");
-	this.addDefaultLanguage(1043, "nl_NL");
-	this.addDefaultLanguage(2068, "nn_NO");
-	this.addDefaultLanguage(1045, "pl_PL");
-	this.addDefaultLanguage(1046, "pt_BR");
-	this.addDefaultLanguage(2070, "pt_PT");
-	this.addDefaultLanguage(1048, "ro_RO");
-	this.addDefaultLanguage(1049, "ru_RU");
-	this.addDefaultLanguage(1051, "sk_SK");
-	this.addDefaultLanguage(1060, "sl_SI");
-	this.addDefaultLanguage(10266, "sr_Cyrl_RS");
-	this.addDefaultLanguage(9242, "sr_Latn_RS");
-	this.addDefaultLanguage(1053, "sv_SE");
-	this.addDefaultLanguage(1055, "tr_TR");
-	this.addDefaultLanguage(1058, "uk_UA");
-	this.addDefaultLanguage(1066, "vi_VN");
-
 	this.onLoadDictionary = function(dictionary)
 	{
+		if (!dictionary.dataAff || !dictionary.dataDic)
+		{
+			this.checkMessage();
+			return;
+		}
+
 		var aff_path = this.allocString(dictionary.id + ".aff");
 		var dic_path = this.allocString(dictionary.id + ".dic");
 
@@ -233,6 +216,8 @@ function Spellchecker()
 
 		this.freeString(aff_path);
 		this.freeString(dic_path);
+
+		dictionary.freeUnusedData();
 
 		this.checkMessage();
 	};

@@ -111,6 +111,7 @@ namespace NSJSBase
 
         virtual int getCount()          = 0;
         virtual const BYTE* getData()   = 0;
+        virtual JSSmart<CJSValue> toValue() = 0;
     };
 
     class CJSFunction : public CJSValue
@@ -211,6 +212,7 @@ namespace NSJSBase
     public:
         static void ExternalInitialize();
         static void ExternalDispose();
+        static bool IsSupportNativeTypedArrays();
     };
 }
 

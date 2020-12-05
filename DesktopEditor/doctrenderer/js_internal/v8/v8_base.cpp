@@ -325,4 +325,8 @@ namespace NSJSBase
     {
         CV8Worker::Dispose();
     }
+    bool CJSContext::IsSupportNativeTypedArrays()
+    {
+        return true;
+    }
 }

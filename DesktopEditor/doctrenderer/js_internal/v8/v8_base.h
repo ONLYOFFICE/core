@@ -2,6 +2,7 @@
 #define _BUILD_NATIVE_CONTROL_V8_BASE_H_
 
 #include "../js_base.h"
+#include <iostream>
 
 #include "v8.h"
 #include "libplatform/libplatform.h"
@@ -563,6 +564,13 @@ namespace NSJSBase
         {
             return (BYTE*)value->Buffer()->Externalize().Data();
         }
+
+        virtual JSSmart<CJSValue> toValue()
+        {
+            CJSValueV8* _value = new CJSValueV8();
+            _value->value = value;
+            return _value;
+        }
     };
 
     class CJSFunctionV8 : public CJSValueV8Template<v8::Function, CJSFunction>
@@ -664,17 +672,9 @@ namespace NSJSBase
                 std::string strCode        = _line->toStringA();
                 std::string strException   = _exception->toStringA();
 
-#if 0 && !defined(__ANDROID__)
-                FILE* f = fopen("D:\\errors.txt", "a+");
-                fprintf(f, "error: ");
-                fprintf(f, strCode.c_str());
-                fprintf(f, "\n");
-                fprintf(f, strException.c_str());
-                fprintf(f, "\n");
-                fclose(f);
-#endif
-
-#ifdef __ANDROID__
+#ifndef __ANDROID__
+                std::cerr << strException << std::endl;
+#else
                 LOGE("NSJSBase::CV8TryCatch::Check() - error:");
                 LOGE(std::to_string(nLineNumber).c_str());
                 LOGE(strCode.c_str());

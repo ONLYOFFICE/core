@@ -344,10 +344,14 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_CatAx* axis)
 		if (axis->m_minorTickMark && axis->m_minorTickMark->m_val)
 			odf_context()->chart_context()->set_axis_tick_minor(*axis->m_minorTickMark->m_val);
 
-		if (axis->m_tickLblPos)
-		{
-			if (axis->m_tickLblPos->m_val)odf_context()->chart_context()->set_display_label_position(*axis->m_tickLblPos->m_val);
+		if ((axis->m_delete) && (axis->m_delete->m_val) && (*axis->m_delete->m_val))
+			odf_context()->chart_context()->set_display_label(false);
+		else
 			odf_context()->chart_context()->set_display_label(true);
+
+		if ((axis->m_tickLblPos) && (axis->m_tickLblPos->m_val))
+		{
+			odf_context()->chart_context()->set_display_label_position(*axis->m_tickLblPos->m_val);
 		}
 		if (axis->m_axPos && axis->m_axPos->m_val)
 			odf_context()->chart_context()->set_axis_position(*axis->m_axPos->m_val);
@@ -392,10 +396,14 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_DateAx* axis)
 		if (axis->m_minorTickMark && axis->m_minorTickMark->m_val)
 			odf_context()->chart_context()->set_axis_tick_minor(*axis->m_minorTickMark->m_val);
 
-		if (axis->m_tickLblPos)
-		{
-			if (axis->m_tickLblPos->m_val)odf_context()->chart_context()->set_display_label_position(*axis->m_tickLblPos->m_val);
+		if ((axis->m_delete) && (axis->m_delete->m_val) && (*axis->m_delete->m_val))
+			odf_context()->chart_context()->set_display_label(false);
+		else
 			odf_context()->chart_context()->set_display_label(true);
+
+		if ((axis->m_tickLblPos) && (axis->m_tickLblPos->m_val))
+		{
+			odf_context()->chart_context()->set_display_label_position(*axis->m_tickLblPos->m_val);
 		}
 		if (axis->m_axPos && axis->m_axPos->m_val)
 			odf_context()->chart_context()->set_axis_position(*axis->m_axPos->m_val);
@@ -436,10 +444,14 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_SerAx* axis)
 		if (axis->m_minorTickMark && axis->m_minorTickMark->m_val)
 			odf_context()->chart_context()->set_axis_tick_minor(*axis->m_minorTickMark->m_val);
 
-		if (axis->m_tickLblPos)
-		{
-			if (axis->m_tickLblPos->m_val)odf_context()->chart_context()->set_display_label_position(*axis->m_tickLblPos->m_val);
+		if ((axis->m_delete) && (axis->m_delete->m_val) && (*axis->m_delete->m_val))
+			odf_context()->chart_context()->set_display_label(false);
+		else
 			odf_context()->chart_context()->set_display_label(true);
+
+		if ((axis->m_tickLblPos) && (axis->m_tickLblPos->m_val))
+		{
+			odf_context()->chart_context()->set_display_label_position(*axis->m_tickLblPos->m_val);
 		}
 
 		if (axis->m_axPos && axis->m_axPos->m_val)
@@ -482,10 +494,14 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ValAx* axis)
 		if (axis->m_minorTickMark && axis->m_minorTickMark->m_val)
 			odf_context()->chart_context()->set_axis_tick_minor(*axis->m_minorTickMark->m_val);
 
-		if (axis->m_tickLblPos)
-		{
-			if (axis->m_tickLblPos->m_val)odf_context()->chart_context()->set_display_label_position(*axis->m_tickLblPos->m_val);
+		if ((axis->m_delete) && (axis->m_delete->m_val) && (*axis->m_delete->m_val))
+			odf_context()->chart_context()->set_display_label(false);
+		else
 			odf_context()->chart_context()->set_display_label(true);
+		
+		if ((axis->m_tickLblPos) && (axis->m_tickLblPos->m_val))
+		{
+			odf_context()->chart_context()->set_display_label_position(*axis->m_tickLblPos->m_val);
 		}
 		if (axis->m_axPos && axis->m_axPos->m_val)
 			odf_context()->chart_context()->set_axis_position(*axis->m_axPos->m_val);

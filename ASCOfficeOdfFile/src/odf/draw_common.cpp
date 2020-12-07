@@ -292,7 +292,7 @@ void Compute_GradientFill(draw_gradient * image_style,oox::oox_gradient_fill_ptr
 	int style =0;
 	if (image_style->draw_style_)style = image_style->draw_style_->get_type();
 
-	if (image_style->draw_angle_)fill->angle = 90 - *image_style->draw_angle_/10.;
+	if (image_style->draw_angle_) fill->angle = 90 - image_style->draw_angle_->get_value();
 	if (fill->angle < 0) fill->angle +=360;
 
 	oox::oox_gradient_fill::_color_position point={};

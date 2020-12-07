@@ -63,7 +63,6 @@
 #include "../OdfFormat/style_graphic_properties.h"
 #include "../OdfFormat/styles_list.h"
 
-
 using namespace cpdoccore;
 
 std::vector<double> current_font_size;
@@ -2052,8 +2051,43 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 		//odt_context->set_master_page_name(odt_context->page_layout_context()->last_master() ?
 		//									  odt_context->page_layout_context()->last_master()->get_name() : L"");
 	}
+	if (oox_section_pr->m_oLnNumType.IsInit())
+	{//linenumbering-configuration один для всех секций и всех разметок страниц ((( - хуевый OpenOffice (также не начала нумерации)
+		//Ms Office тоже фуфло - нет нумерации алфавитами и римскими, нет разделителей
+		odf_writer::office_element_ptr lnNum_elm;
+		odf_writer::create_element(L"text", L"linenumbering-configuration", lnNum_elm, odf_context());
 
-//--------------------------------------------------------------------------------------------------------------------------------------------		
+		odf_writer::text_linenumbering_configuration *linenumbering = dynamic_cast<odf_writer::text_linenumbering_configuration *>(lnNum_elm.get());
+		if (!linenumbering) return;
+
+		linenumbering->text_style_name_ = odt_context->styles_context()->find_free_name(style_family::LineNumbering);
+		linenumbering->text_number_lines_ = true;
+
+		if (oox_section_pr->m_oLnNumType->m_oCountBy.IsInit())
+		{
+			linenumbering->text_increment_ = oox_section_pr->m_oLnNumType->m_oCountBy->GetValue();
+		}
+		if (oox_section_pr->m_oLnNumType->m_oDistance.IsInit())
+		{
+			linenumbering->text_offset_ = odf_types::length(oox_section_pr->m_oLnNumType->m_oDistance->ToPoints(), odf_types::length::pt);
+					}
+		if (oox_section_pr->m_oLnNumType->m_oRestart.IsInit())
+		{
+			if (oox_section_pr->m_oLnNumType->m_oRestart->GetValue() == SimpleTypes::linenumberrestartNewPage)
+			{
+				linenumbering->text_restart_on_page_ = true;
+			}
+			else
+			{
+			}
+		}
+		if (oox_section_pr->m_oLnNumType->m_oStart.IsInit())
+		{
+		}
+		odt_context->styles_context()->add_style(lnNum_elm, false, true, style_family::LineNumbering);
+
+	}
+//------------------------------------------------------------------------------------------------------------------------------------------		
 	// то что относится собственно к секциям-разделам
 
 			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oBidi;
@@ -2062,7 +2096,6 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 			//nullable<OOX::Logic::CFtnProps                               > m_oFootnotePr;
 			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oFormProt;
 
-			//nullable<ComplexTypes::Word::CLineNumber                     > m_oLnNumType;
 			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oNoEndnote;
 			//nullable<ComplexTypes::Word::CPaperSource                    > m_oPaperSrc;
 
@@ -2809,16 +2842,19 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 	}
 	if (oox_run_pr->m_oHighlight.IsInit() && oox_run_pr->m_oHighlight->m_oVal.IsInit())
 	{
-		BYTE ucR = oox_run_pr->m_oHighlight->m_oVal->Get_R(); 
-		BYTE ucB = oox_run_pr->m_oHighlight->m_oVal->Get_B(); 
-		BYTE ucG = oox_run_pr->m_oHighlight->m_oVal->Get_G(); 
-		SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR,ucG,ucB);
-
-        if (oRgbColor)
+		if (oox_run_pr->m_oHighlight->m_oVal->GetValue() != SimpleTypes::highlightcolorNone)
 		{
-            std::wstring strColor = L"#" + oRgbColor->ToString().substr(2);//.Right(6);
-			text_properties->content_.fo_background_color_ = odf_types::color(strColor);
-			delete oRgbColor;
+			BYTE ucR = oox_run_pr->m_oHighlight->m_oVal->Get_R();
+			BYTE ucB = oox_run_pr->m_oHighlight->m_oVal->Get_B();
+			BYTE ucG = oox_run_pr->m_oHighlight->m_oVal->Get_G();
+			SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR, ucG, ucB);
+
+			if (oRgbColor)
+			{
+				std::wstring strColor = L"#" + oRgbColor->ToString().substr(2);//.Right(6);
+				text_properties->content_.fo_background_color_ = odf_types::color(strColor);
+				delete oRgbColor;
+			}
 		}
 	}
 	
@@ -3523,7 +3559,7 @@ void DocxConverter::convert_lists_styles()
 
 	oox_current_child_document = dynamic_cast<OOX::IFileContainer*>(lists_styles);
 
-	for (size_t i=0; i < lists_styles->m_arrNum.size(); i++)
+	for (size_t i = 0; i < lists_styles->m_arrNum.size(); i++)
 	{
 		if (lists_styles->m_arrNum[i] == NULL) continue;
 
@@ -3534,17 +3570,20 @@ void DocxConverter::convert_lists_styles()
 		if (lists_styles->m_arrNum[i]->m_oAbstractNumId.IsInit() &&  lists_styles->m_arrNum[i]->m_oAbstractNumId->m_oVal.IsInit())
 			abstr_num = *lists_styles->m_arrNum[i]->m_oAbstractNumId->m_oVal;			
 
-		OOX::Numbering::CAbstractNum* num_style = lists_styles->m_arrAbstractNum[abstr_num];		
+		std::map<int, size_t>::iterator pFindAbstractNum = lists_styles->m_mapAbstractNum.find(abstr_num);		
+		if (pFindAbstractNum == lists_styles->m_mapAbstractNum.end()) continue;
+		
+		OOX::Numbering::CAbstractNum* num_style = lists_styles->m_arrAbstractNum[pFindAbstractNum->second];
 		if (!num_style) continue;
 
 		odt_context->styles_context()->lists_styles().start_style(true, *lists_styles->m_arrNum[i]->m_oNumId);
-		for (int i = 0; i < 9; ++i)
+		for (int j = 0; j < 9; ++j)
 		{
 			OOX::Numbering::CLvl* pLvl = NULL;
 			OOX::Numbering::CNumLvl* pOverrideLvl = NULL;
 
-			std::map<int, size_t>::iterator pFindLvl = num_style->m_mapLvl.find(i);
-			std::map<int, size_t>::iterator pFindOverrideLvl = lists_styles->m_arrNum[i]->m_mapLvlOverride.find(i);			
+			std::map<int, size_t>::iterator pFindLvl = num_style->m_mapLvl.find(j);
+			std::map<int, size_t>::iterator pFindOverrideLvl = lists_styles->m_arrNum[i]->m_mapLvlOverride.find(j);			
 
 			if (pFindLvl != num_style->m_mapLvl.end())
 				pLvl = num_style->m_arrLvl[pFindLvl->second];
@@ -3552,7 +3591,7 @@ void DocxConverter::convert_lists_styles()
 			if (pFindOverrideLvl != lists_styles->m_arrNum[i]->m_mapLvlOverride.end())
 				pOverrideLvl = lists_styles->m_arrNum[i]->m_arrLvlOverride[pFindOverrideLvl->second];
 
-			convert(pLvl, pOverrideLvl, i);
+			convert(pLvl, pOverrideLvl, j);
 		}
 
 		odt_context->styles_context()->lists_styles().end_style();

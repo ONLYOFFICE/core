@@ -65,6 +65,7 @@ namespace cpdoccore {
 		class office_element;
 		class style_columns;
 		class form_element;
+		class text_linenumbering_configuration;
 
 		namespace text
 		{
@@ -1062,7 +1063,6 @@ private:
 	std::map<std::wstring, std::vector<odf_reader::office_element_ptr>> mapAlphabeticals;
 
 	std::vector<std::wstring>											arBibliography;
-
 };
 
 }

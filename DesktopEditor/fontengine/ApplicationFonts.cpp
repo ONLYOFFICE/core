@@ -80,21 +80,45 @@ namespace NSFonts
         return sRet;
     }
 
+    namespace NSBinarySerialize
+    {
+        template <class T>
+        T Read(BYTE*& pBuffer)
+        {
+            T ret = 0;
+#ifdef _ARM_ALIGN_
+            memcpy(&ret, pBuffer, sizeof(T));
+#else
+            ret = *((T*)pBuffer);
+#endif
+            pBuffer += sizeof(T);
+            return ret;
+        }
+        template <class T>
+        void Write(BYTE*& pBuffer, const T& value)
+        {
+#ifdef _ARM_ALIGN_
+            memcpy(pBuffer, &value, sizeof(T));
+#else
+            *((T*)(pBuffer)) = value;
+#endif
+            pBuffer += sizeof(T);
+        }
+    }
+
     void WriteUtf8ToBuffer(BYTE*& pBuffer, const std::wstring& value)
     {
         std::string sUtf8 = U_TO_UTF8(value);
         size_t len = sUtf8.length();
 
-        *((INT*)(pBuffer)) = (INT)len;
-        pBuffer += sizeof(INT);
+        NSBinarySerialize::Write<INT>(pBuffer, (int)len);
 
         memcpy(pBuffer, sUtf8.c_str(), len);
         pBuffer += len;
     }
     std::wstring ReadUtf8FromBuffer(BYTE*& pBuffer)
     {
-        int nLen = *((INT*)pBuffer);
-        pBuffer += sizeof(INT);
+        int nLen = NSBinarySerialize::Read<INT>(pBuffer);
 
         std::wstring value = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pBuffer, (LONG)nLen);
         pBuffer += nLen;
@@ -111,8 +135,7 @@ namespace NSFonts
     {
         std::wstring sName = ReadUtf8FromBuffer(pBuffer);
 
-        int nNamesCount = *((int*)pBuffer);
-        pBuffer += sizeof(int);
+        int nNamesCount = NSBinarySerialize::Read<INT>(pBuffer);
 
         std::vector<std::wstring> names;
         for (int i = 0; i < nNamesCount; ++i)
@@ -122,93 +145,33 @@ namespace NSFonts
 
         string_replace(sPath, L"\\", L"/");
 
-        // index
-        LONG lIndex = *((int*)pBuffer);
-        pBuffer += sizeof(int);
+        LONG lIndex = NSBinarySerialize::Read<INT>(pBuffer);
+        INT bItalic = NSBinarySerialize::Read<INT>(pBuffer);
+        INT bBold = NSBinarySerialize::Read<INT>(pBuffer);
+        INT bFixedWidth = NSBinarySerialize::Read<INT>(pBuffer);
 
-        // italic
-        INT bItalic = *((INT*)pBuffer);
-        pBuffer += sizeof(INT);
-
-        // bold
-        INT bBold = *((INT*)pBuffer);
-        pBuffer += sizeof(INT);
-
-        // FixedWidth
-        INT bFixedWidth = *((INT*)pBuffer);
-        pBuffer += sizeof(INT);
-
-        // Panose
-        INT lLen = *((int*)pBuffer); // должно быть равно 10
-        pBuffer += sizeof(int);
-
+        INT lLen = NSBinarySerialize::Read<INT>(pBuffer); // должно быть равно 10
         BYTE pPanose[10];
         memcpy( (void *)pPanose, (const void *)pBuffer, 10 );
         pBuffer += lLen;
 
-        // ulUnicodeRange1
-        UINT ulRange1 = *((UINT*)pBuffer);
-        pBuffer += sizeof(UINT);
+        UINT ulRange1 = NSBinarySerialize::Read<UINT>(pBuffer);
+        UINT ulRange2 = NSBinarySerialize::Read<UINT>(pBuffer);
+        UINT ulRange3 = NSBinarySerialize::Read<UINT>(pBuffer);
+        UINT ulRange4 = NSBinarySerialize::Read<UINT>(pBuffer);
+        ULONG ulCodeRange1 = NSBinarySerialize::Read<UINT>(pBuffer);
+        ULONG ulCodeRange2 = NSBinarySerialize::Read<UINT>(pBuffer);
 
-        // ulUnicodeRange2
-        UINT ulRange2 = *((UINT*)pBuffer);
-        pBuffer += sizeof(UINT);
-
-        // ulUnicodeRange3
-        UINT ulRange3 = *((UINT*)pBuffer);
-        pBuffer += sizeof(UINT);
-
-        // ulUnicodeRange4
-        UINT ulRange4 = *((UINT*)pBuffer);
-        pBuffer += sizeof(UINT);
-
-        // ulCodePageRange1
-        UINT ulCodeRange1 = *((UINT*)pBuffer);
-        pBuffer += sizeof(UINT);
-
-        // ulCodePageRange2
-        ULONG ulCodeRange2 = *((UINT*)pBuffer);
-        pBuffer += sizeof(UINT);
-
-        // usWeightClass
-        USHORT usWeight = *((USHORT*)pBuffer);
-        pBuffer += sizeof(USHORT);
-
-        // usWidthClass
-        USHORT usWidth = *((USHORT*)pBuffer);
-        pBuffer += sizeof(USHORT);
-
-        // sFamilyClass
-        SHORT sFamilyClass = *((SHORT*)pBuffer);
-        pBuffer += sizeof(SHORT);
-
-        // FontFormat
-        SHORT sFormat = *((SHORT*)pBuffer);
-        pBuffer += sizeof(SHORT);
-
-        // AvgCharWidth
-        SHORT shAvgCharWidth = *((SHORT*)pBuffer);
-        pBuffer += sizeof(SHORT);
-
-        // Ascent
-        SHORT shAscent = *((SHORT*)pBuffer);
-        pBuffer += sizeof(SHORT);
-
-        // Descent
-        SHORT shDescent = *((SHORT*)pBuffer);
-        pBuffer += sizeof(SHORT);
-
-        // LineGap
-        SHORT shLineGap = *((SHORT*)pBuffer);
-        pBuffer += sizeof(SHORT);
-
-        // XHeight
-        SHORT shXHeight = *((SHORT*)pBuffer);
-        pBuffer += sizeof(SHORT);
-
-        // CapHeight
-        SHORT shCapHeight = *((SHORT*)pBuffer);
-        pBuffer += sizeof(SHORT);
+        USHORT usWeight = NSBinarySerialize::Read<USHORT>(pBuffer);
+        USHORT usWidth = NSBinarySerialize::Read<USHORT>(pBuffer);
+        SHORT sFamilyClass = NSBinarySerialize::Read<SHORT>(pBuffer);
+        SHORT sFormat = NSBinarySerialize::Read<SHORT>(pBuffer);
+        SHORT shAvgCharWidth = NSBinarySerialize::Read<SHORT>(pBuffer);
+        SHORT shAscent = NSBinarySerialize::Read<SHORT>(pBuffer);
+        SHORT shDescent = NSBinarySerialize::Read<SHORT>(pBuffer);
+        SHORT shLineGap = NSBinarySerialize::Read<SHORT>(pBuffer);
+        SHORT shXHeight = NSBinarySerialize::Read<SHORT>(pBuffer);
+        SHORT shCapHeight = NSBinarySerialize::Read<SHORT>(pBuffer);
 
         if (sPath.find(wchar_t('/')) == std::wstring::npos)
             sPath = strDir + sPath;
@@ -285,102 +248,41 @@ namespace NSFonts
         WriteUtf8ToBuffer(pBuffer, pInfo->m_wsFontName);
 
         int nNamesCount = (int)pInfo->names.size();
-        *((INT*)(pBuffer)) = (INT)nNamesCount;
-        pBuffer += sizeof(INT);
+        NSBinarySerialize::Write<INT>(pBuffer, nNamesCount);
 
         for (int i = 0; i < nNamesCount; ++i)
             WriteUtf8ToBuffer(pBuffer, pInfo->names[i]);
 
         WriteUtf8ToBuffer(pBuffer, sPath);
 
-        // index
-        *((INT*)(pBuffer))	= (INT)pInfo->m_lIndex;
-        pBuffer += sizeof(INT);
-
-        // italic
-        *((INT*)(pBuffer))	= pInfo->m_bItalic;
-        pBuffer += sizeof(INT);
-
-        // bold
-        *((INT*)(pBuffer))	= pInfo->m_bBold;
-        pBuffer += sizeof(INT);
-
-        // FixedWidth
-        *((INT*)pBuffer) = pInfo->m_bIsFixed;
-        pBuffer += sizeof(INT);
+        NSBinarySerialize::Write<INT>(pBuffer, (INT)pInfo->m_lIndex);
+        NSBinarySerialize::Write<INT>(pBuffer, pInfo->m_bItalic);
+        NSBinarySerialize::Write<INT>(pBuffer, pInfo->m_bBold);
+        NSBinarySerialize::Write<INT>(pBuffer, pInfo->m_bIsFixed);
 
         // Panose
         INT lLen = 10;
-
-        *((INT*)(pBuffer))	= lLen;
-        pBuffer += sizeof(INT);
-
+        NSBinarySerialize::Write<INT>(pBuffer, lLen);
         memcpy( (void *)pBuffer, (const void *)pInfo->m_aPanose, lLen );
         pBuffer += lLen;
 
-        // ulUnicodeRange1
-        *((UINT*)pBuffer) = (UINT)pInfo->m_ulUnicodeRange1;
-        pBuffer += sizeof(UINT);
+        NSBinarySerialize::Write<UINT>(pBuffer, (UINT)pInfo->m_ulUnicodeRange1);
+        NSBinarySerialize::Write<UINT>(pBuffer, (UINT)pInfo->m_ulUnicodeRange2);
+        NSBinarySerialize::Write<UINT>(pBuffer, (UINT)pInfo->m_ulUnicodeRange3);
+        NSBinarySerialize::Write<UINT>(pBuffer, (UINT)pInfo->m_ulUnicodeRange4);
+        NSBinarySerialize::Write<UINT>(pBuffer, (UINT)pInfo->m_ulCodePageRange1);
+        NSBinarySerialize::Write<UINT>(pBuffer, (UINT)pInfo->m_ulCodePageRange2);
 
-        // ulUnicodeRange2
-        *((UINT*)pBuffer) = (UINT)pInfo->m_ulUnicodeRange2;
-        pBuffer += sizeof(UINT);
-
-        // ulUnicodeRange3
-        *((UINT*)pBuffer) = (UINT)pInfo->m_ulUnicodeRange3;
-        pBuffer += sizeof(UINT);
-
-        // ulUnicodeRange4
-        *((UINT*)pBuffer) = (UINT)pInfo->m_ulUnicodeRange4;
-        pBuffer += sizeof(UINT);
-
-        // ulCodePageRange1
-        *((UINT*)pBuffer) = (UINT)pInfo->m_ulCodePageRange1;
-        pBuffer += sizeof(UINT);
-
-        // ulCodePageRange2
-        *((UINT*)pBuffer) = (UINT)pInfo->m_ulCodePageRange2;
-        pBuffer += sizeof(UINT);
-
-        // usWeightClass
-        *((USHORT*)pBuffer) = pInfo->m_usWeigth;
-        pBuffer += sizeof(USHORT);
-
-        // usWidthClass
-        *((USHORT*)pBuffer) = pInfo->m_usWidth;
-        pBuffer += sizeof(USHORT);
-
-        // sFamilyClass
-        *((SHORT*)pBuffer) = pInfo->m_sFamilyClass;
-        pBuffer += sizeof(SHORT);
-
-        // FontFormat
-        *((SHORT*)pBuffer) = (SHORT)pInfo->m_eFontFormat;
-        pBuffer += sizeof(SHORT);
-
-        // AvgCharWidth
-        *((SHORT*)pBuffer) = (SHORT)pInfo->m_shAvgCharWidth;
-        pBuffer += sizeof(SHORT);
-
-        // Ascent
-        *((SHORT*)pBuffer) = (SHORT)pInfo->m_shAscent;
-        pBuffer += sizeof(SHORT);
-
-        // Descent
-        *((SHORT*)pBuffer) = (SHORT)pInfo->m_shDescent;
-        pBuffer += sizeof(SHORT);
-
-        // LineGap
-        *((SHORT*)pBuffer) = (SHORT)pInfo->m_shLineGap;
-        pBuffer += sizeof(SHORT);
-
-        // XHeight
-        *((SHORT*)pBuffer) = (SHORT)pInfo->m_shXHeight;
-        pBuffer += sizeof(SHORT);
-
-        // CapHeight
-        *((SHORT*)pBuffer) = (SHORT)pInfo->m_shCapHeight;
-        pBuffer += sizeof(SHORT);
+        NSBinarySerialize::Write<USHORT>(pBuffer, pInfo->m_usWeigth);
+        NSBinarySerialize::Write<USHORT>(pBuffer, pInfo->m_usWidth);
+        NSBinarySerialize::Write<SHORT>(pBuffer, pInfo->m_sFamilyClass);
+        NSBinarySerialize::Write<SHORT>(pBuffer, pInfo->m_eFontFormat);
+        NSBinarySerialize::Write<SHORT>(pBuffer, pInfo->m_shAvgCharWidth);
+        NSBinarySerialize::Write<SHORT>(pBuffer, pInfo->m_shAscent);
+        NSBinarySerialize::Write<SHORT>(pBuffer, pInfo->m_shDescent);
+        NSBinarySerialize::Write<SHORT>(pBuffer, pInfo->m_shLineGap);
+        NSBinarySerialize::Write<SHORT>(pBuffer, pInfo->m_shXHeight);
+        NSBinarySerialize::Write<SHORT>(pBuffer, pInfo->m_shCapHeight);
     }
 
     // version 1
@@ -406,8 +308,7 @@ namespace NSFonts
         if (2 == sizeof(wchar_t))
         {
             int nLen = (int)(2 * (value.length() + 1));
-            *((INT*)(pBuffer)) = (INT)nLen;
-            pBuffer += sizeof(INT);
+            NSBinarySerialize::Write<INT>(pBuffer, nLen);
 
             memcpy(pBuffer, value.c_str(), nLen);
             pBuffer += nLen;
@@ -419,8 +320,7 @@ namespace NSFonts
 
             int nLen = sUtf16.Length + 2;
 
-            *((INT*)(pBuffer)) = (INT)nLen;
-            pBuffer += sizeof(INT);
+            NSBinarySerialize::Write<INT>(pBuffer, nLen);
 
             memcpy(pBuffer, sUtf16.Data, nLen);
             pBuffer += nLen;
@@ -462,94 +362,34 @@ namespace NSFonts
         WriteUtf16ToBuffer(pBuffer, pInfo->m_wsFontName);
         WriteUtf16ToBuffer(pBuffer, sPath);
 
-        // index
-        *((INT*)(pBuffer))	= (INT)pInfo->m_lIndex;
-        pBuffer += sizeof(INT);
-
-        // italic
-        *((INT*)(pBuffer))	= pInfo->m_bItalic;
-        pBuffer += sizeof(INT);
-
-        // bold
-        *((INT*)(pBuffer))	= pInfo->m_bBold;
-        pBuffer += sizeof(INT);
-
-        // FixedWidth
-        *((INT*)pBuffer) = pInfo->m_bIsFixed;
-        pBuffer += sizeof(INT);
+        NSBinarySerialize::Write<INT>(pBuffer, (INT)pInfo->m_lIndex);
+        NSBinarySerialize::Write<INT>(pBuffer, pInfo->m_bItalic);
+        NSBinarySerialize::Write<INT>(pBuffer, pInfo->m_bBold);
+        NSBinarySerialize::Write<INT>(pBuffer, pInfo->m_bIsFixed);
 
         // Panose
         INT lLen = 10;
-
-        *((INT*)(pBuffer))	= lLen;
-        pBuffer += sizeof(INT);
-
+        NSBinarySerialize::Write<INT>(pBuffer, lLen);
         memcpy( (void *)pBuffer, (const void *)pInfo->m_aPanose, lLen );
         pBuffer += lLen;
 
-        // ulUnicodeRange1
-        *((UINT*)pBuffer) = (UINT)pInfo->m_ulUnicodeRange1;
-        pBuffer += sizeof(UINT);
+        NSBinarySerialize::Write<UINT>(pBuffer, (UINT)pInfo->m_ulUnicodeRange1);
+        NSBinarySerialize::Write<UINT>(pBuffer, (UINT)pInfo->m_ulUnicodeRange2);
+        NSBinarySerialize::Write<UINT>(pBuffer, (UINT)pInfo->m_ulUnicodeRange3);
+        NSBinarySerialize::Write<UINT>(pBuffer, (UINT)pInfo->m_ulUnicodeRange4);
+        NSBinarySerialize::Write<UINT>(pBuffer, (UINT)pInfo->m_ulCodePageRange1);
+        NSBinarySerialize::Write<UINT>(pBuffer, (UINT)pInfo->m_ulCodePageRange2);
 
-        // ulUnicodeRange2
-        *((UINT*)pBuffer) = (UINT)pInfo->m_ulUnicodeRange2;
-        pBuffer += sizeof(UINT);
-
-        // ulUnicodeRange3
-        *((UINT*)pBuffer) = (UINT)pInfo->m_ulUnicodeRange3;
-        pBuffer += sizeof(UINT);
-
-        // ulUnicodeRange4
-        *((UINT*)pBuffer) = (UINT)pInfo->m_ulUnicodeRange4;
-        pBuffer += sizeof(UINT);
-
-        // ulCodePageRange1
-        *((UINT*)pBuffer) = (UINT)pInfo->m_ulCodePageRange1;
-        pBuffer += sizeof(UINT);
-
-        // ulCodePageRange2
-        *((UINT*)pBuffer) = (UINT)pInfo->m_ulCodePageRange2;
-        pBuffer += sizeof(UINT);
-
-        // usWeightClass
-        *((USHORT*)pBuffer) = pInfo->m_usWeigth;
-        pBuffer += sizeof(USHORT);
-
-        // usWidthClass
-        *((USHORT*)pBuffer) = pInfo->m_usWidth;
-        pBuffer += sizeof(USHORT);
-
-        // sFamilyClass
-        *((SHORT*)pBuffer) = pInfo->m_sFamilyClass;
-        pBuffer += sizeof(SHORT);
-
-        // FontFormat
-        *((SHORT*)pBuffer) = (SHORT)pInfo->m_eFontFormat;
-        pBuffer += sizeof(SHORT);
-
-        // AvgCharWidth
-        *((SHORT*)pBuffer) = (SHORT)pInfo->m_shAvgCharWidth;
-        pBuffer += sizeof(SHORT);
-
-        // Ascent
-        *((SHORT*)pBuffer) = (SHORT)pInfo->m_shAscent;
-        pBuffer += sizeof(SHORT);
-
-        // Descent
-        *((SHORT*)pBuffer) = (SHORT)pInfo->m_shDescent;
-        pBuffer += sizeof(SHORT);
-
-        // LineGap
-        *((SHORT*)pBuffer) = (SHORT)pInfo->m_shLineGap;
-        pBuffer += sizeof(SHORT);
-
-        // XHeight
-        *((SHORT*)pBuffer) = (SHORT)pInfo->m_shXHeight;
-        pBuffer += sizeof(SHORT);
-
-        // CapHeight
-        *((SHORT*)pBuffer) = (SHORT)pInfo->m_shCapHeight;
-        pBuffer += sizeof(SHORT);
+        NSBinarySerialize::Write<USHORT>(pBuffer, pInfo->m_usWeigth);
+        NSBinarySerialize::Write<USHORT>(pBuffer, pInfo->m_usWidth);
+        NSBinarySerialize::Write<SHORT>(pBuffer, pInfo->m_sFamilyClass);
+        NSBinarySerialize::Write<SHORT>(pBuffer, pInfo->m_eFontFormat);
+        NSBinarySerialize::Write<SHORT>(pBuffer, pInfo->m_shAvgCharWidth);
+        NSBinarySerialize::Write<SHORT>(pBuffer, pInfo->m_shAscent);
+        NSBinarySerialize::Write<SHORT>(pBuffer, pInfo->m_shDescent);
+        NSBinarySerialize::Write<SHORT>(pBuffer, pInfo->m_shLineGap);
+        NSBinarySerialize::Write<SHORT>(pBuffer, pInfo->m_shXHeight);
+        NSBinarySerialize::Write<SHORT>(pBuffer, pInfo->m_shCapHeight);
     }
 }
 
@@ -1047,8 +887,7 @@ void CFontList::ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory,
     BYTE* pData = new BYTE[lDataSize];
     BYTE* pDataMem = pData;
 
-    *(INT*)pDataMem = (INT)nFontsCount;
-    pDataMem += sizeof(INT);
+    NSFonts::NSBinarySerialize::Write<INT>(pDataMem, nFontsCount);
 
     for (std::vector<NSFonts::CFontInfo*>::iterator iter = m_pList.begin(); iter != m_pList.end(); iter++)
     {
@@ -1679,8 +1518,7 @@ bool CFontList::CheckLoadFromFolderBin(const std::wstring& strDirectory)
 
 	BYTE* _pBuffer = pBuffer;
 
-    int lCount = *((int*)_pBuffer);
-    _pBuffer += sizeof(int);
+    int lCount = NSFonts::NSBinarySerialize::Read<INT>(_pBuffer);
 
     for (int nIndex = 0; nIndex < lCount; ++nIndex)
 	{

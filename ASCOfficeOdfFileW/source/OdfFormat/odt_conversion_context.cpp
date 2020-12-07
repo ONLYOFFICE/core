@@ -564,8 +564,7 @@ void odt_conversion_context::start_bookmark (int id, const std::wstring& name)
 		{
 			mapBookmarks.insert(std::make_pair(id, name));
 		}
-		text_context()->start_element(bookmark_elm);
-		text_context()->end_element();	
+		text_context()->add_element_in_span_or_par(bookmark_elm);
 	}
 }
 void odt_conversion_context::end_bookmark (int id)
@@ -580,9 +579,8 @@ void odt_conversion_context::end_bookmark (int id)
 	if (bookmark)
 	{
 		bookmark->text_name_ = pFind->second;
-		
-		text_context()->start_element(bookmark_elm);
-		text_context()->end_element();	
+
+		text_context()->add_element_in_span_or_par(bookmark_elm);
 	}
 }
 void odt_conversion_context::start_hyperlink(std::wstring ref)
@@ -669,6 +667,7 @@ void odt_conversion_context::start_sequence()
 }	
 void odt_conversion_context::end_sequence()
 {
+	text_context()->end_span();
 	text_context()->end_element();
 }
 std::map<std::wstring, std::wstring> odt_conversion_context::parse_instr_options(const std::wstring& value)

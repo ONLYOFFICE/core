@@ -1527,12 +1527,12 @@ bool OOXrPrReader::Parse( ReaderParameter oParam, RtfCharProperty& oOutputProper
 	}
 	if( m_ooxRunProps->m_oHighlight.IsInit() && m_ooxRunProps->m_oHighlight->m_oVal.IsInit() )
 	{
-		//switch(m_ooxRunProps->m_oHighlight->m_oVal->GetValue())
-		//{//незачем
-		//}
-		oOutputProperty.m_nHightlited = oParam.oRtf->m_oColorTable.AddItem(RtfColor(m_ooxRunProps->m_oHighlight->m_oVal->Get_R(),
-																					m_ooxRunProps->m_oHighlight->m_oVal->Get_G(),
-																					m_ooxRunProps->m_oHighlight->m_oVal->Get_B()));
+		if (m_ooxRunProps->m_oHighlight->m_oVal->GetValue() != SimpleTypes::highlightcolorNone)
+		{ 
+			oOutputProperty.m_nHightlited = oParam.oRtf->m_oColorTable.AddItem(RtfColor(m_ooxRunProps->m_oHighlight->m_oVal->Get_R(),
+																						m_ooxRunProps->m_oHighlight->m_oVal->Get_G(),
+																						m_ooxRunProps->m_oHighlight->m_oVal->Get_B()));
+		}
 	}
 	if ( m_ooxRunProps->m_oTextOutline.IsInit())
 	{
@@ -1760,7 +1760,7 @@ bool OOXpPrReader::ParseDrawing( ReaderParameter oParam, RtfParagraphProperty& o
 
 	return true;
 }
-bool OOXrPrReader::ParseDrawing( ReaderParameter oParam, RtfCharProperty& oOutputProperty)
+bool OOXrPrReader::ParseDrawing(ReaderParameter oParam, RtfCharProperty& oOutputProperty)
 {
 	if (m_drawingRunProps == NULL) return false;
 
@@ -1771,18 +1771,18 @@ bool OOXrPrReader::ParseDrawing( ReaderParameter oParam, RtfCharProperty& oOutpu
 	//if (m_drawingRunProps->m_oCaps.IsInit())
 	//	oOutputProperty.m_bCaps = m_drawingRunProps->m_oCaps->ToBool() ? 1 : 0;
 
-	if( m_drawingRunProps->sz.IsInit())
+	if (m_drawingRunProps->sz.IsInit())
 		oOutputProperty.m_nFontSize = m_drawingRunProps->sz.get() / 50;
 
 	if (m_drawingRunProps->i.IsInit())
 		oOutputProperty.m_bItalic = m_drawingRunProps->i.get() ? 1 : 0;
 
-	if( m_drawingRunProps->latin.IsInit() || m_drawingRunProps->cs.IsInit() || m_drawingRunProps->ea.IsInit())
+	if (m_drawingRunProps->latin.IsInit() || m_drawingRunProps->cs.IsInit() || m_drawingRunProps->ea.IsInit())
 	{
-		OOXFontReader3 oFontReader3(m_drawingRunProps->latin.GetPointer(), 
-									m_drawingRunProps->ea.GetPointer(),
-									m_drawingRunProps->cs.GetPointer());
-		oFontReader3.Parse( oParam, oOutputProperty.m_nFont);
+		OOXFontReader3 oFontReader3(m_drawingRunProps->latin.GetPointer(),
+			m_drawingRunProps->ea.GetPointer(),
+			m_drawingRunProps->cs.GetPointer());
+		oFontReader3.Parse(oParam, oOutputProperty.m_nFont);
 	}
 	//if (m_drawingRunProps->m_oComplexFont.IsInit() && m_drawingRunProps->m_oComplexFont->m_oTypeFace.IsInit())
 	//	oOutputProperty.m_nComplexScript = m_drawingRunProps->m_oCs->m_oVal.ToBool() ? 1 : 0;;
@@ -1803,7 +1803,7 @@ bool OOXrPrReader::ParseDrawing( ReaderParameter oParam, RtfCharProperty& oOutpu
 
 	//if (m_drawingRunProps->m_oDStrike.IsInit())
 	//	oOutputProperty.m_nStriked = m_drawingRunProps->m_oDStrike->m_oVal.ToBool() ? 1 : 0;
-	
+
 	//if( m_drawingRunProps->m_oVertAlign.IsInit() && m_drawingRunProps->m_oVertAlign->m_oVal.IsInit())
 	//{
 	//	switch(m_drawingRunProps->m_oVertAlign->m_oVal->GetValue())
@@ -1816,12 +1816,12 @@ bool OOXrPrReader::ParseDrawing( ReaderParameter oParam, RtfCharProperty& oOutpu
 	//}
 	//if( m_drawingRunProps->m_oHighlight.IsInit() && m_drawingRunProps->m_oHighlight->m_oVal.IsInit() )
 	//{
-	//	//switch(m_drawingRunProps->m_oHighlight->m_oVal->GetValue())
-	//	//{//незачем
-	//	//}
-	//	oOutputProperty.m_nHightlited = oParam.oRtf->m_oColorTable.AddItem(RtfColor(m_drawingRunProps->m_oHighlight->m_oVal->Get_R(),
+		//if (m_drawingRunProps->m_oHighlight->m_oVal->GetValue() != SimpleTypes::highlightcolorNone)
+		//{ 	
+			//	oOutputProperty.m_nHightlited = oParam.oRtf->m_oColorTable.AddItem(RtfColor(m_drawingRunProps->m_oHighlight->m_oVal->Get_R(),
 	//																				m_drawingRunProps->m_oHighlight->m_oVal->Get_G(),
 	//																				m_drawingRunProps->m_oHighlight->m_oVal->Get_B()));
+		//}
 	//}
 	if( m_drawingRunProps->Fill.is_init() )
 	{

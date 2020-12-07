@@ -342,6 +342,9 @@
     <ClInclude Include="..\src\odf\datatypes\chartclass.h">
       <Filter>datatypes odf</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\odf\datatypes\drawangle.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\odf\datatypes\anchortype.cpp">
@@ -660,6 +663,9 @@
     <ClCompile Include="..\src\common\CPString.cpp" />
     <ClCompile Include="..\src\common\readdocelement.cpp" />
     <ClCompile Include="..\src\odf\datatypes\chartclass.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\datatypes\drawangle.cpp">
       <Filter>datatypes odf</Filter>
     </ClCompile>
   </ItemGroup>

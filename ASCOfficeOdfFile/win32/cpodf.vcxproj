@@ -500,7 +500,6 @@
     <ClInclude Include="..\src\odf\office_settings.h" />
     <ClInclude Include="..\src\odf\office_spreadsheet.h" />
     <ClInclude Include="..\src\odf\office_text.h" />
-    <ClInclude Include="..\src\odf\paragraph_content.h" />
     <ClInclude Include="..\src\odf\paragraph_elements.h" />
     <ClInclude Include="..\src\odf\search_table_cell.h" />
     <ClInclude Include="..\src\odf\serialize_elements.h" />

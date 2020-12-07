@@ -19,6 +19,26 @@ struct CHtmlParams
     std::wstring m_sBookTitle;   // Название
     std::wstring m_sDate;        // Дата
     std::wstring m_sDescription; // описание
+    bool m_bNeedPageBreakBefore; // Новый html с новой страницы
+    std::wstring m_sdocDefaults; // Стиль docDefaults
+    std::wstring m_sNormal;      // Стиль normal
+
+    CHtmlParams() : m_bNeedPageBreakBefore(false) {}
+
+    void SetNormal(const std::wstring& sStyle)
+    {
+        m_sNormal = sStyle;
+    }
+
+    void SetDocDefaults(const std::wstring& sStyle)
+    {
+        m_sdocDefaults = sStyle;
+    }
+
+    void SetPageBreakBefore(bool bNeed)
+    {
+        m_bNeedPageBreakBefore = bNeed;
+    }
 
     void SetDate(const std::wstring& sDate)
     {

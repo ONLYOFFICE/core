@@ -2263,7 +2263,7 @@ std::wstring odf_drawing_context::add_marker_style(int type)
 	odf_writer::office_element_ptr marker_element;
 
 	odf_writer::create_element(L"draw",L"marker", marker_element, impl_->odf_context_);
-	impl_->styles_context_->add_style(marker_element,false,true, style_family::Marker);
+	impl_->styles_context_->add_style(marker_element, false, true, style_family::Marker);
 	impl_->styles_context_->last_state()->set_name(str_types[type]);
 
 	draw_marker * marker = dynamic_cast<draw_marker *>(marker_element.get());
@@ -3161,7 +3161,6 @@ void odf_drawing_context::start_gradient_style()
 	odf_writer::office_element_ptr gradient_element;
 
 	odf_writer::create_element(L"draw",L"gradient", gradient_element, impl_->odf_context_);
-	impl_->styles_context_->add_style(gradient_element,false,true, style_family::Gradient);
 
 	draw_gradient * gradient = dynamic_cast<draw_gradient *>(gradient_element.get());
 	if (!gradient) return;
@@ -3187,6 +3186,7 @@ void odf_drawing_context::start_gradient_style()
 				impl_->current_graphic_properties->svg_stroke_width_ = length(length(1, length::pt).get_value_unit(length::cm), length::cm);//default
 			break;
 	}
+	impl_->styles_context_->add_style(gradient_element, false, true, style_family::Gradient);
 }
 void odf_drawing_context::set_gradient_type(gradient_style::type style)
 {
@@ -3227,7 +3227,7 @@ void odf_drawing_context::set_gradient_angle(double angle)
 	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state(style_family::Gradient)->get_office_element().get());
 	if (!gradient) return;
 
-	gradient->draw_angle_ = (int)((270 - angle) * 10);//(int)((360 - angle)/180. * 3.14159265358979323846);
+	gradient->draw_angle_ = 270 - angle;//(360 - angle)/180. * 3.14159265358979323846;
 }
 void odf_drawing_context::set_gradient_rect(double l, double t, double r, double b)
 {
@@ -3262,7 +3262,6 @@ void odf_drawing_context::start_opacity_style()
 
 	odf_writer::office_element_ptr opacity_element;
 	odf_writer::create_element(L"draw",L"opacity", opacity_element, impl_->odf_context_);
-	impl_->styles_context_->add_style(opacity_element,false,true, style_family::Opacity);
 
 	draw_opacity * opacity = dynamic_cast<draw_opacity *>(opacity_element.get());
 	if (!opacity) return;
@@ -3271,6 +3270,8 @@ void odf_drawing_context::start_opacity_style()
 	opacity->draw_display_name_ = std::wstring(L"User") + opacity->draw_name_.get() ;
 	
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_opacity_name_ = opacity->draw_name_;
+	
+	impl_->styles_context_->add_style(opacity_element, false, true, style_family::Opacity);
 }
 void odf_drawing_context::set_opacity_start(double val)
 {
@@ -3284,7 +3285,7 @@ void odf_drawing_context::set_opacity_angle(double angle)
 	draw_opacity * opacity = dynamic_cast<draw_opacity *>(impl_->styles_context_->last_state(style_family::Opacity)->get_office_element().get());
 	if (!opacity) return;
 
-	opacity->draw_angle_ = (int)((270-angle)*10);//(int)((360 - angle)/180. * 3.14159265358979323846);
+	opacity->draw_angle_ = 270 - angle;//(360 - angle)/180. * 3.14159265358979323846;
 }
 void odf_drawing_context::set_opacity_type(gradient_style style)
 {
@@ -3319,7 +3320,6 @@ void odf_drawing_context::start_hatch_style()
 	odf_writer::office_element_ptr hatch_element;
 
 	odf_writer::create_element(L"draw",L"hatch", hatch_element, impl_->odf_context_);
-	impl_->styles_context_->add_style(hatch_element,false,true, style_family::Hatch);
 
 	draw_hatch * hatch = dynamic_cast<draw_hatch *>(hatch_element.get());
 	if (!hatch) return;
@@ -3329,6 +3329,8 @@ void odf_drawing_context::start_hatch_style()
 	
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_hatch_name_ = hatch->draw_name_;
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::hatch);
+	
+	impl_->styles_context_->add_style(hatch_element, false, true, style_family::Hatch);
 }
 void odf_drawing_context::set_hatch_line_color(std::wstring hexColor)
 {
@@ -3647,7 +3649,6 @@ void odf_drawing_context::start_bitmap_style()
 	odf_writer::office_element_ptr fill_image_element;
 
 	odf_writer::create_element(L"draw", L"fill-image", fill_image_element, impl_->odf_context_);
-	impl_->styles_context_->add_style(fill_image_element, false, true, style_family::FillImage);
 
 	draw_fill_image * fill_image = dynamic_cast<draw_fill_image *>(fill_image_element.get());
 	if (!fill_image) return;
@@ -3660,6 +3661,8 @@ void odf_drawing_context::start_bitmap_style()
 	
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_image_name_ = fill_image->draw_name_;
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::bitmap);
+	
+	impl_->styles_context_->add_style(fill_image_element, false, true, style_family::FillImage);
 	
 	set_image_style_repeat(0);
 

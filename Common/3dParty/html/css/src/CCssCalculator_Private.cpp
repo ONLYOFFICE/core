@@ -466,7 +466,6 @@ namespace NSCSS
                 return oFirstElement->GetWeight() < oSecondElement->GetWeight();
             });
 
-
             for (const CElement* oElement : arFindElements)
                 oStyle->AddStyle(oElement->GetStyle());
 
@@ -475,15 +474,9 @@ namespace NSCSS
 
         oStyle->SetID(arSelectors.back().m_sName + ((!arSelectors.back().m_sClass.empty()) ? L'.' + arSelectors.back().m_sClass : L"") + ((arSelectors.back().m_sId.empty()) ? L"" : L'#' + arSelectors.back().m_sId) + L'-' + std::to_wstring(++m_nCountNodes));
 
-//        for (std::pair<const std::wstring, std::wstring>& pProperie : *(oStyle->GetStyleMap()))
-//            pProperie.second = ConvertUnitMeasure(pProperie.second, 22.0f);
-
         m_mUsedStyles[arSelectors] = oStyle;
 
         std::wcout << oStyle->GetId() << std::endl;
-        std::wcout << oStyle->GetStyleW() << std::endl << std::endl;
-        std::wcout << oStyle->m_pMargin.fTopSide << L" _ " << oStyle->m_pMargin.fRightSide << L" _ " << oStyle->m_pMargin.fBottomSide << L" _ " << oStyle->m_pMargin.fLeftSide << std::endl;
-
         return *oStyle;
     }
 
@@ -530,13 +523,6 @@ namespace NSCSS
         return m_nDpi;
     }
 
-    /*
-    inline size_t CCssCalculator_Private::GetSize() const
-    {
-        return m_arData.size();
-    }
-    */
-
     UnitMeasure CCssCalculator_Private::GetUnitMeasure() const
     {
         return m_UnitMeasure;
@@ -553,10 +539,6 @@ namespace NSCSS
         m_nDpi          = 96;
         m_UnitMeasure   = Default;
 
-//        for (CElement* oElement : m_arData)
-//            delete oElement;
-
-//        m_arStyleUsed.clear();
         m_mData.clear();
         m_arFiles.clear();
     }

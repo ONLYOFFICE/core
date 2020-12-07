@@ -89,6 +89,7 @@ namespace NSCSS
         }
 
         namespace NSProperties {
+
             typedef enum
             {
                 B_CustomStyle = 0,
@@ -156,9 +157,12 @@ namespace NSCSS
 
         namespace NSCssProperties
         {
+            const float fNoneValue = -99999999999.0f;
+
             enum class FontStretch
             {
-                normal = 0,
+                none = 0,
+                normal,
                 ultraCondensed,
                 extraCondensed,
                 condensed,
@@ -171,53 +175,440 @@ namespace NSCSS
 
             enum class FontStyle
             {
-                normal = 0,
+                none = 0,
+                normal,
                 italic,
                 oblique,
             };
 
             enum class FontVariant
             {
-                normal = 0,
+                none = 0,
+                normal,
                 smallCaps,
             };
 
             enum class FontWeight
             {
-                normal = 0,
+                none = 0,
+                normal,
                 bold
             };
 
-            struct Font
+            class Font
             {
-                float fSize;
+                float fSize = fNoneValue;
                 FontStretch enStretch;
                 FontStyle enStyle;
                 FontVariant enVariant;
-                bool bWeight; //true - font-weight:bold;
-                float fLineHeight;
+                FontWeight enWeight;
+                float fLineHeight = fNoneValue;
+                std::wstring sFamily;
+
+            public:
+                Font operator+=(const Font& oFont)
+                {
+                    if (oFont.fSize != fNoneValue)
+                        fSize = oFont.fSize;
+                    if (oFont.enStretch != FontStretch::none)
+                        enStretch = oFont.enStretch;
+                    if (oFont.enStyle != FontStyle::none)
+                        enStyle = oFont.enStyle;
+                    if (oFont.enVariant != FontVariant::none)
+                        enVariant = oFont.enVariant;
+                    if (oFont.enWeight != FontWeight::none)
+                        enWeight = oFont.enWeight;
+                    if (oFont.fLineHeight != fNoneValue)
+                        fLineHeight = oFont.fLineHeight;
+                    if (!oFont.sFamily.empty())
+                        sFamily = oFont.sFamily;
+
+                    return *this;
+                }
+
+                bool operator==(const Font& oFont) const
+                {
+                    return  fSize       == oFont.fSize       &&
+                            fLineHeight == oFont.fLineHeight &&
+                            sFamily     == oFont.sFamily     &&
+                            enStretch   == oFont.enStretch   &&
+                            enStyle     == oFont.enStyle     &&
+                            enVariant   == oFont.enVariant   &&
+                            enWeight    == oFont.enWeight;
+                }
+
+                bool Empty() const
+                {
+                    return fSize == 22.0f && enStretch == FontStretch::none &&
+                           enStyle == FontStyle::none && enVariant == FontVariant::none &&
+                           enWeight == FontWeight::none && fLineHeight < fSize && sFamily.empty();
+                }
+
+                void SetFont(const std::wstring &sFont)
+                {
+                    if (sFont.empty())
+                        return;
+
+                    const std::vector<std::wstring> arValues = NSCSS::NS_STATIC_FUNCTIONS::GetWordsW(sFont, L" ,/");
+
+                    bool bIsBrackets = false;
+                    unsigned short nPosition = 0;
+
+                    for (const std::wstring &sWord : arValues)
+                    {
+                        if (nPosition < 4 && enStyle == FontStyle::none)
+                        {
+                            if (sWord == L"normal")
+                            {
+                                enStyle = FontStyle::normal;
+                                ++nPosition;
+                                continue;
+                            }
+                            else if (sWord == L"italic")
+                            {
+                                enStyle = FontStyle::italic;
+                                ++nPosition;
+                                continue;
+                            }
+                            else if (sWord == L"oblique")
+                            {
+                                enStyle = FontStyle::oblique;
+                                ++nPosition;
+                                continue;
+                            }
+                            else if (sWord == L"inherit")
+                            {
+                                ++nPosition;
+                                continue;
+                            }
+                        }
+
+                        if (nPosition < 4 && enVariant == FontVariant::none)
+                        {
+                            if (sWord == L"normal")
+                            {
+                                enVariant = FontVariant::normal;
+                                ++nPosition;
+                                continue;
+                            }
+                            else if (sWord == L"small-caps")
+                            {
+                                enVariant = FontVariant::smallCaps;
+                                ++nPosition;
+                                continue;
+                            }
+                            else if (sWord == L"inherit")
+                            {
+                                ++nPosition;
+                                continue;
+                            }
+                        }
+
+                        if (nPosition < 4 && enWeight == FontWeight::none)
+                        {
+                            if (sWord == L"bold" || sWord == L"bolder" || sWord[0] == L'6' || sWord[0] == L'7' || sWord[0] == L'8' ||sWord[0] == L'9')
+                            {
+                                enWeight = FontWeight::bold;
+                                ++nPosition;
+                                continue;
+                            }
+                            else if (sWord == L"normal" || sWord[0] == L'3' || sWord[0] == L'4' ||sWord[0] == L'5')
+                            {
+                                enWeight = FontWeight::normal;
+                                ++nPosition;
+                                continue;
+                            }
+                        }
+
+                        if (nPosition < 4 && enStretch == FontStretch::none)
+                        {
+                            if (sWord == L"ultra-condensed")
+                            {
+                                enStretch = FontStretch::ultraCondensed;
+                                ++nPosition;
+                                continue;
+                            }
+                            else if (sWord == L"extra-condensed")
+                            {
+                                enStretch = FontStretch::extraCondensed;
+                                ++nPosition;
+                                continue;
+                            }
+                            else if (sWord == L"condensed")
+                            {
+                                enStretch = FontStretch::condensed;
+                                ++nPosition;
+                                continue;
+                            }
+                            else if (sWord == L"semi-condensed")
+                            {
+                                enStretch = FontStretch::semiCondensed;
+                                ++nPosition;
+                                continue;
+                            }
+                            else if (sWord == L"normal")
+                            {
+                                enStretch = FontStretch::normal;
+                                ++nPosition;
+                                continue;
+                            }
+                            else if (sWord == L"semi-expanded")
+                            {
+                                enStretch = FontStretch::semiExpanded;
+                                ++nPosition;
+                                continue;
+                            }
+                            else if (sWord == L"extra-expanded")
+                            {
+                                enStretch = FontStretch::extraExpanded;
+                                ++nPosition;
+                                continue;
+                            }
+                            else if (sWord == L"ultra-expanded")
+                            {
+                                enStretch = FontStretch::ultraExpanded;
+                                ++nPosition;
+                                continue;
+                            }
+                            else if (sWord == L"inherit")
+                            {
+                                ++nPosition;
+                                continue;
+                            }
+                        }
+
+                        if (nPosition < 5 && isdigit(sWord[0]))
+                        {
+                            nPosition = 5;
+                            fSize = wcstof(sWord.c_str(), NULL);
+                            continue;
+                        }
+
+                        if (nPosition == 5 && isdigit(sWord[0]))
+                        {
+                            fLineHeight = wcstof(sWord.c_str(), NULL);
+                            ++nPosition;
+                            continue;
+                        }
+
+                        if (nPosition >= 5)
+                        {
+                            if (bIsBrackets)
+                            {
+                                sFamily += L' ' + sWord;
+                                if (sWord.back() == L'"' || sWord.back() == L'\'')
+                                    bIsBrackets = false;
+                                continue;
+                            }
+
+                            if (sWord[0] == L'"' || sWord[0] == L'\'')
+                            {
+                                if (bIsBrackets)
+                                    bIsBrackets = false;
+                                else
+                                {
+                                    bIsBrackets = true;
+                                    sFamily = sWord;
+                                }
+
+                                if (sWord.back() == L'"' || sWord.back() == L'\'')
+                                    bIsBrackets = false;
+
+                                continue;
+                            }
+                        }
+                    }
+                }
+
+                void SetSize(const std::wstring &sSize)
+                {
+                    if (sSize.empty())
+                        return;
+
+                    const float fValue = wcstof(sSize.c_str(), NULL);
+                    if (fValue > 0.0f)
+                        fSize = fValue;
+                }
+
+                void SetStretch(const std::wstring &sStretch)
+                {
+                    if (sStretch.empty())
+                        return;
+
+                    if (sStretch == L"ultra-condensed")
+                        enStretch = NSConstValues::NSCssProperties::FontStretch::ultraCondensed;
+                    else if (sStretch == L"extra-condensed")
+                        enStretch = NSConstValues::NSCssProperties::FontStretch::extraCondensed;
+                    else if (sStretch == L"condensed")
+                        enStretch = NSConstValues::NSCssProperties::FontStretch::condensed;
+                    else if (sStretch == L"semi-condensed")
+                        enStretch = NSConstValues::NSCssProperties::FontStretch::semiCondensed;
+                    else if (sStretch == L"normal")
+                        enStretch = NSConstValues::NSCssProperties::FontStretch::normal;
+                    else if (sStretch == L"semi-expanded")
+                        enStretch = NSConstValues::NSCssProperties::FontStretch::semiExpanded;
+                    else if (sStretch == L"expanded")
+                        enStretch = NSConstValues::NSCssProperties::FontStretch::expanded;
+                    else if (sStretch == L"extra-expanded")
+                        enStretch = NSConstValues::NSCssProperties::FontStretch::extraExpanded;
+                    else if (sStretch == L"ultra-expanded")
+                        enStretch = NSConstValues::NSCssProperties::FontStretch::ultraExpanded;
+                }
+
+                void SetStyle(const std::wstring &sStyle)
+                {
+                    if (sStyle.empty())
+                        return;
+
+                    if (sStyle == L"italic")
+                        enStyle = NSConstValues::NSCssProperties::FontStyle::italic;
+                    else if (sStyle == L"oblique")
+                        enStyle = NSConstValues::NSCssProperties::FontStyle::oblique;
+                    else if (sStyle == L"normal")
+                        enStyle = NSConstValues::NSCssProperties::FontStyle::normal;
+                }
+
+                void SetVariant(const std::wstring &sVariant)
+                {
+                    if (sVariant.empty())
+                        return;
+
+                    if (sVariant == L"small-caps")
+                        enVariant = NSConstValues::NSCssProperties::FontVariant::smallCaps;
+                    else if (sVariant == L"normal")
+                        enVariant = NSConstValues::NSCssProperties::FontVariant::normal;
+                }
+
+                void SetWeight(const std::wstring &sWeight)
+                {
+                    if (sWeight.empty())
+                        return;
+
+                    if (sWeight == L"bold" || sWeight == L"bolder" ||
+                        sWeight[0] == L'6' || sWeight[0] == L'7' ||
+                        sWeight[0] == L'8' || sWeight[0] == L'9')
+                        enWeight = NSConstValues::NSCssProperties::FontWeight::bold;
+                    else if (sWeight == L"normal" || sWeight[0] == L'3' ||
+                             sWeight[0] == L'4'   || sWeight[0] == L'5')
+                        enWeight = NSConstValues::NSCssProperties::FontWeight::normal;
+                }
+
+                void SetLineHeight(const std::wstring &sLineHeight)
+                {
+                    if (sLineHeight.empty())
+                        return;
+
+                    const float fValue = wcstof(sLineHeight.c_str(), NULL);
+                    if (fValue > 0.0f && fValue >= fSize)
+                        fLineHeight = fValue;
+                }
+
+                float GetSize() const
+                {
+                    return fSize;
+                }
+
+                std::wstring GetSizeW() const
+                {
+                    if (fSize <= 0.0f)
+                        return L"22";
+
+                    const int nValue = static_cast<int>(fSize);
+                    const bool bLowerLimit = (0.75 <= nValue - fSize);
+                    const bool bUpperLimit = (nValue - fSize < 0.25);
+
+                    return std::to_wstring(bUpperLimit ? nValue : bLowerLimit ? nValue - 1 : nValue - 0.5);
+                }
+
+                std::wstring GetFamily() const
+                {
+                    return sFamily;
+                }
+
+                std::wstring GetStyle() const
+                {
+                    if (enStyle == FontStyle::italic)
+                        return L"italic";
+
+                    if (enStyle == FontStyle::normal)
+                        return L"normal";
+
+                    return std::wstring();
+                }
+
+                std::wstring GetWeight() const
+                {
+                    if (enWeight == FontWeight::bold)
+                        return L"bold";
+
+                    if (enWeight == FontWeight::normal)
+                        return L"normal";
+
+                    return std::wstring();
+                }
+
+                std::wstring GetLineHeight() const
+                {
+                    if (fLineHeight < 0.0f || fLineHeight < fSize)
+                        return std::wstring();
+
+                    const int nValue = static_cast<int>(fLineHeight);
+                    const bool bLowerLimit = (0.75 <= nValue - fLineHeight);
+                    const bool bUpperLimit = (nValue - fLineHeight < 0.25);
+
+                    return std::to_wstring(bUpperLimit ? nValue : bLowerLimit ? nValue - 1 : nValue - 0.5);
+                }
             };
 
             class Margin
             {
-                public:
-                Margin(){};
-                ~Margin(){};
+                float fTopSide = fNoneValue;
+                float fRightSide = fNoneValue;
+                float fBottomSide = fNoneValue;
+                float fLeftSide = fNoneValue;
 
-                float fTopSide = 0;
-                float fRightSide = 0;
-                float fBottomSide = 0;
-                float fLeftSide = 0;
+            public:
+                Margin operator+=(const Margin& oMargin)
+                {
+                    if (oMargin.fTopSide != fNoneValue)
+                        fTopSide = oMargin.fTopSide;
+                    if (oMargin.fRightSide != fNoneValue)
+                        fRightSide = oMargin.fRightSide;
+                    if (oMargin.fBottomSide != fNoneValue)
+                        fBottomSide = oMargin.fBottomSide;
+                    if (oMargin.fLeftSide != fNoneValue)
+                        fLeftSide = oMargin.fLeftSide;
+
+                    return *this;;
+                }
+
+                bool operator==(const Margin& oMargin) const
+                {
+                    return  fTopSide    == oMargin.fTopSide     &&
+                            fRightSide  == oMargin.fRightSide   &&
+                            fBottomSide == oMargin.fBottomSide  &&
+                            fLeftSide   == oMargin.fLeftSide;
+                }
 
                 bool Empty() const
                 {
-                    if (fTopSide == fRightSide == fBottomSide == fLeftSide == 0)
-                        return true;
-                    return false;
+                    return fTopSide == fRightSide == fBottomSide == fLeftSide == fNoneValue;
                 };
 
                 void AddMargin(const std::wstring& sMargin)
                 {
+                    if (sMargin.empty())
+                        return;
+
+                    if (fTopSide == fNoneValue)
+                        fTopSide = 0;
+                    if (fRightSide == fNoneValue)
+                        fRightSide = 0;
+                    if (fBottomSide == fNoneValue)
+                        fBottomSide = 0;
+                    if (fLeftSide == fNoneValue)
+                        fLeftSide = 0;
+
                     const std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(sMargin, L" ");
                     switch (arValues.size())
                     {
@@ -226,6 +617,7 @@ namespace NSCSS
                         case 1:
                         {
                             const float fValue = wcstof(arValues[0].c_str(), NULL);
+
                             fTopSide    += fValue;
                             fRightSide  += fValue;
                             fBottomSide += fValue;
@@ -261,31 +653,166 @@ namespace NSCSS
                         }
                     }
                 };
-            };
 
+                void AddTopMargin(const std::wstring& sTopMargin)
+                {
+                    if (sTopMargin.empty())
+                        return;
+
+                    if (fTopSide == fNoneValue)
+                        fTopSide = 0;
+
+                    fTopSide += wcstof(sTopMargin.c_str(), NULL);
+                }
+
+                void AddRightMargin(const std::wstring& sRightMargin)
+                {
+                    if (sRightMargin.empty())
+                        return;
+
+                    if (fRightSide == fNoneValue)
+                        fRightSide = 0;
+
+                    fRightSide += wcstof(sRightMargin.c_str(), NULL);
+                }
+
+                void AddBottomMargin(const std::wstring& sBottomMargin)
+                {
+                    if (sBottomMargin.empty())
+                        return;
+
+                    if (fBottomSide == fNoneValue)
+                        fBottomSide = 0;
+
+                    fBottomSide += wcstof(sBottomMargin.c_str(), NULL);
+                }
+
+                void AddLeftMargin(const std::wstring& sLeftMargin)
+                {
+                    if (sLeftMargin.empty())
+                        return;
+
+                    if (fLeftSide == fNoneValue)
+                        fLeftSide = 0;
+
+                    fLeftSide += wcstof(sLeftMargin.c_str(), NULL);
+                }
+
+                std::wstring GetTopSide() const
+                {
+                    if (fTopSide == fNoneValue)
+                        return std::wstring();
+
+                    return std::to_wstring(static_cast<short int>(fTopSide  * 10.0f + 0.5f));
+                }
+
+                std::wstring GetRightSide() const
+                {
+                    if (fTopSide == fNoneValue)
+                        return std::wstring();
+
+                    return std::to_wstring(static_cast<short int>(fRightSide  * 10.0f + 0.5f));
+                }
+
+                std::wstring GetBottomSide() const
+                {
+                    if (fBottomSide == fNoneValue)
+                        return std::wstring();
+
+                    return std::to_wstring(static_cast<short int>(fBottomSide  * 10.0f + 0.5f));
+                }
+
+                std::wstring GetLeftSide() const
+                {
+                    if (fLeftSide == fNoneValue)
+                        return std::wstring();
+
+                    return std::to_wstring(static_cast<short int>(fLeftSide  * 10.0f + 0.5f));
+                }
+            };
 
             enum class TextDecoration
             {
                 none = 0,
-                lineThrough,
-                overline,
                 underline
             };
 
             enum class TextAlign
             {
-                left = 0,
+                none = 0,
+                left,
                 right,
                 center,
                 justify
             };
 
-            struct Text
+            class Text
             {
-                float fIndent;
+                float fIndent = fNoneValue;
                 TextAlign enAlign;
                 TextDecoration enDecoration;
                 std::wstring sColor; //HEX color
+            public:
+                Text operator+=(const Text& oText)
+                {
+                    if (oText.fIndent != fNoneValue)
+                        fIndent = oText.fIndent;
+                    if (oText.enAlign != TextAlign::none)
+                        enAlign = oText.enAlign;
+                    if (oText.enDecoration != TextDecoration::none)
+                        enDecoration = oText.enDecoration;
+                    if (!oText.sColor.empty())
+                        sColor = oText.sColor;
+
+                    return *this;
+                }
+
+                bool operator==(const Text& oText) const
+                {
+                    return  fIndent      == oText.fIndent       &&
+                            enAlign      == oText.enAlign       &&
+                            enDecoration == oText.enDecoration  &&
+                            sColor       == oText.sColor;
+                }
+
+                bool Empty() const
+                {
+                    return fIndent == 0 && enAlign == TextAlign::none &&
+                           enDecoration == TextDecoration::none && sColor.empty();
+                }
+
+                void SetAlign(const std::wstring& sAlign)
+                {
+                    if (sAlign.empty())
+                        return;
+
+                    if (sAlign == L"center")
+                       enAlign = NSConstValues::NSCssProperties::TextAlign::center;
+                    else if(sAlign == L"justify")
+                        enAlign = NSConstValues::NSCssProperties::TextAlign::justify;
+                    else if(sAlign == L"left" || sAlign == L"start")
+                        enAlign = NSConstValues::NSCssProperties::TextAlign::left;
+                    else if(sAlign == L"right" || sAlign == L"end")
+                        enAlign = NSConstValues::NSCssProperties::TextAlign::right;
+                }
+
+                void SetDecoration(const std::wstring sDecoration)
+                {
+                    if (sDecoration.empty())
+                        return;
+
+                    if (sDecoration== L"underline")
+                        enDecoration = NSConstValues::NSCssProperties::TextDecoration::underline;
+                }
+
+                void SetIndent(const std::wstring& sIndent)
+                {
+                    if (sIndent.empty())
+                        return;
+
+                    if (sIndent.find_first_not_of(L" 0") != std::wstring::npos)
+                        fIndent = wcstof(sIndent.c_str(), NULL);
+                }
 
                 void SetColor(const std::wstring& sValue)
                 {
@@ -305,9 +832,7 @@ namespace NSCSS
                     }
                     else if (sValue.substr(0, 3) == L"rgb")
                     {
-                        std::wcout << L"{" << sValue << L"}" << std::endl;
                         sColor = NSCSS::NS_STATIC_FUNCTIONS::ConvertRgbToHex(sValue);
-                        std::wcout << L"|" << sColor << L"|" << std::endl;
                     }
                     else
                     {
@@ -317,6 +842,41 @@ namespace NSCSS
                         if (oHEX != NSMaps::mColors.end())
                             sColor = oHEX->second;
                     }
+                }
+
+                std::wstring GetIndentW() const
+                {
+                    if (fIndent == fNoneValue)
+                        return std::wstring();
+
+                    return std::to_wstring(static_cast<short int>(fIndent + ((fIndent > 0.0f) ?  0.5f : -0.5f)));
+                }
+
+                std::wstring GetAlign() const
+                {
+                    if (enAlign == TextAlign::left)
+                        return L"left";
+                    if (enAlign == TextAlign::center)
+                        return L"center";
+                    if (enAlign == TextAlign::right)
+                        return L"right";
+                    if (enAlign == TextAlign::justify)
+                        return L"both";
+
+                    return std::wstring();
+                }
+
+                std::wstring GetDecoration() const
+                {
+                    if (enDecoration == TextDecoration::underline)
+                        return L"single";
+
+                    return std::wstring();
+                }
+
+                std::wstring GetColor() const
+                {
+                    return sColor;
                 }
             };
 
@@ -333,11 +893,24 @@ namespace NSCSS
                 thickThinMediumGap
             };
 
-            struct BorderSide
+            class BorderSide
             {
-                float fWidth = 0;
+            public:
+                float fWidth = fNoneValue;
                 std::wstring sStyle = L"";
                 std::wstring sColor = L"auto"; //HEX color
+
+                BorderSide operator+=(const BorderSide& oBorderSide)
+                {
+                    if (oBorderSide.fWidth > 0.0f)
+                        fWidth = oBorderSide.fWidth;
+                    if (!oBorderSide.sStyle.empty())
+                        sStyle = oBorderSide.sStyle;
+                    if (oBorderSide.sColor != L"auto")
+                        sColor = oBorderSide.sColor;
+
+                    return *this;
+                }
 
                 bool operator==(const BorderSide& oBorderSide) const
                 {
@@ -469,12 +1042,31 @@ namespace NSCSS
                 };
             };
 
-            struct Border
+            class Border
             {
+            public:
                 BorderSide stTop;
                 BorderSide stRight;
                 BorderSide stBottom;
                 BorderSide stLeft;
+
+                Border operator+=(const Border& oBorder)
+                {
+                    stTop    += oBorder.stTop;
+                    stRight  += oBorder.stRight;
+                    stBottom += oBorder.stBottom;
+                    stLeft   += oBorder.stLeft;
+
+                    return *this;;
+                }
+
+                bool operator==(const Border& oBorder) const
+                {
+                    return stTop == oBorder.stTop &&
+                            stRight == oBorder.stRight &&
+                            stBottom == oBorder.stBottom &&
+                            stLeft == oBorder.stLeft;
+                }
 
                 bool EqualSides() const
                 {
@@ -572,9 +1164,33 @@ namespace NSCSS
 
             };
 
-            struct Background
+            class Background
             {
                 std::wstring sColor;
+            public:
+
+                Background operator+=(const Background& oBackground)
+                {
+                    if (oBackground.sColor.empty())
+                        sColor = oBackground.sColor;
+
+                    return *this;
+                }
+
+                bool operator==(const Background& oBackground) const
+                {
+                    return sColor == oBackground.sColor;
+                }
+
+                bool Empty() const
+                {
+                    return sColor.empty();
+                }
+
+                void SetBackground(const std::wstring &sBackground)
+                {
+
+                }
 
                 void SetColor(const std::wstring &sValue)
                 {
@@ -598,12 +1214,17 @@ namespace NSCSS
                     }
                     else
                     {
-                        std::wstring sNewColor;
-                        std::transform(sValue.begin(), sValue.end(), sNewColor.begin(), tolower);
+                        std::wstring sNewColor = sValue;
+                        std::transform(sNewColor.begin(), sNewColor.end(), sNewColor.begin(), tolower);
                         const std::map<std::wstring, std::wstring>::const_iterator oHEX = NSMaps::mColors.find(sNewColor);
                         if (oHEX != NSMaps::mColors.end())
                             sColor = oHEX->second;
                     }
+                }
+
+                std::wstring GetColor() const
+                {
+                    return sColor;
                 }
             };
         }

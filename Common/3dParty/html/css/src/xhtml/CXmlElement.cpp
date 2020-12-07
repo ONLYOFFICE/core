@@ -344,6 +344,7 @@ std::wstring CXmlElement::ConvertPStyle() const
         {
             case NSCSS::NSConstValues::NSProperties::ParagraphProperties::P_Jc:
             {
+            std::wcout << L"___" << oItem.second << std::endl;
                 sPPr += L"<w:jc w:val=\"" + oItem.second + L"\"/>";
                 break;
             }
@@ -445,17 +446,17 @@ std::wstring CXmlElement::ConvertRStyle() const
             }
             case NSCSS::NSConstValues::NSProperties::RunnerProperties::R_B:
             {
-                if (oItem.second == L"true")
+                if (oItem.second == L"bold")
                     sRStyle += L"<w:b/><w:bCs/>";
-                else if (oItem.second == L"false")
+                else if (oItem.second == L"normal")
                     sRStyle += L"<w:b w:val=\"false\"/><w:bCs w:val=\"false\"/>";
                 break;
             }
             case NSCSS::NSConstValues::NSProperties::RunnerProperties::R_I:
             {
-                if (oItem.second == L"true")
+                if (oItem.second == L"italic")
                     sRStyle += L"<w:i/><w:iCs/>";
-                else if (oItem.second == L"false")
+                else if (oItem.second == L"normal")
                     sRStyle += L"<w:i w:val=\"false\"/><w:iCs w:val=\"false\"/>";
                 break;
             }

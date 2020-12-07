@@ -21,21 +21,15 @@ namespace NSCSS
 
         std::map<std::wstring, CElement*> m_mData;
 
-//        std::map<std::vector<CNode>, std::map<std::wstring, std::wstring>*> m_mData;
 
         std::map<std::vector<CNode>, CCompiledStyle*> m_mUsedStyles;
 
         std::wstring m_sEncoding;
 
-        // void AddElement(CElement* oElement);
-        // size_t GetSize() const;
-
         void GetStylesheet(const KatanaStylesheet* oStylesheet);
         void GetRule(const KatanaRule* oRule);
 
         void GetStyleRule(const KatanaStyleRule* oRule);
-
-        // CElement* GetElement(const int& nIndex) const;
 
         std::wstring GetValueList(const KatanaArray* oValues);
 
@@ -53,7 +47,6 @@ namespace NSCSS
 
         CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors, const UnitMeasure& unitMeasure = Default);
 
-        // void AddStyle(const std::vector<std::string>& sSelectors, const std::string& sStyle);
         void AddStyles(const std::string& sStyle);
         void AddStyles(const std::wstring& sStyle);
         void AddStylesFromFile(const std::wstring& sFileName);

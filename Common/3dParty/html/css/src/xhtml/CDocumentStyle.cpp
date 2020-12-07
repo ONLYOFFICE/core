@@ -248,29 +248,25 @@ namespace NSCSS
         if (oStyle.Empty() || oXmlElement.Empty())
             return;
 
-        std::wstring sTextAlign;
-        if (oStyle.m_pText.enAlign == NSCSS::NSConstValues::NSCssProperties::TextAlign::center)
-            oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_Jc, L"center");
-        else if (oStyle.m_pText.enAlign == NSCSS::NSConstValues::NSCssProperties::TextAlign::justify)
-            oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_Jc, L"both");
-        else if (oStyle.m_pText.enAlign == NSCSS::NSConstValues::NSCssProperties::TextAlign::right)
-            oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_Jc, L"right");
-
-        oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_Jc, sTextAlign);
-
-
+        oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_Jc, oStyle.m_pText.GetAlign());
 
         std::wstring sInfValue;
         sInfValue.reserve(64);
 
-        if (oStyle.m_pMargin.Empty())
+        if (!oStyle.m_pMargin.Empty())
         {
-            sInfValue += L"w:left=\""  + std::to_wstring(static_cast<short int>(oStyle.m_pMargin.fLeftSide  * 10.0f + 0.5f)) + L"\" ";
-            sInfValue += L"w:right=\"" + std::to_wstring(static_cast<short int>(oStyle.m_pMargin.fRightSide * 10.0f + 0.5f)) + L"\" ";
+            const std::wstring& sLeftSide = oStyle.m_pMargin.GetLeftSide();
+            const std::wstring& sRightSide = oStyle.m_pMargin.GetRightSide();
+
+            if (!sLeftSide.empty())
+                sInfValue += L"w:left=\""  + sLeftSide + L"\" ";
+            if (!sRightSide.empty())
+                sInfValue += L"w:right=\"" + sRightSide + L"\" ";
         }
 
-        if (oStyle.m_pText.fIndent != 0 && oStyle.GetId().find(L"table") == std::wstring::npos)
-            sInfValue += L"w:firstLine=\"" + std::to_wstring(static_cast<short int>(oStyle.m_pText.fIndent + 0.5f)) + L"\" ";
+        const std::wstring& sIndent = oStyle.m_pText.GetIndentW();
+        if (!sIndent.empty() && oStyle.GetId().find(L"table") == std::wstring::npos)
+            sInfValue += L"w:firstLine=\"" + sIndent + L"\" ";
 
         oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_Ind, sInfValue);
 
@@ -279,26 +275,33 @@ namespace NSCSS
 
         if (oStyle.m_pMargin.Empty())
         {
-            sSpacingValue += L"w:after=\""  + std::to_wstring(static_cast<unsigned short int>((oStyle.m_pMargin.fTopSide > 0.0f) ? (oStyle.m_pMargin.fTopSide  + 0.5f) : 0.0f)) + L"\" ";
-            sSpacingValue += L"w:before=\"" + std::to_wstring(static_cast<unsigned short int>((oStyle.m_pMargin.fBottomSide > 0.0f) ? (oStyle.m_pMargin.fBottomSide  + 0.5f) : 0.0f)) + L"\" ";
+            sSpacingValue += L"w:after=\""  + oStyle.m_pMargin.GetTopSide() + L"\" ";
+            sSpacingValue += L"w:before=\"" + oStyle.m_pMargin.GetTopSide() + L"\" ";
         }
 
-        if (oStyle.m_pFont.fLineHeight > 0)
+//        if (oStyle.m_pFont.fLineHeight > 0)
+//        {
+//            float fValue = oStyle.m_pFont.fSize;
+//            if (fValue <= 0.0f)
+//                fValue = 22;
+
+//            float fLineHeight = oStyle.m_pFont.fLineHeight;
+
+//            if (fLineHeight >= 1.0f)
+//            {
+//                fLineHeight *= (fLineHeight < fValue / 2) ? 10.0f : (10.0f / fLineHeight);
+//                float fLine = fLineHeight * fValue;
+
+//                sSpacingValue += L"w:line=\"" + std::to_wstring(static_cast<unsigned short int>((fLine < fValue * 20.0f) ? fLine : fValue * 5.0f + 0.5f)) + L"\" ";
+//                sSpacingValue += L"w:lineRule=\"auto\"";
+//            }
+//        }
+
+        const std::wstring &sLineHeight = oStyle.m_pFont.GetLineHeight();
+        if (!sLineHeight.empty())
         {
-            float fValue = oStyle.m_pFont.fSize;
-            if (fValue <= 0.0f)
-                fValue = 22;
-
-            float fLineHeight = oStyle.m_pFont.fLineHeight;
-
-            if (fLineHeight >= 1.0f)
-            {
-                fLineHeight *= (fLineHeight < fValue / 2) ? 10.0f : (10.0f / fLineHeight);
-                float fLine = fLineHeight * fValue;
-
-                sSpacingValue += L"w:line=\"" + std::to_wstring(static_cast<unsigned short int>((fLine < fValue * 20.0f) ? fLine : fValue * 5.0f + 0.5f)) + L"\" ";
+                sSpacingValue += L"w:line=\"" + sLineHeight + L"\" ";
                 sSpacingValue += L"w:lineRule=\"auto\"";
-            }
         }
 
         if (!sSpacingValue.empty())
@@ -307,7 +310,7 @@ namespace NSCSS
             oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_ContextualSpacing, L"true");
         }
 
-        oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_Shd, oStyle.m_pBackground.sColor);
+        oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_Shd, oStyle.m_pBackground.GetColor());
 
         if (!oStyle.m_pBorder.Empty())
         {
@@ -319,7 +322,6 @@ namespace NSCSS
 
                 const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
                         sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
-                std::wcout << sBorder << std::endl;
 
                 oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_TopBorder, sBorder);
                 oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_LeftBorder, sBorder);
@@ -385,46 +387,13 @@ namespace NSCSS
         if (oStyle.Empty() || oXmlElement.Empty())
             return;
 
-        std::wcout << L" _ " << oStyle.m_pText.sColor << std::endl;
-
-        oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_Color, oStyle.m_pText.sColor);
-        oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_Shd, oStyle.GetBackgroundColor());
-        oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_U, oStyle.GetTextDecoration());
-
-        const std::wstring sFontSize = oStyle.GetFontSize();
-        if (!sFontSize.empty())
-        {
-            const float fValue = wcstof(sFontSize.c_str(), NULL);
-            oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_Sz, std::to_wstring(static_cast<unsigned short int>((fValue > 0.0f) ? fValue : 22.0f)));
-        }
-
-        const std::wstring sFontFamily = oStyle.GetFontFamily();
-        if (!sFontFamily.empty())
-            oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_RFonts, sFontFamily);
-
-        const std::wstring sFontWeight = oStyle.GetFontWeight();
-
-        if (sFontWeight == L"bold")
-            oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_B, L"true");
-        else if (sFontWeight == L"normal")
-            oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_B, L"false");
-
-        if (oStyle.GetFontStyle() == L"italic")
-            oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_I, L"true");
-        else if (oStyle.GetFontStyle() == L"normal")
-            oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_I, L"false");
-
-        std::wstring sSpacingValue;
-        const std::vector<std::wstring> sMargins = oStyle.GetMargins();
-        if (!sMargins.empty())
-        {
-            const float fAfterValue = wcstof(sMargins[0].c_str(), NULL) * 10.0f;
-            const float fBeforeValue = wcstof(sMargins[2].c_str(), NULL) * 10.0f;
-            sSpacingValue += L"w:after=\"" + std::to_wstring(static_cast<unsigned short int>(fAfterValue + 0.5f)) + L"\" ";
-            sSpacingValue += L"w:before=\"" + std::to_wstring(static_cast<unsigned short int>(fBeforeValue + 0.5f)) + L"\" ";
-        }
-
-        // spacing в rPr
+        oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_Color, oStyle.m_pText.GetColor());
+        oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_Shd, oStyle.m_pBackground.GetColor());
+        oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_U, oStyle.m_pText.GetDecoration());
+        oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_Sz, oStyle.m_pFont.GetSizeW());
+        oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_RFonts, oStyle.m_pFont.GetFamily());
+        oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_I, oStyle.m_pFont.GetStyle());
+        oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_B, oStyle.m_pFont.GetWeight());
     }
 
     void CDocumentStyle::WriteRStyle (const NSCSS::CCompiledStyle& oStyle)

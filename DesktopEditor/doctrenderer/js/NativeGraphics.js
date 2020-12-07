@@ -79,7 +79,6 @@ CNativeGraphics.prototype =
     {
         this.TextureFillTransformScaleX = width_mm  / (width_px  >> 0);
         this.TextureFillTransformScaleY = height_mm / (height_px >> 0);
-
         this.Native["init"](width_px, height_px, width_mm, height_mm);
     },
     EndDraw : function()

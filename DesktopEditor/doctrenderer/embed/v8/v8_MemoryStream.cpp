@@ -26,11 +26,11 @@ namespace NSMemoryStream
     {
         v8::EscapableHandleScope handle_scope(isolate);
 
-        v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New();
+        v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New(V8IsolateOneArg);
         result->SetInternalFieldCount(1);
 
         // property
-        result->SetAccessor(v8::String::NewFromUtf8(CV8Worker::GetCurrent(), "pos"), _ms_pos);
+        result->SetAccessor(CreateV8String(CV8Worker::GetCurrent(), "pos"), _ms_pos);
 
         NSV8Objects::Template_Set(result, "Copy",			_ms_copy);
         NSV8Objects::Template_Set(result, "ClearNoAttack",  _ms_clearnoattack);

@@ -516,7 +516,8 @@ public:
         m_pData = new BYTE[m_nLen];
         m_pDataCur = m_pData;
 
-        m_oArrayBuffer = CJSContext::createUint8Array(m_pData, m_nLen);
+        if (CJSContext::IsSupportNativeTypedArrays())
+            m_oArrayBuffer = CJSContext::createUint8Array(m_pData, m_nLen);
     }
 
     inline int Open(std::vector<std::wstring>& oFiles, int nStart)
@@ -628,7 +629,10 @@ public:
 
     JSSmart<CJSTypedArray> GetData()
     {
-        return m_oArrayBuffer;
+        if (CJSContext::IsSupportNativeTypedArrays())
+            return m_oArrayBuffer;
+        size_t len = (size_t)(m_pDataCur - m_pData);
+        return CJSContext::createUint8Array(m_pData, (int)len);
     }
 
 public:
@@ -743,7 +747,7 @@ public:
     JSSmart<CJSTypedArray> GetDataFull()
     {
         size_t len = (size_t)(m_pDataCur - m_pData);
-        JSSmart<CJSTypedArray> _buffer = CJSContext::createUint8Array(m_pData, len);
+        JSSmart<CJSTypedArray> _buffer = CJSContext::createUint8Array(m_pData, (int)len);
         return _buffer;
     }
 
@@ -993,10 +997,7 @@ public:
     void Lap(const std::string& details)
     {
         DWORD dwCur = NSTimers::GetTickCount();
-        FILE* f = fopen("D:\\doctrenderer.speed", "a+");
-        std::string sTmp = details + ": %d\n";
-        fprintf(f, sTmp.c_str(), (int)(dwCur - m_dwTime));
-        fclose(f);
+        std::cout << details << ": " << (int)(dwCur - m_dwTime) << std::endl;
         m_dwTime = dwCur;
     }
 };

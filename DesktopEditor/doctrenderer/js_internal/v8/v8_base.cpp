@@ -1,6 +1,16 @@
 #include "v8_base.h"
 
+v8::Local<v8::String> CreateV8String(v8::Isolate* i, const char* str, const int& len)
+{
+    return v8::String::NewFromUtf8(i, str, kV8NormalString, len).ToLocalChecked();
+}
+v8::Local<v8::String> CreateV8String(v8::Isolate* i, const std::string& str)
+{
+    return v8::String::NewFromUtf8(i, str.c_str(), kV8NormalString, (int)str.length()).ToLocalChecked();
+}
+
 CV8Initializer* CV8Worker::m_pInitializer = NULL;
+bool CV8Worker::m_bUseExternalInitialize = false;
 
 namespace NSJSBase
 {
@@ -50,11 +60,11 @@ namespace NSJSBase
             if (NULL == Data)
             {
                 Source = new v8::ScriptCompiler::Source(source);
-                script = v8::ScriptCompiler::Compile(_context, Source, v8::ScriptCompiler::kProduceCodeCache).ToLocalChecked();
+                script = v8::ScriptCompiler::Compile(_context, Source, kV8ProduceCodeCache).ToLocalChecked();
 
                 const v8::ScriptCompiler::CachedData* _cachedData = Source->GetCachedData();
                 NSFile::CFileBinary oFileTest;
-                if (oFileTest.CreateFileW(Path))
+                if (_cachedData && oFileTest.CreateFileW(Path))
                 {
                     oFileTest.WriteFile(_cachedData->data, (DWORD)_cachedData->length);
                     oFileTest.CloseFile();
@@ -143,7 +153,9 @@ namespace NSJSBase
     void CJSContext::Dispose()
     {
         m_internal->m_isolate->Dispose();
-        CV8Worker::Dispose();
+        m_internal->m_isolate = NULL;
+        if (!CV8Worker::IsUseExternalInitialize())
+            CV8Worker::Dispose();
     }
 
     void CJSContext::CreateContext()
@@ -216,14 +228,14 @@ namespace NSJSBase
     CJSValue* CJSContext::createString(const char* value, const int& length)
     {
         CJSValueV8* _value = new CJSValueV8();
-        _value->value = v8::String::NewFromUtf8(CV8Worker::GetCurrent(), value, v8::String::kNormalString, length);
+        _value->value = CreateV8String(CV8Worker::GetCurrent(), value, length);
         return _value;
     }
 
     CJSValue* CJSContext::createString(const std::string& value)
     {
         CJSValueV8* _value = new CJSValueV8();
-        _value->value = v8::String::NewFromUtf8(CV8Worker::GetCurrent(), value.c_str(), v8::String::kNormalString, (int)value.length());
+        _value->value = CreateV8String(CV8Worker::GetCurrent(), value.c_str(), (int)value.length());
         return _value;
     }
 
@@ -256,25 +268,18 @@ namespace NSJSBase
 
     JSSmart<CJSValue> CJSContext::runScript(const std::string& script, JSSmart<CJSTryCatch> exception, const std::wstring& scriptPath)
     {
-        v8::Local<v8::String> _source = v8::String::NewFromUtf8(CV8Worker::GetCurrent(), script.c_str());
+        v8::Local<v8::String> _source = CreateV8String(CV8Worker::GetCurrent(), script.c_str());
         
         v8::Local<v8::Script> _script;
         if(!scriptPath.empty())
         {
-            std::wstring sCachePath = scriptPath.substr(0, scriptPath.find(L".")) + L".cache";
+            std::wstring sCachePath = scriptPath.substr(0, scriptPath.rfind(L".")) + L".cache";
             CCacheDataScript oCachedScript(sCachePath);
-            //            if (!oCachedScript.IsInit())
-            //            {
-            //                _script = v8::Script::Compile(_source);
-            //            }
-            //            else
-            //            {
             _script = oCachedScript.Compile(m_internal->m_context, _source);
-            //            }
         }
         else
         {
-            _script = v8::Script::Compile(_source);
+            _script = v8::Script::Compile(V8ContextFirstArg _source).ToLocalChecked();
         }
         
         CJSValueV8* _return = new CJSValueV8();
@@ -282,11 +287,11 @@ namespace NSJSBase
         if (exception.is_init())
         {
             if (!exception->Check())
-                _return->value = _script->Run();
+                _return->value = _script->Run(V8ContextOneArg).ToLocalChecked();
         }
         else
         {
-            _return->value = _script->Run();
+            _return->value = _script->Run(V8ContextOneArg).ToLocalChecked();
         }
         
         return _return;
@@ -305,10 +310,23 @@ namespace NSJSBase
     {
         CJSValueV8* _value = new CJSValueV8();
     #ifndef V8_OS_XP
-        _value->value = v8::JSON::Parse(m_internal->m_context, v8::String::NewFromUtf8(CV8Worker::GetCurrent(), sTmp)).FromMaybe(v8::Local<v8::Value>());
+        _value->value = v8::JSON::Parse(m_internal->m_context, CreateV8String(CV8Worker::GetCurrent(), sTmp)).ToLocalChecked();
     #else
-        _value->value = v8::JSON::Parse(v8::String::NewFromUtf8(CV8Worker::GetCurrent(), sTmp));
+        _value->value = v8::JSON::Parse(CreateV8String(CV8Worker::GetCurrent(), sTmp));
     #endif
         return _value;
+    }
+
+    void CJSContext::ExternalInitialize()
+    {
+        CV8Worker::SetUseExetralInitialize();
+    }
+    void CJSContext::ExternalDispose()
+    {
+        CV8Worker::Dispose();
+    }
+    bool CJSContext::IsSupportNativeTypedArrays()
+    {
+        return true;
     }
 }

@@ -35,7 +35,7 @@ namespace NSNativeControl
     {
         v8::EscapableHandleScope handle_scope(isolate);
 
-        v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New();
+        v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New(V8IsolateOneArg);
         result->SetInternalFieldCount(1);
 
         NSV8Objects::Template_Set(result, "SetFilePath",        _SetFilePath);
@@ -72,7 +72,7 @@ namespace NSNativeControl
     {
         v8::EscapableHandleScope handle_scope(isolate);
 
-        v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New();
+        v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New(V8IsolateOneArg);
         result->SetInternalFieldCount(1);
 
         NSV8Objects::Template_Set(result, "SetFilePath",        _SetFilePath);

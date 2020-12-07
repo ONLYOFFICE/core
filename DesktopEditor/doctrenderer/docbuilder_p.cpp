@@ -64,6 +64,8 @@ CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder)
 }
 CV8RealTimeWorker::~CV8RealTimeWorker()
 {
+    m_handle_scope = NULL;
+    m_isolate_scope = NULL;
     m_context->Dispose();
 }
 
@@ -675,6 +677,16 @@ namespace NSDoctRenderer
                 return false;
         }
 
+        if (!sJsCommands.empty())
+        {
+            // Такого быть не должно!!! Так как результат никуда не сохранится. пустое действие.
+            std::wstring sUnicodeCommand = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sJsCommands.c_str(), (LONG)sJsCommands.length());
+            bool bIsNoError = this->ExecuteCommand(sUnicodeCommand.c_str());
+            sJsCommands = "";
+            if (!bIsNoError)
+                return false;
+        }
+
         return true;
     }
 
@@ -710,6 +722,16 @@ namespace NSDoctRenderer
         std::wstring sW(param);
         std::string sA = U_TO_UTF8(sW);
         return this->SetProperty(sA.c_str(), value);
+    }
+
+    void CDocBuilder::Initialize()
+    {
+        CJSContext::ExternalInitialize();
+    }
+
+    void CDocBuilder::Dispose()
+    {
+        CJSContext::ExternalDispose();
     }
 
     void CDocBuilder::WriteData(const wchar_t* path, const wchar_t* value, const bool& append)

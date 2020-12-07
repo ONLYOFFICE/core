@@ -8,7 +8,7 @@
 #include <JavaScriptCore/JSTypedArray.h>
 #include <JavaScriptCore/JSValueRef.h>
 
-#import "../../../../core/DesktopEditor/common/Mac/NSString+StringUtils.h"
+#import "../../../../DesktopEditor/common/Mac/NSString+StringUtils.h"
 
 @protocol JSEmbedObjectProtocol
 - (void*) getNative;
@@ -21,6 +21,7 @@ namespace NSJSBase
     public:
         JSContext* context;
 
+        static bool g_oldVersion;
         static JSContext* g_lockedContext;
 
     public:
@@ -81,6 +82,7 @@ namespace NSJSBase
         virtual bool isTypedArray();
         virtual bool isObject();
         virtual bool isFunction();
+        virtual bool isEmpty();
 
         virtual void doUndefined();
         virtual void doNull();
@@ -288,11 +290,16 @@ namespace NSJSBase
 
     class CJSTypedArrayJSC : public CJSValueJSCTemplate<CJSTypedArray>
     {
+    private:
+        BYTE* data_old_version;
     public:
         CJSTypedArrayJSC(JSContext* _context, BYTE* data = NULL, int count = 0)
         {
+            data_old_version = NULL;
             context = _context;
-            if (0 < count)
+            if (0 >= count)
+                return;
+            if (!CJSContextPrivate::g_oldVersion)
             {
                 JSObjectRef object = JSObjectMakeTypedArrayWithBytesNoCopy(context.JSGlobalContextRef,
                                                                            kJSTypedArrayTypeUint8Array,
@@ -303,9 +310,20 @@ namespace NSJSBase
                     value = [JSValue valueWithJSValueRef:object inContext:context];
                 }
             }
+            else
+            {
+                char* pDst = NULL;
+                int nDstLen = 0;
+                NSFile::CBase64Converter::Encode(data, count, pDst, nDstLen, NSBase64::B64_BASE64_FLAG_NOCRLF);
+
+                std::string sCode = "jsc_fromBase64(\"" + std::string(pDst, nDstLen) + "\", " + std::to_string(count) + ");";
+                RELEASEARRAYOBJECTS(pDst);
+                value = [_context evaluateScript:[NSString stringWithAString:sCode]];
+            }
         }
         virtual ~CJSTypedArrayJSC()
         {
+            RELEASEARRAYOBJECTS(data_old_version);
             value = nil;
             context = nil;
         }
@@ -317,14 +335,45 @@ namespace NSJSBase
 
         virtual int getCount()
         {
-            JSObjectRef obj = JSValueToObject(context.JSGlobalContextRef, value.JSValueRef, NULL);
-            return (int)JSObjectGetTypedArrayByteLength(context.JSGlobalContextRef, obj, NULL);
+            if (nil == value)
+                return 0;
+            if (!CJSContextPrivate::g_oldVersion)
+            {
+                JSObjectRef obj = JSValueToObject(context.JSGlobalContextRef, value.JSValueRef, NULL);
+                return (int)JSObjectGetTypedArrayByteLength(context.JSGlobalContextRef, obj, NULL);
+            }
+            JSValue* _ret = [value valueForProperty:@"length"];
+            if (nil != _ret && NO == [_ret isUndefined])
+                return [_ret toInt32];
+            return 0;
         }
 
         virtual const BYTE* getData()
         {
-            JSObjectRef obj = JSValueToObject(context.JSGlobalContextRef, value.JSValueRef, NULL);
-            return (BYTE*)JSObjectGetTypedArrayBytesPtr(context.JSGlobalContextRef, obj, NULL);
+            if (!CJSContextPrivate::g_oldVersion)
+            {
+                JSObjectRef obj = JSValueToObject(context.JSGlobalContextRef, value.JSValueRef, NULL);
+                return (BYTE*)JSObjectGetTypedArrayBytesPtr(context.JSGlobalContextRef, obj, NULL);
+            }
+
+            NSMutableArray* arr = [[NSMutableArray alloc] init];
+            [arr addObject:value];
+
+            JSValue* dataBase64 = [context[@"jsc_toBase64"] callWithArguments:arr];
+            std::string sBase64Data = [[dataBase64 toString] stdstring];
+
+            RELEASEARRAYOBJECTS(data_old_version);
+            int nDstLen = 0;
+            NSFile::CBase64Converter::Decode(sBase64Data.c_str(), (int)sBase64Data.length(), data_old_version, nDstLen);
+            return data_old_version;
+        }
+
+        virtual JSSmart<CJSValue> toValue()
+        {
+            CJSValueJSC* _value = new CJSValueJSC();
+            _value->value = value;
+            _value->context = context;
+            return _value;
         }
     };
 

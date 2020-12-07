@@ -20,13 +20,7 @@ ADD_DEPENDENCY(graphics, kernel, UnicodeConverter)
 
 #CONFIG += build_xp
 
-!build_xp {
-    include(../../Common/3dParty/v8/v8.pri)
-} else {
-    DEFINES += V8_OS_XP
-    DESTDIR=$$DESTDIR/xp
-    include(../../Common/3dParty/v8/v8_xp/v8.pri)
-}
+core_mac:CONFIG += use_javascript_core
 
 core_ios {
     CONFIG += doct_renderer_empty
@@ -66,19 +60,44 @@ HEADERS += \
     embed/MemoryStreamEmbed.h \
     embed/NativeControlEmbed.h \
     embed/NativeBuilderEmbed.h \
-    js_internal/js_base.h \
-    js_internal/v8/v8_base.h
+    js_internal/js_base.h
 
 SOURCES += \
     embed/GraphicsEmbed.cpp \
     embed/MemoryStreamEmbed.cpp \
     embed/NativeControlEmbed.cpp \
-    embed/NativeBuilderEmbed.cpp \
-    embed/v8/v8_Graphics.cpp \
-    embed/v8/v8_MemoryStream.cpp \
-    embed/v8/v8_NativeControl.cpp \
-    embed/v8/v8_NativeBuilder.cpp \
-    js_internal/v8/v8_base.cpp
+    embed/NativeBuilderEmbed.cpp
+
+!use_javascript_core {
+    HEADERS += js_internal/v8/v8_base.h
+    SOURCES += js_internal/v8/v8_base.cpp
+    SOURCES += \
+        embed/v8/v8_MemoryStream.cpp \
+        embed/v8/v8_NativeControl.cpp \
+        embed/v8/v8_NativeBuilder.cpp \
+		embed/v8/v8_Graphics.cpp
+
+    !build_xp {
+        include(../../Common/3dParty/v8/v8.pri)
+    } else {
+        DEFINES += V8_OS_XP
+        DESTDIR=$$DESTDIR/xp
+        include(../../Common/3dParty/v8/v8_xp/v8.pri)
+    }
+} else {
+    HEADERS += js_internal/jsc/jsc_base.h
+    OBJECTIVE_SOURCES += js_internal/jsc/jsc_base.mm
+    OBJECTIVE_SOURCES += ../common/Mac/NSString+StringUtils.mm
+    OBJECTIVE_SOURCES += \
+        embed/jsc/jsc_MemoryStream.mm \
+        embed/jsc/jsc_NativeControl.mm \
+        embed/jsc/jsc_NativeBuilder.mm
+
+    QMAKE_OBJECTIVE_CFLAGS += -fobjc-arc -fobjc-weak
+
+    LIBS += -framework Foundation
+    LIBS += -framework JavaScriptCore
+}
 }
 
 # downloader

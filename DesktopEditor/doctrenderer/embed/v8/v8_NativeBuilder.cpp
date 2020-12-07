@@ -33,43 +33,6 @@
 #include "../../docbuilder_p.h"
 #include "../../js_internal/v8/v8_base.h"
 
-void CBuilderDocumentEmbed::OpenFile(const std::wstring& sFile, const std::wstring& sParams)
-{
-    NSDoctRenderer::CDocBuilder_Private* pBuilder = GetPrivate(m_pBuilder);
-
-    std::wstring sTmpDir = pBuilder->m_sTmpFolder;
-
-    m_sFolder = NSFile::CFileBinary::CreateTempFileWithUniqueName(sTmpDir, L"DE_");
-    if (NSFile::CFileBinary::Exists(m_sFolder))
-        NSFile::CFileBinary::Remove(m_sFolder);
-
-    NSCommon::string_replace(m_sFolder, L"\\", L"/");
-
-    std::wstring::size_type nPosPoint = m_sFolder.rfind('.');
-    if (nPosPoint != std::wstring::npos && nPosPoint > sTmpDir.length())
-    {
-        m_sFolder = m_sFolder.substr(0, nPosPoint);
-    }
-
-    NSDirectory::CreateDirectory(m_sFolder);
-
-    std::wstring sExtCopy = pBuilder->GetFileCopyExt(sFile);
-    std::wstring sFileCopy = m_sFolder + L"/origin." + sExtCopy;
-
-    pBuilder->MoveFileOpen(sFile, sFileCopy);
-    int nConvertResult = pBuilder->ConvertToInternalFormat(m_sFolder, sFileCopy, sParams);
-
-    if (0 == nConvertResult)
-        m_bIsValid = true;
-}
-void CBuilderDocumentEmbed::CloseFile()
-{
-    if (!m_sFolder.empty())
-        NSDirectory::DeleteDirectory(m_sFolder);
-    m_bIsValid = false;
-    m_sFolder = L"";
-}
-
 #define CURRENTWRAPPER CBuilderEmbed
 
 FUNCTION_WRAPPER_V8_2(_builder_OpenFile,     builder_OpenFile)
@@ -103,7 +66,7 @@ v8::Local<v8::Value> _builder_CreateNativeTmpDoc(v8::Isolate* isolate, NSDoctRen
     _embed->m_pBuilder = pBuilder;
     _embed->OpenFile(sFile, sParams);
 
-    v8::Local<v8::Object> obj = _template->NewInstance();
+    v8::Local<v8::Object> obj = _template->NewInstance(V8ContextOneArg).ToLocalChecked();
     obj->SetInternalField(0, v8::External::New(isolate, _embed));
 
     return obj;
@@ -123,7 +86,7 @@ v8::Local<v8::Value> _builder_CreateNative(v8::Isolate* isolate, NSDoctRenderer:
     CBuilderEmbed* _embed = new CBuilderEmbed();
     _embed->m_pBuilder = builder;
 
-    v8::Local<v8::Object> obj = _template->NewInstance();
+    v8::Local<v8::Object> obj = _template->NewInstance(V8ContextOneArg).ToLocalChecked();
     obj->SetInternalField(0, v8::External::New(isolate, _embed));
 
     return obj;
@@ -132,12 +95,12 @@ v8::Local<v8::Value> _builder_CreateNative(v8::Isolate* isolate, NSDoctRenderer:
 void builder_CreateNativeTmpDoc(const std::string& name, JSSmart<CJSContext> context, NSDoctRenderer::CDocBuilder* builder, const std::wstring& sFile, const std::wstring& sParams)
 {
     v8::Isolate* current = CV8Worker::GetCurrent();
-    context->m_internal->m_context->Global()->Set(context->m_internal->m_context, v8::String::NewFromUtf8(current, name.c_str()), _builder_CreateNativeTmpDoc(current, builder, sFile, sParams));
+    context->m_internal->m_context->Global()->Set(context->m_internal->m_context, CreateV8String(current, name.c_str()), _builder_CreateNativeTmpDoc(current, builder, sFile, sParams));
 }
 void builder_CreateNative      (const std::string& name, JSSmart<CJSContext> context, NSDoctRenderer::CDocBuilder* builder)
 {
     v8::Isolate* current = CV8Worker::GetCurrent();
-    context->m_internal->m_context->Global()->Set(context->m_internal->m_context, v8::String::NewFromUtf8(current, name.c_str()), _builder_CreateNative(current, builder));
+    context->m_internal->m_context->Global()->Set(context->m_internal->m_context, CreateV8String(current, name.c_str()), _builder_CreateNative(current, builder));
 }
 
 JSSmart<CJSValue> CBuilderEmbed::builder_OpenTmpFile(JSSmart<CJSValue> path, JSSmart<CJSValue> params)

@@ -4,6 +4,9 @@
 #include <string>
 #include <map>
 #include <cctype>
+#include <vector>
+#include <algorithm>
+
 #include "gumbo-parser/src/gumbo.h"
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/common/Directory.h"
@@ -24,20 +27,15 @@ static std::string mhtTohtml(std::string& sFileContent);
 static void replace_all(std::string& s, const std::string& s1, const std::string& s2)
 {
     size_t pos = s.find(s1);
-    size_t l = s2.length();
     while(pos != std::string::npos)
     {
         s.replace(pos, s1.length(), s2);
-        pos = s.find(s1, pos + l);
+        pos = s.find(s1, pos + s2.length());
     }
 }
 
-static std::wstring htmlToXhtml(const std::wstring& sFile)
+static std::wstring htmlToXhtml(std::string& sFileContent)
 {
-    std::string sFileContent;
-    if(!NSFile::CFileBinary::ReadAllTextUtf8A(sFile, sFileContent))
-        return L"";
-
     // Распознование кодировки
     size_t posEncoding = sFileContent.find("charset=");
     if (posEncoding == std::string::npos)
@@ -45,19 +43,14 @@ static std::wstring htmlToXhtml(const std::wstring& sFile)
     if (posEncoding != std::string::npos)
     {
         posEncoding = sFileContent.find("=", posEncoding) + 1;
-        size_t posEnd;
-        if(sFileContent[posEncoding] == '\'')
+        char quoteSymbol = '\"';
+        if(sFileContent[posEncoding] == '\"' || sFileContent[posEncoding] == '\'')
         {
+            quoteSymbol = sFileContent[posEncoding];
             posEncoding += 1;
-            posEnd = sFileContent.find('\'', posEncoding);
-        }
-        else
-        {
-            if(sFileContent[posEncoding] == '\"')
-                posEncoding += 1;
-            posEnd = sFileContent.find('\"', posEncoding);
         }
 
+        size_t posEnd = sFileContent.find(quoteSymbol, posEncoding);
         if (std::string::npos != posEnd)
         {
             std::string sEncoding = sFileContent.substr(posEncoding, posEnd - posEncoding);
@@ -101,28 +94,80 @@ static std::string Base64ToString(const std::string& sContent, const std::string
     return sRes;
 }
 
-static std::string QuotedPrintableDecode(const std::string& sContent)
+static std::string QuotedPrintableDecode(const std::string& sContent, std::string& sCharset)
 {
     NSStringUtils::CStringBuilderA sRes;
     size_t ip = 0;
-    size_t i = sContent.find('=');
+    size_t i  = sContent.find('=');
+
+    if(i == 0)
+    {
+        size_t nIgnore = 12;
+        std::string charset = sContent.substr(0, nIgnore);
+        if(charset == "=00=00=FE=FF")
+            sCharset = "UTF-32BE";
+        else if(charset == "=FF=FE=00=00")
+            sCharset = "UTF-32LE";
+        else if(charset == "=2B=2F=76=38" || charset == "=2B=2F=76=39" ||
+                charset == "=2B=2F=76=2B" || charset == "=2B=2F=76=2F")
+            sCharset = "UTF-7";
+        else if(charset == "=DD=73=66=73")
+            sCharset = "UTF-EBCDIC";
+        else if(charset == "=84=31=95=33")
+            sCharset = "GB-18030";
+        else
+        {
+            nIgnore -= 3;
+            charset.erase(nIgnore);
+            if(charset == "=EF=BB=BF")
+                sCharset = "UTF-8";
+            else if(charset == "=F7=64=4C")
+                sCharset = "UTF-1";
+            else if(charset == "=0E=FE=FF")
+                sCharset = "SCSU";
+            else if(charset == "=FB=EE=28")
+                sCharset = "BOCU-1";
+            else
+            {
+                nIgnore -= 3;
+                charset.erase(nIgnore);
+                if(charset == "=FE=FF")
+                    sCharset = "UTF-16BE";
+                else if(charset == "=FF=FE")
+                    sCharset = "UTF-16LE";
+                else
+                    nIgnore -= 6;
+            }
+        }
+
+        ip = nIgnore;
+        i  = sContent.find('=', ip);
+    }
+
     while(i != std::string::npos && i + 2 < sContent.length())
     {
-        sRes.WriteString(sContent.substr(ip, i - ip));
+        sRes.WriteString(sContent.c_str() + ip, i - ip);
         std::string str = sContent.substr(i + 1, 2);
-        char* err;
-        char ch = (int)strtol(str.data(), &err, 16);
-        if(*err)
+        if(str.front() == '\n' || str.front() == '\r')
         {
-            if(str != "\r\n")
-                sRes.WriteString('=' + str);
+            char ch = str[1];
+            if(ch != '\n' && ch != '\r')
+                sRes.WriteString(&ch, 1);
         }
         else
-            sRes.WriteString(&ch, 1);
+        {
+            char* err;
+            char ch = (int)strtol(str.data(), &err, 16);
+            if(*err)
+                sRes.WriteString('=' + str);
+            else
+                sRes.WriteString(&ch, 1);
+        }
         ip = i + 3;
         i = sContent.find('=', ip);
     }
-    sRes.WriteString(sContent.substr(ip));
+    if(ip != std::string::npos)
+        sRes.WriteString(sContent.c_str() + ip);
     return sRes.GetData();
 }
 
@@ -130,12 +175,26 @@ static void ReadMht(std::string& sFileContent, size_t& nFound, size_t& nNextFoun
                     std::map<std::string, std::string>& sRes, NSStringUtils::CStringBuilderA& oRes)
 {
     // Content
-    size_t nContentTag = sFileContent.find("\n\r\n", nFound);
+    size_t nContentTag = sFileContent.find("\n\n", nFound);
     if(nContentTag == std::string::npos || nContentTag > nNextFound)
     {
-        nFound = nNextFound;
-        return;
+        nContentTag = sFileContent.find("\r\r", nFound);
+        if(nContentTag == std::string::npos || nContentTag > nNextFound)
+        {
+            nContentTag = sFileContent.find("\r\n\r\n", nFound);
+            if(nContentTag == std::string::npos || nContentTag > nNextFound)
+            {
+                nFound = nNextFound;
+                return;
+            }
+            else
+                nContentTag += 4;
+        }
+        else
+            nContentTag += 2;
     }
+    else
+        nContentTag += 2;
 
     // Content-Type
     size_t nTag = sFileContent.find("Content-Type: ", nFound);
@@ -208,7 +267,6 @@ static void ReadMht(std::string& sFileContent, size_t& nFound, size_t& nNextFoun
 
     // Content
     nTagEnd = nNextFound - 2;
-    nContentTag += 2;
     if(nTagEnd == std::string::npos || nTagEnd < nContentTag)
     {
         nFound = nNextFound;
@@ -245,7 +303,7 @@ static void ReadMht(std::string& sFileContent, size_t& nFound, size_t& nNextFoun
         }
         else if(sContentEncoding == "quoted-printable" || sContentEncoding == "Quoted-Printable")
         {
-            sContent = QuotedPrintableDecode(sContent);
+            sContent = QuotedPrintableDecode(sContent, sCharset);
             if (sCharset != "utf-8" && sCharset != "UTF-8" && !sCharset.empty())
             {
                 NSUnicodeConverter::CUnicodeConverter oConverter;
@@ -425,37 +483,57 @@ static void build_doctype(GumboNode* node, NSStringUtils::CStringBuilderA& oBuil
     }
 }
 
-static void build_attributes(GumboAttribute* at, bool no_entities, NSStringUtils::CStringBuilderA& atts)
+static void build_attributes(const GumboVector* attribs, bool no_entities, NSStringUtils::CStringBuilderA& atts)
 {
-    std::string sVal(at->value);
-    std::string sName(at->name);
-    atts.WriteString(" ");
-    if(sName.empty())
-        return;
-    size_t nBad = sName.find_first_of("-'+,.:=?#%<>&;\"\'()[]{}");
-    while(nBad != std::string::npos)
+    std::vector<std::string> arrRepeat;
+    for (size_t i = 0; i < attribs->length; ++i)
     {
-        sName.erase(nBad, 1);
-        nBad = sName.find_first_of("-'+,.:=?#%<>&;\"\'()[]{}", nBad);
-        if(sName.empty())
-            return;
-    }
-    while(sName.front() >= '0' && sName.front() <= '9')
-    {
-        sName.erase(0, 1);
-        if(sName.empty())
-            return;
-    }
-    atts.WriteString(sName);
+        GumboAttribute* at = static_cast<GumboAttribute*>(attribs->data[i]);
+        std::string sVal(at->value);
+        std::string sName(at->name);
+        atts.WriteString(" ");
 
-    // determine original quote character used if it exists
-    std::string qs ="\"";
-    atts.WriteString("=");
-    atts.WriteString(qs);
-    if(!no_entities)
-        substitute_xml_entities_into_attributes(sVal);
-    atts.WriteString(sVal);
-    atts.WriteString(qs);
+        bool bCheck = false;
+        size_t nBad = sName.find_first_of("-'+,.:=?#%<>&;\"\'()[]{}");
+        while(nBad != std::string::npos)
+        {
+            sName.erase(nBad, 1);
+            nBad = sName.find_first_of("-'+,.:=?#%<>&;\"\'()[]{}", nBad);
+            if(sName.empty())
+                break;
+            bCheck = true;
+        }
+        if(sName.empty())
+            continue;
+        while(sName.front() >= '0' && sName.front() <= '9')
+        {
+            sName.erase(0, 1);
+            if(sName.empty())
+                break;
+            bCheck = true;
+        }
+        if(bCheck)
+        {
+            GumboAttribute* check = gumbo_get_attribute(attribs, sName.c_str());
+            if(check || std::find(arrRepeat.begin(), arrRepeat.end(), sName) != arrRepeat.end())
+                continue;
+            else
+                arrRepeat.push_back(sName);
+        }
+
+        if(sName.empty())
+            continue;
+        atts.WriteString(sName);
+
+        // determine original quote character used if it exists
+        std::string qs ="\"";
+        atts.WriteString("=");
+        atts.WriteString(qs);
+        if(!no_entities)
+            substitute_xml_entities_into_attributes(sVal);
+        atts.WriteString(sVal);
+        atts.WriteString(qs);
+    }
 }
 
 static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA& contents)
@@ -530,12 +608,8 @@ static void prettyprint(GumboNode* node, NSStringUtils::CStringBuilderA& oBuilde
     oBuilder.WriteString("<" + tagname);
 
     // build attr string
-    const GumboVector * attribs = &node->v.element.attributes;
-    for (size_t i = 0; i < attribs->length; ++i)
-    {
-        GumboAttribute* at = static_cast<GumboAttribute*>(attribs->data[i]);
-        build_attributes(at, no_entity_substitution, oBuilder);
-    }
+    const GumboVector* attribs = &node->v.element.attributes;
+    build_attributes(attribs, no_entity_substitution, oBuilder);
     oBuilder.WriteString(close + ">");
 
     // prettyprint your contents

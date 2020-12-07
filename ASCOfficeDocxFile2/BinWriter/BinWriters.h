@@ -30,6 +30,8 @@
  *
  */
 #pragma once
+#ifndef BIN_WRITERS
+#define BIN_WRITERS
 
 #include "BinReaderWriterDefines.h"
 
@@ -103,6 +105,7 @@ namespace BinDocxRW
 
 			m_bLocalStyles = m_bLocalNumbering = false;
 		}
+		std::wstring AddEmbeddedStyle(const std::wstring & styleId);
 	};
 	class ParamsDocumentWriter
 	{
@@ -148,7 +151,7 @@ namespace BinDocxRW
 		std::map<int, bool>*			m_mapIgnoreComments;
 	public:
 		ParamsWriter&								m_oParamsWriter;
-		OOX::IFileContainer*						m_oDocumentRelsWriter;
+		OOX::IFileContainer*						m_oDocumentRels;
 
 		std::vector<OOX::CHdrFtr*>					m_aHeaders;
 		std::vector<SimpleTypes::EHdrFtr>			m_aHeaderTypes;
@@ -173,9 +176,7 @@ namespace BinDocxRW
 	{
 		BinaryCommonWriter m_oBcw;
 	public:
-		PPTX::Theme*					m_pTheme;
-		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
-		DocWrapper::FontProcessor&		m_oFontProcessor;
+		ParamsWriter& m_oParamsWriter;
 
 		Binary_rPrWriter(ParamsWriter& oParamsWriter);
 		void Write_rPr(OOX::Logic::CRunProperty* rPr);
@@ -215,9 +216,6 @@ namespace BinDocxRW
 							 const nullable<ComplexTypes::Word::CDecimalNumber>& numStart, nullable<ComplexTypes::Word::CFtnPos>* ftnPos,
 							 nullable<ComplexTypes::Word::CEdnPos>* endPos, std::vector<OOX::CFtnEdnSepRef*>* refs);
 		void WriteNumFmt(const ComplexTypes::Word::CNumFmt& oNumFmt);
-
-	private:
-		std::wstring AddEmbeddedStyle(const std::wstring & styleId);
 	};
 	class Binary_tblPrWriter
 	{
@@ -328,12 +326,7 @@ namespace BinDocxRW
 //---------------------------------
 		BinaryDocumentTableWriter(ParamsWriter& oParamsWriter, ParamsDocumentWriter& oParamsDocumentWriter, std::map<int, bool>* mapIgnoreComments, BinaryHeaderFooterTableWriter* oBinaryHeaderFooterTableWriter);
 	
-		void Write(OOX::Logic::CDocPartPr* pDocPartPr);
-		void Write(OOX::Logic::CDocParts* pDocParts);
-		void Write(OOX::Logic::CDocPartTypes* pDocPartTypes);
-		void Write(OOX::Logic::CDocPartBehaviors* pDocPartBehaviors);
-
-		void WriteAltChunk(OOX::Media& oAltChunk);
+		void WriteAltChunk(OOX::Media& oAltChunk, OOX::CStyles* styles);
 		void WriteVbaProject(OOX::VbaProject& oVbaProject);
 		void Write(std::vector<OOX::WritingElement*> & aElems);
 		void WriteDocumentContent(const std::vector<OOX::WritingElement*> & aElems);
@@ -562,7 +555,7 @@ namespace BinDocxRW
 
 		BinaryFileWriter(ParamsWriter& oParamsWriter);
 		static std::wstring WriteFileHeader(long nDataSize, int version);
-		void WriteMainTableStart(bool bSigTable = true);
+		void WriteMainTableStart();
 		void WriteMainTableEnd();
 		int WriteTableStart(BYTE type, int nStartPos = -1);
 		void WriteTableEnd(int nCurPos);
@@ -571,3 +564,4 @@ namespace BinDocxRW
 	};
 
 }
+#endif	// #ifndef BIN_WRITERS

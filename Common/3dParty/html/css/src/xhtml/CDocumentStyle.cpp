@@ -394,6 +394,7 @@ namespace NSCSS
         oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_RFonts, oStyle.m_pFont.GetFamily());
         oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_I, oStyle.m_pFont.GetStyle());
         oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_B, oStyle.m_pFont.GetWeight());
+        oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_SmallCaps, oStyle.m_pFont.GetVariant());
     }
 
     void CDocumentStyle::WriteRStyle (const NSCSS::CCompiledStyle& oStyle)

@@ -128,6 +128,7 @@ namespace NSCSS
 
     void CCompiledStyle::AddStyle(const std::map<std::wstring, std::wstring>& mStyle, const bool& bHardMode)
     {
+        const bool bBorder = (m_pBorder.Empty()) ? true : false;
         for (std::pair<std::wstring, std::wstring> pPropertie : mStyle)
         {
             SWITCH(pPropertie.first)
@@ -135,45 +136,45 @@ namespace NSCSS
                 //FONT
                 CASE(L"font"):
                 {
-                    m_pFont.SetFont(ConvertUnitMeasure(pPropertie.second.c_str(), m_pFont.GetSize()));
+                    m_pFont.SetFont(ConvertUnitMeasure(pPropertie.second.c_str(), m_pFont.GetSize()), bHardMode);
                     break;
                 }
                 CASE(L"font-size"):
                 CASE(L"font-size-adjust"):
                 {
-                    m_pFont.SetSize(ConvertUnitMeasure(pPropertie.second, m_pFont.GetSize()));
+                    m_pFont.SetSize(ConvertUnitMeasure(pPropertie.second, m_pFont.GetSize()), bHardMode);
                     break;
                 }
 
                 CASE(L"font-stretch"):
                 {
-                    m_pFont.SetStretch(pPropertie.second);
+                    m_pFont.SetStretch(pPropertie.second, bHardMode);
                     break;
                 }
                 CASE(L"font-style"):
                 {
-                    m_pFont.SetStyle(pPropertie.second);
+                    m_pFont.SetStyle(pPropertie.second, bHardMode);
                     break;
                 }
                 CASE(L"font-variant"):
                 {
-                    m_pFont.SetVariant(pPropertie.second);
+                    m_pFont.SetVariant(pPropertie.second, bHardMode);
                     break;
                 }
                 CASE(L"font-weight"):
                 {
-                    m_pFont.SetWeight(pPropertie.second);
+                    m_pFont.SetWeight(pPropertie.second, bHardMode);
                     break;
                 }
                 CASE(L"line-height"):
                 {
-                    m_pFont.SetLineHeight(ConvertUnitMeasure(pPropertie.second, m_pFont.GetSize()));
+                    m_pFont.SetLineHeight(ConvertUnitMeasure(pPropertie.second, m_pFont.GetSize()), bHardMode);
                     break;
                 }
                 //MARGIN
                 CASE(L"margin"):
                 {
-                    if (!m_pBorder.Empty())
+                    if (bBorder)
                         break;
 
                     const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
@@ -183,7 +184,7 @@ namespace NSCSS
                 }
                 CASE(L"margin-top"):
                 {
-                    if (!m_pBorder.Empty())
+                    if (bBorder)
                         break;
 
                     const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
@@ -194,7 +195,7 @@ namespace NSCSS
                 CASE(L"margin-right"):
                 CASE(L"margin-block-end"):
                 {
-                    if (!m_pBorder.Empty())
+                    if (bBorder)
                         break;
 
                     const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
@@ -204,7 +205,7 @@ namespace NSCSS
                 }
                 CASE(L"margin-bottom"):
                 {
-                    if (!m_pBorder.Empty())
+                    if (bBorder)
                         break;
 
                     const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
@@ -215,10 +216,11 @@ namespace NSCSS
                 CASE(L"margin-left"):
                 CASE(L"margin-block-start"):
                 {
-                    if (!m_pBorder.Empty())
+                    if (bBorder)
                         break;
 
                     const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+
                     if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
                         m_pMargin.AddLeftMargin(sValue);
                     break;
@@ -226,24 +228,23 @@ namespace NSCSS
                 // TEXT
                 CASE(L"text-align"):
                 {
-                    m_pText.SetAlign(pPropertie.second);
+                    m_pText.SetAlign(pPropertie.second, bHardMode);
                     break;
                 }
                 CASE(L"text-indent"):
                 {
-                    const std::wstring sIndent = ConvertUnitMeasure(pPropertie.second, 540.0f);
-                    m_pText.SetIndent(sIndent);
+                    m_pText.SetIndent(ConvertUnitMeasure(pPropertie.second, 540.0f), bHardMode);
                     break;
                 }
                 CASE(L"text-decoration"):
                 {
-                    m_pText.SetDecoration(pPropertie.second);
+                    m_pText.SetDecoration(pPropertie.second, bHardMode);
                     break;
                 }
                 CASE(L"text-color"):
                 CASE(L"color"):
                 {
-                    m_pText.SetColor(pPropertie.second);
+                    m_pText.SetColor(pPropertie.second, bHardMode);
                     break;
                 }
                 //BORDER

@@ -122,7 +122,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_Link, L"h1");
 
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_RFonts, L"\"Arial\"");
-        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_B, L"true");
+        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_B, L"bold");
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_Color, L"000000");
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_Sz, L"48");
     }
@@ -137,7 +137,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_Link, L"h2");
 
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_RFonts, L"\"Arial\"");
-        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_B, L"true");
+        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_B, L"bold");
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_Color, L"000000");
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_Sz, L"40");
     }
@@ -152,7 +152,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_Link, L"h3");
 
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_RFonts, L"\"Arial\"");
-        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_B, L"true");
+        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_B, L"bold");
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_Color, L"000000");
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_Sz, L"36");
     }
@@ -167,8 +167,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_Link, L"h4");
 
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_RFonts, L"\"Arial\"");
-        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_B, L"true");
-//        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunnerProperties::R_Color, L"232323");
+        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_B, L"bold");
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_Sz, L"32");
     }
     else if (sNameDefaultElement == L"h5-c")
@@ -182,8 +181,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_Link, L"h5");
 
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_RFonts, L"\"Arial\"");
-        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_B, L"true");
-        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_Color, L"444444");
+        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_B, L"bold");
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_Sz, L"28");
     }
     else if (sNameDefaultElement == L"h6-c")
@@ -197,9 +195,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_Link, L"h6");
 
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_RFonts, L"\"Arial\"");
-        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_B, L"true");
-        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_I, L"true");
-        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_Color, L"232323");
+        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_B, L"bold");
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_Sz, L"24");
     }
     else if (sNameDefaultElement == L"p-c")
@@ -220,8 +216,6 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_Name, L"Paragraph");
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_BasedOn, L"normal");
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_Link, L"p-c");
-//        SetInd(L"w:firstLine=\"567\"");
-//        SetJc(L"both");
     }
     else if (sNameDefaultElement == L"div-c")
     {
@@ -241,8 +235,6 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_Name, L"Div paragraph");
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_BasedOn, L"normal");
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_Link, L"div-c");
-//        SetInd(L"w:firstLine=\"567\"");
-//        SetJc(L"both");
     }
     else if (sNameDefaultElement == L"a-c")
     {
@@ -254,7 +246,6 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_Color, L"0000FF");
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_U, L"single");
-//        AddPropertiesInR(NSCSS::NS_CONST_VALUES::RunerProperties::R_Sz, L"24");
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_RFonts, L"\"Arial\"");
     }
     else if (sNameDefaultElement == L"a")
@@ -344,7 +335,6 @@ std::wstring CXmlElement::ConvertPStyle() const
         {
             case NSCSS::NSConstValues::NSProperties::ParagraphProperties::P_Jc:
             {
-            std::wcout << L"___" << oItem.second << std::endl;
                 sPPr += L"<w:jc w:val=\"" + oItem.second + L"\"/>";
                 break;
             }
@@ -473,6 +463,14 @@ std::wstring CXmlElement::ConvertRStyle() const
             case NSCSS::NSConstValues::NSProperties::RunnerProperties::R_Shd:
             {
                 sRStyle += L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" + oItem.second + L"\"/>";
+                break;
+            }
+            case NSCSS::NSConstValues::NSProperties::RunnerProperties::R_SmallCaps:
+            {
+                if (oItem.second == L"smallCaps")
+                    sRStyle += L"<w:smallCaps/>";
+                else if (oItem.second == L"normal")
+                    sRStyle += L"<w:smallCaps w:val=\"false\"/>";
                 break;
             }
             default:

@@ -476,7 +476,6 @@ namespace NSCSS
 
         m_mUsedStyles[arSelectors] = oStyle;
 
-        std::wcout << oStyle->GetId() << std::endl;
         return *oStyle;
     }
 

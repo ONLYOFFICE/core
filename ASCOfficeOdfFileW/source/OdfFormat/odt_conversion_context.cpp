@@ -1078,8 +1078,17 @@ void odt_conversion_context::end_field()
 	{
 		set_field_instr();
 	}
+	if (current_fields.back().status == 1 && false == current_fields.back().in_span && current_fields.back().type < 0xff)
+	{
+		current_fields.back().status = 2;
 
-	if (current_fields.back().status == 2)	
+		if (current_fields.back().type == fieldHyperlink)		start_hyperlink(current_fields.back().value);
+		else if (current_fields.back().type == fieldSeq)		start_sequence();
+		else if (current_fields.back().type == fieldDropDown)	start_drop_down();
+		else
+			text_context()->start_field(current_fields.back().type, current_fields.back().value);
+	}
+	if (current_fields.back().status == 2)
 	{
 		current_fields.back().status = 3;//prepare for delete
 		

@@ -672,7 +672,23 @@ void a::docx_convert(oox::docx_conversion_context & Context)
 	
 	if (Context.is_table_content())
 	{
-		_Wostream << L"<w:hyperlink w:anchor=\"" << XmlUtils::EncodeXmlString(ref.substr(1)) << L"\" w:history=\"1\">"; //без #
+		size_t pos_outline = ref.find(L"|outline");
+		if (std::wstring::npos != pos_outline)//без #
+		{
+			std::wstringstream strm; 
+			text_to_stream(strm, false);
+			std::wstring outline = strm.str();
+
+			ref = L"_TOC_" + std::to_wstring(0x4321001 + Context.get_table_content_context().mapReferences.size());
+			
+			Context.get_table_content_context().mapReferences.insert(std::make_pair(outline, ref));
+		}
+		else
+		{
+			ref = XmlUtils::EncodeXmlString(ref.substr(1));
+		}
+
+		_Wostream << L"<w:hyperlink w:anchor=\"" << ref << L"\" w:history=\"1\">"; 
 		int type = Context.get_table_content_context().get_type_current_content_template_index();
 		//type == 3 (LinkStart)
 		Context.get_table_content_context().next_level_index();

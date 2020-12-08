@@ -524,3 +524,26 @@ JSSmart<CJSValue> CGraphicsEmbed::TransformPointY(JSSmart<CJSValue> x, JSSmart<C
 {
     return CJSContext::createDouble(m_pInternal->TransformPointY(x->toDouble(), y->toDouble()));
 }
+JSSmart<CJSValue> CGraphicsEmbed::put_LineJoin(JSSmart<CJSValue> join)
+{
+    m_pInternal->put_LineJoin(join->toInt32());
+    return NULL;
+}
+JSSmart<CJSValue> CGraphicsEmbed::get_LineJoin()
+{
+    return CJSContext::createInt(m_pInternal->GetLineJoin());
+}
+JSSmart<CJSValue> CGraphicsEmbed::put_TextureBounds(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h)
+{
+    m_pInternal->put_TextureBounds(x->toDouble(), y->toDouble(), w->toDouble(), h->toDouble());
+    return NULL;
+}
+JSSmart<CJSValue> CGraphicsEmbed::GetlineWidth()
+{
+    return CJSContext::createDouble(m_pInternal->GetlineWidth());
+}
+JSSmart<CJSValue> CGraphicsEmbed::DrawPath(JSSmart<CJSValue> path)
+{
+    m_pInternal->DrawPath(path->toInt32());
+    return NULL;
+}

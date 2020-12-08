@@ -12,43 +12,12 @@ function CNativeGraphics()
     this.m_dDpiY      = 96.0;
     this.m_bIsBreak   = false;
 
-    //this.m_oPen            = new AscCommon.CPen();
     this.m_bPenColorInit   = false;
-    //this.m_oBrush          = new AscCommon.CBrush();
     this.m_bBrushColorInit = false;
 
-    this.m_oFontManager = null;
-
-    //this.m_oCoordTransform      = new AscCommon.CMatrixL();
-    //this.m_oBaseTransform       = new AscCommon.CMatrixL();
-    //this.m_oTransform           = new AscCommon.CMatrixL();
-    //this.m_oFullTransform       = new AscCommon.CMatrixL();
-    //this.m_oInvertFullTransform = new AscCommon.CMatrixL();
-
-    this.m_oCurFont =
-    {
-        Name     : "",
-        FontSize : 10,
-        Bold     : false,
-        Italic   : false
-    };
-
-    // RFonts
     this.m_oTextPr      = null;
-    //this.m_oGrFonts     = new AscCommon.CGrRFonts();
-    //this.m_oLastFont    = new AscCommon.CFontSetup();
-
-    this.LastFontOriginInfo = { Name : "", Replace : null };
-
-    this.m_bIntegerGrid = true;
-
-    //this.ClipManager = new AscCommon.CClipManager();
-    //this.ClipManager.BaseObject = this;
 
     this.IsDemonstrationMode = false;
-
-    //this.GrState = new AscCommon.CGrState();
-    //this.GrState.Parent = this;
 
     this.TextClipRect  = null;
     this.IsClipContext = false;
@@ -60,17 +29,19 @@ function CNativeGraphics()
 
     this.dash_no_smart = null;
 
-
     this.ArrayPoints = null;
+	this.MaxEpsLine  = null;
 
     this.TextureFillTransformScaleX = 1;
     this.TextureFillTransformScaleY = 1;
 
-    this.IsSlideBoundsCheckerType = true;
+    this.RENDERER_PDF_FLAG        = true;
+	this.IsNoSupportTextDraw      = true;
+    this.IsSlideBoundsCheckerType = false;
+	this.AutoCheckLineWidth       = false;
     this.IsTrack                  = false;
     this.IsThumbnail              = false;
     this.ClearMode                = false;
-    this.RENDERER_PDF_FLAG        = true;
 }
 
 CNativeGraphics.prototype =
@@ -600,5 +571,25 @@ CNativeGraphics.prototype =
 	TransformPointY : function(x, y)
 	{
 		return this.Native["TransformPointY"](x, y);
+	},
+	put_LineJoin : function(join)
+	{
+		this.Native["put_LineJoin"](join);
+	},
+    get_LineJoin : function()
+	{
+		return this.Native["get_LineJoin"]();
+	},
+	put_TextureBounds : function(x, y, w, h)
+	{
+		this.Native["put_TextureBounds"](x, y, w, h);
+	},
+	GetlineWidth : function()
+	{
+		return this.Native["GetlineWidth"]();
+	},
+	DrawPath : function(path)
+	{
+		this.Native["DrawPath"](path);
 	}
 };

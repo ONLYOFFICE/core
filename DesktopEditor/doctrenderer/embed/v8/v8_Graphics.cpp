@@ -115,6 +115,11 @@ namespace NSGraphics
     FUNCTION_WRAPPER_V8_3(_put_BrushGradient,     put_BrushGradient)
     FUNCTION_WRAPPER_V8_2(_TransformPointX,       TransformPointX)
     FUNCTION_WRAPPER_V8_2(_TransformPointY,       TransformPointY)
+    FUNCTION_WRAPPER_V8_1(_put_LineJoin,          put_LineJoin)
+    FUNCTION_WRAPPER_V8  (_get_LineJoin,          get_LineJoin)
+    FUNCTION_WRAPPER_V8_4(_put_TextureBounds,     put_TextureBounds)
+    FUNCTION_WRAPPER_V8  (_GetlineWidth,          GetlineWidth)
+    FUNCTION_WRAPPER_V8_1(_DrawPath,              DrawPath)
 
     v8::Handle<v8::ObjectTemplate> CreateGraphicsTemplate(v8::Isolate* isolate)
     {
@@ -224,6 +229,11 @@ namespace NSGraphics
         NSV8Objects::Template_Set(result, "put_BrushGradient",        _put_BrushGradient);
         NSV8Objects::Template_Set(result, "TransformPointX",          _TransformPointX);
         NSV8Objects::Template_Set(result, "TransformPointY",          _TransformPointY);
+        NSV8Objects::Template_Set(result, "put_LineJoin",             _put_LineJoin);
+        NSV8Objects::Template_Set(result, "get_LineJoin",             _get_LineJoin);
+        NSV8Objects::Template_Set(result, "put_TextureBounds",        _put_TextureBounds);
+        NSV8Objects::Template_Set(result, "GetlineWidth",             _GetlineWidth);
+        NSV8Objects::Template_Set(result, "DrawPath",                 _DrawPath);
 
         return handle_scope.Escape(result);
     }

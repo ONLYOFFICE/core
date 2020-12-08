@@ -82,7 +82,7 @@ void CGraphics::p_dash(size_t length, double* dash)
         m_pRenderer->put_PenDashStyle(Aggplus::DashStyleSolid);
 }
 void CGraphics::b_color1(int r, int g, int b, int a)
-{    
+{
     m_pRenderer->put_BrushType(c_BrushTypeSolid);
     m_pRenderer->put_BrushColor1(r | (g << 8) | (b << 16));
     m_pRenderer->put_BrushAlpha1(a);
@@ -1070,14 +1070,47 @@ void CGraphics::put_BrushGradient(int* pColors, double* pPositions, size_t nCoun
 {
     m_pRenderer->put_BrushGradientColors((LONG *)pColors, pPositions, nCount);
 }
-double CGraphics::TransformPointX(double x,  double y)
+double CGraphics::TransformPointX(double x, double y)
 {
     m_pRenderer->GetFullTransform()->TransformPoint(x, y);
     return x;
 }
-double CGraphics::TransformPointY(double x,  double y)
+double CGraphics::TransformPointY(double x, double y)
 {
     m_pRenderer->GetFullTransform()->TransformPoint(x, y);
     return y;
+}
+void CGraphics::put_LineJoin(int nJoin)
+{
+    m_pRenderer->put_PenLineJoin(nJoin);
+}
+int CGraphics::GetLineJoin()
+{
+    BYTE nRes;
+    m_pRenderer->get_PenLineJoin(&nRes);
+    return nRes;
+}
+void CGraphics::put_TextureBounds(double x, double y, double w, double h)
+{
+    if(m_pRenderer->get_IntegerGrid())
+    {
+        double r = x + w;
+        double b = y + h;
+        m_pRenderer->GetFullTransform()->TransformPoint(x, y);
+        m_pRenderer->GetFullTransform()->TransformPoint(r, b);
+        m_pRenderer->BrushBounds(x, y, r - x, b - y);
+    }
+    else
+        m_pRenderer->BrushBounds(x, y, w, h);
+}
+double CGraphics::GetlineWidth()
+{
+    double nRes;
+    m_pRenderer->get_PenSize(&nRes);
+    return nRes;
+}
+void CGraphics::DrawPath(int path)
+{
+    m_pRenderer->DrawPath(path);
 }
 }

@@ -118,5 +118,7 @@ MyGraphics.put_BrushTextureAlpha(255);
 MyGraphics.put_BrushGradient({colors : [{R : 255, G : 255, B : 255, A : 255}, {R : 255, G : 255, B : 255, A : 255}, {R : 255, G : 255, B : 255, A : 255}, {R : 255, G : 255, B : 255, A : 255}, {R : 255, G : 255, B : 255, A : 255}, {R : 255, G : 255, B : 255, A : 255}]}, {x0 : 0, y0 : 0, x1 : 0, y1 : 0, r0 : 0, r1 : 0}, null);
 var x = MyGraphics.TransformPointX(10, 10);
 var y = MyGraphics.TransformPointX(10, 10);
-
-MyGraphics.GetFont();
+MyGraphics.put_LineJoin(5);
+var join = MyGraphics.get_LineJoin();
+MyGraphics.put_TextureBounds(10, 10, 100, 100);
+MyGraphics.GetlineWidth();

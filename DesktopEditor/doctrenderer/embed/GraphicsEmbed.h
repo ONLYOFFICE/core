@@ -126,6 +126,11 @@ public:
     JSSmart<CJSValue> put_BrushGradient(JSSmart<CJSValue> colors, JSSmart<CJSValue> pos, JSSmart<CJSValue> n);
     JSSmart<CJSValue> TransformPointX(JSSmart<CJSValue> x, JSSmart<CJSValue> y);
     JSSmart<CJSValue> TransformPointY(JSSmart<CJSValue> x, JSSmart<CJSValue> y);
+    JSSmart<CJSValue> put_LineJoin(JSSmart<CJSValue> join);
+    JSSmart<CJSValue> get_LineJoin();
+    JSSmart<CJSValue> put_TextureBounds(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h);
+    JSSmart<CJSValue> GetlineWidth();
+    JSSmart<CJSValue> DrawPath(JSSmart<CJSValue> path);
 
     static void CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context);
 };

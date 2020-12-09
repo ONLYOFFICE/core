@@ -2468,15 +2468,25 @@ namespace NSEditorApi
 	{
 	public:
 		// memory release!!!
-		virtual void OnEvent(CAscMenuEvent* pEvent)
-		{
-			if (NULL != pEvent)
+        virtual void OnEvent(CAscMenuEvent* pEvent)
+        {
+            if (NULL != pEvent)
                 pEvent->Release();
-		}
-		virtual bool IsSupportEvent(int nEventType)
-		{
-			return true;
-		}
+        }
+        virtual bool IsSupportEvent(int nEventType)
+        {
+            return true;
+        }
+        
+        void Invoke(int nEventType)
+        {
+            NSEditorApi::CAscMenuEvent* pEvent = new NSEditorApi::CAscMenuEvent();
+            if (pEvent)
+            {
+                pEvent->m_nType = nEventType;
+                OnEvent(pEvent);
+            }
+        }
 	};
 
 	class CAscMenuController

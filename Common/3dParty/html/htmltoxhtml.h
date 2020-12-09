@@ -44,19 +44,14 @@ static std::wstring htmlToXhtml(std::string& sFileContent)
     if (posEncoding != std::string::npos)
     {
         posEncoding = sFileContent.find("=", posEncoding) + 1;
-        size_t posEnd;
-        if(sFileContent[posEncoding] == '\'')
+        char quoteSymbol = '\"';
+        if(sFileContent[posEncoding] == '\"' || sFileContent[posEncoding] == '\'')
         {
+            quoteSymbol = sFileContent[posEncoding];
             posEncoding += 1;
-            posEnd = sFileContent.find('\'', posEncoding);
-        }
-        else
-        {
-            if(sFileContent[posEncoding] == '\"')
-                posEncoding += 1;
-            posEnd = sFileContent.find('\"', posEncoding);
         }
 
+        size_t posEnd = sFileContent.find(quoteSymbol, posEncoding);
         if (std::string::npos != posEnd)
         {
             std::string sEncoding = sFileContent.substr(posEncoding, posEnd - posEncoding);
@@ -66,17 +61,6 @@ static std::wstring htmlToXhtml(std::string& sFileContent)
                 sFileContent = U_TO_UTF8(oConverter.toUnicode(sFileContent, sEncoding.c_str()));
             }
         }
-    }
-
-    // Избавление от <a/>
-    size_t posA = sFileContent.find("<a ");
-    while(posA != std::string::npos)
-    {
-        size_t nBegin = sFileContent.find('<',  posA + 1);
-        size_t nEnd   = sFileContent.find("/>", posA);
-        if(nEnd < nBegin)
-            sFileContent.replace(nEnd, 2, "></a>");
-        posA = sFileContent.find("<a ", nBegin);
     }
 
     // Gumbo

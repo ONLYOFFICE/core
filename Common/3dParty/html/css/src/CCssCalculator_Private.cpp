@@ -84,7 +84,7 @@ namespace NSCSS
     inline void CCssCalculator_Private::GetOutputData(KatanaOutput *oOutput)
     {
         if ( NULL == oOutput )
-            return;
+            return;        
 
         switch (oOutput->mode) {
             case KatanaParserModeStylesheet:
@@ -339,23 +339,21 @@ namespace NSCSS
             return *oItem->second;
 
         CCompiledStyle *oStyle = new CCompiledStyle();
-        oStyle->SetDpi(m_nDpi);
 
         std::vector<std::wstring> arWords;
         arWords.reserve(arSelectors.size() * 2);
 
-//        for (const CNode& oNode : arSelectors)
-        for (std::vector<CNode>::const_reverse_iterator oNode = arSelectors.rbegin(); oNode != arSelectors.rend(); ++oNode)
+        for (const CNode& oNode : arSelectors)
         {
-            oStyle->AddStyle(oNode->m_sStyle, true);
+            oStyle->AddStyle(oNode.m_sStyle, true);
 
-            arWords.push_back(oNode->m_sName);
+            arWords.push_back(oNode.m_sName);
 
-            if (!oNode->m_sClass.empty())
+            if (!oNode.m_sClass.empty())
             {
-                if (oNode->m_sClass.find(L' ') != std::wstring::npos)
+                if (oNode.m_sClass.find(L' ') != std::wstring::npos)
                 {
-                    std::vector<std::wstring> arClasses = NS_STATIC_FUNCTIONS::GetWordsW(oNode->m_sClass, L" ");
+                    std::vector<std::wstring> arClasses = NS_STATIC_FUNCTIONS::GetWordsW(oNode.m_sClass, L" ");
 
                     if (arClasses.size() > 1)
                         arClasses.resize(unique(arClasses.begin(),arClasses.end()) - arClasses.begin());
@@ -386,23 +384,23 @@ namespace NSCSS
                     }
                 }
                 else
-                    arWords.push_back(L'.' + oNode->m_sClass);
+                    arWords.push_back(L'.' + oNode.m_sClass);
             }
-            if (!oNode->m_sId.empty())
-                arWords.push_back(L'#' + oNode->m_sId);
+            if (!oNode.m_sId.empty())
+                arWords.push_back(L'#' + oNode.m_sId);
         }
 
         std::vector<CElement*> arElements;
 
-        for (const CNode oNode : arSelectors)
+        for (std::vector<CNode>::const_reverse_iterator iNode = arSelectors.rbegin(); iNode != arSelectors.rend(); ++iNode)
         {
-//            std::vector<std::wstring> arKins;
-//            for (std::vector<std::wstring>::const_reverse_iterator sNode = arWords.rbegin(); sNode != arWords.rend(); ++sNode)
-//            {
-//                arKins.push_back(*sNode);
-//                if ((*sNode)[0] != L'#' && (*sNode)[0] != L'.')
-//                    break;
-//            }
+            std::vector<std::wstring> arKins;
+            for (std::vector<std::wstring>::const_reverse_iterator sNode = arWords.rbegin(); sNode != arWords.rend(); ++sNode)
+            {
+                arKins.push_back(*sNode);
+                if ((*sNode)[0] != L'#' && (*sNode)[0] != L'.')
+                    break;
+            }
             std::wstring sName, sId;
             std::vector<std::wstring> arClasses;
 
@@ -424,6 +422,7 @@ namespace NSCSS
             const std::map<std::wstring, CElement*>::const_iterator oFindName = m_mData.find(sName);
             std::map<std::wstring, CElement*>::const_iterator oFindId;
             std::vector<CElement*> arFindElements;
+
 
             if (!sId.empty())
             {
@@ -462,13 +461,11 @@ namespace NSCSS
                 arFindElements.insert(arFindElements.end(), arTemp.begin(), arTemp.end());
             }
 
-            if (arFindElements.size() > 1)
+            std::sort(arFindElements.rbegin(), arFindElements.rend(), [](CElement* oFirstElement, CElement* oSecondElement)
             {
-                std::sort(arFindElements.rbegin(), arFindElements.rend(), [](CElement* oFirstElement, CElement* oSecondElement)
-                {
-                    return oFirstElement->GetWeight() < oSecondElement->GetWeight();
-                });
-            }
+                return oFirstElement->GetWeight() < oSecondElement->GetWeight();
+            });
+
 
             for (const CElement* oElement : arFindElements)
                 oStyle->AddStyle(oElement->GetStyle());
@@ -477,6 +474,9 @@ namespace NSCSS
         }
 
         oStyle->SetID(arSelectors.back().m_sName + ((!arSelectors.back().m_sClass.empty()) ? L'.' + arSelectors.back().m_sClass : L"") + ((arSelectors.back().m_sId.empty()) ? L"" : L'#' + arSelectors.back().m_sId) + L'-' + std::to_wstring(++m_nCountNodes));
+
+        for (std::pair<const std::wstring, std::wstring>& pProperie : *(oStyle->GetStyleMap()))
+            pProperie.second = ConvertUnitMeasure(pProperie.second);
 
         m_mUsedStyles[arSelectors] = oStyle;
 
@@ -511,6 +511,540 @@ namespace NSCSS
         AddStyles(NS_STATIC_FUNCTIONS::GetContentAsUTF8(sFileName));
     }
 
+    std::wstring CCssCalculator_Private::ConvertUnitMeasure(const std::wstring &sValue) const
+    {
+        if (sValue.empty())
+            return sValue;
+
+        std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsWithSigns(sValue);
+
+        std::wstring sValueString;
+
+        for (std::wstring& sValueTemp : arValues)
+        {
+            const size_t nPosImportant = sValueTemp.find(L'!');
+            if (nPosImportant != std::wstring::npos)
+                sValueTemp = sValueTemp.substr(0, nPosImportant);
+
+            size_t nPosGrid = sValueTemp.find(L'#');
+
+            if (nPosGrid != std::wstring::npos || !NS_STATIC_FUNCTIONS::ThereIsNumber(sValueTemp))
+            {
+                if (!NS_STATIC_FUNCTIONS::ConvertAbsoluteValue(sValueTemp))
+                {
+                    sValueString += sValueTemp;
+                    continue;
+                }
+            }
+
+            const size_t posPercent = sValueTemp.find(L'%');
+
+            if (posPercent != std::wstring::npos)
+            {
+                const float dValue = wcstof(sValueTemp.substr(0, posPercent).c_str(), NULL) * NS_CONST_VALUES::FONT_SIZE / 100;
+
+                sValueString += std::to_wstring(static_cast<short int>(dValue + 0.5f));
+
+                if (sValueTemp.find(L';') != std::wstring::npos)
+                    sValueString += L';';
+                else if (arValues.size() > 1 && sValueTemp.find(L':') == std::wstring::npos)
+                    sValueString += L' ';
+            }
+            else if (sValueTemp.find(L"px") != std::wstring::npos)
+            {
+                sValueString += ConvertPx(sValueTemp);
+
+                if (sValueTemp.find(L';') != std::wstring::npos)
+                    sValueString += L';';
+                else if (arValues.size() > 1 && sValueTemp.find(L':') == std::wstring::npos)
+                    sValueString += L' ';
+            }
+            else if (sValueTemp.find(L"cm") != std::wstring::npos)
+            {
+                sValueString += ConvertCm(sValueTemp);
+
+                if (sValueTemp.find(L';') != std::wstring::npos)
+                    sValueString += L';';
+                else if (arValues.size() > 1 && sValueTemp.find(L':') == std::wstring::npos)
+                    sValueString += L' ';
+            }
+            else if (sValueTemp.find(L"mm") != std::wstring::npos)
+            {
+                sValueString += ConvertMm(sValueTemp);
+
+                if (sValueTemp.find(L';') != std::wstring::npos)
+                    sValueString += L';';
+                else if (arValues.size() > 1 && sValueTemp.find(L':') == std::wstring::npos)
+                    sValueString += L' ';
+            }
+            else if (sValueTemp.find(L"in") != std::wstring::npos)
+            {
+                sValueString += ConvertIn(sValueTemp);
+
+                if (sValueTemp.find(L';') != std::wstring::npos)
+                    sValueString += L';';
+                else if (arValues.size() > 1 && sValueTemp.find(L':') == std::wstring::npos)
+                    sValueString += L' ';
+            }
+            else if (sValueTemp.find(L"pt") != std::wstring::npos)
+            {
+                sValueString += ConvertPt(sValueTemp);
+
+                if (sValueTemp.find(L';') != std::wstring::npos)
+                    sValueString += L';';
+                else if (arValues.size() > 1 && sValueTemp.find(L':') == std::wstring::npos)
+                    sValueString += L' ';
+            }
+            else if (sValueTemp.find(L"pc") != std::wstring::npos)
+            {
+                sValueString += ConvertPc(sValueTemp);
+
+                if (sValueTemp.find(L';') != std::wstring::npos)
+                    sValueString += L';';
+                else if (arValues.size() > 1 && sValueTemp.find(L':') == std::wstring::npos)
+                    sValueString += L' ';
+            }
+            else if (sValueTemp.find(L"em") != std::wstring::npos)
+            {
+                sValueString += ConvertEm(sValueTemp);
+
+                if (sValueTemp.find(L';') != std::wstring::npos)
+                    sValueString += L';';
+                else if (arValues.size() > 1 && sValueTemp.find(L':') == std::wstring::npos)
+                    sValueString += L' ';
+            }
+            else
+            {
+                sValueString += sValueTemp;
+
+                if (sValueTemp.find(L";") != std::wstring::npos)
+                    sValueString += L';';
+
+                break;
+            }
+
+            if (sValueTemp.back() != L';' && sValueTemp.back() != L':' && sValueTemp.back() != L' ')
+                sValueTemp += L' ';
+        }
+
+        return sValueString;
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertPx(const std::wstring& sValue) const
+    {
+        if (sValue.empty())
+            return std::wstring();
+
+        const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"px") - 1);
+        const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
+
+        switch (m_UnitMeasure)
+        {
+            case Pixel:
+                return std::to_wstring(static_cast<short int>(dValue));;
+            case Default:
+            case Point:
+                return ConvertPxToPt(dValue);
+            case Cantimeter:
+                return ConvertPxToCm(dValue);
+            case Millimeter:
+                return ConvertPxToMm(dValue);
+            case Inch:
+                return ConvertPxToIn(dValue);
+            case Peak:
+                return ConvertPxToPc(dValue);
+        }
+
+        return std::wstring();
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertPxToCm(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(dValue / static_cast<float>(m_nDpi) * 2.54f + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertPxToIn(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(1.0f / static_cast<float>(m_nDpi) * dValue + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertPxToMm(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(dValue / static_cast<float>(m_nDpi) * 25.4f + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertPxToPc(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(0.16667f / static_cast<float>(m_nDpi) * dValue + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertPxToPt(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(72.0f /  static_cast<float>(m_nDpi) * dValue + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertCm(const std::wstring& sValue) const
+    {
+        if (sValue.empty())
+            return std::wstring();
+
+        const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"cm") - 1);
+        const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
+
+        switch (m_UnitMeasure)
+        {
+            case Default:
+            case Point:
+                return ConvertCmToPt(dValue);
+            case Pixel:
+                return ConvertCmToPx(dValue);
+            case Cantimeter:
+                return std::to_wstring(static_cast<short int>(dValue));;
+            case Millimeter:
+                return ConvertCmToMm(dValue);
+            case Inch:
+                return ConvertCmToIn(dValue);
+            case Peak:
+                return ConvertCmToPc(dValue);
+        }
+
+        return std::wstring();
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertCmToIn(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(dValue / 2.54f + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertCmToMm(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(dValue * 10.0f + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertCmToPc(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(2.36f * dValue + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertCmToPt(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(28.35f * dValue + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertCmToPx(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(static_cast<float>(m_nDpi) / 2.54f * dValue + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertMm(const std::wstring& sValue) const
+    {
+        if (sValue.empty())
+            return std::wstring();
+
+        const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"mm") - 1);
+        const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
+
+        switch (m_UnitMeasure)
+        {
+            case Pixel:
+                return ConvertMmToPx(dValue);
+            case Default:
+            case Point:
+                return ConvertMmToPt(dValue);
+            case Cantimeter:
+                return ConvertMmToCm(dValue);
+            case Millimeter:
+                return std::to_wstring(static_cast<short int>(dValue));;
+            case Inch:
+                return ConvertMmToIn(dValue);
+            case Peak:
+                return ConvertMmToPc(dValue);
+        }
+        return std::wstring();
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertMmToIn(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(dValue / 25.4f + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertMmToCm(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(dValue / 10.0f + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertMmToPc(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(2.8346f * dValue + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertMmToPt(const float& dValue) const
+    {
+        if (dValue == 0)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(0.23262f * dValue + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertMmToPx(const float& dValue) const
+    {
+        if (dValue == 0)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(static_cast<float>(m_nDpi) / 25.4f * dValue + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertIn(const std::wstring& sValue) const
+    {
+        if (sValue.empty())
+            return std::wstring();
+
+        const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"in") - 1);
+        const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
+
+        switch (m_UnitMeasure)
+        {
+            case Pixel:
+                return  ConvertInToPx(dValue);
+            case Default:
+            case Point:
+                return ConvertInToPt(dValue);
+            case Cantimeter:
+                return ConvertInToCm(dValue);
+            case Millimeter:
+                return ConvertInToMm(dValue);
+            case Inch:
+                return std::to_wstring(static_cast<short int>(dValue));;
+            case Peak:
+                return ConvertInToPc(dValue);
+        }
+        return std::wstring();
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertInToMm(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(dValue * 25.4f + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertInToCm(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(dValue * 2.54f + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertInToPc(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(dValue / 72.0f + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertInToPt(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(dValue / 6.0f + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertInToPx(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(dValue * static_cast<float>(m_nDpi) + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertPt(const std::wstring& sValue) const
+    {
+        if (sValue.empty())
+            return std::wstring();
+
+        const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"pt") - 1);
+        const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
+
+        switch (m_UnitMeasure)
+        {
+            case Pixel:
+                return ConvertPtToPx(dValue);
+            case Default:
+            case Point:
+                return std::to_wstring(static_cast<short int>(dValue));
+            case Cantimeter:
+                return ConvertPtToCm(dValue);
+            case Millimeter:
+                return ConvertPtToMm(dValue);
+            case Inch:
+                return ConvertPtToIn(dValue);
+            case Peak:
+                return ConvertPtToPc(dValue);
+        }
+
+        return std::wstring();
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertPtToIn(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring((dValue / 72.0f + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertPtToCm(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(dValue * 0.03528f + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertPtToPc(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(dValue / 12.0f + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertPtToMm(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring((dValue * 0.3528f + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertPtToPx(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(static_cast<float>(m_nDpi) / 72.0f * dValue + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertPc(const std::wstring& sValue) const
+    {
+        if (sValue.empty())
+            return std::wstring();
+
+        const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"pc") - 1);
+        const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
+
+        switch (m_UnitMeasure)
+        {
+            case Pixel:
+                return ConvertPcToPx(dValue);
+            case Default:
+            case Point:
+                return ConvertPcToPt(dValue);
+            case Cantimeter:
+                return ConvertPcToCm(dValue);
+            case Millimeter:
+                return ConvertPcToMm(dValue);
+            case Inch:
+                return ConvertPcToIn(dValue);
+            case Peak:
+                return std::to_wstring(static_cast<short int>(dValue));
+        }
+
+        return std::wstring();
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertPcToIn(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(dValue / 6.0f + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertPcToCm(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(dValue * 0.423f + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertPcToPt(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(dValue * 12.0f + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertPcToMm(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(dValue * 4.23f + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertPcToPx(const float& dValue) const
+    {
+        if (dValue == 0.0f)
+            return std::wstring(L"0");
+
+        return std::to_wstring(static_cast<short int>(static_cast<float>(m_nDpi) / 6.0f * dValue + 0.5f));
+    }
+
+    inline std::wstring CCssCalculator_Private::ConvertEm(const std::wstring& sValue) const
+    {
+        if (sValue.empty())
+            return std::wstring(L"");
+
+        const float fValue = wcstof(sValue.c_str(), NULL) * NS_CONST_VALUES::FONT_SIZE;
+        return std::to_wstring(static_cast<short int>(fValue + 0.5f));
+    }
+
     void CCssCalculator_Private::SetDpi(unsigned short int nValue)
     {
         m_nDpi = nValue;
@@ -525,6 +1059,13 @@ namespace NSCSS
     {
         return m_nDpi;
     }
+
+    /*
+    inline size_t CCssCalculator_Private::GetSize() const
+    {
+        return m_arData.size();
+    }
+    */
 
     UnitMeasure CCssCalculator_Private::GetUnitMeasure() const
     {
@@ -542,6 +1083,10 @@ namespace NSCSS
         m_nDpi          = 96;
         m_UnitMeasure   = Default;
 
+//        for (CElement* oElement : m_arData)
+//            delete oElement;
+
+//        m_arStyleUsed.clear();
         m_mData.clear();
         m_arFiles.clear();
     }

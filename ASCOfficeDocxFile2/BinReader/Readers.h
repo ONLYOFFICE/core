@@ -31,9 +31,6 @@
  */
 #pragma once
 
-#ifndef READERS
-#define READERS
-
 #include "FileWriter.h"
 #include "ReaderClasses.h"
 
@@ -467,6 +464,13 @@ public:
 	int ReadSdtPrDate(BYTE type, long length, void* poResult);
 	int ReadDocPartList(BYTE type, long length, void* poResult);
 	int ReadDropDownList(BYTE type, long length, void* poResult);
+
+	int ReadDocParts(BYTE type, long length, void* poResult);
+	int ReadDocPart(BYTE type, long length, void* poResult);
+	int ReadDocPartPr(BYTE type, long length, void* poResult);
+	int ReadDocPartBehaviors(BYTE type, long length, void* poResult);
+	int ReadDocPartTypes(BYTE type, long length, void* poResult);
+
 	int ReadSdtFormPr(BYTE type, long length, void* poResult);
 	int ReadSdtTextFormPr(BYTE type, long length, void* poResult);
 	int ReadSdtTextFormPrComb(BYTE type, long length, void* poResult);
@@ -497,4 +501,3 @@ public:
 		int ReadMainTable();
 };
 }
-#endif	// #ifndef READERS

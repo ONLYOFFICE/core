@@ -652,7 +652,7 @@ IRecord* CreateByType(SRecordHeader oHeader)
 #ifdef _DEBUG
 			char str[1024]={};
 			sprintf(str, "Unknown record type: %x\t" , oHeader.RecType);
-			std::cout << str << GetRecordName((_UINT32)oHeader.RecType) << "\n"; 
+            std::cout << str << GetRecordName(oHeader.RecType) << "\n";
 #endif
 		}
     } else

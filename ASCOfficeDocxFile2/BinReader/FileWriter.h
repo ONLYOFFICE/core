@@ -156,7 +156,7 @@ namespace Writers
 		ChartWriter				m_oChartWriter;
 		DefaultThemeWriter		m_oTheme;
 		CustomXmlWriter			m_oCustomXmlWriter;		
-		DocumentRelsWriter		m_oDocumentRels;
+		DocumentRelsWriter		m_oDocumentRelsWriter;
 
 		smart_ptr<OOX::VbaProject>		m_pVbaProject;
 	

@@ -331,10 +331,10 @@ public:
                 pTimeCondition->ReadFromStream(ReadHeader, pStream);
                 unsigned short recInst = ReadHeader.RecInstance;
 
-                if (recInst == TL_CT_Begin or recInst == TL_CT_Next)
+                if (recInst == TL_CT_Begin || recInst == TL_CT_Next)
                     m_arrRgBeginTimeCondition.push_back(pTimeCondition);
 
-                else if (recInst == TL_CT_End or recInst == TL_CT_Previous)
+                else if (recInst == TL_CT_End || recInst == TL_CT_Previous)
                     m_arrRgEndTimeCondition.push_back(pTimeCondition);
                 else
                     m_pTimeEndSyncTimeCondition = pTimeCondition;

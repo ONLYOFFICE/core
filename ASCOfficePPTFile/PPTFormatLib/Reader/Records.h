@@ -43,10 +43,12 @@
 
 #include <boost/smart_ptr/shared_array.hpp>
 
-using namespace PPT_FORMAT;
+//using namespace PPT_FORMAT;
 using namespace XLS;
 
 using NSCommon::nullable;
+
+std::string GetRecordName(PPT_FORMAT::RecordType dwType);
 
 class SRecordHeader 
 { 
@@ -69,7 +71,7 @@ public:
 	}
     bool ReadFromStream(const CFStreamPtr &pStream)
 	{
-		Clear();
+        Clear();
 
 		if (pStream->isEOF()) return FALSE;
 		POLE::uint64 nRd = 0; 

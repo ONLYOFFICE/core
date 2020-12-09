@@ -922,7 +922,7 @@ public:
 
     inline CSlideTimeLine* GetTimeLine ()
     {
-        if (tagName == L"___PPT10" and
+        if (tagName == L"___PPT10" &&
                 dynamic_cast<PP10SlideBinaryTagExtension*>(m_oBinaryTagExtension)->extTimeNodeContainer)
         {
             CSlideTimeLine* pTimeLine = new CSlideTimeLine ();

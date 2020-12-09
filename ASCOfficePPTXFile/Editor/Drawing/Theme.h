@@ -56,7 +56,7 @@ namespace PPT_FORMAT
 
 		std::vector<CColor>				m_arColorScheme;
 		std::vector<CFontProperty>		m_arFonts;
-        std::vector<CBulletAutoNum>     m_arBullet;
+
 		std::vector<CBrush>				m_arBrushes;
 		std::vector<CPen>				m_arPens;
 
@@ -84,9 +84,13 @@ namespace PPT_FORMAT
 
 		vector_string					m_PlaceholdersReplaceString[3]; //0-dates, 1 - headers, 2 - footers
 
+        std::vector<CBulletAutoNum>     m_arBullet;
+        bool m_wasBulletStart;
+        unsigned m_bulletPos;
 //------------------------------------------------------------------------------------
 		CTheme(_typeMaster type = typeMaster) : m_arColorScheme(), m_arFonts(), m_arBrushes(),
-			m_arPens(), m_arEffects(), m_arLayouts(), m_eType(type)
+            m_arPens(), m_arEffects(), m_arLayouts(), m_eType(type), m_wasBulletStart(false),
+            m_bulletPos(0)
 		{
 			Clear();
 		}

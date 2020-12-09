@@ -35,18 +35,20 @@
 #include "docbuilder.h"
 #include "doctrenderer.h"
 
-#include "../xml/include/xmlutils.h"
 #include <iostream>
+#include <list>
 
+#include "../xml/include/xmlutils.h"
 #include "../common/File.h"
 #include "../common/Directory.h"
 
 #include "../../Common/OfficeFileFormats.h"
 #include "../../Common/OfficeFileFormatChecker.h"
 
-#include "nativebuilder.h"
-#include <list>
-
+#include "js_internal/js_base.h"
+#include "embed/NativeBuilderEmbed.h"
+#include "embed/NativeControlEmbed.h"
+#include "embed/MemoryStreamEmbed.h"
 #ifdef LINUX
 #include <unistd.h>
 #include <sys/wait.h>
@@ -68,45 +70,25 @@ namespace NSDoctRenderer
     class CDocBuilderValue_Private
     {
     public:
-        v8::Isolate* m_isolate;
-        v8::Local<v8::Value> m_value;
+        JSSmart<CJSContext> m_context;
+        JSSmart<CJSValue> m_value;
 
     public:
-        CDocBuilderValue_Private();
-        ~CDocBuilderValue_Private();
-        void Clear();
+        CDocBuilderValue_Private() : m_context(NULL) {}
+        ~CDocBuilderValue_Private() {}
+        void Clear() { m_value.Release(); }
     };
 }
-
-template <typename T>
-class CScopeWrapper
-{
-private:
-    T m_handler;
-
-private:
-    CScopeWrapper(const CScopeWrapper&) {}
-    void operator=(const CScopeWrapper&) {}
-
-public:
-
-    CScopeWrapper(v8::Isolate* isolate) : m_handler(isolate) {}
-};
 
 class CV8RealTimeWorker
 {
 public:
-    v8::Isolate* m_isolate;
-
-    v8::Isolate::Scope* m_isolate_scope;
-    v8::Locker* m_isolate_locker;
-
-    CScopeWrapper<v8::HandleScope>* m_handle_scope;
-    v8::Local<v8::Context> m_context;
+    JSSmart<CJSIsolateScope> m_isolate_scope;
+    JSSmart<CJSLocalScope> m_handle_scope;
+    JSSmart<CJSContext> m_context;
 
     int m_nFileType;
     std::string m_sUtf8ArgumentJSON;
-
     std::string m_sGlobalVariable;
 
 public:
@@ -140,13 +122,7 @@ namespace NSDoctRenderer
     class CDocBuilderParams
     {
     public:
-        CDocBuilderParams()
-        {
-            m_bCheckFonts = false;
-            m_sWorkDir = L"";
-            m_bSaveWithDoctrendererMode = false;
-            m_sArgumentJSON = "";
-        }
+        CDocBuilderParams() : m_bCheckFonts(false), m_sWorkDir(L""), m_bSaveWithDoctrendererMode(false), m_sArgumentJSON("") {}
 
     public:
         bool m_bCheckFonts;
@@ -158,7 +134,7 @@ namespace NSDoctRenderer
     class CDocBuilder_Private
     {
     public:
-        CArray<std::wstring> m_arrFiles;
+        std::vector<std::wstring> m_arrFiles;
 
         std::vector<std::wstring> m_arDoctSDK;
         std::vector<std::wstring> m_arPpttSDK;
@@ -193,28 +169,15 @@ namespace NSDoctRenderer
 
         NSDoctRenderer::CDocBuilder* m_pParent;
     public:
-        CDocBuilder_Private()
+        CDocBuilder_Private() : m_bIsNotUseConfigAllFontsDir(false), m_sTmpFolder(NSFile::CFileBinary::GetTempPath()), m_nFileType(-1),
+            m_pWorker(NULL), m_pAdditionalData(NULL), m_bIsInit(false), m_bIsCacheScript(true), m_bIsServerSafeVersion(false),
+            m_sGlobalVariable(""), m_bIsGlobalVariableUse(false), m_pParent(NULL)
         {
-            m_pParent = NULL;
-            m_pWorker = NULL;
-
-            m_nFileType = -1;
-
-            m_sTmpFolder = NSFile::CFileBinary::GetTempPath();
-
+            // Do not forget call СDocBuilder::Dispose() method!!!
+            CJSContext::ExternalInitialize();
             // под линуксом предыдущая функция создает файл!!!
             if (NSFile::CFileBinary::Exists(m_sTmpFolder))
                 NSFile::CFileBinary::Remove(m_sTmpFolder);
-
-            m_pAdditionalData = NULL;
-            m_bIsInit = false;
-            m_bIsCacheScript = true;
-
-            m_sGlobalVariable = "";
-            m_bIsGlobalVariableUse = false;
-
-            m_bIsNotUseConfigAllFontsDir = false;
-            m_bIsServerSafeVersion = false;
         }
 
         void Init()
@@ -275,15 +238,15 @@ namespace NSDoctRenderer
                             }
                             else
                             {
-                                m_arrFiles.Add(m_strAllFonts);
+                                m_arrFiles.push_back(m_strAllFonts);
                                 continue;
                             }
                         }
 
                         if (NSFile::CFileBinary::Exists(strFilePath) && !NSFile::CFileBinary::Exists(sConfigDir + strFilePath))
-                            m_arrFiles.Add(strFilePath);
+                            m_arrFiles.push_back(strFilePath);
                         else
-                            m_arrFiles.Add(sConfigDir + strFilePath);
+                            m_arrFiles.push_back(sConfigDir + strFilePath);
                     }
                 }
             }
@@ -356,7 +319,8 @@ namespace NSDoctRenderer
             oWorker.m_bIsNeedThumbnails = false;
             oWorker.m_sDirectory = sDirectory;
             NSFonts::IApplicationFonts* pFonts = oWorker.Check();
-            pFonts->Release();
+            if(pFonts)
+                pFonts->Release();
         }
 
         void CheckFileDir()
@@ -966,7 +930,6 @@ namespace NSDoctRenderer
         {
             std::vector<std::wstring>* arSdkFiles = NULL;
 
-            std::wstring sResourceFile;
             switch (m_nFileType)
             {
             case 0:
@@ -989,7 +952,7 @@ namespace NSDoctRenderer
             }
 
             std::string strScript = "";
-            for (size_t i = 0; i < m_arrFiles.GetCount(); ++i)
+            for (size_t i = 0; i < m_arrFiles.size(); ++i)
             {
                 strScript += ReadScriptFile(m_arrFiles[i]);
                 strScript += "\n\n";
@@ -997,9 +960,9 @@ namespace NSDoctRenderer
 
             if (NULL != arSdkFiles)
             {
-                for (std::vector<std::wstring>::iterator i = arSdkFiles->begin(); i != arSdkFiles->end(); i++)
+                for (const std::wstring& i : *arSdkFiles)
                 {
-                    strScript += ReadScriptFile(*i);
+                    strScript += ReadScriptFile(i);
                     strScript += "\n\n";
                 }
             }

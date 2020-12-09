@@ -1,6 +1,9 @@
 #include "FileDownloader_private.h"
 #include "FileDownloader.h"
+
+#ifdef USE_EXTERNAL_DOWNLOAD
 #include "download_external.h"
+#endif
 
 #if _IOS
     #import <Foundation/Foundation.h>
@@ -36,9 +39,11 @@ public :
                 NSFile::CFileBinary::Remove(m_sFilePath);
         }
 
+#ifdef USE_EXTERNAL_DOWNLOAD
         int nExternalDownload = download_external(m_sFileUrl, m_sFilePath);
         if (0 == nExternalDownload)
             return 0;
+#endif
 
         NSString* stringURL = StringWToNSString(m_sFileUrl);
         NSString *escapedURL = [stringURL stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];

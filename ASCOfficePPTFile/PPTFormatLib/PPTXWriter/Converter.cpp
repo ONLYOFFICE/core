@@ -1124,16 +1124,13 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
     // TODO write new method and class for timing
 
     auto slide_iter = m_pUserInfo->m_mapSlides.find(m_pUserInfo->m_arrSlidesOrder[nIndexSlide]);
-    if (slide_iter != m_pUserInfo->m_mapSlides.end() && slide_iter->second->m_pSlideProgTagsContainer)
-    {
-        CRecordSlideProgTagsContainer& progTag = *(slide_iter->second->m_pSlideProgTagsContainer);
-        CRecordPP10SlideBinaryTagExtension* pPP10SlideBinaryTag = progTag.getPP10SlideBinaryTagExtension();
+    CRecordSlideProgTagsContainer& progTag = *(slide_iter->second->m_pSlideProgTagsContainer);
+    CRecordPP10SlideBinaryTagExtension* pPP10SlideBinaryTag = progTag.getPP10SlideBinaryTagExtension();
 
-        if (pPP10SlideBinaryTag)
-        {
-            PPT_FORMAT::ConvertPP10SlideBinaryTagExtensionToTiming(*pPP10SlideBinaryTag, pSlide->m_oTiming);
-            WriteTiming(oWriter, pSlide->m_oTiming);
-        }
+    if (pPP10SlideBinaryTag)
+    {
+        PPT_FORMAT::ConvertPP10SlideBinaryTagExtensionToTiming(*pPP10SlideBinaryTag, pSlide->m_oTiming);
+        WriteTiming(oWriter, pSlide->m_oTiming);
     }
 
 

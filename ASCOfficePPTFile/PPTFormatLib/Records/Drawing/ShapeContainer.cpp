@@ -1493,8 +1493,15 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
 	if (0 == oArrayShape.size())
 		return pElement;
 
-	std::vector<CRecordPlaceHolderAtom*> oArrayPlaceHolder;
-	GetRecordsByType(&oArrayPlaceHolder, true, true);
+    // PlaceHolder
+    std::vector<CRecordOfficeArtClientData*> oOfficeArtClientData;
+    GetRecordsByType(&oOfficeArtClientData, true, true);
+    std::vector<CRecordPlaceHolderAtom*> oArrayPlaceHolder;
+//	GetRecordsByType(&oArrayPlaceHolder, true, true);
+    if (!oOfficeArtClientData.empty() && oOfficeArtClientData[0]->m_placeholderAtom.is_init())
+    {
+        oArrayPlaceHolder.push_back(oOfficeArtClientData[0]->m_placeholderAtom.GetPointer());
+    }
 
 	std::vector<CRecordShapeProperties*> oArrayOptions;
 	GetRecordsByType(&oArrayOptions, true, /*true*/false/*secondary & tetriary*/);

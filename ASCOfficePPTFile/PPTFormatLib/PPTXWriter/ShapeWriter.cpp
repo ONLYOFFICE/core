@@ -1196,14 +1196,14 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
 	}
 	m_oWriter.WriteString(L"</a:bodyPr>");
 	
-	if (0 == nCount)
+    if (0 == nCount)
 	{
 		m_oWriter.WriteString(L"<a:lstStyle/><a:p><a:endParaRPr dirty=\"0\"/></a:p></p:txBody>");
 		return;
 	}
 	m_oWriter.WriteString(L"<a:lstStyle>");
 
-	if (!m_bWordArt)
+    if (!m_bWordArt)
 	{
 		CStylesWriter styleWriter(m_pTheme);
 		styleWriter.ConvertStyles(pShapeElement->m_pShape->m_oText.m_oStyles, m_oWriter);

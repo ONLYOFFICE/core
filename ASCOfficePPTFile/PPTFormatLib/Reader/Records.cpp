@@ -443,7 +443,6 @@ std::string GetRecordName(PPT_FORMAT::RecordType dwType)
 
 IRecord* CreateByType(SRecordHeader oHeader)
 {
-    char str[1024]={};
 
 	IRecord* pRecord = NULL;
     switch (oHeader.RecType)
@@ -658,7 +657,6 @@ IRecord* CreateByType(SRecordHeader oHeader)
 		}
     } else
     {
-        std::cout << "\n";
     }
 	return pRecord;
 }

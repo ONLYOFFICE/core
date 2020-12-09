@@ -444,10 +444,6 @@ std::string GetRecordName(PPT_FORMAT::RecordType dwType)
 IRecord* CreateByType(SRecordHeader oHeader)
 {
     char str[1024]={};
-    sprintf(str, "Record type: %x\t" , oHeader.RecType);
-    std::cout << str << std::setw(32) << GetRecordName(oHeader.RecType)
-              << "\tlen = " << oHeader.RecLen;
-
 
 	IRecord* pRecord = NULL;
     switch (oHeader.RecType)
@@ -649,12 +645,10 @@ IRecord* CreateByType(SRecordHeader oHeader)
 
 		if (oHeader.IsContainer())
 		{
-            std::cout << " - unknown container!\n";
 			pRecord = new CRecordsContainer();
 		}
 		else
 		{
-            std::cout << " - not created!\n";
 			pRecord = new CUnknownRecord();
 #ifdef _DEBUG
 			char str[1024]={};

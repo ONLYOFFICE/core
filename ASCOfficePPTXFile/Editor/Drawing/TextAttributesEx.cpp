@@ -244,6 +244,8 @@ namespace PPT_FORMAT
                 if (!m_arParagraphs[nIndexP].m_oPFRun.spaceBefore.is_init())
                     m_arParagraphs[nIndexP].m_oPFRun.spaceBefore = spaceBefore;
 
+
+
                 if (m_arParagraphs[nIndexP].m_oPFRun.bulletFontRef.is_init())
                 {
                     int ref = m_arParagraphs[nIndexP].m_oPFRun.bulletFontRef.get();
@@ -253,10 +255,18 @@ namespace PPT_FORMAT
                         m_arParagraphs[nIndexP].m_oPFRun.bulletFontProperties.reset();
                         m_arParagraphs[nIndexP].m_oPFRun.bulletFontProperties = new CFontProperty(pTheme->m_arFonts[ref]);
                     }
-                    if (0 < (int)pTheme->m_arBullet.size())
+                    if (pTheme->m_bulletPos < pTheme->m_arBullet.size())
                     {
+                        pTheme->m_wasBulletStart = true;
                         m_arParagraphs[nIndexP].m_oPFRun.bulletAutoNum.reset();
-                        m_arParagraphs[nIndexP].m_oPFRun.bulletAutoNum = new CBulletAutoNum(pTheme->m_arBullet[0]);
+                        m_arParagraphs[nIndexP].m_oPFRun.bulletAutoNum = new CBulletAutoNum(pTheme->m_arBullet[pTheme->m_bulletPos]);
+                    }
+                } else
+                {
+                    if(pTheme->m_wasBulletStart)
+                    {
+                        pTheme->m_bulletPos++;
+                        pTheme->m_wasBulletStart = false;
                     }
                 }
 

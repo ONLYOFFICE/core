@@ -258,6 +258,9 @@ public:
 	style_presentation_page_layout * presentation_page_layout_by_name(const std::wstring & Name); 
    
 	bool compare_page_properties(const std::wstring & master1, const std::wstring & master2);
+	
+	void add_linenumbering(odf_reader::text_linenumbering_configuration *linenumbering) { linenumberingcConfiguration = linenumbering; }
+	odf_reader::text_linenumbering_configuration *linenumbering() { return linenumberingcConfiguration; }
 private:
 	std::vector<style_presentation_page_layout*> presentation_page_layouts_;
     instances_array instances_;
@@ -271,6 +274,7 @@ private:
 
 	boost::unordered_map<std::wstring, int> presentation_page_layout_names_;
 
+	odf_reader::text_linenumbering_configuration *linenumberingcConfiguration = NULL;
 };
 
 

@@ -78,6 +78,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\_Work\core\Common\3dParty\boost\build\win_64\include;</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;D:\_Work\core\Common\3dParty\boost\build\win_64\lib;</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(Configuration)\</OutDir>
@@ -113,7 +115,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\DesktopEditor\freetype-2.5.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;_LIB;_USE_MATH_DEFINES;NODOCX;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;_AVS_PPT_SHAPE_INCLUDE_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;BUILD_CONFIG_FULL_VERSION;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -169,6 +171,7 @@
     <ClCompile Include="..\ASCOfficeDrawingConverter.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="..\ASCOfficePPTXFileRealization.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
@@ -255,6 +258,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="..\PPTXFormat\Logic\GrpSpPr.cpp" />
+    <ClCompile Include="..\PPTXFormat\Logic\HeadingVariant.cpp" />
     <ClCompile Include="..\PPTXFormat\Logic\Hyperlink.cpp" />
     <ClCompile Include="..\PPTXFormat\Logic\Media\WavAudioFile.cpp" />
     <ClCompile Include="..\PPTXFormat\Logic\NvGraphicFramePr.cpp" />

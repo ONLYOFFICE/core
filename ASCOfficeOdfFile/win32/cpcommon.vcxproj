@@ -75,6 +75,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\_Work\core\Common\3dParty\boost\build\win_64\include;</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;D:\_Work\core\Common\3dParty\boost\build\win_64\lib;</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(Configuration)\</OutDir>
@@ -195,6 +197,7 @@
     <ClInclude Include="..\src\odf\datatypes\common_attlists.h" />
     <ClInclude Include="..\src\odf\datatypes\dategroup.h" />
     <ClInclude Include="..\src\odf\datatypes\direction.h" />
+    <ClInclude Include="..\src\odf\datatypes\drawangle.h" />
     <ClInclude Include="..\src\odf\datatypes\drawfill.h" />
     <ClInclude Include="..\src\odf\datatypes\dropcaplength.h" />
     <ClInclude Include="..\src\odf\datatypes\errors.h" />
@@ -321,6 +324,7 @@
     <ClCompile Include="..\src\odf\datatypes\common_attlists.cpp" />
     <ClCompile Include="..\src\odf\datatypes\dategroup.cpp" />
     <ClCompile Include="..\src\odf\datatypes\direction.cpp" />
+    <ClCompile Include="..\src\odf\datatypes\drawangle.cpp" />
     <ClCompile Include="..\src\odf\datatypes\drawfill.cpp" />
     <ClCompile Include="..\src\odf\datatypes\dropcaplength.cpp" />
     <ClCompile Include="..\src\odf\datatypes\fillimagerefpoint.cpp" />

@@ -57,6 +57,19 @@
     #define MAX_PATH 1024
 #endif
 
+#ifdef __ANDROID__
+#define USE_LINUX_SENDFILE_INSTEAD_STREAMS
+
+// Available since API level 21.
+// iostream operation throwing exception when exceptions not enabled
+#endif
+
+#ifdef USE_LINUX_SENDFILE_INSTEAD_STREAMS
+#include <sys/sendfile.h>
+#include <fcntl.h>
+#include <unistd.h>
+#endif
+
 // реализация возможности подмены определения GetTempPath
 std::wstring g_overrideTmpPath = L"";
 
@@ -159,60 +172,90 @@ namespace NSFile
             else if (0x00 == (byteMain & 0x20))
             {
                 // 2 byte
-                int val = (int)(((byteMain & 0x1F) << 6) |
-                    (pBuffer[lIndex + 1] & 0x3F));
+                int val = 0;
+                if ((lIndex + 1) < lCount)
+                {
+                    val = (int)(((byteMain & 0x1F) << 6) |
+                                (pBuffer[lIndex + 1] & 0x3F));
+                }
+
                 pUnicodeString[lIndexUnicode++] = (WCHAR)(val);
                 lIndex += 2;
             }
             else if (0x00 == (byteMain & 0x10))
             {
                 // 3 byte
-                int val = (int)(((byteMain & 0x0F) << 12) |
-                    ((pBuffer[lIndex + 1] & 0x3F) << 6) |
-                    (pBuffer[lIndex + 2] & 0x3F));
+                int val = 0;
+                if ((lIndex + 2) < lCount)
+                {
+                    val = (int)(((byteMain & 0x0F) << 12) |
+                                ((pBuffer[lIndex + 1] & 0x3F) << 6) |
+                                (pBuffer[lIndex + 2] & 0x3F));
+                }
+
                 pUnicodeString[lIndexUnicode++] = (WCHAR)(val);
                 lIndex += 3;
             }
             else if (0x00 == (byteMain & 0x0F))
             {
                 // 4 byte
-                int val = (int)(((byteMain & 0x07) << 18) |
-                    ((pBuffer[lIndex + 1] & 0x3F) << 12) |
-                    ((pBuffer[lIndex + 2] & 0x3F) << 6) |
-                    (pBuffer[lIndex + 3] & 0x3F));
+                int val = 0;
+                if ((lIndex + 3) < lCount)
+                {
+                    val = (int)(((byteMain & 0x07) << 18) |
+                                ((pBuffer[lIndex + 1] & 0x3F) << 12) |
+                                ((pBuffer[lIndex + 2] & 0x3F) << 6) |
+                                (pBuffer[lIndex + 3] & 0x3F));
+                }
+
                 pUnicodeString[lIndexUnicode++] = (WCHAR)(val);
                 lIndex += 4;
             }
             else if (0x00 == (byteMain & 0x08))
             {
                 // 4 byte
-                int val = (int)(((byteMain & 0x07) << 18) |
-                    ((pBuffer[lIndex + 1] & 0x3F) << 12) |
-                    ((pBuffer[lIndex + 2] & 0x3F) << 6) |
-                    (pBuffer[lIndex + 3] & 0x3F));
+                int val = 0;
+                if ((lIndex + 3) < lCount)
+                {
+                    val = (int)(((byteMain & 0x07) << 18) |
+                                ((pBuffer[lIndex + 1] & 0x3F) << 12) |
+                                ((pBuffer[lIndex + 2] & 0x3F) << 6) |
+                                (pBuffer[lIndex + 3] & 0x3F));
+                }
+
                 pUnicodeString[lIndexUnicode++] = (WCHAR)(val);
                 lIndex += 4;
             }
             else if (0x00 == (byteMain & 0x04))
             {
                 // 5 byte
-                int val = (int)(((byteMain & 0x03) << 24) |
-                    ((pBuffer[lIndex + 1] & 0x3F) << 18) |
-                    ((pBuffer[lIndex + 2] & 0x3F) << 12) |
-                    ((pBuffer[lIndex + 3] & 0x3F) << 6) |
-                    (pBuffer[lIndex + 4] & 0x3F));
+                int val = 0;
+                if ((lIndex + 4) < lCount)
+                {
+                    val = (int)(((byteMain & 0x03) << 24) |
+                                ((pBuffer[lIndex + 1] & 0x3F) << 18) |
+                                ((pBuffer[lIndex + 2] & 0x3F) << 12) |
+                                ((pBuffer[lIndex + 3] & 0x3F) << 6) |
+                                (pBuffer[lIndex + 4] & 0x3F));
+                }
+
                 pUnicodeString[lIndexUnicode++] = (WCHAR)(val);
                 lIndex += 5;
             }
             else
             {
                 // 6 byte
-                int val = (int)(((byteMain & 0x01) << 30) |
-                    ((pBuffer[lIndex + 1] & 0x3F) << 24) |
-                    ((pBuffer[lIndex + 2] & 0x3F) << 18) |
-                    ((pBuffer[lIndex + 3] & 0x3F) << 12) |
-                    ((pBuffer[lIndex + 4] & 0x3F) << 6) |
-                    (pBuffer[lIndex + 5] & 0x3F));
+                int val = 0;
+                if ((lIndex + 5) < lCount)
+                {
+                    val = (int)(((byteMain & 0x01) << 30) |
+                                ((pBuffer[lIndex + 1] & 0x3F) << 24) |
+                                ((pBuffer[lIndex + 2] & 0x3F) << 18) |
+                                ((pBuffer[lIndex + 3] & 0x3F) << 12) |
+                                ((pBuffer[lIndex + 4] & 0x3F) << 6) |
+                                (pBuffer[lIndex + 5] & 0x3F));
+                }
+
                 pUnicodeString[lIndexUnicode++] = (WCHAR)(val);
                 lIndex += 5;
             }
@@ -242,17 +285,26 @@ namespace NSFile
             else if (0x00 == (byteMain & 0x20))
             {
                 // 2 byte
-                int val = (int)(((byteMain & 0x1F) << 6) |
-                    (pBuffer[lIndex + 1] & 0x3F));
+                int val = 0;
+                if ((lIndex + 1) < lCount)
+                {
+                    val = (int)(((byteMain & 0x1F) << 6) |
+                                (pBuffer[lIndex + 1] & 0x3F));
+                }
+
                 *pUnicodeString++ = (WCHAR)(val);
                 lIndex += 2;
             }
             else if (0x00 == (byteMain & 0x10))
             {
                 // 3 byte
-                int val = (int)(((byteMain & 0x0F) << 12) |
-                    ((pBuffer[lIndex + 1] & 0x3F) << 6) |
-                    (pBuffer[lIndex + 2] & 0x3F));
+                int val = 0;
+                if ((lIndex + 2) < lCount)
+                {
+                    val = (int)(((byteMain & 0x0F) << 12) |
+                                ((pBuffer[lIndex + 1] & 0x3F) << 6) |
+                                (pBuffer[lIndex + 2] & 0x3F));
+                }
 
                 WriteUtf16_WCHAR(val, pUnicodeString);
                 lIndex += 3;
@@ -260,10 +312,14 @@ namespace NSFile
             else if (0x00 == (byteMain & 0x0F))
             {
                 // 4 byte
-                int val = (int)(((byteMain & 0x07) << 18) |
-                    ((pBuffer[lIndex + 1] & 0x3F) << 12) |
-                    ((pBuffer[lIndex + 2] & 0x3F) << 6) |
-                    (pBuffer[lIndex + 3] & 0x3F));
+                int val = 0;
+                if ((lIndex + 3) < lCount)
+                {
+                    val = (int)(((byteMain & 0x07) << 18) |
+                                ((pBuffer[lIndex + 1] & 0x3F) << 12) |
+                                ((pBuffer[lIndex + 2] & 0x3F) << 6) |
+                                (pBuffer[lIndex + 3] & 0x3F));
+                }
 
                 WriteUtf16_WCHAR(val, pUnicodeString);
                 lIndex += 4;
@@ -271,10 +327,14 @@ namespace NSFile
             else if (0x00 == (byteMain & 0x08))
             {
                 // 4 byte
-                int val = (int)(((byteMain & 0x07) << 18) |
-                    ((pBuffer[lIndex + 1] & 0x3F) << 12) |
-                    ((pBuffer[lIndex + 2] & 0x3F) << 6) |
-                    (pBuffer[lIndex + 3] & 0x3F));
+                int val = 0;
+                if ((lIndex + 3) < lCount)
+                {
+                    val = (int)(((byteMain & 0x07) << 18) |
+                                ((pBuffer[lIndex + 1] & 0x3F) << 12) |
+                                ((pBuffer[lIndex + 2] & 0x3F) << 6) |
+                                (pBuffer[lIndex + 3] & 0x3F));
+                }
 
                 WriteUtf16_WCHAR(val, pUnicodeString);
                 lIndex += 4;
@@ -282,11 +342,15 @@ namespace NSFile
             else if (0x00 == (byteMain & 0x04))
             {
                 // 5 byte
-                int val = (int)(((byteMain & 0x03) << 24) |
-                    ((pBuffer[lIndex + 1] & 0x3F) << 18) |
-                    ((pBuffer[lIndex + 2] & 0x3F) << 12) |
-                    ((pBuffer[lIndex + 3] & 0x3F) << 6) |
-                    (pBuffer[lIndex + 4] & 0x3F));
+                int val = 0;
+                if ((lIndex + 4) < lCount)
+                {
+                    val = (int)(((byteMain & 0x03) << 24) |
+                                ((pBuffer[lIndex + 1] & 0x3F) << 18) |
+                                ((pBuffer[lIndex + 2] & 0x3F) << 12) |
+                                ((pBuffer[lIndex + 3] & 0x3F) << 6) |
+                                (pBuffer[lIndex + 4] & 0x3F));
+                }
 
                 WriteUtf16_WCHAR(val, pUnicodeString);
                 lIndex += 5;
@@ -294,12 +358,16 @@ namespace NSFile
             else
             {
                 // 6 byte
-                int val = (int)(((byteMain & 0x01) << 30) |
-                    ((pBuffer[lIndex + 1] & 0x3F) << 24) |
-                    ((pBuffer[lIndex + 2] & 0x3F) << 18) |
-                    ((pBuffer[lIndex + 3] & 0x3F) << 12) |
-                    ((pBuffer[lIndex + 4] & 0x3F) << 6) |
-                    (pBuffer[lIndex + 5] & 0x3F));
+                int val = 0;
+                if ((lIndex + 5) < lCount)
+                {
+                    val = (int)(((byteMain & 0x01) << 30) |
+                                ((pBuffer[lIndex + 1] & 0x3F) << 24) |
+                                ((pBuffer[lIndex + 2] & 0x3F) << 18) |
+                                ((pBuffer[lIndex + 3] & 0x3F) << 12) |
+                                ((pBuffer[lIndex + 4] & 0x3F) << 6) |
+                                (pBuffer[lIndex + 5] & 0x3F));
+                }
 
                 WriteUtf16_WCHAR(val, pUnicodeString);
                 lIndex += 5;
@@ -1149,6 +1217,43 @@ namespace NSFile
         if (strSrc == strDst)
             return true;
 
+#if !defined(_WIN32) && !defined(_WIN32_WCE) && !defined(_WIN64)
+        std::string strSrcA = U_TO_UTF8(strSrc);
+        std::string strDstA = U_TO_UTF8(strDst);
+#endif
+
+#ifdef USE_LINUX_SENDFILE_INSTEAD_STREAMS
+        int src = open(strSrcA.c_str(), O_RDONLY);
+        int dst = open(strDstA.c_str(), O_WRONLY | O_CREAT);
+
+        // struct required, rationale: function stat() exists also
+        struct stat stat_source;
+        fstat(src, &stat_source);
+
+        if (stat_source.st_size > 0x7FFFFFFF)
+            return false;
+
+        off_t offset = 0;
+        long long file_size = stat_source.st_size;
+        long long file_size_tmp = file_size;
+        long long read_size = 0;
+        long long read_size_marker = (long long)sendfile(dst, src, &offset, file_size_tmp);
+        while (-1 != read_size_marker)
+        {
+            if (read_size == file_size)
+                break;
+
+            file_size_tmp -= read_size_marker;
+            read_size += read_size_marker;
+
+            if (read_size != file_size)
+                read_size_marker = (long long)sendfile(dst, src, &offset, file_size_tmp);
+        }
+
+        close(src);
+        close(dst);
+        return (-1 != read_size_marker) ? true : false;
+#else
         std::ifstream src;
         std::ofstream dst;
 
@@ -1185,18 +1290,8 @@ namespace NSFile
         src.open(strSrc.c_str(), std::ios::binary);
         dst.open(strDst.c_str(), std::ios::binary);
 #else
-        BYTE* pUtf8Src = NULL;
-        LONG lLenSrc = 0;
-        CUtf8Converter::GetUtf8StringFromUnicode(strSrc.c_str(), strSrc.length(), pUtf8Src, lLenSrc, false);
-        BYTE* pUtf8Dst = NULL;
-        LONG lLenDst = 0;
-        CUtf8Converter::GetUtf8StringFromUnicode(strDst.c_str(), strDst.length(), pUtf8Dst, lLenDst, false);
-
-        src.open((char*)pUtf8Src, std::ios::binary);
-        dst.open((char*)pUtf8Dst, std::ios::binary);
-
-        delete [] pUtf8Src;
-        delete [] pUtf8Dst;
+        src.open(strSrcA.c_str(), std::ios::binary);
+        dst.open(strDstA.c_str(), std::ios::binary);
 #endif
 
         bool bRet = false;
@@ -1212,6 +1307,7 @@ namespace NSFile
         RELEASEARRAYOBJECTS(pBuffer_in);
         RELEASEARRAYOBJECTS(pBuffer_out);
         return bRet;
+#endif
     }
     bool CFileBinary::Remove(const std::wstring& strFileName)
     {

@@ -113,8 +113,14 @@ namespace PPTX
 				oAttr.WriteLimitNullable(_T("prst"), prst);
 
 				XmlUtils::CNodeValue oValue;
-				oValue.Write(_T("a:fgClr"), fgClr);
-				oValue.Write(_T("a:bgClr"), bgClr);
+				if (fgClr.is_init())
+				{
+					oValue.Write(_T("a:fgClr"), fgClr);
+				}
+				if (bgClr.is_init())
+				{
+					oValue.Write(_T("a:bgClr"), bgClr);
+				}
 
 				std::wstring strName = (_T("") == m_namespace) ? _T("pattFill") : (m_namespace + _T(":pattFill"));
 				return XmlUtils::CreateNode(strName, oAttr, oValue);
@@ -129,15 +135,21 @@ namespace PPTX
 				pWriter->WriteAttribute(_T("prst"), prst);
 				pWriter->EndAttributes();
 
-				pWriter->StartNode(_T("a:fgClr"));
-				pWriter->EndAttributes();
-				fgClr.toXmlWriter(pWriter);
-				pWriter->EndNode(_T("a:fgClr"));
+				if (fgClr.is_init())
+				{
+					pWriter->StartNode(_T("a:fgClr"));
+					pWriter->EndAttributes();
+					fgClr.toXmlWriter(pWriter);
+					pWriter->EndNode(_T("a:fgClr"));
+				}
 
-				pWriter->StartNode(_T("a:bgClr"));
-				pWriter->EndAttributes();
-				bgClr.toXmlWriter(pWriter);
-				pWriter->EndNode(_T("a:bgClr"));
+				if (bgClr.is_init())
+				{
+					pWriter->StartNode(_T("a:bgClr"));
+					pWriter->EndAttributes();
+					bgClr.toXmlWriter(pWriter);
+					pWriter->EndNode(_T("a:bgClr"));
+				}
 
 				pWriter->EndNode(strName);
 			}

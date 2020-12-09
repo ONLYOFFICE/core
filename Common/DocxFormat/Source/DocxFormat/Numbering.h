@@ -424,8 +424,14 @@ namespace OOX
 					{
 						if ( oLvlList.GetAt( nIndex, oLvlNode ) )
 						{
-							OOX::Numbering::CLvl *oLvl = new OOX::Numbering::CLvl(oLvlNode);
-							if (oLvl)m_arrLvl.push_back( oLvl );
+							OOX::Numbering::CLvl *pLvl = new OOX::Numbering::CLvl(oLvlNode);
+							if (pLvl)
+							{
+								if (pLvl->m_oIlvl.IsInit())
+									m_mapLvl.insert(std::make_pair(*pLvl->m_oIlvl, m_arrLvl.size()));
+								
+								m_arrLvl.push_back(pLvl);
+							}
 						}
 					}
 				}
@@ -443,8 +449,15 @@ namespace OOX
 					std::wstring sName = oReader.GetName();
 					if ( _T("w:lvl") == sName )
 					{
-						OOX::Numbering::CLvl *oLvl = new OOX::Numbering::CLvl(oReader);
-						if (oLvl)m_arrLvl.push_back( oLvl );
+						OOX::Numbering::CLvl *pLvl = new OOX::Numbering::CLvl(oReader);
+
+						if (pLvl)
+						{
+							if (pLvl->m_oIlvl.IsInit())
+								m_mapLvl.insert(std::make_pair(*pLvl->m_oIlvl, m_arrLvl.size()));
+							
+							m_arrLvl.push_back(pLvl);
+						}
 					}
 					else if (L"w:multiLevelType"	== sName || 
 								L"w:plt"			== sName ) m_oMultiLevelType = oReader;
@@ -501,6 +514,7 @@ namespace OOX
 				{
 					copies->m_arrLvl.push_back(new CLvl(*m_arrLvl[i]));
 				}
+				copies->m_mapLvl = m_mapLvl;
 			}
 		private:
 
@@ -523,6 +537,8 @@ namespace OOX
 			nullable<ComplexTypes::Word::String>			m_oNumStyleLink;
 			nullable<ComplexTypes::Word::String>			m_oStyleLink;
 			nullable<ComplexTypes::Word::CLongHexNumber>	m_oTmpl;
+			
+			std::map<int, size_t>							m_mapLvl; //ilvl, index m_arrLvl
 		};
 		//--------------------------------------------------------------------------------
 		// NumLvl 17.9.9 (Part 1)
@@ -643,8 +659,14 @@ namespace OOX
 					{
 						if ( oLvlList.GetAt( nIndex, oLvlNode ) )
 						{
-							OOX::Numbering::CNumLvl *oNumLvl = new OOX::Numbering::CNumLvl (oLvlNode);
-							if (oNumLvl) m_arrLvlOverride.push_back( oNumLvl );
+							OOX::Numbering::CNumLvl *pNumLvl = new OOX::Numbering::CNumLvl (oLvlNode);
+							if (pNumLvl)
+							{
+								if (pNumLvl->m_oIlvl.IsInit())
+									m_mapLvlOverride.insert(std::make_pair(*pNumLvl->m_oIlvl, m_arrLvlOverride.size()));
+
+								m_arrLvlOverride.push_back(pNumLvl);
+							}
 
 						}
 					}
@@ -663,8 +685,14 @@ namespace OOX
 					std::wstring sName = oReader.GetName();
 					if ( _T("w:lvlOverride") == sName )
 					{
-						OOX::Numbering::CNumLvl *oNumLvl = new OOX::Numbering::CNumLvl (oReader);
-						if (oNumLvl) m_arrLvlOverride.push_back( oNumLvl );
+						OOX::Numbering::CNumLvl *pNumLvl = new OOX::Numbering::CNumLvl (oReader);
+						if (pNumLvl)
+						{
+							if (pNumLvl->m_oIlvl.IsInit())
+								m_mapLvlOverride.insert(std::make_pair(*pNumLvl->m_oIlvl, m_arrLvlOverride.size()));
+
+							m_arrLvlOverride.push_back(pNumLvl);
+						}
 					}
 					else if ( L"w:abstractNumId" == sName || L"w:ilst" == sName)
 						m_oAbstractNumId = oReader;
@@ -712,6 +740,8 @@ namespace OOX
 
 			nullable<ComplexTypes::Word::CDecimalNumber>	m_oAbstractNumId;
 			std::vector<OOX::Numbering::CNumLvl*>			m_arrLvlOverride;
+
+			std::map<int, size_t>							m_mapLvlOverride; //ilvl, index m_arrLvlOverride
 		};
 		//--------------------------------------------------------------------------------
 		// NumPicBullet 17.9.21 (Part 1)
@@ -903,8 +933,12 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				if ( L"w:abstractNum" == sName || L"w:listDef" == sName)
 				{
-					OOX::Numbering::CAbstractNum *oAbstractNum = new OOX::Numbering::CAbstractNum(oReader);
-					if (oAbstractNum) m_arrAbstractNum.push_back( oAbstractNum );
+					OOX::Numbering::CAbstractNum *pAbstractNum = new OOX::Numbering::CAbstractNum(oReader);
+					if ((pAbstractNum) && (pAbstractNum->m_oAbstractNumId.IsInit()))
+					{
+						m_mapAbstractNum.insert(std::make_pair(*pAbstractNum->m_oAbstractNumId, m_arrAbstractNum.size()));
+						m_arrAbstractNum.push_back(pAbstractNum);
+					}
 				}
 				else if ( L"w:num" == sName || L"w:list" == sName)
 				{
@@ -976,6 +1010,7 @@ mc:Ignorable=\"w14 w15\">");
 			return et_w_numbering;
 		}
 
+		std::map<int, size_t>							m_mapAbstractNum; //abstractNumId, index m_arrAbstractNum
 		std::vector<OOX::Numbering::CAbstractNum*>		m_arrAbstractNum;
 		std::vector<OOX::Numbering::CNum*>				m_arrNum;
 		nullable<ComplexTypes::Word::CDecimalNumber>	m_oNumIdMacAtCleanup;

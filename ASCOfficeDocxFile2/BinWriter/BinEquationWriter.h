@@ -474,7 +474,7 @@ namespace MathEquation
 						{
 							case specialsymAlignment:
 							{
-                                str =  0x0026;
+                                str = 0x200A;
 								if (oRManager.GetAlligment())
 									oRun.bNormal = true;
 								else

@@ -53,8 +53,6 @@ namespace DocFileFormat
         WordDocumentProperties( FileInformationBlock* fib, POLE::Stream* tableStream );
 
         friend class SettingsMapping;
-
-		bool bDisplayBackgroundShape;
 	private:    
         // True when facing pages should be printed
 		bool fFacingPages;

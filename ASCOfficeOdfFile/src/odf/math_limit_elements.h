@@ -130,10 +130,8 @@ public:
 	virtual void oox_convert(oox::math_context & Context);
 
 private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-
-    office_element_ptr_array    content_;
+	virtual void add_attributes(const xml::attributes_wc_ptr & Attributes) {}
+	virtual void add_child_element(xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_mprescripts);
@@ -154,7 +152,9 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-    office_element_ptr_array    content_;
+    office_element_ptr_array content_;
+	office_element_ptr_array pre_content_;
+	bool bSeparate = false;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_mmultiscripts);

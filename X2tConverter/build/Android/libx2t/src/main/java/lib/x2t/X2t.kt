@@ -20,8 +20,8 @@ class X2t private constructor() {
         const val CONVERTER_CODE_FAIL = -1
         const val CONVERTER_CODE_SUCCESS = 0
         const val CONVERTER_CODE_EXIST = 1
-        const val CONVERTED_CODE_PASSWORD = -2147216550
-        const val CONVERTER_CODE_INVALID_PASSWORD = -2147216549
+        const val CONVERTED_CODE_PASSWORD = 90
+        const val CONVERTER_CODE_INVALID_PASSWORD = 91
 
         init {
             System.loadLibrary(BuildConfig.LIB_X2T)
@@ -49,6 +49,12 @@ class X2t private constructor() {
         @RequiresPermission(allOf = [READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE])
         @JvmStatic
         external fun convertFile(pathXml: String): Int
+
+        /*
+         * SetIcuDataPath
+         * */
+        @JvmStatic
+        external fun setIcuDataPath(icuDataPath: String?)
 
         /*
          * Builder for converter
@@ -130,6 +136,7 @@ class X2t private constructor() {
         var fontsDir: String? = null
         var fontsJs: String? = null
         var themes: String? = null
+        var icu: String? = null
         var password: String? = null
         var xml: String? = null
 
@@ -257,6 +264,7 @@ class X2t private constructor() {
             mInputParams.key = UUID.randomUUID().toString()
             with(mInputParams)
             {
+                setIcuDataPath(icu)
                 setFonts(arrayOf(fontsJs), fontsDir)
                 createXmlFileTransform(xml, key, mConvertType, from, to, temp, fontsJs, themes, password,
                     delimiterCode.equals(

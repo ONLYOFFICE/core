@@ -293,6 +293,8 @@ enum ElementType
 	typeTextIndexTitleTemplate,
 
     typeTextNotesConfiguration,
+	typeTextLinenumberingConfiguration,
+	typeTextLinenumberingSeparator,
 
     typeStyleFontFace,
 

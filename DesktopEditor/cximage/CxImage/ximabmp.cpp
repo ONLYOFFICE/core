@@ -133,7 +133,7 @@ bool CxImageBMP::Decode(CxFile * hFile)
         if (bIsOldBmp){
              // convert a old color table (3 byte entries) to a new
              // color table (4 byte entries)
-            hFile->Read((void*)pRgb,DibNumColors(&bmpHeader) * sizeof(RGBTRIPLE),1);
+            hFile->Read((void*)pRgb,DibNumColors(&bmpHeader) * sizeof(RGBTRIPLE),1,GetDIB(),GetDIBLimit());
             for (int32_t i=DibNumColors(&head)-1; i>=0; i--){
                 pRgb[i].rgbRed      = ((RGBTRIPLE *)pRgb)[i].rgbtRed;
                 pRgb[i].rgbBlue     = ((RGBTRIPLE *)pRgb)[i].rgbtBlue;
@@ -141,7 +141,7 @@ bool CxImageBMP::Decode(CxFile * hFile)
                 pRgb[i].rgbReserved = (uint8_t)0;
             }
         } else {
-            hFile->Read((void*)pRgb,DibNumColors(&bmpHeader) * sizeof(RGBQUAD),1);
+            hFile->Read((void*)pRgb,DibNumColors(&bmpHeader) * sizeof(RGBQUAD),1,GetDIB(),GetDIBLimit());
 			//force rgbReserved=0, to avoid problems with some WinXp bitmaps
 			for (uint32_t i=0; i<head.biClrUsed; i++) pRgb[i].rgbReserved=0;
         }
@@ -195,7 +195,7 @@ bool CxImageBMP::Decode(CxFile * hFile)
 		case 24 :
 			if (bf.bfOffBits != 0L) hFile->Seek(off + bf.bfOffBits,SEEK_SET);
 			if (dwCompression == BI_RGB){
-				hFile->Read(info.pImage, head.biSizeImage,1); // read in the pixels
+                hFile->Read(info.pImage, head.biSizeImage,1,GetDIB(),GetDIBLimit()); // read in the pixels
 			} else cx_throw("unknown compression");
 			break;
 		case 16 :
@@ -210,7 +210,7 @@ bool CxImageBMP::Decode(CxFile * hFile)
 			// bf.bfOffBits required after the bitfield mask <Cui Ying Jie>
 			if (bf.bfOffBits != 0L) hFile->Seek(off + bf.bfOffBits,SEEK_SET);
 			// read in the pixels
-			hFile->Read(info.pImage, head.biHeight*((head.biWidth+1)/2)*4,1);
+            hFile->Read(info.pImage, head.biHeight*((head.biWidth+1)/2)*4,1,GetDIB(),GetDIBLimit());
 			// transform into RGB
 			Bitfield2RGB(info.pImage,bfmask[0],bfmask[1],bfmask[2],16);
 			break;
@@ -229,7 +229,7 @@ bool CxImageBMP::Decode(CxFile * hFile)
 			}
 		switch (dwCompression) {
 			case BI_RGB :
-				hFile->Read(info.pImage, head.biSizeImage,1); // read in the pixels
+                hFile->Read(info.pImage, head.biSizeImage,1,GetDIB(),GetDIBLimit()); // read in the pixels
 				break;
 			case BI_RLE4 :
 			{
@@ -355,7 +355,7 @@ bool CxImageBMP::Decode(CxFile * hFile)
 									break;
 								}
 								default :
-									hFile->Read((void *)(iter.GetRow(scanline) + bits), sizeof(uint8_t) * status_byte, 1);
+                                    hFile->Read((void *)(iter.GetRow(scanline) + bits), sizeof(uint8_t) * status_byte, 1,GetDIB(),GetDIBLimit());
 									// align run length to even number of bytes 
 									if ((status_byte & 1) == 1)
 										hFile->Read(&second_byte, sizeof(uint8_t), 1);												

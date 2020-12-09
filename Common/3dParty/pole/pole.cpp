@@ -1420,28 +1420,33 @@ void StorageIO::load(bool bWriteAccess)
   
   // load directory tree
   blocks.clear();
+ 
   blocks = bbat->follow( header->dirent_start );
   buflen = static_cast<uint64>(blocks.size())*bbat->blockSize;
-  buffer = new unsigned char[ buflen ];  
-  loadBigBlocks( blocks, buffer, buflen );
-  dirtree->load( buffer, buflen );
-  unsigned sb_start = readU32( buffer + 0x74 );
-  delete[] buffer;
   
-  // fetch block chain as data for small-files
-  sb_blocks = bbat->follow( sb_start ); // small files
+  if (buflen > 0)
+  {
+	  buffer = new unsigned char[ buflen ];  
+	  loadBigBlocks( blocks, buffer, buflen );
+	  dirtree->load( buffer, buflen );
+	  unsigned sb_start = readU32( buffer + 0x74 );
+	  delete[] buffer;
   
-  // for troubleshooting, just enable this block
-#if 0
-  header->debug();
-  sbat->debug();
-  bbat->debug();
-  dirtree->debug();
-#endif
-  
-  // so far so good
-  result = Storage::Ok;
-  opened = true;
+	  // fetch block chain as data for small-files
+	  sb_blocks = bbat->follow( sb_start ); // small files
+	  
+	  // for troubleshooting, just enable this block
+	#if 0
+	  header->debug();
+	  sbat->debug();
+	  bbat->debug();
+	  dirtree->debug();
+	#endif
+	  
+	  // so far so good
+	  result = Storage::Ok;
+	  opened = true;
+  }
 }
 
 void StorageIO::create() 

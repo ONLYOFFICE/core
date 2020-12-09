@@ -18,6 +18,7 @@ graphics_dynamic_library {
 CORE_ROOT_DIR = $$PWD/../../..
 PWD_ROOT_DIR = $$PWD
 include(../../../Common/base.pri)
+include(freetype.pri)
 
 ADD_DEPENDENCY(UnicodeConverter, kernel)
 
@@ -35,14 +36,12 @@ DEFINES += \
 DEFINES += FT_SUPPORT_UTF8_IN_NAMES
 
 core_linux {
-    DEFINES += \
-    HAVE_UNISTD_H
+    DEFINES += HAVE_UNISTD_H HAVE_FCNTL_H
     QMAKE_CXXFLAGS += -Wno-narrowing
 }
 
 core_mac {
-    DEFINES += \
-    HAVE_UNISTD_H
+    DEFINES += HAVE_UNISTD_H HAVE_FCNTL_H
 }
 
 core_windows {
@@ -60,16 +59,11 @@ core_windows {
 
 LIB_GRAPHICS_PRI_PATH = $$PWD/../..
 
-FREETYPE_VERSION=2.5.2
-
 INCLUDEPATH += \
     $$LIB_GRAPHICS_PRI_PATH/agg-2.4/include \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/include \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/include/freetype \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jasper/include \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jpeg \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/png \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib
+    $$LIB_GRAPHICS_PRI_PATH/cximage/png
 
 HEADERS += \
     ./../config.h \
@@ -194,47 +188,6 @@ SOURCES += \
     ./../../raster/Metafile/StarView/SvmObjects.cpp \
     ./../../raster/Metafile/StarView/SvmPlayer.cpp
 }
-
-SOURCES += \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftbbox.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftgxval.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftlcdfil.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftmm.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftotval.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftpatent.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftpfr.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftsynth.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/fttype1.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftwinfnt.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftxf86.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/pcf/pcf.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/pfr/pfr.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/psaux/psaux.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/pshinter/pshinter.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/psnames/psmodule.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/raster/raster.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/sfnt/sfnt.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/truetype/truetype.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/type1/type1.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/cid/type1cid.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/type42/type42.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/winfonts/winfnt.c \
-    \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/autofit/autofit.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/bdf/bdf.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/cff/cff.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftbase.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftbitmap.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/cache/ftcache.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftfstype.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftgasp.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftglyph.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/gzip/ftgzip.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftinit.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/lzw/ftlzw.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftstroke.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftsystem.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/smooth/smooth.c
 
 SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jasper/base/jas_cm.c \
@@ -364,20 +317,6 @@ SOURCES += \
 SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/libpsd_pri.c
 SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/libpsd_pri2.c
 SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/libpsd_pri3.c
-
-!build_cximage_zlib_disable {
-SOURCES += \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/crc32.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/adler32.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/deflate.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/inffast.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/inflate.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/inftrees.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/trees.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/zutil.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/uncompr.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/compress.c \
-}
 
 SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/mng/libmng_callback_xs.c \

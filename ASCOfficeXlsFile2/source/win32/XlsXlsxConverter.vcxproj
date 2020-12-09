@@ -344,16 +344,6 @@
     <ClCompile Include="..\XlsXlsxConverter\xlsx_tablecontext.cpp" />
     <ClCompile Include="..\XlsXlsxConverter\xlsx_textcontext.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\OfficeCryptReader\win32\ECMACryptReader.vcxproj">
-      <Project>{c27e9a9f-3a17-4482-9c5f-bf15c01e747c}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="XlsFormat.vcxproj">
-      <Project>{77ddc8d7-5b12-4ff2-9629-26aebca8436d}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

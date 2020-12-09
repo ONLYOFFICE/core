@@ -422,9 +422,15 @@ public:
 					default										: sShd += L" w:val=\"solid\"";					break;
 				}
 			}
-			sShd += L" w:color=\"auto\"";
-			if(bColor)
-                sShd += L" w:fill=\"" + Color.ToString() + L"\"";
+			if (bColor)
+			{
+				sShd += L" w:fill=\"" + Color.ToString() + L"\"";
+				sShd += L" w:color=\"" + Color.ToString() + L"\"";
+			}
+			else
+			{
+				sShd += L" w:color=\"auto\"";
+			}
 			if(bThemeColor && ThemeColor.IsNoEmpty())
 			{
 				if(ThemeColor.Auto && !bColor)

@@ -41,36 +41,53 @@ namespace Writers
 
 FileWriter::FileWriter(std::wstring sDirOutput,std::wstring sFontDir, bool bNoFontDir, int nVersion, bool bSaveChartAsImg, NSBinPptxRW::CDrawingConverter* pDrawingConverter, std::wstring sThemePath)
     :
-	m_oMain(sDirOutput, sFontDir, bNoFontDir, nVersion),
-	m_oGlossary(sDirOutput, sFontDir, bNoFontDir, nVersion),
-	m_oMediaWriter		(sDirOutput),
-	m_oChartWriter		(sDirOutput),
-	m_oCustomXmlWriter	(sDirOutput, pDrawingConverter),
-	m_pDrawingConverter	(pDrawingConverter),
-	m_bSaveChartAsImg	(bSaveChartAsImg),
-	m_sThemePath		(sThemePath),
-	m_oDocumentRels		(sDirOutput),
-	m_nDocPrIndex		(0),
-	m_pComments			(NULL),
-	m_pApp				(NULL),
-	m_pCore				(NULL)
+      m_oFontTableWriter		(sDirOutput, sFontDir, bNoFontDir),
+      m_oDocumentWriter         (sDirOutput, m_oHeaderFooterWriter),
+      m_oMediaWriter			(sDirOutput),
+      m_oStylesWriter			(sDirOutput, nVersion),
+      m_oNumberingWriter		(sDirOutput),
+      m_oHeaderFooterWriter     (sDirOutput),
+      m_oFootnotesWriter		(sDirOutput),
+      m_oEndnotesWriter         (sDirOutput),
+      m_oSettingWriter          (sDirOutput, m_oHeaderFooterWriter),
+      m_oCommentsWriter         (sDirOutput),
+      m_oChartWriter			(sDirOutput),
+      m_oDocumentRelsWriter     (sDirOutput),
+      m_oWebSettingsWriter      (sDirOutput),
+      m_oCustomXmlWriter		(sDirOutput, pDrawingConverter),
+      m_pDrawingConverter       (pDrawingConverter),
+      m_bSaveChartAsImg         (bSaveChartAsImg),
+      m_sThemePath              (sThemePath),
+      m_nDocPrIndex             (0),
+      m_pComments               (NULL),
+      m_pApp					(NULL),
+      m_pCore					(NULL),
+	  m_pCustomProperties		(NULL)
 {
 }
 FileWriter::~FileWriter()
 {
     RELEASEOBJECT(m_pApp);
     RELEASEOBJECT(m_pCore);
+	RELEASEOBJECT(m_pCustomProperties);
 }
 void FileWriter::Write()
 {
-	m_oMain.Write();
+    m_oCommentsWriter.Write();
     m_oChartWriter.Write();
-	//Rels и ContentTypes пишем в конце
-	m_oDocumentRels.Write();
-}
-void FileWriter::WriteGlossary()
-{
-	m_oGlossary.Write(true);
+    m_oStylesWriter.Write();
+    m_oNumberingWriter.Write();
+    m_oFontTableWriter.Write();
+    m_oHeaderFooterWriter.Write();
+    m_oFootnotesWriter.Write();
+    m_oEndnotesWriter.Write();
+    //Setting пишем после HeaderFooter, чтобы заполнить evenAndOddHeaders
+    m_oSettingWriter.Write();
+    m_oWebSettingsWriter.Write();
+    //Document пишем после HeaderFooter, чтобы заполнить sectPr
+    m_oDocumentWriter.Write();
+    //Rels и ContentTypes пишем в конце
+    m_oDocumentRelsWriter.Write();
 }
 }
 

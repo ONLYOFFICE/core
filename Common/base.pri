@@ -74,11 +74,11 @@ DEFINES += INTERNAL_USE_ARRAY_AS_VECTOR
 
 ios {
     CONFIG += core_ios
-    DEFINES += _IOS IOS LINUX _LINUX MAC _MAC _XCODE
+    DEFINES += _IOS IOS LINUX _LINUX MAC _MAC _XCODE _ARM_ALIGN_
 }
 android {
     CONFIG += core_android
-    DEFINES += __ANDROID__ LINUX _LINUX
+    DEFINES += __ANDROID__ LINUX _LINUX _ARM_ALIGN_
 }
 
 win32:contains(QMAKE_TARGET.arch, x86_64): {
@@ -141,6 +141,8 @@ core_mac {
     DEFINES += LINUX _LINUX MAC _MAC
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
     QMAKE_LFLAGS += -isysroot $$QMAKE_MAC_SDK_PATH
+
+    QMAKE_CFLAGS += "-Wno-implicit-function-declaration"
 }
 
 # PREFIXES
@@ -149,6 +151,7 @@ core_windows {
     QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
     QMAKE_CXXFLAGS -= -Zc:strictStrings
     QMAKE_CXXFLAGS += /MP
+    DEFINES += WINDOWS_IGNORE_PACKING_MISMATCH
 
     OO_WINDOWS_IGNORE_PACKING_MISMATCH = $$(OO_WINDOWS_IGNORE_PACKING_MISMATCH)
     isEqual(OO_WINDOWS_IGNORE_PACKING_MISMATCH, 1):QMAKE_CXXFLAGS -= /Zp
@@ -246,7 +249,7 @@ core_ios {
     }
 
     !core_ios_no_unistd {
-        DEFINES += HAVE_UNISTD_H
+        DEFINES += HAVE_UNISTD_H HAVE_FCNTL_H
     }
 }
 
@@ -268,7 +271,7 @@ core_android {
     }
 
     !core_android_no_unistd {
-        DEFINES += HAVE_UNISTD_H
+        DEFINES += HAVE_UNISTD_H HAVE_FCNTL_H
     }
 }
 

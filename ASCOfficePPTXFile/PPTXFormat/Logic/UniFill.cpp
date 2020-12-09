@@ -284,7 +284,7 @@ namespace PPTX
 												pReader->Skip(6); // len + start attributes + type
 
 												// -------------------
-												std::wstring strUrl		= pReader->GetString2();
+												std::wstring strUrl = pReader->GetString2(true);
 												std::wstring strTempFile;
 												std::wstring strOrigBase64;
 

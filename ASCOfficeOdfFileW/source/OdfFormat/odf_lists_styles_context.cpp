@@ -65,47 +65,23 @@ void odf_lists_styles_context::process_styles(office_element_ptr root, bool auto
 	}
 }	
 
-void odf_lists_styles_context::add_style(int style_num, int based_num)
-{
-	//find index array for based_num
-
-	std::wstring style_name;
-
-	for (size_t i = 0 ; i < lists_format_array_.size(); i++)
-	{
-		if (lists_format_array_[i].oox_based_number == based_num)
-		{
-			link_format_map_[style_num]  = lists_format_array_[i].odf_list_style_name;
-			break;
-		}
-	}
-}
-std::wstring odf_lists_styles_context::get_style_name1(int oox_style_num)
-{
-	for (size_t i=0 ; i < lists_format_array_.size(); i++)
-	{
-		if (lists_format_array_[i].oox_based_number == oox_style_num)
-		{
-			return lists_format_array_[i].odf_list_style_name;
-		}
-	}
-	return L"";
-}
 std::wstring odf_lists_styles_context::get_style_name(int oox_style_num)
 {
-	if (lists_format_array_.empty()) return L"";
-
 	if (oox_style_num < 0)
 	{
-		return lists_format_array_.back().odf_list_style_name;
-	}
-    else if (link_format_map_.count(oox_style_num) > 0)
-	{
-        return link_format_map_.at(oox_style_num);
+		if (false == lists_format_array_.empty())
+			return lists_format_array_.back().odf_list_style_name;
+		else
+			return L"";
 	}
 	else
 	{
-		return L"";
+		std::map<int, size_t>::iterator pFind = lists_format_map_.find(oox_style_num);
+		
+		if (pFind != lists_format_map_.end())
+			return lists_format_array_[pFind->second].odf_list_style_name;
+		else
+			return L"";
 	}
 }
 void odf_lists_styles_context::start_style(bool bMaster, int based_number)
@@ -124,8 +100,11 @@ void odf_lists_styles_context::start_style(bool bMaster, int based_number)
 	else
 	{
 		state.oox_based_number		= based_number;
-		state.odf_list_style_name	= std::wstring(L"WWNum") + boost::lexical_cast<std::wstring>(state.oox_based_number + 1);
+		state.odf_list_style_name	= std::wstring(L"WWNum") + boost::lexical_cast<std::wstring>(state.oox_based_number);
 	}
+
+	lists_format_map_.insert(std::make_pair(state.oox_based_number, lists_format_array_.size()));
+
 	state.automatic	= !bMaster; 
 
 	text_list_style *style = dynamic_cast<text_list_style *>(elm.get());
@@ -578,6 +557,12 @@ void odf_lists_styles_context::set_bullet_image	(std::wstring ref)
 	style_image_->text_list_level_style_image_attr_.common_xlink_attlist_.type_		= xlink_type::Simple;
 	style_image_->text_list_level_style_image_attr_.common_xlink_attlist_.show_		= xlink_show::Embed;
 	style_image_->text_list_level_style_image_attr_.common_xlink_attlist_.actuate_	= xlink_actuate::OnLoad;
+}
+void odf_lists_styles_context::set_restart_number(int val)
+{
+	if (lists_format_array_.empty()) return;
+
+	lists_format_array_.back().restart_number = val;
 }
 void odf_lists_styles_context::set_start_number(int val)
 {

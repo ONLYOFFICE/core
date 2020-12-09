@@ -3518,20 +3518,21 @@ void DCR_CLASS dcr_cam_xyz_coeff (DCRAW* p, double cam_xyz[4][3])
 {
 	double cam_rgb[4][3], inverse[4][3], num;
 	int i, j, k;
-
-	for (i=0; i < p->colors; i++)		/* Multiply out XYZ colorspace */
+    int max_colors = p->colors;
+    if (max_colors > 4) max_colors = 4;
+    for (i=0; i < max_colors; i++)		/* Multiply out XYZ colorspace */
 		for (j=0; j < 3; j++)
 			for (cam_rgb[i][j] = k=0; k < 3; k++)
 				cam_rgb[i][j] += cam_xyz[i][k] * xyz_rgb[k][j];
 
-	for (i=0; i < p->colors; i++) {		/* Normalize cam_rgb so that */
+    for (i=0; i < max_colors; i++) {		/* Normalize cam_rgb so that */
 		for (num=j=0; j < 3; j++)		/* cam_rgb * (1,1,1) is (1,1,1,1) */
 			num += cam_rgb[i][j];
 		for (j=0; j < 3; j++)
 			cam_rgb[i][j] /= num;
 		p->pre_mul[i] = 1 / (float)num;
 	}
-	dcr_pseudoinverse (cam_rgb, inverse, p->colors);
+    dcr_pseudoinverse (cam_rgb, inverse, max_colors);
 	for (p->raw_color = i=0; i < 3; i++)
 		for (j=0; j < p->colors; j++)
 			p->rgb_cam[i][j] = (float)inverse[j][i];
@@ -5391,9 +5392,12 @@ void DCR_CLASS dcr_parse_tiff (DCRAW* p, int base)
 		p->tiff_ifd[raw].phint == 1) p->is_raw = 0;
 	if (p->tiff_bps == 8 && p->tiff_samples == 4) p->is_raw = 0;
 	for (i=0; i < (int)p->tiff_nifds; i++)
+    {
+        int sqr_1 = SQR(p->tiff_ifd[i].bps+1); if (sqr_1 == 0) sqr_1 = 1;
+        int sqr_2 = SQR(p->thumb_misc+1); if (sqr_2 == 0) sqr_2 = 1;
 		if (i != raw && p->tiff_ifd[i].samples == max_samp &&
-			p->tiff_ifd[i].width * p->tiff_ifd[i].height / SQR(p->tiff_ifd[i].bps+1) >
-			(int)(p->thumb_width *       p->thumb_height / SQR(p->thumb_misc+1))) {
+            p->tiff_ifd[i].width * p->tiff_ifd[i].height / sqr_1 >
+            (int)(p->thumb_width *       p->thumb_height / sqr_2)) {
 			p->thumb_width  = p->tiff_ifd[i].width;
 			p->thumb_height = p->tiff_ifd[i].height;
 			p->thumb_offset = p->tiff_ifd[i].offset;
@@ -5401,6 +5405,7 @@ void DCR_CLASS dcr_parse_tiff (DCRAW* p, int base)
 			p->thumb_misc   = p->tiff_ifd[i].bps;
 			thm = i;
 		}
+    }
 	if (thm >= 0) {
 		p->thumb_misc |= p->tiff_ifd[thm].samples << 5;
 		switch (p->tiff_ifd[thm].comp) {
@@ -5845,10 +5850,16 @@ void DCR_CLASS dcr_parse_riff(DCRAW* p)
 	{ "Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec" };
 	struct tm t;
 
+    if (dcr_feof(p->obj_))
+    {
+        fprintf (stderr,_("Unexpected end of file\n"));
+        return;
+    }
+
 	p->order = 0x4949;
 	dcr_fread(p->obj_, tag, 4, 1);
 	size = dcr_get4(p);
-	end = dcr_ftell(p->obj_) + size;
+    end = dcr_ftell(p->obj_) + size;
 	if (!memcmp(tag,"RIFF",4) || !memcmp(tag,"LIST",4)) {
 		dcr_get4(p);
 		while (dcr_ftell(p->obj_)+7 < (long)end)

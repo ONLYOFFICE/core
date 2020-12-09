@@ -29,6 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "stdint.h"
 #include "./UnicodeConverter.h"
 
 #include "unicode/utypes.h"
@@ -39,7 +40,7 @@
 #include "../DesktopEditor/common/File.h"
 
 #if !defined (_WIN32) && !defined (_WIN64)
-#if defined (_LINUX) && !defined(__ANDROID__) && !defined(_IOS)
+#if defined (_LINUX) && !defined(__ANDROID__) && !defined(_IOS) && !defined(_MAC)
     #define USE_ICONV
     #include "iconv.h"
 #endif
@@ -47,7 +48,7 @@
     #include <windows.h>
 #endif
 
-#include <stdint.h>
+std::string g_overrideIcuDataPath = "";
 
 namespace NSUnicodeConverter
 {
@@ -266,7 +267,7 @@ namespace NSUnicodeConverter
                     const char* sourceLimit = source + nInputLen;
 
                     unsigned int uBufSize = (nInputLen / (uint8_t)ucnv_getMinCharSize(conv));
-                    
+
                     UChar* targetStart = new UChar[uBufSize * sizeof(UChar)];
                     if (targetStart)
                     {
@@ -407,7 +408,9 @@ namespace NSUnicodeConverter
 
     void CUnicodeConverter::setIcuDataPath(const std::wstring& sDirectory)
     {
-        std::string sDirA = CUnicodeConverter_Private::fromUnicode(sDirectory.c_str(), (unsigned int)sDirectory.length(), "utf-8");
-        u_setDataDirectory(sDirA.c_str());
+        if (!g_overrideIcuDataPath.empty())
+            return;
+        g_overrideIcuDataPath = U_TO_UTF8(sDirectory);
+        u_setDataDirectory(g_overrideIcuDataPath.c_str());
     }
 }

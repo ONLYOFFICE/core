@@ -397,6 +397,7 @@ namespace NSFontConverter
                             char nChar = *pTemp;
                             *pTemp = '\0';
                             nCode = atoi( pCur );
+							if (nCode < 0) nCode = 0;								
                             *pTemp = nChar;
                             if ( nCode == 8 && *pTemp == '#')
                             {
@@ -612,7 +613,7 @@ namespace NSFontConverter
                         sToken.clear();
                         sGlyph.clear();
 
-                        while ( ( nChar = sEexec[++nIndex] ) != ' ' )
+                        while ( nIndex < nEexecLen && ( nChar = sEexec[++nIndex] ) != ' ' )
                             sGlyph.push_back( (wchar_t)nChar );
                     }
                 }
@@ -632,13 +633,16 @@ namespace NSFontConverter
         // (пробел, таб, перенос каретки или перенос строки).
         unsigned char *sCur = (unsigned char*)(*ppEexecBuffer);
         while( sCur < (unsigned char*)(*ppEexecBuffer) + nLen && ( ' ' == *sCur || '\t' == *sCur || '\r' == *sCur || '\n' == *sCur ) )
+        {
             ++sCur;
+            --nLen;
+        }
 
         // Теперь нам надо определить в каком формате у нас данные: ASKII или бинарные данные.
         // Если первые четыре байта являются шестнадцатиричными символами, значит, кодировка ASCII.
         bool bASCII = false;
 
-        if ( isxdigit( sCur[0] ) && isxdigit( sCur[1] ) && isxdigit( sCur[2] ) && isxdigit( sCur[3] ) )
+        if ( nLen > 3 && isxdigit( sCur[0] ) && isxdigit( sCur[1] ) && isxdigit( sCur[2] ) && isxdigit( sCur[3] ) )
             bASCII = true;
 
         if ( bASCII )
@@ -656,7 +660,7 @@ namespace NSFontConverter
         int nChar = 0;
 
         unsigned char *sBuffer = NULL;
-        int nBufLen = 0;
+        unsigned int nBufLen = 0;
 
         while ( nBlockType != PFB_DONE )
         {

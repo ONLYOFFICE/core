@@ -3,10 +3,11 @@
 
 #include "../../../../../UnicodeConverter/UnicodeConverter.h"
 #include "../../../../../DesktopEditor/common/File.h"
-#include "CCssCalculator.h"
-#include "CssCalculator_global.h"
+#include "CNode.h"
+#include <cwctype>
 #include <string>
 #include <vector>
+#include <list>
 #include <algorithm>
 
 namespace NSCSS
@@ -95,37 +96,6 @@ namespace NSCSS
             return (posDigit < posNoDigit) || (posDigit == 0  && posNoDigit == 0);
         }
 
-        inline static void RemoveExcessFromStyles(std::wstring& sStyle)
-        {
-            while (true)
-            {
-                size_t posLeftAngleBracket = sStyle.find(L'<');
-                size_t posRightAngleBracket = sStyle.find(L'>');
-                size_t posLeftComment = sStyle.find(L"<!--");
-                size_t posRightComment = sStyle.find(L"-->");
-
-                if (posLeftAngleBracket != std::wstring::npos || posLeftComment != std::wstring::npos || posRightComment != std::wstring::npos)
-                {
-
-                    if (posLeftAngleBracket != std::wstring::npos &&
-                        posRightAngleBracket != std::wstring::npos)
-                    {
-                        sStyle.erase(posLeftAngleBracket, posRightAngleBracket - posLeftAngleBracket + 1);
-                    }
-                    else if (posLeftAngleBracket != std::wstring::npos)
-                        sStyle.erase(posLeftAngleBracket, 1);
-                    else if (posRightAngleBracket != std::wstring::npos)
-                        sStyle.erase(posRightAngleBracket, 1);
-                    else if (posLeftComment != std::wstring::npos)
-                        sStyle.erase(posLeftComment, 4);
-                    else if (posRightComment != std::wstring::npos)
-                        sStyle.erase(posRightComment, 3);
-                }
-                else
-                    break;
-            }
-        }
-
         inline std::wstring DeleteSpace(const std::wstring& sValue)
         {
             if (sValue.empty())
@@ -157,19 +127,22 @@ namespace NSCSS
             return arWords;
         }
 
-        inline std::vector<std::wstring> GetWordsW(const std::wstring& sLine)
+        inline std::vector<std::wstring> GetWordsW(const std::wstring& sLine, const std::wstring& sSigns = L" \n\r\t\f\v:;,")
         {
             if (sLine.empty())
                 return {};
 
+            if (sLine.find_first_of(sSigns) == std::wstring::npos)
+                return std::vector<std::wstring>({sLine});
+
             std::vector<std::wstring> arWords;
             arWords.reserve(16);
-            size_t posFirstNotSpace = sLine.find_first_not_of(L" \n\r\t\f\v:;,");
+            size_t posFirstNotSpace = sLine.find_first_not_of(sSigns);
             while (posFirstNotSpace != std::wstring::npos)
             {
-                const size_t& posLastNotSpace = sLine.find_first_of(L" \n\r\t\f\v:;,", posFirstNotSpace);
+                const size_t& posLastNotSpace = sLine.find_first_of(sSigns, posFirstNotSpace);
                 arWords.push_back(sLine.substr(posFirstNotSpace, posLastNotSpace - posFirstNotSpace));
-                posFirstNotSpace = sLine.find_first_not_of(L" \n\r\t\f\v:;,", posLastNotSpace);
+                posFirstNotSpace = sLine.find_first_not_of(sSigns, posLastNotSpace);
             }
             return arWords;
         }
@@ -313,18 +286,22 @@ namespace NSCSS
             return arSelectors;
         }
 
-        inline std::vector<std::wstring> GetWordsWithSigns(const std::wstring& sLine)
+        inline std::vector<std::wstring> GetWordsWithSigns(const std::wstring& sLine, const std::wstring& sSigns = L" \n\r\t\f\v:;,")
         {
             if (sLine.empty())
                 return {};
+
+            if (sLine.find_first_of(sSigns) == std::wstring::npos)
+                return std::vector<std::wstring>({sLine});
+
             std::vector<std::wstring> arWords;
             arWords.reserve(16);
-            size_t posFirstNotSpace = sLine.find_first_not_of(L" \n\r\t\f\v:;,");
+            size_t posFirstNotSpace = sLine.find_first_not_of(sSigns);
             while (posFirstNotSpace != std::wstring::npos)
             {
-                const size_t posLastNotSpace = sLine.find_first_of(L" \n\r\t\f\v:;,", posFirstNotSpace);
+                const size_t posLastNotSpace = sLine.find_first_of(sSigns, posFirstNotSpace);
                 arWords.push_back(sLine.substr(posFirstNotSpace, (posLastNotSpace != std::wstring::npos) ? posLastNotSpace - posFirstNotSpace + 1 : posLastNotSpace - posFirstNotSpace ));
-                posFirstNotSpace = sLine.find_first_not_of(L" \n\r\t\f\v:;,", posLastNotSpace);
+                posFirstNotSpace = sLine.find_first_not_of(sSigns, posLastNotSpace);
             }
             return arWords;
         }
@@ -340,9 +317,9 @@ namespace NSCSS
             if (posFirst == std::wstring::npos)
                 return std::wstring();
 
-            const wchar_t cHex[17]{L"0123456789ABCDEF"};
+            const wchar_t cHex[17]{L"0123456789abcdef"};
 
-            std::wstring sValue = L"#";
+            std::wstring sValue;
 
             while (posFirst != std::wstring::npos)
             {
@@ -355,7 +332,7 @@ namespace NSCSS
                 if (nValue < 0)
                     sHex += L"00";
                 else if (nValue > 255)
-                    sHex += L"FF";
+                    sHex += L"ff";
                 else
                 {
                     do
@@ -374,6 +351,83 @@ namespace NSCSS
                 posFirst = sRgbValue.find_first_of(L"01234567890", posSecond);
             }
             return sValue;
+        }
+
+        inline std::vector<unsigned short int> GetWeightSelector(const std::wstring& sSelector)
+        {
+            if (sSelector.empty())
+                return std::vector<unsigned short int>{0, 0, 0, 0};
+
+            std::vector<unsigned short int> arWeight = {0, 0, 0, 0};
+
+            std::wstring sReverseSelector = sSelector;
+            std::reverse(sReverseSelector.begin(), sReverseSelector.end());
+
+            const std::vector<std::wstring> arSelectors = NS_STATIC_FUNCTIONS::GetWordsWithSigns(sReverseSelector, L" .#:");
+
+            for (const std::wstring& sSel : arSelectors)
+            {
+                if (sSel == L"*")
+                    ++arWeight[3];
+                else if (sSel.rfind(L'#') != std::wstring::npos)
+                    ++arWeight[0];
+                else if (sSel.rfind(L':') != std::wstring::npos)
+                {
+                    std::wstring sTemp(sSel);
+                    sTemp.erase(std::remove_if(sTemp.begin(), sTemp.end(), [] (const wchar_t& wc) { return !std::iswalpha(wc);}));
+//                    std::find(NSConstValues::arPseudoClasses.begin(), NSConstValues::arPseudoClasses.end(), sTemp) != NSConstValues::arPseudoClasses.end() ? ++arWeight[1] : ++arWeight[2];
+                }
+                else if (sSel.find_last_of(L".[]") != std::wstring::npos)
+                    ++arWeight[1];
+                else
+                    ++arWeight[2];
+            }
+
+            return arWeight;
+        }
+    }
+
+    #define SWITCH(str)  switch(SWITCH_CASE::str_hash_for_switch(str))
+    #define CASE(str)    static_assert(SWITCH_CASE::str_is_correct(str) && (SWITCH_CASE::str_len(str) <= SWITCH_CASE::MAX_LEN),\
+    "CASE string contains wrong characters, or its length is greater than 9");\
+    case SWITCH_CASE::str_hash(str, SWITCH_CASE::str_len(str))
+    #define DEFAULT  default
+
+    namespace SWITCH_CASE
+    {
+        typedef unsigned long long ullong;
+
+        const unsigned int MAX_LEN = 32;
+        const ullong N_HASH = static_cast<ullong>(-1);
+
+        constexpr ullong raise_128_to(const wchar_t power)
+        {
+            return (1ULL << 7) * power;
+        }
+
+        constexpr bool str_is_correct(const wchar_t* const str)
+        {
+            return (static_cast<wchar_t>(*str) > 0) ? str_is_correct(str + 1) : (*str ? false : true);
+        }
+
+        constexpr unsigned int str_len(const wchar_t* const str)
+        {
+            return *str ? (1 + str_len(str + 1)) : 0;
+        }
+
+        constexpr ullong str_hash(const wchar_t* const str, const wchar_t current_len)
+        {
+            return *str ? (raise_128_to(current_len - 1) * static_cast<wchar_t>(*str) + str_hash(str + 1, current_len - 1)) : 0;
+        }
+
+        inline ullong str_hash_for_switch(const wchar_t* const str)
+        {
+            return (str_is_correct(str) && (str_len(str) <= MAX_LEN)) ? str_hash(str, str_len(str)) : N_HASH;
+        }
+
+        inline ullong str_hash_for_switch(const std::wstring& str)
+        {
+            return (str_is_correct(str.c_str()) && (str.length() <= MAX_LEN)) ? str_hash(str.c_str(), str.length()) : N_HASH;
         }
     }
 }

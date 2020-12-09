@@ -279,24 +279,6 @@ namespace NSCSS
             sSpacingValue += L"w:before=\"" + oStyle.m_pMargin.GetTopSide() + L"\" ";
         }
 
-//        if (oStyle.m_pFont.fLineHeight > 0)
-//        {
-//            float fValue = oStyle.m_pFont.fSize;
-//            if (fValue <= 0.0f)
-//                fValue = 22;
-
-//            float fLineHeight = oStyle.m_pFont.fLineHeight;
-
-//            if (fLineHeight >= 1.0f)
-//            {
-//                fLineHeight *= (fLineHeight < fValue / 2) ? 10.0f : (10.0f / fLineHeight);
-//                float fLine = fLineHeight * fValue;
-
-//                sSpacingValue += L"w:line=\"" + std::to_wstring(static_cast<unsigned short int>((fLine < fValue * 20.0f) ? fLine : fValue * 5.0f + 0.5f)) + L"\" ";
-//                sSpacingValue += L"w:lineRule=\"auto\"";
-//            }
-//        }
-
         const std::wstring &sLineHeight = oStyle.m_pFont.GetLineHeight();
         if (!sLineHeight.empty())
         {

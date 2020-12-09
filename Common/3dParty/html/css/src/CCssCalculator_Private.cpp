@@ -339,21 +339,23 @@ namespace NSCSS
             return *oItem->second;
 
         CCompiledStyle *oStyle = new CCompiledStyle();
+        oStyle->SetDpi(m_nDpi);
 
         std::vector<std::wstring> arWords;
         arWords.reserve(arSelectors.size() * 2);
 
-        for (const CNode& oNode : arSelectors)
+//        for (const CNode& oNode : arSelectors)
+        for (std::vector<CNode>::const_reverse_iterator oNode = arSelectors.rbegin(); oNode != arSelectors.rend(); ++oNode)
         {
-            oStyle->AddStyle(oNode.m_sStyle, true);
+            oStyle->AddStyle(oNode->m_sStyle, true);
 
-            arWords.push_back(oNode.m_sName);
+            arWords.push_back(oNode->m_sName);
 
-            if (!oNode.m_sClass.empty())
+            if (!oNode->m_sClass.empty())
             {
-                if (oNode.m_sClass.find(L' ') != std::wstring::npos)
+                if (oNode->m_sClass.find(L' ') != std::wstring::npos)
                 {
-                    std::vector<std::wstring> arClasses = NS_STATIC_FUNCTIONS::GetWordsW(oNode.m_sClass, L" ");
+                    std::vector<std::wstring> arClasses = NS_STATIC_FUNCTIONS::GetWordsW(oNode->m_sClass, L" ");
 
                     if (arClasses.size() > 1)
                         arClasses.resize(unique(arClasses.begin(),arClasses.end()) - arClasses.begin());
@@ -384,23 +386,23 @@ namespace NSCSS
                     }
                 }
                 else
-                    arWords.push_back(L'.' + oNode.m_sClass);
+                    arWords.push_back(L'.' + oNode->m_sClass);
             }
-            if (!oNode.m_sId.empty())
-                arWords.push_back(L'#' + oNode.m_sId);
+            if (!oNode->m_sId.empty())
+                arWords.push_back(L'#' + oNode->m_sId);
         }
 
         std::vector<CElement*> arElements;
 
-        for (std::vector<CNode>::const_reverse_iterator iNode = arSelectors.rbegin(); iNode != arSelectors.rend(); ++iNode)
+        for (const CNode oNode : arSelectors)
         {
-            std::vector<std::wstring> arKins;
-            for (std::vector<std::wstring>::const_reverse_iterator sNode = arWords.rbegin(); sNode != arWords.rend(); ++sNode)
-            {
-                arKins.push_back(*sNode);
-                if ((*sNode)[0] != L'#' && (*sNode)[0] != L'.')
-                    break;
-            }
+//            std::vector<std::wstring> arKins;
+//            for (std::vector<std::wstring>::const_reverse_iterator sNode = arWords.rbegin(); sNode != arWords.rend(); ++sNode)
+//            {
+//                arKins.push_back(*sNode);
+//                if ((*sNode)[0] != L'#' && (*sNode)[0] != L'.')
+//                    break;
+//            }
             std::wstring sName, sId;
             std::vector<std::wstring> arClasses;
 
@@ -418,7 +420,6 @@ namespace NSCSS
 
             sName = arWords.back();
             oStyle->AddParent(sName);
-            oStyle->SetDpi(m_nDpi);
 
             const std::map<std::wstring, CElement*>::const_iterator oFindName = m_mData.find(sName);
             std::map<std::wstring, CElement*>::const_iterator oFindId;
@@ -461,10 +462,13 @@ namespace NSCSS
                 arFindElements.insert(arFindElements.end(), arTemp.begin(), arTemp.end());
             }
 
-            std::sort(arFindElements.rbegin(), arFindElements.rend(), [](CElement* oFirstElement, CElement* oSecondElement)
+            if (arFindElements.size() > 1)
             {
-                return oFirstElement->GetWeight() < oSecondElement->GetWeight();
-            });
+                std::sort(arFindElements.rbegin(), arFindElements.rend(), [](CElement* oFirstElement, CElement* oSecondElement)
+                {
+                    return oFirstElement->GetWeight() < oSecondElement->GetWeight();
+                });
+            }
 
             for (const CElement* oElement : arFindElements)
                 oStyle->AddStyle(oElement->GetStyle());

@@ -21,6 +21,7 @@ namespace NSCSS
 
     CCompiledStyle::CCompiledStyle(const CCompiledStyle& oStyle) :
         m_arParentsStyles(oStyle.m_arParentsStyles), m_sId(oStyle.m_sId),
+        m_nDpi(oStyle.m_nDpi), m_UnitMeasure(oStyle.m_UnitMeasure),
         m_pFont(oStyle.m_pFont), m_pMargin(oStyle.m_pMargin), m_pBackground(oStyle.m_pBackground),
         m_pText(oStyle.m_pText), m_pBorder(oStyle.m_pBorder){}
 
@@ -45,6 +46,9 @@ namespace NSCSS
     {
         m_sId               = oElement.m_sId;
         m_arParentsStyles   = oElement.m_arParentsStyles;
+
+        m_nDpi          = oElement.m_nDpi;
+        m_UnitMeasure   = oElement.m_UnitMeasure;
 
         m_pBackground   = oElement.m_pBackground;
         m_pBorder       = oElement.m_pBorder;
@@ -71,64 +75,21 @@ namespace NSCSS
         m_nDpi = uiDpi;
     }
 
-//    bool CCompiledStyle::operator<(const CCompiledStyle &oElement) const
-//    {
-//        return m_sId < oElement.m_sId;
-//    }
-
-    /*
-    bool CCompiledStyle::operator!=(const CCompiledStyle &oElement) const
-    {
-        if (*this > oElement)
-            return false;
-
-        if (*this < oElement)
-            return false;
-
-        return true;
-    }
-
-    bool CCompiledStyle::operator>(const CCompiledStyle &oElement) const
-    {
-        return GetWeidth() > oElement.GetWeidth();
-    }
-
-    std::string CCompiledStyle::GetStyle() const
-    {
-        std::wstring sStyle = GetStyleW();
-        return U_TO_UTF8(sStyle);
-    }
-
-    size_t CCompiledStyle::GetSize() const
-    {
-        return m_mStyle.size();
-    }
-    */
-
     bool CCompiledStyle::Empty() const
     {
         return m_pBackground.Empty() && m_pBorder.Empty() &&
                m_pFont.Empty() && m_pMargin.Empty() && m_pText.Empty();
-//        return m_mStyle.empty();
     }
-
-    /*
-    void CCompiledStyle::Clear()
-    {
-        m_mStyle.clear();
-        m_sId.clear();
-        m_arParentsStyles.clear();
-    }
-    */
 
     void CCompiledStyle::AddPropSel(const std::wstring& sProperty, const std::wstring& sValue, const bool& bHardMode)
     {
-        AddStyle({{sProperty, sValue}}, bHardMode);
+        AddStyle({{sProperty, sValue}});
     }
 
     void CCompiledStyle::AddStyle(const std::map<std::wstring, std::wstring>& mStyle, const bool& bHardMode)
     {
-        const bool bBorder = (m_pBorder.Empty()) ? true : false;
+        const bool bIsThereBorder = (m_pBorder.Empty()) ? false : true;
+
         for (std::pair<std::wstring, std::wstring> pPropertie : mStyle)
         {
             SWITCH(pPropertie.first)
@@ -136,115 +97,99 @@ namespace NSCSS
                 //FONT
                 CASE(L"font"):
                 {
-                    m_pFont.SetFont(ConvertUnitMeasure(pPropertie.second.c_str(), m_pFont.GetSize()), bHardMode);
+                    m_pFont.SetFont(ConvertUnitMeasure(pPropertie.second.c_str(), m_pFont.GetSize()));
                     break;
                 }
                 CASE(L"font-size"):
                 CASE(L"font-size-adjust"):
                 {
-                    m_pFont.SetSize(ConvertUnitMeasure(pPropertie.second, m_pFont.GetSize()), bHardMode);
+                    m_pFont.SetSize(ConvertUnitMeasure(pPropertie.second, m_pFont.GetSize()));
                     break;
                 }
 
                 CASE(L"font-stretch"):
                 {
-                    m_pFont.SetStretch(pPropertie.second, bHardMode);
+                    m_pFont.SetStretch(pPropertie.second);
                     break;
                 }
                 CASE(L"font-style"):
                 {
-                    m_pFont.SetStyle(pPropertie.second, bHardMode);
+                    m_pFont.SetStyle(pPropertie.second);
                     break;
                 }
                 CASE(L"font-variant"):
                 {
-                    m_pFont.SetVariant(pPropertie.second, bHardMode);
+                    m_pFont.SetVariant(pPropertie.second);
                     break;
                 }
                 CASE(L"font-weight"):
                 {
-                    m_pFont.SetWeight(pPropertie.second, bHardMode);
+                    m_pFont.SetWeight(pPropertie.second);
                     break;
                 }
                 CASE(L"line-height"):
                 {
-                    m_pFont.SetLineHeight(ConvertUnitMeasure(pPropertie.second, m_pFont.GetSize()), bHardMode);
+                    m_pFont.SetLineHeight(ConvertUnitMeasure(pPropertie.second, m_pFont.GetSize()));
                     break;
                 }
                 //MARGIN
                 CASE(L"margin"):
                 {
-                    if (bBorder)
-                        break;
-
                     const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
-                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos && m_pBorder.Empty())
                         m_pMargin.AddMargin(sValue);
                     break;
                 }
                 CASE(L"margin-top"):
                 {
-                    if (bBorder)
-                        break;
-
                     const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
-                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos && m_pBorder.Empty())
                         m_pMargin.AddTopMargin(sValue);
                     break;
                 }
                 CASE(L"margin-right"):
                 CASE(L"margin-block-end"):
                 {
-                    if (bBorder)
-                        break;
-
                     const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
-                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos && m_pBorder.Empty())
                         m_pMargin.AddRightMargin(sValue);
                     break;
                 }
                 CASE(L"margin-bottom"):
                 {
-                    if (bBorder)
-                        break;
-
                     const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
-                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos && m_pBorder.Empty())
                         m_pMargin.AddBottomMargin(sValue);
                     break;
                 }
                 CASE(L"margin-left"):
                 CASE(L"margin-block-start"):
                 {
-                    if (bBorder)
-                        break;
-
                     const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
-
-                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos && m_pBorder.Empty())
                         m_pMargin.AddLeftMargin(sValue);
                     break;
                 }
                 // TEXT
                 CASE(L"text-align"):
                 {
-                    m_pText.SetAlign(pPropertie.second, bHardMode);
+                    m_pText.SetAlign(pPropertie.second);
                     break;
                 }
                 CASE(L"text-indent"):
                 {
-                    m_pText.SetIndent(ConvertUnitMeasure(pPropertie.second, 540.0f), bHardMode);
+                    m_pText.SetIndent(ConvertUnitMeasure(pPropertie.second, 540.0f));
                     break;
                 }
                 CASE(L"text-decoration"):
                 {
-                    m_pText.SetDecoration(pPropertie.second, bHardMode);
+                    m_pText.SetDecoration(pPropertie.second);
                     break;
                 }
                 CASE(L"text-color"):
                 CASE(L"color"):
                 {
-                    m_pText.SetColor(pPropertie.second, bHardMode);
+                    m_pText.SetColor(pPropertie.second);
                     break;
                 }
                 //BORDER
@@ -252,7 +197,7 @@ namespace NSCSS
                 CASE(L"mso-border-alt"):
                 {
                     const NSConstValues::NSCssProperties::BorderSide oBorderSide = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
-                    if (oBorderSide.fWidth != 0)
+                    if (oBorderSide.fWidth > 0)
                     {
                         m_pBorder.stTop     = oBorderSide;
                         m_pBorder.stRight   = oBorderSide;
@@ -399,14 +344,14 @@ namespace NSCSS
                     sValue.pop_back();
                     std::transform(sProperty.begin(), sProperty.end(), sProperty.begin(), tolower);
                     std::transform(sValue.begin(), sValue.end(), sValue.begin(), tolower);
-                    AddPropSel(sProperty, sValue, bHardMode);
+                    AddPropSel(sProperty, sValue);
                     sProperty.clear();
                     sValue.clear();
                 }
             }
 
         if (!sProperty.empty() && !sValue.empty())
-            AddPropSel(sProperty, sValue, bHardMode);
+            AddPropSel(sProperty, sValue);
     }
 
     void CCompiledStyle::AddParent(const std::wstring& sParentName)

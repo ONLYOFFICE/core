@@ -563,11 +563,6 @@ std::wstring CXmlElement::GetStyle() const
                 sStyle += L" w:default=\"" + oItem.second + L"\"";
                 break;
             }
-//            case NSCSS::NS_CONST_VALUES::BasicProperties::B_S:
-//            {
-//                sStyle += L" w:S=\"" + oItem.second + L"\"";
-//                break;
-//            }
             default:
                 break;
         }
@@ -612,11 +607,6 @@ std::wstring CXmlElement::GetPStyle() const
                 sPStyle += L" w:default=\"" + oItem.second + L"\"";
                 break;
             }
-//            case NSCSS::NS_CONST_VALUES::BasicProperties::B_S:
-//            {
-//                sPStyle += L" w:S=\"" + oItem.second + L"\"";
-//                break;
-//            }
             default:
                 break;
         }
@@ -662,11 +652,7 @@ std::wstring CXmlElement::GetRStyle() const
                 sRStyle += L" w:default=\"" + oItem.second + L"\"";
                 break;
             }
-//            case NSCSS::NS_CONST_VALUES::BasicProperties::B_S:
-//            {
-//                sRStyle += L" w:S=\"" + oItem.second + L"\"";
-//                break;
-//            }
+
             default:
                 break;
         }

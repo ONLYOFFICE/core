@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -32,55 +32,24 @@
 #pragma once
 #include "../Reader/Records.h"
 
-class CRecordPlaceHolderAtom : public CUnknownRecord
+namespace PPT_FORMAT
+{
+class CRecordPlaceholderAtom : public CUnknownRecord
 {
 public:
-	int	 m_nPosition;
-    BYTE m_nPlacementID;
-	BYTE m_nSize;
+    _INT32          m_position;
+    PlaceholderEnum m_placementId;
+    BYTE            m_size;
 
-public:
-	
-	CRecordPlaceHolderAtom()
-	{
-	}
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+    {
+        m_oHeader = oHeader;
 
-	~CRecordPlaceHolderAtom()
-	{
-	}
+        m_position      = StreamUtils::ReadLONG(pStream);
+        m_placementId   = (PlaceholderEnum)StreamUtils::ReadBYTE(pStream);
+        m_size          = StreamUtils::ReadBYTE(pStream);
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
-
-		m_nPosition = StreamUtils::ReadLONG(pStream);
-        m_nPlacementID = StreamUtils::ReadBYTE(pStream);
-		m_nSize = StreamUtils::ReadBYTE(pStream);
-
-		StreamUtils::StreamSkip(2, pStream);
-	}
+        StreamUtils::StreamSkip(2, pStream);
+    }
 };
-
-class CRecordRoundTripHFPlaceholder12Atom : public CUnknownRecord
-{
-public:
-	BYTE m_nPlacementID;
-
-public:
-	
-	CRecordRoundTripHFPlaceholder12Atom()
-	{
-	}
-
-	~CRecordRoundTripHFPlaceholder12Atom()
-	{
-	}
-
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
-
-		m_nPlacementID	= StreamUtils::ReadBYTE(pStream);
-	}
-};
-
+}

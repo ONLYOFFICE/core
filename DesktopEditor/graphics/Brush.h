@@ -147,7 +147,7 @@ protected:
 		float position;
 	};
 	
-	CArray<TSubColor> m_subcolors;
+    std::vector<TSubColor> m_subcolors;
 
 	CMatrix m_matrix;
 	float m_angle; // угол поворота в градусах базовой линии p1 -> p2

@@ -95,6 +95,7 @@ public:
 	void serialize_page_properties		(std::wostream & _Wostream);
 	void serialize_background			(std::wostream & _Wostream);
 	void serialize_data_validation		(std::wostream & _Wostream);
+	void serialize_data_validation_x14	(std::wostream & _Wostream);
 	void serialize_protection			(std::wostream & _Wostream);
 	void serialize_header_footer		(std::wostream & _Wostream);
 	void serialize_breaks				(std::wostream & _Wostream);

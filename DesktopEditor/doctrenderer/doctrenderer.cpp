@@ -87,7 +87,7 @@ namespace NSDoctRenderer
         std::wstring m_strSrcFilePath;
         std::wstring m_strDstFilePath;
 
-        CArray<std::wstring> m_arChanges;
+        std::vector<std::wstring> m_arChanges;
         int m_nCountChangesItems;
 
         std::wstring m_strMailMergeDatabasePath;
@@ -129,7 +129,7 @@ namespace NSDoctRenderer
         }
         ~CExecuteParams()
         {
-            m_arChanges.RemoveAll();
+            m_arChanges.clear();
         }
 
     public:
@@ -163,7 +163,7 @@ namespace NSDoctRenderer
                     XmlUtils::CXmlNode _node;
                     oNodes.GetAt(i, _node);
 
-                    m_arChanges.Add(_node.GetText());
+                    m_arChanges.push_back(_node.GetText());
                 }
             }
 
@@ -278,7 +278,7 @@ namespace NSDoctRenderer
 
         std::wstring m_strConfigDir;
         std::wstring m_strConfigPath;
-        CArray<std::wstring> m_arrFiles;
+        std::vector<std::wstring> m_arrFiles;
 
         std::vector<std::wstring> m_arDoctSDK;
         std::vector<std::wstring> m_arPpttSDK;
@@ -303,7 +303,7 @@ namespace NSDoctRenderer
         }
         void LoadConfig(const std::wstring& sConfigDir, const std::wstring& sAllFontsPath = L"")
         {
-            m_arrFiles.RemoveAll();
+            m_arrFiles.clear();
             m_arDoctSDK.clear();
             m_arPpttSDK.clear();
             m_arXlstSDK.clear();
@@ -333,9 +333,9 @@ namespace NSDoctRenderer
 
                         if (NSFile::CFileBinary::Exists(strFilePath) &&
                             !NSFile::CFileBinary::Exists(m_strConfigDir + strFilePath))
-                            m_arrFiles.Add(strFilePath);
+                            m_arrFiles.push_back(strFilePath);
                         else
-                            m_arrFiles.Add(m_strConfigDir + strFilePath);
+                            m_arrFiles.push_back(m_strConfigDir + strFilePath);
                     }
                 }
             }
@@ -929,7 +929,7 @@ namespace NSDoctRenderer
                 if (!bIsBreak)
                 {
                     v8::Handle<v8::Value> js_func_apply_changes = js_objectApi->Get(v8::String::NewFromUtf8(isolate, "asc_nativeApplyChanges2"));
-                    if (m_oParams.m_arChanges.GetCount() != 0)
+                    if (m_oParams.m_arChanges.size() != 0)
                     {
                         int nCurrentIndex = 0;
                         CChangesWorker oWorker;
@@ -944,7 +944,7 @@ namespace NSDoctRenderer
                         while (!bIsBreak)
                         {
                             nCurrentIndex = oWorker.Open(m_oParams.m_arChanges, nCurrentIndex);
-                            bool bIsFull = (nCurrentIndex == m_oParams.m_arChanges.GetCount()) ? true : false;
+                            bool bIsFull = (nCurrentIndex == m_oParams.m_arChanges.size()) ? true : false;
 
                             if (js_func_apply_changes->IsFunction())
                             {
@@ -1310,7 +1310,7 @@ namespace NSDoctRenderer
         m_pInternal->m_strFilePath = strFileName;
 
         std::string strScript = "";
-        for (size_t i = 0; i < m_pInternal->m_arrFiles.GetCount(); ++i)
+        for (size_t i = 0; i < m_pInternal->m_arrFiles.size(); ++i)
         {
 #if 0
             if (m_arrFiles[i].find(L"AllFonts.js") != std::wstring::npos)

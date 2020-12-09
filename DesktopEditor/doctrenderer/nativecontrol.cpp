@@ -172,7 +172,7 @@ void _GetChangesCount(const v8::FunctionCallbackInfo<v8::Value>& args)
 
     int nCount = 0;
     if (pNative->m_pChanges != NULL)
-        nCount = (int)pNative->m_pChanges->GetCount();
+        nCount = (int)pNative->m_pChanges->size();
     args.GetReturnValue().Set(v8::Integer::New(v8::Isolate::GetCurrent(), nCount));
 }
 void _GetChangesFile(const v8::FunctionCallbackInfo<v8::Value>& args)

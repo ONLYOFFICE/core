@@ -131,7 +131,7 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
         int nCount = (int)strFonts.size();
         for (int i = 0; i < nCount; ++i)
         {
-            if (strFonts[i] != NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(strFontsW_Cur[i].c_str(), strFontsW_Cur[i].length()))
+            if (strFonts[i] != NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(strFontsW_Cur[i].c_str(), (LONG)strFontsW_Cur[i].length()))
             {
                 bIsEqual = false;
                 break;

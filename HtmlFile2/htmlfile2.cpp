@@ -633,7 +633,11 @@ private:
         else if(sName == L"br")
         {
             wrP(oXml, sSelectors, oTS, bWasP);
-            oXml->WriteString(L"<w:r><w:tab/><w:br/></w:r>");
+            oXml->WriteString(L"<w:r>");
+            NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
+            if(oStyle.GetTextAlign() == L"justify")
+                oXml->WriteString(L"<w:tab/>");
+            oXml->WriteString(L"<w:br/></w:r>");
         }
         else if(sName == L"center")
         {

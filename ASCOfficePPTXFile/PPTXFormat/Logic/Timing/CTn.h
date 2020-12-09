@@ -38,6 +38,7 @@
 #include "Cond.h"
 #include "TnLst.h"
 #include "Iterate.h"
+#include "ChildTnLst.h"
 #include "./../../Limit/TLRestart.h"
 #include "./../../Limit/TLNodeType.h"
 #include "./../../Limit/TLNodeFillType.h"
@@ -81,12 +82,13 @@ namespace PPTX
                 XmlMacroReadAttributeBase(node, L"syncBehavior", syncBehavior);
                 XmlMacroReadAttributeBase(node, L"tmFilter", tmFilter);
 
-				stCondLst	= node.ReadNode(_T("p:stCondLst"));
-				endCondLst	= node.ReadNode(_T("p:endCondLst"));
-				endSync		= node.ReadNode(_T("p:endSync"));
-				iterate		= node.ReadNode(_T("p:iterate"));
-				childTnLst	= node.ReadNode(_T("p:childTnLst"));
-				subTnLst	= node.ReadNode(_T("p:subTnLst"));
+                                stCondLst	= node.ReadNode(_T("p:stCondLst"));
+                                childTnLst	= node.ReadNode(_T("p:childTnLst"));
+                                endCondLst	= node.ReadNode(_T("p:endCondLst"));
+                                endSync		= node.ReadNode(_T("p:endSync"));
+                                iterate		= node.ReadNode(_T("p:iterate"));
+
+                                subTnLst	= node.ReadNode(_T("p:subTnLst"));
 
 				Normalize();
 
@@ -123,12 +125,13 @@ namespace PPTX
 
 
 				XmlUtils::CNodeValue oValue;
-				oValue.WriteNullable(stCondLst);
-				oValue.WriteNullable(endCondLst);
-				oValue.WriteNullable(endSync);
-				oValue.WriteNullable(iterate);
-				oValue.WriteNullable(childTnLst);
-				oValue.WriteNullable(subTnLst);
+
+                                oValue.WriteNullable(stCondLst);
+                                oValue.WriteNullable(childTnLst);
+                                oValue.WriteNullable(endCondLst);
+                                oValue.WriteNullable(endSync);
+                                oValue.WriteNullable(iterate);
+                                oValue.WriteNullable(subTnLst);
 
 				return XmlUtils::CreateNode(_T("p:cTn"), oAttr, oValue);
 			}
@@ -139,7 +142,7 @@ namespace PPTX
 			nullable<CondLst>			endCondLst;
 			nullable<Cond>				endSync;
 			nullable<Iterate>			iterate;
-			nullable<TnLst>				childTnLst;
+            nullable<ChildTnLst>        childTnLst;
 			nullable<TnLst>				subTnLst;
 
 
@@ -177,9 +180,9 @@ namespace PPTX
 				if(endSync.IsInit())
 					endSync->SetParentPointer(this);
 				if(iterate.IsInit())
-					iterate->SetParentPointer(this);
-				if(childTnLst.IsInit())
-					childTnLst->SetParentPointer(this);
+                    iterate->SetParentPointer(this);
+                if(childTnLst.IsInit())
+                    childTnLst->SetParentPointer(this);
 				if(subTnLst.IsInit())
 					subTnLst->SetParentPointer(this);
 			}

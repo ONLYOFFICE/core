@@ -39,6 +39,10 @@
 #include <sstream>
 #include <stdio.h>
 
+#ifdef _MSC_VER
+   #pragma warning (disable: 4100 4189)
+#endif
+
 #ifndef _USE_NULLABLE_PROPERTY_
 using namespace NSCommon;
 #endif

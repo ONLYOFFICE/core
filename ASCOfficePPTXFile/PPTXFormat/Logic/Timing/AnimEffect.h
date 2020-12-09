@@ -49,10 +49,11 @@ namespace PPTX
 
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
+            {
+                XmlMacroReadAttributeBase(node, L"transition", transition);
                 XmlMacroReadAttributeBase(node, L"filter", filter);
                 XmlMacroReadAttributeBase(node, L"prLst", prLst);
-                XmlMacroReadAttributeBase(node, L"transition", transition);
+
 
 				cBhvr		= node.ReadNode(_T("p:cBhvr"));
 				progress	= node.ReadNodeNoNS(_T("progress"));
@@ -63,9 +64,10 @@ namespace PPTX
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
+                oAttr.WriteLimitNullable(_T("transition"), transition);
 				oAttr.Write(_T("filter"), filter);
 				oAttr.Write(_T("prLst"), prLst);
-				oAttr.WriteLimitNullable(_T("transition"), transition);
+
 
 				XmlUtils::CNodeValue oValue;
 				oValue.Write(cBhvr);
@@ -78,9 +80,10 @@ namespace PPTX
 			CBhvr cBhvr;
 			
 			nullable<AnimVariant>				progress;
+            nullable_limit<Limit::TLTransition> transition;
 			nullable_string						filter;
 			nullable_string						prLst;
-			nullable_limit<Limit::TLTransition> transition;
+
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

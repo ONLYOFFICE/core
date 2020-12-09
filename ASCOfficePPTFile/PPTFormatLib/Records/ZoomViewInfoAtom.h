@@ -31,15 +31,20 @@
  */
 #pragma once
 #include "../Reader/Records.h"
+#include "../Structures/PointStruct.h"
+#include "../Structures/ScalingStruct.h"
 
+
+namespace PPT_FORMAT
+{
 class CRecordZoomViewInfoAtom : public CUnknownRecord
 {
 public:
-	SScalingAtom m_oCurScale;
-	SPointAtom m_nOrigin;
+    ScalingStruct   m_oCurScale;
+    PointStruct     m_oOrigin;
 
-	BOOL1 m_bUseVarScale;
-	BOOL1 m_bDraftMode;
+    BOOL1 m_fUseVarScale;
+    BOOL1 m_fDraftMode;
 	
 	CRecordZoomViewInfoAtom()
 	{
@@ -51,6 +56,18 @@ public:
 
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
 	{
-		return CUnknownRecord::ReadFromStream(oHeader, pStream);
+        m_oHeader = oHeader;
+
+        m_oCurScale.ReadFromStream(pStream);
+
+        StreamUtils::StreamSkip(24, pStream);
+
+        m_oOrigin.ReadFromStream(pStream);
+
+        m_fUseVarScale  = StreamUtils::ReadBYTE(pStream);
+        m_fDraftMode    = StreamUtils::ReadBYTE(pStream);
+
+        StreamUtils::StreamSkip(2, pStream);
 	}
 };
+}

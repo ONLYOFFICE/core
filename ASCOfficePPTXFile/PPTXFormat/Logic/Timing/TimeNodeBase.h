@@ -60,7 +60,8 @@ namespace PPTX
 			template<class T> AVSINLINE const T&	as() const 	{ return m_node.as<T>(); }
 
 			virtual std::wstring toXML() const;
-		private:
+                public:
+//		private:
 			smart_ptr<WrapperWritingElement> m_node;
 		protected:
 			virtual void FillParentPointersForChilds(){};

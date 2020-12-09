@@ -31,22 +31,22 @@
  */
 #pragma once
 #include "../Reader/Records.h"
-#include "../Records/Animations/AnimationTypes.h"
+#include "../Records/Slide/SlideProgTagsContainer.h"
 
 #include "../Records/SSSlideInfoAtom.h"
 
 class CRecordSlide : public CRecordsContainer
 {
 public:
-	SSlidePersist			m_oPersist;
-	SlideProgTagsContainer*	m_pSlideProgTagsContainer;
+    SSlidePersist       			m_oPersist;
+    CRecordSlideProgTagsContainer*	m_pSlideProgTagsContainer;
 
-	bool					m_bExistsTransition;
+    bool                			m_bExistsTransition;
 	
-	CSlideShowSlideInfoAtom	m_oSlideShowSlideInfoAtom;
+    CSlideShowSlideInfoAtom     	m_oSlideShowSlideInfoAtom;
 
-	int						m_Index;
-	int						m_IndexUser;
+    int                             m_Index;
+    int                             m_IndexUser;
 	
 private:
 	_UINT32 m_lCountReferences;
@@ -91,7 +91,7 @@ public:
 				break;
 			}
 
-			if ( 0x03F9 == oRec.RecType )
+            if ( RT_SlideShowSlideInfoAtom == oRec.RecType )
 			{
 				m_bExistsTransition	=	true;
 				m_oSlideShowSlideInfoAtom.ReadFromStream ( oRec, pStream );
@@ -104,18 +104,24 @@ public:
 				continue;
 			}
 
-			IRecord* pRecord	=	CreateByType ( oRec );
+            if ( RT_ProgTags == oRec.RecType )
+            {
+                m_pSlideProgTagsContainer =
+                        new CRecordSlideProgTagsContainer();
+                m_pSlideProgTagsContainer->ReadFromStream(oRec, pStream);
 
-			if ( RECORD_PROG_TAGS == oRec.RecType )
-			{
-				m_pSlideProgTagsContainer	=	new	SlideProgTagsContainer ();
-				m_pSlideProgTagsContainer->ReadFromStream(oRec, pStream);
-			}
-			else
-			{
-				pRecord->ReadFromStream(oRec, pStream);
-				m_arRecords.push_back(pRecord);
-			}
+                lCurLen += (8 + oRec.RecLen);
+                continue;
+            }
+
+
+            IRecord* pRecord	=	CreateByType ( oRec );
+
+
+
+            pRecord->ReadFromStream(oRec, pStream);
+            m_arRecords.push_back(pRecord);
+
 		
 			lCurLen += (8 + oRec.RecLen);
 		}
@@ -131,9 +137,9 @@ public:
 	{
 		for (size_t nIndex = 0; nIndex < m_arRecords.size(); ++nIndex)
 		{
-			if ((RECORD_TYPE_SLIDE			== m_arRecords[nIndex]->m_oHeader.RecType) ||
-				(RECORD_TYPE_MAINMASTER		== m_arRecords[nIndex]->m_oHeader.RecType) ||
-				(RECORD_TYPE_NOTES			== m_arRecords[nIndex]->m_oHeader.RecType))
+            if ((RT_Slide			== m_arRecords[nIndex]->m_oHeader.RecType) ||
+                (RT_MainMaster		== m_arRecords[nIndex]->m_oHeader.RecType) ||
+                (RT_Notes			== m_arRecords[nIndex]->m_oHeader.RecType))
 			{
 				return true;
 			}

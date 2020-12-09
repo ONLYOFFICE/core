@@ -48,6 +48,15 @@ namespace PPTX
 				m_strValue = _T("hold");
 			}
 
+                        TLNodeFillType(UINT fill)
+                        {
+                            if (    fill == 0       ||
+                                    fill == 3) m_strValue = L"hold";
+                            else if(fill == 1       ||
+                                    fill == 4) m_strValue = L"transition";
+                            else m_strValue = L"freeze";
+                        }
+
 			_USE_STRING_OPERATOR
 				
 			virtual void set(const std::wstring& strValue)

@@ -37,6 +37,10 @@
 #include <map>
 #include <string>
 
+#ifdef _MSC_VER
+   #pragma warning (disable: 4100 4189)
+#endif
+
 #include "../../common/StringBuilder.h"
 
 #ifndef XML_UNUSED

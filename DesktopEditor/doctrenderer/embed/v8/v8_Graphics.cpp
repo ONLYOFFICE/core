@@ -111,6 +111,7 @@ namespace NSGraphics
     FUNCTION_WRAPPER_V8  (_GetPenColor,           GetPenColor)
     FUNCTION_WRAPPER_V8  (_GetBrushColor,         GetBrushColor)
     FUNCTION_WRAPPER_V8_1(_put_brushTexture,      put_brushTexture)
+    FUNCTION_WRAPPER_V8_1(_put_brushTextureMode,  put_brushTextureMode)
     FUNCTION_WRAPPER_V8_1(_put_BrushTextureAlpha, put_BrushTextureAlpha)
     FUNCTION_WRAPPER_V8_3(_put_BrushGradient,     put_BrushGradient)
     FUNCTION_WRAPPER_V8_2(_TransformPointX,       TransformPointX)
@@ -225,6 +226,7 @@ namespace NSGraphics
         NSV8Objects::Template_Set(result, "GetPenColor",              _GetPenColor);
         NSV8Objects::Template_Set(result, "GetBrushColor",            _GetBrushColor);
         NSV8Objects::Template_Set(result, "put_brushTexture",         _put_brushTexture);
+        NSV8Objects::Template_Set(result, "put_brushTextureMode",     _put_brushTextureMode);
         NSV8Objects::Template_Set(result, "put_BrushTextureAlpha",    _put_BrushTextureAlpha);
         NSV8Objects::Template_Set(result, "put_BrushGradient",        _put_BrushGradient);
         NSV8Objects::Template_Set(result, "TransformPointX",          _TransformPointX);

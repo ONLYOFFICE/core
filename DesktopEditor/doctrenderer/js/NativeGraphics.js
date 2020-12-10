@@ -556,6 +556,10 @@ CNativeGraphics.prototype =
 	{
 		this.Native["put_brushTexture"](src);
 	},
+	put_brushTextureMode : function(mode)
+	{
+		this.Native["put_brushTextureMode"](mode);
+	},
     put_BrushTextureAlpha : function(a)
 	{
 		this.Native["put_BrushTextureAlpha"](a);
@@ -579,6 +583,9 @@ CNativeGraphics.prototype =
     get_LineJoin : function()
 	{
 		return this.Native["get_LineJoin"]();
+	},
+	put_TextureBoundsEnabled : function(enabled)
+	{
 	},
 	put_TextureBounds : function(x, y, w, h)
 	{

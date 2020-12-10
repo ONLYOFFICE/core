@@ -122,6 +122,7 @@ public:
     JSSmart<CJSValue> GetPenColor();
     JSSmart<CJSValue> GetBrushColor();
     JSSmart<CJSValue> put_brushTexture(JSSmart<CJSValue> src);
+    JSSmart<CJSValue> put_brushTextureMode(JSSmart<CJSValue> mode);
     JSSmart<CJSValue> put_BrushTextureAlpha(JSSmart<CJSValue> a);
     JSSmart<CJSValue> put_BrushGradient(JSSmart<CJSValue> colors, JSSmart<CJSValue> pos, JSSmart<CJSValue> n);
     JSSmart<CJSValue> TransformPointX(JSSmart<CJSValue> x, JSSmart<CJSValue> y);

@@ -215,6 +215,7 @@ namespace NSGraphics
         CColor GetPenColor();
         CColor GetBrushColor();
         void put_brushTexture(std::wstring src);
+        void put_brushTextureMode(int mode);
         void put_BrushTextureAlpha(int a);
         void put_BrushGradient(int* pColors, double* pPositions, size_t nCount);
         double TransformPointX(double x, double y);

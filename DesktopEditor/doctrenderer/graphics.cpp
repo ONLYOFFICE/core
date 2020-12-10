@@ -235,7 +235,7 @@ bool CGraphics::GetIntegerGrid()
 {
     return m_pRenderer->get_IntegerGrid();
 }
-void CGraphics::DrawStringASCII(const std::wstring& text, double x, double y)
+void CGraphics::DrawStringASCII (const std::wstring& text, double x, double y)
 {
     double DpiY;
     m_pRenderer->get_DpiY(&DpiY);
@@ -353,7 +353,7 @@ void CGraphics::DrawFooterEdit(double yPos)
     m_pRenderer->put_PenSize(dPenSize);
     m_pRenderer->put_PenDashStyle(nPenDashStyle);
 }
-void CGraphics::DrawLockParagraph (double x, double y1, double y2)
+void CGraphics::DrawLockParagraph (double x,  double y1, double y2)
 {
     m_pRenderer->PathCommandEnd();
 
@@ -815,7 +815,7 @@ void CGraphics::drawMailMergeField(double x, double y, double w, double h)
     df();
     m_pRenderer->PathCommandEnd();
 }
-void CGraphics::drawSearchResult(double x, double y, double w, double h)
+void CGraphics::drawSearchResult  (double x, double y, double w, double h)
 {
     b_color1(255, 238, 128, 255);
     rect(x, y, w, h);
@@ -985,7 +985,7 @@ void CGraphics::AddSmartRect(double x, double y, double w, double h, double pen_
 {
     m_pRenderer->AddRect(x, y, w, h);
 }
-void CGraphics::DrawFootnoteRect(double x,  double y,  double w,  double h)
+void CGraphics::DrawFootnoteRect(double x, double y, double w, double h)
 {
     BYTE nPenDashStyle = 0;
     m_pRenderer->get_PenDashStyle(&nPenDashStyle);
@@ -1061,6 +1061,10 @@ CColor CGraphics::GetBrushColor()
 void CGraphics::put_brushTexture(std::wstring src)
 {
     m_pRenderer->put_BrushTexturePath(src);
+}
+void CGraphics::put_brushTextureMode(int mode)
+{
+    m_pRenderer->put_BrushTextureMode(mode);
 }
 void CGraphics::put_BrushTextureAlpha(int a)
 {

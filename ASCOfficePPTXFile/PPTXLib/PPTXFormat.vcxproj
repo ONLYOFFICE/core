@@ -167,7 +167,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\DesktopEditor\raster\exif.cpp" />
     <ClCompile Include="..\..\HtmlRenderer\src\ASCSVGWriter.cpp" />
     <ClCompile Include="..\ASCOfficeDrawingConverter.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>

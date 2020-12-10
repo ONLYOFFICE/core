@@ -39,7 +39,7 @@
 #include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 #include "../../../../OfficeUtils/src/OfficeUtils.h"
-#include "../Enums/_includer.h"
+#include "../../Enums/_includer.h"
 
 
 #define FIXED_POINT_unsigned(val) (double)((WORD)(val >> 16) + ((WORD)(val) / 65536.0))

@@ -4342,6 +4342,8 @@ namespace NExtractTools
 			return AVS_FILEUTILS_ERROR_CONVERT_LIMITS;
 		}
 
+        NSDoctRenderer::CDocBuilder::Initialize();
+
 		_UINT32 result = 0;
 		switch(conversion)
 		{

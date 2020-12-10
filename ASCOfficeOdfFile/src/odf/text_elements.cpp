@@ -500,7 +500,27 @@ void h::afterReadContent()
 
 void h::docx_convert(oox::docx_conversion_context & Context) 
 {
+	std::wstring bookmark;
+	if (false == Context.get_table_content_context().mapReferences.empty())
+	{//когда заголовки находятся выше таблицы контента - херово
+		std::wstringstream strm;
+		text_to_stream(strm, false);
+		std::wstring outline = strm.str();
+		
+		std::map<std::wstring, std::wstring>::iterator pFind = Context.get_table_content_context().mapReferences.find(outline);
+
+		if (pFind != Context.get_table_content_context().mapReferences.end())
+		{
+			bookmark = pFind->second;
+			Context.start_bookmark(bookmark);
+		}
+	}
     paragraph_.docx_convert(Context);
+
+	if (false == bookmark.empty())
+	{
+		Context.end_bookmark(bookmark);
+	}
 }
 
 void h::xlsx_convert(oox::xlsx_conversion_context & Context) 

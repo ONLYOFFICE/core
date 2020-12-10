@@ -751,11 +751,12 @@ bool COfficeFileFormatChecker::isOpenOfficeFlatFormatFile(unsigned char* pBuffer
 {
 	if (dwBytes < 78) return false;
 
-	const char *odfFormatLine = "office:document xmlns:office=\"urn:oasis:names:tc:opendocument:xmlns:office:1.0\"";
-	
+	const char *odfFormatLine1 = "office:document";
+	const char *odfFormatLine2 = "xmlns:office=\"urn:oasis:names:tc:opendocument:xmlns:office:1.0\"";
+
 	std::string xml_string((char*)pBuffer, dwBytes);
 
-	if (std::string::npos == xml_string.find(odfFormatLine))
+	if ((std::string::npos == xml_string.find(odfFormatLine1)) || (std::string::npos == xml_string.find(odfFormatLine2)))
 	{
 		return false;
 	}

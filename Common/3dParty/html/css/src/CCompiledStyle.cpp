@@ -75,6 +75,11 @@ namespace NSCSS
         m_nDpi = uiDpi;
     }
 
+    void CCompiledStyle::SetUnitMeasure(const UnitMeasure &enUnitMeasure)
+    {
+        m_UnitMeasure = enUnitMeasure;
+    }
+
     bool CCompiledStyle::Empty() const
     {
         return m_pBackground.Empty() && m_pBorder.Empty() &&
@@ -89,6 +94,7 @@ namespace NSCSS
     void CCompiledStyle::AddStyle(const std::map<std::wstring, std::wstring>& mStyle, const bool& bHardMode)
     {
         const bool bIsThereBorder = (m_pBorder.Empty()) ? false : true;
+        const float fSize = m_pFont.GetSize();
 
         for (std::pair<std::wstring, std::wstring> pPropertie : mStyle)
         {
@@ -97,13 +103,13 @@ namespace NSCSS
                 //FONT
                 CASE(L"font"):
                 {
-                    m_pFont.SetFont(ConvertUnitMeasure(pPropertie.second.c_str(), m_pFont.GetSize()));
+                    m_pFont.SetFont(ConvertUnitMeasure(pPropertie.second.c_str(), fSize));
                     break;
                 }
                 CASE(L"font-size"):
                 CASE(L"font-size-adjust"):
                 {
-                    m_pFont.SetSize(ConvertUnitMeasure(pPropertie.second, m_pFont.GetSize()));
+                    m_pFont.SetSize(ConvertUnitMeasure(pPropertie.second, fSize));
                     break;
                 }
 
@@ -135,38 +141,104 @@ namespace NSCSS
                 //MARGIN
                 CASE(L"margin"):
                 {
+                    if (bIsThereBorder)
+                        break;
+
                     const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
-                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos && m_pBorder.Empty())
+                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
                         m_pMargin.AddMargin(sValue);
                     break;
                 }
                 CASE(L"margin-top"):
                 {
+                    if (bIsThereBorder)
+                        break;
+
                     const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
-                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos && m_pBorder.Empty())
+                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
                         m_pMargin.AddTopMargin(sValue);
                     break;
                 }
                 CASE(L"margin-right"):
                 CASE(L"margin-block-end"):
                 {
+                    if (bIsThereBorder)
+                        break;
+
                     const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
-                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos && m_pBorder.Empty())
+                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
                         m_pMargin.AddRightMargin(sValue);
                     break;
                 }
                 CASE(L"margin-bottom"):
                 {
+                    if (bIsThereBorder)
+                        break;
+
                     const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
-                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos && m_pBorder.Empty())
+                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
                         m_pMargin.AddBottomMargin(sValue);
                     break;
                 }
                 CASE(L"margin-left"):
                 CASE(L"margin-block-start"):
                 {
+                    if (bIsThereBorder)
+                        break;
+
                     const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
-                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos && m_pBorder.Empty())
+                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                        m_pMargin.AddLeftMargin(sValue);
+                    break;
+                }
+                //PADDING
+                CASE(L"padding"):
+                {
+                    if (bIsThereBorder)
+                        break;
+
+                    const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos && sValue[0] != L'-')
+                        m_pMargin.AddMargin(sValue);
+                    break;
+                }
+                CASE(L"padding-top"):
+                {
+                    if (bIsThereBorder)
+                        break;
+
+                    const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos && sValue[0] != L'-')
+                        m_pMargin.AddTopMargin(sValue);
+                    break;
+                }
+                CASE(L"padding-right"):
+                {
+                    if (bIsThereBorder)
+                        break;
+
+                    const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos && sValue[0] != L'-')
+                        m_pMargin.AddRightMargin(sValue);
+                    break;
+                }
+                CASE(L"padding-bottom"):
+                {
+                    if (bIsThereBorder)
+                        break;
+
+                    const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos && sValue[0] != L'-')
+                        m_pMargin.AddBottomMargin(sValue);
+                    break;
+                }
+                CASE(L"padding-left"):
+                {
+                    if (bIsThereBorder)
+                        break;
+
+                    const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos && sValue[0] != L'-')
                         m_pMargin.AddLeftMargin(sValue);
                     break;
                 }
@@ -190,6 +262,7 @@ namespace NSCSS
                 CASE(L"color"):
                 {
                     m_pText.SetColor(pPropertie.second);
+                    std::wcout << pPropertie.second << L" -> " << m_pText.GetColor() << std::endl;
                     break;
                 }
                 //BORDER

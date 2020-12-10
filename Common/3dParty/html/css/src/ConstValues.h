@@ -519,7 +519,7 @@ namespace NSCSS
                         return;
 
                     const float fValue = wcstof(sLineHeight.c_str(), NULL);
-                    if (fValue > 0.0f && fValue >= fSize)
+                    if (fValue > 0.0f)
                         fLineHeight = fValue;
                 }
 
@@ -530,14 +530,10 @@ namespace NSCSS
 
                 std::wstring GetSizeW() const
                 {
-                    if (fSize <= 0.0f)
+                    if (fSize == fNoneValue)
                         return std::wstring();
 
-                    const int nValue = static_cast<int>(fSize);
-                    const bool bLowerLimit = (0.75 <= nValue - fSize);
-                    const bool bUpperLimit = (nValue - fSize < 0.25);
-
-                    return std::to_wstring(bUpperLimit ? nValue : bLowerLimit ? nValue - 1 : nValue - 0.5);
+                    return std::to_wstring(static_cast<unsigned short>(fSize + 0.5f));
                 }
 
                 std::wstring GetFamily() const
@@ -855,7 +851,7 @@ namespace NSCSS
                         return;
 
                     if (sIndent.find_first_not_of(L" 0") != std::wstring::npos)
-                        fIndent = wcstof(sIndent.c_str(), NULL);
+                        fIndent = wcstof(sIndent.c_str(), NULL) * 10.0f;
                 }
 
                 void SetColor(const std::wstring& sValue)
@@ -879,7 +875,9 @@ namespace NSCSS
                     }
                     else if (sValue.substr(0, 3) == L"rgb")
                     {
-                        sColor = NSCSS::NS_STATIC_FUNCTIONS::ConvertRgbToHex(sValue);
+                        const std::wstring sNewColor = NSCSS::NS_STATIC_FUNCTIONS::ConvertRgbToHex(sValue);
+                        if (!sNewColor.empty())
+                            sColor = sNewColor;
                     }
                     else
                     {

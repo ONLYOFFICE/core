@@ -76,7 +76,8 @@ namespace NSCSS
 
         ~CCompiledStyle();
 
-         void SetDpi(const unsigned short& uiDpi);
+        void SetDpi(const unsigned short& uiDpi);
+        void SetUnitMeasure(const UnitMeasure& enUnitMeasure);
 
         // size_t GetSize() const;
         bool Empty() const;

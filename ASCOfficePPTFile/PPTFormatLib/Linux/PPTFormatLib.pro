@@ -461,7 +461,7 @@ HEADERS += \
     ../Records/DocInfoListContainer.h \
     ../Records/DocProgTagsContainer.h \
     ../Records/OfficeArtClientData.h \
-    ../Records/PlaceholderAtom.h \
+    ../Records/PlaceHolderAtom.h \
     ../Records/ShapeProgBinaryTagSubContainerOrAtom.h \
     ../Records/Text/CFMasks.h \
     ../Records/ColorSchemeAtom.h \

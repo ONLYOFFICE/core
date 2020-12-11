@@ -568,11 +568,7 @@ namespace NSCSS
                     if (fLineHeight < 0.0f || fLineHeight < fSize)
                         return std::wstring();
 
-                    const int nValue = static_cast<int>(fLineHeight);
-                    const bool bLowerLimit = (0.75 <= nValue - fLineHeight);
-                    const bool bUpperLimit = (nValue - fLineHeight < 0.25);
-
-                    return std::to_wstring(bUpperLimit ? nValue : bLowerLimit ? nValue - 1 : nValue - 0.5);
+                    return std::to_wstring(static_cast<unsigned short>(fLineHeight * 10.0f + 0.5f));
                 }
 
                 std::wstring GetVariant() const
@@ -743,7 +739,7 @@ namespace NSCSS
                     if (fTopSide == fNoneValue)
                         return std::wstring();
 
-                    return std::to_wstring(static_cast<short int>(fRightSide  * 10.0f + 0.5f));
+                    return (fRightSide >= -128.0f) ? std::to_wstring(static_cast<short int>(fRightSide  * 10.0f + ((fLeftSide > 0) ? 0.5f : -0.5f))) : L"-1280";
                 }
 
                 std::wstring GetBottomSide() const
@@ -759,7 +755,7 @@ namespace NSCSS
                     if (fLeftSide == fNoneValue)
                         return std::wstring();
 
-                    return std::to_wstring(static_cast<short int>(fLeftSide  * 10.0f + 0.5f));
+                    return (fLeftSide >= -128.0f) ? std::to_wstring(static_cast<short int>(fLeftSide  * 10.0f + ((fLeftSide > 0) ? 0.5f : -0.5f))) : L"-1280";
                 }
             };
 
@@ -973,8 +969,8 @@ namespace NSCSS
 
                 bool Empty() const
                 {
-                    return fWidth  == fNoneValue &&
-                           sStyle  == L"single"  &&
+                    return fWidth  <= 0         &&
+                           sStyle  == L"single" &&
                            sColor  == L"auto";
                 }
 
@@ -1097,6 +1093,8 @@ namespace NSCSS
                                 oBorderSide.sStyle = L"thinThickMediumGap";
                             else if (sValue == L"outset")
                                 oBorderSide.sStyle = L"thickThinMediumGap";
+                            else if (sValue == L"none")
+                                oBorderSide.sStyle = L"none";
                             else
                             {
                                 const std::map<std::wstring, std::wstring>::const_iterator oHEX = NSMaps::mColors.find(sValue);

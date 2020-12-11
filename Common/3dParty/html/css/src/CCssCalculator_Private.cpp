@@ -346,10 +346,11 @@ namespace NSCSS
         std::vector<std::wstring> arWords;
         arWords.reserve(arSelectors.size() * 2);
 
+        std::vector<std::wstring> arNextNodes;
+        arNextNodes.reserve(arSelectors.size() * 2);
+
         for (std::vector<CNode>::const_reverse_iterator oNode = arSelectors.rbegin(); oNode != arSelectors.rend(); ++oNode)
         {
-            oStyle->AddStyle(oNode->m_sStyle, true);
-
             arWords.push_back(oNode->m_sName);
 
             if (!oNode->m_sClass.empty())
@@ -404,15 +405,18 @@ namespace NSCSS
             {
                 sId = arWords.back();
                 arWords.pop_back();
+                arNextNodes.push_back(sId);
             }
 
             if (arWords.back()[0] == L'.')
             {
                 arClasses = NS_STATIC_FUNCTIONS::GetWordsW(arWords.back(), L" ");
+                arNextNodes.push_back(arWords.back());
                 arWords.pop_back();
             }
 
             sName = arWords.back();
+            arNextNodes.push_back(sName);
             oStyle->AddParent(sName);
 
             const std::map<std::wstring, CElement*>::const_iterator oFindName = m_mData.find(sName);
@@ -426,7 +430,7 @@ namespace NSCSS
                 if (oFindId != m_mData.end())
                 {
                     const std::vector<CElement*> arTemp1 = oFindId->second->GetNextOfKin(sName, arClasses);
-                    const std::vector<CElement*> arTemp2 = oFindId->second->GetAllElements(arWords);
+                    const std::vector<CElement*> arTemp2 = oFindId->second->GetAllElements(arNextNodes);
 
                     if (!arTemp1.empty())
                         arFindElements.insert(arFindElements.end(), arTemp1.begin(), arTemp1.end());
@@ -442,14 +446,8 @@ namespace NSCSS
                     const std::map<std::wstring, CElement*>::const_iterator oFindClass = m_mData.find(*iClass);
                     if (oFindClass != m_mData.end())
                     {
-//                        const std::vector<CElement*> arTemp1 = oFindClass->second->GetNextOfKin(sName);
-                        std::vector<CElement*> arTemp1;
-                        if (sId.empty())
-                            arTemp1 = oFindClass->second->GetNextOfKin(sName);
-                        else
-                            arTemp1 = oFindClass->second->GetNextOfKin(sName, {sId});
-
-                        const std::vector<CElement*> arTemp2 = oFindClass->second->GetAllElements(arWords);
+                        const std::vector<CElement*> arTemp1 = oFindClass->second->GetNextOfKin(sName);
+                        const std::vector<CElement*> arTemp2 = oFindClass->second->GetAllElements(arNextNodes);
 
                         if (!arTemp1.empty())
                             arFindElements.insert(arFindElements.end(), arTemp1.begin(), arTemp1.end());
@@ -461,7 +459,7 @@ namespace NSCSS
 
             if (oFindName != m_mData.end())
             {
-                const std::vector<CElement*> arTemp = oFindName->second->GetAllElements(arWords);
+                const std::vector<CElement*> arTemp = oFindName->second->GetAllElements(arNextNodes);
                 if (!arTemp.empty())
                     arFindElements.insert(arFindElements.end(), arTemp.begin(), arTemp.end());
             }
@@ -476,6 +474,8 @@ namespace NSCSS
 
             for (const CElement* oElement : arFindElements)
                 oStyle->AddStyle(oElement->GetStyle());
+
+            oStyle->AddStyle(oElement.m_sStyle);
 
             arWords.pop_back();
         }

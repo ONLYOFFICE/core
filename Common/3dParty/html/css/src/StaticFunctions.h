@@ -147,17 +147,24 @@ namespace NSCSS
             return arWords;
         }
 
-        inline bool ConvertAbsoluteValue(std::wstring& sAbsoluteValue)
+        inline bool ConvertAbsoluteValue(std::wstring& sAbsoluteValue, const float &unId)
         {
             if (sAbsoluteValue.empty())
                 return false;
 
             bool bIsConvert = false;
 
-            std::map<std::wstring, std::wstring> arAbsoluteValues = {{L"xx-small", L"9px"},  {L"x-small", L"10px"},
-                                                                     {L"small",    L"13px"}, {L"medium",  L"16px"},
-                                                                     {L"large",    L"18px"}, {L"x-large", L"24px"},
-                                                                     {L"xx-large", L"32px"}};
+            std::map<std::wstring, std::wstring> arAbsoluteFontValues = {{L"xx-small", L"9px"},  {L"x-small", L"10px"},
+                                                                         {L"small",    L"13px"}, {L"medium",  L"16px"},
+                                                                         {L"large",    L"18px"}, {L"x-large", L"24px"},
+                                                                         {L"xx-large", L"32px"}};
+
+            std::map<std::wstring, std::wstring> arAbsoluteBorderValues = {{L"thin",    L"2px"},
+                                                                           {L"medium",  L"4px"},
+                                                                           {L"thick",   L"6px"}};
+
+            std::map<std::wstring, std::wstring> arAbsoluteValues = ((unId == 0.0f) ? arAbsoluteBorderValues : arAbsoluteFontValues);
+
 
             if (sAbsoluteValue.find(L' ') == std::wstring::npos && arAbsoluteValues.find(sAbsoluteValue) != arAbsoluteValues.end())
             {

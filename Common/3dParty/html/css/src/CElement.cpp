@@ -170,7 +170,6 @@ namespace NSCSS
         if (!m_mStyle.empty())
             arElements.push_back(const_cast<CElement*>(this));
 
-
         std::vector<std::wstring> arKins;
         for (std::vector<std::wstring>::const_reverse_iterator sNode = arNodes.rbegin(); sNode != arNodes.rend(); ++sNode)
         {
@@ -211,7 +210,7 @@ namespace NSCSS
         return arElements;
     }
 
-    std::vector<CElement *> CElement::GetNextOfKin(const std::wstring &sName, const std::vector<std::wstring>& arClasses)
+    std::vector<CElement *> CElement::GetNextOfKin(const std::wstring &sName, const std::vector<std::wstring>& arClasses) const
     {
         if (m_arKinElements.empty())
             return std::vector<CElement*>();

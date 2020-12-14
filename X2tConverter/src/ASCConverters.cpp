@@ -1500,6 +1500,28 @@ namespace NExtractTools
 
 		return nRes;
 	}
+    //doct_bin -> html
+    _UINT32 doct_bin2html(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
+    {
+        _UINT32 nRes = 0;
+        NSDoctRenderer::DoctRendererFormat::FormatFile eToType = NSDoctRenderer::DoctRendererFormat::FormatFile::HTML;
+        std::wstring sFileFromDir = NSDirectory::GetFolderPath(sFrom);
+        std::wstring sFileToDir  = NSSystemPath::GetDirectoryName(sTo);
+        std::wstring sImagesDirectory = sFileFromDir + FILE_SEPARATOR_STR + _T("media");
+        std::wstring sHtmlFile = sFileFromDir + FILE_SEPARATOR_STR + _T("res.html");
+        NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : _T(""));
+        std::wstring sXml = getDoctXml(eFromType, eToType, sFileFromDir, sHtmlFile, sImagesDirectory, sThemeDir, -1, _T(""), params);
+        std::wstring sResult;
+        oDoctRenderer.Execute(sXml, sResult);
+        if (-1 != sResult.find(_T("error")))
+        {
+            std::wcerr << _T("DoctRenderer:") << sResult << std::endl;
+            nRes = AVS_FILEUTILS_ERROR_CONVERT;
+        }
+        else
+            NSFile::CFileBinary::Copy(sHtmlFile, sTo);
+        return nRes;
+    }
    //doct_bin -> pdf
 	_UINT32 doct_bin2pdf(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
    {
@@ -1521,7 +1543,7 @@ namespace NExtractTools
        {
            NSFonts::IApplicationFonts* pApplicationFonts = NSFonts::NSApplication::Create();
            initApplicationFonts(pApplicationFonts, params);
-          
+
 		   CPdfRenderer pdfWriter(pApplicationFonts, params.getIsPDFA());
            
 			pdfWriter.SetTempFolder(sTemp);
@@ -3376,6 +3398,11 @@ namespace NExtractTools
        {
            std::wstring sFromDir = NSDirectory::GetFolderPath(sFrom);
            nRes = dir2zip(sFromDir, sTo);
+       }
+       else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_HTMLR == nFormatTo)
+       {
+           NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT;
+           nRes = doct_bin2html(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
        }
        else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
        {

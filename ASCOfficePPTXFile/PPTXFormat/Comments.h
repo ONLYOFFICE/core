@@ -303,7 +303,7 @@ namespace PPTX
 					{
 					case 0:
 					{
-						LONG _end_rec2 = pReader->GetPos() + pReader->GetLong() + 4;
+						LONG _end_rec2 = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 						pReader->Skip(1); // start attributes
 
@@ -415,7 +415,7 @@ namespace PPTX
 
 		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
-			LONG end = pReader->GetPos() + pReader->GetLong() + 4;
+			LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 			while (pReader->GetPos() < end)
 			{

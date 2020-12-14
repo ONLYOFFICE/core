@@ -30,12 +30,9 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_CHILDTNLST_INCLUDE_H_
-#define PPTX_LOGIC_CHILDTNLST_INCLUDE_H_
 
 #include "./../../WrapperWritingElement.h"
 #include "TnLst.h"
-
 
 namespace PPTX
 {
@@ -46,7 +43,6 @@ namespace PPTX
         public:
             PPTX_LOGIC_BASE(ChildTnLst)
 
-        public:
             virtual void fromXML(XmlUtils::CXmlNode& node)
             {
                 XmlMacroLoadArray(node,_T("*"), list, TimeNodeBase);
@@ -56,19 +52,86 @@ namespace PPTX
 
             virtual std::wstring toXML() const
             {
-                XmlUtils::CAttribute oAttr;
+				if (list.empty()) return L"";
+				
+				XmlUtils::CAttribute oAttr;
                 XmlUtils::CNodeValue oValue;
 
                 oValue.WriteArray(list);
-
-
                 return XmlUtils::CreateNode(_T("p:childTnLst"), oAttr, oValue);
             }
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				if (list.empty()) return;
 
-        public:
-            //Childs
-            std::vector<TimeNodeBase>	list;
+				pWriter->StartNode(L"p:childTnLst");
+				pWriter->EndAttributes();
 
+				for (size_t i = 0; i < list.size(); ++i)
+				{
+					list[i].toXmlWriter(pWriter);
+				}
+
+				pWriter->EndNode(L"p:childTnLst");
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+				if (false == list.empty())
+				{
+					pWriter->StartRecord(0);
+
+					_UINT32 len = (_UINT32)list.size();
+					pWriter->WriteULONG(len);
+
+					for (size_t i = 0; i < list.size(); ++i)
+					{
+						list[i].toPPTY(pWriter);
+					}
+					pWriter->EndRecord();
+				}
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // attribute start
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+				}
+
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+						case 0:
+						{
+							pReader->Skip(4); // len
+							ULONG _c = pReader->GetULong();
+
+							for (ULONG i = 0; i < _c; ++i)
+							{
+								list.push_back(TimeNodeBase());
+								list[i].fromPPTY(pReader);
+							}						
+						}break;
+						default:
+						{
+							pReader->SkipRecord();						
+						}break;
+					}
+				}
+				pReader->Seek(end);
+			}
+
+            std::vector<TimeNodeBase> list;
         protected:
             virtual void FillParentPointersForChilds()
             {
@@ -79,5 +142,3 @@ namespace PPTX
         };
     } // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_CTN_INCLUDE_H

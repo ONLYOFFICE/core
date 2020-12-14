@@ -739,6 +739,9 @@
     <ClInclude Include="..\Structures\WideColorStruct.h">
       <Filter>Structures</Filter>
     </ClInclude>
+    <ClInclude Include="..\PPTXWriter\TimingConverter.h">
+      <Filter>OOXWriter</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Reader\PPTDocumentInfoOneUser.cpp">
@@ -777,6 +780,9 @@
     <ClCompile Include="..\PPTFormatLib.cpp" />
     <ClCompile Include="..\Records\Animations\TimeVariant.cpp">
       <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PPTXWriter\TimingConverter.cpp">
+      <Filter>OOXWriter</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -45,7 +45,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(Audio)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
                 XmlMacroReadAttributeBase(node, L"isNarration", isNarration);
@@ -53,7 +52,6 @@ namespace PPTX
 
 				FillParentPointersForChilds();
 			}
-
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
@@ -61,8 +59,22 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("p:audio"), oAttr, cMediaNode.toXML());
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_p_audio;
+			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->SkipRecord();
+			}
 
-		public:
 			CMediaNode		cMediaNode;
 			nullable_bool	isNarration;
 		protected:

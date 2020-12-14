@@ -46,7 +46,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(BldSub)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				XmlUtils::CXmlNode oNode;
@@ -89,8 +88,18 @@ namespace PPTX
 				}
 				return _T("<p:bldSub/>");
 			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->SkipRecord();
+			}
 
-		public:
 			nullable_bool								chart;
 			//bldChart
 			nullable_bool								animBg;

@@ -268,21 +268,9 @@ namespace PPTX
 				else if (1 == _at)	m_sData		= pReader->GetString2();
 				else if (2 == _at)	m_oDxaOrig	= pReader->GetLong();
 				else if (3 == _at)	m_oDyaOrig	= pReader->GetLong();
-				else if (4 == _at)
-				{
-					m_oDrawAspect = new Limit::OLEDrawAspectType();
-					m_oDrawAspect->SetBYTECode(pReader->GetUChar());
-				}
-				else if (5 == _at)
-				{
-					m_oType = new Limit::OLEType();
-					m_oType->SetBYTECode(pReader->GetUChar());
-				}
-				else if (6 == _at)
-				{
-					m_oUpdateMode = new Limit::OLEUpdateMode();
-					m_oUpdateMode->SetBYTECode(pReader->GetUChar());
-				}
+				else if (4 == _at)	m_oDrawAspect = pReader->GetUChar();
+				else if (5 == _at)	m_oType = pReader->GetUChar();
+				else if (6 == _at)	m_oUpdateMode = pReader->GetUChar();
 				else if (7 == _at)//OleObject Binary FileName (bin, xls, doc, ... other stream file)
 				{
 					m_OleObjectFile = new OOX::OleObject(NULL, false, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
@@ -909,7 +897,7 @@ namespace PPTX
 						bool isExternal = false;
 						std::wstring strMediaFileMask;
 
-						LONG _end_rec1 = pReader->GetPos() + pReader->GetLong() + 4;
+						LONG _end_rec1 = pReader->GetPos() + pReader->GetRecordSize() + 4;
 						pReader->Skip(1); // start attributes
 						while (true)
 						{

@@ -48,7 +48,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(AnimClr)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
                 XmlMacroReadAttributeBase(node, L"clrSpc", clrSpc);
@@ -122,7 +121,22 @@ namespace PPTX
 				return XmlUtils::CreateNode(_T("p:animClr"), oAttr, oValue);
 			}
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_p_animClr;
+			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->SkipRecord();
+			}
+
 			CBhvr			cBhvr;
 
 			nullable_int	byR;

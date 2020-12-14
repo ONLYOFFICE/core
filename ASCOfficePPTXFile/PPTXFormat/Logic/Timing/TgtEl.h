@@ -46,7 +46,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(TgtEl)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				XmlUtils::CXmlNode oNode;
@@ -86,9 +85,77 @@ namespace PPTX
 				{
 					return XmlUtils::CreateNode(_T("p:tgtEl"), spTgt->toXML());
 				}
-                return _T("<p:tgtEl><p:sldTgt /></p:tgtEl>");
+                return _T("<p:tgtEl><p:sldTgt/></p:tgtEl>");
 			}
-		public:
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+					pWriter->WriteString2(0, inkTgt);
+					
+					pWriter->WriteString2(1, name);
+					pWriter->WriteBool2(2, builtIn);
+
+					if (embed.IsInit())
+					{
+						std::wstring file_name;
+
+						if (parentFileIs<FileContainer>())
+							file_name = parentFileAs<FileContainer>().GetLinkFromRId(*embed);
+						if (false == file_name.empty())
+						{
+							NSShapeImageGen::CMediaInfo oId = pWriter->m_pCommon->m_pMediaManager->WriteMedia(file_name);
+							std::wstring s = oId.GetPath2();
+
+							pWriter->WriteString1(3, s);
+						}
+					}
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+				pWriter->WriteRecord2(0, spTgt);
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // attribute start
+
+				std::wstring file_name_ink;
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+						 if (0 == _at)	inkTgt = pReader->GetString2();
+					else if (1 == _at)	name = pReader->GetString2();
+					else if (2 == _at)	builtIn = pReader->GetBool();
+					else if (3 == _at)	file_name_ink = pReader->GetString2();
+
+				}
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+					case 0:
+					{
+						spTgt.Init();
+						spTgt->fromPPTY(pReader);
+					}break;
+					default:
+					{
+						pReader->SkipRecord();
+
+					}break;
+					}
+				}
+				pReader->Seek(end);
+			}
 			nullable_string		inkTgt;
 
 			//sndTgt

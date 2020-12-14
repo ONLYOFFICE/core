@@ -47,20 +47,17 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(AnimEffect)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
             {
                 XmlMacroReadAttributeBase(node, L"transition", transition);
                 XmlMacroReadAttributeBase(node, L"filter", filter);
                 XmlMacroReadAttributeBase(node, L"prLst", prLst);
-
-
+				
 				cBhvr		= node.ReadNode(_T("p:cBhvr"));
 				progress	= node.ReadNodeNoNS(_T("progress"));
 
 				FillParentPointersForChilds();
 			}
-
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
@@ -68,18 +65,74 @@ namespace PPTX
 				oAttr.Write(_T("filter"), filter);
 				oAttr.Write(_T("prLst"), prLst);
 
-
 				XmlUtils::CNodeValue oValue;
 				oValue.Write(cBhvr);
 				oValue.WriteNullable(progress);
 
 				return XmlUtils::CreateNode(_T("p:animEffect"), oAttr, oValue);
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_p_animEffect;
+			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+				pWriter->WriteLimit2(0, transition);
+				pWriter->WriteString2(1, filter);
+				pWriter->WriteString2(2, prLst);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
-		public:
-			CBhvr cBhvr;
-			
+				pWriter->WriteRecord1(0, cBhvr);
+				pWriter->WriteRecord2(2, progress);
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // attribute start
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					else if (0 == _at)	transition = pReader->GetUChar();
+					else if (1 == _at)	filter = pReader->GetString2();
+					else if (2 == _at)	prLst = pReader->GetString2();
+				}
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+					case 0:
+					{
+						cBhvr.fromPPTY(pReader);
+					}break;
+					case 1:
+					{
+						progress.Init(); progress->node_name = L"progress";
+						progress->fromPPTY(pReader);
+					}break;
+					default:
+					{
+						pReader->SkipRecord();
+
+					}break;
+					}
+				}
+				pReader->Seek(end);
+			}
+
+			CBhvr cBhvr;			
 			nullable<AnimVariant>				progress;
+
             nullable_limit<Limit::TLTransition> transition;
 			nullable_string						filter;
 			nullable_string						prLst;

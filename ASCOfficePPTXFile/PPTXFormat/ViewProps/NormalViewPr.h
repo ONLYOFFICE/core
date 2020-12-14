@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_VIEWPROPS_NORMAL_VIEW_PROPERTIES_INCLUDE_H_
-#define PPTX_VIEWPROPS_NORMAL_VIEW_PROPERTIES_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "Restored.h"
@@ -46,7 +44,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(NormalViewPr)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
                 XmlMacroReadAttributeBase(node, L"horzBarState", attrHorzBarState);
@@ -107,7 +104,10 @@ namespace PPTX
 
 				pWriter->EndNode(_T("p:normalViewPr"));
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
 
+			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
@@ -122,7 +122,6 @@ namespace PPTX
 				pWriter->WriteRecord1(1, restoredTop);
 			}
 
-		public:
 			nsViewProps::Restored					restoredLeft;
 			nsViewProps::Restored					restoredTop;
 
@@ -140,5 +139,3 @@ namespace PPTX
 		};
 	} // namespace nsViewProps
 } // namespace PPTX
-
-#endif // PPTX_VIEWPROPS_NORMAL_VIEW_PROPERTIES_INCLUDE_H_

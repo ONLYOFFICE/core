@@ -53,8 +53,6 @@ namespace PPTX
 				list = oSrc.list;
 				return *this;
 			}
-
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
                 XmlMacroLoadArray(node,_T("*"), list, BuildNodeBase);
@@ -67,7 +65,18 @@ namespace PPTX
 				oValue.WriteArray(list);
 				return XmlUtils::CreateNode(_T("p:bldLst"), oValue);
 			}
-		public:
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->SkipRecord();
+			}
+
 			std::vector<BuildNodeBase> list;
 		protected:
 			virtual void FillParentPointersForChilds()

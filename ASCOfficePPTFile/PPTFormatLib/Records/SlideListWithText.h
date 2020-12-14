@@ -35,6 +35,8 @@
 #include "../Enums/RecordType.h"
 
 
+namespace PPT_FORMAT
+{
 class CRecordSlideListWithText : public CRecordsContainer
 {
 public:
@@ -168,3 +170,4 @@ public:
 		}
 	}
 };
+}

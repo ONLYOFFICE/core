@@ -30,39 +30,46 @@
  *
  */
 #pragma once
-#include "../Reader/Records.h"
-#include "Animations/TimeVariant.h"
 
+#include "IStruct.h"
+#include "../Records/FontEntityAtom.h"
 
 namespace PPT_FORMAT
 {
-class CRecordProgStringTagContainer : public CUnknownRecord
+struct FontCollectionEntry : public IStruct
 {
-public:
-    CRecordProgStringTagContainer() : m_pTagValueAtom(nullptr) {}
+    CRecordFontEntityAtom                   m_fontEntityAtom;
+    std::vector<CRecordFontEmbedDataBlob*>  m_arrFontEmbedData;
 
-    ~CRecordProgStringTagContainer()
+    FontCollectionEntry(){}
+    virtual ~FontCollectionEntry()
     {
-        RELEASEOBJECT(m_pTagValueAtom)
-    }
-
-    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override
-    {
-        m_oHeader = oHeader;
-        SRecordHeader ReadHeader;
-        ReadHeader.ReadFromStream(pStream);
-
-        m_oTagNameAtom.ReadFromStream(ReadHeader, pStream);
-        if (m_oHeader.RecLen > 8 + ReadHeader.RecLen)
+        for (auto pEl : m_arrFontEmbedData)
         {
-            m_pTagValueAtom = new CRecordTagValueAtom();
-            ReadHeader.ReadFromStream(pStream);
-            m_pTagValueAtom->ReadFromStream(ReadHeader, pStream);
+            RELEASEOBJECT(pEl);
         }
     }
 
-public:
-    CRecordTagNameAtom      m_oTagNameAtom;
-    CRecordTagValueAtom*    m_pTagValueAtom;    // OPTIONAL
+    virtual void ReadFromStream(POLE::Stream *pStream)
+    {
+        SRecordHeader ReadHeader;
+        ReadHeader.ReadFromStream(pStream);
+
+        while(true)
+        {
+            ReadHeader.ReadFromStream(pStream);
+            if (ReadHeader.RecType == RT_FontEmbedDataBlob)
+            {
+                auto pRec = new CRecordFontEmbedDataBlob;
+                pRec->ReadFromStream(ReadHeader, pStream);
+                m_arrFontEmbedData.push_back(pRec);
+            }
+            else
+            {
+                StreamUtils::StreamSkipBack(8, pStream);
+                break;
+            }
+        }
+    }
 };
 }

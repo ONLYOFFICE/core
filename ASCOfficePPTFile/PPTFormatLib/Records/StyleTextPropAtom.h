@@ -32,6 +32,8 @@
 #pragma once
 #include "../Reader/Records.h"
 
+namespace PPT_FORMAT
+{
 class CRecordStyleTextPropAtom : public CUnknownRecord
 {
 public:
@@ -101,3 +103,4 @@ public:
 	}
 
 };
+}

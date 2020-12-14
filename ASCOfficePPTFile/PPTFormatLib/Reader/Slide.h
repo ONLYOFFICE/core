@@ -33,6 +33,8 @@
 #include "../../AVSOfficeStudio/Common/OfficeDrawing/ElementsContainer.h"
 #include "../Records/TextFullSettings.h"
 
+namespace PPT_FORMAT
+{
 class CSlide : public CElementsContainer
 {
 public:
@@ -560,3 +562,4 @@ private:
 		}
 	}
 };
+}

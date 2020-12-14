@@ -32,6 +32,7 @@
 #include "SlidePersist.h"
 
 #include "../Records/TextFullSettings.h"
+using namespace PPT_FORMAT;
 
 SSlidePersist::SSlidePersist() : m_arTextAttrs()
 {

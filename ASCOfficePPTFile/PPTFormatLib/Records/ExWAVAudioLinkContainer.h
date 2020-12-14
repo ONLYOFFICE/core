@@ -32,6 +32,8 @@
 #pragma once
 #include "../Reader/Records.h"
 
+namespace PPT_FORMAT
+{
 class CRecordWAVAudioLinkContainer : public CRecordsContainer
 {
 public:
@@ -49,3 +51,4 @@ public:
 		CRecordsContainer::ReadFromStream(oHeader, pStream);
 	}
 };
+}

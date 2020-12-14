@@ -32,6 +32,8 @@
 #pragma once
 #include "../Reader/Records.h"
 
+namespace PPT_FORMAT
+{
 class CRecordPlaceHolderAtom : public CUnknownRecord
 {
 public:
@@ -83,4 +85,5 @@ public:
 		m_nPlacementID	= StreamUtils::ReadBYTE(pStream);
 	}
 };
+}
 

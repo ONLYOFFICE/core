@@ -31,7 +31,10 @@
  */
 #pragma once
 #include "../Reader/Records.h"
+#include "SlideListWithText.h"
 
+namespace PPT_FORMAT
+{
 class CRecordDocument : public CRecordsContainer
 {
 public:
@@ -62,7 +65,7 @@ public:
 
 		CRecordsContainer::ReadFromStream(oHeader, pStream);
 
-		std::vector<CRecordSlideListWithText*> oArraySlideWithText;
+        std::vector<CRecordSlideListWithText*> oArraySlideWithText;
 		this->GetRecordsByType(&oArraySlideWithText, true, false);
 
 		for (size_t nIndexList = 0; nIndexList < oArraySlideWithText.size(); ++nIndexList)
@@ -105,3 +108,4 @@ public:
 		}
 	}
 };
+}

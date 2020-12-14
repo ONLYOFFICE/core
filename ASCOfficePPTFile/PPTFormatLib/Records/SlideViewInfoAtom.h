@@ -32,6 +32,8 @@
 #pragma once
 #include "../Reader/Records.h"
 
+namespace PPT_FORMAT
+{
 class CRecordSlideViewInfoAtom : public CUnknownRecord
 {
 	BOOL1 m_bShowGuides;
@@ -58,3 +60,4 @@ public:
 	}
 
 };
+}

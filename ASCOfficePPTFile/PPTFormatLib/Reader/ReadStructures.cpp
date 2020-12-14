@@ -103,10 +103,10 @@ namespace PPT_FORMAT
 		return color;
 	}
 }
-
+using namespace PPT_FORMAT;
 namespace NSStreamReader
 {
-	void Read(POLE::Stream* pStream, PPT_FORMAT::CTextSIRun& oRun, bool bIsIndentation)
+    void Read(POLE::Stream* pStream, CTextSIRun& oRun, bool bIsIndentation)
 	{
 		if (bIsIndentation)
 		{
@@ -168,7 +168,7 @@ namespace NSStreamReader
 		}*/
 	}
 
-	void Read(POLE::Stream* pStream, PPT_FORMAT::CTextRuler& oRun)
+    void Read(POLE::Stream* pStream, CTextRuler& oRun)
 	{
 		double dScaleX				= 625 * 2.54 ;
 		//1/576 inch = 72/576 pt = 360000 *72 * 2.54 /(72*576) emu
@@ -517,7 +517,7 @@ void CTextCFRunRecord::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation
 namespace PPT_FORMAT
 {
 	void ConvertPPTTextToEditorStructure(std::vector<CTextPFRunRecord>& oArrayPF, std::vector<CTextCFRunRecord>& oArrayCF, 
-		std::wstring& strText, PPT_FORMAT::CTextAttributesEx& oAttributes)
+        std::wstring& strText, CTextAttributesEx& oAttributes)
 	{
 		int nCountPFs = (int)oArrayPF.size();
 		int nCountCFs = (int)oArrayCF.size();
@@ -534,7 +534,7 @@ namespace PPT_FORMAT
 		{
 			CParagraph elm;
 			oAttributes.m_arParagraphs.push_back(elm);
-			PPT_FORMAT::CParagraph* pPar = &oAttributes.m_arParagraphs[nIndexPF];
+            CParagraph* pPar = &oAttributes.m_arParagraphs[nIndexPF];
 
 			pPar->m_lTextLevel			= oArrayPF[nIndexPF].m_lLevel;
 			pPar->m_oPFRun				= oArrayPF[nIndexPF].m_oRun;
@@ -562,7 +562,7 @@ namespace PPT_FORMAT
 				{
 					nOffsetCF += nCountInPF;
 
-					PPT_FORMAT::CSpan oSpan;
+                    CSpan oSpan;
 					oSpan.m_oRun	= oArrayCF[nCurrentCF].m_oRun;
 
 					nCountAddTrue = nCountInPF;
@@ -584,7 +584,7 @@ namespace PPT_FORMAT
 				{					
 					nOffsetCF = 0;
 
-					PPT_FORMAT::CSpan oSpan;
+                    CSpan oSpan;
 					oSpan.m_oRun	= oArrayCF[nCurrentCF].m_oRun;
 
 					if (nCountAddTrue > 0)
@@ -600,7 +600,7 @@ namespace PPT_FORMAT
 				{
 					nOffsetCF = 0;
 
-					PPT_FORMAT::CSpan oSpan;
+                    CSpan oSpan;
 					oSpan.m_oRun	= oArrayCF[nCurrentCF].m_oRun;
 
 					if (nCountAddTrue > 0)

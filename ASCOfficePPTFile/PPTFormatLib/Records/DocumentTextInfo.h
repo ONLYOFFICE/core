@@ -32,6 +32,8 @@
 #pragma once
 #include "../Reader/Records.h"
 
+namespace PPT_FORMAT
+{
 class CRecordDocumentTextInfo : public CRecordsContainer
 {
 public:
@@ -69,3 +71,4 @@ public:
 	}
 
 };
+}

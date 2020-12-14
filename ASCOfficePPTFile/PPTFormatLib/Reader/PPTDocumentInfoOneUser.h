@@ -39,6 +39,8 @@
 
 #include "SlideInfo.h"
 
+namespace PPT_FORMAT
+{
 class CPPTDocumentInfo;
 using namespace PPT_FORMAT;
 
@@ -92,7 +94,7 @@ public:
 	bool											m_bHasFooter;
 	int												m_nFormatDate;
 
-	CPPTDocumentInfo*								m_pDocumentInfo;
+    PPT_FORMAT::CPPTDocumentInfo*								m_pDocumentInfo;
 	CRecordVbaProjectStg*							m_VbaProjectStg;
 	int												m_lIndexThisUser;
 
@@ -364,3 +366,4 @@ public:
 	void LoadGroupShapeContainer(CRecordGroupShapeContainer* pGroup, std::vector<CElementPtr>* pParentElements, 
 		CTheme* pTheme, CLayout* pLayout, CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide = NULL);
 };
+}

@@ -43,6 +43,7 @@
 #include "../Records/SoundContainer.h"
 #include "../Enums/_includer.h"
 
+using namespace PPT_FORMAT;
 
 CPPTUserInfo::CPPTUserInfo() :	CDocument(),
     m_oUser(),

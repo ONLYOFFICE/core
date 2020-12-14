@@ -32,6 +32,8 @@
 #pragma once
 #include "../Reader/Records.h"
 
+namespace PPT_FORMAT
+{
 class CRecordRoundTripThemeAtom : public CUnknownRecord
 {
 public:
@@ -48,3 +50,4 @@ public:
 		pStream->read(data.first.get(), data.second);
 	}
 };
+}

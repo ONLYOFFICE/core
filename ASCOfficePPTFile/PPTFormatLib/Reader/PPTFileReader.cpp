@@ -49,6 +49,8 @@
 #define ENCRYPTED_SUMMARY_STREAM	L"EncryptedSummary" 
 #define DOCUMENT_SUMMARY_STREAM		L"DocumentSummaryInformation"
 
+using namespace PPT_FORMAT;
+
 CPPTFileReader::CPPTFileReader(POLE::Storage *pStorage, std::wstring strTemp):
 	   m_pStorage(pStorage),  
        m_bIsPPTFile(false),

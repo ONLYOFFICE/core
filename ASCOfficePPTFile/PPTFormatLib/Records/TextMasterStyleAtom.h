@@ -32,6 +32,8 @@
 #pragma once
 #include "../Reader/Records.h"
 
+namespace PPT_FORMAT
+{
 class CRecordTextMasterStyleAtom : public CUnknownRecord, public PPT_FORMAT::CTextStyles
 {
 public:
@@ -121,3 +123,4 @@ protected:
 		m_pLevels[lLevelOld]->m_oCFRun = oCF.m_oRun;
 	}
 };
+}

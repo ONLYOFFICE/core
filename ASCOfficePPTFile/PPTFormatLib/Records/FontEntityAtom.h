@@ -32,6 +32,8 @@
 #pragma once
 #include "../Reader/Records.h"
 
+namespace PPT_FORMAT
+{
 class CRecordFontEntityAtom : public CUnknownRecord
 {
 public:
@@ -122,3 +124,4 @@ public:
 		pStream->read(data.first.get(), data.second);
 	}
 };
+}

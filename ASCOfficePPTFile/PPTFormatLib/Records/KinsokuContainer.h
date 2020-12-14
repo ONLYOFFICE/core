@@ -35,6 +35,8 @@
 #include "KinsokuFollowingAtom.h"
 #include "KinsokuLeadingAtom.h"
 
+namespace PPT_FORMAT
+{
 class CRecordKinsokuContainer : public CUnknownRecord
 {
 public:
@@ -61,3 +63,4 @@ public:
     CRecordKinsokuFollowingAtom	m_KinsokuFollowingAtom;
 
 };
+}

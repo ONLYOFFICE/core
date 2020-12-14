@@ -35,6 +35,8 @@
 
 #include "../Records/SSSlideInfoAtom.h"
 
+namespace PPT_FORMAT
+{
 class CRecordSlide : public CRecordsContainer
 {
 public:
@@ -163,3 +165,4 @@ public:
 		return this;
 	}
 };
+}

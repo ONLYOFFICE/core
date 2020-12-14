@@ -32,6 +32,8 @@
 #pragma once
 #include "../Reader/Records.h"
 
+namespace PPT_FORMAT
+{
 class CRecordKinsokuFollowingAtom : public CUnknownRecord
 {
 public:
@@ -52,3 +54,4 @@ public:
         m_arKinsokuFollowing = StreamUtils::ReadStringW(pStream, m_oHeader.RecLen - sizeof (oHeader));
     }
 };
+}

@@ -34,6 +34,8 @@
 #include <vector>
 #include "ShapeContainer.h"
 
+namespace PPT_FORMAT
+{
 class CRecordGroupShapeContainer : public CRecordsContainer
 {
 public:
@@ -49,3 +51,4 @@ public:
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
 
 };
+}

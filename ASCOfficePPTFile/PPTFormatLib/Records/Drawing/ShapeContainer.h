@@ -58,7 +58,9 @@
 #define FIXED_POINT_unsigned(val) (double)((WORD)(val >> 16) + ((WORD)(val) / 65536.0))
 
 using namespace ODRAW;
-using namespace PPT_FORMAT;
+
+namespace PPT_FORMAT
+{
 
 class CPPTElement
 {
@@ -144,3 +146,4 @@ protected:
 	void SetUpTextStyle(std::wstring& strText, CTheme* pTheme, CLayout* pLayout, CElementPtr pElem, CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide, CRecordMasterTextPropAtom* master_levels);
 	void ApplyHyperlink(CShapeElement* pShape, CColor& oColor);
 };
+}

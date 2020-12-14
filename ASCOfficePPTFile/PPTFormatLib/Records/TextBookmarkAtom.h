@@ -32,6 +32,8 @@
 #pragma once
 #include "../Reader/Records.h"
 
+namespace PPT_FORMAT
+{
 class CRecordTextBookmarkAtom : public CUnknownRecord
 {
 	UINT m_nBegin;
@@ -54,3 +56,4 @@ public:
 	}
 
 };
+}

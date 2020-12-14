@@ -33,6 +33,8 @@
 #include "../../Reader/Records.h"
 #include "BlipStoreEntry.h"
 
+namespace PPT_FORMAT
+{
 class CRecordBlipStoreContainer : public CRecordsContainer
 {
 public:
@@ -73,3 +75,4 @@ public:
 		}
 	}
 };
+}

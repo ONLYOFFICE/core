@@ -31,14 +31,10 @@
  */
 #pragma once
 #include "../Reader/Records.h"
+#include "../Enums/enums.h"
 
-enum BuildTypeEnum : _UINT32
+namespace PPT_FORMAT
 {
-    TL_BuildParagraph,
-    TL_BuildChart,
-    TL_BuildDiagram
-};
-
 class CRecordBuildAtom : public CUnknownRecord
 {
 public:
@@ -71,3 +67,4 @@ public:
         StreamUtils::StreamSkip(2, pStream);
     }
 };
+}

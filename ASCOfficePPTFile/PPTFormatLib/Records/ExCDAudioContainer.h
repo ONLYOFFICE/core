@@ -32,6 +32,8 @@
 #pragma once
 #include "ExMediaAtom.h"
 
+namespace PPT_FORMAT
+{
 class CRecordExCDAudioContainer : public CRecordsContainer
 {
 public:
@@ -75,3 +77,4 @@ public:
 		m_dEndTime			= 60000 * nMinute2 + 1000 * nSecond2;
 	}
 };
+}

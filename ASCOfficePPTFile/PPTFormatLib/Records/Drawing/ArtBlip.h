@@ -32,10 +32,9 @@
 #pragma once
 
 #include "../../Reader/Records.h"
-
-class CPPTDocumentInfo;
-
-
+#include "../../Reader/PPTDocumentInfo.h"
+namespace PPT_FORMAT
+{
 class CRecordOfficeArtBlip  : public CUnknownRecord
 {
 public:
@@ -79,3 +78,4 @@ public:
 	}
 
 };
+}

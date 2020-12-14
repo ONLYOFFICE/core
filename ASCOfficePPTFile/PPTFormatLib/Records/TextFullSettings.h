@@ -40,6 +40,8 @@
 
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/Interactive.h"
 
+namespace PPT_FORMAT
+{
 class CTextFullSettings
 {
 public:
@@ -105,3 +107,4 @@ public:
 		return m_strText;
 	}
 };
+}

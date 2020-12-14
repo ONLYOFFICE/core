@@ -32,6 +32,8 @@
 #pragma once
 #include "../Reader/Records.h"
 
+namespace PPT_FORMAT
+{
 class CRecordSoundDataBlob : public CUnknownRecord
 {
 	BYTE* m_pData;
@@ -81,3 +83,4 @@ public:
 		ReleaseData();
 	}
 };
+}

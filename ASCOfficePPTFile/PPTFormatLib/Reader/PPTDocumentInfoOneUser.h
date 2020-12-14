@@ -81,8 +81,7 @@ public:
 	CSlideInfo*										m_pHandoutMasterWrapper;
 
 	std::vector<CRecordBlipStoreContainer*>			m_arrBlipStore;
-	std::vector<CFontProperty>						m_arrFonts;
-    std::vector<CBulletAutoNum>						m_arrBullet;
+    std::vector<CFontProperty>						m_arrFonts;
 
 	PPT_FORMAT::CTextStyles							m_oDefaultTextStyle;
 
@@ -157,6 +156,8 @@ public:
 
 	void LoadExVideo(CRecordsContainer* pExObject);
 	void LoadExAudio(CRecordsContainer* pExObject);
+
+    void LoadAutoNumbering(CRecordGroupShapeContainer* pGroupContainer, PPT_FORMAT::CTheme* pTheme);
 
 	void CreateDefaultStyle(PPT_FORMAT::CTextStyles& pStyle, PPT_FORMAT::CTheme* pTheme);
 	void CorrectColorScheme(std::vector<CColor>& oScheme)

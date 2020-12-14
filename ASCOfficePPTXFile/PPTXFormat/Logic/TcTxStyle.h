@@ -100,14 +100,12 @@ namespace PPTX
 					{
 						case 0:
 						{
-							i = new Limit::OnOff();
-							i->SetBYTECode(pReader->GetUChar());
+							i = pReader->GetUChar();
 							break;
 						}
 						case 1:
 						{
-							b = new Limit::OnOff();
-							b->SetBYTECode(pReader->GetUChar());
+							b = pReader->GetUChar();
 							break;
 						}
 						default:

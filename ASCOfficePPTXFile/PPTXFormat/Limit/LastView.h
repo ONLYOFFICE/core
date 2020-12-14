@@ -30,12 +30,8 @@
  *
  */
 #pragma once
-#ifndef PPTX_LIMIT_LASTVIEW_INCLUDE_H_
-#define PPTX_LIMIT_LASTVIEW_INCLUDE_H_
 
 #include "BaseLimit.h"
-
-
 
 namespace PPTX
 {
@@ -46,21 +42,21 @@ namespace PPTX
 		public:
 			LastView()
 			{
-				m_strValue = _T("sldThumbnailView");
+				m_strValue = L"sldThumbnailView";
 			}
 
 			_USE_STRING_OPERATOR
 				
 			virtual void set(const std::wstring& strValue)
 			{
-				if ((_T("handoutView") == strValue) ||
-					(_T("notesMasterView") == strValue) ||
-					(_T("notesView") == strValue) ||
-					(_T("outlineView") == strValue) ||
-					(_T("sldMasterView") == strValue) ||
-					(_T("sldSorterView") == strValue) ||
-					(_T("sldThumbnailView") == strValue) ||
-					(_T("sldView") == strValue))
+				if ((L"handoutView" == strValue) ||
+					(L"notesMasterView" == strValue) ||
+					(L"notesView" == strValue) ||
+					(L"outlineView" == strValue) ||
+					(L"sldMasterView" == strValue) ||
+					(L"sldSorterView" == strValue) ||
+					(L"sldThumbnailView" == strValue) ||
+					(L"sldView" == strValue))
 				{
 					m_strValue = strValue;
 				}
@@ -68,26 +64,30 @@ namespace PPTX
 
 			virtual BYTE GetBYTECode() const
 			{
-				if (_T("handoutView") == m_strValue)
-					return 0;
-				if (_T("notesMasterView") == m_strValue)
-					return 1;
-				if (_T("notesView") == m_strValue)
-					return 2;
-				if (_T("outlineView") == m_strValue)
-					return 3;
-				if (_T("sldMasterView") == m_strValue)
-					return 4;
-				if (_T("sldSorterView") == m_strValue)
-					return 5;
-				if (_T("sldThumbnailView") == m_strValue)
-					return 6;
-				if (_T("sldView") == m_strValue)
-					return 7;
+				if (L"handoutView" == m_strValue)		return 0;
+				if (L"notesMasterView" == m_strValue)	return 1;
+				if (L"notesView" == m_strValue)			return 2;
+				if (L"outlineView" == m_strValue)		return 3;
+				if (L"sldMasterView" == m_strValue)		return 4;
+				if (L"sldSorterView" == m_strValue)		return 5;
+				if (L"sldThumbnailView" == m_strValue)	return 6;
+				if (L"sldView" == m_strValue)			return 7;
 				return 6;
+			}
+			virtual void SetBYTECode(const BYTE& src)
+			{
+				switch (src)
+				{
+				case 0: m_strValue = L"handoutView"; break;
+				case 1: m_strValue = L"notesMasterView"; break;
+				case 2: m_strValue = L"notesView"; break;
+				case 3: m_strValue = L"outlineView"; break;
+				case 4: m_strValue = L"sldMasterView"; break;
+				case 5: m_strValue = L"sldSorterView"; break;
+				case 6: m_strValue = L"sldThumbnailView"; break;
+				case 7: m_strValue = L"sldView"; break;
+				}
 			}
 		};
 	} // namespace Limit
 } // namespace PPTX
-
-#endif // PPTX_LIMIT_LASTVIEW_INCLUDE_H_

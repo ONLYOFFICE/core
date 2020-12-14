@@ -45,7 +45,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(Video)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
                 XmlMacroReadAttributeBase(node, L"fullScrn", fullScrn);
@@ -61,8 +60,22 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("p:video"), oAttr, cMediaNode.toXML());
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_p_video;
+			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->SkipRecord();
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+			}
 
-		public:
 			CMediaNode		cMediaNode;
 			nullable_bool	fullScrn;
 		protected:

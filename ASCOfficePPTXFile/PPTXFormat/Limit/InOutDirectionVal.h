@@ -30,11 +30,8 @@
  *
  */
 #pragma once
-#ifndef PPTX_LIMIT_INOUTDIRECTIONVAL_INCLUDE_H_
-#define PPTX_LIMIT_INOUTDIRECTIONVAL_INCLUDE_H_
 
 #include "BaseLimit.h"
-
 
 namespace PPTX
 {
@@ -45,21 +42,33 @@ namespace PPTX
 		public:
 			InOutDirectionVal()
 			{
-				m_strValue = _T("out");
+				m_strValue = L"out";
 			}
 
 			_USE_STRING_OPERATOR
 				
 			virtual void set(const std::wstring& strValue)
 			{
-				if ((_T("in") == strValue) ||
-					(_T("out") == strValue))
+				if ((L"in" == strValue) ||
+					(L"out" == strValue))
 				{
 					m_strValue = strValue;
+				}
+			}
+			virtual BYTE GetBYTECode() const
+			{
+				if (L"in" == m_strValue)	return 0;
+				if (L"out" == m_strValue)	return 1;
+				return 0;
+			}
+			virtual void SetBYTECode(const BYTE& src)
+			{
+				switch (src)
+				{
+				case 0: m_strValue = L"in"; break;
+				case 1: m_strValue = L"out"; break;
 				}
 			}
 		};
 	} // namespace Limit
 } // namespace PPTX
-
-#endif // PPTX_LIMIT_INOUTDIRECTIONVAL_INCLUDE_H_

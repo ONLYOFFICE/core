@@ -84,11 +84,21 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("p:bldP"), oAttr, oValue);
 			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->SkipRecord();
+			}
 
-		public:
 			nullable<TmplLst>						tmplLst;
 
-			std::wstring									spid;
+			std::wstring							spid;
             int										grpId;
 			nullable_bool							uiExpand;
 			nullable_limit<Limit::ParaBuildType>	build;

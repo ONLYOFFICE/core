@@ -30,11 +30,8 @@
  *
  */
 #pragma once
-#ifndef PPTX_LIMIT_SPLITTER_BAR_STATE_INCLUDE_H_
-#define PPTX_LIMIT_SPLITTER_BAR_STATE_INCLUDE_H_
 
 #include "BaseLimit.h"
-
 
 namespace PPTX
 {
@@ -70,8 +67,15 @@ namespace PPTX
 					return 2;
 				return 2;
 			}
+			virtual void SetBYTECode(const BYTE& src)
+			{
+				switch (src)
+				{
+				case 0: m_strValue = L"maximized"; break;
+				case 1: m_strValue = L"minimized"; break;
+				case 2: m_strValue = L"restored"; break;
+				}
+			}
 		};
 	} // namespace Limit
 } // namespace PPTX
-
-#endif // PPTX_LIMIT_SPLITTER_BAR_STATE_INCLUDE_H_

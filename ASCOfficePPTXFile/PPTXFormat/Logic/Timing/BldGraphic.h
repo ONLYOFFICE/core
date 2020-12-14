@@ -45,7 +45,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(BldGraphic)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				bldSub		= node.ReadNode(_T("p:bldSub"));
@@ -70,8 +69,18 @@ namespace PPTX
 				
 				return XmlUtils::CreateNode(_T("p:bldGraphic"), oAttr, bldSub->toXML());
 			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->SkipRecord();
+			}
 
-		public:
 			nullable<BldSub>		bldSub;
 
 			std::wstring					spid;

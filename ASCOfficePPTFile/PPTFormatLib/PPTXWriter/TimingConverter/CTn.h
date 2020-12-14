@@ -190,11 +190,11 @@ void ConvertTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::TimeNodeBas
             if (pETNC->m_arrRgBeginTimeCondition.empty() == false)
             {
                 oCTn.stCondLst = new PPTX::Logic::CondLst;
-                oCTn.stCondLst->name = L"stCondLst";
+                oCTn.stCondLst->node_name = L"stCondLst";
             }
             for (auto* oldCond : pETNC->m_arrRgBeginTimeCondition) {
                 PPTX::Logic::Cond cond;
-                cond.name = L"cond";
+                cond.node_name = L"cond";
                 FillCond(oldCond, cond);
                 oCTn.stCondLst->list.push_back(cond);
             }
@@ -204,11 +204,11 @@ void ConvertTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::TimeNodeBas
             if (pETNC->m_arrRgEndTimeCondition.empty() == false)
             {
                 oCTn.endCondLst = new PPTX::Logic::CondLst;
-                oCTn.endCondLst->name = L"endCondLst";
+                oCTn.endCondLst->node_name = L"endCondLst";
             }
             for (auto* oldCond : pETNC->m_arrRgEndTimeCondition) {
                         PPTX::Logic::Cond cond;
-                        cond.name = L"cond";
+                        cond.node_name = L"cond";
                         FillCond(oldCond, cond);
                         oCTn.endCondLst->list.push_back(cond);
             }
@@ -254,7 +254,7 @@ void ConvertTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::TimeNodeBas
         {
             auto* sync = pETNC->m_pTimeEndSyncTimeCondition;
             oCTn.endSync = new PPTX::Logic::Cond;
-            oCTn.endSync->name = L"endSync";
+            oCTn.endSync->node_name = L"endSync";
             FillCond(sync, *(oCTn.endSync));
         }
 

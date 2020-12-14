@@ -48,7 +48,7 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				name	= XmlUtils::GetNameNoNS(node.GetName());
+				node_name = XmlUtils::GetNameNoNS(node.GetName());
 
 				XmlUtils::CXmlNode oNode;
 
@@ -98,11 +98,60 @@ namespace PPTX
 				{
 					oValue.m_strValue += (_T("<p:clrVal>") + clrVal.toXML() + _T("</p:clrVal>"));
 				}
-				
-				return XmlUtils::CreateNode(_T("p:") + name, oValue);
+				return XmlUtils::CreateNode(_T("p:") + node_name, oValue);
 			}
-		public:
-			std::wstring				name;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+				pWriter->WriteBool2(0, boolVal);
+				pWriter->WriteString2(1, strVal);
+				pWriter->WriteInt2(2, intVal);
+				pWriter->WriteDouble2(3, fltVal);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+				pWriter->WriteRecord1(0, clrVal);
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // attribute start
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					else if (0 == _at)	boolVal = pReader->GetBool();
+					else if (1 == _at)	strVal = pReader->GetString2();
+					else if (2 == _at)	intVal = pReader->GetLong();
+					else if (3 == _at)	fltVal = pReader->GetDouble();
+				}
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+					case 0:
+					{
+						clrVal.fromPPTY(pReader);
+					}break;
+					default:
+					{
+						pReader->SkipRecord();
+
+					}break;
+					}
+				}
+				pReader->Seek(end);
+			}
+
+			std::wstring		node_name = L"val";
 
 			nullable_bool		boolVal;
 			nullable_string		strVal;

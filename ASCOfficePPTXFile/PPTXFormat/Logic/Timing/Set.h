@@ -46,7 +46,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(Set)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				cBhvr	= node.ReadNode(_T("p:cBhvr"));
@@ -63,8 +62,58 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("p:set"), oValue);
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_p_set;
+			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
-		public:
+				pReader->Skip(1); // attribute start
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+				}
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+					case 0:
+					{
+						cBhvr.fromPPTY(pReader);
+					}break;
+					case 1:
+					{
+						to.Init(); to->node_name = L"to";
+						to->fromPPTY(pReader);
+					}break;
+					default:
+					{
+						pReader->SkipRecord();
+
+					}break;
+					}
+				}
+				pReader->Seek(end);
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+				pWriter->WriteRecord1(0, cBhvr);
+				pWriter->WriteRecord2(1, to);
+			}
+
 			CBhvr					cBhvr;
 			nullable<AnimVariant>	to;
 		protected:

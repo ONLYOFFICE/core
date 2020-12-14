@@ -240,7 +240,7 @@ namespace PPTX
 								{
 									case PARRUN_TYPE_RUN:
 									{
-										LONG _end = pReader->GetPos() + pReader->GetLong() + 4;
+										LONG _end = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 										pReader->Skip(1); // start attr
 
@@ -280,7 +280,7 @@ namespace PPTX
 									}
 									case PARRUN_TYPE_FLD:
 									{
-										LONG _end = pReader->GetPos() + pReader->GetLong() + 4;
+										LONG _end = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 										pReader->Skip(1); // start attr
 
@@ -329,7 +329,7 @@ namespace PPTX
 									}
 									case PARRUN_TYPE_BR:
 									{
-										LONG _end = pReader->GetPos() + pReader->GetLong() + 4;
+										LONG _end = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 										Logic::Br* pRun = new Logic::Br();
 										while (pReader->GetPos() < _end)

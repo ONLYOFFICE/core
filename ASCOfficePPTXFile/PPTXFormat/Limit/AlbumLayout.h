@@ -30,11 +30,7 @@
  *
  */
 #pragma once
-#ifndef PPTX_LIMIT_ALBUMLAYOUT_INCLUDE_H_
-#define PPTX_LIMIT_ALBUMLAYOUT_INCLUDE_H_
-
 #include "BaseLimit.h"
-
 
 namespace PPTX
 {
@@ -45,26 +41,33 @@ namespace PPTX
 		public:
 			AlbumLayout()
 			{
-				m_strValue = _T("fitToSlide");
+				m_strValue = L"fitToSlide";
 			}
 
 			_USE_STRING_OPERATOR
 				
 			virtual void set(const std::wstring& strValue)
 			{
-				if ((_T("1pic") == strValue) || 
-					(_T("1picTitle") == strValue) || 
-					(_T("2pic") == strValue) ||
-					(_T("2picTitle") == strValue) || 
-					(_T("4pic") == strValue) || 
-					(_T("4picTitle") == strValue) || 
-					(_T("fitToSlide") == strValue))
+				if ((L"1pic" == strValue) || 
+					(L"1picTitle" == strValue) || 
+					(L"2pic" == strValue) ||
+					(L"2picTitle" == strValue) || 
+					(L"4pic" == strValue) || 
+					(L"4picTitle" == strValue) || 
+					(L"fitToSlide" == strValue))
 				{
 					m_strValue = strValue;
 				}
 			}
+			virtual BYTE GetBYTECode() const
+			{
+				//not using yet
+				return 0;
+			}
+			virtual void SetBYTECode(const BYTE& src)
+			{
+				//not using yet
+			}
 		};
 	} // namespace Limit
 } // namespace PPTX
-
-#endif // PPTX_LIMIT_ALBUMLAYOUT_INCLUDE_H_

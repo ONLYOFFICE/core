@@ -44,7 +44,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(TxEl)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				XmlUtils::CXmlNode oNode;
@@ -67,7 +66,6 @@ namespace PPTX
 					end.reset();
 				}
 			}
-
 			virtual std::wstring toXML() const
 			{
 				if (charRg.IsInit())
@@ -84,7 +82,18 @@ namespace PPTX
 				}
 				return _T("<p:txEl/>");
 			}
-		public:
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->SkipRecord();
+			}
+
 			nullable_sizet	st;
 			nullable_sizet	end;
 			nullable_bool	charRg;

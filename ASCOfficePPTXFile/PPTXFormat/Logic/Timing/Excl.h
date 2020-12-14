@@ -59,8 +59,22 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("p:excl"), oValue);
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_p_excl;
+			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->SkipRecord();
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
 
-		public:
+			}
 			CTn			cTn;
 		protected:
 			virtual void FillParentPointersForChilds()

@@ -1482,5 +1482,8 @@
     <ClInclude Include="..\..\DesktopEditor\raster\exif.h">
       <Filter>BinaryReaderWriter</Filter>
     </ClInclude>
+    <ClInclude Include="..\PPTXFormat\Logic\Timing\ChildTnLst.h">
+      <Filter>PPTX\Logic\Timing</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

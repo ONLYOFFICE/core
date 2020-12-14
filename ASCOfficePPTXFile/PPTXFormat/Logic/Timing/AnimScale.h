@@ -45,7 +45,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(AnimScale)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				cBhvr = node.ReadNode(_T("p:cBhvr"));
@@ -109,8 +108,22 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("p:animScale"), oAttr, oValue);
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_p_animScale;
+			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->SkipRecord();
+			}
 
-		public:
 			CBhvr				cBhvr;
 
 			nullable_int		byX;

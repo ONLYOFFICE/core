@@ -45,7 +45,7 @@ void FillSet(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
     // TODO
     FillCBhvr(pETNC, oSet.cBhvr);
     oSet.to = new PPTX::Logic::AnimVariant();
-    oSet.to->name = L"to";
+    oSet.to->node_name = L"to";
     oSet.to->strVal = pETNC->m_pTimeSetBehavior->m_oVarTo.m_Value;
 
 }

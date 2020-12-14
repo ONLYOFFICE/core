@@ -97,6 +97,17 @@ namespace PPTX
 				return m_node->toXML();
 			return _T("");
 		}
+		void BuildNodeBase::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
 
+		}
+		void BuildNodeBase::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+
+		}
+		void BuildNodeBase::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+
+		}
 	} // namespace Logic
 } // namespace PPTX

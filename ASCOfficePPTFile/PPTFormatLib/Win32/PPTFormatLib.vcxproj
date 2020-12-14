@@ -267,6 +267,7 @@
     <ClInclude Include="..\PPTXWriter\ImageManager.h" />
     <ClInclude Include="..\PPTXWriter\ShapeWriter.h" />
     <ClInclude Include="..\PPTXWriter\StylesWriter.h" />
+    <ClInclude Include="..\PPTXWriter\TimingConverter.h" />
     <ClInclude Include="..\Reader\ClassesAtom.h" />
     <ClInclude Include="..\Reader\PPTDocumentInfo.h" />
     <ClInclude Include="..\Reader\PPTDocumentInfoOneUser.h" />
@@ -473,6 +474,7 @@
     <ClCompile Include="..\PPTFormatLib.cpp" />
     <ClCompile Include="..\PPTXWriter\Converter.cpp" />
     <ClCompile Include="..\PPTXWriter\ShapeWriter.cpp" />
+    <ClCompile Include="..\PPTXWriter\TimingConverter.cpp" />
     <ClCompile Include="..\Reader\PPTDocumentInfoOneUser.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>

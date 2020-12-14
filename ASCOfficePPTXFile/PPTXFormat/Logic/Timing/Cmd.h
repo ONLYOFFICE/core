@@ -46,7 +46,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(Cmd)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
                 XmlMacroReadAttributeBase(node, L"type", type);
@@ -65,8 +64,22 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("p:cmd"), oAttr, cBhvr.toXML());
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_p_cmd;
+			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->SkipRecord();
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+			}
 
-		public:
 			CBhvr									cBhvr;
 
 			nullable_limit<Limit::TLCommandType>	type;

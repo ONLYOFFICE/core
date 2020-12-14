@@ -46,7 +46,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(GraphicEl)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				XmlUtils::CXmlNode oNode;
@@ -82,7 +81,18 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("p:graphicEl"), XmlUtils::CreateNode(_T("p:dgm"), oAttr));
 			}
-		public:
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->SkipRecord();
+			}
+
 			//Dgm
 			nullable_string						dgmId;
 			nullable_limit<Limit::DgmBuild>		dgmBuildStep;

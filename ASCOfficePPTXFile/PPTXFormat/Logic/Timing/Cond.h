@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_COND_INCLUDE_H_
-#define PPTX_LOGIC_COND_INCLUDE_H_
 
 #include "./../../WrapperWritingElement.h"
 #include "./../../Limit/TLTriggerEvent.h"
@@ -48,14 +46,12 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(Cond)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				name	= XmlUtils::GetNameNoNS(node.GetName());
+				node_name = XmlUtils::GetNameNoNS(node.GetName());
 
                 XmlMacroReadAttributeBase(node, L"evt", evt);
                 XmlMacroReadAttributeBase(node, L"delay", delay);
-
 
 				XmlUtils::CXmlNode oNode;
 				if (node.GetNode(_T("p:tn"), oNode))
@@ -75,7 +71,6 @@ namespace PPTX
                 oAttr.WriteLimitNullable(_T("evt"), evt);
 				oAttr.Write(_T("delay"), delay);
 
-
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteNullable(tgtEl);
 
@@ -84,22 +79,97 @@ namespace PPTX
 					XmlUtils::CAttribute oAttr1;
 					oAttr1.Write(_T("val"), tn);
 
-					return XmlUtils::CreateNode(_T("p:") + name, oAttr, oValue.m_strValue + XmlUtils::CreateNode(_T("p:tn"), oAttr1));
+					return XmlUtils::CreateNode(_T("p:") + node_name, oAttr, oValue.m_strValue + XmlUtils::CreateNode(_T("p:tn"), oAttr1));
 				}
 				else if (rtn.IsInit())
 				{
 					XmlUtils::CAttribute oAttr1;
 					oAttr1.WriteLimitNullable(_T("val"), rtn);
 
-					return XmlUtils::CreateNode(_T("p:") + name, oAttr, oValue.m_strValue + XmlUtils::CreateNode(_T("p:rtn"), oAttr1));
+					return XmlUtils::CreateNode(_T("p:") + node_name, oAttr, oValue.m_strValue + XmlUtils::CreateNode(_T("p:rtn"), oAttr1));
 				}
 
-				return XmlUtils::CreateNode(_T("p:") + name, oAttr, oValue);
+				return XmlUtils::CreateNode(_T("p:") + node_name, oAttr, oValue);
 			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->StartNode(L"p:" + node_name);
+				pWriter->WriteAttribute(L"evt", evt);
+				pWriter->WriteAttribute(L"delay", delay);
+				pWriter->EndAttributes();
 
-		public:
-			std::wstring									name;
-//Choice
+				if (rtn.IsInit())
+				{
+					pWriter->StartNode(L"p:rtn");
+					pWriter->WriteAttribute(L"val", rtn);
+					pWriter->EndAttributes();
+					pWriter->EndNode(L"p:rtn");
+				}
+				if (tn.IsInit())
+				{
+					pWriter->StartNode(L"p:tn");
+					pWriter->WriteAttribute(L"val", tn);
+					pWriter->EndAttributes();
+					pWriter->EndNode(L"p:tn");
+				}
+				if (tgtEl.IsInit())
+					tgtEl->toXmlWriter(pWriter);
+
+				pWriter->EndNode(L"p:" + node_name);
+			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_p_seq;
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // attribute start
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					if (0 == _at) tn = pReader->GetLong();
+					else if (1 == _at)	rtn = pReader->GetUChar();
+					else if (2 == _at)	evt = pReader->GetUChar();
+					else if (3 == _at)	delay = pReader->GetString2();
+				}
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+					case 0:
+					{
+						tgtEl.Init(); 
+						tgtEl->fromPPTY(pReader);
+					}break;
+					default:
+					{
+						pReader->SkipRecord();
+
+					}break;
+					}
+				}
+				pReader->Seek(end);
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+				pWriter->WriteInt2(0, tn);
+				pWriter->WriteLimit2(1, rtn);
+				pWriter->WriteLimit2(2, evt);
+				pWriter->WriteString2(3, delay);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+				pWriter->WriteRecord2(0, tgtEl);
+			}
+			std::wstring							node_name = L"cond"; //endSync
+
 			nullable_limit<Limit::TLRuntimeTrigger> rtn;
 			nullable<TgtEl>							tgtEl;
 			nullable_int							tn;
@@ -120,5 +190,3 @@ namespace PPTX
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_COND_INCLUDE_H

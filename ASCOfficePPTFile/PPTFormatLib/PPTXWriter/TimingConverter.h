@@ -31,7 +31,7 @@
  */
 #pragma once
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Timing.h"
-#include "../Records/Slide/SlideProgTagsContainer.h"
+#include "../Records/SlideProgTagsContainer.h"
 
 namespace PPT_FORMAT
 {

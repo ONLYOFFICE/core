@@ -31,7 +31,7 @@
  */
 #pragma once
 #include "../Reader/Records.h"
-#include "../Records/Slide/SlideProgTagsContainer.h"
+#include "SlideProgTagsContainer.h"
 
 #include "../Records/SSSlideInfoAtom.h"
 

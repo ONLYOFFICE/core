@@ -32,8 +32,6 @@
 #pragma once
 #include "../Reader/Records.h"
 
-namespace PPT_FORMAT
-{
 class CRecordExObjRefAtom : public CUnknownRecord
 {
 public:
@@ -53,4 +51,3 @@ public:
 		m_nExObjID = StreamUtils::ReadDWORD(pStream);
 	}
 };
-}

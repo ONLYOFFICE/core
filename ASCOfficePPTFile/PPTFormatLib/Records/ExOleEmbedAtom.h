@@ -32,8 +32,6 @@
 #pragma once
 #include "../Reader/Records.h"
 
-namespace PPT_FORMAT
-{
 class CRecordExOleEmbedAtom : public CUnknownRecord
 {
 public:
@@ -55,4 +53,3 @@ public:
 		return CUnknownRecord::ReadFromStream(oHeader, pStream);
 	}
 };
-}

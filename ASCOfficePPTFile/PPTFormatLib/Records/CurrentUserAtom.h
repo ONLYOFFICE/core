@@ -35,8 +35,6 @@
 #define			NO_ENCRYPT		0xE391C05F
 #define			ENCRYPT			0xF3D1C4DF
 
-namespace PPT_FORMAT
-{
 class CRecordCurrentUserAtom : public CUnknownRecord
 {
 public:
@@ -110,4 +108,3 @@ public:
 		return (NO_ENCRYPT == m_nToken);
 	}
 };
-}

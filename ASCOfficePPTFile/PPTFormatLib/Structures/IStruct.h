@@ -36,7 +36,6 @@
 
 namespace PPT_FORMAT {
 struct IStruct {
-    virtual ~IStruct(){}
     virtual void ReadFromStream (POLE::Stream* pStream) = 0;
 };
 }

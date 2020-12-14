@@ -32,8 +32,6 @@
 #pragma once
 #include "GroupShapeContainer.h"
 
-namespace PPT_FORMAT
-{
 class CRecordDrawingContainer : public CRecordsContainer
 {
 public:
@@ -51,4 +49,4 @@ public:
 		CRecordsContainer::ReadFromStream(oHeader, pStream);
 	}
 };
-}
+

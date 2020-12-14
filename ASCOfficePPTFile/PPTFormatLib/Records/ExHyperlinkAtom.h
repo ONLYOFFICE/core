@@ -32,8 +32,6 @@
 #pragma once
 #include "../Reader/Records.h"
 
-namespace PPT_FORMAT
-{
 class CRecordExHyperlinkContainer : public CRecordsContainer
 {
 public:
@@ -71,4 +69,3 @@ public:
 		m_nHyperlinkID = StreamUtils::ReadDWORD(pStream);
 	}
 };
-}

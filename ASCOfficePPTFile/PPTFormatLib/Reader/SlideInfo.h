@@ -32,8 +32,6 @@
 #pragma once
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/Document.h"
 
-namespace PPT_FORMAT
-{
 class CElementInfo
 {
 public:
@@ -147,4 +145,3 @@ public:
 		}
 	}
 };
-}

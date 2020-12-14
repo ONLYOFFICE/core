@@ -33,8 +33,6 @@
 
 #include "PPTDocumentInfoOneUser.h"
 
-namespace PPT_FORMAT
-{
 class CPPTDocumentInfo
 {
 public:
@@ -137,4 +135,3 @@ public:
 		return true;
 	}
 };
-}

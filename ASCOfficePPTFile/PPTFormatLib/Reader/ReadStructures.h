@@ -36,10 +36,7 @@
 #include "../../../OfficeUtils/src/OfficeUtils.h"
 //#include "../Records/OfficeArtClientData.h"
 
-
-namespace PPT_FORMAT
-{
-
+using namespace PPT_FORMAT;
 
 namespace CRYPT
 {
@@ -288,14 +285,14 @@ namespace NSStreamReader
 		}
 	}
 	
-    void Read(POLE::Stream* pStream, CTextSIRun& oRun, bool bIsIndentation = true);
-    void Read(POLE::Stream* pStream, CTextRuler& oRun);
+	void Read(POLE::Stream* pStream, PPT_FORMAT::CTextSIRun& oRun, bool bIsIndentation = true);
+	void Read(POLE::Stream* pStream, PPT_FORMAT::CTextRuler& oRun);
 }
 
 class CTextPFRunRecord
 {
 public:
-    CTextPFRun	m_oRun;
+	PPT_FORMAT::CTextPFRun	m_oRun;
 	LONG					m_lLevel;
 	LONG					m_lCount;
 
@@ -322,7 +319,7 @@ public:
 class CTextCFRunRecord
 {
 public:
-    CTextCFRun	m_oRun;
+	PPT_FORMAT::CTextCFRun	m_oRun;
 	LONG					m_lCount;
 
 	CTextCFRunRecord() : m_oRun()
@@ -346,6 +343,5 @@ public:
 namespace PPT_FORMAT
 {
 	void ConvertPPTTextToEditorStructure(std::vector<CTextPFRunRecord>& oArrayPF, std::vector<CTextCFRunRecord>& oArrayCF, 
-        std::wstring& strText, CTextAttributesEx& oAttributes);
-}
+		std::wstring& strText, PPT_FORMAT::CTextAttributesEx& oAttributes);
 }

@@ -32,8 +32,6 @@
 #pragma once
 #include "ExMediaAtom.h"
 
-namespace PPT_FORMAT
-{
 class CRecordWAVAudioEmbeddedContainer : public CRecordsContainer
 {
 public:
@@ -69,4 +67,3 @@ public:
 		m_nDuration	= StreamUtils::ReadLONG(pStream);		
 	}
 };
-}

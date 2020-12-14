@@ -32,8 +32,6 @@
 #pragma once
 #include "../Reader/Records.h"
 
-namespace PPT_FORMAT
-{
 class CRecordExOleObjAtom : public CUnknownRecord
 {
 	UINT m_nDrawAspect;
@@ -129,4 +127,3 @@ public:
 	}
 
 };
-}

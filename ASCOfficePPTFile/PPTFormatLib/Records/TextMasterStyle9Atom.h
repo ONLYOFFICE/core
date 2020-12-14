@@ -35,6 +35,7 @@
 
 namespace PPT_FORMAT
 {
+
 class CRecordTextMasterStyle9Atom : public CUnknownRecord
 {
 public:

@@ -34,8 +34,7 @@
 #include "PPTDocumentInfo.h"
 
 using namespace XLS;
-namespace PPT_FORMAT
-{
+
 class CPPTFileReader
 {
 public: 
@@ -77,4 +76,3 @@ public:
 	CPPTDocumentInfo			m_oDocumentInfo;
 	int							m_nPresentationCodePage;
 };
-}

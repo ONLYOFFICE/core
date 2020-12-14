@@ -32,8 +32,6 @@
 #pragma once
 #include "../Reader/Records.h"
 
-namespace PPT_FORMAT
-{
 class CSlideShowSlideInfoAtom : public CUnknownRecord
 {
 public:
@@ -136,4 +134,3 @@ public:
 		return (double)m_nSlideTime;
 	}
 };
-}

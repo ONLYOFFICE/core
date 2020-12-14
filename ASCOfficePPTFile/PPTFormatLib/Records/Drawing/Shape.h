@@ -32,8 +32,6 @@
 #pragma once
 #include "../../Reader/Records.h"
 
-namespace PPT_FORMAT
-{
 class CRecordShape : public CUnknownRecord
 {
 public:
@@ -92,4 +90,3 @@ public:
 		m_nShapeID = m_oHeader.RecInstance;
 	}
 };
-}

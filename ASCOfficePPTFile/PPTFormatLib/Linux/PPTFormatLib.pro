@@ -602,7 +602,6 @@ HEADERS += \
     ../Structures/ColorIndexStruct.h \
     ../Structures/ColorStruct.h \
     ../Structures/DateTimeStruct.h \
-    ../Structures/FontCollectionEntry.h \
     ../Structures/IStruct.h \
     ../Structures/PointStruct.h \
     ../Structures/RatioStruct.h \

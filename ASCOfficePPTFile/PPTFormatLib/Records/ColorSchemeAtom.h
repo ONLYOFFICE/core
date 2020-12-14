@@ -32,8 +32,6 @@
 #pragma once
 #include "../Reader/Records.h"
 
-namespace PPT_FORMAT
-{
 class CRecordColorSchemeAtom : public CUnknownRecord
 {
 	SColorAtom m_oBackgroundColor;
@@ -114,4 +112,3 @@ public:
 		}
 	}
 };
-}

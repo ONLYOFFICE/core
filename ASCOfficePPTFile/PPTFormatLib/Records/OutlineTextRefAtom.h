@@ -32,8 +32,6 @@
 #pragma once
 #include "../Reader/Records.h"
 
-namespace PPT_FORMAT
-{
 class CRecordOutlineTextRefAtom : public CUnknownRecord
 {
 public:
@@ -54,4 +52,3 @@ public:
 		m_nIndex = StreamUtils::ReadDWORD(pStream);
 	}
 };
-}

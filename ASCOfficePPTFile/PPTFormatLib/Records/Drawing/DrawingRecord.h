@@ -32,8 +32,6 @@
 #pragma once
 #include "../../Reader/Records.h"
 
-namespace PPT_FORMAT
-{
 class CRecordDrawingRecord : public CUnknownRecord
 {
 	UINT m_nCountShapes;
@@ -57,4 +55,3 @@ public:
 		m_nPidCur = (UINT)StreamUtils::ReadDWORD(pStream);
 	}
 };
-}

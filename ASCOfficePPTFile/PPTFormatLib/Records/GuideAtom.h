@@ -32,8 +32,6 @@
 #pragma once
 #include "../Reader/Records.h"
 
-namespace PPT_FORMAT
-{
 class CRecordGuideAtom : public CUnknownRecord
 {
 	_UINT32 m_nType;
@@ -56,4 +54,3 @@ public:
 		m_nPos = StreamUtils::ReadDWORD(pStream);
 	}
 };
-}

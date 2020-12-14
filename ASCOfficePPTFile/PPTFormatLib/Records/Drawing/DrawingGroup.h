@@ -32,8 +32,6 @@
 #pragma once
 #include "../../Reader/Records.h"
 
-namespace PPT_FORMAT
-{
 class CRecordDrawingGroup : public CUnknownRecord
 {
 	UINT m_nMaxShapeId;           // Maximum shape ID
@@ -72,4 +70,3 @@ public:
 	}
 
 };
-}

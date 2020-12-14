@@ -32,8 +32,6 @@
 #pragma once
 #include "../../Reader/Records.h"
 
-namespace PPT_FORMAT
-{
 class CRecordBlipStoreEntry : public CUnknownRecord
 {
 public:
@@ -83,4 +81,3 @@ public:
 		m_nUnused3 = StreamUtils::ReadBYTE(pStream);
 	}
 };
-}

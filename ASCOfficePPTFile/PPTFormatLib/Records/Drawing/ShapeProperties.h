@@ -34,8 +34,6 @@
 #include "../../Reader/Records.h"
 #include "../../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/ElementSettings.h"
 
-namespace PPT_FORMAT
-{
 class CRecordShapeProperties : public CUnknownRecord
 {
 public:
@@ -64,4 +62,3 @@ public:
 		StreamUtils::StreamSeek(lPosition + m_oHeader.RecLen, pStream);
 	}
 };
-}

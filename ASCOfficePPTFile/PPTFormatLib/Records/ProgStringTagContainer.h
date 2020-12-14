@@ -34,8 +34,7 @@
 #include "Animations/TimeVariant.h"
 
 
-namespace PPT_FORMAT
-{
+namespace PPT_FORMAT {
 class CRecordProgStringTagContainer : public CUnknownRecord
 {
 public:

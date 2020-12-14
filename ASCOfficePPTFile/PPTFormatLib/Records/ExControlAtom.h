@@ -32,8 +32,6 @@
 #pragma once
 #include "../Reader/Records.h"
 
-namespace PPT_FORMAT
-{
 class CRecordExControlAtom : public CUnknownRecord
 {
 	UINT m_nSlideIdRef;
@@ -55,4 +53,3 @@ public:
 		m_nSlideIdRef = StreamUtils::ReadDWORD(pStream);
 	}
 };
-}

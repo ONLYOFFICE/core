@@ -32,8 +32,6 @@
 #pragma once
 #include "../../Reader/Records.h"
 
-namespace PPT_FORMAT
-{
 class CRecordChildAnchor : public CUnknownRecord
 {
 public:
@@ -58,4 +56,3 @@ public:
 		m_oBounds.bottom = StreamUtils::ReadLONG(pStream);
 	}
 };
-}

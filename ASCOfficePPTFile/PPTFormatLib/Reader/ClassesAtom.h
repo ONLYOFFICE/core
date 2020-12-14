@@ -34,8 +34,7 @@
 #include "../Records/CurrentUserAtom.h"
 
 //using namespace NSOfficePPT;
-namespace PPT_FORMAT
-{
+
 class CUserEdit
 { 
 public:
@@ -174,5 +173,4 @@ struct SInteractiveInfoAtom
 	BYTE  Jump; 
 	BYTE  Flags; 
 };
-}
 

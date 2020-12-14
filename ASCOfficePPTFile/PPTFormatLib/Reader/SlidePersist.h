@@ -38,9 +38,6 @@
 теперь все структуры...
 которые участвуют в записях
 **************************************************************/
-
-namespace PPT_FORMAT
-{
 class CTextFullSettings;
 struct SSlidePersist
 {
@@ -54,4 +51,3 @@ struct SSlidePersist
     std::wstring ToString();
 	SSlidePersist& operator =(const SSlidePersist& oSrc);
 }; 
-}

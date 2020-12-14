@@ -43,7 +43,7 @@
 
 #include <boost/smart_ptr/shared_array.hpp>
 
-using namespace PPT_FORMAT;
+//using namespace PPT_FORMAT;
 using namespace XLS;
 
 using NSCommon::nullable;

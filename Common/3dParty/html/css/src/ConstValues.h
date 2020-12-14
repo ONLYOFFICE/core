@@ -84,7 +84,7 @@ namespace NSCSS
                 {L"lightslategray",     L"778899"}, {L"slategray",             L"708090"}, {L"darkslategray", L"2F4F4F"},
                 {L"black",              L"000000"},
                 /* Outdated */
-                {L"windowtext",         L"000000"}
+                {L"windowtext",         L"000000"},  {L"transparent",           L"000000"}
             };
         }
 
@@ -590,11 +590,14 @@ namespace NSCSS
                 float fBottomSide;
                 float fLeftSide;
 
+                bool bPermission;
+
             public:
                 Margin() : fTopSide     (fNoneValue),
                            fRightSide   (fNoneValue),
                            fBottomSide  (fNoneValue),
-                           fLeftSide    (fNoneValue){}
+                           fLeftSide    (fNoneValue),
+                           bPermission  (true){}
 
                 Margin operator+=(const Margin& oMargin)
                 {
@@ -620,12 +623,20 @@ namespace NSCSS
 
                 bool Empty() const
                 {
+                    if (!bPermission)
+                        return true;
+
                     return fTopSide == fRightSide == fBottomSide == fLeftSide == fNoneValue;
                 };
 
+                void SetPermission(const bool &bPermission)
+                {
+                    this->bPermission = bPermission;
+                }
+
                 void AddMargin(const std::wstring& sMargin)
                 {
-                    if (sMargin.empty())
+                    if (sMargin.empty() || !bPermission)
                         return;
 
                     if (fTopSide == fNoneValue)
@@ -684,7 +695,7 @@ namespace NSCSS
 
                 void AddTopMargin(const std::wstring& sTopMargin)
                 {
-                    if (sTopMargin.empty())
+                    if (sTopMargin.empty() || !bPermission)
                         return;
 
                     if (fTopSide == fNoneValue)
@@ -695,7 +706,7 @@ namespace NSCSS
 
                 void AddRightMargin(const std::wstring& sRightMargin)
                 {
-                    if (sRightMargin.empty())
+                    if (sRightMargin.empty() || !bPermission)
                         return;
 
                     if (fRightSide == fNoneValue)
@@ -706,7 +717,7 @@ namespace NSCSS
 
                 void AddBottomMargin(const std::wstring& sBottomMargin)
                 {
-                    if (sBottomMargin.empty())
+                    if (sBottomMargin.empty() || !bPermission)
                         return;
 
                     if (fBottomSide == fNoneValue)
@@ -717,7 +728,7 @@ namespace NSCSS
 
                 void AddLeftMargin(const std::wstring& sLeftMargin)
                 {
-                    if (sLeftMargin.empty())
+                    if (sLeftMargin.empty() || !bPermission)
                         return;
 
                     if (fLeftSide == fNoneValue)
@@ -728,7 +739,7 @@ namespace NSCSS
 
                 std::wstring GetTopSide() const
                 {
-                    if (fTopSide == fNoneValue)
+                    if (fTopSide == fNoneValue || !bPermission)
                         return std::wstring();
 
                     return std::to_wstring(static_cast<short int>(fTopSide  * 10.0f + 0.5f));
@@ -736,7 +747,7 @@ namespace NSCSS
 
                 std::wstring GetRightSide() const
                 {
-                    if (fTopSide == fNoneValue)
+                    if (fTopSide == fNoneValue || !bPermission)
                         return std::wstring();
 
                     return (fRightSide >= -128.0f) ? std::to_wstring(static_cast<short int>(fRightSide  * 10.0f + ((fLeftSide > 0) ? 0.5f : -0.5f))) : L"-1280";
@@ -744,7 +755,7 @@ namespace NSCSS
 
                 std::wstring GetBottomSide() const
                 {
-                    if (fBottomSide == fNoneValue)
+                    if (fBottomSide == fNoneValue || !bPermission)
                         return std::wstring();
 
                     return std::to_wstring(static_cast<short int>(fBottomSide  * 10.0f + 0.5f));
@@ -752,7 +763,7 @@ namespace NSCSS
 
                 std::wstring GetLeftSide() const
                 {
-                    if (fLeftSide == fNoneValue)
+                    if (fLeftSide == fNoneValue || !bPermission)
                         return std::wstring();
 
                     return (fLeftSide >= -128.0f) ? std::to_wstring(static_cast<short int>(fLeftSide  * 10.0f + ((fLeftSide > 0) ? 0.5f : -0.5f))) : L"-1280";
@@ -878,7 +889,7 @@ namespace NSCSS
                     else
                     {
                         std::wstring sNewColor = sValue;
-                        std::transform(sNewColor.begin(), sNewColor.end(), sNewColor.begin(), tolower);
+                        std::transform(sNewColor.begin(), sNewColor.end(), sNewColor.begin(), towlower);
 
                         const std::map<std::wstring, std::wstring>::const_iterator oHEX = NSMaps::mColors.find(sNewColor);
                         if (oHEX != NSMaps::mColors.end())
@@ -939,10 +950,11 @@ namespace NSCSS
 
             class BorderSide
             {
-            public:
                 float fWidth;
                 std::wstring sStyle;
                 std::wstring sColor; //HEX color
+
+            public:
 
                 BorderSide() : fWidth(fNoneValue),
                                sStyle(L"single"),
@@ -974,6 +986,27 @@ namespace NSCSS
                            sColor  == L"auto";
                 }
 
+                void SetWidthWithoutChecking(const float& fWidth)
+                {
+                    this->fWidth = fWidth;
+                }
+
+                void SetStyleWithoutChecking(const std::wstring& sStyle)
+                {
+                    this->sStyle = sStyle;
+                }
+
+                void SetColorWithoutChecking(const std::wstring& sColor)
+                {
+                    this->sColor = sColor;
+                }
+
+                void SetWidth(const float& fWidth)
+                {
+                    if (fWidth >= 0.0f)
+                        this->fWidth = fWidth;
+                }
+
                 void SetStyle(const std::wstring& sValue)
                 {
                     if (sValue.empty())
@@ -982,7 +1015,7 @@ namespace NSCSS
                     std::wstring sNewValue = sValue;
                     if (!sNewValue.empty())
                     {
-                        std::transform(sNewValue.begin(), sNewValue.end(), sNewValue.begin(), tolower);
+                        std::transform(sNewValue.begin(), sNewValue.end(), sNewValue.begin(), towlower);
 
                         if (sNewValue == L"dotted")
                             sStyle = sNewValue;
@@ -1010,7 +1043,9 @@ namespace NSCSS
 
                     if (sValue[0] == L'#')
                     {
-                        if (sValue.length() == 7)
+                        if (sValue.length() == 6)
+                            sColor = sValue;
+                        else if (sValue.length() == 7)
                             sColor = sValue.substr(1, 7);
                         else if (sValue.length() == 4)
                         {
@@ -1030,12 +1065,35 @@ namespace NSCSS
                     }
                     else
                     {
-                        std::wstring sNewColor;
-                        std::transform(sValue.begin(), sValue.end(), sNewColor.begin(), tolower);
+                        std::wstring sNewColor = sValue;
+                        std::transform(sNewColor.begin(), sNewColor.end(), sNewColor.begin(), towlower);
                         const std::map<std::wstring, std::wstring>::const_iterator oHEX = NSMaps::mColors.find(sNewColor);
-                        if (oHEX != NSMaps::mColors.end())
+                        if (oHEX != NSMaps::mColors.cend())
                             sColor = oHEX->second;
                     }
+                }
+
+                std::wstring GetStyle() const
+                {
+                    return sStyle;
+                }
+
+                std::wstring GetColor() const
+                {
+                    return sColor;
+                }
+
+                std::wstring GetWidthW() const
+                {
+                    if (fWidth < 0)
+                        return L"0";
+
+                    return std::to_wstring(static_cast<unsigned short>(fWidth + 0.5f));
+                }
+
+                float GetWidth() const
+                {
+                    return fWidth;
                 }
 
                 static BorderSide GetCorrectSide(const std::wstring& sValue)
@@ -1075,7 +1133,7 @@ namespace NSCSS
                         }
                         else
                         {
-                            std::transform(sValue.begin(), sValue.end(), sValue.begin(), tolower);
+                            std::transform(sValue.begin(), sValue.end(), sValue.begin(), towlower);
 
                             if (sValue == L"dotted")
                                 oBorderSide.sStyle = sValue;
@@ -1147,13 +1205,13 @@ namespace NSCSS
 
                 void SetWidth(const float& fValue)
                 {
-                    if (fValue <= 0.0f)
+                    if (fValue < 0.0f)
                         return;
 
-                    stTop.fWidth    = fValue;
-                    stRight.fWidth  = fValue;
-                    stBottom.fWidth = fValue;
-                    stLeft.fWidth   = fValue;
+                    stTop   .SetWidthWithoutChecking(fValue);
+                    stRight .SetWidthWithoutChecking(fValue);
+                    stBottom.SetWidthWithoutChecking(fValue);
+                    stLeft  .SetWidthWithoutChecking(fValue);
                 }
 
                 void SetStyle(const std::wstring& sValue)
@@ -1162,7 +1220,7 @@ namespace NSCSS
                         return;
 
                     std::wstring sNewValue = sValue;
-                    std::transform(sNewValue.begin(), sNewValue.end(), sNewValue.begin(), tolower);
+                    std::transform(sNewValue.begin(), sNewValue.end(), sNewValue.begin(), towlower);
                     std::wstring sStyle;
 
                     if (sNewValue == L"dotted")
@@ -1181,11 +1239,13 @@ namespace NSCSS
                         sStyle = L"thinThickMediumGap";
                     else if (sNewValue == L"outset")
                         sStyle = L"thickThinMediumGap";
+                    else
+                        return;
 
-                    stTop.sStyle    = sStyle;
-                    stRight.sStyle  = sStyle;
-                    stBottom.sStyle = sStyle;
-                    stLeft.sStyle   = sStyle;
+                    stTop   .SetStyleWithoutChecking(sStyle);
+                    stRight .SetStyleWithoutChecking(sStyle);
+                    stBottom.SetStyleWithoutChecking(sStyle);
+                    stLeft  .SetStyleWithoutChecking(sStyle);
                 }
 
                 void SetColor(const std::wstring& sValue)
@@ -1216,18 +1276,19 @@ namespace NSCSS
                     }
                     else
                     {
-                        std::transform(sValue.begin(), sValue.end(), sNewColor.begin(), tolower);
-                        const std::map<std::wstring, std::wstring>::const_iterator oHEX = NSMaps::mColors.find(sNewColor);
+                        std::wstring sTempvalue = sValue;
+                        std::transform(sTempvalue.begin(), sTempvalue.end(), sTempvalue.begin(), towlower);
+                        const std::map<std::wstring, std::wstring>::const_iterator oHEX = NSMaps::mColors.find(sTempvalue);
                         if (oHEX != NSMaps::mColors.end())
                             sNewColor = oHEX->second;
                     }
 
                     if (!sNewColor.empty())
                     {
-                        stTop.sColor    = sNewColor;
-                        stRight.sColor  = sNewColor;
-                        stBottom.sColor = sNewColor;
-                        stLeft.sColor   = sNewColor;
+                        stTop   .SetColorWithoutChecking(sNewColor);
+                        stRight .SetColorWithoutChecking(sNewColor);
+                        stBottom.SetColorWithoutChecking(sNewColor);
+                        stLeft  .SetColorWithoutChecking(sNewColor);
                     }
                 }
 
@@ -1256,11 +1317,6 @@ namespace NSCSS
                 bool Empty() const
                 {
                     return sColor.empty();
-                }
-
-                void SetBackground(const std::wstring &sBackground)
-                {
-
                 }
 
                 void SetColor(const std::wstring &sValue)
@@ -1292,10 +1348,22 @@ namespace NSCSS
                     else
                     {
                         std::wstring sNewColor = sValue;
-                        std::transform(sNewColor.begin(), sNewColor.end(), sNewColor.begin(), tolower);
+                        std::transform(sNewColor.begin(), sNewColor.end(), sNewColor.begin(), towlower);
                         const std::map<std::wstring, std::wstring>::const_iterator oHEX = NSMaps::mColors.find(sNewColor);
                         if (oHEX != NSMaps::mColors.end())
                             sColor = oHEX->second;
+                    }
+                }
+
+                void SetBackground(const std::wstring& sBackground)
+                {
+                    const std::vector<std::wstring> &arValues = NS_STATIC_FUNCTIONS::GetWordsW(sBackground, L" ");
+
+                    for (const std::wstring& sValue : arValues)
+                    {
+                        SetColor(sValue);
+                        if (!sColor.empty())
+                            return;
                     }
                 }
 

@@ -270,7 +270,7 @@ namespace NSCSS
                 CASE(L"mso-border-alt"):
                 {
                     const NSConstValues::NSCssProperties::BorderSide oBorderSide = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
-                    if (oBorderSide.fWidth >= 0)
+                    if (oBorderSide.GetWidth() >= 0)
                     {
                         m_pBorder.stTop     = oBorderSide;
                         m_pBorder.stRight   = oBorderSide;
@@ -298,12 +298,14 @@ namespace NSCSS
                 //BORDER TOP
                 CASE(L"border-top"):
                 {
-                    m_pBorder.stTop = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
+                    const NSConstValues::NSCssProperties::BorderSide oBorderSide = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
+                    if (oBorderSide.GetWidth() >= 0)
+                        m_pBorder.stTop = oBorderSide;
                     break;
                 }
                 CASE(L"border-top-width"):
                 {
-                    m_pBorder.stTop.fWidth = wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL);
+                    m_pBorder.stTop.SetWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL));
                     break;
                 }
                 CASE(L"border-top-style"):
@@ -319,12 +321,15 @@ namespace NSCSS
                 //BORDER RIGHT
                 CASE(L"border-right"):
                 {
-                    m_pBorder.stRight = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
+                    const NSConstValues::NSCssProperties::BorderSide oBorderSide = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
+                    if (oBorderSide.GetWidth() >= 0)
+                        m_pBorder.stRight = oBorderSide;
+
                     break;
                 }
                 CASE(L"border-right-width"):
                 {
-                    m_pBorder.stRight.fWidth = wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL);
+                    m_pBorder.stRight.SetWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL));
                     break;
                 }
                 CASE(L"border-right-style"):
@@ -340,12 +345,14 @@ namespace NSCSS
                 //BORDER bottom
                 CASE(L"border-bottom"):
                 {
-                    m_pBorder.stBottom = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
+                    const NSConstValues::NSCssProperties::BorderSide oBorderSide = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
+                    if (oBorderSide.GetWidth() >= 0)
+                        m_pBorder.stBottom = oBorderSide;
                     break;
                 }
                 CASE(L"border-bottom-width"):
                 {
-                    m_pBorder.stBottom.fWidth = wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL);
+                    m_pBorder.stBottom.SetWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL));
                     break;
                 }
                 CASE(L"border-bottom-style"):
@@ -361,12 +368,14 @@ namespace NSCSS
                 //BORDER LEFT
                 CASE(L"border-left"):
                 {
-                    m_pBorder.stLeft = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
+                    const NSConstValues::NSCssProperties::BorderSide oBorderSide = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
+                    if (oBorderSide.GetWidth() >= 0)
+                        m_pBorder.stLeft = oBorderSide;
                     break;
                 }
                 CASE(L"border-left-width"):
                 {
-                    m_pBorder.stLeft.fWidth = wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL);
+                    m_pBorder.stLeft.SetWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL));
                     break;
                 }
                 CASE(L"border-left-style"):
@@ -387,7 +396,8 @@ namespace NSCSS
                 }
                 CASE(L"background"):
                 {
-
+                    m_pBackground.SetBackground(pPropertie.second);
+                    break;
                 }
             }
         }

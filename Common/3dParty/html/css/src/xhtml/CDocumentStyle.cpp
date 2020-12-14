@@ -265,7 +265,7 @@ namespace NSCSS
         }
 
         const std::wstring& sIndent = oStyle.m_pText.GetIndentW();
-        if (!sIndent.empty() && oStyle.GetId().find(L"table") == std::wstring::npos)
+        if (!sIndent.empty())
             sInfValue += L"w:firstLine=\"" + sIndent + L"\" ";
 
         oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_Ind, sInfValue);
@@ -298,9 +298,9 @@ namespace NSCSS
         {
             if (oStyle.m_pBorder.EqualSides())
             {
-                const std::wstring sBorderColor = oStyle.m_pBorder.stBottom.sColor;
-                const std::wstring sBorderStyle = oStyle.m_pBorder.stBottom.sStyle;
-                const std::wstring sBorderWidth = std::to_wstring(static_cast<short int>(oStyle.m_pBorder.stBottom.fWidth + 0.5f));
+                const std::wstring sBorderColor = oStyle.m_pBorder.stBottom.GetColor();
+                const std::wstring sBorderStyle = oStyle.m_pBorder.stBottom.GetStyle();
+                const std::wstring sBorderWidth = oStyle.m_pBorder.stBottom.GetWidthW();
 
                 const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
                         sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
@@ -314,9 +314,9 @@ namespace NSCSS
             {
                 if (!oStyle.m_pBorder.stTop.Empty())
                 {
-                    const std::wstring sBorderColor = oStyle.m_pBorder.stTop.sColor;
-                    const std::wstring sBorderStyle = oStyle.m_pBorder.stTop.sStyle;
-                    const std::wstring sBorderWidth = std::to_wstring(static_cast<short int>(oStyle.m_pBorder.stTop.fWidth + 0.5f));
+                    const std::wstring sBorderColor = oStyle.m_pBorder.stTop.GetColor();
+                    const std::wstring sBorderStyle = oStyle.m_pBorder.stTop.GetStyle();
+                    const std::wstring sBorderWidth = oStyle.m_pBorder.stTop.GetWidthW();
 
                     const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
                             sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
@@ -326,9 +326,9 @@ namespace NSCSS
 
                 if (!oStyle.m_pBorder.stRight.Empty())
                 {
-                    const std::wstring sBorderColor = oStyle.m_pBorder.stRight.sColor;
-                    const std::wstring sBorderStyle = oStyle.m_pBorder.stRight.sStyle;
-                    const std::wstring sBorderWidth = std::to_wstring(static_cast<short int>(oStyle.m_pBorder.stRight.fWidth + 0.5f));
+                    const std::wstring sBorderColor = oStyle.m_pBorder.stRight.GetColor();
+                    const std::wstring sBorderStyle = oStyle.m_pBorder.stRight.GetStyle();
+                    const std::wstring sBorderWidth = oStyle.m_pBorder.stRight.GetWidthW();
 
                     const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
                             sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
@@ -338,9 +338,9 @@ namespace NSCSS
 
                 if (!oStyle.m_pBorder.stBottom.Empty())
                 {
-                    const std::wstring sBorderColor = oStyle.m_pBorder.stBottom.sColor;
-                    const std::wstring sBorderStyle = oStyle.m_pBorder.stBottom.sStyle;
-                    const std::wstring sBorderWidth = std::to_wstring(static_cast<short int>(oStyle.m_pBorder.stBottom.fWidth + 0.5f));
+                    const std::wstring sBorderColor = oStyle.m_pBorder.stBottom.GetColor();
+                    const std::wstring sBorderStyle = oStyle.m_pBorder.stBottom.GetStyle();
+                    const std::wstring sBorderWidth = oStyle.m_pBorder.stBottom.GetWidthW();
 
                     const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
                             sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
@@ -350,9 +350,9 @@ namespace NSCSS
 
                 if (!oStyle.m_pBorder.stLeft.Empty())
                 {
-                    const std::wstring sBorderColor = oStyle.m_pBorder.stLeft.sColor;
-                    const std::wstring sBorderStyle = oStyle.m_pBorder.stLeft.sStyle;
-                    const std::wstring sBorderWidth = std::to_wstring(static_cast<short int>(oStyle.m_pBorder.stLeft.fWidth + 0.5f));
+                    const std::wstring sBorderColor = oStyle.m_pBorder.stLeft.GetColor();
+                    const std::wstring sBorderStyle = oStyle.m_pBorder.stLeft.GetStyle();
+                    const std::wstring sBorderWidth = oStyle.m_pBorder.stLeft.GetWidthW();
 
                     const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
                             sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";

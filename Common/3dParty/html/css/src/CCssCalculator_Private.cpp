@@ -353,6 +353,9 @@ namespace NSCSS
         {
             arWords.push_back(oNode->m_sName);
 
+            if (oNode->m_sName == L"td")
+                oStyle->m_pMargin.SetPermission(false);
+
             if (!oNode->m_sClass.empty())
             {
                 if (oNode->m_sClass.find(L' ') != std::wstring::npos)

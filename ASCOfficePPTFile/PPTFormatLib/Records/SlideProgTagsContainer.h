@@ -45,7 +45,7 @@
 #include "SlideTime10Atom.h"
 #include "ProgStringTagContainer.h"
 
-#include "Text/TextMasterStyle9Atom.h"
+#include "TextMasterStyle9Atom.h"
 
 #define TN_PPT9 L"___PPT9"
 #define TN_PPT10 L"___PPT10"

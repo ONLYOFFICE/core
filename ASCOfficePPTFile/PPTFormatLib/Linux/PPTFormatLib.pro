@@ -463,7 +463,7 @@ HEADERS += \
     ../Records/OfficeArtClientData.h \
     ../Records/PlaceHolderAtom.h \
     ../Records/ShapeProgBinaryTagSubContainerOrAtom.h \
-    ../Records/Text/CFMasks.h \
+    ../Records/CFMasks.h \
     ../Records/ColorSchemeAtom.h \
     ../Records/CString.h \
     ../Records/CurrentUserAtom.h \
@@ -505,11 +505,11 @@ HEADERS += \
     ../Records/NotesPersistAtom.h \
     ../Records/NoZoomViewInfoAtom.h \
     ../Records/OutlineTextRefAtom.h \
-    ../Records/Text/FontCollection10Container.h \
-    ../Records/Text/FontEmbedFlags10Atom.h \
-    ../Records/Text/OutlineTextProps9Container.h \
-    ../Records/Text/OutlineTextPropsHeaderExAtom.h \
-    ../Records/Text/PFMasks.h \
+    ../Records/FontCollection10Container.h \
+    ../Records/FontEmbedFlags10Atom.h \
+    ../Records/OutlineTextProps9Container.h \
+    ../Records/OutlineTextPropsHeaderExAtom.h \
+    ../Records/PFMasks.h \
     ../Records/PersistDirectoryAtom.h \
     ../Records/PlaceHolderAtom.h \
     ../Records/ProgStringTagContainer.h \
@@ -542,15 +542,15 @@ HEADERS += \
     ../Records/SSlideLayoutAtom.h \
     ../Records/SSSlideInfoAtom.h \
     ../Records/StyleTextPropAtom.h \
-    ../Records/Text/StyleTextProp10Atom.h \
-    ../Records/Text/StyleTextProp11Atom.h \
-    ../Records/Text/StyleTextProp9Atom.h \
-    ../Records/Text/TextCFException10.h \
-    ../Records/Text/TextCFException9.h \
-    ../Records/Text/TextDefaults9Atom.h \
-    ../Records/Text/TextMasterStyle9Atom.h \
-    ../Records/Text/TextMasterStyle9Level.h \
-    ../Records/Text/TextSIException.h \
+    ../Records/StyleTextProp10Atom.h \
+    ../Records/StyleTextProp11Atom.h \
+    ../Records/StyleTextProp9Atom.h \
+    ../Records/TextCFException10.h \
+    ../Records/TextCFException9.h \
+    ../Records/TextDefaults9Atom.h \
+    ../Records/TextMasterStyle9Atom.h \
+    ../Records/TextMasterStyle9Level.h \
+    ../Records/TextSIException.h \
     ../Records/TextBookmarkAtom.h \
     ../Records/TextBytesAtom.h \
     ../Records/TextCFExceptionAtom.h \
@@ -561,7 +561,7 @@ HEADERS += \
     ../Records/TextMasterStyle9Atom.h \
     ../Records/TextMasterStyle9Level.h \
     ../Records/TextMasterStyleAtom.h \
-    ../Records/Text/TextPFException9.h \
+    ../Records/TextPFException9.h \
     ../Records/TextPFExceptionAtom.h \
     ../Records/TextRulerAtom.h \
     ../Records/TextSIExceptionAtom.h \

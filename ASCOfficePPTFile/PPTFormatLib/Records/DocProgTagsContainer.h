@@ -32,10 +32,10 @@
 #pragma once
 
 #include "CString.h"
-#include "Text/TextMasterStyle9Atom.h"
+#include "TextMasterStyle9Atom.h"
 #include "ProgStringTagContainer.h"
-#include "Text/TextDefaults9Atom.h"
-#include "Text/OutlineTextProps9Container.h"
+#include "TextDefaults9Atom.h"
+#include "OutlineTextProps9Container.h"
 
 
 #define ___PPT9  L"___PPT9"

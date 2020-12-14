@@ -32,9 +32,9 @@
 #pragma once
 
 #include "CString.h"
-#include "Text/StyleTextProp9Atom.h"
-#include "Text/StyleTextProp10Atom.h"
-#include "Text/StyleTextProp11Atom.h"
+#include "StyleTextProp9Atom.h"
+#include "StyleTextProp10Atom.h"
+#include "StyleTextProp11Atom.h"
 
 #define TN_PPT9 L"___PPT9"
 #define TN_PPT10 L"___PPT10"

@@ -668,7 +668,7 @@ namespace NSDoctRenderer
             }
             else
             {
-                bIsNoError = this->m_pInternal->ExecuteCommand(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)_data, (LONG)_len));
+                //bIsNoError = this->m_pInternal->ExecuteCommand(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)_data, (LONG)_len));
                 sJsCommands += command;
                 sJsCommands += "\n";
             }

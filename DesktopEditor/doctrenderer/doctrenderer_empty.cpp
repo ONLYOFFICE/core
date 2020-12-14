@@ -82,6 +82,9 @@ namespace NSDoctRenderer
     bool CDocBuilder::IsSaveWithDoctrendererMode() { return false; }
 
     char* CDocBuilder::GetVersion() { return "0.0"; }
+
+    void CDocBuilder::Initialize() {}
+    void CDocBuilder::Dispose() {}
 }
 
 namespace NSDoctRenderer

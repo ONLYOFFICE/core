@@ -556,7 +556,9 @@ void odf_drawing_context::end_drawing()
 				if (impl_->current_drawing_state_.presentation_class_)
 				{
 					draw_layer = L"layout";
-					draw->common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_placeholder_ = true;
+					
+					if (impl_->current_drawing_state_.oox_shape_preset_ != 3000)
+						draw->common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_placeholder_ = true;
 				}
 			}
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_class_ = impl_->current_drawing_state_.presentation_class_;

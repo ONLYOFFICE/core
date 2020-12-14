@@ -1482,548 +1482,542 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 
 
 CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
-						CTheme* pTheme, CLayout* pLayout, 
-						CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide)
+                        CTheme* pTheme, CLayout* pLayout,
+                        CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide)
 {
-	CElementPtr pElement;
+    CElementPtr pElement;
 
-	std::vector<CRecordShape*> oArrayShape;
-	GetRecordsByType(&oArrayShape, true, true);
+    std::vector<CRecordShape*> oArrayShape;
+    GetRecordsByType(&oArrayShape, true, true);
 
-	if (0 == oArrayShape.size())
-		return pElement;
+    if (0 == oArrayShape.size())
+        return pElement;
 
     // PlaceHolder
-    std::vector<CRecordOfficeArtClientData*> oOfficeArtClientData;
-    GetRecordsByType(&oOfficeArtClientData, true, true);
     std::vector<CRecordPlaceHolderAtom*> oArrayPlaceHolder;
-//	GetRecordsByType(&oArrayPlaceHolder, true, true);
-    if (!oOfficeArtClientData.empty() && oOfficeArtClientData[0]->m_placeholderAtom.is_init())
+    GetRecordsByType(&oArrayPlaceHolder, true, true);
+
+    std::vector<CRecordShapeProperties*> oArrayOptions;
+    GetRecordsByType(&oArrayOptions, true, /*true*/false/*secondary & tetriary*/);
+
+    PPTShapes::ShapeType eType = (PPTShapes::ShapeType)oArrayShape[0]->m_oHeader.RecInstance;
+    ElementType			elType = GetTypeElem((ODRAW::eSPT)oArrayShape[0]->m_oHeader.RecInstance);
+
+    int lMasterID = -1;
+
+    CElementPtr pElementLayout;
+
+    if (NULL != pSlide)
     {
-        oArrayPlaceHolder.push_back(oOfficeArtClientData[0]->m_placeholderAtom.GetPointer());
-    }
+        bool bIsMaster = oArrayShape[0]->m_bHaveMaster;
+        if (bIsMaster && elType !=etPicture)
+        {
+            for (int i = 0; i < oArrayOptions[0]->m_oProperties.m_lCount; ++i)
+            {
+                if (hspMaster == oArrayOptions[0]->m_oProperties.m_arProperties[i].m_ePID)
+                {
+                    lMasterID = oArrayOptions[0]->m_oProperties.m_arProperties[i].m_lValue;
 
-	std::vector<CRecordShapeProperties*> oArrayOptions;
-	GetRecordsByType(&oArrayOptions, true, /*true*/false/*secondary & tetriary*/);
-
-	PPTShapes::ShapeType eType = (PPTShapes::ShapeType)oArrayShape[0]->m_oHeader.RecInstance;
-	ElementType			elType = GetTypeElem((ODRAW::eSPT)oArrayShape[0]->m_oHeader.RecInstance); 
-
-	int lMasterID = -1;
-
-	CElementPtr pElementLayout;
-	
-	if (NULL != pSlide)
-	{
-		bool bIsMaster = oArrayShape[0]->m_bHaveMaster;
-		if (bIsMaster && elType !=etPicture)
-		{
-			for (int i = 0; i < oArrayOptions[0]->m_oProperties.m_lCount; ++i)
-			{
-				if (hspMaster == oArrayOptions[0]->m_oProperties.m_arProperties[i].m_ePID)
-				{
-					lMasterID = oArrayOptions[0]->m_oProperties.m_arProperties[i].m_lValue;
-
-					if (pLayout && !oArrayPlaceHolder.empty())
+                    if (pLayout && !oArrayPlaceHolder.empty())
                     {
-						int placeholder_type	= oArrayPlaceHolder[0]->m_nPlacementID;
-						int placeholder_id		= oArrayPlaceHolder[0]->m_nPosition;
+                        int placeholder_type	= oArrayPlaceHolder[0]->m_nPlacementID;
+                        int placeholder_id		= oArrayPlaceHolder[0]->m_nPosition;
 
                         size_t nIndexMem = pLayout->m_arElements.size();
 
                         for (size_t nIndex = 0; nIndex < nIndexMem; ++nIndex)
                         {
                             if ((placeholder_type == pLayout->m_arElements[nIndex]->m_lPlaceholderType )  &&
-								(	placeholder_id < 0 || pLayout->m_arElements[nIndex]->m_lPlaceholderID < 0 || 
-									placeholder_id == pLayout->m_arElements[nIndex]->m_lPlaceholderID))
-							{
-								if (pLayout->m_arElements[nIndex]->m_bPlaceholderSet == false)
-								{
-									pElementLayout			= pLayout->m_arElements[nIndex]; //для переноса настроек
-									pElementLayout->m_lID	= lMasterID;
+                                (	placeholder_id < 0 || pLayout->m_arElements[nIndex]->m_lPlaceholderID < 0 ||
+                                    placeholder_id == pLayout->m_arElements[nIndex]->m_lPlaceholderID))
+                            {
+                                if (pLayout->m_arElements[nIndex]->m_bPlaceholderSet == false)
+                                {
+                                    pElementLayout			= pLayout->m_arElements[nIndex]; //для переноса настроек
+                                    pElementLayout->m_lID	= lMasterID;
 
-									if (placeholder_id >= 0 && pLayout->m_arElements[nIndex]->m_lPlaceholderID < 0 )
-										pLayout->m_arElements[nIndex]->m_lPlaceholderID = placeholder_id;
-								}  
+                                    if (placeholder_id >= 0 && pLayout->m_arElements[nIndex]->m_lPlaceholderID < 0 )
+                                        pLayout->m_arElements[nIndex]->m_lPlaceholderID = placeholder_id;
+                                }
 
-								pElement = pLayout->m_arElements[nIndex]->CreateDublicate();								
+                                pElement = pLayout->m_arElements[nIndex]->CreateDublicate();
 
-								if (elType == etShape)
-								{
-									CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
-									if (NULL != pShape)
-										pShape->m_pShape->m_oText.m_arParagraphs.clear();
-								}
-          
-								break;
-							}
+                                if (elType == etShape)
+                                {
+                                    CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
+                                    if (NULL != pShape)
+                                        pShape->m_pShape->m_oText.m_arParagraphs.clear();
+                                }
+
+                                break;
+                            }
                         }
                     }
-					break;
-				}
-			}
-		}
-	}
-	if (!pElement)
-	{
-		switch (eType)
-		{
-		case sptMax:
-		case sptNil:
-			break;
-		case sptPictureFrame:
-			{
-				std::vector<CRecordExObjRefAtom*> oArrayEx;
-				GetRecordsByType(&oArrayEx, true, true);
+                    break;
+                }
+            }
+        }
+    }
+    if (!pElement)
+    {
+        switch (eType)
+        {
+        case sptMax:
+        case sptNil:
+            break;
+        case sptPictureFrame:
+            {
+                std::vector<CRecordExObjRefAtom*> oArrayEx;
+                GetRecordsByType(&oArrayEx, true, true);
 
-				CExFilesInfo oInfo;
-				CExFilesInfo oInfoDefault;
-				// по умолчанию картинка (или оле объект)
-				CExFilesInfo::ExFilesType exType = CExFilesInfo::eftNone;
-				CExFilesInfo* pInfo = pMapIDs->Lock(0xFFFFFFFF, exType);
-				if (NULL != pInfo)
-				{
-					oInfo			= *pInfo;
-					oInfoDefault	= oInfo;
-				}
+                CExFilesInfo oInfo;
+                CExFilesInfo oInfoDefault;
+                // по умолчанию картинка (или оле объект)
+                CExFilesInfo::ExFilesType exType = CExFilesInfo::eftNone;
+                CExFilesInfo* pInfo = pMapIDs->Lock(0xFFFFFFFF, exType);
+                if (NULL != pInfo)
+                {
+                    oInfo			= *pInfo;
+                    oInfoDefault	= oInfo;
+                }
 
-				if (0 != oArrayEx.size())
-				{
-					pInfo = pMapIDs->Lock(oArrayEx[0]->m_nExObjID, exType);
-					if (NULL != pInfo)
-					{
-						oInfo = *pInfo;
-					}
-				}
+                if (0 != oArrayEx.size())
+                {
+                    pInfo = pMapIDs->Lock(oArrayEx[0]->m_nExObjID, exType);
+                    if (NULL != pInfo)
+                    {
+                        oInfo = *pInfo;
+                    }
+                }
 
-				if (CExFilesInfo::eftVideo == exType)
-				{
-					CVideoElement* pVideoElem		= new CVideoElement();
-					
-					pVideoElem->m_strVideoFileName	= oInfo.m_strFilePath ;
-					pVideoElem->m_strImageFileName	= oInfoDefault.m_strFilePath + FILE_SEPARATOR_STR;
+                if (CExFilesInfo::eftVideo == exType)
+                {
+                    CVideoElement* pVideoElem		= new CVideoElement();
 
-					pElement = CElementPtr(pVideoElem);
-				}
-				else if (CExFilesInfo::eftAudio == exType)
-				{
-					CAudioElement* pAudioElem		= new CAudioElement();
-					pElement = CElementPtr(pAudioElem);
-					
-					pAudioElem->m_strAudioFileName	= oInfo.m_strFilePath;
-					pAudioElem->m_strImageFileName	= oInfoDefault.m_strFilePath + FILE_SEPARATOR_STR;
+                    pVideoElem->m_strVideoFileName	= oInfo.m_strFilePath ;
+                    pVideoElem->m_strImageFileName	= oInfoDefault.m_strFilePath + FILE_SEPARATOR_STR;
 
-					pAudioElem->m_dClipStartTime	= oInfo.m_dStartTime;
-					pAudioElem->m_dClipEndTime		= oInfo.m_dEndTime;
+                    pElement = CElementPtr(pVideoElem);
+                }
+                else if (CExFilesInfo::eftAudio == exType)
+                {
+                    CAudioElement* pAudioElem		= new CAudioElement();
+                    pElement = CElementPtr(pAudioElem);
 
-					pAudioElem->m_bLoop				= oInfo.m_bLoop;						
+                    pAudioElem->m_strAudioFileName	= oInfo.m_strFilePath;
+                    pAudioElem->m_strImageFileName	= oInfoDefault.m_strFilePath + FILE_SEPARATOR_STR;
 
-					if (NULL != pSlide)
-					{
-						pAudioElem->m_dStartTime	= pSlide->m_dStartTime;
-						pAudioElem->m_dEndTime		= pSlide->m_dEndTime;
+                    pAudioElem->m_dClipStartTime	= oInfo.m_dStartTime;
+                    pAudioElem->m_dClipEndTime		= oInfo.m_dEndTime;
 
-					}
-					else
+                    pAudioElem->m_bLoop				= oInfo.m_bLoop;
+
+                    if (NULL != pSlide)
+                    {
+                        pAudioElem->m_dStartTime	= pSlide->m_dStartTime;
+                        pAudioElem->m_dEndTime		= pSlide->m_dEndTime;
+
+                    }
+                    else
                     {
                         if (pLayout)
                             pLayout->m_arElements.push_back(pElement);
                     }
 
-				}
-				else 
-				{
-					CImageElement* pImageElem		= new CImageElement();
-					pImageElem->m_strImageFileName	= oInfo.m_strFilePath + FILE_SEPARATOR_STR;
+                }
+                else
+                {
+                    CImageElement* pImageElem		= new CImageElement();
+                    pImageElem->m_strImageFileName	= oInfo.m_strFilePath + FILE_SEPARATOR_STR;
 
-					pElement = CElementPtr(pImageElem);
-				}					
-			}break;
-		default:
-			{
-				if (bGroupShape)
-				{
-					CGroupElement* pGroupElem = new CGroupElement();
-					pElement = CElementPtr(pGroupElem);
-				}			
-				else
-				{
-					// shape
-					CShapeElement* pShape = new CShapeElement(NSBaseShape::ppt, eType);
-					CPPTShape *ppt_shape = dynamic_cast<CPPTShape *>(pShape->m_pShape->getBaseShape().get());
+                    pElement = CElementPtr(pImageElem);
+                }
+            }break;
+        default:
+            {
+                if (bGroupShape)
+                {
+                    CGroupElement* pGroupElem = new CGroupElement();
+                    pElement = CElementPtr(pGroupElem);
+                }
+                else
+                {
+                    // shape
+                    CShapeElement* pShape = new CShapeElement(NSBaseShape::ppt, eType);
+                    CPPTShape *ppt_shape = dynamic_cast<CPPTShape *>(pShape->m_pShape->getBaseShape().get());
 
-					if ( (ppt_shape) && (OOXMLShapes::sptCustom == ppt_shape->m_eType))
-					{
-						pShape->m_bShapePreset = true;
-					}
-					pElement = CElementPtr(pShape);		
-				}
-			}break;
-		}
-	}
+                    if ( (ppt_shape) && (OOXMLShapes::sptCustom == ppt_shape->m_eType))
+                    {
+                        pShape->m_bShapePreset = true;
+                    }
+                    pElement = CElementPtr(pShape);
+                }
+            }break;
+        }
+    }
 
-	if (!pElement)
-		return pElement;
+    if (!pElement)
+        return pElement;
 
-	pElement->m_lID			= oArrayShape[0]->m_nID;
-	pElement->m_lLayoutID	= lMasterID;
+    pElement->m_lID			= oArrayShape[0]->m_nID;
+    pElement->m_lLayoutID	= lMasterID;
 
-//---------внешние ссылки 
-	{
-		CExFilesInfo::ExFilesType exType		= CExFilesInfo::eftNone;
-		CExFilesInfo			* pTextureInfo	= pMapIDs->Lock(0xFFFFFFFF, exType);
+//---------внешние ссылки
+    {
+        CExFilesInfo::ExFilesType exType		= CExFilesInfo::eftNone;
+        CExFilesInfo			* pTextureInfo	= pMapIDs->Lock(0xFFFFFFFF, exType);
 
-		if (NULL != pTextureInfo)
-		{
-			pElement->m_oBrush.TexturePath = pTextureInfo->m_strFilePath + FILE_SEPARATOR_STR;
-		}
+        if (NULL != pTextureInfo)
+        {
+            pElement->m_oBrush.TexturePath = pTextureInfo->m_strFilePath + FILE_SEPARATOR_STR;
+        }
 
-		std::vector<CRecordExObjRefAtom*> oArrayEx;
-		GetRecordsByType(&oArrayEx, true, true);
-		if (0 != oArrayEx.size())
-		{
-			CExFilesInfo* pInfo = pMapIDs->Lock(oArrayEx[0]->m_nExObjID, exType);
+        std::vector<CRecordExObjRefAtom*> oArrayEx;
+        GetRecordsByType(&oArrayEx, true, true);
+        if (0 != oArrayEx.size())
+        {
+            CExFilesInfo* pInfo = pMapIDs->Lock(oArrayEx[0]->m_nExObjID, exType);
 
-			if (CExFilesInfo::eftHyperlink == exType && pInfo)
-			{
-				pElement->m_sHyperlink = pInfo->m_strFilePath;
-			}
-		}
-	}
-	std::wstring strShapeText;
-//------------------------------------------------------------------------------------------------		
-	// placeholders
-	if (0 < oArrayPlaceHolder.size())
-	{
-		pElement->m_bLine					= false; //по умолчанию у них нет линий
-		pElement->m_lPlaceholderID			= oArrayPlaceHolder[0]->m_nPosition;
-		pElement->m_lPlaceholderType		= oArrayPlaceHolder[0]->m_nPlacementID;
-		pElement->m_lPlaceholderSizePreset	= oArrayPlaceHolder[0]->m_nSize;
+            if (CExFilesInfo::eftHyperlink == exType && pInfo)
+            {
+                pElement->m_sHyperlink = pInfo->m_strFilePath;
+            }
+        }
+    }
+    std::wstring strShapeText;
+//------------------------------------------------------------------------------------------------
+    // placeholders
+    if (0 < oArrayPlaceHolder.size())
+    {
+        pElement->m_bLine					= false; //по умолчанию у них нет линий
+        pElement->m_lPlaceholderID			= oArrayPlaceHolder[0]->m_nPosition;
+        pElement->m_lPlaceholderType		= oArrayPlaceHolder[0]->m_nPlacementID;
+        pElement->m_lPlaceholderSizePreset	= oArrayPlaceHolder[0]->m_nSize;
 
-		if (pElementLayout) 
-			pElementLayout->m_lPlaceholderSizePreset	= oArrayPlaceHolder[0]->m_nSize;
+        if (pElementLayout)
+            pElementLayout->m_lPlaceholderSizePreset	= oArrayPlaceHolder[0]->m_nSize;
 
-		CorrectPlaceholderType(pElement->m_lPlaceholderType);
-	}
+        CorrectPlaceholderType(pElement->m_lPlaceholderType);
+    }
 
-	std::vector<CRecordRoundTripHFPlaceholder12Atom*> oArrayHFPlaceholder;
-	GetRecordsByType(&oArrayHFPlaceholder, true, true);
-	if (0 < oArrayHFPlaceholder.size())
-	{
-		pElement->m_lPlaceholderType	= oArrayHFPlaceholder[0]->m_nPlacementID;//PT_MasterDate, PT_MasterSlideNumber, PT_MasterFooter, or PT_MasterHeader
-		CorrectPlaceholderType(pElement->m_lPlaceholderType);
-		
-		if (pLayout)
-		{
-			std::multimap<int, CElementPtr>::iterator it = pLayout->m_mapPlaceholders.find(pElement->m_lPlaceholderType);
-			if (it != pLayout->m_mapPlaceholders.end())
-			{
-				pElement->m_lPlaceholderID = (it->second)->m_lPlaceholderID;
-			}
-		}
-	}
-	//meta placeholders
-	std::vector<CRecordFooterMetaAtom*> oArrayFooterMeta;
+    std::vector<CRecordRoundTripHFPlaceholder12Atom*> oArrayHFPlaceholder;
+    GetRecordsByType(&oArrayHFPlaceholder, true, true);
+    if (0 < oArrayHFPlaceholder.size())
+    {
+        pElement->m_lPlaceholderType	= oArrayHFPlaceholder[0]->m_nPlacementID;//PT_MasterDate, PT_MasterSlideNumber, PT_MasterFooter, or PT_MasterHeader
+        CorrectPlaceholderType(pElement->m_lPlaceholderType);
 
-	GetRecordsByType(&oArrayFooterMeta, true, true);
-	if (0 < oArrayFooterMeta.size())
-	{
-		pElement->m_lPlaceholderType		= PT_MasterFooter;
-		pElement->m_lPlaceholderUserStr	= oArrayFooterMeta[0]->m_nPosition;
-	}
-	std::vector<CRecordSlideNumberMetaAtom*> oArraySlideNumberMeta;
-	GetRecordsByType(&oArraySlideNumberMeta, true, true);
-	if (0 < oArraySlideNumberMeta.size())
-	{
-		pElement->m_lPlaceholderType = PT_MasterSlideNumber;
-	}
-	std::vector<CRecordGenericDateMetaAtom*> oArrayDateMeta;
-	GetRecordsByType(&oArrayDateMeta, true, true);
-	if (0 < oArrayDateMeta.size())
-	{
-		pElement->m_lPlaceholderType		= PT_MasterDate;
-		
-		CRecordDateTimeMetaAtom* format_data = dynamic_cast<CRecordDateTimeMetaAtom*>(oArrayDateMeta[0]);
-		if (format_data)
-		{
-			pElement->m_nFormatDate			= 1;
-			//todooo сделать форматированый вывод 
-		}
-		else
-		{
-			pElement->m_lPlaceholderUserStr	= oArrayDateMeta[0]->m_nPosition;
-			pElement->m_nFormatDate			= 2;
-		}
-	}
+        if (pLayout)
+        {
+            std::multimap<int, CElementPtr>::iterator it = pLayout->m_mapPlaceholders.find(pElement->m_lPlaceholderType);
+            if (it != pLayout->m_mapPlaceholders.end())
+            {
+                pElement->m_lPlaceholderID = (it->second)->m_lPlaceholderID;
+            }
+        }
+    }
+    //meta placeholders
+    std::vector<CRecordFooterMetaAtom*> oArrayFooterMeta;
+
+    GetRecordsByType(&oArrayFooterMeta, true, true);
+    if (0 < oArrayFooterMeta.size())
+    {
+        pElement->m_lPlaceholderType		= PT_MasterFooter;
+        pElement->m_lPlaceholderUserStr	= oArrayFooterMeta[0]->m_nPosition;
+    }
+    std::vector<CRecordSlideNumberMetaAtom*> oArraySlideNumberMeta;
+    GetRecordsByType(&oArraySlideNumberMeta, true, true);
+    if (0 < oArraySlideNumberMeta.size())
+    {
+        pElement->m_lPlaceholderType = PT_MasterSlideNumber;
+    }
+    std::vector<CRecordGenericDateMetaAtom*> oArrayDateMeta;
+    GetRecordsByType(&oArrayDateMeta, true, true);
+    if (0 < oArrayDateMeta.size())
+    {
+        pElement->m_lPlaceholderType		= PT_MasterDate;
+
+        CRecordDateTimeMetaAtom* format_data = dynamic_cast<CRecordDateTimeMetaAtom*>(oArrayDateMeta[0]);
+        if (format_data)
+        {
+            pElement->m_nFormatDate			= 1;
+            //todooo сделать форматированый вывод
+        }
+        else
+        {
+            pElement->m_lPlaceholderUserStr	= oArrayDateMeta[0]->m_nPosition;
+            pElement->m_nFormatDate			= 2;
+        }
+    }
 //------------- привязки ---------------------------------------------------------------------------------
-	std::vector<CRecordGroupShape*> oArrayGroupShape;
-	this->GetRecordsByType(&oArrayGroupShape, true, true);
+    std::vector<CRecordGroupShape*> oArrayGroupShape;
+    this->GetRecordsByType(&oArrayGroupShape, true, true);
 
-	if (0 != oArrayGroupShape.size())
-	{
-		pElement->m_rcGroupAnchor.left	= (LONG)oArrayGroupShape[0]->m_oBounds.left;
-		pElement->m_rcGroupAnchor.top	= (LONG)oArrayGroupShape[0]->m_oBounds.top;
-		pElement->m_rcGroupAnchor.right	= (LONG)oArrayGroupShape[0]->m_oBounds.right;
-		pElement->m_rcGroupAnchor.bottom	= (LONG)oArrayGroupShape[0]->m_oBounds.bottom;
-		
-		pElement->m_bGroupAnchorEnabled	= true;
-	}
-	std::vector<CRecordClientAnchor*> oArrayAnchor;
-	this->GetRecordsByType(&oArrayAnchor, true, true);
+    if (0 != oArrayGroupShape.size())
+    {
+        pElement->m_rcGroupAnchor.left	= (LONG)oArrayGroupShape[0]->m_oBounds.left;
+        pElement->m_rcGroupAnchor.top	= (LONG)oArrayGroupShape[0]->m_oBounds.top;
+        pElement->m_rcGroupAnchor.right	= (LONG)oArrayGroupShape[0]->m_oBounds.right;
+        pElement->m_rcGroupAnchor.bottom	= (LONG)oArrayGroupShape[0]->m_oBounds.bottom;
 
-	if (0 != oArrayAnchor.size())
-	{
-		pElement->m_rcAnchor.left	= (LONG)oArrayAnchor[0]->m_oBounds.Left;
-		pElement->m_rcAnchor.top	= (LONG)oArrayAnchor[0]->m_oBounds.Top;
-		pElement->m_rcAnchor.right	= (LONG)oArrayAnchor[0]->m_oBounds.Right;
-		pElement->m_rcAnchor.bottom	= (LONG)oArrayAnchor[0]->m_oBounds.Bottom;
+        pElement->m_bGroupAnchorEnabled	= true;
+    }
+    std::vector<CRecordClientAnchor*> oArrayAnchor;
+    this->GetRecordsByType(&oArrayAnchor, true, true);
 
-		pElement->m_bAnchorEnabled	= true;
-	}
+    if (0 != oArrayAnchor.size())
+    {
+        pElement->m_rcAnchor.left	= (LONG)oArrayAnchor[0]->m_oBounds.Left;
+        pElement->m_rcAnchor.top	= (LONG)oArrayAnchor[0]->m_oBounds.Top;
+        pElement->m_rcAnchor.right	= (LONG)oArrayAnchor[0]->m_oBounds.Right;
+        pElement->m_rcAnchor.bottom	= (LONG)oArrayAnchor[0]->m_oBounds.Bottom;
 
-	std::vector<CRecordChildAnchor*> oArrayChildAnchor;
-	this->GetRecordsByType(&oArrayChildAnchor, true, true);
+        pElement->m_bAnchorEnabled	= true;
+    }
 
-	if (0 != oArrayChildAnchor.size())
-	{
-		pElement->m_rcChildAnchor.left	= oArrayChildAnchor[0]->m_oBounds.left;
-		pElement->m_rcChildAnchor.top	= oArrayChildAnchor[0]->m_oBounds.top;
-		pElement->m_rcChildAnchor.right	= oArrayChildAnchor[0]->m_oBounds.right;
-		pElement->m_rcChildAnchor.bottom	= oArrayChildAnchor[0]->m_oBounds.bottom;
+    std::vector<CRecordChildAnchor*> oArrayChildAnchor;
+    this->GetRecordsByType(&oArrayChildAnchor, true, true);
 
-		pElement->m_bChildAnchorEnabled	= true;
-	}
+    if (0 != oArrayChildAnchor.size())
+    {
+        pElement->m_rcChildAnchor.left	= oArrayChildAnchor[0]->m_oBounds.left;
+        pElement->m_rcChildAnchor.top	= oArrayChildAnchor[0]->m_oBounds.top;
+        pElement->m_rcChildAnchor.right	= oArrayChildAnchor[0]->m_oBounds.right;
+        pElement->m_rcChildAnchor.bottom	= oArrayChildAnchor[0]->m_oBounds.bottom;
 
-	pElement->m_bFlipH = oArrayShape[0]->m_bFlipH;
-	pElement->m_bFlipV = oArrayShape[0]->m_bFlipV;
+        pElement->m_bChildAnchorEnabled	= true;
+    }
 
-	pElement->m_bIsBackground	=	(true == oArrayShape[0]->m_bBackground);
-	pElement->m_bHaveAnchor		=	(true == oArrayShape[0]->m_bHaveAnchor);
+    pElement->m_bFlipH = oArrayShape[0]->m_bFlipH;
+    pElement->m_bFlipV = oArrayShape[0]->m_bFlipV;
 
-	if (pElementLayout && (pElement->m_bAnchorEnabled || pElement->m_bChildAnchorEnabled))
-	{
-		pElementLayout->m_rcAnchor			= pElement->m_rcAnchor;
-		pElementLayout->m_rcChildAnchor		= pElement->m_rcChildAnchor;
+    pElement->m_bIsBackground	=	(true == oArrayShape[0]->m_bBackground);
+    pElement->m_bHaveAnchor		=	(true == oArrayShape[0]->m_bHaveAnchor);
 
-		pElementLayout->m_bPlaceholderSet		= true;
-		pElementLayout->m_bAnchorEnabled		= pElement->m_bAnchorEnabled;
-		pElementLayout->m_bChildAnchorEnabled	= pElement->m_bChildAnchorEnabled;
-	}
+    if (pElementLayout && (pElement->m_bAnchorEnabled || pElement->m_bChildAnchorEnabled))
+    {
+        pElementLayout->m_rcAnchor			= pElement->m_rcAnchor;
+        pElementLayout->m_rcChildAnchor		= pElement->m_rcChildAnchor;
+
+        pElementLayout->m_bPlaceholderSet		= true;
+        pElementLayout->m_bAnchorEnabled		= pElement->m_bAnchorEnabled;
+        pElementLayout->m_bChildAnchorEnabled	= pElement->m_bChildAnchorEnabled;
+    }
 //--------- наличие текста --------------------------------------------------------------------------
-	CShapeElement* pShapeElem = dynamic_cast<CShapeElement*>(pElement.get());
-	if (NULL != pShapeElem)
-	{
-		CElementInfo oElementInfo;
+    CShapeElement* pShapeElem = dynamic_cast<CShapeElement*>(pElement.get());
+    if (NULL != pShapeElem)
+    {
+        CElementInfo oElementInfo;
 
-		oElementInfo.m_lMasterPlaceholderType = pElement->m_lPlaceholderType;
+        oElementInfo.m_lMasterPlaceholderType = pElement->m_lPlaceholderType;
 
-		pShapeElem->m_pShape->m_dWidthLogic  = ShapeSizeVML;
-		pShapeElem->m_pShape->m_dHeightLogic = ShapeSizeVML;
+        pShapeElem->m_pShape->m_dWidthLogic  = ShapeSizeVML;
+        pShapeElem->m_pShape->m_dHeightLogic = ShapeSizeVML;
 
-		// проверка на textheader present
-		std::vector<CRecordTextHeaderAtom*> oArrayTextHeader;
-		GetRecordsByType(&oArrayTextHeader, true, true);
-		
-		if (0 < oArrayTextHeader.size())
-		{
-			pShapeElem->m_pShape->m_oText.m_lTextType		= oArrayTextHeader[0]->m_nTextType;
-			pShapeElem->m_pShape->m_oText.m_lTextMasterType	= oArrayTextHeader[0]->m_nTextType;
-			oElementInfo.m_lMasterTextType					= oArrayTextHeader[0]->m_nTextType;
-		}
-		else
-		{
-			pShapeElem->m_pShape->m_oText.m_lTextType		= NoPresent;
-			pShapeElem->m_pShape->m_oText.m_lTextMasterType	= NoPresent;
-			oElementInfo.m_lMasterTextType					= NoPresent;
-		}
+        // проверка на textheader present
+        std::vector<CRecordTextHeaderAtom*> oArrayTextHeader;
+        GetRecordsByType(&oArrayTextHeader, true, true);
 
-		// проверка на ссылку в персист
-		std::vector<CRecordOutlineTextRefAtom*> oArrayTextRefs;
-		GetRecordsByType(&oArrayTextRefs, true, true);
-		
-		if (0 < oArrayTextRefs.size())
-		{
-			oElementInfo.m_lPersistIndex = oArrayTextRefs[0]->m_nIndex;
-		}
+        if (0 < oArrayTextHeader.size())
+        {
+            pShapeElem->m_pShape->m_oText.m_lTextType		= oArrayTextHeader[0]->m_nTextType;
+            pShapeElem->m_pShape->m_oText.m_lTextMasterType	= oArrayTextHeader[0]->m_nTextType;
+            oElementInfo.m_lMasterTextType					= oArrayTextHeader[0]->m_nTextType;
+        }
+        else
+        {
+            pShapeElem->m_pShape->m_oText.m_lTextType		= NoPresent;
+            pShapeElem->m_pShape->m_oText.m_lTextMasterType	= NoPresent;
+            oElementInfo.m_lMasterTextType					= NoPresent;
+        }
 
-		// сам текст...
-		std::vector<CRecordTextBytesAtom*> oArrayTextBytes;
-		GetRecordsByType(&oArrayTextBytes, true, true);
-		if (0 < oArrayTextBytes.size() && strShapeText.empty())
-		{
-			strShapeText = oArrayTextBytes[0]->m_strText;
-		}
-		
-		std::vector<CRecordTextCharsAtom*> oArrayTextChars;
-		GetRecordsByType(&oArrayTextChars, true, true);
+        // проверка на ссылку в персист
+        std::vector<CRecordOutlineTextRefAtom*> oArrayTextRefs;
+        GetRecordsByType(&oArrayTextRefs, true, true);
 
-		if (0 < oArrayTextChars.size() && strShapeText.empty())
-		{
-			strShapeText = oArrayTextChars[0]->m_strText;
-		}
+        if (0 < oArrayTextRefs.size())
+        {
+            oElementInfo.m_lPersistIndex = oArrayTextRefs[0]->m_nIndex;
+        }
 
-		if (pElement->m_lPlaceholderType == PT_MasterSlideNumber && strShapeText.length() > 5)
-		{
-			int pos = strShapeText.find(L"*"); 
-			if (pos < 0) pElement->m_lPlaceholderType = PT_MasterFooter; ///???? 1-(33).ppt
-		}
+        // сам текст...
+        std::vector<CRecordTextBytesAtom*> oArrayTextBytes;
+        GetRecordsByType(&oArrayTextBytes, true, true);
+        if (0 < oArrayTextBytes.size() && strShapeText.empty())
+        {
+            strShapeText = oArrayTextBytes[0]->m_strText;
+        }
+
+        std::vector<CRecordTextCharsAtom*> oArrayTextChars;
+        GetRecordsByType(&oArrayTextChars, true, true);
+
+        if (0 < oArrayTextChars.size() && strShapeText.empty())
+        {
+            strShapeText = oArrayTextChars[0]->m_strText;
+        }
+
+        if (pElement->m_lPlaceholderType == PT_MasterSlideNumber && strShapeText.length() > 5)
+        {
+            int pos = strShapeText.find(L"*");
+            if (pos < 0) pElement->m_lPlaceholderType = PT_MasterFooter; ///???? 1-(33).ppt
+        }
 
 //------ shape properties ----------------------------------------------------------------------------------------
-		CPPTElement oElement;
-		for (size_t nIndexProp = 0; nIndexProp < oArrayOptions.size(); ++nIndexProp)
-		{
-			oElement.SetUpProperties(pElement, pTheme, pSlideWrapper, pSlide, &oArrayOptions[nIndexProp]->m_oProperties, (nIndexProp == 0));
-		}
+        CPPTElement oElement;
+        for (size_t nIndexProp = 0; nIndexProp < oArrayOptions.size(); ++nIndexProp)
+        {
+            oElement.SetUpProperties(pElement, pTheme, pSlideWrapper, pSlide, &oArrayOptions[nIndexProp]->m_oProperties, (nIndexProp == 0));
+        }
 
-		std::vector<CRecordStyleTextPropAtom*> oArrayTextStyle;
-		this->GetRecordsByType(&oArrayTextStyle, true, true);
-		if (0 != oArrayTextStyle.size())
-		{
-			oElementInfo.m_pStream				= m_pStream;
-			oElementInfo.m_lOffsetTextStyle		= oArrayTextStyle[0]->m_lOffsetInStream;
-		}
+        std::vector<CRecordStyleTextPropAtom*> oArrayTextStyle;
+        this->GetRecordsByType(&oArrayTextStyle, true, true);
+        if (0 != oArrayTextStyle.size())
+        {
+            oElementInfo.m_pStream				= m_pStream;
+            oElementInfo.m_lOffsetTextStyle		= oArrayTextStyle[0]->m_lOffsetInStream;
+        }
 
-		std::vector<CRecordTextSpecInfoAtom*> oArrayTextProp;
-		this->GetRecordsByType(&oArrayTextProp, true, true);
-		if (0 != oArrayTextProp.size())
-		{
-			oElementInfo.m_pStream				= m_pStream;
-			oElementInfo.m_lOffsetTextProp		= oArrayTextProp[0]->m_lOffsetInStream;
-		}
+        std::vector<CRecordTextSpecInfoAtom*> oArrayTextProp;
+        this->GetRecordsByType(&oArrayTextProp, true, true);
+        if (0 != oArrayTextProp.size())
+        {
+            oElementInfo.m_pStream				= m_pStream;
+            oElementInfo.m_lOffsetTextProp		= oArrayTextProp[0]->m_lOffsetInStream;
+        }
 
-		std::vector<CRecordTextRulerAtom*> oArrayTextRuler;
-		this->GetRecordsByType(&oArrayTextRuler, true, true);
-		if (0 != oArrayTextRuler.size())
-		{
-			pShapeElem->m_pShape->m_oText.m_oRuler = oArrayTextRuler[0]->m_oTextRuler;
-		}
+        std::vector<CRecordTextRulerAtom*> oArrayTextRuler;
+        this->GetRecordsByType(&oArrayTextRuler, true, true);
+        if (0 != oArrayTextRuler.size())
+        {
+            pShapeElem->m_pShape->m_oText.m_oRuler = oArrayTextRuler[0]->m_oTextRuler;
+        }
 
-		std::vector<CRecordInteractiveInfoAtom*> oArrayInteractive;
-		GetRecordsByType(&oArrayInteractive, true, true);
+        std::vector<CRecordInteractiveInfoAtom*> oArrayInteractive;
+        GetRecordsByType(&oArrayInteractive, true, true);
 
-		if (!oArrayInteractive.empty())
-		{
-			pShapeElem->m_oActions.m_bPresent = true;
-			
-			if (pMapIDs)
-			{
-				CExFilesInfo* pInfo1 = pMapIDs->LockAudioFromCollection(oArrayInteractive[0]->m_nSoundIdRef);
-				if (NULL != pInfo1)
-				{
-					pShapeElem->m_oActions.m_strAudioFileName = pInfo1->m_strFilePath;
-				}
-				CExFilesInfo* pInfo2 = pMapIDs->LockHyperlink(oArrayInteractive[0]->m_nExHyperlinkIdRef);
-				if (NULL != pInfo2)
-				{
-					pShapeElem->m_oActions.m_strHyperlink = pInfo2->m_strFilePath;
-				}
-			}
-			
-			pShapeElem->m_oActions.m_lType				= oArrayInteractive[0]->m_nAction;
-			pShapeElem->m_oActions.m_lOleVerb			= oArrayInteractive[0]->m_nOleVerb;
-			pShapeElem->m_oActions.m_lJump				= oArrayInteractive[0]->m_nJump;
-			pShapeElem->m_oActions.m_lHyperlinkType		= oArrayInteractive[0]->m_nHyperlinkType;
-			
-			pShapeElem->m_oActions.m_bAnimated			= oArrayInteractive[0]->m_bAnimated;
-			pShapeElem->m_oActions.m_bStopSound			= oArrayInteractive[0]->m_bStopSound;
-			pShapeElem->m_oActions.m_bCustomShowReturn	= oArrayInteractive[0]->m_bCustomShowReturn;
-			pShapeElem->m_oActions.m_bVisited			= oArrayInteractive[0]->m_bVisited;
-		}
-		
-		std::vector<CRecordTextInteractiveInfoAtom*> oArrayTextInteractive;
-		this->GetRecordsByType(&oArrayTextInteractive, true);
-		if (!oArrayTextInteractive.empty())
-		{
-			pShapeElem->m_oTextActions.m_bPresent = true;
+        if (!oArrayInteractive.empty())
+        {
+            pShapeElem->m_oActions.m_bPresent = true;
 
-			int nSize = oArrayTextInteractive.size();
-			for (int i = 0; i < nSize; ++i)
-			{
-				CTextRange oRange;
+            if (pMapIDs)
+            {
+                CExFilesInfo* pInfo1 = pMapIDs->LockAudioFromCollection(oArrayInteractive[0]->m_nSoundIdRef);
+                if (NULL != pInfo1)
+                {
+                    pShapeElem->m_oActions.m_strAudioFileName = pInfo1->m_strFilePath;
+                }
+                CExFilesInfo* pInfo2 = pMapIDs->LockHyperlink(oArrayInteractive[0]->m_nExHyperlinkIdRef);
+                if (NULL != pInfo2)
+                {
+                    pShapeElem->m_oActions.m_strHyperlink = pInfo2->m_strFilePath;
+                }
+            }
 
-				oRange.m_lStart = oArrayTextInteractive[i]->m_lStart;
-				oRange.m_lEnd	= oArrayTextInteractive[i]->m_lEnd;
+            pShapeElem->m_oActions.m_lType				= oArrayInteractive[0]->m_nAction;
+            pShapeElem->m_oActions.m_lOleVerb			= oArrayInteractive[0]->m_nOleVerb;
+            pShapeElem->m_oActions.m_lJump				= oArrayInteractive[0]->m_nJump;
+            pShapeElem->m_oActions.m_lHyperlinkType		= oArrayInteractive[0]->m_nHyperlinkType;
 
-				pShapeElem->m_oTextActions.m_arRanges.push_back(oRange);
-			}
-		}
-		double dAngle = pShapeElem->m_dRotate;
-		if (0 <= dAngle)
-		{
-			int lCount = (int)dAngle / 360;
-			dAngle -= (lCount * 360.0);
-		}
-		else
-		{
-			int lCount = (int)dAngle / 360;
-			dAngle += ((-lCount + 1) * 360.0);
-		}
-		if (((dAngle > 45) && (dAngle < 135)) || ((dAngle > 225) && (dAngle < 315)))
-		{
-			if (pShapeElem->m_bAnchorEnabled)
-			{
-				double dW = pShapeElem->m_rcAnchor.GetWidth();
-				double dH = pShapeElem->m_rcAnchor.GetHeight();
+            pShapeElem->m_oActions.m_bAnimated			= oArrayInteractive[0]->m_bAnimated;
+            pShapeElem->m_oActions.m_bStopSound			= oArrayInteractive[0]->m_bStopSound;
+            pShapeElem->m_oActions.m_bCustomShowReturn	= oArrayInteractive[0]->m_bCustomShowReturn;
+            pShapeElem->m_oActions.m_bVisited			= oArrayInteractive[0]->m_bVisited;
+        }
 
-				double dCx = (pShapeElem->m_rcAnchor.left + pShapeElem->m_rcAnchor.right) / 2.0;
-				double dCy = (pShapeElem->m_rcAnchor.top + pShapeElem->m_rcAnchor.bottom) / 2.0;
+        std::vector<CRecordTextInteractiveInfoAtom*> oArrayTextInteractive;
+        this->GetRecordsByType(&oArrayTextInteractive, true);
+        if (!oArrayTextInteractive.empty())
+        {
+            pShapeElem->m_oTextActions.m_bPresent = true;
 
-				pShapeElem->m_rcAnchor.left		= dCx - dH / 2.0;
-				pShapeElem->m_rcAnchor.right	= dCx + dH / 2.0;
+            int nSize = oArrayTextInteractive.size();
+            for (int i = 0; i < nSize; ++i)
+            {
+                CTextRange oRange;
 
-				pShapeElem->m_rcAnchor.top		= dCy - dW / 2.0;
-				pShapeElem->m_rcAnchor.bottom	= dCy + dW / 2.0;
-			}
-			if (pShapeElem->m_bChildAnchorEnabled)
-			{
-				double dW = pShapeElem->m_rcChildAnchor.GetWidth();
-				double dH = pShapeElem->m_rcChildAnchor.GetHeight();
+                oRange.m_lStart = oArrayTextInteractive[i]->m_lStart;
+                oRange.m_lEnd	= oArrayTextInteractive[i]->m_lEnd;
 
-				double dCx = (pShapeElem->m_rcChildAnchor.left + pShapeElem->m_rcChildAnchor.right) / 2.0;
-				double dCy = (pShapeElem->m_rcChildAnchor.top + pShapeElem->m_rcChildAnchor.bottom) / 2.0;
+                pShapeElem->m_oTextActions.m_arRanges.push_back(oRange);
+            }
+        }
+        double dAngle = pShapeElem->m_dRotate;
+        if (0 <= dAngle)
+        {
+            int lCount = (int)dAngle / 360;
+            dAngle -= (lCount * 360.0);
+        }
+        else
+        {
+            int lCount = (int)dAngle / 360;
+            dAngle += ((-lCount + 1) * 360.0);
+        }
+        if (((dAngle > 45) && (dAngle < 135)) || ((dAngle > 225) && (dAngle < 315)))
+        {
+            if (pShapeElem->m_bAnchorEnabled)
+            {
+                double dW = pShapeElem->m_rcAnchor.GetWidth();
+                double dH = pShapeElem->m_rcAnchor.GetHeight();
 
-				pShapeElem->m_rcChildAnchor.left		= dCx - dH / 2.0;
-				pShapeElem->m_rcChildAnchor.right	= dCx + dH / 2.0;
+                double dCx = (pShapeElem->m_rcAnchor.left + pShapeElem->m_rcAnchor.right) / 2.0;
+                double dCy = (pShapeElem->m_rcAnchor.top + pShapeElem->m_rcAnchor.bottom) / 2.0;
 
-				pShapeElem->m_rcChildAnchor.top		= dCy - dW / 2.0;
-				pShapeElem->m_rcChildAnchor.bottom	= dCy + dW / 2.0;
-			}
-		}
-		
-		std::vector<CRecordMasterTextPropAtom*> oArrayMasterTextProp;
-		GetRecordsByType(&oArrayMasterTextProp, true);
+                pShapeElem->m_rcAnchor.left		= dCx - dH / 2.0;
+                pShapeElem->m_rcAnchor.right	= dCx + dH / 2.0;
 
-		CRecordMasterTextPropAtom* master_level = NULL;
-		if (!oArrayMasterTextProp.empty())
-			master_level = oArrayMasterTextProp[0];
+                pShapeElem->m_rcAnchor.top		= dCy - dW / 2.0;
+                pShapeElem->m_rcAnchor.bottom	= dCy + dW / 2.0;
+            }
+            if (pShapeElem->m_bChildAnchorEnabled)
+            {
+                double dW = pShapeElem->m_rcChildAnchor.GetWidth();
+                double dH = pShapeElem->m_rcChildAnchor.GetHeight();
 
-		pSlideWrapper->m_mapElements.insert(std::pair<LONG, CElementInfo>(pShapeElem->m_lID, oElementInfo));
-		
-		SetUpTextStyle(strShapeText, pTheme, pLayout, pElement, pThemeWrapper, pSlideWrapper, pSlide, master_level);
-	}
-	else
-	{//image, audio, video ....
-		CPPTElement oElement; 
-		for (size_t nIndexProp = 0; nIndexProp < oArrayOptions.size(); ++nIndexProp)
-		{
-			oElement.SetUpProperties(pElement, pTheme, pSlideWrapper, pSlide, &oArrayOptions[nIndexProp]->m_oProperties, (nIndexProp == 0));
-		}
+                double dCx = (pShapeElem->m_rcChildAnchor.left + pShapeElem->m_rcChildAnchor.right) / 2.0;
+                double dCy = (pShapeElem->m_rcChildAnchor.top + pShapeElem->m_rcChildAnchor.bottom) / 2.0;
 
-		pElement->m_lLayoutID = lMasterID;
-	}
+                pShapeElem->m_rcChildAnchor.left		= dCx - dH / 2.0;
+                pShapeElem->m_rcChildAnchor.right	= dCx + dH / 2.0;
+
+                pShapeElem->m_rcChildAnchor.top		= dCy - dW / 2.0;
+                pShapeElem->m_rcChildAnchor.bottom	= dCy + dW / 2.0;
+            }
+        }
+
+        std::vector<CRecordMasterTextPropAtom*> oArrayMasterTextProp;
+        GetRecordsByType(&oArrayMasterTextProp, true);
+
+        CRecordMasterTextPropAtom* master_level = NULL;
+        if (!oArrayMasterTextProp.empty())
+            master_level = oArrayMasterTextProp[0];
+
+        pSlideWrapper->m_mapElements.insert(std::pair<LONG, CElementInfo>(pShapeElem->m_lID, oElementInfo));
+
+        SetUpTextStyle(strShapeText, pTheme, pLayout, pElement, pThemeWrapper, pSlideWrapper, pSlide, master_level);
+    }
+    else
+    {//image, audio, video ....
+        CPPTElement oElement;
+        for (size_t nIndexProp = 0; nIndexProp < oArrayOptions.size(); ++nIndexProp)
+        {
+            oElement.SetUpProperties(pElement, pTheme, pSlideWrapper, pSlide, &oArrayOptions[nIndexProp]->m_oProperties, (nIndexProp == 0));
+        }
+
+        pElement->m_lLayoutID = lMasterID;
+    }
 //----------------------------------------------------------------------------------------------------
-	if (NULL != pSlide)
-	{
-		pElement->m_dStartTime		= pSlide->m_dStartTime;
-		pElement->m_dEndTime		= pSlide->m_dEndTime;
-	}
-	else
-	{
-		pElement->m_dStartTime		= 0;
-		pElement->m_dEndTime		= 0;
-	}
+    if (NULL != pSlide)
+    {
+        pElement->m_dStartTime		= pSlide->m_dStartTime;
+        pElement->m_dEndTime		= pSlide->m_dEndTime;
+    }
+    else
+    {
+        pElement->m_dStartTime		= 0;
+        pElement->m_dEndTime		= 0;
+    }
 
-	return pElement;
+    return pElement;
 }
 
 void CRecordShapeContainer::ApplyThemeStyle(CElementPtr pElem, CTheme* pTheme, CRecordMasterTextPropAtom* master_levels)

@@ -120,6 +120,9 @@ namespace PPTX
 
 					oValue.m_strValue += XmlUtils::CreateNode(_T("p:to"), oAttr1);
 				}
+				
+				oValue.Write(cBhvr);
+				
 				if (rCtrX.IsInit() || rCtrY.IsInit())
 				{
 					XmlUtils::CAttribute oAttr1;
@@ -128,7 +131,6 @@ namespace PPTX
 
 					oValue.m_strValue += XmlUtils::CreateNode(_T("p:rCtr"), oAttr1);
 				}
-				oValue.Write(cBhvr);
 
 				return XmlUtils::CreateNode(_T("p:animMotion"), oAttr, oValue);
 			}

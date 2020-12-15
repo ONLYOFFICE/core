@@ -93,7 +93,7 @@ namespace PPTX
 						break;
 
 					else if (0 == _at)	type = pReader->GetUChar();
-					else if (2 == _at)	cmd = pReader->GetString2();
+					else if (1 == _at)	cmd = pReader->GetString2();
 				}
 				while (pReader->GetPos() < end)
 				{

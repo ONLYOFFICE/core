@@ -53,7 +53,7 @@ namespace PPTX
 					inkTgt = oNode.ReadAttributeBase(L"spid");
 				else if(node.GetNode(_T("p:sndTgt"), oNode))
 				{
-                    XmlMacroReadAttributeBase(oNode, L"embed", embed);
+                    XmlMacroReadAttributeBase(oNode, L"r:embed", embed);
                     XmlMacroReadAttributeBase(oNode, L"name", name);
                     XmlMacroReadAttributeBase(oNode, L"builtIn", builtIn);
 				}
@@ -75,7 +75,7 @@ namespace PPTX
 				if (embed.IsInit())
 				{
 					XmlUtils::CAttribute oAttr;
-					oAttr.Write(_T("embed"), embed->ToString());
+					oAttr.Write(_T("r:embed"), embed->ToString());
 					oAttr.Write(_T("name"), name);
 					oAttr.Write(_T("builtIn"), builtIn);
 
@@ -101,13 +101,22 @@ namespace PPTX
 
 					if (embed.IsInit())
 					{
-						std::wstring file_name;
+						OOX::IFileContainer* pRels = dynamic_cast<OOX::IFileContainer*>(const_cast<PPTX::WrapperFile*>(parentFile));
 
-						if (parentFileIs<FileContainer>())
-							file_name = parentFileAs<FileContainer>().GetLinkFromRId(*embed);
-						if (false == file_name.empty())
+						if (!pRels && (pWriter) && (pWriter->m_pCurrentContainer))
 						{
-							NSShapeImageGen::CMediaInfo oId = pWriter->m_pCommon->m_pMediaManager->WriteMedia(file_name);
+							if (pWriter->m_pCurrentContainer->is_init())
+								pRels = pWriter->m_pCurrentContainer->operator ->();
+						}
+
+						smart_ptr<OOX::Media> pMedia;
+
+						if (pRels != NULL)
+							pMedia = pRels->Get<OOX::Media>(embed.get());
+
+						if (pMedia.IsInit())
+						{
+							NSShapeImageGen::CMediaInfo oId = pWriter->m_pCommon->m_pMediaManager->WriteMedia(pMedia->filename().GetPath());
 							std::wstring s = oId.GetPath2();
 
 							pWriter->WriteString1(3, s);
@@ -123,7 +132,7 @@ namespace PPTX
 
 				pReader->Skip(1); // attribute start
 
-				std::wstring file_name_ink;
+				std::wstring file_name_embed;
 				while (true)
 				{
 					BYTE _at = pReader->GetUChar_TypeNode();
@@ -133,7 +142,7 @@ namespace PPTX
 					else if (0 == _at)	inkTgt = pReader->GetString2();
 					else if (1 == _at)	name = pReader->GetString2();
 					else if (2 == _at)	builtIn = pReader->GetBool();
-					else if (3 == _at)	file_name_ink = pReader->GetString2();
+					else if (3 == _at)	file_name_embed = pReader->GetString2();
 
 				}
 				while (pReader->GetPos() < end)
@@ -154,6 +163,18 @@ namespace PPTX
 					}
 				}
 				pReader->Seek(end);
+
+				if (false == file_name_embed.empty())
+				{
+					std::wstring strPath = pReader->m_strFolder + FILE_SEPARATOR_STR + _T("media")  + FILE_SEPARATOR_STR + file_name_embed;
+
+					NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteMedia(strPath, 1);
+
+					if (oRelsGeneratorInfo.nImageRId > 0)
+					{
+						embed = new OOX::RId(oRelsGeneratorInfo.nImageRId);
+					}
+				}
 			}
 			nullable_string		inkTgt;
 

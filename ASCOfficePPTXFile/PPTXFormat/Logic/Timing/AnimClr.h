@@ -131,10 +131,66 @@ namespace PPTX
 			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+					pWriter->WriteLimit2(0, clrSpc);
+					pWriter->WriteLimit2(1, dir);
+					pWriter->WriteInt2(2, byR);
+					pWriter->WriteInt2(3, byG);
+					pWriter->WriteInt2(4, byB);
+					pWriter->WriteInt2(5, byH);
+					pWriter->WriteInt2(6, byS);
+					pWriter->WriteInt2(7, byL);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+				pWriter->WriteRecord1(0, cBhvr);
+				pWriter->WriteRecord1(1, from);
+				pWriter->WriteRecord1(2, to);
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
-				pReader->SkipRecord();
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // attribute start
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					else if (0 == _at)	clrSpc = pReader->GetUChar();
+					else if (1 == _at)	dir = pReader->GetUChar();
+					else if (2 == _at)	byR = pReader->GetLong();
+					else if (3 == _at)	byG = pReader->GetLong();
+					else if (4 == _at)	byB = pReader->GetLong();
+					else if (5 == _at)	byH = pReader->GetLong();
+					else if (6 == _at)	byS = pReader->GetLong();
+					else if (7 == _at)	byL = pReader->GetLong();
+				}
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+						case 0:
+						{
+							cBhvr.fromPPTY(pReader);
+						}break;
+						case 1:
+						{
+							from.fromPPTY(pReader);
+						}break;
+						case 2:
+						{
+							to.fromPPTY(pReader);
+						}break;
+						default:
+						{
+							pReader->SkipRecord();
+						}break;
+					}
+				}
+				pReader->Seek(end);
 			}
 
 			CBhvr			cBhvr;
@@ -147,7 +203,7 @@ namespace PPTX
 			nullable_int	byL;
 			UniColor		from;
 			UniColor		to;
-//Attributes
+
 			nullable_limit<Limit::TLColorSpace>		clrSpc; //ST_TLAnimateColorSpace 
 			nullable_limit<Limit::TLColorDirection> dir;	//ST_TLAnimateColorDirection 
 		protected:

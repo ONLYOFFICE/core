@@ -88,7 +88,7 @@ namespace PPTX
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 				pWriter->WriteRecord1(0, cBhvr);
-				pWriter->WriteRecord2(2, progress);
+				pWriter->WriteRecord2(1, progress);
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{

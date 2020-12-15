@@ -71,10 +71,60 @@ namespace PPTX
 			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+				if (false == list.empty())
+				{
+					pWriter->StartRecord(0);
+
+					_UINT32 len = (_UINT32)list.size();
+					pWriter->WriteULONG(len);
+
+					for (size_t i = 0; i < list.size(); ++i)
+					{
+						list[i].toPPTY(pWriter);
+					}
+					pWriter->EndRecord();
+				}
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
-				pReader->SkipRecord();
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // attribute start
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+				}
+
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+						case 0:
+						{
+							pReader->Skip(4); // len
+							ULONG _c = pReader->GetULong();
+
+							for (ULONG i = 0; i < _c; ++i)
+							{
+								list.push_back(BuildNodeBase());
+								list[i].fromPPTY(pReader);
+							}
+						}break;
+						default:
+						{
+							pReader->SkipRecord();
+						}break;
+					}
+				}
+				pReader->Seek(end);
+
 			}
 
 			std::vector<BuildNodeBase> list;

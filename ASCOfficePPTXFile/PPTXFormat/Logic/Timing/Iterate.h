@@ -86,10 +86,42 @@ namespace PPTX
 			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+					pWriter->WriteLimit2(0, type);
+					pWriter->WriteBool2(1, backwards);
+					pWriter->WriteString2(2, tmAbs);
+					pWriter->WriteInt2(3, tmPct);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
-				pReader->SkipRecord();
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // attribute start
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					else if (0 == _at)	type = pReader->GetUChar();
+					else if (1 == _at)	backwards = pReader->GetBool();
+					else if (2 == _at)	tmAbs = pReader->GetString2();
+					else if (3 == _at)	tmPct = pReader->GetLong();
+				}
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+						default:
+						{
+							pReader->SkipRecord();
+						}break;
+					}
+				}
+				pReader->Seek(end);
 			}
 
 			nullable_limit<Limit::IterateType>		type;

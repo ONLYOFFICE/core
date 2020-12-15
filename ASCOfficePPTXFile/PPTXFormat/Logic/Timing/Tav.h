@@ -89,7 +89,7 @@ namespace PPTX
 					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
 						break;
 
-						 if (0 == _at) tm = pReader->GetString2();
+					else if (0 == _at) tm = pReader->GetString2();
 					else if (1 == _at) fmla = pReader->GetString2();
 				}
 				while (pReader->GetPos() < end)
@@ -98,16 +98,15 @@ namespace PPTX
 
 					switch (_rec)
 					{
-					case 0:
-					{
-						val.Init(); 
-						val->fromPPTY(pReader);
-					}break;
-					default:
-					{
-						pReader->SkipRecord();
-
-					}break;
+						case 0:
+						{
+							val.Init(); 
+							val->fromPPTY(pReader);
+						}break;
+						default:
+						{
+							pReader->SkipRecord();
+						}break;
 					}
 				}
 				pReader->Seek(end);

@@ -99,15 +99,44 @@ namespace PPTX
 		}
 		void BuildNodeBase::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-
+			if (m_node.IsInit())
+				m_node->toXmlWriter(pWriter);
 		}
 		void BuildNodeBase::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
+			BYTE _type = pReader->GetUChar();
 
+			switch (_type)
+			{
+				case 1:	m_node = new Logic::BldDgm(); break;
+				case 2:	m_node = new Logic::BldOleChart(); break;
+				case 3:	m_node = new Logic::BldGraphic(); break;
+				case 4:	m_node = new Logic::BldP(); break;
+				default:break;
+			}
+			if (m_node.IsInit())
+			{
+				m_node->fromPPTY(pReader);
+			}
+			else
+			{
+				pReader->SkipRecord();
+			}
 		}
 		void BuildNodeBase::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
+			switch (m_node->getType())
+			{
+				case OOX::et_p_bldDgm:		pWriter->StartRecord(1); break;
+				case OOX::et_p_bldOleChart:	pWriter->StartRecord(2); break;
+				case OOX::et_p_bldGraphic:	pWriter->StartRecord(3); break;
+				case OOX::et_p_bldP:		pWriter->StartRecord(4); break;
+				default:					pWriter->StartRecord(0); break;
+			}
+			if (m_node.IsInit())
+				m_node->toPPTY(pWriter);
 
+			pWriter->EndRecord();
 		}
 	} // namespace Logic
 } // namespace PPTX

@@ -189,7 +189,7 @@ namespace PPTX
 					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
 						break;
 
-					if (0 == _at) accel = pReader->GetLong();
+					else if (0 == _at) accel = pReader->GetLong();
 					else if (1 == _at)	afterEffect = pReader->GetBool();
 					else if (2 == _at)	autoRev = pReader->GetBool();
 					else if (3 == _at)	fill = pReader->GetUChar();

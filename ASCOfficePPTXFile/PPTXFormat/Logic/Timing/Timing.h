@@ -86,24 +86,20 @@ namespace PPTX
 
 					switch (_rec)
 					{
-					case 0:
-					{
-						tnLst = new Logic::TnLst();
-						tnLst->fromPPTY(pReader);
-						break;
-					}
-					case 1:
-					{
-						bldLst = new Logic::BldLst();
-						bldLst->fromPPTY(pReader);
-						break;
-					}
-
-					default:
-					{
-						pReader->SkipRecord();
-						break;
-					}
+						case 0:
+						{
+							tnLst = new Logic::TnLst();
+							tnLst->fromPPTY(pReader);						
+						}break;
+						case 1:
+						{
+							bldLst = new Logic::BldLst();
+							bldLst->fromPPTY(pReader);						
+						}break;
+						default:
+						{
+							pReader->SkipRecord();						
+						}break;
 					}
 				}
 

@@ -87,20 +87,19 @@ namespace PPTX
 
 					switch (_rec)
 					{
-					case 0:
-					{
-						cBhvr.fromPPTY(pReader);
-					}break;
-					case 1:
-					{
-						to.Init(); to->node_name = L"to";
-						to->fromPPTY(pReader);
-					}break;
-					default:
-					{
-						pReader->SkipRecord();
-
-					}break;
+						case 0:
+						{
+							cBhvr.fromPPTY(pReader);
+						}break;
+						case 1:
+						{
+							to.Init(); to->node_name = L"to";
+							to->fromPPTY(pReader);
+						}break;
+						default:
+						{
+							pReader->SkipRecord();
+						}break;
 					}
 				}
 				pReader->Seek(end);

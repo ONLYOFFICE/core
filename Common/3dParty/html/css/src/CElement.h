@@ -38,7 +38,7 @@ namespace NSCSS
         std::map<std::wstring, std::wstring> GetFullStyle(const std::vector<CNode>& arSelectors) const;
         std::map<std::wstring, std::wstring> GetFullStyle(const std::vector<std::wstring>& arNodes) const;
         std::vector<CElement *> GetAllElements(const std::vector<std::wstring>& arNodes) const;
-        std::vector<CElement *> GetNextOfKin(const std::wstring& sName, const std::vector<std::wstring>& arClasses = {});
+        std::vector<CElement *> GetNextOfKin(const std::wstring& sName, const std::vector<std::wstring>& arClasses = {}) const;
         std::map<std::wstring, std::wstring> GetConvertStyle(const std::vector<CNode>& arNodes) const;
 
         CElement *FindPrevElement(const std::wstring& sSelector) const;

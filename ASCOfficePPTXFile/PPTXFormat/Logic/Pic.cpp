@@ -77,6 +77,10 @@ namespace PPTX
             XmlMacroReadAttributeBase(node, L"Type",		m_oType);
             XmlMacroReadAttributeBase(node, L"UpdateMode",	m_oUpdateMode);
 
+			XmlMacroReadAttributeBase(node, L"w:drawAspect", m_oDrawAspect);
+			XmlMacroReadAttributeBase(node, L"w:progId", m_sProgId);
+			XmlMacroReadAttributeBase(node, L"w:shapeId", m_sShapeId);
+			
 			if (false == m_oId.IsInit())
 			{
 				XmlMacroReadAttributeBase( node, L"relationships:id", m_oId );

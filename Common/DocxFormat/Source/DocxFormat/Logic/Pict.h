@@ -31,12 +31,8 @@
  */
 #pragma once
 
-#include "../../Base/Nullable.h"
-
+#include "../Drawing/Drawing.h"
 #include "../../Common/SimpleTypes_Word.h"
-
-#include "../WritingElement.h"
-#include "../RId.h"
 
 #include "VmlOfficeDrawing.h"
 #include "Vml.h"
@@ -717,8 +713,13 @@ namespace OOX
 							break;
 						}
 					case 'w':
-						if ( _T("w:control") == sName )
+						if (L"w:control" == sName )
 							m_oControl = oSubReader;
+						else if (L"w:objectEmbed" == sName)
+							m_oOleObject = oSubReader;
+						else if (L"w:drawing" == sName)
+							m_oDrawing = oSubReader;
+
 						break;
 					}
 
@@ -744,6 +745,7 @@ namespace OOX
 			nullable_int							m_oDyaOrig;
 
 			nullable<OOX::Logic::CControl>			m_oControl;
+			nullable<OOX::Logic::CDrawing>			m_oDrawing;
 
 			nullable<OOX::Vml::CShapeType>			m_oShapeType;
 			nullable<OOX::VmlOffice::COLEObject>	m_oOleObject;

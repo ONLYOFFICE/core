@@ -351,7 +351,7 @@ namespace Aggplus
 
 		if( count > 0 && presetColors && blendPositions )
 		{
-            m_subcolors.reserve( count );
+            m_subcolors.resize( count );
 
 			for( int i = 0; i < count; i++ )
 			{

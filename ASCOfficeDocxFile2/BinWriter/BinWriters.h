@@ -325,8 +325,14 @@ namespace BinDocxRW
 		bool							m_bWriteSectPr;//Записывать ли свойства верхнего уровня в данном экземпляре BinaryOtherTableWriter
 //---------------------------------
 		BinaryDocumentTableWriter(ParamsWriter& oParamsWriter, ParamsDocumentWriter& oParamsDocumentWriter, std::map<int, bool>* mapIgnoreComments, BinaryHeaderFooterTableWriter* oBinaryHeaderFooterTableWriter);
-	
+
+		void Write(OOX::Logic::CDocPartPr* pDocPartPr);
+		void Write(OOX::Logic::CDocParts* pDocParts);
+		void Write(OOX::Logic::CDocPartTypes* pDocPartTypes);
+		void Write(OOX::Logic::CDocPartBehaviors* pDocPartBehaviors);
+
 		void WriteAltChunk(OOX::Media& oAltChunk, OOX::CStyles* styles);
+
 		void WriteVbaProject(OOX::VbaProject& oVbaProject);
 		void Write(std::vector<OOX::WritingElement*> & aElems);
 		void WriteDocumentContent(const std::vector<OOX::WritingElement*> & aElems);

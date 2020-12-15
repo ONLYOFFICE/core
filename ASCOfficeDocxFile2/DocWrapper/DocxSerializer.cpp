@@ -51,6 +51,130 @@
 
 int BinDocxRW::g_nCurFormatVersion = 0;
 
+namespace BinDocxRW
+{
+	class CPackageFile
+	{
+	public:
+		CPackageFile() {}
+		virtual ~CPackageFile() {}
+
+		bool unpackage(const std::wstring& sSrcFileName, const std::wstring& sDstPath)
+		{
+			m_sDestPath = sDstPath;
+
+			XmlUtils::CXmlLiteReader oReader;
+
+			if (!oReader.FromFile(sSrcFileName))
+				return false;
+
+			if (!oReader.ReadNextNode())
+				return false;
+
+			std::wstring sName = oReader.GetName();
+			if (L"pkg:package" != sName)
+				return false;
+
+			int nDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nDepth))
+			{
+				sName = oReader.GetName();
+
+				if (L"pkg:part" == sName)
+				{
+					read_package_part(oReader);
+				}
+			}
+
+			m_oContentTypes.Write(m_sDestPath);
+			return true;
+		}
+	private:
+		std::wstring m_sDestPath;
+		OOX::CContentTypes m_oContentTypes;
+		
+		void read_package_part(XmlUtils::CXmlLiteReader &oReader)
+		{
+			nullable_int padding;
+			nullable_string compression;
+			nullable_string contentType;
+			nullable_string name;
+
+			WritingElement_ReadAttributes_Start(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"pkg:name", name)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"pkg:contentType", contentType)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"pkg:padding", padding)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"pkg:compression", compression)
+			WritingElement_ReadAttributes_End(oReader)
+
+			if (name.IsInit() == false) return;
+
+			if (contentType.IsInit())
+			{
+				m_oContentTypes.Registration(*contentType, L"", *name);
+			}
+				
+			int nDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nDepth))
+			{
+				std::wstring  sName = oReader.GetName();
+
+				if (L"pkg:xmlData" == sName)
+				{
+					std::wstring data = oReader.GetInnerXml();
+					WriteXmlFile(*name, data);
+				}
+				if (L"pkg:binaryData" == sName)
+				{
+					std::string data = oReader.GetText2A();
+					WriteBinaryFile(*name, data, compression.IsInit() ? compression.get() : L"");
+				}
+			}
+		}
+		void WriteXmlFile(const std::wstring & name, std::wstring & data)
+		{
+			if (name.empty()) return;
+
+			OOX::CPath path(m_sDestPath + name);
+			
+			NSDirectory::CreateDirectories(path.GetDirectory());
+
+			NSFile::CFileBinary file;
+			if (file.CreateFileW(path.GetPath()))
+			{
+				file.WriteStringUTF8(data);
+				file.CloseFile();
+			}
+		}
+		void WriteBinaryFile(const std::wstring & name, std::string & data, const std::wstring & compression)
+		{
+			if (name.empty()) return;
+			
+			OOX::CPath path(m_sDestPath + name);
+			
+			NSDirectory::CreateDirectories(path.GetDirectory());
+			
+			NSFile::CFileBinary file;
+			if (file.CreateFileW(path.GetPath()))
+			{
+				BYTE* pDstBuffer = NULL;
+				int dstLen = Base64::Base64DecodeGetRequiredLength((int)data.size());
+
+				pDstBuffer = new BYTE[dstLen];
+				if (pDstBuffer)
+				{
+					Base64::Base64Decode(data.c_str(), (int)data.size(), pDstBuffer, &dstLen);
+
+					file.WriteFile(pDstBuffer, (DWORD)dstLen);
+					file.CloseFile();
+
+					delete []pDstBuffer;
+				}
+			}
+		}
+	};
+}
+
 BinDocxRW::CDocxSerializer::CDocxSerializer()
 {
 	m_pParamsWriter		= NULL;
@@ -148,7 +272,6 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sSrcFileName, co
 	RELEASEOBJECT(pFontPicker);
 	return true;
 }
-
 bool BinDocxRW::CDocxSerializer::CreateDocxFolders(std::wstring strDirectory, std::wstring& sThemePath, std::wstring& sMediaPath, std::wstring& sEmbedPath)
 {
 	bool res = true;
@@ -480,4 +603,11 @@ void BinDocxRW::CDocxSerializer::setIsNoBase64(bool bIsNoBase64)
 void BinDocxRW::CDocxSerializer::setSaveChartAsImg(bool bSaveChartAsImg)
 {
 	m_bSaveChartAsImg = bSaveChartAsImg;
+}
+
+bool BinDocxRW::CDocxSerializer::unpackageFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath)
+{
+	BinDocxRW::CPackageFile file;
+	
+	return file.unpackage(sSrcFileName, sDstPath);
 }

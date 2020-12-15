@@ -1501,7 +1501,7 @@ namespace NExtractTools
 		return nRes;
 	}
     //doct_bin -> html
-    _UINT32 doct_bin2html(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
+    _UINT32 doct_bin2html_zip(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
     {
         _UINT32 nRes = 0;
         NSDoctRenderer::DoctRendererFormat::FormatFile eToType = NSDoctRenderer::DoctRendererFormat::FormatFile::HTML;
@@ -1519,7 +1519,15 @@ namespace NExtractTools
             nRes = AVS_FILEUTILS_ERROR_CONVERT;
         }
         else
+        {
+            std::wstring sName = NSFile::GetFileName(sTo);
+            size_t nDot = sName.find(L'.');
+            if(nDot != std::wstring::npos)
+                sName.erase(nDot);
+            COfficeUtils oZip;
+            HRESULT oRes = oZip.CompressFileOrDirectory(sFileFromDir, sFileToDir + FILE_SEPARATOR_STR + sName + _T(".zip"));
             NSFile::CFileBinary::Copy(sHtmlFile, sTo);
+        }
         return nRes;
     }
    //doct_bin -> pdf
@@ -3315,7 +3323,7 @@ namespace NExtractTools
 	_UINT32 fromDocxDir(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
    {
        _UINT32 nRes = 0;
-       if(0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatTo))
+       if(0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatTo) && (nFormatTo != AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER))
        {
 			if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == nFormatTo ||
 					AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM == nFormatTo)
@@ -3399,10 +3407,10 @@ namespace NExtractTools
            std::wstring sFromDir = NSDirectory::GetFolderPath(sFrom);
            nRes = dir2zip(sFromDir, sTo);
        }
-       else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_HTMLR == nFormatTo)
+       else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER == nFormatTo)
        {
            NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT;
-           nRes = doct_bin2html(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
+           nRes = doct_bin2html_zip(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
        }
        else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
        {

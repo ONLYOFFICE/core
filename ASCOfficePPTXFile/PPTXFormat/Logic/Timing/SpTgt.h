@@ -137,7 +137,7 @@ namespace PPTX
 					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
 						break;
 
-						 if (0 == _at)	spid = pReader->GetString2();
+					else if (0 == _at)	spid = pReader->GetString2();
 					else if (1 == _at)	subSpid = pReader->GetString2();
 					else if (2 == _at)	bg = pReader->GetBool();
 					else if (3 == _at)	type = pReader->GetUChar();
@@ -149,21 +149,20 @@ namespace PPTX
 
 					switch (_rec)
 					{
-					case 0:
-					{
-						txEl.Init();
-						txEl->fromPPTY(pReader);
-					}break;
-					case 1:
-					{
-						graphicEl.Init();
-						graphicEl->fromPPTY(pReader);
-					}break;
-					default:
-					{
-						pReader->SkipRecord();
-
-					}break;
+						case 0:
+						{
+							txEl.Init();
+							txEl->fromPPTY(pReader);
+						}break;
+						case 1:
+						{
+							graphicEl.Init();
+							graphicEl->fromPPTY(pReader);
+						}break;
+						default:
+						{
+							pReader->SkipRecord();
+						}break;
 					}
 				}
 				pReader->Seek(end);

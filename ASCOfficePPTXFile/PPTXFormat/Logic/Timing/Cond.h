@@ -132,7 +132,7 @@ namespace PPTX
 					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
 						break;
 
-					if (0 == _at) tn = pReader->GetLong();
+					else if (0 == _at) tn = pReader->GetLong();
 					else if (1 == _at)	rtn = pReader->GetUChar();
 					else if (2 == _at)	evt = pReader->GetUChar();
 					else if (3 == _at)	delay = pReader->GetString2();

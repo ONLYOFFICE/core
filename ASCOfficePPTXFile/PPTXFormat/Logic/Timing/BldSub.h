@@ -94,10 +94,44 @@ namespace PPTX
 			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+					pWriter->WriteBool2(0, chart);
+					pWriter->WriteBool2(1, animBg);
+					pWriter->WriteLimit2(2, bldChart);
+					pWriter->WriteLimit2(3, bldDgm);
+					pWriter->WriteBool2(4, rev);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
-				pReader->SkipRecord();
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // attribute start
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					else if (0 == _at)	chart = pReader->GetBool();
+					else if (1 == _at)	animBg = pReader->GetBool();
+					else if (2 == _at)	bldChart = pReader->GetUChar();
+					else if (3 == _at)	bldDgm = pReader->GetUChar();
+					else if (4 == _at)	rev = pReader->GetBool();
+				}
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+						default:
+						{
+							pReader->SkipRecord();
+						}break;
+					}
+				}
+				pReader->Seek(end);
 			}
 
 			nullable_bool								chart;

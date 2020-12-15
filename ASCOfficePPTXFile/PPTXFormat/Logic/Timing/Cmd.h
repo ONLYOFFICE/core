@@ -72,14 +72,49 @@ namespace PPTX
 			{
 				pWriter->WriteString(toXML());
 			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				pReader->SkipRecord();
-			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
-			}
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+					pWriter->WriteLimit2(0, type);
+					pWriter->WriteString2(1, cmd);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
+				pWriter->WriteRecord1(0, cBhvr);
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // attribute start
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					else if (0 == _at)	type = pReader->GetUChar();
+					else if (2 == _at)	cmd = pReader->GetString2();
+				}
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+						case 0:
+						{
+							cBhvr.fromPPTY(pReader);
+						}break;
+						default:
+						{
+							pReader->SkipRecord();
+
+						}break;
+					}
+				}
+				pReader->Seek(end);
+			}
+			
 			CBhvr									cBhvr;
 
 			nullable_limit<Limit::TLCommandType>	type;

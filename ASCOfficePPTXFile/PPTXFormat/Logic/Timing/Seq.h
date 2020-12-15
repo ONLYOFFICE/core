@@ -106,9 +106,9 @@ namespace PPTX
 					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
 						break;
 
-					if (0 == _at) concurrent = pReader->GetBool();
-					else if (1 == _at)	nextAc = pReader->GetUChar();
-					else if (2 == _at)	prevAc = pReader->GetUChar();
+					else if (0 == _at) concurrent = pReader->GetBool();
+					else if (1 == _at) nextAc = pReader->GetUChar();
+					else if (2 == _at) prevAc = pReader->GetUChar();
 				}
 				while (pReader->GetPos() < end)
 				{

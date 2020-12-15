@@ -145,8 +145,7 @@ namespace PPTX
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
-				size_t count = 0;
-				for (size_t i = 0; i < count; ++i)
+				for (size_t i = 0; i < list.size(); ++i)
 					list[i].SetParentPointer(this);
 			}
 		};

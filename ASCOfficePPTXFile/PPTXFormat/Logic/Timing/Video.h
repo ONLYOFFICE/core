@@ -48,7 +48,7 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
                 XmlMacroReadAttributeBase(node, L"fullScrn", fullScrn);
-				cMediaNode	= node.ReadNode(_T("cMediaNode"));
+				cMediaNode	= node.ReadNode(_T("p:cMediaNode"));
 
 				FillParentPointersForChilds();
 			}
@@ -95,20 +95,19 @@ namespace PPTX
 
 					switch (_rec)
 					{
-					case 0:
-					{
-						cMediaNode.fromPPTY(pReader);
-					}break;
-					default:
-					{
-						pReader->SkipRecord();
-					}break;
+						case 0:
+						{
+							cMediaNode.fromPPTY(pReader);
+						}break;
+						default:
+						{
+							pReader->SkipRecord();
+						}break;
 					}
 				}
 				pReader->Seek(end);
 			}
-
-
+			
 			CMediaNode		cMediaNode;
 			nullable_bool	fullScrn;
 		protected:

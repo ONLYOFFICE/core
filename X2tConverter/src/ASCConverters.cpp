@@ -1506,9 +1506,9 @@ namespace NExtractTools
         _UINT32 nRes = 0;
         NSDoctRenderer::DoctRendererFormat::FormatFile eToType = NSDoctRenderer::DoctRendererFormat::FormatFile::HTML;
         std::wstring sFileFromDir = NSDirectory::GetFolderPath(sFrom);
-        std::wstring sFileToDir  = NSSystemPath::GetDirectoryName(sTo);
+        std::wstring sFileToDir   = NSDirectory::GetFolderPath(sTo);
         std::wstring sImagesDirectory = sFileFromDir + FILE_SEPARATOR_STR + _T("media");
-        std::wstring sHtmlFile = sFileFromDir + FILE_SEPARATOR_STR + _T("res.html");
+        std::wstring sHtmlFile        = sFileFromDir + FILE_SEPARATOR_STR + _T("index.html");
         NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : _T(""));
         std::wstring sXml = getDoctXml(eFromType, eToType, sFileFromDir, sHtmlFile, sImagesDirectory, sThemeDir, -1, _T(""), params);
         std::wstring sResult;
@@ -1520,13 +1520,17 @@ namespace NExtractTools
         }
         else
         {
-            std::wstring sName = NSFile::GetFileName(sTo);
+            NSFile::CFileBinary::Remove(sFileFromDir + FILE_SEPARATOR_STR + _T("Editor.bin"));
+            if(NSDirectory::GetFilesCount(sImagesDirectory, false) == 0)
+                NSFile::CFileBinary::Remove(sImagesDirectory);
+            std::wstring sName = NSFile::GetFileName(sFrom);
             size_t nDot = sName.find(L'.');
             if(nDot != std::wstring::npos)
                 sName.erase(nDot);
             COfficeUtils oZip;
             HRESULT oRes = oZip.CompressFileOrDirectory(sFileFromDir, sFileToDir + FILE_SEPARATOR_STR + sName + _T(".zip"));
-            NSFile::CFileBinary::Copy(sHtmlFile, sTo);
+            if(oRes == S_FALSE)
+                nRes = AVS_FILEUTILS_ERROR_CONVERT;
         }
         return nRes;
     }

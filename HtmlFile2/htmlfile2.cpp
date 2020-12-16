@@ -31,7 +31,7 @@
 #define VALUE2STR(x) VALUE_TO_STRING(x)
 #endif
 
-std::wstring rStyle = L"a area b strong bdo bdi big br center cite dfn em i var code kbd samp tt del s font img ins u mark q rt sup small sub svg input basefont button label data object noscript output abbr time ruby progress hgroup meter span acronym";
+std::wstring rStyle = L" a area b strong bdo bdi big br center cite dfn em i var code kbd samp tt del s font img ins u mark q rt sup small sub svg input basefont button label data object noscript output abbr time ruby progress hgroup meter span acronym ";
 
 struct CTree
 {
@@ -1427,7 +1427,7 @@ private:
 		size_t i = 0;
 		while(i != sSelectors.size())
 		{
-			if(rStyle.find(sSelectors[i].m_sName) != std::wstring::npos)
+            if(rStyle.find(L' ' + sSelectors[i].m_sName + L' ') != std::wstring::npos)
 			{
 				temporary.push_back(std::make_pair(i, sSelectors[i]));
 				sSelectors.erase(sSelectors.begin() + i);

@@ -1018,21 +1018,20 @@ void CGraphics::DrawFootnoteRect(double x, double y, double w, double h)
 
     m_pRenderer->put_PenDashStyle(nPenDashStyle);
 }
-std::wstring CGraphics::toDataURL(std::wstring type)
+std::string CGraphics::toDataURL(std::wstring type)
 {
     std::wstring sPath = m_sApplicationImagesDirectory + L"/img." + type;
     m_oFrame.SaveFile(sPath, _CXIMAGE_FORMAT_PNG);
-    return sPath;
-    /*
+
     NSFile::CFileBinary oReader;
-    if(oReader.OpenFile(m_sApplicationImagesDirectory + L"/img." + type))
+    if(oReader.OpenFile(sPath))
     {
         DWORD dwFileSize = oReader.GetFileSize();
         BYTE* pFileContent = new BYTE[dwFileSize];
         DWORD dwReaded;
         oReader.ReadFile(pFileContent, dwFileSize, dwReaded);
         oReader.CloseFile();
-        NSFile::CFileBinary::Remove(m_sApplicationImagesDirectory + L"/img." + type);
+        NSFile::CFileBinary::Remove(sPath);
 
         int nEncodeLen = NSBase64::Base64EncodeGetRequiredLength(dwFileSize);
         BYTE* pImageData = new BYTE[nEncodeLen];
@@ -1040,7 +1039,6 @@ std::wstring CGraphics::toDataURL(std::wstring type)
             return std::string((char*)pImageData, nEncodeLen);
     }
     return "";
-    */
 }
 CColor CGraphics::GetPenColor()
 {

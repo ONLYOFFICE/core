@@ -211,7 +211,7 @@ namespace NSGraphics
         void AddSmartRect   (double x,  double y,  double w,  double h, double pen_w);
         void DrawFootnoteRect(double x, double y,  double w,  double h);
         // new methods
-        std::wstring toDataURL(std::wstring type);
+        std::string toDataURL(std::wstring type);
         CColor GetPenColor();
         CColor GetBrushColor();
         void put_brushTexture(std::wstring src);

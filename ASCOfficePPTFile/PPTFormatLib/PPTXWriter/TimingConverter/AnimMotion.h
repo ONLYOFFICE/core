@@ -33,6 +33,7 @@
 
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/AnimMotion.h"
 #include "../../Records/Animations/ExtTimeNodeContainer.h"
+#include "CBhvr.h"
 
 
 namespace PPT_FORMAT
@@ -41,6 +42,41 @@ namespace PPT_FORMAT
             CRecordExtTimeNodeContainer* pETNC,
             PPTX::Logic::AnimMotion& oAnim)
     {
+        if (!pETNC || !pETNC->m_pTimeMotionBehavior) return;
 
+        auto pMotion = pETNC->m_pTimeMotionBehavior;
+        auto oAtom = pMotion->m_oMotionBehaviorAtom;
+
+        FillCBhvr(pETNC, oAnim.cBhvr);
+
+        if (oAtom.m_bFromPropertyUsed)
+        {
+            oAnim.fromX = oAtom.m_nXFROM;
+            oAnim.fromY = oAtom.m_nYFROM;
+        }
+        if (oAtom.m_bToPropertyUsed)
+        {
+            oAnim.toX   = oAtom.m_nXTO;
+            oAnim.toY   = oAtom.m_nYTO;
+        }
+        if (oAtom.m_bByPropertyUsed)
+        {
+            oAnim.byX   = oAtom.m_nXBY;
+            oAnim.byY   = oAtom.m_nYBY;
+        }
+
+        if (oAtom.m_bOriginPropertyUsed)
+        {
+            oAnim.origin = new PPTX::Limit::TLOrigin;
+            oAnim.origin->set(oAtom.m_nBehaviorOrigin == 2 ?
+                                  L"layout" : L"parent");
+        }
+
+        if (!pMotion->m_pVarPath->m_Value.empty())
+            oAnim.path = pMotion->m_pVarPath->m_Value;
+
+
+        oAnim.pathEditMode = new PPTX::Limit::TLPathEditMode;
+        oAnim.pathEditMode->set(oAtom.m_bEditRotationPropertyUsed ? L"fixed" : L"relative");
     }
 }

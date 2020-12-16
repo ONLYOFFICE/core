@@ -1509,6 +1509,7 @@ namespace NExtractTools
         std::wstring sFileToDir   = NSDirectory::GetFolderPath(sTo);
         std::wstring sImagesDirectory = sFileFromDir + FILE_SEPARATOR_STR + _T("media");
         std::wstring sHtmlFile        = sFileFromDir + FILE_SEPARATOR_STR + _T("index.html");
+        sImagesDirectory = string_replaceAll(sImagesDirectory, L"\\", L"/");
         NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : _T(""));
         std::wstring sXml = getDoctXml(eFromType, eToType, sFileFromDir, sHtmlFile, sImagesDirectory, sThemeDir, -1, _T(""), params);
         std::wstring sResult;

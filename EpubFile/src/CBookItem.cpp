@@ -30,6 +30,12 @@ bool CBookItem::ReadItem(XmlUtils::CXmlLiteReader& oXmlLiteReader, int depth)
 
         if (sAttributeName == L"href")
         {
+            size_t nPer20 = sAttributeValue.find(L"%20");
+            while(nPer20 != std::wstring::npos)
+            {
+                sAttributeValue.replace(nPer20, 3, L" ");
+                nPer20 = sAttributeValue.find(L"%20");
+            }
             size_t posLastSlash = sAttributeValue.rfind(L'/');
             m_sRef = posLastSlash == std::wstring::npos ? sAttributeValue : sAttributeValue.substr(posLastSlash + 1);
         }

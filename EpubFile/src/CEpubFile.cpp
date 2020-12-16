@@ -67,6 +67,9 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
         while (oXmlLiteReader.ReadNextSiblingNode(nParentDepth))
         {
             std::wstring sName = oXmlLiteReader.GetName();
+            size_t nDot = sName.find(L':');
+            if(nDot != std::wstring::npos)
+                sName.erase(0, nDot + 1);
             if (sName == L"metadata")
             {
                 m_oBookInfo.ReadInfo(oXmlLiteReader);

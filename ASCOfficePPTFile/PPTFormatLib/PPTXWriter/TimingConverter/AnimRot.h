@@ -33,7 +33,7 @@
 
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/AnimRot.h"
 #include "../../Records/Animations/ExtTimeNodeContainer.h"
-
+#include "CBhvr.h"
 
 namespace PPT_FORMAT
 {
@@ -41,6 +41,21 @@ void FillAnimRot(
         CRecordExtTimeNodeContainer* pETNC,
         PPTX::Logic::AnimRot& oAnim)
 {
+    if (!pETNC || !pETNC->m_pTimeRotationBehavior) return;
+
+    auto pRot = pETNC->m_pTimeRotationBehavior;
+    auto oAtom = pRot->m_oRotationBehaviorAtom;
+
+    FillCBhvr(pETNC, oAnim.cBhvr);
+
+    const auto mult = 60000;
+
+    if (oAtom.m_fByPropertyUsed)
+        oAnim.by = oAtom.m_By * mult;
+    if (oAtom.m_fToPropertyUsed)
+        oAnim.to = oAtom.m_To * mult;
+    if (oAtom.m_fFromPropertyUsed)
+        oAnim.from = oAtom.m_From * mult;
 
 }
 }

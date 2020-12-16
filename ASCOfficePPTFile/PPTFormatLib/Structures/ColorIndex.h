@@ -29,58 +29,32 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#include "TextMasterStyle9Level.h"
 
+#pragma once
+
+#include "IStruct.h"
 
 namespace PPT_FORMAT
 {
+struct ColorIndex : public IStruct {
 
-class CRecordTextMasterStyle9Atom : public CUnknownRecord
-{
-public:
-    USHORT m_cLevels;
+    BYTE m_red;
+    BYTE m_green;
+    BYTE m_blue;
+    BYTE m_index;
 
-    nullable<STextMasterStyle9Level> m_lstLvl1;
-    nullable<STextMasterStyle9Level> m_lstLvl2;
-    nullable<STextMasterStyle9Level> m_lstLvl3;
-    nullable<STextMasterStyle9Level> m_lstLvl4;
-    nullable<STextMasterStyle9Level> m_lstLvl5;
-
-    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override
+    void clear()
     {
-        m_oHeader = oHeader;
-        LONG lPos; StreamUtils::StreamPosition(lPos, pStream);
+        m_red = m_green = m_blue = 0;
+        m_index = 0xFF;         // Color is undefined.
+    }
 
-
-        m_cLevels = StreamUtils::ReadWORD(pStream);
-        if (m_cLevels > 0)
-        {
-            m_lstLvl1 = new STextMasterStyle9Level;
-            m_lstLvl1->ReadFromStream(pStream);
-            if (m_cLevels > 1)
-            {
-                m_lstLvl2 = new STextMasterStyle9Level;
-                m_lstLvl2->ReadFromStream(pStream);
-                if (m_cLevels > 2)
-                {
-                    m_lstLvl3 = new STextMasterStyle9Level;
-                    m_lstLvl3->ReadFromStream(pStream);
-                    if (m_cLevels > 3)
-                    {
-                        m_lstLvl4 = new STextMasterStyle9Level;
-                        m_lstLvl4->ReadFromStream(pStream);
-                        if (m_cLevels > 4)
-                        {
-                            m_lstLvl5 = new STextMasterStyle9Level;
-                            m_lstLvl5->ReadFromStream(pStream);
-                        }
-                    }
-                }
-            }
-        }
-
-        StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);
+    void ReadFromStream(POLE::Stream * pStream)
+    {
+        m_red       = StreamUtils::ReadBYTE(pStream);
+        m_green     = StreamUtils::ReadBYTE(pStream);
+        m_blue      = StreamUtils::ReadBYTE(pStream);
+        m_index     = StreamUtils::ReadBYTE(pStream);
     }
 };
 }

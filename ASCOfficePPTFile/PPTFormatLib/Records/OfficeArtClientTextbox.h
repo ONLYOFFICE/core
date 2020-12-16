@@ -30,23 +30,14 @@
  *
  */
 #pragma once
-#include "TextCFException9.h"
-#include "TextPFException9.h"
+#include "../Reader/Records.h"
 
 
-namespace PPT_FORMAT
+class CRecordOfficeArtClientTextbox : public CRecordsContainer
 {
-
-struct STextMasterStyle9Level
-{
-    STextPFException9 m_pf9;
-    STextCFException9 m_cf9;
-
-
-    void ReadFromStream(POLE::Stream* pStream)
+public:
+    CRecordOfficeArtClientTextbox()
     {
-        m_pf9.ReadFromStream(pStream);
-        m_cf9.ReadFromStream(pStream);
+
     }
 };
-}

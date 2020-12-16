@@ -57,15 +57,15 @@ public:
     }
 };
 
-class CRecordOfficeArtClientData : public CUnknownRecord
+class CRecordOfficeArtClientData : public CRecordsContainer
 {
 public:
-    nullable<CRecordAnimationInfoContainer>                     m_animationInfo;
-    nullable<CRecordPlaceHolderAtom>                            m_placeholderAtom;
+
     std::vector<CRecordShapeProgBinaryTagSubContainerOrAtom*>   m_rgShapeClientRoundtripData;
 
     virtual ~CRecordOfficeArtClientData()
     {
+        CRecordsContainer::Clear();
         for ( size_t i = 0; i < m_rgShapeClientRoundtripData.size(); ++i )
             RELEASEOBJECT ( m_rgShapeClientRoundtripData[i] );
     }
@@ -100,21 +100,11 @@ public:
                 m_rgShapeClientRoundtripData.push_back(pRec);
                 break;
             }
-
-            case RT_PlaceholderAtom:
-            {
-                m_placeholderAtom = new CRecordPlaceHolderAtom;
-                m_placeholderAtom->ReadFromStream(ReadHeader, pStream);
-                break;
-            }
-            case RT_AnimationInfo:
-            {
-                m_animationInfo = new CRecordAnimationInfoContainer;
-                m_animationInfo->ReadFromStream(ReadHeader, pStream);
-                break;
-            }
             default:
-                StreamUtils::StreamSkip(ReadHeader.RecLen, pStream);
+                IRecord* pRecord = CreateByType(ReadHeader);
+                pRecord->ReadFromStream(ReadHeader, pStream);
+
+                m_arRecords.push_back(pRecord);
                 break;
             }
 

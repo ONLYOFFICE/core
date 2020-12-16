@@ -31,15 +31,15 @@
  */
 #pragma once
 
-#include "FontCollectionEntry.h"
-
+#include "../Structures/FontCollectionEntry.h"
+#include "../Reader/Records.h"
 
 namespace PPT_FORMAT
 {
 class CRecordFontCollection10Container : public CUnknownRecord
 {
 public:
-    std::vector<CRecordFontCollectionEntry*> m_rgFontCollectionEntry;
+    std::vector<FontCollectionEntry*> m_rgFontCollectionEntry;
 
 public:
     virtual ~CRecordFontCollection10Container()
@@ -56,7 +56,7 @@ public:
         LONG lPos			=	0;
         StreamUtils::StreamPosition ( lPos, pStream );
 
-        UINT lCurLen		=	0;
+        _UINT32 lCurLen		=	0;
 
         SRecordHeader ReadHeader;
 
@@ -67,8 +67,8 @@ public:
 
             lCurLen += 8 + ReadHeader.RecLen;
 
-            auto pRec = new CRecordFontCollectionEntry;
-            pRec->ReadFromStream(ReadHeader, pStream);
+            auto pRec = new FontCollectionEntry;
+            pRec->ReadFromStream(pStream);
             m_rgFontCollectionEntry.push_back(pRec);
         }
         StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);

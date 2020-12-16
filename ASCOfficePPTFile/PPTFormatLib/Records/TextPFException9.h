@@ -30,7 +30,7 @@
  *
  */
 #pragma once
-#include "../../Reader/Records.h"
+#include "../Reader/Records.h"
 #include "PFMasks.h"
 
 
@@ -123,6 +123,13 @@ struct STextPFException9
         {
             auto pBulletAutoNumberScheme = new STextAutoNumberScheme;
             pBulletAutoNumberScheme->ReadFromStream(pStream);
+            m_optBulletAutoNumberScheme = pBulletAutoNumberScheme;
+        }
+        else if (m_masks.m_bulletHasScheme)
+        {
+            auto pBulletAutoNumberScheme = new STextAutoNumberScheme;
+            pBulletAutoNumberScheme->m_nStartNum = 1;
+            pBulletAutoNumberScheme->m_eScheme = ANM_ArabicPeriod;
             m_optBulletAutoNumberScheme = pBulletAutoNumberScheme;
         }
 

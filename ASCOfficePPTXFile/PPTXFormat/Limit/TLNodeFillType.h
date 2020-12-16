@@ -30,11 +30,8 @@
  *
  */
 #pragma once
-#ifndef PPTX_LIMIT_TLNODEFILLTYPE_INCLUDE_H_
-#define PPTX_LIMIT_TLNODEFILLTYPE_INCLUDE_H_
 
 #include "BaseLimit.h"
-
 
 namespace PPTX
 {
@@ -48,14 +45,14 @@ namespace PPTX
 				m_strValue = _T("hold");
 			}
 
-                        TLNodeFillType(UINT fill)
-                        {
-                            if (    fill == 0       ||
-                                    fill == 3) m_strValue = L"hold";
-                            else if(fill == 1       ||
-                                    fill == 4) m_strValue = L"transition";
-                            else m_strValue = L"freeze";
-                        }
+            TLNodeFillType(UINT fill)
+            {
+                if (    fill == 0       ||
+                        fill == 3) m_strValue = L"hold";
+                else if(fill == 1       ||
+                        fill == 4) m_strValue = L"transition";
+                else m_strValue = L"freeze";
+            }
 
 			_USE_STRING_OPERATOR
 				
@@ -69,8 +66,25 @@ namespace PPTX
 					m_strValue = strValue;
 				}
 			}
+			virtual BYTE GetBYTECode() const
+			{
+				if (L"freeze" == m_strValue)		return 0;
+				if (L"hold" == m_strValue)			return 1;
+				if (L"remove" == m_strValue)		return 2;
+				if (L"transition" == m_strValue)	return 3;
+				return 0;
+			}
+			virtual void SetBYTECode(const BYTE& src)
+			{
+				switch (src)
+				{
+				case 0: m_strValue = L"freeze"; break;
+				case 1: m_strValue = L"hold"; break;
+				case 2: m_strValue = L"remove"; break;
+				case 3: m_strValue = L"transition"; break;
+				}
+			}
 		};
 	} // namespace Limit
 } // namespace PPTX
 
-#endif // PPTX_LIMIT_TLNODEFILLTYPE_INCLUDE_H_

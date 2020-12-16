@@ -45,14 +45,7 @@ namespace PPT_FORMAT
 
         if (oldAnim->m_oAnimateBehaviorAtom.m_bCalcModePropertyUsed)
         {
-            std::wstring calcmode;
-            switch (oldAnim->m_oAnimateBehaviorAtom.m_nCalcMode) {
-            case 0: calcmode = L"discrete"; break;
-            case 1: calcmode = L"lin"; break;
-            case 2: calcmode = L"fmla"; break;
-            }
-            oAnim.calcmode = new PPTX::Limit::TLCalcMode;
-            oAnim.calcmode = calcmode;
+            oAnim.calcmode = oldAnim->m_oAnimateBehaviorAtom.m_nCalcMode;
         }
 
         if (oldAnim->m_oAnimateBehaviorAtom.m_bValueTypePropertyUsed)
@@ -95,7 +88,7 @@ namespace PPT_FORMAT
             PPTX::Logic::Tav tav;
             tav.val = new PPTX::Logic::AnimVariant;
 
-            tav.val->name = L"val";
+            tav.val->node_name = L"val";
 
             if (animValue->m_pVarValue.is_init())
             switch (animValue->m_pVarValue->m_Type) {

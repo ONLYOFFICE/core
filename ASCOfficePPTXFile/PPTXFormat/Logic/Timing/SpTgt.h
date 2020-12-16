@@ -47,13 +47,12 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(SpTgt)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				spid	= node.GetAttribute(_T("spid"));
+				spid = node.GetAttribute(_T("spid"));
 
 				XmlUtils::CXmlNode oNode;
-                bg		= (true == node.GetNode(_T("p:bg"), oNode)) ? true : false;
+                bg = node.GetNode(_T("p:bg"), oNode);
 
 				XmlUtils::CXmlNode oNodeMem;
 				if (node.GetNode(_T("p:subSp"), oNodeMem))
@@ -81,7 +80,7 @@ namespace PPTX
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("spid"), spid);
 				
-                if (bg.IsInit())
+                if ((bg.IsInit()) && (*bg))
 				{
 					return XmlUtils::CreateNode(_T("p:spTgt"), oAttr, _T("<p:bg/>"));
 				}
@@ -110,8 +109,66 @@ namespace PPTX
 				}
 				return XmlUtils::CreateNode(_T("p:spTgt"), oAttr);
 			}
-		public:
-			std::wstring										spid;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+				pWriter->WriteString1(0, spid);
+				pWriter->WriteString2(1, subSpid);
+				pWriter->WriteBool2(2, bg);
+				pWriter->WriteLimit2(3, type);
+				pWriter->WriteInt2(4, lvl);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+				pWriter->WriteRecord2(0, txEl);
+				pWriter->WriteRecord2(1, graphicEl);
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // attribute start
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					else if (0 == _at)	spid = pReader->GetString2();
+					else if (1 == _at)	subSpid = pReader->GetString2();
+					else if (2 == _at)	bg = pReader->GetBool();
+					else if (3 == _at)	type = pReader->GetUChar();
+					else if (4 == _at)	lvl = pReader->GetLong();
+				}
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+						case 0:
+						{
+							txEl.Init();
+							txEl->fromPPTY(pReader);
+						}break;
+						case 1:
+						{
+							graphicEl.Init();
+							graphicEl->fromPPTY(pReader);
+						}break;
+						default:
+						{
+							pReader->SkipRecord();
+						}break;
+					}
+				}
+				pReader->Seek(end);
+			}
+
+			std::wstring								spid;
 
             nullable_bool								bg;
 			nullable_string								subSpid;

@@ -2061,7 +2061,7 @@ namespace NSBinPptxRW
 
 	void CBinaryFileReader::SkipRecord()
 	{
-		_INT32 _len = GetULong();
+		_INT32 _len = GetRecordSize();
 		Skip(_len);
 	}
 

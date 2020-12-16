@@ -45,7 +45,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(Video)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
                 XmlMacroReadAttributeBase(node, L"fullScrn", fullScrn);
@@ -61,8 +60,55 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("p:video"), oAttr, cMediaNode.toXML());
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_p_video;
+			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+					pWriter->WriteBool2(0, fullScrn);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
-		public:
+				pWriter->WriteRecord1(0, cMediaNode);
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // attribute start
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					if (0 == _at)	fullScrn = pReader->GetBool();
+				}
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+					case 0:
+					{
+						cMediaNode.fromPPTY(pReader);
+					}break;
+					default:
+					{
+						pReader->SkipRecord();
+					}break;
+					}
+				}
+				pReader->Seek(end);
+			}
+
+
 			CMediaNode		cMediaNode;
 			nullable_bool	fullScrn;
 		protected:

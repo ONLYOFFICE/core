@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LIMIT_BEVELTYPE_INCLUDE_H_
-#define PPTX_LIMIT_BEVELTYPE_INCLUDE_H_
 
 #include "BaseLimit.h"
 
@@ -56,30 +54,18 @@ namespace PPTX
 
 			virtual BYTE GetBYTECode() const
 			{
-				if (L"angle" == m_strValue)
-					return 0;
-				if (L"artDeco" == m_strValue)
-					return 1;
-				if (L"circle" == m_strValue)
-					return 2;
-				if (L"convex" == m_strValue)
-					return 3;
-				if (L"coolSlant" == m_strValue)
-					return 4;
-				if (L"cross" == m_strValue)
-					return 5;
-				if (L"divot" == m_strValue)
-					return 6;
-				if (L"hardEdge" == m_strValue)
-					return 7;
-				if (L"relaxedInset" == m_strValue)
-					return 8;
-				if (L"riblet" == m_strValue)
-					return 9;
-				if (L"slope" == m_strValue)
-					return 10;
-				if (L"softRound" == m_strValue)
-					return 11;
+				if (L"angle" == m_strValue)			return 0;
+				if (L"artDeco" == m_strValue)		return 1;
+				if (L"circle" == m_strValue)		return 2;
+				if (L"convex" == m_strValue)		return 3;
+				if (L"coolSlant" == m_strValue)		return 4;
+				if (L"cross" == m_strValue)			return 5;
+				if (L"divot" == m_strValue)			return 6;
+				if (L"hardEdge" == m_strValue)		return 7;
+				if (L"relaxedInset" == m_strValue)	return 8;
+				if (L"riblet" == m_strValue)		return 9;
+				if (L"slope" == m_strValue)			return 10;
+				if (L"softRound" == m_strValue)		return 11;
 				return 0;
 			}
 			virtual void SetBYTECode(const BYTE& val)
@@ -104,5 +90,3 @@ namespace PPTX
 		};
 	} // namespace Limit
 } // namespace PPTX
-
-#endif // PPTX_LIMIT_BEVELTYPE_INCLUDE_H_

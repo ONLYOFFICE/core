@@ -47,7 +47,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(AnimMotion)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				cBhvr = node.ReadNode(_T("p:cBhvr"));
@@ -133,8 +132,78 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("p:animMotion"), oAttr, oValue);
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_p_animMotion;
+			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+					pWriter->WriteLimit2(0, origin);
+					pWriter->WriteLimit2(1, pathEditMode);
+					pWriter->WriteString2(2, path);
+					pWriter->WriteString2(3, ptsTypes);
+					pWriter->WriteInt2(4, byX);
+					pWriter->WriteInt2(5, byY);
+					pWriter->WriteInt2(6, fromX);
+					pWriter->WriteInt2(7, fromY);				
+					pWriter->WriteInt2(8, toX);
+					pWriter->WriteInt2(9, toY);
+					pWriter->WriteInt2(10, rCtrX);
+					pWriter->WriteInt2(11, rCtrY);
+					pWriter->WriteInt2(12, rAng);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
-		public:
+				pWriter->WriteRecord1(0, cBhvr);
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // attribute start
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					else if (0 == _at)	origin = pReader->GetUChar();
+					else if (1 == _at)	pathEditMode = pReader->GetUChar();
+					else if (2 == _at)	path = pReader->GetString2();
+					else if (3 == _at)	ptsTypes = pReader->GetString2();
+					else if (4 == _at)	byX = pReader->GetLong();
+					else if (5 == _at)	byY = pReader->GetLong();
+					else if (6 == _at)	fromX = pReader->GetLong();
+					else if (7 == _at)	fromY = pReader->GetLong();
+					else if (8 == _at)	toX = pReader->GetLong();
+					else if (9 == _at)	toY = pReader->GetLong();
+					else if (10 == _at)	rCtrX = pReader->GetLong();
+					else if (11 == _at)	rCtrY = pReader->GetLong();
+					else if (12 == _at)	rAng = pReader->GetLong();
+				}
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+						case 0:
+						{
+							cBhvr.fromPPTY(pReader);
+						}break;
+						default:
+						{
+							pReader->SkipRecord();
+						}break;
+					}
+				}
+				pReader->Seek(end);
+			}
+
 			CBhvr					cBhvr;
 
 			nullable_int			byX;
@@ -145,7 +214,7 @@ namespace PPTX
 			nullable_int			toY;
 			nullable_int			rCtrX;
 			nullable_int			rCtrY;
-//Attributes
+
 			nullable_limit<Limit::TLOrigin>			origin; //ST_TLAnimateMotionBehaviorOrigin
 			nullable_string							path;	//M = move to, L = line to, C = curve to, Z=close loop, E=end 
 															//UPPERCASE = absolute coords, lowercase = relative coords 

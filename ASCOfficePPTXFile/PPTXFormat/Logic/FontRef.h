@@ -116,8 +116,7 @@ namespace PPTX
 
 					if (0 == _at)
 					{
-						idx = new Limit::FontStyleIndex();
-						idx->SetBYTECode(pReader->GetUChar());
+						idx = pReader->GetUChar();
 					}
 					else
 						break;

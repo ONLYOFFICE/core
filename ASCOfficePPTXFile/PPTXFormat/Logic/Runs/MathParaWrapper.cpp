@@ -193,7 +193,7 @@ xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">\
 			{
 				eType = OOX::et_m_oMath;
 			}
-			LONG _end = pReader->GetPos() + pReader->GetLong() + 4;
+			LONG _end = pReader->GetPos() + pReader->GetRecordSize() + 4;
 			std::wstring sXml;
 			if(NULL != pReader->m_pMainDocument)
 			{

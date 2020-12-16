@@ -157,7 +157,7 @@ namespace PPTX
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
-				LONG _e = pReader->GetPos() + pReader->GetLong() + 4;
+				LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
 				pReader->Skip(1); // start attributes
 
 				while (true)
@@ -175,8 +175,7 @@ namespace PPTX
 						}
 						case 1:
 						{
-							fill = new Limit::PathFillMode();
-							fill->SetBYTECode(pReader->GetUChar());
+							fill = pReader->GetUChar();
 							break;
 						}
 						case 2:
@@ -215,7 +214,7 @@ namespace PPTX
 								pReader->Skip(5); // type + len
 								
 								BYTE _type = pReader->GetUChar();
-								LONG _end = pReader->GetPos() + pReader->GetLong() + 4;
+								LONG _end = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 								Paths.push_back(UniPath2D());
 								UniPath2D& oPath = Paths[j];

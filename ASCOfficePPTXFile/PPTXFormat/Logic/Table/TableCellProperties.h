@@ -247,20 +247,17 @@ namespace PPTX
 						}
 						case 5:
 						{
-							Vert = new Limit::TextVerticalType();
-							Vert->SetBYTECode(pReader->GetUChar());
+							Vert = pReader->GetUChar();
 							break;
 						}
 						case 6:
 						{
-							Anchor = new Limit::TextAnchor();
-							Anchor->SetBYTECode(pReader->GetUChar());
+							Anchor = pReader->GetUChar();
 							break;
 						}
 						case 7:
 						{
-							HorzOverflow = new Limit::HorzOverflow();
-							HorzOverflow->SetBYTECode(pReader->GetUChar());
+							HorzOverflow = pReader->GetUChar();
 							break;
 						}
 						default:

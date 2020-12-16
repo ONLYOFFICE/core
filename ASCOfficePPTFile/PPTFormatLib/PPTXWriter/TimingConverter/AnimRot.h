@@ -48,12 +48,14 @@ void FillAnimRot(
 
     FillCBhvr(pETNC, oAnim.cBhvr);
 
+    const auto mult = 60000;
+
     if (oAtom.m_fByPropertyUsed)
-        oAnim.by = oAtom.m_By * 60000;
+        oAnim.by = oAtom.m_By * mult;
     if (oAtom.m_fToPropertyUsed)
-        oAnim.to = oAtom.m_To * 60000;
+        oAnim.to = oAtom.m_To * mult;
     if (oAtom.m_fFromPropertyUsed)
-        oAnim.from = oAtom.m_From * 60000;
+        oAnim.from = oAtom.m_From * mult;
 
 }
 }

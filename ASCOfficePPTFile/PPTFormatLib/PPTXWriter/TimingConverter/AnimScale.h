@@ -33,6 +33,7 @@
 
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/AnimScale.h"
 #include "../../Records/Animations/ExtTimeNodeContainer.h"
+#include "CBhvr.h"
 
 
 namespace PPT_FORMAT
@@ -41,6 +42,31 @@ void FillAnimScale(
         CRecordExtTimeNodeContainer* pETNC,
         PPTX::Logic::AnimScale& oAnim)
 {
+    if (!pETNC || !pETNC->m_pTimeScaleBehavior) return;
 
+    auto pScale = pETNC->m_pTimeScaleBehavior;
+    auto oAtom =  pScale->m_oScaleBehaviorAtom;
+
+    FillCBhvr(pETNC, oAnim.cBhvr);
+
+    const auto mult = 1000;
+    if (oAtom.m_fByPropertyUsed)
+    {
+        oAnim.byX = oAtom.m_XBy * mult;
+        oAnim.byY = oAtom.m_YBy * mult;
+    }
+    if (oAtom.m_fToPropertyUsed)
+    {
+        oAnim.toX = oAtom.m_XTo * mult;
+        oAnim.toY = oAtom.m_YTo * mult;
+    }
+    if (oAtom.m_fFromPropertyUsed)
+    {
+        oAnim.fromX = oAtom.m_XFrom * mult;
+        oAnim.fromY = oAtom.m_YFrom * mult;
+    }
+
+    if (oAtom.m_fZoomContentsUsed)
+        oAnim.zoomContents = oAtom.m_fZoomContents;
 }
 }

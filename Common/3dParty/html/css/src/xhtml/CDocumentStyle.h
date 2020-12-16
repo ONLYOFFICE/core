@@ -62,6 +62,7 @@ namespace NSCSS
 
         void WritePStyle(const NSCSS::CCompiledStyle& oStyle);
         void WriteRStyle(const NSCSS::CCompiledStyle& oStyle);
+        void WriteLiteStyle(const NSCSS::CCompiledStyle& oStyle);
 
         void SetStyle(const std::wstring& sStyle);
         void SetId   (const std::wstring& sId);

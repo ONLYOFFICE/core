@@ -714,7 +714,7 @@ private:
             wrP(oXml, sSelectors, oTS, bWasP);
             oXml->WriteString(L"<w:r>");
             NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
-            if(oStyle.GetTextAlign() == L"justify")
+            if(oStyle.m_pText.GetAlign() == L"both")
                 oXml->WriteString(L"<w:tab/>");
             oXml->WriteString(L"<w:br/></w:r>");
         }

@@ -407,6 +407,22 @@ namespace NSCSS
         }
     }
 
+    void CDocumentStyle::WriteLiteStyle(const CCompiledStyle &oStyle)
+    {
+        if(oStyle.GetId().empty())
+        {
+            m_sId = L"normal";
+            return;
+        }
+
+        CXmlElement oXmlElement;
+        SetPStyle(oStyle, oXmlElement);
+        SetRStyle(oStyle, oXmlElement);
+
+        if (!oStyle.Empty() || !oXmlElement.Empty())
+            m_sStyle += oXmlElement.GetLiteStyle();
+    }
+
     void CDocumentStyle::WritePStyle (const NSCSS::CCompiledStyle& oStyle)
     {   
         if(oStyle.GetId().empty())

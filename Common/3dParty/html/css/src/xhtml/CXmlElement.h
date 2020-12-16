@@ -30,12 +30,13 @@ public:
     void AddPropertiesInR  (const NSCSS::NSConstValues::NSProperties::RunnerProperties&    nProperties, const std::wstring& sValue);
     void AddBasicProperties(const NSCSS::NSConstValues::NSProperties::BasicProperties&     nProperties, const std::wstring& sValue);
 
-    std::wstring GetPStyle()  const;
-    std::wstring GetRStyle()  const;
-    std::wstring GetStyle()   const;
-    std::wstring GetBasedOn() const;
-    std::wstring GetStyleId() const;
-    std::wstring GetName()    const;
+    std::wstring GetPStyle()    const;
+    std::wstring GetRStyle()    const;
+    std::wstring GetStyle()     const;
+    std::wstring GetLiteStyle() const;
+    std::wstring GetBasedOn()   const;
+    std::wstring GetStyleId()   const;
+    std::wstring GetName()      const;
 
     CXmlElement& operator+=(const CXmlElement& oElement);
     CXmlElement& operator= (const CXmlElement& oelement);

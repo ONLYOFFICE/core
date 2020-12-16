@@ -323,8 +323,8 @@ std::wstring CXmlElement::ConvertPStyle() const
     if (m_mPStyleValues.empty())
         return std::wstring();
 
-    std::wstring sPPr = L"<w:pPr>";
-    std::wstring sPBdr = L"<w:pBdr>";
+    std::wstring sPPr;
+    std::wstring sPBdr;
 
     for (const std::map<NSCSS::NSConstValues::NSProperties::ParagraphProperties, std::wstring>::value_type& oItem : m_mPStyleValues)
     {
@@ -395,14 +395,10 @@ std::wstring CXmlElement::ConvertPStyle() const
         }
     }
 
-    sPBdr += L"</w:pBdr>";
+    if (sPBdr.empty())
+        sPPr += L"<w:pBdr>" + sPBdr + L"</w:pBdr>";
 
-    if (sPBdr.length() > 17)
-        sPPr += sPBdr;
-
-    sPPr += L"</w:pPr>";
-
-    return sPPr;
+    return L"<w:pPr>" + sPPr + L"</w:pPr>";
 }
 
 std::wstring CXmlElement::ConvertRStyle() const
@@ -410,7 +406,7 @@ std::wstring CXmlElement::ConvertRStyle() const
     if (m_mRStyleValues.empty())
         return std::wstring();
 
-    std::wstring sRStyle = L"<w:rPr>";
+    std::wstring sRStyle;
 
     for (const std::map<NSCSS::NSConstValues::NSProperties::RunnerProperties, std::wstring>::value_type& oItem : m_mRStyleValues)
     {
@@ -475,9 +471,7 @@ std::wstring CXmlElement::ConvertRStyle() const
         }
     }
 
-    sRStyle += L"</w:rPr>";
-
-    return sRStyle;
+    return L"<w:rPr>" + sRStyle + L"</w:rPr>";
 }
 
 std::wstring CXmlElement::ConvertBasicInfoStyle() const
@@ -569,6 +563,19 @@ std::wstring CXmlElement::GetStyle() const
     sStyle += ConvertPStyle();
     sStyle += ConvertRStyle();
     sStyle += L"</w:style>";
+
+    return sStyle.length() > 19 ? sStyle : std::wstring();
+}
+
+std::wstring CXmlElement::GetLiteStyle() const
+{
+    if (Empty())
+        return std::wstring();
+
+    std::wstring sStyle;
+
+    sStyle += ConvertPStyle();
+    sStyle += ConvertRStyle();
 
     return sStyle.length() > 19 ? sStyle : std::wstring();
 }

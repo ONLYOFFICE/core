@@ -57,30 +57,6 @@ namespace NSCSS
         m_mUsedStyles.clear();
     }
 
-    /*
-    inline CElement* CCssCalculator_Private::GetElement(const int& nIndex) const
-    {
-        if (nIndex < 0 || nIndex >= (int)m_arData.size())
-            return NULL;
-
-        return m_arData[nIndex];
-    }
-
-    inline void CCssCalculator_Private::AddElement(CElement *oElement)
-    {
-        if (oElement != NULL)
-        {
-            const std::vector<std::pair<std::wstring, std::wstring>>& arDeclarations = oElement->GetDeclarations();
-
-            for (std::pair<std::wstring, std::wstring> pDeclaration : arDeclarations)
-                pDeclaration.second = ConvertUnitMeasure(pDeclaration.second);
-
-            oElement->SetDeclaratins(arDeclarations);
-            m_arData.push_back(oElement);
-        }
-    }
-    */
-
     inline void CCssCalculator_Private::GetOutputData(KatanaOutput *oOutput)
     {
         if ( NULL == oOutput )
@@ -139,10 +115,9 @@ namespace NSCSS
             return;
 
         const std::map<std::wstring, std::wstring> mStyle = GetDeclarationList(oRule->declarations);
-        for (const std::wstring sSelector : GetSelectorList(oRule->selectors))
+        for (const std::wstring &sSelector : GetSelectorList(oRule->selectors))
         {
             std::vector<std::wstring> arWords = NS_STATIC_FUNCTIONS::GetWordsW(sSelector, L" ");
-//            std::wcout << sSelector << std::endl;
 
             CElement* oLastElement = NULL;
             CElement* oFirstElement = NULL;
@@ -399,7 +374,7 @@ namespace NSCSS
 
         std::vector<CElement*> arElements;
 
-        for (const CNode oElement : arSelectors)
+        for (const CNode &oElement : arSelectors)
         {
             std::wstring sName, sId;
             std::vector<std::wstring> arClasses;

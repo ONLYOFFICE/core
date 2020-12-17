@@ -3,7 +3,6 @@ function CNativeGraphics()
 {
     this.Native = CreateNativeGraphics();
 
-    this.m_oContext   = null;
     this.m_dWidthMM   = 0;
     this.m_dHeightMM  = 0;
     this.m_lWidthPix  = 0;
@@ -600,3 +599,40 @@ CNativeGraphics.prototype =
 		this.Native["DrawPath"](path);
 	}
 };
+
+function ShapeToImageConverter(shape, pageIndex)
+{
+    AscCommon.IsShapeToImageConverter = true;
+
+    var dKoef = AscCommon.g_dKoef_mm_to_pix;
+    var w_mm = 210;
+    var h_mm = 297;
+    var w_px = (w_mm * dKoef) >> 0;
+    var h_px = (h_mm * dKoef) >> 0;
+
+    var g = null;
+    if (undefined !== window["native"])
+        g = new CNativeGraphics();
+	else
+		g = new AscCommon.CGraphics();
+    g.init(null, w_px, h_px, w_mm, h_mm);
+    g.transform(1,0,0,1,0,0);
+
+    shape.draw(g, /*pageIndex*/0);
+
+    AscCommon.IsShapeToImageConverter = false;
+
+    var _ret = { ImageNative : null, ImageUrl : "" };
+    try
+    {
+        _ret.ImageUrl = g.toDataURL("png");
+    }
+    catch (err)
+    {
+        if (shape.brush != null && shape.brush.fill && shape.brush.fill.RasterImageId)
+            _ret.ImageUrl = getFullImageSrc2(shape.brush.fill.RasterImageId);
+        else
+            _ret.ImageUrl = "";
+    }
+    return _ret;
+}

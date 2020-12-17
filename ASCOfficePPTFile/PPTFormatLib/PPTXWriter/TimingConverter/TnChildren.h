@@ -116,9 +116,21 @@ namespace PPT_FORMAT
             FillPar(pETNC, *par);
             oChild.m_node = par;
         }
-        else
+        else if (pETNC->m_haveClientVisualElement)
         {
-            // ? Audio Video
+            if (pETNC->m_pClientVisualElement->m_bVisualPageAtom)
+            {
+
+            }
+            if (pETNC->m_pClientVisualElement->m_bVisualShapeAtom)
+            {
+                if (pETNC->m_pClientVisualElement->m_oVisualShapeAtom.m_Type == TL_TVET_Video)
+                {
+                    auto video = new PPTX::Logic::Video;
+                    FillVideo(pETNC, *video);
+                    oChild.m_node = video;
+                }
+            }
         }
     }
 }

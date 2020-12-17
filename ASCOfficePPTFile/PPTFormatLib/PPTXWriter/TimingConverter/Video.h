@@ -33,6 +33,7 @@
 
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Video.h"
 #include "../../Records/Animations/ExtTimeNodeContainer.h"
+#include "CTn.h"
 
 
 namespace PPT_FORMAT
@@ -41,6 +42,30 @@ void FillVideo(
         CRecordExtTimeNodeContainer* pETNC,
         PPTX::Logic::Video& oVideo)
 {
+    auto video = pETNC->m_pClientVisualElement->m_oVisualShapeAtom;
+
+    FillCTn(pETNC, oVideo.cMediaNode.cTn);
+
+    try {
+        oVideo.cMediaNode.vol = (int)(static_cast<CRecordTimeVariantFloat*>
+                                      (pETNC->m_pTimePropertyList->m_arrElements[1])->
+                                        m_Value * 100000);
+    } catch (...) {
+
+    }
+
+    try {
+        oVideo.fullScrn = static_cast<CRecordTimeVariantBool*>
+                                      (pETNC->m_pTimePropertyList->m_arrElements[3])->
+                                        m_Value;
+    } catch (...) {
+
+    }
+
+
+    oVideo.cMediaNode.tgtEl.spTgt = PPTX::Logic::SpTgt();
+    oVideo.cMediaNode.tgtEl.spTgt->spid = std::to_wstring(video.m_nObjectIdRef);
+
 
 }
 }

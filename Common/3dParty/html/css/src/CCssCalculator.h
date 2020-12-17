@@ -28,6 +28,7 @@ namespace NSCSS
 
         void SetUnitMeasure(const UnitMeasure& nType);
         void SetDpi(const unsigned short int& nValue);
+        void SetBodyTree(const CTree &oTree);
 
         UnitMeasure GetUnitMeasure() const;
         std::wstring GetEncoding()   const;

@@ -19,6 +19,24 @@ namespace NSCSS
         Peak
     } UnitMeasure;
 
+    struct CTree
+    {
+        NSCSS::CNode m_oNode;
+        std::vector<CTree> m_arrChild;
+
+        inline static void CountingNumberRepetitions(const CTree &oTree, std::map<std::wstring, unsigned int> &mStatictics)
+        {
+            if (!oTree.m_oNode.m_sId.empty())
+                ++mStatictics[oTree.m_oNode.m_sId];
+            if (!oTree.m_oNode.m_sStyle.empty())
+                ++mStatictics[oTree.m_oNode.m_sStyle];
+
+            if (!oTree.m_arrChild.empty())
+                for (const CTree& oChildren : oTree.m_arrChild)
+                    CountingNumberRepetitions(oChildren, mStatictics);
+        }
+    };
+
     namespace NSConstValues
     {
         namespace NSMaps {

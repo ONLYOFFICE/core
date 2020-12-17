@@ -21,6 +21,7 @@ namespace NSCSS
 
         std::map<std::wstring, CElement*> m_mData;
 
+        std::map<std::wstring, unsigned int> *m_mStatictics; // Количество повторений свойств id и style у селекторов
 
         std::map<std::vector<CNode>, CCompiledStyle*> m_mUsedStyles;
 
@@ -53,6 +54,7 @@ namespace NSCSS
 
         void SetUnitMeasure(const UnitMeasure& nType);
         void SetDpi(unsigned short int nValue);
+        void SetBodyTree(const CTree &oTree);
 
         UnitMeasure GetUnitMeasure() const;
         std::wstring GetEncoding() const;

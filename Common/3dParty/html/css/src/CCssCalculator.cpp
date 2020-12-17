@@ -44,6 +44,11 @@ namespace NSCSS
         m_pInternal->SetDpi(nValue);
     }
 
+    void CCssCalculator::SetBodyTree(const CTree &oTree)
+    {
+        m_pInternal->SetBodyTree(oTree);
+    }
+
     UnitMeasure CCssCalculator::GetUnitMeasure() const
     {
         return m_pInternal->GetUnitMeasure();

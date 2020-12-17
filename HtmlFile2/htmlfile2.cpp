@@ -33,11 +33,11 @@
 
 std::wstring rStyle = L" a area b strong bdo bdi big br center cite dfn em i var code kbd samp tt del s font img ins u mark q rt sup small sub svg input basefont button label data object noscript output abbr time ruby progress hgroup meter span acronym ";
 
-struct CTree
-{
-    NSCSS::CNode m_oNode;
-    std::vector<CTree> m_arrChild;
-};
+//struct CTree
+//{
+//    NSCSS::CNode m_oNode;
+//    std::vector<CTree> m_arrChild;
+//};
 
 // Ячейка таблицы
 struct CTc
@@ -95,7 +95,7 @@ private:
     NSStringUtils::CStringBuilder m_oNoteXml;    // footnotes.xml
     NSStringUtils::CStringBuilder m_oNumberXml;  // numbering.xml
 
-    CTree m_oTree; // Дерево body html-файла
+    NSCSS::CTree m_oTree; // Дерево body html-файла
 
 public:
 
@@ -461,7 +461,7 @@ public:
         }
     }
 
-    void readStyle2(CTree& oTree)
+    void readStyle2(NSCSS::CTree& oTree)
     {
         std::wstring sName = m_oLightReader.GetName();
         // Стиль по ссылке
@@ -520,7 +520,7 @@ public:
         {
             if(!m_oLightReader.IsEmptyNode())
             {
-                CTree oChildTree;
+                NSCSS::CTree oChildTree;
                 readStyle2(oChildTree);
                 oTree.m_arrChild.push_back(oChildTree);
             }
@@ -609,6 +609,7 @@ private:
         m_oDocXml.WriteString(sCrossId);
         m_oDocXml.WriteString(L"\"/>");
         */
+
         bool bWasP = true;
         readStream(&m_oDocXml, sSelectors, { false, false, -1, L"", L"" }, bWasP);
     }

@@ -39,7 +39,7 @@ bool operator<(const std::vector<NSCSS::CNode> &arLeftSelectors, const std::vect
 
 namespace NSCSS
 {
-    CCssCalculator_Private::CCssCalculator_Private() : m_nDpi(96), m_nCountNodes(0), m_UnitMeasure(Default), m_sEncoding(L"UTF-8") {}
+    CCssCalculator_Private::CCssCalculator_Private() : m_nDpi(96), m_nCountNodes(0), m_UnitMeasure(Default), m_mStatictics(NULL), m_sEncoding(L"UTF-8") {}
 
     CCssCalculator_Private::~CCssCalculator_Private()
     {
@@ -55,6 +55,9 @@ namespace NSCSS
             delete iter->second;
 
         m_mUsedStyles.clear();
+
+        if (NULL != m_mStatictics)
+            delete m_mStatictics;
     }
 
     inline void CCssCalculator_Private::GetOutputData(KatanaOutput *oOutput)
@@ -496,6 +499,19 @@ namespace NSCSS
     void CCssCalculator_Private::SetDpi(unsigned short int nValue)
     {
         m_nDpi = nValue;
+    }
+
+    void CCssCalculator_Private::SetBodyTree(const CTree &oTree)
+    {
+        if (oTree.m_arrChild.empty())
+            return;
+
+        if (NULL == m_mStatictics)
+            m_mStatictics = new std::map<std::wstring, unsigned int>();
+
+        std::wcout << oTree.m_arrChild.size() << std::endl;
+
+        CTree::CountingNumberRepetitions(oTree, *m_mStatictics);
     }
 
     void CCssCalculator_Private::SetUnitMeasure(const UnitMeasure& nType)

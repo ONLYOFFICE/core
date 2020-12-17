@@ -121,8 +121,6 @@ namespace NSCSS
         if (arNodes.empty() || (m_mStyle.empty() && m_arPrevElements.empty()))
             return std::map<std::wstring, std::wstring>();
 
-//        Print();
-//        std::wcout << L"++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
         std::map<std::wstring, std::wstring> mStyle(m_mStyle);
 
         for (const CElement* oElement : m_arPrevElements)
@@ -140,8 +138,6 @@ namespace NSCSS
 
                             for (const std::pair<std::wstring, std::wstring> pPropertie : oElement->GetFullStyle(sTempNodes))
                                 mStyle[pPropertie.first] = pPropertie.second;
-        //                    const std::map<std::wstring, std::wstring> mTempStyle = oElement->GetFullStyle((arNodes.size() > 1) ? std::vector<std::wstring>(&arNodes[1], &arNodes[arNodes.size() - 1]) : std::vector<std::wstring>());
-        //                    mStyle.insert(mTempStyle.begin(), mTempStyle.end());
                         }
                     }
                 }
@@ -151,8 +147,6 @@ namespace NSCSS
                     sTempNodes.pop_back();
                     for (const std::pair<std::wstring, std::wstring> pPropertie : oElement->GetFullStyle(sTempNodes))
                         mStyle[pPropertie.first] = pPropertie.second;
-//                    const std::map<std::wstring, std::wstring> mTempStyle = oElement->GetFullStyle((arNodes.size() > 1) ? std::vector<std::wstring>(&arNodes[1], &arNodes[arNodes.size() - 1]) : std::vector<std::wstring>());
-//                    mStyle.insert(mTempStyle.begin(), mTempStyle.end());
                 }
             }
         }
@@ -268,7 +262,7 @@ namespace NSCSS
         std::wcout << L"Selector: " << m_sSelector << std::endl;
         std::wcout << L"Full Selector: " << m_sFullSelector << std::endl;
         std::wcout << L"===========STYLE(" << m_mStyle.size() << ")===========" << std::endl;
-        for (const std::pair<std::wstring, std::wstring>& oPropertie : m_mStyle)
+        for (const std::pair<std::wstring, std::wstring> oPropertie : m_mStyle)
             std::wcout << oPropertie.first << L" - " << oPropertie.second << std::endl;
         std::wcout << L"===========================" << std::endl;
 

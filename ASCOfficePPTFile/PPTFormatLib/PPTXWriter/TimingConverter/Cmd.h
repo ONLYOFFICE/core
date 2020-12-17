@@ -33,6 +33,7 @@
 
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Cmd.h"
 #include "../../Records/Animations/ExtTimeNodeContainer.h"
+#include "CBhvr.h"
 
 
 namespace PPT_FORMAT
@@ -41,6 +42,28 @@ void FillCmd(
         CRecordExtTimeNodeContainer* pETNC,
         PPTX::Logic::Cmd& oCmd)
 {
+    if (!pETNC || !pETNC->m_pTimeCommandBehavior) return;
 
+    auto pCommand = pETNC->m_pTimeCommandBehavior;
+    auto oAtom =    pCommand->m_oCommandBehaviorAtom;
+
+    FillCBhvr(pETNC, oCmd.cBhvr);
+
+    if (oAtom.m_fTypePropertyUsed)
+    {
+        oCmd.type = new PPTX::Limit::TLCommandType;
+        std::wstring type;
+        switch (oAtom.m_eCommandBehaviorType)
+        {
+        case TL_TCBT_Eventv:    type = L"evt";  break;
+        case TL_TCBT_Call:      type = L"call"; break;
+        case TL_TCBT_OleVerb:   type = L"verb"; break;
+        }
+        oCmd.type->set(type);
+    }
+    if (oAtom.m_fCommandPropertyUsed)
+    {
+        oCmd.cmd = pCommand->m_oVarCommand.m_Value;
+    }
 }
 }

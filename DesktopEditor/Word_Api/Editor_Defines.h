@@ -669,6 +669,12 @@
 #define c_oAscSectionBreakType_Continuous		0x03
 #define c_oAscSectionBreakType_Column			0x04
 
+#define c_oAscRestriction_None                  0x00
+#define c_oAscRestriction_OnlyForms             0x01
+#define c_oAscRestriction_OnlyComments          0x02
+#define c_oAscRestriction_OnlySignatures        0x04
+#define c_oAscRestriction_View                  0x80
+
 #define c_oAscAdvancedOptionsID_CSV             0
 #define c_oAscAdvancedOptionsID_TXT             1
 #define c_oAscAdvancedOptionsID_DRM             2
@@ -834,5 +840,14 @@
 #define ASC_MENU_EVENT_TYPE_DO_ACCEPT_CHANGES               24108
 #define ASC_MENU_EVENT_TYPE_DO_REJECT_CHANGES               24109
 #define ASC_MENU_EVENT_TYPE_DO_FOLLOW_REVISION_MOVE         24110
+
+// Universal call
+#define ASC_MENU_EVENT_TYPE_DO_API_FUNCTION_CALL            25001
+
+// Document Processing
+
+#define ASC_EVENT_TYPE_OPEN_DOCUMENT_PROCESSING_BEGIN       60100
+#define ASC_EVENT_TYPE_OPEN_DOCUMENT_PROCESSING_END         60101
+#define ASC_EVENT_TYPE_OPEN_DOCUMENT_ERROR                  60102
 
 #endif //_BUILD_EDITOR_DEFINES_CROSSPLATFORM_H_

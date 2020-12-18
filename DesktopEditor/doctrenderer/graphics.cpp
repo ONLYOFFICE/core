@@ -1020,6 +1020,9 @@ void CGraphics::DrawFootnoteRect(double x, double y, double w, double h)
 }
 std::string CGraphics::toDataURL(std::wstring type)
 {
+    size_t nSl = type.find(L'/');
+    if(nSl != std::wstring::npos)
+        type.erase(nSl);
     std::wstring sPath = m_sApplicationImagesDirectory + L"/img." + type;
     m_oFrame.SaveFile(sPath, _CXIMAGE_FORMAT_PNG);
 

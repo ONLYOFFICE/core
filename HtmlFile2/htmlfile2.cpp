@@ -82,6 +82,8 @@ public:
     std::wstring m_sDst;  // Директория назначения
     std::wstring m_sBase; // Полный базовый адрес
 
+    NSCSS::CTree m_oTree; // Дерево body html-файла
+
 private:
     int m_nImageId;     // ID картинки
     int m_nFootnoteId;  // ID сноски
@@ -94,9 +96,6 @@ private:
     NSStringUtils::CStringBuilder m_oDocXml;     // document.xml
     NSStringUtils::CStringBuilder m_oNoteXml;    // footnotes.xml
     NSStringUtils::CStringBuilder m_oNumberXml;  // numbering.xml
-
-    NSCSS::CTree m_oTree; // Дерево body html-файла
-
 public:
 
     CHtmlFile2_Private() : m_nImageId(1), m_nFootnoteId(1), m_nHyperlinkId(1), m_nCrossId(1), m_nNumberingId(1) {}
@@ -418,6 +417,7 @@ public:
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
         {
             std::wstring sName = m_oLightReader.GetName();
+
             if(sName == L"body")
                 readStyle2(m_oTree);
             else
@@ -455,7 +455,7 @@ public:
                 }
                 // тэг style содержит стили для styles.xml
                 else if(sName == L"style")
-                    m_oStylesCalculator.AddStyles(m_oLightReader.GetText2());
+                    m_oStylesCalculator.AddStyles(m_oLightReader.GetText());
                 readStyle();
             }
         }
@@ -1670,6 +1670,8 @@ HRESULT CHtmlFile2::OpenHtml(const std::wstring& sSrc, const std::wstring& sDst,
     m_internal->CreateDocxEmpty(oParams);
     m_internal->readStyle();
 
+    m_internal->m_oStylesCalculator.SetBodyTree(m_internal->m_oTree);
+
     // Переходим в начало
     if(!m_internal->m_oLightReader.MoveToStart())
         return S_FALSE;
@@ -1691,6 +1693,8 @@ HRESULT CHtmlFile2::OpenMht(const std::wstring& sSrc, const std::wstring& sDst, 
     m_internal->m_sDst = sDst;
     m_internal->CreateDocxEmpty(oParams);
     m_internal->readStyle();
+
+    m_internal->m_oStylesCalculator.SetBodyTree(m_internal->m_oTree);
 
     // Переходим в начало
     if(!m_internal->m_oLightReader.MoveToStart())
@@ -1718,6 +1722,8 @@ HRESULT CHtmlFile2::OpenBatchHtml(const std::vector<std::wstring>& sSrc, const s
         if(!IsHtmlFile(sS))
             continue;
         m_internal->readStyle();
+
+        m_internal->m_oStylesCalculator.SetBodyTree(m_internal->m_oTree);
 
         // Переходим в начало
         if(m_internal->m_oLightReader.MoveToStart())

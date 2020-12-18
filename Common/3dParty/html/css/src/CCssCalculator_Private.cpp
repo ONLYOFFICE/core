@@ -507,9 +507,7 @@ namespace NSCSS
             return;
 
         if (NULL == m_mStatictics)
-            m_mStatictics = new std::map<std::wstring, unsigned int>();
-
-        std::wcout << oTree.m_arrChild.size() << std::endl;
+            m_mStatictics = new std::map<StatistickElement, unsigned int>();
 
         CTree::CountingNumberRepetitions(oTree, *m_mStatictics);
     }
@@ -522,6 +520,44 @@ namespace NSCSS
     unsigned short int CCssCalculator_Private::GetDpi() const
     {
         return m_nDpi;
+    }
+
+    CCompiledStyle CCssCalculator_Private::GetStyleSetting(std::vector<CNode> &arSelectors) const
+    {
+        if (NULL == m_mStatictics)
+            return CCompiledStyle();
+
+        CCompiledStyle oStyle;
+
+        for (CNode& oNode : arSelectors)
+        {
+            if (!oNode.m_sId.empty())
+            {
+                std::map<StatistickElement, unsigned int>::const_iterator oFind = m_mStatictics->find(StatistickElement{StatistickElement::IsId, oNode.m_sId});
+                if (oFind != m_mStatictics->cend() && oFind->second < 6)
+                {
+                    std::map<std::wstring, CElement*>::const_iterator oFindId;
+                    oFindId = m_mData.find(L'#' + oNode.m_sId);
+
+                    if (oFindId != m_mData.cend())
+                    {
+                        oStyle.AddStyle(oFindId->second->GetStyle());
+                        oNode.m_sId.clear();
+                    }
+                }
+            }
+            if (!oNode.m_sStyle.empty())
+            {
+                std::map<StatistickElement, unsigned int>::const_iterator oFind = m_mStatictics->find(StatistickElement{StatistickElement::IsStyle, oNode.m_sStyle});
+                if (oFind != m_mStatictics->cend() && oFind->second < 6)
+                {
+                    oStyle.AddStyle(oNode.m_sStyle);
+                    oNode.m_sStyle.clear();
+                }
+            }
+        }
+
+        return oStyle;
     }
 
     UnitMeasure CCssCalculator_Private::GetUnitMeasure() const

@@ -567,17 +567,24 @@ std::wstring CXmlElement::GetStyle() const
     return sStyle.length() > 19 ? sStyle : std::wstring();
 }
 
-std::wstring CXmlElement::GetLiteStyle() const
+std::wstring CXmlElement::GetLitePStyle() const
 {
     if (Empty())
         return std::wstring();
 
-    std::wstring sStyle;
+    const std::wstring &sLitePStyle = ConvertPStyle();
 
-    sStyle += ConvertPStyle();
-    sStyle += ConvertRStyle();
+    return sLitePStyle.substr(7, sLitePStyle.length() - 8);
+}
 
-    return sStyle.length() > 19 ? sStyle : std::wstring();
+std::wstring CXmlElement::GetLiteRStyle() const
+{
+    if (Empty())
+        return std::wstring();
+
+    const std::wstring &sLiteRStyle = ConvertRStyle();
+
+    return sLiteRStyle.substr(7, sLiteRStyle.length() - 8);
 }
 
 std::wstring CXmlElement::GetPStyle() const

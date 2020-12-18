@@ -30,6 +30,8 @@ namespace NSCSS
         void SetDpi(const unsigned short int& nValue);
         void SetBodyTree(const CTree &oTree);
 
+        CCompiledStyle GetStyleSetting(std::vector<CNode> &arSelectors) const;
+
         UnitMeasure GetUnitMeasure() const;
         std::wstring GetEncoding()   const;
         unsigned short int GetDpi()  const;

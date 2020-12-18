@@ -19,17 +19,32 @@ namespace NSCSS
         Peak
     } UnitMeasure;
 
+    struct StatistickElement
+    {
+        enum TypeElement
+        {
+            IsStyle = 0,
+            IsId
+        } m_enType;
+        std::wstring sValue;
+
+        bool operator<(const StatistickElement& oStatistickElement) const
+        {
+            return sValue < oStatistickElement.sValue;
+        }
+    };
+
     struct CTree
     {
         NSCSS::CNode m_oNode;
         std::vector<CTree> m_arrChild;
 
-        inline static void CountingNumberRepetitions(const CTree &oTree, std::map<std::wstring, unsigned int> &mStatictics)
+        inline static void CountingNumberRepetitions(const CTree &oTree, std::map<StatistickElement, unsigned int> &mStatictics)
         {
             if (!oTree.m_oNode.m_sId.empty())
-                ++mStatictics[oTree.m_oNode.m_sId];
+                ++mStatictics[StatistickElement{StatistickElement::IsId, oTree.m_oNode.m_sId}];
             if (!oTree.m_oNode.m_sStyle.empty())
-                ++mStatictics[oTree.m_oNode.m_sStyle];
+                ++mStatictics[StatistickElement{StatistickElement::IsStyle, oTree.m_oNode.m_sStyle}];
 
             if (!oTree.m_arrChild.empty())
                 for (const CTree& oChildren : oTree.m_arrChild)
@@ -266,9 +281,9 @@ namespace NSCSS
 
                 bool Empty() const
                 {
-                    return fSize == 22.0f && enStretch == FontStretch::none &&
+                    return fSize == fNoneValue && enStretch == FontStretch::none &&
                            enStyle == FontStyle::none && enVariant == FontVariant::none &&
-                           enWeight == FontWeight::none && fLineHeight < fSize && sFamily.empty();
+                           enWeight == FontWeight::none && fLineHeight == fNoneValue && sFamily.empty();
                 }
 
                 void Clear()
@@ -644,7 +659,7 @@ namespace NSCSS
                     if (!bPermission)
                         return true;
 
-                    return fTopSide == fRightSide == fBottomSide == fLeftSide == fNoneValue;
+                    return fTopSide == fNoneValue && fRightSide == fNoneValue && fBottomSide == fNoneValue && fLeftSide == fNoneValue;
                 };
 
                 void SetPermission(const bool &bPermission)
@@ -840,7 +855,7 @@ namespace NSCSS
 
                 bool Empty() const
                 {
-                    return fIndent == 0 && enAlign == TextAlign::none &&
+                    return fIndent == fNoneValue && enAlign == TextAlign::none &&
                            enDecoration == TextDecoration::none && sColor.empty();
                 }
 

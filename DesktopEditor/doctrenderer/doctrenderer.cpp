@@ -459,6 +459,22 @@ namespace NSDoctRenderer
             }
             case DoctRendererFormat::HTML:
             {
+                // CALCULATE
+                if (pParams->m_sJsonParams.empty())
+                    args[0] = CJSContext::createNull();
+                else
+                {
+                    std::string sTmp = U_TO_UTF8((pParams->m_sJsonParams));
+                    args[0] = context->JSON_Parse(sTmp.c_str());
+                }
+
+                JSSmart<CJSValue> js_result1 = js_objectApi->call_func("asc_nativeCalculateFile", 1, args);
+                if(try_catch->Check())
+                {
+                    strError = L"code=\"calculate\"";
+                    bIsBreak = true;
+                }
+
                 JSSmart<CJSValue> js_result2 = js_objectApi->call_func("asc_nativeGetHtml", 1, args);
                 if(try_catch->Check())
                 {

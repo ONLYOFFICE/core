@@ -360,17 +360,16 @@ class Shd
 public:
     BYTE        Value;
     docRGB      Color;
-	CThemeColor ThemeColor; 
+	docRGB      Fill;
+	CThemeColor ThemeColor;
 
-	bool bValue;
-	bool bColor;
-	bool bThemeColor;
-	Shd()
-	{
-		bValue		= false;
-        bColor      = false;
-		bThemeColor = false;
-	}
+	bool bValue = false;
+	bool bColor = false;
+	bool bThemeColor = false;
+	bool bFill = false;
+	
+	Shd(){}
+
     std::wstring ToString()
 	{
         std::wstring sShd;
@@ -423,17 +422,17 @@ public:
 				}
 			}
 			if (bColor)
-			{
-				sShd += L" w:fill=\"" + Color.ToString() + L"\"";
 				sShd += L" w:color=\"" + Color.ToString() + L"\"";
-			}
-			else
-			{
+
+			if (bFill)
+				sShd += L" w:fill=\"#" + Fill.ToString() + L"\"";
+			
+			if (!bColor && !bFill)
 				sShd += L" w:color=\"auto\"";
-			}
+
 			if(bThemeColor && ThemeColor.IsNoEmpty())
 			{
-				if(ThemeColor.Auto && !bColor)
+				if(ThemeColor.Auto && !bColor && !bFill)
                     sShd += L" w:fill=\"auto\"";
 				if(ThemeColor.bColor)
                     sShd += L" w:themeFill=\"" + ThemeColor.ToStringColor() + L"\"";

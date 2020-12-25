@@ -1022,7 +1022,7 @@ std::string CGraphics::toDataURL(std::wstring type)
 {
     size_t nSl = type.find(L'/');
     if(nSl != std::wstring::npos)
-        type.erase(nSl);
+        type.erase(0, nSl + 1);
     std::wstring sPath = m_sApplicationImagesDirectory + L"/img." + type;
     m_oFrame.SaveFile(sPath, _CXIMAGE_FORMAT_PNG);
 
@@ -1034,12 +1034,15 @@ std::string CGraphics::toDataURL(std::wstring type)
         DWORD dwReaded;
         oReader.ReadFile(pFileContent, dwFileSize, dwReaded);
         oReader.CloseFile();
-        NSFile::CFileBinary::Remove(sPath);
+        //NSFile::CFileBinary::Remove(sPath);
 
         int nEncodeLen = NSBase64::Base64EncodeGetRequiredLength(dwFileSize);
         BYTE* pImageData = new BYTE[nEncodeLen];
         if(TRUE == NSBase64::Base64Encode(pFileContent, dwFileSize, pImageData, &nEncodeLen))
-            return std::string((char*)pImageData, nEncodeLen);
+        {
+            std::string sRes = std::string((char*)pImageData, nEncodeLen);
+            return sRes;
+        }
     }
     return "";
 }

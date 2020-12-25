@@ -36,6 +36,7 @@ function CNativeGraphics()
 
     this.RENDERER_PDF_FLAG        = true;
 	this.IsNoSupportTextDraw      = true;
+	this.bDrawSmart               = false;
     this.IsSlideBoundsCheckerType = false;
 	this.AutoCheckLineWidth       = false;
     this.IsTrack                  = false;
@@ -596,6 +597,10 @@ CNativeGraphics.prototype =
 		return this.Native["GetlineWidth"]();
 	},
 	DrawPath : function(path)
+	{
+		this.Native["DrawPath"](path);
+	},
+	drawpath : function(path)
 	{
 		this.Native["DrawPath"](path);
 	}

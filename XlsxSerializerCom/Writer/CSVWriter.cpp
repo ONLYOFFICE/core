@@ -315,21 +315,18 @@ namespace CSVWriter
 	}
 	void CCSVWriter::WriteRowEnd(OOX::Spreadsheet::CRow* pWorksheet)
 	{
-		while (m_nColDimension > m_nColCurrent) // todooo - прописывать в бинарнике dimension - и данные брать оттуда
-		{
-			if (m_bJSON && false == m_bIsWriteCell)
-			{
-				// Запишем пустые строки (для JSON-а)
-				WriteFile(&m_oFile, &m_pWriteBuffer, m_nCurrentIndex, g_sDoubleQuote, m_nCodePage);
-			}
-			// Write delimiter
-			++m_nColCurrent;
-			WriteFile(&m_oFile, &m_pWriteBuffer, m_nCurrentIndex, m_sDelimiter, m_nCodePage);
-			m_bIsWriteCell = false;
-		}
-
 		if (m_bJSON)
 			WriteFile(&m_oFile, &m_pWriteBuffer, m_nCurrentIndex, g_sEndJson, m_nCodePage);
+		else
+		{
+			while (m_nColDimension > m_nColCurrent) // todooo - прописывать в бинарнике dimension - и данные брать оттуда
+			{
+				// Write delimiter
+				++m_nColCurrent;
+				WriteFile(&m_oFile, &m_pWriteBuffer, m_nCurrentIndex, m_sDelimiter, m_nCodePage);
+				m_bIsWriteCell = false;
+			}
+		}
 	}
 	void CCSVWriter::WriteSheetEnd(OOX::Spreadsheet::CWorksheet* pWorksheet)
 	{

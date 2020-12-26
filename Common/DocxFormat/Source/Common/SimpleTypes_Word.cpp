@@ -46,6 +46,11 @@ namespace SimpleTypes
 			{
 				sValue = sValue.substr(0, split);
 			}
+			size_t s0 = sValue.find(L"#"); // ala #ff9
+			if (0 == s0)
+			{
+				sValue = sValue.substr(1);
+			}
             //В документации не написано, что цвет может приходить строкой, но в реальных докуентах встречается и word это разруливает.
             CPresetColorVal<> oPresetColorVal;
             if(oPresetColorVal.FromStringIgnoreCase(sValue))

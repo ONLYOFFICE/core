@@ -1337,6 +1337,8 @@ void CFontList::LoadFromArrayFiles(std::vector<std::wstring>& oArray, int nFlag)
             std::wstring wsFamilyName = GetCorrectSfntName(pFace->family_name);
             std::wstring wsStyleName = GetCorrectSfntName(pFace->style_name);
 
+            bool isBadASCII = (std::wstring::npos != wsFamilyName.find('?')) ? true : false;
+
 #ifdef _MAC
             if (wsFamilyName.find(L".") == 0)
             {
@@ -1452,7 +1454,13 @@ void CFontList::LoadFromArrayFiles(std::vector<std::wstring>& oArray, int nFlag)
                                         break;
                                 }
 
-                                if (iter == pFontInfo->names.end())
+                                if (isBadASCII && pFontInfo->names.empty())
+                                {
+                                    wsFamilyName = sNameW;
+                                    pFontInfo->m_wsFontName = wsFamilyName;
+                                    isBadASCII = false;
+                                }
+                                else if (iter == pFontInfo->names.end())
                                 {
                                     pFontInfo->names.push_back(sNameW);
 

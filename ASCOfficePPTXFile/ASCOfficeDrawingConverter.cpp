@@ -5058,10 +5058,7 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstr
 					bSignatureLine = true;
 				}
 			}
-			
 			NSBinPptxRW::CXmlWriter oXmlWriter(m_pReader->m_nDocumentType);
-			
-			m_pReader->m_nDocumentType = XMLWRITER_DOC_TYPE_PPTX;
 
 			oXmlWriter.m_lObjectIdVML = m_pXmlWriter->m_lObjectIdVML;
 			oXmlWriter.m_lObjectIdOle = m_pXmlWriter->m_lObjectIdOle;

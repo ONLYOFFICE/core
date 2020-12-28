@@ -20,8 +20,6 @@ ADD_DEPENDENCY(graphics, kernel, UnicodeConverter)
 
 #CONFIG += build_xp
 
-core_mac:CONFIG += use_javascript_core
-
 core_ios {
     CONFIG += doct_renderer_empty
 }

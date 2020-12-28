@@ -51,7 +51,7 @@ namespace SimpleTypes
 			{
 				sValue = sValue.substr(1);
 			}
-			//В документации не написано, что цвет может приходить строкой, но в реальных докуентах встречается и word это разруливает.
+            //В документации не написано, что цвет может приходить строкой, но в реальных докуентах встречается и word это разруливает.
             CPresetColorVal<> oPresetColorVal;
             if(oPresetColorVal.FromStringIgnoreCase(sValue))
             {

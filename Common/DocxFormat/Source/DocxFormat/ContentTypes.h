@@ -99,7 +99,7 @@ namespace OOX
 			{
                 std::map<std::wstring, std::wstring>::const_iterator it = m_mTable.find(sExtension);
                 if (it == m_mTable.end())
-                    return _T("");
+                    return _T("application/unknown");
 
                 return it->second;
 			}

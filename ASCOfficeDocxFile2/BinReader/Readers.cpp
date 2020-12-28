@@ -9686,7 +9686,7 @@ int BinaryFileReader::ReadMainTable()
 				
 				m_oFileWriter.m_pDrawingConverter->Registration(
 					L"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml", 
-					L"/word" + m_oFileWriter.m_bGlossaryMode ? std::wstring(L"/glossary") : L"", pFooter->m_sFilename);
+					L"/word" + (m_oFileWriter.m_bGlossaryMode ? std::wstring(L"/glossary") : L""), pFooter->m_sFilename);
 			}
 		}
 		if (!oSettingsCustom.IsEmpty()){

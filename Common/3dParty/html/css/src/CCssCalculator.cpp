@@ -49,9 +49,9 @@ namespace NSCSS
         m_pInternal->SetBodyTree(oTree);
     }
 
-    CCompiledStyle CCssCalculator::GetStyleSetting(std::vector<CNode> &arSelectors) const
+    CCompiledStyle CCssCalculator::GetStyleSetting(std::vector<CNode> &arSelectors, const bool &bIsParagraph) const
     {
-        return m_pInternal->GetStyleSetting(arSelectors);
+        return m_pInternal->GetStyleSetting(arSelectors, bIsParagraph);
     }
 
     UnitMeasure CCssCalculator::GetUnitMeasure() const

@@ -377,7 +377,7 @@ namespace NSCSS
 
         std::vector<CElement*> arElements;
 
-        for (const CNode &oElement : arSelectors)
+        for (size_t i = 0; i < arSelectors.size(); ++i)
         {
             std::wstring sName, sId;
             std::vector<std::wstring> arClasses;
@@ -455,8 +455,7 @@ namespace NSCSS
 
             for (const CElement* oElement : arFindElements)
                 oStyle->AddStyle(oElement->GetStyle());
-
-            oStyle->AddStyle(oElement.m_sStyle);
+ //            oStyle->AddStyle(oElement.m_sStyle);
 
             arWords.pop_back();
         }
@@ -522,7 +521,7 @@ namespace NSCSS
         return m_nDpi;
     }
 
-    CCompiledStyle CCssCalculator_Private::GetStyleSetting(std::vector<CNode> &arSelectors) const
+    CCompiledStyle CCssCalculator_Private::GetStyleSetting(std::vector<CNode> &arSelectors, const bool& bIsParagraph) const
     {
         if (NULL == m_mStatictics)
             return CCompiledStyle();

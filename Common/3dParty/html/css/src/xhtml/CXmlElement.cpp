@@ -395,7 +395,7 @@ std::wstring CXmlElement::ConvertPStyle() const
         }
     }
 
-    if (sPBdr.empty())
+    if (!sPBdr.empty())
         sPPr += L"<w:pBdr>" + sPBdr + L"</w:pBdr>";
 
     return L"<w:pPr>" + sPPr + L"</w:pPr>";
@@ -574,7 +574,7 @@ std::wstring CXmlElement::GetLitePStyle() const
 
     const std::wstring &sLitePStyle = ConvertPStyle();
 
-    return sLitePStyle.substr(7, sLitePStyle.length() - 8);
+    return sLitePStyle.substr(7, sLitePStyle.length() - 15);
 }
 
 std::wstring CXmlElement::GetLiteRStyle() const
@@ -584,7 +584,7 @@ std::wstring CXmlElement::GetLiteRStyle() const
 
     const std::wstring &sLiteRStyle = ConvertRStyle();
 
-    return sLiteRStyle.substr(7, sLiteRStyle.length() - 8);
+    return sLiteRStyle.substr(7, sLiteRStyle.length() - 15);
 }
 
 std::wstring CXmlElement::GetPStyle() const

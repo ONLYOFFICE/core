@@ -20,7 +20,7 @@ namespace NSCSS
 
     std::wstring CDocumentStyle::GetStyle() const
     {
-        return m_sId.empty() ? std::wstring() : m_sStyle;
+        return m_sStyle;
     }
 
     std::wstring CDocumentStyle::GetIdAndClear()
@@ -245,7 +245,7 @@ namespace NSCSS
     void CDocumentStyle::SetPStyle   (const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement)
     {
         ConvertStyle(oStyle, oXmlElement, true);
-        if (oStyle.Empty() || oXmlElement.Empty())
+        if (oStyle.Empty() && oXmlElement.Empty())
             return;
 
         oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_Jc, oStyle.m_pText.GetAlign());
@@ -273,7 +273,7 @@ namespace NSCSS
         std::wstring sSpacingValue;
         sSpacingValue.reserve(128);
 
-        if (oStyle.m_pMargin.Empty())
+        if (!oStyle.m_pMargin.Empty())
         {
             sSpacingValue += L"w:after=\""  + oStyle.m_pMargin.GetTopSide() + L"\" ";
             sSpacingValue += L"w:before=\"" + oStyle.m_pMargin.GetTopSide() + L"\" ";
@@ -366,7 +366,7 @@ namespace NSCSS
     void CDocumentStyle::SetRStyle   (const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement)
     {
         ConvertStyle(oStyle, oXmlElement, false);
-        if (oStyle.Empty() || oXmlElement.Empty())
+        if (oStyle.Empty() && oXmlElement.Empty())
             return;
 
         oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_Color, oStyle.m_pText.GetColor());

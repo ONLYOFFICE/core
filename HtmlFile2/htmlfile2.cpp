@@ -455,7 +455,7 @@ public:
                 }
                 // тэг style содержит стили для styles.xml
                 else if(sName == L"style")
-                    m_oStylesCalculator.AddStyles(m_oLightReader.GetText());
+                    m_oStylesCalculator.AddStyles(m_oLightReader.GetText2());
                 readStyle();
             }
         }
@@ -1439,12 +1439,20 @@ private:
 
         std::wstring sPStyle = GetStyle(sSelectors, true);
         
+        std::vector<NSCSS::CNode> arTemp = sSelectors;
+        const NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetStyleSetting(sSelectors, true);
+        m_oXmlStyle.WriteLitePStyle(oStyle);
+        const std::wstring sPSettings = m_oXmlStyle.GetStyle();
+        m_oXmlStyle.Clear();
+        if (sPSettings.empty())
+            sSelectors = arTemp;
+
         for(int i = temporary.size() - 1; i >= 0; i--)
 			sSelectors.insert(sSelectors.begin() + temporary[i].first, temporary[i].second);
 
         oXml->WriteString(sPStyle);
         oXml->WriteString(L"\"/>");
-        oXml->WriteString(oTS.sPStyle);
+        oXml->WriteString(oTS.sPStyle + L' ' + sPSettings);
         oXml->WriteString(L"</w:pPr>");
         bWasP = false;
         return sPStyle;
@@ -1456,7 +1464,16 @@ private:
         std::wstring sRStyle = GetStyle(sSelectors, false);
         oXml->WriteString(sRStyle);
         oXml->WriteString(L"\"/>");
-        oXml->WriteString(oTS.sRStyle);
+
+        std::vector<NSCSS::CNode> arTemp = sSelectors;
+        const NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetStyleSetting(sSelectors, false);
+        m_oXmlStyle.WriteLiteRStyle(oStyle);
+        const std::wstring sRSettings = m_oXmlStyle.GetStyle();
+        m_oXmlStyle.Clear();
+        if (sRSettings.empty())
+            sSelectors = arTemp;
+
+        oXml->WriteString(oTS.sRStyle + L' ' + sRSettings);
         oXml->WriteString(L"</w:rPr>");
         return sRStyle;
     }

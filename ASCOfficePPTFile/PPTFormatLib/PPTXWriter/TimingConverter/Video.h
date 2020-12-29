@@ -46,20 +46,24 @@ void FillVideo(
 
     FillCTn(pETNC, oVideo.cMediaNode.cTn);
 
-    try {
-        oVideo.cMediaNode.vol = (int)(static_cast<CRecordTimeVariantFloat*>
-                                      (pETNC->m_pTimePropertyList->m_arrElements[1])->
-                                        m_Value * 100000);
-    } catch (...) {
+    if (pETNC->m_pTimePropertyList->m_arrElements.size() >= 5)
+    {
+        try {
+            oVideo.cMediaNode.vol = (int)(static_cast<CRecordTimeVariantFloat*>
+                                          (pETNC->m_pTimePropertyList->m_arrElements[1])->
+                                            m_Value * 100000);
+            oVideo.cMediaNode.mute = static_cast<CRecordTimeVariantBool*>
+                    (pETNC->m_pTimePropertyList->m_arrElements[2])->
+                      m_Value;
+            oVideo.fullScrn = static_cast<CRecordTimeVariantBool*>
+                                          (pETNC->m_pTimePropertyList->m_arrElements[3])->
+                                            m_Value;
+            oVideo.cMediaNode.showWhenStopped = static_cast<CRecordTimeVariantBool*>
+                    (pETNC->m_pTimePropertyList->m_arrElements[4])->
+                      m_Value;
+        } catch (...) {
 
-    }
-
-    try {
-        oVideo.fullScrn = static_cast<CRecordTimeVariantBool*>
-                                      (pETNC->m_pTimePropertyList->m_arrElements[3])->
-                                        m_Value;
-    } catch (...) {
-
+        }
     }
 
 

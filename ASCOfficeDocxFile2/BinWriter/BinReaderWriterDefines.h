@@ -857,7 +857,8 @@ extern int g_nCurFormatVersion;
 		PrintTwoOnOne = 14,
 		BookFoldPrinting = 15,
 		BookFoldPrintingSheets = 16,
-		BookFoldRevPrinting = 17
+		BookFoldRevPrinting = 17,
+		SpecialFormsHighlight = 18
 	};}
 	namespace c_oSer_MathPrType{enum c_oSer_SettingsType
 	{
@@ -1217,7 +1218,8 @@ extern int g_nCurFormatVersion;
 		TextFormPrCombWidth = 52,
 		TextFormPrCombSym = 53,
 		TextFormPrCombFont = 54,
-		TextFormPrMaxCharacters = 55
+		TextFormPrMaxCharacters = 55,
+		TextFormPrCombBorder = 56
 	};}
 	namespace c_oSerFFData{enum c_oSerFFData
 	{

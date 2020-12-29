@@ -245,6 +245,12 @@ docRGB Binary_CommonReader2::ReadColor()
 	oRGB.B = m_oBufferedStream.GetUChar();
 	return oRGB;
 }
+void Binary_CommonReader2::ReadColor2(SimpleTypes::CHexColor<>& color)
+{
+	color.Set_R(m_oBufferedStream.GetUChar());
+	color.Set_G(m_oBufferedStream.GetUChar());
+	color.Set_B(m_oBufferedStream.GetUChar());
+}
 void Binary_CommonReader2::ReadThemeColor(int length, CThemeColor& oCThemeColor)
 {
 	int res = c_oSerConstants::ReadOk;
@@ -1288,6 +1294,54 @@ int Binary_pPrReader::ReadBorder(BYTE type, long length, void* poResult)
 	{
 		odocBorder->bThemeColor = true;
 		oBinary_CommonReader2.ReadThemeColor(length, odocBorder->ThemeColor);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int Binary_pPrReader::ReadBorder2(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	ComplexTypes::Word::CBorder* pBorder = static_cast<ComplexTypes::Word::CBorder*>(poResult);
+	if( c_oSerBorderType::Color == type )
+	{
+		pBorder->m_oColor.Init();
+		pBorder->m_oColor->SetValue(SimpleTypes::hexcolorRGB);
+		oBinary_CommonReader2.ReadColor2(pBorder->m_oColor.get2());
+	}
+	else if( c_oSerBorderType::Space == type )
+	{
+		pBorder->m_oSpace.Init();
+		pBorder->m_oSpace->SetValue(SerializeCommon::Round(g_dKoef_mm_to_pt * m_oBufferedStream.GetDouble()));
+	}
+	else if( c_oSerBorderType::SpacePoint == type )
+	{
+		pBorder->m_oSpace.Init();
+		pBorder->m_oSpace->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if( c_oSerBorderType::Size == type )
+	{
+		pBorder->m_oSz.Init();
+		pBorder->m_oSz->SetValue(SerializeCommon::Round(g_dKoef_mm_to_eightpoint * m_oBufferedStream.GetDouble()));
+	}
+	else if( c_oSerBorderType::Size8Point == type )
+	{
+		pBorder->m_oSz.Init();
+		pBorder->m_oSz->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if( c_oSerBorderType::Value == type )
+	{
+		pBorder->m_oVal.Init();
+		if(border_Single == m_oBufferedStream.GetUChar())
+			pBorder->m_oVal->SetValue(SimpleTypes::bordervalueSingle);
+		else
+			pBorder->m_oVal->SetValue(SimpleTypes::bordervalueNone);
+	}
+	else if( c_oSerBorderType::ColorTheme == type )
+	{
+		CThemeColor ThemeColor;
+		oBinary_CommonReader2.ReadThemeColor(length, ThemeColor);
+		ThemeColor.ToCThemeColor(pBorder->m_oColor, pBorder->m_oThemeColor, pBorder->m_oThemeShade, pBorder->m_oThemeTint);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -3758,6 +3812,13 @@ int Binary_SettingsTableReader::ReadSettings(BYTE type, long length, void* poRes
 	{
 		m_oSettingsCustom.m_oSdtGlobalShowHighlight.Init();
 		m_oSettingsCustom.m_oSdtGlobalShowHighlight->m_oVal.FromBool(m_oBufferedStream.GetBool());
+	}
+	else if( c_oSer_SettingsType::SpecialFormsHighlight == type )
+	{
+		rPr oRPr(m_oFileWriter.get_font_table_writer().m_mapFonts);
+		res = m_oBinary_rPrReader.Read(length, &oRPr);
+		m_oSettingsCustom.m_oSpecialFormsHighlight.Init();
+		InnerColorToOOX(oRPr, m_oSettingsCustom.m_oSpecialFormsHighlight.get2());
 	}
 	else if( c_oSer_SettingsType::Compat == type )
 	{
@@ -9241,6 +9302,11 @@ int Binary_DocumentTableReader::ReadSdtTextFormPr(BYTE type, long length, void* 
 	{
 		pTextFormPr->m_oMaxCharacters.Init();
 		pTextFormPr->m_oMaxCharacters->m_oVal = m_oBufferedStream.GetLong();
+	}
+	else if (c_oSerSdt::TextFormPrCombBorder == type)
+	{
+		pTextFormPr->m_oCombBorder.Init();
+		READ2_DEF(length, res, oBinary_pPrReader.ReadBorder2, pTextFormPr->m_oCombBorder.GetPointer());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

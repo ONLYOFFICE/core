@@ -280,6 +280,33 @@ public:
 		}
 		return sRes;
 	}
+	void ToCThemeColor( nullable<SimpleTypes::CHexColor<>>& oColor,
+												nullable<SimpleTypes::CThemeColor<>>& oThemeColor,
+												nullable<SimpleTypes::CUcharHexNumber<>>& oThemeTint,
+												nullable<SimpleTypes::CUcharHexNumber<>>& oThemeShade)
+	{
+		if (Auto)
+		{
+			if(!oColor.IsInit())
+				oColor.Init();
+			oColor->SetValue(SimpleTypes::hexcolorAuto);
+		}
+		if (bColor)
+		{
+			oThemeColor.Init();
+			oThemeColor->SetValue((SimpleTypes::EThemeColor)Color);
+		}
+		if (bTint)
+		{
+			oThemeTint.Init();
+			oThemeTint->SetValue(Tint);
+		}
+		if (bShade)
+		{
+			oThemeShade.Init();
+			oThemeShade->SetValue(Shade);
+		}
+	}
 };
 class Spacing
 {

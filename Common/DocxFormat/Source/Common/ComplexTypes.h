@@ -190,7 +190,7 @@ namespace ComplexTypes
 				if ( m_oColor.IsInit() )
 				{
 					sResult += _T("w:color=\"");
-					sResult += m_oColor->ToString();
+					sResult += m_oColor->ToStringNoAlpha();
 					sResult += _T("\" ");
 				}
 

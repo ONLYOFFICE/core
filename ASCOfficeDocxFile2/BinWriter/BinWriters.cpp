@@ -7891,6 +7891,12 @@ void BinaryDocumentTableWriter::WriteSdtTextFormPr(const OOX::Logic::CTextFormPr
 		m_oBcw.m_oStream.WriteLONG(oTextFormPr.m_oMaxCharacters->m_oVal.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if(oTextFormPr.m_oCombBorder.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrCombBorder);
+		m_oBcw.WriteBorder(oTextFormPr.m_oCombBorder.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }
 void BinaryDocumentTableWriter::WriteSdtTextFormPrComb(const ComplexTypes::Word::CComb& oComb)
 {
@@ -8320,6 +8326,14 @@ void BinarySettingsTableWriter::WriteSettingsContent(OOX::CSettings& oSettings, 
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::SdtGlobalShowHighlight);
 		m_oBcw.m_oStream.WriteBOOL(oSettingsCustom.m_oSdtGlobalShowHighlight->m_oVal.ToBool());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oSettingsCustom.m_oSpecialFormsHighlight.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::SpecialFormsHighlight);
+		OOX::Logic::CRunProperty oRPr;
+		oRPr.m_oColor = oSettingsCustom.m_oSpecialFormsHighlight;
+		brPrs.Write_rPr(&oRPr);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 };

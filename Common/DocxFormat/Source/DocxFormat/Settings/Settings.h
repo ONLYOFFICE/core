@@ -3647,6 +3647,8 @@ namespace OOX
 						m_oSdtGlobalColor = oReader;
 					else if ( _T("w:SdtGlobalShowHighlight") == sName )
 						m_oSdtGlobalShowHighlight = oReader;
+					else if ( _T("w:SpecialFormsHighlight") == sName )
+						m_oSpecialFormsHighlight = oReader;
 				}
 			}
 		}
@@ -3666,15 +3668,22 @@ namespace OOX
 				sXml += m_oSdtGlobalShowHighlight->ToString();
 				sXml += L"/>";
 			}
+			if(m_oSpecialFormsHighlight.IsInit())
+			{
+				sXml += L"<w:SpecialFormsHighlight ";
+				sXml += m_oSpecialFormsHighlight->ToString();
+				sXml += L"/>";
+			}
 			sXml += L"</w:settings>";
 			return sXml;
 		}
 		bool IsEmpty()
 		{
-			return !(m_oSdtGlobalColor.IsInit() || m_oSdtGlobalShowHighlight.IsInit());
+			return !(m_oSdtGlobalColor.IsInit() || m_oSdtGlobalShowHighlight.IsInit() || m_oSpecialFormsHighlight.IsInit());
 		}
 		nullable<ComplexTypes::Word::CColor> m_oSdtGlobalColor;
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oSdtGlobalShowHighlight;
+		nullable<ComplexTypes::Word::CColor> m_oSpecialFormsHighlight;
 	};
 } // namespace OOX
 

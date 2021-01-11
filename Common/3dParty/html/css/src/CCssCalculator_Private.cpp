@@ -455,7 +455,10 @@ namespace NSCSS
 
             for (const CElement* oElement : arFindElements)
                 oStyle->AddStyle(oElement->GetStyle());
- //            oStyle->AddStyle(oElement.m_sStyle);
+
+            oStyle->AddStyle(arSelectors[i].m_sStyle);
+
+            oStyle->ClearImportants();
 
             arWords.pop_back();
         }

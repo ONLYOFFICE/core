@@ -298,9 +298,9 @@ namespace NSCSS
         {
             if (oStyle.m_pBorder.EqualSides())
             {
-                const std::wstring sBorderColor = oStyle.m_pBorder.stBottom.GetColor();
-                const std::wstring sBorderStyle = oStyle.m_pBorder.stBottom.GetStyle();
-                const std::wstring sBorderWidth = oStyle.m_pBorder.stBottom.GetWidthW();
+                const std::wstring sBorderColor = oStyle.m_pBorder.GetColorBottomSide();
+                const std::wstring sBorderStyle = oStyle.m_pBorder.GetStyleBottomSide();
+                const std::wstring sBorderWidth = oStyle.m_pBorder.GetWidthBottomSideW();
 
                 const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
                         sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
@@ -312,11 +312,11 @@ namespace NSCSS
             }
             else
             {
-                if (!oStyle.m_pBorder.stTop.Empty())
+                if (!oStyle.m_pBorder.EmptyTopSide())
                 {
-                    const std::wstring sBorderColor = oStyle.m_pBorder.stTop.GetColor();
-                    const std::wstring sBorderStyle = oStyle.m_pBorder.stTop.GetStyle();
-                    const std::wstring sBorderWidth = oStyle.m_pBorder.stTop.GetWidthW();
+                    const std::wstring sBorderColor = oStyle.m_pBorder.GetColorTopSide();
+                    const std::wstring sBorderStyle = oStyle.m_pBorder.GetStyleTopSide();
+                    const std::wstring sBorderWidth = oStyle.m_pBorder.GetWidthTopSideW();
 
                     const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
                             sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
@@ -324,11 +324,11 @@ namespace NSCSS
                     oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_TopBorder, sBorder);
                 }
 
-                if (!oStyle.m_pBorder.stRight.Empty())
+                if (!oStyle.m_pBorder.EmptyRightSide())
                 {
-                    const std::wstring sBorderColor = oStyle.m_pBorder.stRight.GetColor();
-                    const std::wstring sBorderStyle = oStyle.m_pBorder.stRight.GetStyle();
-                    const std::wstring sBorderWidth = oStyle.m_pBorder.stRight.GetWidthW();
+                    const std::wstring sBorderColor = oStyle.m_pBorder.GetColorRightSide();
+                    const std::wstring sBorderStyle = oStyle.m_pBorder.GetStyleRightSide();
+                    const std::wstring sBorderWidth = oStyle.m_pBorder.GetWidthRightSideW();
 
                     const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
                             sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
@@ -336,11 +336,11 @@ namespace NSCSS
                     oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_RightBorder, sBorder);
                 }
 
-                if (!oStyle.m_pBorder.stBottom.Empty())
+                if (!oStyle.m_pBorder.EmptyBottomSide())
                 {
-                    const std::wstring sBorderColor = oStyle.m_pBorder.stBottom.GetColor();
-                    const std::wstring sBorderStyle = oStyle.m_pBorder.stBottom.GetStyle();
-                    const std::wstring sBorderWidth = oStyle.m_pBorder.stBottom.GetWidthW();
+                    const std::wstring sBorderColor = oStyle.m_pBorder.GetColorBottomSide();
+                    const std::wstring sBorderStyle = oStyle.m_pBorder.GetStyleBottomSide();
+                    const std::wstring sBorderWidth = oStyle.m_pBorder.GetWidthBottomSideW();
 
                     const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
                             sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
@@ -348,11 +348,11 @@ namespace NSCSS
                     oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_BottomBorder, sBorder);
                 }
 
-                if (!oStyle.m_pBorder.stLeft.Empty())
+                if (!oStyle.m_pBorder.EmptyLeftSide())
                 {
-                    const std::wstring sBorderColor = oStyle.m_pBorder.stLeft.GetColor();
-                    const std::wstring sBorderStyle = oStyle.m_pBorder.stLeft.GetStyle();
-                    const std::wstring sBorderWidth = oStyle.m_pBorder.stLeft.GetWidthW();
+                    const std::wstring sBorderColor = oStyle.m_pBorder.GetColorLeftSide();
+                    const std::wstring sBorderStyle = oStyle.m_pBorder.GetStyleLeftSide();
+                    const std::wstring sBorderWidth = oStyle.m_pBorder.GetWidthLeftSideW();
 
                     const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
                             sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";

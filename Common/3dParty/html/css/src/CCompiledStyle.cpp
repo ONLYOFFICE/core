@@ -88,7 +88,7 @@ namespace NSCSS
 
     void CCompiledStyle::AddPropSel(const std::wstring& sProperty, const std::wstring& sValue, const bool& bHardMode)
     {
-        AddStyle({{sProperty, sValue}});
+        AddStyle({{sProperty, sValue}}, bHardMode);
     }
 
     void CCompiledStyle::AddStyle(const std::map<std::wstring, std::wstring>& mStyle, const bool& bHardMode)
@@ -104,39 +104,102 @@ namespace NSCSS
                 //FONT
                 CASE(L"font"):
                 {
-                    m_pFont.SetFont(ConvertUnitMeasure(pPropertie.second.c_str(), fSize));
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pFont.SetFont(ConvertUnitMeasure(pPropertie.second.c_str(), fSize), bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pFont.SetFont(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), fSize), true);
+                        m_pFont.SetImportantAll(true);
+                    }
                     break;
                 }
                 CASE(L"font-size"):
                 CASE(L"font-size-adjust"):
                 {
-                    m_pFont.SetSize(ConvertUnitMeasure(pPropertie.second, fSize));
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pFont.SetSize(ConvertUnitMeasure(pPropertie.second, fSize), bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pFont.SetSize(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), fSize), true);
+                        m_pFont.SetImportantSize(true);
+                    }
                     break;
                 }
 
                 CASE(L"font-stretch"):
                 {
-                    m_pFont.SetStretch(pPropertie.second);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pFont.SetStretch(pPropertie.second, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pFont.SetStretch(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pFont.SetImportantenStretch(true);
+                    }
                     break;
                 }
                 CASE(L"font-style"):
                 {
-                    m_pFont.SetStyle(pPropertie.second);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pFont.SetStyle(pPropertie.second, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pFont.SetStyle(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pFont.SetImportantenStyle(true);
+                    }
                     break;
                 }
                 CASE(L"font-variant"):
                 {
-                    m_pFont.SetVariant(pPropertie.second);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pFont.SetVariant(pPropertie.second, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pFont.SetVariant(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pFont.SetImportantenVariant(true);
+                    }
                     break;
                 }
                 CASE(L"font-weight"):
                 {
-                    m_pFont.SetWeight(pPropertie.second);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pFont.SetWeight(pPropertie.second, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pFont.SetWeight(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pFont.SetImportantenWeight(true);
+                    }
                     break;
                 }
                 CASE(L"line-height"):
                 {
-                    m_pFont.SetLineHeight(ConvertUnitMeasure(pPropertie.second, m_pFont.GetSize()));
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pFont.SetLineHeight(ConvertUnitMeasure(pPropertie.second, m_pFont.GetSize()), bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pFont.SetLineHeight(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), m_pFont.GetSize()), true);
+                        m_pFont.SetImportantenLineHeight(true);
+                    }
                     break;
                 }
                 //MARGIN
@@ -145,9 +208,22 @@ namespace NSCSS
                     if (bIsThereBorder)
                         break;
 
-                    const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
-                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
-                        m_pMargin.AddMargin(sValue);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddMargin(sValue, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddMargin(sValue, true);
+
+                        m_pMargin.SetImportantAll(true);
+                    }
+
                     break;
                 }
                 CASE(L"margin-top"):
@@ -155,9 +231,21 @@ namespace NSCSS
                     if (bIsThereBorder)
                         break;
 
-                    const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
-                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
-                        m_pMargin.AddTopMargin(sValue);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddTopMargin(sValue, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddTopMargin(sValue, true);
+
+                        m_pMargin.SetImportantTopSide(true);
+                    }
                     break;
                 }
                 CASE(L"margin-right"):
@@ -166,9 +254,21 @@ namespace NSCSS
                     if (bIsThereBorder)
                         break;
 
-                    const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
-                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
-                        m_pMargin.AddRightMargin(sValue);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddRightMargin(sValue, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddRightMargin(sValue, true);
+
+                        m_pMargin.SetImportantRightSide(true);
+                    }
                     break;
                 }
                 CASE(L"margin-bottom"):
@@ -176,9 +276,21 @@ namespace NSCSS
                     if (bIsThereBorder)
                         break;
 
-                    const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
-                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
-                        m_pMargin.AddBottomMargin(sValue);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddBottomMargin(sValue, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddBottomMargin(sValue, true);
+
+                        m_pMargin.SetImportantBottomSide(true);
+                    }
                     break;
                 }
                 CASE(L"margin-left"):
@@ -187,9 +299,21 @@ namespace NSCSS
                     if (bIsThereBorder)
                         break;
 
-                    const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
-                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
-                        m_pMargin.AddLeftMargin(sValue);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddLeftMargin(sValue, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddLeftMargin(sValue, true);
+
+                        m_pMargin.SetImportantLeftSide(true);
+                    }
                     break;
                 }
                 //PADDING
@@ -198,9 +322,22 @@ namespace NSCSS
                     if (bIsThereBorder)
                         break;
 
-                    const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
-                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos && sValue[0] != L'-')
-                        m_pMargin.AddMargin(sValue);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddMargin(sValue, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddMargin(sValue, true);
+
+                        m_pMargin.SetImportantAll(true);
+                    }
+
                     break;
                 }
                 CASE(L"padding-top"):
@@ -208,9 +345,22 @@ namespace NSCSS
                     if (bIsThereBorder)
                         break;
 
-                    const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
-                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos && sValue[0] != L'-')
-                        m_pMargin.AddTopMargin(sValue);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddTopMargin(sValue, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddTopMargin(sValue, true);
+
+                        m_pMargin.SetImportantTopSide(true);
+                    }
+
                     break;
                 }
                 CASE(L"padding-right"):
@@ -218,9 +368,23 @@ namespace NSCSS
                     if (bIsThereBorder)
                         break;
 
-                    const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
-                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos && sValue[0] != L'-')
-                        m_pMargin.AddRightMargin(sValue);
+
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddRightMargin(sValue, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddRightMargin(sValue, true);
+
+                        m_pMargin.SetImportantRightSide(true);
+                    }
+
                     break;
                 }
                 CASE(L"padding-bottom"):
@@ -228,9 +392,22 @@ namespace NSCSS
                     if (bIsThereBorder)
                         break;
 
-                    const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
-                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos && sValue[0] != L'-')
-                        m_pMargin.AddBottomMargin(sValue);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddBottomMargin(sValue, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddBottomMargin(sValue, true);
+
+                        m_pMargin.SetImportantBottomSide(true);
+                    }
+
                     break;
                 }
                 CASE(L"padding-left"):
@@ -238,165 +415,449 @@ namespace NSCSS
                     if (bIsThereBorder)
                         break;
 
-                    const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
-                    if (sValue.find_first_not_of(L" 0") != std::wstring::npos && sValue[0] != L'-')
-                        m_pMargin.AddLeftMargin(sValue);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddLeftMargin(sValue, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddLeftMargin(sValue, true);
+
+                        m_pMargin.SetImportantLeftSide(true);
+                    }
+
                     break;
                 }
                 // TEXT
                 CASE(L"text-align"):
                 {
-                    m_pText.SetAlign(pPropertie.second);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pText.SetAlign(pPropertie.second, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pText.SetAlign(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pText.SetImportantAlign(true);
+                    }
+
                     break;
                 }
                 CASE(L"text-indent"):
                 {
-                    m_pText.SetIndent(ConvertUnitMeasure(pPropertie.second, 540.0f));
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pText.SetIndent(ConvertUnitMeasure(pPropertie.second, 540.0f), bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pText.SetIndent(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f), true);
+                        m_pText.SetImportantIndent(true);
+                    }
+
                     break;
                 }
                 CASE(L"text-decoration"):
                 {
-                    m_pText.SetDecoration(pPropertie.second);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pText.SetDecoration(pPropertie.second, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pText.SetDecoration(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pText.SetImportantDecoration(true);
+                    }
+
                     break;
                 }
                 CASE(L"text-color"):
                 CASE(L"color"):
                 {
-                    m_pText.SetColor(pPropertie.second);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pText.SetColor(pPropertie.second, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pText.SetColor(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pText.SetImportantColor(true);
+                    }
                     break;
                 }
                 //BORDER
                 CASE(L"border"):
                 CASE(L"mso-border-alt"):
                 {
-                    const NSConstValues::NSCssProperties::BorderSide oBorderSide = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
-                    if (oBorderSide.GetWidth() >= 0)
+                    NSConstValues::NSCssProperties::BorderSide oBorderSide = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
+
+                    if (oBorderSide.GetWidth() < 0)
+                        break;
+
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
                     {
-                        m_pBorder.stTop     = oBorderSide;
-                        m_pBorder.stRight   = oBorderSide;
-                        m_pBorder.stBottom  = oBorderSide;
-                        m_pBorder.stLeft    = oBorderSide;
+                        m_pText.SetAlign(pPropertie.second, bHardMode);
+
+                        m_pBorder.SetTopSide(oBorderSide, bHardMode);
+                        m_pBorder.SetRightSide(oBorderSide, bHardMode);
+                        m_pBorder.SetBottomSide(oBorderSide, bHardMode);
+                        m_pBorder.SetLeftSide(oBorderSide, bHardMode);
                     }
+                    else if (unPositionImp != 0)
+                    {
+                        oBorderSide.SetImportantAll(true);
+                        m_pBorder.SetTopSide(oBorderSide, true);
+                        m_pBorder.SetRightSide(oBorderSide, true);
+                        m_pBorder.SetBottomSide(oBorderSide, true);
+                        m_pBorder.SetLeftSide(oBorderSide, true);
+                    }
+
                     break;
                 }
                 CASE(L"border-width"):
                 {
-                    const float fValue = wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL);
-                    m_pBorder.SetWidth(fValue);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        const float fValue = wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL);
+                        m_pBorder.SetWidth(fValue, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        const float fValue = wcstof(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 0.0f).c_str(), NULL);
+                        m_pBorder.SetWidth(fValue, true);
+                        m_pBorder.SetImportantWidth(true);
+                    }
+
                     break;
                 }
                 CASE(L"border-style"):
                 {
-                    m_pBorder.SetStyle(pPropertie.second);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetStyle(pPropertie.second, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetStyle(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pBorder.SetImportantStyle(true);
+                    }
+
                     break;
                 }
                 CASE(L"border-color"):
                 {
-                    m_pBorder.SetColor(pPropertie.second);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetColor(pPropertie.second, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetColor(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pBorder.SetImportantColor(true);
+                    }
+
                     break;
                 }
                 //BORDER TOP
                 CASE(L"border-top"):
                 {
-                    const NSConstValues::NSCssProperties::BorderSide oBorderSide = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
-                    if (oBorderSide.GetWidth() >= 0)
-                        m_pBorder.stTop = oBorderSide;
+                    NSConstValues::NSCssProperties::BorderSide oBorderSide = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
+                    if (oBorderSide.GetWidth() < 0)
+                        break;
+
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetTopSide(oBorderSide, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        oBorderSide.SetImportantAll(true);
+                        m_pBorder.SetTopSide(oBorderSide, true);
+                    }
+
                     break;
                 }
                 CASE(L"border-top-width"):
                 {
-                    m_pBorder.stTop.SetWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL));
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetTopSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL), bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetTopSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 0.0f).c_str(), NULL), true);
+                        m_pBorder.SetImportantWidthTopSide(true);
+                    }
+
                     break;
                 }
                 CASE(L"border-top-style"):
                 {
-                    m_pBorder.stTop.SetStyle(pPropertie.second);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetTopSideStyle(pPropertie.second, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetTopSideStyle(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pBorder.SetImportantStyleTopSide(true);
+                    }
+
                     break;
                 }
                 CASE(L"border-top-color"):
                 {
-                    m_pBorder.stTop.SetColor(pPropertie.second);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetTopSideColor(pPropertie.second, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetTopSideColor(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pBorder.SetImportantColorTopSide(true);
+                    }
+
                     break;
                 }
                 //BORDER RIGHT
                 CASE(L"border-right"):
                 {
-                    const NSConstValues::NSCssProperties::BorderSide oBorderSide = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
-                    if (oBorderSide.GetWidth() >= 0)
-                        m_pBorder.stRight = oBorderSide;
+                    NSConstValues::NSCssProperties::BorderSide oBorderSide = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
+                    if (oBorderSide.GetWidth() < 0)
+                        break;
+
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetRightSide(oBorderSide, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        oBorderSide.SetImportantAll(true);
+                        m_pBorder.SetRightSide(oBorderSide, true);
+                    }
 
                     break;
                 }
                 CASE(L"border-right-width"):
                 {
-                    m_pBorder.stRight.SetWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL));
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetRightSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL), bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetRightSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 0.0f).c_str(), NULL), true);
+                        m_pBorder.SetImportantWidthRightSide(true);
+                    }
+
                     break;
                 }
                 CASE(L"border-right-style"):
                 {
-                    m_pBorder.stRight.SetStyle(pPropertie.second);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetRightSideStyle(pPropertie.second, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetRightSideStyle(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pBorder.SetImportantStyleRightSide(true);
+                    }
+
                     break;
                 }
                 CASE(L"border-right-color"):
                 {
-                    m_pBorder.stRight.SetColor(pPropertie.second);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetRightSideColor(pPropertie.second, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetRightSideColor(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pBorder.SetImportantColorRightSide(true);
+                    }
+
                     break;
                 }
                 //BORDER bottom
                 CASE(L"border-bottom"):
                 {
-                    const NSConstValues::NSCssProperties::BorderSide oBorderSide = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
-                    if (oBorderSide.GetWidth() >= 0)
-                        m_pBorder.stBottom = oBorderSide;
+                    NSConstValues::NSCssProperties::BorderSide oBorderSide = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
+                    if (oBorderSide.GetWidth() < 0)
+                        break;
+
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetBottomSide(oBorderSide, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        oBorderSide.SetImportantAll(true);
+                        m_pBorder.SetBottomSide(oBorderSide, true);
+                    }
+
                     break;
                 }
                 CASE(L"border-bottom-width"):
                 {
-                    m_pBorder.stBottom.SetWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL));
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetBottomSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL), bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetBottomSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 0.0f).c_str(), NULL), true);
+                        m_pBorder.SetImportantWidthBottomSide(true);
+                    }
+
                     break;
                 }
                 CASE(L"border-bottom-style"):
                 {
-                    m_pBorder.stBottom.SetStyle(pPropertie.second);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetBottomSideStyle(pPropertie.second, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetBottomSideStyle(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pBorder.SetImportantStyleBottomSide(true);
+                    }
+
                     break;
                 }
                 CASE(L"border-bottom-color"):
                 {
-                    m_pBorder.stBottom.SetColor(pPropertie.second);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetBottomSideColor(pPropertie.second, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetBottomSideColor(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pBorder.SetImportantColorBottomSide(true);
+                    }
+
                     break;
                 }
                 //BORDER LEFT
                 CASE(L"border-left"):
                 {
-                    const NSConstValues::NSCssProperties::BorderSide oBorderSide = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
-                    if (oBorderSide.GetWidth() >= 0)
-                        m_pBorder.stLeft = oBorderSide;
+                    NSConstValues::NSCssProperties::BorderSide oBorderSide = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
+                    if (oBorderSide.GetWidth() < 0)
+                        break;
+
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetLeftSide(oBorderSide, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        oBorderSide.SetImportantAll(true);
+                        m_pBorder.SetLeftSide(oBorderSide, true);
+                    }
+
                     break;
                 }
                 CASE(L"border-left-width"):
                 {
-                    m_pBorder.stLeft.SetWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL));
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetLeftSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL), bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetLeftSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 0.0f).c_str(), NULL), true);
+                        m_pBorder.SetImportantWidthLeftSide(true);
+                    }
+
                     break;
                 }
                 CASE(L"border-left-style"):
                 {
-                    m_pBorder.stLeft.SetStyle(pPropertie.second);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetLeftSideStyle(pPropertie.second, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetLeftSideStyle(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pBorder.SetImportantStyleLeftSide(true);
+                    }
+
                     break;
                 }
                 CASE(L"border-left-color"):
                 {
-                    m_pBorder.stLeft.SetColor(pPropertie.second);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetLeftSideColor(pPropertie.second, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetLeftSideColor(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pBorder.SetImportantColorLeftSide(true);
+                    }
+
                     break;
                 }
                 // BACKGROUND
                 CASE(L"background-color"):
                 {
-                    m_pBackground.SetColor(pPropertie.second);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBackground.SetColor(pPropertie.second);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBackground.SetColor(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pBackground.SetImportantBackground(true);
+                    }
                     break;
                 }
                 CASE(L"background"):
                 {
-                    m_pBackground.SetBackground(pPropertie.second);
+                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBackground.SetBackground(pPropertie.second);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBackground.SetBackground(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pBackground.SetImportantAll(true);
+                    }
                     break;
                 }
             }
@@ -426,14 +887,14 @@ namespace NSCSS
                     sValue.pop_back();
                     std::transform(sProperty.begin(), sProperty.end(), sProperty.begin(), tolower);
                     std::transform(sValue.begin(), sValue.end(), sValue.begin(), tolower);
-                    AddPropSel(sProperty, sValue);
+                    AddPropSel(sProperty, sValue, bHardMode);
                     sProperty.clear();
                     sValue.clear();
                 }
             }
 
         if (!sProperty.empty() && !sValue.empty())
-            AddPropSel(sProperty, sValue);
+            AddPropSel(sProperty, sValue, bHardMode);
     }
 
     void CCompiledStyle::AddParent(const std::wstring& sParentName)
@@ -455,6 +916,15 @@ namespace NSCSS
     std::wstring CCompiledStyle::GetId() const
     {
         return m_sId;
+    }
+
+    void CCompiledStyle::ClearImportants()
+    {
+        m_pBackground   .ClearImportants();
+        m_pBorder       .ClearImportants();
+        m_pFont         .ClearImportants();
+        m_pMargin       .ClearImportants();
+        m_pText         .ClearImportants();
     }
 
         std::wstring CCompiledStyle::ConvertUnitMeasure(const std::wstring &sValue, const float& fPreviousValue) const

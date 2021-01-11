@@ -392,6 +392,15 @@ namespace NSCSS
 
             return arWeight;
         }
+
+        inline bool IsTrue(const std::vector<bool> arValues)
+        {
+            for (const bool bValue : arValues)
+                if (!bValue)
+                    return false;
+
+            return true;
+        }
     }
 
     #define SWITCH(str)  switch(SWITCH_CASE::str_hash_for_switch(str))

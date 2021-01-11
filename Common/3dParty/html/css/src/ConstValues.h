@@ -239,6 +239,8 @@ namespace NSCSS
                 float fLineHeight;
                 std::wstring sFamily;
 
+                std::vector<bool> bImportants;
+
             public:
 
                 Font() : fSize      (fNoneValue),
@@ -246,10 +248,19 @@ namespace NSCSS
                          enStyle    (FontStyle::none),
                          enVariant  (FontVariant::none),
                          enWeight   (FontWeight::none),
-                         fLineHeight(fNoneValue){}
+                         fLineHeight(fNoneValue),
+                         bImportants({false, false, false, false, false, false, false}){}
+
+                void ClearImportants()
+                {
+                    bImportants = {false, false, false, false, false, false, false};
+                }
 
                 Font operator+=(const Font& oFont)
                 {
+                    if (NS_STATIC_FUNCTIONS::IsTrue(bImportants))
+                        return *this;
+
                     if (oFont.fSize != fNoneValue)
                         fSize = oFont.fSize;
                     if (oFont.enStretch != FontStretch::none)
@@ -265,6 +276,7 @@ namespace NSCSS
                     if (!oFont.sFamily.empty())
                         sFamily = oFont.sFamily;
 
+                    bImportants = oFont.bImportants;
                     return *this;
                 }
 
@@ -288,18 +300,19 @@ namespace NSCSS
 
                 void Clear()
                 {
-                    fSize = fNoneValue;
-                    enStretch = FontStretch::none;
-                    enStyle = FontStyle::none;
-                    enVariant = FontVariant::none;
-                    enWeight = FontWeight::none;
+                    fSize       = fNoneValue;
+                    enStretch   = FontStretch::none;
+                    enStyle     = FontStyle::none;
+                    enVariant   = FontVariant::none;
+                    enWeight    = FontWeight::none;
                     fLineHeight = fNoneValue;
-                    sFamily.clear();
+                    sFamily     .clear();
+                    bImportants  = {false, false, false, false, false, false, false};
                 }
 
-                void SetFont(const std::wstring &sFont)
+                void SetFont(const std::wstring &sFont, const bool& bHardMode = false)
                 {
-                    if (sFont.empty())
+                    if (sFont.empty() || (NS_STATIC_FUNCTIONS::IsTrue(bImportants) && !bHardMode))
                         return;
 
                     const std::vector<std::wstring> arValues = NSCSS::NS_STATIC_FUNCTIONS::GetWordsW(sFont, L" ,/");
@@ -309,23 +322,26 @@ namespace NSCSS
 
                     for (const std::wstring &sWord : arValues)
                     {
-                        if (nPosition < 4 && enStyle == FontStyle::none)
+                        if (nPosition < 4)
                         {
                             if (sWord == L"normal")
                             {
-                                enStyle = FontStyle::normal;
+                                if (!bImportants[2] || bHardMode)
+                                    enStyle = FontStyle::normal;
                                 ++nPosition;
                                 continue;
                             }
                             else if (sWord == L"italic")
                             {
-                                enStyle = FontStyle::italic;
+                                if (!bImportants[2] || bHardMode)
+                                    enStyle = FontStyle::italic;
                                 ++nPosition;
                                 continue;
                             }
                             else if (sWord == L"oblique")
                             {
-                                enStyle = FontStyle::oblique;
+                                if (!bImportants[2] || bHardMode)
+                                    enStyle = FontStyle::oblique;
                                 ++nPosition;
                                 continue;
                             }
@@ -340,13 +356,15 @@ namespace NSCSS
                         {
                             if (sWord == L"normal")
                             {
-                                enVariant = FontVariant::normal;
+                                if (!bImportants[3] || bHardMode)
+                                    enVariant = FontVariant::normal;
                                 ++nPosition;
                                 continue;
                             }
                             else if (sWord == L"small-caps")
                             {
-                                enVariant = FontVariant::smallCaps;
+                                if (!bImportants[3] || bHardMode)
+                                    enVariant = FontVariant::smallCaps;
                                 ++nPosition;
                                 continue;
                             }
@@ -361,13 +379,15 @@ namespace NSCSS
                         {
                             if (sWord == L"bold" || sWord == L"bolder" || sWord[0] == L'6' || sWord[0] == L'7' || sWord[0] == L'8' ||sWord[0] == L'9')
                             {
-                                enWeight = FontWeight::bold;
+                                if (!bImportants[4] || bHardMode)
+                                    enWeight = FontWeight::bold;
                                 ++nPosition;
                                 continue;
                             }
                             else if (sWord == L"normal" || sWord[0] == L'3' || sWord[0] == L'4' ||sWord[0] == L'5')
                             {
-                                enWeight = FontWeight::normal;
+                                if (!bImportants[4] || bHardMode)
+                                    enWeight = FontWeight::normal;
                                 ++nPosition;
                                 continue;
                             }
@@ -377,49 +397,57 @@ namespace NSCSS
                         {
                             if (sWord == L"ultra-condensed")
                             {
-                                enStretch = FontStretch::ultraCondensed;
+                                if (!bImportants[1] || bHardMode)
+                                    enStretch = FontStretch::ultraCondensed;
                                 ++nPosition;
                                 continue;
                             }
                             else if (sWord == L"extra-condensed")
                             {
-                                enStretch = FontStretch::extraCondensed;
+                                if (!bImportants[1] || bHardMode)
+                                    enStretch = FontStretch::extraCondensed;
                                 ++nPosition;
                                 continue;
                             }
                             else if (sWord == L"condensed")
                             {
-                                enStretch = FontStretch::condensed;
+                                if (!bImportants[1] || bHardMode)
+                                    enStretch = FontStretch::condensed;
                                 ++nPosition;
                                 continue;
                             }
                             else if (sWord == L"semi-condensed")
                             {
-                                enStretch = FontStretch::semiCondensed;
+                                if (!bImportants[1] || bHardMode)
+                                    enStretch = FontStretch::semiCondensed;
                                 ++nPosition;
                                 continue;
                             }
                             else if (sWord == L"normal")
                             {
-                                enStretch = FontStretch::normal;
+                                if (!bImportants[1] || bHardMode)
+                                    enStretch = FontStretch::normal;
                                 ++nPosition;
                                 continue;
                             }
                             else if (sWord == L"semi-expanded")
                             {
-                                enStretch = FontStretch::semiExpanded;
+                                if (!bImportants[1] || bHardMode)
+                                    enStretch = FontStretch::semiExpanded;
                                 ++nPosition;
                                 continue;
                             }
                             else if (sWord == L"extra-expanded")
                             {
-                                enStretch = FontStretch::extraExpanded;
+                                if (!bImportants[1] || bHardMode)
+                                    enStretch = FontStretch::extraExpanded;
                                 ++nPosition;
                                 continue;
                             }
                             else if (sWord == L"ultra-expanded")
                             {
-                                enStretch = FontStretch::ultraExpanded;
+                                if (!bImportants[1] || bHardMode)
+                                    enStretch = FontStretch::ultraExpanded;
                                 ++nPosition;
                                 continue;
                             }
@@ -433,13 +461,15 @@ namespace NSCSS
                         if (nPosition < 5 && iswdigit(sWord[0]))
                         {
                             nPosition = 5;
-                            fSize = wcstof(sWord.c_str(), NULL);
+                            if (!bImportants[0] || bHardMode)
+                                fSize = wcstof(sWord.c_str(), NULL);
                             continue;
                         }
 
                         if (nPosition == 5 && iswdigit(sWord[0]))
                         {
-                            fLineHeight = wcstof(sWord.c_str(), NULL);
+                            if (!bImportants[5] || bHardMode)
+                                fLineHeight = wcstof(sWord.c_str(), NULL);
                             ++nPosition;
                             continue;
                         }
@@ -448,7 +478,8 @@ namespace NSCSS
                         {
                             if (bIsBrackets)
                             {
-                                sFamily += L' ' + sWord;
+                                if (!bImportants[6] || bHardMode)
+                                    sFamily += L' ' + sWord;
                                 if (sWord.back() == L'"' || sWord.back() == L'\'')
                                     bIsBrackets = false;
                                 continue;
@@ -461,7 +492,8 @@ namespace NSCSS
                                 else
                                 {
                                     bIsBrackets = true;
-                                    sFamily = sWord;
+                                    if (!bImportants[6] || bHardMode)
+                                        sFamily = sWord;
                                 }
 
                                 if (sWord.back() == L'"' || sWord.back() == L'\'')
@@ -473,9 +505,9 @@ namespace NSCSS
                     }
                 }
 
-                void SetSize(const std::wstring &sSize)
+                void SetSize(const std::wstring &sSize, const bool& bHardMode = false)
                 {
-                    if (sSize.empty())
+                    if (sSize.empty() || (bImportants[0] && !bHardMode))
                         return;
 
                     const float fValue = wcstof(sSize.c_str(), NULL);
@@ -483,9 +515,9 @@ namespace NSCSS
                         fSize = fValue;
                 }
 
-                void SetStretch(const std::wstring &sStretch)
+                void SetStretch(const std::wstring &sStretch, const bool& bHardMode = false)
                 {
-                    if (sStretch.empty())
+                    if (sStretch.empty() || (bImportants[1] && !bHardMode))
                         return;
 
                     if (sStretch == L"ultra-condensed")
@@ -508,9 +540,9 @@ namespace NSCSS
                         enStretch = NSConstValues::NSCssProperties::FontStretch::ultraExpanded;
                 }
 
-                void SetStyle(const std::wstring &sStyle)
+                void SetStyle(const std::wstring &sStyle, const bool& bHardMode = false)
                 {
-                    if (sStyle.empty())
+                    if (sStyle.empty() || (bImportants[2] && !bHardMode))
                         return;
 
                     if (sStyle == L"italic")
@@ -521,9 +553,9 @@ namespace NSCSS
                         enStyle = NSConstValues::NSCssProperties::FontStyle::normal;
                 }
 
-                void SetVariant(const std::wstring &sVariant)
+                void SetVariant(const std::wstring &sVariant, const bool& bHardMode = false)
                 {
-                    if (sVariant.empty())
+                    if (sVariant.empty() || (bImportants[3] && !bHardMode))
                         return;
 
                     if (sVariant == L"small-caps")
@@ -532,9 +564,9 @@ namespace NSCSS
                         enVariant = NSConstValues::NSCssProperties::FontVariant::normal;
                 }
 
-                void SetWeight(const std::wstring &sWeight)
+                void SetWeight(const std::wstring &sWeight, const bool& bHardMode = false)
                 {
-                    if (sWeight.empty())
+                    if (sWeight.empty() || (bImportants[4] && !bHardMode))
                         return;
 
                     if (sWeight == L"bold" || sWeight == L"bolder" ||
@@ -546,14 +578,57 @@ namespace NSCSS
                         enWeight = NSConstValues::NSCssProperties::FontWeight::normal;
                 }
 
-                void SetLineHeight(const std::wstring &sLineHeight)
+                void SetLineHeight(const std::wstring &sLineHeight, const bool& bHardMode = false)
                 {
-                    if (sLineHeight.empty())
+                    if (sLineHeight.empty() || (bImportants[5] && !bHardMode))
                         return;
 
                     const float fValue = wcstof(sLineHeight.c_str(), NULL);
                     if (fValue > 0.0f)
                         fLineHeight = fValue;
+                }
+
+                void SetImportantAll(const bool &bImportant)
+                {
+                    if (bImportant)
+                        bImportants = {true, true, true, true, true, true, true};
+                    else
+                        bImportants = {false, false, false, false, false, false, false};
+                }
+
+                void SetImportantSize(const bool &bImportant)
+                {
+                    bImportants[0] = bImportant;
+                }
+
+                void SetImportantenStretch(const bool &bImportant)
+                {
+                    bImportants[1] = bImportant;
+                }
+
+                void SetImportantenStyle(const bool &bImportant)
+                {
+                    bImportants[2] = bImportant;
+                }
+
+                void SetImportantenVariant(const bool &bImportant)
+                {
+                    bImportants[3] = bImportant;
+                }
+
+                void SetImportantenWeight(const bool &bImportant)
+                {
+                    bImportants[4] = bImportant;
+                }
+
+                void SetImportantenLineHeight(const bool &bImportant)
+                {
+                    bImportants[5] = bImportant;
+                }
+
+                void SetImportantenFamily(const bool &bImportant)
+                {
+                    bImportants[6] = bImportant;
                 }
 
                 float GetSize() const
@@ -624,16 +699,26 @@ namespace NSCSS
                 float fLeftSide;
 
                 bool bPermission;
+                std::vector<bool> bImportants;
 
             public:
                 Margin() : fTopSide     (fNoneValue),
                            fRightSide   (fNoneValue),
                            fBottomSide  (fNoneValue),
                            fLeftSide    (fNoneValue),
-                           bPermission  (true){}
+                           bPermission  (true),
+                           bImportants  ({false, false, false, false}){}
+
+                void ClearImportants()
+                {
+                    bImportants = {false, false, false, false};
+                }
 
                 Margin operator+=(const Margin& oMargin)
                 {
+                    if (NS_STATIC_FUNCTIONS::IsTrue(bImportants))
+                        return *this;
+
                     if (oMargin.fTopSide != fNoneValue)
                         fTopSide = oMargin.fTopSide;
                     if (oMargin.fRightSide != fNoneValue)
@@ -642,6 +727,8 @@ namespace NSCSS
                         fBottomSide = oMargin.fBottomSide;
                     if (oMargin.fLeftSide != fNoneValue)
                         fLeftSide = oMargin.fLeftSide;
+
+                    bImportants = oMargin.bImportants;
 
                     return *this;;
                 }
@@ -667,9 +754,37 @@ namespace NSCSS
                     this->bPermission = bPermission;
                 }
 
-                void AddMargin(const std::wstring& sMargin)
+                void SetImportantAll(const bool &bImportant)
                 {
-                    if (sMargin.empty() || !bPermission)
+                    if (bImportant)
+                        bImportants = {true, true, true, true};
+                    else
+                        bImportants = {false, false, false, false};
+                }
+
+                void SetImportantTopSide(const bool &bImportant)
+                {
+                    bImportants[0] = bImportant;
+                }
+
+                void SetImportantRightSide(const bool &bImportant)
+                {
+                    bImportants[1] = bImportant;
+                }
+
+                void SetImportantBottomSide(const bool &bImportant)
+                {
+                    bImportants[2] = bImportant;
+                }
+
+                void SetImportantLeftSide(const bool &bImportant)
+                {
+                    bImportants[3] = bImportant;
+                }
+
+                void AddMargin(const std::wstring& sMargin, const bool& bHardMode = false)
+                {
+                    if (sMargin.empty() || !bPermission || (NS_STATIC_FUNCTIONS::IsTrue(bImportants) && !bHardMode))
                         return;
 
                     if (fTopSide == fNoneValue)
@@ -690,45 +805,62 @@ namespace NSCSS
                         {
                             const float fValue = wcstof(arValues[0].c_str(), NULL);
 
-                            fTopSide    += fValue;
-                            fRightSide  += fValue;
-                            fBottomSide += fValue;
-                            fLeftSide   += fValue;
+                            if (!bImportants[0] || bHardMode)
+                                fTopSide    += fValue;
+                            if (!bImportants[1] || bHardMode)
+                                fRightSide  += fValue;
+                            if (!bImportants[2] || bHardMode)
+                                fBottomSide += fValue;
+                            if (!bImportants[3] || bHardMode)
+                                fLeftSide   += fValue;
                             break;
                         }
                         case 2:
                         {
                             const float fValue1 = wcstof(arValues[0].c_str(), NULL);
                             const float fValue2 = wcstof(arValues[1].c_str(), NULL);
-                            fTopSide    += fValue1;
-                            fRightSide  += fValue2;
-                            fBottomSide += fValue1;
-                            fLeftSide   += fValue2;
+
+                            if (!bImportants[0] || bHardMode)
+                                fTopSide    += fValue1;
+                            if (!bImportants[1] || bHardMode)
+                                fRightSide  += fValue2;
+                            if (!bImportants[2] || bHardMode)
+                                fBottomSide += fValue1;
+                            if (!bImportants[3] || bHardMode)
+                                fLeftSide   += fValue2;
                             break;
                         }
                         case 3:
                         {
                             const float fValue = wcstof(arValues[1].c_str(), NULL);
-                            fTopSide    += wcstof(arValues[0].c_str(), NULL);
-                            fRightSide  += fValue;
-                            fBottomSide += wcstof(arValues[2].c_str(), NULL);
-                            fLeftSide   += fValue;
+                            if (!bImportants[0] || bHardMode)
+                                fTopSide    += wcstof(arValues[0].c_str(), NULL);
+                            if (!bImportants[1] || bHardMode)
+                                fRightSide  += fValue;
+                            if (!bImportants[2] || bHardMode)
+                                fBottomSide += wcstof(arValues[2].c_str(), NULL);
+                            if (!bImportants[3] || bHardMode)
+                                fLeftSide   += fValue;
                             break;
                         }
                         case 4:
                         {
+                            if (!bImportants[0] || bHardMode)
                             fTopSide    += wcstof(arValues[0].c_str(), NULL);
-                            fRightSide  += wcstof(arValues[1].c_str(), NULL);
-                            fBottomSide += wcstof(arValues[2].c_str(), NULL);
-                            fLeftSide   += wcstof(arValues[3].c_str(), NULL);
+                            if (!bImportants[1] || bHardMode)
+                                fRightSide  += wcstof(arValues[1].c_str(), NULL);
+                            if (!bImportants[2] || bHardMode)
+                                fBottomSide += wcstof(arValues[2].c_str(), NULL);
+                            if (!bImportants[3] || bHardMode)
+                                fLeftSide   += wcstof(arValues[3].c_str(), NULL);
                             break;
                         }
                     }
                 };
 
-                void AddTopMargin(const std::wstring& sTopMargin)
+                void AddTopMargin(const std::wstring& sTopMargin, const bool& bHardMode = false)
                 {
-                    if (sTopMargin.empty() || !bPermission)
+                    if (sTopMargin.empty() || !bPermission || (bImportants[0] && !bHardMode))
                         return;
 
                     if (fTopSide == fNoneValue)
@@ -737,9 +869,9 @@ namespace NSCSS
                     fTopSide += wcstof(sTopMargin.c_str(), NULL);
                 }
 
-                void AddRightMargin(const std::wstring& sRightMargin)
+                void AddRightMargin(const std::wstring& sRightMargin, const bool& bHardMode = false)
                 {
-                    if (sRightMargin.empty() || !bPermission)
+                    if (sRightMargin.empty() || !bPermission || (bImportants[1] && !bHardMode))
                         return;
 
                     if (fRightSide == fNoneValue)
@@ -748,9 +880,9 @@ namespace NSCSS
                     fRightSide += wcstof(sRightMargin.c_str(), NULL);
                 }
 
-                void AddBottomMargin(const std::wstring& sBottomMargin)
+                void AddBottomMargin(const std::wstring& sBottomMargin, const bool& bHardMode = false)
                 {
-                    if (sBottomMargin.empty() || !bPermission)
+                    if (sBottomMargin.empty() || !bPermission || (bImportants[2] && !bHardMode))
                         return;
 
                     if (fBottomSide == fNoneValue)
@@ -759,9 +891,9 @@ namespace NSCSS
                     fBottomSide += wcstof(sBottomMargin.c_str(), NULL);
                 }
 
-                void AddLeftMargin(const std::wstring& sLeftMargin)
+                void AddLeftMargin(const std::wstring& sLeftMargin, const bool& bHardMode = false)
                 {
-                    if (sLeftMargin.empty() || !bPermission)
+                    if (sLeftMargin.empty() || !bPermission || (bImportants[3] && !bHardMode))
                         return;
 
                     if (fLeftSide == fNoneValue)
@@ -825,11 +957,20 @@ namespace NSCSS
                 TextAlign enAlign;
                 TextDecoration enDecoration;
                 std::wstring sColor; //HEX color
+
+                std::vector<bool> bImportants;
+
             public:
 
                 Text() : fIndent        (fNoneValue),
                          enAlign        (TextAlign::none),
-                         enDecoration   (TextDecoration::none){}
+                         enDecoration   (TextDecoration::none),
+                         bImportants    ({false, false, false, false}){}
+
+                void ClearImportants()
+                {
+                    bImportants = {false, false, false, false};
+                }
 
                 Text operator+=(const Text& oText)
                 {
@@ -841,6 +982,8 @@ namespace NSCSS
                         enDecoration = oText.enDecoration;
                     if (!oText.sColor.empty())
                         sColor = oText.sColor;
+
+                    bImportants = oText.bImportants;
 
                     return *this;
                 }
@@ -859,9 +1002,9 @@ namespace NSCSS
                            enDecoration == TextDecoration::none && sColor.empty();
                 }
 
-                void SetAlign(const std::wstring& sAlign)
+                void SetAlign(const std::wstring& sAlign, const bool& bHardMode = false)
                 {
-                    if (sAlign.empty())
+                    if (sAlign.empty() || (bImportants[1] && !bHardMode))
                         return;
 
                     if (sAlign == L"center")
@@ -874,9 +1017,9 @@ namespace NSCSS
                         enAlign = NSConstValues::NSCssProperties::TextAlign::right;
                 }
 
-                void SetDecoration(const std::wstring sDecoration)
+                void SetDecoration(const std::wstring sDecoration, const bool& bHardMode = false)
                 {
-                    if (sDecoration.empty())
+                    if (sDecoration.empty() || (bImportants[2] && !bHardMode))
                         return;
 
                     if (sDecoration == L"underline")
@@ -885,18 +1028,18 @@ namespace NSCSS
                         enDecoration = NSConstValues::NSCssProperties::TextDecoration::normal;
                 }
 
-                void SetIndent(const std::wstring& sIndent)
+                void SetIndent(const std::wstring& sIndent, const bool& bHardMode = false)
                 {
-                    if (sIndent.empty())
+                    if (sIndent.empty() || (bImportants[0] && !bHardMode))
                         return;
 
                     if (sIndent.find_first_not_of(L" 0") != std::wstring::npos)
                         fIndent = wcstof(sIndent.c_str(), NULL) * 10.0f;
                 }
 
-                void SetColor(const std::wstring& sValue)
+                void SetColor(const std::wstring& sValue, const bool& bHardMode = false)
                 {
-                    if (sValue.empty())
+                    if (sValue.empty() || (bImportants[3] && !bHardMode))
                         return;
 
                     if (sValue[0] == L'#')
@@ -928,6 +1071,34 @@ namespace NSCSS
                         if (oHEX != NSMaps::mColors.end())
                             sColor = oHEX->second;
                     }
+                }
+
+                void SetImportantAll(const bool& bImportant)
+                {
+                    if (bImportant)
+                        bImportants = {true, true, true, true};
+                    else
+                        bImportants = {false, false, false, false};
+                }
+
+                void SetImportantIndent(const bool& bImportant)
+                {
+                    bImportants[0] = bImportant;
+                }
+
+                void SetImportantAlign(const bool& bImportant)
+                {
+                    bImportants[1] = bImportant;
+                }
+
+                void SetImportantDecoration(const bool& bImportant)
+                {
+                    bImportants[2] = bImportant;
+                }
+
+                void SetImportantColor(const bool& bImportant)
+                {
+                    bImportants[3] = bImportant;
                 }
 
                 std::wstring GetIndentW() const
@@ -987,11 +1158,19 @@ namespace NSCSS
                 std::wstring sStyle;
                 std::wstring sColor; //HEX color
 
+                std::vector<bool> bImportants;
+
             public:
 
                 BorderSide() : fWidth(fNoneValue),
                                sStyle(L"single"),
-                               sColor(L"auto"){}
+                               sColor(L"auto"),
+                               bImportants({false, false, false}){}
+
+                void ClearImportants()
+                {
+                    bImportants = {false, false, false};
+                }
 
                 BorderSide operator+=(const BorderSide& oBorderSide)
                 {
@@ -1019,30 +1198,33 @@ namespace NSCSS
                            sColor  == L"auto";
                 }
 
-                void SetWidthWithoutChecking(const float& fWidth)
+                void SetWidthWithoutChecking(const float& fWidth, const bool &bHardMode = false)
                 {
-                    this->fWidth = fWidth;
-                }
-
-                void SetStyleWithoutChecking(const std::wstring& sStyle)
-                {
-                    this->sStyle = sStyle;
-                }
-
-                void SetColorWithoutChecking(const std::wstring& sColor)
-                {
-                    this->sColor = sColor;
-                }
-
-                void SetWidth(const float& fWidth)
-                {
-                    if (fWidth >= 0.0f)
+                    if (bImportants[0] && !bHardMode)
                         this->fWidth = fWidth;
                 }
 
-                void SetStyle(const std::wstring& sValue)
+                void SetStyleWithoutChecking(const std::wstring& sStyle, const bool &bHardMode = false)
                 {
-                    if (sValue.empty())
+                    if (bImportants[1] && !bHardMode)
+                        this->sStyle = sStyle;
+                }
+
+                void SetColorWithoutChecking(const std::wstring& sColor, const bool &bHardMode = false)
+                {
+                    if (bImportants[2] && !bHardMode)
+                        this->sColor = sColor;
+                }
+
+                void SetWidth(const float& fWidth, const bool &bHardMode = false)
+                {
+                    if (fWidth >= 0.0f && bImportants[0] && !bHardMode)
+                        this->fWidth = fWidth;
+                }
+
+                void SetStyle(const std::wstring& sValue, const bool &bHardMode = false)
+                {
+                    if (sValue.empty() || (bImportants[1] && !bHardMode))
                         return;
 
                     std::wstring sNewValue = sValue;
@@ -1069,9 +1251,9 @@ namespace NSCSS
                     }
                 }
 
-                void SetColor(const std::wstring& sValue)
+                void SetColor(const std::wstring& sValue, const bool &bHardMode = false)
                 {
-                    if (sValue.empty())
+                    if (sValue.empty() || (bImportants[2] && !bHardMode))
                         return;
 
                     if (sValue[0] == L'#')
@@ -1104,6 +1286,49 @@ namespace NSCSS
                         if (oHEX != NSMaps::mColors.cend())
                             sColor = oHEX->second;
                     }
+                }
+
+                void SetImportantAll(const bool &bImportant)
+                {
+                    if (bImportant)
+                        bImportants = {true, true, true};
+                    else
+                        bImportants = {false, false, false};
+                }
+
+                void SetImportantWidth(const bool &bImportant)
+                {
+                    bImportants[0] = bImportant;
+                }
+
+                void SetImportantStyle(const bool &bImportant)
+                {
+                    bImportants[1] = bImportant;
+                }
+
+                void SetImportantColor(const bool &bImportant)
+                {
+                    bImportants[2] = bImportant;
+                }
+
+                bool GetImportantWidth() const
+                {
+                    return bImportants[0];
+                }
+
+                bool GetImportantStyle() const
+                {
+                    return bImportants[1];
+                }
+
+                bool GetImportantColor() const
+                {
+                    return bImportants[2];
+                }
+
+                std::vector<bool> GetImportants() const
+                {
+                    return bImportants;
                 }
 
                 std::wstring GetStyle() const
@@ -1200,54 +1425,99 @@ namespace NSCSS
 
             class Border
             {
+                BorderSide oTop;
+                BorderSide oRight;
+                BorderSide oBottom;
+                BorderSide oLeft;
+
             public:
-                BorderSide stTop;
-                BorderSide stRight;
-                BorderSide stBottom;
-                BorderSide stLeft;
+
+                void ClearImportants()
+                {
+                    oTop.ClearImportants();
+                    oRight.ClearImportants();
+                    oBottom.ClearImportants();
+                    oLeft.ClearImportants();
+                }
 
                 Border operator+=(const Border& oBorder)
                 {
-                    stTop    += oBorder.stTop;
-                    stRight  += oBorder.stRight;
-                    stBottom += oBorder.stBottom;
-                    stLeft   += oBorder.stLeft;
+                    oTop    += oBorder.oTop;
+                    oRight  += oBorder.oRight;
+                    oBottom += oBorder.oBottom;
+                    oLeft   += oBorder.oLeft;
 
                     return *this;;
                 }
 
                 bool operator==(const Border& oBorder) const
                 {
-                    return stTop    == oBorder.stTop    &&
-                           stRight  == oBorder.stRight  &&
-                           stBottom == oBorder.stBottom &&
-                           stLeft   == oBorder.stLeft;
+                    return oTop    == oBorder.oTop    &&
+                           oRight  == oBorder.oRight  &&
+                           oBottom == oBorder.oBottom &&
+                           oLeft   == oBorder.oLeft;
                 }
 
                 bool EqualSides() const
                 {
-                    return  stTop    == stRight     &&
-                            stRight  == stBottom    &&
-                            stBottom == stLeft;
+                    return  oTop    == oRight     &&
+                            oRight  == oBottom    &&
+                            oBottom == oLeft;
                 }
 
                 bool Empty() const
                 {
-                    return stTop.Empty() && stRight.Empty() && stBottom.Empty() && stLeft.Empty();
+                    return oTop.Empty() && oRight.Empty() && oBottom.Empty() && oLeft.Empty();
                 }
 
-                void SetWidth(const float& fValue)
+                void SetTopSide(const BorderSide &oTopSide, const bool& bHardMode = false)
+                {
+                    if (NS_STATIC_FUNCTIONS::IsTrue(this->oTop.GetImportants()) && !bHardMode)
+                        return;
+
+                    this->oTop = oTopSide;
+                }
+
+                void SetRightSide(const BorderSide &oRightSide, const bool& bHardMode = false)
+                {
+                    if (NS_STATIC_FUNCTIONS::IsTrue(this->oRight.GetImportants()) && !bHardMode)
+                        return;
+
+                    this->oRight = oRightSide;
+                }
+
+                void SetBottomSide(const BorderSide &oBottomSide, const bool& bHardMode = false)
+                {
+                    if (NS_STATIC_FUNCTIONS::IsTrue(this->oBottom.GetImportants()) && !bHardMode)
+                        return;
+
+                    this->oBottom = oBottomSide;
+                }
+
+                void SetLeftSide(const BorderSide &oLeftSide, const bool& bHardMode = false)
+                {
+                    if (NS_STATIC_FUNCTIONS::IsTrue(this->oLeft.GetImportants()) && !bHardMode)
+                        return;
+
+                    this->oLeft = oLeftSide;
+                }
+
+                void SetWidth(const float& fValue, const bool &bHardMode = false)
                 {
                     if (fValue < 0.0f)
                         return;
 
-                    stTop   .SetWidthWithoutChecking(fValue);
-                    stRight .SetWidthWithoutChecking(fValue);
-                    stBottom.SetWidthWithoutChecking(fValue);
-                    stLeft  .SetWidthWithoutChecking(fValue);
+                    if ((!oTop.GetImportantWidth() || bHardMode))
+                        oTop   .SetWidthWithoutChecking(fValue);
+                    if ((!oRight.GetImportantWidth() || bHardMode))
+                        oRight .SetWidthWithoutChecking(fValue);
+                    if ((!oBottom.GetImportantWidth() || bHardMode))
+                        oBottom.SetWidthWithoutChecking(fValue);
+                    if ((!oLeft.GetImportantWidth() || bHardMode))
+                        oLeft  .SetWidthWithoutChecking(fValue);
                 }
 
-                void SetStyle(const std::wstring& sValue)
+                void SetStyle(const std::wstring& sValue, const bool &bHardMode = false)
                 {
                     if (!sValue.empty())
                         return;
@@ -1275,13 +1545,17 @@ namespace NSCSS
                     else
                         return;
 
-                    stTop   .SetStyleWithoutChecking(sStyle);
-                    stRight .SetStyleWithoutChecking(sStyle);
-                    stBottom.SetStyleWithoutChecking(sStyle);
-                    stLeft  .SetStyleWithoutChecking(sStyle);
+                    if ((!oTop.GetImportantStyle() || bHardMode))
+                        oTop   .SetStyleWithoutChecking(sStyle);
+                    if ((!oRight.GetImportantStyle() || bHardMode))
+                        oRight .SetStyleWithoutChecking(sStyle);
+                    if ((!oBottom.GetImportantStyle() || bHardMode))
+                        oBottom.SetStyleWithoutChecking(sStyle);
+                    if ((!oLeft.GetImportantStyle() || bHardMode))
+                        oLeft  .SetStyleWithoutChecking(sStyle);
                 }
 
-                void SetColor(const std::wstring& sValue)
+                void SetColor(const std::wstring& sValue, const bool &bHardMode = false)
                 {
                     if (sValue.empty())
                         return;
@@ -1318,11 +1592,240 @@ namespace NSCSS
 
                     if (!sNewColor.empty())
                     {
-                        stTop   .SetColorWithoutChecking(sNewColor);
-                        stRight .SetColorWithoutChecking(sNewColor);
-                        stBottom.SetColorWithoutChecking(sNewColor);
-                        stLeft  .SetColorWithoutChecking(sNewColor);
+                        if ((!oTop.GetImportantColor() || bHardMode))
+                            oTop   .SetColorWithoutChecking(sNewColor);
+                        if ((!oRight.GetImportantColor() || bHardMode))
+                            oRight .SetColorWithoutChecking(sNewColor);
+                        if ((!oBottom.GetImportantColor() || bHardMode))
+                            oBottom.SetColorWithoutChecking(sNewColor);
+                        if ((!oLeft.GetImportantColor() || bHardMode))
+                            oLeft  .SetColorWithoutChecking(sNewColor);
                     }
+                }
+
+                void SetImportantWidth(const bool& bImportant)
+                {
+                    oTop.SetImportantWidth(bImportant);
+                    oRight.SetImportantWidth(bImportant);
+                    oBottom.SetImportantWidth(bImportant);
+                    oLeft.SetImportantWidth(bImportant);
+                }
+
+                void SetImportantWidthTopSide(const bool& bImportant)
+                {
+                    oTop.SetImportantWidth(bImportant);
+                }
+
+                void SetImportantWidthRightSide(const bool& bImportant)
+                {
+                    oRight.SetImportantWidth(bImportant);
+                }
+
+                void SetImportantWidthBottomSide(const bool& bImportant)
+                {
+                    oBottom.SetImportantWidth(bImportant);
+                }
+
+                void SetImportantWidthLeftSide(const bool& bImportant)
+                {
+                    oLeft.SetImportantWidth(bImportant);
+                }
+
+                void SetImportantStyle(const bool& bImportant)
+                {
+                    oTop.SetImportantStyle(bImportant);
+                    oRight.SetImportantStyle(bImportant);
+                    oBottom.SetImportantStyle(bImportant);
+                    oLeft.SetImportantStyle(bImportant);
+                }
+
+                void SetImportantStyleTopSide(const bool& bImportant)
+                {
+                    oTop.SetImportantStyle(bImportant);
+                }
+
+                void SetImportantStyleRightSide(const bool& bImportant)
+                {
+                    oRight.SetImportantStyle(bImportant);
+                }
+
+                void SetImportantStyleBottomSide(const bool& bImportant)
+                {
+                    oBottom.SetImportantStyle(bImportant);
+                }
+
+                void SetImportantStyleLeftSide(const bool& bImportant)
+                {
+                    oLeft.SetImportantStyle(bImportant);
+                }
+
+                void SetImportantColor(const bool &bImportant)
+                {
+                    oTop.SetImportantColor(bImportant);
+                    oRight.SetImportantColor(bImportant);
+                    oBottom.SetImportantColor(bImportant);
+                    oLeft.SetImportantColor(bImportant);
+                }
+
+                void SetImportantColorTopSide(const bool& bImportant)
+                {
+                    oTop.SetImportantColor(bImportant);
+                }
+
+                void SetImportantColorRightSide(const bool& bImportant)
+                {
+                    oRight.SetImportantColor(bImportant);
+                }
+
+                void SetImportantColorBottomSide(const bool& bImportant)
+                {
+                    oBottom.SetImportantColor(bImportant);
+                }
+
+                void SetImportantColorLeftSide(const bool& bImportant)
+                {
+                    oLeft.SetImportantColor(bImportant);
+                }
+
+                void SetTopSideWidth(const float& fWidth, const bool &bHardMode = false)
+                {
+                    oTop.SetWidth(fWidth, bHardMode);
+                }
+
+                void SetRightSideWidth(const float& fWidth, const bool &bHardMode = false)
+                {
+                    oRight.SetWidth(fWidth, bHardMode);
+                }
+
+                void SetBottomSideWidth(const float& fWidth, const bool &bHardMode = false)
+                {
+                    oBottom.SetWidth(fWidth, bHardMode);
+                }
+
+                void SetLeftSideWidth(const float& fWidth, const bool &bHardMode = false)
+                {
+                    oLeft.SetWidth(fWidth, bHardMode);
+                }
+
+                void SetTopSideStyle(const std::wstring& sValue, const bool &bHardMode = false)
+                {
+                    oTop.SetStyle(sValue, bHardMode);
+                }
+
+                void SetRightSideStyle(const std::wstring& sValue, const bool &bHardMode = false)
+                {
+                    oRight.SetStyle(sValue, bHardMode);
+                }
+
+                void SetBottomSideStyle(const std::wstring& sValue, const bool &bHardMode = false)
+                {
+                    oBottom.SetStyle(sValue, bHardMode);
+                }
+
+                void SetLeftSideStyle(const std::wstring& sValue, const bool &bHardMode = false)
+                {
+                    oLeft.SetStyle(sValue, bHardMode);
+                }
+
+                void SetTopSideColor(const std::wstring& sValue, const bool &bHardMode = false)
+                {
+                    oTop.SetColor(sValue, bHardMode);
+                }
+
+                void SetRightSideColor(const std::wstring& sValue, const bool &bHardMode = false)
+                {
+                    oRight.SetColor(sValue, bHardMode);
+                }
+
+                void SetBottomSideColor(const std::wstring& sValue, const bool &bHardMode = false)
+                {
+                    oBottom.SetColor(sValue, bHardMode);
+                }
+
+                void SetLeftSideColor(const std::wstring& sValue, const bool &bHardMode = false)
+                {
+                    oLeft.SetColor(sValue, bHardMode);
+                }
+
+
+                std::wstring GetWidthTopSideW() const
+                {
+                    return oTop.GetWidthW();
+                }
+
+                std::wstring GetStyleTopSide() const
+                {
+                    return oTop.GetStyle();
+                }
+
+                std::wstring GetColorTopSide() const
+                {
+                    return oTop.GetColor();
+                }
+
+                std::wstring GetWidthRightSideW() const
+                {
+                    return oRight.GetWidthW();
+                }
+
+                std::wstring GetStyleRightSide() const
+                {
+                    return oRight.GetStyle();
+                }
+
+                std::wstring GetColorRightSide() const
+                {
+                    return oRight.GetColor();
+                }
+
+                std::wstring GetWidthBottomSideW() const
+                {
+                    return oBottom.GetWidthW();
+                }
+
+                std::wstring GetStyleBottomSide() const
+                {
+                    return oBottom.GetStyle();
+                }
+
+                std::wstring GetColorBottomSide() const
+                {
+                    return oBottom.GetColor();
+                }
+
+                std::wstring GetWidthLeftSideW() const
+                {
+                    return oLeft.GetWidthW();
+                }
+
+                std::wstring GetStyleLeftSide() const
+                {
+                    return oLeft.GetStyle();
+                }
+
+                std::wstring GetColorLeftSide() const
+                {
+                    return oLeft.GetColor();
+                }
+
+                bool EmptyTopSide() const
+                {
+                    return oTop.Empty();
+                }
+
+                bool EmptyRightSide() const
+                {
+                    return oRight.Empty();
+                }
+
+                bool EmptyBottomSide() const
+                {
+                    return oBottom.Empty();
+                }
+
+                bool EmptyLeftSide() const
+                {
+                    return oLeft.Empty();
                 }
 
             };
@@ -1330,9 +1833,17 @@ namespace NSCSS
             class Background
             {
                 std::wstring sColor;
+
+                std::vector<bool> bImportants;
             public:
 
-                Background(){}
+                Background() : bImportants({false}){}
+
+                void ClearImportants()
+                {
+                    bImportants = {false};
+                }
+
 
                 Background operator+=(const Background& oBackground)
                 {
@@ -1352,9 +1863,9 @@ namespace NSCSS
                     return sColor.empty();
                 }
 
-                void SetColor(const std::wstring &sValue)
+                void SetColor(const std::wstring &sValue, const bool &bHardMode = false)
                 {
-                    if (sValue.empty())
+                    if (sValue.empty() || (bImportants[0] && !bHardMode))
                         return;
 
                     if (sValue[0] == L'#')
@@ -1388,8 +1899,11 @@ namespace NSCSS
                     }
                 }
 
-                void SetBackground(const std::wstring& sBackground)
+                void SetBackground(const std::wstring& sBackground, const bool &bHardMode = false)
                 {
+                    if (sBackground.empty() || (bImportants[0] && !bHardMode))
+                        return;
+
                     const std::vector<std::wstring> &arValues = NS_STATIC_FUNCTIONS::GetWordsW(sBackground, L" ");
 
                     for (const std::wstring& sValue : arValues)
@@ -1398,6 +1912,19 @@ namespace NSCSS
                         if (!sColor.empty())
                             return;
                     }
+                }
+
+                void SetImportantAll(const bool &bImportant)
+                {
+                    if (bImportant)
+                        bImportants = {true};
+                    else
+                        bImportants = {false};
+                }
+
+                void SetImportantBackground(const bool &bImportant)
+                {
+                    bImportants[0] = bImportant;
                 }
 
                 std::wstring GetColor() const

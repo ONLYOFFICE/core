@@ -81,8 +81,8 @@ namespace NSCSS
 
         bool Empty() const;
 
-        void AddPropSel(const std::wstring& sProperty, const std::wstring& sValue, const bool& bHardMode = false);
-        void AddStyle(const std::map<std::wstring, std::wstring>& mStyle, const bool& bHardMode = false);
+        void AddPropSel(const std::wstring& sProperty, const std::wstring& sValue, const bool& bHardMode = true);
+        void AddStyle(const std::map<std::wstring, std::wstring>& mStyle, const bool& bHardMode = true);
         void AddStyle(const std::wstring& sStyle, const bool& bHardMode = false);
         void AddParent(const std::wstring& sParentName);
 
@@ -90,6 +90,8 @@ namespace NSCSS
 
         void SetID(const std::wstring& sId);
         std::wstring GetId() const;
+
+        void ClearImportants();
 
         CCompiledStyle& operator+= (const CCompiledStyle& oElement);
         CCompiledStyle& operator=  (const CCompiledStyle& oElement);

@@ -34,6 +34,8 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/TimeNodeBase.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/WrapperWritingElement.h"
 
+#include "Animation.h"
+
 #include "Anim.h"
 #include "AnimClr.h"
 #include "AnimEffect.h"
@@ -50,7 +52,7 @@
 
 namespace PPT_FORMAT
 {
-    void ConvertTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::TimeNodeBase &oChild)
+    void ConvertTnChild(SAnimation &oAnim, PPTX::Logic::TimeNodeBase &oChild)
     {
         if (pETNC->m_haveSequenceAtom)
         {

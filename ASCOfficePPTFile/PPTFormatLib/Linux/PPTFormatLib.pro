@@ -359,13 +359,13 @@ HEADERS += \
     ../Enums/_includer.h \
     ../Enums/enums.h \
     ../PPTFormatLib.h \
-    ../PPTXWriter/TimingConverter.h \
     ../PPTXWriter/TimingConverter/Anim.h \
     ../PPTXWriter/TimingConverter/AnimClr.h \
     ../PPTXWriter/TimingConverter/AnimEffect.h \
     ../PPTXWriter/TimingConverter/AnimMotion.h \
     ../PPTXWriter/TimingConverter/AnimRot.h \
     ../PPTXWriter/TimingConverter/AnimScale.h \
+    ../PPTXWriter/TimingConverter/Animation.h \
     ../PPTXWriter/TimingConverter/Audio.h \
     ../PPTXWriter/TimingConverter/BldLst.h \
     ../PPTXWriter/TimingConverter/BldP.h \
@@ -670,6 +670,6 @@ SOURCES += \
     ../../../ASCOfficePPTXFile/Editor/Drawing/Elements.cpp \
     ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.cpp \
     ../../../Common/3dParty/pole/pole.cpp \
-    ../PPTXWriter/TimingConverter.cpp \
+    ../PPTXWriter/TimingConverter/Animation.cpp \
     ../Records/Animations/TimeVariant.cpp
 

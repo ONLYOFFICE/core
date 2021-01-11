@@ -1129,7 +1129,15 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
 
     if (pPP10SlideBinaryTag)
     {
-        PPT_FORMAT::ConvertPP10SlideBinaryTagExtensionToTiming(*pPP10SlideBinaryTag, pSlide->m_oTiming);
+        Animation animation(*pPP10SlideBinaryTag);
+        std::vector<CRecordSoundCollectionContainer*> sound;
+        m_pUserInfo->m_oDocument.GetRecordsByType(&sound, false);
+        if (!sound.empty())
+        {
+            animation.m_pSoundContainer = sound[0];
+        }
+
+        animation.Convert(pSlide->m_oTiming);
         WriteTiming(oWriter, pSlide->m_oTiming);
     }
 

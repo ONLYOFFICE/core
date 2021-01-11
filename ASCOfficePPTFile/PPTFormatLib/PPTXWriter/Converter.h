@@ -32,7 +32,7 @@
 #pragma once
 
 #include "ImageManager.h"
-#include "TimingConverter.h"
+#include "TimingConverter/Animation.h"
 
 
 class CStylesWriter;

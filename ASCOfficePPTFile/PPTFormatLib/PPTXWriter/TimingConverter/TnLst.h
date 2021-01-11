@@ -42,18 +42,18 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/WrapperWritingElement.h"
 
 
-#include "../../Records/Animations/ExtTimeNodeContainer.h"
+#include "Animation.h"
 
 #include "TnChildren.h"
 
 
 namespace PPT_FORMAT
 {
-void ConvertCRecordExtTimeNodeContainerToTnLst(
-                            PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
+void ConvertSAnimationToTnLst(
+                            SAnimation &oAnimation,
                             PPTX::Logic::TnLst &oTnLst)
 {
-    if (!pETNC)
+    if (!oAnimation.m_pPPT10->m_haveExtTime)
         return;
 
     gcTn_ID = 1;

@@ -1782,6 +1782,7 @@ std::vector<std::wstring> CApplicationFonts::GetSetupFontFiles()
      NSDirectory::GetFiles2(L"/usr/share/X11/fonts", _array, true);
      NSDirectory::GetFiles2(L"/usr/X11R6/lib/X11/fonts", _array, true);
      NSDirectory::GetFiles2(L"/usr/local/share/fonts", _array, true);
+     NSDirectory::GetFiles2(L"/run/host/fonts", _array, true);
      return _array;
 #endif
 

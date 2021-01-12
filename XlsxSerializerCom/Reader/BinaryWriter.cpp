@@ -6933,13 +6933,16 @@ void BinaryFileWriter::intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinary
 		this->WriteTableEnd(nCurPos);
 	}
 
-	smart_ptr<OOX::File> pFile = pXlsx->Find(OOX::FileTypes::CustomProperties);
-	PPTX::CustomProperties *pCustomProperties = dynamic_cast<PPTX::CustomProperties*>(pFile.GetPointer());
-	if (pCustomProperties)
+	if (pXlsx)
 	{
-		nCurPos = this->WriteTableStart(c_oSerTableTypes::CustomProperties);
-		pCustomProperties->toPPTY(&oBufferedStream);
-		this->WriteTableEnd(nCurPos);
+		smart_ptr<OOX::File> pFile = pXlsx->Find(OOX::FileTypes::CustomProperties);
+		PPTX::CustomProperties *pCustomProperties = dynamic_cast<PPTX::CustomProperties*>(pFile.GetPointer());
+		if (pCustomProperties)
+		{
+			nCurPos = this->WriteTableStart(c_oSerTableTypes::CustomProperties);
+			pCustomProperties->toPPTY(&oBufferedStream);
+			this->WriteTableEnd(nCurPos);
+		}
 	}
 
 	if(pSharedStrings)

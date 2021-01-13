@@ -104,7 +104,7 @@ private:
             CRecordExtTimeNodeContainer *pETNC,
             PPTX::Logic::AnimScale &oAnim);
     void FillAudio(
-            CRecordExtTimeNodeContainer *pETNC,
+            PPT_FORMAT::CRecordClientVisualElementContainer *pCVEC,
             PPTX::Logic::Audio &oAudio);
     void FillCmd(
             CRecordExtTimeNodeContainer *pETNC,
@@ -139,6 +139,9 @@ private:
     void FillSubTnLst (
             PPT_FORMAT::CRecordSubEffectContainer *pSEC,
             PPTX::Logic::TnLst &oSubTnLst);
+    void FillCondLst(
+            std::vector<CRecordTimeConditionContainer*>& oCondVec,
+            PPTX::Logic::CondLst &oCondLst);
 
 private:
     unsigned m_cTnId;

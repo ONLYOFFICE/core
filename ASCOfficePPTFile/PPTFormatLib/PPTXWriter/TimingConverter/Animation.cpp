@@ -43,8 +43,9 @@
 #include "../Records/Animations/ChartBuildContainer.h"
 #include "../Records/Animations/DiagramBuildContainer.h"
 
-using namespace PPT_FORMAT;
+#include "../../Records/SoundContainer.h"
 
+using namespace PPT_FORMAT;
 
 void Animation::Convert(PPTX::Logic::Timing &oTiming)
 {
@@ -390,11 +391,21 @@ void Animation::FillAnimScale(
         oAnim.zoomContents = oAtom.m_fZoomContents;
 }
 
-void Animation::FillAudio(
-        CRecordExtTimeNodeContainer *pETNC,
+void Animation::FillAudio(CRecordClientVisualElementContainer *pCVEC,
         PPTX::Logic::Audio &oAudio)
 {
-    // TODO
+    if (pCVEC->m_bVisualShapeAtom)
+    {
+        oAudio.cMediaNode.tgtEl.embed =
+                new OOX::RId(pCVEC->m_oVisualShapeAtom.m_RefType);
+
+        std::vector<CRecordSoundContainer*> soundCont;
+        this->m_pSoundContainer->GetRecordsByType(
+                    &soundCont, false);
+        oAudio.cMediaNode.tgtEl.name =
+                static_cast<CRecordCString*>
+                (soundCont[0]->m_arRecords[0])->m_strText;
+    }
 }
 
 void Animation::FillVideo(
@@ -855,12 +866,7 @@ void Animation::FillCTn(
             oCTn.endCondLst = new PPTX::Logic::CondLst;
             oCTn.endCondLst->name = L"endCondLst";
         }
-        for (auto *oldCond : pETNC->m_arrRgEndTimeCondition) {
-                    PPTX::Logic::Cond cond;
-                    cond.name = L"cond";
-                    FillCond(oldCond, cond);
-                    oCTn.endCondLst->list.push_back(cond);
-        }
+        FillCondLst(pETNC->m_arrRgEndTimeCondition, oCTn.endCondLst.get2());
     }
 
 
@@ -912,14 +918,8 @@ void Animation::FillCTn(
     if (pETNC->m_arrRgSubEffect.empty() == false)
     {
         oCTn.subTnLst = new PPTX::Logic::TnLst;
+        FillSubTnLst(pETNC->m_arrRgSubEffect[0], *(oCTn.subTnLst));
     }
-    // TODO
-//        for (auto *oldChild : pETNC->m_arrRgSubEffect) {
-//                    PPTX::Logic::TimeNodeBase child;
-//                    ConvertCRecordExtTimeNodeContainerToTnLst(oldChild, child);
-//                    oCTn.childTnLst->list.push_back(child);
-//        }
-
 }
 
 void Animation::FillPar(
@@ -1082,3 +1082,51 @@ void Animation::FillTnLst(
     FillTnChild(pETNC, oChildTimeNodeBase);
     oTnLst.list.push_back(oChildTimeNodeBase);
 }
+
+void Animation::FillSubTnLst (
+        PPT_FORMAT::CRecordSubEffectContainer *pSEC,
+        PPTX::Logic::TnLst &oSubTnLst)
+{
+    if (!pSEC) return;
+
+    if (pSEC->m_haveClientVisualElement)
+    {
+        PPTX::Logic::TimeNodeBase TNB;
+        auto audio = new PPTX::Logic::Audio;
+
+        FillAudio(pSEC->m_pClientVisualElement, *audio);
+        TNB.m_node = audio;
+        oSubTnLst.list.push_back(TNB);
+
+        // Write endCondLst
+        if (pSEC->m_arrRgEndTimeCondition.empty() == false)
+        {
+            audio->cMediaNode.cTn.endCondLst = new PPTX::Logic::CondLst;
+            audio->cMediaNode.cTn.endCondLst->name = L"endCondLst";
+        }
+        FillCondLst(pSEC->m_arrRgEndTimeCondition,
+                    audio->cMediaNode.cTn.endCondLst.get2());
+
+        // Write stCondLst
+        if (pSEC->m_arrRgBeginTimeCondition.empty() == false)
+        {
+            audio->cMediaNode.cTn.stCondLst = new PPTX::Logic::CondLst;
+            audio->cMediaNode.cTn.stCondLst->name = L"stCondLst";
+        }
+        FillCondLst(pSEC->m_arrRgBeginTimeCondition,
+                    audio->cMediaNode.cTn.stCondLst.get2());
+    }
+}
+
+void Animation::FillCondLst(
+        std::vector<CRecordTimeConditionContainer*>& oCondVec,
+        PPTX::Logic::CondLst &oCondLst)
+{
+    for (auto *oldCond : oCondVec) {
+                PPTX::Logic::Cond cond;
+                cond.name = L"cond";
+                FillCond(oldCond, cond);
+                oCondLst.list.push_back(cond);
+    }
+}
+

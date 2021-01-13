@@ -62,7 +62,8 @@ public:
     Animation(CRecordPP10SlideBinaryTagExtension &oPPT10Ext) :
         m_oPPT10(oPPT10Ext),
         m_pSoundContainer(nullptr),
-        m_cTnId(1)
+        m_cTnId(1),
+        m_cSound(0)
     {
 
     }
@@ -142,9 +143,13 @@ private:
     void FillCondLst(
             std::vector<CRecordTimeConditionContainer*>& oCondVec,
             PPTX::Logic::CondLst &oCondLst);
+    void FillCTn(
+            CRecordTimePropertyList4TimeNodeContainer *pProp,
+            PPTX::Logic::CTn &oCTn);
 
 private:
     unsigned m_cTnId;
+    unsigned m_cSound;
 };
 
 }

@@ -67,8 +67,8 @@ namespace PPTX
 			{
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteArray(list);
-
-                return XmlUtils::CreateNode(_T("p:tnLst")/* + name*/, oValue);
+                if (name.empty()) return XmlUtils::CreateNode(_T("p:tnLst"), oValue);
+                else return XmlUtils::CreateNode(name, oValue);
 			}
 			std::vector<TimeNodeBase>		list;
 			std::wstring					name;

@@ -397,14 +397,14 @@ void Animation::FillAudio(CRecordClientVisualElementContainer *pCVEC,
     if (pCVEC->m_bVisualShapeAtom)
     {
         oAudio.cMediaNode.tgtEl.embed =
-                new OOX::RId(pCVEC->m_oVisualShapeAtom.m_RefType);
+                new OOX::RId(pCVEC->m_oVisualShapeAtom.m_nObjectIdRef);
 
         std::vector<CRecordSoundContainer*> soundCont;
         this->m_pSoundContainer->GetRecordsByType(
                     &soundCont, false);
         oAudio.cMediaNode.tgtEl.name =
                 static_cast<CRecordCString*>
-                (soundCont[0]->m_arRecords[0])->m_strText;
+                (soundCont[m_cSound++]->m_arRecords[0])->m_strText;
     }
 }
 
@@ -710,113 +710,7 @@ void Animation::FillCTn(
 
     if (pETNC->m_haveTimePropertyList && !pETNC->m_pTimePropertyList->m_bEmtyNode)
     {
-        for (auto *pRec : pETNC->m_pTimePropertyList->m_arrElements)
-        {
-            TimePropertyID4TimeNode VariableType = ( TimePropertyID4TimeNode ) pRec->m_oHeader.RecInstance;
-
-            switch ( VariableType )
-            {
-            case TL_TPID_Display:
-            {
-                oCTn.display = (bool)dynamic_cast<CRecordTimeDisplayType*>(pRec)->m_Value;
-                break;
-            }
-            case TL_TPID_MasterPos:
-            {
-                oCTn.masterRel = new PPTX::Limit::TLMasterRelation;
-                oCTn.masterRel = dynamic_cast<CRecordTimeMasterRelType*>(pRec)->m_Value ?
-                            L"sameClick" : L"nextClick";
-                break;
-            }
-            case TL_TPID_SubType:			break;
-            case TL_TPID_EffectID:
-            {
-                oCTn.presetID = dynamic_cast<CRecordTimeEffectID*>(pRec)->m_Value;
-                break;
-            }
-            case TL_TPID_EffectDir:
-            {
-                oCTn.presetSubtype = dynamic_cast<CRecordTimeEffectDir*>(pRec)->m_Value;
-                break;
-            }
-            case TL_TPID_EffectType:
-            {
-                // Write presetClass
-                std::wstring presetClass;
-                switch (dynamic_cast<CRecordTimeEffectType*>(pRec)->m_Value) {
-                case 0: break;
-                case 1: presetClass = L"entr";      break;
-                case 2: presetClass = L"exit";      break;
-                case 3: presetClass = L"emph";      break;
-                case 4: presetClass = L"path";      break;
-                case 5: presetClass = L"verb";      break;
-                case 6: presetClass = L"mediacall"; break;
-                }
-                if (!presetClass.empty())
-                {
-                    oCTn.presetClass = new PPTX::Limit::TLPresetClass;
-                    oCTn.presetClass = presetClass;
-                }
-                break;
-            }
-            case TL_TPID_AfterEffect:
-            {
-                oCTn.afterEffect = (bool)dynamic_cast<CRecordTimeAfterEffect*>(pRec)->m_Value;
-                break;
-            }
-            case TL_TPID_SlideCount:		break;
-            case TL_TPID_TimeFilter:
-            {
-                oCTn.tmFilter = dynamic_cast<CRecordTimeNodeTimeFilter*>(pRec)->m_Value;
-                break;
-            }
-            case TL_TPID_EventFilter:
-            {
-                oCTn.evtFilter = dynamic_cast<CRecordTimeEventFilter*>(pRec)->m_Value;
-                break;
-            }
-            case TL_TPID_HideWhenStopped:	break;
-            case TL_TPID_GroupID:
-            {
-                oCTn.grpId = dynamic_cast<CRecordTimeGroupID*>(pRec)->m_Value;
-                break;
-            }
-            case TL_TPID_EffectNodeType:
-            {
-                // Write nodeType
-                std::wstring nodeType;
-                switch (dynamic_cast<CRecordTimeEffectNodeType*>(pRec)->m_Value)
-                {
-                case 1: nodeType = L"clickEffect"; break;
-                case 2: nodeType = L"withEffect"; break;
-                case 3: nodeType = L"afterEffect"; break;
-                case 4: nodeType = L"mainSeq"; break;
-                case 5: nodeType = L"interactiveSeq"; break;
-                case 6: nodeType = L"clickPar"; break;
-                case 7: nodeType = L"withGroup"; break;
-                case 8: nodeType = L"afterGroup"; break;
-                case 9: nodeType = L"tmRoot"; break;
-                }
-                if (!nodeType.empty())
-                {
-                    oCTn.nodeType = new PPTX::Limit::TLNodeType;
-                    oCTn.nodeType = nodeType;
-                }
-
-                break;
-            }
-            case TL_TPID_PlaceholderNode:
-            {
-                oCTn.nodePh = (bool)dynamic_cast<CRecordTimePlaceholderNode*>(pRec)->m_Value;
-                break;
-            }
-            case TL_TPID_MediaVolume:		break;
-            case TL_TPID_MediaMute:			break;
-            case TL_TPID_ZoomToFullScreen:	break;
-            default :
-                break;
-            }
-        }
+        FillCTn(pETNC->m_pTimePropertyList, oCTn);
     }
 
     // Reading TimeNodeAtom
@@ -918,6 +812,7 @@ void Animation::FillCTn(
     if (pETNC->m_arrRgSubEffect.empty() == false)
     {
         oCTn.subTnLst = new PPTX::Logic::TnLst;
+        oCTn.subTnLst->name = L"p:subTnLst";
         FillSubTnLst(pETNC->m_arrRgSubEffect[0], *(oCTn.subTnLst));
     }
 }
@@ -1115,6 +1010,7 @@ void Animation::FillSubTnLst (
         }
         FillCondLst(pSEC->m_arrRgBeginTimeCondition,
                     audio->cMediaNode.cTn.stCondLst.get2());
+        FillCTn(pSEC->m_pTimePropertyList, audio->cMediaNode.cTn);
     }
 }
 
@@ -1130,3 +1026,118 @@ void Animation::FillCondLst(
     }
 }
 
+void Animation::FillCTn(
+        CRecordTimePropertyList4TimeNodeContainer *pProp,
+        PPTX::Logic::CTn &oCTn)
+{
+    if (pProp && !pProp->m_bEmtyNode)
+    {
+        for (auto *pRec : pProp->m_arrElements)
+        {
+            TimePropertyID4TimeNode VariableType = ( TimePropertyID4TimeNode ) pRec->m_oHeader.RecInstance;
+
+            switch ( VariableType )
+            {
+            case TL_TPID_Display:
+            {
+                oCTn.display = !(bool)dynamic_cast<CRecordTimeDisplayType*>(pRec)->m_Value;
+                break;
+            }
+            case TL_TPID_MasterPos:
+            {
+                oCTn.masterRel = new PPTX::Limit::TLMasterRelation;
+                oCTn.masterRel = dynamic_cast<CRecordTimeMasterRelType*>(pRec)->m_Value ?
+                            L"nextClick" : L"sameClick";
+                break;
+            }
+            case TL_TPID_SubType:			break;
+            case TL_TPID_EffectID:
+            {
+                oCTn.presetID = dynamic_cast<CRecordTimeEffectID*>(pRec)->m_Value;
+                break;
+            }
+            case TL_TPID_EffectDir:
+            {
+                oCTn.presetSubtype = dynamic_cast<CRecordTimeEffectDir*>(pRec)->m_Value;
+                break;
+            }
+            case TL_TPID_EffectType:
+            {
+                // Write presetClass
+                std::wstring presetClass;
+                switch (dynamic_cast<CRecordTimeEffectType*>(pRec)->m_Value) {
+                case 0: break;
+                case 1: presetClass = L"entr";      break;
+                case 2: presetClass = L"exit";      break;
+                case 3: presetClass = L"emph";      break;
+                case 4: presetClass = L"path";      break;
+                case 5: presetClass = L"verb";      break;
+                case 6: presetClass = L"mediacall"; break;
+                }
+                if (!presetClass.empty())
+                {
+                    oCTn.presetClass = new PPTX::Limit::TLPresetClass;
+                    oCTn.presetClass = presetClass;
+                }
+                break;
+            }
+            case TL_TPID_AfterEffect:
+            {
+                oCTn.afterEffect = (bool)dynamic_cast<CRecordTimeAfterEffect*>(pRec)->m_Value;
+                break;
+            }
+            case TL_TPID_SlideCount:		break;
+            case TL_TPID_TimeFilter:
+            {
+                oCTn.tmFilter = dynamic_cast<CRecordTimeNodeTimeFilter*>(pRec)->m_Value;
+                break;
+            }
+            case TL_TPID_EventFilter:
+            {
+                oCTn.evtFilter = dynamic_cast<CRecordTimeEventFilter*>(pRec)->m_Value;
+                break;
+            }
+            case TL_TPID_HideWhenStopped:	break;
+            case TL_TPID_GroupID:
+            {
+                oCTn.grpId = dynamic_cast<CRecordTimeGroupID*>(pRec)->m_Value;
+                break;
+            }
+            case TL_TPID_EffectNodeType:
+            {
+                // Write nodeType
+                std::wstring nodeType;
+                switch (dynamic_cast<CRecordTimeEffectNodeType*>(pRec)->m_Value)
+                {
+                case 1: nodeType = L"clickEffect"; break;
+                case 2: nodeType = L"withEffect"; break;
+                case 3: nodeType = L"afterEffect"; break;
+                case 4: nodeType = L"mainSeq"; break;
+                case 5: nodeType = L"interactiveSeq"; break;
+                case 6: nodeType = L"clickPar"; break;
+                case 7: nodeType = L"withGroup"; break;
+                case 8: nodeType = L"afterGroup"; break;
+                case 9: nodeType = L"tmRoot"; break;
+                }
+                if (!nodeType.empty())
+                {
+                    oCTn.nodeType = new PPTX::Limit::TLNodeType;
+                    oCTn.nodeType = nodeType;
+                }
+
+                break;
+            }
+            case TL_TPID_PlaceholderNode:
+            {
+                oCTn.nodePh = (bool)dynamic_cast<CRecordTimePlaceholderNode*>(pRec)->m_Value;
+                break;
+            }
+            case TL_TPID_MediaVolume:		break;
+            case TL_TPID_MediaMute:			break;
+            case TL_TPID_ZoomToFullScreen:	break;
+            default :
+                break;
+            }
+        }
+    }
+}

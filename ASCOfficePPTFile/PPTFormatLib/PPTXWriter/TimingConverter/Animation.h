@@ -121,6 +121,9 @@ private:
     void FillCBhvr(
             CRecordExtTimeNodeContainer *pETNC,
             PPTX::Logic::CBhvr &oBhvr);
+    void FillCBhvr(
+            CRecordTimeBehaviorContainer *pBhvr,
+            PPTX::Logic::CBhvr &oBhvr);
     void FillCond(
             PPT_FORMAT::CRecordTimeConditionContainer *oldCond,
             PPTX::Logic::Cond &cond);
@@ -133,6 +136,9 @@ private:
     void FillSet(
             PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
             PPTX::Logic::Set& oSet);
+    void FillSubTnLst (
+            PPT_FORMAT::CRecordSubEffectContainer *pSEC,
+            PPTX::Logic::TnLst &oSubTnLst);
 
 private:
     unsigned m_cTnId;

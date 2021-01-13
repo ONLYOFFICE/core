@@ -550,7 +550,9 @@ void Animation::FillBldP(PPT_FORMAT::CRecordParaBuildContainer *pPBC,
     oBP.build             = ST_TLParaBuildType[pPBC->m_oParaBuildAtom.m_nParaBuild % 4];
 }
 
-void Animation::FillCBhvr(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CBhvr &oBhvr)
+void Animation::FillCBhvr(
+        CRecordExtTimeNodeContainer *pETNC,
+        PPTX::Logic::CBhvr &oBhvr)
 {
     CRecordTimeBehaviorContainer *bhvr = nullptr;
     if      (pETNC->m_haveSetBehavior)      bhvr = &(pETNC->m_pTimeSetBehavior->m_oBehavior);
@@ -562,12 +564,23 @@ void Animation::FillCBhvr(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CBhvr
     else if (pETNC->m_haveScaleBehavior)    bhvr = &(pETNC->m_pTimeScaleBehavior->m_oBehavior);
     else                                    bhvr = &(pETNC->m_pTimeCommandBehavior->m_oBevavior);
 
+    FillCBhvr(bhvr, oBhvr);
+
+    FillCTn(pETNC, oBhvr.cTn);
+
+}
+
+
+void Animation::FillCBhvr(
+        CRecordTimeBehaviorContainer *pBhvr,
+        PPTX::Logic::CBhvr &oBhvr)
+{
     //// Atom ////
 
     // additive
-    if (bhvr->m_oBehaviorAtom.m_bAdditivePropertyUsed) {
+    if (pBhvr->m_oBehaviorAtom.m_bAdditivePropertyUsed) {
         oBhvr.additive = new PPTX::Limit::TLAdditive;
-        oBhvr.additive = bhvr->m_oBehaviorAtom.m_nBehaviorAdditive ?
+        oBhvr.additive = pBhvr->m_oBehaviorAtom.m_nBehaviorAdditive ?
                     L"repl" : L"base";
     }
 
@@ -575,13 +588,13 @@ void Animation::FillCBhvr(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CBhvr
     // xfrmType     - MUST be 0
 
 
-    if (bhvr->m_haveStringList)
+    if (pBhvr->m_haveStringList)
     {
-        if (!bhvr->m_pStringList->m_arrRgChildRec.empty())
+        if (!pBhvr->m_pStringList->m_arrRgChildRec.empty())
         {
             oBhvr.attrNameLst = new PPTX::Logic::AttrNameLst();
         }
-        for (const auto &oldAttr : bhvr->m_pStringList->m_arrRgChildRec)
+        for (const auto &oldAttr : pBhvr->m_pStringList->m_arrRgChildRec)
         {
             PPTX::Logic::AttrName addAttr;
             addAttr.text = oldAttr.m_Value;
@@ -590,29 +603,24 @@ void Animation::FillCBhvr(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CBhvr
         }
     }
 
-
-
-    FillCTn(pETNC, oBhvr.cTn);
-
-    if (bhvr->m_oClientVisualElement.m_bVisualShapeAtom)
+    if (pBhvr->m_oClientVisualElement.m_bVisualShapeAtom)
     {
         oBhvr.tgtEl.spTgt = new PPTX::Logic::SpTgt();
         oBhvr.tgtEl.spTgt->spid =
-                std::to_wstring(bhvr->
+                std::to_wstring(pBhvr->
                                 m_oClientVisualElement.
                                 m_oVisualShapeAtom.m_nObjectIdRef);
 
-        if (bhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData2 != 0xFFFFFFFF &&
-                bhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData1 != 0xFFFFFFFF)
+        if (pBhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData2 != 0xFFFFFFFF &&
+                pBhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData1 != 0xFFFFFFFF)
         {
             oBhvr.tgtEl.spTgt->txEl         = new PPTX::Logic::TxEl;
             oBhvr.tgtEl.spTgt->txEl->charRg = true;
-            oBhvr.tgtEl.spTgt->txEl->st     = bhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData1;
-            oBhvr.tgtEl.spTgt->txEl->end    = bhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData2;
+            oBhvr.tgtEl.spTgt->txEl->st     = pBhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData1;
+            oBhvr.tgtEl.spTgt->txEl->end    = pBhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData2;
         }
     }
 }
-
 void Animation::FillCmd(
         CRecordExtTimeNodeContainer *pETNC,
         PPTX::Logic::Cmd &oCmd)

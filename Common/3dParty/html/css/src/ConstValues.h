@@ -42,7 +42,7 @@ namespace NSCSS
         inline static void CountingNumberRepetitions(const CTree &oTree, std::map<StatistickElement, unsigned int> &mStatictics)
         {
             if (!oTree.m_oNode.m_sId.empty())
-                ++mStatictics[StatistickElement{StatistickElement::IsId, oTree.m_oNode.m_sId}];
+                ++mStatictics[StatistickElement{StatistickElement::IsId, L'#' + oTree.m_oNode.m_sId}];
             if (!oTree.m_oNode.m_sStyle.empty())
                 ++mStatictics[StatistickElement{StatistickElement::IsStyle, oTree.m_oNode.m_sStyle}];
 

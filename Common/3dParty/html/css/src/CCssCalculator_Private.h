@@ -60,7 +60,7 @@ namespace NSCSS
         std::wstring GetEncoding() const;
         unsigned short int GetDpi() const;
 
-        CCompiledStyle GetStyleSetting(std::vector<CNode> &arSelectors, const bool &bIsParagraph) const;
+        CCompiledStyle GetStyleSetting(std::vector<CNode> &arSelectors) const;
 
         void Clear();        
 

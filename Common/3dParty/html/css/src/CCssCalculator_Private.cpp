@@ -14,6 +14,7 @@
 #include "../../../../../DesktopEditor/common/File.h"
 #include "StaticFunctions.h"
 
+#define MaxNumberRepetitions 6
 
 inline static std::wstring      StringifyValueList(const KatanaArray* oValues);
 inline static std::wstring      StringifyValue(const KatanaValue* oValue);
@@ -386,7 +387,17 @@ namespace NSCSS
             {
                 sId = arWords.back();
                 arWords.pop_back();
-                arNextNodes.push_back(sId);
+
+                if (NULL != m_mStatictics && !m_mStatictics->empty())
+                {
+                    std::map<StatistickElement, unsigned int>::iterator oFind = m_mStatictics->find(StatistickElement{StatistickElement::IsId, sId});
+                    if (oFind != m_mStatictics->end() && oFind->second >= MaxNumberRepetitions)
+                        arNextNodes.push_back(sId);
+                }
+                else
+                {
+                    sId.clear();
+                }
             }
 
             if (arWords.back()[0] == L'.')
@@ -458,6 +469,13 @@ namespace NSCSS
 
             oStyle->AddStyle(arSelectors[i].m_sStyle);
 
+            if (!arSelectors[i].m_sStyle.empty() && NULL != m_mStatictics && !m_mStatictics->empty())
+            {
+                std::map<StatistickElement, unsigned int>::iterator oFind = m_mStatictics->find(StatistickElement{StatistickElement::IsStyle, arSelectors[i].m_sStyle});
+                if (oFind != m_mStatictics->end() && oFind->second >= MaxNumberRepetitions)
+                    oStyle->AddStyle(arSelectors[i].m_sStyle);
+            }
+
             oStyle->ClearImportants();
 
             arWords.pop_back();
@@ -505,9 +523,6 @@ namespace NSCSS
 
     void CCssCalculator_Private::SetBodyTree(const CTree &oTree)
     {
-        if (oTree.m_arrChild.empty())
-            return;
-
         if (NULL == m_mStatictics)
             m_mStatictics = new std::map<StatistickElement, unsigned int>();
 
@@ -524,9 +539,9 @@ namespace NSCSS
         return m_nDpi;
     }
 
-    CCompiledStyle CCssCalculator_Private::GetStyleSetting(std::vector<CNode> &arSelectors, const bool& bIsParagraph) const
+    CCompiledStyle CCssCalculator_Private::GetStyleSetting(std::vector<CNode> &arSelectors) const
     {
-        if (NULL == m_mStatictics)
+        if (NULL == m_mStatictics || m_mStatictics->empty())
             return CCompiledStyle();
 
         CCompiledStyle oStyle;
@@ -535,26 +550,26 @@ namespace NSCSS
         {
             if (!oNode.m_sId.empty())
             {
-                std::map<StatistickElement, unsigned int>::const_iterator oFind = m_mStatictics->find(StatistickElement{StatistickElement::IsId, oNode.m_sId});
-                if (oFind != m_mStatictics->cend() && oFind->second < 6)
+                std::map<StatistickElement, unsigned int>::const_iterator oFind = m_mStatictics->find(StatistickElement{StatistickElement::IsId, L'#' + oNode.m_sId});
+                if (oFind != m_mStatictics->cend() && oFind->second < MaxNumberRepetitions)
                 {
                     std::map<std::wstring, CElement*>::const_iterator oFindId;
                     oFindId = m_mData.find(L'#' + oNode.m_sId);
 
                     if (oFindId != m_mData.cend())
                     {
-                        oStyle.AddStyle(oFindId->second->GetStyle());
-                        oNode.m_sId.clear();
+                        oStyle.AddStyle(oFindId->second->GetStyle(), true);
+//                        oNode.m_sId.clear();
                     }
                 }
             }
             if (!oNode.m_sStyle.empty())
             {
                 std::map<StatistickElement, unsigned int>::const_iterator oFind = m_mStatictics->find(StatistickElement{StatistickElement::IsStyle, oNode.m_sStyle});
-                if (oFind != m_mStatictics->cend() && oFind->second < 6)
+                if (oFind != m_mStatictics->cend() && oFind->second < MaxNumberRepetitions)
                 {
-                    oStyle.AddStyle(oNode.m_sStyle);
-                    oNode.m_sStyle.clear();
+                    oStyle.AddStyle(oNode.m_sStyle, true);
+//                    oNode.m_sStyle.clear();
                 }
             }
         }

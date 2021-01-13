@@ -142,6 +142,9 @@ private:
     void FillCondLst(
             std::vector<CRecordTimeConditionContainer*>& oCondVec,
             PPTX::Logic::CondLst &oCondLst);
+    void FillCTn(
+            CRecordTimePropertyList4TimeNodeContainer *pProp,
+            PPTX::Logic::CTn &oCTn);
 
 private:
     unsigned m_cTnId;

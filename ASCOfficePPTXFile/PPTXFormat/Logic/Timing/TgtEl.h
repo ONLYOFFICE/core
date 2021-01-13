@@ -54,7 +54,7 @@ namespace PPTX
 					inkTgt = oNode.ReadAttributeBase(L"spid");
 				else if(node.GetNode(_T("p:sndTgt"), oNode))
 				{
-                    XmlMacroReadAttributeBase(oNode, L"embed", embed);
+                    XmlMacroReadAttributeBase(oNode, L"r:embed", embed);
                     XmlMacroReadAttributeBase(oNode, L"name", name);
                     XmlMacroReadAttributeBase(oNode, L"builtIn", builtIn);
 				}
@@ -76,7 +76,7 @@ namespace PPTX
 				if (embed.IsInit())
 				{
 					XmlUtils::CAttribute oAttr;
-					oAttr.Write(_T("embed"), embed->ToString());
+                    oAttr.Write(_T("r:embed"), embed->ToString());
 					oAttr.Write(_T("name"), name);
 					oAttr.Write(_T("builtIn"), builtIn);
 

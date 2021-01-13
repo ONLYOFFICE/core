@@ -86,7 +86,7 @@ private:
             CRecordExtTimeNodeContainer *pETNC,
             PPTX::Logic::TimeNodeBase &oChild);
     void FillAnim(
-            CRecordExtTimeNodeContainer *pETNC,
+            CRecordTimeAnimateBehaviorContainer *pTimeAnimateBehavior,
             PPTX::Logic::Anim &oAnim);
     void FillAnimClr(
             CRecordExtTimeNodeContainer *pETNC,

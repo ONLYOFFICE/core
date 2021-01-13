@@ -65,15 +65,13 @@ void Animation::Convert(PPTX::Logic::Timing &oTiming)
 }
 
 void Animation::FillAnim(
-        CRecordExtTimeNodeContainer *pETNC,
+        CRecordTimeAnimateBehaviorContainer *pTimeAnimateBehavior,
         PPTX::Logic::Anim &oAnim)
 {
-    auto &oldAnim = pETNC->m_pTimeAnimateBehavior;
-
-    if (oldAnim->m_oAnimateBehaviorAtom.m_bCalcModePropertyUsed)
+    if (pTimeAnimateBehavior->m_oAnimateBehaviorAtom.m_bCalcModePropertyUsed)
     {
         std::wstring calcmode;
-        switch (oldAnim->m_oAnimateBehaviorAtom.m_nCalcMode) {
+        switch (pTimeAnimateBehavior->m_oAnimateBehaviorAtom.m_nCalcMode) {
         case 0: calcmode = L"discrete"; break;
         case 1: calcmode = L"lin"; break;
         case 2: calcmode = L"fmla"; break;
@@ -82,10 +80,10 @@ void Animation::FillAnim(
         oAnim.calcmode = calcmode;
     }
 
-    if (oldAnim->m_oAnimateBehaviorAtom.m_bValueTypePropertyUsed)
+    if (pTimeAnimateBehavior->m_oAnimateBehaviorAtom.m_bValueTypePropertyUsed)
     {
         std::wstring valueType;
-        switch (oldAnim->m_oAnimateBehaviorAtom.m_ValueType) {
+        switch (pTimeAnimateBehavior->m_oAnimateBehaviorAtom.m_ValueType) {
         case TL_TABVT_Color: valueType = L"Color"; break;
         case TL_TABVT_Number: valueType = L"Number"; break;
         case TL_TABVT_String: valueType = L"String"; break;
@@ -98,26 +96,26 @@ void Animation::FillAnim(
     }
 
     // By
-    if (oldAnim->m_oAnimateBehaviorAtom.m_bByPropertyUsed)
+    if (pTimeAnimateBehavior->m_oAnimateBehaviorAtom.m_bByPropertyUsed)
     {
-        oAnim.by = oldAnim->m_oVarBy.m_Value;
+        oAnim.by = pTimeAnimateBehavior->m_oVarBy.m_Value;
     }
     // To
-    if (oldAnim->m_oAnimateBehaviorAtom.m_bToPropertyUsed)
+    if (pTimeAnimateBehavior->m_oAnimateBehaviorAtom.m_bToPropertyUsed)
     {
-        oAnim.to = oldAnim->m_oVarTo.m_Value;
+        oAnim.to = pTimeAnimateBehavior->m_oVarTo.m_Value;
     }
     //From
-    if (oldAnim->m_oAnimateBehaviorAtom.m_bFromPropertyUsed)
+    if (pTimeAnimateBehavior->m_oAnimateBehaviorAtom.m_bFromPropertyUsed)
     {
-        oAnim.from = oldAnim->m_oVarFrom.m_Value;
+        oAnim.from = pTimeAnimateBehavior->m_oVarFrom.m_Value;
     }
 
     //// Writing childs
 
-    if (!oldAnim->m_oAnimateValueList.m_arrEntry.empty())
+    if (!pTimeAnimateBehavior->m_oAnimateValueList.m_arrEntry.empty())
         oAnim.tavLst = new PPTX::Logic::TavLst;
-    for (auto &animValue : oldAnim->m_oAnimateValueList.m_arrEntry)
+    for (auto &animValue : pTimeAnimateBehavior->m_oAnimateValueList.m_arrEntry)
     {
         PPTX::Logic::Tav tav;
         tav.val = new PPTX::Logic::AnimVariant;
@@ -162,7 +160,7 @@ void Animation::FillAnim(
 
         oAnim.tavLst->list.push_back(tav);
 }
-    FillCBhvr(pETNC, oAnim.cBhvr);
+    FillCBhvr(&(pTimeAnimateBehavior->m_oBehavior), oAnim.cBhvr);
 }
 
 void Animation::FillAnimClr(
@@ -1009,7 +1007,8 @@ void Animation::FillTnChild(
     else if (pETNC->m_haveAnimateBehavior)
     {
         auto anim = new PPTX::Logic::Anim;
-        FillAnim(pETNC, *anim);
+        FillAnim(pETNC->m_pTimeAnimateBehavior, *anim);
+        FillCTn(pETNC, anim->cBhvr.cTn);
         oChild.m_node = anim;
     }
     else if (pETNC->m_haveColorBehavior)

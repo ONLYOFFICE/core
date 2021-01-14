@@ -49,17 +49,18 @@ using namespace PPT_FORMAT;
 
 void Animation::Convert(PPTX::Logic::Timing &oTiming)
 {
+    // It must be first to write some reference from ExtTimeNodeContainer
+    if (m_oPPT10.m_haveBuildList)
+    {
+        oTiming.bldLst = new PPTX::Logic::BldLst();
+        FillBldLst(m_oPPT10.m_pBuildListContainer, *(oTiming.bldLst));
+        m_pBldLst = oTiming.bldLst.GetPointer();
+    }
+
     if (m_oPPT10.m_haveExtTime)
     {
         oTiming.tnLst = new PPTX::Logic::TnLst();
         FillTnLst(m_oPPT10.m_pExtTimeNodeContainer, *(oTiming.tnLst));
-    }
-
-    if (m_oPPT10.m_haveBuildList &&
-            !m_oPPT10.m_pBuildListContainer->n_arrRgChildRec.empty())
-    {
-        oTiming.bldLst = new PPTX::Logic::BldLst();
-        FillBldLst(m_oPPT10.m_pBuildListContainer, *(oTiming.bldLst));
     }
 
     return;
@@ -619,7 +620,11 @@ void Animation::FillCBhvr(
                 std::to_wstring(pBhvr->
                                 m_oClientVisualElement.
                                 m_oVisualShapeAtom.m_nObjectIdRef);
-
+        if (m_currentBldP)
+        {
+            m_currentBldP->spid =
+                    oBhvr.tgtEl.spTgt->spid;
+        }
         if (pBhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData2 != 0xFFFFFFFF &&
                 pBhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData1 != 0xFFFFFFFF)
         {
@@ -811,9 +816,27 @@ void Animation::FillCTn(
     // Write subTnLst
     if (pETNC->m_arrRgSubEffect.empty() == false)
     {
+        if (pETNC->m_arrRgSubEffect[0]->m_oTimeNodeAtom.m_fGroupingTypeProperty &&
+                m_pBldLst)
+        {
+            oCTn.grpId = 0;
+            auto bldP = new PPTX::Logic::BldP;
+            bldP->grpId = 0;
+            m_currentBldP = bldP;
+        }
+
         oCTn.subTnLst = new PPTX::Logic::TnLst;
         oCTn.subTnLst->name = L"p:subTnLst";
         FillSubTnLst(pETNC->m_arrRgSubEffect[0], *(oCTn.subTnLst));
+
+        if (m_currentBldP)
+        {
+            PPTX::Logic::BuildNodeBase oBuildNodeBase;
+            oBuildNodeBase.m_node = m_currentBldP;
+            m_pBldLst->list.push_back(oBuildNodeBase);
+            m_currentBldP = nullptr;
+        }
+
     }
 }
 

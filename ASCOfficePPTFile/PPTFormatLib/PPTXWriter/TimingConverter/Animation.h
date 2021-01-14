@@ -63,7 +63,9 @@ public:
         m_oPPT10(oPPT10Ext),
         m_pSoundContainer(nullptr),
         m_cTnId(1),
-        m_cSound(0)
+        m_cSound(0),
+        m_pBldLst(nullptr),
+        m_currentBldP(nullptr)
     {
 
     }
@@ -150,6 +152,8 @@ private:
 private:
     unsigned m_cTnId;
     unsigned m_cSound;
+    PPTX::Logic::BldLst *m_pBldLst; // Do not delete
+    PPTX::Logic::BldP *m_currentBldP;
 };
 
 }

@@ -713,11 +713,6 @@ void Animation::FillCTn(
 {
     oCTn.id = m_cTnId++;
 
-    if (pETNC->m_haveTimePropertyList && !pETNC->m_pTimePropertyList->m_bEmtyNode)
-    {
-        FillCTn(pETNC->m_pTimePropertyList, oCTn);
-    }
-
     // Reading TimeNodeAtom
     const auto &oTimeNodeAtom = pETNC->m_oTimeNodeAtom;
 
@@ -835,6 +830,11 @@ void Animation::FillCTn(
             oBuildNodeBase.m_node = m_currentBldP;
             m_pBldLst->list.push_back(oBuildNodeBase);
             m_currentBldP = nullptr;
+        }
+
+        if (pETNC->m_haveTimePropertyList && !pETNC->m_pTimePropertyList->m_bEmtyNode)
+        {
+            FillCTn(pETNC->m_pTimePropertyList, oCTn);
         }
 
     }

@@ -280,6 +280,45 @@ namespace NSCSS
                     return *this;
                 }
 
+                static void FontEquation(Font &oFirstFont, Font &oSecondFont)
+                {
+                    if (oFirstFont.bImportants[0] && !oSecondFont.bImportants[0] && oFirstFont.fSize != fNoneValue)
+                        oSecondFont.fSize = fNoneValue;
+                    else if (oSecondFont.fSize != fNoneValue)
+                        oFirstFont.fSize = fNoneValue;
+
+                    if (oFirstFont.bImportants[1] && !oSecondFont.bImportants[1] && oFirstFont.enStretch != FontStretch::none)
+                        oSecondFont.enStretch = FontStretch::none;
+                    else if (oSecondFont.enStretch != FontStretch::none)
+                        oFirstFont.enStretch = FontStretch::none;
+
+                    if (oFirstFont.bImportants[2] && !oSecondFont.bImportants[2] && oFirstFont.enStyle != FontStyle::none)
+                        oSecondFont.enStyle = FontStyle::none;
+                    else if (oSecondFont.enStyle != FontStyle::none)
+                        oFirstFont.enStyle = FontStyle::none;
+
+                    if (oFirstFont.bImportants[3] && !oSecondFont.bImportants[3] && oFirstFont.enVariant != FontVariant::none)
+                        oSecondFont.enVariant = FontVariant::none;
+                    else if (oSecondFont.enVariant != FontVariant::none)
+                        oFirstFont.enVariant = FontVariant::none;
+
+                    if (oFirstFont.bImportants[4] && !oSecondFont.bImportants[4] && oFirstFont.enWeight != FontWeight::none)
+                        oSecondFont.enWeight = FontWeight::none;
+                    else if (oSecondFont.enWeight != FontWeight::none)
+                        oFirstFont.enWeight = FontWeight::none;
+
+                    if (oFirstFont.bImportants[5] && !oSecondFont.bImportants[5] && oFirstFont.fLineHeight != fNoneValue)
+                        oSecondFont.fLineHeight = fNoneValue;
+                    else if (oSecondFont.fLineHeight != fNoneValue)
+                        oFirstFont.fLineHeight = fNoneValue;
+
+                    if (oFirstFont.bImportants[6] && !oSecondFont.bImportants[6] && !oFirstFont.sFamily.empty())
+                        oSecondFont.sFamily.clear();
+                    else if (!oSecondFont.sFamily.empty())
+                        oFirstFont.sFamily.clear();
+                }
+
+
                 bool operator==(const Font& oFont) const
                 {
                     return  fSize       == oFont.fSize       &&
@@ -377,14 +416,14 @@ namespace NSCSS
 
                         if (nPosition < 4 && enWeight == FontWeight::none)
                         {
-                            if (sWord == L"bold" || sWord == L"bolder" || sWord[0] == L'6' || sWord[0] == L'7' || sWord[0] == L'8' ||sWord[0] == L'9')
+                            if (sWord == L"bold" || sWord == L"bolder" || ((sWord[0] == L'6' || sWord[0] == L'7' || sWord[0] == L'8' ||sWord[0] == L'9') && sWord.length() == 3))
                             {
                                 if (!bImportants[4] || bHardMode)
                                     enWeight = FontWeight::bold;
                                 ++nPosition;
                                 continue;
                             }
-                            else if (sWord == L"normal" || sWord[0] == L'3' || sWord[0] == L'4' ||sWord[0] == L'5')
+                            else if (sWord == L"normal" || ((sWord[0] == L'3' || sWord[0] == L'4' ||sWord[0] == L'5') && sWord.length() == 3))
                             {
                                 if (!bImportants[4] || bHardMode)
                                     enWeight = FontWeight::normal;
@@ -458,11 +497,12 @@ namespace NSCSS
                             }
                         }
 
-                        if (nPosition < 5 && iswdigit(sWord[0]))
+                        if ((nPosition < 5 && iswdigit(sWord[0])) || iswdigit(sWord[0]))
                         {
                             nPosition = 5;
                             if (!bImportants[0] || bHardMode)
                                 fSize = wcstof(sWord.c_str(), NULL);
+
                             continue;
                         }
 
@@ -733,6 +773,29 @@ namespace NSCSS
                     return *this;;
                 }
 
+                static void MarginEquation(Margin &oFirstMargin, Margin &oSecondMargin)
+                {
+                    if (oFirstMargin.bImportants[0] && !oSecondMargin.bImportants[0] && oFirstMargin.fTopSide != fNoneValue)
+                        oSecondMargin.fTopSide = fNoneValue;
+                    else if (oSecondMargin.fTopSide != fNoneValue)
+                        oFirstMargin.fTopSide = fNoneValue;
+
+                    if (oFirstMargin.bImportants[1] && !oSecondMargin.bImportants[1] && oFirstMargin.fRightSide != fNoneValue)
+                        oSecondMargin.fRightSide = fNoneValue;
+                    else if (oSecondMargin.fRightSide != fNoneValue)
+                        oFirstMargin.fRightSide = fNoneValue;
+
+                    if (oFirstMargin.bImportants[2] && !oSecondMargin.bImportants[2] && oFirstMargin.fBottomSide != fNoneValue)
+                        oSecondMargin.fBottomSide = fNoneValue;
+                    else if (oSecondMargin.fBottomSide != fNoneValue)
+                        oFirstMargin.fBottomSide = fNoneValue;
+
+                    if (oFirstMargin.bImportants[3] && !oSecondMargin.bImportants[3] && oFirstMargin.fLeftSide != fNoneValue)
+                        oSecondMargin.fLeftSide = fNoneValue;
+                    else if (oSecondMargin.fLeftSide != fNoneValue)
+                        oFirstMargin.fLeftSide = fNoneValue;
+                }
+
                 bool operator==(const Margin& oMargin) const
                 {
                     return  fTopSide    == oMargin.fTopSide     &&
@@ -988,6 +1051,29 @@ namespace NSCSS
                     return *this;
                 }
 
+                static void TextEquation(Text &oFirstText, Text &oSecondText)
+                {
+                    if (oFirstText.bImportants[0] && !oSecondText.bImportants[0] && oFirstText.fIndent != fNoneValue)
+                        oSecondText.fIndent = fNoneValue;
+                    else if (oSecondText.fIndent != fNoneValue)
+                        oFirstText.fIndent = fNoneValue;
+
+                    if (oFirstText.bImportants[1] && !oSecondText.bImportants[1] && oFirstText.enAlign != TextAlign::none)
+                        oSecondText.enAlign = TextAlign::none;
+                    else if (oSecondText.enAlign != TextAlign::none)
+                        oFirstText.enAlign = TextAlign::none;
+
+                    if (oFirstText.bImportants[2] && !oSecondText.bImportants[2] && oFirstText.enDecoration != TextDecoration::none)
+                        oSecondText.enDecoration = TextDecoration::none;
+                    else if (oSecondText.enDecoration != TextDecoration::none)
+                        oFirstText.enDecoration = TextDecoration::none;
+
+                    if (oFirstText.bImportants[3] && !oSecondText.bImportants[3] && !oFirstText.sColor.empty())
+                        oSecondText.sColor.clear();
+                    else if (!oSecondText.sColor.empty())
+                        oFirstText.sColor.clear();
+                }
+
                 bool operator==(const Text& oText) const
                 {
                     return  fIndent      == oText.fIndent       &&
@@ -1182,6 +1268,24 @@ namespace NSCSS
                     sColor = oBorderSide.sColor;
 
                     return *this;
+                }
+
+                static void BorderSideEquation(BorderSide &oFirstBorderSide, BorderSide &oSecondBorderSide)
+                {
+                    if (oFirstBorderSide.bImportants[0] && !oSecondBorderSide.bImportants[0] && oFirstBorderSide.fWidth != fNoneValue)
+                        oSecondBorderSide.fWidth = fNoneValue;
+                    else if (oSecondBorderSide.fWidth != fNoneValue)
+                        oSecondBorderSide.fWidth = fNoneValue;
+
+                    if (oFirstBorderSide.bImportants[1] && !oSecondBorderSide.bImportants[1] && !oFirstBorderSide.sStyle.empty())
+                        oSecondBorderSide.sStyle.clear();
+                    else if (!oSecondBorderSide.sStyle.empty())
+                        oSecondBorderSide.sStyle.clear();
+
+                    if (oFirstBorderSide.bImportants[2] && !oSecondBorderSide.bImportants[2] && !oFirstBorderSide.sColor.empty())
+                        oSecondBorderSide.sColor.clear();
+                    else if (!oSecondBorderSide.sColor.empty())
+                        oSecondBorderSide.sColor.clear();
                 }
 
                 bool operator==(const BorderSide& oBorderSide) const
@@ -1447,7 +1551,15 @@ namespace NSCSS
                     oBottom += oBorder.oBottom;
                     oLeft   += oBorder.oLeft;
 
-                    return *this;;
+                    return *this;
+                }
+
+                static void BorderEquation(Border &oFirstBorder, Border &oSecondBorder)
+                {
+                    BorderSide::BorderSideEquation(oFirstBorder.oTop, oSecondBorder.oTop);
+                    BorderSide::BorderSideEquation(oFirstBorder.oRight, oSecondBorder.oRight);
+                    BorderSide::BorderSideEquation(oFirstBorder.oBottom, oSecondBorder.oBottom);
+                    BorderSide::BorderSideEquation(oFirstBorder.oLeft, oSecondBorder.oLeft);
                 }
 
                 bool operator==(const Border& oBorder) const
@@ -1851,6 +1963,14 @@ namespace NSCSS
                         sColor = oBackground.sColor;
 
                     return *this;
+                }
+
+                static void BackgroundEquation(Background &oFirstBackground, Background &oSecondBackground)
+                {
+                    if (oFirstBackground.bImportants[0] && !oSecondBackground.bImportants[0] && !oFirstBackground.sColor.empty())
+                        oSecondBackground.sColor.clear();
+                    else if (!oSecondBackground.sColor.empty())
+                        oFirstBackground.sColor.clear();
                 }
 
                 bool operator==(const Background& oBackground) const

@@ -97,6 +97,7 @@ namespace NSCSS
         CCompiledStyle& operator=  (const CCompiledStyle& oElement);
         bool operator==            (const CCompiledStyle& oElement) const;
 
+        static void StyleEquation(CCompiledStyle& oFirstStyle, CCompiledStyle& oSecondStyle);
     };
 }
 

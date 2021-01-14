@@ -574,7 +574,7 @@ std::wstring CXmlElement::GetLitePStyle() const
 
     const std::wstring &sLitePStyle = ConvertPStyle();
 
-    return sLitePStyle.substr(7, sLitePStyle.length() - 15);
+    return (sLitePStyle.empty()) ? sLitePStyle : sLitePStyle.substr(7, sLitePStyle.length() - 15);
 }
 
 std::wstring CXmlElement::GetLiteRStyle() const
@@ -584,7 +584,7 @@ std::wstring CXmlElement::GetLiteRStyle() const
 
     const std::wstring &sLiteRStyle = ConvertRStyle();
 
-    return sLiteRStyle.substr(7, sLiteRStyle.length() - 15);
+    return (sLiteRStyle.empty()) ? sLiteRStyle : sLiteRStyle.substr(7, sLiteRStyle.length() - 15);
 }
 
 std::wstring CXmlElement::GetPStyle() const

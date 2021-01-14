@@ -67,7 +67,16 @@ namespace NSCSS
                m_pBorder         == oStyle.m_pBorder         &&
                m_pFont           == oStyle.m_pFont           &&
                m_pMargin         == oStyle.m_pMargin         &&
-               m_pText           == oStyle.m_pText;
+                m_pText           == oStyle.m_pText;
+    }
+
+    void CCompiledStyle::StyleEquation(CCompiledStyle &oFirstStyle, CCompiledStyle &oSecondStyle)
+    {
+        NSConstValues::NSCssProperties::Font::FontEquation(oFirstStyle.m_pFont, oSecondStyle.m_pFont);
+        NSConstValues::NSCssProperties::Margin::MarginEquation(oFirstStyle.m_pMargin, oSecondStyle.m_pMargin);
+        NSConstValues::NSCssProperties::Background::BackgroundEquation(oFirstStyle.m_pBackground, oSecondStyle.m_pBackground);
+        NSConstValues::NSCssProperties::Text::TextEquation(oFirstStyle.m_pText, oSecondStyle.m_pText);
+        NSConstValues::NSCssProperties::Border::BorderEquation(oFirstStyle.m_pBorder, oSecondStyle.m_pBorder);
     }
 
     void CCompiledStyle::SetDpi(const unsigned short &uiDpi)
@@ -104,7 +113,7 @@ namespace NSCSS
                 //FONT
                 CASE(L"font"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pFont.SetFont(ConvertUnitMeasure(pPropertie.second.c_str(), fSize), bHardMode);
@@ -119,7 +128,7 @@ namespace NSCSS
                 CASE(L"font-size"):
                 CASE(L"font-size-adjust"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pFont.SetSize(ConvertUnitMeasure(pPropertie.second, fSize), bHardMode);
@@ -134,7 +143,7 @@ namespace NSCSS
 
                 CASE(L"font-stretch"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pFont.SetStretch(pPropertie.second, bHardMode);
@@ -148,7 +157,7 @@ namespace NSCSS
                 }
                 CASE(L"font-style"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pFont.SetStyle(pPropertie.second, bHardMode);
@@ -162,7 +171,7 @@ namespace NSCSS
                 }
                 CASE(L"font-variant"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pFont.SetVariant(pPropertie.second, bHardMode);
@@ -176,7 +185,7 @@ namespace NSCSS
                 }
                 CASE(L"font-weight"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pFont.SetWeight(pPropertie.second, bHardMode);
@@ -190,7 +199,7 @@ namespace NSCSS
                 }
                 CASE(L"line-height"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pFont.SetLineHeight(ConvertUnitMeasure(pPropertie.second, m_pFont.GetSize()), bHardMode);
@@ -208,7 +217,7 @@ namespace NSCSS
                     if (bIsThereBorder)
                         break;
 
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
@@ -231,7 +240,7 @@ namespace NSCSS
                     if (bIsThereBorder)
                         break;
 
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
@@ -254,7 +263,7 @@ namespace NSCSS
                     if (bIsThereBorder)
                         break;
 
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
@@ -276,7 +285,7 @@ namespace NSCSS
                     if (bIsThereBorder)
                         break;
 
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
@@ -299,7 +308,7 @@ namespace NSCSS
                     if (bIsThereBorder)
                         break;
 
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
@@ -322,7 +331,7 @@ namespace NSCSS
                     if (bIsThereBorder)
                         break;
 
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
@@ -345,7 +354,7 @@ namespace NSCSS
                     if (bIsThereBorder)
                         break;
 
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
@@ -369,7 +378,7 @@ namespace NSCSS
                         break;
 
 
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
@@ -392,7 +401,7 @@ namespace NSCSS
                     if (bIsThereBorder)
                         break;
 
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
@@ -415,7 +424,7 @@ namespace NSCSS
                     if (bIsThereBorder)
                         break;
 
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
@@ -436,7 +445,7 @@ namespace NSCSS
                 // TEXT
                 CASE(L"text-align"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pText.SetAlign(pPropertie.second, bHardMode);
@@ -451,7 +460,7 @@ namespace NSCSS
                 }
                 CASE(L"text-indent"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pText.SetIndent(ConvertUnitMeasure(pPropertie.second, 540.0f), bHardMode);
@@ -466,7 +475,7 @@ namespace NSCSS
                 }
                 CASE(L"text-decoration"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pText.SetDecoration(pPropertie.second, bHardMode);
@@ -482,7 +491,7 @@ namespace NSCSS
                 CASE(L"text-color"):
                 CASE(L"color"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pText.SetColor(pPropertie.second, bHardMode);
@@ -503,7 +512,7 @@ namespace NSCSS
                     if (oBorderSide.GetWidth() < 0)
                         break;
 
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pText.SetAlign(pPropertie.second, bHardMode);
@@ -526,7 +535,7 @@ namespace NSCSS
                 }
                 CASE(L"border-width"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         const float fValue = wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL);
@@ -543,7 +552,7 @@ namespace NSCSS
                 }
                 CASE(L"border-style"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pBorder.SetStyle(pPropertie.second, bHardMode);
@@ -558,7 +567,7 @@ namespace NSCSS
                 }
                 CASE(L"border-color"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pBorder.SetColor(pPropertie.second, bHardMode);
@@ -578,7 +587,7 @@ namespace NSCSS
                     if (oBorderSide.GetWidth() < 0)
                         break;
 
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pBorder.SetTopSide(oBorderSide, bHardMode);
@@ -593,7 +602,7 @@ namespace NSCSS
                 }
                 CASE(L"border-top-width"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pBorder.SetTopSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL), bHardMode);
@@ -608,7 +617,7 @@ namespace NSCSS
                 }
                 CASE(L"border-top-style"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pBorder.SetTopSideStyle(pPropertie.second, bHardMode);
@@ -623,7 +632,7 @@ namespace NSCSS
                 }
                 CASE(L"border-top-color"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pBorder.SetTopSideColor(pPropertie.second, bHardMode);
@@ -643,7 +652,7 @@ namespace NSCSS
                     if (oBorderSide.GetWidth() < 0)
                         break;
 
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pBorder.SetRightSide(oBorderSide, bHardMode);
@@ -658,7 +667,7 @@ namespace NSCSS
                 }
                 CASE(L"border-right-width"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pBorder.SetRightSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL), bHardMode);
@@ -673,7 +682,7 @@ namespace NSCSS
                 }
                 CASE(L"border-right-style"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pBorder.SetRightSideStyle(pPropertie.second, bHardMode);
@@ -688,7 +697,7 @@ namespace NSCSS
                 }
                 CASE(L"border-right-color"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pBorder.SetRightSideColor(pPropertie.second, bHardMode);
@@ -708,7 +717,7 @@ namespace NSCSS
                     if (oBorderSide.GetWidth() < 0)
                         break;
 
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pBorder.SetBottomSide(oBorderSide, bHardMode);
@@ -723,7 +732,7 @@ namespace NSCSS
                 }
                 CASE(L"border-bottom-width"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pBorder.SetBottomSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL), bHardMode);
@@ -738,7 +747,7 @@ namespace NSCSS
                 }
                 CASE(L"border-bottom-style"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pBorder.SetBottomSideStyle(pPropertie.second, bHardMode);
@@ -753,7 +762,7 @@ namespace NSCSS
                 }
                 CASE(L"border-bottom-color"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pBorder.SetBottomSideColor(pPropertie.second, bHardMode);
@@ -773,7 +782,7 @@ namespace NSCSS
                     if (oBorderSide.GetWidth() < 0)
                         break;
 
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pBorder.SetLeftSide(oBorderSide, bHardMode);
@@ -788,7 +797,7 @@ namespace NSCSS
                 }
                 CASE(L"border-left-width"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pBorder.SetLeftSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL), bHardMode);
@@ -803,7 +812,7 @@ namespace NSCSS
                 }
                 CASE(L"border-left-style"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pBorder.SetLeftSideStyle(pPropertie.second, bHardMode);
@@ -818,7 +827,7 @@ namespace NSCSS
                 }
                 CASE(L"border-left-color"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pBorder.SetLeftSideColor(pPropertie.second, bHardMode);
@@ -834,7 +843,7 @@ namespace NSCSS
                 // BACKGROUND
                 CASE(L"background-color"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pBackground.SetColor(pPropertie.second);
@@ -848,7 +857,7 @@ namespace NSCSS
                 }
                 CASE(L"background"):
                 {
-                    const size_t unPositionImp = pPropertie.second.find_first_of(L"!i");
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         m_pBackground.SetBackground(pPropertie.second);

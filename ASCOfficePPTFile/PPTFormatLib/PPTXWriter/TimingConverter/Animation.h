@@ -148,6 +148,9 @@ private:
     void FillCTn(
             CRecordTimePropertyList4TimeNodeContainer *pProp,
             PPTX::Logic::CTn &oCTn);
+//    void SubEffectToETNC(
+//            const CRecordSubEffectContainer *pSub,
+//            CRecordExtTimeNodeContainer *pETNC);
 
 private:
     unsigned m_cTnId;

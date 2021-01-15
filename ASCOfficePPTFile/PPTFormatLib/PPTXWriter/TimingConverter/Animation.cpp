@@ -122,7 +122,7 @@ void Animation::FillAnim(
         PPTX::Logic::Tav tav;
         tav.val = new PPTX::Logic::AnimVariant;
 
-        tav.val->name = L"val";
+        tav.val->node_name = L"val";
 
         if (animValue->m_pVarValue.is_init())
         switch (animValue->m_pVarValue->m_Type) {
@@ -744,11 +744,11 @@ void Animation::FillCTn(
         if (pETNC->m_arrRgBeginTimeCondition.empty() == false)
         {
             oCTn.stCondLst = new PPTX::Logic::CondLst;
-            oCTn.stCondLst->name = L"stCondLst";
+            oCTn.stCondLst->node_name = L"stCondLst";
         }
         for (auto *oldCond : pETNC->m_arrRgBeginTimeCondition) {
             PPTX::Logic::Cond cond;
-            cond.name = L"cond";
+            cond.node_name = L"cond";
             FillCond(oldCond, cond);
             oCTn.stCondLst->list.push_back(cond);
         }
@@ -758,7 +758,7 @@ void Animation::FillCTn(
         if (pETNC->m_arrRgEndTimeCondition.empty() == false)
         {
             oCTn.endCondLst = new PPTX::Logic::CondLst;
-            oCTn.endCondLst->name = L"endCondLst";
+            oCTn.endCondLst->node_name = L"endCondLst";
         }
         FillCondLst(pETNC->m_arrRgEndTimeCondition, oCTn.endCondLst.get2());
     }
@@ -803,7 +803,7 @@ void Animation::FillCTn(
     {
         auto *sync = pETNC->m_pTimeEndSyncTimeCondition;
         oCTn.endSync = new PPTX::Logic::Cond;
-        oCTn.endSync->name = L"endSync";
+        oCTn.endSync->node_name = L"endSync";
         FillCond(sync, *(oCTn.endSync));
     }
 
@@ -811,8 +811,11 @@ void Animation::FillCTn(
     // Write subTnLst
     if (pETNC->m_arrRgSubEffect.empty() == false)
     {
-        if (pETNC->m_arrRgSubEffect[0]->m_oTimeNodeAtom.m_fGroupingTypeProperty &&
-                m_pBldLst)
+        if (
+                pETNC->m_arrRgSubEffect[0]->m_oTimeNodeAtom.m_fGroupingTypeProperty &&
+                m_pBldLst &&
+                m_oPPT10.m_haveBuildList
+           )
         {
             oCTn.grpId = 0;
             auto bldP = new PPTX::Logic::BldP;
@@ -821,7 +824,7 @@ void Animation::FillCTn(
         }
 
         oCTn.subTnLst = new PPTX::Logic::TnLst;
-        oCTn.subTnLst->name = L"p:subTnLst";
+        oCTn.subTnLst->node_name = L"subTnLst";
         FillSubTnLst(pETNC->m_arrRgSubEffect[0], *(oCTn.subTnLst));
 
         if (m_currentBldP)
@@ -866,12 +869,12 @@ void Animation::FillSeq(
     if (!pETNC->m_arrRgEndTimeCondition.empty())
     {
         oSec.prevCondLst = new PPTX::Logic::CondLst();
-        oSec.prevCondLst->name = L"prevCondLst";
+        oSec.prevCondLst->node_name = L"prevCondLst";
     }
     for (auto oldCond : pETNC->m_arrRgEndTimeCondition)
     {
         PPTX::Logic::Cond cond;
-        cond.name = L"cond";
+        cond.node_name = L"cond";
         FillCond(oldCond, cond);
         oSec.prevCondLst->list.push_back(cond);
     }
@@ -879,12 +882,12 @@ void Animation::FillSeq(
     if (!pETNC->m_arrRgBeginTimeCondition.empty())
     {
         oSec.nextCondLst = new PPTX::Logic::CondLst();
-        oSec.nextCondLst->name = L"nextCondLst";
+        oSec.nextCondLst->node_name = L"nextCondLst";
     }
     for (auto oldCond : pETNC->m_arrRgBeginTimeCondition)
     {
         PPTX::Logic::Cond cond;
-        cond.name = L"cond";
+        cond.node_name = L"cond";
         FillCond(oldCond, cond);
         oSec.nextCondLst->list.push_back(cond);
     }
@@ -901,7 +904,7 @@ void Animation::FillSet(
     // TODO
     FillCBhvr(pETNC, oSet.cBhvr);
     oSet.to = new PPTX::Logic::AnimVariant();
-    oSet.to->name = L"to";
+    oSet.to->node_name = L"to";
     oSet.to->strVal = pETNC->m_pTimeSetBehavior->m_oVarTo.m_Value;
 
 }
@@ -1020,7 +1023,7 @@ void Animation::FillSubTnLst (
         if (pSEC->m_arrRgEndTimeCondition.empty() == false)
         {
             audio->cMediaNode.cTn.endCondLst = new PPTX::Logic::CondLst;
-            audio->cMediaNode.cTn.endCondLst->name = L"endCondLst";
+            audio->cMediaNode.cTn.endCondLst->node_name = L"endCondLst";
         }
         FillCondLst(pSEC->m_arrRgEndTimeCondition,
                     audio->cMediaNode.cTn.endCondLst.get2());
@@ -1029,7 +1032,7 @@ void Animation::FillSubTnLst (
         if (pSEC->m_arrRgBeginTimeCondition.empty() == false)
         {
             audio->cMediaNode.cTn.stCondLst = new PPTX::Logic::CondLst;
-            audio->cMediaNode.cTn.stCondLst->name = L"stCondLst";
+            audio->cMediaNode.cTn.stCondLst->node_name = L"stCondLst";
         }
         FillCondLst(pSEC->m_arrRgBeginTimeCondition,
                     audio->cMediaNode.cTn.stCondLst.get2());
@@ -1043,7 +1046,7 @@ void Animation::FillCondLst(
 {
     for (auto *oldCond : oCondVec) {
                 PPTX::Logic::Cond cond;
-                cond.name = L"cond";
+                cond.node_name = L"cond";
                 FillCond(oldCond, cond);
                 oCondLst.list.push_back(cond);
     }

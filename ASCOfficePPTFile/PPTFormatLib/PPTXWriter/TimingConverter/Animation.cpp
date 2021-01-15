@@ -50,7 +50,7 @@ using namespace PPT_FORMAT;
 void Animation::Convert(PPTX::Logic::Timing &oTiming)
 {
     // It must be first to write some reference from ExtTimeNodeContainer
-    if (m_oPPT10.m_haveBuildList)
+    if (m_oPPT10.m_haveBuildList && !m_oPPT10.m_pBuildListContainer->n_arrRgChildRec.empty())
     {
         oTiming.bldLst = new PPTX::Logic::BldLst();
         FillBldLst(m_oPPT10.m_pBuildListContainer, *(oTiming.bldLst));
@@ -167,11 +167,13 @@ void Animation::FillAnim(
 
 void Animation::FillAnimClr(
         CRecordTimeColorBehaviorContainer *pColor,
+        CRecordTimePropertyList4TimeNodeContainer *pProp,
         PPTX::Logic::AnimClr &oAnimClr)
 {
     auto &clrAtom = pColor->m_oColorBehaviorAtom;
 
     FillCBhvr(&(pColor->m_oBehavior), oAnimClr.cBhvr);
+    FillCTn(pProp, oAnimClr.cBhvr.cTn);
 
     // Write Attributes
     if (pColor->m_oBehavior.m_havePropertyList){
@@ -790,10 +792,10 @@ void Animation::FillCTn(
             oCTn.iterate->backwards = (bool)iter->m_nIterateDirection;
 
         if (iter->m_fIterateIntervalTypePropertyUsed)
-            oCTn.iterate->tmAbs = std::to_wstring(iter->m_nIterateIntervalType);
+            oCTn.iterate->tmPct = iter->m_nIterateInterval;
 
         if (iter->m_fIterateIntervalPropertyUsed)
-            oCTn.iterate->tmPct = iter->m_nIterateInterval;
+            oCTn.iterate->tmAbs = std::to_wstring(iter->m_nIterateIntervalType);
 
     }
 
@@ -811,21 +813,22 @@ void Animation::FillCTn(
     // Write subTnLst
     if (pETNC->m_arrRgSubEffect.empty() == false)
     {
-        if (
-                pETNC->m_arrRgSubEffect[0]->m_oTimeNodeAtom.m_fGroupingTypeProperty &&
-                m_pBldLst &&
-                m_oPPT10.m_haveBuildList
-           )
-        {
-            oCTn.grpId = 0;
-            auto bldP = new PPTX::Logic::BldP;
-            bldP->grpId = 0;
-            m_currentBldP = bldP;
-        }
+//        if (
+//                pETNC->m_arrRgSubEffect[0]->m_oTimeNodeAtom.m_fGroupingTypeProperty &&
+//                m_pBldLst &&
+//                m_oPPT10.m_haveBuildList
+//           )
+//        {
+//            oCTn.grpId = 0;
+//            auto bldP = new PPTX::Logic::BldP;
+//            bldP->grpId = 0;
+//            m_currentBldP = bldP;
+//        }
 
-        oCTn.subTnLst = new PPTX::Logic::TnLst;
-        oCTn.subTnLst->node_name = L"subTnLst";
-        FillSubTnLst(pETNC->m_arrRgSubEffect[0], *(oCTn.subTnLst));
+        auto sub = new PPTX::Logic::TnLst;
+        sub->node_name = L"subTnLst";
+        FillSubTnLst(pETNC->m_arrRgSubEffect, *sub);
+        oCTn.subTnLst = sub;
 
         if (m_currentBldP)
         {
@@ -838,6 +841,40 @@ void Animation::FillCTn(
         if (pETNC->m_haveTimePropertyList && !pETNC->m_pTimePropertyList->m_bEmtyNode)
         {
             FillCTn(pETNC->m_pTimePropertyList, oCTn);
+        }
+
+        for (auto timeModAtom : pETNC->m_arrRgTimeModifierAtom)
+        {
+            switch (timeModAtom->m_nType)
+            {
+            case 0:
+            {
+                oCTn.repeatCount = std::to_wstring((int)
+                            timeModAtom->m_Value * 1000);
+                break;
+            }
+            case 1:
+            {
+                // Check 1000
+                oCTn.repeatDur = std::to_wstring((int)
+                            timeModAtom->m_Value * 1000);
+                break;
+            }
+            case 2:
+            {
+                // Check 1000
+                oCTn.spd = std::to_wstring((int)
+                            timeModAtom->m_Value * 1000);
+                break;
+            }
+            case 3:
+            {
+                // Check 1000
+                oCTn.accel = std::to_wstring((int)
+                            timeModAtom->m_Value * 1000);
+                break;
+            }
+            }
         }
 
     }
@@ -935,7 +972,7 @@ void Animation::FillTnChild(
     else if (pETNC->m_haveColorBehavior)
     {
         auto animClr = new PPTX::Logic::AnimClr;
-        FillAnimClr(pETNC->m_pTimeColorBehavior, *animClr);
+        FillAnimClr(pETNC->m_pTimeColorBehavior, pETNC->m_pTimePropertyList, *animClr);
         oChild.m_node = animClr;
     }
     else if (pETNC->m_haveEffectBehavior)
@@ -1005,38 +1042,49 @@ void Animation::FillTnLst(
 }
 
 void Animation::FillSubTnLst (
-        PPT_FORMAT::CRecordSubEffectContainer *pSEC,
+        std::vector<CRecordSubEffectContainer*> &vecSEC,
         PPTX::Logic::TnLst &oSubTnLst)
 {
-    if (!pSEC) return;
-
-    if (pSEC->m_haveClientVisualElement)
+    for (auto pSEC : vecSEC)
     {
-        PPTX::Logic::TimeNodeBase TNB;
-        auto audio = new PPTX::Logic::Audio;
-
-        FillAudio(pSEC->m_pClientVisualElement, *audio);
-        TNB.m_node = audio;
-        oSubTnLst.list.push_back(TNB);
-
-        // Write endCondLst
-        if (pSEC->m_arrRgEndTimeCondition.empty() == false)
+        if (pSEC->m_haveClientVisualElement)
         {
-            audio->cMediaNode.cTn.endCondLst = new PPTX::Logic::CondLst;
-            audio->cMediaNode.cTn.endCondLst->node_name = L"endCondLst";
-        }
-        FillCondLst(pSEC->m_arrRgEndTimeCondition,
-                    audio->cMediaNode.cTn.endCondLst.get2());
+            PPTX::Logic::TimeNodeBase TNB;
+            auto audio = new PPTX::Logic::Audio;
 
-        // Write stCondLst
-        if (pSEC->m_arrRgBeginTimeCondition.empty() == false)
-        {
-            audio->cMediaNode.cTn.stCondLst = new PPTX::Logic::CondLst;
-            audio->cMediaNode.cTn.stCondLst->node_name = L"stCondLst";
+            FillAudio(pSEC->m_pClientVisualElement, *audio);
+            TNB.m_node = audio;
+            oSubTnLst.list.push_back(TNB);
+
+            // Write endCondLst
+            if (pSEC->m_arrRgEndTimeCondition.empty() == false)
+            {
+                audio->cMediaNode.cTn.endCondLst = new PPTX::Logic::CondLst;
+                audio->cMediaNode.cTn.endCondLst->node_name = L"endCondLst";
+            }
+            FillCondLst(pSEC->m_arrRgEndTimeCondition,
+                        audio->cMediaNode.cTn.endCondLst.get2());
+
+            // Write stCondLst
+            if (pSEC->m_arrRgBeginTimeCondition.empty() == false)
+            {
+                audio->cMediaNode.cTn.stCondLst = new PPTX::Logic::CondLst;
+                audio->cMediaNode.cTn.stCondLst->node_name = L"stCondLst";
+            }
+            FillCondLst(pSEC->m_arrRgBeginTimeCondition,
+                        audio->cMediaNode.cTn.stCondLst.get2());
+            FillCTn(pSEC->m_pTimePropertyList, audio->cMediaNode.cTn);
         }
-        FillCondLst(pSEC->m_arrRgBeginTimeCondition,
-                    audio->cMediaNode.cTn.stCondLst.get2());
-        FillCTn(pSEC->m_pTimePropertyList, audio->cMediaNode.cTn);
+
+        if (pSEC->m_haveColorBehavior)
+        {
+            PPTX::Logic::TimeNodeBase TNB;
+            auto color = new PPTX::Logic::AnimClr;
+
+            FillAnimClr(pSEC->m_pTimeColorBehavior, pSEC->m_pTimePropertyList, *color);
+            TNB.m_node = color;
+            oSubTnLst.list.push_back(TNB);
+        }
     }
 }
 

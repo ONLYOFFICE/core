@@ -93,6 +93,7 @@ private:
             PPTX::Logic::Anim &oAnim);
     void FillAnimClr(
             CRecordTimeColorBehaviorContainer *pColor,
+            CRecordTimePropertyList4TimeNodeContainer *pProp,
             PPTX::Logic::AnimClr &oAnimClr);
     void FillAnimEffect(
             CRecordExtTimeNodeContainer *pETNC,
@@ -140,7 +141,7 @@ private:
             PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
             PPTX::Logic::Set& oSet);
     void FillSubTnLst (
-            PPT_FORMAT::CRecordSubEffectContainer *pSEC,
+            std::vector<CRecordSubEffectContainer*> &vecSEC,
             PPTX::Logic::TnLst &oSubTnLst);
     void FillCondLst(
             std::vector<CRecordTimeConditionContainer*>& oCondVec,

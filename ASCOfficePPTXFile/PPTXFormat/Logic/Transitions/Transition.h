@@ -131,10 +131,7 @@ namespace PPTX
 					else if (2 == _at)
 						dur = pReader->GetLong();
 					else if (3 == _at)
-					{
-						spd = new Limit::TransitionSpeed();
-						spd->SetBYTECode(pReader->GetUChar());
-					}
+						spd = pReader->GetUChar();
 				}
 
 				while (pReader->GetPos() < end)

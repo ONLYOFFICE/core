@@ -30,12 +30,8 @@
  *
  */
 #pragma once
-#ifndef PPTX_LIMIT_VARIANT_TYPE_INCLUDE_H_
-#define PPTX_LIMIT_VARIANT_TYPE_INCLUDE_H_
 
 #include "BaseLimit.h"
-
-
 
 namespace PPTX
 {
@@ -59,8 +55,20 @@ namespace PPTX
 					m_strValue = strValue;
 				}
 			}
+			virtual BYTE GetBYTECode() const
+			{
+				if (L"lpstr" == m_strValue)	return 0;
+				if (L"i4" == m_strValue)	return 1;
+				return 0;
+			}
+			virtual void SetBYTECode(const BYTE& src)
+			{
+				switch (src)
+				{
+				case 0: m_strValue = L"lpstr"; break;
+				case 1: m_strValue = L"i4"; break;
+				}
+			}
 		};
 	} // namespace Limit
 } // namespace PPTX
-
-#endif // PPTX_LIMIT_VARIANT_TYPE_INCLUDE_H_

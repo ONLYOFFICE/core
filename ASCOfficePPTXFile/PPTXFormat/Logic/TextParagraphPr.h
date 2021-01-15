@@ -334,8 +334,7 @@ namespace PPTX
 					{
 						case 0:
 						{
-							algn = new Limit::TextAlign();
-							algn->SetBYTECode(pReader->GetUChar());							
+							algn = pReader->GetUChar();							
 							break;
 						}
 						case 1:
@@ -350,8 +349,7 @@ namespace PPTX
 						}
 						case 3:
 						{
-							fontAlgn = new Limit::FontAlign();
-							fontAlgn->SetBYTECode(pReader->GetUChar());
+							fontAlgn = pReader->GetUChar();
 							break;
 						}
 						case 4:
@@ -464,8 +462,7 @@ namespace PPTX
 										{
 											case 0:
 											{
-												tabLst[nIndex].algn = new PPTX::Limit::TextTabAlignType();
-												tabLst[nIndex].algn->SetBYTECode(pReader->GetUChar());
+												tabLst[nIndex].algn = pReader->GetUChar();
 												break;
 											}
 											case 1:

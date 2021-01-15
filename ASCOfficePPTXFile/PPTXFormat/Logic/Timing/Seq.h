@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_SEQ_INCLUDE_H_
-#define PPTX_LOGIC_SEQ_INCLUDE_H_
 
 #include "./../../WrapperWritingElement.h"
 #include "CTn.h"
@@ -48,17 +46,15 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(Seq)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				cTn			= node.ReadNode(_T("p:cTn"));
-                                prevCondLst = node.ReadNode(_T("p:prevCondLst"));
+				cTn = node.ReadNode(_T("p:cTn"));
+				prevCondLst = node.ReadNode(_T("p:prevCondLst"));
 				nextCondLst = node.ReadNode(_T("p:nextCondLst"));
 
                 XmlMacroReadAttributeBase(node, L"concurrent", concurrent);
                 XmlMacroReadAttributeBase(node, L"prevAc", prevAc);
                 XmlMacroReadAttributeBase(node, L"nextAc", nextAc);
-
 
 				FillParentPointersForChilds();
 			}
@@ -72,14 +68,89 @@ namespace PPTX
 
 				XmlUtils::CNodeValue oValue;
 				oValue.Write(cTn);
-                                oValue.WriteNullable(prevCondLst);
+				oValue.WriteNullable(prevCondLst);
 				oValue.WriteNullable(nextCondLst);
 
-
-                return XmlUtils::CreateNode(_T("p:seq"), oAttr, oValue);
+                return XmlUtils::CreateNode(L"p:seq", oAttr, oValue);
 			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->StartNode(L"p:seq");
+					pWriter->WriteAttribute(L"concurrent", concurrent);
+					pWriter->WriteAttribute(L"prevAc", prevAc);
+					pWriter->WriteAttribute(L"nextAc", nextAc);
+				pWriter->EndAttributes();
 
-		public:
+				cTn.toXmlWriter(pWriter);
+
+				if (prevCondLst.IsInit())
+					prevCondLst->toXmlWriter(pWriter);
+
+				if (nextCondLst.IsInit())
+					nextCondLst->toXmlWriter(pWriter);
+				
+				pWriter->EndNode(L"p:seq");
+			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_p_seq;
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // attribute start
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					else if (0 == _at) concurrent = pReader->GetBool();
+					else if (1 == _at) nextAc = pReader->GetUChar();
+					else if (2 == _at) prevAc = pReader->GetUChar();
+				}
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+					case 0:
+					{
+						prevCondLst.Init(); prevCondLst->node_name = L"prevCondLst";
+						prevCondLst->fromPPTY(pReader);
+					}break;
+					case 1:
+					{
+						nextCondLst.Init(); nextCondLst->node_name = L"nextCondLst";
+						nextCondLst->fromPPTY(pReader);
+					}break;
+					case 2:
+					{
+						cTn.fromPPTY(pReader);
+					}break;
+					default:
+					{
+						pReader->SkipRecord();
+
+					}break;
+					}
+				}
+				pReader->Seek(end);
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+					pWriter->WriteBool2(0, concurrent);
+					pWriter->WriteLimit2(1, nextAc);
+					pWriter->WriteLimit2(2, prevAc);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+				pWriter->WriteRecord2(0, prevCondLst);
+				pWriter->WriteRecord2(1, nextCondLst);
+				pWriter->WriteRecord1(2, cTn);
+			}
 			CTn									cTn;
 			nullable<CondLst>					nextCondLst;
 			nullable<CondLst>					prevCondLst;
@@ -100,4 +171,3 @@ namespace PPTX
 	} // namespace Logic
 } // namespace PPTX
 
-#endif // PPTX_LOGIC_SEQ_INCLUDE_H

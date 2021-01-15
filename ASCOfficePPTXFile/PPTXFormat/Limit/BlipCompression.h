@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LIMIT_BLIPCOMPRESSION_INCLUDE_H_
-#define PPTX_LIMIT_BLIPCOMPRESSION_INCLUDE_H_
 
 #include "BaseLimit.h"
 
@@ -44,39 +42,42 @@ namespace PPTX
 		public:
 			BlipCompression()
 			{
-				m_strValue = _T("none");
+				m_strValue = L"none";
 			}
 
 			_USE_STRING_OPERATOR
 				
 			virtual void set(const std::wstring& strValue)
 			{
-				if ((_T("none")		== strValue) ||
-					(_T("email")	== strValue) ||
-					(_T("hqprint")	== strValue) ||
-					(_T("print")	== strValue) ||
-					(_T("screen")	== strValue))
+				if ((L"none"	== strValue) ||
+					(L"email"	== strValue) ||
+					(L"hqprint"	== strValue) ||
+					(L"print"	== strValue) ||
+					(L"screen"	== strValue))
 				{
 					m_strValue = strValue;
 				}
 			}
-
 			virtual BYTE GetBYTECode() const
 			{
-				if (_T("none") == m_strValue)
-					return 0;
-				if (_T("email") == m_strValue)
-					return 1;
-				if (_T("hqprint") == m_strValue)
-					return 2;
-				if (_T("print") == m_strValue)
-					return 3;
-				if (_T("screen") == m_strValue)
-					return 4;
+				if (L"none" == m_strValue)		return 0;
+				if (L"email" == m_strValue)		return 1;
+				if (L"hqprint" == m_strValue)	return 2;
+				if (L"print" == m_strValue)		return 3;
+				if (L"screen" == m_strValue)	return 4;
 				return 0;
+			}
+			virtual void SetBYTECode(const BYTE& val)
+			{
+				switch (val)
+				{
+				case 0:	m_strValue = L"none";	break;
+				case 1:	m_strValue = L"email";	break;
+				case 2:	m_strValue = L"hqprint"; break;
+				case 3:	m_strValue = L"print";	break;
+				case 4:	m_strValue = L"screen"; break;
+				}
 			}
 		};
 	} // namespace Limit
 } // namespace PPTX
-
-#endif // PPTX_LIMIT_BLIPCOMPRESSION_INCLUDE_H_

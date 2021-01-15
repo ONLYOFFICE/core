@@ -166,16 +166,16 @@ void Animation::FillAnim(
 }
 
 void Animation::FillAnimClr(
-        CRecordExtTimeNodeContainer *pETNC,
+        CRecordTimeColorBehaviorContainer *pColor,
         PPTX::Logic::AnimClr &oAnimClr)
 {
-    auto &clrAtom = pETNC->m_pTimeColorBehavior->m_oColorBehaviorAtom;
+    auto &clrAtom = pColor->m_oColorBehaviorAtom;
 
-    FillCBhvr(pETNC, oAnimClr.cBhvr);
+    FillCBhvr(&(pColor->m_oBehavior), oAnimClr.cBhvr);
 
     // Write Attributes
-    if (pETNC->m_pTimeColorBehavior->m_oBehavior.m_havePropertyList){
-        for (auto pRec : pETNC->m_pTimeColorBehavior->m_oBehavior.m_pPropertyList->m_arRecords)
+    if (pColor->m_oBehavior.m_havePropertyList){
+        for (auto pRec : pColor->m_oBehavior.m_pPropertyList->m_arRecords)
         {
             if (pRec->m_oHeader.RecInstance == TL_TBPID_ColorColorModel)
             {
@@ -230,7 +230,7 @@ void Animation::FillAnimClr(
             auto pScheme = new PPTX::Logic::SchemeClr;
             std::wstring strVal;
             UINT index = clrAtom.m_sColorFrom.component0;
-            if (index >= 4 || index < 10)
+            if (index >= 4 && index < 10)
             {
                 strVal = L"accent" + std::to_wstring(index - 3);
             }
@@ -255,7 +255,7 @@ void Animation::FillAnimClr(
             auto pScheme = new PPTX::Logic::SchemeClr;
             std::wstring strVal;
             UINT index = clrAtom.m_sColorTo.component0;
-            if (index >= 4 || index < 10)
+            if (index >= 4 && index < 10)
             {
                 strVal = L"accent" + std::to_wstring(index - 3);
             }
@@ -935,7 +935,7 @@ void Animation::FillTnChild(
     else if (pETNC->m_haveColorBehavior)
     {
         auto animClr = new PPTX::Logic::AnimClr;
-        FillAnimClr(pETNC, *animClr);
+        FillAnimClr(pETNC->m_pTimeColorBehavior, *animClr);
         oChild.m_node = animClr;
     }
     else if (pETNC->m_haveEffectBehavior)

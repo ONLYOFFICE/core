@@ -92,7 +92,7 @@ private:
             CRecordTimeAnimateBehaviorContainer *pTimeAnimateBehavior,
             PPTX::Logic::Anim &oAnim);
     void FillAnimClr(
-            CRecordExtTimeNodeContainer *pETNC,
+            CRecordTimeColorBehaviorContainer *pColor,
             PPTX::Logic::AnimClr &oAnimClr);
     void FillAnimEffect(
             CRecordExtTimeNodeContainer *pETNC,

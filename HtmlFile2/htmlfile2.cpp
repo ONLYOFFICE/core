@@ -394,7 +394,18 @@ public:
         }
 
         if(NSFile::GetFileExtention(sSrc) != L"xhtml")
+        {
+            /*
+            std::wstring sRes = htmlToXhtml(sFileContent);
+            NSFile::CFileBinary oWriter;
+            if (oWriter.CreateFileW(m_sTmp + L"/res.html"))
+            {
+                oWriter.WriteStringUTF8(sRes);
+                oWriter.CloseFile();
+            }
+            */
             return m_oLightReader.FromString(htmlToXhtml(sFileContent));
+        }
         return m_oLightReader.FromStringA(sFileContent);
     }
 
@@ -456,7 +467,8 @@ public:
                 // тэг style содержит стили для styles.xml
                 else if(sName == L"style")
                     m_oStylesCalculator.AddStyles(m_oLightReader.GetText2());
-                readStyle();
+                else
+                    readStyle();
             }
         }
     }

@@ -400,7 +400,7 @@ void Animation::FillAudio(CRecordClientVisualElementContainer *pCVEC,
     if (pCVEC->m_bVisualShapeAtom)
     {
         oAudio.cMediaNode.tgtEl.embed =
-                new OOX::RId(pCVEC->m_oVisualShapeAtom.m_nObjectIdRef);
+                new OOX::RId(pCVEC->m_oVisualShapeAtom.m_nObjectIdRef + 1);
 
         std::vector<CRecordSoundContainer*> soundCont;
         this->m_pSoundContainer->GetRecordsByType(
@@ -739,6 +739,11 @@ void Animation::FillCTn(
 
     //// Write Children ////
 
+    //Write cTn attr
+    if (pETNC->m_haveTimePropertyList && !pETNC->m_pTimePropertyList->m_bEmtyNode)
+    {
+        FillCTn(pETNC->m_pTimePropertyList, oCTn);
+    }
 
     if (!pETNC->m_haveSequenceAtom)
     {
@@ -838,11 +843,6 @@ void Animation::FillCTn(
             m_currentBldP = nullptr;
         }
 
-        if (pETNC->m_haveTimePropertyList && !pETNC->m_pTimePropertyList->m_bEmtyNode)
-        {
-            FillCTn(pETNC->m_pTimePropertyList, oCTn);
-        }
-
         for (auto timeModAtom : pETNC->m_arrRgTimeModifierAtom)
         {
             switch (timeModAtom->m_nType)
@@ -874,6 +874,21 @@ void Animation::FillCTn(
                             timeModAtom->m_Value * 1000);
                 break;
             }
+            case 4:
+            {
+                // Check 1000
+                oCTn.decel = std::to_wstring((int)
+                            timeModAtom->m_Value * 1000);
+                break;
+            }
+            case 5:
+            {
+                // Check 1000
+                oCTn.autoRev = std::to_wstring((int)
+                            timeModAtom->m_Value * 1000);
+                break;
+            }
+
             }
         }
 

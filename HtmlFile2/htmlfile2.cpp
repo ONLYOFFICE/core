@@ -1118,7 +1118,7 @@ private:
         oXml->WriteString(oFoot.GetData());
         oXml->WriteString(L"</w:tbl>");
         // Пустая строка после таблицы, чтобы следующий текст не приклеивался
-        oXml->WriteString(L"<w:p></w:p>");
+        // oXml->WriteString(L"<w:p></w:p>");
         bWasP = false;
     }
 
@@ -1440,7 +1440,7 @@ private:
         std::wstring sPStyle = GetStyle(sSelectors, true);
         
         std::vector<NSCSS::CNode> arTemp = sSelectors;
-        const NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetStyleSetting(sSelectors, true);
+        const NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
         m_oXmlStyle.WriteLitePStyle(oStyle);
         const std::wstring sPSettings = m_oXmlStyle.GetStyle();
         m_oXmlStyle.Clear();
@@ -1466,7 +1466,7 @@ private:
         oXml->WriteString(L"\"/>");
 
         std::vector<NSCSS::CNode> arTemp = sSelectors;
-        const NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetStyleSetting(sSelectors, false);
+        const NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
         m_oXmlStyle.WriteLiteRStyle(oStyle);
         const std::wstring sRSettings = m_oXmlStyle.GetStyle();
         m_oXmlStyle.Clear();

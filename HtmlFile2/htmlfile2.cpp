@@ -958,7 +958,7 @@ private:
         return true;
     }
 
-    void readTr     (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, bool& bWasP)
+    void readTr     (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, bool& bWasP, bool bNeedBorder)
     {
         std::vector<CTc> mTable;
         int nDeath = m_oLightReader.GetDepth();
@@ -1007,7 +1007,11 @@ private:
                     it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
                 }
 
-                oXml->WriteString(L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:tcBorders><w:left w:val=\"none\" w:color=\"000000\"/><w:top w:val=\"none\" w:color=\"000000\"/><w:right w:val=\"none\" w:color=\"000000\"/><w:bottom w:val=\"none\" w:color=\"000000\"/></w:tcBorders>");
+                oXml->WriteString(L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/>");
+                if (bNeedBorder)
+                    oXml->WriteString(L"<w:tcBorders><w:left w:val=\"single\" w:color=\"000000\" w:sz=\"4\" w:space=\"0\"/><w:top w:val=\"single\" w:color=\"000000\" w:sz=\"4\" w:space=\"0\"/><w:right w:val=\"single\" w:color=\"000000\" w:sz=\"4\" w:space=\"0\"/><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"4\" w:space=\"0\"/></w:tcBorders>");
+                else
+                    oXml->WriteString(L"<w:tcBorders><w:left w:val=\"none\" w:color=\"000000\"/><w:top w:val=\"none\" w:color=\"000000\"/><w:right w:val=\"none\" w:color=\"000000\"/><w:bottom w:val=\"none\" w:color=\"000000\"/></w:tcBorders>");
                 if(nRowspan != 1)
                 {
                     oXml->WriteString(L"<w:vMerge w:val=\"restart\"/>");
@@ -1071,6 +1075,14 @@ private:
         if(m_oLightReader.IsEmptyNode())
             return;
 
+        bool bNeedBorder = false;
+        while (m_oLightReader.MoveToNextAttribute())
+        {
+            if (m_oLightReader.GetName() == L"border")
+                bNeedBorder = true;
+        }
+        m_oLightReader.MoveToElement();
+
         NSStringUtils::CStringBuilder oHead;
         NSStringUtils::CStringBuilder oBody;
         NSStringUtils::CStringBuilder oFoot;
@@ -1102,11 +1114,11 @@ private:
                 bWasP = false;
             }
             if(sName == L"thead")
-                readTr(&oHead, sSelectors, oTS, bWasP);
+                readTr(&oHead, sSelectors, oTS, bWasP, bNeedBorder);
             else if(sName == L"tbody")
-                readTr(&oBody, sSelectors, oTS, bWasP);
+                readTr(&oBody, sSelectors, oTS, bWasP, bNeedBorder);
             else if(sName == L"tfoot")
-                readTr(&oFoot, sSelectors, oTS, bWasP);
+                readTr(&oFoot, sSelectors, oTS, bWasP, bNeedBorder);
             sSelectors.pop_back();
         }
 

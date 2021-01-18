@@ -40,7 +40,7 @@ bool operator<(const std::vector<NSCSS::CNode> &arLeftSelectors, const std::vect
 
 namespace NSCSS
 {
-    CCssCalculator_Private::CCssCalculator_Private() : m_nDpi(96), m_nCountNodes(0), m_UnitMeasure(Default), m_mStatictics(NULL), m_sEncoding(L"UTF-8"), m_oLastStyle(NULL) {}
+    CCssCalculator_Private::CCssCalculator_Private() : m_nDpi(96), m_nCountNodes(0), m_UnitMeasure(Default), m_mStatictics(NULL), m_sEncoding(L"UTF-8"){}
 
     CCssCalculator_Private::~CCssCalculator_Private()
     {
@@ -482,13 +482,6 @@ namespace NSCSS
 
         m_mUsedStyles[arSelectors] = oStyle;
 
-        if (NULL != m_oLastStyle && m_oLastStyle->GetId() == oStyle->GetId())
-        {
-            CCompiledStyle::StyleEquation(*oStyle, *m_oLastStyle);
-            m_oLastStyle->SetDpi(5345);
-        }
-        oStyle->ClearImportants();
-
         return *oStyle;
     }
 
@@ -543,12 +536,12 @@ namespace NSCSS
         return m_nDpi;
     }
 
-    CCompiledStyle* CCssCalculator_Private::GetStyleSetting(const std::vector<CNode>& arSelectors)
-    {
+    CCompiledStyle CCssCalculator_Private::GetStyleSetting(const std::vector<CNode>& arSelectors)
+    {        
         if (NULL == m_mStatictics || m_mStatictics->empty())
-            return NULL;
+            return CCompiledStyle();
 
-        CCompiledStyle *oStyle = new CCompiledStyle();
+        CCompiledStyle oStyle;
 
         for (const CNode& oNode : arSelectors)
         {
@@ -561,23 +554,18 @@ namespace NSCSS
                     oFindId = m_mData.find(L'#' + oNode.m_sId);
 
                     if (oFindId != m_mData.cend())
-                        oStyle->AddStyle(oFindId->second->GetStyle(), true);
+                        oStyle.AddStyle(oFindId->second->GetStyle(), true);
                 }
             }
             if (!oNode.m_sStyle.empty())
             {
                 std::map<StatistickElement, unsigned int>::const_iterator oFind = m_mStatictics->find(StatistickElement{StatistickElement::IsStyle, oNode.m_sStyle});
                 if (oFind != m_mStatictics->cend() && oFind->second < MaxNumberRepetitions)
-                    oStyle->AddStyle(oNode.m_sStyle, true);
+                    oStyle.AddStyle(oNode.m_sStyle, true);
             }
         }
 
-        oStyle->SetID(arSelectors.back().m_sName + ((!arSelectors.back().m_sClass.empty()) ? L'.' + arSelectors.back().m_sClass : L"") + ((arSelectors.back().m_sId.empty()) ? L"" : L'#' + arSelectors.back().m_sId) + L'-' + std::to_wstring(1 + m_nCountNodes));
-
-        if (NULL != m_oLastStyle)
-            delete m_oLastStyle;
-
-        m_oLastStyle = oStyle;
+        oStyle.SetID(arSelectors.back().m_sName + ((!arSelectors.back().m_sClass.empty()) ? L'.' + arSelectors.back().m_sClass : L"") + ((arSelectors.back().m_sId.empty()) ? L"" : L'#' + arSelectors.back().m_sId) + L'-' + std::to_wstring(m_nCountNodes));
 
         return oStyle;
     }

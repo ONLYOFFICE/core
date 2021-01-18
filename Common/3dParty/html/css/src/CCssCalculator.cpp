@@ -49,7 +49,7 @@ namespace NSCSS
         m_pInternal->SetBodyTree(oTree);
     }
 
-    CCompiledStyle* CCssCalculator::GetStyleSetting(const std::vector<CNode> &arSelectors)
+    CCompiledStyle CCssCalculator::GetStyleSetting(const std::vector<CNode> &arSelectors)
     {
         return m_pInternal->GetStyleSetting(arSelectors);
     }

@@ -581,9 +581,9 @@ private:
         return sNote;
     }
 
-    std::wstring GetStyle(const std::vector<NSCSS::CNode>& sSelectors, bool bP)
+    std::wstring GetStyle(const NSCSS::CCompiledStyle& oStyle, bool bP)
     {
-        NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
+//        NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
         bP ? m_oXmlStyle.WritePStyle(oStyle) : m_oXmlStyle.WriteRStyle(oStyle);
         m_oStylesXml.WriteString(m_oXmlStyle.GetStyle());
         return m_oXmlStyle.GetIdAndClear();
@@ -1461,15 +1461,16 @@ private:
 				i++;
 		}
 
-        std::wstring sPStyle = GetStyle(sSelectors, true);
-        
-        std::vector<NSCSS::CNode> arTemp = sSelectors;
-        const NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
-        m_oXmlStyle.WriteLitePStyle(oStyle);
+        NSCSS::CCompiledStyle oStyleSetting = m_oStylesCalculator.GetStyleSetting(sSelectors);
+        NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
+
+        NSCSS::CCompiledStyle::StyleEquation(oStyle, oStyleSetting);
+
+        std::wstring sPStyle = GetStyle(oStyle, true);
+
+        m_oXmlStyle.WriteLitePStyle(oStyleSetting);
         const std::wstring sPSettings = m_oXmlStyle.GetStyle();
         m_oXmlStyle.Clear();
-        if (sPSettings.empty())
-            sSelectors = arTemp;
 
         for(int i = temporary.size() - 1; i >= 0; i--)
 			sSelectors.insert(sSelectors.begin() + temporary[i].first, temporary[i].second);
@@ -1484,18 +1485,20 @@ private:
 
     std::wstring wrR(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
     {
-        oXml->WriteString(L"<w:rPr><w:rStyle w:val=\"");
-        std::wstring sRStyle = GetStyle(sSelectors, false);
-        oXml->WriteString(sRStyle);
-        oXml->WriteString(L"\"/>");
+        NSCSS::CCompiledStyle oStyleSetting = m_oStylesCalculator.GetStyleSetting(sSelectors);
+        NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
 
-        std::vector<NSCSS::CNode> arTemp = sSelectors;
-        const NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
-        m_oXmlStyle.WriteLiteRStyle(oStyle);
+        NSCSS::CCompiledStyle::StyleEquation(oStyle, oStyleSetting);
+
+        std::wstring sRStyle = GetStyle(oStyle, false);
+
+        m_oXmlStyle.WriteLiteRStyle(oStyleSetting);
         const std::wstring sRSettings = m_oXmlStyle.GetStyle();
         m_oXmlStyle.Clear();
-        if (sRSettings.empty())
-            sSelectors = arTemp;
+
+        oXml->WriteString(L"<w:rPr><w:rStyle w:val=\"");
+        oXml->WriteString(sRStyle);
+        oXml->WriteString(L"\"/>");
 
         oXml->WriteString(oTS.sRStyle + L' ' + sRSettings);
         oXml->WriteString(L"</w:rPr>");

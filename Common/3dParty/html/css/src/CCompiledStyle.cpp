@@ -77,6 +77,9 @@ namespace NSCSS
         NSConstValues::NSCssProperties::Background::BackgroundEquation(oFirstStyle.m_pBackground, oSecondStyle.m_pBackground);
         NSConstValues::NSCssProperties::Text::TextEquation(oFirstStyle.m_pText, oSecondStyle.m_pText);
         NSConstValues::NSCssProperties::Border::BorderEquation(oFirstStyle.m_pBorder, oSecondStyle.m_pBorder);
+
+        oFirstStyle.ClearImportants();
+        oSecondStyle.ClearImportants();
     }
 
     void CCompiledStyle::SetDpi(const unsigned short &uiDpi)

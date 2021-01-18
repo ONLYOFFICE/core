@@ -1249,8 +1249,8 @@ namespace NSCSS
             public:
 
                 BorderSide() : fWidth(fNoneValue),
-                               sStyle(L"single"),
-                               sColor(L"auto"),
+                               sStyle(L""),
+                               sColor(L""),
                                bImportants({false, false, false}){}
 
                 void ClearImportants()
@@ -1275,17 +1275,17 @@ namespace NSCSS
                     if (oFirstBorderSide.bImportants[0] && !oSecondBorderSide.bImportants[0] && oFirstBorderSide.fWidth != fNoneValue)
                         oSecondBorderSide.fWidth = fNoneValue;
                     else if (oSecondBorderSide.fWidth != fNoneValue)
-                        oSecondBorderSide.fWidth = fNoneValue;
+                        oFirstBorderSide.fWidth = fNoneValue;
 
                     if (oFirstBorderSide.bImportants[1] && !oSecondBorderSide.bImportants[1] && !oFirstBorderSide.sStyle.empty())
                         oSecondBorderSide.sStyle.clear();
                     else if (!oSecondBorderSide.sStyle.empty())
-                        oSecondBorderSide.sStyle.clear();
+                        oFirstBorderSide.sStyle.clear();
 
                     if (oFirstBorderSide.bImportants[2] && !oSecondBorderSide.bImportants[2] && !oFirstBorderSide.sColor.empty())
                         oSecondBorderSide.sColor.clear();
                     else if (!oSecondBorderSide.sColor.empty())
-                        oSecondBorderSide.sColor.clear();
+                        oFirstBorderSide.sColor.clear();
                 }
 
                 bool operator==(const BorderSide& oBorderSide) const
@@ -1297,9 +1297,9 @@ namespace NSCSS
 
                 bool Empty() const
                 {
-                    return fWidth  <= 0         &&
-                           sStyle  == L"single" &&
-                           sColor  == L"auto";
+                    return fWidth  <= 0     &&
+                           sStyle.empty()   &&
+                           sColor.empty();
                 }
 
                 void SetWidthWithoutChecking(const float& fWidth, const bool &bHardMode = false)

@@ -24,7 +24,6 @@ namespace NSCSS
         std::map<StatistickElement, unsigned int> *m_mStatictics; // Количество повторений свойств id и style у селекторов
 
         std::map<std::vector<CNode>, CCompiledStyle*> m_mUsedStyles;
-        CCompiledStyle* m_oLastStyle;
 
         std::wstring m_sEncoding;
 
@@ -48,6 +47,7 @@ namespace NSCSS
         ~CCssCalculator_Private();
 
         CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors, const UnitMeasure& unitMeasure = Default);
+        CCompiledStyle GetStyleSetting(const std::vector<CNode>& arSelectors);
 
         void AddStyles(const std::string& sStyle);
         void AddStyles(const std::wstring& sStyle);
@@ -60,8 +60,6 @@ namespace NSCSS
         UnitMeasure GetUnitMeasure() const;
         std::wstring GetEncoding() const;
         unsigned short int GetDpi() const;
-
-        CCompiledStyle* GetStyleSetting(const std::vector<CNode>& arSelectors);
 
         void Clear();        
 

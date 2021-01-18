@@ -20,6 +20,7 @@ namespace NSCSS
         ~CCssCalculator();
 
         CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors, const UnitMeasure& unitMeasure = Default) const;
+        CCompiledStyle GetStyleSetting(const std::vector<CNode>& arSelectors);
 
         // void AddStyle(const std::vector<std::string>& sSelectors, const std::string& sStyle);
         void AddStyles        (const std::string&  sStyle);
@@ -30,7 +31,6 @@ namespace NSCSS
         void SetDpi(const unsigned short int& nValue);
         void SetBodyTree(const CTree &oTree);
 
-        CCompiledStyle* GetStyleSetting(const std::vector<CNode>& arSelectors);
 
         UnitMeasure GetUnitMeasure() const;
         std::wstring GetEncoding()   const;

@@ -78,7 +78,9 @@ std::wstring RtfAbstractReader::ExecuteTextInternalCodePage( std::string& sCharS
 
     if( false == sCharString.empty())
     {
-        int         nCodepage = -1;
+		if (sCharString == "*") return L"*";
+
+        int nCodepage = -1;
 
         //применяем параметры codepage от текущего шрифта todo associated fonts.
         RtfFont oFont;

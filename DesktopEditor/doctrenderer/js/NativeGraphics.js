@@ -347,8 +347,8 @@ CNativeGraphics.prototype =
     drawVerLine : function(align, x, y, b, penW)
     {
         this.Native["drawVerLine"](align, x, y, b, penW);
-		
-		if (false === this.GetIntegerGrid() && this.ArrayPoints != null)
+        
+        if (false === this.GetIntegerGrid() && this.ArrayPoints != null)
         {
             this.ArrayPoints[this.ArrayPoints.length] = {x: x, y: y};
             this.ArrayPoints[this.ArrayPoints.length] = {x: x, y: b};
@@ -358,8 +358,8 @@ CNativeGraphics.prototype =
     drawHorLineExt : function(align, y, x, r, penW, leftMW, rightMW)
     {
         this.Native["drawHorLineExt"](align, y, x, r, penW, leftMW, rightMW);
-		
-		if (false === this.GetIntegerGrid() && this.ArrayPoints != null)
+        
+        if (false === this.GetIntegerGrid() && this.ArrayPoints != null)
         {
             this.ArrayPoints[this.ArrayPoints.length] = {x: x, y: y};
             this.ArrayPoints[this.ArrayPoints.length] = {x: r, y: y};
@@ -546,63 +546,63 @@ CNativeGraphics.prototype =
     {
         return this.Native["toDataURL"](type);
     },
-	GetPenColor : function()
-	{
-		return this.Native["GetPenColor"]();
-	},
-	GetBrushColor : function()
-	{
-		return this.Native["GetBrushColor"]();
-	},
-	put_brushTexture : function(src, type)
-	{
-		this.Native["put_brushTexture"](src);
-	},
-	put_brushTextureMode : function(mode)
-	{
-		this.Native["put_brushTextureMode"](mode);
-	},
+    GetPenColor : function()
+    {
+        return this.Native["GetPenColor"]();
+    },
+    GetBrushColor : function()
+    {
+        return this.Native["GetBrushColor"]();
+    },
+    put_brushTexture : function(src, type)
+    {
+        this.Native["put_brushTexture"](src);
+    },
+    put_brushTextureMode : function(mode)
+    {
+        this.Native["put_brushTextureMode"](mode);
+    },
     put_BrushTextureAlpha : function(a)
-	{
-		this.Native["put_BrushTextureAlpha"](a);
-	},
-	put_BrushGradient : function(gradFill, points, transparent)
-	{
-		this.Native["put_BrushGradient"](gradFill.colors, points, transparent);
-	},
-	TransformPointX : function(x, y)
-	{
-		return this.Native["TransformPointX"](x, y);
-	},
-	TransformPointY : function(x, y)
-	{
-		return this.Native["TransformPointY"](x, y);
-	},
-	put_LineJoin : function(join)
-	{
-		this.Native["put_LineJoin"](join);
-	},
+    {
+        this.Native["put_BrushTextureAlpha"](a);
+    },
+    put_BrushGradient : function(gradFill, points, transparent)
+    {
+        this.Native["put_BrushGradient"](gradFill.colors, points, transparent);
+    },
+    TransformPointX : function(x, y)
+    {
+        return this.Native["TransformPointX"](x, y);
+    },
+    TransformPointY : function(x, y)
+    {
+        return this.Native["TransformPointY"](x, y);
+    },
+    put_LineJoin : function(join)
+    {
+        this.Native["put_LineJoin"](join);
+    },
     get_LineJoin : function()
-	{
-		return this.Native["get_LineJoin"]();
-	},
-	put_TextureBoundsEnabled : function(enabled)
-	{
-	},
-	put_TextureBounds : function(x, y, w, h)
-	{
-		this.Native["put_TextureBounds"](x, y, w, h);
-	},
-	GetlineWidth : function()
-	{
-		return this.Native["GetlineWidth"]();
-	},
-	DrawPath : function(path)
-	{
-		this.Native["DrawPath"](path);
-	},
-	drawpath : function(path)
-	{
-		this.Native["DrawPath"](path);
-	}
+    {
+        return this.Native["get_LineJoin"]();
+    },
+    put_TextureBoundsEnabled : function(enabled)
+    {
+    },
+    put_TextureBounds : function(x, y, w, h)
+    {
+        this.Native["put_TextureBounds"](x, y, w, h);
+    },
+    GetlineWidth : function()
+    {
+        return this.Native["GetlineWidth"]();
+    },
+    DrawPath : function(path)
+    {
+        this.Native["DrawPath"](path);
+    },
+    drawpath : function(path)
+    {
+        this.Native["DrawPath"](path);
+    }
 };

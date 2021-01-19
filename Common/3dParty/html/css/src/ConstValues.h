@@ -1249,8 +1249,8 @@ namespace NSCSS
             public:
 
                 BorderSide() : fWidth(fNoneValue),
-                               sStyle(L""),
-                               sColor(L""),
+                               sStyle(L"auto"),
+                               sColor(L"auto"),
                                bImportants({false, false, false}){}
 
                 void ClearImportants()
@@ -1278,14 +1278,14 @@ namespace NSCSS
                         oFirstBorderSide.fWidth = fNoneValue;
 
                     if (oFirstBorderSide.bImportants[1] && !oSecondBorderSide.bImportants[1] && !oFirstBorderSide.sStyle.empty())
-                        oSecondBorderSide.sStyle.clear();
+                        oSecondBorderSide.sStyle = L"auto";
                     else if (!oSecondBorderSide.sStyle.empty())
-                        oFirstBorderSide.sStyle.clear();
+                        oFirstBorderSide.sStyle = L"auto";
 
                     if (oFirstBorderSide.bImportants[2] && !oSecondBorderSide.bImportants[2] && !oFirstBorderSide.sColor.empty())
-                        oSecondBorderSide.sColor.clear();
+                        oSecondBorderSide.sColor = L"auto";
                     else if (!oSecondBorderSide.sColor.empty())
-                        oFirstBorderSide.sColor.clear();
+                        oFirstBorderSide.sColor = L"auto";
                 }
 
                 bool operator==(const BorderSide& oBorderSide) const
@@ -1297,9 +1297,7 @@ namespace NSCSS
 
                 bool Empty() const
                 {
-                    return fWidth  <= 0     &&
-                           sStyle.empty()   &&
-                           sColor.empty();
+                    return fWidth  <= 0;
                 }
 
                 void SetWidthWithoutChecking(const float& fWidth, const bool &bHardMode = false)

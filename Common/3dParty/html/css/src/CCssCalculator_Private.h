@@ -46,8 +46,7 @@ namespace NSCSS
         CCssCalculator_Private();
         ~CCssCalculator_Private();
 
-        CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors, const UnitMeasure& unitMeasure = Default);
-        CCompiledStyle GetStyleSetting(const std::vector<CNode>& arSelectors);
+        CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors, const bool& bIsSettings = false, const UnitMeasure& unitMeasure = Default);
 
         void AddStyles(const std::string& sStyle);
         void AddStyles(const std::wstring& sStyle);

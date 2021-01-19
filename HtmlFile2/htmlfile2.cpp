@@ -1460,8 +1460,7 @@ private:
 			else
 				i++;
 		}
-
-        NSCSS::CCompiledStyle oStyleSetting = m_oStylesCalculator.GetStyleSetting(sSelectors);
+        NSCSS::CCompiledStyle oStyleSetting = m_oStylesCalculator.GetCompiledStyle(sSelectors, true);
         NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
 
         NSCSS::CCompiledStyle::StyleEquation(oStyle, oStyleSetting);
@@ -1485,7 +1484,7 @@ private:
 
     std::wstring wrR(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
     {
-        NSCSS::CCompiledStyle oStyleSetting = m_oStylesCalculator.GetStyleSetting(sSelectors);
+        NSCSS::CCompiledStyle oStyleSetting = m_oStylesCalculator.GetCompiledStyle(sSelectors, true);
         NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
 
         NSCSS::CCompiledStyle::StyleEquation(oStyle, oStyleSetting);

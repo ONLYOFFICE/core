@@ -304,7 +304,7 @@ namespace NSCSS
         return StringifyValueList(oValues);
     }
 
-    CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const std::vector<CNode>& arSelectors, const UnitMeasure& unitMeasure)
+    CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const std::vector<CNode>& arSelectors, const bool& bIsSettings, const UnitMeasure& unitMeasure)
     {
         if (arSelectors.empty())
             return CCompiledStyle();
@@ -312,10 +312,22 @@ namespace NSCSS
         if (unitMeasure != Default)
             SetUnitMeasure(unitMeasure);
 
-        const std::map<std::vector<CNode>, CCompiledStyle*>::iterator oItem = m_mUsedStyles.find(arSelectors);
+        if (!bIsSettings)
+        {
+            const std::map<std::vector<CNode>, CCompiledStyle*>::iterator oItem = m_mUsedStyles.find(arSelectors);
 
-        if (oItem != m_mUsedStyles.end())
-            return *oItem->second;
+            if (oItem != m_mUsedStyles.end())
+                return *oItem->second;
+        }
+        else if (NULL == m_mStatictics || m_mStatictics->empty())
+        {
+            CCompiledStyle oStyle;
+            oStyle.SetDpi(m_nDpi);
+            oStyle.SetUnitMeasure(m_UnitMeasure);
+            oStyle.SetID(arSelectors.back().m_sName + ((!arSelectors.back().m_sClass.empty()) ? L'.' + arSelectors.back().m_sClass : L"") + ((arSelectors.back().m_sId.empty()) ? L"" : L'#' + arSelectors.back().m_sId) + L'-' + std::to_wstring(++m_nCountNodes));
+
+            return oStyle;
+        }
 
         CCompiledStyle *oStyle = new CCompiledStyle();
 
@@ -387,17 +399,7 @@ namespace NSCSS
             {
                 sId = arWords.back();
                 arWords.pop_back();
-
-                if (NULL != m_mStatictics && !m_mStatictics->empty())
-                {
-                    std::map<StatistickElement, unsigned int>::iterator oFind = m_mStatictics->find(StatistickElement{StatistickElement::IsId, sId});
-                    if (oFind != m_mStatictics->end() && oFind->second >= MaxNumberRepetitions)
-                        arNextNodes.push_back(sId);
-                }
-                else
-                {
-                    sId.clear();
-                }
+                arNextNodes.push_back(sId);
             }
 
             if (arWords.back()[0] == L'.')
@@ -421,35 +423,29 @@ namespace NSCSS
 
                 if (oFindId != m_mData.end())
                 {
-                    const std::vector<CElement*> arTemp1 = oFindId->second->GetNextOfKin(sName, arClasses);
                     const std::vector<CElement*> arTemp2 = oFindId->second->GetAllElements(arNextNodes);
 
-                    if (!arTemp1.empty())
-                        arFindElements.insert(arFindElements.end(), arTemp1.begin(), arTemp1.end());
                     if (!arTemp2.empty())
                         arFindElements.insert(arFindElements.end(), arTemp2.begin(), arTemp2.end());
                 }
             }
 
-            if (!arClasses.empty())
+            if (!arClasses.empty() && !bIsSettings)
             {
                 for (std::vector<std::wstring>::const_reverse_iterator iClass = arClasses.rbegin(); iClass != arClasses.rend(); ++iClass)
                 {
                     const std::map<std::wstring, CElement*>::const_iterator oFindClass = m_mData.find(*iClass);
                     if (oFindClass != m_mData.end())
                     {
-                        const std::vector<CElement*> arTemp1 = oFindClass->second->GetNextOfKin(sName);
                         const std::vector<CElement*> arTemp2 = oFindClass->second->GetAllElements(arNextNodes);
 
-                        if (!arTemp1.empty())
-                            arFindElements.insert(arFindElements.end(), arTemp1.begin(), arTemp1.end());
                         if (!arTemp2.empty())
                             arFindElements.insert(arFindElements.end(), arTemp2.begin(), arTemp2.end());
                     }
                 }
             }
 
-            if (oFindName != m_mData.end())
+            if (oFindName != m_mData.end() && !bIsSettings)
             {
                 const std::vector<CElement*> arTemp = oFindName->second->GetAllElements(arNextNodes);
                 if (!arTemp.empty())
@@ -467,20 +463,21 @@ namespace NSCSS
             for (const CElement* oElement : arFindElements)
                 oStyle->AddStyle(oElement->GetStyle());
 
-            oStyle->AddStyle(arSelectors[i].m_sStyle);
+            std::map<StatistickElement, unsigned int>::const_iterator oFindCountStyle = m_mStatictics->find(StatistickElement{StatistickElement::IsStyle, arSelectors[i].m_sStyle});
 
-            if (!arSelectors[i].m_sStyle.empty() && NULL != m_mStatictics && !m_mStatictics->empty())
-            {
-                std::map<StatistickElement, unsigned int>::iterator oFind = m_mStatictics->find(StatistickElement{StatistickElement::IsStyle, arSelectors[i].m_sStyle});
-                if (oFind != m_mStatictics->end() && oFind->second >= MaxNumberRepetitions)
-                    oStyle->AddStyle(arSelectors[i].m_sStyle);
-            }
+            if (bIsSettings && oFindCountStyle->second < MaxNumberRepetitions)
+                oStyle->AddStyle(arSelectors[i].m_sStyle, true);
+            else if (!bIsSettings && oFindCountStyle->second >= MaxNumberRepetitions)
+                oStyle->AddStyle(arSelectors[i].m_sStyle, true);
+
             arWords.pop_back();
         }
 
-        oStyle->SetID(arSelectors.back().m_sName + ((!arSelectors.back().m_sClass.empty()) ? L'.' + arSelectors.back().m_sClass : L"") + ((arSelectors.back().m_sId.empty()) ? L"" : L'#' + arSelectors.back().m_sId) + L'-' + std::to_wstring(++m_nCountNodes));
-
-        m_mUsedStyles[arSelectors] = oStyle;
+        if (!bIsSettings)
+        {
+            oStyle->SetID(arSelectors.back().m_sName + ((!arSelectors.back().m_sClass.empty()) ? L'.' + arSelectors.back().m_sClass : L"") + ((arSelectors.back().m_sId.empty()) ? L"" : L'#' + arSelectors.back().m_sId) + L'-' + std::to_wstring(++m_nCountNodes));
+            m_mUsedStyles[arSelectors] = oStyle;
+        }
 
         return *oStyle;
     }
@@ -536,39 +533,6 @@ namespace NSCSS
         return m_nDpi;
     }
 
-    CCompiledStyle CCssCalculator_Private::GetStyleSetting(const std::vector<CNode>& arSelectors)
-    {        
-        if (NULL == m_mStatictics || m_mStatictics->empty())
-            return CCompiledStyle();
-
-        CCompiledStyle oStyle;
-
-        for (const CNode& oNode : arSelectors)
-        {
-            if (!oNode.m_sId.empty())
-            {
-                std::map<StatistickElement, unsigned int>::const_iterator oFind = m_mStatictics->find(StatistickElement{StatistickElement::IsId, L'#' + oNode.m_sId});
-                if (oFind != m_mStatictics->cend() && oFind->second < MaxNumberRepetitions)
-                {
-                    std::map<std::wstring, CElement*>::const_iterator oFindId;
-                    oFindId = m_mData.find(L'#' + oNode.m_sId);
-
-                    if (oFindId != m_mData.cend())
-                        oStyle.AddStyle(oFindId->second->GetStyle(), true);
-                }
-            }
-            if (!oNode.m_sStyle.empty())
-            {
-                std::map<StatistickElement, unsigned int>::const_iterator oFind = m_mStatictics->find(StatistickElement{StatistickElement::IsStyle, oNode.m_sStyle});
-                if (oFind != m_mStatictics->cend() && oFind->second < MaxNumberRepetitions)
-                    oStyle.AddStyle(oNode.m_sStyle, true);
-            }
-        }
-
-        oStyle.SetID(arSelectors.back().m_sName + ((!arSelectors.back().m_sClass.empty()) ? L'.' + arSelectors.back().m_sClass : L"") + ((arSelectors.back().m_sId.empty()) ? L"" : L'#' + arSelectors.back().m_sId) + L'-' + std::to_wstring(m_nCountNodes));
-
-        return oStyle;
-    }
 
     UnitMeasure CCssCalculator_Private::GetUnitMeasure() const
     {

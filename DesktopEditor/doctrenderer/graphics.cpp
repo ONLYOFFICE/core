@@ -1063,7 +1063,10 @@ CColor CGraphics::GetBrushColor()
 }
 void CGraphics::put_brushTexture(std::wstring src)
 {
-    m_pRenderer->put_BrushTexturePath(src);
+    std::wstring strImage = (0 == src.find(L"theme") ? m_sApplicationThemesDirectory : m_sApplicationImagesDirectory) + L'/' + src;
+    //m_pRenderer->put_BrushType(c_BrushTypeTexture);
+    //m_pRenderer->put_BrushTextureMode(c_BrushTextureModeTile);
+    m_pRenderer->put_BrushTexturePath(strImage);
 }
 void CGraphics::put_brushTextureMode(int mode)
 {

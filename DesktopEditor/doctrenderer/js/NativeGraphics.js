@@ -29,20 +29,21 @@ function CNativeGraphics()
     this.dash_no_smart = null;
 
     this.ArrayPoints = null;
-	this.MaxEpsLine  = null;
+    this.MaxEpsLine  = null;
+    this.m_oContext  = null;
 
     this.TextureFillTransformScaleX = 1;
     this.TextureFillTransformScaleY = 1;
 
     this.RENDERER_PDF_FLAG        = true;
-	this.IsNoSupportTextDraw      = true;
-	this.bDrawSmart               = false;
+    this.IsNoSupportTextDraw      = true;
+    this.bDrawSmart               = false;
     this.IsSlideBoundsCheckerType = false;
-	this.AutoCheckLineWidth       = false;
+    this.AutoCheckLineWidth       = false;
     this.IsTrack                  = false;
     this.IsThumbnail              = false;
     this.ClearMode                = false;
-	this.updatedRect              = false;
+    this.updatedRect              = false;
 }
 
 CNativeGraphics.prototype =

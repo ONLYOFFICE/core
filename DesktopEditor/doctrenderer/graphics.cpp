@@ -8,6 +8,7 @@
 std::wstring NSGraphics::CGraphics::m_sApplicationFontsDirectory;
 std::wstring NSGraphics::CGraphics::m_sApplicationThemesDirectory;
 std::wstring NSGraphics::CGraphics::m_sApplicationImagesDirectory;
+int nImage = 1;
 
 namespace NSGraphics
 {
@@ -1021,9 +1022,7 @@ void CGraphics::DrawFootnoteRect(double x, double y, double w, double h)
 std::string CGraphics::toDataURL(std::wstring type)
 {
     size_t nSl = type.find(L'/');
-    if(nSl != std::wstring::npos)
-        type.erase(0, nSl + 1);
-    std::wstring sPath = m_sApplicationImagesDirectory + L"/img." + type;
+    std::wstring sPath = m_sApplicationImagesDirectory + L"/img" + std::to_wstring(nImage++) + L'.' + type.substr(nSl + 1);
     m_oFrame.SaveFile(sPath, _CXIMAGE_FORMAT_PNG);
 
     NSFile::CFileBinary oReader;
@@ -1040,7 +1039,7 @@ std::string CGraphics::toDataURL(std::wstring type)
         BYTE* pImageData = new BYTE[nEncodeLen];
         if(TRUE == NSBase64::Base64Encode(pFileContent, dwFileSize, pImageData, &nEncodeLen))
         {
-            std::string sRes = std::string((char*)pImageData, nEncodeLen);
+            std::string sRes = "data:" + U_TO_UTF8(type) + ";base64, " + std::string((char*)pImageData, nEncodeLen);
             return sRes;
         }
     }

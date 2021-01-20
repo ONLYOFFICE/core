@@ -1070,7 +1070,7 @@ void CGraphics::put_brushTextureMode(int mode)
 }
 void CGraphics::put_BrushTextureAlpha(int a)
 {
-    m_pRenderer->put_BrushTextureAlpha(a);
+    m_pRenderer->put_BrushTextureAlpha(a == 0 ? 255 : a);
 }
 void CGraphics::put_BrushGradient(int* pColors, double* pPositions, size_t nCount)
 {

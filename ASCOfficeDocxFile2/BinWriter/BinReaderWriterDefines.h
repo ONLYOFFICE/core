@@ -411,7 +411,11 @@ extern int g_nCurFormatVersion;
 		MoveFrom = 36,
 		MoveTo = 37,
 		SpacingTwips = 38,
-		PositionHps = 39
+		PositionHps = 39,
+		FontAsciiTheme = 40,
+		FontHAnsiTheme = 41,
+		FontAETheme = 42,
+		FontCSTheme = 43
 	};}
 	namespace c_oSerProp_rowPrType{enum c_oSerProp_rowPrType
 	{

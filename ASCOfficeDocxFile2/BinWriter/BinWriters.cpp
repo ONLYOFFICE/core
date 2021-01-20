@@ -345,7 +345,7 @@ void BinaryCommonWriter::WritePaddings(const nullable<SimpleTypes::CTwipsMeasure
 		m_oStream.WriteLONG(bottom->ToTwips());
 	}
 }
-void BinaryCommonWriter::WriteFont(std::wstring& sFontName, BYTE bType, DocWrapper::FontProcessor& m_oFontProcessor)
+void BinaryCommonWriter::WriteFont(std::wstring sFontName, BYTE bType, DocWrapper::FontProcessor& m_oFontProcessor)
 {
 	if(!sFontName.empty())
 	{
@@ -520,92 +520,39 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 	//FontFamily
 	if(false != rPr->m_oRFonts.IsInit())
 	{
-		std::wstring sFontAscii;
-		std::wstring sFontHAnsi;
-		std::wstring sFontAE;
-		std::wstring sFontCS;
 		const ComplexTypes::Word::CFonts& oFont = rPr->m_oRFonts.get();
-
-		if(NULL != m_oParamsWriter.m_pTheme && oFont.m_oAsciiTheme.IsInit())
+		if(oFont.m_sAscii.IsInit())
+			m_oBcw.WriteFont(oFont.m_sAscii.get(), c_oSerProp_rPrType::FontAscii, *m_oParamsWriter.m_pFontProcessor);
+		if(oFont.m_oAsciiTheme.IsInit())
 		{
-			const SimpleTypes::ETheme& eTheme = oFont.m_oAsciiTheme.get().GetValue();
-			switch(eTheme)
-			{
-			case SimpleTypes::themeMajorAscii:
-			case SimpleTypes::themeMajorBidi:
-			case SimpleTypes::themeMajorEastAsia:
-			case SimpleTypes::themeMajorHAnsi:		sFontAscii = m_oParamsWriter.m_pTheme->themeElements.fontScheme.majorFont.latin.typeface;	break;
-			case SimpleTypes::themeMinorAscii:
-			case SimpleTypes::themeMinorBidi:
-			case SimpleTypes::themeMinorEastAsia:
-			case SimpleTypes::themeMinorHAnsi:		sFontAscii = m_oParamsWriter.m_pTheme->themeElements.fontScheme.minorFont.latin.typeface;	break;
-			default:
-				break;
-			}
+			m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::FontAsciiTheme);
+			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+			m_oBcw.m_oStream.WriteBYTE((BYTE)oFont.m_oAsciiTheme->GetValue());
 		}
-		else if(oFont.m_sAscii.IsInit())
-				sFontAscii = oFont.m_sAscii.get();
-
-		if(NULL != m_oParamsWriter.m_pTheme && oFont.m_oHAnsiTheme.IsInit())
+		if(oFont.m_sHAnsi.IsInit())
+			m_oBcw.WriteFont(oFont.m_sHAnsi.get(), c_oSerProp_rPrType::FontHAnsi, *m_oParamsWriter.m_pFontProcessor);
+		if(oFont.m_oHAnsiTheme.IsInit())
 		{
-			const SimpleTypes::ETheme& eTheme = oFont.m_oHAnsiTheme.get().GetValue();
-			switch(eTheme)
-			{
-			case SimpleTypes::themeMajorAscii:
-			case SimpleTypes::themeMajorBidi:
-			case SimpleTypes::themeMajorEastAsia:
-			case SimpleTypes::themeMajorHAnsi:		sFontHAnsi = m_oParamsWriter.m_pTheme->themeElements.fontScheme.majorFont.latin.typeface;	break;
-			case SimpleTypes::themeMinorAscii:
-			case SimpleTypes::themeMinorBidi:
-			case SimpleTypes::themeMinorEastAsia:
-			case SimpleTypes::themeMinorHAnsi:		sFontHAnsi = m_oParamsWriter.m_pTheme->themeElements.fontScheme.minorFont.latin.typeface;	break;
-			default:
-				break;
-			}
+			m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::FontHAnsiTheme);
+			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+			m_oBcw.m_oStream.WriteBYTE((BYTE)oFont.m_oHAnsiTheme->GetValue());
 		}
-		else if(oFont.m_sHAnsi.IsInit())
-			sFontHAnsi = oFont.m_sHAnsi.get();
-		if(NULL != m_oParamsWriter.m_pTheme && oFont.m_oCsTheme.IsInit())
+		if(oFont.m_sEastAsia.IsInit())
+			m_oBcw.WriteFont(oFont.m_sEastAsia.get(), c_oSerProp_rPrType::FontAE, *m_oParamsWriter.m_pFontProcessor);
+		if(oFont.m_oEastAsiaTheme.IsInit())
 		{
-			const SimpleTypes::ETheme& eTheme = oFont.m_oCsTheme.get().GetValue();
-			switch(eTheme)
-			{
-			case SimpleTypes::themeMajorAscii:
-			case SimpleTypes::themeMajorBidi:
-			case SimpleTypes::themeMajorEastAsia:
-			case SimpleTypes::themeMajorHAnsi:		sFontCS = m_oParamsWriter.m_pTheme->themeElements.fontScheme.majorFont.latin.typeface;	break;
-			case SimpleTypes::themeMinorAscii:
-			case SimpleTypes::themeMinorBidi:
-			case SimpleTypes::themeMinorEastAsia:
-			case SimpleTypes::themeMinorHAnsi:		sFontCS = m_oParamsWriter.m_pTheme->themeElements.fontScheme.minorFont.latin.typeface;	break;
-			default: break;
-			}
+			m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::FontAETheme);
+			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+			m_oBcw.m_oStream.WriteBYTE((BYTE)oFont.m_oEastAsiaTheme->GetValue());
 		}
-		else if(oFont.m_sCs.IsInit())
-			sFontCS = oFont.m_sCs.get();
-		if(NULL != m_oParamsWriter.m_pTheme && oFont.m_oEastAsiaTheme.IsInit())
+		if(oFont.m_sCs.IsInit())
+			m_oBcw.WriteFont(oFont.m_sCs.get(), c_oSerProp_rPrType::FontCS, *m_oParamsWriter.m_pFontProcessor);
+		if(oFont.m_oCsTheme.IsInit())
 		{
-			const SimpleTypes::ETheme& eTheme = oFont.m_oEastAsiaTheme.get().GetValue();
-			switch(eTheme)
-			{
-			case SimpleTypes::themeMajorAscii:
-			case SimpleTypes::themeMajorBidi:
-			case SimpleTypes::themeMajorEastAsia:
-			case SimpleTypes::themeMajorHAnsi:		sFontAE = m_oParamsWriter.m_pTheme->themeElements.fontScheme.majorFont.latin.typeface;	break;
-			case SimpleTypes::themeMinorAscii:
-			case SimpleTypes::themeMinorBidi:
-			case SimpleTypes::themeMinorEastAsia:
-			case SimpleTypes::themeMinorHAnsi:		sFontAE = m_oParamsWriter.m_pTheme->themeElements.fontScheme.minorFont.latin.typeface;	break;
-			default: break;
-			}
+			m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::FontCSTheme);
+			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+			m_oBcw.m_oStream.WriteBYTE((BYTE)oFont.m_oCsTheme->GetValue());
 		}
-		else if(oFont.m_sEastAsia.IsInit())
-			sFontAE = oFont.m_sEastAsia.get();
-		m_oBcw.WriteFont(sFontAscii, c_oSerProp_rPrType::FontAscii, *m_oParamsWriter.m_pFontProcessor);
-		m_oBcw.WriteFont(sFontHAnsi, c_oSerProp_rPrType::FontHAnsi, *m_oParamsWriter.m_pFontProcessor);
-		m_oBcw.WriteFont(sFontAE, c_oSerProp_rPrType::FontAE, *m_oParamsWriter.m_pFontProcessor);
-		m_oBcw.WriteFont(sFontCS, c_oSerProp_rPrType::FontCS, *m_oParamsWriter.m_pFontProcessor);
-
 		//Hint
 		if(false != oFont.m_oHint.IsInit())
 		{

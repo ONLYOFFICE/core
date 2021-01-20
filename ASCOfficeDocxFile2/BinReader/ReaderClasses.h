@@ -478,6 +478,10 @@ public:
     std::wstring FontHAnsi;
     std::wstring FontAE;
     std::wstring FontCS;
+	std::wstring FontAsciiTheme;
+	std::wstring FontHAnsiTheme;
+	std::wstring FontAETheme;
+	std::wstring FontCSTheme;
 	long FontSize;
 	docRGB Color;
 	BYTE VertAlign;
@@ -601,7 +605,7 @@ public:
 	{
 		return bBold || bItalic || bUnderline || bStrikeout || bFontAscii || bFontHAnsi || bFontAE || bFontCS || bFontSize || bColor || bVertAlign || nHighLight > 0 || bShd ||
 			bRStyle || bSpacing || bDStrikeout || bCaps || bSmallCaps || bPosition || bFontHint || bBoldCs || bItalicCs || bFontSizeCs || bCs || bRtl || bLang || bLangBidi || bLangEA || bThemeColor || bVanish ||
-			!Outline.empty() || !Fill.empty() || !Del.empty() || !Ins.empty() || !MoveFrom.empty() || !MoveTo.empty() || !rPrChange.empty();
+			!Outline.empty() || !Fill.empty() || !Del.empty() || !Ins.empty() || !MoveFrom.empty() || !MoveTo.empty() || !rPrChange.empty() || !FontAsciiTheme.empty() || !FontHAnsiTheme.empty() || !FontAETheme.empty() || !FontCSTheme.empty();
 	}
 	void Write(NSStringUtils::CStringBuilder*  pCStringWriter)
 	{
@@ -610,7 +614,7 @@ public:
 		{
             pCStringWriter->WriteString(L"<w:rStyle w:val=\"" + RStyle + L"\"/>");
 		}
-		if(bFontAscii || bFontHAnsi || bFontAE || bFontCS || bFontHint)
+		if(bFontAscii || bFontHAnsi || bFontAE || bFontCS || bFontHint || !FontAsciiTheme.empty() || !FontHAnsiTheme.empty() || !FontAETheme.empty() || !FontCSTheme.empty())
 		{
             std::wstring sFont = _T("<w:rFonts");
 			if(bFontAscii)
@@ -632,6 +636,22 @@ public:
 			{
                 sFont += L" w:eastAsia=\"" + FontAE + L"\"";
 				m_mapFonts[FontAE] = 1;
+			}
+			if(!FontAsciiTheme.empty())
+			{
+				sFont += L" w:asciiTheme=\"" + FontAsciiTheme + L"\"";
+			}
+			if(!FontHAnsiTheme.empty())
+			{
+				sFont += L" w:hAnsiTheme=\"" + FontHAnsiTheme + L"\"";
+			}
+			if(!FontAETheme.empty())
+			{
+				sFont += L" w:eastAsiaTheme=\"" + FontAETheme + L"\"";
+			}
+			if(!FontCSTheme.empty())
+			{
+				sFont += L" w:cstheme=\"" + FontCSTheme + L"\"";
 			}
 			if(bFontHint)
 			{

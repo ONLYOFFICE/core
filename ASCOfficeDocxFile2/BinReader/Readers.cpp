@@ -468,6 +468,13 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 			}
 			break;
 		}
+	case c_oSerProp_rPrType::FontAsciiTheme:
+		{
+			SimpleTypes::CTheme<> theme;
+			theme.SetValue((SimpleTypes::ETheme)m_oBufferedStream.GetUChar());
+			orPr->FontAsciiTheme = theme.ToString();
+			break;
+		}
 	case c_oSerProp_rPrType::FontHAnsi:
 		{
             std::wstring sFontName(m_oBufferedStream.GetString3(length));
@@ -477,6 +484,13 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 				orPr->bFontHAnsi = true;
 				orPr->FontHAnsi = sFontName;
 			}
+			break;
+		}
+	case c_oSerProp_rPrType::FontHAnsiTheme:
+		{
+			SimpleTypes::CTheme<> theme;
+			theme.SetValue((SimpleTypes::ETheme)m_oBufferedStream.GetUChar());
+			orPr->FontHAnsiTheme = theme.ToString();
 			break;
 		}
 	case c_oSerProp_rPrType::FontCS:
@@ -490,6 +504,13 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 			}
 			break;
 		}
+	case c_oSerProp_rPrType::FontCSTheme:
+		{
+			SimpleTypes::CTheme<> theme;
+			theme.SetValue((SimpleTypes::ETheme)m_oBufferedStream.GetUChar());
+			orPr->FontCSTheme = theme.ToString();
+			break;
+		}
 	case c_oSerProp_rPrType::FontAE:
 		{
             std::wstring sFontName(m_oBufferedStream.GetString3(length));
@@ -499,6 +520,13 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 				orPr->bFontAE = true;
 				orPr->FontAE = sFontName;
 			}
+			break;
+		}
+	case c_oSerProp_rPrType::FontAETheme:
+		{
+			SimpleTypes::CTheme<> theme;
+			theme.SetValue((SimpleTypes::ETheme)m_oBufferedStream.GetUChar());
+			orPr->FontAETheme = theme.ToString();
 			break;
 		}
 	case c_oSerProp_rPrType::FontSize:

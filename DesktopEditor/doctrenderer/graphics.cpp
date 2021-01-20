@@ -182,10 +182,6 @@ void CGraphics::reset()
 {
     m_pRenderer->ResetTransform();
 }
-void CGraphics::transform3(double sx, double shy, double shx, double sy, double tx, double ty)
-{
-    m_pRenderer->SetTransform(sx, shy, shx, sy, tx, ty);
-}
 void CGraphics::FreeFont()
 {
     m_pRenderer->CloseFont();
@@ -919,7 +915,7 @@ void CGraphics::RestoreGrState()
                 for (CHist_Clip* j : arr)
                 {
                     Aggplus::CMatrix& oMatrix = j->Transform;
-                    transform3(oMatrix.sx(), oMatrix.shy(), oMatrix.shx(), oMatrix.sy(), oMatrix.tx(), oMatrix.ty());
+                    transform(oMatrix.sx(), oMatrix.shy(), oMatrix.shx(), oMatrix.sy(), oMatrix.tx(), oMatrix.ty());
                     SetIntegerGrid(j->IsIntegerGrid);
 
                     StartClipPath();
@@ -951,7 +947,7 @@ void CGraphics::RestoreGrState()
     m_oGrState.States.pop_back();
 
     Aggplus::CMatrix& oMatrix = pGrState->Transform;
-    transform3(oMatrix.sx(), oMatrix.shy(), oMatrix.shx(), oMatrix.sy(), oMatrix.tx(), oMatrix.ty());
+    transform(oMatrix.sx(), oMatrix.shy(), oMatrix.shx(), oMatrix.sy(), oMatrix.tx(), oMatrix.ty());
     SetIntegerGrid(pGrState->IsIntegerGrid);
 
     RELEASEOBJECT(pState);
@@ -1064,9 +1060,9 @@ CColor CGraphics::GetBrushColor()
 void CGraphics::put_brushTexture(std::wstring src)
 {
     std::wstring strImage = (0 == src.find(L"theme") ? m_sApplicationThemesDirectory : m_sApplicationImagesDirectory) + L'/' + src;
-    //m_pRenderer->put_BrushType(c_BrushTypeTexture);
-    //m_pRenderer->put_BrushTextureMode(c_BrushTextureModeTile);
+    m_pRenderer->put_BrushType(c_BrushTypeTexture);
     m_pRenderer->put_BrushTexturePath(strImage);
+    m_pRenderer->put_BrushTextureMode(0);
 }
 void CGraphics::put_brushTextureMode(int mode)
 {

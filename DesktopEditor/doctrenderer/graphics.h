@@ -150,7 +150,6 @@ namespace NSGraphics
         void restore();
         void clip();
         void reset();
-        void transform3(double sx, double shy, double shx, double sy, double tx, double ty);
         void FreeFont();
         void ClearLastFont();
         // images

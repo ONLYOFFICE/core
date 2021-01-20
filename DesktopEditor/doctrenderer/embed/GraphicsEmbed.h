@@ -46,7 +46,6 @@ public:
     JSSmart<CJSValue> restore();
     JSSmart<CJSValue> clip();
     JSSmart<CJSValue> reset();
-    JSSmart<CJSValue> transform3(JSSmart<CJSValue> sx, JSSmart<CJSValue> shy, JSSmart<CJSValue> shx, JSSmart<CJSValue> sy, JSSmart<CJSValue> tx, JSSmart<CJSValue> ty, JSSmart<CJSValue> isNeedInvert);
     JSSmart<CJSValue> FreeFont();
     JSSmart<CJSValue> ClearLastFont();
     // images

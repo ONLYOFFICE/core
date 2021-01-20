@@ -1,8 +1,31 @@
 
 var MyGraphics = new CNativeGraphics();
 
-// Задаём размеры холста и всё будет полупрозрачное
-MyGraphics.init(null, 1000, 1000, 1000 * 25.4 / 96, 1000 * 25.4 / 96);
+// Задаём размеры холста
+MyGraphics.init(null, 250.779, 389.82, 66, 103);
+
+// Рисование картинки с помощью brush
+MyGraphics.SetIntegerGrid(false);
+MyGraphics.transform(1, 0, 0, 1, 0, 0);
+MyGraphics.ArrayPoints = null;
+MyGraphics.put_TextureBoundsEnabled(true);
+MyGraphics.put_TextureBounds(0, 0, 66.1458, 102.923);
+MyGraphics._s();
+MyGraphics._m(0, 0);
+MyGraphics._l(66.1458, 0);
+MyGraphics._l(66.1458, 102.923);
+MyGraphics._l(0, 102.923);
+MyGraphics._z();
+MyGraphics.put_brushTexture("image3.jpg");
+MyGraphics.put_BrushTextureAlpha(0);
+MyGraphics.drawpath(256);
+MyGraphics._e();
+MyGraphics.put_TextureBoundsEnabled(false);
+MyGraphics.p_dash(null);
+MyGraphics.reset();
+MyGraphics.SetIntegerGrid(true);
+MyGraphics.toDataURL("image/png");
+
 MyGraphics.put_GlobalAlpha(true, 0.5);
 
 // Рисуем желтый квадрат с красной пунктирной обводкой и толщиной 2

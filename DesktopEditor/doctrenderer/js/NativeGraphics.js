@@ -175,7 +175,7 @@ CNativeGraphics.prototype =
     },
     transform3 : function(m, isNeedInvert)
     {
-        this.Native["transform3"](m.sx, m.shy, m.shx, m.sy, m.tx, m.ty, isNeedInvert);
+        this.Native["transform"](m.sx, m.shy, m.shx, m.sy, m.tx, m.ty);
     },
     FreeFont : function()
     {

@@ -35,7 +35,6 @@ namespace NSGraphics
     FUNCTION_WRAPPER_V8  (_restore,       restore)
     FUNCTION_WRAPPER_V8  (_clip,          clip)
     FUNCTION_WRAPPER_V8  (_reset,         reset)
-    FUNCTION_WRAPPER_V8_7(_transform3,    transform3)
     FUNCTION_WRAPPER_V8  (_FreeFont,      FreeFont)
     FUNCTION_WRAPPER_V8  (_ClearLastFont, ClearLastFont)
     // images
@@ -157,7 +156,6 @@ namespace NSGraphics
         NSV8Objects::Template_Set(result, "restore",                  _restore);
         NSV8Objects::Template_Set(result, "clip",                     _clip);
         NSV8Objects::Template_Set(result, "reset",                    _reset);
-        NSV8Objects::Template_Set(result, "transform3",               _transform3);
         NSV8Objects::Template_Set(result, "FreeFont",                 _FreeFont);
         NSV8Objects::Template_Set(result, "ClearLastFont",            _ClearLastFont);
         NSV8Objects::Template_Set(result, "drawImage2",               _drawImage2);

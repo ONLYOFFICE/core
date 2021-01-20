@@ -133,11 +133,6 @@ JSSmart<CJSValue> CGraphicsEmbed::reset()
     m_pInternal->reset();
     return NULL;
 }
-JSSmart<CJSValue> CGraphicsEmbed::transform3(JSSmart<CJSValue> sx, JSSmart<CJSValue> shy, JSSmart<CJSValue> shx, JSSmart<CJSValue> sy, JSSmart<CJSValue> tx, JSSmart<CJSValue> ty, JSSmart<CJSValue> isNeedInvert)
-{
-    m_pInternal->transform3(sx->toDouble(), shy->toDouble(), shx->toDouble(), sy->toDouble(), tx->toDouble(), ty->toDouble());
-    return NULL;
-}
 JSSmart<CJSValue> CGraphicsEmbed::FreeFont()
 {
     m_pInternal->FreeFont();

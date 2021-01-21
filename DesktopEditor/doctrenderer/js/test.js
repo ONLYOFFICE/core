@@ -2,9 +2,29 @@
 var MyGraphics = new CNativeGraphics();
 
 // Задаём размеры холста
-MyGraphics.init(null, 250.779, 389.82, 66, 103);
+MyGraphics.init(null, 181.151, 172.606, 47, 45);
+
+// Рисование шейпа с треугольником
+MyGraphics.SetIntegerGrid(false);
+MyGraphics.transform(1, 0, 0, 1, 0, 0);//0.617492, -0.786577, 0.786577, 0.617492, 123.177, 40.1987);
+MyGraphics.ArrayPoints = null;
+MyGraphics.p_width(1058.31);
+MyGraphics._s();
+MyGraphics._m(0, 39.1583);
+MyGraphics._l(25.6646, 0);
+MyGraphics._l(51.3292, 39.1583);
+MyGraphics._z();
+MyGraphics.p_color(0, 176, 80, 255);
+MyGraphics.b_color1(255, 0, 0, 255);
+MyGraphics.drawpath(256 + 1);
+MyGraphics._e();
+MyGraphics.p_dash(null);
+MyGraphics.SetIntegerGrid(true);
+MyGraphics.reset();
+MyGraphics.toDataURL("image/png");
 
 // Рисование картинки с помощью brush
+/*
 MyGraphics.SetIntegerGrid(false);
 MyGraphics.transform(1, 0, 0, 1, 0, 0);
 MyGraphics.ArrayPoints = null;
@@ -145,3 +165,4 @@ MyGraphics.put_LineJoin(5);
 var join = MyGraphics.get_LineJoin();
 MyGraphics.put_TextureBounds(10, 10, 100, 100);
 MyGraphics.GetlineWidth();
+*/

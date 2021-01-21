@@ -9,41 +9,36 @@ function CNativeGraphics()
     this.m_lHeightPix = 0;
     this.m_dDpiX      = 96.0;
     this.m_dDpiY      = 96.0;
-    this.m_bIsBreak   = false;
-
-    this.m_bPenColorInit   = false;
-    this.m_bBrushColorInit = false;
-
-    this.m_oTextPr      = null;
-
-    this.IsDemonstrationMode = false;
-
-    this.TextClipRect  = null;
-    this.IsClipContext = false;
-
-    this.IsUseFonts2     = false;
-    this.m_oFontManager2 = null;
-    this.m_oLastFont2    = null;
-    this.IsRetina  = false;
-
-    this.dash_no_smart = null;
-
-    this.ArrayPoints = null;
-    this.MaxEpsLine  = null;
-    this.m_oContext  = null;
 
     this.TextureFillTransformScaleX = 1;
     this.TextureFillTransformScaleY = 1;
 
-    this.RENDERER_PDF_FLAG        = true;
-    this.IsNoSupportTextDraw      = true;
-    this.bDrawSmart               = false;
+    this.m_oFontManager2 = null;
+    this.dash_no_smart   = null;
+    this.m_oLastFont2    = null;
+    this.TextClipRect    = null;
+    this.ArrayPoints     = null;
+    this.MaxEpsLine      = null;
+    this.m_oContext      = null;
+    this.m_oTextPr       = null;
+
+    this.IsNoSupportTextDraw = true;
+    this.RENDERER_PDF_FLAG   = true;
+
     this.IsSlideBoundsCheckerType = false;
+    this.IsDemonstrationMode      = false;
     this.AutoCheckLineWidth       = false;
-    this.IsTrack                  = false;
+    this.m_bBrushColorInit        = false;
+    this.m_bPenColorInit          = false;
+    this.IsClipContext            = false;
+    this.IsUseFonts2              = false;
     this.IsThumbnail              = false;
-    this.ClearMode                = false;
     this.updatedRect              = false;
+    this.m_bIsBreak               = false;
+    this.bDrawSmart               = false;
+    this.ClearMode                = false;
+    this.IsRetina                 = false;
+    this.IsTrack                  = false;
 }
 
 CNativeGraphics.prototype =

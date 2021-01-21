@@ -67,7 +67,7 @@ void CGraphics::p_color(int r, int g, int b, int a)
 }
 void CGraphics::p_width(double w)
 {
-    m_pRenderer->put_PenSize(w);
+    m_pRenderer->put_PenSize(w > 1000.0 ? w / 1000.0 : w);
 }
 void CGraphics::p_dash(size_t length, double* dash)
 {
@@ -1117,6 +1117,12 @@ double CGraphics::GetlineWidth()
 }
 void CGraphics::DrawPath(int path)
 {
-    m_pRenderer->DrawPath(path);
+    if(path == 257)
+    {
+        m_pRenderer->DrawPath(256);
+        m_pRenderer->DrawPath(1);
+    }
+    else
+        m_pRenderer->DrawPath(path);
 }
 }

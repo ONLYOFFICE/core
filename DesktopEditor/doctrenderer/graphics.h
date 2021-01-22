@@ -224,6 +224,7 @@ namespace NSGraphics
         void put_TextureBounds(double x, double y, double w, double h);
         double GetlineWidth();
         void DrawPath(int path);
+        void CoordTransformOffset(double tx, double ty);
     };
 }
 

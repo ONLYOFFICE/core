@@ -547,3 +547,8 @@ JSSmart<CJSValue> CGraphicsEmbed::DrawPath(JSSmart<CJSValue> path)
     m_pInternal->DrawPath(path->toInt32());
     return NULL;
 }
+JSSmart<CJSValue> CGraphicsEmbed::CoordTransformOffset(JSSmart<CJSValue> tx, JSSmart<CJSValue> ty)
+{
+    m_pInternal->CoordTransformOffset(tx->toDouble(), ty->toDouble());
+    return NULL;
+}

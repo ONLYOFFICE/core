@@ -14,6 +14,7 @@ namespace NSGraphics
 {
 void CGraphics::init(double width_px, double height_px, double width_mm, double height_mm)
 {
+    std::cout << "init " << width_px << "  " << height_px << "  " << width_mm << "  " << height_mm << std::endl;
     m_pApplicationFonts = NSFonts::NSApplication::Create();
     m_pApplicationFonts->InitializeFromFolder(m_sApplicationFontsDirectory.empty() ? NSFile::GetProcessDirectory() : m_sApplicationFontsDirectory);
     NSFonts::IFontManager* pManager = m_pApplicationFonts->GenerateFontManager();
@@ -44,10 +45,12 @@ void CGraphics::init(double width_px, double height_px, double width_mm, double 
 }
 void CGraphics::put_GlobalAlpha(bool enable, double alpha)
 {
+    std::cout << "put_GlobalAlpha " << enable << "  " << alpha << std::endl;
     m_pRenderer->put_GlobalAlphaEnabled(enable, alpha);
 }
 void CGraphics::End_GlobalAlpha()
 {
+    std::cout << "End_GlobalAlpha " << std::endl;
     bool bIsInteger = m_pRenderer->get_IntegerGrid();
     m_pRenderer->put_IntegerGrid(true);
 
@@ -62,15 +65,18 @@ void CGraphics::End_GlobalAlpha()
 }
 void CGraphics::p_color(int r, int g, int b, int a)
 {
+    std::cout << "p_color " << r << "  " << g << "  " << b << "  " << a << std::endl;
     m_pRenderer->put_PenColor(r | (g << 8) | (b << 16));
     m_pRenderer->put_PenAlpha(a);
 }
 void CGraphics::p_width(double w)
 {
+    std::cout << "p_width " << w  << std::endl;
     m_pRenderer->put_PenSize(w > 1000.0 ? w / 1000.0 : w);
 }
 void CGraphics::p_dash(size_t length, double* dash)
 {
+    std::cout << "p_dash " << length << std::endl;
     if(length > 0)
     {
         for(size_t i = 0; i < length; i++)
@@ -84,37 +90,45 @@ void CGraphics::p_dash(size_t length, double* dash)
 }
 void CGraphics::b_color1(int r, int g, int b, int a)
 {
+    std::cout << "b_color1 " << r << "  " << g << "  " << b << "  " << a << std::endl;
     m_pRenderer->put_BrushType(c_BrushTypeSolid);
     m_pRenderer->put_BrushColor1(r | (g << 8) | (b << 16));
     m_pRenderer->put_BrushAlpha1(a);
 }
 void CGraphics::b_color2(int r, int g, int b, int a)
 {
+    std::cout << "b_color2 " << r << "  " << g << "  " << b << "  " << a << std::endl;
     m_pRenderer->put_BrushColor2(r | (g << 8) | (b << 16));
     m_pRenderer->put_BrushAlpha2(a);
 }
 void CGraphics::transform(double sx, double shy, double shx, double sy, double tx, double ty)
 {
+    std::cout << "transform " << sx << "  " << shy << "  " << shx << "  " << sy << "  " << tx << "  " << ty << std::endl;
     m_pRenderer->SetTransform(sx, shy, shx, sy, tx, ty);
 }
 void CGraphics::CalculateFullTransform()
 {
+    std::cout << "CalculateFullTransform " << std::endl;
     m_pRenderer->CalculateFullTransform();
 }
 void CGraphics::_s()
 {
+    std::cout << "_s " << std::endl;
     m_pRenderer->PathCommandEnd();
 }
 void CGraphics::_e()
 {
+    std::cout << "_e " << std::endl;
     m_pRenderer->PathCommandEnd();
 }
 void CGraphics::_z()
 {
+    std::cout << "_z " << std::endl;
     m_pRenderer->PathCommandClose();
 }
 void CGraphics::_m(double x, double y)
 {
+    std::cout << "_m " << x << "  " << y << std::endl;
     if (!m_pRenderer->get_IntegerGrid())
         m_pRenderer->PathCommandMoveTo(x, y);
     else
@@ -125,6 +139,7 @@ void CGraphics::_m(double x, double y)
 }
 void CGraphics::_l(double x, double y)
 {
+    std::cout << "_l " << x << "  " << y << std::endl;
     if (!m_pRenderer->get_IntegerGrid())
         m_pRenderer->PathCommandLineTo(x, y);
     else
@@ -135,6 +150,7 @@ void CGraphics::_l(double x, double y)
 }
 void CGraphics::_c (double x1, double y1, double x2, double y2, double x3, double y3)
 {
+    std::cout << "_c " << x1 << "  " << y1 << "  " << x2 << "  " << y2 << "  " << x3 << "  " << y3 << std::endl;
     if (!m_pRenderer->get_IntegerGrid())
         m_pRenderer->PathCommandCurveTo(x1, y1, x2, y2, x3, y3);
     else
@@ -147,6 +163,7 @@ void CGraphics::_c (double x1, double y1, double x2, double y2, double x3, doubl
 }
 void CGraphics::_c2(double x1, double y1, double x2, double y2)
 {
+    std::cout << "_c2 " << x1 << "  " << y1 << "  " << x2 << "  " << y2 << std::endl;
     if (!m_pRenderer->get_IntegerGrid())
         m_pRenderer->PathCommandCurveTo(x1, y1, x1, y1, x2, y2);
     else
@@ -158,28 +175,34 @@ void CGraphics::_c2(double x1, double y1, double x2, double y2)
 }
 void CGraphics::ds()
 {
+    std::cout << "ds " << std::endl;
     m_pRenderer->Stroke();
 }
 void CGraphics::df()
 {
+    std::cout << "df " << std::endl;
     m_pRenderer->Fill();
 }
 void CGraphics::save()
 {
+    std::cout << "save " << std::endl;
     m_oFrame.SaveFile(m_sApplicationImagesDirectory + L"/img.png", _CXIMAGE_FORMAT_PNG);
 }
 void CGraphics::restore()
 {
+    std::cout << "restore " << std::endl;
     m_pRenderer->BeginCommand(c_nResetClipType);
     m_pRenderer->EndCommand  (c_nResetClipType);
 }
 void CGraphics::clip()
 {
+    std::cout << "clip " << std::endl;
     m_pRenderer->BeginCommand(c_nClipType);
     m_pRenderer->EndCommand  (c_nClipType);
 }
 void CGraphics::reset()
 {
+    std::cout << "reset " << std::endl;
     m_pRenderer->ResetTransform();
 }
 void CGraphics::FreeFont()
@@ -193,6 +216,7 @@ void CGraphics::ClearLastFont()
 void CGraphics::drawImage(const std::wstring& img, double x, double y, double w, double h, BYTE alpha)
 {
     std::wstring strImage = (0 == img.find(L"theme") ? m_sApplicationThemesDirectory : m_sApplicationImagesDirectory) + L'/' + img;
+    std::wcout << L"drawImage " << strImage << L"  " << x << "  " << y << L"  " << w << L"  " << h << L"  " << alpha << std::endl;
     m_pRenderer->DrawImageFromFile(strImage, x, y, w, h, alpha);
 }
 std::wstring CGraphics::GetFont()
@@ -1117,6 +1141,7 @@ double CGraphics::GetlineWidth()
 }
 void CGraphics::DrawPath(int path)
 {
+    std::cout << "DrawPath " << path << std::endl;
     if(path == 257)
     {
         m_pRenderer->DrawPath(256);
@@ -1124,5 +1149,10 @@ void CGraphics::DrawPath(int path)
     }
     else
         m_pRenderer->DrawPath(path);
+}
+void CGraphics::CoordTransformOffset(double tx, double ty)
+{
+    std::cout << "CoordTransformOffset " << tx << "  " << ty << std::endl;
+    m_pRenderer->SetCoordTransformOffset(tx, ty);
 }
 }

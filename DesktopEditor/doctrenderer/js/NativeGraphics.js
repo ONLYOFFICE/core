@@ -599,5 +599,9 @@ CNativeGraphics.prototype =
     drawpath : function(path)
     {
         this.Native["DrawPath"](path);
-    }
+    },
+	CoordTransformOffset : function(tx, ty)
+	{
+		this.Native["CoordTransformOffset"](tx, ty);
+	}
 };

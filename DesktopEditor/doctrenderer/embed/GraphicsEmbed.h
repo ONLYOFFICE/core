@@ -131,6 +131,7 @@ public:
     JSSmart<CJSValue> put_TextureBounds(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h);
     JSSmart<CJSValue> GetlineWidth();
     JSSmart<CJSValue> DrawPath(JSSmart<CJSValue> path);
+    JSSmart<CJSValue> CoordTransformOffset(JSSmart<CJSValue> tx, JSSmart<CJSValue> ty);
 
     static void CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context);
 };

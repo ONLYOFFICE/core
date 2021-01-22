@@ -120,6 +120,7 @@ namespace NSGraphics
     FUNCTION_WRAPPER_V8_4(_put_TextureBounds,     put_TextureBounds)
     FUNCTION_WRAPPER_V8  (_GetlineWidth,          GetlineWidth)
     FUNCTION_WRAPPER_V8_1(_DrawPath,              DrawPath)
+    FUNCTION_WRAPPER_V8_2(_CoordTransformOffset,  CoordTransformOffset)
 
     v8::Handle<v8::ObjectTemplate> CreateGraphicsTemplate(v8::Isolate* isolate)
     {
@@ -234,6 +235,7 @@ namespace NSGraphics
         NSV8Objects::Template_Set(result, "put_TextureBounds",        _put_TextureBounds);
         NSV8Objects::Template_Set(result, "GetlineWidth",             _GetlineWidth);
         NSV8Objects::Template_Set(result, "DrawPath",                 _DrawPath);
+        NSV8Objects::Template_Set(result, "CoordTransformOffset",     _CoordTransformOffset);
 
         return handle_scope.Escape(result);
     }

@@ -72,7 +72,7 @@ void CGraphics::p_color(int r, int g, int b, int a)
 void CGraphics::p_width(double w)
 {
     std::cout << "p_width " << w  << std::endl;
-    m_pRenderer->put_PenSize(w > 1000.0 ? w / 1000.0 : w);
+    m_pRenderer->put_PenSize(w / 1000.0);
 }
 void CGraphics::p_dash(size_t length, double* dash)
 {
@@ -236,14 +236,17 @@ void CGraphics::SetFont(const std::wstring& name, int face, double size, int sty
 }
 void CGraphics::FillText(double x, double y, int text)
 {
+    std::wcout << L"FillText " << text << L"  " << x << L"  " << y << std::endl;
     m_pRenderer->CommandDrawTextCHAR(text, x, y, 0, 0);
 }
 void CGraphics::t(double x, double y, const std::wstring& text)
 {
+    std::wcout << L"t " << text << L"  " << x << L"  " << y << std::endl;
     m_pRenderer->CommandDrawText(text, x, y, 0, 0);
 }
 void CGraphics::tg(int text, double x, double y)
 {
+    std::wcout << L"tg " << text << L"  " << x << L"  " << y << std::endl;
     m_pRenderer->put_FontStringGID(TRUE);
     m_pRenderer->CommandDrawTextCHAR(text, x, y, 0, 0);
     m_pRenderer->put_FontStringGID(FALSE);
@@ -258,6 +261,7 @@ bool CGraphics::GetIntegerGrid()
 }
 void CGraphics::DrawStringASCII (const std::wstring& text, double x, double y)
 {
+    std::wcout << L"DrawStringASCII " << text << L"  " << x << L"  " << y << std::endl;
     double DpiY;
     m_pRenderer->get_DpiY(&DpiY);
 
@@ -277,6 +281,7 @@ void CGraphics::DrawStringASCII (const std::wstring& text, double x, double y)
 }
 void CGraphics::DrawStringASCII2(const std::wstring& text, double x, double y)
 {
+    std::wcout << L"DrawStringASCII2 " << text << L"  " << x << L"  " << y << std::endl;
     double DpiY;
     m_pRenderer->get_DpiY(&DpiY);
 

@@ -98,12 +98,12 @@ namespace NSCSS
                m_pFont.Empty() && m_pMargin.Empty() && m_pText.Empty();
     }
 
-    void CCompiledStyle::AddPropSel(const std::wstring& sProperty, const std::wstring& sValue, const bool& bHardMode)
+    void CCompiledStyle::AddPropSel(const std::wstring& sProperty, const std::wstring& sValue, const unsigned int unLevel, const bool& bHardMode)
     {
-        AddStyle({{sProperty, sValue}}, bHardMode);
+        AddStyle({{sProperty, sValue}}, unLevel, bHardMode);
     }
 
-    void CCompiledStyle::AddStyle(const std::map<std::wstring, std::wstring>& mStyle, const bool& bHardMode)
+    void CCompiledStyle::AddStyle(const std::map<std::wstring, std::wstring>& mStyle, const unsigned int unLevel, const bool& bHardMode)
     {
         const bool bIsThereBorder = (m_pBorder.Empty()) ? false : true;
         const float fSize = m_pFont.GetSize();
@@ -119,11 +119,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pFont.SetFont(ConvertUnitMeasure(pPropertie.second.c_str(), fSize), bHardMode);
+                        m_pFont.SetFont(ConvertUnitMeasure(pPropertie.second.c_str(), fSize), unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pFont.SetFont(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), fSize), true);
+                        m_pFont.SetFont(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), fSize), unLevel, true);
                         m_pFont.SetImportantAll(true);
                     }
                     break;
@@ -134,11 +134,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pFont.SetSize(ConvertUnitMeasure(pPropertie.second, fSize), bHardMode);
+                        m_pFont.SetSize(ConvertUnitMeasure(pPropertie.second, fSize), unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pFont.SetSize(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), fSize), true);
+                        m_pFont.SetSize(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), fSize), unLevel, true);
                         m_pFont.SetImportantSize(true);
                     }
                     break;
@@ -149,11 +149,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pFont.SetStretch(pPropertie.second, bHardMode);
+                        m_pFont.SetStretch(pPropertie.second, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pFont.SetStretch(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pFont.SetStretch(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
                         m_pFont.SetImportantenStretch(true);
                     }
                     break;
@@ -163,11 +163,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pFont.SetStyle(pPropertie.second, bHardMode);
+                        m_pFont.SetStyle(pPropertie.second, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pFont.SetStyle(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pFont.SetStyle(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
                         m_pFont.SetImportantenStyle(true);
                     }
                     break;
@@ -177,11 +177,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pFont.SetVariant(pPropertie.second, bHardMode);
+                        m_pFont.SetVariant(pPropertie.second, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pFont.SetVariant(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pFont.SetVariant(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
                         m_pFont.SetImportantenVariant(true);
                     }
                     break;
@@ -191,12 +191,26 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pFont.SetWeight(pPropertie.second, bHardMode);
+                        m_pFont.SetWeight(pPropertie.second, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pFont.SetWeight(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pFont.SetWeight(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
                         m_pFont.SetImportantenWeight(true);
+                    }
+                    break;
+                }
+                CASE(L"font-family"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pFont.SetFontFamily(pPropertie.second, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pFont.SetFontFamily(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
+                        m_pFont.SetImportantenFamily(true);
                     }
                     break;
                 }
@@ -205,11 +219,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pFont.SetLineHeight(ConvertUnitMeasure(pPropertie.second, m_pFont.GetSize()), bHardMode);
+                        m_pFont.SetLineHeight(ConvertUnitMeasure(pPropertie.second, m_pFont.GetSize()), unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pFont.SetLineHeight(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), m_pFont.GetSize()), true);
+                        m_pFont.SetLineHeight(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), m_pFont.GetSize()), unLevel, true);
                         m_pFont.SetImportantenLineHeight(true);
                     }
                     break;
@@ -225,13 +239,13 @@ namespace NSCSS
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
-                            m_pMargin.AddMargin(sValue, bHardMode);
+                            m_pMargin.AddMargin(sValue, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
-                            m_pMargin.AddMargin(sValue, true);
+                            m_pMargin.AddMargin(sValue, unLevel, true);
 
                         m_pMargin.SetImportantAll(true);
                     }
@@ -248,13 +262,13 @@ namespace NSCSS
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
-                            m_pMargin.AddTopMargin(sValue, bHardMode);
+                            m_pMargin.AddTopMargin(sValue, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
-                            m_pMargin.AddTopMargin(sValue, true);
+                            m_pMargin.AddTopMargin(sValue, unLevel, true);
 
                         m_pMargin.SetImportantTopSide(true);
                     }
@@ -271,13 +285,13 @@ namespace NSCSS
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
-                            m_pMargin.AddRightMargin(sValue, bHardMode);
+                            m_pMargin.AddRightMargin(sValue, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
-                            m_pMargin.AddRightMargin(sValue, true);
+                            m_pMargin.AddRightMargin(sValue, unLevel, true);
 
                         m_pMargin.SetImportantRightSide(true);
                     }
@@ -293,13 +307,13 @@ namespace NSCSS
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
-                            m_pMargin.AddBottomMargin(sValue, bHardMode);
+                            m_pMargin.AddBottomMargin(sValue, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
-                            m_pMargin.AddBottomMargin(sValue, true);
+                            m_pMargin.AddBottomMargin(sValue, unLevel, true);
 
                         m_pMargin.SetImportantBottomSide(true);
                     }
@@ -316,13 +330,13 @@ namespace NSCSS
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
-                            m_pMargin.AddLeftMargin(sValue, bHardMode);
+                            m_pMargin.AddLeftMargin(sValue, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
-                            m_pMargin.AddLeftMargin(sValue, true);
+                            m_pMargin.AddLeftMargin(sValue, unLevel, true);
 
                         m_pMargin.SetImportantLeftSide(true);
                     }
@@ -339,13 +353,13 @@ namespace NSCSS
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
-                            m_pMargin.AddMargin(sValue, bHardMode);
+                            m_pMargin.AddMargin(sValue, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
-                            m_pMargin.AddMargin(sValue, true);
+                            m_pMargin.AddMargin(sValue, unLevel, true);
 
                         m_pMargin.SetImportantAll(true);
                     }
@@ -362,13 +376,13 @@ namespace NSCSS
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
-                            m_pMargin.AddTopMargin(sValue, bHardMode);
+                            m_pMargin.AddTopMargin(sValue, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
-                            m_pMargin.AddTopMargin(sValue, true);
+                            m_pMargin.AddTopMargin(sValue, unLevel, true);
 
                         m_pMargin.SetImportantTopSide(true);
                     }
@@ -386,13 +400,13 @@ namespace NSCSS
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
-                            m_pMargin.AddRightMargin(sValue, bHardMode);
+                            m_pMargin.AddRightMargin(sValue, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
-                            m_pMargin.AddRightMargin(sValue, true);
+                            m_pMargin.AddRightMargin(sValue, unLevel, true);
 
                         m_pMargin.SetImportantRightSide(true);
                     }
@@ -409,13 +423,13 @@ namespace NSCSS
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
-                            m_pMargin.AddBottomMargin(sValue, bHardMode);
+                            m_pMargin.AddBottomMargin(sValue, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
-                            m_pMargin.AddBottomMargin(sValue, true);
+                            m_pMargin.AddBottomMargin(sValue, unLevel, true);
 
                         m_pMargin.SetImportantBottomSide(true);
                     }
@@ -432,13 +446,13 @@ namespace NSCSS
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
-                            m_pMargin.AddLeftMargin(sValue, bHardMode);
+                            m_pMargin.AddLeftMargin(sValue, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
-                            m_pMargin.AddLeftMargin(sValue, true);
+                            m_pMargin.AddLeftMargin(sValue, unLevel, true);
 
                         m_pMargin.SetImportantLeftSide(true);
                     }
@@ -451,11 +465,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pText.SetAlign(pPropertie.second, bHardMode);
+                        m_pText.SetAlign(pPropertie.second, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pText.SetAlign(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pText.SetAlign(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
                         m_pText.SetImportantAlign(true);
                     }
 
@@ -466,11 +480,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pText.SetIndent(ConvertUnitMeasure(pPropertie.second, 540.0f), bHardMode);
+                        m_pText.SetIndent(ConvertUnitMeasure(pPropertie.second, 540.0f), unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pText.SetIndent(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f), true);
+                        m_pText.SetIndent(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f), unLevel, true);
                         m_pText.SetImportantIndent(true);
                     }
 
@@ -481,11 +495,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pText.SetDecoration(pPropertie.second, bHardMode);
+                        m_pText.SetDecoration(pPropertie.second, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pText.SetDecoration(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pText.SetDecoration(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
                         m_pText.SetImportantDecoration(true);
                     }
 
@@ -497,11 +511,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pText.SetColor(pPropertie.second, bHardMode);
+                        m_pText.SetColor(pPropertie.second, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pText.SetColor(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pText.SetColor(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
                         m_pText.SetImportantColor(true);
                     }
                     break;
@@ -514,6 +528,8 @@ namespace NSCSS
 
                     if (oBorderSide.GetWidth() < 0)
                         break;
+
+                    oBorderSide.SetAllLevels(unLevel);
 
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
@@ -542,12 +558,12 @@ namespace NSCSS
                     if (unPositionImp == std::wstring::npos)
                     {
                         const float fValue = wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL);
-                        m_pBorder.SetWidth(fValue, bHardMode);
+                        m_pBorder.SetWidth(fValue, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
                         const float fValue = wcstof(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 0.0f).c_str(), NULL);
-                        m_pBorder.SetWidth(fValue, true);
+                        m_pBorder.SetWidth(fValue, unLevel, true);
                         m_pBorder.SetImportantWidth(true);
                     }
 
@@ -558,11 +574,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pBorder.SetStyle(pPropertie.second, bHardMode);
+                        m_pBorder.SetStyle(pPropertie.second, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pBorder.SetStyle(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pBorder.SetStyle(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
                         m_pBorder.SetImportantStyle(true);
                     }
 
@@ -573,11 +589,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pBorder.SetColor(pPropertie.second, bHardMode);
+                        m_pBorder.SetColor(pPropertie.second, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pBorder.SetColor(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pBorder.SetColor(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
                         m_pBorder.SetImportantColor(true);
                     }
 
@@ -589,6 +605,8 @@ namespace NSCSS
                     NSConstValues::NSCssProperties::BorderSide oBorderSide = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
                     if (oBorderSide.GetWidth() < 0)
                         break;
+
+                    oBorderSide.SetAllLevels(unLevel);
 
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
@@ -608,11 +626,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pBorder.SetTopSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL), bHardMode);
+                        m_pBorder.SetTopSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL), unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pBorder.SetTopSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 0.0f).c_str(), NULL), true);
+                        m_pBorder.SetTopSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 0.0f).c_str(), NULL), unLevel, true);
                         m_pBorder.SetImportantWidthTopSide(true);
                     }
 
@@ -623,11 +641,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pBorder.SetTopSideStyle(pPropertie.second, bHardMode);
+                        m_pBorder.SetTopSideStyle(pPropertie.second, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pBorder.SetTopSideStyle(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pBorder.SetTopSideStyle(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
                         m_pBorder.SetImportantStyleTopSide(true);
                     }
 
@@ -638,11 +656,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pBorder.SetTopSideColor(pPropertie.second, bHardMode);
+                        m_pBorder.SetTopSideColor(pPropertie.second, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pBorder.SetTopSideColor(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pBorder.SetTopSideColor(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
                         m_pBorder.SetImportantColorTopSide(true);
                     }
 
@@ -652,8 +670,11 @@ namespace NSCSS
                 CASE(L"border-right"):
                 {
                     NSConstValues::NSCssProperties::BorderSide oBorderSide = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
+
                     if (oBorderSide.GetWidth() < 0)
                         break;
+
+                    oBorderSide.SetAllLevels(unLevel);
 
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
@@ -673,11 +694,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pBorder.SetRightSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL), bHardMode);
+                        m_pBorder.SetRightSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL), unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pBorder.SetRightSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 0.0f).c_str(), NULL), true);
+                        m_pBorder.SetRightSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 0.0f).c_str(), NULL), unLevel, true);
                         m_pBorder.SetImportantWidthRightSide(true);
                     }
 
@@ -688,11 +709,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pBorder.SetRightSideStyle(pPropertie.second, bHardMode);
+                        m_pBorder.SetRightSideStyle(pPropertie.second, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pBorder.SetRightSideStyle(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pBorder.SetRightSideStyle(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
                         m_pBorder.SetImportantStyleRightSide(true);
                     }
 
@@ -703,11 +724,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pBorder.SetRightSideColor(pPropertie.second, bHardMode);
+                        m_pBorder.SetRightSideColor(pPropertie.second, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pBorder.SetRightSideColor(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pBorder.SetRightSideColor(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
                         m_pBorder.SetImportantColorRightSide(true);
                     }
 
@@ -717,8 +738,11 @@ namespace NSCSS
                 CASE(L"border-bottom"):
                 {
                     NSConstValues::NSCssProperties::BorderSide oBorderSide = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
+
                     if (oBorderSide.GetWidth() < 0)
                         break;
+
+                    oBorderSide.SetAllLevels(unLevel);
 
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
@@ -738,11 +762,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pBorder.SetBottomSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL), bHardMode);
+                        m_pBorder.SetBottomSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL), unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pBorder.SetBottomSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 0.0f).c_str(), NULL), true);
+                        m_pBorder.SetBottomSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 0.0f).c_str(), NULL), unLevel, true);
                         m_pBorder.SetImportantWidthBottomSide(true);
                     }
 
@@ -753,11 +777,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pBorder.SetBottomSideStyle(pPropertie.second, bHardMode);
+                        m_pBorder.SetBottomSideStyle(pPropertie.second, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pBorder.SetBottomSideStyle(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pBorder.SetBottomSideStyle(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
                         m_pBorder.SetImportantStyleBottomSide(true);
                     }
 
@@ -768,11 +792,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pBorder.SetBottomSideColor(pPropertie.second, bHardMode);
+                        m_pBorder.SetBottomSideColor(pPropertie.second, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pBorder.SetBottomSideColor(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pBorder.SetBottomSideColor(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
                         m_pBorder.SetImportantColorBottomSide(true);
                     }
 
@@ -782,8 +806,11 @@ namespace NSCSS
                 CASE(L"border-left"):
                 {
                     NSConstValues::NSCssProperties::BorderSide oBorderSide = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
+
                     if (oBorderSide.GetWidth() < 0)
                         break;
+
+                    oBorderSide.SetAllLevels(unLevel);
 
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
@@ -803,11 +830,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pBorder.SetLeftSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL), bHardMode);
+                        m_pBorder.SetLeftSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL), unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pBorder.SetLeftSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 0.0f).c_str(), NULL), true);
+                        m_pBorder.SetLeftSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 0.0f).c_str(), NULL), unLevel, true);
                         m_pBorder.SetImportantWidthLeftSide(true);
                     }
 
@@ -818,11 +845,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pBorder.SetLeftSideStyle(pPropertie.second, bHardMode);
+                        m_pBorder.SetLeftSideStyle(pPropertie.second, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pBorder.SetLeftSideStyle(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pBorder.SetLeftSideStyle(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
                         m_pBorder.SetImportantStyleLeftSide(true);
                     }
 
@@ -833,11 +860,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pBorder.SetLeftSideColor(pPropertie.second, bHardMode);
+                        m_pBorder.SetLeftSideColor(pPropertie.second, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pBorder.SetLeftSideColor(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pBorder.SetLeftSideColor(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
                         m_pBorder.SetImportantColorLeftSide(true);
                     }
 
@@ -849,11 +876,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pBackground.SetColor(pPropertie.second);
+                        m_pBackground.SetColor(pPropertie.second, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pBackground.SetColor(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pBackground.SetColor(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
                         m_pBackground.SetImportantBackground(true);
                     }
                     break;
@@ -863,11 +890,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pBackground.SetBackground(pPropertie.second);
+                        m_pBackground.SetBackground(pPropertie.second, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pBackground.SetBackground(pPropertie.second.substr(0, unPositionImp - 1), true);
+                        m_pBackground.SetBackground(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
                         m_pBackground.SetImportantAll(true);
                     }
                     break;
@@ -876,7 +903,7 @@ namespace NSCSS
         }
     }
 
-    void CCompiledStyle::AddStyle(const std::wstring& sStyle, const bool& bHardMode)
+    void CCompiledStyle::AddStyle(const std::wstring& sStyle, const unsigned int unLevel, const bool& bHardMode)
     {
         if (sStyle.empty())
             return;
@@ -899,7 +926,7 @@ namespace NSCSS
                     sValue.pop_back();
                     std::transform(sProperty.begin(), sProperty.end(), sProperty.begin(), tolower);
                     std::transform(sValue.begin(), sValue.end(), sValue.begin(), tolower);
-                    AddPropSel(sProperty, sValue, bHardMode);
+                    AddPropSel(sProperty, sValue, unLevel, bHardMode);
                     sProperty.clear();
                     sValue.clear();
                 }
@@ -912,12 +939,20 @@ namespace NSCSS
     void CCompiledStyle::AddParent(const std::wstring& sParentName)
     {
         if (!sParentName.empty())
-            m_arParentsStyles.push_back(sParentName);
+            m_arParentsStyles.insert(sParentName);
     }
 
     std::vector<std::wstring> CCompiledStyle::GetParentsName() const
     {
-        return m_arParentsStyles;
+        if (m_arParentsStyles.empty())
+            return std::vector<std::wstring>();
+
+        std::vector<std::wstring> arParentsName;
+
+        for (std::set<std::wstring>::iterator iParentName = m_arParentsStyles.begin(); iParentName != m_arParentsStyles.end(); ++iParentName)
+            arParentsName.push_back(*iParentName);
+
+        return arParentsName;
     }
 
     void CCompiledStyle::SetID(const std::wstring& sId)

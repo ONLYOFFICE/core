@@ -32,12 +32,6 @@ namespace NSCSS
             m_sId = sId;
         }
 
-        /*
-        bool operator<(const CStyleUsed& oUsedStyle) const
-        {
-            return m_oStyle < oUsedStyle.m_oStyle;
-        }
-        */
     };
 
     class CSSCALCULATOR_EXPORT CDocumentStyle

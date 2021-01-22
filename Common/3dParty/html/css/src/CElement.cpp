@@ -31,6 +31,11 @@ namespace NSCSS
         return m_sFullSelector;
     }
 
+    bool CElement::Empty() const
+    {
+        return m_mStyle.empty();
+    }
+
     void CElement::SetSelector(const std::wstring &sSelector)
     {
         m_sSelector = sSelector;
@@ -75,11 +80,6 @@ namespace NSCSS
 
         m_arKinElements.push_back(oKinElement);
         oKinElement->m_sFullSelector += m_sFullSelector;
-    }
-
-    size_t CElement::EmptyPrevElements() const
-    {
-        return m_arPrevElements.empty();
     }
 
     std::map<std::wstring, std::wstring> CElement::GetStyle() const
@@ -154,56 +154,6 @@ namespace NSCSS
         return mStyle;
     }
 
-    std::vector<CElement *> CElement::GetAllElements(const std::vector<std::wstring> &arNodes) const
-    {
-        if (arNodes.empty())
-            return std::vector<CElement*>({const_cast<CElement*>(this)});
-
-        std::vector<CElement *> arElements;
-
-        if (!m_mStyle.empty())
-            arElements.push_back(const_cast<CElement*>(this));
-
-        std::vector<std::wstring> arKins;
-        for (std::vector<std::wstring>::const_reverse_iterator sNode = arNodes.rbegin(); sNode != arNodes.rend(); ++sNode)
-        {
-            arKins.push_back(*sNode);
-            if ((*sNode)[0] != L'#' && (*sNode)[0] != L'.')
-                break;
-        }
-
-        for (const CElement* oElement : m_arKinElements)
-        {
-            for (std::vector<std::wstring>::const_reverse_iterator sNode = arKins.rbegin(); sNode != arKins.rend(); ++sNode)
-            {
-                if (oElement->m_sSelector == *sNode)
-                {
-                    std::vector<std::wstring> arWords = arNodes;
-                        arWords.pop_back();
-                    const std::vector<CElement*> arTemp = oElement->GetAllElements(arWords);
-                    arElements.insert(arElements.end(), arTemp.begin(), arTemp.end());
-                }
-            }
-        }
-
-        for (const CElement* oElement : m_arPrevElements)
-        {
-            for (std::vector<std::wstring>::const_reverse_iterator sNode = arNodes.rbegin(); sNode != arNodes.rend(); ++sNode)
-            {
-                if (oElement->m_sSelector == *sNode)
-                {
-                    std::vector<std::wstring> arWords = arNodes;
-                        arWords.pop_back();
-
-                    const std::vector<CElement*> arTemp = oElement->GetAllElements(arWords);
-                    arElements.insert(arElements.end(), arTemp.begin(), arTemp.end());
-                }
-            }
-        }
-
-        return arElements;
-    }
-
     std::vector<CElement *> CElement::GetNextOfKin(const std::wstring &sName, const std::vector<std::wstring>& arClasses) const
     {
         if (m_arKinElements.empty())
@@ -225,6 +175,52 @@ namespace NSCSS
             }
         }
         return arElements;
+    }
+
+    std::vector<CElement *> CElement::GetPrevElements(const std::vector<std::wstring>::reverse_iterator &arNodesRBegin, const std::vector<std::wstring>::reverse_iterator &arNodesREnd) const
+    {
+        if (arNodesRBegin >= arNodesREnd || m_arPrevElements.empty())
+            return std::vector<CElement*>();
+
+        std::vector<CElement*> arElements;
+
+        for (std::vector<std::wstring>::reverse_iterator iWord = arNodesRBegin; iWord != arNodesREnd; ++iWord)
+        {
+            if ((*arNodesRBegin) == L".module_title")
+                std::wcout << *iWord << std::endl;
+            if ((*iWord)[0] == L'.' && ((*iWord).find(L" ") != std::wstring::npos))
+            {
+                std::vector<std::wstring> arClasses = NS_STATIC_FUNCTIONS::GetWordsW(*iWord, L" ");
+                for (std::wstring sClass : arClasses)
+                {
+                    for (CElement* oPrevElement : m_arPrevElements)
+                    {
+                        if (oPrevElement->m_sSelector == sClass)
+                        {
+                            arElements.push_back(oPrevElement);
+                            std::vector<CElement*> arTempElements = oPrevElement->GetPrevElements(iWord + 1, arNodesREnd);
+                            arElements.insert(arElements.end(), arTempElements.begin(), arTempElements.end());
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (CElement* oPrevElement : m_arPrevElements)
+                {
+                    if (oPrevElement->m_sSelector == *iWord)
+                    {
+                        arElements.push_back(oPrevElement);
+                        std::vector<CElement*> arTempElements = oPrevElement->GetPrevElements(iWord + 1, arNodesREnd);
+                        arElements.insert(arElements.end(), arTempElements.begin(), arTempElements.end());
+    //                    return arElements;
+                    }
+                }
+            }
+        }
+
+        return arElements;
+
     }
 
     CElement *CElement::FindPrevElement(const std::wstring &sSelector) const

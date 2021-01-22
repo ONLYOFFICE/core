@@ -96,16 +96,16 @@ namespace NSCSS
             return (posDigit < posNoDigit) || (posDigit == 0  && posNoDigit == 0);
         }
 
-        inline std::wstring DeleteSpace(const std::wstring& sValue)
+        inline std::wstring StripSymbols(const std::wstring& sValue, const std::wstring& sSymbols = L" \n\r\t\f\v")
         {
             if (sValue.empty())
                 return std::wstring();
 
-            size_t start = sValue.find_first_not_of(L" \n\r\t\f\v");
+            size_t start = sValue.find_first_not_of(sSymbols);
             if (std::wstring::npos == start)
                 return sValue;
 
-            size_t end = sValue.find_last_not_of(L" \n\r\t\f\v"); // точно >=0
+            size_t end = sValue.find_last_not_of(sSymbols); // точно >=0
             return sValue.substr(start, end - start + 1);
         }
 

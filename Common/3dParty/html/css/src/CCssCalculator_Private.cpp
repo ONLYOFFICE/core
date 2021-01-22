@@ -410,6 +410,7 @@ namespace NSCSS
             }
 
             sName = arWords.back();
+            arWords.pop_back();
             arNextNodes.push_back(sName);
             oStyle->AddParent(sName);
 
@@ -423,54 +424,84 @@ namespace NSCSS
 
                 if (oFindId != m_mData.end())
                 {
-                    const std::vector<CElement*> arTemp2 = oFindId->second->GetAllElements(arNextNodes);
+                    std::map<StatistickElement, unsigned int>::const_iterator oFindCountId = m_mStatictics->find(StatistickElement{StatistickElement::IsId, sId});
 
-                    if (!arTemp2.empty())
-                        arFindElements.insert(arFindElements.end(), arTemp2.begin(), arTemp2.end());
+                    if (((bIsSettings && oFindCountId->second < MaxNumberRepetitions) ||
+                        (!bIsSettings && oFindCountId->second >= MaxNumberRepetitions)))
+                    {
+                        if (!oFindId->second->Empty())
+                            arFindElements.push_back(oFindId->second);
+                    }
+
+                    const std::vector<CElement*> arTempPrev = oFindName->second->GetPrevElements(arNextNodes.rbegin() + ((arClasses.empty()) ? 1 : 2), arNextNodes.rend());
+
+                    if (!arTempPrev.empty())
+                        arFindElements.insert(arFindElements.end(), arTempPrev.begin(), arTempPrev.end());
                 }
             }
 
-            if (!arClasses.empty() && !bIsSettings)
+            if (!arClasses.empty())
             {
-                for (std::vector<std::wstring>::const_reverse_iterator iClass = arClasses.rbegin(); iClass != arClasses.rend(); ++iClass)
+                if (!bIsSettings)
                 {
-                    const std::map<std::wstring, CElement*>::const_iterator oFindClass = m_mData.find(*iClass);
-                    if (oFindClass != m_mData.end())
+                    for (std::vector<std::wstring>::const_reverse_iterator iClass = arClasses.rbegin(); iClass != arClasses.rend(); ++iClass)
                     {
-                        const std::vector<CElement*> arTemp2 = oFindClass->second->GetAllElements(arNextNodes);
+                        const std::map<std::wstring, CElement*>::const_iterator oFindClass = m_mData.find(*iClass);
+                        if (oFindClass != m_mData.end())
+                        {
+                            if (!oFindClass->second->Empty())
+                                arFindElements.push_back(oFindClass->second);
 
-                        if (!arTemp2.empty())
-                            arFindElements.insert(arFindElements.end(), arTemp2.begin(), arTemp2.end());
+                            const std::vector<CElement*> arTempPrev = oFindClass->second->GetPrevElements(arNextNodes.rbegin() + 2, arNextNodes.rend());
+                            const std::vector<CElement*> arTempKins = oFindClass->second->GetNextOfKin(sName);
+
+                            if (!arTempPrev.empty())
+                                arFindElements.insert(arFindElements.end(), arTempPrev.begin(), arTempPrev.end());
+
+                            if (!arTempKins.empty())
+                                arFindElements.insert(arFindElements.end(), arTempKins.begin(), arTempKins.end());
+                        }
                     }
                 }
             }
 
-            if (oFindName != m_mData.end() && !bIsSettings)
+            if (oFindName != m_mData.end())
             {
-                const std::vector<CElement*> arTemp = oFindName->second->GetAllElements(arNextNodes);
-                if (!arTemp.empty())
-                    arFindElements.insert(arFindElements.end(), arTemp.begin(), arTemp.end());
+                if (!bIsSettings)
+                {
+                    if (!oFindName->second->Empty())
+                        arFindElements.push_back(oFindName->second);
+
+                    const std::vector<CElement*> arTempPrev = oFindName->second->GetPrevElements(arNextNodes.rbegin() + 1, arNextNodes.rend());
+                    const std::vector<CElement*> arTempKins = oFindName->second->GetNextOfKin(sName, arClasses);
+
+                    if (!arTempPrev.empty())
+                        arFindElements.insert(arFindElements.end(), arTempPrev.begin(), arTempPrev.end());
+
+                    if (!arTempKins.empty())
+                        arFindElements.insert(arFindElements.end(), arTempKins.begin(), arTempKins.end());
+                }
             }
+
 
             if (arFindElements.size() > 1)
             {
-                std::sort(arFindElements.rbegin(), arFindElements.rend(), [](CElement* oFirstElement, CElement* oSecondElement)
-                {
-                    return oFirstElement->GetWeight() < oSecondElement->GetWeight();
-                });
+                std::sort(arFindElements.rbegin(), arFindElements.rend(),
+                          [](CElement* oFirstElement, CElement* oSecondElement)
+                          {
+                              return oFirstElement->GetWeight() < oSecondElement->GetWeight();
+                          });
             }
 
             for (const CElement* oElement : arFindElements)
-                oStyle->AddStyle(oElement->GetStyle());
+                oStyle->AddStyle(oElement->GetStyle(), i + 1);
 
             std::map<StatistickElement, unsigned int>::const_iterator oFindCountStyle = m_mStatictics->find(StatistickElement{StatistickElement::IsStyle, arSelectors[i].m_sStyle});
 
-            if (bIsSettings && oFindCountStyle->second < MaxNumberRepetitions)
-                oStyle->AddStyle(arSelectors[i].m_sStyle, true);
-            else if (!bIsSettings && oFindCountStyle->second >= MaxNumberRepetitions)
-                oStyle->AddStyle(arSelectors[i].m_sStyle, true);
+            if ((bIsSettings && oFindCountStyle->second < MaxNumberRepetitions) ||
+                (!bIsSettings && oFindCountStyle->second >= MaxNumberRepetitions))
+                oStyle->AddStyle(arSelectors[i].m_sStyle, i + 1,  true);
 
-            arWords.pop_back();
         }
 
         if (!bIsSettings)

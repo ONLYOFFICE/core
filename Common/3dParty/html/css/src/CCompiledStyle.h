@@ -5,6 +5,7 @@
 #include "ConstValues.h"
 
 #include <map>
+#include <set>
 #include <vector>
 #include <string>
 
@@ -12,7 +13,7 @@ namespace NSCSS
 {
     class CSSCALCULATOR_EXPORT CCompiledStyle
     {
-        std::vector<std::wstring> m_arParentsStyles;
+        std::set<std::wstring> m_arParentsStyles;
         std::wstring m_sId;
 
         unsigned short int m_nDpi;
@@ -81,9 +82,9 @@ namespace NSCSS
 
         bool Empty() const;
 
-        void AddPropSel(const std::wstring& sProperty, const std::wstring& sValue, const bool& bHardMode = true);
-        void AddStyle(const std::map<std::wstring, std::wstring>& mStyle, const bool& bHardMode = true);
-        void AddStyle(const std::wstring& sStyle, const bool& bHardMode = false);
+        void AddPropSel(const std::wstring& sProperty, const std::wstring& sValue, const unsigned int unLevel, const bool& bHardMode = true);
+        void AddStyle(const std::map<std::wstring, std::wstring>& mStyle, const unsigned int unLevel, const bool& bHardMode = true);
+        void AddStyle(const std::wstring& sStyle, const unsigned int unLevel, const bool& bHardMode = false);
         void AddParent(const std::wstring& sParentName);
 
         std::vector<std::wstring> GetParentsName() const;

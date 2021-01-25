@@ -433,7 +433,7 @@ namespace NSCSS
                             arFindElements.push_back(oFindId->second);
                     }
 
-                    const std::vector<CElement*> arTempPrev = oFindName->second->GetPrevElements(arNextNodes.rbegin() + ((arClasses.empty()) ? 1 : 2), arNextNodes.rend());
+                    const std::vector<CElement*> arTempPrev = oFindId->second->GetPrevElements(arNextNodes.rbegin() + ((arClasses.empty()) ? 1 : 2), arNextNodes.rend());
 
                     if (!arTempPrev.empty())
                         arFindElements.insert(arFindElements.end(), arTempPrev.begin(), arTempPrev.end());

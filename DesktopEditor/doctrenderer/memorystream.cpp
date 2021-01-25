@@ -93,8 +93,8 @@ void _ms_writestring2(const v8::FunctionCallbackInfo<v8::Value>& args)
 void _ms_copy(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
     CMemoryStream* pNative = unwrap_memorystream(args.This());
+    CMemoryStream* pNative2 = unwrap_memorystream(CV8Convert::unwrap<v8::Object>(args[0]->ToObject(v8::Isolate::GetCurrent()->GetCurrentContext())));
 
-    CMemoryStream* pNative2 = unwrap_memorystream(args[0]->ToObject());
     size_t pos = (size_t)CV8Convert::ToUint(args[1]);
     size_t len = (size_t)CV8Convert::ToUint(args[2]);
 

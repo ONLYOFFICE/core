@@ -228,7 +228,16 @@ namespace PPTX
 						}
 						case 2:
 						{
-							pReader->SkipRecord();
+							pReader->Skip(4); // len
+							ULONG _c = pReader->GetULong();
+
+							for (ULONG i = 0; i < _c; ++i)
+							{
+								pReader->Skip(1); // type
+								effectStyleLst.push_back(Logic::EffectStyle());
+								effectStyleLst[i].fromPPTY(pReader);
+							}
+
 							break;
 						}
 						case 3:

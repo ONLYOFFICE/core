@@ -8,7 +8,7 @@
 #include <vector>
 #include <string>
 
-int main(int argc, char *argv[])
+int main()
 {
     std::vector<std::wstring> arFiles = NSDirectory::GetFiles(NSFile::GetProcessDirectory() + L"/../../../Files");
     std::wstring sTmp = NSFile::GetProcessDirectory() + L"/tmp";
@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
         if (oEpub.IsEpubFile(sFileName) == S_OK)
         {
             std::wstring sFile = NSFile::GetFileName(sFileName);
-            sFile = sFile.substr(0, sFile.find_last_of(L'.'));
+            sFile = sFile.substr(0, sFile.rfind(L'.'));
 
             std::wcout << L"|----------|" << sFile << L"|----------|" << std::endl;
 

@@ -106,9 +106,27 @@ bool xlsx_table_context::start_database_range(const std::wstring & name, const s
 
 		xlsx_data_ranges_.back()->set_header(row1, col1, col2);
 	}
-
+//-----------------------------------------------------------------------
 	if (!xlsx_table_name.empty())
 	{
+		if (xlsx_data_ranges_.back()->bTablePart)
+		{
+			std::pair<std::multimap<std::wstring, int>::iterator, std::multimap<std::wstring, int>::iterator> range = xlsx_data_ranges_map_.equal_range(xlsx_table_name);
+
+			for (std::multimap<std::wstring, int>::iterator it = range.first; it != range.second; ++it)
+			{
+				if (xlsx_data_ranges_[it->second]->bTablePart)
+				{
+					if (std::wstring::npos != xlsx_data_ranges_[it->second]->name.find(L"__Anonymous_Sheet_DB__"))
+						xlsx_data_ranges_[it->second]->bTablePart = false;
+					else
+						xlsx_data_ranges_.back()->bTablePart = false;
+					break;
+				}
+
+			}
+		}
+		//-----------------------------------------------------------------------
 		xlsx_data_ranges_map_.insert(std::pair<std::wstring, int> (xlsx_table_name, xlsx_data_ranges_.size() - 1));
 	}
 	return true;
@@ -215,7 +233,7 @@ void xlsx_table_context::set_protection(bool val, const std::wstring &key, const
 }
 void xlsx_table_context::end_table()
 {
-    //xlsx_table_states_.pop_back();
+	xlsx_conversion_context_->get_dataValidations_context().clear();
 }	
 void xlsx_table_context::start_cell(const std::wstring & formula, size_t columnsSpanned, size_t rowsSpanned)
 {
@@ -516,6 +534,10 @@ void xlsx_table_context::serialize_background(std::wostream & _Wostream)
 void xlsx_table_context::serialize_data_validation(std::wostream & _Wostream)
 {
     return xlsx_conversion_context_->get_dataValidations_context().serialize(_Wostream);
+}
+void xlsx_table_context::serialize_data_validation_x14(std::wostream & _Wostream)
+{
+	return xlsx_conversion_context_->get_dataValidations_context().serialize_x14(_Wostream);
 }
 void xlsx_table_context::serialize_hyperlinks(std::wostream & _Wostream)
 {

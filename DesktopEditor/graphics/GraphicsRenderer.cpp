@@ -85,7 +85,7 @@ Aggplus::CBrush* CGraphicsRenderer::CreateBrush(NSStructures::CBrush* pBrush)
 		{
 			pNew->SetRelativeCoords( TRUE );
 
-			int nCountSubColors = pBrush->m_arrSubColors.GetSize();
+            int nCountSubColors = pBrush->m_arrSubColors.size();
 			if( nCountSubColors > 0 )
 			{
 				Aggplus::CColor* pColors = new Aggplus::CColor[nCountSubColors];
@@ -550,13 +550,13 @@ HRESULT CGraphicsRenderer::BrushBounds(const double& left, const double& top, co
 }
 HRESULT CGraphicsRenderer::put_BrushGradientColors(LONG* lColors, double* pPositions, LONG nCount)
 {
-	m_oBrush.m_arrSubColors.RemoveAll();
+    m_oBrush.m_arrSubColors.clear();
 	for (LONG i = 0; i < nCount; ++i)
 	{
 		NSStructures::CBrush::TSubColor color;
 		color.color		= lColors[i];
 		color.position	= (long)(pPositions[i] * 65536);
-		m_oBrush.m_arrSubColors.Add(color);		
+        m_oBrush.m_arrSubColors.push_back(color);
 	}
 	return S_OK;
 }

@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_CBHVR_INCLUDE_H_
-#define PPTX_LOGIC_CBHVR_INCLUDE_H_
 
 #include "./../../WrapperWritingElement.h"
 #include "CTn.h"
@@ -51,7 +49,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(CBhvr)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
                 XmlMacroReadAttributeBase(node, L"accumulate", accumulate);
@@ -89,8 +86,76 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("p:cBhvr"), oAttr, oValue);
 			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+					pWriter->WriteLimit2(0, accumulate);
+					pWriter->WriteLimit2(1, additive);
+					pWriter->WriteString2(2, by);
+					pWriter->WriteString2(3, from);
+					pWriter->WriteLimit2(4, override_);
+					pWriter->WriteString2(5, rctx);
+					pWriter->WriteString2(6, to);
+					pWriter->WriteLimit2(7, xfrmType);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
-		public:
+				pWriter->WriteRecord1(0, cTn);
+				pWriter->WriteRecord1(1, tgtEl);
+				pWriter->WriteRecord2(2, attrNameLst);
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // attribute start
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					else if (0 == _at)	accumulate = pReader->GetUChar();
+					else if (1 == _at)	additive = pReader->GetUChar();
+					else if (2 == _at)	by = pReader->GetString2();
+					else if (3 == _at)	from = pReader->GetString2();
+					else if (4 == _at)	override_ = pReader->GetUChar();
+					else if (5 == _at)	rctx = pReader->GetString2();
+					else if (6 == _at)	to = pReader->GetString2();
+					else if (7 == _at)	xfrmType = pReader->GetUChar();
+				}
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+					case 0:
+					{
+						cTn.fromPPTY(pReader);
+					}break;
+					case 1:
+					{
+						tgtEl.fromPPTY(pReader);
+					}break;
+					case 2:
+					{
+						attrNameLst.Init(); 
+						attrNameLst->fromPPTY(pReader);
+					}break;
+					default:
+					{
+						pReader->SkipRecord();
+
+					}break;
+					}
+				}
+				pReader->Seek(end);
+			}
+
 			CTn						cTn;
 			TgtEl					tgtEl;
 			nullable<AttrNameLst>	attrNameLst;
@@ -115,4 +180,3 @@ namespace PPTX
 	} // namespace Logic
 } // namespace PPTX
 
-#endif // PPTX_LOGIC_CBHVR_INCLUDE_H

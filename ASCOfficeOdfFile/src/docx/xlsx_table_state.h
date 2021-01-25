@@ -150,8 +150,12 @@ public:
     std::wstring default_row_cell_style		() const;
     std::wstring default_column_cell_style	() const;
 
-	void set_table_row_group(int count, bool collapsed, int level);
-   
+	void start_table_row_group(bool collapsed);
+	void end_table_row_group();
+
+	void start_table_column_group(bool collapsed);
+	void end_table_column_group();
+
 	void start_cell(size_t columnsSpanned, size_t rowsSpanned);
     void end_cell();
 
@@ -199,18 +203,12 @@ public:
     std::wstring get_table_name()	const { return tableName_; }
 	int			 get_table_id()		const { return tableId_; }
 	bool		 get_table_hidden()	const { return bHidden; }
-	
-	struct _group_row
-	{
-		bool enabled = false;
-		int count = 0;
-		int level = 0;
-		bool collapsed = false;
-	}group_row_;
+
+	std::vector<bool>					group_rows_; //collapsed
+	std::vector<bool>					group_columns_; //collapsed
 
 	friend class xlsx_conversion_context;
 	friend class xlsx_table_context;
-
 private:	
     xlsx_conversion_context *			context_;    
 

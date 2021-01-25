@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Demo of spellchecker</title>
+<meta name="viewport" content="width=device-width">
+<script src="./spell.js"></script>
+<script type="text/javascript">
+    window.spellcheck = new CSpellchecker({
+    	enginePath : "./spell",
+    	dictionariesPath : "./../dictionaries"
+    });
+
+	window.spellcheck.oncommand = function(message) {
+		console.log(message);
+	};
+	
+	window.spellcheck.command({
+		"type" : "spell",
+		"usrLang" : [1033, 1033, 1049],
+		"usrWords" : ["hello", "hellop", "привет"]
+	});
+
+	window.spellcheck.command({
+		"type" : "suggest",
+		"usrLang" : [1033],
+		"usrWords" : ["hellop"]
+	});
+  </script>
+</head>
+<body>
+</body>
+</html>

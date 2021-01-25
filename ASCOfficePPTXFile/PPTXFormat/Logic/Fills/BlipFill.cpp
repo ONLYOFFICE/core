@@ -174,7 +174,7 @@ namespace PPTX
 	{
 		pReader->Skip(4); // len
 		BYTE _type = pReader->GetUChar(); // FILL_TYPE_BLIP
-		LONG _e = pReader->GetPos() + pReader->GetLong() + 4;
+		LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 		pReader->Skip(1);
 
@@ -377,7 +377,7 @@ namespace PPTX
 								}
 
 								NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strImagePath, additionalFile, oleData, strOrigBase64);
-
+								
 								// -------------------
 								if (!strTempFile.empty())
 								{

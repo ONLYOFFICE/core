@@ -180,8 +180,8 @@ public:
     CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_;
     const wchar_t * ns;
     const wchar_t * name;
-    xml::NodeType xml_type;
-    ElementType type;
+	static const xml::NodeType xml_type = xml::typeElement;
+	static const ElementType type = typeTableTableColumnNoGroup;
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ) {}
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
@@ -338,7 +338,7 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    table_table_column_group_attlist	table_table_column_group_attlist_;
+    table_table_column_group_attlist	attlist_;
     table_columns_and_groups			table_columns_and_groups_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_table_column_group);
@@ -569,7 +569,7 @@ public:
 class table_rows_and_groups
 {
 public:
-    table_rows_and_groups();
+	table_rows_and_groups() {}
     std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
     
 	void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
@@ -579,10 +579,6 @@ public:
     void pptx_convert(oox::pptx_conversion_context & Context);
 
     office_element_ptr_array	content_;
-    //int type_;
-    //office_element_ptr		table_table_row_group_;
-    //table_rows_no_group		table_rows_no_group_;
-
 };
 
 class table_table_row_group_attlist
@@ -604,7 +600,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
     
-    table_table_row_group() 
+    table_table_row_group()
 	{
     }
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
@@ -615,7 +611,7 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    table_table_row_group_attlist	table_table_row_group_attlist_;
+    table_table_row_group_attlist	attlist_;
     table_rows_and_groups			table_rows_and_groups_;
 
 };

@@ -760,7 +760,7 @@ namespace MetaFile
 			else
 			{
 				RegisterPoint(nX, nY);
-				RegisterPoint(nX + nW, nY + nH);
+				RegisterPoint(nX + nW, nY + nH);	
 			}
 		}
 		void UpdateOutputDC()
@@ -1568,7 +1568,7 @@ namespace MetaFile
 		{
 			short shX, shY;
 			m_oStream >> shY >> shX;
-			m_pDC->SetWindowExt(shX, shY);
+	    	m_pDC->SetWindowExt(fabs(shX), fabs(shY));
 			UpdateOutputDC();
 		}
 		void Read_META_SETWINDOWORG()

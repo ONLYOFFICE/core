@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LIMIT_BASE_INCLUDE_H_
-#define PPTX_LIMIT_BASE_INCLUDE_H_
 
 #include "../../../Common/DocxFormat/Source/Base/Base.h"
 
@@ -41,8 +39,6 @@
         set(value);                                     \
     }
 
-
-
 namespace PPTX
 {
 	namespace Limit
@@ -50,10 +46,9 @@ namespace PPTX
 		class BaseLimit
 		{
 		public:
-			BaseLimit(const std::wstring& str = _T("")) : m_strValue(str)
+			BaseLimit(const std::wstring& str = L"") : m_strValue(str)
 			{
 			}
-
 			BaseLimit(const BaseLimit& oSrc)
 			{
 				*this = oSrc;
@@ -76,8 +71,7 @@ namespace PPTX
 				set(strValue);
 			}
 
-		public:
-			virtual void set(const std::wstring& strValue)		= 0;
+			virtual void set(const std::wstring& strValue) = 0;
 
 			AVSINLINE std::wstring& get() 
 			{
@@ -87,14 +81,8 @@ namespace PPTX
 			{
 				return m_strValue;
 			}
-
-			virtual BYTE GetBYTECode() const
-			{
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{				
-			}
+			virtual BYTE GetBYTECode() const = 0;
+			virtual void SetBYTECode(const BYTE& src) = 0;
 
 		protected:
 			std::wstring m_strValue;
@@ -102,4 +90,3 @@ namespace PPTX
 	} // namespace Limit
 } // namespace PPTX
 
-#endif // PPTX_LIMIT_BASE_INCLUDE_H_

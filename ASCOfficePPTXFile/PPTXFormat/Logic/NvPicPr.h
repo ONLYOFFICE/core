@@ -127,7 +127,8 @@ namespace PPTX
 			{
 				std::wstring namespace_ = m_namespace;
 
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)					namespace_ = L"pic";
+				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+					pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)		namespace_ = L"pic";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			namespace_ = L"xdr";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		namespace_ = L"a";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	namespace_ = L"cdr";
@@ -140,7 +141,8 @@ namespace PPTX
 				cNvPicPr.toXmlWriter(pWriter);
 
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_PPTX ||
-					pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+					pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+					pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)
 						nvPr.toXmlWriter(pWriter);
 
 				pWriter->EndNode(namespace_ + L":nvPicPr");

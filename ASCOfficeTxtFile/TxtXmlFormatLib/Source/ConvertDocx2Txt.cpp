@@ -177,9 +177,9 @@ namespace Docx2Txt
 		if(m_bCancelled)
 			return;
 
-		OOX::CDocument	*pDocument	= m_inputFile.m_pDocument; 
-		OOX::CStyles	*pStyles	= m_inputFile.m_pStyles;
-		OOX::CNumbering *pNumbering = m_inputFile.m_pNumbering;
+		OOX::CDocument	*pDocument	= m_inputFile.m_oMain.document; 
+		OOX::CStyles	*pStyles	= m_inputFile.m_oMain.styles;
+		OOX::CNumbering *pNumbering = m_inputFile.m_oMain.numbering;
 	
 		if (pNumbering)
 		{
@@ -568,28 +568,28 @@ namespace Docx2Txt
 						OOX::Logic::CEndnoteReference* endnote_ref = dynamic_cast<OOX::Logic::CEndnoteReference*>(run->m_arrItems[j]);
 						NoteCount++;
 
-						if (footnote_ref && m_inputFile.m_pFootnotes)
+						if (footnote_ref && m_inputFile.m_oMain.footnotes)
 						{								
-							for (size_t r = 0; r < m_inputFile.m_pFootnotes->m_arrFootnote.size(); r++)
+							for (size_t r = 0; r < m_inputFile.m_oMain.footnotes->m_arrFootnote.size(); r++)
 							{
-								OOX::CFtnEdn* note = dynamic_cast<OOX::CFtnEdn*>(m_inputFile.m_pFootnotes->m_arrFootnote[r]);
+								OOX::CFtnEdn* note = dynamic_cast<OOX::CFtnEdn*>(m_inputFile.m_oMain.footnotes->m_arrFootnote[r]);
 
 								if (note && note->m_oId == footnote_ref->m_oId)
 								{
-									convert(m_inputFile.m_pFootnotes->m_arrFootnote[r]->m_arrItems, notes_content, Event, false, pDocument, pNumbering, pStyles);
+									convert(m_inputFile.m_oMain.footnotes->m_arrFootnote[r]->m_arrItems, notes_content, Event, false, pDocument, pNumbering, pStyles);
 								}
 							}
 							Notes.insert(std::make_pair(ToWString(NoteCount), notes_content));
 						}
-						if (endnote_ref && m_inputFile.m_pEndnotes)
+						if (endnote_ref && m_inputFile.m_oMain.endnotes)
 						{
-							for (size_t r =0; r < m_inputFile.m_pEndnotes->m_arrEndnote.size(); r++)
+							for (size_t r =0; r < m_inputFile.m_oMain.endnotes->m_arrEndnote.size(); r++)
 							{
-								OOX::CFtnEdn* note = dynamic_cast<OOX::CFtnEdn*>(m_inputFile.m_pEndnotes->m_arrEndnote[r]);
+								OOX::CFtnEdn* note = dynamic_cast<OOX::CFtnEdn*>(m_inputFile.m_oMain.endnotes->m_arrEndnote[r]);
 								
 								if (note && note->m_oId == endnote_ref->m_oId)
 								{
-									convert(m_inputFile.m_pEndnotes->m_arrEndnote[r]->m_arrItems, notes_content, Event, false, pDocument, pNumbering, pStyles);
+									convert(m_inputFile.m_oMain.endnotes->m_arrEndnote[r]->m_arrItems, notes_content, Event, false, pDocument, pNumbering, pStyles);
 								}
 							}
 							Notes.insert(std::make_pair(ToWString(NoteCount), notes_content));

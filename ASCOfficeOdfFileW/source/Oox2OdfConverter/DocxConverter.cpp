@@ -106,7 +106,7 @@ DocxConverter::DocxConverter(const std::wstring & path, bool bTemplate) : docx_f
 
     docx_document   = new OOX::CDocx(oox_path);
 
-	if (docx_document && !docx_document->m_pDocument)
+	if (docx_document && !docx_document->m_oMain.document)
 	{
 		delete docx_document; docx_document = NULL;
 		docx_flat_document = new OOX::CDocxFlat(oox_path);
@@ -142,7 +142,7 @@ OOX::IFileContainer* DocxConverter::current_document()
 	if (oox_current_child_document)
 		return oox_current_child_document;
 	else if (docx_document)
-		return dynamic_cast<OOX::IFileContainer*>(docx_document->m_pDocument);
+		return dynamic_cast<OOX::IFileContainer*>(docx_document->m_oMain.document);
 
 	return NULL;
 }
@@ -152,8 +152,8 @@ NSCommon::smart_ptr<OOX::File> DocxConverter::find_file_by_id(const std::wstring
 
 	if (oox_current_child_document)
 		oFile = oox_current_child_document->Find(sId);
-	else if ((docx_document) && (docx_document->m_pDocument))
-		oFile = docx_document->m_pDocument->Find(sId);
+	else if ((docx_document) && (docx_document->m_oMain.document))
+		oFile = docx_document->m_oMain.document->Find(sId);
 		
 	return oFile;
 }
@@ -172,9 +172,9 @@ std::wstring DocxConverter::find_link_by_id (const std::wstring & sId, int type)
 	if (!ref.empty()) return ref;
 
 	if (!docx_document) return L"";
-	if (docx_document->m_pDocument == NULL) return L"";
+	if (docx_document->m_oMain.document == NULL) return L"";
 	
-	oFile	= docx_document->m_pDocument->Find(sId);
+	oFile	= docx_document->m_oMain.document->Find(sId);
 	ref		= OoxConverter::find_link_by(oFile, type);
 
 	return ref;
@@ -204,7 +204,7 @@ bool DocxConverter::convertDocument()
 
 void DocxConverter::convert_document()
 {
-	OOX::CDocument *doc = docx_document ? docx_document->m_pDocument : (docx_flat_document ? docx_flat_document->m_pDocument.GetPointer() : NULL);
+	OOX::CDocument *doc = docx_document ? docx_document->m_oMain.document : (docx_flat_document ? docx_flat_document->m_pDocument.GetPointer() : NULL);
 	
 	if (!doc)return;
 
@@ -1947,7 +1947,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 	}
 	if (docx_document)
 	{
-		convert(docx_document->m_pDocument->m_oBackground.GetPointer(), 1);//подложка - вот в таком она месте :(, причём одна на все разделы, не как в оо
+		convert(docx_document->m_oMain.document->m_oBackground.GetPointer(), 1);//подложка - вот в таком она месте :(, причём одна на все разделы, не как в оо
 	}
 	else if (docx_flat_document)
 	{
@@ -2003,7 +2003,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 					convert_hdr_ftr(s->m_arrHeaderReference[i]->m_oId->GetValue());
 					if (docx_document)
 					{
-						convert(docx_document->m_pDocument->m_oBackground.GetPointer(), 2);
+						convert(docx_document->m_oMain.document->m_oBackground.GetPointer(), 2);
 					}
 				}
 
@@ -2034,7 +2034,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 					convert_hdr_ftr(s->m_arrFooterReference[i]->m_oId->GetValue());
 					if (docx_document)
 					{
-						convert(docx_document->m_pDocument->m_oBackground.GetPointer(), 3);
+						convert(docx_document->m_oMain.document->m_oBackground.GetPointer(), 3);
 					}
 				}
 
@@ -3500,15 +3500,15 @@ PPTX::Logic::ClrMap* DocxConverter::oox_clrMap()
 {
 	//return current_clrMap; todoooo
 	if (!docx_document) return NULL;
-	if (!docx_document->m_pSettings) return NULL;
+	if (!docx_document->m_oMain.settings) return NULL;
 	
-	return docx_document->m_pSettings->m_oClrSchemeMapping.GetPointer();
+	return docx_document->m_oMain.settings->m_oClrSchemeMapping.GetPointer();
 }
 void DocxConverter::convert_settings()
 {
 	if (!odt_context) return;
 
-	OOX::CSettings *settings = docx_document ? docx_document->m_pSettings : (docx_flat_document ? docx_flat_document->m_pSettings.GetPointer() : NULL);
+	OOX::CSettings *settings = docx_document ? docx_document->m_oMain.settings : (docx_flat_document ? docx_flat_document->m_pSettings.GetPointer() : NULL);
 	if (!settings) return;
 
 	if (settings->m_oWriteProtection.IsInit())
@@ -3553,7 +3553,7 @@ void DocxConverter::convert_lists_styles()
 {
 	if (!odt_context) return;
 
-	OOX::CNumbering * lists_styles = docx_document ? docx_document->m_pNumbering : docx_flat_document ? docx_flat_document->m_pNumbering.GetPointer() : NULL;
+	OOX::CNumbering * lists_styles = docx_document ? docx_document->m_oMain.numbering : docx_flat_document ? docx_flat_document->m_pNumbering.GetPointer() : NULL;
 	
 	if (!lists_styles)return;
 
@@ -3602,7 +3602,7 @@ void DocxConverter::convert_styles()
 {
 	if (!odt_context) return;
 	
-	OOX::CStyles *styles = docx_document ? docx_document->m_pStyles : (docx_flat_document ? docx_flat_document->m_pStyles.GetPointer() : NULL);
+	OOX::CStyles *styles = docx_document ? docx_document->m_oMain.styles : (docx_flat_document ? docx_flat_document->m_pStyles.GetPointer() : NULL);
 	if (!styles)return;
 
 	//nullable<OOX::CLatentStyles > m_oLatentStyles;
@@ -3953,7 +3953,7 @@ void DocxConverter::convert(OOX::Numbering::CLvl *oox_num_lvl, OOX::Numbering::C
 	if (oox_num_lvl->m_oLvlPicBulletId.IsInit() && oox_num_lvl->m_oLvlPicBulletId->m_oVal.IsInit())
 	{
 		int id = *oox_num_lvl->m_oLvlPicBulletId->m_oVal;
-		OOX::CNumbering * lists_styles = docx_document->m_pNumbering;
+		OOX::CNumbering * lists_styles = docx_document->m_oMain.numbering;
 
 		for (size_t i = 0; (lists_styles) && (i < lists_styles->m_arrNumPicBullet.size()); i++)
 		{
@@ -4288,7 +4288,7 @@ void DocxConverter::convert_comment(int oox_comm_id)
 
 	if (docx_document) 
 	{
-		pComments = docx_document->m_pComments;
+		pComments = docx_document->m_oMain.comments;
 	}
 	else if (docx_flat_document)
 	{
@@ -4333,7 +4333,7 @@ void DocxConverter::convert_footnote(int oox_ref_id)
 	
 	if (docx_document)
 	{
-		oox_footnotes = docx_document->m_pFootnotes;
+		oox_footnotes = docx_document->m_oMain.footnotes;
 	}
 	else if (docx_flat_document)
 	{
@@ -4371,7 +4371,7 @@ void DocxConverter::convert_endnote(int oox_ref_id)
 	
 	if (docx_document)
 	{
-		oox_endnotes = docx_document->m_pEndnotes;
+		oox_endnotes = docx_document->m_oMain.endnotes;
 	}
 	else if (docx_flat_document)
 	{

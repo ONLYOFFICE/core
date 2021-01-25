@@ -254,8 +254,6 @@ namespace OOX
 				}
 			}
 		}
-
-
 		void CSdtContent::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ClearItems();
@@ -349,8 +347,6 @@ namespace OOX
 					m_arrItems.push_back( pItem );
 			}
 		}
-
-
 		std::wstring CSdtContent::toXML() const
 		{
 				std::wstring sResult = _T("<w:sdtContent>");

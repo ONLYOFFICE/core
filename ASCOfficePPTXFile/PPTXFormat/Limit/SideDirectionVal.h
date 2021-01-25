@@ -30,11 +30,8 @@
  *
  */
 #pragma once
-#ifndef PPTX_LIMIT_SIDEDIRECTIONVAL_INCLUDE_H_
-#define PPTX_LIMIT_SIDEDIRECTIONVAL_INCLUDE_H_
 
 #include "BaseLimit.h"
-
 
 namespace PPTX
 {
@@ -60,8 +57,24 @@ namespace PPTX
 					m_strValue = strValue;
 				}
 			}
+			virtual BYTE GetBYTECode() const
+			{
+				if (L"d" == m_strValue)		return 4;
+				if (L"l" == m_strValue)		return 5;
+				if (L"r" == m_strValue)		return 6;
+				if (L"u" == m_strValue)		return 7;
+				return 0;
+			}
+			virtual void SetBYTECode(const BYTE& src)
+			{
+				switch (src)
+				{
+				case 4: m_strValue = L"d"; break;
+				case 5: m_strValue = L"l"; break;
+				case 6: m_strValue = L"r"; break;
+				case 7: m_strValue = L"u"; break;
+				}
+			}
 		};
 	} // namespace Limit
 } // namespace PPTX
-
-#endif // PPTX_LIMIT_SIDEDIRECTIONVAL_INCLUDE_H_

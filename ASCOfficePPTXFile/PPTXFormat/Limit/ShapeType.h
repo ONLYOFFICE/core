@@ -30,11 +30,8 @@
  *
  */
 #pragma once
-#ifndef PPTX_LIMIT_SHAPETYPE_INCLUDE_H_
-#define PPTX_LIMIT_SHAPETYPE_INCLUDE_H_
 
 #include "BaseLimit.h"
-
 
 namespace PPTX
 {
@@ -45,206 +42,213 @@ namespace PPTX
 		public:
 			ShapeType()
 			{
-				m_strValue = _T("rect");
+				m_strValue = L"rect";
 	 		}
 
 			_USE_STRING_OPERATOR
 				
 			virtual void set(const std::wstring& strValue)
 			{
-				if ((_T("accentBorderCallout1") == strValue) ||
-					(_T("accentBorderCallout2") == strValue) ||
-					(_T("accentBorderCallout3") == strValue) ||
-					(_T("accentCallout1") == strValue) ||
-					(_T("accentCallout2") == strValue) ||
-					(_T("accentCallout3") == strValue) ||
-					(_T("actionButtonBackPrevious") == strValue) ||
-					(_T("actionButtonBeginning") == strValue) ||
-					(_T("actionButtonBlank") == strValue) ||
-					(_T("actionButtonDocument") == strValue) ||
-					(_T("actionButtonEnd") == strValue) ||
-					(_T("actionButtonForwardNext") == strValue) ||
-					(_T("actionButtonHelp") == strValue) ||
-					(_T("actionButtonHome") == strValue) ||
-					(_T("actionButtonInformation") == strValue) ||
-					(_T("actionButtonMovie") == strValue) ||
-					(_T("actionButtonReturn") == strValue) ||
-					(_T("actionButtonSound") == strValue) ||
-					(_T("arc") == strValue) ||
-					(_T("bentArrow") == strValue) ||
-					(_T("bentConnector2") == strValue) ||
-					(_T("bentConnector3") == strValue) ||
-					(_T("bentConnector4") == strValue) ||
-					(_T("bentConnector5") == strValue) ||
-					(_T("bentUpArrow") == strValue) ||
-					(_T("bevel") == strValue) ||
-					(_T("blockArc") == strValue) ||
-					(_T("borderCallout1") == strValue) ||
-					(_T("borderCallout2") == strValue) ||
-					(_T("borderCallout3") == strValue) ||
-					(_T("bracePair") == strValue) ||
-					(_T("bracketPair") == strValue) ||
-					(_T("callout1") == strValue) ||
-					(_T("callout2") == strValue) ||
-					(_T("callout3") == strValue) ||
-					(_T("can") == strValue) ||
-					(_T("chartPlus") == strValue) ||
-					(_T("chartStar") == strValue) ||
-					(_T("chartX") == strValue) ||
-					(_T("chevron") == strValue) ||
-					(_T("chord") == strValue) ||
-					(_T("circularArrow") == strValue) ||
-					(_T("cloud") == strValue) ||
-					(_T("cloudCallout") == strValue) ||
-					(_T("corner") == strValue) ||
-					(_T("cornerTabs") == strValue) ||
-					(_T("cube") == strValue) ||
-					(_T("curvedConnector2") == strValue) ||
-					(_T("curvedConnector3") == strValue) ||
-					(_T("curvedConnector4") == strValue) ||
-					(_T("curvedConnector5") == strValue) ||
-					(_T("curvedDownArrow") == strValue) ||
-					(_T("curvedLeftArrow") == strValue) ||
-					(_T("curvedRightArrow") == strValue) ||
-					(_T("curvedUpArrow") == strValue) ||
-					(_T("decagon") == strValue) ||
-					(_T("diagStripe") == strValue) ||
-					(_T("diamond") == strValue) ||
-					(_T("dodecagon") == strValue) ||
-					(_T("donut") == strValue) ||
-					(_T("doubleWave") == strValue) ||
-					(_T("downArrow") == strValue) ||
-					(_T("downArrowCallout") == strValue) ||
-					(_T("ellipse") == strValue) ||
-					(_T("ellipseRibbon") == strValue) ||
-					(_T("ellipseRibbon2") == strValue) ||
-					(_T("flowChartAlternateProcess") == strValue) ||
-					(_T("flowChartCollate") == strValue) ||
-					(_T("flowChartConnector") == strValue) ||
-					(_T("flowChartDecision") == strValue) ||
-					(_T("flowChartDelay") == strValue) ||
-					(_T("flowChartDisplay") == strValue) ||
-					(_T("flowChartDocument") == strValue) ||
-					(_T("flowChartExtract") == strValue) ||
-					(_T("flowChartInputOutput") == strValue) ||
-					(_T("flowChartInternalStorage") == strValue) ||
-					(_T("flowChartMagneticDisk") == strValue) ||
-					(_T("flowChartMagneticDrum") == strValue) ||
-					(_T("flowChartMagneticTape") == strValue) ||
-					(_T("flowChartManualInput") == strValue) ||
-					(_T("flowChartManualOperation") == strValue) ||
-					(_T("flowChartMerge") == strValue) ||
-					(_T("flowChartMultidocument") == strValue) ||
-					(_T("flowChartOfflineStorage") == strValue) ||
-					(_T("flowChartOffpageConnector") == strValue) ||
-					(_T("flowChartOnlineStorage") == strValue) ||
-					(_T("flowChartOr") == strValue) ||
-					(_T("flowChartPredefinedProcess") == strValue) ||
-					(_T("flowChartPreparation") == strValue) ||
-					(_T("flowChartProcess") == strValue) ||
-					(_T("flowChartPunchedCard") == strValue) ||
-					(_T("flowChartPunchedTape") == strValue) ||
-					(_T("flowChartSort") == strValue) ||
-					(_T("flowChartSummingJunction") == strValue) ||
-					(_T("flowChartTerminator") == strValue) ||
-					(_T("foldedCorner") == strValue) ||
-					(_T("frame") == strValue) ||
-					(_T("funnel") == strValue) ||
-					(_T("gear6") == strValue) ||
-					(_T("gear9") == strValue) ||
-					(_T("halfFrame") == strValue) ||
-					(_T("heart") == strValue) ||
-					(_T("heptagon") == strValue) ||
-					(_T("hexagon") == strValue) ||
-					(_T("homePlate") == strValue) ||
-					(_T("horizontalScroll") == strValue) ||
-					(_T("irregularSeal1") == strValue) ||
-					(_T("irregularSeal2") == strValue) ||
-					(_T("leftArrow") == strValue) ||
-					(_T("leftArrowCallout") == strValue) ||
-					(_T("leftBrace") == strValue) ||
-					(_T("leftBracket") == strValue) ||
-					(_T("leftCircularArrow") == strValue) ||
-					(_T("leftRightArrow") == strValue) ||
-					(_T("leftRightArrowCallout") == strValue) ||
-					(_T("leftRightCircularArrow") == strValue) ||
-					(_T("leftRightRibbon") == strValue) ||
-					(_T("leftRightUpArrow") == strValue) ||
-					(_T("leftUpArrow") == strValue) ||
-					(_T("lightningBolt") == strValue) ||
-					(_T("line") == strValue) ||
-					(_T("lineInv") == strValue) ||
-					(_T("mathDivide") == strValue) ||
-					(_T("mathEqual") == strValue) ||
-					(_T("mathMinus") == strValue) ||
-					(_T("mathMultiply") == strValue) ||
-					(_T("mathNotEqual") == strValue) ||
-					(_T("mathPlus") == strValue) ||
-					(_T("moon") == strValue) ||
-					(_T("nonIsoscelesTrapezoid") == strValue) ||
-					(_T("noSmoking") == strValue) ||
-					(_T("notchedRightArrow") == strValue) ||
-					(_T("octagon") == strValue) ||
-					(_T("parallelogram") == strValue) ||
-					(_T("pentagon") == strValue) ||
-					(_T("pie") == strValue) ||
-					(_T("pieWedge") == strValue) ||
-					(_T("plaque") == strValue) ||
-					(_T("plaqueTabs") == strValue) ||
-					(_T("plus") == strValue) ||
-					(_T("quadArrow") == strValue) ||
-					(_T("quadArrowCallout") == strValue) ||
-					(_T("rect") == strValue) ||
-					(_T("ribbon") == strValue) ||
-					(_T("ribbon2") == strValue) ||
-					(_T("rightArrow") == strValue) ||
-					(_T("rightArrowCallout") == strValue) ||
-					(_T("rightBrace") == strValue) ||
-					(_T("rightBracket") == strValue) ||
-					(_T("round1Rect") == strValue) ||
-					(_T("round2DiagRect") == strValue) ||
-					(_T("round2SameRect") == strValue) ||
-					(_T("roundRect") == strValue) ||
-					(_T("rtTriangle") == strValue) ||
-					(_T("smileyFace") == strValue) ||
-					(_T("snip1Rect") == strValue) ||
-					(_T("snip2DiagRect") == strValue) ||
-					(_T("snip2SameRect") == strValue) ||
-					(_T("snipRoundRect") == strValue) ||
-					(_T("squareTabs") == strValue) ||
-					(_T("star10") == strValue) ||
-					(_T("star12") == strValue) ||
-					(_T("star16") == strValue) ||
-					(_T("star24") == strValue) ||
-					(_T("star32") == strValue) ||
-					(_T("star4") == strValue) ||
-					(_T("star5") == strValue) ||
-					(_T("star6") == strValue) ||
-					(_T("star7") == strValue) ||
-					(_T("star8") == strValue) ||
-					(_T("straightConnector1") == strValue) ||
-					(_T("stripedRightArrow") == strValue) ||
-					(_T("sun") == strValue) ||
-					(_T("swooshArrow") == strValue) ||
-					(_T("teardrop") == strValue) ||
-					(_T("trapezoid") == strValue) ||
-					(_T("triangle") == strValue) ||
-					(_T("upArrow") == strValue) ||
-					(_T("upArrowCallout") == strValue) ||
-					(_T("upDownArrow") == strValue) ||
-					(_T("upDownArrowCallout") == strValue) ||
-					(_T("uturnArrow") == strValue) ||
-					(_T("verticalScroll") == strValue) ||
-					(_T("wave") == strValue) ||
-					(_T("wedgeEllipseCallout") == strValue) ||
-					(_T("wedgeRectCallout") == strValue) ||
-					(_T("wedgeRoundRectCallout") == strValue))
+				if ((L"accentBorderCallout1" == strValue) ||
+					(L"accentBorderCallout2" == strValue) ||
+					(L"accentBorderCallout3" == strValue) ||
+					(L"accentCallout1" == strValue) ||
+					(L"accentCallout2" == strValue) ||
+					(L"accentCallout3" == strValue) ||
+					(L"actionButtonBackPrevious" == strValue) ||
+					(L"actionButtonBeginning" == strValue) ||
+					(L"actionButtonBlank" == strValue) ||
+					(L"actionButtonDocument" == strValue) ||
+					(L"actionButtonEnd" == strValue) ||
+					(L"actionButtonForwardNext" == strValue) ||
+					(L"actionButtonHelp" == strValue) ||
+					(L"actionButtonHome" == strValue) ||
+					(L"actionButtonInformation" == strValue) ||
+					(L"actionButtonMovie" == strValue) ||
+					(L"actionButtonReturn" == strValue) ||
+					(L"actionButtonSound" == strValue) ||
+					(L"arc" == strValue) ||
+					(L"bentArrow" == strValue) ||
+					(L"bentConnector2" == strValue) ||
+					(L"bentConnector3" == strValue) ||
+					(L"bentConnector4" == strValue) ||
+					(L"bentConnector5" == strValue) ||
+					(L"bentUpArrow" == strValue) ||
+					(L"bevel" == strValue) ||
+					(L"blockArc" == strValue) ||
+					(L"borderCallout1" == strValue) ||
+					(L"borderCallout2" == strValue) ||
+					(L"borderCallout3" == strValue) ||
+					(L"bracePair" == strValue) ||
+					(L"bracketPair" == strValue) ||
+					(L"callout1" == strValue) ||
+					(L"callout2" == strValue) ||
+					(L"callout3" == strValue) ||
+					(L"can" == strValue) ||
+					(L"chartPlus" == strValue) ||
+					(L"chartStar" == strValue) ||
+					(L"chartX" == strValue) ||
+					(L"chevron" == strValue) ||
+					(L"chord" == strValue) ||
+					(L"circularArrow" == strValue) ||
+					(L"cloud" == strValue) ||
+					(L"cloudCallout" == strValue) ||
+					(L"corner" == strValue) ||
+					(L"cornerTabs" == strValue) ||
+					(L"cube" == strValue) ||
+					(L"curvedConnector2" == strValue) ||
+					(L"curvedConnector3" == strValue) ||
+					(L"curvedConnector4" == strValue) ||
+					(L"curvedConnector5" == strValue) ||
+					(L"curvedDownArrow" == strValue) ||
+					(L"curvedLeftArrow" == strValue) ||
+					(L"curvedRightArrow" == strValue) ||
+					(L"curvedUpArrow" == strValue) ||
+					(L"decagon" == strValue) ||
+					(L"diagStripe" == strValue) ||
+					(L"diamond" == strValue) ||
+					(L"dodecagon" == strValue) ||
+					(L"donut" == strValue) ||
+					(L"doubleWave" == strValue) ||
+					(L"downArrow" == strValue) ||
+					(L"downArrowCallout" == strValue) ||
+					(L"ellipse" == strValue) ||
+					(L"ellipseRibbon" == strValue) ||
+					(L"ellipseRibbon2" == strValue) ||
+					(L"flowChartAlternateProcess" == strValue) ||
+					(L"flowChartCollate" == strValue) ||
+					(L"flowChartConnector" == strValue) ||
+					(L"flowChartDecision" == strValue) ||
+					(L"flowChartDelay" == strValue) ||
+					(L"flowChartDisplay" == strValue) ||
+					(L"flowChartDocument" == strValue) ||
+					(L"flowChartExtract" == strValue) ||
+					(L"flowChartInputOutput" == strValue) ||
+					(L"flowChartInternalStorage" == strValue) ||
+					(L"flowChartMagneticDisk" == strValue) ||
+					(L"flowChartMagneticDrum" == strValue) ||
+					(L"flowChartMagneticTape" == strValue) ||
+					(L"flowChartManualInput" == strValue) ||
+					(L"flowChartManualOperation" == strValue) ||
+					(L"flowChartMerge" == strValue) ||
+					(L"flowChartMultidocument" == strValue) ||
+					(L"flowChartOfflineStorage" == strValue) ||
+					(L"flowChartOffpageConnector" == strValue) ||
+					(L"flowChartOnlineStorage" == strValue) ||
+					(L"flowChartOr" == strValue) ||
+					(L"flowChartPredefinedProcess" == strValue) ||
+					(L"flowChartPreparation" == strValue) ||
+					(L"flowChartProcess" == strValue) ||
+					(L"flowChartPunchedCard" == strValue) ||
+					(L"flowChartPunchedTape" == strValue) ||
+					(L"flowChartSort" == strValue) ||
+					(L"flowChartSummingJunction" == strValue) ||
+					(L"flowChartTerminator" == strValue) ||
+					(L"foldedCorner" == strValue) ||
+					(L"frame" == strValue) ||
+					(L"funnel" == strValue) ||
+					(L"gear6" == strValue) ||
+					(L"gear9" == strValue) ||
+					(L"halfFrame" == strValue) ||
+					(L"heart" == strValue) ||
+					(L"heptagon" == strValue) ||
+					(L"hexagon" == strValue) ||
+					(L"homePlate" == strValue) ||
+					(L"horizontalScroll" == strValue) ||
+					(L"irregularSeal1" == strValue) ||
+					(L"irregularSeal2" == strValue) ||
+					(L"leftArrow" == strValue) ||
+					(L"leftArrowCallout" == strValue) ||
+					(L"leftBrace" == strValue) ||
+					(L"leftBracket" == strValue) ||
+					(L"leftCircularArrow" == strValue) ||
+					(L"leftRightArrow" == strValue) ||
+					(L"leftRightArrowCallout" == strValue) ||
+					(L"leftRightCircularArrow" == strValue) ||
+					(L"leftRightRibbon" == strValue) ||
+					(L"leftRightUpArrow" == strValue) ||
+					(L"leftUpArrow" == strValue) ||
+					(L"lightningBolt" == strValue) ||
+					(L"line" == strValue) ||
+					(L"lineInv" == strValue) ||
+					(L"mathDivide" == strValue) ||
+					(L"mathEqual" == strValue) ||
+					(L"mathMinus" == strValue) ||
+					(L"mathMultiply" == strValue) ||
+					(L"mathNotEqual" == strValue) ||
+					(L"mathPlus" == strValue) ||
+					(L"moon" == strValue) ||
+					(L"nonIsoscelesTrapezoid" == strValue) ||
+					(L"noSmoking" == strValue) ||
+					(L"notchedRightArrow" == strValue) ||
+					(L"octagon" == strValue) ||
+					(L"parallelogram" == strValue) ||
+					(L"pentagon" == strValue) ||
+					(L"pie" == strValue) ||
+					(L"pieWedge" == strValue) ||
+					(L"plaque" == strValue) ||
+					(L"plaqueTabs" == strValue) ||
+					(L"plus" == strValue) ||
+					(L"quadArrow" == strValue) ||
+					(L"quadArrowCallout" == strValue) ||
+					(L"rect" == strValue) ||
+					(L"ribbon" == strValue) ||
+					(L"ribbon2" == strValue) ||
+					(L"rightArrow" == strValue) ||
+					(L"rightArrowCallout" == strValue) ||
+					(L"rightBrace" == strValue) ||
+					(L"rightBracket" == strValue) ||
+					(L"round1Rect" == strValue) ||
+					(L"round2DiagRect" == strValue) ||
+					(L"round2SameRect" == strValue) ||
+					(L"roundRect" == strValue) ||
+					(L"rtTriangle" == strValue) ||
+					(L"smileyFace" == strValue) ||
+					(L"snip1Rect" == strValue) ||
+					(L"snip2DiagRect" == strValue) ||
+					(L"snip2SameRect" == strValue) ||
+					(L"snipRoundRect" == strValue) ||
+					(L"squareTabs" == strValue) ||
+					(L"star10" == strValue) ||
+					(L"star12" == strValue) ||
+					(L"star16" == strValue) ||
+					(L"star24" == strValue) ||
+					(L"star32" == strValue) ||
+					(L"star4" == strValue) ||
+					(L"star5" == strValue) ||
+					(L"star6" == strValue) ||
+					(L"star7" == strValue) ||
+					(L"star8" == strValue) ||
+					(L"straightConnector1" == strValue) ||
+					(L"stripedRightArrow" == strValue) ||
+					(L"sun" == strValue) ||
+					(L"swooshArrow" == strValue) ||
+					(L"teardrop" == strValue) ||
+					(L"trapezoid" == strValue) ||
+					(L"triangle" == strValue) ||
+					(L"upArrow" == strValue) ||
+					(L"upArrowCallout" == strValue) ||
+					(L"upDownArrow" == strValue) ||
+					(L"upDownArrowCallout" == strValue) ||
+					(L"uturnArrow" == strValue) ||
+					(L"verticalScroll" == strValue) ||
+					(L"wave" == strValue) ||
+					(L"wedgeEllipseCallout" == strValue) ||
+					(L"wedgeRectCallout" == strValue) ||
+					(L"wedgeRoundRectCallout" == strValue))
 				{
 					m_strValue = strValue;
 				}
 			}
+			virtual BYTE GetBYTECode() const
+			{
+				//not using
+				return 0;
+			}
+			virtual void SetBYTECode(const BYTE& src)
+			{
+				//not using
+			}
 		};
 	} // namespace Limit
 } // namespace PPTX
-
-#endif // PPTX_LIMIT_SHAPETYPE_INCLUDE_H_

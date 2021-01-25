@@ -22,7 +22,7 @@ std::vector<std::wstring> CApplicationFonts::GetSetupFontFiles_ios()
 
 namespace NSDirectory
 {
-    void GetFiles2_ios(std::wstring strDirectory, CArray<std::wstring>& oArray, bool bIsRecursion)
+    void GetFiles2_ios(std::wstring strDirectory, std::vector<std::wstring>& oArray, bool bIsRecursion)
     {
         NSString* directoryPath = [ [ NSString alloc ]
                              initWithBytes : (char*)strDirectory.data()
@@ -38,7 +38,7 @@ namespace NSDirectory
             NSData* pSData              =   [[ directoryContent objectAtIndex:count] dataUsingEncoding : pEncode ];
             
             std::wstring sTmp( (wchar_t*) [ pSData bytes ], [ pSData length] / sizeof ( wchar_t ) );
-            oArray.Add(sTmp);
+            oArray.push_back(sTmp);
         }
     }
 }

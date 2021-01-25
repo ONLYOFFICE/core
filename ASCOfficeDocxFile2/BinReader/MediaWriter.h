@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef MEDIA_WRITER
-#define MEDIA_WRITER
+#pragma once
 
 #include "../../XlsxSerializerCom/Common/Common.h"
 
@@ -93,4 +92,3 @@ namespace Writers
 		}
 	};
 }
-#endif	// #ifndef MEDIA_WRITER

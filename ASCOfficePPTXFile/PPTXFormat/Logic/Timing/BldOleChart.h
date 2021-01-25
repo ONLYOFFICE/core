@@ -45,7 +45,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(BldOleChart)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				spid		= node.GetAttribute(_T("spid"));
@@ -70,9 +69,57 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("p:bldOleChart"), oAttr);
 			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_p_bldOleChart;
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+					pWriter->WriteLimit2(0, bld);
+					pWriter->WriteBool2(1, uiExpand);
+					pWriter->WriteString1(2, spid);
+					pWriter->WriteInt1(3, grpId);
+					pWriter->WriteBool2(4, animBg);
+					pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
-		public:
-			std::wstring									spid;
+				pReader->Skip(1); // attribute start
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					else if (0 == _at)	bld = pReader->GetUChar();
+					else if (1 == _at)	uiExpand = pReader->GetBool();
+					else if (2 == _at)	spid = pReader->GetString2();
+					else if (3 == _at)	grpId = pReader->GetLong();
+					else if (4 == _at)	animBg = pReader->GetBool();
+				}
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+						default:
+						{
+							pReader->SkipRecord();
+						}break;
+					}
+				}
+				pReader->Seek(end);
+			}
+
+			std::wstring							spid;
 			int										grpId;
 			nullable_bool							uiExpand;
 			nullable_limit<Limit::ChartBuildType>	bld;

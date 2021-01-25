@@ -32,10 +32,14 @@
 #pragma once
 
 #include "ImageManager.h"
+#include "TimingConverter.h"
 
 
 class CStylesWriter;
 class CPPTUserInfo;
+class CStringWriter;
+class CSlideShowInfo;
+
 
 namespace PPT_FORMAT
 {
@@ -78,8 +82,9 @@ namespace PPT_FORMAT
 		void WriteLayout		(CLayoutPtr pLayout, int nIndexLayout, int nStartLayout, int nIndexTheme);
 		void WriteSlide			(int nIndexSlide);
 		void WriteNotes			(int nIndexNotes);
+        void WriteTiming        (CStringWriter& oWriter, PPTX::Logic::Timing &oTiming); // TODO write spec class for timing
 		
-		void WriteTransition	(CStringWriter& oWriter, CTransition& transition);		
+        void WriteTransition	(CStringWriter& oWriter, CSlideShowInfo& oSSInfo);
 		void WriteColorScheme	(CStringWriter& oWriter, const std::wstring & name, const std::vector<CColor> & colors, bool extra = false);
 		void WriteBackground	(CStringWriter& oWriter, CRelsGenerator& oRels, CBrush& oBackground);
 		void WriteElement		(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout = NULL);

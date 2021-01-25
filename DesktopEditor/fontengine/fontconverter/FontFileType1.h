@@ -125,7 +125,7 @@ namespace NSFontConverter
 
     struct Type1Charstring
     {
-        CArray<Type1CharstringItem> arrCharstring;
+        std::vector<Type1CharstringItem> arrCharstring;
         int                               nWidth;
         int                               nLSB;
 
@@ -135,7 +135,7 @@ namespace NSFontConverter
             nLSB      = 0;
         }
 
-        Type1Charstring(CArray<Type1CharstringItem> &arrCs, int nW, int nL)
+        Type1Charstring(std::vector<Type1CharstringItem> &arrCs, int nW, int nL)
         {
             arrCharstring = arrCs;
             nWidth        = nW;
@@ -370,8 +370,8 @@ namespace NSFontConverter
         }
 
         Type1Charstring FlattenCharstring(Type1Charstring& oCharstring, int nBias = 0);
-        void   CFFCreateIndexHeader(FontFileOutputFunc pOutputFunc, void *pOutputStream, CArray<std::wstring> aObjects);
-        void   CFFCreateIndexHeader(FontFileOutputFunc pOutputFunc, void *pOutputStream, CArray<Type1Charstring> aObjects);
+        void   CFFCreateIndexHeader(FontFileOutputFunc pOutputFunc, void *pOutputStream, std::vector<std::wstring> aObjects);
+        void   CFFCreateIndexHeader(FontFileOutputFunc pOutputFunc, void *pOutputStream, std::vector<Type1Charstring> aObjects);
         void   CFFEncodeNumber     (FontFileOutputFunc pOutputFunc, void *pOutputStream, int nValue, bool bForceLong = false);
         void   CFFEncodeNumber     (FontFileOutputFunc pOutputFunc, void *pOutputStream, double dValue);
 
@@ -384,8 +384,8 @@ namespace NSFontConverter
         Type1PrivateDict              m_oPrivateDict;
         Type1TopDict                  m_oTopDict;
 
-        CArray<Type1Glyph>      m_arrCharstrings;
-        CArray<Type1Charstring> m_arrSubrs;
+        std::vector<Type1Glyph>      m_arrCharstrings;
+        std::vector<Type1Charstring> m_arrSubrs;
     };
 }
 

@@ -1516,7 +1516,7 @@ bool OOXShapeReader::ParseVmlObject	( ReaderParameter oParam , RtfShapePtr& pOut
 	pOutput->m_pOleObject	= RtfOlePtr(new RtfOle());
 
 	if( vmlOLE->m_sProgId.IsInit() )
-		pOutput->m_pOleObject->m_sOleClass = vmlOLE->m_sProgId.get2();
+		pOutput->m_pOleObject->m_sOleClass = vmlOLE->m_sProgId.get();
 	
 	if(vmlOLE->m_oType.IsInit())
 	{

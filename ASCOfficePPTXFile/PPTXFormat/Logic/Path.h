@@ -114,8 +114,7 @@ namespace PPTX
 
 					if (0 == _at)
 					{
-						path = new PPTX::Limit::FillPath();
-						path->SetBYTECode(pReader->GetUChar());
+						path = pReader->GetUChar();
 					}
 					else
 						break;

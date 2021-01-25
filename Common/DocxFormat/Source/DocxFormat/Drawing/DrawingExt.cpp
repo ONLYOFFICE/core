@@ -395,7 +395,7 @@ namespace OOX
 				OOX::CDocx* docx = dynamic_cast<OOX::CDocx*>(m_pMainDocument);
 				if (docx)
 				{
-					pDocument = docx->m_pDocument;
+					pDocument = docx->m_oMain.document;
 				}
 				OOX::CDocxFlat *docx_flat = dynamic_cast<OOX::CDocxFlat*>(m_pMainDocument);
 				if (docx_flat)

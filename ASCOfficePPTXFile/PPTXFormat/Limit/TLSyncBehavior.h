@@ -30,11 +30,8 @@
  *
  */
 #pragma once
-#ifndef PPTX_LIMIT_TLSYNCBEHAVIOR_INCLUDE_H_
-#define PPTX_LIMIT_TLSYNCBEHAVIOR_INCLUDE_H_
 
 #include "BaseLimit.h"
-
 
 namespace PPTX
 {
@@ -45,21 +42,34 @@ namespace PPTX
 		public:
 			TLSyncBehavior()
 			{
-				m_strValue = _T("canSlip");
+				m_strValue = L"canSlip";
 			}
 
 			_USE_STRING_OPERATOR
 				
 			virtual void set(const std::wstring& strValue)
 			{
-				if ((_T("canSlip") == strValue) ||
-					(_T("locked") == strValue))
+				if ((L"canSlip" == strValue) ||
+					(L"locked" == strValue))
 				{
 					m_strValue = strValue;
+				}
+			}
+			virtual BYTE GetBYTECode() const
+			{
+				if (L"canSlip" == m_strValue)	return 0;
+				if (L"locked" == m_strValue)	return 1;
+				return 0;
+			}
+
+			virtual void SetBYTECode(const BYTE& val)
+			{
+				switch (val)
+				{
+				case 0: m_strValue = L"canSlip";	break;
+				case 1: m_strValue = L"locked";		break;
 				}
 			}
 		};
 	} // namespace Limit
 } // namespace PPTX
-
-#endif // PPTX_LIMIT_TLSYNCBEHAVIOR_INCLUDE_H_

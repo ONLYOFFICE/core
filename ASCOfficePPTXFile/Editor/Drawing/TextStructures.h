@@ -31,12 +31,14 @@
  */
 #pragma once
 #include "Structures.h"
+#include "../../../ASCOfficePPTFile/PPTFormatLib/Enums/enums.h"
 #include "../../../Common/DocxFormat/Source/Base/Nullable.h"
 
 using namespace ODRAW;
 
 namespace PPT_FORMAT
 {
+
 
 	#define DEFAULT_BEFORE(EXIST_PARAM, PARAM)  \
 	if (!EXIST_PARAM && oSrc.##EXIST_PARAM)     \
@@ -82,6 +84,7 @@ namespace PPT_FORMAT
 		
         return _T("<") + strName + _T(">") + std::to_wstring((unsigned int)prop->GetLONG()) + _T("</") + strName + _T(">");
 	}
+//    std::wstring TextAutoNumberSchemeEnumTOTextAutonumberScheme(const PPT_FORMAT::TextAutoNumberSchemeEnum oldEnum);
 
 	class CFontProperty
 	{
@@ -105,6 +108,14 @@ namespace PPT_FORMAT
 			return *this;
 		}
 	};
+
+    class CBulletAutoNum
+    {
+    public:
+        NSCommon::nullable<USHORT>  startAt;
+        NSCommon::nullable_string	type;
+
+    };
 
 	class CFontProperties
 	{
@@ -266,7 +277,8 @@ namespace PPT_FORMAT
 		NSCommon::nullable_base<WORD>			bulletSize;
 		NSCommon::nullable_base<WCHAR>			bulletChar;
 		NSCommon::nullable_base<CColor>			bulletColor;
-		NSCommon::nullable_base<CFontProperty>	bulletFontProperties;
+                NSCommon::nullable_base<CFontProperty>          bulletFontProperties;
+                NSCommon::nullable_base<CBulletAutoNum>         bulletAutoNum;
 
 		NSCommon::nullable_base<WORD>			textAlignment;
 		NSCommon::nullable_base<LONG>			lineSpacing;
@@ -303,6 +315,7 @@ namespace PPT_FORMAT
 			bulletChar			= oSrc.bulletChar;
 			bulletColor			= oSrc.bulletColor;
 			bulletFontProperties = oSrc.bulletFontProperties;
+            bulletAutoNum       = oSrc.bulletAutoNum;
 
 			textAlignment		= oSrc.textAlignment;
 			lineSpacing			= oSrc.lineSpacing;
@@ -343,6 +356,7 @@ namespace PPT_FORMAT
 				bulletColor			= oSrc.bulletColor;				
 			}
 			bulletFontProperties.reset();
+            bulletAutoNum.reset();
 
 			if (!textAlignment.is_init())			textAlignment = oSrc.textAlignment;
 			if (!lineSpacing.is_init())				lineSpacing = oSrc.lineSpacing;
@@ -368,12 +382,13 @@ namespace PPT_FORMAT
 			{
 				hasBullet = oSrc.hasBullet;
 
-				bulletSize = oSrc.bulletSize;	
+                bulletSize = oSrc.bulletSize;
 				bulletChar		= oSrc.bulletChar;
 				bulletFontRef	= oSrc.bulletFontRef;
 				bulletColor		= oSrc.bulletColor;
 
 				bulletFontProperties.reset();
+                bulletAutoNum.reset();
 			}
 
 			if (oSrc.textAlignment.is_init())		textAlignment	= oSrc.textAlignment;
@@ -751,7 +766,118 @@ namespace PPT_FORMAT
 			}
 		}
 	};
+   ///////////////////////////////////////////////////////  TODO  /////////////////////////////////////
 
+//        class CTextStyle9Level
+//	{
+//	public:
+//		CTextPFRun m_oPF9Run;
+//		CTextCFRun m_oCF9Run;
+
+//	public:
+//		CTextStyle9Level()
+//		{
+//		}
+//		CTextStyle9Level(const CTextStyle9Level& oSrc)
+//		{
+//			*this = oSrc;
+//		}
+//		CTextStyle9Level& operator=(const CTextStyle9Level& oSrc)
+//		{
+//			m_oPF9Run	= oSrc.m_oPF9Run;
+//			m_oCF9Run	= oSrc.m_oCF9Run;
+
+//			return *this;
+//		}
+
+//		void ApplyAfter(const CTextStyleLevel& oSrc)
+//		{
+//			m_oPFRun.ApplyAfter(oSrc.m_oPFRun);
+//			m_oCFRun.ApplyAfter(oSrc.m_oCFRun);
+//		}
+//		void ApplyBefore(const CTextStyleLevel& oSrc)
+//		{
+//			m_oPFRun.ApplyBefore(oSrc.m_oPFRun);
+//			m_oCFRun.ApplyBefore(oSrc.m_oCFRun);
+//		}
+//	};
+
+//	class CTextStyles9
+//	{
+//	public:
+//		NSCommon::nullable_base<CTextStyleLevel> m_pLevels[10];
+
+//		CTextStyles9()
+//		{
+//			for (int i = 0; i < 10; ++i)
+//			{
+//				m_pLevels[i] = NULL;
+//			}
+//		}
+//		CTextStyles9(const CTextStyles& oSrc)
+//		{
+//			*this = oSrc;
+//		}
+//		CTextStyles9& operator=(const CTextStyles& oSrc)
+//		{
+//			for (int i = 0; i < 10; ++i)
+//			{
+//				m_pLevels[i] = oSrc.m_pLevels[i];
+//			}
+//			return *this;
+//		}
+//		void SetStyles(CTextStyles* pStyles)
+//		{
+//			for (int i = 0; i < 10; ++i)
+//			{
+//				m_pLevels[i] = pStyles->m_pLevels[i];
+//			}
+//		}
+//		void SetLanguage(nullable<WORD> & language)
+//		{
+//			if (!language.is_init()) return;
+
+//			for (int i = 0; i < 10; ++i)
+//			{
+//				if (m_pLevels[i].is_init())
+//				{
+//					m_pLevels[i]->m_oCFRun.Language = language;
+//				}
+//			}
+//		}
+//		void ApplyAfter(const CTextStyles& oSrc)
+//		{
+//			for (int i = 0; i < 10; ++i)
+//			{
+//				if (!m_pLevels[i].is_init())
+//				{
+//					m_pLevels[i] = oSrc.m_pLevels[i];
+//				}
+//				else if (oSrc.m_pLevels[i].is_init())
+//				{
+//					m_pLevels[i]->ApplyAfter(oSrc.m_pLevels[i].get());
+//				}
+
+//			}
+//		}
+//		void ApplyBefore(const CTextStyles& oSrc)
+//		{
+//			for (int i = 0; i < 10; ++i)
+//			{
+//				if (!m_pLevels[i].is_init())
+//				{
+//					m_pLevels[i] = oSrc.m_pLevels[i];
+//				}
+//				else if (oSrc.m_pLevels[i].is_init())
+//				{
+//					m_pLevels[i]->ApplyBefore(oSrc.m_pLevels[i].get());
+//				}
+
+//			}
+//		}
+//	};
+
+   ///////////////////////////////////////////////////////  TODO  /////////////////////////////////////
 	class CParagraph
 	{
 	public:
@@ -759,8 +885,9 @@ namespace PPT_FORMAT
 		int m_lTextLevel;
 		int m_lStyleThemeIndex;
 
-		CTextPFRun			m_oPFRun;
+                CTextPFRun		m_oPFRun;
 		std::vector<CSpan>	m_arSpans;
+
 
 	public:
 		CParagraph() 

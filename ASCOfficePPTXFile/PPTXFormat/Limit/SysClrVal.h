@@ -30,11 +30,7 @@
  *
  */
 #pragma once
-#ifndef PPTX_LIMIT_SYSCLRVAL_INCLUDE_H_
-#define PPTX_LIMIT_SYSCLRVAL_INCLUDE_H_
-
 #include "BaseLimit.h"
-
 
 namespace PPTX
 {
@@ -86,8 +82,15 @@ namespace PPTX
 					m_strValue = strValue;
 				}
 			}
+			virtual BYTE GetBYTECode() const
+			{
+				//not using
+				return 0;
+			}
+			virtual void SetBYTECode(const BYTE& src)
+			{
+				//not using
+			}
 		};
 	} // namespace Limit
 } // namespace PPTX
-
-#endif // PPTX_LIMIT_SYSCLRVAL_INCLUDE_H_

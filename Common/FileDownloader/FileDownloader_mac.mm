@@ -1,6 +1,10 @@
 #include "FileDownloader_private.h"
 #include "FileDownloader.h"
 
+#ifdef USE_EXTERNAL_DOWNLOAD
+#include "download_external.h"
+#endif
+
 #if _IOS
     #import <Foundation/Foundation.h>
 #else
@@ -15,7 +19,6 @@ static NSString* StringWToNSString ( const std::wstring& Str )
                          encoding : CFStringConvertEncodingToNSStringEncoding ( kCFStringEncodingUTF32LE ) ];
     return pString;
 }
-
 class CFileDownloaderBaseCocoa : public CFileDownloaderBase
 {
 public :
@@ -36,6 +39,12 @@ public :
                 NSFile::CFileBinary::Remove(m_sFilePath);
         }
 
+#ifdef USE_EXTERNAL_DOWNLOAD
+        int nExternalDownload = download_external(m_sFileUrl, m_sFilePath);
+        if (0 == nExternalDownload)
+            return 0;
+#endif
+
         NSString* stringURL = StringWToNSString(m_sFileUrl);
         NSString *escapedURL = [stringURL stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
         NSURL  *url = [NSURL URLWithString:escapedURL];
@@ -55,7 +64,7 @@ public :
             if (!CFileDownloader::GetARCEnabled())
             {
                 [stringURL release];
-                [url release];
+                //[url release];
                 [urlData release];
             }
 #endif
@@ -70,7 +79,7 @@ public :
         if (!CFileDownloader::GetARCEnabled())
         {
             [stringURL release];
-            [url release];
+            //[url release];
         }
 #endif
 #endif

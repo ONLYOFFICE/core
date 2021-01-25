@@ -199,12 +199,21 @@ unsigned int xlsx_table_state::columns_count() const
     return columns_count_;
 }
 
-void xlsx_table_state::set_table_row_group(int count, bool collapsed, int level)
+void xlsx_table_state::start_table_row_group(bool collapsed)
 {
-	group_row_.enabled = true;
-	group_row_.count = count;
-	group_row_.collapsed = collapsed;
-	group_row_.level = level;
+	group_rows_.push_back(collapsed);
+}
+void xlsx_table_state::end_table_row_group()
+{
+	group_rows_.pop_back();
+}
+void xlsx_table_state::start_table_column_group(bool collapsed)
+{
+	group_columns_.push_back(collapsed);
+}
+void xlsx_table_state::end_table_column_group()
+{
+	group_columns_.pop_back();
 }
 void xlsx_table_state::add_empty_row(int count)
 {

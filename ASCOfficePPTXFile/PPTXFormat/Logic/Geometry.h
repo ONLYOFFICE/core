@@ -115,7 +115,7 @@ namespace PPTX
 					if (GEOMETRY_TYPE_PRST == _t)
 					{
 						// preset shape
-						LONG _e = pReader->GetPos() + pReader->GetLong() + 4;
+						LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
 						pReader->Skip(1); // start attributes
 
 						Logic::PrstGeom* pGeom = new Logic::PrstGeom();
@@ -139,7 +139,7 @@ namespace PPTX
 							{
 								case 0:
 								{
-									LONG _end_rec2 = pReader->GetPos() + pReader->GetLong() + 4;
+									LONG _end_rec2 = pReader->GetPos() + pReader->GetRecordSize() + 4;
 									ULONG _c = pReader->GetULong();
 
 									for (ULONG i = 0; i < _c; ++i)
@@ -161,7 +161,7 @@ namespace PPTX
 					}
 					else if (GEOMETRY_TYPE_CUSTOM == _t)
 					{
-						LONG _e = pReader->GetPos() + pReader->GetLong() + 4;
+						LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
 						
 						Logic::CustGeom* pGeom = new Logic::CustGeom();
 						while (pReader->GetPos() < _e)
@@ -171,7 +171,7 @@ namespace PPTX
 							{
 								case 0:
 								{
-									LONG _end_rec2 = pReader->GetPos() + pReader->GetLong() + 4;
+									LONG _end_rec2 = pReader->GetPos() + pReader->GetRecordSize() + 4;
 									ULONG _c = pReader->GetULong();
 
 									for (ULONG i = 0; i < _c; ++i)
@@ -186,7 +186,7 @@ namespace PPTX
 								}
 								case 1:
 								{
-									LONG _end_rec2 = pReader->GetPos() + pReader->GetLong() + 4;
+									LONG _end_rec2 = pReader->GetPos() + pReader->GetRecordSize() + 4;
 									ULONG _c = pReader->GetULong();
 
 									for (ULONG i = 0; i < _c; ++i)
@@ -201,7 +201,7 @@ namespace PPTX
 								}
 								case 2:
 								{
-									LONG _end_rec2 = pReader->GetPos() + pReader->GetLong() + 4;
+									LONG _end_rec2 = pReader->GetPos() + pReader->GetRecordSize() + 4;
 									ULONG _c = pReader->GetULong();
 
 									for (ULONG i = 0; i < _c; ++i)
@@ -270,7 +270,7 @@ namespace PPTX
 								}
 								case 3:
 								{
-									LONG _end_rec2 = pReader->GetPos() + pReader->GetLong() + 4;
+									LONG _end_rec2 = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 									ULONG _c = pReader->GetULong();
 
@@ -308,7 +308,7 @@ namespace PPTX
 								}
 								case 4:
 								{
-									LONG _end_rec2 = pReader->GetPos() + pReader->GetLong() + 4;
+									LONG _end_rec2 = pReader->GetPos() + pReader->GetRecordSize() + 4;
 									ULONG _c = pReader->GetULong();
 
 									for (ULONG i = 0; i < _c; ++i)
@@ -323,7 +323,7 @@ namespace PPTX
 								}
 								case 5:
 								{
-									LONG _end_rec2 = pReader->GetPos() + pReader->GetLong() + 4;
+									LONG _end_rec2 = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 									pReader->Skip(1); // start attributes
 

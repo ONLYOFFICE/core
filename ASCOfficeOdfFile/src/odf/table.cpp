@@ -336,7 +336,7 @@ const wchar_t * table_table_column_group::name = L"table-column-group";
 
 void table_table_column_group::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    table_table_column_group_attlist_.add_attributes(Attributes);
+    attlist_.add_attributes(Attributes);
 }
 
 void table_table_column_group::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -360,9 +360,25 @@ void table_columns_and_groups::add_child_element( xml::sax * Reader, const std::
         CP_CHECK_NAME(L"table", L"table-column") ||
         CP_CHECK_NAME(L"table", L"table-header-columns"))
     {
-        _CP_PTR(table_columns_no_group) elm = table_columns_no_group::create();
-        elm->add_child_element(Reader, Ns, Name, Context);
-        content_.push_back(elm);
+		bool add_new_no_group = false;
+
+		if (content_.empty())	add_new_no_group = true;
+		else
+		{
+			if (content_.back()->get_type() != typeTableTableColumnNoGroup)
+				add_new_no_group = true;
+		}
+		if (add_new_no_group)
+		{
+			_CP_PTR(table_columns_no_group) elm = table_columns_no_group::create();
+			elm->add_child_element(Reader, Ns, Name, Context);
+			content_.push_back(elm);
+		}
+		else
+		{
+			table_columns_no_group* cols_no_group = static_cast<table_columns_no_group*>(content_.back().get());
+			cols_no_group->add_child_element(Reader, Ns, Name, Context);
+		}
     }
     else
         not_applicable_element(L"table-columns-and-groups", Reader, Ns, Name);
@@ -669,10 +685,6 @@ void table_rows_no_group::add_child_element( xml::sax * Reader, const std::wstri
 // table-rows-and-groups
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-table_rows_and_groups::table_rows_and_groups()
-{
-}
-
 std::wostream & table_rows_and_groups::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     CP_SERIALIZE_TEXT(content_, bXmlEncode);
@@ -689,6 +701,7 @@ void table_rows_and_groups::add_child_element( xml::sax * Reader, const std::wst
 		(L"text" == Ns && L"soft-page-break" == Name))
     {
 		bool add_new_no_group = false;
+		
 		if (content_.empty())	add_new_no_group = true;
 		else
 		{
@@ -723,7 +736,7 @@ std::wostream & table_table_row_group::text_to_stream(std::wostream & _Wostream,
 
 void table_table_row_group::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    table_table_row_group_attlist_.add_attributes(Attributes);
+    attlist_.add_attributes(Attributes);
 }
 
 void table_table_row_group::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)

@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_PRESENTATION_PHOTOALBUM_INCLUDE_H_
-#define PPTX_PRESENTATION_PHOTOALBUM_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "./../Limit/FrameShape.h"
@@ -64,13 +62,15 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("p:photoAlbum"), oAttr);
 			}
-
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
-				// TODO:
 			}
-
-		public:
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+			}
 			nullable_bool							bw;
 			nullable_limit<Limit::FrameShape>		frame;
 			nullable_limit<Limit::AlbumLayout>		layout;
@@ -81,4 +81,3 @@ namespace PPTX
 	} // namespace nsPresentation
 } // namespace PPTX
 
-#endif // PPTX_PRESENTATION_PHOTOALBUM_INCLUDE_H_

@@ -89,7 +89,11 @@ std::pair<double, double> GetMaxDigitSizePixelsImpl(const std::wstring & fontNam
 
     double width = (minWidth + 2 * maxWidth) /36. /3.;
 	//double width = (minWidth + 2 * maxWidth) / 5./*/36.*/ /3.;
-	return std::pair<double, double>(width, maxHeight);
+
+	if (width > 0.01 && maxHeight > 0.01)
+		return std::pair<double, double>(width, maxHeight);
+	else
+		return std::pair<double, double>(7., 8.);
 }
 
 

@@ -1,0 +1,332 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{fdfa49f8-093a-4e5b-89b7-b45ea35b2115}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{47e12db1-ddba-4c21-9898-ada2528eb8a9}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{efab1ef5-3c03-4365-bb87-56958f578a50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MetaFile">
+      <UniqueIdentifier>{528d7faf-3214-46e6-bdca-2cac8e8fa55b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MetaFile\Wmf">
+      <UniqueIdentifier>{ad01678f-6bdf-4b66-82d1-acf8bec66682}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MetaFile\Emf">
+      <UniqueIdentifier>{3c9ea46c-d6a9-47d1-bfb4-fa142ffbfb3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MetaFile\Common">
+      <UniqueIdentifier>{0243aea1-c461-4d00-84ea-0b432e5ad4dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MetaFile\StarView">
+      <UniqueIdentifier>{d6715f97-2162-4813-9144-e333f9ca89f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Jp2">
+      <UniqueIdentifier>{a32d6953-247b-4ab7-9854-09e9658403d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MetaFile\svg">
+      <UniqueIdentifier>{beb89c0b-d9a3-4585-915e-cc6792fd92d6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="BgraFrame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFileFormatChecker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Metafile\MetaFile.cpp">
+      <Filter>MetaFile</Filter>
+    </ClCompile>
+    <ClCompile Include="Metafile\Wmf\WmfClip.cpp">
+      <Filter>MetaFile\Wmf</Filter>
+    </ClCompile>
+    <ClCompile Include="Metafile\Wmf\WmfObjects.cpp">
+      <Filter>MetaFile\Wmf</Filter>
+    </ClCompile>
+    <ClCompile Include="Metafile\Wmf\WmfPlayer.cpp">
+      <Filter>MetaFile\Wmf</Filter>
+    </ClCompile>
+    <ClCompile Include="Metafile\Emf\EmfClip.cpp">
+      <Filter>MetaFile\Emf</Filter>
+    </ClCompile>
+    <ClCompile Include="Metafile\Emf\EmfFile.cpp">
+      <Filter>MetaFile\Emf</Filter>
+    </ClCompile>
+    <ClCompile Include="Metafile\Emf\EmfObjects.cpp">
+      <Filter>MetaFile\Emf</Filter>
+    </ClCompile>
+    <ClCompile Include="Metafile\Emf\EmfPath.cpp">
+      <Filter>MetaFile\Emf</Filter>
+    </ClCompile>
+    <ClCompile Include="Metafile\Emf\EmfPlayer.cpp">
+      <Filter>MetaFile\Emf</Filter>
+    </ClCompile>
+    <ClCompile Include="Metafile\Common\MetaFileTypes.cpp">
+      <Filter>MetaFile\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Metafile\Common\MetaFileUtils.cpp">
+      <Filter>MetaFile\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Metafile\StarView\SvmFile.cpp">
+      <Filter>MetaFile\StarView</Filter>
+    </ClCompile>
+    <ClCompile Include="Metafile\StarView\SvmObjects.cpp">
+      <Filter>MetaFile\StarView</Filter>
+    </ClCompile>
+    <ClCompile Include="Metafile\StarView\SvmPlayer.cpp">
+      <Filter>MetaFile\StarView</Filter>
+    </ClCompile>
+    <ClCompile Include="Jp2\J2kFile.cpp">
+      <Filter>Jp2</Filter>
+    </ClCompile>
+    <ClCompile Include="Jp2\Reader.cpp">
+      <Filter>Jp2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\graphics\pro\pro_Graphics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\graphics\pro\pro_Image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\graphics\ArrowHead.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\graphics\BaseThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\graphics\Brush.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\graphics\Clip.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\graphics\Graphics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\graphics\GraphicsPath.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\graphics\GraphicsRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\graphics\Image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\graphics\Matrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Metafile\svg\SVGFramework.cpp">
+      <Filter>MetaFile\svg</Filter>
+    </ClCompile>
+    <ClCompile Include="Metafile\svg\SVGTransformer.cpp">
+      <Filter>MetaFile\svg</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BgraFrame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageFileFormatChecker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\File.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Metafile\MetaFile.h">
+      <Filter>MetaFile</Filter>
+    </ClInclude>
+    <ClInclude Include="Metafile\Wmf\WmfClip.h">
+      <Filter>MetaFile\Wmf</Filter>
+    </ClInclude>
+    <ClInclude Include="Metafile\Wmf\WmfFile.h">
+      <Filter>MetaFile\Wmf</Filter>
+    </ClInclude>
+    <ClInclude Include="Metafile\Wmf\WmfObjects.h">
+      <Filter>MetaFile\Wmf</Filter>
+    </ClInclude>
+    <ClInclude Include="Metafile\Wmf\WmfPlayer.h">
+      <Filter>MetaFile\Wmf</Filter>
+    </ClInclude>
+    <ClInclude Include="Metafile\Wmf\WmfTypes.h">
+      <Filter>MetaFile\Wmf</Filter>
+    </ClInclude>
+    <ClInclude Include="Metafile\Emf\EmfClip.h">
+      <Filter>MetaFile\Emf</Filter>
+    </ClInclude>
+    <ClInclude Include="Metafile\Emf\EmfFile.h">
+      <Filter>MetaFile\Emf</Filter>
+    </ClInclude>
+    <ClInclude Include="Metafile\Emf\EmfObjects.h">
+      <Filter>MetaFile\Emf</Filter>
+    </ClInclude>
+    <ClInclude Include="Metafile\Emf\EmfPath.h">
+      <Filter>MetaFile\Emf</Filter>
+    </ClInclude>
+    <ClInclude Include="Metafile\Emf\EmfPlayer.h">
+      <Filter>MetaFile\Emf</Filter>
+    </ClInclude>
+    <ClInclude Include="Metafile\Emf\EmfTypes.h">
+      <Filter>MetaFile\Emf</Filter>
+    </ClInclude>
+    <ClInclude Include="Metafile\Common\IOutputDevice.h">
+      <Filter>MetaFile\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Metafile\Common\MetaFile.h">
+      <Filter>MetaFile\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Metafile\Common\MetaFileClip.h">
+      <Filter>MetaFile\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Metafile\Common\MetaFileObjects.h">
+      <Filter>MetaFile\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Metafile\Common\MetaFileRenderer.h">
+      <Filter>MetaFile\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Metafile\Common\MetaFileTypes.h">
+      <Filter>MetaFile\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Metafile\Common\MetaFileUtils.h">
+      <Filter>MetaFile\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Metafile\StarView\SvmEnums.h">
+      <Filter>MetaFile\StarView</Filter>
+    </ClInclude>
+    <ClInclude Include="Metafile\StarView\SvmFile.h">
+      <Filter>MetaFile\StarView</Filter>
+    </ClInclude>
+    <ClInclude Include="Metafile\StarView\SvmObjects.h">
+      <Filter>MetaFile\StarView</Filter>
+    </ClInclude>
+    <ClInclude Include="Metafile\StarView\SvmPlayer.h">
+      <Filter>MetaFile\StarView</Filter>
+    </ClInclude>
+    <ClInclude Include="Jp2\ArithmeticCoder.h">
+      <Filter>Jp2</Filter>
+    </ClInclude>
+    <ClInclude Include="Jp2\DWT.h">
+      <Filter>Jp2</Filter>
+    </ClInclude>
+    <ClInclude Include="Jp2\Image.h">
+      <Filter>Jp2</Filter>
+    </ClInclude>
+    <ClInclude Include="Jp2\J2k.h">
+      <Filter>Jp2</Filter>
+    </ClInclude>
+    <ClInclude Include="Jp2\J2kFile.h">
+      <Filter>Jp2</Filter>
+    </ClInclude>
+    <ClInclude Include="Jp2\J2kIncludes.h">
+      <Filter>Jp2</Filter>
+    </ClInclude>
+    <ClInclude Include="Jp2\Jp2.h">
+      <Filter>Jp2</Filter>
+    </ClInclude>
+    <ClInclude Include="Jp2\JpgEvent.h">
+      <Filter>Jp2</Filter>
+    </ClInclude>
+    <ClInclude Include="Jp2\Jpt.h">
+      <Filter>Jp2</Filter>
+    </ClInclude>
+    <ClInclude Include="Jp2\Mj2.h">
+      <Filter>Jp2</Filter>
+    </ClInclude>
+    <ClInclude Include="Jp2\PacketIterator.h">
+      <Filter>Jp2</Filter>
+    </ClInclude>
+    <ClInclude Include="Jp2\Raw.h">
+      <Filter>Jp2</Filter>
+    </ClInclude>
+    <ClInclude Include="Jp2\Reader.h">
+      <Filter>Jp2</Filter>
+    </ClInclude>
+    <ClInclude Include="Jp2\Stream.h">
+      <Filter>Jp2</Filter>
+    </ClInclude>
+    <ClInclude Include="Jp2\TagTree.h">
+      <Filter>Jp2</Filter>
+    </ClInclude>
+    <ClInclude Include="Jp2\Tier1.h">
+      <Filter>Jp2</Filter>
+    </ClInclude>
+    <ClInclude Include="Jp2\Tier2.h">
+      <Filter>Jp2</Filter>
+    </ClInclude>
+    <ClInclude Include="Jp2\Tile.h">
+      <Filter>Jp2</Filter>
+    </ClInclude>
+    <ClInclude Include="Jp2\Types.h">
+      <Filter>Jp2</Filter>
+    </ClInclude>
+    <ClInclude Include="Jp2\Utils.h">
+      <Filter>Jp2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\graphics\AggPlusEnums.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\graphics\aggplustypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\graphics\ArrowHead.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\graphics\BaseThread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\graphics\Brush.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\graphics\Clip.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\graphics\Color.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\graphics\config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\graphics\Defines.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\graphics\Graphics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\graphics\GraphicsPath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\graphics\GraphicsPath_private.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\graphics\GraphicsRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\graphics\Image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\graphics\ImageFilesCache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\graphics\IRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\graphics\Matrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\graphics\Matrix_private.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Metafile\svg\SVGFramework.h">
+      <Filter>MetaFile\svg</Filter>
+    </ClInclude>
+    <ClInclude Include="Metafile\svg\SVGTransformer.h">
+      <Filter>MetaFile\svg</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

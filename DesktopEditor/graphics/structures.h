@@ -268,12 +268,12 @@ namespace NSStructures
 
 		double LinearAngle;
 
-		CArray<TSubColor> m_arrSubColors;
+        std::vector<TSubColor> m_arrSubColors;
 
 	public:
 		void LoadSubColors( const std::string& str )
 		{
-			m_arrSubColors.RemoveAll();
+            m_arrSubColors.clear();
 
 			if( str.empty() )
 				return;
@@ -297,7 +297,7 @@ namespace NSStructures
 				subcolor.position = ::atoi( str.substr( start, pos - start ).c_str() );
 				start = pos + 1;
 
-				m_arrSubColors.Add( subcolor );
+                m_arrSubColors.push_back(subcolor );
 			}
 		}
 
@@ -394,7 +394,7 @@ namespace NSStructures
 			Bounds.right	= 0;
 			Bounds.bottom	= 0;
 
-			m_arrSubColors.RemoveAll();
+            m_arrSubColors.clear();
 		}
 		
 	public:

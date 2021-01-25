@@ -209,13 +209,15 @@ namespace PPTX
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
                 std::wstring namespace_ext = L"p";
-                if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX || 
+                if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+					pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY ||
 					pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_ext= L"a";
 
 				if (link.IsInit())
 				{
 					std::wstring namespace_link = L"p14";
-					if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	namespace_link= L"wp15";
+					if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+						pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)	namespace_link= L"wp15";
 
 					pWriter->StartNode(namespace_ext + L":ext");
 						pWriter->StartAttributes();
@@ -224,7 +226,8 @@ namespace PPTX
 
 						pWriter->StartNode(namespace_link + L":media");
 							pWriter->StartAttributes();
-							if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+							if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX || 
+								pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)
 								pWriter->WriteAttribute(L"xmlns:wp15", std::wstring(L"http://schemas.microsoft.com/office/word/2012/wordprocessingDrawing"));
 							else
 								pWriter->WriteAttribute(L"xmlns:p14", std::wstring(L"http://schemas.microsoft.com/office/powerpoint/2010/main"));

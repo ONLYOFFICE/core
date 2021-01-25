@@ -94,8 +94,7 @@ namespace PPTX
 					{
 					case 0:
 					{
-						val = new Limit::PrstDashVal();
-						val->SetBYTECode(pReader->GetUChar());
+						val = pReader->GetUChar();
 						break;
 					}
 					default:

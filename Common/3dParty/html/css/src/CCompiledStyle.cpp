@@ -216,14 +216,22 @@ namespace NSCSS
                 }
                 CASE(L"line-height"):
                 {
+                    size_t unCoefficient = 1;
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    const size_t unPositionSymbol = pPropertie.second.find_first_of(L"abcdefghijklmnopqrstuvwxyz%");
+
+                    if (unPositionSymbol == std::wstring::npos)
+                        unCoefficient = m_pFont.GetSize();
+
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pFont.SetLineHeight(ConvertUnitMeasure(pPropertie.second, m_pFont.GetSize()), unLevel, bHardMode);
+                        const float fValue = wcstof(ConvertUnitMeasure(pPropertie.second, m_pFont.GetSize()).c_str(), NULL);
+                        m_pFont.SetLineHeight(std::to_wstring(fValue * unCoefficient), unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pFont.SetLineHeight(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), m_pFont.GetSize()), unLevel, true);
+                        const float fValue = wcstof(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), m_pFont.GetSize()).c_str(), NULL);
+                        m_pFont.SetLineHeight(std::to_wstring(fValue * unCoefficient), unLevel, true);
                         m_pFont.SetImportantenLineHeight(true);
                     }
                     break;

@@ -810,11 +810,16 @@ namespace NSCSS
                     if (sLineHeight.empty() || (bImportants[5] && !bHardMode))
                         return;
 
-                    const float fValue = wcstof(sLineHeight.c_str(), NULL);
-                    if (fValue > 0.0f)
+                    if (sLineHeight == L"normal")
+                        fLineHeight = 1.2;
+                    else
                     {
-                        arLevels[5] = unLevel;
-                        fLineHeight = fValue;
+                        const float fValue = wcstof(sLineHeight.c_str(), NULL);
+                        if (fValue > 0.0f)
+                        {
+                            arLevels[5] = unLevel;
+                            fLineHeight = fValue;
+                        }
                     }
                 }
 
@@ -1461,6 +1466,7 @@ namespace NSCSS
                         }
                         else if (sValue.length() == 4)
                         {
+                            sColor.clear();
                             arLevels[3] = unLevel;
                             sColor += sValue[1];
                             sColor += sValue[1];
@@ -1768,6 +1774,7 @@ namespace NSCSS
                         }
                         else if (sValue.length() == 4)
                         {
+                            sColor.clear();
                             arLevels[2] = unLevel;
                             sColor += sValue[1];
                             sColor += sValue[1];

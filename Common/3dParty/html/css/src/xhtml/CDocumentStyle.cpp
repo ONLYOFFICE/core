@@ -73,7 +73,7 @@ namespace NSCSS
             CreateStandardStyle(*iStyleName, oTempElement);
             if (std::find(m_arStandardStylesUsed.begin(), m_arStandardStylesUsed.end(), *iStyleName) == m_arStandardStylesUsed.end())
             {
-                m_sStyle += oTempElement.GetStyle();
+                m_sStyle = oTempElement.GetStyle() + m_sStyle;
                 m_arStandardStylesUsed.push_back(*iStyleName);
             }
             oElement += oTempElement;
@@ -193,6 +193,7 @@ namespace NSCSS
                     m_sStyle += oTempElement.GetRStyle();
 
                 m_arStandardStylesUsed.push_back(sStandPlusParent);
+
                 if (oStyle.Empty())
                 {
                     m_sId = sStandPlusParent;

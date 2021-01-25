@@ -14,17 +14,10 @@ namespace NSCSS
         delete m_pInternal;
     }
 
-    CCompiledStyle CCssCalculator::GetCompiledStyle(const std::vector<CNode> &arSelectors, const UnitMeasure& unitMeasure) const
+    CCompiledStyle CCssCalculator::GetCompiledStyle(const std::vector<CNode> &arSelectors, const bool& bIsSettings, const UnitMeasure& unitMeasure) const
     {
-        return  m_pInternal->GetCompiledStyle(arSelectors, unitMeasure);
+        return  m_pInternal->GetCompiledStyle(arSelectors, bIsSettings, unitMeasure);
     }
-
-    /*
-    void CCssCalculator::AddStyle(const std::vector<std::string>& sSelectors, const std::string &sStyle)
-    {
-        m_pInternal->AddStyle(sSelectors, sStyle);
-    }
-    */
 
     void CCssCalculator::AddStyles(const std::string &sStyle)
     {
@@ -49,6 +42,11 @@ namespace NSCSS
     void CCssCalculator::SetDpi(const unsigned short int& nValue)
     {
         m_pInternal->SetDpi(nValue);
+    }
+
+    void CCssCalculator::SetBodyTree(const CTree &oTree)
+    {
+        m_pInternal->SetBodyTree(oTree);
     }
 
     UnitMeasure CCssCalculator::GetUnitMeasure() const

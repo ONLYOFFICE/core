@@ -16,139 +16,902 @@ namespace NSCSS
 {
     typedef std::map<std::wstring, std::wstring>::const_iterator styles_iterator;
 
-    CCompiledStyle::CCompiledStyle() {}
+    CCompiledStyle::CCompiledStyle() : m_nDpi(96), m_UnitMeasure(Default){}
 
-    CCompiledStyle::CCompiledStyle(const std::map<std::wstring, std::wstring>& mStyle) : m_mStyle(mStyle) {}
 
     CCompiledStyle::CCompiledStyle(const CCompiledStyle& oStyle) :
-        m_mStyle(oStyle.m_mStyle), m_arParentsStyles(oStyle.m_arParentsStyles), m_sId(oStyle.m_sId) {}
+        m_arParentsStyles(oStyle.m_arParentsStyles), m_sId(oStyle.m_sId),
+        m_nDpi(oStyle.m_nDpi), m_UnitMeasure(oStyle.m_UnitMeasure),
+        m_pFont(oStyle.m_pFont), m_pMargin(oStyle.m_pMargin), m_pBackground(oStyle.m_pBackground),
+        m_pText(oStyle.m_pText), m_pBorder(oStyle.m_pBorder){}
 
     CCompiledStyle::~CCompiledStyle()
     {
-        m_mStyle.         clear();
         m_arParentsStyles.clear();
     }
 
 
     CCompiledStyle& CCompiledStyle::operator+= (const CCompiledStyle &oElement)
     {
-        for (const std::map<std::wstring, std::wstring>::value_type& oItem : oElement.m_mStyle)
-        {
-            if (!oItem.second.empty() && oItem.second != L"inherit")
-            {
-                m_mStyle[oItem.first] = oItem.second;
-            }
-        }
+        m_pBackground   += oElement.m_pBackground;
+        m_pBorder       += oElement.m_pBorder;
+        m_pFont         += oElement.m_pFont;
+        m_pMargin       += oElement.m_pMargin;
+        m_pText         += oElement.m_pText;
+
         return *this;
     }
 
     CCompiledStyle& CCompiledStyle::operator= (const CCompiledStyle &oElement)
     {
-        m_mStyle = oElement.m_mStyle;
-        m_sId    = oElement.m_sId;
-        m_arParentsStyles = oElement.m_arParentsStyles;
+        m_sId               = oElement.m_sId;
+        m_arParentsStyles   = oElement.m_arParentsStyles;
+
+        m_nDpi          = oElement.m_nDpi;
+        m_UnitMeasure   = oElement.m_UnitMeasure;
+
+        m_pBackground   = oElement.m_pBackground;
+        m_pBorder       = oElement.m_pBorder;
+        m_pFont         = oElement.m_pFont;
+        m_pMargin       = oElement.m_pMargin;
+        m_pText         = oElement.m_pText;
+
         return *this;
     }
 
     bool CCompiledStyle::operator== (const CCompiledStyle& oStyle) const
     {
-        if (oStyle.m_mStyle.size() != m_mStyle.size() ||
-            oStyle.m_arParentsStyles.size() != m_arParentsStyles.size() ||
-            oStyle.GetId()[0] != m_sId[0])
-            return false;
-
         return GetId()[0]        == oStyle.GetId()[0]        &&
                m_arParentsStyles == oStyle.m_arParentsStyles &&
-               m_mStyle          == oStyle.m_mStyle;
+               m_pBackground     == oStyle.m_pBackground     &&
+               m_pBorder         == oStyle.m_pBorder         &&
+               m_pFont           == oStyle.m_pFont           &&
+               m_pMargin         == oStyle.m_pMargin         &&
+                m_pText           == oStyle.m_pText;
     }
 
-    std::wstring CCompiledStyle::GetStyleW() const
+    void CCompiledStyle::StyleEquation(CCompiledStyle &oFirstStyle, CCompiledStyle &oSecondStyle)
     {
-        return std::accumulate(m_mStyle.begin(), m_mStyle.end(), std::wstring(),
-            [] (std::wstring& sRes, const std::map<std::wstring, std::wstring>::value_type& oIter) { return sRes += oIter.first + L":" + oIter.second + L";"; });
+        NSConstValues::NSCssProperties::Font::FontEquation(oFirstStyle.m_pFont, oSecondStyle.m_pFont);
+        NSConstValues::NSCssProperties::Margin::MarginEquation(oFirstStyle.m_pMargin, oSecondStyle.m_pMargin);
+        NSConstValues::NSCssProperties::Background::BackgroundEquation(oFirstStyle.m_pBackground, oSecondStyle.m_pBackground);
+        NSConstValues::NSCssProperties::Text::TextEquation(oFirstStyle.m_pText, oSecondStyle.m_pText);
+        NSConstValues::NSCssProperties::Border::BorderEquation(oFirstStyle.m_pBorder, oSecondStyle.m_pBorder);
+
+        oFirstStyle.ClearImportants();
+        oSecondStyle.ClearImportants();
     }
 
-    std::map<std::wstring, std::wstring>* CCompiledStyle::GetStyleMap()
+    void CCompiledStyle::SetDpi(const unsigned short &uiDpi)
     {
-        return &m_mStyle;
+        m_nDpi = uiDpi;
     }
 
-//    bool CCompiledStyle::operator<(const CCompiledStyle &oElement) const
-//    {
-//        return m_sId < oElement.m_sId;
-//    }
-
-    /*
-    bool CCompiledStyle::operator!=(const CCompiledStyle &oElement) const
+    void CCompiledStyle::SetUnitMeasure(const UnitMeasure &enUnitMeasure)
     {
-        if (*this > oElement)
-            return false;
-
-        if (*this < oElement)
-            return false;
-
-        return true;
+        m_UnitMeasure = enUnitMeasure;
     }
-
-    bool CCompiledStyle::operator>(const CCompiledStyle &oElement) const
-    {
-        return GetWeidth() > oElement.GetWeidth();
-    }
-
-    std::string CCompiledStyle::GetStyle() const
-    {
-        std::wstring sStyle = GetStyleW();
-        return U_TO_UTF8(sStyle);
-    }
-
-    size_t CCompiledStyle::GetSize() const
-    {
-        return m_mStyle.size();
-    }
-    */
 
     bool CCompiledStyle::Empty() const
     {
-        return m_mStyle.empty();
+        return m_pBackground.Empty() && m_pBorder.Empty() &&
+               m_pFont.Empty() && m_pMargin.Empty() && m_pText.Empty();
     }
 
-    /*
-    void CCompiledStyle::Clear()
+    void CCompiledStyle::AddPropSel(const std::wstring& sProperty, const std::wstring& sValue, const unsigned int unLevel, const bool& bHardMode)
     {
-        m_mStyle.clear();
-        m_sId.clear();
-        m_arParentsStyles.clear();
-    }
-    */
-
-    void CCompiledStyle::AddPropSel(const std::wstring& sProperty, const std::wstring& sValue, const bool& bHardMode)
-    {
-        if (m_mStyle[sProperty].find(L'!') != std::wstring::npos)
-            return;
-
-        std::wstring sNetValue = sValue;
-        if (sNetValue.substr(0, 3) == L"rgb")
-            sNetValue = NSCSS::NS_STATIC_FUNCTIONS::ConvertRgbToHex(sNetValue);
-
-        if (!bHardMode)
-            m_mStyle.emplace(sProperty, sNetValue);
-        else
-            m_mStyle[sProperty] = sNetValue;
+        AddStyle({{sProperty, sValue}}, unLevel, bHardMode);
     }
 
-    void CCompiledStyle::AddStyle(const std::map<std::wstring, std::wstring>& mStyle, const bool& bHardMode)
+    void CCompiledStyle::AddStyle(const std::map<std::wstring, std::wstring>& mStyle, const unsigned int unLevel, const bool& bHardMode)
     {
-        for (const std::pair<std::wstring, std::wstring> pPropertie : mStyle)
+        const bool bIsThereBorder = (m_pBorder.Empty()) ? false : true;
+        const float fSize = m_pFont.GetSize();
+
+        for (std::pair<std::wstring, std::wstring> pPropertie : mStyle)
         {
-            if (m_mStyle[pPropertie.first].empty() || bHardMode)
-                m_mStyle[pPropertie.first] = pPropertie.second;
-            else if (!bHardMode || m_mStyle[pPropertie.first].find(L'!') != std::wstring::npos)
-                continue;
+            std::transform(pPropertie.first.begin(), pPropertie.first.end(), pPropertie.first.begin(), tolower);
+            SWITCH(pPropertie.first)
+            {
+                //FONT
+                CASE(L"font"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pFont.SetFont(ConvertUnitMeasure(pPropertie.second.c_str(), fSize), unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pFont.SetFont(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), fSize), unLevel, true);
+                        m_pFont.SetImportantAll(true);
+                    }
+                    break;
+                }
+                CASE(L"font-size"):
+                CASE(L"font-size-adjust"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pFont.SetSize(ConvertUnitMeasure(pPropertie.second, fSize), unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pFont.SetSize(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), fSize), unLevel, true);
+                        m_pFont.SetImportantSize(true);
+                    }
+                    break;
+                }
+
+                CASE(L"font-stretch"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pFont.SetStretch(pPropertie.second, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pFont.SetStretch(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
+                        m_pFont.SetImportantenStretch(true);
+                    }
+                    break;
+                }
+                CASE(L"font-style"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pFont.SetStyle(pPropertie.second, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pFont.SetStyle(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
+                        m_pFont.SetImportantenStyle(true);
+                    }
+                    break;
+                }
+                CASE(L"font-variant"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pFont.SetVariant(pPropertie.second, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pFont.SetVariant(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
+                        m_pFont.SetImportantenVariant(true);
+                    }
+                    break;
+                }
+                CASE(L"font-weight"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pFont.SetWeight(pPropertie.second, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pFont.SetWeight(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
+                        m_pFont.SetImportantenWeight(true);
+                    }
+                    break;
+                }
+                CASE(L"font-family"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pFont.SetFontFamily(pPropertie.second, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pFont.SetFontFamily(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
+                        m_pFont.SetImportantenFamily(true);
+                    }
+                    break;
+                }
+                CASE(L"line-height"):
+                {
+                    size_t unCoefficient = 1;
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    const size_t unPositionSymbol = pPropertie.second.find_first_of(L"abcdefghijklmnopqrstuvwxyz%");
+
+                    if (unPositionSymbol == std::wstring::npos)
+                        unCoefficient = m_pFont.GetSize();
+
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        const float fValue = wcstof(ConvertUnitMeasure(pPropertie.second, m_pFont.GetSize()).c_str(), NULL);
+                        m_pFont.SetLineHeight(std::to_wstring(fValue * unCoefficient), unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        const float fValue = wcstof(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), m_pFont.GetSize()).c_str(), NULL);
+                        m_pFont.SetLineHeight(std::to_wstring(fValue * unCoefficient), unLevel, true);
+                        m_pFont.SetImportantenLineHeight(true);
+                    }
+                    break;
+                }
+                //MARGIN
+                CASE(L"margin"):
+                {
+                    if (bIsThereBorder)
+                        break;
+
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddMargin(sValue, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddMargin(sValue, unLevel, true);
+
+                        m_pMargin.SetImportantAll(true);
+                    }
+
+                    break;
+                }
+                CASE(L"margin-top"):
+                {
+                    if (bIsThereBorder)
+                        break;
+
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddTopMargin(sValue, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddTopMargin(sValue, unLevel, true);
+
+                        m_pMargin.SetImportantTopSide(true);
+                    }
+                    break;
+                }
+                CASE(L"margin-right"):
+                CASE(L"margin-block-end"):
+                {
+                    if (bIsThereBorder)
+                        break;
+
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddRightMargin(sValue, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddRightMargin(sValue, unLevel, true);
+
+                        m_pMargin.SetImportantRightSide(true);
+                    }
+                    break;
+                }
+                CASE(L"margin-bottom"):
+                {
+                    if (bIsThereBorder)
+                        break;
+
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddBottomMargin(sValue, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddBottomMargin(sValue, unLevel, true);
+
+                        m_pMargin.SetImportantBottomSide(true);
+                    }
+                    break;
+                }
+                CASE(L"margin-left"):
+                CASE(L"margin-block-start"):
+                {
+                    if (bIsThereBorder)
+                        break;
+
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddLeftMargin(sValue, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddLeftMargin(sValue, unLevel, true);
+
+                        m_pMargin.SetImportantLeftSide(true);
+                    }
+                    break;
+                }
+                //PADDING
+                CASE(L"padding"):
+                {
+                    if (bIsThereBorder)
+                        break;
+
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddMargin(sValue, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddMargin(sValue, unLevel, true);
+
+                        m_pMargin.SetImportantAll(true);
+                    }
+
+                    break;
+                }
+                CASE(L"padding-top"):
+                {
+                    if (bIsThereBorder)
+                        break;
+
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddTopMargin(sValue, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddTopMargin(sValue, unLevel, true);
+
+                        m_pMargin.SetImportantTopSide(true);
+                    }
+
+                    break;
+                }
+                CASE(L"padding-right"):
+                {
+                    if (bIsThereBorder)
+                        break;
+
+
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddRightMargin(sValue, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddRightMargin(sValue, unLevel, true);
+
+                        m_pMargin.SetImportantRightSide(true);
+                    }
+
+                    break;
+                }
+                CASE(L"padding-bottom"):
+                {
+                    if (bIsThereBorder)
+                        break;
+
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddBottomMargin(sValue, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddBottomMargin(sValue, unLevel, true);
+
+                        m_pMargin.SetImportantBottomSide(true);
+                    }
+
+                    break;
+                }
+                CASE(L"padding-left"):
+                {
+                    if (bIsThereBorder)
+                        break;
+
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddLeftMargin(sValue, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                            m_pMargin.AddLeftMargin(sValue, unLevel, true);
+
+                        m_pMargin.SetImportantLeftSide(true);
+                    }
+
+                    break;
+                }
+                // TEXT
+                CASE(L"text-align"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pText.SetAlign(pPropertie.second, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pText.SetAlign(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
+                        m_pText.SetImportantAlign(true);
+                    }
+
+                    break;
+                }
+                CASE(L"text-indent"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pText.SetIndent(ConvertUnitMeasure(pPropertie.second, 540.0f), unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pText.SetIndent(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f), unLevel, true);
+                        m_pText.SetImportantIndent(true);
+                    }
+
+                    break;
+                }
+                CASE(L"text-decoration"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pText.SetDecoration(pPropertie.second, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pText.SetDecoration(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
+                        m_pText.SetImportantDecoration(true);
+                    }
+
+                    break;
+                }
+                CASE(L"text-color"):
+                CASE(L"color"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pText.SetColor(pPropertie.second, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pText.SetColor(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
+                        m_pText.SetImportantColor(true);
+                    }
+                    break;
+                }
+                //BORDER
+                CASE(L"border"):
+                CASE(L"mso-border-alt"):
+                {
+                    NSConstValues::NSCssProperties::BorderSide oBorderSide = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
+
+                    if (oBorderSide.GetWidth() < 0)
+                        break;
+
+                    oBorderSide.SetAllLevels(unLevel);
+
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pText.SetAlign(pPropertie.second, bHardMode);
+
+                        m_pBorder.SetTopSide(oBorderSide, bHardMode);
+                        m_pBorder.SetRightSide(oBorderSide, bHardMode);
+                        m_pBorder.SetBottomSide(oBorderSide, bHardMode);
+                        m_pBorder.SetLeftSide(oBorderSide, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        oBorderSide.SetImportantAll(true);
+                        m_pBorder.SetTopSide(oBorderSide, true);
+                        m_pBorder.SetRightSide(oBorderSide, true);
+                        m_pBorder.SetBottomSide(oBorderSide, true);
+                        m_pBorder.SetLeftSide(oBorderSide, true);
+                    }
+
+                    break;
+                }
+                CASE(L"border-width"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        const float fValue = wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL);
+                        m_pBorder.SetWidth(fValue, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        const float fValue = wcstof(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 0.0f).c_str(), NULL);
+                        m_pBorder.SetWidth(fValue, unLevel, true);
+                        m_pBorder.SetImportantWidth(true);
+                    }
+
+                    break;
+                }
+                CASE(L"border-style"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetStyle(pPropertie.second, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetStyle(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
+                        m_pBorder.SetImportantStyle(true);
+                    }
+
+                    break;
+                }
+                CASE(L"border-color"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetColor(pPropertie.second, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetColor(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
+                        m_pBorder.SetImportantColor(true);
+                    }
+
+                    break;
+                }
+                //BORDER TOP
+                CASE(L"border-top"):
+                {
+                    NSConstValues::NSCssProperties::BorderSide oBorderSide = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
+                    if (oBorderSide.GetWidth() < 0)
+                        break;
+
+                    oBorderSide.SetAllLevels(unLevel);
+
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetTopSide(oBorderSide, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        oBorderSide.SetImportantAll(true);
+                        m_pBorder.SetTopSide(oBorderSide, true);
+                    }
+
+                    break;
+                }
+                CASE(L"border-top-width"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetTopSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL), unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetTopSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 0.0f).c_str(), NULL), unLevel, true);
+                        m_pBorder.SetImportantWidthTopSide(true);
+                    }
+
+                    break;
+                }
+                CASE(L"border-top-style"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetTopSideStyle(pPropertie.second, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetTopSideStyle(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
+                        m_pBorder.SetImportantStyleTopSide(true);
+                    }
+
+                    break;
+                }
+                CASE(L"border-top-color"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetTopSideColor(pPropertie.second, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetTopSideColor(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
+                        m_pBorder.SetImportantColorTopSide(true);
+                    }
+
+                    break;
+                }
+                //BORDER RIGHT
+                CASE(L"border-right"):
+                {
+                    NSConstValues::NSCssProperties::BorderSide oBorderSide = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
+
+                    if (oBorderSide.GetWidth() < 0)
+                        break;
+
+                    oBorderSide.SetAllLevels(unLevel);
+
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetRightSide(oBorderSide, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        oBorderSide.SetImportantAll(true);
+                        m_pBorder.SetRightSide(oBorderSide, true);
+                    }
+
+                    break;
+                }
+                CASE(L"border-right-width"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetRightSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL), unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetRightSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 0.0f).c_str(), NULL), unLevel, true);
+                        m_pBorder.SetImportantWidthRightSide(true);
+                    }
+
+                    break;
+                }
+                CASE(L"border-right-style"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetRightSideStyle(pPropertie.second, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetRightSideStyle(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
+                        m_pBorder.SetImportantStyleRightSide(true);
+                    }
+
+                    break;
+                }
+                CASE(L"border-right-color"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetRightSideColor(pPropertie.second, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetRightSideColor(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
+                        m_pBorder.SetImportantColorRightSide(true);
+                    }
+
+                    break;
+                }
+                //BORDER bottom
+                CASE(L"border-bottom"):
+                {
+                    NSConstValues::NSCssProperties::BorderSide oBorderSide = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
+
+                    if (oBorderSide.GetWidth() < 0)
+                        break;
+
+                    oBorderSide.SetAllLevels(unLevel);
+
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetBottomSide(oBorderSide, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        oBorderSide.SetImportantAll(true);
+                        m_pBorder.SetBottomSide(oBorderSide, true);
+                    }
+
+                    break;
+                }
+                CASE(L"border-bottom-width"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetBottomSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL), unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetBottomSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 0.0f).c_str(), NULL), unLevel, true);
+                        m_pBorder.SetImportantWidthBottomSide(true);
+                    }
+
+                    break;
+                }
+                CASE(L"border-bottom-style"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetBottomSideStyle(pPropertie.second, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetBottomSideStyle(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
+                        m_pBorder.SetImportantStyleBottomSide(true);
+                    }
+
+                    break;
+                }
+                CASE(L"border-bottom-color"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetBottomSideColor(pPropertie.second, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetBottomSideColor(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
+                        m_pBorder.SetImportantColorBottomSide(true);
+                    }
+
+                    break;
+                }
+                //BORDER LEFT
+                CASE(L"border-left"):
+                {
+                    NSConstValues::NSCssProperties::BorderSide oBorderSide = NSConstValues::NSCssProperties::BorderSide::GetCorrectSide(ConvertUnitMeasure(pPropertie.second, 0.0f));
+
+                    if (oBorderSide.GetWidth() < 0)
+                        break;
+
+                    oBorderSide.SetAllLevels(unLevel);
+
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetLeftSide(oBorderSide, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        oBorderSide.SetImportantAll(true);
+                        m_pBorder.SetLeftSide(oBorderSide, true);
+                    }
+
+                    break;
+                }
+                CASE(L"border-left-width"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetLeftSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second, 0.0f).c_str(), NULL), unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetLeftSideWidth(wcstof(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 0.0f).c_str(), NULL), unLevel, true);
+                        m_pBorder.SetImportantWidthLeftSide(true);
+                    }
+
+                    break;
+                }
+                CASE(L"border-left-style"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetLeftSideStyle(pPropertie.second, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetLeftSideStyle(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
+                        m_pBorder.SetImportantStyleLeftSide(true);
+                    }
+
+                    break;
+                }
+                CASE(L"border-left-color"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBorder.SetLeftSideColor(pPropertie.second, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBorder.SetLeftSideColor(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
+                        m_pBorder.SetImportantColorLeftSide(true);
+                    }
+
+                    break;
+                }
+                // BACKGROUND
+                CASE(L"background-color"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBackground.SetColor(pPropertie.second, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBackground.SetColor(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
+                        m_pBackground.SetImportantBackground(true);
+                    }
+                    break;
+                }
+                CASE(L"background"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pBackground.SetBackground(pPropertie.second, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pBackground.SetBackground(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
+                        m_pBackground.SetImportantAll(true);
+                    }
+                    break;
+                }
+            }
         }
     }
 
-
-    void CCompiledStyle::AddStyle(const std::wstring& sStyle, const bool& bHardMode)
+    void CCompiledStyle::AddStyle(const std::wstring& sStyle, const unsigned int unLevel, const bool& bHardMode)
     {
         if (sStyle.empty())
             return;
@@ -171,7 +934,7 @@ namespace NSCSS
                     sValue.pop_back();
                     std::transform(sProperty.begin(), sProperty.end(), sProperty.begin(), tolower);
                     std::transform(sValue.begin(), sValue.end(), sValue.begin(), tolower);
-                    AddPropSel(sProperty, sValue, bHardMode);
+                    AddPropSel(sProperty, sValue, unLevel, bHardMode);
                     sProperty.clear();
                     sValue.clear();
                 }
@@ -181,20 +944,23 @@ namespace NSCSS
             AddPropSel(sProperty, sValue, bHardMode);
     }
 
-    void CCompiledStyle::SetStyle(const std::map<std::wstring, std::wstring> &mStyle)
-    {
-        m_mStyle = mStyle;
-    }
-
     void CCompiledStyle::AddParent(const std::wstring& sParentName)
     {
         if (!sParentName.empty())
-            m_arParentsStyles.push_back(sParentName);
+            m_arParentsStyles.insert(sParentName);
     }
 
     std::vector<std::wstring> CCompiledStyle::GetParentsName() const
     {
-        return m_arParentsStyles;
+        if (m_arParentsStyles.empty())
+            return std::vector<std::wstring>();
+
+        std::vector<std::wstring> arParentsName;
+
+        for (std::set<std::wstring>::iterator iParentName = m_arParentsStyles.begin(); iParentName != m_arParentsStyles.end(); ++iParentName)
+            arParentsName.push_back(*iParentName);
+
+        return arParentsName;
     }
 
     void CCompiledStyle::SetID(const std::wstring& sId)
@@ -207,1602 +973,539 @@ namespace NSCSS
         return m_sId;
     }
 
-    /*
-    const std::map<std::wstring, std::wstring>::iterator& CCompiledStyle::GetBegin()
+    void CCompiledStyle::ClearImportants()
     {
-        return m_mStyle.begin();
+        m_pBackground   .ClearImportants();
+        m_pBorder       .ClearImportants();
+        m_pFont         .ClearImportants();
+        m_pMargin       .ClearImportants();
+        m_pText         .ClearImportants();
     }
 
-    const std::map<std::wstring, std::wstring>::iterator& CCompiledStyle::GetEnd()
-    {
-        return m_mStyle.end();
-    }
-
-    double CCompiledStyle::GetWeidth() const
-    {
-        double dWidth = 0.0;
-        dWidth = std::accumulate(m_mStyle.begin(), m_mStyle.end(), dWidth,
-            [] (double dW, const std::pair<std::wstring, std::wstring>& sValue) { return dW + sValue.first.length() + sValue.second.length(); });
-        dWidth = std::accumulate(m_arParentsStyles.begin(), m_arParentsStyles.end(), dWidth,
-            [] (double dW, const std::wstring& sValue) { return dW + sValue.length() / 2; });
-        return dWidth;
-    }
-    */
-
-    /* FONT */
-
-        std::wstring CCompiledStyle::GetFont() const
+        std::wstring CCompiledStyle::ConvertUnitMeasure(const std::wstring &sValue, const float& fPreviousValue) const
         {
-            styles_iterator oFont = m_mStyle.find(L"font");
-            if (oFont != m_mStyle.end())
-                return oFont->second;
+            if (sValue.empty())
+                return sValue;
 
-            std::wstring sValue = GetFontStyle()   + L" " +
-                                  GetFontVariant() + L" " +
-                                  GetFontWeight()  + L" " +
-                                  GetFontSize()    + L"/" +
-                                  GetLineHeight()  + L" " +
-                                  GetFontFamily();
+            std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsWithSigns(sValue);
 
-            return sValue.length() == 5 ? std::wstring() : sValue;
-        }
+            std::wstring sValueString;
 
-        std::wstring CCompiledStyle::GetFontFamily() const
-        {
-            styles_iterator oFontFamily = m_mStyle.find(L"font-family");
-
-            if (oFontFamily != m_mStyle.end())
+            for (std::wstring& sValueTemp : arValues)
             {
-                const std::wstring& sFont = oFontFamily->second;
-                size_t nLeftQuote = sFont.find_first_of(L"'\"");
-                while (nLeftQuote != std::wstring::npos)
+                const size_t nPosImportant = sValueTemp.find(L'!');
+                if (nPosImportant != std::wstring::npos)
+                    sValueTemp = sValueTemp.substr(0, nPosImportant);
+
+                size_t nPosGrid = sValueTemp.find(L'#');
+
+                if (nPosGrid != std::wstring::npos || !NS_STATIC_FUNCTIONS::ThereIsNumber(sValueTemp))
                 {
-                    const size_t nRightQuote = sFont.find_first_of(L"'\"", nLeftQuote + 1);
-                    const size_t nNewLeftQuote = sFont.find_first_of(L"'\"", nRightQuote + 1);
-                    if (nNewLeftQuote == std::wstring::npos)
-                        return sFont.substr(nLeftQuote, nRightQuote - nLeftQuote + 1);
-                    nLeftQuote = nNewLeftQuote;
+                    if (!NS_STATIC_FUNCTIONS::ConvertAbsoluteValue(sValueTemp, fPreviousValue))
+                    {
+                        sValueString += sValueTemp;
+                        continue;
+                    }
                 }
-            }
 
-            std::wstring sFont;
-            styles_iterator oFont = m_mStyle.find(L"font");
+                const size_t posPercent = sValueTemp.find(L'%');
 
-            if (oFont != m_mStyle.end())
-                sFont = oFont->second;
-
-            if (sFont.empty())
-                return std::wstring();
-
-            size_t nLeftQuote = sFont.find_first_of(L"'\"");
-            while (nLeftQuote != std::wstring::npos)
-            {
-                const size_t nRightQuote = sFont.find_first_of(L"'\"", nLeftQuote + 1);
-                const size_t nNewLeftQuote = sFont.find_first_of(L"'\"", nRightQuote + 1);
-                if (nNewLeftQuote == std::wstring::npos)
-                    return sFont.substr(nLeftQuote, nRightQuote - nLeftQuote + 1);
-                nLeftQuote = nNewLeftQuote;
-            }
-
-            return std::wstring();
-        }
-
-        std::wstring CCompiledStyle::GetFontSize() const
-        {
-            styles_iterator oFontSize = m_mStyle.find(L"font-size");
-
-            if (oFontSize != m_mStyle.end())
-                return oFontSize->second;
-
-            std::wstring sFont;
-
-            styles_iterator oFont = m_mStyle.find(L"font");
-
-            if (oFont != m_mStyle.end())
-                sFont = oFont->second;
-
-            if (sFont.empty())
-                return std::wstring();
-
-            const std::vector<std::wstring> arWords = NS_STATIC_FUNCTIONS::GetWordsW(sFont);
-
-            std::wstring sValue;
-
-            for (const std::wstring& sWord : arWords)
-                if (isdigit(sWord[0]))
-                    sValue = sWord;
-                else if (sWord == L"/")
-                    return sValue;
-
-            return sValue;
-        }
-
-        std::wstring CCompiledStyle::GetFontSizeAdjust() const
-        {
-            styles_iterator oFontSizeAdj = m_mStyle.find(L"font-size-adjust");
-            return oFontSizeAdj != m_mStyle.end() ? oFontSizeAdj->second : std::wstring();
-        }
-
-        std::wstring CCompiledStyle::GetFontStretch() const
-        {
-            styles_iterator oFontStretch = m_mStyle.find(L"font-stretch");
-            return oFontStretch != m_mStyle.end() ? oFontStretch->second : std::wstring();
-        }
-
-        std::wstring CCompiledStyle::GetFontStyle() const
-        {
-            styles_iterator oFontStyle = m_mStyle.find(L"font-style");
-
-            if (oFontStyle != m_mStyle.end())
-                return oFontStyle->second;
-
-            std::wstring sFont;
-
-            styles_iterator oFont = m_mStyle.find(L"font");
-
-            if (oFont != m_mStyle.end())
-                sFont = oFont->second;
-
-            if (sFont.empty())
-                return std::wstring();
-
-            const std::vector<std::wstring> arWords = NS_STATIC_FUNCTIONS::GetWordsW(sFont);
-
-            for (const std::wstring& sWord : arWords)
-                if (sWord == L"italic" || sWord == L"oblique")
-                    return sWord;
-
-            return std::wstring();
-        }
-
-        std::wstring CCompiledStyle::GetFontVariant() const
-        {
-            styles_iterator oFontVariant = m_mStyle.find(L"font-variant");
-
-            if (oFontVariant != m_mStyle.end())
-                return oFontVariant->second;
-
-            styles_iterator oFont = m_mStyle.find(L"font");
-            std::wstring sFont;
-
-            if (oFont != m_mStyle.end())
-                sFont = oFont->second;
-
-            if (sFont.empty())
-                return std::wstring();
-
-            const std::vector<std::wstring> arWords = NS_STATIC_FUNCTIONS::GetWordsW(sFont);
-
-            for (const std::wstring& sWord : arWords)
-                if (sWord == L"small-caps")
-                    return sWord;
-
-            return std::wstring();
-        }
-
-        std::wstring CCompiledStyle::GetFontWeight() const
-        {
-            styles_iterator oFontWeight = m_mStyle.find(L"font-weight");
-
-            if (oFontWeight != m_mStyle.end())
-                return oFontWeight->second;
-
-            styles_iterator oFont = m_mStyle.find(L"font");
-            std::wstring sFont;
-
-            if (oFont != m_mStyle.end())
-                sFont = oFont->second;
-
-            if (sFont.empty())
-                return std::wstring();
-
-            const std::vector<std::wstring> arWords = NS_STATIC_FUNCTIONS::GetWordsW(sFont);
-
-            for (const std::wstring& sWord : arWords)
-                if (sWord == L"bold" || sWord == L"bolder" || L"lighter" || (sWord.length() == 3 && isdigit(sWord[0]) && isdigit(sWord[1]) && isdigit(sWord[2])))
-                    return std::wstring(L"bold");
-
-            return std::wstring();
-        }
-
-        std::wstring CCompiledStyle::GetLineHeight() const
-        {
-            styles_iterator oLineHeight = m_mStyle.find(L"line-height");
-
-            if (oLineHeight != m_mStyle.end())
-                return oLineHeight->second;
-
-            std::wstring sFont;
-
-            styles_iterator oFont = m_mStyle.find(L"font");
-
-            if (oFont != m_mStyle.end())
-                sFont = oFont->second;
-
-            if (sFont.empty())
-                return std::wstring();
-
-            const std::vector<std::wstring> arWords = NS_STATIC_FUNCTIONS::GetWordsW(sFont);
-
-            std::wstring sValue;
-
-            for (size_t i = 0; i < arWords.size() - 1; ++i)
-                if (arWords[i] == L"/" && i < arWords.size() - 2)
-                    return arWords[i + 1];
-
-            return std::wstring();
-
-        }
-
-        std::vector<std::wstring> CCompiledStyle::GetFontNames() const
-        {
-            const std::wstring sFontFamily = GetFontFamily();
-            if (sFontFamily.empty())
-                return std::vector<std::wstring>();
-
-
-            size_t posFirst = sFontFamily.find_first_of(L"'\"");
-                if (posFirst == std::wstring::npos)
-                    return std::vector<std::wstring>({sFontFamily});
-
-            std::vector<std::wstring> arWords;
-            while (posFirst != std::wstring::npos)
-            {
-                const size_t& posSecond = sFontFamily.find_first_of(L"'\"", posFirst + 1);
-                arWords.push_back(sFontFamily.substr(posFirst, posSecond - posFirst + 1));
-                posFirst = sFontFamily.find_first_of(L"'\"", posSecond + 1);
-            }
-
-            return arWords;
-        }
-
-        std::vector<std::wstring> CCompiledStyle::GetFontNames2(const std::wstring& sFontFamily) const
-        {
-            if (sFontFamily.empty())
-                return std::vector<std::wstring>();
-
-            size_t posFirst = sFontFamily.find_first_of(L"'\"");
-            if (posFirst == std::wstring::npos)
-                return std::vector<std::wstring>({sFontFamily});
-
-            std::vector<std::wstring> arWords;
-            while (posFirst != std::wstring::npos)
-            {
-                const size_t& posSecond = sFontFamily.find_first_of(L"'\"", posFirst + 1);
-                arWords.push_back(sFontFamily.substr(posFirst, posSecond - posFirst + 1));
-                posFirst = sFontFamily.find_first_of(L"'\"", posSecond + 1);
-            }
-            return arWords;
-        }
-
-    /* MARGIN */
-        std::wstring CCompiledStyle::GetMargin() const
-        {
-            styles_iterator oMargin = m_mStyle.find(L"margin");
-            if (oMargin != m_mStyle.end())
-                return oMargin->second;
-
-            const std::wstring& sTop    = GetMarginTop();
-            const std::wstring& sLeft   = GetMarginLeft();
-            const std::wstring& sRight  = GetMarginRight();
-            const std::wstring& sBottom = GetMarginBottom();
-
-            if ((sTop == sLeft) && (sLeft == sRight) && (sRight == sBottom))
-                return sTop;
-
-            if ((sTop == sBottom) && (sLeft == sRight))
-                return  sTop + L" " + sLeft;
-
-            if (sLeft == sRight)
-                return sTop + L" " + sLeft + L" " + sBottom;
-
-            return sTop + L" " + sRight + L" " + sBottom + L" " + sLeft;
-
-            return std::wstring();
-        }
-
-        std::vector<std::wstring> CCompiledStyle::GetMargins() const
-        {
-            styles_iterator oMargin = m_mStyle.find(L"margin");
-
-            std::vector<std::wstring> sRes(4);
-
-            std::wstring sMargin;
-            if (oMargin != m_mStyle.end())
-                sMargin = oMargin->second;
-
-            std::wstring sTop    = GetMarginTop2();
-            std::wstring sBottom = GetMarginBottom2();
-            std::wstring sLeft   = GetMarginLeft2  ();
-            std::wstring sRight  = GetMarginRight2 ();
-
-            if(!sMargin.empty())
-            {
-                std::vector<std::wstring> arValues;
-                size_t pre = 0;
-                size_t find = sMargin.find(' ');
-                while(find != std::wstring::npos)
+                if (posPercent != std::wstring::npos)
                 {
-                    arValues.push_back(sMargin.substr(pre, find - pre));
-                    pre = find + 1;
-                    find = sMargin.find(' ', pre);
+                    const float dValue = wcstof(sValueTemp.substr(0, posPercent).c_str(), NULL) * fPreviousValue / 100;
+
+                    sValueString += std::to_wstring(static_cast<short int>(dValue + 0.5f));
+
+                    if (sValueTemp.find(L';') != std::wstring::npos)
+                        sValueString += L';';
+                    else if (arValues.size() > 1 && sValueTemp.find(L':') == std::wstring::npos)
+                        sValueString += L' ';
                 }
-                if(pre < sMargin.size())
-                    arValues.push_back(sMargin.substr(pre));
-
-                if(sTop.empty())
-                    sTop = arValues[0];
-                if(sLeft.empty())
-                    sLeft = arValues.size() == 4 ? arValues[3] : (arValues.size() > 1 ? arValues[1] : arValues[0]);
-                if(sRight.empty())
-                    sRight = arValues.size() > 1 ? arValues[1] : arValues[0];
-                if(sBottom.empty())
-                    sBottom = arValues.size() > 2 ? arValues[2] : arValues[0];
-            }
-            sRes[0] = sTop;
-            sRes[1] = sRight;
-            sRes[2] = sBottom;
-            sRes[3] = sLeft;
-            return sRes;
-        }
-
-        std::wstring CCompiledStyle::GetMarginTop2() const
-        {
-            styles_iterator oMarginTop = m_mStyle.find(L"margin-top");
-            if (oMarginTop != m_mStyle.end())
-                return oMarginTop->second;
-
-            const std::wstring& sMarginBlockStart = GetMarginBlockStart();
-            return sMarginBlockStart.empty() ? std::wstring() : sMarginBlockStart;
-        }
-
-        std::wstring CCompiledStyle::GetMarginTop() const
-        {
-            styles_iterator oMarginTop = m_mStyle.find(L"margin-top");
-
-            if (oMarginTop != m_mStyle.end())
-                return oMarginTop->second;
-
-            const std::wstring& sMarginBlockStart = GetMarginBlockStart();
-
-            if (!sMarginBlockStart.empty())
-                return sMarginBlockStart;
-
-            std::wstring sMargin;
-            styles_iterator oMargin = m_mStyle.find(L"margin");
-
-            if (oMargin != m_mStyle.end())
-                sMargin = oMargin->second;
-            else
-                return std::wstring();
-
-            if (sMargin.empty())
-                return std::wstring();
-
-            std::vector<std::wstring> arValues;
-
-            std::wstring sTemp;
-
-            for (const wchar_t& wc : sMargin)
-            {
-                sTemp += wc;
-
-                if (wc == L' ')
+                else if (sValueTemp.find(L"px") != std::wstring::npos)
                 {
-                    arValues.push_back(sTemp);
-                    sTemp.clear();
+                    sValueString += ConvertPx(sValueTemp);
+
+                    if (sValueTemp.find(L';') != std::wstring::npos)
+                        sValueString += L';';
+                    else if (arValues.size() > 1 && sValueTemp.find(L':') == std::wstring::npos)
+                        sValueString += L' ';
                 }
+                else if (sValueTemp.find(L"cm") != std::wstring::npos)
+                {
+                    sValueString += ConvertCm(sValueTemp);
+
+                    if (sValueTemp.find(L';') != std::wstring::npos)
+                        sValueString += L';';
+                    else if (arValues.size() > 1 && sValueTemp.find(L':') == std::wstring::npos)
+                        sValueString += L' ';
+                }
+                else if (sValueTemp.find(L"mm") != std::wstring::npos)
+                {
+                    sValueString += ConvertMm(sValueTemp);
+
+                    if (sValueTemp.find(L';') != std::wstring::npos)
+                        sValueString += L';';
+                    else if (arValues.size() > 1 && sValueTemp.find(L':') == std::wstring::npos)
+                        sValueString += L' ';
+                }
+                else if (sValueTemp.find(L"in") != std::wstring::npos)
+                {
+                    sValueString += ConvertIn(sValueTemp);
+
+                    if (sValueTemp.find(L';') != std::wstring::npos)
+                        sValueString += L';';
+                    else if (arValues.size() > 1 && sValueTemp.find(L':') == std::wstring::npos)
+                        sValueString += L' ';
+                }
+                else if (sValueTemp.find(L"pt") != std::wstring::npos)
+                {
+                    sValueString += ConvertPt(sValueTemp);
+
+                    if (sValueTemp.find(L';') != std::wstring::npos)
+                        sValueString += L';';
+                    else if (arValues.size() > 1 && sValueTemp.find(L':') == std::wstring::npos)
+                        sValueString += L' ';
+                }
+                else if (sValueTemp.find(L"pc") != std::wstring::npos)
+                {
+                    sValueString += ConvertPc(sValueTemp);
+
+                    if (sValueTemp.find(L';') != std::wstring::npos)
+                        sValueString += L';';
+                    else if (arValues.size() > 1 && sValueTemp.find(L':') == std::wstring::npos)
+                        sValueString += L' ';
+                }
+                else if (sValueTemp.find(L"em") != std::wstring::npos)
+                {
+                    const float fValue = wcstof(sValue.c_str(), NULL) * m_pFont.GetSize();
+                    sValueString += std::to_wstring(static_cast<short int>(fValue + 0.5f));
+
+                    if (sValueTemp.find(L';') != std::wstring::npos)
+                        sValueString += L';';
+                    else if (arValues.size() > 1 && sValueTemp.find(L':') == std::wstring::npos)
+                        sValueString += L' ';
+                }
+                else
+                {
+                    sValueString += sValueTemp;
+
+                    if (sValueTemp.find(L";") != std::wstring::npos)
+                        sValueString += L';';
+
+                    continue;
+                }
+
+                if (sValueTemp.back() != L';' && sValueTemp.back() != L':' && sValueTemp.back() != L' ')
+                    sValueTemp += L' ';
             }
-            if (!sTemp.empty())
-                arValues.push_back(sTemp);
 
-            if (!arValues.empty())
-                return arValues[0];
-
-            return std::wstring();
+            return sValueString;
         }
 
-        std::wstring CCompiledStyle::GetMarginBlockStart() const
+        inline std::wstring CCompiledStyle::ConvertPx(const std::wstring& sValue) const
         {
-            styles_iterator oMarginBlockStart = m_mStyle.find(L"margin-block-start");
-            return oMarginBlockStart != m_mStyle.end() ? oMarginBlockStart->second : std::wstring();
-        }
-
-        std::wstring CCompiledStyle::GetMarginLeft2() const
-        {
-            styles_iterator oMarginLeft = m_mStyle.find(L"margin-left");
-            return oMarginLeft != m_mStyle.end() ? oMarginLeft->second : std::wstring();
-        }
-
-        std::wstring CCompiledStyle::GetMarginLeft() const
-        {
-            styles_iterator oMarginLeft = m_mStyle.find(L"margin-left");
-
-            if (oMarginLeft != m_mStyle.end())
-                return oMarginLeft->second;
-
-            std::wstring sValue;
-            styles_iterator oMargin = m_mStyle.find(L"margin");
-
-            if (oMargin != m_mStyle.end())
-                sValue = oMargin->second;
-            else
-                return std::wstring();
-
             if (sValue.empty())
                 return std::wstring();
 
-            std::vector<std::wstring> arValues;
+            const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"px") - 1);
+            const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
 
-            std::wstring sTemp;
-
-            for (const wchar_t& wc : sValue)
+            switch (m_UnitMeasure)
             {
-                sTemp += wc;
-
-                if (wc == L' ')
-                {
-                    arValues.push_back(sTemp);
-                    sTemp.clear();
-                }
+                case Pixel:
+                    return std::to_wstring(static_cast<short int>(dValue));;
+                case Default:
+                case Point:
+                    return ConvertPxToPt(dValue);
+                case Cantimeter:
+                    return ConvertPxToCm(dValue);
+                case Millimeter:
+                    return ConvertPxToMm(dValue);
+                case Inch:
+                    return ConvertPxToIn(dValue);
+                case Peak:
+                    return ConvertPxToPc(dValue);
             }
-            if (!sTemp.empty())
-                arValues.push_back(sTemp);
-
-            if (arValues.size() == 4)
-                return arValues[3];
-            else if (arValues.size() > 1)
-                return arValues[1];
-            else if (arValues.size() == 1)
-                return arValues[0];
 
             return std::wstring();
         }
 
-        std::wstring CCompiledStyle::GetMarginRight2() const
+        inline std::wstring CCompiledStyle::ConvertPxToCm(const float& dValue) const
         {
-            styles_iterator oMarginRight = m_mStyle.find(L"margin-right");
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
 
-            if (oMarginRight != m_mStyle.end())
-                return oMarginRight->second;
-
-            return L"";
+            return std::to_wstring(static_cast<short int>(dValue / static_cast<float>(m_nDpi) * 2.54f + 0.5f));
         }
 
-        std::wstring CCompiledStyle::GetMarginRight() const
+        inline std::wstring CCompiledStyle::ConvertPxToIn(const float& dValue) const
         {
-            styles_iterator oMarginRight = m_mStyle.find(L"margin-right");
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
 
-            if (oMarginRight != m_mStyle.end())
-                return oMarginRight->second;
+            return std::to_wstring(static_cast<short int>(1.0f / static_cast<float>(m_nDpi) * dValue + 0.5f));
+        }
 
-            std::wstring sValue;
-            styles_iterator oMargin = m_mStyle.find(L"margin");
+        inline std::wstring CCompiledStyle::ConvertPxToMm(const float& dValue) const
+        {
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
 
-            if (oMargin != m_mStyle.end())
-                sValue = oMargin->second;
-            else
-                return std::wstring();
+            return std::to_wstring(static_cast<short int>(dValue / static_cast<float>(m_nDpi) * 25.4f + 0.5f));
+        }
 
+        inline std::wstring CCompiledStyle::ConvertPxToPc(const float& dValue) const
+        {
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
+
+            return std::to_wstring(static_cast<short int>(0.16667f / static_cast<float>(m_nDpi) * dValue + 0.5f));
+        }
+
+        inline std::wstring CCompiledStyle::ConvertPxToPt(const float& dValue) const
+        {
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
+
+            return std::to_wstring(static_cast<short int>(72.0f /  static_cast<float>(m_nDpi) * dValue + 0.5f));
+        }
+
+        inline std::wstring CCompiledStyle::ConvertCm(const std::wstring& sValue) const
+        {
             if (sValue.empty())
                 return std::wstring();
 
-            std::vector<std::wstring> arValues;
+            const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"cm") - 1);
+            const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
 
-            std::wstring sTemp;
-
-            for (const wchar_t& wc : sValue)
+            switch (m_UnitMeasure)
             {
-                sTemp += wc;
-
-                if (wc == L' ')
-                {
-                    arValues.push_back(sTemp);
-                    sTemp.clear();
-                }
+                case Default:
+                case Point:
+                    return ConvertCmToPt(dValue);
+                case Pixel:
+                    return ConvertCmToPx(dValue);
+                case Cantimeter:
+                    return std::to_wstring(static_cast<short int>(dValue));;
+                case Millimeter:
+                    return ConvertCmToMm(dValue);
+                case Inch:
+                    return ConvertCmToIn(dValue);
+                case Peak:
+                    return ConvertCmToPc(dValue);
             }
-
-            if (!sTemp.empty())
-                arValues.push_back(sTemp);
-
-            if (arValues.size() > 1)
-                return arValues[1];
-            else if (arValues.size() == 1)
-                return arValues[0];
 
             return std::wstring();
         }
 
-        std::wstring CCompiledStyle::GetMarginBottom2() const
+        inline std::wstring CCompiledStyle::ConvertCmToIn(const float& dValue) const
         {
-            styles_iterator oMarginBottom = m_mStyle.find(L"margin-bottom");
-            if (oMarginBottom != m_mStyle.end())
-                return oMarginBottom->second;
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
 
-            const std::wstring& sMarginBlockEnd = GetMarginBlockEnd();
-            return sMarginBlockEnd.empty() ? std::wstring() : sMarginBlockEnd;
+            return std::to_wstring(static_cast<short int>(dValue / 2.54f + 0.5f));
         }
 
-        std::wstring CCompiledStyle::GetMarginBottom() const
+        inline std::wstring CCompiledStyle::ConvertCmToMm(const float& dValue) const
         {
-            styles_iterator oMarginBottom = m_mStyle.find(L"margin-bottom");
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
 
-            if (oMarginBottom != m_mStyle.end())
-                return oMarginBottom->second;
+            return std::to_wstring(static_cast<short int>(dValue * 10.0f + 0.5f));
+        }
 
-            const std::wstring& sMarginBlockEnd = GetMarginBlockEnd();
+        inline std::wstring CCompiledStyle::ConvertCmToPc(const float& dValue) const
+        {
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
 
-            if (!sMarginBlockEnd.empty())
-                return sMarginBlockEnd;
+            return std::to_wstring(static_cast<short int>(2.36f * dValue + 0.5f));
+        }
 
-            std::wstring sValue;
-            styles_iterator oMargin = m_mStyle.find(L"margin");
+        inline std::wstring CCompiledStyle::ConvertCmToPt(const float& dValue) const
+        {
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
 
-            if (oMargin != m_mStyle.end())
-                sValue = oMargin->second;
-            else
-                return std::wstring();
+            return std::to_wstring(static_cast<short int>(28.35f * dValue + 0.5f));
+        }
 
+        inline std::wstring CCompiledStyle::ConvertCmToPx(const float& dValue) const
+        {
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
+
+            return std::to_wstring(static_cast<short int>(static_cast<float>(m_nDpi) / 2.54f * dValue + 0.5f));
+        }
+
+        inline std::wstring CCompiledStyle::ConvertMm(const std::wstring& sValue) const
+        {
             if (sValue.empty())
                 return std::wstring();
 
-            std::vector<std::wstring> arValues;
+            const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"mm") - 1);
+            const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
 
-            std::wstring sTemp;
-
-            for (const wchar_t& wc : sValue)
+            switch (m_UnitMeasure)
             {
-                sTemp += wc;
-
-                if (wc == L' ')
-                {
-                    arValues.push_back(sTemp);
-                    sTemp.clear();
-                }
+                case Pixel:
+                    return ConvertMmToPx(dValue);
+                case Default:
+                case Point:
+                    return ConvertMmToPt(dValue);
+                case Cantimeter:
+                    return ConvertMmToCm(dValue);
+                case Millimeter:
+                    return std::to_wstring(static_cast<short int>(dValue));;
+                case Inch:
+                    return ConvertMmToIn(dValue);
+                case Peak:
+                    return ConvertMmToPc(dValue);
             }
-            if (!sTemp.empty())
-                arValues.push_back(sTemp);
-
-            if (arValues.size() > 2)
-                return arValues[2];
-            else if (arValues.size() > 0)
-                return arValues[0];
-
             return std::wstring();
         }
 
-        std::wstring CCompiledStyle::GetMarginBlockEnd() const
+        inline std::wstring CCompiledStyle::ConvertMmToIn(const float& dValue) const
         {
-            styles_iterator oMarginBlockEnd = m_mStyle.find(L"margin-block-end");
-            return oMarginBlockEnd != m_mStyle.end() ? oMarginBlockEnd->second : std::wstring();
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
+
+            return std::to_wstring(static_cast<short int>(dValue / 25.4f + 0.5f));
         }
 
-    /* PADDING */
-        std::wstring CCompiledStyle::GetPadding() const
+        inline std::wstring CCompiledStyle::ConvertMmToCm(const float& dValue) const
         {
-            styles_iterator oPadding = m_mStyle.find(L"padding");
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
 
-            if (oPadding != m_mStyle.end())
-                return oPadding->second;
-
-            const std::wstring& sTop    = GetPaddingTop();
-            const std::wstring& sLeft   = GetPaddingLeft();
-            const std::wstring& sRight  = GetPaddingRight();
-            const std::wstring& sBottom = GetPaddingBottom();
-
-            if ((sTop == sLeft) && (sLeft == sRight) && (sRight == sBottom))
-                return sTop;
-
-            if ((sTop == sBottom) && (sLeft == sRight))
-                return  sTop + L" " + sLeft;
-
-            if (sLeft == sRight)
-                return sTop + L" " + sLeft + L" " + sBottom;
-
-            return sTop + L" " + sRight + L" " + sBottom + L" " + sLeft;
+            return std::to_wstring(static_cast<short int>(dValue / 10.0f + 0.5f));
         }
 
-        std::wstring CCompiledStyle::GetPaddingTop() const
+        inline std::wstring CCompiledStyle::ConvertMmToPc(const float& dValue) const
         {
-            styles_iterator oPaddingTop = m_mStyle.find(L"padding-top");
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
 
-            if (oPaddingTop != m_mStyle.end())
-                return oPaddingTop->second;
+            return std::to_wstring(static_cast<short int>(2.8346f * dValue + 0.5f));
+        }
 
-            std::wstring sValue;
-            styles_iterator oPadding = m_mStyle.find(L"padding");
+        inline std::wstring CCompiledStyle::ConvertMmToPt(const float& dValue) const
+        {
+            if (dValue == 0)
+                return std::wstring(L"0");
 
-            if (oPadding != m_mStyle.end())
-                sValue = oPadding->second;
-            else
-                return std::wstring();
+            return std::to_wstring(static_cast<short int>(0.23262f * dValue + 0.5f));
+        }
 
+        inline std::wstring CCompiledStyle::ConvertMmToPx(const float& dValue) const
+        {
+            if (dValue == 0)
+                return std::wstring(L"0");
+
+            return std::to_wstring(static_cast<short int>(static_cast<float>(m_nDpi) / 25.4f * dValue + 0.5f));
+        }
+
+        inline std::wstring CCompiledStyle::ConvertIn(const std::wstring& sValue) const
+        {
             if (sValue.empty())
                 return std::wstring();
 
-            std::vector<std::wstring> arValues;
+            const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"in") - 1);
+            const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
 
-            std::wstring sTemp;
-
-            for (const wchar_t& wc : sValue)
+            switch (m_UnitMeasure)
             {
-                sTemp += wc;
-
-                if (wc == L' ')
-                {
-                    arValues.push_back(sTemp);
-                    sTemp.clear();
-                }
+                case Pixel:
+                    return  ConvertInToPx(dValue);
+                case Default:
+                case Point:
+                    return ConvertInToPt(dValue);
+                case Cantimeter:
+                    return ConvertInToCm(dValue);
+                case Millimeter:
+                    return ConvertInToMm(dValue);
+                case Inch:
+                    return std::to_wstring(static_cast<short int>(dValue));;
+                case Peak:
+                    return ConvertInToPc(dValue);
             }
-            if (!sTemp.empty())
-                arValues.push_back(sTemp);
-
-            if (!arValues.empty())
-                return arValues[0];
-
             return std::wstring();
         }
 
-        std::wstring CCompiledStyle::GetPaddingLeft() const
+        inline std::wstring CCompiledStyle::ConvertInToMm(const float& dValue) const
         {
-            styles_iterator oPaddingLeft = m_mStyle.find(L"padding-left");
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
 
-            if (oPaddingLeft != m_mStyle.end())
-                return oPaddingLeft->second;
+            return std::to_wstring(static_cast<short int>(dValue * 25.4f + 0.5f));
+        }
 
-            std::wstring sValue;
-            styles_iterator oPadding = m_mStyle.find(L"padding");
+        inline std::wstring CCompiledStyle::ConvertInToCm(const float& dValue) const
+        {
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
 
-            if (oPadding != m_mStyle.end())
-                sValue = oPadding->second;
-            else
-                return std::wstring();
+            return std::to_wstring(static_cast<short int>(dValue * 2.54f + 0.5f));
+        }
 
+        inline std::wstring CCompiledStyle::ConvertInToPc(const float& dValue) const
+        {
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
+
+            return std::to_wstring(static_cast<short int>(dValue / 72.0f + 0.5f));
+        }
+
+        inline std::wstring CCompiledStyle::ConvertInToPt(const float& dValue) const
+        {
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
+
+            return std::to_wstring(static_cast<short int>(dValue / 6.0f + 0.5f));
+        }
+
+        inline std::wstring CCompiledStyle::ConvertInToPx(const float& dValue) const
+        {
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
+
+            return std::to_wstring(static_cast<short int>(dValue * static_cast<float>(m_nDpi) + 0.5f));
+        }
+
+        inline std::wstring CCompiledStyle::ConvertPt(const std::wstring& sValue) const
+        {
             if (sValue.empty())
                 return std::wstring();
 
-            std::vector<std::wstring> arValues;
+            const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"pt") - 1);
+            const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
 
-            std::wstring sTemp;
-
-            for (const wchar_t& wc : sValue)
+            switch (m_UnitMeasure)
             {
-                sTemp += wc;
-
-                if (wc == L' ')
-                {
-                    arValues.push_back(sTemp);
-                    sTemp.clear();
-                }
+                case Pixel:
+                    return ConvertPtToPx(dValue);
+                case Default:
+                case Point:
+                    return std::to_wstring(static_cast<short int>(dValue));
+                case Cantimeter:
+                    return ConvertPtToCm(dValue);
+                case Millimeter:
+                    return ConvertPtToMm(dValue);
+                case Inch:
+                    return ConvertPtToIn(dValue);
+                case Peak:
+                    return ConvertPtToPc(dValue);
             }
-
-            if (!sTemp.empty())
-                arValues.push_back(sTemp);
-
-            if (arValues.size() == 4)
-                return arValues[3];
-            else if (arValues.size() > 1)
-                return arValues[1];
-            else if (arValues.size() == 1)
-                return arValues[0];
 
             return std::wstring();
         }
 
-        std::wstring CCompiledStyle::GetPaddingRight() const
+        inline std::wstring CCompiledStyle::ConvertPtToIn(const float& dValue) const
         {
-            styles_iterator
-                  oPaddingRight = m_mStyle.find(L"padding-right");
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
 
-            if (oPaddingRight != m_mStyle.end())
-                return oPaddingRight->second;
+            return std::to_wstring((dValue / 72.0f + 0.5f));
+        }
 
-            std::wstring sValue;
-            styles_iterator oPadding = m_mStyle.find(L"padding");
+        inline std::wstring CCompiledStyle::ConvertPtToCm(const float& dValue) const
+        {
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
 
-            if (oPadding != m_mStyle.end())
-                sValue = oPadding->second;
-            else
-                return std::wstring();
+            return std::to_wstring(static_cast<short int>(dValue * 0.03528f + 0.5f));
+        }
 
+        inline std::wstring CCompiledStyle::ConvertPtToPc(const float& dValue) const
+        {
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
+
+            return std::to_wstring(static_cast<short int>(dValue / 12.0f + 0.5f));
+        }
+
+        inline std::wstring CCompiledStyle::ConvertPtToMm(const float& dValue) const
+        {
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
+
+            return std::to_wstring((dValue * 0.3528f + 0.5f));
+        }
+
+        inline std::wstring CCompiledStyle::ConvertPtToPx(const float& dValue) const
+        {
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
+
+            return std::to_wstring(static_cast<short int>(static_cast<float>(m_nDpi) / 72.0f * dValue + 0.5f));
+        }
+
+        inline std::wstring CCompiledStyle::ConvertPc(const std::wstring& sValue) const
+        {
             if (sValue.empty())
                 return std::wstring();
 
-            std::vector<std::wstring> arValues;
+            const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"pc") - 1);
+            const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
 
-            std::wstring sTemp;
-
-            for (const wchar_t& wc : sValue)
+            switch (m_UnitMeasure)
             {
-                sTemp += wc;
-
-                if (wc == L' ')
-                {
-                    arValues.push_back(sTemp);
-                    sTemp.clear();
-                }
-            }
-
-            if (!sTemp.empty())
-                arValues.push_back(sTemp);
-
-            if (arValues.size() > 1)
-                return arValues[1];
-            else if (arValues.size() == 1)
-                return arValues[0];
-
-            return std::wstring();
-        }
-
-        std::wstring CCompiledStyle::GetPaddingBottom() const
-        {
-            styles_iterator oPaddingBottom = m_mStyle.find(L"padding-bottom");
-
-            if (oPaddingBottom != m_mStyle.end())
-                return oPaddingBottom->second;
-
-            std::wstring sValue;
-            styles_iterator oPadding = m_mStyle.find(L"padding");
-
-            if (oPadding != m_mStyle.end())
-                sValue = oPadding->second;
-            else
-                return std::wstring();
-
-            if (sValue.empty())
-                return std::wstring();
-
-            std::vector<std::wstring> arValues;
-
-            std::wstring sTemp;
-
-            for (const wchar_t& wc : sValue)
-            {
-                sTemp += wc;
-
-                if (wc == L' ')
-                {
-                    arValues.push_back(sTemp);
-                    sTemp.clear();
-                }
-            }
-
-            if (!sTemp.empty())
-                arValues.push_back(sTemp);
-
-            if (arValues.size() > 2)
-                return arValues[2];
-            else if (arValues.size() > 0)
-                return arValues[0];
-
-            return std::wstring();
-        }
-
-    /*  SPACING */
-        std::wstring CCompiledStyle::GetLetterSpacing() const
-        {
-            styles_iterator oLetterSpacing = m_mStyle.find(L"letter-spacing");
-
-            if (oLetterSpacing != m_mStyle.end())
-                return oLetterSpacing->second;
-
-            return std::wstring();
-        }
-
-        std::wstring CCompiledStyle::GetWordSpacing() const
-        {
-            styles_iterator oWordSpacing = m_mStyle.find(L"word-spacing");
-
-            if (oWordSpacing != m_mStyle.end())
-                return oWordSpacing->second;
-
-            return std::wstring();
-        }
-
-        std::wstring CCompiledStyle::GetBorderSpacing() const
-        {
-            styles_iterator oBorderSpacing = m_mStyle.find(L"border-spacing");
-
-            if (oBorderSpacing != m_mStyle.end())
-                return oBorderSpacing->second;
-
-            return std::wstring();
-        }
-
-    /* COLOR */
-        std::wstring CCompiledStyle::GetTextDecorationColor() const
-        {
-            styles_iterator oTextDecorationColor = m_mStyle.find(L"text-decoration-color");
-
-            if (oTextDecorationColor != m_mStyle.end())
-                return oTextDecorationColor->second;
-
-            return std::wstring();
-        }
-
-        std::wstring CCompiledStyle::GetBackgroundColor() const
-        {
-            styles_iterator oBackgroundColor = m_mStyle.find(L"background-color");
-
-            if (oBackgroundColor != m_mStyle.end())
-            {
-                std::wstring sColor = oBackgroundColor->second;
-
-                if (sColor[0] == L'#')
-                {
-                    if (sColor.length() == 7)
-                        return sColor.substr(1, 7);
-                    else if (sColor.length() == 4)
-                    {
-                        std::wstring sRetColor;
-                        sRetColor += sColor[1];
-                        sRetColor += sColor[1];
-                        sRetColor += sColor[2];
-                        sRetColor += sColor[2];
-                        sRetColor += sColor[3];
-                        sRetColor += sColor[3];
-                        return sRetColor;
-                    }
-                    else
-                        return L"auto";
-                }
-
-                std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
-
-                styles_iterator oHEX = NS_CONST_VALUES::mColors.find(sColor);
-
-                if (oHEX != NS_CONST_VALUES::mColors.end())
-                    return oHEX->second;
-            }
-            const std::wstring& sBackground = GetBackground();
-
-            if (sBackground.empty())
-                return std::wstring();
-
-            const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBackground);
-
-            for (std::wstring sColor : arWords)
-            {
-                if (sColor[0] == L'#')
-                {
-                    if (sColor.length() == 7)
-                        return sColor.substr(1, 7);
-                    else if (sColor.length() == 4)
-                    {
-                        std::wstring sRetColor;
-                        sRetColor += sColor[1];
-                        sRetColor += sColor[1];
-                        sRetColor += sColor[2];
-                        sRetColor += sColor[2];
-                        sRetColor += sColor[3];
-                        sRetColor += sColor[3];
-                        return sRetColor;
-                    }
-                    else
-                        return L"auto";
-                }
-
-                std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
-
-                styles_iterator oHEX = NS_CONST_VALUES::mColors.find(sColor);
-
-                if (oHEX != NS_CONST_VALUES::mColors.end())
-                    return oHEX->second;
+                case Pixel:
+                    return ConvertPcToPx(dValue);
+                case Default:
+                case Point:
+                    return ConvertPcToPt(dValue);
+                case Cantimeter:
+                    return ConvertPcToCm(dValue);
+                case Millimeter:
+                    return ConvertPcToMm(dValue);
+                case Inch:
+                    return ConvertPcToIn(dValue);
+                case Peak:
+                    return std::to_wstring(static_cast<short int>(dValue));
             }
 
             return std::wstring();
         }
 
-        std::wstring CCompiledStyle::GetColor() const
+        inline std::wstring CCompiledStyle::ConvertPcToIn(const float& dValue) const
         {
-            styles_iterator oColor = m_mStyle.find(L"color");
-            if (oColor == m_mStyle.end())
-                return std::wstring();
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
 
-            std::wstring sColor = oColor->second;
-
-            if (sColor[0] == L'#')
-            {
-                if (sColor.length() == 7)
-                    return sColor.substr(1, 7);
-                else if (sColor.length() == 4)
-                {
-                    std::wstring sRetColor;
-                    sRetColor = sColor[1] + sColor[1] + sColor[2] + sColor[2] + sColor[3] + sColor[3];
-                    return sRetColor;
-                }
-                else
-                    return L"";
-            }
-
-            std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
-
-            styles_iterator oHEX = NS_CONST_VALUES::mColors.find(sColor);
-
-            if (oHEX != NS_CONST_VALUES::mColors.end())
-                return oHEX->second;
-
-            return L"";
+            return std::to_wstring(static_cast<short int>(dValue / 6.0f + 0.5f));
         }
 
-        std::wstring CCompiledStyle::GetOutlineColor() const
+        inline std::wstring CCompiledStyle::ConvertPcToCm(const float& dValue) const
         {
-            styles_iterator oOutlineColor = m_mStyle.find(L"outline-color");
-            return oOutlineColor != m_mStyle.end() ? oOutlineColor->second : std::wstring();
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
+
+            return std::to_wstring(static_cast<short int>(dValue * 0.423f + 0.5f));
         }
 
-        std::wstring CCompiledStyle::GetColumnRuleColor() const
+        inline std::wstring CCompiledStyle::ConvertPcToPt(const float& dValue) const
         {
-            styles_iterator oColumnRuleColor = m_mStyle.find(L"column-rule-color");
-            return oColumnRuleColor != m_mStyle.end() ? oColumnRuleColor->second : std::wstring();
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
+
+            return std::to_wstring(static_cast<short int>(dValue * 12.0f + 0.5f));
         }
 
-        std::wstring CCompiledStyle::GetBackground() const
+        inline std::wstring CCompiledStyle::ConvertPcToMm(const float& dValue) const
         {
-            styles_iterator oBackground = m_mStyle.find(L"background");
-            return oBackground != m_mStyle.end() ? oBackground->second : std::wstring();
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
+
+            return std::to_wstring(static_cast<short int>(dValue * 4.23f + 0.5f));
         }
 
-    /* TEXT */
-        std::wstring CCompiledStyle::GetTextAlign() const
+        inline std::wstring CCompiledStyle::ConvertPcToPx(const float& dValue) const
         {
-            styles_iterator oTextAlign = m_mStyle.find(L"text-align");
-            return oTextAlign != m_mStyle.end() ? oTextAlign->second : std::wstring();
+            if (dValue == 0.0f)
+                return std::wstring(L"0");
+
+            return std::to_wstring(static_cast<short int>(static_cast<float>(m_nDpi) / 6.0f * dValue + 0.5f));
         }
-
-        std::wstring CCompiledStyle::GetTextIndent() const
-        {
-            styles_iterator oTextIndent = m_mStyle.find(L"text-indent");
-            return oTextIndent != m_mStyle.end() ? oTextIndent->second : std::wstring();
-        }
-
-        std::wstring CCompiledStyle::GetTextDecoration() const
-        {
-            styles_iterator oTextDecoration = m_mStyle.find(L"text-decoration");
-
-            if (oTextDecoration != m_mStyle.end())
-            {
-                if (oTextDecoration->second == L"underline")
-                    return std::wstring(L"single");
-                else if (oTextDecoration->second == L"none")
-                    return oTextDecoration->second;
-            }
-
-            return L"";
-
-//            return oTextDecoration != m_mStyle.end() ? oTextDecoration->second : std::wstring();
-        }
-
-        /* BORDER */
-
-            std::wstring CCompiledStyle::GetBorder() const
-            {
-                styles_iterator oBorder = m_mStyle.find(L"border");
-
-                if (oBorder != m_mStyle.end() && oBorder->second != L"none")
-                    return oBorder->second;
-                else
-                {
-                    styles_iterator oMsoBorder = m_mStyle.find(L"mso-border-alt");
-                    if (oMsoBorder != m_mStyle.end() && oMsoBorder->second != L"none")
-                        return oMsoBorder->second;
-                }
-
-                const std::wstring& sBorderWidth = GetBorderWidth();
-                const std::wstring& sBorderStyle = GetBorderStyle();
-                const std::wstring& sBorderColor = GetBorderColor();
-
-                if (!sBorderWidth.empty() && !sBorderStyle.empty() && !sBorderColor.empty())
-                    return sBorderWidth + L" " + sBorderStyle + L" " + sBorderColor;
-
-                return std::wstring();
-            }
-
-            std::wstring CCompiledStyle::GetBorderWidth() const
-            {
-                styles_iterator oBorderWidth = m_mStyle.find(L"border-width");
-
-                if (oBorderWidth != m_mStyle.end())
-                    return oBorderWidth->second;
-
-                styles_iterator oBorder = m_mStyle.find(L"border");
-
-                std::wstring sBorder;
-
-                if (oBorder != m_mStyle.end() && oBorder->second != L"none")
-                    sBorder = oBorder->second;
-                else
-                {
-                    styles_iterator oMsoBorder = m_mStyle.find(L"mso-border-alt");
-                    if (oMsoBorder != m_mStyle.end() && oMsoBorder->second != L"none")
-                        sBorder =  oMsoBorder->second;
-                    else
-                        return std::wstring();
-                }
-
-                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorder);
-
-                for (const std::wstring& sWidth : arWords)
-                    if (iswdigit(sWidth[0]))
-                        return sWidth;
-
-                return std::wstring();
-            }
-
-            std::wstring CCompiledStyle::GetBorderStyle() const
-            {
-                styles_iterator oBorderStyle = m_mStyle.find(L"border-style");
-
-                if (oBorderStyle != m_mStyle.end())
-                    return oBorderStyle->second;
-
-                styles_iterator oBorder = m_mStyle.find(L"border");
-
-                std::wstring sBorder;
-
-                if (oBorder != m_mStyle.end() && oBorder->second != L"none")
-                    sBorder = oBorder->second;
-                else
-                {
-                    styles_iterator oMsoBorder = m_mStyle.find(L"mso-border-alt");
-                    if (oMsoBorder != m_mStyle.end() && oMsoBorder->second != L"none")
-                        sBorder =  oMsoBorder->second;
-                    else
-                        return std::wstring();
-                }
-
-                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorder);
-
-                for (std::wstring sStyle : arWords)
-                {
-                    std::transform(sStyle.begin(), sStyle.end(), sStyle.begin(), tolower);
-                    styles_iterator oStyle = NS_CONST_VALUES::mStyles.find(sStyle);
-
-                    if (oStyle != NS_CONST_VALUES::mStyles.end())
-                        return oStyle->second;
-                }
-
-                return std::wstring();
-            }
-
-            std::wstring CCompiledStyle::GetBorderColor() const
-            {
-                styles_iterator oBorderColor = m_mStyle.find(L"border-color");
-
-                if (oBorderColor != m_mStyle.end())
-                    return oBorderColor->second;
-
-                styles_iterator oBorder = m_mStyle.find(L"border");
-
-                std::wstring sBorder;
-
-                if (oBorder != m_mStyle.end() && oBorder->second != L"none")
-                    sBorder = oBorder->second;
-                else
-                {
-                    styles_iterator oMsoBorder = m_mStyle.find(L"mso-border-alt");
-                    if (oMsoBorder != m_mStyle.end() && oMsoBorder->second != L"none")
-                        sBorder =  oMsoBorder->second;
-                    else
-                        return std::wstring();
-                }
-
-                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorder);
-
-                for (std::wstring sColor : arWords)
-                {
-                    if (sColor[0] == L'#')
-                    {
-                        if (sColor.length() == 7)
-                            return sColor.substr(1, 7);
-                        else if (sColor.length() == 4)
-                        {
-                            std::wstring sRetColor;
-                            sRetColor += sColor[1];
-                            sRetColor += sColor[1];
-                            sRetColor += sColor[2];
-                            sRetColor += sColor[2];
-                            sRetColor += sColor[3];
-                            sRetColor += sColor[3];
-                            return sRetColor;
-                        }
-                        else
-                            return L"auto";
-                    }
-
-                    std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
-
-                    styles_iterator oHEX = NS_CONST_VALUES::mColors.find(sColor);
-
-                    if (oHEX != NS_CONST_VALUES::mColors.end())
-                        return oHEX->second;
-                }
-
-                return std::wstring();
-            }
-
-            std::wstring CCompiledStyle::GetBorderBottom() const
-            {
-                styles_iterator oBorderBottom = m_mStyle.find(L"border-bottom");
-
-                if (oBorderBottom != m_mStyle.end())
-                    return oBorderBottom->second;
-
-                const std::wstring& sBorderBottomWidth = GetBorderBottomWidth();
-                const std::wstring& sBorderBottomStyle = GetBorderBottomStyle();
-                const std::wstring& sBorderBottomColor = GetBorderBottomColor();
-
-                if (!sBorderBottomWidth.empty() && !sBorderBottomStyle.empty() && !sBorderBottomColor.empty())
-                    return sBorderBottomWidth + L" " + sBorderBottomStyle + L" " + sBorderBottomColor;
-
-                return std::wstring();
-            }
-
-            std::wstring CCompiledStyle::GetBorderBottomWidth() const
-            {
-                styles_iterator oBorderBottomWidth = m_mStyle.find(L"border-bottom-width");
-
-                if (oBorderBottomWidth != m_mStyle.end())
-                    return oBorderBottomWidth->second;
-
-                styles_iterator oBorderBottom = m_mStyle.find(L"border-bottom");
-
-                std::wstring sBorderBottom;
-
-                if (oBorderBottom != m_mStyle.end())
-                    sBorderBottom = oBorderBottom->second;
-                else
-                    return std::wstring();
-
-                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderBottom);
-
-                for (const std::wstring& sWidth : arWords)
-                    if (iswdigit(sWidth[0]))
-                        return sWidth;
-
-                return std::wstring();
-            }
-
-            std::wstring CCompiledStyle::GetBorderBottomStyle() const
-            {
-                styles_iterator oBorderBottomStyle = m_mStyle.find(L"border-bottom-style");
-
-                if (oBorderBottomStyle != m_mStyle.end())
-                    return oBorderBottomStyle->second;
-
-                styles_iterator oBorderBottom = m_mStyle.find(L"border-bottom");
-
-                std::wstring sBorderBottom;
-
-                if (oBorderBottom != m_mStyle.end())
-                    sBorderBottom = oBorderBottom->second;
-                else
-                    return std::wstring();
-
-                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderBottom);
-
-                for (std::wstring sStyle : arWords)
-                {
-                    std::transform(sStyle.begin(), sStyle.end(), sStyle.begin(), tolower);
-                    styles_iterator oStyle = NS_CONST_VALUES::mStyles.find(sStyle);
-
-                    if (oStyle != NS_CONST_VALUES::mStyles.end())
-                        return oStyle->second;
-                }
-
-                return std::wstring();
-            }
-
-            std::wstring CCompiledStyle::GetBorderBottomColor() const
-            {
-                styles_iterator oBorderBottomColor = m_mStyle.find(L"border-bottom-color");
-
-                if (oBorderBottomColor != m_mStyle.end())
-                    return oBorderBottomColor->second;\
-
-                styles_iterator oBorderBottom = m_mStyle.find(L"border-bottom");
-
-                std::wstring sBorderBottom;
-
-                if (oBorderBottom != m_mStyle.end())
-                    sBorderBottom = oBorderBottom->second;
-                else
-                    return std::wstring();
-
-                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderBottom);
-
-                for (std::wstring sColor : arWords)
-                {
-                    if (sColor[0] == L'#')
-                    {
-                        if (sColor.length() == 7)
-                            return sColor.substr(1, 7);
-                        else if (sColor.length() == 4)
-                        {
-                            std::wstring sRetColor;
-                            sRetColor += sColor[1];
-                            sRetColor += sColor[1];
-                            sRetColor += sColor[2];
-                            sRetColor += sColor[2];
-                            sRetColor += sColor[3];
-                            sRetColor += sColor[3];
-                            return sRetColor;
-                        }
-                        else
-                            return L"auto";
-                    }
-
-                    std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
-
-                    styles_iterator oHEX = NS_CONST_VALUES::mColors.find(sColor);
-
-                    if (oHEX != NS_CONST_VALUES::mColors.end())
-                        return oHEX->second;
-                }
-
-                return std::wstring();
-            }
-
-            std::wstring CCompiledStyle::GetBorderLeft() const
-            {
-                styles_iterator oBorderLeft = m_mStyle.find(L"border-left");
-
-                if (oBorderLeft != m_mStyle.end())
-                    return oBorderLeft->second;
-
-                const std::wstring& sBorderLeftWidth = GetBorderLeftWidth();
-                const std::wstring& sBorderLeftStyle = GetBorderLeftStyle();
-                const std::wstring& sBorderLeftColor = GetBorderLeftColor();
-
-                if (!sBorderLeftWidth.empty() && !sBorderLeftStyle.empty() && !sBorderLeftColor.empty())
-                    return sBorderLeftWidth + L" " + sBorderLeftStyle + L" " + sBorderLeftColor;
-
-                return std::wstring();
-            }
-
-            std::wstring CCompiledStyle::GetBorderLeftWidth() const
-            {
-                styles_iterator oBorderLeftWidth = m_mStyle.find(L"border-left-width");
-
-                if (oBorderLeftWidth != m_mStyle.end())
-                    return oBorderLeftWidth->second;
-
-                styles_iterator oBorderLeft = m_mStyle.find(L"border-left");
-
-                std::wstring sBorderLeft;
-
-                if (oBorderLeft != m_mStyle.end())
-                    sBorderLeft = oBorderLeft->second;
-                else
-                    return std::wstring();
-
-                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderLeft);
-
-                for (const std::wstring& sWidth : arWords)
-                    if (iswdigit(sWidth[0]))
-                        return sWidth;
-
-                return std::wstring();
-            }
-
-            std::wstring CCompiledStyle::GetBorderLeftStyle() const
-            {
-                styles_iterator oBorderLeftStyle = m_mStyle.find(L"border-left-style");
-
-                if (oBorderLeftStyle != m_mStyle.end())
-                    return oBorderLeftStyle->second;
-
-                styles_iterator oBorderLeft = m_mStyle.find(L"border-left");
-
-                std::wstring sBorderLeft;
-
-                if (oBorderLeft != m_mStyle.end())
-                    sBorderLeft = oBorderLeft->second;
-                else
-                    return std::wstring();
-
-                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderLeft);
-
-                for (std::wstring sStyle : arWords)
-                {
-                    styles_iterator oStyle = NS_CONST_VALUES::mStyles.find(sStyle);
-
-                    if (oStyle != NS_CONST_VALUES::mStyles.end())
-                        return oStyle->second;
-                }
-
-                return std::wstring();
-            }
-
-            std::wstring CCompiledStyle::GetBorderLeftColor() const
-            {
-                styles_iterator oBorderLeftColor = m_mStyle.find(L"border-left-color");
-
-                if (oBorderLeftColor != m_mStyle.end())
-                    return oBorderLeftColor->second;
-
-                styles_iterator oBorderLeft = m_mStyle.find(L"border-left");
-
-                std::wstring sBorderLeft;
-
-                if (oBorderLeft != m_mStyle.end())
-                    sBorderLeft = oBorderLeft->second;
-                else
-                    return std::wstring();
-
-                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderLeft);
-
-                for (std::wstring sColor : arWords)
-                {
-                    if (sColor[0] == L'#')
-                    {
-                        if (sColor.length() == 7)
-                            return sColor.substr(1, 7);
-                        else if (sColor.length() == 4)
-                        {
-                            std::wstring sRetColor;
-                            sRetColor += sColor[1];
-                            sRetColor += sColor[1];
-                            sRetColor += sColor[2];
-                            sRetColor += sColor[2];
-                            sRetColor += sColor[3];
-                            sRetColor += sColor[3];
-                            return sRetColor;
-                        }
-                        else
-                            return L"auto";
-                    }
-
-                    const styles_iterator oHEX = NS_CONST_VALUES::mColors.find(sColor);
-
-                    if (oHEX != NS_CONST_VALUES::mColors.end())
-                        return oHEX->second;
-                }
-
-                return std::wstring();
-            }
-
-            std::wstring CCompiledStyle::GetBorderRight() const
-            {
-                styles_iterator oBorderRight = m_mStyle.find(L"border-right");
-
-                if (oBorderRight != m_mStyle.end())
-                    return oBorderRight->second;
-
-                const std::wstring& sBorderRightWidth = GetBorderRightWidth();
-                const std::wstring& sBorderRightStyle = GetBorderRightStyle();
-                const std::wstring& sBorderRightColor = GetBorderRightColor();
-
-                if (!sBorderRightWidth.empty() && !sBorderRightStyle.empty() && !sBorderRightColor.empty())
-                    return sBorderRightWidth + L" " + sBorderRightStyle + L" " + sBorderRightColor;
-
-                return std::wstring();
-            }
-
-            std::wstring CCompiledStyle::GetBorderRightWidth() const
-            {
-                styles_iterator oBorderRightWidth = m_mStyle.find(L"border-right-width");
-
-                if (oBorderRightWidth != m_mStyle.end())
-                    return oBorderRightWidth->second;
-
-                styles_iterator oBorderRight = m_mStyle.find(L"border-right");
-
-                std::wstring sBorderRight;
-
-                if (oBorderRight != m_mStyle.end())
-                    sBorderRight = oBorderRight->second;
-                else
-                    return std::wstring();
-
-                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderRight);
-
-                for (const std::wstring& sWidth : arWords)
-                    if (iswdigit(sWidth[0]))
-                        return sWidth;
-
-                return std::wstring();
-            }
-
-            std::wstring CCompiledStyle::GetBorderRightStyle() const
-            {
-                styles_iterator oBorderRightStyle = m_mStyle.find(L"border-right-style");
-
-                if (oBorderRightStyle != m_mStyle.end())
-                    return oBorderRightStyle->second;
-
-                styles_iterator oBorderRight = m_mStyle.find(L"border-right");
-
-                std::wstring sBorderRight;
-
-                if (oBorderRight != m_mStyle.end())
-                    sBorderRight = oBorderRight->second;
-                else
-                    return std::wstring();
-
-                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderRight);
-
-                for (std::wstring sStyle : arWords)
-                {
-                    std::transform(sStyle.begin(), sStyle.end(), sStyle.begin(), tolower);
-                    styles_iterator oStyle = NS_CONST_VALUES::mStyles.find(sStyle);
-
-                    if (oStyle != NS_CONST_VALUES::mStyles.end())
-                        return oStyle->second;
-                }
-
-                return std::wstring();
-            }
-
-            std::wstring CCompiledStyle::GetBorderRightColor() const
-            {
-                styles_iterator oBorderRightColor = m_mStyle.find(L"border-right-color");
-
-                if (oBorderRightColor != m_mStyle.end())
-                    return oBorderRightColor->second;
-
-                styles_iterator oBorderRight = m_mStyle.find(L"border-right");
-
-                std::wstring sBorderRight;
-
-                if (oBorderRight != m_mStyle.end())
-                    sBorderRight = oBorderRight->second;
-                else
-                    return std::wstring();
-
-                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderRight);
-
-                for (std::wstring sColor : arWords)
-                {
-                    if (sColor[0] == L'#')
-                    {
-                        if (sColor.length() == 7)
-                            return sColor.substr(1, 7);
-                        else if (sColor.length() == 4)
-                        {
-                            std::wstring sRetColor;
-                            sRetColor += sColor[1];
-                            sRetColor += sColor[1];
-                            sRetColor += sColor[2];
-                            sRetColor += sColor[2];
-                            sRetColor += sColor[3];
-                            sRetColor += sColor[3];
-                            return sRetColor;
-                        }
-                        else
-                            return L"auto";
-                    }
-
-                    std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
-
-                    styles_iterator oHEX = NS_CONST_VALUES::mColors.find(sColor);
-
-                    if (oHEX != NS_CONST_VALUES::mColors.end())
-                        return oHEX->second;
-                }
-
-                return std::wstring();
-            }
-
-            std::wstring CCompiledStyle::GetBorderTop() const
-            {
-                styles_iterator oBorderTop = m_mStyle.find(L"border-top");
-
-                if (oBorderTop != m_mStyle.end())
-                    return oBorderTop->second;
-
-                const std::wstring& sBorderTopWidth = GetBorderTopWidth();
-                const std::wstring& sBorderTopStyle = GetBorderTopStyle();
-                const std::wstring& sBorderTopColor = GetBorderTopColor();
-
-                if (!sBorderTopWidth.empty() && !sBorderTopStyle.empty() && !sBorderTopColor.empty())
-                    return sBorderTopWidth + L" " + sBorderTopStyle + L" " + sBorderTopColor;
-
-                return std::wstring();
-            }
-
-            std::wstring CCompiledStyle::GetBorderTopWidth() const
-            {
-                styles_iterator oBorderTopWidth = m_mStyle.find(L"border-top-width");
-
-                if (oBorderTopWidth != m_mStyle.end())
-                    return oBorderTopWidth->second;
-
-                styles_iterator oBorderTop = m_mStyle.find(L"border-top");
-
-                std::wstring sBorderTop;
-
-                if (oBorderTop != m_mStyle.end())
-                    sBorderTop = oBorderTop->second;
-                else
-                    return std::wstring();
-
-                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderTop);
-
-                for (const std::wstring& sWidth : arWords)
-                    if (iswdigit(sWidth[0]))
-                        return sWidth;
-
-                return std::wstring();
-            }
-
-            std::wstring CCompiledStyle::GetBorderTopStyle() const
-            {
-                styles_iterator oBorderTopStyle = m_mStyle.find(L"border-top-style");
-
-                if (oBorderTopStyle != m_mStyle.end())
-                    return oBorderTopStyle->second;
-
-                styles_iterator oBorderTop = m_mStyle.find(L"border-top");
-
-                std::wstring sBorderTop;
-
-                if (oBorderTop != m_mStyle.end())
-                    sBorderTop = oBorderTop->second;
-                else
-                    return std::wstring();
-
-                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderTop);
-
-                for (std::wstring sStyle : arWords)
-                {
-                    std::transform(sStyle.begin(), sStyle.end(), sStyle.begin(), tolower);
-                    styles_iterator oStyle = NS_CONST_VALUES::mStyles.find(sStyle);
-
-                    if (oStyle != NS_CONST_VALUES::mStyles.end())
-                        return oStyle->second;
-                }
-
-                return std::wstring();
-            }
-
-            std::wstring CCompiledStyle::GetBorderTopColor() const
-            {
-                styles_iterator oBorderTopColor = m_mStyle.find(L"border-top-color");
-
-                if (oBorderTopColor != m_mStyle.end())
-                    return oBorderTopColor->second;
-
-                styles_iterator oBorderTop = m_mStyle.find(L"border-top");
-
-                std::wstring sBorderTop;
-
-                if (oBorderTop != m_mStyle.end())
-                    sBorderTop = oBorderTop->second;
-                else
-                    return std::wstring();
-
-                const std::vector<std::wstring>& arWords = NS_STATIC_FUNCTIONS::GetWordsW(sBorderTop);
-
-                for (std::wstring sColor : arWords)
-                {
-                    if (sColor[0] == L'#')
-                    {
-                        if (sColor.length() == 7)
-                            return sColor.substr(1, 7);
-                        else if (sColor.length() == 4)
-                        {
-                            std::wstring sRetColor;
-                            sRetColor += sColor[1];
-                            sRetColor += sColor[1];
-                            sRetColor += sColor[2];
-                            sRetColor += sColor[2];
-                            sRetColor += sColor[3];
-                            sRetColor += sColor[3];
-                            return sRetColor;
-                        }
-                        else
-                            return L"auto";
-                    }
-                    std::transform(sColor.begin(), sColor.end(), sColor.begin(), tolower);
-
-                    styles_iterator oHEX = NS_CONST_VALUES::mColors.find(sColor);
-
-                    if (oHEX != NS_CONST_VALUES::mColors.end())
-                        return oHEX->second;
-                }
-
-                return std::wstring();
-            }
     }
 

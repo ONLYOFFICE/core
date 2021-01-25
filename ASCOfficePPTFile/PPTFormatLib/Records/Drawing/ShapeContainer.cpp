@@ -1558,8 +1558,6 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
             }
         }
     }
-
-
     if (!pElement)
     {
         switch (eType)
@@ -1651,36 +1649,8 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
                     if ( (ppt_shape) && (OOXMLShapes::sptCustom == ppt_shape->m_eType))
                     {
                         pShape->m_bShapePreset = true;
-
-                        pElement = CElementPtr(pShape);
-                    } else if (!pMapIDs->m_arAudioCollection.empty()/* && !pElement*/)
-                    {
-                        auto oInfo = pMapIDs->m_arAudioCollection.back();
-                        pMapIDs->m_arAudioCollection.pop_back();
-                        CAudioElement* pAudioElem		= new CAudioElement();
-                        pElement = CElementPtr(pAudioElem);
-
-                        pAudioElem->m_strAudioFileName	= oInfo.m_strFilePath;
-
-                        pAudioElem->m_dClipStartTime	= oInfo.m_dStartTime;
-                        pAudioElem->m_dClipEndTime		= oInfo.m_dEndTime;
-
-                        pAudioElem->m_bLoop				= oInfo.m_bLoop;
-
-                        if (NULL != pSlide)
-                        {
-                            pAudioElem->m_dStartTime	= pSlide->m_dStartTime;
-                            pAudioElem->m_dEndTime		= pSlide->m_dEndTime;
-
-                        }
-                        else
-                        {
-                            if (pLayout)
-                                pLayout->m_arElements.push_back(pElement);
-
-                            pElement = CElementPtr(pShape);
-                        }
                     }
+                    pElement = CElementPtr(pShape);
                 }
             }break;
         }

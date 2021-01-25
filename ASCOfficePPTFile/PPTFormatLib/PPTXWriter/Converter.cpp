@@ -936,12 +936,6 @@ void PPT_FORMAT::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRelsGenerato
     if (!pElement) return;
 
     CGroupElement *pGroupElement = dynamic_cast<CGroupElement*>(pElement.get());
-    CAudioElement *pAudio = dynamic_cast<CAudioElement*>(pElement.get());
-
-    if (pAudio)
-    {
-        return ;
-    }
 
     if (pGroupElement)
     {

@@ -88,6 +88,10 @@ public:
 	{
 		return ToString(m->Get());
 	}
+	template <typename T>
+        inline static v8::Local<T> unwrap(v8::MaybeLocal<T> maybe) {
+                return maybe.FromMaybe(v8::Local<T>());
+        }
 };
 
 class CMemoryStream

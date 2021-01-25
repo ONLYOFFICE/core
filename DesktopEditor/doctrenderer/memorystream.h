@@ -62,7 +62,7 @@ public:
 	}
 	static bool ToBool(const v8::Local<v8::Value>& v)
 	{
-		return v->ToBoolean(v8::Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::Boolean>())->Value();
+		return v->ToBoolean(v8::Isolate::GetCurrent())->Value();
 	}
 	static std::wstring ToString(v8::Local<v8::Value> v)
 	{

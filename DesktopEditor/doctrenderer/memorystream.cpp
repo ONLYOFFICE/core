@@ -126,7 +126,7 @@ v8::Handle<v8::ObjectTemplate> CreateMemoryStreamTemplate(v8::Isolate* isolate)
     v8::Isolate* current = v8::Isolate::GetCurrent();
 
     // property
-    result->SetAccessor(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), "pos"), _ms_pos); // получить код ошибки
+    result->SetAccessor(v8::String::NewFromUtf8Literal(v8::Isolate::GetCurrent(), "pos"), _ms_pos); // получить код ошибки
 
     // прописываем функции - методы объекта
     result->Set(current, "Copy",			v8::FunctionTemplate::New(current, _ms_copy));

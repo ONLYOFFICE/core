@@ -1219,8 +1219,8 @@ public:
 #ifndef V8_OS_XP
         v8::V8::InitializeICUDefaultLocation(sPrA.c_str());
         v8::V8::InitializeExternalStartupData(sPrA.c_str());
-        m_platform = v8::platform::CreateDefaultPlatform();
-        v8::V8::InitializePlatform(m_platform);
+        //old-notSolvedBecauseForXP//m_platform = v8::platform::CreateDefaultPlatform();
+        //old-notSolvedBecauseForXP//v8::V8::InitializePlatform(m_platform);
         v8::V8::Initialize();
 #else
         m_platform = v8::platform::CreateDefaultPlatform();
@@ -1326,8 +1326,8 @@ public:
         if (NULL == Data)
         {
             Source = new v8::ScriptCompiler::Source(source);
-            script = v8::ScriptCompiler::Compile(_context, Source, v8::ScriptCompiler::kProduceCodeCache).ToLocalChecked();
-
+            script = v8::ScriptCompiler::Compile(_context, Source, v8::ScriptCompiler::kConsumeCodeCache).ToLocalChecked();
+            
             const v8::ScriptCompiler::CachedData* _cachedData = Source->GetCachedData();
             NSFile::CFileBinary oFileTest;
             if (oFileTest.CreateFileW(Path))

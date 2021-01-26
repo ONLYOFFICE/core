@@ -22,11 +22,11 @@ function CNativeGraphics()
     this.m_oContext      = null;
     this.m_oTextPr       = null;
 
-    this.IsNoSupportTextDraw = true;
     this.RENDERER_PDF_FLAG   = true;
 
     this.IsSlideBoundsCheckerType = false;
     this.IsDemonstrationMode      = false;
+    this.IsNoSupportTextDraw      = false;
     this.AutoCheckLineWidth       = false;
     this.m_bBrushColorInit        = false;
     this.m_bPenColorInit          = false;
@@ -243,8 +243,7 @@ CNativeGraphics.prototype =
     },
     FillTextCode : function(x, y, lUnicode)
     {
-        var _code = lUnicode.charCodeAt(0);
-        this.Native["FillTextCode"](x, y, _code);
+        this.Native["FillTextCode"](x, y, lUnicode);
     },
     tg : function(text, x, y)
     {

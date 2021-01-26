@@ -207,10 +207,12 @@ void CGraphics::reset()
 }
 void CGraphics::FreeFont()
 {
+    std::cout << "FreeFont " << std::endl;
     m_pRenderer->CloseFont();
 }
 void CGraphics::ClearLastFont()
 {
+    std::cout << "ClearLastFont " << std::endl;
     m_pRenderer->ClearInstallFont();
 }
 void CGraphics::drawImage(const std::wstring& img, double x, double y, double w, double h, BYTE alpha)
@@ -221,10 +223,12 @@ void CGraphics::drawImage(const std::wstring& img, double x, double y, double w,
 }
 std::wstring CGraphics::GetFont()
 {
+    std::cout << "GetFont " << std::endl;
     return m_pRenderer->GetFontManager()->GetName();
 }
 void CGraphics::SetFont(const std::wstring& name, int face, double size, int style)
 {
+    std::wcout << L"SetFont " << name << std::endl;
     double DpiX, DpiY;
     m_pRenderer->get_DpiX(&DpiX);
     m_pRenderer->get_DpiY(&DpiY);
@@ -253,10 +257,12 @@ void CGraphics::tg(int text, double x, double y)
 }
 void CGraphics::SetIntegerGrid(bool param)
 {
+    std::cout << "SetIntegerGrid " << param << std::endl;
     m_pRenderer->put_IntegerGrid(param);
 }
 bool CGraphics::GetIntegerGrid()
 {
+    std::cout << "GetIntegerGrid " << std::endl;
     return m_pRenderer->get_IntegerGrid();
 }
 void CGraphics::DrawStringASCII (const std::wstring& text, double x, double y)
@@ -301,6 +307,7 @@ void CGraphics::DrawStringASCII2(const std::wstring& text, double x, double y)
 }
 void CGraphics::DrawHeaderEdit(double yPos)
 {
+    std::cout << "DrawHeaderEdit " << std::endl;
     m_pRenderer->PathCommandEnd();
 
     Aggplus::CMatrix* pFull = m_pRenderer->GetFullTransform();
@@ -341,6 +348,7 @@ void CGraphics::DrawHeaderEdit(double yPos)
 }
 void CGraphics::DrawFooterEdit(double yPos)
 {
+    std::cout << "DrawFooterEdit " << std::endl;
     m_pRenderer->PathCommandEnd();
 
     Aggplus::CMatrix* pFull = m_pRenderer->GetFullTransform();
@@ -381,6 +389,7 @@ void CGraphics::DrawFooterEdit(double yPos)
 }
 void CGraphics::DrawLockParagraph (double x,  double y1, double y2)
 {
+    std::cout << "DrawLockParagraph " << std::endl;
     m_pRenderer->PathCommandEnd();
 
     Aggplus::CMatrix* pFull = m_pRenderer->GetFullTransform();
@@ -450,6 +459,7 @@ void CGraphics::DrawLockParagraph (double x,  double y1, double y2)
 }
 void CGraphics::DrawLockObjectRect(double x,  double y,  double w,  double h)
 {
+    std::cout << "DrawLockObjectRect " << std::endl;
     m_pRenderer->PathCommandEnd();
 
     double dPenSize = 0.0;
@@ -473,6 +483,7 @@ void CGraphics::DrawLockObjectRect(double x,  double y,  double w,  double h)
 }
 void CGraphics::DrawEmptyTableLine(double x1, double y1, double x2, double y2)
 {
+    std::cout << "DrawEmptyTableLine " << std::endl;
     m_pRenderer->PathCommandEnd();
 
     Aggplus::CMatrix* pFull = m_pRenderer->GetFullTransform();
@@ -555,6 +566,7 @@ void CGraphics::DrawEmptyTableLine(double x1, double y1, double x2, double y2)
 }
 void CGraphics::DrawSpellingLine  (double y0, double x0, double x1, double w)
 {
+    std::cout << "DrawSpellingLine " << std::endl;
     Aggplus::CMatrix* pMatrix = m_pRenderer->GetTransformMatrix();
     if (!m_pRenderer->get_IntegerGrid())
     {
@@ -909,6 +921,7 @@ void CGraphics::RestorePenBrush()
 }
 void CGraphics::SaveGrState()
 {
+    std::cout << "SaveGrState " << std::endl;
     CGrStateState* pState = new CGrStateState();
     pState->IsIntegerGrid = m_pRenderer->get_IntegerGrid();
     pState->Clips = m_oGrState.Clips;
@@ -922,6 +935,7 @@ void CGraphics::SaveGrState()
 }
 void CGraphics::RestoreGrState()
 {
+    std::cout << "RestoreGrState " << std::endl;
     if (m_oGrState.States.empty())
         return;
 
@@ -983,10 +997,12 @@ void CGraphics::RestoreGrState()
 }
 void CGraphics::StartClipPath()
 {
+    std::cout << "StartClipPath " << std::endl;
     m_pRenderer->BeginCommand(c_nClipType);
 }
 void CGraphics::EndClipPath()
 {
+    std::cout << "EndClipPath " << std::endl;
     m_pRenderer->EndCommand(c_nClipType);
 }
 bool CGraphics::StartCheckTableDraw()
@@ -1048,6 +1064,7 @@ std::string CGraphics::toDataURL(std::wstring type)
 {
     size_t nSl = type.find(L'/');
     std::wstring sPath = m_sApplicationImagesDirectory + L"/img" + std::to_wstring(nImage++) + L'.' + type.substr(nSl + 1);
+    std::wcout << "toDataURL " << sPath << std::endl;
     m_oFrame.SaveFile(sPath, _CXIMAGE_FORMAT_PNG);
 
     NSFile::CFileBinary oReader;
@@ -1088,45 +1105,55 @@ CColor CGraphics::GetBrushColor()
 }
 void CGraphics::put_brushTexture(std::wstring src)
 {
+
     std::wstring strImage = (0 == src.find(L"theme") ? m_sApplicationThemesDirectory : m_sApplicationImagesDirectory) + L'/' + src;
+    std::wcout << L"put_brushTexture " << strImage << std::endl;
     m_pRenderer->put_BrushType(c_BrushTypeTexture);
     m_pRenderer->put_BrushTexturePath(strImage);
     m_pRenderer->put_BrushTextureMode(0);
 }
 void CGraphics::put_brushTextureMode(int mode)
 {
+    std::cout << "put_brushTextureMode " << std::endl;
     m_pRenderer->put_BrushTextureMode(mode);
 }
 void CGraphics::put_BrushTextureAlpha(int a)
 {
+    std::cout << "put_BrushTextureAlpha " << std::endl;
     m_pRenderer->put_BrushTextureAlpha(a == 0 ? 255 : a);
 }
 void CGraphics::put_BrushGradient(int* pColors, double* pPositions, size_t nCount)
 {
+    std::cout << "put_BrushGradient " << std::endl;
     m_pRenderer->put_BrushGradientColors((LONG *)pColors, pPositions, nCount);
 }
 double CGraphics::TransformPointX(double x, double y)
 {
+    std::cout << "TransformPointX " << std::endl;
     m_pRenderer->GetFullTransform()->TransformPoint(x, y);
     return x;
 }
 double CGraphics::TransformPointY(double x, double y)
 {
+    std::cout << "TransformPointY " << std::endl;
     m_pRenderer->GetFullTransform()->TransformPoint(x, y);
     return y;
 }
 void CGraphics::put_LineJoin(int nJoin)
 {
+    std::cout << "put_LineJoin " << std::endl;
     m_pRenderer->put_PenLineJoin(nJoin);
 }
 int CGraphics::GetLineJoin()
 {
+    std::cout << "GetLineJoin " << std::endl;
     BYTE nRes;
     m_pRenderer->get_PenLineJoin(&nRes);
     return nRes;
 }
 void CGraphics::put_TextureBounds(double x, double y, double w, double h)
 {
+    std::cout << "put_TextureBounds " << std::endl;
     if(m_pRenderer->get_IntegerGrid())
     {
         double r = x + w;
@@ -1140,6 +1167,7 @@ void CGraphics::put_TextureBounds(double x, double y, double w, double h)
 }
 double CGraphics::GetlineWidth()
 {
+    std::cout << "GetlineWidth " << std::endl;
     double nRes;
     m_pRenderer->get_PenSize(&nRes);
     return nRes;

@@ -2,9 +2,56 @@
 var MyGraphics = new CNativeGraphics();
 
 // Задаём размеры холста
-MyGraphics.init(null, 181.151, 172.606, 47, 45);
+MyGraphics.init(null, 200, 149, 52.9167, 39.4229);
+
+// Проверка FillTextCode
+MyGraphics.CoordTransformOffset(-187.936, -66.5134);
+MyGraphics.transform(1, 0, 0, 1, 0, 0);
+MyGraphics.SetIntegerGrid(false);
+MyGraphics.transform(1, 0, 0, 1, 50.2979, 18.1354);
+MyGraphics.p_width(1058.31);
+MyGraphics._s();
+MyGraphics._m(0, 0);
+MyGraphics._l(51.8583, 0);
+MyGraphics._l(51.8583, 38.3646);
+MyGraphics._l(0, 38.3646);
+MyGraphics._z();
+MyGraphics.p_color(67, 115, 158, 255);
+MyGraphics.b_color1(91, 155, 213, 255);
+MyGraphics.drawpath(256 + 1);
+MyGraphics._e();
+MyGraphics.p_dash(null);
+
+MyGraphics.SetIntegerGrid(false);
+MyGraphics.transform(1, 0, 0, 1, 50.2979, 18.1354);
+MyGraphics._s();
+MyGraphics._m(-1.6, 0.199153);
+MyGraphics._l(51.8583, 0.199153);
+MyGraphics._l(51.8583, 36.5654);
+MyGraphics._l(-1.6, 36.5654);
+MyGraphics._l(-1.6, 0.199153);
+MyGraphics.SetIntegerGrid(false);
+MyGraphics.transform(1, 0, 0, 1, 53.3671, 32.988);
+MyGraphics.b_color1(0, 0, 0, 255);
+MyGraphics.p_color(0, 0, 0, 255);
+MyGraphics.SetFont({FontFamily : {Name : "Arial", Index : -1}, FontSize : 16, Italic : true, Bold : true});
+MyGraphics.FillTextCode(12.2943, 3.63992, 72);
+MyGraphics.FillTextCode(15.0967, 3.63992, 101);
+MyGraphics.FillTextCode(17.2548, 3.63992, 108);
+MyGraphics.FillTextCode(18.117,  3.63992, 108);
+MyGraphics.FillTextCode(18.9791, 3.63992, 111);
+MyGraphics.FillTextCode(22.2153, 3.63992, 87);
+MyGraphics.FillTextCode(25.8779, 3.63992, 111);
+MyGraphics.FillTextCode(28.0361, 3.63992, 114);
+MyGraphics.FillTextCode(29.3283, 3.63992, 108);
+MyGraphics.FillTextCode(30.1904, 3.63992, 100);
+MyGraphics.FillTextCode(32.3486, 3.63992, 33);
+MyGraphics.SetIntegerGrid(true);
+MyGraphics.reset();
+MyGraphics.toDataURL("image/png");
 
 // Рисование шейпа с треугольником
+/*
 MyGraphics.SetIntegerGrid(false);
 MyGraphics.transform(1, 0, 0, 1, 0, 0);//0.617492, -0.786577, 0.786577, 0.617492, 123.177, 40.1987);
 MyGraphics.ArrayPoints = null;
@@ -24,7 +71,6 @@ MyGraphics.reset();
 MyGraphics.toDataURL("image/png");
 
 // Рисование картинки с помощью brush
-/*
 MyGraphics.SetIntegerGrid(false);
 MyGraphics.transform(1, 0, 0, 1, 0, 0);
 MyGraphics.ArrayPoints = null;

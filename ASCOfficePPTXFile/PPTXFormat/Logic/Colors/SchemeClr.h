@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_SCHEMECLR_INCLUDE_H_
-#define PPTX_LOGIC_SCHEMECLR_INCLUDE_H_
 
 #include "./../../Limit/SchemeClrVal.h"
 #include "./../../Theme/ClrScheme.h"
@@ -126,7 +124,86 @@ namespace PPTX
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};
+		class StyleClr : public ColorBase
+		{
+		public:
+			WritingElement_AdditionConstructors(StyleClr)
+			PPTX_LOGIC_BASE2(StyleClr)
+
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_styleClr;
+			}
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				nullable_string sVal;
+
+				WritingElement_ReadAttributes_Start_No_NS(oReader)
+					WritingElement_ReadAttributes_Read_if(oReader, L"val", sVal)
+				WritingElement_ReadAttributes_End_No_NS(oReader)
+
+				if (sVal.IsInit())
+				{
+					if (*sVal == L"auto") bAuto = true;
+					else
+						val = *sVal;
+				}
+			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->StartNode(L"cs:styleClr");
+
+				pWriter->StartAttributes();
+				if (val.IsInit())
+					pWriter->WriteAttribute(L"val", *val);
+				else if (bAuto)
+					pWriter->WriteAttribute(L"val", L"auto");
+				pWriter->EndAttributes();
+
+				size_t nCount = Modifiers.size();
+				for (size_t i = 0; i < nCount; ++i)
+					Modifiers[i].toXmlWriter(pWriter);
+
+				pWriter->EndNode(L"cs:styleClr");
+			}
+
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->StartRecord(COLOR_TYPE_STYLE);
+
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+					if (val.IsInit())
+						pWriter->WriteUInt2(0, val);
+					else
+						pWriter->WriteBool1(1, bAuto);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+				ULONG len = (ULONG)Modifiers.size();
+				if (len != 0)
+				{
+					pWriter->StartRecord(0);
+					pWriter->WriteULONG(len);
+
+					for (ULONG i = 0; i < len; ++i)
+					{
+						pWriter->WriteRecord1(1, Modifiers[i]);
+					}
+
+					pWriter->EndRecord();
+				}
+
+				pWriter->EndRecord();
+			}
+
+			nullable_uint val;
+			bool bAuto = false;
+		protected:
+			virtual void FillParentPointersForChilds() {};
+		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_SCHEMECLR_INCLUDE_H

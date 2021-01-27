@@ -31,9 +31,9 @@
  */
 #pragma once
 
-#include "IFileContainer.h"
-#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTreeElem.h"
-#include "../XlsxFormat/WritingElement.h"
+#include "../../DocxFormat/IFileContainer.h"
+#include "../../../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTreeElem.h"
+#include "../WritingElement.h"
 
 namespace OOX
 {

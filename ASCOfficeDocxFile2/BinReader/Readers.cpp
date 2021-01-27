@@ -7693,14 +7693,15 @@ int Binary_DocumentTableReader::ReadRunContent(BYTE type, long length, void* poR
 		CDrawingProperty oCDrawingProperty(m_oFileWriter.getNextDocPr());
 		READ2_DEF(length, res, this->ReadPptxDrawing, &oCDrawingProperty);
 
-		if(oCDrawingProperty.IsChart())
+		if(oCDrawingProperty.IsGraphicFrameContent())
 		{
 			GetRunStringWriter().WriteString(oCDrawingProperty.Write());
 		}
 		else if(oCDrawingProperty.bDataPos && oCDrawingProperty.bDataLength)
 		{
             std::wstring sDrawingProperty = oCDrawingProperty.Write();
-            if(false == sDrawingProperty.empty())
+           
+			if(false == sDrawingProperty.empty())
 			{
 				ReadDrawing(oCDrawingProperty);
 			}
@@ -8219,110 +8220,58 @@ int Binary_DocumentTableReader::ReadPptxDrawing(BYTE type, long length, void* po
 {
 	int res = c_oSerConstants::ReadOk;
 	CDrawingProperty* pDrawingProperty = static_cast<CDrawingProperty*>(poResult);
-	if ( c_oSerImageType2::Type == type )
+	if (c_oSerImageType2::Type == type)
 	{
 		pDrawingProperty->bType = true;
 		pDrawingProperty->Type = m_oBufferedStream.GetUChar();
 	}
-	else if ( c_oSerImageType2::PptxData == type )
+	else if (c_oSerImageType2::PptxData == type)
 	{
 		pDrawingProperty->bDataPos = true;
 		pDrawingProperty->bDataLength = true;
 		pDrawingProperty->DataPos = m_oBufferedStream.GetPos();
 		pDrawingProperty->DataLength = length;
-	//сейчас пропуская, потому что перед чтение этого поля надо собрать остальные данные
+		//сейчас пропуская, потому что перед чтение этого поля надо собрать остальные данные
 		res = c_oSerConstants::ReadUnknown;
 	}
-	else if ( c_oSerImageType2::Chart2 == type )
+	else if (c_oSerImageType2::Chart == type)
 	{
-		if(false == m_oFileWriter.m_bSaveChartAsImg)
+		OOX::CPath pathCharts = m_oFileWriter.m_oChartWriter.m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"charts";
+		OOX::CSystemUtility::CreateDirectories(pathCharts.GetPath());
+		
+		m_oBufferedStream.m_pRels->m_pManager->SetDstCharts(pathCharts.GetPath());
+
+		m_oBufferedStream.Seek(m_oBufferedStream.GetPos() - 4); //roll back length
+
+		PPTX::Logic::GraphicFrame graphicFrame; 
+
+		graphicFrame.chartRec.Init();
+		graphicFrame.chartRec->fromPPTY(&m_oBufferedStream);
+
+		if (graphicFrame.chartRec->id_data.IsInit())
 		{
-			OOX::CPath pathChartsDir = m_oFileWriter.m_oChartWriter.m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"charts";
-			OOX::CSystemUtility::CreateDirectories(pathChartsDir.GetPath());
-			
-			OOX::CPath pathChartsRelsDir = pathChartsDir.GetPath() + FILE_SEPARATOR_STR +  L"_rels";                
-			OOX::CSystemUtility::CreateDirectories(pathChartsRelsDir.GetPath());
-
-			OOX::CPath pathChartsWorksheetDir = m_oFileWriter.m_oChartWriter.m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"embeddings";
-			OOX::CSystemUtility::CreateDirectories(pathChartsWorksheetDir.GetPath());
-
-            int nativeDocumentType = m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_nDocumentType;
-
-            m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_nDocumentType = XMLWRITER_DOC_TYPE_XLSX;
-			m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
-			
-			std::wstring sThemePath		= m_oFileWriter.m_sThemePath;
-			std::wstring sDrawingsPath	= m_oFileWriter.m_oChartWriter.m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"drawings";
-
-			size_t nPos = sThemePath.rfind(FILE_SEPARATOR_STR);
-			if (std::wstring::npos != nPos)
-			{
-				sThemePath = sThemePath.substr(0, nPos);
-			}
-				
-			BinXlsxRW::SaveParams			oSaveParams(sDrawingsPath, sThemePath, m_oFileWriter.m_pDrawingConverter->GetContentTypes());
-			BinXlsxRW::BinaryChartReader	oBinaryChartReader(m_oBufferedStream, oSaveParams, m_oFileWriter.m_pDrawingConverter);
-			
-			OOX::Spreadsheet::CChartSpace* pChartSpace = new OOX::Spreadsheet::CChartSpace(NULL);
-			oBinaryChartReader.ReadCT_ChartSpace(length, pChartSpace);
-
-			//save xlsx
-			_INT32 nChartCount = m_oFileWriter.m_pDrawingConverter->GetDocumentChartsCount();
-			_INT32 nChartIndex = nChartCount + 1;
-			m_oFileWriter.m_pDrawingConverter->SetDocumentChartsCount(nChartCount + 1);
-			std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(nChartIndex) + L".xlsx";
-			std::wstring sXlsxPath = pathChartsWorksheetDir.GetPath() + FILE_SEPARATOR_STR + sXlsxFilename;
-			BinXlsxRW::CXlsxSerializer oXlsxSerializer;
-			if (oXlsxSerializer.writeChartXlsx(sXlsxPath, *pChartSpace))
-			{
-				std::wstring sChartsWorksheetRelsName = L"../embeddings/" + sXlsxFilename;
-				unsigned int rIdXlsx;
-				std::wstring bstrChartsWorksheetRelType = OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();
-
-				m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartsWorksheetRelType, sChartsWorksheetRelsName, std::wstring(), &rIdXlsx);
-				m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_pContentTypes->AddDefault(L"xlsx");
-
-				pChartSpace->m_oChartSpace.m_externalData = new OOX::Spreadsheet::CT_ExternalData();
-				pChartSpace->m_oChartSpace.m_externalData->m_id = new std::wstring();
-				pChartSpace->m_oChartSpace.m_externalData->m_id->append(L"rId");
-				pChartSpace->m_oChartSpace.m_externalData->m_id->append(std::to_wstring(rIdXlsx));
-				pChartSpace->m_oChartSpace.m_externalData->m_autoUpdate = new OOX::Spreadsheet::CT_Boolean();
-				pChartSpace->m_oChartSpace.m_externalData->m_autoUpdate->m_val = new bool(false);
-			}
-
-			std::wstring sFilename = L"chart" + std::to_wstring(nChartIndex) + L".xml";
-			std::wstring sRelsName = L"charts/" + sFilename;
-			
-			OOX::CPath pathChartsFile = pathChartsDir + FILE_SEPARATOR_STR + sFilename;
-			pChartSpace->write(pathChartsFile, OOX::CPath(L"/word/charts"), *m_oFileWriter.m_pDrawingConverter->GetContentTypes());
-
-            OOX::CPath pathChartsRels =  pathChartsRelsDir.GetPath() + FILE_SEPARATOR_STR + sFilename + L".rels";
-			m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(pathChartsRels.GetPath());
-
-			unsigned int rIdChart;
-            std::wstring bstrChartRelType = OOX::FileTypes::Chart.RelationType();
-			
-			m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartRelType, sRelsName, std::wstring(), &rIdChart);
-			//m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml", L"/word/charts", sFilename);
-
-            pDrawingProperty->sChartRels = L"rId" + std::to_wstring( rIdChart);
-
-            m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_nDocumentType = nativeDocumentType;
+			pDrawingProperty->sGraphicFrameContent = graphicFrame.toXML2();
 		}
-		else
-			res = c_oSerConstants::ReadUnknown;
 	}
-	else if ( c_oSerImageType2::ChartImg == type )
+	else if (c_oSerImageType2::ChartEx == type)
 	{
-		if(true == m_oFileWriter.m_bSaveChartAsImg)
+		OOX::CPath pathCharts = m_oFileWriter.m_oChartWriter.m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"charts";
+		OOX::CSystemUtility::CreateDirectories(pathCharts.GetPath());
+
+		m_oBufferedStream.m_pRels->m_pManager->SetDstCharts(pathCharts.GetPath());
+
+		m_oBufferedStream.Seek(m_oBufferedStream.GetPos() - 4); //roll back length
+
+		PPTX::Logic::GraphicFrame graphicFrame;
+
+		graphicFrame.chartRec.Init();
+		graphicFrame.chartRec->m_bChartEx = true;
+		graphicFrame.chartRec->fromPPTY(&m_oBufferedStream);
+
+		if (graphicFrame.chartRec->id_data.IsInit())
 		{
-			pDrawingProperty->bDataPos = true;
-			pDrawingProperty->bDataLength = true;
-			pDrawingProperty->DataPos = m_oBufferedStream.GetPos();
-			pDrawingProperty->DataLength = length;
-	//сейчас пропуская, потому что перед чтение этого поля надо собрать остальные данные
+			pDrawingProperty->sGraphicFrameContent = graphicFrame.toXML2();
 		}
-		res = c_oSerConstants::ReadUnknown;
 	}
 	else if ( c_oSerImageType2::BehindDoc == type )
 	{
@@ -8511,11 +8460,12 @@ int Binary_DocumentTableReader::ReadEmbedded(BYTE type, long length, void* poRes
 
 			std::wstring strDstEmbeddedTempThemePath = strDstEmbeddedTempXl + FILE_SEPARATOR_STR + L"theme";
 			std::wstring strDstEmbeddedTempDrawingPath = strDstEmbeddedTempXl + FILE_SEPARATOR_STR + L"drawings";
-			
+			std::wstring strDstEmbeddedTempEmbeddingsPath = strDstEmbeddedTempXl + FILE_SEPARATOR_STR + L"embeddings";
+
 			int id = m_oFileWriter.m_oChartWriter.nEmbeddedCount++;
 
 			std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring( id + 1) + L".xlsx";
-			BinXlsxRW::SaveParams oSaveParams(strDstEmbeddedTempDrawingPath, strDstEmbeddedTempThemePath, m_oFileWriter.m_pDrawingConverter->GetContentTypes());//???
+			BinXlsxRW::SaveParams oSaveParams(strDstEmbeddedTempDrawingPath, strDstEmbeddedTempEmbeddingsPath, strDstEmbeddedTempThemePath, m_oFileWriter.m_pDrawingConverter->GetContentTypes());//???
 			
 			OOX::Spreadsheet::CXlsx oXlsx;
 

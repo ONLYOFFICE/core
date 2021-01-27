@@ -319,7 +319,7 @@ namespace PPTX
 					XmlUtils::CXmlNodes oNodesC;
 					std::wstring sRequires;
 					//todo better check (a14 can be math, slicer)
-					if(oNodeChoice.GetAttributeIfExist(L"Requires", sRequires) && L"a14" == sRequires)
+					if(oNodeChoice.GetAttributeIfExist(L"Requires", sRequires) && (L"a14" == sRequires || L"cx1" == sRequires))
 					{
 						oNodeChoice.GetNodes(L"*", oNodesC);
 					}

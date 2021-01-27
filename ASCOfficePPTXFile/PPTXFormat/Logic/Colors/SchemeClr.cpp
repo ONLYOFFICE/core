@@ -186,5 +186,47 @@ namespace PPTX
 			red		= static_cast<unsigned char>((RGB & 0xFF0000)>>16);
 			alpha	= static_cast<unsigned char>((RGB & 0xFF000000)>>24);
 		}
+//--------------------------------------------------------------------------------
+		void StyleClr::fromXML(XmlUtils::CXmlNode& node)
+		{
+			std::wstring sVal = node.GetAttribute(_T("val"));
+
+			if (sVal == L"auto") bAuto = true;
+			else if (false == sVal.empty()) val = sVal;
+
+			Modifiers.clear();
+			XmlMacroLoadArray(node, _T("*"), Modifiers, ColorModifier);
+		}
+		void StyleClr::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if (oReader.IsEmptyNode())
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nCurDepth))
+			{
+				std::wstring strName = oReader.GetName();
+
+				ColorModifier m;
+				Modifiers.push_back(m);
+				Modifiers.back().fromXML(oReader);
+			}
+		}
+
+		std::wstring StyleClr::toXML() const
+		{
+			XmlUtils::CNodeValue oValue;
+			oValue.WriteArray(Modifiers);
+			
+			XmlUtils::CAttribute oAttr;
+			if (val.IsInit())
+				oAttr.Write(L"val", *val);
+			else if (bAuto)
+				oAttr.Write(L"val", std::wstring(L"auto"));
+
+			return XmlUtils::CreateNode(L"cs:styleClr", oAttr, oValue);
+		}
 	} // namespace Logic
 } // namespace PPTX

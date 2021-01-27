@@ -36,7 +36,7 @@
 #include "../utils.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/ChartDrawing.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Chart/ChartDrawing.h"
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Chart/Chart.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Slide.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTreeElem.h"
@@ -105,7 +105,7 @@ void OoxConverter::convert(PPTX::Logic::GraphicFrame *oox_graphic_frame)
 {
 	if (!oox_graphic_frame)return;
 
-	convert(&oox_graphic_frame->nvGraphicFramePr);		
+	convert(oox_graphic_frame->nvGraphicFramePr.GetPointer());
 	convert(oox_graphic_frame->xfrm.GetPointer());		
 	
 	if ( oox_graphic_frame->chartRec.is_init())
@@ -440,8 +440,8 @@ void OoxConverter::convert(PPTX::Logic::ChartRec *oox_chart)
 	smart_ptr<OOX::File> oFile = find_file_by_id (oox_chart->id_data->get());
 	if (oFile.IsInit())
 	{
-		OOX::Spreadsheet::CChartSpace* pChart = dynamic_cast<OOX::Spreadsheet::CChartSpace*>(oFile.GetPointer());
-		OOX::Spreadsheet::CChartSpaceEx* pChartEx = dynamic_cast<OOX::Spreadsheet::CChartSpaceEx*>(oFile.GetPointer());
+		OOX::Spreadsheet::CChartFile* pChart = dynamic_cast<OOX::Spreadsheet::CChartFile*>(oFile.GetPointer());
+		OOX::Spreadsheet::CChartExFile* pChartEx = dynamic_cast<OOX::Spreadsheet::CChartExFile*>(oFile.GetPointer());
 		
 		if (pChart || pChartEx)
 		{

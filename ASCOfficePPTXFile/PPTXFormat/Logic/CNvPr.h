@@ -314,7 +314,7 @@ namespace PPTX
 
 			std::wstring		m_namespace;
 
-			int					id;
+			int					id = -1;
 			std::wstring		name;
 			nullable_string		descr;
 			nullable_bool		hidden;

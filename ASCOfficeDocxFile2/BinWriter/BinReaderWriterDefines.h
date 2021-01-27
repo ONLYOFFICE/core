@@ -639,9 +639,7 @@ extern int g_nCurFormatVersion;
 		WrapThrough = 20,
 		WrapTight = 21,
 		WrapTopAndBottom = 22,
-		Chart = 23,
-		ChartImg = 24,
-		Chart2 = 25,
+		Chart = 25,
 		CachedImage = 26,
 		SizeRelH = 27,
 		SizeRelV = 28,
@@ -651,7 +649,8 @@ extern int g_nCurFormatVersion;
 		DistBEmu = 32,
 		DistLEmu = 33,
 		DistREmu = 34,
-		DistTEmu = 35
+		DistTEmu = 35,
+		ChartEx = 36
 	};}
 	namespace c_oSerEffectExtent{enum c_oSerEffectExtent
 	{

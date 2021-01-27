@@ -432,9 +432,6 @@
     <ClInclude Include="..\Source\XlsxFormat\Chart\Chart.h">
       <Filter>XlsxFormat\Chart</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\DocxFormat\ChartDrawing.h">
-      <Filter>XlsxFormat\Chart</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Chart\ChartSerialize.h">
       <Filter>XlsxFormat\Chart</Filter>
     </ClInclude>
@@ -690,6 +687,15 @@
     <ClInclude Include="..\Source\DocxFormat\WritingElement.h" />
     <ClInclude Include="..\Source\DocxFormat\Logic\DocParts.h">
       <Filter>Logic\DocParts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Chart\ChartStyle.h">
+      <Filter>XlsxFormat\Chart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Chart\ChartColors.h">
+      <Filter>XlsxFormat\Chart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Chart\ChartDrawing.h">
+      <Filter>XlsxFormat\Chart</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

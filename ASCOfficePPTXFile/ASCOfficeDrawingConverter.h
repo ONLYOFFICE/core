@@ -212,7 +212,6 @@ namespace NSBinPptxRW
         std::wstring                                        m_strFontDirectory;
 
 		CDrawingConverter();
-
 		~CDrawingConverter();
 
 		void							SetRels(OOX::IFileContainer *container);
@@ -264,9 +263,6 @@ namespace NSBinPptxRW
 		void Registration			(const std::wstring& sType, const std::wstring& oDirectory, const std::wstring& oFilename);
 
         void SetFontManager         (NSFonts::IFontManager* pFontManager);
-
-        void SetDocumentChartsCount (int val);
-        int  GetDocumentChartsCount ();
 
         OOX::CContentTypes* GetContentTypes();
 	protected:

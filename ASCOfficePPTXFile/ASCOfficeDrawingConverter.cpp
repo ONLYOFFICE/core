@@ -5967,15 +5967,6 @@ HRESULT CDrawingConverter::GetAdditionalParam(const std::wstring& ParamName, BYT
     return S_OK;
 }
 
-void CDrawingConverter::SetDocumentChartsCount (int val)
-{
-    m_pReader->m_lChartNumber = val + 1;
-}
-int CDrawingConverter::GetDocumentChartsCount ()
-{
-    return m_pReader->m_lChartNumber - 1;
-}
-
 OOX::CContentTypes* CDrawingConverter::GetContentTypes()
 {
 	return m_pImageManager->m_pContentTypes;

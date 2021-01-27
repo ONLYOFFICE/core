@@ -341,7 +341,7 @@ namespace PPTX
 								oDrawingConverter.SetMainDocument(&oDocxSerializer);
 				
 								//oDocxSerializer.m_pParamsWriter = new BinDocxRW::ParamsWriter(oDrawingConverter.m_pBinaryWriter, &oFontProcessor, &oDrawingConverter, NULL);
-								oDocxSerializer.m_pCurFileWriter = new Writers::FileWriter(L"", L"", false, 111, false, &oDrawingConverter, L"");
+								oDocxSerializer.m_pCurFileWriter = new Writers::FileWriter(L"", L"", false, 111, &oDrawingConverter, L"");
 
 								oDocxSerializer.getXmlContentElem(OOX::et_m_oMathPara, *pReader, sXmlContent);
 							}
@@ -355,7 +355,7 @@ namespace PPTX
 						{
 							m_OleObjectFile = new OOX::OleObject(NULL, true, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
 
-							int id = pReader->m_lChartNumber++; //todoooo -> countEmbeddedObjects
+							int id = pReader->m_nCountEmbedded++;
 							
 							BinDocxRW::CDocxSerializer		oDocxSerializer;
 							NSBinPptxRW::CDrawingConverter	oDrawingConverter;
@@ -377,7 +377,7 @@ namespace PPTX
 				
 							NSBinPptxRW::CBinaryFileReader& oBufferedStream = *oDrawingConverter.m_pReader;
 				
-							oDocxSerializer.m_pCurFileWriter = new Writers::FileWriter(sDstEmbeddedTemp, L"", false, 111, false, &oDrawingConverter, sThemePath);
+							oDocxSerializer.m_pCurFileWriter = new Writers::FileWriter(sDstEmbeddedTemp, L"", false, 111, &oDrawingConverter, sThemePath);
 
 							BinDocxRW::BinaryFileReader oBinaryFileReader(pReader->m_strFolder, oBufferedStream, *oDocxSerializer.m_pCurFileWriter);
 							oBinaryFileReader.ReadFile();
@@ -418,7 +418,7 @@ namespace PPTX
 						{
 							m_OleObjectFile = new OOX::OleObject(NULL, true, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
 
-							int id = pReader->m_lChartNumber++; //todoooo -> countEmbeddedObjects
+							int id = pReader->m_nCountEmbedded++; //todoooo -> countEmbeddedObjects
 							
 							OOX::Spreadsheet::CXlsx			oXlsx;
 							BinXlsxRW::BinaryFileReader		oEmbeddedReader;				
@@ -426,8 +426,9 @@ namespace PPTX
 
 							std::wstring sDrawingsPath = sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl" + FILE_SEPARATOR_STR + L"drawings";
 							std::wstring sThemePath = sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl" + FILE_SEPARATOR_STR + L"theme";
+							std::wstring sEmbeddingsPath = sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl" + FILE_SEPARATOR_STR + L"embeddings";
 
-							BinXlsxRW::SaveParams oSaveParams(sDrawingsPath, sThemePath, oDrawingConverter.GetContentTypes());							
+							BinXlsxRW::SaveParams oSaveParams(sDrawingsPath, sEmbeddingsPath, sThemePath, oDrawingConverter.GetContentTypes());
 
 							std::wstring sXmlOptions, sMediaPath, sEmbedPath;
 							BinXlsxRW::CXlsxSerializer::CreateXlsxFolders (sXmlOptions, sDstEmbeddedTemp, sMediaPath, sEmbedPath);

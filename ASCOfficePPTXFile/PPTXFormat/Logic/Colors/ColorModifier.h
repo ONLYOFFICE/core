@@ -30,9 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_COLORMODIFIER_INCLUDE_H_
-#define PPTX_LOGIC_COLORMODIFIER_INCLUDE_H_
-
 #include "./../../WrapperWritingElement.h"
 
 namespace PPTX
@@ -86,7 +83,7 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				name	= node.GetName();
+				name = node.GetName();
 				XmlMacroReadAttributeBase(node, L"val", val);
 
 				if (XmlUtils::GetNameNoNS(name) == _T("alpha"))
@@ -122,32 +119,50 @@ namespace PPTX
 				pWriter->WriteInt2(1, val);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
+				pReader->Skip(1); // start attributes
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					if (0 == _at)
+						name = pReader->GetString2();
+					else if (1 == _at)
+						val = pReader->GetLong();
+					else
+						break;
+				}
+				pReader->Seek(_end_rec);
+			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{				
 				std::wstring _name;
 				std::wstring sAttrNamespace;
 				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
 				{
-					_name = _T("w14:") + XmlUtils::GetNameNoNS(name);
-					sAttrNamespace = _T("w14:");
+					_name = L"w14:" + XmlUtils::GetNameNoNS(name);
+					sAttrNamespace = L"w14:";
 				}
 				else
 					_name = name;
 				pWriter->StartNode(_name);
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(sAttrNamespace + _T("val"), val);
+				pWriter->WriteAttribute(sAttrNamespace + L"val", val);
 				pWriter->EndAttributes();
 				pWriter->EndNode(_name);
 			}
 
 		public:
-			std::wstring			name;
+			std::wstring	name;
 			nullable_int	val;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_COLORMODIFIER_INCLUDE_H

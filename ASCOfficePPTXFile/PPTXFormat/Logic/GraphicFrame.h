@@ -85,7 +85,7 @@ namespace PPTX
 
 			std::wstring			m_namespace;
 
-			NvGraphicFramePr		nvGraphicFramePr;
+			nullable<NvGraphicFramePr> nvGraphicFramePr;
 
 			nullable<Xfrm>			xfrm;
 

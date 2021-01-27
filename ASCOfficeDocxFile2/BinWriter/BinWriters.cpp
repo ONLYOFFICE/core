@@ -6398,7 +6398,7 @@ void BinaryDocumentTableWriter::WriteDrawing(std::wstring* pXml, OOX::Logic::CDr
 	{
 		if (pGraphic->chartRec.IsInit() && pGraphic->chartRec->id_data.IsInit() )
 		{
-			m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::Chart2);
+			m_oBcw.m_oStream.WriteBYTE(pGraphic->chartRec->m_bChartEx ? c_oSerImageType2::ChartEx : c_oSerImageType2::Chart);
 			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 
 			int nCurPos = m_oBcw.WriteItemWithLengthStart();
@@ -6464,11 +6464,12 @@ void BinaryDocumentTableWriter::WriteDrawing(std::wstring* pXml, OOX::Logic::CDr
 					WriteEffectExtent(pInline.m_oEffectExtent.get());
 					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				}
+				if (pInline.m_oGraphic.nvGraphicFramePr.IsInit())
 				{
 					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::GraphicFramePr);
 					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 					nCurPos = m_oBcw.WriteItemWithLengthStart();
-					WriteNvGraphicFramePr(pInline.m_oGraphic.nvGraphicFramePr);
+					WriteNvGraphicFramePr(pInline.m_oGraphic.nvGraphicFramePr.get());
 					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				}
 				if(pInline.m_oDocPr.IsInit())
@@ -6647,11 +6648,12 @@ void BinaryDocumentTableWriter::WriteDrawing(std::wstring* pXml, OOX::Logic::CDr
 				WriteWrapTopBottom(pAnchor.m_oWrapTopAndBottom.get());
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
+			if (pAnchor.m_oGraphic.nvGraphicFramePr.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::GraphicFramePr);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 				nCurPos = m_oBcw.WriteItemWithLengthStart();
-				WriteNvGraphicFramePr(pAnchor.m_oGraphic.nvGraphicFramePr);
+				WriteNvGraphicFramePr(pAnchor.m_oGraphic.nvGraphicFramePr.get());
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 			if(pAnchor.m_oDocPr.IsInit())

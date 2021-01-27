@@ -459,7 +459,7 @@ void CPPTUserInfo::ReadExtenalObjects(std::wstring strFolderMem)
     std::vector<CRecordExObjListContainer*> oArrayExObjects;
     m_oDocument.GetRecordsByType(&oArrayExObjects, false, true);
 
-    if (0 != oArrayExObjects.size())
+    if (!oArrayExObjects.empty())
     {
         LoadExternal(oArrayExObjects[0]);
     }
@@ -2271,7 +2271,7 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
     std::vector<CRecordSoundCollectionContainer*> oArrayCollection;
     m_oDocument.GetRecordsByType(&oArrayCollection, false, true);
 
-    if (0 != oArrayCollection.size())
+    if (!oArrayCollection.empty())
     {
         std::vector<CRecordSoundContainer*> oArraySounds;
         oArrayCollection[0]->GetRecordsByType(&oArraySounds, false);
@@ -2294,8 +2294,6 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
                 oInfo.m_dwID		= (_UINT32)XmlUtils::GetInteger(oArrayStrings[2]->m_strText.c_str());
 
                 oArrayData[0]->SaveToFile(oInfo.m_strFilePath);
-
-                m_oExMedia.m_arAudioCollection.push_back(oInfo);
             }
         }
     }

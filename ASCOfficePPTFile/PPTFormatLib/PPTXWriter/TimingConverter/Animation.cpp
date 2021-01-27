@@ -400,7 +400,7 @@ void Animation::FillAudio(CRecordClientVisualElementContainer *pCVEC,
     if (pCVEC->m_bVisualShapeAtom)
     {
         oAudio.cMediaNode.tgtEl.embed =
-                new OOX::RId(pCVEC->m_oVisualShapeAtom.m_nObjectIdRef + 1);
+                new OOX::RId(pCVEC->m_oVisualShapeAtom.m_nObjectIdRef + 2);
 
         std::vector<CRecordSoundContainer*> soundCont;
         this->m_pSoundContainer->GetRecordsByType(

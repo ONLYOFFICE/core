@@ -339,7 +339,7 @@ namespace PPT_FORMAT
 			std::wstring strMedia = m_pManager->FindMedia(strMediaPath);
 
 			if (strMedia.empty())	return WriteHyperlinkMedia(CorrectXmlString3(strMediaPath), true, true);			
-									return WriteHyperlinkMedia(strMedia, false, true);
+                                    return WriteHyperlinkMedia(strMedia, false, false); // changed
 		}
 		inline std::wstring WriteImage(const std::wstring& strImagePath)
 		{

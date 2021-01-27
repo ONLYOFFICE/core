@@ -1638,7 +1638,7 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertShape()
 	CImageElement* pImageElement = dynamic_cast<CImageElement*>(m_pElement.get());
 	CGroupElement* pGroupElement = dynamic_cast<CGroupElement*>(m_pElement.get());
 	CShapeElement* pShapeElement = dynamic_cast<CShapeElement*>(m_pElement.get());
-	
+
 	if (pImageElement) return ConvertImage();
 	if (pGroupElement) return ConvertGroup();
 

@@ -30,7 +30,9 @@ function CNativeGraphics()
     this.AutoCheckLineWidth       = false;
     this.m_bBrushColorInit        = false;
     this.m_bPenColorInit          = false;
+    this.Start_Command            = false;
     this.IsClipContext            = false;
+    this.End_Command              = false;
     this.IsUseFonts2              = false;
     this.IsThumbnail              = false;
     this.updatedRect              = false;
@@ -213,10 +215,61 @@ CNativeGraphics.prototype =
     },
     SetTextPr : function(textPr, theme)
     {
+        this.m_oTextPr = textPr;
+        if (theme) {
+            this.m_oGrFonts.checkFromTheme(theme.themeElements.fontScheme, this.m_oTextPr.RFonts);
+        } else {
+            this.m_oGrFonts = this.m_oTextPr.RFonts;
+        }
         // this.Native["SetTextPr"](textPr, theme);
     },
     SetFontSlot : function(slot, fontSizeKoef)
     {
+        var _rfonts = this.m_oGrFonts;
+        var _lastFont = this.m_oFontSlotFont;
+        switch(slot) {
+            case fontslot_ASCII:
+            {
+                _lastFont.Name = _rfonts.Ascii.Name;
+                _lastFont.Size = this.m_oTextPr.FontSize;
+                _lastFont.Bold = this.m_oTextPr.Bold;
+                _lastFont.Italic = this.m_oTextPr.Italic;
+                break;
+            }
+            case fontslot_CS:
+            {
+                _lastFont.Name = _rfonts.CS.Name;
+                _lastFont.Size = this.m_oTextPr.FontSizeCS;
+                _lastFont.Bold = this.m_oTextPr.BoldCS;
+                _lastFont.Italic = this.m_oTextPr.ItalicCS;
+                break;
+            }
+            case fontslot_EastAsia:
+            {
+                  _lastFont.Name = _rfonts.EastAsia.Name;
+                  _lastFont.Size = this.m_oTextPr.FontSize;
+                  _lastFont.Bold = this.m_oTextPr.Bold;
+                  _lastFont.Italic = this.m_oTextPr.Italic;
+                  break;
+            }
+            case fontslot_HAnsi:
+            default:
+            {
+                _lastFont.Name = _rfonts.HAnsi.Name;
+                _lastFont.Size = this.m_oTextPr.FontSize;
+                _lastFont.Bold = this.m_oTextPr.Bold;
+                _lastFont.Italic = this.m_oTextPr.Italic;
+                break;
+            }
+        }
+        if (undefined !== fontSizeKoef) {
+            _lastFont.Size *= fontSizeKoef;
+        }
+        this.m_oFontTmp.FontFamily.Name = _lastFont.Name;
+        this.m_oFontTmp.Bold = _lastFont.Bold;
+        this.m_oFontTmp.Italic = _lastFont.Italic;
+        this.m_oFontTmp.FontSize = _lastFont.Size;
+        this.SetFont(this.m_oFontTmp);
         // this.Native["SetFontSlot"](slot, fontSizeKoef);
     },
     GetTextPr : function()

@@ -305,13 +305,15 @@ void BinaryCommonWriter::WriteShd(const ComplexTypes::Word::CShading& Shd)
 		m_oStream.WriteBYTE(Shd.m_oVal.get().GetValue()); //Misalignment-footer.doc
 
 	}
-	//Value
-	if (false != Shd.m_oFill.IsInit())
-		WriteColor(c_oSerShdType::Color, Shd.m_oFill.get());
-	else if (false != Shd.m_oColor.IsInit())
+	//Color
+	if (false != Shd.m_oColor.IsInit())
 		WriteColor(c_oSerShdType::Color, Shd.m_oColor.get());
-
+	
 	WriteThemeColor(c_oSerShdType::ColorTheme, Shd.m_oFill, Shd.m_oThemeFill, Shd.m_oThemeFillTint, Shd.m_oThemeFillShade);
+
+	//Fill
+	if (false != Shd.m_oFill.IsInit())
+		WriteColor(c_oSerShdType::Fill, Shd.m_oFill.get());
 }
 void BinaryCommonWriter::WritePaddings(const nullable<SimpleTypes::CTwipsMeasure>& left, const nullable<SimpleTypes::CTwipsMeasure>& top,
 	const nullable<SimpleTypes::CTwipsMeasure>& right, const nullable<SimpleTypes::CTwipsMeasure>& bottom)
@@ -6343,7 +6345,7 @@ void BinaryDocumentTableWriter::WriteDrawing(std::wstring* pXml, OOX::Logic::CDr
 	{
 		if (pGraphic->chartRec.IsInit() && pGraphic->chartRec->id_data.IsInit() )
 		{
-			m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::Chart2);
+			m_oBcw.m_oStream.WriteBYTE(pGraphic->chartRec->m_bChartEx ? c_oSerImageType2::ChartEx : c_oSerImageType2::Chart);
 			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 
 			int nCurPos = m_oBcw.WriteItemWithLengthStart();
@@ -6409,11 +6411,12 @@ void BinaryDocumentTableWriter::WriteDrawing(std::wstring* pXml, OOX::Logic::CDr
 					WriteEffectExtent(pInline.m_oEffectExtent.get());
 					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				}
+				if (pInline.m_oGraphic.nvGraphicFramePr.IsInit())
 				{
 					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::GraphicFramePr);
 					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 					nCurPos = m_oBcw.WriteItemWithLengthStart();
-					WriteNvGraphicFramePr(pInline.m_oGraphic.nvGraphicFramePr);
+					WriteNvGraphicFramePr(pInline.m_oGraphic.nvGraphicFramePr.get());
 					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				}
 				if(pInline.m_oDocPr.IsInit())
@@ -6592,11 +6595,12 @@ void BinaryDocumentTableWriter::WriteDrawing(std::wstring* pXml, OOX::Logic::CDr
 				WriteWrapTopBottom(pAnchor.m_oWrapTopAndBottom.get());
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
+			if (pAnchor.m_oGraphic.nvGraphicFramePr.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::GraphicFramePr);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 				nCurPos = m_oBcw.WriteItemWithLengthStart();
-				WriteNvGraphicFramePr(pAnchor.m_oGraphic.nvGraphicFramePr);
+				WriteNvGraphicFramePr(pAnchor.m_oGraphic.nvGraphicFramePr.get());
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 			if(pAnchor.m_oDocPr.IsInit())
@@ -7836,6 +7840,12 @@ void BinaryDocumentTableWriter::WriteSdtTextFormPr(const OOX::Logic::CTextFormPr
 		m_oBcw.m_oStream.WriteLONG(oTextFormPr.m_oMaxCharacters->m_oVal.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if(oTextFormPr.m_oCombBorder.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrCombBorder);
+		m_oBcw.WriteBorder(oTextFormPr.m_oCombBorder.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }
 void BinaryDocumentTableWriter::WriteSdtTextFormPrComb(const ComplexTypes::Word::CComb& oComb)
 {
@@ -8265,6 +8275,14 @@ void BinarySettingsTableWriter::WriteSettingsContent(OOX::CSettings& oSettings, 
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::SdtGlobalShowHighlight);
 		m_oBcw.m_oStream.WriteBOOL(oSettingsCustom.m_oSdtGlobalShowHighlight->m_oVal.ToBool());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oSettingsCustom.m_oSpecialFormsHighlight.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::SpecialFormsHighlight);
+		OOX::Logic::CRunProperty oRPr;
+		oRPr.m_oColor = oSettingsCustom.m_oSpecialFormsHighlight;
+		brPrs.Write_rPr(&oRPr);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 };

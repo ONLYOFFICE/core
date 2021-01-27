@@ -327,7 +327,6 @@ namespace BinXlsxRW
 	private:
 		BinaryCommonWriter* m_oBcw;
 		int m_nLastFilePos;
-		int m_nLastFilePosOffset;
 		int m_nRealTableCount;
 		int m_nMainTableStart;
 		DocWrapper::FontProcessor& m_oFontProcessor;
@@ -338,11 +337,14 @@ namespace BinXlsxRW
             NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions, bool bIsNoBase64);
 		
 		void intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinaryFileWriter &oBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter);
- 	private:
-       std::wstring WriteFileHeader(int nDataSize, int version);
+       
+		std::wstring WriteFileHeader(int nDataSize, int version);
+		int GetMainTableSize();
+	
+		int m_nLastFilePosOffset;
+	private:
 		void WriteMainTableStart();
 		void WriteMainTableEnd();
-		int GetMainTableSize();
 		int WriteTableStart(BYTE type, int nStartPos = -1);
 		void WriteTableEnd(int nCurPos);
 	};

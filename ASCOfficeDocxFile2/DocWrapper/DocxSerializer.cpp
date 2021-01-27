@@ -182,7 +182,6 @@ BinDocxRW::CDocxSerializer::CDocxSerializer()
 
 	m_bIsNoBase64Save	= false;
 	m_bIsNoBase64		= false;
-	m_bSaveChartAsImg	= false;
 }
 BinDocxRW::CDocxSerializer::~CDocxSerializer()
 {
@@ -407,7 +406,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, 
 				oDrawingConverter.SetMediaDstPath(sMediaPath);
 				oDrawingConverter.SetEmbedDstPath(sEmbedPath);
 				
-				m_pCurFileWriter = new Writers::FileWriter(sDstPath, m_sFontDir, false, nVersion, m_bSaveChartAsImg, &oDrawingConverter, sThemePath);
+				m_pCurFileWriter = new Writers::FileWriter(sDstPath, m_sFontDir, false, nVersion, &oDrawingConverter, sThemePath);
 
 	//папка с картинками
 				std::wstring strFileInDir = NSSystemPath::GetDirectoryName(sSrcFileName);
@@ -600,11 +599,6 @@ void BinDocxRW::CDocxSerializer::setIsNoBase64(bool bIsNoBase64)
 {
 	m_bIsNoBase64 = bIsNoBase64;
 }
-void BinDocxRW::CDocxSerializer::setSaveChartAsImg(bool bSaveChartAsImg)
-{
-	m_bSaveChartAsImg = bSaveChartAsImg;
-}
-
 bool BinDocxRW::CDocxSerializer::unpackageFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath)
 {
 	BinDocxRW::CPackageFile file;

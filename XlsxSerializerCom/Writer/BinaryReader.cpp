@@ -5450,7 +5450,7 @@ int BinaryWorksheetsTableReader::ReadCell(BYTE type, long length, void* poResult
 	{
 		int nRow = m_oBufferedStream.GetLong();
 		int nCol = m_oBufferedStream.GetLong();
-		pCell->setRowCol(nRow, nCol);
+		pCell->setRowCol(nRow - 1, nCol);
 	}
 	else if(c_oSerCellTypes::Style == type)
 	{
@@ -6906,12 +6906,16 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 			
 			std::wstring themePath = sDstPath + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultDirectory().GetPath();
 			std::wstring drawingsPath = sDstPath + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Drawings.DefaultDirectory().GetPath();
-           
+			std::wstring embeddingsPath = sDstPath + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::FileTypes::MicrosoftOfficeUnknown.DefaultDirectory().GetPath();
+			std::wstring chartsPath = sDstPath + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::FileTypes::Chart.DefaultDirectory().GetPath();
+
+			oBufferedStream.m_pRels->m_pManager->SetDstCharts(chartsPath);
+			
 			bResultOk = true;
 			
 			if(BinXlsxRW::c_oFileTypes::XLSX == fileType)
 			{
-				SaveParams oSaveParams(drawingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), NULL);
+				SaveParams oSaveParams(drawingsPath, embeddingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), NULL);
 				
 				try
 				{
@@ -6929,7 +6933,7 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 			{
 				CSVWriter::CCSVWriter oCSVWriter(oXlsx, nCodePage, sDelimiter, false);
 				oCSVWriter.Start(sDstPathCSV);
-				SaveParams oSaveParams(drawingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), &oCSVWriter);
+				SaveParams oSaveParams(drawingsPath, embeddingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), &oCSVWriter);
 				
 				try
 				{

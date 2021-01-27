@@ -97,7 +97,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			m_oTxPr->m_name = L"cx:txPr";
 			writer.WriteString(m_oTxPr->toXML());
 		}
-		if(m_oClrMapOvr.IsInit())
+		if (m_oClrMapOvr.IsInit())
 		{
 			m_oClrMapOvr->m_name = L"cx:clrMapOvr";
 			writer.WriteString(m_oClrMapOvr->toXML());
@@ -156,7 +156,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 
 		if(m_legend.IsInit())
 		{
-            //m_legend->toXML(writer);
+            m_legend->toXML(writer);
 		}
 		if(m_oExtLst.IsInit())
 		{
@@ -185,6 +185,10 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 				CData *item = new CData(oReader);
 				m_arData.push_back(item);
 			}
+			else if (L"externalData" == sName)
+			{
+				m_externalData = oReader;
+			}
 			else if( L"extLst" == sName)
 			{
 				m_oExtLst = oReader;
@@ -195,7 +199,11 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 	{
 		writer.WriteString(L"<cx:chartData>");
 
-        for(size_t i = 0; i < m_arData.size(); ++i)
+		if (m_externalData.IsInit())
+		{
+			m_externalData->toXML(writer);
+		}  
+		for (size_t i = 0; i < m_arData.size(); ++i)
 		{
 			m_arData[i]->toXML(writer);
 		}
@@ -410,7 +418,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 	void CData::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		writer.WriteString(L"<cx:data");
-			WritingStringNullableAttrString(L"id", m_id, m_id->ToString());
+		WritingStringNullableAttrUInt(L"id", m_id, *m_id);
 		writer.WriteString(L">");
 
         for (size_t i = 0; i < m_arDimension.size(); ++i)
@@ -424,6 +432,29 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 		writer.WriteString(L"</cx:data>");
 	}
 	EElementType CData::getType() const {return et_ct_Data;}
+//----------------------------------------------------------------------------------------------
+	void CExternalData::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes(oReader);
+
+		if (oReader.IsEmptyNode())
+			return;
+	}
+	void CExternalData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start_No_NS(oReader)
+			WritingElement_ReadAttributes_Read_if(oReader, L"id", m_id)
+			WritingElement_ReadAttributes_Read_else_if(oReader, L"autoUpdate", m_autoUpdate)
+		WritingElement_ReadAttributes_End_No_NS(oReader)
+	}
+	void CExternalData::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<cx:externalData");
+			WritingStringNullableAttrString(L"r:id", m_id, *m_id);
+			WritingStringNullableAttrBool2(L"cx:autoUpdate", m_autoUpdate);
+		writer.WriteString(L"/>");
+	}
+	EElementType CExternalData::getType() const { return et_ct_ExternalData; }
 //------------------------------------------------------------------------------------------------
 	CPlotArea::~CPlotArea()
 	{
@@ -554,7 +585,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 	}
 	void CPlotSurface::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
-		writer.WriteString(L"<cx:PlotSurface>");
+		writer.WriteString(L"<cx:plotSurface>");
 
 		if (m_oSpPr.IsInit())
 		{
@@ -565,7 +596,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 		{
             writer.WriteString(m_oExtLst->toXMLWithNS(L"cx:"));
 		}
-		writer.WriteString(L"</cx:PlotSurface>");
+		writer.WriteString(L"</cx:plotSurface>");
 	}
 	EElementType CPlotSurface::getType() const {return et_ct_PlotSurface;}
 //------------------------------------------------------------------------------------------------
@@ -649,7 +680,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 	void CAxis::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		writer.WriteString(L"<cx:axis");
-			WritingStringNullableAttrString(L"id", m_id, m_id->ToString());
+			WritingStringNullableAttrUInt(L"id", m_id, *m_id);
 			WritingStringNullableAttrString(L"hidden", m_hidden, *m_hidden ? L"true" : L"false");
 		writer.WriteString(L">");
 		if(m_valScaling.IsInit())
@@ -927,23 +958,27 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			WritingStringNullableAttrString(L"uniqueId", m_sUniqueId, m_sUniqueId.get())
 			WritingStringNullableAttrInt(L"formatIdx", m_nFormatIdx, m_nFormatIdx.get())
 		writer.WriteString(L">");
-		if(m_dataId.IsInit())
-		{
-			writer.WriteString(L"<cx:dataId>");
-			writer.WriteString(m_dataId->ToString());
-			writer.WriteString(L"</cx:dataId>");
-		}
 		if (m_tx.IsInit())
 		{
 			m_tx->toXML(writer);
 		}
-		if (m_layoutPr.IsInit())
+		for (size_t i = 0; i < m_arDataPt.size(); i++)
 		{
-			m_layoutPr->toXML(writer);
-		}
+			m_arDataPt[i]->toXML(writer);
+		}	
 		if (m_dataLabels.IsInit())
 		{
 			m_dataLabels->toXML(writer);
+		}
+		if (m_dataId.IsInit())
+		{
+			writer.WriteString(L"<cx:dataId ");
+			writer.WriteString(m_dataId->ToString());
+			writer.WriteString(L"/>");
+		}
+		if (m_layoutPr.IsInit())
+		{
+			m_layoutPr->toXML(writer);
 		}
 		for (size_t i = 0; i < m_arAxisId.size(); i++)
 		{
@@ -951,10 +986,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			writer.WriteString(std::to_wstring(m_arAxisId[i]));
 			writer.WriteString(L"</cx:axisId>");
 		}
-		for (size_t i = 0; i < m_arDataPt.size(); i++)
-		{
-			m_arDataPt[i]->toXML(writer);
-		}
+
 		if (m_oSpPr.IsInit())
 		{
 			m_oSpPr->m_namespace = L"cx";
@@ -1161,7 +1193,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 	void CNumericLevel::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		writer.WriteString(L"<cx:lvl");
-			WritingStringNullableAttrInt(L"ptCount", m_ptCount,*m_ptCount)
+			WritingStringNullableAttrInt(L"ptCount", m_ptCount, *m_ptCount)
 			WritingStringNullableAttrString(L"formatCode", m_formatCode, *m_formatCode)
 			WritingStringNullableAttrString(L"name", m_name, *m_name)
 		writer.WriteString(L">");
@@ -1240,7 +1272,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 	void CStringLevel::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		writer.WriteString(L"<cx:lvl");
-			WritingStringNullableAttrInt(L"ptCount", m_ptCount,*m_ptCount)
+			WritingStringNullableAttrInt(L"ptCount", m_ptCount, *m_ptCount)
 			WritingStringNullableAttrString(L"name", m_name, *m_name)
 		writer.WriteString(L">");
 
@@ -1570,6 +1602,8 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 //----------------------------------------------------------------------------------------------
 	void CDataLabel::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
+		ReadAttributes(oReader);
+
 		if ( oReader.IsEmptyNode() )
 			return;
 		
@@ -1655,8 +1689,16 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			delete m_arDataLabelHidden[i];
         m_arDataLabelHidden.clear();
 	}
+	void CDataLabels::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start_No_NS(oReader)
+			WritingElement_ReadAttributes_Read_if(oReader, L"pos", m_pos)
+		WritingElement_ReadAttributes_End_No_NS(oReader)
+	}
 	void CDataLabels::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
+		ReadAttributes(oReader);
+
 		if ( oReader.IsEmptyNode() )
 			return;
 		
@@ -1702,7 +1744,10 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 
 	void CDataLabels::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
-		writer.WriteString(L"<cx:dataLabels>");
+		writer.WriteString(L"<cx:dataLabels");
+
+		WritingStringNullableAttrString(L"pos", m_pos, m_pos->ToString())
+		writer.WriteString(L">");
 
 		if (m_numFmt.IsInit())
 		{

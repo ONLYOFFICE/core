@@ -77,6 +77,53 @@ namespace PPTX
 			
 			return XmlUtils::CreateNode(_T("a:schemeClr"), oAttr, oValue);
 		}
+		void SchemeClr::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			std::wstring sNodeNamespace;
+			std::wstring sAttrNamespace;
+			if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
+			{
+				sNodeNamespace = _T("w14:");
+				sAttrNamespace = sNodeNamespace;
+			}
+			else
+				sNodeNamespace = _T("a:");
+			pWriter->StartNode(sNodeNamespace + _T("schemeClr"));
+
+			pWriter->StartAttributes();
+			pWriter->WriteAttribute(sAttrNamespace + _T("val"), val.get());
+			pWriter->EndAttributes();
+
+			size_t nCount = Modifiers.size();
+			for (size_t i = 0; i < nCount; ++i)
+				Modifiers[i].toXmlWriter(pWriter);
+
+			pWriter->EndNode(sNodeNamespace + _T("schemeClr"));
+		}
+		void SchemeClr::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->StartRecord(COLOR_TYPE_SCHEME);
+
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			pWriter->WriteLimit1(0, val);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+			ULONG len = (ULONG)Modifiers.size();
+			if (len != 0)
+			{
+				pWriter->StartRecord(0);
+				pWriter->WriteULONG(len);
+
+				for (ULONG i = 0; i < len; ++i)
+				{
+					pWriter->WriteRecord1(1, Modifiers[i]);
+				}
+
+				pWriter->EndRecord();
+			}
+
+			pWriter->EndRecord();
+		}
 
 		DWORD SchemeClr::GetRGBA(DWORD RGBA) const
 		{

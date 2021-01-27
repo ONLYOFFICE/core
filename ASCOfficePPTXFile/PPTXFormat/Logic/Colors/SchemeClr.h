@@ -60,29 +60,7 @@ namespace PPTX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"), val)
 				WritingElement_ReadAttributes_End_No_NS( oReader )
 			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				std::wstring sNodeNamespace;
-				std::wstring sAttrNamespace;
-				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
-				{
-					sNodeNamespace = _T("w14:");
-					sAttrNamespace = sNodeNamespace;
-				}
-				else
-					sNodeNamespace = _T("a:");
-				pWriter->StartNode(sNodeNamespace + _T("schemeClr"));
-						
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(sAttrNamespace + _T("val"), val.get());
-				pWriter->EndAttributes();
-
-				size_t nCount = Modifiers.size();
-				for (size_t i = 0; i < nCount; ++i)
-					Modifiers[i].toXmlWriter(pWriter);
-				
-				pWriter->EndNode(sNodeNamespace + _T("schemeClr"));
-			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 			virtual DWORD GetRGBA(DWORD RGBA) const;
 			virtual DWORD GetARGB(DWORD ARGB) const;
@@ -91,30 +69,7 @@ namespace PPTX
 
 			virtual DWORD GetRGBColor(NSCommon::smart_ptr<PPTX::Theme>& _oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& _oClrMap, DWORD ARGB = 0);
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(COLOR_TYPE_SCHEME);
-
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteLimit1(0, val);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				ULONG len = (ULONG)Modifiers.size();
-				if (len != 0)
-				{
-					pWriter->StartRecord(0);
-					pWriter->WriteULONG(len);
-
-					for (ULONG i = 0; i < len; ++i)
-					{
-						pWriter->WriteRecord1(1, Modifiers[i]);
-					}
-
-					pWriter->EndRecord();
-				}
-
-				pWriter->EndRecord();
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
 		public:
 			Limit::SchemeClrVal val;

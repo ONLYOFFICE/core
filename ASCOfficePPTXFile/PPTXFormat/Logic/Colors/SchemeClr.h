@@ -117,7 +117,7 @@ namespace PPTX
 				if (val.IsInit())
 					pWriter->WriteAttribute(L"val", *val);
 				else if (bAuto)
-					pWriter->WriteAttribute(L"val", L"auto");
+					pWriter->WriteAttribute(L"val", std::wstring(L"auto"));
 				pWriter->EndAttributes();
 
 				size_t nCount = Modifiers.size();

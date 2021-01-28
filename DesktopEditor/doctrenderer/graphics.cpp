@@ -228,19 +228,20 @@ std::wstring CGraphics::GetFont()
 }
 void CGraphics::SetFont(const std::wstring& name, int face, double size, int style)
 {
-    std::wcout << L"SetFont " << name << std::endl;
+    std::wcout << L"SetFont " << name << L"  " << face << L"  " << size << L"  " << style << std::endl;
     double DpiX, DpiY;
     m_pRenderer->get_DpiX(&DpiX);
     m_pRenderer->get_DpiY(&DpiY);
     m_pRenderer->GetFontManager()->LoadFontByName(name, size, style, DpiX, DpiY);
 
+    m_pRenderer->put_FontName     (name);
     m_pRenderer->put_FontFaceIndex(face);
     m_pRenderer->put_FontSize     (size);
     m_pRenderer->put_FontStyle    (style);
 }
 void CGraphics::FillText(double x, double y, int text)
 {
-    std::wcout << L"FillText " << text << L"  " << x << L"  " << y << std::endl;
+    std::wcout << L"FillText " << (wchar_t)text << L"  " << x << L"  " << y << std::endl;
     m_pRenderer->CommandDrawTextCHAR(text, x, y, 0, 0);
 }
 void CGraphics::t(double x, double y, const std::wstring& text)

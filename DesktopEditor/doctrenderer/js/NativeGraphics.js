@@ -20,8 +20,14 @@ function CNativeGraphics()
     this.ArrayPoints     = null;
     this.MaxEpsLine      = null;
     this.m_oContext      = null;
-    this.m_oGrFonts      = null;
     this.m_oTextPr       = null;
+
+    this.m_oGrFonts = {
+        Ascii    : {Name : "", Index : -1}, 
+        EastAsia : {Name : "", Index : -1}, 
+        HAnsi    : {Name : "", Index : -1}, 
+        CS       : {Name : "", Index : -1}
+    };
 
     this.RENDERER_PDF_FLAG   = true;
 
@@ -217,7 +223,7 @@ CNativeGraphics.prototype =
     SetTextPr : function(textPr, theme)
     {
         this.m_oTextPr = textPr;
-        if (theme && this.m_oGrFonts)
+        if (theme)
         {
             this.m_oGrFonts.Ascii.Name     = theme.themeElements.fontScheme.checkFont(this.m_oTextPr.RFonts.Ascii.Name);
             this.m_oGrFonts.EastAsia.Name  = theme.themeElements.fontScheme.checkFont(this.m_oTextPr.RFonts.EastAsia.Name);
@@ -251,7 +257,7 @@ CNativeGraphics.prototype =
                   _lastFont.FontFamily.Name = this.m_oGrFonts.EastAsia.Name;
                   _lastFont.FontSize = this.m_oTextPr.FontSize;
                   _lastFont.Bold     = this.m_oTextPr.Bold;
-                  _lastFont.Italic  = this.m_oTextPr.Italic;
+                  _lastFont.Italic   = this.m_oTextPr.Italic;
                   break;
             }
             case 2: // fontslot_CS
@@ -259,7 +265,7 @@ CNativeGraphics.prototype =
                 _lastFont.FontFamily.Name = this.m_oGrFonts.CS.Name;
                 _lastFont.FontSize = this.m_oTextPr.FontSizeCS;
                 _lastFont.Bold     = this.m_oTextPr.BoldCS;
-                _lastFont.Italic  = this.m_oTextPr.ItalicCS;
+                _lastFont.Italic   = this.m_oTextPr.ItalicCS;
                 break;
             }
             case 3: // fontslot_HAnsi
@@ -273,9 +279,9 @@ CNativeGraphics.prototype =
             }
         }
         if (undefined !== fontSizeKoef)
-		{
+        {
             _lastFont.FontSize *= fontSizeKoef;
-		}
+        }
         this.SetFont(_lastFont);
     },
     GetTextPr : function()
@@ -658,8 +664,8 @@ CNativeGraphics.prototype =
     {
         this.Native["DrawPath"](path);
     },
-	CoordTransformOffset : function(tx, ty)
-	{
-		this.Native["CoordTransformOffset"](tx, ty);
-	}
+    CoordTransformOffset : function(tx, ty)
+    {
+        this.Native["CoordTransformOffset"](tx, ty);
+    }
 };

@@ -719,6 +719,8 @@ public:
 	bool							bSeparators;
 	std::vector<_state>				current_template;
 
+	std::map<std::wstring, std::wstring> mapReferences;
+
 private:
 	std::vector<int>				current_content_template_;
 	int								current_content_template_index_;

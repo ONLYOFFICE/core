@@ -119,6 +119,7 @@ namespace NSGraphics
     FUNCTION_WRAPPER_V8  (_GetlineWidth,          GetlineWidth)
     FUNCTION_WRAPPER_V8_1(_DrawPath,              DrawPath)
     FUNCTION_WRAPPER_V8_2(_CoordTransformOffset,  CoordTransformOffset)
+    FUNCTION_WRAPPER_V8  (_GetTransform,          GetTransform)
 
     v8::Handle<v8::ObjectTemplate> CreateGraphicsTemplate(v8::Isolate* isolate)
     {
@@ -232,6 +233,7 @@ namespace NSGraphics
         NSV8Objects::Template_Set(result, "GetlineWidth",             _GetlineWidth);
         NSV8Objects::Template_Set(result, "DrawPath",                 _DrawPath);
         NSV8Objects::Template_Set(result, "CoordTransformOffset",     _CoordTransformOffset);
+        NSV8Objects::Template_Set(result, "GetTransform",             _GetTransform);
 
         return handle_scope.Escape(result);
     }

@@ -652,7 +652,7 @@ CNativeGraphics.prototype =
     {
         this.Native["put_TextureBounds"](x, y, w, h);
     },
-    GetlineWidth : function()
+    GetLineWidth : function()
     {
         return this.Native["GetlineWidth"]();
     },
@@ -667,5 +667,17 @@ CNativeGraphics.prototype =
     CoordTransformOffset : function(tx, ty)
     {
         this.Native["CoordTransformOffset"](tx, ty);
+    },
+    GetTransform : function()
+    {
+        var _trans = this.Native["GetTransform"]();
+        var _transform = new AscCommon.CMatrix;
+        _transform.sx  = _trans.sx;
+        _transform.shx = _trans.shx;
+        _transform.shy = _trans.shy;
+        _transform.sy  = _trans.sy;
+        _transform.tx  = _trans.tx;
+        _transform.ty  = _trans.ty;
+        return _transform;
     }
 };

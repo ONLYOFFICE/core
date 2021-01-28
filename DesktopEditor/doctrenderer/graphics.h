@@ -100,6 +100,16 @@ namespace NSGraphics
         int a;
     };
 
+    struct CTransform
+    {
+        double sx;
+        double shy;
+        double shx;
+        double sy;
+        double tx;
+        double ty;
+    };
+
     class CGraphics
     {
     public:
@@ -223,6 +233,7 @@ namespace NSGraphics
         double GetlineWidth();
         void DrawPath(int path);
         void CoordTransformOffset(double tx, double ty);
+        CTransform GetTransform();
     };
 }
 

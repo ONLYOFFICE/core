@@ -130,6 +130,7 @@ public:
     JSSmart<CJSValue> GetlineWidth();
     JSSmart<CJSValue> DrawPath(JSSmart<CJSValue> path);
     JSSmart<CJSValue> CoordTransformOffset(JSSmart<CJSValue> tx, JSSmart<CJSValue> ty);
+    JSSmart<CJSValue> GetTransform();
 
     static void CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context);
 };

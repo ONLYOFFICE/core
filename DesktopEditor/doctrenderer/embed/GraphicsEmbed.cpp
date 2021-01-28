@@ -542,3 +542,15 @@ JSSmart<CJSValue> CGraphicsEmbed::CoordTransformOffset(JSSmart<CJSValue> tx, JSS
     m_pInternal->CoordTransformOffset(tx->toDouble(), ty->toDouble());
     return NULL;
 }
+JSSmart<CJSValue> CGraphicsEmbed::GetTransform()
+{
+    JSSmart<CJSObject> e = CJSContext::createObject();
+    NSGraphics::CTransform res = m_pInternal->GetTransform();
+    e->set("sx",  res.sx);
+    e->set("shx", res.shx);
+    e->set("shy", res.shy);
+    e->set("sy",  res.sy);
+    e->set("tx",  res.tx);
+    e->set("ty",  res.ty);
+    return e->toValue();
+}

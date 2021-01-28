@@ -1189,4 +1189,10 @@ void CGraphics::CoordTransformOffset(double tx, double ty)
     std::cout << "CoordTransformOffset " << tx << "  " << ty << std::endl;
     m_pRenderer->SetCoordTransformOffset(tx, ty);
 }
+CTransform CGraphics::GetTransform()
+{
+    CTransform oRes;
+    m_pRenderer->GetTransform(&oRes.sx, &oRes.shy, &oRes.shx, &oRes.sy, &oRes.tx, &oRes.ty);
+    return oRes;
+}
 }

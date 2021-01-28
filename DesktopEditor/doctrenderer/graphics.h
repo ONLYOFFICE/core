@@ -224,7 +224,7 @@ namespace NSGraphics
         void put_brushTexture(std::wstring src);
         void put_brushTextureMode(int mode);
         void put_BrushTextureAlpha(int a);
-        void put_BrushGradient(int* pColors, double* pPositions, size_t nCount);
+        void put_BrushGradient(LONG* pColors, double* pPositions, size_t nCount, double x0, double y0, double x1, double y1, double r0, double r1);
         double TransformPointX(double x, double y);
         double TransformPointY(double x, double y);
         void put_LineJoin(int nJoin);

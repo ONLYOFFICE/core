@@ -627,7 +627,7 @@ CNativeGraphics.prototype =
     },
     put_BrushGradient : function(gradFill, points, transparent)
     {
-        this.Native["put_BrushGradient"](gradFill.colors, points, transparent);
+        this.Native["put_BrushGradient"](gradFill.colors, transparent, points.x0, points.y0, points.x1, points.y1, points.r0, points.r1);
     },
     TransformPointX : function(x, y)
     {

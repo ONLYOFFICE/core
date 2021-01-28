@@ -472,35 +472,43 @@ JSSmart<CJSValue> CGraphicsEmbed::put_BrushTextureAlpha(JSSmart<CJSValue> a)
     m_pInternal->put_BrushTextureAlpha(a->toInt32());
     return NULL;
 }
-JSSmart<CJSValue> CGraphicsEmbed::put_BrushGradient(JSSmart<CJSValue> colors, JSSmart<CJSValue> points, JSSmart<CJSValue> transparent)
+JSSmart<CJSValue> CGraphicsEmbed::put_BrushGradient(JSSmart<CJSValue> colors, JSSmart<CJSValue> transparent, JSSmart<CJSValue> x0, JSSmart<CJSValue> y0, JSSmart<CJSValue> x1, JSSmart<CJSValue> y1, JSSmart<CJSValue> r0, JSSmart<CJSValue> r1)
 {
     JSSmart<CJSArray> items = colors->toArray();
     size_t length = items->getCount();
-    int* color = NULL;
+    LONG* color = NULL;
+    double* pos = NULL;
     if(length > 0)
-        color = new int[length];
+    {
+        color = new LONG[length];
+        pos = new double[length];
+    }
     for(size_t i = 0; i < length; i++)
     {
         JSSmart<CJSObject> item = items->get(i)->toObject();
-        int R = item->get("R")->toInt32();
-        int G = item->get("G")->toInt32();
-        int B = item->get("B")->toInt32();
-        int A = item->get("A")->toInt32();
+        pos[i] = item->get("pos")->toDouble() / 100000.0;
+        LONG R = item->get("color")->toObject()->get("RGBA")->toObject()->get("R")->toInt32();
+        LONG G = item->get("color")->toObject()->get("RGBA")->toObject()->get("G")->toInt32();
+        LONG B = item->get("color")->toObject()->get("RGBA")->toObject()->get("B")->toInt32();
+        LONG A = item->get("color")->toObject()->get("RGBA")->toObject()->get("A")->toInt32();
         if(!transparent->isNull())
             A = transparent->toInt32();
         color[i] = R | (G << 8) | (B << 16) | (A << 24);
     }
 
-    JSSmart<CJSObject> point = points->toObject();
-    double* pos = new double[6];
-    pos[0] = point->get("x0")->toDouble();
-    pos[1] = point->get("y0")->toDouble();
-    pos[2] = point->get("x1")->toDouble();
-    pos[3] = point->get("y1")->toDouble();
-    pos[4] = point->get("r0")->toDouble();
-    pos[5] = point->get("r1")->toDouble();
+    double _x0 = x0->toDouble() / 100000.0;
+    double _y0 = y0->toDouble() / 100000.0;
+    double _x1 = x1->toDouble() / 100000.0;
+    double _y1 = y1->toDouble() / 100000.0;
+    double _r0 = NAN;
+    double _r1 = NAN;
+    if(!r0->isNull())
+    {
+        _r0 = r0->toDouble() / 100000.0;
+        _r1 = r1->toDouble() / 100000.0;
+    }
 
-    m_pInternal->put_BrushGradient(color, pos, length);
+    m_pInternal->put_BrushGradient(color, pos, length, _x0, _y0, _x1, _y1, _r0, _r1);
 
     RELEASEARRAYOBJECTS(color);
     RELEASEARRAYOBJECTS(pos);

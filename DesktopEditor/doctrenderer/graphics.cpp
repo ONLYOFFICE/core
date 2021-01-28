@@ -1,9 +1,12 @@
 #include "graphics.h"
+#include "../common/Base64.h"
 
 #include <string>
 #include <iostream>
 
-#include "../common/Base64.h"
+#ifndef M_PI
+#define M_PI       3.14159265358979323846
+#endif
 
 std::wstring NSGraphics::CGraphics::m_sApplicationFontsDirectory;
 std::wstring NSGraphics::CGraphics::m_sApplicationThemesDirectory;
@@ -1123,10 +1126,23 @@ void CGraphics::put_BrushTextureAlpha(int a)
     std::cout << "put_BrushTextureAlpha " << std::endl;
     m_pRenderer->put_BrushTextureAlpha(a == 0 ? 255 : a);
 }
-void CGraphics::put_BrushGradient(int* pColors, double* pPositions, size_t nCount)
+void CGraphics::put_BrushGradient(LONG* pColors, double* pPositions, size_t nCount, double x0, double y0, double x1, double y1, double r0, double r1)
 {
     std::cout << "put_BrushGradient " << std::endl;
-    m_pRenderer->put_BrushGradientColors((LONG *)pColors, pPositions, nCount);
+    if(isnan(r0))
+    {
+        double dX = x1 - x0, dY = y1 - y0;
+        double dHyp = sqrt(dX * dX + dY * dY);
+        double dAngle = acos(dX / dHyp) * 180 / M_PI;
+        m_pRenderer->put_BrushType(c_BrushTypePathGradient1);
+        m_pRenderer->put_BrushGradientColors(pColors, pPositions, nCount);
+        m_pRenderer->put_BrushLinearAngle(dAngle);
+    }
+    else
+    {
+        m_pRenderer->put_BrushType(c_BrushTypePathGradient2);
+        m_pRenderer->put_BrushGradientColors(pColors, pPositions, nCount);
+    }
 }
 double CGraphics::TransformPointX(double x, double y)
 {

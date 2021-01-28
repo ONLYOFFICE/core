@@ -110,7 +110,7 @@ namespace NSGraphics
     FUNCTION_WRAPPER_V8_1(_put_brushTexture,      put_brushTexture)
     FUNCTION_WRAPPER_V8_1(_put_brushTextureMode,  put_brushTextureMode)
     FUNCTION_WRAPPER_V8_1(_put_BrushTextureAlpha, put_BrushTextureAlpha)
-    FUNCTION_WRAPPER_V8_3(_put_BrushGradient,     put_BrushGradient)
+    FUNCTION_WRAPPER_V8_8(_put_BrushGradient,     put_BrushGradient)
     FUNCTION_WRAPPER_V8_2(_TransformPointX,       TransformPointX)
     FUNCTION_WRAPPER_V8_2(_TransformPointY,       TransformPointY)
     FUNCTION_WRAPPER_V8_1(_put_LineJoin,          put_LineJoin)

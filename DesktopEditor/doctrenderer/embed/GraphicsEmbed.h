@@ -121,7 +121,7 @@ public:
     JSSmart<CJSValue> put_brushTexture(JSSmart<CJSValue> src);
     JSSmart<CJSValue> put_brushTextureMode(JSSmart<CJSValue> mode);
     JSSmart<CJSValue> put_BrushTextureAlpha(JSSmart<CJSValue> a);
-    JSSmart<CJSValue> put_BrushGradient(JSSmart<CJSValue> colors, JSSmart<CJSValue> pos, JSSmart<CJSValue> n);
+    JSSmart<CJSValue> put_BrushGradient(JSSmart<CJSValue> colors, JSSmart<CJSValue> n, JSSmart<CJSValue> x0, JSSmart<CJSValue> y0, JSSmart<CJSValue> x1, JSSmart<CJSValue> y1, JSSmart<CJSValue> r0, JSSmart<CJSValue> r1);
     JSSmart<CJSValue> TransformPointX(JSSmart<CJSValue> x, JSSmart<CJSValue> y);
     JSSmart<CJSValue> TransformPointY(JSSmart<CJSValue> x, JSSmart<CJSValue> y);
     JSSmart<CJSValue> put_LineJoin(JSSmart<CJSValue> join);

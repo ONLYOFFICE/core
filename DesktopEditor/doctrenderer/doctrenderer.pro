@@ -38,7 +38,8 @@ SOURCES += \
     nativecontrol.cpp \
     doctrenderer.cpp \
     docbuilder.cpp \
-    docbuilder_p.cpp
+    docbuilder_p.cpp \
+    graphics.cpp
 
 SOURCES += \
     ../../Common/OfficeFileFormatChecker2.cpp \
@@ -49,15 +50,18 @@ SOURCES += \
 HEADERS += \
     docbuilder_p.h \
     memorystream.h \
-    nativecontrol.h
+    nativecontrol.h \
+    graphics.h
 
 HEADERS += \
+    embed/GraphicsEmbed.h \
     embed/MemoryStreamEmbed.h \
     embed/NativeControlEmbed.h \
     embed/NativeBuilderEmbed.h \
     js_internal/js_base.h
 
 SOURCES += \
+    embed/GraphicsEmbed.cpp \
     embed/MemoryStreamEmbed.cpp \
     embed/NativeControlEmbed.cpp \
     embed/NativeBuilderEmbed.cpp
@@ -68,7 +72,8 @@ SOURCES += \
     SOURCES += \
         embed/v8/v8_MemoryStream.cpp \
         embed/v8/v8_NativeControl.cpp \
-        embed/v8/v8_NativeBuilder.cpp
+        embed/v8/v8_NativeBuilder.cpp \
+		embed/v8/v8_Graphics.cpp
 
     !build_xp {
         include(../../Common/3dParty/v8/v8.pri)

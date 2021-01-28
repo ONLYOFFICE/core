@@ -54,6 +54,7 @@ CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder)
     m_context->CreateGlobalForContext();
     CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", m_context);
     CMemoryStreamEmbed::CreateObjectInContext  ("CreateNativeMemoryStream", m_context);
+    CGraphicsEmbed::CreateObjectInContext          ("CreateNativeGraphics", m_context);
     m_context->CreateContext();
 
     JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
@@ -199,6 +200,10 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
     {
         pNative->m_strFontsDirectory = sBasePath + L"/sdkjs/common";
         pNative->m_strImagesDirectory = path + L"/media";
+
+        NSGraphics::CGraphics::m_sApplicationFontsDirectory = pNative->m_strFontsDirectory;
+        NSGraphics::CGraphics::m_sApplicationImagesDirectory = pNative->m_strImagesDirectory;
+        NSGraphics::CGraphics::m_sApplicationThemesDirectory = sBasePath + L"/sdkjs/slide/themes";
 
         pNative->CheckFonts();
 

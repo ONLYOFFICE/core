@@ -39,8 +39,91 @@
 #include "../../Common/DocxFormat/Source/XlsxFormat/Styles/Styles.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Worksheet.h"
 
+#include <boost/date_time.hpp>
+
 namespace CSVWriter
 {
+	std::wstring convert_date_time (const std::wstring & sValue, const std::wstring & format_code, bool bDate = true, bool bTime = true)
+	{
+		double dTime = XmlUtils::GetDouble(sValue);
+		int iDate = (int)dTime;
+		dTime -= iDate;
+
+		std::wstring date_str, time_str;
+
+		// format_code todooo
+		try
+		{
+			if (bDate)
+			{
+				boost::gregorian::date date_ = boost::gregorian::date(1900, 1, 1) + boost::gregorian::date_duration(iDate - 2);
+
+				date_str = boost::lexical_cast<std::wstring>(date_.year())
+					+ L"-" +
+					(date_.month() < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(date_.month().as_number())
+					+ L"-" +
+					(date_.day() < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(date_.day());
+			}
+
+			if (bTime)
+			{
+				int hours = 0, minutes = 0;
+				double sec = 0;
+
+				boost::posix_time::time_duration day(24, 0, 0);
+
+				double millisec = day.total_milliseconds() * dTime;
+
+				sec = millisec / 1000.;
+				hours = sec / 60. / 60.;
+				minutes = (sec - (hours * 60 * 60)) / 60.;
+				sec = sec - (hours * 60 + minutes) * 60.;
+
+				time_str =
+					(hours < 10 ? L"0" : L"") + std::to_wstring(hours) + L":" +
+					(minutes < 10 ? L"0" : L"") + std::to_wstring(minutes) + L":" +
+					(sec < 10 ? L"0" : L"") + std::to_wstring((int)sec);
+			}
+		}
+		catch (...)
+		{
+			return sValue;
+		}
+		return (bDate ? date_str : L"") + (bDate & bTime ? L" " : L"" ) + (bTime ? time_str : L"");
+	}
+	long gcd(long a, long b)
+	{
+		if (a == 0)			return b;
+		else if (b == 0)	return a;
+
+		if (a < b)	return gcd(a, b % a);
+		else		return gcd(b, a % b);
+	}
+	std::wstring convert_fraction(const std::wstring & sValue)
+	{
+		double dValue = XmlUtils::GetDouble(sValue);
+
+		double integral = std::floor(dValue);
+		double frac = dValue - integral;
+
+		const long precision = 1000000000;
+
+		long gcd_ = gcd(round(frac * precision), precision);
+
+		long denominator = precision / gcd_;
+		long numerator = round(frac * precision) / gcd_;
+
+		return std::to_wstring((int)integral) + L" " + std::to_wstring(numerator) + L"/" + std::to_wstring(denominator);
+	}
+	std::wstring convert_scientific(const std::wstring & sValue)
+	{
+		double dValue = XmlUtils::GetDouble(sValue);
+
+		std::wstringstream strm;
+		strm << std::setprecision(2) << std::scientific << dValue;
+		return strm.str();
+	}
+//---------------------------------------------------------------------------------------------
 	static std::wstring g_sNewLineN = _T("\n");
 	static std::wstring g_sEndJson = _T("]");
 	static std::wstring g_sQuote = _T("\"");
@@ -266,6 +349,7 @@ namespace CSVWriter
 
 		// Get cell value
 		std::wstring sCellValue = _T("");
+		
 		if (pCell->m_oValue.IsInit())
 		{
 			if (pCell->m_oType.IsInit() && SimpleTypes::Spreadsheet::celltypeNumber != pCell->m_oType->GetValue())
@@ -290,7 +374,42 @@ namespace CSVWriter
 			}
 			else
 			{
-				sCellValue = pCell->m_oValue->ToString();
+				std::wstring format_code;
+				int format_type = SimpleTypes::Spreadsheet::celltypeNumber;
+
+				if (pCell->m_oStyle.IsInit() && m_oXlsx.m_pStyles)
+				{
+					int style = pCell->m_oStyle->GetValue();
+					OOX::Spreadsheet::CXfs* xfs = m_oXlsx.m_pStyles->m_oCellXfs->m_arrItems[style];
+					if (xfs)
+					{
+						if ((xfs->m_oApplyNumberFormat.IsInit()) && (xfs->m_oApplyNumberFormat->ToBool()))
+						{
+							if ((xfs->m_oNumFmtId.IsInit()) /*&& (xfs->m_oNumFmtId->GetValue() != 0*/)
+							{
+								int numFmt = xfs->m_oNumFmtId->GetValue();
+								//get default code
+
+								GetDefaultFormatCode(numFmt, format_code, format_type);
+								
+								if (m_oXlsx.m_pStyles->m_oNumFmts.IsInit())
+								{
+									std::map<unsigned int, size_t>::iterator pFind = m_oXlsx.m_pStyles->m_oNumFmts->m_mapNumFmtIndex.find(numFmt);
+									if (pFind != m_oXlsx.m_pStyles->m_oNumFmts->m_mapNumFmtIndex.end())
+									{
+										OOX::Spreadsheet::CNumFmt *fmt = m_oXlsx.m_pStyles->m_oNumFmts->m_arrItems[pFind->second];
+										if (fmt)
+										{
+											if (fmt->m_oFormatCode.IsInit())
+												format_code = *fmt->m_oFormatCode;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				sCellValue = ConvertValueCellToString(pCell->m_oValue->ToString(), format_type, format_code);
 			}
 		}
 
@@ -350,5 +469,86 @@ namespace CSVWriter
 	{
 		RELEASEARRAYOBJECTS(m_pWriteBuffer);
 		m_oFile.CloseFile();
+	}
+	void CCSVWriter::GetDefaultFormatCode(int numFmt, std::wstring & format_code, int & format_type)
+	{
+		switch (numFmt)
+		{
+		case 1:		format_code = L"0";					format_type = SimpleTypes::Spreadsheet::celltypeNumber; break;
+		case 2:		format_code = L"0.00";				format_type = SimpleTypes::Spreadsheet::celltypeNumber; break;
+		case 3:		format_code = L"#,##0";				format_type = SimpleTypes::Spreadsheet::celltypeNumber; break;
+		case 4:		format_code = L"#,##0.00";			format_type = SimpleTypes::Spreadsheet::celltypeNumber; break;
+
+		case 9:		format_code = L"0%";				format_type = SimpleTypes::Spreadsheet::celltypePercentage; break;
+		case 10:	format_code = L"0.00%";				format_type = SimpleTypes::Spreadsheet::celltypePercentage; break;
+
+		case 11:	format_code = L"0.00E+00";			format_type = SimpleTypes::Spreadsheet::celltypeScientific; break;
+		case 12:	format_code = L"# ?/?";				format_type = SimpleTypes::Spreadsheet::celltypeFraction; break;
+		case 13:	format_code = L"# ??/??";			format_type = SimpleTypes::Spreadsheet::celltypeFraction; break;
+
+		case 14:	format_code = L"mm-dd-yy";			format_type = SimpleTypes::Spreadsheet::celltypeDate; break;
+		case 15:	format_code = L"d-mmm-yy";			format_type = SimpleTypes::Spreadsheet::celltypeDate; break;
+		case 16:	format_code = L"d-mmm";				format_type = SimpleTypes::Spreadsheet::celltypeDate; break;
+		case 17:	format_code = L"mmm-yy";			format_type = SimpleTypes::Spreadsheet::celltypeDate; break;
+
+		case 18:	format_code = L"h:mm AM/PM";		format_type = SimpleTypes::Spreadsheet::celltypeTime; break;
+		case 19:	format_code = L"h:mm:ss AM/PM";		format_type = SimpleTypes::Spreadsheet::celltypeTime; break;
+		case 20:	format_code = L"h:mm";				format_type = SimpleTypes::Spreadsheet::celltypeTime; break;
+		case 21:	format_code = L"h:mm:ss";			format_type = SimpleTypes::Spreadsheet::celltypeTime; break;
+		case 22:	format_code = L"m/d/yy h:mm";		format_type = SimpleTypes::Spreadsheet::celltypeDateTime; break;
+
+		case 37:	format_code = L"#,##0 ;(#,##0)";		format_type = SimpleTypes::Spreadsheet::celltypeNumber; break;
+		case 38:	format_code = L"#,##0 ;[Red](#,##0)";	format_type = SimpleTypes::Spreadsheet::celltypeNumber; break;
+		case 39:	format_code = L"#,##0.00;(#,##0.00)";	format_type = SimpleTypes::Spreadsheet::celltypeNumber; break;
+		case 40:	format_code = L"#,##0.00;[Red](#,##0.00)"; format_type = SimpleTypes::Spreadsheet::celltypeNumber; break;
+
+		case 41:	format_code = L"";				format_type = SimpleTypes::Spreadsheet::celltypeCurrency; break;
+		case 42:	format_code = L"";				format_type = SimpleTypes::Spreadsheet::celltypeCurrency; break;
+
+		case 45:	format_code = L"mm:ss";			format_type = SimpleTypes::Spreadsheet::celltypeTime; break;
+		case 46:	format_code = L"[h]:mm:ss";		format_type = SimpleTypes::Spreadsheet::celltypeTime; break;
+		case 47:	format_code = L"mmss.0";		format_type = SimpleTypes::Spreadsheet::celltypeTime; break;
+
+		case 49:	format_code = L"@";				format_type = SimpleTypes::Spreadsheet::celltypeStr; break;
+
+		default:
+			/////////////////////////////////// с неопределенным format_code .. он задается в файле
+			if (numFmt >= 5 && numFmt <= 8)		format_type = SimpleTypes::Spreadsheet::celltypeCurrency;
+			if (numFmt >= 43 && numFmt <= 44)	format_type = SimpleTypes::Spreadsheet::celltypeCurrency;
+
+			if (numFmt >= 27 && numFmt <= 31)	format_type = SimpleTypes::Spreadsheet::celltypeDate;
+			if (numFmt >= 50 && numFmt <= 54)	format_type = SimpleTypes::Spreadsheet::celltypeDate;
+			if (numFmt >= 57 && numFmt <= 58)	format_type = SimpleTypes::Spreadsheet::celltypeDate;
+			if (numFmt == 36)					format_type = SimpleTypes::Spreadsheet::celltypeDate;
+
+			if (numFmt >= 32 && numFmt <= 35)	format_type = SimpleTypes::Spreadsheet::celltypeTime;
+			if (numFmt >= 55 && numFmt <= 56)	format_type = SimpleTypes::Spreadsheet::celltypeTime;
+
+			if (numFmt >= 60 && numFmt <= 62)	format_type = SimpleTypes::Spreadsheet::celltypeNumber;
+			if (numFmt >= 69 && numFmt <= 70)	format_type = SimpleTypes::Spreadsheet::celltypeNumber;
+
+			if (numFmt >= 67 && numFmt <= 68)	format_type = SimpleTypes::Spreadsheet::celltypePercentage;
+
+			if (numFmt >= 71 && numFmt <= 74)	format_type = SimpleTypes::Spreadsheet::celltypeDate;
+			if (numFmt >= 75 && numFmt <= 80)	format_type = SimpleTypes::Spreadsheet::celltypeTime;
+			if (numFmt == 81)					format_type = SimpleTypes::Spreadsheet::celltypeDate;
+		}
+	}
+	std::wstring CCSVWriter::ConvertValueCellToString(const std::wstring &value, int format_type, const std::wstring & format_code)
+	{
+		switch (format_type)
+		{
+		case SimpleTypes::Spreadsheet::celltypeNumber:
+		case SimpleTypes::Spreadsheet::celltypeStr:			return value;
+		case SimpleTypes::Spreadsheet::celltypePercentage:	return value + L"%";
+
+		case SimpleTypes::Spreadsheet::celltypeDate:		return convert_date_time(value, format_code, true, false);
+		case SimpleTypes::Spreadsheet::celltypeTime:		return convert_date_time(value, format_code, false, true);
+		case SimpleTypes::Spreadsheet::celltypeDateTime:	return convert_date_time(value, format_code);
+		case SimpleTypes::Spreadsheet::celltypeFraction:	return convert_fraction(value);
+		case SimpleTypes::Spreadsheet::celltypeScientific:	return convert_scientific(value);
+		default:
+			return value;
+		}
 	}
 }

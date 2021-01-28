@@ -72,7 +72,7 @@ CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder)
     v8::Context::Scope context_scope(m_context);
     v8::TryCatch try_catch(m_isolate);
 
-    m_context->Global()->Set(m_context, v8::String::NewFromUtf8(m_isolate, "builderJS"), _builder_CreateNative(m_isolate, pBuilder));
+    m_context->Global()->Set(m_context, v8::String::NewFromUtf8Literal(m_isolate, "builderJS"), _builder_CreateNative(m_isolate, pBuilder));
 }
 CV8RealTimeWorker::~CV8RealTimeWorker()
 {
@@ -100,7 +100,7 @@ bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRender
 
     v8::TryCatch try_catch(m_isolate);
 
-    v8::Local<v8::String> source = v8::String::NewFromUtf8(m_isolate, commandA.c_str());
+    v8::Local<v8::String> source = CV8Convert::unwrap<v8::String>(v8::String::NewFromUtf8(m_isolate, commandA.c_str()));
     v8::Local<v8::Script> script = v8::Script::Compile(m_context, source).FromMaybe(v8::Local<v8::Script>());
 
     LOGGER_SPEED_LAP("compile_command")
@@ -151,7 +151,7 @@ std::string CV8RealTimeWorker::GetGlobalVariable()
 
     v8::TryCatch try_catch(m_isolate);
 
-    v8::Local<v8::String> source = v8::String::NewFromUtf8(m_isolate, commandA.c_str());
+    v8::Local<v8::String> source = CV8Convert::unwrap<v8::String>(v8::String::NewFromUtf8(m_isolate, commandA.c_str()));
     v8::Local<v8::Script> script = v8::Script::Compile(m_context, source).FromMaybe(v8::Local<v8::Script>());
 
     std::string sReturn = "{}";
@@ -198,7 +198,7 @@ std::wstring CV8RealTimeWorker::GetJSVariable(std::wstring sParam)
 
     v8::TryCatch try_catch(m_isolate);
 
-    v8::Local<v8::String> source = v8::String::NewFromUtf8(m_isolate, commandA.c_str());
+    v8::Local<v8::String> source = CV8Convert::unwrap<v8::String>(v8::String::NewFromUtf8(m_isolate, commandA.c_str()));
     v8::Local<v8::Script> script = v8::Script::Compile(m_context, source).FromMaybe(v8::Local<v8::Script>());
 
     if (try_catch.HasCaught())
@@ -241,7 +241,7 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 
     v8::TryCatch try_catch(m_isolate);
 
-    v8::Local<v8::String> source = v8::String::NewFromUtf8(m_isolate, sString.c_str());
+    v8::Local<v8::String> source = CV8Convert::unwrap<v8::String>(v8::String::NewFromUtf8(m_isolate, sString.c_str()));
     v8::Local<v8::Script> script;
 
     CCacheDataScript oCachedScript(sCachePath);
@@ -290,7 +290,7 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
         NSCommon::string_replaceA(sArg, "\"", "\\\"");
         std::string sArgument = "var Argument = JSON.parse(\"" + sArg + "\");";
 
-        v8::Local<v8::String> _sourceArg = v8::String::NewFromUtf8(m_isolate, sArgument.c_str());
+        v8::Local<v8::String> _sourceArg = CV8Convert::unwrap<v8::String>(v8::String::NewFromUtf8(m_isolate, sArgument.c_str()));
         v8::Local<v8::Script> _scriptArg = v8::Script::Compile(m_context, _sourceArg).FromMaybe(v8::Local<v8::Script>());
         _scriptArg->Run(m_context);
 
@@ -316,7 +316,7 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 
         std::string sScriptVar = "var GlobalVariable = JSON.parse(\"" + sArg + "\");";
 
-        v8::Local<v8::String> _sourceArg = v8::String::NewFromUtf8(m_isolate, sScriptVar.c_str());
+        v8::Local<v8::String> _sourceArg = CV8Convert::unwrap<v8::String>(v8::String::NewFromUtf8(m_isolate, sScriptVar.c_str()));
         v8::Local<v8::Script> _scriptArg = v8::Script::Compile(m_context, _sourceArg).FromMaybe(v8::Local<v8::Script>());
         _scriptArg->Run(m_context);
 
@@ -342,12 +342,12 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
     // GET_NATIVE_ENGINE
     if (!bIsBreak)
     {
-        v8::Handle<v8::Value> js_func_get_native = global_js->Get(v8::String::NewFromUtf8(m_isolate, "GetNativeEngine"));
+        v8::Handle<v8::Value> js_func_get_native = CV8Convert::unwrap<v8::Value>(global_js->Get(v8::Isolate::GetCurrent()->GetCurrentContext(), v8::String::NewFromUtf8Literal(m_isolate, "GetNativeEngine")));
         v8::Local<v8::Object> objNative;
         if (js_func_get_native->IsFunction())
         {
             v8::Handle<v8::Function> func_get_native = v8::Handle<v8::Function>::Cast(js_func_get_native);
-            v8::Local<v8::Value> js_result2 = func_get_native->Call(global_js, 1, args);
+            v8::Local<v8::Value> js_result2 = CV8Convert::unwrap<v8::Value>(func_get_native->Call(v8::Isolate::GetCurrent()->GetCurrentContext(), global_js, 1, args));
 
             if (try_catch.HasCaught())
             {
@@ -361,7 +361,7 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
             }
             else
             {
-                objNative = js_result2->ToObject();
+                objNative = CV8Convert::unwrap<v8::Object>(js_result2->ToObject(v8::Isolate::GetCurrent()->GetCurrentContext()));
                 v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(objNative->GetInternalField(0));
 
                 pNative = static_cast<CNativeControl*>(field->Value());
@@ -393,7 +393,7 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
     // OPEN
     if (!bIsBreak)
     {
-        v8::Handle<v8::Value> js_func_open = global_js->Get(v8::String::NewFromUtf8(m_isolate, "NativeOpenFileData"));
+        v8::Handle<v8::Value> js_func_open = CV8Convert::unwrap<v8::Value>(global_js->Get(v8::Isolate::GetCurrent()->GetCurrentContext(), v8::String::NewFromUtf8Literal(m_isolate, "NativeOpenFileData")));
         if (js_func_open->IsFunction())
         {
             v8::Handle<v8::Function> func_open = v8::Handle<v8::Function>::Cast(js_func_open);
@@ -409,14 +409,14 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
             if (NSFile::CFileBinary::Exists(sXlsx))
             {
                 std::string sXlsxA = U_TO_UTF8(sXlsx);
-                args_open[2] = v8::String::NewFromUtf8(m_isolate, (char*)(sXlsxA.c_str()));
+                args_open[2] = CV8Convert::unwrap<v8::String>(v8::String::NewFromUtf8(m_isolate, (char*)(sXlsxA.c_str())));
             }
             else
             {
                 args_open[2] = v8::Undefined(m_isolate);
             }
 
-            func_open->Call(global_js, 3, args_open);
+            func_open->Call(v8::Isolate::GetCurrent()->GetCurrentContext(), global_js, 3, args_open);
 
             if (try_catch.HasCaught())
             {
@@ -463,12 +463,12 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path)
     // GET_NATIVE_ENGINE
     if (true)
     {
-        v8::Handle<v8::Value> js_func_get_native = global_js->Get(v8::String::NewFromUtf8(m_isolate, "GetNativeEngine"));
+        v8::Handle<v8::Value> js_func_get_native = CV8Convert::unwrap<v8::Value>(global_js->Get(v8::Isolate::GetCurrent()->GetCurrentContext(), v8::String::NewFromUtf8Literal(m_isolate, "GetNativeEngine")));
         v8::Local<v8::Object> objNative;
         if (js_func_get_native->IsFunction())
         {
             v8::Handle<v8::Function> func_get_native = v8::Handle<v8::Function>::Cast(js_func_get_native);
-            v8::Local<v8::Value> js_result2 = func_get_native->Call(global_js, 1, args);
+            v8::Local<v8::Value> js_result2 = CV8Convert::unwrap<v8::Value>(func_get_native->Call(v8::Isolate::GetCurrent()->GetCurrentContext(), global_js, 1, args));
 
             if (try_catch.HasCaught())
             {
@@ -480,7 +480,7 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path)
             }
             else
             {
-                objNative = js_result2->ToObject();
+                objNative = CV8Convert::unwrap<v8::Object>(js_result2->ToObject(v8::Isolate::GetCurrent()->GetCurrentContext()));
                 v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(objNative->GetInternalField(0));
 
                 pNative = static_cast<CNativeControl*>(field->Value());
@@ -594,7 +594,7 @@ namespace NSDoctRenderer
         std::string sPropA = U_TO_UTF8(sProp);
 
         ret.m_internal->m_isolate = m_internal->m_isolate;
-        ret.m_internal->m_value = m_internal->m_value->ToObject()->Get(v8::String::NewFromUtf8(m_internal->m_isolate, sPropA.c_str()));
+        ret.m_internal->m_value = CV8Convert::unwrap<v8::Value>(CV8Convert::unwrap<v8::Object>(m_internal->m_value->ToObject(v8::Isolate::GetCurrent()->GetCurrentContext()))->Get(v8::Isolate::GetCurrent()->GetCurrentContext(), CV8Convert::unwrap<v8::String>(v8::String::NewFromUtf8(m_internal->m_isolate, sPropA.c_str()))));
 
         return ret;
     }

@@ -153,7 +153,7 @@ void _builder_doc_GetFolder(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
     CBuilderDocumentEmbed* doc = unwrap_builder_doc_embed(args.This());
     std::string sUtf8 = U_TO_UTF8((doc->m_sFolder));
-    args.GetReturnValue().Set(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), sUtf8.c_str()));
+    args.GetReturnValue().Set(CV8Convert::unwrap<v8::String>(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), sUtf8.c_str())));
 }
 void _builder_doc_CloseFile(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
@@ -174,10 +174,10 @@ void _builder_doc_GetImageMap(const v8::FunctionCallbackInfo<v8::Value>& args)
         std::string sFileA = U_TO_UTF8(sFile);
         std::string sNameA = U_TO_UTF8(sName);
 
-        v8::Local<v8::String> _k = v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), sNameA.c_str(), v8::String::kNormalString, -1);
-        v8::Local<v8::String> _v = v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), sFileA.c_str(), v8::String::kNormalString, -1);
+        v8::Local<v8::String> _k = CV8Convert::unwrap<v8::String>(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), sNameA.c_str(), v8::NewStringType::kNormal, -1));
+        v8::Local<v8::String> _v = CV8Convert::unwrap<v8::String>(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), sFileA.c_str(), v8::NewStringType::kNormal, -1));
 
-        obj->Set(_k, _v);
+        obj->Set(v8::Isolate::GetCurrent()->GetCurrentContext(), _k, _v);
     }
 
     args.GetReturnValue().Set(obj);
@@ -199,7 +199,7 @@ v8::Local<v8::Value> _builder_CreateNativeTmpDoc(v8::Isolate* isolate, NSDoctRen
     _embed->m_pBuilder = pBuilder;
     _embed->OpenFile(sFile, sParams);
 
-    v8::Local<v8::Object> obj = _template->NewInstance();
+    v8::Local<v8::Object> obj = CV8Convert::unwrap<v8::Object>(_template->NewInstance(v8::Isolate::GetCurrent()->GetCurrentContext()));
     obj->SetInternalField(0, v8::External::New(isolate, _embed));
 
     return obj;
@@ -219,7 +219,7 @@ v8::Local<v8::Value> _builder_CreateNative(v8::Isolate* isolate, NSDoctRenderer:
     CBuilderEmbed* _embed = new CBuilderEmbed();
     _embed->m_pBuilder = builder;
 
-    v8::Local<v8::Object> obj = _template->NewInstance();
+    v8::Local<v8::Object> obj = CV8Convert::unwrap<v8::Object>(_template->NewInstance(v8::Isolate::GetCurrent()->GetCurrentContext()));
     obj->SetInternalField(0, v8::External::New(isolate, _embed));
 
     return obj;

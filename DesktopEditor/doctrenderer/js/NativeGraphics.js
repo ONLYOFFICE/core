@@ -20,6 +20,7 @@ function CNativeGraphics()
     this.ArrayPoints     = null;
     this.MaxEpsLine      = null;
     this.m_oContext      = null;
+    this.m_oGrFonts      = null;
     this.m_oTextPr       = null;
 
     this.RENDERER_PDF_FLAG   = true;
@@ -216,61 +217,66 @@ CNativeGraphics.prototype =
     SetTextPr : function(textPr, theme)
     {
         this.m_oTextPr = textPr;
-        if (theme) {
-            this.m_oGrFonts.checkFromTheme(theme.themeElements.fontScheme, this.m_oTextPr.RFonts);
-        } else {
+        if (theme && this.m_oGrFonts)
+        {
+            this.m_oGrFonts.Ascii.Name     = theme.themeElements.fontScheme.checkFont(this.m_oTextPr.RFonts.Ascii.Name);
+            this.m_oGrFonts.EastAsia.Name  = theme.themeElements.fontScheme.checkFont(this.m_oTextPr.RFonts.EastAsia.Name);
+            this.m_oGrFonts.HAnsi.Name     = theme.themeElements.fontScheme.checkFont(this.m_oTextPr.RFonts.HAnsi.Name);
+            this.m_oGrFonts.CS.Name        = theme.themeElements.fontScheme.checkFont(this.m_oTextPr.RFonts.CS.Name);
+            this.m_oGrFonts.Ascii.Index    = -1;
+            this.m_oGrFonts.EastAsia.Index = -1;
+            this.m_oGrFonts.HAnsi.Index    = -1;
+            this.m_oGrFonts.CS.Index       = -1;
+        }
+        else
+        {
             this.m_oGrFonts = this.m_oTextPr.RFonts;
         }
-        // this.Native["SetTextPr"](textPr, theme);
     },
     SetFontSlot : function(slot, fontSizeKoef)
     {
-        var _rfonts = this.m_oGrFonts;
-        var _lastFont = this.m_oFontSlotFont;
-        switch(slot) {
-            case fontslot_ASCII:
+        var _lastFont = {FontFamily : {Name : "Arial", Index : -1}, FontSize : 16, Italic : true, Bold : true};
+        switch(slot) 
+        {
+            case 0: // fontslot_ASCII
             {
-                _lastFont.Name = _rfonts.Ascii.Name;
-                _lastFont.Size = this.m_oTextPr.FontSize;
-                _lastFont.Bold = this.m_oTextPr.Bold;
-                _lastFont.Italic = this.m_oTextPr.Italic;
+                _lastFont.FontFamily.Name = this.m_oGrFonts.Ascii.Name;
+                _lastFont.FontSize = this.m_oTextPr.FontSize;
+                _lastFont.Bold     = this.m_oTextPr.Bold;
+                _lastFont.Italic   = this.m_oTextPr.Italic;
                 break;
             }
-            case fontslot_CS:
+            case 1: // fontslot_EastAsia
             {
-                _lastFont.Name = _rfonts.CS.Name;
-                _lastFont.Size = this.m_oTextPr.FontSizeCS;
-                _lastFont.Bold = this.m_oTextPr.BoldCS;
-                _lastFont.Italic = this.m_oTextPr.ItalicCS;
-                break;
-            }
-            case fontslot_EastAsia:
-            {
-                  _lastFont.Name = _rfonts.EastAsia.Name;
-                  _lastFont.Size = this.m_oTextPr.FontSize;
-                  _lastFont.Bold = this.m_oTextPr.Bold;
-                  _lastFont.Italic = this.m_oTextPr.Italic;
+                  _lastFont.FontFamily.Name = this.m_oGrFonts.EastAsia.Name;
+                  _lastFont.FontSize = this.m_oTextPr.FontSize;
+                  _lastFont.Bold     = this.m_oTextPr.Bold;
+                  _lastFont.Italic  = this.m_oTextPr.Italic;
                   break;
             }
-            case fontslot_HAnsi:
+            case 2: // fontslot_CS
+            {
+                _lastFont.FontFamily.Name = this.m_oGrFonts.CS.Name;
+                _lastFont.FontSize = this.m_oTextPr.FontSizeCS;
+                _lastFont.Bold     = this.m_oTextPr.BoldCS;
+                _lastFont.Italic  = this.m_oTextPr.ItalicCS;
+                break;
+            }
+            case 3: // fontslot_HAnsi
             default:
             {
-                _lastFont.Name = _rfonts.HAnsi.Name;
-                _lastFont.Size = this.m_oTextPr.FontSize;
-                _lastFont.Bold = this.m_oTextPr.Bold;
-                _lastFont.Italic = this.m_oTextPr.Italic;
+                _lastFont.FontFamily.Name = this.m_oGrFonts.HAnsi.Name;
+                _lastFont.FontSize = this.m_oTextPr.FontSize;
+                _lastFont.Bold     = this.m_oTextPr.Bold;
+                _lastFont.Italic   = this.m_oTextPr.Italic;
                 break;
             }
         }
-        if (undefined !== fontSizeKoef) {
-            _lastFont.Size *= fontSizeKoef;
-        }
-        this.m_oFontTmp.FontFamily.Name = _lastFont.Name;
-        this.m_oFontTmp.Bold = _lastFont.Bold;
-        this.m_oFontTmp.Italic = _lastFont.Italic;
-        this.m_oFontTmp.FontSize = _lastFont.Size;
-        this.SetFont(this.m_oFontTmp);
-        // this.Native["SetFontSlot"](slot, fontSizeKoef);
+        if (undefined !== fontSizeKoef)
+		{
+            _lastFont.FontSize *= fontSizeKoef;
+		}
+        this.SetFont(_lastFont);
     },
     GetTextPr : function()
     {

@@ -167,16 +167,6 @@ JSSmart<CJSValue> CGraphicsEmbed::SetFont(JSSmart<CJSValue> path, JSSmart<CJSVal
     m_pInternal->SetFont(path->toStringW(), face->toInt32(), size->toDouble(), style->toInt32());
     return NULL;
 }
-JSSmart<CJSValue> CGraphicsEmbed::SetTextPr(JSSmart<CJSValue> textPr, JSSmart<CJSValue> theme)
-{
-    m_pInternal->SetTextPr();
-    return NULL;
-}
-JSSmart<CJSValue> CGraphicsEmbed::SetFontSlot(JSSmart<CJSValue> slot, JSSmart<CJSValue> fontSizeKoef)
-{
-    m_pInternal->SetFontSlot();
-    return NULL;
-}
 JSSmart<CJSValue> CGraphicsEmbed::GetTextPr()
 {
     m_pInternal->GetTextPr();

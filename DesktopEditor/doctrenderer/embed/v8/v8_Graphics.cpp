@@ -44,8 +44,6 @@ namespace NSGraphics
     FUNCTION_WRAPPER_V8  (_GetFont,      GetFont)
     FUNCTION_WRAPPER_V8_2(_font,         font)
     FUNCTION_WRAPPER_V8_4(_SetFont,      SetFont)
-    FUNCTION_WRAPPER_V8_2(_SetTextPr,    SetTextPr)
-    FUNCTION_WRAPPER_V8_2(_SetFontSlot,  SetFontSlot)
     FUNCTION_WRAPPER_V8  (_GetTextPr,    GetTextPr)
     FUNCTION_WRAPPER_V8_3(_FillText,     FillText)
     FUNCTION_WRAPPER_V8_3(_t,            t)
@@ -164,8 +162,6 @@ namespace NSGraphics
         NSV8Objects::Template_Set(result, "GetFont",                  _GetFont);
         NSV8Objects::Template_Set(result, "font",                     _font);
         NSV8Objects::Template_Set(result, "SetFont",                  _SetFont);
-        NSV8Objects::Template_Set(result, "SetTextPr",                _SetTextPr);
-        NSV8Objects::Template_Set(result, "SetFontSlot",              _SetFontSlot);
         NSV8Objects::Template_Set(result, "GetTextPr",                _GetTextPr);
         NSV8Objects::Template_Set(result, "FillText",                 _FillText);
         NSV8Objects::Template_Set(result, "t",                        _t);

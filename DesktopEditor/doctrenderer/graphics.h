@@ -158,8 +158,6 @@ namespace NSGraphics
         std::wstring GetFont();
         void font() {}
         void SetFont(const std::wstring& name, int face, double size, int style);
-        void SetTextPr() {}
-        void SetFontSlot() {}
         void GetTextPr() {}
         void FillText(double x, double y, int text);
         void t(double x, double y, const std::wstring& text);

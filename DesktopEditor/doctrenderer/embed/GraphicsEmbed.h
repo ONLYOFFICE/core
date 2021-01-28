@@ -55,8 +55,6 @@ public:
     JSSmart<CJSValue> GetFont();
     JSSmart<CJSValue> font(JSSmart<CJSValue> font_id, JSSmart<CJSValue> font_size);
     JSSmart<CJSValue> SetFont(JSSmart<CJSValue> path, JSSmart<CJSValue> face, JSSmart<CJSValue> size, JSSmart<CJSValue> style);
-    JSSmart<CJSValue> SetTextPr(JSSmart<CJSValue> textPr, JSSmart<CJSValue> theme);
-    JSSmart<CJSValue> SetFontSlot(JSSmart<CJSValue> slot, JSSmart<CJSValue> fontSizeKoef);
     JSSmart<CJSValue> GetTextPr();
     JSSmart<CJSValue> FillText(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> text);
     JSSmart<CJSValue> t(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> _arr);

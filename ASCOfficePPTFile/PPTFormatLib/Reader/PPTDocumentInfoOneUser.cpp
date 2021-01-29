@@ -453,7 +453,6 @@ void CPPTUserInfo::ReadExtenalObjects(std::wstring strFolderMem)
     oInfo.m_strFilePath = m_oExMedia.m_strPresentationDirectory;
     oInfo.m_dwID		= 0xFFFFFFFF;
     m_oExMedia.m_arImages.push_back(oInfo);
-    m_oExMedia.m_arAudios.push_back(oInfo); // Experimental
 
     // читаем все внешние объекты
     std::vector<CRecordExObjListContainer*> oArrayExObjects;
@@ -2293,6 +2292,7 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
                 oInfo.m_strFilePath = m_oExMedia.m_strPresentationDirectory + FILE_SEPARATOR_STR + oArrayStrings[0]->m_strText + _T(".audio");
                 oInfo.m_dwID		= (_UINT32)XmlUtils::GetInteger(oArrayStrings[2]->m_strText.c_str());
 
+                m_oExMedia.m_arAudios.push_back(oInfo);
                 oArrayData[0]->SaveToFile(oInfo.m_strFilePath);
             }
         }

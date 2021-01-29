@@ -73,7 +73,7 @@ SOURCES += \
         embed/v8/v8_MemoryStream.cpp \
         embed/v8/v8_NativeControl.cpp \
         embed/v8/v8_NativeBuilder.cpp \
-		embed/v8/v8_Graphics.cpp
+        embed/v8/v8_Graphics.cpp
 
     !build_xp {
         include(../../Common/3dParty/v8/v8.pri)

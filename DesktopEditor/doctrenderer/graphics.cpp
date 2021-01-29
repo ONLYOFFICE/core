@@ -1170,14 +1170,40 @@ CColor CGraphics::GetBrushColor()
 }
 void CGraphics::put_brushTexture(std::wstring src)
 {
-
-    std::wstring strImage = (0 == src.find(L"theme") ? m_sApplicationThemesDirectory : m_sApplicationImagesDirectory) + L'/' + src;
-    #ifdef _DEBUG
-    std::wcout << L"put_brushTexture " << strImage << std::endl;
-    #endif
-    m_pRenderer->put_BrushType(c_BrushTypeTexture);
-    m_pRenderer->put_BrushTexturePath(strImage);
-    m_pRenderer->put_BrushTextureMode(0);
+    if (0 == src.find(L"data"))
+    {
+        std::wstring strImage = m_sApplicationImagesDirectory + L"/texture.png";
+        NSFile::CFileBinary oImageWriter;
+        if (oImageWriter.CreateFileW(strImage))
+        {
+            src.erase(0, src.find(L',') + 1);
+            int nSrcLen = (int)src.length();
+            int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
+            if(nDecodeLen == 0)
+                return;
+            BYTE* pImageData = new BYTE[nDecodeLen];
+            if (TRUE == NSBase64::Base64Decode(U_TO_UTF8(src).c_str(), nSrcLen, pImageData, &nDecodeLen))
+            {
+                oImageWriter.WriteFile(pImageData, (DWORD)nDecodeLen);
+                #ifdef _DEBUG
+                std::wcout << L"put_brushTexture " << src << std::endl;
+                #endif
+                m_pRenderer->put_BrushType(c_BrushTypeTexture);
+                m_pRenderer->put_BrushTexturePath(strImage);
+                m_pRenderer->put_BrushTextureMode(c_BrushTextureModeTile);
+            }
+        }
+    }
+    else
+    {
+        std::wstring strImage = (0 == src.find(L"theme") ? m_sApplicationThemesDirectory : m_sApplicationImagesDirectory) + L'/' + src;
+        #ifdef _DEBUG
+        std::wcout << L"put_brushTexture " << strImage << std::endl;
+        #endif
+        m_pRenderer->put_BrushType(c_BrushTypeTexture);
+        m_pRenderer->put_BrushTexturePath(strImage);
+        m_pRenderer->put_BrushTextureMode(c_BrushTextureModeStretch);
+    }
 }
 void CGraphics::put_brushTextureMode(int mode)
 {

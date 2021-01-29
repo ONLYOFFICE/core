@@ -180,7 +180,6 @@ namespace NSGraphics
         void SetIntegerGrid(bool param);
         bool GetIntegerGrid();
         void DrawStringASCII(const std::wstring& text, double x, double y);
-        void DrawStringASCII2(const std::wstring& text, double x, double y);
         void DrawHeaderEdit(double yPos);
         void DrawFooterEdit(double yPos);
         void DrawLockParagraph (double x,  double y1, double y2);
@@ -199,7 +198,6 @@ namespace NSGraphics
         void AddClipRect(double x, double y, double w, double h);
         void RemoveClipRect();
         void SetClip    (double x, double y, double w, double h);
-        void RemoveClip();
         void drawCollaborativeChanges(double x, double y, double w, double h, int r, int g, int b, int a);
         void drawMailMergeField      (double x, double y, double w, double h);
         void drawSearchResult        (double x, double y, double w, double h);
@@ -215,7 +213,6 @@ namespace NSGraphics
         void EndClipPath();
         bool StartCheckTableDraw();
         void SetTextClipRect(double _l, double _t, double _r, double _b);
-        void AddSmartRect   (double x,  double y,  double w,  double h, double pen_w);
         void DrawFootnoteRect(double x, double y,  double w,  double h);
         // new methods
         std::string toDataURL(std::wstring type);

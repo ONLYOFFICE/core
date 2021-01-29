@@ -11,13 +11,14 @@
 std::wstring NSGraphics::CGraphics::m_sApplicationFontsDirectory;
 std::wstring NSGraphics::CGraphics::m_sApplicationThemesDirectory;
 std::wstring NSGraphics::CGraphics::m_sApplicationImagesDirectory;
-int nImage = 1;
 
 namespace NSGraphics
 {
 void CGraphics::init(double width_px, double height_px, double width_mm, double height_mm)
 {
+    #ifdef _DEBUG
     std::cout << "init " << width_px << "  " << height_px << "  " << width_mm << "  " << height_mm << std::endl;
+    #endif
     m_pApplicationFonts = NSFonts::NSApplication::Create();
     m_pApplicationFonts->InitializeFromFolder(m_sApplicationFontsDirectory.empty() ? NSFile::GetProcessDirectory() : m_sApplicationFontsDirectory);
     NSFonts::IFontManager* pManager = m_pApplicationFonts->GenerateFontManager();
@@ -48,12 +49,16 @@ void CGraphics::init(double width_px, double height_px, double width_mm, double 
 }
 void CGraphics::put_GlobalAlpha(bool enable, double alpha)
 {
+    #ifdef _DEBUG
     std::cout << "put_GlobalAlpha " << enable << "  " << alpha << std::endl;
+    #endif
     m_pRenderer->put_GlobalAlphaEnabled(enable, alpha);
 }
 void CGraphics::End_GlobalAlpha()
 {
+    #ifdef _DEBUG
     std::cout << "End_GlobalAlpha " << std::endl;
+    #endif
     bool bIsInteger = m_pRenderer->get_IntegerGrid();
     m_pRenderer->put_IntegerGrid(true);
 
@@ -68,22 +73,30 @@ void CGraphics::End_GlobalAlpha()
 }
 void CGraphics::p_color(int r, int g, int b, int a)
 {
+    #ifdef _DEBUG
     std::cout << "p_color " << r << "  " << g << "  " << b << "  " << a << std::endl;
+    #endif
     m_pRenderer->put_PenColor(r | (g << 8) | (b << 16));
     m_pRenderer->put_PenAlpha(a);
 }
 void CGraphics::p_width(double w)
 {
+    #ifdef _DEBUG
     std::cout << "p_width " << w  << std::endl;
+    #endif
     m_pRenderer->put_PenSize(w / 1000.0);
 }
 void CGraphics::p_dash(size_t length, double* dash)
 {
+    #ifdef _DEBUG
     std::cout << "p_dash " << length << std::endl;
+    #endif
     if(length > 0)
     {
+        double dDpiX = 0;
+        m_pRenderer->get_DpiX(&dDpiX);
         for(size_t i = 0; i < length; i++)
-            dash[i] = dash[i] * 72.0 / 25.4 * 2.0;
+            dash[i] *= (dDpiX / 25.4);
 
         m_pRenderer->put_PenDashStyle(Aggplus::DashStyleCustom);
         m_pRenderer->PenDashPattern(dash, length);
@@ -93,45 +106,61 @@ void CGraphics::p_dash(size_t length, double* dash)
 }
 void CGraphics::b_color1(int r, int g, int b, int a)
 {
+    #ifdef _DEBUG
     std::cout << "b_color1 " << r << "  " << g << "  " << b << "  " << a << std::endl;
+    #endif
     m_pRenderer->put_BrushType(c_BrushTypeSolid);
     m_pRenderer->put_BrushColor1(r | (g << 8) | (b << 16));
     m_pRenderer->put_BrushAlpha1(a);
 }
 void CGraphics::b_color2(int r, int g, int b, int a)
 {
+    #ifdef _DEBUG
     std::cout << "b_color2 " << r << "  " << g << "  " << b << "  " << a << std::endl;
+    #endif
     m_pRenderer->put_BrushColor2(r | (g << 8) | (b << 16));
     m_pRenderer->put_BrushAlpha2(a);
 }
 void CGraphics::transform(double sx, double shy, double shx, double sy, double tx, double ty)
 {
+    #ifdef _DEBUG
     std::cout << "transform " << sx << "  " << shy << "  " << shx << "  " << sy << "  " << tx << "  " << ty << std::endl;
+    #endif
     m_pRenderer->SetTransform(sx, shy, shx, sy, tx, ty);
 }
 void CGraphics::CalculateFullTransform()
 {
+    #ifdef _DEBUG
     std::cout << "CalculateFullTransform " << std::endl;
+    #endif
     m_pRenderer->CalculateFullTransform();
 }
 void CGraphics::_s()
 {
+    #ifdef _DEBUG
     std::cout << "_s " << std::endl;
+    #endif
     m_pRenderer->PathCommandEnd();
 }
 void CGraphics::_e()
 {
+    #ifdef _DEBUG
     std::cout << "_e " << std::endl;
+    #endif
     m_pRenderer->PathCommandEnd();
 }
 void CGraphics::_z()
 {
+    #ifdef _DEBUG
     std::cout << "_z " << std::endl;
+    #endif
     m_pRenderer->PathCommandClose();
 }
 void CGraphics::_m(double x, double y)
 {
+    #ifdef _DEBUG
     std::cout << "_m " << x << "  " << y << std::endl;
+    #endif
     if (!m_pRenderer->get_IntegerGrid())
         m_pRenderer->PathCommandMoveTo(x, y);
     else
@@ -142,7 +171,9 @@ void CGraphics::_m(double x, double y)
 }
 void CGraphics::_l(double x, double y)
 {
+    #ifdef _DEBUG
     std::cout << "_l " << x << "  " << y << std::endl;
+    #endif
     if (!m_pRenderer->get_IntegerGrid())
         m_pRenderer->PathCommandLineTo(x, y);
     else
@@ -153,7 +184,9 @@ void CGraphics::_l(double x, double y)
 }
 void CGraphics::_c (double x1, double y1, double x2, double y2, double x3, double y3)
 {
+    #ifdef _DEBUG
     std::cout << "_c " << x1 << "  " << y1 << "  " << x2 << "  " << y2 << "  " << x3 << "  " << y3 << std::endl;
+    #endif
     if (!m_pRenderer->get_IntegerGrid())
         m_pRenderer->PathCommandCurveTo(x1, y1, x2, y2, x3, y3);
     else
@@ -166,7 +199,9 @@ void CGraphics::_c (double x1, double y1, double x2, double y2, double x3, doubl
 }
 void CGraphics::_c2(double x1, double y1, double x2, double y2)
 {
+    #ifdef _DEBUG
     std::cout << "_c2 " << x1 << "  " << y1 << "  " << x2 << "  " << y2 << std::endl;
+    #endif
     if (!m_pRenderer->get_IntegerGrid())
         m_pRenderer->PathCommandCurveTo(x1, y1, x1, y1, x2, y2);
     else
@@ -178,60 +213,82 @@ void CGraphics::_c2(double x1, double y1, double x2, double y2)
 }
 void CGraphics::ds()
 {
+    #ifdef _DEBUG
     std::cout << "ds " << std::endl;
+    #endif
     m_pRenderer->Stroke();
 }
 void CGraphics::df()
 {
+    #ifdef _DEBUG
     std::cout << "df " << std::endl;
+    #endif
     m_pRenderer->Fill();
 }
 void CGraphics::save()
 {
+    #ifdef _DEBUG
     std::cout << "save " << std::endl;
+    #endif
     m_oFrame.SaveFile(m_sApplicationImagesDirectory + L"/img.png", _CXIMAGE_FORMAT_PNG);
 }
 void CGraphics::restore()
 {
+    #ifdef _DEBUG
     std::cout << "restore " << std::endl;
+    #endif
     m_pRenderer->BeginCommand(c_nResetClipType);
     m_pRenderer->EndCommand  (c_nResetClipType);
 }
 void CGraphics::clip()
 {
+    #ifdef _DEBUG
     std::cout << "clip " << std::endl;
+    #endif
     m_pRenderer->BeginCommand(c_nClipType);
     m_pRenderer->EndCommand  (c_nClipType);
 }
 void CGraphics::reset()
 {
+    #ifdef _DEBUG
     std::cout << "reset " << std::endl;
+    #endif
     m_pRenderer->ResetTransform();
 }
 void CGraphics::FreeFont()
 {
+    #ifdef _DEBUG
     std::cout << "FreeFont " << std::endl;
+    #endif
     m_pRenderer->CloseFont();
 }
 void CGraphics::ClearLastFont()
 {
+    #ifdef _DEBUG
     std::cout << "ClearLastFont " << std::endl;
+    #endif
     m_pRenderer->ClearInstallFont();
 }
 void CGraphics::drawImage(const std::wstring& img, double x, double y, double w, double h, BYTE alpha)
 {
     std::wstring strImage = (0 == img.find(L"theme") ? m_sApplicationThemesDirectory : m_sApplicationImagesDirectory) + L'/' + img;
+    #ifdef _DEBUG
     std::wcout << L"drawImage " << strImage << L"  " << x << "  " << y << L"  " << w << L"  " << h << L"  " << alpha << std::endl;
+    #endif
     m_pRenderer->DrawImageFromFile(strImage, x, y, w, h, alpha);
 }
 std::wstring CGraphics::GetFont()
 {
+    #ifdef _DEBUG
     std::cout << "GetFont " << std::endl;
+    #endif
     return m_pRenderer->GetFontManager()->GetName();
 }
 void CGraphics::SetFont(const std::wstring& name, int face, double size, int style)
 {
+    #ifdef _DEBUG
     std::wcout << L"SetFont " << name << L"  " << face << L"  " << size << L"  " << style << std::endl;
+    #endif
     double DpiX, DpiY;
     m_pRenderer->get_DpiX(&DpiX);
     m_pRenderer->get_DpiY(&DpiY);
@@ -244,54 +301,46 @@ void CGraphics::SetFont(const std::wstring& name, int face, double size, int sty
 }
 void CGraphics::FillText(double x, double y, int text)
 {
+    #ifdef _DEBUG
     std::wcout << L"FillText " << (wchar_t)text << L"  " << x << L"  " << y << std::endl;
+    #endif
     m_pRenderer->CommandDrawTextCHAR(text, x, y, 0, 0);
 }
 void CGraphics::t(double x, double y, const std::wstring& text)
 {
+    #ifdef _DEBUG
     std::wcout << L"t " << text << L"  " << x << L"  " << y << std::endl;
+    #endif
     m_pRenderer->CommandDrawText(text, x, y, 0, 0);
 }
 void CGraphics::tg(int text, double x, double y)
 {
+    #ifdef _DEBUG
     std::wcout << L"tg " << text << L"  " << x << L"  " << y << std::endl;
+    #endif
     m_pRenderer->put_FontStringGID(TRUE);
     m_pRenderer->CommandDrawTextCHAR(text, x, y, 0, 0);
     m_pRenderer->put_FontStringGID(FALSE);
 }
 void CGraphics::SetIntegerGrid(bool param)
 {
+    #ifdef _DEBUG
     std::cout << "SetIntegerGrid " << param << std::endl;
+    #endif
     m_pRenderer->put_IntegerGrid(param);
 }
 bool CGraphics::GetIntegerGrid()
 {
+    #ifdef _DEBUG
     std::cout << "GetIntegerGrid " << std::endl;
+    #endif
     return m_pRenderer->get_IntegerGrid();
 }
 void CGraphics::DrawStringASCII (const std::wstring& text, double x, double y)
 {
+    #ifdef _DEBUG
     std::wcout << L"DrawStringASCII " << text << L"  " << x << L"  " << y << std::endl;
-    double DpiY;
-    m_pRenderer->get_DpiY(&DpiY);
-
-    SavePenBrush();
-
-    b_color1(225, 225, 225, 255);
-    m_pRenderer->GetFontManager()->LoadString2(text, x, y);
-    TBBox oBox = m_pRenderer->GetFontManager()->MeasureString2();
-    rect(x, y, oBox.fMinX, oBox.fMinY);
-    df();
-    ds();
-
-    b_color1(68, 68, 68, 255);
-    t(x + 10.0 * 25.4 / DpiY, y - 5.0 * 25.4 / DpiY, text);
-
-    RestorePenBrush();
-}
-void CGraphics::DrawStringASCII2(const std::wstring& text, double x, double y)
-{
-    std::wcout << L"DrawStringASCII2 " << text << L"  " << x << L"  " << y << std::endl;
+    #endif
     double DpiY;
     m_pRenderer->get_DpiY(&DpiY);
 
@@ -311,7 +360,9 @@ void CGraphics::DrawStringASCII2(const std::wstring& text, double x, double y)
 }
 void CGraphics::DrawHeaderEdit(double yPos)
 {
+    #ifdef _DEBUG
     std::cout << "DrawHeaderEdit " << std::endl;
+    #endif
     m_pRenderer->PathCommandEnd();
 
     Aggplus::CMatrix* pFull = m_pRenderer->GetFullTransform();
@@ -352,7 +403,9 @@ void CGraphics::DrawHeaderEdit(double yPos)
 }
 void CGraphics::DrawFooterEdit(double yPos)
 {
+    #ifdef _DEBUG
     std::cout << "DrawFooterEdit " << std::endl;
+    #endif
     m_pRenderer->PathCommandEnd();
 
     Aggplus::CMatrix* pFull = m_pRenderer->GetFullTransform();
@@ -393,7 +446,9 @@ void CGraphics::DrawFooterEdit(double yPos)
 }
 void CGraphics::DrawLockParagraph (double x,  double y1, double y2)
 {
+    #ifdef _DEBUG
     std::cout << "DrawLockParagraph " << std::endl;
+    #endif
     m_pRenderer->PathCommandEnd();
 
     Aggplus::CMatrix* pFull = m_pRenderer->GetFullTransform();
@@ -463,7 +518,9 @@ void CGraphics::DrawLockParagraph (double x,  double y1, double y2)
 }
 void CGraphics::DrawLockObjectRect(double x,  double y,  double w,  double h)
 {
+    #ifdef _DEBUG
     std::cout << "DrawLockObjectRect " << std::endl;
+    #endif
     m_pRenderer->PathCommandEnd();
 
     double dPenSize = 0.0;
@@ -487,7 +544,9 @@ void CGraphics::DrawLockObjectRect(double x,  double y,  double w,  double h)
 }
 void CGraphics::DrawEmptyTableLine(double x1, double y1, double x2, double y2)
 {
+    #ifdef _DEBUG
     std::cout << "DrawEmptyTableLine " << std::endl;
+    #endif
     m_pRenderer->PathCommandEnd();
 
     Aggplus::CMatrix* pFull = m_pRenderer->GetFullTransform();
@@ -570,7 +629,9 @@ void CGraphics::DrawEmptyTableLine(double x1, double y1, double x2, double y2)
 }
 void CGraphics::DrawSpellingLine  (double y0, double x0, double x1, double w)
 {
+    #ifdef _DEBUG
     std::cout << "DrawSpellingLine " << std::endl;
+    #endif
     Aggplus::CMatrix* pMatrix = m_pRenderer->GetTransformMatrix();
     if (!m_pRenderer->get_IntegerGrid())
     {
@@ -839,10 +900,6 @@ void CGraphics::SetClip    (double x, double y, double w, double h)
     rect(x, y, w, h);
     clip();
 }
-void CGraphics::RemoveClip()
-{
-    restore();
-}
 void CGraphics::drawCollaborativeChanges(double x, double y, double w, double h, int r, int g, int b, int a)
 {
     b_color1(r, g, b, a);
@@ -925,7 +982,9 @@ void CGraphics::RestorePenBrush()
 }
 void CGraphics::SaveGrState()
 {
+    #ifdef _DEBUG
     std::cout << "SaveGrState " << std::endl;
+    #endif
     CGrStateState* pState = new CGrStateState();
     pState->IsIntegerGrid = m_pRenderer->get_IntegerGrid();
     pState->Clips = m_oGrState.Clips;
@@ -939,7 +998,9 @@ void CGraphics::SaveGrState()
 }
 void CGraphics::RestoreGrState()
 {
+    #ifdef _DEBUG
     std::cout << "RestoreGrState " << std::endl;
+    #endif
     if (m_oGrState.States.empty())
         return;
 
@@ -951,7 +1012,7 @@ void CGraphics::RestoreGrState()
 
     if (!m_oGrState.Clips.empty())
     {
-        RemoveClip();
+        restore();
 
         for (IGrState* i : m_oGrState.States)
         {
@@ -1001,12 +1062,16 @@ void CGraphics::RestoreGrState()
 }
 void CGraphics::StartClipPath()
 {
+    #ifdef _DEBUG
     std::cout << "StartClipPath " << std::endl;
+    #endif
     m_pRenderer->BeginCommand(c_nClipType);
 }
 void CGraphics::EndClipPath()
 {
+    #ifdef _DEBUG
     std::cout << "EndClipPath " << std::endl;
+    #endif
     m_pRenderer->EndCommand(c_nClipType);
 }
 bool CGraphics::StartCheckTableDraw()
@@ -1026,10 +1091,6 @@ bool CGraphics::StartCheckTableDraw()
 void CGraphics::SetTextClipRect(double _l, double _t, double _r, double _b)
 {
     AddClipRect(_l, _t, _r - _l, _b - _t);
-}
-void CGraphics::AddSmartRect(double x, double y, double w, double h, double pen_w)
-{
-    m_pRenderer->AddRect(x, y, w, h);
 }
 void CGraphics::DrawFootnoteRect(double x, double y, double w, double h)
 {
@@ -1067,8 +1128,10 @@ void CGraphics::DrawFootnoteRect(double x, double y, double w, double h)
 std::string CGraphics::toDataURL(std::wstring type)
 {
     size_t nSl = type.find(L'/');
-    std::wstring sPath = m_sApplicationImagesDirectory + L"/img" + std::to_wstring(nImage++) + L'.' + type.substr(nSl + 1);
+    std::wstring sPath = m_sApplicationImagesDirectory + L"/img." + type.substr(nSl + 1);
+    #ifdef _DEBUG
     std::wcout << "toDataURL " << sPath << std::endl;
+    #endif
     m_oFrame.SaveFile(sPath, _CXIMAGE_FORMAT_PNG);
 
     NSFile::CFileBinary oReader;
@@ -1079,7 +1142,7 @@ std::string CGraphics::toDataURL(std::wstring type)
         DWORD dwReaded;
         oReader.ReadFile(pFileContent, dwFileSize, dwReaded);
         oReader.CloseFile();
-        //NSFile::CFileBinary::Remove(sPath);
+        NSFile::CFileBinary::Remove(sPath);
 
         int nEncodeLen = NSBase64::Base64EncodeGetRequiredLength(dwFileSize);
         BYTE* pImageData = new BYTE[nEncodeLen];
@@ -1111,24 +1174,32 @@ void CGraphics::put_brushTexture(std::wstring src)
 {
 
     std::wstring strImage = (0 == src.find(L"theme") ? m_sApplicationThemesDirectory : m_sApplicationImagesDirectory) + L'/' + src;
+    #ifdef _DEBUG
     std::wcout << L"put_brushTexture " << strImage << std::endl;
+    #endif
     m_pRenderer->put_BrushType(c_BrushTypeTexture);
     m_pRenderer->put_BrushTexturePath(strImage);
     m_pRenderer->put_BrushTextureMode(0);
 }
 void CGraphics::put_brushTextureMode(int mode)
 {
+    #ifdef _DEBUG
     std::cout << "put_brushTextureMode " << std::endl;
+    #endif
     m_pRenderer->put_BrushTextureMode(mode);
 }
 void CGraphics::put_BrushTextureAlpha(int a)
 {
+    #ifdef _DEBUG
     std::cout << "put_BrushTextureAlpha " << std::endl;
+    #endif
     m_pRenderer->put_BrushTextureAlpha(a == 0 ? 255 : a);
 }
 void CGraphics::put_BrushGradient(LONG* pColors, double* pPositions, size_t nCount, double x0, double y0, double x1, double y1, double r0, double r1)
 {
+    #ifdef _DEBUG
     std::cout << "put_BrushGradient " << std::endl;
+    #endif
     if(isnan(r0))
     {
         double dX = x1 - x0, dY = y1 - y0;
@@ -1146,31 +1217,41 @@ void CGraphics::put_BrushGradient(LONG* pColors, double* pPositions, size_t nCou
 }
 double CGraphics::TransformPointX(double x, double y)
 {
+    #ifdef _DEBUG
     std::cout << "TransformPointX " << std::endl;
+    #endif
     m_pRenderer->GetFullTransform()->TransformPoint(x, y);
     return x;
 }
 double CGraphics::TransformPointY(double x, double y)
 {
+    #ifdef _DEBUG
     std::cout << "TransformPointY " << std::endl;
+    #endif
     m_pRenderer->GetFullTransform()->TransformPoint(x, y);
     return y;
 }
 void CGraphics::put_LineJoin(int nJoin)
 {
+    #ifdef _DEBUG
     std::cout << "put_LineJoin " << std::endl;
+    #endif
     m_pRenderer->put_PenLineJoin(nJoin);
 }
 int CGraphics::GetLineJoin()
 {
+    #ifdef _DEBUG
     std::cout << "GetLineJoin " << std::endl;
+    #endif
     BYTE nRes;
     m_pRenderer->get_PenLineJoin(&nRes);
     return nRes;
 }
 void CGraphics::put_TextureBounds(double x, double y, double w, double h)
 {
+    #ifdef _DEBUG
     std::cout << "put_TextureBounds " << std::endl;
+    #endif
     if(m_pRenderer->get_IntegerGrid())
     {
         double r = x + w;
@@ -1184,14 +1265,18 @@ void CGraphics::put_TextureBounds(double x, double y, double w, double h)
 }
 double CGraphics::GetlineWidth()
 {
+    #ifdef _DEBUG
     std::cout << "GetlineWidth " << std::endl;
+    #endif
     double nRes;
     m_pRenderer->get_PenSize(&nRes);
     return nRes;
 }
 void CGraphics::DrawPath(int path)
 {
+    #ifdef _DEBUG
     std::cout << "DrawPath " << path << std::endl;
+    #endif
     if(path == 257)
     {
         m_pRenderer->DrawPath(256);
@@ -1202,7 +1287,9 @@ void CGraphics::DrawPath(int path)
 }
 void CGraphics::CoordTransformOffset(double tx, double ty)
 {
+    #ifdef _DEBUG
     std::cout << "CoordTransformOffset " << tx << "  " << ty << std::endl;
+    #endif
     m_pRenderer->SetCoordTransformOffset(tx, ty);
 }
 CTransform CGraphics::GetTransform()

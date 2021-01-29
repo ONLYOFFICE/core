@@ -238,7 +238,7 @@ JSSmart<CJSValue> CGraphicsEmbed::DrawStringASCII (JSSmart<CJSValue> text, JSSma
 }
 JSSmart<CJSValue> CGraphicsEmbed::DrawStringASCII2(JSSmart<CJSValue> text, JSSmart<CJSValue> x, JSSmart<CJSValue> y)
 {
-    m_pInternal->DrawStringASCII2(text->toStringW(), x->toDouble(), y->toDouble());
+    m_pInternal->DrawStringASCII(text->toStringW(), x->toDouble(), y->toDouble());
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::DrawHeaderEdit(JSSmart<CJSValue> yPos, JSSmart<CJSValue> lock_type, JSSmart<CJSValue> sectionNum, JSSmart<CJSValue> bIsRepeat, JSSmart<CJSValue> type)
@@ -318,7 +318,7 @@ JSSmart<CJSValue> CGraphicsEmbed::SetClip(JSSmart<CJSValue> x, JSSmart<CJSValue>
 }
 JSSmart<CJSValue> CGraphicsEmbed::RemoveClip()
 {
-    m_pInternal->RemoveClip();
+    m_pInternal->restore();
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::drawCollaborativeChanges(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h, JSSmart<CJSValue> r, JSSmart<CJSValue> g, JSSmart<CJSValue> b, JSSmart<CJSValue> a)
@@ -401,7 +401,7 @@ JSSmart<CJSValue> CGraphicsEmbed::SetTextClipRect(JSSmart<CJSValue> _l, JSSmart<
 }
 JSSmart<CJSValue> CGraphicsEmbed::AddSmartRect   (JSSmart<CJSValue> x,  JSSmart<CJSValue> y,  JSSmart<CJSValue> w,  JSSmart<CJSValue> h, JSSmart<CJSValue> pen_w)
 {
-    m_pInternal->AddSmartRect(x->toDouble(), y->toDouble(), w->toDouble(), h->toDouble(), pen_w->toDouble());
+    m_pInternal->rect(x->toDouble(), y->toDouble(), w->toDouble(), h->toDouble());
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::CheckUseFonts2 (JSSmart<CJSValue> _transform)

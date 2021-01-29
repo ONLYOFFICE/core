@@ -4359,6 +4359,19 @@ namespace NExtractTools
 			{
 				result = docxflat2doct_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
 			}break;
+			case TCD_PKG2DOCT:
+			{
+				result = package2doct(sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_PKG2DOCT_BIN:
+			{
+				result = package2doct_bin(sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;			
+			case TCD_PKG2DOCX:
+			{
+				oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX);
+				result = package2docx(sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
 			case TCD_DOCT2DOCX:
 			{
 				oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX);

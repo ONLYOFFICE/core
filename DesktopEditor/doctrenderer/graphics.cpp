@@ -8,16 +8,14 @@
 #define M_PI       3.14159265358979323846
 #endif
 
-std::wstring NSGraphics::CGraphics::m_sApplicationFontsDirectory;
-std::wstring NSGraphics::CGraphics::m_sApplicationThemesDirectory;
-std::wstring NSGraphics::CGraphics::m_sApplicationImagesDirectory;
-
 namespace NSGraphics
 {
-void CGraphics::init(double width_px, double height_px, double width_mm, double height_mm)
+void CGraphics::init(std::wstring ImagesDirectory, std::wstring FontsDirectory, double width_px, double height_px, double width_mm, double height_mm)
 {
+    m_sApplicationImagesDirectory = ImagesDirectory;
+    m_sApplicationFontsDirectory  = FontsDirectory;
     #ifdef _DEBUG
-    std::cout << "init " << width_px << "  " << height_px << "  " << width_mm << "  " << height_mm << std::endl;
+    std::wcout << L"init "<< ImagesDirectory << L"  " << FontsDirectory << L"  " << width_px << L"  " << height_px << L"  " << width_mm << L"  " << height_mm << std::endl;
     #endif
     m_pApplicationFonts = NSFonts::NSApplication::Create();
     m_pApplicationFonts->InitializeFromFolder(m_sApplicationFontsDirectory.empty() ? NSFile::GetProcessDirectory() : m_sApplicationFontsDirectory);

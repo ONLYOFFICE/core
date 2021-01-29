@@ -6,7 +6,7 @@ namespace NSGraphics
     #define CURRENTWRAPPER CGraphicsEmbed
 
     // FUNCTION
-    FUNCTION_WRAPPER_V8_4(_init,              init)
+    FUNCTION_WRAPPER_V8_6(_init,              init)
     FUNCTION_WRAPPER_V8  (_EndDraw,           EndDraw)
     FUNCTION_WRAPPER_V8_2(_put_GlobalAlpha,   put_GlobalAlpha)
     FUNCTION_WRAPPER_V8  (_Start_GlobalAlpha, Start_GlobalAlpha)

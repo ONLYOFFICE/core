@@ -113,9 +113,9 @@ namespace NSGraphics
     class CGraphics
     {
     public:
-        static std::wstring m_sApplicationFontsDirectory;
-        static std::wstring m_sApplicationImagesDirectory;
-        static std::wstring m_sApplicationThemesDirectory;
+        std::wstring m_sApplicationFontsDirectory;
+        std::wstring m_sApplicationImagesDirectory;
+        std::wstring m_sApplicationThemesDirectory;
 
     private:
         NSFonts   ::IApplicationFonts* m_pApplicationFonts;
@@ -131,7 +131,7 @@ namespace NSGraphics
             RELEASEINTERFACE(m_pApplicationFonts);
         }
 
-        void init(double width_px, double height_px, double width_mm, double height_mm);
+        void init(std::wstring ImagesDirectory, std::wstring FontsDirectory, double width_px, double height_px, double width_mm, double height_mm);
         void EndDraw() {}
         void put_GlobalAlpha(bool enable, double globalAlpha);
         void Start_GlobalAlpha() {}

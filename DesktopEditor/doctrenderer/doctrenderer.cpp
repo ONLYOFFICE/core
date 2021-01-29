@@ -627,10 +627,6 @@ namespace NSDoctRenderer
         {
             LOGGER_SPEED_START
 
-            NSGraphics::CGraphics::m_sApplicationFontsDirectory  = m_oParams.m_strFontsDirectory;
-            NSGraphics::CGraphics::m_sApplicationThemesDirectory = m_oParams.m_strThemesDirectory;
-            NSGraphics::CGraphics::m_sApplicationImagesDirectory = m_oParams.m_strImagesDirectory;
-
             bool bIsBreak = false;
             JSSmart<CJSContext> context = new CJSContext();
             context->Initialize();

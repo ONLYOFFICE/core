@@ -17,7 +17,7 @@ public:
     virtual void* getObject() override { return (void*)m_pInternal; }
 
 public:
-    JSSmart<CJSValue> init(JSSmart<CJSValue> width_px, JSSmart<CJSValue> height_px, JSSmart<CJSValue> width_mm, JSSmart<CJSValue> height_mm);
+    JSSmart<CJSValue> init(JSSmart<CJSValue> ImagesDirectory, JSSmart<CJSValue> FontsDirectory, JSSmart<CJSValue> width_px, JSSmart<CJSValue> height_px, JSSmart<CJSValue> width_mm, JSSmart<CJSValue> height_mm);
     JSSmart<CJSValue> EndDraw();
     JSSmart<CJSValue> put_GlobalAlpha(JSSmart<CJSValue> enable, JSSmart<CJSValue> globalAlpha);
     JSSmart<CJSValue> Start_GlobalAlpha();

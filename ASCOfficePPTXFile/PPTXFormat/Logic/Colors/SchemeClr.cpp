@@ -261,7 +261,6 @@ namespace PPTX
 				Modifiers.back().fromXML(oReader);
 			}
 		}
-
 		std::wstring StyleClr::toXML() const
 		{
 			XmlUtils::CNodeValue oValue;
@@ -269,11 +268,55 @@ namespace PPTX
 			
 			XmlUtils::CAttribute oAttr;
 			if (val.IsInit())
-				oAttr.Write(L"val", *val);
+				oAttr.Write(L"val", std::to_wstring(*val));
 			else if (bAuto)
 				oAttr.Write(L"val", std::wstring(L"auto"));
 
 			return XmlUtils::CreateNode(L"cs:styleClr", oAttr, oValue);
 		}
+		void StyleClr::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(L"cs:styleClr");
+
+			pWriter->StartAttributes();
+			if (val.IsInit())
+				pWriter->WriteAttribute(L"val", std::to_wstring(*val));
+			else if (bAuto)
+				pWriter->WriteAttribute(L"val", std::wstring(L"auto"));
+			pWriter->EndAttributes();
+
+			for (size_t i = 0; i < Modifiers.size(); ++i)
+				Modifiers[i].toXmlWriter(pWriter);
+
+			pWriter->EndNode(L"cs:styleClr");
+		}
+		void StyleClr::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->StartRecord(COLOR_TYPE_STYLE);
+
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			if (val.IsInit())
+				pWriter->WriteUInt2(0, val);
+			else
+				pWriter->WriteBool1(1, bAuto);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+			ULONG len = (ULONG)Modifiers.size();
+			if (len != 0)
+			{
+				pWriter->StartRecord(0);
+				pWriter->WriteULONG(len);
+
+				for (ULONG i = 0; i < len; ++i)
+				{
+					pWriter->WriteRecord1(1, Modifiers[i]);
+				}
+
+				pWriter->EndRecord();
+			}
+
+			pWriter->EndRecord();
+		}
+
 	} // namespace Logic
 } // namespace PPTX

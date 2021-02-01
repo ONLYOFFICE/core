@@ -562,6 +562,8 @@ void CPPTUserInfo::FromDocument()
 
     double DurationSlide = PPT_DEFAULT_SLIDE_DURATION;
 
+    // here we need to load audioCollection
+
     m_arSlides.reserve(m_arrSlidesOrder.size());
     for (size_t i = 0; i < m_arrSlidesOrder.size(); i++)
     {
@@ -595,6 +597,7 @@ void CPPTUserInfo::FromDocument()
 
         LoadSlide ( pPair->first, pSlide);
     }
+    // Here we may be need to load audio
 
     m_arNotes.reserve(m_arrNotesOrder.size());
     for (size_t i = 0; i< m_arrNotesOrder.size(); i++)
@@ -2292,7 +2295,7 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
                 oInfo.m_strFilePath = m_oExMedia.m_strPresentationDirectory + FILE_SEPARATOR_STR + oArrayStrings[0]->m_strText + _T(".audio");
                 oInfo.m_dwID		= (_UINT32)XmlUtils::GetInteger(oArrayStrings[2]->m_strText.c_str());
 
-                m_oExMedia.m_arAudios.push_back(oInfo);
+                m_oExMedia.m_arAudioCollection.push_back(oInfo);
                 oArrayData[0]->SaveToFile(oInfo.m_strFilePath);
             }
         }
@@ -2486,14 +2489,8 @@ void CPPTUserInfo::AddAudioTransition (_UINT32 dwSlideID, CTransition* pTransiti
     if (NULL==pTransition)
         return;
 
-    CAudioElement* pAudio = new CAudioElement ();
-    if (pAudio)
-    {
-        pAudio->m_strAudioFileName	=	strFilePath;
-    }
+    pTransition->m_oAudio.m_strAudioFileName = strFilePath;
     // ??? недоделка ???
-
-    delete pAudio;
 }
 
 void CPPTUserInfo::CreateDefaultStyle(PPT_FORMAT::CTextStyles& pStyle, PPT_FORMAT::CTheme* pTheme)

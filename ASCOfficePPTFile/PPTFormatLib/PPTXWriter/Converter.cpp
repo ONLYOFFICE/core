@@ -1424,6 +1424,12 @@ void PPT_FORMAT::CPPTXWriter::WriteNotes(int nIndexNotes)
 
 void PPT_FORMAT::CPPTXWriter::WriteSlides()
 {
+    // here audio
+    for (auto& audio : m_pUserInfo->m_oExMedia.m_arAudioCollection)
+    {
+        auto rid = m_oManager.GenerateAudio(audio.m_strFilePath);
+        audio.m_dwID;
+    }
     for (size_t nIndexS = 0; nIndexS < m_pDocument->m_arSlides.size(); ++nIndexS)
     {
         WriteSlide((int)nIndexS);

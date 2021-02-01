@@ -109,51 +109,8 @@ namespace PPTX
 						val = *sVal;
 				}
 			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"cs:styleClr");
-
-				pWriter->StartAttributes();
-				if (val.IsInit())
-					pWriter->WriteAttribute(L"val", *val);
-				else if (bAuto)
-					pWriter->WriteAttribute(L"val", std::wstring(L"auto"));
-				pWriter->EndAttributes();
-
-				size_t nCount = Modifiers.size();
-				for (size_t i = 0; i < nCount; ++i)
-					Modifiers[i].toXmlWriter(pWriter);
-
-				pWriter->EndNode(L"cs:styleClr");
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(COLOR_TYPE_STYLE);
-
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-					if (val.IsInit())
-						pWriter->WriteUInt2(0, val);
-					else
-						pWriter->WriteBool1(1, bAuto);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				ULONG len = (ULONG)Modifiers.size();
-				if (len != 0)
-				{
-					pWriter->StartRecord(0);
-					pWriter->WriteULONG(len);
-
-					for (ULONG i = 0; i < len; ++i)
-					{
-						pWriter->WriteRecord1(1, Modifiers[i]);
-					}
-
-					pWriter->EndRecord();
-				}
-
-				pWriter->EndRecord();
-			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
 			nullable_uint val;
 			bool bAuto = false;

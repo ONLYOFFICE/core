@@ -1062,6 +1062,15 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
 
     CSlide* pSlide = m_pDocument->m_arSlides[nIndexSlide];
 
+    // here audio
+    if (nIndexSlide == 256)
+        for (auto& audio : m_pUserInfo->m_oExMedia.m_arAudioCollection)
+        {
+            bool bExternal = false;
+            std::wstring strAudio = m_oManager.GenerateAudio(audio.m_strFilePath);
+            oRels.WriteHyperlinkMedia(strAudio, bExternal, true, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
+        }
+
     if (0 == pSlide->m_lThemeID)
         oRels.StartSlide(pSlide->m_lLayoutID, pSlide->m_lNotesID);
     else
@@ -1424,12 +1433,7 @@ void PPT_FORMAT::CPPTXWriter::WriteNotes(int nIndexNotes)
 
 void PPT_FORMAT::CPPTXWriter::WriteSlides()
 {
-    // here audio
-    for (auto& audio : m_pUserInfo->m_oExMedia.m_arAudioCollection)
-    {
-        auto rid = m_oManager.GenerateAudio(audio.m_strFilePath);
-        audio.m_dwID;
-    }
+
     for (size_t nIndexS = 0; nIndexS < m_pDocument->m_arSlides.size(); ++nIndexS)
     {
         WriteSlide((int)nIndexS);

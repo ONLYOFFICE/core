@@ -5,17 +5,17 @@
 #include <iostream>
 
 #ifndef M_PI
-#define M_PI       3.14159265358979323846
+#define M_PI 3.14159265358979323846
 #endif
 
 namespace NSGraphics
 {
-void CGraphics::init(std::wstring ImagesDirectory, std::wstring FontsDirectory, double width_px, double height_px, double width_mm, double height_mm)
+void CGraphics::init(NSNativeControl::CNativeControl* oNative, double width_px, double height_px, double width_mm, double height_mm)
 {
-    m_sApplicationImagesDirectory = ImagesDirectory;
-    m_sApplicationFontsDirectory  = FontsDirectory;
+    m_sApplicationImagesDirectory = oNative->m_strImagesDirectory;
+    m_sApplicationFontsDirectory  = oNative->m_strFontsDirectory;
     #ifdef _DEBUG
-    std::wcout << L"init "<< ImagesDirectory << L"  " << FontsDirectory << L"  " << width_px << L"  " << height_px << L"  " << width_mm << L"  " << height_mm << std::endl;
+    std::wcout << L"init "<< m_sApplicationImagesDirectory << L"  " << m_sApplicationFontsDirectory << L"  " << width_px << L"  " << height_px << L"  " << width_mm << L"  " << height_mm << std::endl;
     #endif
     m_pApplicationFonts = NSFonts::NSApplication::Create();
     m_pApplicationFonts->InitializeFromFolder(m_sApplicationFontsDirectory.empty() ? NSFile::GetProcessDirectory() : m_sApplicationFontsDirectory);
@@ -1172,6 +1172,13 @@ void CGraphics::put_brushTexture(std::wstring src)
 {
     if (0 == src.find(L"data"))
     {
+        #ifdef _DEBUG
+        std::wcout << L"put_brushTexture " << src << std::endl;
+        #endif
+        m_pRenderer->put_BrushType(c_BrushTypeTexture);
+        m_pRenderer->put_BrushTexturePath(src);
+        m_pRenderer->put_BrushTextureMode(c_BrushTextureModeTile);
+        /*
         std::wstring strImage = m_sApplicationImagesDirectory + L"/texture.png";
         NSFile::CFileBinary oImageWriter;
         if (oImageWriter.CreateFileW(strImage))
@@ -1193,6 +1200,7 @@ void CGraphics::put_brushTexture(std::wstring src)
                 m_pRenderer->put_BrushTextureMode(c_BrushTextureModeTile);
             }
         }
+        */
     }
     else
     {
@@ -1215,7 +1223,7 @@ void CGraphics::put_brushTextureMode(int mode)
 void CGraphics::put_BrushTextureAlpha(int a)
 {
     #ifdef _DEBUG
-    std::cout << "put_BrushTextureAlpha " << std::endl;
+    std::cout << "put_BrushTextureAlpha " << a << std::endl;
     #endif
     m_pRenderer->put_BrushTextureAlpha(a == 0 ? 255 : a);
 }
@@ -1274,7 +1282,7 @@ int CGraphics::GetLineJoin()
 void CGraphics::put_TextureBounds(double x, double y, double w, double h)
 {
     #ifdef _DEBUG
-    std::cout << "put_TextureBounds " << std::endl;
+    std::cout << "put_TextureBounds " << L"  " << x << "  " << y << L"  " << w << L"  " << h << std::endl;
     #endif
     if(m_pRenderer->get_IntegerGrid())
     {

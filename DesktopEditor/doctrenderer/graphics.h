@@ -5,6 +5,7 @@
 
 #include "../common/Types.h"
 #include "../common/File.h"
+#include "nativecontrol.h"
 #include "../graphics/pro/Graphics.h"
 
 namespace NSGraphics
@@ -131,7 +132,7 @@ namespace NSGraphics
             RELEASEINTERFACE(m_pApplicationFonts);
         }
 
-        void init(std::wstring ImagesDirectory, std::wstring FontsDirectory, double width_px, double height_px, double width_mm, double height_mm);
+        void init(NSNativeControl::CNativeControl* oNative, double width_px, double height_px, double width_mm, double height_mm);
         void EndDraw() {}
         void put_GlobalAlpha(bool enable, double globalAlpha);
         void Start_GlobalAlpha() {}

@@ -107,7 +107,7 @@ namespace NSGraphics
     FUNCTION_WRAPPER_V8_1(_toDataURL,             toDataURL)
     FUNCTION_WRAPPER_V8  (_GetPenColor,           GetPenColor)
     FUNCTION_WRAPPER_V8  (_GetBrushColor,         GetBrushColor)
-    FUNCTION_WRAPPER_V8_1(_put_brushTexture,      put_brushTexture)
+    FUNCTION_WRAPPER_V8_2(_put_brushTexture,      put_brushTexture)
     FUNCTION_WRAPPER_V8_1(_put_brushTextureMode,  put_brushTextureMode)
     FUNCTION_WRAPPER_V8_1(_put_BrushTextureAlpha, put_BrushTextureAlpha)
     FUNCTION_WRAPPER_V8_8(_put_BrushGradient,     put_BrushGradient)

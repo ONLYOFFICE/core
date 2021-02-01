@@ -1168,16 +1168,25 @@ CColor CGraphics::GetBrushColor()
     m_pRenderer->get_BrushAlpha1(&a);
     return {color & 255, (color & 65280) >> 8, (color & 16711680) >> 16, a};
 }
-void CGraphics::put_brushTexture(std::wstring src)
+void CGraphics::put_brushTexture(std::wstring src, int type)
 {
-    if (0 == src.find(L"data"))
+    if (src.find(L':') == 0)
     {
+        src.erase(0, 1);
         #ifdef _DEBUG
-        std::wcout << L"put_brushTexture " << src << std::endl;
+        std::wcout << L"put_brushTexture " << src << L"  " << type << std::endl;
         #endif
-        m_pRenderer->put_BrushType(c_BrushTypeTexture);
+        LONG BrushColor;
+        m_pRenderer->put_BrushType(c_BrushTypeHatch1);
+        if (type)
+            m_pRenderer->put_BrushAlpha2(0);
+        else
+        {
+            m_pRenderer->put_BrushAlpha2(255);
+        }
         m_pRenderer->put_BrushTexturePath(src);
-        m_pRenderer->put_BrushTextureMode(c_BrushTextureModeTile);
+        m_pRenderer->put_BrushAlpha1(255);
+        m_pRenderer->put_BrushTextureMode(type);
         /*
         std::wstring strImage = m_sApplicationImagesDirectory + L"/texture.png";
         NSFile::CFileBinary oImageWriter;
@@ -1206,17 +1215,17 @@ void CGraphics::put_brushTexture(std::wstring src)
     {
         std::wstring strImage = (0 == src.find(L"theme") ? m_sApplicationThemesDirectory : m_sApplicationImagesDirectory) + L'/' + src;
         #ifdef _DEBUG
-        std::wcout << L"put_brushTexture " << strImage << std::endl;
+        std::wcout << L"put_brushTexture " << strImage << L"  " << type << std::endl;
         #endif
         m_pRenderer->put_BrushType(c_BrushTypeTexture);
         m_pRenderer->put_BrushTexturePath(strImage);
-        m_pRenderer->put_BrushTextureMode(c_BrushTextureModeStretch);
+        m_pRenderer->put_BrushTextureMode(type);
     }
 }
 void CGraphics::put_brushTextureMode(int mode)
 {
     #ifdef _DEBUG
-    std::cout << "put_brushTextureMode " << std::endl;
+    std::cout << "put_brushTextureMode " << mode << std::endl;
     #endif
     m_pRenderer->put_BrushTextureMode(mode);
 }

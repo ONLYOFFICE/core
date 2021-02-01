@@ -118,7 +118,7 @@ public:
     JSSmart<CJSValue> toDataURL(JSSmart<CJSValue> type);
     JSSmart<CJSValue> GetPenColor();
     JSSmart<CJSValue> GetBrushColor();
-    JSSmart<CJSValue> put_brushTexture(JSSmart<CJSValue> src);
+    JSSmart<CJSValue> put_brushTexture(JSSmart<CJSValue> src, JSSmart<CJSValue> type);
     JSSmart<CJSValue> put_brushTextureMode(JSSmart<CJSValue> mode);
     JSSmart<CJSValue> put_BrushTextureAlpha(JSSmart<CJSValue> a);
     JSSmart<CJSValue> put_BrushGradient(JSSmart<CJSValue> colors, JSSmart<CJSValue> n, JSSmart<CJSValue> x0, JSSmart<CJSValue> y0, JSSmart<CJSValue> x1, JSSmart<CJSValue> y1, JSSmart<CJSValue> r0, JSSmart<CJSValue> r1);

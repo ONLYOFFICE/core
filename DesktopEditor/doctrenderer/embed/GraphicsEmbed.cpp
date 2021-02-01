@@ -457,9 +457,9 @@ JSSmart<CJSValue> CGraphicsEmbed::GetBrushColor()
     e->set("A", res.a);
     return e->toValue();
 }
-JSSmart<CJSValue> CGraphicsEmbed::put_brushTexture(JSSmart<CJSValue> src)
+JSSmart<CJSValue> CGraphicsEmbed::put_brushTexture(JSSmart<CJSValue> src, JSSmart<CJSValue> type)
 {
-    m_pInternal->put_brushTexture(src->toStringW());
+    m_pInternal->put_brushTexture(src->toStringW(), type->toInt32());
     return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::put_brushTextureMode(JSSmart<CJSValue> mode)

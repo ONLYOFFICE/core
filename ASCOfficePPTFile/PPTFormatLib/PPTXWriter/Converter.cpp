@@ -1062,15 +1062,6 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
 
     CSlide* pSlide = m_pDocument->m_arSlides[nIndexSlide];
 
-    // here audio
-    if (nIndexSlide == 256)
-        for (auto& audio : m_pUserInfo->m_oExMedia.m_arAudioCollection)
-        {
-            bool bExternal = false;
-            std::wstring strAudio = m_oManager.GenerateAudio(audio.m_strFilePath);
-            oRels.WriteHyperlinkMedia(strAudio, bExternal, true, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
-        }
-
     if (0 == pSlide->m_lThemeID)
         oRels.StartSlide(pSlide->m_lLayoutID, pSlide->m_lNotesID);
     else
@@ -1148,10 +1139,26 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
 
         animation.Convert(pSlide->m_oTiming);
         WriteTiming(oWriter, pSlide->m_oTiming);
+
+        // here audio for animation in _rels
+        bool noAudioTrans = pSlide->m_oSlideShow.m_oTransition.m_oAudio.m_strAudioFileName.empty();
+        auto& audioCont = m_pUserInfo->m_oExMedia.m_arAudioCollection;
+        unsigned audioSize = audioCont.size();
+        for (unsigned i = 0; i < audioSize && i <= animation.getCSound() - noAudioTrans; i++)
+        {
+            auto& audio = audioCont[i];
+            bool bExternal = false;
+            std::wstring strAudio = m_oManager.GenerateAudio(audio.m_strFilePath);
+            oRels.WriteHyperlinkMedia(strAudio, bExternal, true, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
+            audioCont.erase(audioCont.begin());
+         }
     }
 
 
     oWriter.WriteString(std::wstring(L"</p:sld>"));
+
+
+
 
     oRels.CloseRels();
 

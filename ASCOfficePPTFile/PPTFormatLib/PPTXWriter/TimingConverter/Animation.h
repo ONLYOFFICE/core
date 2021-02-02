@@ -153,6 +153,9 @@ private:
 //            const CRecordSubEffectContainer *pSub,
 //            CRecordExtTimeNodeContainer *pETNC);
 
+public:
+    unsigned getCSound()const{return m_cSound;}
+
 private:
     unsigned m_cTnId;
     unsigned m_cSound;

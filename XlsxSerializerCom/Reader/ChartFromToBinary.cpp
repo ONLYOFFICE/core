@@ -1241,7 +1241,8 @@ namespace BinXlsxRW
 				OOX::CPath pathDrawingsRels = pathEmbeddingRelsDir.GetPath() + FILE_SEPARATOR_STR + pXlsxFile->m_sOutputFilename + _T(".rels");
 				m_pOfficeDrawingConverter->SaveDstContentRels(pathDrawingsRels.GetPath());
 								
-				pChart->Add(pXlsxFile.smart_dynamic_cast<OOX::File>());
+				NSCommon::smart_ptr<OOX::File> pFile = pXlsxFile.smart_dynamic_cast<OOX::File>();
+				pChart->Add(pFile);
 
 				unsigned int rId = 0;
 				m_pOfficeDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package", L"../embeddings/" + pXlsxFile->m_sOutputFilename, std::wstring(), &rId);

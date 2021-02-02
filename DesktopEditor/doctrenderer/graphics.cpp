@@ -1170,46 +1170,47 @@ CColor CGraphics::GetBrushColor()
 }
 void CGraphics::put_brushTexture(std::wstring src, int type)
 {
-    if (src.find(L':') == 0)
+    if (src.find(L"data:") == 0)
     {
-        src.erase(0, 1);
-        #ifdef _DEBUG
-        std::wcout << L"put_brushTexture " << src << L"  " << type << std::endl;
-        #endif
-        LONG BrushColor;
-        m_pRenderer->put_BrushType(c_BrushTypeHatch1);
-        if (type)
-            m_pRenderer->put_BrushAlpha2(0);
-        else
-        {
-            m_pRenderer->put_BrushAlpha2(255);
-        }
-        m_pRenderer->put_BrushTexturePath(src);
-        m_pRenderer->put_BrushAlpha1(255);
-        m_pRenderer->put_BrushTextureMode(type);
-        /*
         std::wstring strImage = m_sApplicationImagesDirectory + L"/texture.png";
-        NSFile::CFileBinary oImageWriter;
-        if (oImageWriter.CreateFileW(strImage))
+        bool bIsOnlyOfficeHatch = false;
+        if(src.find(L"onlyoffice_hatch") != std::wstring::npos)
+            bIsOnlyOfficeHatch = true;
+        #ifdef _DEBUG
+        std::wcout << L"put_brushTexture " << src << L"  "  << bIsOnlyOfficeHatch << std::endl;
+        #endif
+        src.erase(0, src.find(L',') + 1);
+
+        std::string sBase64MultyByte(src.begin(), src.end());
+        int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(sBase64MultyByte.length());
+        if(nDecodeLen == 0)
+            return;
+        BYTE* pImageData = new BYTE[nDecodeLen + 64];
+        if (TRUE == NSBase64::Base64Decode(sBase64MultyByte.c_str(), sBase64MultyByte.length(), pImageData, &nDecodeLen))
         {
-            src.erase(0, src.find(L',') + 1);
-            int nSrcLen = (int)src.length();
-            int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
-            if(nDecodeLen == 0)
-                return;
-            BYTE* pImageData = new BYTE[nDecodeLen];
-            if (TRUE == NSBase64::Base64Decode(U_TO_UTF8(src).c_str(), nSrcLen, pImageData, &nDecodeLen))
+            if(!bIsOnlyOfficeHatch)
             {
-                oImageWriter.WriteFile(pImageData, (DWORD)nDecodeLen);
-                #ifdef _DEBUG
-                std::wcout << L"put_brushTexture " << src << std::endl;
-                #endif
-                m_pRenderer->put_BrushType(c_BrushTypeTexture);
-                m_pRenderer->put_BrushTexturePath(strImage);
-                m_pRenderer->put_BrushTextureMode(c_BrushTextureModeTile);
+                NSFile::CFileBinary oImageWriter;
+                if (oImageWriter.CreateFileW(strImage))
+                {
+                    oImageWriter.WriteFile(pImageData, (DWORD)nDecodeLen);
+                    oImageWriter.CloseFile();
+                }
             }
+            else
+            {
+                int nSize = (int)sqrt(nDecodeLen >> 2);
+                CBgraFrame oFrame;
+                oFrame.put_Data(pImageData);
+                oFrame.put_Width(nSize);
+                oFrame.put_Height(nSize);
+                oFrame.put_Stride(4 * nSize);
+                oFrame.SaveFile(strImage, 4);
+            }
+            m_pRenderer->put_BrushType(c_BrushTypeTexture);
+            m_pRenderer->put_BrushTexturePath(strImage);
+            m_pRenderer->put_BrushTextureMode(type);
         }
-        */
     }
     else
     {

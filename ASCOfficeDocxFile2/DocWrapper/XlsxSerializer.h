@@ -29,6 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
+
 #include <string>
 #include "../../Common/DocxFormat/Source/Base/Types_32.h"
 #include "../../Common/DocxFormat/Source/Base/SmartPtr.h"

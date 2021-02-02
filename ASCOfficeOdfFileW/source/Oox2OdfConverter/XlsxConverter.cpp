@@ -1159,7 +1159,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRow *oox_row, OOX::Spreadsheet::C
 
 			if (bEqual)
 			{
-				if ( ods_context->current_table()->is_row_comment(row_number, 1) < 0)
+				int repeated = 1;
+				if ( ods_context->current_table()->is_row_comment(row_number, repeated) < 0 &&
+					ods_context->current_table()->is_row_validation(row_number, repeated) < 0)
 				{
 					ods_context->add_row_repeated();
 					return;

@@ -508,7 +508,7 @@ bool ods_table_state::is_cell_comment()
 }
 bool ods_table_state::is_cell_data_validation()
 {
-	if ( cells_size_ < 1 )return false;
+	if ( cells_size_ < 1 ) return false;
 	return cells_.back().data_validation_name.empty() ? true : false;
 }
 int ods_table_state::is_cell_hyperlink(int col, int row)
@@ -522,16 +522,31 @@ int ods_table_state::is_cell_hyperlink(int col, int row)
 	}
 	return -1;
 }
-std::wstring ods_table_state::is_cell_data_validation(int col, int row)
+std::wstring ods_table_state::is_cell_data_validation(int col, int row, unsigned int repeate_col, data_validation_state::_ref & ref)
 {
-    for (size_t i = 0; i < data_validations_.size(); i++)
+	for (size_t i = 0; i < data_validations_.size(); i++)
 	{
-		if (data_validations_[i].in_ref(col, row))
+		if (data_validations_[i].in_ref(col, row, repeate_col, ref))
 		{
             return data_validations_[i].name;
 		}
 	}
 	return L"";
+}
+int ods_table_state::is_row_validation(int row, int & repeate_row)
+{
+	for (size_t i = 0; i < data_validations_.size(); i++)
+	{
+		data_validation_state::_ref ref;
+		if (data_validations_[i].in_row(row, repeate_row, ref))
+		{
+			repeate_row = std::min(ref.row_end, row + repeate_row - 1) - std::max(row, ref.row_start) + 1;
+			
+			if (ref.row_start > row) row = ref.row_start;
+			return  row;
+		}
+	}
+	return -1;
 }
 int ods_table_state::is_cell_comment(int col, int row, unsigned int repeate_col)
 {
@@ -550,7 +565,7 @@ int ods_table_state::is_row_comment(int row, int repeate_row)
 	{
 		if (comments_[i].row < row + repeate_row && comments_[i].row >= row && comments_[i].used == false)
 		{
-			return  (int)i;
+			return comments_[i].row;
 		}
 	}
 	return -1;
@@ -633,9 +648,12 @@ void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & 
 	state.elm = elm;  state.repeated = 1;  state.style_name = style_name; state.style_elm = style_elm;
     state.row = current_table_row_;  state.col = current_table_column_ + 1;
 
+	data_validation_state::_ref ref;
+	std::wstring validation_name = is_cell_data_validation(state.col, state.row, 1, ref);
+
 	state.hyperlink_idx			= is_cell_hyperlink(state.col, state.row);
 	state.comment_idx			= is_cell_comment(state.col, state.row);
-	state.data_validation_name	= is_cell_data_validation(state.col, state.row);
+	state.data_validation_name	= validation_name;
 
 	current_table_column_ +=  state.repeated;  
     cells_.push_back(state);
@@ -1413,7 +1431,7 @@ void ods_table_state::end_cell()
 	}
 }
 
-void ods_table_state::add_default_cell( unsigned int repeated)
+void ods_table_state::add_default_cell( int repeated)
 {
 	if (repeated < 1) return;
 
@@ -1425,12 +1443,11 @@ void ods_table_state::add_default_cell( unsigned int repeated)
 
 		add_default_cell(comments_[comment_idx].col - c - 1);
 		add_default_cell(1);
-		add_default_cell(repeated + c + 1 - comments_[comment_idx].col);
+		add_default_cell(repeated + c - comments_[comment_idx].col);
 
 		return;
 	}
-
-//////////////////////////////////////////////////
+//-----------------------------------------------------------------------------------------
 	std::map<int, std::map<int, _spanned_info>>::iterator pFindRow = map_merged_cells.find(current_table_row_);
 
 	bool bSpanned = false;
@@ -1447,7 +1464,7 @@ void ods_table_state::add_default_cell( unsigned int repeated)
 
 					add_default_cell(it->first - c - 1);
 					add_default_cell(1);
-					add_default_cell(repeated + c + 1 - it->first);
+					add_default_cell(repeated + c - current_table_column_);
 
 					return;
 				}
@@ -1459,7 +1476,24 @@ void ods_table_state::add_default_cell( unsigned int repeated)
 			}
 		}
 	}
+//-----------------------------------------------------------------------------------------
+	data_validation_state::_ref ref;
+	std::wstring validation_name = is_cell_data_validation(current_table_column_ + 1, current_table_row_, repeated, ref);
 
+	int repeated_validation = std::min(ref.col_end, current_table_column_ + (int)repeated) - std::max(ref.col_start, current_table_column_ + 1) + 1;
+
+	if (false == validation_name.empty() && repeated > 1 && repeated_validation != repeated)
+	{
+		//делим на 3 - до, с validation, после;
+		int c = current_table_column_;
+
+		add_default_cell(ref.col_start - c - 1);
+		add_default_cell(repeated_validation);
+		add_default_cell(repeated + c - current_table_column_);
+
+		return;
+	}
+//-----------------------------------------------------------------------------------------
 	bool bCovered = false;
 	if (!bSpanned)
 	{
@@ -1487,7 +1521,7 @@ void ods_table_state::add_default_cell( unsigned int repeated)
 			}
 		}		
 	}
-
+//-----------------------------------------------------------------------------------------
 	office_element_ptr default_cell_elm;
 	if (bCovered)
 	{
@@ -1522,7 +1556,7 @@ void ods_table_state::add_default_cell( unsigned int repeated)
 	state.col = current_table_column_ + 1;
 
 	state.hyperlink_idx			= is_cell_hyperlink(state.col, current_table_row_);
-	state.data_validation_name	= is_cell_data_validation(state.col, current_table_row_);
+	state.data_validation_name	= validation_name;
 	state.comment_idx			= comment_idx;
 	
 	cells_.push_back(state);

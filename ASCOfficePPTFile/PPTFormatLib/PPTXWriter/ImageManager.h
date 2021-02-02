@@ -376,5 +376,6 @@ namespace PPT_FORMAT
 				return WriteHyperlinkVideo(strVideo, false);
 			}
 		}
-	};
+        inline int getRId()const{return m_lNextRelsID;}
+    };
 }

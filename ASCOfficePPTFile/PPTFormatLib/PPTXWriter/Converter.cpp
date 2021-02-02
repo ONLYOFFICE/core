@@ -1146,7 +1146,7 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
         unsigned audioSize = audioCont.size();
         for (unsigned i = 0; i < audioSize && i <= animation.getCSound() - noAudioTrans; i++)
         {
-            auto& audio = audioCont[i];
+            auto& audio = audioCont.front();
             bool bExternal = false;
             std::wstring strAudio = m_oManager.GenerateAudio(audio.m_strFilePath);
             oRels.WriteHyperlinkMedia(strAudio, bExternal, true, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");

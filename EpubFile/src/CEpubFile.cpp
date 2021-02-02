@@ -185,26 +185,46 @@ void CEpubFile::ShowMap()
         std::wcout << oItem.m_sID << L" - " << m_mapRefs[oItem.m_sID].GetRef() << std::endl;
 }
 
-HRESULT CEpubFile::FromHtml(const std::wstring& sInputFile, const std::wstring& sDstDirect)
+HRESULT CEpubFile::FromHtml(const std::wstring& sSrc, const std::wstring& sDst)
 {
-    NSDirectory::CreateDirectory(sDstDirect + L"/META-INF");
-    NSDirectory::CreateDirectory(sDstDirect + L"/OEBPS");
+    NSDirectory::CreateDirectory(sDst + L"/META-INF");
+    NSDirectory::CreateDirectory(sDst + L"/OEBPS");
 
     NSFile::CFileBinary oMimeType;
-    if(!oMimeType.CreateFileW(sDstDirect + L"/mimetype"))
-        return S_FALSE;
-    oMimeType.WriteStringUTF8(L"application/epub+zip");
-    oMimeType.CloseFile();
+    if (oMimeType.CreateFileW(sDst + L"/mimetype"))
+    {
+        oMimeType.WriteStringUTF8(L"application/epub+zip");
+        oMimeType.CloseFile();
+    }
 
     NSFile::CFileBinary oContainerXml;
-    if(!oContainerXml.CreateFileW(sDstDirect + L"/META-INF/container.xml"))
-        return S_FALSE;
-    oContainerXml.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\"><rootfiles><rootfile full-path=\"OEBPS/content.opf\" media-type=\"application/oebps-package+xml\"/></rootfiles></container>");
-    oContainerXml.CloseFile();
+    if (oContainerXml.CreateFileW(sDst + L"/META-INF/container.xml"))
+    {
+        oContainerXml.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\"><rootfiles><rootfile full-path=\"OEBPS/content.opf\" media-type=\"application/oebps-package+xml\"/></rootfiles></container>");
+        oContainerXml.CloseFile();
+    }
 
     NSFile::CFileBinary oContentOpf;
-    if(!oContentOpf.CreateFileW(sDstDirect + L"/OEBPS/content.opf"))
-        return S_FALSE;
-    oContentOpf.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><package><metadata></metadata><manifest></manifest><spine toc=\"ncx\"></spine><guide></guide></package>");
-    oContentOpf.CloseFile();
+    if (oContentOpf.CreateFileW(sDst + L"/OEBPS/content.opf"))
+    {
+        oContentOpf.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><package xmlns=\"http://www.idpf.org/2007/opf\" version=\"2.0\" unique-identifier=\"book_uuid\"><metadata></metadata><manifest></manifest><spine toc=\"ncx\"></spine><guide></guide></package>");
+
+        std::wstring sCoreXml;
+        XmlUtils::CXmlLiteReader oCoreReader;
+        if (NSFile::CFileBinary::ReadAllTextUtf8(sSrc + L"/docProps/core.xml", sCoreXml))
+        {
+            oCoreReader.FromString(sCoreXml);
+            oCoreReader.ReadNextNode();
+            int nDeath = oCoreReader.GetDepth();
+            while (oCoreReader.ReadNextSiblingNode(nDeath))
+            {
+                if (oCoreReader.GetNamespacePrefix() == L"dc")
+                {
+                    oContentOpf.WriteStringUTF8(oCoreReader.GetInnerXml());
+                }
+            }
+        }
+
+        oContentOpf.CloseFile();
+    }
 }

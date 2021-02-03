@@ -207,24 +207,22 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sSrc, const std::wstring& sDst)
     NSFile::CFileBinary oContentOpf;
     if (oContentOpf.CreateFileW(sDst + L"/OEBPS/content.opf"))
     {
-        oContentOpf.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><package xmlns=\"http://www.idpf.org/2007/opf\" version=\"2.0\" unique-identifier=\"book_uuid\"><metadata></metadata><manifest></manifest><spine toc=\"ncx\"></spine><guide></guide></package>");
-
+        oContentOpf.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><package xmlns=\"http://www.idpf.org/2007/opf\" version=\"2.0\" unique-identifier=\"book_uuid\"><metadata>");
+        // metadata
         std::wstring sCoreXml;
         XmlUtils::CXmlLiteReader oCoreReader;
-        if (NSFile::CFileBinary::ReadAllTextUtf8(sSrc + L"/docProps/core.xml", sCoreXml))
+        if (NSFile::CFileBinary::ReadAllTextUtf8(sSrc + L"/docx_unpacked/docProps/core.xml", sCoreXml))
         {
             oCoreReader.FromString(sCoreXml);
             oCoreReader.ReadNextNode();
             int nDeath = oCoreReader.GetDepth();
             while (oCoreReader.ReadNextSiblingNode(nDeath))
-            {
                 if (oCoreReader.GetNamespacePrefix() == L"dc")
-                {
                     oContentOpf.WriteStringUTF8(oCoreReader.GetInnerXml());
-                }
-            }
         }
 
+        NSFile::CFileBinary::Copy(sSrc + L"/doct_unpacked/index.html", sDst + L"/OEBPS/index.html");
+        oContentOpf.WriteStringUTF8(L"</metadata><manifest><item href=\"index.html\" id=\"index\" media-type=\"application/xhtml+xml\"/></manifest><spine toc=\"ncx\"><itemref idref=\"index\"/></spine><guide></guide></package>");
         oContentOpf.CloseFile();
     }
 }

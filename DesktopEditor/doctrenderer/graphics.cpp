@@ -1158,7 +1158,7 @@ CColor CGraphics::GetPenColor()
     LONG a;
     m_pRenderer->get_PenColor(&color);
     m_pRenderer->get_PenAlpha(&a);
-    return {color & 255, (color & 65280) >> 8, (color & 16711680) >> 16, a};
+    return {(int)(color & 0xFF), (int)((color >> 8) & 0xFF), (int)((color >> 16) & 0xFF), (int)a};
 }
 CColor CGraphics::GetBrushColor()
 {
@@ -1166,7 +1166,7 @@ CColor CGraphics::GetBrushColor()
     LONG a;
     m_pRenderer->get_BrushColor1(&color);
     m_pRenderer->get_BrushAlpha1(&a);
-    return {color & 255, (color & 65280) >> 8, (color & 16711680) >> 16, a};
+    return {(int)(color & 0xFF), (int)((color >> 8) & 0xFF), (int)((color >> 16) & 0xFF), (int)a};
 }
 void CGraphics::put_brushTexture(std::wstring src, int type)
 {

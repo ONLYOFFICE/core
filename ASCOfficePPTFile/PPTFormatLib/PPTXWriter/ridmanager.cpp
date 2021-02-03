@@ -1,11 +1,28 @@
 #include "ridmanager.h"
 
 #include "../Records/SoundContainer.h"
+#include <set>
 
 RIDManager::RIDManager() :
+    m_addToRID(1),
     m_haveSetedSoundRIDCollection(false)
 {
 
+}
+
+std::vector<std::wstring> RIDManager::getPathesForRels()
+{
+    std::vector<std::wstring> paths;
+    std::set<_UINT32> rids;
+    for (auto pRId : m_arrRID)
+    {
+        rids.insert(*pRId);
+        *pRId += m_addToRID;
+    }
+
+    for (auto RId : rids)
+        paths.push_back(m_soundPaths[RId - 1]);
+    return paths;
 }
 
 void RIDManager::setRIDfromAnimation(Animation& anim)
@@ -36,6 +53,11 @@ void RIDManager::setSoundRIDCollection(CRecordSoundCollectionContainer* pColecti
     }
 }
 
+void RIDManager::addSoundPath(std::wstring& path)
+{
+    m_soundPaths.push_back(path);
+}
+
 void RIDManager::searchSound (CRecordExtTimeNodeContainer* const pETNC)
 {
     if (!pETNC) return;
@@ -62,4 +84,5 @@ void RIDManager::clearRIDSforSlide()
 {
     m_arrRID.clear();
     m_arrSoundRef.clear();
+    m_addToRID = 1;
 }

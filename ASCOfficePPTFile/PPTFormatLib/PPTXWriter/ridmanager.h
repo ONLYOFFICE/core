@@ -29,11 +29,19 @@ public:
         2 rels 2:3 3:5 4:6
         3 rels 2:7
     */
+    // It sets in first
+    void addSoundPath(std::wstring& path);
+
     void setRIDfromTransitions(int &soundRID);
     void setRIDfromAnimation(Animation& anim);
+    void setRID(int addToRID)  // It's num was added to output //// add some constants(1)
+        {m_addToRID = addToRID;}
+    std::vector<std::wstring> getPathesForSlideRels(); // Correct RIDs and get paths for rels in current slide
 
 private:
+    // It set once
     void setSoundRIDCollection(CRecordSoundCollectionContainer* pColection);
+
     void searchSound (CRecordExtTimeNodeContainer* const pETNC);
     void addSound(CRecordClientVisualElementContainer* const pCVEC);
     void clearRIDSforSlide();
@@ -41,9 +49,11 @@ private:
     // for input --> rewrite --> output
     std::vector<_UINT32*> m_arrRID;         // It's for one slide animation
     std::vector<_UINT32*> m_arrSoundRef;    // It's for one slide _rels
+    int                   m_addToRID;
 
     bool m_haveSetedSoundRIDCollection;
-    std::vector<std::wstring*> m_soundRIDCollection; // It set once
+    std::vector<std::wstring*> m_soundRIDCollection; // It sets once
+    std::vector<std::wstring > m_soundPaths; // It sets once
 };
 
 #endif // RIDMANAGER_H

@@ -34,6 +34,7 @@
 #ifndef DISABLE_FILE_DOWNLOADER
 #include "../../../Common/FileDownloader/FileDownloader.h"
 #endif
+#include "ridmanager.h"
 
 namespace PPT_FORMAT
 {
@@ -172,11 +173,14 @@ namespace PPT_FORMAT
 	}
 	class CRelsGenerator
 	{
+    public:
+        RIDManager                              m_ridManager;
+
 	private:
-		PPT_FORMAT::CStringWriter		m_oWriter;
+        PPT_FORMAT::CStringWriter               m_oWriter;
 		int										m_lNextRelsID;
 		std::map<std::wstring, int>				m_mapMediaRelsID;
-		CMediaManager*							m_pManager;
+        CMediaManager*							m_pManager;
 		std::map<std::wstring, std::wstring>	m_mapHyperlinks;
 
 	public:
@@ -376,6 +380,19 @@ namespace PPT_FORMAT
 				return WriteHyperlinkVideo(strVideo, false);
 			}
 		}
+
+        inline void WriteAudioCollection(const std::vector<CExFilesInfo>& audioCont)
+        {
+            if (audioCont.empty() or !m_pManager) return;
+
+            for (auto& audio : audioCont)
+            {
+                auto pathAudio = m_pManager->GenerateAudio(audio.m_strFilePath);
+                m_ridManager.addSoundPath(pathAudio);
+            }
+
+        }
+
         inline int getRId()const{return m_lNextRelsID;}
     };
 }

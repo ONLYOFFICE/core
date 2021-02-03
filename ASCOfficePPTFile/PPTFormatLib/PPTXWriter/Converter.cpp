@@ -1137,6 +1137,8 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
             animation.m_pSoundContainer = sound[0];
         }
 
+        m_oRIDManager.setRIDfromAnimation(animation);
+
         animation.Convert(pSlide->m_oTiming);
         WriteTiming(oWriter, pSlide->m_oTiming);
 

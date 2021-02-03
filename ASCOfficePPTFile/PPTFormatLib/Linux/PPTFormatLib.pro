@@ -380,6 +380,7 @@ HEADERS += \
     ../PPTXWriter/TimingConverter/TnChildren.h \
     ../PPTXWriter/TimingConverter/TnLst.h \
     ../PPTXWriter/TimingConverter/Video.h \
+    ../PPTXWriter/ridmanager.h \
     ../Reader/ClassesAtom.h \
     ../Reader/CommonZLib.h \
     ../Reader/PPTDocumentInfo.h \
@@ -671,5 +672,6 @@ SOURCES += \
     ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.cpp \
     ../../../Common/3dParty/pole/pole.cpp \
     ../PPTXWriter/TimingConverter/Animation.cpp \
+    ../PPTXWriter/ridmanager.cpp \
     ../Records/Animations/TimeVariant.cpp
 

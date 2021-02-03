@@ -32,7 +32,7 @@
 #pragma once
 
 #include "ImageManager.h"
-#include "TimingConverter/Animation.h"
+#include "ridmanager.h"
 
 
 class CStylesWriter;
@@ -55,6 +55,7 @@ namespace PPT_FORMAT
 		CDocument	*	m_pDocument;
 		CPPTUserInfo*	m_pUserInfo;
 		CMediaManager	m_oManager;
+        RIDManager      m_oRIDManager;
 
 		CShapeWriter*	m_pShapeWriter;
 

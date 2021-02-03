@@ -540,7 +540,7 @@ int ods_table_state::is_row_validation(int row, int & repeate_row)
 		data_validation_state::_ref ref;
 		if (data_validations_[i].in_row(row, repeate_row, ref))
 		{
-			repeate_row = std::min(ref.row_end, row + repeate_row - 1) - std::max(row, ref.row_start) + 1;
+			repeate_row = (std::min)(ref.row_end, row + repeate_row - 1) - (std::max)(row, ref.row_start) + 1;
 			
 			if (ref.row_start > row) row = ref.row_start;
 			return  row;
@@ -1480,7 +1480,7 @@ void ods_table_state::add_default_cell( int repeated)
 	data_validation_state::_ref ref;
 	std::wstring validation_name = is_cell_data_validation(current_table_column_ + 1, current_table_row_, repeated, ref);
 
-	int repeated_validation = std::min(ref.col_end, current_table_column_ + (int)repeated) - std::max(ref.col_start, current_table_column_ + 1) + 1;
+	int repeated_validation = (std::min)(ref.col_end, current_table_column_ + (int)repeated) - (std::max)(ref.col_start, current_table_column_ + 1) + 1;
 
 	if (false == validation_name.empty() && repeated > 1 && repeated_validation != repeated)
 	{

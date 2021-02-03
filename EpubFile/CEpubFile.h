@@ -30,7 +30,7 @@ public:
     void SetTempDirectory(const std::wstring& stempDir);
     HRESULT Convert(const std::wstring& sInputFile, const std::wstring& sOutputFile, bool bIsOutCompress = true);
     void ShowMap();
-    HRESULT FromHtml(const std::wstring& sSrc, const std::wstring& sDst);
+    HRESULT FromHtml(const std::wstring& sSrc, const std::wstring& sDstFile);
 };
 
 #endif // CEPUBFILE_H

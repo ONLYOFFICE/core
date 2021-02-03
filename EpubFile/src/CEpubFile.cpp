@@ -185,27 +185,27 @@ void CEpubFile::ShowMap()
         std::wcout << oItem.m_sID << L" - " << m_mapRefs[oItem.m_sID].GetRef() << std::endl;
 }
 
-HRESULT CEpubFile::FromHtml(const std::wstring& sSrc, const std::wstring& sDst)
+HRESULT CEpubFile::FromHtml(const std::wstring& sSrc, const std::wstring& sDstFile)
 {
-    NSDirectory::CreateDirectory(sDst + L"/META-INF");
-    NSDirectory::CreateDirectory(sDst + L"/OEBPS");
+    NSDirectory::CreateDirectory(m_sTempDir + L"/META-INF");
+    NSDirectory::CreateDirectory(m_sTempDir + L"/OEBPS");
 
     NSFile::CFileBinary oMimeType;
-    if (oMimeType.CreateFileW(sDst + L"/mimetype"))
+    if (oMimeType.CreateFileW(m_sTempDir + L"/mimetype"))
     {
         oMimeType.WriteStringUTF8(L"application/epub+zip");
         oMimeType.CloseFile();
     }
 
     NSFile::CFileBinary oContainerXml;
-    if (oContainerXml.CreateFileW(sDst + L"/META-INF/container.xml"))
+    if (oContainerXml.CreateFileW(m_sTempDir + L"/META-INF/container.xml"))
     {
         oContainerXml.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\"><rootfiles><rootfile full-path=\"OEBPS/content.opf\" media-type=\"application/oebps-package+xml\"/></rootfiles></container>");
         oContainerXml.CloseFile();
     }
 
     NSFile::CFileBinary oContentOpf;
-    if (oContentOpf.CreateFileW(sDst + L"/OEBPS/content.opf"))
+    if (oContentOpf.CreateFileW(m_sTempDir + L"/OEBPS/content.opf"))
     {
         oContentOpf.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><package xmlns=\"http://www.idpf.org/2007/opf\" version=\"2.0\" unique-identifier=\"book_uuid\"><metadata>");
         // metadata
@@ -217,12 +217,19 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sSrc, const std::wstring& sDst)
             oCoreReader.ReadNextNode();
             int nDeath = oCoreReader.GetDepth();
             while (oCoreReader.ReadNextSiblingNode(nDeath))
+            {
                 if (oCoreReader.GetNamespacePrefix() == L"dc")
-                    oContentOpf.WriteStringUTF8(oCoreReader.GetInnerXml());
+                {
+                    oContentOpf.WriteStringUTF8(oCoreReader.GetOuterXml());
+                }
+            }
         }
-
-        NSFile::CFileBinary::Copy(sSrc + L"/doct_unpacked/index.html", sDst + L"/OEBPS/index.html");
+        // index.html
+        NSFile::CFileBinary::Copy(sSrc + L"/doct_unpacked/index.html", m_sTempDir + L"/OEBPS/index.html");
         oContentOpf.WriteStringUTF8(L"</metadata><manifest><item href=\"index.html\" id=\"index\" media-type=\"application/xhtml+xml\"/></manifest><spine toc=\"ncx\"><itemref idref=\"index\"/></spine><guide></guide></package>");
         oContentOpf.CloseFile();
     }
+
+    COfficeUtils oOfficeUtils;
+    return oOfficeUtils.CompressFileOrDirectory(m_sTempDir, sDstFile);
 }

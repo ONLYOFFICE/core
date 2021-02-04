@@ -399,9 +399,8 @@ void Animation::FillAudio(CRecordClientVisualElementContainer *pCVEC,
 {
     if (pCVEC->m_bVisualShapeAtom)
     {
-        // We need take be ref m_nObjectIdRef and delete +2
         oAudio.cMediaNode.tgtEl.embed =
-                new OOX::RId(pCVEC->m_oVisualShapeAtom.m_nObjectIdRef + 2);
+                new OOX::RId(pCVEC->m_oVisualShapeAtom.m_nObjectIdRef);
 
         std::vector<CRecordSoundContainer*> soundCont;
         this->m_pSoundContainer->GetRecordsByType(

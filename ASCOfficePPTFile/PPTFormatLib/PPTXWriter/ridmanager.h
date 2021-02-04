@@ -34,8 +34,8 @@ public:
 
     void setRIDfromTransitions(int &soundRID);
     void setRIDfromAnimation(Animation& anim);
-    void setRID(int addToRID)  // It's num was added to output //// add some constants(1)
-        {m_addToRID = addToRID;}
+    void setRID(int RID)  // It's num was added to output //// add some constants(1)
+        {m_RID = RID;}
     std::vector<std::wstring> getPathesForSlideRels(); // Correct RIDs and get paths for rels in current slide
 
 private:
@@ -49,7 +49,7 @@ private:
     // for input --> rewrite --> output
     std::vector<_UINT32*> m_arrRID;         // It's for one slide animation
     std::vector<_UINT32*> m_arrSoundRef;    // It's for one slide _rels
-    int                   m_addToRID;
+    int                   m_RID;
 
     bool m_haveSetedSoundRIDCollection;
     std::vector<std::wstring*> m_soundRIDCollection; // It sets once

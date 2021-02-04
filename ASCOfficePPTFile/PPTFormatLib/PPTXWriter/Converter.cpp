@@ -1137,23 +1137,16 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
             animation.m_pSoundContainer = sound[0];
         }
 
-        oRels.m_ridManager.setRIDfromAnimation(animation);
+        m_oManager.m_ridManager.setRIDfromAnimation(animation);
+        m_oManager.m_ridManager.setRID(oRels.getRId());
+        auto paths = m_oManager.m_ridManager.getPathesForSlideRels();
+        for (auto& path : paths)
+        {
+            oRels.WriteHyperlinkMedia(path, false, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
+        }
 
         animation.Convert(pSlide->m_oTiming);
         WriteTiming(oWriter, pSlide->m_oTiming);
-
-        // here audio for animation in _rels
-        bool noAudioTrans = pSlide->m_oSlideShow.m_oTransition.m_oAudio.m_strAudioFileName.empty();
-        auto& audioCont = m_pUserInfo->m_oExMedia.m_arAudioCollection;
-        unsigned audioSize = audioCont.size();
-        for (unsigned i = 0; i < audioSize && i <= animation.getCSound() - noAudioTrans; i++)
-        {
-            auto& audio = audioCont.front();
-            bool bExternal = false;
-            std::wstring strAudio = m_oManager.GenerateAudio(audio.m_strFilePath);
-            oRels.WriteHyperlinkMedia(strAudio, bExternal, true, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
-            audioCont.erase(audioCont.begin());
-         }
     }
 
 
@@ -1442,7 +1435,7 @@ void PPT_FORMAT::CPPTXWriter::WriteNotes(int nIndexNotes)
 
 void PPT_FORMAT::CPPTXWriter::WriteSlides()
 {
-
+    m_oManager.WriteAudioCollection(m_pUserInfo->m_oExMedia.m_arAudioCollection);
     for (size_t nIndexS = 0; nIndexS < m_pDocument->m_arSlides.size(); ++nIndexS)
     {
         WriteSlide((int)nIndexS);

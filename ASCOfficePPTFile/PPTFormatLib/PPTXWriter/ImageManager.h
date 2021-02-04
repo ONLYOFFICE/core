@@ -40,7 +40,10 @@ namespace PPT_FORMAT
 {
 	class CMediaManager
 	{
-	private:
+    public:
+        RIDManager                              m_ridManager;
+
+    private:
 		std::map<std::wstring, std::wstring>	m_mapMedia;
 
 		long									m_lIndexNextAudio;
@@ -140,7 +143,17 @@ namespace PPT_FORMAT
 			m_mapMedia[strInput] = strMediaName;
 			return strMediaName;
 		}
+        inline void WriteAudioCollection(const std::vector<CExFilesInfo>& audioCont)
+        {
+            if (audioCont.empty()) return;
 
+            for (auto& audio : audioCont)
+            {
+                auto pathAudio = GenerateAudio(audio.m_strFilePath);
+                m_ridManager.addSoundPath(pathAudio);
+            }
+
+        }
         inline bool IsNeedDownload(const std::wstring& strFile)
 		{
 			int n1 = strFile.find(L"www");
@@ -173,10 +186,7 @@ namespace PPT_FORMAT
 	}
 	class CRelsGenerator
 	{
-    public:
-        RIDManager                              m_ridManager;
-
-	private:
+    private:
         PPT_FORMAT::CStringWriter               m_oWriter;
 		int										m_lNextRelsID;
 		std::map<std::wstring, int>				m_mapMediaRelsID;
@@ -380,18 +390,6 @@ namespace PPT_FORMAT
 				return WriteHyperlinkVideo(strVideo, false);
 			}
 		}
-
-        inline void WriteAudioCollection(const std::vector<CExFilesInfo>& audioCont)
-        {
-            if (audioCont.empty() or !m_pManager) return;
-
-            for (auto& audio : audioCont)
-            {
-                auto pathAudio = m_pManager->GenerateAudio(audio.m_strFilePath);
-                m_ridManager.addSoundPath(pathAudio);
-            }
-
-        }
 
         inline int getRId()const{return m_lNextRelsID;}
     };

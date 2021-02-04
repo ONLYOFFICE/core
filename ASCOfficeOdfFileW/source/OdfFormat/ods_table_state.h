@@ -275,7 +275,7 @@ struct data_validation_state
 		{
 			if (row < refs[i].row_start || row > refs[i].row_end) continue;
 
-			if (col + repeate_col <= refs[i].col_start ||  col >= refs[i].col_end) continue;
+			if (col + repeate_col <= refs[i].col_start ||  col > refs[i].col_end) continue;
 			
 			ref = refs[i];
 			return true;

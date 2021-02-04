@@ -1509,7 +1509,6 @@ namespace NExtractTools
         std::wstring sFileToDir   = NSDirectory::GetFolderPath(sTo);
         std::wstring sImagesDirectory = sFileFromDir + FILE_SEPARATOR_STR + L"media";
         std::wstring sHtmlFile        = sFileFromDir + FILE_SEPARATOR_STR + L"index.html";
-        sImagesDirectory = string_replaceAll(sImagesDirectory, L"\\", L"/");
         NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
         std::wstring sXml = getDoctXml(eFromType, eToType, sFileFromDir, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
         std::wstring sResult;
@@ -1523,15 +1522,14 @@ namespace NExtractTools
         {
             // Удаляем Editor.bin, иначе он попадёт в архив
             NSFile::CFileBinary::Remove(sFileFromDir + FILE_SEPARATOR_STR + L"Editor.bin");
-            if(NSDirectory::GetFilesCount(sImagesDirectory, false) == 0)
-                NSFile::CFileBinary::Remove(sImagesDirectory);
+            NSDirectory::DeleteDirectory(sImagesDirectory);
             std::wstring sName = NSFile::GetFileName(sFrom);
             size_t nDot = sName.rfind(L'.');
             if(nDot != std::wstring::npos)
                 sName.erase(nDot);
             COfficeUtils oZip;
             HRESULT oRes = oZip.CompressFileOrDirectory(sFileFromDir, sFileToDir + FILE_SEPARATOR_STR + sName + L".zip");
-            if(oRes == S_FALSE)
+            if (oRes == S_FALSE)
                 nRes = AVS_FILEUTILS_ERROR_CONVERT;
         }
         return nRes;

@@ -8,12 +8,17 @@
 #define M_PI 3.14159265358979323846
 #endif
 
+bool NSGraphics::CGraphics::m_bIsFromHtmlToEpubConverter = false;
+int  nImage = 1;
+
 namespace NSGraphics
 {
 void CGraphics::init(NSNativeControl::CNativeControl* oNative, double width_px, double height_px, double width_mm, double height_mm)
 {
     m_sApplicationImagesDirectory = oNative->m_strImagesDirectory;
     m_sApplicationFontsDirectory  = oNative->m_strFontsDirectory;
+    if (m_bIsFromHtmlToEpubConverter)
+        NSDirectory::CreateDirectory(m_sApplicationImagesDirectory + L"/../images");
     #ifdef _DEBUG
     std::wcout << L"init "<< m_sApplicationImagesDirectory << L"  " << m_sApplicationFontsDirectory << L"  " << width_px << L"  " << height_px << L"  " << width_mm << L"  " << height_mm << std::endl;
     #endif
@@ -1126,29 +1131,27 @@ void CGraphics::DrawFootnoteRect(double x, double y, double w, double h)
 std::string CGraphics::toDataURL(std::wstring type)
 {
     size_t nSl = type.find(L'/');
-    std::wstring sPath = m_sApplicationImagesDirectory + L"/img." + type.substr(nSl + 1);
+    std::wstring sPath = m_sApplicationImagesDirectory + (m_bIsFromHtmlToEpubConverter ? L"/../images/img" + std::to_wstring(nImage) : L"/img") + L'.' + type.substr(nSl + 1);
     #ifdef _DEBUG
     std::wcout << "toDataURL " << sPath << std::endl;
     #endif
     m_oFrame.SaveFile(sPath, _CXIMAGE_FORMAT_PNG);
 
+    if (m_bIsFromHtmlToEpubConverter)
+        return "images/img" + std::to_string(nImage++) + '.' + U_TO_UTF8(type.substr(nSl + 1));
     NSFile::CFileBinary oReader;
-    if(oReader.OpenFile(sPath))
+    if (oReader.OpenFile(sPath))
     {
         DWORD dwFileSize = oReader.GetFileSize();
         BYTE* pFileContent = new BYTE[dwFileSize];
         DWORD dwReaded;
         oReader.ReadFile(pFileContent, dwFileSize, dwReaded);
         oReader.CloseFile();
-        NSFile::CFileBinary::Remove(sPath);
 
         int nEncodeLen = NSBase64::Base64EncodeGetRequiredLength(dwFileSize);
         BYTE* pImageData = new BYTE[nEncodeLen];
-        if(TRUE == NSBase64::Base64Encode(pFileContent, dwFileSize, pImageData, &nEncodeLen))
-        {
-            std::string sRes = "data:" + U_TO_UTF8(type) + ";base64, " + std::string((char*)pImageData, nEncodeLen);
-            return sRes;
-        }
+        if (TRUE == NSBase64::Base64Encode(pFileContent, dwFileSize, pImageData, &nEncodeLen))
+            return "data:" + U_TO_UTF8(type) + ";base64, " + std::string((char*)pImageData, nEncodeLen);
     }
     return "";
 }

@@ -207,9 +207,16 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sSrc, const std::wstring& sDstFi
     NSFile::CFileBinary oContentOpf;
     if (oContentOpf.CreateFileW(m_sTempDir + L"/OEBPS/content.opf"))
     {
-        oContentOpf.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><package xmlns=\"http://www.idpf.org/2007/opf\" version=\"2.0\" unique-identifier=\"book_uuid\"><metadata>");
+        // index.html
+        NSFile::CFileBinary::Copy(sSrc + L"/doct_unpacked/index.html", m_sTempDir + L"/OEBPS/index.html");
+        NSDirectory::CopyDirectory(sSrc + L"/doct_unpacked/images", m_sTempDir + L"/OEBPS/images");
+        // cover.html
+        bool bCoverFromImg1 = NSFile::CFileBinary::Exists(sSrc + L"/doct_unpacked/images/img1.png");
+
+        oContentOpf.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><package xmlns=\"http://www.idpf.org/2007/opf\" version=\"2.0\" unique-identifier=\"book_uuid\"><metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\">");
         // metadata
         std::wstring sCoreXml;
+        bool bWasIdentifier = false;
         XmlUtils::CXmlLiteReader oCoreReader;
         if (NSFile::CFileBinary::ReadAllTextUtf8(sSrc + L"/docx_unpacked/docProps/core.xml", sCoreXml))
         {
@@ -220,13 +227,43 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sSrc, const std::wstring& sDstFi
             {
                 if (oCoreReader.GetNamespacePrefix() == L"dc")
                 {
+                    if (oCoreReader.GetName() == L"dc:identifier")
+                        bWasIdentifier = true;
                     oContentOpf.WriteStringUTF8(oCoreReader.GetOuterXml());
                 }
             }
         }
-        // index.html
-        NSFile::CFileBinary::Copy(sSrc + L"/doct_unpacked/index.html", m_sTempDir + L"/OEBPS/index.html");
-        oContentOpf.WriteStringUTF8(L"</metadata><manifest><item href=\"index.html\" id=\"index\" media-type=\"application/xhtml+xml\"/></manifest><spine toc=\"ncx\"><itemref idref=\"index\"/></spine><guide></guide></package>");
+        if (!bWasIdentifier)
+        {
+            std::wstring sUUID = NSDirectory::CreateDirectoryWithUniqueName(m_sTempDir);
+            NSDirectory::DeleteDirectory(sUUID);
+            sUUID.erase(0, sUUID.find_last_of(L"\\/") + 1);
+            oContentOpf.WriteStringUTF8(L"<dc:identifier id=\"book_uuid\" opf:scheme=\"UUID\">urn:uuid:");
+            oContentOpf.WriteStringUTF8(sUUID);
+            oContentOpf.WriteStringUTF8(L"</dc:identifier>");
+        }
+        if (bCoverFromImg1)
+            oContentOpf.WriteStringUTF8(L"<meta name=\"cover\" content=\"img1.png\"/>");
+        // manifest
+        oContentOpf.WriteStringUTF8(L"</metadata><manifest><item id=\"ncx\" href=\"toc.ncx\" media-type=\"application/x-dtbncx+xml\"/>");
+        std::vector<std::wstring> arFiles = NSDirectory::GetFiles(m_sTempDir + L"/OEBPS/images");
+        for (const std::wstring& sFileName : arFiles)
+        {
+            std::wstring sName = NSFile::GetFileName(sFileName);
+            oContentOpf.WriteStringUTF8(L"<item id=\"" + sName + L"\" href=\"images/" + sName + L"\" media-type=\"image/png\"/>");
+        }
+        oContentOpf.WriteStringUTF8(L"<item id=\"index\" href=\"index.html\" media-type=\"application/xhtml+xml\"/>");
+        if (bCoverFromImg1)
+            oContentOpf.WriteStringUTF8(L"<item id=\"cover\" href=\"cover.html\" media-type=\"application/xhtml+xml\"/>");
+        // spine
+        oContentOpf.WriteStringUTF8(L"</manifest><spine toc=\"ncx\">");
+        if (bCoverFromImg1)
+            oContentOpf.WriteStringUTF8(L"<itemref idref=\"cover\"/>");
+        // guide
+        oContentOpf.WriteStringUTF8(L"<itemref idref=\"index\"/></spine><guide>");
+        if (bCoverFromImg1)
+            oContentOpf.WriteStringUTF8(L"<reference type=\"cover\" title=\"Cover\" href=\"cover.html\"/>");
+        oContentOpf.WriteStringUTF8(L"</guide></package>");
         oContentOpf.CloseFile();
     }
 

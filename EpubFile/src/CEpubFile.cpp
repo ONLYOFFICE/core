@@ -3,10 +3,14 @@
 #include "../../OfficeUtils/src/OfficeUtils.h"
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../HtmlFile2/htmlfile2.h"
+#include "../../DesktopEditor/raster/BgraFrame.h"
 #include "src/CBookInfo.h"
 
 #include <iostream>
+#include <iomanip>
 #include <string>
+#include <sstream>
+#include <random>
 
 // Заменяет в строке s все символы s1 на s2
 static void replace_all(std::wstring& s, const std::wstring& s1, const std::wstring& s2)
@@ -18,6 +22,22 @@ static void replace_all(std::wstring& s, const std::wstring& s1, const std::wstr
         s.replace(pos, s1.length(), s2);
         pos = s.find(s1, pos + l);
     }
+}
+
+static std::wstring GenerateUUID()
+{
+    std::mt19937 oRand(time(0));
+    std::wstringstream sstream;
+    sstream << std::setfill(L'0') << std::hex << std::setw(8) << (oRand() & 0xffffffff);
+    sstream << L'-';
+    sstream << std::setfill(L'0') << std::hex << std::setw(4) << (oRand() & 0xffff);
+    sstream << L'-';
+    sstream << std::setfill(L'0') << std::hex << std::setw(4) << (oRand() & 0xffff);
+    sstream << L'-';
+    sstream << std::setfill(L'0') << std::hex << std::setw(4) << (oRand() & 0xffff);
+    sstream << L'-';
+    sstream << std::setfill(L'0') << std::hex << std::setw(8) << (oRand() & 0xffffffff);
+    return sstream.str();
 }
 
 CEpubFile::CEpubFile()
@@ -189,31 +209,48 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sSrc, const std::wstring& sDstFi
 {
     NSDirectory::CreateDirectory(m_sTempDir + L"/META-INF");
     NSDirectory::CreateDirectory(m_sTempDir + L"/OEBPS");
-
+    NSFile::CFileBinary::Copy(sSrc + L"/doct_unpacked/index.html", m_sTempDir + L"/OEBPS/index.html");
+    NSDirectory::CopyDirectory(sSrc + L"/doct_unpacked/images", m_sTempDir + L"/OEBPS/images");
+    // mimetype
     NSFile::CFileBinary oMimeType;
     if (oMimeType.CreateFileW(m_sTempDir + L"/mimetype"))
     {
         oMimeType.WriteStringUTF8(L"application/epub+zip");
         oMimeType.CloseFile();
     }
-
+    // container.xml
     NSFile::CFileBinary oContainerXml;
     if (oContainerXml.CreateFileW(m_sTempDir + L"/META-INF/container.xml"))
     {
         oContainerXml.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\"><rootfiles><rootfile full-path=\"OEBPS/content.opf\" media-type=\"application/oebps-package+xml\"/></rootfiles></container>");
         oContainerXml.CloseFile();
     }
-
+    // cover.html
+    bool bCoverFromImg1 = NSFile::CFileBinary::Exists(sSrc + L"/doct_unpacked/images/img1.png");
+    if (bCoverFromImg1)
+    {
+        int nHy = 0;
+        int nWx = 0;
+        CBgraFrame oBgraFrame;
+        if (oBgraFrame.OpenFile(m_sTempDir + L"/OEBPS/images/img1.png"))
+        {
+            nHy = oBgraFrame.get_Height();
+            nWx = oBgraFrame.get_Width();
+        }
+        NSFile::CFileBinary oCoverHtml;
+        if (oCoverHtml.CreateFileW(m_sTempDir + L"/OEBPS/cover.html"))
+        {
+            oCoverHtml.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><html xmlns=\"http://www.w3.org/1999/xhtml\"><head><title>Cover</title></head><body><div style=\"text-align: center; padding: 0pt; margin: 0pt;\"><svg xmlns=\"http://www.w3.org/2000/svg\" height=\"100%\" preserveAspectRatio=\"xMidYMid meet\" version=\"1.1\" width=\"100%\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 " + std::to_wstring(nWx) + L' ' + std::to_wstring(nHy) + L"\"><image width=\"" + std::to_wstring(nWx) + L"\" height=\"" + std::to_wstring(nHy) + L"\" xlink:href=\"images/img1.png\"/></svg></div></body></html>");
+            oCoverHtml.CloseFile();
+        }
+    }
+    // content.opf
     NSFile::CFileBinary oContentOpf;
+    std::wstring sTitle;
+    std::wstring sUUID = GenerateUUID();
     if (oContentOpf.CreateFileW(m_sTempDir + L"/OEBPS/content.opf"))
     {
-        // index.html
-        NSFile::CFileBinary::Copy(sSrc + L"/doct_unpacked/index.html", m_sTempDir + L"/OEBPS/index.html");
-        NSDirectory::CopyDirectory(sSrc + L"/doct_unpacked/images", m_sTempDir + L"/OEBPS/images");
-        // cover.html
-        bool bCoverFromImg1 = NSFile::CFileBinary::Exists(sSrc + L"/doct_unpacked/images/img1.png");
-
-        oContentOpf.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><package xmlns=\"http://www.idpf.org/2007/opf\" version=\"2.0\" unique-identifier=\"book_uuid\"><metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\">");
+        oContentOpf.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><package xmlns=\"http://www.idpf.org/2007/opf\" version=\"2.0\" unique-identifier=\"book_uuid\"><metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:opf=\"http://www.idpf.org/2007/opf\">");
         // metadata
         std::wstring sCoreXml;
         bool bWasIdentifier = false;
@@ -227,17 +264,22 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sSrc, const std::wstring& sDstFi
             {
                 if (oCoreReader.GetNamespacePrefix() == L"dc")
                 {
-                    if (oCoreReader.GetName() == L"dc:identifier")
+                    std::wstring sOut = oCoreReader.GetOuterXml();
+                    oContentOpf.WriteStringUTF8(sOut);
+                    std::wstring sName = oCoreReader.GetName();
+                    if (sName == L"dc:identifier")
                         bWasIdentifier = true;
-                    oContentOpf.WriteStringUTF8(oCoreReader.GetOuterXml());
+                    else if (sName == L"dc:title")
+                    {
+                        sOut.erase(0, sOut.find(L'>') + 1);
+                        sOut.erase(sOut.find(L'<'));
+                        sTitle = sOut;
+                    }
                 }
             }
         }
         if (!bWasIdentifier)
         {
-            std::wstring sUUID = NSDirectory::CreateDirectoryWithUniqueName(m_sTempDir);
-            NSDirectory::DeleteDirectory(sUUID);
-            sUUID.erase(0, sUUID.find_last_of(L"\\/") + 1);
             oContentOpf.WriteStringUTF8(L"<dc:identifier id=\"book_uuid\" opf:scheme=\"UUID\">urn:uuid:");
             oContentOpf.WriteStringUTF8(sUUID);
             oContentOpf.WriteStringUTF8(L"</dc:identifier>");
@@ -266,7 +308,13 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sSrc, const std::wstring& sDstFi
         oContentOpf.WriteStringUTF8(L"</guide></package>");
         oContentOpf.CloseFile();
     }
-
+    // toc.ncx
+    NSFile::CFileBinary oTocNcx;
+    if (oTocNcx.CreateFileW(m_sTempDir + L"/OEBPS/toc.ncx"))
+    {
+        oTocNcx.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><ncx xmlns=\"http://www.daisy.org/z3986/2005/ncx/\" version=\"2005-1\"><head><meta name=\"dtb:uid\" content=\"urn:uuid:" + sUUID + L"\"/><meta name=\"dtb:depth\" content=\"0\"/><meta name=\"dtb:totalPageCount\" content=\"0\"/><meta name=\"dtb:maxPageNumber\" content=\"0\"/></head><docTitle><text>" + sTitle + L"</text></docTitle><navMap><navPoint id=\"navPoint-1\" playOrder=\"1\"><navLabel><text>Start</text></navLabel><content src=\"cover.html\"/></navPoint></navMap></ncx>");
+        oTocNcx.CloseFile();
+    }
     COfficeUtils oOfficeUtils;
     return oOfficeUtils.CompressFileOrDirectory(m_sTempDir, sDstFile);
 }

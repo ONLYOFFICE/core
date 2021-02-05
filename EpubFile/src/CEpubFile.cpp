@@ -209,8 +209,17 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sSrc, const std::wstring& sDstFi
 {
     NSDirectory::CreateDirectory(m_sTempDir + L"/META-INF");
     NSDirectory::CreateDirectory(m_sTempDir + L"/OEBPS");
-    NSFile::CFileBinary::Copy(sSrc + L"/doct_unpacked/index.html", m_sTempDir + L"/OEBPS/index.html");
     NSDirectory::CopyDirectory(sSrc + L"/doct_unpacked/images", m_sTempDir + L"/OEBPS/images");
+    // index.html
+    std::wstring sIndexHtml;
+    NSFile::CFileBinary::ReadAllTextUtf8(sSrc + L"/doct_unpacked/index.html", sIndexHtml);
+    NSFile::CFileBinary oIndexHtml;
+    if (oIndexHtml.CreateFileW(m_sTempDir + L"/OEBPS/index.html"))
+    {
+        oIndexHtml.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">");
+        oIndexHtml.WriteStringUTF8(sIndexHtml);
+        oIndexHtml.CloseFile();
+    }
     // mimetype
     NSFile::CFileBinary oMimeType;
     if (oMimeType.CreateFileW(m_sTempDir + L"/mimetype"))
@@ -240,7 +249,7 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sSrc, const std::wstring& sDstFi
         NSFile::CFileBinary oCoverHtml;
         if (oCoverHtml.CreateFileW(m_sTempDir + L"/OEBPS/cover.html"))
         {
-            oCoverHtml.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><html xmlns=\"http://www.w3.org/1999/xhtml\"><head><title>Cover</title></head><body><div style=\"text-align: center; padding: 0pt; margin: 0pt;\"><svg xmlns=\"http://www.w3.org/2000/svg\" height=\"100%\" preserveAspectRatio=\"xMidYMid meet\" version=\"1.1\" width=\"100%\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 " + std::to_wstring(nWx) + L' ' + std::to_wstring(nHy) + L"\"><image width=\"" + std::to_wstring(nWx) + L"\" height=\"" + std::to_wstring(nHy) + L"\" xlink:href=\"images/img1.png\"/></svg></div></body></html>");
+            oCoverHtml.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"><html xmlns=\"http://www.w3.org/1999/xhtml\"><head><title>Cover</title></head><body><div style=\"text-align: center; padding: 0pt; margin: 0pt;\"><svg xmlns=\"http://www.w3.org/2000/svg\" height=\"100%\" preserveAspectRatio=\"xMidYMid meet\" version=\"1.1\" width=\"100%\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 " + std::to_wstring(nWx) + L' ' + std::to_wstring(nHy) + L"\"><image width=\"" + std::to_wstring(nWx) + L"\" height=\"" + std::to_wstring(nHy) + L"\" xlink:href=\"images/img1.png\"/></svg></div></body></html>");
             oCoverHtml.CloseFile();
         }
     }
@@ -312,7 +321,7 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sSrc, const std::wstring& sDstFi
     NSFile::CFileBinary oTocNcx;
     if (oTocNcx.CreateFileW(m_sTempDir + L"/OEBPS/toc.ncx"))
     {
-        oTocNcx.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><ncx xmlns=\"http://www.daisy.org/z3986/2005/ncx/\" version=\"2005-1\"><head><meta name=\"dtb:uid\" content=\"urn:uuid:" + sUUID + L"\"/><meta name=\"dtb:depth\" content=\"0\"/><meta name=\"dtb:totalPageCount\" content=\"0\"/><meta name=\"dtb:maxPageNumber\" content=\"0\"/></head><docTitle><text>" + sTitle + L"</text></docTitle><navMap><navPoint id=\"navPoint-1\" playOrder=\"1\"><navLabel><text>Start</text></navLabel><content src=\"cover.html\"/></navPoint></navMap></ncx>");
+        oTocNcx.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE ncx PUBLIC \"-//NISO//DTD ncx 2005-1//EN\" \"http://www.daisy.org/z3986/2005/ncx-2005-1.dtd\"><ncx xmlns=\"http://www.daisy.org/z3986/2005/ncx/\" version=\"2005-1\"><head><meta name=\"dtb:uid\" content=\"urn:uuid:" + sUUID + L"\"/><meta name=\"dtb:depth\" content=\"0\"/><meta name=\"dtb:totalPageCount\" content=\"0\"/><meta name=\"dtb:maxPageNumber\" content=\"0\"/></head><docTitle><text>" + sTitle + L"</text></docTitle><navMap><navPoint id=\"navPoint-1\" playOrder=\"1\"><navLabel><text>Start</text></navLabel><content src=\"index.html\"/></navPoint></navMap></ncx>");
         oTocNcx.CloseFile();
     }
     COfficeUtils oOfficeUtils;

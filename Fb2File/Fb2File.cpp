@@ -1354,9 +1354,7 @@ bool CFb2File::IsFb2File(const std::wstring& sFile)
     if (!m_internal->OpenFromFile(sFile))
         return false;
     // Читаем FictionBook
-    if(!m_internal->isFictionBook())
-        return false;
-    return true;
+    return m_internal->isFictionBook();
 }
 
 // Выставление рабочей папки
@@ -1365,12 +1363,11 @@ void CFb2File::SetTmpDirectory(const std::wstring& sFolder)
     // m_internal->m_sTmpFolder = sFolder;
 }
 
-// Проверяет, соответствует ли fb2 файл формату
 // sPath - путь к файлу fb2, sDirectory - директория, где формируется и создается docx
 HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory, CFb2Params* oParams)
 {
     // Копирование шаблона
-    if(!ExtractTemplate(sDirectory))
+    if (!ExtractTemplate(sDirectory))
         return S_FALSE;
 
     // Начало файла
@@ -1402,32 +1399,32 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
 
     // Читаем содержание, картинки, сноски
     bool bNeedContents = false;
-    if(oParams)
+    if (oParams)
         bNeedContents = oParams->bNeedContents;
-    if(!m_internal->readText(sPath, sMediaDirectory, oContents, oRels, oFootnotes))
+    if (!m_internal->readText(sPath, sMediaDirectory, oContents, oRels, oFootnotes))
         return S_FALSE;
 
     // Переходим в начало
-    if(!m_internal->m_oLightReader.MoveToStart())
+    if (!m_internal->m_oLightReader.MoveToStart())
         return S_FALSE;
 
     int nDeath = m_internal->m_oLightReader.GetDepth();
-    while(m_internal->m_oLightReader.ReadNextSiblingNode(nDeath))
+    while (m_internal->m_oLightReader.ReadNextSiblingNode(nDeath))
     {
         std::wstring sName = m_internal->m_oLightReader.GetName();
-        if(sName == L"description")
+        if (sName == L"description")
             m_internal->readDescription(oDescription);
-        else if(sName == L"body")
+        else if (sName == L"body")
         {
             bool bNotes = false;
             while(m_internal->m_oLightReader.MoveToNextAttribute())
             {
-                if(m_internal->m_oLightReader.GetName() == L"name" &&
-                   m_internal->m_oLightReader.GetText() == L"notes")
+                if (m_internal->m_oLightReader.GetName() == L"name" &&
+                    m_internal->m_oLightReader.GetText() == L"notes")
                     bNotes = true;
             }
             m_internal->m_oLightReader.MoveToElement();
-            if(bNotes)
+            if (bNotes)
                 continue;
             m_internal->readBody(oBuilder);
         }
@@ -1446,7 +1443,7 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     // Вставляем description
     oDocument += oDescription.GetData();
     // Вставляем содержание
-    if(bNeedContents)
+    if (bNeedContents)
         oDocument += oContents.GetData();
     // Вставляем основное тело
     oDocument += oBuilder.GetData();
@@ -1499,9 +1496,9 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
     if (sApplication.empty())
         sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
-#if defined(INTVER)
+    #if defined(INTVER)
     std::string sVersion = VALUE2STR(INTVER);
-#endif
+    #endif
     sApplication += L"/";
     sApplication += UTF8_TO_U(sVersion);
     // Создаем app.xml
@@ -1519,13 +1516,69 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
 
     // Архивим в docx
     bool bNeedDocx = false;
-    if(oParams)
+    if (oParams)
         bNeedDocx = oParams->bNeedDocx;
-    if(bNeedDocx)
+    if (bNeedDocx)
     {
         COfficeUtils oZip;
-        HRESULT oRes = oZip.CompressFileOrDirectory(sDirectory, sDirectory + L"/" + NSFile::GetFileName(sPath) + L".docx");
-        return oRes;
+        return oZip.CompressFileOrDirectory(sDirectory, sDirectory + L"/" + NSFile::GetFileName(sPath) + L".docx");
     }
     return S_OK;
+}
+
+HRESULT FromHtml(const std::wstring& sSrc, const std::wstring& sDst)
+{
+    NSFile::CFileBinary oWriter;
+    if (!oWriter.CreateFileW(sDst))
+        return S_FALSE;
+    oWriter.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><FictionBook xmlns=\"http://www.gribuser.ru/xml/fictionbook/2.0\" xmlns:l=\"http://www.w3.org/1999/xlink\">");
+    // description
+    oWriter.WriteStringUTF8(L"<description>");
+    // title-info
+    std::wstring sCoreXml;
+    XmlUtils::CXmlLiteReader oCoreReader;
+    if (NSFile::CFileBinary::ReadAllTextUtf8(sSrc + L"/docx_unpacked/docProps/core.xml", sCoreXml))
+    {
+        oWriter.WriteStringUTF8(L"<title-info>");
+        std::wstring sBookTitle = NSFile::GetFileName(sDst);
+        std::wstring sAuthor = sBookTitle;
+        std::wstring sAnnotation;
+        std::wstring sKeywords;
+
+        oCoreReader.FromString(sCoreXml);
+        oCoreReader.ReadNextNode();
+        int nDeath = oCoreReader.GetDepth();
+        while (oCoreReader.ReadNextSiblingNode(nDeath))
+        {
+            std::wstring sPrefix = oCoreReader.GetNamespacePrefix();
+            if (sPrefix == L"dc")
+            {
+                std::wstring sName = oCoreReader.GetName();
+                if (sName == L"dc:creator")
+                    sAuthor = oCoreReader.GetText2();
+                else if (sName == L"dc:title")
+                    sBookTitle = oCoreReader.GetText2();
+                else if (sName == L"dc:description")
+                    sAnnotation = oCoreReader.GetText2();
+                else if (sName == L"dc:subject")
+                    sKeywords += oCoreReader.GetText2() + L' ';
+            }
+            else if (sPrefix == L"cp")
+            {
+
+            }
+        }
+
+        oWriter.WriteStringUTF8(L"<genre>dramaturgy</genre>");
+        oWriter.WriteStringUTF8(L"<author><nickname>" + sAuthor + L"</nickname></author>");
+        oWriter.WriteStringUTF8(L"<book-title>" + sBookTitle + L"</book-title>");
+        if (!sAnnotation.empty())
+            oWriter.WriteStringUTF8(L"<annotation><p>" + sAnnotation + L"</p></annotation>");
+        if (!sKeywords.empty())
+            oWriter.WriteStringUTF8(L"<keywords>" + sKeywords + L"</keywords>");
+        oWriter.WriteStringUTF8(L"</title-info>");
+    }
+    oWriter.WriteStringUTF8(L"</description>");
+    oWriter.WriteStringUTF8(L"</FictionBook>");
+    oWriter.CloseFile();
 }

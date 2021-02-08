@@ -17,7 +17,9 @@ std::vector<std::wstring> RIDManager::getPathesForSlideRels()
     if (m_arrRID.empty())
         return paths;
 
+
     std::map<_UINT32, _UINT32*> mapRIDs;    // first value is old rId : second new rId
+    int i = 0;
     for (auto* pRID : m_arrRID)
     {
         auto searchIter(mapRIDs.find(*pRID));
@@ -28,6 +30,8 @@ std::vector<std::wstring> RIDManager::getPathesForSlideRels()
         }
         else
             *pRID = *(searchIter->second);
+
+        *(m_soundRIDCollection[i++]) = std::to_wstring(*pRID);
     }
 
     for (auto RID : mapRIDs)

@@ -827,7 +827,7 @@ void CPPTUserInfo::LoadSlide(_UINT32 dwSlideID, CSlide* pSlide)
     {
         PPT_FORMAT::CExFilesInfo* pInfo	= m_oExMedia.LockAudioFromCollection(pAtom->m_nSoundRef);
         if (NULL != pInfo)
-            AddAudioTransition (dwSlideID, pTransition, pInfo->m_strFilePath);
+            AddAudioTransition (pAtom->m_nSoundRef, pTransition, pInfo->m_strFilePath);
     }
 
     // анимации
@@ -2484,12 +2484,27 @@ void CPPTUserInfo::LoadExAudio(CRecordsContainer* pExObject)
 //	}
 //}
 
-void CPPTUserInfo::AddAudioTransition (_UINT32 dwSlideID, CTransition* pTransition, const std::wstring& strFilePath)
+void CPPTUserInfo::AddAudioTransition (_UINT32 refID, CTransition* pTransition, const std::wstring& strFilePath)
 {
     if (NULL==pTransition)
         return;
 
-    pTransition->m_oAudio.m_strAudioFileName = strFilePath;
+    std::vector<CRecordSoundCollectionContainer*> sound;
+    m_oDocument.GetRecordsByType(&sound, false);
+    if (sound.empty() or sound[0]->m_arRecords.size() < refID)
+        return;
+
+    auto audio = dynamic_cast<CRecordSoundContainer*>(sound[0]->m_arRecords[refID]);
+    if (!audio)
+        return;
+    auto strRecord = dynamic_cast<CRecordCString*>(audio->m_arRecords[0]);
+
+    std::wstring audioName = strRecord->m_strText;
+    ;
+//    audioName.erase(audioName.find(L"."), audioName.end()); todo
+    if (strRecord)
+        pTransition->m_oAudio.m_sImageName = audioName;
+
     // ??? недоделка ???
 }
 

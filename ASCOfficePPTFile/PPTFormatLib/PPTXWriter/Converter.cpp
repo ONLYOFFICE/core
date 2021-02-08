@@ -1312,7 +1312,8 @@ void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CSlideShow
         }break;
     case 23:
         {
-            type = L"p:alphaFade";
+            type = L"p:fade";
+            // p:alphaFade
         }break;
     case 26:
         {

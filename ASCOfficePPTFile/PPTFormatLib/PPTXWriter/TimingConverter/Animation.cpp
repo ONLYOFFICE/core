@@ -402,7 +402,6 @@ void Animation::FillAudio(CRecordClientVisualElementContainer *pCVEC,
         oAudio.cMediaNode.tgtEl.embed =
                 new OOX::RId(pCVEC->m_oVisualShapeAtom.m_nObjectIdRef);
 
-        // достать массив с текстом rid превратить в мапу
         std::vector<CRecordSoundContainer*> soundCont;
         this->m_pSoundContainer->GetRecordsByType(
                     &soundCont, false);

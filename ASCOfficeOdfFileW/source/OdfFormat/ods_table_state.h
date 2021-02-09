@@ -286,7 +286,7 @@ struct data_validation_state
 	{
 		for (size_t i = 0; i < refs.size(); i++)
 		{
-			if (row + repeate_row <= refs[i].row_start || row >= refs[i].row_end) continue;
+			if (row + repeate_row <= refs[i].row_start || row > refs[i].row_end) continue;
 
 			ref = refs[i];
 			return true;

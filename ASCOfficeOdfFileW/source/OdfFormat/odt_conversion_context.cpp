@@ -585,6 +585,11 @@ void odt_conversion_context::end_bookmark (int id)
 }
 void odt_conversion_context::start_hyperlink(std::wstring ref)
 {
+	if (false == current_fields.empty() && current_fields.back().status == 1 && false == current_fields.back().in_span)
+	{
+		end_paragraph();
+		start_paragraph(true);
+	}
 	office_element_ptr hyperlink_elm;
 	create_element(L"text", L"a", hyperlink_elm, this);
 
@@ -833,7 +838,8 @@ void odt_conversion_context::set_field_instr()
 			boost::algorithm::split(arLevels, pFind->second, boost::algorithm::is_any_of(L"-"), boost::algorithm::token_compress_on);
 			if (arLevels.size() > 1)
 			{
-				current_fields.back().type = fieldToc;  
+				if (current_fields.back().captionSEQ.empty()) 
+					current_fields.back().type = fieldToc;
 				current_fields.back().outline_levels = XmlUtils::GetInteger(arLevels[1]);
 			}
 		}
@@ -856,7 +862,7 @@ void odt_conversion_context::set_field_instr()
 			}
 		}
 		pFind = options.find(L"z");
-		if ( pFind != options.end())//table of content outline levels style
+		if ( pFind != options.end())
 		{
 			current_fields.back().bHidePageNumbers = true; 
 		}

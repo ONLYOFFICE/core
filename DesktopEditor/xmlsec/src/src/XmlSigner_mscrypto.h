@@ -701,6 +701,11 @@ public:
         return 1;
     }
 
+    virtual std::string Print()
+    {
+        return "";
+    }
+
 private:
     void ConvertEndian(const BYTE* src, BYTE* dst, DWORD size)
     {

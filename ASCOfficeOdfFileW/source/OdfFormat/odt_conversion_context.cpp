@@ -758,7 +758,12 @@ void odt_conversion_context::set_field_instr()
 	res1 = instr.find(L"TIME");
 	if (std::wstring::npos != res1 && current_fields.back().type == 0)
 	{
-		current_fields.back().type = fieldDateTime;
+		current_fields.back().type = fieldTime;
+	}
+	res1 = instr.find(L"DATE");
+	if (std::wstring::npos != res1 && current_fields.back().type == 0)
+	{
+		current_fields.back().type = fieldDate;
 	}
 	res1 = instr.find(L"FORMTEXT");
 	if (std::wstring::npos != res1 && current_fields.back().type == 0)
@@ -868,19 +873,24 @@ void odt_conversion_context::set_field_instr()
 		}
 	}
 	////////////////////////////////////////// 
-	res1 = instr.find(L"@");
+	res1 = instr.find(L" ");
 	if (std::wstring::npos != res1)
 	{
-		current_fields.back().format = instr.substr(res1 + 1, instr.length());
-	}
+		if (current_fields.back().format.empty())
+		{
+			std::map<std::wstring, std::wstring> options = parse_instr_options(instr.substr(res1 + 1));
 
-	if (current_fields.back().type == 0)
-	{
-		res1 = instr.find(L" ");
-		if (std::wstring::npos != res1)
+			std::map<std::wstring, std::wstring>::iterator pFind = options.find(L"@");
+			if (pFind != options.end())
+			{
+				current_fields.back().format = pFind->second;
+			}
+		}
+
+		if (current_fields.back().type == 0)
 		{
 			current_fields.back().name = instr.substr(0, res1);
-		}		
+		}
 	}
 }
 void odt_conversion_context::set_field_date_time(const std::wstring &date_time)
@@ -1092,7 +1102,7 @@ void odt_conversion_context::end_field()
 		else if (current_fields.back().type == fieldSeq)		start_sequence();
 		else if (current_fields.back().type == fieldDropDown)	start_drop_down();
 		else
-			text_context()->start_field(current_fields.back().type, current_fields.back().value);
+			text_context()->start_field(current_fields.back().type, current_fields.back().value, current_fields.back().format);
 	}
 	if (current_fields.back().status == 2)
 	{
@@ -1112,6 +1122,14 @@ void odt_conversion_context::end_field()
 	{
 		current_fields.pop_back();
 	}
+	if (false == current_fields.empty())
+	{
+		if (current_fields.back().type < 0xff	&& current_fields.back().type != fieldHyperlink 
+												&& current_fields.back().type != fieldSeq
+												&& current_fields.back().type != fieldDropDown)
+			text_context()->in_field_ = true;
+	}
+
 }
 void odt_conversion_context::end_paragraph()
 {
@@ -1241,7 +1259,7 @@ void odt_conversion_context::start_run(bool styled)
 		else if (current_fields.back().type == fieldSeq)		start_sequence();
 		else if (current_fields.back().type == fieldDropDown)	start_drop_down();
 		else												
-			text_context()->start_field(current_fields.back().type, current_fields.back().value);
+			text_context()->start_field(current_fields.back().type, current_fields.back().value, current_fields.back().format);
 	}	
 	
 	text_context()->start_span(styled);
@@ -1256,7 +1274,7 @@ void odt_conversion_context::start_run(bool styled)
 	if (!current_fields.empty() && current_fields.back().status == 1 && current_fields.back().in_span)//поле стартуется в span - нужно для сохранения стиля
 	{
 		current_fields.back().status = 2;
-		text_context()->start_field(current_fields.back().type, current_fields.back().value);
+		text_context()->start_field(current_fields.back().type, current_fields.back().value, current_fields.back().format);
 	}	
 }
 void odt_conversion_context::end_run()

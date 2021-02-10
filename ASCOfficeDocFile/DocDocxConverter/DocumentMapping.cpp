@@ -847,6 +847,8 @@ namespace DocFileFormat
 			}
 			else if (TextMark::FieldBeginMark == code)
 			{
+				_embeddedObject = false;
+				
 				int cpFieldStart = initialCp + i;
 				int cpFieldEnd = searchNextTextMark( m_document->Text, cpFieldStart, TextMark::FieldEndMark );
 				
@@ -1034,21 +1036,14 @@ namespace DocFileFormat
 
 						if (!bFormula)
 						{
-							if (false == _fieldLevels.empty())
+							m_pXmlWriter->WriteString(pictWriter.GetXmlString());
+							
+							if ((false == _fieldLevels.empty()) && (_fieldLevels.back().bSeparate && !_fieldLevels.back().bResult))	//ege15.doc
 							{
-								if (_fieldLevels.back().bSeparate && !_fieldLevels.back().bResult)	//ege15.doc
-								{
-									m_pXmlWriter->WriteString(pictWriter.GetXmlString());
-									_fieldLevels.back().bResult = true;
-								}
-							}
-							else
-							{
-								m_pXmlWriter->WriteString(pictWriter.GetXmlString());
-							}
+								_fieldLevels.back().bResult = true;
+							}//imrtemplate(endnotes).doc
 						}
 					}
-
 				}                   
 			}
 			else if ((TextMark::AutoNumberedFootnoteReference == code) && fSpec)
@@ -1098,9 +1093,20 @@ namespace DocFileFormat
 			}
 			else if (!FormatUtils::IsControlSymbol(c) && ((int)c != 0xFFFF))
 			{
-
-				writeNotesReferences(cp);//for word95 & non-automatic notes
                 text += FormatUtils::GetXMLSymbol(c);
+				
+				//non-automatic notes
+				if ((m_document->IndividualFootnotesPlex != NULL) && (m_document->IndividualFootnotesPlex->IsCpExists(cp - m_document->FIB->m_RgLw97.ccpText)))
+				{
+					_writeNoteRef = L"<w:footnoteRef/>";
+				}
+				else if ((m_document->IndividualEndnotesPlex != NULL) &&
+					(m_document->IndividualEndnotesPlex->IsCpExists(cp - m_document->FIB->m_RgLw97.ccpAtn - m_document->FIB->m_RgLw97.ccpHdr - m_document->FIB->m_RgLw97.ccpFtn - m_document->FIB->m_RgLw97.ccpText)))
+				{
+					_writeNoteRef = L"<w:endnoteRef/>";
+				}
+				else 
+					writeNotesReferences(cp);//for word95
 			}
 
 			cp++;
@@ -1817,6 +1823,11 @@ namespace DocFileFormat
 		{
             m_pXmlWriter->WriteNodeBegin( L"w:endnoteRef", true );
             m_pXmlWriter->WriteNodeEnd( L"", true );
+		}
+		else if (false == _writeNoteRef.empty())
+		{
+			m_pXmlWriter->WriteString(_writeNoteRef);
+			_writeNoteRef.clear();
 		}
 		return true;
 	}

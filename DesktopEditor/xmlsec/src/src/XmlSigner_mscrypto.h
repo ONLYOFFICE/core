@@ -572,6 +572,9 @@ public:
 
     virtual bool Verify(const std::string& sXml, std::string& sXmlSignature, int nAlg)
     {
+        if (sXmlSignature.empty())
+            return false;
+
         DWORD dwKeySpec = 0;
         HCRYPTHASH hHash = NULL;
         HCRYPTKEY hPubKey = NULL;

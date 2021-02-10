@@ -14,6 +14,10 @@
 #include <vector>
 #include <map>
 #include <numeric>
+#include <iostream>
+#include <iomanip>
+#include <sstream>
+#include <random>
 
 #ifndef VALUE2STR
 #define VALUE_TO_STRING(x) #x
@@ -1527,8 +1531,8 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     return S_OK;
 }
 
-void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl);
-void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bWasP)
+static void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl);
+static void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bWasP)
 {
     int nDeath = oIndexHtml.GetDepth();
     if (oIndexHtml.IsEmptyNode() || !oIndexHtml.ReadNextSiblingNode2(nDeath))
@@ -1550,39 +1554,39 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
         }
         else if (sName == L"h1")
         {
-            oXml.WriteString(L"<title><p>");
-            readStream(oXml, oIndexHtml, arrBinary, true);
-            oXml.WriteString(L"</p></title>");
-        }
-        else if (sName == L"h2")
-        {
             oXml.WriteString(L"<section><title><p>");
             readStream(oXml, oIndexHtml, arrBinary, true);
             oXml.WriteString(L"</p></title></section>");
         }
-        else if (sName == L"h3")
+        else if (sName == L"h2")
         {
             oXml.WriteString(L"<section><section><title><p>");
             readStream(oXml, oIndexHtml, arrBinary, true);
             oXml.WriteString(L"</p></title></section></section>");
         }
-        else if (sName == L"h4")
+        else if (sName == L"h3")
         {
             oXml.WriteString(L"<section><section><section><title><p>");
             readStream(oXml, oIndexHtml, arrBinary, true);
             oXml.WriteString(L"</p></title></section></section></section>");
         }
-        else if (sName == L"h5")
+        else if (sName == L"h4")
         {
             oXml.WriteString(L"<section><section><section><section><title><p>");
             readStream(oXml, oIndexHtml, arrBinary, true);
             oXml.WriteString(L"</p></title></section></section></section></section>");
         }
-        else if (sName == L"h6")
+        else if (sName == L"h5")
         {
             oXml.WriteString(L"<section><section><section><section><section><title><p>");
             readStream(oXml, oIndexHtml, arrBinary, true);
             oXml.WriteString(L"</p></title></section></section></section></section></section>");
+        }
+        else if (sName == L"h6")
+        {
+            oXml.WriteString(L"<section><section><section><section><section><section><title><p>");
+            readStream(oXml, oIndexHtml, arrBinary, true);
+            oXml.WriteString(L"</p></title></section></section></section></section></section></section>");
         }
         else if (sName == L"span")
         {
@@ -1699,7 +1703,7 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
     } while (oIndexHtml.ReadNextSiblingNode2(nDeath));
 }
 
-void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl)
+static void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl)
 {
     int nNum = 1;
     int nDeath = oIndexHtml.GetDepth();
@@ -1718,16 +1722,32 @@ void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oInde
     } while (oIndexHtml.ReadNextSiblingNode2(nDeath));
 }
 
+static std::wstring GenerateUUID()
+{
+    std::mt19937 oRand(time(0));
+    std::wstringstream sstream;
+    sstream << std::setfill(L'0') << std::hex << std::setw(8) << (oRand() & 0xffffffff);
+    sstream << L'-';
+    sstream << std::setfill(L'0') << std::hex << std::setw(4) << (oRand() & 0xffff);
+    sstream << L'-';
+    sstream << std::setfill(L'0') << std::hex << std::setw(4) << (oRand() & 0xffff);
+    sstream << L'-';
+    sstream << std::setfill(L'0') << std::hex << std::setw(4) << (oRand() & 0xffff);
+    sstream << L'-';
+    sstream << std::setfill(L'0') << std::hex << std::setw(8) << (oRand() & 0xffffffff);
+    return sstream.str();
+}
+
 HRESULT CFb2File::FromHtml(const std::wstring& sSrc, const std::wstring& sDst)
 {
     NSStringUtils::CStringBuilder oDocument;
     oDocument.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><FictionBook xmlns=\"http://www.gribuser.ru/xml/fictionbook/2.0\" xmlns:l=\"http://www.w3.org/1999/xlink\">");
     // description
     oDocument.WriteString(L"<description>");
-    // title-info
     std::wstring sCoreXml;
     if (NSFile::CFileBinary::ReadAllTextUtf8(sSrc + L"/docx_unpacked/docProps/core.xml", sCoreXml))
     {
+        // title-info
         oDocument.WriteString(L"<title-info>");
         std::wstring sBookTitle = NSFile::GetFileName(sDst);
         std::wstring sAuthor = sBookTitle;
@@ -1766,7 +1786,16 @@ HRESULT CFb2File::FromHtml(const std::wstring& sSrc, const std::wstring& sDst)
             oDocument.WriteString(L"<annotation><p>" + sAnnotation + L"</p></annotation>");
         if (!sKeywords.empty())
             oDocument.WriteString(L"<keywords>" + sKeywords + L"</keywords>");
+        oDocument.WriteString(L"<lang>en</lang>");
         oDocument.WriteString(L"</title-info>");
+        // document-info
+        oDocument.WriteString(L"<document-info>");
+        oDocument.WriteString(L"<author><nickname>" + sAuthor + L"</nickname></author>");
+        oDocument.WriteString(L"<date></date>");
+        oDocument.WriteString(L"<id>" + GenerateUUID() + L"</id>");
+        oDocument.WriteString(L"<version>1.0</version>");
+        oDocument.WriteString(L"</document-info>");
+
     }
     oDocument.WriteString(L"</description>");
     // body

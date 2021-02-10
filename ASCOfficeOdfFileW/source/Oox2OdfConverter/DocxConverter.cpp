@@ -2873,6 +2873,19 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 	if (oox_run_pr->m_oVanish.IsInit())
 		text_properties->content_.text_display_ = odf_types::text_display(odf_types::text_display::None);
 
+	if (oox_run_pr->m_oLang.IsInit())
+	{
+		if (oox_run_pr->m_oLang->m_oVal.IsInit())
+		{
+			std::wstring lang = oox_run_pr->m_oLang->m_oVal->GetValue();
+			size_t split = lang.find(L"-");
+			if (split != std::wstring::npos)
+			{
+				text_properties->content_.fo_language_ = lang.substr(0, split);
+				text_properties->content_.fo_country_ = lang.substr(split + 1);
+			}
+		}
+	}
 }
 
 void DocxConverter::convert(SimpleTypes::CTheme<>* oox_font_theme, _CP_OPT(std::wstring) & odf_font_name)

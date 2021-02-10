@@ -1548,6 +1548,42 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
             if (!bWasP)
                 oXml.WriteString(L"</p>");
         }
+        else if (sName == L"h1")
+        {
+            oXml.WriteString(L"<title><p>");
+            readStream(oXml, oIndexHtml, arrBinary, true);
+            oXml.WriteString(L"</p></title>");
+        }
+        else if (sName == L"h2")
+        {
+            oXml.WriteString(L"<section><title><p>");
+            readStream(oXml, oIndexHtml, arrBinary, true);
+            oXml.WriteString(L"</p></title></section>");
+        }
+        else if (sName == L"h3")
+        {
+            oXml.WriteString(L"<section><section><title><p>");
+            readStream(oXml, oIndexHtml, arrBinary, true);
+            oXml.WriteString(L"</p></title></section></section>");
+        }
+        else if (sName == L"h4")
+        {
+            oXml.WriteString(L"<section><section><section><title><p>");
+            readStream(oXml, oIndexHtml, arrBinary, true);
+            oXml.WriteString(L"</p></title></section></section></section>");
+        }
+        else if (sName == L"h5")
+        {
+            oXml.WriteString(L"<section><section><section><section><title><p>");
+            readStream(oXml, oIndexHtml, arrBinary, true);
+            oXml.WriteString(L"</p></title></section></section></section></section>");
+        }
+        else if (sName == L"h6")
+        {
+            oXml.WriteString(L"<section><section><section><section><section><title><p>");
+            readStream(oXml, oIndexHtml, arrBinary, true);
+            oXml.WriteString(L"</p></title></section></section></section></section></section>");
+        }
         else if (sName == L"span")
         {
             std::wstring sStyle;

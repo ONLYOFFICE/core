@@ -1003,7 +1003,7 @@ public:
 
         // Пишет картинку в файл
         NSFile::CFileBinary oImageWriter;
-        if(oImageWriter.CreateFileW(sMediaDirectory + L"/" + sId))
+        if(oImageWriter.CreateFileW(sMediaDirectory + L"/" + sId + (sId.find(L'.') == std::wstring::npos ? L".png" : L"")))
         {
             std::string sBase64 = contentA();
             int nSrcLen = (int)sBase64.length();
@@ -1696,7 +1696,7 @@ static void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteRe
                 }
             }
             oIndexHtml.MoveToElement();
-            oXml.WriteString(L"<image l:href=\"#img" + std::to_wstring(arrBinary.size()) + L"\"/>");
+            oXml.WriteString(L"<image l:href=\"#img" + std::to_wstring(arrBinary.size()) + L".png\"/>");
         }
         else
             readStream(oXml, oIndexHtml, arrBinary, bWasP);
@@ -1816,7 +1816,7 @@ HRESULT CFb2File::FromHtml(const std::wstring& sSrc, const std::wstring& sDst)
     // binary
     for (size_t i = 0; i < arrBinary.size(); i++)
     {
-        oDocument.WriteString(L"<binary id=\"img" + std::to_wstring(i + 1) + L"\" content-type=\"image/png\">");
+        oDocument.WriteString(L"<binary id=\"img" + std::to_wstring(i + 1) + L".png\" content-type=\"image/png\">");
         oDocument.WriteString(arrBinary[i]);
         oDocument.WriteString(L"</binary>");
     }

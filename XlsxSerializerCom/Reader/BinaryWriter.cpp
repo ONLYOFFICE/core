@@ -6932,6 +6932,7 @@ void BinaryFileWriter::intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinary
 		pXlsx->m_pCore->ToPptxCore()->toPPTY(&oBufferedStream);
 		this->WriteTableEnd(nCurPos);
 	}
+
 	if (pXlsx)
 	{
 		smart_ptr<OOX::File> pFile = pXlsx->Find(OOX::FileTypes::CustomProperties);

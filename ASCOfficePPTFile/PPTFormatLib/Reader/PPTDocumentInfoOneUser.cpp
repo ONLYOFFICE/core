@@ -562,8 +562,6 @@ void CPPTUserInfo::FromDocument()
 
     double DurationSlide = PPT_DEFAULT_SLIDE_DURATION;
 
-    // here we need to load audioCollection
-
     m_arSlides.reserve(m_arrSlidesOrder.size());
     for (size_t i = 0; i < m_arrSlidesOrder.size(); i++)
     {
@@ -597,7 +595,6 @@ void CPPTUserInfo::FromDocument()
 
         LoadSlide ( pPair->first, pSlide);
     }
-    // Here we may be need to load audio
 
     m_arNotes.reserve(m_arrNotesOrder.size());
     for (size_t i = 0; i< m_arrNotesOrder.size(); i++)

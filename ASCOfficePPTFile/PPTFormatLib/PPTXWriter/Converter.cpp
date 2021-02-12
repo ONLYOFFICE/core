@@ -1124,29 +1124,32 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
     // TODO write new method and class for timing
 
     auto slide_iter = m_pUserInfo->m_mapSlides.find(m_pUserInfo->m_arrSlidesOrder[nIndexSlide]);
-    CRecordSlideProgTagsContainer& progTag = *(slide_iter->second->m_pSlideProgTagsContainer);
-    CRecordPP10SlideBinaryTagExtension* pPP10SlideBinaryTag = progTag.getPP10SlideBinaryTagExtension();
+    CRecordSlideProgTagsContainer* progTag = slide_iter->second->m_pSlideProgTagsContainer;
 
-    if (pPP10SlideBinaryTag)
+    if (progTag)
     {
-        Animation animation(*pPP10SlideBinaryTag);
-        std::vector<CRecordSoundCollectionContainer*> sound;
-        m_pUserInfo->m_oDocument.GetRecordsByType(&sound, false);
-        if (!sound.empty())
+        CRecordPP10SlideBinaryTagExtension* pPP10SlideBinaryTag = progTag->getPP10SlideBinaryTagExtension();
+        if (pPP10SlideBinaryTag)
         {
-            animation.m_pSoundContainer = sound[0];
-        }
+            Animation animation(*pPP10SlideBinaryTag);
+            std::vector<CRecordSoundCollectionContainer*> sound;
+            m_pUserInfo->m_oDocument.GetRecordsByType(&sound, false);
+            if (!sound.empty())
+            {
+                animation.m_pSoundContainer = sound[0];
+            }
 
-        m_oManager.m_ridManager.setRIDfromAnimation(animation);
-        m_oManager.m_ridManager.setRID(oRels.getRId());
-        auto paths = m_oManager.m_ridManager.getPathesForSlideRels();
-        for (auto& path : paths)
-        {
-            oRels.WriteHyperlinkMedia(path, false, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
-        }
+            m_oManager.m_ridManager.setRIDfromAnimation(animation);
+            m_oManager.m_ridManager.setRID(oRels.getRId());
+            auto paths = m_oManager.m_ridManager.getPathesForSlideRels();
+            for (auto& path : paths)
+            {
+                oRels.WriteHyperlinkMedia(path, false, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
+            }
 
-        animation.Convert(pSlide->m_oTiming);
-        WriteTiming(oWriter, pSlide->m_oTiming);
+            animation.Convert(pSlide->m_oTiming);
+            WriteTiming(oWriter, pSlide->m_oTiming);
+        }
     }
 
 

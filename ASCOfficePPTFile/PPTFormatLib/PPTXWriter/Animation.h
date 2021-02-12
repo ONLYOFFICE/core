@@ -31,8 +31,8 @@
  */
 #pragma once
 
-#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Timing.h"
-#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldP.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Timing.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldP.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Anim.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/AnimClr.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/AnimEffect.h"
@@ -50,8 +50,8 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Set.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Video.h"
 
-#include "../../Records/SlideProgTagsContainer.h"
-#include "../../Records/SoundCollectionContainer.h"
+#include "../Records/SlideProgTagsContainer.h"
+#include "../Records/SoundCollectionContainer.h"
 
 namespace PPT_FORMAT
 {

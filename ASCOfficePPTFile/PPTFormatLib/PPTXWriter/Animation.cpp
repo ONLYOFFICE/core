@@ -35,15 +35,15 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/SchemeClr.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/SrgbClr.h"
 
-#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldLst.h"
-#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldOleChart.h"
-#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldDgm.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldLst.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldOleChart.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldDgm.h"
 
 #include "../Records/Animations/BuildListContainer.h"
 #include "../Records/Animations/ChartBuildContainer.h"
 #include "../Records/Animations/DiagramBuildContainer.h"
 
-#include "../../Records/SoundContainer.h"
+#include "../Records/SoundContainer.h"
 
 using namespace PPT_FORMAT;
 

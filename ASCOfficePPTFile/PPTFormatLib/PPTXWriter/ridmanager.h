@@ -1,7 +1,7 @@
 #ifndef RIDMANAGER_H
 #define RIDMANAGER_H
 
-#include "TimingConverter/Animation.h"
+#include "Animation.h"
 
 // This class is heeded for rId audio in the first.
 // And later maybe will be used for video.

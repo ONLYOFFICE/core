@@ -387,9 +387,9 @@ void ods_conversion_context::set_data_validation_operator(int val)
 {
 	table_context_.set_data_validation_operator(val);
 }
-void ods_conversion_context::set_data_validation_error(const std::wstring &title, const std::wstring &content, bool display)
+void ods_conversion_context::set_data_validation_error(const std::wstring &title, const std::wstring &content, bool display, int type)
 {
-	table_context_.set_data_validation_error(title, content, display);
+	table_context_.set_data_validation_error(title, content, display, type);
 }
 void ods_conversion_context::set_data_validation_promt(const std::wstring &title, const std::wstring &content, bool display)
 {

@@ -29,36 +29,46 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <CPOptional.h>
-#include <CPScopedPtr.h>
-#include <string>
+#include "messagetype.h"
 
-namespace cpdoccore {
-namespace oox {
+#include <boost/algorithm/string.hpp>
+#include <ostream>
 
-class xlsx_dataValidations_context
+namespace cpdoccore { namespace odf_types { 
+
+std::wostream & operator << (std::wostream & _Wostream, const message_type & _Val)
 {
-public:
-    xlsx_dataValidations_context();
-    ~xlsx_dataValidations_context();
-
-	void add(const std::wstring & name, /*int col, int row*/const std::wstring & ref);
-	void add_formula(const std::wstring & name, const std::wstring & f);
-	void add_help_msg(const std::wstring & name, const std::wstring & title, const std::wstring & content, bool display);
-	void add_error_msg(const std::wstring & name, const std::wstring & title, const std::wstring & content, bool display, int type);
-
-	void activate(const std::wstring & name, int col, int row/*const std::wstring & ref*/);
-
-    void serialize(std::wostream & _Wostream);
-	void serialize_x14(std::wostream & _Wostream);
-
-	void clear();
-private:
-    class Impl;
-    _CP_SCOPED_PTR(Impl) impl_;
-};
-
+    switch(_Val.get_type())
+    {
+    case message_type::stop:
+        _Wostream << L"stop";
+        break;
+    case message_type::warning:
+        _Wostream << L"warning";
+        break;
+    case message_type::information:
+        _Wostream << L"information";
+        break;
+    }
+    return _Wostream;    
 }
+
+message_type message_type::parse(const std::wstring & Str)
+{
+    std::wstring tmp = Str;
+    boost::algorithm::to_lower(tmp);
+
+    if (tmp == L"stop")
+        return message_type(stop);
+    else if (tmp == L"warning")
+        return message_type(warning);
+    else if (tmp == L"information")
+        return message_type(information);
+    else
+    {
+        return message_type(stop);
+    }
 }
+
+} }

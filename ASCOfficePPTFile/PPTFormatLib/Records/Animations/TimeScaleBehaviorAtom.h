@@ -48,8 +48,8 @@ public:
 
         m_fByPropertyUsed				=	( 0x01 == ( 0x01 & ((BYTE)src) ) );
         m_fFromPropertyUsed				=	( 0x02 == ( 0x02 & ((BYTE)src) ) );
-        m_fToPropertyUsed				=	( 0x03 == ( 0x03 & ((BYTE)src) ) );
-        m_fZoomContentsUsed				=	( 0x04 == ( 0x04 & ((BYTE)src) ) );
+        m_fToPropertyUsed				=	( 0x04 == ( 0x04 & ((BYTE)src) ) );
+        m_fZoomContentsUsed				=	( 0x08 == ( 0x08 & ((BYTE)src) ) );
 
         m_XBy							=	StreamUtils::ReadFLOAT ( pStream );
         m_YBy							=	StreamUtils::ReadFLOAT ( pStream );

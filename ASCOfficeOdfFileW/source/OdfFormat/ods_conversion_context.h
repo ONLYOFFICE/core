@@ -106,7 +106,7 @@ public:
 		void set_data_validation_operator(int val);
 		void set_data_validation_content(const std::wstring &val1, const std::wstring &val2);
 		void set_data_validation_allow_empty(bool val);
-		void set_data_validation_error(const std::wstring &title, const std::wstring &content, bool display);
+		void set_data_validation_error(const std::wstring &title, const std::wstring &content, bool display, int type);
 		void set_data_validation_promt(const std::wstring &title, const std::wstring &content, bool display);
 	void end_data_validation();
 

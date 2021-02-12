@@ -898,11 +898,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDataValidation *oox_validation)
 
 	ods_context->set_data_validation_content(formula_1, formula_2);
 	
-	ods_context->set_data_validation_error(oox_validation->m_oErrorTitle.IsInit() ? *oox_validation->m_oErrorTitle : L"", 
+	ods_context->set_data_validation_error( oox_validation->m_oErrorTitle.IsInit() ? *oox_validation->m_oErrorTitle : L"", 
 											oox_validation->m_oError.IsInit() ? *oox_validation->m_oError : L"",
-											oox_validation->m_oShowErrorMessage.IsInit() ? oox_validation->m_oShowErrorMessage->ToBool() : true);
+											oox_validation->m_oShowErrorMessage.IsInit() ? oox_validation->m_oShowErrorMessage->ToBool() : true,
+											oox_validation->m_oErrorStyle.IsInit() ? oox_validation->m_oErrorStyle->GetValue() : SimpleTypes::Spreadsheet::errorStyleStop);
 
-	ods_context->set_data_validation_promt(oox_validation->m_oPromptTitle.IsInit() ? *oox_validation->m_oPromptTitle : L"", 
+	ods_context->set_data_validation_promt( oox_validation->m_oPromptTitle.IsInit() ? *oox_validation->m_oPromptTitle : L"", 
 											oox_validation->m_oPrompt.IsInit() ? *oox_validation->m_oPrompt : L"", 
 											oox_validation->m_oShowInputMessage.IsInit() ? oox_validation->m_oShowInputMessage->ToBool() : true);
 	ods_context->end_data_validation();

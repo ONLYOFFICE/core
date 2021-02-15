@@ -30,8 +30,8 @@ struct SAuthor
     std::wstring first_name;
     std::wstring middle_name;
     std::wstring last_name;
-    /*
     std::wstring nickname;
+    /*
     std::vector<std::wstring> home_page;
     std::vector<std::wstring> email;
     std::wstring id;
@@ -96,7 +96,7 @@ struct STitleInfo
     std::wstring getAuthors()
     {
         return std::accumulate(m_arAuthors.begin(), m_arAuthors.end(), std::wstring(),
-            [] (std::wstring& sRes, const SAuthor& vElem) { return sRes += vElem.middle_name + L" " + vElem.first_name + L" " + vElem.last_name + L";"; });
+            [] (std::wstring& sRes, const SAuthor& vElem) { return sRes += vElem.middle_name + L" " + vElem.first_name + L" " + vElem.last_name + L" " + vElem.nickname + L";"; });
     }
 };
 
@@ -191,7 +191,7 @@ public:
     CFb2File_Private()
     {
         // m_pSrcTitleInfo = NULL;
-        // m_pPublishInfo = NULL;
+        // m_pPublishInfo  = NULL;
         m_nContentsId       = 1;
         m_nCrossReferenceId = 1;
     }
@@ -227,23 +227,23 @@ public:
     // Читает поля автора
     void getAuthor(std::vector<SAuthor>& arAuthor)
     {
-        if(m_oLightReader.IsEmptyNode())
+        if (m_oLightReader.IsEmptyNode())
             return;
 
         SAuthor oAuthor;
         int nDepth = m_oLightReader.GetDepth();
-        while(m_oLightReader.ReadNextSiblingNode(nDepth))
+        while (m_oLightReader.ReadNextSiblingNode(nDepth))
         {
             std::wstring sName = m_oLightReader.GetName();
-            if(sName == L"first-name")
+            if (sName == L"first-name")
                 oAuthor.first_name  = content();
-            else if(sName == L"middle-name")
+            else if (sName == L"middle-name")
                 oAuthor.middle_name = content();
-            else if(sName == L"last-name")
+            else if (sName == L"last-name")
                 oAuthor.last_name   = content();
-            /*
-            else if(sName == L"nickname")
+            else if (sName == L"nickname")
                 oAuthor.nickname = content();
+            /*
             else if(sName == L"home-page")
                 oAuthor.home_page.push_back(content());
             else if(sName == L"email")
@@ -260,15 +260,15 @@ public:
     void readImage(NSStringUtils::CStringBuilder& oBuilder)
     {
         // Читаем href
-        std::wstring sImageName = L"";
-        while(m_oLightReader.MoveToNextAttribute())
+        std::wstring sImageName;
+        while (m_oLightReader.MoveToNextAttribute())
         {
             std::wstring sName = m_oLightReader.GetName();
             size_t nLen = (sName.length() > 4 ? sName.length() - 4 : 0);
-            if(sName.substr(nLen) == L"href")
+            if (sName.substr(nLen) == L"href")
             {
                 std::wstring sText = m_oLightReader.GetText();
-                if(sText.length() > 1)
+                if (sText.length() > 1)
                     sImageName = sText.substr(1);
             }
         }
@@ -277,7 +277,7 @@ public:
         readCrossReference(oBuilder);
 
         std::map<std::wstring, std::vector<std::wstring>>::iterator it = m_mImages.find(sImageName);
-        if(it != m_mImages.end())
+        if (it != m_mImages.end())
         {
             // Пишем картинку в файл
             // extent
@@ -307,7 +307,7 @@ public:
     }
 
     // Читает title
-    void readTitle(std::wstring sLevel, NSStringUtils::CStringBuilder& oBuilder)
+    void readTitle(const std::wstring& sLevel, NSStringUtils::CStringBuilder& oBuilder)
     {
         if(m_oLightReader.IsEmptyNode())
             return;
@@ -359,27 +359,27 @@ public:
     {
         readCrossReference(oBuilder);
 
-        if(m_oLightReader.IsEmptyNode())
+        if (m_oLightReader.IsEmptyNode())
             return;
 
         int nDeath = m_oLightReader.GetDepth();
-        while(m_oLightReader.ReadNextSiblingNode(nDeath))
+        while (m_oLightReader.ReadNextSiblingNode(nDeath))
         {
             std::wstring sName = m_oLightReader.GetName();
-            if(sName == L"p")
+            if (sName == L"p")
             {
                 oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"epigraph-p\"/></w:pPr>";
                 readP(L"", oBuilder);
                 oBuilder += L"</w:p>";
             }
-            else if(sName == L"poem")
+            else if (sName == L"poem")
                 readPoem(oBuilder);
-            else if(sName == L"cite")
+            else if (sName == L"cite")
                 readCite(oBuilder);
-            else if(sName == L"empty-line")
+            else if (sName == L"empty-line")
                 oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"epigraph-p\"/></w:pPr></w:p>";
             // Автор эпиграфа выделяется полужирным
-            else if(sName == L"text-author")
+            else if (sName == L"text-author")
             {
                 oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"epigraph-p\"/></w:pPr>";
                 readP(L"<w:b/>", oBuilder);
@@ -395,15 +395,15 @@ public:
     {
         readCrossReference(oBuilder);
 
-        if(m_oLightReader.IsEmptyNode())
+        if (m_oLightReader.IsEmptyNode())
             return;
 
         int nDepth = m_oLightReader.GetDepth();
-        while(m_oLightReader.ReadNextSiblingNode2(nDepth))
+        while (m_oLightReader.ReadNextSiblingNode2(nDepth))
         {
             std::wstring sName = m_oLightReader.GetName();
             // Читаем обычный текст
-            if(sName == L"#text")
+            if (sName == L"#text")
             {
                 // Стиль текста
                 oBuilder += L"<w:r><w:rPr>";
@@ -418,24 +418,24 @@ public:
             else if (sName == L"strong")
                 readP(sRStyle + L"<w:b/>", oBuilder);
             // Читаем курсивный текст
-            else if(sName == L"emphasis")
+            else if (sName == L"emphasis")
                 readP(sRStyle + L"<w:i/>", oBuilder);
             // Читаем стилизованный текст
-            else if(sName == L"style")
+            else if (sName == L"style")
                 readP(sRStyle, oBuilder);
             // Читаем ссылку
-            else if(sName == L"a")
+            else if (sName == L"a")
             {
                 // Читаем href
                 std::wstring sFootnoteName = L"";
-                while(m_oLightReader.MoveToNextAttribute())
+                while (m_oLightReader.MoveToNextAttribute())
                 {
                     std::wstring sTName = m_oLightReader.GetName();
                     size_t nLen = (sTName.length() > 4 ? sTName.length() - 4 : 0);
-                    if(sTName.substr(nLen) == L"href")
+                    if (sTName.substr(nLen) == L"href")
                     {
                         std::wstring sText = m_oLightReader.GetText();
-                        if(sText.length() > 1)
+                        if (sText.length() > 1)
                             sFootnoteName = sText.substr(1);
                         break;
                     }
@@ -443,7 +443,7 @@ public:
                 m_oLightReader.MoveToElement();
 
                 std::map<std::wstring, std::wstring>::iterator it = m_mFootnotes.find(sFootnoteName);
-                if(it != m_mFootnotes.end())
+                if (it != m_mFootnotes.end())
                 {
                     // Пробел перед текстом внутри сноски
                     oBuilder += L"<w:r><w:t xml:space=\"preserve\"> </w:t></w:r>";
@@ -466,7 +466,7 @@ public:
                 }
             }
             // Читаем вычеркнутый текст
-            else if(sName == L"strikethrough")
+            else if (sName == L"strikethrough")
                 readP(sRStyle + L"<w:strike/>", oBuilder);
             // Читает нижний текст
             else if(sName == L"sub")
@@ -488,29 +488,29 @@ public:
     {
         readCrossReference(oBuilder);
 
-        if(m_oLightReader.IsEmptyNode())
+        if (m_oLightReader.IsEmptyNode())
             return;
 
         int nDeath = m_oLightReader.GetDepth();
-        while(m_oLightReader.ReadNextSiblingNode(nDeath))
+        while (m_oLightReader.ReadNextSiblingNode(nDeath))
         {
             std::wstring sName = m_oLightReader.GetName();
-            if(sName == L"title")
+            if (sName == L"title")
                 readTitle(L"title4", oBuilder);
-            else if(sName == L"epigraph")
+            else if (sName == L"epigraph")
                 readEpigraph(oBuilder);
-            else if(sName == L"stanza")
+            else if (sName == L"stanza")
             {
-                if(m_oLightReader.IsEmptyNode())
+                if (m_oLightReader.IsEmptyNode())
                     continue;
 
                 int nSDeath = m_oLightReader.GetDepth();
-                while(m_oLightReader.ReadNextSiblingNode(nSDeath))
+                while (m_oLightReader.ReadNextSiblingNode(nSDeath))
                 {
                     std::wstring sSName = m_oLightReader.GetName();
-                    if(sSName == L"title")
+                    if (sSName == L"title")
                         readTitle(L"title5", oBuilder);
-                    else if(sSName == L"v" || sSName == L"subtitle")
+                    else if (sSName == L"v" || sSName == L"subtitle")
                     {
                         oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"v-stanza\"/></w:pPr>";
                         readP(L"", oBuilder);
@@ -519,13 +519,13 @@ public:
                 }
             }
             // Автор поэмы выделяется полужирным
-            else if(sName == L"text-author")
+            else if (sName == L"text-author")
             {
                 oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"v-stanza\"/></w:pPr>";
                 readP(L"<w:b/>", oBuilder);
                 oBuilder += L"</w:p>";
             }
-            else if(sName == L"date")
+            else if (sName == L"date")
             {
                 oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"v-stanza\"/></w:pPr><w:r><w:t>";
                 oBuilder.WriteEncodeXmlString(content());
@@ -995,10 +995,7 @@ public:
                 sId = m_oLightReader.GetText();
         }
         m_oLightReader.MoveToElement();
-        if(sId == L"")
-            return;
-
-        if(m_oLightReader.IsEmptyNode())
+        if (sId == L"" || m_oLightReader.IsEmptyNode())
             return;
 
         // Пишет картинку в файл

@@ -84,6 +84,7 @@ public:
 		void end_cell();
 
 		void add_row_repeated();
+		void add_default_row(int repeated);
 	void end_rows();
 
 	void start_cell_text();

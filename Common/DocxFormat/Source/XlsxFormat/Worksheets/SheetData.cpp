@@ -1215,7 +1215,7 @@ namespace OOX
 					m_oRef = getCellAddressA(xlsx_flat->m_nLastReadRow, xlsx_flat->m_nLastReadCol);
 				}
 				setRowCol(xlsx_flat->m_nLastReadRow, xlsx_flat->m_nLastReadCol - 1);
-				
+
 				if (false == xlsx_flat->m_pSharedStrings.IsInit())
 				{
 					xlsx_flat->m_pSharedStrings = new CSharedStrings(m_pMainDocument);

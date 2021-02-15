@@ -142,7 +142,9 @@ namespace DocFileFormat
 			m_pXmlWriter->WriteNodeBegin( L"v:group", true );
 			m_pXmlWriter->WriteAttribute( L"id", m_shapeId);
 			
+			bool layoutInCell = true;
 			bool twistDimensions = false;
+
 			m_pXmlWriter->WriteAttribute( L"style", FormatUtils::XmlEncode(buildStyle(shape, anchor, options, container->Index, twistDimensions)));
 			m_pXmlWriter->WriteAttribute( L"coordorigin", ( FormatUtils::IntToWideString(gsr->rcgBounds.topLeftAngle.x) + L"," + FormatUtils::IntToWideString( gsr->rcgBounds.topLeftAngle.y)));
 			m_pXmlWriter->WriteAttribute( L"coordsize", ( FormatUtils::IntToWideString(gsr->rcgBounds.size.cx) + L"," + FormatUtils::IntToWideString(gsr->rcgBounds.size.cy)));
@@ -157,13 +159,24 @@ namespace DocFileFormat
 						std::wstring wrapCoords	= GetWrapCoords(options[i]);
 						if (!wrapCoords.empty())
 							m_pXmlWriter->WriteAttribute(L"wrapcoords", wrapCoords);
+					}break;
+					case ODRAW::groupShapeBooleanProperties:
+					{
+						ODRAW::GroupShapeBooleanProperties *booleans = dynamic_cast<ODRAW::GroupShapeBooleanProperties *>(options[i].get());
+						if (booleans && booleans->fUsefLayoutInCell)
+						{
+							layoutInCell = booleans->fLayoutInCell;
+						}
 					}
 					break;
 					default:
 						break;
 				}
 			}
-
+			if (!layoutInCell)
+			{
+				m_pXmlWriter->WriteAttribute(L"o:allowincell", L"f");
+			}
 			m_pXmlWriter->WriteNodeEnd(L"", true, false);
 
 			// Convert the shapes/groups in the group
@@ -306,7 +319,7 @@ namespace DocFileFormat
 			ODRAW::OfficeArtFOPTEPtr & iter = options[i];
 			switch (iter->opid)
 			{
-				//BOOLEANS
+	//BOOLEANS
 			case ODRAW::geometryBooleanProperties:
 			{
 				ODRAW::GeometryBooleanProperties *booleans = dynamic_cast<ODRAW::GeometryBooleanProperties*>(iter.get());
@@ -368,7 +381,7 @@ namespace DocFileFormat
 				}
 			}
 			break;
-			// GEOMETRY
+	// GEOMETRY
 			case ODRAW::shapePath:
 			{
 				bHavePath = true;
@@ -519,7 +532,7 @@ namespace DocFileFormat
 				case 3:	m_pXmlWriter->WriteAttribute(L"o:connectortype", L"none");		break;
 				}
 			}break;
-			// FILL
+	// FILL
 			case ODRAW::fillColor:
 			{
 				RGBColor fillColor((int)iter->op, RedFirst);
@@ -590,7 +603,7 @@ namespace DocFileFormat
 			{
 				appendValueAttribute(&m_fill, L"o:opacity2", (FormatUtils::IntToWideString(iter->op) + L"f"));
 			}break;
-			// SHADOW
+	// SHADOW
 			case ODRAW::shadowType:
 			{
 				appendValueAttribute(&m_shadow, L"type", getShadowType(iter->op));
@@ -636,12 +649,12 @@ namespace DocFileFormat
 				//ODRAW::ShadowStyleBooleanProperties
 
 			}break;
-			// OLE
+	// OLE
 			case ODRAW::pictureId:
 			{
 				indexOLE = iter->op;
 			}break;
-			// PICTURE
+	// PICTURE
 			case ODRAW::pib:
 			{
 				int index = (int)(iter->op - 1);
@@ -680,6 +693,35 @@ namespace DocFileFormat
 			{
 				appendValueAttribute(&m_imagedata, L"gamma", (FormatUtils::IntToWideString(iter->op) + L"f"));
 			}break;
+			//CROPPING
+			case ODRAW::cropFromBottom:
+			{
+				//cast to signed integer
+				int cropBottom = (int)iter->op;
+				appendValueAttribute(&m_imagedata, L"cropbottom", FormatUtils::IntToWideString(cropBottom) + L"f");
+			}
+			break;
+			case ODRAW::cropFromLeft:
+			{
+				//cast to signed integer
+				int cropLeft = (int)iter->op;
+				appendValueAttribute(&m_imagedata, L"cropleft", FormatUtils::IntToWideString(cropLeft) + L"f");
+			}
+			break;
+			case ODRAW::cropFromRight:
+			{
+				//cast to signed integer
+				int cropRight = (int)iter->op;
+				appendValueAttribute(&m_imagedata, L"cropright", FormatUtils::IntToWideString(cropRight) + L"f");
+			}
+			break;
+			case ODRAW::cropFromTop:
+			{
+				//cast to signed integer
+				int cropTop = (int)iter->op;
+				appendValueAttribute(&m_imagedata, L"croptop", FormatUtils::IntToWideString(cropTop) + L"f");
+			}
+			break;
 // 3D STYLE
 			case ODRAW::threeDStyleBooleanProperties:
 				{

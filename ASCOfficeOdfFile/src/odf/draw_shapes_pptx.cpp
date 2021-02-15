@@ -369,11 +369,11 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 		std::vector<::svg_path::_polyline> o_Polyline;
 	
 		bool res = false;
-		bool bClosed =false;
+		bool bClosed = false, bStroked = true;
 		
 		try
 		{
-			res = ::svg_path::parseSvgD(o_Polyline, odf_path_, true, bClosed);
+			res = ::svg_path::parseSvgD(o_Polyline, odf_path_, true, bClosed, bStroked);
 		}
 		catch(...)
 		{
@@ -389,7 +389,11 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 			Context.get_slide_context().set_property(odf_reader::_property(L"custom_path", output_.str()));
 
 			set_shape = true;
-			
+
+			if (false == bStroked)
+			{
+				Context.get_slide_context().set_property(odf_reader::_property(L"custom_path_s", false));
+			}
 			if (attlist_.drawooo_sub_view_size_)
 			{
 				std::vector< std::wstring > splitted;			    

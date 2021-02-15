@@ -951,8 +951,9 @@ namespace NSDoctRenderer
         RELEASEOBJECT(m_pInternal);
     }    
 
-    bool CDoctrenderer::Execute(const std::wstring& strXml, std::wstring& strError)
+    bool CDoctrenderer::Execute(const std::wstring& strXml, std::wstring& strError, bool bForEpub)
     {
+        NSGraphics::CGraphics::m_bIsFromHtmlToEpubConverter = bForEpub;
         strError = L"";
         m_pInternal->m_oParams.FromXml(strXml);
         m_pInternal->m_arImagesInChanges.clear();

@@ -1500,6 +1500,35 @@ namespace NExtractTools
 
 		return nRes;
 	}
+    // doct_bin -> epub
+    _UINT32 doct_bin2epub(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
+    {
+        _UINT32 nRes = 0;
+        NSDoctRenderer::DoctRendererFormat::FormatFile eToType = NSDoctRenderer::DoctRendererFormat::FormatFile::HTML;
+        std::wstring sFileFromDir = NSDirectory::GetFolderPath(sFrom);
+        std::wstring sFileToDir   = NSDirectory::GetFolderPath(sTo);
+        std::wstring sImagesDirectory = sFileFromDir + FILE_SEPARATOR_STR + L"media";
+        std::wstring sHtmlFile        = sFileFromDir + FILE_SEPARATOR_STR + L"index.html";
+        NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
+        std::wstring sXml = getDoctXml(eFromType, eToType, sFileFromDir, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
+        std::wstring sResult;
+        oDoctRenderer.Execute(sXml, sResult, true);
+        if (sResult.find(L"error") != std::wstring::npos)
+        {
+            std::wcerr << L"DoctRenderer:" << sResult << std::endl;
+            nRes = AVS_FILEUTILS_ERROR_CONVERT;
+        }
+        else
+        {
+            CEpubFile oFile;
+            std::wstring sEpubTemp = sTemp + FILE_SEPARATOR_STR + L"tmp";
+            NSDirectory::CreateDirectory(sEpubTemp);
+            oFile.SetTempDirectory(sEpubTemp);
+            if (S_FALSE == oFile.FromHtml(sFileFromDir + FILE_SEPARATOR_STR + L"..", sTo))
+                nRes = AVS_FILEUTILS_ERROR_CONVERT;
+        }
+        return nRes;
+    }
     // doct_bin -> fb2
     _UINT32 doct_bin2fb(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
     {
@@ -3359,6 +3388,7 @@ namespace NExtractTools
 			// перечислить все "документные" форматы, которым нужна конвертация через doct
             case AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER:
             case AVS_OFFICESTUDIO_FILE_DOCUMENT_FB2:
+            case AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB:
 				bIsNeedDoct = true;
 				break;
 			default:
@@ -3447,6 +3477,11 @@ namespace NExtractTools
        {
            std::wstring sFromDir = NSDirectory::GetFolderPath(sFrom);
            nRes = dir2zip(sFromDir, sTo);
+       }
+       else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB == nFormatTo)
+       {
+           NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT;
+           nRes = doct_bin2epub(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
        }
        else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_FB2 == nFormatTo)
        {

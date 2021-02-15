@@ -1757,8 +1757,7 @@ HRESULT CFb2File::FromHtml(const std::wstring& sSrc, const std::wstring& sDst)
         int nDeath = oCoreReader.GetDepth();
         while (oCoreReader.ReadNextSiblingNode(nDeath))
         {
-            std::wstring sPrefix = oCoreReader.GetNamespacePrefix();
-            if (sPrefix == L"dc")
+            if (oCoreReader.GetNamespacePrefix() == L"dc")
             {
                 std::wstring sName = oCoreReader.GetName();
                 if (sName == L"dc:creator")
@@ -1769,10 +1768,6 @@ HRESULT CFb2File::FromHtml(const std::wstring& sSrc, const std::wstring& sDst)
                     sAnnotation = oCoreReader.GetText2();
                 else if (sName == L"dc:subject")
                     sKeywords += oCoreReader.GetText2() + L' ';
-            }
-            else if (sPrefix == L"cp")
-            {
-
             }
         }
 

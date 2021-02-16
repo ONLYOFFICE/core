@@ -1512,7 +1512,7 @@ namespace NExtractTools
         NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
         std::wstring sXml = getDoctXml(eFromType, eToType, sFileFromDir, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
         std::wstring sResult;
-        oDoctRenderer.Execute(sXml, sResult, true);
+        oDoctRenderer.Execute(sXml, sResult);
         if (sResult.find(L"error") != std::wstring::npos)
         {
             std::wcerr << L"DoctRenderer:" << sResult << std::endl;
@@ -1589,7 +1589,7 @@ namespace NExtractTools
         }
         return nRes;
     }
-   // doct_bin -> pdf
+    // doct_bin -> pdf
 	_UINT32 doct_bin2pdf(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
    {
        _UINT32 nRes = 0;

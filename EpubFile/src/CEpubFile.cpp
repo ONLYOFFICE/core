@@ -209,10 +209,34 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sSrc, const std::wstring& sDstFi
 {
     NSDirectory::CreateDirectory(m_sTempDir + L"/META-INF");
     NSDirectory::CreateDirectory(m_sTempDir + L"/OEBPS");
-    NSDirectory::CopyDirectory(sSrc + L"/doct_unpacked/images", m_sTempDir + L"/OEBPS/images");
     // index.html
     std::wstring sIndexHtml;
     NSFile::CFileBinary::ReadAllTextUtf8(sSrc + L"/doct_unpacked/index.html", sIndexHtml);
+
+    size_t nImage = sIndexHtml.find(L"data:image/png;base64, ");
+    int nNumImage = 1;
+    if (nImage != std::wstring::npos)
+        NSDirectory::CreateDirectory(m_sTempDir + L"/OEBPS/images");
+    while (nImage != std::wstring::npos)
+    {
+        size_t nImageBegin = sIndexHtml.find(L' ', nImage) + 1;
+        size_t nImageEnd = sIndexHtml.find(L'\"', nImageBegin);
+        std::wstring sImage = sIndexHtml.substr(nImageBegin, nImageEnd - nImageBegin);
+        NSFile::CFileBinary oImageWriter;
+        if (oImageWriter.CreateFileW(m_sTempDir + L"/OEBPS/images/img" + std::to_wstring(nNumImage) + L".png"))
+        {
+            int nSrcLen = (int)sImage.length();
+            int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
+            BYTE* pImageData = new BYTE[nDecodeLen];
+            if (TRUE == NSBase64::Base64Decode(U_TO_UTF8(sImage).c_str(), nSrcLen, pImageData, &nDecodeLen))
+                oImageWriter.WriteFile(pImageData, (DWORD)nDecodeLen);
+            RELEASEARRAYOBJECTS(pImageData);
+            oImageWriter.CloseFile();
+        }
+        sIndexHtml.replace(nImage, nImageEnd - nImage, L"images/img" + std::to_wstring(nNumImage++) + L".png");
+        nImage = sIndexHtml.find(L"data:image/png;base64, ", nImage);
+    }
+
     NSFile::CFileBinary oIndexHtml;
     if (oIndexHtml.CreateFileW(m_sTempDir + L"/OEBPS/index.html"))
     {
@@ -235,7 +259,7 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sSrc, const std::wstring& sDstFi
         oContainerXml.CloseFile();
     }
     // cover.html
-    bool bCoverFromImg1 = NSFile::CFileBinary::Exists(sSrc + L"/doct_unpacked/images/img1.png");
+    bool bCoverFromImg1 = NSFile::CFileBinary::Exists(m_sTempDir + L"/OEBPS/images/img1.png");
     if (bCoverFromImg1)
     {
         int nHy = 0;

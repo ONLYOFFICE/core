@@ -114,7 +114,6 @@ namespace NSGraphics
     class CGraphics
     {
     public:
-        static  bool m_bIsFromHtmlToEpubConverter;
         std::wstring m_sApplicationFontsDirectory;
         std::wstring m_sApplicationImagesDirectory;
         std::wstring m_sApplicationThemesDirectory;

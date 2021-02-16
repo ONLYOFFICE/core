@@ -159,47 +159,89 @@ public:
         return builder.GetData();
     }
 
-    int GetCountSigns(const std::wstring& file)
+    int GetCountSigns(const std::wstring& folder)
     {
-        if (!NSFile::CFileBinary::Exists(file))
-        {
-            std::wstring sRels = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
-<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
-<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-signature/signature\" Target=\"sig1.xml\"/>\
-</Relationships>";
+        std::wstring sRelsFolder = folder + L"/_rels";
 
-            NSFile::CFileBinary::SaveToFile(file, sRels, false);
-            return 1;
+        std::vector<std::wstring> arFiles = NSDirectory::GetFiles(sRelsFolder, false);
+        std::map<std::wstring, bool> arSigFiles;
+
+        for (std::vector<std::wstring>::iterator iter = arFiles.begin(); iter != arFiles.end(); iter++)
+        {
+            XmlUtils::CXmlNode oNodeRels;
+            if (!oNodeRels.FromXmlFile(*iter))
+                continue;
+            XmlUtils::CXmlNodes oNodesRels = oNodeRels.GetNodes(L"Relationship");
+            int nCount = oNodesRels.GetCount();
+            for (int nIndex = 0; nIndex < nCount; nIndex++)
+            {
+                XmlUtils::CXmlNode oNodeRel;
+                oNodesRels.GetAt(nIndex, oNodeRel);
+
+                std::wstring sTarget = oNodeRel.GetAttribute(L"Target");
+                if (!sTarget.empty() && arSigFiles.find(sTarget) == arSigFiles.end() && NSFile::CFileBinary::Exists(folder + L"/" + sTarget))
+                    arSigFiles.insert(std::pair<std::wstring, bool>(sTarget, true));
+            }
+            NSFile::CFileBinary::Remove(*iter);
         }
 
-        XmlUtils::CXmlNode oNode;
-        oNode.FromXmlFile(file);
+        int nCountSigs = (int)arSigFiles.size();
+        std::wstring sFile = sRelsFolder + L"/origin.sigs.rels";
 
-        XmlUtils::CXmlNodes oNodes;
-        oNode.GetNodes(L"Relationship", oNodes);
+        NSStringUtils::CStringBuilder oBuilder;
+        oBuilder.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
 
-        int rId = oNodes.GetCount() + 1;
+        for (int nIndex = 0; nIndex <= nCountSigs/*old + one new*/; nIndex++)
+        {
+            oBuilder.WriteString(L"<Relationship Id=\"rId");
+            oBuilder.WriteString(std::to_wstring(nIndex + 1));
+            oBuilder.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-signature/signature\" Target=\"sig");
+            oBuilder.WriteString(std::to_wstring(nIndex + 1));
+            oBuilder.WriteString(L".xml\"/>");
+        }
 
-        std::string sXmlA;
-        NSFile::CFileBinary::ReadAllTextUtf8A(file, sXmlA);
+        oBuilder.WriteString(L"</Relationships>");
 
-        std::string::size_type pos = sXmlA.rfind("</Relationships>");
-        if (pos == std::string::npos)
-            return 1;
-
-        std::string sRet = sXmlA.substr(0, pos);
-        sRet += ("<Relationship Id=\"rId" + std::to_string(rId) + "\" \
-Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-signature/signature\" Target=\"sig" + std::to_string(rId) + ".xml\"/>\
-</Relationships>");
-
-        NSFile::CFileBinary::Remove(file);
-
+        NSFile::CFileBinary::Remove(sFile);
         NSFile::CFileBinary oFile;
-        oFile.CreateFileW(file);
-        oFile.WriteFile((BYTE*)sRet.c_str(), (DWORD)sRet.length());
+        oFile.CreateFileW(sFile);
+        oFile.WriteStringUTF8(oBuilder.GetData());
         oFile.CloseFile();
 
-        return rId;
+        // теперь перебьем все имена файлов
+
+        std::vector<std::wstring> arSigs;
+
+        std::vector<std::wstring> arFilesXml = NSDirectory::GetFiles(folder, false);
+        for (std::vector<std::wstring>::iterator iter = arFilesXml.begin(); iter != arFilesXml.end(); iter++)
+        {
+            std::wstring sXmlFileName = NSFile::GetFileName(*iter);
+            if (NSFile::GetFileExtention(sXmlFileName) != L"xml")
+                continue;
+
+            std::map<std::wstring, bool>::iterator find = arSigFiles.find(sXmlFileName);
+            if (find == arSigFiles.end())
+            {
+                // ненужная xml
+                NSFile::CFileBinary::Remove(*iter);
+                continue;
+            }
+
+            arSigs.push_back(sXmlFileName);
+        }
+
+        std::sort(arSigs.begin(), arSigs.end());
+        for (std::vector<std::wstring>::iterator iter = arSigs.begin(); iter != arSigs.end(); iter++)
+        {
+            NSFile::CFileBinary::Move(folder + L"/" + *iter, folder + L"/onlyoffice_" + *iter);
+        }
+        int nSigNumber = 1;
+        for (std::vector<std::wstring>::iterator iter = arSigs.begin(); iter != arSigs.end(); iter++)
+        {
+            NSFile::CFileBinary::Move(folder + L"/onlyoffice_" + *iter, folder + L"/sig" + std::to_wstring(nSigNumber++) + L".xml");
+        }
+
+        return (int)arSigs.size();
     }
 
     void ParseContentTypes()
@@ -258,7 +300,8 @@ Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-sign
             // check needed file
             if (0 == sCheckFile.find(L"/_xmlsignatures") ||
                 0 == sCheckFile.find(L"/docProps") ||
-                0 == sCheckFile.find(L"/[Content_Types].xml"))
+                0 == sCheckFile.find(L"/[Content_Types].xml") ||
+                0 == sCheckFile.find(L"/[trash]"))
                 continue;
 
             // check rels and add to needed array
@@ -322,74 +365,61 @@ Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-sign
         builder.WriteString(L"</Manifest>");
     }
 
-    void CorrectContentTypes(int nCountSigsNeeds)
+    void CorrectContentTypes(int nCountSignatures)
     {
         std::wstring file = m_sFolder + L"/[Content_Types].xml";
         XmlUtils::CXmlNode oNode;
         oNode.FromXmlFile(file);
 
-        XmlUtils::CXmlNodes nodesDefaults;
-        oNode.GetNodes(L"Default", nodesDefaults);
+        NSStringUtils::CStringBuilder oBuilder;
+        oBuilder.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
 
-        XmlUtils::CXmlNodes nodesOverrides;
-        oNode.GetNodes(L"Override", nodesOverrides);
+        int nAttributesCount = oNode.GetAttributesCount();
+        oBuilder.WriteNodeBegin(oNode.GetName(), nAttributesCount != 0);
 
-        std::string sAddition = "";
+        std::vector<std::wstring> attrNames;
+        std::vector<std::wstring> attrValues;
+        oNode.GetAllAttributes(attrNames, attrValues);
 
-        bool bIsSigsExist = false;
-        int nCount = nodesDefaults.GetCount();
-        for (int i = 0; i < nCount; ++i)
+        for (int nAttrIndex = 0; nAttrIndex < nAttributesCount; ++nAttrIndex)
         {
-            XmlUtils::CXmlNode node;
-            nodesDefaults.GetAt(i, node);
-
-            if ("sigs" == node.GetAttributeA("Extension") &&
-                "application/vnd.openxmlformats-package.digital-signature-origin" == node.GetAttributeA("ContentType"))
-            {
-                bIsSigsExist = true;
-                break;
-            }
+            oBuilder.WriteAttributeEncodeXml(attrNames[nAttrIndex], attrValues[nAttrIndex]);
         }
 
-        if (!bIsSigsExist)
-            sAddition += "<Default Extension=\"sigs\" ContentType=\"application/vnd.openxmlformats-package.digital-signature-origin\"/>";
+        oBuilder.WriteNodeEnd(oNode.GetName(), true, false);
 
-        int nCountSigs = 0;
-        nCount = nodesOverrides.GetCount();
-        for (int i = 0; i < nCount; ++i)
+        XmlUtils::CXmlNodes oNodes = oNode.GetNodes(L"*");
+
+        int nCountNodes = oNodes.GetCount();
+        for (int nIndex = 0; nIndex < nCountNodes; ++nIndex)
         {
-            XmlUtils::CXmlNode node;
-            nodesOverrides.GetAt(i, node);
+            XmlUtils::CXmlNode oCurrentRecord;
+            oNodes.GetAt(nIndex, oCurrentRecord);
 
-            if ("application/vnd.openxmlformats-package.digital-signature-xmlsignature+xml" == node.GetAttributeA("ContentType"))
-            {
-                ++nCountSigs;
-            }
+            if (L"Default" == oCurrentRecord.GetName() && oCurrentRecord.GetAttributeA("Extension") == "sigs")
+                continue;
+            if (L"Override" == oCurrentRecord.GetName() && oCurrentRecord.GetAttributeA("ContentType") == "application/vnd.openxmlformats-package.digital-signature-xmlsignature+xml")
+                continue;
+
+            oBuilder.WriteString(oCurrentRecord.GetXml());
         }
 
-        for (int i = nCountSigs; i < nCountSigsNeeds; ++i)
+        if (0 != nCountSignatures)
+            oBuilder.WriteString(L"<Default Extension=\"sigs\" ContentType=\"application/vnd.openxmlformats-package.digital-signature-origin\"/>");
+
+        for (int nIndex = 0; nIndex < nCountSignatures; ++nIndex)
         {
-            sAddition += "<Override PartName=\"/_xmlsignatures/sig";
-            sAddition += std::to_string(i + 1);
-            sAddition += ".xml\" ContentType=\"application/vnd.openxmlformats-package.digital-signature-xmlsignature+xml\"/>";
+            oBuilder.WriteString(L"<Override PartName=\"/_xmlsignatures/sig");
+            oBuilder.WriteString(std::to_wstring(nIndex + 1));
+            oBuilder.WriteString(L".xml\" ContentType=\"application/vnd.openxmlformats-package.digital-signature-xmlsignature+xml\"/>");
         }
 
-        std::string sXmlA;
-        NSFile::CFileBinary::ReadAllTextUtf8A(file, sXmlA);
-
-        std::string::size_type pos = sXmlA.rfind("</Types>");
-        if (pos == std::string::npos)
-            return;
-
-        std::string sRet = sXmlA.substr(0, pos);
-        sRet += sAddition;
-        sRet += "</Types>";
+        oBuilder.WriteNodeEnd(oNode.GetName());
 
         NSFile::CFileBinary::Remove(file);
-
         NSFile::CFileBinary oFile;
         oFile.CreateFileW(file);
-        oFile.WriteFile((BYTE*)sRet.c_str(), (DWORD)sRet.length());
+        oFile.WriteStringUTF8(oBuilder.GetData());
         oFile.CloseFile();
     }
 
@@ -558,20 +588,30 @@ Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-sign
         if (!NSDirectory::Exists(sDirectory))
             NSDirectory::CreateDirectory(sDirectory);
 
-        if (!NSFile::CFileBinary::Exists(sDirectory + L"/origin.sigs"))
+        // remove old .sig file
+        std::vector<std::wstring> arFiles = NSDirectory::GetFiles(sDirectory, false);
+        for (std::vector<std::wstring>::iterator i = arFiles.begin(); i != arFiles.end(); i++)
+        {
+            if (NSFile::GetFileExtention(*i) == L"sigs")
+            {
+                NSFile::CFileBinary::Remove(*i);
+            }
+        }
+
+        std::wstring sOriginName = L"origin.sigs";
+        if (!NSFile::CFileBinary::Exists(sDirectory + L"/" + sOriginName))
         {
             NSFile::CFileBinary oFile;
-            oFile.CreateFileW(sDirectory + L"/origin.sigs");
+            oFile.CreateFileW(sDirectory + L"/" + sOriginName);
             oFile.CloseFile();
         }
 
         if (!NSDirectory::Exists(sDirectory + L"/_rels"))
             NSDirectory::CreateDirectory(sDirectory + L"/_rels");
 
-        int nSignNum = GetCountSigns(sDirectory + L"/_rels/origin.sigs.rels");
+        int nSignNum = GetCountSigns(sDirectory);
 
-        CorrectContentTypes(nSignNum);
-
+        CorrectContentTypes(nSignNum + 1);
         return nSignNum;
     }
 
@@ -609,7 +649,7 @@ Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-sign
 
         int nSignNum = AddSignatureReference();
 
-        NSFile::CFileBinary::SaveToFile(m_sFolder + L"/_xmlsignatures/sig" + std::to_wstring(nSignNum) + L".xml", builderResult.GetData(), false);
+        NSFile::CFileBinary::SaveToFile(m_sFolder + L"/_xmlsignatures/sig" + std::to_wstring(nSignNum + 1) + L".xml", builderResult.GetData(), false);
     }
 };
 

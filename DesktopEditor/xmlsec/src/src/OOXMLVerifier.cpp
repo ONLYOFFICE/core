@@ -437,6 +437,17 @@ public:
             sXml = oTransforms.Transform(sXml);
 
             sCalcValue = m_cert->GetHash(sXml, nAlg);
+
+            FILE* f = fopen("D:/123.txt", "a+");
+            fprintf(f, sXml.c_str());
+            fprintf(f, "\n");
+            fprintf(f, sCalcValue.c_str());
+            fprintf(f, "\n");
+            fprintf(f, sValue.c_str());
+            fprintf(f, "\n");
+            fprintf(f, "\n");
+            fclose(f);
+
             sValue = U_TO_UTF8((node.ReadNodeText(L"DigestValue")));
             MakeBase64_NOCRLF(sValue);
         }
@@ -568,7 +579,19 @@ public:
     {
         m_sFolder = sFolder;
 
-        if (!NSFile::CFileBinary::Exists(m_sFolder + L"/_xmlsignatures/origin.sigs"))
+        // check .sig file
+        std::vector<std::wstring> arFiles = NSDirectory::GetFiles(m_sFolder + L"/_xmlsignatures", false);
+        bool bIsFound = false;
+        for (std::vector<std::wstring>::iterator i = arFiles.begin(); i != arFiles.end(); i++)
+        {
+            if (NSFile::GetFileExtention(*i) == L"sigs")
+            {
+                bIsFound = true;
+                break;
+            }
+        }
+
+        if (!bIsFound)
             return;
 
         XmlUtils::CXmlNode oContentTypes;

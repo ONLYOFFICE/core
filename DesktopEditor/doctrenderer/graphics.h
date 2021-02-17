@@ -12,11 +12,11 @@ namespace NSGraphics
 {
     enum EGrStateType
     {
-        gstPen		= 0,
-        gstBrush	= 1,
-        gstPenBrush	= 2,
-        gstState	= 3,
-        gstNone		= 4
+        gstPen      = 0,
+        gstBrush    = 1,
+        gstPenBrush = 2,
+        gstState    = 3,
+        gstNone     = 4
     };
 
     struct IGrState
@@ -50,16 +50,16 @@ namespace NSGraphics
     struct CHist_Clip
     {
         Aggplus::CDoubleRect Rect;
-        bool				 IsIntegerGrid;
-        Aggplus::CMatrix	 Transform;
+        bool             IsIntegerGrid;
+        Aggplus::CMatrix Transform;
 
         CHist_Clip() : IsIntegerGrid(false) {}
     };
 
     struct CGrStateState : public IGrState
     {
-        Aggplus::CMatrix	     Transform;
-        bool				     IsIntegerGrid;
+        Aggplus::CMatrix         Transform;
+        bool                     IsIntegerGrid;
         std::vector<CHist_Clip*> Clips;
 
         CGrStateState()

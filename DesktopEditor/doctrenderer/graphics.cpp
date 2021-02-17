@@ -866,10 +866,10 @@ void CGraphics::AddClipRect(double x, double y, double w, double h)
     _histClip->Transform.SetElements(sx, shy, shx, sy, tx, ty);
 
     _histClip->IsIntegerGrid = m_pRenderer->get_IntegerGrid();
-    _histClip->Rect.left	 = x;
-    _histClip->Rect.top		 = y;
-    _histClip->Rect.right	 = x + w;
-    _histClip->Rect.bottom	 = y + h;
+    _histClip->Rect.left     = x;
+    _histClip->Rect.top      = y;
+    _histClip->Rect.right    = x + w;
+    _histClip->Rect.bottom   = y + h;
 
     m_oGrState.Clips.push_back(_histClip);
 

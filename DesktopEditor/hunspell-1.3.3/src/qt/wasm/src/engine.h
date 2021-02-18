@@ -181,6 +181,7 @@ public:
     {
         if (m_qEngineQueue.size() == m_nMaxEngineNumber)
         {
+            Hunspell_destroy(m_mapDictionariesEngines[m_qEngineQueue.front()]); 
             m_mapDictionariesEngines.erase(m_qEngineQueue.front());
             m_qEngineQueue.pop();
         }

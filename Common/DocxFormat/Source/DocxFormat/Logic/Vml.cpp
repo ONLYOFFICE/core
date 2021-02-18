@@ -1354,24 +1354,16 @@ namespace OOX
 			sResult += L"</x:ClientData>";
 			return sResult;
 		}
-		void CClientData::toCellAnchor(OOX::Spreadsheet::CCellAnchor *pCellAnchor)
+		bool CClientData::toCellAnchor(OOX::Spreadsheet::CCellAnchor *pCellAnchor)
 		{
-			if (!m_oAnchor.IsInit()) return;
-			if (!pCellAnchor) return;
+			if (!m_oAnchor.IsInit()) return false;
+			if (!pCellAnchor) return false;
 
 			std::vector<std::wstring> sAnchors;
             boost::algorithm::split(sAnchors, m_oAnchor.get(), boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
 			
-			if (sAnchors.size() < 8) return;
+			if (sAnchors.size() < 8) return false;
 
-			if (pCellAnchor == NULL)
-			{
-				SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
-				eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
-				
-				pCellAnchor = new OOX::Spreadsheet::CCellAnchor(eAnchorType);
-			}
-            
 			pCellAnchor->m_oFrom.Init();
 			pCellAnchor->m_oFrom->m_oCol.Init();
 			pCellAnchor->m_oFrom->m_oCol->SetValue(XmlUtils::GetInteger(sAnchors[0]));
@@ -1392,6 +1384,7 @@ namespace OOX
 			pCellAnchor->m_oTo->m_oRowOff.Init();
 			pCellAnchor->m_oTo->m_oRowOff->FromPx(XmlUtils::GetInteger(sAnchors[7]));
 
+			return true;
 		}
 		void CClientData::toFormControlPr(OOX::Spreadsheet::CFormControlPr* pFormControlPr)
 		{

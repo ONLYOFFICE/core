@@ -341,7 +341,7 @@ void ods_table_context::set_data_validation_content( std::wstring oox_formula1, 
 		case 2: // SimpleTypes::spreadsheet::operatorEqual
 			odf_condition += L"()==" + odf_formula1; break;
 		case 3: // SimpleTypes::spreadsheet::operatorNotEqual
-			odf_condition += L"()<>" + odf_formula1; break;
+			odf_condition += L"()!=" + odf_formula1; break;
 		case 4: // SimpleTypes::spreadsheet::operatorLessThan
 			odf_condition += L"()<" + odf_formula1; break;
 		case 5: // SimpleTypes::spreadsheet::operatorLessThanOrEqual

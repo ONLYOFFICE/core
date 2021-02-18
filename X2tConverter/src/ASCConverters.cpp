@@ -4894,7 +4894,7 @@ namespace NExtractTools
 		}
 
 		//clean up v8
-		// NSDoctRenderer::CDocBuilder::Dispose();
+        NSDoctRenderer::CDocBuilder::Dispose();
 		if (SUCCEEDED_X2T(result) && oInputParams.m_bOutputConvertCorrupted)
 		{
 			return AVS_FILEUTILS_ERROR_CONVERT_CORRUPTED;

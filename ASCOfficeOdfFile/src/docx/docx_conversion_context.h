@@ -833,7 +833,7 @@ public:
     bool process_page_properties(std::wostream & strm);
 	void process_section		(std::wostream & strm, odf_reader::style_columns * columns = NULL);
 	
-	int process_paragraph_style (const std::wstring & style_name);
+	int process_paragraph_style (_CP_OPT(std::wstring) style_name_ptr);
 	int process_paragraph_attr	(odf_reader::text::paragraph_attrs *attr);
 	int process_text_attr		(odf_reader::text::paragraph_attrs *Attr);
 	void process_page_break_after(const odf_reader::style_instance *styleInst);
@@ -931,7 +931,16 @@ public:
 
 	void start_paragraph_style(const std::wstring& style_name) {paragraph_style_stack_.push_back(style_name);}
 	void end_paragraph_style() { if (!paragraph_style_stack_.empty()) paragraph_style_stack_.pop_back();}
-	std::wstring get_current_paragraph_style()	{return paragraph_style_stack_.empty() ? L"" : paragraph_style_stack_.back();}
+	
+	_CP_OPT(std::wstring) get_current_paragraph_style()	
+	{
+		_CP_OPT(std::wstring) result;
+		if (false == paragraph_style_stack_.empty())
+
+			result = paragraph_style_stack_.back();
+		
+		return result;
+	}
 	
 	oox_chart_context & current_chart();
     void start_chart(std::wstring name);

@@ -507,7 +507,7 @@ void xlsx_dataValidations_context::add_formula(const std::wstring & name, const 
 				pFind->second->operator_ = L"equal";
 				split = 4;
 			}
-			else if (std::wstring::npos != (pos = operator_.find(L"()<>")))
+			else if (std::wstring::npos != (pos = operator_.find(L"()!=")))
 			{
 				pFind->second->operator_ = L"notEqual";
 				split = 4;

@@ -921,14 +921,8 @@ namespace
 		}
         else
         {
-            switch(Type)
-            {
-            case odf_types::style_family::Paragraph:
-                return L"Normal";
-            default:
-				bDisplayed = false;
-                return std::wstring(L"DStyle_") + boost::lexical_cast<std::wstring>(odf_types::style_family( Type) );
-            }
+			bDisplayed = false;
+			return std::wstring(L"DStyle_") + boost::lexical_cast<std::wstring>(odf_types::style_family(Type) );
         }
     }
 }
@@ -1132,15 +1126,22 @@ void docx_conversion_context::process_styles()
 					 arStyles[i]->type() == odf_types::style_family::Text))
             {
                 const std::wstring id = styles_map_.get(arStyles[i]->name(), arStyles[i]->type());
-                _Wostream << L"<w:style w:styleId=\"" << id << L"\" w:type=\"" << StyleTypeOdf2Docx(arStyles[i]->type()) << L"\""; 
-				if (!arStyles[i]->is_default())
+				bool bDefault = (arStyles[i]->style_class() == L"default");
+				bool bDisplayed = (arStyles[i]->type() == odf_types::style_family::Paragraph);
+                
+				_Wostream << L"<w:style w:styleId=\"" << id << L"\" w:type=\"" << StyleTypeOdf2Docx(arStyles[i]->type()) << L"\""; 
+
+				if (bDefault)  // style
+				{
+					_Wostream << L" w:default=\"1\"";
+				}
+				else if (!arStyles[i]->is_default()) // default-style
 				{
 					_Wostream << L" w:customStyle=\"1\"";
 				}
 				_Wostream << L">";
-
-				bool bDisplayed = (arStyles[i]->type() == odf_types::style_family::Paragraph);
-                const std::wstring displayName = StyleDisplayName(arStyles[i]->name(), arStyles[i]->display_name(), arStyles[i]->type(), bDisplayed);
+                
+				const std::wstring displayName = StyleDisplayName(arStyles[i]->name(), arStyles[i]->display_name(), arStyles[i]->type(), bDisplayed);
 
 				_Wostream << L"<w:name w:val=\"" << XmlUtils::EncodeXmlString(displayName) << L"\"/>";
 
@@ -1149,27 +1150,27 @@ void docx_conversion_context::process_styles()
                     const std::wstring basedOnId = styles_map_.get(baseOn->name(), baseOn->type());
                     _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\"/>";
                 }
-                else if (false == arStyles[i]->is_default() && styles_map_.check(L"", arStyles[i]->type()))
-                {
-					bDisplayed = false;
-                    const std::wstring basedOnId = styles_map_.get(L"", arStyles[i]->type());
-                    _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\"/>";
-                }
+     //           else if (false == bDefault && false == arStyles[i]->is_default() && styles_map_.check(L"", arStyles[i]->type()))
+     //           {
+					//bDisplayed = false;
+     //               const std::wstring basedOnId = styles_map_.get(L"", arStyles[i]->type());
+     //               _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\"/>";
+     //           }
 				if (bDisplayed)
 				{
 					_Wostream << L"<w:qFormat/>";
 				}
 
-                if (odf_reader::style_instance * next = arStyles[i]->next())
-                {
-                    const std::wstring nextId = styles_map_.get(next->name(), next->type());
-                    _Wostream << L"<w:next w:val=\"" << nextId << "\"/>";
-                }
-                else if (arStyles[i]->is_default())
-                {
-                    // self
-                    _Wostream << L"<w:next w:val=\"" << id << "\"/>";
-                }
+				if (odf_reader::style_instance * next = arStyles[i]->next())
+				{
+				    const std::wstring nextId = styles_map_.get(next->name(), next->type());
+				    _Wostream << L"<w:next w:val=\"" << nextId << "\"/>";
+				}
+                //else if (arStyles[i]->is_default())
+                //{
+                //    // self
+                //    _Wostream << L"<w:next w:val=\"" << id << "\"/>";
+                //}
 
                 if (odf_reader::style_content * content = arStyles[i]->content())
                 {
@@ -1624,9 +1625,12 @@ int docx_conversion_context::process_text_attr(odf_reader::text::paragraph_attrs
 	push_text_properties(styleContent->get_style_text_properties());
 	return 1;
 }
-int docx_conversion_context::process_paragraph_style(const std::wstring & style_name)
+int docx_conversion_context::process_paragraph_style(_CP_OPT(std::wstring) style_name_ptr)
 {
-	if (style_name.empty()) return 0;
+	if (!style_name_ptr) return 0;
+	if (style_name_ptr->empty()) return 0;
+
+	std::wstring & style_name = *style_name_ptr;
 
 	if (odf_reader::style_instance * styleInst =
 			root()->odf_context().styleContainer().style_by_name(style_name, odf_types::style_family::Paragraph, process_headers_footers_))

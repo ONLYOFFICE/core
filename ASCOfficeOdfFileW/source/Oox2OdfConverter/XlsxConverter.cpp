@@ -2832,20 +2832,23 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
 					OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pChildElemShape);
 
 					SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
-					OOX::Spreadsheet::CCellAnchor *pCellAnchor = new OOX::Spreadsheet::CCellAnchor(eAnchorType);
+					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
 
-					pClientData->toCellAnchor(pCellAnchor);
-					
-					oox_table_position from = {}, to = {};
-					convert(pCellAnchor->m_oFrom.GetPointer(),	&from);	
-					convert(pCellAnchor->m_oTo.GetPointer(),	&to);
-					delete pCellAnchor;
-
-					double x1 = 0, y1 = 0, x2 = 0, y2 = 0;
-					ods_context->current_table()->convert_position(from, x1, y1);
-					ods_context->current_table()->convert_position(to,	x2, y2);
+					OOX::Spreadsheet::CCellAnchor *pCellAnchor = new OOX::Spreadsheet::CCellAnchor(eAnchorType);					
+					if (pClientData->toCellAnchor(pCellAnchor))
+					{
+						oox_table_position from = {}, to = {};
 						
-					ods_context->drawing_context()->set_drawings_rect(x1, y1, x2 - x1, y2 - y1);
+						convert(pCellAnchor->m_oFrom.GetPointer(), &from);
+						convert(pCellAnchor->m_oTo.GetPointer(), &to);
+						
+						double x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+						ods_context->current_table()->convert_position(from, x1, y1);
+						ods_context->current_table()->convert_position(to,	x2, y2);
+						
+						ods_context->drawing_context()->set_drawings_rect(x1, y1, x2 - x1, y2 - y1);
+					}
+					delete pCellAnchor;
 				}
 				if(OOX::et_v_imagedata == pChildElemShape->getType())
 				{
@@ -2991,9 +2994,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spre
 					OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pChildElemShape);
 
 					if (!bSetAnchor )
-					{
-						pClientData->toCellAnchor(oCellAnchor.GetPointer());
-						bSetAnchor = true;
+					{						
+						bSetAnchor = pClientData->toCellAnchor(oCellAnchor.GetPointer());
 					}
 					pClientData->toFormControlPr(oFormControlPr.GetPointer());
 				}

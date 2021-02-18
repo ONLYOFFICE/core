@@ -387,6 +387,7 @@ namespace PPTX
 								if (oRelsGeneratorInfo.nImageRId > 0)
 								{
 									blip->embed = new OOX::RId(oRelsGeneratorInfo.nImageRId);
+									blip->imageFilepath = oRelsGeneratorInfo.sFilepathImage;
 								}
 								
 								if(oRelsGeneratorInfo.nOleRId > 0)

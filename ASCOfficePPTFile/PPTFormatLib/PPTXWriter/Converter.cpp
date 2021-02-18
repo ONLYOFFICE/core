@@ -1126,6 +1126,28 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
     auto slide_iter = m_pUserInfo->m_mapSlides.find(m_pUserInfo->m_arrSlidesOrder[nIndexSlide]);
     CRecordSlideProgTagsContainer* progTag = slide_iter->second->m_pSlideProgTagsContainer;
 
+    // This part for old animation
+    std::vector<CRecordDrawingContainer* > drawingAnim;
+    slide_iter->second->GetRecordsByType(&drawingAnim, true);
+    if (!drawingAnim.empty())
+    {
+        std::vector<CRecordSoundCollectionContainer*> sound;
+        m_pUserInfo->m_oDocument.GetRecordsByType(&sound, false);
+
+        for (auto drawingAnimEl : drawingAnim)
+        {
+
+            std::vector<CRecordDrawingRecord* > drawingRecord;
+            drawingAnimEl->GetRecordsByType(&drawingRecord, true);
+            std::vector<CRecordAnimationInfoContainer* > amimInfoCont;
+            drawingAnimEl->GetRecordsByType(&amimInfoCont, true);
+            if (!amimInfoCont.empty() && !drawingRecord.empty())
+            {
+                UINT shapeId = drawingRecord[0]->m_nPidCur;
+            }
+        }
+    }
+
     if (progTag)
     {
         CRecordPP10SlideBinaryTagExtension* pPP10SlideBinaryTag = progTag->getPP10SlideBinaryTagExtension();

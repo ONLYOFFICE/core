@@ -1,6 +1,7 @@
 #include "hunspell.h"
 #include "base.h"
 #include <map>
+#include <queue>
 #include <string>
 
 //#define WASM_LOGGING fprintf
@@ -153,13 +154,52 @@ public:
     }
 };
 
+class LimitedEngineMap 
+{
+public:
+    LimitedEngineMap() 
+    {
+        m_nMaxEngineNumber = 5;
+    }
+    ~LimitedEngineMap() 
+    {
+        for (std::pair<const std::string, Hunhandle*> &i : m_mapDictionariesEngines) 
+        {
+            Hunspell_destroy(i.second);
+        }
+        m_mapDictionariesEngines.clear();
+    }
+    std::map<std::string, Hunhandle*>::iterator find(const std::string &to_find) 
+    {
+        return m_mapDictionariesEngines.find(to_find);
+    }
+    std::map<std::string, Hunhandle*>::iterator end()
+    {
+        return m_mapDictionariesEngines.end();
+    }
+    std::pair<std::map<std::string, Hunhandle*>::iterator,bool> insert(const std::pair<std::string, Hunhandle*> &data) 
+    {
+        if (m_qEngineQueue.size() == m_nMaxEngineNumber)
+        {
+            m_mapDictionariesEngines.erase(m_qEngineQueue.front());
+            m_qEngineQueue.pop();
+        }
+        m_qEngineQueue.push(data.first);
+        return m_mapDictionariesEngines.insert(data);
+    }
+private:
+    std::map<std::string, Hunhandle*> m_mapDictionariesEngines; 
+    std::queue<std::string> m_qEngineQueue;
+    size_t m_nMaxEngineNumber;
+};
+
 class CSpellchecker
 {
 public:
     static std::map<std::string, CFileMemory*> g_dictionaries;
 
 public:
-    std::map<std::string, Hunhandle*> m_mapDictionariesEngines; // TODO: ограничивать количество
+    LimitedEngineMap m_oDictionariesEngines; // TODO: ограничивать количество
     std::string m_sCurrentDictionaryId;
     Hunhandle* m_pCurrentDictionary;
     CSuggests m_oSuggests;
@@ -172,16 +212,12 @@ public:
     }
     ~CSpellchecker()
     {
-        for (std::map<std::string, Hunhandle*>::iterator i = m_mapDictionariesEngines.begin(); i != m_mapDictionariesEngines.end(); i++)
-        {
-            Hunspell_destroy(i->second);
-        }
-        m_mapDictionariesEngines.clear();
+        
         m_pCurrentDictionary = NULL;
 
-        for (std::map<std::string, CFileMemory*>::iterator iter = g_dictionaries.begin(); iter != g_dictionaries.end(); iter++)
+        for (std::pair<const std::string, CFileMemory*> &i : g_dictionaries)
         {
-            delete iter->second;
+            delete i.second;
         }
         g_dictionaries.clear();
     }
@@ -268,15 +304,15 @@ protected:
         m_sCurrentDictionaryId = aff_id + dic_id;
         m_pCurrentDictionary = NULL;
 
-        std::map<std::string, Hunhandle*>::iterator iterEngine = m_mapDictionariesEngines.find(m_sCurrentDictionaryId);
-        if (iterEngine != m_mapDictionariesEngines.end())
+        std::map<std::string, Hunhandle*>::iterator iterEngine = m_oDictionariesEngines.find(m_sCurrentDictionaryId);
+        if (iterEngine != m_oDictionariesEngines.end())
         {
             m_pCurrentDictionary = iterEngine->second;
             return m_pCurrentDictionary;
         }
 
         Hunhandle* pDictionary = Hunspell_create(aff_id.c_str(), dic_id.c_str());
-        m_mapDictionariesEngines.insert(std::pair<std::string, Hunhandle*>(m_sCurrentDictionaryId, pDictionary));
+        m_oDictionariesEngines.insert(std::pair<std::string, Hunhandle*>(m_sCurrentDictionaryId, pDictionary));
         m_pCurrentDictionary = pDictionary;
         return m_pCurrentDictionary;
     }

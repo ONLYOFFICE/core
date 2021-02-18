@@ -49,6 +49,7 @@
 #include "embed/NativeBuilderEmbed.h"
 #include "embed/NativeControlEmbed.h"
 #include "embed/MemoryStreamEmbed.h"
+#include "embed/GraphicsEmbed.h"
 #ifdef LINUX
 #include <unistd.h>
 #include <sys/wait.h>

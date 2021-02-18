@@ -8,11 +8,16 @@
 #include "../DesktopEditor/common/SystemUtils.h"
 #include "../DesktopEditor/raster/BgraFrame.h"
 #include "../OfficeUtils/src/OfficeUtils.h"
+#include "../Common/3dParty/html/htmltoxhtml.h"
 #include "./template/template.h"
 
 #include <vector>
 #include <map>
 #include <numeric>
+#include <iostream>
+#include <iomanip>
+#include <sstream>
+#include <random>
 
 #ifndef VALUE2STR
 #define VALUE_TO_STRING(x) #x
@@ -25,8 +30,8 @@ struct SAuthor
     std::wstring first_name;
     std::wstring middle_name;
     std::wstring last_name;
-    /*
     std::wstring nickname;
+    /*
     std::vector<std::wstring> home_page;
     std::vector<std::wstring> email;
     std::wstring id;
@@ -91,7 +96,7 @@ struct STitleInfo
     std::wstring getAuthors()
     {
         return std::accumulate(m_arAuthors.begin(), m_arAuthors.end(), std::wstring(),
-            [] (std::wstring& sRes, const SAuthor& vElem) { return sRes += vElem.middle_name + L" " + vElem.first_name + L" " + vElem.last_name + L";"; });
+            [] (std::wstring& sRes, const SAuthor& vElem) { return sRes += vElem.middle_name + L" " + vElem.first_name + L" " + vElem.last_name + L" " + vElem.nickname + L";"; });
     }
 };
 
@@ -186,7 +191,7 @@ public:
     CFb2File_Private()
     {
         // m_pSrcTitleInfo = NULL;
-        // m_pPublishInfo = NULL;
+        // m_pPublishInfo  = NULL;
         m_nContentsId       = 1;
         m_nCrossReferenceId = 1;
     }
@@ -222,23 +227,23 @@ public:
     // Читает поля автора
     void getAuthor(std::vector<SAuthor>& arAuthor)
     {
-        if(m_oLightReader.IsEmptyNode())
+        if (m_oLightReader.IsEmptyNode())
             return;
 
         SAuthor oAuthor;
         int nDepth = m_oLightReader.GetDepth();
-        while(m_oLightReader.ReadNextSiblingNode(nDepth))
+        while (m_oLightReader.ReadNextSiblingNode(nDepth))
         {
             std::wstring sName = m_oLightReader.GetName();
-            if(sName == L"first-name")
+            if (sName == L"first-name")
                 oAuthor.first_name  = content();
-            else if(sName == L"middle-name")
+            else if (sName == L"middle-name")
                 oAuthor.middle_name = content();
-            else if(sName == L"last-name")
+            else if (sName == L"last-name")
                 oAuthor.last_name   = content();
-            /*
-            else if(sName == L"nickname")
+            else if (sName == L"nickname")
                 oAuthor.nickname = content();
+            /*
             else if(sName == L"home-page")
                 oAuthor.home_page.push_back(content());
             else if(sName == L"email")
@@ -255,15 +260,15 @@ public:
     void readImage(NSStringUtils::CStringBuilder& oBuilder)
     {
         // Читаем href
-        std::wstring sImageName = L"";
-        while(m_oLightReader.MoveToNextAttribute())
+        std::wstring sImageName;
+        while (m_oLightReader.MoveToNextAttribute())
         {
             std::wstring sName = m_oLightReader.GetName();
             size_t nLen = (sName.length() > 4 ? sName.length() - 4 : 0);
-            if(sName.substr(nLen) == L"href")
+            if (sName.substr(nLen) == L"href")
             {
                 std::wstring sText = m_oLightReader.GetText();
-                if(sText.length() > 1)
+                if (sText.length() > 1)
                     sImageName = sText.substr(1);
             }
         }
@@ -272,7 +277,7 @@ public:
         readCrossReference(oBuilder);
 
         std::map<std::wstring, std::vector<std::wstring>>::iterator it = m_mImages.find(sImageName);
-        if(it != m_mImages.end())
+        if (it != m_mImages.end())
         {
             // Пишем картинку в файл
             // extent
@@ -302,7 +307,7 @@ public:
     }
 
     // Читает title
-    void readTitle(std::wstring sLevel, NSStringUtils::CStringBuilder& oBuilder)
+    void readTitle(const std::wstring& sLevel, NSStringUtils::CStringBuilder& oBuilder)
     {
         if(m_oLightReader.IsEmptyNode())
             return;
@@ -354,27 +359,27 @@ public:
     {
         readCrossReference(oBuilder);
 
-        if(m_oLightReader.IsEmptyNode())
+        if (m_oLightReader.IsEmptyNode())
             return;
 
         int nDeath = m_oLightReader.GetDepth();
-        while(m_oLightReader.ReadNextSiblingNode(nDeath))
+        while (m_oLightReader.ReadNextSiblingNode(nDeath))
         {
             std::wstring sName = m_oLightReader.GetName();
-            if(sName == L"p")
+            if (sName == L"p")
             {
                 oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"epigraph-p\"/></w:pPr>";
                 readP(L"", oBuilder);
                 oBuilder += L"</w:p>";
             }
-            else if(sName == L"poem")
+            else if (sName == L"poem")
                 readPoem(oBuilder);
-            else if(sName == L"cite")
+            else if (sName == L"cite")
                 readCite(oBuilder);
-            else if(sName == L"empty-line")
+            else if (sName == L"empty-line")
                 oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"epigraph-p\"/></w:pPr></w:p>";
             // Автор эпиграфа выделяется полужирным
-            else if(sName == L"text-author")
+            else if (sName == L"text-author")
             {
                 oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"epigraph-p\"/></w:pPr>";
                 readP(L"<w:b/>", oBuilder);
@@ -390,15 +395,15 @@ public:
     {
         readCrossReference(oBuilder);
 
-        if(m_oLightReader.IsEmptyNode())
+        if (m_oLightReader.IsEmptyNode())
             return;
 
         int nDepth = m_oLightReader.GetDepth();
-        while(m_oLightReader.ReadNextSiblingNode2(nDepth))
+        while (m_oLightReader.ReadNextSiblingNode2(nDepth))
         {
             std::wstring sName = m_oLightReader.GetName();
             // Читаем обычный текст
-            if(sName == L"#text")
+            if (sName == L"#text")
             {
                 // Стиль текста
                 oBuilder += L"<w:r><w:rPr>";
@@ -413,24 +418,24 @@ public:
             else if (sName == L"strong")
                 readP(sRStyle + L"<w:b/>", oBuilder);
             // Читаем курсивный текст
-            else if(sName == L"emphasis")
+            else if (sName == L"emphasis")
                 readP(sRStyle + L"<w:i/>", oBuilder);
             // Читаем стилизованный текст
-            else if(sName == L"style")
+            else if (sName == L"style")
                 readP(sRStyle, oBuilder);
             // Читаем ссылку
-            else if(sName == L"a")
+            else if (sName == L"a")
             {
                 // Читаем href
                 std::wstring sFootnoteName = L"";
-                while(m_oLightReader.MoveToNextAttribute())
+                while (m_oLightReader.MoveToNextAttribute())
                 {
                     std::wstring sTName = m_oLightReader.GetName();
                     size_t nLen = (sTName.length() > 4 ? sTName.length() - 4 : 0);
-                    if(sTName.substr(nLen) == L"href")
+                    if (sTName.substr(nLen) == L"href")
                     {
                         std::wstring sText = m_oLightReader.GetText();
-                        if(sText.length() > 1)
+                        if (sText.length() > 1)
                             sFootnoteName = sText.substr(1);
                         break;
                     }
@@ -438,7 +443,7 @@ public:
                 m_oLightReader.MoveToElement();
 
                 std::map<std::wstring, std::wstring>::iterator it = m_mFootnotes.find(sFootnoteName);
-                if(it != m_mFootnotes.end())
+                if (it != m_mFootnotes.end())
                 {
                     // Пробел перед текстом внутри сноски
                     oBuilder += L"<w:r><w:t xml:space=\"preserve\"> </w:t></w:r>";
@@ -461,7 +466,7 @@ public:
                 }
             }
             // Читаем вычеркнутый текст
-            else if(sName == L"strikethrough")
+            else if (sName == L"strikethrough")
                 readP(sRStyle + L"<w:strike/>", oBuilder);
             // Читает нижний текст
             else if(sName == L"sub")
@@ -483,29 +488,29 @@ public:
     {
         readCrossReference(oBuilder);
 
-        if(m_oLightReader.IsEmptyNode())
+        if (m_oLightReader.IsEmptyNode())
             return;
 
         int nDeath = m_oLightReader.GetDepth();
-        while(m_oLightReader.ReadNextSiblingNode(nDeath))
+        while (m_oLightReader.ReadNextSiblingNode(nDeath))
         {
             std::wstring sName = m_oLightReader.GetName();
-            if(sName == L"title")
+            if (sName == L"title")
                 readTitle(L"title4", oBuilder);
-            else if(sName == L"epigraph")
+            else if (sName == L"epigraph")
                 readEpigraph(oBuilder);
-            else if(sName == L"stanza")
+            else if (sName == L"stanza")
             {
-                if(m_oLightReader.IsEmptyNode())
+                if (m_oLightReader.IsEmptyNode())
                     continue;
 
                 int nSDeath = m_oLightReader.GetDepth();
-                while(m_oLightReader.ReadNextSiblingNode(nSDeath))
+                while (m_oLightReader.ReadNextSiblingNode(nSDeath))
                 {
                     std::wstring sSName = m_oLightReader.GetName();
-                    if(sSName == L"title")
+                    if (sSName == L"title")
                         readTitle(L"title5", oBuilder);
-                    else if(sSName == L"v" || sSName == L"subtitle")
+                    else if (sSName == L"v" || sSName == L"subtitle")
                     {
                         oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"v-stanza\"/></w:pPr>";
                         readP(L"", oBuilder);
@@ -514,13 +519,13 @@ public:
                 }
             }
             // Автор поэмы выделяется полужирным
-            else if(sName == L"text-author")
+            else if (sName == L"text-author")
             {
                 oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"v-stanza\"/></w:pPr>";
                 readP(L"<w:b/>", oBuilder);
                 oBuilder += L"</w:p>";
             }
-            else if(sName == L"date")
+            else if (sName == L"date")
             {
                 oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"v-stanza\"/></w:pPr><w:r><w:t>";
                 oBuilder.WriteEncodeXmlString(content());
@@ -990,15 +995,12 @@ public:
                 sId = m_oLightReader.GetText();
         }
         m_oLightReader.MoveToElement();
-        if(sId == L"")
-            return;
-
-        if(m_oLightReader.IsEmptyNode())
+        if (sId == L"" || m_oLightReader.IsEmptyNode())
             return;
 
         // Пишет картинку в файл
         NSFile::CFileBinary oImageWriter;
-        if(oImageWriter.CreateFileW(sMediaDirectory + L"/" + sId))
+        if(oImageWriter.CreateFileW(sMediaDirectory + L"/" + sId + (sId.find(L'.') == std::wstring::npos ? L".png" : L"")))
         {
             std::string sBase64 = contentA();
             int nSrcLen = (int)sBase64.length();
@@ -1354,9 +1356,7 @@ bool CFb2File::IsFb2File(const std::wstring& sFile)
     if (!m_internal->OpenFromFile(sFile))
         return false;
     // Читаем FictionBook
-    if(!m_internal->isFictionBook())
-        return false;
-    return true;
+    return m_internal->isFictionBook();
 }
 
 // Выставление рабочей папки
@@ -1365,12 +1365,11 @@ void CFb2File::SetTmpDirectory(const std::wstring& sFolder)
     // m_internal->m_sTmpFolder = sFolder;
 }
 
-// Проверяет, соответствует ли fb2 файл формату
 // sPath - путь к файлу fb2, sDirectory - директория, где формируется и создается docx
 HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory, CFb2Params* oParams)
 {
     // Копирование шаблона
-    if(!ExtractTemplate(sDirectory))
+    if (!ExtractTemplate(sDirectory))
         return S_FALSE;
 
     // Начало файла
@@ -1402,32 +1401,32 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
 
     // Читаем содержание, картинки, сноски
     bool bNeedContents = false;
-    if(oParams)
+    if (oParams)
         bNeedContents = oParams->bNeedContents;
-    if(!m_internal->readText(sPath, sMediaDirectory, oContents, oRels, oFootnotes))
+    if (!m_internal->readText(sPath, sMediaDirectory, oContents, oRels, oFootnotes))
         return S_FALSE;
 
     // Переходим в начало
-    if(!m_internal->m_oLightReader.MoveToStart())
+    if (!m_internal->m_oLightReader.MoveToStart())
         return S_FALSE;
 
     int nDeath = m_internal->m_oLightReader.GetDepth();
-    while(m_internal->m_oLightReader.ReadNextSiblingNode(nDeath))
+    while (m_internal->m_oLightReader.ReadNextSiblingNode(nDeath))
     {
         std::wstring sName = m_internal->m_oLightReader.GetName();
-        if(sName == L"description")
+        if (sName == L"description")
             m_internal->readDescription(oDescription);
-        else if(sName == L"body")
+        else if (sName == L"body")
         {
             bool bNotes = false;
             while(m_internal->m_oLightReader.MoveToNextAttribute())
             {
-                if(m_internal->m_oLightReader.GetName() == L"name" &&
-                   m_internal->m_oLightReader.GetText() == L"notes")
+                if (m_internal->m_oLightReader.GetName() == L"name" &&
+                    m_internal->m_oLightReader.GetText() == L"notes")
                     bNotes = true;
             }
             m_internal->m_oLightReader.MoveToElement();
-            if(bNotes)
+            if (bNotes)
                 continue;
             m_internal->readBody(oBuilder);
         }
@@ -1446,7 +1445,7 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     // Вставляем description
     oDocument += oDescription.GetData();
     // Вставляем содержание
-    if(bNeedContents)
+    if (bNeedContents)
         oDocument += oContents.GetData();
     // Вставляем основное тело
     oDocument += oBuilder.GetData();
@@ -1499,9 +1498,9 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
     if (sApplication.empty())
         sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
-#if defined(INTVER)
+    #if defined(INTVER)
     std::string sVersion = VALUE2STR(INTVER);
-#endif
+    #endif
     sApplication += L"/";
     sApplication += UTF8_TO_U(sVersion);
     // Создаем app.xml
@@ -1519,13 +1518,308 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
 
     // Архивим в docx
     bool bNeedDocx = false;
-    if(oParams)
+    if (oParams)
         bNeedDocx = oParams->bNeedDocx;
-    if(bNeedDocx)
+    if (bNeedDocx)
     {
         COfficeUtils oZip;
-        HRESULT oRes = oZip.CompressFileOrDirectory(sDirectory, sDirectory + L"/" + NSFile::GetFileName(sPath) + L".docx");
-        return oRes;
+        return oZip.CompressFileOrDirectory(sDirectory, sDirectory + L"/" + NSFile::GetFileName(sPath) + L".docx");
     }
     return S_OK;
+}
+
+static void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl);
+static void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bWasP)
+{
+    int nDeath = oIndexHtml.GetDepth();
+    if (oIndexHtml.IsEmptyNode() || !oIndexHtml.ReadNextSiblingNode2(nDeath))
+        return;
+    do
+    {
+        std::wstring sName = oIndexHtml.GetName();
+        if (sName == L"#text")
+        {
+            oXml.WriteString(oIndexHtml.GetText());
+        }
+        else if (sName == L"p")
+        {
+            if (!bWasP)
+                oXml.WriteString(L"<p>");
+            readStream(oXml, oIndexHtml, arrBinary, true);
+            if (!bWasP)
+                oXml.WriteString(L"</p>");
+        }
+        else if (sName == L"h1")
+        {
+            oXml.WriteString(L"<section><title><p>");
+            readStream(oXml, oIndexHtml, arrBinary, true);
+            oXml.WriteString(L"</p></title></section>");
+        }
+        else if (sName == L"h2")
+        {
+            oXml.WriteString(L"<section><section><title><p>");
+            readStream(oXml, oIndexHtml, arrBinary, true);
+            oXml.WriteString(L"</p></title></section></section>");
+        }
+        else if (sName == L"h3")
+        {
+            oXml.WriteString(L"<section><section><section><title><p>");
+            readStream(oXml, oIndexHtml, arrBinary, true);
+            oXml.WriteString(L"</p></title></section></section></section>");
+        }
+        else if (sName == L"h4")
+        {
+            oXml.WriteString(L"<section><section><section><section><title><p>");
+            readStream(oXml, oIndexHtml, arrBinary, true);
+            oXml.WriteString(L"</p></title></section></section></section></section>");
+        }
+        else if (sName == L"h5")
+        {
+            oXml.WriteString(L"<section><section><section><section><section><title><p>");
+            readStream(oXml, oIndexHtml, arrBinary, true);
+            oXml.WriteString(L"</p></title></section></section></section></section></section>");
+        }
+        else if (sName == L"h6")
+        {
+            oXml.WriteString(L"<section><section><section><section><section><section><title><p>");
+            readStream(oXml, oIndexHtml, arrBinary, true);
+            oXml.WriteString(L"</p></title></section></section></section></section></section></section>");
+        }
+        else if (sName == L"span")
+        {
+            std::wstring sStyle;
+            while (oIndexHtml.MoveToNextAttribute())
+                if (oIndexHtml.GetName() == L"style")
+                    sStyle = oIndexHtml.GetText();
+            oIndexHtml.MoveToElement();
+
+            std::wstring sAlign;
+            size_t nAlign = sStyle.find(L"vertical-align");
+            if (nAlign != std::wstring::npos)
+            {
+                nAlign = sStyle.find(L':', nAlign);
+                size_t nAlignEnd = sStyle.find(L';', nAlign);
+                sAlign = sStyle.substr(nAlign + 1, (nAlignEnd < sStyle.length() ? nAlignEnd : sStyle.length()) - nAlign);
+                if (sAlign == L"super")
+                {
+                    oXml.WriteString(L"<sup>");
+                    readStream(oXml, oIndexHtml, arrBinary, bWasP);
+                    oXml.WriteString(L"</sup>");
+                }
+                else if (sAlign == L"sub")
+                {
+                    oXml.WriteString(L"<sub>");
+                    readStream(oXml, oIndexHtml, arrBinary, bWasP);
+                    oXml.WriteString(L"</sub>");
+                }
+                else
+                    readStream(oXml, oIndexHtml, arrBinary, bWasP);
+            }
+            else
+                readStream(oXml, oIndexHtml, arrBinary, bWasP);
+        }
+        else if (sName == L"s")
+        {
+            oXml.WriteString(L"<strikethrough>");
+            readStream(oXml, oIndexHtml, arrBinary, bWasP);
+            oXml.WriteString(L"</strikethrough>");
+        }
+        else if (sName == L"i")
+        {
+            oXml.WriteString(L"<emphasis>");
+            readStream(oXml, oIndexHtml, arrBinary, bWasP);
+            oXml.WriteString(L"</emphasis>");
+        }
+        else if (sName == L"b")
+        {
+            oXml.WriteString(L"<strong>");
+            readStream(oXml, oIndexHtml, arrBinary, bWasP);
+            oXml.WriteString(L"</strong>");
+        }
+        else if (sName == L"table")
+        {
+            oXml.WriteString(L"<table>");
+            readStream(oXml, oIndexHtml, arrBinary, bWasP);
+            oXml.WriteString(L"</table>");
+        }
+        else if (sName == L"tr")
+        {
+            oXml.WriteString(L"<tr>");
+            readStream(oXml, oIndexHtml, arrBinary, bWasP);
+            oXml.WriteString(L"</tr>");
+        }
+        else if (sName == L"th")
+        {
+            oXml.WriteString(L"<th>");
+            readStream(oXml, oIndexHtml, arrBinary, true);
+            oXml.WriteString(L"</th>");
+        }
+        else if (sName == L"td")
+        {
+            oXml.WriteString(L"<td>");
+            readStream(oXml, oIndexHtml, arrBinary, true);
+            oXml.WriteString(L"</td>");
+        }
+        else if (sName == L"a")
+        {
+            oIndexHtml.MoveToNextAttribute();
+            oXml.WriteString(L"<a l:href=\"" + oIndexHtml.GetText() + L"\">");
+            oIndexHtml.MoveToElement();
+            readStream(oXml, oIndexHtml, arrBinary, bWasP);
+            oXml.WriteString(L"</a>");
+        }
+        else if (sName == L"ul")
+        {
+            oXml.WriteString(L"<ul>");
+            readLi(oXml, oIndexHtml, arrBinary, true);
+            oXml.WriteString(L"</ul>");
+        }
+        else if (sName == L"ol")
+        {
+            oXml.WriteString(L"<ol>");
+            readLi(oXml, oIndexHtml, arrBinary, false);
+            oXml.WriteString(L"</ol>");
+        }
+        else if (sName == L"img")
+        {
+            std::wstring sBinary;
+            while (oIndexHtml.MoveToNextAttribute())
+            {
+                if (oIndexHtml.GetName() == L"src")
+                {
+                    sBinary = oIndexHtml.GetText();
+                    sBinary.erase(0, sBinary.find(L',') + 2);
+                    arrBinary.push_back(sBinary);
+                }
+            }
+            oIndexHtml.MoveToElement();
+            oXml.WriteString(L"<image l:href=\"#img" + std::to_wstring(arrBinary.size()) + L".png\"/>");
+        }
+        else
+            readStream(oXml, oIndexHtml, arrBinary, bWasP);
+    } while (oIndexHtml.ReadNextSiblingNode2(nDeath));
+}
+
+static void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl)
+{
+    int nNum = 1;
+    int nDeath = oIndexHtml.GetDepth();
+    if (oIndexHtml.IsEmptyNode() || !oIndexHtml.ReadNextSiblingNode2(nDeath))
+        return;
+    do
+    {
+        if (oIndexHtml.GetName() == L"li")
+        {
+            oXml.WriteString(L"<p>");
+            bUl ? oXml.AddCharSafe(183) : oXml.AddInt(nNum++);
+            oXml.WriteString(L" ");
+            readStream(oXml, oIndexHtml, arrBinary, true);
+            oXml.WriteString(L"</p>");
+        }
+    } while (oIndexHtml.ReadNextSiblingNode2(nDeath));
+}
+
+static std::wstring GenerateUUID()
+{
+    std::mt19937 oRand(time(0));
+    std::wstringstream sstream;
+    sstream << std::setfill(L'0') << std::hex << std::setw(8) << (oRand() & 0xffffffff);
+    sstream << L'-';
+    sstream << std::setfill(L'0') << std::hex << std::setw(4) << (oRand() & 0xffff);
+    sstream << L'-';
+    sstream << std::setfill(L'0') << std::hex << std::setw(4) << (oRand() & 0xffff);
+    sstream << L'-';
+    sstream << std::setfill(L'0') << std::hex << std::setw(4) << (oRand() & 0xffff);
+    sstream << L'-';
+    sstream << std::setfill(L'0') << std::hex << std::setw(8) << (oRand() & 0xffffffff);
+    return sstream.str();
+}
+
+HRESULT CFb2File::FromHtml(const std::wstring& sSrc, const std::wstring& sDst)
+{
+    NSStringUtils::CStringBuilder oDocument;
+    oDocument.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><FictionBook xmlns=\"http://www.gribuser.ru/xml/fictionbook/2.0\" xmlns:l=\"http://www.w3.org/1999/xlink\">");
+    // description
+    oDocument.WriteString(L"<description>");
+    std::wstring sCoreXml;
+    if (NSFile::CFileBinary::ReadAllTextUtf8(sSrc + L"/docx_unpacked/docProps/core.xml", sCoreXml))
+    {
+        // title-info
+        oDocument.WriteString(L"<title-info>");
+        std::wstring sBookTitle = NSFile::GetFileName(sDst);
+        std::wstring sAuthor = sBookTitle;
+        std::wstring sAnnotation;
+        std::wstring sKeywords;
+
+        XmlUtils::CXmlLiteReader oCoreReader;
+        oCoreReader.FromString(sCoreXml);
+        oCoreReader.ReadNextNode();
+        int nDeath = oCoreReader.GetDepth();
+        while (oCoreReader.ReadNextSiblingNode(nDeath))
+        {
+            if (oCoreReader.GetNamespacePrefix() == L"dc")
+            {
+                std::wstring sName = oCoreReader.GetName();
+                if (sName == L"dc:creator")
+                    sAuthor = oCoreReader.GetText2();
+                else if (sName == L"dc:title")
+                    sBookTitle = oCoreReader.GetText2();
+                else if (sName == L"dc:description")
+                    sAnnotation = oCoreReader.GetText2();
+                else if (sName == L"dc:subject")
+                    sKeywords += oCoreReader.GetText2() + L' ';
+            }
+        }
+
+        oDocument.WriteString(L"<genre>dramaturgy</genre>");
+        oDocument.WriteString(L"<author><nickname>" + sAuthor + L"</nickname></author>");
+        oDocument.WriteString(L"<book-title>" + sBookTitle + L"</book-title>");
+        if (!sAnnotation.empty())
+            oDocument.WriteString(L"<annotation><p>" + sAnnotation + L"</p></annotation>");
+        if (!sKeywords.empty())
+            oDocument.WriteString(L"<keywords>" + sKeywords + L"</keywords>");
+        oDocument.WriteString(L"<lang>en</lang>");
+        oDocument.WriteString(L"</title-info>");
+        // document-info
+        oDocument.WriteString(L"<document-info>");
+        oDocument.WriteString(L"<author><nickname>" + sAuthor + L"</nickname></author>");
+        oDocument.WriteString(L"<date></date>");
+        oDocument.WriteString(L"<id>" + GenerateUUID() + L"</id>");
+        oDocument.WriteString(L"<version>1.0</version>");
+        oDocument.WriteString(L"</document-info>");
+
+    }
+    oDocument.WriteString(L"</description>");
+    // body
+    oDocument.WriteString(L"<body><section>");
+    std::string sContent;
+    NSFile::CFileBinary::ReadAllTextUtf8A(sSrc + L"/doct_unpacked/index.html", sContent);
+    XmlUtils::CXmlLiteReader oIndexHtml;
+    std::vector<std::wstring> arrBinary;
+    if (oIndexHtml.FromString(htmlToXhtml(sContent)))
+    {
+        oIndexHtml.ReadNextNode(); // html
+        int nDepth = oIndexHtml.GetDepth();
+        oIndexHtml.ReadNextSiblingNode(nDepth); // head
+        oIndexHtml.ReadNextSiblingNode(nDepth); // body
+        readStream(oDocument, oIndexHtml, arrBinary, false);
+    }
+    oDocument.WriteString(L"</section></body>");
+    // binary
+    for (size_t i = 0; i < arrBinary.size(); i++)
+    {
+        oDocument.WriteString(L"<binary id=\"img" + std::to_wstring(i + 1) + L".png\" content-type=\"image/png\">");
+        oDocument.WriteString(arrBinary[i]);
+        oDocument.WriteString(L"</binary>");
+    }
+    oDocument.WriteString(L"</FictionBook>");
+    // Запись в файл
+    NSFile::CFileBinary oWriter;
+    if (oWriter.CreateFileW(sDst))
+    {
+        oWriter.WriteStringUTF8(oDocument.GetData());
+        oWriter.CloseFile();
+    }
+    return S_OK;
+
 }

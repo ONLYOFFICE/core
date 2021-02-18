@@ -87,6 +87,7 @@ SOURCES += \
     OBJECTIVE_SOURCES += js_internal/jsc/jsc_base.mm
     OBJECTIVE_SOURCES += ../common/Mac/NSString+StringUtils.mm
     OBJECTIVE_SOURCES += \
+        embed/jsc/jsc_Graphics.mm \
         embed/jsc/jsc_MemoryStream.mm \
         embed/jsc/jsc_NativeControl.mm \
         embed/jsc/jsc_NativeBuilder.mm

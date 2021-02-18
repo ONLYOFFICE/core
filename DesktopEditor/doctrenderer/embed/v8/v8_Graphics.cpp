@@ -131,7 +131,7 @@ namespace NSGraphics
         v8::Isolate* current = v8::Isolate::GetCurrent();
 
         // методы
-        NSV8Objects::Template_Set(result, "init",                     _init);
+        NSV8Objects::Template_Set(result, "create",                   _init);
         NSV8Objects::Template_Set(result, "EndDraw",                  _EndDraw);
         NSV8Objects::Template_Set(result, "put_GlobalAlpha",          _put_GlobalAlpha);
         NSV8Objects::Template_Set(result, "Start_GlobalAlpha",        _Start_GlobalAlpha);

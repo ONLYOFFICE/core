@@ -1122,57 +1122,7 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
     WriteTransition(oWriter, pSlide->m_oSlideShow);
 
     // TODO write new method and class for timing
-
-    auto slide_iter = m_pUserInfo->m_mapSlides.find(m_pUserInfo->m_arrSlidesOrder[nIndexSlide]);
-    CRecordSlideProgTagsContainer* progTag = slide_iter->second->m_pSlideProgTagsContainer;
-
-    // This part for old animation
-    std::vector<CRecordDrawingContainer* > drawingAnim;
-    slide_iter->second->GetRecordsByType(&drawingAnim, true);
-    if (!drawingAnim.empty())
-    {
-        std::vector<CRecordSoundCollectionContainer*> sound;
-        m_pUserInfo->m_oDocument.GetRecordsByType(&sound, false);
-
-        for (auto drawingAnimEl : drawingAnim)
-        {
-
-            std::vector<CRecordDrawingRecord* > drawingRecord;
-            drawingAnimEl->GetRecordsByType(&drawingRecord, true);
-            std::vector<CRecordAnimationInfoContainer* > amimInfoCont;
-            drawingAnimEl->GetRecordsByType(&amimInfoCont, true);
-            if (!amimInfoCont.empty() && !drawingRecord.empty())
-            {
-                UINT shapeId = drawingRecord[0]->m_nPidCur;
-            }
-        }
-    }
-
-    if (progTag)
-    {
-        CRecordPP10SlideBinaryTagExtension* pPP10SlideBinaryTag = progTag->getPP10SlideBinaryTagExtension();
-        if (pPP10SlideBinaryTag)
-        {
-            Animation animation(*pPP10SlideBinaryTag);
-            std::vector<CRecordSoundCollectionContainer*> sound;
-            m_pUserInfo->m_oDocument.GetRecordsByType(&sound, false);
-            if (!sound.empty())
-            {
-                animation.m_pSoundContainer = sound[0];
-            }
-
-            m_oManager.m_ridManager.setRIDfromAnimation(animation);
-            m_oManager.m_ridManager.setRID(oRels.getRId());
-            auto paths = m_oManager.m_ridManager.getPathesForSlideRels();
-            for (auto& path : paths)
-            {
-                oRels.WriteHyperlinkMedia(path, false, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
-            }
-
-            animation.Convert(pSlide->m_oTiming);
-            WriteTiming(oWriter, pSlide->m_oTiming);
-        }
-    }
+   WriteTiming(oWriter, oRels, nIndexSlide);
 
 
     oWriter.WriteString(std::wstring(L"</p:sld>"));
@@ -1476,8 +1426,53 @@ void PPT_FORMAT::CPPTXWriter::WriteNotes()
 }
 
 
-void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, PPTX::Logic::Timing &oTiming)
+void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, CRelsGenerator &oRels, int nIndexSlide)
 {
+    PPTX::Logic::Timing oTiming;
+
+    auto slide_iter = m_pUserInfo->m_mapSlides.find(m_pUserInfo->m_arrSlidesOrder[nIndexSlide]);
+    // This part for new animation
+    CRecordSlideProgTagsContainer* progTag = slide_iter->second->m_pSlideProgTagsContainer;
+    CRecordPP10SlideBinaryTagExtension* pPP10SlideBinaryTag = progTag ? progTag->getPP10SlideBinaryTagExtension() : NULL;
+    // This part for old animation
+    std::vector<CRecordDrawingContainer* > drawingAnim;
+    slide_iter->second->GetRecordsByType(&drawingAnim, true);
+    std::vector<SOldAnimation> arrOldAnim;
+    for (auto drawingAnimEl : drawingAnim)
+    {
+        SOldAnimation oldAnim;
+        std::vector<CRecordDrawingRecord* > drawingRecord;
+        drawingAnimEl->GetRecordsByType(&drawingRecord, true);
+        std::vector<CRecordAnimationInfoContainer* > amimInfoCont;
+        drawingAnimEl->GetRecordsByType(&amimInfoCont, true);
+        if (!amimInfoCont.empty() && !drawingRecord.empty())
+        {
+            oldAnim.shapeId = drawingRecord[0]->m_nPidCur;
+            oldAnim.anim = amimInfoCont.front();
+            arrOldAnim.push_back(oldAnim);
+        }
+    }
+
+    if (!pPP10SlideBinaryTag && arrOldAnim.empty())
+        return;
+
+    Animation animation(pPP10SlideBinaryTag, arrOldAnim);
+    std::vector<CRecordSoundCollectionContainer*> sound;
+    m_pUserInfo->m_oDocument.GetRecordsByType(&sound, false);
+    if (!sound.empty())
+    {
+        animation.m_pSoundContainer = sound[0];
+    }
+
+    m_oManager.m_ridManager.setRIDfromAnimation(animation);
+    m_oManager.m_ridManager.setRID(oRels.getRId());
+    auto paths = m_oManager.m_ridManager.getPathesForSlideRels();
+    for (auto& path : paths)
+    {
+        oRels.WriteHyperlinkMedia(path, false, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
+    }
+
+    animation.Convert(oTiming);
     oWriter.WriteString(oTiming.toXML());
     //oWriter.WriteString(std::wstring(L"<p:timing><p:tnLst><p:par><p:cTn id=\"1\" dur=\"indefinite\" restart=\"never\" nodeType=\"tmRoot\" /></p:par></p:tnLst></p:timing>"));
 

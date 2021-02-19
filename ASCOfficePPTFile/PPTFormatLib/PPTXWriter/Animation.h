@@ -52,18 +52,27 @@
 
 #include "../Records/SlideProgTagsContainer.h"
 #include "../Records/SoundCollectionContainer.h"
+#include "../Records/Animations/AnimationInfoContainer.h"
 
 namespace PPT_FORMAT
 {
+struct SOldAnimation
+{
+    UINT shapeId;
+    CRecordAnimationInfoContainer* anim;
+
+    // There will be additional records for animation here;
+};
+
 // Extenstion for CRecordExtTimeNodeContainer
 class Animation
 {
 public:
-    Animation(CRecordPP10SlideBinaryTagExtension &oPPT10Ext) :
-        m_oPPT10(oPPT10Ext),
+    Animation(CRecordPP10SlideBinaryTagExtension *pPPT10Ext, const std::vector<SOldAnimation> &oldAnim) :
+        m_pPPT10(pPPT10Ext),
+        m_arrOldAnim(oldAnim),
         m_pSoundContainer(nullptr),
         m_cTnId(1),
-        m_cSound(0),
         m_pBldLst(nullptr),
         m_currentBldP(nullptr)
     {
@@ -71,7 +80,8 @@ public:
     }
 
     // Not delete any pointers
-    CRecordPP10SlideBinaryTagExtension &m_oPPT10;   // Must be
+    CRecordPP10SlideBinaryTagExtension *m_pPPT10;       // Must be it xor (maybe 'or' i dunno)
+    std::vector<SOldAnimation>          m_arrOldAnim;   // this one
 
     CRecordSoundCollectionContainer *m_pSoundContainer; // Optional
 
@@ -153,14 +163,10 @@ private:
 //            const CRecordSubEffectContainer *pSub,
 //            CRecordExtTimeNodeContainer *pETNC);
 
-public:
-    unsigned getCSound()const{return m_cSound;}
-
 private:
     unsigned m_cTnId;
-    unsigned m_cSound;
     PPTX::Logic::BldLst *m_pBldLst; // Do not delete
-    PPTX::Logic::BldP *m_currentBldP;
+    PPTX::Logic::BldP   *m_currentBldP;
 };
 
 }

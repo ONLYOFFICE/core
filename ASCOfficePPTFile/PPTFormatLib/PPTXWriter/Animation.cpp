@@ -49,18 +49,24 @@ using namespace PPT_FORMAT;
 
 void Animation::Convert(PPTX::Logic::Timing &oTiming)
 {
-    // It must be first to write some reference from ExtTimeNodeContainer
-    if (m_oPPT10.m_haveBuildList && !m_oPPT10.m_pBuildListContainer->n_arrRgChildRec.empty())
+    if (m_pPPT10)
     {
-        oTiming.bldLst = new PPTX::Logic::BldLst();
-        FillBldLst(m_oPPT10.m_pBuildListContainer, *(oTiming.bldLst));
-        m_pBldLst = oTiming.bldLst.GetPointer();
-    }
+        // It must be first to write some reference from ExtTimeNodeContainer
+        if (m_pPPT10->m_haveBuildList && !m_pPPT10->m_pBuildListContainer->n_arrRgChildRec.empty())
+        {
+            oTiming.bldLst = new PPTX::Logic::BldLst();
+            FillBldLst(m_pPPT10->m_pBuildListContainer, *(oTiming.bldLst));
+            m_pBldLst = oTiming.bldLst.GetPointer();
+        }
 
-    if (m_oPPT10.m_haveExtTime)
+        if (m_pPPT10->m_haveExtTime)
+        {
+            oTiming.tnLst = new PPTX::Logic::TnLst();
+            FillTnLst(m_pPPT10->m_pExtTimeNodeContainer, *(oTiming.tnLst));
+        }
+    } else if (!m_arrOldAnim.empty())
     {
-        oTiming.tnLst = new PPTX::Logic::TnLst();
-        FillTnLst(m_oPPT10.m_pExtTimeNodeContainer, *(oTiming.tnLst));
+        return; // TODO
     }
 
     return;
@@ -821,7 +827,7 @@ void Animation::FillCTn(
 //        if (
 //                pETNC->m_arrRgSubEffect[0]->m_oTimeNodeAtom.m_fGroupingTypeProperty &&
 //                m_pBldLst &&
-//                m_oPPT10.m_haveBuildList
+//                m_pPPT10->m_haveBuildList
 //           )
 //        {
 //            oCTn.grpId = 0;

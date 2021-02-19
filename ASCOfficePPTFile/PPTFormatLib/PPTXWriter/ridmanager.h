@@ -43,6 +43,7 @@ private:
     void setSoundRIDCollection(CRecordSoundCollectionContainer* pColection);
 
     void searchSound (CRecordExtTimeNodeContainer* const pETNC);
+    void searchSound (const std::vector<SOldAnimation> &arrAnim);
     void addSound(CRecordClientVisualElementContainer* const pCVEC);
     void clearRIDSforSlide();
 private:

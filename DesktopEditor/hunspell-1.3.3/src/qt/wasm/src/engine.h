@@ -1,4 +1,5 @@
 #include "hunspell.h"
+#include <iostream>
 #include "base.h"
 #include <map>
 #include <queue>
@@ -157,9 +158,9 @@ public:
 class LimitedEngineMap 
 {
 public:
-    LimitedEngineMap() 
+    LimitedEngineMap(size_t _maxEngineNumer) 
     {
-        m_nMaxEngineNumber = 5;
+        m_nMaxEngineNumber = _maxEngineNumer;
     }
     ~LimitedEngineMap() 
     {
@@ -188,6 +189,24 @@ public:
         m_qEngineQueue.push(data.first);
         return m_mapDictionariesEngines.insert(data);
     }
+    void RemoveEngine(const char* id) {
+        if (m_mapDictionariesEngines.find(id) == m_mapDictionariesEngines.end()) {
+            std::cout << "Engine has not been deleted\n"; //debug
+            return;
+        }
+        std::queue<std::string> new_queue;
+        Hunspell_destroy(m_mapDictionariesEngines[id]);
+        m_mapDictionariesEngines.erase(id);
+        while (!m_qEngineQueue.empty())
+        {
+            if (m_qEngineQueue.front() != id) {
+                new_queue.push(m_qEngineQueue.front());
+            }
+            m_qEngineQueue.pop();
+        }
+        std::cout << "Engine has been deleted\n"; //debug
+        m_qEngineQueue = new_queue;
+    }
 private:
     std::map<std::string, Hunhandle*> m_mapDictionariesEngines; 
     std::queue<std::string> m_qEngineQueue;
@@ -206,7 +225,8 @@ public:
     CSuggests m_oSuggests;
 
 public:
-    CSpellchecker()
+    CSpellchecker(size_t _MaxEngineNumber) :
+    m_oDictionariesEngines(_MaxEngineNumber)
     {
         m_sCurrentDictionaryId = "";
         m_pCurrentDictionary = NULL;
@@ -243,7 +263,9 @@ public:
             CFileMemory* file = iter->second;
             g_dictionaries.erase(iter);
             delete file;
+            std::cout << "Lang has been deleted\n"; //debug
         }
+        else std::cout << "Lang has not been deleted\n"; //debug
     }
     static CFileMemory* Get(const char*& id)
     {
@@ -295,7 +317,9 @@ public:
 
         return m_oSuggests.GetBuffer();
     }
-
+    void RemoveEngine(const char* id) {
+        m_oDictionariesEngines.RemoveEngine(id);
+    }
 protected:
     Hunhandle* SetLanguage(const std::string& aff_id, const std::string& dic_id)
     {

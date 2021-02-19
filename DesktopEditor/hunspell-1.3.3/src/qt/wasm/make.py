@@ -42,7 +42,8 @@ exported_functions = ["_malloc",
                       "_Spellchecker_RemoveDicrionary",
                       "_Spellchecker_Load",
                       "_Spellchecker_Spell",
-                      "_Spellchecker_Suggest"]
+                      "_Spellchecker_Suggest",
+                      "_Spellchecker_RemoveEngine"]
 
 version_hunspell = 13
 libhunspell_src_path = "./../../hunspell"

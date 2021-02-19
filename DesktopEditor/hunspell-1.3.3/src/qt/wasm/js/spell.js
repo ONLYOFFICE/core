@@ -171,6 +171,7 @@ function Dictionary()
 	};
 }
 
+
 function Spellchecker()
 {
 	this.languagesPath = "";
@@ -180,6 +181,41 @@ function Spellchecker()
 	this.ports = [];
 	this.tmpStrings = new ArrayBuffer(1000);
 	this.engine = 0;
+
+	//Experimental TODO убрать не нужную инфу
+	this.maxEngines = 5;
+	this.maxDictionaries = 5;
+	this.languageQueue = [];
+
+	this.maxDictionariesHandler = function() {
+		if (this.languageQueue.length > this.maxDictionaries) {
+			var toDelete = this.languageQueue.length - this.maxDictionaries;
+			for (let i = 0; i < toDelete; i++) {
+				var lk = this.languageQueue[0];
+				this.deleteDictionaty(lk);
+				delete this.readyLanguages[lk];
+				this.languageQueue.shift();
+			}
+		}
+	}
+
+	this.deleteDictionaty = function(lk) {
+		if (!lk) {
+			return;
+		}
+		var affID = lk + ".aff";
+		var dicID = lk + ".dic"
+		var engineID = affID + dicID;
+		var engineIDptr = this.allocString(engineID);
+		var langAffptr = this.allocString(affID);
+		var langDicptr = this.allocString(dicID);
+		Module._Spellchecker_RemoveDicrionary(this.engine, langAffptr);
+		Module._Spellchecker_RemoveDicrionary(this.engine, langDicptr);
+		Module._Spellchecker_RemoveEngine(this.engine, engineIDptr);
+		this.freeString(engineIDptr);
+		this.freeString(langAffptr);
+		this.freeString(langDicptr);
+	}
 
 	this.init = function()
 	{
@@ -240,6 +276,7 @@ function Spellchecker()
 				langToReady.id = lang_key;
 				langToReady.language = this.languages[lang_key];
 				this.readyLanguages[lang_key] = langToReady;
+				this.languageQueue.push(lang_key); // push lang info into the queue
 				langToReady.load();
 
 				isReady = false;
@@ -279,7 +316,7 @@ function Spellchecker()
 			default:
 				break;
 		}
-
+		this.maxDictionariesHandler();
 		this.messages.shift();
 	};
 
@@ -423,7 +460,7 @@ function Spellchecker()
 
 	this.createEngine = function()
 	{
-		return Module._Spellchecker_Create();
+		return Module._Spellchecker_Create(this.maxEngines);
 	};
 	this.destroyEngine = function()
 	{
@@ -504,4 +541,3 @@ function Spellchecker()
 		}, 1);
 	};
 }
-

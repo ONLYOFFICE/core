@@ -13,9 +13,9 @@ void Spellchecker_Free(void* p)
         ::free(p);
 }
 
-CSpellchecker* Spellchecker_Create()
+CSpellchecker* Spellchecker_Create(size_t max_engine_number)
 {
-    return new CSpellchecker();
+    return new CSpellchecker(max_engine_number);
 }
 void Spellchecker_Destroy(CSpellchecker* p)
 {
@@ -47,4 +47,7 @@ int Spellchecker_Spell(CSpellchecker* p, const char* word_utf8)
 unsigned char* Spellchecker_Suggest(CSpellchecker* p, const char* word_utf8)
 {
     return p->Suggest(word_utf8);
+}
+void Spellchecker_RemoveEngine(CSpellchecker* p, const char* sid) {
+    p->RemoveEngine(sid);
 }

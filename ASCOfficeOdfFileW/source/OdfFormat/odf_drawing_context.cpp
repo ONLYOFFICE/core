@@ -2457,9 +2457,9 @@ void odf_drawing_context::set_textarea_font(std::wstring & latin, std::wstring &
 
 	if (!impl_->current_text_properties) return;
 
-	if (!ea.empty())	impl_->current_text_properties->content_.fo_font_family_			= ea;
+	if (!ea.empty())	impl_->current_text_properties->content_.fo_font_family_			= latin;
 	if (!cs.empty())	impl_->current_text_properties->content_.style_font_family_complex_	= cs;
-	if (!latin.empty())	impl_->current_text_properties->content_.style_font_family_asian_	= latin;
+	if (!latin.empty())	impl_->current_text_properties->content_.style_font_family_asian_	= ea;
 
 }
 void odf_drawing_context::set_textarea_fontcolor(std::wstring hexColor)

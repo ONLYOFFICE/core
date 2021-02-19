@@ -213,7 +213,7 @@ public:
         int lenDst = 0;
         NSFile::CBase64Converter::Encode(data, size, dataDst, lenDst, NSBase64::B64_BASE64_FLAG_NOCRLF);
 
-        std::string sReturn(dataDst);
+        std::string sReturn(dataDst, lenDst);
 
         RELEASEARRAYOBJECTS(dataDst);
 

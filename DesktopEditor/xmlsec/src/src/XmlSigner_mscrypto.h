@@ -671,6 +671,8 @@ public:
 
     virtual int ShowCertificate(void* parent = NULL)
     {
+        if (NULL == m_context)
+            return 0;
         return (int)CryptUIDlgViewContext(CERT_STORE_CERTIFICATE_CONTEXT, m_context, (NULL == parent) ? NULL : (*((HWND*)parent)), NULL, 0, NULL);
     }
 

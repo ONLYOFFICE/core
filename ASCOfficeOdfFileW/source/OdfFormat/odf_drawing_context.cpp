@@ -1330,11 +1330,16 @@ void odf_drawing_context::set_opacity(double percent_)
 	switch(impl_->current_drawing_part_)
 	{
 	case Area:
-		impl_->current_graphic_properties->common_draw_fill_attlist_.draw_opacity_ = percent(percent_);
-		break;
+	{
+		if (impl_->current_drawing_state_.oox_shape_preset_  == 3000)
+			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_image_opacity_ = percent(percent_);
+		else
+			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_opacity_ = percent(percent_);
+	}break;
 	case Line:
+	{
 		impl_->current_graphic_properties->svg_stroke_opacity_ = percent(percent_);
-		break;
+	}break;
 	}
 }
 void odf_drawing_context::set_grayscale()
@@ -2181,7 +2186,8 @@ void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) 
 }
 void odf_drawing_context::set_line_width(double pt)
 {
-	if (!impl_->current_graphic_properties)return;
+	if (!impl_->current_graphic_properties) return;
+
 	impl_->current_graphic_properties->svg_stroke_width_ = length(length(pt,length::pt).get_value_unit(length::cm), length::cm);
 }
 

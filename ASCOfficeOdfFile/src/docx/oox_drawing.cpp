@@ -193,7 +193,7 @@ void oox_serialize_effects(std::wostream & strm, const std::vector<odf_reader::_
 						{
 							CP_XML_NODE(L"a:alpha")
 							{
-								CP_XML_ATTR(L"val", *dShadowOpacity * 1000); 
+								CP_XML_ATTR(L"val", (int)(*dShadowOpacity * 1000)); 
 							}
 						}
 					}

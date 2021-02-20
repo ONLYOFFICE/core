@@ -2167,6 +2167,7 @@ void DocxConverter::convert(OOX::Logic::CBgPict *oox_bg_pict, int type)
 	odf_writer::style_page_layout_properties *current_layout_properties = odt_context->page_layout_context()->last_layout()->get_properties();
 
 	odt_context->drawing_context()->end_drawing_background(current_layout_properties->attlist_.common_draw_fill_attlist_);
+	odt_context->drawing_context()->set_background_state(false);
 	odt_context->end_drawings();
 }
 void DocxConverter::convert(OOX::Logic::CBackground *oox_background, int type)
@@ -2196,6 +2197,7 @@ void DocxConverter::convert(OOX::Logic::CBackground *oox_background, int type)
 	odf_writer::style_page_layout_properties * current_layout_properties = odt_context->page_layout_context()->last_layout()->get_properties();
 
 	odt_context->drawing_context()->end_drawing_background(current_layout_properties->attlist_.common_draw_fill_attlist_);
+	odt_context->drawing_context()->set_background_state(false);
 	odt_context->end_drawings();
 }
 

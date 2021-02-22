@@ -66,7 +66,8 @@ void Animation::Convert(PPTX::Logic::Timing &oTiming)
         }
     } else if (!m_arrOldAnim.empty())
     {
-        return; // TODO
+        InitTimingTags(oTiming);
+        FillTimingForOld(oTiming);
     }
 
     return;
@@ -1235,4 +1236,14 @@ void Animation::FillCTn(
             }
         }
     }
+}
+
+void Animation::InitTimingTags(PPTX::Logic::Timing &oTiming)
+{
+
+}
+
+void Animation::FillTimingForOld(PPTX::Logic::Timing &oTiming)
+{
+
 }

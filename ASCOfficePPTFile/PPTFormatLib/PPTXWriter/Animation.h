@@ -163,6 +163,10 @@ private:
 //            const CRecordSubEffectContainer *pSub,
 //            CRecordExtTimeNodeContainer *pETNC);
 
+    // For old animation.
+    void InitTimingTags(PPTX::Logic::Timing &oTiming); // Initialize non-exist (in 95-97 format) struct
+    void FillTimingForOld(PPTX::Logic::Timing &oTiming);
+
 private:
     unsigned m_cTnId;
     PPTX::Logic::BldLst *m_pBldLst; // Do not delete

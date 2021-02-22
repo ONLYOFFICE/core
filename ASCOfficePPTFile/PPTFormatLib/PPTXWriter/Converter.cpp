@@ -1435,20 +1435,20 @@ void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, CRelsGenerator
     CRecordSlideProgTagsContainer* progTag = slide_iter->second->m_pSlideProgTagsContainer;
     CRecordPP10SlideBinaryTagExtension* pPP10SlideBinaryTag = progTag ? progTag->getPP10SlideBinaryTagExtension() : NULL;
     // This part for old animation
-    std::vector<CRecordDrawingContainer* > drawingAnim;
-    slide_iter->second->GetRecordsByType(&drawingAnim, true);
+    std::vector<CRecordShapeContainer* > arrShapeCont;
+    slide_iter->second->GetRecordsByType(&arrShapeCont, true);
     std::vector<SOldAnimation> arrOldAnim;
-    for (auto drawingAnimEl : drawingAnim)
+    for (auto ShapeCont : arrShapeCont)
     {
         SOldAnimation oldAnim;
-        std::vector<CRecordDrawingRecord* > drawingRecord;
-        drawingAnimEl->GetRecordsByType(&drawingRecord, true);
-        std::vector<CRecordAnimationInfoContainer* > amimInfoCont;
-        drawingAnimEl->GetRecordsByType(&amimInfoCont, true);
-        if (!amimInfoCont.empty() && !drawingRecord.empty())
+        std::vector<CRecordShape* > shape;
+        ShapeCont->GetRecordsByType(&shape, true);
+        std::vector<CRecordAnimationInfoContainer* > anim;
+        ShapeCont->GetRecordsByType(&anim, true);
+        if (!anim.empty() && !shape.empty())
         {
-            oldAnim.shapeId = drawingRecord[0]->m_nPidCur;
-            oldAnim.anim = amimInfoCont.front();
+            oldAnim.shapeId = shape[0]->m_nID;
+            oldAnim.anim = anim[0];
             arrOldAnim.push_back(oldAnim);
         }
     }

@@ -41,12 +41,12 @@ namespace cpdoccore {
 namespace oox {
 
 
-_CP_PTR(oox_axis_content) oox_axis_content::create(int type)
+_CP_PTR(oox_axis_content) oox_axis_content::create(int type, unsigned int id)
 {
-    return boost::make_shared<oox_axis_content>(type);
+    return boost::make_shared<oox_axis_content>(type, id);
 }
 
-oox_axis_content::oox_axis_content(int type/*,std::wstring name*/)
+oox_axis_content::oox_axis_content(int type/*,std::wstring name*/, unsigned int id)
 {
 	if (type == 0)
 	{
@@ -54,13 +54,13 @@ oox_axis_content::oox_axis_content(int type/*,std::wstring name*/)
 	}
 	else
 	{
-		id_  = abs((long)this);
+		id_  = id;
 	}
 	type_ = type;
 }
 void oox_axis_content::oox_serialize(std::wostream & _Wostream)
 {
-	if (id_ < 1 )return; //not activate, blank axis
+	if (id_ < 1 ) return; //not activate, blank axis
  
 	CP_XML_WRITER(_Wostream)
     {

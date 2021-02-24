@@ -4971,7 +4971,6 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 					}
 				}
 			}
-			pDrawing->m_arrItems.push_back(pCellAnchor);
 		}
 		else if (pCellAnchor->m_oElement.is_init() && pCellAnchor->m_oElement->is<PPTX::Logic::Shape>())
 		{

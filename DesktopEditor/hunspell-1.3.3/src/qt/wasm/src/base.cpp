@@ -42,12 +42,20 @@ int Spellchecker_Load(CSpellchecker* p, const char* aff_id, const char* dic_id)
 }
 int Spellchecker_Spell(CSpellchecker* p, const char* word_utf8)
 {
-    return p->Spell(word_utf8);
+    return  p->Spell(word_utf8);
 }
 unsigned char* Spellchecker_Suggest(CSpellchecker* p, const char* word_utf8)
-{
+{;
     return p->Suggest(word_utf8);
 }
-void Spellchecker_RemoveEngine(CSpellchecker* p, const char* sid) {
+void Spellchecker_RemoveEngine(CSpellchecker* p, const char* sid) 
+{
     p->RemoveEngine(sid);
+}
+
+double Spellchecker_Debug() 
+{
+        struct mallinfo a;
+        a = mallinfo(); // Debug
+        return (double)a.uordblks/1000./1000.;
 }

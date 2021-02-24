@@ -1,10 +1,11 @@
 #include "hunspell.h"
 #include <iostream>
+#include <stdlib.h>
 #include "base.h"
 #include <map>
 #include <queue>
 #include <string>
-
+#include <memory.h>
 //#define WASM_LOGGING fprintf
 
 class CFileMemory
@@ -181,30 +182,39 @@ public:
     std::pair<std::map<std::string, Hunhandle*>::iterator,bool> insert(const std::pair<std::string, Hunhandle*> &data) 
     {
         if (m_qEngineQueue.size() == m_nMaxEngineNumber)
-        {
-            Hunspell_destroy(m_mapDictionariesEngines[m_qEngineQueue.front()]); 
-            m_mapDictionariesEngines.erase(m_qEngineQueue.front());
-            m_qEngineQueue.pop();
+        { 
+            if (m_mapDictionariesEngines.find(m_qEngineQueue.front()) != 
+                m_mapDictionariesEngines.end()) 
+                {
+                    std::cout << "queue engine called" << '\n';
+                    Hunspell_destroy(m_mapDictionariesEngines[m_qEngineQueue.front()]); 
+                    m_mapDictionariesEngines.erase(m_qEngineQueue.front());
+                    m_qEngineQueue.pop();
+                }
+            
         }
         m_qEngineQueue.push(data.first);
         return m_mapDictionariesEngines.insert(data);
     }
-    void RemoveEngine(const char* id) {
-        if (m_mapDictionariesEngines.find(id) == m_mapDictionariesEngines.end()) {
-            std::cout << "Engine has not been deleted\n"; //debug
+    void RemoveEngine(const char* id) 
+    {
+        if (m_mapDictionariesEngines.find(id) == m_mapDictionariesEngines.end())
+        {
+            std::cout << "destroy_engine not called " << m_mapDictionariesEngines.size() << '\n';
             return;
         }
         std::queue<std::string> new_queue;
+        std::cout << "destroy_engine_called\n";
         Hunspell_destroy(m_mapDictionariesEngines[id]);
         m_mapDictionariesEngines.erase(id);
         while (!m_qEngineQueue.empty())
         {
-            if (m_qEngineQueue.front() != id) {
+            if (m_qEngineQueue.front() != id) 
+            {
                 new_queue.push(m_qEngineQueue.front());
             }
             m_qEngineQueue.pop();
         }
-        std::cout << "Engine has been deleted\n"; //debug
         m_qEngineQueue = new_queue;
     }
 private:
@@ -263,9 +273,7 @@ public:
             CFileMemory* file = iter->second;
             g_dictionaries.erase(iter);
             delete file;
-            std::cout << "Lang has been deleted\n"; //debug
         }
-        else std::cout << "Lang has not been deleted\n"; //debug
     }
     static CFileMemory* Get(const char*& id)
     {
@@ -317,7 +325,8 @@ public:
 
         return m_oSuggests.GetBuffer();
     }
-    void RemoveEngine(const char* id) {
+    void RemoveEngine(const char* id) 
+    {
         m_oDictionariesEngines.RemoveEngine(id);
     }
 protected:
@@ -325,7 +334,7 @@ protected:
     {
         if ((aff_id + dic_id) == m_sCurrentDictionaryId)
             return m_pCurrentDictionary;
-
+       
         m_sCurrentDictionaryId = aff_id + dic_id;
         m_pCurrentDictionary = NULL;
 

@@ -183,14 +183,17 @@ function Spellchecker()
 	this.engine = 0;
 
 	//Experimental TODO убрать не нужную инфу
-	this.maxEngines = 5;
-	this.maxDictionaries = 5;
+	this.maxEngines = 1;
+	this.maxDictionaries = 2;
 	this.languageQueue = [];
 
-	this.maxDictionariesHandler = function() {
-		if (this.languageQueue.length > this.maxDictionaries) {
+	this.maxDictionariesHandler = function() 
+	{
+		if (this.languageQueue.length > this.maxDictionaries) 
+		{
 			var toDelete = this.languageQueue.length - this.maxDictionaries;
-			for (let i = 0; i < toDelete; i++) {
+			for (let i = 0; i < toDelete; i++) 
+			{
 				var lk = this.languageQueue[0];
 				this.deleteDictionaty(lk);
 				delete this.readyLanguages[lk];
@@ -199,10 +202,11 @@ function Spellchecker()
 		}
 	}
 
-	this.deleteDictionaty = function(lk) {
-		if (!lk) {
+	this.deleteDictionaty = function(lk) 
+	{
+		if (!lk) 
 			return;
-		}
+
 		var affID = lk + ".aff";
 		var dicID = lk + ".dic"
 		var engineID = affID + dicID;
@@ -317,6 +321,7 @@ function Spellchecker()
 				break;
 		}
 		this.maxDictionariesHandler();
+		console.log(Module._Spellchecker_Debug()); //Debug
 		this.messages.shift();
 	};
 
@@ -481,9 +486,7 @@ function Spellchecker()
 				curLang = "" + data.usrLang[i];
 				var aff = this.allocString(curLang + ".aff");
 				var dic = this.allocString(curLang + ".dic");
-
 				ret = Module._Spellchecker_Load(this.engine, aff, dic);
-
 				this.freeString(aff);
 				this.freeString(dic);
 			}

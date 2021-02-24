@@ -43,9 +43,10 @@ exported_functions = ["_malloc",
                       "_Spellchecker_Load",
                       "_Spellchecker_Spell",
                       "_Spellchecker_Suggest",
-                      "_Spellchecker_RemoveEngine"]
+                      "_Spellchecker_RemoveEngine",
+                      "_Spellchecker_Debug"] #debug
 
-version_hunspell = 13
+version_hunspell = 17
 libhunspell_src_path = "./../../hunspell"
 
 input_sources = ["affentry.cxx",

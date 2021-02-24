@@ -1,5 +1,5 @@
 #include <memory>
-
+#include <malloc.h>
 class CSpellchecker;
 
 extern "C"
@@ -17,4 +17,6 @@ extern "C"
     int Spellchecker_Spell(CSpellchecker* p, const char* word_utf8);
     void Spellchecker_RemoveEngine(CSpellchecker* p, const char* sid);
     unsigned char* Spellchecker_Suggest(CSpellchecker* p, const char* word_utf8);
+
+    double Spellchecker_Debug(); //Debug
 }

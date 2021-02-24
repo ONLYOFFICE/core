@@ -5,10 +5,10 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "filemgr.hxx"
-#include "csutil.hxx"
+#include "./filemgr.hxx"
+ #include "csutil.hxx"
 
-#include "./engine.h"
+ #include "./engine.h"
 
 int FileMgr::fail(const char * err, const char * par) {
     fprintf(stderr, err, par);

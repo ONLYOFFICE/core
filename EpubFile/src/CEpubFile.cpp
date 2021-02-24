@@ -13,18 +13,18 @@
 #include <random>
 
 // Заменяет в строке s все символы s1 на s2
-static void replace_all(std::wstring& s, const std::wstring& s1, const std::wstring& s2)
+void replace_all(std::wstring& s, const std::wstring& s1, const std::wstring& s2)
 {
     size_t pos = s.find(s1);
     size_t l = s2.length();
-    while(pos != std::string::npos)
+    while (pos != std::string::npos)
     {
         s.replace(pos, s1.length(), s2);
         pos = s.find(s1, pos + l);
     }
 }
 
-static std::wstring GenerateUUID()
+std::wstring GenerateUUID()
 {
     std::mt19937 oRand(time(0));
     std::wstringstream sstream;
@@ -74,10 +74,10 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
 
     std::wstring sFileContent;
     std::wstring sContent;
-    if(!NSFile::CFileBinary::ReadAllTextUtf8(m_sTempDir + L"/container.xml", sFileContent))
+    if (!NSFile::CFileBinary::ReadAllTextUtf8(m_sTempDir + L"/container.xml", sFileContent))
         return S_FALSE;
     size_t nContent = sFileContent.find(L"full-path");
-    if(nContent != std::wstring::npos)
+    if (nContent != std::wstring::npos)
     {
         nContent += 11;
         sContent = sFileContent.substr(nContent, sFileContent.find(L'\"', nContent) - nContent);
@@ -87,53 +87,44 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     }
     sContent = m_sTempDir + (sContent.empty() ? L"/content.opf" : L'/' + sContent);
 
-
     XmlUtils::CXmlLiteReader oXmlLiteReader;
-    if (oXmlLiteReader.FromFile(sContent))
+    if (!oXmlLiteReader.FromFile(sContent))
+        return S_FALSE;
+    oXmlLiteReader.ReadNextNode();
+    int nParentDepth = oXmlLiteReader.GetDepth();
+    while (oXmlLiteReader.ReadNextSiblingNode(nParentDepth))
     {
-        oXmlLiteReader.ReadNextNode();
-        int nParentDepth = oXmlLiteReader.GetDepth();
-        while (oXmlLiteReader.ReadNextSiblingNode(nParentDepth))
+        std::wstring sName = oXmlLiteReader.GetName();
+        size_t nDot = sName.find(L':');
+        if (nDot != std::wstring::npos)
+            sName.erase(0, nDot + 1);
+        if (sName == L"metadata")
+            m_oBookInfo.ReadInfo(oXmlLiteReader);
+        else if (sName == L"manifest")
         {
-            std::wstring sName = oXmlLiteReader.GetName();
-            size_t nDot = sName.find(L':');
-            if(nDot != std::wstring::npos)
-                sName.erase(0, nDot + 1);
-            if (sName == L"metadata")
+            int _nParentDepth = oXmlLiteReader.GetDepth();
+            while (true)
             {
-                m_oBookInfo.ReadInfo(oXmlLiteReader);
-//                #ifdef _DEBUG
-//                    m_oBookInfo.ShowInfo();
-//                #endif
+                CBookItem oItem;
+                if (oItem.ReadItem(oXmlLiteReader, _nParentDepth))
+                    m_mapRefs.insert(std::make_pair(oItem.GetID(), oItem));
+                else
+                    break;
             }
-            else if (sName == L"manifest")
+        }
+        else if (sName == L"spine")
+        {
+            int _nParentDepth = oXmlLiteReader.GetDepth();
+            while (true)
             {
-                int _nParentDepth = oXmlLiteReader.GetDepth();
-                while (true)
-                {
-                    CBookItem oItem;
-                    if (oItem.ReadItem(oXmlLiteReader, _nParentDepth))
-                        m_mapRefs.insert(std::make_pair(oItem.GetID(), oItem));
-                    else
-                        break;
-                }
-            }
-            else if (sName == L"spine")
-            {
-                int _nParentDepth = oXmlLiteReader.GetDepth();
-                while (true)
-                {
-                    CBookContentItem oContentItem;
-                    if (oContentItem.ReadContentItem(oXmlLiteReader, _nParentDepth))
-                        m_arContents.push_back(oContentItem);
-                    else
-                        break;
-                }
+                CBookContentItem oContentItem;
+                if (oContentItem.ReadContentItem(oXmlLiteReader, _nParentDepth))
+                    m_arContents.push_back(oContentItem);
+                else
+                    break;
             }
         }
     }
-    else
-        return S_FALSE;
 
     /*
     if (!oXmlLiteReader.FromFile(m_sTempDir + L"/toc.ncx"))
@@ -150,9 +141,9 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     CHtmlParams oFileParams;
 
     oFileParams.SetAuthors(m_oBookInfo.GetCreators());
-    oFileParams.SetGenres(m_oBookInfo.GetSubjects());
-    oFileParams.SetTitle(m_oBookInfo.GetTitle());
-    oFileParams.SetDate(m_oBookInfo.GetDate());
+    oFileParams.SetGenres (m_oBookInfo.GetSubjects());
+    oFileParams.SetTitle  (m_oBookInfo.GetTitle());
+    oFileParams.SetDate   (m_oBookInfo.GetDate());
     oFileParams.SetDescription(m_oBookInfo.GetDescriptions());
     oFileParams.SetPageBreakBefore(true);
 
@@ -304,8 +295,14 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sSrc, const std::wstring& sDstFi
                         bWasIdentifier = true;
                     else if (sName == L"dc:title")
                     {
-                        sOut.erase(0, sOut.find(L'>') + 1);
-                        sOut.erase(sOut.find(L'<'));
+                        size_t nBegin = sOut.find(L'>');
+                        if (nBegin == std::wstring::npos)
+                            continue;
+                        sOut.erase(0, nBegin + 1);
+                        nBegin = sOut.find(L'<');
+                        if (nBegin == std::wstring::npos)
+                            continue;
+                        sOut.erase(nBegin);
                         sTitle = sOut;
                     }
                 }

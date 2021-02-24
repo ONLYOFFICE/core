@@ -17,9 +17,9 @@ class EPUBFILE_EXPORT CEpubFile
     std::wstring m_sTempDir;
 
     CBookInfo m_oBookInfo;
+    CBookToc  m_oToc;
     std::map<std::wstring, CBookItem> m_mapRefs;
-    CBookToc m_oToc;
-    std::vector<CBookContentItem> m_arContents;
+    std::vector<CBookContentItem>  m_arContents;
 
 public:
     CEpubFile();

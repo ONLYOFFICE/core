@@ -16,6 +16,7 @@ void getDirectories(const std::wstring& sDirectory, std::vector<std::wstring>& a
 int main()
 {
     bool bBatchMode = false;
+    bool bFromHtml  = false;
     if (bBatchMode)
     {
         // Директория файлов
@@ -39,38 +40,44 @@ int main()
 
         for (std::wstring sD : arrDirectory)
         {
-            std::vector<std::wstring> arrFiles = NSDirectory::GetFiles(sD);
-
-            // Директория, где будем создавать docx
-            size_t nPos = sD.find(L"/fb2");
-            sD.insert(nPos + 4, L"-res");
-            NSDirectory::DeleteDirectory(sD);
-            NSDirectory::CreateDirectory(sD);
-
-            for(const std::wstring& sFile : arrFiles)
+            if (bFromHtml)
             {
-                CFb2File oFile;
-                std::wstring sFileName = NSFile::GetFileName(sFile);
-                std::wcout << sFileName << std::endl;
-                if(!oFile.IsFb2File(sFile))
-                {
-                    nErrorCol++;
-                    arrError.push_back(sFileName);
-                    std::cout << "This isn't a fb2 file" << std::endl;
-                    continue;
-                }
+            }
+            else
+            {
+                std::vector<std::wstring> arrFiles = NSDirectory::GetFiles(sD);
 
-                if(oFile.Open(sFile, sTmp, &oParams) == S_OK)
+                // Директория, где будем создавать docx
+                size_t nPos = sD.find(L"/fb2");
+                sD.insert(nPos + 4, L"-res");
+                NSDirectory::DeleteDirectory(sD);
+                NSDirectory::CreateDirectory(sD);
+
+                for(const std::wstring& sFile : arrFiles)
                 {
-                    std::cout << "Success" << std::endl;
-                    oZip.CompressFileOrDirectory(sTmp, sD + L"/" + sFileName + L".docx");
-                    NSDirectory::DeleteDirectory(sTmp + L"/word/media");
-                }
-                else
-                {
-                    nErrorCol++;
-                    arrError.push_back(sFileName);
-                    std::cout << "Failure" << std::endl;
+                    CFb2File oFile;
+                    std::wstring sFileName = NSFile::GetFileName(sFile);
+                    std::wcout << sFileName << std::endl;
+                    if(!oFile.IsFb2File(sFile))
+                    {
+                        nErrorCol++;
+                        arrError.push_back(sFileName);
+                        std::cout << "This isn't a fb2 file" << std::endl;
+                        continue;
+                    }
+
+                    if(oFile.Open(sFile, sTmp, &oParams) == S_OK)
+                    {
+                        std::cout << "Success" << std::endl;
+                        oZip.CompressFileOrDirectory(sTmp, sD + L"/" + sFileName + L".docx");
+                        NSDirectory::DeleteDirectory(sTmp + L"/word/media");
+                    }
+                    else
+                    {
+                        nErrorCol++;
+                        arrError.push_back(sFileName);
+                        std::cout << "Failure" << std::endl;
+                    }
                 }
             }
         }
@@ -84,17 +91,17 @@ int main()
         CFb2File oFile;
 
         // Файл, который открываем
-        std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test2.fb2";
+        std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/8-sezon-groz.fb2";
 
         // Директория, где будем создавать docx
         std::wstring sOutputDirectory = NSFile::GetProcessDirectory() + L"/res";
         NSDirectory::DeleteDirectory(sOutputDirectory);
         NSDirectory::CreateDirectory(sOutputDirectory);
 
-        bool bFromHtml = true;
+
         if (bFromHtml)
         {
-            sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test1";
+            sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test3";
             oFile.FromHtml(sFile, sOutputDirectory + L"/res.fb2");
             return 0;
         }

@@ -30,7 +30,7 @@ if not base.is_dir("hunspell"):
     os.chdir("hunspell")
     base.cmd("git", ["checkout", last_stable_commit])
     base.replaceInFile("./src/hunspell/filemgr.hxx", "FileMgr& operator=(const FileMgr&);", "FileMgr& operator=(const FileMgr&); \n" 
-         +" #ifdef HUNSPELL_WASM_MODULE \n char* memory;size_t index;size_t size; \n #endif") #custon filemgr support
+         +" #ifdef HUNSPELL_WASM_MODULE \n char* memory;size_t index;size_t size; \n #endif") #custon filemgr support watch filemgr_wrapper_new.cxx
     os.chdir("../")
 
 
@@ -85,7 +85,6 @@ else:
 sources.append("./wasm/src/base.cpp")
 
 compiler_flags.append("-I" + libhunspell_src_path)
-compiler_flags.append("-I" + "/wasm/win_api")
 compiler_flags.append("-DWIN32 -DNDEBUG -DHUNSPELL_STATIC -DBUILDING_LIBHUNSPELL -DHUNSPELL_WASM_MODULE")
 
 # arguments

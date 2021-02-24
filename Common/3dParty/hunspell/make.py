@@ -154,3 +154,6 @@ base.copy_file("spell.js.mem", "./deploy/spell/spell.js.mem")
 
 base.copy_file("./wasm/js/code.js", "./deploy/spell.js")
 base.copy_file("./wasm/js/index.html", "./deploy/index.html")
+
+base.delete_file("spell.js")
+base.delete_file("spell.js.mem")

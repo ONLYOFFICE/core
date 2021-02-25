@@ -330,62 +330,71 @@ void ods_table_context::set_data_validation_content( std::wstring oox_formula1, 
 	table_content_validation *validation = dynamic_cast<table_content_validation*>(state()->data_validations_.back().elm.get());
 	
 	std::wstring odf_condition;
+
+	if (state()->data_validations_.back().type == 5) odf_condition = L"cell-content-text-length";
+	else odf_condition = L"cell-content";
+
 	switch(state()->data_validations_.back().operator_)
 	{
 		case 1: // SimpleTypes::spreadsheet::operatorNotBetween
-			odf_condition = L" and cell-content-is-not-between(" + odf_formula1 + L"," + odf_formula2 + L")"; break;
+			odf_condition += L"-is-not-between(" + odf_formula1 + L"," + odf_formula2 + L")"; break;
 		case 2: // SimpleTypes::spreadsheet::operatorEqual
-			odf_condition = L" and cell-content()==" + odf_formula1; break;
+			odf_condition += L"()==" + odf_formula1; break;
 		case 3: // SimpleTypes::spreadsheet::operatorNotEqual
-			odf_condition = L" and cell-content()<>" + odf_formula1; break;
+			odf_condition += L"()!=" + odf_formula1; break;
 		case 4: // SimpleTypes::spreadsheet::operatorLessThan
-			odf_condition = L" and cell-content()<" + odf_formula1; break;
+			odf_condition += L"()<" + odf_formula1; break;
 		case 5: // SimpleTypes::spreadsheet::operatorLessThanOrEqual
-			odf_condition = L" and cell-content()<=" + odf_formula1; break;
+			odf_condition += L"()<=" + odf_formula1; break;
 		case 6: // SimpleTypes::spreadsheet::operatorGreaterThan
-			odf_condition = L" and cell-content()>" + odf_formula1; break;
+			odf_condition += L"()>" + odf_formula1; break;
 		case 7: // SimpleTypes::spreadsheet::operatorGreaterThanOrEqual
-			odf_condition = L" and cell-content()>=" + odf_formula1; break;
+			odf_condition += L"()>=" + odf_formula1; break;
 		case 0: // SimpleTypes::spreadsheet::operatorBetween
 		default:
-			odf_condition = L" and cell-content-is-between(" + odf_formula1 + L"," + odf_formula2 + L")"; break;
+			odf_condition +=  + L"-is-between(" + odf_formula1 + L"," + odf_formula2 + L")"; break;
 	}
 	switch (state()->data_validations_.back().type)
 	{
-	case 0://SimpleTypes::spreadsheet::validationTypeNone:
-		odf_condition.clear();
-		break;
-	case 1://SimpleTypes::spreadsheet::validationTypeCustom:
-		odf_condition = L"of:is-true-formula(" + odf_formula1 + L")";
-		break;
-	case 2://SimpleTypes::spreadsheet::validationTypeDate:
+		case 0://SimpleTypes::spreadsheet::validationTypeNone:
 		{
-			odf_condition = L"of:cell-content-is-date()" + odf_condition;
+			odf_condition.clear();
 		}break;
-	case 3://SimpleTypes::spreadsheet::validationTypeDecimal:
+		case 1://SimpleTypes::spreadsheet::validationTypeCustom:
 		{
-			odf_condition = L"of:cell-content-is-decimal-number()" + odf_condition;
+			odf_condition = L"of:is-true-formula(" + odf_formula1 + L")";
 		}break;
-	case 4://SimpleTypes::spreadsheet::validationTypeList:	
+		case 2://SimpleTypes::spreadsheet::validationTypeDate:
+		{
+			odf_condition = L"of:cell-content-is-date() and " + odf_condition;
+		}break;
+		case 3://SimpleTypes::spreadsheet::validationTypeDecimal:
+		{
+			odf_condition = L"of:cell-content-is-decimal-number() and " + odf_condition;
+		}break;
+		case 4://SimpleTypes::spreadsheet::validationTypeList:	
 		{
 			odf_condition = L"of:cell-content-is-in-list(" + odf_formula1 + L")";
 		}break;
-	case 5://SimpleTypes::spreadsheet::validationTypeTextLength:
-		break;
-	case 6://SimpleTypes::spreadsheet::validationTypeTime:
+		case 6://SimpleTypes::spreadsheet::validationTypeTime:
 		{
-			odf_condition = L"of:cell-content-is-time()" + odf_condition;
+			odf_condition = L"of:cell-content-is-time() and " + odf_condition;
 		}break;
-	case 7://SimpleTypes::spreadsheet::validationTypeWhole:
+		case 7://SimpleTypes::spreadsheet::validationTypeWhole:
 		{
-			odf_condition = L"of:cell-content-is-whole-number()" + odf_condition;
+			odf_condition = L"of:cell-content-is-whole-number() and " + odf_condition;
 		}break;
+		case 5://SimpleTypes::spreadsheet::validationTypeTextLength:
+		default:
+		{
+			odf_condition = L"of:" + odf_condition;
+		}break;	
 	}
 	state()->data_validations_.back().condition = odf_condition;
 	
 	validation->table_condition_ = odf_condition;
 }
-void ods_table_context::set_data_validation_error(const std::wstring &title, const std::wstring &content, bool display)
+void ods_table_context::set_data_validation_error(const std::wstring &title, const std::wstring &content, bool display, int type)
 {
 	if (state()->data_validations_.empty()) return;
 
@@ -398,6 +407,7 @@ void ods_table_context::set_data_validation_error(const std::wstring &title, con
 
 	if (error_message)
 	{
+		error_message->table_message_type_ = (odf_types::message_type::type)type;
 		error_message->table_display_ = display;
 		if (false == title.empty()) error_message->table_title_ = title;
 

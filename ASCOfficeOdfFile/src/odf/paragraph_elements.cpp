@@ -1383,9 +1383,12 @@ void sequence::docx_convert(oox::docx_conversion_context & Context)
 	//	Context.start_bookmark(ref);
 	//}
 
-	Context.add_new_run();
-		Context.output_stream() << L"<w:t>" << template_ << L"</w:t>";
-	Context.finish_run();
+	if (template_)
+	{
+		Context.add_new_run();
+		Context.output_stream() << L"<w:t>" << *template_ << L"</w:t>";
+		Context.finish_run();
+	}
 
 	std::wstring num_format = L"ARABIC";
 	if (style_num_format_)

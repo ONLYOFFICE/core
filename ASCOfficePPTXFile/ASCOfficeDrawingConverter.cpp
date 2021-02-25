@@ -2083,7 +2083,8 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 		
 		PPTX::Logic::SpPr*	pSpPr		= NULL;
 		PPTX::Logic::CNvPr* pCNvPr		= NULL;
-		if (bPicture)
+		
+		if (bPicture && false == pPPTShape->m_oSignatureLine.IsInit())
 		{
 			pPicture = new PPTX::Logic::Pic();
 			elem->InitElem(pPicture);

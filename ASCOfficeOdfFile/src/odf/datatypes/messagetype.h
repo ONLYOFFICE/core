@@ -31,34 +31,43 @@
  */
 #pragma once
 
-#include <CPOptional.h>
-#include <CPScopedPtr.h>
+#include <iosfwd>
 #include <string>
+#include "odfattributes.h"
 
-namespace cpdoccore {
-namespace oox {
 
-class xlsx_dataValidations_context
+namespace cpdoccore { namespace odf_types { 
+
+class message_type
 {
 public:
-    xlsx_dataValidations_context();
-    ~xlsx_dataValidations_context();
+    enum type
+    {
+		stop,
+		warning,
+		information
+    };
+	message_type() {}
 
-	void add(const std::wstring & name, /*int col, int row*/const std::wstring & ref);
-	void add_formula(const std::wstring & name, const std::wstring & f);
-	void add_help_msg(const std::wstring & name, const std::wstring & title, const std::wstring & content, bool display);
-	void add_error_msg(const std::wstring & name, const std::wstring & title, const std::wstring & content, bool display, int type);
+	message_type(type _Type) : type_(_Type)
+    {}
 
-	void activate(const std::wstring & name, int col, int row/*const std::wstring & ref*/);
+    type get_type() const
+    {
+        return type_;
+    };
+    
+    static message_type parse(const std::wstring & Str);
 
-    void serialize(std::wostream & _Wostream);
-	void serialize_x14(std::wostream & _Wostream);
-
-	void clear();
 private:
-    class Impl;
-    _CP_SCOPED_PTR(Impl) impl_;
+    type type_;
+
 };
 
-}
+std::wostream & operator << (std::wostream & _Wostream, const message_type & _Val);
+
+} 
+
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::message_type);
+
 }

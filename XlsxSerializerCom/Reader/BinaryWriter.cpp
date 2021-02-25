@@ -3236,7 +3236,9 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
 		WriteDataValidations(oWorksheet.m_oDataValidations.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
+//Drawing
 	 smart_ptr<OOX::CVmlDrawing> currentVmlDrawing;
+	 smart_ptr<OOX::Spreadsheet::CDrawing> currentDrawing;
 
     if (oWorksheet.m_oLegacyDrawing.IsInit() &&
                     oWorksheet.m_oLegacyDrawing->m_oId.IsInit())
@@ -3244,28 +3246,30 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
         smart_ptr<OOX::File> oFile = oWorksheet.Find(oWorksheet.m_oLegacyDrawing->m_oId->GetValue());
 		currentVmlDrawing = oFile.smart_dynamic_cast<OOX::CVmlDrawing>();
 	}
-	//Drawing
 	if (oWorksheet.m_oDrawing.IsInit() && oWorksheet.m_oDrawing->m_oId.IsInit())
 	{
-		smart_ptr<OOX::Spreadsheet::CDrawing> currentDrawing;
-		
 		smart_ptr<OOX::File> oFile = oWorksheet.Find(oWorksheet.m_oDrawing->m_oId->GetValue());
 		currentDrawing = oFile.smart_dynamic_cast<OOX::Spreadsheet::CDrawing>();
-	
-		if (currentDrawing.IsInit())
-		{
-			smart_ptr<OOX::IFileContainer> oldRels = m_pOfficeDrawingConverter->GetRels();
-			m_pOfficeDrawingConverter->SetRels(currentDrawing.smart_dynamic_cast<OOX::IFileContainer>());
-			
-	//из Drawing могут быть ссылки на объекты в VmlDrawing
-			nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawings);
-				WriteDrawings(oWorksheet, currentDrawing.GetPointer(), currentVmlDrawing.GetPointer());
-			m_oBcw.WriteItemWithLengthEnd(nCurPos);
-
-			m_pOfficeDrawingConverter->SetRels(oldRels);
-		}
 	}
+	
 	WriteControls(oWorksheet, currentVmlDrawing.GetPointer());
+
+	smart_ptr<OOX::IFileContainer> oldRels;
+	if (currentDrawing.IsInit())
+	{
+		oldRels = m_pOfficeDrawingConverter->GetRels();
+		m_pOfficeDrawingConverter->SetRels(currentDrawing.smart_dynamic_cast<OOX::IFileContainer>());
+	}
+	if (currentDrawing.IsInit() || currentVmlDrawing.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawings);
+			WriteDrawings(oWorksheet, currentDrawing.GetPointer(), currentVmlDrawing.GetPointer());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (oldRels.IsInit())
+	{
+		m_pOfficeDrawingConverter->SetRels(oldRels);
+	}
 
 	if (oWorksheet.m_oLegacyDrawingHF.IsInit())
 	{
@@ -4487,11 +4491,17 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 		}
 		
 		std::wstring sShapeId = L"_x0000_s" + std::to_wstring(pControl->m_oShapeId->GetValue());
-		smart_ptr<OOX::Vml::CShape> oShape;
+		OOX::Vml::CShape* pShape = NULL;
+		boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind;
+		
 		if (pVmlDrawing)
 		{
-			smart_ptr<OOX::WritingElement> oObjectElement = pVmlDrawing->FindVmlObject(sShapeId);
-			oShape = oObjectElement.smart_dynamic_cast<OOX::Vml::CShape>();
+			pFind = pVmlDrawing->m_mapShapes.find(sShapeId);
+
+			if (pFind != pVmlDrawing->m_mapShapes.end() && !pFind->second.bUsed)
+			{
+				pShape = dynamic_cast<OOX::Vml::CShape*>(pFind->second.pElement);
+			}
 		}
 		SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
 		eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
@@ -4522,19 +4532,18 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 			oCellAnchor.reset(new OOX::Spreadsheet::CCellAnchor(eAnchorType));
 			oCellAnchor->m_bShapeOle= true;			
 		}
-		if ((oShape.IsInit()) && (OOX::et_v_shapetype != oShape->getType()))
+		if ((pShape) && (OOX::et_v_shapetype != pShape->getType()))
 		{
-			for(size_t j = 0; (oShape.IsInit()) && (j < oShape->m_arrItems.size()); ++j)
+			for(size_t j = 0; (pShape) && (j < pShape->m_arrItems.size()); ++j)
 			{
-				OOX::WritingElement* pChildElemShape = oShape->m_arrItems[j];
+				OOX::WritingElement* pChildElemShape = pShape->m_arrItems[j];
 				if (OOX::et_v_ClientData == pChildElemShape->getType())
 				{
 					OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pChildElemShape);
 
 					if (!bSetAnchor )
-					{
-						pClientData->toCellAnchor(oCellAnchor.GetPointer());
-						bSetAnchor = true;
+					{						
+						bSetAnchor = pClientData->toCellAnchor(oCellAnchor.GetPointer());
 					}
 					pClientData->toFormControlPr(pFormControlPr);
 				}
@@ -4551,6 +4560,8 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 		{
 			continue;
 		}
+		if (pShape)
+			pFind->second.bUsed = true;
 //-----------------------------------------------------------------------------------------------------
 		int nCurPos2 = m_oBcw.WriteItemStart(c_oSerControlTypes::Control);
 			int nCurPos3 = m_oBcw.WriteItemStart(c_oSerControlTypes::ControlAnchor);
@@ -4838,7 +4849,7 @@ void BinaryWorksheetTableWriter::WriteControlPr(OOX::Spreadsheet::CControlPr* pC
 
 void BinaryWorksheetTableWriter::WriteDrawings(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::Spreadsheet::CDrawing* pDrawing, OOX::CVmlDrawing *pVmlDrawing)
 {
-	for (size_t i = 0, length = pDrawing->m_arrItems.size(); i  < length ; ++i)
+	for (size_t i = 0; pDrawing && i < pDrawing->m_arrItems.size(); ++i)
 	{
 		OOX::Spreadsheet::CCellAnchor* pCellAnchor = pDrawing->m_arrItems[i];
 
@@ -4891,20 +4902,20 @@ void BinaryWorksheetTableWriter::WriteDrawings(const OOX::Spreadsheet::CWorkshee
 							//преобразуем ClientData в CellAnchor
 							OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pElemShape);
 							
-							OOX::Spreadsheet::CCellAnchor *pCellAnchor = NULL;
-							pClientData->toCellAnchor(pCellAnchor);
+							SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
+							eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
 
-							if (pCellAnchor)
+							OOX::Spreadsheet::CCellAnchor *pCellAnchor = new OOX::Spreadsheet::CCellAnchor(eAnchorType);
+							if (pClientData->toCellAnchor(pCellAnchor))
 							{
 								pCellAnchor->m_sVmlSpId.Init();
 								pCellAnchor->m_sVmlSpId->append(it->first);
 
 								int nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawing);
 								WriteDrawing(oWorksheet, pDrawing, pCellAnchor, pVmlDrawing, NULL);
-								m_oBcw.WriteItemEnd(nCurPos);
-								
-								delete pCellAnchor;
+								m_oBcw.WriteItemEnd(nCurPos);								
 							}
+							delete pCellAnchor;
 						}
 					}
 				}

@@ -826,6 +826,16 @@ namespace DocFileFormat
 						break;
 					}
 				}break;	
+			case ODRAW::textBooleanProperties:
+				{
+					ODRAW::TextBooleanProperties *props = dynamic_cast<ODRAW::TextBooleanProperties*>(iter.get());
+
+					if (props->fUsefFitShapeToText && props->fFitShapeToText)
+					{
+						appendStyleProperty(sTextboxStyle, L"mso-fit-shape-to-text", L"t");
+					}
+				}break;
+
 // Word Art
 			case ODRAW::gtextUNICODE:
 				{
@@ -1427,7 +1437,7 @@ namespace DocFileFormat
 					{
 						if (oBlip->btWin32 == Global::msoblipDIB)
 						{
-							std::wstring file_name = m_context->_doc->m_sTempFolder + L"tmp_image";
+							std::wstring file_name = m_context->_doc->m_sTempFolder + FILE_SEPARATOR_STR + L"tmp_image";
 
 							oBlip->btWin32 = ImageHelper::SaveImageToFileFromDIB(bitBlip->m_pvBits, bitBlip->pvBitsSize, file_name);
 							
@@ -1681,7 +1691,19 @@ namespace DocFileFormat
 				return L"margin";
 		}
 	}
-
+	std::wstring VMLShapeMapping::mapWrapText(int val)
+	{
+		switch (val)
+		{
+		case 0:	return L"square";
+		//case 1:	return L"ByPoints";	
+		case 2:	return L"none";
+		//case 3:	return L"TopBottom";
+		//case 3:	return L"Through";
+		default:
+			return L"square";
+		}
+	}
 	void VMLShapeMapping::AppendOptionsToStyle (std::wstring& oStyle, const std::vector<ODRAW::OfficeArtFOPTEPtr>& options, int zIndex) const
 	{
 		int nRelH = -1;
@@ -1697,7 +1719,11 @@ namespace DocFileFormat
 			const ODRAW::OfficeArtFOPTEPtr & iter = options[i];
 			switch (iter->opid)
 			{
-//	POSITIONING
+			case ODRAW::WrapText:
+			{
+				appendStyleProperty(oStyle, L"mso-wrap-style", mapWrapText(iter->op));
+			}break;
+		//	POSITIONING
 			case ODRAW::posh:
 				{
 					nPosH = iter->op;

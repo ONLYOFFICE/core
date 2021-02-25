@@ -82,6 +82,7 @@ public:
 	
     void set_layout_style_name (std::wstring name);
 	void set_display_name (std::wstring & name);
+	void set_class(const std::wstring &value);
 
 	office_element_ptr & get_root();
 	office_element_ptr & get_last_element();

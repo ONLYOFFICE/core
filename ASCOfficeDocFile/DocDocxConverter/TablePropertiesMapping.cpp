@@ -67,7 +67,7 @@ namespace DocFileFormat
         XMLTools::XMLAttribute	layoutType	( L"w:type", L"");
 		
 		bool bLayoutFixed = true;
-		layoutType.SetValue(L"fixed");
+		//layoutType.SetValue(L"fixed");  
 
 		_CP_OPT(short) tblIndent;
 		short gabHalf		= 0;

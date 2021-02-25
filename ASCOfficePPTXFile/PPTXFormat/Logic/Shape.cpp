@@ -619,7 +619,7 @@ namespace PPTX
 				lH = spPr.xfrm->extY.get_value_or(43200);
 			}
 
-			spPr.Geometry.ConvertToCustomVML(pWriter->m_pOOXToVMLRenderer, strPath, strTextRect, lW, lH);
+			spPr.Geometry.ConvertToCustomVML(pWriter->m_pOOXToVMLRenderer, strPath, strTextRect, lW, lH );
             
 			std::wstring strId		= L"shape "		+ std::to_wstring(pWriter->m_lObjectIdVML);
 			std::wstring strSpid	= L"_x0000_s"	+ std::to_wstring(pWriter->m_lObjectIdVML);
@@ -632,7 +632,7 @@ namespace PPTX
             std::wstring strStrokeNode;;
 
 			CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, false, bSignature);
-			CalculateLine(spPr, style, oTheme, oClrMap, strStrokeAttr, strStrokeNode, false, bSignature);
+			CalculateLine(spPr, style, oTheme, oClrMap, strStrokeAttr, strStrokeNode, false);
 
 			pWriter->StartNode(L"v:shape");
 

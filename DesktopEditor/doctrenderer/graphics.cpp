@@ -1125,8 +1125,7 @@ void CGraphics::DrawFootnoteRect(double x, double y, double w, double h)
 }
 std::string CGraphics::toDataURL(std::wstring type)
 {
-    size_t nSl = type.find(L'/');
-    std::wstring sPath = m_sApplicationImagesDirectory + L"/img."+ type.substr(nSl + 1);
+    std::wstring sPath = NSFile::CFileBinary::CreateTempFileWithUniqueName(m_sApplicationImagesDirectory, L"img");
     #ifdef _DEBUG
     std::wcout << "toDataURL " << sPath << std::endl;
     #endif
@@ -1141,6 +1140,7 @@ std::string CGraphics::toDataURL(std::wstring type)
         oReader.ReadFile(pFileContent, dwFileSize, dwReaded);
         oReader.CloseFile();
 
+        NSFile::CFileBinary::Remove(sPath);
         int nEncodeLen = NSBase64::Base64EncodeGetRequiredLength(dwFileSize);
         BYTE* pImageData = new BYTE[nEncodeLen];
         if (TRUE == NSBase64::Base64Encode(pFileContent, dwFileSize, pImageData, &nEncodeLen))

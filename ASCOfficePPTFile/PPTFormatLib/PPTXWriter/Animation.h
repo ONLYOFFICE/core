@@ -165,7 +165,7 @@ private:
 
     // For old animation.
     void InitTimingTags(PPTX::Logic::Timing &oTiming); // Initialize non-exist (in 95-97 format) struct
-    void FillTimingForOld(PPTX::Logic::Timing &oTiming);
+    void FillOldAnim(SOldAnimation& oldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase);
 
 private:
     unsigned m_cTnId;

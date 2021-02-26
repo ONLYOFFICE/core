@@ -1298,6 +1298,7 @@ void Animation::InitTimingTags(PPTX::Logic::Timing &oTiming)
     par1->cTn.childTnLst = new PPTX::Logic::ChildTnLst;
     par1->cTn.childTnLst->list.push_back(timeNodeBase);
     timeNodeBase.m_node = par1;
+
     oTiming.tnLst->list.push_back(timeNodeBase);
 
 }

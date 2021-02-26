@@ -1556,13 +1556,33 @@ namespace NExtractTools
 		}
 		return nRes;
 	}
+	// doct_bin -> html
+	_UINT32 doct_bin2html(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
+	{
+		_UINT32 nRes = 0;
+		NSDoctRenderer::DoctRendererFormat::FormatFile eToType = NSDoctRenderer::DoctRendererFormat::FormatFile::HTML;
+		std::wstring sFileFromDir = NSDirectory::GetFolderPath(sFrom);
+		std::wstring sImagesDirectory = sFileFromDir + FILE_SEPARATOR_STR + L"media";
+		std::wstring sHtmlFile        = sFileFromDir + FILE_SEPARATOR_STR + L"index.html";
+		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
+		std::wstring sXml = getDoctXml(eFromType, eToType, sFileFromDir, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
+		std::wstring sResult;
+		oDoctRenderer.Execute(sXml, sResult);
+		if (sResult.find(L"error") != std::wstring::npos)
+		{
+			std::wcerr << L"DoctRenderer:" << sResult << std::endl;
+			nRes = AVS_FILEUTILS_ERROR_CONVERT;
+		}
+		else if (!NSFile::CFileBinary::Copy(sHtmlFile, sTo))
+			nRes = AVS_FILEUTILS_ERROR_CONVERT;
+		return nRes;
+	}
 	// doct_bin -> html_zip
 	_UINT32 doct_bin2html_zip(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
 	{
 		_UINT32 nRes = 0;
 		NSDoctRenderer::DoctRendererFormat::FormatFile eToType = NSDoctRenderer::DoctRendererFormat::FormatFile::HTML;
 		std::wstring sFileFromDir = NSDirectory::GetFolderPath(sFrom);
-		std::wstring sFileToDir   = NSDirectory::GetFolderPath(sTo);
 		std::wstring sImagesDirectory = sFileFromDir + FILE_SEPARATOR_STR + L"media";
 		std::wstring sHtmlFile        = sFileFromDir + FILE_SEPARATOR_STR + L"index.html";
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
@@ -1576,15 +1596,8 @@ namespace NExtractTools
 		}
 		else
 		{
-			// Удаляем Editor.bin, иначе он попадёт в архив
-			NSFile::CFileBinary::Remove(sFileFromDir + FILE_SEPARATOR_STR + L"Editor.bin");
-			NSDirectory::DeleteDirectory(sImagesDirectory);
-			std::wstring sName = NSFile::GetFileName(sFrom);
-			size_t nDot = sName.rfind(L'.');
-			if(nDot != std::wstring::npos)
-				sName.erase(nDot);
 			COfficeUtils oZip;
-			if (S_FALSE == oZip.CompressFileOrDirectory(sFileFromDir, sFileToDir + FILE_SEPARATOR_STR + sName + L".zip"))
+			if (S_FALSE == oZip.CompressFileOrDirectory(sHtmlFile, sTo))
 				nRes = AVS_FILEUTILS_ERROR_CONVERT;
 		}
 		return nRes;
@@ -1633,7 +1646,6 @@ namespace NExtractTools
 			NSFile::CFileBinary::Remove(sPdfBinFile);
 		return nRes;
 	}
-
 	// doct_bin -> image
 	_UINT32 doct_bin2image(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
 	{
@@ -3386,6 +3398,7 @@ namespace NExtractTools
 		switch (nFormatTo)
 		{
 			// перечислить все "документные" форматы, которым нужна конвертация через doct
+			case AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML:
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER:
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_FB2:
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB:
@@ -3487,6 +3500,11 @@ namespace NExtractTools
 		{
 			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT;
 			nRes = doct_bin2fb(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
+		}
+		else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML == nFormatTo)
+		{
+			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT;
+			nRes = doct_bin2html(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
 		}
 		else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER == nFormatTo)
 		{

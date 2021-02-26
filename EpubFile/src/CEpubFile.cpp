@@ -196,13 +196,13 @@ void CEpubFile::ShowMap()
         std::wcout << oItem.m_sID << L" - " << m_mapRefs[oItem.m_sID].GetRef() << std::endl;
 }
 
-HRESULT CEpubFile::FromHtml(const std::wstring& sSrc, const std::wstring& sDstFile)
+HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sCoreFile, const std::wstring& sDstFile)
 {
     NSDirectory::CreateDirectory(m_sTempDir + L"/META-INF");
     NSDirectory::CreateDirectory(m_sTempDir + L"/OEBPS");
     // index.html
     std::wstring sIndexHtml;
-    NSFile::CFileBinary::ReadAllTextUtf8(sSrc + L"/doct_unpacked/index.html", sIndexHtml);
+    NSFile::CFileBinary::ReadAllTextUtf8(sHtmlFile, sIndexHtml);
 
     size_t nImage = sIndexHtml.find(L"data:image/png;base64, ");
     int nNumImage = 1;
@@ -279,7 +279,7 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sSrc, const std::wstring& sDstFi
         std::wstring sCoreXml;
         bool bWasIdentifier = false;
         XmlUtils::CXmlLiteReader oCoreReader;
-        if (NSFile::CFileBinary::ReadAllTextUtf8(sSrc + L"/docx_unpacked/docProps/core.xml", sCoreXml))
+        if (NSFile::CFileBinary::ReadAllTextUtf8(sCoreFile, sCoreXml))
         {
             oCoreReader.FromString(sCoreXml);
             oCoreReader.ReadNextNode();

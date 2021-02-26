@@ -1707,13 +1707,13 @@ std::wstring GenerateUUID()
     return sstream.str();
 }
 
-HRESULT CFb2File::FromHtml(const std::wstring& sSrc, const std::wstring& sDst)
+HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sCoreFile, const std::wstring& sDst)
 {
     NSStringUtils::CStringBuilder oDocument;
     oDocument.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><FictionBook xmlns=\"http://www.gribuser.ru/xml/fictionbook/2.0\" xmlns:l=\"http://www.w3.org/1999/xlink\"><description>");
     // description
     std::wstring sCoreXml;
-    if (NSFile::CFileBinary::ReadAllTextUtf8(sSrc + L"/docx_unpacked/docProps/core.xml", sCoreXml))
+    if (NSFile::CFileBinary::ReadAllTextUtf8(sCoreFile, sCoreXml))
     {
         // title-info
         oDocument.WriteString(L"<title-info>");
@@ -1761,7 +1761,7 @@ HRESULT CFb2File::FromHtml(const std::wstring& sSrc, const std::wstring& sDst)
     // body
     oDocument.WriteString(L"</description><body><section>");
     std::string sContent;
-    NSFile::CFileBinary::ReadAllTextUtf8A(sSrc + L"/doct_unpacked/index.html", sContent);;
+    NSFile::CFileBinary::ReadAllTextUtf8A(sHtmlFile, sContent);;
     XmlUtils::CXmlLiteReader oIndexHtml;
     std::vector<std::wstring> arrBinary;
     if (oIndexHtml.FromString(htmlToXhtml(sContent)))

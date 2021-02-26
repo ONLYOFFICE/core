@@ -1520,12 +1520,18 @@ namespace NExtractTools
 		}
 		else
 		{
-			CEpubFile oFile;
-			std::wstring sEpubTemp = sTemp + FILE_SEPARATOR_STR + L"tmp";
-			NSDirectory::CreateDirectory(sEpubTemp);
-			oFile.SetTempDirectory(sEpubTemp);
-			if (S_FALSE == oFile.FromHtml(sFileFromDir + FILE_SEPARATOR_STR + L"..", sTo))
-				nRes = AVS_FILEUTILS_ERROR_CONVERT;
+			std::wstring sDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
+			NSDirectory::CreateDirectory(sDocxDir);
+			nRes = doct_bin2docx_dir(sFrom, sTo, sDocxDir, false, sThemeDir, params);
+			if(SUCCEEDED_X2T(nRes))
+			{
+				CEpubFile oFile;
+				std::wstring sEpubTemp = sTemp + FILE_SEPARATOR_STR + L"tmp";
+				NSDirectory::CreateDirectory(sEpubTemp);
+				oFile.SetTempDirectory(sEpubTemp);
+				if (S_FALSE == oFile.FromHtml(sHtmlFile, sDocxDir + FILE_SEPARATOR_STR + L"docProps" + FILE_SEPARATOR_STR + L"core.xml", sTo))
+					nRes = AVS_FILEUTILS_ERROR_CONVERT;
+			}
 		}
 		return nRes;
 	}
@@ -1549,10 +1555,16 @@ namespace NExtractTools
 		}
 		else
 		{
-			CFb2File fb2File;
-			fb2File.SetTmpDirectory(sTemp);
-			if (S_FALSE == fb2File.FromHtml(sFileFromDir + FILE_SEPARATOR_STR + L"..", sTo))
-				nRes = AVS_FILEUTILS_ERROR_CONVERT;
+			std::wstring sDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
+			NSDirectory::CreateDirectory(sDocxDir);
+			nRes = doct_bin2docx_dir(sFrom, sTo, sDocxDir, false, sThemeDir, params);
+			if(SUCCEEDED_X2T(nRes))
+			{
+				CFb2File fb2File;
+				fb2File.SetTmpDirectory(sTemp);
+				if (S_FALSE == fb2File.FromHtml(sHtmlFile, sDocxDir + FILE_SEPARATOR_STR + L"docProps" + FILE_SEPARATOR_STR + L"core.xml", sTo))
+					nRes = AVS_FILEUTILS_ERROR_CONVERT;
+			}
 		}
 		return nRes;
 	}

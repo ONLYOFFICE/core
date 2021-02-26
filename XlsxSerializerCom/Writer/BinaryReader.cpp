@@ -4995,7 +4995,7 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 				oWriter.m_lObjectIdVML = m_pCurVmlDrawing->m_lObjectIdVML;
 
 				NSCommon::smart_ptr<PPTX::Logic::ClrMap> oClrMap;
-				oShape.toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap);
+				oShape.toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, NULL, false, true);
 
 				std::wstring strXml = oWriter.GetXmlString();
 

@@ -67,7 +67,6 @@ void Animation::Convert(PPTX::Logic::Timing &oTiming)
     } else if (!m_arrOldAnim.empty())
     {
         InitTimingTags(oTiming);
-        FillTimingForOld(oTiming);
     }
 
     return;
@@ -1240,10 +1239,87 @@ void Animation::FillCTn(
 
 void Animation::InitTimingTags(PPTX::Logic::Timing &oTiming)
 {
+    // p:bldLst
+    oTiming.bldLst = new PPTX::Logic::BldLst();
+    for (auto oldAnim : m_arrOldAnim)
+    {
+        PPTX::Logic::BuildNodeBase oBuildNodeBase;
+        PPTX::Logic::BldP *pBldP = new PPTX::Logic::BldP();
+        pBldP->spid = std::to_wstring(oldAnim.shapeId);
+        pBldP->grpId = false;
+        pBldP->animBg = true;
+
+        oBuildNodeBase.m_node = pBldP;
+        oTiming.bldLst->list.push_back(oBuildNodeBase);
+    }
+
+    // p:tnLst
+    oTiming.tnLst = new PPTX::Logic::TnLst();
+
+    auto par1 = new PPTX::Logic::Par;
+    par1->cTn.id = m_cTnId++;
+    par1->cTn.dur = L"indefinite";
+    par1->cTn.restart = L"never";
+    par1->cTn.nodeType = L"tmRoot";
+
+    auto seq2 = new PPTX::Logic::Seq;
+    seq2->cTn.id = m_cTnId++;
+    seq2->cTn.dur = L"indefinite";
+    seq2->cTn.nodeType = L"mainSeq";
+    seq2->concurrent = L"1";
+    seq2->nextAc = L"seek";
+    seq2->cTn.childTnLst = new PPTX::Logic::ChildTnLst;
+
+    for (auto oldAnim : m_arrOldAnim)
+    {
+        PPTX::Logic::TimeNodeBase child;
+        FillOldAnim(oldAnim, child);
+        seq2->cTn.childTnLst->list.push_back(child);
+    }
+
+    PPTX::Logic::Cond cond;
+    cond.tgtEl = new PPTX::Logic::TgtEl;
+    if (m_arrOldAnim[0].anim->m_AnimationAtom.m_fAutomatic)
+        cond.delay = L"0";
+
+    seq2->nextCondLst = new PPTX::Logic::CondLst;
+    seq2->nextCondLst->node_name = L"nextCondLst";
+    cond.evt = L"onNext";
+    seq2->nextCondLst->list.push_back(cond);
+
+    seq2->prevCondLst = new PPTX::Logic::CondLst;
+    seq2->prevCondLst->node_name = L"prevCondLst";
+    cond.evt = L"onPrev";
+    seq2->prevCondLst->list.push_back(cond);
+
+    // push back
+    PPTX::Logic::TimeNodeBase timeNodeBase;
+    timeNodeBase.m_node = seq2;
+    par1->cTn.childTnLst = new PPTX::Logic::ChildTnLst;
+    par1->cTn.childTnLst->list.push_back(timeNodeBase);
+    timeNodeBase.m_node = par1;
+    oTiming.tnLst->list.push_back(timeNodeBase);
 
 }
 
-void Animation::FillTimingForOld(PPTX::Logic::Timing &oTiming)
+void Animation::FillOldAnim(SOldAnimation& oldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase)
 {
+    auto par = new PPTX::Logic::Par;
+    par->cTn.id = m_cTnId++;
+    par->cTn.fill = L"hold";
+    par->cTn.nodeType = L"clickPar";
 
+    // p:stCondLst
+    par->cTn.stCondLst = new PPTX::Logic::CondLst;
+    PPTX::Logic::Cond cond;
+    cond.delay = L"indefinite";
+    par->cTn.stCondLst->list.push_back(cond);
+    if (oldAnim.anim->m_AnimationAtom.m_fAutomatic)
+    {
+//        cond.evt = o
+        par->cTn.stCondLst->list.push_back(cond);
+    }
+
+    // TODO
+    oTimeNodeBase.m_node = par;
 }

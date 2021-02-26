@@ -74,13 +74,27 @@ core_android {
     DEFINES += USE_FILE32API
     SOURCES += ./FileDownloader/FileDownloader_curl.cpp
 
-    CONFIG += use_external_download
 
     use_external_download {
         DEFINES += USE_EXTERNAL_DOWNLOAD
     } else {
         include(../Common/3dParty/curl/curl.pri)
     }
+
+    DEFINES += USE_IXWEBSOCKET
+
+    HEADERS += \
+        ./WebSocket/websocket.h \
+        ./WebSocket/listener.h \
+        ./WebSocket/ixwebsocket_internal.h \
+        ./WebSocket/managerWebSocket.h \
+
+
+    SOURCES += \
+        ./WebSocket/ixwebsocket_internal.cpp \
+        ./WebSocket/managerWebSocket.cpp \
+
+    include(../Common/3dParty/ixwebsocket/ixwebsocket.pri)
 
     DEFINES += NOT_USE_PTHREAD_CANCEL
 }

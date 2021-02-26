@@ -138,6 +138,9 @@ private:
     void FillCBhvr(
             CRecordTimeBehaviorContainer *pBhvr,
             PPTX::Logic::CBhvr &oBhvr);
+    void FillCBhvr(
+            int dur, UINT spid, std::wstring attrname, int delay,
+            PPTX::Logic::CBhvr &oBhvr);
     void FillCond(
             PPT_FORMAT::CRecordTimeConditionContainer *oldCond,
             PPTX::Logic::Cond &cond);

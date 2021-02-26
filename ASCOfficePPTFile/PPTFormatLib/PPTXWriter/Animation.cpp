@@ -643,6 +643,31 @@ void Animation::FillCBhvr(
         }
     }
 }
+void Animation::FillCBhvr(
+        int dur, UINT spid, std::wstring attrname, int delay,
+        PPTX::Logic::CBhvr &oBhvr)
+{
+    oBhvr.cTn.id = m_cTnId++;
+    oBhvr.cTn.fill = L"hold";
+    oBhvr.cTn.dur = std::to_wstring(dur);
+    if (delay > -1)
+    {
+       oBhvr.cTn.stCondLst = new PPTX::Logic::CondLst;
+       PPTX::Logic::Cond cond;
+       cond.delay = std::to_wstring(delay);
+    }
+
+    oBhvr.tgtEl.spTgt = new PPTX::Logic::SpTgt;
+    oBhvr.tgtEl.spTgt->spid = std::to_wstring(spid);
+
+    if (!attrname.empty())
+    {
+        oBhvr.attrNameLst = new PPTX::Logic::AttrNameLst;
+        PPTX::Logic::AttrName attrName;
+        attrName.text = attrname;
+        oBhvr.attrNameLst->list.push_back(attrName);
+    }
+}
 void Animation::FillCmd(
         CRecordExtTimeNodeContainer *pETNC,
         PPTX::Logic::Cmd &oCmd)
@@ -1305,22 +1330,33 @@ void Animation::InitTimingTags(PPTX::Logic::Timing &oTiming)
 
 void Animation::FillOldAnim(SOldAnimation& oldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase)
 {
-    auto par = new PPTX::Logic::Par;
-    par->cTn.id = m_cTnId++;
-    par->cTn.fill = L"hold";
-    par->cTn.nodeType = L"clickPar";
+    auto par1 = new PPTX::Logic::Par;
+    par1->cTn.id = m_cTnId++;
+    par1->cTn.fill = L"hold";
+    par1->cTn.nodeType = L"clickPar";
 
     // p:stCondLst
-    par->cTn.stCondLst = new PPTX::Logic::CondLst;
+    par1->cTn.stCondLst = new PPTX::Logic::CondLst;
     PPTX::Logic::Cond cond;
     cond.delay = L"indefinite";
-    par->cTn.stCondLst->list.push_back(cond);
-    if (oldAnim.anim->m_AnimationAtom.m_fAutomatic)
-    {
-//        cond.evt = o
-        par->cTn.stCondLst->list.push_back(cond);
-    }
+    par1->cTn.stCondLst->list.push_back(cond);
 
-    // TODO
-    oTimeNodeBase.m_node = par;
+    // anim
+    PPTX::Logic::TimeNodeBase animTimeNode;
+    auto animSet = new PPTX::Logic::Set;
+//    animSet->cBhvr.cTn
+
+    animTimeNode.m_node = animSet;
+    // push_back(animTimeNode);
+
+    auto anim1 = new PPTX::Logic::Anim;
+
+    animTimeNode.m_node = anim1;
+    // push_back(animTimeNode);
+    auto anim2 = new PPTX::Logic::Anim;
+
+    animTimeNode.m_node = anim2;
+    // push_back(animTimeNode);
+
+    oTimeNodeBase.m_node = par1;
 }

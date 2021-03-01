@@ -32,7 +32,7 @@
 #pragma once
 
 #include "ImageManager.h"
-#include "TimingConverter.h"
+#include "ridmanager.h"
 
 
 class CStylesWriter;
@@ -82,7 +82,7 @@ namespace PPT_FORMAT
 		void WriteLayout		(CLayoutPtr pLayout, int nIndexLayout, int nStartLayout, int nIndexTheme);
 		void WriteSlide			(int nIndexSlide);
 		void WriteNotes			(int nIndexNotes);
-        void WriteTiming        (CStringWriter& oWriter, PPTX::Logic::Timing &oTiming); // TODO write spec class for timing
+        void WriteTiming        (CStringWriter& oWriter, CRelsGenerator &oRels, int nIndexSlide); // TODO write spec class for timing
 		
         void WriteTransition	(CStringWriter& oWriter, CSlideShowInfo& oSSInfo);
 		void WriteColorScheme	(CStringWriter& oWriter, const std::wstring & name, const std::vector<CColor> & colors, bool extra = false);

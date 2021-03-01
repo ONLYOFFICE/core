@@ -1122,19 +1122,13 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
     WriteTransition(oWriter, pSlide->m_oSlideShow);
 
     // TODO write new method and class for timing
-
-    auto slide_iter = m_pUserInfo->m_mapSlides.find(m_pUserInfo->m_arrSlidesOrder[nIndexSlide]);
-    CRecordSlideProgTagsContainer& progTag = *(slide_iter->second->m_pSlideProgTagsContainer);
-    CRecordPP10SlideBinaryTagExtension* pPP10SlideBinaryTag = progTag.getPP10SlideBinaryTagExtension();
-
-    if (pPP10SlideBinaryTag)
-    {
-        PPT_FORMAT::ConvertPP10SlideBinaryTagExtensionToTiming(*pPP10SlideBinaryTag, pSlide->m_oTiming);
-        WriteTiming(oWriter, pSlide->m_oTiming);
-    }
+   WriteTiming(oWriter, oRels, nIndexSlide);
 
 
     oWriter.WriteString(std::wstring(L"</p:sld>"));
+
+
+
 
     oRels.CloseRels();
 
@@ -1293,7 +1287,8 @@ void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CSlideShow
         }break;
     case 23:
         {
-            type = L"p:alphaFade";
+            type = L"p:fade";
+            // p:alphaFade
         }break;
     case 26:
         {
@@ -1416,6 +1411,7 @@ void PPT_FORMAT::CPPTXWriter::WriteNotes(int nIndexNotes)
 
 void PPT_FORMAT::CPPTXWriter::WriteSlides()
 {
+    m_oManager.WriteAudioCollection(m_pUserInfo->m_oExMedia.m_arAudioCollection);
     for (size_t nIndexS = 0; nIndexS < m_pDocument->m_arSlides.size(); ++nIndexS)
     {
         WriteSlide((int)nIndexS);
@@ -1430,8 +1426,53 @@ void PPT_FORMAT::CPPTXWriter::WriteNotes()
 }
 
 
-void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, PPTX::Logic::Timing &oTiming)
+void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, CRelsGenerator &oRels, int nIndexSlide)
 {
+    PPTX::Logic::Timing oTiming;
+
+    auto slide_iter = m_pUserInfo->m_mapSlides.find(m_pUserInfo->m_arrSlidesOrder[nIndexSlide]);
+    // This part for new animation
+    CRecordSlideProgTagsContainer* progTag = slide_iter->second->m_pSlideProgTagsContainer;
+    CRecordPP10SlideBinaryTagExtension* pPP10SlideBinaryTag = progTag ? progTag->getPP10SlideBinaryTagExtension() : NULL;
+    // This part for old animation
+    std::vector<CRecordShapeContainer* > arrShapeCont;
+    slide_iter->second->GetRecordsByType(&arrShapeCont, true);
+    std::vector<SOldAnimation> arrOldAnim;
+    for (auto ShapeCont : arrShapeCont)
+    {
+        SOldAnimation oldAnim;
+        std::vector<CRecordShape* > shape;
+        ShapeCont->GetRecordsByType(&shape, true);
+        std::vector<CRecordAnimationInfoContainer* > anim;
+        ShapeCont->GetRecordsByType(&anim, true);
+        if (!anim.empty() && !shape.empty())
+        {
+            oldAnim.shapeId = shape[0]->m_nID;
+            oldAnim.anim = anim[0];
+            arrOldAnim.push_back(oldAnim);
+        }
+    }
+
+    if (!pPP10SlideBinaryTag && arrOldAnim.empty())
+        return;
+
+    Animation animation(pPP10SlideBinaryTag, arrOldAnim);
+    std::vector<CRecordSoundCollectionContainer*> sound;
+    m_pUserInfo->m_oDocument.GetRecordsByType(&sound, false);
+    if (!sound.empty())
+    {
+        animation.m_pSoundContainer = sound[0];
+    }
+
+    m_oManager.m_ridManager.setRIDfromAnimation(animation);
+    m_oManager.m_ridManager.setRID(oRels.getRId());
+    auto paths = m_oManager.m_ridManager.getPathesForSlideRels();
+    for (auto& path : paths)
+    {
+        oRels.WriteHyperlinkMedia(path, false, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
+    }
+
+    animation.Convert(oTiming);
     oWriter.WriteString(oTiming.toXML());
     //oWriter.WriteString(std::wstring(L"<p:timing><p:tnLst><p:par><p:cTn id=\"1\" dur=\"indefinite\" restart=\"never\" nodeType=\"tmRoot\" /></p:par></p:tnLst></p:timing>"));
 

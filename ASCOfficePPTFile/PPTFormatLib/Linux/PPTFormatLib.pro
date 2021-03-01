@@ -359,27 +359,8 @@ HEADERS += \
     ../Enums/_includer.h \
     ../Enums/enums.h \
     ../PPTFormatLib.h \
-    ../PPTXWriter/TimingConverter.h \
-    ../PPTXWriter/TimingConverter/Anim.h \
-    ../PPTXWriter/TimingConverter/AnimClr.h \
-    ../PPTXWriter/TimingConverter/AnimEffect.h \
-    ../PPTXWriter/TimingConverter/AnimMotion.h \
-    ../PPTXWriter/TimingConverter/AnimRot.h \
-    ../PPTXWriter/TimingConverter/AnimScale.h \
-    ../PPTXWriter/TimingConverter/Audio.h \
-    ../PPTXWriter/TimingConverter/BldLst.h \
-    ../PPTXWriter/TimingConverter/BldP.h \
-    ../PPTXWriter/TimingConverter/CBhvr.h \
-    ../PPTXWriter/TimingConverter/CTn.h \
-    ../PPTXWriter/TimingConverter/Cmd.h \
-    ../PPTXWriter/TimingConverter/Cond.h \
-    ../PPTXWriter/TimingConverter/Par.h \
-    ../PPTXWriter/TimingConverter/Seq.h \
-    ../PPTXWriter/TimingConverter/Set.h \
-    ../PPTXWriter/TimingConverter/TgtEl.h \
-    ../PPTXWriter/TimingConverter/TnChildren.h \
-    ../PPTXWriter/TimingConverter/TnLst.h \
-    ../PPTXWriter/TimingConverter/Video.h \
+    ../PPTXWriter/Animation.h \
+    ../PPTXWriter/ridmanager.h \
     ../Reader/ClassesAtom.h \
     ../Reader/CommonZLib.h \
     ../Reader/PPTDocumentInfo.h \
@@ -670,6 +651,7 @@ SOURCES += \
     ../../../ASCOfficePPTXFile/Editor/Drawing/Elements.cpp \
     ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.cpp \
     ../../../Common/3dParty/pole/pole.cpp \
-    ../PPTXWriter/TimingConverter.cpp \
+    ../PPTXWriter/Animation.cpp \
+    ../PPTXWriter/ridmanager.cpp \
     ../Records/Animations/TimeVariant.cpp
 

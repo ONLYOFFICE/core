@@ -55,12 +55,11 @@ public:
     {
         m_oHeader = oHeader;
 
-        BYTE flags = StreamUtils::ReadBYTE(pStream);
+        _UINT32 flags = StreamUtils::ReadLONG(pStream);
 
         m_fTypePropertyUsed     =	( 0x01 == ( 0x01 & (flags) ) );
         m_fCommandPropertyUsed  =	( 0x02 == ( 0x02 & (flags) ) );
 
-        StreamUtils::StreamSkip(28, pStream);
 
         m_eCommandBehaviorType  = (TimeCommandBehaviorTypeEnum)
                                     StreamUtils::ReadLONG(pStream);

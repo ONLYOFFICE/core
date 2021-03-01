@@ -142,7 +142,7 @@ namespace OOX
 			pWriter->WriteBYTE(type);
             pWriter->WriteStringW(ToString());
 		}
-	private:
+        private:
 		unsigned int	m_id;
 		std::wstring	m_sId;
 		mutable bool	bNumber;

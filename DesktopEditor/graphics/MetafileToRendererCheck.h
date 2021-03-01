@@ -61,7 +61,7 @@ namespace NSOnlineOfficeBinToPdf
 	{
 	public:
 		int PagesCount;
-		CArray<CMetafilePageInfo> arSizes;
+        std::vector<CMetafilePageInfo> arSizes;
 
 	public:
 		CMetafilePagesInfo()
@@ -73,7 +73,7 @@ namespace NSOnlineOfficeBinToPdf
 		inline void AddPage()
 		{
 			++PagesCount;
-			arSizes.Add();
+            arSizes.push_back(CMetafilePageInfo());
 		}
 
         void CheckBuffer(BYTE* pBuffer, LONG lBufferLen);

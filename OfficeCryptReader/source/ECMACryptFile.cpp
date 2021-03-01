@@ -648,18 +648,18 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 	
 	std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvMethodEncrypt);
 
-	if (sApplication == L"Weak")
-	{
-		cryptData.bAgile			= false;
-		cryptData.cipherAlgorithm	= CRYPT_METHOD::DES_ECB;
-		cryptData.hashAlgorithm		= CRYPT_METHOD::SHA1;
-		cryptData.keySize			= 0x08;
-		cryptData.hashSize			= 0x14;
-		cryptData.blockSize			= 0x10;
-		cryptData.saltSize			= 0x10;
-		cryptData.spinCount			= 50000;
-	}
-	else
+	//if (sApplication == L"Weak")
+	//{
+	//	cryptData.bAgile			= false;
+	//	cryptData.cipherAlgorithm	= CRYPT_METHOD::DES_ECB;
+	//	cryptData.hashAlgorithm		= CRYPT_METHOD::SHA1;
+	//	cryptData.keySize			= 0x08;
+	//	cryptData.hashSize			= 0x14;
+	//	cryptData.blockSize			= 0x10;
+	//	cryptData.saltSize			= 0x10;
+	//	cryptData.spinCount			= 50000;
+	//}
+	//else
 	{
 		cryptData.bAgile			= true;
 		cryptData.cipherAlgorithm	= CRYPT_METHOD::AES_CBC;

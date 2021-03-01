@@ -4,7 +4,21 @@
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../HtmlFile2/htmlfile2.h"
 #include "src/CBookInfo.h"
+
 #include <iostream>
+#include <string>
+
+// Заменяет в строке s все символы s1 на s2
+static void replace_all(std::wstring& s, const std::wstring& s1, const std::wstring& s2)
+{
+    size_t pos = s.find(s1);
+    size_t l = s2.length();
+    while(pos != std::string::npos)
+    {
+        s.replace(pos, s1.length(), s2);
+        pos = s.find(s1, pos + l);
+    }
+}
 
 CEpubFile::CEpubFile()
 {
@@ -38,29 +52,24 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     if (oOfficeUtils.ExtractToDirectory(sInputFile, m_sTempDir.c_str(), password, 1) != S_OK)
         return S_FALSE;
 
-    XmlUtils::CXmlLiteReader oXmlLiteReader;
-
-    bool bThereIsAFile = false;
-    std::wstring sOpfFilePath = m_sTempDir + L"/content.opf";
-
-    if (oXmlLiteReader.FromFile(sOpfFilePath))
-        bThereIsAFile = true;
-
-    if (!bThereIsAFile)
+    std::wstring sFileContent;
+    std::wstring sContent;
+    if(!NSFile::CFileBinary::ReadAllTextUtf8(m_sTempDir + L"/container.xml", sFileContent))
+        return S_FALSE;
+    size_t nContent = sFileContent.find(L"full-path");
+    if(nContent != std::wstring::npos)
     {
-        const std::vector<std::wstring>& arTempFiles = NSDirectory::GetFiles(m_sTempDir);
-        for (const std::wstring& sFile : arTempFiles)
-            if (NSFile::GetFileExtention(sFile) == L"opf")
-            {
-                sOpfFilePath = sFile;
-                break;
-            }
-
-        if (sOpfFilePath.empty())
-            return S_FALSE;
+        nContent += 11;
+        sContent = sFileContent.substr(nContent, sFileContent.find(L'\"', nContent) - nContent);
+        size_t posLastSlash = sContent.rfind(L'/');
+        if (posLastSlash != std::wstring::npos)
+            sContent = sContent.substr(posLastSlash + 1);
     }
+    sContent = m_sTempDir + (sContent.empty() ? L"/content.opf" : L'/' + sContent);
 
-    if (oXmlLiteReader.FromFile(sOpfFilePath))
+
+    XmlUtils::CXmlLiteReader oXmlLiteReader;
+    if (oXmlLiteReader.FromFile(sContent))
     {
         oXmlLiteReader.ReadNextNode();
         int nParentDepth = oXmlLiteReader.GetDepth();
@@ -106,6 +115,17 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     else
         return S_FALSE;
 
+    /*
+    if (!oXmlLiteReader.FromFile(m_sTempDir + L"/toc.ncx"))
+        return S_FALSE;
+
+    oXmlLiteReader.ReadNextNode();
+    m_oToc.ReadToc(oXmlLiteReader);
+//        #ifdef _DEBUG
+//            m_oToc.ShowToc();
+//        #endif
+    */
+
     CHtmlFile2 oFile;
     CHtmlParams oFileParams;
 
@@ -122,7 +142,11 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
 
     std::vector<std::wstring> arFiles;
     for (const CBookContentItem& oContent : m_arContents)
-        arFiles.push_back(m_sTempDir + L"/" + m_mapRefs[oContent.m_sID].GetRef());
+    {
+        std::wstring sFile = m_mapRefs[oContent.m_sID].GetRef();
+        replace_all(sFile, L"%20", L" ");
+        arFiles.push_back(m_sTempDir + L"/" + sFile);
+    }
 
 #ifdef _DEBUG
     std::wcout << L"---The conversion process from Epub to Docx...---" << std::endl;

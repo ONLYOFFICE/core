@@ -187,21 +187,21 @@ bool OoxConverter::encrypt_file (const std::wstring &password, const std::wstrin
 
 	std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvMethodEncrypt);
 
-	if (sApplication == L"Weak")
-	{
-//-----------------------
-//blowfish
-		cryptData.cipherAlgorithm		= CRYPT_METHOD::Blowfish_CFB;
-		cryptData.start_hashAlgorithm	= CRYPT_METHOD::SHA1;
-		cryptData.start_hashSize		= 20;
-
-		cryptData.spinCount	= 1024;
-		cryptData.keySize	= 7;//16;
-
-		cryptData.checksum_size = 1024;
-		cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA1;
-	}
-	else
+//	if (sApplication == L"Weak")
+//	{
+////-----------------------
+////blowfish
+//		cryptData.cipherAlgorithm		= CRYPT_METHOD::Blowfish_CFB;
+//		cryptData.start_hashAlgorithm	= CRYPT_METHOD::SHA1;
+//		cryptData.start_hashSize		= 20;
+//
+//		cryptData.spinCount	= 1024;
+//		cryptData.keySize	= 7;//16;
+//
+//		cryptData.checksum_size = 1024;
+//		cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA1;
+//	}
+//	else
 	{
 //-----------------------
 //aes

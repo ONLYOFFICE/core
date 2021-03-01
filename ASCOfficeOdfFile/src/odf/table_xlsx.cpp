@@ -1329,7 +1329,8 @@ void table_content_validation::xlsx_convert(oox::xlsx_conversion_context & Conte
 			std::wstring content = Context.get_text_context().end_only_text();
 
 			Context.get_dataValidations_context().add_error_msg(name, error->table_title_.get_value_or(L""), content, 
-																error->table_display_ ? error->table_display_->get() : true);
+																error->table_display_ ? error->table_display_->get() : true,
+																error->table_message_type_.get_value_or(message_type::stop).get_type());
 		}
 		else if (content_[i]->get_type() == typeTableHelpMassage)
 		{

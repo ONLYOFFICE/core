@@ -1730,28 +1730,27 @@ namespace PdfReader
 			else // 1-D encoding
 			{
 				m_pCodingLine[m_nCurPosCL = 0] = 0;
-				while (1)
+				int nBlackPixels = 0;
+				while (m_pCodingLine[m_nCurPosCL] < m_nColumns)
 				{
 					nCode1 = 0;
-					do {
-						nCode1 += nCode3 = GetWhiteCode();
-					} while (nCode3 >= 64);
+
+					if (nBlackPixels)
+					{
+						do {
+							nCode1 += nCode3 = GetBlackCode();
+						} while (nCode3 >= 64);
+					}
+					else
+					{
+						do {
+							nCode1 += nCode3 = GetWhiteCode();
+						} while (nCode3 >= 64);
+					}
+
 					m_pCodingLine[m_nCurPosCL + 1] = m_pCodingLine[m_nCurPosCL] + nCode1;
 					++m_nCurPosCL;
-					if (m_pCodingLine[m_nCurPosCL] >= m_nColumns)
-					{
-						break;
-					}
-					nCode2 = 0;
-					do {
-						nCode2 += nCode3 = GetBlackCode();
-					} while (nCode3 >= 64);
-					m_pCodingLine[m_nCurPosCL + 1] = m_pCodingLine[m_nCurPosCL] + nCode2;
-					++m_nCurPosCL;
-					if (m_pCodingLine[m_nCurPosCL] >= m_nColumns)
-					{
-						break;
-					}
+					nBlackPixels ^= 1;
 				}
 			}
 
@@ -1960,6 +1959,9 @@ namespace PdfReader
 		if (m_bEndOfBlock)
 		{
 			nCode = LookBits(12);
+			if (EOF == nCode)
+				return 1;
+
 			if ((nCode >> 5) == 0)
 			{
 				pCCITTCode = &c_arrWhiteTable1[nCode];
@@ -1979,6 +1981,9 @@ namespace PdfReader
 			for (int nCount = 1; nCount <= 9; ++nCount)
 			{
 				nCode = LookBits(nCount);
+				if (EOF == nCode)
+					return 1;
+
 				if (nCount < 9)
 				{
 					nCode <<= 9 - nCount;
@@ -1993,6 +1998,9 @@ namespace PdfReader
 			for (int nCount = 11; nCount <= 12; ++nCount)
 			{
 				nCode = LookBits(nCount);
+				if (EOF == nCode)
+					return 1;
+
 				if (nCount < 12)
 				{
 					nCode <<= 12 - nCount;
@@ -2019,6 +2027,9 @@ namespace PdfReader
 		if (m_bEndOfBlock)
 		{
 			nCode = LookBits(13);
+			if (EOF == nCode)
+				return 1;
+
 			if ((nCode >> 7) == 0)
 			{
 				pCCITTCode = &c_arrBlackTable1[nCode];
@@ -2042,6 +2053,9 @@ namespace PdfReader
 			for (int nCount = 2; nCount <= 6; ++nCount)
 			{
 				nCode = LookBits(nCount);
+				if (EOF == nCode)
+					return 1;
+
 				if (nCount < 6)
 				{
 					nCode <<= 6 - nCount;
@@ -2056,6 +2070,9 @@ namespace PdfReader
 			for (int nCount = 7; nCount <= 12; ++nCount)
 			{
 				nCode = LookBits(nCount);
+				if (EOF == nCode)
+					return 1;
+
 				if (nCount < 12)
 				{
 					nCode <<= 12 - nCount;
@@ -2073,6 +2090,9 @@ namespace PdfReader
 			for (int nCount = 10; nCount <= 13; ++nCount)
 			{
 				nCode = LookBits(nCount);
+				if (EOF == nCode)
+					return 1;
+
 				if (nCount < 13)
 				{
 					nCode <<= 13 - nCount;

@@ -1479,5 +1479,8 @@
     </ClInclude>
     <ClInclude Include="..\ASCOfficeDrawingConverter.h" />
     <ClInclude Include="..\ASCOfficePPTXFile.h" />
+    <ClInclude Include="..\..\DesktopEditor\raster\exif.h">
+      <Filter>BinaryReaderWriter</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

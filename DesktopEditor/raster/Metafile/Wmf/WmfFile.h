@@ -760,7 +760,7 @@ namespace MetaFile
 			else
 			{
 				RegisterPoint(nX, nY);
-				RegisterPoint(nX + nW, nY + nH);
+				RegisterPoint(nX + nW, nY + nH);	
 			}
 		}
 		void UpdateOutputDC()

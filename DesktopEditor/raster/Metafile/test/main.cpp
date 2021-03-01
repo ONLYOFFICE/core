@@ -29,4 +29,32 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "stdafx.h"
+//#include <QCoreApplication>
+
+#include "../../../graphics/pro/Fonts.h"
+#include "../../../graphics/pro/Graphics.h"
+#include "../../../fontengine/ApplicationFontsWorker.h"
+
+#include "../../../raster/BgraFrame.h"
+#include "../../../common/Directory.h"
+
+int main(int argc, char *argv[])
+{
+    // Check system fonts
+    CApplicationFontsWorker oWorker;
+    oWorker.m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts_cache";
+    oWorker.m_bIsNeedThumbnails = false;
+
+    if (!NSDirectory::Exists(oWorker.m_sDirectory))
+        NSDirectory::CreateDirectory(oWorker.m_sDirectory);
+
+    NSFonts::IApplicationFonts* pFonts = oWorker.Check();
+
+    MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
+    pMetafile->LoadFromFile(L"PATH_TO_METAFILE");
+    pMetafile->ConvertToRaster(L"PATH_TO_RASTER", 4, 1000);
+    pMetafile->Release();
+
+    pFonts->Release();
+    return 0;
+}

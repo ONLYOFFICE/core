@@ -27,10 +27,11 @@ static std::string mhtTohtml(std::string& sFileContent);
 static void replace_all(std::string& s, const std::string& s1, const std::string& s2)
 {
     size_t pos = s.find(s1);
+    size_t l = s2.length();
     while(pos != std::string::npos)
     {
         s.replace(pos, s1.length(), s2);
-        pos = s.find(s1, pos + s2.length());
+        pos = s.find(s1, pos + l);
     }
 }
 

@@ -19,6 +19,12 @@ protected:
     int fail(const char * err, const char * par);
     int linenum;
 
+#ifdef HUNSPELL_WASM_MODULE
+    char* memory;
+    size_t index;
+    size_t size;
+#endif
+
 public:
     FileMgr(const char * filename, const char * key = NULL);
     ~FileMgr();

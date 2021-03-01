@@ -166,9 +166,10 @@ namespace BinXlsxRW{
 			sEmbedingPath	= sFilepathLeft + L"embeddings";
 			sDrawingsPath	= sFilepathLeft + L"drawings";
 		}
-        if		(pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX)	sContentTypePath = L"/word/charts/";
-		else if (pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_XLSX)	sContentTypePath = L"/xl/charts/";
-		else															sContentTypePath = L"/ppt/charts/";
+        if		(pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX ||
+				 pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)	sContentTypePath = L"/word/charts/";
+		else if (pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_XLSX)			sContentTypePath = L"/xl/charts/";
+		else																	sContentTypePath = L"/ppt/charts/";
 
 	//todo theme path
 		BinXlsxRW::SaveParams			oSaveParams(sDrawingsPath, sThemePath, m_pExternalDrawingConverter->GetContentTypes());

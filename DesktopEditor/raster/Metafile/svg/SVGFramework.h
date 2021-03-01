@@ -567,7 +567,7 @@ public:
             return 0;
         return std::stod(bNeedZero ? L'0' + sVal : (bNeedMZero ? L"-0" + sVal.substr(1) : sVal));
     }
-    static bool DoubleValues(const std::wstring& SourceW, CArray<double>& Values)
+    static bool DoubleValues(const std::wstring& SourceW, std::vector<double>& Values)
     {
         std::wstring number	= L"";
         size_t length = SourceW.length();
@@ -586,7 +586,7 @@ public:
                     }
                 }
                 if (!number.empty())
-                    Values.Add(std::stod(number.front() == L'.' ? L'0' + number : number));
+                    Values.push_back(std::stod(number.front() == L'.' ? L'0' + number : number));
                 number = L"";
             }
 
@@ -608,15 +608,15 @@ public:
                 }
                 else if(number.front() == L'.')
                     bNeedZero = true;
-                Values.Add(std::stod(bNeedZero ? L'0' + number : (bNeedMZero ? L"-0" + number.substr(1) : number)));
+                Values.push_back(std::stod(bNeedZero ? L'0' + number : (bNeedMZero ? L"-0" + number.substr(1) : number)));
             }
             number = L"";
         }
 
         if (!number.empty())
-            Values.Add(std::stod(number.front() == L'.' ? L'0' + number : number));
+            Values.push_back(std::stod(number.front() == L'.' ? L'0' + number : number));
 
-        return (0 != Values.GetSize());
+        return (0 != Values.size());
     }
 
     static inline std::wstring RemoveSymbol(std::wstring& src, wchar_t symbol)
@@ -772,7 +772,7 @@ public:
     {
         AddArc ( fX, fY, fWidth, fHeight, -fStartAngle, -fSweepAngle );
     }
-    inline const CArray<CubicBezier>& GetCurves() const
+    inline const std::vector<CubicBezier>& GetCurves() const
     {
         return m_arrCurves;
     }
@@ -910,7 +910,7 @@ private:
         if ( !bClockDirection )
         {
             CubicBezier	oBezier ( fCX1, fCY1, fCX2, fCY2, fX2, fY2 );
-            m_arrCurves.Add ( oBezier );
+            m_arrCurves.push_back ( oBezier );
 
             *pfXCur = fX2;
             *pfYCur = fY2;
@@ -918,7 +918,7 @@ private:
         else
         {
             CubicBezier	oBezier ( fCX1, fCY1, fCX2, fCY2, fX2, fY2 );
-            m_arrCurves.Add ( oBezier );
+            m_arrCurves.push_back ( oBezier );
 
             *pfXCur = fX1;
             *pfYCur = fY1;
@@ -942,7 +942,7 @@ private:
 
 private:
 
-    CArray<CubicBezier> m_arrCurves;
+    std::vector<CubicBezier> m_arrCurves;
 };
 }
 
@@ -1099,12 +1099,12 @@ public:
             }
         }
 
-        m_colors.Add(color);
+        m_colors.push_back(color);
         return true;
     }
     inline bool Add(const StopColor& color)
     {
-        m_colors.Add(color);
+        m_colors.push_back(color);
         return true;
     }
 
@@ -1115,11 +1115,11 @@ public:
     }
     inline long Count()	const
     {
-        return (long)m_colors.GetCount();
+        return (long)m_colors.size();
     }
 
 private:
-    CArray<StopColor> m_colors;
+    std::vector<StopColor> m_colors;
 };
 }
 
@@ -1144,10 +1144,10 @@ public:
     }
     bool FromString(const std::wstring& Str)
     {
-        CArray<double> Values;
+        std::vector<double> Values;
         if (StrUtils::DoubleValues(Str, Values))
         {
-            if (4 == Values.GetSize())
+            if (4 == Values.size())
             {
                 m_nX		=	static_cast<int>(Values[0]);
                 m_nY		=	static_cast<int>(Values[1]);
@@ -1872,9 +1872,9 @@ public:
 
     inline bool Push(const Style& oStyle, bool combine = true)
     {
-        if ((0 == m_styles.GetCount()) || (false == combine))
+        if ((0 == m_styles.size()) || (false == combine))
         {
-            m_styles.Add (oStyle);
+            m_styles.push_back(oStyle);
             return true;
         }
 
@@ -1882,19 +1882,19 @@ public:
         {
             Style oStyleTo = oStyle;
             oStyleTo.Combine(GetTop());
-            m_styles.Add(oStyleTo);
+            m_styles.push_back(oStyleTo);
 
             return true;
         }
 
-        m_styles.Add(oStyle);
+        m_styles.push_back(oStyle);
         return true;
     }
     inline bool Pop()
     {
-        if (m_styles.GetCount())
+        if (m_styles.size())
         {
-            m_styles.RemoveAt(m_styles.GetCount() - 1);
+            m_styles.pop_back();
             return true;
         }
 
@@ -1904,15 +1904,15 @@ public:
     {
         Style oStyle;
 
-        if (m_styles.GetCount())
-            oStyle = m_styles[m_styles.GetCount() - 1];
+        if (m_styles.size())
+            oStyle = m_styles[m_styles.size() - 1];
 
         return oStyle;
     }
 
 private:
 
-    CArray<Style> m_styles;
+    std::vector<Style> m_styles;
 };
 class FontStyle
 {
@@ -2183,7 +2183,7 @@ public:
                 style.SetStyle(src.substr(left + 1, src.length() - left), true, us, model, colors);
 
                 ReadSelList(selector, ',');
-                for (int i = 0; i < m_selectors.GetCount(); ++i)
+                for (size_t i = 0; i < m_selectors.size(); ++i)
                 {
                     selector = m_selectors[i];
                     if ('.' == selector.c_str()[0])
@@ -2253,7 +2253,7 @@ private:
     }
     inline void ReadSelList(const std::wstring& src, wchar_t splitter)
     {
-        m_selectors.RemoveAll();
+        m_selectors.clear();
 
         std::wstring selector;
 
@@ -2269,7 +2269,7 @@ private:
                     {
                         selector = src.substr(begin, src.length() - begin);
                         if (!selector.empty())
-                            m_selectors.Add(selector);
+                            m_selectors.push_back(selector);
                     }
 
                     break;
@@ -2277,7 +2277,7 @@ private:
 
                 selector = src.substr(begin, symbol);
                 if (selector.length())
-                    m_selectors.Add(selector);
+                    m_selectors.push_back(selector);
 
                 symbol++;
                 begin = symbol;
@@ -2290,7 +2290,7 @@ private:
 
     std::map<std::wstring, Style>	m_classStyles;					//	селекторы классов
     Style							m_typeStyles[ENodesCount];		//	селекторы элементов
-    CArray<std::wstring>			m_selectors;
+    std::vector<std::wstring>		m_selectors;
 
     // TODO: остальные типа селекторов
 };
@@ -2456,12 +2456,12 @@ private:
     }
     inline bool FromString(const std::wstring& sTransforms, UnitSystem& us)
     {
-        CArray<std::wstring> arrMatrix;
+        std::vector<std::wstring> arrMatrix;
         if (GetTranforms(sTransforms, arrMatrix))
         {
             Matrix matrix;
 
-            for (int i = 0; i < arrMatrix.GetSize(); ++i)
+            for (size_t i = 0; i < arrMatrix.size(); ++i)
                 matrix *= Matrix::ReadMatrix(arrMatrix[i], us);
 
             *this = matrix;
@@ -2491,10 +2491,10 @@ private:
         if (sMat.empty())
             return Matrix();
 
-        CArray<double> mat;
+        std::vector<double> mat;
         if (StrUtils::DoubleValues(sMat, mat))
         {
-            int count = mat.GetSize();
+            size_t count = mat.size();
             if (L"matrix" == matType)
             {
                 Matrix oTransform;
@@ -2567,17 +2567,17 @@ private:
 
         return Matrix();
     }
-    inline static bool GetTranforms(const std::wstring& strMat, CArray<std::wstring>& refTransforms)
+    inline static bool GetTranforms(const std::wstring& strMat, std::vector<std::wstring>& refTransforms)
     {
         std::wstring::size_type index = 0;
         while (std::wstring::npos != index)
         {
             std::wstring sToken = StringHelpers::Tokenize(strMat, L")", index);
             if (!sToken.empty())
-                refTransforms.Add(sToken);
+                refTransforms.push_back(sToken);
         }
 
-        return (0 != refTransforms.GetSize());
+        return (0 != refTransforms.size());
     }
 
 private:
@@ -2594,9 +2594,9 @@ public:
 
     inline bool Push(const Matrix& transform, bool combine = true)	//	каждая последующая трансформация применяется к вершине стэка
     {
-        if ((0 == m_transforms.GetCount()) || (false == combine))
+        if ((0 == m_transforms.size()) || (false == combine))
         {
-            m_transforms.Add(transform);
+            m_transforms.push_back(transform);
             return true;
         }
 
@@ -2605,18 +2605,18 @@ public:
             Matrix top = GetTop ();
             top *= transform;
 
-            m_transforms.Add(top);
+            m_transforms.push_back(top);
             return true;
         }
 
-        m_transforms.Add(transform);
+        m_transforms.push_back(transform);
         return true;
     }
     inline bool Pop()
     {
-        if (m_transforms.GetCount())
+        if (m_transforms.size() > 0)
         {
-            m_transforms.RemoveAt(m_transforms.GetCount() - 1);
+            m_transforms.pop_back();
             return true;
         }
 
@@ -2627,8 +2627,8 @@ public:
     {
         Matrix transform;
 
-        if (m_transforms.GetCount())
-            transform = m_transforms[m_transforms.GetCount() - 1];
+        if (m_transforms.size() > 0)
+            transform = m_transforms[m_transforms.size() - 1];
 
         return transform;
     }
@@ -2636,14 +2636,14 @@ public:
     {
         Matrix transform;
 
-        for (size_t i = 0; i < m_transforms.GetCount(); ++i)
+        for (size_t i = 0; i < m_transforms.size(); ++i)
             transform *= m_transforms[i];
 
         return transform;
     }
 
 private:
-    CArray<Matrix> m_transforms;
+    std::vector<Matrix> m_transforms;
 };
 class PathParser
 {
@@ -2659,7 +2659,7 @@ public:
 
     inline bool FromString(UnitSystem& oUnitSystem, const std::wstring& path)
     {
-        m_Points.RemoveAll ();
+        m_Points.clear ();
 
         std::wstring::size_type To = 0;
         bool	EndSegment	=	false;
@@ -2680,19 +2680,19 @@ public:
 
                 // ATLTRACE ( _T("%c : - %s\n"), symbol, Source );
 
-                CArray<double> Values;
+                std::vector<double> Values;
                 if (StrUtils::DoubleValues(Source, Values))
                 {
                     if ((symbol == 'M') || (symbol == 'm'))
                     {
-                        int Segments	=	(int)Values.GetSize () / 2;
+                        int Segments	=	(int)Values.size () / 2;
                         if (Segments > 0)
                         {
                             PointPath oPointM;
                             oPointM.code	=	path[i];
                             oPointM.oPoint	=	Point ( Values [ 0 ], Values [ 1 ] );
                             oPointM.subCode	=	path[i];
-                            m_Points.Add ( oPointM );
+                            m_Points.push_back ( oPointM );
                         }
 
                         int iNextCode = (symbol == 'M') ? 'L' : 'l';
@@ -2703,37 +2703,37 @@ public:
                             oPoint.oPoint	=	Point ( Values [ 0 + 2 * j ], Values [ 1 + 2 * j ] );
                             oPoint.subCode	=	path[i];
 
-                            m_Points.Add ( oPoint );
+                            m_Points.push_back ( oPoint );
                             EndSegment = false;
                             //	ATLTRACE ( _T("LineTo : %c, -  %f, %f\n"), oPoint.code, oPoint.oPoint.X, oPoint.oPoint.Y );
                         }
                     }
                     else
                     {
-                        if (m_Points.GetCount() > 0 && EndSegment == false)
+                        if (m_Points.size() > 0 && EndSegment == false)
                         {
                             if ( symbol == 'M' )
                             {
                                 PointPath oEndPoint;
                                 oEndPoint.code = 'Z';
-                                m_Points.Add ( oEndPoint );
+                                m_Points.push_back ( oEndPoint );
                             }
 
                             if (symbol == 'm')
                             {
                                 PointPath oEndPoint;
                                 oEndPoint.code = 'z';
-                                m_Points.Add ( oEndPoint );
+                                m_Points.push_back ( oEndPoint );
                             }
                         }
 
-                        int Segments	=	(int)Values.GetSize () / 2;
+                        int Segments	=	(int)Values.size () / 2;
                         for ( int j = 0; j <  Segments; ++j )
                         {
                             PointPath oPoint;
                             oPoint.code	=	symbol;
 
-                            if ( m_Points.GetCount() > 0 && EndSegment == false )
+                            if ( m_Points.size() > 0 && EndSegment == false )
                             {
                                 if ( oPoint.code == 'M' )
                                     oPoint.code = 'L';
@@ -2744,7 +2744,7 @@ public:
 
                             oPoint.oPoint	=	Point ( Values [ 0 + 2 * j ], Values [ 1 + 2 * j ] );
 
-                            m_Points.Add ( oPoint );
+                            m_Points.push_back ( oPoint );
 
                             EndSegment	=	false;
 
@@ -2755,7 +2755,7 @@ public:
 
                 if (To == std::wstring::npos)
                 {
-                    m_Points.RemoveAll ();
+                    m_Points.clear ();
                     return false;
                 }
             }
@@ -2765,10 +2765,10 @@ public:
 
                 std::wstring Source	= StringHelpers::Tokenize(path, Tokens, To);
 
-                CArray<double> Values;
+                std::vector<double> Values;
                 if (StrUtils::DoubleValues(Source, Values))
                 {
-                    for ( int j = 0; j < Values.GetSize(); ++j )
+                    for ( size_t j = 0; j < Values.size(); ++j )
                     {
                         PointPath oPoint;
                         oPoint.code	= symbol;
@@ -2779,13 +2779,13 @@ public:
                         if ( 'v' == symbol || 'V' == symbol )
                             oPoint.oPoint.Y	=	Values [ j ];
 
-                        m_Points.Add(oPoint);
+                        m_Points.push_back(oPoint);
                     }
                 }
 
                 if ( To == std::wstring::npos )
                 {
-                    m_Points.RemoveAll ();
+                    m_Points.clear ();
                     return false;
                 }
             }
@@ -2795,34 +2795,34 @@ public:
 
                 std::wstring Source	= StringHelpers::Tokenize(path, Tokens, To);
 
-                CArray<double> Values;
+                std::vector<double> Values;
                 if (StrUtils::DoubleValues(Source, Values))
                 {
                     //rx ry x-axis-rotation large-arc-flag sweep-flag x y
 
-                    int Size	=	( Values.GetSize () / 7 ) * 7;
+                    int Size	=	( Values.size () / 7 ) * 7;
                     for ( int j = 0; j < Size; j += 7 )
                     {
                         PointPath oPoint;
                         oPoint.code	=	symbol;
 
                         oPoint.oPoint	=	Point ( Values [ j ], Values [ j + 1 ] );		//	rx ry
-                        m_Points.Add ( oPoint );
+                        m_Points.push_back ( oPoint );
 
                         oPoint.oPoint	=	Point ( Values [ j + 2 ], Values [ j + 3 ] );	//	x-axis-rotation large-arc-flag
-                        m_Points.Add ( oPoint );
+                        m_Points.push_back ( oPoint );
 
                         oPoint.oPoint	=	Point ( Values [ j + 4 ], Values [ j + 4 ] );	//	sweep-flag
-                        m_Points.Add ( oPoint );
+                        m_Points.push_back ( oPoint );
 
                         oPoint.oPoint	=	Point ( Values [ j + 5 ], Values [ j + 6 ] );	//	x y
-                        m_Points.Add ( oPoint );
+                        m_Points.push_back ( oPoint );
                     }
                 }
 
                 if ( To == std::wstring::npos )
                 {
-                    m_Points.RemoveAll();
+                    m_Points.clear();
                     return false;
                 }
             }
@@ -2832,24 +2832,24 @@ public:
 
                 std::wstring Source	= StringHelpers::Tokenize(path, Tokens, To);
 
-                CArray<double> Values;
+                std::vector<double> Values;
                 if (StrUtils::DoubleValues(Source, Values))
                 {
                     PointPath oPoint;
                     oPoint.code	=	symbol;
 
                     oPoint.oPoint	=	Point ( Values [ 0 ], Values [ 1 ] );
-                    m_Points.Add ( oPoint );
+                    m_Points.push_back ( oPoint );
 
                     oPoint.oPoint	=	Point ( Values [ 2 ], Values [ 3 ] );
-                    m_Points.Add ( oPoint );
+                    m_Points.push_back ( oPoint );
 
                     // ATLTRACE ( _T("LineTo : %f, %f "), oPoint.oPoint.X, oPoint.oPoint.Y );
                 }
 
                 if ( To == std::wstring::npos )
                 {
-                    m_Points.RemoveAll ();
+                    m_Points.clear ();
                     return false;
                 }
             }
@@ -2861,23 +2861,23 @@ public:
 
                 // ATLTRACE ( _T("%c : - %s\n"), symbol, Source );
 
-                CArray<double> Values;
+                std::vector<double> Values;
                 if (StrUtils::DoubleValues(Source, Values))
                 {
-                    int Size	=	( Values.GetSize () / 6 ) * 6;
+                    int Size	=	( Values.size () / 6 ) * 6;
                     for ( int j = 0; j < Size; j += 6 )
                     {
                         PointPath oPoint;
                         oPoint.code	=	symbol;
 
                         oPoint.oPoint	=	Point ( Values [ j ], Values [ j + 1 ] );
-                        m_Points.Add ( oPoint );
+                        m_Points.push_back ( oPoint );
 
                         oPoint.oPoint	=	Point ( Values [ j + 2 ], Values [ j + 3 ] );
-                        m_Points.Add ( oPoint );
+                        m_Points.push_back ( oPoint );
 
                         oPoint.oPoint	=	Point ( Values [ j + 4 ], Values [ j + 5 ] );
-                        m_Points.Add ( oPoint );
+                        m_Points.push_back ( oPoint );
 
                         // ATLTRACE ( _T("add curve : [ %f, %f ] \n"), oPoint.oPoint.X, oPoint.oPoint.Y );
                     }
@@ -2885,7 +2885,7 @@ public:
 
                 if (To == std::wstring::npos)
                 {
-                    m_Points.RemoveAll();
+                    m_Points.clear();
                     return false;
                 }
             }
@@ -2894,15 +2894,15 @@ public:
                 PointPath point;
                 point.code		=	symbol;
 
-                m_Points.Add(point);
+                m_Points.push_back(point);
 
                 m_bIsClose		=	true;
                 EndSegment		=	true;
             }
         }
 
-        count = (long)m_Points.GetCount();
-        for (long i = 0; i < count; ++i)
+        count = m_Points.size();
+        for (size_t i = 0; i < count; ++i)
         {
             if ('a' == m_Points[i].code || 'A' == m_Points[i].code)
             {
@@ -2923,7 +2923,7 @@ public:
 
         return true;
     }
-    inline CArray<PointPath>& GetPoints()
+    inline std::vector<PointPath>& GetPoints()
     {
         return m_Points;
     }
@@ -2933,12 +2933,12 @@ public:
     }
     inline void SetPoint(long index, const Point& val)
     {
-        if ((long)m_Points.GetCount() > index)
+        if ((long)m_Points.size() > index)
             m_Points[index].oPoint = val;
     }
     inline Point GetPoint(long index)
     {
-        if ((long)m_Points.GetCount() > index)
+        if ((long)m_Points.size() > index)
             return m_Points[index].oPoint;
 
         return Point();
@@ -2947,7 +2947,7 @@ public:
 private:
 
     bool				m_bIsClose;
-    CArray <PointPath>	m_Points;
+    std::vector <PointPath>	m_Points;
 };
 class ImageBase64		//	for inner data image's
 {
@@ -3677,7 +3677,7 @@ public:
     }
     virtual bool Normalize(const double& dAfX, const double& dAfY)
     {
-        long count = (long)m_oParser.GetPoints().GetCount();
+        long count = (long)m_oParser.GetPoints().size();
         for (long i = 0; i < count; ++i)
         {
             Point oPoint	=	m_oParser.GetPoint(i);
@@ -3715,7 +3715,7 @@ public:
     }
     inline long GetSize ()
     {
-        return (long)m_oParser.GetPoints().GetCount();
+        return (long)m_oParser.GetPoints().size();
     }
 
 private:
@@ -3743,20 +3743,20 @@ public:
     virtual bool FromXml (XmlUtils::CXmlNode& oXml, UnitSystem& oUs)
     {
         DrawElement::FromXml (oXml, oUs);
-        m_points.RemoveAll ();
+        m_points.clear ();
         StrUtils::DoubleValues(oXml.GetAttribute(L"points"), m_points);
 
-        for (size_t i = 0; i < m_points.GetCount(); i += 2)
+        for (size_t i = 0; i < m_points.size(); i += 2)
         {
             m_points[i]		=	DoubleValue(oUs, m_points[i], c_dirHorizontal);
             m_points[i+1]	=	DoubleValue(oUs, m_points[i+1], c_dirVertical);
         }
 
-        return (m_points.GetCount() > 0);
+        return (m_points.size() > 0);
     }
     virtual bool Normalize(const double& dAfX, const double& dAfY)
     {
-        for (size_t i = 0; i < m_points.GetCount(); i += 2)
+        for (size_t i = 0; i < m_points.size(); i += 2)
         {
             m_points[i]		*=	dAfX;
             m_points[i + 1]	*=	dAfY;
@@ -3775,7 +3775,7 @@ public:
     }
     inline long GetSize () const
     {
-        return (long)m_points.GetCount() / 2;
+        return (long)m_points.size() / 2;
     }
 
 private:
@@ -3787,7 +3787,7 @@ private:
 
 protected:
 
-    CArray <double> m_points;
+    std::vector <double> m_points;
 };
 class Polygon : public Polyline
 {
@@ -3800,7 +3800,7 @@ public:
 
     virtual bool Normalize(const double& dAfX, const double& dAfY)
     {
-        for (size_t i = 0; i < m_points.GetCount(); i += 2)
+        for (size_t i = 0; i < m_points.size(); i += 2)
         {
             m_points[i]		*=	dAfX;
             m_points[i + 1]	*=	dAfY;
@@ -4190,10 +4190,10 @@ public:
     }
     virtual ~Symbol()
     {
-        for (size_t i = 0; i < m_arrRefElems.GetCount(); ++i)
+        for (size_t i = 0; i < m_arrRefElems.size(); ++i)
             RELEASEOBJECT (m_arrRefElems[i]);
 
-        m_arrRefElems.RemoveAll();
+        m_arrRefElems.clear();
     }
 
     virtual bool FromXml(XmlUtils::CXmlNode& oXmlNode, IRefStorage* pStorage, UnitSystem& oUs)
@@ -4209,12 +4209,12 @@ public:
     {
         if (pReference)
         {
-            m_arrRefElems.Add (pReference);
+            m_arrRefElems.push_back(pReference);
         }
     }
     inline long GetCount() const
     {
-        return (long)m_arrRefElems.GetCount();
+        return (long)m_arrRefElems.size();
     }
     inline DrawElement* GetAt(long nInd)
     {
@@ -4235,7 +4235,7 @@ public:
 public:
 
     ViewBox					m_oViewBox;
-    CArray<DrawElement*>	m_arrRefElems;
+    std::vector<DrawElement*>m_arrRefElems;
 };
 class ClipPath : public RefElement	//	content element
 {
@@ -4247,10 +4247,10 @@ public:
     }
     virtual ~ClipPath()
     {
-        for (size_t i = 0; i < m_clips.GetCount(); ++i)
+        for (size_t i = 0; i < m_clips.size(); ++i)
             RELEASEOBJECT (m_clips[i]);
 
-        m_clips.RemoveAll();
+        m_clips.clear();
     }
 
     virtual bool FromXml (XmlUtils::CXmlNode& oXml, IRefStorage* pStorage, UnitSystem& oUs)
@@ -4262,7 +4262,7 @@ public:
     }
     inline long GetCount ()
     {
-        return (long)m_clips.GetCount();
+        return (long)m_clips.size();
     }
     inline ISvgRef* GetAt (long nInd)
     {
@@ -4277,7 +4277,7 @@ public:
     }
     virtual bool Normalize(const double& dAfX, const double& dAfY)
     {
-        for (size_t i = 0; i < m_clips.GetCount(); ++i)
+        for (size_t i = 0; i < m_clips.size(); ++i)
             m_clips[i]->Normalize(dAfX, dAfY);
 
         return true;
@@ -4319,7 +4319,7 @@ protected:
         if (pClip)
         {
             pClip->FromXml(oXml,m_oUs);
-            m_clips.Add (pClip);
+            m_clips.push_back(pClip);
             return true;
         }
 
@@ -4328,7 +4328,7 @@ protected:
 
 protected:
 
-    CArray <DrawElement*>		m_clips;
+    std::vector <DrawElement*>	m_clips;
     DrawBuilder					m_oBuilder;
     UnitSystem					m_oUs;
 };
@@ -4342,10 +4342,10 @@ public:
     }
     virtual ~Pattern()
     {
-        for (size_t i = 0; i < m_elements.GetCount(); ++i)
+        for (size_t i = 0; i < m_elements.size(); ++i)
             RELEASEOBJECT (m_elements[i]);
 
-        m_elements.RemoveAll();
+        m_elements.clear();
     }
 
     virtual bool FromXml(XmlUtils::CXmlNode& oXml, IRefStorage* model, UnitSystem& oUs)
@@ -4390,7 +4390,7 @@ public:
 
     virtual long GetSize()
     {
-        return (long)m_elements.GetCount();
+        return (long)m_elements.size();
     }
     // NOT IMPLEMENTED
     virtual bool HashRef(ISvgRef* pRef, bool bDef)
@@ -4424,7 +4424,7 @@ public:
 
     inline bool NormalizeEx(const double& dAfX, const double& dAfY)
     {
-        for (size_t i = 0; i < m_elements.GetCount(); ++i)
+        for (size_t i = 0; i < m_elements.size(); ++i)
             m_elements[i]->Normalize(dAfX, dAfY);
 
         return true;
@@ -4506,7 +4506,7 @@ protected:
             }
 
             element->FromXml(oXml,m_oUs);
-            m_elements.Add (element);
+            m_elements.push_back(element);
             return true;
         }
 
@@ -4515,7 +4515,7 @@ protected:
 
 protected:
 
-    CArray <DrawElement*>		m_elements;
+    std::vector <DrawElement*>	m_elements;
     DrawBuilder					m_oBuilder;
     UnitSystem					m_oUs;
     ColorTable					m_oColTable;
@@ -4649,21 +4649,21 @@ public:
     // storage
     inline ISvgRef* Get(long index)
     {
-        if (index > (long)m_arrGroup.GetCount())
+        if (index > (long)m_arrGroup.size())
             return NULL;
 
         return m_arrGroup[index];
     }
     inline long GetSize()
     {
-        return (long)(m_arrGroup.GetCount());
+        return (long)(m_arrGroup.size());
     }
 
     virtual bool Normalize(const double& dAddFMX, const double& dAddFMY)
     {
         if ( false == m_bAddNormMM )
         {
-            for ( long i = 0; i < (long)m_arrGroup.GetCount (); ++i )
+            for ( size_t i = 0; i < m_arrGroup.size (); ++i )
             {
                 ISvgRef* pE	=	m_arrGroup [ i ];
                 if ( pE )
@@ -4682,7 +4682,7 @@ public:
     {
         if (m_bRefMode)
         {
-            m_arrGroup.Add(element);
+            m_arrGroup.push_back(element);
         }
     }
 
@@ -4724,7 +4724,7 @@ private:
                             pContainer->FromXml(oXmlNode2, m_model, m_oViewBox, m_oUs, m_transforms.GetFinal());
                             m_model->HashRef(pContainer, false);
 
-                            m_arrGroup.Add(pContainer);
+                            m_arrGroup.push_back(pContainer);
 
                             continue;
                         }
@@ -4828,7 +4828,7 @@ private:
             // ATLTRACE(L"GraphicsContainer : %s - push : %s\n", m_nodeId, oXmlNode.GetName());
 
             if (bAddStorage)
-                m_arrGroup.Add(element);
+                m_arrGroup.push_back(element);
 
             return element;
         }
@@ -4867,11 +4867,11 @@ private:
     {
         if (!m_bRefMode)
         {
-            for (long i = 0; i < (long)m_arrGroup.GetCount (); ++i)
+            for (size_t i = 0; i <m_arrGroup.size (); ++i)
                 RELEASEOBJECT(m_arrGroup[i]);
         }
 
-        m_arrGroup.RemoveAll();
+        m_arrGroup.clear();
     }
 
     //
@@ -4900,7 +4900,7 @@ private:
 
     bool					m_bAddNormMM;
 
-    CArray <ISvgRef*>		m_arrGroup;
+    std::vector <ISvgRef*>	m_arrGroup;
 
     IRefStorage*			m_model;
     DrawBuilder				m_oDrawBuilder;
@@ -4932,20 +4932,20 @@ public:
 
     inline void Clear ()
     {
-        for (size_t i = 0; i < m_arrGroup.GetCount(); ++i)
+        for (size_t i = 0; i < m_arrGroup.size(); ++i)
         {
             RELEASEOBJECT(m_arrGroup[i]);
         }
 
-        m_arrGroup.RemoveAll();
+        m_arrGroup.clear();
         m_arrRef.clear();
 
-        for (size_t i = 0; i < m_arFlush.GetCount(); ++i)
+        for (size_t i = 0; i < m_arFlush.size(); ++i)
         {
             RELEASEOBJECT (m_arFlush[i]);
         }
 
-        m_arFlush.RemoveAll();
+        m_arFlush.clear();
     }
     inline bool JoinXLinkReference()
     {
@@ -4962,7 +4962,7 @@ public:
     }
     inline bool JoinClipPathLinks()
     {
-        for (size_t i = 0; i < m_arrGroup.GetCount(); ++i)
+        for (size_t i = 0; i < m_arrGroup.size(); ++i)
         {
             DrawElement* pRef = static_cast<DrawElement*>(m_arrGroup[i]);
             if (pRef)
@@ -4983,7 +4983,7 @@ public:
     }
     inline bool JoinStyleLinks()
     {
-        for (size_t i = 0; i < m_arrGroup.GetCount(); ++i)
+        for (size_t i = 0; i < m_arrGroup.size(); ++i)
         {
             DrawElement* pRef = static_cast<DrawElement*>(m_arrGroup[i]);
             if (pRef)
@@ -5004,7 +5004,7 @@ public:
     //	IRefStorage
     virtual ISvgRef* Get (long index)
     {
-        if (index > (long)m_arrGroup.GetCount())
+        if (index > (long)m_arrGroup.size())
             return NULL;
 
         // ATLTRACE ( _T("get : %s\n"), m_arrGroup [nIndex]->nodeId () );
@@ -5013,13 +5013,13 @@ public:
     }
     virtual long GetSize ()
     {
-        return (long)m_arrGroup.GetCount();
+        return (long)m_arrGroup.size();
     }
     virtual bool Push (ISvgRef* Elem)
     {
         // ATLTRACE ( _T("push : %s\n"), Elem->nodeId () );
-
-        return (0 == m_arrGroup.Add(Elem));
+        m_arrGroup.push_back(Elem);
+        return true;
     }
 
     virtual bool HashRef (ISvgRef* element, bool bDef)
@@ -5038,7 +5038,7 @@ public:
 
                     if (bDef)
                     {
-                        m_arFlush.Add (element);
+                        m_arFlush.push_back(element);
                     }
 
                     // объекты с id могут быть использованы вне описания другими элементами, поэтому их надо учитывать
@@ -5066,7 +5066,7 @@ public:
     {
         if ( false == m_bAddNormMM )
         {
-            for ( long i = 0; i < (long)m_arrGroup.GetCount (); ++i )
+            for ( size_t i = 0; i < m_arrGroup.size (); ++i )
             {
                 ISvgRef* pE	=	m_arrGroup [ i ];
                 if ( pE )
@@ -5137,10 +5137,10 @@ private:
 
     bool								m_bAddNormMM;
 
-    CArray <ISvgRef*>					m_arrGroup;
+    std::vector <ISvgRef*>				m_arrGroup;
     std::map<std::wstring, ISvgRef*>	m_arrRef;					// индексация (только хранения ссылок)
     std::wstring						m_sWorkingDirectory;
-    CArray<ISvgRef*>					m_arFlush;					// объекты которые нужно удалять
+    std::vector<ISvgRef*>				m_arFlush;					// объекты которые нужно удалять
 };
 class Painter
 {
@@ -5268,7 +5268,7 @@ private:
             Matrix rotate			=	Matrix::RotateAtPoint(Point(Center.X, Center.Y), -dRotAngle * M_PI / 180);
 
             CArcToCubicBezier oSplitter(Center.X - Radi.X, Center.Y - Radi.Y, Radi.X * 2.0, Radi.Y * 2.0, dStartAngle - dRotAngle, dSweep);
-            for (int i = 0; i < oSplitter.GetCurves().GetSize(); ++i)
+            for (size_t i = 0; i < oSplitter.GetCurves().size(); ++i)
             {
                 CubicBezier oBezier	=	oSplitter.GetCurves()[i];
 
@@ -5293,7 +5293,7 @@ private:
             Matrix rotate			=	Matrix::RotateAtPoint(Point(Center.X, Center.Y), -dRotAngle * M_PI / 180);
 
             CArcToCubicBezier oSplitter(Center.X - Radi.X, Center.Y - Radi.Y, Radi.X * 2.0, Radi.Y * 2.0, dStartAngle - dRotAngle, dSweep);
-            for (int i = 0; i < oSplitter.GetCurves().GetSize(); ++i)
+            for (size_t i = 0; i < oSplitter.GetCurves().size(); ++i)
             {
                 CubicBezier oBezier	=	oSplitter.GetCurves()[i];
 
@@ -5459,7 +5459,7 @@ public:
             {
                 ENTITY entity;
                 if (entity.Read(sTag.substr(at + length, to - at - length)))
-                    m_ENTITY.Add(entity);
+                    m_ENTITY.push_back(entity);
 
                 while (std::wstring::npos != at)
                 {
@@ -5473,11 +5473,11 @@ public:
 
                     ENTITY entity;
                     if (entity.Read(sTag.substr(at + length, to - at - length)))
-                        m_ENTITY.Add(entity);
+                        m_ENTITY.push_back(entity);
                 }
             }
 
-            if (m_ENTITY.GetCount())
+            if (m_ENTITY.empty() == false)
                 return true;
         }
 
@@ -5486,9 +5486,9 @@ public:
 
     bool ConnectEntities(std::wstring& sXml)
     {
-        if (m_ENTITY.GetCount())
+        if (m_ENTITY.empty() == false)
         {
-            CArray<std::wstring> subStrings;
+            std::vector<std::wstring> subStrings;
 
             std::wstring _and	=	L"&";
             std::wstring _sem	=	L";";
@@ -5503,7 +5503,7 @@ public:
             while (std::wstring::npos != at && std::wstring::npos != to)
             {
                 std::wstring replace = sXml.substr(at + 1, to - at - 1);
-                subStrings.Add(replace);
+                subStrings.push_back(replace);
 
                 at = sXml.find(_and, to);
                 if (std::wstring::npos == at) break;
@@ -5511,9 +5511,9 @@ public:
                 if (std::wstring::npos == to) break;
             }
 
-            if (subStrings.GetCount())
+            if (subStrings.empty() == false)
             {
-                for (long i = (long)subStrings.GetCount() - 1; i >= 0; --i)
+                for (long i = (long)subStrings.size() - 1; i >= 0; --i)
                 {
                     std::wstring str = _and + subStrings[i] + _sem;
                     StringHelpers::string_replace(sXml, str, GetVal(subStrings[i]));
@@ -5528,7 +5528,7 @@ public:
 
     inline std::wstring GetVal(const std::wstring& sName) const
     {
-        for (size_t i = 0; i < m_ENTITY.GetCount(); ++i)
+        for (size_t i = 0; i < m_ENTITY.size(); ++i)
         {
             if (sName == m_ENTITY[i].GetName())
             {
@@ -5540,7 +5540,7 @@ public:
     }
     inline std::wstring GetAt(long index, long type = 0) const
     {
-        if (index >= (long)m_ENTITY.GetCount())
+        if (index >= (long)m_ENTITY.size())
             return L"";
 
         return m_ENTITY[index].GetValue();
@@ -5548,12 +5548,12 @@ public:
 
     inline void Clear()
     {
-        m_ENTITY.RemoveAll();
+        m_ENTITY.clear();
     }
 
 private:
 
-    CArray<ENTITY> m_ENTITY;	//	<!ENTITY
+    std::vector<ENTITY> m_ENTITY;	//	<!ENTITY
 };
 
 class Parser

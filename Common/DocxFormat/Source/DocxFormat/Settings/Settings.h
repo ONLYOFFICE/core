@@ -2945,12 +2945,22 @@ namespace OOX
 		CSettings(OOX::Document *pMain) : OOX::File(pMain), OOX::WritingElement(pMain)
 		{
 			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
-			if (docx) docx->m_pSettings = this;			
+		
+			if (docx)
+			{
+				if (docx->m_bGlossaryRead)	docx->m_oGlossary.settings = this;
+				else						docx->m_oMain.settings = this;
+			}
 		}
 		CSettings(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain), OOX::WritingElement(pMain)
 		{
 			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
-			if (docx) docx->m_pSettings = this;			
+			
+			if (docx)
+			{
+				if (docx->m_bGlossaryRead)	docx->m_oGlossary.settings = this;
+				else						docx->m_oMain.settings = this;
+			}
 
 			read( oPath );
 		}
@@ -3637,6 +3647,8 @@ namespace OOX
 						m_oSdtGlobalColor = oReader;
 					else if ( _T("w:SdtGlobalShowHighlight") == sName )
 						m_oSdtGlobalShowHighlight = oReader;
+					else if ( _T("w:SpecialFormsHighlight") == sName )
+						m_oSpecialFormsHighlight = oReader;
 				}
 			}
 		}
@@ -3656,15 +3668,22 @@ namespace OOX
 				sXml += m_oSdtGlobalShowHighlight->ToString();
 				sXml += L"/>";
 			}
+			if(m_oSpecialFormsHighlight.IsInit())
+			{
+				sXml += L"<w:SpecialFormsHighlight ";
+				sXml += m_oSpecialFormsHighlight->ToString();
+				sXml += L"/>";
+			}
 			sXml += L"</w:settings>";
 			return sXml;
 		}
 		bool IsEmpty()
 		{
-			return !(m_oSdtGlobalColor.IsInit() || m_oSdtGlobalShowHighlight.IsInit());
+			return !(m_oSdtGlobalColor.IsInit() || m_oSdtGlobalShowHighlight.IsInit() || m_oSpecialFormsHighlight.IsInit());
 		}
 		nullable<ComplexTypes::Word::CColor> m_oSdtGlobalColor;
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oSdtGlobalShowHighlight;
+		nullable<ComplexTypes::Word::CColor> m_oSpecialFormsHighlight;
 	};
 } // namespace OOX
 

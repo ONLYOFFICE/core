@@ -1438,6 +1438,7 @@ void PptxConverter::convert(PPTX::Logic::Bg *oox_background)
 	//}
 
 	odp_context->drawing_context()->end_drawing_background(page_props->content_.common_draw_fill_attlist_);
+	odp_context->drawing_context()->set_background_state(false);
 
 	odp_context->end_drawings();
 }
@@ -1498,23 +1499,23 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 				if (pPic.IsInit())		pPic->FillLevelUp();
 			}
 			
+			int ph_type = 0;
 			if (pNvPr->ph->type.IsInit())
 			{
-				int ph_type = pNvPr->ph->type->GetBYTECode();
+				ph_type = pNvPr->ph->type->GetBYTECode();
 
 				if (type == Layout && (ph_type == 5 || ph_type == 6 || ph_type == 7 || ph_type == 12))
 					continue;
-
-				odf_context()->drawing_context()->set_placeholder_type(ph_type);
 			}
-			else
-				odf_context()->drawing_context()->set_placeholder_type(0);
-
-			if (pNvPr->ph->idx.IsInit())
-				odf_context()->drawing_context()->set_placeholder_id(pNvPr->ph->idx.get());
 
 			if (!bPlaceholders)
 				continue;
+
+			odf_context()->drawing_context()->set_placeholder_type(ph_type);
+			
+			if (pNvPr->ph->idx.IsInit())
+				odf_context()->drawing_context()->set_placeholder_id(pNvPr->ph->idx.get());
+
 
 			PPTX::Logic::TextListStyle * listMasterStyle = NULL;
 			

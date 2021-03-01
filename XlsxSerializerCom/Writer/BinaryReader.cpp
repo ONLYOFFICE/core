@@ -4853,6 +4853,8 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 		pCellAnchor->m_bShapeOle = false;
 		pCellAnchor->m_bShapeControl = false;
 
+		bool bAddToDrawing = true;
+
 		if (pCellAnchor->m_oElement.is_init() && pCellAnchor->m_oElement->is<PPTX::Logic::Pic>())
 		{
 			PPTX::Logic::Pic& oPic = pCellAnchor->m_oElement->as<PPTX::Logic::Pic>();
@@ -4879,27 +4881,16 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 
 					if(pOleObject->m_OleObjectFile.IsInit())
 					{
-				//generate ClientData
-						std::wstring sAnchor;
-						sAnchor += pCellAnchor->m_oFrom->m_oCol->ToString()						+ L",";
-						sAnchor += std::to_wstring(pCellAnchor->m_oFrom->m_oColOff->ToPx())		+ L",";
-						sAnchor += pCellAnchor->m_oFrom->m_oRow->ToString()						+ L",";
-						sAnchor += std::to_wstring(pCellAnchor->m_oFrom->m_oRowOff->ToPx())		+ L",";
-						sAnchor += pCellAnchor->m_oTo->m_oCol->ToString()						+ L",";
-						sAnchor += std::to_wstring(pCellAnchor->m_oTo->m_oColOff->ToPx())		+ L",";
-						sAnchor += pCellAnchor->m_oTo->m_oRow->ToString()						+ L",";
-						sAnchor += std::to_wstring(pCellAnchor->m_oTo->m_oRowOff->ToPx());
-						
+				//generate ClientData						
 						OOX::Vml::CClientData oClientData;
 						oClientData.m_oObjectType.Init();
 						oClientData.m_oObjectType->SetValue(SimpleTypes::Vml::vmlclientdataobjecttypePict);
 						oClientData.m_oSizeWithCells = true;
-
-						oClientData.m_oAnchor = sAnchor;
-
-				//add VmlDrawing
+						oClientData.m_oAnchor = pCellAnchor->toVmlXML();
+						
 						oPic.m_sClientDataXml = oClientData.toXML();
 						
+				//add VmlDrawing
 						NSBinPptxRW::CXmlWriter oWriter(XMLWRITER_DOC_TYPE_XLSX);
 						COOXToVMLGeometry oOOXToVMLRenderer;
 
@@ -4937,8 +4928,7 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 							
 							oRIdImg = new OOX::RId(m_pCurWorksheet->Add(pFileWorksheet));
 						}
-					//add oleObject rels
-
+				//add oleObject rels
                         smart_ptr<OOX::File> pFileObject = pOleObject->m_OleObjectFile.smart_dynamic_cast<OOX::File>();
                         const OOX::RId oRIdBin = m_pCurWorksheet->Add(pFileObject);
 
@@ -4981,9 +4971,58 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 					}
 				}
 			}
-		}				
+		}
+		else if (pCellAnchor->m_oElement.is_init() && pCellAnchor->m_oElement->is<PPTX::Logic::Shape>())
+		{
+			PPTX::Logic::Shape& oShape = pCellAnchor->m_oElement->as<PPTX::Logic::Shape>();
+			if (oShape.signatureLine.IsInit())
+			{
+				bAddToDrawing = false;
+			//generate ClientData						
+				OOX::Vml::CClientData oClientData;
+				oClientData.m_oObjectType.Init();
+				oClientData.m_oObjectType->SetValue(SimpleTypes::Vml::vmlclientdataobjecttypePict);
+				oClientData.m_oSizeWithCells = true;
+				oClientData.m_oAnchor = pCellAnchor->toVmlXML();
 
-		pDrawing->m_arrItems.push_back(pCellAnchor);
+				oShape.m_sClientDataXml = oClientData.toXML();
+
+			//add VmlDrawing
+				NSBinPptxRW::CXmlWriter oWriter(XMLWRITER_DOC_TYPE_XLSX);
+				COOXToVMLGeometry oOOXToVMLRenderer;
+
+				oWriter.m_pOOXToVMLRenderer = &oOOXToVMLRenderer;
+				oWriter.m_lObjectIdVML = m_pCurVmlDrawing->m_lObjectIdVML;
+
+				NSCommon::smart_ptr<PPTX::Logic::ClrMap> oClrMap;
+				oShape.toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, NULL, false, true);
+
+				std::wstring strXml = oWriter.GetXmlString();
+
+				m_pCurVmlDrawing->m_arObjectXml.push_back(strXml);
+				m_lObjectIdVML = m_pCurVmlDrawing->m_lObjectIdVML = oWriter.m_lObjectIdVML;
+
+				if (oShape.spPr.Fill.m_type == PPTX::Logic::UniFill::blipFill)
+				{
+					OOX::CPath pathImageCache = oShape.spPr.Fill.as<PPTX::Logic::BlipFill>().blip->imageFilepath;
+					
+					smart_ptr<OOX::RId> oRIdImg;
+					if (pathImageCache.GetPath().empty() == false)
+					{
+					//add image rels to VmlDrawing
+						NSCommon::smart_ptr<OOX::Image> pImageFileVml(new OOX::Image(NULL, false));
+						pImageFileVml->set_filename(pathImageCache, false);
+
+						smart_ptr<OOX::File> pFileVml = pImageFileVml.smart_dynamic_cast<OOX::File>();
+						m_pCurVmlDrawing->Add(*oShape.spPr.Fill.as<PPTX::Logic::BlipFill>().blip->embed, pFileVml);
+					}
+				}
+			}
+		}
+		if (bAddToDrawing)
+		{
+			pDrawing->m_arrItems.push_back(pCellAnchor);
+		}
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

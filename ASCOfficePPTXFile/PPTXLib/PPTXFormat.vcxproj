@@ -346,6 +346,7 @@
     <ClInclude Include="..\..\Common\DocxFormat\Source\DocxFormat\WritingVector.h" />
     <ClInclude Include="..\..\Common\DocxFormat\Source\SystemUtility\File.h" />
     <ClInclude Include="..\..\Common\DocxFormat\Source\SystemUtility\SystemUtility.h" />
+    <ClInclude Include="..\..\DesktopEditor\raster\exif.h" />
     <ClInclude Include="..\ASCOfficeDrawingConverter.h" />
     <ClInclude Include="..\ASCOfficePPTXFile.h" />
     <ClInclude Include="..\Editor\BinaryFileReaderWriter.h" />

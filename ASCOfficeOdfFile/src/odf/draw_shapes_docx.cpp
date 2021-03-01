@@ -318,11 +318,11 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 		std::vector<::svg_path::_polyline> o_Polyline;
 	
 		bool res = false;
-		bool bClosed = false;
+		bool bClosed = false, bStroked = true;
 		
 		try
 		{
-			res = ::svg_path::parseSvgD(o_Polyline, odf_path_, true, bClosed);
+			res = ::svg_path::parseSvgD(o_Polyline, odf_path_, true, bClosed, bStroked);
 		}
 		catch(...)
 		{
@@ -342,6 +342,10 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 			int w = 0;
 			int h = 0;
 
+			if (false == bStroked)
+			{
+				shape->additional_.push_back(odf_reader::_property(L"custom_path_s", false));
+			}
 			if (attlist_.drawooo_sub_view_size_)
 			{
 				std::vector< std::wstring > splitted;			    

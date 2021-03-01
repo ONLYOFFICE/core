@@ -225,7 +225,8 @@ namespace NSOnlineOfficeBinToPdf
 		}
 		RELEASEARRAYOBJECTS(pFileContent);
 
-		pPdf->SaveToFile(wsDstFile);
+		if (0 != pPdf->SaveToFile(wsDstFile))
+			return false;
 
 		return true;
 	}

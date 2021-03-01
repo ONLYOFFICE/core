@@ -366,7 +366,7 @@ public:
     
 	CPDOCCORE_DEFINE_VISITABLE();
   
-	virtual void afterCreate();
+	//virtual void afterCreate();
     virtual void afterReadContent();
     
 	void docx_convert(oox::docx_conversion_context & Context);
@@ -398,7 +398,7 @@ public:
     
 	CPDOCCORE_DEFINE_VISITABLE();
     
-    virtual void afterCreate();
+    //virtual void afterCreate();
     virtual void afterReadContent();
 
 	void docx_convert(oox::docx_conversion_context & Context);
@@ -430,7 +430,7 @@ public:
     
 	CPDOCCORE_DEFINE_VISITABLE();
     
-    virtual void afterCreate();
+    //virtual void afterCreate();
     virtual void afterReadContent();
 
 	void docx_convert(oox::docx_conversion_context & Context);

@@ -333,7 +333,9 @@ namespace PPTX
 			nullable<BodyPr>					oTextBoxBodyPr;
 
 			nullable_bool						attrUseBgFill;
+//-------------------------------------------------------------------------------------------------
 			nullable<OOX::VmlOffice::CSignatureLine> signatureLine;
+			std::wstring						m_sClientDataXml;
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

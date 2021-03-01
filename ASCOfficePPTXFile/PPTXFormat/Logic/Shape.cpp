@@ -619,7 +619,7 @@ namespace PPTX
 				lH = spPr.xfrm->extY.get_value_or(43200);
 			}
 
-			spPr.Geometry.ConvertToCustomVML(pWriter->m_pOOXToVMLRenderer, strPath, strTextRect, lW, lH);
+			spPr.Geometry.ConvertToCustomVML(pWriter->m_pOOXToVMLRenderer, strPath, strTextRect, lW, lH );
             
 			std::wstring strId		= L"shape "		+ std::to_wstring(pWriter->m_lObjectIdVML);
 			std::wstring strSpid	= L"_x0000_s"	+ std::to_wstring(pWriter->m_lObjectIdVML);
@@ -632,7 +632,7 @@ namespace PPTX
             std::wstring strStrokeNode;;
 
 			CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, false, bSignature);
-			CalculateLine(spPr, style, oTheme, oClrMap, strStrokeAttr, strStrokeNode, false, bSignature);
+			CalculateLine(spPr, style, oTheme, oClrMap, strStrokeAttr, strStrokeNode, false);
 
 			pWriter->StartNode(L"v:shape");
 
@@ -763,10 +763,31 @@ namespace PPTX
 				pWriter->WriteString(*strTextBoxShape); //??? todooo -> oTextBoxShape
 				pWriter->EndNode(L"v:textbox");
 			}
+			if (spPr.Fill.m_type == UniFill::blipFill)
+			{
+				BlipFill& blipFill = spPr.Fill.as<BlipFill>();
+				
+				pWriter->StartNode(L"v:imagedata");
+				pWriter->StartAttributes();
+				if (XMLWRITER_DOC_TYPE_XLSX == pWriter->m_lDocType)
+				{
+					pWriter->WriteAttribute(L"o:relid", blipFill.blip->embed->ToString());
+				}
+				else
+				{
+					pWriter->WriteAttribute(L"r:id", blipFill.blip->embed->ToString());
+				}
+				pWriter->WriteAttribute(L"o:title", L"");
+				pWriter->EndAttributes();
+				pWriter->EndNode(L"v:imagedata");
+			}
+
 			if (signatureLine.is_init())
 			{
 				signatureLine->toXmlWriter(pWriter);
 			}
+
+			pWriter->WriteString(m_sClientDataXml);
 
 			pWriter->EndNode(L"v:shape");
 

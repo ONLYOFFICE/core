@@ -121,6 +121,7 @@ public:
 public:
     virtual int ShowSelectDialog(void* parent = NULL)   = 0;
     virtual int ShowCertificate(void* parent = NULL)    = 0;
+    virtual std::string Print() = 0;
 
     static CCertificateInfo GetDefault();
     static ICertificate* GetById(const std::string& id);

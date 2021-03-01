@@ -45,7 +45,7 @@ namespace oox {
 class oox_plot_area: boost::noncopyable
 {
 public:
-	oox_plot_area() : no_used_local_tables_(false) {}
+	oox_plot_area();
 	~oox_plot_area(){}
  
     std::vector<oox_chart_ptr>			charts_;
@@ -71,6 +71,8 @@ public:
 private:
 	void reset_cross_axis(); //обязательно после всех добавлений
  	bool no_used_local_tables_;
+
+	unsigned int axis_id_ = 0xf2905;
 
 };
 

@@ -155,6 +155,14 @@ namespace NSBinPptxRW
 	{
 		return m_strDstMedia;
 	}
+	void CImageManager2::SetDstCharts(const std::wstring& strDst)
+	{
+		m_strDstCharts = strDst;
+	}
+	std::wstring CImageManager2::GetDstCharts()
+	{
+		return m_strDstCharts;
+	}
 	void CImageManager2::SetDstEmbed(const std::wstring& strDst)
 	{
 		m_strDstEmbed = strDst;
@@ -1627,24 +1635,6 @@ namespace NSBinPptxRW
 		m_mapImages.insert(std::pair<std::wstring, _relsGeneratorInfo>(strImageRelsPath, oRelsGeneratorInfo));
 		return oRelsGeneratorInfo;
 	}
-	unsigned int CRelsGenerator::WriteChart(int nChartNumber, _INT32 lDocType = XMLWRITER_DOC_TYPE_PPTX)
-	{
-		std::wstring strChart = L"charts/chart" + std::to_wstring(nChartNumber) + L".xml";
-
-		if (lDocType != XMLWRITER_DOC_TYPE_DOCX)
-		{
-			strChart = L"../" + strChart;
-		}
-
-		std::wstring strRid = L"rId" + std::to_wstring(m_lNextRelsID++);
-
-        std::wstring strRels = L"<Relationship Id=\"" + strRid +
-                L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart\" Target=\"" +
-                strChart + L"\"/>";
-		m_pWriter->WriteString(strRels);
-
-		return m_lNextRelsID - 1;
-	}	
 
 	unsigned int CRelsGenerator::WriteRels(const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode)
 	{
@@ -1701,7 +1691,6 @@ namespace NSBinPptxRW
 	{
 		m_pMainDocument		= NULL;
 		m_lNextId			= 0;
-		m_lChartNumber		= 1;
 		m_nDocumentType		= XMLWRITER_DOC_TYPE_PPTX;
 
 		m_pRels				= new CRelsGenerator();

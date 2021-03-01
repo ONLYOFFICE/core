@@ -27,11 +27,10 @@ static std::string mhtTohtml(std::string& sFileContent);
 static void replace_all(std::string& s, const std::string& s1, const std::string& s2)
 {
     size_t pos = s.find(s1);
-    size_t l = s2.length();
     while(pos != std::string::npos)
     {
         s.replace(pos, s1.length(), s2);
-        pos = s.find(s1, pos + l);
+        pos = s.find(s1, pos + s2.length());
     }
 }
 
@@ -61,6 +60,17 @@ static std::wstring htmlToXhtml(std::string& sFileContent)
                 sFileContent = U_TO_UTF8(oConverter.toUnicode(sFileContent, sEncoding.c_str()));
             }
         }
+    }
+
+    // Избавление от <a/>
+    size_t posA = sFileContent.find("<a ");
+    while(posA != std::string::npos)
+    {
+        size_t nBegin = sFileContent.find('<',  posA + 1);
+        size_t nEnd   = sFileContent.find("/>", posA);
+        if(nEnd < nBegin)
+            sFileContent.replace(nEnd, 2, "></a>");
+        posA = sFileContent.find("<a ", nBegin);
     }
 
     // Gumbo
@@ -495,11 +505,11 @@ static void build_attributes(const GumboVector* attribs, bool no_entities, NSStr
         atts.WriteString(" ");
 
         bool bCheck = false;
-        size_t nBad = sName.find_first_of("-'+,.:=?#%<>&;\"\'()[]{}");
+        size_t nBad = sName.find_first_of("+,.:=?#%<>&;\"\'()[]{}");
         while(nBad != std::string::npos)
         {
             sName.erase(nBad, 1);
-            nBad = sName.find_first_of("-'+,.:=?#%<>&;\"\'()[]{}", nBad);
+            nBad = sName.find_first_of("+,.:=?#%<>&;\"\'()[]{}", nBad);
             if(sName.empty())
                 break;
             bCheck = true;

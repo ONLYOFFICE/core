@@ -284,15 +284,19 @@ namespace NSJSBase
         
         CJSValueV8* _return = new CJSValueV8();
         
+        v8::MaybeLocal<v8::Value> retValue;
         if (exception.is_init())
         {
             if (!exception->Check())
-                _return->value = _script->Run(V8ContextOneArg).ToLocalChecked();
+                retValue = _script->Run(V8ContextOneArg);
         }
         else
         {
-            _return->value = _script->Run(V8ContextOneArg).ToLocalChecked();
+            retValue = _script->Run(V8ContextOneArg);
         }
+
+        if (!retValue.IsEmpty())
+            _return->value = retValue.ToLocalChecked();
         
         return _return;
     }

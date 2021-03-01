@@ -572,6 +572,9 @@ public:
 
     virtual bool Verify(const std::string& sXml, std::string& sXmlSignature, int nAlg)
     {
+        if (sXmlSignature.empty())
+            return false;
+
         DWORD dwKeySpec = 0;
         HCRYPTHASH hHash = NULL;
         HCRYPTKEY hPubKey = NULL;
@@ -668,6 +671,8 @@ public:
 
     virtual int ShowCertificate(void* parent = NULL)
     {
+        if (NULL == m_context)
+            return 0;
         return (int)CryptUIDlgViewContext(CERT_STORE_CERTIFICATE_CONTEXT, m_context, (NULL == parent) ? NULL : (*((HWND*)parent)), NULL, 0, NULL);
     }
 
@@ -699,6 +704,11 @@ public:
 
         GetHashAlgs();
         return 1;
+    }
+
+    virtual std::string Print()
+    {
+        return "";
     }
 
 private:

@@ -2038,6 +2038,11 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 		m_oWorkbook.m_oWorkbookPr.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadWorkbookPr, poResult);
 	}
+	else if (c_oSerWorkbookTypes::Protection == type)
+	{
+		m_oWorkbook.m_oWorkbookProtection.Init();
+		READ2_DEF_SPREADSHEET(length, res, this->ReadProtection, poResult);
+	}
 	else if(c_oSerWorkbookTypes::BookViews == type)
 	{
 		m_oWorkbook.m_oBookViews.Init();
@@ -2492,7 +2497,31 @@ int BinaryWorkbookTableReader::ReadConnectionWebPr(BYTE type, long length, void*
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
-
+int BinaryWorkbookTableReader::ReadProtection(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	if (c_oSerWorkbookProtection::AlgorithmName == type)
+	{
+		m_oWorkbook.m_oWorkbookProtection->m_oWorkbookAlgorithmName.Init();
+		m_oWorkbook.m_oWorkbookProtection->m_oWorkbookAlgorithmName->SetValue((SimpleTypes::ECryptAlgoritmName)m_oBufferedStream.GetUChar());
+	}
+	else if (c_oSerWorkbookProtection::SpinCount == type)
+	{
+		m_oWorkbook.m_oWorkbookProtection->m_oWorkbookSpinCount.Init();
+		m_oWorkbook.m_oWorkbookProtection->m_oWorkbookSpinCount->SetValue(m_oBufferedStream.GetULong());
+	}
+	else if (c_oSerWorkbookProtection::HashValue == type)
+	{
+		m_oWorkbook.m_oWorkbookProtection->m_oWorkbookHashValue = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerWorkbookProtection::SaltValue == type)
+	{
+		m_oWorkbook.m_oWorkbookProtection->m_oWorkbookSaltValue = m_oBufferedStream.GetString4(length);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
 int BinaryWorkbookTableReader::ReadWorkbookPr(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
@@ -3739,6 +3768,11 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		READ1_DEF(length, res, this->ReadHyperlinks, &oHyperlinks);
 	SEEK_TO_POS_END(oHyperlinks);
 //-------------------------------------------------------------------------------------------------------------
+	SEEK_TO_POS_START(c_oSerWorksheetsTypes::Protection);
+	OOX::Spreadsheet::CSheetProtection oProtection;
+	READ2_DEF_SPREADSHEET(length, res, this->ReadProtection, &oProtection);
+	SEEK_TO_POS_END(oProtection);
+//-------------------------------------------------------------------------------------------------------------
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::PrintOptions);
 		OOX::Spreadsheet::CPrintOptions oPrintOptions;
 		READ2_DEF_SPREADSHEET(length, res, this->ReadPrintOptions, &oPrintOptions);
@@ -4647,6 +4681,122 @@ int BinaryWorksheetsTableReader::ReadPageSetup(BYTE type, long length, void* poR
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
+}
+int BinaryWorksheetsTableReader::ReadProtection(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CSheetProtection* pProtection = static_cast<OOX::Spreadsheet::CSheetProtection*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+	
+	if (c_oSerWorksheetProtection::AlgorithmName == type)
+	{
+		pProtection->m_oAlgorithmName.Init();
+		pProtection->m_oAlgorithmName->SetValue((SimpleTypes::ECryptAlgoritmName)m_oBufferedStream.GetUChar());
+	}
+	else if (c_oSerWorksheetProtection::SpinCount == type)
+	{
+		pProtection->m_oSpinCount.Init();
+		pProtection->m_oSpinCount->SetValue(m_oBufferedStream.GetULong());
+	}
+	else if (c_oSerWorksheetProtection::HashValue == type)
+	{
+		pProtection->m_oHashValue = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerWorksheetProtection::SaltValue == type)
+	{
+		pProtection->m_oSaltValue = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerWorksheetProtection::Password == type)
+	{
+		pProtection->m_oPassword = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerWorksheetProtection::AutoFilter == type)
+	{
+		pProtection->m_oAutoFilter.Init();
+		pProtection->m_oAutoFilter->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSerWorksheetProtection::Content == type)
+	{
+		pProtection->m_oContent.Init();
+		pProtection->m_oContent->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSerWorksheetProtection::DeleteColumns == type)
+	{
+		pProtection->m_oDeleteColumns.Init();
+		pProtection->m_oDeleteColumns->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSerWorksheetProtection::DeleteRows == type)
+	{
+		pProtection->m_oDeleteRows.Init();
+		pProtection->m_oDeleteRows->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSerWorksheetProtection::FormatCells == type)
+	{
+		pProtection->m_oFormatCells.Init();
+		pProtection->m_oFormatCells->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSerWorksheetProtection::FormatColumns == type)
+	{
+		pProtection->m_oFormatColumns.Init();
+		pProtection->m_oFormatColumns->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSerWorksheetProtection::FormatRows == type)
+	{
+		pProtection->m_oFormatRows.Init();
+		pProtection->m_oFormatRows->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSerWorksheetProtection::InsertColumns == type)
+	{
+		pProtection->m_oInsertColumns.Init();
+		pProtection->m_oInsertColumns->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSerWorksheetProtection::InsertHyperlinks == type)
+	{
+		pProtection->m_oInsertHyperlinks.Init();
+		pProtection->m_oInsertHyperlinks->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSerWorksheetProtection::InsertRows == type)
+	{
+		pProtection->m_oInsertRows.Init();
+		pProtection->m_oInsertRows->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSerWorksheetProtection::Objects == type)
+	{
+		pProtection->m_oObjects.Init();
+		pProtection->m_oObjects->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSerWorksheetProtection::PivotTables == type)
+	{
+		pProtection->m_oPivotTables.Init();
+		pProtection->m_oPivotTables->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSerWorksheetProtection::Scenarios == type)
+	{
+		pProtection->m_oScenarios.Init();
+		pProtection->m_oScenarios->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSerWorksheetProtection::SelectLockedCells == type)
+	{
+		pProtection->m_oSelectLockedCells.Init();
+		pProtection->m_oSelectLockedCells->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSerWorksheetProtection::SelectUnlockedCell == type)
+	{
+		pProtection->m_oSelectUnlockedCell.Init();
+		pProtection->m_oSelectUnlockedCell->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSerWorksheetProtection::Sheet == type)
+	{
+		pProtection->m_oSheet.Init();
+		pProtection->m_oSheet->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSerWorksheetProtection::Sort == type)
+	{
+		pProtection->m_oSort.Init();
+		pProtection->m_oSort->FromBool(m_oBufferedStream.GetBool());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+		return res;
 }
 int BinaryWorksheetsTableReader::ReadHeaderFooter(BYTE type, long length, void* poResult)
 {

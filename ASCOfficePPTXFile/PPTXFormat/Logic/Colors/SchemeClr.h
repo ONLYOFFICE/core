@@ -30,6 +30,8 @@
  *
  */
 #pragma once
+#ifndef PPTX_LOGIC_SCHEMECLR_INCLUDE_H_
+#define PPTX_LOGIC_SCHEMECLR_INCLUDE_H_
 
 #include "./../../Limit/SchemeClrVal.h"
 #include "./../../Theme/ClrScheme.h"
@@ -60,7 +62,29 @@ namespace PPTX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"), val)
 				WritingElement_ReadAttributes_End_No_NS( oReader )
 			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				std::wstring sNodeNamespace;
+				std::wstring sAttrNamespace;
+				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
+				{
+					sNodeNamespace = _T("w14:");
+					sAttrNamespace = sNodeNamespace;
+				}
+				else
+					sNodeNamespace = _T("a:");
+				pWriter->StartNode(sNodeNamespace + _T("schemeClr"));
+						
+				pWriter->StartAttributes();
+				pWriter->WriteAttribute(sAttrNamespace + _T("val"), val.get());
+				pWriter->EndAttributes();
+
+				size_t nCount = Modifiers.size();
+				for (size_t i = 0; i < nCount; ++i)
+					Modifiers[i].toXmlWriter(pWriter);
+				
+				pWriter->EndNode(sNodeNamespace + _T("schemeClr"));
+			}
 
 			virtual DWORD GetRGBA(DWORD RGBA) const;
 			virtual DWORD GetARGB(DWORD ARGB) const;
@@ -69,7 +93,30 @@ namespace PPTX
 
 			virtual DWORD GetRGBColor(NSCommon::smart_ptr<PPTX::Theme>& _oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& _oClrMap, DWORD ARGB = 0);
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->StartRecord(COLOR_TYPE_SCHEME);
+
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+				pWriter->WriteLimit1(0, val);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+				ULONG len = (ULONG)Modifiers.size();
+				if (len != 0)
+				{
+					pWriter->StartRecord(0);
+					pWriter->WriteULONG(len);
+
+					for (ULONG i = 0; i < len; ++i)
+					{
+						pWriter->WriteRecord1(1, Modifiers[i]);
+					}
+
+					pWriter->EndRecord();
+				}
+
+				pWriter->EndRecord();
+			}
 
 		public:
 			Limit::SchemeClrVal val;
@@ -79,43 +126,7 @@ namespace PPTX
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};
-		class StyleClr : public ColorBase
-		{
-		public:
-			WritingElement_AdditionConstructors(StyleClr)
-			PPTX_LOGIC_BASE2(StyleClr)
-
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual std::wstring toXML() const;
-
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_styleClr;
-			}
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				nullable_string sVal;
-
-				WritingElement_ReadAttributes_Start_No_NS(oReader)
-					WritingElement_ReadAttributes_Read_if(oReader, L"val", sVal)
-				WritingElement_ReadAttributes_End_No_NS(oReader)
-
-				if (sVal.IsInit())
-				{
-					if (*sVal == L"auto") bAuto = true;
-					else
-						val = *sVal;
-				}
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-
-			nullable_uint val;
-			bool bAuto = false;
-		protected:
-			virtual void FillParentPointersForChilds() {};
-		};
 	} // namespace Logic
 } // namespace PPTX
+
+#endif // PPTX_LOGIC_SCHEMECLR_INCLUDE_H

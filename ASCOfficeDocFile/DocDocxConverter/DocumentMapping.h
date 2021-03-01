@@ -158,7 +158,6 @@ namespace DocFileFormat
 		bool							_writeWebHidden;
 		std::wstring					_writeAfterRun;
 		std::wstring					_lastOLEObject;
-		std::wstring					_writeNoteRef;
 		int								_cacheListNum;
 
 		std::wstring					_paraId;

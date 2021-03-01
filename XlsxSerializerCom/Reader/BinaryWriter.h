@@ -159,7 +159,6 @@ namespace BinXlsxRW
 		void Write(OOX::Spreadsheet::CWorkbook& workbook);
 		void WriteWorkbook(OOX::Spreadsheet::CWorkbook& workbook);
 		void WriteWorkbookPr(const OOX::Spreadsheet::CWorkbookPr& workbookPr);
-		void WriteProtection(const OOX::Spreadsheet::CWorkbookProtection& protection);
 		void WriteBookViews(const OOX::Spreadsheet::CBookViews& bookViews);
 		void WriteWorkbookView(const OOX::Spreadsheet::CWorkbookView& workbookView);
 		void WriteDefinedNames(const OOX::Spreadsheet::CDefinedNames& definedNames);
@@ -217,7 +216,6 @@ namespace BinXlsxRW
 		void WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet, OOX::Spreadsheet::CWorksheet& oWorksheet);
 		
 		void WriteWorksheetProp(OOX::Spreadsheet::CSheet& oSheet);
-		void WriteProtection(const OOX::Spreadsheet::CSheetProtection& protection);
 		void WriteCols(const OOX::Spreadsheet::CCols& oCols);
 		void WriteCol(const OOX::Spreadsheet::CCol& oCol);
 		void WriteSheetViews(const OOX::Spreadsheet::CSheetViews& oSheetViews);
@@ -329,6 +327,7 @@ namespace BinXlsxRW
 	private:
 		BinaryCommonWriter* m_oBcw;
 		int m_nLastFilePos;
+		int m_nLastFilePosOffset;
 		int m_nRealTableCount;
 		int m_nMainTableStart;
 		DocWrapper::FontProcessor& m_oFontProcessor;
@@ -339,14 +338,11 @@ namespace BinXlsxRW
             NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions, bool bIsNoBase64);
 		
 		void intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinaryFileWriter &oBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter);
-       
-		std::wstring WriteFileHeader(int nDataSize, int version);
-		int GetMainTableSize();
-	
-		int m_nLastFilePosOffset;
-	private:
+ 	private:
+       std::wstring WriteFileHeader(int nDataSize, int version);
 		void WriteMainTableStart();
 		void WriteMainTableEnd();
+		int GetMainTableSize();
 		int WriteTableStart(BYTE type, int nStartPos = -1);
 		void WriteTableEnd(int nCurPos);
 	};

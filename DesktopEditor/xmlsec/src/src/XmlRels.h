@@ -25,7 +25,6 @@ public:
         rid = node.GetAttribute("Id");
         type = node.GetAttribute("Type");
         target = node.GetAttribute("Target");
-        target_mode = node.GetAttribute("TargetMode");
 
         CheckTargetMode();
     }
@@ -53,9 +52,6 @@ public:
 protected:
     void CheckTargetMode()
     {
-        if (!target_mode.empty())
-            return;
-
         if (0 == target.find(L"http") || 0 == target.find(L"www") || 0 == target.find(L"ftp"))
             target_mode = L"External";
         else
@@ -164,15 +160,11 @@ public:
     void CheckOriginSigs(const std::wstring& file)
     {
         int rId = 0;
-        std::string sReplace = "";
         std::vector<COOXMLRelationship>::iterator i = rels.begin();
         while (i != rels.end())
         {
             if (0 == i->target.find(L"_xmlsignatures/"))
-            {
-                sReplace = U_TO_UTF8(i->target);
-                break;
-            }
+                return;
 
             std::wstring rid = i->rid;
             rid = rid.substr(3);
@@ -183,23 +175,6 @@ public:
                 rId = nTemp;
 
             i++;
-        }
-
-        if (!sReplace.empty())
-        {
-            if (sReplace == "_xmlsignatures/origin.sigs")
-                return;
-
-            std::string sXmlA;
-            NSFile::CFileBinary::ReadAllTextUtf8A(file, sXmlA);
-            NSStringUtils::string_replaceA(sXmlA, sReplace, "_xmlsignatures/origin.sigs");
-
-            NSFile::CFileBinary::Remove(file);
-            NSFile::CFileBinary oFile;
-            oFile.CreateFileW(file);
-            oFile.WriteFile((BYTE*)sXmlA.c_str(), (DWORD)sXmlA.length());
-            oFile.CloseFile();
-            return;
         }
 
         std::string sXmlA;
@@ -216,6 +191,7 @@ Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-sign
 </Relationships>");
 
         NSFile::CFileBinary::Remove(file);
+
         NSFile::CFileBinary oFile;
         oFile.CreateFileW(file);
         oFile.WriteFile((BYTE*)sRet.c_str(), (DWORD)sRet.length());

@@ -55,8 +55,6 @@ private:
     bool m_bIsGrayScale;
     double m_dJpegSaveQuality;
 
-    bool m_bIsRGBA;
-
 public:
     CBgraFrame();
     ~CBgraFrame();
@@ -82,13 +80,10 @@ public:
 
     bool IsGrayScale();
 
-    void put_IsRGBA(const bool& bIsRGBA);
-    bool get_IsRGBA();
-
     void SetJpegQuality(const double& value);
 
 	bool OpenFile(const std::wstring& strFileName, unsigned int nFileType = 0);	//0 - detect
-    bool SaveFile(const std::wstring& strFileName, unsigned int nFileType);
+	bool SaveFile(const std::wstring& strFileName, unsigned int nFileType);
     bool Encode(BYTE*& pBuffer, int& nSize, unsigned int nFileType);
     
 	bool Resize(const long& nNewWidth, const long& nNewHeight, bool bDestroyData = true);

@@ -187,11 +187,6 @@ core_linux_64 {
 }
 core_mac_64 {
     CORE_BUILDS_PLATFORM_PREFIX = mac_64
-
-    apple_silicon {
-        CORE_BUILDS_PLATFORM_PREFIX = mac_arm64
-        QMAKE_APPLE_DEVICE_ARCHS = arm64
-    }
 }
 core_linux_arm {
     CORE_BUILDS_PLATFORM_PREFIX = arm

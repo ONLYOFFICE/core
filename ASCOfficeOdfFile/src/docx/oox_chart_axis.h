@@ -50,10 +50,10 @@ class oox_axis_content
 public:
 	odf_reader::chart::oox_typeconvert oox_typeconvert_;
 
-	oox_axis_content(int type/*,std::wstring name*/, unsigned int id);
+	oox_axis_content(int type/*,std::wstring name*/);
 	~oox_axis_content(){}
 	
-	static oox_axis_content_ptr create(int type/*,std::wstring name*/, unsigned int id);
+	static oox_axis_content_ptr create(int type/*,std::wstring name*/);
 
 	void oox_serialize(std::wostream & _Wostream);
 	void oox_serialize_content(std::wostream & _Wostream);
@@ -61,7 +61,7 @@ public:
 	int get_Id(){return id_;}
 	void add_CrossedId (int id){cross_id_.push_back( id);}
 
-	unsigned int						id_;
+	int						id_;
 	std::vector<int>		cross_id_;
 	odf_reader::chart::axis content_;
 

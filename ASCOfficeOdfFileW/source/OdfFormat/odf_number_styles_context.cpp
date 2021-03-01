@@ -245,7 +245,7 @@ void odf_number_styles_context::create(int oox_num_fmt, std::wstring formatCode)
 	number_format_state state;
 
 	state.oox_num_fmt = oox_num_fmt;
-	state.style_name = std::wstring(L"NF1000") + boost::lexical_cast<std::wstring>( number_format_array_.size() + 1);
+	state.style_name = std::wstring(L"NF1000") + boost::lexical_cast<std::wstring>( number_format_array_.size()+1);
 	state.ods_type = office_value_type::Custom;
 	state.language_code = 0;
 
@@ -253,7 +253,7 @@ void odf_number_styles_context::create(int oox_num_fmt, std::wstring formatCode)
 
 	boost::algorithm::split(state.format_code, formatCode, boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
 
-	if (state.format_code.size() > 1 && state.format_code[state.format_code.size() - 1].find(L"@") >= 0)
+	if (state.format_code.size()>1 && state.format_code[state.format_code.size()-1].find(L"@")>=0)
 	{
 		state.format_code.pop_back();
 	}
@@ -357,13 +357,7 @@ void odf_number_styles_context::create_default(int oox_num_fmt, std::wstring for
 }
 number_format_state & odf_number_styles_context::add_or_find(int oox_num_fmt, std::wstring formatCode)
 {
-	if (oox_num_fmt < 0)
-	{
-		//not spreadsheet todooo - search by formatCode
-		oox_num_fmt = 0xffff + named_link_map_.size();
-	}	
-	
-	if (named_link_map_.count(oox_num_fmt) > 0)
+    if (named_link_map_.count(oox_num_fmt) > 0)
 	{
         return number_format_array_[named_link_map_.at(oox_num_fmt)];
 	}
@@ -376,7 +370,7 @@ number_format_state & odf_number_styles_context::add_or_find(int oox_num_fmt, st
 
 void odf_number_styles_context::process_styles(office_element_ptr root )
 {
-	for (size_t i = 0; i< number_format_array_.size(); i++)
+	for (size_t i=0; i< number_format_array_.size(); i++)
 	{
 		create_style(number_format_array_[i]);
 
@@ -822,7 +816,7 @@ void odf_number_styles_context::create_text_style(number_format_state & state, o
 
 void odf_number_styles_context::detect_format(number_format_state & state)
 {
-	if (state.ods_type != office_value_type::Custom) return;
+	if (state.ods_type != office_value_type::Custom)return;
 	if (state.format_code.empty())return;
 
  	//find [$<Currency String>-<language info>].

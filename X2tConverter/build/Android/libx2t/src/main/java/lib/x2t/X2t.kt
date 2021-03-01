@@ -238,14 +238,14 @@ class X2t private constructor() {
 
         FileUtils.getCache(context, mConvertFileName, mConvertFolderName)?.let { cache ->
             result.to = mInputParams.to ?: cache.to
-            result.root = File(result.to ?: "").parent
+            result.root = File(result.to).parent
 
             mInputParams.to = mInputParams.to ?: cache.to
             mInputParams.temp = mInputParams.temp ?: cache.temp
             mInputParams.themes = mInputParams.themes ?: "${cache.root}/themes"
             mInputParams.xml = mInputParams.xml ?: "${cache.temp}/param.xml"
 
-            if (File(mInputParams.to ?: "").exists()) {
+            if (File(mInputParams.to).exists()) {
                 if (mIsOverwrite) {
                     FileUtils.deletePath(result.to!!)
                 } else {
@@ -382,16 +382,16 @@ class X2t private constructor() {
             fileOutputStream.close()
         }
         catch (e: FileNotFoundException) {
-            e.printStackTrace()
+            e.printStackTrace();
 
         } catch (e: IllegalArgumentException) {
-            e.printStackTrace()
+            e.printStackTrace();
 
         } catch (e: IllegalStateException) {
-            e.printStackTrace()
+            e.printStackTrace();
 
         } catch (e: IOException) {
-            e.printStackTrace()
+            e.printStackTrace();
 
         }
     }

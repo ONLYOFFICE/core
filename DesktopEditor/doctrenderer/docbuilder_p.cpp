@@ -54,7 +54,6 @@ CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder)
     m_context->CreateGlobalForContext();
     CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", m_context);
     CMemoryStreamEmbed::CreateObjectInContext  ("CreateNativeMemoryStream", m_context);
-    CGraphicsEmbed::CreateObjectInContext          ("CreateNativeGraphics", m_context);
     m_context->CreateContext();
 
     JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();

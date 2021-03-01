@@ -36,7 +36,7 @@
 #include "../utils.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
-#include "../../../Common/DocxFormat/Source/XlsxFormat/Chart/ChartDrawing.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/ChartDrawing.h"
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Chart/Chart.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Slide.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTreeElem.h"
@@ -105,7 +105,7 @@ void OoxConverter::convert(PPTX::Logic::GraphicFrame *oox_graphic_frame)
 {
 	if (!oox_graphic_frame)return;
 
-	convert(oox_graphic_frame->nvGraphicFramePr.GetPointer());
+	convert(&oox_graphic_frame->nvGraphicFramePr);		
 	convert(oox_graphic_frame->xfrm.GetPointer());		
 	
 	if ( oox_graphic_frame->chartRec.is_init())
@@ -381,8 +381,6 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 
 			odf_context()->drawing_context()->set_image_client_rect_inch( l * Width, t * Height, r * Width, b * Height );
 		}
-
-		odf_context()->drawing_context()->start_area_properties();
 		if (oox_picture->blipFill.blip.IsInit())
 		{
 			for (size_t i = 0 ; i < oox_picture->blipFill.blip->Effects.size(); i++)
@@ -390,9 +388,7 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 				convert(oox_picture->blipFill.blip->Effects[i].Effect.GetPointer());
 			}
 		}
-		odf_context()->drawing_context()->end_area_properties();
-
-		OoxConverter::convert(&oox_picture->nvPicPr.cNvPr);
+		OoxConverter::convert(&oox_picture->nvPicPr.cNvPr);		
 		OoxConverter::convert(&oox_picture->spPr, oox_picture->style.GetPointer());
 
 	}
@@ -444,8 +440,8 @@ void OoxConverter::convert(PPTX::Logic::ChartRec *oox_chart)
 	smart_ptr<OOX::File> oFile = find_file_by_id (oox_chart->id_data->get());
 	if (oFile.IsInit())
 	{
-		OOX::Spreadsheet::CChartFile* pChart = dynamic_cast<OOX::Spreadsheet::CChartFile*>(oFile.GetPointer());
-		OOX::Spreadsheet::CChartExFile* pChartEx = dynamic_cast<OOX::Spreadsheet::CChartExFile*>(oFile.GetPointer());
+		OOX::Spreadsheet::CChartSpace* pChart = dynamic_cast<OOX::Spreadsheet::CChartSpace*>(oFile.GetPointer());
+		OOX::Spreadsheet::CChartSpaceEx* pChartEx = dynamic_cast<OOX::Spreadsheet::CChartSpaceEx*>(oFile.GetPointer());
 		
 		if (pChart || pChartEx)
 		{
@@ -1149,7 +1145,6 @@ void OoxConverter::convert(PPTX::Logic::BlipFill *oox_bitmap_fill)
 	if (oox_bitmap_fill == NULL)return;
 
 	odf_context()->drawing_context()->start_bitmap_style();
-	odf_context()->drawing_context()->start_area_properties();
 	{
 		double Width=0, Height = 0;
 		if (oox_bitmap_fill->blip.IsInit())
@@ -1222,7 +1217,6 @@ void OoxConverter::convert(PPTX::Logic::BlipFill *oox_bitmap_fill)
 			if (oox_bitmap_fill->stretch->fillRect.IsInit()){} //заполнение неполного объема
 		}
 	}
-	odf_context()->drawing_context()->end_area_properties();
 	odf_context()->drawing_context()->end_bitmap_style();
 }
 void OoxConverter::convert(PPTX::Logic::GradFill *oox_grad_fill, DWORD nARGB)
@@ -1402,15 +1396,7 @@ void OoxConverter::convert(PPTX::Logic::Ln *oox_line_prop, DWORD ARGB, PPTX::Log
 	}
 	if (oox_line_prop->w.IsInit())
 	{
-		int width = oox_line_prop->w.get(); 
-		
-		if (width == 12700 && false == oox_line_prop->Fill.is_init())
-		{
-			width = 0;
-			odf_context()->drawing_context()->set_no_fill();
-		}
-		
-		odf_context()->drawing_context()->set_line_width(width / 12700.); //pt
+		odf_context()->drawing_context()->set_line_width(oox_line_prop->w.get() / 12700.); //pt
 	}
 	if (oox_line_prop->headEnd.IsInit())
 	{

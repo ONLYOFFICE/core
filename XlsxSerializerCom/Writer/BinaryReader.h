@@ -202,7 +202,6 @@ namespace BinXlsxRW
 		int Read();
 		int ReadWorkbookTableContent(BYTE type, long length, void* poResult);
 		int ReadWorkbookPr(BYTE type, long length, void* poResult);
-		int ReadProtection(BYTE type, long length, void* poResult);
 		int ReadBookViews(BYTE type, long length, void* poResult);
 		int ReadWorkbookView(BYTE type, long length, void* poResult);
 		int ReadExternalReferences(BYTE type, long length, void* poResult);
@@ -306,7 +305,6 @@ namespace BinXlsxRW
 		int ReadPageMargins(BYTE type, long length, void* poResult);
 		int ReadPageSetup(BYTE type, long length, void* poResult);
 		int ReadHeaderFooter(BYTE type, long length, void* poResult);
-		int ReadProtection(BYTE type, long length, void* poResult);
 		int ReadRowColBreaks(BYTE type, long length, void* poResult);
 		int ReadBreak(BYTE type, long length, void* poResult);
 		int ReadPrintOptions(BYTE type, long length, void* poResult);

@@ -190,7 +190,7 @@ style_instance * style_instance::next() const
 {
     if (next_)
         return next_;
-    else if (container_ && next_name_.empty() == false)
+    else if (container_)
         next_ = container_->style_by_name(next_name_, type(), false);
     
     return next_;

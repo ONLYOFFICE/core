@@ -411,11 +411,7 @@ extern int g_nCurFormatVersion;
 		MoveFrom = 36,
 		MoveTo = 37,
 		SpacingTwips = 38,
-		PositionHps = 39,
-		FontAsciiTheme = 40,
-		FontHAnsiTheme = 41,
-		FontAETheme = 42,
-		FontCSTheme = 43
+		PositionHps = 39
 	};}
 	namespace c_oSerProp_rowPrType{enum c_oSerProp_rowPrType
 	{
@@ -643,7 +639,9 @@ extern int g_nCurFormatVersion;
 		WrapThrough = 20,
 		WrapTight = 21,
 		WrapTopAndBottom = 22,
-		Chart = 25,
+		Chart = 23,
+		ChartImg = 24,
+		Chart2 = 25,
 		CachedImage = 26,
 		SizeRelH = 27,
 		SizeRelV = 28,
@@ -653,8 +651,7 @@ extern int g_nCurFormatVersion;
 		DistBEmu = 32,
 		DistLEmu = 33,
 		DistREmu = 34,
-		DistTEmu = 35,
-		ChartEx = 36
+		DistTEmu = 35
 	};}
 	namespace c_oSerEffectExtent{enum c_oSerEffectExtent
 	{
@@ -752,8 +749,7 @@ extern int g_nCurFormatVersion;
 	{
 		Value = 0,
 		Color = 1,
-		ColorTheme = 2,
-		Fill = 3
+		ColorTheme = 2
 	};}
 	namespace c_oSerPaddingType{enum c_oSerPaddingType
 	{
@@ -861,8 +857,7 @@ extern int g_nCurFormatVersion;
 		PrintTwoOnOne = 14,
 		BookFoldPrinting = 15,
 		BookFoldPrintingSheets = 16,
-		BookFoldRevPrinting = 17,
-		SpecialFormsHighlight = 18
+		BookFoldRevPrinting = 17
 	};}
 	namespace c_oSer_MathPrType{enum c_oSer_SettingsType
 	{
@@ -1222,8 +1217,7 @@ extern int g_nCurFormatVersion;
 		TextFormPrCombWidth = 52,
 		TextFormPrCombSym = 53,
 		TextFormPrCombFont = 54,
-		TextFormPrMaxCharacters = 55,
-		TextFormPrCombBorder = 56
+		TextFormPrMaxCharacters = 55
 	};}
 	namespace c_oSerFFData{enum c_oSerFFData
 	{

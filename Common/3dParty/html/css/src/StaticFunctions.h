@@ -3,7 +3,9 @@
 
 #include "../../../../../UnicodeConverter/UnicodeConverter.h"
 #include "../../../../../DesktopEditor/common/File.h"
-#include "CNode.h"
+#include "CCssCalculator.h"
+#include "CssCalculator_global.h"
+#include "ConstValues.h"
 #include <cwctype>
 #include <string>
 #include <vector>
@@ -96,16 +98,16 @@ namespace NSCSS
             return (posDigit < posNoDigit) || (posDigit == 0  && posNoDigit == 0);
         }
 
-        inline std::wstring StripSymbols(const std::wstring& sValue, const std::wstring& sSymbols = L" \n\r\t\f\v")
+        inline std::wstring DeleteSpace(const std::wstring& sValue)
         {
             if (sValue.empty())
                 return std::wstring();
 
-            size_t start = sValue.find_first_not_of(sSymbols);
+            size_t start = sValue.find_first_not_of(L" \n\r\t\f\v");
             if (std::wstring::npos == start)
                 return sValue;
 
-            size_t end = sValue.find_last_not_of(sSymbols); // точно >=0
+            size_t end = sValue.find_last_not_of(L" \n\r\t\f\v"); // точно >=0
             return sValue.substr(start, end - start + 1);
         }
 
@@ -147,24 +149,17 @@ namespace NSCSS
             return arWords;
         }
 
-        inline bool ConvertAbsoluteValue(std::wstring& sAbsoluteValue, const float &unId)
+        inline bool ConvertAbsoluteValue(std::wstring& sAbsoluteValue)
         {
             if (sAbsoluteValue.empty())
                 return false;
 
             bool bIsConvert = false;
 
-            std::map<std::wstring, std::wstring> arAbsoluteFontValues = {{L"xx-small", L"9px"},  {L"x-small", L"10px"},
-                                                                         {L"small",    L"13px"}, {L"medium",  L"16px"},
-                                                                         {L"large",    L"18px"}, {L"x-large", L"24px"},
-                                                                         {L"xx-large", L"32px"}};
-
-            std::map<std::wstring, std::wstring> arAbsoluteBorderValues = {{L"thin",    L"2px"},
-                                                                           {L"medium",  L"4px"},
-                                                                           {L"thick",   L"6px"}};
-
-            std::map<std::wstring, std::wstring> arAbsoluteValues = ((unId == 0.0f) ? arAbsoluteBorderValues : arAbsoluteFontValues);
-
+            std::map<std::wstring, std::wstring> arAbsoluteValues = {{L"xx-small", L"9px"},  {L"x-small", L"10px"},
+                                                                     {L"small",    L"13px"}, {L"medium",  L"16px"},
+                                                                     {L"large",    L"18px"}, {L"x-large", L"24px"},
+                                                                     {L"xx-large", L"32px"}};
 
             if (sAbsoluteValue.find(L' ') == std::wstring::npos && arAbsoluteValues.find(sAbsoluteValue) != arAbsoluteValues.end())
             {
@@ -324,9 +319,9 @@ namespace NSCSS
             if (posFirst == std::wstring::npos)
                 return std::wstring();
 
-            const wchar_t cHex[17]{L"0123456789abcdef"};
+            const wchar_t cHex[17]{L"0123456789ABCDEF"};
 
-            std::wstring sValue;
+            std::wstring sValue = L"#";
 
             while (posFirst != std::wstring::npos)
             {
@@ -339,7 +334,7 @@ namespace NSCSS
                 if (nValue < 0)
                     sHex += L"00";
                 else if (nValue > 255)
-                    sHex += L"ff";
+                    sHex += L"FF";
                 else
                 {
                     do
@@ -382,7 +377,7 @@ namespace NSCSS
                 {
                     std::wstring sTemp(sSel);
                     sTemp.erase(std::remove_if(sTemp.begin(), sTemp.end(), [] (const wchar_t& wc) { return !std::iswalpha(wc);}));
-//                    std::find(NSConstValues::arPseudoClasses.begin(), NSConstValues::arPseudoClasses.end(), sTemp) != NSConstValues::arPseudoClasses.end() ? ++arWeight[1] : ++arWeight[2];
+                    std::find(NS_CONST_VALUES::arPseudoClasses.begin(), NS_CONST_VALUES::arPseudoClasses.end(), sTemp) != NS_CONST_VALUES::arPseudoClasses.end() ? ++arWeight[1] : ++arWeight[2];
                 }
                 else if (sSel.find_last_of(L".[]") != std::wstring::npos)
                     ++arWeight[1];
@@ -393,58 +388,7 @@ namespace NSCSS
             return arWeight;
         }
 
-        inline bool IsTrue(const std::vector<bool> arValues)
-        {
-            for (const bool bValue : arValues)
-                if (!bValue)
-                    return false;
 
-            return true;
-        }
-    }
-
-    #define SWITCH(str)  switch(SWITCH_CASE::str_hash_for_switch(str))
-    #define CASE(str)    static_assert(SWITCH_CASE::str_is_correct(str) && (SWITCH_CASE::str_len(str) <= SWITCH_CASE::MAX_LEN),\
-    "CASE string contains wrong characters, or its length is greater than 9");\
-    case SWITCH_CASE::str_hash(str, SWITCH_CASE::str_len(str))
-    #define DEFAULT  default
-
-    namespace SWITCH_CASE
-    {
-        typedef unsigned long long ullong;
-
-        const unsigned int MAX_LEN = 32;
-        const ullong N_HASH = static_cast<ullong>(-1);
-
-        constexpr ullong raise_128_to(const wchar_t power)
-        {
-            return (1ULL << 7) * power;
-        }
-
-        constexpr bool str_is_correct(const wchar_t* const str)
-        {
-            return (static_cast<wchar_t>(*str) > 0) ? str_is_correct(str + 1) : (*str ? false : true);
-        }
-
-        constexpr unsigned int str_len(const wchar_t* const str)
-        {
-            return *str ? (1 + str_len(str + 1)) : 0;
-        }
-
-        constexpr ullong str_hash(const wchar_t* const str, const wchar_t current_len)
-        {
-            return *str ? (raise_128_to(current_len - 1) * static_cast<wchar_t>(*str) + str_hash(str + 1, current_len - 1)) : 0;
-        }
-
-        inline ullong str_hash_for_switch(const wchar_t* const str)
-        {
-            return (str_is_correct(str) && (str_len(str) <= MAX_LEN)) ? str_hash(str, str_len(str)) : N_HASH;
-        }
-
-        inline ullong str_hash_for_switch(const std::wstring& str)
-        {
-            return (str_is_correct(str.c_str()) && (str.length() <= MAX_LEN)) ? str_hash(str.c_str(), str.length()) : N_HASH;
-        }
     }
 }
 

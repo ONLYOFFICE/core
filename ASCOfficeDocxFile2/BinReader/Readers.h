@@ -56,7 +56,6 @@ class Binary_CommonReader2 : public Binary_CommonReader
 public:
 	Binary_CommonReader2(NSBinPptxRW::CBinaryFileReader& poBufferedStream);
 	docRGB ReadColor();
-	void ReadColor2(SimpleTypes::CHexColor<>& color);
 	void ReadThemeColor(int length, CThemeColor& oCThemeColor);
 	int _ReadThemeColor(BYTE type, long length, void* poResult);
 	template<typename T> int ReadTrackRevision(long length, T* poResult);
@@ -127,7 +126,6 @@ public:
 	int ReadNumPr(BYTE type, long length, void* poResult);
 	int ReadBorders(BYTE type, long length, void* poResult);
 	int ReadBorder(BYTE type, long length, void* poResult);
-	int ReadBorder2(BYTE type, long length, void* poResult);
 	int ReadFramePr(BYTE type, long length, void* poResult);
     int Read_SecPr(BYTE type, long length, void* poResult);
 	int ReadFootnotePr(BYTE type, long length, void* poResult);

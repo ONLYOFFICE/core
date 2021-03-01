@@ -102,8 +102,6 @@ namespace PPTX
 			nullable<OOX::RId>	embed;
 			nullable<OOX::RId>	link;
 			std::wstring		m_namespace;
-
-			std::wstring		imageFilepath;
 	//internal
 			std::wstring		mediaRid;
 			std::wstring		mediaFilepath;

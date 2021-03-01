@@ -32,7 +32,6 @@
 
 #include "oox_plot_area.h"
 
-#include <random>
 #include <CPOptional.h>
 #include <xml/simple_xml_writer.h>
 #include <boost/algorithm/string.hpp>
@@ -44,14 +43,6 @@
 
 namespace cpdoccore {
 	namespace oox {
-		oox_plot_area::oox_plot_area() : no_used_local_tables_(false)
-		{
-			std::random_device rd;
-			std::mt19937 gen(rd());
-			std::uniform_int_distribution<> distrib(1001, 9999);
-
-			axis_id_ += distrib(gen);
-		}
 
 		void oox_plot_area::add_chart(int type)
 		{
@@ -101,8 +92,7 @@ namespace cpdoccore {
 
 		void oox_plot_area::add_axis(int type, odf_reader::chart::axis & content)
 		{
-			unsigned int id = axis_id_++;
-			oox_axis_content_ptr ax = oox_axis_content::create(type, id);
+			oox_axis_content_ptr ax = oox_axis_content::create(type);
 			ax->content_ = content;
 
 			axis_.push_back(ax);

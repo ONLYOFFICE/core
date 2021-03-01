@@ -26,19 +26,19 @@ namespace NSCSS
         std::wstring GetSelector() const;
         std::wstring GetFullSelector() const;
 
-        bool Empty() const;
-
         void SetSelector(const std::wstring& sSelector);
         void AddPropertie(const std::wstring& sName, const std::wstring& sValue);
         void AddProperties(const std::map<std::wstring, std::wstring>& mProperties);
         void AddPrevElement(CElement* oPrevElement);
         void AddKinElement(CElement* oKinElement);
 
+        size_t EmptyPrevElements() const;
+
         std::map<std::wstring, std::wstring> GetStyle() const;
         std::map<std::wstring, std::wstring> GetFullStyle(const std::vector<CNode>& arSelectors) const;
         std::map<std::wstring, std::wstring> GetFullStyle(const std::vector<std::wstring>& arNodes) const;
-        std::vector<CElement *> GetNextOfKin(const std::wstring& sName, const std::vector<std::wstring>& arClasses = {}) const;
-        std::vector<CElement *> GetPrevElements(const std::vector<std::wstring>::reverse_iterator &arNodesRBegin, const std::vector<std::wstring>::reverse_iterator &arNodesREnd) const;
+        std::vector<CElement *> GetAllElements(const std::vector<std::wstring>& arNodes) const;
+        std::vector<CElement *> GetNextOfKin(const std::wstring& sName, const std::vector<std::wstring>& arClasses = {});
         std::map<std::wstring, std::wstring> GetConvertStyle(const std::vector<CNode>& arNodes) const;
 
         CElement *FindPrevElement(const std::wstring& sSelector) const;

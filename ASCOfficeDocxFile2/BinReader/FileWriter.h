@@ -120,7 +120,7 @@ namespace Writers
 		_part_summary_writers	m_oGlossary;
 	public:
 
-		FileWriter(std::wstring sDirOutput, std::wstring sFontDir, bool bNoFontDir, int nVersion, NSBinPptxRW::CDrawingConverter* pDrawingConverter, std::wstring sThemePath);
+		FileWriter(std::wstring sDirOutput, std::wstring sFontDir, bool bNoFontDir, int nVersion, bool bSaveChartAsImg, NSBinPptxRW::CDrawingConverter* pDrawingConverter, std::wstring sThemePath);
 		~FileWriter();
 
 		FontTableWriter&		get_font_table_writer()		{ return m_bGlossaryMode ? m_oGlossary.font_table : m_oMain.font_table; }
@@ -161,7 +161,7 @@ namespace Writers
 		smart_ptr<OOX::VbaProject>		m_pVbaProject;
 	
  		NSBinPptxRW::CDrawingConverter* m_pDrawingConverter;
-
+		bool							m_bSaveChartAsImg;
 		std::wstring					m_sThemePath;
 		int								m_nDocPrIndex;
 		BinDocxRW::CComments*			m_pComments;

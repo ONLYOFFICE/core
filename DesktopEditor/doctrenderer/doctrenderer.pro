@@ -20,6 +20,8 @@ ADD_DEPENDENCY(graphics, kernel, UnicodeConverter)
 
 #CONFIG += build_xp
 
+core_mac:CONFIG += use_javascript_core
+
 core_ios {
     CONFIG += doct_renderer_empty
 }
@@ -38,8 +40,7 @@ SOURCES += \
     nativecontrol.cpp \
     doctrenderer.cpp \
     docbuilder.cpp \
-    docbuilder_p.cpp \
-    graphics.cpp
+    docbuilder_p.cpp
 
 SOURCES += \
     ../../Common/OfficeFileFormatChecker2.cpp \
@@ -50,18 +51,15 @@ SOURCES += \
 HEADERS += \
     docbuilder_p.h \
     memorystream.h \
-    nativecontrol.h \
-    graphics.h
+    nativecontrol.h
 
 HEADERS += \
-    embed/GraphicsEmbed.h \
     embed/MemoryStreamEmbed.h \
     embed/NativeControlEmbed.h \
     embed/NativeBuilderEmbed.h \
     js_internal/js_base.h
 
 SOURCES += \
-    embed/GraphicsEmbed.cpp \
     embed/MemoryStreamEmbed.cpp \
     embed/NativeControlEmbed.cpp \
     embed/NativeBuilderEmbed.cpp
@@ -72,8 +70,7 @@ SOURCES += \
     SOURCES += \
         embed/v8/v8_MemoryStream.cpp \
         embed/v8/v8_NativeControl.cpp \
-        embed/v8/v8_NativeBuilder.cpp \
-        embed/v8/v8_Graphics.cpp
+        embed/v8/v8_NativeBuilder.cpp
 
     !build_xp {
         include(../../Common/3dParty/v8/v8.pri)
@@ -87,7 +84,6 @@ SOURCES += \
     OBJECTIVE_SOURCES += js_internal/jsc/jsc_base.mm
     OBJECTIVE_SOURCES += ../common/Mac/NSString+StringUtils.mm
     OBJECTIVE_SOURCES += \
-        embed/jsc/jsc_Graphics.mm \
         embed/jsc/jsc_MemoryStream.mm \
         embed/jsc/jsc_NativeControl.mm \
         embed/jsc/jsc_NativeBuilder.mm

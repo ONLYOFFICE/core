@@ -255,7 +255,7 @@ namespace oox {
 							CP_XML_NODE(L"a:srgbClr")
 							{
 								CP_XML_ATTR(L"val",L"000000");
-								CP_XML_NODE(L"a:alpha"){CP_XML_ATTR(L"val", 38000);}
+								CP_XML_NODE(L"a:alpha"){CP_XML_ATTR(L"val",38000);}
 							}
 						}
 					}
@@ -273,7 +273,7 @@ namespace oox {
 							CP_XML_NODE(L"a:srgbClr")
 							{
 								CP_XML_ATTR(L"val",L"000000");
-								CP_XML_NODE(L"a:alpha"){CP_XML_ATTR(L"val", 35000);}
+								CP_XML_NODE(L"a:alpha"){CP_XML_ATTR(L"val",35000);}
 							}
 						}
 					}
@@ -291,7 +291,7 @@ namespace oox {
 							CP_XML_NODE(L"a:srgbClr")
 							{
 								CP_XML_ATTR(L"val",L"000000");
-								CP_XML_NODE(L"a:alpha"){CP_XML_ATTR(L"val", 35000);}
+								CP_XML_NODE(L"a:alpha"){CP_XML_ATTR(L"val",35000);}
 							}
 						}
 					}

@@ -1493,7 +1493,7 @@ namespace OOX
                     }
 				}
 			}
-			bool toCellAnchor(OOX::Spreadsheet::CCellAnchor* pCellAnchor);
+			void toCellAnchor(OOX::Spreadsheet::CCellAnchor* pCellAnchor);
 			void toFormControlPr(OOX::Spreadsheet::CFormControlPr* pFormControlPr);
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)

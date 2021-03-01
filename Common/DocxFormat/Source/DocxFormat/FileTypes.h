@@ -66,7 +66,7 @@ namespace OOX
 												L"application/vnd.openxmlformats-officedocument.theme+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme", 
 												L"theme", true);
-		 
+
 		const FileType ThemeOverride	(L"themeOverride", L"themeOverride.xml",
 												L"application/vnd.openxmlformats-officedocument.theme+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/themeOverride", 
@@ -224,12 +224,12 @@ namespace OOX
 												L"http://schemas.microsoft.com/office/2014/relationships/chartEx", 
 												L"charts/chartEx", true, true);
 
-		const FileType ChartStyle			(L"", L"style.xml",
+		const FileType ChartStyle			(L"charts", L"style.xml",
 												L"application/vnd.ms-office.chartstyle+xml",
 												L"http://schemas.microsoft.com/office/2011/relationships/chartStyle", 
 												L"charts/style", true, true);
 
-		const FileType ChartColors			(L"", L"colors.xml",
+		const FileType ChartColorStyle		(L"charts", L"colors.xml",
 												L"application/vnd.ms-office.chartcolorstyle+xml",
 												L"http://schemas.microsoft.com/office/2011/relationships/chartColorStyle", 
 												L"charts/colors", true, true);

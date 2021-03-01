@@ -372,7 +372,6 @@ namespace OOX
 		et_a_scene3d, // <a:scene3d>
 		et_a_schemeClr, // <a:schemeClr>
 		et_a_scrgbClr, // <a:scrgbClr>
-		et_a_styleClr,
 		et_a_shade, // <a:shade>
 		et_a_snd, // <a:snd>
 		et_a_softEdge, // <a:softEdge>
@@ -1123,14 +1122,7 @@ namespace OOX
 		et_ct_StrDimension,
 		et_ct_NumDimension,
 		et_ct_ChartData,
-		et_ct_ExternalData,
 
-		et_cs_ChartStyle,
-		et_cs_StyleEntry,
-		et_cs_MarkerLayout,
-		et_cs_ColorStyle,
-		et_cs_SchemeClr,
-		et_cs_Variation,
 
 		et_cdr_FromTo,
 		et_cdr_Ext,
@@ -1142,7 +1134,6 @@ namespace OOX
 		et_x_BookViews, // <bookViews>
 		et_x_Workbook,
 		et_x_WorkbookPr,
-		et_x_WorkbookProtection,
 		et_x_WorkbookView, // <workbookView>
 		et_x_DefinedNames, // <definedNames>
 		et_x_DefinedName, // <definedName>

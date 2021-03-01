@@ -238,7 +238,7 @@ namespace PPTX
 				}
 				if (sectionLst.IsInit())
 				{
-					pWriter->StartNode(namespace_ext + L":ext");
+					pWriter->StartNode(namespace_ext + L"ext");
 						pWriter->StartAttributes();
 						pWriter->WriteAttribute(L"uri", std::wstring(L"{521415D9-36F7-43E2-AB2F-B90AF26B5E84}"));
 						pWriter->EndAttributes();

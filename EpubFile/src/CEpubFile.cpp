@@ -3,41 +3,21 @@
 #include "../../OfficeUtils/src/OfficeUtils.h"
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../HtmlFile2/htmlfile2.h"
-#include "../../DesktopEditor/raster/BgraFrame.h"
 #include "src/CBookInfo.h"
 
 #include <iostream>
-#include <iomanip>
 #include <string>
-#include <sstream>
-#include <random>
 
 // Заменяет в строке s все символы s1 на s2
-void replace_all(std::wstring& s, const std::wstring& s1, const std::wstring& s2)
+static void replace_all(std::wstring& s, const std::wstring& s1, const std::wstring& s2)
 {
     size_t pos = s.find(s1);
     size_t l = s2.length();
-    while (pos != std::string::npos)
+    while(pos != std::string::npos)
     {
         s.replace(pos, s1.length(), s2);
         pos = s.find(s1, pos + l);
     }
-}
-
-std::wstring GenerateUUID()
-{
-    std::mt19937 oRand(time(0));
-    std::wstringstream sstream;
-    sstream << std::setfill(L'0') << std::hex << std::setw(8) << (oRand() & 0xffffffff);
-    sstream << L'-';
-    sstream << std::setfill(L'0') << std::hex << std::setw(4) << (oRand() & 0xffff);
-    sstream << L'-';
-    sstream << std::setfill(L'0') << std::hex << std::setw(4) << (oRand() & 0xffff);
-    sstream << L'-';
-    sstream << std::setfill(L'0') << std::hex << std::setw(4) << (oRand() & 0xffff);
-    sstream << L'-';
-    sstream << std::setfill(L'0') << std::hex << std::setw(8) << (oRand() & 0xffffffff);
-    return sstream.str();
 }
 
 CEpubFile::CEpubFile()
@@ -74,10 +54,10 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
 
     std::wstring sFileContent;
     std::wstring sContent;
-    if (!NSFile::CFileBinary::ReadAllTextUtf8(m_sTempDir + L"/container.xml", sFileContent))
+    if(!NSFile::CFileBinary::ReadAllTextUtf8(m_sTempDir + L"/container.xml", sFileContent))
         return S_FALSE;
     size_t nContent = sFileContent.find(L"full-path");
-    if (nContent != std::wstring::npos)
+    if(nContent != std::wstring::npos)
     {
         nContent += 11;
         sContent = sFileContent.substr(nContent, sFileContent.find(L'\"', nContent) - nContent);
@@ -87,44 +67,50 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     }
     sContent = m_sTempDir + (sContent.empty() ? L"/content.opf" : L'/' + sContent);
 
+
     XmlUtils::CXmlLiteReader oXmlLiteReader;
-    if (!oXmlLiteReader.FromFile(sContent))
-        return S_FALSE;
-    oXmlLiteReader.ReadNextNode();
-    int nParentDepth = oXmlLiteReader.GetDepth();
-    while (oXmlLiteReader.ReadNextSiblingNode(nParentDepth))
+    if (oXmlLiteReader.FromFile(sContent))
     {
-        std::wstring sName = oXmlLiteReader.GetName();
-        size_t nDot = sName.find(L':');
-        if (nDot != std::wstring::npos)
-            sName.erase(0, nDot + 1);
-        if (sName == L"metadata")
-            m_oBookInfo.ReadInfo(oXmlLiteReader);
-        else if (sName == L"manifest")
+        oXmlLiteReader.ReadNextNode();
+        int nParentDepth = oXmlLiteReader.GetDepth();
+        while (oXmlLiteReader.ReadNextSiblingNode(nParentDepth))
         {
-            int _nParentDepth = oXmlLiteReader.GetDepth();
-            while (true)
+            std::wstring sName = oXmlLiteReader.GetName();
+            if (sName == L"metadata")
             {
-                CBookItem oItem;
-                if (oItem.ReadItem(oXmlLiteReader, _nParentDepth))
-                    m_mapRefs.insert(std::make_pair(oItem.GetID(), oItem));
-                else
-                    break;
+                m_oBookInfo.ReadInfo(oXmlLiteReader);
+//                #ifdef _DEBUG
+//                    m_oBookInfo.ShowInfo();
+//                #endif
             }
-        }
-        else if (sName == L"spine")
-        {
-            int _nParentDepth = oXmlLiteReader.GetDepth();
-            while (true)
+            else if (sName == L"manifest")
             {
-                CBookContentItem oContentItem;
-                if (oContentItem.ReadContentItem(oXmlLiteReader, _nParentDepth))
-                    m_arContents.push_back(oContentItem);
-                else
-                    break;
+                int _nParentDepth = oXmlLiteReader.GetDepth();
+                while (true)
+                {
+                    CBookItem oItem;
+                    if (oItem.ReadItem(oXmlLiteReader, _nParentDepth))
+                        m_mapRefs.insert(std::make_pair(oItem.GetID(), oItem));
+                    else
+                        break;
+                }
+            }
+            else if (sName == L"spine")
+            {
+                int _nParentDepth = oXmlLiteReader.GetDepth();
+                while (true)
+                {
+                    CBookContentItem oContentItem;
+                    if (oContentItem.ReadContentItem(oXmlLiteReader, _nParentDepth))
+                        m_arContents.push_back(oContentItem);
+                    else
+                        break;
+                }
             }
         }
     }
+    else
+        return S_FALSE;
 
     /*
     if (!oXmlLiteReader.FromFile(m_sTempDir + L"/toc.ncx"))
@@ -141,9 +127,9 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     CHtmlParams oFileParams;
 
     oFileParams.SetAuthors(m_oBookInfo.GetCreators());
-    oFileParams.SetGenres (m_oBookInfo.GetSubjects());
-    oFileParams.SetTitle  (m_oBookInfo.GetTitle());
-    oFileParams.SetDate   (m_oBookInfo.GetDate());
+    oFileParams.SetGenres(m_oBookInfo.GetSubjects());
+    oFileParams.SetTitle(m_oBookInfo.GetTitle());
+    oFileParams.SetDate(m_oBookInfo.GetDate());
     oFileParams.SetDescription(m_oBookInfo.GetDescriptions());
     oFileParams.SetPageBreakBefore(true);
 
@@ -194,157 +180,4 @@ void CEpubFile::ShowMap()
     std::cout << "-----MAP-----" << std::endl;
     for (const CBookContentItem& oItem : m_arContents)
         std::wcout << oItem.m_sID << L" - " << m_mapRefs[oItem.m_sID].GetRef() << std::endl;
-}
-
-HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sCoreFile, const std::wstring& sDstFile)
-{
-    NSDirectory::CreateDirectory(m_sTempDir + L"/META-INF");
-    NSDirectory::CreateDirectory(m_sTempDir + L"/OEBPS");
-    // index.html
-    std::wstring sIndexHtml;
-    NSFile::CFileBinary::ReadAllTextUtf8(sHtmlFile, sIndexHtml);
-
-    size_t nImage = sIndexHtml.find(L"data:image/png;base64, ");
-    int nNumImage = 1;
-    if (nImage != std::wstring::npos)
-        NSDirectory::CreateDirectory(m_sTempDir + L"/OEBPS/images");
-    while (nImage != std::wstring::npos)
-    {
-        size_t nImageBegin = sIndexHtml.find(L' ', nImage) + 1;
-        size_t nImageEnd = sIndexHtml.find(L'\"', nImageBegin);
-        std::wstring sImage = sIndexHtml.substr(nImageBegin, nImageEnd - nImageBegin);
-        NSFile::CFileBinary oImageWriter;
-        if (oImageWriter.CreateFileW(m_sTempDir + L"/OEBPS/images/img" + std::to_wstring(nNumImage) + L".png"))
-        {
-            int nSrcLen = (int)sImage.length();
-            int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
-            BYTE* pImageData = new BYTE[nDecodeLen];
-            if (TRUE == NSBase64::Base64Decode(U_TO_UTF8(sImage).c_str(), nSrcLen, pImageData, &nDecodeLen))
-                oImageWriter.WriteFile(pImageData, (DWORD)nDecodeLen);
-            RELEASEARRAYOBJECTS(pImageData);
-            oImageWriter.CloseFile();
-        }
-        sIndexHtml.replace(nImage, nImageEnd - nImage, L"images/img" + std::to_wstring(nNumImage++) + L".png");
-        nImage = sIndexHtml.find(L"data:image/png;base64, ", nImage);
-    }
-
-    NSFile::CFileBinary oIndexHtml;
-    if (oIndexHtml.CreateFileW(m_sTempDir + L"/OEBPS/index.html"))
-    {
-        oIndexHtml.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">");
-        oIndexHtml.WriteStringUTF8(sIndexHtml);
-        oIndexHtml.CloseFile();
-    }
-    // mimetype
-    NSFile::CFileBinary oMimeType;
-    if (oMimeType.CreateFileW(m_sTempDir + L"/mimetype"))
-    {
-        oMimeType.WriteStringUTF8(L"application/epub+zip");
-        oMimeType.CloseFile();
-    }
-    // container.xml
-    NSFile::CFileBinary oContainerXml;
-    if (oContainerXml.CreateFileW(m_sTempDir + L"/META-INF/container.xml"))
-    {
-        oContainerXml.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\"><rootfiles><rootfile full-path=\"OEBPS/content.opf\" media-type=\"application/oebps-package+xml\"/></rootfiles></container>");
-        oContainerXml.CloseFile();
-    }
-    // cover.html
-    bool bCoverFromImg1 = NSFile::CFileBinary::Exists(m_sTempDir + L"/OEBPS/images/img1.png");
-    if (bCoverFromImg1)
-    {
-        int nHy = 0;
-        int nWx = 0;
-        CBgraFrame oBgraFrame;
-        if (oBgraFrame.OpenFile(m_sTempDir + L"/OEBPS/images/img1.png"))
-        {
-            nHy = oBgraFrame.get_Height();
-            nWx = oBgraFrame.get_Width();
-        }
-        NSFile::CFileBinary oCoverHtml;
-        if (oCoverHtml.CreateFileW(m_sTempDir + L"/OEBPS/cover.html"))
-        {
-            oCoverHtml.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"><html xmlns=\"http://www.w3.org/1999/xhtml\"><head><title>Cover</title></head><body><div style=\"text-align: center; padding: 0pt; margin: 0pt;\"><svg xmlns=\"http://www.w3.org/2000/svg\" height=\"100%\" preserveAspectRatio=\"xMidYMid meet\" version=\"1.1\" width=\"100%\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 " + std::to_wstring(nWx) + L' ' + std::to_wstring(nHy) + L"\"><image width=\"" + std::to_wstring(nWx) + L"\" height=\"" + std::to_wstring(nHy) + L"\" xlink:href=\"images/img1.png\"/></svg></div></body></html>");
-            oCoverHtml.CloseFile();
-        }
-    }
-    // content.opf
-    NSFile::CFileBinary oContentOpf;
-    std::wstring sTitle;
-    std::wstring sUUID = GenerateUUID();
-    if (oContentOpf.CreateFileW(m_sTempDir + L"/OEBPS/content.opf"))
-    {
-        oContentOpf.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><package xmlns=\"http://www.idpf.org/2007/opf\" version=\"2.0\" unique-identifier=\"book_uuid\"><metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:opf=\"http://www.idpf.org/2007/opf\">");
-        // metadata
-        std::wstring sCoreXml;
-        bool bWasIdentifier = false;
-        XmlUtils::CXmlLiteReader oCoreReader;
-        if (NSFile::CFileBinary::ReadAllTextUtf8(sCoreFile, sCoreXml))
-        {
-            oCoreReader.FromString(sCoreXml);
-            oCoreReader.ReadNextNode();
-            int nDeath = oCoreReader.GetDepth();
-            while (oCoreReader.ReadNextSiblingNode(nDeath))
-            {
-                if (oCoreReader.GetNamespacePrefix() == L"dc")
-                {
-                    std::wstring sOut = oCoreReader.GetOuterXml();
-                    oContentOpf.WriteStringUTF8(sOut);
-                    std::wstring sName = oCoreReader.GetName();
-                    if (sName == L"dc:identifier")
-                        bWasIdentifier = true;
-                    else if (sName == L"dc:title")
-                    {
-                        size_t nBegin = sOut.find(L'>');
-                        if (nBegin == std::wstring::npos)
-                            continue;
-                        sOut.erase(0, nBegin + 1);
-                        nBegin = sOut.find(L'<');
-                        if (nBegin == std::wstring::npos)
-                            continue;
-                        sOut.erase(nBegin);
-                        sTitle = sOut;
-                    }
-                }
-            }
-        }
-        if (!bWasIdentifier)
-        {
-            oContentOpf.WriteStringUTF8(L"<dc:identifier id=\"book_uuid\" opf:scheme=\"UUID\">urn:uuid:");
-            oContentOpf.WriteStringUTF8(sUUID);
-            oContentOpf.WriteStringUTF8(L"</dc:identifier>");
-        }
-        if (bCoverFromImg1)
-            oContentOpf.WriteStringUTF8(L"<meta name=\"cover\" content=\"img1.png\"/>");
-        // manifest
-        oContentOpf.WriteStringUTF8(L"</metadata><manifest><item id=\"ncx\" href=\"toc.ncx\" media-type=\"application/x-dtbncx+xml\"/>");
-        std::vector<std::wstring> arFiles = NSDirectory::GetFiles(m_sTempDir + L"/OEBPS/images");
-        for (const std::wstring& sFileName : arFiles)
-        {
-            std::wstring sName = NSFile::GetFileName(sFileName);
-            oContentOpf.WriteStringUTF8(L"<item id=\"" + sName + L"\" href=\"images/" + sName + L"\" media-type=\"image/png\"/>");
-        }
-        oContentOpf.WriteStringUTF8(L"<item id=\"index\" href=\"index.html\" media-type=\"application/xhtml+xml\"/>");
-        if (bCoverFromImg1)
-            oContentOpf.WriteStringUTF8(L"<item id=\"cover\" href=\"cover.html\" media-type=\"application/xhtml+xml\"/>");
-        // spine
-        oContentOpf.WriteStringUTF8(L"</manifest><spine toc=\"ncx\">");
-        if (bCoverFromImg1)
-            oContentOpf.WriteStringUTF8(L"<itemref idref=\"cover\"/>");
-        // guide
-        oContentOpf.WriteStringUTF8(L"<itemref idref=\"index\"/></spine><guide>");
-        if (bCoverFromImg1)
-            oContentOpf.WriteStringUTF8(L"<reference type=\"cover\" title=\"Cover\" href=\"cover.html\"/>");
-        oContentOpf.WriteStringUTF8(L"</guide></package>");
-        oContentOpf.CloseFile();
-    }
-    // toc.ncx
-    NSFile::CFileBinary oTocNcx;
-    if (oTocNcx.CreateFileW(m_sTempDir + L"/OEBPS/toc.ncx"))
-    {
-        oTocNcx.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE ncx PUBLIC \"-//NISO//DTD ncx 2005-1//EN\" \"http://www.daisy.org/z3986/2005/ncx-2005-1.dtd\"><ncx xmlns=\"http://www.daisy.org/z3986/2005/ncx/\" version=\"2005-1\"><head><meta name=\"dtb:uid\" content=\"urn:uuid:" + sUUID + L"\"/><meta name=\"dtb:depth\" content=\"0\"/><meta name=\"dtb:totalPageCount\" content=\"0\"/><meta name=\"dtb:maxPageNumber\" content=\"0\"/></head><docTitle><text>" + sTitle + L"</text></docTitle><navMap><navPoint id=\"navPoint-1\" playOrder=\"1\"><navLabel><text>Start</text></navLabel><content src=\"index.html\"/></navPoint></navMap></ncx>");
-        oTocNcx.CloseFile();
-    }
-    COfficeUtils oOfficeUtils;
-    return oOfficeUtils.CompressFileOrDirectory(m_sTempDir, sDstFile);
 }

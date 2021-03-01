@@ -41,18 +41,25 @@ namespace PPTX
 {
 	namespace Logic
 	{
+
 		UniColor::UniColor()
 		{
 			Color.reset();
 		}
+
+
 		UniColor::~UniColor()
 		{
 			//Color.reset();
 		}
+	
+
 		UniColor::UniColor(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 		}
+
+
 		const UniColor& UniColor::operator =(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
@@ -88,9 +95,7 @@ namespace PPTX
 				Color.reset(new Logic::SchemeClr(oReader));
 			else if (name == _T("sysClr"))
 				Color.reset(new Logic::SysClr(oReader));
-			else if (name == _T("styleClr"))
-				Color.reset(new Logic::StyleClr(oReader));
-			else Color.reset();
+			else Color.reset();		
 		}
 		OOX::EElementType UniColor::getType () const
 		{
@@ -116,8 +121,6 @@ namespace PPTX
 				Color.reset(new Logic::SchemeClr(node));
 			else if (name == _T("sysClr"))
 				Color.reset(new Logic::SysClr(node));
-			else if (name == _T("styleClr"))
-				Color.reset(new Logic::StyleClr(node));
 			else Color.reset();
 		}
 
@@ -147,8 +150,10 @@ namespace PPTX
 							{
 								Color->ReadModsFromPPTY(pReader);
 							}
-						}						
-					}break;
+						}
+
+						break;
+					}
 					case COLOR_TYPE_SCHEME:
 					{
 						pReader->Skip(2);
@@ -165,8 +170,10 @@ namespace PPTX
 							{
 								Color->ReadModsFromPPTY(pReader);
 							}
-						}						
-					}break;
+						}
+
+						break;
+					}
 					case COLOR_TYPE_SRGB:
 					{
 						pReader->Skip(1);
@@ -204,60 +211,30 @@ namespace PPTX
 							{
 								case 0:
 								{
-									pColor->val = pReader->GetString2();									
-								}break;
+									pColor->val = pReader->GetString2();
+									break;
+								}
 								case 1:
 								{
-									pColor->red = pReader->GetUChar();									
-								}break;
+									pColor->red = pReader->GetUChar();
+									break;
+								}
 								case 2:
 								{
-									pColor->green = pReader->GetUChar();									
-								}break;
+									pColor->green = pReader->GetUChar();
+									break;
+								}
 								case 3:
 								{
-									pColor->blue = pReader->GetUChar();									
-								}break;
+									pColor->blue = pReader->GetUChar();
+									break;
+								}
 								default:
 									break;
 							}
 						}
-						Color = pColor;
-						if (pReader->GetPos() < _e)
-						{
-							if (0 == pReader->GetUChar())
-							{
-								Color->ReadModsFromPPTY(pReader);
-							}
-						}						
-					}break;
-					case COLOR_TYPE_STYLE:
-					{
-						pReader->Skip(1);
-						Logic::StyleClr* pColor = new Logic::StyleClr();
-						while (true)
-						{
-							BYTE _at = pReader->GetUChar_TypeNode();
-							if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-								break;
 
-							switch (_at)
-							{
-							case 0:
-							{
-								pColor->val = pReader->GetULong();
-							}break;
-							case 1:
-							{
-								pColor->bAuto = pReader->GetBool();
-							}break;
-							default:
-								break;
-							}
-						}
 						Color = pColor;
-
-						pReader->Skip(1);
 
 						if (pReader->GetPos() < _e)
 						{
@@ -266,7 +243,9 @@ namespace PPTX
 								Color->ReadModsFromPPTY(pReader);
 							}
 						}
-					}break;
+
+						break;
+					}
 				}
 			}
 

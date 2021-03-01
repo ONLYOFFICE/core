@@ -229,7 +229,6 @@
     <ClInclude Include="..\src\odf\datatypes\markerstyle.h" />
     <ClInclude Include="..\src\odf\datatypes\mathvariant.h" />
     <ClInclude Include="..\src\odf\datatypes\membertype.h" />
-    <ClInclude Include="..\src\odf\datatypes\messagetype.h" />
     <ClInclude Include="..\src\odf\datatypes\noteclass.h" />
     <ClInclude Include="..\src\odf\datatypes\odfattributes.h" />
     <ClInclude Include="..\src\odf\datatypes\officevaluetype.h" />
@@ -357,7 +356,6 @@
     <ClCompile Include="..\src\odf\datatypes\markerstyle.cpp" />
     <ClCompile Include="..\src\odf\datatypes\mathvariant.cpp" />
     <ClCompile Include="..\src\odf\datatypes\membertype.cpp" />
-    <ClCompile Include="..\src\odf\datatypes\messagetype.cpp" />
     <ClCompile Include="..\src\odf\datatypes\noteclass.cpp" />
     <ClCompile Include="..\src\odf\datatypes\officevaluetype.cpp" />
     <ClCompile Include="..\src\odf\datatypes\pageusage.cpp" />

@@ -17,9 +17,9 @@ class EPUBFILE_EXPORT CEpubFile
     std::wstring m_sTempDir;
 
     CBookInfo m_oBookInfo;
-    CBookToc  m_oToc;
     std::map<std::wstring, CBookItem> m_mapRefs;
-    std::vector<CBookContentItem>  m_arContents;
+    CBookToc m_oToc;
+    std::vector<CBookContentItem> m_arContents;
 
 public:
     CEpubFile();
@@ -30,7 +30,6 @@ public:
     void SetTempDirectory(const std::wstring& stempDir);
     HRESULT Convert(const std::wstring& sInputFile, const std::wstring& sOutputFile, bool bIsOutCompress = true);
     void ShowMap();
-    HRESULT FromHtml(const std::wstring& sHtmlFile, const std::wstring& sCoreFile, const std::wstring& sDstFile);
 };
 
 #endif // CEPUBFILE_H

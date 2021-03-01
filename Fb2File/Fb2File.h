@@ -16,7 +16,11 @@ struct CFb2Params
     bool bNeedDocx;
     bool bNeedContents;
 
-    CFb2Params() : bNeedDocx(false), bNeedContents(false) {}
+    CFb2Params()
+    {
+        bNeedDocx = false;
+        bNeedContents = false;
+    }
 };
 
 class CFb2File_Private;
@@ -31,7 +35,6 @@ public:
     bool IsFb2File(const std::wstring& sFile);
     void SetTmpDirectory(const std::wstring& sFolder);
     HRESULT Open(const std::wstring& sPath, const std::wstring& sDirectory, CFb2Params* oParams = NULL);
-    HRESULT FromHtml(const std::wstring& sHtmlFile, const std::wstring& sCoreFile, const std::wstring& sDst);
 };
 
 #endif // _FB2FILE_FB2FILE_H

@@ -525,11 +525,6 @@ inline JSValue* js_return(JSSmart<NSJSBase::CJSValue> _value)
     {                                                                                                                                                   \
         return js_return(m_internal->NAME_EMBED(js_value(p1), js_value(p2), js_value(p3), js_value(p4), js_value(p5), js_value(p6), js_value(p7)));     \
     }
-#define FUNCTION_WRAPPER_JS_8(NAME, NAME_EMBED)                                                                                                         \
-    -(JSValue*) NAME:(JSValue*)p1 : (JSValue*)p2 : (JSValue*)p3 : (JSValue*)p4 : (JSValue*)p5 : (JSValue*)p6 : (JSValue*)p7 : (JSValue*)p8              \
-    {                                                                                                                                                   \
-        return js_return(m_internal->NAME_EMBED(js_value(p1), js_value(p2), js_value(p3), js_value(p4), js_value(p5), js_value(p6), js_value(p7), js_value(p8)));     \
-    }
 
 #if __has_feature(objc_arc)
 #define EMBED_OBJECT_WRAPPER_METHODS(CLASS)     \

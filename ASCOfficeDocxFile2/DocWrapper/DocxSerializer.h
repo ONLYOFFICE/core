@@ -54,6 +54,7 @@ namespace BinDocxRW
         std::wstring			m_sEmbeddedFontsDir;
 		bool					m_bIsNoBase64Save;
 		bool					m_bIsNoBase64;
+		bool					m_bSaveChartAsImg;
 		ParamsWriter*			m_pParamsWriter;
 		Writers::FileWriter*	m_pCurFileWriter;
 

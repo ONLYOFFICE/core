@@ -394,8 +394,6 @@ namespace PPTX
 													pFill->blip = new PPTX::Logic::Blip();
 
 												pFill->blip->embed = new OOX::RId(oRelsGeneratorInfo.nImageRId);
-												pFill->blip->imageFilepath = oRelsGeneratorInfo.sFilepathImage;
-												
 												if (pFill->blip.is_init())
 													pFill->blip->m_namespace = _T("a");
 

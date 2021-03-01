@@ -32,8 +32,6 @@ if not base.is_dir("hunspell"):
     base.replaceInFile("./src/hunspell/filemgr.hxx", "FileMgr& operator=(const FileMgr&);", "FileMgr& operator=(const FileMgr&); \n" 
          +" #ifdef HUNSPELL_WASM_MODULE \n std::istrstream* memin; \n #endif") #custon filemgr support watch filemgr_wrapper_new.cxx
     base.replaceInFile("./src/hunspell/filemgr.hxx", "#include <fstream>", "#include <fstream> \n #include <strstream>\n")
-	#include <fstream>
-	#include <strstream>
     os.chdir("../")
 
 

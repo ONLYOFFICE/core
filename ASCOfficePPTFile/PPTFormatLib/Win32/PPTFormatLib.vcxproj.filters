@@ -739,8 +739,14 @@
     <ClInclude Include="..\Structures\WideColorStruct.h">
       <Filter>Structures</Filter>
     </ClInclude>
-    <ClInclude Include="..\PPTXWriter\TimingConverter.h">
+    <ClInclude Include="..\PPTXWriter\Animation.h">
       <Filter>OOXWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PPTXWriter\ridmanager.h">
+      <Filter>OOXWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Structures\ColorIndex.h">
+      <Filter>OOXElements</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -781,7 +787,10 @@
     <ClCompile Include="..\Records\Animations\TimeVariant.cpp">
       <Filter>Records\Animations</Filter>
     </ClCompile>
-    <ClCompile Include="..\PPTXWriter\TimingConverter.cpp">
+    <ClCompile Include="..\PPTXWriter\Animation.cpp">
+      <Filter>OOXWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PPTXWriter\ridmanager.cpp">
       <Filter>OOXWriter</Filter>
     </ClCompile>
   </ItemGroup>

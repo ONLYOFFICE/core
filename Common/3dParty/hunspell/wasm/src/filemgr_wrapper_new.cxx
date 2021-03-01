@@ -16,7 +16,7 @@ int FileMgr::fail(const char * err, const char * par) {
 }
 
 FileMgr::FileMgr(const char * file, const char * key)
-    : hin(NULL), linenum(0)
+    : hin(NULL), linenum(0), memin(NULL)
 {
     in[0] = '\0';
 
@@ -27,33 +27,23 @@ FileMgr::FileMgr(const char * file, const char * key)
     }
     else
     {
-        index = 0;
-        size = file_memory->len;
-        memory = (char*)file_memory->data;
+		memin = new std::istrstream((char*)file_memory->data, file_memory->len);
     }
 }
 
 FileMgr::~FileMgr()
 {
     if (hin) delete hin;
+	if (memin) delete memin;
 }
 
-bool FileMgr::getline(std::string& res) {
-    bool ret = false;
-    if(index >= size)
-        return false;
-    int i = 0, l = BUFSIZE-1;
-    size_t cur_index = index;
-    while (memory[index] != '\n' && memory[index] != EOF && i <= l)
-    {index++;i++;}
-    res = std::string(memory + cur_index, index - cur_index);
-    index++;    
-    if(index < size)
-    {
-        linenum++;
-        return true;
-    }
-    return false;
+bool FileMgr::getline(std::string& dest) {
+  ++linenum;
+  bool ret = static_cast<bool>(std::getline(*memin, dest));
+  if (!ret) {
+    --linenum;
+  }
+  return ret;
 }
 
 int FileMgr::getlinenum() {

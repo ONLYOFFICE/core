@@ -24,13 +24,16 @@ if not base.is_dir("emsdk"):
 #fetch libhunspell
 
 if not base.is_dir("hunspell"):
-    last_stable_commit = "8a2fdfe5a6bb1cbafc04b0c8486abcefd17ad903"
+    last_stable_commit = "4ddd8ed5ca6484b930b111aec50c2750a6119a0f"
     repo_path = "https://github.com/hunspell/hunspell.git"
     base.cmd("git", ["clone", repo_path])
     os.chdir("hunspell")
     base.cmd("git", ["checkout", last_stable_commit])
     base.replaceInFile("./src/hunspell/filemgr.hxx", "FileMgr& operator=(const FileMgr&);", "FileMgr& operator=(const FileMgr&); \n" 
-         +" #ifdef HUNSPELL_WASM_MODULE \n char* memory;size_t index;size_t size; \n #endif") #custon filemgr support watch filemgr_wrapper_new.cxx
+         +" #ifdef HUNSPELL_WASM_MODULE \n std::istrstream* memin; \n #endif") #custon filemgr support watch filemgr_wrapper_new.cxx
+    base.replaceInFile("./src/hunspell/filemgr.hxx", "#include <fstream>", "#include <fstream> \n #include <strstream>\n")
+	#include <fstream>
+	#include <strstream>
     os.chdir("../")
 
 

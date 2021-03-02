@@ -1234,6 +1234,7 @@ void CGraphics::put_BrushGradient(LONG* pColors, double* pPositions, size_t nCou
     #endif
     if(r0 < 0)
     {
+        // линейный
         double dX = x1 - x0, dY = y1 - y0;
         double dHyp = sqrt(dX * dX + dY * dY);
         double dAngle = acos(dX / dHyp) * 180 / M_PI;
@@ -1243,6 +1244,7 @@ void CGraphics::put_BrushGradient(LONG* pColors, double* pPositions, size_t nCou
     }
     else
     {
+        // радиальный
         m_pRenderer->put_BrushType(c_BrushTypePathGradient2);
         m_pRenderer->put_BrushGradientColors(pColors, pPositions, nCount);
     }

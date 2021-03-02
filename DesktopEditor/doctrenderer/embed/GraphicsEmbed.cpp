@@ -497,7 +497,7 @@ JSSmart<CJSValue> CGraphicsEmbed::put_BrushGradient(JSSmart<CJSValue> colors, JS
     double _y1 = y1->toDouble() / 100000.0;
     double _r0 = -1;
     double _r1 = -1;
-    if(!r0->isNull())
+    if(r0->isNumber())
     {
         _r0 = r0->toDouble() / 100000.0;
         _r1 = r1->toDouble() / 100000.0;

@@ -1239,7 +1239,7 @@ void CGraphics::put_BrushGradient(LONG* pColors, double* pPositions, size_t nCou
     #ifdef _DEBUG
     std::cout << "put_BrushGradient " << std::endl;
     #endif
-    if(isnan(r0))
+    if(r0 < 0)
     {
         double dX = x1 - x0, dY = y1 - y0;
         double dHyp = sqrt(dX * dX + dY * dY);

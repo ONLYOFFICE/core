@@ -1506,9 +1506,8 @@ namespace NExtractTools
 		_UINT32 nRes = 0;
 		NSDoctRenderer::DoctRendererFormat::FormatFile eToType = NSDoctRenderer::DoctRendererFormat::FormatFile::HTML;
 		std::wstring sFileFromDir = NSDirectory::GetFolderPath(sFrom);
-		std::wstring sFileToDir   = NSDirectory::GetFolderPath(sTo);
 		std::wstring sImagesDirectory = sFileFromDir + FILE_SEPARATOR_STR + L"media";
-		std::wstring sHtmlFile        = sFileFromDir + FILE_SEPARATOR_STR + L"index.html";
+		std::wstring sHtmlFile        = sTemp        + FILE_SEPARATOR_STR + L"index.html";
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
 		std::wstring sXml = getDoctXml(eFromType, eToType, sFileFromDir, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
 		std::wstring sResult;
@@ -1523,7 +1522,7 @@ namespace NExtractTools
 			std::wstring sDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
 			NSDirectory::CreateDirectory(sDocxDir);
 			nRes = doct_bin2docx_dir(sFrom, sTo, sDocxDir, false, sThemeDir, params);
-			if(SUCCEEDED_X2T(nRes))
+			if (SUCCEEDED_X2T(nRes))
 			{
 				CEpubFile oFile;
 				std::wstring sEpubTemp = sTemp + FILE_SEPARATOR_STR + L"tmp";
@@ -1541,9 +1540,8 @@ namespace NExtractTools
 		_UINT32 nRes = 0;
 		NSDoctRenderer::DoctRendererFormat::FormatFile eToType = NSDoctRenderer::DoctRendererFormat::FormatFile::HTML;
 		std::wstring sFileFromDir = NSDirectory::GetFolderPath(sFrom);
-		std::wstring sFileToDir   = NSDirectory::GetFolderPath(sTo);
 		std::wstring sImagesDirectory = sFileFromDir + FILE_SEPARATOR_STR + L"media";
-		std::wstring sHtmlFile        = sFileFromDir + FILE_SEPARATOR_STR + L"index.html";
+		std::wstring sHtmlFile        = sTemp        + FILE_SEPARATOR_STR + L"index.html";
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
 		std::wstring sXml = getDoctXml(eFromType, eToType, sFileFromDir, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
 		std::wstring sResult;
@@ -1558,7 +1556,7 @@ namespace NExtractTools
 			std::wstring sDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
 			NSDirectory::CreateDirectory(sDocxDir);
 			nRes = doct_bin2docx_dir(sFrom, sTo, sDocxDir, false, sThemeDir, params);
-			if(SUCCEEDED_X2T(nRes))
+			if (SUCCEEDED_X2T(nRes))
 			{
 				CFb2File fb2File;
 				fb2File.SetTmpDirectory(sTemp);
@@ -1575,7 +1573,7 @@ namespace NExtractTools
 		NSDoctRenderer::DoctRendererFormat::FormatFile eToType = NSDoctRenderer::DoctRendererFormat::FormatFile::HTML;
 		std::wstring sFileFromDir = NSDirectory::GetFolderPath(sFrom);
 		std::wstring sImagesDirectory = sFileFromDir + FILE_SEPARATOR_STR + L"media";
-		std::wstring sHtmlFile        = sFileFromDir + FILE_SEPARATOR_STR + L"index.html";
+		std::wstring sHtmlFile        = sTemp        + FILE_SEPARATOR_STR + L"index.html";
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
 		std::wstring sXml = getDoctXml(eFromType, eToType, sFileFromDir, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
 		std::wstring sResult;
@@ -1596,7 +1594,7 @@ namespace NExtractTools
 		NSDoctRenderer::DoctRendererFormat::FormatFile eToType = NSDoctRenderer::DoctRendererFormat::FormatFile::HTML;
 		std::wstring sFileFromDir = NSDirectory::GetFolderPath(sFrom);
 		std::wstring sImagesDirectory = sFileFromDir + FILE_SEPARATOR_STR + L"media";
-		std::wstring sHtmlFile        = sFileFromDir + FILE_SEPARATOR_STR + L"index.html";
+		std::wstring sHtmlFile        = sTemp        + FILE_SEPARATOR_STR + L"index.html";
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
 		std::wstring sXml = getDoctXml(eFromType, eToType, sFileFromDir, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
 		std::wstring sResult;

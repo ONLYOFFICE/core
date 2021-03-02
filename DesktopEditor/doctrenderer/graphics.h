@@ -199,7 +199,6 @@ namespace NSGraphics
         void AddClipRect(double x, double y, double w, double h);
         void RemoveClipRect();
         void SetClip    (double x, double y, double w, double h);
-        void drawCollaborativeChanges(double x, double y, double w, double h, int r, int g, int b, int a);
         void drawMailMergeField      (double x, double y, double w, double h);
         void drawSearchResult        (double x, double y, double w, double h);
         void SavePen();

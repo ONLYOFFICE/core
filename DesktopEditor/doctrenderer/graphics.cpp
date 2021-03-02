@@ -899,13 +899,6 @@ void CGraphics::SetClip    (double x, double y, double w, double h)
     rect(x, y, w, h);
     clip();
 }
-void CGraphics::drawCollaborativeChanges(double x, double y, double w, double h, int r, int g, int b, int a)
-{
-    b_color1(r, g, b, a);
-    rect(x, y, w, h);
-    df();
-    m_pRenderer->PathCommandEnd();
-}
 void CGraphics::drawMailMergeField(double x, double y, double w, double h)
 {
     b_color1(206, 212, 223, 204);

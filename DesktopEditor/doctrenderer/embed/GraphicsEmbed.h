@@ -90,7 +90,6 @@ public:
     JSSmart<CJSValue> RemoveClipRect();
     JSSmart<CJSValue> SetClip(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h);
     JSSmart<CJSValue> RemoveClip();
-    JSSmart<CJSValue> drawCollaborativeChanges(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h, JSSmart<CJSValue> r, JSSmart<CJSValue> g, JSSmart<CJSValue> b, JSSmart<CJSValue> a);
     JSSmart<CJSValue> drawMailMergeField(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h);
     JSSmart<CJSValue> drawSearchResult  (JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h);
     JSSmart<CJSValue> drawFlowAnchor    (JSSmart<CJSValue> x, JSSmart<CJSValue> y);

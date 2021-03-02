@@ -79,7 +79,6 @@ namespace NSGraphics
     FUNCTION_WRAPPER_V8  (_RemoveClipRect,           RemoveClipRect)
     FUNCTION_WRAPPER_V8_4(_SetClip,                  SetClip)
     FUNCTION_WRAPPER_V8  (_RemoveClip,               RemoveClip)
-    FUNCTION_WRAPPER_V8_8(_drawCollaborativeChanges, drawCollaborativeChanges)
     FUNCTION_WRAPPER_V8_4(_drawMailMergeField,       drawMailMergeField)
     FUNCTION_WRAPPER_V8_4(_drawSearchResult,         drawSearchResult)
     FUNCTION_WRAPPER_V8_2(_drawFlowAnchor,           drawFlowAnchor)
@@ -194,7 +193,6 @@ namespace NSGraphics
         NSV8Objects::Template_Set(result, "RemoveClipRect",           _RemoveClipRect);
         NSV8Objects::Template_Set(result, "SetClip",                  _SetClip);
         NSV8Objects::Template_Set(result, "RemoveClip",               _RemoveClip);
-        NSV8Objects::Template_Set(result, "drawCollaborativeChanges", _drawCollaborativeChanges);
         NSV8Objects::Template_Set(result, "drawMailMergeField",       _drawMailMergeField);
         NSV8Objects::Template_Set(result, "drawSearchResult",         _drawSearchResult);
         NSV8Objects::Template_Set(result, "drawFlowAnchor",           _drawFlowAnchor);

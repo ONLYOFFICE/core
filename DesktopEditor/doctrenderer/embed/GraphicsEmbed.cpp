@@ -321,11 +321,6 @@ JSSmart<CJSValue> CGraphicsEmbed::RemoveClip()
     m_pInternal->restore();
     return NULL;
 }
-JSSmart<CJSValue> CGraphicsEmbed::drawCollaborativeChanges(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h, JSSmart<CJSValue> r, JSSmart<CJSValue> g, JSSmart<CJSValue> b, JSSmart<CJSValue> a)
-{
-    m_pInternal->drawCollaborativeChanges(x->toDouble(), y->toDouble(), w->toDouble(), h->toDouble(), r->toInt32(), g->toInt32(), b->toInt32(), a->toInt32());
-    return NULL;
-}
 JSSmart<CJSValue> CGraphicsEmbed::drawMailMergeField(JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h)
 {
     m_pInternal->drawMailMergeField(x->toDouble(), y->toDouble(), w->toDouble(), h->toDouble());

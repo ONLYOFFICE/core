@@ -607,7 +607,8 @@ namespace PPTX
 				SimpleTypes::CShapeType<> ooxPrst = SimpleTypes::CShapeType<>(lpGeom.prst.get());
 				vmlPrst =  OOX::PrstGeom2VmlShapeType( ooxPrst.GetValue());
 			}   
-
+			else if (bSignature) vmlPrst = SimpleTypes::Vml::sptPictureFrame;
+			
 			if (spPr.xfrm.is_init())
 			{
 				if (spPr.xfrm->offX.is_init())	dL = *spPr.xfrm->offX;
@@ -763,7 +764,7 @@ namespace PPTX
 				pWriter->WriteString(*strTextBoxShape); //??? todooo -> oTextBoxShape
 				pWriter->EndNode(L"v:textbox");
 			}
-			if (spPr.Fill.m_type == UniFill::blipFill)
+			if (strFillNode.empty() && spPr.Fill.m_type == UniFill::blipFill)
 			{
 				BlipFill& blipFill = spPr.Fill.as<BlipFill>();
 				

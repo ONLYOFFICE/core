@@ -1230,7 +1230,10 @@ void CGraphics::put_BrushTextureAlpha(int a)
 void CGraphics::put_BrushGradient(LONG* pColors, double* pPositions, size_t nCount, double x0, double y0, double x1, double y1, double r0, double r1)
 {
     #ifdef _DEBUG
-    std::cout << "put_BrushGradient " << x0 << "  " << y0 << "  " << x1 << "  " << y1 << "  " << r0 << "  " << r1 << std::endl;
+    std::cout << "put_BrushGradient " << nCount << "  " << x0 << "  " << y0 << "  " << x1 << "  " << y1 << "  " << r0 << "  " << r1 << std::endl;
+    for (size_t i = 0; i < nCount; i++)
+        std::cout << pPositions[i] << "  " << pColors[i] << "  ";
+    std::cout << std::endl;
     #endif
     if (std::isnan(r0))
     {

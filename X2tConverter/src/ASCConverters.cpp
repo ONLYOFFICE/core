@@ -3518,11 +3518,15 @@ namespace NExtractTools
            {
                nRes = html_zip2docx_dir(sFrom, sDocxDir, sTemp, params);
            }
-           else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT == nFormatFrom)
+           else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_PACKAGE == nFormatFrom)
            {
-               nRes = mht2docx_dir(sFrom, sDocxDir, sTemp, params);
+               nRes = package2docx_dir(sFrom, sDocxDir, sTemp, params);
            }
-           else
+		   else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT == nFormatFrom)
+		   {
+			   nRes = mht2docx_dir(sFrom, sDocxDir, sTemp, params);
+		   }
+		   else
                nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
            if(SUCCEEDED_X2T(nRes))
            {

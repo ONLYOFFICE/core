@@ -4599,8 +4599,8 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 				}else
 				{
 					//stretch ??? bug 28238
-					pBlipFill->stretch = new PPTX::Logic::Stretch();
-
+					pBlipFill->stretch.Init();
+					pBlipFill->stretch->fillRect.Init();
 				}
 
                 std::wstring strCropT = oNodeFillID.GetAttribute(L"croptop");

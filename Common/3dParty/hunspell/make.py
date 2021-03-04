@@ -11,6 +11,9 @@ def get_hunspell(last_stable_commit):
     base.replaceInFile("./src/hunspell/filemgr.hxx", "FileMgr& operator=(const FileMgr&);", "FileMgr& operator=(const FileMgr&); \n" 
          +" #ifdef HUNSPELL_WASM_MODULE \n std::istrstream* memin; \n #endif") #custon filemgr support watch filemgr_wrapper_new.cxx
     base.replaceInFile("./src/hunspell/filemgr.hxx", "#include <fstream>", "#include <fstream> \n #include <strstream>\n")
+    base.replaceInFile("./src/hunspell/csutil.cxx", "void free_utf_tbl() {", "void free_utf_tbl() { \n return;\n")
+	# bug fix, we need to keep this utf table 
+    # free_utf_tbl doesnt delete anything so we can destroy huspell object
     os.chdir("../")
 
 

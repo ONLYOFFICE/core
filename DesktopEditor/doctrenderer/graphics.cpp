@@ -1238,9 +1238,9 @@ void CGraphics::put_BrushGradient(LONG* pColors, double* pPositions, size_t nCou
     if (std::isnan(r0))
     {
         // линейный
-        double dX = x1 - x0, dY = y1 - y0;
-        double dHyp = sqrt(dX * dX + dY * dY);
-        double dAngle = acos(dX / dHyp) * 180 / M_PI;
+        double dAngle = 0;
+        if (fabs(x1 - x0) >= FLT_EPSILON || fabs(y1 - y0) >= FLT_EPSILON)
+            dAngle = atan2(y1 - y0, x1 - x0) * 180 / M_PI;
         m_pRenderer->put_BrushType(c_BrushTypePathGradient1);
         m_pRenderer->put_BrushGradientColors(pColors, pPositions, nCount);
         m_pRenderer->put_BrushLinearAngle(dAngle);

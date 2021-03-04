@@ -1195,6 +1195,7 @@ void CGraphics::put_brushTexture(std::wstring src, int type)
                 oFrame.put_Width(nSize);
                 oFrame.put_Height(nSize);
                 oFrame.put_Stride(4 * nSize);
+                oFrame.put_IsRGBA(true);
                 oFrame.SaveFile(strImage, 4);
             }
             m_pRenderer->put_BrushType(c_BrushTypeTexture);

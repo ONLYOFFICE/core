@@ -470,38 +470,40 @@ JSSmart<CJSValue> CGraphicsEmbed::put_BrushTextureAlpha(JSSmart<CJSValue> a)
 JSSmart<CJSValue> CGraphicsEmbed::put_BrushGradient(JSSmart<CJSValue> colors, JSSmart<CJSValue> transparent, JSSmart<CJSValue> x0, JSSmart<CJSValue> y0, JSSmart<CJSValue> x1, JSSmart<CJSValue> y1, JSSmart<CJSValue> r0, JSSmart<CJSValue> r1)
 {
     JSSmart<CJSArray> items = colors->toArray();
-    size_t length = items->getCount();
+    size_t length = items->getCount() / 5;
     LONG* color = NULL;
     double* pos = NULL;
-    if(length > 0)
+    if (length > 0)
     {
         color = new LONG[length];
         pos = new double[length];
     }
-    for(size_t i = 0; i < length; i++)
+    LONG R, G, B, A;
+    for (size_t i = 0; i < 5 * length; i++)
     {
-        JSSmart<CJSObject> item = items->get(i)->toObject();
-        pos[i] = item->get("pos")->toDouble() / 100000.0;
-        LONG R = item->get("color")->toObject()->get("RGBA")->toObject()->get("R")->toInt32();
-        LONG G = item->get("color")->toObject()->get("RGBA")->toObject()->get("G")->toInt32();
-        LONG B = item->get("color")->toObject()->get("RGBA")->toObject()->get("B")->toInt32();
-        LONG A = item->get("color")->toObject()->get("RGBA")->toObject()->get("A")->toInt32();
-        if(!transparent->isNull())
-            A = transparent->toInt32();
-        color[i] = R | (G << 8) | (B << 16) | (A << 24);
+        JSSmart<CJSValue> item = items->get(i);
+        size_t nDel = i % 5;
+        switch (nDel)
+        {
+        case 0: pos[i / 5] = item->toDouble() / 100000.0; break;
+        case 1: R = item->toInt32(); break;
+        case 2: G = item->toInt32(); break;
+        case 3: B = item->toInt32(); break;
+        case 4:
+            A = item->toInt32();
+            if (!transparent->isNull())
+                A = transparent->toInt32();
+            color[i / 5] = R | (G << 8) | (B << 16) | (A << 24);
+            break;
+        }
     }
 
     double _x0 = x0->toDouble() / 100000.0;
     double _y0 = y0->toDouble() / 100000.0;
     double _x1 = x1->toDouble() / 100000.0;
     double _y1 = y1->toDouble() / 100000.0;
-    double _r0 = -1;
-    double _r1 = -1;
-    if(r0->isNumber())
-    {
-        _r0 = r0->toDouble() / 100000.0;
-        _r1 = r1->toDouble() / 100000.0;
-    }
+    double _r0 = r0->toDouble() / 100000.0;
+    double _r1 = r1->toDouble() / 100000.0;
 
     m_pInternal->put_BrushGradient(color, pos, length, _x0, _y0, _x1, _y1, _r0, _r1);
 

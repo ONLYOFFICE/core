@@ -290,22 +290,20 @@ public:
     /*static */void ExecuteTextInternalSkipChars(std::wstring & sResult, RtfReader& oReader, std::string & sKey, int& nSkipChars)
 	{
 		//удаляем символы вслед за юникодом
-		if( nSkipChars > 0 )
+		if ( nSkipChars > 0 )
 		{
-            int nLength = (int)sResult.length();
-			if( nSkipChars >= nLength )
+			if ( nSkipChars >= (int)sResult.length())
 			{
-				nSkipChars = 0;				//vedomost.rtf
-				//nSkipChars -= nLength;
+				//nSkipChars -= nLength;//vedomost.rtf
 				sResult.clear();
 			}
 			else
 			{
                 sResult = sResult.substr( nSkipChars );
-				nSkipChars = 0;
 			}
+			nSkipChars = 0;
 		}
-        if( "u" == sKey )
+        if ( "u" == sKey )
 		{
 			//надо правильно установить m_nSkipChars по значению \ucN
 			nSkipChars = oReader.m_oState->m_nUnicodeClean;

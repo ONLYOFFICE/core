@@ -148,7 +148,6 @@ public:
 
         BN_free(bn);
         OPENSSL_free(tmp);
-        ASN1_INTEGER_free(asn1_serial);
 
         return sReturn;
     }

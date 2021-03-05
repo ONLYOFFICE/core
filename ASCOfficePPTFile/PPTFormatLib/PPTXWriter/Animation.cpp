@@ -1276,7 +1276,7 @@ void Animation::InitTimingTags(PPTX::Logic::Timing &oTiming)
         PPTX::Logic::BldP *pBldP = new PPTX::Logic::BldP();
         pBldP->spid = std::to_wstring(oldAnim.shapeId);
         pBldP->grpId = false;
-        pBldP->animBg = true;
+        pBldP->animBg = (bool)(oldAnim.anim->m_AnimationAtom.m_fAnimateBg);
 
         oBuildNodeBase.m_node = pBldP;
         oTiming.bldLst->list.push_back(oBuildNodeBase);
@@ -1298,6 +1298,26 @@ void Animation::InitTimingTags(PPTX::Logic::Timing &oTiming)
     seq2->concurrent = L"1";
     seq2->nextAc = L"seek";
     seq2->cTn.childTnLst = new PPTX::Logic::ChildTnLst;
+
+    std::list<std::list<SOldAnimation*> > arrClickPar;
+
+    for (auto oldAnim : m_arrOldAnim)
+    {
+        if (arrClickPar.empty())
+        {
+            std::list<SOldAnimation*> clickPar;
+            clickPar.push_back(&oldAnim);
+            arrClickPar.push_back(clickPar);
+        } else if (oldAnim.anim->m_AnimationAtom.m_fAutomatic)
+        {
+            arrClickPar.back().push_back(&oldAnim);
+        } else
+        {
+            std::list<SOldAnimation*> clickPar;
+            clickPar.push_back(&oldAnim);
+            arrClickPar.push_back(clickPar);
+        }
+    }
 
     for (auto oldAnim : m_arrOldAnim)
     {
@@ -1336,6 +1356,8 @@ void Animation::InitTimingTags(PPTX::Logic::Timing &oTiming)
 
 void Animation::FillOldAnim(SOldAnimation& oldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase)
 {
+    auto animAtom = oldAnim.anim->m_AnimationAtom;
+
     auto par1 = new PPTX::Logic::Par;
     par1->cTn.id = m_cTnId++;
     par1->cTn.fill = L"hold";
@@ -1347,8 +1369,8 @@ void Animation::FillOldAnim(SOldAnimation& oldAnim, PPTX::Logic::TimeNodeBase &o
     PPTX::Logic::Cond cond1;
     cond1.delay = L"indefinite";
     par1->cTn.stCondLst->list.push_back(cond1);
-    if (oldAnim.anim->m_AnimationAtom.m_OrderID == 1 &&
-            oldAnim.anim->m_AnimationAtom.m_fAutomatic)
+    if (animAtom.m_OrderID == 1 &&
+            animAtom.m_fAutomatic)
     {
         PPTX::Logic::Cond cond11;
         cond11.evt = L"onBegin";
@@ -1367,13 +1389,13 @@ void Animation::FillOldAnim(SOldAnimation& oldAnim, PPTX::Logic::TimeNodeBase &o
         par2->cTn.stCondLst = new PPTX::Logic::CondLst;
         par2->cTn.stCondLst->node_name = L"stCondLst";
         PPTX::Logic::Cond cond2;
-        cond2.delay = std::to_wstring(oldAnim.anim->m_AnimationAtom.m_DelayTime); // Experimental
+        cond2.delay = animAtom.m_fAutomatic ? std::to_wstring(animAtom.m_DelayTime) : L"0"; // Experimental
         par2->cTn.stCondLst->list.push_back(cond2);
 
             auto par3 = new PPTX::Logic::Par;
             par3->cTn.id = m_cTnId++;
             par3->cTn.fill = L"hold";
-            par3->cTn.nodeType = (oldAnim.anim->m_AnimationAtom.m_fAutomatic ? L"afterEffect" : L"clickEffect");
+            par3->cTn.nodeType = (animAtom.m_fAutomatic ? L"afterEffect" : L"clickEffect");
             par3->cTn.presetID = 1;
             par3->cTn.presetSubtype = 0;
             par3->cTn.presetClass = L"entr";

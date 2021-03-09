@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef CUSTOM_XML_WRITER
-#define CUSTOM_XML_WRITER
+#pragma once
 
 #include "../../XlsxSerializerCom/Common/Common.h"
 
@@ -44,11 +43,15 @@ namespace Writers
 	class CustomXmlWriter
 	{
 		int m_nCount;
-        std::wstring				m_sDir;
+        std::wstring m_sDir;
 		NSBinPptxRW::CDrawingConverter* m_pDrawingConverter;
 	public:
+		std::vector<std::wstring> arItems;
+
 		CustomXmlWriter(std::wstring sDir, NSBinPptxRW::CDrawingConverter* pDrawingConverter);
-		std::wstring WriteCustomXml(const std::wstring& sUrl, const std::wstring& sXml);
+		
+		void WriteCustomSettings(const std::wstring& sUrl, const std::wstring& sXml);
+		void WriteCustom(const std::wstring& sCustomXmlPropertiesContent, const std::wstring& sCustomXmlContents);
 	};
 }
-#endif	// #ifndef CUSTOM_XML_WRITER
+

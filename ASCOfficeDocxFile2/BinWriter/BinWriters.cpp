@@ -49,6 +49,8 @@
 #include "../../HtmlFile2/htmlfile2.h"
 #include "../../ASCOfficeRtfFile/RtfFormatLib/source/ConvertationManager.h"
 
+#include "../../Common/DocxFormat/Source/DocxFormat/CustomXml.h"
+
 
 #define COMPLEX_BOOL_TO_UINT(offset, val) \
 	if(val.IsInit()) { \
@@ -8771,8 +8773,59 @@ void BinaryNotesTableWriter::WriteNote(const OOX::CFtnEdn& oFtnEdn, BinaryDocume
 	oBinaryDocumentTableWriter.WriteDocumentContent(oFtnEdn.m_arrItems);
 	m_oBcw.WriteItemEnd(nCurPos);
 }
+BinaryCustomsTableWriter::BinaryCustomsTableWriter(ParamsWriter& oParamsWriter) : m_oParamsWriter(oParamsWriter), m_oBcw(oParamsWriter)
+{
+}
+void BinaryCustomsTableWriter::Write(OOX::CDocument* pDocument)
+{
+	if (!pDocument) return;
 
+	int nStart = m_oBcw.WriteItemWithLengthStart();
+	
+	std::vector<smart_ptr<OOX::File>>& container = pDocument->GetContainer();
+	for (size_t i = 0; i < container.size(); ++i)
+	{
+		if (OOX::FileTypes::CustomXml == container[i]->type())
+		{
+			OOX::CCustomXML* pCustomXml = dynamic_cast<OOX::CCustomXML*>(container[i].GetPointer());
+			if (pCustomXml->bUsed) continue;
 
+			int nCurPos = m_oBcw.WriteItemStart(BinDocxRW::c_oSerCustoms::Custom);
+			
+			std::vector<smart_ptr<OOX::File>>& containerCustom = pCustomXml->GetContainer();
+			for (size_t i = 0; i < containerCustom.size(); ++i)
+			{
+				if (OOX::FileTypes::CustomXmlProps == containerCustom[i]->type())
+				{
+					OOX::CCustomXMLProps* pCustomXmlProps = dynamic_cast<OOX::CCustomXMLProps*>(containerCustom[i].GetPointer());
+					
+					int nCurPos1 = m_oBcw.WriteItemStart(c_oSerCustoms::ItemId);
+					m_oBcw.m_oStream.WriteStringW3(pCustomXmlProps->m_oItemID.ToString());
+					m_oBcw.WriteItemEnd(nCurPos1);
+
+					if (pCustomXmlProps->m_oShemaRefs.IsInit())
+					{
+						for (size_t j = 0; j < pCustomXmlProps->m_oShemaRefs->m_arrItems.size(); ++j)
+						{
+							nCurPos1 = m_oBcw.WriteItemStart(c_oSerCustoms::Uri);
+							m_oBcw.m_oStream.WriteStringW3(pCustomXmlProps->m_oShemaRefs->m_arrItems[j]->m_sUri);
+							m_oBcw.WriteItemEnd(nCurPos1);
+						}
+					}
+				}
+			}
+			
+			int nCurPos2 = m_oBcw.WriteItemStart(c_oSerCustoms::Content);
+			m_oBcw.m_oStream.WriteStringW3(pCustomXml->m_sXml);
+			m_oBcw.WriteItemEnd(nCurPos2);
+			
+			m_oBcw.WriteItemEnd(nCurPos);
+			pCustomXml->bUsed = true;
+		}
+	}
+	m_oBcw.WriteItemWithLengthEnd(nStart);
+}
+//----------------------------------------------------------------------------------------------------------------------------
 BinaryFileWriter::BinaryFileWriter(ParamsWriter& oParamsWriter) : m_oParamsWriter(oParamsWriter), m_oBcw(oParamsWriter)
 {
 	m_nLastFilePos = 0;
@@ -9041,6 +9094,13 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 	if (m_oParamsWriter.m_bLocalNumbering)
 		delete m_oParamsWriter.m_pNumbering;	
 	
+	{
+		nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Customs);
+			BinDocxRW::BinaryCustomsTableWriter oBinaryCustomsTableWriter(m_oParamsWriter);
+			oBinaryCustomsTableWriter.Write(pDocument);
+		this->WriteTableEnd(nCurPos);
+	}
+
 	if (pDocx && pDocx->m_oGlossary.document)
 	{
 		m_oParamsWriter.m_pSettings = pDocx->m_oGlossary.settings;

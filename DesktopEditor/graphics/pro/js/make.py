@@ -1,7 +1,7 @@
 import sys
-import os
 sys.path.append("../../../../../build_tools/scripts")
 import base
+import os
 
 base.configure_common_apps()
 
@@ -9,7 +9,7 @@ base.configure_common_apps()
 if base.is_dir("./deploy"):
     base.delete_dir("./deploy")
 base.create_dir("./deploy")
-base.create_dir("./deploy/spell")
+base.create_dir("./deploy/raster")
 
 # fetch emsdk
 command_prefix = "" if ("windows" == base.host_platform()) else "./"
@@ -21,7 +21,7 @@ if not base.is_dir("emsdk"):
     os.chdir("../")
 
 # compile
-compiler_flags = ["-o spell.js",
+compiler_flags = ["-o raster.js",
                   "-O3",
                   "-fno-exceptions",
                   "-fno-rtti",
@@ -48,7 +48,7 @@ compiler_flags.append("-DWIN32 -DNDEBUG -DBGRAFRAME_STATIC -DBUILDING_LIBBGRAFRA
 # arguments
 arguments = ""
 for item in compiler_flags:
-    arguments += (item + ' ')
+    arguments += (item + " ")
 
 arguments += "-s EXPORTED_FUNCTIONS=\"["
 for item in exported_functions:
@@ -70,7 +70,14 @@ else:
     windows_bat.append("emcc " + arguments)
 base.run_as_bat(windows_bat)
 
+# finalize
+base.replaceInFile("./raster.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){self.onLoadModule();}];")
+base.replaceInFile("./raster.js", "function getBinaryPromise(){", "function getBinaryPromise2(){")
+
+raster_js_content = base.readFile("./raster.js")
+engine_base_js_content = base.readFile("./wasm/js/raster.js")
+engine_js_content = engine_base_js_content.replace("//module", raster_js_content)
+
 # write new version
-base.copy_file("spell.js",     "./deploy/spell/spell.js")
-base.copy_file("spell.wasm",   "./deploy/spell/spell.wasm")
-base.copy_file("spell.js.mem", "./deploy/spell/spell.js.mem")
+base.writeFile("./deploy/raster/raster.js", engine_js_content)
+base.copy_file("raster.wasm",   "./deploy/raster/raster.wasm")

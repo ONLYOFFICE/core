@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 
 #include <QApplication>
-#include "Graphics.h"
+#include "../../../../DesktopEditor/graphics/pro/Graphics.h"
 int main(int argc, char *argv[])
 {
     NSGraphics::Create();

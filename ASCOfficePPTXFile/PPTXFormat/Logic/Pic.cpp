@@ -1384,7 +1384,8 @@ namespace PPTX
 			{
 				std::wstring strPenAttr = _T("");
 				nullable<ShapeStyle> pShapeStyle;
-				CalculateLine(spPr, pShapeStyle, oTheme, oClrMap, strPenAttr, strNodeVal, bOle);
+				
+				CalculateLine(pWriter->m_lDocType, spPr, pShapeStyle, oTheme, oClrMap, strPenAttr, strNodeVal, bOle);
 				pWriter->WriteString(strPenAttr);
 			}
 

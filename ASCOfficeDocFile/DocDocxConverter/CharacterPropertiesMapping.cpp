@@ -91,8 +91,11 @@ namespace DocFileFormat
 			XMLTools::XMLAttribute date( L"w:date", _revisionData->Dttm.getString());
 			rPrChange.AppendAttribute( date );
 
+			XMLTools::XMLElement rPr(L"w:rPr");
 			//convert revision stack
-			convertSprms( _revisionData->Changes, &rPrChange );
+			convertSprms( _revisionData->Changes, &rPr);
+
+			rPrChange.AppendChild(rPr);
 
 			_rPr->AppendChild( rPrChange );
 		}

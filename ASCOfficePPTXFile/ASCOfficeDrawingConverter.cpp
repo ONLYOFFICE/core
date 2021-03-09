@@ -2068,6 +2068,9 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 			oShapeElem.m_pShape->getBaseShape()->m_oPath.SetCoordsize(21600, 21600);			
 		}
 
+		if (pPPTShape->m_oSignatureLine.IsInit())
+			pPPTShape->m_eType = PPTShapes::ShapeType::sptCFrame;
+
 		if (pPPTShape->m_eType == PPTShapes::sptCTextBox)
 		{
 			bTextBox = true;

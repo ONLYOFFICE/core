@@ -615,7 +615,7 @@ public:
         return nSignNum;
     }
 
-    void Sign()
+    int Sign()
     {
         Parse();
 
@@ -650,6 +650,8 @@ public:
         int nSignNum = AddSignatureReference();
 
         NSFile::CFileBinary::SaveToFile(m_sFolder + L"/_xmlsignatures/sig" + std::to_wstring(nSignNum + 1) + L".xml", builderResult.GetData(), false);
+
+        return (sSignedXml.empty()) ? 1 : 0;
     }
 };
 
@@ -678,7 +680,7 @@ void COOXMLSigner::SetImageInvalid(const std::wstring& file)
     m_internal->SetImageInvalid(file);
 }
 
-void COOXMLSigner::Sign()
+int COOXMLSigner::Sign()
 {
-    m_internal->Sign();
+    return m_internal->Sign();
 }

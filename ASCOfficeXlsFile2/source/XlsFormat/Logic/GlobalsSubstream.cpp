@@ -339,7 +339,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 			case rt_XFCRC:
 			{
 				if (proc.mandatory<FORMATTING>())
-				{
+				{					
 					if (m_Formating ) //Zakaz_detalizatcii(08_fevralia_2014-21_fevralia_2014).XLS
 					{//check previus
 						FORMATTING* fmts = dynamic_cast<FORMATTING*>(m_Formating.get());
@@ -348,6 +348,19 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 						if (!xfs || (xfs->m_arCellXFs.empty()))
 						{
 							m_Formating = NULL;
+						}
+						else
+						{
+							FORMATTING* fmts_new = dynamic_cast<FORMATTING*>(elements_.back().get());
+
+							if (!fmts->m_Palette && fmts_new->m_Palette)
+								fmts->m_Palette = fmts_new->m_Palette;
+							
+							if (!fmts->m_TABLESTYLES && fmts_new->m_TABLESTYLES)
+								fmts->m_TABLESTYLES = fmts_new->m_TABLESTYLES;
+							
+							if (!fmts->m_THEME && fmts_new->m_THEME)
+								fmts->m_THEME = fmts_new->m_THEME;
 						}
 					}
 					if (!m_Formating )

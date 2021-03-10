@@ -136,7 +136,7 @@ namespace BinDocxRW
 		void WriteShd(const ComplexTypes::Word::CShading& Shd);
 		void WritePaddings(const nullable<SimpleTypes::CTwipsMeasure>& left, const nullable<SimpleTypes::CTwipsMeasure>& top,
 			const nullable<SimpleTypes::CTwipsMeasure>& right, const nullable<SimpleTypes::CTwipsMeasure>& bottom);
-		void WriteFont(std::wstring& sFontName, BYTE bType, DocWrapper::FontProcessor& m_oFontProcessor);
+		void WriteFont(std::wstring sFontName, BYTE bType, DocWrapper::FontProcessor& m_oFontProcessor);
 		void WriteBytesArray(BYTE* pData, long nDataSize);
 		template<typename T> void WriteTrackRevision(const T& elem);
 	};

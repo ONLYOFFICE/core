@@ -47,6 +47,7 @@
 #include "datatypes/tablemode.h"
 #include "datatypes/common_attlists.h"
 #include "datatypes/tablevisibility.h"
+#include "datatypes/messagetype.h"
 
 namespace cpdoccore { 
 namespace odf_reader {
@@ -776,11 +777,11 @@ public:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-    _CP_OPT(std::wstring)		table_title_;
-	_CP_OPT(odf_types::Bool)	table_display_;
-    _CP_OPT(std::wstring)		table_message_type_;
+    _CP_OPT(std::wstring) table_title_;
+	_CP_OPT(odf_types::Bool) table_display_;
+    _CP_OPT(odf_types::message_type) table_message_type_;
 
-    office_element_ptr_array	content_;
+    office_element_ptr_array content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_error_message);
 
@@ -800,11 +801,10 @@ public:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-    _CP_OPT(std::wstring)		table_title_;
-	_CP_OPT(odf_types::Bool)	table_display_;
-    _CP_OPT(std::wstring)		table_message_type_;
-
-    office_element_ptr_array	content_;
+	_CP_OPT(std::wstring) table_title_;
+	_CP_OPT(odf_types::Bool) table_display_;
+	
+	office_element_ptr_array content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_help_message);
 

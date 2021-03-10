@@ -2086,7 +2086,8 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 		
 		PPTX::Logic::SpPr*	pSpPr		= NULL;
 		PPTX::Logic::CNvPr* pCNvPr		= NULL;
-		if (bPicture)
+		
+		if (bPicture && false == pPPTShape->m_oSignatureLine.IsInit())
 		{
 			pPicture = new PPTX::Logic::Pic();
 			elem->InitElem(pPicture);
@@ -5061,10 +5062,7 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstr
 					bSignatureLine = true;
 				}
 			}
-			
 			NSBinPptxRW::CXmlWriter oXmlWriter(m_pReader->m_nDocumentType);
-			
-			m_pReader->m_nDocumentType = XMLWRITER_DOC_TYPE_PPTX;
 
 			oXmlWriter.m_lObjectIdVML = m_pXmlWriter->m_lObjectIdVML;
 			oXmlWriter.m_lObjectIdOle = m_pXmlWriter->m_lObjectIdOle;
@@ -5971,15 +5969,6 @@ HRESULT CDrawingConverter::GetAdditionalParam(const std::wstring& ParamName, BYT
     //    return oWriter.Serialize(m_pImageManager, pArray, szCount) ? S_OK : S_FALSE;
     //}
     return S_OK;
-}
-
-void CDrawingConverter::SetDocumentChartsCount (int val)
-{
-    m_pReader->m_lChartNumber = val + 1;
-}
-int CDrawingConverter::GetDocumentChartsCount ()
-{
-    return m_pReader->m_lChartNumber - 1;
 }
 
 OOX::CContentTypes* CDrawingConverter::GetContentTypes()

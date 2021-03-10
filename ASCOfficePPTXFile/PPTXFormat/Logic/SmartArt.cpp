@@ -37,13 +37,17 @@
 
 #include "../../ASCOfficeDrawingConverter.h"
 
-#include "../../../XlsxSerializerCom/Reader/ChartFromToBinary.h"
+#include "../../../XlsxSerializerCom/Reader/BinaryWriter.h"
+
 #include "../../../ASCOfficeDocxFile2/DocWrapper/XlsxSerializer.h"
+#include "../../../ASCOfficeDocxFile2/DocWrapper/FontProcessor.h"
 #include "../../../ASCOfficeDocxFile2/BinWriter/BinWriters.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramData.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
+#include "../../../Common/OfficeFileFormatChecker.h"
 
+#include "../../../OfficeUtils/src/OfficeUtils.h"
 namespace PPTX
 {
 	namespace Logic
@@ -144,7 +148,7 @@ namespace PPTX
 			
 			bool result = LoadDrawing(&pRelsPPTX);
 			if (!result)
-				result	= LoadDrawing( pRels );
+				result = LoadDrawing( pRels );
 		}
 		void SmartArt::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
@@ -174,52 +178,171 @@ namespace PPTX
 				if(parentFileIs<OOX::IFileContainer>())	file = parentFileAs<OOX::IFileContainer>().Find(*id_data);
 				else if (pRels != NULL)					file = pRels->Find(*id_data);
 			}
-			smart_ptr<OOX::Spreadsheet::CChartSpace> pChart = file.smart_dynamic_cast<OOX::Spreadsheet::CChartSpace>();
-			smart_ptr<OOX::Spreadsheet::CChartSpaceEx> pChartEx = file.smart_dynamic_cast<OOX::Spreadsheet::CChartSpaceEx>();
+			smart_ptr<OOX::Spreadsheet::CChartFile> pChart = file.smart_dynamic_cast<OOX::Spreadsheet::CChartFile>();
+			smart_ptr<OOX::Spreadsheet::CChartExFile> pChartEx = file.smart_dynamic_cast<OOX::Spreadsheet::CChartExFile>();
 
-			if (false == pChart.IsInit() && false == pChartEx.IsInit()) return;
+			if (false == pChart.IsInit() && false == pChartEx.IsInit()) return;		
 
-			NSBinPptxRW::CDrawingConverter oDrawingConverter;
+	//----------------------------------------------------------------
+			std::wstring id;
+			if ((pChart.IsInit()) && (pChart->m_oChartSpace.m_externalData) && (pChart->m_oChartSpace.m_externalData->m_id))
+				id = *pChart->m_oChartSpace.m_externalData->m_id;
+			else if ((pChartEx.IsInit()) && (true == pChartEx->m_oChartSpace.m_chartData.m_externalData.IsInit()))
+				id = pChartEx->m_oChartSpace.m_chartData.m_externalData->m_id.get_value_or(L"");
 			
+			if (false == id.empty())
+			{
+				smart_ptr<OOX::File> oFile = pChart.IsInit() ? pChart->Find(id) : pChartEx->Find(id);
+				smart_ptr<OOX::Media> oMediaFile = oFile.smart_dynamic_cast<OOX::Media>();
+
+				if (oMediaFile.IsInit())
+				{
+					OOX::CPath oox_file = oMediaFile->filename();
+					OOX::CPath embed_folder = oox_file.GetDirectory(true);
+					OOX::CPath oox_unpacked = embed_folder + L"Temp_unpacked";
+					NSDirectory::CreateDirectory(oox_unpacked.GetPath());
+
+					COfficeUtils oOfficeUtils(NULL);
+					oOfficeUtils.ExtractToDirectory(oox_file.GetPath(), oox_unpacked.GetPath(), NULL, 0);
+
+					COfficeFileFormatChecker office_checker;
+					office_checker.isOOXFormatFile(oox_file.GetPath());
+
+					if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX ||
+						office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM)
+					{
+						DocWrapper::FontProcessor oFontProcessor;
+						NSBinPptxRW::CDrawingConverter oDrawingConverter;
+
+						NSCommon::smart_ptr<OOX::IFileContainer>	old_rels = *pWriter->m_pCurrentContainer;
+						NSCommon::smart_ptr<PPTX::Theme>            old_theme = *pWriter->m_pTheme;
+
+						NSShapeImageGen::CMediaManager* old_manager = oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager;
+						oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = pWriter->m_pCommon->m_pMediaManager;
+
+						oDrawingConverter.SetFontPicker(pWriter->m_pCommon->m_pFontPicker);
+
+						BinXlsxRW::BinaryFileWriter xlsxBinaryWriter(oFontProcessor);
+//----------------------------
+						OOX::Spreadsheet::CXlsx oXlsxEmbedded(oox_unpacked);
+
+						//startheader for test
+						//oDrawingConverter.m_pBinaryWriter->WriteStringUtf8(xlsxBinaryWriter.WriteFileHeader(0, BinXlsxRW::g_nFormatVersionNoBase64));
+						
+						xlsxBinaryWriter.intoBindoc(&oXlsxEmbedded, *oDrawingConverter.m_pBinaryWriter, NULL, &oDrawingConverter);
+//------------------------------
+						*pWriter->m_pCurrentContainer = old_rels;
+						*pWriter->m_pTheme = old_theme;
+						oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = old_manager;
+						
+						pWriter->StartRecord(/*c_oserct_chartspaceXLSX*/16);
+						
+						BYTE* pbBinBuffer = oDrawingConverter.m_pBinaryWriter->GetBuffer();
+						int nBinBufferLen = oDrawingConverter.m_pBinaryWriter->GetPosition();
+
+						pWriter->WriteBYTEArray(pbBinBuffer, nBinBufferLen);
+
+						pWriter->EndRecord();
+
+						//for test
+						//NSFile::CFileBinary oFile;
+						//oFile.CreateFileW(L"d:\\Editor.bin");
+						//oFile.WriteFile(pbBinBuffer, nBinBufferLen);
+						//oFile.CloseFile();
+					}
+
+					NSDirectory::DeleteDirectory(oox_unpacked.GetPath());
+				}
+			}
+	//----------------------------------------------------------------
+			NSBinPptxRW::CDrawingConverter oDrawingConverter;
 			NSBinPptxRW::CBinaryFileWriter *pOldDrawingWriter = oDrawingConverter.m_pBinaryWriter;
 			BinDocxRW::CDocxSerializer *pOldMainDocument = pWriter->m_pMainDocument;
 			
 			pWriter->m_pMainDocument = NULL;
 			oDrawingConverter.m_pBinaryWriter = pWriter;
 			smart_ptr<OOX::IFileContainer> oldRels = oDrawingConverter.GetRels();
-			oDrawingConverter.SetRels(pChart.smart_dynamic_cast<OOX::IFileContainer>());
+			oDrawingConverter.SetRels(file.smart_dynamic_cast<OOX::IFileContainer>());
 		
 			BinXlsxRW::BinaryChartWriter oBinaryChartWriter(*pWriter, &oDrawingConverter);	
 			if (pChart.IsInit())
 			{
-				oBinaryChartWriter.WriteCT_ChartSpace(*pChart);
+				oBinaryChartWriter.WriteCT_ChartFile(*pChart);
 			}
 			else if (pChartEx.IsInit())
 			{
-				//oBinaryChartWriter.WriteCT_ChartSpace(*pChartEx);
+				oBinaryChartWriter.WriteCT_ChartExFile(*pChartEx);
 			}
+	//----------------------------------------------------------------
+			std::vector<smart_ptr<OOX::File>>& container = pChartEx.IsInit() ? pChartEx->GetContainer() : pChart->GetContainer();
 
+			for (size_t i = 0; i < container.size(); ++i)
+			{
+				if (OOX::FileTypes::ThemeOverride == container[i]->type())
+				{
+					PPTX::Theme* pThemeOverride = dynamic_cast<PPTX::Theme*>(container[i].GetPointer());
+
+					pWriter->StartRecord(/*c_oserct_chartspaceTHEMEOVERRIDE = */15);
+					pThemeOverride->toPPTY(pWriter);
+					pWriter->EndRecord();
+					break;
+				}
+				else if (OOX::FileTypes::ChartStyle == container[i]->type())
+				{
+					OOX::Spreadsheet::CChartStyleFile* pChartStyle = dynamic_cast<OOX::Spreadsheet::CChartStyleFile*>(container[i].GetPointer());
+
+					pWriter->StartRecord(/*c_oserct_chartspaceSTYLES = */17);
+					oBinaryChartWriter.WriteCT_ChartStyle(*pChartStyle);
+					pWriter->EndRecord();
+				}
+				else if (OOX::FileTypes::ChartColors == container[i]->type())
+				{
+					OOX::Spreadsheet::CChartColorsFile* pChartColors = dynamic_cast<OOX::Spreadsheet::CChartColorsFile*>(container[i].GetPointer());
+
+					pWriter->StartRecord(/*c_oserct_chartspaceCOLORS = */18);
+					oBinaryChartWriter.WriteCT_ChartColor(*pChartColors);
+					pWriter->EndRecord();
+				}
+			}
+	//----------------------------------------------------------------
 			oDrawingConverter.SetRels(oldRels);
 			
 			oDrawingConverter.m_pBinaryWriter = pOldDrawingWriter;
 			pWriter->m_pMainDocument = pOldMainDocument;
+
 		}
 		std::wstring ChartRec::toXML() const
 		{
-			if (!id_data.is_init() || false == m_bData)
+			if (!id_data.is_init())
 				return L"";
-            std::wstring strData = L"<c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" \
-xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"" + id_data->ToString() + L"\"/>";
 
+			std::wstring strData;
+			if (m_bChartEx)
+			{
+				strData = L"<cx:chart xmlns:cx=\"http://schemas.microsoft.com/office/drawing/2014/chartex\"";
+			}
+			else
+			{
+				strData = L"<c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"";
+			}
+			strData += L" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"" + id_data->ToString() + L"\"/>";
 			return strData;
 		}
 		void ChartRec::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-			if (!id_data.is_init() || false == m_bData)
+			if (!id_data.is_init())
 				return;
 			
-            std::wstring strData = L"<c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" \
-xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"" + id_data->ToString() + L"\"/>";
+			std::wstring strData;
+			if (m_bChartEx)
+			{
+				strData = L"<cx:chart xmlns:cx=\"http://schemas.microsoft.com/office/drawing/2014/chartex\"";
+			}
+			else
+			{
+				strData = L"<c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"";
+			}
+			strData += L" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"" + id_data->ToString() + L"\"/>";
 
 			pWriter->WriteString(strData);
 		}
@@ -227,11 +350,9 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 		void ChartRec::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
 			ULONG lLen = pReader->GetLong();
-			m_bData = true;
 
-			m_lChartNumber = pReader->m_lChartNumber;
-			pReader->m_lChartNumber++;
-			unsigned int lId = pReader->m_pRels->WriteChart(m_lChartNumber, pReader->m_nDocumentType);
+			m_nCountCharts = pReader->m_nCountCharts;
+			pReader->m_nCountCharts++;
 
 			BinXlsxRW::CXlsxSerializer		oXlsxSerializer;
 			NSBinPptxRW::CDrawingConverter	oDrawingConverter;
@@ -244,23 +365,35 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 
 			oXlsxSerializer.setDrawingConverter(&oDrawingConverter);
 
-            std::wstring strDstChart = pReader->m_pRels->m_pManager->GetDstMedia();
-            int nPos = (int)strDstChart.rfind(wchar_t('m'));
-			if (-1 != nPos)
-                strDstChart = strDstChart.substr(0, nPos);
+			std::wstring strDstChart = pReader->m_pRels->m_pManager->GetDstCharts();
+			NSDirectory::CreateDirectory(strDstChart);
 
-            strDstChart += L"charts";
-        //на всякий случай всегда создаем, нет уверенности что 1 == m_lChartNumber для первого chart
-            NSDirectory::CreateDirectory(strDstChart);
-
-			std::wstring strChart = strDstChart + FILE_SEPARATOR_STR + L"chart" + std::to_wstring(m_lChartNumber) + L".xml";
-
-			oXlsxSerializer.saveChart(pReader, lLen, strChart, m_lChartNumber);
-
+			smart_ptr<OOX::File> file;
+			if (m_bChartEx)
+			{
+				smart_ptr<OOX::Spreadsheet::CChartExFile> chartEx = new OOX::Spreadsheet::CChartExFile(NULL);
+				file = chartEx.smart_dynamic_cast<OOX::File>();
+			}
+			else
+			{
+				smart_ptr<OOX::Spreadsheet::CChartFile> chart = new OOX::Spreadsheet::CChartFile(NULL);
+				file = chart.smart_dynamic_cast<OOX::File>();
+			}
+			if (true == oXlsxSerializer.saveChart(pReader, lLen, file, m_nCountCharts))
+			{
+				if (m_bChartEx)
+				{
+					unsigned int nRId = pReader->m_pRels->WriteRels(L"http://schemas.microsoft.com/office/2014/relationships/chartEx", file->m_sOutputFilename, L"");
+					id_data = new OOX::RId(nRId);
+				}
+				else
+				{
+					unsigned int nRId = pReader->m_pRels->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart", file->m_sOutputFilename, L"");
+					id_data = new OOX::RId(nRId);
+				}
+			}
 			oDrawingConverter.m_pReader			= pOldReader;
 			oDrawingConverter.m_pImageManager	= pOldImageManager;
-
-			id_data = new OOX::RId(lId);
 		}
 	} // namespace Logic
 } // namespace PPTX

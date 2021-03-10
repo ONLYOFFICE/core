@@ -224,9 +224,9 @@ public:
 
         char* dataDst = NULL;
         int lenDst = 0;
-        NSFile::CBase64Converter::Encode(data, size, dataDst, lenDst);
+        NSFile::CBase64Converter::Encode(data, size, dataDst, lenDst, NSBase64::B64_BASE64_FLAG_NOCRLF);
 
-        std::string sReturn(dataDst);
+        std::string sReturn(dataDst, lenDst);
 
         RELEASEARRAYOBJECTS(dataDst);
 
@@ -581,6 +581,20 @@ public:
         return -1;
     }
 
+    std::string Print()
+    {
+        if (NULL == m_cert)
+            return "";
+
+        BIO* bio = BIO_new(BIO_s_mem());
+        X509_print_ex(bio, m_cert, XN_FLAG_COMPAT, X509_FLAG_COMPAT);
+        char *buf = NULL;
+        size_t len = BIO_get_mem_data(bio, &buf);
+        std::string sRet((char*)buf, len);
+        BIO_free (bio);
+        return sRet;
+    }
+
     int VerifySelf()
     {
         return OPEN_SSL_WARNING_OK;
@@ -788,8 +802,22 @@ end:
             nErr = OPEN_SSL_WARNING_PASS;
             goto end;
         }
-
         BIO_FREE(bio);
+
+        bio = BIO_new_mem_buf((void*)pData, (int)dwDataLen);
+        if (PEM_read_bio_X509_AUX(bio, &pCert, NULL, (void*)pPassword))
+        {
+            nErr = OPEN_SSL_WARNING_OK;
+            goto end;
+        }
+        sError = GetOpenSslErrors();
+        if (IsOpenSslPasswordError(sError))
+        {
+            nErr = OPEN_SSL_WARNING_PASS;
+            goto end;
+        }
+        BIO_FREE(bio);
+
         bio = BIO_new_mem_buf((void*)pData, (int)dwDataLen);
         if (d2i_X509_bio(bio, &pCert))
         {
@@ -802,10 +830,9 @@ end:
             nErr = OPEN_SSL_WARNING_PASS;
             goto end;
         }
-
         BIO_FREE(bio);
-        bio = BIO_new_mem_buf((void*)pData, (int)dwDataLen);
 
+        bio = BIO_new_mem_buf((void*)pData, (int)dwDataLen);
         p12 = d2i_PKCS12_bio(bio, NULL);
         if (p12)
         {
@@ -944,6 +971,11 @@ int CCertificate_openssl::ShowSelectDialog(void* parent)
 int CCertificate_openssl::ShowCertificate(void* parent)
 {
     return m_internal->ShowCertificate();
+}
+
+std::string CCertificate_openssl::Print()
+{
+    return m_internal->Print();
 }
 
 bool CCertificate_openssl::FromFiles(const std::wstring& keyPath, const std::string& keyPassword, const std::wstring& certPath, const std::string& certPassword)

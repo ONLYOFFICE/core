@@ -2167,6 +2167,7 @@ void DocxConverter::convert(OOX::Logic::CBgPict *oox_bg_pict, int type)
 	odf_writer::style_page_layout_properties *current_layout_properties = odt_context->page_layout_context()->last_layout()->get_properties();
 
 	odt_context->drawing_context()->end_drawing_background(current_layout_properties->attlist_.common_draw_fill_attlist_);
+	odt_context->drawing_context()->set_background_state(false);
 	odt_context->end_drawings();
 }
 void DocxConverter::convert(OOX::Logic::CBackground *oox_background, int type)
@@ -2196,6 +2197,7 @@ void DocxConverter::convert(OOX::Logic::CBackground *oox_background, int type)
 	odf_writer::style_page_layout_properties * current_layout_properties = odt_context->page_layout_context()->last_layout()->get_properties();
 
 	odt_context->drawing_context()->end_drawing_background(current_layout_properties->attlist_.common_draw_fill_attlist_);
+	odt_context->drawing_context()->set_background_state(false);
 	odt_context->end_drawings();
 }
 
@@ -2873,6 +2875,19 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 	if (oox_run_pr->m_oVanish.IsInit())
 		text_properties->content_.text_display_ = odf_types::text_display(odf_types::text_display::None);
 
+	if (oox_run_pr->m_oLang.IsInit())
+	{
+		if (oox_run_pr->m_oLang->m_oVal.IsInit())
+		{
+			std::wstring lang = oox_run_pr->m_oLang->m_oVal->GetValue();
+			size_t split = lang.find(L"-");
+			if (split != std::wstring::npos)
+			{
+				text_properties->content_.fo_language_ = lang.substr(0, split);
+				text_properties->content_.fo_country_ = lang.substr(split + 1);
+			}
+		}
+	}
 }
 
 void DocxConverter::convert(SimpleTypes::CTheme<>* oox_font_theme, _CP_OPT(std::wstring) & odf_font_name)
@@ -4106,6 +4121,8 @@ void DocxConverter::convert(OOX::CStyle	*oox_style)
 		return;
 	}
 	
+	std::wstring oox_name_id = oox_style->m_sStyleId.get_value_or(L"");
+	bool bDefault = oox_style->m_oDefault.IsInit() && oox_style->m_oDefault->ToBool();
 
 	switch(oox_style->m_oType->GetValue())
 	{
@@ -4114,10 +4131,14 @@ void DocxConverter::convert(OOX::CStyle	*oox_style)
 		default:  
 			return;
 	}
+	if (bDefault && family == odf_types::style_family::Paragraph && oox_name_id != L"Standart")
+	{
+		//todooo ???
+		//odt_context->sRenamedStyle = oox_name_id;
+		//oox_name_id = L"Standart";
+	}
 
-	std::wstring oox_name_id = oox_style->m_sStyleId.get_value_or(L"");
-
-	odt_context->styles_context()->create_style(oox_name_id, family, false, true, -1); 
+	odt_context->styles_context()->create_style(oox_name_id, family, false, true, -1);
 
 	std::wstring style_name;
 	if (oox_style->m_oName.IsInit() && oox_style->m_oName->m_sVal.IsInit()) 
@@ -4125,18 +4146,20 @@ void DocxConverter::convert(OOX::CStyle	*oox_style)
 		style_name = *oox_style->m_oName->m_sVal;
 		odt_context->styles_context()->last_state()->set_display_name(style_name);
 	}
-
+	if (bDefault)
+	{
+		odt_context->styles_context()->last_state()->set_class(L"default");
+	}
 	odf_writer::style_text_properties* text_properties = NULL;
 	if (oox_style->m_oRunPr.IsInit())
 	{
 		text_properties = odt_context->styles_context()->last_state()->get_text_properties();
 	
-		if (oox_style->m_oDefault.IsInit() && oox_style->m_oDefault->ToBool())
+		if (bDefault)
 		{
-			//основан на дефолтовом - накатить
 			odf_writer::odf_style_state_ptr def_style_state;
 			if (odt_context->styles_context()->find_odf_default_style_state(odf_types::style_family::Paragraph, def_style_state) && def_style_state)
-			{
+			{//??
 				odf_writer::style_text_properties * props = def_style_state->get_text_properties();
 				text_properties->apply_from(props);
 			}
@@ -4149,10 +4172,9 @@ void DocxConverter::convert(OOX::CStyle	*oox_style)
 		odf_writer::style_paragraph_properties	*paragraph_properties = odt_context->styles_context()->last_state()->get_paragraph_properties();
 		if (oox_style->m_oDefault.IsInit() && oox_style->m_oDefault->ToBool())
 		{
-			//основан на дефолтовом - накатить
 			odf_writer::odf_style_state_ptr def_style_state;
 			if (odt_context->styles_context()->find_odf_default_style_state(odf_types::style_family::Paragraph, def_style_state) && def_style_state)
-			{
+			{//??
 				odf_writer::style_paragraph_properties *props = def_style_state->get_paragraph_properties();
 				paragraph_properties->apply_from(props);
 			}

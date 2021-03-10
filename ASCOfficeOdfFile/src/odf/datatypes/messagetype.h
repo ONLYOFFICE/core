@@ -29,37 +29,45 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once   
+#pragma once
 
-#include <ostream>
-#include <sstream>
+#include <iosfwd>
 #include <string>
-#include <vector>
+#include "odfattributes.h"
 
-#include <boost/regex.hpp>
 
-#include "../../include/CPOptional.h"
+namespace cpdoccore { namespace odf_types { 
 
-namespace svg_path
+class message_type
 {
-	struct _point
-	{
-		_point(double _x,double _y){x=_x; y=_y;}
-		
-		_CP_OPT(double) x;
-		_CP_OPT(double) y;
-		
-	};
-	struct _polyline
-	{
-		std::wstring command;
-		std::vector<_point> points; //будем бить строку пути по количеству точек в буковках
+public:
+    enum type
+    {
+		stop,
+		warning,
+		information
+    };
+	message_type() {}
 
-	};
+	message_type(type _Type) : type_(_Type)
+    {}
 
-	bool parseVml(std::vector<_polyline> & Polyline, const std::wstring &  path);
-	bool parseSvgD(std::vector<_polyline> & Polyline, const std::wstring &  path, bool bWrongPositionAfterZ, bool & bIsClosed, bool & bIsStroked);
-	bool parsePolygon(std::vector<_polyline> & Polyline, const std::wstring &  path, bool bWrongPositionAfterZ, bool closed);
+    type get_type() const
+    {
+        return type_;
+    };
+    
+    static message_type parse(const std::wstring & Str);
+
+private:
+    type type_;
+
+};
+
+std::wostream & operator << (std::wostream & _Wostream, const message_type & _Val);
+
+} 
+
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::message_type);
+
 }
-
-

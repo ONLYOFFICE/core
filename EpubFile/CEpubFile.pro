@@ -16,7 +16,7 @@ PWD_ROOT_DIR = $$PWD
 
 include($$CORE_ROOT_DIR/Common/base.pri)
 
-ADD_DEPENDENCY(kernel, HtmlFile2)
+ADD_DEPENDENCY(kernel, graphics, HtmlFile2)
 
 SOURCES += src/CEpubFile.cpp \
     src/CBookToc.cpp \

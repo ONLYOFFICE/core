@@ -326,6 +326,7 @@ $(VIDEOPLAYERLIB): $(VIDEOPLAYERLIB_DEP)
 	qmake -r $<
 
 $(ARCHIVE) : 
+	mkdir -p $(dir $@)
 	$(AR) $@ $(ARTIFACTS)
 
 clean:

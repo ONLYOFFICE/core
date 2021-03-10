@@ -278,7 +278,7 @@ public:
 	void	Clear(uint8_t bval=0);
 	void	Copy(const CxImage &src, bool copypixels = true, bool copyselection = true, bool copyalpha = true);
 	bool	Transfer(CxImage &from, bool bTransferFrames = true);
-	bool	CreateFromArray(uint8_t* pArray,uint32_t dwWidth,uint32_t dwHeight,uint32_t dwBitsperpixel, uint32_t dwBytesperline, bool bFlipImage);
+	bool	CreateFromArray(uint8_t* pArray,uint32_t dwWidth,uint32_t dwHeight,uint32_t dwBitsperpixel, uint32_t dwBytesperline, bool bFlipImage, bool isBGRA = true);
 	bool	CreateFromMatrix(uint8_t** ppMatrix,uint32_t dwWidth,uint32_t dwHeight,uint32_t dwBitsperpixel, uint32_t dwBytesperline, bool bFlipImage);
 	void	FreeMemory(void* memblock);
 

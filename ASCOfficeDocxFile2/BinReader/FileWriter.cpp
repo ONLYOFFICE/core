@@ -39,7 +39,7 @@
 namespace Writers
 {
 
-FileWriter::FileWriter(std::wstring sDirOutput,std::wstring sFontDir, bool bNoFontDir, int nVersion, bool bSaveChartAsImg, NSBinPptxRW::CDrawingConverter* pDrawingConverter, std::wstring sThemePath)
+FileWriter::FileWriter(std::wstring sDirOutput,std::wstring sFontDir, bool bNoFontDir, int nVersion, NSBinPptxRW::CDrawingConverter* pDrawingConverter, std::wstring sThemePath)
     :
 	m_oMain(sDirOutput, sFontDir, bNoFontDir, nVersion),
 	m_oGlossary(sDirOutput, sFontDir, bNoFontDir, nVersion),
@@ -47,7 +47,6 @@ FileWriter::FileWriter(std::wstring sDirOutput,std::wstring sFontDir, bool bNoFo
 	m_oChartWriter		(sDirOutput),
 	m_oCustomXmlWriter	(sDirOutput, pDrawingConverter),
 	m_pDrawingConverter	(pDrawingConverter),
-	m_bSaveChartAsImg	(bSaveChartAsImg),
 	m_sThemePath		(sThemePath),
 	m_oDocumentRelsWriter		(sDirOutput),
 	m_nDocPrIndex		(0),

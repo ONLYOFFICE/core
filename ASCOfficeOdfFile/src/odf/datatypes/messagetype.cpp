@@ -29,37 +29,46 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once   
 
+#include "messagetype.h"
+
+#include <boost/algorithm/string.hpp>
 #include <ostream>
-#include <sstream>
-#include <string>
-#include <vector>
 
-#include <boost/regex.hpp>
+namespace cpdoccore { namespace odf_types { 
 
-#include "../../include/CPOptional.h"
-
-namespace svg_path
+std::wostream & operator << (std::wostream & _Wostream, const message_type & _Val)
 {
-	struct _point
-	{
-		_point(double _x,double _y){x=_x; y=_y;}
-		
-		_CP_OPT(double) x;
-		_CP_OPT(double) y;
-		
-	};
-	struct _polyline
-	{
-		std::wstring command;
-		std::vector<_point> points; //будем бить строку пути по количеству точек в буковках
-
-	};
-
-	bool parseVml(std::vector<_polyline> & Polyline, const std::wstring &  path);
-	bool parseSvgD(std::vector<_polyline> & Polyline, const std::wstring &  path, bool bWrongPositionAfterZ, bool & bIsClosed, bool & bIsStroked);
-	bool parsePolygon(std::vector<_polyline> & Polyline, const std::wstring &  path, bool bWrongPositionAfterZ, bool closed);
+    switch(_Val.get_type())
+    {
+    case message_type::stop:
+        _Wostream << L"stop";
+        break;
+    case message_type::warning:
+        _Wostream << L"warning";
+        break;
+    case message_type::information:
+        _Wostream << L"information";
+        break;
+    }
+    return _Wostream;    
 }
 
+message_type message_type::parse(const std::wstring & Str)
+{
+    std::wstring tmp = Str;
+    boost::algorithm::to_lower(tmp);
 
+    if (tmp == L"stop")
+        return message_type(stop);
+    else if (tmp == L"warning")
+        return message_type(warning);
+    else if (tmp == L"information")
+        return message_type(information);
+    else
+    {
+        return message_type(stop);
+    }
+}
+
+} }

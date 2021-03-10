@@ -246,6 +246,12 @@ docRGB Binary_CommonReader2::ReadColor()
 	oRGB.B = m_oBufferedStream.GetUChar();
 	return oRGB;
 }
+void Binary_CommonReader2::ReadColor2(SimpleTypes::CHexColor<>& color)
+{
+	color.Set_R(m_oBufferedStream.GetUChar());
+	color.Set_G(m_oBufferedStream.GetUChar());
+	color.Set_B(m_oBufferedStream.GetUChar());
+}
 void Binary_CommonReader2::ReadThemeColor(int length, CThemeColor& oCThemeColor)
 {
 	int res = c_oSerConstants::ReadOk;
@@ -301,6 +307,10 @@ int Binary_CommonReader2::ReadShd(BYTE type, long length, void* poResult)
 	case c_oSerShdType::ColorTheme:
 		pShd->bThemeColor = true;
 		ReadThemeColor(length, pShd->ThemeColor);
+		break;
+	case c_oSerShdType::Fill:
+		pShd->bFill = true;
+		pShd->Fill = ReadColor();
 		break;
 	default:
 		res = c_oSerConstants::ReadUnknown;
@@ -469,6 +479,13 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 			}
 			break;
 		}
+	case c_oSerProp_rPrType::FontAsciiTheme:
+		{
+			SimpleTypes::CTheme<> theme;
+			theme.SetValue((SimpleTypes::ETheme)m_oBufferedStream.GetUChar());
+			orPr->FontAsciiTheme = theme.ToString();
+			break;
+		}
 	case c_oSerProp_rPrType::FontHAnsi:
 		{
             std::wstring sFontName(m_oBufferedStream.GetString3(length));
@@ -478,6 +495,13 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 				orPr->bFontHAnsi = true;
 				orPr->FontHAnsi = sFontName;
 			}
+			break;
+		}
+	case c_oSerProp_rPrType::FontHAnsiTheme:
+		{
+			SimpleTypes::CTheme<> theme;
+			theme.SetValue((SimpleTypes::ETheme)m_oBufferedStream.GetUChar());
+			orPr->FontHAnsiTheme = theme.ToString();
 			break;
 		}
 	case c_oSerProp_rPrType::FontCS:
@@ -491,6 +515,13 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 			}
 			break;
 		}
+	case c_oSerProp_rPrType::FontCSTheme:
+		{
+			SimpleTypes::CTheme<> theme;
+			theme.SetValue((SimpleTypes::ETheme)m_oBufferedStream.GetUChar());
+			orPr->FontCSTheme = theme.ToString();
+			break;
+		}
 	case c_oSerProp_rPrType::FontAE:
 		{
             std::wstring sFontName(m_oBufferedStream.GetString3(length));
@@ -500,6 +531,13 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 				orPr->bFontAE = true;
 				orPr->FontAE = sFontName;
 			}
+			break;
+		}
+	case c_oSerProp_rPrType::FontAETheme:
+		{
+			SimpleTypes::CTheme<> theme;
+			theme.SetValue((SimpleTypes::ETheme)m_oBufferedStream.GetUChar());
+			orPr->FontAETheme = theme.ToString();
 			break;
 		}
 	case c_oSerProp_rPrType::FontSize:
@@ -1289,6 +1327,54 @@ int Binary_pPrReader::ReadBorder(BYTE type, long length, void* poResult)
 	{
 		odocBorder->bThemeColor = true;
 		oBinary_CommonReader2.ReadThemeColor(length, odocBorder->ThemeColor);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int Binary_pPrReader::ReadBorder2(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	ComplexTypes::Word::CBorder* pBorder = static_cast<ComplexTypes::Word::CBorder*>(poResult);
+	if( c_oSerBorderType::Color == type )
+	{
+		pBorder->m_oColor.Init();
+		pBorder->m_oColor->SetValue(SimpleTypes::hexcolorRGB);
+		oBinary_CommonReader2.ReadColor2(pBorder->m_oColor.get2());
+	}
+	else if( c_oSerBorderType::Space == type )
+	{
+		pBorder->m_oSpace.Init();
+		pBorder->m_oSpace->SetValue(SerializeCommon::Round(g_dKoef_mm_to_pt * m_oBufferedStream.GetDouble()));
+	}
+	else if( c_oSerBorderType::SpacePoint == type )
+	{
+		pBorder->m_oSpace.Init();
+		pBorder->m_oSpace->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if( c_oSerBorderType::Size == type )
+	{
+		pBorder->m_oSz.Init();
+		pBorder->m_oSz->SetValue(SerializeCommon::Round(g_dKoef_mm_to_eightpoint * m_oBufferedStream.GetDouble()));
+	}
+	else if( c_oSerBorderType::Size8Point == type )
+	{
+		pBorder->m_oSz.Init();
+		pBorder->m_oSz->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if( c_oSerBorderType::Value == type )
+	{
+		pBorder->m_oVal.Init();
+		if(border_Single == m_oBufferedStream.GetUChar())
+			pBorder->m_oVal->SetValue(SimpleTypes::bordervalueSingle);
+		else
+			pBorder->m_oVal->SetValue(SimpleTypes::bordervalueNone);
+	}
+	else if( c_oSerBorderType::ColorTheme == type )
+	{
+		CThemeColor ThemeColor;
+		oBinary_CommonReader2.ReadThemeColor(length, ThemeColor);
+		ThemeColor.ToCThemeColor(pBorder->m_oColor, pBorder->m_oThemeColor, pBorder->m_oThemeShade, pBorder->m_oThemeTint);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -3814,6 +3900,13 @@ int Binary_SettingsTableReader::ReadSettings(BYTE type, long length, void* poRes
 	{
 		m_oSettingsCustom.m_oSdtGlobalShowHighlight.Init();
 		m_oSettingsCustom.m_oSdtGlobalShowHighlight->m_oVal.FromBool(m_oBufferedStream.GetBool());
+	}
+	else if( c_oSer_SettingsType::SpecialFormsHighlight == type )
+	{
+		rPr oRPr(m_oFileWriter.get_font_table_writer().m_mapFonts);
+		res = m_oBinary_rPrReader.Read(length, &oRPr);
+		m_oSettingsCustom.m_oSpecialFormsHighlight.Init();
+		InnerColorToOOX(oRPr, m_oSettingsCustom.m_oSpecialFormsHighlight.get2());
 	}
 	else if( c_oSer_SettingsType::Compat == type )
 	{
@@ -7684,14 +7777,15 @@ int Binary_DocumentTableReader::ReadRunContent(BYTE type, long length, void* poR
 		CDrawingProperty oCDrawingProperty(m_oFileWriter.getNextDocPr());
 		READ2_DEF(length, res, this->ReadPptxDrawing, &oCDrawingProperty);
 
-		if(oCDrawingProperty.IsChart())
+		if(oCDrawingProperty.IsGraphicFrameContent())
 		{
 			GetRunStringWriter().WriteString(oCDrawingProperty.Write());
 		}
 		else if(oCDrawingProperty.bDataPos && oCDrawingProperty.bDataLength)
 		{
             std::wstring sDrawingProperty = oCDrawingProperty.Write();
-            if(false == sDrawingProperty.empty())
+           
+			if(false == sDrawingProperty.empty())
 			{
 				ReadDrawing(oCDrawingProperty);
 			}
@@ -8210,110 +8304,58 @@ int Binary_DocumentTableReader::ReadPptxDrawing(BYTE type, long length, void* po
 {
 	int res = c_oSerConstants::ReadOk;
 	CDrawingProperty* pDrawingProperty = static_cast<CDrawingProperty*>(poResult);
-	if ( c_oSerImageType2::Type == type )
+	if (c_oSerImageType2::Type == type)
 	{
 		pDrawingProperty->bType = true;
 		pDrawingProperty->Type = m_oBufferedStream.GetUChar();
 	}
-	else if ( c_oSerImageType2::PptxData == type )
+	else if (c_oSerImageType2::PptxData == type)
 	{
 		pDrawingProperty->bDataPos = true;
 		pDrawingProperty->bDataLength = true;
 		pDrawingProperty->DataPos = m_oBufferedStream.GetPos();
 		pDrawingProperty->DataLength = length;
-	//сейчас пропуская, потому что перед чтение этого поля надо собрать остальные данные
+		//сейчас пропуская, потому что перед чтение этого поля надо собрать остальные данные
 		res = c_oSerConstants::ReadUnknown;
 	}
-	else if ( c_oSerImageType2::Chart2 == type )
+	else if (c_oSerImageType2::Chart == type)
 	{
-		if(false == m_oFileWriter.m_bSaveChartAsImg)
+		OOX::CPath pathCharts = m_oFileWriter.m_oChartWriter.m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"charts";
+		OOX::CSystemUtility::CreateDirectories(pathCharts.GetPath());
+		
+		m_oBufferedStream.m_pRels->m_pManager->SetDstCharts(pathCharts.GetPath());
+
+		m_oBufferedStream.Seek(m_oBufferedStream.GetPos() - 4); //roll back length
+
+		PPTX::Logic::GraphicFrame graphicFrame; 
+
+		graphicFrame.chartRec.Init();
+		graphicFrame.chartRec->fromPPTY(&m_oBufferedStream);
+
+		if (graphicFrame.chartRec->id_data.IsInit())
 		{
-			OOX::CPath pathChartsDir = m_oFileWriter.m_oChartWriter.m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"charts";
-			OOX::CSystemUtility::CreateDirectories(pathChartsDir.GetPath());
-			
-			OOX::CPath pathChartsRelsDir = pathChartsDir.GetPath() + FILE_SEPARATOR_STR +  L"_rels";                
-			OOX::CSystemUtility::CreateDirectories(pathChartsRelsDir.GetPath());
-
-			OOX::CPath pathChartsWorksheetDir = m_oFileWriter.m_oChartWriter.m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"embeddings";
-			OOX::CSystemUtility::CreateDirectories(pathChartsWorksheetDir.GetPath());
-
-            int nativeDocumentType = m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_nDocumentType;
-
-            m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_nDocumentType = XMLWRITER_DOC_TYPE_XLSX;
-			m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
-			
-			std::wstring sThemePath		= m_oFileWriter.m_sThemePath;
-			std::wstring sDrawingsPath	= m_oFileWriter.m_oChartWriter.m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"drawings";
-
-			size_t nPos = sThemePath.rfind(FILE_SEPARATOR_STR);
-			if (std::wstring::npos != nPos)
-			{
-				sThemePath = sThemePath.substr(0, nPos);
-			}
-				
-			BinXlsxRW::SaveParams			oSaveParams(sDrawingsPath, sThemePath, m_oFileWriter.m_pDrawingConverter->GetContentTypes());
-			BinXlsxRW::BinaryChartReader	oBinaryChartReader(m_oBufferedStream, oSaveParams, m_oFileWriter.m_pDrawingConverter);
-			
-			OOX::Spreadsheet::CChartSpace* pChartSpace = new OOX::Spreadsheet::CChartSpace(NULL);
-			oBinaryChartReader.ReadCT_ChartSpace(length, pChartSpace);
-
-			//save xlsx
-			_INT32 nChartCount = m_oFileWriter.m_pDrawingConverter->GetDocumentChartsCount();
-			_INT32 nChartIndex = nChartCount + 1;
-			m_oFileWriter.m_pDrawingConverter->SetDocumentChartsCount(nChartCount + 1);
-			std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(nChartIndex) + L".xlsx";
-			std::wstring sXlsxPath = pathChartsWorksheetDir.GetPath() + FILE_SEPARATOR_STR + sXlsxFilename;
-			BinXlsxRW::CXlsxSerializer oXlsxSerializer;
-			if (oXlsxSerializer.writeChartXlsx(sXlsxPath, *pChartSpace))
-			{
-				std::wstring sChartsWorksheetRelsName = L"../embeddings/" + sXlsxFilename;
-				unsigned int rIdXlsx;
-				std::wstring bstrChartsWorksheetRelType = OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();
-
-				m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartsWorksheetRelType, sChartsWorksheetRelsName, std::wstring(), &rIdXlsx);
-				m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_pContentTypes->AddDefault(L"xlsx");
-
-				pChartSpace->m_oChartSpace.m_externalData = new OOX::Spreadsheet::CT_ExternalData();
-				pChartSpace->m_oChartSpace.m_externalData->m_id = new std::wstring();
-				pChartSpace->m_oChartSpace.m_externalData->m_id->append(L"rId");
-				pChartSpace->m_oChartSpace.m_externalData->m_id->append(std::to_wstring(rIdXlsx));
-				pChartSpace->m_oChartSpace.m_externalData->m_autoUpdate = new OOX::Spreadsheet::CT_Boolean();
-				pChartSpace->m_oChartSpace.m_externalData->m_autoUpdate->m_val = new bool(false);
-			}
-
-			std::wstring sFilename = L"chart" + std::to_wstring(nChartIndex) + L".xml";
-			std::wstring sRelsName = L"charts/" + sFilename;
-			
-			OOX::CPath pathChartsFile = pathChartsDir + FILE_SEPARATOR_STR + sFilename;
-			pChartSpace->write(pathChartsFile, OOX::CPath(L"/word/charts"), *m_oFileWriter.m_pDrawingConverter->GetContentTypes());
-
-            OOX::CPath pathChartsRels =  pathChartsRelsDir.GetPath() + FILE_SEPARATOR_STR + sFilename + L".rels";
-			m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(pathChartsRels.GetPath());
-
-			unsigned int rIdChart;
-            std::wstring bstrChartRelType = OOX::FileTypes::Chart.RelationType();
-			
-			m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartRelType, sRelsName, std::wstring(), &rIdChart);
-			//m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml", L"/word/charts", sFilename);
-
-            pDrawingProperty->sChartRels = L"rId" + std::to_wstring( rIdChart);
-
-            m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_nDocumentType = nativeDocumentType;
+			pDrawingProperty->sGraphicFrameContent = graphicFrame.toXML2();
 		}
-		else
-			res = c_oSerConstants::ReadUnknown;
 	}
-	else if ( c_oSerImageType2::ChartImg == type )
+	else if (c_oSerImageType2::ChartEx == type)
 	{
-		if(true == m_oFileWriter.m_bSaveChartAsImg)
+		OOX::CPath pathCharts = m_oFileWriter.m_oChartWriter.m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"charts";
+		OOX::CSystemUtility::CreateDirectories(pathCharts.GetPath());
+
+		m_oBufferedStream.m_pRels->m_pManager->SetDstCharts(pathCharts.GetPath());
+
+		m_oBufferedStream.Seek(m_oBufferedStream.GetPos() - 4); //roll back length
+
+		PPTX::Logic::GraphicFrame graphicFrame;
+
+		graphicFrame.chartRec.Init();
+		graphicFrame.chartRec->m_bChartEx = true;
+		graphicFrame.chartRec->fromPPTY(&m_oBufferedStream);
+
+		if (graphicFrame.chartRec->id_data.IsInit())
 		{
-			pDrawingProperty->bDataPos = true;
-			pDrawingProperty->bDataLength = true;
-			pDrawingProperty->DataPos = m_oBufferedStream.GetPos();
-			pDrawingProperty->DataLength = length;
-	//сейчас пропуская, потому что перед чтение этого поля надо собрать остальные данные
+			pDrawingProperty->sGraphicFrameContent = graphicFrame.toXML2();
 		}
-		res = c_oSerConstants::ReadUnknown;
 	}
 	else if ( c_oSerImageType2::BehindDoc == type )
 	{
@@ -8502,11 +8544,12 @@ int Binary_DocumentTableReader::ReadEmbedded(BYTE type, long length, void* poRes
 
 			std::wstring strDstEmbeddedTempThemePath = strDstEmbeddedTempXl + FILE_SEPARATOR_STR + L"theme";
 			std::wstring strDstEmbeddedTempDrawingPath = strDstEmbeddedTempXl + FILE_SEPARATOR_STR + L"drawings";
-			
+			std::wstring strDstEmbeddedTempEmbeddingsPath = strDstEmbeddedTempXl + FILE_SEPARATOR_STR + L"embeddings";
+
 			int id = m_oFileWriter.m_oChartWriter.nEmbeddedCount++;
 
 			std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring( id + 1) + L".xlsx";
-			BinXlsxRW::SaveParams oSaveParams(strDstEmbeddedTempDrawingPath, strDstEmbeddedTempThemePath, m_oFileWriter.m_pDrawingConverter->GetContentTypes());//???
+			BinXlsxRW::SaveParams oSaveParams(strDstEmbeddedTempDrawingPath, strDstEmbeddedTempEmbeddingsPath, strDstEmbeddedTempThemePath, m_oFileWriter.m_pDrawingConverter->GetContentTypes());//???
 			
 			OOX::Spreadsheet::CXlsx oXlsx;
 
@@ -9298,6 +9341,11 @@ int Binary_DocumentTableReader::ReadSdtTextFormPr(BYTE type, long length, void* 
 		pTextFormPr->m_oMaxCharacters.Init();
 		pTextFormPr->m_oMaxCharacters->m_oVal = m_oBufferedStream.GetLong();
 	}
+	else if (c_oSerSdt::TextFormPrCombBorder == type)
+	{
+		pTextFormPr->m_oCombBorder.Init();
+		READ2_DEF(length, res, oBinary_pPrReader.ReadBorder2, pTextFormPr->m_oCombBorder.GetPointer());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -9759,7 +9807,7 @@ int BinaryFileReader::ReadMainTable()
 				
 				m_oFileWriter.m_pDrawingConverter->Registration(
 					L"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml", 
-					L"/word" + m_oFileWriter.m_bGlossaryMode ? std::wstring(L"/glossary") : L"", pFooter->m_sFilename);
+					L"/word" + (m_oFileWriter.m_bGlossaryMode ? std::wstring(L"/glossary") : L""), pFooter->m_sFilename);
 			}
 		}
 		for (size_t i = 0; i < m_oFileWriter.m_oCustomXmlWriter.arItems.size(); ++i)

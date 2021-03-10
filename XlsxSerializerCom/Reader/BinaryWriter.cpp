@@ -3244,7 +3244,7 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
 	// ConditionalFormatting
 	if ( !oWorksheet.m_arrConditionalFormatting.empty() )
     {
-		WriteConditionalFormattings(oWorksheet.m_arrConditionalFormatting, oWorksheet.m_mapConditionalFormattingEx);
+		WriteConditionalFormattings(oWorksheet.m_arrConditionalFormatting, oWorksheet.m_mapConditionalFormattingEx, false);
 	}
     if (oWorksheet.m_oExtLst.IsInit())
     {
@@ -3253,7 +3253,7 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
             OOX::Drawing::COfficeArtExtension* pExt = oWorksheet.m_oExtLst->m_arrExt[i];
 			if ( !pExt->m_arrConditionalFormatting.empty() )
 			{
-				WriteConditionalFormattings(pExt->m_arrConditionalFormatting, oWorksheet.m_mapConditionalFormattingEx);
+				WriteConditionalFormattings(pExt->m_arrConditionalFormatting, oWorksheet.m_mapConditionalFormattingEx, true);
 			}
 			else if ( pExt->m_oSlicerList.IsInit() )
 			{
@@ -6081,7 +6081,7 @@ void BinaryWorksheetTableWriter::WritemBreak(const OOX::Spreadsheet::CBreak& oBr
 	}
 }
 void BinaryWorksheetTableWriter::WriteConditionalFormattings(std::vector<OOX::Spreadsheet::CConditionalFormatting*>& arrConditionalFormatting,
-	std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx)
+	std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt)
 {
 	int nCurPos = 0;
 	for (size_t nIndex = 0, nLength = arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
@@ -6089,12 +6089,12 @@ void BinaryWorksheetTableWriter::WriteConditionalFormattings(std::vector<OOX::Sp
 		if (arrConditionalFormatting[nIndex]->IsUsage()) continue;
 
 		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::ConditionalFormatting);
-		WriteConditionalFormatting(*arrConditionalFormatting[nIndex], mapCFRuleEx);
+		WriteConditionalFormatting(*arrConditionalFormatting[nIndex], mapCFRuleEx, isExt);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }
 void BinaryWorksheetTableWriter::WriteConditionalFormatting(const OOX::Spreadsheet::CConditionalFormatting& oConditionalFormatting,
-	std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx)
+	std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt)
 {
 	int nCurPos = 0;
 
@@ -6115,13 +6115,13 @@ void BinaryWorksheetTableWriter::WriteConditionalFormatting(const OOX::Spreadshe
 		for (size_t i = 0, length = oConditionalFormatting.m_arrItems.size(); i < length; ++i)
 		{
 			int nCurPos1 = m_oBcw.WriteItemStart(c_oSer_ConditionalFormatting::ConditionalFormattingRule);
-			WriteConditionalFormattingRule(*oConditionalFormatting.m_arrItems[i], mapCFRuleEx);
+			WriteConditionalFormattingRule(*oConditionalFormatting.m_arrItems[i], mapCFRuleEx, isExt);
 			m_oBcw.WriteItemEnd(nCurPos1);
 		}			
 	}
 }
 void BinaryWorksheetTableWriter::WriteConditionalFormattingRule(const OOX::Spreadsheet::CConditionalFormattingRule& oConditionalFormattingRule,
-	std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx)
+	std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt)
 {
 	std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>::iterator pFind;
 	if (oConditionalFormattingRule.m_oExtId.IsInit())
@@ -6134,7 +6134,7 @@ void BinaryWorksheetTableWriter::WriteConditionalFormattingRule(const OOX::Sprea
 				 OOX::Spreadsheet::CConditionalFormattingRule::Merge(oConditionalFormattingRule, *pFind->second);
 
 			 pFind->second->bUsage = true;
-			 return WriteConditionalFormattingRule(newRule, mapCFRuleEx);
+			 return WriteConditionalFormattingRule(newRule, mapCFRuleEx, true);
 		 }
 	}
 	int nCurPos = 0;
@@ -6250,6 +6250,10 @@ void BinaryWorksheetTableWriter::WriteConditionalFormattingRule(const OOX::Sprea
 		WriteIconSet(oConditionalFormattingRule.m_oIconSet.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+
+	nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingRule::IsExt);
+	m_oBcw.m_oStream.WriteBOOL(isExt);
+	m_oBcw.WriteItemEnd(nCurPos);
 }
 
 void BinaryWorksheetTableWriter::WriteColorScale(const OOX::Spreadsheet::CColorScale& oColorScale)

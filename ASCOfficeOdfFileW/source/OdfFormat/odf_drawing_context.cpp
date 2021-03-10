@@ -1330,16 +1330,11 @@ void odf_drawing_context::set_opacity(double percent_)
 	switch(impl_->current_drawing_part_)
 	{
 	case Area:
-	{
-		if (impl_->current_drawing_state_.oox_shape_preset_  == 3000)
-			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_image_opacity_ = percent(percent_);
-		else
-			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_opacity_ = percent(percent_);
-	}break;
+		impl_->current_graphic_properties->common_draw_fill_attlist_.draw_opacity_ = percent(percent_);
+		break;
 	case Line:
-	{
 		impl_->current_graphic_properties->svg_stroke_opacity_ = percent(percent_);
-	}break;
+		break;
 	}
 }
 void odf_drawing_context::set_grayscale()
@@ -2186,8 +2181,7 @@ void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) 
 }
 void odf_drawing_context::set_line_width(double pt)
 {
-	if (!impl_->current_graphic_properties) return;
-
+	if (!impl_->current_graphic_properties)return;
 	impl_->current_graphic_properties->svg_stroke_width_ = length(length(pt,length::pt).get_value_unit(length::cm), length::cm);
 }
 
@@ -2463,9 +2457,9 @@ void odf_drawing_context::set_textarea_font(std::wstring & latin, std::wstring &
 
 	if (!impl_->current_text_properties) return;
 
-	if (!ea.empty())	impl_->current_text_properties->content_.fo_font_family_			= latin;
+	if (!ea.empty())	impl_->current_text_properties->content_.fo_font_family_			= ea;
 	if (!cs.empty())	impl_->current_text_properties->content_.style_font_family_complex_	= cs;
-	if (!latin.empty())	impl_->current_text_properties->content_.style_font_family_asian_	= ea;
+	if (!latin.empty())	impl_->current_text_properties->content_.style_font_family_asian_	= latin;
 
 }
 void odf_drawing_context::set_textarea_fontcolor(std::wstring hexColor)

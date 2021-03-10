@@ -10,23 +10,11 @@
 
 int main()
 {
+    std::vector<std::wstring> arFiles = NSDirectory::GetFiles(NSFile::GetProcessDirectory() + L"/../../../Files");
     std::wstring sTmp = NSFile::GetProcessDirectory() + L"/tmp";
     std::wstring sOutputDirectory = NSFile::GetProcessDirectory() + L"/OutputFiles";
     NSDirectory::CreateDirectory(sOutputDirectory);
     NSDirectory::CreateDirectory(sTmp);
-
-    bool bFromHtml = false;
-    if (bFromHtml)
-    {
-        std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../FromHtmlTest/test3";
-        CEpubFile oEpub;
-        oEpub.SetTempDirectory(sTmp);
-        oEpub.FromHtml(sFile, sOutputDirectory + L"/res.epub");
-        NSDirectory::DeleteDirectory(sTmp);
-        return 0;
-    }
-
-    std::vector<std::wstring> arFiles = NSDirectory::GetFiles(NSFile::GetProcessDirectory() + L"/../../../Files");
 
     clock_t tTime1 = clock();
     //Русские символы в консоль не выводятся

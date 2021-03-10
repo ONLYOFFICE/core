@@ -78,10 +78,8 @@ public:
 
 	void add_child(office_element_ptr & child);
 /////////////////////////////////////////////////////////////////////////////////////////
-    void			set_name(const std::wstring &name);
+    void			set_name(std::wstring name);
 	std::wstring 	get_name();
-
-	void	set_class(const std::wstring &value);
 
 	odf_types::style_family::type	get_family_type	();
 	void							set_family_type	(odf_types::style_family::type type);
@@ -89,11 +87,11 @@ public:
 	void	set_number_format(int id)	{num_fmt_id_ = id;}
 	int		get_number_format()			{return num_fmt_id_;}
 
-    void	set_parent_style_name(const std::wstring &name) ;
-    void	set_data_style_name(const std::wstring &name);
-    void	set_list_style_name(const std::wstring &name);
+    void	set_parent_style_name(std::wstring name) ;
+    void	set_data_style_name(std::wstring name);
+    void	set_list_style_name(std::wstring name);
 
-    void	set_display_name(const std::wstring &name);
+    void	set_display_name(std::wstring name);
 //////////////////////////////////////////////////////////////////////////////////////////
     graphic_format_properties *		get_graphic_properties() ;
     

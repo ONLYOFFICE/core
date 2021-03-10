@@ -404,8 +404,6 @@ namespace ChartEx
 		virtual std::wstring toXML() const { return L""; }
 		virtual EElementType getType () const;
 
-		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-
 		nullable<CNumberFormat>								m_numFmt;
 		nullable<PPTX::Logic::TxBody>						m_oTxPr;
 		nullable<PPTX::Logic::SpPr>							m_oSpPr;
@@ -414,8 +412,6 @@ namespace ChartEx
 		nullable_string										m_separator;
 		std::vector<CDataLabel*>							m_arDataLabel;
 		std::vector<CDataLabelHidden*>						m_arDataLabelHidden;
-		
-		nullable<SimpleTypes::Spreadsheet::CDataLabelPos<>>	m_pos;
 	};
 //------------------------------------------------------------------------------
 	class CDataPoint : public WritingElement
@@ -489,7 +485,7 @@ namespace ChartEx
 
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-		nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<>> m_gapWidth;	//typedef ST_DoubleOrAutomatic ST_GapWidthRatio 
+		nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<>>	m_gapWidth;	//typedef ST_DoubleOrAutomatic ST_GapWidthRatio 
 	};
 //------------------------------------------------------------------------------
 	class CValScaling : public WritingElement
@@ -510,7 +506,7 @@ namespace ChartEx
 		nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<>>	m_max;
 		nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<>>	m_min;
 
-		nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<>>	m_majorUnit; //ST_ValueAxisUnit == ST_DoubleOrAutomatic  
+		nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<>>	m_majorUnit; //typedef ST_DoubleOrAutomatic ST_ValueAxisUnit 
 		nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<>>	m_minorUnit;
 	};
 //------------------------------------------------------------------------------
@@ -625,8 +621,8 @@ namespace ChartEx
 		nullable<PPTX::Logic::TxBody>	m_oTxPr;	
 		nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 
-		nullable_uint					m_id;
-		nullable_bool					m_hidden;
+		nullable<SimpleTypes::CDecimalNumber<>> m_id;
+		nullable_bool							m_hidden;
 	};
 //------------------------------------------------------------------------------
 	class CPlotSurface : public WritingElement
@@ -805,25 +801,7 @@ namespace ChartEx
 
 		std::vector<CDimension*>						m_arDimension;
 		nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
-		nullable_uint									m_id;
-	};
-//------------------------------------------------------------------------------
-	class CExternalData : public WritingElement
-	{
-	public:
-		WritingElement_AdditionConstructors(CExternalData)
-		CExternalData() {}
-
-		virtual void fromXML(XmlUtils::CXmlNode& node) {}
-		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-		virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
-		virtual std::wstring toXML() const { return L""; }
-		virtual EElementType getType() const;
-		
-		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-
-		nullable_string m_id;
-		nullable_bool m_autoUpdate;
+		nullable<SimpleTypes::CDecimalNumber<>>			m_id;
 	};
 //------------------------------------------------------------------------------
 	class CChartData : public WritingElement
@@ -840,7 +818,6 @@ namespace ChartEx
 		virtual std::wstring toXML() const { return L""; }
 		virtual EElementType getType () const;
 
-		nullable<CExternalData>							m_externalData;
 		std::vector<CData*>								m_arData;
 		nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 	};

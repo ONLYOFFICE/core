@@ -280,33 +280,6 @@ public:
 		}
 		return sRes;
 	}
-	void ToCThemeColor( nullable<SimpleTypes::CHexColor<>>& oColor,
-												nullable<SimpleTypes::CThemeColor<>>& oThemeColor,
-												nullable<SimpleTypes::CUcharHexNumber<>>& oThemeTint,
-												nullable<SimpleTypes::CUcharHexNumber<>>& oThemeShade)
-	{
-		if (Auto)
-		{
-			if(!oColor.IsInit())
-				oColor.Init();
-			oColor->SetValue(SimpleTypes::hexcolorAuto);
-		}
-		if (bColor)
-		{
-			oThemeColor.Init();
-			oThemeColor->SetValue((SimpleTypes::EThemeColor)Color);
-		}
-		if (bTint)
-		{
-			oThemeTint.Init();
-			oThemeTint->SetValue(Tint);
-		}
-		if (bShade)
-		{
-			oThemeShade.Init();
-			oThemeShade->SetValue(Shade);
-		}
-	}
 };
 class Spacing
 {
@@ -387,16 +360,17 @@ class Shd
 public:
     BYTE        Value;
     docRGB      Color;
-	docRGB      Fill;
-	CThemeColor ThemeColor;
+	CThemeColor ThemeColor; 
 
-	bool bValue = false;
-	bool bColor = false;
-	bool bThemeColor = false;
-	bool bFill = false;
-	
-	Shd(){}
-
+	bool bValue;
+	bool bColor;
+	bool bThemeColor;
+	Shd()
+	{
+		bValue		= false;
+        bColor      = false;
+		bThemeColor = false;
+	}
     std::wstring ToString()
 	{
         std::wstring sShd;
@@ -449,17 +423,17 @@ public:
 				}
 			}
 			if (bColor)
+			{
+				sShd += L" w:fill=\"" + Color.ToString() + L"\"";
 				sShd += L" w:color=\"" + Color.ToString() + L"\"";
-
-			if (bFill)
-				sShd += L" w:fill=\"#" + Fill.ToString() + L"\"";
-			
-			if (!bColor && !bFill)
+			}
+			else
+			{
 				sShd += L" w:color=\"auto\"";
-
+			}
 			if(bThemeColor && ThemeColor.IsNoEmpty())
 			{
-				if(ThemeColor.Auto && !bColor && !bFill)
+				if(ThemeColor.Auto && !bColor)
                     sShd += L" w:fill=\"auto\"";
 				if(ThemeColor.bColor)
                     sShd += L" w:themeFill=\"" + ThemeColor.ToStringColor() + L"\"";
@@ -504,10 +478,6 @@ public:
     std::wstring FontHAnsi;
     std::wstring FontAE;
     std::wstring FontCS;
-	std::wstring FontAsciiTheme;
-	std::wstring FontHAnsiTheme;
-	std::wstring FontAETheme;
-	std::wstring FontCSTheme;
 	long FontSize;
 	docRGB Color;
 	BYTE VertAlign;
@@ -631,7 +601,7 @@ public:
 	{
 		return bBold || bItalic || bUnderline || bStrikeout || bFontAscii || bFontHAnsi || bFontAE || bFontCS || bFontSize || bColor || bVertAlign || nHighLight > 0 || bShd ||
 			bRStyle || bSpacing || bDStrikeout || bCaps || bSmallCaps || bPosition || bFontHint || bBoldCs || bItalicCs || bFontSizeCs || bCs || bRtl || bLang || bLangBidi || bLangEA || bThemeColor || bVanish ||
-			!Outline.empty() || !Fill.empty() || !Del.empty() || !Ins.empty() || !MoveFrom.empty() || !MoveTo.empty() || !rPrChange.empty() || !FontAsciiTheme.empty() || !FontHAnsiTheme.empty() || !FontAETheme.empty() || !FontCSTheme.empty();
+			!Outline.empty() || !Fill.empty() || !Del.empty() || !Ins.empty() || !MoveFrom.empty() || !MoveTo.empty() || !rPrChange.empty();
 	}
 	void Write(NSStringUtils::CStringBuilder*  pCStringWriter)
 	{
@@ -640,7 +610,7 @@ public:
 		{
             pCStringWriter->WriteString(L"<w:rStyle w:val=\"" + RStyle + L"\"/>");
 		}
-		if(bFontAscii || bFontHAnsi || bFontAE || bFontCS || bFontHint || !FontAsciiTheme.empty() || !FontHAnsiTheme.empty() || !FontAETheme.empty() || !FontCSTheme.empty())
+		if(bFontAscii || bFontHAnsi || bFontAE || bFontCS || bFontHint)
 		{
             std::wstring sFont = _T("<w:rFonts");
 			if(bFontAscii)
@@ -662,22 +632,6 @@ public:
 			{
                 sFont += L" w:eastAsia=\"" + FontAE + L"\"";
 				m_mapFonts[FontAE] = 1;
-			}
-			if(!FontAsciiTheme.empty())
-			{
-				sFont += L" w:asciiTheme=\"" + FontAsciiTheme + L"\"";
-			}
-			if(!FontHAnsiTheme.empty())
-			{
-				sFont += L" w:hAnsiTheme=\"" + FontHAnsiTheme + L"\"";
-			}
-			if(!FontAETheme.empty())
-			{
-				sFont += L" w:eastAsiaTheme=\"" + FontAETheme + L"\"";
-			}
-			if(!FontCSTheme.empty())
-			{
-				sFont += L" w:cstheme=\"" + FontCSTheme + L"\"";
 			}
 			if(bFontHint)
 			{
@@ -2355,41 +2309,40 @@ public:
     unsigned int	nObjectId;
     BYTE			nObjectType;
 	
-	long DataPos;
-    long DataLength;
-    BYTE Type;
-    bool BehindDoc;
-	__int64 DistL;
-	__int64 DistT;
-	__int64 DistR;
-	__int64 DistB;
-    bool LayoutInCell;
+	long    DataPos;
+    long    DataLength;
+    BYTE    Type;
+    bool    BehindDoc;
+	__int64  DistL;
+	__int64  DistT;
+	__int64  DistR;
+	__int64  DistB;
+    bool    LayoutInCell;
 	unsigned long RelativeHeight;
-    bool BSimplePos;
-	__int64 EffectExtentL;
-	__int64 EffectExtentT;
-	__int64 EffectExtentR;
-	__int64 EffectExtentB;
-	__int64 Width;
-	__int64 Height;
-    BYTE PositionHRelativeFrom;
-    BYTE PositionHAlign;
-	__int64 PositionHPosOffset;
-	double PositionHPctOffset;
-    BYTE PositionVRelativeFrom;
-    BYTE PositionVAlign;
-	__int64 PositionVPosOffset;
-    double PositionVPctOffset;
-	__int64 SimplePosX;
-	__int64 SimplePosY;
+    bool    BSimplePos;
+	__int64  EffectExtentL;
+	__int64  EffectExtentT;
+	__int64  EffectExtentR;
+	__int64  EffectExtentB;
+	__int64  Width;
+	__int64  Height;
+    BYTE    PositionHRelativeFrom;
+    BYTE    PositionHAlign;
+	__int64  PositionHPosOffset;
+	double  PositionHPctOffset;
+    BYTE    PositionVRelativeFrom;
+    BYTE    PositionVAlign;
+	__int64  PositionVPosOffset;
+    double  PositionVPctOffset;
+	__int64  SimplePosX;
+	__int64  SimplePosY;
+    std::wstring sChartRels;
     std::wstring sSizeRelH;
     std::wstring sSizeRelV;
-    int m_nDocPr;
+    int     m_nDocPr;
     std::wstring sGraphicFramePr;
     std::wstring sDocPr;
    
-    std::wstring sGraphicFrameContent;
-
 	CDrawingPropertyWrap DrawingPropertyWrap;
 
     bool bDataPos;
@@ -2457,9 +2410,9 @@ public:
         bSimplePosY         = false;
 		bDrawingPropertyWrap = false;
 	}
-	bool IsGraphicFrameContent()
+	bool IsChart()
 	{
-        return false == sGraphicFrameContent.empty();
+        return false == sChartRels.empty();
 	}
     std::wstring Write()
 	{
@@ -2467,22 +2420,17 @@ public:
 
         std::wstring sXml;
 
-        bool bGraphicFrameContent = IsGraphicFrameContent();
-       
-		if(c_oAscWrapStyle::Inline == Type)
+        bool bChart = IsChart();
+        if(c_oAscWrapStyle::Inline == Type)
         {
             if(bWidth && bHeight)
             {
-				if (bGraphicFrameContent)
-				{
-					sXml += L"<w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\">\
-<wp:extent cx=\"" + std::to_wstring(Width) + L"\" cy=\"" + std::to_wstring(Height) + L"\"/>";		
-				}
-				else
-				{
-					sXml += L"<wp:inline xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
+                if(false == bChart)
+                    sXml += L"<wp:inline xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
 distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstring(Width) + L"\" cy=\"" + std::to_wstring(Height) + L"\"/>";
-				}
+                else
+                    sXml += L"<w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\">\
+<wp:extent cx=\"" + std::to_wstring(Width) + L"\" cy=\"" + std::to_wstring(Height) + L"\"/>";
 
                 if(bEffectExtentL && bEffectExtentT && bEffectExtentR && bEffectExtentB)
                 {
@@ -2498,17 +2446,18 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
                 {
                     sXml += L"<wp:docPr id=\"" + std::to_wstring(m_nDocPr) + L"\" name=\"\"/>";
                 }
-                if (!sGraphicFramePr.empty())
+                if(!sGraphicFramePr.empty())
                 {
-                    sXml += sGraphicFramePr;
+                    sXml += (sGraphicFramePr);
                 }
                 else
                 {
                     sXml += L"<wp:cNvGraphicFramePr/>";
                 }
-                if (bGraphicFrameContent)
+                if(bChart)
                 {
-					sXml += sGraphicFrameContent + L"</wp:inline></w:drawing>";
+                    sXml += L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"><c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\""
+                            + sChartRels + L"\"/></a:graphicData></a:graphic></wp:inline></w:drawing>";
                 }
                 else
                 {
@@ -2548,10 +2497,9 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
                 if(bLayoutInCell && false == LayoutInCell)
                     nLayoutInCell = 0;
 
-				if (bGraphicFrameContent)
-				{
-					sXml += L"<w:drawing>";
-				}
+                if(bChart)
+                    sXml += L"<w:drawing>";
+
                 sXml += L"<wp:anchor xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\"\
                              distT=\""      + std::to_wstring(emuDistT) +
                         L"\" distB=\""      + std::to_wstring(emuDistB) +
@@ -2570,7 +2518,7 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
 					emuY = SimplePosY;
                 sXml += L"<wp:simplePos x=\"" + std::to_wstring(emuX) + L"\" y=\"" + std::to_wstring(emuY) + L"\"/>";
 
-                if (bPositionHRelativeFrom && (bPositionHAlign || bPositionHPosOffset || bPositionHPctOffset))
+                if(bPositionHRelativeFrom && (bPositionHAlign || bPositionHPosOffset || bPositionHPctOffset))
                 {
                     std::wstring sRelativeFrom;
                     switch(PositionHRelativeFrom)
@@ -2607,7 +2555,7 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
                     }
                     sXml += L"<wp:positionH relativeFrom=\"" + sRelativeFrom + L"\">" + sContent + L"</wp:positionH>";
                 }
-                if (bPositionVRelativeFrom && (bPositionVAlign || bPositionVPosOffset || bPositionVPctOffset))
+                if(bPositionVRelativeFrom && (bPositionVAlign || bPositionVPosOffset || bPositionVPctOffset))
                 {
                     std::wstring sRelativeFrom;
                     switch(PositionVRelativeFrom)
@@ -2622,7 +2570,7 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
                     case 7: sRelativeFrom = _T("topMargin");break;
                     }
                     std::wstring sContent;
-                    if (bPositionVAlign)
+                    if(bPositionVAlign)
                     {
                         switch(PositionVAlign)
                         {
@@ -2646,22 +2594,22 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
                 }
 				sXml += L"<wp:extent cx=\"" + std::to_wstring(Width) + L"\" cy=\"" + std::to_wstring(Height)+ L"\"/>";
 
-                if (bEffectExtentL && bEffectExtentT && bEffectExtentR && bEffectExtentB)
+                if(bEffectExtentL && bEffectExtentT && bEffectExtentR && bEffectExtentB)
                 {
 					sXml += L"<wp:effectExtent l=\"" + std::to_wstring(EffectExtentL) +
 										  L"\" t=\"" + std::to_wstring(EffectExtentT) + L"\" r=\"" + std::to_wstring(EffectExtentR) +
 										  L"\" b=\"" + std::to_wstring(EffectExtentB) + L"\"/>";
                 }
-                if (bDrawingPropertyWrap && DrawingPropertyWrap.bWrappingType)
+                if(bDrawingPropertyWrap && DrawingPropertyWrap.bWrappingType)
                 {
                     std::wstring sTagName;
                     switch(DrawingPropertyWrap.WrappingType)
                     {
-						case c_oSerImageType2::WrapNone:sTagName        = _T("wrapNone");           break;
-						case c_oSerImageType2::WrapSquare:sTagName      = _T("wrapSquare");         break;
-						case c_oSerImageType2::WrapThrough:sTagName     = _T("wrapThrough");        break;
-						case c_oSerImageType2::WrapTight:sTagName       = _T("wrapTight");          break;
-						case c_oSerImageType2::WrapTopAndBottom:sTagName = _T("wrapTopAndBottom");  break;
+                    case c_oSerImageType2::WrapNone:sTagName        = _T("wrapNone");           break;
+                    case c_oSerImageType2::WrapSquare:sTagName      = _T("wrapSquare");         break;
+                    case c_oSerImageType2::WrapThrough:sTagName     = _T("wrapThrough");        break;
+                    case c_oSerImageType2::WrapTight:sTagName       = _T("wrapTight");          break;
+                    case c_oSerImageType2::WrapTopAndBottom:sTagName = _T("wrapTopAndBottom");  break;
                     }
                     if(DrawingPropertyWrap.bStart || DrawingPropertyWrap.Points.size() > 0)
                     {
@@ -2727,9 +2675,10 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
                 {
                     sXml += L"<wp:cNvGraphicFramePr/>";
                 }
-                if (bGraphicFrameContent)
+                if(bChart)
                 {
-                    sXml += sGraphicFrameContent;
+                    sXml += L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"><c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\""
+                         + sChartRels + L"\"/></a:graphicData></a:graphic>";
                 }
 
                 if(!sSizeRelH.empty())
@@ -2743,7 +2692,7 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
 
                 sXml += L"</wp:anchor>";
 
-                if (bGraphicFrameContent)
+                if(bChart)
                     sXml += L"</w:drawing>";
             }
         }

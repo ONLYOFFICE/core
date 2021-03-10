@@ -108,7 +108,7 @@ static int ParseTxtOptions(const std::wstring & sXmlOptions)
 
 _UINT32 CTxtXmlFile::txt_LoadFromFile(const std::wstring & sSrcFileName, const std::wstring & sDstPath, const std::wstring & sXMLOptions)
 {
-    Writers::FileWriter *pDocxWriter =  new Writers::FileWriter(sDstPath, L"", true, 1, NULL, L"");
+    Writers::FileWriter *pDocxWriter =  new Writers::FileWriter(sDstPath, L"", true, 1, false, NULL, L"");
 	if (pDocxWriter == NULL) return AVS_FILEUTILS_ERROR_CONVERT;
 
     CreateDocxEmpty(sDstPath, pDocxWriter);

@@ -522,7 +522,7 @@ void odf_text_context::end_list()
 }
 //------------------------------------------------------------------------------------------  LIST
 
-bool odf_text_context::start_field(int type, const std::wstring& value, const std::wstring& format)
+bool odf_text_context::start_field(int type, const std::wstring& value)
 {
 	if (single_paragraph_ == true) return false;
 
@@ -561,34 +561,16 @@ bool odf_text_context::start_field(int type, const std::wstring& value, const st
 		{
 			create_element(L"text", L"page-count", elm, odf_context_);
 		}break;
-		case fieldTime:
-		{
-			create_element(L"text", L"time", elm, odf_context_);
-
-			text_time *time = dynamic_cast<text_time*>(elm.get());
-			if (time)
-			{			
-				if (false == value.empty()) time->text_time_value_ = value;
-				if (false == format.empty() && styles_context_)
-				{
-					number_format_state state = styles_context_->numbers_styles().add_or_find(-1, format);
-					time->style_data_style_name_ = state.style_name;
-				}
-
-			}
-		}break;
 		case fieldDateTime:
 		{
 			create_element(L"text", L"date", elm, odf_context_);
 
-			text_date *date = dynamic_cast<text_date*>(elm.get());
-			if (date)
-			{		
-				if (false == value.empty()) date->text_date_value_ = value;
-				if (false == format.empty() && styles_context_)
+			if (false == value.empty())
+			{
+				text_date *date = dynamic_cast<text_date*>(elm.get());
+				if (date)
 				{
-					number_format_state state = styles_context_->numbers_styles().add_or_find(-1, format);
-					date->style_data_style_name_ = state.style_name;
+					date->text_date_value_ = value;
 				}
 			}
 		}break;

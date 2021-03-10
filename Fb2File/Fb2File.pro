@@ -7,6 +7,7 @@ TEMPLATE = lib
 
 CONFIG += shared
 CONFIG += plugin
+
 CONFIG += core_static_link_libstd
 
 DEFINES += FB2FILE_USE_DYNAMIC_LIBRARY
@@ -14,8 +15,6 @@ DEFINES += FB2FILE_USE_DYNAMIC_LIBRARY
 CORE_ROOT_DIR = $$PWD/..
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
-
-include($$CORE_ROOT_DIR/Common/3dParty/html/gumbo.pri)
 
 ADD_DEPENDENCY(kernel, UnicodeConverter, graphics)
 

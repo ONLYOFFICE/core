@@ -256,6 +256,7 @@
     <ClInclude Include="..\Source\Common\ZIndex.h" />
     <ClInclude Include="..\Source\DocxFormat\App.h" />
     <ClInclude Include="..\Source\DocxFormat\Bibliography.h" />
+    <ClInclude Include="..\Source\DocxFormat\ChartDrawing.h" />
     <ClInclude Include="..\Source\DocxFormat\Comments.h" />
     <ClInclude Include="..\Source\DocxFormat\ContentTypes.h" />
     <ClInclude Include="..\Source\DocxFormat\Core.h" />
@@ -341,11 +342,8 @@
     <ClInclude Include="..\Source\SystemUtility\SystemUtility.h" />
     <ClInclude Include="..\Source\XlsxFormat\CalcChain\CalcChain.h" />
     <ClInclude Include="..\Source\XlsxFormat\Chart\Chart.h" />
-    <ClInclude Include="..\Source\XlsxFormat\Chart\ChartColors.h" />
-    <ClInclude Include="..\Source\XlsxFormat\Chart\ChartDrawing.h" />
     <ClInclude Include="..\Source\XlsxFormat\Chart\ChartSerialize.h" />
     <ClInclude Include="..\Source\XlsxFormat\Chart\ChartSerializeEx.h" />
-    <ClInclude Include="..\Source\XlsxFormat\Chart\ChartStyle.h" />
     <ClInclude Include="..\Source\XlsxFormat\Comments\Comments.h" />
     <ClInclude Include="..\Source\XlsxFormat\Comments\ThreadedComments.h" />
     <ClInclude Include="..\Source\XlsxFormat\Common.h" />

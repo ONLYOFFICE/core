@@ -343,7 +343,6 @@ void CBgraFrame::Clear()
     m_lPaletteColors = 0;
     m_bIsGrayScale  = false;
     m_dJpegSaveQuality = -1;
-    m_bIsRGBA = false;
 }
 
 void CBgraFrame::ClearNoAttack()
@@ -391,15 +390,6 @@ bool CBgraFrame::IsGrayScale()
 void CBgraFrame::SetJpegQuality(const double& value)
 {
     m_dJpegSaveQuality = value;
-}
-
-void CBgraFrame::put_IsRGBA(const bool& bIsRGBA)
-{
-    m_bIsRGBA = bIsRGBA;
-}
-bool CBgraFrame::get_IsRGBA()
-{
-    return m_bIsRGBA;
 }
 
 void CBgraFrame::put_Palette(BYTE* pDataColors, const int& colors)
@@ -459,7 +449,7 @@ bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileTyp
 	if (21/*CXIMAGE_FORMAT_JBIG2*/ == nFileType)
 	{
 		CJBig2File jBig2File;
-        bool res = jBig2File.MemoryToJBig2(m_pData, m_lWidth * m_lHeight * 24, m_lWidth, m_lHeight, strFileName, !m_bIsRGBA);
+		bool res = jBig2File.MemoryToJBig2(m_pData, m_lWidth * m_lHeight * 24, m_lWidth, m_lHeight, strFileName);
 
 		return res;		
 	}
@@ -471,7 +461,7 @@ bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileTyp
 		
 		CxImage img;
 
-        if (!img.CreateFromArray(m_pData, m_lWidth, m_lHeight, lBitsPerPixel * 8, lStride, (m_lStride >= 0) ? true : false, !m_bIsRGBA))
+        if (!img.CreateFromArray(m_pData, m_lWidth, m_lHeight, lBitsPerPixel * 8, lStride, (m_lStride >= 0) ? true : false))
             return false;
 
         if (m_pPalette)

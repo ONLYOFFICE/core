@@ -32,6 +32,12 @@ namespace NSCSS
             m_sId = sId;
         }
 
+        /*
+        bool operator<(const CStyleUsed& oUsedStyle) const
+        {
+            return m_oStyle < oUsedStyle.m_oStyle;
+        }
+        */
     };
 
     class CSSCALCULATOR_EXPORT CDocumentStyle
@@ -56,8 +62,6 @@ namespace NSCSS
 
         void WritePStyle(const NSCSS::CCompiledStyle& oStyle);
         void WriteRStyle(const NSCSS::CCompiledStyle& oStyle);
-        void WriteLitePStyle(const NSCSS::CCompiledStyle& oStyle);
-        void WriteLiteRStyle(const NSCSS::CCompiledStyle& oStyle);
 
         void SetStyle(const std::wstring& sStyle);
         void SetId   (const std::wstring& sId);

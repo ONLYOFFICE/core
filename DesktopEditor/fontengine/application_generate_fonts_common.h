@@ -145,11 +145,7 @@ namespace NSCommon
     }
     static std::wstring GetFileName(const std::wstring& sPath)
     {
-#ifdef _WIN32
         std::wstring::size_type nPos1 = sPath.rfind('\\');
-#else
-        std::wstring::size_type nPos1 = std::wstring::npos;
-#endif
         std::wstring::size_type nPos2 = sPath.rfind('/');
         std::wstring::size_type nPos = std::wstring::npos;
 
@@ -168,11 +164,7 @@ namespace NSCommon
     }
     static std::wstring GetDirectoryName(const std::wstring& sPath)
     {
-#ifdef _WIN32
         std::wstring::size_type nPos1 = sPath.rfind('\\');
-#else
-        std::wstring::size_type nPos1 = std::wstring::npos;
-#endif
         std::wstring::size_type nPos2 = sPath.rfind('/');
         std::wstring::size_type nPos = std::wstring::npos;
 

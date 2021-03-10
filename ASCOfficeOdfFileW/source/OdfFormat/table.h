@@ -39,7 +39,6 @@
 #include "office_elements_create.h"
 
 #include "tablevisibility.h"
-#include "messagetype.h"
 
 #include "common_attlists.h"
 #include "tablemode.h"
@@ -747,11 +746,11 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-    _CP_OPT(std::wstring) table_title_;
-	_CP_OPT(odf_types::Bool) table_display_;
-    _CP_OPT(odf_types::message_type) table_message_type_;
+    _CP_OPT(std::wstring)		table_title_;
+	_CP_OPT(odf_types::Bool)	table_display_;
+    _CP_OPT(std::wstring)		table_message_type_;
 
-    office_element_ptr_array content_;
+    office_element_ptr_array	content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_error_message);
 

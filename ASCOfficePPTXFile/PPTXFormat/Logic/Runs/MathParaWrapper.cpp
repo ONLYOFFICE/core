@@ -210,7 +210,7 @@ xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">\
 				oDrawingConverter.m_pImageManager	= pReader->m_pRels->m_pManager;
 				oDrawingConverter.m_pReader			= pReader;
 
-				oDocxSerializer.m_pCurFileWriter = new Writers::FileWriter(L"", L"", true, BinDocxRW::g_nFormatVersion, &oDrawingConverter, L"");
+				oDocxSerializer.m_pCurFileWriter = new Writers::FileWriter(L"", L"", true, BinDocxRW::g_nFormatVersion, false, &oDrawingConverter, L"");
 				oDocxSerializer.getXmlContentElem(eType, *pReader, sXml);
 
 				oDrawingConverter.m_pReader = pOldReader;

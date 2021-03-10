@@ -38,8 +38,6 @@
 
 #include <xml/simple_xml_writer.h>
 #include <CPSharedPtr.h>
-#include <boost/regex.hpp>
-#include <boost/algorithm/string/regex.hpp>
 
 #include "../formulasconvert/formulasconvert.h"
 #include "../../../Common/DocxFormat/Source/XML/Utils.h"
@@ -70,8 +68,6 @@ struct xlsx_dataValidation
 	std::wstring promt_title;
 
 	std::wstring activate_ref;
-
-	int error_type = 0;//stop
 };
 typedef shared_ptr<xlsx_dataValidation>::Type xlsx_dataValidation_ptr;
 
@@ -255,14 +251,6 @@ public:
 						{
 							CP_XML_ATTR(L"error", it->second->error_text);
 						}
-						switch (it->second->error_type)
-						{
-						case 1: CP_XML_ATTR(L"errorStyle", L"warning"); break;
-						case 2: CP_XML_ATTR(L"errorStyle", L"information"); break;
-						case 0: 
-						default:
-								CP_XML_ATTR(L"errorStyle", L"stop"); break;
-						}
 						if (!it->second->promt_title.empty())
 						{
 							CP_XML_ATTR(L"promptTitle", it->second->promt_title);
@@ -392,7 +380,7 @@ void xlsx_dataValidations_context::add_help_msg(const std::wstring & name, const
 	pFind->second->promt_text = content;
 }
 
-void xlsx_dataValidations_context::add_error_msg(const std::wstring & name, const std::wstring & title, const std::wstring & content, bool display, int type)
+void xlsx_dataValidations_context::add_error_msg(const std::wstring & name, const std::wstring & title, const std::wstring & content, bool display)
 {
 	std::map<std::wstring, xlsx_dataValidation_ptr>::iterator pFind = impl_->mapDataValidations.find(name);
 
@@ -401,56 +389,49 @@ void xlsx_dataValidations_context::add_error_msg(const std::wstring & name, cons
 	pFind->second->showErrorMessage = display;
 	pFind->second->error_title = title;
 	pFind->second->error_text = content;
-	pFind->second->error_type = type;
 }
-void xlsx_dataValidations_context::add_formula(const std::wstring & name, const std::wstring & formula) 
+void xlsx_dataValidations_context::add_formula(const std::wstring & name, const std::wstring & f) // todooo пооптимальней
 {
 	std::map<std::wstring, xlsx_dataValidation_ptr>::iterator pFind = impl_->mapDataValidations.find(name);
 
 	if (pFind == impl_->mapDataValidations.end()) return;
 
 	formulasconvert::odf2oox_converter converter;
-
-	std::vector<std::wstring> arrFormula;
-	boost::algorithm::split_regex(arrFormula, formula, boost::wregex(L"and"));
-
-	std::wstring val, val2, operator_;
-
-	for (size_t i = 0; i < arrFormula.size(); ++i)
+	size_t pos;
+	std::wstring val, val2;
+	
+	if ( std::wstring::npos != (pos = f.find(L"cell-content-is-in-list"))) //oooc: , of:
 	{
-		std::wstring & f = arrFormula[i];
-		size_t pos;
-
-		if (std::wstring::npos != (pos = f.find(L"cell-content-is-in-list"))) //oooc: , of:
+		pFind->second->type = L"list";
+		val = f.substr(24 + pos, f.size() - 25 - pos);
+		
+		if ( val.substr(0, 1) == L"\"") 
 		{
-			pFind->second->type = L"list";
-			val = f.substr(24 + pos, f.size() - 25 - pos);
+			std::wstring keep = val;
+			XmlUtils::replace_all(val, L"\"", L"");
+		
+			pFind->second->formula1 = converter.convert(val);
 
-			if (val.substr(0, 1) == L"\"")
+			if ( (std::wstring::npos != val.find(L";")) ||	//convert formula replacing ; on ,
+				L"\"" + pFind->second->formula1 + L"\"" == keep)
 			{
-				std::wstring keep = val;
-				XmlUtils::replace_all(val, L"\"", L"");
-
-				pFind->second->formula1 = converter.convert(val);
-
-				if ((std::wstring::npos != val.find(L";")) ||	//convert formula replacing ; on ,
-					L"\"" + pFind->second->formula1 + L"\"" == keep)
-				{
-					pFind->second->formula1 = L"\"" + pFind->second->formula1 + L"\"";
-				}
-			}
-			else
-			{
-				pFind->second->formula1 = converter.convert(val);
+				pFind->second->formula1 = L"\"" + pFind->second->formula1 + L"\"";
 			}
 		}
-		else if (std::wstring::npos != (pos = f.find(L"is-true-formula")))
+		else
 		{
-			pFind->second->type = L"custom";
-			val = f.substr(16 + pos, f.size() - 17 - pos);
 			pFind->second->formula1 = converter.convert(val);
 		}
-		else if (std::wstring::npos != (pos = f.find(L"cell-content-is-date")))
+	}
+	else if ( std::wstring::npos != (pos = f.find(L"is-true-formula")))
+	{
+		pFind->second->type = L"custom";
+		val = f.substr(16 + pos, f.size() - 17 - pos);
+		pFind->second->formula1 = converter.convert(val);
+	}
+	else
+	{
+		if (std::wstring::npos != (pos = f.find(L"cell-content-is-date")))
 		{
 			pFind->second->type = L"date";
 		}
@@ -466,78 +447,81 @@ void xlsx_dataValidations_context::add_formula(const std::wstring & name, const 
 		{
 			pFind->second->type = L"whole";
 		}
-		else if (std::wstring::npos != (pos = f.find(L"cell-content-text-length")))
+		
+		if (std::wstring::npos != (pos = f.find(L"cell-content()==")))
 		{
-			pFind->second->type = L"textLength";
-			operator_ = f.substr(pos + 24);
-		}
-		else if (std::wstring::npos != (pos = f.find(L"cell-content")))
-		{
-			operator_ = f.substr(pos + 12);
-		}
-	}
-	if (false == operator_.empty())
-	{
-		size_t pos;
-		if (std::wstring::npos != (pos = operator_.find(L"-is-not-between(")))
-		{
-			pFind->second->operator_ = L"notBetween";
+			pFind->second->operator_ = L"equal";
+			
+			size_t pos2 = f.find(L"and", pos + 16); 
+			if (pos2 == std::wstring::npos) pos2 = f.length();
 
-			size_t pos2 = operator_.find(L",", pos + 15);
-			size_t pos3 = operator_.rfind(L")");
-
-			val = operator_.substr(pos + 15, pos2 - pos - 15);
-			val2 = operator_.substr(pos2 + 1, pos3 - pos2 - 1);
+			val = f.substr(pos + 16, pos2 - pos - 16);
 		}
-		else if (std::wstring::npos != (pos = operator_.find(L"-is-between(")))
+		else if (std::wstring::npos != (pos = f.find(L"cell-content()<>")))
+		{
+			pFind->second->operator_ = L"notEqual";
+
+			size_t pos2 = f.find(L"and", pos + 16); 
+			if (pos2 == std::wstring::npos) pos2 = f.length();
+
+			val = f.substr(pos + 16, pos2 - pos - 16);
+		}
+		else if (std::wstring::npos != (pos = f.find(L"cell-content()<=")))
+		{
+			pFind->second->operator_ = L"lessThanOrEqual";
+
+			size_t pos2 = f.find(L"and", pos + 16); 
+			if (pos2 == std::wstring::npos) pos2 = f.length();
+
+			val = f.substr(pos + 16, pos2 - pos - 16);
+		}
+		else if (std::wstring::npos != (pos = f.find(L"cell-content()<")))
+		{
+			pFind->second->operator_ = L"lessThan";
+
+			size_t pos2 = f.find(L"and", pos + 15); 
+			if (pos2 == std::wstring::npos) pos2 = f.length();
+
+			val = f.substr(pos + 15, pos2 - pos - 15);
+		}
+		else if (std::wstring::npos != (pos = f.find(L"cell-content()>=")))
+		{
+			pFind->second->operator_ = L"greaterThanOrEqual";
+
+			size_t pos2 = f.find(L"and", pos + 16); 
+			if (pos2 == std::wstring::npos) pos2 = f.length();
+
+			val = f.substr(pos + 16, pos2 - pos - 16);
+		}	
+		else if (std::wstring::npos != (pos = f.find(L"cell-content()>")))
+		{
+			pFind->second->operator_ = L"greaterThan";
+
+			size_t pos2 = f.find(L"and", pos + 15); 
+			if (pos2 == std::wstring::npos) pos2 = f.length();
+
+			val = f.substr(pos + 15, pos2 - pos - 15);
+		}
+		else if (std::wstring::npos != (pos = f.find(L"cell-content-is-not-between(")))
+		{
+			pFind->second->operator_ = L"greaterThanOrEqual";
+
+			size_t pos2 = f.find(L",", pos + 27); 
+			size_t pos3 = f.rfind(L")"); 
+	
+			val = f.substr(pos + 27, pos2 - pos - 27);
+			val2 = f.substr(pos2 + 1, pos3 - pos2 - 1);
+		}
+		else if (std::wstring::npos != (pos = f.find(L"cell-content-is-between(")))
 		{
 			pFind->second->operator_ = L"between";
 
-			size_t pos2 = operator_.find(L",", pos + 12);
-			size_t pos3 = operator_.rfind(L")");
-
-			val = operator_.substr(pos + 12, pos2 - pos - 12);
-			val2 = operator_.substr(pos2 + 1, pos3 - pos2 - 1);
+			size_t pos2 = f.find(L",", pos + 24); 
+			size_t pos3 = f.rfind(L")"); 
+	
+			val = f.substr(pos + 24, pos2 - pos - 24);
+			val2 = f.substr(pos2 + 1, pos3 - pos2 - 1);
 		}
-		else
-		{
-			size_t split = std::wstring::npos;
-			if (std::wstring::npos != (pos = operator_.find(L"()==")))
-			{
-				pFind->second->operator_ = L"equal";
-				split = 4;
-			}
-			else if (std::wstring::npos != (pos = operator_.find(L"()!=")))
-			{
-				pFind->second->operator_ = L"notEqual";
-				split = 4;
-			}
-			else if (std::wstring::npos != (pos = operator_.find(L"()<=")))
-			{
-				pFind->second->operator_ = L"lessThanOrEqual";
-				split = 4;
-			}
-			else if (std::wstring::npos != (pos = operator_.find(L"()<")))
-			{
-				pFind->second->operator_ = L"lessThan";
-				split = 3;
-			}
-			else if (std::wstring::npos != (pos = operator_.find(L"()>=")))
-			{
-				pFind->second->operator_ = L"greaterThanOrEqual";
-				split = 4;
-			}
-			else if (std::wstring::npos != (pos = operator_.find(L"()>")))
-			{
-				pFind->second->operator_ = L"greaterThan";
-				split = 3;
-			}
-			if (split != std::wstring::npos)
-			{
-				val = operator_.substr(pos + split, operator_.length() - pos - split);
-			}
-		}
-
 		pFind->second->formula1 = converter.convert(val);
 		pFind->second->formula2 = converter.convert(val2);
 	}

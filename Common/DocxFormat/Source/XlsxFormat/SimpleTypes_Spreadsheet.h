@@ -1526,14 +1526,7 @@ namespace SimpleTypes
 			celltypeInlineStr		=  3,
 			celltypeNumber			=  4,
 			celltypeSharedString	=  5,
-			celltypeStr				=  6,
-//--------------- for our using
-			celltypePercentage		= 7,
-			celltypeScientific		= 8,
-			celltypeFraction		= 9,
-			celltypeTime			= 10,
-			celltypeCurrency		= 11,
-			celltypeDateTime		= 12
+			celltypeStr				=  6
 		};
 		template<ECellTypeType eDefValue = celltypeNumber>
 		class CCellTypeType : public CSimpleType<ECellTypeType, eDefValue>

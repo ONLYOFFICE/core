@@ -1337,8 +1337,6 @@ void CFontList::LoadFromArrayFiles(std::vector<std::wstring>& oArray, int nFlag)
             std::wstring wsFamilyName = GetCorrectSfntName(pFace->family_name);
             std::wstring wsStyleName = GetCorrectSfntName(pFace->style_name);
 
-            bool isBadASCII = (std::wstring::npos != wsFamilyName.find('?')) ? true : false;
-
 #ifdef _MAC
             if (wsFamilyName.find(L".") == 0)
             {
@@ -1454,13 +1452,7 @@ void CFontList::LoadFromArrayFiles(std::vector<std::wstring>& oArray, int nFlag)
                                         break;
                                 }
 
-                                if (isBadASCII && pFontInfo->names.empty())
-                                {
-                                    wsFamilyName = sNameW;
-                                    pFontInfo->m_wsFontName = wsFamilyName;
-                                    isBadASCII = false;
-                                }
-                                else if (iter == pFontInfo->names.end())
+                                if (iter == pFontInfo->names.end())
                                 {
                                     pFontInfo->names.push_back(sNameW);
 
@@ -1782,7 +1774,6 @@ std::vector<std::wstring> CApplicationFonts::GetSetupFontFiles()
      NSDirectory::GetFiles2(L"/usr/share/X11/fonts", _array, true);
      NSDirectory::GetFiles2(L"/usr/X11R6/lib/X11/fonts", _array, true);
      NSDirectory::GetFiles2(L"/usr/local/share/fonts", _array, true);
-     NSDirectory::GetFiles2(L"/run/host/fonts", _array, true);
      return _array;
 #endif
 

@@ -146,15 +146,8 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if (L"numFmt" == sName)
-					{
-						m_arrItems.push_back(new CNumFmt(oReader));
-
-						if (m_arrItems.back()->m_oNumFmtId.IsInit())
-						{
-							m_mapNumFmtIndex.insert(std::make_pair(m_arrItems.back()->m_oNumFmtId->GetValue(), m_arrItems.size() - 1));
-						}
-					}
+					if ( _T("numFmt") == sName )
+						m_arrItems.push_back( new CNumFmt( oReader ));
 				}
 			}
 
@@ -167,13 +160,11 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"), m_oCount )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"),      m_oCount )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCount;
-
-			std::map<unsigned int, size_t> m_mapNumFmtIndex;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
 		};
 	} //Spreadsheet
 } // namespace OOX

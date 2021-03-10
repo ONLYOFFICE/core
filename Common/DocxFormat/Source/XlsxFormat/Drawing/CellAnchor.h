@@ -70,21 +70,6 @@ namespace OOX
 			{
 				return _T("");
 			}
-			std::wstring toVmlXML() const
-			{
-				std::wstring sAnchor;
-				sAnchor += m_oFrom->m_oCol->ToString() + L",";
-				sAnchor += std::to_wstring(m_oFrom->m_oColOff->ToPx()) + L",";
-				sAnchor += m_oFrom->m_oRow->ToString() + L",";
-				sAnchor += std::to_wstring(m_oFrom->m_oRowOff->ToPx()) + L",";
-				sAnchor += m_oTo->m_oCol->ToString() + L",";
-				sAnchor += std::to_wstring(m_oTo->m_oColOff->ToPx()) + L",";
-				sAnchor += m_oTo->m_oRow->ToString() + L",";
-				sAnchor += std::to_wstring(m_oTo->m_oRowOff->ToPx());
-
-				return sAnchor;
-			}
-
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(isValid() == false)	return;				

@@ -269,30 +269,16 @@ struct data_validation_state
 
 	std::wstring condition;
 
-	bool in_ref(int col, int row, unsigned int repeate_col, _ref & ref)
+	bool in_ref(int col, int row)
 	{
 		for (size_t i = 0; i < refs.size(); i++)
 		{
-			if (row < refs[i].row_start || row > refs[i].row_end) continue;
-
-			if (col + repeate_col <= refs[i].col_start ||  col > refs[i].col_end) continue;
-			
-			ref = refs[i];
-			return true;
+			if (col >= refs[i].col_start && col <= refs[i].col_end && row >= refs[i].row_start && row <= refs[i].row_end)
+				return true;
 		}
 		return false;
 	}
-	bool in_row(int row, unsigned int repeate_row, _ref & ref)
-	{
-		for (size_t i = 0; i < refs.size(); i++)
-		{
-			if (row + repeate_row <= refs[i].row_start || row > refs[i].row_end) continue;
 
-			ref = refs[i];
-			return true;
-		}
-		return false;
-	}
 };
 struct ods_array_formula_state
 {
@@ -352,7 +338,7 @@ public:
 
 	void start_cell(office_element_ptr & elm ,office_element_ptr & style);
 	void end_cell();
-    void add_default_cell(int repeated);
+    void add_default_cell(unsigned int repeated);
 
 	void check_spanned_cells();
 
@@ -416,8 +402,7 @@ public:
     int is_cell_hyperlink(int col, int row);
     int is_cell_comment(int col, int row, unsigned int repeate_col = 1);
 	int is_row_comment(int row, int repeate_row = 1);
-	int is_row_validation(int row, int & repeate_row);
-	std::wstring is_cell_data_validation(int col, int row, unsigned int repeate_col, data_validation_state::_ref & ref);
+	std::wstring is_cell_data_validation(int col, int row);
 
 	unsigned int get_last_row_repeated ();
 

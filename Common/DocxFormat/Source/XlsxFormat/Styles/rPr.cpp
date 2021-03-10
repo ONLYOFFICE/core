@@ -338,9 +338,7 @@ namespace OOX
 					BYTE ucR;
 					BYTE ucG;
 					BYTE ucB;
-					int index = m_oColor->m_oIndexed->GetValue();
-					//64 is auto color
-					if(64 != index && OOX::Spreadsheet::CIndexedColors::GetDefaultRGBAByIndex(index, ucR, ucG, ucB, ucA))
+					if(OOX::Spreadsheet::CIndexedColors::GetDefaultRGBAByIndex(m_oColor->m_oIndexed->GetValue(), ucR, ucG, ucB, ucA))
 					{
 						xColorType |= 0x1;
 						xColorType |= 0x4;

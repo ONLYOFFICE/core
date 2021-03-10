@@ -38,19 +38,19 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
-		class CChartFile: public OOX::FileGlobalEnumerated, public OOX::IFileContainer
+		class CChartSpace : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
-			CChartFile(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+			CChartSpace(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 			}
-			CChartFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+			CChartSpace(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 				read( oRootPath, oPath );
 			}
-			virtual ~CChartFile()
+			virtual ~CChartSpace()
 			{
 			}
 			virtual void read(const CPath& oPath)
@@ -92,6 +92,10 @@ namespace OOX
 			{
 				m_oChartSpace.toXML(L"c:chartSpace", writer);
 			}
+			bool isValid() const
+			{
+				return true;
+			}
 			virtual const OOX::FileType type() const
 			{
 				return OOX::FileTypes::Chart;
@@ -109,26 +113,26 @@ namespace OOX
 				return m_oReadPath;
 			}
 
-			CT_ChartSpace m_oChartSpace;
+			CT_ChartSpace	m_oChartSpace;
 		private:
-			CPath m_oReadPath;
+			CPath			m_oReadPath;
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
 		};
-		class CChartExFile : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
+		class CChartSpaceEx : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
-			CChartExFile(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+			CChartSpaceEx(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 			}
-			CChartExFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+			CChartSpaceEx(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 				read( oRootPath, oPath );
 			}
-			virtual ~CChartExFile()
+			virtual ~CChartSpaceEx()
 			{
 			}
 			virtual void read(const CPath& oPath)
@@ -170,6 +174,10 @@ namespace OOX
 			{
 				m_oChartSpace.toXML(writer);
 			}
+			bool isValid() const
+			{
+				return true;
+			}
 			virtual const OOX::FileType type() const
 			{
 				return OOX::FileTypes::ChartEx;
@@ -187,26 +195,26 @@ namespace OOX
 				return m_oReadPath;
 			}
 
-			ChartEx::CChartSpace m_oChartSpace;
+			ChartEx::CChartSpace	m_oChartSpace;
 		private:
-			CPath m_oReadPath;
+			CPath			m_oReadPath;
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
 		};
-		class CChartStyleFile : public OOX::FileGlobalEnumerated/*, public OOX::IFileContainer*/
+		class CChartStyle : public OOX::FileGlobalEnumerated/*, public OOX::IFileContainer*/
 		{
 		public:
-			CChartStyleFile(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain)/*, OOX::IFileContainer(pMain)*/
+			CChartStyle(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain)/*, OOX::IFileContainer(pMain)*/
 			{
 				//m_bSpreadsheets = true;
 			}
-			CChartStyleFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain)/*, OOX::IFileContainer(pMain)*/
+			CChartStyle(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain)/*, OOX::IFileContainer(pMain)*/
 			{
 				//m_bSpreadsheets = true;
 				read( oRootPath, oPath );
 			}
-			virtual ~CChartStyleFile()
+			virtual ~CChartStyle()
 			{
 			}
 			virtual void read(const CPath& oPath)
@@ -228,7 +236,7 @@ namespace OOX
 				if ( !oReader.ReadNextNode() )
 					return;
 
-				m_oChartStyle.fromXML(oReader);
+				//m_oChartSpace.fromXML(oReader);
 			}
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
@@ -246,7 +254,7 @@ namespace OOX
 			}
 			void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				m_oChartStyle.toXML(writer);
+				//m_oChartSpace.toXML(L"cs:chartStyle", writer);
 			}
 			bool isValid() const
 			{
@@ -269,23 +277,25 @@ namespace OOX
 				return m_oReadPath;
 			}
 
-			ChartEx::CChartStyle m_oChartStyle;
 		private:
-			CPath m_oReadPath;
+			CPath			m_oReadPath;
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+			}
 		};
-		class CChartColorsFile: public OOX::FileGlobalEnumerated/*, public OOX::IFileContainer*/
+		class CChartColorStyle : public OOX::FileGlobalEnumerated/*, public OOX::IFileContainer*/
 		{
 		public:
-			CChartColorsFile(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain)/*, OOX::IFileContainer(pMain)*/
+			CChartColorStyle(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain)/*, OOX::IFileContainer(pMain)*/
 			{
 				//m_bSpreadsheets = true;
 			}
-			CChartColorsFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain)/*, OOX::IFileContainer(pMain)*/
+			CChartColorStyle(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain)/*, OOX::IFileContainer(pMain)*/
 			{
 				//m_bSpreadsheets = true;
 				read( oRootPath, oPath );
 			}
-			virtual ~CChartColorsFile()
+			virtual ~CChartColorStyle()
 			{
 			}
 			virtual void read(const CPath& oPath)
@@ -307,7 +317,7 @@ namespace OOX
 				if ( !oReader.ReadNextNode() )
 					return;
 
-				m_oColorStyle.fromXML(oReader);
+				//m_oChartSpace.fromXML(oReader);
 			}
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
@@ -325,7 +335,7 @@ namespace OOX
 			}
 			void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				m_oColorStyle.toXML(writer);
+				//m_oChartSpace.toXML(L"cs:chartStyle", writer);
 			}
 			bool isValid() const
 			{
@@ -333,7 +343,7 @@ namespace OOX
 			}
 			virtual const OOX::FileType type() const
 			{
-				return OOX::FileTypes::ChartColors;
+				return OOX::FileTypes::ChartColorStyle;
 			}
 			virtual const CPath DefaultDirectory() const
 			{
@@ -348,11 +358,11 @@ namespace OOX
 				return m_oReadPath;
 			}
 
-			ChartEx::CColorStyle m_oColorStyle;
-
 		private:
-			CPath m_oReadPath;
-
+			CPath			m_oReadPath;
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+			}
 		};
 	} //Spreadsheet
 } // namespace OOX

@@ -220,7 +220,6 @@ SOURCES += \
     ../src/odf/datatypes/styleprint.cpp \
     ../src/odf/datatypes/charttimeunit.cpp \
     ../src/odf/datatypes/drawangle.cpp \
-	../src/odf/datatypes/messagetype.cpp \
     ../src/docx/xlsx_conditionalFormatting.cpp \
     ../src/docx/xlsx_dxfs.cpp \
     ../src/docx/docx_content_type.cpp \
@@ -484,7 +483,6 @@ HEADERS += \
     ../src/odf/datatypes/styleprint.h \
     ../src/odf/datatypes/drawangle.h \
     ../src/odf/datatypes/charttimeunit.h \
-	../src/odf/datatypes/messagetype.h \
     ../src/docx/docx_content_type.h \
     ../src/docx/docx_conversion_context.h \
     ../src/docx/docx_conversion_state.h \

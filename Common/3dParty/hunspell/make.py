@@ -26,12 +26,11 @@ base.create_dir("./deploy")
 base.create_dir("./deploy/spell")
 
 # fetch emsdk
-command_prefix = "" if ("windows" == base.host_platform()) else "./"
 if not base.is_dir("emsdk"):
   base.cmd("git", ["clone", "https://github.com/emscripten-core/emsdk.git"])
   os.chdir("emsdk")
-  base.cmd(command_prefix + "emsdk", ["install", "latest"])
-  base.cmd(command_prefix + "emsdk", ["activate", "latest"])
+  base.cmd("emsdk", ["install", "latest"])
+  base.cmd("emsdk", ["activate", "latest"])
   os.chdir("../")
 
 
@@ -123,13 +122,8 @@ for item in sources:
 
 # command
 windows_bat = []
-if (base.host_platform() == "windows"):
-  windows_bat.append("call emsdk/emsdk_env.bat")
-  windows_bat.append("call emcc " + arguments)  
-else:
-  windows_bat.append("#!/bin/bash")
-  windows_bat.append("source ./emsdk/emsdk_env.sh")
-  windows_bat.append("emcc " + arguments)  
+windows_bat.append("call emsdk/emsdk_env.bat")
+windows_bat.append("call emcc " + arguments)
 base.run_as_bat(windows_bat)
 
 # finalize
@@ -149,13 +143,8 @@ arguments = arguments.replace("WASM=1", "WASM=0")
 
 # command
 windows_bat = []
-if (base.host_platform() == "windows"):
-  windows_bat.append("call emsdk/emsdk_env.bat")
-  windows_bat.append("call emcc " + arguments)  
-else:
-  windows_bat.append("#!/bin/bash")
-  windows_bat.append("source ./emsdk/emsdk_env.sh")
-  windows_bat.append("emcc " + arguments)  
+windows_bat.append("call emsdk/emsdk_env.bat")
+windows_bat.append("call emcc " + arguments)
 base.run_as_bat(windows_bat)
 
 # finalize

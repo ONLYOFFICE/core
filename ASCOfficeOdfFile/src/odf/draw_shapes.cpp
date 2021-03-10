@@ -257,8 +257,8 @@ void draw_path::reset_svg_path()
 		std::vector<::svg_path::_polyline> o_Polyline_pt;
 		std::vector<::svg_path::_polyline> o_Polyline_cm;
 	
-		bool bClosed = false, bStroked = true;
-		bool res = ::svg_path::parseSvgD(o_Polyline_cm, draw_path_attlist_.svg_d_.get(), false, bClosed, bStroked);
+		bool bClosed = false;
+		bool res = ::svg_path::parseSvgD(o_Polyline_cm, draw_path_attlist_.svg_d_.get(), false, bClosed);
 		
 		if (!bClosed) lined_shape_ = true;
 
@@ -713,8 +713,8 @@ void draw_connector::reset_svg_path()
 		std::vector<::svg_path::_polyline> o_Polyline_pt;
 		std::vector<::svg_path::_polyline> o_Polyline_cm;
 	
-		bool bClosed = false, bStroked = true;
-		bool res = ::svg_path::parseSvgD(o_Polyline_cm, draw_connector_attlist_.svg_d_.get(), false, bClosed, bStroked);
+		bool bClosed = false;
+		bool res = ::svg_path::parseSvgD(o_Polyline_cm, draw_connector_attlist_.svg_d_.get(), false, bClosed);
 
 		if (!bClosed) lined_shape_ = true;
 	

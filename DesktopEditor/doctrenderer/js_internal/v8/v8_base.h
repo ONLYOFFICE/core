@@ -420,9 +420,7 @@ namespace NSJSBase
                         CJSValueV8* _value_arg = static_cast<CJSValueV8*>(argv[i].operator ->());
                         args[i] = _value_arg->value;
                     }
-                    v8::MaybeLocal<v8::Value> retValue = _funcN->Call(V8ContextFirstArg value, argc, args);
-                    if (!retValue.IsEmpty())
-                        _return->value = retValue.ToLocalChecked();
+                    _return->value = _funcN->Call(V8ContextFirstArg value, argc, args).ToLocalChecked();
                     RELEASEARRAYOBJECTS(args);
                 }
             }

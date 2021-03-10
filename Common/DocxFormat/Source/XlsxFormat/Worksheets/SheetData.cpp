@@ -1013,7 +1013,6 @@ namespace OOX
 				}
 //o:SmartTags, x:PhoneticText
 			}
-
 			PrepareForBinaryWriter();
 		}
 		void CCell::ReadComment(XmlUtils::CXmlLiteReader& oReader, CCommentItem* pComment)
@@ -1206,16 +1205,6 @@ namespace OOX
 			}
 			else if (xlsx_flat)
 			{
-				if (false == m_oRef.IsInit())
-				{
-					CWorksheet* sheet = xlsx_flat->m_arWorksheets.back();
-
-					xlsx_flat->m_nLastReadCol = (xlsx_flat->m_nLastReadCol < 0 ? 1 : xlsx_flat->m_nLastReadCol + 1);
-					//m_oRef = "R" + std::to_string(xlsx_flat->m_nLastReadRow) + "C" + std::to_string(xlsx_flat->m_nLastReadCol);
-					m_oRef = getCellAddressA(xlsx_flat->m_nLastReadRow, xlsx_flat->m_nLastReadCol);
-				}
-				setRowCol(xlsx_flat->m_nLastReadRow, xlsx_flat->m_nLastReadCol - 1);
-
 				if (false == xlsx_flat->m_pSharedStrings.IsInit())
 				{
 					xlsx_flat->m_pSharedStrings = new CSharedStrings(m_pMainDocument);

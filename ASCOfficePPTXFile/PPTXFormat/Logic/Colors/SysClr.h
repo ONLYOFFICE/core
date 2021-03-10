@@ -30,10 +30,14 @@
  *
  */
 #pragma once
+#ifndef PPTX_LOGIC_SYSCLR_INCLUDE_H_
+#define PPTX_LOGIC_SYSCLR_INCLUDE_H_
 
 #include "ColorBase.h"
 #include "./../../Limit/SysClrVal.h"
 #include "../../../../Common/DocxFormat/Source/Base/ASCWinAPI.h" // GetSysColor
+
+
 
 namespace PPTX
 {
@@ -263,3 +267,4 @@ namespace PPTX
 	} // namespace Logic
 } // namespace PPTX
 
+#endif // PPTX_LOGIC_SYSCLR_INCLUDE_H

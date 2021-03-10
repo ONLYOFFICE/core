@@ -134,4 +134,3 @@
 #include "../src/odf/datatypes/styleprint.cpp"
 #include "../src/odf/datatypes/charttimeunit.cpp"
 #include "../src/odf/datatypes/drawangle.cpp"
-#include "../src/odf/datatypes/messagetype.cpp""

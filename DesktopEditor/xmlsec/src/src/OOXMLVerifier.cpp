@@ -568,19 +568,7 @@ public:
     {
         m_sFolder = sFolder;
 
-        // check .sig file
-        std::vector<std::wstring> arFiles = NSDirectory::GetFiles(m_sFolder + L"/_xmlsignatures", false);
-        bool bIsFound = false;
-        for (std::vector<std::wstring>::iterator i = arFiles.begin(); i != arFiles.end(); i++)
-        {
-            if (NSFile::GetFileExtention(*i) == L"sigs")
-            {
-                bIsFound = true;
-                break;
-            }
-        }
-
-        if (!bIsFound)
+        if (!NSFile::CFileBinary::Exists(m_sFolder + L"/_xmlsignatures/origin.sigs"))
             return;
 
         XmlUtils::CXmlNode oContentTypes;

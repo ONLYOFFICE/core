@@ -107,14 +107,14 @@ namespace NSBinPptxRW
 			m_oImageManager.SetDstFolder(pathPPT.GetPath());
 			
 			OOX::CPath pathMedia = pathPPT / _T("media");
-            m_oImageManager.SetDstMedia(pathMedia.GetPath());
             NSDirectory::CreateDirectory(pathMedia.GetPath());
 
-            OOX::CPath pathCharts = pathPPT / _T("charts");
-            m_oImageManager.SetDstCharts(pathCharts.GetPath());
+            m_oImageManager.SetDstMedia(pathMedia.GetPath());
 
-			OOX::CPath pathEmbeddings = pathPPT / _T("embeddings");
-			m_oImageManager.SetDstEmbed(pathEmbeddings.GetPath());
+            OOX::CPath pathEmbeddings = pathPPT / _T("embeddings");
+            NSDirectory::CreateDirectory(pathEmbeddings.GetPath());
+
+            m_oImageManager.SetDstEmbed(pathEmbeddings.GetPath());
 
 			m_oReader.m_pRels->m_pManager = &m_oImageManager;
 

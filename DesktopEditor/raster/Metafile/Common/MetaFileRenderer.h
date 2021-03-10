@@ -227,8 +227,8 @@ namespace MetaFile
 
 			double dTheta = ((((double)pFont->GetEscapement()) / 10) * M_PI / 180);
 
-			double dCosTheta = (float)cos(dTheta);
-			double dSinTheta = (float)sin(dTheta);
+			double dCosTheta = cosf(dTheta);
+			double dSinTheta = sinf(dTheta) * -1;
 
 			float fL = 0, fT = 0, fW = 0, fH = 0;
 			float fUndX1 = 0, fUndY1 = 0, fUndX2 = 0, fUndY2 = 0, fUndSize = 1;
@@ -395,11 +395,14 @@ namespace MetaFile
 				// TODO: тут реализован только параметр shEscapement, еще нужно реализовать параметр Orientation
 				double dM11, dM12, dM21, dM22, dRx, dRy;
 				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
+
+				m_pRenderer->ResetTransform();
+				m_pRenderer->SetTransform(dCosTheta * fabs(dM11), dSinTheta * fabs(dM11), -dSinTheta * fabs(dM22), dCosTheta * fabs(dM22), dRx, dRy);
+
 				double dOldX = dX;
-				dX = dX * dCosTheta - dY * dSinTheta;
-				dY = -(dOldX * dSinTheta + dY * dCosTheta);
-				//Нужно дальше продолжить искать прафильную формулу
-				m_pRenderer->SetTransform(dCosTheta, dSinTheta * fabs(dM11), -dSinTheta * fabs(dM22), -dCosTheta, dRx - dY * dCosTheta, dRy - dX * dSinTheta);
+
+				dX = dX * dSinTheta + dY * dCosTheta + fH * dSinTheta - fH * dCosTheta + fW * dCosTheta;
+				dY = dOldX * dCosTheta - dY * dSinTheta + fH * dSinTheta + fW * dCosTheta;
 
 				bChangeCTM = true;
 			}

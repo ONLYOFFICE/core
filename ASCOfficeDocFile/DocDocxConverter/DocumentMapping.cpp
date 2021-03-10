@@ -399,16 +399,17 @@ namespace DocFileFormat
 
 			if (Deleted == rev.Type)
 			{
-				//If it's a deleted run
+				WideString* author = dynamic_cast<WideString*>(m_document->RevisionAuthorTable->operator[](rev.Isbt));
+
                 m_pXmlWriter->WriteNodeBegin(L"w:del", true);
-                m_pXmlWriter->WriteAttribute(L"w:author", L"[b2x: could not retrieve author]");
-                m_pXmlWriter->WriteAttribute(L"w:date", L"[b2x: could not retrieve date]");
-                m_pXmlWriter->WriteNodeEnd(L"", true, false);
+				m_pXmlWriter->WriteAttribute(L"w:author", FormatUtils::XmlEncode(*author));
+				m_pXmlWriter->WriteAttribute(L"w:date", FormatUtils::XmlEncode(rev.Dttm.getString()));
+				m_pXmlWriter->WriteNodeEnd(L"", true, false);
 			}
 			else if ( rev.Type == Inserted )
 			{
 				WideString* author = dynamic_cast<WideString*>(m_document->RevisionAuthorTable->operator[](rev.Isbt));
-				//if it's a inserted run
+
                 m_pXmlWriter->WriteNodeBegin(L"w:ins", true);
                 m_pXmlWriter->WriteAttribute(L"w:author", FormatUtils::XmlEncode(*author));
                 m_pXmlWriter->WriteAttribute(L"w:date", FormatUtils::XmlEncode(rev.Dttm.getString()));

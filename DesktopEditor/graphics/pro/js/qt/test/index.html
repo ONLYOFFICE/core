@@ -1,0 +1,31 @@
+<html>
+	<head>
+		
+	</head>
+	<body>
+		<canvas id="myCanvas" width="500" height="500">
+		</canvas>
+		<script>
+			var canvas = document.getElementById('myCanvas');
+			var ctx = canvas.getContext('2d');
+			var myImageData = ctx.getImageData(0, 0, 2, 2);
+			myImageData.data[0*4 + 0] = 255;
+			myImageData.data[0*4 + 1] = 0;
+			myImageData.data[0*4 + 2] = 0;
+			myImageData.data[0*4 + 3] = 255;
+			myImageData.data[1*4 + 0] = 255;
+			myImageData.data[1*4 + 1] = 0;
+			myImageData.data[1*4 + 2] = 0;
+			myImageData.data[1*4 + 3] = 255;
+			myImageData.data[2*4 + 0] = 255;
+			myImageData.data[2*4 + 1] = 0;
+			myImageData.data[2*4 + 2] = 0;
+			myImageData.data[2*4 + 3] = 255;
+			myImageData.data[3*4 + 0] = 255;
+			myImageData.data[3*4 + 1] = 0;
+			myImageData.data[3*4 + 2] = 0;
+			myImageData.data[3*4 + 3] = 255;
+			ctx.putImageData(myImageData, 0, 0);
+		</script>
+	</body>
+</html>

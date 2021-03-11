@@ -600,14 +600,17 @@ namespace PPTX
 			LONG lW = 43200, lH = 43200;
 			int dL = 0, dT = 0, dW = 0, dH = 0;
 			
-			if (spPr.Geometry.is<PrstGeom>())
+			if (bSignature)
+			{
+				vmlPrst = SimpleTypes::Vml::sptPictureFrame;
+			}
+			else if (spPr.Geometry.is<PrstGeom>())
 			{
 				const PPTX::Logic::PrstGeom & lpGeom = spPr.Geometry.as<PPTX::Logic::PrstGeom>();
 				
 				SimpleTypes::CShapeType<> ooxPrst = SimpleTypes::CShapeType<>(lpGeom.prst.get());
 				vmlPrst =  OOX::PrstGeom2VmlShapeType( ooxPrst.GetValue());
 			}   
-			else if (bSignature) vmlPrst = SimpleTypes::Vml::sptPictureFrame;
 			
 			if (spPr.xfrm.is_init())
 			{

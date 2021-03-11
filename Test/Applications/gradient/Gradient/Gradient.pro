@@ -10,6 +10,7 @@ HEADERS += \
 FORMS += \
     mainwindow.ui
 
+PWD_ROOT_DIR = $$PWD
 CORE_ROOT_DIR = $$PWD/../../../../../core
 include($$CORE_ROOT_DIR/Common/base.pri)
 

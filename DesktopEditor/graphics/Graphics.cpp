@@ -1896,8 +1896,12 @@ namespace Aggplus
 		{
 			DoFillPathGradient2((CBrushLinearGradient*)Brush);
 		}
+        else if (Brush->GetType() == BrushTypeMyTestGradient)
+		{
+			DoFillPathGradientMyTest((CBrushLinearGradient*)Brush);
+		}
+        
 	}
-
 	// text methods
 	int CGraphics::FillGlyph2(int nX, int nY, TGlyph* pGlyph, Aggplus::CBrush* pBrush) 
 	{
@@ -2020,5 +2024,165 @@ namespace Aggplus
 
 		m_oCoordTransform.Scale(dScaleX, dScaleY, MatrixOrderAppend);
 		CalculateFullTransform();
+	}
+
+
+    // Testing
+    void CGraphics::DoFillPathGradientMyTest(CBrushLinearGradient *pBrush)
+	{
+		CDoubleRect& oBounds = pBrush->GetBounds();
+
+		CMatrix oMatrix;
+
+		agg::rect_d	rect;
+		if (oBounds.GetWidth() > FLT_EPSILON || oBounds.GetHeight() > FLT_EPSILON)
+		{
+			rect.x1 = oBounds.left;
+			rect.y1 = oBounds.top;
+			rect.x2 = oBounds.right;
+			rect.y2 = oBounds.bottom;
+
+			oMatrix = m_oFullTransform;
+			oMatrix.Invert();
+		}
+		else
+		{
+			int x = m_rasterizer.get_rasterizer().min_x();
+			int y = m_rasterizer.get_rasterizer().min_y();
+			int width  = m_rasterizer.get_rasterizer().max_x() - m_rasterizer.get_rasterizer().min_x();
+			int height = m_rasterizer.get_rasterizer().max_y() - m_rasterizer.get_rasterizer().min_y();
+
+			rect.x1 = x;
+			rect.x2 = x + width;
+			rect.y1 = y;
+			rect.y2 = y + height;
+		}
+
+		typedef agg::my_test_gradient<agg::rgba8> gradient_span_gen;
+		gradient_span_gen span_gen;
+        span_gen.SetGradientInfo(pBrush->m_oGradientInfo);
+
+		span_gen.SetDirection(rect, oMatrix.m_internal->m_agg_mtx);
+
+		agg::rgba8* pSubColors = NULL;
+		float* pSubBlends = NULL;
+		
+		int nCountSubColors = pBrush->GetInterpolationColorsCount();
+		if( nCountSubColors > 0 )
+		{
+			pSubColors = new agg::rgba8[nCountSubColors];
+			pSubBlends = new float[nCountSubColors];
+
+			if( pSubColors && pSubBlends )
+			{
+				for( int i = 0; i < nCountSubColors; i++ )
+				{
+					CColor c;
+					pBrush->GetSubColor( i, &c, &pSubBlends[i] );
+					pSubColors[i] = agg::rgba8(c.GetB(), c.GetG(), c.GetR(), c.GetA());
+				}
+				
+				span_gen.SetSubColors( pSubColors, pSubBlends, nCountSubColors );
+			}
+		}
+		
+		typedef agg::span_allocator<gradient_span_gen::color_type> gradient_span_alloc;
+		gradient_span_alloc span_alloc;
+
+		typedef agg::renderer_scanline_aa<base_renderer_type, gradient_span_alloc, gradient_span_gen> renderer_gradient_type;
+		renderer_gradient_type ren_gradient( m_frame_buffer.ren_base(), span_alloc, span_gen );
+
+        if (fabs(m_dGlobalAlpha - 1.0) < FLT_EPSILON)
+        {
+            render_scanlines(ren_gradient);
+        }
+        else
+        {
+            m_rasterizer.gamma_multi(m_dGlobalAlpha);
+            render_scanlines(ren_gradient);
+            m_rasterizer.gamma(1.0);
+        }
+
+		if( pSubColors ) delete [] pSubColors;
+		if( pSubBlends ) delete [] pSubBlends;
+	}
+
+     void CGraphics::DoFillPathGradientConical(CBrushLinearGradient *pBrush)
+	{
+		CDoubleRect& oBounds = pBrush->GetBounds();
+
+		CMatrix oMatrix;
+
+		agg::rect_d	rect;
+		if (oBounds.GetWidth() > FLT_EPSILON || oBounds.GetHeight() > FLT_EPSILON)
+		{
+			rect.x1 = oBounds.left;
+			rect.y1 = oBounds.top;
+			rect.x2 = oBounds.right;
+			rect.y2 = oBounds.bottom;
+
+			oMatrix = m_oFullTransform;
+			oMatrix.Invert();
+		}
+		else
+		{
+			int x = m_rasterizer.get_rasterizer().min_x();
+			int y = m_rasterizer.get_rasterizer().min_y();
+			int width  = m_rasterizer.get_rasterizer().max_x() - m_rasterizer.get_rasterizer().min_x();
+			int height = m_rasterizer.get_rasterizer().max_y() - m_rasterizer.get_rasterizer().min_y();
+
+			rect.x1 = x;
+			rect.x2 = x + width;
+			rect.y1 = y;
+			rect.y2 = y + height;
+		}
+
+		typedef agg::conical_gradient_span<agg::rgba8> gradient_span_gen;
+		gradient_span_gen span_gen;
+        span_gen.SetGradientInfo(pBrush->m_oGradientInfo);
+
+		span_gen.SetDirection(rect, oMatrix.m_internal->m_agg_mtx);
+
+		agg::rgba8* pSubColors = NULL;
+		float* pSubBlends = NULL;
+		
+		int nCountSubColors = pBrush->GetInterpolationColorsCount();
+		if( nCountSubColors > 0 )
+		{
+			pSubColors = new agg::rgba8[nCountSubColors];
+			pSubBlends = new float[nCountSubColors];
+
+			if( pSubColors && pSubBlends )
+			{
+				for( int i = 0; i < nCountSubColors; i++ )
+				{
+					CColor c;
+					pBrush->GetSubColor( i, &c, &pSubBlends[i] );
+					pSubColors[i] = agg::rgba8(c.GetB(), c.GetG(), c.GetR(), c.GetA());
+				}
+				
+				span_gen.SetSubColors( pSubColors, pSubBlends, nCountSubColors );
+			}
+		}
+		
+		typedef agg::span_allocator<gradient_span_gen::color_type> gradient_span_alloc;
+		gradient_span_alloc span_alloc;
+
+		typedef agg::renderer_scanline_aa<base_renderer_type, gradient_span_alloc, gradient_span_gen> renderer_gradient_type;
+		renderer_gradient_type ren_gradient( m_frame_buffer.ren_base(), span_alloc, span_gen );
+
+        if (fabs(m_dGlobalAlpha - 1.0) < FLT_EPSILON)
+        {
+            render_scanlines(ren_gradient);
+        }
+        else
+        {
+            m_rasterizer.gamma_multi(m_dGlobalAlpha);
+            render_scanlines(ren_gradient);
+            m_rasterizer.gamma(1.0);
+        }
+
+		if( pSubColors ) delete [] pSubColors;
+		if( pSubBlends ) delete [] pSubBlends;
 	}
 }

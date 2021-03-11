@@ -88,8 +88,8 @@ const long c_BrushTypeVertical				= 2002;
 const long c_BrushTypeDiagonal1				= 2003;
 const long c_BrushTypeDiagonal2				= 2004;
 const long c_BrushTypeCenter				= 2005;
-const long c_BrushTypePathGradient1			= 2006;	
-const long c_BrushTypePathGradient2			= 2007;
+const long c_BrushTypePathGradient1			= 2006;	// left for comparability
+const long c_BrushTypePathGradient2			= 2007; // left for comparability
 const long c_BrushTypeCylinderHor			= 2008;
 const long c_BrushTypeCylinderVer			= 2009;
 const long c_BrushTypeTexture				= 3008;
@@ -99,6 +99,12 @@ const long c_BrushTypeHatch53				= 4061;
 const long c_BrushTypeNoFill				= 5000;
 const long c_BrushTypeNotSet				= 5001;
 
+const long c_BrushTypeMyTestGradient        = 6000;
+const long c_BrushTypePathRadialGradient        = 6001;
+const long c_BrushTypePathConicalGradient       = 6002;
+const long c_BrushTypePathDiamondGradient       = 6003;
+const long c_BrushTypePathNewLinearGradient     = 6004;
+
 const long c_BrushTextureModeStretch		= 0;
 const long c_BrushTextureModeTile			= 1;
 const long c_BrushTextureModeTileCenter		= 2;
@@ -106,6 +112,30 @@ const long c_BrushTextureModeTileCenter		= 2;
 
 namespace NSStructures
 {
+    // Containing additional info about gradient
+    struct GradientInfo {
+        GradientInfo() :
+        littleRadius(0.), largeRadius(1.),
+        littleCenter(0.),
+        center(0.),
+        angle(0.),
+        discrete_step(0.),
+        reflected(false),
+        periods(0.5)
+        {}
+
+
+
+        double littleRadius, largeRadius; // used in radial gradient - [0, 1]
+        double littleCenter; // used in radial gradient - offset relative to figure center
+        double center; // used in radial, diamond and conical gradient - offset relative to figure center
+        double angle; // used in linear and conical gradient (rad)
+        double discrete_step; // used to make discrete gradient. <= 0 to make continious
+
+        bool reflected; // 1234567 ->  1357531 works kind of like this
+        double periods; //  number of perionds: 12345679 -> 159159159 (periods = 3)
+    };
+
 	class CPen
 	{
 	public:
@@ -244,6 +274,7 @@ namespace NSStructures
 	class CBrush
 	{
 	public:
+        int test;
 		struct TSubColor
 		{
 			long color;
@@ -267,8 +298,8 @@ namespace NSStructures
 		Aggplus::CDoubleRect	Bounds;
 
 		double LinearAngle;
-
         std::vector<TSubColor> m_arrSubColors;
+        NSStructures::GradientInfo m_oGradientInfo;
 
 	public:
 		void LoadSubColors( const std::string& str )

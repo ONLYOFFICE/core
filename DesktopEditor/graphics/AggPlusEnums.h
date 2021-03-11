@@ -139,11 +139,16 @@ enum LineCap
 
 enum BrushType
 {
-   BrushTypeSolidColor       = 0,
-   BrushTypeHatchFill        = 1,
-   BrushTypeTextureFill      = 2,
-   BrushTypePathGradient     = 3,
-   BrushTypeLinearGradient   = 4
+    BrushTypeSolidColor       = 0,
+    BrushTypeHatchFill        = 1,
+    BrushTypeTextureFill      = 2,
+    BrushTypePathGradient     = 3, // left for comparability
+    BrushTypeLinearGradient   = 4, // left for comparability
+    BrushTypeRadialGradient   = 5,
+    BrushTypeConicalGradient  = 6,
+    BrushTypeDiamondGradient  = 7,
+    BrushTypeNewLinearGradient = 8,
+    BrushTypeMyTestGradient   = 100
 };
 
 //--------------------------------------------------------------------------

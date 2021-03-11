@@ -401,8 +401,8 @@ namespace MetaFile
 
 				double dOldX = dX;
 
-				dX = dX * dSinTheta + dY * dCosTheta + fH * dSinTheta - fH * dCosTheta + fW * dCosTheta;
-				dY = dOldX * dCosTheta - dY * dSinTheta + fH * dSinTheta + fW * dCosTheta;
+				dX = dX * dSinTheta + dY * dCosTheta + lLogicalFontHeight * dSinTheta;
+				dY = dOldX * dCosTheta - dY * dSinTheta + lLogicalFontHeight * dSinTheta + lLogicalFontHeight * dCosTheta;
 
 				bChangeCTM = true;
 			}

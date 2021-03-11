@@ -162,7 +162,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\ASCOfficeDocxFile2\BinReader\CustormXmlWriter.cpp" />
+    <ClCompile Include="..\..\..\ASCOfficeDocxFile2\BinReader\CustomXmlWriter.cpp" />
     <ClCompile Include="..\..\..\ASCOfficeDocxFile2\BinReader\FileWriter.cpp" />
     <ClCompile Include="..\..\..\ASCOfficeDocxFile2\BinReader\Readers.cpp" />
     <ClCompile Include="..\..\..\ASCOfficeDocxFile2\BinWriter\BinWriters.cpp">

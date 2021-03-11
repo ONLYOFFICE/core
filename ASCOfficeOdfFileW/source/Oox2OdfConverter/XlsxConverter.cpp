@@ -1181,7 +1181,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRow *oox_row, OOX::Spreadsheet::C
 		level = oox_row->m_oOutlineLevel->GetValue();
 	}
 
-	ods_context->start_row(row_number, 1, level,_default);
+	ods_context->start_row(row_number, 1, level, _default);
 	
 	if (oox_row->m_oHidden.IsInit())		ods_context->current_table()->set_row_hidden(true);
 	if (oox_row->m_oCollapsed.IsInit())		ods_context->current_table()->set_row_hidden(true);
@@ -1208,12 +1208,16 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRow *oox_row, OOX::Spreadsheet::C
 		}
 		ods_context->current_table()->set_row_height(height);
 	}
-	if ((oox_row->m_oCustomHeight.IsInit() && oox_row->m_oCustomHeight->GetValue() == 1) || 
-		(oox_row->m_oCustomFormat.IsInit() && oox_row->m_oCustomFormat->GetValue() == 1 && oox_row->m_oHt.IsInit()) )
-	{ 
-		ods_context->current_table()->set_row_optimal_height(false);
-	}else
-		ods_context->current_table()->set_row_optimal_height(true);
+	if (false == _default)
+	{
+		if ((oox_row->m_oCustomHeight.IsInit() && oox_row->m_oCustomHeight->GetValue() == 1) ||
+			(oox_row->m_oCustomFormat.IsInit() && oox_row->m_oCustomFormat->GetValue() == 1 && oox_row->m_oHt.IsInit()))
+		{
+			ods_context->current_table()->set_row_optimal_height(false);
+		}
+		else
+			ods_context->current_table()->set_row_optimal_height(true);
+	}
 
 	for (size_t cell = 0 ; cell < oox_row->m_arrItems.size();cell++)
 	{
@@ -2006,7 +2010,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_p
 					ods_context->current_table()->defaut_row_height_ = height;//pt
 					row_properties->style_table_row_properties_attlist_.style_row_height_ = odf_types::length(odf_types::length(height,odf_types::length::pt).get_value_unit(odf_types::length::cm),odf_types::length::cm);
 				}
-				row_properties->style_table_row_properties_attlist_.style_use_optimal_row_height_ = true; //???? не знаю cтоит ли 
+				//row_properties->style_table_row_properties_attlist_.style_use_optimal_row_height_ = true; - UTF-8''Отчет о развертывании-1.xlsx
 				row_properties->style_table_row_properties_attlist_.common_break_attlist_.fo_break_before_ = odf_types::fo_break(odf_types::fo_break::Auto);
 			}
 		}

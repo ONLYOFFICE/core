@@ -96,7 +96,7 @@ namespace PPTX
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
-				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+				LONG _end = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 				pReader->Skip(1); // attribute start
 				while (true)
@@ -109,7 +109,7 @@ namespace PPTX
 					else if (1 == _at)	st = pReader->GetULong();
 					else if (2 == _at)	end = pReader->GetULong();
 				}
-				while (pReader->GetPos() < end)
+				while (pReader->GetPos() < _end)
 				{
 					BYTE _rec = pReader->GetUChar();
 
@@ -121,7 +121,7 @@ namespace PPTX
 					}break;
 					}
 				}
-				pReader->Seek(end);
+				pReader->Seek(_end);
 			}
 
 			nullable_sizet	st;

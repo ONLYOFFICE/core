@@ -499,6 +499,15 @@ namespace BinDocxRW
 		void WriteSdtTextFormPr(const OOX::Logic::CTextFormPr& oTextFormPr);
 		void WriteSdtTextFormPrComb(const ComplexTypes::Word::CComb& oComb);
 	};
+	class BinaryCustomsTableWriter
+	{
+	private:
+		ParamsWriter&			m_oParamsWriter;
+		BinaryCommonWriter		m_oBcw;
+	public:
+		BinaryCustomsTableWriter(ParamsWriter& oParamsWriter);
+		void Write(OOX::CDocument* poDocument);
+	};
 	class BinaryCommentsTableWriter
 	{
 		struct CCommentWriteTemp

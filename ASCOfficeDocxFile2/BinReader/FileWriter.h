@@ -46,7 +46,7 @@
 #include "DocumentRelsWriter.h"
 #include "webSettingsWriter.h"
 #include "DefaultThemeWriter.h"
-#include "CustormXmlWriter.h"
+#include "CustomXmlWriter.h"
 
 namespace BinDocxRW 
 {

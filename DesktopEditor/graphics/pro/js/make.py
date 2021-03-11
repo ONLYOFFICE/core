@@ -28,20 +28,14 @@ compiler_flags = ["-o raster.js",
                   "-s WASM=1",
                   "-s ALLOW_MEMORY_GROWTH=1",
                   "-s FILESYSTEM=0",
-                  "-s ENVIRONMENT='web,worker'",
-                  "-s LLD_REPORT_UNDEFINED"]
+                  "-s ENVIRONMENT='web,worker'"]
 
 exported_functions = ["_CxImage_Create",
                       "_CxImage_Destroy",
                       "_CxImage_Decode"]
 
 libRaster_src_path = "./cimage"
-input_sources = ["CxImage/ximage.cpp",
-                 "CxImage/ximainfo.cpp",
-                 "CxImage/ximaenc.cpp",
-                 "CxImage/ximajpg.cpp",
-                 "CxImage/ximapal.cpp",
-                 "CxImage/ximasel.cpp"]
+input_sources = ["CxImage/ximage.cpp"]
 
 sources = []
 for item in input_sources:
@@ -78,7 +72,7 @@ else:
 base.run_as_bat(windows_bat)
 
 # finalize
-base.replaceInFile("./raster.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){self.onLoadModule();}];")
+#base.replaceInFile("./raster.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){self.onLoadModule();}];")
 base.replaceInFile("./raster.js", "function getBinaryPromise(){", "function getBinaryPromise2(){")
 
 raster_js_content = base.readFile("./raster.js")
@@ -87,4 +81,8 @@ raster_js_content = base.readFile("./raster.js")
 
 # write new version
 base.writeFile("./deploy/raster/raster.js", raster_js_content)
-base.copy_file("raster.wasm",   "./deploy/raster/raster.wasm")
+base.copy_file("raster.wasm", "./deploy/raster/raster.wasm")
+base.copy_file("./wasm/js/index.html", "./deploy/index.html")
+
+base.delete_file("raster.js")
+base.delete_file("raster.wasm")

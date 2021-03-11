@@ -9,7 +9,6 @@ void CxImage_Free(void* p)
 {
     if (p) ::free(p);
 }
-
 CxImage* CxImage_Create()
 {
     return new CxImage();
@@ -20,6 +19,6 @@ void CxImage_Destroy(CxImage* p)
 }
 bool CxImage_Decode(CxImage* p, unsigned char * buffer, unsigned int size, unsigned int imagetype)
 {
-    if (p) return p->Decode(buffer, size, imagetype);
+    //if (p) return p->Decode(buffer, size, imagetype);
     return false;
 }

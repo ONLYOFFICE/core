@@ -1,3 +1,4 @@
+#include <malloc.h>
 class CxImage;
 
 extern "C"

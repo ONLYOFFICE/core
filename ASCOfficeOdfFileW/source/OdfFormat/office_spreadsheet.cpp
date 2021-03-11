@@ -116,15 +116,15 @@ void office_spreadsheet::serialize(std::wostream & _Wostream)
 			{
 				content_[i]->serialize(CP_XML_STREAM());
 			}
-
-			if (data_pilot_tables_)
-				data_pilot_tables_->serialize(CP_XML_STREAM());
-
+			
 			if (named_expressions_)
 				named_expressions_->serialize(CP_XML_STREAM());
 
 			if (database_ranges_)
-				database_ranges_->serialize(CP_XML_STREAM());			
+				database_ranges_->serialize(CP_XML_STREAM());		
+
+			if (data_pilot_tables_)
+				data_pilot_tables_->serialize(CP_XML_STREAM());
 		}
 	}
 }

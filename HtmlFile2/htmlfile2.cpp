@@ -1469,17 +1469,17 @@ private:
         oXml->WriteString(L"<w:pPr><w:pStyle w:val=\"");
         
         std::vector<std::pair<size_t, NSCSS::CNode>> temporary;
-		size_t i = 0;
-		while(i != sSelectors.size())
-		{
+        size_t i = 0;
+        while(i != sSelectors.size())
+        {
             if(rStyle.find(L' ' + sSelectors[i].m_sName + L' ') != std::wstring::npos)
-			{
-				temporary.push_back(std::make_pair(i, sSelectors[i]));
-				sSelectors.erase(sSelectors.begin() + i);
-			}
-			else
-				i++;
-		}
+            {
+                temporary.push_back(std::make_pair(i, sSelectors[i]));
+                sSelectors.erase(sSelectors.begin() + i);
+            }
+            else
+                i++;
+        }
         NSCSS::CCompiledStyle oStyleSetting = m_oStylesCalculator.GetCompiledStyle(sSelectors, true);
         NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
 
@@ -1492,7 +1492,7 @@ private:
         m_oXmlStyle.Clear();
 
         for(int i = temporary.size() - 1; i >= 0; i--)
-			sSelectors.insert(sSelectors.begin() + temporary[i].first, temporary[i].second);
+            sSelectors.insert(sSelectors.begin() + temporary[i].first, temporary[i].second);
 
         oXml->WriteString(sPStyle);
         oXml->WriteString(L"\"/>");

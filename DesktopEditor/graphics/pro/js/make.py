@@ -28,13 +28,20 @@ compiler_flags = ["-o raster.js",
                   "-s WASM=1",
                   "-s ALLOW_MEMORY_GROWTH=1",
                   "-s FILESYSTEM=0",
-                  "-s ENVIRONMENT='web,worker'"]
+                  "-s ENVIRONMENT='web,worker'",
+                  "-s LLD_REPORT_UNDEFINED"]
 
-exported_functions = ["_BgraFrame_Create",
-                      "_BgraFrame_Destroy"]
+exported_functions = ["_CxImage_Create",
+                      "_CxImage_Destroy",
+                      "_CxImage_Decode"]
 
-libRaster_src_path = "./../../../raster"
-input_sources = ["BgraFrame.cpp"]
+libRaster_src_path = "./cimage"
+input_sources = ["CxImage/ximage.cpp",
+                 "CxImage/ximainfo.cpp",
+                 "CxImage/ximaenc.cpp",
+                 "CxImage/ximajpg.cpp",
+                 "CxImage/ximapal.cpp",
+                 "CxImage/ximasel.cpp"]
 
 sources = []
 for item in input_sources:
@@ -43,7 +50,7 @@ for item in input_sources:
 sources.append("./wasm/src/base.cpp")
 
 compiler_flags.append("-I" + libRaster_src_path)
-compiler_flags.append("-DWIN32 -DNDEBUG -DBGRAFRAME_STATIC -DBUILDING_LIBBGRAFRAME -DBGRAFRAME_WASM_MODULE")
+# compiler_flags.append("-D")
 
 # arguments
 arguments = ""
@@ -75,9 +82,9 @@ base.replaceInFile("./raster.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(
 base.replaceInFile("./raster.js", "function getBinaryPromise(){", "function getBinaryPromise2(){")
 
 raster_js_content = base.readFile("./raster.js")
-engine_base_js_content = base.readFile("./wasm/js/raster.js")
-engine_js_content = engine_base_js_content.replace("//module", raster_js_content)
+# engine_base_js_content = base.readFile("./wasm/js/raster.js")
+# engine_js_content = engine_base_js_content.replace("//module", raster_js_content)
 
 # write new version
-base.writeFile("./deploy/raster/raster.js", engine_js_content)
+base.writeFile("./deploy/raster/raster.js", raster_js_content)
 base.copy_file("raster.wasm",   "./deploy/raster/raster.wasm")

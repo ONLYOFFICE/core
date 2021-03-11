@@ -534,6 +534,7 @@ namespace NSEditorApi
         js_wrapper<std::wstring>	m_sUploadPath;
         js_wrapper<std::string>		m_sBase64;	
         js_wrapper<CAscBinaryData>	m_oBinaryData;
+        js_wrapper<std::wstring>    m_sAdditionalParams;
         
     public:
         CAscInsertImage()
@@ -548,6 +549,7 @@ namespace NSEditorApi
         LINK_PROPERTY_STRING_JS(UploadPath)
         LINK_PROPERTY_STRINGA_JS(Base64)
         LINK_PROPERTY_OBJECT_JS(CAscBinaryData, BinaryData)
+        LINK_PROPERTY_STRING_JS(AdditionalParams)
     };
 }
 

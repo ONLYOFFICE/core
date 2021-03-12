@@ -47,9 +47,9 @@ protected:
 public:
     
     virtual void open() = 0;
-    virtual void send(std::string message) = 0;
+    virtual void send(const std::string& message) = 0;
     virtual void close() = 0;
-    virtual void setUrl(std::string url) {this->url = url;}
+    virtual void setUrl(const std::string& url) {this->url = url;}
     virtual void setListener(std::shared_ptr<IListener> listener) {this->listener = listener;}
     virtual ~IWebSocket() {};
 

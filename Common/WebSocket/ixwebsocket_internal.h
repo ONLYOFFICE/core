@@ -54,7 +54,7 @@ public:
 public:
     
     virtual void open() override;
-    virtual void send(std::string message) override;
+    virtual void send(const std::string& message) override;
     virtual void close() override;
     void receive(const ix::WebSocketMessagePtr& msg);
 

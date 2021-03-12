@@ -40,10 +40,10 @@ class IListener
 
 public:
 
-    virtual void onMessage(std::string message) = 0;
+    virtual void onMessage(const std::string& message) = 0;
     virtual void onOpen() = 0;
-    virtual void onError(std::string error) = 0;
-    virtual void onClose(int code, std::string reason) = 0;
+    virtual void onError(const std::string& error) = 0;
+    virtual void onClose(int code, const std::string& reason) = 0;
     virtual ~IListener() {}
 
 };

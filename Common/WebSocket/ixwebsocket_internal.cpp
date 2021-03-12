@@ -63,7 +63,7 @@ void CIXWebSocket::receive(const ix::WebSocketMessagePtr& msg)
     }
 }
 
-void CIXWebSocket::send(std::string message)
+void CIXWebSocket::send(const std::string& message)
 {
     webSocket.send(message);
 }

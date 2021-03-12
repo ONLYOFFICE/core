@@ -1,4 +1,5 @@
 ﻿#include "ximage.h"
+
 void CxImage::Startup(uint32_t imagetype)
 {
     //init pointers
@@ -50,17 +51,34 @@ bool CxImage::DestroyFrames()
 	}
 	return false;
 }
-void CxImage::SetXDPI(int32_t dpi)
+void CxImage::CopyInfo(const CxImage &src)
 {
-    if (dpi<=0) dpi = CXIMAGE_DEFAULT_DPI;
-    info.xDPI = dpi;
-    head.biXPelsPerMeter = (int32_t) floor(dpi * 10000.0 / 254.0 + 0.5);
-    if (pDib) ((BITMAPINFOHEADER*)pDib)->biXPelsPerMeter = head.biXPelsPerMeter;
+    if (pDib==NULL) memcpy(&info,&src.info,sizeof(CXIMAGEINFO));
 }
-void CxImage::SetYDPI(int32_t dpi)
+bool CxImage::Transfer(CxImage &from, bool bTransferFrames /*=true*/)
 {
-    if (dpi<=0) dpi = CXIMAGE_DEFAULT_DPI;
-    info.yDPI = dpi;
-    head.biYPelsPerMeter = (int32_t) floor(dpi * 10000.0 / 254.0 + 0.5);
-    if (pDib) ((BITMAPINFOHEADER*)pDib)->biYPelsPerMeter = head.biYPelsPerMeter;
+    if (!Destroy())
+        return false;
+
+    memcpy(&head,&from.head,sizeof(BITMAPINFOHEADER));
+    memcpy(&info,&from.info,sizeof(CXIMAGEINFO));
+
+    pDib = from.pDib;
+    pDibLimit = from.pDibLimit;
+    pSelection = from.pSelection;
+    pAlpha = from.pAlpha;
+    ppLayers = from.ppLayers;
+
+    memset(&from.head,0,sizeof(BITMAPINFOHEADER));
+    memset(&from.info,0,sizeof(CXIMAGEINFO));
+    from.pDib = from.pDibLimit = from.pSelection = from.pAlpha = NULL;
+    from.ppLayers = NULL;
+
+    if (bTransferFrames){
+        DestroyFrames();
+        ppFrames = from.ppFrames;
+        from.ppFrames = NULL;
+    }
+
+    return true;
 }

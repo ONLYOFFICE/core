@@ -1,4 +1,8 @@
-﻿#include "ximadef.h"
+﻿#ifndef __ximage_h
+#define __ximage_h
+
+#include "xmemfile.h"
+#include "ximadef.h"
 
 enum ENUM_CXIMAGE_FORMATS{
 CXIMAGE_FORMAT_UNKNOWN = 0,
@@ -115,7 +119,7 @@ typedef struct tag_ExifInfo
 
 #endif //CXIMAGE_SUPPORT_EXIF
 
-class DLL_EXP CxImage
+class CxImage
 {
     //extensible information collector
     typedef struct tagCxImageInfo
@@ -164,14 +168,22 @@ public:
 
 	bool	Destroy();
 	bool	DestroyFrames();
+    bool	Transfer(CxImage &from, bool bTransferFrames = true);
+
+    const char*	GetLastError();
 
     void	SetXDPI(int32_t dpi);
     void	SetYDPI(int32_t dpi);
 
-    //bool Decode(uint8_t * buffer, uint32_t size, uint32_t imagetype);
+#if CXIMAGE_SUPPORT_DECODE
+    bool Decode(CxFile * hFile, uint32_t imagetype);
+    bool Decode(uint8_t * buffer, uint32_t size, uint32_t imagetype);
+#endif //CXIMAGE_SUPPORT_DECODE
 
 protected:
     void Startup(uint32_t imagetype = 0);
+    void CopyInfo(const CxImage &src);
+
 	void*				pDib; //contains the header, the palette, the pixels
 	void*				pDibLimit;
 
@@ -182,3 +194,5 @@ protected:
 	CxImage**			ppLayers; //generic layers
 	CxImage**			ppFrames;
 };
+
+#endif // __ximage_h

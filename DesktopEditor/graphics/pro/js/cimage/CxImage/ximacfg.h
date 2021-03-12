@@ -1,4 +1,7 @@
-﻿// CxImage supported features
+﻿#ifndef __ximacfg_h
+#define __ximacfg_h
+
+// CxImage supported features
 #define CXIMAGE_SUPPORT_ALPHA          1
 #define CXIMAGE_SUPPORT_SELECTION      1
 #define CXIMAGE_SUPPORT_TRANSFORMATION 1
@@ -52,3 +55,5 @@
 
 /////////////////////////////////////////////////////////////////////////////
 #define RGB2GRAY(r,g,b) (((b)*117 + (g)*601 + (r)*306) >> 10)
+
+#endif // __ximacfg_h

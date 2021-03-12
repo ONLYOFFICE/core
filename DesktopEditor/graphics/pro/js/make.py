@@ -29,13 +29,19 @@ compiler_flags = ["-o raster.js",
                   "-s ALLOW_MEMORY_GROWTH=1",
                   "-s FILESYSTEM=0",
                   "-s ENVIRONMENT='web,worker'"]
+                  #"-s LLD_REPORT_UNDEFINED"]
 
 exported_functions = ["_CxImage_Create",
                       "_CxImage_Destroy",
                       "_CxImage_Decode"]
 
 libRaster_src_path = "./cimage"
-input_sources = ["CxImage/ximage.cpp"]
+input_sources = ["CxImage/ximaenc.cpp",
+                 "CxImage/ximaexif.cpp",
+                 "CxImage/ximage.cpp",
+                 "CxImage/ximainfo.cpp",
+                 "CxImage/ximajpg.cpp",
+                 "CxImage/xmemfile.cpp"]
 
 sources = []
 for item in input_sources:

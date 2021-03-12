@@ -1,13 +1,8 @@
-﻿#include "ximacfg.h"
-#include <string>
+﻿#ifndef __ximadef_h
+#define __ximadef_h
 
-#if defined(_USRDLL)
- #define DLL_EXP __declspec(dllexport)
-#elif defined(_MSC_VER)&&(_MSC_VER<1200)
- #define DLL_EXP __declspec(dllimport)
-#else
- #define DLL_EXP
-#endif
+#include "ximacfg.h"
+#include <string>
 
 #if defined(WIN32) || defined(_WIN32_WCE)
  #include "stdint.h"
@@ -41,3 +36,5 @@ typedef struct tagBITMAPINFOHEADER{
     uint32_t   biClrUsed;
     uint32_t   biClrImportant;
 } BITMAPINFOHEADER;
+
+#endif //__ximadef_h

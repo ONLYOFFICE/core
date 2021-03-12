@@ -6,7 +6,12 @@
 		<canvas id="myCanvas" width="500" height="500">
 		</canvas>
 		<script src="./raster/raster.js"></script>
-		<script>
+		<script type="text/javascript">
+			var CImage = Module._CxImage_Create();
+			Module._CxImage_Decode(CImage, ['a', 'b'], 2, 1);
+			Module._CxImage_Destroy(CImage);
+		</script>
+		<script type="text/javascript">
 			var resMyCode = /*JPGToPixels*/ [255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255];
 			var canvas = document.getElementById('myCanvas');
 			var ctx = canvas.getContext('2d');

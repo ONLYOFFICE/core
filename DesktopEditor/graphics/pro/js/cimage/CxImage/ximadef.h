@@ -8,6 +8,10 @@
 #include "stdint.h"
 #endif
 
+#ifndef BOOL
+typedef int BOOL;
+#endif
+
 typedef struct tagRECT
 {
     int32_t left;
@@ -38,5 +42,7 @@ typedef struct tagBITMAPINFOHEADER
     uint32_t biClrUsed;
     uint32_t biClrImportant;
 } BITMAPINFOHEADER;
+
+#define BI_RGB 0L
 
 #endif //__ximadef_h

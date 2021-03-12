@@ -164,23 +164,54 @@ public:
     CxImage(uint32_t imagetype = 0);
     virtual ~CxImage() { DestroyFrames(); Destroy(); };
 
+    void* Create(uint32_t dwWidth, uint32_t dwHeight, uint32_t wBpp, uint32_t imagetype = 0);
     bool Destroy();
     bool DestroyFrames();
     bool Transfer(CxImage& from, bool bTransferFrames = true);
 
+    uint32_t    GetSize();
+    uint8_t*    GetBits(uint32_t row = 0);
+    uint32_t    GetHeight() const;
+    uint32_t    GetWidth() const;
+    uint32_t    GetEffWidth() const;
+    uint32_t    GetType() const;
     const char* GetLastError();
 
+    uint8_t	GetJpegQuality() const;
+
+    uint8_t	GetJpegScale() const;
+
+    int32_t	GetXDPI() const;
+    int32_t	GetYDPI() const;
     void SetXDPI(int32_t dpi);
     void SetYDPI(int32_t dpi);
+
+    uint32_t GetCodecOption(uint32_t imagetype = 0);
+
+    static uint32_t GetTypeIndexFromId(const uint32_t id);
+
+    uint32_t GetPaletteSize();
+    RGBQUAD* GetPalette() const;
+    void     SetGrayPalette();
+    void     SetPalette(uint32_t n, uint8_t* r, uint8_t* g, uint8_t* b);
 
 #if CXIMAGE_SUPPORT_DECODE
     bool Decode(CxFile*  hFile,  uint32_t imagetype);
     bool Decode(uint8_t* buffer, uint32_t size, uint32_t imagetype);
 #endif //CXIMAGE_SUPPORT_DECODE
 
+#if CXIMAGE_SUPPORT_SELECTION
+    bool SelectionDelete();
+#endif //CXIMAGE_SUPPORT_SELECTION
+
+#if CXIMAGE_SUPPORT_ALPHA
+    void AlphaDelete();
+#endif //CXIMAGE_SUPPORT_ALPHA
+
 protected:
     void Startup(uint32_t imagetype = 0);
     void CopyInfo(const CxImage &src);
+    void RGBtoBGR(uint8_t* buffer, int32_t length);
 
     void* pDib;
     void* pDibLimit;

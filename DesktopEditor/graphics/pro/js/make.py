@@ -35,21 +35,33 @@ exported_functions = ["_CxImage_Create",
                       "_CxImage_Destroy",
                       "_CxImage_Decode"]
 
-libRaster_src_path = "./cimage"
-input_sources = ["CxImage/ximaenc.cpp",
-                 "CxImage/ximaexif.cpp",
-                 "CxImage/ximage.cpp",
-                 "CxImage/ximainfo.cpp",
-                 "CxImage/ximajpg.cpp",
-                 "CxImage/xmemfile.cpp"]
+libRaster_src_path = "./cimage/CxImage"
+input_sources = ["/ximaenc.cpp",
+                 "/ximaexif.cpp",
+                 "/ximage.cpp",
+                 "/ximainfo.cpp",
+                 "/ximajpg.cpp",
+                 "/ximalpha.cpp",
+                 "/ximapal.cpp",
+                 "/ximasel.cpp",
+                 "/xmemfile.cpp"]
+
+libJpeg_src_path = "./../../../cximage/jpeg"
+input_jpeg_sources = ["/jerror.c", "jdmarker.c", "jdapimin.c", "jdmaster.c", "jdapistd.c",
+                      "jcomapi.c", "jutils.c", "jdinput.c", "jdmainct.c", "jmemmgr.c",
+                      "jquant1.c", "jquant2.c", "jdmerge.c", "jdcolor.c", "jdsample.c",
+                      "jdpostct.c", "jddctmgr.c", "jdarith.c", "jdhuff.c", "jdcoefct.c",
+                      "jmemnobs.c", "jidctint.c", "jidctfst.c", "jidctflt.c", "jaricom.c"]
 
 sources = []
 for item in input_sources:
-    if base.is_file(libRaster_src_path + '/' + item):
-        sources.append(libRaster_src_path + '/' + item)
+    sources.append(libRaster_src_path + '/' + item)
+for item in input_jpeg_sources:
+    sources.append(libJpeg_src_path + '/' + item)
 sources.append("./wasm/src/base.cpp")
 
 compiler_flags.append("-I" + libRaster_src_path)
+compiler_flags.append("-I" + libJpeg_src_path)
 compiler_flags.append("-DWIN32")
 
 # arguments

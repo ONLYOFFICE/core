@@ -50,7 +50,7 @@ for item in input_sources:
 sources.append("./wasm/src/base.cpp")
 
 compiler_flags.append("-I" + libRaster_src_path)
-# compiler_flags.append("-D")
+compiler_flags.append("-DWIN32")
 
 # arguments
 arguments = ""

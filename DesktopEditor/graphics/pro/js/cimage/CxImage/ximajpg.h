@@ -9,24 +9,25 @@
 
 extern "C"
 {
- #include "../../../../../cximage/jpeg/jpeglib.h"
- #include "../../../../../cximage/jpeg/jerror.h"
+#include "../../../../../cximage/jpeg/jpeglib.h"
+#include "../../../../../cximage/jpeg/jerror.h"
 }
 
 class CxImageJPG: public CxImage
 {
 public:
-	CxImageJPG();
-	~CxImageJPG();
+    CxImageJPG();
+    ~CxImageJPG();
 
     bool Decode(CxFile * hFile);
 
 #if CXIMAGEJPG_SUPPORT_EXIF
     class CxExifInfo
     {
-        typedef struct tag_Section_t{
-            uint8_t*    Data;
-            int32_t      Type;
+        typedef struct tag_Section_t
+        {
+            uint8_t* Data;
+            int32_t  Type;
             unsigned Size;
         } Section_t;
 

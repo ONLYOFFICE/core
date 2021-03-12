@@ -2,10 +2,10 @@
 
 CxMemFile::CxMemFile(uint8_t* pBuffer, uint32_t size)
 {
-    m_pBuffer = pBuffer;
+    m_pBuffer  = pBuffer;
     m_Position = 0;
     m_Size = m_Edge = size;
-    m_bFreeOnClose = (bool)(pBuffer==0);
+    m_bFreeOnClose = (pBuffer == 0);
     m_bEOF = false;
 }
 CxMemFile::~CxMemFile()
@@ -14,7 +14,8 @@ CxMemFile::~CxMemFile()
 }
 bool CxMemFile::Close()
 {
-    if ( (m_pBuffer) && (m_bFreeOnClose) ){
+    if ((m_pBuffer) && (m_bFreeOnClose))
+    {
         free(m_pBuffer);
         m_pBuffer = NULL;
         m_Size = 0;
@@ -24,10 +25,10 @@ bool CxMemFile::Close()
 bool CxMemFile::Seek(int32_t offset, int32_t origin)
 {
     m_bEOF = false;
-    if (m_pBuffer==NULL) return false;
+    if (m_pBuffer == NULL) return false;
     int32_t lNewPos = m_Position;
 
-    if (origin == SEEK_SET)		 lNewPos = offset;
+    if (origin == SEEK_SET)      lNewPos = offset;
     else if (origin == SEEK_CUR) lNewPos += offset;
     else if (origin == SEEK_END) lNewPos = m_Size + offset;
     else return false;
@@ -39,6 +40,6 @@ bool CxMemFile::Seek(int32_t offset, int32_t origin)
 }
 int32_t CxMemFile::Tell()
 {
-    if (m_pBuffer==NULL) return -1;
+    if (m_pBuffer == NULL) return -1;
     return m_Position;
 }

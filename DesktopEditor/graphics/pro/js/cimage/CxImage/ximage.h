@@ -4,7 +4,8 @@
 #include "xmemfile.h"
 #include "ximadef.h"
 
-enum ENUM_CXIMAGE_FORMATS{
+enum ENUM_CXIMAGE_FORMATS
+{
 CXIMAGE_FORMAT_UNKNOWN = 0,
 #if CXIMAGE_SUPPORT_BMP
 CXIMAGE_FORMAT_BMP = 1,
@@ -82,26 +83,26 @@ CMAX_IMAGE_FORMATS = CXIMAGE_SUPPORT_BMP + CXIMAGE_SUPPORT_GIF + CXIMAGE_SUPPORT
 
 typedef struct tag_ExifInfo
 {
-    char  Version      [5];
-    char  CameraMake   [32];
-    char  CameraModel  [40];
-    char  DateTime     [20];
-    int32_t   Height, Width;
-    int32_t   Orientation;
-    int32_t   IsColor;
-    int32_t   Process;
-    int32_t   FlashUsed;
+    char Version     [5];
+    char CameraMake  [32];
+    char CameraModel [40];
+    char DateTime    [20];
+    int32_t Height, Width;
+    int32_t Orientation;
+    int32_t IsColor;
+    int32_t Process;
+    int32_t FlashUsed;
     float FocalLength;
     float ExposureTime;
     float ApertureFNumber;
     float Distance;
     float CCDWidth;
     float ExposureBias;
-    int32_t   Whitebalance;
-    int32_t   MeteringMode;
-    int32_t   ExposureProgram;
-    int32_t   ISOequivalent;
-    int32_t   CompressionLevel;
+    int32_t Whitebalance;
+    int32_t MeteringMode;
+    int32_t ExposureProgram;
+    int32_t ISOequivalent;
+    int32_t CompressionLevel;
     float FocalplaneXRes;
     float FocalplaneYRes;
     float FocalplaneUnits;
@@ -109,90 +110,87 @@ typedef struct tag_ExifInfo
     float Yresolution;
     float ResolutionUnit;
     float Brightness;
-    char  Comments[MAX_COMMENT+1];
+    char  Comments[MAX_COMMENT + 1];
 
-    uint8_t * ThumbnailPointer;  /* Pointer at the thumbnail */
-    unsigned ThumbnailSize;     /* Size of thumbnail. */
+    uint8_t* ThumbnailPointer;
+    unsigned ThumbnailSize;
 
-    bool  IsExif;
+    bool IsExif;
 } EXIFINFO;
 
 #endif //CXIMAGE_SUPPORT_EXIF
 
 class CxImage
 {
-    //extensible information collector
     typedef struct tagCxImageInfo
     {
-        uint32_t	dwEffWidth;			///< uint32_t aligned scan line width
-        uint8_t*	pImage;				///< THE IMAGE BITS
-        CxImage* pGhost;			///< if this is a ghost, pGhost points to the body
-        CxImage* pParent;			///< if this is a layer, pParent points to the body
-        uint32_t	dwType;				///< original image format
-        char	szLastError[256];	///< debugging
-        int32_t	nProgress;			///< monitor
-        int32_t	nEscape;			///< escape
-        int32_t	nBkgndIndex;		///< used for GIF, PNG, MNG
-        RGBQUAD nBkgndColor;		///< used for RGB transparency
-        float	fQuality;			///< used for JPEG, JPEG2000 (0.0f ... 100.0f)
-        uint8_t	nJpegScale;			///< used for JPEG [ignacio]
-        int32_t	nFrame;				///< used for TIF, GIF, MNG : actual frame
-        int32_t	nNumFrames;			///< used for TIF, GIF, MNG : total number of frames
-        uint32_t	dwFrameDelay;		///< used for GIF, MNG
-        int32_t	xDPI;				///< horizontal resolution
-        int32_t	yDPI;				///< vertical resolution
-        RECT	rSelectionBox;		///< bounding rectangle
-        uint8_t	nAlphaMax;			///< max opacity (fade)
-        bool	bAlphaPaletteEnabled; ///< true if alpha values in the palette are enabled.
-        bool	bEnabled;			///< enables the painting functions
-        int32_t	xOffset;
-        int32_t	yOffset;
-        uint32_t	dwCodecOpt[CMAX_IMAGE_FORMATS];	///< for GIF, TIF : 0=def.1=unc,2=fax3,3=fax4,4=pack,5=jpg
-        RGBQUAD last_c;				///< for GetNearestIndex optimization
-        uint8_t	last_c_index;
-        bool	last_c_isvalid;
-        int32_t	nNumLayers;
-        uint32_t	dwFlags;			///< 0x??00000 = reserved, 0x00??0000 = blend mode, 0x0000???? = layer id - user flags
-        uint8_t	dispmeth;
-        bool	bGetAllFrames;
-        bool	bLittleEndianHost;
-
+        uint32_t dwEffWidth;
+        uint8_t* pImage;
+        CxImage* pGhost;
+        CxImage* pParent;
+        uint32_t dwType;
+        char     szLastError[256];
+        int32_t  nProgress;
+        int32_t  nEscape;
+        int32_t  nBkgndIndex;
+        RGBQUAD  nBkgndColor;
+        float    fQuality;
+        uint8_t  nJpegScale;
+        int32_t  nFrame;
+        int32_t  nNumFrames;
+        uint32_t dwFrameDelay;
+        int32_t  xDPI;
+        int32_t  yDPI;
+        RECT     rSelectionBox;
+        uint8_t  nAlphaMax;
+        bool     bAlphaPaletteEnabled;
+        bool     bEnabled;
+        int32_t  xOffset;
+        int32_t  yOffset;
+        uint32_t dwCodecOpt[CMAX_IMAGE_FORMATS];
+        RGBQUAD  last_c;
+        uint8_t  last_c_index;
+        bool     last_c_isvalid;
+        int32_t  nNumLayers;
+        uint32_t dwFlags;
+        uint8_t  dispmeth;
+        bool     bGetAllFrames;
+        bool     bLittleEndianHost;
     #if CXIMAGE_SUPPORT_EXIF
         EXIFINFO ExifInfo;
     #endif
-
     } CXIMAGEINFO;
 public:
-	CxImage(uint32_t imagetype = 0);
-	virtual ~CxImage() { DestroyFrames(); Destroy(); };
+    CxImage(uint32_t imagetype = 0);
+    virtual ~CxImage() { DestroyFrames(); Destroy(); };
 
-	bool	Destroy();
-	bool	DestroyFrames();
-    bool	Transfer(CxImage &from, bool bTransferFrames = true);
+    bool Destroy();
+    bool DestroyFrames();
+    bool Transfer(CxImage& from, bool bTransferFrames = true);
 
-    const char*	GetLastError();
+    const char* GetLastError();
 
-    void	SetXDPI(int32_t dpi);
-    void	SetYDPI(int32_t dpi);
+    void SetXDPI(int32_t dpi);
+    void SetYDPI(int32_t dpi);
 
 #if CXIMAGE_SUPPORT_DECODE
-    bool Decode(CxFile * hFile, uint32_t imagetype);
-    bool Decode(uint8_t * buffer, uint32_t size, uint32_t imagetype);
+    bool Decode(CxFile*  hFile,  uint32_t imagetype);
+    bool Decode(uint8_t* buffer, uint32_t size, uint32_t imagetype);
 #endif //CXIMAGE_SUPPORT_DECODE
 
 protected:
     void Startup(uint32_t imagetype = 0);
     void CopyInfo(const CxImage &src);
 
-	void*				pDib; //contains the header, the palette, the pixels
-	void*				pDibLimit;
+    void* pDib;
+    void* pDibLimit;
 
-    BITMAPINFOHEADER    head; //standard header
-	CXIMAGEINFO			info; //extended information
-	uint8_t*			pSelection;	//selected region
-	uint8_t*			pAlpha; //alpha channel
-	CxImage**			ppLayers; //generic layers
-	CxImage**			ppFrames;
+    BITMAPINFOHEADER head;
+    CXIMAGEINFO      info;
+    uint8_t*         pSelection;
+    uint8_t*         pAlpha;
+    CxImage**        ppLayers;
+    CxImage**        ppFrames;
 };
 
 #endif // __ximage_h

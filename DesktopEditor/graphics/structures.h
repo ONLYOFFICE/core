@@ -35,6 +35,7 @@
 #include "../common/Array.h"
 #include "../graphics/aggplustypes.h"
 
+#include <cmath>
 #include <string>
 #include <string.h>
 #include <stdlib.h>
@@ -116,22 +117,26 @@ namespace NSStructures
     struct GradientInfo {
         GradientInfo() :
         littleRadius(0.), largeRadius(1.),
-        littleCenter(0.),
-        center(0.),
+        centerX(0.), centerY(0.),
         angle(0.),
         discrete_step(0.),
         reflected(false),
-        periods(0.5)
+        periods(0.5),
+        xsize(1), ysize(1)
         {}
-
+        void setAngleDegrees(double deg) {
+            angle = deg / 180. * M_PI;
+        }
+        double getAngleDegrees() {
+            return angle / M_PI * 180.;
+        }
 
 
         double littleRadius, largeRadius; // used in radial gradient - [0, 1]
-        double littleCenter; // used in radial gradient - offset relative to figure center
-        double center; // used in radial, diamond and conical gradient - offset relative to figure center
+        double centerX, centerY; // used in radial, diamond and conical gradient - offset relative to figure center
         double angle; // used in linear and conical gradient (rad)
         double discrete_step; // used to make discrete gradient. <= 0 to make continious
-
+        double xsize, ysize;  // stretch image; can be negative to reflect relative to other axis; must not be zero
         bool reflected; // 1234567 ->  1357531 works kind of like this
         double periods; //  number of perionds: 12345679 -> 159159159 (periods = 3)
     };

@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
 //    std::vector<Point> points {{150, 170}, {100, 160}, {150, 150}, {160, 100}, {170, 150}, {230, 160}, {170, 170}, {150, 170}};
     std::vector<Point> points;
     points = drawCircle1(100, 130.,100.,40);
-    GenerateImg(pm, c_BrushTypeConicalGradient, 0, points);
+    GenerateImg(pm, c_BrushTypePathDiamondGradient, 0, points);
     //setColor2(pm, 0x0000FF);
    //pm.invertPixels();
     ui->lable_test->setPixmap(QPixmap::fromImage(pm));
@@ -72,7 +72,9 @@ void GenerateImg(QImage &img, int grad, double angle, std::vector<Point> points)
 
     NSStructures::GradientInfo ginfo;
     ginfo.periods = 0.5;
-    ginfo.discrete_step = 0.03;
+    ginfo.discrete_step = 0.00;
+    ginfo.setAngleDegrees(-45);
+    ginfo.xsize = 1;
     pRasterRenderer->put_BrushGradInfo(ginfo);
     pRasterRenderer->put_PenColor(0xFF000000);
     //pRasterRenderer->put_BrushColor1(0xFF00FF00);
@@ -80,6 +82,7 @@ void GenerateImg(QImage &img, int grad, double angle, std::vector<Point> points)
     double p[] = {0.0,0.2,0.4,0.6,0.8,1};
     pRasterRenderer->put_BrushLinearAngle(angle);
     pRasterRenderer->put_BrushType(grad);
+    pRasterRenderer->put_BrushGradientColors(c, p, 6);
     pRasterRenderer->PathCommandStart();
     pRasterRenderer->BeginCommand(c_nPathType);
     if (points.size() > 0) {

@@ -405,8 +405,7 @@ protected:
 	void DoFillPathGradient(CBrushLinearGradient *pBrush);
 	void DoFillPathGradient2(CBrushLinearGradient *pBrush);
     //--Test
-    void DoFillPathGradientMyTest(CBrushLinearGradient *pBrush);
-    void DoFillPathGradientConical(CBrushLinearGradient *pBrush);
+    void DoFillPathGradientType(CBrushLinearGradient *pBrush);
     //--test
 	void DoFillPathHatch(CBrushHatch *pBrush);
 	void DoFillPathTextureClampSz(const CMatrix &mImgMtx, const void *pImgBuff, DWORD dwImgWidth, DWORD dwImgHeight, int nImgStride);

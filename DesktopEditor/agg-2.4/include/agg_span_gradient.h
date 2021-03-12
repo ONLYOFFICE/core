@@ -22,6 +22,8 @@
 #include "agg_math.h"
 #include "agg_array.h"
 #include "agg_trans_affine.h"
+#include <iostream>
+#include <cmath>
 
 namespace agg
 {

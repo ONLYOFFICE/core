@@ -27,6 +27,7 @@
 
 namespace agg
 {
+    #include "./test_grads/custom_gradients.h"
 #if !defined(_LINUX) && !(defined(_WIN32) || defined (_WIN64)) && !defined(__APPLE__)
     double _hypot(double x, double y)
     {
@@ -716,12 +717,6 @@ namespace agg
     private:
         const GradientF* m_gradient;
     };
-
-
-    //==============================================================Testin
-
-    #include "./test_grads/diamond.h"
-
 }
 
 #endif

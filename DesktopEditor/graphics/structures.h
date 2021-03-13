@@ -116,29 +116,39 @@ namespace NSStructures
     // Containing additional info about gradient
     struct GradientInfo {
         GradientInfo() :
-        littleRadius(0.), largeRadius(1.),
-        centerX(0.), centerY(0.),
-        angle(0.),
-        discrete_step(0.),
+        littleRadius(0.0f), largeRadius(1.0f),
+        centerX(0.0f), centerY(0.0f),
+        angle(0.0f),
+        discrete_step(0.0f),
         reflected(false),
-        periods(0.5),
-        xsize(1), ysize(1)
+        periods(0.5f), periodic(false),
+        xsize(1.0f), ysize(1.0f),
+        linstretch(1.0f), linoffset(0.0f) 
         {}
-        void setAngleDegrees(double deg) {
-            angle = deg / 180. * M_PI;
+        void setAngleDegrees(float deg) 
+        {
+            angle = deg / 180.f * (float)M_PI;
         }
-        double getAngleDegrees() {
-            return angle / M_PI * 180.;
+        float getAngleDegrees() 
+        {
+            return angle / (float)M_PI * 180.f;
+        }
+        void setStepByNum(int n)          // recomended to use
+        {
+            discrete_step = 1.0f / n;
         }
 
 
-        double littleRadius, largeRadius; // used in radial gradient - [0, 1]
-        double centerX, centerY; // used in radial, diamond and conical gradient - offset relative to figure center
-        double angle; // used in linear and conical gradient (rad)
-        double discrete_step; // used to make discrete gradient. <= 0 to make continious
-        double xsize, ysize;  // stretch image; can be negative to reflect relative to other axis; must not be zero
-        bool reflected; // 1234567 ->  1357531 works kind of like this
-        double periods; //  number of perionds: 12345679 -> 159159159 (periods = 3)
+        float littleRadius, largeRadius; // used in radial gradient - [0, 1]
+        float centerX, centerY;          // used in radial, diamond and conical gradient - offset relative to figure center
+        float angle;                     // used in linear and conical gradient (rad)
+        float discrete_step;             // used to make discrete gradient. <= 0 to make continious
+        float xsize, ysize;              // stretch image; can be negative to reflect relative to other axis; cannot be zero
+        bool   reflected;                 // 1234567 ->  1357531 works kind of like this
+        bool   periodic;
+        float periods;                   // number of perionds (best with to colours, works as saw fuction in color space)
+        float linstretch;                // stretch linear gradient, can be negative (eq angle = 180) can not be zero
+        float linoffset;                 // offset relative to image size
     };
 
 	class CPen

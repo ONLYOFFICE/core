@@ -1,18 +1,24 @@
-
+#include <cmath>
 class calcBase
 {
 public:
-    virtual double eval(double, double) = 0;
+    virtual float eval(float, float) = 0;
     virtual ~calcBase() {}
-    void rotate(double &x, double &y, double angle)
+    void set_rotation(float angle) 
     {
-        double ca = cos(angle);
-        double sa = sin(angle);
-        double newx = x * ca + y * sa;
-        double newy = -x * sa + y * ca;
+        ca = cosf(angle);
+        sa = sinf(angle);
+    }
+    void rotate(float &x, float &y)
+    {
+        
+        float newx = x * ca + y * sa;
+        float newy = -x * sa + y * ca;
         x = newx;
         y = newy;
     }
+private:
+    float ca, sa;
 };
 
 class calcRandom : public calcBase
@@ -22,29 +28,32 @@ public:
     {
         srand(time(NULL));
     }
-    virtual double eval(double, double) override
+    virtual float eval(float, float) override
     {
-        return rand() / (double)RAND_MAX;
+        return rand() / (float)RAND_MAX;
     }
 };
 
 class calcRadial : public calcBase
 {
 public:
-    calcRadial(const NSStructures::GradientInfo &_gi, double _cx, double _cy, double _factor) : ginfo(_gi), cx(_cx), cy(_cy), factor(_factor)
+    calcRadial(const NSStructures::GradientInfo &_gi, float _cx, float _cy, float _factor) :
+     ginfo(_gi), cx(_cx), cy(_cy), factor(_factor), inverseFactor(1.0f / _factor),
+     invXsize(1.0f / _gi.xsize), invYsize(1.0f / _gi.ysize)
     {
-        cx += ginfo.centerX / factor;
-        cy += ginfo.centerY / factor;
+        cx += ginfo.centerX * inverseFactor;
+        cy += ginfo.centerY * inverseFactor;
+        set_rotation(ginfo.angle);
     }
 
-    virtual double eval(double x, double y) override
+    virtual float eval(float x, float y) override
     {
-        x = x - cx;
-        y = y - cy;
-        x /= ginfo.xsize;
-        y /= ginfo.ysize;
-        rotate(x, y, ginfo.angle);
-        double t = sqrt(x * x + y * y) * factor;
+        x -= cx;
+        y -= cy;
+        x *= invXsize;
+        y *= invYsize;
+        rotate(x, y);
+        float t = sqrt(x * x + y * y) * factor;
         if (t < ginfo.littleRadius || t < 0)
             return 0.;
         if (t > ginfo.largeRadius || t > 1)
@@ -57,25 +66,30 @@ public:
 
 private:
     NSStructures::GradientInfo ginfo;
-    double cx, cy, factor;
+    float cx, cy, factor;
+    float inverseFactor;
+    float invXsize, invYsize;
 };
 
 class calcConical : public calcBase
 {
 public:
-    calcConical(const NSStructures::GradientInfo &_gi, double _cx, double _cy, double _factor) : ginfo(_gi), cx(_cx), cy(_cy), factor(_factor)
+    calcConical(const NSStructures::GradientInfo &_gi, float _cx, float _cy, float _factor) :
+     ginfo(_gi), cx(_cx), cy(_cy), factor(_factor), inverseFactor(1.0f / _factor),
+     invXsize(1.0f / _gi.xsize), invYsize(1.0f / _gi.ysize), m1pi((float) M_1_PI)
     {
-        cx += ginfo.centerX / factor;
-        cy += ginfo.centerY / factor;
+        cx += ginfo.centerX * inverseFactor;
+        cy += ginfo.centerY * inverseFactor;
+        set_rotation(ginfo.angle);
     }
-    virtual double eval(double x, double y)
+    virtual float eval(float x, float y) override
     {
-        x = x - cx;
-        y = y - cy;
-        x /= ginfo.xsize;
-        y /= ginfo.ysize;
-        rotate(x, y, ginfo.angle);
-        double t = fabs(atan2(x, y)) / pi;
+        x -= cx;
+        y -= cy;
+        x *= invXsize;
+        y *= invYsize;
+        rotate(x, y);
+        float t = fabs(atan2(x, y)) * m1pi;
         if (ginfo.angle > FLT_EPSILON)
         {
             if (t > 1 + FLT_EPSILON)
@@ -92,27 +106,33 @@ public:
 
 private:
     NSStructures::GradientInfo ginfo;
-    double cx, cy, factor;
+    float cx, cy, factor;
+    float inverseFactor;
+    float invXsize, invYsize;
+    float m1pi;
 };
 
 class calcDiamond : public calcBase
 {
 public:
-    calcDiamond(const NSStructures::GradientInfo &_gi, double _cx, double _cy, double _factor) : ginfo(_gi), cx(_cx), cy(_cy), factor(_factor)
+    calcDiamond(const NSStructures::GradientInfo &_gi, float _cx, float _cy, float _factor) 
+    : ginfo(_gi), cx(_cx), cy(_cy), factor(_factor), inverseFactor(1.0f / _factor),
+     invXsize(1.0f / _gi.xsize), invYsize(1.0f / _gi.ysize)
     {
-        cx += ginfo.centerX / factor;
-        cy += ginfo.centerY / factor;
+        cx += ginfo.centerX * inverseFactor;
+        cy += ginfo.centerY * inverseFactor;
+        set_rotation(ginfo.angle);
     }
-    virtual double eval(double x, double y)
+    virtual float eval(float x, float y) override
     {
-        x = x - cx;
-        y = y - cy;
-        x /= ginfo.xsize;
-        y /= ginfo.ysize;
+        x -= cx;
+        y -= cy;
+        x *= invXsize;
+        y *= invYsize;
 
-        rotate(x, y, ginfo.angle);
+        rotate(x, y);
         
-        double t = std::max(fabs(x * factor), fabs(y * factor));
+        float t = std::max(fabs(x * factor), fabs(y * factor));
 
         if (t > ginfo.largeRadius || t > 1)
             return 1;
@@ -123,20 +143,33 @@ public:
 
 private:
     NSStructures::GradientInfo ginfo;
-    double cx, cy, factor;
+    float cx, cy, factor;
+    float inverseFactor;
+    float invXsize, invYsize;
 };
 
 class calcNewLinear : public calcBase
 {
 public:
-    calcNewLinear(const NSStructures::GradientInfo &_gi, double _start, double _end) : ginfo(_gi), start(_start), len(_end - _start)
+    calcNewLinear(const NSStructures::GradientInfo &_gi,
+     float _xmin, float _ymin, 
+     float _xmax, float _ymax) :
+    ginfo(_gi),
+    xmin(_xmin), ymin(_ymin), xmax(_xmax), ymax(_ymax)
     {
+        cx = (xmin + xmax) * 0.5;
+        cy = (ymin + ymax) * 0.5;
+        xlen = xmax - xmin;
+        invXlen = 1.0f / xlen;
+        invStretch = 1.0f / ginfo.linstretch;
+        set_rotation(ginfo.angle);
     }
-    virtual double eval(double x, double y)
+    virtual float eval(float x, float y) override
     {
-        x = x - start;
-        rotate(x, y, ginfo.angle);
-        double t = x / len;
+        x -= cx;
+        y -= cy;
+        rotate(x, y);
+        float t = (x + 0.5 * xlen) * invXlen * invStretch - ginfo.linoffset;
 
         if (t > ginfo.largeRadius || t > 1)
             return 1;
@@ -146,7 +179,9 @@ public:
     }
 
 private:
-    double start, len;
+    float xmin, ymin, xmax, ymax;
+    float cx, cy, xlen;
+    float invXlen, invStretch;
     NSStructures::GradientInfo ginfo;
 };
 
@@ -170,8 +205,9 @@ protected:
     int m_state;
 
     ginfo m_oGradientInfo;
+    float invStep;
     agg::point_d m_center;
-    double m_factor;
+    float m_factor;
     calcBase *calculate;
 
     agg::trans_affine m_trans;
@@ -180,21 +216,34 @@ protected:
     const color_type *m_pSubColors;
     const float *m_pPosSubColors;
     int m_nCountSubColors;
-    double xmin, xmax;
+    float xmin, xmax;
+    float ymin, ymax;
     color_type m_color_table[MaxColorIndex + 1];
     bool m_valid_table[MaxColorIndex + 1];
 
 protected:
-    inline double calculate_param(const double &x, const double &y)
+    inline float calculate_param(const float &x, const float &y)
     {
-        double t = calculate->eval(x, y);
-        if (this->m_oGradientInfo.periods != 0.5)
+        float t = calculate->eval(x, y);
+
+        if (m_oGradientInfo.discrete_step > FLT_EPSILON)
         {
-            t = this->triagle_saw(this->m_oGradientInfo.periods * t);
+            if (t >= 1)
+                t -= FLT_EPSILON;
+            t = m_oGradientInfo.discrete_step * floor(t * invStep) 
+                + 0.5 * m_oGradientInfo.discrete_step;
         }
-        if (fabs(this->m_oGradientInfo.discrete_step) > FLT_EPSILON)
+
+        if (m_oGradientInfo.periodic)
         {
-            t = this->m_oGradientInfo.discrete_step * floor(t / this->m_oGradientInfo.discrete_step);
+            t = triagle_saw(m_oGradientInfo.periods * t);
+        }
+
+        if (m_oGradientInfo.reflected) {
+            t *= 2;
+            if (t > 1 + FLT_EPSILON) {
+                t = 2. - t;
+            }
         }
         if (t < 0)
             return 0;
@@ -218,6 +267,7 @@ public:
     void SetGradientInfo(ginfo _g, Aggplus::BrushType bType)
     {
         m_oGradientInfo = _g;
+        invStep = 1.0f / m_oGradientInfo.discrete_step;
         switch (bType)
         {
         case Aggplus::BrushTypeRadialGradient:
@@ -233,7 +283,7 @@ public:
             break;
 
         case Aggplus::BrushTypeNewLinearGradient:
-            calculate = new calcNewLinear(m_oGradientInfo, xmin, xmax);
+            calculate = new calcNewLinear(m_oGradientInfo, xmin, ymin, xmax, ymax);
             break;
         default:
             fprintf(stderr, "WRONG BRUSH TYPE");
@@ -265,7 +315,7 @@ public:
             double _x = x;
             double _y = y;
             m_trans.transform(&_x, &_y);
-            double t = calculate_param(_x, _y);
+            float t = calculate_param((float)_x, (float)_y);
 
             int index = int(t * MaxColorIndex + 0.5);
             if (!m_valid_table[index])
@@ -281,22 +331,24 @@ public:
 
         xmax = std::max(bounds.x1, bounds.x2);
         xmin = std::min(bounds.x1, bounds.x2);
+        ymax = std::max(bounds.y1, bounds.y2);
+        ymin = std::min(bounds.y1, bounds.y2);
         m_center.x = (bounds.x1 + bounds.x2) / 2;
         m_center.y = (bounds.y1 + bounds.y2) / 2;
 
-        double dmax = (abs(bounds.x1 - bounds.x2));
+        float dmax = (abs(bounds.x1 - bounds.x2));
         if (dmax < abs(bounds.y1 - bounds.y2))
             dmax = abs(bounds.y1 - bounds.y2);
-        m_factor = 0;
+        m_factor = 0.0f;
 
         if (dmax > FLT_EPSILON)
-            m_factor = 2 / dmax;
+            m_factor = 2.0f / dmax;
     }
 
 protected:
     void CalcColor(int index)
     {
-        double t = index * (1.0 / MaxColorIndex);
+        float t = index * (1.0 / MaxColorIndex);
 
         bool bFindColor = false;
 
@@ -327,78 +379,8 @@ protected:
         m_valid_table[index] = true;
     }
 
-    inline double triagle_saw(double x)
+    inline float triagle_saw(float x)
     {
-        return fabs(2 * asin(sin(x * pi)) / pi);
+        return fabs(2 * asinf(sinf(x * pi)) * M_1_PI);
     }
 };
-
-// template <class ColorT>
-// class my_test_gradient : public gradient_base<ColorT>
-// {
-//     inline double calculate_param(const double &x, const double &y) override
-//     {
-//         double cx = this->m_center.x;
-//         double cy = this->m_center.y;
-//         double t = sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy)) * this->m_factor;
-//         if (this->m_oGradientInfo.periods != 0)
-//         {
-//             t = this->triagle_saw(this->m_oGradientInfo.periods * t);
-//         }
-//         if (fabs(this->m_oGradientInfo.discrete_step) > FLT_EPSILON)
-//         {
-//             t = this->m_oGradientInfo.discrete_step * floor(t / this->m_oGradientInfo.discrete_step);
-//         }
-//         if (t < 0)
-//             return 0;
-//         if (t > 1)
-//             return 1;
-//         return t;
-//     }
-// };
-
-// template <class ColorT>
-// class gradient_radial_span : public gradient_base<ColorT>
-// {
-//     inline double calculate_param(const double &x, const double &y) override
-//     {
-//         double cx = this->m_center.x;
-//         double cy = this->m_center.y;
-//         double t = sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy)) * this->m_factor;
-//         if (this->m_oGradientInfo.periods != 0)
-//         {
-//             t = this->triagle_saw(this->m_oGradientInfo.periods * t);
-//         }
-//         if (fabs(this->m_oGradientInfo.discrete_step) > FLT_EPSILON)
-//         {
-//             t = this->m_oGradientInfo.discrete_step * floor(t / this->m_oGradientInfo.discrete_step);
-//         }
-//         if (t < 0)
-//             return 0;
-//         if (t > 1)
-//             return 1;
-//         return t;
-//     }
-// };
-
-// template <class ColorT>
-// class conical_gradient_span : public gradient_base<ColorT>
-// {
-//     inline double calculate_param(const double &x, const double &y) override
-//     {
-//         double t = 2 * fabs(atan2(double(y), double(x))) / pi;
-//         if (this->m_oGradientInfo.periods != 0)
-//         {
-//             t = this->triagle_saw(this->m_oGradientInfo.periods * t);
-//         }
-//         if (fabs(this->m_oGradientInfo.discrete_step) > FLT_EPSILON)
-//         {
-//             t = this->m_oGradientInfo.discrete_step * floor(t / this->m_oGradientInfo.discrete_step);
-//         }
-//         if (t < 0)
-//             return 0;
-//         if (t > 1)
-//             return 1;
-//         return t;
-//     }
-// };

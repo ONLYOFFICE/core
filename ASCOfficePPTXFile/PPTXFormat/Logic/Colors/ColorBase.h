@@ -385,7 +385,7 @@ namespace PPTX
 				int iDelta = iMax - iMin;
 				double dMax = ( iMax + iMin )/255.0;
 				double dDelta = iDelta/255.0;
-				double H,S,L;
+				double H = 0, S = 0, L = 0;
 
 				L = dMax / 2.0;
 
@@ -450,7 +450,7 @@ namespace PPTX
 				int iDelta = iMax - iMin;
 				double dMax = ( iMax + iMin )/255.0;
 				double dDelta = iDelta/255.0;
-				double H,S,L;
+				double H = 0, S = 0, L = 0;
 
 				L = dMax / 2.0;
 

@@ -910,7 +910,7 @@ namespace NSBinPptxRW
 				{
 					m_oPresentation.sldMasterIdLst.push_back(PPTX::Logic::XmlId(L"p:sldMasterId"));
 
-                    std::wstring sId = std::to_wstring((_UINT64)(0x80000000 + nCountLayouts));
+                    std::wstring sId = std::to_wstring((_UINT64)(0x80000000 + (_UINT64)nCountLayouts));
 
 					m_oPresentation.sldMasterIdLst[i].id = sId;
 					m_oPresentation.sldMasterIdLst[i].rid = (size_t)(i + 1);

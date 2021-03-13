@@ -104,7 +104,7 @@ namespace PPTX
 						LnB = oReader;
 					else if (_T("a:cell3D") == strName)
 						cell3D = oReader;
-					else if (_T("a:lnBlToTr") == strName)
+					else if (_T("a:lnBlToBr") == strName)
 						LnTlToBr = oReader;
 					else if (_T("a:lnBlToTr") == strName)
 						LnBlToTr = oReader;

@@ -50,16 +50,19 @@ public:
     {
         x -= cx;
         y -= cy;
+        rotate(x, y);
         x *= invXsize;
         y *= invYsize;
-        rotate(x, y);
         float t = sqrt(x * x + y * y) * factor;
-        if (t < ginfo.littleRadius || t < 0)
+        if (t < ginfo.littleRadius)
             return 0.;
-        if (t > ginfo.largeRadius || t > 1)
-        {
+        if (t > ginfo.largeRadius)
             return 1.;
-        }
+        
+        if (ginfo.largeRadius - ginfo.littleRadius < FLT_EPSILON)
+            return t;
+        
+        t = (t - ginfo.littleRadius) / (ginfo.largeRadius - ginfo.littleRadius);// TODO optimize
         return t;
     }
     virtual ~calcRadial() {}
@@ -86,9 +89,9 @@ public:
     {
         x -= cx;
         y -= cy;
+        rotate(x, y);
         x *= invXsize;
         y *= invYsize;
-        rotate(x, y);
         float t = fabs(atan2(x, y)) * m1pi;
         if (ginfo.angle > FLT_EPSILON)
         {
@@ -97,10 +100,14 @@ public:
                 t -= floor(t);
             }
         }
-        if (t > ginfo.largeRadius || t > 1)
+        if (t > ginfo.largeRadius)
             return 1;
-        if (t < ginfo.littleRadius || t < 0)
+        if (t < ginfo.littleRadius)
             return 0;
+        if (ginfo.largeRadius - ginfo.littleRadius < FLT_EPSILON)
+            return t;
+        
+        t = (t - ginfo.littleRadius) / (ginfo.largeRadius - ginfo.littleRadius);// TODO optimize
         return t;
     }
 
@@ -127,17 +134,20 @@ public:
     {
         x -= cx;
         y -= cy;
+        rotate(x, y);
         x *= invXsize;
         y *= invYsize;
-
-        rotate(x, y);
         
         float t = std::max(fabs(x * factor), fabs(y * factor));
 
-        if (t > ginfo.largeRadius || t > 1)
+        if (t > ginfo.largeRadius)
             return 1;
-        if (t < ginfo.littleRadius || t < 0)
+        if (t < ginfo.littleRadius)
             return 0;
+        if (ginfo.largeRadius - ginfo.littleRadius < FLT_EPSILON)
+            return t;
+        
+        t = (t - ginfo.littleRadius) / (ginfo.largeRadius - ginfo.littleRadius);// TODO optimize
         return t;
     }
 
@@ -171,10 +181,14 @@ public:
         rotate(x, y);
         float t = (x + 0.5 * xlen) * invXlen * invStretch - ginfo.linoffset;
 
-        if (t > ginfo.largeRadius || t > 1)
+        if (t > ginfo.largeRadius)
             return 1;
-        if (t < ginfo.littleRadius || t < 0)
+        if (t < ginfo.littleRadius)
             return 0;
+        if (ginfo.largeRadius - ginfo.littleRadius < FLT_EPSILON)
+            return t;
+        
+        t = (t - ginfo.littleRadius) / (ginfo.largeRadius - ginfo.littleRadius);// TODO optimize
         return t;
     }
 

@@ -377,9 +377,8 @@ public:
 		
 		bool write(const std::wstring & out_path, const std::wstring & temp_path, const std::wstring & password, const std::wstring & documentID);
 		
-		OoxConverter()
+		OoxConverter() : output_document(NULL), oox_current_child_document(NULL)
 		{
-			oox_current_child_document = NULL; 
 		}
 		virtual ~OoxConverter(){}
 

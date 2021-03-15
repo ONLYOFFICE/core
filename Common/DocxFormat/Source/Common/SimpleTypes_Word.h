@@ -1204,6 +1204,7 @@ namespace SimpleTypes
 	public:
 		CDecimalNumberOrPercent() 
 		{
+			m_dValue = 0;
 			m_bTrailingPercentSign = false;
 		}
 

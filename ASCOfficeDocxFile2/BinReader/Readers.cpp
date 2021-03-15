@@ -1762,7 +1762,7 @@ int Binary_pPrReader::Read_pgHeader(BYTE type, long length, void* poResult)
 		if(nHdrFtrIndex >= 0 && nHdrFtrIndex < (int)m_oFileWriter.get_headers_footers_writer().m_aHeaders.size())
 		{
 			Writers::HdrFtrItem* pHdrFtrItem = m_oFileWriter.get_headers_footers_writer().m_aHeaders[nHdrFtrIndex];
-			pHdrFtrItem->m_sFilename;
+
             std::wstring sType;
 			if(SimpleTypes::hdrftrFirst == pHdrFtrItem->eType)
 				sType = _T("first");
@@ -1787,7 +1787,7 @@ int Binary_pPrReader::Read_pgFooter(BYTE type, long length, void* poResult)
 		if(nHdrFtrIndex >= 0 && nHdrFtrIndex <= (int)oBinary_HdrFtrTableReader.m_oHeaderFooterWriter.m_aFooters.size())
 		{
 			Writers::HdrFtrItem* pHdrFtrItem = oBinary_HdrFtrTableReader.m_oHeaderFooterWriter.m_aFooters[nHdrFtrIndex];
-			pHdrFtrItem->m_sFilename;
+
             std::wstring sType;
 			if(SimpleTypes::hdrftrFirst == pHdrFtrItem->eType)
 				sType = _T("first");

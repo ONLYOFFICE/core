@@ -3972,7 +3972,10 @@ void DocxConverter::convert(OOX::Numbering::CLvl *oox_num_lvl, OOX::Numbering::C
 
 		for (size_t i = 0; (lists_styles) && (i < lists_styles->m_arrNumPicBullet.size()); i++)
 		{
+			if (!lists_styles->m_arrNumPicBullet[i]) continue;
+			
 			if (false == lists_styles->m_arrNumPicBullet[i]->m_oNumPicBulletId.IsInit()) continue;
+			
 			if ((lists_styles->m_arrNumPicBullet[i]) && (*lists_styles->m_arrNumPicBullet[i]->m_oNumPicBulletId == id))
 			{
 				if (lists_styles->m_arrNumPicBullet[i]->m_oDrawing.IsInit())
@@ -4949,7 +4952,7 @@ bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer
 
 void DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer::style_table_cell_properties * table_cell_properties)
 {
-	if (oox_table_pr == NULL || oox_table_pr == NULL) return;
+	if (oox_table_pr == NULL || table_cell_properties == NULL) return;
 
 	convert(oox_table_pr->m_oTblBorders.GetPointer(), table_cell_properties);
 

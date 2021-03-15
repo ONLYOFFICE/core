@@ -102,15 +102,15 @@ else:
 base.run_as_bat(windows_bat)
 
 # finalize
-#base.replaceInFile("./raster.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){self.onLoadModule();}];")
+base.replaceInFile("./raster.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){self.onEngineInit();}];")
 base.replaceInFile("./raster.js", "function getBinaryPromise(){", "function getBinaryPromise2(){")
 
 raster_js_content = base.readFile("./raster.js")
-# engine_base_js_content = base.readFile("./wasm/js/raster.js")
-# engine_js_content = engine_base_js_content.replace("//module", raster_js_content)
+engine_base_js_content = base.readFile("./wasm/js/raster.js")
+engine_js_content = engine_base_js_content.replace("//module", raster_js_content)
 
 # write new version
-base.writeFile("./deploy/raster/raster.js", raster_js_content)
+base.writeFile("./deploy/raster/raster.js", engine_js_content)
 base.copy_file("raster.wasm", "./deploy/raster/raster.wasm")
 base.copy_file("./wasm/js/index.html", "./deploy/index.html")
 

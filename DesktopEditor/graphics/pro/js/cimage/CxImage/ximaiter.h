@@ -1,32 +1,4 @@
-﻿/*
- * File:    ImaIter.h
- * Purpose: Declaration of the Platform Independent Image Base Class
- * Author:  Alejandro Aguilar Sierra
- * Created: 1995
- * Copyright:   (c) 1995, Alejandro Aguilar Sierra <asierra(at)servidor(dot)unam(dot)mx>
- *
- * 07/08/2001 Davide Pizzolato - www.xdp.it
- * - removed slow loops
- * - added safe checks
- *
- * Permission is given by the author to freely redistribute and include
- * this code in any program as int32_t as this credit is given where due.
- *
- * COVERED CODE IS PROVIDED UNDER THIS LICENSE ON AN "AS IS" BASIS, WITHOUT WARRANTY
- * OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, WITHOUT LIMITATION, WARRANTIES
- * THAT THE COVERED CODE IS FREE OF DEFECTS, MERCHANTABLE, FIT FOR A PARTICULAR PURPOSE
- * OR NON-INFRINGING. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE COVERED
- * CODE IS WITH YOU. SHOULD ANY COVERED CODE PROVE DEFECTIVE IN ANY RESPECT, YOU (NOT
- * THE INITIAL DEVELOPER OR ANY OTHER CONTRIBUTOR) ASSUME THE COST OF ANY NECESSARY
- * SERVICING, REPAIR OR CORRECTION. THIS DISCLAIMER OF WARRANTY CONSTITUTES AN ESSENTIAL
- * PART OF THIS LICENSE. NO USE OF ANY COVERED CODE IS AUTHORIZED HEREUNDER EXCEPT UNDER
- * THIS DISCLAIMER.
- *
- * Use at your own risk!
- * ==========================================================
- */
-
-#ifndef __ximaiter_h
+﻿#ifndef __ximaiter_h
 #define __ximaiter_h
 
 #include "ximage.h"

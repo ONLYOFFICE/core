@@ -65,11 +65,12 @@ void GenerateImg(QImage &img, std::vector<Point> &points, const Info &info) {
     NSStructures::GradientInfo ginfo = info.ginfo;
     //ginfo.reflected = true;
     pRasterRenderer->put_BrushGradInfo(ginfo);
-
-    LONG c[] = {0xFFff0000, 0xFFffa500, 0xFFffff00, 0xFF008000, 0xFF0000ff, 0xFFFF00FF};
-    double p[] = {0.0,0.2,0.4,0.6,0.8,1};
+    auto a = info.c;
+    auto b = info.p;
+    LONG *c = a.data();
+    double *p = b.data();
     pRasterRenderer->put_BrushType(info.gradient_type);
-    pRasterRenderer->put_BrushGradientColors(c, p, 6);
+    pRasterRenderer->put_BrushGradientColors(c, p, info.n_colors);
     pRasterRenderer->PathCommandStart();
     pRasterRenderer->BeginCommand(c_nPathType);
     if (points.size() > 0) {
@@ -118,12 +119,6 @@ void MainWindow::on_OffsetSlider_sliderMoved(int position)
     double offset = ((double)position - 50.0) / 25.0;
     ui->lable_offset->setText(std::to_string(offset).c_str());
     info.ginfo.linoffset = offset;
-    this->on_RenderPic_clicked();
-}
-
-void MainWindow::on_PeriodicCheckBox_clicked()
-{
-    info.ginfo.periodic = false; //!info.ginfo.periodic; BUG!
     this->on_RenderPic_clicked();
 }
 
@@ -236,4 +231,47 @@ void MainWindow::on_YSizeSlider_sliderMoved(int position)
     ui->lable_ysize->setText(std::to_string(ysize).c_str());
     info.ginfo.ysize = ysize;
     this->on_RenderPic_clicked();
+}
+
+void MainWindow::on_ColorSpaces_itemClicked(QListWidgetItem *item)
+{
+
+    if (item->text() == "Rainbow") {
+        info.c = {0xFFff0000, 0xFFffa500, 0xFFffff00, 0xFF008000, 0xFF0000ff, 0xFFFF00FF};
+        info.p = {0.0,0.2,0.4,0.6,0.8,1};
+        info.n_colors = 6;
+    }
+    else if (item->text() == "Black and white") {
+        info.c = {0xFFFFFFFF, 0xFF000000};
+        info.p = {0.0, 1};
+        info.n_colors = 2;
+    }
+    else if (item->text() == "Red Blue") {
+        info.c = {0xFFFF0000, 0xFF0000FF};
+        info.p = {0.0, 1};
+        info.n_colors = 2;
+    }
+    else if (item->text() == "Pastel") {
+        info.c = {0xfff39189, 0xff046582};
+        info.p = {0.0, 1};
+        info.n_colors = 2;
+    }
+}
+
+void MainWindow::on_ColorSpaces_itemDoubleClicked(QListWidgetItem *item)
+{
+    on_ColorSpaces_itemClicked(item);
+    on_RenderPic_clicked();
+}
+
+void MainWindow::on_Reflected_CheckBox_clicked(bool checked)
+{
+    info.ginfo.reflected = checked;
+    on_RenderPic_clicked();
+}
+
+void MainWindow::on_PeriodicCheckBox_clicked(bool checked)
+{
+    info.ginfo.periodic = checked;
+    on_RenderPic_clicked();
 }

@@ -613,6 +613,49 @@
      <string>1</string>
     </property>
    </widget>
+   <widget class="QListWidget" name="ColorSpaces">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>400</y>
+      <width>121</width>
+      <height>161</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>Rainbow</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Black and white</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Red Blue</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Pastel</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QCheckBox" name="Reflected_CheckBox">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>80</y>
+      <width>81</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Reflected</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

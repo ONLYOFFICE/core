@@ -54,15 +54,6 @@ public:
         x *= invXsize;
         y *= invYsize;
         float t = sqrt(x * x + y * y) * factor;
-        if (t < ginfo.littleRadius)
-            return 0.;
-        if (t > ginfo.largeRadius)
-            return 1.;
-        
-        if (ginfo.largeRadius - ginfo.littleRadius < FLT_EPSILON)
-            return t;
-        
-        t = (t - ginfo.littleRadius) / (ginfo.largeRadius - ginfo.littleRadius);// TODO optimize
         return t;
     }
     virtual ~calcRadial() {}
@@ -93,21 +84,6 @@ public:
         x *= invXsize;
         y *= invYsize;
         float t = fabs(atan2(x, y)) * m1pi;
-        if (ginfo.angle > FLT_EPSILON)
-        {
-            if (t > 1 + FLT_EPSILON)
-            {
-                t -= floor(t);
-            }
-        }
-        if (t > ginfo.largeRadius)
-            return 1;
-        if (t < ginfo.littleRadius)
-            return 0;
-        if (ginfo.largeRadius - ginfo.littleRadius < FLT_EPSILON)
-            return t;
-        
-        t = (t - ginfo.littleRadius) / (ginfo.largeRadius - ginfo.littleRadius);// TODO optimize
         return t;
     }
 
@@ -139,15 +115,6 @@ public:
         y *= invYsize;
         
         float t = std::max(fabs(x * factor), fabs(y * factor));
-
-        if (t > ginfo.largeRadius)
-            return 1;
-        if (t < ginfo.littleRadius)
-            return 0;
-        if (ginfo.largeRadius - ginfo.littleRadius < FLT_EPSILON)
-            return t;
-        
-        t = (t - ginfo.littleRadius) / (ginfo.largeRadius - ginfo.littleRadius);// TODO optimize
         return t;
     }
 
@@ -179,16 +146,7 @@ public:
         x -= cx;
         y -= cy;
         rotate(x, y);
-        float t = (x + 0.5 * xlen) * invXlen * invStretch - ginfo.linoffset;
-
-        if (t > ginfo.largeRadius)
-            return 1;
-        if (t < ginfo.littleRadius)
-            return 0;
-        if (ginfo.largeRadius - ginfo.littleRadius < FLT_EPSILON)
-            return t;
-        
-        t = (t - ginfo.littleRadius) / (ginfo.largeRadius - ginfo.littleRadius);// TODO optimize
+        float t = (x + 0.5 * xlen) * invXlen * invStretch - ginfo.linoffset;      
         return t;
     }
 
@@ -259,6 +217,14 @@ protected:
                 t = 2. - t;
             }
         }
+        if (t > m_oGradientInfo.largeRadius)
+            return 1;
+        if (t < m_oGradientInfo.littleRadius)
+            return 0;
+        if (m_oGradientInfo.largeRadius - m_oGradientInfo.littleRadius < FLT_EPSILON)
+            return t;
+        
+        t = (t - m_oGradientInfo.littleRadius) / (m_oGradientInfo.largeRadius - m_oGradientInfo.littleRadius);// TODO optimize
         if (t < 0)
             return 0;
         if (t > 1)

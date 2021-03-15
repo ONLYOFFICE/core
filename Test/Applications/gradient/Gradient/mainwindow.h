@@ -32,7 +32,16 @@ struct Color {
 struct Info {
     NSStructures::GradientInfo ginfo;
     int gradient_type;
-    Info() : gradient_type(c_BrushTypePathNewLinearGradient) {};
+    std::vector<LONG> c;
+    std::vector<double> p;
+    int n_colors;
+    Info() : gradient_type(c_BrushTypePathNewLinearGradient) {
+        c = {0xFFff0000, 0xFFffa500, 0xFFffff00, 0xFF008000, 0xFF0000ff, 0xFFFF00FF};
+        p = {0.0,0.2,0.4,0.6,0.8,1};
+        n_colors = 6;
+    };
+    ~Info() {
+    }
 };
 
 void GenerateImg(QImage &img, int grad = 1,double angle = 0,std::vector<Point> points = {});
@@ -55,8 +64,6 @@ private slots:
     void on_AngleSlider_sliderMoved(int position);
 
     void on_OffsetSlider_sliderMoved(int position);
-
-    void on_PeriodicCheckBox_clicked();
 
     void on_StretchSlide_sliderMoved(int position);
 
@@ -81,6 +88,14 @@ private slots:
     void on_xcenterSlider_sliderMoved(int position);
 
     void on_YSizeSlider_sliderMoved(int position);
+
+    void on_ColorSpaces_itemClicked(QListWidgetItem *item);
+
+    void on_ColorSpaces_itemDoubleClicked(QListWidgetItem *item);
+
+    void on_Reflected_CheckBox_clicked(bool checked);
+
+    void on_PeriodicCheckBox_clicked(bool checked);
 
 private:
     Ui::MainWindow *ui;

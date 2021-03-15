@@ -1,13 +1,35 @@
+#ifndef _RASTER_H
+#define _RASTER_H
+
+#ifndef RASTER_USE_DYNAMIC_LIBRARY
+#define RASTER_DECL_EXPORT
+#else
+#include "../../../../../common/base_export.h"
+#define RASTER_DECL_EXPORT Q_DECL_EXPORT
+#endif
+
 #include <malloc.h>
-class CxImage;
+#include "../../cimage/CxImage/ximage.h"
 
-extern "C"
-{
-    void* Spellchecker_Malloc(unsigned int size);
-    void Spellchecker_Free(void* p);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-    CxImage* CxImage_Create();
-    void CxImage_Destroy(CxImage* p);
+RASTER_DECL_EXPORT void* CxImage_Malloc(unsigned int size);
+RASTER_DECL_EXPORT void CxImage_Free(void* p);
 
-    bool CxImage_Decode(CxImage* p, unsigned char * buffer, unsigned int size, unsigned int imagetype);
+RASTER_DECL_EXPORT CxImage* CxImage_Create();
+RASTER_DECL_EXPORT void CxImage_Destroy(CxImage* p);
+
+RASTER_DECL_EXPORT unsigned int CxImage_GetHeight(CxImage* p);
+RASTER_DECL_EXPORT unsigned int CxImage_GetWidth (CxImage* p);
+
+RASTER_DECL_EXPORT bool CxImage_Decode(CxImage* p, unsigned char* buffer, unsigned int size, unsigned int imagetype);
+RASTER_DECL_EXPORT bool CxImage_Encode(CxImage* p, unsigned char* &buffer, int &size, unsigned int imagetype);
+RASTER_DECL_EXPORT bool CxImage_Encode2RGBA(CxImage* p, unsigned char* &buffer, int &size, bool bFlipY = false);
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif // _RASTER_H

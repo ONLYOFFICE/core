@@ -22,6 +22,22 @@ bool CxMemFile::Close()
     }
     return true;
 }
+bool CxMemFile::Open()
+{
+    if (m_pBuffer) return false; // Can't re-open without closing first
+
+    m_Position = m_Size = m_Edge = 0;
+    m_pBuffer = (uint8_t*)malloc(1);
+    m_bFreeOnClose = true;
+
+    return (m_pBuffer != 0);
+}
+uint8_t* CxMemFile::GetBuffer(bool bDetachBuffer)
+{
+    if (bDetachBuffer)
+        m_bFreeOnClose = false;
+    return m_pBuffer;
+}
 size_t CxMemFile::Read(void* buffer, size_t size, size_t count, void* limit_start, void* limit_end)
 {
     if (buffer == NULL) return 0;
@@ -92,6 +108,11 @@ int32_t CxMemFile::Tell()
     if (m_pBuffer == NULL) return -1;
     return m_Position;
 }
+int32_t CxMemFile::Size()
+{
+    if (m_pBuffer == NULL) return -1;
+    return m_Size;
+}
 bool CxMemFile::Flush()
 {
     return m_pBuffer != NULL;
@@ -100,6 +121,21 @@ int32_t CxMemFile::Error()
 {
     if (m_pBuffer == NULL) return -1;
     return (m_Position > (int32_t)m_Size);
+}
+bool CxMemFile::PutC(uint8_t c)
+{
+    m_bEOF = false;
+    if (m_pBuffer == NULL) return false;
+
+    if (m_Position >= m_Edge)
+        if (!Alloc(m_Position + 1))
+            return false;
+
+    m_pBuffer[m_Position++] = c;
+
+    if (m_Position > (int32_t)m_Size) m_Size = m_Position;
+
+    return true;
 }
 int32_t CxMemFile::GetC()
 {

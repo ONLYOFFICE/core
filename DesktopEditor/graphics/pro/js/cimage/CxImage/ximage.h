@@ -177,12 +177,12 @@ public:
     uint32_t    GetType() const;
     const char* GetLastError();
 
-    uint8_t	GetJpegQuality() const;
+    uint8_t GetJpegQuality() const;
 
-    uint8_t	GetJpegScale() const;
+    uint8_t GetJpegScale() const;
 
-    int32_t	GetXDPI() const;
-    int32_t	GetYDPI() const;
+    int32_t GetXDPI() const;
+    int32_t GetYDPI() const;
     void SetXDPI(int32_t dpi);
     void SetYDPI(int32_t dpi);
 
@@ -190,27 +190,51 @@ public:
 
     static uint32_t GetTypeIndexFromId(const uint32_t id);
 
+    bool     IsGrayScale();
     uint32_t GetPaletteSize();
     RGBQUAD* GetPalette() const;
+    RGBQUAD  GetPaletteColor(uint8_t idx);
     void     SetGrayPalette();
     void     SetPalette(uint32_t n, uint8_t* r, uint8_t* g, uint8_t* b);
 
+    bool IsInside(int32_t x, int32_t y);
+
+protected:
+    uint8_t BlindGetPixelIndex(const int32_t x, const int32_t y);
+    RGBQUAD BlindGetPixelColor(const int32_t x, const int32_t y, bool bGetAlpha = true);
+
 #if CXIMAGE_SUPPORT_DECODE
+public:
     bool Decode(CxFile*  hFile,  uint32_t imagetype);
     bool Decode(uint8_t* buffer, uint32_t size, uint32_t imagetype);
 #endif //CXIMAGE_SUPPORT_DECODE
 
+#if CXIMAGE_SUPPORT_ENCODE
+protected:
+    bool EncodeSafeCheck(CxFile* hFile);
+public:
+    bool Encode(CxFile* hFile, uint32_t imagetype);
+    bool Encode(uint8_t* &buffer, int32_t &size, uint32_t imagetype);
+    bool Encode2RGBA(CxFile* hFile, bool bFlipY = false);
+    bool Encode2RGBA(uint8_t* &buffer, int32_t &size, bool bFlipY = false);
+#endif //CXIMAGE_SUPPORT_ENCODE
+
 #if CXIMAGE_SUPPORT_SELECTION
+public:
     bool SelectionDelete();
 #endif //CXIMAGE_SUPPORT_SELECTION
 
 #if CXIMAGE_SUPPORT_ALPHA
+public:
     void AlphaDelete();
+protected:
+    uint8_t BlindAlphaGet(const int32_t x,const int32_t y);
 #endif //CXIMAGE_SUPPORT_ALPHA
 
 protected:
     void Startup(uint32_t imagetype = 0);
-    void CopyInfo(const CxImage &src);
+    void CopyInfo(const CxImage& src);
+    void Ghost   (const CxImage* src);
     void RGBtoBGR(uint8_t* buffer, int32_t length);
 
     void* pDib;

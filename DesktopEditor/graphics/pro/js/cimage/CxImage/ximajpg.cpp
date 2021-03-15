@@ -8,9 +8,9 @@
 
 struct jpg_error_mgr
 {
-    struct jpeg_error_mgr pub;	/* "public" fields */
-    jmp_buf setjmp_buffer;		/* for return to caller */
-    char* buffer;				/* error message <CSC>*/
+    struct jpeg_error_mgr pub;  /* "public" fields */
+    jmp_buf setjmp_buffer;      /* for return to caller */
+    char* buffer;               /* error message <CSC>*/
 };
 typedef jpg_error_mgr *jpg_error_ptr;
 
@@ -69,8 +69,8 @@ bool CxImageJPG::Decode(CxFile* hFile)
     struct jpg_error_mgr jerr;
     jerr.buffer=info.szLastError;
     /* More stuff */
-    JSAMPARRAY buffer;	/* Output row buffer */
-    int32_t row_stride;		/* physical row width in output buffer */
+    JSAMPARRAY buffer;  /* Output row buffer */
+    int32_t row_stride;     /* physical row width in output buffer */
 
     /* In this example we want to open the input file before doing anything else,
     * so that the setjmp() error recovery below can assume the file is open.
@@ -121,8 +121,8 @@ bool CxImageJPG::Decode(CxFile* hFile)
 //<DP>: Load true color images as RGB (no quantize)
 /* Step 4: set parameters for decompression */
 /*  if (cinfo.jpeg_color_space!=JCS_GRAYSCALE) {
- *	cinfo.quantize_colors = TRUE;
- *	cinfo.desired_number_of_colors = 128;
+ *  cinfo.quantize_colors = TRUE;
+ *  cinfo.desired_number_of_colors = 128;
  *}
  */ //</DP>
 
@@ -165,7 +165,7 @@ bool CxImageJPG::Decode(CxFile* hFile)
     } else {
         switch (cinfo.density_unit)
         {
-        case 0:	// [andy] fix for aspect ratio...
+        case 0: // [andy] fix for aspect ratio...
             if((cinfo.Y_density > 0) && (cinfo.X_density > 0))
                 SetYDPI((int32_t)(GetXDPI()*(float(cinfo.Y_density)/float(cinfo.X_density))));
             break;
@@ -257,6 +257,229 @@ bool CxImageJPG::Decode(CxFile* hFile)
     return true;
 }
 #endif //CXIMAGE_SUPPORT_DECODE
+#if CXIMAGE_SUPPORT_ENCODE
+bool CxImageJPG::Encode(CxFile* hFile)
+{
+    if (EncodeSafeCheck(hFile)) return false;
 
+    if (head.biClrUsed != 0 && !IsGrayScale())
+    {
+        strcpy(info.szLastError,"JPEG can save only RGB or GreyScale images");
+        return false;
+    }
+
+    // necessary for EXIF, and for roll backs
+    int32_t pos = hFile->Tell();
+
+    /* This struct contains the JPEG compression parameters and pointers to
+    * working space (which is allocated as needed by the JPEG library).
+    * It is possible to have several such structures, representing multiple
+    * compression/decompression processes, in existence at once.  We refer
+    * to any one struct (and its associated working data) as a "JPEG object".
+    */
+    struct jpeg_compress_struct cinfo;
+    /* This struct represents a JPEG error handler.  It is declared separately
+    * because applications often want to supply a specialized error handler
+    * (see the second half of this file for an example).  But here we just
+    * take the easy way out and use the standard error handler, which will
+    * print a message on stderr and call exit() if compression fails.
+    * Note that this struct must live as int32_t as the main JPEG parameter
+    * struct, to avoid dangling-pointer problems.
+    */
+    //struct jpeg_error_mgr jerr;
+    /* We use our private extension JPEG error handler. <CSC> */
+    struct jpg_error_mgr jerr;
+    jerr.buffer = info.szLastError;
+    /* More stuff */
+    int32_t row_stride;     /* physical row width in image buffer */
+    JSAMPARRAY buffer;      /* Output row buffer */
+
+    /* Step 1: allocate and initialize JPEG compression object */
+    /* We have to set up the error handler first, in case the initialization
+    * step fails.  (Unlikely, but it could happen if you are out of memory.)
+    * This routine fills in the contents of struct jerr, and returns jerr's
+    * address which we place into the link field in cinfo.
+    */
+    //cinfo.err = jpeg_std_error(&jerr); <CSC>
+    /* We set up the normal JPEG error routines, then override error_exit. */
+    cinfo.err = jpeg_std_error(&jerr.pub);
+    jerr.pub.error_exit = ima_jpeg_error_exit;
+
+    /* Establish the setjmp return context for my_error_exit to use. */
+    if (setjmp(jerr.setjmp_buffer))
+    {
+        /* If we get here, the JPEG code has signaled an error.
+        * We need to clean up the JPEG object, close the input file, and return.
+        */
+        strcpy(info.szLastError, jerr.buffer); //<CSC>
+        jpeg_destroy_compress(&cinfo);
+        return 0;
+    }
+
+    /* Now we can initialize the JPEG compression object. */
+    jpeg_create_compress(&cinfo);
+    /* Step 2: specify data destination (eg, a file) */
+    /* Note: steps 2 and 3 can be done in either order. */
+    /* Here we use the library-supplied code to send compressed data to a
+    * stdio stream.  You can also write your own code to do something else.
+    * VERY IMPORTANT: use "b" option to fopen() if you are on a machine that
+    * requires it in order to write binary files.
+    */
+
+    //jpeg_stdio_dest(&cinfo, outfile);
+    CxFileJpg dest(hFile);
+    cinfo.dest = &dest;
+
+    /* Step 3: set parameters for compression */
+    /* First we supply a description of the input image.
+    * Four fields of the cinfo struct must be filled in:
+    */
+    cinfo.image_width  = GetWidth();    // image width and height, in pixels
+    cinfo.image_height = GetHeight();
+
+    if (IsGrayScale())
+    {
+        cinfo.input_components = 1;         // # of color components per pixel
+        cinfo.in_color_space = JCS_GRAYSCALE; /* colorspace of input image */
+    }
+    else
+    {
+        cinfo.input_components = 3;     // # of color components per pixel
+        cinfo.in_color_space = JCS_RGB; /* colorspace of input image */
+    }
+
+    /* Now use the library's routine to set default compression parameters.
+    * (You must set at least cinfo.in_color_space before calling this,
+    * since the defaults depend on the source color space.)
+    */
+    jpeg_set_defaults(&cinfo);
+    /* Now you can set any non-default parameters you wish to.
+    * Here we just illustrate the use of quality (quantization table) scaling:
+    */
+
+    uint32_t dwCodecOptions = GetCodecOption(CXIMAGE_FORMAT_JPG); //[nm_114]
+//#ifdef C_ARITH_CODING_SUPPORTED
+    if ((dwCodecOptions & ENCODE_ARITHMETIC) != 0)
+        cinfo.arith_code = TRUE;
+//#endif
+
+//#ifdef ENTROPY_OPT_SUPPORTED
+    if ((dwCodecOptions & ENCODE_OPTIMIZE) != 0)
+        cinfo.optimize_coding = TRUE;
+//#endif
+
+    if ((dwCodecOptions & ENCODE_GRAYSCALE) != 0)
+        jpeg_set_colorspace(&cinfo, JCS_GRAYSCALE);
+
+    if ((dwCodecOptions & ENCODE_SMOOTHING) != 0)
+        cinfo.smoothing_factor = m_nSmoothing;
+
+    jpeg_set_quality(&cinfo, GetJpegQuality(), (dwCodecOptions & ENCODE_BASELINE) != 0);
+
+//#ifdef C_PROGRESSIVE_SUPPORTED
+    if ((dwCodecOptions & ENCODE_PROGRESSIVE) != 0)
+        jpeg_simple_progression(&cinfo);
+//#endif
+
+#ifdef C_LOSSLESS_SUPPORTED
+    if ((dwCodecOptions & ENCODE_LOSSLESS) != 0)
+        jpeg_simple_lossless(&cinfo, m_nPredictor, m_nPointTransform);
+#endif
+
+    //SetCodecOption(ENCODE_SUBSAMPLE_444 | GetCodecOption(CXIMAGE_FORMAT_JPG),CXIMAGE_FORMAT_JPG);
+
+        // 2x2, 1x1, 1x1 (4:1:1) : High (default sub sampling)
+        cinfo.comp_info[0].h_samp_factor = 2;
+        cinfo.comp_info[0].v_samp_factor = 2;
+        cinfo.comp_info[1].h_samp_factor = 1;
+        cinfo.comp_info[1].v_samp_factor = 1;
+        cinfo.comp_info[2].h_samp_factor = 1;
+        cinfo.comp_info[2].v_samp_factor = 1;
+
+    if ((dwCodecOptions & ENCODE_SUBSAMPLE_422) != 0)
+    {
+        // 2x1, 1x1, 1x1 (4:2:2) : Medium
+        cinfo.comp_info[0].h_samp_factor = 2;
+        cinfo.comp_info[0].v_samp_factor = 1;
+        cinfo.comp_info[1].h_samp_factor = 1;
+        cinfo.comp_info[1].v_samp_factor = 1;
+        cinfo.comp_info[2].h_samp_factor = 1;
+        cinfo.comp_info[2].v_samp_factor = 1;
+    }
+
+    if ((dwCodecOptions & ENCODE_SUBSAMPLE_444) != 0)
+    {
+        // 1x1 1x1 1x1 (4:4:4) : None
+        cinfo.comp_info[0].h_samp_factor = 1;
+        cinfo.comp_info[0].v_samp_factor = 1;
+        cinfo.comp_info[1].h_samp_factor = 1;
+        cinfo.comp_info[1].v_samp_factor = 1;
+        cinfo.comp_info[2].h_samp_factor = 1;
+        cinfo.comp_info[2].v_samp_factor = 1;
+    }
+
+    cinfo.density_unit = 1;
+    cinfo.X_density = (uint16_t)GetXDPI();
+    cinfo.Y_density = (uint16_t)GetYDPI();
+
+    /* Step 4: Start compressor */
+    /* TRUE ensures that we will write a complete interchange-JPEG file.
+    * Pass TRUE unless you are very sure of what you're doing.
+    */
+    jpeg_start_compress(&cinfo, TRUE);
+
+    /* Step 5: while (scan lines remain to be written) */
+    /*           jpeg_write_scanlines(...); */
+    /* Here we use the library's state variable cinfo.next_scanline as the
+    * loop counter, so that we don't have to keep track ourselves.
+    * To keep things simple, we pass one scanline per call; you can pass
+    * more if you wish, though.
+    */
+    row_stride = info.dwEffWidth;   /* JSAMPLEs per row in image_buffer */
+
+    //<DP> "8+row_stride" fix heap deallocation problem during debug???
+    buffer = (*cinfo.mem->alloc_sarray)
+        ((j_common_ptr) &cinfo, JPOOL_IMAGE, 8 + row_stride, 1);
+
+    CImageIterator iter(this);
+
+    iter.Upset();
+    while (cinfo.next_scanline < cinfo.image_height)
+    {
+        // info.nProgress = (int32_t)(100*cinfo.next_scanline/cinfo.image_height);
+        iter.GetRow(buffer[0], row_stride);
+        // not necessary if swapped red and blue definition in jmorecfg.h;ln322 <W. Morrison>
+        if (head.biClrUsed == 0) // swap R & B for RGB images
+            RGBtoBGR(buffer[0], row_stride); // Lance : 1998/09/01 : Bug ID: EXP-2.1.1-9
+        iter.PrevRow();
+        (void) jpeg_write_scanlines(&cinfo, buffer, 1);
+    }
+
+    /* Step 6: Finish compression */
+    jpeg_finish_compress(&cinfo);
+
+    /* Step 7: release JPEG compression object */
+    /* This is an important step since it will release a good deal of memory. */
+    jpeg_destroy_compress(&cinfo);
+
+
+#if CXIMAGEJPG_SUPPORT_EXIF
+    if (m_exif && m_exif->m_exifinfo->IsExif){
+        // discard useless sections (if any) read from original image
+        m_exif->DiscardAllButExif();
+        // read new created image, to split the sections
+        hFile->Seek(pos,SEEK_SET);
+        m_exif->DecodeExif(hFile,EXIF_READ_IMAGE);
+        // save back the image, adding EXIF section
+        hFile->Seek(pos,SEEK_SET);
+        m_exif->EncodeExif(hFile);
+    }
+#endif
+
+
+    /* And we're done! */
+    return true;
+}
+#endif // CXIMAGE_SUPPORT_ENCODE
 #endif // CXIMAGE_SUPPORT_JPG
 

@@ -1,5 +1,4 @@
 #include "base.h"
-#include "../../cimage/CxImage/ximage.h"
 
 void* CxImage_Malloc(unsigned int size)
 {
@@ -17,8 +16,28 @@ void CxImage_Destroy(CxImage* p)
 {
     delete p;
 }
-bool CxImage_Decode(CxImage* p, unsigned char * buffer, unsigned int size, unsigned int imagetype)
+unsigned int CxImage_GetHeight(CxImage* p)
+{
+    if (p) return p->GetHeight();
+    return -1;
+}
+unsigned int CxImage_GetWidth (CxImage* p)
+{
+    if (p) return p->GetWidth();
+    return -1;
+}
+bool CxImage_Decode(CxImage* p, unsigned char* buffer, unsigned int size, unsigned int imagetype)
 {
     if (p) return p->Decode(buffer, size, imagetype);
+    return false;
+}
+bool CxImage_Encode(CxImage* p, unsigned char* &buffer, int &size, unsigned int imagetype)
+{
+    if (p) return p->Encode(buffer, size, imagetype);
+    return false;
+}
+bool CxImage_Encode2RGBA(CxImage* p, unsigned char* &buffer, int &size, bool bFlipY)
+{
+    if (p) return p->Encode2RGBA(buffer, size, bFlipY);
     return false;
 }

@@ -31,9 +31,17 @@ compiler_flags = ["-o raster.js",
                   "-s ENVIRONMENT='web,worker'"]
                   #"-s LLD_REPORT_UNDEFINED"]
 
-exported_functions = ["_CxImage_Create",
+exported_functions = ["_malloc",
+                      "_free",
+                      "_CxImage_Malloc",
+                      "_CxImage_Free",
+                      "_CxImage_Create",
                       "_CxImage_Destroy",
-                      "_CxImage_Decode"]
+                      "_CxImage_GetHeight",
+                      "_CxImage_GetWidth",
+                      "_CxImage_Decode",
+                      "_CxImage_Encode",
+                      "_CxImage_Encode2RGBA"]
 
 libRaster_src_path = "./cimage/CxImage"
 input_sources = ["/ximaenc.cpp",
@@ -51,7 +59,11 @@ input_jpeg_sources = ["/jerror.c", "jdmarker.c", "jdapimin.c", "jdmaster.c", "jd
                       "jcomapi.c", "jutils.c", "jdinput.c", "jdmainct.c", "jmemmgr.c",
                       "jquant1.c", "jquant2.c", "jdmerge.c", "jdcolor.c", "jdsample.c",
                       "jdpostct.c", "jddctmgr.c", "jdarith.c", "jdhuff.c", "jdcoefct.c",
-                      "jmemnobs.c", "jidctint.c", "jidctfst.c", "jidctflt.c", "jaricom.c"]
+                      "jmemnobs.c", "jidctint.c", "jidctfst.c", "jidctflt.c", "jaricom.c",
+                      "jcapimin.c", "jcparam.c", "jcapistd.c", "jcinit.c", "jcmaster.c",
+                      "jccolor.c", "jcmarker.c", "jcsample.c", "jcprepct.c", "jcdctmgr.c",
+                      "jcarith.c", "jchuff.c", "jccoefct.c", "jcmainct.c", "jfdctint.c",
+                      "jfdctfst.c", "jfdctflt.c"]
 
 sources = []
 for item in input_sources:

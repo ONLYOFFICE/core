@@ -1,52 +1,40 @@
 #include "../../../../../common/Types.h"
 #include "../../../../../common/File.h"
+#include "../../wasm/src/base.h"
 
 #include <string>
 
-BYTE* JPGToPixels(BYTE* pData, int nWidth, int nHeight)
-{
-    BYTE* pRes = new BYTE[4 * nWidth * nHeight];
-    if (!pRes)
-        return NULL;
-}
-
 int main()
 {
+    BYTE* pData = NULL;
+    DWORD nBytesCount;
     NSFile::CFileBinary oFile;
-    if (!oFile.OpenFile(L"test.jpg"))
+    if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.jpg", &pData, nBytesCount))
         return 1;
+    oFile.CloseFile();
 
-    CxIOFile hFile(oFile.GetFileNative());
-    uint32_t pos = hFile.Tell();
+    CxImage* img = CxImage_Create();
 
-    CxImageJPG *newima = new CxImageJPG;
-    if (!newima)
+    if (!CxImage_Decode(img, pData, (unsigned int)nBytesCount, 3))
         return 2;
 
-    if (!newima->Decode(hFile))
-        return 3;
-    Transfer(*newima);
-    delete newima;
-    return 0;
-
-    /*
-    CxImage img;
-    if (!img.Decode(nFile, m_nFileType))
+    BYTE* pResInt = NULL;
+    int nCountInt;
+    if (!CxImage_Encode2RGBA(img, pResInt, nCountInt))
         return 3;
 
-    DWORD nBytesCount = 0;
-    BYTE* pData = NULL;
-    NSFile::CFileBinary oFileBinary;
-    if (oFileBinary.OpenFile(L"test.jpg"))
+    BYTE* pRes = NULL;
+    int nCount;
+    if (!CxImage_Encode(img, pRes, nCount, 3))
+        return 3;
+
+    NSFile::CFileBinary oRes;
+    if (oRes.CreateFileW(NSFile::GetProcessDirectory() + L"/res.jpg"))
     {
-        long nFileSize = oFileBinary.GetFileSize();
-        pData = new BYTE[nFileSize];
-        if (oFileBinary.ReadFile(pData, nFileSize, nBytesCount))
-            oFileBinary.CloseFile();
-        else
-            RELEASEARRAYOBJECTS(pData);
+        oRes.WriteFile(pRes, nCount);
+        oRes.CloseFile();
     }
 
+    CxImage_Destroy(img);
     return 0;
-    */
 }

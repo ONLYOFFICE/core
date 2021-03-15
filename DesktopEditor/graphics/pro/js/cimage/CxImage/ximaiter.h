@@ -1,9 +1,9 @@
 ﻿/*
- * File:	ImaIter.h
- * Purpose:	Declaration of the Platform Independent Image Base Class
- * Author:	Alejandro Aguilar Sierra
- * Created:	1995
- * Copyright:	(c) 1995, Alejandro Aguilar Sierra <asierra(at)servidor(dot)unam(dot)mx>
+ * File:    ImaIter.h
+ * Purpose: Declaration of the Platform Independent Image Base Class
+ * Author:  Alejandro Aguilar Sierra
+ * Created: 1995
+ * Copyright:   (c) 1995, Alejandro Aguilar Sierra <asierra(at)servidor(dot)unam(dot)mx>
  *
  * 07/08/2001 Davide Pizzolato - www.xdp.it
  * - removed slow loops
@@ -39,16 +39,17 @@ friend class CxImage;
 protected:
     int32_t Itx, Ity; // Counters
     int32_t Stepx, Stepy;
-    uint8_t* IterImage;	// Image pointer
+    uint8_t* IterImage; // Image pointer
     CxImage* ima;
 public:
-	// Constructors
+    // Constructors
     CImageIterator();
     CImageIterator(CxImage* image);
     operator CxImage* ();
 
     void Upset();
     void SetRow(uint8_t* buf, int32_t n);
+    void GetRow(uint8_t* buf, int32_t n);
     uint8_t* GetRow();
     BOOL PrevRow();
 };
@@ -82,6 +83,11 @@ inline void CImageIterator::SetRow(uint8_t* buf, int32_t n)
     else n = (std::min)(n, (int32_t)ima->GetEffWidth());
 
     if ((IterImage != NULL) && (buf != NULL) && (n > 0)) memcpy(IterImage, buf, n);
+}
+inline void CImageIterator::GetRow(uint8_t* buf, int32_t n)
+{
+    if ((IterImage != NULL) && (buf != NULL) && (n > 0))
+        memcpy(buf, IterImage, (std::min)(n, (int32_t)ima->GetEffWidth()));
 }
 inline BOOL CImageIterator::PrevRow()
 {

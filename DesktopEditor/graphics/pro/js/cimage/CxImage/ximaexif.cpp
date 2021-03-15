@@ -589,7 +589,7 @@ bool CxImageJPG::CxExifInfo::ProcessExifDir2(CSafeReader DirStart, CSafeReader O
                 switch ((int32_t)ConvertAnyFormat2(ValuePtr, Format))
                 {
                     case 1: m_exifinfo->ResolutionUnit = 1.0f; break; /* 1 inch */
-                    case 2:	m_exifinfo->ResolutionUnit = 1.0f; break;
+                    case 2: m_exifinfo->ResolutionUnit = 1.0f; break;
                     case 3: m_exifinfo->ResolutionUnit = 0.3937007874f;  break;  /* 1 centimeter*/
                     case 4: m_exifinfo->ResolutionUnit = 0.03937007874f; break;  /* 1 millimeter*/
                     case 5: m_exifinfo->ResolutionUnit = 0.00003937007874f;  /* 1 micrometer*/
@@ -599,7 +599,7 @@ bool CxImageJPG::CxExifInfo::ProcessExifDir2(CSafeReader DirStart, CSafeReader O
                 switch ((int32_t)ConvertAnyFormat2(ValuePtr, Format))
                 {
                     case 1: m_exifinfo->FocalplaneUnits = 1.0f; break; /* 1 inch */
-                    case 2:	m_exifinfo->FocalplaneUnits = 1.0f; break;
+                    case 2: m_exifinfo->FocalplaneUnits = 1.0f; break;
                     case 3: m_exifinfo->FocalplaneUnits = 0.3937007874f;  break;  /* 1 centimeter*/
                     case 4: m_exifinfo->FocalplaneUnits = 0.03937007874f; break;  /* 1 millimeter*/
                     case 5: m_exifinfo->FocalplaneUnits = 0.00003937007874f;  /* 1 micrometer*/
@@ -772,6 +772,81 @@ void CxImageJPG::CxExifInfo::process_SOFn(const uint8_t* Data, int32_t marker)
 
     //if (ShowTags) printf("JPEG image is %uw * %uh, %d color components, %d bits per sample\n",
     //               ImageInfo.Width, ImageInfo.Height, num_components, data_precision);
+}
+bool CxImageJPG::CxExifInfo::EncodeExif(CxFile * hFile)
+{
+    int32_t a;
+
+    if (FindSection(M_SOS) == NULL)
+    {
+        strcpy(m_szLastError, "Can't write exif : didn't read all");
+        return false;
+    }
+
+    // Initial static jpeg marker.
+    hFile->PutC(0xff);
+    hFile->PutC(0xd8);
+
+    if (Sections[0].Type != M_EXIF && Sections[0].Type != M_JFIF)
+    {
+        // The image must start with an exif or jfif marker.  If we threw those away, create one.
+        static uint8_t JfifHead[18] =
+        {
+            0xff, M_JFIF,
+            0x00, 0x10, 'J' , 'F' , 'I' , 'F' , 0x00, 0x01,
+            0x01, 0x01, 0x01, 0x2C, 0x01, 0x2C, 0x00, 0x00
+        };
+        hFile->Write(JfifHead, 18, 1);
+    }
+
+    // Write all the misc sections
+    for (a = 0; a < SectionsRead - 1; a++)
+    {
+        hFile->PutC(0xff);
+        hFile->PutC((uint8_t)(Sections[a].Type));
+        hFile->Write(Sections[a].Data, Sections[a].Size, 1);
+    }
+
+    // Write the remaining image data.
+    hFile->Write(Sections[a].Data, Sections[a].Size, 1);
+
+    return true;
+}
+void CxImageJPG::CxExifInfo::DiscardAllButExif()
+{
+    Section_t ExifKeeper;
+    Section_t CommentKeeper;
+    int32_t a;
+
+    memset(&ExifKeeper, 0, sizeof(ExifKeeper));
+    memset(&CommentKeeper, 0, sizeof(ExifKeeper));
+
+    for (a = 0; a < SectionsRead; a++)
+    {
+        if (Sections[a].Type == M_EXIF && ExifKeeper.Type == 0)
+            ExifKeeper = Sections[a];
+        else if (Sections[a].Type == M_COM && CommentKeeper.Type == 0)
+            CommentKeeper = Sections[a];
+        else
+        {
+            free(Sections[a].Data);
+            Sections[a].Data = 0;
+        }
+    }
+    SectionsRead = 0;
+    if (ExifKeeper.Type)
+        Sections[SectionsRead++] = ExifKeeper;
+    if (CommentKeeper.Type)
+        Sections[SectionsRead++] = CommentKeeper;
+}
+void* CxImageJPG::CxExifInfo::FindSection(int32_t SectionType)
+{
+    int32_t a;
+    for ( a = 0; a < SectionsRead - 1; a++)
+        if (Sections[a].Type == SectionType)
+            return &Sections[a];
+    // Could not be found.
+    return NULL;
 }
 
 #endif  // CXIMAGEJPG_SUPPORT_EXIF

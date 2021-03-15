@@ -15,8 +15,14 @@ public:
     virtual bool Seek(int32_t offset, int32_t origin) = 0;
     virtual int32_t Tell()  = 0;
     virtual bool    Flush() = 0;
-    virtual int32_t	Error() = 0;
-    virtual int32_t	GetC()  = 0;
+    virtual int32_t Error() = 0;
+    virtual bool    PutC(uint8_t c)
+    {
+        // Default implementation
+        size_t nWrote = Write(&c, 1, 1);
+        return (bool)(nWrote == 1);
+    }
+    virtual int32_t GetC()  = 0;
 };
 
 #endif //__xfile_h

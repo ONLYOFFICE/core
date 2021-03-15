@@ -21,6 +21,10 @@ public:
 
     bool Decode(CxFile * hFile);
 
+#if CXIMAGE_SUPPORT_ENCODE
+    bool Encode(CxFile * hFile);
+#endif // CXIMAGE_SUPPORT_ENCODE
+
 #if CXIMAGEJPG_SUPPORT_EXIF
 
 #define M_SOF0  0xC0
@@ -113,6 +117,8 @@ public:
     CxExifInfo(EXIFINFO* info = NULL);
     ~CxExifInfo();
     bool DecodeExif(CxFile* hFile, int32_t nReadMode = EXIF_READ_EXIF);
+    bool EncodeExif(CxFile* hFile);
+    void DiscardAllButExif();
 protected:
     bool process_EXIF(uint8_t* CharBuf,   uint32_t length);
     void process_COM (const uint8_t* Data, int32_t length);
@@ -122,6 +128,7 @@ protected:
     int32_t  Get32s(void* Long);
     uint32_t Get32u(void* Long);
     double ConvertAnyFormat2(CSafeReader& reader, int32_t Format);
+    void* FindSection(int32_t SectionType);
     bool ProcessExifDir2(CSafeReader DirStart, CSafeReader OffsetBase, unsigned ExifLength,
                          EXIFINFO* const pInfo, uint8_t** const LastExifRefdP, int32_t NestingLevel = 0);
     int32_t ExifImageWidth;
@@ -154,7 +161,7 @@ public:
         resync_to_restart = jpeg_resync_to_restart; // use default method
         term_source = TermSource;
         next_input_byte = NULL; //* => next byte to read from buffer
-        bytes_in_buffer = 0;	//* # of bytes remaining in buffer
+        bytes_in_buffer = 0;    //* # of bytes remaining in buffer
 
         m_pBuffer = new uint8_t[eBufSize];
     }
@@ -203,7 +210,7 @@ public:
         CxFileJpg* pSource = (CxFileJpg*)cinfo->src;
         nbytes = pSource->m_pFile->Read(pSource->m_pBuffer,1,eBufSize);
         if (nbytes <= 0){
-            if (pSource->m_bStartOfFile)	//* Treat empty input file as fatal error
+            if (pSource->m_bStartOfFile)    //* Treat empty input file as fatal error
                 ERREXIT(cinfo, JERR_INPUT_EMPTY);
             WARNMS(cinfo, JWRN_JPEG_EOF);
             // Insert a fake EOI marker

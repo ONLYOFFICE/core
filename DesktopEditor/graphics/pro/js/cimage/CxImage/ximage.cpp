@@ -88,7 +88,7 @@ void* CxImage::Create(uint32_t dwWidth, uint32_t dwHeight, uint32_t wBpp, uint32
     // set the correct bpp value
     switch (wBpp)
     {
-        case 1: head.biClrUsed = 2;	break;
+        case 1: head.biClrUsed = 2; break;
         case 4: head.biClrUsed = 16; break;
         case 8: head.biClrUsed = 256; break;
         default: head.biClrUsed = 0;
@@ -100,10 +100,10 @@ void* CxImage::Create(uint32_t dwWidth, uint32_t dwHeight, uint32_t wBpp, uint32
 
     // initialize BITMAPINFOHEADER
     head.biSize = sizeof(BITMAPINFOHEADER); //<ralphw>
-    head.biWidth = dwWidth;		// fill in width from parameter
-    head.biHeight = dwHeight;	// fill in height from parameter
-    head.biPlanes = 1;			// must be 1
-    head.biBitCount = (uint16_t)wBpp;		// from parameter
+    head.biWidth = dwWidth;     // fill in width from parameter
+    head.biHeight = dwHeight;   // fill in height from parameter
+    head.biPlanes = 1;          // must be 1
+    head.biBitCount = (uint16_t)wBpp;       // from parameter
     head.biCompression = BI_RGB;
     head.biSizeImage = info.dwEffWidth * dwHeight;
 
@@ -158,6 +158,10 @@ uint32_t CxImage::GetSize()
         return 0xFFFFFFFF;
     return (uint32_t)size64;
 }
+bool CxImage::IsInside(int32_t x, int32_t y)
+{
+  return (0 <= y && y < head.biHeight && 0 <= x && x < head.biWidth);
+}
 bool CxImage::Transfer(CxImage &from, bool bTransferFrames)
 {
     if (!Destroy())
@@ -185,4 +189,19 @@ bool CxImage::Transfer(CxImage &from, bool bTransferFrames)
     }
 
     return true;
+}
+void CxImage::Ghost(const CxImage* from)
+{
+    if (from)
+    {
+        memcpy(&head, &from->head, sizeof(BITMAPINFOHEADER));
+        memcpy(&info, &from->info, sizeof(CXIMAGEINFO));
+        pDib = from->pDib;
+        pDibLimit  = from->pDibLimit;
+        pSelection = from->pSelection;
+        pAlpha   = from->pAlpha;
+        ppLayers = from->ppLayers;
+        ppFrames = from->ppFrames;
+        info.pGhost = (CxImage*)from;
+    }
 }

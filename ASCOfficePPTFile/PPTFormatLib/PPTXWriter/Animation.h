@@ -169,6 +169,17 @@ private:
     // For old animation.
     void InitTimingTags(PPTX::Logic::Timing &oTiming); // Initialize non-exist (in 95-97 format) struct
     void FillOldAnim(SOldAnimation& oldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase);
+    void SplitAnim(std::list<std::list<SOldAnimation*> >& arrClickPar);
+
+    // erase first oldAnim and fill new timeNodeBase. After filling call next method with same list
+    void FillClickPar   (std::list<SOldAnimation*>& clickPar, PPTX::Logic::TimeNodeBase &oTimeNodeBase);
+    void FillGroup      (SOldAnimation* pOldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase, _UINT32& groupDelay, std::wstring nodeType);
+    void FillAfterEffect(SOldAnimation* pOldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase, _UINT32& groupDelay);
+    void FillClickEffect(SOldAnimation* pOldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase);
+    void FillCBhvr      (SOldAnimation* pOldAnim, PPTX::Logic::CBhvr &oCBhvr);
+
+    void FillCTnParams  (PPTX::Logic::CTn &oCTN, std::wstring nodeType, std::wstring condDelay = L"0",
+                         std::wstring fill = L"hold");
 
 private:
     unsigned m_cTnId;

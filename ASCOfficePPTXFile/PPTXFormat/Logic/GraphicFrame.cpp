@@ -132,6 +132,16 @@ namespace PPTX
 			
 			if (L"xfrm" == strName)
 				xfrm = oReader;
+			else if (L"cNvFrPr" == strName)
+			{
+
+			}
+			else if (L"cNvPr" == strName)
+			{
+				if (!nvGraphicFramePr.IsInit())
+					nvGraphicFramePr.Init();
+				nvGraphicFramePr->cNvPr.fromXML(oReader);
+			}
 			else if (L"cNvGraphicFramePr" == strName)
 			{
 				if (!nvGraphicFramePr.IsInit())

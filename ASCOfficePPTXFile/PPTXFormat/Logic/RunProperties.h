@@ -345,8 +345,6 @@ namespace PPTX
 						hlinkMouseOver = oReader;
 					else if ( L"rtl" == sName )
 						rtl = oReader;
-					else if ( L"rtl" == sName )
-						rtl = oReader;
 					else if (	L"effectDag"	== sName	||
 								L"effectLst"	== sName)
 					{
@@ -396,10 +394,10 @@ namespace PPTX
 				if (node.GetNodes(L"*", oNodes))
 				{
 					int nCount = oNodes.GetCount();
-					for (int i = 0; i < nCount; ++i)
+					for (int j = 0; j < nCount; ++j)
 					{
 						XmlUtils::CXmlNode oNode;
-						oNodes.GetAt(i, oNode);
+						oNodes.GetAt(j, oNode);
 
 						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 

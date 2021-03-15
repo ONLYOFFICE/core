@@ -275,9 +275,8 @@ namespace PPTX
 										RunElems.push_back(elm);
 										RunElems.back().InitRun(pRun);
 
-										pReader->Seek(_end);
-										break;
-									}
+										pReader->Seek(_end);										
+									}break;
 									case PARRUN_TYPE_FLD:
 									{
 										LONG _end = pReader->GetPos() + pReader->GetRecordSize() + 4;
@@ -319,14 +318,12 @@ namespace PPTX
 											else
 												pReader->SkipRecord();
 										}
-
 										RunElem elm;
 										RunElems.push_back(elm);
 										RunElems.back().InitRun(pRun);
 
-										pReader->Seek(_end);
-										break;
-									}
+										pReader->Seek(_end);										
+									}break;
 									case PARRUN_TYPE_BR:
 									{
 										LONG _end = pReader->GetPos() + pReader->GetRecordSize() + 4;
@@ -350,9 +347,8 @@ namespace PPTX
 										RunElems.push_back(elm);
 										RunElems.back().InitRun(pRun);
 
-										pReader->Seek(_end);
-										break;
-									}
+										pReader->Seek(_end);										
+									}break;
 									case PARRUN_TYPE_MATH:
 									{
 										Logic::MathParaWrapper* pRun = new Logic::MathParaWrapper();
@@ -360,9 +356,8 @@ namespace PPTX
 
 										RunElem elm;
 										RunElems.push_back(elm);
-										RunElems.back().InitRun(pRun);
-										break;
-									}
+										RunElems.back().InitRun(pRun);										
+									}break;
 									case PARRUN_TYPE_MATHPARA:
 									{
 										Logic::MathParaWrapper* pRun = new Logic::MathParaWrapper();
@@ -370,9 +365,8 @@ namespace PPTX
 
 										RunElem elm;
 										RunElems.push_back(elm);
-										RunElems.back().InitRun(pRun);
-										break;
-									}
+										RunElems.back().InitRun(pRun);										
+									}break;
 									default:
 										break;
 								}

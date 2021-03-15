@@ -96,10 +96,10 @@ private:
 			return;
 
 		DWORD dwTemp;
-		for (int i=0;i<256;i++)
+		for (int i = 0; i < 256; i++)
 		{
 			dwTemp = i;
-			for (int j=0;j<8;j++)
+			for (int j = 0;j < 8;j++)
 			{
 				if (0x1==(dwTemp & 0x1))
 					dwTemp = (dwTemp >> 1) ^ m_dwMagicWord;
@@ -112,6 +112,6 @@ private:
 
 	DWORD m_dwMagicWord;
 	DWORD m_dwInitCrc;	
-	DWORD m_arCRCTable[255];
+	DWORD m_arCRCTable[256];
     bool m_bInitTable;
 };

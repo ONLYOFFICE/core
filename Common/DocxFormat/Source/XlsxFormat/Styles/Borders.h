@@ -206,9 +206,9 @@ namespace OOX
 						m_oStart = oReader;
 					else if ( _T("top") == sName )
 						m_oTop = oReader;
-					else if ( _T("vertical") == sName )
+					else if ( L"vertical" == sName )
 						m_oVertical = oReader;
-					else if (L"Border")
+					else if (L"Border" == sName)
 					{
 						CBorderProp* border = new CBorderProp(oReader);
 						if ((border) && (border->m_oType.IsInit()))

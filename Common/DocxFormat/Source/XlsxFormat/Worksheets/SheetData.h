@@ -178,7 +178,6 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "r1",	m_oR1 )
 					WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "r2",	m_oR2 )
 					WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "ref",	m_oRef )
-					WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "si",	m_oSi )
 
 					WritingElement_ReadAttributes_EndChar( oReader )
 			}

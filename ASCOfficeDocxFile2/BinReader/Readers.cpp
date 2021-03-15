@@ -9810,7 +9810,7 @@ int BinaryFileReader::ReadMainTable()
 					L"/word" + (m_oFileWriter.m_bGlossaryMode ? std::wstring(L"/glossary") : L""), pFooter->m_sFilename);
 			}
 		}
-		for (size_t i = 0; i < m_oFileWriter.m_oCustomXmlWriter.arItems.size(); ++i)
+		for (size_t i = 0; (false == m_oFileWriter.m_bGlossaryMode) && (i < m_oFileWriter.m_oCustomXmlWriter.arItems.size()); ++i)
 		{
 			std::wstring sRelsPath = L"../" + OOX::FileTypes::CustomXml.DefaultDirectory().GetPath() + L"/" + m_oFileWriter.m_oCustomXmlWriter.arItems[i];
 			unsigned int rId;

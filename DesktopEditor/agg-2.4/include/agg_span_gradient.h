@@ -24,10 +24,10 @@
 #include "agg_trans_affine.h"
 #include <iostream>
 #include <cmath>
-
+#include "./test_grads/custom_gradients.h"
 namespace agg
 {
-    #include "./test_grads/custom_gradients.h"
+    
 #if !defined(_LINUX) && !(defined(_WIN32) || defined (_WIN64)) && !defined(__APPLE__)
     double _hypot(double x, double y)
     {

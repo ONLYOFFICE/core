@@ -49,7 +49,7 @@ namespace cpdoccore {
 
 namespace odf_writer {
 
-static int style_family_counts_[26]={};//согласно количеству разных стилей
+static int style_family_counts_[1024]={};//согласно количеству разных стилей
 
 
 void calc_paragraph_properties_content(std::vector<style_paragraph_properties*> & parProps, paragraph_format_properties * result)

@@ -14,7 +14,7 @@ CxImage* CxImage_Create()
 }
 void CxImage_Destroy(CxImage* p)
 {
-    delete p;
+    if (p) delete p;
 }
 unsigned int CxImage_GetHeight(CxImage* p)
 {

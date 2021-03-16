@@ -3647,23 +3647,23 @@ void DocxConverter::convert(OOX::Logic::CHyperlink *oox_hyperlink)
 {
 	if (oox_hyperlink == NULL)return;
 
-	std::wstring ref;
+	std::wstring link, location;
 
 	if (oox_hyperlink->m_oId.IsInit()) //гиперлинк
 	{
-		ref = find_link_by_id(oox_hyperlink->m_oId->GetValue(), 2);
+		link = find_link_by_id(oox_hyperlink->m_oId->GetValue(), 2);
 	}
 	else if (oox_hyperlink->m_sDestinition.IsInit()) //гиперлинк
 	{
-		ref = *oox_hyperlink->m_sDestinition;
+		link = *oox_hyperlink->m_sDestinition;
 	}
-	else if (oox_hyperlink->m_sAnchor.IsInit())
+	if (oox_hyperlink->m_sAnchor.IsInit())
 	{
-		ref = L"#" + *oox_hyperlink->m_sAnchor;
+		location =  *oox_hyperlink->m_sAnchor;
 	}
-	if (false == ref.empty())
+	if (false == link.empty() || false == location.empty())
 	{
-		odt_context->start_hyperlink(ref);
+		odt_context->start_hyperlink(link, location);
 		
         for (size_t i = 0; i < oox_hyperlink->m_arrItems.size(); ++i)
 		{

@@ -583,7 +583,7 @@ void odt_conversion_context::end_bookmark (int id)
 		text_context()->add_element_in_span_or_par(bookmark_elm);
 	}
 }
-void odt_conversion_context::start_hyperlink(std::wstring ref)
+void odt_conversion_context::start_hyperlink(const std::wstring& link, const std::wstring& location)
 {
 	if (false == current_fields.empty() && current_fields.back().status == 1 && false == current_fields.back().in_span)
 	{
@@ -596,7 +596,7 @@ void odt_conversion_context::start_hyperlink(std::wstring ref)
 	text_a* hyperlink = dynamic_cast<text_a*>(hyperlink_elm.get());
 	if (hyperlink)
 	{
-		hyperlink->common_xlink_attlist_.href_	= ref;
+		hyperlink->common_xlink_attlist_.href_	= link + (location.empty() ? L"" : (L"#" + location));
 		hyperlink->common_xlink_attlist_.type_	= xlink_type::Simple;
 		
 		text_context()->start_element(hyperlink_elm);

@@ -1,15 +1,17 @@
 <html>
 	<head>
-		
+		<meta charset="utf-8">
+		<title>Demo of raster</title>
+		<meta name="viewport" content="width=device-width">
+		<script src="./raster.js"></script>
 	</head>
 	<body>
-		<canvas id="myCanvas" width="500" height="500">
-		</canvas>
-		<script src="./raster/raster.js"></script>
+		<canvas id="myCanvas" width="500" height="500"></canvas>
 		<script type="text/javascript">
-			var CImage = Module._CxImage_Create();
-			Module._CxImage_Decode(CImage, ['a', 'b'], 2, 1);
-			Module._CxImage_Destroy(CImage);
+			window.raster = new CRaster({
+				enginePath : "./raster"
+			});
+			
 		</script>
 		<script type="text/javascript">
 			var resMyCode = /*JPGToPixels*/ [255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255];

@@ -2323,8 +2323,8 @@ void OoxConverter::convert(PPTX::Logic::Run *oox_run)
 		text_properties->content_.style_text_underline_style_	= odf_types::line_style::Solid;
 		
 		std::wstring hlink = find_link_by_id(oox_run->rPr->hlinkClick->id.get(), 2);
-		
-		text_context->add_hyperlink(hlink, oox_run->GetText());
+		std::wstring location;
+		text_context->add_hyperlink(hlink, oox_run->GetText(), location);
 	}
 	else
 	{
@@ -2358,8 +2358,9 @@ void OoxConverter::convert(PPTX::Logic::Fld *oox_fld)
 	if ((oox_fld->rPr.IsInit()) && (oox_fld->rPr->hlinkClick.IsInit()) && (oox_fld->rPr->hlinkClick->id.IsInit()))
 	{
 		std::wstring hlink = find_link_by_id(oox_fld->rPr->hlinkClick->id.get(), 2);
+		std::wstring location;
 		
-		odf_context()->text_context()->add_hyperlink(hlink, oox_fld->GetText());
+		odf_context()->text_context()->add_hyperlink(hlink, oox_fld->GetText(), location);
 
 	}
 	else if (fld_type == L"slidenum")

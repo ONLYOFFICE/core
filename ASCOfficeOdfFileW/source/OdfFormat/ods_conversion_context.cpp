@@ -347,7 +347,7 @@ void ods_conversion_context::add_hyperlink(const std::wstring & ref, const std::
 		{ 
 			for (long row = start_row; row <= end_row; row++)
 			{
-				current_table()->add_hyperlink(ref, col, row, link, bLocation);
+				current_table()->add_hyperlink(ref, col, row, link, location);
 				//ссылка одна, а вот отображаемый текст - разный
 			}
 		}

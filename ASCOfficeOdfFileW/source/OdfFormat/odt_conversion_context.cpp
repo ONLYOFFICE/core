@@ -1098,7 +1098,11 @@ void odt_conversion_context::end_field()
 	{
 		current_fields.back().status = 2;
 
-		if (current_fields.back().type == fieldHyperlink)		start_hyperlink(current_fields.back().value);
+		if (current_fields.back().type == fieldHyperlink)
+		{
+			std::wstring location;
+			start_hyperlink(current_fields.back().value, location);
+		}
 		else if (current_fields.back().type == fieldSeq)		start_sequence();
 		else if (current_fields.back().type == fieldDropDown)	start_drop_down();
 		else
@@ -1255,7 +1259,11 @@ void odt_conversion_context::start_run(bool styled)
 	{
 		current_fields.back().status = 2;
 
-		if (current_fields.back().type == fieldHyperlink)		start_hyperlink(current_fields.back().value);
+		if (current_fields.back().type == fieldHyperlink)
+		{
+			std::wstring location;
+			start_hyperlink(current_fields.back().value, location);
+		}
 		else if (current_fields.back().type == fieldSeq)		start_sequence();
 		else if (current_fields.back().type == fieldDropDown)	start_drop_down();
 		else												

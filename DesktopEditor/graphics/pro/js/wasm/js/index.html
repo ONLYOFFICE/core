@@ -11,7 +11,12 @@
 			window.raster = new CRaster({
 				enginePath : "./raster"
 			});
-			
+			window.raster.oncommand = function(message) {
+				console.log(message);
+			};
+			window.raster.command({
+				"type" : "height"
+			});
 		</script>
 		<script type="text/javascript">
 			var resMyCode = /*JPGToPixels*/ [255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255];

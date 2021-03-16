@@ -58,6 +58,9 @@ public:
     bool IsFileDownloaded();
 
     bool DownloadSync();
+    bool UploadSync();
+    void SetUploadProp(std::wstring &url, unsigned char* data, const int size);
+    std::wstring& GetResponse();
 
     void Start(int lPriority);
     void Suspend();

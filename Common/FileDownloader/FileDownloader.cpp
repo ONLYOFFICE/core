@@ -63,6 +63,21 @@ bool CFileDownloader::DownloadSync()
     return m_pInternal->DownloadSync();
 }
 
+bool CFileDownloader::UploadSync()
+{
+    return m_pInternal->DownloadSync();
+}
+
+void CFileDownloader::SetUploadProp(std::wstring &url,  unsigned char* data, const int size)
+{
+    m_pInternal->SetUploadProp(url, data, size);
+}
+
+std::wstring& CFileDownloader::GetResponse()
+{
+    return m_pInternal->GetResponse();
+}
+
 void CFileDownloader::Start(int lPriority)
 {
     return m_pInternal->Start(lPriority);

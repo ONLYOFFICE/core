@@ -50,8 +50,10 @@ window.onload = function()
 
 window.onresize = function()
 {
-	if (!window.loadedImage)
-		return;
 	var dst = document.getElementById("main");
+	dst.width = dst.offsetWidth;
+	dst.height = dst.offsetHeight;
+	if (!window.loadedImage)
+		return;	
 	dst.getContext("2d").drawImage(window.loadedImage, 0, 0, dst.width, dst.height);
 };

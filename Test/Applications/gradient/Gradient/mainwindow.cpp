@@ -8,7 +8,7 @@ std::vector<Point> drawCircle1(int n, double cx, double cy, double r) {
     std::vector<Point> res;
     for (int i = 0; i < n; i++) {
         double x = cx + r * cos(i * 8 * atan(1) / n);
-        double y = cy + r * sin(i * 8 * atan(1) / n);
+        double y = cy + r * sin(i * 8 * atan(1) /  n);
         res.push_back({x, y});
     }
     return res;
@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->lable_test->setStyleSheet("QLabel { background-color : white;}");
-    points = {{0, 0}, {105, 0}, {105, 105}, {0, 105}};
+    points = {{0, 0}, {105,  0}, {105, 105}, {0, 105}};
 }
 
 
@@ -33,7 +33,7 @@ MainWindow::~MainWindow()
 }
 
 
-void GenerateImg(QImage &img, std::vector<Point> &points, const Info &info) {
+void GenerateImg(QImage &img, std::vector<Point> &points, Info &info) {
     NSGraphics::IGraphicsRenderer* pRasterRenderer = NSGraphics::Create();
     pRasterRenderer->SetFontManager(NULL);
     int nRasterW = img.size().width();
@@ -64,6 +64,7 @@ void GenerateImg(QImage &img, std::vector<Point> &points, const Info &info) {
 
     NSStructures::GradientInfo ginfo = info.ginfo;
     //ginfo.reflected = true;
+    ginfo.shading.f_type = NSStructures::ShadingInfo::UseT2Color;
     pRasterRenderer->put_BrushGradInfo(ginfo);
     auto a = info.c;
     auto b = info.p;
@@ -145,8 +146,10 @@ void MainWindow::on_DiscreteStepSlider_sliderMoved(int position)
 
 void MainWindow::on_PathType_itemDoubleClicked(QListWidgetItem *item)
 {
+    int tmp = info.gradient_type;
     on_PathType_itemClicked(item);
     this->on_RenderPic_clicked();
+    //info.gradient_type = tmp;
 }
 
 void MainWindow::on_PathType_itemClicked(QListWidgetItem *item)
@@ -159,6 +162,11 @@ void MainWindow::on_PathType_itemClicked(QListWidgetItem *item)
     }
     else if (item->text() == "Triangle") {
         points = {{5, 10}, {40, 100}, {100, 1}};
+        info.gradient_type = c_BrushTypeMyTestGradient;
+        info.ginfo.shading.triangle = {{5 * 3.84, 10 * 3.84}, {40 * 3.84, 100 * 3.84}, {100 * 3.84, 1 * 3.84}};
+        info.ginfo.shading.triangle_parametrs = {0, 0.1,  1};
+        info.ginfo.shading.parametrised_triangle_shading = false;
+        info.ginfo.shading.triangle_colors = {{255,0,0, 255}, {0,255,0,255 },  {0,0,255,255}};
     }
 }
 
@@ -240,21 +248,26 @@ void MainWindow::on_ColorSpaces_itemClicked(QListWidgetItem *item)
         info.c = {0xFFff0000, 0xFFffa500, 0xFFffff00, 0xFF008000, 0xFF0000ff, 0xFFFF00FF};
         info.p = {0.0,0.2,0.4,0.6,0.8,1};
         info.n_colors = 6;
+        info.ginfo.shading.function.set_linear_interpolation({0xFFff0000, 0xFFffa500, 0xFFffff00, 0xFF008000, 0xFF0000ff, 0xFFFF00FF}
+                                                             , {0.0,0.2,0.4,0.6,0.8,1});
     }
     else if (item->text() == "Black and white") {
         info.c = {0xFFFFFFFF, 0xFF000000};
         info.p = {0.0, 1};
         info.n_colors = 2;
+        info.ginfo.shading.function.set_linear_interpolation({0xFFFFFFFF, 0xFF000000}, {0.0, 1});
     }
     else if (item->text() == "Red Blue") {
         info.c = {0xFFFF0000, 0xFF0000FF};
         info.p = {0.0, 1};
         info.n_colors = 2;
+        info.ginfo.shading.function.set_linear_interpolation({0xFFFF0000, 0xFF0000FF}, {0.0, 1});
     }
     else if (item->text() == "Pastel") {
         info.c = {0xfff39189, 0xff046582};
         info.p = {0.0, 1};
         info.n_colors = 2;
+        info.ginfo.shading.function.set_linear_interpolation({0xfff39189, 0xff046582}, {0.0, 1});
     }
 }
 

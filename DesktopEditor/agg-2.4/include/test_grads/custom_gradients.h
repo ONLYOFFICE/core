@@ -1,5 +1,15 @@
 namespace agg
 {
+    /**
+     *  Основной смысл в том, что есть два этапа обсчета, это параметризация и вычисление цвета.
+     * 
+     *  В частности радиальный и линейный градиенты, требуют параметризацию, (x,y)-> t,
+     * чтобы затем перевести параметр в цвет.
+     * 
+     * У шейдеров параметризация опциональная, поэтому для них отдельно есть способ с параметризацией и без нее
+     * 
+     * */
+
     class calcBase
     {
     public:
@@ -156,6 +166,35 @@ namespace agg
         NSStructures::GradientInfo ginfo;
     };
 
+    class calcTriangle : public calcBase
+    {
+    public:
+        calcTriangle(const NSStructures::GradientInfo &_g)
+        {
+            ginfo = _g;
+        }
+        virtual float eval(float x, float y) override
+        {
+            // тут можно любую интерполяцию сделать, там не написано какая должна быть
+            // пока просто по проекциям берет среднее todo refactor
+            float t1 = relative_project_len(x, y, ginfo.shading.triangle[0], ginfo.shading.triangle[1]);
+            float t2 = relative_project_len(x, y, ginfo.shading.triangle[1], ginfo.shading.triangle[2]);
+            float t3 = relative_project_len(x, y, ginfo.shading.triangle[2], ginfo.shading.triangle[0]);
+            return 0.333333333 * (ginfo.shading.triangle_parametrs[0] * (t2 + 1 - t1) + 
+            ginfo.shading.triangle_parametrs[1] * (t3 + 1 - t2) + 
+            ginfo.shading.triangle_parametrs[2] * (t1 + 1 - t3));
+        }
+        // x first, наверное это стоит немного отрефакторить пока просто пробую чтобы работало
+        //todo
+        static float relative_project_len(float x, float y, std::pair<float, float> start, std::pair<float, float> finish)
+        {
+            return ((x - start.first) * (finish.first - start.first) + (y - start.second) * (finish.second - start.second))
+             / ((finish.first - start.first) * (finish.first - start.first) +
+             (finish.second - start.second) * (finish.second - start.second)); //(a, b) / b^2
+        }
+        NSStructures::GradientInfo ginfo;
+    };
+
     template <class ColorT>
     class gradient_base
     {
@@ -265,6 +304,9 @@ namespace agg
             case Aggplus::BrushTypeNewLinearGradient:
                 calculate = new calcNewLinear(m_oGradientInfo, xmin, ymin, xmax, ymax);
                 break;
+            case Aggplus::BrushTypeMyTestGradient:
+                calculate = new calcTriangle(m_oGradientInfo);
+                break;
             default:
                 fprintf(stderr, "WRONG BRUSH TYPE");
                 calculate = new calcRandom();
@@ -296,15 +338,48 @@ namespace agg
                 double _y = y;
                 m_trans.transform(&_x, &_y);
                 float t = calculate_param((float)_x, (float)_y);
-
-                int index = int(t * MaxColorIndex + 0.5);
-                if (!m_valid_table[index])
-                    CalcColor(index);
-
-                *span++ = m_color_table[index];
+                if (m_oGradientInfo.shading.parametrised_triangle_shading) {
+                    *span++ = this->triangle(x, y);
+                }
+                else if (m_oGradientInfo.shading.f_type == NSStructures::ShadingInfo::UseXY2Color)
+                {
+                    _x = (_x - xmin) / (xmax - xmin);
+                    _y = (_y - ymin) / (ymax - xmin);
+                    *span++ = m_oGradientInfo.shading.function.get_color(_x, _y); //m_color_table[index];
+                }
+                else if (m_oGradientInfo.shading.f_type == NSStructures::ShadingInfo::UseT2Color)
+                {
+                    *span++ = m_oGradientInfo.shading.function.get_color(t);
+                }
+                else
+                {
+                    int index = int(t * MaxColorIndex + 0.5);
+                    if (!m_valid_table[index])
+                        CalcColor(index);
+                    *span++ = m_color_table[index];
+                }
             }
         }
+        //todo refactor
+        ColorT mul(ColorT c1, float t)
+        {
+            return ColorT(c1.r * t, c1.g * t, c1.b * t, c1.a * t);
+        }
+        ColorT sum(ColorT c1, ColorT c2) 
+        {
+            return ColorT(c1.r + c2.r, c1.g + c2.g, c1.b + c2.b, c1.a + c2.a);
+        }
+        ColorT triangle(float x, float y)
+        {
+            float t1 = calcTriangle::relative_project_len(x, y, m_oGradientInfo.shading.triangle[0], m_oGradientInfo.shading.triangle[1]);
+            float t2 = calcTriangle::relative_project_len(x, y, m_oGradientInfo.shading.triangle[1], m_oGradientInfo.shading.triangle[2]);
+            float t3 = calcTriangle::relative_project_len(x, y, m_oGradientInfo.shading.triangle[2], m_oGradientInfo.shading.triangle[0]);
 
+            ColorT c1 = mul(m_oGradientInfo.shading.triangle_colors[0], (t2 + 1 - t1)/3);
+            ColorT c2 = mul(m_oGradientInfo.shading.triangle_colors[1], (t3 + 1 - t2)/3);
+            ColorT c3 = mul(m_oGradientInfo.shading.triangle_colors[2], (t2 + 1 - t1)/3);
+            return sum(c1, sum(c2,c3));
+        }
         void SetDirection(const agg::rect_d &bounds, const agg::trans_affine &trans)
         {
             m_trans = trans;

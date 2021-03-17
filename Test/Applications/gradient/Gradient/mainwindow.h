@@ -55,8 +55,8 @@ public:
     ~MainWindow();
     QImage img;
     QLabel *lable;
-    Info info;
     std::vector<Point> points;
+    Info info;
 
 private slots:
     void on_RenderPic_clicked();

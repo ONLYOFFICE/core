@@ -1,59 +1,50 @@
-function CRaster(settings)
+window.onload = function()
 {
-	useWasm = false;
-	var webAsmObj = window["WebAssembly"];
-	if (typeof webAsmObj === "object")
+	var holder = document.body;
+	holder.ondragover = function(e) 
 	{
-		if (typeof webAsmObj["Memory"] === "function")
+		var isFile = false;
+		if (e.dataTransfer.types)
 		{
-			if ((typeof webAsmObj["instantiateStreaming"] === "function") || (typeof webAsmObj["instantiate"] === "function"))
-				useWasm = true;
+			for (var i = 0, length = e.dataTransfer.types.length; i < length; ++i)
+			{
+				var type = e.dataTransfer.types[i].toLowerCase();
+				if (type == "files" && e.dataTransfer.items && e.dataTransfer.items.length == 1)
+				{
+					var item = e.dataTransfer.items[0];
+					if (item.kind && "file" == item.kind.toLowerCase())
+					{
+						isFile = true;
+						break;
+					}
+				}
+			}
 		}
-	}
-
-	var enginePath = "./raster/";
-	if (settings && settings.enginePath)
-	{
-		enginePath = settings.enginePath;
-		if (enginePath.substring(enginePath.length - 1) != "/")
-			enginePath += "/";
-	}
-
-	var isUseSharedWorker = !!window.SharedWorker;
-	if (isUseSharedWorker && (false === settings.useShared))
-		isUseSharedWorker = false;
-
-	var worker_src = useWasm ? "raster.js" : "raster_ie.js";
-	worker_src = enginePath + worker_src;
-
-	var _worker = this;
-	var _port = null;
-	if (isUseSharedWorker)
-	{
-		this.worker = new SharedWorker(worker_src, "onlyoffice-raster");
-		_port = this.worker.port;
-	}
-	else
-	{
-		this.worker = new Worker(worker_src);
-		_port = this.worker;
-	}
-
-	_port.onmessage = function(message) 
-	{
-		_worker.oncommand && _worker.oncommand(message.data);
+		e.dataTransfer.dropEffect = isFile ? "copy" : "none";
+		e.preventDefault();
+		return false; 
 	};
-	_port.postMessage({ "type" : "init" });
+	holder.ondrop = function(e) 
+	{ 
+		var file = e.dataTransfer.files ? e.dataTransfer.files[0] : null;
+		if (!file)
+		{
+			e.preventDefault();
+			return false;
+		}
+		
+		var reader = new FileReader();
+		reader.onload = function(e) {
+			var image = window.nativeRasterEngine.openImage(e.target.result);
+			if (!image)
+				return;
 
-	this.stop = function()
-	{
-		this.worker.terminate();
-		this.worker = null;
+			var destination = document.getElementById("main");
+			destination.getContext("2d").drawImage(image, 0, 0, destination.width, destination.heigth);
+		};
+		reader.readAsArrayBuffer(file);
+	
+		return false; 
 	};
 
-	this.command = function(message)
-	{
-		_port && _port.postMessage(message);
-	};
-	this.oncommand = function(message) { console.log(message); }
-}
+};

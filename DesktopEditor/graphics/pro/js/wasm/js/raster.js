@@ -1,3 +1,5 @@
+(function(window, undefined){
+
 var printErr = undefined;
 var print    = undefined;
 
@@ -35,139 +37,67 @@ else
 
 //module
 
-self.raster = null;
-function onMessageEvent(data, port)
-{
-    if (data.type == "init")
-    {
-        if (self.raster)
-            return;
-        self.raster = new Raster();
-        self.raster.init();
-        return;
-    }
-
-    if (!self.raster)
-        return;
-
-    self.raster.messages.push(data);
-    if (port)
-        self.raster.ports.push(port);
-
-    if (1 < self.raster.messages.length)
-    {
-        // значит еще грузим что-то
-        return;
-    }
-
-    self.raster.checkMessage();
-}
-
-self.onconnect = function(e)
-{
-    var port = e.ports[0];
-    port.onmessage = function(e) {
-        onMessageEvent(e.data, port);
-    }
-};
-self.onmessage = function(e)
-{
-    onMessageEvent(e.data);
-};
-self.engineInit = false;
-self.onEngineInit = function()
-{
-    self.engineInit = true;
-    if (self.raster)
-    {
-        self.raster.init();
-        self.raster.checkMessage();
-    }
-};
-
 function Raster()
 {
-    this.messages = [];
-    this.ports = [];
-    this.engine = 0;
+    this.isInit = false;
 
-    this.init = function()
+    this.openImage = function(dataBuffer)
     {
-        if (0 == this.engine && self.engineInit)
-            this.engine = this.createEngine();
-    };
-    this.checkMessage = function()
-    {
-        if (0 == this.messages.length || !self.engineInit)
-            return;
+        if (!this.isInit)
+        {
+            // не подгружен еще модуль
+            return null;
+        }
 
-        var m = this.messages[0];
+        // копируем память в память webasm
+        var imageFileRawDataSize = dataBuffer.byteLength;
+        var imageFileRawData = Module["_CxImage_Malloc"](imageFileRawDataSize);
+        if (0 === imageFileRawData)
+            return null;
 
-        switch (m.type)
+        Module["HEAP8"].set(dataBuffer, imageFileRawData);
+
+        // грузим картинку
+        var imageFile = Module["_CxImage_Load"](imageFileRawData, imageFileRawDataSize);
+        if (0 === imageFile)
         {
-            case "encode2RGBA":
-            {
-                this.Encode2RGBA(m);
-                break;
-            }
-            case "decode":
-            {
-                this.Decode(m);
-                break;
-            }
-            case "height"
-            {
-                this.height(m);
-                break;
-            }
-            case "width"
-            {
-                this.width(m);
-                break;
-            }
-            default:
-                break;
+            Module["_CxImage_Free"](imageFileRawData);
+            return null;
         }
-        this.messages.shift();
-    };
-    
-    this.createEngine = function()
-    {
-        return Module._CxImage_Create();
-    };
-    this.destroyEngine = function()
-    {
-        Module._CxImage_Destroy(this.engine);
-    };
-    this.Encode2RGBA = function(data)
-    {
-    };
-    this.Decode = function(data)
-    {
-    };
-    this.height = function(data)
-    {
-        data.height = Module._CxImage_GetHeight(this.engine);
-        this.sendAnswer(data);
-    };
-    this.width = function(data)
-    {
-        data.width = Module._CxImage_GetWidth(this.engine);
-        this.sendAnswer(data);
-    };
-    this.sendAnswer = function(data)
-    {
-        if (self.raster.ports.length == 0)
+
+        // получаем данные картинки
+        var imageW = Module["_CxImage_GetWidth"](imageFile);
+        var imageH = Module["_CxImage_GetHeight"](imageFile);
+        var imageRGBA = Module["_CxImage_GetRGBA"](imageFile);
+
+        if (imageW <= 0 || imageH <= 0 || 0 === imageRGBA)
         {
-            self.postMessage(data);
+            Module["_CxImage_Destroy"](imageFile);
+            Module["_CxImage_Free"](imageFileRawData);
+            return null;
         }
-        else
-        {
-            var port = self.raster.ports.shift();
-            port.postMessage(data);
-        }
-        setTimeout(function(){
-            self.raster.checkMessage();
-        }, 1);
-    };
+
+        // быстро копируем память в канву
+        var canvas = document.createElement("canvas");
+        canvas.width = imageW;
+        canvas.height = imageH;
+
+        var canvasCtx = canvas.getContext("2d");
+        var imageRGBAClampedArray = new Uint8ClampedArray(Module["HEAP8"].buffer, imageRGBA, 4 * imageW * imageH);
+        var canvasData = new ImageData(imageRGBAClampedArray, imageW, imageH);
+        canvasCtx.putImageData(canvasData, 0, 0);
+
+        Module["_CxImage_Destroy"](imageFile);
+        Module["_CxImage_Free"](imageFileRawData);
+
+        return canvas;
+    }
 }
+
+window.nativeRasterEngine = new Raster();
+window.onEngineInit = function()
+{
+    window.nativeRasterEngine.isInit = true;
+};
+
+})(window, undefined);

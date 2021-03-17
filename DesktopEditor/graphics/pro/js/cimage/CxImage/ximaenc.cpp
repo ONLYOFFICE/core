@@ -65,6 +65,12 @@
 #endif
 
 #if CXIMAGE_SUPPORT_DECODE
+CxImage::CxImage(uint8_t* buffer, uint32_t size, uint32_t imagetype)
+{
+    Startup(imagetype);
+    CxMemFile stream(buffer, size);
+    Decode(&stream, imagetype);
+}
 bool CxImage::Decode(uint8_t* buffer, uint32_t size, uint32_t imagetype)
 {
     CxMemFile file(buffer,size);

@@ -9,7 +9,6 @@ base.configure_common_apps()
 if base.is_dir("./deploy"):
     base.delete_dir("./deploy")
 base.create_dir("./deploy")
-base.create_dir("./deploy/raster")
 
 # fetch emsdk
 command_prefix = "" if ("windows" == base.host_platform()) else "./"
@@ -36,12 +35,13 @@ exported_functions = ["_malloc",
                       "_CxImage_Malloc",
                       "_CxImage_Free",
                       "_CxImage_Create",
+                      "_CxImage_Load",
                       "_CxImage_Destroy",
                       "_CxImage_GetHeight",
                       "_CxImage_GetWidth",
                       "_CxImage_Decode",
                       "_CxImage_Encode",
-                      "_CxImage_Encode2RGBA"]
+                      "_CxImage_GetRGBA"]
 
 libRaster_src_path = "./cimage/CxImage"
 input_sources = ["/ximaenc.cpp",
@@ -110,10 +110,10 @@ engine_base_js_content = base.readFile("./wasm/js/raster.js")
 engine_js_content = engine_base_js_content.replace("//module", raster_js_content)
 
 # write new version
-base.writeFile("./deploy/raster/raster.js", engine_js_content)
-base.copy_file("raster.wasm", "./deploy/raster/raster.wasm")
+base.writeFile("./deploy/raster.js", engine_js_content)
+base.copy_file("./raster.wasm", "./deploy/raster.wasm")
 base.copy_file("./wasm/js/index.html", "./deploy/index.html")
-base.copy_file("./wasm/js/code.js", "./deploy/raster.js")
+base.copy_file("./wasm/js/code.js", "./deploy/code.js")
 
 base.delete_file("raster.js")
 base.delete_file("raster.wasm")

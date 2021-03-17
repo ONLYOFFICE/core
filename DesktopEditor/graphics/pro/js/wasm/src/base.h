@@ -19,6 +19,7 @@ RASTER_DECL_EXPORT void* CxImage_Malloc(unsigned int size);
 RASTER_DECL_EXPORT void CxImage_Free(void* p);
 
 RASTER_DECL_EXPORT CxImage* CxImage_Create();
+RASTER_DECL_EXPORT CxImage* CxImage_Load(unsigned char* buffer, unsigned int size, unsigned int imagetype = 0);
 RASTER_DECL_EXPORT void CxImage_Destroy(CxImage* p);
 
 RASTER_DECL_EXPORT unsigned int CxImage_GetHeight(CxImage* p);
@@ -26,7 +27,7 @@ RASTER_DECL_EXPORT unsigned int CxImage_GetWidth (CxImage* p);
 
 RASTER_DECL_EXPORT bool CxImage_Decode(CxImage* p, unsigned char* buffer, unsigned int size, unsigned int imagetype);
 RASTER_DECL_EXPORT bool CxImage_Encode(CxImage* p, unsigned char* &buffer, int &size, unsigned int imagetype);
-RASTER_DECL_EXPORT bool CxImage_Encode2RGBA(CxImage* p, unsigned char* &buffer, int &size, bool bFlipY = false);
+RASTER_DECL_EXPORT unsigned char* CxImage_GetRGBA(CxImage* p);
 
 #ifdef __cplusplus
 }

@@ -3,6 +3,7 @@
 #include "../../wasm/src/base.h"
 
 #include <string>
+#include <iostream>
 
 int main()
 {
@@ -13,15 +14,13 @@ int main()
         return 1;
     oFile.CloseFile();
 
-    CxImage* img = CxImage_Create();
+    CxImage* img = CxImage_Load(pData, (unsigned int)nBytesCount, 3);
 
-    if (!CxImage_Decode(img, pData, (unsigned int)nBytesCount, 3))
-        return 2;
+    BYTE* pResInt = CxImage_GetRGBA(img);
+    int nCountInt = 4 * CxImage_GetHeight(img) * CxImage_GetWidth(img);
 
-    BYTE* pResInt = NULL;
-    int nCountInt;
-    if (!CxImage_Encode2RGBA(img, pResInt, nCountInt))
-        return 3;
+    for (int i = 0; i < (nCountInt > 100 ? 100 : nCountInt); i++)
+        std::cout << pResInt[i] << " ";
 
     BYTE* pRes = NULL;
     int nCount;

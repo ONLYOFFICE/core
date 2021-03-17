@@ -162,6 +162,9 @@ class CxImage
     } CXIMAGEINFO;
 public:
     CxImage(uint32_t imagetype = 0);
+#if CXIMAGE_SUPPORT_DECODE
+    CxImage(uint8_t* buffer, uint32_t size, uint32_t imagetype);
+#endif // CXIMAGE_SUPPORT_DECODE
     virtual ~CxImage() { DestroyFrames(); Destroy(); };
 
     void* Create(uint32_t dwWidth, uint32_t dwHeight, uint32_t wBpp, uint32_t imagetype = 0);

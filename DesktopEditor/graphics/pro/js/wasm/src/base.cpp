@@ -12,6 +12,10 @@ CxImage* CxImage_Create()
 {
     return new CxImage();
 }
+CxImage* CxImage_Load(unsigned char* buffer, unsigned int size, unsigned int imagetype)
+{
+    return new CxImage(buffer, size, imagetype);
+}
 void CxImage_Destroy(CxImage* p)
 {
     if (p) delete p;
@@ -36,8 +40,10 @@ bool CxImage_Encode(CxImage* p, unsigned char* &buffer, int &size, unsigned int 
     if (p) return p->Encode(buffer, size, imagetype);
     return false;
 }
-bool CxImage_Encode2RGBA(CxImage* p, unsigned char* &buffer, int &size, bool bFlipY)
+unsigned char* CxImage_GetRGBA(CxImage* p)
 {
-    if (p) return p->Encode2RGBA(buffer, size, bFlipY);
-    return false;
+    unsigned char* buffer = NULL;
+    int size;
+    if (p) p->Encode2RGBA(buffer, size);
+    return buffer;
 }

@@ -1024,6 +1024,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CHyperlink *oox_hyperlink,OOX::Spr
 
 	std::wstring ref = oox_hyperlink->m_oRef.IsInit() ? oox_hyperlink->m_oRef.get() : L"";
 	std::wstring link;	
+	std::wstring location;
 	std::wstring display = oox_hyperlink->m_oDisplay.IsInit() ? oox_hyperlink->m_oDisplay.get() : L"";
 
 	if (oox_hyperlink->m_oRid.IsInit() && oox_sheet->m_pCurRels.IsInit())
@@ -1035,17 +1036,18 @@ void XlsxConverter::convert(OOX::Spreadsheet::CHyperlink *oox_hyperlink,OOX::Spr
 			if(oRels->IsExternal())
 				link= oRels->Target().GetPath();
 		}
-		ods_context->add_hyperlink(ref, link, display, false);
 	}
-	else if (oox_hyperlink->m_oLink.IsInit())
+	if (link.empty() && oox_hyperlink->m_oLink.IsInit())
 	{
-		link = oox_hyperlink->m_oLink.get();
-		ods_context->add_hyperlink(ref, link, display, false);
+		link = *oox_hyperlink->m_oLink;
 	}
-	else if (oox_hyperlink->m_oLocation.IsInit())
+	if (oox_hyperlink->m_oLocation.IsInit())
 	{
-		link = oox_hyperlink->m_oLocation.get();
-		ods_context->add_hyperlink(ref, link, display, true);
+		location = *oox_hyperlink->m_oLocation;
+	}
+	if (false == location.empty() || false == link.empty())
+	{
+		ods_context->add_hyperlink(ref, link, display, location);
 	}
 }
 

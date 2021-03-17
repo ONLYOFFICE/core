@@ -394,7 +394,7 @@ public:
 	void end_pilot_table();
 
 ///////////////////////////////
-    void add_hyperlink(const std::wstring & ref,int col, int row, const std::wstring & link, bool bLocation = false);
+    void add_hyperlink(const std::wstring & ref,int col, int row, const std::wstring & link, const std::wstring & location);
 	
 	void add_definded_expression(office_element_ptr & elm);
 

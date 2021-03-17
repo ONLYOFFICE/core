@@ -583,7 +583,7 @@ void odt_conversion_context::end_bookmark (int id)
 		text_context()->add_element_in_span_or_par(bookmark_elm);
 	}
 }
-void odt_conversion_context::start_hyperlink(std::wstring ref)
+void odt_conversion_context::start_hyperlink(const std::wstring& link, const std::wstring& location)
 {
 	if (false == current_fields.empty() && current_fields.back().status == 1 && false == current_fields.back().in_span)
 	{
@@ -596,7 +596,7 @@ void odt_conversion_context::start_hyperlink(std::wstring ref)
 	text_a* hyperlink = dynamic_cast<text_a*>(hyperlink_elm.get());
 	if (hyperlink)
 	{
-		hyperlink->common_xlink_attlist_.href_	= ref;
+		hyperlink->common_xlink_attlist_.href_	= link + (location.empty() ? L"" : (L"#" + location));
 		hyperlink->common_xlink_attlist_.type_	= xlink_type::Simple;
 		
 		text_context()->start_element(hyperlink_elm);
@@ -1098,7 +1098,11 @@ void odt_conversion_context::end_field()
 	{
 		current_fields.back().status = 2;
 
-		if (current_fields.back().type == fieldHyperlink)		start_hyperlink(current_fields.back().value);
+		if (current_fields.back().type == fieldHyperlink)
+		{
+			std::wstring location;
+			start_hyperlink(current_fields.back().value, location);
+		}
 		else if (current_fields.back().type == fieldSeq)		start_sequence();
 		else if (current_fields.back().type == fieldDropDown)	start_drop_down();
 		else
@@ -1255,7 +1259,11 @@ void odt_conversion_context::start_run(bool styled)
 	{
 		current_fields.back().status = 2;
 
-		if (current_fields.back().type == fieldHyperlink)		start_hyperlink(current_fields.back().value);
+		if (current_fields.back().type == fieldHyperlink)
+		{
+			std::wstring location;
+			start_hyperlink(current_fields.back().value, location);
+		}
 		else if (current_fields.back().type == fieldSeq)		start_sequence();
 		else if (current_fields.back().type == fieldDropDown)	start_drop_down();
 		else												

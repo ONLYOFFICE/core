@@ -35,7 +35,7 @@ else
     getBinaryPromise = function() { return getBinaryPromise2(); }
 }
 
-// module
+//module
 
 function Raster()
 {

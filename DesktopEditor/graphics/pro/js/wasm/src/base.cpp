@@ -44,6 +44,6 @@ unsigned char* CxImage_GetRGBA(CxImage* p)
 {
     unsigned char* buffer = NULL;
     int size;
-    if (p) p->Encode2RGBA(buffer, size);
+    if (p) p->Encode2RGBA(buffer, size, true);
     return buffer;
 }

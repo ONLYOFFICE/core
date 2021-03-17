@@ -239,9 +239,6 @@ private:
 	{
         std::string palabraClave;
 
-//        palabraClave.GetBuffer( 20 );
-//		palabraClave.ReleaseBuffer();
-
         std::wstring parametroStr ;
 		int parametroInt = 0;
 

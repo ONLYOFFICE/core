@@ -35,7 +35,7 @@ else
     getBinaryPromise = function() { return getBinaryPromise2(); }
 }
 
-//module
+// module
 
 function Raster()
 {
@@ -55,10 +55,11 @@ function Raster()
         if (0 === imageFileRawData)
             return null;
 
-        Module["HEAP8"].set(dataBuffer, imageFileRawData);
+		var uint8DataBuffer = new Uint8Array(dataBuffer);
+        Module["HEAP8"].set(uint8DataBuffer, imageFileRawData);
 
         // грузим картинку
-        var imageFile = Module["_CxImage_Load"](imageFileRawData, imageFileRawDataSize);
+        var imageFile = Module["_CxImage_Load"](imageFileRawData, imageFileRawDataSize, 3);
         if (0 === imageFile)
         {
             Module["_CxImage_Free"](imageFileRawData);
@@ -85,6 +86,15 @@ function Raster()
         var canvasCtx = canvas.getContext("2d");
         var imageRGBAClampedArray = new Uint8ClampedArray(Module["HEAP8"].buffer, imageRGBA, 4 * imageW * imageH);
         var canvasData = new ImageData(imageRGBAClampedArray, imageW, imageH);
+		
+		// correct
+		var alphaIndex = 4 * imageW * imageH - 1;
+		while (alphaIndex > 0)
+		{
+			canvasData.data[alphaIndex] = 255;
+			alphaIndex -= 4;
+		}
+		
         canvasCtx.putImageData(canvasData, 0, 0);
 
         Module["_CxImage_Destroy"](imageFile);

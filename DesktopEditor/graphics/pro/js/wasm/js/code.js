@@ -1,3 +1,4 @@
+window.loadedImage = null;
 window.onload = function()
 {
 	var holder = document.body;
@@ -35,16 +36,22 @@ window.onload = function()
 		
 		var reader = new FileReader();
 		reader.onload = function(e) {
-			var image = window.nativeRasterEngine.openImage(e.target.result);
-			if (!image)
+			window.loadedImage = window.nativeRasterEngine.openImage(e.target.result);
+			if (!window.loadedImage)
 				return;
 
-			var destination = document.getElementById("main");
-			destination.getContext("2d").drawImage(image, 0, 0, destination.width, destination.heigth);
+			window.onresize();
 		};
 		reader.readAsArrayBuffer(file);
 	
 		return false; 
 	};
+};
 
+window.onresize = function()
+{
+	if (!window.loadedImage)
+		return;
+	var dst = document.getElementById("main");
+	dst.getContext("2d").drawImage(window.loadedImage, 0, 0, dst.width, dst.height);
 };

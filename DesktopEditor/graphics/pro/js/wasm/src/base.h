@@ -9,25 +9,25 @@
 #endif
 
 #include <malloc.h>
-#include "../../cimage/CxImage/ximage.h"
+#include "../../../../../raster/BgraFrame.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-RASTER_DECL_EXPORT void* CxImage_Malloc(unsigned int size);
-RASTER_DECL_EXPORT void CxImage_Free(void* p);
+RASTER_DECL_EXPORT void* Raster_Malloc(unsigned int size);
+RASTER_DECL_EXPORT void Raster_Free(void* p);
 
-RASTER_DECL_EXPORT CxImage* CxImage_Create();
-RASTER_DECL_EXPORT CxImage* CxImage_Load(unsigned char* buffer, unsigned int size, unsigned int imagetype = 0);
-RASTER_DECL_EXPORT void CxImage_Destroy(CxImage* p);
+RASTER_DECL_EXPORT CBgraFrame* Raster_Create();
+RASTER_DECL_EXPORT CBgraFrame* Raster_Load(unsigned char* buffer, unsigned int size);
+RASTER_DECL_EXPORT void Raster_Destroy(CBgraFrame* p);
 
-RASTER_DECL_EXPORT unsigned int CxImage_GetHeight(CxImage* p);
-RASTER_DECL_EXPORT unsigned int CxImage_GetWidth (CxImage* p);
+RASTER_DECL_EXPORT int Raster_GetHeight(CBgraFrame* p);
+RASTER_DECL_EXPORT int Raster_GetWidth (CBgraFrame* p);
 
-RASTER_DECL_EXPORT bool CxImage_Decode(CxImage* p, unsigned char* buffer, unsigned int size, unsigned int imagetype);
-RASTER_DECL_EXPORT bool CxImage_Encode(CxImage* p, unsigned char* &buffer, int &size, unsigned int imagetype);
-RASTER_DECL_EXPORT unsigned char* CxImage_GetRGBA(CxImage* p);
+RASTER_DECL_EXPORT bool Raster_Decode(CBgraFrame* p, unsigned char* buffer, unsigned int size);
+RASTER_DECL_EXPORT unsigned char* Raster_Encode(CBgraFrame* p, unsigned int imagetype);
+RASTER_DECL_EXPORT unsigned char* Raster_GetRGBA(CBgraFrame* p);
 
 #ifdef __cplusplus
 }

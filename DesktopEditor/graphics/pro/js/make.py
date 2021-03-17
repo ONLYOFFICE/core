@@ -32,16 +32,16 @@ compiler_flags = ["-o raster.js",
 
 exported_functions = ["_malloc",
                       "_free",
-                      "_CxImage_Malloc",
-                      "_CxImage_Free",
-                      "_CxImage_Create",
-                      "_CxImage_Load",
-                      "_CxImage_Destroy",
-                      "_CxImage_GetHeight",
-                      "_CxImage_GetWidth",
-                      "_CxImage_Decode",
-                      "_CxImage_Encode",
-                      "_CxImage_GetRGBA"]
+                      "_Raster_Malloc",
+                      "_Raster_Free",
+                      "_Raster_Create",
+                      "_Raster_Load",
+                      "_Raster_Destroy",
+                      "_Raster_GetHeight",
+                      "_Raster_GetWidth",
+                      "_Raster_Decode",
+                      "_Raster_Encode",
+                      "_Raster_GetRGBA"]
 
 libRaster_src_path = "./cimage/CxImage"
 input_sources = ["/ximaenc.cpp",

@@ -424,26 +424,24 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileTyp
         Jpeg2000::CJ2kFile oJ2;
         return oJ2.Open(this, strFileName, std::wstring(L""));
     }
-	else
-	{
-		if (nFileType == 0)
-		{
-			CImageFileFormatChecker checker(strFileName);
-			m_nFileType = checker.eFileType;
-		}
-		NSFile::CFileBinary oFile;
-		if (!oFile.OpenFile(strFileName))
-			return false;
 
-		CxImage img;
+    if (nFileType == 0)
+    {
+        CImageFileFormatChecker checker(strFileName);
+        m_nFileType = checker.eFileType;
+    }
+    NSFile::CFileBinary oFile;
+    if (!oFile.OpenFile(strFileName))
+        return false;
 
-		if (!img.Decode(oFile.GetFileNative(), m_nFileType))
-			return false;
+    CxImage img;
 
-        CxImageToMediaFrame(img, this);
-		m_bIsGrayScale = img.IsGrayScale();
-		return true;
-	}
+    if (!img.Decode(oFile.GetFileNative(), m_nFileType))
+        return false;
+
+    CxImageToMediaFrame(img, this);
+    m_bIsGrayScale = img.IsGrayScale();
+    return true;
 }
 
 bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileType)

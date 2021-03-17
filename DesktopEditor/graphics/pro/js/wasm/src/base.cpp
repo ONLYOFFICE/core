@@ -1,49 +1,51 @@
 #include "base.h"
 
-void* CxImage_Malloc(unsigned int size)
+void* Raster_Malloc(unsigned int size)
 {
     return ::malloc(size);
 }
-void CxImage_Free(void* p)
+void Raster_Free(void* p)
 {
     if (p) ::free(p);
 }
-CxImage* CxImage_Create()
+CBgraFrame* Raster_Create()
 {
-    return new CxImage();
+    return new CBgraFrame();
 }
-CxImage* CxImage_Load(unsigned char* buffer, unsigned int size, unsigned int imagetype)
+CBgraFrame* Raster_Load(unsigned char* buffer, unsigned int size)
 {
-    return new CxImage(buffer, size, imagetype);
+    return NULL; // Open from buffer new CxImage(buffer, size);
 }
-void CxImage_Destroy(CxImage* p)
+void Raster_Destroy(CBgraFrame* p)
 {
     if (p) delete p;
 }
-unsigned int CxImage_GetHeight(CxImage* p)
+int  Raster_GetHeight(CBgraFrame* p)
 {
-    if (p) return p->GetHeight();
+    if (p) return p->get_Height();
     return -1;
 }
-unsigned int CxImage_GetWidth (CxImage* p)
+int  Raster_GetWidth (CBgraFrame* p)
 {
-    if (p) return p->GetWidth();
+    if (p) return p->get_Width();
     return -1;
 }
-bool CxImage_Decode(CxImage* p, unsigned char* buffer, unsigned int size, unsigned int imagetype)
+bool Raster_Decode(CBgraFrame* p, unsigned char* buffer, unsigned int size)
 {
-    if (p) return p->Decode(buffer, size, imagetype);
+    if (p) return false; // Open from buffer p->Decode(buffer, size, imagetype);
     return false;
 }
-bool CxImage_Encode(CxImage* p, unsigned char* &buffer, int &size, unsigned int imagetype)
-{
-    if (p) return p->Encode(buffer, size, imagetype);
-    return false;
-}
-unsigned char* CxImage_GetRGBA(CxImage* p)
+unsigned char* Raster_Encode(CBgraFrame* p, unsigned int imagetype)
 {
     unsigned char* buffer = NULL;
     int size;
-    if (p) p->Encode2RGBA(buffer, size, true);
+    if (p) p->Encode(buffer, size, imagetype);
+    return buffer;
+}
+unsigned char* Raster_GetRGBA(CBgraFrame* p)
+{
+    unsigned char* buffer = NULL;
+    int size;
+    if (p) p->Encode(buffer, size, 0 /* type RGBA array */);
     return buffer;
 }

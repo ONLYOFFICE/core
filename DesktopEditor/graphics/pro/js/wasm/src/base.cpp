@@ -12,9 +12,11 @@ CBgraFrame* Raster_Create()
 {
     return new CBgraFrame();
 }
-CBgraFrame* Raster_Load(unsigned char* buffer, unsigned int size)
+CBgraFrame* Raster_Load(unsigned char* buffer, int size)
 {
-    return NULL; // Open from buffer new CxImage(buffer, size);
+    CBgraFrame* oRes = new CBgraFrame();
+    oRes->Decode(buffer, size);
+    return oRes;
 }
 void Raster_Destroy(CBgraFrame* p)
 {
@@ -30,22 +32,14 @@ int  Raster_GetWidth (CBgraFrame* p)
     if (p) return p->get_Width();
     return -1;
 }
-bool Raster_Decode(CBgraFrame* p, unsigned char* buffer, unsigned int size)
+bool Raster_Decode(CBgraFrame* p, unsigned char* buffer, int size)
 {
-    if (p) return false; // Open from buffer p->Decode(buffer, size, imagetype);
+    if (p) return p->Decode(buffer, size);
     return false;
-}
-unsigned char* Raster_Encode(CBgraFrame* p, unsigned int imagetype)
-{
-    unsigned char* buffer = NULL;
-    int size;
-    if (p) p->Encode(buffer, size, imagetype);
-    return buffer;
 }
 unsigned char* Raster_GetRGBA(CBgraFrame* p)
 {
     unsigned char* buffer = NULL;
-    int size;
-    if (p) p->Encode(buffer, size, 0 /* type RGBA array */);
+    if (p) buffer = p->get_Data();
     return buffer;
 }

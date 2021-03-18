@@ -51,7 +51,7 @@ function Raster()
 
         // копируем память в память webasm
         var imageFileRawDataSize = dataBuffer.byteLength;
-        var imageFileRawData = Module["_CxImage_Malloc"](imageFileRawDataSize);
+        var imageFileRawData = Module["_Raster_Malloc"](imageFileRawDataSize);
         if (0 === imageFileRawData)
             return null;
 
@@ -59,22 +59,22 @@ function Raster()
         Module["HEAP8"].set(uint8DataBuffer, imageFileRawData);
 
         // грузим картинку
-        var imageFile = Module["_CxImage_Load"](imageFileRawData, imageFileRawDataSize, 3);
+        var imageFile = Module["_Raster_Load"](imageFileRawData, imageFileRawDataSize);
         if (0 === imageFile)
         {
-            Module["_CxImage_Free"](imageFileRawData);
+            Module["_Raster_Free"](imageFileRawData);
             return null;
         }
 
         // получаем данные картинки
-        var imageW = Module["_CxImage_GetWidth"](imageFile);
-        var imageH = Module["_CxImage_GetHeight"](imageFile);
-        var imageRGBA = Module["_CxImage_GetRGBA"](imageFile);
+        var imageW = Module["_Raster_GetWidth"](imageFile);
+        var imageH = Module["_Raster_GetHeight"](imageFile);
+        var imageRGBA = Module["_Raster_GetRGBA"](imageFile);
 
         if (imageW <= 0 || imageH <= 0 || 0 === imageRGBA)
         {
-            Module["_CxImage_Destroy"](imageFile);
-            Module["_CxImage_Free"](imageFileRawData);
+            Module["_Raster_Destroy"](imageFile);
+            Module["_Raster_Free"](imageFileRawData);
             return null;
         }
 
@@ -97,8 +97,8 @@ function Raster()
 		
         canvasCtx.putImageData(canvasData, 0, 0);
 
-        Module["_CxImage_Destroy"](imageFile);
-        Module["_CxImage_Free"](imageFileRawData);
+        Module["_Raster_Destroy"](imageFile);
+        Module["_Raster_Free"](imageFileRawData);
 
         return canvas;
     }

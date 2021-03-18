@@ -419,11 +419,13 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileTyp
 {
 	m_nFileType = nFileType;
 
+#if CXIMAGE_SUPPORT_JP2
     if (CXIMAGE_FORMAT_JP2 == nFileType)
     {
         Jpeg2000::CJ2kFile oJ2;
         return oJ2.Open(this, strFileName, std::wstring(L""));
     }
+#endif
 
     if (nFileType == 0)
     {
@@ -437,6 +439,26 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileTyp
     CxImage img;
 
     if (!img.Decode(oFile.GetFileNative(), m_nFileType))
+        return false;
+
+    CxImageToMediaFrame(img, this);
+    m_bIsGrayScale = img.IsGrayScale();
+    return true;
+}
+bool CBgraFrame::Decode(BYTE* pBuffer, int nSize, unsigned int nFileType)
+{
+    m_nFileType = nFileType;
+
+    // добавить CXIMAGE_FORMAT_JP2 с буфером
+    if (nFileType == 0)
+    {
+        CImageFileFormatChecker checker(pBuffer, nSize);
+        m_nFileType = checker.eFileType;
+    }
+
+    CxImage img;
+
+    if (!img.Decode(pBuffer, nSize, m_nFileType))
         return false;
 
     CxImageToMediaFrame(img, this);

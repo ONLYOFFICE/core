@@ -88,8 +88,8 @@ public:
     void SetJpegQuality(const double& value);
 
     bool OpenFile(const std::wstring& strFileName, unsigned int nFileType = 0);	//0 - detect
-    bool LoadFile(unsigned char* buffer, unsigned int size, unsigned int nFileType = 0);
     bool SaveFile(const std::wstring& strFileName, unsigned int nFileType);
+    bool Decode(BYTE*  pBuffer, int  nSize, unsigned int nFileType = 0);
     bool Encode(BYTE*& pBuffer, int& nSize, unsigned int nFileType);
     
     bool Resize(const long& nNewWidth, const long& nNewHeight, bool bDestroyData = true);

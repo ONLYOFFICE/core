@@ -40,22 +40,18 @@ exported_functions = ["_malloc",
                       "_Raster_GetHeight",
                       "_Raster_GetWidth",
                       "_Raster_Decode",
-                      "_Raster_Encode",
                       "_Raster_GetRGBA"]
 
-libRaster_src_path = "./cimage/CxImage"
-input_sources = ["/ximaenc.cpp",
-                 "/ximaexif.cpp",
-                 "/ximage.cpp",
-                 "/ximainfo.cpp",
-                 "/ximajpg.cpp",
-                 "/ximalpha.cpp",
-                 "/ximapal.cpp",
-                 "/ximasel.cpp",
-                 "/xmemfile.cpp"]
+libRaster_src_path = "./../../../raster"
+input_raster_sources = ["BgraFrame.cpp", "ImageFileFormatChecker.cpp"]
+
+libCxImage_src_path = "./../../../cximage/CxImage"
+input_cximage_sources = ["ximaenc.cpp", "ximaexif.cpp", "ximage.cpp", "ximainfo.cpp",
+                         "ximajpg.cpp", "ximalpha.cpp", "ximapal.cpp", "ximasel.cpp",
+                         "xmemfile.cpp"]
 
 libJpeg_src_path = "./../../../cximage/jpeg"
-input_jpeg_sources = ["/jerror.c", "jdmarker.c", "jdapimin.c", "jdmaster.c", "jdapistd.c",
+input_jpeg_sources = ["jerror.c", "jdmarker.c", "jdapimin.c", "jdmaster.c", "jdapistd.c",
                       "jcomapi.c", "jutils.c", "jdinput.c", "jdmainct.c", "jmemmgr.c",
                       "jquant1.c", "jquant2.c", "jdmerge.c", "jdcolor.c", "jdsample.c",
                       "jdpostct.c", "jddctmgr.c", "jdarith.c", "jdhuff.c", "jdcoefct.c",
@@ -66,15 +62,18 @@ input_jpeg_sources = ["/jerror.c", "jdmarker.c", "jdapimin.c", "jdmaster.c", "jd
                       "jfdctfst.c", "jfdctflt.c"]
 
 sources = []
-for item in input_sources:
+for item in input_raster_sources:
     sources.append(libRaster_src_path + '/' + item)
+for item in input_cximage_sources:
+    sources.append(libCxImage_src_path + '/' + item)
 for item in input_jpeg_sources:
     sources.append(libJpeg_src_path + '/' + item)
 sources.append("./wasm/src/base.cpp")
 
-compiler_flags.append("-I" + libRaster_src_path)
-compiler_flags.append("-I" + libJpeg_src_path)
-compiler_flags.append("-DWIN32")
+#compiler_flags.append("-I" + libRaster_src_path)
+#compiler_flags.append("-I" + libCxImage_src_path)
+#compiler_flags.append("-I" + libJpeg_src_path)
+compiler_flags.append("-D__linux__ -DBUILDING_WASM_MODULE -D_tcsnicmp=strncmp -UCXIMAGE_SUPPORT_TIF")
 
 # arguments
 arguments = ""

@@ -71,6 +71,7 @@ public:
 	
     CImageFileFormatChecker();
     CImageFileFormatChecker(std::wstring sFileName);
+    CImageFileFormatChecker(BYTE* pBuffer, DWORD dwBytes);
 
     bool isImageFileInZip(std::wstring& fileName);
 	
@@ -81,6 +82,7 @@ public:
     bool isRawFile(std::wstring& fileName);
     bool isSvgFile(std::wstring& fileName);
 
+    bool isImageFile(BYTE* pBuffer,DWORD dwBytes);
 	bool isBmpFile(BYTE* pBuffer,DWORD dwBytes);
 	bool isGifFile(BYTE* pBuffer,DWORD dwBytes);
 	bool isPngFile(BYTE* pBuffer,DWORD dwBytes);
@@ -106,6 +108,7 @@ public:
 	bool isIpodFile(BYTE* pBuffer,DWORD dwBytes);
 	bool isPgxFile(BYTE* pBuffer,DWORD dwBytes);
 	bool isSvgFile(BYTE* pBuffer,DWORD dwBytes);
+    bool isRawFile(BYTE* pBuffer,DWORD dwBytes);
 
 	std::wstring DetectFormatByData(BYTE *Data, int DataSize);
 

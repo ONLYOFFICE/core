@@ -33,9 +33,6 @@
 #include <algorithm>
 #include "../fontengine/FontFile.h"
 
-namespace Aggplus {
-    #include "test/shading.h"
-}
 namespace Aggplus
 {
 	CGraphics::CGraphics()

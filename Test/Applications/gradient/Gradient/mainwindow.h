@@ -36,7 +36,7 @@ struct Info {
     std::vector<double> p;
     int n_colors;
     Info() : gradient_type(c_BrushTypePathNewLinearGradient) {
-        c = {0xFFff0000, 0xFFffa500, 0xFFffff00, 0xFF008000, 0xFF0000ff, 0xFFFF00FF};
+        c = {(LONG)0xFFff0000, (LONG)0xFFffa500, (LONG)0xFFffff00, (LONG)0xFF008000, (LONG)0xFF0000ff, (LONG)0xFFFF00FF};
         p = {0.0,0.2,0.4,0.6,0.8,1};
         n_colors = 6;
     };

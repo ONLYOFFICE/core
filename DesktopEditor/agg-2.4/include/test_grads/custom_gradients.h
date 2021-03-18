@@ -1,3 +1,10 @@
+#include <algorithm>
+#include <time.h>
+
+#ifndef M_1_PI
+#define M_1_PI 0.318309886183790671538
+#endif
+
 namespace agg
 {
     /**
@@ -80,7 +87,7 @@ namespace agg
     {
     public:
         calcConical(const NSStructures::GradientInfo &_gi, float _cx, float _cy, float _factor) : ginfo(_gi), cx(_cx), cy(_cy), factor(_factor), inverseFactor(1.0f / _factor),
-                                                                                                  invXsize(1.0f / _gi.xsize), invYsize(1.0f / _gi.ysize), m1pi((float)M_1_PI)
+                                                                                                  invXsize(1.0f / _gi.xsize), invYsize(1.0f / _gi.ysize), m1pi((float)agg::pi)
         {
             cx += ginfo.centerX * inverseFactor;
             cy += ginfo.centerY * inverseFactor;

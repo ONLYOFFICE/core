@@ -35,7 +35,6 @@
 #include "../common/Array.h"
 #include "../graphics/aggplustypes.h"
 #include "../agg-2.4/include/agg_color_rgba.h"
-#include "./test/shading.h"
 #include "shading_info.h"
 #include <cmath>
 #include <string>

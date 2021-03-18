@@ -164,7 +164,7 @@ void MainWindow::on_PathType_itemClicked(QListWidgetItem *item)
         points = {{5, 10}, {40, 100}, {100, 1}};
         info.gradient_type = c_BrushTypeMyTestGradient;
         info.ginfo.shading.triangle = {{5 * 3.84, 10 * 3.84}, {40 * 3.84, 100 * 3.84}, {100 * 3.84, 1 * 3.84}};
-        info.ginfo.shading.triangle_parametrs = {0, 0.1,  1};
+        info.ginfo.shading.triangle_parametrs = {0.0f, 0.1f,  1.0f};
         info.ginfo.shading.parametrised_triangle_shading = false;
         info.ginfo.shading.triangle_colors = {{255,0,0, 255}, {0,255,0,255 },  {0,0,255,255}};
     }
@@ -245,29 +245,29 @@ void MainWindow::on_ColorSpaces_itemClicked(QListWidgetItem *item)
 {
 
     if (item->text() == "Rainbow") {
-        info.c = {0xFFff0000, 0xFFffa500, 0xFFffff00, 0xFF008000, 0xFF0000ff, 0xFFFF00FF};
+        info.c = {(LONG)0xFFff0000, (LONG)0xFFffa500, (LONG)0xFFffff00, (LONG)0xFF008000, (LONG)0xFF0000ff, (LONG)0xFFFF00FF};
         info.p = {0.0,0.2,0.4,0.6,0.8,1};
         info.n_colors = 6;
         info.ginfo.shading.function.set_linear_interpolation({0xFFff0000, 0xFFffa500, 0xFFffff00, 0xFF008000, 0xFF0000ff, 0xFFFF00FF}
-                                                             , {0.0,0.2,0.4,0.6,0.8,1});
+                                                             , {0.0f,0.2f,0.4f,0.6f,0.8f,1.0f});
     }
     else if (item->text() == "Black and white") {
-        info.c = {0xFFFFFFFF, 0xFF000000};
+        info.c = {(LONG)0xFFFFFFFF, (LONG)0xFF000000};
         info.p = {0.0, 1};
         info.n_colors = 2;
-        info.ginfo.shading.function.set_linear_interpolation({0xFFFFFFFF, 0xFF000000}, {0.0, 1});
+        info.ginfo.shading.function.set_linear_interpolation({0xFFFFFFFF, 0xFF000000}, {0.0f, 1.0f});
     }
     else if (item->text() == "Red Blue") {
-        info.c = {0xFFFF0000, 0xFF0000FF};
+        info.c = {(LONG)0xFFFF0000, (LONG)0xFF0000FF};
         info.p = {0.0, 1};
         info.n_colors = 2;
-        info.ginfo.shading.function.set_linear_interpolation({0xFFFF0000, 0xFF0000FF}, {0.0, 1});
+        info.ginfo.shading.function.set_linear_interpolation({0xFFFF0000, 0xFF0000FF}, {0.0f, 1.0f});
     }
     else if (item->text() == "Pastel") {
-        info.c = {0xfff39189, 0xff046582};
+        info.c = {(LONG)0xfff39189, (LONG)0xff046582};
         info.p = {0.0, 1};
         info.n_colors = 2;
-        info.ginfo.shading.function.set_linear_interpolation({0xfff39189, 0xff046582}, {0.0, 1});
+        info.ginfo.shading.function.set_linear_interpolation({0xfff39189, 0xff046582}, {0.0f, 1.0f});
     }
 }
 

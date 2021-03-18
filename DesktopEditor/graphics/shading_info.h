@@ -1,4 +1,10 @@
 #include <iostream>
+#include <math.h>
+
+#ifndef	M_PI
+#define	M_PI		3.14159265358979323846
+#endif
+
 namespace NSStructures
 {
     /**
@@ -45,7 +51,7 @@ namespace NSStructures
         {
             for (int i = 0; i < RESOLUTION; i++)
             {
-                uint value = 255 - (255 * ((float)i / RESOLUTION));
+                unsigned int value = 255 - (255 * ((float)i / RESOLUTION));
                 values[0][i] = ColorT(value, value, value);
             }
         }
@@ -55,7 +61,7 @@ namespace NSStructures
         {
             for (int i = 0; i < RESOLUTION; i++)
             {
-                uint value = 255 - (255 * ((float)i / RESOLUTION));
+                unsigned int value = 255 - (255 * ((float)i / RESOLUTION));
                 values[0][i] = ColorT(value, value, value);
             }
         }
@@ -193,22 +199,23 @@ namespace NSStructures
                 values[line][i].b = f.b * (1 - (float)(i - first) / len ) + s.b * ((float)(i - first) / len ); ;
                 values[line][i].a = f.a * (1 - (float)(i - first) / len ) + s.a * ((float)(i - first) / len ); ;
             }
+            return 0;
         }
 
-        uint hex2a(uint32_t c)
+        unsigned int hex2a(uint32_t c)
         {
             return (c / 256 / 256 / 256) % 256;
         }
 
-        uint hex2r(uint32_t c)
+        unsigned int hex2r(uint32_t c)
         {
             return (c / 256 / 256) % 256;
         }
-        uint hex2g(uint32_t c)
+        unsigned int hex2g(uint32_t c)
         {
             return (c / 256) % 256;
         }
-        uint hex2b(uint32_t c)
+        unsigned int hex2b(uint32_t c)
         {
             return c % 256;
         }

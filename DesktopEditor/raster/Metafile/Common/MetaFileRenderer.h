@@ -228,7 +228,7 @@ namespace MetaFile
 			double dTheta = ((((double)pFont->GetEscapement()) / 10) * M_PI / 180);
 
 			double dCosTheta = cosf(dTheta);
-			double dSinTheta = sinf(dTheta) * -1;
+			double dSinTheta = sinf(dTheta);
 
 			float fL = 0, fT = 0, fW = 0, fH = 0;
 			float fUndX1 = 0, fUndY1 = 0, fUndX2 = 0, fUndY2 = 0, fUndSize = 1;
@@ -396,13 +396,12 @@ namespace MetaFile
 				double dM11, dM12, dM21, dM22, dRx, dRy;
 				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
 
-				m_pRenderer->ResetTransform();
-				m_pRenderer->SetTransform(dCosTheta * fabs(dM11), dSinTheta * fabs(dM11), -dSinTheta * fabs(dM22), dCosTheta * fabs(dM22), dRx, dRy);
-
 				double dOldX = dX;
 
-				dX = dX * dSinTheta + dY * dCosTheta + lLogicalFontHeight * dSinTheta;
-				dY = dOldX * dCosTheta - dY * dSinTheta + lLogicalFontHeight * dSinTheta + lLogicalFontHeight * dCosTheta;
+				dX = dX * dCosTheta + dY * dSinTheta;
+				dY = dY * dCosTheta - dOldX * dSinTheta;
+
+				m_pRenderer->SetTransform(dCosTheta * fabs(dM11), dSinTheta * fabs(dM11), -dSinTheta * fabs(dM22), dCosTheta * fabs(dM22), dRx, dRy);
 
 				bChangeCTM = true;
 			}

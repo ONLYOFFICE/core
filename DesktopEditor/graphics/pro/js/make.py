@@ -73,7 +73,7 @@ sources.append("./wasm/src/base.cpp")
 #compiler_flags.append("-I" + libRaster_src_path)
 #compiler_flags.append("-I" + libCxImage_src_path)
 #compiler_flags.append("-I" + libJpeg_src_path)
-compiler_flags.append("-D__linux__ -DBUILDING_WASM_MODULE -D_tcsnicmp=strncmp -UCXIMAGE_SUPPORT_TIF")
+compiler_flags.append("-D__linux__ -DBUILDING_WASM_MODULE -D_tcsnicmp=strncmp")
 
 # arguments
 arguments = ""

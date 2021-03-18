@@ -54,6 +54,7 @@ window.onresize = function()
 	dst.width = dst.offsetWidth;
 	dst.height = dst.offsetHeight;
 	if (!window.loadedImage)
-		return;	
+		return;
+	dst.getContext("2d").transform(1, 0, 0, -1, 0, dst.height);
 	dst.getContext("2d").drawImage(window.loadedImage, 0, 0, dst.width, dst.height);
 };

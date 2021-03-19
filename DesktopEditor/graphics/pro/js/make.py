@@ -46,13 +46,14 @@ libRaster_src_path = "./../../../raster"
 input_raster_sources = ["BgraFrame.cpp", "ImageFileFormatChecker.cpp"]
 
 libZlib_src_path = "./../../../../OfficeUtils/src/zlib-1.2.11"
-input_zlib_sources = ["inflate.c", "zutil.c", "crc32.c", "adler32.c", "inftrees.c",
-                      "inffast.c"]
+input_zlib_sources = ["inflate.c", "zutil.c", "crc32.c", "adler32.c", "inftrees.c", "inffast.c",
+                      "deflate.c", "trees.c"]
 
 libCxImage_src_path = "./../../../cximage/CxImage"
 input_cximage_sources = ["ximaenc.cpp", "ximaexif.cpp", "ximage.cpp", "ximainfo.cpp",
                          "ximajpg.cpp", "ximalpha.cpp", "ximapal.cpp", "ximasel.cpp",
-                         "xmemfile.cpp", "ximapng.cpp"]
+                         "xmemfile.cpp", "ximapng.cpp", "ximabmp.cpp", "ximatran.cpp",
+                         "ximatif.cpp", "tif_xfile.cpp"]
 
 libJpeg_src_path = "./../../../cximage/jpeg"
 input_jpeg_sources = ["jerror.c", "jdmarker.c", "jdapimin.c", "jdmaster.c", "jdapistd.c",
@@ -69,6 +70,15 @@ libPng_src_path = "./../../../cximage/png"
 input_png_sources = ["pngread.c", "pngmem.c", "pngerror.c", "png.c", "pngrio.c", "pngtrans.c",
                      "pngget.c", "pngrutil.c", "pngrtran.c", "pngset.c"]
 
+libTiff_src_path = "./../../../cximage/tiff"
+input_tiff_sources = ["tif_close.c", "tif_dir.c", "tif_aux.c", "tif_getimage.c", "tif_strip.c",
+                      "tif_open.c", "tif_tile.c", "tif_error.c", "tif_read.c", "tif_flush.c",
+                      "tif_dirinfo.c", "tif_compress.c", "tif_warning.c", "tif_swab.c",
+                      "tif_color.c", "tif_dirread.c", "tif_write.c", "tif_codec.c", "tif_luv.c",
+                      "tif_dirwrite.c", "tif_dumpmode.c", "tif_fax3.c", "tif_ojpeg.c",
+                      "tif_jpeg.c", "tif_next.c", "tif_thunder.c", "tif_packbits.c", "tif_lzw.c",
+                      "tif_zip.c", "tif_fax3sm.c", "tif_predict.c"]
+
 sources = []
 for item in input_raster_sources:
     sources.append(libRaster_src_path + '/' + item)
@@ -80,6 +90,8 @@ for item in input_jpeg_sources:
     sources.append(libJpeg_src_path + '/' + item)
 for item in input_png_sources:
     sources.append(libPng_src_path + '/' + item)
+for item in input_tiff_sources:
+    sources.append(libTiff_src_path + '/' + item)
 sources.append("./wasm/src/base.cpp")
 
 compiler_flags.append("-I./../../../../OfficeUtils/src/zlib-1.2.11")

@@ -102,7 +102,7 @@ typedef T_ULONG64   UINT64;
 #else
 
 #if (!defined (_MAC) && (!defined(MIDL_PASS) || defined(__midl)) && (!defined(_M_IX86) || (defined(_INTEGRAL_MAX_BITS) && _INTEGRAL_MAX_BITS >= 64)))
-#ifndef __int64
+#ifdef BUILDING_WASM_MODULE
 #define __int64 long long
 #endif
 typedef __int64				T_LONG64;

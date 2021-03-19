@@ -64,6 +64,7 @@ void CxImageToMediaFrame( CxImage& img, CBgraFrame* bgra )
     RGBQUAD* pPalette = img.GetPalette();
     bool bIsAlphaPalettePresent = img.AlphaPaletteIsEnabled();
     bool bIsAlphaApplied = false;
+    bool bIsRGBA = !bgra->get_IsRGBA();
 
     if( 1 == nBitsPerPixel )
     {
@@ -89,9 +90,9 @@ void CxImageToMediaFrame( CxImage& img, CBgraFrame* bgra )
             for( int nPos = 0; nPos < nWidth; ++nPos, dst += 4 )
             {
                 int index = (src[nPos >> 3] >> (7 - (nPos & 7)) * 1) & 1;
-                dst[0] = pPalette[index].rgbBlue;
+                dst[0] = bIsRGBA ? pPalette[index].rgbBlue : pPalette[index].rgbRed;
                 dst[1] = pPalette[index].rgbGreen;
-                dst[2] = pPalette[index].rgbRed;
+                dst[2] = bIsRGBA ? pPalette[index].rgbRed : pPalette[index].rgbBlue;
             }
         }
     }
@@ -120,9 +121,9 @@ void CxImageToMediaFrame( CxImage& img, CBgraFrame* bgra )
             for( int nPos = 0; nPos < nWidth; ++nPos, dst += 4 )
             {
                 int index = (src[nPos >> 2] >> (3 - (nPos & 3)) * 2) & 3;
-                dst[0] = pPalette[index].rgbBlue;
+                dst[0] = bIsRGBA ? pPalette[index].rgbBlue : pPalette[index].rgbRed;
                 dst[1] = pPalette[index].rgbGreen;
-                dst[2] = pPalette[index].rgbRed;
+                dst[2] = bIsRGBA ? pPalette[index].rgbRed : pPalette[index].rgbBlue;
             }
         }
     }
@@ -155,9 +156,9 @@ void CxImageToMediaFrame( CxImage& img, CBgraFrame* bgra )
             for( int nPos = 0; nPos < nWidth; ++nPos, dst += 4 )
             {
                 int index = (src[nPos >> 1] >> (1 - (nPos & 1)) * 4) & 15;
-                dst[0] = pPalette[index].rgbBlue;
+                dst[0] = bIsRGBA ? pPalette[index].rgbBlue : pPalette[index].rgbRed;
                 dst[1] = pPalette[index].rgbGreen;
-                dst[2] = pPalette[index].rgbRed;
+                dst[2] = bIsRGBA ? pPalette[index].rgbRed : pPalette[index].rgbBlue;
 
                 if (bIsAlphaPalettePresent)
                     dst[3] = pPalette[index].rgbReserved;
@@ -193,9 +194,9 @@ void CxImageToMediaFrame( CxImage& img, CBgraFrame* bgra )
                 for( int nPos = 0; nPos < nWidth; ++nPos, src += 1, dst += 4 )
                 {
                     int index = src[0];
-                    dst[0] = pPalette[index].rgbBlue;
+                    dst[0] = bIsRGBA ? pPalette[index].rgbBlue : pPalette[index].rgbRed;
                     dst[1] = pPalette[index].rgbGreen;
-                    dst[2] = pPalette[index].rgbRed;
+                    dst[2] = bIsRGBA ? pPalette[index].rgbRed : pPalette[index].rgbBlue;
 
                     if (bIsAlphaPalettePresent)
                         dst[3] = pPalette[index].rgbReserved;
@@ -237,9 +238,9 @@ void CxImageToMediaFrame( CxImage& img, CBgraFrame* bgra )
         {
             for( int nPos = 0; nPos < nWidth; ++nPos, src += 3, dst += 4 )
             {
-                dst[0] = src[0];
+                dst[0] = bIsRGBA ? src[0] : src[2];
                 dst[1] = src[1];
-                dst[2] = src[2];
+                dst[2] = bIsRGBA ? src[2] : src[0];
             }
         }
     }
@@ -254,9 +255,9 @@ void CxImageToMediaFrame( CxImage& img, CBgraFrame* bgra )
         {
             for( int nPos = 0; nPos < nWidth; ++nPos, src += 4, dst += 4 )
             {
-                dst[0] = src[0];
+                dst[0] = bIsRGBA ? src[0] : src[2];
                 dst[1] = src[1];
-                dst[2] = src[2];
+                dst[2] = bIsRGBA ? src[2] : src[0];
             }
         }
     }

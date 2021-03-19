@@ -266,6 +266,14 @@ namespace MetaFile
 			a = 0;
 		}
 
+		void InitWhite()
+		{
+			r = 255;
+			g = 255;
+			b = 255;
+			a = 0;
+		}
+
 		void Copy(TEmfColor* pOther)
 		{
 			r = pOther->r;

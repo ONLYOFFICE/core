@@ -1303,7 +1303,7 @@ void Animation::InitTimingTags(PPTX::Logic::Timing &oTiming)
     std::list<std::list<SOldAnimation*> > arrClickPar;
     SplitAnim(arrClickPar);
 
-    for (auto clickPar : arrClickPar)
+    for (auto& clickPar : arrClickPar)
     {
         PPTX::Logic::TimeNodeBase child;
         FillClickPar(clickPar, child);
@@ -1441,7 +1441,7 @@ void Animation::SplitAnim(std::list<std::list<SOldAnimation*> >& arrClickPar)
                 a2.anim->m_AnimationAtom.m_OrderID;
     });
 
-    for (auto oldAnim : m_arrOldAnim)
+    for (auto& oldAnim : m_arrOldAnim)
     {
         if (arrClickPar.empty())
         {
@@ -1472,7 +1472,6 @@ void Animation::FillClickPar(std::list<SOldAnimation*>& clickPar, PPTX::Logic::T
     if (animAtom.m_OrderID == 1 &&
             animAtom.m_fAutomatic)
     {
-        PPTX::Logic::Cond cond;
         cond.evt = L"onBegin";
         cond.delay = L"0";
         cond.tn = 2;
@@ -1485,14 +1484,14 @@ void Animation::FillClickPar(std::list<SOldAnimation*>& clickPar, PPTX::Logic::T
     FillGroup(clickPar.front(), childTimeNode, groupDelay, L"withGroup");
     par1->cTn.childTnLst = new PPTX::Logic::ChildTnLst;
     par1->cTn.childTnLst->list.push_back(childTimeNode);
-    clickPar.pop_back();
+    clickPar.pop_front();
 
     while (!clickPar.empty())
     {
         PPTX::Logic::TimeNodeBase childTimeNode;
         FillGroup(clickPar.front(), childTimeNode, groupDelay, L"afterGroup");
         par1->cTn.childTnLst->list.push_back(childTimeNode);
-        clickPar.pop_back();
+        clickPar.pop_front();
     }
 
     oTimeNodeBase.m_node = par1;
@@ -1503,31 +1502,37 @@ void Animation::FillGroup  (SOldAnimation* pOldAnim, PPTX::Logic::TimeNodeBase &
     auto anim = pOldAnim->anim->m_AnimationAtom;
     auto par = new PPTX::Logic::Par;
 
-    FillCTnParams(par->cTn, nodeType);
+    FillCTnParams(par->cTn, nodeType, std::to_wstring(groupDelay));
     PPTX::Logic::TimeNodeBase childTimeNode;
     if (anim.m_fAutomatic)
     {
         FillAfterEffect(pOldAnim, childTimeNode, groupDelay);
     } else
     {
-        FillClickEffect(pOldAnim, childTimeNode);
+        FillClickEffect(pOldAnim, childTimeNode, groupDelay);
     }
+
     par->cTn.childTnLst = new PPTX::Logic::ChildTnLst;
     par->cTn.childTnLst->list.push_back(childTimeNode);
 
     oTimeNodeBase.m_node = par;
 }
 
-void Animation::FillClickEffect(SOldAnimation* pOldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase)
+void Animation::FillClickEffect(SOldAnimation* pOldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase, _UINT32& groupDelay)
 {
     auto par = new PPTX::Logic::Par;
 
-    FillCTnParams(par->cTn, L"clickEffect");
+    FillCTnParams(par->cTn, L"clickEffect", L"0", L"hold", true);
     par->cTn.childTnLst = new PPTX::Logic::ChildTnLst;
+    groupDelay += 500; // Effect time // TODO for anim
 
     PPTX::Logic::TimeNodeBase childTimeNode;
     auto set = new PPTX::Logic::Set;
     FillCBhvr(pOldAnim, set->cBhvr);
+    set->to = new PPTX::Logic::AnimVariant;
+    set->to->node_name = L"to";
+    set->to->strVal = L"visible";
+
     childTimeNode.m_node = set;
     par->cTn.childTnLst->list.push_back(childTimeNode);
 
@@ -1542,15 +1547,19 @@ void Animation::FillAfterEffect(SOldAnimation* pOldAnim, PPTX::Logic::TimeNodeBa
     auto par = new PPTX::Logic::Par;
 
     groupDelay += anim.m_DelayTime;
-    auto delay = std::to_wstring(groupDelay);
+    auto delay = std::to_wstring(anim.m_DelayTime);
     groupDelay += 500; // Effect time // TODO for anim
 
-    FillCTnParams(par->cTn, L"afterEffect", delay);
+    FillCTnParams(par->cTn, L"afterEffect", delay, L"hold", true);
     par->cTn.childTnLst = new PPTX::Logic::ChildTnLst;
 
     PPTX::Logic::TimeNodeBase childTimeNode;
     auto set = new PPTX::Logic::Set;
     FillCBhvr(pOldAnim, set->cBhvr);
+    set->to = new PPTX::Logic::AnimVariant;
+    set->to->node_name = L"to";
+    set->to->strVal = L"visible";
+
     childTimeNode.m_node = set;
     par->cTn.childTnLst->list.push_back(childTimeNode);
 
@@ -1566,16 +1575,24 @@ void Animation::FillCBhvr      (SOldAnimation* pOldAnim, PPTX::Logic::CBhvr &oCB
 }
 
 void Animation::FillCTnParams  (PPTX::Logic::CTn &oCTN, std::wstring nodeType, std::wstring condDelay,
-                     std::wstring fill)
+                     std::wstring fill, bool isPresetExist)
 {
     oCTN.id = m_cTnId++;
     oCTN.fill = fill;
     oCTN.nodeType = nodeType;
 
+    if (isPresetExist)
+    {
+        oCTN.presetID = 1;
+        oCTN.presetClass = L"entr";
+        oCTN.presetSubtype = 0;
+        oCTN.grpId = 0;
+    }
+
     // p:stCondLst
     oCTN.stCondLst = new PPTX::Logic::CondLst;
     oCTN.stCondLst->node_name = L"stCondLst";
-    PPTX::Logic::Cond cond1;
-    cond1.delay = condDelay;
-    oCTN.stCondLst->list.push_back(cond1);
+    PPTX::Logic::Cond cond;
+    cond.delay = condDelay;
+    oCTN.stCondLst->list.push_back(cond);
 }

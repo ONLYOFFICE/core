@@ -179,7 +179,7 @@ private:
     void FillCBhvr      (SOldAnimation* pOldAnim, PPTX::Logic::CBhvr &oCBhvr);
 
     void FillCTnParams  (PPTX::Logic::CTn &oCTN, std::wstring nodeType, std::wstring condDelay = L"0",
-                         std::wstring fill = L"hold");
+                         std::wstring fill = L"hold", bool isPresetExist = false);
 
 private:
     unsigned m_cTnId;

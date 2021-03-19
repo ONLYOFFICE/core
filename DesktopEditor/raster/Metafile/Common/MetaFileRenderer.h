@@ -230,6 +230,12 @@ namespace MetaFile
 			double dCosTheta = cosf(dTheta);
 			double dSinTheta = sinf(dTheta);
 
+			double dM11, dM12, dM21, dM22, dRx, dRy;
+			m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
+
+			if (dM22 > 0)
+			    dSinTheta *= -1;
+
 			float fL = 0, fT = 0, fW = 0, fH = 0;
 			float fUndX1 = 0, fUndY1 = 0, fUndX2 = 0, fUndY2 = 0, fUndSize = 1;
 
@@ -350,9 +356,6 @@ namespace MetaFile
 				// В данной ситуации матрица преобразования должна быть диагональной, в ней могут быть только отражения,
 				// которые в данном случае нужно проправить
 
-				double dM11, dM12, dM21, dM22, dRx, dRy;
-				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
-
 				double dShiftX = 0;
 				double dShiftY = 0;
 
@@ -393,7 +396,6 @@ namespace MetaFile
 			if (0 != pFont->GetEscapement())
 			{
 				// TODO: тут реализован только параметр shEscapement, еще нужно реализовать параметр Orientation
-				double dM11, dM12, dM21, dM22, dRx, dRy;
 				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
 
 				double dOldX = dX;

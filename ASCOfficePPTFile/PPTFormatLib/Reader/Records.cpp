@@ -520,7 +520,7 @@ IRecord* CreateByType(SRecordHeader oHeader)
             //CREATE_BY_TYPE(RECORD_TYPE_NAMEDSHOW_SLIDES			, CRecordNamedShowSlidesAtom)
             //CREATE_BY_TYPE(RECORD_TYPE_SHEET_PROPERTIES			, CRecordNormalViewSetInfoAtom)
 
-    CREATE_BY_TYPE(RT_SorterViewInfo			, CRecordColorSchemeAtom)
+    CREATE_BY_TYPE(RT_ColorSchemeAtom                       , CRecordColorSchemeAtom)
 
     CREATE_BY_TYPE(RT_RoundTripOriginalMainMasterId12Atom	, CRecordTripOriginalMasterId12Atom)
     CREATE_BY_TYPE(RT_RoundTripCompositeMasterId12Atom		, CRecordTripCompositeMasterId12Atom)

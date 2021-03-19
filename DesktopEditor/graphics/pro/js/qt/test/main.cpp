@@ -10,7 +10,7 @@ int main()
     BYTE* pData = NULL;
     DWORD nBytesCount;
     NSFile::CFileBinary oFile;
-    if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.jpg", &pData, nBytesCount))
+    if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.png", &pData, nBytesCount))
         return 1;
     oFile.CloseFile();
 

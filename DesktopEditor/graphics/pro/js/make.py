@@ -45,10 +45,14 @@ exported_functions = ["_malloc",
 libRaster_src_path = "./../../../raster"
 input_raster_sources = ["BgraFrame.cpp", "ImageFileFormatChecker.cpp"]
 
+libZlib_src_path = "./../../../../OfficeUtils/src/zlib-1.2.11"
+input_zlib_sources = ["inflate.c", "zutil.c", "crc32.c", "adler32.c", "inftrees.c",
+                      "inffast.c"]
+
 libCxImage_src_path = "./../../../cximage/CxImage"
 input_cximage_sources = ["ximaenc.cpp", "ximaexif.cpp", "ximage.cpp", "ximainfo.cpp",
                          "ximajpg.cpp", "ximalpha.cpp", "ximapal.cpp", "ximasel.cpp",
-                         "xmemfile.cpp"]
+                         "xmemfile.cpp", "ximapng.cpp"]
 
 libJpeg_src_path = "./../../../cximage/jpeg"
 input_jpeg_sources = ["jerror.c", "jdmarker.c", "jdapimin.c", "jdmaster.c", "jdapistd.c",
@@ -61,19 +65,27 @@ input_jpeg_sources = ["jerror.c", "jdmarker.c", "jdapimin.c", "jdmaster.c", "jda
                       "jcarith.c", "jchuff.c", "jccoefct.c", "jcmainct.c", "jfdctint.c",
                       "jfdctfst.c", "jfdctflt.c"]
 
+libPng_src_path = "./../../../cximage/png"
+input_png_sources = ["pngread.c", "pngmem.c", "pngerror.c", "png.c", "pngrio.c", "pngtrans.c",
+                     "pngget.c", "pngrutil.c", "pngrtran.c", "pngset.c"]
+
 sources = []
 for item in input_raster_sources:
     sources.append(libRaster_src_path + '/' + item)
+for item in input_zlib_sources:
+    sources.append(libZlib_src_path + '/' + item)
 for item in input_cximage_sources:
     sources.append(libCxImage_src_path + '/' + item)
 for item in input_jpeg_sources:
     sources.append(libJpeg_src_path + '/' + item)
+for item in input_png_sources:
+    sources.append(libPng_src_path + '/' + item)
 sources.append("./wasm/src/base.cpp")
 
-#compiler_flags.append("-I" + libRaster_src_path)
+compiler_flags.append("-I./../../../../OfficeUtils/src/zlib-1.2.11")
 #compiler_flags.append("-I" + libCxImage_src_path)
 #compiler_flags.append("-I" + libJpeg_src_path)
-compiler_flags.append("-D__linux__ -DBUILDING_WASM_MODULE -D_tcsnicmp=strncmp")
+compiler_flags.append("-DBUILDING_WASM_MODULE -D_tcsnicmp=strncmp")
 
 # arguments
 arguments = ""

@@ -87,14 +87,6 @@ function Raster()
         var imageRGBAClampedArray = new Uint8ClampedArray(Module["HEAP8"].buffer, imageRGBA, 4 * imageW * imageH);
         var canvasData = new ImageData(imageRGBAClampedArray, imageW, imageH);
 		
-		// correct
-		var alphaIndex = 4 * imageW * imageH - 1;
-		while (alphaIndex > 0)
-		{
-			canvasData.data[alphaIndex] = 255;
-			alphaIndex -= 4;
-		}
-		
         canvasCtx.putImageData(canvasData, 0, 0);
 
         Module["_Raster_Destroy"](imageFile);

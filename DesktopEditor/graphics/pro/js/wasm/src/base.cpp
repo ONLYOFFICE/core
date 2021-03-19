@@ -15,6 +15,7 @@ CBgraFrame* Raster_Create()
 CBgraFrame* Raster_Load(unsigned char* buffer, int size)
 {
     CBgraFrame* oRes = new CBgraFrame();
+    oRes->put_IsRGBA(false);
     oRes->Decode(buffer, size);
     return oRes;
 }

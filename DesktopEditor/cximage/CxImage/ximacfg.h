@@ -26,7 +26,7 @@
 #define CXIMAGE_SUPPORT_BMP 0
 #define CXIMAGE_SUPPORT_GIF 0
 #define CXIMAGE_SUPPORT_JPG 1
-#define CXIMAGE_SUPPORT_PNG 0
+#define CXIMAGE_SUPPORT_PNG 1
 #define CXIMAGE_SUPPORT_ICO 0
 #define CXIMAGE_SUPPORT_TIF 0
 #define CXIMAGE_SUPPORT_TGA 0
@@ -83,7 +83,11 @@
 #define CXIMAGE_ERR_NOFILE "null file handler"
 #define CXIMAGE_ERR_NOIMAGE "null image!!!"
 
+#if defined(BUILDING_WASM_MODULE)
+#define CXIMAGE_SUPPORT_EXCEPTION_HANDLING 0
+#else
 #define CXIMAGE_SUPPORT_EXCEPTION_HANDLING 1
+#endif // BUILDING_WASM_MODULE
 
 /////////////////////////////////////////////////////////////////////////////
 //color to grey mapping <H. Muelner> <jurgene>

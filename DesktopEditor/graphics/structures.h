@@ -107,6 +107,9 @@ const long c_BrushTypePathRadialGradient = 6001;
 const long c_BrushTypePathConicalGradient = 6002;
 const long c_BrushTypePathDiamondGradient = 6003;
 const long c_BrushTypePathNewLinearGradient = 6004;
+const long c_BrushTypeTriagnleMeshGradient = 6005;
+const long c_BrushTypeCurveGradient     = 6006;
+const long c_BrushTypeTensorCurveGradient = 6007;
 
 const long c_BrushTypeShading = 7000;
 

@@ -163,7 +163,7 @@ public:
 	virtual HRESULT PenDashPattern(double* pPattern, LONG lCount);
 
 // brush ------------------------------------------------------------------------------------
-    virtual void put_BrushGradInfo(const NSStructures::GradientInfo _ginfo) override {
+    virtual void put_BrushGradInfo(const NSStructures::GradientInfo &_ginfo) override {
         m_oBrush.m_oGradientInfo = _ginfo;
     }
 

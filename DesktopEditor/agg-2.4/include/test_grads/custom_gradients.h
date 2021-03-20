@@ -5,6 +5,8 @@
 #define M_1_PI 0.318309886183790671538
 #endif
 
+
+
 namespace agg
 {
     /**
@@ -20,7 +22,7 @@ namespace agg
     class calcBase
     {
     public:
-        virtual float eval(float, float) = 0;
+        virtual float eval(float , float ) = 0;
         virtual ~calcBase() {}
         void set_rotation(float angle)
         {
@@ -47,9 +49,9 @@ namespace agg
         {
             srand(time(NULL));
         }
-        virtual float eval(float, float) override
+        virtual float eval(float , float ) override
         {
-            return rand() / (float)RAND_MAX;
+            return rand() / (float )RAND_MAX;
         }
     };
 
@@ -87,7 +89,7 @@ namespace agg
     {
     public:
         calcConical(const NSStructures::GradientInfo &_gi, float _cx, float _cy, float _factor) : ginfo(_gi), cx(_cx), cy(_cy), factor(_factor), inverseFactor(1.0f / _factor),
-                                                                                                  invXsize(1.0f / _gi.xsize), invYsize(1.0f / _gi.ysize), m1pi((float)agg::pi)
+                                                                                                  invXsize(1.0f / _gi.xsize), invYsize(1.0f / _gi.ysize)
         {
             cx += ginfo.centerX * inverseFactor;
             cy += ginfo.centerY * inverseFactor;
@@ -100,7 +102,7 @@ namespace agg
             rotate(x, y);
             x *= invXsize;
             y *= invYsize;
-            float t = fabs(atan2(x, y)) * m1pi;
+            float t = fabs(atan2(x, y)) * M_1_PI;
             return t;
         }
 
@@ -182,24 +184,152 @@ namespace agg
         }
         virtual float eval(float x, float y) override
         {
-            // тут можно любую интерполяцию сделать, там не написано какая должна быть
-            // пока просто по проекциям берет среднее todo refactor
-            float t1 = relative_project_len(x, y, ginfo.shading.triangle[0], ginfo.shading.triangle[1]);
-            float t2 = relative_project_len(x, y, ginfo.shading.triangle[1], ginfo.shading.triangle[2]);
-            float t3 = relative_project_len(x, y, ginfo.shading.triangle[2], ginfo.shading.triangle[0]);
-            return 0.333333333 * (ginfo.shading.triangle_parametrs[0] * (t2 + 1 - t1) + 
-            ginfo.shading.triangle_parametrs[1] * (t3 + 1 - t2) + 
-            ginfo.shading.triangle_parametrs[2] * (t1 + 1 - t3));
+            auto w = baricentric_weights({x, y}, ginfo.shading.triangle);
+            return w[0] * ginfo.shading.triangle_parametrs[0] +
+                   w[1] * ginfo.shading.triangle_parametrs[1] +
+                   w[2] * ginfo.shading.triangle_parametrs[2];
         }
-        // x first, наверное это стоит немного отрефакторить пока просто пробую чтобы работало
-        //todo
-        static float relative_project_len(float x, float y, std::pair<float, float> start, std::pair<float, float> finish)
+
+        /**
+         *  Вычисляем веса по барицетрическим координатам
+         *  https://codeplea.com/triangular-interpolation
+        */
+        static std::vector<float>
+        baricentric_weights(const NSStructures::Point &P, const std::vector<NSStructures::Point> &t)
         {
-            return ((x - start.first) * (finish.first - start.first) + (y - start.second) * (finish.second - start.second))
-             / ((finish.first - start.first) * (finish.first - start.first) +
-             (finish.second - start.second) * (finish.second - start.second)); //(a, b) / b^2
+            std::vector<float> r(3);
+            r[0] = ( (t[1].y - t[2].y) * (P.x - t[2].x) + (t[2].x - t[1].x) * (P.y - t[2].y) ) /
+                    ((t[1].y - t[2].y) * (t[0].x - t[2].x) + (t[2].x - t[1].x) * (t[0].y - t[2].y));
+            r[1] = ( (t[2].y - t[0].y) * (P.x - t[2].x) + (t[0].x - t[2].x) * (P.y - t[2].y) ) /
+                    ((t[1].y - t[2].y) * (t[0].x - t[2].x) + (t[2].x - t[1].x) * (t[0].y - t[2].y));
+            r[2] = 1 - r[0] - r[1];
+            return r;
         }
         NSStructures::GradientInfo ginfo;
+    };
+
+    class calcCurve : public calcBase
+    {
+        /** 
+         * Пока наивный метод, из недостатков - долгая инициализация, из плюсов если рендерить несколько раз
+         * то будет быстро, достаточно будет преобразование старых координат в новые. И как то сохранить результат инициализации.
+         * Пока не буду ничего этого делать, тк. наверное все равно придется поменять.
+         */
+    public:
+        calcCurve(const NSStructures::GradientInfo &_g, bool calculate_tensor_coefs = true) : tensor_size(4)
+        {
+            ginfo = _g;
+            if (calculate_tensor_coefs)
+                calculate_tensor();
+            RES = 10; //ginfo.shading.function.get_resolution();
+            float delta = 1.0 / RES;
+            float u = 0, v = 0;
+            auto start_p = get_p(u, v);
+            xmax = xmin = start_p.x;
+            ymax = ymin = start_p.y;
+            precalc = std::vector<std::vector<float>>(RES, std::vector<float>(RES, 0.0f));
+            for (;u <= 1; u += delta) {
+                for (;v <= 1; v+= delta) {
+                    auto p = get_p(u, v);
+                    xmax = std::max(p.x, xmax);
+                    ymax = std::max(p.y, ymax);
+                    xmin = std::min(p.x, xmin);
+                    ymin = std::min(p.y, ymin);
+                }
+            }
+            for (u = 0.0; u <= 1; u += delta) {
+                for (v = 0.0; v <= 1; v+= delta) {
+                    auto p = get_p(u, v);
+                    auto i = get_index(p.x, p.y);
+                    if (i.first == 0 || i.first == RES - 1 || i.second == 0 || i.second == RES - 1)
+                        precalc[i.first][i.second] = 0;
+                    else 
+                        precalc[i.first][i.second] = 1;
+                }
+            }
+        }
+        virtual float eval(float x, float y) override
+        {
+            auto i = get_index(x, y);
+            return precalc[i.first][i.second];
+        }
+
+    private:
+        NSStructures::Point get_p(float u, float v)
+        {
+            NSStructures::Point p;
+            for (int i = 0; i < tensor_size; i++)
+            {
+                for (int j = 0; j < tensor_size; j++) {
+                    p+= ginfo.shading.patch[i][j] * berstein_polynomial(u, i) * berstein_polynomial(v, j);
+                }
+            }
+            return p;
+        }        
+        float berstein_polynomial(float t, int i) 
+        {
+            switch (i)
+            {
+            case 0:
+                return (1 - t) * (1 - t) * (1- t);
+            case 1:
+                return 3 * t * (1 - t) * (1- t);
+            case 2:
+                return 3 * t * t * (1- t);
+            case 3:
+                return t * t * t;
+            
+            default:
+                printf("!!!!!!");
+            }
+        }
+        
+        // pdf 208p.
+        void calculate_tensor()
+        {
+            auto p = ginfo.shading.patch;
+            //-----------------------------------------------------------------------------
+            p[1][1] = (1.0 / 9) * ( -4.0 * p[0][0] + 6 * ( p[0][1] + p[1][0] ) 
+
+                        - 2 * ( p[0][3] + p[3][0] ) + 3 * ( p[3][1] + p[1][3] ) - p[3][3] );
+            //-----------------------------------------------------------------------------
+            p[1][2] = (1.0 / 9) * ( -4.0 * p[0][3] + 6 * ( p[0][2] + p[1][3] ) 
+
+                        - 2 * ( p[0][0] + p[3][3] ) + 3 * ( p[3][2] + p[1][0] ) - p[3][0] );
+            //-----------------------------------------------------------------------------
+            p[2][1] = (1.0 / 9) * ( -4.0 * p[3][0] + 6 * ( p[3][1] + p[2][0] ) 
+
+                        - 2 * ( p[3][3] + p[0][0] ) + 3 * ( p[0][1] + p[2][3] ) - p[0][3] );
+            //-----------------------------------------------------------------------------
+            p[2][2] = (1.0 / 9) * ( -4.0 * p[3][3] + 6 * ( p[3][2] + p[2][3] ) 
+
+                        - 2 * ( p[3][0] + p[0][3] ) + 3 * ( p[0][2] + p[2][0] ) - p[0][0] );
+            //-----------------------------------------------------------------------------
+            ginfo.shading.patch = p;
+        }
+        
+        std::pair<size_t, size_t> get_index(float x, float y)
+        {
+            size_t x_index = (size_t)(RES - 1) * (x - xmin) / (xmax - xmin);
+            if (x_index < 0)
+                x_index = 0;
+            if (x_index > RES - 1)
+                x_index = RES - 1;
+
+            size_t y_index = (size_t)(RES - 1) * (y - ymin) / (ymax - ymin);
+            if (y_index < 0)
+                y_index = 0;
+            if (y_index > RES - 1)
+                y_index = RES - 1;
+            
+            return {x_index, y_index};
+        }
+
+        NSStructures::GradientInfo ginfo;
+        std::vector<std::vector<float>> precalc;
+        const size_t tensor_size;
+        float xmin, xmax, ymin, ymax;
+        size_t RES;
     };
 
     template <class ColorT>
@@ -207,8 +337,6 @@ namespace agg
     {
     public:
         typedef ColorT color_type;
-        typedef NSStructures::GradientInfo ginfo;
-
     protected:
         enum
         {
@@ -221,7 +349,7 @@ namespace agg
     protected:
         int m_state;
 
-        ginfo m_oGradientInfo;
+        NSStructures::GradientInfo m_oGradientInfo;
         float invStep;
         agg::point_d m_center;
         float m_factor;
@@ -239,6 +367,7 @@ namespace agg
         bool m_valid_table[MaxColorIndex + 1];
 
     protected:
+        
         inline float calculate_param(const float &x, const float &y)
         {
             float t = calculate->eval(x, y);
@@ -290,7 +419,11 @@ namespace agg
         {
         }
         virtual ~gradient_base() {}
-        void SetGradientInfo(ginfo _g, Aggplus::BrushType bType)
+
+        /** 
+         * Выбор варианта параметризации. И получение основной инфы о градиенте. 
+         */
+        void SetGradientInfo(const NSStructures::GradientInfo &_g, Aggplus::BrushType bType)
         {
             m_oGradientInfo = _g;
             invStep = 1.0f / m_oGradientInfo.discrete_step;
@@ -311,9 +444,19 @@ namespace agg
             case Aggplus::BrushTypeNewLinearGradient:
                 calculate = new calcNewLinear(m_oGradientInfo, xmin, ymin, xmax, ymax);
                 break;
-            case Aggplus::BrushTypeMyTestGradient:
+
+            case Aggplus::BrushTypeTriagnleMeshGradient:
                 calculate = new calcTriangle(m_oGradientInfo);
                 break;
+
+            case Aggplus::BrushTypeCurveGradient:
+                calculate = new calcCurve(m_oGradientInfo);
+                break;
+
+            case Aggplus::BrushTypeTensorCurveGradient:
+                calculate = new calcCurve(m_oGradientInfo, false);
+                break;
+
             default:
                 fprintf(stderr, "WRONG BRUSH TYPE");
                 calculate = new calcRandom();
@@ -321,6 +464,9 @@ namespace agg
             }
         }
 
+        /** 
+         * Для старой цветовой функции. 
+         */
         void SetSubColors(const color_type *colors, const float *positions, int count)
         {
             m_pSubColors = colors;
@@ -328,6 +474,9 @@ namespace agg
             m_nCountSubColors = count;
         }
 
+        /** 
+         * Нужно для функции отрисовки. 
+         */
         void prepare()
         {
             if (m_state != StateReady)
@@ -337,56 +486,54 @@ namespace agg
             }
         }
 
+        /** 
+         * Генерирует цвет пикселя для рендерной функции. 
+         */
         void generate(color_type *span, int x, int y, unsigned len)
         {
             for (unsigned count = 0; count < len; ++count, ++x)
             {
-                double _x = x;
-                double _y = y;
-                m_trans.transform(&_x, &_y);
-                float t = calculate_param((float)_x, (float)_y);
-                if (m_oGradientInfo.shading.parametrised_triangle_shading) {
-                    *span++ = this->triangle(x, y);
-                }
-                else if (m_oGradientInfo.shading.f_type == NSStructures::ShadingInfo::UseXY2Color)
+                if (m_oGradientInfo.shading.shading_type == NSStructures::ShadingInfo::FunctionOnly) 
                 {
+                    float _x = x;
+                    float _y = y;
                     _x = (_x - xmin) / (xmax - xmin);
                     _y = (_y - ymin) / (ymax - xmin);
                     *span++ = m_oGradientInfo.shading.function.get_color(_x, _y); //m_color_table[index];
                 }
-                else if (m_oGradientInfo.shading.f_type == NSStructures::ShadingInfo::UseT2Color)
+                else if (m_oGradientInfo.shading.shading_type == NSStructures::ShadingInfo::TriangleInterpolation)
                 {
-                    *span++ = m_oGradientInfo.shading.function.get_color(t);
+                    *span++ = this->triangle(x, y);
                 }
-                else
+                else if (m_oGradientInfo.shading.shading_type == NSStructures::ShadingInfo::CurveInterpolation)
                 {
-                    int index = int(t * MaxColorIndex + 0.5);
-                    if (!m_valid_table[index])
-                        CalcColor(index);
-                    *span++ = m_color_table[index];
+                    *span++ = this->triangle(x,y); // todo
+                }
+                else if (m_oGradientInfo.shading.shading_type == NSStructures::ShadingInfo::TesorCurveInterpolation)
+                {
+                    *span++ = this->triangle(x,y); // todo
+                }
+                else if (m_oGradientInfo.shading.shading_type == NSStructures::ShadingInfo::Parametric)
+                {
+                    float t = calculate_param(x,y);
+                    if (m_oGradientInfo.shading.f_type == NSStructures::ShadingInfo::UseNew)
+                    {
+                        *span++ = m_oGradientInfo.shading.function.get_color(t);
+                    }
+                    if (m_oGradientInfo.shading.f_type == NSStructures::ShadingInfo::UseOld)
+                    {
+                        int index = int(t * MaxColorIndex + 0.5);
+                        if (!m_valid_table[index])
+                            CalcColor(index);
+                        *span++ = m_color_table[index];
+                    }
                 }
             }
         }
-        //todo refactor
-        ColorT mul(ColorT c1, float t)
-        {
-            return ColorT(c1.r * t, c1.g * t, c1.b * t, c1.a * t);
-        }
-        ColorT sum(ColorT c1, ColorT c2) 
-        {
-            return ColorT(c1.r + c2.r, c1.g + c2.g, c1.b + c2.b, c1.a + c2.a);
-        }
-        ColorT triangle(float x, float y)
-        {
-            float t1 = calcTriangle::relative_project_len(x, y, m_oGradientInfo.shading.triangle[0], m_oGradientInfo.shading.triangle[1]);
-            float t2 = calcTriangle::relative_project_len(x, y, m_oGradientInfo.shading.triangle[1], m_oGradientInfo.shading.triangle[2]);
-            float t3 = calcTriangle::relative_project_len(x, y, m_oGradientInfo.shading.triangle[2], m_oGradientInfo.shading.triangle[0]);
-
-            ColorT c1 = mul(m_oGradientInfo.shading.triangle_colors[0], (t2 + 1 - t1)/3);
-            ColorT c2 = mul(m_oGradientInfo.shading.triangle_colors[1], (t3 + 1 - t2)/3);
-            ColorT c3 = mul(m_oGradientInfo.shading.triangle_colors[2], (t2 + 1 - t1)/3);
-            return sum(c1, sum(c2,c3));
-        }
+        
+        /** 
+         * Выставляем всякую инфу про наш градиент. 
+         */
         void SetDirection(const agg::rect_d &bounds, const agg::trans_affine &trans)
         {
             m_trans = trans;
@@ -408,6 +555,9 @@ namespace agg
         }
 
     protected:
+        /**
+         * Для старой цветовой функции
+         */
         void CalcColor(int index)
         {
             float t = index * (1.0 / MaxColorIndex);
@@ -441,9 +591,47 @@ namespace agg
             m_valid_table[index] = true;
         }
 
+        /** 
+         * Треугольная пила, нужна для периодических градиентов. 
+         */
         inline float triagle_saw(float x)
         {
             return fabs(2 * asinf(sinf(x * pi)) * M_1_PI);
         }
+
+        int limit8bit(int a) {
+            if (a >= 0x100)
+                return 0xFF;
+            return a;
+        }
+        /** 
+         * Умножение цвета на число (теплейт поэтому не перегрузка *) 
+         */
+        ColorT mul(ColorT c1, float t)
+        {
+            return ColorT(limit8bit(c1.r * t), limit8bit(c1.g * t), limit8bit(c1.b * t), limit8bit(c1.a * t));
+        }
+        /** 
+         * Сумма двух цветов 
+         */
+        ColorT sum(ColorT c1, ColorT c2) 
+        {
+            return ColorT(limit8bit(c1.r + c2.r), limit8bit(c1.g + c2.g), 
+                        limit8bit(c1.b + c2.b), limit8bit(c1.a + c2.a));
+        }
+        /** 
+         * Треугольная интерполяция на цветовой функции.
+         * Вычисляется по барицентрическим координатам. 
+         */
+        ColorT triangle(float x, float y)
+        {
+            auto w = calcTriangle::baricentric_weights({x, y}, m_oGradientInfo.shading.triangle);
+            ColorT c1 = mul(m_oGradientInfo.shading.triangle_colors[0], fabs(w[0]));
+            ColorT c2 = mul(m_oGradientInfo.shading.triangle_colors[1], fabs(w[1]));
+            ColorT c3 = mul(m_oGradientInfo.shading.triangle_colors[2], fabs(w[2]));
+            return sum(c1, sum(c2,c3));
+        }
+
+
     };
 }

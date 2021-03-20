@@ -67,20 +67,23 @@ Aggplus::CBrush* CGraphicsRenderer::CreateBrush(NSStructures::CBrush* pBrush)
 
 		return pNew;
 	}
-	else if	   ((c_BrushTypeHorizontal	    == Type) ||
-				(c_BrushTypeVertical		== Type) ||
-				(c_BrushTypeDiagonal1		== Type) ||
-				(c_BrushTypeDiagonal2		== Type) ||
-				(c_BrushTypeCenter			== Type) ||
-				(c_BrushTypePathGradient1	== Type) ||
-				(c_BrushTypePathGradient2	== Type) ||
-				(c_BrushTypeCylinderHor		== Type) ||
-				(c_BrushTypeCylinderVer		== Type) || 
-                (c_BrushTypePathRadialGradient  == Type) ||
-                (c_BrushTypePathNewLinearGradient == Type) ||
-                (c_BrushTypePathConicalGradient == Type) ||
-                (c_BrushTypePathDiamondGradient == Type) ||
-                (c_BrushTypeMyTestGradient  == Type))
+	else if	   ((c_BrushTypeHorizontal	    == Type) 		||
+				(c_BrushTypeVertical		== Type) 		||
+				(c_BrushTypeDiagonal1		== Type)		||
+				(c_BrushTypeDiagonal2		== Type)		||
+				(c_BrushTypeCenter			== Type) 		||
+				(c_BrushTypePathGradient1	== Type) 		||
+				(c_BrushTypePathGradient2	== Type) 		||
+				(c_BrushTypeCylinderHor		== Type) 		||
+				(c_BrushTypeCylinderVer		== Type) 		|| 
+                (c_BrushTypePathRadialGradient  == Type) 	||
+                (c_BrushTypePathNewLinearGradient == Type)  ||
+                (c_BrushTypePathConicalGradient == Type) 	||
+                (c_BrushTypePathDiamondGradient == Type) 	||
+                (c_BrushTypeMyTestGradient  == Type)  		||
+                (c_BrushTypeTriagnleMeshGradient  == Type)  ||
+                (c_BrushTypeCurveGradient  == Type)  		||
+                (c_BrushTypeTensorCurveGradient == Type))
 	{
         Aggplus::CColor o1((BYTE)(pBrush->Alpha1 * m_dGlobalAlpha), pBrush->Color1, bIsSwappedRGB);
         Aggplus::CColor o2((BYTE)(pBrush->Alpha2 * m_dGlobalAlpha), pBrush->Color2, bIsSwappedRGB);
@@ -148,6 +151,15 @@ Aggplus::CBrush* CGraphicsRenderer::CreateBrush(NSStructures::CBrush* pBrush)
                 break;
             case c_BrushTypePathDiamondGradient:
                 pNew->m_bType = Aggplus::BrushTypeDiamondGradient;
+                break;
+			case c_BrushTypeTensorCurveGradient:
+                pNew->m_bType = Aggplus::BrushTypeTensorCurveGradient;
+                break;
+			case c_BrushTypeCurveGradient:
+                pNew->m_bType = Aggplus::BrushTypeCurveGradient;
+                break;
+			case c_BrushTypeTriagnleMeshGradient:
+                pNew->m_bType = Aggplus::BrushTypeTriagnleMeshGradient;
                 break;
             
             default:

@@ -125,7 +125,7 @@ namespace NSGraphics
 
         // test
 
-        virtual void put_BrushGradInfo(const NSStructures::GradientInfo _ginfo) = 0;
+        virtual void put_BrushGradInfo(const NSStructures::GradientInfo &_ginfo) = 0;
     };
 
     GRAPHICS_DECL IGraphicsRenderer* Create();

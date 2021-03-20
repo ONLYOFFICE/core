@@ -148,6 +148,10 @@ enum BrushType
     BrushTypeConicalGradient  = 6,
     BrushTypeDiamondGradient  = 7,
     BrushTypeNewLinearGradient = 8,
+    BrushTypeTriagnleMeshGradient = 9,
+    BrushTypeCurveGradient     = 10,
+    BrushTypeTensorCurveGradient = 11,
+
     BrushTypeMyTestGradient   = 100
 };
 

@@ -42,7 +42,7 @@ void GenerateImg(QImage &img, std::vector<Point> &points, Info &info) {
 
     unsigned int back = 0xffffff;
     unsigned int* pData32 = (unsigned int*)pData;
-    unsigned int* pData32End = pData32 + nRasterW * nRasterH;
+    unsigned int* pData32End = pData32 + nRasterW * nRasterH ;
     //дефолтный тон должен быть прозрачным, а не белым
     while (pData32 < pData32End)
         *pData32++ = back;
@@ -64,7 +64,7 @@ void GenerateImg(QImage &img, std::vector<Point> &points, Info &info) {
 
     NSStructures::GradientInfo ginfo = info.ginfo;
     //ginfo.reflected = true;
-    ginfo.shading.f_type = NSStructures::ShadingInfo::UseT2Color;
+    ginfo.shading.f_type = NSStructures::ShadingInfo::UseNew;
     pRasterRenderer->put_BrushGradInfo(ginfo);
     auto a = info.c;
     auto b = info.p;
@@ -162,11 +162,25 @@ void MainWindow::on_PathType_itemClicked(QListWidgetItem *item)
     }
     else if (item->text() == "Triangle") {
         points = {{5, 10}, {40, 100}, {100, 1}};
-        info.gradient_type = c_BrushTypeMyTestGradient;
+        /*
+         * Пока чтобы тестить прямую интерполяцию цвета, нужно редактировать код
+         * И вычтавить  info.ginfo.shading.shading_type как NSStructures::ShadingInfo::TriangleInterpolation
+         * Чтобы тестить параметрическую нужно выставить NSStructures::ShadingInfo::Parametric
+         * С опцией Parametric можно тестить другие градиенты.
+         *
+        */
+        info.gradient_type = c_BrushTypeTriagnleMeshGradient;
+        info.ginfo.shading.shading_type = NSStructures::ShadingInfo::TriangleInterpolation;
         info.ginfo.shading.triangle = {{5 * 3.84, 10 * 3.84}, {40 * 3.84, 100 * 3.84}, {100 * 3.84, 1 * 3.84}};
-        info.ginfo.shading.triangle_parametrs = {0.0f, 0.1f,  1.0f};
-        info.ginfo.shading.parametrised_triangle_shading = false;
-        info.ginfo.shading.triangle_colors = {{255,0,0, 255}, {0,255,0,255 },  {0,0,255,255}};
+        info.ginfo.shading.triangle_parametrs = {0.0f, 0.5f,  1.0f} ;
+        info.ginfo.shading.triangle_colors = {{255,0,0, 255}, {255,255,0,255 },  {0,255,0,255}};
+
+        info.ginfo.shading.patch = {
+            {{10, 40}, {}, {}, {10,10}},
+            {{}, {}, {}, {}},
+            {{}, {}, {}, {}},
+            {{40,40}, {}, {}, {40,10}}
+        };
     }
 }
 
@@ -251,7 +265,7 @@ void MainWindow::on_ColorSpaces_itemClicked(QListWidgetItem *item)
         info.ginfo.shading.function.set_linear_interpolation({0xFFff0000, 0xFFffa500, 0xFFffff00, 0xFF008000, 0xFF0000ff, 0xFFFF00FF}
                                                              , {0.0f,0.2f,0.4f,0.6f,0.8f,1.0f});
     }
-    else if (item->text() == "Black and white") {
+    else if (item->text() == "Black and wh200ite") {
         info.c = {(LONG)0xFFFFFFFF, (LONG)0xFF000000};
         info.p = {0.0, 1};
         info.n_colors = 2;

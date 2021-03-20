@@ -39,6 +39,7 @@ struct Info {
         c = {(LONG)0xFFff0000, (LONG)0xFFffa500, (LONG)0xFFffff00, (LONG)0xFF008000, (LONG)0xFF0000ff, (LONG)0xFFFF00FF};
         p = {0.0,0.2,0.4,0.6,0.8,1};
         n_colors = 6;
+        ginfo.shading.parametrised_triangle_shading = false;
     };
     ~Info() {
     }

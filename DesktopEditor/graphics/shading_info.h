@@ -5,13 +5,16 @@
 #define	M_PI		3.14159265358979323846
 #endif
 
+#ifndef SHADING_INFO
+#define SHADING_INFO
+
 namespace NSStructures
 {
     /**
 	 * PDF Gradients is not so comparable with this graphics lib
 	 * so my realisation of gradients use quite different interface.
 	 * 
-	 * First of all we have to be able to use different (x, y) -> color / t -> color 
+	 * First of all we have to be able to use different (x, y) -> color / (x, y) -> t -> color 
 	 * functions in runtime. I think the most natural way is to use vector.
 	 * 
      * 
@@ -46,9 +49,9 @@ namespace NSStructures
     {
     public:
         // Default constructor works only with one parameter functions
-        ColorFuction() : RESOLUTION(512), x_domain_min(0.0f), x_domain_max(1.0f),
-                         values(std::vector<std::vector<ColorT>>(1, std::vector<ColorT>(RESOLUTION)))
+        ColorFuction() : RESOLUTION(512), x_domain_min(0.0f), x_domain_max(1.0f)
         {
+            values = std::vector<std::vector<ColorT>>(1, std::vector<ColorT>(RESOLUTION));
             for (int i = 0; i < RESOLUTION; i++)
             {
                 unsigned int value = 255 - (255 * ((float)i / RESOLUTION));
@@ -56,9 +59,10 @@ namespace NSStructures
             }
         }
 
-        ColorFuction(size_t res, float xmin, float xmax) : RESOLUTION(res), x_domain_min(xmin), x_domain_max(xmax),
-                                                           values(std::vector<std::vector<ColorT>>(1, std::vector<ColorT>(RESOLUTION)))
+        ColorFuction(size_t res, float xmin, float xmax) : RESOLUTION(res), x_domain_min(xmin), x_domain_max(xmax)
+                                               
         {
+            values = std::vector<std::vector<ColorT>>(1, std::vector<ColorT>(RESOLUTION));
             for (int i = 0; i < RESOLUTION; i++)
             {
                 unsigned int value = 255 - (255 * ((float)i / RESOLUTION));
@@ -66,10 +70,9 @@ namespace NSStructures
             }
         }
 
-        ColorFuction(size_t res, float xmin, float xmax, float ymin, float ymax) : RESOLUTION(res), x_domain_min(xmin), x_domain_max(xmax), y_domain_min(ymin), y_domain_max(ymax),
-                                                                                   values(std::vector<std::vector<ColorT>>(RESOLUTION, std::vector<ColorT>(RESOLUTION)))
+        ColorFuction(size_t res, float xmin, float xmax, float ymin, float ymax) : RESOLUTION(res), x_domain_min(xmin), x_domain_max(xmax), y_domain_min(ymin), y_domain_max(ymax)
         {
-
+            values = std::vector<std::vector<ColorT>>(RESOLUTION, std::vector<ColorT>(RESOLUTION));
             for (int i = 0; i < RESOLUTION; i++)
             {
                 for (int j = 0; j < RESOLUTION; j++)
@@ -187,8 +190,10 @@ namespace NSStructures
                 return RESOLUTION - 1;
             return y_index;
         }
-
-        int interpolate_indexes(size_t first, size_t second, size_t line = 0) 
+        /** 
+         * Линейная интерполяция для построения цветовой функции. 
+         */
+        int interpolate_indexes(size_t first, size_t second, size_t line = 0)
         {
             size_t len = second - first;
             ColorT f = values[line][first];
@@ -204,22 +209,62 @@ namespace NSStructures
 
         unsigned int hex2a(uint32_t c)
         {
-            return (c / 256 / 256 / 256) % 256;
+            unsigned int a = (c >> 24) % 0x100;
+            std::cout << a << "sdfsd\n";
+            return a;
         }
 
         unsigned int hex2r(uint32_t c)
         {
-            return (c / 256 / 256) % 256;
+            return (c >> 16) % 0x100;
         }
         unsigned int hex2g(uint32_t c)
         {
-            return (c / 256) % 256;
+            return (c >> 8) % 0x100;
         }
         unsigned int hex2b(uint32_t c)
         {
-            return c % 256;
+            return c % 0x100;
         }
     };
+
+    struct Point 
+    {
+        Point():x(0),y(0){}
+        Point(float _x, float _y):x(_x),y(_y){}
+        float x, y;
+
+        Point& operator+=(const Point &a)
+        {
+            x += a.x;
+            y += a.y;
+            return *this;
+        }
+
+
+        /** 
+         * Костыль от ошибок линковки. Чтобы время не терять пока что.
+        */
+        friend Point operator*(const Point &a, float t)
+        {
+            return Point(a.x * t, a.y * t);
+        }
+        friend Point operator*(float t, const Point &a)
+        {
+            return Point(a.x * t, a.y * t);
+        }
+        friend Point operator+(const Point &a, const Point &b)
+        {
+            return Point(a.x + b.x, a.y + b.y);
+        }
+        friend Point operator-(const Point &a, const Point &b)
+        {
+            return Point(a.x - b.x, a.y - b.y);
+        }
+    };
+
+    
+
 
     // Contains PDF render info
     /**
@@ -237,51 +282,47 @@ namespace NSStructures
      * 
      * 
      * */
-
-    struct float_affine {
-        float sx, shy, shx, sy, tx, ty;
-        void transform(float &x, float &y) 
-        {
-            double tmp = x;
-            x = tmp * sx  + y * shx + tx;
-            y = tmp * shy + y * sy  + ty;
-        }
-    };
-
     struct ShadingInfo
     {
         public:
-        ShadingInfo() : function(),
-                        f_type(UseT2Color)
+        ShadingInfo() : shading_type(Parametric), f_type(UseNew){}
+        enum ShadingType 
         {
-        }
-        enum ShadingType {
-            Triangle, SimpleCubic, TensorCubic
-        };
+            FunctionOnly,
+            Parametric,
+            TriangleInterpolation,
+            CurveInterpolation,
+            TesorCurveInterpolation 
+        } shading_type;
         enum ColorFunctionType
         {
-            UseOld,
-            UseT2Color,
-            UseXY2Color
-        }; // if UseOld old function is called, look for IChaphicsRender.put_BrushGradientColors
-        ColorFunctionType f_type;
+            UseOld, UseNew
+        }f_type; // if UseOld old function is called, look for IChaphicsRender.put_BrushGradientColors;
         ColorFuction<agg::rgba8> function;
 
         
         bool default_mapping; // boundaries to domain of color function
-        float_affine mapping; // пока не готово, если дефолтный то выстввляется специальным методом, если нет то пользователь сам выставляет.
-
 
         // triangle shading
         bool parametrised_triangle_shading;
-        std::vector<std::pair<float, float>> triangle;
+        std::vector<Point> triangle;
         std::vector<agg::rgba8> triangle_colors;
         std::vector<float> triangle_parametrs;
 
         // non linear (NOT ready) пока не написал, как кривую переводить в нормальные координаты
         bool parametrised_curve_shading;
-        std::vector<std::pair<float, float>> patch; // 12 точкек характеризующих фигуру
+
+        /** 
+         *  матрица 4 на 4 заполняется как в документации к пдф 7 тип
+         * Если выбран тип 6 то значения (1,2) (2,1) (1,1) (2,2)
+         * В массиве игнормруется и заполняются автоматически, следите за переданным типом градинта
+         * (Нумерация от нуля)
+         * 
+         * Наверное напишу адаптор который переводит порядок точек из 6 типа в общий.
+         */
+        std::vector<std::vector<Point>> patch; 
         std::vector<agg::rgba8> patch_colors; // 4 цвета по углам
+        std::vector<float> patch_patamerts; // 4 параметра
     };
 
     // Containing additional info about gradient
@@ -324,3 +365,5 @@ namespace NSStructures
         ShadingInfo shading;
     };
 }
+
+#endif

@@ -1901,7 +1901,10 @@ namespace Aggplus
                  (BrushTypeNewLinearGradient == Type) ||
                  (BrushTypeConicalGradient   == Type) ||
                  (BrushTypeRadialGradient    == Type) ||
-                 (BrushTypeDiamondGradient   == Type))
+                 (BrushTypeDiamondGradient   == Type) ||
+                 (BrushTypeTriagnleMeshGradient  == Type) ||
+                 (BrushTypeCurveGradient   == Type) ||
+				 (BrushTypeTensorCurveGradient   == Type) )
 		{
 			DoFillPathGradientType((CBrushLinearGradient*)Brush);
 		}

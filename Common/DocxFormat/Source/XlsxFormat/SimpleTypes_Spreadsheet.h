@@ -973,11 +973,11 @@ namespace SimpleTypes
                     this->m_eValue = borderstyleDashDot;
 				else if(_T("dashDotDot") == sValue)
                     this->m_eValue = borderstyleDashDotDot;
-				else if(_T("dashed") == sValue || _T("Dash") == sValue)
+				else if(_T("dashed") == sValue)
                     this->m_eValue = borderstyleDashed;
-				else if(_T("dotted") == sValue || _T("Dot") == sValue)
+				else if(_T("dotted") == sValue)
                     this->m_eValue = borderstyleDotted;
-				else if(_T("double") == sValue || _T("Double") == sValue)
+				else if(_T("double") == sValue)
                     this->m_eValue = borderstyleDouble;
 				else if(_T("hair") == sValue)
                     this->m_eValue = borderstyleHair;

@@ -1236,7 +1236,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCell *oox_cell)
 
 	std::wstring ref = oox_cell->isInitRef() ? oox_cell->getRef() : L"";
 
-	int ifx_style = oox_cell->m_oStyle.IsInit() ? oox_cell->m_oStyle->GetValue() : -1;
+	int ifx_style = oox_cell->m_oStyle.IsInit() ? *oox_cell->m_oStyle : -1;
 
 	ods_context->start_cell(ref, ifx_style);
 

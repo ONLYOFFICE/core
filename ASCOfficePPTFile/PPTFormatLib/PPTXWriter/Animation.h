@@ -62,6 +62,7 @@ struct SOldAnimation
     CRecordAnimationInfoContainer* anim;
 
     // There will be additional records for animation here;
+    void convertPresets(UINT& presetID, UINT& presetSubtype);
 };
 
 // Extenstion for CRecordExtTimeNodeContainer
@@ -138,9 +139,8 @@ private:
     void FillCBhvr(
             CRecordTimeBehaviorContainer *pBhvr,
             PPTX::Logic::CBhvr &oBhvr);
-    void FillCBhvr(
-            int dur, UINT spid, std::wstring attrname, int delay,
-            PPTX::Logic::CBhvr &oBhvr);
+    void FillCBhvr(PPTX::Logic::CBhvr &oBhvr,
+            int dur, UINT spid, std::wstring attrname, int delay);
     void FillCond(
             PPT_FORMAT::CRecordTimeConditionContainer *oldCond,
             PPTX::Logic::Cond &cond);
@@ -176,11 +176,13 @@ private:
     void FillGroup      (SOldAnimation* pOldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase, _UINT32& groupDelay, std::wstring nodeType);
     void FillAfterEffect(SOldAnimation* pOldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase, _UINT32& groupDelay);
     void FillClickEffect(SOldAnimation* pOldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase, _UINT32& groupDelay);
-    void FillCBhvr      (SOldAnimation* pOldAnim, PPTX::Logic::CBhvr &oCBhvr);
+    void FillCBhvr      (PPTX::Logic::CBhvr &oCBhvr, SOldAnimation* pOldAnim, int delay = 499);
 
     void FillCTnParams  (PPTX::Logic::CTn &oCTN, std::wstring nodeType, std::wstring condDelay = L"0",
-                         std::wstring fill = L"hold", bool isPresetExist = false);
-
+                         std::wstring fill = L"hold", SOldAnimation *pOldAnim = NULL);
+    void FillAnim       (PPTX::Logic::Anim& oAnim, SOldAnimation* pOldAnim, int dur, std::wstring attrname,
+                         std::wstring strVal1, std::wstring strVal2);
+    void FillSetAndAnim (SOldAnimation* pOldAnim, PPTX::Logic::ChildTnLst& oParent);
 private:
     unsigned m_cTnId;
     PPTX::Logic::BldLst *m_pBldLst; // Do not delete

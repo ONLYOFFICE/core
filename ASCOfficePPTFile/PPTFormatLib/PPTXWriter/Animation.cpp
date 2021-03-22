@@ -645,8 +645,8 @@ void Animation::FillCBhvr(
     }
 }
 void Animation::FillCBhvr(
-        int dur, UINT spid, std::wstring attrname, int delay,
-        PPTX::Logic::CBhvr &oBhvr)
+        PPTX::Logic::CBhvr &oBhvr, int dur,
+          UINT spid, std::wstring attrname, int delay)
 {
     oBhvr.cTn.id = m_cTnId++;
     oBhvr.cTn.fill = L"hold";
@@ -1522,21 +1522,11 @@ void Animation::FillClickEffect(SOldAnimation* pOldAnim, PPTX::Logic::TimeNodeBa
 {
     auto par = new PPTX::Logic::Par;
 
-    FillCTnParams(par->cTn, L"clickEffect", L"0", L"hold", true);
+    FillCTnParams(par->cTn, L"clickEffect", L"0", L"hold", pOldAnim);
     par->cTn.childTnLst = new PPTX::Logic::ChildTnLst;
     groupDelay += 500; // Effect time // TODO for anim
 
-    PPTX::Logic::TimeNodeBase childTimeNode;
-    auto set = new PPTX::Logic::Set;
-    FillCBhvr(pOldAnim, set->cBhvr);
-    set->to = new PPTX::Logic::AnimVariant;
-    set->to->node_name = L"to";
-    set->to->strVal = L"visible";
-
-    childTimeNode.m_node = set;
-    par->cTn.childTnLst->list.push_back(childTimeNode);
-
-    // TODO anim optional
+    FillSetAndAnim(pOldAnim, par->cTn.childTnLst.get2());
 
     oTimeNodeBase.m_node = par;
 }
@@ -1550,42 +1540,64 @@ void Animation::FillAfterEffect(SOldAnimation* pOldAnim, PPTX::Logic::TimeNodeBa
     auto delay = std::to_wstring(anim.m_DelayTime);
     groupDelay += 500; // Effect time // TODO for anim
 
-    FillCTnParams(par->cTn, L"afterEffect", delay, L"hold", true);
+    FillCTnParams(par->cTn, L"afterEffect", delay, L"hold", pOldAnim);
     par->cTn.childTnLst = new PPTX::Logic::ChildTnLst;
 
-    PPTX::Logic::TimeNodeBase childTimeNode;
-    auto set = new PPTX::Logic::Set;
-    FillCBhvr(pOldAnim, set->cBhvr);
-    set->to = new PPTX::Logic::AnimVariant;
-    set->to->node_name = L"to";
-    set->to->strVal = L"visible";
+    FillSetAndAnim(pOldAnim, par->cTn.childTnLst.get2());
+//    bool isAppear = pOldAnim->anim->m_AnimationAtom.m_AnimEffect == 0;
+//    PPTX::Logic::TimeNodeBase childTimeNode;
+//    auto set = new PPTX::Logic::Set;
+//    if (isAppear)
+//        FillCBhvr(set->cBhvr, pOldAnim);
+//    else
+//    {
+//        FillCBhvr(set->cBhvr, pOldAnim, 0);
+//    }
+//    set->to = new PPTX::Logic::AnimVariant;
+//    set->to->node_name = L"to";
+//    set->to->strVal = L"visible";
 
-    childTimeNode.m_node = set;
-    par->cTn.childTnLst->list.push_back(childTimeNode);
+//    childTimeNode.m_node = set;
+//    par->cTn.childTnLst->list.push_back(childTimeNode);
 
-    // TODO anim optional
+//    if (!isAppear)
+//    {
+//        auto anim = new PPTX::Logic::Anim;
+//        FillAnim(*anim, pOldAnim, 500, L"ppt_x", L"0-#ppt_w/2", L"#ppt_x");
+//        childTimeNode.m_node = anim;
+//        par->cTn.childTnLst->list.push_back(childTimeNode);
+
+//        anim = new PPTX::Logic::Anim;
+//        FillAnim(*anim, pOldAnim, 500, L"ppt_y", L"1+#ppt_h/2", L"#ppt_y");
+//        childTimeNode.m_node = anim;
+//        par->cTn.childTnLst->list.push_back(childTimeNode);
+//    }
 
     oTimeNodeBase.m_node = par;
 }
 
-void Animation::FillCBhvr      (SOldAnimation* pOldAnim, PPTX::Logic::CBhvr &oCBhvr)
+void Animation::FillCBhvr      (PPTX::Logic::CBhvr &oCBhvr, SOldAnimation* pOldAnim, int delay)
 {
 //    auto anim = pOldAnim->anim->m_AnimationAtom;
-    FillCBhvr(1, pOldAnim->shapeId, L"style.visibility", 499, oCBhvr);
+    FillCBhvr(oCBhvr, 1, pOldAnim->shapeId, L"style.visibility", delay);
 }
 
 void Animation::FillCTnParams  (PPTX::Logic::CTn &oCTN, std::wstring nodeType, std::wstring condDelay,
-                     std::wstring fill, bool isPresetExist)
+                     std::wstring fill, SOldAnimation* pOldAnim)
 {
     oCTN.id = m_cTnId++;
     oCTN.fill = fill;
     oCTN.nodeType = nodeType;
 
-    if (isPresetExist)
+    if (pOldAnim)
     {
-        oCTN.presetID = 1;
+        UINT presetID;
+        UINT presetSubtype;
+        pOldAnim->convertPresets(presetID, presetSubtype);
+
+        oCTN.presetID = presetID;
         oCTN.presetClass = L"entr";
-        oCTN.presetSubtype = 0;
+        oCTN.presetSubtype = presetSubtype;
         oCTN.grpId = 0;
     }
 
@@ -1595,4 +1607,209 @@ void Animation::FillCTnParams  (PPTX::Logic::CTn &oCTN, std::wstring nodeType, s
     PPTX::Logic::Cond cond;
     cond.delay = condDelay;
     oCTN.stCondLst->list.push_back(cond);
+}
+
+void Animation::FillAnim (PPTX::Logic::Anim& oAnim, SOldAnimation* pOldAnim, int dur, std::wstring attrname,
+                          std::wstring strVal1, std::wstring strVal2)
+{
+    FillCBhvr(oAnim.cBhvr, dur, pOldAnim->shapeId, attrname, -1);
+
+    oAnim.cBhvr.additive = new PPTX::Limit::TLAdditive;
+    oAnim.cBhvr.additive->set(L"base");
+    oAnim.calcmode       = new PPTX::Limit::TLCalcMode;
+    oAnim.calcmode->set(L"lin");
+    oAnim.valueType      = new PPTX::Limit::TLValueType;
+    oAnim.valueType->set(L"num");
+
+    oAnim.tavLst = new PPTX::Logic::TavLst;
+    PPTX::Logic::Tav tav;
+
+    tav.tm = L"0";
+    auto val = new PPTX::Logic::AnimVariant;
+    val->node_name = L"val";
+    val->strVal = strVal1;
+    tav.val = val;
+    oAnim.tavLst->list.push_back(tav);
+
+    tav.tm = std::to_wstring(pOldAnim->anim->m_AnimationAtom.m_DelayTime * 100);
+    val = new PPTX::Logic::AnimVariant;
+    val->node_name = L"val";
+    val->strVal = strVal2;
+    tav.val = val;
+    oAnim.tavLst->list.push_back(tav);
+}
+
+void Animation::FillSetAndAnim (SOldAnimation* pOldAnim,
+                                PPTX::Logic::ChildTnLst& oParent)
+{
+    bool isAppear = pOldAnim->anim->m_AnimationAtom.m_AnimEffect == 0;
+    PPTX::Logic::TimeNodeBase childTimeNode;
+    auto set = new PPTX::Logic::Set;
+    if (isAppear)
+        FillCBhvr(set->cBhvr, pOldAnim);
+    else
+    {
+        FillCBhvr(set->cBhvr, pOldAnim, 0);
+    }
+    set->to = new PPTX::Logic::AnimVariant;
+    set->to->node_name = L"to";
+    set->to->strVal = L"visible";
+
+    childTimeNode.m_node = set;
+    oParent.list.push_back(childTimeNode);
+
+    if (!isAppear)
+    {
+        auto anim = new PPTX::Logic::Anim;
+        FillAnim(*anim, pOldAnim, 500, L"ppt_x", L"0-#ppt_w/2", L"#ppt_x");
+        childTimeNode.m_node = anim;
+        oParent.list.push_back(childTimeNode);
+
+        anim = new PPTX::Logic::Anim;
+        FillAnim(*anim, pOldAnim, 500, L"ppt_y", L"1+#ppt_h/2", L"#ppt_y");
+        childTimeNode.m_node = anim;
+        oParent.list.push_back(childTimeNode);
+    }
+}
+
+void SOldAnimation::convertPresets(UINT& presetID, UINT& presetSubtype)
+{
+    const UINT effect = anim->m_AnimationAtom.m_AnimEffect;
+    const UINT direct = anim->m_AnimationAtom.m_AnimEffectDirection;
+
+    switch (effect)
+    {
+    case 0x00:
+    {
+        presetID = 0x01;
+        presetSubtype = (direct == 1);
+        break;
+    }
+    case 0x01:
+    {
+        presetID = 0x18;
+        presetSubtype = 0x00;   // Ignore
+        break;
+    }
+    case 0x02:
+    {
+        presetID = 0x03;
+        presetSubtype = direct;
+        break;
+    }
+    case 0x03:
+    {
+        presetID = 0x01;
+        presetSubtype = direct;
+        break;
+    }
+    case 0x04: // Wipe
+    {
+        presetID = 0x16;
+        presetSubtype = direct;
+        break;
+    }
+    case 0x05:
+    {
+        presetID = 0x09;
+        presetSubtype = 0x00;
+        break;
+    }
+    case 0x06:
+    {
+        presetID = 0x0A;
+        presetSubtype = 0x00;
+        break;
+    }
+    case 0x08:
+    {
+        presetID = 0x0E;
+        presetSubtype = direct;
+        break;
+    }
+    case 0x09:
+    {
+        presetID = 0x12;
+        presetSubtype = direct;
+        break;
+    }
+    case 0x0A: // Wipe
+    {
+        presetID = 0x16;
+        presetSubtype = direct;
+        break;
+    }
+    case 0x0B:
+    {
+        presetID = 0x17;
+        presetSubtype = direct;
+        break;
+    }
+    case 0x0C:
+    {
+        if (direct >= 1 && direct <= 7)
+        {
+            presetID = 0x02;
+            switch (direct)
+            {
+            case 0: presetSubtype = 0x08; break;
+            case 1: presetSubtype = 0x01; break;
+            case 2: presetSubtype = 0x02; break;
+            case 3: presetSubtype = 0x04; break;
+            case 4: presetSubtype = 0x09; break;
+            case 5: presetSubtype = 0x03; break;
+            case 6: presetSubtype = 0x0C; break;
+            case 7: presetSubtype = 0x06; break;
+            }
+        } else if (direct >= 0x0C && direct <= 0x0F)
+        {
+            presetID = 0x07;
+            switch (direct)
+            {
+            case 0x0C: presetSubtype = 0x08; break;
+            case 0x0D: presetSubtype = 0x01; break;
+            case 0x0E: presetSubtype = 0x02; break;
+            case 0x0F: presetSubtype = 0x04; break;
+            }
+        } else if (direct >= 0x16 && direct <= 0x1A)
+        {
+            presetID = 0x11;
+            switch (direct)
+            {
+            case 0x16: presetSubtype = 0x0A; break;
+            case 0x17: presetSubtype = 0x08; break;
+            case 0x18: presetSubtype = 0x01; break;
+            case 0x19: presetSubtype = 0x02; break;
+            case 0x1A: presetSubtype = 0x04; break;
+            }
+        } else if (direct == 0x1B)
+        {
+            presetID = 0x13;
+            presetSubtype = 0x05;
+        }else if (direct == 0x1C)
+        {
+            presetID = 0x0F;
+            presetSubtype = 0x00;
+        }
+        break;
+    } // TODO after
+    case 0x0D:
+    {
+        presetID = 0x08;
+        presetSubtype = 0x00;
+        break;
+    }
+    case 0x0E:
+    {
+        presetID = 0x0A;
+        presetSubtype = 0x00;
+        break;
+    }
+    case 0x13:
+    {
+        presetID = 0x0A;
+        presetSubtype = 0x00;
+        break;
+    }
+    }
 }

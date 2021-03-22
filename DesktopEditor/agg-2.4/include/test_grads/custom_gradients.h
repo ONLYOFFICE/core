@@ -1,6 +1,6 @@
 #include <algorithm>
 #include <time.h>
-
+#include "../../../graphics/AggPlusEnums.h"
 #ifndef M_1_PI
 #define M_1_PI 0.318309886183790671538
 #endif
@@ -185,9 +185,9 @@ namespace agg
         virtual float eval(float x, float y) override
         {
             auto w = baricentric_weights({x, y}, ginfo.shading.triangle);
-            return w[0] * ginfo.shading.triangle_parametrs[0] +
-                   w[1] * ginfo.shading.triangle_parametrs[1] +
-                   w[2] * ginfo.shading.triangle_parametrs[2];
+            return w[0] * ginfo.shading.triangle_parameters[0] +
+                   w[1] * ginfo.shading.triangle_parameters[1] +
+                   w[2] * ginfo.shading.triangle_parameters[2];
         }
 
         /**
@@ -221,15 +221,15 @@ namespace agg
             ginfo = _g;
             if (calculate_tensor_coefs)
                 calculate_tensor();
-            RES = 10; //ginfo.shading.function.get_resolution();
+            RES = ginfo.shading.function.get_resolution();
             float delta = 1.0 / RES;
             float u = 0, v = 0;
             auto start_p = get_p(u, v);
             xmax = xmin = start_p.x;
             ymax = ymin = start_p.y;
-            precalc = std::vector<std::vector<float>>(RES, std::vector<float>(RES, 0.0f));
+            precalc = std::vector<std::vector<float>>(RES, std::vector<float>(RES, 0.0f/0.0f)); // nan 
             for (;u <= 1; u += delta) {
-                for (;v <= 1; v+= delta) {
+                for (v = 0;v <= 1; v+= delta) {
                     auto p = get_p(u, v);
                     xmax = std::max(p.x, xmax);
                     ymax = std::max(p.y, ymax);
@@ -241,32 +241,28 @@ namespace agg
                 for (v = 0.0; v <= 1; v+= delta) {
                     auto p = get_p(u, v);
                     auto i = get_index(p.x, p.y);
-                    if (i.first == 0 || i.first == RES - 1 || i.second == 0 || i.second == RES - 1)
-                        precalc[i.first][i.second] = 0;
-                    else 
-                        precalc[i.first][i.second] = 1;
+                    if (i.first > RES -1 || i.second > RES - 1 || i.first < 0 || i.second < 0)
+                    {
+                        continue;
+                    }
+                    precalc[i.first][i.second] = 
+                        ginfo.shading.patch_parameters[0][0] * (1 - v) * (1 - u) + 
+                        ginfo.shading.patch_parameters[0][1] * (1 - v) * u + 
+                        ginfo.shading.patch_parameters[1][0] * v * (1 - u) + 
+                        ginfo.shading.patch_parameters[1][1] * v  *  u;
                 }
             }
         }
         virtual float eval(float x, float y) override
         {
             auto i = get_index(x, y);
+            if (i.first > RES -1 || i.second > RES - 1 || i.first < 0 || i.second < 0)
+                return 0.0f/0.0f; // nan intentionaly
+
             return precalc[i.first][i.second];
         }
 
-    private:
-        NSStructures::Point get_p(float u, float v)
-        {
-            NSStructures::Point p;
-            for (int i = 0; i < tensor_size; i++)
-            {
-                for (int j = 0; j < tensor_size; j++) {
-                    p+= ginfo.shading.patch[i][j] * berstein_polynomial(u, i) * berstein_polynomial(v, j);
-                }
-            }
-            return p;
-        }        
-        float berstein_polynomial(float t, int i) 
+        static float berstein_polynomial(float t, int i) 
         {
             switch (i)
             {
@@ -284,6 +280,19 @@ namespace agg
             }
         }
         
+
+    private:
+        NSStructures::Point get_p(float u, float v)
+        {
+            NSStructures::Point p;
+            for (int i = 0; i < tensor_size; i++)
+            {
+                for (int j = 0; j < tensor_size; j++) {
+                    p+= ginfo.shading.patch[i][j] * berstein_polynomial(u, i) * berstein_polynomial(v, j);
+                }
+            }
+            return p;
+        }        
         // pdf 208p.
         void calculate_tensor()
         {
@@ -311,16 +320,7 @@ namespace agg
         std::pair<size_t, size_t> get_index(float x, float y)
         {
             size_t x_index = (size_t)(RES - 1) * (x - xmin) / (xmax - xmin);
-            if (x_index < 0)
-                x_index = 0;
-            if (x_index > RES - 1)
-                x_index = RES - 1;
-
             size_t y_index = (size_t)(RES - 1) * (y - ymin) / (ymax - ymin);
-            if (y_index < 0)
-                y_index = 0;
-            if (y_index > RES - 1)
-                y_index = RES - 1;
             
             return {x_index, y_index};
         }
@@ -427,6 +427,13 @@ namespace agg
         {
             m_oGradientInfo = _g;
             invStep = 1.0f / m_oGradientInfo.discrete_step;
+
+            if (m_oGradientInfo.shading.shading_type == NSStructures::ShadingInfo::TensorCurveInterpolation)
+                    initialise_curve(false);
+
+            if (m_oGradientInfo.shading.shading_type == NSStructures::ShadingInfo::CurveInterpolation)
+                    initialise_curve();
+
             switch (bType)
             {
             case Aggplus::BrushTypeRadialGradient:
@@ -454,7 +461,7 @@ namespace agg
                 break;
 
             case Aggplus::BrushTypeTensorCurveGradient:
-                calculate = new calcCurve(m_oGradientInfo, false);
+                    calculate = new calcCurve(m_oGradientInfo, false);
                 break;
 
             default:
@@ -507,20 +514,24 @@ namespace agg
                 }
                 else if (m_oGradientInfo.shading.shading_type == NSStructures::ShadingInfo::CurveInterpolation)
                 {
-                    *span++ = this->triangle(x,y); // todo
+                    *span++ = this->curve_eval(x,y); // todo
                 }
-                else if (m_oGradientInfo.shading.shading_type == NSStructures::ShadingInfo::TesorCurveInterpolation)
+                else if (m_oGradientInfo.shading.shading_type == NSStructures::ShadingInfo::TensorCurveInterpolation)
                 {
-                    *span++ = this->triangle(x,y); // todo
+                    *span++ = this->curve_eval(x,y); // todo
                 }
                 else if (m_oGradientInfo.shading.shading_type == NSStructures::ShadingInfo::Parametric)
                 {
                     float t = calculate_param(x,y);
-                    if (m_oGradientInfo.shading.f_type == NSStructures::ShadingInfo::UseNew)
+                    if (isnan(t)) 
+                    {
+                        *span++ = {0,0,0,0};
+                    }
+                    else if (m_oGradientInfo.shading.f_type == NSStructures::ShadingInfo::UseNew)
                     {
                         *span++ = m_oGradientInfo.shading.function.get_color(t);
                     }
-                    if (m_oGradientInfo.shading.f_type == NSStructures::ShadingInfo::UseOld)
+                    else if (m_oGradientInfo.shading.f_type == NSStructures::ShadingInfo::UseOld)
                     {
                         int index = int(t * MaxColorIndex + 0.5);
                         if (!m_valid_table[index])
@@ -633,5 +644,109 @@ namespace agg
         }
 
 
-    };
+        /** 
+         * Здесь все относящееся к кривой поверхности, будет дублирование кода, зато потом в теории будет проще работать.
+         * И логика чуть менее запутанная.
+         * Основной алгоритм - разбить поверхность на множество квадратиков. И забить туда значения сразу. Чтобы обратную фнкцию не считать.
+         *  
+         */
+
+        std::vector<std::vector<ColorT>> precalc;
+        size_t tensor_size;
+        float xmin_curve, xmax_curve, ymin_curve, ymax_curve;
+        size_t RES;
+
+        void initialise_curve(bool calculate_tensor_coefs = true)
+        {
+            tensor_size = 4;
+            if (calculate_tensor_coefs)
+                calculate_tensor();
+            RES = m_oGradientInfo.shading.function.get_resolution();
+            float delta = 1.0 / RES;
+            float u = 0, v = 0;
+            auto start_p = get_p_curve(u, v);
+            xmax_curve = xmin_curve = start_p.x;
+            ymax_curve = ymin_curve = start_p.y;
+            precalc = std::vector<std::vector<ColorT>>(RES, std::vector<ColorT>(RES, {0,0,0,0}));
+            for (;u <= 1; u += delta) {
+                for (v = 0;v <= 1; v+= delta) {
+                    auto p = get_p_curve(u, v);
+                    xmax_curve = std::max(p.x, xmax_curve);
+                    ymax_curve = std::max(p.y, ymax_curve);
+                    xmin_curve = std::min(p.x, xmin_curve);
+                    ymin_curve = std::min(p.y, ymin_curve);
+                }
+            }
+            for (u = 0.0; u <= 1; u += delta) {
+                for (v = 0.0; v <= 1; v+= delta) {
+                    auto p = get_p_curve(u, v);
+                    auto i = get_index_curve(p.x, p.y);
+                    if (i.first > RES -1 || i.second > RES - 1 || i.first < 0 || i.second < 0)
+                    {
+                        continue;
+                    }
+
+                    ColorT c00 = mul(m_oGradientInfo.shading.patch_colors[0][0], (1 - u) * (1 - v));
+                    ColorT c01 = mul(m_oGradientInfo.shading.patch_colors[0][1], u * (1 - v));
+                    ColorT c10 = mul(m_oGradientInfo.shading.patch_colors[1][0], (1 - u) * v);
+                    ColorT c11 = mul(m_oGradientInfo.shading.patch_colors[1][1], u * v);
+                    precalc[i.first][i.second] = sum(c00, sum(c01, sum(c10, c11)));
+                }
+            }
+        }
+
+        ColorT curve_eval(float x, float y)
+        {
+            auto i = get_index_curve(x, y);
+            if (i.first > RES -1 || i.second > RES - 1 || i.first < 0 || i.second < 0)
+                return {0,0,0,0};
+            
+            return precalc[i.first][i.second];
+        }
+
+        NSStructures::Point get_p_curve(float u, float v)
+        {
+            NSStructures::Point p;
+            for (int i = 0; i < tensor_size; i++)
+            {
+                for (int j = 0; j < tensor_size; j++) {
+                    p+= m_oGradientInfo.shading.patch[i][j] * 
+                        calcCurve::berstein_polynomial(u, i) * calcCurve::berstein_polynomial(v, j);
+                }
+            }
+            return p;
+        }
+
+        // pdf 208p.
+        void calculate_tensor()
+        {
+            auto p = m_oGradientInfo.shading.patch;
+            //-----------------------------------------------------------------------------
+            p[1][1] = (1.0 / 9) * ( -4.0 * p[0][0] + 6 * ( p[0][1] + p[1][0] ) 
+
+                        - 2 * ( p[0][3] + p[3][0] ) + 3 * ( p[3][1] + p[1][3] ) - p[3][3] );
+            //-----------------------------------------------------------------------------
+            p[1][2] = (1.0 / 9) * ( -4.0 * p[0][3] + 6 * ( p[0][2] + p[1][3] ) 
+
+                        - 2 * ( p[0][0] + p[3][3] ) + 3 * ( p[3][2] + p[1][0] ) - p[3][0] );
+            //-----------------------------------------------------------------------------
+            p[2][1] = (1.0 / 9) * ( -4.0 * p[3][0] + 6 * ( p[3][1] + p[2][0] ) 
+
+                        - 2 * ( p[3][3] + p[0][0] ) + 3 * ( p[0][1] + p[2][3] ) - p[0][3] );
+            //-----------------------------------------------------------------------------
+            p[2][2] = (1.0 / 9) * ( -4.0 * p[3][3] + 6 * ( p[3][2] + p[2][3] ) 
+
+                        - 2 * ( p[3][0] + p[0][3] ) + 3 * ( p[0][2] + p[2][0] ) - p[0][0] );
+            //-----------------------------------------------------------------------------
+            m_oGradientInfo.shading.patch = p;
+        }          
+    
+        std::pair<size_t, size_t> get_index_curve(float x, float y)
+        {
+            size_t x_index = (size_t)(RES - 1) * (x - xmin_curve) / (xmax_curve - xmin_curve);
+            size_t y_index = (size_t)(RES - 1) * (y - ymin_curve) / (ymax_curve - ymin_curve);
+            
+            return {x_index, y_index};
+        }
+    };  
 }

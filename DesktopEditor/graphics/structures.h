@@ -111,7 +111,6 @@ const long c_BrushTypeTriagnleMeshGradient = 6005;
 const long c_BrushTypeCurveGradient     = 6006;
 const long c_BrushTypeTensorCurveGradient = 6007;
 
-const long c_BrushTypeShading = 7000;
 
 const long c_BrushTextureModeStretch = 0;
 const long c_BrushTextureModeTile = 1;

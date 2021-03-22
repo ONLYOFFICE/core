@@ -24,7 +24,7 @@ namespace NSStructures
 	 * */
     // TODO div optimise
     template <class ColorT = agg::rgba8>
-    class ColorFuction
+    class ColorFunction
     /**
      *  Реализацию произвольной функции в рантайме я решил сделать как массив, тк так проще всего
      * я еще не совсем понял как точно передается в пдфе функция, но такая реализация, позволяет пользователю
@@ -49,7 +49,7 @@ namespace NSStructures
     {
     public:
         // Default constructor works only with one parameter functions
-        ColorFuction() : RESOLUTION(512), x_domain_min(0.0f), x_domain_max(1.0f)
+        ColorFunction() : RESOLUTION(512), x_domain_min(0.0f), x_domain_max(1.0f)
         {
             values = std::vector<std::vector<ColorT>>(1, std::vector<ColorT>(RESOLUTION));
             for (int i = 0; i < RESOLUTION; i++)
@@ -59,8 +59,8 @@ namespace NSStructures
             }
         }
 
-        ColorFuction(size_t res, float xmin, float xmax) : RESOLUTION(res), x_domain_min(xmin), x_domain_max(xmax)
-                                               
+        ColorFunction(size_t res, float xmin, float xmax) : RESOLUTION(res), x_domain_min(xmin), x_domain_max(xmax)
+
         {
             values = std::vector<std::vector<ColorT>>(1, std::vector<ColorT>(RESOLUTION));
             for (int i = 0; i < RESOLUTION; i++)
@@ -70,7 +70,7 @@ namespace NSStructures
             }
         }
 
-        ColorFuction(size_t res, float xmin, float xmax, float ymin, float ymax) : RESOLUTION(res), x_domain_min(xmin), x_domain_max(xmax), y_domain_min(ymin), y_domain_max(ymax)
+        ColorFunction(size_t res, float xmin, float xmax, float ymin, float ymax) : RESOLUTION(res), x_domain_min(xmin), x_domain_max(xmax), y_domain_min(ymin), y_domain_max(ymax)
         {
             values = std::vector<std::vector<ColorT>>(RESOLUTION, std::vector<ColorT>(RESOLUTION));
             for (int i = 0; i < RESOLUTION; i++)
@@ -210,7 +210,6 @@ namespace NSStructures
         unsigned int hex2a(uint32_t c)
         {
             unsigned int a = (c >> 24) % 0x100;
-            std::cout << a << "sdfsd\n";
             return a;
         }
 
@@ -292,22 +291,21 @@ namespace NSStructures
             Parametric,
             TriangleInterpolation,
             CurveInterpolation,
-            TesorCurveInterpolation 
+            TensorCurveInterpolation
         } shading_type;
         enum ColorFunctionType
         {
             UseOld, UseNew
-        }f_type; // if UseOld old function is called, look for IChaphicsRender.put_BrushGradientColors;
-        ColorFuction<agg::rgba8> function;
+        }f_type; // if UseOld old function is called, look for IGraphicsRender.put_BrushGradientColors;
+        ColorFunction<agg::rgba8> function;
 
         
         bool default_mapping; // boundaries to domain of color function
 
         // triangle shading
-        bool parametrised_triangle_shading;
         std::vector<Point> triangle;
         std::vector<agg::rgba8> triangle_colors;
-        std::vector<float> triangle_parametrs;
+        std::vector<float> triangle_parameters;
 
         // non linear (NOT ready) пока не написал, как кривую переводить в нормальные координаты
         bool parametrised_curve_shading;
@@ -321,8 +319,8 @@ namespace NSStructures
          * Наверное напишу адаптор который переводит порядок точек из 6 типа в общий.
          */
         std::vector<std::vector<Point>> patch; 
-        std::vector<agg::rgba8> patch_colors; // 4 цвета по углам
-        std::vector<float> patch_patamerts; // 4 параметра
+        std::vector<std::vector<agg::rgba8>> patch_colors; // 2 на 2 цвета по углам
+        std::vector<std::vector<float>> patch_parameters; // 2 на 2 параметра
     };
 
     // Containing additional info about gradient
@@ -347,7 +345,7 @@ namespace NSStructures
         {
             return angle / (float)M_PI * 180.f;
         }
-        void setStepByNum(int n) // recomended to use
+        void setStepByNum(int n) // recommended to use
         {
             discrete_step = 1.0f / n;
         }
@@ -355,11 +353,11 @@ namespace NSStructures
         float littleRadius, largeRadius; // used in radial gradient - [0, 1]
         float centerX, centerY;          // used in radial, diamond and conical gradient - offset relative to figure center
         float angle;                     // used in linear and conical gradient (rad)
-        float discrete_step;             // used to make discrete gradient. <= 0 to make continious
+        float discrete_step;             // used to make discrete gradient. <= 0 to make continuous
         float xsize, ysize;              // stretch image; can be negative to reflect relative to other axis; cannot be zero
         bool reflected;                  // 1234567 ->  1357531 works kind of like this
         bool periodic;
-        float periods;    // number of perionds (best with to colours, works as saw fuction in color space)
+        float periods;    // number of periods (best with to colours, works as saw function in color space)
         float linstretch; // stretch linear gradient, can be negative (eq angle = 180) can not be zero
         float linoffset;  // offset relative to image size
         ShadingInfo shading;

@@ -169,18 +169,34 @@ void MainWindow::on_PathType_itemClicked(QListWidgetItem *item)
          * С опцией Parametric можно тестить другие градиенты.
          *
         */
-        info.gradient_type = c_BrushTypeTriagnleMeshGradient;
-        info.ginfo.shading.shading_type = NSStructures::ShadingInfo::TriangleInterpolation;
+        info.gradient_type = c_BrushTypeTensorCurveGradient;
+        info.ginfo.shading.shading_type = NSStructures::ShadingInfo::Parametric;
         info.ginfo.shading.triangle = {{5 * 3.84, 10 * 3.84}, {40 * 3.84, 100 * 3.84}, {100 * 3.84, 1 * 3.84}};
-        info.ginfo.shading.triangle_parametrs = {0.0f, 0.5f,  1.0f} ;
+        info.ginfo.shading.triangle_parameters = {0.0f, 0.5f,  1.0f} ;
         info.ginfo.shading.triangle_colors = {{255,0,0, 255}, {255,255,0,255 },  {0,255,0,255}};
 
         info.ginfo.shading.patch = {
-            {{10, 40}, {}, {}, {10,10}},
-            {{}, {}, {}, {}},
-            {{}, {}, {}, {}},
-            {{40,40}, {}, {}, {40,10}}
+            {{10, 80}, {20, 70}, {0, 20}, {10,10}},
+            {{25, 75}, {40, 60}, {40, 40}, {20, 0}},
+            {{90, 70}, {60,60}, {60, 40}, {70, 20}},
+            {{80,80}, {70, 70}, {90, 20}, {80,80}}
         };
+        info.ginfo.shading.patch_parameters = {
+            {0 , 1},
+            {1, 0.5}
+        };
+        info.ginfo.shading.patch_colors = {
+            {{255, 0, 0}, {0, 255, 255}},
+            {{0, 255, 0}, {0, 0, 255}}
+        };
+        float mult = 4.0;
+        for (int i = 0; i < info.ginfo.shading.patch.size(); i++)
+        {
+            for (int j = 0; j < info.ginfo.shading.patch[0].size(); j++)
+            {
+                info.ginfo.shading.patch[i][j] = info.ginfo.shading.patch[i][j]  * mult;
+            }
+        }
     }
 }
 
@@ -265,7 +281,7 @@ void MainWindow::on_ColorSpaces_itemClicked(QListWidgetItem *item)
         info.ginfo.shading.function.set_linear_interpolation({0xFFff0000, 0xFFffa500, 0xFFffff00, 0xFF008000, 0xFF0000ff, 0xFFFF00FF}
                                                              , {0.0f,0.2f,0.4f,0.6f,0.8f,1.0f});
     }
-    else if (item->text() == "Black and wh200ite") {
+    else if (item->text() == "Black and white") {
         info.c = {(LONG)0xFFFFFFFF, (LONG)0xFF000000};
         info.p = {0.0, 1};
         info.n_colors = 2;

@@ -531,8 +531,14 @@ namespace MetaFile
 		{
 			CheckStartPath(false);
 
-			TPointD oTL = TranslatePoint(dLeft, dBottom);
-			TPointD oBR = TranslatePoint(dRight, dTop);
+			double dM11, dM12, dM21, dM22, dRx, dRy;
+			m_pRenderer->GetTransform(&dM11, &dM22, &dM21, &dM22, &dRx, &dRy);
+
+			if (dM22 < 0)
+				std::swap(dTop, dBottom);
+
+			TPointD oTL = TranslatePoint(dLeft, dTop);
+			TPointD oBR = TranslatePoint(dRight, dBottom);
 			m_pRenderer->PathCommandArcTo(oTL.x, oTL.y, oBR.x - oTL.x, oBR.y - oTL.y, dStart, dSweep);
 		}
 		void ClosePath()

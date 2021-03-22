@@ -146,10 +146,8 @@ void MainWindow::on_DiscreteStepSlider_sliderMoved(int position)
 
 void MainWindow::on_PathType_itemDoubleClicked(QListWidgetItem *item)
 {
-    int tmp = info.gradient_type;
     on_PathType_itemClicked(item);
-    this->on_RenderPic_clicked();
-    //info.gradient_type = tmp;
+    on_RenderPic_clicked();
 }
 
 void MainWindow::on_PathType_itemClicked(QListWidgetItem *item)
@@ -169,17 +167,23 @@ void MainWindow::on_PathType_itemClicked(QListWidgetItem *item)
          * С опцией Parametric можно тестить другие градиенты.
          *
         */
-        info.gradient_type = c_BrushTypeTensorCurveGradient;
+        info.gradient_type = c_BrushTypeTriagnleMeshGradient;
         info.ginfo.shading.shading_type = NSStructures::ShadingInfo::Parametric;
         info.ginfo.shading.triangle = {{5 * 3.84, 10 * 3.84}, {40 * 3.84, 100 * 3.84}, {100 * 3.84, 1 * 3.84}};
         info.ginfo.shading.triangle_parameters = {0.0f, 0.5f,  1.0f} ;
         info.ginfo.shading.triangle_colors = {{255,0,0, 255}, {255,255,0,255 },  {0,255,0,255}};
 
+
+    }
+    else if (item->text() == "Patch") {
+        points = {{0, 0}, {105, 0}, {105, 105}, {0, 105}};
+        info.gradient_type = c_BrushTypeCurveGradient;
+        info.ginfo.shading.shading_type = NSStructures::ShadingInfo::Parametric;
         info.ginfo.shading.patch = {
             {{10, 80}, {20, 70}, {0, 20}, {10,10}},
             {{25, 75}, {40, 60}, {40, 40}, {20, 0}},
             {{90, 70}, {60,60}, {60, 40}, {70, 20}},
-            {{80,80}, {70, 70}, {90, 20}, {80,80}}
+            {{80,80}, {70, 70}, {90, 20}, {80,10}}
         };
         info.ginfo.shading.patch_parameters = {
             {0 , 1},

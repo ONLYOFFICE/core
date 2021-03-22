@@ -362,6 +362,14 @@ namespace NSStructures
         float linoffset;  // offset relative to image size
         ShadingInfo shading;
     };
+
+
+    /** 
+     * Создает объект класса GradientInfo по заданным параметрам. 
+     */
+    class GInfoConstructor {
+
+    };
 }
 
 #endif

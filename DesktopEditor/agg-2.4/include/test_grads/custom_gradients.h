@@ -5,6 +5,8 @@
 #define M_1_PI 0.318309886183790671538
 #endif
 
+#ifndef SHADING_PDF
+#define SHADING_PDF
 
 
 namespace agg
@@ -211,9 +213,11 @@ namespace agg
     class calcCurve : public calcBase
     {
         /** 
-         * Пока наивный метод, из недостатков - долгая инициализация, из плюсов если рендерить несколько раз
-         * то будет быстро, достаточно будет преобразование старых координат в новые. И как то сохранить результат инициализации.
-         * Пока не буду ничего этого делать, тк. наверное все равно придется поменять.
+         *  Проходим по всем значениям параметра и рисуем, т.к. иначе придется решать систему кубических уравнений. 
+         * 
+         *  Судя по всему чтото сильно эффективней для кривых не написать, разве что
+         * Можно пытаться отрисовывать как можно меньше, например делать шаг больше не на границе,
+         * но у этого свои минусы. В любом случае, такой объект будет очень плохо постоянно перерисовывать.
          */
     public:
         calcCurve(const NSStructures::GradientInfo &_g, bool calculate_tensor_coefs = true) : tensor_size(4)
@@ -227,7 +231,6 @@ namespace agg
             auto start_p = get_p(u, v);
             xmax = xmin = start_p.x;
             ymax = ymin = start_p.y;
-            precalc = std::vector<std::vector<float>>(RES, std::vector<float>(RES, 0.0f/0.0f)); // nan 
             for (;u <= 1; u += delta) {
                 for (v = 0;v <= 1; v+= delta) {
                     auto p = get_p(u, v);
@@ -237,19 +240,39 @@ namespace agg
                     ymin = std::min(p.y, ymin);
                 }
             }
-            for (u = 0.0; u <= 1; u += delta) {
-                for (v = 0.0; v <= 1; v+= delta) {
-                    auto p = get_p(u, v);
-                    auto i = get_index(p.x, p.y);
+           
+            RES = (int)std::max(ymax - ymin, xmax - xmin);
+            precalc = std::vector<std::vector<float>>(RES, std::vector<float>(RES, 0.0f/0.0f)); // nan 
+            delta = 1.0f / RES;
+            std::pair<int, int> prev_i;
+            /** 
+             * В худшем случае, константа на которую надо делить это 3 - значит будет рабоать в 9 раз медленнее
+             * 
+             * Я думаю над некоторыми оптимизациями, главная проблема в том что шаг идет по двум измерениям.
+             * 
+             *  
+             */
+            for (u = 0.0; u <= 1; u += delta / 1.4) { 
+                bool start = true;
+                for (v = 0.0; v <= 1; v+= delta / 1.4) {
+                    NSStructures::Point p = get_p(u, v);
+                    std::pair<int, int> i = get_index(p.x, p.y);
+
                     if (i.first > RES -1 || i.second > RES - 1 || i.first < 0 || i.second < 0)
                     {
                         continue;
                     }
-                    precalc[i.first][i.second] = 
+
+                    float t =
                         ginfo.shading.patch_parameters[0][0] * (1 - v) * (1 - u) + 
                         ginfo.shading.patch_parameters[0][1] * (1 - v) * u + 
                         ginfo.shading.patch_parameters[1][0] * v * (1 - u) + 
                         ginfo.shading.patch_parameters[1][1] * v  *  u;
+                    
+                    precalc[i.first][i.second] = t;
+                    
+                    start = false;
+                    prev_i = i;
                 }
             }
         }
@@ -262,6 +285,9 @@ namespace agg
             return precalc[i.first][i.second];
         }
 
+        /** 
+         *  Через полинамы такого вида определяется нужная нам поверхность. 
+         */
         static float berstein_polynomial(float t, int i) 
         {
             switch (i)
@@ -317,10 +343,10 @@ namespace agg
             ginfo.shading.patch = p;
         }
         
-        std::pair<size_t, size_t> get_index(float x, float y)
+        std::pair<int, int> get_index(float x, float y)
         {
-            size_t x_index = (size_t)(RES - 1) * (x - xmin) / (xmax - xmin);
-            size_t y_index = (size_t)(RES - 1) * (y - ymin) / (ymax - ymin);
+            size_t x_index = (int)(RES - 1) * (x - xmin) / (xmax - xmin);
+            size_t y_index = (int)(RES - 1) * (y - ymin) / (ymax - ymin);
             
             return {x_index, y_index};
         }
@@ -661,7 +687,7 @@ namespace agg
             tensor_size = 4;
             if (calculate_tensor_coefs)
                 calculate_tensor();
-            RES = m_oGradientInfo.shading.function.get_resolution();
+            RES = m_oGradientInfo.shading.function.get_resolution() / 2;
             float delta = 1.0 / RES;
             float u = 0, v = 0;
             auto start_p = get_p_curve(u, v);
@@ -677,8 +703,11 @@ namespace agg
                     ymin_curve = std::min(p.y, ymin_curve);
                 }
             }
-            for (u = 0.0; u <= 1; u += delta) {
-                for (v = 0.0; v <= 1; v+= delta) {
+            RES = (int)std::max(ymax - ymin, xmax - xmin);
+            precalc = std::vector<std::vector<ColorT>>(RES, std::vector<ColorT>(RES, {0,0,0,0}));
+            delta = 1.0f / RES;
+            for (u = 0.0; u <= 1; u += delta / 2) {
+                for (v = 0.0; v <= 1; v+= delta / 2) {
                     auto p = get_p_curve(u, v);
                     auto i = get_index_curve(p.x, p.y);
                     if (i.first > RES -1 || i.second > RES - 1 || i.first < 0 || i.second < 0)
@@ -750,3 +779,65 @@ namespace agg
         }
     };  
 }
+/*
+Одна из возможных оптимизаций, пока не получилось, мб еще к ней вернусь.
+
+if (!start && std::max(abs(p_i.first - i.first), abs(p_i.second - i.second)) >= 1)
+                    {
+                        std::pair<int, int> start = {std::min(p_i.first, i.first), std::min(p_i.second, i.second)};
+                        std::pair<int, int> finish = {std::max(p_i.first, i.first), std::max(p_i.second, i.second)};
+
+                        // Т.к вероятне всего "скачки" будут не больше пары пикселей я не вижу смысла счиать прямую.
+
+                        int right = finish.first - start.first + 1;
+                        int down = finish.second - start.second + 1;
+
+                        if (right >= down)
+                        {
+                            int step = right / down;
+                            int add = right % down;
+                            for (int i = 0; i < down; i++)
+                            {
+                                int cs = step;
+                                if (add)
+                                {
+                                    cs++;
+                                    add--;
+                                }
+                                for (int j = 0; j < cs; j++)
+                                {
+                                    precalc[start.first][start.second] = t;
+                                    start.first++;
+                                }
+                                start.second++;
+                            }
+                        }
+                        else
+                        {
+                            int step = down / right;
+                            int add = down % right;
+                            for (int i = 0; i < down; i++)
+                            {
+                                int cs = step;
+                                if (add)
+                                {
+                                    cs++;
+                                    add--;
+                                }
+                                for (int j = 0; j < cs; j++)
+                                {
+                                    precalc[start.first][start.second] = t;
+                                    start.second++;
+                                }
+                                start.first++;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        precalc[i.first][i.second] = t;
+                    }
+                    start = false;
+                    p_i = i;
+*/
+#endif

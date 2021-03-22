@@ -4323,7 +4323,7 @@ void BinaryWorksheetTableWriter::WriteCell(const OOX::Spreadsheet::CCell& oCell)
 	if(oCell.m_oStyle.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerCellTypes::Style);
-		m_oBcw.m_oStream.WriteLONG(oCell.m_oStyle->GetValue());
+		m_oBcw.m_oStream.WriteLONG(*oCell.m_oStyle);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	//Type

@@ -84,8 +84,14 @@ namespace OOX
 				{
 					sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( L"Borders" == sName )
+					if (L"Borders" == sName)
+					{
 						m_oBorder = oReader;
+						if (m_oBorder.IsInit())
+						{
+							bStyleContinuous = m_oBorder->bBorderContinuous; // todooo - one border exclusive
+						}
+					}
 					//else if ( L"Alignment" == sName )
 					//	m_oAlignment = oReader;
 					else if ( L"Font" == sName )
@@ -120,6 +126,8 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CFill>		m_oFill;
 			nullable<OOX::Spreadsheet::CFont>		m_oFont;
 			nullable<OOX::Spreadsheet::CNumFmt>		m_oNumFmt;
+
+			bool bStyleContinuous = false;
 		};
 
 		//необработанные child:
@@ -289,6 +297,16 @@ xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\">");
 				m_oFonts.Init();
 				m_oNumFmts.Init();
 
+				m_oFills->m_arrItems.push_back(new CFill);
+				m_oFills->m_arrItems.back()->m_oPatternFill.Init();
+				m_oFills->m_arrItems.back()->m_oPatternFill->m_oPatternType.Init();
+				m_oFills->m_arrItems.back()->m_oPatternFill->m_oPatternType->SetValue(SimpleTypes::Spreadsheet::patterntypeNone);
+
+				m_oFills->m_arrItems.push_back(new CFill);
+				m_oFills->m_arrItems.back()->m_oPatternFill.Init();
+				m_oFills->m_arrItems.back()->m_oPatternFill->m_oPatternType.Init();
+				m_oFills->m_arrItems.back()->m_oPatternFill->m_oPatternType->SetValue(SimpleTypes::Spreadsheet::patterntypeGray125);
+
 				for (size_t i = 0; i < m_arrStyles2003.size(); ++i)
 				{
 					if (m_arrStyles2003[i]->m_sId.IsInit() == false) continue;
@@ -371,6 +389,9 @@ xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\">");
 						}			
 					}
 					m_mapStyles2003.insert(std::make_pair(*m_arrStyles2003[i]->m_sId, m_oCellXfs->m_arrItems.size() - 1));
+
+					if (m_arrStyles2003[i]->bStyleContinuous)
+						m_mapStylesContinues2003.insert(std::make_pair(m_oCellXfs->m_arrItems.size() - 1, true));
 				}
 			}
 			void PrepareToWrite()
@@ -549,8 +570,9 @@ xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\">");
 
 			nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;
 
-			std::vector<CStyle2003*>					m_arrStyles2003;
-			std::map<std::wstring, size_t>				m_mapStyles2003;
+			std::vector<CStyle2003*>		m_arrStyles2003;
+			std::map<std::wstring, size_t>	m_mapStyles2003;
+			std::map<unsigned int, bool>	m_mapStylesContinues2003;
 		};
 	} //Spreadsheet
 } // namespace OOX

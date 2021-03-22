@@ -208,7 +208,7 @@ namespace BinXlsxRW{
 		}
 		oXlsx.m_pStyles->m_oNumFmts.Init();
 
-        for (boost::unordered_map<std::wstring, int>::iterator it = m_mapFormats.begin(); it != m_mapFormats.end(); ++it)
+        for (boost::unordered_map<std::wstring, unsigned int>::iterator it = m_mapFormats.begin(); it != m_mapFormats.end(); ++it)
 		{
 			OOX::Spreadsheet::CNumFmt* pNumFmt = new OOX::Spreadsheet::CNumFmt();
 			pNumFmt->m_oFormatCode = (it->first);
@@ -662,9 +662,9 @@ namespace BinXlsxRW{
 
         if(NULL != format)
 		{
-			int nXfsIndex = (int)m_aXfs.size();
+			unsigned int nXfsIndex = m_aXfs.size();
 
-            boost::unordered_map<std::wstring, int>::const_iterator itFormat = m_mapFormats.find(*format);
+            boost::unordered_map<std::wstring, unsigned int>::const_iterator itFormat = m_mapFormats.find(*format);
 			if(itFormat == m_mapFormats.end())
 			{
 				m_mapFormats[*format] = nXfsIndex;
@@ -684,8 +684,8 @@ namespace BinXlsxRW{
 			pXfs->m_oNumFmtId.Init();
 			pXfs->m_oNumFmtId->SetValue(NUMID_START + nXfsIndex);
 			m_aXfs.push_back(pXfs);
-			pNewCell->m_oStyle.Init();
-			pNewCell->m_oStyle->SetValue(nXfsIndex);
+			
+			pNewCell->m_oStyle = nXfsIndex;
 		}
 		pNewCell->setRowCol(nRow - 1, nCol - 1);
 		return pNewCell;

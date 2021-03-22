@@ -194,8 +194,8 @@ void office_annotation::xlsx_convert(oox::xlsx_conversion_context & Context)
 	{
 		author = xml::utils::replace_text_to_xml(dynamic_cast<dc_creator * >(dc_creator_.get())->content_);
 	}
-	int col = Context.current_table_column();	if (col < 0) col = 0;
-	int row = Context.current_table_row();		if (row < 0) row = 0;
+	int col = Context.current_table_column() + 1;	if (col < 0) col = 0;
+	int row = Context.current_table_row();			if (row < 0) row = 0;
 
 	std::wstring  ref = oox::getCellAddress(col, row); 
 //-----------------------------------------------

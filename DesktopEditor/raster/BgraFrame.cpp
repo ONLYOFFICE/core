@@ -418,21 +418,22 @@ void CBgraFrame::put_Palette(BYTE* pDataColors, const int& colors)
 
 bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileType)
 {
-	m_nFileType = nFileType;
-
-#if CXIMAGE_SUPPORT_JP2
-    if (CXIMAGE_FORMAT_JP2 == nFileType)
-    {
-        Jpeg2000::CJ2kFile oJ2;
-        return oJ2.Open(this, strFileName, std::wstring(L""));
-    }
-#endif
+    m_nFileType = nFileType;
 
     if (nFileType == 0)
     {
         CImageFileFormatChecker checker(strFileName);
         m_nFileType = checker.eFileType;
     }
+
+#if CXIMAGE_SUPPORT_JP2
+    if (CXIMAGE_FORMAT_JP2 == m_nFileType)
+    {
+        Jpeg2000::CJ2kFile oJ2;
+        return oJ2.Open(this, strFileName, std::wstring(L""));
+    }
+#endif
+
     NSFile::CFileBinary oFile;
     if (!oFile.OpenFile(strFileName))
         return false;
@@ -450,12 +451,19 @@ bool CBgraFrame::Decode(BYTE* pBuffer, int nSize, unsigned int nFileType)
 {
     m_nFileType = nFileType;
 
-    // добавить CXIMAGE_FORMAT_JP2 с буфером
     if (nFileType == 0)
     {
         CImageFileFormatChecker checker(pBuffer, nSize);
         m_nFileType = checker.eFileType;
     }
+
+#if CXIMAGE_SUPPORT_JP2
+    if (CXIMAGE_FORMAT_JP2 == m_nFileType)
+    {
+        Jpeg2000::CJ2kFile oJ2;
+        return oJ2.Open(this, pBuffer, nSize, std::wstring(L""));
+    }
+#endif
 
     CxImage img;
 

@@ -51,7 +51,7 @@ namespace Jpeg2000
 
 		if (sIndexFile)
 		{
-			for (unsigned int nIndex = 0; nIndex < strlen(sIndexFile); nIndex)
+			for (unsigned int nIndex = 0; nIndex < strlen(sIndexFile); nIndex++)
 			{
 				pStream->Write(sIndexFile[nIndex], 1);
 			}

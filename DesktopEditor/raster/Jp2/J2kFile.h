@@ -9,6 +9,7 @@ namespace Jpeg2000
 	{
 	public:
 		bool Open(CBgraFrame* pFrame, const std::wstring& wsSrcPath, const std::wstring& wsXmlOptions);
+		bool Open(CBgraFrame* pFrame, BYTE* pBuffer, int nSize, const std::wstring& wsXmlOptions);
 		bool Save(CBgraFrame* pFrame, const std::wstring& wsSrcPath, const std::wstring& wsXmlOptions);
 		bool Open(BYTE** ppData, int& nComponentsCount, int& nWidth, int& nHeight, const std::wstring& wsSrcPath, const std::wstring& wsXmlOptions);
 

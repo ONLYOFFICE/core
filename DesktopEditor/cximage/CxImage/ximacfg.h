@@ -34,7 +34,7 @@
 #define CXIMAGE_SUPPORT_WBMP 0
 #define CXIMAGE_SUPPORT_WMF 0
 
-#define CXIMAGE_SUPPORT_JP2 0
+#define CXIMAGE_SUPPORT_JP2 1
 #define CXIMAGE_SUPPORT_JPC 0
 #define CXIMAGE_SUPPORT_PGX 0
 #define CXIMAGE_SUPPORT_PNM 0
@@ -83,11 +83,7 @@
 #define CXIMAGE_ERR_NOFILE "null file handler"
 #define CXIMAGE_ERR_NOIMAGE "null image!!!"
 
-#if defined(BUILDING_WASM_MODULE)
-#define CXIMAGE_SUPPORT_EXCEPTION_HANDLING 0
-#else
 #define CXIMAGE_SUPPORT_EXCEPTION_HANDLING 1
-#endif // BUILDING_WASM_MODULE
 
 /////////////////////////////////////////////////////////////////////////////
 //color to grey mapping <H. Muelner> <jurgene>

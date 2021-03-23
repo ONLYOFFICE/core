@@ -22,7 +22,6 @@ if not base.is_dir("emsdk"):
 # compile
 compiler_flags = ["-o raster.js",
                   "-O3",
-                  "-fno-exceptions",
                   "-fno-rtti",
                   "-s WASM=1",
                   "-s ALLOW_MEMORY_GROWTH=1",
@@ -53,7 +52,7 @@ libCxImage_src_path = "./../../../cximage/CxImage"
 input_cximage_sources = ["ximaenc.cpp", "ximaexif.cpp", "ximage.cpp", "ximainfo.cpp",
                          "ximajpg.cpp", "ximalpha.cpp", "ximapal.cpp", "ximasel.cpp",
                          "xmemfile.cpp", "ximapng.cpp", "ximabmp.cpp", "ximatran.cpp",
-                         "ximatif.cpp", "tif_xfile.cpp"]
+                         "ximatif.cpp", "tif_xfile.cpp", "ximajas.cpp"]
 
 libJpeg_src_path = "./../../../cximage/jpeg"
 input_jpeg_sources = ["jerror.c", "jdmarker.c", "jdapimin.c", "jdmaster.c", "jdapistd.c",
@@ -79,6 +78,25 @@ input_tiff_sources = ["tif_close.c", "tif_dir.c", "tif_aux.c", "tif_getimage.c",
                       "tif_jpeg.c", "tif_next.c", "tif_thunder.c", "tif_packbits.c", "tif_lzw.c",
                       "tif_zip.c", "tif_fax3sm.c", "tif_predict.c"]
 
+libJasper_src_path = "./../../../cximage/jasper"
+input_jasper_sources = ["base/jas_init.c", "base/jas_stream.c", "base/jas_malloc.c", 
+                        "base/jas_image.c", "base/jas_cm.c", "base/jas_seq.c", 
+                        "base/jas_string.c", "base/jas_icc.c", "base/jas_debug.c", 
+                        "base/jas_iccdata.c", "base/jas_tvp.c", "base/jas_version.c",
+                        "mif/mif_cod.c", "pnm/pnm_dec.c", "pnm/pnm_enc.c", "pnm/pnm_cod.c",
+                        "bmp/bmp_dec.c", "bmp/bmp_enc.c", "bmp/bmp_cod.c", "ras/ras_dec.c",
+                        "ras/ras_enc.c", "jp2/jp2_dec.c", "jp2/jp2_enc.c", "jp2/jp2_cod.c",
+                        "jpc/jpc_cs.c", "jpc/jpc_enc.c", "jpc/jpc_dec.c", "jpc/jpc_t1cod.c",
+                        "jpc/jpc_math.c", "jpc/jpc_util.c", "jpc/jpc_tsfb.c", "jpc/jpc_mct.c",
+                        "jpc/jpc_t1enc.c", "jpc/jpc_t1dec.c", "jpc/jpc_bs.c", "jpc/jpc_t2cod.c",
+                        "jpc/jpc_t2enc.c", "jpc/jpc_t2dec.c", "jpc/jpc_tagtree.c",
+                        "jpc/jpc_mqenc.c", "jpc/jpc_mqdec.c", "jpc/jpc_mqcod.c",
+                        "jpc/jpc_qmfb.c", "jpg/jpg_val.c", "jpg/jpg_dummy.c", "pgx/pgx_dec.c",
+                        "pgx/pgx_enc.c"]
+
+libJ2kFile_src_path = "./../../../raster/Jp2"
+input_j2k_sources = ["J2kFile.cpp", "Reader.cpp"]
+
 sources = []
 for item in input_raster_sources:
     sources.append(libRaster_src_path + '/' + item)
@@ -92,12 +110,15 @@ for item in input_png_sources:
     sources.append(libPng_src_path + '/' + item)
 for item in input_tiff_sources:
     sources.append(libTiff_src_path + '/' + item)
+for item in input_jasper_sources:
+    sources.append(libJasper_src_path + '/' + item)
+for item in input_j2k_sources:
+    sources.append(libJ2kFile_src_path + '/' + item)
 sources.append("./wasm/src/base.cpp")
 
 compiler_flags.append("-I./../../../../OfficeUtils/src/zlib-1.2.11")
-#compiler_flags.append("-I" + libCxImage_src_path)
-#compiler_flags.append("-I" + libJpeg_src_path)
-compiler_flags.append("-DBUILDING_WASM_MODULE -D_tcsnicmp=strncmp")
+compiler_flags.append("-I" + libJasper_src_path + "/include")
+compiler_flags.append("-DBUILDING_WASM_MODULE -D_tcsnicmp=strncmp -D_lseek=lseek")
 
 # arguments
 arguments = ""

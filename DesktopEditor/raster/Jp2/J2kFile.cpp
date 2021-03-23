@@ -119,7 +119,7 @@ namespace Jpeg2000
 	}
 
 	// CJ2kFile
-	bool CJ2kFile::Open(CBgraFrame* pFrame, const std::wstring& wsSrcPath, const std::wstring& wsXmlOptions)
+	bool CJ2kFile::Open(CBgraFrame* pFrame, const std::wstring& wsSrcPath, const std::wstring& wsXmlOptions, bool isBGRA)
 	{
 		Image *pImage = NULL;
 
@@ -199,9 +199,9 @@ namespace Jpeg2000
 				unsigned char nG = pImage->pComponents[1].pData[nWidth * nResH - ((nIndex) / (nResW)+1) * nWidth + (nIndex) % (nResW)];
 				unsigned char nB = pImage->pComponents[2].pData[nWidth * nResH - ((nIndex) / (nResW)+1) * nWidth + (nIndex) % (nResW)];
 
-				pBufferPtr[0] = nB;
+				pBufferPtr[0] = isBGRA ? nB : nR;
 				pBufferPtr[1] = nG;
-				pBufferPtr[2] = nR;
+				pBufferPtr[2] = isBGRA ? nR : nB;
 				pBufferPtr[3] = 255;
 				pBufferPtr += 4;
 
@@ -222,9 +222,9 @@ namespace Jpeg2000
 				unsigned char nB = pImage->pComponents[2].pData[nWidth * nResH - ((nIndex) / (nResW)+1) * nWidth + (nIndex) % (nResW)];
 				unsigned char nA = pImage->pComponents[3].pData[nWidth * nResH - ((nIndex) / (nResW)+1) * nWidth + (nIndex) % (nResW)];
 
-				pBufferPtr[0] = nB;
+				pBufferPtr[0] = isBGRA ? nB : nR;
 				pBufferPtr[1] = nG;
-				pBufferPtr[2] = nR;
+				pBufferPtr[2] = isBGRA ? nR : nB;
 				pBufferPtr[3] = nA;
 				pBufferPtr += 4;
 
@@ -249,7 +249,7 @@ namespace Jpeg2000
 		Image_Destroy(pImage);
 		return true;
 	}
-	bool CJ2kFile::Open(CBgraFrame* pFrame, BYTE* pBuffer, int nSize,      const std::wstring& wsXmlOptions)
+	bool CJ2kFile::Open(CBgraFrame* pFrame, BYTE* pBuffer, int nSize,      const std::wstring& wsXmlOptions, bool isBGRA)
 	{
 		Image *pImage = NULL;
 
@@ -322,9 +322,9 @@ namespace Jpeg2000
 				unsigned char nG = pImage->pComponents[1].pData[nWidth * nResH - ((nIndex) / (nResW)+1) * nWidth + (nIndex) % (nResW)];
 				unsigned char nB = pImage->pComponents[2].pData[nWidth * nResH - ((nIndex) / (nResW)+1) * nWidth + (nIndex) % (nResW)];
 
-				pBufferPtr[0] = nB;
+				pBufferPtr[0] = isBGRA ? nB : nR;
 				pBufferPtr[1] = nG;
-				pBufferPtr[2] = nR;
+				pBufferPtr[2] = isBGRA ? nR : nB;
 				pBufferPtr[3] = 255;
 				pBufferPtr += 4;
 
@@ -345,9 +345,9 @@ namespace Jpeg2000
 				unsigned char nB = pImage->pComponents[2].pData[nWidth * nResH - ((nIndex) / (nResW)+1) * nWidth + (nIndex) % (nResW)];
 				unsigned char nA = pImage->pComponents[3].pData[nWidth * nResH - ((nIndex) / (nResW)+1) * nWidth + (nIndex) % (nResW)];
 
-				pBufferPtr[0] = nB;
+				pBufferPtr[0] = isBGRA ? nB : nR;
 				pBufferPtr[1] = nG;
-				pBufferPtr[2] = nR;
+				pBufferPtr[2] = isBGRA ? nR : nB;
 				pBufferPtr[3] = nA;
 				pBufferPtr += 4;
 			}

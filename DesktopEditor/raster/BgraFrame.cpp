@@ -430,7 +430,7 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileTyp
     if (CXIMAGE_FORMAT_JP2 == m_nFileType)
     {
         Jpeg2000::CJ2kFile oJ2;
-        return oJ2.Open(this, strFileName, std::wstring(L""));
+        return oJ2.Open(this, strFileName, std::wstring(L""), !m_bIsRGBA);
     }
 #endif
 
@@ -461,7 +461,7 @@ bool CBgraFrame::Decode(BYTE* pBuffer, int nSize, unsigned int nFileType)
     if (CXIMAGE_FORMAT_JP2 == m_nFileType)
     {
         Jpeg2000::CJ2kFile oJ2;
-        return oJ2.Open(this, pBuffer, nSize, std::wstring(L""));
+        return oJ2.Open(this, pBuffer, nSize, std::wstring(L""), !m_bIsRGBA);
     }
 #endif
 

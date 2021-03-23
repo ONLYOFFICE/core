@@ -21,33 +21,6 @@
 
 /////////////////////////////////////////////////////////////////////////////
 // CxImage supported formats
-#if defined(BUILDING_WASM_MODULE)
-
-#define CXIMAGE_SUPPORT_BMP 1
-#define CXIMAGE_SUPPORT_GIF 1
-#define CXIMAGE_SUPPORT_JPG 1
-#define CXIMAGE_SUPPORT_PNG 1
-#define CXIMAGE_SUPPORT_ICO 1
-#define CXIMAGE_SUPPORT_TIF 1
-#define CXIMAGE_SUPPORT_TGA 1
-#define CXIMAGE_SUPPORT_PCX 1
-#define CXIMAGE_SUPPORT_WBMP 0
-#define CXIMAGE_SUPPORT_WMF 0
-
-#define CXIMAGE_SUPPORT_JP2 1
-#define CXIMAGE_SUPPORT_JPC 0
-#define CXIMAGE_SUPPORT_PGX 0
-#define CXIMAGE_SUPPORT_PNM 0
-#define CXIMAGE_SUPPORT_RAS 0
-
-#define CXIMAGE_SUPPORT_JBG 0
-
-#define CXIMAGE_SUPPORT_MNG 0
-#define CXIMAGE_SUPPORT_SKA 0
-#define CXIMAGE_SUPPORT_RAW 0
-#define CXIMAGE_SUPPORT_PSD 0
-
-#else
 
 #define CXIMAGE_SUPPORT_BMP 1
 #define CXIMAGE_SUPPORT_GIF 1
@@ -68,6 +41,15 @@
 
 #define CXIMAGE_SUPPORT_JBG 0		// GPL'd see ../jbig/copying.txt & ../jbig/patents.htm
 
+#if defined(BUILDING_WASM_MODULE)
+
+#define CXIMAGE_SUPPORT_MNG 0
+#define CXIMAGE_SUPPORT_SKA 0
+#define CXIMAGE_SUPPORT_RAW 0
+#define CXIMAGE_SUPPORT_PSD 0
+
+#else
+
 #define CXIMAGE_SUPPORT_MNG 1
 #define CXIMAGE_SUPPORT_SKA 1
 #define CXIMAGE_SUPPORT_RAW 1
@@ -83,7 +65,11 @@
 #define CXIMAGE_ERR_NOFILE "null file handler"
 #define CXIMAGE_ERR_NOIMAGE "null image!!!"
 
+#if defined(BUILDING_WASM_MODULE)
+#define CXIMAGE_SUPPORT_EXCEPTION_HANDLING 0
+#else
 #define CXIMAGE_SUPPORT_EXCEPTION_HANDLING 1
+#endif // BUILDING_WASM_MODULE
 
 /////////////////////////////////////////////////////////////////////////////
 //color to grey mapping <H. Muelner> <jurgene>

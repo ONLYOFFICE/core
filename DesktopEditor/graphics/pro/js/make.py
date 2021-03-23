@@ -53,7 +53,7 @@ input_cximage_sources = ["ximaenc.cpp", "ximaexif.cpp", "ximage.cpp", "ximainfo.
                          "ximajpg.cpp", "ximalpha.cpp", "ximapal.cpp", "ximasel.cpp",
                          "xmemfile.cpp", "ximapng.cpp", "ximabmp.cpp", "ximatran.cpp",
                          "ximatif.cpp", "tif_xfile.cpp", "ximajas.cpp", "ximagif.cpp",
-                         "ximaico.cpp", "ximatga.cpp", "ximapcx.cpp"]
+                         "ximaico.cpp", "ximatga.cpp", "ximapcx.cpp", "ximawbmp.cpp"]
 
 libJpeg_src_path = "./../../../cximage/jpeg"
 input_jpeg_sources = ["jerror.c", "jdmarker.c", "jdapimin.c", "jdmaster.c", "jdapistd.c",

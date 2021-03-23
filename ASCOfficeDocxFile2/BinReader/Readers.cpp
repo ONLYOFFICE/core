@@ -5072,6 +5072,11 @@ int Binary_DocumentTableReader::ReadFldChar(BYTE type, long length, void* poResu
 		pFldChar->m_oFldCharType.Init();
 		pFldChar->m_oFldCharType->SetValue((SimpleTypes::EFldCharType)m_oBufferedStream.GetUChar());
 	}
+	else if (c_oSer_FldSimpleType::FFData == type)
+	{
+		pFldChar->m_oFFData.Init();
+		READ1_DEF(length, res, this->ReadFFData, pFldChar->m_oFFData.GetPointer());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;

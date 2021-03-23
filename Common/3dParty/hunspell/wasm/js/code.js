@@ -92,7 +92,8 @@ function CSpellchecker(settings)
         "1053" : "sv_SE",
         "1055" : "tr_TR",
         "1058" : "uk_UA",
-        "1066" : "vi_VN"
+        "1066" : "vi_VN",
+		"2067" : "nl_NL" // nl_BE
     };
 
 	_port.onmessage = function(message) {
@@ -110,9 +111,15 @@ function CSpellchecker(settings)
 	{
 		_port && _port.postMessage(message);
 	};
-	this.oncommand = function(message) { console.log(message); }
+	this.oncommand = function(message) { console.log(message); };
 
 	this.checkDictionary = function(lang) {
 		return (undefined !== this.languages["" + lang]) ? true : false;
-	}
+	};
+	this.getLanguages = function() {
+		var ret = [];
+		for (var lang in this.languages)
+			ret.push(lang);
+		return ret;
+	};
 }

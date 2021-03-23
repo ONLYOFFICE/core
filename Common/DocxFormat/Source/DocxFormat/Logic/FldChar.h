@@ -124,7 +124,7 @@ namespace ComplexTypes
 				if ( m_oVal.IsInit() )
 				{
 					sResult += L"w:val=\"";
-					sResult += m_oVal->ToString();
+					sResult += m_oVal->ToXmlString();
 					sResult += L"\" ";
 				}
 
@@ -185,7 +185,7 @@ namespace ComplexTypes
 				if ( m_oVal.IsInit() )
 				{
 					sResult += L"w:val=\"";
-					sResult += m_oVal->ToString();
+					sResult += m_oVal->ToXmlString();
 					sResult += L"\" ";
 				}
 
@@ -238,7 +238,7 @@ namespace ComplexTypes
 				if ( m_oVal.IsInit() )
 				{
 					sResult += L"w:val=\"";
-					sResult += m_oVal->ToString();
+					sResult += m_oVal->ToXmlString();
 					sResult += L"\" ";
 				}
 
@@ -263,8 +263,8 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CInfoTextType<>  > m_oType;
-			nullable<SimpleTypes::CFFStatusTextVal > m_oVal;
+			nullable<SimpleTypes::CInfoTextType<> > m_oType;
+			nullable<SimpleTypes::CFFStatusTextVal> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -516,9 +516,9 @@ namespace OOX
 
 		public:
 
-			nullable<ComplexTypes::Word::CDecimalNumber >	m_oDefault;
-			nullable<ComplexTypes::Word::CDecimalNumber >	m_oResult;
-            std::vector<ComplexTypes::Word::String  *>	m_arrListEntry;
+			nullable<ComplexTypes::Word::CDecimalNumber> m_oDefault;
+			nullable<ComplexTypes::Word::CDecimalNumber> m_oResult;
+            std::vector<ComplexTypes::Word::String*> m_arrListEntry;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -582,10 +582,10 @@ namespace OOX
 			{
 				std::wstring sResult = L"<w:textInput>";
 
+				WritingElement_WriteNode_1( L"<w:type ",      m_oType );
 				WritingElement_WriteNode_1( L"<w:default ",   m_oDefault );
 				WritingElement_WriteNode_1( L"<w:format ",    m_oFormat );
 				WritingElement_WriteNode_1( L"<w:maxLength ", m_oMaxLength );
-				WritingElement_WriteNode_1( L"<w:type ",      m_oType );
 
 				sResult += L"</w:textInput>";
 
@@ -596,12 +596,10 @@ namespace OOX
 				return et_w_textInput;
 			}
 
-		public:
-
-            nullable<ComplexTypes::Word::String       > m_oDefault;
-            nullable<ComplexTypes::Word::String       > m_oFormat;
-			nullable<ComplexTypes::Word::CDecimalNumber > m_oMaxLength;
-			nullable<ComplexTypes::Word::CFFTextType    > m_oType;
+            nullable<ComplexTypes::Word::String> m_oDefault;
+            nullable<ComplexTypes::Word::String> m_oFormat;
+			nullable<ComplexTypes::Word::CDecimalNumber> m_oMaxLength;
+			nullable<ComplexTypes::Word::CFFTextType> m_oType;
 
 		};
 
@@ -703,18 +701,18 @@ namespace OOX
 
 		public:
 
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oCalcOnExit;
-			nullable<OOX::Logic::CFFCheckBox                             > m_oCheckBox;
-			nullable<OOX::Logic::CFFDDList                               > m_oDDList;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oEnabled;
-			nullable<ComplexTypes::Word::CMacroName                      > m_oEntryMacro;
-			nullable<ComplexTypes::Word::CMacroName                      > m_oExitMacro;
-			nullable<ComplexTypes::Word::CFFHelpText                     > m_oHelpText;
-			nullable<ComplexTypes::Word::CDecimalNumber                  > m_oLabel;
-			nullable<ComplexTypes::Word::CFFName                         > m_oName;
-			nullable<ComplexTypes::Word::CFFStatusText                   > m_oStatusText;
-			nullable<ComplexTypes::Word::CUnsignedDecimalNumber          > m_oTabIndex;
-			nullable<OOX::Logic::CFFTextInput                            > m_oTextInput;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oCalcOnExit;
+			nullable<OOX::Logic::CFFCheckBox> m_oCheckBox;
+			nullable<OOX::Logic::CFFDDList> m_oDDList;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oEnabled;
+			nullable<ComplexTypes::Word::CMacroName> m_oEntryMacro;
+			nullable<ComplexTypes::Word::CMacroName> m_oExitMacro;
+			nullable<ComplexTypes::Word::CFFHelpText> m_oHelpText;
+			nullable<ComplexTypes::Word::CDecimalNumber> m_oLabel;
+			nullable<ComplexTypes::Word::CFFName> m_oName;
+			nullable<ComplexTypes::Word::CFFStatusText> m_oStatusText;
+			nullable<ComplexTypes::Word::CUnsignedDecimalNumber> m_oTabIndex;
+			nullable<OOX::Logic::CFFTextInput> m_oTextInput;
 
 		};
 

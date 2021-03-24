@@ -77,7 +77,7 @@ void GenerateImg(QImage &img, std::vector<Point> &points, Info &info) {
     if (points.size() > 0) {
         pRasterRenderer->PathCommandMoveTo(points[0].x, points[0].y);
         for (uint i = 1; i < points.size(); i++) {
-            pRasterRenderer->PathCommandLineTo(points[i].x, points[i].y);
+            pRasterRenderer->PathCommandLineTo(points[i].x, points[i].y) ;
         }
     }
      pRasterRenderer->Fill();
@@ -177,20 +177,20 @@ void MainWindow::on_PathType_itemClicked(QListWidgetItem *item)
     }
     else if (item->text() == "Patch") {
         points = {{0, 0}, {105, 0}, {105, 105}, {0, 105}};
-        info.gradient_type = c_BrushTypeCurveGradient;
-        info.ginfo.shading.shading_type = NSStructures::ShadingInfo::Parametric;
+        info.gradient_type = c_BrushTypeTensorCurveGradient ;
+        info.ginfo.shading.shading_type = NSStructures::ShadingInfo::CurveInterpolation;
         info.ginfo.shading.patch = {
             {{10, 80}, {20, 70}, {0, 20}, {10,10}},
             {{25, 75}, {40, 60}, {40, 40}, {20, 0}},
             {{90, 70}, {60,60}, {60, 40}, {70, 20}},
-            {{80,80}, {70, 70}, {90, 20}, {80,10}}
+            {{80,80}, {40, 40}, {130, 70}, {80,10}}
         };
         info.ginfo.shading.patch_parameters = {
             {0 , 1},
             {1, 0.5}
         };
         info.ginfo.shading.patch_colors = {
-            {{255, 0, 0}, {0, 255, 255}},
+            {{255, 0, 0}, {150, 255, 255}},
             {{0, 255, 0}, {0, 0, 255}}
         };
         float mult = 4.0;
@@ -313,12 +313,7 @@ void MainWindow::on_ColorSpaces_itemDoubleClicked(QListWidgetItem *item)
 
 void MainWindow::on_Reflected_CheckBox_clicked(bool checked)
 {
-    info.ginfo.reflected = checked;
+    info.ginfo.continue_shading = checked;
     on_RenderPic_clicked();
 }
 
-void MainWindow::on_PeriodicCheckBox_clicked(bool checked)
-{
-    info.ginfo.periodic = checked;
-    on_RenderPic_clicked();
-}

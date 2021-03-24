@@ -403,19 +403,6 @@
      <string/>
     </property>
    </widget>
-   <widget class="QCheckBox" name="PeriodicCheckBox">
-    <property name="geometry">
-     <rect>
-      <x>470</x>
-      <y>80</y>
-      <width>81</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Periodic</string>
-    </property>
-   </widget>
    <widget class="QSlider" name="xcenterSlider">
     <property name="geometry">
      <rect>
@@ -649,6 +636,9 @@
     </item>
    </widget>
    <widget class="QCheckBox" name="Reflected_CheckBox">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>600</x>
@@ -658,7 +648,10 @@
      </rect>
     </property>
     <property name="text">
-     <string>Reflected</string>
+     <string>Continue</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QLabel" name="label_5">

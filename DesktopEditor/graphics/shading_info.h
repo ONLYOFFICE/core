@@ -11,18 +11,8 @@
 namespace NSStructures
 {
     /**
-	 * PDF Gradients is not so comparable with this graphics lib
-	 * so my realisation of gradients use quite different interface.
-	 * 
-	 * First of all we have to be able to use different (x, y) -> color / (x, y) -> t -> color 
-	 * functions in runtime. I think the most natural way is to use vector.
-	 * 
-     * 
-     * Потом приведу комменты в порядок, после ревью.
-     * 
      * 
 	 * */
-    // TODO div optimise
     template <class ColorT = agg::rgba8>
     class ColorFunction
     /**
@@ -264,8 +254,6 @@ namespace NSStructures
 
     
 
-
-    // Contains PDF render info
     /**
      *  Тут хранится информация спецефичная для рендера ПДФ.
      * 
@@ -278,8 +266,6 @@ namespace NSStructures
      * Так же шейдер будет получать, в качетве параметров, границы, тут я пока не решил, вообще
      * можно оставить соблюдение границ, на откуп пользователю, т.к. все равно заполенение в конечном итоге будет 
      * выполняться с помощью рисования замкнутого пути и команды Fill
-     * 
-     * 
      * */
     struct ShadingInfo
     {
@@ -299,6 +285,7 @@ namespace NSStructures
         }f_type; // if UseOld old function is called, look for IGraphicsRender.put_BrushGradientColors;
         ColorFunction<agg::rgba8> function;
 
+
         
         bool default_mapping; // boundaries to domain of color function
 
@@ -307,11 +294,8 @@ namespace NSStructures
         std::vector<agg::rgba8> triangle_colors;
         std::vector<float> triangle_parameters;
 
-        // non linear (NOT ready) пока не написал, как кривую переводить в нормальные координаты
-        bool parametrised_curve_shading;
-
         /** 
-         *  матрица 4 на 4 заполняется как в документации к пдф 7 тип
+         *  Матрица 4 на 4 заполняется как в документации к пдф 7 тип
          * Если выбран тип 6 то значения (1,2) (2,1) (1,1) (2,2)
          * В массиве игнормруется и заполняются автоматически, следите за переданным типом градинта
          * (Нумерация от нуля)
@@ -333,7 +317,8 @@ namespace NSStructures
                          reflected(false),
                          periods(0.5f), periodic(false),
                          xsize(1.0f), ysize(1.0f),
-                         linstretch(1.0f), linoffset(0.0f)
+                         linstretch(1.0f), linoffset(0.0f),
+                         continue_shading(true)
 
         {
         }
@@ -360,15 +345,47 @@ namespace NSStructures
         float periods;    // number of periods (best with to colours, works as saw function in color space)
         float linstretch; // stretch linear gradient, can be negative (eq angle = 180) can not be zero
         float linoffset;  // offset relative to image size
+        float continue_shading;
         ShadingInfo shading;
     };
 
 
     /** 
      * Создает объект класса GradientInfo по заданным параметрам. 
+     * 
+     * Цветовую функцию надо заполнять вручную
      */
     class GInfoConstructor {
-
+        static GradientInfo get_functional()
+        {
+            
+        }
+        static GradientInfo get_linear()
+        {
+            
+        }
+        static GradientInfo get_radial()
+        {
+            
+        }
+        static GradientInfo get_triangle()
+        {
+            
+        }
+        static GradientInfo get_curve(const std::vector<Point> &curve_points,
+                                        const std::vector<float> &curve_parametrs,
+                                        const std::vector<agg::rgba8> &curve_colors)
+        {
+            GradientInfo ginfo;
+            
+            return ginfo;
+        }
+        static GradientInfo get_tensor_curve(const std::vector<std::vector<Point>> &curve_poits,
+                                             const std::vector<float> &curve_parametrs,
+                                             const std::vector<agg::rgba8> &curve_colors)
+        {
+            
+        }
     };
 }
 

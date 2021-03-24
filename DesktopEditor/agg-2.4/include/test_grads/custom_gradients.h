@@ -5,9 +5,12 @@
 #define M_1_PI 0.318309886183790671538
 #endif
 
+#ifndef NAN_FLOAT
+#define NAN_FLOAT 0.0f/0.0f
+#endif
+
 #ifndef SHADING_PDF
 #define SHADING_PDF
-
 
 namespace agg
 {
@@ -21,10 +24,16 @@ namespace agg
      * 
      * */
 
+
+    /** 
+     * Абстрактный класс для параметризации.
+     * 
+     * Чтобы показать что данный пиксель не надо закрашивать используется nan 
+     */
     class calcBase
     {
     public:
-        virtual float eval(float , float ) = 0;
+        virtual float eval(float, float) = 0;
         virtual ~calcBase() {}
         void set_rotation(float angle)
         {
@@ -51,12 +60,15 @@ namespace agg
         {
             srand(time(NULL));
         }
-        virtual float eval(float , float ) override
+        virtual float eval(float, float) override
         {
-            return rand() / (float )RAND_MAX;
+            return rand() / (float)RAND_MAX;
         }
     };
 
+    /** 
+     * Параметр радисального градиента. 
+     */
     class calcRadial : public calcBase
     {
     public:
@@ -87,6 +99,9 @@ namespace agg
         float invXsize, invYsize;
     };
 
+     /** 
+     * Параметр конусного градиента. Не используется в пдф. 
+     */
     class calcConical : public calcBase
     {
     public:
@@ -115,7 +130,10 @@ namespace agg
         float invXsize, invYsize;
         float m1pi;
     };
-
+    
+    /** 
+     * Параметр квадратного градиента. Не используется в пдф. 
+     */
     class calcDiamond : public calcBase
     {
     public:
@@ -146,6 +164,9 @@ namespace agg
         float invXsize, invYsize;
     };
 
+    /** 
+     * Параметр линейного градиента.
+     */
     class calcNewLinear : public calcBase
     {
     public:
@@ -177,6 +198,9 @@ namespace agg
         NSStructures::GradientInfo ginfo;
     };
 
+    /** 
+     * Треугольный шейдинг, закрашивает всю область.  
+     */
     class calcTriangle : public calcBase
     {
     public:
@@ -200,26 +224,30 @@ namespace agg
         baricentric_weights(const NSStructures::Point &P, const std::vector<NSStructures::Point> &t)
         {
             std::vector<float> r(3);
-            r[0] = ( (t[1].y - t[2].y) * (P.x - t[2].x) + (t[2].x - t[1].x) * (P.y - t[2].y) ) /
-                    ((t[1].y - t[2].y) * (t[0].x - t[2].x) + (t[2].x - t[1].x) * (t[0].y - t[2].y));
-            r[1] = ( (t[2].y - t[0].y) * (P.x - t[2].x) + (t[0].x - t[2].x) * (P.y - t[2].y) ) /
-                    ((t[1].y - t[2].y) * (t[0].x - t[2].x) + (t[2].x - t[1].x) * (t[0].y - t[2].y));
+            r[0] = ((t[1].y - t[2].y) * (P.x - t[2].x) + (t[2].x - t[1].x) * (P.y - t[2].y)) /
+                   ((t[1].y - t[2].y) * (t[0].x - t[2].x) + (t[2].x - t[1].x) * (t[0].y - t[2].y));
+            r[1] = ((t[2].y - t[0].y) * (P.x - t[2].x) + (t[0].x - t[2].x) * (P.y - t[2].y)) /
+                   ((t[1].y - t[2].y) * (t[0].x - t[2].x) + (t[2].x - t[1].x) * (t[0].y - t[2].y));
             r[2] = 1 - r[0] - r[1];
             return r;
         }
         NSStructures::GradientInfo ginfo;
     };
 
+    /** 
+     * Шейдинг гладкой поверхности, закрашивает только саму поверхность.
+     * 
+     * Алгоритм работы примерно следующий. 
+     * Проходимся по плоскости значений параметра, и для каждой точки закрашиваем квадрат с границой.
+     * 
+     * P(u,v), P(u + du, u + dv) - углы.
+     * 
+     * Это позволяет изьежать вычисления обратной функции, которую можно в общем случаем почтитать только методом Ньютона.
+     */
     class calcCurve : public calcBase
     {
-        /** 
-         *  Проходим по всем значениям параметра и рисуем, т.к. иначе придется решать систему кубических уравнений. 
-         * 
-         *  Судя по всему чтото сильно эффективней для кривых не написать, разве что
-         * Можно пытаться отрисовывать как можно меньше, например делать шаг больше не на границе,
-         * но у этого свои минусы. В любом случае, такой объект будет очень плохо постоянно перерисовывать.
-         */
     public:
+        // В конструкторе происходит весь прекалк, т.е. экзепляр класса полностью готов к работе.
         calcCurve(const NSStructures::GradientInfo &_g, bool calculate_tensor_coefs = true) : tensor_size(4)
         {
             ginfo = _g;
@@ -231,8 +259,10 @@ namespace agg
             auto start_p = get_p(u, v);
             xmax = xmin = start_p.x;
             ymax = ymin = start_p.y;
-            for (;u <= 1; u += delta) {
-                for (v = 0;v <= 1; v+= delta) {
+            for (; u <= 1; u += delta)
+            {
+                for (v = 0; v <= 1; v += delta)
+                {
                     auto p = get_p(u, v);
                     xmax = std::max(p.x, xmax);
                     ymax = std::max(p.y, ymax);
@@ -240,72 +270,74 @@ namespace agg
                     ymin = std::min(p.y, ymin);
                 }
             }
-           
+
             RES = (int)std::max(ymax - ymin, xmax - xmin);
-            precalc = std::vector<std::vector<float>>(RES, std::vector<float>(RES, 0.0f/0.0f)); // nan 
+            precalc = std::vector<std::vector<float>>(RES, std::vector<float>(RES, NAN_FLOAT));
             delta = 1.0f / RES;
             std::pair<int, int> prev_i;
-            /** 
-             * В худшем случае, константа на которую надо делить это 3 - значит будет рабоать в 9 раз медленнее
-             * 
-             * Я думаю над некоторыми оптимизациями, главная проблема в том что шаг идет по двум измерениям.
-             * 
-             *  
-             */
-            for (u = 0.0; u <= 1; u += delta / 1.4) { 
-                bool start = true;
-                for (v = 0.0; v <= 1; v+= delta / 1.4) {
+            for (u = 0; u <=1; u+=delta)
+            {   
+                for (v = 0; v <= 1; v+=delta)
+                {
                     NSStructures::Point p = get_p(u, v);
-                    std::pair<int, int> i = get_index(p.x, p.y);
-
-                    if (i.first > RES -1 || i.second > RES - 1 || i.first < 0 || i.second < 0)
-                    {
-                        continue;
-                    }
+                    std::pair<int, int> index1 = get_index(p.x, p.y);
+                    p = get_p(u + delta, v + delta);
+                    std::pair<int, int> index2 = get_index(p.x, p.y);
 
                     float t =
-                        ginfo.shading.patch_parameters[0][0] * (1 - v) * (1 - u) + 
-                        ginfo.shading.patch_parameters[0][1] * (1 - v) * u + 
-                        ginfo.shading.patch_parameters[1][0] * v * (1 - u) + 
-                        ginfo.shading.patch_parameters[1][1] * v  *  u;
-                    
-                    precalc[i.first][i.second] = t;
-                    
-                    start = false;
-                    prev_i = i;
+                        ginfo.shading.patch_parameters[0][0] * (1 - v) * (1 - u) +
+                        ginfo.shading.patch_parameters[0][1] * (1 - v) * u +
+                        ginfo.shading.patch_parameters[1][0] * v * (1 - u) +
+                        ginfo.shading.patch_parameters[1][1] * v * u;
+
+                    fill_square(index1, index2, t);
                 }
             }
         }
+
+        // Заполняем квадрат в один цвет, чтобы небыло пропусков.
+        void fill_square(std::pair<int, int> index1, std::pair<int, int> index2, float t)
+        {
+            for (int i = std::min(index1.first, index2.first); i <= std::max(index1.first, index2.first); i++)
+            {
+                for (int j = std::min(index1.second, index2.second); j <= std::max(index1.second, index2.second); j++)
+                {
+                    if (i < RES && j < RES)
+                    {
+                        precalc[i][j] = t;
+                    }
+                }
+            }
+        }
+
         virtual float eval(float x, float y) override
         {
             auto i = get_index(x, y);
-            if (i.first > RES -1 || i.second > RES - 1 || i.first < 0 || i.second < 0)
-                return 0.0f/0.0f; // nan intentionaly
+            if (i.first > RES - 1 || i.second > RES - 1 || i.first < 0 || i.second < 0)
+                return NAN_FLOAT; // Не закрашиваем
 
             return precalc[i.first][i.second];
         }
 
-        /** 
-         *  Через полинамы такого вида определяется нужная нам поверхность. 
-         */
-        static float berstein_polynomial(float t, int i) 
+      
+        // Через полинамы такого вида определяется нужная нам поверхность.  
+        static float berstein_polynomial(float t, int i)
         {
             switch (i)
             {
             case 0:
-                return (1 - t) * (1 - t) * (1- t);
+                return (1 - t) * (1 - t) * (1 - t);
             case 1:
-                return 3 * t * (1 - t) * (1- t);
+                return 3 * t * (1 - t) * (1 - t);
             case 2:
-                return 3 * t * t * (1- t);
+                return 3 * t * t * (1 - t);
             case 3:
                 return t * t * t;
-            
+
             default:
                 printf("!!!!!!");
             }
         }
-        
 
     private:
         NSStructures::Point get_p(float u, float v)
@@ -313,43 +345,49 @@ namespace agg
             NSStructures::Point p;
             for (int i = 0; i < tensor_size; i++)
             {
-                for (int j = 0; j < tensor_size; j++) {
-                    p+= ginfo.shading.patch[i][j] * berstein_polynomial(u, i) * berstein_polynomial(v, j);
+                for (int j = 0; j < tensor_size; j++)
+                {
+                    p += ginfo.shading.patch[i][j] * berstein_polynomial(u, i) * berstein_polynomial(v, j);
                 }
             }
             return p;
-        }        
-        // pdf 208p.
+        }
+
+        /** 
+         * т.к. шестой тип шейдинга по сути является частным случаем седьмого, только с пересчетом некоторый точек.
+         * Этот метод позволяет вычислить нужные параметры, подробнее в стандарте пдф 208с. 
+         */
         void calculate_tensor()
         {
             auto p = ginfo.shading.patch;
             //-----------------------------------------------------------------------------
-            p[1][1] = (1.0 / 9) * ( -4.0 * p[0][0] + 6 * ( p[0][1] + p[1][0] ) 
+            p[1][1] = (1.0 / 9) * (-4.0 * p[0][0] + 6 * (p[0][1] + p[1][0])
 
-                        - 2 * ( p[0][3] + p[3][0] ) + 3 * ( p[3][1] + p[1][3] ) - p[3][3] );
+                                   - 2 * (p[0][3] + p[3][0]) + 3 * (p[3][1] + p[1][3]) - p[3][3]);
             //-----------------------------------------------------------------------------
-            p[1][2] = (1.0 / 9) * ( -4.0 * p[0][3] + 6 * ( p[0][2] + p[1][3] ) 
+            p[1][2] = (1.0 / 9) * (-4.0 * p[0][3] + 6 * (p[0][2] + p[1][3])
 
-                        - 2 * ( p[0][0] + p[3][3] ) + 3 * ( p[3][2] + p[1][0] ) - p[3][0] );
+                                   - 2 * (p[0][0] + p[3][3]) + 3 * (p[3][2] + p[1][0]) - p[3][0]);
             //-----------------------------------------------------------------------------
-            p[2][1] = (1.0 / 9) * ( -4.0 * p[3][0] + 6 * ( p[3][1] + p[2][0] ) 
+            p[2][1] = (1.0 / 9) * (-4.0 * p[3][0] + 6 * (p[3][1] + p[2][0])
 
-                        - 2 * ( p[3][3] + p[0][0] ) + 3 * ( p[0][1] + p[2][3] ) - p[0][3] );
+                                   - 2 * (p[3][3] + p[0][0]) + 3 * (p[0][1] + p[2][3]) - p[0][3]);
             //-----------------------------------------------------------------------------
-            p[2][2] = (1.0 / 9) * ( -4.0 * p[3][3] + 6 * ( p[3][2] + p[2][3] ) 
+            p[2][2] = (1.0 / 9) * (-4.0 * p[3][3] + 6 * (p[3][2] + p[2][3])
 
-                        - 2 * ( p[3][0] + p[0][3] ) + 3 * ( p[0][2] + p[2][0] ) - p[0][0] );
+                                   - 2 * (p[3][0] + p[0][3]) + 3 * (p[0][2] + p[2][0]) - p[0][0]);
             //-----------------------------------------------------------------------------
             ginfo.shading.patch = p;
         }
-        
+
         std::pair<int, int> get_index(float x, float y)
         {
             size_t x_index = (int)(RES - 1) * (x - xmin) / (xmax - xmin);
             size_t y_index = (int)(RES - 1) * (y - ymin) / (ymax - ymin);
-            
+
             return {x_index, y_index};
         }
+
 
         NSStructures::GradientInfo ginfo;
         std::vector<std::vector<float>> precalc;
@@ -358,12 +396,17 @@ namespace agg
         size_t RES;
     };
 
+
+    /** 
+     * Основной класс отвечающий за градиенты. 
+     */
     template <class ColorT>
     class gradient_base
     {
     public:
         typedef ColorT color_type;
-    protected:
+
+    private:
         enum
         {
             StateInit = 0,
@@ -372,7 +415,7 @@ namespace agg
             MaxColorIndex = 512
         };
 
-    protected:
+    private:
         int m_state;
 
         NSStructures::GradientInfo m_oGradientInfo;
@@ -383,7 +426,7 @@ namespace agg
 
         agg::trans_affine m_trans;
 
-    protected:
+    private:
         const color_type *m_pSubColors;
         const float *m_pPosSubColors;
         int m_nCountSubColors;
@@ -392,32 +435,20 @@ namespace agg
         color_type m_color_table[MaxColorIndex + 1];
         bool m_valid_table[MaxColorIndex + 1];
 
-    protected:
-        
+    private:
+
+        // Параметризация, с некторыми обертками.
         inline float calculate_param(const float &x, const float &y)
         {
             float t = calculate->eval(x, y);
+            if(isnanf(t))
+                return t;
+            
+            if (t < 0 && !m_oGradientInfo.continue_shading)
+                return NAN_FLOAT;
+            if (t > 1 && !m_oGradientInfo.continue_shading)
+                return NAN_FLOAT;
 
-            if (m_oGradientInfo.discrete_step > FLT_EPSILON)
-            {
-                if (t >= 1)
-                    t -= FLT_EPSILON;
-                t = m_oGradientInfo.discrete_step * floor(t * invStep) + 0.5 * m_oGradientInfo.discrete_step;
-            }
-
-            if (m_oGradientInfo.periodic)
-            {
-                t = triagle_saw(m_oGradientInfo.periods * t);
-            }
-
-            if (m_oGradientInfo.reflected)
-            {
-                t *= 2;
-                if (t > 1 + FLT_EPSILON)
-                {
-                    t = 2. - t;
-                }
-            }
             if (t > m_oGradientInfo.largeRadius)
                 return 1;
             if (t < m_oGradientInfo.littleRadius)
@@ -426,10 +457,6 @@ namespace agg
                 return t;
 
             t = (t - m_oGradientInfo.littleRadius) / (m_oGradientInfo.largeRadius - m_oGradientInfo.littleRadius); // TODO optimize
-            if (t < 0)
-                return 0;
-            if (t > 1)
-                return 1;
             return t;
         }
 
@@ -455,10 +482,10 @@ namespace agg
             invStep = 1.0f / m_oGradientInfo.discrete_step;
 
             if (m_oGradientInfo.shading.shading_type == NSStructures::ShadingInfo::TensorCurveInterpolation)
-                    initialise_curve(false);
+                initialise_curve(false);
 
             if (m_oGradientInfo.shading.shading_type == NSStructures::ShadingInfo::CurveInterpolation)
-                    initialise_curve();
+                initialise_curve();
 
             switch (bType)
             {
@@ -487,7 +514,7 @@ namespace agg
                 break;
 
             case Aggplus::BrushTypeTensorCurveGradient:
-                    calculate = new calcCurve(m_oGradientInfo, false);
+                calculate = new calcCurve(m_oGradientInfo, false);
                 break;
 
             default:
@@ -526,7 +553,7 @@ namespace agg
         {
             for (unsigned count = 0; count < len; ++count, ++x)
             {
-                if (m_oGradientInfo.shading.shading_type == NSStructures::ShadingInfo::FunctionOnly) 
+                if (m_oGradientInfo.shading.shading_type == NSStructures::ShadingInfo::FunctionOnly)
                 {
                     float _x = x;
                     float _y = y;
@@ -540,18 +567,18 @@ namespace agg
                 }
                 else if (m_oGradientInfo.shading.shading_type == NSStructures::ShadingInfo::CurveInterpolation)
                 {
-                    *span++ = this->curve_eval(x,y); // todo
+                    *span++ = this->curve_eval(x, y); 
                 }
                 else if (m_oGradientInfo.shading.shading_type == NSStructures::ShadingInfo::TensorCurveInterpolation)
                 {
-                    *span++ = this->curve_eval(x,y); // todo
+                    *span++ = this->curve_eval(x, y);
                 }
                 else if (m_oGradientInfo.shading.shading_type == NSStructures::ShadingInfo::Parametric)
                 {
-                    float t = calculate_param(x,y);
-                    if (isnan(t)) 
+                    float t = calculate_param(x, y);
+                    if (isnan(t))
                     {
-                        *span++ = {0,0,0,0};
+                        *span++ = {0, 0, 0, 0};
                     }
                     else if (m_oGradientInfo.shading.f_type == NSStructures::ShadingInfo::UseNew)
                     {
@@ -567,7 +594,7 @@ namespace agg
                 }
             }
         }
-        
+
         /** 
          * Выставляем всякую инфу про наш градиент. 
          */
@@ -636,26 +663,28 @@ namespace agg
             return fabs(2 * asinf(sinf(x * pi)) * M_1_PI);
         }
 
-        int limit8bit(int a) {
+
+        // Нужно для безопасного сложения цветов.
+        int limit8bit(int a)
+        {
             if (a >= 0x100)
                 return 0xFF;
             return a;
         }
-        /** 
-         * Умножение цвета на число (теплейт поэтому не перегрузка *) 
-         */
+       
+         
+        // Умножение цвета на число (теплейт поэтому не перегрузка *) 
         ColorT mul(ColorT c1, float t)
         {
             return ColorT(limit8bit(c1.r * t), limit8bit(c1.g * t), limit8bit(c1.b * t), limit8bit(c1.a * t));
         }
-        /** 
-         * Сумма двух цветов 
-         */
-        ColorT sum(ColorT c1, ColorT c2) 
+        // Сумма двух цветов 
+        ColorT sum(ColorT c1, ColorT c2)
         {
-            return ColorT(limit8bit(c1.r + c2.r), limit8bit(c1.g + c2.g), 
-                        limit8bit(c1.b + c2.b), limit8bit(c1.a + c2.a));
+            return ColorT(limit8bit(c1.r + c2.r), limit8bit(c1.g + c2.g),
+                          limit8bit(c1.b + c2.b), limit8bit(c1.a + c2.a));
         }
+
         /** 
          * Треугольная интерполяция на цветовой функции.
          * Вычисляется по барицентрическим координатам. 
@@ -666,7 +695,7 @@ namespace agg
             ColorT c1 = mul(m_oGradientInfo.shading.triangle_colors[0], fabs(w[0]));
             ColorT c2 = mul(m_oGradientInfo.shading.triangle_colors[1], fabs(w[1]));
             ColorT c3 = mul(m_oGradientInfo.shading.triangle_colors[2], fabs(w[2]));
-            return sum(c1, sum(c2,c3));
+            return sum(c1, sum(c2, c3));
         }
 
 
@@ -675,6 +704,10 @@ namespace agg
          * И логика чуть менее запутанная.
          * Основной алгоритм - разбить поверхность на множество квадратиков. И забить туда значения сразу. Чтобы обратную фнкцию не считать.
          *  
+         * Основня цель повтора - сделать единый интерфейс параметризации и все остальное.
+         * Т.к. просто добавляя разные параметризации, можно добавить большое количесво нужных градиентов.
+         * 
+         * Все с кривыми работает так же как и параметры, только интерполируется не парамет, а цвет.
          */
 
         std::vector<std::vector<ColorT>> precalc;
@@ -693,9 +726,11 @@ namespace agg
             auto start_p = get_p_curve(u, v);
             xmax_curve = xmin_curve = start_p.x;
             ymax_curve = ymin_curve = start_p.y;
-            precalc = std::vector<std::vector<ColorT>>(RES, std::vector<ColorT>(RES, {0,0,0,0}));
-            for (;u <= 1; u += delta) {
-                for (v = 0;v <= 1; v+= delta) {
+            precalc = std::vector<std::vector<ColorT>>(RES, std::vector<ColorT>(RES, {0, 0, 0, 0}));
+            for (; u <= 1; u += delta)
+            {
+                for (v = 0; v <= 1; v += delta)
+                {
                     auto p = get_p_curve(u, v);
                     xmax_curve = std::max(p.x, xmax_curve);
                     ymax_curve = std::max(p.y, ymax_curve);
@@ -704,22 +739,22 @@ namespace agg
                 }
             }
             RES = (int)std::max(ymax - ymin, xmax - xmin);
-            precalc = std::vector<std::vector<ColorT>>(RES, std::vector<ColorT>(RES, {0,0,0,0}));
+            precalc = std::vector<std::vector<ColorT>>(RES, std::vector<ColorT>(RES, {0, 0, 0, 0}));
             delta = 1.0f / RES;
-            for (u = 0.0; u <= 1; u += delta / 2) {
-                for (v = 0.0; v <= 1; v+= delta / 2) {
-                    auto p = get_p_curve(u, v);
-                    auto i = get_index_curve(p.x, p.y);
-                    if (i.first > RES -1 || i.second > RES - 1 || i.first < 0 || i.second < 0)
-                    {
-                        continue;
-                    }
+            for (u = 0.0; u <= 1; u += delta)
+            {
+                for (v = 0.0; v <= 1; v += delta)
+                {
+                    NSStructures::Point p = get_p_curve(u, v);
+                    std::pair<int, int> index1 = get_index_curve(p.x, p.y);
+                    p = get_p_curve(u + delta, v + delta);
+                    std::pair<int, int> index2 = get_index_curve(p.x, p.y);
 
                     ColorT c00 = mul(m_oGradientInfo.shading.patch_colors[0][0], (1 - u) * (1 - v));
                     ColorT c01 = mul(m_oGradientInfo.shading.patch_colors[0][1], u * (1 - v));
                     ColorT c10 = mul(m_oGradientInfo.shading.patch_colors[1][0], (1 - u) * v);
                     ColorT c11 = mul(m_oGradientInfo.shading.patch_colors[1][1], u * v);
-                    precalc[i.first][i.second] = sum(c00, sum(c01, sum(c10, c11)));
+                    fill_square(index1, index2, sum(c00, sum(c01, sum(c10, c11))));
                 }
             }
         }
@@ -727,9 +762,9 @@ namespace agg
         ColorT curve_eval(float x, float y)
         {
             auto i = get_index_curve(x, y);
-            if (i.first > RES -1 || i.second > RES - 1 || i.first < 0 || i.second < 0)
-                return {0,0,0,0};
-            
+            if (i.first > RES - 1 || i.second > RES - 1 || i.first < 0 || i.second < 0)
+                return {0, 0, 0, 0};
+
             return precalc[i.first][i.second];
         }
 
@@ -738,9 +773,10 @@ namespace agg
             NSStructures::Point p;
             for (int i = 0; i < tensor_size; i++)
             {
-                for (int j = 0; j < tensor_size; j++) {
-                    p+= m_oGradientInfo.shading.patch[i][j] * 
-                        calcCurve::berstein_polynomial(u, i) * calcCurve::berstein_polynomial(v, j);
+                for (int j = 0; j < tensor_size; j++)
+                {
+                    p += m_oGradientInfo.shading.patch[i][j] *
+                         calcCurve::berstein_polynomial(u, i) * calcCurve::berstein_polynomial(v, j);
                 }
             }
             return p;
@@ -751,93 +787,47 @@ namespace agg
         {
             auto p = m_oGradientInfo.shading.patch;
             //-----------------------------------------------------------------------------
-            p[1][1] = (1.0 / 9) * ( -4.0 * p[0][0] + 6 * ( p[0][1] + p[1][0] ) 
+            p[1][1] = (1.0 / 9) * (-4.0 * p[0][0] + 6 * (p[0][1] + p[1][0])
 
-                        - 2 * ( p[0][3] + p[3][0] ) + 3 * ( p[3][1] + p[1][3] ) - p[3][3] );
+                                   - 2 * (p[0][3] + p[3][0]) + 3 * (p[3][1] + p[1][3]) - p[3][3]);
             //-----------------------------------------------------------------------------
-            p[1][2] = (1.0 / 9) * ( -4.0 * p[0][3] + 6 * ( p[0][2] + p[1][3] ) 
+            p[1][2] = (1.0 / 9) * (-4.0 * p[0][3] + 6 * (p[0][2] + p[1][3])
 
-                        - 2 * ( p[0][0] + p[3][3] ) + 3 * ( p[3][2] + p[1][0] ) - p[3][0] );
+                                   - 2 * (p[0][0] + p[3][3]) + 3 * (p[3][2] + p[1][0]) - p[3][0]);
             //-----------------------------------------------------------------------------
-            p[2][1] = (1.0 / 9) * ( -4.0 * p[3][0] + 6 * ( p[3][1] + p[2][0] ) 
+            p[2][1] = (1.0 / 9) * (-4.0 * p[3][0] + 6 * (p[3][1] + p[2][0])
 
-                        - 2 * ( p[3][3] + p[0][0] ) + 3 * ( p[0][1] + p[2][3] ) - p[0][3] );
+                                   - 2 * (p[3][3] + p[0][0]) + 3 * (p[0][1] + p[2][3]) - p[0][3]);
             //-----------------------------------------------------------------------------
-            p[2][2] = (1.0 / 9) * ( -4.0 * p[3][3] + 6 * ( p[3][2] + p[2][3] ) 
+            p[2][2] = (1.0 / 9) * (-4.0 * p[3][3] + 6 * (p[3][2] + p[2][3])
 
-                        - 2 * ( p[3][0] + p[0][3] ) + 3 * ( p[0][2] + p[2][0] ) - p[0][0] );
+                                   - 2 * (p[3][0] + p[0][3]) + 3 * (p[0][2] + p[2][0]) - p[0][0]);
             //-----------------------------------------------------------------------------
             m_oGradientInfo.shading.patch = p;
-        }          
-    
+        }
+
         std::pair<size_t, size_t> get_index_curve(float x, float y)
         {
             size_t x_index = (size_t)(RES - 1) * (x - xmin_curve) / (xmax_curve - xmin_curve);
             size_t y_index = (size_t)(RES - 1) * (y - ymin_curve) / (ymax_curve - ymin_curve);
-            
+
             return {x_index, y_index};
         }
-    };  
+
+        void fill_square(const std::pair<int, int> &index1, const std::pair<int, int> &index2, const ColorT &c)
+        {
+            for (int i = std::min(index1.first, index2.first); i <= std::max(index1.first, index2.first); i++)
+            {
+                for (int j = std::min(index1.second, index2.second); j <= std::max(index1.second, index2.second); j++)
+                {
+                    if (i < RES && j < RES)
+                    {
+                        precalc[i][j] = c;
+                    }
+                }
+            }
+        }
+    };
 }
-/*
-Одна из возможных оптимизаций, пока не получилось, мб еще к ней вернусь.
 
-if (!start && std::max(abs(p_i.first - i.first), abs(p_i.second - i.second)) >= 1)
-                    {
-                        std::pair<int, int> start = {std::min(p_i.first, i.first), std::min(p_i.second, i.second)};
-                        std::pair<int, int> finish = {std::max(p_i.first, i.first), std::max(p_i.second, i.second)};
-
-                        // Т.к вероятне всего "скачки" будут не больше пары пикселей я не вижу смысла счиать прямую.
-
-                        int right = finish.first - start.first + 1;
-                        int down = finish.second - start.second + 1;
-
-                        if (right >= down)
-                        {
-                            int step = right / down;
-                            int add = right % down;
-                            for (int i = 0; i < down; i++)
-                            {
-                                int cs = step;
-                                if (add)
-                                {
-                                    cs++;
-                                    add--;
-                                }
-                                for (int j = 0; j < cs; j++)
-                                {
-                                    precalc[start.first][start.second] = t;
-                                    start.first++;
-                                }
-                                start.second++;
-                            }
-                        }
-                        else
-                        {
-                            int step = down / right;
-                            int add = down % right;
-                            for (int i = 0; i < down; i++)
-                            {
-                                int cs = step;
-                                if (add)
-                                {
-                                    cs++;
-                                    add--;
-                                }
-                                for (int j = 0; j < cs; j++)
-                                {
-                                    precalc[start.first][start.second] = t;
-                                    start.second++;
-                                }
-                                start.first++;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        precalc[i.first][i.second] = t;
-                    }
-                    start = false;
-                    p_i = i;
-*/
 #endif

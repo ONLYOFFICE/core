@@ -96,8 +96,6 @@ private slots:
 
     void on_Reflected_CheckBox_clicked(bool checked);
 
-    void on_PeriodicCheckBox_clicked(bool checked);
-
 private:
     Ui::MainWindow *ui;
 };

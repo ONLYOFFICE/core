@@ -41,21 +41,22 @@ exported_functions = ["_malloc",
                       "_Raster_Decode",
                       "_Raster_GetRGBA"]
 
-libRaster_src_path = "./../../../raster"
+libRaster_src_path = "../../../raster"
 input_raster_sources = ["BgraFrame.cpp", "ImageFileFormatChecker.cpp"]
 
-libZlib_src_path = "./../../../../OfficeUtils/src/zlib-1.2.11"
+libZlib_src_path = "../../../../OfficeUtils/src/zlib-1.2.11"
 input_zlib_sources = ["inflate.c", "zutil.c", "crc32.c", "adler32.c", "inftrees.c", "inffast.c",
                       "deflate.c", "trees.c"]
 
-libCxImage_src_path = "./../../../cximage/CxImage"
+libCxImage_src_path = "../../../cximage/CxImage"
 input_cximage_sources = ["ximaenc.cpp", "ximaexif.cpp", "ximage.cpp", "ximainfo.cpp",
                          "ximajpg.cpp", "ximalpha.cpp", "ximapal.cpp", "ximasel.cpp",
                          "xmemfile.cpp", "ximapng.cpp", "ximabmp.cpp", "ximatran.cpp",
                          "ximatif.cpp", "tif_xfile.cpp", "ximajas.cpp", "ximagif.cpp",
-                         "ximaico.cpp", "ximatga.cpp", "ximapcx.cpp", "ximawbmp.cpp"]
+                         "ximaico.cpp", "ximatga.cpp", "ximapcx.cpp", "ximawbmp.cpp",
+                         "ximamng.cpp", "ximapsd.cpp"]
 
-libJpeg_src_path = "./../../../cximage/jpeg"
+libJpeg_src_path = "../../../cximage/jpeg"
 input_jpeg_sources = ["jerror.c", "jdmarker.c", "jdapimin.c", "jdmaster.c", "jdapistd.c",
                       "jcomapi.c", "jutils.c", "jdinput.c", "jdmainct.c", "jmemmgr.c",
                       "jquant1.c", "jquant2.c", "jdmerge.c", "jdcolor.c", "jdsample.c",
@@ -66,11 +67,11 @@ input_jpeg_sources = ["jerror.c", "jdmarker.c", "jdapimin.c", "jdmaster.c", "jda
                       "jcarith.c", "jchuff.c", "jccoefct.c", "jcmainct.c", "jfdctint.c",
                       "jfdctfst.c", "jfdctflt.c"]
 
-libPng_src_path = "./../../../cximage/png"
+libPng_src_path = "../../../cximage/png"
 input_png_sources = ["pngread.c", "pngmem.c", "pngerror.c", "png.c", "pngrio.c", "pngtrans.c",
                      "pngget.c", "pngrutil.c", "pngrtran.c", "pngset.c"]
 
-libTiff_src_path = "./../../../cximage/tiff"
+libTiff_src_path = "../../../cximage/tiff"
 input_tiff_sources = ["tif_close.c", "tif_dir.c", "tif_aux.c", "tif_getimage.c", "tif_strip.c",
                       "tif_open.c", "tif_tile.c", "tif_error.c", "tif_read.c", "tif_flush.c",
                       "tif_dirinfo.c", "tif_compress.c", "tif_warning.c", "tif_swab.c",
@@ -79,7 +80,7 @@ input_tiff_sources = ["tif_close.c", "tif_dir.c", "tif_aux.c", "tif_getimage.c",
                       "tif_jpeg.c", "tif_next.c", "tif_thunder.c", "tif_packbits.c", "tif_lzw.c",
                       "tif_zip.c", "tif_fax3sm.c", "tif_predict.c"]
 
-libJasper_src_path = "./../../../cximage/jasper"
+libJasper_src_path = "../../../cximage/jasper"
 input_jasper_sources = ["base/jas_init.c", "base/jas_stream.c", "base/jas_malloc.c", 
                         "base/jas_image.c", "base/jas_cm.c", "base/jas_seq.c", 
                         "base/jas_string.c", "base/jas_icc.c", "base/jas_debug.c", 
@@ -95,8 +96,25 @@ input_jasper_sources = ["base/jas_init.c", "base/jas_stream.c", "base/jas_malloc
                         "jpc/jpc_qmfb.c", "jpg/jpg_val.c", "jpg/jpg_dummy.c", "pgx/pgx_dec.c",
                         "pgx/pgx_enc.c"]
 
-libJ2kFile_src_path = "./../../../raster/Jp2"
+libJ2kFile_src_path = "../../../raster/Jp2"
 input_j2k_sources = ["J2kFile.cpp", "Reader.cpp"]
+
+libMng_src_path = "../../../cximage/mng"
+input_mng_sources = ["libmng_hlapi.c", "libmng_callback_xs.c", "libmng_prop_xs.c",
+                     "libmng_object_prc.c", "libmng_zlib.c", "libmng_jpeg.c", "libmng_pixels.c",
+                     "libmng_read.c", "libmng_error.c", "libmng_display.c", "libmng_write.c",
+                     "libmng_chunk_io.c", "libmng_cms.c", "libmng_filter.c",
+                     "libmng_chunk_prc.c"]
+
+libPsd_src_path = "../../../cximage/libpsd"
+input_psd_sources = ["psd.c", "file_header.c", "color_mode.c", "image_resource.c", "blend.c",
+                     "layer_mask.c", "image_data.c", "stream.c", "psd_system.c", "color.c",
+                     "pattern_fill.c", "color_balance.c", "channel_image.c", "gradient_fill.c",
+                     "invert.c", "posterize.c", "brightness_contrast.c", "solid_color.c",
+                     "threshold.c", "effects.c", "selective_color.c", "channel_mixer.c",
+                     "photo_filter.c", "type_tool.c", "gradient_map.c", "hue_saturation.c",
+                     "levels.c", "curves.c", "pattern.c", "psd_zip.c", "descriptor.c",
+                     "drop_shadow.c"]
 
 sources = []
 for item in input_raster_sources:
@@ -115,9 +133,13 @@ for item in input_jasper_sources:
     sources.append(libJasper_src_path + '/' + item)
 for item in input_j2k_sources:
     sources.append(libJ2kFile_src_path + '/' + item)
-sources.append("./wasm/src/base.cpp")
+for item in input_mng_sources:
+    sources.append(libMng_src_path + '/' + item)
+for item in input_psd_sources:
+    sources.append(libPsd_src_path + '/' + item)
+sources.append("wasm/src/base.cpp")
 
-compiler_flags.append("-I./../../../../OfficeUtils/src/zlib-1.2.11")
+compiler_flags.append("-I../../../../OfficeUtils/src/zlib-1.2.11")
 compiler_flags.append("-I" + libJasper_src_path + "/include")
 compiler_flags.append("-DBUILDING_WASM_MODULE -D_tcsnicmp=strncmp -D_lseek=lseek")
 
@@ -138,6 +160,7 @@ for item in sources:
 # command
 windows_bat = []
 if base.host_platform() == "windows":
+    base.writeFile("temp", arguments)
     windows_bat.append("call emsdk/emsdk_env.bat")
     windows_bat.append("call emcc " + arguments)
 else:

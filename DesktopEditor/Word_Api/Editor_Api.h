@@ -2494,10 +2494,11 @@ namespace NSEditorApi
 	class CAscMenuController
 	{
 		// release memory in sdk
-		virtual void Apply(CAscMenuEvent* pEvent)
+		virtual NSEditorApi::CAscMenuEvent* Apply(CAscMenuEvent* pEvent)
 		{
 			if (NULL != pEvent)
                 pEvent->Release();
+            return NULL;
 		}
 	};
 

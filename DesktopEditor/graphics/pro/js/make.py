@@ -9,6 +9,9 @@ base.configure_common_apps()
 if base.is_dir("./deploy"):
     base.delete_dir("./deploy")
 base.create_dir("./deploy")
+if base.is_dir("./temp"):
+    base.delete_dir("./temp")
+base.create_dir("./temp")
 
 # fetch emsdk
 command_prefix = "" if ("windows" == base.host_platform()) else "./"
@@ -20,8 +23,7 @@ if not base.is_dir("emsdk"):
     os.chdir("../")
 
 # compile
-compiler_flags = ["-o raster.js",
-                  "-O3",
+compiler_flags = ["-O3",
                   "-fno-rtti",
                   "-s WASM=1",
                   "-s ALLOW_MEMORY_GROWTH=1",
@@ -114,7 +116,9 @@ input_psd_sources = ["psd.c", "file_header.c", "color_mode.c", "image_resource.c
                      "threshold.c", "effects.c", "selective_color.c", "channel_mixer.c",
                      "photo_filter.c", "type_tool.c", "gradient_map.c", "hue_saturation.c",
                      "levels.c", "curves.c", "pattern.c", "psd_zip.c", "descriptor.c",
-                     "drop_shadow.c"]
+                     "drop_shadow.c", "inner_shadow.c", "color_overlay.c", "outer_glow.c",
+                     "inner_glow.c", "bevel_emboss.c", "satin.c", "gradient_overlay.c",
+                     "stroke.c", "pattern_overlay.c"]
 
 sources = []
 for item in input_raster_sources:
@@ -123,8 +127,6 @@ for item in input_zlib_sources:
     sources.append(libZlib_src_path + '/' + item)
 for item in input_cximage_sources:
     sources.append(libCxImage_src_path + '/' + item)
-for item in input_jpeg_sources:
-    sources.append(libJpeg_src_path + '/' + item)
 for item in input_png_sources:
     sources.append(libPng_src_path + '/' + item)
 for item in input_tiff_sources:
@@ -135,8 +137,6 @@ for item in input_j2k_sources:
     sources.append(libJ2kFile_src_path + '/' + item)
 for item in input_mng_sources:
     sources.append(libMng_src_path + '/' + item)
-for item in input_psd_sources:
-    sources.append(libPsd_src_path + '/' + item)
 sources.append("wasm/src/base.cpp")
 
 compiler_flags.append("-I../../../../OfficeUtils/src/zlib-1.2.11")
@@ -148,25 +148,53 @@ arguments = ""
 for item in compiler_flags:
     arguments += (item + " ")
 
-arguments += "-s EXPORTED_FUNCTIONS=\"["
-for item in exported_functions:
-    arguments += ("'" + item + "',")
-arguments = arguments[:-1]
-arguments += "]\" "
-
-for item in sources:
-    arguments += (item + " ")
-
 # command
 windows_bat = []
 if base.host_platform() == "windows":
-    base.writeFile("temp", arguments)
     windows_bat.append("call emsdk/emsdk_env.bat")
-    windows_bat.append("call emcc " + arguments)
+    
+    jpeg = ""
+    for item in input_jpeg_sources:
+        windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libJpeg_src_path + '/' + item)
+        jpeg += ("temp/" + item + ".o ")
+    
+    psd = ""
+    for item in input_psd_sources:
+        windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libPsd_src_path + '/' + item)
+        psd += ("temp/" + item + ".o ")
+    
+    arguments += "-s EXPORTED_FUNCTIONS=\"["
+    for item in exported_functions:
+        arguments += ("'" + item + "',")
+    arguments = arguments[:-1]
+    arguments += "]\" "
+    for item in sources:
+        arguments += (item + " ")
+    
+    windows_bat.append("call emcc -o raster.js " + arguments + jpeg + psd)
 else:
     windows_bat.append("#!/bin/bash")
     windows_bat.append("source ./emsdk/emsdk_env.sh")
-    windows_bat.append("emcc " + arguments)
+    
+    jpeg = ""
+    for item in input_jpeg_sources:
+        windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libJpeg_src_path + '/' + item)
+        jpeg += ("temp/" + item + ".o ")
+    
+    psd = ""
+    for item in input_psd_sources:
+        windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libPsd_src_path + '/' + item)
+        psd += ("temp/" + item + ".o ")
+    
+    arguments += "-s EXPORTED_FUNCTIONS=\"["
+    for item in exported_functions:
+        arguments += ("'" + item + "',")
+    arguments = arguments[:-1]
+    arguments += "]\" "
+    for item in sources:
+        arguments += (item + " ")
+    
+    windows_bat.append("emcc -o raster.js " + arguments + jpeg + psd)
 base.run_as_bat(windows_bat)
 
 # finalize
@@ -185,3 +213,4 @@ base.copy_file("./wasm/js/code.js", "./deploy/code.js")
 
 base.delete_file("raster.js")
 base.delete_file("raster.wasm")
+base.delete_dir("./temp")

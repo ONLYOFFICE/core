@@ -20,8 +20,9 @@ int main()
     int nCountInt = 4 * Raster_GetHeight(img) * Raster_GetWidth(img);
 
     for (int i = 0; i < (nCountInt > 100 ? 100 : nCountInt); i++)
-        std::cout << pResInt[i] << " ";
+        std::cout << (int)pResInt[i] << " ";
 
+    img->SaveFile(NSFile::GetProcessDirectory() + L"/res.jpg", 3);
     Raster_Destroy(img);
     return 0;
 }

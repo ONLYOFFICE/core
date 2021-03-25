@@ -14,4 +14,4 @@ CORE_ROOT_DIR = $$PWD/../../../../../..
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 
-ADD_DEPENDENCY(kernel, Raster)
+ADD_DEPENDENCY(kernel, Raster, graphics)

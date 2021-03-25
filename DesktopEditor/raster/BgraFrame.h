@@ -41,13 +41,13 @@
 class GRAPHICS_DECL CBgraFrame
 {
 private:
-    int m_nFileType;
+	int m_nFileType;
 
-    int m_lWidth;
-    int m_lHeight;
-    int m_lStride;
+	int m_lWidth;
+	int m_lHeight;
+	int m_lStride;
 
-    BYTE* m_pData;
+	BYTE* m_pData;
 
     BYTE* m_pPalette;
     int m_lPaletteColors;
@@ -87,14 +87,14 @@ public:
 
     void SetJpegQuality(const double& value);
 
-    bool OpenFile(const std::wstring& strFileName, unsigned int nFileType = 0);	//0 - detect
+	bool OpenFile(const std::wstring& strFileName, unsigned int nFileType = 0);	//0 - detect
     bool SaveFile(const std::wstring& strFileName, unsigned int nFileType);
     bool Decode(BYTE*  pBuffer, int  nSize, unsigned int nFileType = 0);
     bool Encode(BYTE*& pBuffer, int& nSize, unsigned int nFileType);
     
-    bool Resize(const long& nNewWidth, const long& nNewHeight, bool bDestroyData = true);
+	bool Resize(const long& nNewWidth, const long& nNewHeight, bool bDestroyData = true);
 
-    bool ReColorPatternImage(const std::wstring& strFileName, unsigned int rgbColorBack, unsigned int rgbColorFore);
+	bool ReColorPatternImage(const std::wstring& strFileName, unsigned int rgbColorBack, unsigned int rgbColorFore);
 
     void FromImage(IGrObject* pGraphics, bool bIsCopy = true);
 };

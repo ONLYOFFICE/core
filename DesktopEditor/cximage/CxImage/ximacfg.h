@@ -41,21 +41,10 @@
 
 #define CXIMAGE_SUPPORT_JBG 0		// GPL'd see ../jbig/copying.txt & ../jbig/patents.htm
 
-#if defined(BUILDING_WASM_MODULE)
-
-#define CXIMAGE_SUPPORT_MNG 1
-#define CXIMAGE_SUPPORT_SKA 0
-#define CXIMAGE_SUPPORT_RAW 0
-#define CXIMAGE_SUPPORT_PSD 1
-
-#else
-
 #define CXIMAGE_SUPPORT_MNG 1
 #define CXIMAGE_SUPPORT_SKA 1
 #define CXIMAGE_SUPPORT_RAW 1
 #define CXIMAGE_SUPPORT_PSD 1
-
-#endif // BUILDING_WASM_MODULE
 
 /////////////////////////////////////////////////////////////////////////////
 #define	CXIMAGE_MAX_MEMORY 268435456

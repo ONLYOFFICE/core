@@ -56,7 +56,7 @@ input_cximage_sources = ["ximaenc.cpp", "ximaexif.cpp", "ximage.cpp", "ximainfo.
                          "xmemfile.cpp", "ximapng.cpp", "ximabmp.cpp", "ximatran.cpp",
                          "ximatif.cpp", "tif_xfile.cpp", "ximajas.cpp", "ximagif.cpp",
                          "ximaico.cpp", "ximatga.cpp", "ximapcx.cpp", "ximawbmp.cpp",
-                         "ximamng.cpp", "ximapsd.cpp"]
+                         "ximamng.cpp", "ximapsd.cpp", "ximaska.cpp", "ximaraw.cpp"]
 
 libJpeg_src_path = "../../../cximage/jpeg"
 input_jpeg_sources = ["jerror.c", "jdmarker.c", "jdapimin.c", "jdmaster.c", "jdapistd.c",
@@ -120,6 +120,9 @@ input_psd_sources = ["psd.c", "file_header.c", "color_mode.c", "image_resource.c
                      "inner_glow.c", "bevel_emboss.c", "satin.c", "gradient_overlay.c",
                      "stroke.c", "pattern_overlay.c"]
 
+libRaw_src_path = "../../../cximage/raw"
+input_raw_sources = ["libdcr.c"]
+
 sources = []
 for item in input_raster_sources:
     sources.append(libRaster_src_path + '/' + item)
@@ -127,21 +130,25 @@ for item in input_zlib_sources:
     sources.append(libZlib_src_path + '/' + item)
 for item in input_cximage_sources:
     sources.append(libCxImage_src_path + '/' + item)
+# jpeg
 for item in input_png_sources:
     sources.append(libPng_src_path + '/' + item)
-for item in input_tiff_sources:
-    sources.append(libTiff_src_path + '/' + item)
+# tiff
 for item in input_jasper_sources:
     sources.append(libJasper_src_path + '/' + item)
 for item in input_j2k_sources:
     sources.append(libJ2kFile_src_path + '/' + item)
 for item in input_mng_sources:
     sources.append(libMng_src_path + '/' + item)
+for item in input_psd_sources:
+    sources.append(libPsd_src_path + '/' + item)
+for item in input_raw_sources:
+    sources.append(libRaw_src_path + '/' + item)
 sources.append("wasm/src/base.cpp")
 
 compiler_flags.append("-I../../../../OfficeUtils/src/zlib-1.2.11")
 compiler_flags.append("-I" + libJasper_src_path + "/include")
-compiler_flags.append("-DBUILDING_WASM_MODULE -D_tcsnicmp=strncmp -D_lseek=lseek")
+compiler_flags.append("-DBUILDING_WASM_MODULE -D_tcsnicmp=strncmp -D_lseek=lseek -D_getcwd=getcwd")
 
 # arguments
 arguments = ""
@@ -158,10 +165,10 @@ if base.host_platform() == "windows":
         windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libJpeg_src_path + '/' + item)
         jpeg += ("temp/" + item + ".o ")
     
-    psd = ""
-    for item in input_psd_sources:
-        windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libPsd_src_path + '/' + item)
-        psd += ("temp/" + item + ".o ")
+    tiff = ""
+    for item in input_tiff_sources:
+        windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libTiff_src_path + '/' + item)
+        tiff += ("temp/" + item + ".o ")
     
     arguments += "-s EXPORTED_FUNCTIONS=\"["
     for item in exported_functions:
@@ -171,7 +178,7 @@ if base.host_platform() == "windows":
     for item in sources:
         arguments += (item + " ")
     
-    windows_bat.append("call emcc -o raster.js " + arguments + jpeg + psd)
+    windows_bat.append("call emcc -o raster.js " + arguments + jpeg + tiff)
 else:
     windows_bat.append("#!/bin/bash")
     windows_bat.append("source ./emsdk/emsdk_env.sh")
@@ -181,10 +188,10 @@ else:
         windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libJpeg_src_path + '/' + item)
         jpeg += ("temp/" + item + ".o ")
     
-    psd = ""
-    for item in input_psd_sources:
-        windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libPsd_src_path + '/' + item)
-        psd += ("temp/" + item + ".o ")
+    tiff = ""
+    for item in input_tiff_sources:
+        windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libTiff_src_path + '/' + item)
+        tiff += ("temp/" + item + ".o ")
     
     arguments += "-s EXPORTED_FUNCTIONS=\"["
     for item in exported_functions:
@@ -194,7 +201,7 @@ else:
     for item in sources:
         arguments += (item + " ")
     
-    windows_bat.append("emcc -o raster.js " + arguments + jpeg + psd)
+    windows_bat.append("emcc -o raster.js " + arguments + jpeg + tiff)
 base.run_as_bat(windows_bat)
 
 # finalize

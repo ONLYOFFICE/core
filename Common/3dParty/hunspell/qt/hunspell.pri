@@ -23,20 +23,20 @@ SOURCES += \
     $$PWD/../hunspell/src/hunspell/suggestmgr.cxx
 
 HEADERS += \    
-    $$PWD/../hunspell/src/hunspell/affentry.hxx \
-    $$PWD/../hunspell/src/hunspell/affixmgr.hxx \
-    $$PWD/../hunspell/src/hunspell/atypes.hxx \
-    $$PWD/../hunspell/src/hunspell/baseaffix.hxx \
-    $$PWD/../hunspell/src/hunspell/csutil.hxx \
-    $$PWD/../hunspell/src/hunspell/dictmgr.hxx \
-    $$PWD/../hunspell/src/hunspell/filemgr.hxx \
-    $$PWD/../hunspell/src/hunspell/hashmgr.hxx \
-    $$PWD/../hunspell/src/hunspell/htypes.hxx \
-    $$PWD/../hunspell/src/hunspell/hunspell.h \
-    $$PWD/../hunspell/src/hunspell/hunspell.hxx \
-    $$PWD/../hunspell/src/hunspell/hunzip.hxx \
-    $$PWD/../hunspell/src/hunspell/langnum.hxx \
-    $$PWD/../hunspell/src/hunspell/phonet.hxx \
-    $$PWD/../hunspell/src/hunspell/replist.hxx \
-    $$PWD/../hunspell/src/hunspell/suggestmgr.hxx \
-    $$PWD/../hunspell/src/hunspell/w_char.hxx
+    $$PWD/../hunspell/affentry.hxx \
+    $$PWD/../hunspell/affixmgr.hxx \
+    $$PWD/../hunspell/atypes.hxx \
+    $$PWD/../hunspell/baseaffix.hxx \
+    $$PWD/../hunspell/csutil.hxx \
+    $$PWD/../hunspell/dictmgr.hxx \
+    $$PWD/../hunspell/filemgr.hxx \
+    $$PWD/../hunspell/hashmgr.hxx \
+    $$PWD/../hunspell/htypes.hxx \
+    $$PWD/../hunspell/hunspell.h \
+    $$PWD/../hunspell/hunspell.hxx \
+    $$PWD/../hunspell/hunzip.hxx \
+    $$PWD/../hunspell/langnum.hxx \
+    $$PWD/../hunspell/phonet.hxx \
+    $$PWD/../hunspell/replist.hxx \
+    $$PWD/../hunspell/suggestmgr.hxx \
+    $$PWD/../hunspell/w_char.hxx

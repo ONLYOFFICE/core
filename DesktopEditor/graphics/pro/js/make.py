@@ -148,7 +148,7 @@ sources.append("wasm/src/base.cpp")
 
 compiler_flags.append("-I../../../../OfficeUtils/src/zlib-1.2.11")
 compiler_flags.append("-I" + libJasper_src_path + "/include")
-compiler_flags.append("-DBUILDING_WASM_MODULE -D_tcsnicmp=strncmp -D_lseek=lseek -D_getcwd=getcwd")
+compiler_flags.append("-D__linux__ -DBUILDING_WASM_MODULE -D_tcsnicmp=strncmp -D_lseek=lseek -D_getcwd=getcwd")
 
 # arguments
 arguments = ""

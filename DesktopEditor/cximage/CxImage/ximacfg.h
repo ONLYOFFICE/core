@@ -21,7 +21,6 @@
 
 /////////////////////////////////////////////////////////////////////////////
 // CxImage supported formats
-
 #define CXIMAGE_SUPPORT_BMP 1
 #define CXIMAGE_SUPPORT_GIF 1
 #define CXIMAGE_SUPPORT_JPG 1

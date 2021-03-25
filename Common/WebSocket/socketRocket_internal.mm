@@ -1,5 +1,5 @@
-/*
- * (c) Copyright Ascensio System SIA 2010-2019
+﻿/*
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -30,45 +30,47 @@
  *
  */
 
-#include "ixwebsocket_internal.h"
+#include "socketRocket_internal.h"
+#import "socketRocket_objc.mm"
 
-void CIXWebSocket::open()
+struct SocketRocketImpl
 {
-    ix::SocketTLSOptions tls;
-    tls.caFile = "NONE";//std::string(this->m_pInternal->m_sAssetsCertificateSSL.begin(), this->m_pInternal->m_sAssetsCertificateSSL.end());
-    webSocket.setTLSOptions(tls);
-    webSocket.setUrl(url);
-    std::function<void(const ix::WebSocketMessagePtr&)> f = std::bind(&CIXWebSocket::receive, this, std::placeholders::_1);
-    webSocket.setOnMessageCallback(f);
-    webSocket.start();
+    SocketRocketObjC* wrapped;
+};
+
+CSocketRocket::CSocketRocket():impl(new CSocketRocket)
+{
+    impl->wrapped = [[SocketRocketObjC alloc] init];
 }
 
-void CIXWebSocket::receive(const ix::WebSocketMessagePtr& msg)
+CSocketRocket::~CSocketRocket()
 {
-    if (msg->type == ix::WebSocketMessageType::Message)
-    {
-        listener->onMessage(msg->str);
-    }
-    else if (msg->type == ix::WebSocketMessageType::Open)
-    {
-        listener->onOpen();
-    }
-    else if (msg->type == ix::WebSocketMessageType::Error)
-    {
-        listener->onError(msg->errorInfo.reason);
-    }
-    else if (msg->type == ix::WebSocketMessageType::Close)
-    {
-        listener->onClose(msg->closeInfo.code, msg->closeInfo.reason);
-    }
+    if (impl)
+      [impl->wrapped release];
+    delete impl;
 }
 
-void CIXWebSocket::send(const std::string& message)
+void CSocketRocket::open()
 {
-    webSocket.send(message);
+    [impl->wrapped open];
 }
 
-void CIXWebSocket::close()
+void CSocketRocket::send(const std::string& message)
 {
-    webSocket.stop();
+    [impl->wrapped send:[NSString stringWithAString:message]];
+}
+
+void CSocketRocket::close()
+{
+    [impl->wrapped close];
+}
+
+void setUrl(const std::string& url) 
+{
+    [impl->wrapped setUrl:[NSString stringWithAString:url]];
+}
+
+void setListener(std::shared_ptr<IListener> listener)
+{
+    [impl->wrapped setListener:[IListener* listener.get()]];
 }

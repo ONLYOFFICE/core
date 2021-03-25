@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -30,45 +30,29 @@
  *
  */
 
-#include "ixwebsocket_internal.h"
+#ifndef _SOCKET_ROCKET_H_
+#define _SOCKET_ROCKET_H_
 
-void CIXWebSocket::open()
-{
-    ix::SocketTLSOptions tls;
-    tls.caFile = "NONE";//std::string(this->m_pInternal->m_sAssetsCertificateSSL.begin(), this->m_pInternal->m_sAssetsCertificateSSL.end());
-    webSocket.setTLSOptions(tls);
-    webSocket.setUrl(url);
-    std::function<void(const ix::WebSocketMessagePtr&)> f = std::bind(&CIXWebSocket::receive, this, std::placeholders::_1);
-    webSocket.setOnMessageCallback(f);
-    webSocket.start();
-}
+#include "websocket.h"
 
-void CIXWebSocket::receive(const ix::WebSocketMessagePtr& msg)
+class CSocketRocket: public IWebSocket
 {
-    if (msg->type == ix::WebSocketMessageType::Message)
-    {
-        listener->onMessage(msg->str);
-    }
-    else if (msg->type == ix::WebSocketMessageType::Open)
-    {
-        listener->onOpen();
-    }
-    else if (msg->type == ix::WebSocketMessageType::Error)
-    {
-        listener->onError(msg->errorInfo.reason);
-    }
-    else if (msg->type == ix::WebSocketMessageType::Close)
-    {
-        listener->onClose(msg->closeInfo.code, msg->closeInfo.reason);
-    }
-}
+	struct SocketRocketImpl;
 
-void CIXWebSocket::send(const std::string& message)
-{
-    webSocket.send(message);
-}
+public:
 
-void CIXWebSocket::close()
-{
-    webSocket.stop();
-}
+     SocketRocketImpl* impl;
+   
+public:
+
+    CSocketRocket();
+    ~CSocketRocket();
+    virtual void open() override;
+    virtual void send(const std::string& message) override;
+    virtual void close() override;
+    virtual void setUrl(const std::string& url) override;
+    virtual void setListener(std::shared_ptr<IListener> listener) override;
+
+};
+
+#endif /* _SOCKET_ROCKET_H_ */

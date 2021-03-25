@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -30,45 +30,23 @@
  *
  */
 
-#include "ixwebsocket_internal.h"
+#ifndef _SOCKET_ROCKET_OBJC_H_
+#define _SOCKET_ROCKET_OBJC_H_
 
-void CIXWebSocket::open()
-{
-    ix::SocketTLSOptions tls;
-    tls.caFile = "NONE";//std::string(this->m_pInternal->m_sAssetsCertificateSSL.begin(), this->m_pInternal->m_sAssetsCertificateSSL.end());
-    webSocket.setTLSOptions(tls);
-    webSocket.setUrl(url);
-    std::function<void(const ix::WebSocketMessagePtr&)> f = std::bind(&CIXWebSocket::receive, this, std::placeholders::_1);
-    webSocket.setOnMessageCallback(f);
-    webSocket.start();
-}
+#import <SocketRocket/SRWebSocket.h>
+#include "listener.h"
 
-void CIXWebSocket::receive(const ix::WebSocketMessagePtr& msg)
-{
-    if (msg->type == ix::WebSocketMessageType::Message)
-    {
-        listener->onMessage(msg->str);
-    }
-    else if (msg->type == ix::WebSocketMessageType::Open)
-    {
-        listener->onOpen();
-    }
-    else if (msg->type == ix::WebSocketMessageType::Error)
-    {
-        listener->onError(msg->errorInfo.reason);
-    }
-    else if (msg->type == ix::WebSocketMessageType::Close)
-    {
-        listener->onClose(msg->closeInfo.code, msg->closeInfo.reason);
-    }
-}
+@interface SocketRocketObjC  <SRWebSocketDelegate>
 
-void CIXWebSocket::send(const std::string& message)
-{
-    webSocket.send(message);
-}
+@property (strong, nonatomic) SRWebSocket *socket;
+@property IListener* listener;
+@property (strong) std::string* url;
 
-void CIXWebSocket::close()
-{
-    webSocket.stop();
-}
+- (void) open;
+- (void) send : (NSString *)name;
+- (void) close;
+- (void) setListener: (id)listener;
+- (void) setUrl: (id)url;
+
+@end
+ /* _SOCKET_ROCKET_OBJC_H_ */

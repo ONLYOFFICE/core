@@ -127,11 +127,15 @@ void MainWindow::on_GradientType_itemClicked(QListWidgetItem *item)
     else if (item->text() == "Triangle") {
         info.gradient_type = c_BrushTypeTriagnleMeshGradient;
         info.ginfo = NSStructures::GInfoConstructor::get_triangle(
-                    {{100, 100}, {300, 200}, {200, 350}},
+                    info.triangle,
                     {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
                     {}, false
                     );
-        points = {{100 / 3.84, 100 / 3.84}, {300 / 3.84, 200 / 3.84}, {200 / 3.84, 350 / 3.84}};
+        points = {};
+        for (auto p : info.triangle)
+        {
+            points.push_back({p.x / 3.84, p.y / 3.84});
+        }
     }
     else if (item->text() == "Functional" ) {
         info.gradient_type = c_BrushTypePathNewLinearGradient;
@@ -141,11 +145,15 @@ void MainWindow::on_GradientType_itemClicked(QListWidgetItem *item)
     else if (item->text() == "TriangleParametric" ) {
         info.gradient_type = c_BrushTypeTriagnleMeshGradient;
         info.ginfo = NSStructures::GInfoConstructor::get_triangle(
-                    {{100, 100}, {300, 200}, {200, 350}},
+                    info.triangle,
                     {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
                     {0, 0.4, 1}, true
                     );
-        points = {{100 / 3.84, 100 / 3.84}, {300 / 3.84, 200 / 3.84}, {200 / 3.84, 350 / 3.84}};
+        points = {};
+        for (auto p : info.triangle)
+        {
+            points.push_back({p.x / 3.84, p.y / 3.84});
+        }
     }
     else if (item->text() == "CoonsPatch" ) {
         info.gradient_type = c_BrushTypePathNewLinearGradient;
@@ -360,6 +368,225 @@ void MainWindow::on_ContinueBack_clicked(bool checked)
     {
         info.ginfo = NSStructures::GInfoConstructor::get_radial(info.c0, info.c1, info.r0, info.r1,
                                                                 0, 1, info.cont_b, info.cont_f);
+        on_RenderPic_clicked();
+    }
+}
+
+
+
+void MainWindow::on_TrianglePoint1X_sliderMoved(int position)
+{
+
+    info.triangle[0].x = position;
+    if (info.ginfo.shading.shading_type == NSStructures::ShadingInfo::TriangleInterpolation)
+    {
+        info.gradient_type = c_BrushTypeTriagnleMeshGradient;
+        info.ginfo = NSStructures::GInfoConstructor::get_triangle(
+                    info.triangle,
+                    {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
+                    {}, false
+                    );
+        points = {};
+        for (auto p : info.triangle)
+        {
+            points.push_back({p.x / 3.84, p.y / 3.84});
+        }
+        on_RenderPic_clicked();
+        return;
+    }
+    else if (info.gradient_type == c_BrushTypeTriagnleMeshGradient)
+    {
+        info.gradient_type = c_BrushTypeTriagnleMeshGradient;
+        info.ginfo = NSStructures::GInfoConstructor::get_triangle(
+                    info.triangle,
+                    {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
+                    {0, 0.4, 1}, true
+                    );
+        points = {};
+        for (auto p : info.triangle)
+        {
+            points.push_back({p.x / 3.84, p.y / 3.84});
+        }
+        on_RenderPic_clicked();
+    }
+}
+
+void MainWindow::on_TrianglePoint1Y_sliderMoved(int position)
+{
+    info.triangle[0].y = position;
+    if (info.ginfo.shading.shading_type == NSStructures::ShadingInfo::TriangleInterpolation)
+    {
+        info.gradient_type = c_BrushTypeTriagnleMeshGradient;
+        info.ginfo = NSStructures::GInfoConstructor::get_triangle(
+                    info.triangle,
+                    {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
+                    {}, false
+                    );
+        points = {};
+        for (auto p : info.triangle)
+        {
+            points.push_back({p.x / 3.84, p.y / 3.84});
+        }
+        on_RenderPic_clicked();
+        return;
+    }
+    else if (info.gradient_type == c_BrushTypeTriagnleMeshGradient)
+    {
+        info.gradient_type = c_BrushTypeTriagnleMeshGradient;
+        info.ginfo = NSStructures::GInfoConstructor::get_triangle(
+                    info.triangle,
+                    {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
+                    {0, 0.4, 1}, true
+                    );
+        points = {};
+        for (auto p : info.triangle)
+        {
+            points.push_back({p.x / 3.84, p.y / 3.84});
+        }
+        on_RenderPic_clicked();
+    }
+}
+
+void MainWindow::on_TrianglePoint2X_sliderMoved(int position)
+{
+    info.triangle[1].x = position;
+    if (info.ginfo.shading.shading_type == NSStructures::ShadingInfo::TriangleInterpolation)
+    {
+        info.gradient_type = c_BrushTypeTriagnleMeshGradient;
+        info.ginfo = NSStructures::GInfoConstructor::get_triangle(
+                    info.triangle,
+                    {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
+                    {}, false
+                    );
+        points = {};
+        for (auto p : info.triangle)
+        {
+            points.push_back({p.x / 3.84, p.y / 3.84});
+        }
+        on_RenderPic_clicked();
+        return;
+    }
+    else if (info.gradient_type == c_BrushTypeTriagnleMeshGradient)
+    {
+        info.gradient_type = c_BrushTypeTriagnleMeshGradient;
+        info.ginfo = NSStructures::GInfoConstructor::get_triangle(
+                    info.triangle,
+                    {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
+                    {0, 0.4, 1}, true
+                    );
+        points = {};
+        for (auto p : info.triangle)
+        {
+            points.push_back({p.x / 3.84, p.y / 3.84});
+        }
+        on_RenderPic_clicked();
+    }
+}
+
+void MainWindow::on_TrianglePoint2Y_sliderMoved(int position)
+{
+    info.triangle[1].y = position;
+    if (info.ginfo.shading.shading_type == NSStructures::ShadingInfo::TriangleInterpolation)
+    {
+        info.gradient_type = c_BrushTypeTriagnleMeshGradient;
+        info.ginfo = NSStructures::GInfoConstructor::get_triangle(
+                    info.triangle,
+                    {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
+                    {}, false
+                    );
+        points = {};
+        for (auto p : info.triangle)
+        {
+            points.push_back({p.x / 3.84, p.y / 3.84});
+        }
+        on_RenderPic_clicked();
+        return;
+    }
+    else if (info.gradient_type == c_BrushTypeTriagnleMeshGradient)
+    {
+        info.gradient_type = c_BrushTypeTriagnleMeshGradient;
+        info.ginfo = NSStructures::GInfoConstructor::get_triangle(
+                    info.triangle,
+                    {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
+                    {0, 0.4, 1}, true
+                    );
+        points = {};
+        for (auto p : info.triangle)
+        {
+            points.push_back({p.x / 3.84, p.y / 3.84});
+        }
+        on_RenderPic_clicked();
+    }
+}
+
+void MainWindow::on_TrianglePoint3X_sliderMoved(int position)
+{
+    info.triangle[2].x = position;
+    if (info.ginfo.shading.shading_type == NSStructures::ShadingInfo::TriangleInterpolation)
+    {
+        info.gradient_type = c_BrushTypeTriagnleMeshGradient;
+        info.ginfo = NSStructures::GInfoConstructor::get_triangle(
+                    info.triangle,
+                    {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
+                    {}, false
+                    );
+        points = {};
+        for (auto p : info.triangle)
+        {
+            points.push_back({p.x / 3.84, p.y / 3.84});
+        }
+        on_RenderPic_clicked();
+        return;
+    }
+    else if (info.gradient_type == c_BrushTypeTriagnleMeshGradient)
+    {
+        info.gradient_type = c_BrushTypeTriagnleMeshGradient;
+        info.ginfo = NSStructures::GInfoConstructor::get_triangle(
+                    info.triangle,
+                    {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
+                    {0, 0.4, 1}, true
+                    );
+        points = {};
+        for (auto p : info.triangle)
+        {
+            points.push_back({p.x / 3.84, p.y / 3.84});
+        }
+        on_RenderPic_clicked();
+    }
+}
+
+void MainWindow::on_TrianglePoint3Y_sliderMoved(int position)
+{
+    info.triangle[2].y = position;
+    if (info.ginfo.shading.shading_type == NSStructures::ShadingInfo::TriangleInterpolation)
+    {
+        info.gradient_type = c_BrushTypeTriagnleMeshGradient;
+        info.ginfo = NSStructures::GInfoConstructor::get_triangle(
+                    info.triangle,
+                    {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
+                    {}, false
+                    );
+        points = {};
+        for (auto p : info.triangle)
+        {
+            points.push_back({p.x / 3.84, p.y / 3.84});
+        }
+        on_RenderPic_clicked();
+        return;
+    }
+    else if (info.gradient_type == c_BrushTypeTriagnleMeshGradient)
+    {
+        info.gradient_type = c_BrushTypeTriagnleMeshGradient;
+        info.ginfo = NSStructures::GInfoConstructor::get_triangle(
+                    info.triangle,
+                    {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
+                    {0, 0.4, 1}, true
+                    );
+        points = {};
+        for (auto p : info.triangle)
+        {
+            points.push_back({p.x / 3.84, p.y / 3.84});
+        }
         on_RenderPic_clicked();
     }
 }

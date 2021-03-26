@@ -35,6 +35,7 @@ struct Info {
     NSStructures::Point c0, c1;
     NSStructures::Point p0, p1;
     bool cont_b, cont_f;
+    std::vector<NSStructures::Point> triangle ={{100, 100}, {300, 200}, {200, 350}};
 
 
     NSStructures::GradientInfo ginfo;
@@ -110,6 +111,18 @@ private slots:
     void on_ContinueForvard_clicked(bool checked);
 
     void on_ContinueBack_clicked(bool checked);
+
+    void on_TrianglePoint1X_sliderMoved(int position);
+
+    void on_TrianglePoint1Y_sliderMoved(int position);
+
+    void on_TrianglePoint2X_sliderMoved(int position);
+
+    void on_TrianglePoint2Y_sliderMoved(int position);
+
+    void on_TrianglePoint3X_sliderMoved(int position);
+
+    void on_TrianglePoint3Y_sliderMoved(int position);
 
 private:
     Ui::MainWindow *ui;

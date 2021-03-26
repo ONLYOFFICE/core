@@ -95,114 +95,16 @@ void GenerateImg(QImage &img, std::vector<Point> &points, Info &info) {
 void MainWindow::on_RenderPic_clicked()
 {
 
-    QImage pm(400, 400,QImage::Format_RGB888);
+    QImage pm(400, 400, QImage::Format_RGB888);
     GenerateImg(pm,  points, info);
     //setColor2(pm, 0x0000FF);
    //pm.invertPixels();
-    ui->lable_test->setPixmap(QPixmap::fromImage(pm));
+    ui->lable_test->setPixmap(QPixmap::fromImage(pm)) ;
     ui->lable_test->setScaledContents(true);
     ui->lable_test->resize(pm.size());
     pm.save("test.bmp");
 }
 
-
-
-void MainWindow::on_AngleSlider_sliderMoved(int position)
-{
-    double angleT = 360. / 100 * position;
-    ui->lable_angle->setText(std::to_string(angleT).c_str());
-    info.ginfo.setAngleDegrees(angleT);
-    this->on_RenderPic_clicked();
-}
-
-void MainWindow::on_OffsetSlider_sliderMoved(int position)
-{
-    double offset = ((double)position - 50.0) / 25.0;
-    ui->lable_offset->setText(std::to_string(offset).c_str());
-    info.ginfo.linoffset = offset;
-    this->on_RenderPic_clicked();
-}
-
-void MainWindow::on_StretchSlide_sliderMoved(int position)
-{
-    double stretch = pow(2.0, (position - 50.) / 25.0);
-    ui->lable_stretch->setText(std::to_string(stretch).c_str());
-    info.ginfo.linstretch = stretch;
-    this->on_RenderPic_clicked();
-}
-
-void MainWindow::on_DiscreteStepSlider_sliderMoved(int position)
-{
-    if (position == 0) {
-        info.ginfo.discrete_step = 0.0;
-        ui->label_discrete->setText("Continious");
-        this->on_RenderPic_clicked();
-        return;
-    }
-    info.ginfo.setStepByNum(position);
-    ui->label_discrete->setText(std::to_string(position).c_str());
-    this->on_RenderPic_clicked();
-}
-
-void MainWindow::on_PathType_itemDoubleClicked(QListWidgetItem *item)
-{
-    on_PathType_itemClicked(item);
-    on_RenderPic_clicked();
-}
-
-void MainWindow::on_PathType_itemClicked(QListWidgetItem *item)
-{
-    if (item->text() == "Circle") {
-        points = drawCircle1(100, 53, 53, 50);
-    }
-    else if (item->text() == "Square") {
-        points = {{0, 0}, {105, 0}, {105, 105}, {0, 105}};
-    }
-    else if (item->text() == "Triangle") {
-        points = {{5, 10}, {40, 100}, {100, 1}};
-        /*
-         * Пока чтобы тестить прямую интерполяцию цвета, нужно редактировать код
-         * И вычтавить  info.ginfo.shading.shading_type как NSStructures::ShadingInfo::TriangleInterpolation
-         * Чтобы тестить параметрическую нужно выставить NSStructures::ShadingInfo::Parametric
-         * С опцией Parametric можно тестить другие градиенты.
-         *
-        */
-        info.gradient_type = c_BrushTypeTriagnleMeshGradient;
-        info.ginfo.shading.shading_type = NSStructures::ShadingInfo::Parametric;
-        info.ginfo.shading.triangle = {{5 * 3.84, 10 * 3.84}, {40 * 3.84, 100 * 3.84}, {100 * 3.84, 1 * 3.84}};
-        info.ginfo.shading.triangle_parameters = {0.0f, 0.5f,  1.0f} ;
-        info.ginfo.shading.triangle_colors = {{255,0,0, 255}, {255,255,0,255 },  {0,255,0,255}};
-
-
-    }
-    else if (item->text() == "Patch") {
-        points = {{0, 0}, {105, 0}, {105, 105}, {0, 105}};
-        info.gradient_type = c_BrushTypeTensorCurveGradient ;
-        info.ginfo.shading.shading_type = NSStructures::ShadingInfo::CurveInterpolation;
-        info.ginfo.shading.patch = {
-            {{10, 80}, {20, 70}, {0, 20}, {10,10}},
-            {{25, 75}, {40, 60}, {40, 40}, {20, 0}},
-            {{90, 70}, {60,60}, {60, 40}, {70, 20}},
-            {{80,80}, {40, 40}, {130, 70}, {80,10}}
-        };
-        info.ginfo.shading.patch_parameters = {
-            {0 , 1},
-            {1, 0.5}
-        };
-        info.ginfo.shading.patch_colors = {
-            {{255, 0, 0}, {150, 255, 255}},
-            {{0, 255, 0}, {0, 0, 255}}
-        };
-        float mult = 4.0;
-        for (int i = 0; i < info.ginfo.shading.patch.size(); i++)
-        {
-            for (int j = 0; j < info.ginfo.shading.patch[0].size(); j++)
-            {
-                info.ginfo.shading.patch[i][j] = info.ginfo.shading.patch[i][j]  * mult;
-            }
-        }
-    }
-}
 
 void MainWindow::on_GradientType_itemDoubleClicked(QListWidgetItem *item)
 {
@@ -212,68 +114,98 @@ void MainWindow::on_GradientType_itemDoubleClicked(QListWidgetItem *item)
 
 void MainWindow::on_GradientType_itemClicked(QListWidgetItem *item)
 {
+    points = {{0, 0}, {105,  0}, {105, 105}, {0, 105}};
     if (item->text() == "Linear") {
         info.gradient_type = c_BrushTypePathNewLinearGradient;
+        info.ginfo = NSStructures::GInfoConstructor::get_linear(info.p0, info.p1, 0, 1, info.cont_b, info.cont_f);
     }
     else if (item->text() == "Radial") {
         info.gradient_type = c_BrushTypePathRadialGradient;
+        info.ginfo = NSStructures::GInfoConstructor::get_radial(info.c0, info.c1, info.r0, info.r1,
+                                                                0, 1, info.cont_b, info.cont_f);
     }
-    else if (item->text() == "Diamond") {
-        info.gradient_type = c_BrushTypePathDiamondGradient;
+    else if (item->text() == "Triangle") {
+        info.gradient_type = c_BrushTypeTriagnleMeshGradient;
+        info.ginfo = NSStructures::GInfoConstructor::get_triangle(
+                    {{100, 100}, {300, 200}, {200, 350}},
+                    {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
+                    {}, false
+                    );
+        points = {{100 / 3.84, 100 / 3.84}, {300 / 3.84, 200 / 3.84}, {200 / 3.84, 350 / 3.84}};
     }
-    else if (item->text() == "Conical") {
-        info.gradient_type = c_BrushTypePathConicalGradient;
+    else if (item->text() == "Functional" ) {
+        info.ginfo = NSStructures::GInfoConstructor::get_functional(0, 1, 0, 1,
+                                                                            {400, 0, 0, 400, 0, 0});
+    }
+    else if (item->text() == "TriangleParametric" ) {
+        info.gradient_type = c_BrushTypeTriagnleMeshGradient;
+        info.ginfo = NSStructures::GInfoConstructor::get_triangle(
+                    {{100, 100}, {300, 200}, {200, 350}},
+                    {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
+                    {0, 0.4, 1}, true
+                    );
+        points = {{100 / 3.84, 100 / 3.84}, {300 / 3.84, 200 / 3.84}, {200 / 3.84, 350 / 3.84}};
+    }
+    else if (item->text() == "CoonsPatch" ) {
+        info.gradient_type = c_BrushTypePathNewLinearGradient;
+        info.ginfo = NSStructures::GInfoConstructor::get_curve(
+                    {
+                     {100, 300}, {50, 250}, {150, 150}, {100, 100},
+                     {150, 50}, {250, 150}, {300, 100}, {250, 150},
+                     {350, 250}, {300, 300}, {250, 350}, {150,250}
+                    },
+                    {0, 0.5, 1, 0.5},
+                    {{0, 0, 255}, {255, 0, 255},
+                     {255, 0, 0}, {0, 255, 0}},
+                        false
+                    );
+    }
+    else if (item->text() == "TesnorCoonsPatch" ) {
+        info.gradient_type = c_BrushTypePathNewLinearGradient;
+        info.ginfo = NSStructures::GInfoConstructor::get_tensor_curve(
+                    {
+                        {{100, 300}, {150, 250}, {50, 150}, {100,100}},
+                        {{150, 250}, {170, 230}, {170, 170}, {50, 150}},
+                        {{350, 250}, {230, 230}, {230, 170}, {150, 250}},
+                        {{300, 300}, {250, 250}, {350, 150}, {300, 100}}
+                    },
+                    {{0, 0.5}, {1, 0.5}},
+                    {{{0, 0, 255}, {255, 0, 255}}, {{255, 0, 0}, {0, 255, 0}}},
+                    false
+                    );
+    }
+    else if (item->text() == "CoonsPatchParametric") {
+        info.gradient_type = c_BrushTypeCurveGradient;
+        info.ginfo = NSStructures::GInfoConstructor::get_curve(
+                    {
+                     {100, 300}, {50, 250}, {150, 150}, {100, 100},
+                     {150, 50}, {250, 150}, {300, 100}, {250, 150},
+                     {350, 250}, {300, 300}, {250, 350}, {150,250}
+                    },
+                    {0, 0.5, 1, 0.5},
+                    {{0, 0, 255}, {255, 0, 255},
+                     {255, 0, 0}, {0, 255, 0}},
+                        true
+                    );
+    }
+    else if (item->text() == "TensorCoonsPatchParametric") {
+        info.gradient_type = c_BrushTypeTensorCurveGradient;
+        info.ginfo = NSStructures::GInfoConstructor::get_tensor_curve(
+                    {
+                        {{100, 300}, {150, 250}, {50, 150}, {100,100}},
+                        {{150, 250}, {170, 230}, {170, 170}, {50, 150}},
+                        {{350, 250}, {230, 230}, {230, 170}, {150, 250}},
+                        {{300, 300}, {250, 250}, {350, 150}, {300, 100}}
+                    },
+                    {{0, 0.5}, {1, 0.5}},
+                    {{{0, 0, 255}, {255, 0, 255}}, {{255, 0, 0}, {0, 255, 0}}},
+                    true
+                    );
     }
 }
 
 
-void MainWindow::on_LittleRadiusSlider_sliderMoved(int position)
-{
-    double llr = (double)position / 100.0;
-    ui->lable_little_radius->setText(std::to_string(llr).c_str());
-    info.ginfo.littleRadius = llr;
-    this->on_RenderPic_clicked();
-}
 
-void MainWindow::on_LargeRadiusSlider_sliderMoved(int position)
-{
-    double lgr = (double)position / 100.0;
-    ui->lable_large_radius->setText(std::to_string(lgr).c_str());
-    info.ginfo.largeRadius = lgr;
-    this->on_RenderPic_clicked();
-}
-
-void MainWindow::on_xcenterSlider_sliderMoved(int position)
-{
-    double xc = ((double)position - 50.0) / 25.0;
-    ui->lable_xcenter->setText(std::to_string(xc).c_str());
-    info.ginfo.centerX = xc;
-    this->on_RenderPic_clicked();
-}
-
-void MainWindow::on_ycenterSlider_sliderMoved(int position)
-{
-    double yc = ((double)position - 50.0) / 25.0;
-    ui->lable_ycenter->setText(std::to_string(yc).c_str());
-    info.ginfo.centerY = yc;
-    this->on_RenderPic_clicked();
-}
-
-void MainWindow::on_XSizeSlider_sliderMoved(int position)
-{
-    double xsize = pow(2.0, (position - 50.) / 25.0);
-    ui->lable_xsize->setText(std::to_string(xsize).c_str());
-    info.ginfo.xsize = xsize;
-    this->on_RenderPic_clicked();
-}
-
-void MainWindow::on_YSizeSlider_sliderMoved(int position)
-{
-    double ysize = pow(2.0, (position - 50.) / 25.0);
-    ui->lable_ysize->setText(std::to_string(ysize).c_str());
-    info.ginfo.ysize = ysize;
-    this->on_RenderPic_clicked();
-}
 
 void MainWindow::on_ColorSpaces_itemClicked(QListWidgetItem *item)
 {
@@ -311,9 +243,122 @@ void MainWindow::on_ColorSpaces_itemDoubleClicked(QListWidgetItem *item)
     on_RenderPic_clicked();
 }
 
-void MainWindow::on_Reflected_CheckBox_clicked(bool checked)
+
+void MainWindow::on_Point1X_sliderMoved(int position)
 {
-    info.ginfo.continue_shading = checked;
+    info.p0.x= position;
+    if (info.gradient_type != c_BrushTypePathNewLinearGradient) return;
+    info.ginfo = NSStructures::GInfoConstructor::get_linear(info.p0, info.p1, 0, 1, info.cont_b, info.cont_f);
     on_RenderPic_clicked();
 }
 
+void MainWindow::on_Point1Y_sliderMoved(int position)
+{
+    info.p0.y = position;
+    if (info.gradient_type != c_BrushTypePathNewLinearGradient) return;
+    info.ginfo = NSStructures::GInfoConstructor::get_linear(info.p0, info.p1, 0, 1, info.cont_b, info.cont_f);
+    on_RenderPic_clicked();
+}
+
+void MainWindow::on_Point2X_sliderMoved(int position)
+{
+    info.p1.x = position;
+    if (info.gradient_type != c_BrushTypePathNewLinearGradient) return;
+    info.ginfo = NSStructures::GInfoConstructor::get_linear(info.p0, info.p1, 0, 1, info.cont_b, info.cont_f);
+    on_RenderPic_clicked();
+}
+
+void MainWindow::on_Point2Y_sliderMoved(int position)
+{
+    info.p1.y = position;
+    if (info.gradient_type != c_BrushTypePathNewLinearGradient) return;
+    info.ginfo = NSStructures::GInfoConstructor::get_linear(info.p0, info.p1, 0, 1, info.cont_b, info.cont_f);
+    on_RenderPic_clicked();
+}
+
+
+void MainWindow::on_CenterX0_valueChanged(int value)
+{
+    info.c0.x = value;
+    if (info.gradient_type != c_BrushTypePathRadialGradient) return;
+    info.ginfo = NSStructures::GInfoConstructor::get_radial(info.c0, info.c1, info.r0, info.r1,
+                                                            0, 1, info.cont_b, info.cont_f);
+    on_RenderPic_clicked();
+}
+
+void MainWindow::on_CenterY0_valueChanged(int value)
+{
+    info.c0.y = value;
+    if (info.gradient_type != c_BrushTypePathRadialGradient) return;
+    info.ginfo = NSStructures::GInfoConstructor::get_radial(info.c0, info.c1, info.r0, info.r1,
+                                                            0, 1, info.cont_b, info.cont_f);
+    on_RenderPic_clicked();
+}
+
+void MainWindow::on_CenterX1_valueChanged(int value)
+{
+    info.c1.x = value;
+    if (info.gradient_type != c_BrushTypePathRadialGradient) return;
+    info.ginfo = NSStructures::GInfoConstructor::get_radial(info.c0, info.c1, info.r0, info.r1,
+                                                            0, 1, info.cont_b, info.cont_f);
+    on_RenderPic_clicked();
+}
+
+void MainWindow::on_CenterY1_valueChanged(int value)
+{
+    info.c1.y= value;
+    if (info.gradient_type != c_BrushTypePathRadialGradient) return;
+    info.ginfo = NSStructures::GInfoConstructor::get_radial(info.c0, info.c1, info.r0, info.r1,
+                                                            0, 1, info.cont_b, info.cont_f);
+    on_RenderPic_clicked();
+}
+
+void MainWindow::on_r0slider_valueChanged(int value)
+{
+    info.r0 = value;
+    if (info.gradient_type != c_BrushTypePathRadialGradient) return;
+    info.ginfo = NSStructures::GInfoConstructor::get_radial(info.c0, info.c1, info.r0, info.r1,
+                                                            0, 1, info.cont_b, info.cont_f);
+    on_RenderPic_clicked();
+}
+
+void MainWindow::on_r1slider_valueChanged(int value)
+{
+    info.r1 = value;
+    if (info.gradient_type != c_BrushTypePathRadialGradient) return;
+    info.ginfo = NSStructures::GInfoConstructor::get_radial(info.c0, info.c1, info.r0, info.r1,
+                                                            0, 1, info.cont_b, info.cont_f);
+    on_RenderPic_clicked();
+}
+
+void MainWindow::on_ContinueForvard_clicked(bool checked)
+{
+    info.cont_f= checked;
+    if (info.gradient_type == c_BrushTypePathNewLinearGradient)
+    {
+        info.ginfo = NSStructures::GInfoConstructor::get_linear(info.p0, info.p1, 0, 1, info.cont_b, info.cont_f);
+        on_RenderPic_clicked();
+    }
+    if (info.gradient_type == c_BrushTypePathRadialGradient)
+    {
+        info.ginfo = NSStructures::GInfoConstructor::get_radial(info.c0, info.c1, info.r0, info.r1,
+                                                                0, 1, info.cont_b, info.cont_f);
+        on_RenderPic_clicked();
+    }
+}
+
+void MainWindow::on_ContinueBack_clicked(bool checked)
+{
+    info.cont_b = checked;
+    if (info.gradient_type == c_BrushTypePathNewLinearGradient)
+    {
+        info.ginfo = NSStructures::GInfoConstructor::get_linear(info.p0, info.p1, 0, 1, info.cont_b, info.cont_f);
+        on_RenderPic_clicked();
+    }
+    if (info.gradient_type == c_BrushTypePathRadialGradient)
+    {
+        info.ginfo = NSStructures::GInfoConstructor::get_radial(info.c0, info.c1, info.r0, info.r1,
+                                                                0, 1, info.cont_b, info.cont_f);
+        on_RenderPic_clicked();
+    }
+}

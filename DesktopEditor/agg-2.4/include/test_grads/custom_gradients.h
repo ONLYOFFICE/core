@@ -72,31 +72,58 @@ namespace agg
     class calcRadial : public calcBase
     {
     public:
-        calcRadial(const NSStructures::GradientInfo &_gi, float _cx, float _cy, float _factor) : ginfo(_gi), cx(_cx), cy(_cy), factor(_factor), inverseFactor(1.0f / _factor),
-                                                                                                 invXsize(1.0f / _gi.xsize), invYsize(1.0f / _gi.ysize)
+        calcRadial(const NSStructures::GradientInfo &_gi)
         {
-            cx += ginfo.centerX * inverseFactor;
-            cy += ginfo.centerY * inverseFactor;
-            set_rotation(ginfo.angle);
+            r0 = _gi.r0;
+            r1 = _gi.r1;
+            p0 = _gi.p0;
+            p1 = _gi.p1;
+            ginfo = _gi;
         }
 
         virtual float eval(float x, float y) override
         {
-            x -= cx;
-            y -= cy;
-            rotate(x, y);
-            x *= invXsize;
-            y *= invYsize;
-            float t = sqrt(x * x + y * y) * factor;
-            return t;
+            if (r0 * r0 > (x - p0.x)*(x - p0.x) + (y - p0.y)*(y - p0.y))
+            {
+                return ginfo.shading.function.get_x_min() - 1;
+            }
+            if (r1 * r1 < (x - p1.x)*(x - p1.x) + (y - p1.y)*(y - p1.y))
+            {
+                return ginfo.shading.function.get_x_max() + 1;
+            }
+
+            float a = (r1 - r0) * (r1 - r0) - (p1.x - p0.x) * (p1.x - p0.x) - (p1.y - p0.y) * (p1.y - p0.y);
+
+            float b = 2 * r0 * (r1 - r0) + 2 * (p1.x - p0.x) * (x - p0.x) + 2 * (p1.y - p0.y) * (y - p0.y);
+
+            float c = r0 * r0 - (x - p0.x) * (x - p0.x) - (y - p0.y) * (y - p0.y);
+
+            float D = b * b - 4 * a * c;
+            if (D < 0)
+            {
+                return NAN_FLOAT;
+            }
+            float x1 = (-b + sqrtf(D)) / 2 / a;
+            float x2 = (-b - sqrtf(D)) / 2 / a;
+
+            if (0 <= x1 && x1 <= 1)
+            {
+                return ginfo.shading.function.get_x_min() + 
+                    (ginfo.shading.function.get_x_max() - ginfo.shading.function.get_x_min()) * x1;
+            }
+            if (0 <= x2 && x2 <= 1)
+            {
+                 return ginfo.shading.function.get_x_min() + 
+                    (ginfo.shading.function.get_x_max() - ginfo.shading.function.get_x_min()) * x2;
+            }
+            return NAN_FLOAT;
         }
         virtual ~calcRadial() {}
 
     private:
+        float r0, r1;
+        NSStructures::Point p0,p1;
         NSStructures::GradientInfo ginfo;
-        float cx, cy, factor;
-        float inverseFactor;
-        float invXsize, invYsize;
     };
 
      /** 
@@ -170,30 +197,22 @@ namespace agg
     class calcNewLinear : public calcBase
     {
     public:
-        calcNewLinear(const NSStructures::GradientInfo &_gi,
-                      float _xmin, float _ymin,
-                      float _xmax, float _ymax) : ginfo(_gi),
-                                                  xmin(_xmin), ymin(_ymin), xmax(_xmax), ymax(_ymax)
+        calcNewLinear(const NSStructures::GradientInfo &_gi) : ginfo(_gi)
         {
-            cx = (xmin + xmax) * 0.5;
-            cy = (ymin + ymax) * 0.5;
-            xlen = xmax - xmin;
-            invXlen = 1.0f / xlen;
-            invStretch = 1.0f / ginfo.linstretch;
-            set_rotation(ginfo.angle);
+            p0 = _gi.shading.point1;
+            p1 = _gi.shading.point2;
         }
         virtual float eval(float x, float y) override
         {
-            x -= cx;
-            y -= cy;
-            rotate(x, y);
-            float t = (x + 0.5 * xlen) * invXlen * invStretch - ginfo.linoffset;
+            float t = (x - p0.x) * (p1.x - p0.x) + (y - p0.y) * (p1.y - p0.y);
+            t /= (p1.x - p0.x) * (p1.x - p0.x) + (p1.y - p0.y) * (p1.y - p0.y);
             return t;
         }
 
     private:
-        float xmin, ymin, xmax, ymax;
-        float cx, cy, xlen;
+
+        NSStructures::Point p0, p1;
+        float cx, cy, len;
         float invXlen, invStretch;
         NSStructures::GradientInfo ginfo;
     };
@@ -274,15 +293,29 @@ namespace agg
             RES = (int)std::max(ymax - ymin, xmax - xmin);
             precalc = std::vector<std::vector<float>>(RES, std::vector<float>(RES, NAN_FLOAT));
             delta = 1.0f / RES;
-            std::pair<int, int> prev_i;
-            for (u = 0; u <=1; u+=delta)
+            std::vector<std::pair<int, int>> next_indexes(RES + 1);
+            u = 0;
+            for (int i = 0; i < RES; ++i)
             {   
-                for (v = 0; v <= 1; v+=delta)
+                v = 0;
+                std::vector<std::pair<int, int>> cur_next_indexes(RES + 1);
+                for (int j = 0; j < RES; ++j)
                 {
-                    NSStructures::Point p = get_p(u, v);
-                    std::pair<int, int> index1 = get_index(p.x, p.y);
+                    NSStructures::Point p;
+                    std::pair<int, int> index1;
+                    if (i == 0 || j == 0)
+                    {
+                        p = get_p(u, v);
+                        index1 = get_index(p.x, p.y);
+                    }
+                    else
+                    {
+                        index1 = next_indexes[j];
+                    }
+                    
                     p = get_p(u + delta, v + delta);
                     std::pair<int, int> index2 = get_index(p.x, p.y);
+                    cur_next_indexes[j + 1] = index2;
 
                     float t =
                         ginfo.shading.patch_parameters[0][0] * (1 - v) * (1 - u) +
@@ -291,7 +324,10 @@ namespace agg
                         ginfo.shading.patch_parameters[1][1] * v * u;
 
                     fill_square(index1, index2, t);
+                    v += delta;
                 }
+                next_indexes = cur_next_indexes;
+                u += delta;
             }
         }
 
@@ -333,9 +369,6 @@ namespace agg
                 return 3 * t * t * (1 - t);
             case 3:
                 return t * t * t;
-
-            default:
-                printf("!!!!!!");
             }
         }
 
@@ -444,9 +477,9 @@ namespace agg
             if(isnanf(t))
                 return t;
             
-            if (t < 0 && !m_oGradientInfo.continue_shading)
+            if (t < m_oGradientInfo.shading.function.get_x_min() && !m_oGradientInfo.continue_shading_b)
                 return NAN_FLOAT;
-            if (t > 1 && !m_oGradientInfo.continue_shading)
+            if (t > m_oGradientInfo.shading.function.get_x_max() && !m_oGradientInfo.continue_shading_f)
                 return NAN_FLOAT;
 
             if (t > m_oGradientInfo.largeRadius)
@@ -490,7 +523,7 @@ namespace agg
             switch (bType)
             {
             case Aggplus::BrushTypeRadialGradient:
-                calculate = new calcRadial(m_oGradientInfo, m_center.x, m_center.y, m_factor);
+                calculate = new calcRadial(m_oGradientInfo);
                 break;
 
             case Aggplus::BrushTypeConicalGradient:
@@ -502,7 +535,7 @@ namespace agg
                 break;
 
             case Aggplus::BrushTypeNewLinearGradient:
-                calculate = new calcNewLinear(m_oGradientInfo, xmin, ymin, xmax, ymax);
+                calculate = new calcNewLinear(m_oGradientInfo);
                 break;
 
             case Aggplus::BrushTypeTriagnleMeshGradient:
@@ -557,8 +590,12 @@ namespace agg
                 {
                     float _x = x;
                     float _y = y;
-                    _x = (_x - xmin) / (xmax - xmin);
-                    _y = (_y - ymin) / (ymax - xmin);
+                    _x += m_oGradientInfo.shading.inv_map[4];
+                    _y += m_oGradientInfo.shading.inv_map[5];
+
+                    _x = _x * m_oGradientInfo.shading.inv_map[0] + _y * m_oGradientInfo.shading.inv_map[1];
+                    _y = _x * m_oGradientInfo.shading.inv_map[2] + _y * m_oGradientInfo.shading.inv_map[3];
+
                     *span++ = m_oGradientInfo.shading.function.get_color(_x, _y); //m_color_table[index];
                 }
                 else if (m_oGradientInfo.shading.shading_type == NSStructures::ShadingInfo::TriangleInterpolation)
@@ -667,6 +704,8 @@ namespace agg
         // Нужно для безопасного сложения цветов.
         int limit8bit(int a)
         {
+            if (a < 0)
+                return 0;
             if (a >= 0x100)
                 return 0xFF;
             return a;
@@ -727,7 +766,7 @@ namespace agg
             xmax_curve = xmin_curve = start_p.x;
             ymax_curve = ymin_curve = start_p.y;
             precalc = std::vector<std::vector<ColorT>>(RES, std::vector<ColorT>(RES, {0, 0, 0, 0}));
-            for (; u <= 1; u += delta)
+            for (; u <= 1; u += delta )
             {
                 for (v = 0; v <= 1; v += delta)
                 {

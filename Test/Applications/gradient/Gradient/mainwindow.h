@@ -30,6 +30,13 @@ struct Color {
 };
 
 struct Info {
+    // Для теста адаптора все вынес в инфо.
+    float r0, r1;
+    NSStructures::Point c0, c1;
+    NSStructures::Point p0, p1;
+    bool cont_b, cont_f;
+
+
     NSStructures::GradientInfo ginfo;
     int gradient_type;
     std::vector<LONG> c;
@@ -40,6 +47,16 @@ struct Info {
         p = {0.0,0.2,0.4,0.6,0.8,1};
         n_colors = 6;
         ginfo.shading.shading_type = NSStructures::ShadingInfo::Parametric;
+
+
+
+        r0 = 0;
+        r1 = 100;
+        c0 = {200, 200};
+        c1 = {200, 200};
+        p0 = {0, 0};
+        p1 = {400, 400};
+        cont_b = cont_f = false;
     };
     ~Info() {
     }
@@ -62,39 +79,37 @@ public:
 private slots:
     void on_RenderPic_clicked();
 
-    void on_AngleSlider_sliderMoved(int position);
-
-    void on_OffsetSlider_sliderMoved(int position);
-
-    void on_StretchSlide_sliderMoved(int position);
-
-    void on_DiscreteStepSlider_sliderMoved(int position);
-
-    void on_PathType_itemDoubleClicked(QListWidgetItem *item);
-
-    void on_PathType_itemClicked(QListWidgetItem *item);
-
     void on_GradientType_itemDoubleClicked(QListWidgetItem *item);
 
     void on_GradientType_itemClicked(QListWidgetItem *item);
-
-    void on_LittleRadiusSlider_sliderMoved(int position);
-
-    void on_LargeRadiusSlider_sliderMoved(int position);
-
-    void on_XSizeSlider_sliderMoved(int position);
-
-    void on_ycenterSlider_sliderMoved(int position);
-
-    void on_xcenterSlider_sliderMoved(int position);
-
-    void on_YSizeSlider_sliderMoved(int position);
 
     void on_ColorSpaces_itemClicked(QListWidgetItem *item);
 
     void on_ColorSpaces_itemDoubleClicked(QListWidgetItem *item);
 
-    void on_Reflected_CheckBox_clicked(bool checked);
+    void on_Point1X_sliderMoved(int position);
+
+    void on_Point1Y_sliderMoved(int position);
+
+    void on_Point2X_sliderMoved(int position);
+
+    void on_Point2Y_sliderMoved(int position);
+
+    void on_CenterX0_valueChanged(int value);
+
+    void on_CenterY0_valueChanged(int value);
+
+    void on_CenterX1_valueChanged(int value);
+
+    void on_CenterY1_valueChanged(int value);
+
+    void on_r0slider_valueChanged(int value);
+
+    void on_r1slider_valueChanged(int value);
+
+    void on_ContinueForvard_clicked(bool checked);
+
+    void on_ContinueBack_clicked(bool checked);
 
 private:
     Ui::MainWindow *ui;

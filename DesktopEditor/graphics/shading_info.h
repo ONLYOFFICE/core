@@ -67,12 +67,28 @@ namespace NSStructures
             {
                 for (int j = 0; j < RESOLUTION; j++)
                 {
-                    uint value = 255 - (255 * ((float)(i + j) / RESOLUTION / 2));
-                    values[j][i] = ColorT(value, value, value);
+                    uint value = 255 * sin(i * j * M_PI / RESOLUTION);
+                    values[j][i] = ColorT(value, value, 0);
                 }
             }
         }
 
+        float get_x_min()
+        {
+            return x_domain_min;
+        }
+        float get_x_max()
+        {
+            return x_domain_max;
+        }
+        float get_y_min()
+        {
+            return y_domain_min;
+        }
+        float get_y_max()
+        {
+            return y_domain_max;
+        }
         ColorT get_color(float x)
         {
             int index = get_x_index(x);
@@ -270,7 +286,7 @@ namespace NSStructures
     struct ShadingInfo
     {
         public:
-        ShadingInfo() : shading_type(Parametric), f_type(UseNew){}
+        ShadingInfo() : shading_type(Parametric), f_type(UseNew), inv_map(6){}
         enum ShadingType 
         {
             FunctionOnly,
@@ -279,15 +295,21 @@ namespace NSStructures
             CurveInterpolation,
             TensorCurveInterpolation
         } shading_type;
+
+        // if UseOld old function is called, look for IGraphicsRender.put_BrushGradientColors;
         enum ColorFunctionType
         {
             UseOld, UseNew
-        }f_type; // if UseOld old function is called, look for IGraphicsRender.put_BrushGradientColors;
+        } f_type; 
         ColorFunction<agg::rgba8> function;
-
-
         
-        bool default_mapping; // boundaries to domain of color function
+        // Обратное преобразование из картинки в цветовую функцию
+        std::vector<float> inv_map;
+
+        // Линейный градиент задается в pdf 2 точками
+        bool set_two_points;
+        Point point1, point2;
+
 
         // triangle shading
         std::vector<Point> triangle;
@@ -318,7 +340,8 @@ namespace NSStructures
                          periods(0.5f), periodic(false),
                          xsize(1.0f), ysize(1.0f),
                          linstretch(1.0f), linoffset(0.0f),
-                         continue_shading(true)
+                         continue_shading_f(false),
+                         continue_shading_b(false)
 
         {
         }
@@ -335,7 +358,10 @@ namespace NSStructures
             discrete_step = 1.0f / n;
         }
 
-        float littleRadius, largeRadius; // used in radial gradient - [0, 1]
+        Point p0, p1;
+        float r0, r1;
+        
+        float littleRadius, largeRadius; 
         float centerX, centerY;          // used in radial, diamond and conical gradient - offset relative to figure center
         float angle;                     // used in linear and conical gradient (rad)
         float discrete_step;             // used to make discrete gradient. <= 0 to make continuous
@@ -345,7 +371,7 @@ namespace NSStructures
         float periods;    // number of periods (best with to colours, works as saw function in color space)
         float linstretch; // stretch linear gradient, can be negative (eq angle = 180) can not be zero
         float linoffset;  // offset relative to image size
-        float continue_shading;
+        float continue_shading_b, continue_shading_f;
         ShadingInfo shading;
     };
 
@@ -356,36 +382,168 @@ namespace NSStructures
      * Цветовую функцию надо заполнять вручную
      */
     class GInfoConstructor {
-        static GradientInfo get_functional()
-        {
-            
-        }
-        static GradientInfo get_linear()
-        {
-            
-        }
-        static GradientInfo get_radial()
-        {
-            
-        }
-        static GradientInfo get_triangle()
-        {
-            
-        }
-        static GradientInfo get_curve(const std::vector<Point> &curve_points,
-                                        const std::vector<float> &curve_parametrs,
-                                        const std::vector<agg::rgba8> &curve_colors)
+        public:
+        static GradientInfo get_functional(float xmin, float xmax, float ymin, float ymax,
+                                            std::vector<float> mapping)
         {
             GradientInfo ginfo;
+            ginfo.shading.function = ColorFunction<agg::rgba8>(512, xmin, xmax, ymin, ymax);
+            ginfo.shading.f_type = ShadingInfo::UseNew;
+            ginfo.shading.shading_type = ShadingInfo::FunctionOnly;
+
+            ginfo.shading.inv_map[4] = -mapping[4];
+            ginfo.shading.inv_map[5] = -mapping[5];
+
+            float D = mapping[0] * mapping[3] - mapping[1] * mapping[2];
             
+            ginfo.shading.inv_map[0] = mapping[3] / D;
+            ginfo.shading.inv_map[1] = mapping[1] / D;
+            ginfo.shading.inv_map[2] = mapping[2] / D;
+            ginfo.shading.inv_map[3] = mapping[0] / D;
+
+            return ginfo;
+        }
+        static GradientInfo get_linear(const Point &p1, const Point &p2, float t0 = 0.0f, float t1 = 1.0f, 
+                                        bool continue_shading_b = false, bool continue_shading_f = false)
+        {
+            GradientInfo ginfo;
+            ginfo.shading.f_type = ShadingInfo::UseNew;
+            ginfo.shading.shading_type = ShadingInfo::Parametric;
+            ginfo.continue_shading_f = continue_shading_f;
+            ginfo.continue_shading_b = continue_shading_b;
+
+            ginfo.shading.function = ColorFunction<agg::rgba8>(515, t0, t1);
+
+            ginfo.shading.set_two_points = true;
+            ginfo.shading.point1 = p1;
+            ginfo.shading.point2 = p2;
+
+
+            return ginfo;
+        }
+        static GradientInfo get_radial(const Point &c0, const Point &c1, float r0, float r1, 
+                                        float t0 = 0.0f, float t1 = 1.0f, 
+                                        bool continue_shading_b = false, bool continue_shading_f = false)
+        {
+            GradientInfo ginfo;
+            ginfo.shading.f_type = ShadingInfo::UseNew;
+            ginfo.shading.shading_type = ShadingInfo::Parametric;
+            ginfo.continue_shading_f = continue_shading_f;
+            ginfo.continue_shading_b = continue_shading_b;
+            ginfo.shading.function = ColorFunction<agg::rgba8>(512, t0, t1);
+            ginfo.p0 = c0;
+            ginfo.p1 = c1;
+            ginfo.r0 = r0;
+            ginfo.r1 = r1;
+            return ginfo;
+
+
+        }
+        static GradientInfo get_triangle(const std::vector<Point> &points, 
+                                         const std::vector<agg::rgba8> &colors,
+                                         const std::vector<float> &params,
+                                         bool parametric,
+                                         float t0 = 0.0f, float t1 = 1.0f)
+        {
+            GradientInfo ginfo;
+            ginfo.shading.triangle = points;
+            if (parametric)
+            {
+                ginfo.shading.triangle_parameters = params;
+                ginfo.shading.f_type = ShadingInfo::UseNew;
+                ginfo.shading.function = ColorFunction<agg::rgba8>(512, t0, t1);
+                ginfo.shading.shading_type = ShadingInfo::Parametric;
+                ginfo.continue_shading_f = false;
+                ginfo.continue_shading_b = false;
+            }
+            else
+            {
+                ginfo.shading.triangle_colors = colors;
+                ginfo.shading.shading_type = ShadingInfo::TriangleInterpolation;
+            }
+            return ginfo;
+        }
+        
+        /** 
+         * Набор из 12 точек для построения границ в порядке указанном в стандарте,
+         * Порядок цветов или параметров как в стандарте.  
+         */
+        static GradientInfo get_curve(const std::vector<Point> &curve_points,
+                                        const std::vector<float> &curve_parametrs,
+                                        const std::vector<agg::rgba8> &curve_colors,
+                                        bool parametric,
+                                        float t0 = 0.0f, float t1 = 1.0f)
+        {
+            GradientInfo ginfo;
+            ginfo.shading.patch.resize(4, std::vector<Point>(4));
+            ginfo.shading.patch[0][0] = curve_points[0];
+            ginfo.shading.patch[0][1] = curve_points[1];
+            ginfo.shading.patch[0][2] = curve_points[2];
+
+            ginfo.shading.patch[0][3] = curve_points[3];
+            ginfo.shading.patch[1][3] = curve_points[4];
+            ginfo.shading.patch[2][3] = curve_points[5];
+
+            ginfo.shading.patch[3][3] = curve_points[6];
+            ginfo.shading.patch[3][2] = curve_points[7];
+            ginfo.shading.patch[3][1] = curve_points[8];
+
+            ginfo.shading.patch[3][0] = curve_points[9];
+            ginfo.shading.patch[2][0] = curve_points[10];
+            ginfo.shading.patch[1][0] = curve_points[11];
+
+
+
+            if (parametric)
+            {
+                ginfo.shading.patch_parameters.resize(2, std::vector<float>(2));
+                ginfo.shading.patch_parameters[0][0] = curve_parametrs[0];
+                ginfo.shading.patch_parameters[0][1] = curve_parametrs[1];
+                ginfo.shading.patch_parameters[1][0] = curve_parametrs[3];
+                ginfo.shading.patch_parameters[1][1] = curve_parametrs[2];
+                ginfo.shading.f_type = ShadingInfo::UseNew;
+                ginfo.shading.function = ColorFunction<agg::rgba8>(512, t0, t1);
+                ginfo.shading.shading_type = ShadingInfo::Parametric;
+                ginfo.continue_shading_f = false;
+                ginfo.continue_shading_b = false;
+            }
+            else 
+            {
+                ginfo.shading.patch_colors.resize(2, std::vector<agg::rgba8>(2));
+                ginfo.shading.patch_colors[0][0] = curve_colors[0];
+                ginfo.shading.patch_colors[0][1] = curve_colors[1];
+                ginfo.shading.patch_colors[1][0] = curve_colors[3];
+                ginfo.shading.patch_colors[1][1] = curve_colors[2];
+                ginfo.shading.shading_type = ShadingInfo::CurveInterpolation;
+            }
             return ginfo;
         }
         static GradientInfo get_tensor_curve(const std::vector<std::vector<Point>> &curve_poits,
-                                             const std::vector<float> &curve_parametrs,
-                                             const std::vector<agg::rgba8> &curve_colors)
+                                             const std::vector<std::vector<float>> &curve_parametrs,
+                                             const std::vector<std::vector<agg::rgba8>> &curve_colors,
+                                             bool parametric,
+                                             float t0 = 0.0f, float t1 = 1.0f)
         {
+            GradientInfo ginfo;
             
-        }
+            ginfo.shading.patch = curve_poits;
+            
+            if (parametric)
+            {
+                ginfo.shading.patch_parameters = curve_parametrs;
+                ginfo.shading.f_type = ShadingInfo::UseNew;
+                ginfo.shading.function = ColorFunction<agg::rgba8>(512, t0, t1);
+                ginfo.shading.shading_type = ShadingInfo::Parametric;
+                ginfo.continue_shading_f = false;
+                ginfo.continue_shading_b = false;
+            }
+            else
+            {
+                ginfo.shading.patch_colors = curve_colors;
+                ginfo.shading.shading_type = ShadingInfo::TensorCurveInterpolation;
+            }
+            return ginfo;
+        }   
     };
 }
 

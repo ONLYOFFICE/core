@@ -39,4 +39,4 @@ HEADERS += \
     $$PWD/../hunspell/phonet.hxx \
     $$PWD/../hunspell/replist.hxx \
     $$PWD/../hunspell/suggestmgr.hxx \
-    $$PWD/../hunspell/w_char.hxx
+    $$PWD/../hunspell/w_char.hxx 

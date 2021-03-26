@@ -17,7 +17,6 @@ CBgraFrame* Raster_Load(unsigned char* buffer, int size)
     CBgraFrame* oRes = new CBgraFrame();
     oRes->put_IsRGBA(true);
     oRes->Decode(buffer, size);
-    oRes->put_IsRGBA(false);
     return oRes;
 }
 void Raster_Destroy(CBgraFrame* p)
@@ -40,7 +39,6 @@ bool Raster_Decode(CBgraFrame* p, unsigned char* buffer, int size)
     {
         p->put_IsRGBA(true);
         bool bRes = p->Decode(buffer, size);
-        p->put_IsRGBA(false);
         return bRes;
     }
     return false;

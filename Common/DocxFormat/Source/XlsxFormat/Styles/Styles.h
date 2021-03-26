@@ -92,8 +92,8 @@ namespace OOX
 							bStyleContinuous = m_oBorder->bBorderContinuous; // todooo - one border exclusive
 						}
 					}
-					//else if ( L"Alignment" == sName )
-					//	m_oAlignment = oReader;
+					else if ( L"Alignment" == sName )
+						m_oAligment = oReader;
 					else if ( L"Font" == sName )
 						m_oFont = oReader;
 					else if ( L"Interior" == sName )
@@ -126,6 +126,7 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CFill>		m_oFill;
 			nullable<OOX::Spreadsheet::CFont>		m_oFont;
 			nullable<OOX::Spreadsheet::CNumFmt>		m_oNumFmt;
+			nullable<OOX::Spreadsheet::CAligment>	m_oAligment;
 
 			bool bStyleContinuous = false;
 		};
@@ -357,6 +358,12 @@ xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\">");
 							pStyleXfs->m_oApplyNumberFormat->FromBool(true);
 						}						
 						pStyleXfs->m_oNumFmtId = index;
+					}
+					if (m_arrStyles2003[i]->m_oAligment.IsInit())
+					{
+						pStyleXfs->m_oAligment = m_arrStyles2003[i]->m_oAligment;
+						pStyleXfs->m_oApplyAlignment.Init();
+						pStyleXfs->m_oApplyAlignment->FromBool(true);
 					}
 					CXfs *pCellXfs = new CXfs(*pStyleXfs);
 					

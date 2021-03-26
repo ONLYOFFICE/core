@@ -1366,14 +1366,14 @@ void BinaryStyleTableWriter::WriteAligment(const OOX::Spreadsheet::CAligment& al
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerAligmentTypes::Indent);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
-		m_oBcw.m_oStream.WriteLONG(aligment.m_oIndent->GetValue());
+		m_oBcw.m_oStream.WriteLONG(*aligment.m_oIndent);
 	}
 	//RelativeIndent
 	if(false != aligment.m_oRelativeIndent.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerAligmentTypes::RelativeIndent);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
-		m_oBcw.m_oStream.WriteLONG(aligment.m_oRelativeIndent->GetValue());
+		m_oBcw.m_oStream.WriteLONG(*aligment.m_oRelativeIndent);
 	}
 	//ShrinkToFit
 	if(false != aligment.m_oShrinkToFit.IsInit())
@@ -1387,7 +1387,7 @@ void BinaryStyleTableWriter::WriteAligment(const OOX::Spreadsheet::CAligment& al
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerAligmentTypes::TextRotation);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
-		m_oBcw.m_oStream.WriteLONG(aligment.m_oTextRotation->GetValue());
+		m_oBcw.m_oStream.WriteLONG(*aligment.m_oTextRotation);
 	}
 	//Vertical
 	if(false != aligment.m_oVertical.IsInit())

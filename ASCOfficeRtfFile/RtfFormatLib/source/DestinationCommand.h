@@ -146,7 +146,6 @@ class RtfTableRowPropsCommand
 public:
     static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,  std::string sCommand, bool hasParameter, int parameter, RtfRowProperty * props);
 };
-//Reader выражения в скобках
 class RtfOldListReader : public RtfAbstractReader
 {
 private: 
@@ -161,65 +160,50 @@ public:
 		m_oTarget.m_oLevelText->m_oProperty.m_oCharProperty = oReader.m_oState->m_oCharProp;
 	}
 };
-//class RtfColorSchemeReader: public RtfAbstractReader
-//{
-//private: std::wstring sSchemeXml;
-//public: void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, std::wstring sText)
-//		{
-//			sSchemeXml += sText;
-//		}
-//		void ExitReader(RtfDocument& oDocument, RtfReader& oReader)
-//		{
-//			std::wstring sXml = RtfUtility::EncodeHex(sSchemeXml);
-//			XmlUtils::CXmlLiteReader oXmlReader;
-//			oXmlReader.OpenFromXmlString(sXml);
-//			oXmlReader.ReadRootNode(L"a:clrMap");
-//			std::wstring sValue;
-//			sValue = oXmlReader.ReadNodeAttribute(L"bg1",L"");
-//			if( L"" != sValue )
-//				oDocument.m_oColorSchemeMapping.bg1 = sValue;
-//			sValue = oXmlReader.ReadNodeAttribute(L"tx1",L"");
-//			if( L"" != sValue )
-//				oDocument.m_oColorSchemeMapping.t1 = sValue;
-//			sValue = oXmlReader.ReadNodeAttribute(L"bg2",L"");
-//			if( L"" != sValue )
-//				oDocument.m_oColorSchemeMapping.bg2 = sValue;
-//			sValue = oXmlReader.ReadNodeAttribute(L"tx2",L"");
-//			if( L"" != sValue )
-//				oDocument.m_oColorSchemeMapping.t2 = sValue;
-//			sValue = oXmlReader.ReadNodeAttribute(L"accent1",L"");
-//			if( L"" != sValue )
-//				oDocument.m_oColorSchemeMapping.accent1 = sValue;
-//			sValue = oXmlReader.ReadNodeAttribute(L"accent2",L"");
-//			if( L"" != sValue )
-//				oDocument.m_oColorSchemeMapping.accent3 = sValue;
-//			sValue = oXmlReader.ReadNodeAttribute(L"accent3", L"");
-//			if( L"" != sValue )
-//				oDocument.m_oColorSchemeMapping.accent4 = sValue;
-//			sValue = oXmlReader.ReadNodeAttribute(L"accent4", L"");
-//			if( L"" != sValue )
-//				oDocument.m_oColorSchemeMapping.accent5 = sValue;
-//			sValue = oXmlReader.ReadNodeAttribute(L"accent5", L"");
-//			if( L"" != sValue )
-//				oDocument.m_oColorSchemeMapping.accent6 = sValue;
-//			sValue = oXmlReader.ReadNodeAttribute(L"accent6",L"");
-//			if( L"" != sValue )
-//				oDocument.m_oColorSchemeMapping.hyperlink = sValue;
-//			sValue = oXmlReader.ReadNodeAttribute(L"hlink", L"");
-//			if( L"" != sValue )
-//				oDocument.m_oColorSchemeMapping.hyperlink = sValue;
-//			sValue = oXmlReader.ReadNodeAttribute(L"folHlink", L"");
-//			if( L"" != sValue )
-//				oDocument.m_oColorSchemeMapping.followedHyperlink = sValue;
-//		}
-//};
-//class RtfThemeDataReader: public RtfAbstractReader
-//{
-//public: void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, std::wstring sText )
-//		{
-//			oDocument.m_sThemeData += sText;
-//		}
-//};
+
+class RtfHEXStringReader : public RtfAbstractReader
+{
+private:
+	std::string sHexString;
+public: 
+	std::pair<boost::shared_array<unsigned char>, int> pDataArray;
+
+	virtual void ExecuteTextInternal2(RtfDocument& oDocument, RtfReader& oReader, std::string & sKey, int& nSkipChars)
+	{
+		if (oReader.m_oState->m_sCurText.empty()) return;
+		sHexString += oReader.m_oState->m_sCurText;
+
+		oReader.m_oState->m_sCurText.clear();
+	}
+	void ExitReader(RtfDocument& oDocument, RtfReader& oReader)
+	{
+		if (sHexString.empty()) return;
+
+		int nDataSize = sHexString.size() / 2;
+		unsigned char *pData = new unsigned char[nDataSize];
+		RtfUtility::DecodeHexString(sHexString, pData);
+
+		pDataArray = std::make_pair(boost::shared_array<unsigned char>(pData), nDataSize);
+	}
+};
+class RtfThemeDataReader : public RtfHEXStringReader
+{
+public:
+	void ExitReader(RtfDocument& oDocument, RtfReader& oReader);
+};
+class RtfDataStoreReader : public RtfHEXStringReader
+{
+public:
+	void ExitReader(RtfDocument& oDocument, RtfReader& oReader)
+	{
+		RtfHEXStringReader::ExitReader(oDocument, oReader);
+	}
+};
+class RtfColorSchemeReader : public RtfHEXStringReader
+{
+public:
+	void ExitReader(RtfDocument& oDocument, RtfReader& oReader);
+};
 class RtfFontTableReader: public RtfAbstractReader
 {
 private: 

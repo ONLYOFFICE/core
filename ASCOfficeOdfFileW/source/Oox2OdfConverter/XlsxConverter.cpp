@@ -2244,7 +2244,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf_writer::s
 	if (!aligment)return;
 
 	bool rtl = false;
-	if (aligment->m_oReadingOrder.IsInit() && (aligment->m_oReadingOrder->GetValue() == 1))
+	if (aligment->m_oReadingOrder.IsInit() && (*aligment->m_oReadingOrder == 1))
 	{
 		paragraph_properties->content_.style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::RlTb);
 		rtl = true;
@@ -2270,13 +2270,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf_writer::s
 	}
 	if (aligment->m_oTextRotation.IsInit())
 	{
-		int rot = aligment->m_oTextRotation->GetValue();
-		if (rot <=180 && rot >= 0 ) 
+		if (*aligment->m_oTextRotation <= 180 && *aligment->m_oTextRotation >= 0 )
 		{
-			cell_properties->content_.common_rotation_angle_attlist_.style_rotation_angle_ = rot;
+			cell_properties->content_.common_rotation_angle_attlist_.style_rotation_angle_ = *aligment->m_oTextRotation;
 			cell_properties->content_.style_rotation_align_= odf_types::rotation_align(odf_types::rotation_align::Bottom);
 		}
-		else if (rot == 0xff)//вертикальный текст
+		else if (*aligment->m_oTextRotation == 0xff)//вертикальный текст
 			cell_properties->content_.style_direction_ = odf_types::direction(odf_types::direction::Ttb);
 
 	}

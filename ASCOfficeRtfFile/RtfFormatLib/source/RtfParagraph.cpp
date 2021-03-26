@@ -36,6 +36,8 @@
 
 int RtfParagraph::AddItem( IDocumentElementPtr piRend )
 {
+	m_IsValid = true;
+
 	if( TYPE_RTF_CHAR == piRend->GetType() )
 	{
 		if( m_aArray.size() > 0 && TYPE_RTF_CHAR == m_aArray[ m_aArray.size() - 1 ]->GetType() )//соединяем два текста с одинаковыми свойствами

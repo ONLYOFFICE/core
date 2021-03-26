@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef DEFAULT_THEME_WRITER
-#define DEFAULT_THEME_WRITER
+#pragma once
 
 #include "../../XlsxSerializerCom/Common/Common.h"
 
@@ -48,7 +47,8 @@ namespace Writers
 		{
 			if (m_sContent.empty())
 			{
-				m_sContent = _T("<a:theme xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" name=\"Office Theme\">\
+				m_sContent = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+				m_sContent += L"<a:theme xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" name=\"Office Theme\">\
   <a:themeElements> \
     <a:clrScheme name=\"Office\"> \
       <a:dk1> \
@@ -87,9 +87,9 @@ namespace Writers
       <a:folHlink> \
         <a:srgbClr val=\"800080\"/> \
       </a:folHlink> \
-    </a:clrScheme> ");
+    </a:clrScheme> ";
 m_sContent +=
-   _T("<a:fontScheme name=\"Office\"> \
+   L"<a:fontScheme name=\"Office\"> \
       <a:majorFont> \
         <a:latin typeface=\"Cambria\"/> \
         <a:ea typeface=\"\"/> \
@@ -158,9 +158,9 @@ m_sContent +=
         <a:font script=\"Viet\" typeface=\"Arial\"/> \
         <a:font script=\"Uigh\" typeface=\"Microsoft Uighur\"/> \
       </a:minorFont> \
-    </a:fontScheme>");
+    </a:fontScheme>";
 m_sContent +=
-    _T("<a:fmtScheme name=\"Office\"> \
+    L"<a:fmtScheme name=\"Office\"> \
       <a:fillStyleLst> \
         <a:solidFill> \
           <a:schemeClr val=\"phClr\"/> \
@@ -329,17 +329,16 @@ m_sContent +=
   </a:themeElements> \
   <a:objectDefaults/> \
   <a:extraClrSchemeLst/> \
-</a:theme>");
+</a:theme>";
 			}
 
             OOX::CPath fileName = sThemeFilePath;
 
 			NSFile::CFileBinary oFile;
             oFile.CreateFileW(fileName.GetPath());
-			oFile.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
 			oFile.WriteStringUTF8(m_sContent);
 			oFile.CloseFile();
 		}
 	};
 }
-#endif	// #ifndef DEFAULT_THEME_WRITER
+

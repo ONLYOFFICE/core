@@ -134,6 +134,7 @@ void MainWindow::on_GradientType_itemClicked(QListWidgetItem *item)
         points = {{100 / 3.84, 100 / 3.84}, {300 / 3.84, 200 / 3.84}, {200 / 3.84, 350 / 3.84}};
     }
     else if (item->text() == "Functional" ) {
+        info.gradient_type = c_BrushTypePathNewLinearGradient;
         info.ginfo = NSStructures::GInfoConstructor::get_functional(0, 1, 0, 1,
                                                                             {400, 0, 0, 400, 0, 0});
     }

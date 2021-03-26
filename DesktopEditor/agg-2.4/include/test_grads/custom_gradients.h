@@ -780,21 +780,39 @@ namespace agg
             RES = (int)std::max(ymax - ymin, xmax - xmin);
             precalc = std::vector<std::vector<ColorT>>(RES, std::vector<ColorT>(RES, {0, 0, 0, 0}));
             delta = 1.0f / RES;
-            for (u = 0.0; u <= 1; u += delta)
-            {
-                for (v = 0.0; v <= 1; v += delta)
+             std::vector<std::pair<int, int>> next_indexes(RES + 1);
+            u = 0;
+            for (int i = 0; i < RES; ++i)
+            {   
+                v = 0;
+                std::vector<std::pair<int, int>> cur_next_indexes(RES + 1);
+                for (int j = 0; j < RES; ++j)
                 {
-                    NSStructures::Point p = get_p_curve(u, v);
-                    std::pair<int, int> index1 = get_index_curve(p.x, p.y);
+                    NSStructures::Point p;
+                    std::pair<int, int> index1;
+                    if (i == 0 || j == 0)
+                    {
+                        p = get_p_curve(u, v);
+                        index1 = get_index_curve(p.x, p.y);
+                    }
+                    else
+                    {
+                        index1 = next_indexes[j];
+                    }
+                    
                     p = get_p_curve(u + delta, v + delta);
                     std::pair<int, int> index2 = get_index_curve(p.x, p.y);
+                    cur_next_indexes[j + 1] = index2;
 
                     ColorT c00 = mul(m_oGradientInfo.shading.patch_colors[0][0], (1 - u) * (1 - v));
                     ColorT c01 = mul(m_oGradientInfo.shading.patch_colors[0][1], u * (1 - v));
                     ColorT c10 = mul(m_oGradientInfo.shading.patch_colors[1][0], (1 - u) * v);
                     ColorT c11 = mul(m_oGradientInfo.shading.patch_colors[1][1], u * v);
                     fill_square(index1, index2, sum(c00, sum(c01, sum(c10, c11))));
+                    v += delta;
                 }
+                next_indexes = cur_next_indexes;
+                u += delta;
             }
         }
 

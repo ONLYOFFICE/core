@@ -384,7 +384,10 @@ private:
 			while (c == '\r' || c == '\n')
 				c = m_oStream.getc();	
 		}
-		m_oStream.ungetc();
+		if (c != EOF)
+		{
+			m_oStream.ungetc();
+		}
 		if( nTempBufPos > 0 )
 		{
 			m_caReadBuffer[nTempBufPos++] = '\0';
@@ -413,34 +416,35 @@ private:
 	}
 	void parseTextFile(int car, RtfToken& token)
 	{
-		if( NULL != m_oFileWriter )
+		if (NULL == m_oFileWriter) return;
+
+		try
 		{
-			try
+			int nFirst = car;
+			int nSecond = 0;
+			if( true == GetNextChar( nSecond ) )
 			{
-				int nFirst = car;
-				int nSecond = 0;
-				if( true == GetNextChar( nSecond ) )
+				BYTE byteByte = 10 * RtfUtility::ToByte( nFirst ) + RtfUtility::ToByte( nSecond  );
+				m_oFileWriter->Write( &byteByte, 1 );
+				while( true )
 				{
-					BYTE byteByte = 10 * RtfUtility::ToByte( nFirst ) + RtfUtility::ToByte( nSecond  );
-					m_oFileWriter->Write( &byteByte, 1 );
-					while( true )
+					bool bContinue = false;
+					if (true == GetNextChar(nFirst))
 					{
-						bool bContinue = true;
-						if( true == GetNextChar( nFirst ) )
-							if( true == GetNextChar( nSecond ) )
-							{
-								byteByte = 10 * Strings::ToDigit( nFirst ) + Strings::ToDigit( nSecond  );
-								m_oFileWriter->Write( &byteByte, 1 );
-								bContinue = true;
-							}
-						if( false == bContinue)
-							break;
+						if (true == GetNextChar(nSecond))
+						{
+							byteByte = 10 * Strings::ToDigit(nFirst) + Strings::ToDigit(nSecond);
+							m_oFileWriter->Write(&byteByte, 1);
+							bContinue = true;
+						}
 					}
+					if ( false == bContinue)
+						break;
 				}
 			}
-			catch(...)
-			{
-			}
+		}
+		catch(...)
+		{
 		}
     }
 };

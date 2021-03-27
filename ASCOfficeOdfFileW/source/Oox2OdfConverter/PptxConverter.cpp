@@ -88,7 +88,7 @@ PptxConverter::PptxConverter(const std::wstring & path, bool bTemplate)
 	pptx_document = new PPTX::Document();
 	if (!pptx_document->isValid(oox_path.GetPath())) // true ???
 	{
-		delete pptx_document;
+		delete pptx_document; pptx_document = NULL;
 		return;
 	}
 
@@ -97,7 +97,7 @@ PptxConverter::PptxConverter(const std::wstring & path, bool bTemplate)
 	smart_ptr<PPTX::Presentation> presentation_ptr = pptx_document->Get(OOX::Presentation::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
 	if (!presentation_ptr.is_init())
 	{
-		delete pptx_document;
+		delete pptx_document;  pptx_document = NULL;
 		return;
 	}
 	presentation = presentation_ptr.GetPointer();

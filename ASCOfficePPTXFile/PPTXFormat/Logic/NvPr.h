@@ -165,7 +165,13 @@ namespace PPTX
 
 				pWriter->Write(ph);
 				media.toXmlWriter(pWriter);
-				pWriter->WriteArray(L"a:extLst", extLst);				
+
+				std::wstring namespace_extLst = L"p";
+				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+					pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY ||
+					pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_extLst = L"a";
+
+				pWriter->WriteArray(namespace_extLst + L":extLst", extLst);
 				
                 pWriter->EndNode(strNS + L":nvPr");
 			}

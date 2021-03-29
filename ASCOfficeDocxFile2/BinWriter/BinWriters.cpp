@@ -3061,11 +3061,7 @@ void BinaryOtherTableWriter::Write()
 }
 void BinaryOtherTableWriter::WriteOtherContent()
 {
-	//ImageMap
-	//int nStart = m_oBcw.WriteItemStart(c_oSerOtherTableTypes::ImageMap);
-	//WriteImageMapContent();
-	//m_oBcw.WriteItemEnd(nStart);
-	//EmbeddedFonts
+//EmbeddedFonts
 	if(NULL != m_oBcw.m_pEmbeddedFontsManager)
 	{
 		EmbeddedBinaryWriter oEmbeddedBinaryWriter(m_oBcw.m_oStream);

@@ -1762,7 +1762,7 @@ int Binary_pPrReader::Read_pgHeader(BYTE type, long length, void* poResult)
 		if(nHdrFtrIndex >= 0 && nHdrFtrIndex < (int)m_oFileWriter.get_headers_footers_writer().m_aHeaders.size())
 		{
 			Writers::HdrFtrItem* pHdrFtrItem = m_oFileWriter.get_headers_footers_writer().m_aHeaders[nHdrFtrIndex];
-			pHdrFtrItem->m_sFilename;
+
             std::wstring sType;
 			if(SimpleTypes::hdrftrFirst == pHdrFtrItem->eType)
 				sType = _T("first");
@@ -1787,7 +1787,7 @@ int Binary_pPrReader::Read_pgFooter(BYTE type, long length, void* poResult)
 		if(nHdrFtrIndex >= 0 && nHdrFtrIndex <= (int)oBinary_HdrFtrTableReader.m_oHeaderFooterWriter.m_aFooters.size())
 		{
 			Writers::HdrFtrItem* pHdrFtrItem = oBinary_HdrFtrTableReader.m_oHeaderFooterWriter.m_aFooters[nHdrFtrIndex];
-			pHdrFtrItem->m_sFilename;
+
             std::wstring sType;
 			if(SimpleTypes::hdrftrFirst == pHdrFtrItem->eType)
 				sType = _T("first");
@@ -5071,6 +5071,11 @@ int Binary_DocumentTableReader::ReadFldChar(BYTE type, long length, void* poResu
 	{
 		pFldChar->m_oFldCharType.Init();
 		pFldChar->m_oFldCharType->SetValue((SimpleTypes::EFldCharType)m_oBufferedStream.GetUChar());
+	}
+	else if (c_oSer_FldSimpleType::FFData == type)
+	{
+		pFldChar->m_oFFData.Init();
+		READ1_DEF(length, res, this->ReadFFData, pFldChar->m_oFFData.GetPointer());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -9810,7 +9815,7 @@ int BinaryFileReader::ReadMainTable()
 					L"/word" + (m_oFileWriter.m_bGlossaryMode ? std::wstring(L"/glossary") : L""), pFooter->m_sFilename);
 			}
 		}
-		for (size_t i = 0; i < m_oFileWriter.m_oCustomXmlWriter.arItems.size(); ++i)
+		for (size_t i = 0; (false == m_oFileWriter.m_bGlossaryMode) && (i < m_oFileWriter.m_oCustomXmlWriter.arItems.size()); ++i)
 		{
 			std::wstring sRelsPath = L"../" + OOX::FileTypes::CustomXml.DefaultDirectory().GetPath() + L"/" + m_oFileWriter.m_oCustomXmlWriter.arItems[i];
 			unsigned int rId;

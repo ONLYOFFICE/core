@@ -55,7 +55,7 @@ namespace odf_writer {
 
 
 odp_conversion_context::odp_conversion_context(package::odf_document * outputDocument) 
-	:	odf_conversion_context (PresentationDocument, outputDocument), slide_context_(*this), text_context_(NULL), drawing_context_(this)
+	:	odf_conversion_context (PresentationDocument, outputDocument), root_presentation_(NULL), slide_context_(*this), text_context_(NULL), drawing_context_(this)
 {
 }
 odf_text_context* odp_conversion_context::text_context()

@@ -90,7 +90,7 @@ namespace ComplexTypes
 		ComplexType(){};
 		virtual ~ComplexType() {};
 
-		virtual void    FromXML(XmlUtils::CXmlNode& oNode) = 0;
+		virtual void FromXML(XmlUtils::CXmlNode& oNode) = 0;
         virtual std::wstring ToString() const = 0;
 		
 		std::wstring ValNode(const std::wstring &node_name)

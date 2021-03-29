@@ -810,7 +810,7 @@ namespace OOX
 		class CDrawing : public WritingElement
 		{
 		public:
-			CDrawing(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
+			CDrawing(OOX::Document *pMain = NULL) : m_bAnchor(false), WritingElement(pMain) {}
 
 			CDrawing(XmlUtils::CXmlNode& oNode)
 			{

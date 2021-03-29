@@ -68,14 +68,18 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 
 			oMetaFile.SetHeader(NULL, 0);
 
-			BYTE* pData = new BYTE[oHeader.RecLen - lOffset];
-			pStream->read(pData, oHeader.RecLen - lOffset); 
-			if (pDecryptor)
+			int nDataSize = oHeader.RecLen - lOffset;
+			BYTE* pData = (nDataSize > 0 && nDataSize < 0xffffff ) ? (new BYTE[nDataSize]) : NULL;
+			
+			if (pData)
 			{
-				pDecryptor->Decrypt((char*)pData, oHeader.RecLen - lOffset, 0);
+				pStream->read(pData, oHeader.RecLen - lOffset);
+				if (pDecryptor)
+				{
+					pDecryptor->Decrypt((char*)pData, oHeader.RecLen - lOffset, 0);
+				}
+				oMetaFile.SetData(pData, oMetaHeader.cbSave, oMetaHeader.cbSize, (bool)(oMetaHeader.compression != 0xFE));
 			}
-			oMetaFile.SetData(pData, oMetaHeader.cbSave, oMetaHeader.cbSize, (bool)(oMetaHeader.compression != 0xFE) );
-
 		}break;
 		case RECORD_TYPE_ESCHER_BLIP_WMF:
 		{

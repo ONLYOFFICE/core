@@ -2595,6 +2595,18 @@ namespace NExtractTools
         }
         return AVS_FILEUTILS_ERROR_CONVERT;
 	}
+	_UINT32 docx2txt(const std::wstring &sDocxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+		std::wstring sTempUnpackedDOCX = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
+		NSDirectory::CreateDirectory(sTempUnpackedDOCX);
+
+		COfficeUtils oCOfficeUtils(NULL);
+		if (S_OK == oCOfficeUtils.ExtractToDirectory(sDocxDir, sTempUnpackedDOCX, NULL, 0))
+		{
+			return docx_dir2txt(sTempUnpackedDOCX, sTo, sTemp, params);
+		}
+		return AVS_FILEUTILS_ERROR_CONVERT;
+	}
 	_UINT32 docx_dir2txt (const std::wstring &sDocxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
 	{
 		CTxtXmlFile txtFile;
@@ -4732,6 +4744,10 @@ namespace NExtractTools
 			case TCD_DOCX2RTF:
 			{
 				result =  docx2rtf (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_DOCX2TXT:
+			{
+				result = docx2txt(sFileFrom, sFileTo, sTempDir, oInputParams);
 			}break;
 			case TCD_DOC2DOCX:
 			{

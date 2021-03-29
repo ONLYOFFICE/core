@@ -1024,6 +1024,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CHyperlink *oox_hyperlink,OOX::Spr
 
 	std::wstring ref = oox_hyperlink->m_oRef.IsInit() ? oox_hyperlink->m_oRef.get() : L"";
 	std::wstring link;	
+	std::wstring location;
 	std::wstring display = oox_hyperlink->m_oDisplay.IsInit() ? oox_hyperlink->m_oDisplay.get() : L"";
 
 	if (oox_hyperlink->m_oRid.IsInit() && oox_sheet->m_pCurRels.IsInit())
@@ -1035,17 +1036,18 @@ void XlsxConverter::convert(OOX::Spreadsheet::CHyperlink *oox_hyperlink,OOX::Spr
 			if(oRels->IsExternal())
 				link= oRels->Target().GetPath();
 		}
-		ods_context->add_hyperlink(ref, link, display, false);
 	}
-	else if (oox_hyperlink->m_oLink.IsInit())
+	if (link.empty() && oox_hyperlink->m_oLink.IsInit())
 	{
-		link = oox_hyperlink->m_oLink.get();
-		ods_context->add_hyperlink(ref, link, display, false);
+		link = *oox_hyperlink->m_oLink;
 	}
-	else if (oox_hyperlink->m_oLocation.IsInit())
+	if (oox_hyperlink->m_oLocation.IsInit())
 	{
-		link = oox_hyperlink->m_oLocation.get();
-		ods_context->add_hyperlink(ref, link, display, true);
+		location = *oox_hyperlink->m_oLocation;
+	}
+	if (false == location.empty() || false == link.empty())
+	{
+		ods_context->add_hyperlink(ref, link, display, location);
 	}
 }
 
@@ -1234,7 +1236,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCell *oox_cell)
 
 	std::wstring ref = oox_cell->isInitRef() ? oox_cell->getRef() : L"";
 
-	int ifx_style = oox_cell->m_oStyle.IsInit() ? oox_cell->m_oStyle->GetValue() : -1;
+	int ifx_style = oox_cell->m_oStyle.IsInit() ? *oox_cell->m_oStyle : -1;
 
 	ods_context->start_cell(ref, ifx_style);
 
@@ -2242,7 +2244,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf_writer::s
 	if (!aligment)return;
 
 	bool rtl = false;
-	if (aligment->m_oReadingOrder.IsInit() && (aligment->m_oReadingOrder->GetValue() == 1))
+	if (aligment->m_oReadingOrder.IsInit() && (*aligment->m_oReadingOrder == 1))
 	{
 		paragraph_properties->content_.style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::RlTb);
 		rtl = true;
@@ -2268,13 +2270,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf_writer::s
 	}
 	if (aligment->m_oTextRotation.IsInit())
 	{
-		int rot = aligment->m_oTextRotation->GetValue();
-		if (rot <=180 && rot >= 0 ) 
+		if (*aligment->m_oTextRotation <= 180 && *aligment->m_oTextRotation >= 0 )
 		{
-			cell_properties->content_.common_rotation_angle_attlist_.style_rotation_angle_ = rot;
+			cell_properties->content_.common_rotation_angle_attlist_.style_rotation_angle_ = *aligment->m_oTextRotation;
 			cell_properties->content_.style_rotation_align_= odf_types::rotation_align(odf_types::rotation_align::Bottom);
 		}
-		else if (rot == 0xff)//вертикальный текст
+		else if (*aligment->m_oTextRotation == 0xff)//вертикальный текст
 			cell_properties->content_.style_direction_ = odf_types::direction(odf_types::direction::Ttb);
 
 	}

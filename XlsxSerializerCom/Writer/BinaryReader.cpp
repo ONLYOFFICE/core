@@ -1777,13 +1777,11 @@ int BinaryStyleTableReader::ReadAligment(BYTE type, long length, void* poResult)
 	}
 	else if(c_oSerAligmentTypes::Indent == type)
 	{
-		pAligment->m_oIndent.Init();
-		pAligment->m_oIndent->SetValue(m_oBufferedStream.GetLong());
+		pAligment->m_oIndent = m_oBufferedStream.GetLong();
 	}
 	else if(c_oSerAligmentTypes::RelativeIndent == type)
 	{
-		pAligment->m_oRelativeIndent.Init();
-		pAligment->m_oRelativeIndent->SetValue(m_oBufferedStream.GetLong());
+		pAligment->m_oRelativeIndent = m_oBufferedStream.GetLong();
 	}
 	else if(c_oSerAligmentTypes::ShrinkToFit == type)
 	{
@@ -1792,8 +1790,7 @@ int BinaryStyleTableReader::ReadAligment(BYTE type, long length, void* poResult)
 	}
 	else if(c_oSerAligmentTypes::TextRotation == type)
 	{
-		pAligment->m_oTextRotation.Init();
-		pAligment->m_oTextRotation->SetValue(m_oBufferedStream.GetLong());
+		pAligment->m_oTextRotation = m_oBufferedStream.GetLong();
 	}
 	else if(c_oSerAligmentTypes::Vertical == type)
 	{
@@ -7020,7 +7017,8 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 		int nType = 0;
 		std::string version = "";
 		std::string dst_len = "";
-		while (true)
+		
+		while (nIndex < nBase64DataSize)
 		{
 			nIndex++;
 			BYTE _c = pBase64Data[nIndex];

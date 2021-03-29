@@ -134,7 +134,7 @@ namespace Base64
         }
 
         nLen2 = (nSrcLen%3) ? (nSrcLen%3 + 1) : 0;
-        if (nLen2)
+        if (nLen2 != 0)
         {
             DWORD dwCurr(0);
             for (int n=0; n<3; n++)
@@ -152,7 +152,7 @@ namespace Base64
             nWritten+= nLen2;
             if ((dwFlags & B64_BASE64_FLAG_NOPAD)==0)
             {
-                nLen3 = nLen2 ? 4-nLen2 : 0;
+                nLen3 = (nLen2 != 0) ? 4 - nLen2 : 0;
                 for (int j=0; j<nLen3; j++)
                 {
                     *szDest++ = '=';

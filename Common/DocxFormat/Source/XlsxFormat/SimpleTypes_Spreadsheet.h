@@ -973,11 +973,11 @@ namespace SimpleTypes
                     this->m_eValue = borderstyleDashDot;
 				else if(_T("dashDotDot") == sValue)
                     this->m_eValue = borderstyleDashDotDot;
-				else if(_T("dashed") == sValue || _T("Dash") == sValue)
+				else if(_T("dashed") == sValue)
                     this->m_eValue = borderstyleDashed;
-				else if(_T("dotted") == sValue || _T("Dot") == sValue)
+				else if(_T("dotted") == sValue)
                     this->m_eValue = borderstyleDotted;
-				else if(_T("double") == sValue || _T("Double") == sValue)
+				else if(_T("double") == sValue)
                     this->m_eValue = borderstyleDouble;
 				else if(_T("hair") == sValue)
                     this->m_eValue = borderstyleHair;
@@ -1033,11 +1033,11 @@ namespace SimpleTypes
 			horizontalalignmentCenter			=  0,
 			horizontalalignmentContinuous		=  1,
 			horizontalalignmentDistributed		=  2,
-			horizontalalignmentFill					=  3,
-			horizontalalignmentGeneral				=  4,
-			horizontalalignmentJustify				=  5,
-			horizontalalignmentLeft					=  6,
-			horizontalalignmentRight				=  7
+			horizontalalignmentFill				=  3,
+			horizontalalignmentGeneral			=  4,
+			horizontalalignmentJustify			=  5,
+			horizontalalignmentLeft				=  6,
+			horizontalalignmentRight			=  7
 		};
 		template<EHorizontalAlignment eDefValue = horizontalalignmentGeneral>
 		class CHorizontalAlignment : public CSimpleType<EHorizontalAlignment, eDefValue>
@@ -1048,21 +1048,23 @@ namespace SimpleTypes
 
             virtual EHorizontalAlignment FromString(std::wstring &sValue)
 			{
-				if(_T("center") == sValue)
+				// CenterAcrossSelection, JustifyDistributed
+
+				if(L"center" == sValue || L"Center" == sValue)
                     this->m_eValue = horizontalalignmentCenter;
-				else if(_T("continuous") == sValue)
+				else if(L"continuous" == sValue)
                     this->m_eValue = horizontalalignmentContinuous;
-				else if(_T("distributed") == sValue)
+				else if(L"distributed" == sValue || L"Distributed" == sValue)
                     this->m_eValue = horizontalalignmentDistributed;
-				else if(_T("fill") == sValue)
+				else if(L"fill" == sValue || L"Fill" == sValue)
                     this->m_eValue = horizontalalignmentFill;
-				else if(_T("general") == sValue)
+				else if(L"general" == sValue || L"Automatic" == sValue)
                     this->m_eValue = horizontalalignmentGeneral;
-				else if(_T("justify") == sValue)
+				else if(L"justify" == sValue || L"Justify" == sValue)
                     this->m_eValue = horizontalalignmentJustify;
-				else if(_T("left") == sValue)
+				else if(L"left" == sValue || L"Left" == sValue)
                     this->m_eValue = horizontalalignmentLeft;
-				else if(_T("right") == sValue)
+				else if(L"right" == sValue || L"Right" == sValue)
                     this->m_eValue = horizontalalignmentRight;
 				else
                     this->m_eValue = eDefValue;
@@ -1073,20 +1075,19 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-				case horizontalalignmentCenter : return _T("center"); break;
-				case horizontalalignmentContinuous : return _T("continuous"); break;
-				case horizontalalignmentDistributed : return _T("distributed"); break;
-				case horizontalalignmentFill : return _T("fill"); break;
-				case horizontalalignmentGeneral : return _T("general"); break;
-				case horizontalalignmentJustify : return _T("justify"); break;
-				case horizontalalignmentLeft : return _T("left"); break;
-				case horizontalalignmentRight : return _T("right"); break;
-				default : return _T("general");
+				case horizontalalignmentCenter : return L"center"; break;
+				case horizontalalignmentContinuous : return L"continuous"; break;
+				case horizontalalignmentDistributed : return L"distributed"; break;
+				case horizontalalignmentFill : return L"fill"; break;
+				case horizontalalignmentGeneral : return L"general"; break;
+				case horizontalalignmentJustify : return L"justify"; break;
+				case horizontalalignmentLeft : return L"left"; break;
+				case horizontalalignmentRight : return L"right"; break;
+				default : return L"general";
 				}
 			}
-
 			SimpleType_FromString     (EHorizontalAlignment)
-				SimpleType_Operator_Equal (CHorizontalAlignment)
+			SimpleType_Operator_Equal (CHorizontalAlignment)
 		};
 		enum EVerticalAlignment
 		{
@@ -1105,34 +1106,33 @@ namespace SimpleTypes
 
             virtual EVerticalAlignment FromString(std::wstring &sValue)
 			{
-				if(_T("bottom") == sValue)
+				//Automatic, JustifyDistributed
+				if(L"bottom" == sValue || L"Bottom" == sValue)
                     this->m_eValue = verticalalignmentBottom;
-				else if(_T("center") == sValue)
+				else if(L"center" == sValue || L"Center" == sValue)
                     this->m_eValue = verticalalignmentCenter;
-				else if(_T("distributed") == sValue)
+				else if(L"distributed" == sValue || L"Distributed" == sValue)
                     this->m_eValue = verticalalignmentDistributed;
-				else if(_T("justify") == sValue)
+				else if(L"justify" == sValue || L"Justify" == sValue)
                     this->m_eValue = verticalalignmentJustify;
-				else if(_T("top") == sValue)
+				else if(L"top" == sValue || L"Top" == sValue)
                     this->m_eValue = verticalalignmentTop;
 				else
                     this->m_eValue = eDefValue;
                 return this->m_eValue;
 			}
-
 			virtual std::wstring     ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
-				case verticalalignmentBottom : return _T("bottom"); break;
-				case verticalalignmentCenter : return _T("center"); break;
-				case verticalalignmentDistributed : return _T("distributed"); break;
-				case verticalalignmentJustify : return _T("justify"); break;
-				case verticalalignmentTop : return _T("top"); break;
-				default:return _T("bottom");
+				case verticalalignmentBottom : return L"bottom"; break;
+				case verticalalignmentCenter : return L"center"; break;
+				case verticalalignmentDistributed : return L"distributed"; break;
+				case verticalalignmentJustify : return L"justify"; break;
+				case verticalalignmentTop : return L"top"; break;
+				default:return L"bottom";
 				}
 			}
-
 			SimpleType_FromString     (EVerticalAlignment)
 			SimpleType_Operator_Equal (CVerticalAlignment)
 		};

@@ -379,8 +379,7 @@ namespace CSVWriter
 
 				if (pCell->m_oStyle.IsInit() && m_oXlsx.m_pStyles)
 				{
-					int style = pCell->m_oStyle->GetValue();
-					OOX::Spreadsheet::CXfs* xfs = m_oXlsx.m_pStyles->m_oCellXfs->m_arrItems[style];
+					OOX::Spreadsheet::CXfs* xfs = m_oXlsx.m_pStyles->m_oCellXfs->m_arrItems[*pCell->m_oStyle];
 					if (xfs)
 					{
 						if ((xfs->m_oApplyNumberFormat.IsInit()) && (xfs->m_oApplyNumberFormat->ToBool()))

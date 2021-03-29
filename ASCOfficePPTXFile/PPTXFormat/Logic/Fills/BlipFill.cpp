@@ -325,8 +325,7 @@ namespace PPTX
 
 									if (false == detectImageExtension.empty())
 									{
-										if (sImageExtension.empty())
-											sImageExtension = detectImageExtension;
+										sImageExtension = detectImageExtension;
 
 										//папки media может не быть в случае, когда все картинки base64(поскольку файл временный, папку media не создаем)
 										std::wstring tempFilePath = pReader->m_strFolder + FILE_SEPARATOR_STR;

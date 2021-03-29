@@ -396,10 +396,14 @@ namespace NSCommon
             pCache->SetStreams(applicationFonts->GetStreams());
             pManager->SetOwnerCache(pCache);
 
-            for (int iX = 1; iX <= 2; ++iX)
+            #define COUNT_FONTS_SCALE 3
+            double support_scales[COUNT_FONTS_SCALE] = { 1, 1.5, 2 };
+
+            for (int iX = 0; iX < COUNT_FONTS_SCALE; ++iX)
             {
+                double dScale = support_scales[iX];
                 // создаем картинку для табнейлов
-                double dDpi = 96 * iX;
+                double dDpi = 96 * dScale;
                 double dW_mm = 80;
                 LONG lH1_px = LONG(7 * dDpi / 25.4);
                 LONG lWidthPix = (LONG)(dW_mm * dDpi / 25.4);
@@ -532,10 +536,14 @@ namespace NSCommon
                 }
 
                 std::wstring strThumbnailPath = strFolderThumbnails + L"/fonts_thumbnail";
-                if (iX == 1)
+                int nScaleOut = (int)(dScale * 10 + 0.5);
+
+                if (nScaleOut == 10)
                     strThumbnailPath += L".png";
+                else if ((nScaleOut % 10) == 0)
+                    strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 10)) + L"x.png";
                 else
-                    strThumbnailPath += L"@2x.png";
+                    strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 10)) + L"." + std::to_wstring((int)(nScaleOut % 10)) + L"x.png";
 
                 oFrame.SaveFile(strThumbnailPath, 4);
 

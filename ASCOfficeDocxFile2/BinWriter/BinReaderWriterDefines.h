@@ -206,8 +206,8 @@ extern int g_nCurFormatVersion;
 	};}
 	namespace c_oSerOtherTableTypes{enum c_oSerOtherTableTypes
 	{
-		ImageMap		= 0,
-		ImageMap_Src	= 1,
+		ImageMap		= 0, //not using now
+		ImageMap_Src	= 1, //not using now
 		EmbeddedFonts	= 2,
 		DocxTheme		= 3
 	};}

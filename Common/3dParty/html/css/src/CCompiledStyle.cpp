@@ -1077,7 +1077,7 @@ namespace NSCSS
                 }
                 else if (sValueTemp.find(L"em") != std::wstring::npos)
                 {
-                    const float fValue = wcstof(sValue.c_str(), NULL) * m_pFont.GetSize();
+                    const float fValue = wcstof(sValueTemp.c_str(), NULL) * m_pFont.GetSize();
                     sValueString += std::to_wstring(static_cast<short int>(fValue + 0.5f));
 
                     if (sValueTemp.find(L';') != std::wstring::npos)

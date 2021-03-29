@@ -50,7 +50,10 @@ namespace OOX
 		}
 		Media(OOX::Document *pMain, const CPath& filename, bool bExternal = false) : File(pMain)
 		{
-			m_bExternal	= bExternal;			
+			m_bExist = false;
+			m_bDocument = false;
+			m_bExternal	= bExternal;
+			
 			read(filename);
 		}
 		virtual ~Media()

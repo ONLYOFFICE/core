@@ -3647,23 +3647,23 @@ void DocxConverter::convert(OOX::Logic::CHyperlink *oox_hyperlink)
 {
 	if (oox_hyperlink == NULL)return;
 
-	std::wstring ref;
+	std::wstring link, location;
 
 	if (oox_hyperlink->m_oId.IsInit()) //гиперлинк
 	{
-		ref = find_link_by_id(oox_hyperlink->m_oId->GetValue(), 2);
+		link = find_link_by_id(oox_hyperlink->m_oId->GetValue(), 2);
 	}
 	else if (oox_hyperlink->m_sDestinition.IsInit()) //гиперлинк
 	{
-		ref = *oox_hyperlink->m_sDestinition;
+		link = *oox_hyperlink->m_sDestinition;
 	}
-	else if (oox_hyperlink->m_sAnchor.IsInit())
+	if (oox_hyperlink->m_sAnchor.IsInit())
 	{
-		ref = L"#" + *oox_hyperlink->m_sAnchor;
+		location =  *oox_hyperlink->m_sAnchor;
 	}
-	if (false == ref.empty())
+	if (false == link.empty() || false == location.empty())
 	{
-		odt_context->start_hyperlink(ref);
+		odt_context->start_hyperlink(link, location);
 		
         for (size_t i = 0; i < oox_hyperlink->m_arrItems.size(); ++i)
 		{
@@ -3972,7 +3972,10 @@ void DocxConverter::convert(OOX::Numbering::CLvl *oox_num_lvl, OOX::Numbering::C
 
 		for (size_t i = 0; (lists_styles) && (i < lists_styles->m_arrNumPicBullet.size()); i++)
 		{
+			if (!lists_styles->m_arrNumPicBullet[i]) continue;
+			
 			if (false == lists_styles->m_arrNumPicBullet[i]->m_oNumPicBulletId.IsInit()) continue;
+			
 			if ((lists_styles->m_arrNumPicBullet[i]) && (*lists_styles->m_arrNumPicBullet[i]->m_oNumPicBulletId == id))
 			{
 				if (lists_styles->m_arrNumPicBullet[i]->m_oDrawing.IsInit())
@@ -4949,7 +4952,7 @@ bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer
 
 void DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer::style_table_cell_properties * table_cell_properties)
 {
-	if (oox_table_pr == NULL || oox_table_pr == NULL) return;
+	if (oox_table_pr == NULL || table_cell_properties == NULL) return;
 
 	convert(oox_table_pr->m_oTblBorders.GetPointer(), table_cell_properties);
 

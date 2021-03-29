@@ -127,8 +127,9 @@ namespace NExtractTools
 							if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM)
 								res = TCD_DOTM2DOCX;
 						}
-                        else if (0 == sExt2.compare(_T(".docm")))		res = TCD_DOTM2DOCM;
-                    }break;
+                        else if (0 == sExt2.compare(_T(".docm")))	res = TCD_DOTM2DOCM;
+						else if (0 == sExt2.compare(_T(".txt")))		res = TCD_DOCX2TXT;
+				}break;
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_PACKAGE:
 					{
 							 if (0 == sExt2.compare(_T(".doct")))		res = TCD_PKG2DOCT;

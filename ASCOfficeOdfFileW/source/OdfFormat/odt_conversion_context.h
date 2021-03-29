@@ -88,7 +88,7 @@ public:
 
 	void add_paragraph_break(int type);
 
-	void start_hyperlink	(std::wstring ref);
+	void start_hyperlink	(const std::wstring& link, const std::wstring& location);
 	void end_hyperlink		();
 	
 	void start_bookmark		(int id, const std::wstring& name);

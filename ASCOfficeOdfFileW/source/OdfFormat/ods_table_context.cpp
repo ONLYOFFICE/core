@@ -101,11 +101,8 @@ void ods_table_context::start_table_part(const std::wstring &name, std::wstring 
 
 	if (std::wstring::npos == ref.find(L"!") )
 	{
-		bool bQuotes = false;
-		if (std::wstring::npos != table_state_list_.back()->office_table_name_.find(L" "))
-		{
-			bQuotes = true;
-		}
+		bool bQuotes = (std::wstring::npos != table_state_list_.back()->office_table_name_.find(L" "));
+
 		ref = (bQuotes ? L"'" : L"" ) + table_state_list_.back()->office_table_name_ + (bQuotes ? L"'" : L"" ) + L"!" + ref;
 	}
 	std::wstring odf_range = formulas_converter.convert_named_ref(ref);
@@ -138,7 +135,11 @@ void ods_table_context::add_table_part_column(std::wstring name)
 
 	std::wstring sCol = L"$" + utils::getColAddress(state()->table_parts_.back().col_start + column - 1);
 
-	std::wstring ref = L"$" + state()->office_table_name_ + L"." ;
+	bool bQuotes = (std::wstring::npos != table_state_list_.back()->office_table_name_.find(L" "));
+
+	std::wstring ref = L"$";
+	
+	ref += (bQuotes ? L"'" : L"") + table_state_list_.back()->office_table_name_ + (bQuotes ? L"'" : L"") + L".";
 
 	ref += sCol + std::to_wstring(state()->table_parts_.back().row_start);
 	ref += L":";
@@ -168,14 +169,16 @@ void ods_table_context::add_autofilter(std::wstring ref)
 	if (!table_database_ranges_.root) create_element(L"table", L"database-ranges", table_database_ranges_.root, &context_);
 
 	office_element_ptr elm;
-	create_element(L"table", L"database-range",elm,&context_);
+	create_element(L"table", L"database-range", elm, &context_);
 	table_database_range * d_range = dynamic_cast<table_database_range*>(elm.get());
 
 	if (!d_range)return;
 
 	if (std::wstring::npos == ref.find(L"!") )
 	{
-		ref = table_state_list_.back()->office_table_name_ + L"!" + ref;
+		bool bQuotes = (std::wstring::npos != table_state_list_.back()->office_table_name_.find(L" "));
+
+		ref = (bQuotes ? L"'" : L"") + table_state_list_.back()->office_table_name_ + (bQuotes ? L"'" : L"") + L"!" + ref;
 	}
 	formulasconvert::oox2odf_converter formulas_converter;
 
@@ -183,6 +186,8 @@ void ods_table_context::add_autofilter(std::wstring ref)
 
 	d_range->table_target_range_address_ = odf_range;
 	d_range->table_display_filter_buttons_= true;
+
+	d_range->table_name_ = L"__Anonymous_Sheet_DB__" + std::to_wstring(table_database_ranges_.elements.size() + 1);
 
 	table_database_ranges_.root->add_child_element(elm);
 	table_database_ranges_.elements.push_back(elm);

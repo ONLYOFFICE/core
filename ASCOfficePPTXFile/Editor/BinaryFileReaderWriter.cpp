@@ -690,7 +690,12 @@ namespace NSBinPptxRW
 			{
 				while (nNewSize >= m_lSize)
 				{
-					m_lSize *= 2;
+					unsigned int lSize = m_lSize * 2;
+					if (lSize < m_lSize)
+					{
+						m_lSize = nNewSize;
+						break;
+					}
 				}
 
 				BYTE* pNew = new BYTE[m_lSize];
@@ -704,8 +709,8 @@ namespace NSBinPptxRW
 		}
 		else
 		{
-			m_lSize		= 1024 * 1024; // 1Mb
-			m_pStreamData	= new BYTE[m_lSize];
+			m_lSize = 1024 * 1024; // 1Mb
+			m_pStreamData = new BYTE[m_lSize];
 
 			m_lPosition = 0;
 			m_pStreamCur = m_pStreamData;

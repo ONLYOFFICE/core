@@ -126,18 +126,26 @@ void CDataValidation::toXML2(NSStringUtils::CStringBuilder& writer, bool bExtend
 
 bool CDataValidation::IsExtended()
 {
-	bool result = true;
+	bool result1 = true, result2 = true;
 	if (m_oFormula1.IsInit())
 	{
 		if (m_oFormula1->m_sText.find(L"!") != std::wstring::npos && m_oFormula1->m_sText != L"#REF!")
-			result = false;
-	}
+			result1 = false;
+		
+		//if ((m_oFormula1->m_sText.size() > 2) && (m_oFormula1->m_sText[0] == L'\"' && m_oFormula1->m_sText.back() == L'\"'))
+		//	result1 = false;
+	}else result1 = false;
+	
 	if (m_oFormula2.IsInit())
 	{
 		if (m_oFormula2->m_sText.find(L"!") != std::wstring::npos && m_oFormula2->m_sText != L"#REF!")
-			result = false;
-	}
-	return result;
+			result2 = false;
+		
+		//if ((m_oFormula2->m_sText.size() > 2) && (m_oFormula2->m_sText[0] == L'\"' && m_oFormula2->m_sText.back() == L'\"'))
+		//	result2 = false;
+	}else result2 = false;
+	
+	return result1 || result2;
 }
 void CDataValidation::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {

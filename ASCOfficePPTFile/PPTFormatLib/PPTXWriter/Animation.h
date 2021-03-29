@@ -62,7 +62,6 @@ struct SOldAnimation
     CRecordAnimationInfoContainer* anim;
 
     // There will be additional records for animation here;
-    void convertPresets(UINT& presetID, UINT& presetSubtype);
 };
 
 // Extenstion for CRecordExtTimeNodeContainer
@@ -180,9 +179,31 @@ private:
 
     void FillCTnParams  (PPTX::Logic::CTn &oCTN, std::wstring nodeType, std::wstring condDelay = L"0",
                          std::wstring fill = L"hold", SOldAnimation *pOldAnim = NULL);
+    void FillCTnAnimation  (PPTX::Logic::CTn &oCTN, SOldAnimation *pOldAnim);
     void FillAnim       (PPTX::Logic::Anim& oAnim, SOldAnimation* pOldAnim, int dur, std::wstring attrname,
                          std::wstring strVal1, std::wstring strVal2);
     void FillSetAndAnim (SOldAnimation* pOldAnim, PPTX::Logic::ChildTnLst& oParent);
+
+    // This methods fill ChildTnLst with anim nodes
+    void ConvertAppear(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim);
+    void ConvertFlyIn(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
+    void ConvertBlinds(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
+    void ConvertShape(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
+    void ConvertCheckerboard(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim);
+    void ConvertCrawlIn(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
+    void ConvertDissolveIn(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim);
+    void ConvertFlashOnce(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
+    void ConvertPeekIn(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
+    void ConvertRandomBars(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
+    void ConvertSpiralIn(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim);
+    void ConvertSplit(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim);
+    void ConvertStretch(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
+    void ConvertStrips(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
+    void ConvertBasicSwivel(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
+    void ConvertWipe(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
+    void ConvertBasicZoom(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
+    void ConvertRandomEffect(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim);
+
 private:
     unsigned m_cTnId;
     PPTX::Logic::BldLst *m_pBldLst; // Do not delete

@@ -389,8 +389,8 @@ int main(int argc, char** argv)
 
     NSDoctRenderer::CDocBuilder::Initialize();
 
-    int nRasterW = 85;
-    int nRasterH = 38;
+    int nRasterW = 88;
+    int nRasterH = 40;
     if (nParamsCount >= 2)
     {
         nRasterW = arParams[0];
@@ -646,9 +646,6 @@ int main(int argc, char** argv)
                 {
                     CBgraFrame oFrame;
                     oFrame.OpenFile(sSrcThemesDir + L"/theme" + std::to_wstring(nIndex) + L"/" + sCurrentPath);
-
-                    std::wstring ss = sSrcThemesDir + L"/theme" + std::to_wstring(nIndex) + L"/" + sCurrentPath;
-                    std::cout << "theme " << nIndex << " " << U_TO_UTF8(ss) << std::endl;
 
                     if (false)
                     {

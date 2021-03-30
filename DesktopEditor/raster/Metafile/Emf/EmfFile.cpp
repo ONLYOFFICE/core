@@ -1691,10 +1691,25 @@ static const struct ActionNamesEmf
 
 		T oPoint;
 		m_oStream >> oPoint;
+
+		double dTemp = m_oTransform.Dx;
 		MoveTo(oPoint);
+
+		if (m_oTransform.M22 < -0.5)
+		{
+//		    oPoint.x *= m_oTransform.M11;
+		    oPoint.x += dTemp;
+		    MoveTo(oPoint);
+		}
+
+
 		for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex++)
 		{
 			m_oStream >> oPoint;
+			if (m_oTransform.M22 < -0.5)
+//			    oPoint.x *= m_oTransform.M11;
+			    oPoint.x += dTemp;
+
 			LineTo(oPoint);
 		}
 		ClosePath();

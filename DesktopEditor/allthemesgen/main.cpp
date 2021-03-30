@@ -524,6 +524,11 @@ int main(int argc, char** argv)
                 imageWriter.SetFileName(sOut + L"/thumbnail.png");
                 imageWriter.ConvertBuffer(pData, nBytesCount);
 
+                imageWriter.SetRasterW((int)(nRasterW * 1.5));
+                imageWriter.SetRasterH((int)(nRasterH * 1.5));
+                imageWriter.SetFileName(sOut + L"/thumbnail@1.5x.png");
+                imageWriter.ConvertBuffer(pData, nBytesCount);
+
                 imageWriter.SetRasterW(nRasterW * 2);
                 imageWriter.SetRasterH(nRasterH * 2);
                 imageWriter.SetFileName(sOut + L"/thumbnail@2x.png");
@@ -611,28 +616,39 @@ int main(int argc, char** argv)
             int nRasterW1 = nRasterW;
             int nRasterH1 = nRasterH;
 
-            for (int nScale = 1; nScale <= 2; nScale++)
+            #define COUNT_FONTS_SCALE 3
+            double support_scales[COUNT_FONTS_SCALE] = { 1, 1.5, 2 };
+
+            for (int nScale = 0; nScale < COUNT_FONTS_SCALE; nScale++)
             {
-                nRasterW = nScale * nRasterW;
-                nRasterH = nScale * nRasterH;
+                double dScale = support_scales[nScale];
+
+                nRasterW = (int)(dScale * nRasterW1);
+                nRasterH = (int)(dScale * nRasterH1);
 
                 int nRow = 4 * nRasterW;
                 int nSize = nRow * nRasterH;
                 BYTE* pData = new BYTE[nSize * nThemeIndex];
                 BYTE* pDataCur = pData;
 
+                std::wstring sCurrentPath = L"";
+                int nScaleOut = (int)(dScale * 10 + 0.5);
+                if (nScaleOut != 10)
+                {
+                    if ((nScaleOut % 10) == 0)
+                        sCurrentPath += L"@" + std::to_wstring((int)(nScaleOut / 10)) + L"x";
+                    else
+                        sCurrentPath += L"@" + std::to_wstring((int)(nScaleOut / 10)) + L"." + std::to_wstring((int)(nScaleOut % 10)) + L"x";
+                }
+
+                sCurrentPath = (L"thumbnail" + sCurrentPath + L".png");
                 for (int nIndex = 1; nIndex <= nThemeIndex; ++nIndex)
                 {
                     CBgraFrame oFrame;
+                    oFrame.OpenFile(sSrcThemesDir + L"/theme" + std::to_wstring(nIndex) + L"/" + sCurrentPath);
 
-                    if (1 == nScale)
-                    {
-                        oFrame.OpenFile(sSrcThemesDir + L"/theme" + std::to_wstring(nIndex) + L"/thumbnail.png");
-                    }
-                    else
-                    {
-                        oFrame.OpenFile(sSrcThemesDir + L"/theme" + std::to_wstring(nIndex) + L"/thumbnail@" + std::to_wstring(nScale) + L"x.png");
-                    }
+                    std::wstring ss = sSrcThemesDir + L"/theme" + std::to_wstring(nIndex) + L"/" + sCurrentPath;
+                    std::cout << "theme " << nIndex << " " << U_TO_UTF8(ss) << std::endl;
 
                     if (false)
                     {
@@ -649,7 +665,7 @@ int main(int argc, char** argv)
                             pDataCur += nRow;
                             pTmp -= nRow;
                         }
-                    }
+                    }                    
                 }
 
                 CBgraFrame oFrame;
@@ -658,14 +674,7 @@ int main(int argc, char** argv)
                 oFrame.put_Height(nRasterH * nThemeIndex);
                 oFrame.put_Stride(nRow);
 
-                if (1 == nScale)
-                {
-                    oFrame.SaveFile(sOutputThumbnails + L"/themes_thumbnail.png", 4);
-                }
-                else
-                {
-                    oFrame.SaveFile(sOutputThumbnails + L"/themes_thumbnail@" + std::to_wstring(nScale) + L"x.png", 4);
-                }
+                oFrame.SaveFile(sOutputThumbnails + L"/themes_" + sCurrentPath, 4);
             }
         }
     }

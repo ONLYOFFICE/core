@@ -1641,17 +1641,9 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
             oXml.WriteString(L"</a>");
         }
         else if (sName == L"ul")
-        {
-            oXml.WriteString(L"<ul>");
             readLi(oXml, oIndexHtml, arrBinary, true);
-            oXml.WriteString(L"</ul>");
-        }
         else if (sName == L"ol")
-        {
-            oXml.WriteString(L"<ol>");
             readLi(oXml, oIndexHtml, arrBinary, false);
-            oXml.WriteString(L"</ol>");
-        }
         else if (sName == L"img")
         {
             std::wstring sBinary;

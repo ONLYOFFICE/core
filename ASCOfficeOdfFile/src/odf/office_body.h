@@ -71,10 +71,9 @@ private:
 	virtual void add_text(const std::wstring & Text) {}
 	virtual void add_space(const std::wstring & Text) {}
 public:
-    office_element_ptr content_;
+
+	office_element_ptr content_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(office_body);
-
 }
 }

@@ -453,7 +453,7 @@ void text_list_level_style_number::docx_convert(oox::docx_conversion_context & C
 			{
 				Context.get_styles_context().start();
 		//to style_context
-				textProperties->content().docx_convert(Context);
+				textProperties->content_.docx_convert(Context);
 		//serialize style_context
 				Context.get_styles_context().docx_serialize_text_style( CP_XML_STREAM(), L"", Context.get_text_tracked_context().dumpRPr_);
 			}		
@@ -513,7 +513,7 @@ void text_list_level_style_number::pptx_convert(oox::pptx_conversion_context & C
 		if (style_text_properties * textProperties = dynamic_cast<style_text_properties *>(style_text_properties_.get()))///эти свойства относятся 
 			// к отрисовки значков !!! а не самого текста
 	    {
-	        textProperties->content().pptx_convert_as_list(Context);
+	        textProperties->content_.pptx_convert_as_list(Context);
 			strm << Context.get_text_context().get_styles_context().text_style().str();
 	    }
 		if (false == num_format.empty())
@@ -646,7 +646,7 @@ void text_list_level_style_bullet::docx_convert(oox::docx_conversion_context & C
 			if (style_text_properties * textProperties = dynamic_cast<style_text_properties *>(style_text_properties_.get()))
 			{
 				Context.get_styles_context().start();
-				textProperties->content().docx_convert(Context);
+				textProperties->content_.docx_convert(Context);
 				Context.get_styles_context().docx_serialize_text_style(CP_XML_STREAM(), L"", Context.get_text_tracked_context().dumpRPr_);
 			}    
 		}
@@ -676,7 +676,7 @@ void text_list_level_style_bullet::pptx_convert(oox::pptx_conversion_context & C
 		if (textProperties)///эти свойства относятся 
 			// к отрисовки значков !!! а не самого текста
 	    {
-	        textProperties->content().pptx_convert_as_list(Context);
+	        textProperties->content_.pptx_convert_as_list(Context);
 			strm << Context.get_text_context().get_styles_context().text_style().str();
 	    }
 		
@@ -784,7 +784,7 @@ void text_list_level_style_image::docx_convert(oox::docx_conversion_context & Co
 			if (style_text_properties * textProperties = dynamic_cast<style_text_properties *>(style_text_properties_.get()))
 			{
 				Context.get_styles_context().start();
-				textProperties->content().docx_convert(Context);
+				textProperties->content_.docx_convert(Context);
 				Context.get_styles_context().docx_serialize_text_style(CP_XML_STREAM(), L"", Context.get_text_tracked_context().dumpRPr_);
 			}    
 		}
@@ -814,7 +814,7 @@ void text_list_level_style_image::pptx_convert(oox::pptx_conversion_context & Co
 		if (textProperties)///эти свойства относятся 
 			// к отрисовки значков !!! а не самого текста
 	    {
-	        textProperties->content().pptx_convert_as_list(Context);
+	        textProperties->content_.pptx_convert_as_list(Context);
 			strm << Context.get_text_context().get_styles_context().text_style().str();
 	    }
 		
@@ -1002,7 +1002,7 @@ void text_outline_level_style::docx_convert(oox::docx_conversion_context & Conte
 			{
 				Context.get_styles_context().start();
 		//to style_context
-				textProperties->content().docx_convert(Context);
+				textProperties->content_.docx_convert(Context);
 		//serialize style_context
 				Context.get_styles_context().docx_serialize_text_style( CP_XML_STREAM(), L"", Context.get_text_tracked_context().dumpRPr_);
 			}		

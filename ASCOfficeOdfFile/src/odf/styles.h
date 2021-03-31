@@ -105,7 +105,8 @@ public:
     style_chart_properties *		get_style_chart_properties()		const;
 	style_drawing_page_properties*	get_style_drawing_page_properties() const;
     style_table_cell_properties *	get_style_table_cell_properties		(bool always =false);
-
+	
+	void add_properties	(office_element_ptr element);
 private:
 	odf_types::style_family style_family_;
 
@@ -120,7 +121,6 @@ private:
     office_element_ptr		style_graphic_properties_;
     office_element_ptr		style_table_cell_properties_;
 	office_element_ptr		style_drawing_page_properties_;
-
 };
 
 //  style:default-style
@@ -227,11 +227,11 @@ public:
 	_CP_OPT(odf_types::color)		draw_start_color_;
 	_CP_OPT(odf_types::color)		draw_end_color_;
 
-	_CP_OPT(odf_types::percent)	draw_end_intensity_; 
-	_CP_OPT(odf_types::percent)	draw_start_intensity_;
+	_CP_OPT(odf_types::percent)		draw_end_intensity_; 
+	_CP_OPT(odf_types::percent)		draw_start_intensity_;
 
-	_CP_OPT(odf_types::percent)	draw_cy_;//%
-	_CP_OPT(odf_types::percent)	draw_cx_;
+	_CP_OPT(odf_types::percent)		draw_cy_;//%
+	_CP_OPT(odf_types::percent)		draw_cx_;
 	
 	_CP_OPT(odf_types::percent)		draw_border_;
 	_CP_OPT(odf_types::draw_angle)	draw_angle_;
@@ -379,7 +379,8 @@ public:
     _CP_OPT( int )			style_default_outline_level_; 
 
     style_content				content_;
-    office_element_ptr_array	style_map_;
+	
+	office_element_ptr_array	style_map_;
 
     friend class odf_document;
 };

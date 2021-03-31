@@ -111,6 +111,7 @@ _UINT32 ConvertODF2OOXml(const std::wstring & srcPath, const std::wstring & dstP
 		switch (type)
 		{
 		case 1:
+		case 4:
 			nResult = ConvertOdt2Docx(inputOdf, dstPath, fontsPath);
 			break;
 		case 2:

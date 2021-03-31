@@ -41,7 +41,6 @@ class document_context::Impl
 public:
     Impl() : last_element_(NULL) {}
 
-public:
     void set_last_element(office_element* elem)
     {
         last_element_ = elem;

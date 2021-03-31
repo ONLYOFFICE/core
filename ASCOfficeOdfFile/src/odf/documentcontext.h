@@ -31,6 +31,8 @@
  */
 #pragma once
 
+#include <string>
+
 namespace cpdoccore { 
 namespace odf_reader {
 
@@ -45,8 +47,9 @@ public:
 	void set_last_element(office_element* elem);
 	office_element* get_last_element();
 
-	int level;
-    
+	int level = 0;
+	std::wstring office_class_; //openoffice xml 1.0
+
 private:
     class Impl;
     Impl * impl_;

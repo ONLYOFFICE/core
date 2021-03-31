@@ -265,6 +265,9 @@ void s::pptx_convert(oox::pptx_conversion_context & Context)
     this->text_to_stream(val);
     Context.get_text_context().add_text(val.str());
 }
+//------------------------------------------------------------------------------------------------------------
+const wchar_t * tab_stop::ns = L"text";
+const wchar_t * tab_stop::name = L"tab_stop";
 
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * tab::ns = L"text";

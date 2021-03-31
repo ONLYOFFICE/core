@@ -234,8 +234,8 @@ void docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
 				get_styles_context().start();
 
 
-				if(( textProp) && (textProp->content().r_style_))parenStyleId = _T("");
-				textProp->content().docx_convert(*this);
+				if(( textProp) && (textProp->content_.r_style_))parenStyleId = _T("");
+				textProp->content_.docx_convert(*this);
 			}
 	        
 			get_styles_context().docx_serialize_text_style( output_stream(), parenStyleId, text_tracked_context_.dumpRPr_);
@@ -1449,7 +1449,7 @@ odf_reader::style_text_properties_ptr docx_conversion_context::current_text_prop
 	for (size_t i = 0; i < state_.text_properties_stack_.size(); i++)
     {
         if (state_.text_properties_stack_[i])
-            cur->content().apply_from( state_.text_properties_stack_[i]->content() );
+            cur->content_.apply_from( state_.text_properties_stack_[i]->content_);
     }
     return cur;
 }

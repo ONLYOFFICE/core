@@ -60,11 +60,10 @@ private:
 	virtual void add_space(const std::wstring & Text) {}
 
 public:
-    std::wstring				office_mimetype_;
-    std::wstring				office_version_;
+	_CP_OPT(std::wstring) office_mimetype_;
+	_CP_OPT(std::wstring) office_version_;
+	_CP_OPT(std::wstring) office_class_; //old version (1.1)
     
-	// office-document-attrs
-    // office-document-common-attrs
     office_element_ptr			office_body_;				// office-body
 
     office_element_ptr			office_meta_;				// office-meta

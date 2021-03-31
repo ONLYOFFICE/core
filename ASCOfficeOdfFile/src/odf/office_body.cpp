@@ -72,7 +72,33 @@ void office_body::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void office_body::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-	CP_CREATE_ELEMENT(content_);
+	if (L"office" == Ns && ((L"text"		== Name) || 
+							(L"spreadsheet"	== Name) ||
+							(L"presentation"== Name) || 
+							(L"chart"		== Name) || 
+							(L"drawing"		== Name) || 
+							(L"image"		== Name) ||
+							(L"database"	== Name)))
+	{
+		CP_CREATE_ELEMENT(content_);
+	}
+	else if (false == getContext()->office_class_.empty() || content_)
+	{
+		if (!content_)
+		{
+			if (getContext()->office_class_ == L"text")
+				content_ = office_element_creator::get()->create(L"office", L"text", getContext(), false);
+			else if (getContext()->office_class_ == L"spreadsheet")
+				content_ = office_element_creator::get()->create(L"office", L"spreadsheet", getContext(), false);
+			else if (getContext()->office_class_ == L"presentation")
+				content_ = office_element_creator::get()->create(L"office", L"presentation", getContext(), false);
+			else if (getContext()->office_class_ == L"chart")
+				content_ = office_element_creator::get()->create(L"office", L"chart", getContext(), false);
+		}
+		if (content_)
+			content_->add_child_element(Reader, Ns, Name);
+	}
+
 }
 
 void office_body::xlsx_convert(oox::xlsx_conversion_context & Context)

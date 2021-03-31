@@ -85,6 +85,7 @@ SOURCES += \
     ../src/odf/style_chart_properties.cpp \
     ../src/odf/style_graphic_properties.cpp \
     ../src/odf/style_map.cpp \
+    ../src/odf/style_properties.cpp \
     ../src/odf/style_paragraph_properties.cpp \
     ../src/odf/style_paragraph_properties_docx.cpp \
     ../src/odf/style_paragraph_properties_pptx.cpp \

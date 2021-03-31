@@ -270,7 +270,7 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
     // content.opf
     NSFile::CFileBinary oContentOpf;
     bool bWasLanguage = false;
-    std::wstring sTitle = L"Title";
+    std::wstring sTitle = NSFile::GetFileName(sDstFile);
     std::wstring sUUID = GenerateUUID();
     if (oContentOpf.CreateFileW(m_sTempDir + L"/OEBPS/content.opf"))
     {

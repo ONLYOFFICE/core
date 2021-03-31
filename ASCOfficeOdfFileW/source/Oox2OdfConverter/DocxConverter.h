@@ -103,7 +103,7 @@ namespace OOX
 		class CBookmarkStart;
 		class CBookmarkEnd;
 		class CBgPict;
-
+		class COMathPara;
 	}
 	namespace Numbering
 	{
@@ -273,6 +273,7 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CTableProperty			*oox_table_pr,		odf_writer::style_table_cell_properties	*table_cell_properties);
 		void convert(OOX::Logic::CTableRowProperties	*oox_table_row_pr);
 		void convert(OOX::Logic::CTableRowProperties	*oox_table_row_pr,	odf_writer::style_table_row_properties	*table_row_properties);
+		void convert(OOX::Logic::COMathPara				*math);
 //--------------------------------------------------------------------------------
 	};
 }

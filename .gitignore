@@ -147,3 +147,5 @@ EpubFile/Makefile
 HtmlFile2/Makefile
 
 XpsFile/Makefile
+
+*.vcxproj

@@ -80,7 +80,7 @@ public:
 	}
 	void WriteUInt16(unsigned short val)
 	{
-		if (m_Data)
+		if (m_Data && (m_Position + sizeof(unsigned short) <= m_Size))
 		{
 			((unsigned short *)(m_Data + m_Position))[0] = val;
 			m_Position	+=	sizeof(unsigned short);
@@ -113,7 +113,7 @@ public:
 	}
 	void WriteInt32(_INT32 val)
 	{
-		if (m_Data)
+		if (m_Data && (m_Position + sizeof(_INT32) <= m_Size))
 		{
 			((_INT32 *)(m_Data + m_Position))[0] = val;
 			m_Position	+=	sizeof(_INT32);
@@ -133,7 +133,7 @@ public:
 	}
 	void WriteByte(unsigned char val)
 	{
-		if (m_Data)
+		if (m_Data && (m_Position + 1 <= m_Size))
 		{
 			m_Data[m_Position] = val;
 			m_Position	+= 1;
@@ -141,7 +141,7 @@ public:
 	}
 	void WriteUInt32(_UINT32 val)
 	{
-		if (m_Data)
+		if (m_Data && (m_Position + sizeof(_UINT32) <= m_Size))
 		{
 			((_UINT32 *)(m_Data + m_Position))[0] = val;
 			m_Position	+=	sizeof(_UINT32);
@@ -190,7 +190,7 @@ public:
 	}
 	void WriteBytes(unsigned char* pData, int size)
 	{
-		if (m_Data)
+		if (m_Data && (m_Position + size <= m_Size))
 		{
 			memcpy(m_Data + m_Position, pData, size);
 			m_Position += size;

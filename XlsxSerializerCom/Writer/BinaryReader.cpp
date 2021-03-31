@@ -6870,7 +6870,8 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 		int nType = 0;
 		std::string version = "";
 		std::string dst_len = "";
-		while (true)
+		
+		while (nIndex < nBase64DataSize)
 		{
 			nIndex++;
 			BYTE _c = pBase64Data[nIndex];

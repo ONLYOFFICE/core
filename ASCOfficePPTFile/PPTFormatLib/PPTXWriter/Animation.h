@@ -204,6 +204,10 @@ private:
     void ConvertBasicZoom(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
     void ConvertRandomEffect(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim);
 
+    void PushAnim(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *pOldAnim, int dur,
+                  std::wstring attrname1, std::wstring strVal1, std::wstring strVal2,
+                  std::wstring attrname2, std::wstring strVal3, std::wstring strVal4);
+
 private:
     unsigned m_cTnId;
     PPTX::Logic::BldLst *m_pBldLst; // Do not delete

@@ -132,32 +132,32 @@ void Animation::FillAnim(
         tav.val->node_name = L"val";
 
         if (animValue->m_pVarValue.is_init())
-        switch (animValue->m_pVarValue->m_Type) {
-        case TL_TVT_String:
-        {
-            tav.val->strVal = dynamic_cast<const CRecordTimeVariantString&>
-                    (animValue->m_pVarValue.get()).m_Value;
-            break;
-        }
-        case TL_TVT_Bool:
-        {
-            tav.val->boolVal = dynamic_cast<const CRecordTimeVariantBool&>
-                    (animValue->m_pVarValue.get()).m_Value;
-            break;
-        }
-        case TL_TVT_Int:
-        {
-            tav.val->intVal = dynamic_cast<const CRecordTimeVariantInt&>
-                    (animValue->m_pVarValue.get()).m_Value;
-            break;
-        }
-        case TL_TVT_Float:
-        {
-            tav.val->fltVal = dynamic_cast<const CRecordTimeVariantFloat&>
-                    (animValue->m_pVarValue.get()).m_Value;
-            break;
-        }
-        }
+            switch (animValue->m_pVarValue->m_Type) {
+            case TL_TVT_String:
+            {
+                tav.val->strVal = dynamic_cast<const CRecordTimeVariantString&>
+                        (animValue->m_pVarValue.get()).m_Value;
+                break;
+            }
+            case TL_TVT_Bool:
+            {
+                tav.val->boolVal = dynamic_cast<const CRecordTimeVariantBool&>
+                        (animValue->m_pVarValue.get()).m_Value;
+                break;
+            }
+            case TL_TVT_Int:
+            {
+                tav.val->intVal = dynamic_cast<const CRecordTimeVariantInt&>
+                        (animValue->m_pVarValue.get()).m_Value;
+                break;
+            }
+            case TL_TVT_Float:
+            {
+                tav.val->fltVal = dynamic_cast<const CRecordTimeVariantFloat&>
+                        (animValue->m_pVarValue.get()).m_Value;
+                break;
+            }
+            }
 
         tav.tm = std::to_wstring(
                     animValue->m_oTimeAnimationValueAtom.m_nTime  *100);
@@ -168,7 +168,7 @@ void Animation::FillAnim(
         }
 
         oAnim.tavLst->list.push_back(tav);
-}
+    }
     FillCBhvr(&(pTimeAnimateBehavior->m_oBehavior), oAnim.cBhvr);
 }
 
@@ -402,7 +402,7 @@ void Animation::FillAnimScale(
 }
 
 void Animation::FillAudio(CRecordClientVisualElementContainer *pCVEC,
-        PPTX::Logic::Audio &oAudio)
+                          PPTX::Logic::Audio &oAudio)
 {
     if (pCVEC->m_bVisualShapeAtom)
     {
@@ -431,16 +431,16 @@ void Animation::FillVideo(
         try {
             oVideo.cMediaNode.vol = (int)(static_cast<CRecordTimeVariantFloat*>
                                           (pETNC->m_pTimePropertyList->m_arrElements[1])->
-                                            m_Value * 100000);
+                    m_Value * 100000);
             oVideo.cMediaNode.mute = static_cast<CRecordTimeVariantBool*>
                     (pETNC->m_pTimePropertyList->m_arrElements[2])->
-                      m_Value;
+                    m_Value;
             oVideo.fullScrn = static_cast<CRecordTimeVariantBool*>
-                                          (pETNC->m_pTimePropertyList->m_arrElements[3])->
-                                            m_Value;
+                    (pETNC->m_pTimePropertyList->m_arrElements[3])->
+                    m_Value;
             oVideo.cMediaNode.showWhenStopped = static_cast<CRecordTimeVariantBool*>
                     (pETNC->m_pTimePropertyList->m_arrElements[4])->
-                      m_Value;
+                    m_Value;
         } catch (...) {
 
         }
@@ -454,8 +454,8 @@ void Animation::FillVideo(
 }
 
 void Animation::FillBldLst(
-                            PPT_FORMAT::CRecordBuildListContainer *pBLC,
-                            PPTX::Logic::BldLst &oBL)
+        PPT_FORMAT::CRecordBuildListContainer *pBLC,
+        PPTX::Logic::BldLst &oBL)
 {
     if (!pBLC)
         return;
@@ -547,7 +547,7 @@ void Animation::FillBldLst(
 }
 
 void Animation::FillBldP(PPT_FORMAT::CRecordParaBuildContainer *pPBC,
-              PPTX::Logic::BldP &oBP)
+                         PPTX::Logic::BldP &oBP)
 {
 
     oBP.spid      = std::to_wstring(pPBC->m_oBuildAtom.m_nShapeIdRef);
@@ -646,18 +646,18 @@ void Animation::FillCBhvr(
 }
 void Animation::FillCBhvr(
         PPTX::Logic::CBhvr &oBhvr, int dur,
-          UINT spid, std::wstring attrname, int delay)
+        UINT spid, std::wstring attrname, int delay)
 {
     oBhvr.cTn.id = m_cTnId++;
     oBhvr.cTn.fill = L"hold";
     oBhvr.cTn.dur = std::to_wstring(dur);
     if (delay > -1)
     {
-       oBhvr.cTn.stCondLst = new PPTX::Logic::CondLst;
-       oBhvr.cTn.stCondLst->node_name = L"stCondLst";
-       PPTX::Logic::Cond cond;
-       cond.delay = std::to_wstring(delay);
-       oBhvr.cTn.stCondLst->list.push_back(cond);
+        oBhvr.cTn.stCondLst = new PPTX::Logic::CondLst;
+        oBhvr.cTn.stCondLst->node_name = L"stCondLst";
+        PPTX::Logic::Cond cond;
+        cond.delay = std::to_wstring(delay);
+        oBhvr.cTn.stCondLst->list.push_back(cond);
     }
 
     oBhvr.tgtEl.spTgt = new PPTX::Logic::SpTgt;
@@ -712,7 +712,7 @@ void Animation::FillCond(
         cond.delay = L"indefinite";
 
     if (oldCond->m_oTimeConditionAtom.m_TriggerObject == TL_TOT_RuntimeNodeRef ||
-        oldCond->m_oTimeConditionAtom.m_TriggerObject == TL_TOT_TimeNode)
+            oldCond->m_oTimeConditionAtom.m_TriggerObject == TL_TOT_TimeNode)
     {
         cond.tn = oldCond->m_oTimeConditionAtom.m_nID;
     }
@@ -735,8 +735,8 @@ void Animation::FillCond(
     if (!str.empty()) cond.evt = str;
 
     // TODO
-//    if (oldCond->m_oVisualElement.)
-//    cond.tgtEl = new PPTX::Logic::TgtEl();
+    //    if (oldCond->m_oVisualElement.)
+    //    cond.tgtEl = new PPTX::Logic::TgtEl();
 
     if (oldCond->m_oVisualElement.m_bVisualPageAtom &&
             oldCond->m_oVisualElement.m_oVisualPageAtom.m_eType == TL_TVET_Page)
@@ -854,17 +854,17 @@ void Animation::FillCTn(
     // Write subTnLst
     if (pETNC->m_arrRgSubEffect.empty() == false)
     {
-//        if (
-//                pETNC->m_arrRgSubEffect[0]->m_oTimeNodeAtom.m_fGroupingTypeProperty &&
-//                m_pBldLst &&
-//                m_pPPT10->m_haveBuildList
-//           )
-//        {
-//            oCTn.grpId = 0;
-//            auto bldP = new PPTX::Logic::BldP;
-//            bldP->grpId = 0;
-//            m_currentBldP = bldP;
-//        }
+        //        if (
+        //                pETNC->m_arrRgSubEffect[0]->m_oTimeNodeAtom.m_fGroupingTypeProperty &&
+        //                m_pBldLst &&
+        //                m_pPPT10->m_haveBuildList
+        //           )
+        //        {
+        //            oCTn.grpId = 0;
+        //            auto bldP = new PPTX::Logic::BldP;
+        //            bldP->grpId = 0;
+        //            m_currentBldP = bldP;
+        //        }
 
         auto sub = new PPTX::Logic::TnLst;
         sub->node_name = L"subTnLst";
@@ -886,42 +886,42 @@ void Animation::FillCTn(
             case 0:
             {
                 oCTn.repeatCount = std::to_wstring((int)
-                            timeModAtom->m_Value * 1000);
+                                                   timeModAtom->m_Value * 1000);
                 break;
             }
             case 1:
             {
                 // Check 1000
                 oCTn.repeatDur = std::to_wstring((int)
-                            timeModAtom->m_Value * 1000);
+                                                 timeModAtom->m_Value * 1000);
                 break;
             }
             case 2:
             {
                 // Check 1000
                 oCTn.spd = std::to_wstring((int)
-                            timeModAtom->m_Value * 1000);
+                                           timeModAtom->m_Value * 1000);
                 break;
             }
             case 3:
             {
                 // Check 1000
                 oCTn.accel = std::to_wstring((int)
-                            timeModAtom->m_Value * 1000);
+                                             timeModAtom->m_Value * 1000);
                 break;
             }
             case 4:
             {
                 // Check 1000
                 oCTn.decel = std::to_wstring((int)
-                            timeModAtom->m_Value * 1000);
+                                             timeModAtom->m_Value * 1000);
                 break;
             }
             case 5:
             {
                 // Check 1000
                 oCTn.autoRev = std::to_wstring((int)
-                            timeModAtom->m_Value * 1000);
+                                               timeModAtom->m_Value * 1000);
                 break;
             }
 
@@ -1144,10 +1144,10 @@ void Animation::FillCondLst(
         PPTX::Logic::CondLst &oCondLst)
 {
     for (auto *oldCond : oCondVec) {
-                PPTX::Logic::Cond cond;
-                cond.node_name = L"cond";
-                FillCond(oldCond, cond);
-                oCondLst.list.push_back(cond);
+        PPTX::Logic::Cond cond;
+        cond.node_name = L"cond";
+        FillCond(oldCond, cond);
+        oCondLst.list.push_back(cond);
     }
 }
 
@@ -1523,7 +1523,6 @@ void Animation::FillClickEffect(SOldAnimation* pOldAnim, PPTX::Logic::TimeNodeBa
     auto par = new PPTX::Logic::Par;
 
     FillCTnParams(par->cTn, L"clickEffect", L"0", L"hold", pOldAnim);
-    par->cTn.childTnLst = new PPTX::Logic::ChildTnLst;
     groupDelay += 500; // Effect time // TODO for anim
 
     oTimeNodeBase.m_node = par;
@@ -1546,12 +1545,12 @@ void Animation::FillAfterEffect(SOldAnimation* pOldAnim, PPTX::Logic::TimeNodeBa
 
 void Animation::FillCBhvr      (PPTX::Logic::CBhvr &oCBhvr, SOldAnimation* pOldAnim, int delay)
 {
-//    auto anim = pOldAnim->anim->m_AnimationAtom;
+    //    auto anim = pOldAnim->anim->m_AnimationAtom;
     FillCBhvr(oCBhvr, 1, pOldAnim->shapeId, L"style.visibility", delay);
 }
 
 void Animation::FillCTnParams  (PPTX::Logic::CTn &oCTN, std::wstring nodeType, std::wstring condDelay,
-                     std::wstring fill, SOldAnimation* pOldAnim)
+                                std::wstring fill, SOldAnimation* pOldAnim)
 {
     oCTN.id = m_cTnId++;
     oCTN.fill = fill;
@@ -1606,34 +1605,34 @@ void Animation::FillAnim (PPTX::Logic::Anim& oAnim, SOldAnimation* pOldAnim, int
 void Animation::FillSetAndAnim (SOldAnimation* pOldAnim,
                                 PPTX::Logic::ChildTnLst& oParent)
 {
-//    bool isAppear = pOldAnim->anim->m_AnimationAtom.m_AnimEffect == 0;
-//    PPTX::Logic::TimeNodeBase childTimeNode;
-//    auto set = new PPTX::Logic::Set;
-//    if (isAppear)
-//        FillCBhvr(set->cBhvr, pOldAnim);
-//    else
-//    {
-//        FillCBhvr(set->cBhvr, pOldAnim, 0);
-//    }
-//    set->to = new PPTX::Logic::AnimVariant;
-//    set->to->node_name = L"to";
-//    set->to->strVal = L"visible";
+    //    bool isAppear = pOldAnim->anim->m_AnimationAtom.m_AnimEffect == 0;
+    //    PPTX::Logic::TimeNodeBase childTimeNode;
+    //    auto set = new PPTX::Logic::Set;
+    //    if (isAppear)
+    //        FillCBhvr(set->cBhvr, pOldAnim);
+    //    else
+    //    {
+    //        FillCBhvr(set->cBhvr, pOldAnim, 0);
+    //    }
+    //    set->to = new PPTX::Logic::AnimVariant;
+    //    set->to->node_name = L"to";
+    //    set->to->strVal = L"visible";
 
-//    childTimeNode.m_node = set;
-//    oParent.list.push_back(childTimeNode);
+    //    childTimeNode.m_node = set;
+    //    oParent.list.push_back(childTimeNode);
 
-//    if (!isAppear)
-//    {
-//        auto anim = new PPTX::Logic::Anim;
-//        FillAnim(*anim, pOldAnim, 500, L"ppt_x", L"0-#ppt_w/2", L"#ppt_x");
-//        childTimeNode.m_node = anim;
-//        oParent.list.push_back(childTimeNode);
+    //    if (!isAppear)
+    //    {
+    //        auto anim = new PPTX::Logic::Anim;
+    //        FillAnim(*anim, pOldAnim, 500, L"ppt_x", L"0-#ppt_w/2", L"#ppt_x");
+    //        childTimeNode.m_node = anim;
+    //        oParent.list.push_back(childTimeNode);
 
-//        anim = new PPTX::Logic::Anim;
-//        FillAnim(*anim, pOldAnim, 500, L"ppt_y", L"1+#ppt_h/2", L"#ppt_y");
-//        childTimeNode.m_node = anim;
-//        oParent.list.push_back(childTimeNode);
-//    }
+    //        anim = new PPTX::Logic::Anim;
+    //        FillAnim(*anim, pOldAnim, 500, L"ppt_y", L"1+#ppt_h/2", L"#ppt_y");
+    //        childTimeNode.m_node = anim;
+    //        oParent.list.push_back(childTimeNode);
+    //    }
 }
 
 void Animation::FillCTnAnimation  (PPTX::Logic::CTn &oCTN, SOldAnimation *pOldAnim)
@@ -1774,12 +1773,78 @@ void Animation::ConvertAppear(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *p
 
 void Animation::ConvertFlyIn(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *pOldAnim, int& presetSub)
 {
-    // TODO
     switch (pOldAnim->anim->m_AnimationAtom.m_AnimEffectDirection)
     {
     case 0:
     {
+        PushAnim(oParent, pOldAnim, 500,
+                 L"ppt_x", L"0-#ppt_w/2", L"#ppt_x",
+                 L"ppt_y", L"#ppt_y", L"#ppt_y");
+
         presetSub = 8;
+        break;
+    }
+    case 1:
+    {
+        PushAnim(oParent, pOldAnim, 500,
+                 L"ppt_x", L"#ppt_x", L"#ppt_x",
+                 L"ppt_y", L"0-#ppt_h/2", L"#ppt_y");
+
+        presetSub = 1;
+        break;
+    }
+    case 2:
+    {
+        PushAnim(oParent, pOldAnim, 500,
+                 L"ppt_x", L"1+#ppt_w/2", L"#ppt_x",
+                 L"ppt_y", L"#ppt_y", L"#ppt_y");
+
+        presetSub = 2;
+        break;
+    }
+    case 3:
+    {
+        PushAnim(oParent, pOldAnim, 500,
+                 L"ppt_x", L"#ppt_x", L"#ppt_x",
+                 L"ppt_y", L"1+#ppt_h/2", L"#ppt_y");
+
+        presetSub = 4;
+        break;
+    }
+    case 4:
+    {
+        PushAnim(oParent, pOldAnim, 500,
+                 L"ppt_x", L"0-#ppt_w/2", L"#ppt_x",
+                 L"ppt_y", L"0-#ppt_h/2", L"#ppt_y");
+
+        presetSub = 9;
+        break;
+    }
+    case 5:
+    {
+        PushAnim(oParent, pOldAnim, 500,
+                 L"ppt_x", L"1+#ppt_w/2", L"#ppt_x",
+                 L"ppt_y", L"0-#ppt_h/2", L"#ppt_y");
+
+        presetSub = 3;
+        break;
+    }
+    case 6:
+    {
+        PushAnim(oParent, pOldAnim, 500,
+                 L"ppt_x", L"0-#ppt_w/2", L"#ppt_x",
+                 L"ppt_y", L"1+#ppt_h/2", L"#ppt_y");
+
+        presetSub = 12;
+        break;
+    }
+    case 7:
+    {
+        PushAnim(oParent, pOldAnim, 500,
+                 L"ppt_x", L"1+#ppt_w/2", L"#ppt_x",
+                 L"ppt_y", L"1+#ppt_h/2", L"#ppt_y");
+
+        presetSub = 6;
         break;
     }
     }
@@ -1863,4 +1928,30 @@ void Animation::ConvertBasicZoom(PPTX::Logic::ChildTnLst& oParent, SOldAnimation
 void Animation::ConvertRandomEffect(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim)
 {
 
+}
+
+void Animation::PushAnim(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *pOldAnim, int dur,
+              std::wstring attrname1, std::wstring strVal1, std::wstring strVal2,
+                         std::wstring attrname2, std::wstring strVal3, std::wstring strVal4)
+{
+    PPTX::Logic::TimeNodeBase childTimeNode;
+    auto set = new PPTX::Logic::Set;
+
+    FillCBhvr(set->cBhvr, pOldAnim, 0);
+    set->to = new PPTX::Logic::AnimVariant;
+    set->to->node_name = L"to";
+    set->to->strVal = L"visible";
+
+    childTimeNode.m_node = set;
+    oParent.list.push_back(childTimeNode);
+
+    auto anim = new PPTX::Logic::Anim;
+    FillAnim(*anim, pOldAnim, dur, attrname1, strVal1, strVal2);
+    childTimeNode.m_node = anim;
+    oParent.list.push_back(childTimeNode);
+
+    anim = new PPTX::Logic::Anim;
+    FillAnim(*anim, pOldAnim, dur, attrname2, strVal3, strVal4);
+    childTimeNode.m_node = anim;
+    oParent.list.push_back(childTimeNode);
 }

@@ -1486,7 +1486,13 @@ static const struct ActionNamesEmf
 	{
 		TEmfRectL oBox;
 		m_oStream >> oBox;
-		ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, 0, 360);
+
+		if (m_pDC->GetArcDirection() == AD_COUNTERCLOCKWISE)
+		    ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, 0, 360);
+		else
+		    ArcTo(oBox.lLeft, oBox.lBottom, oBox.lRight, oBox.lTop, 0, 360);
+
+
 		DrawPath(true, true);
 	}
 	void CEmfFile::Read_EMR_EXTTEXTOUTA()

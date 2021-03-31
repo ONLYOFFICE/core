@@ -531,12 +531,6 @@ namespace MetaFile
 		{
 			CheckStartPath(false);
 
-			double dM11, dM12, dM21, dM22, dRx, dRy;
-			m_pRenderer->GetTransform(&dM11, &dM22, &dM21, &dM22, &dRx, &dRy);
-
-			if (dM22 < 0)
-				std::swap(dTop, dBottom);
-
 			TPointD oTL = TranslatePoint(dLeft, dTop);
 			TPointD oBR = TranslatePoint(dRight, dBottom);
 			m_pRenderer->PathCommandArcTo(oTL.x, oTL.y, oBR.x - oTL.x, oBR.y - oTL.y, dStart, dSweep);
@@ -741,10 +735,12 @@ namespace MetaFile
 					m_pRenderer->put_BrushAlpha2(255);
 
 					TColor oBgColor(m_pFile->GetTextBgColor());
+					oBgColor.SwapRGBtoBGR();
 					m_pRenderer->put_BrushColor2(oBgColor.ToInt());
 				}
 
 				TColor oFgColor(pBrush->GetColor());
+				oFgColor.SwapRGBtoBGR();
 				m_pRenderer->put_BrushTexturePath(wsBrushType);
 				m_pRenderer->put_BrushAlpha1(255);
 				m_pRenderer->put_BrushColor1(oFgColor.ToInt());

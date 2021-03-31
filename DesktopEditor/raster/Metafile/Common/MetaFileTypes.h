@@ -394,7 +394,7 @@ namespace MetaFile
 		}
 		int ToInt()
 		{
-			return METAFILE_RGBA(b, g, r);
+			return METAFILE_RGBA(r, g, b);
 		}
 		void SwapRGBtoBGR()
 		{

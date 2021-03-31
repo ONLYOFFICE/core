@@ -193,20 +193,19 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
+    style_text_properties(){};
+    style_text_properties(const std::wstring & rStyle)			{ content_.set_r_style(rStyle); };
+
     void docx_convert	(oox::docx_conversion_context & Context);
 	void pptx_convert	(oox::pptx_conversion_context & Context);
 
-    const	text_format_properties_content & content() const	{ return content_; } ;
-			text_format_properties_content & content()			{ return content_; } ;
+    text_format_properties_content	content_;
 
-    style_text_properties(){};
-    style_text_properties(const std::wstring & rStyle)			{ content_.set_r_style(rStyle); };
 
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
  
-    text_format_properties_content	content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_text_properties);

@@ -263,10 +263,9 @@ void math_context::start()
 {
 	text_properties_ = odf_reader::style_text_properties_ptr(new odf_reader::style_text_properties());
 	
-	text_properties_->content().style_font_name_	= L"Cambria Math";
-	text_properties_->content().fo_font_size_		= odf_types::length(base_font_size_, odf_types::length::pt);
+	text_properties_->content_.style_font_name_ = L"Cambria Math";
+	text_properties_->content_.fo_font_size_ = odf_types::length(base_font_size_, odf_types::length::pt);
 }
-
 std::wstring math_context::end()
 {
 	std::wstring math = math_stream_.str();

@@ -92,11 +92,14 @@ public:
 
 		if (type_ != typeTextSection)
 		{
-			if (context_->level == 4)
+			if (context_->level == 4) 
 			{
 				if (office_element * prev= context_->get_last_element())
 				{
-					prev->next_element_style_name = element_style_name;
+					if (element_style_name)
+					{
+						prev->next_element_style_name = element_style_name;
+					}
 				}
 		        
 				context_->set_last_element(this);

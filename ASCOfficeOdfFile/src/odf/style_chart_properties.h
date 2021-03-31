@@ -55,7 +55,16 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-//         style:chart-properties
+	class chart_format_properties : public std::vector<_property>
+	{
+	public:
+		void add_attributes(const xml::attributes_wc_ptr & Attributes);
+		void apply_from(const chart_format_properties & Other);
+
+		odf_types::common_rotation_angle_attlist  common_rotation_angle_attlist_;
+	};
+
+// style:chart-properties
 class style_chart_properties : public office_element_impl<style_chart_properties>//стили чарта не наследуются
 {
 public:
@@ -71,10 +80,7 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
  
 public:
-	std::vector<_property> content_;
-
-	odf_types::common_rotation_angle_attlist       common_rotation_angle_attlist_;
-
+	chart_format_properties content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_chart_properties);

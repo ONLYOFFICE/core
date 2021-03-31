@@ -1508,6 +1508,8 @@ namespace NExtractTools
 		std::wstring sFileFromDir = NSDirectory::GetFolderPath(sFrom);
 		std::wstring sImagesDirectory = sFileFromDir + FILE_SEPARATOR_STR + L"media";
 		std::wstring sHtmlFile        = sTemp        + FILE_SEPARATOR_STR + L"index.html";
+		if (!NSDirectory::Exists(sImagesDirectory))
+			NSDirectory::CreateDirectory(sImagesDirectory);
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
 		std::wstring sXml = getDoctXml(eFromType, eToType, sFileFromDir, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
 		std::wstring sResult;
@@ -1542,6 +1544,8 @@ namespace NExtractTools
 		std::wstring sFileFromDir = NSDirectory::GetFolderPath(sFrom);
 		std::wstring sImagesDirectory = sFileFromDir + FILE_SEPARATOR_STR + L"media";
 		std::wstring sHtmlFile        = sTemp        + FILE_SEPARATOR_STR + L"index.html";
+		if (!NSDirectory::Exists(sImagesDirectory))
+			NSDirectory::CreateDirectory(sImagesDirectory);
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
 		std::wstring sXml = getDoctXml(eFromType, eToType, sFileFromDir, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
 		std::wstring sResult;
@@ -1574,6 +1578,8 @@ namespace NExtractTools
 		std::wstring sFileFromDir = NSDirectory::GetFolderPath(sFrom);
 		std::wstring sImagesDirectory = sFileFromDir + FILE_SEPARATOR_STR + L"media";
 		std::wstring sHtmlFile        = sTemp        + FILE_SEPARATOR_STR + L"index.html";
+		if (!NSDirectory::Exists(sImagesDirectory))
+			NSDirectory::CreateDirectory(sImagesDirectory);
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
 		std::wstring sXml = getDoctXml(eFromType, eToType, sFileFromDir, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
 		std::wstring sResult;
@@ -1595,6 +1601,8 @@ namespace NExtractTools
 		std::wstring sFileFromDir = NSDirectory::GetFolderPath(sFrom);
 		std::wstring sImagesDirectory = sFileFromDir + FILE_SEPARATOR_STR + L"media";
 		std::wstring sHtmlFile        = sTemp        + FILE_SEPARATOR_STR + L"index.html";
+		if (!NSDirectory::Exists(sImagesDirectory))
+			NSDirectory::CreateDirectory(sImagesDirectory);
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
 		std::wstring sXml = getDoctXml(eFromType, eToType, sFileFromDir, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
 		std::wstring sResult;

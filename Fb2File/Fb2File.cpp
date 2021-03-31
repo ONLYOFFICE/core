@@ -1512,7 +1512,7 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
     {
         std::wstring sName = oIndexHtml.GetName();
         if (sName == L"#text")
-            oXml.WriteString(oIndexHtml.GetText());
+            oXml.WriteEncodeXmlString(oIndexHtml.GetText());
         else if (sName == L"p")
         {
             if (!bWasP)
@@ -1635,23 +1635,17 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
         else if (sName == L"a")
         {
             oIndexHtml.MoveToNextAttribute();
-            oXml.WriteString(L"<a l:href=\"" + oIndexHtml.GetText() + L"\">");
+            oXml.WriteString(L"<a l:href=\"");
+            oXml.WriteEncodeXmlString(oIndexHtml.GetText());
+            oXml.WriteString(L"\">");
             oIndexHtml.MoveToElement();
             readStream(oXml, oIndexHtml, arrBinary, bWasP);
             oXml.WriteString(L"</a>");
         }
         else if (sName == L"ul")
-        {
-            oXml.WriteString(L"<ul>");
             readLi(oXml, oIndexHtml, arrBinary, true);
-            oXml.WriteString(L"</ul>");
-        }
         else if (sName == L"ol")
-        {
-            oXml.WriteString(L"<ol>");
             readLi(oXml, oIndexHtml, arrBinary, false);
-            oXml.WriteString(L"</ol>");
-        }
         else if (sName == L"img")
         {
             std::wstring sBinary;

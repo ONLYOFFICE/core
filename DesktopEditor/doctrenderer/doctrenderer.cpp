@@ -950,9 +950,12 @@ namespace NSDoctRenderer
                         }
                         else if (!js_results->isNull())
                         {
-                            strReturnParams += L"<dc:creator>";
-                            strReturnParams += js_results->toStringW();
-                            strReturnParams += L"</dc:creator>";
+                            if (!js_results->toStringW().empty())
+                            {
+                                strReturnParams += L"<dc:creator>";
+                                strReturnParams += js_results->toStringW();
+                                strReturnParams += L"</dc:creator>";
+                            }
                         }
 
                         js_results = js_objectCore->call_func("asc_getDescription", 1, args);

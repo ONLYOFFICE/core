@@ -909,15 +909,8 @@ namespace NSDoctRenderer
                         strError = L"code=\"core_props\"";
                         bIsBreak = true;
                     }
-                    else
+                    else if (js_objectCore->isObject())
                     {
-                        if (js_objectCore->isUndefined() || !js_objectCore->isObject())
-                        {
-                            strError = L"code=\"core_props\"";
-                            bIsBreak = true;
-                            return bIsBreak;
-                        }
-
                         JSSmart<CJSValue> js_results = js_objectCore->call_func("asc_getTitle", 1, args);
                         if(try_catch->Check())
                         {

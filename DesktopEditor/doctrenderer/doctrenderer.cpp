@@ -485,6 +485,24 @@ namespace NSDoctRenderer
                 {
                     std::string sHTML_Utf8 = js_result2->toStringA();
 
+                    JSSmart<CJSObject> js_objectCore = js_objectApi->call_func("asc_getCoreProps", 1, args)->toObject();
+                    if(try_catch->Check())
+                    {
+                        strError = L"code=\"core_props\"";
+                        bIsBreak = true;
+                    }
+                    else if (js_objectCore->isObject())
+                    {
+                        JSSmart<CJSValue> js_results = js_objectCore->call_func("asc_getTitle", 1, args);
+                        if(try_catch->Check())
+                        {
+                            strError = L"code=\"get_title\"";
+                            bIsBreak = true;
+                        }
+                        else if (!js_results->isNull() && sHTML_Utf8.find("<title>") == std::string::npos)
+                            sHTML_Utf8.insert(sHTML_Utf8.find("</head>"), "<title>" + js_results->toStringA() + "</title>");
+                    }
+
                     NSFile::CFileBinary oFile;
                     if (true == oFile.CreateFileW(pParams->m_strDstFilePath))
                     {

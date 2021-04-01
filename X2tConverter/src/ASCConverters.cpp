@@ -1513,7 +1513,7 @@ namespace NExtractTools
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
 		std::wstring sXml = getDoctXml(eFromType, eToType, sFileFromDir, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
 		std::wstring sResult;
-		oDoctRenderer.Execute(sXml, sResult, true);
+		oDoctRenderer.Execute(sXml, sResult);
 		if (sResult.find(L"error") != std::wstring::npos)
 		{
 			std::wcerr << L"DoctRenderer:" << sResult << std::endl;
@@ -1543,7 +1543,7 @@ namespace NExtractTools
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
 		std::wstring sXml = getDoctXml(eFromType, eToType, sFileFromDir, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
 		std::wstring sResult;
-		oDoctRenderer.Execute(sXml, sResult, true);
+		oDoctRenderer.Execute(sXml, sResult);
 		if (sResult.find(L"error") != std::wstring::npos)
 		{
 			std::wcerr << L"DoctRenderer:" << sResult << std::endl;

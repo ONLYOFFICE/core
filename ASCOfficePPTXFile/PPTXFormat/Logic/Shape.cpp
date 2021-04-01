@@ -600,14 +600,17 @@ namespace PPTX
 			LONG lW = 43200, lH = 43200;
 			int dL = 0, dT = 0, dW = 0, dH = 0;
 			
-			if (spPr.Geometry.is<PrstGeom>())
+			if (bSignature)
+			{
+				vmlPrst = SimpleTypes::Vml::sptPictureFrame;
+			}
+			else if (spPr.Geometry.is<PrstGeom>())
 			{
 				const PPTX::Logic::PrstGeom & lpGeom = spPr.Geometry.as<PPTX::Logic::PrstGeom>();
 				
 				SimpleTypes::CShapeType<> ooxPrst = SimpleTypes::CShapeType<>(lpGeom.prst.get());
 				vmlPrst =  OOX::PrstGeom2VmlShapeType( ooxPrst.GetValue());
 			}   
-			else if (bSignature) vmlPrst = SimpleTypes::Vml::sptPictureFrame;
 			
 			if (spPr.xfrm.is_init())
 			{
@@ -632,8 +635,8 @@ namespace PPTX
             std::wstring strFillNode;
             std::wstring strStrokeNode;;
 
-			CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, false, bSignature);
-			CalculateLine(spPr, style, oTheme, oClrMap, strStrokeAttr, strStrokeNode, false);
+			CalculateFill(pWriter->m_lDocType, spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, false, bSignature);
+			CalculateLine(pWriter->m_lDocType, spPr, style, oTheme, oClrMap, strStrokeAttr, strStrokeNode, false);
 
 			pWriter->StartNode(L"v:shape");
 
@@ -797,7 +800,7 @@ namespace PPTX
 		void Shape::toXmlWriterVMLBackground(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap)
 		{
 			std::wstring strFillAttr, strFillNode;
-			CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, false);
+			CalculateFill(pWriter->m_lDocType, spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, false);
 
 			pWriter->StartNode(L"v:background");
 

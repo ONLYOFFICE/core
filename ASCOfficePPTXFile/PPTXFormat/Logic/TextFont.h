@@ -232,7 +232,7 @@ namespace PPTX
 				pWriter->StartNode(m_name);				
 				
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("typeface"), typeface);
+				pWriter->WriteAttribute(_T("typeface"), XmlUtils::EncodeXmlString(typeface));
 				pWriter->WriteAttribute(_T("pitchFamily"), pitchFamily);
 				pWriter->WriteAttribute(_T("charset"), charset);
 				pWriter->WriteAttribute(_T("panose"), panose);

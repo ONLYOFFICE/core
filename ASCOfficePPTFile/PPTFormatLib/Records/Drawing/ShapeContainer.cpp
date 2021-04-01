@@ -115,7 +115,8 @@ CColor CPPTElement::CorrectSysColor(int nColorCode, CElementPtr pElement, CTheme
 		break;
 	}
 
-	if (color.m_lSchemeIndex != -1)
+    if (color.m_lSchemeIndex != -1 &&
+            (int)pTheme->m_arColorScheme.size() > color.m_lSchemeIndex)
 	{
 		//вытащить цвет (
 

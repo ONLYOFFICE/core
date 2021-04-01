@@ -142,10 +142,10 @@ public:
 		if ( stream != NULL  && rdBytes != NULL )
 		{
 			stream->seek( position );
-			stream->read( rdBytes, sizeof( unsigned char )*count );
+			count = (unsigned int)stream->read( rdBytes, count );
 		}
 		
-		position += sizeof( unsigned char )*count;
+		position += count;
 
 		return rdBytes;
 	}

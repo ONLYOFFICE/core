@@ -145,7 +145,8 @@ extern int g_nCurFormatVersion;
 		Core		= 16,
 		DocumentComments = 17,
 		CustomProperties = 18,
-		Glossary	= 19
+		Glossary	= 19,
+		Customs		= 20
 	};}
 	namespace c_oSerSigTypes{enum c_oSerSigTypes
 	{
@@ -205,8 +206,8 @@ extern int g_nCurFormatVersion;
 	};}
 	namespace c_oSerOtherTableTypes{enum c_oSerOtherTableTypes
 	{
-		ImageMap		= 0,
-		ImageMap_Src	= 1,
+		ImageMap		= 0, //not using now
+		ImageMap_Src	= 1, //not using now
 		EmbeddedFonts	= 2,
 		DocxTheme		= 3
 	};}
@@ -1145,6 +1146,13 @@ extern int g_nCurFormatVersion;
 		PrFntPos = 9,
 		PrEndPos = 10,
 		PrRef = 11
+	};}
+	namespace c_oSerCustoms {enum c_oSerCustoms
+	{
+		Custom = 0,
+		ItemId = 1,
+		Uri = 2,
+		Content = 3
 	};}
 	namespace c_oSerApp{enum c_oSerApp
 	{

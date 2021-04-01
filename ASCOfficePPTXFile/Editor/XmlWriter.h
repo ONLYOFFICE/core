@@ -117,11 +117,14 @@ namespace NSBinPptxRW
 #endif
                 {
                     wchar_t* pMalloc = (wchar_t*)malloc(size_alloc );
-                    memcpy(pMalloc, m_pData, m_lSizeCur * sizeof(wchar_t));
+					if (pMalloc)
+					{
+						memcpy(pMalloc, m_pData, m_lSizeCur * sizeof(wchar_t));
 
-                    free(m_pData);
-                    m_pData		= pMalloc;
-                    m_pDataCur	= m_pData + m_lSizeCur;
+						free(m_pData);
+						m_pData = pMalloc;
+						m_pDataCur = m_pData + m_lSizeCur;
+					}
                 }
             }
         }

@@ -33,7 +33,7 @@
 #include "Writer/OOXWriter.h"
 #include "Writer/OOXRelsWriter.h"
 #include "RtfDocument.h"
-
+#include "../../../Common/OfficeFileFormatChecker.h"
 
 std::wstring RtfOle::RenderToOOX(RenderParameter oRenderParameter)
 {
@@ -133,7 +133,40 @@ std::wstring RtfOle::RenderToOOXOnlyOle(RenderParameter oRenderParameter)
 
     std::wstring sExtension	= L"bin";
     std::wstring sMime		= L"application/vnd.openxmlformats-officedocument.oleObject";
-	
+	std::wstring sRelsType	= L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject";
+
+	COfficeFileFormatChecker checker;
+
+	if (checker.isOfficeFile(m_sOleFilename))
+	{
+		switch (checker.nFileType)
+		{
+			case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS:
+			{
+				sExtension = L"xls";
+				sMime = L"application/vnd.ms-excel";
+			}break;
+			case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX:
+			{
+				sExtension = L"xlsx";
+				sMime = L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+				sRelsType = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package";
+			}break;
+			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:
+			{
+				sExtension = L"doc";
+				sMime = L"application/msword";
+			}break;
+			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
+			{
+				sExtension = L"docx";
+				sMime = L"application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+				sRelsType = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package";
+
+			}break;
+		}
+	}
+
     std::wstring sFilenameRels;
     sFilenameRels += L"oleObject" + std::to_wstring(poDocument->m_oIdGenerator.Generate_OleIndex()) + L".";
 	sFilenameRels += sExtension;
@@ -148,7 +181,7 @@ std::wstring RtfOle::RenderToOOXOnlyOle(RenderParameter oRenderParameter)
 	Utils::CopyDirOrFile( m_sOleFilename, sFilenameFull );
 
 	poOOXWriter->m_oContentTypes.AddExtension( sMime, sExtension);
-    std::wstring srId = poRelsWriter->AddRelationship( L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject", sFilenameRels);
+    std::wstring srId = poRelsWriter->AddRelationship( sRelsType, sFilenameRels);
     
 	sResult += L" r:id=\"" + srId + L"\"";
 	sResult += L"/>";

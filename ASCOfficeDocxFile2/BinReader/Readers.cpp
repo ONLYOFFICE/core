@@ -51,6 +51,7 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Settings/Settings.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/App.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Core.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/CustomXml.h"
 
 #include "../DocWrapper/XlsxSerializer.h"
 
@@ -58,6 +59,7 @@
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
 #include "../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 #define UINT_TO_COMPLEX_BOOL(offset, val) \
 	if (0 != ((nFlags >> offset) & 1)) { \
@@ -1761,7 +1763,7 @@ int Binary_pPrReader::Read_pgHeader(BYTE type, long length, void* poResult)
 		if(nHdrFtrIndex >= 0 && nHdrFtrIndex < (int)m_oFileWriter.get_headers_footers_writer().m_aHeaders.size())
 		{
 			Writers::HdrFtrItem* pHdrFtrItem = m_oFileWriter.get_headers_footers_writer().m_aHeaders[nHdrFtrIndex];
-			pHdrFtrItem->m_sFilename;
+
             std::wstring sType;
 			if(SimpleTypes::hdrftrFirst == pHdrFtrItem->eType)
 				sType = _T("first");
@@ -1786,7 +1788,7 @@ int Binary_pPrReader::Read_pgFooter(BYTE type, long length, void* poResult)
 		if(nHdrFtrIndex >= 0 && nHdrFtrIndex <= (int)oBinary_HdrFtrTableReader.m_oHeaderFooterWriter.m_aFooters.size())
 		{
 			Writers::HdrFtrItem* pHdrFtrItem = oBinary_HdrFtrTableReader.m_oHeaderFooterWriter.m_aFooters[nHdrFtrIndex];
-			pHdrFtrItem->m_sFilename;
+
             std::wstring sType;
 			if(SimpleTypes::hdrftrFirst == pHdrFtrItem->eType)
 				sType = _T("first");
@@ -3443,11 +3445,13 @@ int Binary_OtherTableReader::Read()
 int Binary_OtherTableReader::ReadOtherContent(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if ( c_oSerOtherTableTypes::ImageMap == type )
-	{
-		READ1_DEF(length, res, this->ReadImageMapContent, NULL);
-	}
-	else if(c_oSerOtherTableTypes::DocxTheme == type)
+	// not using now
+	//if ( c_oSerOtherTableTypes::ImageMap == type )
+	//{
+	//	READ1_DEF(length, res, this->ReadImageMapContent, NULL);
+	//}
+	//else 
+	if(c_oSerOtherTableTypes::DocxTheme == type)
 	{
 		smart_ptr<PPTX::Theme> pTheme = new PPTX::Theme(NULL);
 		try
@@ -3471,51 +3475,121 @@ int Binary_OtherTableReader::ReadOtherContent(BYTE type, long length, void* poRe
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
-int Binary_OtherTableReader::ReadImageMapContent(BYTE type, long length, void* poResult)
+// not using now
+//int Binary_OtherTableReader::ReadImageMapContent(BYTE type, long length, void* poResult)
+//{
+//	int res = c_oSerConstants::ReadOk;
+//	if ( c_oSerOtherTableTypes::ImageMap_Src == type )
+//	{
+//        std::wstring sImage(m_oBufferedStream.GetString3(length));
+//        std::wstring sFilePath;
+//		bool bDeleteFile = false;
+//		NSFile::CFileBinary oFile;
+//        if(0 == sImage.find(_T("data:")))
+//		{
+//			if(oFile.CreateTempFile())
+//				SerializeCommon::convertBase64ToImage(oFile, sImage);
+//		}
+//        else if(0 == sImage.find(_T("http:")) || 0 == sImage.find(_T("https:")) || 0 == sImage.find(_T("ftp:")) || 0 == sImage.find(_T("www")))
+//		{
+//			//url
+//			sFilePath = SerializeCommon::DownloadImage(sImage);
+//			bDeleteFile = true;
+//		}
+//		else
+//		{
+//			OOX::CPath pathNormalizer = m_sFileInDir + L"media";
+//			std::wstring sPath = pathNormalizer.GetPath();
+//	//local
+//            sFilePath = sPath + FILE_SEPARATOR_STR + sImage;			
+//
+//			pathNormalizer = sFilePath;
+//			sFilePath = pathNormalizer.GetPath();
+//
+//			if (std::wstring::npos == sFilePath.find(sPath))
+//			{
+//				sFilePath.clear();
+//			}
+//		}
+//
+//	//Проверяем что файл существует
+//		FILE* pFileNative = oFile.GetFileNative();
+//		if(NULL != pFileNative)
+//		{
+//			m_oFileWriter.m_oMediaWriter.AddImage2(pFileNative);
+//		}
+//		else if (NSFile::CFileBinary::Exists(sFilePath)) //todooo IsFileExistInDirectory
+//		{
+//			CImageFileFormatChecker checker;
+//			if (true == checker.isImageFile(sFilePath))
+//			{
+//				m_oFileWriter.m_oMediaWriter.AddImage(sFilePath);
+//			}
+//			if(bDeleteFile)
+//				NSFile::CFileBinary::Remove(sFilePath);
+//		}
+//	}
+//	else
+//		res = c_oSerConstants::ReadUnknown;
+//	return res;
+//}
+//-----------------------------------------------------------------------------------------------------------------------------------------
+Binary_CustomsTableReader::Binary_CustomsTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter)
+	: Binary_CommonReader(poBufferedStream), m_oFileWriter(oFileWriter)
+{
+}
+int Binary_CustomsTableReader::Read()
+{
+	OOX::CCustomXMLProps oCustomXmlProps(NULL);
+
+	int res = c_oSerConstants::ReadOk;
+	READ_TABLE_DEF(res, this->ReadCustom, NULL);
+
+	return res;
+}
+int Binary_CustomsTableReader::ReadCustom(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if ( c_oSerOtherTableTypes::ImageMap_Src == type )
-	{
-        std::wstring sImage(m_oBufferedStream.GetString3(length));
-        std::wstring sFilePath;
-		bool bDeleteFile = false;
-		NSFile::CFileBinary oFile;
-        if(0 == sImage.find(_T("data:")))
-		{
-			if(oFile.CreateTempFile())
-				SerializeCommon::convertBase64ToImage(oFile, sImage);
-		}
-        else if(0 == sImage.find(_T("http:")) || 0 == sImage.find(_T("https:")) || 0 == sImage.find(_T("ftp:")) || 0 == sImage.find(_T("www")))
-		{
-			//url
-			sFilePath = SerializeCommon::DownloadImage(sImage);
-			bDeleteFile = true;
-		}
-		else
-		{
-			//local
-            sFilePath = m_sFileInDir + _T("media") + FILE_SEPARATOR_STR + sImage;
-		}
 
-		//Проверяем что файл существует
-		FILE* pFileNative = oFile.GetFileNative();
-		if(NULL != pFileNative)
-		{
-			m_oFileWriter.m_oMediaWriter.AddImage2(pFileNative);
-		}
-		else if(NSFile::CFileBinary::Exists(sFilePath))
-		{
-			m_oFileWriter.m_oMediaWriter.AddImage(sFilePath);
-			if(bDeleteFile)
-				NSFile::CFileBinary::Remove(sFilePath);
-		}
+	if (c_oSerCustoms::Custom == type)
+	{
+		OOX::CCustomXMLProps oCustomXmlProps(NULL);
+
+		int res = c_oSerConstants::ReadOk;
+		READ1_DEF(length, res, this->ReadCustomContent, &oCustomXmlProps);
+
+		m_oFileWriter.m_oCustomXmlWriter.WriteCustom(oCustomXmlProps.toXML(), oCustomXmlProps.m_oCustomXmlContent);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
+int Binary_CustomsTableReader::ReadCustomContent(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::CCustomXMLProps* pCustomXMLProps = static_cast<OOX::CCustomXMLProps*>(poResult);
 
+	if (c_oSerCustoms::Uri == type)
+	{
+		if (false == pCustomXMLProps->m_oShemaRefs.IsInit())
+			pCustomXMLProps->m_oShemaRefs.Init();
 
+		pCustomXMLProps->m_oShemaRefs->m_arrItems.push_back(new OOX::CCustomXMLProps::CShemaRef());
+		pCustomXMLProps->m_oShemaRefs->m_arrItems.back()->m_sUri = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSerCustoms::ItemId == type)
+	{
+		pCustomXMLProps->m_oItemID.FromString(m_oBufferedStream.GetString3(length));
+	}
+	else if (c_oSerCustoms::Content == type)
+	{
+		pCustomXMLProps->m_oCustomXmlContent = m_oBufferedStream.GetString3(length);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+//-----------------------------------------------------------------------------------------------------------------------------------------
 Binary_CommentsTableReader::Binary_CommentsTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter) 
 	: Binary_CommonReader(poBufferedStream), m_oFileWriter(oFileWriter)
 {
@@ -5015,6 +5089,11 @@ int Binary_DocumentTableReader::ReadFldChar(BYTE type, long length, void* poResu
 	{
 		pFldChar->m_oFldCharType.Init();
 		pFldChar->m_oFldCharType->SetValue((SimpleTypes::EFldCharType)m_oBufferedStream.GetUChar());
+	}
+	else if (c_oSer_FldSimpleType::FFData == type)
+	{
+		pFldChar->m_oFFData.Init();
+		READ1_DEF(length, res, this->ReadFFData, pFldChar->m_oFFData.GetPointer());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -9514,14 +9593,20 @@ int BinaryFileReader::ReadMainTable()
 		if(c_oSerConstants::ReadOk != res)
 			return res;
 	}
-	OOX::CSettingsCustom oSettingsCustom;
 	if(-1 != nSettingsOffset)
 	{
+		OOX::CSettingsCustom oSettingsCustom;
+
 		int nOldPos = m_oBufferedStream.GetPos();
 		m_oBufferedStream.Seek(nSettingsOffset);
 		res = Binary_SettingsTableReader(m_oBufferedStream, m_oFileWriter, oSettingsCustom).Read();
 		if(c_oSerConstants::ReadOk != res)
 			return res;
+		
+		if (!oSettingsCustom.IsEmpty())
+		{
+			m_oFileWriter.m_oCustomXmlWriter.WriteCustomSettings(oSettingsCustom.GetSchemaUrl(), oSettingsCustom.ToXml());
+		}
 	}
 	else
 	{
@@ -9531,7 +9616,7 @@ int BinaryFileReader::ReadMainTable()
 		m_oFileWriter.m_pDrawingConverter->LoadClrMap(sClrMap);
 	}
 	BinaryStyleTableReader oBinaryStyleTableReader(m_oBufferedStream, m_oFileWriter);
-	if(-1 != nStyleOffset)
+	if (-1 != nStyleOffset)
 	{
 		int nOldPos = m_oBufferedStream.GetPos();
 		m_oBufferedStream.Seek(nStyleOffset);
@@ -9540,7 +9625,7 @@ int BinaryFileReader::ReadMainTable()
 			return res;
 	}
 	Binary_CommentsTableReader oBinary_CommentsTableReader(m_oBufferedStream, m_oFileWriter);
-	if(-1 != nCommentsOffset)
+	if (-1 != nCommentsOffset)
 	{
 		int nOldPos = m_oBufferedStream.GetPos();
 		m_oBufferedStream.Seek(nCommentsOffset);
@@ -9550,7 +9635,7 @@ int BinaryFileReader::ReadMainTable()
 			return res;
 	}
 	Binary_CommentsTableReader oBinary_DocumentCommentsTableReader(m_oBufferedStream, m_oFileWriter);
-	if(-1 != nDocumentCommentsOffset)
+	if (-1 != nDocumentCommentsOffset)
 	{
 		int nOldPos = m_oBufferedStream.GetPos();
 		m_oBufferedStream.Seek(nDocumentCommentsOffset);
@@ -9600,23 +9685,28 @@ int BinaryFileReader::ReadMainTable()
 			PPTX::CustomProperties* pCustomProperties = new PPTX::CustomProperties(NULL);
 			pCustomProperties->fromPPTY(&m_oBufferedStream);
 			m_oFileWriter.m_pCustomProperties = pCustomProperties;
-			m_oFileWriter.m_oDocumentRelsWriter.m_bHasCustom = true;
-		}break;			
+			m_oFileWriter.m_oDocumentRelsWriter.m_bHasCustomProperties = true;
+		}break;
 		case c_oSerTableTypes::HdrFtr:
+		{
 			res = Binary_HdrFtrTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_pComments).Read();
-			break;
+		}break;
 		case c_oSerTableTypes::Numbering:
+		{
 			res = Binary_NumberingTableReader(m_oBufferedStream, m_oFileWriter).Read();
-			break;
+		}break;
 		case c_oSerTableTypes::Footnotes:
+		{
 			res = Binary_NotesTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_pComments, true).Read();
-			break;
+		}break;
 		case c_oSerTableTypes::Endnotes:
+		{
 			res = Binary_NotesTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_pComments, false).Read();
-			break;
+		}break;
 		case c_oSerTableTypes::VbaProject:
+		{
 			res = Binary_VbaProjectTableReader(m_oBufferedStream, m_oFileWriter).Read();
-			break;
+		}break;
 		case c_oSerTableTypes::Glossary:
 		{
 			OOX::CPath pathGlossary = m_oFileWriter.get_document_writer().m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"glossary";
@@ -9631,11 +9721,21 @@ int BinaryFileReader::ReadMainTable()
 			}
 			else res = c_oSerConstants::ReadUnknown;
 		}break;
+		case c_oSerTableTypes::Customs:
+		{
+			OOX::CPath pathCustomXml = m_oFileWriter.get_document_writer().m_sDir + FILE_SEPARATOR_STR + L"customXml";
+			OOX::CPath pathCustomXmlRels = pathCustomXml + FILE_SEPARATOR_STR + L"_rels";
+			if (NSDirectory::CreateDirectory(pathCustomXml.GetPath()) && NSDirectory::CreateDirectory(pathCustomXmlRels.GetPath()))
+			{
+				Binary_CustomsTableReader oBinary_CustomsTableReader(m_oBufferedStream, m_oFileWriter);
+				res = oBinary_CustomsTableReader.Read();
+			}
+		}break;
 		}
-		if(c_oSerConstants::ReadOk != res)
+		if (c_oSerConstants::ReadOk != res)
 			return res;
 	}
-	if(-1 != nDocumentOffset)
+	if (-1 != nDocumentOffset)
 	{
 		m_oBufferedStream.Seek(nDocumentOffset);
 
@@ -9667,13 +9767,13 @@ int BinaryFileReader::ReadMainTable()
 			}
 		}
 		m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml",
-			L"/word" + (m_oFileWriter.m_bGlossaryMode ? std::wstring(std::wstring(L"/glossary")) : L""), L"styles.xml");
+			L"/word" + std::wstring(m_oFileWriter.m_bGlossaryMode ? L"/glossary" : L""), L"styles.xml");
 		m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml",
-			L"/word" + (m_oFileWriter.m_bGlossaryMode ? std::wstring(std::wstring(L"/glossary")) : L""), L"settings.xml");
+			L"/word" + std::wstring(m_oFileWriter.m_bGlossaryMode ? L"/glossary" : L""), L"settings.xml");
 		m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml",
-			L"/word" + (m_oFileWriter.m_bGlossaryMode ? std::wstring(std::wstring(L"/glossary")) : L""), L"webSettings.xml");
+			L"/word" + std::wstring(m_oFileWriter.m_bGlossaryMode ? L"/glossary" : L""), L"webSettings.xml");
 		m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml",
-			L"/word" + (m_oFileWriter.m_bGlossaryMode ? std::wstring(std::wstring(L"/glossary")) : L""), L"fontTable.xml");
+			L"/word" + std::wstring(m_oFileWriter.m_bGlossaryMode ? L"/glossary" : L""), L"fontTable.xml");
 		m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.theme+xml",	L"/word/theme", L"theme1.xml");
 
 		if (false == m_oFileWriter.m_bGlossaryMode && false == m_oFileWriter.IsEmptyGlossary())
@@ -9687,7 +9787,7 @@ int BinaryFileReader::ReadMainTable()
             m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering", L"numbering.xml", std::wstring(), &rId);
 			m_oFileWriter.m_pDrawingConverter->Registration(
 				L"application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml", 
-				L"/word" + (m_oFileWriter.m_bGlossaryMode ? std::wstring(std::wstring(L"/glossary")) : L""), L"numbering.xml");
+				L"/word" + std::wstring(m_oFileWriter.m_bGlossaryMode ? L"/glossary" : L""), L"numbering.xml");
 		}
         if (false == m_oFileWriter.get_footnotes_writer().IsEmpty())
 		{
@@ -9695,7 +9795,7 @@ int BinaryFileReader::ReadMainTable()
             m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes", L"footnotes.xml", std::wstring(), &rId);
 			m_oFileWriter.m_pDrawingConverter->Registration(
 				L"application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml", 
-				L"/word" + (m_oFileWriter.m_bGlossaryMode ? std::wstring(std::wstring(L"/glossary")) : L""), L"footnotes.xml");
+				L"/word" + std::wstring(m_oFileWriter.m_bGlossaryMode ? L"/glossary" : L""), L"footnotes.xml");
 		}
         if (false == m_oFileWriter.get_endnotes_writer().IsEmpty())
 		{
@@ -9703,7 +9803,7 @@ int BinaryFileReader::ReadMainTable()
             m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes", L"endnotes.xml", std::wstring(), &rId);
 			m_oFileWriter.m_pDrawingConverter->Registration(
 				L"application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml",
-				L"/word" + (m_oFileWriter.m_bGlossaryMode ? std::wstring(std::wstring(L"/glossary")) : L""), L"endnotes.xml");
+				L"/word" + std::wstring(m_oFileWriter.m_bGlossaryMode ? L"/glossary" : L""), L"endnotes.xml");
 		}
 		for (size_t i = 0; i < m_oFileWriter.get_headers_footers_writer().m_aHeaders.size(); ++i)
 		{
@@ -9716,13 +9816,13 @@ int BinaryFileReader::ReadMainTable()
 				
 				m_oFileWriter.m_pDrawingConverter->Registration(
 					L"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml", 
-					L"/word" + (m_oFileWriter.m_bGlossaryMode ? std::wstring(L"/glossary") : L""), pHeader->m_sFilename);
+					L"/word" + std::wstring(m_oFileWriter.m_bGlossaryMode ? L"/glossary" : L""), pHeader->m_sFilename);
 			}
 		}
 		for (size_t i = 0; i < m_oFileWriter.get_headers_footers_writer().m_aFooters.size(); ++i)
 		{
 			Writers::HdrFtrItem* pFooter = m_oFileWriter.get_headers_footers_writer().m_aFooters[i];
-			if(false == pFooter->IsEmpty())
+			if (false == pFooter->IsEmpty())
 			{
 				unsigned int rId;
                 m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer", pFooter->m_sFilename, std::wstring(), &rId);
@@ -9733,9 +9833,9 @@ int BinaryFileReader::ReadMainTable()
 					L"/word" + (m_oFileWriter.m_bGlossaryMode ? std::wstring(L"/glossary") : L""), pFooter->m_sFilename);
 			}
 		}
-		if (!oSettingsCustom.IsEmpty()){
-			std::wstring sFilename = m_oFileWriter.m_oCustomXmlWriter.WriteCustomXml(oSettingsCustom.GetSchemaUrl(), oSettingsCustom.ToXml());
-			std::wstring sRelsPath = L"../" + OOX::FileTypes::CustomXml.DefaultDirectory().GetPath() + L"/" + sFilename;
+		for (size_t i = 0; (false == m_oFileWriter.m_bGlossaryMode) && (i < m_oFileWriter.m_oCustomXmlWriter.arItems.size()); ++i)
+		{
+			std::wstring sRelsPath = L"../" + OOX::FileTypes::CustomXml.DefaultDirectory().GetPath() + L"/" + m_oFileWriter.m_oCustomXmlWriter.arItems[i];
 			unsigned int rId;
 			m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::CustomXml.RelationType(), sRelsPath, L"", &rId);
 		}

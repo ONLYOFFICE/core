@@ -42,7 +42,7 @@
 
 namespace ASC
 {
-    class KERNEL_DECL CFontsAssistant
+    class GRAPHICS_DECL CFontsAssistant
     {
     public:
         CFontsAssistant(const std::vector<std::wstring>& arFontsPaths, const std::wstring& sDataFontsPath);

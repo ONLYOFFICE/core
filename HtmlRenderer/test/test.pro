@@ -54,7 +54,6 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
 SOURCES += main.cpp
 
 SOURCES += \
-    ../src/ASCSVGWriter.cpp \
-    ../../DesktopEditor/fontengine/ApplicationFontsWorker.cpp
+    ../src/ASCSVGWriter.cpp
 
 HEADERS += ../include/ASCSVGWriter.h

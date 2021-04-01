@@ -88,7 +88,11 @@ void FormFieldData::_FFData::read(VirtualStreamReader *reader)
 	hps			= reader->ReadUInt16();
 
 	xstzName	= readXstz(reader);
-	xstzTextDef	= readXstz(reader);
+	
+	if (iType == 0)
+	{
+		xstzTextDef = readXstz(reader);
+	}
 	
 	wDef = reader->ReadUInt16();
 	
@@ -97,6 +101,11 @@ void FormFieldData::_FFData::read(VirtualStreamReader *reader)
 	xstzStatText	= readXstz(reader);
 	xstzEntryMcr	= readXstz(reader);
 	xstzExitMcr		= readXstz(reader);
+
+	if (iType == 2) 
+	{
+		//hsttbDropList
+	}
 }
 FormFieldData::FormFieldData( int type, const CharacterPropertyExceptions* chpx, POLE::Stream* stream, int nWordVersion )
 {
@@ -115,6 +124,18 @@ FormFieldData::FormFieldData( int type, const CharacterPropertyExceptions* chpx,
 			{
 			}
 			break;
+			case sprmCHps:
+			{
+			}
+			break;
+			case sprmCHpsBi:
+			{
+			}
+			break;
+			case sprmCCv:
+			{
+			}
+			break;
 			case sprmCFFldVanish:
 			{
 			}
@@ -124,6 +145,15 @@ FormFieldData::FormFieldData( int type, const CharacterPropertyExceptions* chpx,
 				fc = FormatUtils::BytesToInt32( iter->Arguments, 0, iter->argumentsSize );
 			}
 			break;
+			case sprmCRsidProp:
+			{
+			}break;
+			case sprmCFBold:
+			{
+			}break;
+			case sprmCIco:
+			{
+			}break;
 			case sprmCRsidText:
 			{
 				rsid = FormatUtils::IntToFormattedWideString(FormatUtils::BytesToInt32(iter->Arguments, 0, iter->argumentsSize), L"%08X");
@@ -148,7 +178,7 @@ FormFieldData::FormFieldData( int type, const CharacterPropertyExceptions* chpx,
 		int lcb = reader.ReadUInt32();
 		int cbHeader = reader.ReadUInt16();
 
-		if (cbHeader != 0x44) return;
+		if (cbHeader != 0x44) return; 
 
 		//ignored
 		reader.ReadBytes(62, false);

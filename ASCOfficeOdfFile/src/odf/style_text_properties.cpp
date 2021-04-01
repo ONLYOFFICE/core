@@ -188,7 +188,7 @@ double text_format_properties_content::process_font_size_impl(const _CP_OPT(font
             {
                 if (const style_text_properties * textProp = parentStyle->content()->get_style_text_properties())
                 {
-                    return process_font_size_impl(textProp->content().fo_font_size_, parentStyle, Complex, Mul * usedFontSize.get_percent().get_value() / 100.0);
+                    return process_font_size_impl(textProp->content_.fo_font_size_, parentStyle, Complex, Mul * usedFontSize.get_percent().get_value() / 100.0);
                 }
             }
         }

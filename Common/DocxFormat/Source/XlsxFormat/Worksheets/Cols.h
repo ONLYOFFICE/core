@@ -113,7 +113,7 @@ namespace OOX
 				if (ptWidth.IsInit())
 				{
 					m_oWidth.Init();
-					const double pixDpi = *ptWidth / 72.0 * 96.;
+					double pixDpi = *ptWidth / 72.0 * 96.; if (pixDpi < 5) pixDpi = 7; // ~
 					double maxDigitSize = 4.25;
 					m_oWidth->SetValue((int(( pixDpi /*/ 0.75*/ - 5)/ maxDigitSize * 100. + 0.5)) /100. * 0.9);
 					

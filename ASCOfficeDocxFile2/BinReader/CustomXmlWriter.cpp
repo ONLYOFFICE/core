@@ -30,23 +30,50 @@
  *
  */
 
-#include "CustormXmlWriter.h"
+#include "CustomXmlWriter.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/CustomXml.h"
 #include "../../ASCOfficePPTXFile/ASCOfficeDrawingConverter.h"
 
 namespace Writers
 {
-	CustomXmlWriter::CustomXmlWriter(std::wstring sDir, NSBinPptxRW::CDrawingConverter* pDrawingConverter):m_sDir(sDir),m_pDrawingConverter(pDrawingConverter)
+	CustomXmlWriter::CustomXmlWriter(std::wstring sDir, NSBinPptxRW::CDrawingConverter* pDrawingConverter) : m_sDir(sDir), m_pDrawingConverter(pDrawingConverter)
 	{
 		m_nCount = 0;
 	}
-	std::wstring CustomXmlWriter::WriteCustomXml(const std::wstring& sUrl, const std::wstring& sXml)
+	void CustomXmlWriter::WriteCustom(const std::wstring& sCustomXmlPropertiesContent, const std::wstring& sCustomXmlContent)
+	{
+		m_nCount++;
+
+		std::wstring sCustomXmlDir = m_sDir + FILE_SEPARATOR_STR;
+		sCustomXmlDir += OOX::FileTypes::CustomXmlProps.DefaultDirectory().GetPath();
+		
+		std::wstring sCustomXmlRelsDir = sCustomXmlDir + FILE_SEPARATOR_STR + L"_rels";
+		
+		std::wstring  sCustomXMLPropsFilename = OOX::FileTypes::CustomXmlProps.DefaultFileName().GetBasename();
+		sCustomXMLPropsFilename += std::to_wstring(m_nCount) + OOX::FileTypes::CustomXmlProps.DefaultFileName().GetExtention();
+
+		NSFile::CFileBinary::SaveToFile(sCustomXmlDir + FILE_SEPARATOR_STR + sCustomXMLPropsFilename, sCustomXmlPropertiesContent);
+
+		std::wstring sCustomXmlFilename;
+		sCustomXmlFilename = OOX::FileTypes::CustomXml.DefaultFileName().GetBasename() + std::to_wstring(m_nCount);
+		sCustomXmlFilename += OOX::FileTypes::CustomXml.DefaultFileName().GetExtention();
+
+		NSFile::CFileBinary::SaveToFile(sCustomXmlDir + FILE_SEPARATOR_STR + sCustomXmlFilename, sCustomXmlContent);
+		
+		m_pDrawingConverter->SetDstContentRels();
+		unsigned int lId;
+		m_pDrawingConverter->WriteRels(OOX::FileTypes::CustomXmlProps.RelationType(), sCustomXMLPropsFilename, L"", &lId);
+		m_pDrawingConverter->SaveDstContentRels(sCustomXmlRelsDir + FILE_SEPARATOR_STR + sCustomXmlFilename + L".rels");
+
+		arItems.push_back(sCustomXmlFilename);
+	}
+	void CustomXmlWriter::WriteCustomSettings(const std::wstring& sUrl, const std::wstring& sXml)
 	{
 		m_nCount++;
 		OOX::CCustomXMLProps oCustomXMLProps(NULL);
 		OOX::CCustomXMLProps::CShemaRef* pShemaRef = new OOX::CCustomXMLProps::CShemaRef();
 		pShemaRef->m_sUri = sUrl;
-		//todo guid
+	//todo guid
 		oCustomXMLProps.m_oItemID.FromString(L"{5D0AEA6B-E499-4EEF-98A3-AFBB261C493E}");
 		oCustomXMLProps.m_oShemaRefs.Init();
 		oCustomXMLProps.m_oShemaRefs->m_arrItems.push_back(pShemaRef);
@@ -71,6 +98,7 @@ namespace Writers
 		m_pDrawingConverter->SaveDstContentRels(sCustomXmlRelsDir + FILE_SEPARATOR_STR + sCustomXmlFilename + L".rels");
 
 		NSFile::CFileBinary::SaveToFile(sCustomXmlDir + FILE_SEPARATOR_STR + sCustomXmlFilename, sXml);
-		return sCustomXmlFilename;
+		
+		arItems.push_back(sCustomXmlFilename);
 	}
 }

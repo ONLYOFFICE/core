@@ -89,10 +89,13 @@ namespace PPTX
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
+				if (!pWriter) return;
 				pWriter->WriteString(toXML());
 			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
+				if (!pWriter) return;
+
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 					pWriter->WriteString2(0, inkTgt);
 					

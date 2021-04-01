@@ -481,28 +481,18 @@ public:
 		file.CloseFile();
 
 	}
-    static std::wstring DecodeHex( std::wstring sText )
+    static void DecodeHexString( std::string sHexText, BYTE *&pData )
 	{
-        std::wstring sHexText;
-        for( size_t i = 0; i < sText.length(); i++ )
-		{
-            BYTE byteChar = (BYTE)sText[i];
-            sHexText += XmlUtils::IntToString(byteChar, L"%x");
-		}
-		return sHexText;
-	}
-    static std::wstring EncodeHex( std::wstring sHexText )
-	{
-        std::wstring sText;
-        for( size_t i = 0; i < sHexText.length() -1 ; i+=2 )
+		if (sHexText.empty()) return;
+		if (!pData) return;
+
+		for( size_t i = 0; i < sHexText.length() -1 ; i+=2 )
 		{
 			int byte1 = ToByte( sHexText[i] );
 			int byte2 = ToByte(sHexText[i + 1] );
 			int cChar = (byte1 << 4) + byte2;
-
-            sText += XmlUtils::IntToString(cChar, L"%c" );
+			pData[i/2] = (BYTE)cChar;
 		}
-		return sText;
 	}
     static BYTE ToByte( wchar_t cChar )
 	{

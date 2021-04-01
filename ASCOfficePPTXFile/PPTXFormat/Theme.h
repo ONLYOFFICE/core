@@ -57,7 +57,8 @@ namespace PPTX
 		Theme(OOX::Document *pMain) : WrapperFile(pMain), PPTX::FileContainer(pMain)
 		{
 			isThemeOverride = false;
-			
+			m_map = NULL;
+
 			OOX::CDocx* docx = dynamic_cast<OOX::CDocx*>(File::m_pMainDocument);
 			if (docx) docx->m_pTheme = this;
 		}

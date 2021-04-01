@@ -52,6 +52,7 @@ enum ElementType
     typeTextReferenceMarkStart,
     typeTextReferenceMarkEnd,
 	typeTextReferenceRef,
+	typeTextTabStop,
 
 	typeFieldFieldmarkStart,
 	typeFieldFieldmarkEnd,
@@ -259,6 +260,8 @@ enum ElementType
 	typeStyleHeaderLeft,
     typeStyleFooterLeft,
     typeStyleFootnoteSep,
+
+	typeStyleProperties,
 
 	typeLoextHeaderFirst,
 	typeLoextFooterFirst,

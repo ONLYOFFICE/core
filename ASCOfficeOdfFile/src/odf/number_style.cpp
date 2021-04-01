@@ -65,10 +65,10 @@ void number_style_base::oox_convert_impl(oox::num_format_context & Context)
     {
         if (style_text_properties * textProp = dynamic_cast<style_text_properties*>(style_text_properties_.get()))
         {
-            if (textProp->content().fo_color_)
+            if (textProp->content_.fo_color_)
             {
                 int r = 0, g = 0, b = 0;
-                if (HEXStringToRGB(textProp->content().fo_color_->get_hex_value(), r, g, b))
+                if (HEXStringToRGB(textProp->content_.fo_color_->get_hex_value(), r, g, b))
                 {
                     std::wostream & strm = Context.output();
                     strm << L"[" << RGBToString(r, g, b) << L"]";

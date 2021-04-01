@@ -615,7 +615,7 @@ void draw_a::pptx_convert(oox::pptx_conversion_context & Context)
 }
 void draw_a::docx_convert(oox::docx_conversion_context & Context) 
 {
-	std::wstring rId = Context.add_hyperlink(xlink_attlist_.href_.get_value_or(L""), true);//гиперлинк с объекта, а не с текста .. 
+	std::wstring rId = Context.add_hyperlink(xlink_attlist_.href_.get_value_or(L""), L"");//гиперлинк с объекта, а не с текста .. 
 	
 	for (size_t i = 0; i < content_.size(); i++)
 	{

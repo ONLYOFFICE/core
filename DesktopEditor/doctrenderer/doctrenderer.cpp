@@ -641,7 +641,7 @@ namespace NSDoctRenderer
             return bIsBreak;
         }
 
-        bool ExecuteScript(const std::string& strScript, const std::wstring& sCachePath, std::wstring& strError, std::wstring& strReturnParams, bool bNeedCore)
+        bool ExecuteScript(const std::string& strScript, const std::wstring& sCachePath, std::wstring& strError, std::wstring& strReturnParams)
         {
             LOGGER_SPEED_START
 
@@ -919,7 +919,7 @@ namespace NSDoctRenderer
                 }
 
                 // CORE PARAMS
-                if (!bIsBreak && m_oParams.m_eDstFormat == DoctRendererFormat::HTML && bNeedCore)
+                if (!bIsBreak && m_oParams.m_eDstFormat == DoctRendererFormat::HTML && !bIsMailMerge)
                 {
                     JSSmart<CJSObject> js_objectCore = js_objectApi->call_func("asc_getCoreProps", 1, args)->toObject();
                     if(try_catch->Check())
@@ -1102,7 +1102,7 @@ namespace NSDoctRenderer
         RELEASEOBJECT(m_pInternal);
     }    
 
-    bool CDoctrenderer::Execute(const std::wstring& strXml, std::wstring& strError, bool bNeedCore)
+    bool CDoctrenderer::Execute(const std::wstring& strXml, std::wstring& strError)
     {
         strError = L"";
         m_pInternal->m_oParams.FromXml(strXml);
@@ -1220,7 +1220,7 @@ namespace NSDoctRenderer
             strScript += "\n$.ready();";
 
         std::wstring sReturnParams = L"";
-        bool bResult = m_pInternal->ExecuteScript(strScript, sCachePath, strError, sReturnParams, bNeedCore);
+        bool bResult = m_pInternal->ExecuteScript(strScript, sCachePath, strError, sReturnParams);
 
         if (strError.length() != 0)
         {

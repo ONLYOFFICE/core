@@ -65,7 +65,7 @@ namespace NSDoctRenderer
         ~CDoctrenderer();
 
     public:
-        bool Execute(const std::wstring& strXml, std::wstring& strError, bool bNeedCore = false);
+        bool Execute(const std::wstring& strXml, std::wstring& strError);
         std::vector<std::wstring> GetImagesInChanges();
 
     private:

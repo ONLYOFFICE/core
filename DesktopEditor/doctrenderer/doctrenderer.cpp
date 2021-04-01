@@ -623,7 +623,7 @@ namespace NSDoctRenderer
             return bIsBreak;
         }
 
-        bool ExecuteScript(const std::string& strScript, const std::wstring& sCachePath, std::wstring& strError, std::wstring& strReturnParams)
+        bool ExecuteScript(const std::string& strScript, const std::wstring& sCachePath, std::wstring& strError, std::wstring& strReturnParams, bool bNeedCore)
         {
             LOGGER_SPEED_START
 
@@ -900,6 +900,143 @@ namespace NSDoctRenderer
                     bIsBreak = Doct_renderer_SaveFile(&m_oParams, pNative, context, args, strError, js_objectApi);
                 }
 
+                // CORE PARAMS
+                if (!bIsBreak && m_oParams.m_eDstFormat == DoctRendererFormat::HTML && bNeedCore)
+                {
+                    JSSmart<CJSObject> js_objectCore = js_objectApi->call_func("asc_getCoreProps", 1, args)->toObject();
+                    if(try_catch->Check())
+                    {
+                        strError = L"code=\"core_props\"";
+                        bIsBreak = true;
+                    }
+                    else
+                    {
+                        if (js_objectCore->isUndefined() || !js_objectCore->isObject())
+                        {
+                            strError = L"code=\"core_props\"";
+                            bIsBreak = true;
+                            return bIsBreak;
+                        }
+
+                        JSSmart<CJSValue> js_results = js_objectCore->call_func("asc_getTitle", 1, args);
+                        if(try_catch->Check())
+                        {
+                            strError = L"code=\"get_title\"";
+                            bIsBreak = true;
+                        }
+                        else if (!js_results->isNull())
+                        {
+                            strReturnParams += L"<dc:title>";
+                            strReturnParams += js_results->toStringW();
+                            strReturnParams += L"</dc:title>";
+                        }
+
+                        js_results = js_objectCore->call_func("asc_getCreator", 1, args);
+                        if(try_catch->Check())
+                        {
+                            strError = L"code=\"get_creator\"";
+                            bIsBreak = true;
+                        }
+                        else if (!js_results->isNull())
+                        {
+                            strReturnParams += L"<dc:creator>";
+                            strReturnParams += js_results->toStringW();
+                            strReturnParams += L"</dc:creator>";
+                        }
+
+                        js_results = js_objectCore->call_func("asc_getDescription", 1, args);
+                        if(try_catch->Check())
+                        {
+                            strError = L"code=\"get_description\"";
+                            bIsBreak = true;
+                        }
+                        else if (!js_results->isNull())
+                        {
+                            strReturnParams += L"<dc:description>";
+                            strReturnParams += js_results->toStringW();
+                            strReturnParams += L"</dc:description>";
+                        }
+
+                        js_results = js_objectCore->call_func("asc_getSubject", 1, args);
+                        if(try_catch->Check())
+                        {
+                            strError = L"code=\"get_subject\"";
+                            bIsBreak = true;
+                        }
+                        else if (!js_results->isNull())
+                        {
+                            strReturnParams += L"<dc:subject>";
+                            strReturnParams += js_results->toStringW();
+                            strReturnParams += L"</dc:subject>";
+                        }
+
+                        js_results = js_objectCore->call_func("asc_getIdentifier", 1, args);
+                        if(try_catch->Check())
+                        {
+                            strError = L"code=\"get_identifier\"";
+                            bIsBreak = true;
+                        }
+                        else if (!js_results->isNull())
+                        {
+                            strReturnParams += L"<dc:identifier>";
+                            strReturnParams += js_results->toStringW();
+                            strReturnParams += L"</dc:identifier>";
+                        }
+
+                        js_results = js_objectCore->call_func("asc_getLanguage", 1, args);
+                        if(try_catch->Check())
+                        {
+                            strError = L"code=\"get_language\"";
+                            bIsBreak = true;
+                        }
+                        else if (!js_results->isNull())
+                        {
+                            strReturnParams += L"<dc:language>";
+                            strReturnParams += js_results->toStringW();
+                            strReturnParams += L"</dc:language>";
+                        }
+
+                        js_results = js_objectCore->call_func("asc_getCreated", 1, args);
+                        if(try_catch->Check())
+                        {
+                            strError = L"code=\"get_created\"";
+                            bIsBreak = true;
+                        }
+                        else if (!js_results->isNull())
+                        {
+                            strReturnParams += L"<dcterms:created xsi:type=\"dcterms:W3CDTF\">";
+                            strReturnParams += js_results->toStringW();
+                            strReturnParams += L"</dcterms:created>";
+                        }
+
+                        js_results = js_objectCore->call_func("asc_getKeywords", 1, args);
+                        if(try_catch->Check())
+                        {
+                            strError = L"code=\"get_keywords\"";
+                            bIsBreak = true;
+                        }
+                        else if (!js_results->isNull())
+                        {
+                            strReturnParams += L"<cp:keywords>";
+                            strReturnParams += js_results->toStringW();
+                            strReturnParams += L"</cp:keywords>";
+                        }
+
+                        js_results = js_objectCore->call_func("asc_getVersion", 1, args);
+                        if(try_catch->Check())
+                        {
+                            strError = L"code=\"get_version\"";
+                            bIsBreak = true;
+                        }
+                        else if (!js_results->isNull())
+                        {
+                            strReturnParams += L"<cp:version>";
+                            strReturnParams += js_results->toStringW();
+                            strReturnParams += L"</cp:version>";
+                        }
+                    }
+                }
+
                 LOGGER_SPEED_LAP("save")
             }
 
@@ -951,7 +1088,7 @@ namespace NSDoctRenderer
         RELEASEOBJECT(m_pInternal);
     }    
 
-    bool CDoctrenderer::Execute(const std::wstring& strXml, std::wstring& strError)
+    bool CDoctrenderer::Execute(const std::wstring& strXml, std::wstring& strError, bool bNeedCore)
     {
         strError = L"";
         m_pInternal->m_oParams.FromXml(strXml);
@@ -1069,7 +1206,7 @@ namespace NSDoctRenderer
             strScript += "\n$.ready();";
 
         std::wstring sReturnParams = L"";
-        bool bResult = m_pInternal->ExecuteScript(strScript, sCachePath, strError, sReturnParams);
+        bool bResult = m_pInternal->ExecuteScript(strScript, sCachePath, strError, sReturnParams, bNeedCore);
 
         if (strError.length() != 0)
         {

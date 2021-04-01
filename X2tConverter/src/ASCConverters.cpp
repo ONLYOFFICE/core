@@ -1545,7 +1545,7 @@ namespace NExtractTools
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
 		std::wstring sXml = getDoctXml(eFromType, eToType, sFileFromDir, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
 		std::wstring sResult;
-		oDoctRenderer.Execute(sXml, sResult);
+		oDoctRenderer.Execute(sXml, sResult, true);
 		if (sResult.find(L"error") != std::wstring::npos)
 		{
 			std::wcerr << L"DoctRenderer:" << sResult << std::endl;
@@ -1553,16 +1553,10 @@ namespace NExtractTools
 		}
 		else
 		{
-			std::wstring sDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
-			NSDirectory::CreateDirectory(sDocxDir);
-			nRes = doct_bin2docx_dir(sFrom, sTo, sDocxDir, false, sThemeDir, params);
-			if (SUCCEEDED_X2T(nRes))
-			{
-				CFb2File fb2File;
-				fb2File.SetTmpDirectory(sTemp);
-				if (S_FALSE == fb2File.FromHtml(sHtmlFile, sDocxDir + FILE_SEPARATOR_STR + L"docProps" + FILE_SEPARATOR_STR + L"core.xml", sTo))
-					nRes = AVS_FILEUTILS_ERROR_CONVERT;
-			}
+			CFb2File fb2File;
+			fb2File.SetTmpDirectory(sTemp);
+			if (S_FALSE == fb2File.FromHtml(sHtmlFile, sResult, sTo))
+				nRes = AVS_FILEUTILS_ERROR_CONVERT;
 		}
 		return nRes;
 	}

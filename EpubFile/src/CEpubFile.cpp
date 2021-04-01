@@ -242,7 +242,7 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
     }
     // content.opf
     NSFile::CFileBinary oContentOpf;
-    bool bWasLanguage = false;
+    bool bWasLanguage = false, bWasTitle = false;
     std::wstring sTitle = NSFile::GetFileName(sDstFile);
     std::wstring sUUID = GenerateUUID();
     if (oContentOpf.CreateFileW(m_sTempDir + L"/OEBPS/content.opf"))
@@ -268,6 +268,7 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
                         bWasIdentifier = true;
                     else if (sName == L"dc:title")
                     {
+                        bWasTitle = true;
                         size_t nBegin = sOut.find(L'>');
                         if (nBegin == std::wstring::npos)
                             continue;
@@ -289,9 +290,12 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
             oContentOpf.WriteStringUTF8(sUUID);
             oContentOpf.WriteStringUTF8(L"</dc:identifier>");
         }
-        oContentOpf.WriteStringUTF8(L"<dc:title>");
-        oContentOpf.WriteStringUTF8(sTitle);
-        oContentOpf.WriteStringUTF8(L"</dc:title>");
+        if (!bWasTitle)
+        {
+            oContentOpf.WriteStringUTF8(L"<dc:title>");
+            oContentOpf.WriteStringUTF8(sTitle);
+            oContentOpf.WriteStringUTF8(L"</dc:title>");
+        }
         if (!bWasLanguage)
             oContentOpf.WriteStringUTF8(L"<dc:language>en-EN</dc:language>");
         // manifest

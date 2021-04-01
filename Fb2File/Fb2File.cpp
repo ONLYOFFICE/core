@@ -1706,52 +1706,59 @@ HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sC
     NSStringUtils::CStringBuilder oDocument;
     oDocument.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><FictionBook xmlns=\"http://www.gribuser.ru/xml/fictionbook/2.0\" xmlns:l=\"http://www.w3.org/1999/xlink\"><description>");
     // description
-    std::wstring sCoreXml;
-    if (NSFile::CFileBinary::ReadAllTextUtf8(sCoreFile, sCoreXml))
+    // title-info
+    oDocument.WriteString(L"<title-info>");
+    std::wstring sBookTitle = NSFile::GetFileName(sDst);
+    std::wstring sAuthor = sBookTitle;
+    std::wstring sAnnotation, sKeywords, sDate;
+    std::wstring sLanguage = L"en-EN", sVersion = L"1.0";
+    std::wstring sIdentifier = GenerateUUID();
+    XmlUtils::CXmlLiteReader oCoreReader;
+    oCoreReader.FromString(sCoreFile);
+    oCoreReader.ReadNextNode();
+    int nDeath = oCoreReader.GetDepth();
+    while (oCoreReader.ReadNextSiblingNode(nDeath))
     {
-        // title-info
-        oDocument.WriteString(L"<title-info>");
-        std::wstring sBookTitle = NSFile::GetFileName(sDst);
-        std::wstring sAuthor = sBookTitle;
-        std::wstring sAnnotation;
-        std::wstring sKeywords;
-
-        XmlUtils::CXmlLiteReader oCoreReader;
-        oCoreReader.FromString(sCoreXml);
-        oCoreReader.ReadNextNode();
-        int nDeath = oCoreReader.GetDepth();
-        while (oCoreReader.ReadNextSiblingNode(nDeath))
-        {
-            if (oCoreReader.GetNamespacePrefix() == L"dc")
-            {
-                std::wstring sName = oCoreReader.GetName();
-                if (sName == L"dc:creator")
-                    sAuthor = oCoreReader.GetText2();
-                else if (sName == L"dc:title")
-                    sBookTitle = oCoreReader.GetText2();
-                else if (sName == L"dc:description")
-                    sAnnotation = oCoreReader.GetText2();
-                else if (sName == L"dc:subject")
-                    sKeywords += oCoreReader.GetText2() + L' ';
-            }
-        }
-
-        oDocument.WriteString(L"<genre>dramaturgy</genre><author><nickname>");
-        oDocument.WriteString(sAuthor);
-        oDocument.WriteString(L"</nickname></author><book-title>");
-        oDocument.WriteString(sBookTitle);
-        oDocument.WriteString(L"</book-title>");
-        if (!sAnnotation.empty())
-            oDocument.WriteString(L"<annotation><p>" + sAnnotation + L"</p></annotation>");
-        if (!sKeywords.empty())
-            oDocument.WriteString(L"<keywords>" + sKeywords + L"</keywords>");
-        oDocument.WriteString(L"<lang>en</lang></title-info><document-info><author><nickname>");
-        // document-info
-        oDocument.WriteString(sAuthor);
-        oDocument.WriteString(L"</nickname></author><date></date><id>");
-        oDocument.WriteString(GenerateUUID());
-        oDocument.WriteString(L"</id><version>1.0</version></document-info>");
+        std::wstring sName = oCoreReader.GetName();
+        if (sName == L"dc:creator")
+            sAuthor     = oCoreReader.GetText2();
+        else if (sName == L"dc:title")
+            sBookTitle  = oCoreReader.GetText2();
+        else if (sName == L"dc:description")
+            sAnnotation = oCoreReader.GetText2();
+        else if (sName == L"dc:subject" || sName == L"cp:keywords")
+            sKeywords  += oCoreReader.GetText2() + L' ';
+        else if (sName == L"dc:identifier")
+            sIdentifier = oCoreReader.GetText2();
+        else if (sName == L"dc:language")
+            sLanguage   = oCoreReader.GetText2();
+        else if (sName == L"dcterms:created")
+            sDate       = oCoreReader.GetText2();
+        else if (sName == L"cp:version")
+            sVersion    = oCoreReader.GetText2();
     }
+
+    oDocument.WriteString(L"<genre>dramaturgy</genre><author><nickname>");
+    oDocument.WriteString(sAuthor);
+    oDocument.WriteString(L"</nickname></author><book-title>");
+    oDocument.WriteString(sBookTitle);
+    oDocument.WriteString(L"</book-title>");
+    if (!sAnnotation.empty())
+        oDocument.WriteString(L"<annotation><p>" + sAnnotation + L"</p></annotation>");
+    if (!sKeywords.empty())
+        oDocument.WriteString(L"<keywords>" + sKeywords + L"</keywords>");
+    oDocument.WriteString(L"<lang>");
+    oDocument.WriteString(sLanguage);
+    oDocument.WriteString(L"</lang></title-info><document-info><author><nickname>");
+    // document-info
+    oDocument.WriteString(sAuthor);
+    oDocument.WriteString(L"</nickname></author><date>");
+    oDocument.WriteString(sDate);
+    oDocument.WriteString(L"</date><id>");
+    oDocument.WriteString(sIdentifier);
+    oDocument.WriteString(L"</id><version>");
+    oDocument.WriteString(sVersion);
+    oDocument.WriteString(L"</version></document-info>");
     // body
     oDocument.WriteString(L"</description><body><section>");
     std::string sContent;

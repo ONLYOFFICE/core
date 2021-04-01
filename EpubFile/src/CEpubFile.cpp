@@ -242,46 +242,40 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
     }
     // content.opf
     NSFile::CFileBinary oContentOpf;
-    bool bWasLanguage = false;
+    bool bWasLanguage = false, bWasTitle = false;
     std::wstring sTitle = NSFile::GetFileName(sDstFile);
     std::wstring sUUID = GenerateUUID();
     if (oContentOpf.CreateFileW(m_sTempDir + L"/OEBPS/content.opf"))
     {
-        oContentOpf.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><package xmlns=\"http://www.idpf.org/2007/opf\" version=\"2.0\" unique-identifier=\"book_uuid\"><metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:opf=\"http://www.idpf.org/2007/opf\">");
+        oContentOpf.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><package xmlns=\"http://www.idpf.org/2007/opf\" version=\"2.0\" unique-identifier=\"book_uuid\"><metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" xmlns:opf=\"http://www.idpf.org/2007/opf\">");
         // metadata
-        std::wstring sCoreXml;
         bool bWasIdentifier = false;
-        if (NSFile::CFileBinary::ReadAllTextUtf8(sCoreFile, sCoreXml))
+        XmlUtils::CXmlLiteReader oCoreReader;
+        oCoreReader.FromString(sCoreFile);
+        oCoreReader.ReadNextNode();
+        int nDeath = oCoreReader.GetDepth();
+        while (oCoreReader.ReadNextSiblingNode(nDeath))
         {
-            XmlUtils::CXmlLiteReader oCoreReader;
-            oCoreReader.FromString(sCoreXml);
-            oCoreReader.ReadNextNode();
-            int nDeath = oCoreReader.GetDepth();
-            while (oCoreReader.ReadNextSiblingNode(nDeath))
+            std::wstring sOut = oCoreReader.GetOuterXml();
+            oContentOpf.WriteStringUTF8(sOut);
+            std::wstring sName = oCoreReader.GetName();
+            if (sName == L"dc:identifier")
+                bWasIdentifier = true;
+            else if (sName == L"dc:title")
             {
-                if (oCoreReader.GetNamespacePrefix() == L"dc")
-                {
-                    std::wstring sOut = oCoreReader.GetOuterXml();
-                    oContentOpf.WriteStringUTF8(sOut);
-                    std::wstring sName = oCoreReader.GetName();
-                    if (sName == L"dc:identifier")
-                        bWasIdentifier = true;
-                    else if (sName == L"dc:title")
-                    {
-                        size_t nBegin = sOut.find(L'>');
-                        if (nBegin == std::wstring::npos)
-                            continue;
-                        sOut.erase(0, nBegin + 1);
-                        nBegin = sOut.find(L'<');
-                        if (nBegin == std::wstring::npos)
-                            continue;
-                        sOut.erase(nBegin);
-                        sTitle = sOut;
-                    }
-                    else if (sName == L"dc:language")
-                        bWasLanguage = true;
-                }
+                bWasTitle = true;
+                size_t nBegin = sOut.find(L'>');
+                if (nBegin == std::wstring::npos)
+                    continue;
+                sOut.erase(0, nBegin + 1);
+                nBegin = sOut.find(L'<');
+                if (nBegin == std::wstring::npos)
+                    continue;
+                sOut.erase(nBegin);
+                sTitle = sOut;
             }
+            else if (sName == L"dc:language")
+                bWasLanguage = true;
         }
         if (!bWasIdentifier)
         {
@@ -289,9 +283,12 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
             oContentOpf.WriteStringUTF8(sUUID);
             oContentOpf.WriteStringUTF8(L"</dc:identifier>");
         }
-        oContentOpf.WriteStringUTF8(L"<dc:title>");
-        oContentOpf.WriteStringUTF8(sTitle);
-        oContentOpf.WriteStringUTF8(L"</dc:title>");
+        if (!bWasTitle)
+        {
+            oContentOpf.WriteStringUTF8(L"<dc:title>");
+            oContentOpf.WriteStringUTF8(sTitle);
+            oContentOpf.WriteStringUTF8(L"</dc:title>");
+        }
         if (!bWasLanguage)
             oContentOpf.WriteStringUTF8(L"<dc:language>en-EN</dc:language>");
         // manifest

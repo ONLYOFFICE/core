@@ -64,6 +64,23 @@ struct SOldAnimation
     // There will be additional records for animation here;
 };
 
+// struct for the params in class PPTX::Logic::Val
+struct SValue
+{
+    enum
+    {
+        str,
+        dbl
+    };
+    SValue(const std::wstring& str) : strVal(str), type(SValue::str) {}
+    SValue(const wchar_t* str) : strVal(str), type(SValue::str) {}
+    SValue(const double& dbl) : dblVal(dbl), type(SValue::dbl) {}
+
+    std::wstring strVal;
+    double dblVal;
+    const int type;
+};
+
 // Extenstion for CRecordExtTimeNodeContainer
 class Animation
 {
@@ -180,8 +197,11 @@ private:
     void FillCTnParams  (PPTX::Logic::CTn &oCTN, std::wstring nodeType, std::wstring condDelay = L"0",
                          std::wstring fill = L"hold", SOldAnimation *pOldAnim = NULL);
     void FillCTnAnimation  (PPTX::Logic::CTn &oCTN, SOldAnimation *pOldAnim);
+
     void FillAnim       (PPTX::Logic::Anim& oAnim, SOldAnimation* pOldAnim, int dur, std::wstring attrname,
-                         std::wstring strVal1, std::wstring strVal2);
+                         SValue val1, SValue val2, std::wstring fmla = L"");
+
+    void FillCBhvrForAnim (PPTX::Logic::Anim& oAnim, SOldAnimation* pOldAnim, int dur, std::wstring attrname);
     void FillSetAndAnim (SOldAnimation* pOldAnim, PPTX::Logic::ChildTnLst& oParent);
 
     // This methods fill ChildTnLst with anim nodes
@@ -205,8 +225,10 @@ private:
     void ConvertRandomEffect(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim);
 
     void PushAnim(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *pOldAnim, int dur,
-                  std::wstring attrname1, std::wstring strVal1, std::wstring strVal2,
-                  std::wstring attrname2, std::wstring strVal3, std::wstring strVal4);
+                  std::wstring attrname1, SValue val1, SValue val2,
+                  std::wstring attrname2, SValue val3, SValue val4,
+                  std::wstring fmla1 = L"", std::wstring fmla2 = L"");
+    void PushSet(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *pOldAnim, int dur = 0);
 
 private:
     unsigned m_cTnId;

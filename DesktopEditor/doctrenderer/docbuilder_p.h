@@ -123,13 +123,16 @@ namespace NSDoctRenderer
     class CDocBuilderParams
     {
     public:
-        CDocBuilderParams() : m_bCheckFonts(false), m_sWorkDir(L""), m_bSaveWithDoctrendererMode(false), m_sArgumentJSON("") {}
+        CDocBuilderParams() : m_bCheckFonts(false), m_sWorkDir(L""), m_bSaveWithDoctrendererMode(false), m_sArgumentJSON(""), m_bIsSystemFonts(true) {}
 
     public:
         bool m_bCheckFonts;
         std::wstring m_sWorkDir;
         bool m_bSaveWithDoctrendererMode;
         std::string m_sArgumentJSON;
+
+        bool m_bIsSystemFonts;
+        std::vector<std::wstring> m_arFontDirs;
     };
 
     class CDocBuilder_Private
@@ -307,16 +310,17 @@ namespace NSDoctRenderer
             }
         }
 
-        void CheckFonts(bool bIsCheckSystemFonts)
+        void CheckFonts(bool bIsCheckFonts)
         {
             std::wstring sDirectory = NSCommon::GetDirectoryName(m_strAllFonts);
             std::wstring strFontsSelectionBin = sDirectory + L"/font_selection.bin";
 
-            if (!bIsCheckSystemFonts && NSFile::CFileBinary::Exists(strFontsSelectionBin))
+            if (!bIsCheckFonts && NSFile::CFileBinary::Exists(strFontsSelectionBin))
                 return;
 
             CApplicationFontsWorker oWorker;
-            oWorker.m_bIsUseSystemFonts = bIsCheckSystemFonts;
+            oWorker.m_bIsUseSystemFonts = m_oParams.m_bIsSystemFonts;
+            oWorker.m_arAdditionalFolders = m_oParams.m_arFontDirs;
             oWorker.m_bIsNeedThumbnails = false;
             oWorker.m_sDirectory = sDirectory;
             NSFonts::IApplicationFonts* pFonts = oWorker.Check();

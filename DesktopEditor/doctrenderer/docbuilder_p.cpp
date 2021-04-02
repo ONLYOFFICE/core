@@ -712,6 +712,14 @@ namespace NSDoctRenderer
             std::wstring sArg(value);
             m_pInternal->m_oParams.m_sArgumentJSON = U_TO_UTF8(sArg);
         }
+        else if (sParam == "--fonts-system")
+        {
+            m_pInternal->m_oParams.m_bIsSystemFonts = (std::wstring(value) == L"true");
+        }
+        else if (sParam == "--fonts-dir")
+        {
+            m_pInternal->m_oParams.m_arFontDirs.push_back(std::wstring(value));
+        }
     }
     void CDocBuilder::SetPropertyW(const wchar_t* param, const wchar_t* value)
     {

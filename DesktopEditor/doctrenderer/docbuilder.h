@@ -195,6 +195,8 @@ namespace NSDoctRenderer
          * Default: false
          * --all-fonts-path Path to AllFonts.js script
          * --argument Json argument, sending to global params of all opened js context
+         * --fonts-system true/false Is use system fonts. Default true
+         * --fonts-dir Path to additional fonts dir. (may be many records)
          * @param param key
          * @param value value
          */

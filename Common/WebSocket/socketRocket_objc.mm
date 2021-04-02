@@ -31,12 +31,12 @@
  */
 
 
-//#import "socketRocket_objc.h"
+#import "socketRocket_objc.h"
 
-#import <SocketRocket/SRWebSocket.h>
+//#import <SocketRocket/SRWebSocket.h>
 #include "listener.h"
-
-@interface SocketRocketObjC  <SRWebSocketDelegate>
+#import "../../DesktopEditor/Common/Mac/NSString+StringUtils.h"
+/*@interface SocketRocketObjC  <SRWebSocketDelegate>
 
 @property (strong, nonatomic) SRWebSocket *socket;
 @property IListener* listener;
@@ -49,7 +49,7 @@
 - (void) setUrl: (NSString *)url;
 
 @end
-
+*/
 @implementation SocketRocketObjC
 
 - (id)init
@@ -57,15 +57,17 @@
     self = [super init];
     if (self) {
         self.socket = nil;
+        m_listener = nil;
+        m_url = nil;
     }
     return self;
 }
 
-- (void *)open
+- (void)open
 {   
-    if (url && url.length)
+    if (m_url && m_url.length)
     {
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:m_url]];
         if (request)
         {
             self.socket = [[SRWebSocket alloc] initWithURLRequest:request
@@ -83,18 +85,18 @@
 #if _LOGGER_SOCKETS
         
             NSLog(@"------------------- SEND TO SOCKET -------------------");
-            NSLog(@"%@", [message toString]);
+            NSLog(@"%@", message);
         
 #endif
 
     if (self.socket)
     {
-        [self.socket send:[message toString]];
+        [self.socket send:message];
         
     }
 }
 
-- (void *)close
+- (void)close
 {
     if (self.socket)
     {
@@ -102,14 +104,14 @@
     }
 }
 
-- (void) setListener: (IListener*)listener
+- (void)setListener: (IListener*)listener
 {
-	self.listener = listener;
+	m_listener = listener;
 }
 
-- (void) setUrl: (NSString *)url
+- (void)setUrl: (NSString *)url
 {
-	self.url = url;
+	m_url = url;
 }
 
 #pragma mark - SRWebSocketDelegate
@@ -126,7 +128,7 @@
     NSString *s = (NSString *)message;
     if (s)
     {
-       listener->onMessage(s.stdstring);
+       m_listener->onMessage(s.stdstring);
     }
     
 }
@@ -134,7 +136,7 @@
 - (void)webSocketDidOpen:(SRWebSocket *)webSocket
 {
   
-    listener->onOpen();
+    m_listener->onOpen();
 #if _LOGGER_SOCKETS
         
         NSLog(@"------------------- SOCKET OPEN -------------------");
@@ -149,7 +151,7 @@
 
 - (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
-	listener->onError(error.stdstring);
+	m_listener->onError(error.localizedDescription.stdstring);
 #if _LOGGER_SOCKETS
     
     NSLog(@"---------------------------------------------------------");
@@ -162,7 +164,7 @@
 - (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean
 {
     
-	listener->onClose(code, error.stdstring);   
+	m_listener->onClose(code, reason.stdstring);   
 #if _LOGGER_SOCKETS
         
         NSLog(@"---------------------------------------------------------");
@@ -170,7 +172,7 @@
         NSLog(@"---------------------------------------------------------");
         
 #endif
-        
+}     
 
 - (void)webSocket:(SRWebSocket *)webSocket didReceivePong:(NSData *)pongPayload
 {        
@@ -184,5 +186,6 @@
         NSLog(@"---------------------------------------------------");
         
 #endif
-  
 }
+
+@end

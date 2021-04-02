@@ -32,6 +32,8 @@
 #include "managerWebSocket.h"
 #ifdef USE_IXWEBSOCKET
 #include "ixwebsocket_internal.h"
+#elif defined USE_SOCKETROCKET
+#include "socketRocket_internal.h"
 #endif
 
 CManagerWebSocket* CManagerWebSocket::instance = nullptr;
@@ -50,7 +52,15 @@ std::shared_ptr<IWebSocket> CManagerWebSocket::createWebsocket(std::string type)
 	{
 		#ifdef USE_IXWEBSOCKET
 			return std::make_shared<CIXWebSocket>();
-		#elif
+		#else
+			return nullptr;
+		#endif
+	}
+	if(type == "socketRocket")
+	{
+		#ifdef USE_SOCKETROCKET
+			return std::make_shared<CSocketRocket>();
+		#else
 			return nullptr;
 		#endif
 	}

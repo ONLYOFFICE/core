@@ -68,6 +68,22 @@ core_ios {
         ./../DesktopEditor/common/File_ios.mm
 
     LIBS += -framework Foundation
+
+    DEFINES += USE_SOCKETROCKET
+
+    HEADERS += \
+        ./WebSocket/websocket.h \
+        ./WebSocket/listener.h \
+        ./WebSocket/socketRocket_objc.h \
+        ./WebSocket/socketRocket_internal.h \
+        ./WebSocket/managerWebSocket.h \
+
+    OBJECTIVE_SOURCES += \
+        ./WebSocket/socketRocket_objc.mm \
+        ./WebSocket/socketRocket_internal.mm \
+        ./WebSocket/managerWebSocket.cpp \
+
+    include(../Common/3dParty/socketRocket/socketRocket.pri)
 }
 
 core_android {

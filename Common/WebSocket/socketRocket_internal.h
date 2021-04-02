@@ -35,10 +35,10 @@
 
 #include "websocket.h"
 
+struct SocketRocketImpl;
 class CSocketRocket: public IWebSocket
 {
-	struct SocketRocketImpl;
-
+	
 public:
 
      SocketRocketImpl* impl;

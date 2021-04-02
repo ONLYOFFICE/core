@@ -30,23 +30,26 @@
  *
  */
 
-#ifndef _SOCKET_ROCKET_OBJC_H_
-#define _SOCKET_ROCKET_OBJC_H_
+//#ifndef _SOCKET_ROCKET_OBJC_H_
+//#define _SOCKET_ROCKET_OBJC_H_
 
 #import <SocketRocket/SRWebSocket.h>
 #include "listener.h"
 
-@interface SocketRocketObjC  <SRWebSocketDelegate>
+@interface SocketRocketObjC: NSObject<SRWebSocketDelegate>
+{
+	IListener* m_listener;
+	NSString* m_url;
+}
 
 @property (strong, nonatomic) SRWebSocket *socket;
-@property IListener* listener;
-@property (strong) std::string* url;
+
 
 - (void) open;
 - (void) send : (NSString *)name;
 - (void) close;
-- (void) setListener: (id)listener;
-- (void) setUrl: (id)url;
+- (void) setListener: (IListener *)listener;
+- (void) setUrl: (NSString *)url;
 
 @end
  /* _SOCKET_ROCKET_OBJC_H_ */

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -31,15 +31,16 @@
  */
 
 #include "socketRocket_internal.h"
-#import "socketRocket_objc.mm"
+#import "socketRocket_objc.h"
 
 struct SocketRocketImpl
 {
     SocketRocketObjC* wrapped;
 };
 
-CSocketRocket::CSocketRocket():impl(new CSocketRocket)
+CSocketRocket::CSocketRocket()
 {
+    impl = new SocketRocketImpl();
     impl->wrapped = [[SocketRocketObjC alloc] init];
 }
 
@@ -65,12 +66,13 @@ void CSocketRocket::close()
     [impl->wrapped close];
 }
 
-void setUrl(const std::string& url) 
+void CSocketRocket::setUrl(const std::string& url) 
 {
     [impl->wrapped setUrl:[NSString stringWithAString:url]];
 }
 
-void setListener(std::shared_ptr<IListener> listener)
+void CSocketRocket::setListener(std::shared_ptr<IListener> listener)
 {
-    [impl->wrapped setListener:[IListener* listener.get()]];
+    IListener* ptr = listener.get();
+    [impl->wrapped setListener: ptr];
 }

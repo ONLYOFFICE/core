@@ -226,6 +226,12 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
         sIndexHtml.replace(nImage, nImageEnd - nImage, L"images/img" + std::to_wstring(nNumImage++) + L".png");
         nImage = sIndexHtml.find(L"data:image/png;base64, ", nImage);
     }
+    nImage = sIndexHtml.find(L"&nbsp;");
+    while (nImage != std::wstring::npos)
+    {
+        sIndexHtml.replace(nImage, 6, L" ");
+        nImage = sIndexHtml.find(L"&nbsp;", nImage);
+    }
     // mimetype
     NSFile::CFileBinary oMimeType;
     if (oMimeType.CreateFileW(m_sTempDir + L"/mimetype"))
@@ -321,7 +327,7 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
     NSFile::CFileBinary oIndexHtml;
     if (oIndexHtml.CreateFileW(m_sTempDir + L"/OEBPS/index.html"))
     {
-        oIndexHtml.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\" [<!ENTITY nbsp \"&#160;\">]><html xmlns=\"http://www.w3.org/1999/xhtml\">");
+        oIndexHtml.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"><html xmlns=\"http://www.w3.org/1999/xhtml\">");
         oIndexHtml.WriteStringUTF8(sIndexHtml);
         oIndexHtml.CloseFile();
     }

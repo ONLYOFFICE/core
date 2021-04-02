@@ -236,9 +236,13 @@ namespace NSBinPptxRW
 		std::wstring strExts = _T(".jpg");
 		//use GetFileName to avoid defining '.' in the directory as extension
 		std::wstring strFileName = NSFile::GetFileName(strInput);
-		int nIndexExt = (int)strFileName.rfind(wchar_t('.'));
-		if (-1 != nIndexExt)
-			strExts = strFileName.substr(nIndexExt);
+		int sizeExt = (int)strFileName.rfind(wchar_t('.'));
+		if (-1 != sizeExt)
+		{
+			strExts = strFileName.substr(sizeExt);
+			sizeExt = (int)strFileName.length() - sizeExt;
+		}
+		else sizeExt = 0;
 
 		int	typeAdditional = 0;
 		std::wstring strAdditional;
@@ -246,14 +250,14 @@ namespace NSBinPptxRW
 
 		int nDisplayType = IsDisplayedImage(strInput);
 		size_t nFileNameLength = strFileName.length();
-		if (0 != nDisplayType && nFileNameLength > 4)
+		if (0 != nDisplayType && nFileNameLength > sizeExt)
 		{
 			OOX::CPath oPath = strInput;
 			
 			std::wstring strFolder		= oPath.GetDirectory();
 			std::wstring strFileName	= oPath.GetFilename();
 
-			strFileName.erase(strFileName.length() - 4, 4);
+			strFileName.erase(strFileName.length() - sizeExt, sizeExt);
 
 			if(0 != (nDisplayType & 1))
 			{
@@ -696,6 +700,7 @@ namespace NSBinPptxRW
 						m_lSize = nNewSize;
 						break;
 					}
+					m_lSize = lSize;
 				}
 
 				BYTE* pNew = new BYTE[m_lSize];

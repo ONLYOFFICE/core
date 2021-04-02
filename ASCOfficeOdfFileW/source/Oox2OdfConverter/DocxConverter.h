@@ -104,6 +104,12 @@ namespace OOX
 		class CBookmarkEnd;
 		class CBgPict;
 		class COMathPara;
+		class COMathParaPr;
+		class COMath;
+		class CSSup;
+		class CSSub;
+		class CMRun;
+		class CNary;
 	}
 	namespace Numbering
 	{
@@ -273,7 +279,13 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CTableProperty			*oox_table_pr,		odf_writer::style_table_cell_properties	*table_cell_properties);
 		void convert(OOX::Logic::CTableRowProperties	*oox_table_row_pr);
 		void convert(OOX::Logic::CTableRowProperties	*oox_table_row_pr,	odf_writer::style_table_row_properties	*table_row_properties);
-		void convert(OOX::Logic::COMathPara				*math);
+		void convert(OOX::Logic::COMathPara				*oox_math_para);
+		void convert(OOX::Logic::COMathParaPr			*oox_math_para_pr);
+		void convert(OOX::Logic::COMath					*oox_math);
+		void convert(OOX::Logic::CSSup					*oox_ssup);
+		void convert(OOX::Logic::CSSub					*oox_ssub);
+		void convert(OOX::Logic::CMRun					*oox_mrun);
+		void convert(OOX::Logic::CNary					*oox_nary);
 //--------------------------------------------------------------------------------
 	};
 }

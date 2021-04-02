@@ -454,6 +454,14 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 		{
 			convert(dynamic_cast<OOX::Logic::COMathPara*>(oox_unknown));
 		}break;
+		case OOX::et_m_oMathParaPr:
+		{
+			convert(dynamic_cast<OOX::Logic::COMathParaPr*>(oox_unknown));
+		}break;
+		case OOX::et_m_oMath:
+		{
+			convert(dynamic_cast<OOX::Logic::COMath*>(oox_unknown));
+		}break;
 		default:
 		{
 			OoxConverter::convert(oox_unknown);
@@ -5280,15 +5288,6 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 	bool res = convert(oox_table_cell_pr, cell_properties);
 
 	return true;
-}
-void DocxConverter::convert(OOX::Logic::COMathPara *math)
-{
-	if (!math) return;
-
-	for (size_t i = 0; i < math->m_arrItems.size(); ++i)
-	{
-		convert(math->m_arrItems[i]);
-	}
 }
 } 
 

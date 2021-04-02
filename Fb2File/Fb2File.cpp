@@ -1710,7 +1710,7 @@ HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sC
     oDocument.WriteString(L"<title-info>");
     std::wstring sBookTitle = NSFile::GetFileName(sDst);
     std::wstring sAuthor = sBookTitle;
-    std::wstring sAnnotation, sKeywords, sDate;
+    std::wstring sAnnotation, sKeywords;
     std::wstring sLanguage = L"en-EN", sVersion = L"1.0";
     std::wstring sIdentifier = GenerateUUID();
     XmlUtils::CXmlLiteReader oCoreReader;
@@ -1732,8 +1732,6 @@ HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sC
             sIdentifier = oCoreReader.GetText2();
         else if (sName == L"dc:language")
             sLanguage   = oCoreReader.GetText2();
-        else if (sName == L"dcterms:created")
-            sDate       = oCoreReader.GetText2();
         else if (sName == L"cp:version")
             sVersion    = oCoreReader.GetText2();
     }
@@ -1752,9 +1750,7 @@ HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sC
     oDocument.WriteString(L"</lang></title-info><document-info><author><nickname>");
     // document-info
     oDocument.WriteString(sAuthor);
-    oDocument.WriteString(L"</nickname></author><date>");
-    oDocument.WriteString(sDate);
-    oDocument.WriteString(L"</date><id>");
+    oDocument.WriteString(L"</nickname></author><date></date><id>");
     oDocument.WriteString(sIdentifier);
     oDocument.WriteString(L"</id><version>");
     oDocument.WriteString(sVersion);

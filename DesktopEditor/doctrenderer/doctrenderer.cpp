@@ -1010,19 +1010,6 @@ namespace NSDoctRenderer
                             strReturnParams += L"</dc:language>";
                         }
 
-                        js_results = js_objectCore->call_func("asc_getCreated", 1, args);
-                        if(try_catch->Check())
-                        {
-                            strError = L"code=\"get_created\"";
-                            bIsBreak = true;
-                        }
-                        else if (!js_results->isNull())
-                        {
-                            strReturnParams += L"<dcterms:created xsi:type=\"dcterms:W3CDTF\">";
-                            strReturnParams += js_results->toStringW();
-                            strReturnParams += L"</dcterms:created>";
-                        }
-
                         js_results = js_objectCore->call_func("asc_getKeywords", 1, args);
                         if(try_catch->Check())
                         {

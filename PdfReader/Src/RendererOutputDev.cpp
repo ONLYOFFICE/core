@@ -3913,4 +3913,54 @@ namespace PdfReader
 		}
 		return;
 	}
+
+	void RendererOutputDev::FillStrokeGradient(GrState *pGState, PdfReader::GrPatch *patch)
+		{
+			if (m_bDrawOnlyText)
+				return;
+
+			if (m_bTransparentGroupSoftMask)
+				return;
+
+			DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
+
+			long brush;
+			double xpi, ypi;
+			double xmin, ymin, xmax, ymax;
+			pGState->GetClipBBox(&xmin, &ymin, &xmax, &ymax);
+			patch->arrColor[0];
+			m_pRenderer->get_DpiX(&xpi);
+			m_pRenderer->get_DpiY(&ypi);
+			m_pRenderer->get_BrushType(&brush);
+			m_pRenderer->put_BrushType(c_BrushTypeMyTestGradient);
+			std::vector<std::vector<NSStructures::Point>> points(4, std::vector<NSStructures::Point>(4));
+			for (int i = 0; i < 4; i++)
+			{
+				for (int j = 0; j < 4; j++)
+				{
+                    points[i][j].x = patch->arrX[i][j] + 520;
+                    points[i][j].y = (patch->arrY[i][j]) + 400;
+				}
+			}
+			std::vector<std::vector<agg::rgba8>> colors(2, std::vector<agg::rgba8>(2));
+			GrDeviceRGBColorSpace ColorSpace;
+			for (int i = 0; i < 2; i ++)
+			{
+				for (int j = 0; j < 2; j++)
+				{
+					DWORD dcolor = ColorSpace.GetDwordColor(&patch->arrColor[i][j]);
+					colors[i][j] = {dcolor % 0x100, (dcolor >> 8) % 0x100, (dcolor >> 16) % 0x100};
+ 				}
+			}
+			auto info = NSStructures::GInfoConstructor::get_tensor_curve(points, 
+			{{0, 1}, {1 , 0.5}},
+			 colors,
+			 false
+			);
+			((NSGraphics::IGraphicsRenderer*)m_pRenderer)->put_BrushGradInfo(info);
+			m_pRenderer->DrawPath(c_nWindingFillMode);
+			
+			m_pRenderer->EndCommand(c_nPathType);
+			m_pRenderer->put_BrushType(brush);
+		}
 }

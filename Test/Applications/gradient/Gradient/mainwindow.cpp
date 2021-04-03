@@ -3,6 +3,9 @@
 #include <QPixmap>
 #include <iostream>
 #include "../../../../DesktopEditor/graphics/pro/Graphics.h"
+#include "../../../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
+#include "../../../../DesktopEditor/common/Directory.h"
+#include "../../../../PdfReader/PdfReader.h"
 
 std::vector<Point> drawCircle1(int n, double cx, double cy, double r) {
     std::vector<Point> res;
@@ -34,8 +37,10 @@ MainWindow::~MainWindow()
 
 
 void GenerateImg(QImage &img, std::vector<Point> &points, Info &info) {
+
     NSGraphics::IGraphicsRenderer* pRasterRenderer = NSGraphics::Create();
-    pRasterRenderer->SetFontManager(NULL);
+    NSFonts::IFontManager *fmp = NSFonts::NSFontManager::Create();
+    pRasterRenderer->SetFontManager(fmp);
     int nRasterW = img.size().width();
     int nRasterH = img.size().height();
     BYTE* pData = new BYTE[4 * nRasterW * nRasterH];
@@ -70,6 +75,7 @@ void GenerateImg(QImage &img, std::vector<Point> &points, Info &info) {
     auto b = info.p;
     LONG *c = a.data();
     double *p = b.data();
+            pRasterRenderer->CommandDrawText(L"Test", 10, 10, 345, 345);
     pRasterRenderer->put_BrushType(info.gradient_type);
     pRasterRenderer->put_BrushGradientColors(c, p, info.n_colors);
     pRasterRenderer->PathCommandStart();
@@ -92,17 +98,33 @@ void GenerateImg(QImage &img, std::vector<Point> &points, Info &info) {
     }
 }
 
+
+
 void MainWindow::on_RenderPic_clicked()
 {
 
-    QImage pm(400, 400, QImage::Format_RGB888);
-    GenerateImg(pm,  points, info);
+    CApplicationFontsWorker oWorker;
+    oWorker.m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts_cache";
+    oWorker.m_bIsNeedThumbnails = false;
+    if (!NSDirectory::Exists(oWorker.m_sDirectory))
+        NSDirectory::CreateDirectory(oWorker.m_sDirectory);
+
+    NSFonts::IApplicationFonts* pFonts = oWorker.Check();
+    PdfReader::CPdfReader PDFREADER(pFonts);
+    PDFREADER.LoadFromFile(L"test.pdf");
+    int page = ui->lineEdit->text().toInt();
+    PDFREADER.ConvertToRaster(page + 1, L"testpdf.bmp", 1);
+      QImage pm("testpdf.bmp");
+   // QImage pm(400, 400, QImage::Format_RGB888);
+   // GenerateImg(pm,  points, info);
     //setColor2(pm, 0x0000FF);
    //pm.invertPixels();
     ui->lable_test->setPixmap(QPixmap::fromImage(pm)) ;
     ui->lable_test->setScaledContents(true);
-    ui->lable_test->resize(pm.size());
-    pm.save("test.bmp");
+   // ui->lable_test->resize(pm.size());
+    //pm.save("test.bmp");
+
+   // pFonts->Release();
 }
 
 
@@ -589,4 +611,18 @@ void MainWindow::on_TrianglePoint3Y_sliderMoved(int position)
         }
         on_RenderPic_clicked();
     }
+}
+
+void MainWindow::on_LeftButton_clicked()
+{
+    int page = ui->lineEdit->text().toInt();
+    ui->lineEdit->setText(QString::number(page - 1));
+    on_RenderPic_clicked();
+}
+
+void MainWindow::on_RightButton_clicked()
+{
+    int page = ui->lineEdit->text().toInt();
+    ui->lineEdit->setText(QString::number(page + 1));
+    on_RenderPic_clicked();
 }

@@ -124,6 +124,10 @@ private slots:
 
     void on_TrianglePoint3Y_sliderMoved(int position);
 
+    void on_LeftButton_clicked();
+
+    void on_RightButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

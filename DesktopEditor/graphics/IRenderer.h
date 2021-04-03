@@ -36,6 +36,7 @@
 
 #include <string>
 #include "../common/IGrObject.h"
+#include "structures.h"
 #include "Matrix.h"
 
 // тип в DrawPath
@@ -189,6 +190,7 @@ public:
 	virtual HRESULT BrushBounds(const double& left, const double& top, const double& width, const double& height) = 0;
 
 	virtual HRESULT put_BrushGradientColors(LONG* lColors, double* pPositions, LONG nCount) = 0;
+	//virtual void put_BrushGradInfo(const NSStructures::GradientInfo &_ginfo) {};
 
 // font -------------------------------------------------------------------------------------
 	virtual HRESULT get_FontName(std::wstring* bsName)			= 0;

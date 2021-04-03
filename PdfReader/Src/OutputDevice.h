@@ -34,7 +34,8 @@
 
 #include "CharTypes.h"
 #include "GlobalParams.h"
-
+#include "Graphics.h"
+#include "../PdfReader.h"
 namespace PdfReader
 {
 	class StringExt;
@@ -221,6 +222,8 @@ namespace PdfReader
 		virtual void UpdateTextShift(GrState *pGState, double dShift) {}
 
 		//----- Рисование Path
+		virtual void FillStrokeGradient(GrState *pGState, GrPatch *patch) {}
+
 		virtual void Stroke(GrState *pGState) {}
 		virtual void Fill(GrState *pGState) {}
 		virtual void EoFill(GrState *pGState) {}

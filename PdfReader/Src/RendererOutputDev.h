@@ -34,7 +34,11 @@
 
 #include "../../DesktopEditor/graphics/IRenderer.h"
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
+#include "../../DesktopEditor/graphics/pro/Graphics.h"
 #include "../../DesktopEditor/graphics/TemporaryCS.h"
+#include "../../DesktopEditor/graphics/structures.h"
+#include "../PdfReader.h"
+#include "./Graphics.h"
 
 #include "OutputDevice.h"
 #include "XmlUtils.h"
@@ -117,6 +121,7 @@ namespace PdfReader
 	class RendererOutputDev : public OutputDev
 	{
 	public:
+		virtual void FillStrokeGradient(GrState *pGState, GrPatch *patch);
 
         RendererOutputDev(GlobalParams *pGlobalParams, IRenderer *pRenderer, NSFonts::IFontManager* pFontManager, CFontList *pFontList = NULL);
 		virtual ~RendererOutputDev();

@@ -79,18 +79,22 @@ namespace agg
             p0 = _gi.p0;
             p1 = _gi.p1;
             ginfo = _gi;
+
+           
         }
 
         virtual float eval(float x, float y) override
         {
-            if (r0 * r0 > (x - p0.x)*(x - p0.x) + (y - p0.y)*(y - p0.y))
-            {
-                return ginfo.shading.function.get_x_min() - 1;
-            }
-            if (r1 * r1 < (x - p1.x)*(x - p1.x) + (y - p1.y)*(y - p1.y))
-            {
-                return ginfo.shading.function.get_x_max() + 1;
-            }
+            // if (r0 * r0 > (x - p0.x)*(x - p0.x) + (y - p0.y)*(y - p0.y))
+            // {
+            //     //return ginfo.shading.function.get_x_min() - 1;
+            // }
+            // if (r1 * r1 < (x - p1.x)*(x - p1.x) + (y - p1.y)*(y - p1.y))
+            // {
+            //     //return ginfo.shading.function.get_x_max() + 1;
+            // }
+
+           
 
             float a = (r1 - r0) * (r1 - r0) - (p1.x - p0.x) * (p1.x - p0.x) - (p1.y - p0.y) * (p1.y - p0.y);
 
@@ -103,8 +107,11 @@ namespace agg
             {
                 return NAN_FLOAT;
             }
-            float x1 = (-b + sqrtf(D)) / 2 / a;
+            float x1 = (-b + sqrtf(D)) / 2 / a; 
             float x2 = (-b - sqrtf(D)) / 2 / a;
+
+            if (abs(a) < FLT_EPSILON)
+                x1 = -c / b;
 
             if (0 <= x1 && x1 <= 1)
             {
@@ -115,6 +122,12 @@ namespace agg
             {
                  return ginfo.shading.function.get_x_min() + 
                     (ginfo.shading.function.get_x_max() - ginfo.shading.function.get_x_min()) * x2;
+            }
+            if (ginfo.continue_shading_b)
+            {
+                if (x1 < 0 || x2 < 0)
+                    return ginfo.shading.function.get_x_min();
+
             }
             return NAN_FLOAT;
         }

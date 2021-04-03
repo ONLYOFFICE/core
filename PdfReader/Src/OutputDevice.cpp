@@ -34,6 +34,8 @@
 #include "Stream.h"
 #include "GState.h"
 #include "OutputDevice.h"
+#include "Graphics.h"
+#include "../PdfReader.h"
 
 namespace PdfReader
 {

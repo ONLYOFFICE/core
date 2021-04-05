@@ -1525,7 +1525,7 @@ namespace NExtractTools
 			std::wstring sEpubTemp = sTemp + FILE_SEPARATOR_STR + L"tmp";
 			NSDirectory::CreateDirectory(sEpubTemp);
 			oFile.SetTempDirectory(sEpubTemp);
-			if (S_FALSE == oFile.FromHtml(sHtmlFile, sResult, sTo))
+			if (S_FALSE == oFile.FromHtml(sHtmlFile, sResult, sTo, params.m_sTitle ? *params.m_sTitle : L""))
 				nRes = AVS_FILEUTILS_ERROR_CONVERT;
 		}
 		return nRes;
@@ -1553,7 +1553,7 @@ namespace NExtractTools
 		{
 			CFb2File fb2File;
 			fb2File.SetTmpDirectory(sTemp);
-			if (S_FALSE == fb2File.FromHtml(sHtmlFile, sResult, sTo))
+			if (S_FALSE == fb2File.FromHtml(sHtmlFile, sResult, sTo, params.m_sTitle ? *params.m_sTitle : L""))
 				nRes = AVS_FILEUTILS_ERROR_CONVERT;
 		}
 		return nRes;

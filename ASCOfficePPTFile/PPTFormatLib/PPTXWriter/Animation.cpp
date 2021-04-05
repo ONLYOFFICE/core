@@ -1535,7 +1535,7 @@ void Animation::FillAfterEffect(SOldAnimation* pOldAnim, PPTX::Logic::TimeNodeBa
 
     groupDelay += anim.m_DelayTime;
     auto delay = std::to_wstring(anim.m_DelayTime);
-    groupDelay += 500; // Effect time // TODO for anim
+    groupDelay += pOldAnim->getAnimDur(); // Effect time
 
     FillCTnParams(par->cTn, L"afterEffect", delay, L"hold", pOldAnim);
     par->cTn.childTnLst = new PPTX::Logic::ChildTnLst;
@@ -1575,6 +1575,7 @@ void Animation::FillCBhvrForAnim (PPTX::Logic::Anim& oAnim, SOldAnimation* pOldA
 
     oAnim.cBhvr.additive = new PPTX::Limit::TLAdditive;
     oAnim.cBhvr.additive->set(L"base");
+
     oAnim.calcmode       = new PPTX::Limit::TLCalcMode;
     oAnim.calcmode->set(L"lin");
     oAnim.valueType      = new PPTX::Limit::TLValueType;
@@ -1608,7 +1609,7 @@ void Animation::FillAnim (PPTX::Logic::Anim& oAnim, SOldAnimation* pOldAnim, int
     tav.tm = L"100000";
     val = new PPTX::Logic::AnimVariant;
     val->node_name = L"val";
-    if (val1.type == SValue::str)
+    if (val2.type == SValue::str)
         val->strVal = val2.strVal;
     else if (val2.type == SValue::dbl)
         val->fltVal = val2.dblVal;
@@ -1760,7 +1761,7 @@ void Animation::FillCTnAnimation  (PPTX::Logic::CTn &oCTN, SOldAnimation *pOldAn
     }
     case 0x0E:
     {
-        oCTN.presetID = 4;
+        oCTN.presetID = 11;
         ConvertFlashOnce(oCTN.childTnLst.get2(), pOldAnim, presetSub);
         break;
     }
@@ -1927,7 +1928,14 @@ void Animation::ConvertDissolveIn(PPTX::Logic::ChildTnLst& oParent, SOldAnimatio
 
 void Animation::ConvertFlashOnce(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *pOldAnim, int& presetSub)
 {
+    PushSet(oParent, pOldAnim);
+    presetSub = 0;
 
+    // correct cTn params
+    auto set = dynamic_cast<PPTX::Logic::Set*>(oParent.list.front().m_node.GetPointer());
+    if (!set) return;
+    set->cBhvr.cTn.dur = std::to_wstring(pOldAnim->getAnimDur());
+    set->cBhvr.cTn.fill.reset();
 }
 
 void Animation::ConvertPeekIn(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *pOldAnim, int& presetSub)
@@ -1944,16 +1952,24 @@ void Animation::ConvertRandomBars(PPTX::Logic::ChildTnLst& oParent, SOldAnimatio
 
 void Animation::ConvertSpiralIn(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim)
 {
-//    PushSet(oParent, pOldAnim);
-    // TODO
-//    PushAnim(oParent, pOldAnim, 1000,
-//             L"ppt_w", double(0), L"#ppt_w",
-//             L"ppt_h", double(0), L"#ppt_h");
-//    PushAnim(oParent, pOldAnim, 1000,
-//             L"ppt_x", double(0), double(1),
-//             L"ppt_y", double(0), double(1),
-//             L"#ppt_x+(cos(-2*pi*(1-$))*-#ppt_x-sin(-2*pi*(1-$))*(1-#ppt_y))*(1-$)",
-//             L"#ppt_y+(sin(-2*pi*(1-$))*-#ppt_x+cos(-2*pi*(1-$))*(1-#ppt_y))*(1-$)");
+    PushSet(oParent, pOldAnim);
+//     TODO
+    PushAnim(oParent, pOldAnim, 1000,
+             L"ppt_w", double(0), L"#ppt_w",
+             L"ppt_h", double(0), L"#ppt_h");
+    PushAnim(oParent, pOldAnim, 1000,
+             L"ppt_x", double(0), double(1),
+             L"ppt_y", double(0), double(1),
+             L"#ppt_x+(cos(-2*pi*(1-$))*-#ppt_x-sin(-2*pi*(1-$))*(1-#ppt_y))*(1-$)",
+             L"#ppt_y+(sin(-2*pi*(1-$))*-#ppt_x+cos(-2*pi*(1-$))*(1-#ppt_y))*(1-$)");
+
+    // remove additive from <p:anim>
+    for (auto& child : oParent.list)
+    {
+        auto anim = dynamic_cast<PPTX::Logic::Anim*>(child.m_node.GetPointer());
+        if (!anim) continue;
+        anim->cBhvr.additive.reset();
+    }
 
 }
 
@@ -1992,11 +2008,11 @@ void Animation::ConvertStretch(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* 
     case 23:
     {
         PushAnim(oParent, pOldAnim, 500,
-                 L"ppt_x", L"#ppt_x", L"#ppt_x",
-                 L"ppt_y", L"#ppt_y+#ppt_h/2", L"#ppt_y");
+                 L"ppt_x", L"##ppt_x-#ppt_w/2", L"#ppt_x",
+                 L"ppt_y", L"#ppt_y", L"#ppt_y");
         PushAnim(oParent, pOldAnim, 500,
-                 L"ppt_w", L"#ppt_w", L"#ppt_w",
-                 L"ppt_h", double(0), L"#ppt_h");
+                 L"ppt_w", double(0), L"#ppt_w",
+                 L"ppt_h", L"#ppt_h", L"#ppt_h");
 
         presetSub = 8;
         break;
@@ -2152,4 +2168,31 @@ void Animation::PushSet(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *pOldAni
 
     childTimeNode.m_node = set;
     oParent.list.push_back(childTimeNode);
+}
+
+
+unsigned SOldAnimation::getAnimDur()const
+{
+    unsigned dur = 500;
+    if (!anim)
+        return 0;
+
+    const UINT effect = anim->m_AnimationAtom.m_AnimEffect;
+    const UINT direct = anim->m_AnimationAtom.m_AnimEffectDirection;
+
+    if (effect == 12 && ((direct >= 12 && direct <= 15) || direct == 27))   // Crawl In, Basic Swivel
+        dur = 5000;
+    else if (effect == 12 && direct == 28)
+        dur = 1000;
+    else if (effect == 14)
+    {
+        switch (direct)
+        {
+        case 0: dur = 75; break;
+        case 1: dur = 500; break;
+        case 2: dur = 1000; break;
+        }
+    }
+
+    return dur;
 }

@@ -62,6 +62,7 @@ struct SOldAnimation
     CRecordAnimationInfoContainer* anim;
 
     // There will be additional records for animation here;
+    unsigned getAnimDur()const;
 };
 
 // struct for the params in class PPTX::Logic::Val

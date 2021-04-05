@@ -395,8 +395,8 @@ std::wstring CXmlElement::ConvertPStyle() const
         }
     }
 
-    if (!sPBdr.empty())
-        sPPr += L"<w:pBdr>" + sPBdr + L"</w:pBdr>";
+    //if (!sPBdr.empty())
+    //    sPPr += L"<w:pBdr>" + sPBdr + L"</w:pBdr>";
 
     return L"<w:pPr>" + sPPr + L"</w:pPr>";
 }

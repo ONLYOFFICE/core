@@ -24,6 +24,21 @@
 #define VALUE2STR(x) VALUE_TO_STRING(x)
 #endif
 
+// Ячейка таблицы
+struct CTc
+{
+    int i;
+    int j;
+    std::wstring sGridSpan = L"1";
+
+    CTc(int _i, int _j, const std::wstring& sColspan) : i(_i), j(_j), sGridSpan(sColspan) {}
+
+    bool operator==(const CTc& c2)
+    {
+        return (i == c2.i && j == c2.j && sGridSpan == c2.sGridSpan);
+    }
+};
+
 // Информация об авторе книги. Тэг author, translator
 struct SAuthor
 {
@@ -582,7 +597,9 @@ public:
         oBuilder += L"<w:tbl><w:tblPr><w:tblStyle w:val=\"table-t\"/><w:tblW w:w=\"0\" w:type=\"auto\"/><w:tblLayout w:type=\"fixed\"/></w:tblPr>";
 
         NSStringUtils::CStringBuilder oTmpBuilder;
+        std::vector<CTc> mTable;
         int nGridCol = 0;
+        int i = 1; // Строка
         int nDeath = m_oLightReader.GetDepth();
         while (m_oLightReader.ReadNextSiblingNode(nDeath))
         {
@@ -590,11 +607,55 @@ public:
             if (m_oLightReader.GetName() != L"tr" || m_oLightReader.IsEmptyNode())
                 continue;
             int nTCol = 0;
+            int j = 1; // Столбец
             oTmpBuilder += L"<w:tr>";
             int nTrDeath = m_oLightReader.GetDepth();
             while (m_oLightReader.ReadNextSiblingNode(nTrDeath))
             {
-                oTmpBuilder += L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/></w:tcPr><w:p>";
+                int nColspan = 1;
+                int nRowspan = 1;
+                while(m_oLightReader.MoveToNextAttribute())
+                {
+                    if(m_oLightReader.GetName() == L"colspan")
+                        nColspan = stoi(m_oLightReader.GetText());
+                    else if(m_oLightReader.GetName() == L"rowspan")
+                        nRowspan = stoi(m_oLightReader.GetText());
+                }
+                m_oLightReader.MoveToElement();
+
+                // Вставляем ячейки до
+                std::vector<CTc>::iterator it1 = std::find_if(mTable.begin(), mTable.end(), [i, j](const CTc& item){ return item.i == i && item.j == j; });
+                std::vector<CTc>::iterator it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
+                while(it1 != mTable.end() || it2 != mTable.end())
+                {
+                    oTmpBuilder.WriteString(L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"");
+                    std::wstring sCol = (it1 != mTable.end() ? it1->sGridSpan : it2->sGridSpan);
+                    oTmpBuilder.WriteString(sCol);
+                    oTmpBuilder.WriteString(L"\"/></w:tcPr><w:p></w:p></w:tc>");
+                    j += stoi(sCol);
+                    it1 = std::find_if(mTable.begin(), mTable.end(), [i, j](const CTc& item){ return item.i == i && item.j == j; });
+                    it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
+                }
+
+                oTmpBuilder += L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/>";
+                if (nRowspan != 1)
+                {
+                    oTmpBuilder.WriteString(L"<w:vMerge w:val=\"restart\"/>");
+                    std::wstring sColspan = std::to_wstring(nColspan);
+                    if (nRowspan == 0)
+                        mTable.push_back({0, j, sColspan});
+                    else
+                        for (int k = i + 1; k < i + nRowspan; k++)
+                            mTable.push_back({k, j, sColspan});
+                }
+                if (nColspan != 1)
+                {
+                    oTmpBuilder.WriteString(L"<w:gridSpan w:val=\"");
+                    oTmpBuilder.WriteString(std::to_wstring(nColspan));
+                    oTmpBuilder.WriteString(L"\"/>");
+                    j += nColspan - 1;
+                }
+                oTmpBuilder.WriteString(L"</w:tcPr><w:p>");
                 // Читаем th. Ячейка заголовка таблицы. Выравнивание посередине. Выделяется полужирным
                 if (m_oLightReader.GetName() == L"th")
                 {
@@ -612,6 +673,21 @@ public:
                     readP(L"", oTmpBuilder);
                 }
                 oTmpBuilder += L"</w:p></w:tc>";
+                j++;
+
+                // Вставляем ячейки после
+                it1 = std::find_if(mTable.begin(), mTable.end(), [i, j](const CTc& item){ return item.i == i && item.j == j; });
+                it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
+                while(it1 != mTable.end() || it2 != mTable.end())
+                {
+                    oTmpBuilder.WriteString(L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"");
+                    std::wstring sCol = (it1 != mTable.end() ? it1->sGridSpan : it2->sGridSpan);
+                    oTmpBuilder.WriteString(sCol);
+                    oTmpBuilder.WriteString(L"\"/></w:tcPr><w:p></w:p></w:tc>");
+                    j += stoi(sCol);
+                    it1 = std::find_if(mTable.begin(), mTable.end(), [i, j](const CTc& item){ return item.i == i && item.j == j; });
+                    it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
+                }
             }
             oTmpBuilder += L"</w:tr>";
         }
@@ -1620,14 +1696,18 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
             readStream(oXml, oIndexHtml, arrBinary, bWasP);
             oXml.WriteString(L"</tr>");
         }
-        else if (sName == L"th")
+        else if (sName == L"td" || sName == L"th")
         {
-            oXml.WriteString(L"<th>");
-            readStream(oXml, oIndexHtml, arrBinary, true);
-            oXml.WriteString(L"</th>");
-        }
-        else if (sName == L"td")
-        {
+            oXml.WriteString(L"<td");
+            while (oIndexHtml.MoveToNextAttribute())
+            {
+                if (oIndexHtml.GetName() == L"colspan")
+                    oXml.WriteString(L" colspan=\"" + oIndexHtml.GetText() + L"\"");
+                else if (oIndexHtml.GetName() == L"rowspan")
+                    oXml.WriteString(L" rowspan=\"" + oIndexHtml.GetText() + L"\"");
+            }
+            oIndexHtml.MoveToElement();
+
             oXml.WriteString(L"<td>");
             readStream(oXml, oIndexHtml, arrBinary, true);
             oXml.WriteString(L"</td>");

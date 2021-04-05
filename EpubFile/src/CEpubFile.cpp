@@ -196,7 +196,7 @@ void CEpubFile::ShowMap()
         std::wcout << oItem.m_sID << L" - " << m_mapRefs[oItem.m_sID].GetRef() << std::endl;
 }
 
-HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sCoreFile, const std::wstring& sDstFile)
+HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sCoreFile, const std::wstring& sDstFile, const std::wstring& sInpTitle)
 {
     NSDirectory::CreateDirectory(m_sTempDir + L"/META-INF");
     NSDirectory::CreateDirectory(m_sTempDir + L"/OEBPS");
@@ -204,6 +204,7 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
     // index.html
     std::wstring sIndexHtml;
     NSFile::CFileBinary::ReadAllTextUtf8(sHtmlFile, sIndexHtml);
+    // картинки в файл
     size_t nImage = sIndexHtml.find(L"data:image/png;base64, ");
     int nNumImage = 1;
     while (nImage != std::wstring::npos)
@@ -226,11 +227,50 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
         sIndexHtml.replace(nImage, nImageEnd - nImage, L"images/img" + std::to_wstring(nNumImage++) + L".png");
         nImage = sIndexHtml.find(L"data:image/png;base64, ", nImage);
     }
+    // удаляем &nbsp;
     nImage = sIndexHtml.find(L"&nbsp;");
     while (nImage != std::wstring::npos)
     {
         sIndexHtml.replace(nImage, 6, L" ");
         nImage = sIndexHtml.find(L"&nbsp;", nImage);
+    }
+    // заменяем <s> на style=text-decoration:line-through
+    nImage = sIndexHtml.find(L"<s>");
+    while (nImage != std::wstring::npos)
+    {
+        sIndexHtml.erase(nImage, 3);
+        size_t nEndTag = sIndexHtml.find(L"</s>", nImage);
+        sIndexHtml.erase(nEndTag, 4);
+        nImage = sIndexHtml.rfind(L"style=\"", nImage);
+        nEndTag = sIndexHtml.find(L"\"", nImage + 7);
+        sIndexHtml.insert(nEndTag, L";text-decoration:line-through");
+        nImage = sIndexHtml.find(L"<s>", nImage);
+    }
+    // удаляем атрибут width у <td>
+    nImage = sIndexHtml.find(L"<td");
+    while (nImage != std::wstring::npos)
+    {
+        size_t nEndTag = sIndexHtml.find(L">", nImage);
+        nImage = sIndexHtml.find(L"width=\"", nImage);
+        if (nImage < nEndTag)
+        {
+            nEndTag = sIndexHtml.find(L"\"", nImage + 7);
+            sIndexHtml.erase(nImage, nEndTag - nImage + 1);
+        }
+        nImage = sIndexHtml.find(L"<td", nImage);
+    }
+    // удаляем атрибут clear у <br/>
+    nImage = sIndexHtml.find(L"<br");
+    while (nImage != std::wstring::npos)
+    {
+        size_t nEndTag = sIndexHtml.find(L">", nImage);
+        nImage = sIndexHtml.find(L"clear=\"", nImage);
+        if (nImage < nEndTag)
+        {
+            nEndTag = sIndexHtml.find(L"\"", nImage + 7);
+            sIndexHtml.erase(nImage, nEndTag - nImage + 1);
+        }
+        nImage = sIndexHtml.find(L"<br", nImage);
     }
     // mimetype
     NSFile::CFileBinary oMimeType;
@@ -249,7 +289,7 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
     // content.opf
     NSFile::CFileBinary oContentOpf;
     bool bWasLanguage = false, bWasTitle = false;
-    std::wstring sTitle = NSFile::GetFileName(sDstFile);
+    std::wstring sTitle = sInpTitle.empty() ? NSFile::GetFileName(sDstFile) : sInpTitle;
     std::wstring sUUID = GenerateUUID();
     if (oContentOpf.CreateFileW(m_sTempDir + L"/OEBPS/content.opf"))
     {

@@ -1701,14 +1701,14 @@ std::wstring GenerateUUID()
     return sstream.str();
 }
 
-HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sCoreFile, const std::wstring& sDst)
+HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sCoreFile, const std::wstring& sDst, const std::wstring& sInpTitle)
 {
     NSStringUtils::CStringBuilder oDocument;
     oDocument.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><FictionBook xmlns=\"http://www.gribuser.ru/xml/fictionbook/2.0\" xmlns:l=\"http://www.w3.org/1999/xlink\"><description>");
     // description
     // title-info
     oDocument.WriteString(L"<title-info>");
-    std::wstring sBookTitle = NSFile::GetFileName(sDst);
+    std::wstring sBookTitle = sInpTitle.empty() ? NSFile::GetFileName(sDst) : sInpTitle;
     std::wstring sAuthor = sBookTitle;
     std::wstring sAnnotation, sKeywords;
     std::wstring sLanguage = L"en-EN", sVersion = L"1.0";

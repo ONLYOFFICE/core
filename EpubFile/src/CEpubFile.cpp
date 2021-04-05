@@ -226,6 +226,12 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
         sIndexHtml.replace(nImage, nImageEnd - nImage, L"images/img" + std::to_wstring(nNumImage++) + L".png");
         nImage = sIndexHtml.find(L"data:image/png;base64, ", nImage);
     }
+    nImage = sIndexHtml.find(L"&nbsp;");
+    while (nImage != std::wstring::npos)
+    {
+        sIndexHtml.replace(nImage, 6, L" ");
+        nImage = sIndexHtml.find(L"&nbsp;", nImage);
+    }
     // mimetype
     NSFile::CFileBinary oMimeType;
     if (oMimeType.CreateFileW(m_sTempDir + L"/mimetype"))

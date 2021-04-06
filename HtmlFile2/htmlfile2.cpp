@@ -1111,6 +1111,19 @@ private:
         NSStringUtils::CStringBuilder oBody;
         NSStringUtils::CStringBuilder oFoot;
 
+        // Начало таблицы
+        oXml->WriteString(L"<w:tbl><w:tblPr><w:tblStyle w:val=\"table\"/><w:tblW w:w=\"0\" w:type=\"auto\"/>");
+        NSCSS::CNode oLast = sSelectors.back();
+        sSelectors.pop_back();
+        NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
+        std::wstring sAlign = oStyle.m_pText.GetAlign();
+        if(sAlign == L"left" || sAlign == L"center" || sAlign == L"right" || sAlign == L"both")
+            oXml->WriteString(L"<w:jc w:val=\"" + sAlign + L"\"/>");
+        oXml->WriteString(L"</w:tblPr>");
+        sSelectors.push_back(oLast);
+        if (!bNeedBorder && m_oStylesCalculator.GetCompiledStyle(sSelectors).m_pBorder.GetWidthBottomSideW() != L"0")
+            bNeedBorder = true;
+
         int nDeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
         {
@@ -1146,16 +1159,6 @@ private:
             sSelectors.pop_back();
         }
 
-        // Начало таблицы
-        oXml->WriteString(L"<w:tbl><w:tblPr><w:tblStyle w:val=\"table\"/><w:tblW w:w=\"0\" w:type=\"auto\"/>");
-        NSCSS::CNode oLast = sSelectors.back();
-        sSelectors.pop_back();
-        NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
-        std::wstring sAlign = oStyle.m_pText.GetAlign();
-        if(sAlign == L"left" || sAlign == L"center" || sAlign == L"right" || sAlign == L"both")
-            oXml->WriteString(L"<w:jc w:val=\"" + sAlign + L"\"/>");
-        oXml->WriteString(L"</w:tblPr>");
-        sSelectors.push_back(oLast);
         // Конец таблицы
         oXml->WriteString(oHead.GetData());
         oXml->WriteString(oBody.GetData());

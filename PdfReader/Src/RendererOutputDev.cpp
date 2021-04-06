@@ -3926,9 +3926,9 @@ namespace PdfReader
 
 			long brush;
 			double xpi, ypi;
+			double coef = 2386. / 842;
 			double xmin, ymin, xmax, ymax;
 			pGState->GetClipBBox(&xmin, &ymin, &xmax, &ymax);
-			patch->arrColor[0];
 			m_pRenderer->get_DpiX(&xpi);
 			m_pRenderer->get_DpiY(&ypi);
 			m_pRenderer->get_BrushType(&brush);
@@ -3938,8 +3938,8 @@ namespace PdfReader
 			{
 				for (int j = 0; j < 4; j++)
 				{
-                    points[i][j].x = patch->arrX[i][j] + 520;
-                    points[i][j].y = (patch->arrY[i][j]) + 400;
+                    points[i][3 - j].x = patch->arrX[i][j] * coef * 0.75 + xmin * coef;// * xpi / 25.4;
+                    points[3 - i][j].y = patch->arrY[i][j] * coef * 0.75 + (842. - ymax) * coef;// * ypi / 25.4;
 				}
 			}
 			std::vector<std::vector<agg::rgba8>> colors(2, std::vector<agg::rgba8>(2));
@@ -3957,6 +3957,7 @@ namespace PdfReader
 			 colors,
 			 false
 			);
+			//info.shading.shading_type = info.shading.CurveInterpolation;
 			((NSGraphics::IGraphicsRenderer*)m_pRenderer)->put_BrushGradInfo(info);
 			m_pRenderer->DrawPath(c_nWindingFillMode);
 			

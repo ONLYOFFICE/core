@@ -11,7 +11,7 @@ std::vector<Point> drawCircle1(int n, double cx, double cy, double r) {
     std::vector<Point> res;
     for (int i = 0; i < n; i++) {
         double x = cx + r * cos(i * 8 * atan(1) / n);
-        double y = cy + r * sin(i * 8 * atan(1) /  n);
+        double y = cy + r * sin(i * 8 * atan(1) / n);
         res.push_back({x, y});
     }
     return res;

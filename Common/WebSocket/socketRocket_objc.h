@@ -34,22 +34,27 @@
 //#define _SOCKET_ROCKET_OBJC_H_
 
 #import <SocketRocket/SRWebSocket.h>
-#include "listener.h"
+#include "websocket.h"
 
-@interface SocketRocketObjC: NSObject<SRWebSocketDelegate>
+namespace NSWebSocket
 {
-	IListener* m_listener;
-	NSString* m_url;
+
+    @interface SocketRocketObjC: NSObject<SRWebSocketDelegate>
+    {
+	    IListener* m_listener;
+	    NSString* m_url;
+    }
+
+    @property (strong, nonatomic) SRWebSocket *socket;
+
+
+    - (void) open;
+    - (void) send : (NSString *)name;
+    - (void) close;
+    - (void) setListener: (IListener *)listener;
+    - (void) setUrl: (NSString *)url;
+
+    @end
+
 }
-
-@property (strong, nonatomic) SRWebSocket *socket;
-
-
-- (void) open;
-- (void) send : (NSString *)name;
-- (void) close;
-- (void) setListener: (IListener *)listener;
-- (void) setUrl: (NSString *)url;
-
-@end
  /* _SOCKET_ROCKET_OBJC_H_ */

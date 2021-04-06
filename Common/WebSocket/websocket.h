@@ -33,26 +33,31 @@
 #ifndef _WEB_SOCKET_H_
 #define _WEB_SOCKET_H_
 
-#include "listener.h"
+#include "../kernel_config.h"
 #include <string>
 
-class IWebSocket
+namespace NSWebSocket
 {
+    class IWebSocket
+    {
+    public:
+        virtual void open() = 0;
+        virtual void send(const std::string& message) = 0;
+        virtual void close() = 0;
+        virtual ~IWebSocket() {}
+    };
 
-protected:
+    class IListener
+    {
+    public:
+        virtual void onMessage(const std::string& message) = 0;
+        virtual void onOpen() = 0;
+        virtual void onError(const std::string& error) = 0;
+        virtual void onClose(int code, const std::string& reason) = 0;
+        virtual ~IListener() {}
+    };
 
-    std::shared_ptr<IListener> listener;
-    std::string url;
-
-public:
-    
-    virtual void open() = 0;
-    virtual void send(const std::string& message) = 0;
-    virtual void close() = 0;
-    virtual void setUrl(const std::string& url) {this->url = url;}
-    virtual void setListener(std::shared_ptr<IListener> listener) {this->listener = listener;}
-    virtual ~IWebSocket() {};
-
-};
+    KERNEL_DECL std::shared_ptr<IWebSocket> createWebsocket(std::string type, const std::string& url, std::shared_ptr<IListener> listener);
+}
 
 #endif /* _WEB_SOCKET_H_ */

@@ -33,31 +33,34 @@
 #ifndef _IX_WEB_SOCKET_H_
 #define _IX_WEB_SOCKET_H_
 
-#include "websocket.h"
+#include "WebWorkerBase.h"
 #include <ixwebsocket/IXNetSystem.h>
 #include <ixwebsocket/IXWebSocket.h>
 
-class CIXWebSocket: public IWebSocket
+namespace NSWebSocket
 {
-
-public:
-
-    ix::WebSocket webSocket;
-   
-public:
-
-    CIXWebSocket()
+    class CIXWebSocket: public CWebWorkerBase
     {
-        ix::initNetSystem();
-    }
-    
-public:
-    
-    virtual void open() override;
-    virtual void send(const std::string& message) override;
-    virtual void close() override;
-    void receive(const ix::WebSocketMessagePtr& msg);
 
-};
+    private:
+
+        ix::WebSocket webSocket;
+       
+    public:
+
+        CIXWebSocket(const std::string& url, std::shared_ptr<IListener> listener): CWebWorkerBase(url, listener)
+        {
+            ix::initNetSystem();
+        }
+        
+    public:
+        
+        virtual void open() override;
+        virtual void send(const std::string& message) override;
+        virtual void close() override;
+        void receive(const ix::WebSocketMessagePtr& msg);
+
+    };
+}
 
 #endif /* _IX_WEB_SOCKET_H_ */

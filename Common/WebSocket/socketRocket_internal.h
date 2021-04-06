@@ -33,26 +33,29 @@
 #ifndef _SOCKET_ROCKET_H_
 #define _SOCKET_ROCKET_H_
 
-#include "websocket.h"
+#include "WebWorkerBase.h"
 
-struct SocketRocketImpl;
-class CSocketRocket: public IWebSocket
+namespace NSWebSocket
 {
-	
-public:
+    struct SocketRocketImpl;
+    class CSocketRocket: public CWebWorkerBase
+    {
+	    
+    private:
 
-     SocketRocketImpl* impl;
-   
-public:
+         SocketRocketImpl* impl;
+       
+    public:
 
-    CSocketRocket();
-    ~CSocketRocket();
-    virtual void open() override;
-    virtual void send(const std::string& message) override;
-    virtual void close() override;
-    virtual void setUrl(const std::string& url) override;
-    virtual void setListener(std::shared_ptr<IListener> listener) override;
+        CSocketRocket(const std::string& url, std::shared_ptr<IListener> listener);
+        ~CSocketRocket();
+        virtual void open() override;
+        virtual void send(const std::string& message) override;
+        virtual void close() override;
+        virtual void setUrl(const std::string& url) override;
+        virtual void setListener(std::shared_ptr<IListener> listener) override;
 
-};
+    };
+}
 
 #endif /* _SOCKET_ROCKET_H_ */

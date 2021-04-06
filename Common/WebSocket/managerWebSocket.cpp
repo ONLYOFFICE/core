@@ -29,40 +29,34 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "managerWebSocket.h"
+
+#include "websocket.h"
 #ifdef USE_IXWEBSOCKET
 #include "ixwebsocket_internal.h"
 #elif defined USE_SOCKETROCKET
 #include "socketRocket_internal.h"
 #endif
 
-CManagerWebSocket* CManagerWebSocket::instance = nullptr;
-
-CManagerWebSocket* CManagerWebSocket::GetInstance()
+namespace NSWebSocket
 {
-    if(instance == nullptr){
-        instance = new CManagerWebSocket();
+    std::shared_ptr<IWebSocket> createWebsocket(std::string type, const std::string& url, std::shared_ptr<IListener> listener);
+    {
+	    if(type == "ixwebsocket")
+	    {
+		    #ifdef USE_IXWEBSOCKET
+			    return std::make_shared<CIXWebSocket>(url, listener);
+		    #else
+			    return nullptr;
+		    #endif
+	    }
+	    if(type == "socketRocket")
+	    {
+		    #ifdef USE_SOCKETROCKET
+			    return std::make_shared<CSocketRocket>(url, listener);
+		    #else
+			    return nullptr;
+		    #endif
+	    }
+	    else return nullptr;
     }
-    return instance;
-}
-
-std::shared_ptr<IWebSocket> CManagerWebSocket::createWebsocket(std::string type)
-{
-	if(type == "ixwebsocket")
-	{
-		#ifdef USE_IXWEBSOCKET
-			return std::make_shared<CIXWebSocket>();
-		#else
-			return nullptr;
-		#endif
-	}
-	if(type == "socketRocket")
-	{
-		#ifdef USE_SOCKETROCKET
-			return std::make_shared<CSocketRocket>();
-		#else
-			return nullptr;
-		#endif
-	}
-	else return nullptr;
 }

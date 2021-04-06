@@ -33,46 +33,56 @@
 #include "socketRocket_internal.h"
 #import "socketRocket_objc.h"
 
-struct SocketRocketImpl
+namespace NSWebSocket
 {
-    SocketRocketObjC* wrapped;
-};
 
-CSocketRocket::CSocketRocket()
-{
-    impl = new SocketRocketImpl();
-    impl->wrapped = [[SocketRocketObjC alloc] init];
-}
+    struct SocketRocketImpl
+    {
+        SocketRocketObjC* wrapped;
+    };
 
-CSocketRocket::~CSocketRocket()
-{
-    if (impl)
-      [impl->wrapped release];
-    delete impl;
-}
+    CSocketRocket::CSocketRocket(): CWebWorkerBase(url, listener)
+    {
+        impl = new SocketRocketImpl();
+        impl->wrapped = [[SocketRocketObjC alloc] init];
 
-void CSocketRocket::open()
-{
-    [impl->wrapped open];
-}
+        [impl->wrapped setUrl:[NSString stringWithAString:url]];
 
-void CSocketRocket::send(const std::string& message)
-{
-    [impl->wrapped send:[NSString stringWithAString:message]];
-}
+        IListener* ptr = listener.get();
+        [impl->wrapped setListener: ptr];
+    }
 
-void CSocketRocket::close()
-{
-    [impl->wrapped close];
-}
+    CSocketRocket::~CSocketRocket()
+    {
+        if (impl)
+          [impl->wrapped release];
+        delete impl;
+    }
 
-void CSocketRocket::setUrl(const std::string& url) 
-{
-    [impl->wrapped setUrl:[NSString stringWithAString:url]];
-}
+    void CSocketRocket::open()
+    {
+        [impl->wrapped open];
+    }
 
-void CSocketRocket::setListener(std::shared_ptr<IListener> listener)
-{
-    IListener* ptr = listener.get();
-    [impl->wrapped setListener: ptr];
+    void CSocketRocket::send(const std::string& message)
+    {
+        [impl->wrapped send:[NSString stringWithAString:message]];
+    }
+
+    void CSocketRocket::close()
+    {
+        [impl->wrapped close];
+    }
+
+    void CSocketRocket::setUrl(const std::string& url) 
+    {
+        [impl->wrapped setUrl:[NSString stringWithAString:url]];
+    }
+
+    void CSocketRocket::setListener(std::shared_ptr<IListener> listener)
+    {
+        IListener* ptr = listener.get();
+        [impl->wrapped setListener: ptr];
+    }
+
 }

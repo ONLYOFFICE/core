@@ -462,6 +462,22 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 		{
 			convert(dynamic_cast<OOX::Logic::COMath*>(oox_unknown));
 		}break;
+		case OOX::et_m_sSup
+		{
+			convert(dynamic_cast<OOX::Logic::CSSup*>(oox_unknown));
+		}break;
+		case OOX::et_m_sSub
+		{
+			convert(dynamic_cast<OOX::Logic::*>(oox_unknown));
+		}break;
+		case OOX::et_m_r
+		{
+			convert(dynamic_cast<OOX::Logic::CMRun*>(oox_unknown));
+		}break;
+		case OOX::et_m_nary
+		{
+			convert(dynamic_cast<OOX::Logic::CNary*>(oox_unknown));
+		}break;
 		default:
 		{
 			OoxConverter::convert(oox_unknown);

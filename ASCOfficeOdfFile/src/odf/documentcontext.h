@@ -32,6 +32,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 namespace cpdoccore { 
 namespace odf_reader {
@@ -44,15 +45,10 @@ public:
     document_context();
     virtual ~document_context();
 				
-	void set_last_element(office_element* elem);
 	office_element* get_last_element();
 
-	int level = 0;
+	std::vector<office_element*> levels;
 	std::wstring office_class_; //openoffice xml 1.0
-
-private:
-    class Impl;
-    Impl * impl_;
 };
 
 }

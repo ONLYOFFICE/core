@@ -35,46 +35,21 @@
 
 namespace cpdoccore { 
 namespace odf_reader {
-
-class document_context::Impl
-{
-public:
-    Impl() : last_element_(NULL) {}
-
-    void set_last_element(office_element* elem)
-    {
-        last_element_ = elem;
-    }
-
-    office_element* get_last_element()
-    {
-        return last_element_;
-    }
-
-private:
-    office_element * last_element_;
-
-
-};
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
-document_context::document_context() : impl_( new document_context::Impl() )
+	
+document_context::document_context() 
 {            
-	level = 0;
 }
 
 document_context::~document_context()
 {
-    delete impl_;
 }
-void document_context::set_last_element(office_element* elem)
-{
-    return impl_->set_last_element(elem);
-}
+
 office_element* document_context::get_last_element()
 {
-    return impl_->get_last_element();
+	if (levels.size() > 1)
+		return levels[levels.size() - 2];
+	else 
+		return NULL;
 }
 
 

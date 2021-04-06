@@ -183,13 +183,13 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 		CP_XML_NODE(L"c:axPos")
         {
 			if (content_.dimension_ == L"x")
-				CP_XML_ATTR(L"val",L"b");//  "b" | "l" |  "r" |  "t"// == bottom left right top
+				CP_XML_ATTR(L"val", L"b");//  "b" | "l" |  "r" |  "t"// == bottom left right top
 				
 			if (content_.dimension_ == L"y")
-				CP_XML_ATTR(L"val",L"l");//  "b" | "l" |  "r" |  "t"// == bottom left right top
+				CP_XML_ATTR(L"val", L"l");//  "b" | "l" |  "r" |  "t"// == bottom left right top
 		}
 		//oox_serialize_ln(_Wostream, content_.graphic_properties_);
-		_CP_OPT(std::wstring) strNumFormat, strPercentFormat;
+		_CP_OPT(std::wstring) strNumFormat, strPercentFormat, strAxisType;
 		_CP_OPT(bool) bLinkData;
 		_CP_OPT(int) nTypeFormat;
 
@@ -197,6 +197,7 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 		odf_reader::GetProperty(content_.properties_, L"percentage_num_format", strPercentFormat);
 		odf_reader::GetProperty(content_.properties_, L"data-label-number", nTypeFormat);
 		odf_reader::GetProperty(content_.properties_, L"link-data-style-to-source", bLinkData);
+		odf_reader::GetProperty(content_.properties_, L"axis-type", strAxisType);
 
 		std::wstring formatCode;
 		if ((nTypeFormat) && (*nTypeFormat == 2) && strPercentFormat)
@@ -213,7 +214,7 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 			CP_XML_NODE(L"c:numFmt")
 			{
 				CP_XML_ATTR(L"formatCode", formatCode);
-				CP_XML_ATTR(L"sourceLinked", bLinkData.get_value_or(true));
+				CP_XML_ATTR(L"sourceLinked", bLinkData.get_value_or(strAxisType ? false : true));
 			}
 		}
 

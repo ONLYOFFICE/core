@@ -460,6 +460,7 @@ void h::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"text:restart-numbering"	, restart_numbering_);
     CP_APPLY_ATTR(L"text:start-value"		, start_value_);
     CP_APPLY_ATTR(L"text:is-list-header"	, is_list_header_);
+	CP_APPLY_ATTR(L"text:level"				, outline_level_); // openoffice xml 1.0
 
     paragraph_.add_attributes(Attributes);
 
@@ -660,8 +661,6 @@ std::wostream & section::text_to_stream(std::wostream & _Wostream, bool bXmlEnco
 
 void section::afterCreate()
 {
-	office_element::afterCreate();
-	
 	if (document_context * context = getContext())
     {
         if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
@@ -678,19 +677,17 @@ void section::afterCreate()
 void section::afterReadContent()
 {
 	if (document_context * context = getContext())
-    {
-        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
-        {
-            lastPar->paragraph_.set_next_end_section(true);        
-        }
+	{
+		if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
+		{
+			lastPar->paragraph_.set_next_end_section(true);
+		}
 		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
-        {
-            lastPar->paragraph_.set_next_end_section(true);        
-        }
-    }
- 	office_element::afterReadContent();
+		{
+			lastPar->paragraph_.set_next_end_section(true);
+		}
+	}
 }
-
 void section::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     section_attr_.add_attributes(Attributes);
@@ -1136,10 +1133,10 @@ const wchar_t * table_index_entry_template::name = L"table-index-entry-template"
 const wchar_t * illustration_index::ns = L"text";
 const wchar_t * illustration_index::name = L"illustration-index";
 
-//void illustration_index::afterCreate()
-//{
-// 	office_element::afterCreate();
-//
+void illustration_index::afterCreate()
+{
+ 	office_element::afterCreate();
+
 //	if (document_context * context = getContext())
 //    {
 //        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
@@ -1151,7 +1148,7 @@ const wchar_t * illustration_index::name = L"illustration-index";
 //            lastPar->paragraph_.set_next_section(true);        
 //        }
 //    }
-//}
+}
 
 void illustration_index::afterReadContent()
 {
@@ -1293,10 +1290,10 @@ void alphabetical_index::add_child_element( xml::sax * Reader, const std::wstrin
         CP_CREATE_ELEMENT(alphabetical_index_source_);
 	}
 }
-//void alphabetical_index::afterCreate()
-//{
-//	office_element::afterCreate();
-//	
+void alphabetical_index::afterCreate()
+{
+	office_element::afterCreate();
+	
 //	if (document_context * context = getContext())
 //    {
 //        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
@@ -1308,7 +1305,7 @@ void alphabetical_index::add_child_element( xml::sax * Reader, const std::wstrin
 //            lastPar->paragraph_.set_next_section(true);        
 //        }
 //    }
-//}
+}
 void alphabetical_index::afterReadContent()
 {
     if (document_context * context = getContext())
@@ -1412,10 +1409,10 @@ void alphabetical_index_entry_template::docx_convert(oox::docx_conversion_contex
 const wchar_t * object_index::ns = L"text";
 const wchar_t * object_index::name = L"object-index";
 
-//void object_index::afterCreate()
-//{
-//	office_element::afterCreate();
-//
+void object_index::afterCreate()
+{
+	office_element::afterCreate();
+
 //	if (document_context * context = getContext())
 //    {
 //        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
@@ -1427,7 +1424,7 @@ const wchar_t * object_index::name = L"object-index";
 //            lastPar->paragraph_.set_next_section(true);        
 //        }
 //    }
-//}
+}
 void object_index::afterReadContent()
 {
     if (document_context * context = getContext())

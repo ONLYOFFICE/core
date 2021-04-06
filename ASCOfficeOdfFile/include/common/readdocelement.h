@@ -37,41 +37,38 @@
 
 namespace cpdoccore { 
 
-namespace xml {
+	namespace xml {
 
-class sax;
+		class sax;
+		class attributes;
 
-class attributes;
+		typedef attributes attributes_wc;
+		typedef shared_ptr< attributes_wc >::Type attributes_wc_ptr;
 
-typedef attributes attributes_wc;
+	}
+	namespace common 
+	{
 
-typedef shared_ptr< attributes_wc >::Type attributes_wc_ptr;
+	// Базовый класс для элемента, который может быть прочитан sax-reader -ом
+	// Для каждого элемента будут вызваны методы
+	// add_attributes, add_child_element, add_text как колбеки для чтения соответствующих данных
 
-}
-    
-namespace common {
+	class read_doc_element 
+	{
+	public:
+		bool read_sax( xml::sax * Reader);
+		virtual ~read_doc_element() = 0; 
 
-// Базовый класс для элемента, который может быть прочитан sax-reader -ом
-// Для каждого элемента будут вызваны методы
-// add_attributes, add_child_element, add_text как колбеки для чтения соответствующих данных
+		virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) = 0;
+		virtual void add_attributes		(const xml::attributes_wc_ptr & Attributes) = 0;
+	private:
+		virtual void add_text			(const std::wstring & Text) = 0;
+		virtual void add_space			(const std::wstring & Text) = 0;
+	};
 
-class read_doc_element 
-{
-public:
-    bool read_sax( xml::sax * Reader);
-    virtual ~read_doc_element() = 0; 
+	inline read_doc_element::~read_doc_element()
+	{
+	}
 
-    virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) = 0;
-private:
-    virtual void add_attributes		(const xml::attributes_wc_ptr & Attributes) = 0;
-    virtual void add_text			(const std::wstring & Text) = 0;
-    virtual void add_space			(const std::wstring & Text) = 0;
-
-};
-
-inline read_doc_element::~read_doc_element()
-{
-}
-
-}
+	}
 }

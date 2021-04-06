@@ -643,6 +643,8 @@ bool COfficeFileFormatChecker::isOpenOfficeFormatFile(const std::wstring & fileN
  	const char *otpFormatLine = "application/vnd.oasis.opendocument.presentation-template";
 	const char *epubFormatLine = "application/epub+zip";
 	const char *sxwFormatLine = "application/vnd.sun.xml.writer";
+	const char *sxcFormatLine = "application/vnd.sun.xml.calc";
+	const char *sxiFormatLine = "application/vnd.sun.xml.impress";
 
     COfficeUtils OfficeUtils(NULL);
 	
@@ -679,11 +681,13 @@ bool COfficeFileFormatChecker::isOpenOfficeFormatFile(const std::wstring & fileN
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
 		}
-        else if ( NULL != strstr((char*)pBuffer, odsFormatLine) )
+        else if ( NULL != strstr((char*)pBuffer, odsFormatLine) ||
+					NULL != strstr((char*)pBuffer, sxcFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
 		}
-        else if ( NULL != strstr((char*)pBuffer, odpFormatLine) )
+        else if ( NULL != strstr((char*)pBuffer, odpFormatLine) ||
+					NULL != strstr((char*)pBuffer, sxiFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
 		}

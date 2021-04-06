@@ -106,10 +106,8 @@ public:
 	style_drawing_page_properties*	get_style_drawing_page_properties() const;
     style_table_cell_properties *	get_style_table_cell_properties		(bool always =false);
 	
-	void add_properties	(office_element_ptr element);
-private:
 	odf_types::style_family style_family_;
-
+private:
     office_element_ptr		style_text_properties_;
     office_element_ptr		style_paragraph_properties_;
     office_element_ptr		style_section_properties_;
@@ -136,8 +134,6 @@ public:
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
     default_style() {};
-
-    odf_types::style_family style_family_;
 
     style_content content_;
 
@@ -366,7 +362,6 @@ public:
     bool					style_auto_update_;	// default = false
     
 	_CP_OPT( std::wstring ) style_display_name_; 
-    odf_types::style_family style_family_;
 
     _CP_OPT( std::wstring ) style_parent_style_name_; 
     _CP_OPT( std::wstring ) style_next_style_name_;	 
@@ -853,7 +848,7 @@ private:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_footer_style);
 
-/// style:page-layout
+// style:page-layout
 class style_page_layout : public office_element_impl<style_page_layout>
 {
 public:
@@ -876,8 +871,20 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style_page_layout);
+
+// style:page-master openoffice xml 1.0
+class style_page_master : public style_page_layout
+{
+public:
+	static const wchar_t * ns;
+	static const wchar_t * name;
+	static const xml::NodeType xml_type = xml::typeElement;
+	static const ElementType type = typeStylePageMaster;
+private:
+	virtual void add_child_element(xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+};
+CP_REGISTER_OFFICE_ELEMENT2(style_page_master);
 
 // style-page-layout-properties-attlist
 class style_page_layout_properties_attlist

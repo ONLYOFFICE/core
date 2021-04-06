@@ -560,6 +560,14 @@ int odf_document::Impl::GetMimetype(std::wstring value)
 	{
 		return 4;
 	}
+	else if (std::wstring::npos != value.find(L"application/vnd.sun.xml.calc"))
+	{
+		return 5;
+	}
+	else if (std::wstring::npos != value.find(L"application/vnd.sun.xml.impress"))
+	{
+		return 6;
+	}
 	return 0;
 }
 void odf_document::Impl::parse_manifests(office_element *element)
@@ -757,7 +765,6 @@ void odf_document::Impl::parse_styles(office_element *element)
 				context_->styleContainer().add_style
 					(	L"common:" + styleInst->style_name_,
 						styleInst->style_display_name_.get_value_or(L""),
-						styleInst->style_family_.get_type(),
 						&(styleInst->content_),
 						true,
 						false,
@@ -840,7 +847,6 @@ void odf_document::Impl::parse_styles(office_element *element)
 
                 context_->styleContainer().add_style(L"",
 					L"",
-                    styleInst->style_family_.get_type(), 
                     &(styleInst->content_),
                     false,
                     true,
@@ -879,7 +885,6 @@ void odf_document::Impl::parse_styles(office_element *element)
 
                 context_->styleContainer().add_style(styleInst->style_name_,
 					styleInst->style_display_name_.get_value_or(L""),
-                    styleInst->style_family_.get_type(),
                     &(styleInst->content_),
                     false,
                     false,
@@ -1060,7 +1065,6 @@ void odf_document::Impl::parse_styles(office_element *element)
 
                 context_->styleContainer().add_style(styleInst->style_name_,
 					styleInst->style_display_name_.get_value_or(L""),
-                    styleInst->style_family_.get_type(),
                     &(styleInst->content_),
                     true,
                     false,

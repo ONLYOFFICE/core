@@ -170,38 +170,6 @@ style_section_properties * style_content::get_style_section_properties() const
 {
     return dynamic_cast<style_section_properties *>(style_section_properties_.get());
 }
-void style_content::add_properties(office_element_ptr element)
-{
-	if (!element) return;
-
-	switch (element->get_type())
-	{
-	case typeStyleTextProperties:
-		style_text_properties_ = element;
-		break;
-	case typeStyleParagraphProperties:
-		style_paragraph_properties_ = element;
-		break;
-	case typeStyleTableCellProperties:
-		style_table_cell_properties_ = element;
-		break;
-	case typeStyleTableProperties:
-		style_table_properties_ = element;
-		break;
-	case typeStyleTableRowProperties:
-		style_table_row_properties_ = element;
-		break;
-	case typeStyleTableColumnProperties:
-		style_table_column_properties_ = element;
-		break;
-	case typeStyleGraphicPropertis:
-		style_graphic_properties_ = element;
-		break;
-	case typeStyleChartProperties:
-		style_chart_properties_ = element;
-		break;		
-	}
-}
 style_table_cell_properties * style_content::get_style_table_cell_properties(bool always)
 {
 	if (!style_table_cell_properties_ && always)
@@ -314,6 +282,128 @@ void style_content::add_child_element( xml::sax * Reader, const std::wstring & N
 	{
 		CP_CREATE_ELEMENT_SIMPLE(style_drawing_page_properties_);
 	}
+	else if CP_CHECK_NAME(L"style", L"properties")
+	{
+		office_element_ptr element;
+		CP_CREATE_ELEMENT_SIMPLE(element);
+
+		style_properties *common_props = dynamic_cast<style_properties *>(element.get());
+
+		if (common_props)
+		{
+			switch (style_family_.get_type())
+			{
+			case style_family::Text:
+			{
+				office_element_ptr elm = office_element_creator::get()->create(L"style", L"text-properties", Context, false);
+				style_text_properties *text_props = dynamic_cast<style_text_properties *>(elm.get());
+
+				if (text_props)
+					text_props->content_.apply_from(common_props->text_properties_);
+
+				style_text_properties_ = elm;
+			}break;
+			case style_family::Paragraph:
+			{
+				office_element_ptr para_elm = office_element_creator::get()->create(L"style", L"paragraph-properties", Context, false);
+				style_paragraph_properties *para_props = dynamic_cast<style_paragraph_properties *>(para_elm.get());
+
+				if (para_props)
+					para_props->content_.apply_from(common_props->paragraph_properties_);
+
+				style_paragraph_properties_ = para_elm;
+
+				office_element_ptr text_elm = office_element_creator::get()->create(L"style", L"text-properties", Context, false);
+				style_text_properties *text_props = dynamic_cast<style_text_properties *>(text_elm.get());
+
+				if (text_props)
+					text_props->content_.apply_from(common_props->text_properties_);
+
+				style_text_properties_ = text_elm;
+			}break;
+			case style_family::Graphic:
+			{
+				office_element_ptr elm = office_element_creator::get()->create(L"style", L"graphic-properties", Context, false);
+				style_graphic_properties *graphic_props = dynamic_cast<style_graphic_properties *>(elm.get());
+
+				if (graphic_props)
+					graphic_props->content_.apply_from(&common_props->graphic_properties_);
+
+				style_graphic_properties_ = elm;
+
+				office_element_ptr para_elm = office_element_creator::get()->create(L"style", L"paragraph-properties", Context, false);
+				style_paragraph_properties *para_props = dynamic_cast<style_paragraph_properties *>(para_elm.get());
+
+				if (para_props)
+					para_props->content_.apply_from(common_props->paragraph_properties_);
+
+				style_paragraph_properties_ = para_elm;
+
+				office_element_ptr text_elm = office_element_creator::get()->create(L"style", L"text-properties", Context, false);
+				style_text_properties *text_props = dynamic_cast<style_text_properties *>(text_elm.get());
+
+				if (text_props)
+					text_props->content_.apply_from(common_props->text_properties_);
+
+				style_text_properties_ = elm;
+			}break;
+			case style_family::Chart:
+			{
+				office_element_ptr elm = office_element_creator::get()->create(L"style", L"chart-properties", Context, false);
+				style_chart_properties *chart_props = dynamic_cast<style_chart_properties *>(elm.get());
+
+				if (chart_props)
+					chart_props->content_.apply_from(common_props->chart_properties_);
+
+				style_chart_properties_ = elm;
+				
+				elm = office_element_creator::get()->create(L"style", L"graphic-properties", Context, false);
+				style_graphic_properties *graphic_props = dynamic_cast<style_graphic_properties *>(elm.get());
+
+				if (graphic_props)
+					graphic_props->content_.apply_from(&common_props->graphic_properties_);
+
+				style_graphic_properties_ = elm;
+				
+				office_element_ptr text_elm = office_element_creator::get()->create(L"style", L"text-properties", Context, false);
+				style_text_properties *text_props = dynamic_cast<style_text_properties *>(text_elm.get());
+
+				if (text_props)
+					text_props->content_.apply_from(common_props->text_properties_);
+			}break;
+			case style_family::TableCell:
+			{
+				office_element_ptr elm = office_element_creator::get()->create(L"style", L"table-cell-properties", Context, false);
+				style_table_cell_properties *table_cell_props = dynamic_cast<style_table_cell_properties *>(elm.get());
+
+				if (table_cell_props)
+					table_cell_props->attlist_.apply_from(common_props->table_cell_properties_);
+
+				style_table_cell_properties_ = elm;
+			}break;
+			case style_family::TableRow:
+			{
+				office_element_ptr elm = office_element_creator::get()->create(L"style", L"table-row-properties", Context, false);
+				style_table_row_properties *table_row_props = dynamic_cast<style_table_row_properties *>(elm.get());
+
+				if (table_row_props)
+					table_row_props->attlist_.apply_from(common_props->table_row_properties_);
+
+				style_table_row_properties_ = elm;
+			}break;
+			case style_family::TableColumn:
+			{
+				office_element_ptr elm = office_element_creator::get()->create(L"style", L"table-column-properties", Context, false);
+				style_table_column_properties *table_column_props = dynamic_cast<style_table_column_properties *>(elm.get());
+
+				if (table_column_props)
+					table_column_props->attlist_.apply_from(common_props->table_column_properties_);
+
+				style_table_column_properties_ = elm;
+			}break;
+			}
+		}
+	}
 	else
     {
         not_applicable_element(L"style-content", Reader, Ns, Name);
@@ -332,7 +422,7 @@ std::wostream & default_style::text_to_stream(std::wostream & _Wostream, bool bX
 
 void default_style::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"style:family", style_family_, style_family());
+    CP_APPLY_ATTR(L"style:family", content_.style_family_, style_family());
 }
 
 void default_style::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -474,9 +564,10 @@ void style::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 	_CP_OPT(std::wstring) sTest;
 
-    CP_APPLY_ATTR(L"style:name"					, style_name_, std::wstring(L""));
+    CP_APPLY_ATTR(L"style:family"				, content_.style_family_, style_family());
+   
+	CP_APPLY_ATTR(L"style:name"					, style_name_, std::wstring(L""));
     CP_APPLY_ATTR(L"style:display-name"			, style_display_name_);
-    CP_APPLY_ATTR(L"style:family"				, style_family_, style_family());
     CP_APPLY_ATTR(L"style:parent-style-name"	, style_parent_style_name_);
     CP_APPLY_ATTR(L"style:next-style-name"		, style_next_style_name_);
     CP_APPLY_ATTR(L"style:list-style-name"		, style_list_style_name_);
@@ -522,98 +613,6 @@ void style::add_child_element( xml::sax * Reader, const std::wstring & Ns, const
     {
         CP_CREATE_ELEMENT(style_map_);
     }
-	else if CP_CHECK_NAME(L"style", L"properties")
-	{
-		office_element_ptr element;
-		CP_CREATE_ELEMENT(element);
-
-		style_properties *common_props = dynamic_cast<style_properties *>(element.get());
-
-		if (common_props)
-		{
-			switch (style_family_.get_type())
-			{
-			case style_family::Text:
-			{
-				office_element_ptr elm = office_element_creator::get()->create(L"style", L"text-properties", getContext(), false);
-				style_text_properties *text_props = dynamic_cast<style_text_properties *>(elm.get());
-
-				if (text_props)
-					text_props->content_.apply_from(common_props->text_properties_);
-
-				content_.add_properties(elm);
-			}break;
-			case style_family::Paragraph:
-			{
-				office_element_ptr para_elm = office_element_creator::get()->create(L"style", L"paragraph-properties", getContext(), false);
-				style_paragraph_properties *para_props = dynamic_cast<style_paragraph_properties *>(para_elm.get());
-
-				if (para_props)
-					para_props->content_.apply_from(common_props->paragraph_properties_);
-
-				content_.add_properties(para_elm);
-
-				office_element_ptr text_elm = office_element_creator::get()->create(L"style", L"text-properties", getContext(), false);
-				style_text_properties *text_props = dynamic_cast<style_text_properties *>(text_elm.get());
-
-				if (text_props)
-					text_props->content_.apply_from(common_props->text_properties_);
-
-				content_.add_properties(text_elm);
-			}break;
-			case style_family::Graphic:
-			{
-				office_element_ptr elm = office_element_creator::get()->create(L"style", L"graphic-properties", getContext(), false);
-				style_graphic_properties *graphic_props = dynamic_cast<style_graphic_properties *>(elm.get());
-
-				if (graphic_props)
-					graphic_props->content_.apply_from(&common_props->graphic_properties_);
-
-				content_.add_properties(elm);
-			}break;
-			case style_family::Chart:
-			{
-				office_element_ptr elm = office_element_creator::get()->create(L"style", L"chart-properties", getContext(), false);
-				style_chart_properties *chart_props = dynamic_cast<style_chart_properties *>(elm.get());
-
-				if (chart_props)
-					chart_props->content_.apply_from(common_props->chart_properties_);
-
-				content_.add_properties(elm);
-			}break;
-			case style_family::TableCell:
-			{
-				office_element_ptr elm = office_element_creator::get()->create(L"style", L"table-cell-properties", getContext(), false);
-				style_table_cell_properties *table_cell_props = dynamic_cast<style_table_cell_properties *>(elm.get());
-
-				if (table_cell_props)
-					table_cell_props->attlist_.apply_from(common_props->table_cell_properties_);
-
-				content_.add_properties(elm);
-			}break;
-			case style_family::TableRow:
-			{
-				office_element_ptr elm = office_element_creator::get()->create(L"style", L"table-row-properties", getContext(), false);
-				style_table_row_properties *table_row_props = dynamic_cast<style_table_row_properties *>(elm.get());
-
-				if (table_row_props)
-					table_row_props->attlist_.apply_from(common_props->table_row_properties_);
-
-				content_.add_properties(elm);
-			}break;
-			case style_family::TableColumn:
-			{
-				office_element_ptr elm = office_element_creator::get()->create(L"style", L"table-column-properties", getContext(), false);
-				style_table_column_properties *table_column_props = dynamic_cast<style_table_column_properties *>(elm.get());
-
-				if (table_column_props)
-					table_column_props->attlist_.apply_from(common_props->table_column_properties_);
-
-				content_.add_properties(elm);
-			}break;
-			}
-		}
-	}
     else
         content_.add_child_element(Reader, Ns, Name, getContext());
 }
@@ -705,7 +704,8 @@ void office_automatic_styles::add_attributes( const xml::attributes_wc_ptr & Att
 
 void office_automatic_styles::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    if (L"style" == Ns && L"page-layout" == Name)
+    if (L"style" == Ns && ( L"page-layout" == Name || 
+							L"page-master" == Name ))
     {
         CP_CREATE_ELEMENT(style_page_layout_);
     }
@@ -905,7 +905,11 @@ void style_header_style::add_child_element( xml::sax * Reader, const std::wstrin
     {
         CP_CREATE_ELEMENT(style_header_footer_properties_);        
     } 
-    else
+	else if (L"style" == Ns && L"properties" == Name) // openoffice xml 1.0
+	{
+		create_element_and_read(Reader, L"style", L"header-footer-properties", style_header_footer_properties_, getContext());
+	}
+	else
     {
         CP_NOT_APPLICABLE_ELM();
     }
@@ -930,14 +934,38 @@ void style_footer_style::add_child_element( xml::sax * Reader, const std::wstrin
     {
         CP_CREATE_ELEMENT(style_header_footer_properties_);        
     } 
-    else
+	else if (L"style" == Ns && L"properties" == Name) // openoffice xml 1.0
+	{
+		create_element_and_read(Reader, L"style", L"header-footer-properties", style_header_footer_properties_, getContext());
+	}
+	else
     {
         CP_NOT_APPLICABLE_ELM();
     }
 }
+//-----------------------------------------------------------------------------------------------------
+const wchar_t * style_page_master::ns = L"style";
+const wchar_t * style_page_master::name = L"page-master";
 
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
+void style_page_master::add_child_element(xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+	if (L"style" == Ns && L"header-style" == Name)
+	{
+		CP_CREATE_ELEMENT(style_header_style_);
+	}
+	else if (L"style" == Ns && L"footer-style" == Name)
+	{
+		CP_CREATE_ELEMENT(style_footer_style_);
+	}
+	else if (L"style" == Ns && L"properties" == Name)
+	{
+		create_element_and_read(Reader, L"style", L"page-layout-properties", style_page_layout_properties_, getContext());
+	}
+	else
+	{
+		CP_NOT_APPLICABLE_ELM();
+	}
+}//-----------------------------------------------------------------------------------------------------
 const wchar_t * style_page_layout::ns = L"style";
 const wchar_t * style_page_layout::name = L"page-layout";
 
@@ -1597,6 +1625,11 @@ void style_master_page_attlist::add_attributes( const xml::attributes_wc_ptr & A
     CP_APPLY_ATTR(L"style:page-layout-name",style_page_layout_name_);
     CP_APPLY_ATTR(L"draw:style-name",		draw_style_name_);
     CP_APPLY_ATTR(L"style:next-style-name", style_next_style_name_);
+
+	if (!style_page_layout_name_)
+	{//openoffice xml 1.0
+		CP_APPLY_ATTR(L"style:page-master-name", style_page_layout_name_);
+	}
 }
 
 /// style:master-page

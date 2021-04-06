@@ -512,17 +512,59 @@ public:
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
     note();
 
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-
 	std::wstring			text_id_;
 	odf_types::noteclass	text_note_class_;
     office_element_ptr		text_note_citation_;
-    office_element_ptr		text_note_body_;
-  
+    office_element_ptr		text_note_body_;  
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 };
 CP_REGISTER_OFFICE_ELEMENT2(note);
+//-------------------------------------------------------------------------------------------------------------------
+// text:endnote openoffice xml 1.0
+//-------------------------------------------------------------------------------------------------------------------
+class endnote : public note
+{
+public:
+	static const wchar_t * ns;
+	static const wchar_t * name;
+	static const xml::NodeType xml_type = xml::typeElement;
+	static const ElementType type = typeTextNote;
+
+	CPDOCCORE_DEFINE_VISITABLE();
+	CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_;
+
+	endnote()
+	{
+		text_note_class_ = odf_types::noteclass::Endnote;
+	}
+private:
+	virtual void add_child_element(xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+};
+CP_REGISTER_OFFICE_ELEMENT2(endnote);
+//-------------------------------------------------------------------------------------------------------------------
+// text:footnote openoffice xml 1.0
+//-------------------------------------------------------------------------------------------------------------------
+class footnote : public note
+{
+public:
+	static const wchar_t * ns;
+	static const wchar_t * name;
+	static const xml::NodeType xml_type = xml::typeElement;
+	static const ElementType type = typeTextNote;
+
+	CPDOCCORE_DEFINE_VISITABLE();
+	CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_;
+
+	footnote()
+	{
+		text_note_class_ = odf_types::noteclass::Footnote;
+	}
+private:
+	virtual void add_child_element(xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+};
+CP_REGISTER_OFFICE_ELEMENT2(footnote);
 //-------------------------------------------------------------------------------------------------------------------
 // text:ruby
 //-------------------------------------------------------------------------------------------------------------------

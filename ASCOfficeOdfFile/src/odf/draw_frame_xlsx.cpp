@@ -205,9 +205,24 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 void draw_image::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    std::wstring href = xlink_attlist_.href_.get_value_or(L"");
+	if (draw_frame_ptr)
+	{
+		draw_frame *frame = dynamic_cast<draw_frame *>(draw_frame_ptr.get());
+		if (frame)
+		{
+			office_element_ptr elm = office_element_ptr(new draw_image(*this));
+			draw_image *image = dynamic_cast<draw_image *>(elm.get());
+			image->draw_frame_ptr = office_element_ptr();
 
-	if (href.empty() && office_binary_data_)
+			frame->content_.push_back(elm);
+			frame->xlsx_convert(Context);
+		}
+		return;
+	}
+//-----------------------------------------------------------------------------------------------	
+	std::wstring href = xlink_attlist_.href_.get_value_or(L"");
+
+	if (true == href.empty())
 	{
 		office_binary_data* binary_data = dynamic_cast<office_binary_data*>(office_binary_data_.get());
 		
@@ -215,6 +230,10 @@ void draw_image::xlsx_convert(oox::xlsx_conversion_context & Context)
 		{
 			href = binary_data->write_to(Context.root()->get_folder());
 		}
+	}
+	else
+	{
+		if (href[0] == L'#') href = href.substr(1);
 	}
 
 	Context.get_drawing_context().set_image(href);
@@ -246,6 +265,22 @@ void draw_chart::xlsx_convert(oox::xlsx_conversion_context & Context)
 }
 void draw_text_box::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
+	if (draw_frame_ptr)
+	{
+		draw_frame *frame = dynamic_cast<draw_frame *>(draw_frame_ptr.get());
+		if (frame)
+		{
+			office_element_ptr elm = office_element_ptr(new draw_text_box(*this));
+			draw_text_box *text_box = dynamic_cast<draw_text_box *>(elm.get());
+			text_box->draw_frame_ptr = office_element_ptr();
+
+			frame->content_.push_back(elm);
+			frame->xlsx_convert(Context);
+
+		}
+		return;
+	}
+//---------------------------------------------------------------------------------------------------------------
 	Context.get_drawing_context().set_text_box();
 
 	Context.get_text_context().start_drawing_content();
@@ -264,12 +299,29 @@ void draw_text_box::xlsx_convert(oox::xlsx_conversion_context & Context)
 }
 void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
+	if (draw_frame_ptr)
+	{
+		draw_frame *frame = dynamic_cast<draw_frame *>(draw_frame_ptr.get());
+		if (frame)
+		{
+			office_element_ptr elm = office_element_ptr(new draw_object(*this));
+			draw_object *object = dynamic_cast<draw_object *>(elm.get());
+			object->draw_frame_ptr = office_element_ptr();
+
+			frame->content_.push_back(elm);
+			frame->xlsx_convert(Context);
+		}
+		return;
+	}
+//-----------------------------------------------------------------------------------------------
 	try 
 	{
 		std::wstring href = xlink_attlist_.href_.get_value_or(L"");
 		
-		if (!odf_document_ && !href.empty())
+		if (!odf_document_ && false == href.empty())
 		{			
+			if (href[0] == L'#') href = href.substr(1);
+
 			std::wstring tempPath	= Context.root()->get_temp_folder();
 			std::wstring folderPath = Context.root()->get_folder();
 			std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;

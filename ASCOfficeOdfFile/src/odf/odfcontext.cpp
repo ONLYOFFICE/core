@@ -105,7 +105,6 @@ style_instance * styles_container::hyperlink_style()
 
 void styles_container::add_style(	const std::wstring & Name,
 									const std::wstring & DisplayName,
-									style_family::type Type,
 									style_content * Content,
 									bool IsAutomatic,
 									bool IsDefault,
@@ -120,6 +119,8 @@ void styles_container::add_style(	const std::wstring & Name,
 {
 	std::wstring ParentStyleName = ParentStyleName_;
 
+	style_family::type Type = Content ? Content->style_family_.get_type() : style_family::None;
+	
 	if (Name == ParentStyleName)
 	{
 		ParentStyleName = L"";//иначе в коде возможно зацикливание.

@@ -69,12 +69,18 @@ void text_list_style::add_attributes( const xml::attributes_wc_ptr & Attributes 
 
 void text_list_style::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    if		(L"text" == Ns && L"list-level-style-number" == Name)
-        CP_CREATE_ELEMENT(content_);
-    else if (L"text" == Ns && L"list-level-style-bullet" == Name)
-        CP_CREATE_ELEMENT(content_);    
-     else if (L"text" == Ns && L"list-level-style-image" == Name)
-        CP_CREATE_ELEMENT(content_);    
+	if (L"text" == Ns && L"list-level-style-number" == Name)
+	{
+		CP_CREATE_ELEMENT(content_);
+	}
+	else if (L"text" == Ns && L"list-level-style-bullet" == Name)
+	{
+		CP_CREATE_ELEMENT(content_);
+	}
+	else if (L"text" == Ns && L"list-level-style-image" == Name)
+	{
+		CP_CREATE_ELEMENT(content_);
+	}
    else
     {
          CP_NOT_APPLICABLE_ELM();
@@ -132,12 +138,20 @@ void text_list_level_style_number::add_attributes( const xml::attributes_wc_ptr 
     text_list_level_style_number_attr_.add_attributes(Attributes);
 }
 
-void text_list_level_style_number::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+void text_list_level_style_number::add_child_element(xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    if		(L"style" == Ns && L"list-level-properties" == Name)
-        CP_CREATE_ELEMENT(list_level_properties_);    
+	if (L"style" == Ns && L"list-level-properties" == Name)
+	{
+		CP_CREATE_ELEMENT(list_level_properties_);
+	}
+	else if (L"style" == Ns && L"properties" == Name) //openoffice xml 1.0
+	{
+		create_element_and_read(Reader, L"style", L"list-level-properties", list_level_properties_, getContext());
+	}
 	else if (L"style" == Ns && L"text-properties" == Name)
-        CP_CREATE_ELEMENT(style_text_properties_); 
+	{
+		CP_CREATE_ELEMENT(style_text_properties_);
+	}
 	else
     {
          CP_NOT_APPLICABLE_ELM();
@@ -157,10 +171,18 @@ void text_list_level_style_image::add_attributes( const xml::attributes_wc_ptr &
 
 void text_list_level_style_image::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    if		(L"style" == Ns && L"list-level-properties" == Name)
-        CP_CREATE_ELEMENT(list_level_properties_);    
+	if (L"style" == Ns && L"list-level-properties" == Name)
+	{
+		CP_CREATE_ELEMENT(list_level_properties_);
+	}
+	else if (L"style" == Ns && L"properties" == Name)
+	{
+		create_element_and_read(Reader, L"style", L"list-level-properties", list_level_properties_, getContext());
+	}
 	else if (L"style" == Ns && L"text-properties" == Name)
-        CP_CREATE_ELEMENT(style_text_properties_); 
+	{
+        CP_CREATE_ELEMENT(style_text_properties_);
+	}
 	else
     {
          CP_NOT_APPLICABLE_ELM();
@@ -230,10 +252,18 @@ void text_list_level_style_bullet::add_attributes( const xml::attributes_wc_ptr 
 
 void text_list_level_style_bullet::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    if (L"style" == Ns && L"list-level-properties" == Name)
-        CP_CREATE_ELEMENT(list_level_properties_);
-    else if (L"style" == Ns && L"text-properties" == Name)
-        CP_CREATE_ELEMENT(style_text_properties_);    
+	if (L"style" == Ns && L"list-level-properties" == Name)
+	{
+		CP_CREATE_ELEMENT(list_level_properties_);
+	}
+	else if (L"style" == Ns && L"properties" == Name)
+	{
+		create_element_and_read(Reader, L"style", L"list-level-properties", list_level_properties_, getContext());
+	}
+	else if (L"style" == Ns && L"text-properties" == Name)
+	{
+		CP_CREATE_ELEMENT(style_text_properties_);
+	}
     else
     {
          CP_NOT_APPLICABLE_ELM();
@@ -865,10 +895,18 @@ void text_outline_level_style::add_attributes( const xml::attributes_wc_ptr & At
 
 void text_outline_level_style::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    if (L"style" == Ns && L"list-level-properties" == Name)
-        CP_CREATE_ELEMENT(list_level_properties_);    
-    else if (L"style" == Ns && L"text-properties" == Name)
-        CP_CREATE_ELEMENT(text_properties_);    
+	if (L"style" == Ns && L"list-level-properties" == Name)
+	{
+		CP_CREATE_ELEMENT(list_level_properties_);
+	}
+	else if (L"style" == Ns && L"properties" == Name)
+	{
+		create_element_and_read(Reader, L"style", L"list-level-properties", list_level_properties_, getContext());
+	}
+	else if (L"style" == Ns && L"text-properties" == Name)
+	{
+		CP_CREATE_ELEMENT(text_properties_);
+	}
 	else
     {
          CP_NOT_APPLICABLE_ELM();

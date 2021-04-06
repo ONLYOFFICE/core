@@ -89,8 +89,10 @@ void chart_format_properties::add_attributes( const xml::attributes_wc_ptr & Att
     CP_APPLY_ATTR(L"chart:mean-value",			bVal);		if (bVal) push_back(_property(L"mean-value",			bVal.get()));
     CP_APPLY_ATTR(L"chart:error-upper-indicator",bVal);		if (bVal) push_back(_property(L"error-upper-indicator",	bVal.get()));
     CP_APPLY_ATTR(L"chart:error-lower-indicator",bVal);		if (bVal) push_back(_property(L"error-lower-indicator",	bVal.get()));
-
+	
 	_CP_OPT(std::wstring) strVal;
+	
+	CP_APPLY_ATTR(L"chartooo:axis-type", strVal); if (strVal) push_back(_property(L"axis-type", strVal.get()));
 
 	CP_APPLY_ATTR(L"chart:symbol-type",		strVal);	
 	if (strVal) push_back(_property(L"symbol-type",chart_symbol_type(chart_symbol_type::parse(strVal.get())).get_type()));

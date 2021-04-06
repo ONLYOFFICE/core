@@ -78,11 +78,8 @@ public:
 		if (!context_) return;
 
 		ElementType type_ = this->get_type();
-
-		if (type_ != typeTextSection)
-		{
-			context_->level++;
-		}
+		
+		context_->levels.push_back(this);
 	}
 	virtual void afterReadContent()
 	{
@@ -90,22 +87,18 @@ public:
 
 		ElementType type_ = this->get_type();
 
-		if (type_ != typeTextSection)
+		if (context_->levels.size() == 4) 
 		{
-			if (context_->level == 4) 
+			if (office_element * prev= context_->levels[context_->levels.size() - 2]) //for master pages doc
 			{
-				if (office_element * prev= context_->get_last_element())
+				if (element_style_name)
 				{
-					if (element_style_name)
-					{
-						prev->next_element_style_name = element_style_name;
-					}
+					prev->next_element_style_name = element_style_name;
 				}
-		        
-				context_->set_last_element(this);
 			}
-			context_->level--;
 		}
+		if (false == context_->levels.empty())
+			context_->levels.pop_back();
 	}
    
     CPDOCCORE_DEFINE_VISITABLE();

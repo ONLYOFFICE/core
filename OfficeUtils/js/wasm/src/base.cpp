@@ -9,18 +9,19 @@ void Zlib_Free(void* p)
     if (p) ::free(p);
 }
 
-const    char** Zlib_GetPaths(unsigned char* buffer, int size)
+unsigned char** Zlib_GetPaths(unsigned char* buffer, int size)
 {
-
+    if (buffer == NULL)
+        return NULL;
 }
 
-unsigned char*  Zlib_GetFile (unzFile* file, const wchar_t* path)
+unsigned char*  Zlib_GetFile (void* uf, const wchar_t* path)
 {
-    if (file == NULL)
-        return NULL;
     bool isIn = false;
     BYTE* fileInBytes = NULL;
     unsigned long nFileSize;
-    isIn = ZLibZipUtils::get_file_in_archive( file, path, &fileInBytes, nFileSize);
+
+    if (uf != NULL)
+        isIn = ZLibZipUtils::get_file_in_archive( uf, path, &fileInBytes, nFileSize);
     return fileInBytes;
 }

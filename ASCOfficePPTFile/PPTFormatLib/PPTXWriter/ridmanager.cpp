@@ -36,7 +36,14 @@ std::vector<std::wstring> RIDManager::getPathesForSlideRels()
     }
 
     for (auto RID : mapRIDs)
-        paths.push_back(m_soundPaths[RID.first - 1]);
+    {
+        const unsigned soundPos = RID.first - 1;
+        if (soundPos < m_soundPaths.size())
+            paths.push_back(m_soundPaths[soundPos]);
+        else if (m_soundPaths.size())                   //TODO
+            paths.push_back(m_soundPaths.back());
+    }
+
     return paths;
 }
 

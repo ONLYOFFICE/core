@@ -690,6 +690,7 @@ public:
                 }
             }
             oTmpBuilder += L"</w:tr>";
+            i++;
         }
         // Размеры таблицы
         std::wstring sGridCol;
@@ -1578,8 +1579,8 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     return S_OK;
 }
 
-void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl);
-void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bWasP)
+void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl, bool bWasTable);
+void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bWasP, bool bWasTable)
 {
     int nDeath = oIndexHtml.GetDepth();
     if (oIndexHtml.IsEmptyNode() || !oIndexHtml.ReadNextSiblingNode2(nDeath))
@@ -1593,45 +1594,57 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
         {
             if (!bWasP)
                 oXml.WriteString(L"<p>");
-            readStream(oXml, oIndexHtml, arrBinary, true);
+            readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
             if (!bWasP)
                 oXml.WriteString(L"</p>");
         }
         else if (sName == L"h1")
         {
-            oXml.WriteString(L"<section><title><p>");
-            readStream(oXml, oIndexHtml, arrBinary, true);
-            oXml.WriteString(L"</p></title></section>");
+            if (!bWasP)
+                oXml.WriteString(L"<section><title><p>");
+            readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
+            if (!bWasP)
+                oXml.WriteString(L"</p></title></section>");
         }
         else if (sName == L"h2")
         {
-            oXml.WriteString(L"<section><section><title><p>");
-            readStream(oXml, oIndexHtml, arrBinary, true);
-            oXml.WriteString(L"</p></title></section></section>");
+            if (!bWasP)
+                oXml.WriteString(L"<section><section><title><p>");
+            readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
+            if (!bWasP)
+                oXml.WriteString(L"</p></title></section></section>");
         }
         else if (sName == L"h3")
         {
-            oXml.WriteString(L"<section><section><section><title><p>");
-            readStream(oXml, oIndexHtml, arrBinary, true);
-            oXml.WriteString(L"</p></title></section></section></section>");
+            if (!bWasP)
+                oXml.WriteString(L"<section><section><section><title><p>");
+            readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
+            if (!bWasP)
+                oXml.WriteString(L"</p></title></section></section></section>");
         }
         else if (sName == L"h4")
         {
-            oXml.WriteString(L"<section><section><section><section><title><p>");
-            readStream(oXml, oIndexHtml, arrBinary, true);
-            oXml.WriteString(L"</p></title></section></section></section></section>");
+            if (!bWasP)
+                oXml.WriteString(L"<section><section><section><section><title><p>");
+            readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
+            if (!bWasP)
+                oXml.WriteString(L"</p></title></section></section></section></section>");
         }
         else if (sName == L"h5")
         {
-            oXml.WriteString(L"<section><section><section><section><section><title><p>");
-            readStream(oXml, oIndexHtml, arrBinary, true);
-            oXml.WriteString(L"</p></title></section></section></section></section></section>");
+            if (!bWasP)
+                oXml.WriteString(L"<section><section><section><section><section><title><p>");
+            readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
+            if (!bWasP)
+                oXml.WriteString(L"</p></title></section></section></section></section></section>");
         }
         else if (sName == L"h6")
         {
-            oXml.WriteString(L"<section><section><section><section><section><section><title><p>");
-            readStream(oXml, oIndexHtml, arrBinary, true);
-            oXml.WriteString(L"</p></title></section></section></section></section></section></section>");
+            if (!bWasP)
+                oXml.WriteString(L"<section><section><section><section><section><section><title><p>");
+            readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
+            if (!bWasP)
+                oXml.WriteString(L"</p></title></section></section></section></section></section></section>");
         }
         else if (sName == L"span")
         {
@@ -1651,66 +1664,73 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
                 if (sAlign == L"super")
                 {
                     oXml.WriteString(L"<sup>");
-                    readStream(oXml, oIndexHtml, arrBinary, bWasP);
+                    readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
                     oXml.WriteString(L"</sup>");
                 }
                 else if (sAlign == L"sub")
                 {
                     oXml.WriteString(L"<sub>");
-                    readStream(oXml, oIndexHtml, arrBinary, bWasP);
+                    readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
                     oXml.WriteString(L"</sub>");
                 }
                 else
-                    readStream(oXml, oIndexHtml, arrBinary, bWasP);
+                    readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
             }
             else
-                readStream(oXml, oIndexHtml, arrBinary, bWasP);
+                readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
         }
         else if (sName == L"s")
         {
             oXml.WriteString(L"<strikethrough>");
-            readStream(oXml, oIndexHtml, arrBinary, bWasP);
+            readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
             oXml.WriteString(L"</strikethrough>");
         }
         else if (sName == L"i")
         {
             oXml.WriteString(L"<emphasis>");
-            readStream(oXml, oIndexHtml, arrBinary, bWasP);
+            readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
             oXml.WriteString(L"</emphasis>");
         }
         else if (sName == L"b")
         {
             oXml.WriteString(L"<strong>");
-            readStream(oXml, oIndexHtml, arrBinary, bWasP);
+            readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
             oXml.WriteString(L"</strong>");
         }
         else if (sName == L"table")
         {
-            oXml.WriteString(L"<table>");
-            readStream(oXml, oIndexHtml, arrBinary, bWasP);
-            oXml.WriteString(L"</table>");
+            if (!bWasTable)
+                oXml.WriteString(L"<table>");
+            readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
+            if (!bWasTable)
+                oXml.WriteString(L"</table>");
         }
         else if (sName == L"tr")
         {
-            oXml.WriteString(L"<tr>");
-            readStream(oXml, oIndexHtml, arrBinary, bWasP);
-            oXml.WriteString(L"</tr>");
+            if (!bWasTable)
+                oXml.WriteString(L"<tr>");
+            readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
+            if (!bWasTable)
+                oXml.WriteString(L"</tr>");
         }
         else if (sName == L"td" || sName == L"th")
         {
-            oXml.WriteString(L"<td");
-            while (oIndexHtml.MoveToNextAttribute())
+            if (!bWasTable)
             {
-                if (oIndexHtml.GetName() == L"colspan")
-                    oXml.WriteString(L" colspan=\"" + oIndexHtml.GetText() + L"\"");
-                else if (oIndexHtml.GetName() == L"rowspan")
-                    oXml.WriteString(L" rowspan=\"" + oIndexHtml.GetText() + L"\"");
+                oXml.WriteString(L"<td");
+                while (oIndexHtml.MoveToNextAttribute())
+                {
+                    if (oIndexHtml.GetName() == L"colspan")
+                        oXml.WriteString(L" colspan=\"" + oIndexHtml.GetText() + L"\"");
+                    else if (oIndexHtml.GetName() == L"rowspan")
+                        oXml.WriteString(L" rowspan=\"" + oIndexHtml.GetText() + L"\"");
+                }
+                oIndexHtml.MoveToElement();
+                oXml.WriteString(L">");
             }
-            oIndexHtml.MoveToElement();
-
-            oXml.WriteString(L"<td>");
-            readStream(oXml, oIndexHtml, arrBinary, true);
-            oXml.WriteString(L"</td>");
+            readStream(oXml, oIndexHtml, arrBinary, true, true);
+            if (!bWasTable)
+                oXml.WriteString(L"</td>");
         }
         else if (sName == L"a")
         {
@@ -1719,13 +1739,13 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
             oXml.WriteEncodeXmlString(oIndexHtml.GetText());
             oXml.WriteString(L"\">");
             oIndexHtml.MoveToElement();
-            readStream(oXml, oIndexHtml, arrBinary, bWasP);
+            readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
             oXml.WriteString(L"</a>");
         }
         else if (sName == L"ul")
-            readLi(oXml, oIndexHtml, arrBinary, true);
+            readLi(oXml, oIndexHtml, arrBinary, true, bWasTable);
         else if (sName == L"ol")
-            readLi(oXml, oIndexHtml, arrBinary, false);
+            readLi(oXml, oIndexHtml, arrBinary, false, bWasTable);
         else if (sName == L"img")
         {
             std::wstring sBinary;
@@ -1742,11 +1762,11 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
             oXml.WriteString(L"<image l:href=\"#img" + std::to_wstring(arrBinary.size()) + L".png\"/>");
         }
         else
-            readStream(oXml, oIndexHtml, arrBinary, bWasP);
+            readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
     } while (oIndexHtml.ReadNextSiblingNode2(nDeath));
 }
 
-void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl)
+void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl, bool bWasTable)
 {
     int nNum = 1;
     int nDeath = oIndexHtml.GetDepth();
@@ -1759,7 +1779,7 @@ void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oInde
             oXml.WriteString(L"<p>");
             bUl ? oXml.AddCharSafe(183) : oXml.AddInt(nNum++);
             oXml.WriteString(L" ");
-            readStream(oXml, oIndexHtml, arrBinary, true);
+            readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
             oXml.WriteString(L"</p>");
         }
     } while (oIndexHtml.ReadNextSiblingNode2(nDeath));
@@ -1847,7 +1867,7 @@ HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sC
         int nDepth = oIndexHtml.GetDepth();
         oIndexHtml.ReadNextSiblingNode(nDepth); // head
         oIndexHtml.ReadNextSiblingNode(nDepth); // body
-        readStream(oDocument, oIndexHtml, arrBinary, false);
+        readStream(oDocument, oIndexHtml, arrBinary, false, false);
     }
     oDocument.WriteString(L"</section></body>");
     // binary

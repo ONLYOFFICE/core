@@ -1,5 +1,4 @@
-/*
- * (c) Copyright Ascensio System SIA 2010-2021
+﻿ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -77,12 +76,6 @@ namespace NSWebSocket
     void CSocketRocket::setUrl(const std::string& url) 
     {
         [impl->wrapped setUrl:[NSString stringWithAString:url]];
-    }
-
-    void CSocketRocket::setListener(std::shared_ptr<IListener> listener)
-    {
-        IListener* ptr = listener.get();
-        [impl->wrapped setListener: ptr];
     }
 
 }

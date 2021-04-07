@@ -30,18 +30,17 @@
  *
  */
 
-#ifndef _WEB_SOCKET_H_
-#define _WEB_SOCKET_H_
+#ifndef _WEB_WORKER_BASE_H_
+#define _WEB_WORKER_BASE_H_
 
 #include "websocket.h"
-#include <string>
 
 namespace NSWebSocket
 {
 
     class CWebWorkerBase: public IWebSocket
     {
-        public:
+        protected:
             std::shared_ptr<IListener> listener;
             std::string url;
 
@@ -54,10 +53,9 @@ namespace NSWebSocket
             virtual void open() override {}
             virtual void send(const std::string& message) override {}
             virtual void close() override {}
-            virtual void setUrl(const std::string& url) {this->url = url;}
-            virtual void setListener(std::shared_ptr<IListener> listener) {this->listener = listener;}
-    }
+            virtual void setUrl(const std::string& url) override {this->url = url;}
+    };
 
 }
 
-#endif /* _WEB_SOCKET_H_ */
+#endif /* _WEB_WORKER_BASE_H_ */

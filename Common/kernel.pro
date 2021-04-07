@@ -73,10 +73,9 @@ core_ios {
 
     HEADERS += \
         ./WebSocket/websocket.h \
-        ./WebSocket/listener.h \
+        ./WebSocket/WebWorkerBase.h \
         ./WebSocket/socketRocket_objc.h \
         ./WebSocket/socketRocket_internal.h \
-        ./WebSocket/managerWebSocket.h \
 
     OBJECTIVE_SOURCES += \
         ./WebSocket/socketRocket_objc.mm \
@@ -101,10 +100,8 @@ core_android {
 
     HEADERS += \
         ./WebSocket/websocket.h \
-        ./WebSocket/listener.h \
+        ./WebSocket/WebWorkerBase.h \
         ./WebSocket/ixwebsocket_internal.h \
-        ./WebSocket/managerWebSocket.h \
-
 
     SOURCES += \
         ./WebSocket/ixwebsocket_internal.cpp \

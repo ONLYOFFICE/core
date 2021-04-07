@@ -39,7 +39,7 @@
 
 namespace NSWebSocket
 {
-    std::shared_ptr<IWebSocket> createWebsocket(std::string type, const std::string& url, std::shared_ptr<IListener> listener);
+    std::shared_ptr<IWebSocket> createWebsocket(const std::string& type, std::shared_ptr<IListener> listener, const std::string& url)
     {
 	    if(type == "ixwebsocket")
 	    {

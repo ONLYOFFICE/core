@@ -53,7 +53,6 @@ namespace NSWebSocket
         virtual void send(const std::string& message) override;
         virtual void close() override;
         virtual void setUrl(const std::string& url) override;
-        virtual void setListener(std::shared_ptr<IListener> listener) override;
 
     };
 }

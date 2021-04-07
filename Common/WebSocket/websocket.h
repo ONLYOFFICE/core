@@ -44,6 +44,7 @@ namespace NSWebSocket
         virtual void open() = 0;
         virtual void send(const std::string& message) = 0;
         virtual void close() = 0;
+        virtual void setUrl(const std::string& url) = 0;
         virtual ~IWebSocket() {}
     };
 
@@ -57,7 +58,7 @@ namespace NSWebSocket
         virtual ~IListener() {}
     };
 
-    KERNEL_DECL std::shared_ptr<IWebSocket> createWebsocket(std::string type, const std::string& url, std::shared_ptr<IListener> listener);
+    KERNEL_DECL std::shared_ptr<IWebSocket> createWebsocket(const std::string& type, std::shared_ptr<IListener> listener, const std::string& url = "");
 }
 
 #endif /* _WEB_SOCKET_H_ */

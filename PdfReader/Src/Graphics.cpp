@@ -3287,22 +3287,22 @@ namespace PdfReader
 		if (m_pOut->IsStopped())
 			return;
 
-		m_pGState->SetFillColor(&pPatch->arrColor[0][0]);
-		m_pGState->SetStrokeColor(&pPatch->arrColor[0][0]);
-			//m_pOut->UpdateFillColor(m_pGState);
-			//m_pOut->UpdateStrokeColor(m_pGState);
-		m_pGState->MoveTo(pPatch->arrX[0][0], pPatch->arrY[0][0]);
-		m_pGState->CurveTo(pPatch->arrX[0][1], pPatch->arrY[0][1], pPatch->arrX[0][2], pPatch->arrY[0][2], pPatch->arrX[0][3], pPatch->arrY[0][3]);
-		m_pGState->CurveTo(pPatch->arrX[1][3], pPatch->arrY[1][3], pPatch->arrX[2][3], pPatch->arrY[2][3], pPatch->arrX[3][3], pPatch->arrY[3][3]);
-		m_pGState->CurveTo(pPatch->arrX[3][2], pPatch->arrY[3][2], pPatch->arrX[3][1], pPatch->arrY[3][1], pPatch->arrX[3][0], pPatch->arrY[3][0]);
-		m_pGState->CurveTo(pPatch->arrX[2][0], pPatch->arrY[2][0], pPatch->arrX[1][0], pPatch->arrY[1][0], pPatch->arrX[0][0], pPatch->arrY[0][0]);
-		m_pGState->ClosePath();
+		if (m_pGState->GetRenderMode() == 16L) // Графический тип рендера
+		{
+			m_pGState->SetFillColor(&pPatch->arrColor[0][0]);
+			m_pGState->SetStrokeColor(&pPatch->arrColor[0][0]);
+			m_pGState->MoveTo(pPatch->arrX[0][0], pPatch->arrY[0][0]);
+			m_pGState->CurveTo(pPatch->arrX[0][1], pPatch->arrY[0][1], pPatch->arrX[0][2], pPatch->arrY[0][2], pPatch->arrX[0][3], pPatch->arrY[0][3]);
+			m_pGState->CurveTo(pPatch->arrX[1][3], pPatch->arrY[1][3], pPatch->arrX[2][3], pPatch->arrY[2][3], pPatch->arrX[3][3], pPatch->arrY[3][3]);
+			m_pGState->CurveTo(pPatch->arrX[3][2], pPatch->arrY[3][2], pPatch->arrX[3][1], pPatch->arrY[3][1], pPatch->arrX[3][0], pPatch->arrY[3][0]);
+			m_pGState->CurveTo(pPatch->arrX[2][0], pPatch->arrY[2][0], pPatch->arrX[1][0], pPatch->arrY[1][0], pPatch->arrX[0][0], pPatch->arrY[0][0]);
+			m_pGState->ClosePath();
 
-		m_pOut->FillStrokeGradient(m_pGState, pPatch);
+			m_pOut->FillStrokeGradientPatch(m_pGState, pPatch);
 
-		m_pGState->ClearPath();
-		return;
-
+			m_pGState->ClearPath() ;
+			return;
+		}
 		GrPatch oPatch00, oPatch01, oPatch10, oPatch11;
 		double arrX[4][8], arrY[4][8];
 		double dMidX, dMidY;

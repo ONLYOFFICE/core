@@ -222,7 +222,11 @@ namespace PdfReader
 		virtual void UpdateTextShift(GrState *pGState, double dShift) {}
 
 		//----- Рисование Path
-		virtual void FillStrokeGradient(GrState *pGState, GrPatch *patch) {}
+		virtual void FillStrokeGradientPatch(GrState *pGState, GrPatch *patch) {}
+		virtual void FillStrokeGradientFunctional(GrState *pGState, GrFunctionShading *pShading){}
+		virtual void FillStrokeGradientAxial(GrState *pGState, GrAxialShading *pShading) {}
+		virtual void FillStrokeGradientRadial(GrState *pGState, GrRadialShading *pShading) {}
+		virtual void FillStrokeGradientTriangle(GrState *pGState, GrGouraudTriangleShading *pShading) {}
 
 		virtual void Stroke(GrState *pGState) {}
 		virtual void Fill(GrState *pGState) {}

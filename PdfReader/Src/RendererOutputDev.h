@@ -121,8 +121,6 @@ namespace PdfReader
 	class RendererOutputDev : public OutputDev
 	{
 	public:
-		virtual void FillStrokeGradient(GrState *pGState, GrPatch *patch);
-
         RendererOutputDev(GlobalParams *pGlobalParams, IRenderer *pRenderer, NSFonts::IFontManager* pFontManager, CFontList *pFontList = NULL);
 		virtual ~RendererOutputDev();
 		virtual bool UpSideDown()
@@ -271,6 +269,14 @@ namespace PdfReader
 		{
 			m_pbBreak = pbBreak;
 		}
+
+		//------ Отрисовка градиента через графическую либу
+		virtual void FillStrokeGradientPatch(GrState *pGState, GrPatch *patch);
+		virtual void TransformToPixels(GrState *pGState, double &x, double &y);
+		// virtual void FillStrokeGradientFunctional(GrState *pGState, GrFunctionShading *pShading);
+		// virtual void FillStrokeGradientAxial(GrState *pGState, GrAxialShading *pShading);
+		virtual void FillStrokeGradientRadial(GrState *pGState, GrRadialShading *pShading);
+		// virtual void FillStrokeGradientTriangle(GrState *pGState, GrGouraudTriangleShading *pShading);
 	private:
 
 		void Transform(double *pMatrix, double dUserX, double dUserY, double *pdDeviceX, double *pdDeviceY);

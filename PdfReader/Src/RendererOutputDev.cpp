@@ -3914,7 +3914,29 @@ namespace PdfReader
 		return;
 	}
 
-	void RendererOutputDev::FillStrokeGradient(GrState *pGState, PdfReader::GrPatch *patch)
+	void RendererOutputDev::TransformToPixels(GrState *pGState, double &x, double &y)
+	{
+		double newx = m_arrMatrix[0] * x +  m_arrMatrix[1] * y;	
+		double newy = m_arrMatrix[2] * x +  m_arrMatrix[3] * y;
+		newx += m_arrMatrix[4];	
+		newy += m_arrMatrix[5];
+
+		// double width, height;
+		// m_pRenderer->get_Height(&height);
+		// m_pRenderer->get_Width(&width);
+
+		double xdpi, ydpi;
+		m_pRenderer->get_DpiX(&xdpi);
+		m_pRenderer->get_DpiY(&ydpi);
+
+		double xcoef = pGState->GetHorDPI() / 25.4;
+		double ycoef = pGState->GetVerDPI() / 25.4;
+
+		x = newx * xcoef;
+		y = newy * ycoef;	
+	}
+
+	void RendererOutputDev::FillStrokeGradientPatch(GrState *pGState, PdfReader::GrPatch *patch)
 		{
 			if (m_bDrawOnlyText)
 				return;
@@ -3925,21 +3947,21 @@ namespace PdfReader
 			DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
 
 			long brush;
-			double xpi, ypi;
-			double coef = 2386. / 842;
-			double xmin, ymin, xmax, ymax;
-			pGState->GetClipBBox(&xmin, &ymin, &xmax, &ymax);
-			m_pRenderer->get_DpiX(&xpi);
-			m_pRenderer->get_DpiY(&ypi);
+			int alpha = pGState->GetFillOpacity() * 255;
 			m_pRenderer->get_BrushType(&brush);
 			m_pRenderer->put_BrushType(c_BrushTypeMyTestGradient);
+
 			std::vector<std::vector<NSStructures::Point>> points(4, std::vector<NSStructures::Point>(4));
 			for (int i = 0; i < 4; i++)
 			{
 				for (int j = 0; j < 4; j++)
 				{
-                    points[i][3 - j].x = patch->arrX[i][j] * coef * 0.75 + xmin * coef;// * xpi / 25.4;
-                    points[3 - i][j].y = patch->arrY[i][j] * coef * 0.75 + (842. - ymax) * coef;// * ypi / 25.4;
+                    double x = patch->arrX[i][j];
+                    double y = patch->arrY[i][j];
+					
+					TransformToPixels(pGState, x, y);
+					points[i][j].x = x;
+					points[i][j].y = y;
 				}
 			}
 			std::vector<std::vector<agg::rgba8>> colors(2, std::vector<agg::rgba8>(2));
@@ -3949,11 +3971,11 @@ namespace PdfReader
 				for (int j = 0; j < 2; j++)
 				{
 					DWORD dcolor = ColorSpace.GetDwordColor(&patch->arrColor[i][j]);
-					colors[i][j] = {dcolor % 0x100, (dcolor >> 8) % 0x100, (dcolor >> 16) % 0x100};
+					colors[j][i] = {dcolor % 0x100, (dcolor >> 8) % 0x100, (dcolor >> 16) % 0x100, alpha};
  				}
 			}
 			auto info = NSStructures::GInfoConstructor::get_tensor_curve(points, 
-			{{0, 1}, {1 , 0.5}},
+			{},
 			 colors,
 			 false
 			);
@@ -3964,4 +3986,41 @@ namespace PdfReader
 			m_pRenderer->EndCommand(c_nPathType);
 			m_pRenderer->put_BrushType(brush);
 		}
+
+	void RendererOutputDev::FillStrokeGradientRadial(GrState *pGState, GrRadialShading *pShading)
+	{
+		if (m_bDrawOnlyText)
+				return;
+
+		if (m_bTransparentGroupSoftMask)
+				return;
+
+		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
+
+		long brush;
+		int alpha = pGState->GetFillOpacity() * 255;
+		m_pRenderer->get_BrushType(&brush);
+		m_pRenderer->put_BrushType(c_BrushTypePathNewLinearGradient);
+
+		double x1, x2, y1, y2, r1, r2;
+		double t0, t1;
+		pShading->GetCoords(&x1, &y1, &r1, &x2, &y2, &r2);
+		t0 = pShading->GetDomain0();
+		t1 = pShading->GetDomain1();
+
+		double r_coef = pGState->GetHorDPI() / 25.4;
+
+		TransformToPixels(pGState, x1, y1);
+		TransformToPixels(pGState, x2, y2);
+
+		auto info = NSStructures::GInfoConstructor::get_radial({x1, y1}, {x2, y1}, r1 * r_coef, r2 * r_coef, 
+		t0, t1, pShading->GetExtendFirst(), pShading->GetExtendSecond());
+
+
+		((NSGraphics::IGraphicsRenderer*)m_pRenderer)->put_BrushGradInfo(info);
+		m_pRenderer->DrawPath(c_nWindingFillMode);
+			
+		m_pRenderer->EndCommand(c_nPathType);
+		m_pRenderer->put_BrushType(brush);
+	}	
 }

@@ -7,6 +7,8 @@ TEMPLATE = lib
 CONFIG += staticlib
 CONFIG += build_all_zlib
 
+DEFINES += ZLIB_USE_DYNAMIC_LIBRARY
+
 CORE_ROOT_DIR = $$PWD/../../..
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)

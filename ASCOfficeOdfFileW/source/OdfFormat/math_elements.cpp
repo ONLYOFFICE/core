@@ -39,7 +39,7 @@
 
 namespace cpdoccore { 
 
-	//using namespace odf_types;
+	using namespace odf_types;
 
 namespace odf_writer {
 
@@ -52,7 +52,21 @@ const wchar_t * office_math::name = L"math";
 
 //----------------------------------------------------------------------------------------------------
 
-
+//void office_math::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+//{
+//	CP_CREATE_ELEMENT(content_);
+//	this->
+//}
+//
+//void office_math::add_child_element(const office_element_ptr & child_element)
+//{
+//	content_.push_back(child_element);
+//}
+//
+//void office_math::serialize(std::wostream & _Wostream)
+//{
+//
+//}
 
 //----------------------------------------------------------------------------------------------------
 const wchar_t * math_semantics::ns = L"math";
@@ -71,7 +85,18 @@ void math_semantics::add_child_element(const office_element_ptr & child_element)
 
 void math_semantics::serialize(std::wostream & _Wostream)
 {
-
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				if (!content_[i]) continue;
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+			annotation_->serialize(CP_XML_STREAM());		
+		}
+	}
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -91,7 +116,19 @@ void math_annotation::add_child_element(const office_element_ptr & child_element
 
 void math_annotation::serialize(std::wostream & _Wostream)
 {
-
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				if (!content_[i]) continue;
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+			CP_XML_ATTR_OPT(L"math:text", text_);
+			CP_XML_ATTR_OPT(L"math:encoding", encoding_);
+		}
+	}
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -118,6 +155,7 @@ void math_annotation_xml::serialize(std::wostream & _Wostream)
 		{		
 			for (size_t i = 0; i < content_.size(); i++)
 			{
+				if (!content_[i]) continue;
 				content_[i]->serialize(CP_XML_STREAM());
 			}
 			CP_XML_ATTR_OPT(L"math:text", text_);

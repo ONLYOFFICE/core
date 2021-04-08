@@ -39,6 +39,8 @@
 
 #include "office_elements_create.h"
 
+#include "mathvariant.h"
+
 
 namespace cpdoccore { 
 namespace odf_writer {

@@ -38,7 +38,7 @@
 
 namespace cpdoccore { 
 
-	//using namespace odf_types;
+	using namespace odf_types;
 
 namespace odf_writer {
 
@@ -59,7 +59,17 @@ void math_mstack::add_child_element(const office_element_ptr & child_element)
 
 void math_mstack::serialize(std::wostream & _Wostream)
 {
-
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				if (!content_[i]) continue;
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
 }
 
 
@@ -81,7 +91,17 @@ void math_msrow::add_child_element(const office_element_ptr & child_element)
 
 void math_msrow::serialize(std::wostream & _Wostream)
 {
-
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				if (!content_[i]) continue;
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -101,7 +121,17 @@ void math_msline::add_child_element(const office_element_ptr & child_element)
 
 void math_msline::serialize(std::wostream & _Wostream)
 {
-
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				if (!content_[i]) continue;
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
 }
 
 //---------------------------------------------------------------
@@ -127,7 +157,17 @@ void math_msgroup::add_child_element(const office_element_ptr & child_element)
 
 void math_msgroup::serialize(std::wostream & _Wostream)
 {
-
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				if (!content_[i]) continue;
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
 }
 
 
@@ -155,7 +195,17 @@ void math_mlongdiv::add_child_element(const office_element_ptr & child_element)
 
 void math_mlongdiv::serialize(std::wostream & _Wostream)
 {
-
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				if (!content_[i]) continue;
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
 }
 
 //---------------------------------------------------------------
@@ -181,7 +231,17 @@ void math_mscarry::add_child_element(const office_element_ptr & child_element)
 
 void math_mscarry::serialize(std::wostream & _Wostream)
 {
-
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				if (!content_[i]) continue;
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
 }
 
 
@@ -208,7 +268,17 @@ void math_mscarries::add_child_element(const office_element_ptr & child_element)
 
 void math_mscarries::serialize(std::wostream & _Wostream)
 {
-
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				if (!content_[i]) continue;
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
 }
 
 //---------------------------------------------------------------

@@ -111,9 +111,9 @@ void MainWindow::on_RenderPic_clicked()
 
     NSFonts::IApplicationFonts* pFonts = oWorker.Check();
     PdfReader::CPdfReader PDFREADER(pFonts);
-    PDFREADER.LoadFromFile(L"test.pdf");
+    PDFREADER.LoadFromFile(L"barycentric.pdf");
     int page = ui->lineEdit->text().toInt();
-    PDFREADER.ConvertToRaster(page + 1, L"testpdf.bmp", 1);
+    PDFREADER.ConvertToRaster(0, L"testpdf.bmp", 1);
       QImage pm("testpdf.bmp");
    // QImage pm(400, 400, QImage::Format_RGB888);
    // GenerateImg(pm,  points, info);

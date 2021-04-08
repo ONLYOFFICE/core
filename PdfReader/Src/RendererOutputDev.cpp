@@ -4000,7 +4000,7 @@ namespace PdfReader
 		long brush;
 		int alpha = pGState->GetFillOpacity() * 255;
 		m_pRenderer->get_BrushType(&brush);
-		m_pRenderer->put_BrushType(c_BrushTypePathNewLinearGradient);
+		m_pRenderer->put_BrushType(c_BrushTypePathRadialGradient);
 
 		double x1, x2, y1, y2, r1, r2;
 		double t0, t1;
@@ -4008,14 +4008,24 @@ namespace PdfReader
 		t0 = pShading->GetDomain0();
 		t1 = pShading->GetDomain1();
 
-		double r_coef = pGState->GetHorDPI() / 25.4;
+		double r_coef = pGState->GetHorDPI() / 25.4 * pGState->GetCTM()[0];
 
 		TransformToPixels(pGState, x1, y1);
 		TransformToPixels(pGState, x2, y2);
 
-		auto info = NSStructures::GInfoConstructor::get_radial({x1, y1}, {x2, y1}, r1 * r_coef, r2 * r_coef, 
+		auto info = NSStructures::GInfoConstructor::get_radial({x1, y1}, {x2, y2}, r1 * r_coef, r2 * r_coef, 
 		t0, t1, pShading->GetExtendFirst(), pShading->GetExtendSecond());
-
+		
+		GrColorSpace *ColorSpace = pShading->GetColorSpace();;
+		float delta = (t1 - t0) / info.shading.function.get_resolution();
+		for (float t = t0; t <= t1; t += delta/100)
+		{
+			PdfReader::GrColor c;
+			pShading->GetColor(t, &c);
+			DWORD dword_color = ColorSpace->GetDwordColor(&c);
+			info.shading.function.set_color((float)t, dword_color % 0x100, 
+				(dword_color >> 8) % 0x100, (dword_color >> 16) % 0x100, alpha);
+		}
 
 		((NSGraphics::IGraphicsRenderer*)m_pRenderer)->put_BrushGradInfo(info);
 		m_pRenderer->DrawPath(c_nWindingFillMode);
@@ -4023,4 +4033,76 @@ namespace PdfReader
 		m_pRenderer->EndCommand(c_nPathType);
 		m_pRenderer->put_BrushType(brush);
 	}	
+
+	void RendererOutputDev::FillStrokeGradientAxial(GrState *pGState, GrAxialShading *pShading)
+	{
+		if (m_bDrawOnlyText)
+				return;
+
+		if (m_bTransparentGroupSoftMask)
+				return;
+
+		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
+
+		long brush;
+		int alpha = pGState->GetFillOpacity() * 255;
+		m_pRenderer->get_BrushType(&brush);
+		m_pRenderer->put_BrushType(c_BrushTypePathNewLinearGradient);
+
+		double x1, x2, y1, y2;
+		double t0, t1;
+		pShading->GetCoords(&x1, &y1, &x2, &y2);
+		t0 = pShading->GetDomain0();
+		t1 = pShading->GetDomain1();
+
+		double r_coef = pGState->GetHorDPI() / 25.4 * pGState->GetCTM()[0];
+
+		TransformToPixels(pGState, x1, y1);
+		TransformToPixels(pGState, x2, y2);
+
+		auto info = NSStructures::GInfoConstructor::get_linear({x1, y1}, {x2, y2}, t0, t1);
+		
+		GrColorSpace *ColorSpace = pShading->GetColorSpace();;
+		float delta = (t1 - t0) / info.shading.function.get_resolution();
+		for (float t = t0; t <= t1; t += delta/100)
+		{
+			PdfReader::GrColor c;
+			pShading->GetColor(t, &c);
+			DWORD dword_color = ColorSpace->GetDwordColor(&c);
+			info.shading.function.set_color((float)t, dword_color % 0x100, 
+				(dword_color >> 8) % 0x100, (dword_color >> 16) % 0x100, alpha);
+		}
+
+		((NSGraphics::IGraphicsRenderer*)m_pRenderer)->put_BrushGradInfo(info);
+		m_pRenderer->DrawPath(c_nWindingFillMode);
+			
+		m_pRenderer->EndCommand(c_nPathType);
+		m_pRenderer->put_BrushType(brush);
+	}
+	void RendererOutputDev::FillStrokeGradientTriangle(GrState *pGState, std::vector<GrColor*> &colors, std::vector<NSStructures::Point> &point)
+	{
+		if (m_bDrawOnlyText)
+				return;
+
+		if (m_bTransparentGroupSoftMask)
+			return;
+
+		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
+
+		long brush;
+		int alpha = pGState->GetFillOpacity() * 255;
+		m_pRenderer->get_BrushType(&brush);
+		m_pRenderer->put_BrushType(c_BrushTypeMyTestGradient);
+
+		//info.shading.shading_type = info.shading.CurveInterpolation;
+		//((NSGraphics::IGraphicsRenderer*)m_pRenderer)->put_BrushGradInfo(info);
+		m_pRenderer->DrawPath(c_nWindingFillMode);
+			
+		m_pRenderer->EndCommand(c_nPathType);
+		m_pRenderer->put_BrushType(brush);
+	}
+	void RendererOutputDev::FillStrokeGradientFunctional(GrState *pGState, GrFunctionShading *pShading)
+	{
+
+	}
 }

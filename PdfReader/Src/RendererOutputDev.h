@@ -273,10 +273,10 @@ namespace PdfReader
 		//------ Отрисовка градиента через графическую либу
 		virtual void FillStrokeGradientPatch(GrState *pGState, GrPatch *patch);
 		virtual void TransformToPixels(GrState *pGState, double &x, double &y);
-		// virtual void FillStrokeGradientFunctional(GrState *pGState, GrFunctionShading *pShading);
-		// virtual void FillStrokeGradientAxial(GrState *pGState, GrAxialShading *pShading);
+		virtual void FillStrokeGradientFunctional(GrState *pGState, GrFunctionShading *pShading);
+		virtual void FillStrokeGradientAxial(GrState *pGState, GrAxialShading *pShading);
 		virtual void FillStrokeGradientRadial(GrState *pGState, GrRadialShading *pShading);
-		// virtual void FillStrokeGradientTriangle(GrState *pGState, GrGouraudTriangleShading *pShading);
+		virtual void FillStrokeGradientTriangle(GrState *pGState, std::vector<GrColor*> &colors, std::vector<NSStructures::Point> &point);
 	private:
 
 		void Transform(double *pMatrix, double dUserX, double dUserY, double *pdDeviceX, double *pdDeviceY);

@@ -2349,6 +2349,11 @@ namespace PdfReader
 		double dMinX, dMinY, dMaxX, dMaxY;
 		GrColor arrColors[4];
 
+		if (true)
+		{
+
+		}
+		
 		pShading->GetDomain(&dMinX, &dMinY, &dMaxX, &dMaxY);
 		pShading->GetColor(dMinX, dMinY, &arrColors[0]);
 		pShading->GetColor(dMinX, dMaxY, &arrColors[1]);
@@ -2482,6 +2487,22 @@ namespace PdfReader
 		double dDy = dY1 - dY0;
 		bool bDxZero = fabs(dDx) < 0.01;
 		bool bDyZero = fabs(dDy) < 0.01;
+		if (true) // Графический тип рендера todo
+		{
+			double xmin, ymin, xmax, ymax;
+			m_pGState->GetUserClipBBox(&xmin, &ymin, &xmax, &ymax);
+			m_pGState->MoveTo(xmin, ymin);
+			m_pGState->LineTo(xmin, ymax);
+			m_pGState->LineTo(xmax, ymax);
+			m_pGState->LineTo(xmax, ymin);
+			m_pGState->LineTo(xmin, ymin);
+			m_pGState->ClosePath();
+
+			m_pOut->FillStrokeGradientAxial(m_pGState, pShading);
+
+			m_pGState->ClearPath();	
+			return;
+		}
 		if (bDxZero && bDyZero)
 		{
 			dTmin = dTmax = 0;
@@ -2776,7 +2797,7 @@ namespace PdfReader
 		}
 	}
 
-	void Graphics::DoRadialShadingFill(GrRadialShading *pShading)
+    void Graphics::DoRadialShadingFill(GrRadialShading *pShading)
 	{
 		// Сначала предоставляем возможность OuputDevice самому сделать Shading
 		if (m_pOut->UseRadialShadedFills() && m_pOut->RadialShadedFill(m_pGState, pShading))
@@ -2792,6 +2813,22 @@ namespace PdfReader
 		double dT1 = pShading->GetDomain1();
 		int nComponentsCount = pShading->GetColorSpace()->GetComponentsCount();
 
+		if (true) // Графический тип рендера todo
+		{
+			double xmin, ymin, xmax, ymax;
+			m_pGState->GetUserClipBBox(&xmin, &ymin, &xmax, &ymax);
+			m_pGState->MoveTo(xmin, ymin);
+			m_pGState->LineTo(xmin, ymax);
+			m_pGState->LineTo(xmax, ymax);
+			m_pGState->LineTo(xmax, ymin);
+			m_pGState->LineTo(xmin, ymin);
+			m_pGState->ClosePath();
+
+			m_pOut->FillStrokeGradientRadial(m_pGState, pShading);
+
+			m_pGState->ClearPath();	
+			return;
+		}
 		// Вычисляем точку, в которой r(s) = 0; проверяме вложенность окружностей; и 
 		// вычисляем углы тангенциальных линий
 		bool bEnclosed = false;
@@ -3212,7 +3249,10 @@ namespace PdfReader
 		double dABx, dABy, dBCx, dBCy, dACx, dACy;
 		GrColor oColorAB, oColorBC, oColorAC;
 		int nIndex;
-
+		if (true)
+		{
+			
+		}
 		for (nIndex = 0; nIndex < nComponentsCount; ++nIndex)
 		{
 			if (abs(pColorA->arrComp[nIndex] - pColorB->arrComp[nIndex]) > gouraudColorDelta || abs(pColorB->arrComp[nIndex] - pColorC->arrComp[nIndex]) > gouraudColorDelta)
@@ -3287,10 +3327,10 @@ namespace PdfReader
 		if (m_pOut->IsStopped())
 			return;
 
-		if (m_pGState->GetRenderMode() == 16L) // Графический тип рендера
+		if (true) // Графический тип рендера todo
 		{
-			m_pGState->SetFillColor(&pPatch->arrColor[0][0]);
-			m_pGState->SetStrokeColor(&pPatch->arrColor[0][0]);
+			//m_pGState->SetFillColor(&pPatch->arrColor[0][0]);
+			//m_pGState->SetStrokeColor(&pPatch->arrColor[0][0]);
 			m_pGState->MoveTo(pPatch->arrX[0][0], pPatch->arrY[0][0]);
 			m_pGState->CurveTo(pPatch->arrX[0][1], pPatch->arrY[0][1], pPatch->arrX[0][2], pPatch->arrY[0][2], pPatch->arrX[0][3], pPatch->arrY[0][3]);
 			m_pGState->CurveTo(pPatch->arrX[1][3], pPatch->arrY[1][3], pPatch->arrX[2][3], pPatch->arrY[2][3], pPatch->arrX[3][3], pPatch->arrY[3][3]);

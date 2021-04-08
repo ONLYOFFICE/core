@@ -8,6 +8,7 @@ CONFIG += staticlib
 CONFIG += build_all_zlib
 
 DEFINES += ZLIB_USE_DYNAMIC_LIBRARY
+DEFINES += BUILDING_WASM_MODULE
 
 CORE_ROOT_DIR = $$PWD/../../..
 PWD_ROOT_DIR = $$PWD
@@ -71,6 +72,8 @@ core_ios {
 OBJECTIVE_SOURCES += $$PWD/../../src/ZipUtilsCP_ios.mm
 }
 
-SOURCES += ../wasm/src/base.cpp
+SOURCES += ../wasm/src/base.cpp \
+    ../wasm/src/ioapibuf.c
 
-HEADERS += ../wasm/src/base.h
+HEADERS += ../wasm/src/base.h \
+    ../wasm/src/ioapibuf.h

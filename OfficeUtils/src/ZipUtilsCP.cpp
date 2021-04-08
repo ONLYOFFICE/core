@@ -34,6 +34,9 @@
 #include <algorithm>
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/common/Path.h"
+#if defined(BUILDING_WASM_MODULE)
+#include "../js/wasm/src/ioapibuf.h"
+#endif
 
 #if !defined(_WIN32) && !defined (_WIN64)
 #include <unistd.h>
@@ -76,6 +79,15 @@ namespace ZLibZipUtils
 #endif
 	  return uf;
   }
+#if defined(BUILDING_WASM_MODULE)
+  unzFile unzOpenHelp(const char* buffer, int size)
+  {
+      zlib_filefunc64_def ffunc;
+      fill_buffer_filefunc(&ffunc);
+      unzFile uf = unzOpen2_64(buffer, &ffunc);
+      return uf;
+  }
+#endif // BUILDING_WASM_MODULE
 #endif
   static std::wstring ascii_to_unicode(const char *src)
   {

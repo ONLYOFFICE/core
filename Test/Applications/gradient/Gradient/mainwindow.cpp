@@ -111,7 +111,7 @@ void MainWindow::on_RenderPic_clicked()
 
     NSFonts::IApplicationFonts* pFonts = oWorker.Check();
     PdfReader::CPdfReader PDFREADER(pFonts);
-    PDFREADER.LoadFromFile(L"barycentric.pdf");
+    PDFREADER.LoadFromFile(L"GWG060_Shading_x1a.pdf");
     int page = ui->lineEdit->text().toInt();
     PDFREADER.ConvertToRaster(0, L"testpdf.bmp", 1);
       QImage pm("testpdf.bmp");

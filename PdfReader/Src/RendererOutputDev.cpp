@@ -4079,7 +4079,7 @@ namespace PdfReader
 		m_pRenderer->EndCommand(c_nPathType);
 		m_pRenderer->put_BrushType(brush);
 	}
-	void RendererOutputDev::FillStrokeGradientTriangle(GrState *pGState, std::vector<GrColor*> &colors, std::vector<NSStructures::Point> &point)
+	void RendererOutputDev::FillStrokeGradientTriangle(GrState *pGState, const std::vector<GrColor*> &colors, const std::vector<NSStructures::Point> &point)
 	{
 		if (m_bDrawOnlyText)
 				return;
@@ -4094,8 +4094,23 @@ namespace PdfReader
 		m_pRenderer->get_BrushType(&brush);
 		m_pRenderer->put_BrushType(c_BrushTypeMyTestGradient);
 
-		//info.shading.shading_type = info.shading.CurveInterpolation;
-		//((NSGraphics::IGraphicsRenderer*)m_pRenderer)->put_BrushGradInfo(info);
+		std::vector<NSStructures::Point> pixel_points;
+		std::vector<agg::rgba8> rgba8_colors;
+		GrCalRGBColorSpace ColorSpace; 
+		for (int i = 0;i < 3; i++)
+		{
+			GrColor c = *colors[i];
+			DWORD dword_color = ColorSpace.GetDwordColor(&c);
+			rgba8_colors.push_back({dword_color % 0x100, (dword_color >> 8) % 0x100, (dword_color >> 16) % 0x100, alpha});
+			double x = point[i].x;
+			double y = point[i].y;
+			TransformToPixels(pGState, x, y);
+			pixel_points.push_back({x, y});
+			
+		}
+
+		auto info = NSStructures::GInfoConstructor::get_triangle(pixel_points, rgba8_colors, {}, false);
+		((NSGraphics::IGraphicsRenderer*)m_pRenderer)->put_BrushGradInfo(info);
 		m_pRenderer->DrawPath(c_nWindingFillMode);
 			
 		m_pRenderer->EndCommand(c_nPathType);

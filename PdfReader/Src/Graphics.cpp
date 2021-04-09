@@ -3251,7 +3251,13 @@ namespace PdfReader
 		int nIndex;
 		if (true)
 		{
-			
+			m_pGState->MoveTo(dAx, dAy);
+			m_pGState->LineTo(dBx, dBy);
+			m_pGState->LineTo(dCx, dCy);
+			m_pGState->ClosePath();
+			m_pOut->FillStrokeGradientTriangle(m_pGState, {pColorA, pColorB, pColorC}, {{dAx, dAy}, {dBx, dBy}, {dCx, dCy}});
+			m_pGState->ClearPath();
+			return;
 		}
 		for (nIndex = 0; nIndex < nComponentsCount; ++nIndex)
 		{

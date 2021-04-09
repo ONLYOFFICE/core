@@ -36,6 +36,7 @@
 #include "GlobalParams.h"
 #include "Graphics.h"
 #include "../PdfReader.h"
+#include "../../DesktopEditor/graphics/structures.h"
 namespace PdfReader
 {
 	class StringExt;
@@ -226,7 +227,7 @@ namespace PdfReader
 		virtual void FillStrokeGradientFunctional(GrState *pGState, GrFunctionShading *pShading){}
 		virtual void FillStrokeGradientAxial(GrState *pGState, GrAxialShading *pShading) {}
 		virtual void FillStrokeGradientRadial(GrState *pGState, GrRadialShading *pShading) {}
-		virtual void FillStrokeGradientTriangle(GrState *pGState, GrGouraudTriangleShading *pShading) {}
+		virtual void FillStrokeGradientTriangle(GrState *pGState, const std::vector<GrColor*> &colors, const std::vector<NSStructures::Point> &points) {}
 
 		virtual void Stroke(GrState *pGState) {}
 		virtual void Fill(GrState *pGState) {}

@@ -1,34 +1,32 @@
 #include "../../../../DesktopEditor/common/Types.h"
 #include "../../../../DesktopEditor/common/File.h"
-#include "../../../src/OfficeUtils.h"
 #include "../../wasm/src/base.h"
 
 #include <string>
-#include <iostream>
-#include <fstream>
+#include <vector>
 
 int main()
 {
-    COfficeUtils cOU;
-    cOU.CompressFileOrDirectory(NSFile::GetProcessDirectory() + L"/test", NSFile::GetProcessDirectory() + L"/test.zip");
-
-    std::string sData;
+    DWORD nBytesCount;
+    BYTE* pData;
     NSFile::CFileBinary oFile;
-    if (oFile.ReadAllTextUtf8A(NSFile::GetProcessDirectory() + L"/test.zip", sData))
+    if (oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.zip", &pData, nBytesCount))
         oFile.CloseFile();
 
-    int nBytesCount = sData.length();
-    char* pData = new char[nBytesCount];
-    for (int i = 0; i < nBytesCount; i++)
-        pData[i] = sData[i];
-
-    myFile* res = Zlib_GetFile(pData, nBytesCount, L"a/b/c/1.txt");
-
-    if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/res.txt"))
+    std::vector<std::wstring> paths = Zlib_GetPaths(pData, nBytesCount);
+    for (std::wstring& path : paths)
     {
-        if (res->data)
-            oFile.WriteFile(res->data, res->size);
-        oFile.CloseFile();
+        myFile* res = Zlib_GetFile(pData, nBytesCount, path.c_str());
+
+        if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L'/' + NSFile::GetFileName(path)))
+        {
+            if (res->data)
+                oFile.WriteFile(res->data, res->size);
+            oFile.CloseFile();
+        }
+
+        delete[] res->data;
+        delete res;
     }
 
     delete[] pData;

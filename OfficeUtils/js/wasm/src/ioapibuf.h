@@ -8,7 +8,7 @@ extern "C" {
 #endif
 
 typedef struct {
-    char* buffer;
+    unsigned char* buffer;
     uLong nSize;
     uLong nLimit;
     uLong nCurrentPos;

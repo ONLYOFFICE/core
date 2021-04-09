@@ -9,14 +9,12 @@
 #endif
 
 #include <malloc.h>
+#include <string>
+#include <vector>
 
 #include "../../../../DesktopEditor/common/Types.h"
 #include "../../../src/zlib-1.2.11/contrib/minizip/unzip.h"
 #include "../../../src/ZipUtilsCP.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 struct myFile
 {
@@ -27,11 +25,7 @@ struct myFile
 ZLIB_DECL_EXPORT void* Zlib_Malloc(unsigned int size);
 ZLIB_DECL_EXPORT void  Zlib_Free(void* p);
 
-ZLIB_DECL_EXPORT unsigned char** Zlib_GetPaths(unsigned char* buffer, int size);
-ZLIB_DECL_EXPORT myFile*         Zlib_GetFile (char* buffer, int size, const wchar_t* path);
-
-#ifdef __cplusplus
-}
-#endif
+ZLIB_DECL_EXPORT std::vector<std::wstring> Zlib_GetPaths(unsigned char* buffer, unsigned long size);
+ZLIB_DECL_EXPORT myFile* Zlib_GetFile(unsigned char* buffer, unsigned long size, const wchar_t* path);
 
 #endif // _ZLIB_H

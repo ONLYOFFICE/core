@@ -54,6 +54,16 @@ bool get_file(unzFile unzip_file_handle, BYTE* arr, uInt array_size)
     }
     return false;
 }
+static const std::wstring get_filename_from_unzfile(unzFile unzip_file_handle)
+{
+    char filename_inzip[256];
+    int err = UNZ_OK;
+
+    if (UNZ_OK == unzGetCurrentFileInfo(unzip_file_handle, NULL, filename_inzip, sizeof(filename_inzip), NULL, 0, NULL, 0))
+        return codepage_issue_fixFromOEM(filename_inzip);
+
+    return std::wstring(L"");
+}
 bool get_file_in_archive(unzFile unzip_file_handle, const wchar_t *filePathInZip, BYTE** fileInBytes, ULONG& nFileSize)
 {
     if(NULL == fileInBytes)
@@ -91,25 +101,44 @@ void Zlib_Free(void* p)
     if (p) ::free(p);
 }
 
-unsigned char** Zlib_GetPaths(unsigned char* buffer, int size)
+std::vector<std::wstring> Zlib_GetPaths(unsigned char* buffer, unsigned long size)
 {
-    if (buffer == NULL)
-        return NULL;
-}
-
-myFile*         Zlib_GetFile (char* buffer, int size, const wchar_t* path)
-{
-    BYTE** fileInBytes = new BYTE*;
-    ULONG nFileSize;
     unzFile uf = NULL;
-    bool isIn = false;
     BUFFER_IO* buf = new BUFFER_IO;
-    if (buffer != NULL && path != NULL)
+    if (buffer != NULL)
     {
         buf->buffer = buffer;
         buf->nSize = size;
         uf = unzOpenHelp(buf);
     }
+    std::vector<std::wstring> res;
+    if (uf != NULL)
+    {
+        do
+        {
+            unz_file_info file_info;
+            unzGetCurrentFileInfo(uf, &file_info, NULL, 0, NULL, 0, NULL, 0);
+            if (file_info.uncompressed_size != 0)
+                res.push_back(get_filename_from_unzfile(uf));
+        } while (UNZ_OK == unzGoToNextFile(uf));
+        unzClose(uf);
+    }
+    return res;
+}
+
+myFile* Zlib_GetFile(unsigned char* buffer, unsigned long size, const wchar_t* path)
+{
+    unzFile uf = NULL;
+    BUFFER_IO* buf = new BUFFER_IO;
+    if (buffer != NULL && path != NULL)
+    {
+        buf->buffer = buffer;
+        buf->nSize  = size;
+        uf = unzOpenHelp(buf);
+    }
+    BYTE** fileInBytes = new BYTE*;
+    ULONG nFileSize;
+    bool isIn = false;
     if (uf != NULL)
     {
         isIn = get_file_in_archive(uf, path, fileInBytes, nFileSize);

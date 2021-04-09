@@ -8,37 +8,10 @@
 #define ZLIB_DECL_EXPORT Q_DECL_EXPORT
 #endif
 
-#include "../../../../DesktopEditor/common/Types.h"
-#include "../../../src/zlib-1.2.11/contrib/minizip/unzip.h"
-
-/*
 #include <malloc.h>
-#include <string>
-#include <deque>
-#include <fstream>
-#include <vector>
-#include <list>
 
-#if defined(_WIN32) || defined (_WIN64)
-    #include <direct.h>
-    #include <windows.h>
-#endif
-
-#include "../../../src/OfficeUtilsCommon.h"
 #include "../../../../DesktopEditor/common/Types.h"
-
-// using namespace std;
-
 #include "../../../src/zlib-1.2.11/contrib/minizip/unzip.h"
-#include "../../../src/zlib-1.2.11/contrib/minizip/zip.h"
-#if defined(_WIN32) || defined (_WIN64)
-    #include "../../../src/zlib-1.2.11/contrib/minizip/iowin32.h"
-#endif
-#include "../../../src/zlib-1.2.11/zlib.h"
-#include "../../../src/ZipUtilsCP.h"
-
-#include <fstream>
-*/
 
 #ifdef __cplusplus
 extern "C" {

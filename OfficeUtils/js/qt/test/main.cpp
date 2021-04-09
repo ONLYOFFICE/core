@@ -1,5 +1,6 @@
 #include "../../../../DesktopEditor/common/Types.h"
 #include "../../../../DesktopEditor/common/File.h"
+#include "../../../src/OfficeUtils.h"
 #include "../../wasm/src/base.h"
 
 #include <string>
@@ -8,26 +9,25 @@
 
 int main()
 {
+    COfficeUtils cOU;
+    cOU.CompressFileOrDirectory(NSFile::GetProcessDirectory() + L"/test", NSFile::GetProcessDirectory() + L"/test.zip");
+
     std::string sData;
-    std::ifstream in(NSFile::GetProcessDirectory() + L"/test.zip", std::ios::in | std::ios::binary);
-    if (in.is_open())
-    {
-        char buf[512];
-        while (in.read(buf, sizeof (buf)).gcount() > 0)
-            sData.append(buf, in.gcount());
-    }
-    in.close();
+    NSFile::CFileBinary oFile;
+    if (oFile.ReadAllTextUtf8A(NSFile::GetProcessDirectory() + L"/test.zip", sData))
+        oFile.CloseFile();
 
     int nBytesCount = sData.length();
     char* pData = new char[nBytesCount];
-    strcpy(pData, sData.c_str());
+    for (int i = 0; i < nBytesCount; i++)
+        pData[i] = sData[i];
 
     unsigned char* res = Zlib_GetFile(pData, nBytesCount, L"a/b/c/1.txt");
 
-    NSFile::CFileBinary oFile;
     if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/res.txt"))
     {
-        oFile.WriteStringUTF8(std::wstring((wchar_t*)res));
+        if (res)
+            oFile.WriteStringUTF8(std::wstring((wchar_t*)res));
         oFile.CloseFile();
     }
 

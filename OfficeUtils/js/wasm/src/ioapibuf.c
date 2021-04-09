@@ -98,11 +98,12 @@ long   ZCALLBACK seek_buffer_func (voidpf opaque, voidpf stream, uLong offset, i
         return -1;
     }
     hFile->nCurrentPos = fseek_origin + offset;
-    return hFile->nCurrentPos;
+    return 0;
 }
 
 int    ZCALLBACK close_buffer_func(voidpf opaque, voidpf stream)
 {
+    /*
     BUFFER_IO* hFile = NULL;
     if (stream != NULL)
         hFile = (BUFFER_IO*)stream;
@@ -111,6 +112,7 @@ int    ZCALLBACK close_buffer_func(voidpf opaque, voidpf stream)
     hFile->nSize = 0;
     hFile->error = 0;
     free(stream);
+    */
     return 0;
 }
 

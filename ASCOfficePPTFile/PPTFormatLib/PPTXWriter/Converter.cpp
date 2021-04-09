@@ -1110,9 +1110,14 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
         start_index = 1;
     }
 
+    // I don't know: why do u need to write empty text box for footer and date
+    // If it exist he write it as shape.
     for (size_t i = start_index; i < pSlide->m_arElements.size(); ++i)
     {
-        WriteElement(oWriter, oRels, pSlide->m_arElements[i]);
+        auto pElement = pSlide->m_arElements[i];
+        auto type = pElement.get()->m_lPlaceholderType;
+        if (type != 7 && type != 9) // to fix date and footer empty box
+            WriteElement(oWriter, oRels, pElement);
     }
 
     oWriter.WriteString(std::wstring(L"</p:spTree></p:cSld>"));

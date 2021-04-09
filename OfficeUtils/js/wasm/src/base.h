@@ -8,6 +8,10 @@
 #define ZLIB_DECL_EXPORT Q_DECL_EXPORT
 #endif
 
+#include "../../../../DesktopEditor/common/Types.h"
+#include "../../../src/zlib-1.2.11/contrib/minizip/unzip.h"
+
+/*
 #include <malloc.h>
 #include <string>
 #include <deque>
@@ -34,6 +38,7 @@
 #include "../../../src/ZipUtilsCP.h"
 
 #include <fstream>
+*/
 
 #ifdef __cplusplus
 extern "C" {
@@ -43,7 +48,7 @@ ZLIB_DECL_EXPORT void* Zlib_Malloc(unsigned int size);
 ZLIB_DECL_EXPORT void  Zlib_Free(void* p);
 
 ZLIB_DECL_EXPORT unsigned char** Zlib_GetPaths(unsigned char* buffer, int size);
-ZLIB_DECL_EXPORT unsigned char*  Zlib_GetFile (std::string buffer, const wchar_t* path);
+ZLIB_DECL_EXPORT unsigned char*  Zlib_GetFile (char* buffer, int size, const wchar_t* path);
 
 #ifdef __cplusplus
 }

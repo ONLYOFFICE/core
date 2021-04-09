@@ -6,7 +6,15 @@
 extern "C" {
 #endif
 
-void fill_buffer_filefunc OF((zlib_filefunc64_def* pzlib_filefunc_def));
+typedef struct {
+    char* buffer;
+    uLong nSize;
+    uLong nLimit;
+    uLong nCurrentPos;
+    int error;
+} BUFFER_IO;
+
+void fill_buffer_filefunc OF((zlib_filefunc_def* pzlib_filefunc_def, BUFFER_IO* buffer));
 
 #ifdef __cplusplus
 }

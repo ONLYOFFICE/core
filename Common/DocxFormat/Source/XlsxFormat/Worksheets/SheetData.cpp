@@ -2096,8 +2096,14 @@ void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
 							
 							r1c1_formula_convert convert;
 
+							std::wstring ref = convert.convert(oReader.GetText2());;
+
 							m_oSheetViews->m_arrItems.back()->m_arrItems.push_back(new CSelection());							
-							m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref = convert.convert(oReader.GetText2());
+							m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref = ref;
+
+							size_t pos_split = ref.find(L":");
+							m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oActiveCell =
+								pos_split != std::wstring::npos ? ref.substr(0, pos_split) : ref;
 						}
 					}
 					if (col.IsInit() && row.IsInit())
@@ -2106,6 +2112,7 @@ void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
 							m_oSheetViews->m_arrItems.back()->m_arrItems.push_back(new CSelection());
 
 						m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oActiveCell = getCellAddress(*row + 1, *col + 1);
+						
 						if (false == m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref.IsInit())
 						{
 							m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref = m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oActiveCell;

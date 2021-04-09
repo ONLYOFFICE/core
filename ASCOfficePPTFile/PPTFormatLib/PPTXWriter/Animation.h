@@ -201,6 +201,7 @@ private:
 
     void FillAnim       (PPTX::Logic::Anim& oAnim, SOldAnimation* pOldAnim, int dur, std::wstring attrname,
                          SValue val1, SValue val2, std::wstring fmla = L"");
+    void FillAnimEffect (PPTX::Logic::AnimEffect& oAnimEffect, SOldAnimation* pOldAnim, std::wstring filter, std::wstring transition = L"in");
 
     void FillCBhvrForAnim (PPTX::Logic::Anim& oAnim, SOldAnimation* pOldAnim, int dur, std::wstring attrname);
     void FillSetAndAnim (SOldAnimation* pOldAnim, PPTX::Logic::ChildTnLst& oParent);
@@ -217,7 +218,7 @@ private:
     void ConvertPeekIn(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
     void ConvertRandomBars(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
     void ConvertSpiralIn(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim);
-    void ConvertSplit(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim);
+    void ConvertSplit(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
     void ConvertStretch(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
     void ConvertStrips(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
     void ConvertBasicSwivel(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
@@ -229,6 +230,10 @@ private:
                   std::wstring attrname1, SValue val1, SValue val2,
                   std::wstring attrname2, SValue val3, SValue val4,
                   std::wstring fmla1 = L"", std::wstring fmla2 = L"");
+    void PushAnim(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *pOldAnim,
+             std::wstring attrname1, SValue val1, SValue val2,std::wstring fmla1 = L"");
+
+    void PushAnimEffect(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *pOldAnim, std::wstring filter, std::wstring transition = L"in");
     void PushSet(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *pOldAnim, int dur = 0);
 
 private:

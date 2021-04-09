@@ -12,16 +12,23 @@
 
 #include "../../../../DesktopEditor/common/Types.h"
 #include "../../../src/zlib-1.2.11/contrib/minizip/unzip.h"
+#include "../../../src/ZipUtilsCP.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+struct myFile
+{
+    unsigned char* data;
+    unsigned long size;
+};
+
 ZLIB_DECL_EXPORT void* Zlib_Malloc(unsigned int size);
 ZLIB_DECL_EXPORT void  Zlib_Free(void* p);
 
 ZLIB_DECL_EXPORT unsigned char** Zlib_GetPaths(unsigned char* buffer, int size);
-ZLIB_DECL_EXPORT unsigned char*  Zlib_GetFile (char* buffer, int size, const wchar_t* path);
+ZLIB_DECL_EXPORT myFile*         Zlib_GetFile (char* buffer, int size, const wchar_t* path);
 
 #ifdef __cplusplus
 }

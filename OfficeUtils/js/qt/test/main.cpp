@@ -22,12 +22,12 @@ int main()
     for (int i = 0; i < nBytesCount; i++)
         pData[i] = sData[i];
 
-    unsigned char* res = Zlib_GetFile(pData, nBytesCount, L"a/b/c/1.txt");
+    myFile* res = Zlib_GetFile(pData, nBytesCount, L"a/b/c/1.txt");
 
     if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/res.txt"))
     {
-        if (res)
-            oFile.WriteStringUTF8(std::wstring((wchar_t*)res));
+        if (res->data)
+            oFile.WriteFile(res->data, res->size);
         oFile.CloseFile();
     }
 

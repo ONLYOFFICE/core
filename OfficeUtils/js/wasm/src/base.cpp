@@ -23,7 +23,7 @@ unsigned char** Zlib_GetPaths(unsigned char* buffer, int size)
         return NULL;
 }
 
-unsigned char*  Zlib_GetFile (char* buffer, int size, const wchar_t* path)
+myFile*         Zlib_GetFile (char* buffer, int size, const wchar_t* path)
 {
     BYTE** fileInBytes = new BYTE*;
     ULONG nFileSize;
@@ -38,8 +38,15 @@ unsigned char*  Zlib_GetFile (char* buffer, int size, const wchar_t* path)
     }
     if (uf != NULL)
     {
-        //isIn = get_file_in_archive(uf, path, fileInBytes, nFileSize);
+        isIn = ZLibZipUtils::get_file_in_archive(uf, path, fileInBytes, nFileSize);
         unzClose(uf);
     }
-    return isIn ? *fileInBytes : NULL;
+    delete buf;
+    myFile* res = new myFile;
+    if (isIn)
+    {
+        res->data = *fileInBytes;
+        res->size = nFileSize;
+    }
+    return res;
 }

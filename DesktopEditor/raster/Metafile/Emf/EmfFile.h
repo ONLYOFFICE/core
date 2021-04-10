@@ -38,6 +38,10 @@
 #include "EmfPlayer.h"
 #include "EmfPath.h"
 
+#ifdef _DEBUG
+    #include "../../../xml/include/xmlutils.h"
+#endif
+
 #if defined(DrawText)
 #undef DrawText
 #endif
@@ -335,6 +339,11 @@ namespace MetaFile
 
 		friend class CEmfPlayer;
 		friend class CEmfClip;
+
+		#ifdef _DEBUG
+			XmlUtils::CXmlWriter oXmlWriter;
+		#endif
+
 	};
 }
 

@@ -40,373 +40,267 @@ namespace cpdoccore {
 
 	using namespace odf_types;
 
-namespace odf_reader {
+namespace odf_writer {
 
 //---------------------------------------------------------------
 const wchar_t * math_msub::ns = L"math";
 const wchar_t * math_msub::name = L"msub";
 //----------------------------------------------------------------------------------------------------
-void math_msub::add_attributes( const xml::attributes_wc_ptr & Attributes )
+void math_msub::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
-
-}
-
-void math_msub::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-{
-	//<msub> base subscript </msub>
-
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_msub::oox_convert(oox::math_context & Context)
-{//2 elements
-	if (content_.size() != 2)
+void math_msub::add_child_element(const office_element_ptr & child_element)
+{
+	content_.push_back(child_element);
+}
+
+void math_msub::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
 	{
-		return;//todooo
+		CP_XML_NODE_SIMPLE()
+		{
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				if (!content_[i]) continue;
+				content_[i]->serialize(CP_XML_STREAM());
+			}			
+		}
 	}
-    std::wostream & strm = Context.output_stream();
-	
-	office_math_element* math_element = NULL;
-
-	strm << L"<m:sSub>";
-
-		strm << L"<m:e>";
-			Context.is_need_e_ = false;
-
-			math_element = dynamic_cast<office_math_element*>(content_[0].get());
-			math_element->oox_convert(Context);		
-		strm << L"</m:e>";
-		
-		strm << L"<m:sub>";
-			Context.is_need_e_ = false; //??
-
-			math_element = dynamic_cast<office_math_element*>(content_[1].get());
-			math_element->oox_convert(Context);		
-		strm << L"</m:sub>";
-
-	strm << L"</m:sSub>";
 }
 //---------------------------------------------------------------
 const wchar_t * math_msup::ns = L"math";
 const wchar_t * math_msup::name = L"msup";
 //----------------------------------------------------------------------------------------------------
-void math_msup::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-
-}
-
-void math_msup::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+void math_msup::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_msup::oox_convert(oox::math_context & Context)
-{//2 elements
-	if (content_.size() != 2)
+void math_msup::add_child_element(const office_element_ptr & child_element)
+{
+	content_.push_back(child_element);
+}
+
+void math_msup::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
 	{
-		return;//todooo
+		CP_XML_NODE_SIMPLE()
+		{
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				if (!content_[i]) continue;
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
 	}
-    std::wostream & strm = Context.output_stream();
-	
-	office_math_element* math_element = NULL;
-
-	strm << L"<m:sSup>";
-
-		strm << L"<m:e>";
-			Context.is_need_e_ = false;
-
-			math_element = dynamic_cast<office_math_element*>(content_[0].get());
-			math_element->oox_convert(Context);		
-		strm << L"</m:e>";
-		
-		strm << L"<m:sup>";
-			math_element = dynamic_cast<office_math_element*>(content_[1].get());
-			math_element->oox_convert(Context);		
-		strm << L"</m:sup>";
-
-	strm << L"</m:sSup>";
 }
 
 //---------------------------------------------------------------
 const wchar_t * math_msubsup::ns = L"math";
 const wchar_t * math_msubsup::name = L"msubsup";
 //----------------------------------------------------------------------------------------------------
-void math_msubsup::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-
-}
-
-void math_msubsup::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+void math_msubsup::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_msubsup::oox_convert(oox::math_context & Context)
-{//3 elements
-    std::wostream & strm = Context.output_stream();
-	
-	office_math_element* math_element = NULL;
+void math_msubsup::add_child_element(const office_element_ptr & child_element)
+{
+	content_.push_back(child_element);
+}
 
-	strm << L"<m:sSubSup>";
-	
-	Context.is_need_e_ = false;
-
-		strm << L"<m:e>";
-			math_element = dynamic_cast<office_math_element*>(content_[0].get());
-			math_element->oox_convert(Context);		
-		strm << L"</m:e>";
-		
-		strm << L"<m:sub>";
-			math_element = dynamic_cast<office_math_element*>(content_[1].get());
-			math_element->oox_convert(Context);		
-		strm << L"</m:sub>";
-
-		strm << L"<m:sup>";
-			math_element = dynamic_cast<office_math_element*>(content_[2].get());
-			math_element->oox_convert(Context);		
-		strm << L"</m:sup>";
-
-	strm << L"</m:sSubSup>";
+void math_msubsup::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				if (!content_[i]) continue;
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
 }
 //---------------------------------------------------------------
 const wchar_t * math_none::ns = L"math";
 const wchar_t * math_none::name = L"none";
 //----------------------------------------------------------------------------------------------------
-void math_none::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-
-}
-
-void math_none::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+void math_none::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_none::oox_convert(oox::math_context & Context)
+void math_none::add_child_element(const office_element_ptr & child_element)
 {
+	content_.push_back(child_element);
+}
 
+void math_none::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				if (!content_[i]) continue;
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
 }
 
 //---------------------------------------------------------------
 const wchar_t * math_mprescripts::ns = L"math";
 const wchar_t * math_mprescripts::name = L"mprescripts";
 
-void math_mprescripts::oox_convert(oox::math_context & Context)
+void math_mprescripts::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
+	//CP_CREATE_ELEMENT(content_); //TODO pich
+}
+
+void math_mprescripts::add_child_element(const office_element_ptr & child_element)
+{
+	//content_.push_back(child_element);
+}
+
+void math_mprescripts::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			// pich_qa?
+			/*for (size_t i = 0; i < content_.size(); i++)
+			{
+				if (!content_[i]) continue;
+				content_[i]->serialize(CP_XML_STREAM());
+			}*/
+		}
+	}
 }
 //---------------------------------------------------------------
 const wchar_t * math_mmultiscripts::ns = L"math";
 const wchar_t * math_mmultiscripts::name = L"mmultiscripts";
 //----------------------------------------------------------------------------------------------------
-void math_mmultiscripts::add_attributes( const xml::attributes_wc_ptr & Attributes )
+void math_mmultiscripts::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
-
+	CP_CREATE_ELEMENT(content_);
 }
 
-void math_mmultiscripts::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+void math_mmultiscripts::add_child_element(const office_element_ptr & child_element)
 {
-	if (Name == L"mprescripts")
-	{
-		bSeparate = true;
-	}
-	else
-	{
-		if (bSeparate)
-			CP_CREATE_ELEMENT(pre_content_);
-		else
-			CP_CREATE_ELEMENT(content_);
-	}
+	content_.push_back(child_element);
 }
 
-void math_mmultiscripts::oox_convert(oox::math_context & Context)
-{//1* elements
-	std::wostream & strm = Context.output_stream();
-
-	strm << L"<m:sPre>";	
-		strm << L"<m:sup>";
-			for (size_t i = 0; i < pre_content_.size(); i++)
-			{
-				office_math_element* math_element = dynamic_cast<office_math_element*>(pre_content_[i].get());
-				math_element->oox_convert(Context);
-			}
-		strm << L"</m:sup>";
-		strm << L"<m:e>";
+void math_mmultiscripts::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
 			for (size_t i = 0; i < content_.size(); i++)
 			{
-				office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
-				math_element->oox_convert(Context);
+				if (!pre_content_[i]) continue;
+				pre_content_[i]->serialize(CP_XML_STREAM());
 			}
-		strm << L"</m:e>";
-	strm << L"</m:sPre>";
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				if (!content_[i]) continue;
+				content_[i]->serialize(CP_XML_STREAM());
+			}			
+		}
+	}
 }
 //---------------------------------------------------------------
 const wchar_t * math_munderover::ns = L"math";
 const wchar_t * math_munderover::name = L"munderover";
 //----------------------------------------------------------------------------------------------------
-void math_munderover::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-
-}
-
-void math_munderover::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+void math_munderover::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_munderover::oox_convert(oox::math_context & Context)
-{//3 elements (+1)
-	if (content_.size() < 4)
+void math_munderover::add_child_element(const office_element_ptr & child_element)
+{
+	content_.push_back(child_element);
+}
+
+void math_munderover::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
 	{
-		return;
-	}
-	std::wstringstream strmTemp; 
-	strmTemp.clear();
-	content_[0]->text_to_stream(strmTemp);
-
-	std::wstring sBase = strmTemp.str();
-
-	std::wostream & strm = Context.output_stream();
-
-	office_math_element* math_element = NULL;
-
-	if (sBase.size() < 3)
-	{	
-		strm << L"<m:nary>";
-
-			strm << L"<m:naryPr>";
+		CP_XML_NODE_SIMPLE()
+		{
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				strm << L"<m:chr m:val=\"";
-					content_[0]->text_to_stream(strm);
-				strm << L"\"/>";
+				if (!content_[i]) continue;
+				content_[i]->serialize(CP_XML_STREAM());
 			}
-			strm << L"</m:naryPr>";
-			strm << L"<m:sub>";
-			{
-				math_element = dynamic_cast<office_math_element*>(content_[2].get());
-				math_element->oox_convert(Context);		
-			}
-			strm << L"</m:sub>";
-			
-			strm << L"<m:sup>";
-			{
-				math_element = dynamic_cast<office_math_element*>(content_[1].get());
-				math_element->oox_convert(Context);		
-			}
-			strm << L"</m:sup>";
-
-			strm << L"<m:e>";
-			{
-				math_element = dynamic_cast<office_math_element*>(content_[3].get());
-				math_element->oox_convert(Context);		
-			}
-			strm << L"</m:e>";
-		strm << L"</m:nary>";
-	}
-	else if (sBase == L"lim")
-	{
-		strm << L"<m:limUpp>";
-		strm << L"<m:limUppPr/>";
-			strm << L"<m:e>";
-				strm << L"<m:limLow>";	
-					strm << L"<m:limLowPr/>";
-					strm << L"<m:e>";
-						math_element = dynamic_cast<office_math_element*>(content_[0].get());
-						math_element->oox_convert(Context);		
-					strm << L"</m:e>";
-					strm << L"<m:lim>";
-						math_element = dynamic_cast<office_math_element*>(content_[1].get());
-						math_element->oox_convert(Context);		
-					strm << L"</m:lim>";
-				strm << L"</m:limLow>";
-			strm << L"</m:e>";
-			strm << L"<m:lim>";
-				math_element = dynamic_cast<office_math_element*>(content_[2].get());
-				math_element->oox_convert(Context);		
-			strm << L"</m:lim>";
-		strm << L"</m:limUpp>";
-	
-		math_element = dynamic_cast<office_math_element*>(content_[3].get());
-		math_element->oox_convert(Context);		
+		}
 	}
 }
 //---------------------------------------------------------------
 const wchar_t * math_mover::ns = L"math";
 const wchar_t * math_mover::name = L"mover";
 //----------------------------------------------------------------------------------------------------
-void math_mover::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-
-}
-
-void math_mover::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+void math_mover::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_mover::oox_convert(oox::math_context & Context)
-{//2 elements
-	std::wostream & strm = Context.output_stream();
+void math_mover::add_child_element(const office_element_ptr & child_element)
+{
+	content_.push_back(child_element);
+}
 
-	office_math_element* math_element = NULL;
-
-	strm << L"<m:limUpp>";	
-		strm << L"<m:limUppPr/>";
-		strm << L"<m:e>";
-	
-		Context.is_need_e_ = false;
-
-			math_element = dynamic_cast<office_math_element*>(content_[0].get());
-			math_element->oox_convert(Context);		
-		strm << L"</m:e>";
-		strm << L"<m:lim>";
-			math_element = dynamic_cast<office_math_element*>(content_[1].get());
-			math_element->oox_convert(Context);		
-		strm << L"</m:lim>";
-	strm << L"</m:limUpp>";
+void math_mover::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				if (!content_[i]) continue;
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
 }
 //---------------------------------------------------------------
 const wchar_t * math_munder::ns = L"math";
 const wchar_t * math_munder::name = L"munder";
 //----------------------------------------------------------------------------------------------------
-void math_munder::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-
-}
-
-void math_munder::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+void math_munder::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_munder::oox_convert(oox::math_context & Context)
-{//2 elements
-	std::wostream & strm = Context.output_stream();
+void math_munder::add_child_element(const office_element_ptr & child_element)
+{
+	content_.push_back(child_element);
+}
 
-	bool need_e = Context.is_need_e_;
-	if (need_e)
+void math_munder::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
 	{
-		Context.output_stream() << L"<m:e>";
+		CP_XML_NODE_SIMPLE()
+		{
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				if (!content_[i]) continue;
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
 	}
-	Context.is_need_e_ = false;
-
-	office_math_element* math_element = NULL;
-	strm << L"<m:limLow>";	
-		strm << L"<m:limLowPr/>";
-		strm << L"<m:e>";
-			math_element = dynamic_cast<office_math_element*>(content_[0].get());
-			math_element->oox_convert(Context);		
-		strm << L"</m:e>";
-		strm << L"<m:lim>";
-			math_element = dynamic_cast<office_math_element*>(content_[1].get());
-			math_element->oox_convert(Context);		
-		strm << L"</m:lim>";
-	strm << L"</m:limLow>";
-
-	if (need_e)
-	{
-		Context.output_stream() << L"</m:e>";
-	}
-	Context.is_need_e_ = need_e;
 }
-}
-}
+} // odf_writer
+} // cpdoccore

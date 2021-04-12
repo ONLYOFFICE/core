@@ -33,10 +33,10 @@
 
 #include "math_elements.h"
 
-#include "datatypes/common_attlists.h"
+#include "../datatypes/common_attlists.h"
 
 namespace cpdoccore { 
-namespace odf_reader {
+namespace odf_writer {
 
 class math_mi : public office_math_element
 {
@@ -46,13 +46,13 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMI;
 
-	virtual void oox_convert(oox::math_context & Context);
-
+	
 	virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 private:
-    virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text			(const std::wstring & Text);
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element(const office_element_ptr & child_element);
+
+	virtual void serialize(std::wostream & _Wostream);
 
 	odf_types::common_math_style_attlist	common_attlist_;
    
@@ -61,7 +61,7 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_mi);
-CP_REGISTER_OFFICE_ELEMENT3(math_mi);
+//CP_REGISTER_OFFICE_ELEMENT3(math_mi);
 //--------------------------------------------------------------------
 class math_mo : public office_math_element
 {
@@ -71,16 +71,16 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMO;
 
-	virtual void oox_convert(oox::math_context & Context);
-
+	
 	virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 	_CP_OPT(bool)				fence_;
 	_CP_OPT(bool)				stretchy_;
 private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element(const office_element_ptr & child_element);
+
+	virtual void serialize(std::wostream & _Wostream);
 
 	odf_types::common_math_style_attlist	common_attlist_;
 
@@ -89,7 +89,7 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_mo);
-CP_REGISTER_OFFICE_ELEMENT3(math_mo);
+//CP_REGISTER_OFFICE_ELEMENT3(math_mo);
 //--------------------------------------------------------------------
 class math_mn : public office_math_element
 {
@@ -99,12 +99,12 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMN;
 
-	virtual void oox_convert(oox::math_context & Context);
-
+	
 private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element(const office_element_ptr & child_element);
+
+	virtual void serialize(std::wostream & _Wostream);
 
 	odf_types::common_math_style_attlist	common_attlist_;
 
@@ -113,7 +113,7 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_mn);
-CP_REGISTER_OFFICE_ELEMENT3(math_mn);
+//CP_REGISTER_OFFICE_ELEMENT3(math_mn);
 //--------------------------------------------------------------------
 class math_mtext : public office_math_element
 {
@@ -123,12 +123,12 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMText;
 
-	virtual void oox_convert(oox::math_context & Context);
 
 private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element(const office_element_ptr & child_element);
+
+	virtual void serialize(std::wostream & _Wostream);
 
 	odf_types::common_math_style_attlist	common_attlist_;
 
@@ -137,7 +137,7 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_mtext);
-CP_REGISTER_OFFICE_ELEMENT3(math_mtext);
+//CP_REGISTER_OFFICE_ELEMENT3(math_mtext);
 //--------------------------------------------------------------------
 class math_mspace : public office_math_element
 {
@@ -147,12 +147,12 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMSpace;
 
-	virtual void oox_convert(oox::math_context & Context);
 
 private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element(const office_element_ptr & child_element);
+
+	virtual void serialize(std::wostream & _Wostream);
 
 	odf_types::common_math_style_attlist	common_attlist_;
 
@@ -161,7 +161,7 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_mspace);
-CP_REGISTER_OFFICE_ELEMENT3(math_mspace);
+//CP_REGISTER_OFFICE_ELEMENT3(math_mspace);
 //--------------------------------------------------------------------
 class math_ms : public office_math_element
 {
@@ -171,12 +171,12 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMS;
 
-	virtual void oox_convert(oox::math_context & Context);
 
 private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element(const office_element_ptr & child_element);
+
+	virtual void serialize(std::wostream & _Wostream);
 
  	odf_types::common_math_style_attlist	common_attlist_;
 
@@ -185,7 +185,7 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_ms);
-CP_REGISTER_OFFICE_ELEMENT3(math_ms);
+//CP_REGISTER_OFFICE_ELEMENT3(math_ms);
 //--------------------------------------------------------------------
 class math_mglyph : public office_math_element
 {
@@ -195,12 +195,12 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMGlyph;
 
-	virtual void oox_convert(oox::math_context & Context);
 
 private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element(const office_element_ptr & child_element);
+
+	virtual void serialize(std::wostream & _Wostream);
 
 	odf_types::common_math_style_attlist	common_attlist_;
 
@@ -209,7 +209,7 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_mglyph);
-CP_REGISTER_OFFICE_ELEMENT3(math_mglyph);
+//CP_REGISTER_OFFICE_ELEMENT3(math_mglyph);
 //--------------------------------------------------------------------
 }
 }

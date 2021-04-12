@@ -44,81 +44,35 @@ namespace cpdoccore {
 
 	using namespace odf_types;
 
-namespace odf_reader {
+namespace odf_writer {
 
 //---------------------------------------------------------------
 const wchar_t * math_mi::ns = L"math";
 const wchar_t * math_mi::name = L"mi";
 //----------------------------------------------------------------------------------------------------
-void math_mi::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-	common_attlist_.add_attributes(Attributes);
-}
-
-void math_mi::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+void math_mi::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_mi::add_text(const std::wstring & Text) 
+void math_mi::add_child_element(const office_element_ptr & child_element)
 {
-    text_ = Text;
+	content_.push_back(child_element);
 }
 
-std::wostream & math_mi::text_to_stream(std::wostream & _strm, bool bXmlEncode) const
+void math_mi::serialize(std::wostream & _Wostream)
 {
-	if (text_) 
-		_strm << *text_;
-    return _strm;
-}
-
-void math_mi::oox_convert(oox::math_context & Context)
-{
-	if (!text_) return;
-
-	CP_XML_WRITER(Context.output_stream())
-    {
-		CP_XML_NODE(L"m:r")
-		{		
-			if (common_attlist_.mathvariant_)
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			common_attlist_.serialize(CP_GET_XML_NODE());
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				std::wstring m_sty_val;
-				if (common_attlist_.mathvariant_->style_.bold)	m_sty_val += L"b";
-				if (common_attlist_.mathvariant_->style_.italic)m_sty_val += L"i";
-
-				CP_XML_NODE(L"m:rPr")
-				{
-					if (!m_sty_val.empty())
-					{
-						CP_XML_NODE(L"m:sty")
-						{
-							CP_XML_ATTR(L"m:val", m_sty_val);
-						}
-					}
-					if (common_attlist_.mathvariant_->style_.type > 0)
-					{
-						CP_XML_NODE(L"m:scr")
-						{
-							switch(common_attlist_.mathvariant_->style_.type)
-							{
-								case 1: CP_XML_ATTR(L"m:val", L"double-struck");	break;
-								case 2: CP_XML_ATTR(L"m:val", L"fraktur");			break;
-								case 3: CP_XML_ATTR(L"m:val", L"script");			break;
-								case 4: CP_XML_ATTR(L"m:val", L"sans-serif");		break;
-								case 5: CP_XML_ATTR(L"m:val", L"monospace");		break;
-							}
-						}
-					}
-				}
-			}
-
-			Context.text_properties_->content_.oox_serialize(CP_XML_STREAM(), Context.graphRPR_, Context.fonts_container_);
-
-			CP_XML_NODE(L"m:t")
-			{
-				//CP_XML_ATTR(L"xml:space", L"preserve");
-				CP_XML_STREAM() << xml::utils::replace_text_to_xml( *text_ );
-			}
+				if (!content_[i]) continue;
+				content_[i]->serialize(CP_XML_STREAM());
+			}			
+			CP_XML_ATTR_OPT(L"math:text", text_);			
 		}
 	}
 }
@@ -126,47 +80,29 @@ void math_mi::oox_convert(oox::math_context & Context)
 const wchar_t * math_mo::ns = L"math";
 const wchar_t * math_mo::name = L"mo";
 //----------------------------------------------------------------------------------------------------
-void math_mo::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-	common_attlist_.add_attributes(Attributes);
-	CP_APPLY_ATTR(L"stretchy",		stretchy_);
-	CP_APPLY_ATTR(L"fence",			fence_);
-}
-
-void math_mo::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+void math_mo::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_mo::add_text(const std::wstring & Text) 
+void math_mo::add_child_element(const office_element_ptr & child_element)
 {
-    text_ = Text;
+	content_.push_back(child_element);
 }
 
-std::wostream & math_mo::text_to_stream(std::wostream & _strm, bool bXmlEncode) const
+void math_mo::serialize(std::wostream & _Wostream)
 {
-	if (text_) 
-		_strm << *text_;
-    return _strm;
-}
-
-void math_mo::oox_convert(oox::math_context & Context)
-{
-	if (!text_) return;
-   
-	CP_XML_WRITER(Context.output_stream())
-    {
-		CP_XML_NODE(L"m:r")
-        {
-			// + доп стили текста ... todoooo
-
-			Context.text_properties_->content_.oox_serialize(CP_XML_STREAM(), Context.graphRPR_, Context.fonts_container_);
-			
-			CP_XML_NODE(L"m:t")
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			common_attlist_.serialize(CP_GET_XML_NODE());
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				//CP_XML_ATTR(L"xml:space", L"preserve");
-				CP_XML_STREAM() << xml::utils::replace_text_to_xml( *text_ );
+				if (!content_[i]) continue;
+				content_[i]->serialize(CP_XML_STREAM());
 			}
+			CP_XML_ATTR_OPT(L"math:text", text_);
 		}
 	}
 }
@@ -174,40 +110,29 @@ void math_mo::oox_convert(oox::math_context & Context)
 const wchar_t * math_mn::ns = L"math";
 const wchar_t * math_mn::name = L"mn";
 //----------------------------------------------------------------------------------------------------
-void math_mn::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-	common_attlist_.add_attributes(Attributes);
-
-}
-
-void math_mn::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+void math_mn::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_mn::add_text(const std::wstring & Text) 
+void math_mn::add_child_element(const office_element_ptr & child_element)
 {
-    text_ = Text;
+	content_.push_back(child_element);
 }
 
-
-void math_mn::oox_convert(oox::math_context & Context)
+void math_mn::serialize(std::wostream & _Wostream)
 {
-	if (!text_) return;
-
-	CP_XML_WRITER(Context.output_stream())
-    {
-		CP_XML_NODE(L"m:r")
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
 		{
-			// + доп стили текста ... todoooo
-
-			Context.text_properties_->content_.oox_serialize(CP_XML_STREAM(), Context.graphRPR_, Context.fonts_container_);
-	
-			CP_XML_NODE(L"m:t")
+			common_attlist_.serialize(CP_GET_XML_NODE());
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				//CP_XML_ATTR(L"xml:space", L"preserve");
-				CP_XML_STREAM() << xml::utils::replace_text_to_xml( *text_ );
+				if (!content_[i]) continue;
+				content_[i]->serialize(CP_XML_STREAM());
 			}
+			CP_XML_ATTR_OPT(L"math:text", text_);
 		}
 	}
 }
@@ -215,105 +140,121 @@ void math_mn::oox_convert(oox::math_context & Context)
 const wchar_t * math_ms::ns = L"math";
 const wchar_t * math_ms::name = L"ms";
 //----------------------------------------------------------------------------------------------------
-void math_ms::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-	common_attlist_.add_attributes(Attributes);
-
-}
-
-void math_ms::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+void math_ms::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_ms::add_text(const std::wstring & Text) 
+void math_ms::add_child_element(const office_element_ptr & child_element)
 {
-    text_ = Text;
+	content_.push_back(child_element);
 }
 
-
-void math_ms::oox_convert(oox::math_context & Context)
+void math_ms::serialize(std::wostream & _Wostream)
 {
-
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			common_attlist_.serialize(CP_GET_XML_NODE());
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				if (!content_[i]) continue;
+				content_[i]->serialize(CP_XML_STREAM());
+			}			
+			CP_XML_ATTR_OPT(L"math:text", text_);
+		}
+	}
 }
 //----------------------------------------------------------------------------------------------------
 const wchar_t * math_mspace::ns = L"math";
 const wchar_t * math_mspace::name = L"mspace";
 //----------------------------------------------------------------------------------------------------
-void math_mspace::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-
-}
-
-void math_mspace::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+void math_mspace::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_mspace::add_text(const std::wstring & Text) 
+void math_mspace::add_child_element(const office_element_ptr & child_element)
 {
-    text_ = Text;
+	content_.push_back(child_element);
 }
 
-
-void math_mspace::oox_convert(oox::math_context & Context)
+void math_mspace::serialize(std::wostream & _Wostream)
 {
-
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			common_attlist_.serialize(CP_GET_XML_NODE());
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				if (!content_[i]) continue;
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+			CP_XML_ATTR_OPT(L"math:text", text_);
+		}
+	}
 }
 //----------------------------------------------------------------------------------------------------
 const wchar_t * math_mtext::ns = L"math";
 const wchar_t * math_mtext::name = L"mtext";
 //----------------------------------------------------------------------------------------------------
-void math_mtext::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-	common_attlist_.add_attributes(Attributes);
-
-}
-
-void math_mtext::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+void math_mtext::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_mtext::add_text(const std::wstring & Text) 
+void math_mtext::add_child_element(const office_element_ptr & child_element)
 {
-    text_ = Text;
+	content_.push_back(child_element);
 }
 
-
-void math_mtext::oox_convert(oox::math_context & Context)
+void math_mtext::serialize(std::wostream & _Wostream)
 {
-	if (text_)
+	CP_XML_WRITER(_Wostream)
 	{
-		Context.output_stream() << L"<m:r><m:rPr><m:nor/></m:rPr><m:t>";
-			Context.output_stream() << XmlUtils::EncodeXmlString(*text_);
-		Context.output_stream() << L"</m:t></m:r>";
+		CP_XML_NODE_SIMPLE()
+		{
+			common_attlist_.serialize(CP_GET_XML_NODE());
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				if (!content_[i]) continue;
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+			CP_XML_ATTR_OPT(L"math:text", text_);
+		}
 	}
 }
 //----------------------------------------------------------------------------------------------------
 const wchar_t * math_mglyph::ns = L"math";
 const wchar_t * math_mglyph::name = L"mglyph";
 //----------------------------------------------------------------------------------------------------
-void math_mglyph::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-	common_attlist_.add_attributes(Attributes);
-
-}
-
-void math_mglyph::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+void math_mglyph::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_mglyph::add_text(const std::wstring & Text) 
+void math_mglyph::add_child_element(const office_element_ptr & child_element)
 {
-    text_ = Text;
+	content_.push_back(child_element);
 }
 
-
-void math_mglyph::oox_convert(oox::math_context & Context)
+void math_mglyph::serialize(std::wostream & _Wostream)
 {
-
-}
-}
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			common_attlist_.serialize(CP_GET_XML_NODE());
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				if (!content_[i]) continue;
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+			CP_XML_ATTR_OPT(L"math:text", text_);
+		}
+	}
+} // odf_writer
+} // cpdoccore
 }

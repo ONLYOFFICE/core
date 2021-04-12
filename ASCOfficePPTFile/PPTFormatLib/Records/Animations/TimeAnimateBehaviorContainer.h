@@ -54,11 +54,11 @@ public:
         if ( ReadHeader.ReadFromStream(pStream) )
             m_oAnimateBehaviorAtom.ReadFromStream ( ReadHeader, pStream );
 
-        if ( m_oAnimateBehaviorAtom.m_bAnimationValuesPropertyUsed )
-        {
+//        if ( m_oAnimateBehaviorAtom.m_bAnimationValuesPropertyUsed )
+//        {
             if ( ReadHeader.ReadFromStream(pStream) )
                 m_oAnimateValueList.ReadFromStream ( ReadHeader, pStream );
-        }
+//        }
 
         if ( m_oAnimateBehaviorAtom.m_bByPropertyUsed )
         {

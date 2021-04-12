@@ -1,6 +1,7 @@
 #include "base.h"
 
 #include <algorithm> // для std::min в get_file_in_archive
+#include <vector>
 
 unzFile unzOpenHelp(BUFFER_IO* buffer)
 {
@@ -95,7 +96,7 @@ void* Zlib_Malloc(unsigned int size)
 {
     return ::malloc(size);
 }
-void Zlib_Free(void* p)
+void  Zlib_Free(void* p)
 {
     if (p) ::free(p);
 }

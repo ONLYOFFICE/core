@@ -10,7 +10,6 @@
 
 #include <malloc.h>
 #include <string>
-#include <vector>
 
 #include "../../../../DesktopEditor/common/Types.h"
 #include "../../../src/zlib-1.2.11/contrib/minizip/unzip.h"

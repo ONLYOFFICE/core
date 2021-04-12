@@ -1,0 +1,303 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="FreeType">
+      <UniqueIdentifier>{21d59946-a4de-4629-bd36-fd186a3b2900}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PdfWriterLib">
+      <UniqueIdentifier>{850ba345-bd3e-4b71-ae5b-f14f4f265a1b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Annotation.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Catalog.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Consts.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Destination.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Document.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Encrypt.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\EncryptDictionary.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Font.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Font14.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\FontCidTT.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\FontTTWriter.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\GState.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Image.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Info.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Objects.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Outline.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Pages.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Pattern.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Shading.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Streams.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Types.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OnlineOfficeBinToPdf.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PdfRenderer.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Metadata.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\ICCProfile.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="PdfWriterLibTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\autofit\autofit.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\bdf\bdf.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\cff\cff.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftbase.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftbbox.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftbitmap.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\cache\ftcache.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftfstype.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftgasp.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftglyph.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftgxval.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\gzip\ftgzip.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftinit.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftlcdfil.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\lzw\ftlzw.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftmm.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftotval.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftpatent.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftpfr.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftstroke.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftsynth.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftsystem.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\fttype1.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftwinfnt.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftxf86.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\pcf\pcf.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\pfr\pfr.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\psaux\psaux.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\pshinter\pshinter.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\psnames\psmodule.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\raster\raster.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\sfnt\sfnt.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\smooth\smooth.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\truetype\truetype.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\type1\type1.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\cid\type1cid.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\type42\type42.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\winfonts\winfnt.c">
+      <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Annotation.cpp">
+      <Filter>PdfWriterLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Catalog.cpp">
+      <Filter>PdfWriterLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Destination.cpp">
+      <Filter>PdfWriterLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Document.cpp">
+      <Filter>PdfWriterLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Encrypt.cpp">
+      <Filter>PdfWriterLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\EncryptDictionary.cpp">
+      <Filter>PdfWriterLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Font.cpp">
+      <Filter>PdfWriterLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Font14.cpp">
+      <Filter>PdfWriterLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\FontCidTT.cpp">
+      <Filter>PdfWriterLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\FontTTWriter.cpp">
+      <Filter>PdfWriterLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\GState.cpp">
+      <Filter>PdfWriterLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Image.cpp">
+      <Filter>PdfWriterLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Info.cpp">
+      <Filter>PdfWriterLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Objects.cpp">
+      <Filter>PdfWriterLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Outline.cpp">
+      <Filter>PdfWriterLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Pages.cpp">
+      <Filter>PdfWriterLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Pattern.cpp">
+      <Filter>PdfWriterLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Shading.cpp">
+      <Filter>PdfWriterLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Streams.cpp">
+      <Filter>PdfWriterLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils.cpp">
+      <Filter>PdfWriterLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OnlineOfficeBinToPdf.cpp">
+      <Filter>PdfWriterLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PdfRenderer.cpp">
+      <Filter>PdfWriterLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Metadata.cpp">
+      <Filter>PdfWriterLib</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

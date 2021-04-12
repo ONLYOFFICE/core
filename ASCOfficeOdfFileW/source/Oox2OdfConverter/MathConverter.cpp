@@ -34,6 +34,7 @@ namespace Oox2Odf
 	void DocxConverter::convert(OOX::Logic::COMathParaPr *oox_math_para_pr)
 	{
 		if (!oox_math_para_pr) return;
+		
 	}
 
 	void DocxConverter::convert(OOX::Logic::CCtrlPr *oox_ctrl_pr)

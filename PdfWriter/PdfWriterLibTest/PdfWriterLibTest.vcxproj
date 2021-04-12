@@ -1,0 +1,252 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7DBC8195-1D94-4B34-863F-8F35CC59C231}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>PdfWriterLibTest</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <LibraryPath>..\..\build\lib\win_64\DEBUG;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;FT2_BUILD_LIBRARY;CRYPTOPP_DISABLE_ASM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>..\..\DesktopEditor\freetype-2.5.2\include;..\..\DesktopEditor\agg-2.4\include;..\..\DesktopEditor\cximage\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4018;4005;4267;4146;4703</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\OnlineOfficeBinToPdf.h" />
+    <ClInclude Include="..\PdfRenderer.h" />
+    <ClInclude Include="..\Src\Annotation.h" />
+    <ClInclude Include="..\Src\Catalog.h" />
+    <ClInclude Include="..\Src\Consts.h" />
+    <ClInclude Include="..\Src\Destination.h" />
+    <ClInclude Include="..\Src\Document.h" />
+    <ClInclude Include="..\Src\Encrypt.h" />
+    <ClInclude Include="..\Src\EncryptDictionary.h" />
+    <ClInclude Include="..\Src\Font.h" />
+    <ClInclude Include="..\Src\Font14.h" />
+    <ClInclude Include="..\Src\FontCidTT.h" />
+    <ClInclude Include="..\Src\FontTTWriter.h" />
+    <ClInclude Include="..\Src\GState.h" />
+    <ClInclude Include="..\Src\ICCProfile.h" />
+    <ClInclude Include="..\Src\Image.h" />
+    <ClInclude Include="..\Src\Info.h" />
+    <ClInclude Include="..\Src\Metadata.h" />
+    <ClInclude Include="..\Src\Objects.h" />
+    <ClInclude Include="..\Src\Outline.h" />
+    <ClInclude Include="..\Src\Pages.h" />
+    <ClInclude Include="..\Src\Pattern.h" />
+    <ClInclude Include="..\Src\Shading.h" />
+    <ClInclude Include="..\Src\Streams.h" />
+    <ClInclude Include="..\Src\Types.h" />
+    <ClInclude Include="..\Src\Utils.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftbbox.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftgxval.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftlcdfil.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftmm.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftotval.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftpatent.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftpfr.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftsynth.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\fttype1.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftwinfnt.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftxf86.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\pcf\pcf.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\pfr\pfr.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\psaux\psaux.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\pshinter\pshinter.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\psnames\psmodule.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\raster\raster.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\sfnt\sfnt.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\truetype\truetype.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\type1\type1.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\cid\type1cid.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\type42\type42.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\winfonts\winfnt.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\autofit\autofit.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\bdf\bdf.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\cff\cff.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftbase.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftbitmap.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\cache\ftcache.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftfstype.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftgasp.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftglyph.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\gzip\ftgzip.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftinit.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\lzw\ftlzw.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftstroke.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftsystem.c" />
+    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\smooth\smooth.c" />
+    <ClCompile Include="..\OnlineOfficeBinToPdf.cpp" />
+    <ClCompile Include="..\PdfRenderer.cpp" />
+    <ClCompile Include="..\Src\Annotation.cpp" />
+    <ClCompile Include="..\Src\Catalog.cpp" />
+    <ClCompile Include="..\Src\Destination.cpp" />
+    <ClCompile Include="..\Src\Document.cpp" />
+    <ClCompile Include="..\Src\Encrypt.cpp" />
+    <ClCompile Include="..\Src\EncryptDictionary.cpp" />
+    <ClCompile Include="..\Src\Font.cpp" />
+    <ClCompile Include="..\Src\Font14.cpp" />
+    <ClCompile Include="..\Src\FontCidTT.cpp" />
+    <ClCompile Include="..\Src\FontTTWriter.cpp" />
+    <ClCompile Include="..\Src\GState.cpp" />
+    <ClCompile Include="..\Src\Image.cpp" />
+    <ClCompile Include="..\Src\Info.cpp" />
+    <ClCompile Include="..\Src\Metadata.cpp" />
+    <ClCompile Include="..\Src\Objects.cpp" />
+    <ClCompile Include="..\Src\Outline.cpp" />
+    <ClCompile Include="..\Src\Pages.cpp" />
+    <ClCompile Include="..\Src\Pattern.cpp" />
+    <ClCompile Include="..\Src\Shading.cpp" />
+    <ClCompile Include="..\Src\Streams.cpp" />
+    <ClCompile Include="..\Src\Utils.cpp" />
+    <ClCompile Include="PdfWriterLibTest.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

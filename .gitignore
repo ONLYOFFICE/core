@@ -148,6 +148,3 @@ HtmlFile2/Makefile
 
 XpsFile/Makefile
 
-*.vcxproj
-
-*.filters

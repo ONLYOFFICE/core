@@ -1,0 +1,620 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="common">
+      <UniqueIdentifier>{f7ca54bc-cf3e-477a-a14b-ce0832a6bfcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="xlsx">
+      <UniqueIdentifier>{fd9f4e92-e430-4020-b9bd-47ddd7400e39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shape converter">
+      <UniqueIdentifier>{edc62180-b186-4ad7-b991-75cd2a13daee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shape converter\autoshapes">
+      <UniqueIdentifier>{0be8fddd-32ec-46da-a7ec-efb4634e3b31}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\common\common.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\simple_xml_writer.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\utils.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\external_items.h">
+      <Filter>xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\namespaces.h">
+      <Filter>xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\oox_content_type.h">
+      <Filter>xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\oox_package.h">
+      <Filter>xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\oox_rels.h">
+      <Filter>xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ShapeType.h">
+      <Filter>xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_activeX_context.h">
+      <Filter>xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_chart_context.h">
+      <Filter>xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_comments.h">
+      <Filter>xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_comments_context.h">
+      <Filter>xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_conversion_context.h">
+      <Filter>xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_drawing_context.h">
+      <Filter>xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_drawings.h">
+      <Filter>xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_external_context.h">
+      <Filter>xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_hyperlinks.h">
+      <Filter>xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_output_xml.h">
+      <Filter>xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_package.h">
+      <Filter>xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_pivots_context.h">
+      <Filter>xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_sheet_context.h">
+      <Filter>xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_tablecontext.h">
+      <Filter>xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_textcontext.h">
+      <Filter>xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\BaseShape.h">
+      <Filter>shape converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\CustomGeomShape.h">
+      <Filter>shape converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\CustomShape.h">
+      <Filter>shape converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\CustomShapeConvert.h">
+      <Filter>shape converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\FormulaShape.h">
+      <Filter>shape converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\GraphicsPath.h">
+      <Filter>shape converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\PathShape.h">
+      <Filter>shape converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\PresetShapesHeader.h">
+      <Filter>shape converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\ShapeUtils.h">
+      <Filter>shape converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\accentbordercallout1type.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\AccentBorderCallout2Type.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\accentbordercallout3type.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\accentbordercallout90type.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\AccentCallout1Type.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\AccentCallout2Type.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\AccentCallout3Type.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\AccentCallout90Type.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ActionButtonBack.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ActionButtonBeginning.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ActionButtonBlank.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ActionButtonDocument.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ActionButtonEnd.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ActionButtonHelp.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ActionButtonHome.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ActionButtonInfo.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ActionButtonMovie.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ActionButtonNext.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ActionButtonReturn.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ActionButtonSound.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\arctype.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\BentArrowType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\BentConnector.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\BentUpArrowType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\BevelType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\BlockArcType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\BorderCallout1Type.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\BorderCallout2Type.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\BorderCallout3Type.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\BorderCallout90Type.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\BracePairType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\BracketPairType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\Callout1Type.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\Callout2Type.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\Callout3Type.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\Callout90Type.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\CanType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ChevronType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\CircularArrowType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\CloudCalloutType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\CubeType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\CurvedConnector.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\CurvedDownArrowType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\CurvedLeftArrowType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\CurvedRightArrowType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\CurvedUpArrowType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\DiamondType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\DonutType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\DownArrowCalloutType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\DownArrowType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\EllipseRibbon2Type.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\EllipseRibbonType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\EllipseType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartAlternateProcessType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartCollateType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartConnectorType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartDecisionType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartDelayType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartDisplayType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartDocumentType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartExtractType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartInputOutputType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartInternalStorageType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartMagneticDiskType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartMagneticDrumType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartMagneticTapeType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartManualInputType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartManualOperationType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartMergeType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartMultidocumentType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartOffpageConnectorType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartOnlineStorageType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartOrType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartPredefinedProcessType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartPreparationType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartProcessType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartPunchedCardType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartPunchedTapeType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartSortType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartSummingJunctionType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartTerminatorType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FoldedCornerType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\HeartType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\HexagonType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\HomePlateType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\HorisontalScrollType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\IrregularSealOneType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\IrregularSealTwo.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\IsoscelesTriangleType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\LeftArrowCalloutType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\LeftArrowType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\LeftBraceType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\LeftBracketType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\LeftRightArrowCalloutType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\LeftRightArrowType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\LeftRightUpArrow.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\LeftUpArrowType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\LightningBoltType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\LineType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\MoonType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\NoSmokingType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\NotchedRightArrowType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\OctagonType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ParallelogramType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\PentagonType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\PlaqueType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\PlusType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\QuadArrowCalloutType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\QuadArrowType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\RectangleType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\RibbonDownType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\RibbonUpType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\RightArrowCalloutType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\RightArrowType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\RightBracetype.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\RightBracketType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\RightTriangleType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\RoundedRectangleType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\Seal16Type.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\Seal24Type.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\Seal32Type.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\Seal4Type.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\Seal8Type.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\SmileyFaceType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\Startype.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\StraightConnectorType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\StripedRightArrowType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\SunType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\TextboxType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\TrapezoidType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\UpArrowCalloutType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\UpArrowType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\UpDownArrowCalloutType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\UpDownArrowType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\UturnArrowType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\VerticalScrollType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\WaveDoubleType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\WaveType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\WedgeEllipseCalloutType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\WedgeRectCalloutType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\WedgeRoundedRectCalloutType.h">
+      <Filter>shape converter\autoshapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsXlsxConverter\ConvertXls2Xlsx.h" />
+    <ClInclude Include="..\XlsXlsxConverter\XlsConverter.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\common\utils.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsXlsxConverter\external_items.cpp">
+      <Filter>xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsXlsxConverter\mediaitems_utils.cpp">
+      <Filter>xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsXlsxConverter\namespaces.cpp">
+      <Filter>xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsXlsxConverter\oox_content_type.cpp">
+      <Filter>xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsXlsxConverter\oox_package.cpp">
+      <Filter>xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsXlsxConverter\oox_rels.cpp">
+      <Filter>xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_activeX_context.cpp">
+      <Filter>xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_chart_context.cpp">
+      <Filter>xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_comments.cpp">
+      <Filter>xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_comments_context.cpp">
+      <Filter>xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_conversion_context.cpp">
+      <Filter>xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_drawing_context.cpp">
+      <Filter>xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_drawings.cpp">
+      <Filter>xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_external_context.cpp">
+      <Filter>xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_hyperlinks.cpp">
+      <Filter>xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_output_xml.cpp">
+      <Filter>xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_package.cpp">
+      <Filter>xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_pivots_context.cpp">
+      <Filter>xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_sheet_context.cpp">
+      <Filter>xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_tablecontext.cpp">
+      <Filter>xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_textcontext.cpp">
+      <Filter>xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsXlsxConverter\ConvertShapes\CustomShape.cpp">
+      <Filter>shape converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsXlsxConverter\ConvertShapes\FormulaShape.cpp">
+      <Filter>shape converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsXlsxConverter\ConvertXls2Xlsx.cpp" />
+    <ClCompile Include="..\..\..\Common\DocxFormat\Source\Base\unicode_util.cpp" />
+    <ClCompile Include="..\XlsXlsxConverter\XlsConverter.cpp" />
+  </ItemGroup>
+</Project>

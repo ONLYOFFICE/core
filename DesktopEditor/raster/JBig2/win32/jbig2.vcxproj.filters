@@ -1,0 +1,572 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="LeptonLib">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Encoder">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\source\LeptonLib\adaptmap.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\affine.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\affinecompose.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\arithlow.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\arrayaccess.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\bardecode.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\baseline.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\bbuffer.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\bilinear.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\binarize.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\binexpand.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\binexpandlow.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\binreduce.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\binreducelow.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\blend1.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\bmf.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\bmpio.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\bmpiostub.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\boxbasic.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\boxfunc1.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\boxfunc2.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\boxfunc3.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\ccbord.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\ccthin.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\classapp.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\colorcontent.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\colormap.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\colormorph.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\colorquant1.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\colorquant2.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\colorseg.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\compare.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\conncomp.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\convertfiles.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\convolve.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\convolvelow.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\correlscore.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\dewarp.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\dwacomb.2.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\dwacomblow.2.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\edge.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\enhance.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\fhmtauto.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\fhmtgen.1.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\fhmtgenlow.1.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\finditalic.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\flipdetect.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\fliphmtgen.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\fmorphauto.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\fmorphgen.1.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\fmorphgenlow.1.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\fpix1.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\fpix2.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\freetype.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\gifio.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\gifiostub.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\gplot.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\graphics1.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\graymorph.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\graymorphlow.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\grayquant.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\grayquantlow.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\heap.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\jbclass.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\jpegio.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\jpegiostub.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\kernel.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\lepton_utils.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\list.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\maze.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\morph.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\morphapp.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\morphdwa.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\morphseq.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\numabasic.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\numafunc1.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\numafunc2.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\pageseg.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\paintcmap.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\parseprotos.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\partition.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\pix1.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\pix2.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\pix3.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\pix4.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\pix5.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\pixabasic.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\pixacc.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\pixafunc1.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\pixafunc2.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\pixalloc.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\pixarith.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\pixcomp.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\pixconv.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\pixtiling.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\pngio.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\pngiostub.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\pnmio.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\pnmiostub.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\projective.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\psio1.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\psio1stub.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\psio2.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\psio2stub.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\ptabasic.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\ptafunc1.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\ptra.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\queue.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\rank.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\readbarcode.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\readfile.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\regutils.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\rop.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\ropiplow.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\roplow.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\rotate.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\rotateam.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\rotateamlow.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\rotateorth.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\rotateorthlow.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\rotateshear.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\runlength.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\sarray.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\scale.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\scalelow.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\seedfill.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\seedfilllow.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\sel1.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\sel2.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\selgen.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\shear.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\skew.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\spixio.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\stack.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\sudoku.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\textops.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\tiffio.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\tiffiostub.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\warper.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\watershed.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\webpio.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\webpiostub.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\writefile.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\zlibmem.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LeptonLib\zlibmemstub.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Encoder\jbig2arith.cpp">
+      <Filter>Encoder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Encoder\jbig2enc.cpp">
+      <Filter>Encoder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Encoder\jbig2sym.cpp">
+      <Filter>Encoder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\JBig2File.cpp">
+      <Filter>LeptonLib</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\LeptonLib\additionaltypes.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\allheaders.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\alltypes.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\array.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\arrayaccess.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\bbuffer.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\bmf.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\bmp.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\ccbord.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\dewarp.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\endianness.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\environ.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\freetype.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\funcprotos.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\gplot.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\heap.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\imageio.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\jbclass.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\list.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\morph.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\pix.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\ptra.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\queue.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\readbarcode.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\regutils.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\stack.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\sudoku.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LeptonLib\watershed.h">
+      <Filter>LeptonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Encoder\jbig2arith.h">
+      <Filter>Encoder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Encoder\jbig2enc.h">
+      <Filter>Encoder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Encoder\jbig2encoder.h">
+      <Filter>Encoder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Encoder\jbig2segments.h">
+      <Filter>Encoder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Encoder\jbig2structs.h">
+      <Filter>Encoder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Encoder\jbig2sym.h">
+      <Filter>Encoder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\JBig2File.h">
+      <Filter>Encoder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Utils.h">
+      <Filter>Encoder</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

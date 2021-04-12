@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Src">
+      <UniqueIdentifier>{1fccc0b6-4331-4120-a261-6d13ed199aab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Src\Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Src\Font">
+      <UniqueIdentifier>{207e9ca3-771d-48cd-b185-e8557f5a59c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Encrypt">
+      <UniqueIdentifier>{e955fc8f-90e5-44a8-89b6-4f281e87c89a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Src\Annotation.cpp">
+      <Filter>Src\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Catalog.cpp">
+      <Filter>Src\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Destination.cpp">
+      <Filter>Src\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Document.cpp">
+      <Filter>Src\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\GState.cpp">
+      <Filter>Src\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Image.cpp">
+      <Filter>Src\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Info.cpp">
+      <Filter>Src\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Objects.cpp">
+      <Filter>Src\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Outline.cpp">
+      <Filter>Src\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Pages.cpp">
+      <Filter>Src\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Streams.cpp">
+      <Filter>Src\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Utils.cpp">
+      <Filter>Src\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Font.cpp">
+      <Filter>Src\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Encrypt.cpp">
+      <Filter>Src\Encrypt</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\EncryptDictionary.cpp">
+      <Filter>Src\Encrypt</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Font14.cpp">
+      <Filter>Src\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\FontCidTT.cpp">
+      <Filter>Src\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\FontTTWriter.cpp">
+      <Filter>Src\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Shading.cpp">
+      <Filter>Src\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Pattern.cpp">
+      <Filter>Src\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PdfRenderer.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="OnlineOfficeBinToPdf.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Src\Annotation.h">
+      <Filter>Src\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Catalog.h">
+      <Filter>Src\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Consts.h">
+      <Filter>Src\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Destination.h">
+      <Filter>Src\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Document.h">
+      <Filter>Src\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\GState.h">
+      <Filter>Src\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Image.h">
+      <Filter>Src\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Info.h">
+      <Filter>Src\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Objects.h">
+      <Filter>Src\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Outline.h">
+      <Filter>Src\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Pages.h">
+      <Filter>Src\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Streams.h">
+      <Filter>Src\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Types.h">
+      <Filter>Src\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Utils.h">
+      <Filter>Src\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Font.h">
+      <Filter>Src\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Encrypt.h">
+      <Filter>Src\Encrypt</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\EncryptDictionary.h">
+      <Filter>Src\Encrypt</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Font14.h">
+      <Filter>Src\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\FontCidTT.h">
+      <Filter>Src\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\FontTTWriter.h">
+      <Filter>Src\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Shading.h">
+      <Filter>Src\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Pattern.h">
+      <Filter>Src\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PdfRenderer.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="OnlineOfficeBinToPdf.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\FastStringToDouble.h">
+      <Filter>Src\Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

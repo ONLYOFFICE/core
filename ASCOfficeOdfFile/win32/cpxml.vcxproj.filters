@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="xmllite">
+      <UniqueIdentifier>{d4faedc5-417c-40bd-9ca2-07728764fdb3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\xml\sax_xmllite.cpp">
+      <Filter>xmllite</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\xml\attributes.cpp" />
+    <ClCompile Include="..\src\xml\sax.cpp" />
+    <ClCompile Include="..\src\xml\utils.cpp" />
+    <ClCompile Include="..\src\xml\xmlchar.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\xml\sax_xmllite.h">
+      <Filter>xmllite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\xml\attributes.h" />
+    <ClInclude Include="..\include\xml\nodetype.h" />
+    <ClInclude Include="..\include\xml\sax.h" />
+    <ClInclude Include="..\include\xml\simple_xml_writer.h" />
+    <ClInclude Include="..\include\xml\utils.h" />
+    <ClInclude Include="..\include\xml\xmlchar.h" />
+    <ClInclude Include="..\include\xml\xmlelement.h" />
+  </ItemGroup>
+</Project>

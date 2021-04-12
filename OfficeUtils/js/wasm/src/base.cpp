@@ -1,5 +1,4 @@
 #include "base.h"
-#include "ioapibuf.h"
 
 #include <algorithm> // для std::min в get_file_in_archive
 
@@ -101,55 +100,83 @@ void Zlib_Free(void* p)
     if (p) ::free(p);
 }
 
-std::vector<std::wstring> Zlib_GetPaths(unsigned char* buffer, unsigned long size)
+Zlib* Zlib_Create()
 {
-    unzFile uf = NULL;
-    BUFFER_IO* buf = new BUFFER_IO;
-    if (buffer != NULL)
+    return new Zlib();
+}
+Zlib* Zlib_Load(unsigned char* buffer, unsigned long size)
+{
+    Zlib* oRes   = new Zlib;
+    oRes->buffer = new BUFFER_IO;
+    oRes->buffer->buffer = buffer;
+    oRes->buffer->nSize  = size;
+    oRes->uf = unzOpenHelp(oRes->buffer);
+    return oRes;
+}
+void  Zlib_Destroy(Zlib* p)
+{
+    if (p)
     {
-        buf->buffer = buffer;
-        buf->nSize = size;
-        uf = unzOpenHelp(buf);
+        delete[] p->buffer;
+        unzClose(p->uf);
+        if (p->paths)
+        {
+            if (*p->paths) delete[] *p->paths;
+            delete p->paths;
+        }
+        if (p->fileInBytes)
+        {
+            if (*p->fileInBytes) delete[] *p->fileInBytes;
+            delete p->fileInBytes;
+        }
+        delete p;
     }
-    std::vector<std::wstring> res;
-    if (uf != NULL)
+}
+
+int Zlib_GetNumberPaths(Zlib* p)
+{
+    if (p && p->buffer && p->uf)
     {
+        std::vector<std::wstring> res;
         do
         {
             unz_file_info file_info;
-            unzGetCurrentFileInfo(uf, &file_info, NULL, 0, NULL, 0, NULL, 0);
+            unzGetCurrentFileInfo(p->uf, &file_info, NULL, 0, NULL, 0, NULL, 0);
             if (file_info.uncompressed_size != 0)
-                res.push_back(get_filename_from_unzfile(uf));
-        } while (UNZ_OK == unzGoToNextFile(uf));
-        unzClose(uf);
+                res.push_back(get_filename_from_unzfile(p->uf));
+        } while (UNZ_OK == unzGoToNextFile(p->uf));
+        p->nNumPaths = res.size();
+        if (p->nNumPaths > 0)
+        {
+            p->paths = new wchar_t*[p->nNumPaths];
+            for (int i = 0; i < p->nNumPaths; i++)
+            {
+                p->paths[i] = new wchar_t[res[i].size()];
+                for (size_t j = 0; j < res[i].size(); j++)
+                    p->paths[i][j] = res[i][j];
+            }
+        }
+        return p->nNumPaths;
     }
-    return res;
+    return -1;
 }
-
-myFile* Zlib_GetFile(unsigned char* buffer, unsigned long size, const wchar_t* path)
+wchar_t** Zlib_GetPaths(Zlib* p)
 {
-    unzFile uf = NULL;
-    BUFFER_IO* buf = new BUFFER_IO;
-    if (buffer != NULL && path != NULL)
+    if (p && p->paths) return p->paths;
+    return NULL;
+}
+int Zlib_GetSizeFileByPath(Zlib* p, const wchar_t* path)
+{
+    if (p && p->buffer && p->uf)
     {
-        buf->buffer = buffer;
-        buf->nSize  = size;
-        uf = unzOpenHelp(buf);
+        p->fileInBytes = new BYTE*;
+        p->fileIsIn = get_file_in_archive(p->uf, path, p->fileInBytes, p->nFileSize);
+        if (p->fileIsIn) return p->nFileSize;
     }
-    BYTE** fileInBytes = new BYTE*;
-    ULONG nFileSize;
-    bool isIn = false;
-    if (uf != NULL)
-    {
-        isIn = get_file_in_archive(uf, path, fileInBytes, nFileSize);
-        unzClose(uf);
-    }
-    delete buf;
-    myFile* res = new myFile;
-    if (isIn)
-    {
-        res->data = *fileInBytes;
-        res->size = nFileSize;
-    }
-    return res;
+    return -1;
+}
+unsigned char* Zlib_GetLastFileByPath(Zlib* p)
+{
+    if (p && p->fileIsIn && p->fileInBytes) return *p->fileInBytes;
+    return NULL;
 }

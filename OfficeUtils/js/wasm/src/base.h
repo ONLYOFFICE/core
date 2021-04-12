@@ -15,17 +15,31 @@
 #include "../../../../DesktopEditor/common/Types.h"
 #include "../../../src/zlib-1.2.11/contrib/minizip/unzip.h"
 #include "../../../src/ZipUtilsCP.h"
+#include "ioapibuf.h"
 
-struct myFile
+struct Zlib
 {
-    unsigned char* data;
-    unsigned long size;
+    BUFFER_IO* buffer;
+    unzFile uf;
+
+    wchar_t** paths;
+    int nNumPaths;
+
+    bool fileIsIn;
+    BYTE** fileInBytes;
+    ULONG  nFileSize;
 };
 
 ZLIB_DECL_EXPORT void* Zlib_Malloc(unsigned int size);
 ZLIB_DECL_EXPORT void  Zlib_Free(void* p);
 
-ZLIB_DECL_EXPORT std::vector<std::wstring> Zlib_GetPaths(unsigned char* buffer, unsigned long size);
-ZLIB_DECL_EXPORT myFile* Zlib_GetFile(unsigned char* buffer, unsigned long size, const wchar_t* path);
+ZLIB_DECL_EXPORT Zlib* Zlib_Create();
+ZLIB_DECL_EXPORT Zlib* Zlib_Load(unsigned char* buffer, unsigned long size);
+ZLIB_DECL_EXPORT void  Zlib_Destroy(Zlib* p);
+
+ZLIB_DECL_EXPORT int Zlib_GetNumberPaths(Zlib* p);
+ZLIB_DECL_EXPORT wchar_t** Zlib_GetPaths(Zlib* p);
+ZLIB_DECL_EXPORT int Zlib_GetSizeFileByPath(Zlib* p, const wchar_t* path);
+ZLIB_DECL_EXPORT unsigned char* Zlib_GetLastFileByPath(Zlib* p);
 
 #endif // _ZLIB_H

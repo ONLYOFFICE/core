@@ -13,22 +13,24 @@ int main()
     if (oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.zip", &pData, nBytesCount))
         oFile.CloseFile();
 
-    std::vector<std::wstring> paths = Zlib_GetPaths(pData, nBytesCount);
-    for (std::wstring& path : paths)
-    {
-        myFile* res = Zlib_GetFile(pData, nBytesCount, path.c_str());
+    Zlib* zlib = Zlib_Load(pData, nBytesCount);
 
-        if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L'/' + NSFile::GetFileName(path)))
+    int nPaths = Zlib_GetNumberPaths(zlib);
+    wchar_t** arrPaths = Zlib_GetPaths(zlib);
+    for (int i = 0; i < nPaths; i++)
+    {
+        int nSizeFile = Zlib_GetSizeFileByPath(zlib, arrPaths[i]);
+        unsigned char* res = Zlib_GetLastFileByPath(zlib);
+        if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L'/' + NSFile::GetFileName(arrPaths[i])))
         {
-            if (res->data)
-                oFile.WriteFile(res->data, res->size);
+            if (res)
+                oFile.WriteFile(res, nSizeFile);
             oFile.CloseFile();
         }
-
-        delete[] res->data;
-        delete res;
+        delete[] res;
     }
 
+    Zlib_Destroy(zlib);
     delete[] pData;
     return 0;
 }

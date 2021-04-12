@@ -1,8 +1,8 @@
 core_ios {
 
     INCLUDEPATH += \
-    	$$PWD/../socketRocket \
+    	$$PWD/../socketrocket \
 
     LIBS        += \
-    	$$PWD/../socketRocket/build/lib/ios/libSoсketRocket.a \
+    	$$PWD/../socketrocket/build/lib/ios/libSoсketRocket.a \
 }

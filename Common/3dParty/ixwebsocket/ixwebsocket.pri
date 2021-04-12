@@ -14,3 +14,15 @@ core_android {
     LIBS        += \
     	$$PWD/../ixwebsocket/IXWebSocket/build/$$ABI_PATH/lib/libixwebsocket.a \
 }
+
+core_ios {
+
+    INCLUDEPATH += \
+        $$PWD/../ixwebsocket/IXWebSocket/build/ios/ixwebsocket-universal/include \
+
+    LIBS        += \
+        $$PWD/../openssl/ios/build/openssl-universal/lib/libcrypto.a \
+        $$PWD/../openssl/ios/build/openssl-universal/lib/libssl.a \
+        $$PWD/../ixwebsocket/IXWebSocket/build/ios/ixwebsocket-universal/lib/libixwebsocket.a \
+
+}

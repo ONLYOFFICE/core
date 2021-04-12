@@ -1,4 +1,4 @@
-﻿ * (c) Copyright Ascensio System SIA 2010-2021
+﻿ /* (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -40,7 +40,7 @@ namespace NSWebSocket
         SocketRocketObjC* wrapped;
     };
 
-    CSocketRocket::CSocketRocket(): CWebWorkerBase(url, listener)
+    CSocketRocket::CSocketRocket(const std::string& url, std::shared_ptr<IListener> listener): CWebWorkerBase(url, listener)
     {
         impl = new SocketRocketImpl();
         impl->wrapped = [[SocketRocketObjC alloc] init];

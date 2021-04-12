@@ -37,7 +37,7 @@ echo TOOLS_ROOT=${TOOLS_ROOT}
 # openssl-1.1.1d has fix configure bug
 LIB_VERSION="OpenSSL_1_1_1d"
 LIB_NAME="openssl-1.1.1d"
-LIB_DEST_DIR="${pwd_path}/../output/ios/openssl-universal"
+LIB_DEST_DIR="${pwd_path}/ios/build/openssl-universal/lib"
 
 init_log_color
 
@@ -74,16 +74,16 @@ function configure_make() {
         exit -1
     fi
 
-    PREFIX_DIR="${pwd_path}/../output/ios/openssl-${ARCH}"
+    PREFIX_DIR="${pwd_path}/ios/build/${ARCH}"
     if [ -d "${PREFIX_DIR}" ]; then
         rm -fr "${PREFIX_DIR}"
     fi
     mkdir -p "${PREFIX_DIR}"
 
-    OUTPUT_ROOT=${TOOLS_ROOT}/../output/ios/openssl-${ARCH}
+    OUTPUT_ROOT=${TOOLS_ROOT}/ios/${ARCH}
     mkdir -p ${OUTPUT_ROOT}/log
 
-    set_android_cpu_feature "nghttp2" "${ARCH}" "${IOS_MIN_TARGET}" "${CROSS_TOP}/SDKs/${CROSS_SDK}"
+    set_ios_cpu_feature "nghttp2" "${ARCH}" "${IOS_MIN_TARGET}" "${CROSS_TOP}/SDKs/${CROSS_SDK}"
     
     ios_printf_global_params "$ARCH" "$SDK" "$PLATFORM" "$PREFIX_DIR" "$OUTPUT_ROOT"
 
@@ -97,19 +97,19 @@ function configure_make() {
     elif [[ "${ARCH}" == "armv7" ]]; then
 
         # openssl1.1.1d can be set normally, 1.1.0f does not take effect
-        ./Configure iphoneos-cross no-shared --prefix="${PREFIX_DIR}"
+        ./Configure iphoneos-cross no-shared --prefix="${PREFIX_DIR}" enable-ssl3 enable-ssl3-method
         sed -ie "s!-fno-common!-fno-common -fembed-bitcode !" "Makefile"
 
     elif [[ "${ARCH}" == "arm64" ]]; then
 
         # openssl1.1.1d can be set normally, 1.1.0f does not take effect
-        ./Configure iphoneos-cross no-shared --prefix="${PREFIX_DIR}"
+        ./Configure iphoneos-cross no-shared --prefix="${PREFIX_DIR}" enable-ssl3 enable-ssl3-method
         sed -ie "s!-fno-common!-fno-common -fembed-bitcode !" "Makefile"
 
-    elif [[ "${ARCH}" == "arm64e" ]]; then
+    elif [[ "${ARCH}" == "i386" ]]; then
 
         # openssl1.1.1d can be set normally, 1.1.0f does not take effect
-        ./Configure iphoneos-cross no-shared --prefix="${PREFIX_DIR}"
+        ./Configure darwin-i386-cc no-shared --prefix="${PREFIX_DIR}" enable-ssl3 enable-ssl3-method
         sed -ie "s!-fno-common!-fno-common -fembed-bitcode !" "Makefile"
 
     else
@@ -131,6 +131,7 @@ log_info "${PLATFORM_TYPE} ${LIB_NAME} start..."
 
 for ((i = 0; i < ${#ARCHS[@]}; i++)); do
     if [[ $# -eq 0 || "$1" == "${ARCHS[i]}" ]]; then
+        log_info "configure_make ${ARCHS[i]}" "${SDKS[i]}" "${PLATFORMS[i]}"
         configure_make "${ARCHS[i]}" "${SDKS[i]}" "${PLATFORMS[i]}"
     fi
 done
@@ -140,12 +141,26 @@ log_info "lipo start..."
 function lipo_library() {
     LIB_SRC=$1
     LIB_DST=$2
-    LIB_PATHS=("${ARCHS[@]/#/${pwd_path}/../output/ios/openssl-}")
+    LIB_PATHS=("${ARCHS[@]/#/${pwd_path}/ios/build/}")
     LIB_PATHS=("${LIB_PATHS[@]/%//lib/${LIB_SRC}}")
     lipo ${LIB_PATHS[@]} -create -output "${LIB_DST}"
 }
+function copy_include() {
+    DST=$1
+    if [ -d "${pwd_path}/ios/build/x86_64/include" ]; then
+        cp -r "${pwd_path}/ios/build/x86_64/include"  "${DST}"
+    elif [ -d "${pwd_path}/ios/build/armv7/include" ]; then
+        cp -r "${pwd_path}/ios/build/armv7/include"  "${DST}"
+    elif [ -d "${pwd_path}/ios/build/arm64/include" ]; then
+        cp -r "${pwd_path}/ios/build/arm64/include"  "${DST}"
+    elif [ -d "${pwd_path}/ios/build/i386/include" ]; then
+        cp -r "${pwd_path}/ios/build/i386/include"  "${DST}"  
+    fi
+}
+
 mkdir -p "${LIB_DEST_DIR}"
-lipo_library "libcrypto.a" "${LIB_DEST_DIR}/libcrypto-universal.a"
-lipo_library "libssl.a" "${LIB_DEST_DIR}/libssl-universal.a"
+lipo_library "libcrypto.a" "${LIB_DEST_DIR}/libcrypto.a"
+lipo_library "libssl.a" "${LIB_DEST_DIR}/libssl.a"
+copy_include "${LIB_DEST_DIR}/../"
 
 log_info "${PLATFORM_TYPE} ${LIB_NAME} end..."

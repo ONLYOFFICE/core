@@ -69,20 +69,33 @@ core_ios {
 
     LIBS += -framework Foundation
 
-    DEFINES += USE_SOCKETROCKET
+    #DEFINES += USE_SOCKETROCKET
+
+   # HEADERS += \
+    #    ./WebSocket/websocket.h \
+    #    ./WebSocket/WebWorkerBase.h \
+     #   ./WebSocket/socketRocket_objc.h \
+      #  ./WebSocket/socketRocket_internal.h \
+
+    #OBJECTIVE_SOURCES += \
+     #   ./WebSocket/socketRocket_objc.mm \
+      #  ./WebSocket/socketRocket_internal.mm \
+       # ./WebSocket/managerWebSocket.cpp \
+
+   # include(../Common/3dParty/socketRocket/socketRocket.pri)
+
+    DEFINES += USE_IXWEBSOCKET
 
     HEADERS += \
         ./WebSocket/websocket.h \
         ./WebSocket/WebWorkerBase.h \
-        ./WebSocket/socketRocket_objc.h \
-        ./WebSocket/socketRocket_internal.h \
+        ./WebSocket/ixwebsocket_internal.h \
 
-    OBJECTIVE_SOURCES += \
-        ./WebSocket/socketRocket_objc.mm \
-        ./WebSocket/socketRocket_internal.mm \
+    SOURCES += \
+        ./WebSocket/ixwebsocket_internal.cpp \
         ./WebSocket/managerWebSocket.cpp \
 
-    include(../Common/3dParty/socketRocket/socketRocket.pri)
+    include(../Common/3dParty/ixwebsocket/ixwebsocket.pri)
 }
 
 core_android {

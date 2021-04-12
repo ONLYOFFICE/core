@@ -106,7 +106,7 @@ namespace PPTX
 			if (!blur.IsInit() && !fillOverlay.IsInit() && !glow.IsInit() && !innerShdw.IsInit() && 
 				!outerShdw.IsInit() && !prstShdw.IsInit() && !reflection.IsInit() && !softEdge.IsInit())
 			{
-				pWriter->WriteString(L"a:effectLst/");
+				pWriter->WriteString(L"<a:effectLst/>");
 				return;
 			}
 			

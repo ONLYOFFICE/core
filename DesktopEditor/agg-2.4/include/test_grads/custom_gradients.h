@@ -85,6 +85,7 @@ namespace agg
 
         virtual float eval(float x, float y) override
         {
+            //return ginfo.shading.function.get_x_max();
             // if (r0 * r0 > (x - p0.x)*(x - p0.x) + (y - p0.y)*(y - p0.y))
             // {
             //     //return ginfo.shading.function.get_x_min() - 1;
@@ -125,8 +126,14 @@ namespace agg
             }
             if (ginfo.continue_shading_b)
             {
-                if (x1 < 0 || x2 < 0)
+                if (x1 <= 0 || x2 <= 0)
                     return ginfo.shading.function.get_x_min();
+
+            }
+            if (ginfo.continue_shading_f)
+            {
+                if (x1 >= 1 || x2 >= 1)
+                    return ginfo.shading.function.get_x_max();
 
             }
             return NAN_FLOAT;
@@ -303,7 +310,15 @@ namespace agg
                 }
             }
 
-            RES = (int)std::max(ymax - ymin, xmax - xmin);
+            int nRES = (int)std::max(ymax - ymin, xmax - xmin);
+            if (nRES <= 0)
+            {
+                RES = 1;
+            }
+            else 
+            {
+                RES = nRES;
+            }
             precalc = std::vector<std::vector<float>>(RES, std::vector<float>(RES, NAN_FLOAT));
             delta = 1.0f / RES;
             std::vector<std::pair<int, int>> next_indexes(RES + 1);
@@ -563,6 +578,9 @@ namespace agg
                 calculate = new calcCurve(m_oGradientInfo, false);
                 break;
 
+            case Aggplus::BrushTypeMyTestGradient:
+                break;
+
             default:
                 fprintf(stderr, "WRONG BRUSH TYPE");
                 calculate = new calcRandom();
@@ -772,7 +790,35 @@ namespace agg
             tensor_size = 4;
             if (calculate_tensor_coefs)
                 calculate_tensor();
-            RES = m_oGradientInfo.shading.function.get_resolution() / 2;
+
+            float minxres = m_oGradientInfo.shading.patch[0][0].x;
+            float minyres = m_oGradientInfo.shading.patch[0][0].y;
+            float maxxres = m_oGradientInfo.shading.patch[0][0].x;
+            float maxyres = m_oGradientInfo.shading.patch[0][0].y;
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    if (m_oGradientInfo.shading.patch[i][j].x > maxxres)
+                    {
+                        maxxres = m_oGradientInfo.shading.patch[i][j].x;
+                    }
+                    if (m_oGradientInfo.shading.patch[i][j].y > maxyres)
+                    {
+                        maxyres = m_oGradientInfo.shading.patch[i][j].y;
+                    }
+                    if (m_oGradientInfo.shading.patch[i][j].x < minxres)
+                    {
+                        minxres = m_oGradientInfo.shading.patch[i][j].x;
+                    }
+                    if (m_oGradientInfo.shading.patch[i][j].y < minyres)
+                    {
+                        minyres = m_oGradientInfo.shading.patch[i][j].y;
+                    }
+                }
+            }
+
+            RES = std::max(1.0f, std::max(maxxres - minxres, maxyres - minyres));
             float delta = 1.0 / RES;
             float u = 0, v = 0;
             auto start_p = get_p_curve(u, v);
@@ -790,7 +836,15 @@ namespace agg
                     ymin_curve = std::min(p.y, ymin_curve);
                 }
             }
-            RES = (int)std::max(ymax - ymin, xmax - xmin);
+            int nRES = (int)std::max(ymax - ymin, xmax - xmin);
+            if (nRES <= 0)
+            {
+                RES = 1;
+            }
+            else 
+            {
+                RES = nRES;
+            }
             precalc = std::vector<std::vector<ColorT>>(RES, std::vector<ColorT>(RES, {0, 0, 0, 0}));
             delta = 1.0f / RES;
              std::vector<std::pair<int, int>> next_indexes(RES + 1);
@@ -805,7 +859,7 @@ namespace agg
                     std::pair<int, int> index1;
                     if (i == 0 || j == 0)
                     {
-                        p = get_p_curve(u, v);
+                        p = get_p_curve(u + delta / 2, v + delta / 2);
                         index1 = get_index_curve(p.x, p.y);
                     }
                     else

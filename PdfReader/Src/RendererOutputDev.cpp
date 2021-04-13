@@ -4018,12 +4018,13 @@ namespace PdfReader
 		
 		GrColorSpace *ColorSpace = pShading->GetColorSpace();;
 		float delta = (t1 - t0) / info.shading.function.get_resolution();
-		for (float t = t0; t <= t1; t += delta/100)
+		float t = t0;
+		for (size_t i = 0; i < info.shading.function.get_resolution(); i++, t += delta)
 		{
 			PdfReader::GrColor c;
 			pShading->GetColor(t, &c);
 			DWORD dword_color = ColorSpace->GetDwordColor(&c);
-			info.shading.function.set_color((float)t, dword_color % 0x100, 
+			info.shading.function.set_color(i, dword_color % 0x100, 
 				(dword_color >> 8) % 0x100, (dword_color >> 16) % 0x100, alpha);
 		}
 

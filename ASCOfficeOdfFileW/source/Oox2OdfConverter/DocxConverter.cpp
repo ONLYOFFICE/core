@@ -1695,8 +1695,13 @@ void DocxConverter::convert( ComplexTypes::Word::CShading* shading, _CP_OPT(odf_
 		}
 	}
 	convert(NULL, shading->m_oThemeFill.GetPointer(),
-		shading->m_oThemeFillTint.GetPointer(), shading->m_oThemeShade.GetPointer(), odf_color);
+		shading->m_oThemeFillTint.GetPointer(), shading->m_oThemeFillShade.GetPointer(), odf_color);
 		
+	if (odf_color) return;
+
+	convert(NULL, shading->m_oThemeColor.GetPointer(), 
+		shading->m_oThemeTint.GetPointer(), shading->m_oThemeShade.GetPointer(), odf_color);
+
 	if (odf_color) return;
 
 	if (bColor)
@@ -2446,7 +2451,7 @@ void DocxConverter::convert(ComplexTypes::Word::CPageBorder *borderProp, std::ws
 	if (borderProp->m_oColor.IsInit())
 	{
 		if (borderProp->m_oColor->GetValue() != SimpleTypes::hexcolorAuto)
-			convert(borderProp->m_oColor.GetPointer(), borderProp->m_oThemeColor.GetPointer(), borderProp->m_oThemeTint.GetPointer(),borderProp->m_oThemeShade.GetPointer(), color);
+			convert(borderProp->m_oColor.GetPointer(), borderProp->m_oThemeColor.GetPointer(), borderProp->m_oThemeTint.GetPointer(), borderProp->m_oThemeShade.GetPointer(), color);
 	}
 	if (color) border_color = color->get_hex_value();
 	else border_color = L"000000";
@@ -2458,10 +2463,6 @@ void DocxConverter::convert(ComplexTypes::Word::CBorder *borderProp, std::wstrin
 	odf_border_prop = L"";
 	if (!borderProp)
 		return;
-			//nullable<SimpleTypes::COnOff<>              > m_oFrame;
-			//nullable<SimpleTypes::COnOff<>              > m_oShadow;
-			//nullable<SimpleTypes::CPointMeasure<>       > m_oSpace;
-			//nullable<SimpleTypes::CUcharHexNumber<>     > m_oThemeShade;
 
 	std::wstringstream border_style;
 	std::wstring border_color;
@@ -2502,10 +2503,9 @@ void DocxConverter::convert(ComplexTypes::Word::CBorder *borderProp, std::wstrin
 ///////////////////////////////////////////////////////////////////
 	_CP_OPT(odf_types::color) color;
 
-	if (borderProp->m_oColor.IsInit())
+	if (borderProp->m_oColor.IsInit() || borderProp->m_oThemeColor.IsInit())
 	{
-		if (borderProp->m_oColor->GetValue() != SimpleTypes::hexcolorAuto)
-			convert(borderProp->m_oColor.GetPointer(), borderProp->m_oThemeColor.GetPointer(), borderProp->m_oThemeTint.GetPointer(),borderProp->m_oThemeShade.GetPointer(), color);
+		convert(borderProp->m_oColor.GetPointer(), borderProp->m_oThemeColor.GetPointer(), borderProp->m_oThemeTint.GetPointer(),borderProp->m_oThemeShade.GetPointer(), color);
 	}
 	if (color) border_color = color->get_hex_value();
 	else border_color = L"000000";
@@ -3478,27 +3478,33 @@ void DocxConverter::convert(SimpleTypes::CHexColor<>		*color,
 	odf_color = boost::none;
 
 	bool result = false;	
-
-	if(color && color->GetValue() == SimpleTypes::hexcolorRGB)//easy, faster,realy  !!
+	if (color)
 	{
-		unsigned char ucA=0, ucR=0, ucG=0, ucB=0;
-		
-		ucR = color->Get_R(); 
-		ucB = color->Get_B(); 
-		ucG = color->Get_G(); 
-		ucA = color->Get_A(); 
-
-		SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR, ucG, ucB);
-
-        if ((oRgbColor) && (oRgbColor->GetValue() == SimpleTypes::hexcolorRGB ))
+		if (color->GetValue() == SimpleTypes::hexcolorAuto)
 		{
-            std::wstring strColor = L"#" + oRgbColor->ToString().substr(2);//.Right(6);
-
-			odf_color = odf_types::color(strColor);
-			result = true;
+			return;
 		}
-		if (oRgbColor)
-			delete oRgbColor;
+		else if (color->GetValue() == SimpleTypes::hexcolorRGB)
+		{
+			unsigned char ucA = 0, ucR = 0, ucG = 0, ucB = 0;
+
+			ucR = color->Get_R();
+			ucB = color->Get_B();
+			ucG = color->Get_G();
+			ucA = color->Get_A();
+
+			SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR, ucG, ucB);
+
+			if ((oRgbColor) && (oRgbColor->GetValue() == SimpleTypes::hexcolorRGB))
+			{
+				std::wstring strColor = L"#" + oRgbColor->ToString().substr(2);//.Right(6);
+
+				odf_color = odf_types::color(strColor);
+				result = true;
+			}
+			if (oRgbColor)
+				delete oRgbColor;
+		}
 	}
 	if(theme_color && result == false)
 	{
@@ -3524,10 +3530,24 @@ void DocxConverter::convert(SimpleTypes::CHexColor<>		*color,
 		}
 		if (pFind != docx_document->m_pTheme->themeElements.clrScheme.Scheme.end())
 		{
-			PPTX::Logic::UniColor & color = pFind->second;
-			
-			DWORD argb = color.GetARGB(); 
+			DWORD argb = pFind->second.GetARGB();
 
+			if (theme_tint || theme_shade)
+			{
+				double dH, dS, dL;
+				RGB2HSL(argb, dH, dS, dL);
+
+				if (theme_shade)
+				{
+					dL = dL * theme_shade->GetValue() / 255. ;
+				}
+				if (theme_tint)
+				{
+					dL = dL * theme_tint->GetValue() / 255. + (1 - theme_tint->GetValue() / 255.);
+				}
+				argb = HSL2RGB(dH, dS, dL);
+
+			}
 			std::wstring strColor = XmlUtils::IntToString(argb & 0x00FFFFFF, L"#%06X");
 			odf_color = odf_types::color(strColor);
 		}

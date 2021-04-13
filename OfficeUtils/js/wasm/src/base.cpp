@@ -11,6 +11,11 @@ unzFile unzOpenHelp(BUFFER_IO* buffer)
 }
 
 // begin from (ZipUtilsCP.cpp)
+static std::wstring ascii_to_unicode(const char *src)
+{
+    std::string sAnsi(src);
+    return std::wstring(sAnsi.begin(), sAnsi.end());
+}
 std::wstring codepage_issue_fixFromOEM( const char* sVal)
 {
 #if defined(_WIN32) || defined (_WIN64)

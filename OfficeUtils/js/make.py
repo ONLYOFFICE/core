@@ -43,15 +43,22 @@ exported_functions = ["_malloc",
                       "_Zlib_GetLastFileByPath"]
 
 libZlib_src_path = "../src/zlib-1.2.11"
-input_zlib_sources = []
+input_zlib_sources = ["inflate.c", "zutil.c", "adler32.c", "crc32.c", "inftrees.c",
+                      "inffast.c"]
+
+libMinizip_src_path = "../src/zlib-1.2.11/contrib/minizip"
+input_minizip_sources = ["unzip.c", "ioapi.c"]
 
 sources = []
 for item in input_zlib_sources:
     sources.append(libZlib_src_path + '/' + item)
+for item in input_minizip_sources:
+    sources.append(libMinizip_src_path + '/' + item)
 sources.append("wasm/src/ioapibuf.c")
 sources.append("wasm/src/base.cpp")
 
 compiler_flags.append("-I../src/zlib-1.2.11")
+compiler_flags.append("-D__linux__")
 
 # arguments
 arguments = ""

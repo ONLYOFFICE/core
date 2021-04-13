@@ -16,6 +16,10 @@
 #include "../../../src/ZipUtilsCP.h"
 #include "ioapibuf.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct Zlib
 {
     unsigned char* buffer;
@@ -40,5 +44,9 @@ ZLIB_DECL_EXPORT int Zlib_GetNumberPaths(Zlib* p);
 ZLIB_DECL_EXPORT std::wstring* Zlib_GetPaths(Zlib* p);
 ZLIB_DECL_EXPORT int Zlib_GetSizeFileByPath(Zlib* p, const wchar_t* path);
 ZLIB_DECL_EXPORT unsigned char* Zlib_GetLastFileByPath(Zlib* p);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // _ZLIB_H

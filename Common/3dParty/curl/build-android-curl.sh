@@ -37,15 +37,13 @@ echo TOOLS_ROOT=${TOOLS_ROOT}
 
 LIB_VERSION="curl-7_68_0"
 LIB_NAME="curl-7.68.0"
-LIB_DEST_DIR="${pwd_path}/android/build/curl-universal"
+LIB_DEST_DIR="${pwd_path}/build/android/curl-universal"
 
 echo "https://github.com/curl/curl/releases/download/${LIB_VERSION}/${LIB_NAME}.tar.gz"
 
 # https://curl.haxx.se/download/${LIB_NAME}.tar.gz
 # https://github.com/curl/curl/releases/download/curl-7_69_0/curl-7.69.0.tar.gz
 # https://github.com/curl/curl/releases/download/curl-7_68_0/curl-7.68.0.tar.gz
-DEVELOPER=$(xcode-select -print-path)
-SDK_VERSION=$(xcrun -sdk iphoneos --show-sdk-version)
 rm -rf "${LIB_DEST_DIR}" "${LIB_NAME}"
 [ -f "${LIB_NAME}.tar.gz" ] || curl -LO https://github.com/curl/curl/releases/download/${LIB_VERSION}/${LIB_NAME}.tar.gz >${LIB_NAME}.tar.gz
 
@@ -66,13 +64,13 @@ function configure_make() {
     pushd .
     cd "${LIB_NAME}"
 
-    PREFIX_DIR="${pwd_path}/android/build/${ABI}"
+    PREFIX_DIR="${pwd_path}/build/android/${ABI}"
     if [ -d "${PREFIX_DIR}" ]; then
         rm -fr "${PREFIX_DIR}"
     fi
     mkdir -p "${PREFIX_DIR}"
 
-    OUTPUT_ROOT=${TOOLS_ROOT}/android/build/${ABI}
+    OUTPUT_ROOT=${TOOLS_ROOT}/build/android/${ABI}
     mkdir -p ${OUTPUT_ROOT}/log
 
     set_android_toolchain "curl" "${ARCH}" "${ANDROID_API}"
@@ -81,7 +79,7 @@ function configure_make() {
     export ANDROID_NDK_HOME=${ANDROID_NDK_ROOT}
     echo ANDROID_NDK_HOME=${ANDROID_NDK_HOME}
 
-    OPENSSL_OUT_DIR="${pwd_path}/../openssl/android/build/${ABI}"
+    OPENSSL_OUT_DIR="${pwd_path}/../openssl/build/android/${ABI}"
 
     export LDFLAGS="${LDFLAGS} -L${OPENSSL_OUT_DIR}/lib"
     # export LDFLAGS="-Wl,-rpath-link,-L${OPENSSL_OUT_DIR}/lib $LDFLAGS "
@@ -102,7 +100,6 @@ function configure_make() {
 
     elif [[ "${ARCH}" == "arm64" ]]; then
 
-        # --enable-shared need nghttp2 cpp compile
         ./configure --host=$(android_get_build_host "${ARCH}") --prefix="${PREFIX_DIR}" --enable-ipv6 --with-ssl=${OPENSSL_OUT_DIR} --enable-static --disable-shared >"${OUTPUT_ROOT}/log/${ABI}.log" 2>&1
 
     else

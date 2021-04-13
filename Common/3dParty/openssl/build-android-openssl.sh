@@ -39,15 +39,11 @@ echo TOOLS_ROOT=${TOOLS_ROOT}
 # openssl-1.1.1d has fix configure bug
 LIB_VERSION="OpenSSL_1_1_1d"
 LIB_NAME="openssl-1.1.1d"
-LIB_DEST_DIR="${pwd_path}/android/build/openssl-universal"
 
 echo "https://www.openssl.org/source/${LIB_NAME}.tar.gz"
 
 # https://github.com/openssl/openssl/archive/OpenSSL_1_1_1d.tar.gz
 # https://github.com/openssl/openssl/archive/OpenSSL_1_1_1f.tar.gz
-DEVELOPER=$(xcode-select -print-path)
-SDK_VERSION=$(xcrun -sdk iphoneos --show-sdk-version)
-rm -rf "${LIB_DEST_DIR}" "${LIB_NAME}"
 [ -f "${LIB_NAME}.tar.gz" ] || curl https://www.openssl.org/source/${LIB_NAME}.tar.gz >${LIB_NAME}.tar.gz
 
 set_android_toolchain_bin
@@ -67,13 +63,13 @@ function configure_make() {
     pushd .
     cd "${LIB_NAME}"
 
-    PREFIX_DIR="${pwd_path}/android/build/${ABI}"
+    PREFIX_DIR="${pwd_path}/build/android/${ABI}"
     if [ -d "${PREFIX_DIR}" ]; then
         rm -fr "${PREFIX_DIR}"
     fi
     mkdir -p "${PREFIX_DIR}"
 
-    OUTPUT_ROOT=${TOOLS_ROOT}/android/${ABI}
+    OUTPUT_ROOT=${TOOLS_ROOT}/build/android/${ABI}
     mkdir -p ${OUTPUT_ROOT}/log
 
     set_android_toolchain "openssl" "${ARCH}" "${ANDROID_API}"

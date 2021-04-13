@@ -37,7 +37,7 @@ echo TOOLS_ROOT=${TOOLS_ROOT}
 # openssl-1.1.1d has fix configure bug
 LIB_VERSION="OpenSSL_1_1_1d"
 LIB_NAME="openssl-1.1.1d"
-LIB_DEST_DIR="${pwd_path}/ios/build/openssl-universal/lib"
+LIB_DEST_DIR="${pwd_path}/build/ios/openssl-universal/lib"
 
 init_log_color
 
@@ -74,16 +74,16 @@ function configure_make() {
         exit -1
     fi
 
-    PREFIX_DIR="${pwd_path}/ios/build/${ARCH}"
+    PREFIX_DIR="${pwd_path}/build/ios/${ARCH}"
     if [ -d "${PREFIX_DIR}" ]; then
         rm -fr "${PREFIX_DIR}"
     fi
     mkdir -p "${PREFIX_DIR}"
 
-    OUTPUT_ROOT=${TOOLS_ROOT}/ios/${ARCH}
+    OUTPUT_ROOT=${TOOLS_ROOT}/build/ios/${ARCH}
     mkdir -p ${OUTPUT_ROOT}/log
 
-    set_ios_cpu_feature "nghttp2" "${ARCH}" "${IOS_MIN_TARGET}" "${CROSS_TOP}/SDKs/${CROSS_SDK}"
+    set_ios_cpu_feature "openssl" "${ARCH}" "${IOS_MIN_TARGET}" "${CROSS_TOP}/SDKs/${CROSS_SDK}"
     
     ios_printf_global_params "$ARCH" "$SDK" "$PLATFORM" "$PREFIX_DIR" "$OUTPUT_ROOT"
 
@@ -141,20 +141,21 @@ log_info "lipo start..."
 function lipo_library() {
     LIB_SRC=$1
     LIB_DST=$2
-    LIB_PATHS=("${ARCHS[@]/#/${pwd_path}/ios/build/}")
+    LIB_PATHS=("${ARCHS[@]/#/${pwd_path}/build/ios/}")
     LIB_PATHS=("${LIB_PATHS[@]/%//lib/${LIB_SRC}}")
     lipo ${LIB_PATHS[@]} -create -output "${LIB_DST}"
 }
+
 function copy_include() {
     DST=$1
-    if [ -d "${pwd_path}/ios/build/x86_64/include" ]; then
-        cp -r "${pwd_path}/ios/build/x86_64/include"  "${DST}"
-    elif [ -d "${pwd_path}/ios/build/armv7/include" ]; then
-        cp -r "${pwd_path}/ios/build/armv7/include"  "${DST}"
-    elif [ -d "${pwd_path}/ios/build/arm64/include" ]; then
-        cp -r "${pwd_path}/ios/build/arm64/include"  "${DST}"
-    elif [ -d "${pwd_path}/ios/build/i386/include" ]; then
-        cp -r "${pwd_path}/ios/build/i386/include"  "${DST}"  
+    if [ -d "${pwd_path}/build/ios/x86_64/include" ]; then
+        cp -r "${pwd_path}/build/ios/x86_64/include"  "${DST}"
+    elif [ -d "${pwd_path}/build/ios/armv7/include" ]; then
+        cp -r "${pwd_path}/build/ios/armv7/include"  "${DST}"
+    elif [ -d "${pwd_path}/build/ios/arm64/include" ]; then
+        cp -r "${pwd_path}/build/ios/arm64/include"  "${DST}"
+    elif [ -d "${pwd_path}/build/ios/i386/include" ]; then
+        cp -r "${pwd_path}/build/ios/i386/include"  "${DST}"  
     fi
 }
 

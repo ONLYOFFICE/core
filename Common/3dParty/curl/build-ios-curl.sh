@@ -35,7 +35,7 @@ echo TOOLS_ROOT=${TOOLS_ROOT}
 
 LIB_VERSION="curl-7_68_0"
 LIB_NAME="curl-7.68.0"
-LIB_DEST_DIR="${pwd_path}/../output/ios/curl-universal"
+LIB_DEST_DIR="${pwd_path}/build/ios//curl-universal/lib"
 
 init_log_color
 
@@ -73,39 +73,38 @@ function configure_make() {
         exit -1
     fi
 
-    PREFIX_DIR="${pwd_path}/../output/ios/curl-${ARCH}"
+    PREFIX_DIR="${pwd_path}/build/ios/${ARCH}"
     if [ -d "${PREFIX_DIR}" ]; then
         rm -fr "${PREFIX_DIR}"
     fi
     mkdir -p "${PREFIX_DIR}"
 
-    OUTPUT_ROOT=${TOOLS_ROOT}/../output/ios/curl-${ARCH}
+    OUTPUT_ROOT=${TOOLS_ROOT}/build/ios/${ARCH}
     mkdir -p ${OUTPUT_ROOT}/log
 
-    set_android_cpu_feature "nghttp2" "${ARCH}" "${IOS_MIN_TARGET}" "${CROSS_TOP}/SDKs/${CROSS_SDK}"
+    set_ios_cpu_feature "curl" "${ARCH}" "${IOS_MIN_TARGET}" "${CROSS_TOP}/SDKs/${CROSS_SDK}"
 
-    OPENSSL_OUT_DIR="${pwd_path}/../output/ios/openssl-${ARCH}"
-    NGHTTP2_OUT_DIR="${pwd_path}/../output/ios/nghttp2-${ARCH}"
+    OPENSSL_OUT_DIR="${pwd_path}/../openssl/build/ios/${ARCH}"
 
-    export LDFLAGS="${LDFLAGS} -L${OPENSSL_OUT_DIR}/lib -L${NGHTTP2_OUT_DIR}/lib"
+    export LDFLAGS="${LDFLAGS} -L${OPENSSL_OUT_DIR}/lib"
 
     ios_printf_global_params "$ARCH" "$SDK" "$PLATFORM" "$PREFIX_DIR" "$OUTPUT_ROOT"
 
     if [[ "${ARCH}" == "x86_64" ]]; then
 
-        ./Configure --host=$(ios_get_build_host "$ARCH") --prefix="${PREFIX_DIR}" --disable-shared --enable-static --enable-ipv6 --without-libidn2 --with-ssl=${OPENSSL_OUT_DIR} --with-nghttp2=${NGHTTP2_OUT_DIR} >"${OUTPUT_ROOT}/log/${ARCH}.log" 2>&1
+        ./Configure --host=$(ios_get_build_host "$ARCH") --prefix="${PREFIX_DIR}" --enable-ipv6 --with-ssl=${OPENSSL_OUT_DIR} --enable-static --disable-shared >"${OUTPUT_ROOT}/log/${ABI}.log" 2>&1
 
     elif [[ "${ARCH}" == "armv7" ]]; then
 
-        ./Configure --host=$(ios_get_build_host "$ARCH") --prefix="${PREFIX_DIR}" --disable-shared --enable-static --enable-ipv6 --with-ssl=${OPENSSL_OUT_DIR} --with-nghttp2=${NGHTTP2_OUT_DIR} >"${OUTPUT_ROOT}/log/${ARCH}.log" 2>&1
+        ./Configure --host=$(ios_get_build_host "$ARCH") --prefix="${PREFIX_DIR}" --enable-ipv6 --with-ssl=${OPENSSL_OUT_DIR} --enable-static --disable-shared >"${OUTPUT_ROOT}/log/${ABI}.log" 2>&1
 
     elif [[ "${ARCH}" == "arm64" ]]; then
 
-        ./Configure --host=$(ios_get_build_host "$ARCH") --prefix="${PREFIX_DIR}" --disable-shared --enable-static --enable-ipv6 --with-ssl=${OPENSSL_OUT_DIR} --with-nghttp2=${NGHTTP2_OUT_DIR} >"${OUTPUT_ROOT}/log/${ARCH}.log" 2>&1
+        ./Configure --host=$(ios_get_build_host "$ARCH") --prefix="${PREFIX_DIR}" --enable-ipv6 --with-ssl=${OPENSSL_OUT_DIR} --enable-static --disable-shared >"${OUTPUT_ROOT}/log/${ABI}.log" 2>&1
     
-    elif [[ "${ARCH}" == "arm64e" ]]; then
+    elif [[ "${ARCH}" == "i386" ]]; then
 
-        ./Configure --host=$(ios_get_build_host "$ARCH") --prefix="${PREFIX_DIR}" --disable-shared --enable-static --enable-ipv6 --with-ssl=${OPENSSL_OUT_DIR} --with-nghttp2=${NGHTTP2_OUT_DIR} >"${OUTPUT_ROOT}/log/${ARCH}.log" 2>&1
+        ./Configure --host=$(ios_get_build_host "$ARCH") --prefix="${PREFIX_DIR}" --enable-ipv6 --with-ssl=${OPENSSL_OUT_DIR} --enable-static --disable-shared >"${OUTPUT_ROOT}/log/${ABI}.log" 2>&1
 
     else
         log_error "not support" && exit 1
@@ -134,11 +133,26 @@ log_info "lipo start..."
 function lipo_library() {
     LIB_SRC=$1
     LIB_DST=$2
-    LIB_PATHS=("${ARCHS[@]/#/${pwd_path}/../output/ios/curl-}")
+    LIB_PATHS=("${ARCHS[@]/#/${pwd_path}/build/ios/}")
     LIB_PATHS=("${LIB_PATHS[@]/%//lib/${LIB_SRC}}")
     lipo ${LIB_PATHS[@]} -create -output "${LIB_DST}"
 }
+
+function copy_include() {
+    DST=$1
+    if [ -d "${pwd_path}/build/ios/x86_64/include" ]; then
+        cp -r "${pwd_path}/build/ios/x86_64/include"  "${DST}"
+    elif [ -d "${pwd_path}/build/ios/armv7/include" ]; then
+        cp -r "${pwd_path}/build/ios/armv7/include"  "${DST}"
+    elif [ -d "${pwd_path}/build/ios/arm64/include" ]; then
+        cp -r "${pwd_path}/build/ios/arm64/include"  "${DST}"
+    elif [ -d "${pwd_path}/build/ios/i386/include" ]; then
+        cp -r "${pwd_path}/build/ios/i386/include"  "${DST}"  
+    fi
+}
+
 mkdir -p "${LIB_DEST_DIR}"
-lipo_library "libcurl.a" "${LIB_DEST_DIR}/libcurl-universal.a"
+lipo_library "libcurl.a" "${LIB_DEST_DIR}/libcurl.a"
+copy_include "${LIB_DEST_DIR}/../"
 
 log_info "${PLATFORM_TYPE} ${LIB_NAME} end..."

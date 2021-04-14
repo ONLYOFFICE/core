@@ -3998,7 +3998,7 @@ namespace PdfReader
 		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
 
 		long brush;
-                int alpha = pGState->GetFillOpacity() * 255;
+		int alpha = pGState->GetFillOpacity() * 255;
 		m_pRenderer->get_BrushType(&brush);
 		m_pRenderer->put_BrushType(c_BrushTypePathRadialGradient);
 

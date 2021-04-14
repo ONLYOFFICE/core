@@ -25,7 +25,7 @@ struct Zlib
     unsigned char* buffer;
     unsigned long  size;
 
-    std::wstring* paths;
+    std::string* paths;
     int pathsSize;
 
     bool fileIsIn;
@@ -41,8 +41,8 @@ ZLIB_DECL_EXPORT Zlib* Zlib_Load(unsigned char* buffer, unsigned long size);
 ZLIB_DECL_EXPORT void  Zlib_Destroy(Zlib* p);
 
 ZLIB_DECL_EXPORT int Zlib_GetNumberPaths(Zlib* p);
-ZLIB_DECL_EXPORT std::wstring* Zlib_GetPaths(Zlib* p);
-ZLIB_DECL_EXPORT int Zlib_GetSizeFileByPath(Zlib* p, const wchar_t* path);
+ZLIB_DECL_EXPORT std::string* Zlib_GetPaths(Zlib* p);
+ZLIB_DECL_EXPORT int Zlib_GetSizeFileByPath(Zlib* p, std::string* path);
 ZLIB_DECL_EXPORT unsigned char* Zlib_GetLastFileByPath(Zlib* p);
 
 #ifdef __cplusplus

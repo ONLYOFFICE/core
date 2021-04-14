@@ -40,6 +40,47 @@ else
 function Zlib()
 {
     this.isInit = false;
+	
+	this.readFromUtf8 = function(buffer, start, len)
+	{
+		var result = "";
+		var index = start;
+		var end = start + len;
+		while (index < end) 
+		{
+	        var u0 = buffer[index++];
+	        if (!(u0 & 128)) 
+	        {
+	          	result += String.fromCharCode(u0);
+	          	continue;
+	        }
+	        var u1 = buffer[index++] & 63;
+	        if ((u0 & 224) == 192) 
+	        {
+	          	result += String.fromCharCode((u0 & 31) << 6 | u1);
+	          	continue;
+	        }
+	        var u2 = buffer[index++] & 63;
+	        if ((u0 & 240) == 224) 
+	        {
+	          	u0 = (u0 & 15) << 12 | u1 << 6 | u2;
+	        } 
+	        else 
+	        {
+	          	u0 = (u0 & 7) << 18 | u1 << 12 | u2 << 6 | buffer[index++] & 63;
+	        }
+	        if (u0 < 65536) 
+	        {
+	          	result += String.fromCharCode(u0);
+	        } 
+	        else 
+	        {
+	          	var ch = u0 - 65536;
+	          	result += String.fromCharCode(55296 | ch >> 10, 56320 | ch & 1023);
+	        }
+      	}
+      	return result;
+	};
 
     this.openZip = function(dataBuffer)
     {
@@ -51,7 +92,7 @@ function Zlib()
 
         // копируем память в память webasm
         var FileRawDataSize = dataBuffer.byteLength;
-        var FileRawData = Module["_Raster_Malloc"](FileRawDataSize);
+        var FileRawData = Module["_Zlib_Malloc"](FileRawDataSize);
         if (0 === FileRawData)
             return null;
 
@@ -75,24 +116,27 @@ function Zlib()
             Module["_Zlib_Free"](FileRawData);
             return null;
         }
-
-        // получаем содержимое файла по пути
-		/*
-        var canvas = document.createElement("canvas");
-        canvas.width = imageW;
-        canvas.height = imageH;
-
-        var canvasCtx = canvas.getContext("2d");
-        var imageRGBAClampedArray = new Uint8ClampedArray(Module["HEAP8"].buffer, imageRGBA, 4 * imageW * imageH);
-        var canvasData = new ImageData(imageRGBAClampedArray, imageW, imageH);
 		
-        canvasCtx.putImageData(canvasData, 0, 0);
-
-        Module["_Raster_Destroy"](zipFile);
-        Module["_Raster_Free"](FileRawData);
-
-        return canvas;
-		*/
+		var res = []
+        // получаем содержимое файла по пути
+		for (var i = 0; i < nPaths; i++)
+		{
+			var nSizeFile   = Module["_Zlib_GetSizeFileByPath"](zipFile, sPaths + i);
+			var pointerFile = Module["_Zlib_GetLastFileByPath"](zipFile);
+			
+			var buffer = new Uint8Array(Module["HEAP8"].buffer, pointerFile, nSizeFile);
+			var index = 0;
+			var File = [];
+			while (index < nSizeFile)
+			{
+				var lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+				index += 4;
+				File.push(this.readFromUtf8(buffer, index, lenRec));
+				index += lenRec;
+			}
+			res.push(File);
+		}
+		return res;
     }
 }
 

@@ -16,12 +16,13 @@ int main()
     Zlib* zlib = Zlib_Load(pData, nBytesCount);
 
     int nPaths = Zlib_GetNumberPaths(zlib);
-    std::wstring* arrPaths = Zlib_GetPaths(zlib);
+    std::string* arrPaths = Zlib_GetPaths(zlib);
     for (int i = 0; i < nPaths; i++)
     {
-        int nSizeFile = Zlib_GetSizeFileByPath(zlib, arrPaths[i].c_str());
+        int nSizeFile = Zlib_GetSizeFileByPath(zlib, arrPaths + i);
         unsigned char* res = Zlib_GetLastFileByPath(zlib);
-        if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L'/' + NSFile::GetFileName(arrPaths[i])))
+
+        if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L'/' + NSFile::GetFileName(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(arrPaths[i], 1))))
         {
             if (res)
                 oFile.WriteFile(res, nSizeFile);

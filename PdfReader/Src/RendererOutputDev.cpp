@@ -3998,7 +3998,7 @@ namespace PdfReader
 		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
 
 		long brush;
-		int alpha = pGState->GetFillOpacity() * 255;
+                int alpha = pGState->GetFillOpacity() * 255;
 		m_pRenderer->get_BrushType(&brush);
 		m_pRenderer->put_BrushType(c_BrushTypePathRadialGradient);
 
@@ -4008,7 +4008,7 @@ namespace PdfReader
 		t0 = pShading->GetDomain0();
 		t1 = pShading->GetDomain1();
 
-		double r_coef = pGState->GetHorDPI() / 25.4 * pGState->GetCTM()[0];
+		double r_coef = pGState->GetHorDPI() / 25.4 * sqrt(fabs(pGState->GetCTM()[0] * pGState->GetCTM()[3] - pGState->GetCTM()[1] * pGState->GetCTM()[2]));
 
 		TransformToPixels(pGState, x1, y1);
 		TransformToPixels(pGState, x2, y2);
@@ -4056,7 +4056,7 @@ namespace PdfReader
 		t0 = pShading->GetDomain0();
 		t1 = pShading->GetDomain1();
 
-		double r_coef = pGState->GetHorDPI() / 25.4 * pGState->GetCTM()[0];
+		
 
 		TransformToPixels(pGState, x1, y1);
 		TransformToPixels(pGState, x2, y2);
@@ -4070,8 +4070,8 @@ namespace PdfReader
 			PdfReader::GrColor c;
 			pShading->GetColor(t, &c);
 			DWORD dword_color = ColorSpace->GetDwordColor(&c);
-			info.shading.function.set_color((float)t, dword_color % 0x100, 
-				(dword_color >> 8) % 0x100, (dword_color >> 16) % 0x100, alpha);
+			//info.shading.function.set_color((float)t, dword_color % 0x100, 
+			//	(dword_color >> 8) % 0x100, (dword_color >> 16) % 0x100, alpha);
 		}
 
 		((NSGraphics::IGraphicsRenderer*)m_pRenderer)->put_BrushGradInfo(info);

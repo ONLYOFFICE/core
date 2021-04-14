@@ -119,7 +119,7 @@ void MainWindow::on_RenderPic_clicked()
    // GenerateImg(pm,  points, info);
     //setColor2(pm, 0x0000FF);
    //pm.invertPixels();
-    ui->lable_test->setPixmap(QPixmap::fromImage(pm)) ;
+    ui->lable_test->setPixmap(QPixmap::fromImage(pm));
     ui->lable_test->setScaledContents(true);
    // ui->lable_test->resize(pm.size());
     //pm.save("test.bmp");

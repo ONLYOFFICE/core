@@ -75,8 +75,8 @@ namespace OOX
 		if ( oReader.IsEmptyNode() )
 			return;
 
-		int nStylesDepth = oReader.GetDepth();
-		while ( oReader.ReadNextSiblingNode( nStylesDepth ) )
+		int nDepth = oReader.GetDepth();
+		while ( oReader.ReadNextSiblingNode(nDepth) )
 		{
 			std::wstring sName = oReader.GetName();
 

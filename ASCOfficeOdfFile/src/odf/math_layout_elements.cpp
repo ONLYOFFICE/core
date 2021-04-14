@@ -297,21 +297,21 @@ void math_mstyle::oox_convert(oox::math_context & Context)
 {
 	Context.text_properties_ = odf_reader::style_text_properties_ptr(new odf_reader::style_text_properties());
 	
-	Context.text_properties_->content().style_font_name_	= L"Cambria Math";
-	Context.text_properties_->content().fo_font_size_		= odf_types::length(Context.base_font_size_, odf_types::length::pt);
+	Context.text_properties_->content_.style_font_name_ = L"Cambria Math";
+	Context.text_properties_->content_.fo_font_size_ = odf_types::length(Context.base_font_size_, odf_types::length::pt);
 	
 	if (mathsize_)
-		Context.text_properties_->content().fo_font_size_ = mathsize_;
+		Context.text_properties_->content_.fo_font_size_ = mathsize_;
 
 	if (color_)
-		Context.text_properties_->content().fo_color_ = color_;
+		Context.text_properties_->content_.fo_color_ = color_;
 	
 	if (common_attlist_.mathvariant_)
 	{
 		if (common_attlist_.mathvariant_->style_.bold)
-			Context.text_properties_->content().fo_font_weight_ = odf_types::font_weight(odf_types::font_weight::WBold);
+			Context.text_properties_->content_.fo_font_weight_ = odf_types::font_weight(odf_types::font_weight::WBold);
 		if (common_attlist_.mathvariant_->style_.italic)
-			Context.text_properties_->content().fo_font_style_ = odf_types::font_style(odf_types::font_style::Italic);
+			Context.text_properties_->content_.fo_font_style_ = odf_types::font_style(odf_types::font_style::Italic);
 	}
 
 //--------------------------------------------------
@@ -324,7 +324,7 @@ void math_mstyle::oox_convert(oox::math_context & Context)
 		{ 
 			CP_XML_NODE(L"m:ctrlPr")
 			{
-				Context.text_properties_->content().oox_serialize(CP_XML_STREAM(), Context.graphRPR_, Context.fonts_container_);
+				Context.text_properties_->content_.oox_serialize(CP_XML_STREAM(), Context.graphRPR_, Context.fonts_container_);
 			}
 		}
 	}
@@ -352,8 +352,8 @@ void math_mstyle::oox_convert(oox::math_context & Context)
 //reset to default math text props
 	Context.text_properties_ = odf_reader::style_text_properties_ptr(new odf_reader::style_text_properties());
 	
-	Context.text_properties_->content().style_font_name_	= L"Cambria Math";
-	Context.text_properties_->content().fo_font_size_		= odf_types::length(Context.base_font_size_, odf_types::length::pt);
+	Context.text_properties_->content_.style_font_name_	= L"Cambria Math";
+	Context.text_properties_->content_.fo_font_size_		= odf_types::length(Context.base_font_size_, odf_types::length::pt);
 
 	Context.is_need_e_ = need_e_old;
 	{
@@ -365,7 +365,7 @@ void math_mstyle::oox_convert(oox::math_context & Context)
 		{ 
 			CP_XML_NODE(L"m:ctrlPr")
 			{
-				Context.text_properties_->content().oox_serialize(CP_XML_STREAM(), Context.graphRPR_, Context.fonts_container_);
+				Context.text_properties_->content_.oox_serialize(CP_XML_STREAM(), Context.graphRPR_, Context.fonts_container_);
 			}
 		}
 	}

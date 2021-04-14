@@ -85,7 +85,7 @@ void odf_style_state::add_child(office_element_ptr & child)
 	odf_style_->add_child_element(child);
 }
 
-void odf_style_state::set_name(std::wstring name)
+void odf_style_state::set_name(const std::wstring &name)
 {
 	odf_style_name_ = name;
 
@@ -94,14 +94,19 @@ void odf_style_state::set_name(std::wstring name)
 	
 	style_->style_name_ = name;
 }
-
-void odf_style_state::set_display_name(std::wstring name)
+void odf_style_state::set_display_name(const std::wstring &name)
 {
 	style* style_ = dynamic_cast<style*>(odf_style_.get());
 	if (!style_)return;
 	
 	style_->style_display_name_ = name;
+}
+void odf_style_state::set_class(const std::wstring &value)
+{
+	style* style_ = dynamic_cast<style*>(odf_style_.get());
+	if (!style_)return;
 
+	style_->style_class_ = value;
 }
 std::wstring odf_style_state::get_name()
 {
@@ -114,13 +119,12 @@ style_family::type odf_style_state::get_family_type()
 {
 	return style_family_;
 }
-
 void odf_style_state::set_family_type (odf_types::style_family::type type)
 {
 	 style_family_ = type;
 }
 
-void odf_style_state::set_parent_style_name(std::wstring name)
+void odf_style_state::set_parent_style_name(const std::wstring &name)
 {
 	if (name.length() < 1) return;
 
@@ -131,7 +135,7 @@ void odf_style_state::set_parent_style_name(std::wstring name)
 		return;
 	style_->style_parent_style_name_ = name;
 }
-void odf_style_state::set_list_style_name(std::wstring name)
+void odf_style_state::set_list_style_name(const std::wstring &name)
 {
 	if (name.length() < 1) return;
 
@@ -146,7 +150,7 @@ void odf_style_state::set_dont_write(bool Val)
 {
 	writable_ = !Val;
 }
-void odf_style_state::set_data_style_name(std::wstring name)
+void odf_style_state::set_data_style_name(const std::wstring &name)
 {
 	style* style_ = dynamic_cast<style*>(odf_style_.get());
 	if (!style_)return;

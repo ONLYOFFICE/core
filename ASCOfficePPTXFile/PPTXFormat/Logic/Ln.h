@@ -240,20 +240,17 @@ namespace PPTX
 					{
 						case 0:
 						{
-							algn = new Limit::PenAlign();
-							algn->SetBYTECode(pReader->GetUChar());
+							algn = pReader->GetUChar();
 							break;
 						}
 						case 1:
 						{
-							cap = new Limit::LineCap();
-							cap->SetBYTECode(pReader->GetUChar());
+							cap = pReader->GetUChar();
 							break;
 						}
 						case 2:
 						{
-							cmpd = new Limit::CompoundLine();
-							cmpd->SetBYTECode(pReader->GetUChar());
+							cmpd = pReader->GetUChar();
 							break;
 						}
 						case 3:

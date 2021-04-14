@@ -111,21 +111,6 @@ void process_paragraph_drop_cap_attr(const paragraph_attrs & Attr, oox::docx_con
 	}
 }
 
-void process_paragraph_index(const paragraph_attrs & Attr, oox::docx_conversion_context & Context)
-{
-	if (false == Context.is_table_content()) return;
-
-    if (Attr.text_style_name_.empty())return;
-
-	style_instance * styleInst 
-            = Context.root()->odf_context().styleContainer().style_by_name(Attr.text_style_name_, style_family::Paragraph, Context.process_headers_footers_);
-    if ((!styleInst) || (styleInst->is_automatic() == false))return;
-
-	if (L"index" != styleInst->style_class()) return;
-
-
-}								
-
 }
 
 std::wostream & paragraph::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
@@ -270,7 +255,7 @@ size_t paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 }
 void paragraph::docx_convert(oox::docx_conversion_context & Context)
 {
-    const std::wstring & styleName = attrs_.text_style_name_;
+    std::wstring styleName = attrs_.text_style_name_;
 	
 	bool in_drawing	= false;
 
@@ -475,6 +460,7 @@ void h::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"text:restart-numbering"	, restart_numbering_);
     CP_APPLY_ATTR(L"text:start-value"		, start_value_);
     CP_APPLY_ATTR(L"text:is-list-header"	, is_list_header_);
+	CP_APPLY_ATTR(L"text:level"				, outline_level_); // openoffice xml 1.0
 
     paragraph_.add_attributes(Attributes);
 
@@ -675,8 +661,6 @@ std::wostream & section::text_to_stream(std::wostream & _Wostream, bool bXmlEnco
 
 void section::afterCreate()
 {
-	office_element::afterCreate();
-	
 	if (document_context * context = getContext())
     {
         if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
@@ -693,19 +677,17 @@ void section::afterCreate()
 void section::afterReadContent()
 {
 	if (document_context * context = getContext())
-    {
-        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
-        {
-            lastPar->paragraph_.set_next_end_section(true);        
-        }
+	{
+		if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
+		{
+			lastPar->paragraph_.set_next_end_section(true);
+		}
 		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
-        {
-            lastPar->paragraph_.set_next_end_section(true);        
-        }
-    }
- 	office_element::afterReadContent();
+		{
+			lastPar->paragraph_.set_next_end_section(true);
+		}
+	}
 }
-
 void section::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     section_attr_.add_attributes(Attributes);
@@ -940,11 +922,13 @@ void table_of_content::add_child_element( xml::sax * Reader, const std::wstring 
 }
 void table_of_content::docx_convert(oox::docx_conversion_context & Context)
 {
-	std::wstring current_page_properties = Context.get_page_properties();
-   
-	Context.get_section_context().add_section (section_attr_.name_, section_attr_.style_name_.get_value_or(L""), current_page_properties);
-	
-	Context.add_page_properties(current_page_properties);
+	if (section_attr_.style_name_ && false == section_attr_.name_.empty()) // ??? ||
+	{
+		std::wstring current_page_properties = Context.get_page_properties();
+		Context.get_section_context().add_section(section_attr_.name_, section_attr_.style_name_.get_value_or(L""), current_page_properties);
+		Context.add_page_properties(current_page_properties);
+	}
+
 	if (index_body_)
 	{
 		Context.start_sdt(1);
@@ -1153,17 +1137,17 @@ void illustration_index::afterCreate()
 {
  	office_element::afterCreate();
 
-	if (document_context * context = getContext())
-    {
-        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
-        {
-            lastPar->paragraph_.set_next_section(true);        
-        }
-		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
-        {
-            lastPar->paragraph_.set_next_section(true);        
-        }
-    }
+//	if (document_context * context = getContext())
+//    {
+//        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
+//        {
+//            lastPar->paragraph_.set_next_section(true);        
+//        }
+//		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+//        {
+//            lastPar->paragraph_.set_next_section(true);        
+//        }
+//    }
 }
 
 void illustration_index::afterReadContent()
@@ -1183,9 +1167,12 @@ void illustration_index::afterReadContent()
 }
 void illustration_index::docx_convert(oox::docx_conversion_context & Context)
 {
-	std::wstring current_page_properties = Context.get_page_properties();
-	Context.get_section_context().add_section (section_attr_.name_,section_attr_.style_name_.get_value_or(L""), current_page_properties);
-	Context.add_page_properties(current_page_properties);
+	if (section_attr_.style_name_ && false == section_attr_.name_.empty()) // ??? ||
+	{
+		std::wstring current_page_properties = Context.get_page_properties();
+		Context.get_section_context().add_section(section_attr_.name_, section_attr_.style_name_.get_value_or(L""), current_page_properties);
+		Context.add_page_properties(current_page_properties);
+	}
 
 	if (index_body_)
 	{
@@ -1307,17 +1294,17 @@ void alphabetical_index::afterCreate()
 {
 	office_element::afterCreate();
 	
-	if (document_context * context = getContext())
-    {
-        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
-        {
-            lastPar->paragraph_.set_next_section(true);        
-        }
-		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
-        {
-            lastPar->paragraph_.set_next_section(true);        
-        }
-    }
+//	if (document_context * context = getContext())
+//    {
+//        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
+//        {
+//            lastPar->paragraph_.set_next_section(true);        
+//        }
+//		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+//        {
+//            lastPar->paragraph_.set_next_section(true);        
+//        }
+//    }
 }
 void alphabetical_index::afterReadContent()
 {
@@ -1336,9 +1323,12 @@ void alphabetical_index::afterReadContent()
 }
 void alphabetical_index::docx_convert(oox::docx_conversion_context & Context)
 {
-	std::wstring current_page_properties = Context.get_page_properties();   
-	Context.get_section_context().add_section (section_attr_.name_, section_attr_.style_name_.get_value_or(L""), current_page_properties);
-	Context.add_page_properties(current_page_properties);
+	if (section_attr_.style_name_ && false == section_attr_.name_.empty()) // ??? ||
+	{
+		std::wstring current_page_properties = Context.get_page_properties();
+		Context.get_section_context().add_section(section_attr_.name_, section_attr_.style_name_.get_value_or(L""), current_page_properties);
+		Context.add_page_properties(current_page_properties);
+	}
 
 	if (index_body_)
 	{
@@ -1423,17 +1413,17 @@ void object_index::afterCreate()
 {
 	office_element::afterCreate();
 
-	if (document_context * context = getContext())
-    {
-        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
-        {
-            lastPar->paragraph_.set_next_section(true);        
-        }
-		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
-        {
-            lastPar->paragraph_.set_next_section(true);        
-        }
-    }
+//	if (document_context * context = getContext())
+//    {
+//        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
+//        {
+//            lastPar->paragraph_.set_next_section(true);        
+//        }
+//		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+//        {
+//            lastPar->paragraph_.set_next_section(true);        
+//        }
+//    }
 }
 void object_index::afterReadContent()
 {
@@ -1718,9 +1708,12 @@ void bibliography::afterReadContent()
 }
 void bibliography::docx_convert(oox::docx_conversion_context & Context)
 {
-	std::wstring current_page_properties = Context.get_page_properties();   
-	Context.get_section_context().add_section (section_attr_.name_, section_attr_.style_name_.get_value_or(L""), current_page_properties);
-	Context.add_page_properties(current_page_properties);
+	if (section_attr_.style_name_ && false == section_attr_.name_.empty()) // ??? ||
+	{
+		std::wstring current_page_properties = Context.get_page_properties();
+		Context.get_section_context().add_section(section_attr_.name_, section_attr_.style_name_.get_value_or(L""), current_page_properties);
+		Context.add_page_properties(current_page_properties);
+	}
 
 	if (index_body_)
 	{

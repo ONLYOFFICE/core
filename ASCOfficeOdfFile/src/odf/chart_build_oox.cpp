@@ -106,14 +106,22 @@ void object_odf_context::set_style_name(std::wstring const & val)
 {
     style_name_ = val;        
 }
-void object_odf_context::start_axis(std::wstring const & dimensionName, std::wstring const & name, std::wstring const & styleName)
+void object_odf_context::start_axis(std::wstring const & dimension, std::wstring const & name, std::wstring const & styleName)
 {
     in_axis_ = true;
 	
 	axis ax;
-	ax.dimension_	= dimensionName;
+	ax.dimension_	= dimension;
 	ax.chart_name_	= name;
 	ax.style_name_	= styleName;
+
+	if (ax.dimension_.empty())
+	{
+		if (std::wstring::npos != ax.chart_name_.find(L"primary-"))
+		{
+			ax.dimension_ = ax.chart_name_.substr(8);
+		}
+	}
 
 	axises_.push_back(ax);
 }
@@ -451,7 +459,7 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 		}
 
 		std::wstring			formatCode	= L"General";
-		_CP_OPT(std::wstring)	strNumFormat, strPercentFormat;
+		_CP_OPT(std::wstring)	strNumFormat, strPercentFormat, strAxisType;
 		_CP_OPT(int)			nTypeFormat;
 		_CP_OPT(bool)			bLinkData;
 		
@@ -459,6 +467,7 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 		odf_reader::GetProperty(series_[i].properties_, L"percentage_num_format", strPercentFormat);
 		odf_reader::GetProperty(series_[i].properties_, L"link-data-style-to-source", bLinkData);
 		odf_reader::GetProperty(series_[i].properties_, L"data-label-number", nTypeFormat);
+		odf_reader::GetProperty(series_[i].properties_, L"axis-type", strAxisType);
 
 		if ((nTypeFormat) && (*nTypeFormat == 2) && strPercentFormat)
 		{
@@ -480,11 +489,11 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 			if (last_set_class == chart_class::bubble)
 			{	//bubble(x)
 				if (!bPivotChart_)
-					current->set_formula_series(4, domain_cell_range_adress_, formatCode, bLinkData.get_value_or(true));	
+					current->set_formula_series(4, domain_cell_range_adress_, formatCode, bLinkData.get_value_or(strAxisType ? false : true));
 				current->set_values_series (4, domain_cash);
 				//y	
 				if (!bPivotChart_)
-					current->set_formula_series(3, series_[i].cell_range_address_, formatCode, bLinkData.get_value_or(true));			
+					current->set_formula_series(3, series_[i].cell_range_address_, formatCode, bLinkData.get_value_or(strAxisType ? false : true));
 				current->set_values_series (3, cell_cash);
 			}
 			else
@@ -492,14 +501,14 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 				if (false == domain_cash.empty() || false == cash_values.empty())
 				{
 					if (!bPivotChart_)
-						current->set_formula_series(2, domain_cell_range_adress_, formatCode, bLinkData.get_value_or(true));	
+						current->set_formula_series(2, domain_cell_range_adress_, formatCode, bLinkData.get_value_or(strAxisType ? false : true));
 					current->set_values_series (2, domain_cash);		
 				}
 				//y
 				if (false == cell_cash.empty() || false == cash_values.empty())
 				{
 					if (!bPivotChart_)
-						current->set_formula_series(3, series_[i].cell_range_address_, formatCode, bLinkData.get_value_or(true));				
+						current->set_formula_series(3, series_[i].cell_range_address_, formatCode, bLinkData.get_value_or(strAxisType ? false : true));
 					current->set_values_series (3, cell_cash);		
 				}
 			}
@@ -507,7 +516,7 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 		else
 		{	//common
 			if (!bPivotChart_)
-				current->set_formula_series(1, series_[i].cell_range_address_, formatCode, bLinkData.get_value_or(true));	
+				current->set_formula_series(1, series_[i].cell_range_address_, formatCode, bLinkData.get_value_or(strAxisType ? false : true));
 			current->set_values_series(1, cell_cash);
 		}
 

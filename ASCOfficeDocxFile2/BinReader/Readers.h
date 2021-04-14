@@ -31,9 +31,6 @@
  */
 #pragma once
 
-#ifndef READERS
-#define READERS
-
 #include "FileWriter.h"
 #include "ReaderClasses.h"
 
@@ -59,6 +56,7 @@ class Binary_CommonReader2 : public Binary_CommonReader
 public:
 	Binary_CommonReader2(NSBinPptxRW::CBinaryFileReader& poBufferedStream);
 	docRGB ReadColor();
+	void ReadColor2(SimpleTypes::CHexColor<>& color);
 	void ReadThemeColor(int length, CThemeColor& oCThemeColor);
 	int _ReadThemeColor(BYTE type, long length, void* poResult);
 	template<typename T> int ReadTrackRevision(long length, T* poResult);
@@ -129,6 +127,7 @@ public:
 	int ReadNumPr(BYTE type, long length, void* poResult);
 	int ReadBorders(BYTE type, long length, void* poResult);
 	int ReadBorder(BYTE type, long length, void* poResult);
+	int ReadBorder2(BYTE type, long length, void* poResult);
 	int ReadFramePr(BYTE type, long length, void* poResult);
     int Read_SecPr(BYTE type, long length, void* poResult);
 	int ReadFootnotePr(BYTE type, long length, void* poResult);
@@ -222,7 +221,16 @@ public:
     Binary_OtherTableReader(std::wstring sFileInDir, NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter);
 	int Read();
 	int ReadOtherContent(BYTE type, long length, void* poResult);
-	int ReadImageMapContent(BYTE type, long length, void* poResult);
+//	int ReadImageMapContent(BYTE type, long length, void* poResult); not using now
+};
+class Binary_CustomsTableReader : public Binary_CommonReader
+{
+	Writers::FileWriter& m_oFileWriter;
+public:
+	Binary_CustomsTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter);
+	int Read();
+	int ReadCustom(BYTE type, long length, void* poResult);
+	int ReadCustomContent(BYTE type, long length, void* poResult);
 };
 class Binary_CommentsTableReader : public Binary_CommonReader
 {
@@ -467,6 +475,13 @@ public:
 	int ReadSdtPrDate(BYTE type, long length, void* poResult);
 	int ReadDocPartList(BYTE type, long length, void* poResult);
 	int ReadDropDownList(BYTE type, long length, void* poResult);
+
+	int ReadDocParts(BYTE type, long length, void* poResult);
+	int ReadDocPart(BYTE type, long length, void* poResult);
+	int ReadDocPartPr(BYTE type, long length, void* poResult);
+	int ReadDocPartBehaviors(BYTE type, long length, void* poResult);
+	int ReadDocPartTypes(BYTE type, long length, void* poResult);
+
 	int ReadSdtFormPr(BYTE type, long length, void* poResult);
 	int ReadSdtTextFormPr(BYTE type, long length, void* poResult);
 	int ReadSdtTextFormPrComb(BYTE type, long length, void* poResult);
@@ -497,4 +512,3 @@ public:
 		int ReadMainTable();
 };
 }
-#endif	// #ifndef READERS

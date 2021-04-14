@@ -85,9 +85,9 @@ namespace Writers
 		{
 			return OOX::FileTypes::Comments.DefaultFileName().GetPath();
 		}
-		void Write()
+		void Write(bool bGlossary = false)
 		{
-			std::wstring sDir = m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR;
+			std::wstring sDir = m_sDir + FILE_SEPARATOR_STR + L"word" + (bGlossary ? (FILE_SEPARATOR_STR + std::wstring(L"glossary")) : L"" ) + FILE_SEPARATOR_STR;
             if(false == m_sComment.empty())
 			{
 				OOX::CPath filePath = sDir + OOX::FileTypes::Comments.DefaultFileName().GetPath();

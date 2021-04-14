@@ -160,6 +160,9 @@
     <Filter Include="PPTX">
       <UniqueIdentifier>{c2314c85-3672-456a-9797-b4f879792f36}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Logic\DocParts">
+      <UniqueIdentifier>{744df142-08f4-4564-9383-0594368c1eb2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\DocxFormat\Rels.h">
@@ -429,9 +432,6 @@
     <ClInclude Include="..\Source\XlsxFormat\Chart\Chart.h">
       <Filter>XlsxFormat\Chart</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\DocxFormat\ChartDrawing.h">
-      <Filter>XlsxFormat\Chart</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Chart\ChartSerialize.h">
       <Filter>XlsxFormat\Chart</Filter>
     </ClInclude>
@@ -685,6 +685,18 @@
     <ClInclude Include="..\Source\DocxFormat\RId.h" />
     <ClInclude Include="..\Source\DocxFormat\UnknowTypeFile.h" />
     <ClInclude Include="..\Source\DocxFormat\WritingElement.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\DocParts.h">
+      <Filter>Logic\DocParts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Chart\ChartStyle.h">
+      <Filter>XlsxFormat\Chart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Chart\ChartColors.h">
+      <Filter>XlsxFormat\Chart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Chart\ChartDrawing.h">
+      <Filter>XlsxFormat\Chart</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\DocxFormat\Logic\Table.cpp">
@@ -870,5 +882,11 @@
     <ClCompile Include="..\Source\DocxFormat\DocxFlat.cpp" />
     <ClCompile Include="..\Source\DocxFormat\FileFactory.cpp" />
     <ClCompile Include="..\Source\DocxFormat\IFileContainer.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Document.cpp">
+      <Filter>Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\DocParts.cpp">
+      <Filter>Logic\DocParts</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

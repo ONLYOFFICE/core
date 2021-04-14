@@ -54,14 +54,20 @@ office_document_base::office_document_base()
 
 void office_document_base::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"office:mimetype", office_mimetype_, std::wstring(L""));
-    CP_APPLY_ATTR(L"office:version", office_version_, std::wstring(L""));
+	CP_APPLY_ATTR(L"office:mimetype", office_mimetype_);
+	CP_APPLY_ATTR(L"office:version", office_version_);
+	CP_APPLY_ATTR(L"office:class", office_class_);
+
+	if (office_class_)
+	{
+		getContext()->office_class_ = *office_class_;
+	}
 }
 
 void office_document_base::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    if CP_CHECK_NAME(L"office", L"body")
-        CP_CREATE_ELEMENT(office_body_);
+	if CP_CHECK_NAME(L"office", L"body")
+		CP_CREATE_ELEMENT(office_body_);
     else if CP_CHECK_NAME(L"office", L"automatic-styles")
         CP_CREATE_ELEMENT(office_automatic_styles_);
     else if CP_CHECK_NAME(L"office", L"styles")

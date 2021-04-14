@@ -56,6 +56,8 @@ namespace odf_writer
 		fieldTextInput,
 		fieldExpression,
 		fieldDropDown,
+		fieldDate,
+		fieldTime,
 
 		fieldBibliography = 0xff + 1,
 		fieldIndex,
@@ -105,7 +107,7 @@ public:
 
 	void add_element_in_span_or_par(office_element_ptr & elm);
  	
-	bool start_field		(int type, const std::wstring& value);
+	bool start_field		(int type, const std::wstring& value, const std::wstring& format);
 	void end_field			();
 
 	void start_span			(bool styled = false); 
@@ -122,7 +124,7 @@ public:
 	void save_property_break();
 
 	void add_tab			(_CP_OPT(int) ref = boost::none);
-	void add_hyperlink		(std::wstring ref, std::wstring display_text);
+	void add_hyperlink		(const std::wstring & link, const std::wstring & display, const std::wstring & location);
 	void set_outline_level	(int level);
 
 	bool get_list_item_state()		{return list_state_.levels.size() > 0 ? list_state_.levels.back() : false;}

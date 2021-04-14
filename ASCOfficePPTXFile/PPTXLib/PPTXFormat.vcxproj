@@ -346,6 +346,7 @@
     <ClInclude Include="..\..\Common\DocxFormat\Source\DocxFormat\WritingVector.h" />
     <ClInclude Include="..\..\Common\DocxFormat\Source\SystemUtility\File.h" />
     <ClInclude Include="..\..\Common\DocxFormat\Source\SystemUtility\SystemUtility.h" />
+    <ClInclude Include="..\..\DesktopEditor\raster\exif.h" />
     <ClInclude Include="..\ASCOfficeDrawingConverter.h" />
     <ClInclude Include="..\ASCOfficePPTXFile.h" />
     <ClInclude Include="..\Editor\BinaryFileReaderWriter.h" />
@@ -658,6 +659,7 @@
     <ClInclude Include="..\PPTXFormat\Logic\Timing\BldSub.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Timing\BuildNodeBase.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Timing\CBhvr.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Timing\ChildTnLst.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Timing\Cmd.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Timing\CMediaNode.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Timing\Cond.h" />

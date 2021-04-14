@@ -36,7 +36,7 @@
 #include <vector>
 #include "../graphics/pro/Fonts.h"
 
-class CApplicationFontsWorker
+class GRAPHICS_DECL CApplicationFontsWorker
 {
 public:
     bool                        m_bIsUseSystemFonts;

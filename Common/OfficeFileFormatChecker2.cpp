@@ -642,6 +642,9 @@ bool COfficeFileFormatChecker::isOpenOfficeFormatFile(const std::wstring & fileN
 	const char *otsFormatLine = "application/vnd.oasis.opendocument.spreadsheet-template";
  	const char *otpFormatLine = "application/vnd.oasis.opendocument.presentation-template";
 	const char *epubFormatLine = "application/epub+zip";
+	const char *sxwFormatLine = "application/vnd.sun.xml.writer";
+	const char *sxcFormatLine = "application/vnd.sun.xml.calc";
+	const char *sxiFormatLine = "application/vnd.sun.xml.impress";
 
     COfficeUtils OfficeUtils(NULL);
 	
@@ -673,15 +676,18 @@ bool COfficeFileFormatChecker::isOpenOfficeFormatFile(const std::wstring & fileN
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP;
 		}		
-        else if ( NULL != strstr((char*)pBuffer, odtFormatLine) )
+        else if ( NULL != strstr((char*)pBuffer, odtFormatLine) ||
+					NULL != strstr((char*)pBuffer, sxwFormatLine) )
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
 		}
-        else if ( NULL != strstr((char*)pBuffer, odsFormatLine) )
+        else if ( NULL != strstr((char*)pBuffer, odsFormatLine) ||
+					NULL != strstr((char*)pBuffer, sxcFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
 		}
-        else if ( NULL != strstr((char*)pBuffer, odpFormatLine) )
+        else if ( NULL != strstr((char*)pBuffer, odpFormatLine) ||
+					NULL != strstr((char*)pBuffer, sxiFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
 		}
@@ -788,6 +794,7 @@ bool COfficeFileFormatChecker::isOOXFlatFormatFile(unsigned char* pBuffer,int dw
 
     const char *docxFormatLine = "xmlns:w=\"http://schemas.microsoft.com/office/word/2003/wordml\"";
     const char *xlsxFormatLine = "xmlns:ss=\"urn:schemas-microsoft-com:office:spreadsheet\"";
+	const char *packageFormatLine = "xmlns:pkg=\"http://schemas.microsoft.com/office/2006/xmlPackage\"";
 
 	if (std::string::npos != xml_string.find(docxFormatLine))
 	{
@@ -797,7 +804,10 @@ bool COfficeFileFormatChecker::isOOXFlatFormatFile(unsigned char* pBuffer,int dw
 	{
 		nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_FLAT;
 	}
-
+	else if (std::string::npos != xml_string.find(packageFormatLine))
+	{
+		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_PACKAGE;
+	}
 	if (nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN) return true;
 
 	return false;

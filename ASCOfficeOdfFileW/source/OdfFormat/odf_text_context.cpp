@@ -522,7 +522,7 @@ void odf_text_context::end_list()
 }
 //------------------------------------------------------------------------------------------  LIST
 
-bool odf_text_context::start_field(int type, const std::wstring& value)
+bool odf_text_context::start_field(int type, const std::wstring& value, const std::wstring& format)
 {
 	if (single_paragraph_ == true) return false;
 
@@ -561,16 +561,34 @@ bool odf_text_context::start_field(int type, const std::wstring& value)
 		{
 			create_element(L"text", L"page-count", elm, odf_context_);
 		}break;
+		case fieldTime:
+		{
+			create_element(L"text", L"time", elm, odf_context_);
+
+			text_time *time = dynamic_cast<text_time*>(elm.get());
+			if (time)
+			{			
+				if (false == value.empty()) time->text_time_value_ = value;
+				if (false == format.empty() && styles_context_)
+				{
+					number_format_state state = styles_context_->numbers_styles().add_or_find(-1, format);
+					time->style_data_style_name_ = state.style_name;
+				}
+
+			}
+		}break;
 		case fieldDateTime:
 		{
 			create_element(L"text", L"date", elm, odf_context_);
 
-			if (false == value.empty())
-			{
-				text_date *date = dynamic_cast<text_date*>(elm.get());
-				if (date)
+			text_date *date = dynamic_cast<text_date*>(elm.get());
+			if (date)
+			{		
+				if (false == value.empty()) date->text_date_value_ = value;
+				if (false == format.empty() && styles_context_)
 				{
-					date->text_date_value_ = value;
+					number_format_state state = styles_context_->numbers_styles().add_or_find(-1, format);
+					date->style_data_style_name_ = state.style_name;
 				}
 			}
 		}break;
@@ -634,7 +652,7 @@ void odf_text_context::add_text_style(office_element_ptr & style_elm, std::wstri
 	}
 }
 
-void odf_text_context::add_hyperlink (std::wstring ref, std::wstring display_text)
+void odf_text_context::add_hyperlink (const std::wstring & link, const std::wstring & display, const std::wstring & location)
 {
 	office_element_ptr elm;
 	create_element(L"text", L"a", elm, odf_context_);
@@ -642,14 +660,14 @@ void odf_text_context::add_hyperlink (std::wstring ref, std::wstring display_tex
 	text_a* hyperlink = dynamic_cast<text_a*>(elm.get());
 	if (!hyperlink)return;
 
-	if (!display_text.empty())
-		hyperlink->add_text(display_text);
+	if (!display.empty())
+		hyperlink->add_text(display);
 ////////////////////////////
 
-	hyperlink->common_xlink_attlist_.href_	= ref;
+	hyperlink->common_xlink_attlist_.href_	= link + (location.empty() ? L"" : (L"#" + location));
 	hyperlink->common_xlink_attlist_.type_	= xlink_type::Simple;
 	
-	if (current_level_.size() > 0)
+	if (false == current_level_.empty())
 		current_level_.back().elm->add_child_element(elm);
 }
 

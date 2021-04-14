@@ -410,7 +410,9 @@ namespace NSJSBase
 
                 if (0 == argc)
                 {
-                    _return->value = _funcN->Call(V8ContextFirstArg value, 0, NULL).ToLocalChecked();
+                    v8::MaybeLocal<v8::Value> retValue = _funcN->Call(V8ContextFirstArg value, 0, NULL);
+                    if (!retValue.IsEmpty())
+                        _return->value = retValue.ToLocalChecked();
                 }
                 else
                 {
@@ -420,7 +422,9 @@ namespace NSJSBase
                         CJSValueV8* _value_arg = static_cast<CJSValueV8*>(argv[i].operator ->());
                         args[i] = _value_arg->value;
                     }
-                    _return->value = _funcN->Call(V8ContextFirstArg value, argc, args).ToLocalChecked();
+                    v8::MaybeLocal<v8::Value> retValue = _funcN->Call(V8ContextFirstArg value, argc, args);
+                    if (!retValue.IsEmpty())
+                        _return->value = retValue.ToLocalChecked();
                     RELEASEARRAYOBJECTS(args);
                 }
             }

@@ -112,7 +112,7 @@ void math_mi::oox_convert(oox::math_context & Context)
 				}
 			}
 
-			Context.text_properties_->content().oox_serialize(CP_XML_STREAM(), Context.graphRPR_, Context.fonts_container_);
+			Context.text_properties_->content_.oox_serialize(CP_XML_STREAM(), Context.graphRPR_, Context.fonts_container_);
 
 			CP_XML_NODE(L"m:t")
 			{
@@ -160,7 +160,7 @@ void math_mo::oox_convert(oox::math_context & Context)
         {
 			// + доп стили текста ... todoooo
 
-			Context.text_properties_->content().oox_serialize(CP_XML_STREAM(), Context.graphRPR_, Context.fonts_container_);
+			Context.text_properties_->content_.oox_serialize(CP_XML_STREAM(), Context.graphRPR_, Context.fonts_container_);
 			
 			CP_XML_NODE(L"m:t")
 			{
@@ -201,7 +201,7 @@ void math_mn::oox_convert(oox::math_context & Context)
 		{
 			// + доп стили текста ... todoooo
 
-			Context.text_properties_->content().oox_serialize(CP_XML_STREAM(), Context.graphRPR_, Context.fonts_container_);
+			Context.text_properties_->content_.oox_serialize(CP_XML_STREAM(), Context.graphRPR_, Context.fonts_container_);
 	
 			CP_XML_NODE(L"m:t")
 			{

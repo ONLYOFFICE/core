@@ -106,7 +106,7 @@ namespace Spreadsheet
 	}
 	void CSortRule::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
-		LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+		LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 		pReader->Skip(1); // start attributes
 		while (true)
 		{
@@ -215,7 +215,7 @@ namespace Spreadsheet
 	}
 	void CSortRules::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
-		LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+		LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 		pReader->Skip(1); // start attributes
 		while (true)
 		{
@@ -347,7 +347,7 @@ namespace Spreadsheet
 	}
 	void CColumnFilter::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
-		LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+		LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 		pReader->Skip(1); // start attributes
 		while (true)
 		{
@@ -467,7 +467,7 @@ namespace Spreadsheet
 	}
 	void CNsvFilter::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
-		LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+		LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 		pReader->Skip(1); // start attributes
 		while (true)
 		{
@@ -581,7 +581,7 @@ namespace Spreadsheet
 	}
 	void CNamedSheetView::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
-		LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+		LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 		pReader->Skip(1); // start attributes
 		while (true)
 		{
@@ -680,7 +680,7 @@ namespace Spreadsheet
 	void CNamedSheetViews::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
 		pReader->Skip(1); // type
-		LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+		LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 		pReader->Skip(1); // start attributes
 		while (true)
 		{

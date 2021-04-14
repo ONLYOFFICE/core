@@ -45,6 +45,7 @@ SOURCES += \
     ../Source/DocxFormat/Logic/Table.cpp \
     ../Source/DocxFormat/Logic/TableProperty.cpp \
     ../Source/DocxFormat/Logic/Vml.cpp \
+    ../Source/DocxFormat/Logic/DocParts.cpp \
     ../Source/DocxFormat/Media/VbaProject.cpp \
     ../Source/DocxFormat/Media/JsaProject.cpp \
     ../Source/DocxFormat/Media/ActiveX.cpp \
@@ -55,7 +56,8 @@ SOURCES += \
     ../Source/DocxFormat/Docx.cpp \
     ../Source/DocxFormat/DocxFlat.cpp \
     ../Source/DocxFormat/Comments.cpp \
-    ../Source/DocxFormat/VmlDrawing.cpp \
+    ../Source/DocxFormat/Document.cpp \
+   ../Source/DocxFormat/VmlDrawing.cpp \
     ../Source/XlsxFormat/Chart/ChartSerialize.cpp \
     ../Source/XlsxFormat/Chart/ChartSerializeEx.cpp \
     ../Source/XlsxFormat/Common.cpp \
@@ -71,6 +73,7 @@ SOURCES += \
     ../Source/DocxFormat/Core.cpp \
     ../Source/DocxFormat/FileFactory.cpp \
     ../Source/DocxFormat/IFileContainer.cpp \
+    ../Source/DocxFormat/Document.cpp \
     ../Source/XlsxFormat/FileFactory_Spreadsheet.cpp \
     ../Source/DocxFormat/Drawing/DrawingExt.cpp \
     ../Source/Common/Align.cpp \
@@ -151,6 +154,7 @@ HEADERS += docxformatlib.h \
     ../Source/DocxFormat/Logic/Vml.h \
     ../Source/DocxFormat/Logic/VmlOfficeDrawing.h \
     ../Source/DocxFormat/Logic/VmlWord.h \
+    ../Source/DocxFormat/Logic/DocParts.h \
     ../Source/DocxFormat/Math/OMath.h \
     ../Source/DocxFormat/Math/oMathBottomNodes.h \
     ../Source/DocxFormat/Math/oMathContent.h \

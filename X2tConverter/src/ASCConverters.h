@@ -59,6 +59,11 @@ namespace NExtractTools
     _UINT32 docxflat2doct		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
 	_UINT32 docxflat2doct_bin	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
 	
+	_UINT32 package2docx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
+	_UINT32 package2docx_dir	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
+	_UINT32 package2doct		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
+	_UINT32 package2doct_bin	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
+
 	_UINT32 dotm2docm			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
     _UINT32 dotm2docm_dir		(const std::wstring &sFrom, const std::wstring &sTo, InputParams& params);
 	_UINT32 dotx2docx			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);

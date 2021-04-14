@@ -8,13 +8,25 @@
 #include <vector>
 #include <string>
 
-int main(int argc, char *argv[])
+int main()
 {
-    std::vector<std::wstring> arFiles = NSDirectory::GetFiles(NSFile::GetProcessDirectory() + L"/../../../Files");
     std::wstring sTmp = NSFile::GetProcessDirectory() + L"/tmp";
     std::wstring sOutputDirectory = NSFile::GetProcessDirectory() + L"/OutputFiles";
     NSDirectory::CreateDirectory(sOutputDirectory);
     NSDirectory::CreateDirectory(sTmp);
+
+    bool bFromHtml = false;
+    if (bFromHtml)
+    {
+        std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../FromHtmlTest/test3";
+        CEpubFile oEpub;
+        oEpub.SetTempDirectory(sTmp);
+        oEpub.FromHtml(sFile + L"/index.html", sFile + L"/docx_unpacked/docProps/core.xml", sOutputDirectory + L"/res.epub");
+        NSDirectory::DeleteDirectory(sTmp);
+        return 0;
+    }
+
+    std::vector<std::wstring> arFiles = NSDirectory::GetFiles(NSFile::GetProcessDirectory() + L"/../../../Files");
 
     clock_t tTime1 = clock();
     //Русские символы в консоль не выводятся
@@ -27,7 +39,7 @@ int main(int argc, char *argv[])
         if (oEpub.IsEpubFile(sFileName) == S_OK)
         {
             std::wstring sFile = NSFile::GetFileName(sFileName);
-            sFile = sFile.substr(0, sFile.find_last_of(L'.'));
+            sFile = sFile.substr(0, sFile.rfind(L'.'));
 
             std::wcout << L"|----------|" << sFile << L"|----------|" << std::endl;
 

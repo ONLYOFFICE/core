@@ -219,8 +219,16 @@ namespace BinXlsxRW
 		AppName = 17,
 		SlicerCaches = 18,
 		SlicerCachesExt = 19,
-		SlicerCache = 20
+		SlicerCache = 20,
+		Protection = 21
 	};}	
+	namespace c_oSerWorkbookProtection{ enum c_oSerWorkbookProtection
+	{
+		AlgorithmName = 0,
+		SpinCount = 1,
+		HashValue = 2,
+		SaltValue = 3
+	}; }
 	namespace c_oSerDbPrTypes{enum c_oSerDbPrTypes
 	{
 		Connection = 0,
@@ -389,7 +397,33 @@ namespace BinXlsxRW
 		Slicers = 37,
 		SlicersExt = 38,
 		Slicer = 39,
-		NamedSheetView = 40
+		NamedSheetView = 40,
+		Protection = 41
+	};}
+	namespace c_oSerWorksheetProtection {enum c_oSerWorksheetPropTypes
+	{
+		AlgorithmName = 0,
+		SpinCount = 1,
+		HashValue = 2,
+		SaltValue = 3,
+		Password = 4,
+		AutoFilter = 5,
+		Content = 6,
+		DeleteColumns = 7,
+		DeleteRows = 8,
+		FormatCells = 9,
+		FormatColumns = 10,
+		FormatRows = 11,
+		InsertColumns = 12,
+		InsertHyperlinks = 13,
+		InsertRows = 14,
+		Objects = 15,
+		PivotTables = 16,
+		Scenarios = 17,
+		SelectLockedCells = 18,
+		SelectUnlockedCell = 19,
+		Sheet = 20,
+		Sort = 21
 	};}
 	namespace c_oSerWorksheetPropTypes{enum c_oSerWorksheetPropTypes
 	{
@@ -1018,7 +1052,8 @@ namespace BinXlsxRW
 		DataBar = 15,
 		FormulaCF = 16,
 		IconSet = 17,
-		Dxf = 18
+		Dxf = 18,
+		IsExt = 19
 	};}
 	namespace c_oSer_ConditionalFormattingRuleColorScale{enum c_oSer_ConditionalFormattingRuleElement
 	{

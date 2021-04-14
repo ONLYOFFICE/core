@@ -105,10 +105,9 @@ public:
     style_chart_properties *		get_style_chart_properties()		const;
 	style_drawing_page_properties*	get_style_drawing_page_properties() const;
     style_table_cell_properties *	get_style_table_cell_properties		(bool always =false);
-
-private:
+	
 	odf_types::style_family style_family_;
-
+private:
     office_element_ptr		style_text_properties_;
     office_element_ptr		style_paragraph_properties_;
     office_element_ptr		style_section_properties_;
@@ -120,7 +119,6 @@ private:
     office_element_ptr		style_graphic_properties_;
     office_element_ptr		style_table_cell_properties_;
 	office_element_ptr		style_drawing_page_properties_;
-
 };
 
 //  style:default-style
@@ -136,8 +134,6 @@ public:
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
     default_style() {};
-
-    odf_types::style_family style_family_;
 
     style_content content_;
 
@@ -227,11 +223,11 @@ public:
 	_CP_OPT(odf_types::color)		draw_start_color_;
 	_CP_OPT(odf_types::color)		draw_end_color_;
 
-	_CP_OPT(odf_types::percent)	draw_end_intensity_; 
-	_CP_OPT(odf_types::percent)	draw_start_intensity_;
+	_CP_OPT(odf_types::percent)		draw_end_intensity_; 
+	_CP_OPT(odf_types::percent)		draw_start_intensity_;
 
-	_CP_OPT(odf_types::percent)	draw_cy_;//%
-	_CP_OPT(odf_types::percent)	draw_cx_;
+	_CP_OPT(odf_types::percent)		draw_cy_;//%
+	_CP_OPT(odf_types::percent)		draw_cx_;
 	
 	_CP_OPT(odf_types::percent)		draw_border_;
 	_CP_OPT(odf_types::draw_angle)	draw_angle_;
@@ -366,7 +362,6 @@ public:
     bool					style_auto_update_;	// default = false
     
 	_CP_OPT( std::wstring ) style_display_name_; 
-    odf_types::style_family style_family_;
 
     _CP_OPT( std::wstring ) style_parent_style_name_; 
     _CP_OPT( std::wstring ) style_next_style_name_;	 
@@ -379,7 +374,8 @@ public:
     _CP_OPT( int )			style_default_outline_level_; 
 
     style_content				content_;
-    office_element_ptr_array	style_map_;
+	
+	office_element_ptr_array	style_map_;
 
     friend class odf_document;
 };
@@ -852,7 +848,7 @@ private:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_footer_style);
 
-/// style:page-layout
+// style:page-layout
 class style_page_layout : public office_element_impl<style_page_layout>
 {
 public:
@@ -875,8 +871,20 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style_page_layout);
+
+// style:page-master openoffice xml 1.0
+class style_page_master : public style_page_layout
+{
+public:
+	static const wchar_t * ns;
+	static const wchar_t * name;
+	static const xml::NodeType xml_type = xml::typeElement;
+	static const ElementType type = typeStylePageMaster;
+private:
+	virtual void add_child_element(xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+};
+CP_REGISTER_OFFICE_ELEMENT2(style_page_master);
 
 // style-page-layout-properties-attlist
 class style_page_layout_properties_attlist

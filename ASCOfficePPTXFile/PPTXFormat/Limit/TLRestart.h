@@ -48,6 +48,14 @@ namespace PPTX
 				m_strValue = _T("never");
 			}
 
+            TLRestart(UINT restart)
+            {
+                if      (   restart == 0     ||
+                            restart == 3) m_strValue = L"never";
+                else if (   restart == 1) m_strValue = L"always";
+                else m_strValue = L"whenNotActive";
+            }
+
 			_USE_STRING_OPERATOR
 				
 			virtual void set(const std::wstring& strValue)
@@ -57,6 +65,23 @@ namespace PPTX
 					(_T("whenNotActive") == strValue))
 				{
 					m_strValue = strValue;
+				}
+			}
+			virtual BYTE GetBYTECode() const
+			{
+				if (L"always" == m_strValue)	return 0;
+				if (L"never" == m_strValue)	return 1;
+				if (L"whenNotActive" == m_strValue)	return 2;
+
+				return 0;
+			}
+			virtual void SetBYTECode(const BYTE& src)
+			{
+				switch (src)
+				{
+				case 0: m_strValue = L"always"; break;
+				case 1: m_strValue = L"never"; break;
+				case 2: m_strValue = L"whenNotActive"; break;
 				}
 			}
 		};

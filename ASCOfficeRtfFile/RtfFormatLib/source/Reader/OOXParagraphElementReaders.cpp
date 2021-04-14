@@ -250,7 +250,7 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 
 			if( pHyperlink->m_oId.IsInit() )
 			{
-				std::wstring sTarget;
+				std::wstring sTarget, sLocation;
 				
 				if (oParam.oReader->m_currentContainer)
 				{ 
@@ -261,8 +261,13 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 						sTarget = pH->Uri().GetPath();
 					}
 				}
+
 				if( !sTarget.empty() )
 				{
+					if (pHyperlink->m_sAnchor.IsInit())
+					{
+						sTarget += L"#" + *pHyperlink->m_sAnchor;
+					}
 					//заменяем пробелы на %20
                     XmlUtils::replace_all(sTarget, L" ", L"%20" );
 
@@ -320,7 +325,7 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 					oOutputParagraph.AddItem( oCurField );
 				}
 			}
-			if( pHyperlink->m_sAnchor.IsInit() )
+			else if( pHyperlink->m_sAnchor.IsInit() )
 			{
 				RtfFieldPtr oCurField( new RtfField() );
 				
@@ -496,13 +501,13 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 				oOutputParagraph.AddItem( oNewAnnotElem );
 			
 				//find comment and add info
-				std::map<int, int>::iterator pFindComment = oParam.oDocx->m_pComments->m_mapComments.find(nId);
+				std::map<int, int>::iterator pFindComment = oParam.oDocx->m_oMain.comments->m_mapComments.find(nId);
 
-				if (pFindComment != oParam.oDocx->m_pComments->m_mapComments.end())
+				if (pFindComment != oParam.oDocx->m_oMain.comments->m_mapComments.end())
 				{
-					if ( pFindComment->second < (int)oParam.oDocx->m_pComments->m_arrComments.size() && pFindComment->second >= 0)
+					if ( pFindComment->second < (int)oParam.oDocx->m_oMain.comments->m_arrComments.size() && pFindComment->second >= 0)
 					{
-						OOX::CComment* oox_comment = oParam.oDocx->m_pComments->m_arrComments[pFindComment->second];
+						OOX::CComment* oox_comment = oParam.oDocx->m_oMain.comments->m_arrComments[pFindComment->second];
 						if (oox_comment)
 						{
 							if (oox_comment->m_oAuthor.IsInit())

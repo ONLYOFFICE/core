@@ -44,7 +44,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(TxEl)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				XmlUtils::CXmlNode oNode;
@@ -67,7 +66,6 @@ namespace PPTX
 					end.reset();
 				}
 			}
-
 			virtual std::wstring toXML() const
 			{
 				if (charRg.IsInit())
@@ -84,7 +82,48 @@ namespace PPTX
 				}
 				return _T("<p:txEl/>");
 			}
-		public:
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+					pWriter->WriteBool2(0, charRg);
+					pWriter->WriteSize_t2(1, st);
+					pWriter->WriteSize_t2(2, end);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG _end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // attribute start
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					else if (0 == _at)	charRg = pReader->GetBool();
+					else if (1 == _at)	st = pReader->GetULong();
+					else if (2 == _at)	end = pReader->GetULong();
+				}
+				while (pReader->GetPos() < _end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+					default:
+					{
+						pReader->SkipRecord();
+					}break;
+					}
+				}
+				pReader->Seek(_end);
+			}
+
 			nullable_sizet	st;
 			nullable_sizet	end;
 			nullable_bool	charRg;

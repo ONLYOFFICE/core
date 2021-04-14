@@ -70,8 +70,6 @@ isEqual(QT_MAJOR_VERSION, 5) {
     }
 }
 
-DEFINES += INTERNAL_USE_ARRAY_AS_VECTOR
-
 ios {
     CONFIG += core_ios
     DEFINES += _IOS IOS LINUX _LINUX MAC _MAC _XCODE _ARM_ALIGN_
@@ -189,6 +187,11 @@ core_linux_64 {
 }
 core_mac_64 {
     CORE_BUILDS_PLATFORM_PREFIX = mac_64
+
+    apple_silicon {
+        CORE_BUILDS_PLATFORM_PREFIX = mac_arm64
+        QMAKE_APPLE_DEVICE_ARCHS = arm64
+    }
 }
 core_linux_arm {
     CORE_BUILDS_PLATFORM_PREFIX = arm
@@ -287,6 +290,11 @@ message($$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX)
 
 # COMPILER
 CONFIG += c++11
+
+greaterThan(QT_MAJOR_VERSION, 5) {
+    QMAKE_CXXFLAGS += -Wno-register
+    QMAKE_CFLAGS += -Wno-register
+}
 
 core_linux {
 core_static_link_libstd {

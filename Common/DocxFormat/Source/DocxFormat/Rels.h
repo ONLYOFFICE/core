@@ -62,7 +62,7 @@ namespace OOX
 
 				if (bExternal)
 				{
-					m_sMode == L"External";
+					m_sMode = L"External";
 				}
 			}
 

@@ -62,6 +62,17 @@ static std::wstring htmlToXhtml(std::string& sFileContent)
         }
     }
 
+    // Избавление от <a/>
+    size_t posA = sFileContent.find("<a ");
+    while(posA != std::string::npos)
+    {
+        size_t nBegin = sFileContent.find('<',  posA + 1);
+        size_t nEnd   = sFileContent.find("/>", posA);
+        if(nEnd < nBegin)
+            sFileContent.replace(nEnd, 2, "></a>");
+        posA = sFileContent.find("<a ", nBegin);
+    }
+
     // Gumbo
     GumboOptions options = kGumboDefaultOptions;
     GumboOutput* output = gumbo_parse_with_options(&options, sFileContent.data(), sFileContent.length());
@@ -494,11 +505,11 @@ static void build_attributes(const GumboVector* attribs, bool no_entities, NSStr
         atts.WriteString(" ");
 
         bool bCheck = false;
-        size_t nBad = sName.find_first_of("-'+,.:=?#%<>&;\"\'()[]{}");
+        size_t nBad = sName.find_first_of("+,.:=?#%<>&;\"\'()[]{}");
         while(nBad != std::string::npos)
         {
             sName.erase(nBad, 1);
-            nBad = sName.find_first_of("-'+,.:=?#%<>&;\"\'()[]{}", nBad);
+            nBad = sName.find_first_of("+,.:=?#%<>&;\"\'()[]{}", nBad);
             if(sName.empty())
                 break;
             bCheck = true;

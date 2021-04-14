@@ -52,7 +52,7 @@ public:
 		LONG lPosition = 0;
 		StreamUtils::StreamPosition(lPosition, pStream);
 
-		m_oPFRun.LoadFromStream(pStream, false);
+        m_oPFRun.LoadFromStream(pStream, m_oHeader.RecLen == 12);
 
 		// это на всякий случай...
 		POLE::uint64 current_pos = pStream->tell();

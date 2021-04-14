@@ -492,6 +492,8 @@
 #define c_oAscTypeSelectElement_Slide				7
 #define c_oAscTypeSelectElement_Chart				8
 #define c_oAscTypeSelectElement_Math                9
+#define c_oAscTypeSelectElement_MailMerge           10
+#define c_oAscTypeSelectElement_ContentControl      11
 
 #define c_oAscTableBordersType_LEFT					0
 #define c_oAscTableBordersType_TOP					1
@@ -679,6 +681,14 @@
 #define c_oAscAdvancedOptionsID_TXT             1
 #define c_oAscAdvancedOptionsID_DRM             2
 
+#define c_oAscContentControlSpecificTypeNone          0
+#define c_oAscContentControlSpecificTypeCheckBox      1
+#define c_oAscContentControlSpecificTypePicture       2
+#define c_oAscContentControlSpecificTypeComboBox      3
+#define c_oAscContentControlSpecificTypeDropDownList  4
+#define c_oAscContentControlSpecificTypeDateTime      5
+#define c_oAscContentControlSpecificTypeTOC           10
+
 #define INSERT_PAGE_NUM_PARAM(AlignV, AlignH)	((AlignV << 16) | AlignH)
 
 // MENU COMMANDS
@@ -843,6 +853,17 @@
 
 // Universal call
 #define ASC_MENU_EVENT_TYPE_DO_API_FUNCTION_CALL            25001
+
+// Fill forms
+#define ASC_MENU_EVENT_TYPE_SHOW_CONTENT_CONTROLS_ACTIONS   26001
+#define ASC_MENU_EVENT_TYPE_HIDE_CONTENT_CONTROLS_ACTIONS   26002
+#define ASC_MENU_EVENT_TYPE_DO_SET_CONTENTCONTROL_PICTURE   26003
+
+// Others
+#define ASC_MENU_EVENT_TYPE_FOCUS_OBJECT                    26101
+#define ASC_MENU_EVENT_TYPE_LONGACTION_BEGIN                26102
+#define ASC_MENU_EVENT_TYPE_LONGACTION_END                  26103
+#define ASC_MENU_EVENT_TYPE_API_ERROR                       26104
 
 // Document Processing
 

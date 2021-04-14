@@ -167,9 +167,9 @@ length ComputeContextWidth(const style_page_layout_properties			* pageProperties
                     columnGap = styleColumns->fo_column_gap_.get_value_or( length(0, length::pt ));
                 }
             }
-            //$pageWidth - $pageLeftMargin - $pageRightMargin - $columnGap
+			//$pageWidth - $pageLeftMargin - $pageRightMargin - $columnGap
             return length( (pageWidth.get_value_or(length(0, length::pt)).get_value_unit(length::pt) - 
-                    pageMarginRight.get_value_or(length(0, length::pt)).get_value_unit(length::pt) -
+				pageMarginRight.get_value_or(length(0, length::pt)).get_value_unit(length::pt) -
                     pageMarginRight.get_value_or(length(0, length::pt)).get_value_unit(length::pt) - 
                     columnGap.get_value_unit(length::pt)) / columnsCount
                     );
@@ -1153,19 +1153,36 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 
 void draw_image::docx_convert(oox::docx_conversion_context & Context)
 {
-	if (!xlink_attlist_.href_)
-		return;
- 
-	std::wstring href		= xlink_attlist_.href_.get_value_or(L"");
-	size_t pos_replaicement	= href.find(L"ObjectReplacements"); 
+	const draw_frame *frame = Context.get_drawing_context().get_current_frame();//owner
+	
+	if (!frame && draw_frame_ptr)
+	{
+		draw_frame *frame = dynamic_cast<draw_frame *>(draw_frame_ptr.get());
+		if (frame)
+		{
+			office_element_ptr elm = office_element_ptr(new draw_image(*this));
+			draw_image *image = dynamic_cast<draw_image *>(elm.get());
+			image->draw_frame_ptr = office_element_ptr();
 
-    const draw_frame * frame = Context.get_drawing_context().get_current_frame();//owner
+			frame->content_.push_back(elm);
+			frame->docx_convert(Context);
+		}
+		return;
+	}
+//-----------------------------------------------------------------------------------------------	
 	if (!frame)
 		return;
 
-	oox::_docx_drawing * drawing = dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get()); 
-	if (!drawing) return;
+	if (!xlink_attlist_.href_)
+		return;
 
+	std::wstring href = xlink_attlist_.href_.get_value_or(L"");
+
+	oox::_docx_drawing * drawing = dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get()); 
+	if (!drawing) 
+		return;
+
+	size_t pos_replaicement	= href.find(L"ObjectReplacements"); 
 	if (pos_replaicement != std::wstring::npos)
 	{
 		if (!Context.get_drawing_context().get_use_image_replace())
@@ -1173,6 +1190,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 		if (href.length() - (pos_replaicement + 18) < 2)
 			return; //href="./ObjectReplacements/"
 	}
+	if (href[0] == L'#') href = href.substr(1);
 
 	if (drawing->type == oox::typeUnknown)
 		drawing->type = oox::typeImage;
@@ -1245,6 +1263,24 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 
 void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 {
+	const draw_frame *frame = Context.get_drawing_context().get_current_frame();//owner
+
+	if (!frame && draw_frame_ptr)
+	{
+		draw_frame *frame = dynamic_cast<draw_frame *>(draw_frame_ptr.get());
+		if (frame)
+		{
+			office_element_ptr elm = office_element_ptr(new draw_text_box(*this));
+			draw_text_box *text_box = dynamic_cast<draw_text_box *>(elm.get());
+			text_box->draw_frame_ptr = office_element_ptr();
+
+			frame->content_.push_back(elm);
+			frame->docx_convert(Context);
+
+		}
+		return;
+	}
+//---------------------------------------------------------------------------------------------------------------
 	//тут может быть не только текст , но и таблицы, другие объекты ...
  	oox::StreamsManPtr prev = Context.get_stream_man();
 	
@@ -1269,13 +1305,12 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 	Context.back_context_state();
 
 //---------------------------------------------------------------------------------------------------------
-
-	const draw_frame * frame = Context.get_drawing_context().get_current_frame();//owner
 	if (!frame)
 		return;
 
 	oox::_docx_drawing * drawing = dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get()); 
-	if (!drawing) return;
+	if (!drawing) 
+		return;
 
 	drawing->type		= oox::typeShape;
 	drawing->sub_type	= 1;	//textBox
@@ -1516,7 +1551,8 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 	drawing->inGroup	= Context.get_drawing_context().in_group();
 	
 	common_draw_docx_convert(Context, common_draw_attlists_, drawing);
-	
+//-----------------------------------------------------------------------------------------------------
+
 	for (size_t i = 0 ; i < content_.size(); i++)
     {
 		content_[i]->docx_convert(Context);
@@ -1555,14 +1591,36 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 
 void draw_object::docx_convert(oox::docx_conversion_context & Context)
 {
-    try 
+	const draw_frame *frame = Context.get_drawing_context().get_current_frame();//owner
+
+	if (!frame && draw_frame_ptr)
+	{
+		draw_frame *frame = dynamic_cast<draw_frame *>(draw_frame_ptr.get());
+		if (frame)
+		{
+			office_element_ptr elm = office_element_ptr(new draw_object(*this));
+			draw_object *object = dynamic_cast<draw_object *>(elm.get());
+			object->draw_frame_ptr = office_element_ptr();
+
+			frame->content_.push_back(elm);
+			frame->docx_convert(Context);
+		}
+		return;
+	}
+//-----------------------------------------------------------------------------------------------	
+	if (!frame)
+		return;
+
+	oox::_docx_drawing *drawing =  dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get());
+	try
 	{
         std::wstring href		= xlink_attlist_.href_.get_value_or(L"");
 		std::wstring tempPath	= Context.root()->get_temp_folder();
 		std::wstring odfPath	= Context.root()->get_folder();
 
-		if (!odf_document_ && !href.empty())
-		{			
+		if (!odf_document_ && false == href.empty())
+		{
+			if (href[0] == L'#') href = href.substr(1);
 			std::wstring objectPath = odfPath + FILE_SEPARATOR_STR + href;
 
 			// normalize path ???? todooo
@@ -1571,19 +1629,13 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			odf_document_ = odf_document_ptr(new odf_document(objectPath, tempPath, L"", NULL));    
 		}
 //---------------------------------------------------------------------------------------------------------------------
-		draw_frame*				frame			= NULL;
-		oox::_docx_drawing *	drawing			= NULL;
-		office_element*			contentSubDoc	= odf_document_ ? odf_document_->get_impl()->get_content() : NULL;
+		office_element* contentSubDoc	= odf_document_ ? odf_document_->get_impl()->get_content() : NULL;
 		
 		object_odf_context	objectBuild (href);
 		if (contentSubDoc)
 		{
 			process_build_object process_build_object_(objectBuild, odf_document_->odf_context());
 			contentSubDoc->accept(process_build_object_); 
-
-			frame = Context.get_drawing_context().get_current_frame();	//owner			
-			if (frame)
-				drawing = dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get()); 
 
 			if (objectBuild.table_table_)
 			{

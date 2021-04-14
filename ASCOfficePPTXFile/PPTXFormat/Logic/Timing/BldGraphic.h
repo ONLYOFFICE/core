@@ -45,7 +45,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(BldGraphic)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				bldSub		= node.ReadNode(_T("p:bldSub"));
@@ -70,11 +69,62 @@ namespace PPTX
 				
 				return XmlUtils::CreateNode(_T("p:bldGraphic"), oAttr, bldSub->toXML());
 			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_p_bldGraphic;
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+					pWriter->WriteBool2(0, uiExpand);
+					pWriter->WriteString1(1, spid);
+					pWriter->WriteInt1(2, grpId);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
-		public:
+				pWriter->WriteRecord2(0, bldSub);
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // attribute start
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					else if (0 == _at)	uiExpand = pReader->GetBool();
+					else if (1 == _at)	spid = pReader->GetString2();
+					else if (2 == _at)	grpId = pReader->GetLong();
+				}
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+						case 0:
+						{
+							bldSub = new Logic::BldSub();
+							bldSub->fromPPTY(pReader);
+						}break;
+						default:
+						{
+							pReader->SkipRecord();
+						}break;
+					}
+				}
+				pReader->Seek(end);
+			}
+
 			nullable<BldSub>		bldSub;
 
-			std::wstring					spid;
+			std::wstring			spid;
 			int						grpId;
 			nullable_bool			uiExpand;
 		protected:

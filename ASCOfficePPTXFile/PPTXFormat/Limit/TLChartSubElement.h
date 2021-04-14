@@ -61,6 +61,26 @@ namespace PPTX
 					m_strValue = strValue;
 				}
 			}
+			virtual BYTE GetBYTECode() const
+			{
+				if (L"category" == m_strValue)	return 0;
+				if (L"gridLegend" == m_strValue)	return 1;
+				if (L"ptInCategory" == m_strValue)	return 2;
+				if (L"ptInSeries" == m_strValue)	return 3;
+				if (L"series" == m_strValue)	return 4;
+				return 0;
+			}
+			virtual void SetBYTECode(const BYTE& src)
+			{
+				switch (src)
+				{
+				case 0: m_strValue = L"category"; break;
+				case 1: m_strValue = L"gridLegend"; break;
+				case 2: m_strValue = L"ptInCategory"; break;
+				case 3: m_strValue = L"ptInSeries"; break;
+				case 4: m_strValue = L"series"; break;
+				}
+			}
 		};
 	} // namespace Limit
 } // namespace PPTX

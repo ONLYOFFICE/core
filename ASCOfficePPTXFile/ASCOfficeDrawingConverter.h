@@ -212,14 +212,13 @@ namespace NSBinPptxRW
         std::wstring                                        m_strFontDirectory;
 
 		CDrawingConverter();
-
 		~CDrawingConverter();
 
 		void							SetRels(OOX::IFileContainer *container);
 		void							SetRels(smart_ptr<OOX::IFileContainer> container);
 		smart_ptr<OOX::IFileContainer>	GetRels();
 		
-		HRESULT SetMainDocument     (BinDocxRW::CDocxSerializer* pDocument);
+		void SetMainDocument (BinDocxRW::CDocxSerializer* pDocument);
 
         void SetSrcPath         (const std::wstring& sPath, int nDocType = 1/*XMLWRITER_DOC_TYPE_DOCX*/);
         void SetDstPath         (const std::wstring& sPath);
@@ -265,9 +264,6 @@ namespace NSBinPptxRW
 
         void SetFontManager         (NSFonts::IFontManager* pFontManager);
 
-        void SetDocumentChartsCount (int val);
-        int  GetDocumentChartsCount ();
-
         OOX::CContentTypes* GetContentTypes();
 	protected:
 		nullable<PPTX::Logic::Xfrm> m_oxfrm_override;
@@ -278,6 +274,7 @@ namespace NSBinPptxRW
 		void doc_LoadDiagram(PPTX::Logic::SpTreeElem *result, XmlUtils::CXmlNode& oNode, std::wstring**& pMainProps, bool bIsTop = true);
 		void doc_LoadShape	(PPTX::Logic::SpTreeElem *result, XmlUtils::CXmlNode& oNode, std::wstring**& pMainProps, bool bIsTop = true);
 		void doc_LoadGroup	(PPTX::Logic::SpTreeElem *result, XmlUtils::CXmlNode& oNode, std::wstring**& pMainProps, bool bIsTop = true);
+		void doc_LoadDrawing(PPTX::Logic::SpTreeElem *result, XmlUtils::CXmlNode& oNode, std::wstring**& pMainProps, bool bIsTop = true);
 
         std::wstring GetVMLShapeXml      (CPPTShape* pPPTShape);
         std::wstring GetVMLShapeXml      (PPTX::Logic::SpTreeElem& oElem);

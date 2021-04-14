@@ -256,7 +256,6 @@
     <ClInclude Include="..\Source\Common\ZIndex.h" />
     <ClInclude Include="..\Source\DocxFormat\App.h" />
     <ClInclude Include="..\Source\DocxFormat\Bibliography.h" />
-    <ClInclude Include="..\Source\DocxFormat\ChartDrawing.h" />
     <ClInclude Include="..\Source\DocxFormat\Comments.h" />
     <ClInclude Include="..\Source\DocxFormat\ContentTypes.h" />
     <ClInclude Include="..\Source\DocxFormat\Core.h" />
@@ -289,6 +288,7 @@
     <ClInclude Include="..\Source\DocxFormat\Logic\Annotations.h" />
     <ClInclude Include="..\Source\DocxFormat\Logic\Bdo.h" />
     <ClInclude Include="..\Source\DocxFormat\Logic\Dir.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\DocParts.h" />
     <ClInclude Include="..\Source\DocxFormat\Logic\FldChar.h" />
     <ClInclude Include="..\Source\DocxFormat\Logic\FldSimple.h" />
     <ClInclude Include="..\Source\DocxFormat\Logic\Hyperlink.h" />
@@ -341,8 +341,11 @@
     <ClInclude Include="..\Source\SystemUtility\SystemUtility.h" />
     <ClInclude Include="..\Source\XlsxFormat\CalcChain\CalcChain.h" />
     <ClInclude Include="..\Source\XlsxFormat\Chart\Chart.h" />
+    <ClInclude Include="..\Source\XlsxFormat\Chart\ChartColors.h" />
+    <ClInclude Include="..\Source\XlsxFormat\Chart\ChartDrawing.h" />
     <ClInclude Include="..\Source\XlsxFormat\Chart\ChartSerialize.h" />
     <ClInclude Include="..\Source\XlsxFormat\Chart\ChartSerializeEx.h" />
+    <ClInclude Include="..\Source\XlsxFormat\Chart\ChartStyle.h" />
     <ClInclude Include="..\Source\XlsxFormat\Comments\Comments.h" />
     <ClInclude Include="..\Source\XlsxFormat\Comments\ThreadedComments.h" />
     <ClInclude Include="..\Source\XlsxFormat\Common.h" />
@@ -438,6 +441,7 @@
     <ClCompile Include="..\Source\DocxFormat\App.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Comments.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Core.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Document.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Docx.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -463,6 +467,7 @@
     <ClCompile Include="..\Source\DocxFormat\Logic\Dir.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\DocParts.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Logic\FldSimple.cpp">
       <AssemblerListingLocation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</AssemblerListingLocation>
       <AssemblerListingLocation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)Docx\Logic\</AssemblerListingLocation>

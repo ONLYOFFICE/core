@@ -94,6 +94,7 @@ public:
 
         m_pBase = NULL;
         m_separator = ";;;;;;;ONLYOFFICE;;;;;;;";
+        m_alg = OOXML_HASH_ALG_INVALID;
     }
     virtual ~CCertificate_openssl_private()
     {
@@ -131,10 +132,22 @@ public:
             return "";
         }
 
+        if (asn1_serial->type == V_ASN1_NEG_INTEGER)
+        {
+            std::string sPositive = "1";
+            for (int i = 0; i < asn1_serial->length; ++i)
+                sPositive += "00";
+            BIGNUM* pn = NULL;
+            int res = BN_hex2bn(&pn, sPositive.c_str());
+            BN_add(bn, bn, pn);
+            BN_free(pn);
+        }
+
         char *tmp = BN_bn2dec(bn);
         std::string sReturn(tmp);
 
         BN_free(bn);
+        OPENSSL_free(tmp);
 
         return sReturn;
     }
@@ -211,9 +224,9 @@ public:
 
         char* dataDst = NULL;
         int lenDst = 0;
-        NSFile::CBase64Converter::Encode(data, size, dataDst, lenDst);
+        NSFile::CBase64Converter::Encode(data, size, dataDst, lenDst, NSBase64::B64_BASE64_FLAG_NOCRLF);
 
-        std::string sReturn(dataDst);
+        std::string sReturn(dataDst, lenDst);
 
         RELEASEARRAYOBJECTS(dataDst);
 
@@ -271,7 +284,7 @@ public:
         return GetNumber();
     }
 
-public:     
+public:
     std::string Sign(const std::string& sXml)
     {
         EVP_MD_CTX* pCtx = EVP_MD_CTX_create();
@@ -385,7 +398,7 @@ public:
     bool Verify(const std::string& sXml, std::string& sXmlSignature, int nAlg)
     {
         EVP_MD_CTX* pCtx = EVP_MD_CTX_create();
-        const EVP_MD* pDigest = Get_EVP_MD(this->GetHashAlg());
+        const EVP_MD* pDigest = Get_EVP_MD(nAlg);
 
         int n1 = EVP_VerifyInit(pCtx, pDigest);
         n1 = n1;
@@ -442,8 +455,36 @@ public:
         if (!m_cert)
             return algs;
 
-        // TODO:
-        // Check algs in cert
+        //const X509_ALGOR* pAlgr = X509_get0_tbs_sigalg(m_cert);
+        //int nAlg = OBJ_obj2nid(pAlgr);
+        int nAlg = X509_get_signature_nid(m_cert);
+
+        switch (nAlg)
+        {
+        case NID_sha1:
+        case NID_sha1WithRSA:
+        case NID_sha1WithRSAEncryption:
+            algs.push_back(OOXML_HASH_ALG_SHA1);
+            break;
+        case NID_sha256:
+        case NID_sha256WithRSAEncryption:
+            algs.push_back(OOXML_HASH_ALG_SHA256);
+            break;
+        case NID_sha224:
+        case NID_sha224WithRSAEncryption:
+            algs.push_back(OOXML_HASH_ALG_SHA224);
+            break;
+        case NID_sha384:
+        case NID_sha384WithRSAEncryption:
+            algs.push_back(OOXML_HASH_ALG_SHA384);
+            break;
+        case NID_sha512:
+        case NID_sha512WithRSAEncryption:
+            algs.push_back(OOXML_HASH_ALG_SHA512);
+            break;
+        default:
+            break;
+        }
 
         if (algs.empty())
             m_alg = OOXML_HASH_ALG_SHA1;
@@ -538,6 +579,20 @@ public:
     int ShowCertificate()
     {
         return -1;
+    }
+
+    std::string Print()
+    {
+        if (NULL == m_cert)
+            return "";
+
+        BIO* bio = BIO_new(BIO_s_mem());
+        X509_print_ex(bio, m_cert, XN_FLAG_COMPAT, X509_FLAG_COMPAT);
+        char *buf = NULL;
+        size_t len = BIO_get_mem_data(bio, &buf);
+        std::string sRet((char*)buf, len);
+        BIO_free (bio);
+        return sRet;
     }
 
     int VerifySelf()
@@ -747,8 +802,22 @@ end:
             nErr = OPEN_SSL_WARNING_PASS;
             goto end;
         }
-
         BIO_FREE(bio);
+
+        bio = BIO_new_mem_buf((void*)pData, (int)dwDataLen);
+        if (PEM_read_bio_X509_AUX(bio, &pCert, NULL, (void*)pPassword))
+        {
+            nErr = OPEN_SSL_WARNING_OK;
+            goto end;
+        }
+        sError = GetOpenSslErrors();
+        if (IsOpenSslPasswordError(sError))
+        {
+            nErr = OPEN_SSL_WARNING_PASS;
+            goto end;
+        }
+        BIO_FREE(bio);
+
         bio = BIO_new_mem_buf((void*)pData, (int)dwDataLen);
         if (d2i_X509_bio(bio, &pCert))
         {
@@ -761,10 +830,9 @@ end:
             nErr = OPEN_SSL_WARNING_PASS;
             goto end;
         }
-
         BIO_FREE(bio);
-        bio = BIO_new_mem_buf((void*)pData, (int)dwDataLen);
 
+        bio = BIO_new_mem_buf((void*)pData, (int)dwDataLen);
         p12 = d2i_PKCS12_bio(bio, NULL);
         if (p12)
         {
@@ -903,6 +971,11 @@ int CCertificate_openssl::ShowSelectDialog(void* parent)
 int CCertificate_openssl::ShowCertificate(void* parent)
 {
     return m_internal->ShowCertificate();
+}
+
+std::string CCertificate_openssl::Print()
+{
+    return m_internal->Print();
 }
 
 bool CCertificate_openssl::FromFiles(const std::wstring& keyPath, const std::string& keyPassword, const std::wstring& certPath, const std::string& certPassword)

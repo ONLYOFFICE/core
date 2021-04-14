@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef DOCX_BIN_READER_WRITER_DEFINES
-#define DOCX_BIN_READER_WRITER_DEFINES
+#pragma once
 
 namespace BinDocxRW
 {
@@ -144,8 +143,10 @@ extern int g_nCurFormatVersion;
 		VbaProject	= 13,
 		App			= 15,
 		Core		= 16,
-		DocumentComments	= 17,
-		CustomProperties	= 18
+		DocumentComments = 17,
+		CustomProperties = 18,
+		Glossary	= 19,
+		Customs		= 20
 	};}
 	namespace c_oSerSigTypes{enum c_oSerSigTypes
 	{
@@ -205,8 +206,8 @@ extern int g_nCurFormatVersion;
 	};}
 	namespace c_oSerOtherTableTypes{enum c_oSerOtherTableTypes
 	{
-		ImageMap		= 0,
-		ImageMap_Src	= 1,
+		ImageMap		= 0, //not using now
+		ImageMap_Src	= 1, //not using now
 		EmbeddedFonts	= 2,
 		DocxTheme		= 3
 	};}
@@ -411,7 +412,11 @@ extern int g_nCurFormatVersion;
 		MoveFrom = 36,
 		MoveTo = 37,
 		SpacingTwips = 38,
-		PositionHps = 39
+		PositionHps = 39,
+		FontAsciiTheme = 40,
+		FontHAnsiTheme = 41,
+		FontAETheme = 42,
+		FontCSTheme = 43
 	};}
 	namespace c_oSerProp_rowPrType{enum c_oSerProp_rowPrType
 	{
@@ -517,7 +522,25 @@ extern int g_nCurFormatVersion;
 		BookmarkStart = 23,
 		BookmarkEnd = 24,
 		MRun = 25,
-		AltChunk = 26
+		AltChunk = 26,
+		DocParts = 27
+	};}
+	namespace c_oSerGlossary {
+		enum c_oSerGlossary
+		{
+			DocPart = 0,
+			DocPartPr = 1,
+			DocPartBody = 2,
+			Name = 3,
+			Style = 4,
+			Guid = 5,
+			Description = 6,
+			CategoryName = 7,
+			CategoryGallery = 8,
+			Types = 9,
+			Type = 10,
+			Behaviors = 11,
+			Behavior = 12
 	};}
 	namespace c_oSerDocTableType{enum c_oSerDocTableType
 	{
@@ -621,9 +644,7 @@ extern int g_nCurFormatVersion;
 		WrapThrough = 20,
 		WrapTight = 21,
 		WrapTopAndBottom = 22,
-		Chart = 23,
-		ChartImg = 24,
-		Chart2 = 25,
+		Chart = 25,
 		CachedImage = 26,
 		SizeRelH = 27,
 		SizeRelV = 28,
@@ -633,7 +654,8 @@ extern int g_nCurFormatVersion;
 		DistBEmu = 32,
 		DistLEmu = 33,
 		DistREmu = 34,
-		DistTEmu = 35
+		DistTEmu = 35,
+		ChartEx = 36
 	};}
 	namespace c_oSerEffectExtent{enum c_oSerEffectExtent
 	{
@@ -731,7 +753,8 @@ extern int g_nCurFormatVersion;
 	{
 		Value = 0,
 		Color = 1,
-		ColorTheme = 2
+		ColorTheme = 2,
+		Fill = 3
 	};}
 	namespace c_oSerPaddingType{enum c_oSerPaddingType
 	{
@@ -839,7 +862,8 @@ extern int g_nCurFormatVersion;
 		PrintTwoOnOne = 14,
 		BookFoldPrinting = 15,
 		BookFoldPrintingSheets = 16,
-		BookFoldRevPrinting = 17
+		BookFoldRevPrinting = 17,
+		SpecialFormsHighlight = 18
 	};}
 	namespace c_oSer_MathPrType{enum c_oSer_SettingsType
 	{
@@ -1123,6 +1147,13 @@ extern int g_nCurFormatVersion;
 		PrEndPos = 10,
 		PrRef = 11
 	};}
+	namespace c_oSerCustoms {enum c_oSerCustoms
+	{
+		Custom = 0,
+		ItemId = 1,
+		Uri = 2,
+		Content = 3
+	};}
 	namespace c_oSerApp{enum c_oSerApp
 	{
 		Application = 0,
@@ -1199,7 +1230,8 @@ extern int g_nCurFormatVersion;
 		TextFormPrCombWidth = 52,
 		TextFormPrCombSym = 53,
 		TextFormPrCombFont = 54,
-		TextFormPrMaxCharacters = 55
+		TextFormPrMaxCharacters = 55,
+		TextFormPrCombBorder = 56
 	};}
 	namespace c_oSerFFData{enum c_oSerFFData
 	{
@@ -1259,5 +1291,3 @@ extern int g_nCurFormatVersion;
 		Flags3 = 6
 	};}
 }
-
-#endif	// #ifndef DOCX_BIN_READER_WRITER_DEFINES

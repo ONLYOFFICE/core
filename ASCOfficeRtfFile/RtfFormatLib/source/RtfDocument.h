@@ -65,6 +65,8 @@ public:
 	RtfInformation			m_oInformation;
 	RtfShapePtr				m_pBackground;
 
+	std::wstring			m_sThemeXml;
+
 	RtfListTable			m_oListTable;
 	RtfListOverrideTable	m_oListOverrideTable;
 

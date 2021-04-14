@@ -218,8 +218,7 @@ namespace CSVReader
 		if (bIsWrap)
 		{
 			// WrapStyle
-			pCell->m_oStyle.Init();
-			pCell->m_oStyle->SetValue(1);
+			pCell->m_oStyle = 1;
 		}
 
 		pCell->setRowCol(nRow, nCol);

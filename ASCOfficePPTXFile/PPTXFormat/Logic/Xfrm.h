@@ -190,7 +190,7 @@ namespace PPTX
 				pWriter->WriteAttribute(_T("flipV"), flipV);
 				pWriter->EndAttributes();
 				
-				if (offX.is_init() || offX.is_init())
+				if (offX.is_init() || offY.is_init())
 				{
 					pWriter->StartNode(_T("a:off"));
 					pWriter->StartAttributes();
@@ -243,7 +243,7 @@ namespace PPTX
 				pWriter->WriteAttribute(_T("flipV"), flipV);
 				pWriter->EndAttributes();
 				
-				if (offX.is_init() || offX.is_init())
+				if (offX.is_init() || offY.is_init())
 				{
 					pWriter->StartNode(_T("a:off"));
 					pWriter->StartAttributes();

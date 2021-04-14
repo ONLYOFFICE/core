@@ -162,7 +162,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\ASCOfficeDocxFile2\BinReader\CustormXmlWriter.cpp" />
+    <ClCompile Include="..\..\..\ASCOfficeDocxFile2\BinReader\CustomXmlWriter.cpp" />
     <ClCompile Include="..\..\..\ASCOfficeDocxFile2\BinReader\FileWriter.cpp" />
     <ClCompile Include="..\..\..\ASCOfficeDocxFile2\BinReader\Readers.cpp" />
     <ClCompile Include="..\..\..\ASCOfficeDocxFile2\BinWriter\BinWriters.cpp">
@@ -237,7 +237,6 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\ChartWriter.h" />
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\CommentsWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\ContentTypesWriter.h" />
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\DocumentRelsWriter.h" />
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\DocumentWriter.h" />
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\FileWriter.h" />
@@ -249,6 +248,7 @@
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\Readers.h" />
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\SettingWriter.h" />
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\StylesWriter.h" />
+    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\webSettingsWriter.h" />
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinWriter\BinEquationWriter.h" />
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinWriter\BinReaderWriterDefines.h" />
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinWriter\BinWriters.h" />

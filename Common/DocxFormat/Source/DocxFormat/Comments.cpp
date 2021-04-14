@@ -271,13 +271,22 @@ void CComment::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 CComments::CComments(OOX::Document *pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 {
 	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
-	if (docx) docx->m_pComments = this;			
+	
+	if (docx)
+	{
+		if (docx->m_bGlossaryRead)	docx->m_oGlossary.comments = this;
+		else						docx->m_oMain.comments = this;
+	}
 }
 CComments::CComments(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 {
 	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
-	if (docx) docx->m_pComments = this;			
 
+	if (docx)
+	{
+		if (docx->m_bGlossaryRead)	docx->m_oGlossary.comments = this;
+		else						docx->m_oMain.comments = this;
+	}
 	read( oPath );
 }
 CComments::~CComments()

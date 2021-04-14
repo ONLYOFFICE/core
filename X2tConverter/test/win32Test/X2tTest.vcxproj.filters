@@ -72,13 +72,13 @@
     <ClCompile Include="..\..\..\XlsxSerializerCom\Common\Common.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ASCOfficeDocxFile2\BinReader\CustormXmlWriter.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\ASCConverters.cpp" />
     <ClCompile Include="..\..\src\cextracttools.cpp" />
     <ClCompile Include="..\..\..\Common\OfficeFileFormatChecker2.cpp" />
     <ClCompile Include="X2tTest.cpp" />
+    <ClCompile Include="..\..\..\ASCOfficeDocxFile2\BinReader\CustomXmlWriter.cpp">
+      <Filter>DOCX\Reader\OOXWriter</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\DocWrapper\XlsxSerializer.h">
@@ -126,9 +126,6 @@
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\CommentsWriter.h">
       <Filter>DOCX\Reader\OOXWriter</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\ContentTypesWriter.h">
-      <Filter>DOCX\Reader\OOXWriter</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\DocumentRelsWriter.h">
       <Filter>DOCX\Reader\OOXWriter</Filter>
     </ClInclude>
@@ -173,5 +170,8 @@
     </ClInclude>
     <ClInclude Include="..\..\src\ASCConverters.h" />
     <ClInclude Include="..\..\src\cextracttools.h" />
+    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\webSettingsWriter.h">
+      <Filter>DOCX\Reader\OOXWriter</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

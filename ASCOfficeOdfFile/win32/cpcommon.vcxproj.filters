@@ -345,6 +345,9 @@
     <ClInclude Include="..\src\odf\datatypes\drawangle.h">
       <Filter>datatypes odf</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\odf\datatypes\messagetype.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\odf\datatypes\anchortype.cpp">
@@ -666,6 +669,9 @@
       <Filter>datatypes odf</Filter>
     </ClCompile>
     <ClCompile Include="..\src\odf\datatypes\drawangle.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\datatypes\messagetype.cpp">
       <Filter>datatypes odf</Filter>
     </ClCompile>
   </ItemGroup>

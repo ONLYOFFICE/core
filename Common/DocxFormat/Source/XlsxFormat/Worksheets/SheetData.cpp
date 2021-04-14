@@ -923,21 +923,21 @@ namespace OOX
 			writer.WriteString(_T("<c"));
 			if (m_oRow.IsInit() && m_oCol.IsInit())
 			{
-				int nCol = m_oCol->GetValue();
+				int nCol = *m_oCol;
 				if (nCol < 0 || nCol > 16383)
 				{
 					nCol = 0;
 				}
 				writer.WriteString(L" r=\"");
 				writer.WriteString(m_aLetters[nCol]);
-				writer.AddInt(m_oRow->GetValue() + 1);
+				writer.AddInt(*m_oRow + 1);
 				writer.WriteString(L"\"");
 			}
 			else
 			{
 				WritingStringNullableAttrString(L"r", m_oRef, getRef());
 			}
-			WritingStringNullableAttrInt(L"s", m_oStyle, m_oStyle->GetValue());
+			WritingStringNullableAttrInt(L"s", m_oStyle, *m_oStyle);
 			if(m_oType.IsInit() && SimpleTypes::Spreadsheet::celltypeNumber != m_oType->GetValue())
 			{
 				writer.WriteString(L" t=\"");
@@ -1013,6 +1013,7 @@ namespace OOX
 				}
 //o:SmartTags, x:PhoneticText
 			}
+
 			PrepareForBinaryWriter();
 		}
 		void CCell::ReadComment(XmlUtils::CXmlLiteReader& oReader, CCommentItem* pComment)
@@ -1196,7 +1197,7 @@ namespace OOX
 
 				if (false == xlsx->m_arWorksheets.back()->m_bPrepareForBinaryWriter) return;
 
-				if( !xlsx->m_pSharedStrings)
+				if (!xlsx->m_pSharedStrings)
 				{	// еще не прочитался rels
 					xlsx->m_arWorksheets.back()->m_bPrepareForBinaryWriter = false;
 					return;
@@ -1205,6 +1206,121 @@ namespace OOX
 			}
 			else if (xlsx_flat)
 			{
+				CWorksheet* sheet = xlsx_flat->m_arWorksheets.back();
+
+				if (iColIndex.IsInit())
+				{
+					xlsx_flat->m_nLastReadCol = *iColIndex;
+				}
+				else
+				{
+					xlsx_flat->m_nLastReadCol = (xlsx_flat->m_nLastReadCol < 0 ? 1 : xlsx_flat->m_nLastReadCol + 1);
+				}
+
+				std::map<int, unsigned int>::iterator it = sheet->m_oSheetData->m_arrItems.back()->m_mapStyleMerges2003.begin();
+				while (it != sheet->m_oSheetData->m_arrItems.back()->m_mapStyleMerges2003.end())
+				{
+					if (it->first > xlsx_flat->m_nLastReadCol)
+						break;
+					else if (it->first == xlsx_flat->m_nLastReadCol)
+					{
+						m_oStyle = it->second;
+						break;
+					}
+					{
+						CCell *pCell = new CCell();
+						pCell->m_oRef = getCellAddressA(xlsx_flat->m_nLastReadRow, it->first);
+						pCell->m_oStyle = it->second;
+						pCell->m_oCol = it->first;
+						pCell->m_oRow = xlsx_flat->m_nLastReadRow;
+
+						size_t pos = sheet->m_oSheetData->m_arrItems.back()->m_arrItems.size() - 2;
+						sheet->m_oSheetData->m_arrItems.back()->m_arrItems.insert(
+							sheet->m_oSheetData->m_arrItems.back()->m_arrItems.begin() + pos, pCell);
+					}
+
+					sheet->m_oSheetData->m_arrItems.back()->m_mapStyleMerges2003.erase(it);
+					it = sheet->m_oSheetData->m_arrItems.back()->m_mapStyleMerges2003.begin();
+				}
+				//m_oRef = "R" + std::to_string(xlsx_flat->m_nLastReadRow) + "C" + std::to_string(xlsx_flat->m_nLastReadCol);
+				m_oRef = getCellAddressA(xlsx_flat->m_nLastReadRow, xlsx_flat->m_nLastReadCol);
+
+				setRowCol(xlsx_flat->m_nLastReadRow, xlsx_flat->m_nLastReadCol - 1);
+
+				if (m_oFormula.IsInit())
+				{
+					r1c1_formula_convert::base_row = xlsx_flat->m_nLastReadRow;
+					r1c1_formula_convert::base_col = xlsx_flat->m_nLastReadCol;
+
+					r1c1_formula_convert convert;
+
+					m_oFormula->m_sText = convert.convert(m_oFormula->m_sText);
+				}
+
+				if (sStyleId.IsInit() && xlsx_flat->m_pStyles.IsInit())
+				{
+					std::map<std::wstring, size_t>::iterator pFind = xlsx_flat->m_pStyles->m_mapStyles2003.find(*sStyleId);
+					if (pFind != xlsx_flat->m_pStyles->m_mapStyles2003.end())
+					{
+						m_oStyle = pFind->second;
+					}
+				}
+
+				if (sHyperlink.IsInit())
+				{
+					if (false == sheet->m_oHyperlinks.IsInit())
+					{
+						sheet->m_oHyperlinks.Init();
+					}
+					CHyperlink *pHyperlink = new CHyperlink(m_pMainDocument);
+
+					pHyperlink->m_oRef = std::wstring(m_oRef->begin(), m_oRef->end());
+					pHyperlink->m_oDisplay = sHyperlink;
+
+					if (sHyperlink->find(L"#") == 0)
+					{
+						sHyperlink = sHyperlink->substr(1);
+						pHyperlink->m_oLocation = sHyperlink;
+					}
+					else
+					{
+						pHyperlink->m_oLink = sHyperlink;
+					}
+
+					sheet->m_oHyperlinks->m_arrItems.push_back(pHyperlink);
+				}
+				if (iAcross.IsInit() || iDown.IsInit())
+				{
+					//std::string Ref = m_oRef.get2() + ":R" + std::to_string(xlsx_flat->m_nLastReadRow + 1 + iDown.get_value_or(0)) + "C" + std::to_string(xlsx_flat->m_nLastReadCol + 1 + iAcross.get_value_or(0));
+					std::string Ref = m_oRef.get2() + ":" + getCellAddressA(xlsx_flat->m_nLastReadRow + iDown.get_value_or(0),
+						xlsx_flat->m_nLastReadCol + iAcross.get_value_or(0));
+
+					if (false == sheet->m_oMergeCells.IsInit())
+					{
+						sheet->m_oMergeCells.Init();
+					}
+					CMergeCell *pMergeCell = new CMergeCell(m_pMainDocument);
+					pMergeCell->m_oRef = std::wstring(Ref.begin(), Ref.end());
+
+					sheet->m_oMergeCells->m_arrItems.push_back(pMergeCell);
+
+					if (m_oStyle.IsInit())
+					{
+						std::map<unsigned int, bool>::iterator pFind = xlsx_flat->m_pStyles->m_mapStylesContinues2003.find(*m_oStyle);
+						if (pFind != xlsx_flat->m_pStyles->m_mapStylesContinues2003.end())
+						{
+							for (int i = 0; i < iDown.get_value_or(0); ++i)
+							{
+								//sheet->m_mapStyleMergesRow2003 (xlsx_flat->m_nLastReadRow + i), (xlsx_flat->m_nLastReadCol), *m_oStyle
+							}
+							for (int i = 0; i < iAcross.get_value_or(0); ++i)
+							{
+								sheet->m_oSheetData->m_arrItems.back()->m_mapStyleMerges2003.insert(std::make_pair(xlsx_flat->m_nLastReadCol + i, *m_oStyle));
+							}
+						}
+					}
+					xlsx_flat->m_nLastReadCol += iAcross.get_value_or(0);					
+				}
 				if (false == xlsx_flat->m_pSharedStrings.IsInit())
 				{
 					xlsx_flat->m_pSharedStrings = new CSharedStrings(m_pMainDocument);
@@ -1288,15 +1404,12 @@ namespace OOX
 		{
 			LONG nEnd = oStream.XlsbReadRecordLength() + oStream.GetPos();
 
-			m_oRow.Init();
-			m_oRow->SetValue(nRow);
-			m_oCol.Init();
-			m_oCol->SetValue(oStream.GetULong() & 0x3FFF);
+			m_oRow = nRow;
+			m_oCol = (oStream.GetULong() & 0x3FFF);
 			_UINT32 nStyleRef = oStream.GetULong();
 			if(0 != (nStyleRef & 0xFFFFFF))
 			{
-				m_oStyle.Init();
-				m_oStyle->SetValue(nStyleRef & 0xFFFFFF);
+				m_oStyle = (nStyleRef & 0xFFFFFF);
 			}
 
 			if(0 != (nStyleRef & 0x1000000))
@@ -1389,9 +1502,6 @@ namespace OOX
 		}
 		void CCell::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			nullable_string sStyleId, sArrayRange,sHyperlink;
-			nullable_int iAcross, iDown, iColIndex;
-
 			WritingElement_ReadAttributes_StartChar( oReader )
 
 				if (strcmp("r", wsName) == 0)
@@ -1420,83 +1530,6 @@ namespace OOX
 
 			WritingElement_ReadAttributes_EndChar( oReader )
 
-			CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
-			if (xlsx_flat)
-			{
-				CWorksheet* sheet = xlsx_flat->m_arWorksheets.back();
-				
-				if (iColIndex.IsInit())
-				{
-					xlsx_flat->m_nLastReadCol = *iColIndex;
-				}
-				else
-				{
-					xlsx_flat->m_nLastReadCol = (xlsx_flat->m_nLastReadCol < 0 ? 1 : xlsx_flat->m_nLastReadCol + 1);
-				}
-
-				//m_oRef = "R" + std::to_string(xlsx_flat->m_nLastReadRow) + "C" + std::to_string(xlsx_flat->m_nLastReadCol);
-				m_oRef = getCellAddressA( xlsx_flat->m_nLastReadRow, xlsx_flat->m_nLastReadCol);
-
-				if (m_oFormula.IsInit())
-				{
-					r1c1_formula_convert::base_row = xlsx_flat->m_nLastReadRow;
-					r1c1_formula_convert::base_col = xlsx_flat->m_nLastReadCol;
-					
-					r1c1_formula_convert convert;
-
-					m_oFormula->m_sText = convert.convert(m_oFormula->m_sText);
-				}
-
-				if (sStyleId.IsInit() && xlsx_flat->m_pStyles.IsInit())
-				{
-					std::map<std::wstring, size_t>::iterator pFind = xlsx_flat->m_pStyles->m_mapStyles2003.find(*sStyleId);
-					if (pFind != xlsx_flat->m_pStyles->m_mapStyles2003.end())
-					{
-						m_oStyle.Init();
-						m_oStyle->SetValue(pFind->second);
-					}
-				}
-				if (iAcross.IsInit() || iDown.IsInit())
-				{
-					//std::string Ref = m_oRef.get2() + ":R" + std::to_string(xlsx_flat->m_nLastReadRow + 1 + iDown.get_value_or(0)) + "C" + std::to_string(xlsx_flat->m_nLastReadCol + 1 + iAcross.get_value_or(0));
-					std::string Ref =  m_oRef.get2() + ":" + getCellAddressA(xlsx_flat->m_nLastReadRow + iDown.get_value_or(0),
-																			xlsx_flat->m_nLastReadCol + iAcross.get_value_or(0));
-
-					if (false == sheet->m_oMergeCells.IsInit())
-					{
-						sheet->m_oMergeCells.Init();
-					}
-					CMergeCell *pMergeCell = new CMergeCell(m_pMainDocument);
-					pMergeCell->m_oRef = std::wstring(Ref.begin(), Ref.end());
-					
-					sheet->m_oMergeCells->m_arrItems.push_back(pMergeCell);
-
-					xlsx_flat->m_nLastReadCol += iAcross.get_value_or(0);
-				}
-				if (sHyperlink.IsInit())
-				{
-					if (false == sheet->m_oHyperlinks.IsInit())
-					{
-						sheet->m_oHyperlinks.Init();
-					}
-					CHyperlink *pHyperlink = new CHyperlink(m_pMainDocument);
-					
-					pHyperlink->m_oRef = std::wstring(m_oRef->begin(), m_oRef->end());
-					pHyperlink->m_oDisplay = sHyperlink;
-
-					if (sHyperlink->find(L"#") == 0)
-					{
-						sHyperlink = sHyperlink->substr(1);
-						pHyperlink->m_oLocation = sHyperlink;
-					}
-					else
-					{
-						pHyperlink->m_oLink = sHyperlink;
-					}
-					
-					sheet->m_oHyperlinks->m_arrItems.push_back(pHyperlink);
-				}
-			}
 		}
 
 		void CRow::toXMLStart(NSStringUtils::CStringBuilder& writer) const
@@ -1543,6 +1576,19 @@ namespace OOX
 					}
 				}
 			}
+//----------------- 2003
+			CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
+			for (std::map<int, unsigned int>::iterator it = m_mapStyleMerges2003.begin(); xlsx_flat && it != m_mapStyleMerges2003.end(); ++it)
+			{
+				CCell *pCell = new CCell();
+				pCell->m_oRef = getCellAddressA(xlsx_flat->m_nLastReadRow, it->first);
+				pCell->m_oStyle = it->second;
+				pCell->m_oCol = it->first;
+				pCell->m_oRow = xlsx_flat->m_nLastReadRow;
+
+				m_arrItems.push_back(pCell);
+			}
+			m_mapStyleMerges2003.clear();
 		}
 		void CRow::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType)
 		{
@@ -1660,10 +1706,18 @@ namespace OOX
 					m_oCustomFormat.Init();
 					m_oCustomFormat->FromStringA(oReader.GetTextChar());
 				}
-				else if ( strcmp("ht", wsName) == 0 || strcmp("ss:Height", wsName) == 0 )\
+				else if ( strcmp("ht", wsName) == 0)
 				{
 					m_oHt.Init();
 					m_oHt->SetValue(atof(oReader.GetTextChar()));
+				}
+				else if (strcmp("ss:Height", wsName) == 0 )
+				{
+					m_oHt.Init();
+					m_oHt->SetValue(atof(oReader.GetTextChar()));
+					
+					m_oCustomHeight.Init();
+					m_oCustomHeight->SetValue(SimpleTypes::onoffTrue);
 				}
 				else if ( strcmp("hidden", wsName) == 0 )\
 				{

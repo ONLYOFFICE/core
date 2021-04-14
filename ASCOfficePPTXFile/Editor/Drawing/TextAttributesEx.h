@@ -56,6 +56,7 @@ namespace PPT_FORMAT
 		int		m_lPlaceholderType;
 		int		m_lPlaceholderID;
 
+
 		// граница
         Aggplus::RECT m_oBounds;
 

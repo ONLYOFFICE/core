@@ -40,8 +40,6 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
-		//необработано:
-		//<extLst>
 		class CWorkbookPr : public WritingElement
 		{
 		public:
@@ -142,6 +140,74 @@ namespace OOX
 				nullable<SimpleTypes::Spreadsheet::CUpdateLinksType<>>						m_oUpdateLinks;
 		};
 
+		class CWorkbookProtection : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CWorkbookProtection)
+			CWorkbookProtection()
+			{
+			}
+			virtual ~CWorkbookProtection()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual std::wstring toXML() const
+			{
+				return L"";
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<workbookProtection");
+					WritingStringNullableAttrString(L"workbookAlgorithmName", m_oWorkbookAlgorithmName, m_oWorkbookAlgorithmName->ToString());
+					WritingStringNullableAttrString(L"workbookHashValue", m_oWorkbookHashValue, m_oWorkbookHashValue.get());
+					WritingStringNullableAttrString(L"workbookSaltValue", m_oWorkbookSaltValue, m_oWorkbookSaltValue.get());
+					WritingStringNullableAttrInt(L"workbookSpinCount", m_oWorkbookSpinCount, m_oWorkbookSpinCount->GetValue());
+				writer.WriteString(L"/>");
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+
+				if (!oReader.IsEmptyNode())
+					oReader.ReadTillEnd();
+			}
+
+			virtual EElementType getType() const
+			{
+				return et_x_WorkbookProtection;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start(oReader)
+					WritingElement_ReadAttributes_Read_if(oReader, (L"workbookAlgorithmName"), m_oWorkbookAlgorithmName)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"workbookHashValue"), m_oWorkbookHashValue)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"workbookSaltValue"), m_oWorkbookSaltValue)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"workbookSpinCount"), m_oWorkbookSpinCount)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"revisionsAlgorithmName"), m_oRevisionsAlgorithmName)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"revisionsHashValue"), m_oRevisionsHashValue)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"revisionsSaltValue"), m_oRevisionsSaltValue)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"revisionsSpinCount"), m_oRevisionsSpinCount)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"lockRevision"), m_oLockRevision)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"lockStructure"), m_oLockStructure)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"lockWindows"), m_oLockWindows)
+				WritingElement_ReadAttributes_End(oReader)
+			}
+			nullable<SimpleTypes::COnOff<>>		m_oLockRevision;
+			nullable<SimpleTypes::COnOff<>>		m_oLockStructure;
+			nullable<SimpleTypes::COnOff<>>		m_oLockWindows;
+
+			nullable<SimpleTypes::CCryptAlgoritmName<>>		m_oWorkbookAlgorithmName;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oWorkbookSpinCount;
+			nullable_string									m_oWorkbookHashValue;
+			nullable_string									m_oWorkbookSaltValue;
+
+			nullable<SimpleTypes::CCryptAlgoritmName<>>		m_oRevisionsAlgorithmName;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oRevisionsSpinCount;
+			nullable_string									m_oRevisionsHashValue;
+			nullable_string									m_oRevisionsSaltValue;			
+		};
 	} //Spreadsheet
 } // namespace OOX
 

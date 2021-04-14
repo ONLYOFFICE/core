@@ -84,6 +84,11 @@ namespace Docx2Txt
         void convert(std::vector<OOX::WritingElement *> & items, std::vector<std::wstring>& textOut, TxtXml::ITxtXmlEvent& Event, bool isFirstLevel,
 							 OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles);
        
+		std::wstring convert( OOX::Logic::CRun* pRun, TxtXml::ITxtXmlEvent& Event,
+			OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles* pStyles);
+			
+		std::vector<bool> m_Field;
+
 		int m_lPercent;
         int m_lAddition;
         bool m_bCancelled;
@@ -177,9 +182,9 @@ namespace Docx2Txt
 		if(m_bCancelled)
 			return;
 
-		OOX::CDocument	*pDocument	= m_inputFile.m_pDocument; 
-		OOX::CStyles	*pStyles	= m_inputFile.m_pStyles;
-		OOX::CNumbering *pNumbering = m_inputFile.m_pNumbering;
+		OOX::CDocument	*pDocument	= m_inputFile.m_oMain.document; 
+		OOX::CStyles	*pStyles	= m_inputFile.m_oMain.styles;
+		OOX::CNumbering *pNumbering = m_inputFile.m_oMain.numbering;
 	
 		if (pNumbering)
 		{
@@ -253,74 +258,170 @@ namespace Docx2Txt
     void Converter_Impl::convert(std::vector<OOX::WritingElement*> & items, std::vector<std::wstring>& textOut, TxtXml::ITxtXmlEvent& Event,
 										bool isFirstLevel, OOX::CDocument *pDocument,  OOX::CNumbering* pNumbering, OOX::CStyles *pStyles)
 	{
-		if( !items.empty() )
-		{
-			if(isFirstLevel)
-				m_lAddition = m_lAddition / items.size();
+		if (items.empty()) return;
+
+		if(isFirstLevel)
+			m_lAddition = m_lAddition / items.size();
 			
-            for (std::vector<OOX::WritingElement*>::iterator it = items.begin(); it != items.end(); ++it)
+        for (std::vector<OOX::WritingElement*>::iterator it = items.begin(); it != items.end(); ++it)
+		{
+			OOX::WritingElement* item = *it;
+
+			if (!item)continue;
+
+			if (item->getType() == OOX::et_w_p)
 			{
-				OOX::WritingElement* item = *it;
-
-				if (!item)continue;
-
-				if (item->getType() == OOX::et_w_p)
+				textOut.push_back(convert((dynamic_cast<OOX::Logic::CParagraph*>(item)), Event, pDocument, pNumbering, pStyles));
+			}
+			else if (item->getType() == OOX::et_w_r)
+			{
+				textOut.push_back(convert((dynamic_cast<OOX::Logic::CRun*>(item)), Event, pDocument, pNumbering, pStyles));
+			}
+			/*else if (item.is<OOX::Logic::List>())
+			{
+				BOOST_FOREACH(const OOX::Logic::ListItem& listItem, *item.as<OOX::Logic::List>().m_arrItems)
 				{
-					textOut.push_back(convert((dynamic_cast<OOX::Logic::CParagraph*>(item)), Event, pDocument, pNumbering, pStyles));
+					convert(listItem.m_arrItems);
 				}
-				/*else if (item.is<OOX::Logic::List>())
-				{
-					BOOST_FOREACH(const OOX::Logic::ListItem& listItem, *item.as<OOX::Logic::List>().m_arrItems)
-					{
-						convert(listItem.m_arrItems);
-					}
-				}*/
-				//else if (item->getType() == OOX::et_w_tbl)
-				//{
-				//	OOX::Logic::CTbl* tbl = dynamic_cast<OOX::Logic::CTbl*>(item);
-				//	for (int r = 0 ; r < tbl->m_arrItems.size(); r++)
-				//	{
-				//		OOX::WritingElement * item = tbl->m_arrItems[r];
-				//		if (item->getType() == OOX::et_w_tr)
-				//		{
-				//			OOX::Logic::CTr* tr = dynamic_cast<OOX::Logic::CTr*>(item);
-				//			for (int c = 0 ; c < tr->m_arrItems.size(); c++)
-				//			{
-				//				OOX::WritingElement * item = tr->m_arrItems[c];
-				//				if (item->getType() == OOX::et_w_tc)
-				//				{
-				//					OOX::Logic::CTc* tc = dynamic_cast<OOX::Logic::CTc*>(item);
-				//					convert(tc->m_arrItems, Event, false, pDocument, pStyles);
-				//				}
-				//			}
-				//		}
+			}*/
+			//else if (item->getType() == OOX::et_w_tbl)
+			//{
+			//	OOX::Logic::CTbl* tbl = dynamic_cast<OOX::Logic::CTbl*>(item);
+			//	for (int r = 0 ; r < tbl->m_arrItems.size(); r++)
+			//	{
+			//		OOX::WritingElement * item = tbl->m_arrItems[r];
+			//		if (item->getType() == OOX::et_w_tr)
+			//		{
+			//			OOX::Logic::CTr* tr = dynamic_cast<OOX::Logic::CTr*>(item);
+			//			for (int c = 0 ; c < tr->m_arrItems.size(); c++)
+			//			{
+			//				OOX::WritingElement * item = tr->m_arrItems[c];
+			//				if (item->getType() == OOX::et_w_tc)
+			//				{
+			//					OOX::Logic::CTc* tc = dynamic_cast<OOX::Logic::CTc*>(item);
+			//					convert(tc->m_arrItems, Event, false, pDocument, pStyles);
+			//				}
+			//			}
+			//		}
 		
-				//	}
-				//}
-				//else if (item->getType() == OOX::et_w_sdt)
-				//{
-				//	convert((dynamic_cast<OOX::Logic::CSdt*>(item))->m_arrItems, text, Event, false, pDocument, pNumbering, pStyles);
-				//}
-				else
-				{
-					//todoooo  проверить - это общий случай - вместо CSdt ... да и Tbl тож
-					OOX::WritingElementWithChilds<OOX::WritingElement> *item_with_items = dynamic_cast<OOX::WritingElementWithChilds<OOX::WritingElement>*>(item);
+			//	}
+			//}
+			//else if (item->getType() == OOX::et_w_sdt)
+			//{
+			//	convert((dynamic_cast<OOX::Logic::CSdt*>(item))->m_arrItems, text, Event, false, pDocument, pNumbering, pStyles);
+			//}
+			else
+			{
+				//todoooo  проверить - это общий случай - вместо CSdt ... да и Tbl тож
+				OOX::WritingElementWithChilds<OOX::WritingElement> *item_with_items = dynamic_cast<OOX::WritingElementWithChilds<OOX::WritingElement>*>(item);
 					
-					if (item_with_items)
-					{
-						convert(item_with_items->m_arrItems, textOut, Event, false, pDocument, pNumbering, pStyles);
-					}
-				}
-
-				if(isFirstLevel)
+				if (item_with_items)
 				{
-					m_lPercent += m_lAddition;
-					m_bCancelled = Event.Progress(0, m_lPercent);
-					if(m_bCancelled)
-						return;
+					convert(item_with_items->m_arrItems, textOut, Event, false, pDocument, pNumbering, pStyles);
 				}
 			}
+
+			if(isFirstLevel)
+			{
+				m_lPercent += m_lAddition;
+				m_bCancelled = Event.Progress(0, m_lPercent);
+				if(m_bCancelled)
+					return;
+			}
 		}
+	}
+	std::wstring Converter_Impl::convert(OOX::Logic::CRun* pRun, TxtXml::ITxtXmlEvent& Event,
+		OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles* pStyles)
+	{
+		if (pRun == NULL) return L"";
+		
+		std::wstring line;
+
+		for (size_t j = 0; pRun && j < pRun->m_arrItems.size(); ++j)
+		{
+			if (pRun->m_arrItems[j] == NULL) continue;
+
+			if (pRun->m_arrItems[j]->getType() == OOX::et_w_fldChar)
+			{
+				OOX::Logic::CFldChar *fldChar = dynamic_cast<OOX::Logic::CFldChar*>(pRun->m_arrItems[j]);
+
+				if ((fldChar) && (fldChar->m_oFldCharType.IsInit()))
+				{
+					if (fldChar->m_oFldCharType->GetValue() == SimpleTypes::fldchartypeBegin)	m_Field.push_back(true);
+					else if (fldChar->m_oFldCharType->GetValue() == SimpleTypes::fldchartypeEnd)m_Field.pop_back();
+					else if (false == m_Field.empty()) m_Field[m_Field.size() - 1] = false;
+				}
+			}
+			else if ((m_Field.empty()) || (m_Field.back() == false))
+			{
+				bool caps = false;
+				//
+				//if ((pRun->m_oRunProperty) && (pRun->m_oRunProperty->m_oCaps.Init()) && (pRun->m_oRunProperty->m_oCaps->m_oVal.ToBool()))	
+				//	caps = true;
+
+				std::wstring wstr;
+
+				switch (pRun->m_arrItems[j]->getType())
+				{
+					case OOX::et_w_tab:
+					{
+						wstr = L"\x09";
+					}break;
+					case  OOX::et_w_br:
+					{
+						wstr = L"\x0A";
+					}break;
+					case OOX::et_w_t:
+					{
+						OOX::Logic::CText* text = dynamic_cast<OOX::Logic::CText*>(pRun->m_arrItems[j]);
+						wstr = text->m_sText;
+						if (caps)
+						{
+							wstr = XmlUtils::GetUpper(wstr);
+						}
+					}break;
+					case OOX::et_w_footnoteReference:
+					case OOX::et_w_endnoteReference:
+					{
+						OOX::Logic::CFootnoteReference* footnote_ref = dynamic_cast<OOX::Logic::CFootnoteReference*>(pRun->m_arrItems[j]);
+						OOX::Logic::CEndnoteReference* endnote_ref = dynamic_cast<OOX::Logic::CEndnoteReference*>(pRun->m_arrItems[j]);
+
+						std::vector<std::wstring> notes_content;
+
+						if (footnote_ref && m_inputFile.m_oMain.footnotes)
+						{
+							for (size_t r = 0; r < m_inputFile.m_oMain.footnotes->m_arrFootnote.size(); r++)
+							{
+								OOX::CFtnEdn* note = dynamic_cast<OOX::CFtnEdn*>(m_inputFile.m_oMain.footnotes->m_arrFootnote[r]);
+
+								if (note && note->m_oId == footnote_ref->m_oId)
+								{
+									convert(m_inputFile.m_oMain.footnotes->m_arrFootnote[r]->m_arrItems, notes_content, Event, false, pDocument, pNumbering, pStyles);
+								}
+							}
+							Notes.insert(std::make_pair(ToWString(++NoteCount), notes_content));
+							wstr += L"[" + ToWString(NoteCount) + L"]";
+						}
+						if (endnote_ref && m_inputFile.m_oMain.endnotes)
+						{
+							for (size_t r = 0; r < m_inputFile.m_oMain.endnotes->m_arrEndnote.size(); r++)
+							{
+								OOX::CFtnEdn* note = dynamic_cast<OOX::CFtnEdn*>(m_inputFile.m_oMain.endnotes->m_arrEndnote[r]);
+
+								if (note && note->m_oId == endnote_ref->m_oId)
+								{
+									convert(m_inputFile.m_oMain.endnotes->m_arrEndnote[r]->m_arrItems, notes_content, Event, false, pDocument, pNumbering, pStyles);
+								}
+							}
+							Notes.insert(std::make_pair(ToWString(++NoteCount), notes_content));
+							wstr += L"[" + ToWString(NoteCount) + L"]";
+						}break;
+					}
+				}
+				line += wstr;
+			}
+		}
+		return line;
 	}
 
 	std::wstring Converter_Impl::convert(OOX::Logic::CParagraph* pParagraph, TxtXml::ITxtXmlEvent& Event, 
@@ -510,101 +611,59 @@ namespace Docx2Txt
 			}
 		}
 
-		bool inField = false;
-
         for (size_t	i = 0; i < pParagraph->m_arrItems.size(); ++i)
 		{
 			if (pParagraph->m_arrItems[i] == NULL) continue;
 
-			OOX::Logic::CRun *run = dynamic_cast<OOX::Logic::CRun*>(pParagraph->m_arrItems[i]);
-
-            for (size_t j = 0; run && j < run->m_arrItems.size(); ++j)
+			switch (pParagraph->m_arrItems[i]->getType())
 			{
-				if (run->m_arrItems[j] == NULL) continue;
-
-				else if (run->m_arrItems[j]->getType() == OOX::et_w_fldChar)
+				case OOX::et_w_r:
 				{
-					OOX::Logic::CFldChar *fldChar = dynamic_cast<OOX::Logic::CFldChar*>(run->m_arrItems[j]);
-
-					if ((fldChar) && (fldChar->m_oFldCharType.IsInit()))
-					{
-						if (fldChar->m_oFldCharType->GetValue() == SimpleTypes::fldchartypeBegin)	inField = true;
-						else																		inField = false;
-					}
-				}
-				else if (inField == false)
+					OOX::Logic::CRun *pRun = dynamic_cast<OOX::Logic::CRun*>(pParagraph->m_arrItems[i]);
+					line += convert(pRun, Event, pDocument, pNumbering, pStyles);
+				}break;
+				case OOX::et_w_hyperlink:
 				{
-					bool caps = false;
-					//
-					//if ((run->m_oRunProperty) && (run->m_oRunProperty->m_oCaps.Init()) && (run->m_oRunProperty->m_oCaps->m_oVal.ToBool()))	
-					//	caps = true;
+					OOX::Logic::CHyperlink *pHyperlink = dynamic_cast<OOX::Logic::CHyperlink*>(pParagraph->m_arrItems[i]);
+					if (pHyperlink)
+					{
+						std::wstring sTarget;
+						std::vector<std::wstring> arDisplay;
 
-					std::wstring wstr;						
-					if (run->m_arrItems[j]->getType() == OOX::et_w_tab)
-					{
-						wstr = L"\x09";
-					}
-					else if (run->m_arrItems[j]->getType() == OOX::et_w_br)
-					{
-						wstr = L"\x0A";
-					}
-					else if (run->m_arrItems[j]->getType() == OOX::et_w_t)
-					{
-						OOX::Logic::CText* text = dynamic_cast<OOX::Logic::CText*>(run->m_arrItems[j]);
-						wstr = text->m_sText;
-						if(caps)
+						if ((pHyperlink) && (pHyperlink->m_oId.IsInit()))
 						{
-							wstr = XmlUtils::GetUpper(wstr);
-						}
-					}
-					
-					if (run->m_arrItems[j]->getType() == OOX::et_w_footnoteReference || 
-						pParagraph->m_arrItems[i]->getType() == OOX::et_w_endnoteReference)
-					{// todooo Ref ????
-
-                        std::vector<std::wstring> notes_content;
-
-						OOX::Logic::CFootnoteReference* footnote_ref = dynamic_cast<OOX::Logic::CFootnoteReference*>(run->m_arrItems[j]);
-						OOX::Logic::CEndnoteReference* endnote_ref = dynamic_cast<OOX::Logic::CEndnoteReference*>(run->m_arrItems[j]);
-						NoteCount++;
-
-						if (footnote_ref && m_inputFile.m_pFootnotes)
-						{								
-							for (size_t r = 0; r < m_inputFile.m_pFootnotes->m_arrFootnote.size(); r++)
+							if (pDocument) //todooo - >+headers/footers ->container
 							{
-								OOX::CFtnEdn* note = dynamic_cast<OOX::CFtnEdn*>(m_inputFile.m_pFootnotes->m_arrFootnote[r]);
-
-								if (note && note->m_oId == footnote_ref->m_oId)
+								smart_ptr<OOX::File> oFile = pDocument->Find(pHyperlink->m_oId->GetValue());
+								if ((oFile.IsInit()) && (OOX::FileTypes::HyperLink == oFile->type()))
 								{
-									convert(m_inputFile.m_pFootnotes->m_arrFootnote[r]->m_arrItems, notes_content, Event, false, pDocument, pNumbering, pStyles);
+									OOX::HyperLink* pH = (OOX::HyperLink*)oFile.GetPointer();
+									sTarget = pH->Uri().GetPath();
 								}
 							}
-							Notes.insert(std::make_pair(ToWString(NoteCount), notes_content));
 						}
-						if (endnote_ref && m_inputFile.m_pEndnotes)
+						if (pHyperlink->m_sAnchor.IsInit())
 						{
-							for (size_t r =0; r < m_inputFile.m_pEndnotes->m_arrEndnote.size(); r++)
-							{
-								OOX::CFtnEdn* note = dynamic_cast<OOX::CFtnEdn*>(m_inputFile.m_pEndnotes->m_arrEndnote[r]);
-								
-								if (note && note->m_oId == endnote_ref->m_oId)
-								{
-									convert(m_inputFile.m_pEndnotes->m_arrEndnote[r]->m_arrItems, notes_content, Event, false, pDocument, pNumbering, pStyles);
-								}
-							}
-							Notes.insert(std::make_pair(ToWString(NoteCount), notes_content));
+							sTarget += L"#" + *pHyperlink->m_sAnchor;
 						}
 
-						wstr += L"[" + ToWString(NoteCount) + L"]"; ;
+						for (size_t j = 0; j < pHyperlink->m_arrItems.size(); ++j)
+						{
+							convert(pHyperlink->m_arrItems, arDisplay, Event, false, pDocument, pNumbering, pStyles);
+						}
+						for (size_t j = 0; j < arDisplay.size(); ++j)
+							line += arDisplay[j];
+
+						if (false == sTarget.empty())
+						{
+							line += L"(" + sTarget + L")";
+						}				
 					}
-					line += wstr;
-				}
+				}break;
 			}
 		}
-
 		return line;
 	}
-
 
 	std::wstring Converter_Impl::IntToLowerLetter(int number)
 	{

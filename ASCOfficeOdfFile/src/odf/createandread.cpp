@@ -50,7 +50,8 @@ bool create_element_and_read(xml::sax * Reader,
 {
     if (office_element_ptr elm = office_element_creator::get()->create(Ns, Name, Context, isRoot))
     {
-		elm->read_sax( Reader );
+		elm->afterCreate();
+			elm->read_sax( Reader );
         elm->afterReadContent();
         
         if (_Element) // элемент читается повторно
@@ -63,7 +64,7 @@ bool create_element_and_read(xml::sax * Reader,
     }
     else
     {
-        _CP_LOG << L"[error] : create element failed (" << Ns << L":" << Name << L")\n";
+		_CP_LOG << L"[error] : create element failed (" << Ns << L":" << Name << L")\n";
 
         not_applicable_element(L"[!!!]", Reader, Ns, Name);
     }

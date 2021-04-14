@@ -94,6 +94,7 @@ namespace NSOnlineOfficeBinToPdf
                             oFrame.put_Width(nSize);
                             oFrame.put_Height(nSize);
                             oFrame.put_Stride(4 * nSize);
+                            oFrame.put_IsRGBA(true);
                             oFrame.SaveFile(wsBase64TempFile, 4); // PNG
                             wsTempString = wsBase64TempFile;
                         }
@@ -225,7 +226,8 @@ namespace NSOnlineOfficeBinToPdf
 		}
 		RELEASEARRAYOBJECTS(pFileContent);
 
-		pPdf->SaveToFile(wsDstFile);
+		if (0 != pPdf->SaveToFile(wsDstFile))
+			return false;
 
 		return true;
 	}

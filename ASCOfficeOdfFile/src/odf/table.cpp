@@ -154,7 +154,11 @@ void table_table_protection::add_attributes( const xml::attributes_wc_ptr & Attr
 	//CP_APPLY_ATTR(L"loext:format-rows",			format_rows);
 	//CP_APPLY_ATTR(L"loext:format-cells",			format_cells);
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------------
+// table:table
+const wchar_t * table_sub_table::ns = L"table";
+const wchar_t * table_sub_table::name = L"sub-table";
+//---------------------------------------------------------------------------------------------------------
 // table:table
 const wchar_t * table_table::ns = L"table";
 const wchar_t * table_table::name = L"table";
@@ -837,7 +841,6 @@ const wchar_t * table_help_message::name = L"help-message";
 void table_help_message::add_attributes(xml::attributes_wc_ptr const & Attributes)
 {
     CP_APPLY_ATTR(L"table:title",			table_title_);
-    CP_APPLY_ATTR(L"table:message-type",	table_message_type_);
 	CP_APPLY_ATTR(L"table:display",			table_display_);
 }
 void table_help_message::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)

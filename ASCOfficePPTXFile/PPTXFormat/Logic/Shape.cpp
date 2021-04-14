@@ -205,7 +205,8 @@ namespace PPTX
 		{
 			std::wstring name_ = m_name;
 
-			if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)			name_ = L"wps:wsp";
+			if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+					 pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)	name_ = L"wps:wsp";
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			name_ = L"xdr:sp";
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		name_ = L"a:sp";
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	name_ = L"cdr:sp";
@@ -216,7 +217,8 @@ namespace PPTX
 			pWriter->WriteAttribute(_T("useBgFill"), attrUseBgFill);
 			pWriter->EndAttributes();
 
-			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+				pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)
 			{
 				nvSpPr.cNvSpPr.toXmlWriter2(_T("wps"), pWriter);
 			}
@@ -239,14 +241,16 @@ namespace PPTX
 			}
 			if (style.is_init())
 			{
-				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)			style->m_namespace = L"wps";
+				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+						 pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)	style->m_namespace = L"wps";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			style->m_namespace = L"xdr";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		style->m_namespace = L"a";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	style->m_namespace = L"cdr";
 
                 pWriter->Write(style);
             }
-			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+				pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)
 			{	
 				bool bIsWritedBodyPr = false;
 				if (strTextBoxShape.is_init())
@@ -596,14 +600,18 @@ namespace PPTX
 			LONG lW = 43200, lH = 43200;
 			int dL = 0, dT = 0, dW = 0, dH = 0;
 			
-			if (spPr.Geometry.is<PrstGeom>())
+			if (bSignature)
+			{
+				vmlPrst = SimpleTypes::Vml::sptPictureFrame;
+			}
+			else if (spPr.Geometry.is<PrstGeom>())
 			{
 				const PPTX::Logic::PrstGeom & lpGeom = spPr.Geometry.as<PPTX::Logic::PrstGeom>();
 				
 				SimpleTypes::CShapeType<> ooxPrst = SimpleTypes::CShapeType<>(lpGeom.prst.get());
 				vmlPrst =  OOX::PrstGeom2VmlShapeType( ooxPrst.GetValue());
 			}   
-
+			
 			if (spPr.xfrm.is_init())
 			{
 				if (spPr.xfrm->offX.is_init())	dL = *spPr.xfrm->offX;
@@ -615,7 +623,7 @@ namespace PPTX
 				lH = spPr.xfrm->extY.get_value_or(43200);
 			}
 
-			spPr.Geometry.ConvertToCustomVML(pWriter->m_pOOXToVMLRenderer, strPath, strTextRect, lW, lH);
+			spPr.Geometry.ConvertToCustomVML(pWriter->m_pOOXToVMLRenderer, strPath, strTextRect, lW, lH );
             
 			std::wstring strId		= L"shape "		+ std::to_wstring(pWriter->m_lObjectIdVML);
 			std::wstring strSpid	= L"_x0000_s"	+ std::to_wstring(pWriter->m_lObjectIdVML);
@@ -627,8 +635,8 @@ namespace PPTX
             std::wstring strFillNode;
             std::wstring strStrokeNode;;
 
-			CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, false, bSignature);
-			CalculateLine(spPr, style, oTheme, oClrMap, strStrokeAttr, strStrokeNode, false, bSignature);
+			CalculateFill(pWriter->m_lDocType, spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, false, bSignature);
+			CalculateLine(pWriter->m_lDocType, spPr, style, oTheme, oClrMap, strStrokeAttr, strStrokeNode, false);
 
 			pWriter->StartNode(L"v:shape");
 
@@ -759,10 +767,31 @@ namespace PPTX
 				pWriter->WriteString(*strTextBoxShape); //??? todooo -> oTextBoxShape
 				pWriter->EndNode(L"v:textbox");
 			}
+			if (strFillNode.empty() && spPr.Fill.m_type == UniFill::blipFill)
+			{
+				BlipFill& blipFill = spPr.Fill.as<BlipFill>();
+				
+				pWriter->StartNode(L"v:imagedata");
+				pWriter->StartAttributes();
+				if (XMLWRITER_DOC_TYPE_XLSX == pWriter->m_lDocType)
+				{
+					pWriter->WriteAttribute(L"o:relid", blipFill.blip->embed->ToString());
+				}
+				else
+				{
+					pWriter->WriteAttribute(L"r:id", blipFill.blip->embed->ToString());
+				}
+				pWriter->WriteAttribute(L"o:title", L"");
+				pWriter->EndAttributes();
+				pWriter->EndNode(L"v:imagedata");
+			}
+
 			if (signatureLine.is_init())
 			{
 				signatureLine->toXmlWriter(pWriter);
 			}
+
+			pWriter->WriteString(m_sClientDataXml);
 
 			pWriter->EndNode(L"v:shape");
 
@@ -771,7 +800,7 @@ namespace PPTX
 		void Shape::toXmlWriterVMLBackground(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap)
 		{
 			std::wstring strFillAttr, strFillNode;
-			CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, false);
+			CalculateFill(pWriter->m_lDocType, spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, false);
 
 			pWriter->StartNode(L"v:background");
 

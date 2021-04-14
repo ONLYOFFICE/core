@@ -484,6 +484,7 @@ namespace OOX
 			// Nodes
 			nullable<ComplexTypes::Word::CComb				> m_oComb;
 			nullable<ComplexTypes::Word::CDecimalNumber     > m_oMaxCharacters;
+			nullable<ComplexTypes::Word::CBorder			> m_oCombBorder;
 		};
 		//--------------------------------------------------------------------------------
 		// CSdtComboBox 17.5.2.5 (Part 1)

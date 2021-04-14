@@ -178,7 +178,8 @@ namespace PPTX
 			{
                 std::wstring namespace_ = m_namespace;
 				
-				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)			namespace_= L"pic";
+				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+						 pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)	namespace_= L"pic";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			namespace_= L"xdr";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		namespace_= L"a";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	namespace_ = L"cdr";
@@ -313,7 +314,7 @@ namespace PPTX
 
 			std::wstring		m_namespace;
 
-			int					id;
+			int					id = -1;
 			std::wstring		name;
 			nullable_string		descr;
 			nullable_bool		hidden;

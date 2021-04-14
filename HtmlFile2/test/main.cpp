@@ -6,10 +6,10 @@
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
-void getDirectories(std::wstring sDirectory, std::vector<std::wstring>& arrDirectory)
+void getDirectories(const std::wstring& sDirectory, std::vector<std::wstring>& arrDirectory)
 {
     arrDirectory.push_back(sDirectory);
-    for(std::wstring sT : NSDirectory::GetDirectories(sDirectory))
+    for(const std::wstring& sT : NSDirectory::GetDirectories(sDirectory))
         getDirectories(sT, arrDirectory);
 }
 
@@ -38,7 +38,7 @@ int main()
             std::wstring sOutputDirectory = sD.insert(nPos + 5, L"-res");
             NSDirectory::CreateDirectory(sOutputDirectory);
 
-            for(std::wstring sFile : arrFiles)
+            for(const std::wstring& sFile : arrFiles)
             {
                 std::wstring sFileName = NSFile::GetFileName(sFile);
                 std::wcout << sFileName << std::endl;

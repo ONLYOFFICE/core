@@ -329,7 +329,7 @@ namespace NSCommon
     static void SaveAllFontsJS(NSFonts::IApplicationFonts* applicationFonts, std::wstring strFile, std::wstring strFolderThumbnails, std::wstring strFontSelectionBin, int nVersion = -1)
     {
         std::vector<NSFonts::CFontInfo*>* pList = applicationFonts->GetList()->GetFonts();
-        int nCount = pList->size();
+        int nCount = (int)pList->size();
         
         // сначала строим массив всех файлов шрифтов
         std::map<std::wstring, LONG> mapFontFiles;
@@ -350,7 +350,7 @@ namespace NSCommon
         
         // теперь строим массив всех шрифтов по имени
         std::map<std::wstring, CFontInfoJS> mapFonts;
-        CArray<std::wstring> arrFonts;
+        std::vector<std::wstring> arrFonts;
         
         for (std::vector<NSFonts::CFontInfo*>::iterator i = pList->begin(); i != pList->end(); i++)
         {
@@ -441,16 +441,16 @@ namespace NSCommon
                 }
                 
                 mapFonts.insert(std::pair<std::wstring, CFontInfoJS>(fontInfo.m_sName, fontInfo));
-                arrFonts.Add(fontInfo.m_sName);
+                arrFonts.push_back(fontInfo.m_sName);
             }
         }
         // -------------------------------------------
         
         // теперь сортируем шрифты по имени ----------
-        int nCountFonts = arrFonts.GetCount();
-        for (int i = 0; i < nCountFonts; ++i)
+        size_t nCountFonts = arrFonts.size();
+        for (size_t i = 0; i < nCountFonts; ++i)
         {
-            for (int j = i + 1; j < nCountFonts; ++j)
+            for (size_t j = i + 1; j < nCountFonts; ++j)
             {
                 if (arrFonts[i] > arrFonts[j])
                 {
@@ -889,10 +889,15 @@ namespace NSCommon
             pCache->SetStreams(applicationFonts->GetStreams());
             pManager->SetOwnerCache(pCache);
 
-            for (int iX = 1; iX <= 2; ++iX)
+            #define COUNT_FONTS_SCALE 3
+            double support_scales[COUNT_FONTS_SCALE] = { 1, 1.5, 2 };
+
+            for (int iX = 0; iX < COUNT_FONTS_SCALE; ++iX)
             {
+                double dScale = support_scales[iX];
+
                 // создаем картинку для табнейлов
-                double dDpi = 96 * iX;
+                double dDpi = 96 * dScale;
                 double dW_mm = 80;
                 LONG lH1_px = LONG(7 * dDpi / 25.4);
                 LONG lWidthPix = (LONG)(dW_mm * dDpi / 25.4);
@@ -1035,10 +1040,14 @@ namespace NSCommon
                 RELEASEOBJECT(pRenderer);
 
                 std::wstring strThumbnailPath = strFolderThumbnails + L"/fonts_thumbnail";
-                if (iX == 1)
+                int nScaleOut = (int)(dScale * 10 + 0.5);
+
+                if (nScaleOut == 10)
                     strThumbnailPath += L".png";
+                else if ((nScaleOut % 10) == 0)
+                    strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 10)) + L"x.png";
                 else
-                    strThumbnailPath += L"@2x.png";
+                    strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 10)) + L"." + std::to_wstring((int)(nScaleOut % 10)) + L"x.png";
 
                 oFrame.SaveFile(strThumbnailPath, 4);
             }

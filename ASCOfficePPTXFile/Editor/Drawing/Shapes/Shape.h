@@ -65,7 +65,7 @@ public:
 	long					m_lLimoX;
 	long					m_lLimoY;
 
-	CTextAttributesEx		m_oText;
+        CTextAttributesEx                       m_oText;
 
 	double					m_dWidthLogic;
 	double					m_dHeightLogic;

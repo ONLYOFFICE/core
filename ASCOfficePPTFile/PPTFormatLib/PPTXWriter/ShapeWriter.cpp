@@ -156,6 +156,12 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
 				oWriter.WriteStringXML(std::wstring(&bu, 1));
 				oWriter.WriteString(L"\"/>");	
 			}
+//            if (!pPF->bulletAutoNum.is_init())
+//            {
+//                oWriter.WriteString(L"<a:buAutoNum type=\"");
+//                oWriter.WriteString(L"arabicPeriod");
+//                oWriter.WriteString(L"\"/>");
+//            }
 		}
 		else
 		{
@@ -1190,14 +1196,14 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
 	}
 	m_oWriter.WriteString(L"</a:bodyPr>");
 	
-	if (0 == nCount)
+    if (0 == nCount)
 	{
 		m_oWriter.WriteString(L"<a:lstStyle/><a:p><a:endParaRPr dirty=\"0\"/></a:p></p:txBody>");
 		return;
 	}
 	m_oWriter.WriteString(L"<a:lstStyle>");
 
-	if (!m_bWordArt)
+    if (!m_bWordArt)
 	{
 		CStylesWriter styleWriter(m_pTheme);
 		styleWriter.ConvertStyles(pShapeElement->m_pShape->m_oText.m_oStyles, m_oWriter);
@@ -1337,6 +1343,12 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
 					}
 					m_oWriter.WriteString(std::wstring(L"/>"));
 				}
+                if (pPF->bulletAutoNum.is_init())  // TODO Numbering
+                {
+                    m_oWriter.WriteString(L"<a:buAutoNum type=\"");
+                    m_oWriter.WriteString(pPF->bulletAutoNum->type.get());
+                    m_oWriter.WriteString(L"\"/>");
+                }
 
 				bool set = true;
 				if (pPF->bulletFontProperties.is_init() == false && pPF->bulletSize.is_init() == false)
@@ -1626,7 +1638,7 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertShape()
 	CImageElement* pImageElement = dynamic_cast<CImageElement*>(m_pElement.get());
 	CGroupElement* pGroupElement = dynamic_cast<CGroupElement*>(m_pElement.get());
 	CShapeElement* pShapeElement = dynamic_cast<CShapeElement*>(m_pElement.get());
-	
+
 	if (pImageElement) return ConvertImage();
 	if (pGroupElement) return ConvertGroup();
 

@@ -71,7 +71,7 @@ class PDFWRITER_DECL_EXPORT CPdfRenderer : public IRenderer
 public:
 	CPdfRenderer(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA = false);
 	~CPdfRenderer();
-	void         SaveToFile(const std::wstring& wsPath);
+	int          SaveToFile(const std::wstring& wsPath);
 	void         SetPassword(const std::wstring& wsPassword);
 	void		 SetDocumentID(const std::wstring& wsDocumentID);
 	void         SetTempFolder(const std::wstring& wsPath);

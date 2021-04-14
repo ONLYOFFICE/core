@@ -152,7 +152,7 @@ void oox_chart_series::parse_properties()
 	if (false == formatCode.empty())
 	{
 		if (!data_labels_)	data_labels_ = oox_data_labels();
-		data_labels_->set_formatCode(formatCode, bLinkData.get_value_or(true));
+		data_labels_->set_formatCode(formatCode, bLinkData.get_value_or(false));
 	}
 	odf_reader::GetProperty(content_.properties_, L"label-position", intVal);
 	if (intVal && labelPosEnabled_)

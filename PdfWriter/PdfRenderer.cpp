@@ -552,14 +552,18 @@ void CPdfRenderer::SetDocumentID(const std::wstring& wsDocumentID)
 
     m_pDocument->SetDocumentID(wsDocumentID);
 }
-void CPdfRenderer::SaveToFile(const std::wstring& wsPath)
+int CPdfRenderer::SaveToFile(const std::wstring& wsPath)
 {
+	// TODO: Переделать на код ошибки
 	if (!IsValid())
-		return;
+		return 1;
 
 	m_oCommandManager.Flush();
 
-	m_pDocument->SaveToFile(wsPath);
+	if (!m_pDocument->SaveToFile(wsPath))
+		return 1;
+
+	return 0;
 }
 void CPdfRenderer::SetTempFolder(const std::wstring& wsPath)
 {

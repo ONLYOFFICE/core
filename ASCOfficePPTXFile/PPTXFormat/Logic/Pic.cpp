@@ -77,6 +77,10 @@ namespace PPTX
             XmlMacroReadAttributeBase(node, L"Type",		m_oType);
             XmlMacroReadAttributeBase(node, L"UpdateMode",	m_oUpdateMode);
 
+			XmlMacroReadAttributeBase(node, L"w:drawAspect", m_oDrawAspect);
+			XmlMacroReadAttributeBase(node, L"w:progId", m_sProgId);
+			XmlMacroReadAttributeBase(node, L"w:shapeId", m_sShapeId);
+			
 			if (false == m_oId.IsInit())
 			{
 				XmlMacroReadAttributeBase( node, L"relationships:id", m_oId );
@@ -264,21 +268,9 @@ namespace PPTX
 				else if (1 == _at)	m_sData		= pReader->GetString2();
 				else if (2 == _at)	m_oDxaOrig	= pReader->GetLong();
 				else if (3 == _at)	m_oDyaOrig	= pReader->GetLong();
-				else if (4 == _at)
-				{
-					m_oDrawAspect = new Limit::OLEDrawAspectType();
-					m_oDrawAspect->SetBYTECode(pReader->GetUChar());
-				}
-				else if (5 == _at)
-				{
-					m_oType = new Limit::OLEType();
-					m_oType->SetBYTECode(pReader->GetUChar());
-				}
-				else if (6 == _at)
-				{
-					m_oUpdateMode = new Limit::OLEUpdateMode();
-					m_oUpdateMode->SetBYTECode(pReader->GetUChar());
-				}
+				else if (4 == _at)	m_oDrawAspect = pReader->GetUChar();
+				else if (5 == _at)	m_oType = pReader->GetUChar();
+				else if (6 == _at)	m_oUpdateMode = pReader->GetUChar();
 				else if (7 == _at)//OleObject Binary FileName (bin, xls, doc, ... other stream file)
 				{
 					m_OleObjectFile = new OOX::OleObject(NULL, false, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
@@ -349,7 +341,7 @@ namespace PPTX
 								oDrawingConverter.SetMainDocument(&oDocxSerializer);
 				
 								//oDocxSerializer.m_pParamsWriter = new BinDocxRW::ParamsWriter(oDrawingConverter.m_pBinaryWriter, &oFontProcessor, &oDrawingConverter, NULL);
-								oDocxSerializer.m_pCurFileWriter = new Writers::FileWriter(L"", L"", false, 111, false, &oDrawingConverter, L"");
+								oDocxSerializer.m_pCurFileWriter = new Writers::FileWriter(L"", L"", false, 111, &oDrawingConverter, L"");
 
 								oDocxSerializer.getXmlContentElem(OOX::et_m_oMathPara, *pReader, sXmlContent);
 							}
@@ -363,7 +355,7 @@ namespace PPTX
 						{
 							m_OleObjectFile = new OOX::OleObject(NULL, true, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
 
-							int id = pReader->m_lChartNumber++; //todoooo -> countEmbeddedObjects
+							int id = pReader->m_nCountEmbedded++;
 							
 							BinDocxRW::CDocxSerializer		oDocxSerializer;
 							NSBinPptxRW::CDrawingConverter	oDrawingConverter;
@@ -385,7 +377,7 @@ namespace PPTX
 				
 							NSBinPptxRW::CBinaryFileReader& oBufferedStream = *oDrawingConverter.m_pReader;
 				
-							oDocxSerializer.m_pCurFileWriter = new Writers::FileWriter(sDstEmbeddedTemp, L"", false, 111, false, &oDrawingConverter, sThemePath);
+							oDocxSerializer.m_pCurFileWriter = new Writers::FileWriter(sDstEmbeddedTemp, L"", false, 111, &oDrawingConverter, sThemePath);
 
 							BinDocxRW::BinaryFileReader oBinaryFileReader(pReader->m_strFolder, oBufferedStream, *oDocxSerializer.m_pCurFileWriter);
 							oBinaryFileReader.ReadFile();
@@ -426,7 +418,7 @@ namespace PPTX
 						{
 							m_OleObjectFile = new OOX::OleObject(NULL, true, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
 
-							int id = pReader->m_lChartNumber++; //todoooo -> countEmbeddedObjects
+							int id = pReader->m_nCountEmbedded++; //todoooo -> countEmbeddedObjects
 							
 							OOX::Spreadsheet::CXlsx			oXlsx;
 							BinXlsxRW::BinaryFileReader		oEmbeddedReader;				
@@ -434,8 +426,9 @@ namespace PPTX
 
 							std::wstring sDrawingsPath = sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl" + FILE_SEPARATOR_STR + L"drawings";
 							std::wstring sThemePath = sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl" + FILE_SEPARATOR_STR + L"theme";
+							std::wstring sEmbeddingsPath = sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl" + FILE_SEPARATOR_STR + L"embeddings";
 
-							BinXlsxRW::SaveParams oSaveParams(sDrawingsPath, sThemePath, oDrawingConverter.GetContentTypes());							
+							BinXlsxRW::SaveParams oSaveParams(sDrawingsPath, sEmbeddingsPath, sThemePath, oDrawingConverter.GetContentTypes());
 
 							std::wstring sXmlOptions, sMediaPath, sEmbedPath;
 							BinXlsxRW::CXlsxSerializer::CreateXlsxFolders (sXmlOptions, sDstEmbeddedTemp, sMediaPath, sEmbedPath);
@@ -762,12 +755,14 @@ namespace PPTX
 			bool bOle = false;
 			
 			if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			namespace_ = L"xdr";
-			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)			namespace_ = L"pic";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+					 pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)	namespace_ = L"pic";
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		namespace_ = L"a";
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	namespace_ = L"cdr";
 
 			if (pWriter->m_lDocType != XMLWRITER_DOC_TYPE_XLSX && 
-				pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX)
+				pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX &&
+				pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)
 			{
 				if(oleObject.IsInit() && oleObject->isValid())
 				{
@@ -806,7 +801,8 @@ namespace PPTX
 			}
 			pWriter->StartNode(namespace_ + L":pic");
 
-			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+				pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)
 			{
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(_T("xmlns:pic"), (std::wstring)_T("http://schemas.openxmlformats.org/drawingml/2006/picture"));
@@ -827,7 +823,8 @@ namespace PPTX
 			pWriter->EndNode(namespace_ + L":pic");
 			
 			if (pWriter->m_lDocType != XMLWRITER_DOC_TYPE_XLSX &&
-				pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX)
+				pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX && 
+				pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)
 			{
 				if(bOle)
 				{
@@ -901,7 +898,7 @@ namespace PPTX
 						bool isExternal = false;
 						std::wstring strMediaFileMask;
 
-						LONG _end_rec1 = pReader->GetPos() + pReader->GetLong() + 4;
+						LONG _end_rec1 = pReader->GetPos() + pReader->GetRecordSize() + 4;
 						pReader->Skip(1); // start attributes
 						while (true)
 						{
@@ -1387,7 +1384,8 @@ namespace PPTX
 			{
 				std::wstring strPenAttr = _T("");
 				nullable<ShapeStyle> pShapeStyle;
-				CalculateLine(spPr, pShapeStyle, oTheme, oClrMap, strPenAttr, strNodeVal, bOle);
+				
+				CalculateLine(pWriter->m_lDocType, spPr, pShapeStyle, oTheme, oClrMap, strPenAttr, strNodeVal, bOle);
 				pWriter->WriteString(strPenAttr);
 			}
 

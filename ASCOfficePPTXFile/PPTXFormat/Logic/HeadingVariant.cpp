@@ -59,7 +59,7 @@ namespace PPTX
 		}
 		void CVariantVStream::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
-			LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 			pReader->Skip(1); // start attributes
 			while (true)
 			{
@@ -212,7 +212,7 @@ namespace PPTX
 		}
 		void CVariant::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
-			LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 			pReader->Skip(1); // start attributes
 			while (true)
 			{
@@ -455,7 +455,7 @@ namespace PPTX
 		}
 		void CVariantVector::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
-			LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 			pReader->Skip(1); // start attributes
 			while (true)
 			{
@@ -552,7 +552,7 @@ namespace PPTX
 		}
 		void CVariantArray::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
-			LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 			pReader->Skip(1); // start attributes
 			while (true)
 			{
@@ -651,7 +651,7 @@ namespace PPTX
 		}
 		void CustomProperty::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
-			LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 			pReader->Skip(1); // start attributes
 			while (true)
 			{
@@ -778,7 +778,7 @@ namespace PPTX
 	void CustomProperties::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
 		pReader->Skip(1); // type
-		LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+		LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 		pReader->Skip(1); // start attributes
 

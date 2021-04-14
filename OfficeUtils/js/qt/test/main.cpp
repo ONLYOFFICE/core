@@ -15,22 +15,31 @@ int main()
 
     Zlib* zlib = Zlib_Load(pData, nBytesCount);
 
-    int nPaths = Zlib_GetNumberPaths(zlib);
-    std::string* arrPaths = Zlib_GetPaths(zlib);
-    for (int i = 0; i < nPaths; i++)
-    {
-        int nSizeFile = Zlib_GetSizeFileByPath(zlib, arrPaths + i);
-        unsigned char* res = Zlib_GetLastFileByPath(zlib);
+    BYTE* sPaths = Zlib_GetPaths(zlib);
+    unsigned int nLength = sPaths[0] | sPaths[1] << 8 | sPaths[2] << 16 | sPaths[3] << 24;
+    unsigned int i = 4;
+    nLength -= 4;
 
-        if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L'/' + NSFile::GetFileName(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(arrPaths[i], 1))))
+    while (i < nLength)
+    {
+        unsigned int nPathLength = (sPaths + i)[0] | (sPaths + i)[1] << 8 | (sPaths + i)[2] << 16 | (sPaths + i)[3] << 24;
+        i += 4;
+        std::string sPath((const char*)(sPaths + i), nPathLength);
+        i += nPathLength;
+        BYTE* sFile = Zlib_GetFileByPath(zlib, sPath.c_str());
+
+        if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L'/' + NSFile::GetFileName(UTF8_TO_U(sPath))))
         {
-            if (res)
-                oFile.WriteFile(res, nSizeFile);
+            if (sFile)
+            {
+                unsigned int nFileLength = (sFile + 4)[0] | (sFile + 4)[1] << 8 | (sFile + 4)[2] << 16 | (sFile + 4)[3] << 24;
+                oFile.WriteFile(sFile + 8, nFileLength);
+            }
             oFile.CloseFile();
         }
     }
 
-    Zlib_Destroy(zlib);
     delete[] pData;
+    Zlib_Destroy(zlib);
     return 0;
 }

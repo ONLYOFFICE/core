@@ -15,23 +15,11 @@
 #include "../../../src/zlib-1.2.11/contrib/minizip/unzip.h"
 #include "../../../src/ZipUtilsCP.h"
 #include "ioapibuf.h"
+class Zlib;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-struct Zlib
-{
-    unsigned char* buffer;
-    unsigned long  size;
-
-    std::string* paths;
-    int pathsSize;
-
-    bool fileIsIn;
-    BYTE** file;
-    ULONG fileSize;
-};
 
 ZLIB_DECL_EXPORT void* Zlib_Malloc(unsigned int size);
 ZLIB_DECL_EXPORT void  Zlib_Free(void* p);
@@ -40,10 +28,8 @@ ZLIB_DECL_EXPORT Zlib* Zlib_Create();
 ZLIB_DECL_EXPORT Zlib* Zlib_Load(unsigned char* buffer, unsigned long size);
 ZLIB_DECL_EXPORT void  Zlib_Destroy(Zlib* p);
 
-ZLIB_DECL_EXPORT int Zlib_GetNumberPaths(Zlib* p);
-ZLIB_DECL_EXPORT std::string* Zlib_GetPaths(Zlib* p);
-ZLIB_DECL_EXPORT int Zlib_GetSizeFileByPath(Zlib* p, std::string* path);
-ZLIB_DECL_EXPORT unsigned char* Zlib_GetLastFileByPath(Zlib* p);
+ZLIB_DECL_EXPORT unsigned char* Zlib_GetPaths(Zlib* p);
+ZLIB_DECL_EXPORT unsigned char* Zlib_GetFileByPath(Zlib* p, const char* path);
 
 #ifdef __cplusplus
 }

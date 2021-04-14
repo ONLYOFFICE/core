@@ -23,4 +23,5 @@ SOURCES += ../wasm/src/base.cpp \
     ../wasm/src/ioapibuf.c
 
 HEADERS += ../wasm/src/base.h \
-    ../wasm/src/ioapibuf.h
+    ../wasm/src/ioapibuf.h \
+    ../wasm/src/engine.h

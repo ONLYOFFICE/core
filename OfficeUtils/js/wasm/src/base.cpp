@@ -1,4 +1,5 @@
 #include "base.h"
+#include "engine.h"
 
 #include <algorithm> // для std::min в get_file_in_archive
 #include <vector>
@@ -89,79 +90,63 @@ Zlib* Zlib_Create()
 }
 Zlib* Zlib_Load(unsigned char* buffer, unsigned long size)
 {
-    Zlib* oRes = new Zlib;
-    oRes->file  = NULL;
-    oRes->paths = NULL;
-    oRes->fileIsIn = false;
-    oRes->fileSize  = -1;
-    oRes->pathsSize = -1;
-    oRes->buffer = buffer;
-    oRes->size   = size;
-    return oRes;
+    return new Zlib(buffer, size);
 }
 void  Zlib_Destroy(Zlib* p)
 {
     if (p)
     {
-        if (p->file) delete[] p->file;
-        if (p->paths) delete[] p->paths;
         delete p;
     }
 }
 
-int Zlib_GetNumberPaths(Zlib* p)
+unsigned char* Zlib_GetPaths(Zlib* p)
 {
-    if (p && p->buffer)
+    if (p && p->isInit())
     {
         BUFFER_IO* buf = new BUFFER_IO;
         buf->buffer = p->buffer;
         buf->nSize  = p->size;
         unzFile uf = unzOpenHelp(buf);
-        std::vector<std::string> res;
+
+        p->m_oPaths.ClearNoAttack();
+        p->m_oPaths.SkipLen();
         do
         {
             unz_file_info file_info;
             unzGetCurrentFileInfo(uf, &file_info, NULL, 0, NULL, 0, NULL, 0);
             if (file_info.uncompressed_size != 0)
-                res.push_back(get_filename_from_unzfile(uf));
+            {
+                std::string sPath = get_filename_from_unzfile(uf);
+                p->m_oPaths.WriteString(sPath.c_str(), sPath.length());
+            }
         } while (UNZ_OK == unzGoToNextFile(uf));
-        p->pathsSize = res.size();
-        if (p->pathsSize > 0)
-        {
-            p->paths = new std::string[p->pathsSize];
-            for (int i = 0; i < p->pathsSize; i++)
-                p->paths[i] = res[i];
-        }
-        unzClose(uf);
-        if (buf) delete buf;
-        return p->pathsSize;
+        p->m_oPaths.WriteLen();
+        return p->m_oPaths.GetBuffer();
     }
-    return -1;
-}
-std::string* Zlib_GetPaths(Zlib* p)
-{
-    if (p && p->paths) return p->paths;
     return NULL;
 }
-int Zlib_GetSizeFileByPath(Zlib* p, std::string* path)
+unsigned char* Zlib_GetFileByPath(Zlib* p, const char* path)
 {
-    if (p && p->buffer)
+    if (p && p->isInit())
     {
         BUFFER_IO* buf = new BUFFER_IO;
         buf->buffer = p->buffer;
         buf->nSize  = p->size;
         unzFile uf = unzOpenHelp(buf);
-        if (p->file) delete p->file;
-        p->file = new BYTE*;
-        p->fileSize = 0;
-        p->fileIsIn = get_file_in_archive(uf, path->c_str(), p->file, p->fileSize);
+
+        unsigned char* file = new BYTE;
+        unsigned long  nFileSize = 0;
+        bool fileIsIn = get_file_in_archive(uf, path, &file, nFileSize);
+
         unzClose(uf);
-        if (p->fileIsIn) return p->fileSize;
+        if (fileIsIn)
+        {
+            p->m_oFile.Clear();
+            p->m_oFile.SkipLen();
+            p->m_oFile.WriteString(file, nFileSize);
+            return p->m_oFile.GetBuffer();
+        }
     }
-    return -1;
-}
-unsigned char* Zlib_GetLastFileByPath(Zlib* p)
-{
-    if (p && p->fileIsIn && p->file) return *p->file;
     return NULL;
 }

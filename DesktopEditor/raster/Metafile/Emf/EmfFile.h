@@ -32,15 +32,12 @@
 #ifndef _METAFILE_EMF_EMFFILE_H
 #define _METAFILE_EMF_EMFFILE_H
 
+#include "../../../xml/include/xmlutils.h"
 #include "../Common/MetaFile.h"
 
 #include "EmfTypes.h"
 #include "EmfPlayer.h"
 #include "EmfPath.h"
-
-#ifdef _DEBUG
-    #include "../../../xml/include/xmlutils.h"
-#endif
 
 #if defined(DrawText)
 #undef DrawText
@@ -61,6 +58,13 @@ namespace MetaFile
 		~CEmfFile()
 		{
 			ClearFile();
+			if (NULL != m_pOutputXml)
+				delete m_pOutputXml;
+		}
+
+		void CreateOutputXml()
+		{
+			m_pOutputXml = new XmlUtils::CXmlWriter;
 		}
 
 		TEmfRectL* GetBounds()
@@ -340,10 +344,7 @@ namespace MetaFile
 		friend class CEmfPlayer;
 		friend class CEmfClip;
 
-		#ifdef _DEBUG
-			XmlUtils::CXmlWriter oXmlWriter;
-		#endif
-
+		XmlUtils::CXmlWriter *m_pOutputXml;
 	};
 }
 

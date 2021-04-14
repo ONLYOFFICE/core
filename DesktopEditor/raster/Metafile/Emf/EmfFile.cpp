@@ -37,29 +37,8 @@
 
 #ifdef _DEBUG
     #include <iostream>
-    #include "../../../xml/include/xmlutils.h"
     #include  <algorithm>
     #include <cstdlib>
-
-    std::wstring StringNormalization(std::wstring wsString)
-    {
-        std::wstring wsText;
-        for (wchar_t wChar : wsString)
-            if (wChar == L'<')
-                   wsText += L"&lt;";
-            else if (wChar == L'>')
-                   wsText += L"&gt;";
-            else if (wChar == L'&')
-                   wsText += L"&amp;";
-            else if (wChar == L'\'')
-                   wsText += L"&apos;";
-            else if (wChar == L'"')
-                   wsText += L"&quot;";
-            else if (wChar == 0x00)
-                return wsText;
-            else wsText += wChar;
-        return wsText;
-    }
 #endif
 
 #if defined(DrawText)
@@ -68,6 +47,26 @@
 
 namespace MetaFile
 {
+        std::wstring StringNormalization(std::wstring wsString)
+        {
+            std::wstring wsText;
+            for (wchar_t wChar : wsString)
+                if (wChar == L'<')
+                       wsText += L"&lt;";
+                else if (wChar == L'>')
+                       wsText += L"&gt;";
+                else if (wChar == L'&')
+                       wsText += L"&amp;";
+                else if (wChar == L'\'')
+                       wsText += L"&apos;";
+                else if (wChar == L'"')
+                       wsText += L"&quot;";
+                else if (wChar == 0x00)
+                    return wsText;
+                else wsText += wChar;
+            return wsText;
+        }
+
 static const struct ActionNamesEmf
 {
     int     actionNumber;
@@ -214,14 +213,15 @@ static const struct ActionNamesEmf
 		if (m_pOutput)
 		{
 			m_pOutput->Begin();
-			#ifdef _DEBUG
-				oXmlWriter.WriteString(L"<?xml version=\"1.0\"?>\n");
-				oXmlWriter.WriteNodeBegin(L"EMF");
-			#endif
+			if (NULL != m_pOutputXml)
+			{
+				m_pOutputXml->WriteString(L"<?xml version=\"1.0\"?>\n");
+				m_pOutputXml->WriteNodeBegin(L"EMF");
+			}
 		}
 
 		do
-		{
+		{			
             if (m_oStream.IsEof())
                 break;
             if (m_oStream.CanRead() < 8)
@@ -399,10 +399,11 @@ static const struct ActionNamesEmf
 		{
 			m_pOutput->End();
 
-			#ifdef _DEBUG
-				oXmlWriter.WriteNodeEnd(L"EMF");
-				oXmlWriter.SaveToFile(NSFile::GetProcessDirectory() + L"/tests.xml");
-			#endif
+			if (NULL != m_pOutputXml)
+			{
+				m_pOutputXml->WriteNodeEnd(L"EMF");
+				m_pOutputXml->SaveToFile(NSFile::GetProcessDirectory() + L"/tests.xml");
+			}
 		}
 	}
 	void CEmfFile::TranslatePoint(TEmfPointL& oPoint, double& dX, double& dY)
@@ -653,12 +654,10 @@ static const struct ActionNamesEmf
 
 		std::wstring wsText = NSStringExt::CConverter::GetUnicodeFromSingleByteString((unsigned char*)oText.OutputString, oText.Chars, eCharSet);
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-					oXmlWriter.WriteNode(L"Text", StringNormalization(wsText));
-			}
-		#endif
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+				m_pOutputXml->WriteNode(L"Text", StringNormalization(wsText));
+		}
 
 		int* pDx = NULL;
 		if (oText.OutputDx)
@@ -689,12 +688,10 @@ static const struct ActionNamesEmf
 
 		std::wstring wsText = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)oText.OutputString, oText.Chars);
 
-                #ifdef _DEBUG
-                        if (m_pOutput)
-                        {
-                                        oXmlWriter.WriteNode(L"Text", StringNormalization(wsText));
-                        }
-                #endif
+                if (m_pOutput && NULL != m_pOutputXml)
+                {
+                                m_pOutputXml->WriteNode(L"Text", StringNormalization(wsText));
+                }
 
 		unsigned int unLen = 0;
 		int* pDx = NULL;
@@ -775,53 +772,51 @@ static const struct ActionNamesEmf
 		m_oStream >> m_oHeader.oDevice;
 		m_oStream >> m_oHeader.oMillimeters;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_HEADER", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_HEADER);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_HEADER", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_HEADER", true);
+				m_pOutputXml->WriteAttribute(L"Id",	EMR_HEADER);
+				m_pOutputXml->WriteAttribute(L"Size",	m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_HEADER", true, false);
 
-					oXmlWriter.WriteNodeBegin(L"Bounds");
-						oXmlWriter.WriteNode(L"Left",	m_oHeader.oBounds.lLeft);
-						oXmlWriter.WriteNode(L"Top",	m_oHeader.oBounds.lTop);
-						oXmlWriter.WriteNode(L"Right",	m_oHeader.oBounds.lRight);
-						oXmlWriter.WriteNode(L"Bottom", m_oHeader.oBounds.lBottom);
-						oXmlWriter.WriteNodeEnd(L"Bounds");
+				m_pOutputXml->WriteNodeBegin(L"Bounds");
+					m_pOutputXml->WriteNode(L"Left",	m_oHeader.oBounds.lLeft);
+					m_pOutputXml->WriteNode(L"Top",		m_oHeader.oBounds.lTop);
+					m_pOutputXml->WriteNode(L"Right",	m_oHeader.oBounds.lRight);
+					m_pOutputXml->WriteNode(L"Bottom",	m_oHeader.oBounds.lBottom);
+					m_pOutputXml->WriteNodeEnd(L"Bounds");
 
-					oXmlWriter.WriteNodeBegin(L"Frame");
-						oXmlWriter.WriteNode(L"Left",	m_oHeader.oFrame.lLeft);
-						oXmlWriter.WriteNode(L"Top",	m_oHeader.oFrame.lTop);
-						oXmlWriter.WriteNode(L"Right",	m_oHeader.oFrame.lRight);
-						oXmlWriter.WriteNode(L"Bottom", m_oHeader.oFrame.lBottom);
-						oXmlWriter.WriteNodeEnd(L"Frame");
+				m_pOutputXml->WriteNodeBegin(L"Frame");
+					m_pOutputXml->WriteNode(L"Left",	m_oHeader.oFrame.lLeft);
+					m_pOutputXml->WriteNode(L"Top",		m_oHeader.oFrame.lTop);
+					m_pOutputXml->WriteNode(L"Right",	m_oHeader.oFrame.lRight);
+					m_pOutputXml->WriteNode(L"Bottom",	m_oHeader.oFrame.lBottom);
+					m_pOutputXml->WriteNodeEnd(L"Frame");
 
-					oXmlWriter.WriteNode(L"Signature",	    (int)m_oHeader.ulSignature);
-					oXmlWriter.WriteNode(L"Version",	    (int)m_oHeader.ulVersion);
-					oXmlWriter.WriteNode(L"Size",		    (int)m_oHeader.ulSize);
-					oXmlWriter.WriteNode(L"Records",	    (int)m_oHeader.ulRecords);
-					oXmlWriter.WriteNode(L"CountObjects",	    (int)m_oHeader.ushObjects);
-					oXmlWriter.WriteNode(L"Reserved",	    (int)m_oHeader.ushReserved);
-					oXmlWriter.WriteNode(L"SizeDescription",    (int)m_oHeader.ulSizeDescription);
-					oXmlWriter.WriteNode(L"OffsetDescription",  (int)m_oHeader.ulOffsetDescription);
-					oXmlWriter.WriteNode(L"PalletEntries",	    (int)m_oHeader.ulPalEntries);
+				m_pOutputXml->WriteNode(L"Signature",		m_oHeader.ulSignature);
+				m_pOutputXml->WriteNode(L"Version",		m_oHeader.ulVersion);
+				m_pOutputXml->WriteNode(L"Size",		m_oHeader.ulSize);
+				m_pOutputXml->WriteNode(L"Records",		m_oHeader.ulRecords);
+				m_pOutputXml->WriteNode(L"CountObjects",	m_oHeader.ushObjects);
+				m_pOutputXml->WriteNode(L"Reserved",		m_oHeader.ushReserved);
+				m_pOutputXml->WriteNode(L"SizeDescription",	m_oHeader.ulSizeDescription);
+				m_pOutputXml->WriteNode(L"OffsetDescription",	m_oHeader.ulOffsetDescription);
+				m_pOutputXml->WriteNode(L"PalletEntries",	m_oHeader.ulPalEntries);
 
-					oXmlWriter.WriteNodeBegin(L"Frame");
-						oXmlWriter.WriteNode(L"X", (int)m_oHeader.oDevice.cx);
-						oXmlWriter.WriteNode(L"Y", (int)m_oHeader.oDevice.cy);
-						oXmlWriter.WriteNodeEnd(L"Frame");
+				m_pOutputXml->WriteNodeBegin(L"Frame");
+					m_pOutputXml->WriteNode(L"X", m_oHeader.oDevice.cx);
+					m_pOutputXml->WriteNode(L"Y", m_oHeader.oDevice.cy);
+					m_pOutputXml->WriteNodeEnd(L"Frame");
 
-					oXmlWriter.WriteNodeBegin(L"Millimeters");
-						oXmlWriter.WriteNode(L"X", (int)m_oHeader.oMillimeters.cx);
-						oXmlWriter.WriteNode(L"Y", (int)m_oHeader.oMillimeters.cy);
-						oXmlWriter.WriteNodeEnd(L"Millimeters");
+				m_pOutputXml->WriteNodeBegin(L"Millimeters");
+					m_pOutputXml->WriteNode(L"X", m_oHeader.oMillimeters.cx);
+					m_pOutputXml->WriteNode(L"Y", m_oHeader.oMillimeters.cy);
+					m_pOutputXml->WriteNodeEnd(L"Millimeters");
 
-					//TODO: не хватает сохранения остальных записей, которые не используются
+				//TODO: не хватает сохранения остальных записей, которые не используются
 
-					oXmlWriter.WriteNodeEnd(L"EMR_HEADER");
-			}
-		#endif
+				m_pOutputXml->WriteNodeEnd(L"EMR_HEADER");
+		}
 
 		if (ENHMETA_SIGNATURE != m_oHeader.ulSignature || 0x00010000 != m_oHeader.ulVersion)
 			return SetError();
@@ -856,66 +851,64 @@ static const struct ActionNamesEmf
 		TEmfAlphaBlend oBitmap;
 		m_oStream >> oBitmap;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_ALPHABLEND", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_ALPHABLEND);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_ALPHABLEND", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_ALPHABLEND", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_ALPHABLEND);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_ALPHABLEND", true, false);
 
-					oXmlWriter.WriteNodeBegin(L"Bounds");
-						oXmlWriter.WriteNode(L"Left",	oBitmap.Bounds.lLeft);
-						oXmlWriter.WriteNode(L"Top",	oBitmap.Bounds.lTop);
-						oXmlWriter.WriteNode(L"Right",	oBitmap.Bounds.lRight);
-						oXmlWriter.WriteNode(L"Bottom", oBitmap.Bounds.lBottom);
-						oXmlWriter.WriteNodeEnd(L"Bounds");
+				m_pOutputXml->WriteNodeBegin(L"Bounds");
+					m_pOutputXml->WriteNode(L"Left",    oBitmap.Bounds.lLeft);
+					m_pOutputXml->WriteNode(L"Top",	    oBitmap.Bounds.lTop);
+					m_pOutputXml->WriteNode(L"Right",   oBitmap.Bounds.lRight);
+					m_pOutputXml->WriteNode(L"Bottom",  oBitmap.Bounds.lBottom);
+					m_pOutputXml->WriteNodeEnd(L"Bounds");
 
-					oXmlWriter.WriteNode(L"xDest",	oBitmap.xDest);
-					oXmlWriter.WriteNode(L"yDest",	oBitmap.yDest);
-					oXmlWriter.WriteNode(L"cxDest", oBitmap.cxDest);
-					oXmlWriter.WriteNode(L"cyDest", oBitmap.cyDest);
+				m_pOutputXml->WriteNode(L"xDest",   oBitmap.xDest);
+				m_pOutputXml->WriteNode(L"yDest",   oBitmap.yDest);
+				m_pOutputXml->WriteNode(L"cxDest",  oBitmap.cxDest);
+				m_pOutputXml->WriteNode(L"cyDest",  oBitmap.cyDest);
 
-					oXmlWriter.WriteNodeBegin(L"BLENDFUNCTION");
-						oXmlWriter.WriteNode(L"BlendOperation",	    oBitmap.BlendOperation);
-						oXmlWriter.WriteNode(L"BlendFlags",	    oBitmap.BlendFlags);
-						oXmlWriter.WriteNode(L"SrcConstantAlpha",   oBitmap.SrcConstantAlpha);
-						oXmlWriter.WriteNode(L"AlphaFormat",	    oBitmap.AlphaFormat);
-						oXmlWriter.WriteNodeEnd(L"BLENDFUNCTION");
+				m_pOutputXml->WriteNodeBegin(L"BLENDFUNCTION");
+//					m_pOutputXml->WriteNode(L"BlendOperation",  oBitmap.BlendOperation);
+//					m_pOutputXml->WriteNode(L"BlendFlags",	    oBitmap.BlendFlags);
+//					m_pOutputXml->WriteNode(L"SrcConstantAlpha",oBitmap.SrcConstantAlpha);
+//					m_pOutputXml->WriteNode(L"AlphaFormat",	    oBitmap.AlphaFormat);
+					m_pOutputXml->WriteNodeEnd(L"BLENDFUNCTION");
 
-					oXmlWriter.WriteNode(L"xSrc", oBitmap.xSrc);
-					oXmlWriter.WriteNode(L"ySrc", oBitmap.ySrc);
+				m_pOutputXml->WriteNode(L"xSrc", oBitmap.xSrc);
+				m_pOutputXml->WriteNode(L"ySrc", oBitmap.ySrc);
 
-					oXmlWriter.WriteNodeBegin(L"XformSrc");
-						oXmlWriter.WriteNode(L"M11",	oBitmap.XformSrc.M11);
-						oXmlWriter.WriteNode(L"M12",	oBitmap.XformSrc.M12);
-						oXmlWriter.WriteNode(L"M21",	oBitmap.XformSrc.M21);
-						oXmlWriter.WriteNode(L"M22",	oBitmap.XformSrc.M22);
-						oXmlWriter.WriteNode(L"Dx",	oBitmap.XformSrc.Dx);
-						oXmlWriter.WriteNode(L"Dy",	oBitmap.XformSrc.Dy);
-						oXmlWriter.WriteNodeEnd(L"XformSrc");
+				m_pOutputXml->WriteNodeBegin(L"XformSrc");
+					m_pOutputXml->WriteNode(L"M11",	oBitmap.XformSrc.M11);
+					m_pOutputXml->WriteNode(L"M12",	oBitmap.XformSrc.M12);
+					m_pOutputXml->WriteNode(L"M21",	oBitmap.XformSrc.M21);
+					m_pOutputXml->WriteNode(L"M22",	oBitmap.XformSrc.M22);
+					m_pOutputXml->WriteNode(L"Dx",	oBitmap.XformSrc.Dx);
+					m_pOutputXml->WriteNode(L"Dy",	oBitmap.XformSrc.Dy);
+					m_pOutputXml->WriteNodeEnd(L"XformSrc");
 
-					oXmlWriter.WriteNodeBegin(L"BkColorSrc");
-						oXmlWriter.WriteNode(L"Red",	    oBitmap.BkColor.r);
-						oXmlWriter.WriteNode(L"Green",	    oBitmap.BkColor.g);
-						oXmlWriter.WriteNode(L"Blue",	    oBitmap.BkColor.b);
-						oXmlWriter.WriteNode(L"Reserved",   oBitmap.BkColor.a);
-						oXmlWriter.WriteNodeEnd(L"BkColorSrc");
+				m_pOutputXml->WriteNodeBegin(L"BkColorSrc");
+					m_pOutputXml->WriteNode(L"Red",	    oBitmap.BkColor.r);
+					m_pOutputXml->WriteNode(L"Green",   oBitmap.BkColor.g);
+					m_pOutputXml->WriteNode(L"Blue",    oBitmap.BkColor.b);
+					m_pOutputXml->WriteNode(L"Reserved",oBitmap.BkColor.a);
+					m_pOutputXml->WriteNodeEnd(L"BkColorSrc");
 
-					oXmlWriter.WriteNode(L"UsageSrc",   (int)oBitmap.UsageSrc);
-					oXmlWriter.WriteNode(L"offBmiSrc",  (int)oBitmap.offBmiSrc);
-					oXmlWriter.WriteNode(L"cbBmiSrc",   (int)oBitmap.cbBmiSrc);
-					oXmlWriter.WriteNode(L"offBitsSrc", (int)oBitmap.offBitsSrc);
-					oXmlWriter.WriteNode(L"cbBitsSrc",  (int)oBitmap.cbBitsSrc);
-					oXmlWriter.WriteNode(L"cxSrc",	    oBitmap.cxSrc);
-					oXmlWriter.WriteNode(L"cySrc",	    oBitmap.cySrc);
+				m_pOutputXml->WriteNode(L"UsageSrc",	oBitmap.UsageSrc);
+				m_pOutputXml->WriteNode(L"offBmiSrc",	oBitmap.offBmiSrc);
+				m_pOutputXml->WriteNode(L"cbBmiSrc",	oBitmap.cbBmiSrc);
+				m_pOutputXml->WriteNode(L"offBitsSrc",	oBitmap.offBitsSrc);
+				m_pOutputXml->WriteNode(L"cbBitsSrc",	oBitmap.cbBitsSrc);
+				m_pOutputXml->WriteNode(L"cxSrc",	oBitmap.cxSrc);
+				m_pOutputXml->WriteNode(L"cySrc",	oBitmap.cySrc);
 
-					//TODO: не хватает записи переменной BitmapBuffer
+				//TODO: не хватает записи переменной BitmapBuffer
 
-					oXmlWriter.WriteNodeEnd(L"EMR_ALPHABLEND");
+				m_pOutputXml->WriteNodeEnd(L"EMR_ALPHABLEND");
 
-			}
-		#endif
+		}
 
 		BYTE* pBgraBuffer = NULL;
 		unsigned int unWidth, unHeight;
@@ -960,6 +953,40 @@ static const struct ActionNamesEmf
 	{
 		TEmfStretchDIBITS oBitmap;
 		m_oStream >> oBitmap;
+
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_STRETCHDIBITS", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_STRETCHDIBITS);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_STRETCHDIBITS", true, false);
+
+				m_pOutputXml->WriteNodeBegin(L"Bounds");
+					m_pOutputXml->WriteNode(L"Left",    oBitmap.Bounds.lLeft);
+					m_pOutputXml->WriteNode(L"Top",	    oBitmap.Bounds.lTop);
+					m_pOutputXml->WriteNode(L"Right",   oBitmap.Bounds.lRight);
+					m_pOutputXml->WriteNode(L"Bottom",  oBitmap.Bounds.lBottom);
+					m_pOutputXml->WriteNodeEnd(L"Bounds");
+
+				m_pOutputXml->WriteNode(L"xDest",		    oBitmap.xDest);
+				m_pOutputXml->WriteNode(L"yDest",		    oBitmap.yDest);
+				m_pOutputXml->WriteNode(L"xSrc",		    oBitmap.xSrc);
+				m_pOutputXml->WriteNode(L"ySrc",		    oBitmap.ySrc);
+				m_pOutputXml->WriteNode(L"cxSrc",		    oBitmap.cxSrc);
+				m_pOutputXml->WriteNode(L"cySrc",		    oBitmap.cySrc);
+				m_pOutputXml->WriteNode(L"cbBitsSrc",		    oBitmap.offBmiSrc);
+				m_pOutputXml->WriteNode(L"cbBmiSrc",		    oBitmap.cbBmiSrc);
+				m_pOutputXml->WriteNode(L"offBitsSrc",		    oBitmap.offBitsSrc);
+				m_pOutputXml->WriteNode(L"cbBitsSrc",		    oBitmap.cbBitsSrc);
+				m_pOutputXml->WriteNode(L"UsageSrc",		    oBitmap.UsageSrc);
+				m_pOutputXml->WriteNode(L"BitBltRasterOperation",   oBitmap.BitBltRasterOperation);
+				m_pOutputXml->WriteNode(L"cxDest",		    oBitmap.cxDest);
+				m_pOutputXml->WriteNode(L"cyDest",		    oBitmap.cyDest);
+
+				//TODO: не хватает записи переменной BitmapBuffer
+
+				m_pOutputXml->WriteNodeEnd(L"EMR_STRETCHDIBITS");
+		}
 
 		BYTE* pBgraBuffer = NULL;
 		unsigned int ulWidth, ulHeight;
@@ -1122,22 +1149,20 @@ static const struct ActionNamesEmf
 
 		m_oStream >> ulSizeLast;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_EOF", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_EOF);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_EOF", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_EOF", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_EOF);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_EOF", true, false);
 
-					oXmlWriter.WriteNode(L"nPalEntries",	(int)ulCount);
-					oXmlWriter.WriteNode(L"offPalEntries",	(int)ulOffset);
-					oXmlWriter.WriteNode(L"SizeLast",	(int)ulSizeLast);
+				m_pOutputXml->WriteNode(L"nPalEntries",	    ulCount);
+				m_pOutputXml->WriteNode(L"offPalEntries",   ulOffset);
+				m_pOutputXml->WriteNode(L"SizeLast",	    ulSizeLast);
 
-					oXmlWriter.WriteNodeEnd(L"EMR_EOF");
+				m_pOutputXml->WriteNodeEnd(L"EMR_EOF");
 
-			}
-		#endif
+		}
 
 	}
 	void CEmfFile::Read_EMR_UNKNOWN()
@@ -1149,36 +1174,32 @@ static const struct ActionNamesEmf
 	{
 		m_pDC = m_oPlayer.SaveDC();
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_SAVEDC", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_SAVEDC);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_SAVEDC", true, true);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_SAVEDC", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_SAVEDC);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_SAVEDC", true, true);
 
-			}
-		#endif
+		}
 	}
 	void CEmfFile::Read_EMR_RESTOREDC()
 	{
 		int lSavedDC;
 		m_oStream >> lSavedDC;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_RESTOREDC", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_EOF);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_RESTOREDC", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_RESTOREDC", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_EOF);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_RESTOREDC", true, false);
 
-					oXmlWriter.WriteNode(L"SavedDC", lSavedDC);
+				m_pOutputXml->WriteNode(L"SavedDC", lSavedDC);
 
-					oXmlWriter.WriteNodeEnd(L"EMR_RESTOREDC");
+				m_pOutputXml->WriteNodeEnd(L"EMR_RESTOREDC");
 
-			}
-		#endif
+		}
 
 		if (lSavedDC >= 0)
 		{
@@ -1201,29 +1222,27 @@ static const struct ActionNamesEmf
 		m_oStream >> oXForm;
 		m_oStream >> ulMode;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_MODIFYWORLDTRANSFORM", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_MODIFYWORLDTRANSFORM);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_MODIFYWORLDTRANSFORM", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_MODIFYWORLDTRANSFORM", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_MODIFYWORLDTRANSFORM);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_MODIFYWORLDTRANSFORM", true, false);
 
-					oXmlWriter.WriteNodeBegin(L"XForm");
-						oXmlWriter.WriteNode(L"M11", oXForm.M11);
-						oXmlWriter.WriteNode(L"M12", oXForm.M12);
-						oXmlWriter.WriteNode(L"M21", oXForm.M21);
-						oXmlWriter.WriteNode(L"M22", oXForm.M22);
-						oXmlWriter.WriteNode(L"Dx",  oXForm.Dx);
-						oXmlWriter.WriteNode(L"Dy",  oXForm.Dy);
-						oXmlWriter.WriteNodeEnd(L"XForm");
+				m_pOutputXml->WriteNodeBegin(L"XForm");
+					m_pOutputXml->WriteNode(L"M11", oXForm.M11);
+					m_pOutputXml->WriteNode(L"M12", oXForm.M12);
+					m_pOutputXml->WriteNode(L"M21", oXForm.M21);
+					m_pOutputXml->WriteNode(L"M22", oXForm.M22);
+					m_pOutputXml->WriteNode(L"Dx",  oXForm.Dx);
+					m_pOutputXml->WriteNode(L"Dy",  oXForm.Dy);
+					m_pOutputXml->WriteNodeEnd(L"XForm");
 
-					oXmlWriter.WriteNode(L"ModifyWorldTransformMode", (int)ulMode);
+				m_pOutputXml->WriteNode(L"ModifyWorldTransformMode", ulMode);
 
-					oXmlWriter.WriteNodeEnd(L"EMR_MODIFYWORLDTRANSFORM");
+				m_pOutputXml->WriteNodeEnd(L"EMR_MODIFYWORLDTRANSFORM");
 
-			}
-		#endif
+		}
 
 		m_pDC->MultiplyTransform(oXForm, ulMode);
 		UpdateOutputDC();
@@ -1234,27 +1253,25 @@ static const struct ActionNamesEmf
 
 		m_oStream >> oXForm;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_SETWORLDTRANSFORM", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_SETWORLDTRANSFORM);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_SETWORLDTRANSFORM", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_SETWORLDTRANSFORM", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_SETWORLDTRANSFORM);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETWORLDTRANSFORM", true, false);
 
-					oXmlWriter.WriteNodeBegin(L"XForm");
-						oXmlWriter.WriteNode(L"M11", oXForm.M11);
-						oXmlWriter.WriteNode(L"M12", oXForm.M12);
-						oXmlWriter.WriteNode(L"M21", oXForm.M21);
-						oXmlWriter.WriteNode(L"M22", oXForm.M22);
-						oXmlWriter.WriteNode(L"Dx",  oXForm.Dx);
-						oXmlWriter.WriteNode(L"Dy",  oXForm.Dy);
-						oXmlWriter.WriteNodeEnd(L"XForm");
+				m_pOutputXml->WriteNodeBegin(L"XForm");
+					m_pOutputXml->WriteNode(L"M11", oXForm.M11);
+					m_pOutputXml->WriteNode(L"M12", oXForm.M12);
+					m_pOutputXml->WriteNode(L"M21", oXForm.M21);
+					m_pOutputXml->WriteNode(L"M22", oXForm.M22);
+					m_pOutputXml->WriteNode(L"Dx",  oXForm.Dx);
+					m_pOutputXml->WriteNode(L"Dy",  oXForm.Dy);
+					m_pOutputXml->WriteNodeEnd(L"XForm");
 
-					oXmlWriter.WriteNodeEnd(L"EMR_SETWORLDTRANSFORM");
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETWORLDTRANSFORM");
 
-			}
-		#endif
+		}
 
 		m_pDC->MultiplyTransform(oXForm, MWT_SET);
 		UpdateOutputDC();
@@ -1269,31 +1286,29 @@ static const struct ActionNamesEmf
 		m_oStream >> ulBrushIndex;
 		m_oStream >> *pBrush;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_CREATEBRUSHINDIRECT", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_CREATEBRUSHINDIRECT);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_CREATEBRUSHINDIRECT", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_CREATEBRUSHINDIRECT", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_CREATEBRUSHINDIRECT);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_CREATEBRUSHINDIRECT", true, false);
 
-					oXmlWriter.WriteNode(L"ihBrush", (int)ulBrushIndex);
-					oXmlWriter.WriteNodeBegin(L"LogBrush");
-						oXmlWriter.WriteNode(L"BrushStyle", (int)pBrush->BrushStyle);
-						oXmlWriter.WriteNodeBegin(L"Color");
-							oXmlWriter.WriteNode(L"Red",	    pBrush->Color.r);
-							oXmlWriter.WriteNode(L"Green",	    pBrush->Color.g);
-							oXmlWriter.WriteNode(L"Blue",	    pBrush->Color.b);
-							oXmlWriter.WriteNode(L"Reserved",   pBrush->Color.a);
-							oXmlWriter.WriteNodeEnd(L"Color");
-						oXmlWriter.WriteNode(L"BrushHatch", (int)pBrush->BrushHatch);
+				m_pOutputXml->WriteNode(L"ihBrush", ulBrushIndex);
+				m_pOutputXml->WriteNodeBegin(L"LogBrush");
+					m_pOutputXml->WriteNode(L"BrushStyle", pBrush->BrushStyle);
+					m_pOutputXml->WriteNodeBegin(L"Color");
+						m_pOutputXml->WriteNode(L"Red",	    pBrush->Color.r);
+						m_pOutputXml->WriteNode(L"Green",   pBrush->Color.g);
+						m_pOutputXml->WriteNode(L"Blue",    pBrush->Color.b);
+						m_pOutputXml->WriteNode(L"Reserved",pBrush->Color.a);
+						m_pOutputXml->WriteNodeEnd(L"Color");
+					m_pOutputXml->WriteNode(L"BrushHatch", pBrush->BrushHatch);
 
-						oXmlWriter.WriteNodeEnd(L"LogBrush");
+					m_pOutputXml->WriteNodeEnd(L"LogBrush");
 
-					oXmlWriter.WriteNodeEnd(L"EMR_CREATEBRUSHINDIRECT");
+				m_pOutputXml->WriteNodeEnd(L"EMR_CREATEBRUSHINDIRECT");
 
-			}
-		#endif
+		}
 
 		m_oPlayer.RegisterObject(ulBrushIndex, (CEmfObjectBase*)pBrush);
 	}
@@ -1302,25 +1317,23 @@ static const struct ActionNamesEmf
 		TEmfColor oColor;
 		m_oStream >> oColor;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_SETTEXTCOLOR", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_SETTEXTCOLOR);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_SETTEXTCOLOR", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_SETTEXTCOLOR", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_SETTEXTCOLOR);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETTEXTCOLOR", true, false);
 
-					oXmlWriter.WriteNodeBegin(L"Color");
-						oXmlWriter.WriteNode(L"Red",	    oColor.r);
-						oXmlWriter.WriteNode(L"Green",	    oColor.g);
-						oXmlWriter.WriteNode(L"Blue",	    oColor.b);
-						oXmlWriter.WriteNode(L"Reserved",   oColor.a);
-						oXmlWriter.WriteNodeEnd(L"Color");
+				m_pOutputXml->WriteNodeBegin(L"Color");
+					m_pOutputXml->WriteNode(L"Red",	    oColor.r);
+					m_pOutputXml->WriteNode(L"Green",   oColor.g);
+					m_pOutputXml->WriteNode(L"Blue",    oColor.b);
+					m_pOutputXml->WriteNode(L"Reserved",oColor.a);
+					m_pOutputXml->WriteNodeEnd(L"Color");
 
-					oXmlWriter.WriteNodeEnd(L"EMR_SETTEXTCOLOR");
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETTEXTCOLOR");
 
-			}
-		#endif
+		}
 
 		m_pDC->SetTextColor(oColor);
 		UpdateOutputDC();
@@ -1330,20 +1343,18 @@ static const struct ActionNamesEmf
 		unsigned int ulObjectIndex;
 		m_oStream >> ulObjectIndex;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_SELECTOBJECT", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_SELECTOBJECT);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_SELECTOBJECT", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_SELECTOBJECT", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_SELECTOBJECT);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_SELECTOBJECT", true, false);
 
-					oXmlWriter.WriteNode(L"Index", (int)ulObjectIndex);
+				m_pOutputXml->WriteNode(L"Index", ulObjectIndex);
 
-					oXmlWriter.WriteNodeEnd(L"EMR_SELECTOBJECT");
+				m_pOutputXml->WriteNodeEnd(L"EMR_SELECTOBJECT");
 
-			}
-		#endif
+		}
 
 		m_oPlayer.SelectObject(ulObjectIndex);
 		UpdateOutputDC();
@@ -1361,59 +1372,57 @@ static const struct ActionNamesEmf
 		m_oStream >> ulIndex;
 		m_oStream >> *pFont;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_EXTCREATEFONTINDIRECTW", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_EXTCREATEFONTINDIRECTW);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_EXTCREATEFONTINDIRECTW", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_EXTCREATEFONTINDIRECTW", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_EXTCREATEFONTINDIRECTW);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_EXTCREATEFONTINDIRECTW", true, false);
 
-					oXmlWriter.WriteNode(L"ihFonts", (int)ulIndex);
+				m_pOutputXml->WriteNode(L"ihFonts", ulIndex);
 
-					if (!pFont->IsFixedLength())
-					{
-						oXmlWriter.WriteNodeBegin(L"LogFontExDv");
-					}
+				if (!pFont->IsFixedLength())
+				{
+					m_pOutputXml->WriteNodeBegin(L"LogFontExDv");
+				}
 
-					oXmlWriter.WriteNodeBegin(L"LogFont");
-						oXmlWriter.WriteNode(L"Height",		pFont->LogFontEx.LogFont.Height);
-						oXmlWriter.WriteNode(L"Width",		pFont->LogFontEx.LogFont.Width);
-						oXmlWriter.WriteNode(L"Escapement",	pFont->LogFontEx.LogFont.Escapement);
-						oXmlWriter.WriteNode(L"Orientation",	pFont->LogFontEx.LogFont.Orientation);
-						oXmlWriter.WriteNode(L"Weight",		pFont->LogFontEx.LogFont.Weight);
-						oXmlWriter.WriteNode(L"Italic",		pFont->LogFontEx.LogFont.Italic);
-						oXmlWriter.WriteNode(L"Underline",	pFont->LogFontEx.LogFont.Underline);
-						oXmlWriter.WriteNode(L"StrikeOut",	pFont->LogFontEx.LogFont.StrikeOut);
-						oXmlWriter.WriteNode(L"CharSet",	pFont->LogFontEx.LogFont.CharSet);
-						oXmlWriter.WriteNode(L"OutPrecision",	pFont->LogFontEx.LogFont.OutPrecision);
-						oXmlWriter.WriteNode(L"ClipPrecision",	pFont->LogFontEx.LogFont.ClipPrecision);
-						oXmlWriter.WriteNode(L"Quality",	pFont->LogFontEx.LogFont.Quality);
-						oXmlWriter.WriteNode(L"PitchAndFamily", pFont->LogFontEx.LogFont.PitchAndFamily);
-						oXmlWriter.WriteNode(L"FaceName",	StringNormalization(NSStringExt::CConverter::GetUnicodeFromUTF16(pFont->LogFontEx.LogFont.FaceName, 32)));
-						oXmlWriter.WriteNodeEnd(L"LogFont");
+				m_pOutputXml->WriteNodeBegin(L"LogFont");
+					m_pOutputXml->WriteNode(L"Height",	    pFont->LogFontEx.LogFont.Height);
+					m_pOutputXml->WriteNode(L"Width",	    pFont->LogFontEx.LogFont.Width);
+					m_pOutputXml->WriteNode(L"Escapement",	    pFont->LogFontEx.LogFont.Escapement);
+					m_pOutputXml->WriteNode(L"Orientation",	    pFont->LogFontEx.LogFont.Orientation);
+					m_pOutputXml->WriteNode(L"Weight",	    pFont->LogFontEx.LogFont.Weight);
+					m_pOutputXml->WriteNode(L"Italic",	    pFont->LogFontEx.LogFont.Italic);
+					m_pOutputXml->WriteNode(L"Underline",	    pFont->LogFontEx.LogFont.Underline);
+					m_pOutputXml->WriteNode(L"StrikeOut",	    pFont->LogFontEx.LogFont.StrikeOut);
+					m_pOutputXml->WriteNode(L"CharSet",	    pFont->LogFontEx.LogFont.CharSet);
+					m_pOutputXml->WriteNode(L"OutPrecision",    pFont->LogFontEx.LogFont.OutPrecision);
+					m_pOutputXml->WriteNode(L"ClipPrecision",   pFont->LogFontEx.LogFont.ClipPrecision);
+					m_pOutputXml->WriteNode(L"Quality",	    pFont->LogFontEx.LogFont.Quality);
+					m_pOutputXml->WriteNode(L"PitchAndFamily",  pFont->LogFontEx.LogFont.PitchAndFamily);
+					m_pOutputXml->WriteNode(L"FaceName",	    StringNormalization(NSStringExt::CConverter::GetUnicodeFromUTF16(pFont->LogFontEx.LogFont.FaceName, 32)));
+					m_pOutputXml->WriteNodeEnd(L"LogFont");
 
-					oXmlWriter.WriteNode(L"FullName",   StringNormalization(NSStringExt::CConverter::GetUnicodeFromUTF16(pFont->LogFontEx.FullName, 64)));
-					oXmlWriter.WriteNode(L"Style",	    StringNormalization(NSStringExt::CConverter::GetUnicodeFromUTF16(pFont->LogFontEx.Style,	32)));
-					oXmlWriter.WriteNode(L"Script",	    StringNormalization(NSStringExt::CConverter::GetUnicodeFromUTF16(pFont->LogFontEx.Script,	32)));
+				m_pOutputXml->WriteNode(L"FullName",   StringNormalization(NSStringExt::CConverter::GetUnicodeFromUTF16(pFont->LogFontEx.FullName, 64)));
+				m_pOutputXml->WriteNode(L"Style",	StringNormalization(NSStringExt::CConverter::GetUnicodeFromUTF16(pFont->LogFontEx.Style,	32)));
+				m_pOutputXml->WriteNode(L"Script",	StringNormalization(NSStringExt::CConverter::GetUnicodeFromUTF16(pFont->LogFontEx.Script,	32)));
 
-					if (!pFont->IsFixedLength())
-					{
-						oXmlWriter.WriteNodeBegin(L"DesignVector");
-							oXmlWriter.WriteNode(L"Signature",  (int)pFont->DesignVector.Signature);
-							oXmlWriter.WriteNode(L"NumAxes",    (int)pFont->DesignVector.NumAxes);
+				if (!pFont->IsFixedLength())
+				{
+					m_pOutputXml->WriteNodeBegin(L"DesignVector");
+						m_pOutputXml->WriteNode(L"Signature",  pFont->DesignVector.Signature);
+						m_pOutputXml->WriteNode(L"NumAxes",    pFont->DesignVector.NumAxes);
 
-							for (unsigned int i = 0; i < pFont->DesignVector.NumAxes; ++i)
-								oXmlWriter.WriteNode(L"NumAxes" + std::to_wstring(i + 1),    pFont->DesignVector.Values[i]);
+						for (unsigned int i = 0; i < pFont->DesignVector.NumAxes; ++i)
+							m_pOutputXml->WriteNode(L"NumAxes" + std::to_wstring(i + 1),    pFont->DesignVector.Values[i]);
 
-							oXmlWriter.WriteNodeEnd(L"DesignVector");
-							oXmlWriter.WriteNodeEnd(L"LogFontExDv");
-					}
+						m_pOutputXml->WriteNodeEnd(L"DesignVector");
+						m_pOutputXml->WriteNodeEnd(L"LogFontExDv");
+				}
 
-					oXmlWriter.WriteNodeEnd(L"EMR_EXTCREATEFONTINDIRECTW");
+				m_pOutputXml->WriteNodeEnd(L"EMR_EXTCREATEFONTINDIRECTW");
 
-			}
-		#endif
+		}
 
 		m_oPlayer.RegisterObject(ulIndex, (CEmfObjectBase*)pFont);
 	}
@@ -1422,20 +1431,17 @@ static const struct ActionNamesEmf
 		unsigned int ulAlign;
 		m_oStream >> ulAlign;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_SETTEXTALIGN", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_SETTEXTALIGN);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_SETTEXTALIGN", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_SETTEXTALIGN", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_SETTEXTALIGN);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETTEXTALIGN", true, false);
 
-					oXmlWriter.WriteNode(L"TextAlign", (int)ulAlign);
+				m_pOutputXml->WriteNode(L"TextAlign", ulAlign);
 
-					oXmlWriter.WriteNodeEnd(L"EMR_SETTEXTALIGN");
-
-			}
-		#endif
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETTEXTALIGN");
+		}
 
 		m_pDC->SetTextAlign(ulAlign);
 		UpdateOutputDC();
@@ -1445,20 +1451,18 @@ static const struct ActionNamesEmf
 		unsigned int ulBgMode;
 		m_oStream >> ulBgMode;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_SETBKMODE", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_SETBKMODE);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_SETBKMODE", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_SETBKMODE", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_SETBKMODE);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETBKMODE", true, false);
 
-					oXmlWriter.WriteNode(L"BgMode", (int)ulBgMode);
+				m_pOutputXml->WriteNode(L"BgMode", ulBgMode);
 
-					oXmlWriter.WriteNodeEnd(L"EMR_SETBKMODE");
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETBKMODE");
 
-			}
-		#endif
+		}
 
 		m_pDC->SetBgMode(ulBgMode);
 		UpdateOutputDC();
@@ -1468,20 +1472,18 @@ static const struct ActionNamesEmf
 		unsigned int ulIndex;
 		m_oStream >> ulIndex;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_DELETEOBJECT", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_DELETEOBJECT);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_DELETEOBJECT", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_DELETEOBJECT", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_DELETEOBJECT);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_DELETEOBJECT", true, false);
 
-					oXmlWriter.WriteNode(L"Index", (int)ulIndex);
+				m_pOutputXml->WriteNode(L"Index", ulIndex);
 
-					oXmlWriter.WriteNodeEnd(L"EMR_DELETEOBJECT");
+				m_pOutputXml->WriteNodeEnd(L"EMR_DELETEOBJECT");
 
-			}
-		#endif
+		}
 
 		m_oPlayer.DeleteObject(ulIndex);
 		UpdateOutputDC();
@@ -1491,20 +1493,18 @@ static const struct ActionNamesEmf
 		unsigned int ulMiterLimit;
 		m_oStream >> ulMiterLimit;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_SETMITERLIMIT", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_SETMITERLIMIT);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_SETMITERLIMIT", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_SETMITERLIMIT", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_SETMITERLIMIT);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETMITERLIMIT", true, false);
 
-					oXmlWriter.WriteNode(L"MiterLimit", (int)ulMiterLimit);
+				m_pOutputXml->WriteNode(L"MiterLimit", ulMiterLimit);
 
-					oXmlWriter.WriteNodeEnd(L"EMR_SETMITERLIMIT");
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETMITERLIMIT");
 
-			}
-		#endif
+		}
 
 		m_pDC->SetMiterLimit(ulMiterLimit);
 		UpdateOutputDC();
@@ -1519,23 +1519,21 @@ static const struct ActionNamesEmf
 		m_oStream.Skip(4); // offBits
 		m_oStream.Skip(4); // cbBits
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_EXTCREATEPEN", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_EXTCREATEPEN);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_EXTCREATEPEN", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_EXTCREATEPEN", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_EXTCREATEPEN);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_EXTCREATEPEN", true, false);
 
-					m_oStream.SeekBack(16);
+				m_oStream.SeekBack(16);
 
-					oXmlWriter.WriteNode(L"ihPen",	(int)ulPenIndex);
-					oXmlWriter.WriteNode(L"offBmi", (int)m_oStream.ReadULong());
-					oXmlWriter.WriteNode(L"cbBmi",	(int)m_oStream.ReadULong());
-					oXmlWriter.WriteNode(L"offBits",(int)m_oStream.ReadULong());
-					oXmlWriter.WriteNode(L"cbBits",	(int)m_oStream.ReadULong());
-			}
-		#endif
+				m_pOutputXml->WriteNode(L"ihPen",   ulPenIndex);
+				m_pOutputXml->WriteNode(L"offBmi",  m_oStream.ReadULong());
+				m_pOutputXml->WriteNode(L"cbBmi",   m_oStream.ReadULong());
+				m_pOutputXml->WriteNode(L"offBits", m_oStream.ReadULong());
+				m_pOutputXml->WriteNode(L"cbBits",  m_oStream.ReadULong());
+		}
 
 		unsigned int current_size = m_ulRecordSize - 20;
 
@@ -1547,42 +1545,42 @@ static const struct ActionNamesEmf
 		m_oStream >> pPen->PenStyle;
 		m_oStream >> pPen->Width;
 
-		#ifdef _DEBUG
-			unsigned int BrushStyle, BrushHatch;
-			m_oStream >> BrushStyle;
-		#else
-			m_oStream.Skip(4); // BrushStyle
-		#endif
+
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			unsigned int unBrushStyle;
+			m_oStream >> unBrushStyle;
+			m_pOutputXml->WriteNodeBegin(L"LogPenEx");
+				m_pOutputXml->WriteNode(L"PenStyle",	pPen->PenStyle);
+				m_pOutputXml->WriteNode(L"Width",	pPen->Width);
+				m_pOutputXml->WriteNode(L"BrushStyle",	unBrushStyle);
+		}
+		else
+		    m_oStream.Skip(4); // BrushStyle
 
 		m_oStream >> pPen->Color;
 
-		#ifdef _DEBUG
-			m_oStream >> BrushHatch;
-		#else
-			m_oStream.Skip(4); // BrushHatch
-		#endif
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			unsigned int unBrushHatch;
+			m_oStream >> unBrushHatch;
+
+				m_pOutputXml->WriteNodeBegin(L"ColorRef");
+					m_pOutputXml->WriteNode(L"Red",	    pPen->Color.r);
+					m_pOutputXml->WriteNode(L"Green",   pPen->Color.g);
+					m_pOutputXml->WriteNode(L"Blue",    pPen->Color.b);
+					m_pOutputXml->WriteNode(L"Reserved",pPen->Color.a);
+					m_pOutputXml->WriteNodeEnd(L"ColorRef");
+
+				m_pOutputXml->WriteNode(L"BrushHatch",	    unBrushHatch);
+		}
+		else
+		    m_oStream.Skip(4); // BrushHatch
 
 		m_oStream >> pPen->NumStyleEntries;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"LogPenEx");
-					oXmlWriter.WriteNode(L"PenStyle",	    (int)pPen->PenStyle);
-					oXmlWriter.WriteNode(L"Width",		    (int)pPen->Width);
-					oXmlWriter.WriteNode(L"BrushStyle",	    (int)BrushStyle);
-					oXmlWriter.WriteNodeBegin(L"ColorRef");
-						oXmlWriter.WriteNode(L"Red",	    pPen->Color.r);
-						oXmlWriter.WriteNode(L"Green",	    pPen->Color.g);
-						oXmlWriter.WriteNode(L"Blue",	    pPen->Color.b);
-						oXmlWriter.WriteNode(L"Reserved",   pPen->Color.a);
-						oXmlWriter.WriteNodeEnd(L"ColorRef");
-
-					oXmlWriter.WriteNode(L"BrushHatch",	    (int)BrushHatch);
-					oXmlWriter.WriteNode(L"NumStyleEntries",    (int)pPen->NumStyleEntries);
-
-			}
-		#endif
+		if (m_pOutput && NULL != m_pOutputXml)
+			m_pOutputXml->WriteNode(L"NumStyleEntries", pPen->NumStyleEntries);
 
 		current_size -= 24;
 		if (pPen->NumStyleEntries > 0)
@@ -1598,32 +1596,26 @@ static const struct ActionNamesEmf
 			for (unsigned int ulIndex = 0; ulIndex < pPen->NumStyleEntries; ulIndex++)
 			{
 				m_oStream >> pPen->StyleEntry[ulIndex];
-				#ifdef _DEBUG
-					if (m_pOutput)
-						oXmlWriter.WriteNode(L"StyleEntry" + std::to_wstring(ulIndex + 1),  (int)pPen->StyleEntry[ulIndex]);
-				#endif
+				if (m_pOutput && NULL != m_pOutputXml)
+					m_pOutputXml->WriteNode(L"StyleEntry" + std::to_wstring(ulIndex + 1),  pPen->StyleEntry[ulIndex]);
 			}
 		}
 		else
 		{
 			pPen->StyleEntry = NULL;
 		}
-		#ifdef _DEBUG
-			if (m_pOutput)
-					oXmlWriter.WriteNodeEnd(L"LogPenEx");
-		#endif
 
+		if (m_pOutput && NULL != m_pOutputXml)
+					m_pOutputXml->WriteNodeEnd(L"LogPenEx");
 
 		// Пропускаем часть с картинкой, если она была
 		m_oStream.Skip(current_size);
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
 				//TODO: не хватает сохранения
-				oXmlWriter.WriteNodeEnd(L"EMR_EXTCREATEPEN");
-			}
-		#endif
+				m_pOutputXml->WriteNodeEnd(L"EMR_EXTCREATEPEN");
+		}
 
 		m_oPlayer.RegisterObject(ulPenIndex, (CEmfObjectBase*)pPen);
 	}
@@ -1640,25 +1632,22 @@ static const struct ActionNamesEmf
 		unsigned int widthX, widthY;
 		m_oStream >> widthX >> widthY;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_CREATEPEN", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_CREATEPEN);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_CREATEPEN", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_CREATEPEN", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_CREATEPEN);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_CREATEPEN", true, false);
 
-					oXmlWriter.WriteNode(L"ihPen", (int)ulPenIndex);
-					oXmlWriter.WriteNodeBegin(L"LogPen");
-						oXmlWriter.WriteNode(L"PenStyle", (int)pPen->PenStyle);
-						oXmlWriter.WriteNodeBegin(L"Width");
-							oXmlWriter.WriteNode(L"X", (int)widthX);
-							oXmlWriter.WriteNode(L"Y", (int)widthY);
-							oXmlWriter.WriteNodeEnd(L"Width");
-						oXmlWriter.WriteNodeEnd(L"LogPen");
-
-			}
-		#endif
+				m_pOutputXml->WriteNode(L"ihPen", ulPenIndex);
+				m_pOutputXml->WriteNodeBegin(L"LogPen");
+					m_pOutputXml->WriteNode(L"PenStyle", pPen->PenStyle);
+					m_pOutputXml->WriteNodeBegin(L"Width");
+						m_pOutputXml->WriteNode(L"X", widthX);
+						m_pOutputXml->WriteNode(L"Y", widthY);
+						m_pOutputXml->WriteNodeEnd(L"Width");
+					m_pOutputXml->WriteNodeEnd(L"LogPen");
+		}
 
 		if (!widthX)	
 		{//emf from Bonetti Martínez. cálculo estructural de pilotes y pilas.xlsx
@@ -1668,21 +1657,19 @@ static const struct ActionNamesEmf
 
 		m_oStream >> pPen->Color;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
 
-					oXmlWriter.WriteNodeBegin(L"COLORREF");
-						oXmlWriter.WriteNode(L"Red",	    pPen->Color.r);
-						oXmlWriter.WriteNode(L"Green",	    pPen->Color.g);
-						oXmlWriter.WriteNode(L"Blue",	    pPen->Color.b);
-						oXmlWriter.WriteNode(L"Reserved",   pPen->Color.a);
-						oXmlWriter.WriteNodeEnd(L"COLORREF");
+				m_pOutputXml->WriteNodeBegin(L"COLORREF");
+					m_pOutputXml->WriteNode(L"Red",	    pPen->Color.r);
+					m_pOutputXml->WriteNode(L"Green",   pPen->Color.g);
+					m_pOutputXml->WriteNode(L"Blue",    pPen->Color.b);
+					m_pOutputXml->WriteNode(L"Reserved",pPen->Color.a);
+					m_pOutputXml->WriteNodeEnd(L"COLORREF");
 
-					oXmlWriter.WriteNodeEnd(L"EMR_CREATEPEN");
+				m_pOutputXml->WriteNodeEnd(L"EMR_CREATEPEN");
+		}
 
-			}
-		#endif
 		m_oPlayer.RegisterObject(ulPenIndex, (CEmfObjectBase*)pPen);
 	}
 	void CEmfFile::Read_EMR_SETPOLYFILLMODE()
@@ -1690,20 +1677,18 @@ static const struct ActionNamesEmf
 		unsigned int ulFillMode;
 		m_oStream >> ulFillMode;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_SETPOLYFILLMODE", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_SETPOLYFILLMODE);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_SETPOLYFILLMODE", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_SETPOLYFILLMODE", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_SETPOLYFILLMODE);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETPOLYFILLMODE", true, false);
 
-					oXmlWriter.WriteNode(L"PolygonFillMode", (int)ulFillMode);
+				m_pOutputXml->WriteNode(L"PolygonFillMode", ulFillMode);
 
-					oXmlWriter.WriteNodeEnd(L"EMR_SETPOLYFILLMODE");
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETPOLYFILLMODE");
 
-			}
-		#endif
+		}
 
 		m_pDC->SetFillMode(ulFillMode);
 		UpdateOutputDC();
@@ -1713,15 +1698,13 @@ static const struct ActionNamesEmf
 		if (m_pPath)
 			delete m_pPath;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_BEGINPATH", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_BEGINPATH);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_BEGINPATH", true, true);
-			}
-		#endif
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_BEGINPATH", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_BEGINPATH);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_BEGINPATH", true, true);
+		}
 
 		m_pPath = new CEmfPath();
 		if (!m_pPath)
@@ -1735,28 +1718,25 @@ static const struct ActionNamesEmf
 	}
 	void CEmfFile::Read_EMR_ENDPATH()
 	{
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_ENDPATH", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_ENDPATH);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_ENDPATH", true, true);
-			}
-		#endif
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_ENDPATH", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_ENDPATH);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_ENDPATH", true, true);
+		}
 		// Ничего не делаем
 	}
 	void CEmfFile::Read_EMR_CLOSEFIGURE()
 	{
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_CLOSEFIGURE", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_CLOSEFIGURE);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_CLOSEFIGURE", true, true);
-			}
-		#endif
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_CLOSEFIGURE", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_CLOSEFIGURE);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_CLOSEFIGURE", true, true);
+		}
+
 		if (m_pPath)
 		{
 			if (!m_pPath->Close())
@@ -1765,42 +1745,36 @@ static const struct ActionNamesEmf
 	}
 	void CEmfFile::Read_EMR_FLATTENPATH()
 	{
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_FLATTENPATH", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_FLATTENPATH);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_FLATTENPATH", true, true);
-			}
-		#endif
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_FLATTENPATH", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_FLATTENPATH);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_FLATTENPATH", true, true);
+		}
 		// Ничего не делаем
 	}
 	void CEmfFile::Read_EMR_WIDENPATH()
 	{
 		// TODO: реализовать
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_WIDENPATH", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_WIDENPATH);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_WIDENPATH", true, true);
-			}
-		#endif
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_WIDENPATH", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_WIDENPATH);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_WIDENPATH", true, true);
+		}
 	}
 	void CEmfFile::Read_EMR_ABORTPATH()
 	{
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_ABORTPATH", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_ABORTPATH);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_ABORTPATH", true, true);
-			}
-		#endif
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_ABORTPATH", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_ABORTPATH);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_ABORTPATH", true, true);
+		}
 
 		if (m_pPath)
 		{
@@ -1813,21 +1787,19 @@ static const struct ActionNamesEmf
 		TEmfPointL oPoint;
 		m_oStream >> oPoint;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_MOVETOEX", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_MOVETOEX);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_MOVETOEX", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_MOVETOEX", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_MOVETOEX);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_MOVETOEX", true, false);
 
-					oXmlWriter.WriteNode(L"X", oPoint.x);
-					oXmlWriter.WriteNode(L"Y", oPoint.y);
+				m_pOutputXml->WriteNode(L"X", oPoint.x);
+				m_pOutputXml->WriteNode(L"Y", oPoint.y);
 
-					oXmlWriter.WriteNodeEnd(L"EMR_MOVETOEX");
+				m_pOutputXml->WriteNodeEnd(L"EMR_MOVETOEX");
 
-			}
-		#endif
+		}
 
 		MoveTo(oPoint);
 	}	
@@ -1836,20 +1808,18 @@ static const struct ActionNamesEmf
 		unsigned int unDirection;
 		m_oStream >> unDirection;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_SETARCDIRECTION", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_SETARCDIRECTION);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_SETARCDIRECTION", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_SETARCDIRECTION", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_SETARCDIRECTION);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETARCDIRECTION", true, false);
 
-					oXmlWriter.WriteNode(L"arcDirection", (int)unDirection);
+				m_pOutputXml->WriteNode(L"arcDirection", unDirection);
 
-					oXmlWriter.WriteNodeEnd(L"EMR_SETARCDIRECTION");
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETARCDIRECTION");
 
-			}
-		#endif
+		}
 
 		m_pDC->SetArcDirection(unDirection);
 		// Здесь не обновляем DC у Output, т.к. этот параметр разруливается внутри данного класса.
@@ -1859,25 +1829,23 @@ static const struct ActionNamesEmf
 		TEmfRectL oBounds;
 		m_oStream >> oBounds;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_FILLPATH", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_FILLPATH);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_FILLPATH", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_FILLPATH", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_FILLPATH);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_FILLPATH", true, false);
 
-					oXmlWriter.WriteNodeBegin(L"Bounds");
-						oXmlWriter.WriteNode(L"Left",	oBounds.lLeft);
-						oXmlWriter.WriteNode(L"Top",	oBounds.lTop);
-						oXmlWriter.WriteNode(L"Right",	oBounds.lRight);
-						oXmlWriter.WriteNode(L"Bottom", oBounds.lBottom);
-						oXmlWriter.WriteNodeEnd(L"Bounds");
+				m_pOutputXml->WriteNodeBegin(L"Bounds");
+					m_pOutputXml->WriteNode(L"Left",    oBounds.lLeft);
+					m_pOutputXml->WriteNode(L"Top",	    oBounds.lTop);
+					m_pOutputXml->WriteNode(L"Right",   oBounds.lRight);
+					m_pOutputXml->WriteNode(L"Bottom",  oBounds.lBottom);
+					m_pOutputXml->WriteNodeEnd(L"Bounds");
 
-					oXmlWriter.WriteNodeEnd(L"EMR_FILLPATH");
+				m_pOutputXml->WriteNodeEnd(L"EMR_FILLPATH");
 
-			}
-		#endif
+		}
 
 		if (m_pPath)
 		{
@@ -1890,20 +1858,18 @@ static const struct ActionNamesEmf
 		unsigned int ulMapMode;
 		m_oStream >> ulMapMode;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_SETMAPMODE", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_SETMAPMODE);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_SETMAPMODE", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_SETMAPMODE", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_SETMAPMODE);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETMAPMODE", true, false);
 
-					oXmlWriter.WriteNode(L"MapMode", (int)ulMapMode);
+				m_pOutputXml->WriteNode(L"MapMode", ulMapMode);
 
-					oXmlWriter.WriteNodeEnd(L"EMR_SETMAPMODE");
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETMAPMODE");
 
-			}
-		#endif
+		}
 
 		m_pDC->SetMapMode(ulMapMode);
 	}
@@ -1912,23 +1878,21 @@ static const struct ActionNamesEmf
 		TEmfPointL oOrigin;
 		m_oStream >> oOrigin;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_SETWINDOWORGEX", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_SETWINDOWORGEX);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_SETWINDOWORGEX", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_SETWINDOWORGEX", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_SETWINDOWORGEX);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETWINDOWORGEX", true, false);
 
-					oXmlWriter.WriteNodeBegin(L"Origin");
-						oXmlWriter.WriteNode(L"X", (int)oOrigin.x);
-						oXmlWriter.WriteNode(L"Y", (int)oOrigin.y);
-						oXmlWriter.WriteNodeEnd(L"Origin");
+				m_pOutputXml->WriteNodeBegin(L"Origin");
+					m_pOutputXml->WriteNode(L"X", oOrigin.x);
+					m_pOutputXml->WriteNode(L"Y", oOrigin.y);
+					m_pOutputXml->WriteNodeEnd(L"Origin");
 
-					oXmlWriter.WriteNodeEnd(L"EMR_SETWINDOWORGEX");
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETWINDOWORGEX");
 
-			}
-		#endif
+		}
 
 		m_pDC->SetWindowOrigin(oOrigin);
 	}
@@ -1937,23 +1901,20 @@ static const struct ActionNamesEmf
 		TEmfSizeL oExtent;
 		m_oStream >> oExtent;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_SETWINDOWEXTEX", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_SETWINDOWEXTEX);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_SETWINDOWEXTEX", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_SETWINDOWEXTEX", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_SETWINDOWEXTEX);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETWINDOWEXTEX", true, false);
 
-					oXmlWriter.WriteNodeBegin(L"Extent");
-						oXmlWriter.WriteNode(L"cX", (int)oExtent.cx);
-						oXmlWriter.WriteNode(L"cY", (int)oExtent.cy);
-						oXmlWriter.WriteNodeEnd(L"Extent");
+				m_pOutputXml->WriteNodeBegin(L"Extent");
+					m_pOutputXml->WriteNode(L"cX", oExtent.cx);
+					m_pOutputXml->WriteNode(L"cY", oExtent.cy);
+					m_pOutputXml->WriteNodeEnd(L"Extent");
 
-					oXmlWriter.WriteNodeEnd(L"EMR_SETWINDOWEXTEX");
-
-			}
-		#endif
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETWINDOWEXTEX");
+		}
 
 		m_pDC->SetWindowExtents(oExtent);
 	}
@@ -1962,23 +1923,21 @@ static const struct ActionNamesEmf
 		TEmfPointL oOrigin;
 		m_oStream >> oOrigin;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_SETVIEWPORTORGEX", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_SETVIEWPORTORGEX);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_SETVIEWPORTORGEX", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_SETVIEWPORTORGEX", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_SETVIEWPORTORGEX);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETVIEWPORTORGEX", true, false);
 
-					oXmlWriter.WriteNodeBegin(L"Origin");
-						oXmlWriter.WriteNode(L"X", (int)oOrigin.x);
-						oXmlWriter.WriteNode(L"Y", (int)oOrigin.y);
-						oXmlWriter.WriteNodeEnd(L"Origin");
+				m_pOutputXml->WriteNodeBegin(L"Origin");
+					m_pOutputXml->WriteNode(L"X", oOrigin.x);
+					m_pOutputXml->WriteNode(L"Y", oOrigin.y);
+					m_pOutputXml->WriteNodeEnd(L"Origin");
 
-					oXmlWriter.WriteNodeEnd(L"EMR_SETVIEWPORTORGEX");
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETVIEWPORTORGEX");
 
-			}
-		#endif
+		}
 
 		m_pDC->SetViewportOrigin(oOrigin);
 	}
@@ -1987,23 +1946,21 @@ static const struct ActionNamesEmf
 		TEmfSizeL oExtent;
 		m_oStream >> oExtent;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
+		if (m_pOutput && NULL != m_pOutputXml)
 			{
-				oXmlWriter.WriteNodeBegin(L"EMR_SETVIEWPORTEXTEX", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_SETVIEWPORTEXTEX);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_SETVIEWPORTEXTEX", true, false);
+			m_pOutputXml->WriteNodeBegin(L"EMR_SETVIEWPORTEXTEX", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_SETVIEWPORTEXTEX);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETVIEWPORTEXTEX", true, false);
 
-					oXmlWriter.WriteNodeBegin(L"Extent");
-						oXmlWriter.WriteNode(L"cX", (int)oExtent.cx);
-						oXmlWriter.WriteNode(L"cY", (int)oExtent.cy);
-						oXmlWriter.WriteNodeEnd(L"Extent");
+				m_pOutputXml->WriteNodeBegin(L"Extent");
+					m_pOutputXml->WriteNode(L"cX", oExtent.cx);
+					m_pOutputXml->WriteNode(L"cY", oExtent.cy);
+					m_pOutputXml->WriteNodeEnd(L"Extent");
 
-					oXmlWriter.WriteNodeEnd(L"EMR_SETVIEWPORTEXTEX");
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETVIEWPORTEXTEX");
 
-			}
-		#endif
+		}
 
 		m_pDC->SetViewportExtents(oExtent);
 	}
@@ -2012,20 +1969,18 @@ static const struct ActionNamesEmf
 		unsigned int ulStretchMode;
 		m_oStream >> ulStretchMode;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_SETSTRETCHBLTMODE", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_SETSTRETCHBLTMODE);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_SETSTRETCHBLTMODE", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_SETSTRETCHBLTMODE", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_SETSTRETCHBLTMODE);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETSTRETCHBLTMODE", true, false);
 
-					oXmlWriter.WriteNode(L"StretchMode", (int)ulStretchMode);
+				m_pOutputXml->WriteNode(L"StretchMode", ulStretchMode);
 
-					oXmlWriter.WriteNodeEnd(L"EMR_SETSTRETCHBLTMODE");
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETSTRETCHBLTMODE");
 
-			}
-		#endif
+		}
 
 		m_pDC->SetStretchMode(ulStretchMode);
 	}
@@ -2034,20 +1989,18 @@ static const struct ActionNamesEmf
 		unsigned int ulICMMode;
 		m_oStream >> ulICMMode;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_SETICMMODE", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_SETICMMODE);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_SETICMMODE", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_SETICMMODE", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_SETICMMODE);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETICMMODE", true, false);
 
-					oXmlWriter.WriteNode(L"ICMMode", (int)ulICMMode);
+				m_pOutputXml->WriteNode(L"ICMMode", ulICMMode);
 
-					oXmlWriter.WriteNodeEnd(L"EMR_SETICMMODE");
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETICMMODE");
 
-			}
-		#endif
+		}
 
 	}
 	void CEmfFile::Read_EMR_CREATEDIBPATTERNBRUSHPT()
@@ -2060,27 +2013,25 @@ static const struct ActionNamesEmf
 		BYTE* pBgraBuffer = NULL;
 		unsigned int ulWidth, ulHeight;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_CREATEDIBPATTERNBRUSHPT", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_CREATEDIBPATTERNBRUSHPT);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_CREATEDIBPATTERNBRUSHPT", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_CREATEDIBPATTERNBRUSHPT", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_CREATEDIBPATTERNBRUSHPT);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_CREATEDIBPATTERNBRUSHPT", true, false);
 
-					oXmlWriter.WriteNode(L"ihBrush",    (int)ulBrushIndex);
-					oXmlWriter.WriteNode(L"Usage",	    (int)oDibBrush.Usage);
-					oXmlWriter.WriteNode(L"offBmi",	    (int)oDibBrush.offBmi);
-					oXmlWriter.WriteNode(L"cbBmi",	    (int)oDibBrush.cbBmi);
-					oXmlWriter.WriteNode(L"offBits",    (int)oDibBrush.offBits);
-					oXmlWriter.WriteNode(L"cbBits",	    (int)oDibBrush.cbBits);
+				m_pOutputXml->WriteNode(L"ihBrush", ulBrushIndex);
+				m_pOutputXml->WriteNode(L"Usage",   oDibBrush.Usage);
+				m_pOutputXml->WriteNode(L"offBmi",  oDibBrush.offBmi);
+				m_pOutputXml->WriteNode(L"cbBmi",   oDibBrush.cbBmi);
+				m_pOutputXml->WriteNode(L"offBits", oDibBrush.offBits);
+				m_pOutputXml->WriteNode(L"cbBits",  oDibBrush.cbBits);
 
-					oXmlWriter.WriteNodeBegin(L"DeviceIndependentBitmap");
+				m_pOutputXml->WriteNodeBegin(L"DeviceIndependentBitmap");
 
-					//TODO: не хватает сохранения переменной DeviceIndependentBitmap
+				//TODO: не хватает сохранения переменной DeviceIndependentBitmap
 
-			}
-		#endif
+		}
 
 		if (ReadImage(oDibBrush.offBmi, oDibBrush.cbBmi, oDibBrush.offBits, oDibBrush.cbBits, sizeof(TEmfDibPatternBrush) + 12, &pBgraBuffer, &ulWidth, &ulHeight))
 		{
@@ -2092,14 +2043,12 @@ static const struct ActionNamesEmf
 			m_oPlayer.RegisterObject(ulBrushIndex, (CEmfObjectBase*)pBrush);
 		}
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-					oXmlWriter.WriteNodeEnd(L"DeviceIndependentBitmap");
-					oXmlWriter.WriteNodeEnd(L"EMR_CREATEDIBPATTERNBRUSHPT");
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+					m_pOutputXml->WriteNodeEnd(L"DeviceIndependentBitmap");
+				m_pOutputXml->WriteNodeEnd(L"EMR_CREATEDIBPATTERNBRUSHPT");
 
-			}
-		#endif
+		}
 
 	}
 	void CEmfFile::Read_EMR_SELECTCLIPPATH()
@@ -2107,20 +2056,19 @@ static const struct ActionNamesEmf
 		unsigned int unRegionMode;
 		m_oStream >> unRegionMode;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_SELECTCLIPPATH", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_SELECTCLIPPATH);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_SELECTCLIPPATH", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_SELECTCLIPPATH", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_SELECTCLIPPATH);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_SELECTCLIPPATH", true, false);
 
-					oXmlWriter.WriteNode(L"RegionMode", (int)unRegionMode);
+				m_pOutputXml->WriteNode(L"RegionMode", unRegionMode);
 
-					oXmlWriter.WriteNodeEnd(L"EMR_SELECTCLIPPATH", true);
+				m_pOutputXml->WriteNodeEnd(L"EMR_SELECTCLIPPATH", true);
 
-			}
-		#endif
+		}
+
 
 		if (m_pPath)
 		{
@@ -2135,26 +2083,24 @@ static const struct ActionNamesEmf
 		TEmfColor oColor;
 		m_oStream >> oColor;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_SETBKCOLOR", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_SETBKCOLOR);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_SETBKCOLOR", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_SETBKCOLOR", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_SETBKCOLOR);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETBKCOLOR", true, false);
 
-					oXmlWriter.WriteNodeBegin(L"Color");
-						oXmlWriter.WriteNode(L"Red",	    oColor.r);
-						oXmlWriter.WriteNode(L"Green",	    oColor.g);
-						oXmlWriter.WriteNode(L"Blue",	    oColor.b);
-						oXmlWriter.WriteNode(L"Reserved",   oColor.a);
-						oXmlWriter.WriteNodeEnd(L"Color");
+				m_pOutputXml->WriteNodeBegin(L"Color");
+					m_pOutputXml->WriteNode(L"Red",	    oColor.r);
+					m_pOutputXml->WriteNode(L"Green",   oColor.g);
+					m_pOutputXml->WriteNode(L"Blue",    oColor.b);
+					m_pOutputXml->WriteNode(L"Reserved",oColor.a);
+					m_pOutputXml->WriteNodeEnd(L"Color");
 
 
-					oXmlWriter.WriteNodeEnd(L"EMR_SETBKCOLOR");
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETBKCOLOR");
 
-			}
-		#endif
+		}
 
 		m_pDC->SetBgColor(oColor);
 		UpdateOutputDC();
@@ -2165,25 +2111,23 @@ static const struct ActionNamesEmf
 		TEmfRectL oClip;
 		m_oStream >> oClip;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_EXCLUDECLIPRECT", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_EXCLUDECLIPRECT);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_EXCLUDECLIPRECT", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_EXCLUDECLIPRECT", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_EXCLUDECLIPRECT);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_EXCLUDECLIPRECT", true, false);
 
-					oXmlWriter.WriteNodeBegin(L"Clip");
-						oXmlWriter.WriteNode(L"Left",	oClip.lLeft);
-						oXmlWriter.WriteNode(L"Top",	oClip.lTop);
-						oXmlWriter.WriteNode(L"Right",	oClip.lRight);
-						oXmlWriter.WriteNode(L"Bottom", oClip.lBottom);
-						oXmlWriter.WriteNodeEnd(L"Clip");
+				m_pOutputXml->WriteNodeBegin(L"Clip");
+					m_pOutputXml->WriteNode(L"Left",    oClip.lLeft);
+					m_pOutputXml->WriteNode(L"Top",	    oClip.lTop);
+					m_pOutputXml->WriteNode(L"Right",   oClip.lRight);
+					m_pOutputXml->WriteNode(L"Bottom",  oClip.lBottom);
+					m_pOutputXml->WriteNodeEnd(L"Clip");
 
-					oXmlWriter.WriteNodeEnd(L"EMR_EXCLUDECLIPRECT");
+				m_pOutputXml->WriteNodeEnd(L"EMR_EXCLUDECLIPRECT");
 
-			}
-		#endif
+		}
 
 		TRectD oClipRect, oBB;
 
@@ -2226,23 +2170,21 @@ static const struct ActionNamesEmf
 		unsigned int ulRgnDataSize, ulRegionMode;
 		m_oStream >> ulRgnDataSize >> ulRegionMode;
 
-                #ifdef _DEBUG
-                        if (m_pOutput)
-                        {
-                                oXmlWriter.WriteNodeBegin(L"EMR_EXTSELECTCLIPRGN", true);
-                                        oXmlWriter.WriteAttribute(L"Id", EMR_EXTSELECTCLIPRGN);
-                                        oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-                                        oXmlWriter.WriteNodeEnd(L"EMR_EXTSELECTCLIPRGN", true, false);
+                if (m_pOutput && NULL != m_pOutputXml)
+                {
+                        m_pOutputXml->WriteNodeBegin(L"EMR_EXTSELECTCLIPRGN", true);
+                                m_pOutputXml->WriteAttribute(L"Id", EMR_EXTSELECTCLIPRGN);
+                                m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+                                m_pOutputXml->WriteNodeEnd(L"EMR_EXTSELECTCLIPRGN", true, false);
 
-                                        oXmlWriter.WriteNode(L"RgnDataSize",    (int)ulRgnDataSize);
-                                        oXmlWriter.WriteNode(L"RegionMode",     (int)ulRegionMode);
+                                m_pOutputXml->WriteNode(L"RgnDataSize", ulRgnDataSize);
+                                m_pOutputXml->WriteNode(L"RegionMode",  ulRegionMode);
 
-                                        //TODO: не хватает сохранения переменной RgnData, которая в реализации пропускается
+                                //TODO: не хватает сохранения переменной RgnData, которая в реализации пропускается
 
-                                        oXmlWriter.WriteNodeEnd(L"EMR_EXTSELECTCLIPRGN");
+                                m_pOutputXml->WriteNodeEnd(L"EMR_EXTSELECTCLIPRGN");
 
-                        }
-                #endif
+                }
 
 		m_oStream.Skip(m_ulRecordSize - 8);
 
@@ -2255,37 +2197,33 @@ static const struct ActionNamesEmf
 		m_pDC->GetClip()->Reset();
 		UpdateOutputDC();
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_SETMETARGN", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_SETMETARGN);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_SETMETARGN", true, false);
-					oXmlWriter.WriteNodeEnd(L"EMR_SETMETARGN");
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_SETMETARGN", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_SETMETARGN);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETMETARGN", true, false);
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETMETARGN");
 
-			}
-		#endif
+		}
 	}		
 	void CEmfFile::Read_EMR_SETROP2()
 	{
 		unsigned int ulRop2Mode;
 		m_oStream >> ulRop2Mode;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_SETROP2", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_SETROP2);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_SETROP2", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_SETROP2", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_SETROP2);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETROP2", true, false);
 
-					oXmlWriter.WriteNode(L"Rop2Mode", (int)ulRop2Mode);
+				m_pOutputXml->WriteNode(L"Rop2Mode", ulRop2Mode);
 
-					oXmlWriter.WriteNodeEnd(L"EMR_SETROP2");
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETROP2");
 
-			}
-		#endif
+		}
 
 		m_pDC->SetRop2Mode(ulRop2Mode);
 		UpdateOutputDC();
@@ -2300,36 +2238,34 @@ static const struct ActionNamesEmf
 		m_oStream >> ulPaletteIndex;
 		m_oStream >> *pPalette;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_CREATEPALETTE", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_CREATEPALETTE);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_CREATEPALETTE", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_CREATEPALETTE", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_CREATEPALETTE);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_CREATEPALETTE", true, false);
 
-					oXmlWriter.WriteNode(L"ihPal", (int)ulPaletteIndex);
-					oXmlWriter.WriteNodeBegin(L"LogPalette");
-						oXmlWriter.WriteNode(L"Version",	    768);
-						oXmlWriter.WriteNode(L"NumberOfEntries",    (int)pPalette->NumberOfEntries);
+				m_pOutputXml->WriteNode(L"ihPal", ulPaletteIndex);
+				m_pOutputXml->WriteNodeBegin(L"LogPalette");
+					m_pOutputXml->WriteNode(L"Version",	    768);
+					m_pOutputXml->WriteNode(L"NumberOfEntries", pPalette->NumberOfEntries);
 
-						for(unsigned int i = 0; i < pPalette->NumberOfEntries; ++i)
-						{
-							oXmlWriter.WriteNodeBegin(L"LogPaletteEntry" + std::to_wstring(i + 1));
-								oXmlWriter.WriteNode(L"Reserved",   pPalette->PaletteEntries[i].Reserved);
-								oXmlWriter.WriteNode(L"Blue",	    pPalette->PaletteEntries[i].Blue);
-								oXmlWriter.WriteNode(L"Green",	    pPalette->PaletteEntries[i].Green);
-								oXmlWriter.WriteNode(L"Red",	    pPalette->PaletteEntries[i].Red);
-								oXmlWriter.WriteNodeEnd(L"LogPaletteEntry" + std::to_wstring(i + 1));
+					for(unsigned int i = 0; i < pPalette->NumberOfEntries; ++i)
+					{
+						m_pOutputXml->WriteNodeBegin(L"LogPaletteEntry" + std::to_wstring(i + 1));
+							m_pOutputXml->WriteNode(L"Reserved",pPalette->PaletteEntries[i].Reserved);
+							m_pOutputXml->WriteNode(L"Blue",    pPalette->PaletteEntries[i].Blue);
+							m_pOutputXml->WriteNode(L"Green",   pPalette->PaletteEntries[i].Green);
+							m_pOutputXml->WriteNode(L"Red",	    pPalette->PaletteEntries[i].Red);
+							m_pOutputXml->WriteNodeEnd(L"LogPaletteEntry" + std::to_wstring(i + 1));
 
-						}
+					}
 
-						oXmlWriter.WriteNodeEnd(L"LogPalette");
+					m_pOutputXml->WriteNodeEnd(L"LogPalette");
 
-					oXmlWriter.WriteNodeEnd(L"EMR_CREATEPALETTE");
+				m_pOutputXml->WriteNodeEnd(L"EMR_CREATEPALETTE");
 
-			}
-		#endif
+		}
 
 		m_oPlayer.RegisterObject(ulPaletteIndex, (CEmfObjectBase*)pPalette);
 	}
@@ -2338,61 +2274,55 @@ static const struct ActionNamesEmf
 		unsigned int ulIndex;
 		m_oStream >> ulIndex;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_SELECTPALETTE", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_SELECTPALETTE);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_SELECTPALETTE", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_SELECTPALETTE", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_SELECTPALETTE);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_SELECTPALETTE", true, false);
 
-					oXmlWriter.WriteNode(L"ihPal", (int)ulIndex);
+				m_pOutputXml->WriteNode(L"ihPal", ulIndex);
 
-					oXmlWriter.WriteNodeEnd(L"EMR_SELECTPALETTE");
+				m_pOutputXml->WriteNodeEnd(L"EMR_SELECTPALETTE");
 
-			}
-		#endif
+		}
 
 		m_oPlayer.SelectPalette(ulIndex);
 	}
 	void CEmfFile::Read_EMR_REALIZEPALETTE()
 	{
 		// TODO: Реализовать
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_REALIZEPALETTE", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_REALIZEPALETTE);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_REALIZEPALETTE", true, true);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_REALIZEPALETTE", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_REALIZEPALETTE);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_REALIZEPALETTE", true, true);
 
-			}
-		#endif
+		}
 	}
 	void CEmfFile::Read_EMR_INTERSECTCLIPRECT()
 	{
 		TEmfRectL oClip;
 		m_oStream >> oClip;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_INTERSECTCLIPRECT", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_INTERSECTCLIPRECT);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_INTERSECTCLIPRECT", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_INTERSECTCLIPRECT", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_INTERSECTCLIPRECT);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_INTERSECTCLIPRECT", true, false);
 
-					oXmlWriter.WriteNodeBegin(L"Clip");
-						oXmlWriter.WriteNode(L"Left",	oClip.lLeft);
-						oXmlWriter.WriteNode(L"Top",	oClip.lTop);
-						oXmlWriter.WriteNode(L"Right",	oClip.lRight);
-						oXmlWriter.WriteNode(L"Bottom", oClip.lBottom);
-						oXmlWriter.WriteNodeEnd(L"Clip");
+				m_pOutputXml->WriteNodeBegin(L"Clip");
+					m_pOutputXml->WriteNode(L"Left",    oClip.lLeft);
+					m_pOutputXml->WriteNode(L"Top",	    oClip.lTop);
+					m_pOutputXml->WriteNode(L"Right",   oClip.lRight);
+					m_pOutputXml->WriteNode(L"Bottom",  oClip.lBottom);
+					m_pOutputXml->WriteNodeEnd(L"Clip");
 
-					oXmlWriter.WriteNodeEnd(L"EMR_INTERSECTCLIPRECT");
+				m_pOutputXml->WriteNodeEnd(L"EMR_INTERSECTCLIPRECT");
 
-			}
-		#endif
+		}
 
 		TRectD oClipRect;
 		TranslatePoint(oClip.lLeft, oClip.lTop, oClipRect.dLeft, oClipRect.dTop);
@@ -2404,20 +2334,18 @@ static const struct ActionNamesEmf
 		unsigned int ulLayoutMode;
 		m_oStream >> ulLayoutMode;
 
-                #ifdef _DEBUG
-                        if (m_pOutput)
-                        {
-                                oXmlWriter.WriteNodeBegin(L"EMR_SETLAYOUT", true);
-                                        oXmlWriter.WriteAttribute(L"Id", EMR_SETLAYOUT);
-                                        oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-                                        oXmlWriter.WriteNodeEnd(L"EMR_SETLAYOUT", true, false);
+                if (m_pOutput && NULL != m_pOutputXml)
+                {
+                        m_pOutputXml->WriteNodeBegin(L"EMR_SETLAYOUT", true);
+                                m_pOutputXml->WriteAttribute(L"Id", EMR_SETLAYOUT);
+                                m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+                                m_pOutputXml->WriteNodeEnd(L"EMR_SETLAYOUT", true, false);
 
-                                        oXmlWriter.WriteNode(L"LayoutMode", (int)ulLayoutMode);
+                                m_pOutputXml->WriteNode(L"LayoutMode", ulLayoutMode);
 
-                                        oXmlWriter.WriteNodeEnd(L"EMR_SETLAYOUT");
+                                m_pOutputXml->WriteNodeEnd(L"EMR_SETLAYOUT");
 
-                        }
-                #endif
+                }
 
 		// TODO: реализовать
 	}
@@ -2426,23 +2354,21 @@ static const struct ActionNamesEmf
 		TEmfPointL oOrigin;
 		m_oStream >> oOrigin;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_SETBRUSHORGEX", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_SETBRUSHORGEX);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_SETBRUSHORGEX", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_SETBRUSHORGEX", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_SETBRUSHORGEX);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETBRUSHORGEX", true, false);
 
-					oXmlWriter.WriteNodeBegin(L"Origin");
-						oXmlWriter.WriteNode(L"X",  oOrigin.x);
-						oXmlWriter.WriteNode(L"Y",  oOrigin.y);
-						oXmlWriter.WriteNodeEnd(L"Origin");
+				m_pOutputXml->WriteNodeBegin(L"Origin");
+					m_pOutputXml->WriteNode(L"X",  oOrigin.x);
+					m_pOutputXml->WriteNode(L"Y",  oOrigin.y);
+					m_pOutputXml->WriteNodeEnd(L"Origin");
 
-					oXmlWriter.WriteNodeEnd(L"EMR_SETBRUSHORGEX");
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETBRUSHORGEX");
 
-			}
-		#endif
+		}
 
 		// TODO: реализовать
 	}		
@@ -2454,27 +2380,25 @@ static const struct ActionNamesEmf
 		double dStartAngle, dSweepAngle;
 		m_oStream >> oCenter >> unRadius >> dStartAngle >> dSweepAngle;
 
-                #ifdef _DEBUG
-                        if (m_pOutput)
-                        {
-                                oXmlWriter.WriteNodeBegin(L"EMR_ANGLEARC", true);
-                                        oXmlWriter.WriteAttribute(L"Id", EMR_ANGLEARC);
-                                        oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-                                        oXmlWriter.WriteNodeEnd(L"EMR_ANGLEARC", true, false);
+                if (m_pOutput && NULL != m_pOutputXml)
+                {
+                        m_pOutputXml->WriteNodeBegin(L"EMR_ANGLEARC", true);
+                                m_pOutputXml->WriteAttribute(L"Id", EMR_ANGLEARC);
+                                m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+                                m_pOutputXml->WriteNodeEnd(L"EMR_ANGLEARC", true, false);
 
-                                        oXmlWriter.WriteNodeBegin(L"Center");
-                                                oXmlWriter.WriteNode(L"X", oCenter.x);
-                                                oXmlWriter.WriteNode(L"Y", oCenter.y);
-                                                oXmlWriter.WriteNodeEnd(L"Center");
+                                m_pOutputXml->WriteNodeBegin(L"Center");
+                                        m_pOutputXml->WriteNode(L"X", oCenter.x);
+                                        m_pOutputXml->WriteNode(L"Y", oCenter.y);
+                                        m_pOutputXml->WriteNodeEnd(L"Center");
 
-                                        oXmlWriter.WriteNode(L"Radius",     (int)unRadius);
-                                        oXmlWriter.WriteNode(L"StartAngle", dStartAngle);
-                                        oXmlWriter.WriteNode(L"SweepAngle", dSweepAngle);
+                                m_pOutputXml->WriteNode(L"Radius",     unRadius);
+                                m_pOutputXml->WriteNode(L"StartAngle", dStartAngle);
+                                m_pOutputXml->WriteNode(L"SweepAngle", dSweepAngle);
 
-                                        oXmlWriter.WriteNodeEnd(L"EMR_ANGLEARC");
+                                m_pOutputXml->WriteNodeEnd(L"EMR_ANGLEARC");
 
-                        }
-                #endif
+                }
 
 		ArcTo(oCenter.x - unRadius, oCenter.y - unRadius, oCenter.x + unRadius, oCenter.y + unRadius, dStartAngle, dSweepAngle);
 		DrawPath(true, false);
@@ -2503,34 +2427,32 @@ static const struct ActionNamesEmf
 		double dStartAngle, dSweep;
 		Read_EMR_ARC_BASE(oBox, oStart, oEnd, dStartAngle, dSweep);
 
-                #ifdef _DEBUG
-                        if (m_pOutput)
-                        {
-                                oXmlWriter.WriteNodeBegin(L"EMR_ARC", true);
-                                        oXmlWriter.WriteAttribute(L"Id", EMR_ARC);
-                                        oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-                                        oXmlWriter.WriteNodeEnd(L"EMR_ARC", true, false);
+                if (m_pOutput && NULL != m_pOutputXml)
+                {
+                        m_pOutputXml->WriteNodeBegin(L"EMR_ARC", true);
+                                m_pOutputXml->WriteAttribute(L"Id", EMR_ARC);
+                                m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+                               m_pOutputXml->WriteNodeEnd(L"EMR_ARC", true, false);
 
-                                        oXmlWriter.WriteNodeBegin(L"Rectangle");
-                                                oXmlWriter.WriteNode(L"Left",	oBox.lLeft);
-                                                oXmlWriter.WriteNode(L"Top",	oBox.lTop);
-                                                oXmlWriter.WriteNode(L"Right",	oBox.lRight);
-                                                oXmlWriter.WriteNode(L"Bottom", oBox.lBottom);
-                                                oXmlWriter.WriteNodeEnd(L"Rectangle");
+                                m_pOutputXml->WriteNodeBegin(L"Rectangle");
+                                        m_pOutputXml->WriteNode(L"Left",    oBox.lLeft);
+                                        m_pOutputXml->WriteNode(L"Top",     oBox.lTop);
+                                        m_pOutputXml->WriteNode(L"Right",   oBox.lRight);
+                                        m_pOutputXml->WriteNode(L"Bottom",  oBox.lBottom);
+                                        m_pOutputXml->WriteNodeEnd(L"Rectangle");
 
-                                        oXmlWriter.WriteNodeBegin(L"StartPoint");
-                                                oXmlWriter.WriteNode(L"X",  oStart.x);
-                                                oXmlWriter.WriteNode(L"Y",  oStart.y);
-                                                oXmlWriter.WriteNodeEnd(L"StartPoint");
+                                m_pOutputXml->WriteNodeBegin(L"StartPoint");
+                                        m_pOutputXml->WriteNode(L"X",  oStart.x);
+                                        m_pOutputXml->WriteNode(L"Y",  oStart.y);
+                                        m_pOutputXml->WriteNodeEnd(L"StartPoint");
 
-                                        oXmlWriter.WriteNodeBegin(L"EndPoint");
-                                                oXmlWriter.WriteNode(L"X",  oEnd.x);
-                                                oXmlWriter.WriteNode(L"Y",  oEnd.y);
-                                                oXmlWriter.WriteNodeEnd(L"EndPoint");
+                                m_pOutputXml->WriteNodeBegin(L"EndPoint");
+                                        m_pOutputXml->WriteNode(L"X",  oEnd.x);
+                                        m_pOutputXml->WriteNode(L"Y",  oEnd.y);
+                                        m_pOutputXml->WriteNodeEnd(L"EndPoint");
 
-                                        oXmlWriter.WriteNodeEnd(L"EMR_ARC");
-                        }
-                #endif
+                                m_pOutputXml->WriteNodeEnd(L"EMR_ARC");
+                }
 
 		MoveTo(oStart);
 		ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweep);
@@ -2544,34 +2466,32 @@ static const struct ActionNamesEmf
 		double dStartAngle, dSweep;
 		Read_EMR_ARC_BASE(oBox, oStart, oEnd, dStartAngle, dSweep);
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_ARCTO", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_ARCTO);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_ARCTO", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_ARCTO", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_ARCTO);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_ARCTO", true, false);
 
-					oXmlWriter.WriteNodeBegin(L"Rectangle");
-						oXmlWriter.WriteNode(L"Left",	oBox.lLeft);
-						oXmlWriter.WriteNode(L"Top",	oBox.lTop);
-						oXmlWriter.WriteNode(L"Right",	oBox.lRight);
-						oXmlWriter.WriteNode(L"Bottom", oBox.lBottom);
-						oXmlWriter.WriteNodeEnd(L"Rectangle");
+				m_pOutputXml->WriteNodeBegin(L"Rectangle");
+					m_pOutputXml->WriteNode(L"Left",    oBox.lLeft);
+					m_pOutputXml->WriteNode(L"Top",	    oBox.lTop);
+					m_pOutputXml->WriteNode(L"Right",   oBox.lRight);
+					m_pOutputXml->WriteNode(L"Bottom",  oBox.lBottom);
+					m_pOutputXml->WriteNodeEnd(L"Rectangle");
 
-					oXmlWriter.WriteNodeBegin(L"StartPoint");
-						oXmlWriter.WriteNode(L"X",  oStart.x);
-						oXmlWriter.WriteNode(L"Y",  oStart.y);
-						oXmlWriter.WriteNodeEnd(L"StartPoint");
+				m_pOutputXml->WriteNodeBegin(L"StartPoint");
+					m_pOutputXml->WriteNode(L"X",  oStart.x);
+					m_pOutputXml->WriteNode(L"Y",  oStart.y);
+					m_pOutputXml->WriteNodeEnd(L"StartPoint");
 
-					oXmlWriter.WriteNodeBegin(L"EndPoint");
-						oXmlWriter.WriteNode(L"X",  oEnd.x);
-						oXmlWriter.WriteNode(L"Y",  oEnd.y);
-						oXmlWriter.WriteNodeEnd(L"EndPoint");
+				m_pOutputXml->WriteNodeBegin(L"EndPoint");
+					m_pOutputXml->WriteNode(L"X",  oEnd.x);
+					m_pOutputXml->WriteNode(L"Y",  oEnd.y);
+					m_pOutputXml->WriteNodeEnd(L"EndPoint");
 
-					oXmlWriter.WriteNodeEnd(L"EMR_ARCTO");
-			}
-		#endif
+				m_pOutputXml->WriteNodeEnd(L"EMR_ARCTO");
+		}
 
 		ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweep);
 	}
@@ -2583,34 +2503,32 @@ static const struct ActionNamesEmf
 		double dStartAngle, dSweep;
 		Read_EMR_ARC_BASE(oBox, oStart, oEnd, dStartAngle, dSweep);
 
-                #ifdef _DEBUG
-                        if (m_pOutput)
-                        {
-                                oXmlWriter.WriteNodeBegin(L"EMR_CHORD", true);
-                                        oXmlWriter.WriteAttribute(L"Id", EMR_CHORD);
-                                        oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-                                        oXmlWriter.WriteNodeEnd(L"EMR_CHORD", true, false);
+                if (m_pOutput && NULL != m_pOutputXml)
+                {
+                        m_pOutputXml->WriteNodeBegin(L"EMR_CHORD", true);
+                                m_pOutputXml->WriteAttribute(L"Id", EMR_CHORD);
+                                m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+                                m_pOutputXml->WriteNodeEnd(L"EMR_CHORD", true, false);
 
-                                        oXmlWriter.WriteNodeBegin(L"Rectangle");
-                                                oXmlWriter.WriteNode(L"Left",	oBox.lLeft);
-                                                oXmlWriter.WriteNode(L"Top",	oBox.lTop);
-                                                oXmlWriter.WriteNode(L"Right",	oBox.lRight);
-                                                oXmlWriter.WriteNode(L"Bottom", oBox.lBottom);
-                                                oXmlWriter.WriteNodeEnd(L"Rectangle");
+                                m_pOutputXml->WriteNodeBegin(L"Rectangle");
+                                        m_pOutputXml->WriteNode(L"Left",    oBox.lLeft);
+                                        m_pOutputXml->WriteNode(L"Top",     oBox.lTop);
+                                        m_pOutputXml->WriteNode(L"Right",   oBox.lRight);
+                                        m_pOutputXml->WriteNode(L"Bottom",  oBox.lBottom);
+                                        m_pOutputXml->WriteNodeEnd(L"Rectangle");
 
-                                        oXmlWriter.WriteNodeBegin(L"StartPoint");
-                                                oXmlWriter.WriteNode(L"X",  oStart.x);
-                                                oXmlWriter.WriteNode(L"Y",  oStart.y);
-                                                oXmlWriter.WriteNodeEnd(L"StartPoint");
+                                m_pOutputXml->WriteNodeBegin(L"StartPoint");
+                                        m_pOutputXml->WriteNode(L"X",  oStart.x);
+                                        m_pOutputXml->WriteNode(L"Y",  oStart.y);
+                                        m_pOutputXml->WriteNodeEnd(L"StartPoint");
 
-                                        oXmlWriter.WriteNodeBegin(L"EndPoint");
-                                                oXmlWriter.WriteNode(L"X",  oEnd.x);
-                                                oXmlWriter.WriteNode(L"Y",  oEnd.y);
-                                                oXmlWriter.WriteNodeEnd(L"EndPoint");
+                                m_pOutputXml->WriteNodeBegin(L"EndPoint");
+                                        m_pOutputXml->WriteNode(L"X",  oEnd.x);
+                                        m_pOutputXml->WriteNode(L"Y",  oEnd.y);
+                                        m_pOutputXml->WriteNodeEnd(L"EndPoint");
 
-                                        oXmlWriter.WriteNodeEnd(L"EMR_CHORD");
-                        }
-                #endif
+                                m_pOutputXml->WriteNodeEnd(L"EMR_CHORD");
+                }
 
 		MoveTo(oStart);
 		ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweep);
@@ -2622,24 +2540,22 @@ static const struct ActionNamesEmf
 		TEmfRectL oBox;
 		m_oStream >> oBox;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_ELLIPSE", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_ELLIPSE);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_ELLIPSE", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_ELLIPSE", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_ELLIPSE);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_ELLIPSE", true, false);
 
-					oXmlWriter.WriteNodeBegin(L"Rectangle");
-						oXmlWriter.WriteNode(L"Left",	oBox.lLeft);
-						oXmlWriter.WriteNode(L"Top",	oBox.lTop);
-						oXmlWriter.WriteNode(L"Right",	oBox.lRight);
-						oXmlWriter.WriteNode(L"Bottom", oBox.lBottom);
-						oXmlWriter.WriteNodeEnd(L"Rectangle");
+				m_pOutputXml->WriteNodeBegin(L"Rectangle");
+					m_pOutputXml->WriteNode(L"Left",    oBox.lLeft);
+					m_pOutputXml->WriteNode(L"Top",	    oBox.lTop);
+					m_pOutputXml->WriteNode(L"Right",   oBox.lRight);
+					m_pOutputXml->WriteNode(L"Bottom",  oBox.lBottom);
+					m_pOutputXml->WriteNodeEnd(L"Rectangle");
 
-					oXmlWriter.WriteNodeEnd(L"EMR_ELLIPSE");
-			}
-		#endif
+				m_pOutputXml->WriteNodeEnd(L"EMR_ELLIPSE");
+		}
 
 		if (m_pDC->GetArcDirection() == AD_COUNTERCLOCKWISE)
 		    ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, 0, 360);
@@ -2655,145 +2571,135 @@ static const struct ActionNamesEmf
 		TEmfExtTextoutA oText;
 		m_oStream >> oText;	
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_EXTTEXTOUTA", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_EXTTEXTOUTA);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_EXTTEXTOUTA", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_EXTTEXTOUTA", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_EXTTEXTOUTA);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_EXTTEXTOUTA", true, false);
 
-					oXmlWriter.WriteNodeBegin(L"Bounds");
-						oXmlWriter.WriteNode(L"Left",	oText.Bounds.lLeft);
-						oXmlWriter.WriteNode(L"Top",	oText.Bounds.lTop);
-						oXmlWriter.WriteNode(L"Right",	oText.Bounds.lRight);
-						oXmlWriter.WriteNode(L"Bottom", oText.Bounds.lBottom);
-						oXmlWriter.WriteNodeEnd(L"Bounds");
+                                m_pOutputXml->WriteNodeBegin(L"Bounds");
+                                        m_pOutputXml->WriteNode(L"Left",    oText.Bounds.lLeft);
+                                        m_pOutputXml->WriteNode(L"Top",     oText.Bounds.lTop);
+                                        m_pOutputXml->WriteNode(L"Right",   oText.Bounds.lRight);
+                                        m_pOutputXml->WriteNode(L"Bottom",  oText.Bounds.lBottom);
+                                        m_pOutputXml->WriteNodeEnd(L"Bounds");
 
-					oXmlWriter.WriteNode(L"GraphicsMode",	(int)oText.iGraphicsMode);
-					oXmlWriter.WriteNode(L"exScale",	oText.exScale);
-					oXmlWriter.WriteNode(L"eyScale",	oText.eyScale);
+                                m_pOutputXml->WriteNode(L"GraphicsMode",    oText.iGraphicsMode);
+                                m_pOutputXml->WriteNode(L"exScale",         oText.exScale);
+                                m_pOutputXml->WriteNode(L"eyScale",         oText.eyScale);
 
-					if (NULL != oText.aEmrText.OutputString)
-					{
-						oXmlWriter.WriteNodeBegin(L"EmrText");
-							oXmlWriter.WriteNodeBegin(L"Reference");
-								oXmlWriter.WriteNode(L"X", oText.aEmrText.Reference.x);
-								oXmlWriter.WriteNode(L"Y", oText.aEmrText.Reference.y);
-								oXmlWriter.WriteNodeEnd(L"Reference");
+                                if (NULL != oText.aEmrText.OutputString)
+                                {
+                                        m_pOutputXml->WriteNodeBegin(L"EmrText");
+                                                m_pOutputXml->WriteNodeBegin(L"Reference");
+                                                        m_pOutputXml->WriteNode(L"X",   oText.aEmrText.Reference.x);
+                                                        m_pOutputXml->WriteNode(L"Y",   oText.aEmrText.Reference.y);
+                                                        m_pOutputXml->WriteNodeEnd(L"Reference");
 
-							oXmlWriter.WriteNode(L"CountChars", (int)oText.aEmrText.Chars);
-							oXmlWriter.WriteNode(L"offString",  (int)oText.aEmrText.offString);
-							oXmlWriter.WriteNode(L"Options",    (int)oText.aEmrText.Options);
+                                                m_pOutputXml->WriteNode(L"CountChars",  oText.aEmrText.Chars);
+                                                m_pOutputXml->WriteNode(L"offString",   oText.aEmrText.offString);
+                                                m_pOutputXml->WriteNode(L"Options",     oText.aEmrText.Options);
 
-							oXmlWriter.WriteNodeBegin(L"Rectangle");
-								oXmlWriter.WriteNode(L"Left",	oText.aEmrText.Rectangle.lLeft);
-								oXmlWriter.WriteNode(L"Top",	oText.aEmrText.Rectangle.lTop);
-								oXmlWriter.WriteNode(L"Right",	oText.aEmrText.Rectangle.lRight);
-								oXmlWriter.WriteNode(L"Bottom", oText.aEmrText.Rectangle.lBottom);
-								oXmlWriter.WriteNodeEnd(L"Rectangle");
+                                                m_pOutputXml->WriteNodeBegin(L"Rectangle");
+                                                        m_pOutputXml->WriteNode(L"Left",    oText.aEmrText.Rectangle.lLeft);
+                                                        m_pOutputXml->WriteNode(L"Top",     oText.aEmrText.Rectangle.lTop);
+                                                        m_pOutputXml->WriteNode(L"Right",   oText.aEmrText.Rectangle.lRight);
+                                                        m_pOutputXml->WriteNode(L"Bottom",  oText.aEmrText.Rectangle.lBottom);
+                                                        m_pOutputXml->WriteNodeEnd(L"Rectangle");
 
-							oXmlWriter.WriteNode(L"offDx", (int)oText.aEmrText.offDx);
-							//TODO: сделать сохранение DX
-							//возможно текст нужно сохранять иначе (сохранение в DrawTextA)
-					}
-			    }
-		#endif
+                                                m_pOutputXml->WriteNode(L"offDx", oText.aEmrText.offDx);
+                                                //TODO: сделать сохранение DX
+                                                //возможно текст нужно сохранять иначе (сохранение в DrawTextA)
+                                }
+                }
 
 		DrawTextA(oText.aEmrText, oText.iGraphicsMode);
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				if (oText.aEmrText.OutputString != NULL)
-					oXmlWriter.WriteNodeEnd(L"EmrText");
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			if (oText.aEmrText.OutputString != NULL)
+				m_pOutputXml->WriteNodeEnd(L"EmrText");
 
-				oXmlWriter.WriteNodeEnd(L"EMR_EXTTEXTOUTA");
-			}
-		#endif
+			m_pOutputXml->WriteNodeEnd(L"EMR_EXTTEXTOUTA");
+		}
 	}
 	void CEmfFile::Read_EMR_EXTTEXTOUTW()
 	{
 		TEmfExtTextoutW oText;
 		m_oStream >> oText;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_EXTTEXTOUTW", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_EXTTEXTOUTW);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_EXTTEXTOUTW", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_EXTTEXTOUTW", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_EXTTEXTOUTW);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_EXTTEXTOUTW", true, false);
 
-					oXmlWriter.WriteNodeBegin(L"Bounds");
-						oXmlWriter.WriteNode(L"Left",	oText.Bounds.lLeft);
-						oXmlWriter.WriteNode(L"Top",	oText.Bounds.lTop);
-						oXmlWriter.WriteNode(L"Right",	oText.Bounds.lRight);
-						oXmlWriter.WriteNode(L"Bottom", oText.Bounds.lBottom);
-						oXmlWriter.WriteNodeEnd(L"Bounds");
+				m_pOutputXml->WriteNodeBegin(L"Bounds");
+					m_pOutputXml->WriteNode(L"Left",    oText.Bounds.lLeft);
+					m_pOutputXml->WriteNode(L"Top",	    oText.Bounds.lTop);
+					m_pOutputXml->WriteNode(L"Right",   oText.Bounds.lRight);
+					m_pOutputXml->WriteNode(L"Bottom",  oText.Bounds.lBottom);
+					m_pOutputXml->WriteNodeEnd(L"Bounds");
 
-					oXmlWriter.WriteNode(L"GraphicsMode",	(int)oText.iGraphicsMode);
-					oXmlWriter.WriteNode(L"exScale",	oText.exScale);
-					oXmlWriter.WriteNode(L"eyScale",	oText.eyScale);
+				m_pOutputXml->WriteNode(L"GraphicsMode",    oText.iGraphicsMode);
+				m_pOutputXml->WriteNode(L"exScale",	    oText.exScale);
+				m_pOutputXml->WriteNode(L"eyScale",	    oText.eyScale);
 
-					if (oText.wEmrText.OutputString != NULL)
-					{
-						oXmlWriter.WriteNodeBegin(L"EmrText");
-							oXmlWriter.WriteNodeBegin(L"Reference");
-								oXmlWriter.WriteNode(L"X", oText.wEmrText.Reference.x);
-								oXmlWriter.WriteNode(L"Y", oText.wEmrText.Reference.y);
-								oXmlWriter.WriteNodeEnd(L"Reference");
+				if (oText.wEmrText.OutputString != NULL)
+				{
+					m_pOutputXml->WriteNodeBegin(L"EmrText");
+						m_pOutputXml->WriteNodeBegin(L"Reference");
+							m_pOutputXml->WriteNode(L"X",	oText.wEmrText.Reference.x);
+							m_pOutputXml->WriteNode(L"Y",	oText.wEmrText.Reference.y);
+							m_pOutputXml->WriteNodeEnd(L"Reference");
 
-							oXmlWriter.WriteNode(L"CountChars", (int)oText.wEmrText.Chars);
-							oXmlWriter.WriteNode(L"offString",  (int)oText.wEmrText.offString);
-							oXmlWriter.WriteNode(L"Options",    (int)oText.wEmrText.Options);
+						m_pOutputXml->WriteNode(L"CountChars",	oText.wEmrText.Chars);
+						m_pOutputXml->WriteNode(L"offString",	oText.wEmrText.offString);
+						m_pOutputXml->WriteNode(L"Options",	oText.wEmrText.Options);
 
-							oXmlWriter.WriteNodeBegin(L"Rectangle");
-								oXmlWriter.WriteNode(L"Left",	oText.wEmrText.Rectangle.lLeft);
-								oXmlWriter.WriteNode(L"Top",	oText.wEmrText.Rectangle.lTop);
-								oXmlWriter.WriteNode(L"Right",	oText.wEmrText.Rectangle.lRight);
-								oXmlWriter.WriteNode(L"Bottom", oText.wEmrText.Rectangle.lBottom);
-								oXmlWriter.WriteNodeEnd(L"Rectangle");
+						m_pOutputXml->WriteNodeBegin(L"Rectangle");
+							m_pOutputXml->WriteNode(L"Left",    oText.wEmrText.Rectangle.lLeft);
+							m_pOutputXml->WriteNode(L"Top",	    oText.wEmrText.Rectangle.lTop);
+							m_pOutputXml->WriteNode(L"Right",   oText.wEmrText.Rectangle.lRight);
+							m_pOutputXml->WriteNode(L"Bottom",  oText.wEmrText.Rectangle.lBottom);
+							m_pOutputXml->WriteNodeEnd(L"Rectangle");
 
-							oXmlWriter.WriteNode(L"offDx", (int)oText.wEmrText.offDx);
-							//TODO: сделать сохранение DX
-							//возможно текст нужно сохранять иначе (сохранение в DrawTextW)
-					}
-			    }
-		#endif
+						m_pOutputXml->WriteNode(L"offDx", oText.wEmrText.offDx);
+						//TODO: сделать сохранение DX
+						//возможно текст нужно сохранять иначе (сохранение в DrawTextW)
+				}
+		}
 
 		DrawTextW(oText.wEmrText, oText.iGraphicsMode);
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				if (oText.wEmrText.OutputString != NULL)
-					oXmlWriter.WriteNodeEnd(L"EmrText");
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			if (oText.wEmrText.OutputString != NULL)
+				m_pOutputXml->WriteNodeEnd(L"EmrText");
 
-				oXmlWriter.WriteNodeEnd(L"EMR_EXTTEXTOUTW");
-			}
-		#endif
+			m_pOutputXml->WriteNodeEnd(L"EMR_EXTTEXTOUTW");
+		}
 	}
 	void CEmfFile::Read_EMR_LINETO()
 	{
 		TEmfPointL oPoint;
 		m_oStream >> oPoint;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_LINETO", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_LINETO);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_LINETO", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_LINETO", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_LINETO);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_LINETO", true, false);
 
-					oXmlWriter.WriteNode(L"X",  oPoint.x);
-					oXmlWriter.WriteNode(L"Y",  oPoint.y);
+				m_pOutputXml->WriteNode(L"X",  oPoint.x);
+				m_pOutputXml->WriteNode(L"Y",  oPoint.y);
 
-					oXmlWriter.WriteNodeEnd(L"EMR_LINETO");
+				m_pOutputXml->WriteNodeEnd(L"EMR_LINETO");
 
-			    }
-		#endif
+		}
 
 		LineTo(oPoint);
 	}
@@ -2805,34 +2711,32 @@ static const struct ActionNamesEmf
 		double dStartAngle, dSweep;
 		Read_EMR_ARC_BASE(oBox, oStart, oEnd, dStartAngle, dSweep);
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_PIE", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_PIE);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_PIE", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_PIE", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_PIE);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_PIE", true, false);
 
-					oXmlWriter.WriteNodeBegin(L"Rectangle");
-						oXmlWriter.WriteNode(L"Left",	oBox.lLeft);
-						oXmlWriter.WriteNode(L"Top",	oBox.lTop);
-						oXmlWriter.WriteNode(L"Right",	oBox.lRight);
-						oXmlWriter.WriteNode(L"Bottom", oBox.lBottom);
-						oXmlWriter.WriteNodeEnd(L"Rectangle");
+				m_pOutputXml->WriteNodeBegin(L"Rectangle");
+					m_pOutputXml->WriteNode(L"Left",    oBox.lLeft);
+					m_pOutputXml->WriteNode(L"Top",	    oBox.lTop);
+					m_pOutputXml->WriteNode(L"Right",   oBox.lRight);
+					m_pOutputXml->WriteNode(L"Bottom",  oBox.lBottom);
+					m_pOutputXml->WriteNodeEnd(L"Rectangle");
 
-					oXmlWriter.WriteNodeBegin(L"StartPoint");
-						oXmlWriter.WriteNode(L"X",  oStart.x);
-						oXmlWriter.WriteNode(L"Y",  oStart.y);
-						oXmlWriter.WriteNodeEnd(L"StartPoint");
+				m_pOutputXml->WriteNodeBegin(L"StartPoint");
+					m_pOutputXml->WriteNode(L"X",  oStart.x);
+					m_pOutputXml->WriteNode(L"Y",  oStart.y);
+					m_pOutputXml->WriteNodeEnd(L"StartPoint");
 
-					oXmlWriter.WriteNodeBegin(L"EndPoint");
-						oXmlWriter.WriteNode(L"X",  oEnd.x);
-						oXmlWriter.WriteNode(L"Y",  oEnd.y);
-						oXmlWriter.WriteNodeEnd(L"EndPoint");
+				m_pOutputXml->WriteNodeBegin(L"EndPoint");
+					m_pOutputXml->WriteNode(L"X",  oEnd.x);
+					m_pOutputXml->WriteNode(L"Y",  oEnd.y);
+					m_pOutputXml->WriteNodeEnd(L"EndPoint");
 
-					oXmlWriter.WriteNodeEnd(L"EMR_PIE");
-			}
-		#endif
+				m_pOutputXml->WriteNodeEnd(L"EMR_PIE");
+		}
 
 		ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweep);
 		LineTo((oBox.lLeft + oBox.lRight) / 2, (oBox.lTop + oBox.lBottom) / 2);
@@ -2862,79 +2766,73 @@ static const struct ActionNamesEmf
 		m_oStream >> oStartPoint;
 		MoveTo(oStartPoint);
 
-		#ifdef _DEBUG
-			std::wstring sName;
-			unsigned int unId;
+		std::wstring wsRecordName;
+		unsigned int unRecordId;
 
-			if (m_pOutput)
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			if (typeid (T).name() == "TEmfPointL")
 			{
-				if (typeid (T).name() == "TEmfPointL")
-				{
-					sName = L"EMR_POLYBEZIER";
-					unId = EMR_POLYBEZIER;
-				}
-				else
-				{
-					sName = L"EMR_POLYBEZIER16";
-					unId = EMR_POLYBEZIER16;
-				}
-
-				oXmlWriter.WriteNodeBegin(sName, true);
-					oXmlWriter.WriteAttribute(L"Id",    (int)unId);
-					oXmlWriter.WriteAttribute(L"Size",  (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(sName, true, false);
-
-					oXmlWriter.WriteNodeBegin(L"Bounds");
-						oXmlWriter.WriteNode(L"Left",	oBounds.lLeft);
-						oXmlWriter.WriteNode(L"Top",	oBounds.lTop);
-						oXmlWriter.WriteNode(L"Right",	oBounds.lRight);
-						oXmlWriter.WriteNode(L"Bottom", oBounds.lBottom);
-						oXmlWriter.WriteNodeEnd(L"Bounds");
-
-					oXmlWriter.WriteNode(L"NumberPoints", (int)ulCount);
-
-					oXmlWriter.WriteNodeBegin(L"Point1");
-						oXmlWriter.WriteNode(L"X", oStartPoint.x);
-						oXmlWriter.WriteNode(L"Y", oStartPoint.y);
-						oXmlWriter.WriteNodeEnd(L"Point1");
+				wsRecordName = L"EMR_POLYBEZIER";
+				unRecordId = EMR_POLYBEZIER;
 			}
-		#endif
+			else
+			{
+				wsRecordName = L"EMR_POLYBEZIER16";
+				unRecordId = EMR_POLYBEZIER16;
+			}
+
+			m_pOutputXml->WriteNodeBegin(wsRecordName, true);
+				m_pOutputXml->WriteAttribute(L"Id",    unRecordId);
+				m_pOutputXml->WriteAttribute(L"Size",  m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(wsRecordName, true, false);
+
+				m_pOutputXml->WriteNodeBegin(L"Bounds");
+					m_pOutputXml->WriteNode(L"Left",    oBounds.lLeft);
+					m_pOutputXml->WriteNode(L"Top",	    oBounds.lTop);
+					m_pOutputXml->WriteNode(L"Right",   oBounds.lRight);
+					m_pOutputXml->WriteNode(L"Bottom",  oBounds.lBottom);
+					m_pOutputXml->WriteNodeEnd(L"Bounds");
+
+				m_pOutputXml->WriteNode(L"NumberPoints", ulCount);
+
+				m_pOutputXml->WriteNodeBegin(L"Point1");
+					m_pOutputXml->WriteNode(L"X", oStartPoint.x);
+					m_pOutputXml->WriteNode(L"Y", oStartPoint.y);
+					m_pOutputXml->WriteNodeEnd(L"Point1");
+		}
 
 		T oPoint1, oPoint2, oPointE;
 		for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex += 3)
 		{
 			m_oStream >> oPoint1 >> oPoint2 >> oPointE;
 
-			#ifdef _DEBUG
-				if (m_pOutput)
-				{
-					oXmlWriter.WriteNodeBegin(L"Point" + std::to_wstring(ulIndex + 1));
-						oXmlWriter.WriteNode(L"X", oPoint1.x);
-						oXmlWriter.WriteNode(L"Y", oPoint1.y);
-						oXmlWriter.WriteNodeEnd(L"Point" + std::to_wstring(ulIndex + 1));
+			if (m_pOutput && NULL != m_pOutputXml)
+			{
+				m_pOutputXml->WriteNodeBegin(L"Point" + std::to_wstring(ulIndex + 1));
+					m_pOutputXml->WriteNode(L"X", oPoint1.x);
+					m_pOutputXml->WriteNode(L"Y", oPoint1.y);
+					m_pOutputXml->WriteNodeEnd(L"Point" + std::to_wstring(ulIndex + 1));
 
-					oXmlWriter.WriteNodeBegin(L"Point" + std::to_wstring(ulIndex + 2));
-						oXmlWriter.WriteNode(L"X", oPoint2.x);
-						oXmlWriter.WriteNode(L"Y", oPoint2.y);
-						oXmlWriter.WriteNodeEnd(L"Point" + std::to_wstring(ulIndex + 2));
+				m_pOutputXml->WriteNodeBegin(L"Point" + std::to_wstring(ulIndex + 2));
+					m_pOutputXml->WriteNode(L"X", oPoint2.x);
+					m_pOutputXml->WriteNode(L"Y", oPoint2.y);
+					m_pOutputXml->WriteNodeEnd(L"Point" + std::to_wstring(ulIndex + 2));
 
-					oXmlWriter.WriteNodeBegin(L"Point" + std::to_wstring(ulIndex + 3));
-						oXmlWriter.WriteNode(L"X", oPointE.x);
-						oXmlWriter.WriteNode(L"Y", oPointE.y);
-						oXmlWriter.WriteNodeEnd(L"Point" + std::to_wstring(ulIndex + 3));
+				m_pOutputXml->WriteNodeBegin(L"Point" + std::to_wstring(ulIndex + 3));
+					m_pOutputXml->WriteNode(L"X", oPointE.x);
+					m_pOutputXml->WriteNode(L"Y", oPointE.y);
+					m_pOutputXml->WriteNodeEnd(L"Point" + std::to_wstring(ulIndex + 3));
 
-				}
-			#endif
+			}
 
 			CurveTo(oPoint1, oPoint2, oPointE);
 		}
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeEnd(sName);
-			}
-		#endif
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeEnd(wsRecordName);
+		}
 
 		DrawPath(true, false);
 	}
@@ -2954,39 +2852,37 @@ static const struct ActionNamesEmf
 		unsigned int ulCount;
 		m_oStream >> ulCount;
 
-		#ifdef _DEBUG
-			std::wstring sName;
-			unsigned int unId;
+		std::wstring wsRecordName;
+		unsigned int unRecordId;
 
-			if (m_pOutput)
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			if (typeid (T).name() == "TEmfPointL")
 			{
-				if (typeid (T).name() == "TEmfPointL")
-				{
-					sName = L"EMR_POLYBEZIERTO";
-					unId = EMR_POLYBEZIERTO;
-				}
-				else
-				{
-					sName = L"EMR_POLYBEZIERTO16";
-					unId = EMR_POLYBEZIERTO16;
-				}
-
-				oXmlWriter.WriteNodeBegin(sName, true);
-					oXmlWriter.WriteAttribute(L"Id",    (int)unId);
-					oXmlWriter.WriteAttribute(L"Size",  (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(sName, true, false);
-
-					oXmlWriter.WriteNodeBegin(L"Bounds");
-						oXmlWriter.WriteNode(L"Left",	oBounds.lLeft);
-						oXmlWriter.WriteNode(L"Top",	oBounds.lTop);
-						oXmlWriter.WriteNode(L"Right",	oBounds.lRight);
-						oXmlWriter.WriteNode(L"Bottom", oBounds.lBottom);
-						oXmlWriter.WriteNodeEnd(L"Bounds");
-
-					oXmlWriter.WriteNode(L"NumberPoints", (int)ulCount);
-
+				wsRecordName = L"EMR_POLYBEZIERTO";
+				unRecordId = EMR_POLYBEZIERTO;
 			}
-		#endif
+			else
+			{
+				wsRecordName = L"EMR_POLYBEZIERTO16";
+				unRecordId = EMR_POLYBEZIERTO16;
+			}
+
+			m_pOutputXml->WriteNodeBegin(wsRecordName, true);
+				m_pOutputXml->WriteAttribute(L"Id",    unRecordId);
+				m_pOutputXml->WriteAttribute(L"Size",  m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(wsRecordName, true, false);
+
+				m_pOutputXml->WriteNodeBegin(L"Bounds");
+					m_pOutputXml->WriteNode(L"Left",    oBounds.lLeft);
+					m_pOutputXml->WriteNode(L"Top",	    oBounds.lTop);
+					m_pOutputXml->WriteNode(L"Right",   oBounds.lRight);
+					m_pOutputXml->WriteNode(L"Bottom",  oBounds.lBottom);
+					m_pOutputXml->WriteNodeEnd(L"Bounds");
+
+				m_pOutputXml->WriteNode(L"NumberPoints", ulCount);
+
+		}
 
 		for (unsigned int ulIndex = 0; ulIndex < ulCount; ulIndex += 3)
 		{
@@ -2996,36 +2892,32 @@ static const struct ActionNamesEmf
 			T oPoint1, oPoint2, oPointE;
 			m_oStream >> oPoint1 >> oPoint2 >> oPointE;
 
-			#ifdef _DEBUG
-				if (m_pOutput)
-				{
-					oXmlWriter.WriteNodeBegin(L"Point" + std::to_wstring(ulIndex + 1));
-						oXmlWriter.WriteNode(L"X", oPoint1.x);
-						oXmlWriter.WriteNode(L"Y", oPoint1.y);
-						oXmlWriter.WriteNodeEnd(L"Point" + std::to_wstring(ulIndex + 1));
+			if (m_pOutput && NULL != m_pOutputXml)
+			{
+				m_pOutputXml->WriteNodeBegin(L"Point" + std::to_wstring(ulIndex + 1));
+					m_pOutputXml->WriteNode(L"X", oPoint1.x);
+					m_pOutputXml->WriteNode(L"Y", oPoint1.y);
+					m_pOutputXml->WriteNodeEnd(L"Point" + std::to_wstring(ulIndex + 1));
 
-					oXmlWriter.WriteNodeBegin(L"Point" + std::to_wstring(ulIndex + 2));
-						oXmlWriter.WriteNode(L"X", oPoint2.x);
-						oXmlWriter.WriteNode(L"Y", oPoint2.y);
-						oXmlWriter.WriteNodeEnd(L"Point" + std::to_wstring(ulIndex + 2));
+				m_pOutputXml->WriteNodeBegin(L"Point" + std::to_wstring(ulIndex + 2));
+					m_pOutputXml->WriteNode(L"X", oPoint2.x);
+					m_pOutputXml->WriteNode(L"Y", oPoint2.y);
+					m_pOutputXml->WriteNodeEnd(L"Point" + std::to_wstring(ulIndex + 2));
 
-					oXmlWriter.WriteNodeBegin(L"Point" + std::to_wstring(ulIndex + 3));
-						oXmlWriter.WriteNode(L"X", oPointE.x);
-						oXmlWriter.WriteNode(L"Y", oPointE.y);
-						oXmlWriter.WriteNodeEnd(L"Point" + std::to_wstring(ulIndex + 3));
+				m_pOutputXml->WriteNodeBegin(L"Point" + std::to_wstring(ulIndex + 3));
+					m_pOutputXml->WriteNode(L"X", oPointE.x);
+					m_pOutputXml->WriteNode(L"Y", oPointE.y);
+					m_pOutputXml->WriteNodeEnd(L"Point" + std::to_wstring(ulIndex + 3));
 
-				}
-			#endif
+			}
 
 			CurveTo(oPoint1, oPoint2, oPointE);
 		}
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeEnd(sName);
-			}
-		#endif
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeEnd(wsRecordName);
+		}
 	}
 	void CEmfFile::Read_EMR_POLYDRAW()
 	{
@@ -3053,52 +2945,48 @@ static const struct ActionNamesEmf
 		if (!pPoints)
 			return SetError();
 
-		#ifdef _DEBUG
-			std::wstring sName;
-			unsigned int unId;
+		std::wstring wsRecordName;
+		unsigned int unRecordId;
 
-			if (m_pOutput)
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			if (typeid (T).name() == "TEmfPointL")
 			{
-				if (typeid (T).name() == "TEmfPointL")
-				{
-					sName = L"EMR_POLYDRAW";
-					unId = EMR_POLYDRAW;
-				}
-				else
-				{
-					sName = L"EMR_POLYDRAW16";
-					unId = EMR_POLYDRAW16;
-				}
-
-				oXmlWriter.WriteNodeBegin(sName, true);
-					oXmlWriter.WriteAttribute(L"Id",    (int)unId);
-					oXmlWriter.WriteAttribute(L"Size",  (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(sName, true, false);
-
-					oXmlWriter.WriteNodeBegin(L"Bounds");
-						oXmlWriter.WriteNode(L"Left",	oBounds.lLeft);
-						oXmlWriter.WriteNode(L"Top",	oBounds.lTop);
-						oXmlWriter.WriteNode(L"Right",	oBounds.lRight);
-						oXmlWriter.WriteNode(L"Bottom", oBounds.lBottom);
-						oXmlWriter.WriteNodeEnd(L"Bounds");
-
-					oXmlWriter.WriteNode(L"NumberPoints", (int)unCount);
-
+				wsRecordName = L"EMR_POLYDRAW";
+				unRecordId = EMR_POLYDRAW;
 			}
-		#endif
+			else
+			{
+				wsRecordName = L"EMR_POLYDRAW16";
+				unRecordId = EMR_POLYDRAW16;
+			}
+
+			m_pOutputXml->WriteNodeBegin(wsRecordName, true);
+				m_pOutputXml->WriteAttribute(L"Id",    unRecordId);
+				m_pOutputXml->WriteAttribute(L"Size",  m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(wsRecordName, true, false);
+
+				m_pOutputXml->WriteNodeBegin(L"Bounds");
+					m_pOutputXml->WriteNode(L"Left",    oBounds.lLeft);
+					m_pOutputXml->WriteNode(L"Top",	    oBounds.lTop);
+					m_pOutputXml->WriteNode(L"Right",   oBounds.lRight);
+					m_pOutputXml->WriteNode(L"Bottom",  oBounds.lBottom);
+					m_pOutputXml->WriteNodeEnd(L"Bounds");
+
+				m_pOutputXml->WriteNode(L"NumberPoints", unCount);
+
+		}
 
 		for (unsigned int unIndex = 0; unIndex < unCount; unIndex++)
 		{
 			m_oStream >> pPoints[unIndex];
-			#ifdef _DEBUG
-				if (m_pOutput)
-				{
-					oXmlWriter.WriteNodeBegin(L"Point" + std::to_wstring(unIndex + 1));
-						oXmlWriter.WriteNode(L"X", pPoints[unIndex].x);
-						oXmlWriter.WriteNode(L"Y", pPoints[unIndex].y);
-						oXmlWriter.WriteNodeEnd(L"Point" + std::to_wstring(unIndex + 1));
-				}
-			#endif
+			if (m_pOutput && NULL != m_pOutputXml)
+			{
+				m_pOutputXml->WriteNodeBegin(L"Point" + std::to_wstring(unIndex + 1));
+					m_pOutputXml->WriteNode(L"X",	pPoints[unIndex].x);
+					m_pOutputXml->WriteNode(L"Y",	pPoints[unIndex].y);
+					m_pOutputXml->WriteNodeEnd(L"Point" + std::to_wstring(unIndex + 1));
+			}
 		}
 
 		unsigned char* pAbTypes = new unsigned char[unCount];
@@ -3112,10 +3000,8 @@ static const struct ActionNamesEmf
 		{
 			m_oStream >> pAbTypes[unIndex];
 
-			#ifdef _DEBUG
-				if (m_pOutput)
-					oXmlWriter.WriteNode(L"abTypes" + std::to_wstring(unIndex + 1), pAbTypes[unIndex]);
-			#endif
+			if (m_pOutput && NULL != m_pOutputXml)
+				m_pOutputXml->WriteNode(L"abTypes" + std::to_wstring(unIndex + 1), pAbTypes[unIndex]);
 		}
 
 		T* pPoint1 = NULL, *pPoint2 = NULL;
@@ -3164,12 +3050,10 @@ static const struct ActionNamesEmf
 
 		}
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeEnd(sName);
-			}
-		#endif
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeEnd(wsRecordName);
+		}
 
 		delete[] pPoints;
 		delete[] pAbTypes;
@@ -3195,44 +3079,42 @@ static const struct ActionNamesEmf
 		T oPoint;
 		m_oStream >> oPoint;
 
-		#ifdef _DEBUG
-			std::wstring sName;
-			unsigned int unId;
+		std::wstring wsRecordName;
+		unsigned int unRecordId;
 
-			if (m_pOutput)
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			if (typeid (T).name() == "TEmfPointL")
 			{
-				if (typeid (T).name() == "TEmfPointL")
-				{
-					sName = L"EMR_POLYGON";
-					unId = EMR_POLYGON;
-				}
-				else
-				{
-					sName = L"EMR_POLYGON16";
-					unId = EMR_POLYGON16;
-				}
-
-				oXmlWriter.WriteNodeBegin(sName, true);
-					oXmlWriter.WriteAttribute(L"Id",    (int)unId);
-					oXmlWriter.WriteAttribute(L"Size",  (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(sName, true, false);
-
-					oXmlWriter.WriteNodeBegin(L"Bounds");
-						oXmlWriter.WriteNode(L"Left",	oBounds.lLeft);
-						oXmlWriter.WriteNode(L"Top",	oBounds.lTop);
-						oXmlWriter.WriteNode(L"Right",	oBounds.lRight);
-						oXmlWriter.WriteNode(L"Bottom", oBounds.lBottom);
-						oXmlWriter.WriteNodeEnd(L"Bounds");
-
-					oXmlWriter.WriteNode(L"NumberPoints", (int)ulCount);
-
-					oXmlWriter.WriteNodeBegin(L"Point1");
-					    oXmlWriter.WriteNode(L"X",  oPoint.x);
-					    oXmlWriter.WriteNode(L"Y",  oPoint.y);
-					    oXmlWriter.WriteNodeEnd(L"Point1");
-
+				wsRecordName = L"EMR_POLYGON";
+				unRecordId = EMR_POLYGON;
 			}
-		#endif
+			else
+			{
+				wsRecordName = L"EMR_POLYGON16";
+				unRecordId = EMR_POLYGON16;
+			}
+
+			m_pOutputXml->WriteNodeBegin(wsRecordName, true);
+				m_pOutputXml->WriteAttribute(L"Id",    unRecordId);
+				m_pOutputXml->WriteAttribute(L"Size",  m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(wsRecordName, true, false);
+
+				m_pOutputXml->WriteNodeBegin(L"Bounds");
+					m_pOutputXml->WriteNode(L"Left",    oBounds.lLeft);
+					m_pOutputXml->WriteNode(L"Top",	    oBounds.lTop);
+					m_pOutputXml->WriteNode(L"Right",   oBounds.lRight);
+					m_pOutputXml->WriteNode(L"Bottom",  oBounds.lBottom);
+					m_pOutputXml->WriteNodeEnd(L"Bounds");
+
+				m_pOutputXml->WriteNode(L"NumberPoints", ulCount);
+
+				m_pOutputXml->WriteNodeBegin(L"Point1");
+					m_pOutputXml->WriteNode(L"X",  oPoint.x);
+					m_pOutputXml->WriteNode(L"Y",  oPoint.y);
+					m_pOutputXml->WriteNodeEnd(L"Point1");
+
+		}
 
 		MoveTo(oPoint);
 
@@ -3242,24 +3124,20 @@ static const struct ActionNamesEmf
 			m_oStream >> oPoint;
 			LineTo(oPoint);
 
-			#ifdef _DEBUG
-				if (m_pOutput)
-				{
-					const std::wstring sNamePoint = L"Point" + std::to_wstring(ulIndex + 1);
-					oXmlWriter.WriteNodeBegin(sNamePoint);
-					    oXmlWriter.WriteNode(L"X",  oPoint.x);
-					    oXmlWriter.WriteNode(L"Y",  oPoint.y);
-					    oXmlWriter.WriteNodeEnd(sNamePoint);
-				}
-			#endif
+			if (m_pOutput && NULL != m_pOutputXml)
+			{
+				const std::wstring sNamePoint = L"Point" + std::to_wstring(ulIndex + 1);
+				m_pOutputXml->WriteNodeBegin(sNamePoint);
+				    m_pOutputXml->WriteNode(L"X",  oPoint.x);
+				    m_pOutputXml->WriteNode(L"Y",  oPoint.y);
+				    m_pOutputXml->WriteNodeEnd(sNamePoint);
+			}
 		}
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeEnd(sName);
-			}
-		#endif
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeEnd(wsRecordName);
+		}
 
 		ClosePath();
 		DrawPath(true, true);
@@ -3286,68 +3164,62 @@ static const struct ActionNamesEmf
 		m_oStream >> oPoint;
 		MoveTo(oPoint);
 
-		#ifdef _DEBUG
-			std::wstring sName;
-			unsigned int unId;
+		std::wstring wsRecordName;
+		unsigned int unRecordId;
 
-			if (m_pOutput)
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			if (typeid (T).name() == "TEmfPointL")
 			{
-				if (typeid (T).name() == "TEmfPointL")
-				{
-					sName = L"EMR_POLYLINE";
-					unId = EMR_POLYLINE;
-				}
-				else
-				{
-					sName = L"EMR_POLYLINE16";
-					unId = EMR_POLYLINE16;
-				}
+				wsRecordName = L"EMR_POLYLINE";
+				unRecordId = EMR_POLYLINE;
+			}
+			else
+			{
+				wsRecordName = L"EMR_POLYLINE16";
+				unRecordId = EMR_POLYLINE16;
+			}
 
-				oXmlWriter.WriteNodeBegin(sName, true);
-					oXmlWriter.WriteAttribute(L"Id",    (int)unId);
-					oXmlWriter.WriteAttribute(L"Size",  (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(sName, true, false);
+			m_pOutputXml->WriteNodeBegin(wsRecordName, true);
+				m_pOutputXml->WriteAttribute(L"Id",    unRecordId);
+				m_pOutputXml->WriteAttribute(L"Size",  m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(wsRecordName, true, false);
 
-					oXmlWriter.WriteNodeBegin(L"Bounds");
-						oXmlWriter.WriteNode(L"Left",	oBounds.lLeft);
-						oXmlWriter.WriteNode(L"Top",	oBounds.lTop);
-						oXmlWriter.WriteNode(L"Right",	oBounds.lRight);
-						oXmlWriter.WriteNode(L"Bottom", oBounds.lBottom);
-						oXmlWriter.WriteNodeEnd(L"Bounds");
+				m_pOutputXml->WriteNodeBegin(L"Bounds");
+					m_pOutputXml->WriteNode(L"Left",    oBounds.lLeft);
+					m_pOutputXml->WriteNode(L"Top",	    oBounds.lTop);
+					m_pOutputXml->WriteNode(L"Right",   oBounds.lRight);
+					m_pOutputXml->WriteNode(L"Bottom",  oBounds.lBottom);
+					m_pOutputXml->WriteNodeEnd(L"Bounds");
 
-					oXmlWriter.WriteNode(L"NumberPoints", (int)ulCount);
+				m_pOutputXml->WriteNode(L"NumberPoints", ulCount);
 
-					oXmlWriter.WriteNodeBegin(L"Point1");
-					    oXmlWriter.WriteNode(L"X",  oPoint.x);
-					    oXmlWriter.WriteNode(L"Y",  oPoint.y);
-					    oXmlWriter.WriteNodeEnd(L"Point1");
+				m_pOutputXml->WriteNodeBegin(L"Point1");
+					m_pOutputXml->WriteNode(L"X",  oPoint.x);
+					m_pOutputXml->WriteNode(L"Y",  oPoint.y);
+					m_pOutputXml->WriteNodeEnd(L"Point1");
 
-			    }
-		#endif
+		}
 
 		for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex++)
 		{
 			m_oStream >> oPoint;
 			LineTo(oPoint);
 
-			#ifdef _DEBUG
-				if (m_pOutput)
-				{
-					const std::wstring sNamePoint = L"Point" + std::to_wstring(ulIndex + 1);
-					oXmlWriter.WriteNodeBegin(sNamePoint);
-					    oXmlWriter.WriteNode(L"X",  oPoint.x);
-					    oXmlWriter.WriteNode(L"Y",  oPoint.y);
-					    oXmlWriter.WriteNodeEnd(sNamePoint);
-				}
-			#endif
+			if (m_pOutput && NULL != m_pOutputXml)
+			{
+				const std::wstring sNamePoint = L"Point" + std::to_wstring(ulIndex + 1);
+				m_pOutputXml->WriteNodeBegin(sNamePoint);
+				    m_pOutputXml->WriteNode(L"X",  oPoint.x);
+				    m_pOutputXml->WriteNode(L"Y",  oPoint.y);
+				    m_pOutputXml->WriteNodeEnd(sNamePoint);
+			}
 		}
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeEnd(sName);
-			}
-		#endif
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeEnd(wsRecordName);
+		}
 
 		DrawPath(true, false);
 	}
@@ -3367,38 +3239,36 @@ static const struct ActionNamesEmf
 		unsigned int ulCount;
 		m_oStream >> ulCount;
 
-		#ifdef _DEBUG
-			std::wstring sName;
-			unsigned int unId;
+		std::wstring wsRecordName;
+		unsigned int unRecordId;
 
-			if (m_pOutput)
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			if (typeid (T).name() == "TEmfPointL")
 			{
-				if (typeid (T).name() == "TEmfPointL")
-				{
-					sName = L"EMR_POLYLINETO";
-					unId = EMR_POLYLINETO;
-				}
-				else
-				{
-					sName = L"EMR_POLYLINETO16";
-					unId = EMR_POLYLINETO16;
-				}
+				wsRecordName = L"EMR_POLYLINETO";
+				unRecordId = EMR_POLYLINETO;
+			}
+			else
+			{
+				wsRecordName = L"EMR_POLYLINETO16";
+				unRecordId = EMR_POLYLINETO16;
+			}
 
-				oXmlWriter.WriteNodeBegin(sName, true);
-					oXmlWriter.WriteAttribute(L"Id",    (int)unId);
-					oXmlWriter.WriteAttribute(L"Size",  (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(sName, true, false);
+			m_pOutputXml->WriteNodeBegin(wsRecordName, true);
+				m_pOutputXml->WriteAttribute(L"Id",    unRecordId);
+				m_pOutputXml->WriteAttribute(L"Size",  m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(wsRecordName, true, false);
 
-					oXmlWriter.WriteNodeBegin(L"Bounds");
-						oXmlWriter.WriteNode(L"Left",	oBounds.lLeft);
-						oXmlWriter.WriteNode(L"Top",	oBounds.lTop);
-						oXmlWriter.WriteNode(L"Right",	oBounds.lRight);
-						oXmlWriter.WriteNode(L"Bottom", oBounds.lBottom);
-						oXmlWriter.WriteNodeEnd(L"Bounds");
+				m_pOutputXml->WriteNodeBegin(L"Bounds");
+					m_pOutputXml->WriteNode(L"Left",    oBounds.lLeft);
+					m_pOutputXml->WriteNode(L"Top",	    oBounds.lTop);
+					m_pOutputXml->WriteNode(L"Right",   oBounds.lRight);
+					m_pOutputXml->WriteNode(L"Bottom",  oBounds.lBottom);
+					m_pOutputXml->WriteNodeEnd(L"Bounds");
 
-					oXmlWriter.WriteNode(L"NumberPoints", (int)ulCount);
-			    }
-		#endif
+				m_pOutputXml->WriteNode(L"NumberPoints", ulCount);
+		}
 
 		for (unsigned int ulIndex = 0; ulIndex < ulCount; ulIndex++)
 		{
@@ -3406,24 +3276,20 @@ static const struct ActionNamesEmf
 			m_oStream >> oPoint;
 			LineTo(oPoint);
 
-			#ifdef _DEBUG
-				if (m_pOutput)
-				{
-					const std::wstring sNamePoint = L"Point" + std::to_wstring(ulIndex + 1);
-					oXmlWriter.WriteNodeBegin(sNamePoint);
-						oXmlWriter.WriteNode(L"X",  oPoint.x);
-						oXmlWriter.WriteNode(L"Y",  oPoint.y);
-						oXmlWriter.WriteNodeEnd(sNamePoint);
-				}
-			#endif
+			if (m_pOutput && NULL != m_pOutputXml)
+			{
+				const std::wstring sNamePoint = L"Point" + std::to_wstring(ulIndex + 1);
+				m_pOutputXml->WriteNodeBegin(sNamePoint);
+					m_pOutputXml->WriteNode(L"X",  oPoint.x);
+					m_pOutputXml->WriteNode(L"Y",  oPoint.y);
+					m_pOutputXml->WriteNodeEnd(sNamePoint);
+			}
 		}
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeEnd(sName);
-			}
-		#endif
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeEnd(wsRecordName);
+		}
 	}
 	void CEmfFile::Read_EMR_POLYPOLYGON()
 	{
@@ -3446,54 +3312,48 @@ static const struct ActionNamesEmf
 		if (!pPolygonPointCount)
 			return SetError();
 
-		#ifdef _DEBUG
-			std::wstring sName;
-			unsigned int unId;
+		std::wstring wsRecordName;
+		unsigned int unRecordId;
 
-			if (m_pOutput)
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			if (typeid (T).name() == "TEmfPointL")
 			{
-				if (typeid (T).name() == "TEmfPointL")
-				{
-					sName = L"EMR_POLYPOLYGON";
-					unId = EMR_POLYPOLYGON;
-				}
-				else
-				{
-					sName = L"EMR_POLYPOLYGON16";
-					unId = EMR_POLYPOLYGON16;
-				}
+				wsRecordName = L"EMR_POLYPOLYGON";
+				unRecordId = EMR_POLYPOLYGON;
+			}
+			else
+			{
+				wsRecordName = L"EMR_POLYPOLYGON16";
+				unRecordId = EMR_POLYPOLYGON16;
+			}
 
-				oXmlWriter.WriteNodeBegin(sName, true);
-					oXmlWriter.WriteAttribute(L"Id",    (int)unId);
-					oXmlWriter.WriteAttribute(L"Size",  (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(sName, true, false);
+			m_pOutputXml->WriteNodeBegin(wsRecordName, true);
+				m_pOutputXml->WriteAttribute(L"Id",    unRecordId);
+				m_pOutputXml->WriteAttribute(L"Size",  m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(wsRecordName, true, false);
 
-					oXmlWriter.WriteNodeBegin(L"Bounds");
-						oXmlWriter.WriteNode(L"Left",	oBounds.lLeft);
-						oXmlWriter.WriteNode(L"Top",	oBounds.lTop);
-						oXmlWriter.WriteNode(L"Right",	oBounds.lRight);
-						oXmlWriter.WriteNode(L"Bottom", oBounds.lBottom);
-						oXmlWriter.WriteNodeEnd(L"Bounds");
+				m_pOutputXml->WriteNodeBegin(L"Bounds");
+					m_pOutputXml->WriteNode(L"Left",    oBounds.lLeft);
+					m_pOutputXml->WriteNode(L"Top",	    oBounds.lTop);
+					m_pOutputXml->WriteNode(L"Right",   oBounds.lRight);
+					m_pOutputXml->WriteNode(L"Bottom",  oBounds.lBottom);
+					m_pOutputXml->WriteNodeEnd(L"Bounds");
 
-					oXmlWriter.WriteNode(L"NumberOfPolygons",   (int)ulNumberOfPolygons);					oXmlWriter.WriteNode(L"NumberOfPolygons", (int)ulNumberOfPolygons);
-					oXmlWriter.WriteNode(L"Count",		    (int)ulTotalPointsCount);
+				m_pOutputXml->WriteNode(L"NumberOfPolygons",	ulNumberOfPolygons);
+				m_pOutputXml->WriteNode(L"Count",		ulTotalPointsCount);
 
-			    }
-		#endif
+		}
 
 		for (unsigned int ulIndex = 0; ulIndex < ulNumberOfPolygons; ulIndex++)
 		{
 			m_oStream >> pPolygonPointCount[ulIndex];
 
-			#ifdef _DEBUG
-				if (m_pOutput)
-					oXmlWriter.WriteNode(L"PolygonPointCount" + std::to_wstring(ulIndex + 1), (int)pPolygonPointCount[ulIndex]);
-			#endif
+			if (m_pOutput && NULL != m_pOutputXml)
+				m_pOutputXml->WriteNode(L"PolygonPointCount" + std::to_wstring(ulIndex + 1), pPolygonPointCount[ulIndex]);
 		}
 
-                #ifdef _DEBUG
-                        unsigned int unIndexPoint = 0;
-                #endif
+		unsigned int unIndexPoint = 0;
 
 		for (unsigned int ulPolygonIndex = 0, unStartPointIndex = 0; ulPolygonIndex < ulNumberOfPolygons; ulPolygonIndex++)
 		{
@@ -3504,16 +3364,14 @@ static const struct ActionNamesEmf
 			T oPoint;
 			m_oStream >> oPoint;
 
-			#ifdef _DEBUG
-				if (m_pOutput)
-				{
-					++unIndexPoint;
-					oXmlWriter.WriteNodeBegin(L"Point" + std::to_wstring(unIndexPoint));
-						oXmlWriter.WriteNode(L"X",  oPoint.x);
-						oXmlWriter.WriteNode(L"Y",  oPoint.y);
-						oXmlWriter.WriteNodeEnd(L"Point" + std::to_wstring(unIndexPoint));
-				}
-			#endif
+			if (m_pOutput && NULL != m_pOutputXml)
+			{
+				++unIndexPoint;
+				m_pOutputXml->WriteNodeBegin(L"Point" + std::to_wstring(unIndexPoint));
+					m_pOutputXml->WriteNode(L"X",  oPoint.x);
+					m_pOutputXml->WriteNode(L"Y",  oPoint.y);
+					m_pOutputXml->WriteNodeEnd(L"Point" + std::to_wstring(unIndexPoint));
+			}
 
 			MoveTo(oPoint);
 
@@ -3528,28 +3386,25 @@ static const struct ActionNamesEmf
 
 				m_oStream >> oPoint;
 
-				#ifdef _DEBUG
-					if (m_pOutput)
-					{
-						++unIndexPoint;
-						oXmlWriter.WriteNodeBegin(L"Point" + std::to_wstring(unIndexPoint));
-							oXmlWriter.WriteNode(L"X",  oPoint.x);
-							oXmlWriter.WriteNode(L"Y",  oPoint.y);
-							oXmlWriter.WriteNodeEnd(L"Point" + std::to_wstring(unIndexPoint));
-					}
-				#endif
+				if (m_pOutput && NULL != m_pOutputXml)
+				{
+					++unIndexPoint;
+					m_pOutputXml->WriteNodeBegin(L"Point" + std::to_wstring(unIndexPoint));
+						m_pOutputXml->WriteNode(L"X",  oPoint.x);
+						m_pOutputXml->WriteNode(L"Y",  oPoint.y);
+						m_pOutputXml->WriteNodeEnd(L"Point" + std::to_wstring(unIndexPoint));
+				}
+
 				LineTo(oPoint);
 			}
 
 			ClosePath();
 		}
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeEnd(sName);
-			}
-		#endif
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeEnd(wsRecordName);
+		}
 
 		DrawPath(true, true);
 
@@ -3580,55 +3435,49 @@ static const struct ActionNamesEmf
 			return SetError();
 
 
-		#ifdef _DEBUG
-			std::wstring sName;
-			unsigned int unId;
+		std::wstring wsRecordName;
+		unsigned int unRecordId;
 
-			if (m_pOutput)
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			if (typeid (T).name() == "TEmfPointL")
 			{
-				if (typeid (T).name() == "TEmfPointL")
-				{
-					sName = L"EMR_POLYPOLYLINE";
-					unId = EMR_POLYPOLYLINE;
-				}
-				else
-				{
-					sName = L"EMR_POLYPOLYLINE16";
-					unId = EMR_POLYPOLYLINE16;
-				}
+				wsRecordName = L"EMR_POLYPOLYLINE";
+				unRecordId = EMR_POLYPOLYLINE;
+			}
+			else
+			{
+				wsRecordName = L"EMR_POLYPOLYLINE16";
+				unRecordId = EMR_POLYPOLYLINE16;
+			}
 
-				oXmlWriter.WriteNodeBegin(sName, true);
-					oXmlWriter.WriteAttribute(L"Id",    (int)unId);
-					oXmlWriter.WriteAttribute(L"Size",  (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(sName, true, false);
+                        m_pOutputXml->WriteNodeBegin(wsRecordName, true);
+                                m_pOutputXml->WriteAttribute(L"Id",    unRecordId);
+                                m_pOutputXml->WriteAttribute(L"Size",  m_ulRecordSize);
+                                m_pOutputXml->WriteNodeEnd(wsRecordName, true, false);
 
-					oXmlWriter.WriteNodeBegin(L"Bounds");
-						oXmlWriter.WriteNode(L"Left",	oBounds.lLeft);
-						oXmlWriter.WriteNode(L"Top",	oBounds.lTop);
-						oXmlWriter.WriteNode(L"Right",	oBounds.lRight);
-						oXmlWriter.WriteNode(L"Bottom", oBounds.lBottom);
-						oXmlWriter.WriteNodeEnd(L"Bounds");
+                                m_pOutputXml->WriteNodeBegin(L"Bounds");
+                                        m_pOutputXml->WriteNode(L"Left",    oBounds.lLeft);
+                                        m_pOutputXml->WriteNode(L"Top",     oBounds.lTop);
+                                        m_pOutputXml->WriteNode(L"Right",   oBounds.lRight);
+                                        m_pOutputXml->WriteNode(L"Bottom",  oBounds.lBottom);
+                                        m_pOutputXml->WriteNodeEnd(L"Bounds");
 
-					oXmlWriter.WriteNode(L"NumberOfPolylines",  (int)ulNumberOfPolylines);
-					oXmlWriter.WriteNode(L"Count",		    (int)ulTotalPointsCount);
+                                m_pOutputXml->WriteNode(L"NumberOfPolylines",   ulNumberOfPolylines);
+                                m_pOutputXml->WriteNode(L"Count",               ulTotalPointsCount);
 
-			    }
-		#endif
+                }
 
 		unsigned int* pPolylinePointCount = new unsigned int[ulNumberOfPolylines];
 		for (unsigned int ulIndex = 0; ulIndex < ulNumberOfPolylines; ulIndex++)
 		{
 			m_oStream >> pPolylinePointCount[ulIndex];
 
-			#ifdef _DEBUG
-				if (m_pOutput)
-					oXmlWriter.WriteNode(L"PolylinePointCount" + std::to_wstring(ulIndex + 1), (int)pPolylinePointCount[ulIndex]);
-			#endif
+			if (m_pOutput && NULL != m_pOutputXml)
+				m_pOutputXml->WriteNode(L"PolylinePointCount" + std::to_wstring(ulIndex + 1), pPolylinePointCount[ulIndex]);
 		}
 
-                #ifdef _DEBUG
-                        unsigned int unIndexPoint = 0;
-                #endif
+		unsigned int unIndexPoint = 0;
 
 		for (unsigned int ulPolyIndex = 0, ulStartPointIndex = 0; ulPolyIndex < ulNumberOfPolylines; ulPolyIndex++)
 		{
@@ -3639,16 +3488,14 @@ static const struct ActionNamesEmf
 			T oPoint;
 			m_oStream >> oPoint;
 
-			#ifdef _DEBUG
-				if (m_pOutput)
-				{
-					++unIndexPoint;
-					oXmlWriter.WriteNodeBegin(L"Point" + std::to_wstring(unIndexPoint));
-						oXmlWriter.WriteNode(L"X",  oPoint.x);
-						oXmlWriter.WriteNode(L"Y",  oPoint.y);
-						oXmlWriter.WriteNodeEnd(L"Point" + std::to_wstring(unIndexPoint));
-				}
-			#endif
+			if (m_pOutput && NULL != m_pOutputXml)
+			{
+				++unIndexPoint;
+				m_pOutputXml->WriteNodeBegin(L"Point" + std::to_wstring(unIndexPoint));
+					m_pOutputXml->WriteNode(L"X",  oPoint.x);
+					m_pOutputXml->WriteNode(L"Y",  oPoint.y);
+					m_pOutputXml->WriteNodeEnd(L"Point" + std::to_wstring(unIndexPoint));
+			}
 
 			MoveTo(oPoint);
 
@@ -3663,27 +3510,23 @@ static const struct ActionNamesEmf
 
 				m_oStream >> oPoint;
 
-				#ifdef _DEBUG
-					if (m_pOutput)
-					{
-						++unIndexPoint;
-						oXmlWriter.WriteNodeBegin(L"Point" + std::to_wstring(unIndexPoint));
-							oXmlWriter.WriteNode(L"X",  oPoint.x);
-							oXmlWriter.WriteNode(L"Y",  oPoint.y);
-							oXmlWriter.WriteNodeEnd(L"Point" + std::to_wstring(unIndexPoint));
-					}
-				#endif
+				if (m_pOutput && NULL != m_pOutputXml)
+				{
+					++unIndexPoint;
+					m_pOutputXml->WriteNodeBegin(L"Point" + std::to_wstring(unIndexPoint));
+						m_pOutputXml->WriteNode(L"X",  oPoint.x);
+						m_pOutputXml->WriteNode(L"Y",  oPoint.y);
+						m_pOutputXml->WriteNodeEnd(L"Point" + std::to_wstring(unIndexPoint));
+				}
 
 				LineTo(oPoint);
 			}				
 		}
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeEnd(sName);
-			}
-		#endif
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeEnd(wsRecordName);
+		}
 
 		DrawPath(true, false);
 
@@ -3728,24 +3571,22 @@ static const struct ActionNamesEmf
 		TEmfRectL oBox;
 		m_oStream >> oBox;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_RECTANGLE", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_RECTANGLE);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_RECTANGLE", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_RECTANGLE", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_RECTANGLE);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_RECTANGLE", true, false);
 
-					oXmlWriter.WriteNodeBegin(L"Rectangle");
-						oXmlWriter.WriteNode(L"Left",	oBox.lLeft);
-						oXmlWriter.WriteNode(L"Top",	oBox.lTop);
-						oXmlWriter.WriteNode(L"Right",	oBox.lRight);
-						oXmlWriter.WriteNode(L"Bottom", oBox.lBottom);
-						oXmlWriter.WriteNodeEnd(L"Rectangle");
+				m_pOutputXml->WriteNodeBegin(L"Rectangle");
+					m_pOutputXml->WriteNode(L"Left",    oBox.lLeft);
+					m_pOutputXml->WriteNode(L"Top",	    oBox.lTop);
+					m_pOutputXml->WriteNode(L"Right",   oBox.lRight);
+					m_pOutputXml->WriteNode(L"Bottom",  oBox.lBottom);
+					m_pOutputXml->WriteNodeEnd(L"Rectangle");
 
-					oXmlWriter.WriteNodeEnd(L"EMR_RECTANGLE");
-			}
-		#endif
+				m_pOutputXml->WriteNodeEnd(L"EMR_RECTANGLE");
+		}
 
 		if (AD_COUNTERCLOCKWISE == m_pDC->GetArcDirection())
 		{
@@ -3770,29 +3611,27 @@ static const struct ActionNamesEmf
 		TEmfSizeL oCorner;
 		m_oStream >> oBox >> oCorner;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_ROUNDRECT", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_ROUNDRECT);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_ROUNDRECT", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_ROUNDRECT", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_ROUNDRECT);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_ROUNDRECT", true, false);
 
-					oXmlWriter.WriteNodeBegin(L"Rectangle");
-						oXmlWriter.WriteNode(L"Left",	oBox.lLeft);
-						oXmlWriter.WriteNode(L"Top",	oBox.lTop);
-						oXmlWriter.WriteNode(L"Right",	oBox.lRight);
-						oXmlWriter.WriteNode(L"Bottom", oBox.lBottom);
-						oXmlWriter.WriteNodeEnd(L"Rectangle");
+				m_pOutputXml->WriteNodeBegin(L"Rectangle");
+					m_pOutputXml->WriteNode(L"Left",    oBox.lLeft);
+					m_pOutputXml->WriteNode(L"Top",	    oBox.lTop);
+					m_pOutputXml->WriteNode(L"Right",   oBox.lRight);
+					m_pOutputXml->WriteNode(L"Bottom",  oBox.lBottom);
+					m_pOutputXml->WriteNodeEnd(L"Rectangle");
 
-					oXmlWriter.WriteNodeBegin(L"Corner");
-						oXmlWriter.WriteNode(L"cX", (int)oCorner.cx);
-						oXmlWriter.WriteNode(L"cY", (int)oCorner.cy);
-						oXmlWriter.WriteNodeEnd(L"Corner");
+				m_pOutputXml->WriteNodeBegin(L"Corner");
+					m_pOutputXml->WriteNode(L"cX", oCorner.cx);
+					m_pOutputXml->WriteNode(L"cY", oCorner.cy);
+					m_pOutputXml->WriteNodeEnd(L"Corner");
 
-					oXmlWriter.WriteNodeEnd(L"EMR_ROUNDRECT");
-			}
-		#endif
+				m_pOutputXml->WriteNodeEnd(L"EMR_ROUNDRECT");
+		}
 
 
 		int lBoxW = oBox.lRight - oBox.lLeft;
@@ -3837,30 +3676,28 @@ static const struct ActionNamesEmf
 		m_oStream >> oPoint;
 		m_oStream >> oColor;
 
-                #ifdef _DEBUG
-                        if (m_pOutput)
-                        {
-                                oXmlWriter.WriteNodeBegin(L"EMR_SETPIXELV", true);
-                                        oXmlWriter.WriteAttribute(L"Id", EMR_SETPIXELV);
-                                        oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-                                        oXmlWriter.WriteNodeEnd(L"EMR_SETPIXELV", true, false);
+                if (m_pOutput && NULL != m_pOutputXml)
+                {
+                        m_pOutputXml->WriteNodeBegin(L"EMR_SETPIXELV", true);
+                                m_pOutputXml->WriteAttribute(L"Id", EMR_SETPIXELV);
+                                m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+                                m_pOutputXml->WriteNodeEnd(L"EMR_SETPIXELV", true, false);
 
-                                        oXmlWriter.WriteNodeBegin(L"Pixel");
-                                            oXmlWriter.WriteNode(L"X", oPoint.x);
-                                            oXmlWriter.WriteNode(L"Y", oPoint.x);
-                                            oXmlWriter.WriteNodeEnd(L"Pixel");
+                                m_pOutputXml->WriteNodeBegin(L"Pixel");
+                                        m_pOutputXml->WriteNode(L"X", oPoint.x);
+                                        m_pOutputXml->WriteNode(L"Y", oPoint.x);
+                                        m_pOutputXml->WriteNodeEnd(L"Pixel");
 
-                                        oXmlWriter.WriteNodeBegin(L"Color");
-                                            oXmlWriter.WriteNode(L"Red",        oColor.r);
-                                            oXmlWriter.WriteNode(L"Green",      oColor.g);
-                                            oXmlWriter.WriteNode(L"Blue",       oColor.b);
-                                            oXmlWriter.WriteNode(L"Reserved",   oColor.a);
-                                            oXmlWriter.WriteNodeEnd(L"Color");
+                                m_pOutputXml->WriteNodeBegin(L"Color");
+                                        m_pOutputXml->WriteNode(L"Red",        oColor.r);
+                                        m_pOutputXml->WriteNode(L"Green",      oColor.g);
+                                        m_pOutputXml->WriteNode(L"Blue",       oColor.b);
+                                        m_pOutputXml->WriteNode(L"Reserved",   oColor.a);
+                                        m_pOutputXml->WriteNodeEnd(L"Color");
 
-                                        oXmlWriter.WriteNodeEnd(L"EMR_SETPIXELV");
+                                m_pOutputXml->WriteNodeEnd(L"EMR_SETPIXELV");
 
-                        }
-                #endif
+                }
 
 		// Делаем цветом кисти
 		BYTE pBgraBuffer[4];
@@ -3876,34 +3713,32 @@ static const struct ActionNamesEmf
 		TEmfSmallTextout oText;
 		m_oStream >> oText;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_SMALLTEXTOUT", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_SMALLTEXTOUT);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_SMALLTEXTOUT", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_SMALLTEXTOUT", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_SMALLTEXTOUT);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_SMALLTEXTOUT", true, false);
 
-					oXmlWriter.WriteNode(L"X",	oText.x);
-					oXmlWriter.WriteNode(L"X",	oText.y);
-					oXmlWriter.WriteNode(L"cChars", (int)oText.cChars);
-					oXmlWriter.WriteNode(L"fuOptions", (int)oText.fuOptions);
-					oXmlWriter.WriteNode(L"iGraphicsMode", (int)oText.iGraphicsMode);
-					oXmlWriter.WriteNode(L"exScale", oText.exScale);
-					oXmlWriter.WriteNode(L"eyScale", oText.eyScale);
+				m_pOutputXml->WriteNode(L"X",		    oText.x);
+				m_pOutputXml->WriteNode(L"X",		    oText.y);
+				m_pOutputXml->WriteNode(L"cChars",	    oText.cChars);
+				m_pOutputXml->WriteNode(L"fuOptions",	    oText.fuOptions);
+				m_pOutputXml->WriteNode(L"iGraphicsMode",   oText.iGraphicsMode);
+				m_pOutputXml->WriteNode(L"exScale",	    oText.exScale);
+				m_pOutputXml->WriteNode(L"eyScale",	    oText.eyScale);
 
-					if (!(oText.fuOptions & ETO_NO_RECT))
-					{
-						oXmlWriter.WriteNodeBegin(L"Bounds");
-							oXmlWriter.WriteNode(L"Left",	oText.Bounds.lLeft);
-							oXmlWriter.WriteNode(L"Top",	oText.Bounds.lTop);
-							oXmlWriter.WriteNode(L"Right",	oText.Bounds.lRight);
-							oXmlWriter.WriteNode(L"Bottom", oText.Bounds.lBottom);
-							oXmlWriter.WriteNodeEnd(L"Bounds");
-					}
+				if (!(oText.fuOptions & ETO_NO_RECT))
+				{
+					m_pOutputXml->WriteNodeBegin(L"Bounds");
+						m_pOutputXml->WriteNode(L"Left",    oText.Bounds.lLeft);
+						m_pOutputXml->WriteNode(L"Top",	    oText.Bounds.lTop);
+						m_pOutputXml->WriteNode(L"Right",   oText.Bounds.lRight);
+						m_pOutputXml->WriteNode(L"Bottom",  oText.Bounds.lBottom);
+						m_pOutputXml->WriteNodeEnd(L"Bounds");
+				}
 
-			}
-		#endif
+		}
 
 		// Переводим oText в TEmfEmrText
 		TEmfEmrText oEmrText;
@@ -3925,12 +3760,10 @@ static const struct ActionNamesEmf
 
 		DrawTextW(oEmrText, oText.iGraphicsMode);
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeEnd(L"EMR_SMALLTEXTOUT");
-			}
-		#endif
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeEnd(L"EMR_SMALLTEXTOUT");
+		}
 
 		// Поскольку мы просто скопировали ссылку на строку, а не скопировали сами строку обнуляем здесь, потому 
 		// что на деструкторе структуры освобождается память.
@@ -3941,24 +3774,22 @@ static const struct ActionNamesEmf
 		TEmfRectL oBounds;
 		m_oStream >> oBounds;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_STROKEANDFILLPATH", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_STROKEANDFILLPATH);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_STROKEANDFILLPATH", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_STROKEANDFILLPATH", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_STROKEANDFILLPATH);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_STROKEANDFILLPATH", true, false);
 
-					oXmlWriter.WriteNodeBegin(L"Bounds");
-						oXmlWriter.WriteNode(L"Left",	oBounds.lLeft);
-						oXmlWriter.WriteNode(L"Top",	oBounds.lTop);
-						oXmlWriter.WriteNode(L"Right",	oBounds.lRight);
-						oXmlWriter.WriteNode(L"Bottom", oBounds.lBottom);
-						oXmlWriter.WriteNodeEnd(L"Bounds");
+				m_pOutputXml->WriteNodeBegin(L"Bounds");
+					m_pOutputXml->WriteNode(L"Left",    oBounds.lLeft);
+					m_pOutputXml->WriteNode(L"Top",	    oBounds.lTop);
+					m_pOutputXml->WriteNode(L"Right",   oBounds.lRight);
+					m_pOutputXml->WriteNode(L"Bottom",  oBounds.lBottom);
+					m_pOutputXml->WriteNodeEnd(L"Bounds");
 
-					oXmlWriter.WriteNodeEnd(L"EMR_STROKEANDFILLPATH");
-			}
-		#endif
+				m_pOutputXml->WriteNodeEnd(L"EMR_STROKEANDFILLPATH");
+		}
 
 		if (m_pOutput && m_pPath)
 		{
@@ -3971,24 +3802,22 @@ static const struct ActionNamesEmf
 		TEmfRectL oBounds;
 		m_oStream >> oBounds;
 
-		#ifdef _DEBUG
-			if (m_pOutput)
-			{
-				oXmlWriter.WriteNodeBegin(L"EMR_STROKEPATH", true);
-					oXmlWriter.WriteAttribute(L"Id", EMR_STROKEPATH);
-					oXmlWriter.WriteAttribute(L"Size", (int)m_ulRecordSize);
-					oXmlWriter.WriteNodeEnd(L"EMR_STROKEPATH", true, false);
+		if (m_pOutput && NULL != m_pOutputXml)
+		{
+			m_pOutputXml->WriteNodeBegin(L"EMR_STROKEPATH", true);
+				m_pOutputXml->WriteAttribute(L"Id", EMR_STROKEPATH);
+				m_pOutputXml->WriteAttribute(L"Size", m_ulRecordSize);
+				m_pOutputXml->WriteNodeEnd(L"EMR_STROKEPATH", true, false);
 
-					oXmlWriter.WriteNodeBegin(L"Bounds");
-						oXmlWriter.WriteNode(L"Left",	oBounds.lLeft);
-						oXmlWriter.WriteNode(L"Top",	oBounds.lTop);
-						oXmlWriter.WriteNode(L"Right",	oBounds.lRight);
-						oXmlWriter.WriteNode(L"Bottom", oBounds.lBottom);
-						oXmlWriter.WriteNodeEnd(L"Bounds");
+				m_pOutputXml->WriteNodeBegin(L"Bounds");
+					m_pOutputXml->WriteNode(L"Left",    oBounds.lLeft);
+					m_pOutputXml->WriteNode(L"Top",	    oBounds.lTop);
+					m_pOutputXml->WriteNode(L"Right",   oBounds.lRight);
+					m_pOutputXml->WriteNode(L"Bottom",  oBounds.lBottom);
+					m_pOutputXml->WriteNodeEnd(L"Bounds");
 
-					oXmlWriter.WriteNodeEnd(L"EMR_STROKEPATH");
-			}
-		#endif
+				m_pOutputXml->WriteNodeEnd(L"EMR_STROKEPATH");
+		}
 
 		if (m_pOutput && m_pPath)
 		{

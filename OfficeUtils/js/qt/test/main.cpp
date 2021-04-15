@@ -30,9 +30,8 @@ int main()
         unsigned int nPathLength = GetLength(sPaths + i);
         i += 4;
         BYTE* sFile = Zlib_GetFileByPath(zlib, sPaths + i, nPathLength);
-        i += nPathLength;
 
-        if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L'/' + NSFile::GetFileName(UTF8_TO_U(std::string((const char*)(sPaths + i), nPathLength)))))
+        if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L'/' + NSFile::GetFileName(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(sPaths + i, nPathLength))))
         {
             if (sFile)
             {
@@ -41,6 +40,7 @@ int main()
             }
             oFile.CloseFile();
         }
+        i += nPathLength;
     }
 
     Zlib_Destroy(zlib);

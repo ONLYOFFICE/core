@@ -1,5 +1,10 @@
 #include "base.h"
 #include "engine.h"
+#if defined(_WIN32) || defined (_WIN64)
+#include "../../../DesktopEditor/common/File.h"
+#elif defined(__linux__)
+#include <iconv.h>
+#endif
 
 #include <algorithm> // для std::min в get_file_in_archive
 #include <vector>
@@ -12,6 +17,19 @@ unzFile unzOpenHelp(BUFFER_IO* buffer)
 }
 
 // begin from (ZipUtilsCP.cpp)
+#if defined(_WIN32) || defined (_WIN64)
+static std::wstring codepage_issue_fixFromOEM(const char* sVal)
+{
+    int nBufferSize = MultiByteToWideChar( CP_OEMCP, 0, sVal, -1, NULL, 0 );
+    wchar_t* pBuffer = new wchar_t[nBufferSize];
+    MultiByteToWideChar( CP_OEMCP, 0, sVal, -1, pBuffer, nBufferSize );
+    //If this parameter is -1, the function processes the entire input string, including the terminating null character.
+    //Therefore, the resulting Unicode string has a terminating null character, and the length returned by the function includes this character.
+    std::wstring sRes(pBuffer, nBufferSize - 1);
+    RELEASEARRAYOBJECTS(pBuffer);
+    return sRes;
+}
+#endif
 bool current_file_is_find(unzFile uf, const char* filename)
 {
     char filename_inzip[256];
@@ -23,7 +41,12 @@ bool current_file_is_find(unzFile uf, const char* filename)
     if (err != UNZ_OK)
         return false;
 
-    std::string name(filename_inzip);
+    #if defined(_WIN32) || defined (_WIN64)
+    std::string name = U_TO_UTF8(codepage_issue_fixFromOEM(filename_inzip));
+    #elif defined(__linux__)
+    std::string name;
+    iconv_open(name.c_str(), filename_inzip);
+    #endif
     //todooo есть ли необходимость свести все к нижнему ???
     return strcmp(filename, name.c_str()) == 0;
 }
@@ -38,12 +61,20 @@ bool get_file(unzFile unzip_file_handle, BYTE* arr, uInt array_size)
     }
     return false;
 }
-static const std::string get_filename_from_unzfile(unzFile unzip_file_handle)
+static std::string get_filename_from_unzfile(unzFile unzip_file_handle)
 {
     char filename_inzip[256];
 
     if (UNZ_OK == unzGetCurrentFileInfo(unzip_file_handle, NULL, filename_inzip, sizeof(filename_inzip), NULL, 0, NULL, 0))
-        return std::string(filename_inzip);
+    {
+        #if defined(_WIN32) || defined (_WIN64)
+        return U_TO_UTF8(codepage_issue_fixFromOEM(filename_inzip));
+        #elif defined(__linux__)
+        std::string name;
+        iconv_open(name.c_str(), filename_inzip);
+        return name;
+        #endif
+    }
 
     return "";
 }
@@ -118,7 +149,7 @@ unsigned char* Zlib_GetPaths(Zlib* p)
             if (file_info.uncompressed_size != 0)
             {
                 std::string sPath = get_filename_from_unzfile(uf);
-                p->m_oPaths.WriteString(sPath.c_str(), sPath.length());
+                p->m_oPaths.WriteString((unsigned char*)sPath.c_str(), sPath.length());
             }
         } while (UNZ_OK == unzGoToNextFile(uf));
         p->m_oPaths.WriteLen();

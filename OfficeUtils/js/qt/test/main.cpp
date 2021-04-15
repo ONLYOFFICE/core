@@ -5,6 +5,11 @@
 #include <string>
 #include <vector>
 
+unsigned int GetLength(BYTE* x)
+{
+    return x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24;
+}
+
 int main()
 {
     DWORD nBytesCount;
@@ -16,30 +21,28 @@ int main()
     Zlib* zlib = Zlib_Load(pData, nBytesCount);
 
     BYTE* sPaths = Zlib_GetPaths(zlib);
-    unsigned int nLength = sPaths[0] | sPaths[1] << 8 | sPaths[2] << 16 | sPaths[3] << 24;
+    unsigned int nLength = GetLength(sPaths);
     unsigned int i = 4;
     nLength -= 4;
 
     while (i < nLength)
     {
-        unsigned int nPathLength = (sPaths + i)[0] | (sPaths + i)[1] << 8 | (sPaths + i)[2] << 16 | (sPaths + i)[3] << 24;
+        unsigned int nPathLength = GetLength(sPaths + i);
         i += 4;
-        std::string sPath((const char*)(sPaths + i), nPathLength);
+        BYTE* sFile = Zlib_GetFileByPath(zlib, sPaths + i, nPathLength);
         i += nPathLength;
-        BYTE* sFile = Zlib_GetFileByPath(zlib, sPath.c_str());
 
-        if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L'/' + NSFile::GetFileName(UTF8_TO_U(sPath))))
+        if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L'/' + NSFile::GetFileName(UTF8_TO_U(std::string((const char*)(sPaths + i), nPathLength)))))
         {
             if (sFile)
             {
-                unsigned int nFileLength = (sFile + 4)[0] | (sFile + 4)[1] << 8 | (sFile + 4)[2] << 16 | (sFile + 4)[3] << 24;
-                oFile.WriteFile(sFile + 8, nFileLength);
+                unsigned int nFileLength = GetLength(sFile);
+                oFile.WriteFile(sFile + 4, nFileLength);
             }
             oFile.CloseFile();
         }
     }
 
-    delete[] pData;
     Zlib_Destroy(zlib);
     return 0;
 }

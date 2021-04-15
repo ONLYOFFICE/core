@@ -95,7 +95,7 @@ public:
 
     void Clear()
     {
-        free(m_pData);
+        if (m_pData) free(m_pData);
 
         m_pData = NULL;
         m_lSize = 0;
@@ -218,7 +218,7 @@ public:
 
     void Clear()
     {
-        free(m_pData);
+        if (m_pData) free(m_pData);
 
         m_pData = NULL;
         m_lSize = 0;

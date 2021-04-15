@@ -126,7 +126,7 @@ unsigned char* Zlib_GetPaths(Zlib* p)
     }
     return NULL;
 }
-unsigned char* Zlib_GetFileByPath(Zlib* p, const char* path)
+unsigned char* Zlib_GetFileByPath(Zlib* p, unsigned char* path, unsigned int pathLen)
 {
     if (p && p->isInit())
     {
@@ -137,13 +137,13 @@ unsigned char* Zlib_GetFileByPath(Zlib* p, const char* path)
 
         unsigned char* file = new BYTE;
         unsigned long  nFileSize = 0;
-        bool fileIsIn = get_file_in_archive(uf, path, &file, nFileSize);
+        std::string sPath((const char*)(path), pathLen);
+        bool fileIsIn = get_file_in_archive(uf, sPath.c_str(), &file, nFileSize);
 
         unzClose(uf);
         if (fileIsIn)
         {
             p->m_oFile.Clear();
-            p->m_oFile.SkipLen();
             p->m_oFile.WriteString(file, nFileSize);
             return p->m_oFile.GetBuffer();
         }

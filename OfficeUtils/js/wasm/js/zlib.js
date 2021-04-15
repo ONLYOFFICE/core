@@ -108,33 +108,41 @@ function Zlib()
         }
 
         // получаем пути в архиве
-        var nPaths = Module["_Zlib_GetNumberPaths"](zipFile);
-		var sPaths = Module["_Zlib_GetPaths"](zipFile);
-        if (nPaths <= 0)
+        var pointer = Module["_Zlib_GetPaths"](zipFile);
+        if (pointer == 0)
         {
             Module["_Zlib_Destroy"](zipFile);
             Module["_Zlib_Free"](FileRawData);
             return null;
         }
+		var lenArray = new Int32Array(Module["HEAP8"].buffer, pointer, 4);
+		var len = lenArray[0];
+		len -= 4;
+		
+		var buffer = new Uint8Array(Module["HEAP8"].buffer, pointer + 4, len);
+		var index = 0;
+		var ret = [];
+		var paths = []
+		while (index < len)
+		{
+			var lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+			index += 4;
+			paths.push({ length : lenRec, pointerPath : pointer + 4 + index });
+			ret.push(this.readFromUtf8(buffer, index, lenRec));
+			index += lenRec;
+		}
 		
 		var res = []
         // получаем содержимое файла по пути
-		for (var i = 0; i < nPaths; i++)
+		for (var i = 0; i < paths.length; i++)
 		{
-			var nSizeFile   = Module["_Zlib_GetSizeFileByPath"](zipFile, sPaths + i);
-			var pointerFile = Module["_Zlib_GetLastFileByPath"](zipFile);
+			var pointerFile = Module["_Zlib_GetFileByPath"](zipFile, paths[i].pointerPath, paths[i].length);
 			
-			var buffer = new Uint8Array(Module["HEAP8"].buffer, pointerFile, nSizeFile);
-			var index = 0;
-			var File = [];
-			while (index < nSizeFile)
-			{
-				var lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
-				index += 4;
-				File.push(this.readFromUtf8(buffer, index, lenRec));
-				index += lenRec;
-			}
-			res.push(File);
+			var _lenFile = new Int32Array(Module["HEAP8"].buffer, pointerFile, 4);
+			var lenFile = _lenFile[0];
+			
+			var buffer = new Uint8Array(Module["HEAP8"].buffer, pointerFile + 4, lenFile);
+			res.push(this.readFromUtf8(buffer, 0, lenFile));
 		}
 		return res;
     }

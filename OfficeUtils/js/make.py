@@ -37,10 +37,8 @@ exported_functions = ["_malloc",
                       "_Zlib_Create",
                       "_Zlib_Load",
                       "_Zlib_Destroy",
-                      "_Zlib_GetNumberPaths",
                       "_Zlib_GetPaths",
-                      "_Zlib_GetSizeFileByPath",
-                      "_Zlib_GetLastFileByPath"]
+                      "_Zlib_GetFileByPath"]
 
 libZlib_src_path = "../src/zlib-1.2.11"
 input_zlib_sources = ["inflate.c", "zutil.c", "adler32.c", "crc32.c", "inftrees.c",

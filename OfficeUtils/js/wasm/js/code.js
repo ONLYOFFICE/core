@@ -52,5 +52,10 @@ window.writeFile = function()
 	var dst = document.getElementById("main");
 	if (!window.loadedZip)
 		return;
-	dst.innerHTML = window.loadedZip;
+	for (var i = 0; i < window.loadedZip.length; i++)
+	{
+		dst.innerHTML += window.loadedZip[i].sPath + ' ' + window.loadedZip[i].lengthFile + ' ';
+		if (window.loadedZip[i].lengthFile < 100)
+			dst.innerHTML += window.loadedZip[i].sFile + ' ';
+	}
 };

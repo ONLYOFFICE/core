@@ -121,30 +121,36 @@ function Zlib()
 		
 		var buffer = new Uint8Array(Module["HEAP8"].buffer, pointer + 4, len);
 		var index = 0;
-		var ret = [];
 		var paths = []
+		var pointerPaths = []
 		while (index < len)
 		{
 			var lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
 			index += 4;
-			paths.push({ length : lenRec, pointerPath : pointer + 4 + index });
-			ret.push(this.readFromUtf8(buffer, index, lenRec));
+			pointerPaths.push({ 
+				lengthPath  : lenRec,
+				pointerPath : pointer + 4 + index
+			});
+			paths.push({ 
+				sPath : this.readFromUtf8(buffer, index, lenRec),
+				sFile : "",
+				lengthFile : 0
+			});
 			index += lenRec;
 		}
 		
-		var res = []
         // получаем содержимое файла по пути
-		for (var i = 0; i < paths.length; i++)
+		for (var i = 0; i < pointerPaths.length; i++)
 		{
-			var pointerFile = Module["_Zlib_GetFileByPath"](zipFile, paths[i].pointerPath, paths[i].length);
+			var pointerFile = Module["_Zlib_GetFileByPath"](zipFile, pointerPaths[i].pointerPath, pointerPaths[i].lengthPath);
 			
 			var _lenFile = new Int32Array(Module["HEAP8"].buffer, pointerFile, 4);
-			var lenFile = _lenFile[0];
+			paths[i].lengthFile = _lenFile[0];
 			
-			var buffer = new Uint8Array(Module["HEAP8"].buffer, pointerFile + 4, lenFile);
-			res.push(this.readFromUtf8(buffer, 0, lenFile));
+			var buffer = new Uint8Array(Module["HEAP8"].buffer, pointerFile + 4, paths[i].lengthFile);
+			paths[i].sFile = this.readFromUtf8(buffer, 0, paths[i].lengthFile);
 		}
-		return res;
+		return paths;
     }
 }
 

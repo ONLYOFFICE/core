@@ -50,19 +50,19 @@ namespace NSWebSocket
     {
         if (msg->type == ix::WebSocketMessageType::Message)
         {
-            listener->onMessage(msg->str);
+            CWebWorkerBase::listener->onMessage(msg->str);
         }
         else if (msg->type == ix::WebSocketMessageType::Open)
         {
-            listener->onOpen();
+            CWebWorkerBase::listener->onOpen();
         }
         else if (msg->type == ix::WebSocketMessageType::Error)
         {
-            listener->onError(msg->errorInfo.reason);
+            CWebWorkerBase::listener->onError(msg->errorInfo.reason);
         }
         else if (msg->type == ix::WebSocketMessageType::Close)
         {
-            listener->onClose(msg->closeInfo.code, msg->closeInfo.reason);
+            CWebWorkerBase::listener->onClose(msg->closeInfo.code, msg->closeInfo.reason);
         }
     }
 

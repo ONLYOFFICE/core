@@ -25,6 +25,47 @@ include(../OfficeUtils/OfficeUtils.pri)
 CONFIG += core_static_link_xml_full
 include(../DesktopEditor/xml/build/qt/libxml2.pri)
 
+# WEBSOCKET
+include(../Common/WebSocket/websocket.pri)
+
+ixwebsocket {
+
+    DEFINES += USE_IXWEBSOCKET
+
+    include(../Common/3dParty/ixwebsocket/ixwebsocket.pri)
+    include(../Common/3dParty/openssl/openssl.pri)
+
+    HEADERS += \
+        ./WebSocket/websocket.h \
+        ./WebSocket/WebWorkerBase.h \
+        ./WebSocket/ixwebsocket_internal.h \
+
+    SOURCES += \
+        ./WebSocket/ixwebsocket_internal.cpp \
+        ./WebSocket/managerWebSocket.cpp \
+
+}
+
+socketrocket {
+
+    DEFINES += USE_SOCKETROCKET
+
+    include(../Common/3dParty/socketrocket/socketrocket.pri)
+
+    HEADERS += \
+        ./WebSocket/websocket.h \
+        ./WebSocket/WebWorkerBase.h \
+        ./WebSocket/socketRocket_objc.h \
+        ./WebSocket/socketRocket_internal.h \
+
+    OBJECTIVE_SOURCES += \
+        ./WebSocket/socketRocket_objc.mm \
+        ./WebSocket/socketRocket_internal.mm \
+        ./WebSocket/managerWebSocket.cpp \
+
+}
+
+
 # DOWNLOADER
 HEADERS += \
     ./FileDownloader/FileDownloader.h \
@@ -69,58 +110,17 @@ core_ios {
 
     LIBS += -framework Foundation
 
-    #DEFINES += USE_SOCKETROCKET
-
-   # HEADERS += \
-    #    ./WebSocket/websocket.h \
-    #    ./WebSocket/WebWorkerBase.h \
-     #   ./WebSocket/socketRocket_objc.h \
-      #  ./WebSocket/socketRocket_internal.h \
-
-    #OBJECTIVE_SOURCES += \
-     #   ./WebSocket/socketRocket_objc.mm \
-      #  ./WebSocket/socketRocket_internal.mm \
-       # ./WebSocket/managerWebSocket.cpp \
-
-   # include(../Common/3dParty/socketRocket/socketRocket.pri)
-
-    DEFINES += USE_IXWEBSOCKET
-
-    HEADERS += \
-        ./WebSocket/websocket.h \
-        ./WebSocket/WebWorkerBase.h \
-        ./WebSocket/ixwebsocket_internal.h \
-
-    SOURCES += \
-        ./WebSocket/ixwebsocket_internal.cpp \
-        ./WebSocket/managerWebSocket.cpp \
-
-    include(../Common/3dParty/ixwebsocket/ixwebsocket.pri)
 }
 
 core_android {
     DEFINES += USE_FILE32API
     SOURCES += ./FileDownloader/FileDownloader_curl.cpp
 
-
     use_external_download {
         DEFINES += USE_EXTERNAL_DOWNLOAD
     } else {
         include(../Common/3dParty/curl/curl.pri)
     }
-
-    DEFINES += USE_IXWEBSOCKET
-
-    HEADERS += \
-        ./WebSocket/websocket.h \
-        ./WebSocket/WebWorkerBase.h \
-        ./WebSocket/ixwebsocket_internal.h \
-
-    SOURCES += \
-        ./WebSocket/ixwebsocket_internal.cpp \
-        ./WebSocket/managerWebSocket.cpp \
-
-    include(../Common/3dParty/ixwebsocket/ixwebsocket.pri)
 
     DEFINES += NOT_USE_PTHREAD_CANCEL
 }

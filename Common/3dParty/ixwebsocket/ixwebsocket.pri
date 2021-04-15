@@ -9,10 +9,10 @@ core_android {
 	}
 
     INCLUDEPATH += \
-    	$$PWD/../ixwebsocket/IXWebSocket/build/$$ABI_PATH/include \
+    	$$PWD/../ixwebsocket/IXWebSocket/build/android/$$ABI_PATH/include \
 
     LIBS        += \
-    	$$PWD/../ixwebsocket/IXWebSocket/build/$$ABI_PATH/lib/libixwebsocket.a \
+    	$$PWD/../ixwebsocket/IXWebSocket/build/android/$$ABI_PATH/lib/libixwebsocket.a \
 }
 
 core_ios {
@@ -21,8 +21,24 @@ core_ios {
         $$PWD/../ixwebsocket/IXWebSocket/build/ios/ixwebsocket-universal/include \
 
     LIBS        += \
-        $$PWD/../openssl/ios/build/openssl-universal/lib/libcrypto.a \
-        $$PWD/../openssl/ios/build/openssl-universal/lib/libssl.a \
+        $$PWD/../openssl/build/ios/openssl-universal/lib/libcrypto.a \
+        $$PWD/../openssl/build/ios/openssl-universal/lib/libssl.a \
         $$PWD/../ixwebsocket/IXWebSocket/build/ios/ixwebsocket-universal/lib/libixwebsocket.a \
 
+}
+
+core_linux {
+
+    INCLUDEPATH += \
+        $$PWD/../ixwebsocket/IXWebSocket/build/linux_64/include \
+
+    LIBS +=  $$PWD/../ixwebsocket/IXWebSocket/build/linux_64/lib/libixwebsocket.a
+}
+
+core_mac {
+    
+}
+
+core_windows {
+    
 }

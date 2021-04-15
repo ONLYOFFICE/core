@@ -35,6 +35,7 @@
 
 #include "../kernel_config.h"
 #include <string>
+#include <memory>
 
 namespace NSWebSocket
 {

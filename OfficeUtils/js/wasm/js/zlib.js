@@ -37,58 +37,165 @@ else
 
 //module
 
+var readFromUtf8 = function(buffer, start, len)
+{
+	var result = "";
+	var index = start;
+	var end = start + len;
+	while (index < end) 
+	{
+        var u0 = buffer[index++];
+        if (!(u0 & 128)) 
+        {
+          	result += String.fromCharCode(u0);
+          	continue;
+        }
+        var u1 = buffer[index++] & 63;
+        if ((u0 & 224) == 192) 
+        {
+          	result += String.fromCharCode((u0 & 31) << 6 | u1);
+          	continue;
+        }
+        var u2 = buffer[index++] & 63;
+        if ((u0 & 240) == 224) 
+        {
+          	u0 = (u0 & 15) << 12 | u1 << 6 | u2;
+        } 
+        else 
+        {
+          	u0 = (u0 & 7) << 18 | u1 << 12 | u2 << 6 | buffer[index++] & 63;
+        }
+        if (u0 < 65536) 
+        {
+          	result += String.fromCharCode(u0);
+        } 
+        else 
+        {
+          	var ch = u0 - 65536;
+          	result += String.fromCharCode(55296 | ch >> 10, 56320 | ch & 1023);
+        }
+     	}
+     	return result;
+};
+
+var allocString = function(string)
+{
+	var inputLen = string.length;
+	var testLen = 6 * inputLen + 1;
+	var tmpStrings = new ArrayBuffer(testLen);
+
+	var code = 0;
+	var index = 0;
+
+	var outputIndex = 0;
+	var outputDataTmp = new Uint8Array(tmpStrings);
+	var outputData = outputDataTmp;
+
+    while (index < inputLen)
+    {
+    	code = string.charCodeAt(index++);
+    	if (code >= 0xD800 && code <= 0xDFFF && index < inputLen)
+        {
+            code = 0x10000 + (((code & 0x3FF) << 10) | (0x03FF & string.charCodeAt(index++)));
+        }
+
+        if (code < 0x80)
+        {
+            outputData[outputIndex++] = code;
+        }
+        else if (code < 0x0800)
+        {
+            outputData[outputIndex++] = 0xC0 | (code >> 6);
+            outputData[outputIndex++] = 0x80 | (code & 0x3F);
+        }
+        else if (code < 0x10000)
+        {
+            outputData[outputIndex++] = 0xE0 | (code >> 12);
+            outputData[outputIndex++] = 0x80 | ((code >> 6) & 0x3F);
+            outputData[outputIndex++] = 0x80 | (code & 0x3F);
+        }
+        else if (code < 0x1FFFFF)
+        {
+            outputData[outputIndex++] = 0xF0 | (code >> 18);
+            outputData[outputIndex++] = 0x80 | ((code >> 12) & 0x3F);
+            outputData[outputIndex++] = 0x80 | ((code >> 6) & 0x3F);
+            outputData[outputIndex++] = 0x80 | (code & 0x3F);
+        }
+        else if (code < 0x3FFFFFF)
+        {
+            outputData[outputIndex++] = 0xF8 | (code >> 24);
+            outputData[outputIndex++] = 0x80 | ((code >> 18) & 0x3F);
+            outputData[outputIndex++] = 0x80 | ((code >> 12) & 0x3F);
+            outputData[outputIndex++] = 0x80 | ((code >> 6) & 0x3F);
+            outputData[outputIndex++] = 0x80 | (code & 0x3F);
+        }
+        else if (code < 0x7FFFFFFF)
+        {
+            outputData[outputIndex++] = 0xFC | (code >> 30);
+            outputData[outputIndex++] = 0x80 | ((code >> 24) & 0x3F);
+            outputData[outputIndex++] = 0x80 | ((code >> 18) & 0x3F);
+            outputData[outputIndex++] = 0x80 | ((code >> 12) & 0x3F);
+            outputData[outputIndex++] = 0x80 | ((code >> 6) & 0x3F);
+            outputData[outputIndex++] = 0x80 | (code & 0x3F);
+        }
+    }
+
+    outputData[outputIndex++] = 0;
+
+    var tmpBuffer = new Uint8Array(tmpStrings, 0, outputIndex);
+   	return { len : outputIndex, buf : tmpBuffer };
+};
+
 function Zlib()
 {
+	this.zipFile = null;
     this.isInit = false;
-	
-	this.readFromUtf8 = function(buffer, start, len)
-	{
-		var result = "";
-		var index = start;
-		var end = start + len;
-		while (index < end) 
-		{
-	        var u0 = buffer[index++];
-	        if (!(u0 & 128)) 
-	        {
-	          	result += String.fromCharCode(u0);
-	          	continue;
-	        }
-	        var u1 = buffer[index++] & 63;
-	        if ((u0 & 224) == 192) 
-	        {
-	          	result += String.fromCharCode((u0 & 31) << 6 | u1);
-	          	continue;
-	        }
-	        var u2 = buffer[index++] & 63;
-	        if ((u0 & 240) == 224) 
-	        {
-	          	u0 = (u0 & 15) << 12 | u1 << 6 | u2;
-	        } 
-	        else 
-	        {
-	          	u0 = (u0 & 7) << 18 | u1 << 12 | u2 << 6 | buffer[index++] & 63;
-	        }
-	        if (u0 < 65536) 
-	        {
-	          	result += String.fromCharCode(u0);
-	        } 
-	        else 
-	        {
-	          	var ch = u0 - 65536;
-	          	result += String.fromCharCode(55296 | ch >> 10, 56320 | ch & 1023);
-	        }
-      	}
-      	return result;
-	};
+	this.paths = [];
+	this.files = [];
 
-    this.openZip = function(dataBuffer)
+    this.GetPaths = function()
+	{
+		if (!this.isInit) return [];
+		return this.paths;
+	}
+	
+	this.GetFileByPath = function(_path)
+	{
+		if (!this.isInit) return null;
+		if (this.zipFile == 0) return null;
+		
+		var findFile = this.files.find(o => o.path === _path);
+		if (findFile) return findFile;
+		
+		var tmp = allocString(_path);
+		var pointer = Module["_Zlib_Malloc"](tmp.len);
+		Module["HEAP8"].set(tmp.buf, pointer);
+		
+		var pointerFile = Module["_Zlib_GetFileByPath"](this.zipFile, pointer);
+		if (pointerFile == 0) 
+		{
+			Module["_Zlib_Free"](pointer);
+			return null;
+		}
+			
+		var _lenFile = new Int32Array(Module["HEAP8"].buffer, pointerFile, 4);
+		var len = _lenFile[0];
+		
+		var buffer = new Uint8Array(Module["HEAP8"].buffer, pointerFile + 4, len);
+		var file = { 
+			path : _path, 
+			length : len, 
+			file : readFromUtf8(buffer, 0, len) 
+		};
+		this.files.push(file);
+		
+		Module["_Zlib_Free"](pointer);
+		return file;
+	}
+	
+	this.openZip = function(dataBuffer)
     {
-        if (!this.isInit)
-        {
-            // не подгружен еще модуль
-            return null;
-        }
+        if (!this.isInit) return null;
 
         // копируем память в память webasm
         var FileRawDataSize = dataBuffer.byteLength;
@@ -100,18 +207,18 @@ function Zlib()
         Module["HEAP8"].set(uint8DataBuffer, FileRawData);
 
         // грузим данные
-        var zipFile = Module["_Zlib_Load"](FileRawData, FileRawDataSize);
-        if (0 === zipFile)
+        this.zipFile = Module["_Zlib_Load"](FileRawData, FileRawDataSize);
+        if (0 == this.zipFile)
         {
             Module["_Zlib_Free"](FileRawData);
             return null;
         }
 
         // получаем пути в архиве
-        var pointer = Module["_Zlib_GetPaths"](zipFile);
+        var pointer = Module["_Zlib_GetPaths"](this.zipFile);
         if (pointer == 0)
         {
-            Module["_Zlib_Destroy"](zipFile);
+            Module["_Zlib_Destroy"](this.zipFile);
             Module["_Zlib_Free"](FileRawData);
             return null;
         }
@@ -121,37 +228,23 @@ function Zlib()
 		
 		var buffer = new Uint8Array(Module["HEAP8"].buffer, pointer + 4, len);
 		var index = 0;
-		var paths = []
-		var pointerPaths = []
 		while (index < len)
 		{
 			var lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
 			index += 4;
-			pointerPaths.push({ 
-				lengthPath  : lenRec,
-				pointerPath : pointer + 4 + index
-			});
-			paths.push({ 
-				sPath : this.readFromUtf8(buffer, index, lenRec),
-				sFile : "",
-				lengthFile : 0
-			});
+			this.paths.push(readFromUtf8(buffer, index, lenRec));
 			index += lenRec;
 		}
-		
-        // получаем содержимое файла по пути
-		for (var i = 0; i < pointerPaths.length; i++)
-		{
-			var pointerFile = Module["_Zlib_GetFileByPath"](zipFile, pointerPaths[i].pointerPath, pointerPaths[i].lengthPath);
-			
-			var _lenFile = new Int32Array(Module["HEAP8"].buffer, pointerFile, 4);
-			paths[i].lengthFile = _lenFile[0];
-			
-			var buffer = new Uint8Array(Module["HEAP8"].buffer, pointerFile + 4, paths[i].lengthFile);
-			paths[i].sFile = this.readFromUtf8(buffer, 0, paths[i].lengthFile);
-		}
-		return paths;
+		return this;
     }
+
+	this.closeZip = function()
+	{
+		if (!this.isInit) return;
+		Module["_Zlib_Destroy"](this.zipFile);
+		this.paths = [];
+		this.files = [];
+	}
 }
 
 window.nativeZlibEngine = new Zlib();

@@ -29,7 +29,7 @@ ZLIB_DECL_EXPORT Zlib* Zlib_Load(unsigned char* buffer, unsigned long size);
 ZLIB_DECL_EXPORT void  Zlib_Destroy(Zlib* p);
 
 ZLIB_DECL_EXPORT unsigned char* Zlib_GetPaths(Zlib* p);
-ZLIB_DECL_EXPORT unsigned char* Zlib_GetFileByPath(Zlib* p, unsigned char* path, unsigned int pathLen);
+ZLIB_DECL_EXPORT unsigned char* Zlib_GetFileByPath(Zlib* p, const char* path);
 
 #ifdef __cplusplus
 }

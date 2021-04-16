@@ -29,7 +29,7 @@ int main()
     {
         unsigned int nPathLength = GetLength(sPaths + i);
         i += 4;
-        BYTE* sFile = Zlib_GetFileByPath(zlib, sPaths + i, nPathLength);
+        BYTE* sFile = Zlib_GetFileByPath(zlib, std::string((char*)(sPaths + i), nPathLength).c_str());
 
         if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L'/' + NSFile::GetFileName(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(sPaths + i, nPathLength))))
         {

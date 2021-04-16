@@ -39,7 +39,13 @@ window.onload = function()
 			window.loadedZip = window.nativeZlibEngine.openZip(e.target.result);
 			if (!window.loadedZip)
 				return;
-			window.writeFile();
+			var paths = window.loadedZip.GetPaths();
+			for (var i = 0; i < paths.length; i++)
+			{
+				var file = window.loadedZip.GetFileByPath(paths[i]);
+				window.writeFile(file);
+			}
+			window.loadedZip.closeZip();
 		};
 		reader.readAsArrayBuffer(file);
 	
@@ -47,15 +53,11 @@ window.onload = function()
 	};
 };
 
-window.writeFile = function()
+window.writeFile = function(file)
 {
+	if (!file) return;
 	var dst = document.getElementById("main");
-	if (!window.loadedZip)
-		return;
-	for (var i = 0; i < window.loadedZip.length; i++)
-	{
-		dst.innerHTML += window.loadedZip[i].sPath + ' ' + window.loadedZip[i].lengthFile + ' ';
-		if (window.loadedZip[i].lengthFile < 100)
-			dst.innerHTML += window.loadedZip[i].sFile + ' ';
-	}
+	dst.innerHTML += file.path + ' ' + file.length + ' ';
+	if (file.length < 100)
+		dst.innerHTML += file.file;
 };

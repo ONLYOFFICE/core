@@ -170,6 +170,7 @@ namespace PPT_FORMAT
 
 		bool SetElement(CElementPtr pElem);
 //--------------------------------------------------------------------
+            std::wstring	ConvertTable	();
 			std::wstring	ConvertGroup	();
 			std::wstring	ConvertShape	();
             std::wstring	ConvertImage	();

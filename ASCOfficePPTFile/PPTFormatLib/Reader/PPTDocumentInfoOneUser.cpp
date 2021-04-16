@@ -30,6 +30,7 @@
  *
  */
 #include <boost/make_shared.hpp>
+#include <iostream>
 
 #include "PPTDocumentInfo.h"
 
@@ -1592,6 +1593,8 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
 
     std::vector<CRecordDrawingContainer*> oArrayDrawing;
     pMaster->GetRecordsByType(&oArrayDrawing, true);
+
+    if (oArrayDrawing.size()) std::cout << GetRecordName(oArrayDrawing[0]->m_oHeader.RecType) << "\n";
 
     m_current_level = 0;
     m_current_elements = &pTheme->m_arElements;

@@ -1632,6 +1632,22 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertGroup()
 	return m_oWriter.GetData();
 }
 
+// TODO! Not work correct
+std::wstring	PPT_FORMAT::CShapeWriter::ConvertTable	()
+{
+    CGroupElement* pGroupElement = dynamic_cast<CGroupElement*>(m_pElement.get());
+    if (!pGroupElement) return L"";
+
+    m_oWriter.WriteString(std::wstring(L"<p:graphicFrame>"));
+
+    WriteGroupInfo();
+
+    m_pElement->NormalizeCoordsByMetric();
+
+    pGroupElement = NULL;
+
+    return m_oWriter.GetData();
+}
 
 std::wstring PPT_FORMAT::CShapeWriter::ConvertShape()
 {

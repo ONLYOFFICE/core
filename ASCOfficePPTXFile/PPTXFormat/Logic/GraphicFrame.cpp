@@ -85,6 +85,8 @@ namespace PPTX
 		{
 			m_namespace = XmlUtils::GetNamespace(oReader.GetName());
 
+			ReadAttributes(oReader);
+
 			if ( oReader.IsEmptyNode() )
 				return;
 
@@ -363,6 +365,8 @@ namespace PPTX
 		{
 			m_namespace = XmlUtils::GetNamespace(node.GetName());
 
+			XmlMacroReadAttributeBase(node, L"macro",macro);
+
 			XmlUtils::CXmlNodes oNodes;
 			if (node.GetNodes(L"*", oNodes))
 			{
@@ -446,7 +450,7 @@ namespace PPTX
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)									namespace_ = L"cdr";
 
 			pWriter->StartNode(namespace_ + L":graphicFrame");
-
+			pWriter->WriteAttribute(L"macro", macro);
 			pWriter->EndAttributes();
 			
 			toXmlWriter2(pWriter);
@@ -565,6 +569,7 @@ namespace PPTX
 
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 			pWriter->WriteString2(0, vmlSpid);
+			pWriter->WriteString2(1, macro);
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			pWriter->WriteRecord2(0, nvGraphicFramePr);
@@ -620,9 +625,12 @@ namespace PPTX
 				{
 					case 0:
 					{
-						vmlSpid = pReader->GetString2();
-						break;
-					}	
+						vmlSpid = pReader->GetString2();						
+					}break;	
+					case 1:
+					{
+						macro = pReader->GetString2();
+					}break;
 					default:
 						break;
 				}
@@ -745,7 +753,12 @@ namespace PPTX
 		{
 			std::wstring sXml;
 			
-			sXml += L"<" + m_namespace + L":graphicFrame macro=\"\">";
+			sXml += L"<" + m_namespace + L":graphicFrame";
+
+			sXml += L" macro=\"" + (macro.IsInit() ? *macro : L"") + L"\">";
+
+			XmlUtils::CAttribute oAttr;
+			oAttr.Write(L"macro", macro);
 
 			sXml += toXML2();
 

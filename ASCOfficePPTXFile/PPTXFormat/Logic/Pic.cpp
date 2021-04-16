@@ -553,6 +553,8 @@ namespace PPTX
 		{
 			m_namespace = XmlUtils::GetNamespace(oReader.GetName());
 			
+			ReadAttributes(oReader);
+
 			if ( oReader.IsEmptyNode() )
 				return;
 					
@@ -576,6 +578,8 @@ namespace PPTX
 		void Pic::fromXML(XmlUtils::CXmlNode& node)
 		{
 			m_namespace = XmlUtils::GetNamespace(node.GetName());
+
+			XmlMacroReadAttributeBase(node, L"macro", macro);
 
 			XmlUtils::CXmlNodes oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
@@ -620,13 +624,16 @@ namespace PPTX
 
 		std::wstring Pic::toXML() const
 		{
+			XmlUtils::CAttribute oAttr;
+			oAttr.Write(L"macro", macro);
+
 			XmlUtils::CNodeValue oValue;
 			oValue.Write(nvPicPr);
 			oValue.Write(blipFill);
 			oValue.Write(spPr);
 			oValue.WriteNullable(style);
 
-			return XmlUtils::CreateNode(m_namespace + L":pic", oValue);
+			return XmlUtils::CreateNode(m_namespace + L":pic", oAttr, oValue);
 		}
 		
 		void Pic::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -720,6 +727,9 @@ namespace PPTX
 			{
 				pWriter->StartRecord(SPTREE_TYPE_PIC);
 			}
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			pWriter->WriteString2(0, macro);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			if (blipFill.additionalFile.is<OOX::Media>())
 			{
@@ -807,6 +817,7 @@ namespace PPTX
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(_T("xmlns:pic"), (std::wstring)_T("http://schemas.openxmlformats.org/drawingml/2006/picture"));
 			}
+			pWriter->WriteAttribute(L"macro", macro);
 			pWriter->EndAttributes();
 
 			nvPicPr.toXmlWriter(pWriter);
@@ -839,6 +850,25 @@ namespace PPTX
 			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 			nvPicPr.cNvPr.id = -1;
+			pReader->Skip(1); // start attributes
+
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+
+				switch (_at)
+				{
+					case 0:
+					{
+						macro = pReader->GetString2();
+					}break;
+					default:
+						break;
+				}
+			}
+
 			while (pReader->GetPos() < _end_rec)
 			{
 				BYTE _at = pReader->GetUChar();

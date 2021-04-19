@@ -100,7 +100,7 @@ void  Zlib_Destroy(Zlib* p)
     }
 }
 
-unsigned char* Zlib_GetPaths(Zlib* p)
+unsigned char* Zlib_GetPathsInArchive(Zlib* p)
 {
     if (p && p->isInit())
     {
@@ -126,7 +126,7 @@ unsigned char* Zlib_GetPaths(Zlib* p)
     }
     return NULL;
 }
-unsigned char* Zlib_GetFileByPath(Zlib* p, const char* path)
+unsigned char* Zlib_GetFileFromArchive(Zlib* p, const char* path)
 {
     if (p && p->isInit())
     {

@@ -143,13 +143,34 @@ function Zlib()
     this.isInit  = false;
     this.paths = [];
     this.files = [];
+	
+	this.CreateArchiveFromFiles(_files)
+	{
+		var tmpBuffer;
+		// вычисление размера
+		tmpBuffer[i + 0] = (val & (255 <<  0)) >>  0;
+		tmpBuffer[i + 1] = (val & (255 <<  8)) >>  8;
+		tmpBuffer[i + 2] = (val & (255 << 16)) >> 16;
+		tmpBuffer[i + 3] = (val & (255 << 24)) >> 24;
+	}
 
-    this.GetPaths = function()
+    this.GetPathsInArchive = function()
     {
-		return (this.isInit ? this.paths : []);
+		return (this.isInit && this.zipFile != 0 ? this.paths : []);
     }
     
-    this.GetFileByPath = function(_path)
+	this.GetFilesInArchive = function()
+	{
+		if (!this.isInit) return [];
+		if (this.zipFile == 0) return [];
+		
+		var _paths = this.GetPathsInArchive();
+		for (var i = 0; i < _paths.length; i++)
+			this.GetFileInArchive(_paths[i]);
+		return this.files;
+	}
+	
+    this.GetFileInArchive = function(_path)
     {
         if (!this.isInit) return null;
         if (this.zipFile == 0) return null;
@@ -161,7 +182,7 @@ function Zlib()
         var pointer = Module["_Zlib_Malloc"](tmp.len);
         Module["HEAP8"].set(tmp.buf, pointer);
         
-        var pointerFile = Module["_Zlib_GetFileByPath"](this.zipFile, pointer);
+        var pointerFile = Module["_Zlib_GetFileFromArchive"](this.zipFile, pointer);
         if (pointerFile == 0) 
         {
             Module["_Zlib_Free"](pointer);
@@ -172,10 +193,10 @@ function Zlib()
         var len = _lenFile[0];
         
         var buffer = new Uint8Array(Module["HEAP8"].buffer, pointerFile + 4, len);
-        var file = { 
-            path   : _path, 
-            length : len, 
-            file   : readFromUtf8(buffer, 0, len) 
+        var file = {
+            path   : _path,
+            length : len,
+            file   : buffer
         };
         this.files.push(file);
         
@@ -197,14 +218,14 @@ function Zlib()
 
         // грузим данные
         this.zipFile = Module["_Zlib_Load"](FileRawData, FileRawDataSize);
-        if (0 == this.zipFile)
+        if (this.zipFile == 0)
         {
             Module["_Zlib_Free"](FileRawData);
             return null;
         }
 
         // получаем пути в архиве
-        var pointer = Module["_Zlib_GetPaths"](this.zipFile);
+        var pointer = Module["_Zlib_GetPathsInArchive"](this.zipFile);
         if (pointer == 0)
         {
             Module["_Zlib_Destroy"](this.zipFile);
@@ -230,7 +251,7 @@ function Zlib()
     this.closeZip = function()
     {
         if (!this.isInit) return;
-        Module["_Zlib_Destroy"](this.zipFile);
+        if (this.zipFile != 0) Module["_Zlib_Destroy"](this.zipFile);
         this.paths = [];
         this.files = [];
     }

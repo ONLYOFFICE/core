@@ -28,8 +28,9 @@ ZLIB_DECL_EXPORT Zlib* Zlib_Create();
 ZLIB_DECL_EXPORT Zlib* Zlib_Load(unsigned char* buffer, unsigned long size);
 ZLIB_DECL_EXPORT void  Zlib_Destroy(Zlib* p);
 
-ZLIB_DECL_EXPORT unsigned char* Zlib_GetPaths(Zlib* p);
-ZLIB_DECL_EXPORT unsigned char* Zlib_GetFileByPath(Zlib* p, const char* path);
+ZLIB_DECL_EXPORT unsigned char* Zlib_GetPathsInArchive(Zlib* p);
+ZLIB_DECL_EXPORT unsigned char* Zlib_GetFileFromArchive(Zlib* p, const char* path);
+ZLIB_DECL_EXPORT unsigned char* Zlib_CompressFiles(Zlib* p,   unsigned char* tree);
 
 #ifdef __cplusplus
 }

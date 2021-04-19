@@ -39,12 +39,9 @@ window.onload = function()
 			window.loadedZip = window.nativeZlibEngine.openZip(e.target.result);
 			if (!window.loadedZip)
 				return;
-			var paths = window.loadedZip.GetPaths();
-			for (var i = 0; i < paths.length; i++)
-			{
-				var file = window.loadedZip.GetFileByPath(paths[i]);
-				window.writeFile(file);
-			}
+			var files = window.loadedZip.GetFilesInArchive();
+			for (var i = 0; i < files.length; i++)
+				window.writeFile(files[i]);
 			window.loadedZip.closeZip();
 		};
 		reader.readAsArrayBuffer(file);
@@ -59,5 +56,5 @@ window.writeFile = function(file)
 	var dst = document.getElementById("main");
 	dst.innerHTML += file.path + ' ' + file.length + ' ';
 	if (file.length < 100)
-		dst.innerHTML += file.file;
+		dst.innerHTML += "in"; // Uint8Array file.file;
 };

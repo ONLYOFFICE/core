@@ -1,6 +1,7 @@
 #include "../../../../DesktopEditor/common/Types.h"
 #include "../../../../DesktopEditor/common/File.h"
 #include "../../wasm/src/base.h"
+#include "../../../OfficeUtils.h"
 
 #include <string>
 #include <vector>
@@ -10,8 +11,19 @@ unsigned int GetLength(BYTE* x)
     return x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24;
 }
 
+bool RFC(std::wstring& file_name, BYTE*& pData, long& nSize, void* pParam)
+{
+    return true;
+}
+
 int main()
 {
+    COfficeUtils cOU;
+    cOU.CompressFileOrDirectory(NSFile::GetProcessDirectory() + L"/test", NSFile::GetProcessDirectory() + L"/test.zip");
+    RequestFileCallback callback = RFC;
+    bool bResult;
+    cOU.CompressFilesFromMemory(NSFile::GetProcessDirectory() + L"/test.zip", callback, NULL, -1, &bResult);
+
     DWORD nBytesCount;
     BYTE* pData;
     NSFile::CFileBinary oFile;

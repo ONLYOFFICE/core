@@ -37,6 +37,139 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CProtectedRange : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CProtectedRange)
+			CProtectedRange()
+			{
+			}
+			virtual ~CProtectedRange()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual std::wstring toXML() const
+			{
+				return L"";
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<protectedRange");
+				WritingStringNullableAttrString(L"name", m_oName, m_oName.get());
+				WritingStringNullableAttrString(L"sqref", m_oSqref, m_oSqref.get());
+				WritingStringNullableAttrString(L"algorithmName", m_oAlgorithmName, m_oAlgorithmName->ToString());
+				WritingStringNullableAttrString(L"hashValue", m_oHashValue, m_oHashValue.get());
+				WritingStringNullableAttrString(L"saltValue", m_oSaltValue, m_oSaltValue.get());
+				WritingStringNullableAttrInt(L"spinCount", m_oSpinCount, m_oSpinCount->GetValue());
+				
+				if (m_oSecurityDescriptor.IsInit())
+				{
+					writer.WriteString(L">");
+					writer.WriteString(L"<securityDescriptor>");
+					writer.WriteString(XmlUtils::EncodeXmlString(*m_oSecurityDescriptor));
+					writer.WriteString(L"</securityDescriptor>");
+					writer.WriteString(L"</protectedRange>");
+				}
+				else
+				{
+					writer.WriteString(L"/>");
+				}
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+
+				if (!oReader.IsEmptyNode())
+					oReader.ReadTillEnd();
+				
+				int nCurDepth = oReader.GetDepth();
+				while (oReader.ReadNextSiblingNode(nCurDepth))
+				{
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if (L"securityDescriptor" == sName)
+						m_oSecurityDescriptor = oReader.GetText2();
+				}
+
+			}
+			virtual EElementType getType() const
+			{
+				return et_x_ProtectedRange;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start(oReader)
+					WritingElement_ReadAttributes_Read_if(oReader, (L"algorithmName"), m_oAlgorithmName)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"hashValue"), m_oHashValue)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"saltValue"), m_oSaltValue)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"spinCount"), m_oSpinCount)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"name"), m_oName)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"sqref"), m_oSqref)
+				WritingElement_ReadAttributes_End(oReader)
+			}
+			nullable<SimpleTypes::CCryptAlgoritmName<>>		m_oAlgorithmName;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oSpinCount;
+			nullable_string		m_oHashValue;
+			nullable_string		m_oSaltValue;
+			nullable_string		m_oSecurityDescriptor;
+			nullable_string		m_oName;
+			nullable_string		m_oSqref;
+		};
+		class CProtectedRanges : public WritingElementWithChilds<CProtectedRange>
+		{
+		public:
+			WritingElement_AdditionConstructors(CProtectedRanges)
+			CProtectedRanges()
+			{
+			}
+			virtual ~CProtectedRanges()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual std::wstring toXML() const
+			{
+				return (L"");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				if (m_arrItems.empty()) return;
+
+				writer.WriteString((L"<protectedRanges>"));
+
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if (m_arrItems[i])
+					{
+						m_arrItems[i]->toXML(writer);
+					}
+				}
+
+				writer.WriteString((L"</protectedRanges>"));
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if (oReader.IsEmptyNode())
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while (oReader.ReadNextSiblingNode(nCurDepth))
+				{
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if (L"protectedRange" == sName)
+						m_arrItems.push_back(new CProtectedRange(oReader));
+				}
+			}
+
+			virtual EElementType getType() const
+			{
+				return et_x_ProtectedRanges;
+			}
+		};
 		class CPageMargins : public WritingElement
 		{
 		public:
@@ -313,7 +446,6 @@ namespace OOX
 		public:
 			nullable_string	m_oRef;
 		};
-
 		class CSheetFormatPr : public WritingElement
 		{
 		public:
@@ -445,7 +577,6 @@ namespace OOX
             nullable<SimpleTypes::CDouble>                      m_oXSplit;
             nullable<SimpleTypes::CDouble>                      m_oYSplit;
 		};
-
 		class CSelection : public WritingElement
 		{
 		public:
@@ -636,7 +767,6 @@ namespace OOX
 				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oZoomScalePageLayoutView;
 				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oZoomScaleSheetLayoutView;
 		};
-
 		class CSheetViews : public WritingElementWithChilds<CSheetView>
 		{
 		public:
@@ -672,8 +802,6 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				ReadAttributes( oReader );
-
 				if ( oReader.IsEmptyNode() )
 					return;
 
@@ -682,23 +810,14 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( (L"sheetView") == sName )
+					if ( L"sheetView" == sName )
 						m_arrItems.push_back( new CSheetView( oReader ));
 				}
 			}
-
 			virtual EElementType getType () const
 			{
 				return et_x_SheetViews;
 			}
-
-		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
-
-		public:
 		};
 
 		class CPageSetUpPr : public WritingElement

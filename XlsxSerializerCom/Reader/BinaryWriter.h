@@ -218,6 +218,8 @@ namespace BinXlsxRW
 		
 		void WriteWorksheetProp(OOX::Spreadsheet::CSheet& oSheet);
 		void WriteProtection(const OOX::Spreadsheet::CSheetProtection& protection);
+		void WriteProtectedRanges(const OOX::Spreadsheet::CProtectedRanges& protectedRanges);
+		void WriteProtectedRange(const OOX::Spreadsheet::CProtectedRange& protectedRanges);
 		void WriteCols(const OOX::Spreadsheet::CCols& oCols);
 		void WriteCol(const OOX::Spreadsheet::CCol& oCol);
 		void WriteSheetViews(const OOX::Spreadsheet::CSheetViews& oSheetViews);

@@ -3470,6 +3470,62 @@ void BinaryWorksheetTableWriter::WriteWorksheetProp(OOX::Spreadsheet::CSheet& oS
 		m_oBcw.m_oStream.WriteBYTE(oSheet.m_oState->GetValue());
 	}
 }
+void BinaryWorksheetTableWriter::WriteProtectedRanges(const OOX::Spreadsheet::CProtectedRanges& protectedRanges)
+{
+	int nCurPos = 0;
+	for (size_t nIndex = 0, nLength = protectedRanges.m_arrItems.size(); nIndex < nLength; ++nIndex)
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::ProtectedRange);
+		WriteProtectedRange(*protectedRanges.m_arrItems[nIndex]);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+}
+
+void BinaryWorksheetTableWriter::WriteProtectedRange(const OOX::Spreadsheet::CProtectedRange& protectedRange)
+{
+	if (protectedRange.m_oAlgorithmName.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectedRangeTypes::AlgorithmName);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBYTE(protectedRange.m_oAlgorithmName->GetValue());
+	}
+	if (protectedRange.m_oSpinCount.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectedRangeTypes::SpinCount);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteULONG(protectedRange.m_oSpinCount->GetValue());
+	}
+	if (protectedRange.m_oHashValue.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectedRangeTypes::HashValue);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*protectedRange.m_oHashValue);
+	}
+	if (protectedRange.m_oSaltValue.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectedRangeTypes::SaltValue);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*protectedRange.m_oSaltValue);
+	}
+	if (protectedRange.m_oName.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectedRangeTypes::Name);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*protectedRange.m_oName);
+	}
+	if (protectedRange.m_oSqref.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectedRangeTypes::SqRef);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*protectedRange.m_oSqref);
+	}
+	if (protectedRange.m_oSecurityDescriptor.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectedRangeTypes::SecurityDescriptor);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*protectedRange.m_oSecurityDescriptor);
+	}
+}
 void BinaryWorksheetTableWriter::WriteProtection(const OOX::Spreadsheet::CSheetProtection& protection)
 {
 	if (protection.m_oAlgorithmName.IsInit())

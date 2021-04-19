@@ -398,7 +398,8 @@ namespace BinXlsxRW
 		SlicersExt = 38,
 		Slicer = 39,
 		NamedSheetView = 40,
-		Protection = 41
+		Protection = 41,
+		ProtectedRange = 42
 	};}
 	namespace c_oSerWorksheetProtection {enum c_oSerWorksheetPropTypes
 	{
@@ -424,6 +425,15 @@ namespace BinXlsxRW
 		SelectUnlockedCell = 19,
 		Sheet = 20,
 		Sort = 21
+	};}
+	namespace c_oSerProtectedRangeTypes {enum c_oSerProtectedRangeTypes {
+		AlgorithmName = 0,
+		SpinCount = 1,
+		HashValue = 2,
+		SaltValue = 3,
+		Name = 4,
+		SqRef= 5,
+		SecurityDescriptor = 6
 	};}
 	namespace c_oSerWorksheetPropTypes{enum c_oSerWorksheetPropTypes
 	{

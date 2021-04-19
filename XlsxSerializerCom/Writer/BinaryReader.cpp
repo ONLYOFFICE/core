@@ -3639,6 +3639,13 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 	}
 	oSheetFormatPr.toXML(oStreamWriter);
 //-------------------------------------------------------------------------------------------------------------
+	OOX::Spreadsheet::CProtectedRanges oProtectedRanges;
+	SEEK_TO_POS_START(c_oSerWorksheetsTypes::ProtectedRange);
+	READ1_DEF(length, res, this->ReadProtectedRanges, &oProtectedRanges);
+	SEEK_TO_POS_END2();
+
+	oProtectedRanges.toXML(oStreamWriter);
+//-------------------------------------------------------------------------------------------------------------
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::Cols);
 		OOX::Spreadsheet::CCols oCols;
 		READ1_DEF(length, res, this->ReadWorksheetCols, &oCols);
@@ -4196,6 +4203,60 @@ int BinaryWorksheetsTableReader::ReadWorksheetCol(BYTE type, long length, void* 
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
+int BinaryWorksheetsTableReader::ReadProtectedRanges(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CProtectedRanges* pProtectedRanges = static_cast<OOX::Spreadsheet::CProtectedRanges*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+	if (c_oSerWorksheetsTypes::SheetView == type)
+	{
+		OOX::Spreadsheet::CProtectedRange* pProtectedRange = new OOX::Spreadsheet::CProtectedRange();
+		READ1_DEF(length, res, this->ReadProtectedRange, pProtectedRange);
+		pProtectedRanges->m_arrItems.push_back(pProtectedRange);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorksheetsTableReader::ReadProtectedRange(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CProtectedRange* pProtectedRange = static_cast<OOX::Spreadsheet::CProtectedRange*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+
+	if (c_oSerProtectedRangeTypes::AlgorithmName == type)
+	{
+		pProtectedRange->m_oAlgorithmName.Init();
+		pProtectedRange->m_oAlgorithmName->SetValue((SimpleTypes::ECryptAlgoritmName)m_oBufferedStream.GetUChar());
+	}
+	else if (c_oSerProtectedRangeTypes::SpinCount == type)
+	{
+		pProtectedRange->m_oSpinCount.Init();
+		pProtectedRange->m_oSpinCount->SetValue(m_oBufferedStream.GetULong());
+	}
+	else if (c_oSerProtectedRangeTypes::HashValue == type)
+	{
+		pProtectedRange->m_oHashValue = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerProtectedRangeTypes::SaltValue == type)
+	{
+		pProtectedRange->m_oSaltValue = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerProtectedRangeTypes::SqRef == type)
+	{
+		pProtectedRange->m_oSqref = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerProtectedRangeTypes::Name == type)
+	{
+		pProtectedRange->m_oName = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerProtectedRangeTypes::SecurityDescriptor == type)
+	{
+		pProtectedRange->m_oSecurityDescriptor = m_oBufferedStream.GetString4(length);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+
 int BinaryWorksheetsTableReader::ReadSheetViews(BYTE type, long length, void* poResult)
 {
 	OOX::Spreadsheet::CSheetViews* pSheetViews = static_cast<OOX::Spreadsheet::CSheetViews*>(poResult);

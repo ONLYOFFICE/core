@@ -104,6 +104,7 @@ public:
 			else
 			{
 				delete []pData;
+				pData = NULL;
 			}
 		}			
 		//if (pDecryptor)

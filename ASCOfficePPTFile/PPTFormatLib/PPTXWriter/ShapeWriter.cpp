@@ -809,6 +809,56 @@ void PPT_FORMAT::CShapeWriter::WriteGroupInfo()
 	m_oWriter.WriteString(str2);
 }
 
+void PPT_FORMAT::CShapeWriter::WriteTableInfo()
+{
+    CGroupElement* pGroupElement = dynamic_cast<CGroupElement*>(m_pElement.get());
+    if (!pGroupElement) return;
+
+    m_oWriter.WriteString(std::wstring(L"<p:nvGraphicFramePr>"));
+
+    if (pGroupElement->m_lID < 0)
+        pGroupElement->m_lID = m_lNextShapeID;
+
+    std::wstring strTableID = std::to_wstring(pGroupElement->m_lID);
+
+    m_oWriter.WriteString(std::wstring(L"<p:cNvPr id=\"") + strTableID + L"\"");
+
+    if (pGroupElement->m_sName.empty()) pGroupElement->m_sName = std::wstring(L"Group ") +  strTableID;
+
+    if (pGroupElement->m_bHidden)	m_oWriter.WriteString(std::wstring(L" hidden=\"1\""));
+
+    m_oWriter.WriteString(std::wstring(L" name=\""));
+        m_oWriter.WriteStringXML(pGroupElement->m_sName);
+    m_oWriter.WriteString(std::wstring(L"\""));
+
+    if (!pGroupElement->m_sDescription.empty())
+    {
+        m_oWriter.WriteString(std::wstring(L" descr=\""));
+            m_oWriter.WriteStringXML(pGroupElement->m_sDescription);
+        m_oWriter.WriteString(std::wstring(L"\""));
+    }
+    m_oWriter.WriteString(std::wstring(L">"));
+    if (!pGroupElement->m_sHyperlink.empty())
+    {
+        std::wstring rId = m_pRels->WriteHyperlink(pGroupElement->m_sHyperlink);
+
+        m_oWriter.WriteString(std::wstring(L"<a:hlinkClick"));
+            m_oWriter.WriteString(std::wstring(L" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""));
+            m_oWriter.WriteString(std::wstring(L" r:id=\"" + rId ));
+        m_oWriter.WriteString(std::wstring(L"\"></a:hlinkClick>"));
+    }
+    m_oWriter.WriteString(std::wstring(L"</p:cNvPr>"));
+
+    m_oWriter.WriteString(std::wstring(L"<p:cNvGraphicFramePr><a:graphicFrameLocks noGrp=\"1\"/></p:cNvGraphicFramePr>"));
+
+    ++m_lNextShapeID;
+
+    m_oWriter.WriteString(std::wstring(L"<p:nvPr/>"));
+
+    std::wstring str2 = _T("</p:nvGraphicFramePr>");
+    m_oWriter.WriteString(str2);
+}
+
 void PPT_FORMAT::CShapeWriter::WriteShapeInfo()
 {
 	CShapeElement* pShapeElement = dynamic_cast<CShapeElement*>(m_pElement.get());
@@ -1640,13 +1690,66 @@ std::wstring	PPT_FORMAT::CShapeWriter::ConvertTable	()
 
     m_oWriter.WriteString(std::wstring(L"<p:graphicFrame>"));
 
-    WriteGroupInfo();
+    WriteTableInfo();
 
     m_pElement->NormalizeCoordsByMetric();
+
+
+    if (pGroupElement->m_bChildAnchorEnabled || pGroupElement->m_bAnchorEnabled)
+    {
+        std::wstring str;
+
+        m_oWriter.WriteString(std::wstring(L"<p:xfrm"));
+            if (0 != pGroupElement->m_dRotate)
+            {
+                if (pGroupElement->m_bFlipH && pGroupElement->m_dRotate < 180)
+                    pGroupElement->m_dRotate += 180; //Тікбұрышты үшбұрыштарды.ppt slide-7
+
+                m_oWriter.WriteString(L" rot=\"" + std::to_wstring((int)(pGroupElement->m_dRotate * 60000)) + L"\"");
+            }
+            if (pGroupElement->m_bFlipH)
+            {
+                m_oWriter.WriteString(std::wstring(L" flipH=\"1\""));
+            }
+            if (pGroupElement->m_bFlipV)
+            {
+                m_oWriter.WriteString(std::wstring(L" flipV=\"1\""));
+            }
+        m_oWriter.WriteString(std::wstring(L">"));
+
+        m_oWriter.WriteString(L"<a:off x=\"" +
+            std::to_wstring(pGroupElement->m_bChildAnchorEnabled ? (int)pGroupElement->m_rcChildAnchor.left : (int)pGroupElement->m_rcAnchor.left)
+            + L"\" y=\"" +
+            std::to_wstring(pGroupElement->m_bChildAnchorEnabled ? (int)pGroupElement->m_rcChildAnchor.top : (int)pGroupElement->m_rcAnchor.top) +
+            L"\"/>");
+
+        double width	= pGroupElement->m_bChildAnchorEnabled ? pGroupElement->m_rcChildAnchor.GetWidth() : pGroupElement->m_rcAnchor.GetWidth();
+        double height	= pGroupElement->m_bChildAnchorEnabled ? pGroupElement->m_rcChildAnchor.GetHeight() : pGroupElement->m_rcAnchor.GetHeight();
+
+        if ( width > 0 || height > 0 )
+        {
+            m_oWriter.WriteString(L"<a:ext cx=\"" + std::to_wstring((int)width) + L"\" cy=\"" + std::to_wstring((int)height) + L"\"/>");
+        }
+
+        m_oWriter.WriteString(std::wstring(L"</p:xfrm>"));
+    }
+
+    m_oWriter.WriteString(std::wstring(L"<a:graphic><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/table\"><a:tbl><a:tblPr firstRow=\"1\" bandRow=\"1\"><a:tableStyleId>"));
+
+    m_oWriter.WriteString(std::wstring(L"</a:tableStyleId></a:tblPr>"));
 
     pGroupElement = NULL;
 
     return m_oWriter.GetData();
+}
+
+std::wstring PPT_FORMAT::CShapeWriter::ConvertTableCells()
+{
+    CGroupElement* pGroupElement = dynamic_cast<CGroupElement*>(m_pElement.get());
+    if (!pGroupElement) return L"";
+
+    //TODO
+    return L"";
 }
 
 std::wstring PPT_FORMAT::CShapeWriter::ConvertShape()

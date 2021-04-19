@@ -938,11 +938,12 @@ void PPT_FORMAT::CPPTXWriter::WriteTable(CStringWriter& oWriter, CRelsGenerator&
     m_pShapeWriter->SetElement(pElement);
     oWriter.WriteString(m_pShapeWriter->ConvertTable());
 
-    for (size_t i = 0; i < pGroupElement->m_pChildElements.size(); i++)
-    {
-        WriteElement(oWriter, oRels, pGroupElement->m_pChildElements[i], pLayout);
-    }
-    oWriter.WriteString(L"</p:graphicFrame>");
+    oWriter.WriteString(m_pShapeWriter->ConvertTableCells());
+//    for (size_t i = 0; i < pGroupElement->m_pChildElements.size(); i++)
+//    {
+//        WriteElement(oWriter, oRels, pGroupElement->m_pChildElements[i], pLayout);
+//    }
+    oWriter.WriteString(L"</a:tbl></a:graphicData></a:graphic></p:graphicFrame>");
 }
 void PPT_FORMAT::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout)
 {

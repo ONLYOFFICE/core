@@ -446,7 +446,11 @@ namespace PPT_FORMAT
 			m_oWriterPath.WriteString(str);
 		}
 
-		void WriteGroupInfo();
+        void WriteGroupInfo();
+        void WriteTableInfo();
+        std::wstring ConvertTableCells();
+        std::wstring ConvertTableRow();
+        std::wstring ConvertTableCell();
 		void WriteShapeInfo();
 		void WriteImageInfo();
 		void WriteTextInfo();

@@ -452,7 +452,7 @@ public:
 				sShd += L" w:color=\"" + Color.ToString() + L"\"";
 
 			if (bFill)
-				sShd += L" w:fill=\"#" + Fill.ToString() + L"\"";
+				sShd += L" w:fill=\"" + Fill.ToString() + L"\"";
 			
 			if (!bColor && !bFill)
 				sShd += L" w:color=\"auto\"";

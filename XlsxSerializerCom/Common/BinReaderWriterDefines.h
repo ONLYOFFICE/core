@@ -399,7 +399,8 @@ namespace BinXlsxRW
 		Slicer = 39,
 		NamedSheetView = 40,
 		Protection = 41,
-		ProtectedRange = 42
+		ProtectedRanges = 42,
+		ProtectedRange = 43
 	};}
 	namespace c_oSerWorksheetProtection {enum c_oSerWorksheetPropTypes
 	{

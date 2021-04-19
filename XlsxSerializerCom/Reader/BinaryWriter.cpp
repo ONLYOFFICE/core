@@ -3191,6 +3191,12 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
 		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::SheetViews);
 		WriteSheetViews(oWorksheet.m_oSheetViews.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}	
+	if (oWorksheet.m_oProtectedRanges.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::ProtectedRanges);
+		WriteProtectedRanges(oWorksheet.m_oProtectedRanges.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 	//SheetFormatPr
 	if(oWorksheet.m_oSheetFormatPr.IsInit())

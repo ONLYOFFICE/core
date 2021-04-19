@@ -4207,7 +4207,7 @@ int BinaryWorksheetsTableReader::ReadProtectedRanges(BYTE type, long length, voi
 {
 	OOX::Spreadsheet::CProtectedRanges* pProtectedRanges = static_cast<OOX::Spreadsheet::CProtectedRanges*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if (c_oSerWorksheetsTypes::SheetView == type)
+	if (c_oSerWorksheetsTypes::ProtectedRange == type)
 	{
 		OOX::Spreadsheet::CProtectedRange* pProtectedRange = new OOX::Spreadsheet::CProtectedRange();
 		READ1_DEF(length, res, this->ReadProtectedRange, pProtectedRange);

@@ -159,7 +159,7 @@ void MainWindow::resizeEvent(QResizeEvent *pResizeEvent)
     int h = pResizeEvent->size().height();
     int w = pResizeEvent->size().width();
 
-    ui->horizontalLayoutWidget->setGeometry(QRect(0, 0, w, h - 50));
+    ui->horizontalLayoutWidget->setGeometry(QRect(0, 0, w, h));
 }
 
 void MainWindow::on_SaveButton_clicked()

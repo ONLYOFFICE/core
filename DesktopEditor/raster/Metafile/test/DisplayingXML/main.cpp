@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     NSFonts::IApplicationFonts* pFonts = oWorker.Check();
 
     MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
-    pMetafile->LoadFromFile(L"C:\\Users\\Kirill.Polyakov.AVSMEDIA\\Desktop\\emf\\testEmf.emf");
+    pMetafile->LoadFromFile(L"PATH_TO_FILE");
     std::wstring wsNewFilePath = NSFile::GetProcessDirectory() + L"\\test.png";
     pMetafile->ConvertToRaster(wsNewFilePath.c_str(), 4, 1000);
     pMetafile->Release();

@@ -280,16 +280,13 @@ namespace XmlUtils
 		void WriteInteger(int Value);
 		void WriteDouble(double Value);
 		void WriteBoolean(bool Value);
-		void WriteUInt(unsigned int unValue);
 		void WriteNodeBegin(const std::wstring& strNodeName, bool bAttributed = false);
 		void WriteNodeEnd(const std::wstring& strNodeName, bool bEmptyNode = false, bool bEndNode = true);
 		void WriteNode(const std::wstring& strNodeName, const std::wstring& strNodeValue);
 		void WriteNode(const std::wstring& strNodeName, int nValue, const std::wstring& strTextBeforeValue = L"", const std::wstring& strTextAfterValue = L"");
 		void WriteNode(const std::wstring& strNodeName, double dValue);
-		void WriteNode(const std::wstring& strNodeName, unsigned int unValue);
 		void WriteAttribute(const std::wstring& strAttributeName, const std::wstring& strAttributeValue);
 		void WriteAttribute(const std::wstring& strAttributeName, int nValue, const std::wstring& strTextBeforeValue = L"", const std::wstring& strTextAfterValue = (L""));
-		void WriteAttribute(const std::wstring& strAttributeName, unsigned int unValue);
 		void WriteAttribute(const std::wstring& strAttributeName, double dValue);
 	};
 

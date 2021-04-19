@@ -926,10 +926,6 @@ namespace XmlUtils
     {
         m_str += std::to_wstring(Value);
     }
-    void CXmlWriter::WriteUInt(unsigned int unValue)
-    {
-        m_str += std::to_wstring(unValue);
-    }
     void CXmlWriter::WriteBoolean(bool Value)
     {
         if (Value)
@@ -977,14 +973,6 @@ namespace XmlUtils
         WriteDouble(dValue);
         WriteNodeEnd(strNodeName);
     }
-
-    void CXmlWriter::WriteNode(const std::wstring& strNodeName, unsigned int unValue)
-    {
-        WriteNodeBegin(strNodeName);
-        WriteUInt(unValue);
-        WriteNodeEnd(strNodeName);
-    }
-
     void CXmlWriter::WriteAttribute(const std::wstring& strAttributeName, const std::wstring& strAttributeValue)
     {
         m_str += L" " + strAttributeName + L"=\"" + strAttributeValue + L"\"";
@@ -996,13 +984,6 @@ namespace XmlUtils
         WriteString(strTextBeforeValue);
         WriteInteger(nValue);
         WriteString(strTextAfterValue);
-        WriteString(L"\"");
-    }
-    void CXmlWriter::WriteAttribute(const std::wstring& strAttributeName, unsigned int unValue)
-    {
-        WriteString(L" " + strAttributeName + L"=");
-        WriteString(L"\"");
-        WriteUInt(unValue);
         WriteString(L"\"");
     }
     void CXmlWriter::WriteAttribute(const std::wstring& strAttributeName, double dValue)

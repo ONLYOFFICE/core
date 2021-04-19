@@ -30,10 +30,7 @@ include(../Common/WebSocket/websocket.pri)
 
 ixwebsocket {
 
-    DEFINES += USE_IXWEBSOCKET
-
-    include(../Common/3dParty/ixwebsocket/ixwebsocket.pri)
-    include(../Common/3dParty/openssl/openssl.pri)
+    DEFINES += USE_IXWEBSOCKET    
 
     HEADERS += \
         ./WebSocket/websocket.h \
@@ -43,7 +40,8 @@ ixwebsocket {
     SOURCES += \
         ./WebSocket/ixwebsocket_internal.cpp \
         ./WebSocket/managerWebSocket.cpp \
-
+        
+    include(../Common/3dParty/ixwebsocket/ixwebsocket.pri)
 }
 
 socketrocket {

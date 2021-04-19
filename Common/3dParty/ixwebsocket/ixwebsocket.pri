@@ -18,7 +18,6 @@ core_android {
 core_ios {
 
     INCLUDEPATH += \
-        $$PWD/../ixwebsocket/IXWebSocket/build/ios/ixwebsocket-universal/include \
 
     LIBS        += \
         $$PWD/../openssl/build/ios/openssl-universal/lib/libcrypto.a \
@@ -31,8 +30,11 @@ core_linux {
 
     INCLUDEPATH += \
         $$PWD/../ixwebsocket/IXWebSocket/build/linux_64/include \
-
+  
     LIBS +=  $$PWD/../ixwebsocket/IXWebSocket/build/linux_64/lib/libixwebsocket.a
+    LIBS += $$PWD/../openssl/build/linux_64/lib/libssl.a
+    LIBS += $$PWD/../openssl/build/linux_64/lib/libcrypto.a
+
 }
 
 core_mac {

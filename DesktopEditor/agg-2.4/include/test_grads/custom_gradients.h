@@ -1,12 +1,21 @@
 #include <algorithm>
 #include <time.h>
+#include <math.h>
 #include "../../../graphics/AggPlusEnums.h"
 #ifndef M_1_PI
 #define M_1_PI 0.318309886183790671538
 #endif
 
 #ifndef NAN_FLOAT
+#ifdef NAN
+#define NAN_FLOAT NAN
+#else
 #define NAN_FLOAT 0.0f/0.0f
+#endif
+#endif
+
+#ifdef _WIN32
+#define isnanf _isnanf
 #endif
 
 #ifndef SHADING_PDF

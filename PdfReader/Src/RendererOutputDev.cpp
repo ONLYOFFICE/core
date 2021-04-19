@@ -3971,7 +3971,7 @@ namespace PdfReader
 				for (int j = 0; j < 2; j++)
 				{
 					DWORD dcolor = ColorSpace.GetDwordColor(&patch->arrColor[i][j]);
-					colors[j][i] = {dcolor % 0x100, (dcolor >> 8) % 0x100, (dcolor >> 16) % 0x100, alpha};
+                    colors[j][i] = {(unsigned)(dcolor & 0xFF), (unsigned)((dcolor >> 8) & 0xFF), (unsigned)((dcolor >> 16) & 0xFF), (unsigned)alpha};
  				}
 			}
 			auto info = NSStructures::GInfoConstructor::get_tensor_curve(points, 
@@ -4102,7 +4102,7 @@ namespace PdfReader
 		{
 			GrColor c = *colors[i];
 			DWORD dword_color = ColorSpace.GetDwordColor(&c);
-			rgba8_colors.push_back({dword_color % 0x100, (dword_color >> 8) % 0x100, (dword_color >> 16) % 0x100, alpha});
+            rgba8_colors.push_back({dword_color % 0x100, (dword_color >> 8) % 0x100, (dword_color >> 16) % 0x100, (unsigned)alpha});
 			double x = point[i].x;
 			double y = point[i].y;
 			TransformToPixels(pGState, x, y);

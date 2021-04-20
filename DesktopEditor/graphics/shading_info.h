@@ -67,7 +67,7 @@ namespace NSStructures
             {
                 for (int j = 0; j < RESOLUTION; j++)
                 {
-                    uint value = 255 * sin(i * j * M_PI / RESOLUTION);
+                    unsigned int value = 255 * sin(i * j * M_PI / RESOLUTION);
                     values[j][i] = ColorT(value, value, 0);
                 }
             }
@@ -104,7 +104,7 @@ namespace NSStructures
             return values[yi][xi];
         }
 
-        int set_color(float x, int r, int g, int b, int a)
+        void set_color(float x, int r, int g, int b, int a)
         {
             int index = get_x_index(x); // pls dont set color out of bounds, it wont crush, but will work not as you max expected
             values[0][index].r = r;
@@ -112,7 +112,7 @@ namespace NSStructures
             values[0][index].b = b;
             values[0][index].a = a;
         }
-        int set_color(float x, float y, int r, int g, int b, int a)
+        void set_color(float x, float y, int r, int g, int b, int a)
         {
             int xindex = get_x_index(x);
             int yindex = get_y_index(y);
@@ -121,14 +121,14 @@ namespace NSStructures
             values[yindex][xindex].b = b;
             values[yindex][xindex].a = a;
         }
-        int set_color(size_t xindex, int r, int g, int b, int a)
+        void set_color(size_t xindex, int r, int g, int b, int a)
         {
             values[0][xindex].r = r;
             values[0][xindex].g = g;
             values[0][xindex].b = b;
             values[0][xindex].a = a;
         }
-        int set_color(size_t xindex, size_t yindex, int r, int g, int b, int a)
+        void set_color(size_t xindex, size_t yindex, int r, int g, int b, int a)
         {
             values[yindex][xindex].r = r;
             values[yindex][xindex].g = g;
@@ -204,7 +204,7 @@ namespace NSStructures
             size_t len = second - first;
             ColorT f = values[line][first];
             ColorT s = values[line][second];
-            for(int i = first + 1; i < second; i++) {
+            for(size_t i = first + 1; i < second; i++) {
                 values[line][i].r = f.r * (1 - (float)(i - first) / len ) + s.r * ((float)(i - first) / len );
                 values[line][i].g = f.g * (1 - (float)(i - first) / len ) + s.g * ((float)(i - first) / len ); ;
                 values[line][i].b = f.b * (1 - (float)(i - first) / len ) + s.b * ((float)(i - first) / len ); ;
@@ -236,7 +236,9 @@ namespace NSStructures
     struct Point 
     {
         Point():x(0),y(0){}
-        Point(float _x, float _y):x(_x),y(_y){}
+        Point(const float& _x, const float& _y):x(_x),y(_y){}
+        Point(const int& _x, const int& _y):x((int)_x),y((int)_y){}
+        Point(const double& _x, const double& _y):x((float)_x),y((float)_y){}
         float x, y;
 
         Point& operator+=(const Point &a)

@@ -169,7 +169,7 @@ void MainWindow::on_GradientType_itemClicked(QListWidgetItem *item)
         info.ginfo = NSStructures::GInfoConstructor::get_triangle(
                     info.triangle,
                     {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
-                    {0, 0.4, 1}, true
+                    {0.f, 0.4f, 1.f}, true
                     );
         points = {};
         for (auto p : info.triangle)
@@ -422,7 +422,7 @@ void MainWindow::on_TrianglePoint1X_sliderMoved(int position)
         info.ginfo = NSStructures::GInfoConstructor::get_triangle(
                     info.triangle,
                     {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
-                    {0, 0.4, 1}, true
+                    {0.f, 0.4f, 1.f}, true
                     );
         points = {};
         for (auto p : info.triangle)
@@ -458,7 +458,7 @@ void MainWindow::on_TrianglePoint1Y_sliderMoved(int position)
         info.ginfo = NSStructures::GInfoConstructor::get_triangle(
                     info.triangle,
                     {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
-                    {0, 0.4, 1}, true
+                    {0.f, 0.4f, 1.f}, true
                     );
         points = {};
         for (auto p : info.triangle)
@@ -494,7 +494,7 @@ void MainWindow::on_TrianglePoint2X_sliderMoved(int position)
         info.ginfo = NSStructures::GInfoConstructor::get_triangle(
                     info.triangle,
                     {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
-                    {0, 0.4, 1}, true
+                    {0.f, 0.4f, 1.f}, true
                     );
         points = {};
         for (auto p : info.triangle)
@@ -530,7 +530,7 @@ void MainWindow::on_TrianglePoint2Y_sliderMoved(int position)
         info.ginfo = NSStructures::GInfoConstructor::get_triangle(
                     info.triangle,
                     {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
-                    {0, 0.4, 1}, true
+                    {0.f, 0.4f, 1.f}, true
                     );
         points = {};
         for (auto p : info.triangle)
@@ -566,7 +566,7 @@ void MainWindow::on_TrianglePoint3X_sliderMoved(int position)
         info.ginfo = NSStructures::GInfoConstructor::get_triangle(
                     info.triangle,
                     {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
-                    {0, 0.4, 1}, true
+                    {0.f, 0.4f, 1.f}, true
                     );
         points = {};
         for (auto p : info.triangle)
@@ -602,7 +602,7 @@ void MainWindow::on_TrianglePoint3Y_sliderMoved(int position)
         info.ginfo = NSStructures::GInfoConstructor::get_triangle(
                     info.triangle,
                     {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}},
-                    {0, 0.4, 1}, true
+                    {0.f, 0.4f, 1.f}, true
                     );
         points = {};
         for (auto p : info.triangle)

@@ -10,6 +10,16 @@ unzFile unzOpenHelp(BUFFER_IO* buffer)
     fill_buffer_filefunc(&ffunc, buffer);
     return unzOpen2(NULL, &ffunc);
 }
+zipFile zipOpenHelp(BUFFER_IO* buffer)
+{
+    zlib_filefunc_def ffunc;
+    fill_buffer_filefunc(&ffunc, buffer);
+    return zipOpen2(NULL, APPEND_STATUS_CREATE, NULL, &ffunc);
+}
+unsigned int GetLength(BYTE* x)
+{
+    return x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24;
+}
 
 // begin from (ZipUtilsCP.cpp)
 bool current_file_is_find(unzFile uf, const char* filename)
@@ -146,6 +156,44 @@ unsigned char* Zlib_GetFileFromArchive(Zlib* p, const char* path)
             p->m_oFile.WriteString(file, nFileSize);
             return p->m_oFile.GetBuffer();
         }
+    }
+    return NULL;
+}
+unsigned char* Zlib_CompressFiles(Zlib* p,   unsigned char* tree)
+{
+    if (p && tree)
+    {
+        BUFFER_IO* buf = new BUFFER_IO;
+        zipFile zip_file_handle = zipOpenHelp(buf);
+
+        unsigned int nLength = GetLength(tree);
+        unsigned int i = 4;
+        nLength -= 4;
+
+        while (i < nLength)
+        {
+            unsigned int nPathLength = GetLength(tree + i);
+            i += 4;
+            std::string sPath((char*)(tree + i), nPathLength);
+            i += nPathLength;
+            unsigned int nFileLength = GetLength(tree + i);
+            i += 4;
+
+            if (ZIP_OK != zipOpenNewFileInZip( zip_file_handle, sPath.c_str(), NULL, NULL, 0, NULL, 0, NULL, Z_DEFLATED, -1 ) ||
+                ZIP_OK != zipWriteInFileInZip(zip_file_handle, tree + i, nFileLength) ||
+                ZIP_OK != zipCloseFileInZip(zip_file_handle))
+            {
+                zipClose(zip_file_handle, NULL);
+                return NULL;
+            }
+        }
+        zipClose(zip_file_handle, NULL);
+        p->buffer = buf->buffer;
+        p->size   = buf->nSize;
+
+        CData oRes;
+        oRes.WriteString(buf->buffer, buf->nSize);
+        return oRes.GetBuffer();
     }
     return NULL;
 }

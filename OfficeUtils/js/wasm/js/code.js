@@ -43,6 +43,8 @@ window.onload = function()
 			for (var i = 0; i < files.length; i++)
 				window.writeFile(files[i]);
 			window.loadedZip.closeZip();
+			
+			var archive = window.loadedZip.CreateArchiveFromFiles(files);
 		};
 		reader.readAsArrayBuffer(file);
 	
@@ -55,6 +57,5 @@ window.writeFile = function(file)
 	if (!file) return;
 	var dst = document.getElementById("main");
 	dst.innerHTML += file.path + ' ' + file.length + ' ';
-	if (file.length < 100)
-		dst.innerHTML += "in"; // Uint8Array file.file;
+	dst.innerHTML += "in"; // Uint8Array file.file;
 };

@@ -146,12 +146,40 @@ function Zlib()
 	
 	this.CreateArchiveFromFiles(_files)
 	{
-		var tmpBuffer;
-		// вычисление размера
-		tmpBuffer[i + 0] = (val & (255 <<  0)) >>  0;
-		tmpBuffer[i + 1] = (val & (255 <<  8)) >>  8;
-		tmpBuffer[i + 2] = (val & (255 << 16)) >> 16;
-		tmpBuffer[i + 3] = (val & (255 << 24)) >> 24;
+		if (!this.isInit) return null;
+		// создание дерева файлов
+		var tmpBuffer = new Uint8Array();
+		var index = 4;
+		tmpBuffer.set([0,0,0,0], 0); // SkipLen
+		for (var i = 0; i < _files.length; i++)
+		{
+			var path = allocString(_files[i].path);
+			tmpBuffer.set([
+				(path.len >> 24) & 0xFF,
+				(path.len >> 16) & 0xFF,
+				(path.len >>  8) & 0xFF,
+				(path.len >>  0) & 0xFF
+			], index);
+			index += 4;
+			tmpBuffer.set(path.buf, index);
+			index += path.len;
+			
+			tmpBuffer.set([
+				(_files[i].length >> 24) & 0xFF,
+				(_files[i].length >> 16) & 0xFF,
+				(_files[i].length >>  8) & 0xFF,
+				(_files[i].length >>  0) & 0xFF
+			], index);
+			index += 4;
+			tmpBuffer.set(_files[i].file, index);
+			index += _files[i].length;
+		}
+		tmpBuffer.set([
+			(index >> 24) & 0xFF,
+			(index >> 16) & 0xFF,
+			(index >>  8) & 0xFF,
+			(index >>  0) & 0xFF
+		], 0);
 	}
 
     this.GetPathsInArchive = function()

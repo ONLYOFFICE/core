@@ -58,8 +58,8 @@ struct STitleInfo
 {
     std::vector<std::wstring> m_arGenres; // Жанры
     std::vector<SAuthor> m_arAuthors;     // Авторы
-    std::wstring  m_sBookTitle;           // Название
-    std::wstring* m_pKeywords;            // Ключевые слова
+    std::wstring m_sBookTitle;            // Название
+    std::wstring m_pKeywords;             // Ключевые слова
     /*
     std::vector<SAuthor> m_arTranslator;  // Переводчики
     std::wstring m_sLang;      // Язык после перевода
@@ -80,7 +80,6 @@ struct STitleInfo
     {
         m_arGenres .clear();
         m_arAuthors.clear();
-        RELEASEARRAYOBJECTS(m_pKeywords);
         /*
         m_arTranslator.clear();
         m_mSequence.clear();
@@ -1317,12 +1316,7 @@ public:
                 oTitleInfo.m_sBookTitle = content();
             // Читаем keywords (ноль или один)
             else if(sName == L"keywords")
-            {
-                if(oTitleInfo.m_pKeywords)
-                    delete[] oTitleInfo.m_pKeywords;
-                oTitleInfo.m_pKeywords = new std::wstring[1];
-                *oTitleInfo.m_pKeywords = content();
-            }
+                oTitleInfo.m_pKeywords = content();
             /*
             // Читаем date (ноль или один)
             else if(sName == L"date")
@@ -1535,10 +1529,10 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     oCore.WriteEncodeXmlString(m_internal->m_oTitleInfo.getAuthors());
     oCore.WriteString(L"</dc:creator>");
     // Ключевые слова
-    if (m_internal->m_oTitleInfo.m_pKeywords)
+    if (!m_internal->m_oTitleInfo.m_pKeywords.empty())
     {
         oCore.WriteString(L"<cp:keywords>");
-        oCore.WriteEncodeXmlString(*m_internal->m_oTitleInfo.m_pKeywords);
+        oCore.WriteEncodeXmlString(m_internal->m_oTitleInfo.m_pKeywords);
         oCore.WriteString(L"</cp:keywords>");
     }
     // Конец core

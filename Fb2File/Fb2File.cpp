@@ -58,12 +58,12 @@ struct STitleInfo
 {
     std::vector<std::wstring> m_arGenres; // Жанры
     std::vector<SAuthor> m_arAuthors;     // Авторы
-    std::wstring m_sBookTitle;            // Название
-
+    std::wstring  m_sBookTitle;           // Название
+    std::wstring* m_pKeywords;            // Ключевые слова
     /*
     std::vector<SAuthor> m_arTranslator;  // Переводчики
     std::wstring m_sLang;      // Язык после перевода
-    std::wstring* m_pKeywords;                      // Ключевые слова
+
     std::pair<std::wstring, std::wstring>* m_pDate; // Дата
     std::wstring* m_pSrcLang;                       // Язык до перевода
     std::map<std::wstring, std::wstring> m_mSequence; // Серии книг
@@ -80,10 +80,10 @@ struct STitleInfo
     {
         m_arGenres .clear();
         m_arAuthors.clear();
+        RELEASEARRAYOBJECTS(m_pKeywords);
         /*
         m_arTranslator.clear();
         m_mSequence.clear();
-        RELEASEARRAYOBJECTS(m_pKeywords);
         RELEASEARRAYOBJECTS(m_pDate);
         RELEASEARRAYOBJECTS(m_pSrcLang);
         */
@@ -216,8 +216,6 @@ public:
         m_oLightReader.Clear();
         m_mFootnotes.clear();
         m_mImages.clear();
-        m_oTitleInfo.m_arAuthors.clear();
-        m_oTitleInfo.m_arGenres.clear();
         /*
         m_mCustomInfo.clear();
         if(m_pSrcTitleInfo)
@@ -1317,7 +1315,6 @@ public:
                getAuthor(oTitleInfo.m_arAuthors);
             else if (sName == L"book-title")
                 oTitleInfo.m_sBookTitle = content();
-            /*
             // Читаем keywords (ноль или один)
             else if(sName == L"keywords")
             {
@@ -1326,6 +1323,7 @@ public:
                 oTitleInfo.m_pKeywords = new std::wstring[1];
                 *oTitleInfo.m_pKeywords = content();
             }
+            /*
             // Читаем date (ноль или один)
             else if(sName == L"date")
             {
@@ -1535,8 +1533,16 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     // Авторы
     oCore += L"</dc:subject><dc:creator>";
     oCore.WriteEncodeXmlString(m_internal->m_oTitleInfo.getAuthors());
+    oCore.WriteString(L"</dc:creator>");
+    // Ключевые слова
+    if (m_internal->m_oTitleInfo.m_pKeywords)
+    {
+        oCore.WriteString(L"<cp:keywords>");
+        oCore.WriteEncodeXmlString(*m_internal->m_oTitleInfo.m_pKeywords);
+        oCore.WriteString(L"</cp:keywords>");
+    }
     // Конец core
-    oCore += L"</dc:creator><cp:revision>1</cp:revision></cp:coreProperties>";
+    oCore += L"<cp:revision>1</cp:revision></cp:coreProperties>";
     // Пишем core в файл
     NSFile::CFileBinary oCoreWriter;
     if (oCoreWriter.CreateFileW(sDocPropsDirectory + L"/core.xml"))
@@ -1810,7 +1816,7 @@ HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sC
     oDocument.WriteString(L"<title-info>");
     std::wstring sBookTitle = sInpTitle.empty() ? NSFile::GetFileName(sDst) : sInpTitle;
     std::wstring sAuthor = sBookTitle;
-    std::wstring sAnnotation, sKeywords;
+    std::wstring sAnnotation, sKeywords, sGenre;
     std::wstring sLanguage = L"en-EN", sVersion = L"1.0";
     std::wstring sIdentifier = GenerateUUID();
     XmlUtils::CXmlLiteReader oCoreReader;
@@ -1826,8 +1832,10 @@ HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sC
             sBookTitle  = oCoreReader.GetText2();
         else if (sName == L"dc:description")
             sAnnotation = oCoreReader.GetText2();
-        else if (sName == L"dc:subject" || sName == L"cp:keywords")
-            sKeywords  += oCoreReader.GetText2() + L' ';
+        else if (sName == L"dc:subject")
+            sGenre      = oCoreReader.GetText2();
+        else if (sName == L"cp:keywords")
+            sKeywords   = oCoreReader.GetText2();
         else if (sName == L"dc:identifier")
             sIdentifier = oCoreReader.GetText2();
         else if (sName == L"dc:language")
@@ -1836,7 +1844,9 @@ HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sC
             sVersion    = oCoreReader.GetText2();
     }
 
-    oDocument.WriteString(L"<genre>dramaturgy</genre><author><nickname>");
+    oDocument.WriteString(L"<genre>");
+    oDocument.WriteString(sGenre);
+    oDocument.WriteString(L"</genre><author><nickname>");
     oDocument.WriteString(sAuthor);
     oDocument.WriteString(L"</nickname></author><book-title>");
     oDocument.WriteString(sBookTitle);

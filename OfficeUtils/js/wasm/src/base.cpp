@@ -164,6 +164,8 @@ unsigned char* Zlib_CompressFiles(Zlib* p,   unsigned char* tree)
     if (p && tree)
     {
         BUFFER_IO* buf = new BUFFER_IO;
+        buf->bGrow = 1;
+        buf->nCurrentPos = 0;
         zipFile zip_file_handle = zipOpenHelp(buf);
 
         unsigned int nLength = GetLength(tree);
@@ -186,14 +188,15 @@ unsigned char* Zlib_CompressFiles(Zlib* p,   unsigned char* tree)
                 zipClose(zip_file_handle, NULL);
                 return NULL;
             }
+            i += nFileLength;
         }
         zipClose(zip_file_handle, NULL);
         p->buffer = buf->buffer;
         p->size   = buf->nSize;
 
-        CData oRes;
-        oRes.WriteString(buf->buffer, buf->nSize);
-        return oRes.GetBuffer();
+        CData* oRes = new CData;
+        oRes->WriteString(buf->buffer, buf->nSize);
+        return oRes->GetBuffer();
     }
     return NULL;
 }

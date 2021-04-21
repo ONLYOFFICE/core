@@ -13,6 +13,7 @@ typedef struct {
     uLong nLimit;
     uLong nCurrentPos;
     int error;
+    int bGrow;
 } BUFFER_IO;
 
 void fill_buffer_filefunc OF((zlib_filefunc_def* pzlib_filefunc_def, BUFFER_IO* buffer));

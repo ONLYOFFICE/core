@@ -10,21 +10,24 @@ static int    ZCALLBACK error_buffer_func OF((voidpf opaque, voidpf stream));
 
 voidpf ZCALLBACK open_buffer_func (voidpf opaque, const char* filename, int mode)
 {
-    voidpf ret = NULL;
     BUFFER_IO* hFile = NULL;
     if (opaque != NULL)
         hFile = (BUFFER_IO*)opaque;
     if (hFile != NULL)
     {
         if (mode & ZLIB_FILEFUNC_MODE_CREATE)
+        {
+            if (hFile->bGrow)
+            {
+                hFile->nSize  = 0xffff;
+                hFile->buffer = malloc(hFile->nSize);
+            }
             hFile->nLimit = 0;
+        }
         else
             hFile->nLimit = hFile->nSize;
-        ret = malloc(sizeof(BUFFER_IO));
-        if (ret != NULL)
-            *((BUFFER_IO*)ret) = *hFile;
     }
-    return ret;
+    return hFile;
 }
 
 uLong  ZCALLBACK read_buffer_func (voidpf opaque, voidpf stream, void* buf, uLong size)
@@ -54,13 +57,26 @@ uLong  ZCALLBACK write_buffer_func(voidpf opaque, voidpf stream, const void* buf
     if (hFile != NULL)
     {
         if (hFile->nCurrentPos + size > hFile->nSize)
-            ret = hFile->nSize - hFile->nCurrentPos;
+        {
+            if (hFile->bGrow)
+            {
+                uLong nNewSize = hFile->nSize + (size < 0xffff ? 0xffff : size);
+                unsigned char* NewBuffer = malloc(nNewSize);
+                memcpy(NewBuffer, hFile->buffer, hFile->nSize);
+                free(hFile->buffer);
+                hFile->buffer = NewBuffer;
+                hFile->nSize  = nNewSize;
+                ret = size;
+            }
+            else
+                ret = hFile->nSize - hFile->nCurrentPos;
+        }
         else
             ret = size;
         memcpy(hFile->buffer + hFile->nCurrentPos, buf, ret);
         hFile->nCurrentPos += ret;
         if (hFile->nCurrentPos > hFile->nLimit)
-                hFile->nLimit = hFile->nCurrentPos;
+            hFile->nLimit = hFile->nCurrentPos;
     }
     return ret;
 }

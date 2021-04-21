@@ -3525,11 +3525,11 @@ void BinaryWorksheetTableWriter::WriteProtectedRange(const OOX::Spreadsheet::CPr
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 		m_oBcw.m_oStream.WriteStringW(*protectedRange.m_oSqref);
 	}
-	if (protectedRange.m_oSecurityDescriptor.IsInit())
+	for (size_t i = 0; i < protectedRange.m_arSecurityDescriptors.size(); ++i)
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectedRangeTypes::SecurityDescriptor);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-		m_oBcw.m_oStream.WriteStringW(*protectedRange.m_oSecurityDescriptor);
+		m_oBcw.m_oStream.WriteStringW(protectedRange.m_arSecurityDescriptors[i]);
 	}
 }
 void BinaryWorksheetTableWriter::WriteProtection(const OOX::Spreadsheet::CSheetProtection& protection)

@@ -64,12 +64,19 @@ namespace OOX
 				WritingStringNullableAttrString(L"saltValue", m_oSaltValue, m_oSaltValue.get());
 				WritingStringNullableAttrInt(L"spinCount", m_oSpinCount, m_oSpinCount->GetValue());
 				
-				if (m_oSecurityDescriptor.IsInit())
+				if (m_arSecurityDescriptors.size() == 1)
+				{
+					WritingStringAttrString(L"securityDescriptor", XmlUtils::EncodeXmlString(m_arSecurityDescriptors[0]));
+				}
+				if (m_arSecurityDescriptors.size() > 1)
 				{
 					writer.WriteString(L">");
-					writer.WriteString(L"<securityDescriptor>");
-					writer.WriteString(XmlUtils::EncodeXmlString(*m_oSecurityDescriptor));
-					writer.WriteString(L"</securityDescriptor>");
+					for (size_t i = 0; i < m_arSecurityDescriptors.size(); ++i)
+					{
+						writer.WriteString(L"<securityDescriptor>");
+						writer.WriteString(XmlUtils::EncodeXmlString(m_arSecurityDescriptors[i]));
+						writer.WriteString(L"</securityDescriptor>");
+					}
 					writer.WriteString(L"</protectedRange>");
 				}
 				else
@@ -81,8 +88,8 @@ namespace OOX
 			{
 				ReadAttributes(oReader);
 
-				if (!oReader.IsEmptyNode())
-					oReader.ReadTillEnd();
+				if (oReader.IsEmptyNode())
+					return;
 				
 				int nCurDepth = oReader.GetDepth();
 				while (oReader.ReadNextSiblingNode(nCurDepth))
@@ -90,7 +97,7 @@ namespace OOX
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if (L"securityDescriptor" == sName)
-						m_oSecurityDescriptor = oReader.GetText2();
+						m_arSecurityDescriptors.push_back(oReader.GetText2());
 				}
 
 			}
@@ -100,6 +107,7 @@ namespace OOX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
+				nullable_string desc;
 				WritingElement_ReadAttributes_Start(oReader)
 					WritingElement_ReadAttributes_Read_if(oReader, (L"algorithmName"), m_oAlgorithmName)
 					WritingElement_ReadAttributes_Read_else_if(oReader, (L"hashValue"), m_oHashValue)
@@ -107,15 +115,19 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if(oReader, (L"spinCount"), m_oSpinCount)
 					WritingElement_ReadAttributes_Read_else_if(oReader, (L"name"), m_oName)
 					WritingElement_ReadAttributes_Read_else_if(oReader, (L"sqref"), m_oSqref)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"securityDescriptor"), desc)
 				WritingElement_ReadAttributes_End(oReader)
+
+				if (desc.IsInit())
+					m_arSecurityDescriptors.push_back(*desc);
 			}
 			nullable<SimpleTypes::CCryptAlgoritmName<>>		m_oAlgorithmName;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oSpinCount;
-			nullable_string		m_oHashValue;
-			nullable_string		m_oSaltValue;
-			nullable_string		m_oSecurityDescriptor;
-			nullable_string		m_oName;
-			nullable_string		m_oSqref;
+			nullable_string				m_oHashValue;
+			nullable_string				m_oSaltValue;
+			nullable_string				m_oName;
+			nullable_string				m_oSqref;
+			std::vector<std::wstring>	m_arSecurityDescriptors;
 		};
 		class CProtectedRanges : public WritingElementWithChilds<CProtectedRange>
 		{

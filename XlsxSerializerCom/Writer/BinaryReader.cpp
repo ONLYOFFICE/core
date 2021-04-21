@@ -3639,13 +3639,6 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 	}
 	oSheetFormatPr.toXML(oStreamWriter);
 //-------------------------------------------------------------------------------------------------------------
-	OOX::Spreadsheet::CProtectedRanges oProtectedRanges;
-	SEEK_TO_POS_START(c_oSerWorksheetsTypes::ProtectedRange);
-	READ1_DEF(length, res, this->ReadProtectedRanges, &oProtectedRanges);
-	SEEK_TO_POS_END2();
-
-	oProtectedRanges.toXML(oStreamWriter);
-//-------------------------------------------------------------------------------------------------------------
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::Cols);
 		OOX::Spreadsheet::CCols oCols;
 		READ1_DEF(length, res, this->ReadWorksheetCols, &oCols);
@@ -3776,6 +3769,11 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 	OOX::Spreadsheet::CSheetProtection oProtection;
 	READ2_DEF_SPREADSHEET(length, res, this->ReadProtection, &oProtection);
 	SEEK_TO_POS_END(oProtection);
+//-------------------------------------------------------------------------------------------------------------
+	SEEK_TO_POS_START(c_oSerWorksheetsTypes::ProtectedRanges);
+	OOX::Spreadsheet::CProtectedRanges oProtectedRanges;
+	READ1_DEF(length, res, this->ReadProtectedRanges, &oProtectedRanges);
+	SEEK_TO_POS_END(oProtectedRanges);
 //-------------------------------------------------------------------------------------------------------------
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::PrintOptions);
 		OOX::Spreadsheet::CPrintOptions oPrintOptions;
@@ -4210,7 +4208,7 @@ int BinaryWorksheetsTableReader::ReadProtectedRanges(BYTE type, long length, voi
 	if (c_oSerWorksheetsTypes::ProtectedRange == type)
 	{
 		OOX::Spreadsheet::CProtectedRange* pProtectedRange = new OOX::Spreadsheet::CProtectedRange();
-		READ1_DEF(length, res, this->ReadProtectedRange, pProtectedRange);
+		READ2_DEF_SPREADSHEET(length, res, this->ReadProtectedRange, pProtectedRange);
 		pProtectedRanges->m_arrItems.push_back(pProtectedRange);
 	}
 	else
@@ -4250,7 +4248,7 @@ int BinaryWorksheetsTableReader::ReadProtectedRange(BYTE type, long length, void
 	}
 	else if (c_oSerProtectedRangeTypes::SecurityDescriptor == type)
 	{
-		pProtectedRange->m_oSecurityDescriptor = m_oBufferedStream.GetString4(length);
+		pProtectedRange->m_arSecurityDescriptors.push_back(m_oBufferedStream.GetString4(length));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

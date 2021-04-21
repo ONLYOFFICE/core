@@ -38,14 +38,15 @@ exported_functions = ["_malloc",
                       "_Zlib_Load",
                       "_Zlib_Destroy",
                       "_Zlib_GetPathsInArchive",
-                      "_Zlib_GetFileFromArchive"]
+                      "_Zlib_GetFileFromArchive",
+                      "_Zlib_CompressFiles"]
 
 libZlib_src_path = "../src/zlib-1.2.11"
 input_zlib_sources = ["inflate.c", "zutil.c", "adler32.c", "crc32.c", "inftrees.c",
-                      "inffast.c"]
+                      "inffast.c", "deflate.c", "trees.c"]
 
 libMinizip_src_path = "../src/zlib-1.2.11/contrib/minizip"
-input_minizip_sources = ["unzip.c", "ioapi.c"]
+input_minizip_sources = ["unzip.c", "ioapi.c", "zip.c"]
 
 sources = []
 for item in input_zlib_sources:

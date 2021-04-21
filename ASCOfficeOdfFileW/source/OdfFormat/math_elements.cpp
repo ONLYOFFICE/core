@@ -52,21 +52,26 @@ const wchar_t * office_math::name = L"math";
 
 //----------------------------------------------------------------------------------------------------
 
-//void office_math::create_child_element(const std::wstring & Ns, const std::wstring & Name)
-//{
-//	CP_CREATE_ELEMENT(content_);
-//	this->
-//}
-//
-//void office_math::add_child_element(const office_element_ptr & child_element)
-//{
-//	content_.push_back(child_element);
-//}
-//
-//void office_math::serialize(std::wostream & _Wostream)
-//{
-//
-//}
+void office_math::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+{
+	CP_CREATE_ELEMENT(semantics_);	
+}
+
+void office_math::add_child_element(const office_element_ptr & child_element)
+{
+	semantics_->add_child_element(child_element);
+}
+
+void office_math::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{			
+			semantics_->serialize(CP_XML_STREAM());
+		}
+	}
+}
 
 //----------------------------------------------------------------------------------------------------
 const wchar_t * math_semantics::ns = L"math";

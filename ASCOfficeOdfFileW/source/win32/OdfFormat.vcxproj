@@ -178,6 +178,7 @@
     <ClCompile Include="..\OdfFormat\odf_conversion_context.cpp" />
     <ClCompile Include="..\OdfFormat\odf_drawing_context.cpp" />
     <ClCompile Include="..\OdfFormat\odf_lists_styles_context.cpp" />
+    <ClCompile Include="..\OdfFormat\odf_math_context.cpp" />
     <ClCompile Include="..\OdfFormat\odf_notes_context.cpp" />
     <ClCompile Include="..\OdfFormat\odf_number_styles_context.cpp" />
     <ClCompile Include="..\OdfFormat\odf_page_layout_context.cpp" />
@@ -263,6 +264,7 @@
     <ClInclude Include="..\OdfFormat\odf_conversion_context.h" />
     <ClInclude Include="..\OdfFormat\odf_drawing_context.h" />
     <ClInclude Include="..\OdfFormat\odf_lists_styles_context.h" />
+    <ClInclude Include="..\OdfFormat\odf_math_context.h" />
     <ClInclude Include="..\OdfFormat\odf_notes_context.h" />
     <ClInclude Include="..\OdfFormat\odf_number_styles_context.h" />
     <ClInclude Include="..\OdfFormat\odf_page_layout_context.h" />

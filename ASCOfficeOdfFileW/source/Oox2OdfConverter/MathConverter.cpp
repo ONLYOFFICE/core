@@ -95,6 +95,10 @@ namespace Oox2Odf
 	void DocxConverter::convert(OOX::Logic::CDelimiter *oox_del)
 	{
 		if (!oox_del) return;
+		//create
+		//start
+		//
+		//end
 	}
 
 	void DocxConverter::convert(OOX::Logic::CDelimiterPr *oox_del_pr)
@@ -115,6 +119,12 @@ namespace Oox2Odf
 	void DocxConverter::convert(OOX::Logic::CFraction *oox_fraction)
 	{
 		if (!oox_fraction) return;
+		// create_element(fraction);
+		// odf_context::start_element(fraction);
+		// convert(frPr)
+		// convert(den)
+		// convert(num)
+		//end_element();
 	}
 	
 	void DocxConverter::convert(OOX::Logic::CFPr *oox_f_pr)

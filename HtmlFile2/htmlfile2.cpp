@@ -1067,6 +1067,11 @@ private:
                 sSelectors.pop_back();
                 for(size_t i = 0; i < nHyp; i++)
                     oXml->WriteString(L"</w:hyperlink>");
+                if (bWasP)
+                {
+                    wrP(oXml, sSelectors, oTS, bWasP);
+                    oXml->WriteString(L"<w:r></w:r>");
+                }
                 oXml->WriteString(L"</w:p></w:tc>");
                 j++;
 

@@ -40,6 +40,7 @@
 
 #include "odf_drawing_context.h"
 #include "odf_chart_context.h"
+#include "odf_math_context.h"
 #include "odf_controls_context.h"
 
 #include "mediaitems.h"
@@ -113,12 +114,16 @@ public:
 	odf_settings_context			* settings_context();
 	odf_chart_context				* chart_context();
 	odf_page_layout_context			* page_layout_context();
+	odf_math_context				* math_context();
 
 	odf_number_styles_context		* numbers_styles_context();
 	_mediaitems						* mediaitems();
 
 	void start_chart();
 	void end_chart();
+
+	virtual bool start_math();
+	virtual void end_math();
 
 	void start_spreadsheet();
 	void end_spreadsheet();
@@ -146,6 +151,7 @@ private:
 
 	odf_chart_context			chart_context_;
 	odf_page_layout_context		page_layout_context_;	
+	odf_math_context			math_context_;
 
 	void process_styles		(_object & object, bool isRoot);
 	void process_settings	(_object & object, bool isRoot);

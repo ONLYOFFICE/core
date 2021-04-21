@@ -75,12 +75,11 @@ public:
 
 	CPDOCCORE_DEFINE_VISITABLE();
 	friend class odf_document;
-private:
-    //virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element(const office_element_ptr & child_element);
+private:
 	virtual void serialize(std::wostream & _Wostream);
-
 
 	office_element_ptr semantics_;
 };

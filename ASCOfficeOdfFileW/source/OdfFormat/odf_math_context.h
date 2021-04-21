@@ -73,6 +73,8 @@ namespace cpdoccore {
 
 			void end_math();
 
+
+			bool isEmpty();
 		private:
 			class Impl;
 			_CP_PTR(Impl) impl_;

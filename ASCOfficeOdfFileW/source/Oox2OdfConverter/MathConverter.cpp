@@ -4,16 +4,22 @@
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/DocxFlat.h"
 
+#include "../OdfFormat/odf_conversion_context.h"
+
 namespace Oox2Odf
 {
 	void DocxConverter::convert(OOX::Logic::COMath *oox_math)
 	{
 		if (!oox_math) return;
 
+		bool bStart = odf_context()->start_math(); //למזוע בûעü מעהוכüםמ מע COMathPara 
+
 		for (size_t i = 0; i < oox_math->m_arrItems.size(); ++i)
 		{
 			convert(oox_math->m_arrItems[i]);
 		}
+		
+		if (bStart) odf_context()->end_math();
 	}
 
 	void DocxConverter::convert(OOX::Logic::CMathPr *oox_math_pr)
@@ -25,10 +31,13 @@ namespace Oox2Odf
 	{
 		if (!oox_math_para) return;
 
+		odf_context()->start_math();
+
 		for (size_t i = 0; i < oox_math_para->m_arrItems.size(); ++i)
 		{
 			convert(oox_math_para->m_arrItems[i]);
 		}
+		odf_context()->end_math();
 	}
 
 	void DocxConverter::convert(OOX::Logic::COMathParaPr *oox_math_para_pr)

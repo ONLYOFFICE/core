@@ -56,7 +56,7 @@ namespace odf_writer {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 odf_conversion_context::odf_conversion_context(_office_type_document type_, package::odf_document * outputDocument) 
-	: type (type_), chart_context_ (this), page_layout_context_(this)
+	: type (type_), chart_context_ (this), page_layout_context_(this), math_context_(this)
 { 
 	output_document_	= outputDocument;
 	current_object_		= 0;
@@ -101,6 +101,10 @@ odf_chart_context* odf_conversion_context::chart_context()
 	return &chart_context_;
 }
 
+odf_math_context* odf_conversion_context::math_context()
+{
+	return &math_context_;
+}
 
 odf_number_styles_context* odf_conversion_context::numbers_styles_context()	
 {
@@ -227,6 +231,31 @@ void odf_conversion_context::end_chart()
 
 	end_object();
 	chart_context_.set_styles_context(styles_context());
+}
+bool odf_conversion_context::start_math()
+{
+	if (false == math_context_.isEmpty()) return false;
+
+	create_object();
+	create_element(L"math", L"math", objects_.back().content, this, true);
+
+	drawing_context()->start_drawing();
+	drawing_context()->start_object(get_next_name_object()); //имитация рисованного объекта - высота-ширина ????
+
+	math_context_.set_styles_context(odf_conversion_context::styles_context());
+	math_context_.start_math(get_current_object_element());
+
+	return true;
+}
+void odf_conversion_context::end_math()
+{
+	math_context_.end_math();
+
+	end_object();
+	math_context_.set_styles_context(styles_context());
+	
+	drawing_context()->end_object();
+	drawing_context()->end_drawing();
 }
 void odf_conversion_context::end_text()
 {

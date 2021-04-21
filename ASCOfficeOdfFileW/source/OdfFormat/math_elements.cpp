@@ -59,7 +59,14 @@ void office_math::create_child_element(const std::wstring & Ns, const std::wstri
 
 void office_math::add_child_element(const office_element_ptr & child_element)
 {
-	semantics_->add_child_element(child_element);
+	if (!child_element) return;
+
+	if (typeMathSemantics == child_element->get_type())
+	{
+		semantics_ = child_element;
+	}
+	else if (semantics_)
+		semantics_->add_child_element(child_element);
 }
 
 void office_math::serialize(std::wostream & _Wostream)
@@ -99,7 +106,8 @@ void math_semantics::serialize(std::wostream & _Wostream)
 				if (!content_[i]) continue;
 				content_[i]->serialize(CP_XML_STREAM());
 			}
-			annotation_->serialize(CP_XML_STREAM());		
+			if (annotation_)
+				annotation_->serialize(CP_XML_STREAM());		
 		}
 	}
 }

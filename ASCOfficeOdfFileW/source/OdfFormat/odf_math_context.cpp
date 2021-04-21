@@ -58,39 +58,13 @@ using namespace odf_types;
 
 namespace odf_writer
 {
-	static const std::wstring default_MS_series_colors[] =
-	{
-		L"#355a86", L"#883533", L"#6e963c", L"#594573", L"#327a8d", L"#3d679a", L"#9d3e3b", L"#7e9945", L"#674f84", L"#398ba2", L"#cb7934",
-		//todooo - продолжить .... пока копия первых
-		L"#355a86", L"#883533", L"#6e963c", L"#594573", L"#327a8d", L"#3d679a", L"#9d3e3b", L"#7e9945", L"#674f84", L"#398ba2", L"#cb7934",
-		L"#355a86", L"#883533", L"#6e963c", L"#594573", L"#327a8d", L"#3d679a", L"#9d3e3b", L"#7e9945", L"#674f84", L"#398ba2", L"#cb7934",
-		L"#355a86", L"#883533", L"#6e963c", L"#594573", L"#327a8d", L"#3d679a", L"#9d3e3b", L"#7e9945", L"#674f84", L"#398ba2", L"#cb7934",
-		L"#355a86", L"#883533", L"#6e963c", L"#594573", L"#327a8d", L"#3d679a", L"#9d3e3b", L"#7e9945", L"#674f84", L"#398ba2", L"#cb7934",
-		L"#355a86", L"#883533", L"#6e963c", L"#594573", L"#327a8d", L"#3d679a", L"#9d3e3b", L"#7e9945", L"#674f84", L"#398ba2", L"#cb7934"
-	};
-
-
-	struct 	odf_cash_state
-	{
-		std::wstring ref;
-		std::wstring format_code;
-
-		bool categories;
-		bool label;
-
-		std::vector<std::wstring>	data_str;
-	};
 	struct 	odf_math_state
 	{
-		odf_math_state() { clear(); }
+		odf_math_state() { }
 		void clear()
 		{
 			elements_.clear();
-			math_width_pt = math_height_pt = 0;
 		}
-		double math_width_pt;
-		double math_height_pt; //chart_height_pt
-
 		std::vector<odf_element_state>	elements_;
 	};
 
@@ -102,27 +76,15 @@ namespace odf_writer
 		office_element_ptr	elm;
 	};
 
-	struct odf_category_state
-	{
-		std::wstring ref;
-		std::wstring format_code;
-		int type;
-
-	};
-
 	class odf_math_context::Impl
 	{
 		public: 
 			Impl(odf_conversion_context *odf_context) : odf_context_(odf_context)
 			{							
+				styles_context_ = NULL;				
 				current_paragraph_properties = NULL;
 				current_text_properties = NULL;
-
-				
-				//некоторые свойства для объектов графики не поддерживаюися в редакторах Libre && OpenOffice.net
-											  //в MS Office и в нашем - проблем таких нет.
 			}
-			~Impl();
 			odf_math_state						current_math_state_;
 			void								clear_current();
 		
@@ -132,6 +94,8 @@ namespace odf_writer
 			std::vector<odf_math_state>			math_list_;		//все элементы .. для удобства разделение по "топам"
 			odf_conversion_context				*odf_context_;
 			office_math							*root_element_;
+			
+			odf_style_context					*styles_context_;
 	};
 
 	void odf_math_context::Impl::clear_current()
@@ -149,14 +113,19 @@ namespace odf_writer
 	odf_math_context::~odf_math_context()
 	{
 	}
+	void odf_math_context::set_styles_context(odf_style_context * style_context)
+	{
+		impl_->styles_context_ = style_context;
 
+		impl_->odf_context_->drawing_context()->set_styles_context(style_context);
+	}
 
 	odf_drawing_context * odf_math_context::drawing_context()
 	{
 		return impl_->odf_context_->drawing_context();
 	}
 
-	odf_text_context	* odf_math_context::text_context()
+	odf_text_context * odf_math_context::text_context()
 	{
 		return impl_->odf_context_->text_context();
 	}
@@ -165,18 +134,14 @@ namespace odf_writer
 	{
 		impl_->root_element_ = dynamic_cast<office_math*>(root.get());
 
-		office_element_ptr math_elm;
-		create_element(L"math", L"math", math_elm, impl_->odf_context_);		
+		if (!impl_->root_element_) return;
 
-
-		root->add_child_element(math_elm);
+		impl_->root_element_->create_child_element(L"math", L"semantics");
 
 		size_t level = impl_->current_level_.size();
 
-		odf_element_state		state(math_elm, NULL, NULL, level);		
-		odf_math_level_state	level_state = { NULL, NULL, math_elm };
-
-		drawing_context()->start_element(math_elm);
+		odf_element_state state(root, L"", office_element_ptr(), level);
+		odf_math_level_state	level_state = { NULL, NULL, root };
 
 		impl_->current_level_.push_back(level_state);
 		impl_->current_math_state_.elements_.push_back(state);
@@ -186,11 +151,9 @@ namespace odf_writer
 	{		
 		size_t level = impl_->current_level_.size();
 
-		odf_element_state		state(elm, NULL, NULL, level);
+		odf_element_state		state(elm, L"", office_element_ptr(), level);
 		odf_math_level_state	level_state = { NULL, NULL, elm };
 		
-		drawing_context()->start_element(elm, NULL);		
-
 		impl_->current_level_.push_back(level_state);
 		impl_->current_math_state_.elements_.push_back(state);
 	}
@@ -199,10 +162,13 @@ namespace odf_writer
 	{
 		impl_->current_level_.pop_back();
 	}
-	
+	bool odf_math_context::isEmpty()
+	{
+		return impl_->current_level_.empty();
+	}
 	void odf_math_context::end_math()
 	{
-		if (impl_->current_math_state_.elements_.size() < 1) return;
+		if (impl_->current_math_state_.elements_.empty()) return;
 
 		
 

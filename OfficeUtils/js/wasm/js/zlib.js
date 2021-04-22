@@ -134,7 +134,7 @@ var allocString = function(string)
     outputData[outputIndex++] = 0;
 
     var tmpBuffer = new Uint8Array(tmpStrings, 0, outputIndex);
-    return { len : outputIndex, buf : tmpBuffer };
+    return { length : outputIndex, buf : tmpBuffer };
 };
 
 function Zlib()
@@ -153,24 +153,40 @@ function Zlib()
 			this.paths = [];
 			this.files = [];
 		}
+		// вычисление длины дерева
 		var _paths = [];
-		// создание дерева файлов
-		var tmpBuffer = new Uint8Array();
-		var index = 4;
-		tmpBuffer.set([0,0,0,0], 0); // SkipLen
+		var nLength = 4;
 		for (var i = 0; i < _files.length; i++)
 		{
-			var path = allocString(_files[i].path);
+			_paths.push(allocString(_files[i].path));
+			nLength += 4;
+			nLength += _paths[i].length;
+			this.paths.push(_files[i].path)
+
+			nLength += 4;
+			nLength += _files[i].length;
+			this.files.push(_files[i]);
+		}
+		// создание дерева файлов
+		var tmpBuffer = new Uint8Array(nLength);
+		tmpBuffer.set([
+			(nLength >>  0) & 0xFF,
+			(nLength >>  8) & 0xFF,
+			(nLength >> 16) & 0xFF,
+			(nLength >> 24) & 0xFF
+		], 0);
+		var index = 4;
+		for (var i = 0; i < _files.length; i++)
+		{
 			tmpBuffer.set([
-				(path.len >>  0) & 0xFF,
-				(path.len >>  8) & 0xFF,
-				(path.len >> 16) & 0xFF,
-				(path.len >> 24) & 0xFF
+				(_paths[i].length >>  0) & 0xFF,
+				(_paths[i].length >>  8) & 0xFF,
+				(_paths[i].length >> 16) & 0xFF,
+				(_paths[i].length >> 24) & 0xFF
 			], index);
 			index += 4;
-			tmpBuffer.set(path.buf, index);
-			index += path.len;
-			this.paths.push(_files[i].path)
+			tmpBuffer.set(_paths[i].buf, index);
+			index += _paths[i].length;
 			
 			tmpBuffer.set([
 				(_files[i].length >>  0) & 0xFF,
@@ -181,14 +197,7 @@ function Zlib()
 			index += 4;
 			tmpBuffer.set(_files[i].file, index);
 			index += _files[i].length;
-			this.files.push(_files[i]);
 		}
-		tmpBuffer.set([
-			(index >>  0) & 0xFF,
-			(index >>  8) & 0xFF,
-			(index >> 16) & 0xFF,
-			(index >> 24) & 0xFF
-		], 0);
 		
 		var pointer = Module["_Zlib_Malloc"](tmpBuffer.length);
 		Module["HEAP8"].set(tmpBuffer, pointer);
@@ -196,7 +205,7 @@ function Zlib()
 		var _lenFile = new Int32Array(Module["HEAP8"].buffer, pointerZip, 4);
         var len = _lenFile[0];
 		var zip = new Uint8Array(Module["HEAP8"].buffer, pointerZip + 4, len);
-		return { len : len, file : zip };
+		return { length : len, file : zip };
 	}
 
     this.GetPathsInArchive = function()
@@ -224,7 +233,7 @@ function Zlib()
         if (findFile) return findFile;
         
         var tmp = allocString(_path);
-        var pointer = Module["_Zlib_Malloc"](tmp.len);
+        var pointer = Module["_Zlib_Malloc"](tmp.length);
         Module["HEAP8"].set(tmp.buf, pointer);
         
         var pointerFile = Module["_Zlib_GetFileFromArchive"](this.zipFile, pointer);

@@ -170,10 +170,18 @@ private:
     void InitTimingTags(PPTX::Logic::Timing &oTiming); // Initialize non-exist (in 95-97 format) struct
     void FillOldAnim(SOldAnimation& oldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase);
 
+public:
+    inline void setNextRId(int nextRId)
+    {
+        m_nextRID = nextRId;
+    }
+
 private:
     unsigned m_cTnId;
     PPTX::Logic::BldLst *m_pBldLst; // Do not delete
     PPTX::Logic::BldP   *m_currentBldP;
+
+    int m_nextRID; // it needs for audio maybe video for compisation id number;
 };
 
 }

@@ -1477,6 +1477,7 @@ void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, CRelsGenerator
         oRels.WriteHyperlinkMedia(path, false, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
     }
 
+    animation.setNextRId(oRels.getNextRId());
     animation.Convert(oTiming);
     oWriter.WriteString(oTiming.toXML());
     //oWriter.WriteString(std::wstring(L"<p:timing><p:tnLst><p:par><p:cTn id=\"1\" dur=\"indefinite\" restart=\"never\" nodeType=\"tmRoot\" /></p:par></p:tnLst></p:timing>"));

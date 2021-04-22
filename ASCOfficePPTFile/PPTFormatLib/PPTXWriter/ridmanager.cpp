@@ -54,7 +54,7 @@ void RIDManager::setRIDfromAnimation(Animation& anim)
     setSoundRIDCollection(anim.m_pSoundContainer);
     if (anim.m_pPPT10)
         searchSound(anim.m_pPPT10->m_pExtTimeNodeContainer);
-    else if (!anim.m_arrOldAnim.empty())
+    if (!anim.m_arrOldAnim.empty())
         searchSound(anim.m_arrOldAnim);
 }
 

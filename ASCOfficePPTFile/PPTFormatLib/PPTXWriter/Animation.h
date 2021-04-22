@@ -88,6 +88,8 @@ public:
     // Call it and only it to convert animation
     void Convert(PPTX::Logic::Timing &oTiming);
 
+    inline void setNextRelsId(LONG id) {m_lNextRelsID = id;}
+
 private:
     void FillTnLst(
             CRecordExtTimeNodeContainer *pETNC,
@@ -174,6 +176,7 @@ private:
     unsigned m_cTnId;
     PPTX::Logic::BldLst *m_pBldLst; // Do not delete
     PPTX::Logic::BldP   *m_currentBldP;
+    LONG m_lNextRelsID = -1;
 };
 
 }

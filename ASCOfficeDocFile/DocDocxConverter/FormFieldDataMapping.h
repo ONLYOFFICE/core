@@ -60,7 +60,7 @@ namespace DocFileFormat
                 m_pXmlWriter->WriteNodeBegin( L"w:ffData");
 
 					m_pXmlWriter->WriteNodeBegin( L"w:name", true);
-						m_pXmlWriter->WriteAttribute(L"w:val", ffData->FFData.xstzName);
+						m_pXmlWriter->WriteAttribute(L"w:val", XmlUtils::EncodeXmlString(ffData->FFData.xstzName));
 					m_pXmlWriter->WriteNodeEnd(L"w:name", true, true );
 					
 					m_pXmlWriter->WriteNodeBegin(L"w:enabled", true);
@@ -76,26 +76,26 @@ namespace DocFileFormat
 					{
 						m_pXmlWriter->WriteNodeBegin(L"w:helpText", true);
 						m_pXmlWriter->WriteAttribute(L"w:type", ffData->FFData.fOwnHelp ? L"text" : L"autoText");
-						m_pXmlWriter->WriteAttribute(L"w:val", ffData->FFData.xstzHelpText);
+						m_pXmlWriter->WriteAttribute(L"w:val", XmlUtils::EncodeXmlString(ffData->FFData.xstzHelpText));
 						m_pXmlWriter->WriteNodeEnd(L"w:helpText", true, true);
 					}
 					if (false == ffData->FFData.xstzStatText.empty())
 					{
 						m_pXmlWriter->WriteNodeBegin(L"w:statusText", true);
 						m_pXmlWriter->WriteAttribute(L"w:type", ffData->FFData.fOwnStat ? L"text" : L"autoText");
-						m_pXmlWriter->WriteAttribute(L"w:val", ffData->FFData.xstzStatText);
+						m_pXmlWriter->WriteAttribute(L"w:val", XmlUtils::EncodeXmlString(ffData->FFData.xstzStatText));
 						m_pXmlWriter->WriteNodeEnd(L"w:statusText", true, true);
 					}
 					if (false == ffData->FFData.xstzEntryMcr.empty())
 					{
 						m_pXmlWriter->WriteNodeBegin(L"w:entryMacro", true);
-						m_pXmlWriter->WriteAttribute(L"w:val", ffData->FFData.xstzEntryMcr);
+						m_pXmlWriter->WriteAttribute(L"w:val", XmlUtils::EncodeXmlString(ffData->FFData.xstzEntryMcr));
 						m_pXmlWriter->WriteNodeEnd(L"w:entryMacro", true, true);
 					}
 					if (false == ffData->FFData.xstzExitMcr.empty())
 					{
 						m_pXmlWriter->WriteNodeBegin(L"w:exitMacro", true);
-						m_pXmlWriter->WriteAttribute(L"w:val", ffData->FFData.xstzExitMcr);
+						m_pXmlWriter->WriteAttribute(L"w:val", XmlUtils::EncodeXmlString(ffData->FFData.xstzExitMcr));
 						m_pXmlWriter->WriteNodeEnd(L"w:exitMacro", true, true);
 					}
 					if (ffData->FFData.iType == 1)

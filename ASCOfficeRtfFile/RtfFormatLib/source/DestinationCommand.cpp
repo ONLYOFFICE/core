@@ -2907,7 +2907,11 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 		oNewShape->m_oPicture			= RtfPicturePtr( new RtfPicture() );
 
 		RtfPictureReader oPictureReader( oReader, *oNewShape);
-		oAbstrReader.StartSubReader( oPictureReader, oDocument, oReader );
+		if (false == oAbstrReader.StartSubReader(oPictureReader, oDocument, oReader))
+		{
+			//open-rtf-document-image-error.rtf
+			oPictureReader.Parse(oDocument, oReader);
+		}
 
 		if ( oNewShape->IsValid() )
 			m_oCurParagraph->AddItem( oNewShape );

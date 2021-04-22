@@ -147,12 +147,10 @@ function Zlib()
 	this.CreateZipFromFiles = function(_files)
 	{
 		if (!this.isInit) return null;
-		if (this.zipFile == 0)
-		{
-			this.zipFile = Module["_Zlib_Create"]();
-			this.paths = [];
-			this.files = [];
-		}
+		if (this.zipFile) this.CloseZip();
+		this.zipFile = Module["_Zlib_Create"]();
+		this.paths = [];
+		this.files = [];
 		// вычисление длины дерева
 		var _paths = [];
 		var nLength = 4;
@@ -208,6 +206,18 @@ function Zlib()
 		return zip;
 	}
 
+	this.AddFileInZip = function(_file)
+	{
+		if (!this.isInit)  return false;
+		if (!this.zipFile) return false;
+		var _files = this.GetFilesInZip();
+		var findFile = _files.find(o => o === _file);
+        if (!findFile) _files.push(_file);
+		this.CreateZipFromFiles(_files);
+		findFile = this.files.find(o => o === _file);
+		return !!findFile;
+	}
+
     this.GetPathsInZip = function()
     {
 		return (this.isInit && this.zipFile != 0 ? this.paths : []);
@@ -215,8 +225,8 @@ function Zlib()
     
 	this.GetFilesInZip = function()
 	{
-		if (!this.isInit) return [];
-		if (this.zipFile == 0) return [];
+		if (!this.isInit)  return [];
+		if (!this.zipFile) return [];
 		
 		var _paths = this.GetPathsInZip();
 		for (var i = 0; i < _paths.length; i++)
@@ -226,8 +236,8 @@ function Zlib()
 	
     this.GetFileInZip = function(_path)
     {
-        if (!this.isInit) return null;
-        if (this.zipFile == 0) return null;
+        if (!this.isInit)  return null;
+        if (!this.zipFile) return null;
         
         var findFile = this.files.find(o => o.path === _path);
         if (findFile) return findFile;
@@ -260,51 +270,14 @@ function Zlib()
     
     this.OpenZipFromBuffer = function(dataBuffer)
     {
-        if (!this.isInit) return null;
-
-        // копируем память в память webasm
-        var FileRawDataSize = dataBuffer.byteLength;
-        var FileRawData = Module["_Zlib_Malloc"](FileRawDataSize);
-        if (0 === FileRawData) return null;
-
-        var uint8DataBuffer = new Uint8Array(dataBuffer);
-        Module["HEAP8"].set(uint8DataBuffer, FileRawData);
-
-        // грузим данные
-        this.zipFile = Module["_Zlib_Load"](FileRawData, FileRawDataSize);
-        if (this.zipFile == 0)
-        {
-            Module["_Zlib_Free"](FileRawData);
-            return null;
-        }
-
-        // получаем пути в архиве
-        var pointer = Module["_Zlib_GetPathsInArchive"](this.zipFile);
-        if (pointer == 0)
-        {
-            Module["_Zlib_Destroy"](this.zipFile);
-            Module["_Zlib_Free"](FileRawData);
-            return null;
-        }
-        var lenArray = new Int32Array(Module["HEAP8"].buffer, pointer, 4);
-        var len = lenArray[0];
-        len -= 4;
-        
-        var buffer = new Uint8Array(Module["HEAP8"].buffer, pointer + 4, len);
-        var index = 0;
-        while (index < len)
-        {
-            var lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
-            index += 4;
-            this.paths.push(readFromUtf8(buffer, index, lenRec));
-            index += lenRec;
-        }
-        return this;
+		var uint8DataBuffer = new Uint8Array(dataBuffer);
+		return this.OpenZipFromUint8Array(uint8DataBuffer);
     }
 	
 	this.OpenZipFromUint8Array = function(dataBuffer)
     {
         if (!this.isInit) return null;
+		if (this.zipFile) this.CloseZip();
 
         // копируем память в память webasm
         var FileRawDataSize = dataBuffer.length;
@@ -350,7 +323,7 @@ function Zlib()
     this.CloseZip = function()
     {
         if (!this.isInit) return;
-        if (this.zipFile != 0) Module["_Zlib_Destroy"](this.zipFile);
+        if (this.zipFile) Module["_Zlib_Destroy"](this.zipFile);
         this.zipFile = null;
 		this.paths = [];
         this.files = [];

@@ -45,10 +45,19 @@ window.onload = function()
 			window.loadedZip.CloseZip();
 			
 			var archive = window.loadedZip.CreateZipFromFiles(files);
+			window.loadedZip.CloseZip();
+			
 			window.loadedZip.OpenZipFromUint8Array(archive);
 			var files2 = window.loadedZip.GetFilesInZip();
 			for (var i = 0; i < files2.length; i++)
-				window.writeFile(files2[i]);
+			{
+				files2[i].path += "new";
+				window.loadedZip.AddFileInZip(files2[i]);
+			}
+			
+			var files3 = window.loadedZip.GetFilesInZip();
+			for (var i = 0; i < files3.length; i++)
+				window.writeFile(files3[i]);
 			window.loadedZip.CloseZip();
 		};
 		reader.readAsArrayBuffer(file);

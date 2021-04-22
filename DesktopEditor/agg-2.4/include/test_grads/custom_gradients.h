@@ -2,6 +2,7 @@
 #include <time.h>
 #include <math.h>
 #include "../../../graphics/AggPlusEnums.h"
+#include "../../../graphics/structures.h"
 #ifndef M_1_PI
 #define M_1_PI 0.318309886183790671538
 #endif
@@ -81,15 +82,41 @@ namespace agg
     class calcRadial : public calcBase
     {
     public:
-        calcRadial(const NSStructures::GradientInfo &_gi)
+        calcRadial(const NSStructures::GradientInfo &_gi) : extend_to_inf_constant(10)
         {
             r0 = _gi.r0;
             r1 = _gi.r1;
             p0 = _gi.p0;
             p1 = _gi.p1;
             ginfo = _gi;
+            extend_back_coef = extend_front_coef = 0;
+           if (ginfo.continue_shading_b)
+           {
+               if (r0 < r1)
+               {
+                    extend_back_coef = r0 / (r1 - r0);
+               }
 
-           
+                else
+                {
+                    extend_back_coef = extend_to_inf_constant;
+                }
+           }
+
+            if (ginfo.continue_shading_f)
+            {
+                if (r1 < r0)
+               {
+                    extend_front_coef = r1 / (r0 - r1);
+               }
+
+                else
+                {
+                    extend_front_coef = extend_to_inf_constant;
+                }
+            }
+
+            var_segment = 1 / (1 + extend_back_coef + extend_front_coef);
         }
 
         virtual float eval(float x, float y) override
@@ -117,12 +144,13 @@ namespace agg
             {
                 return NAN_FLOAT;
             }
-            float x1 = (-b + sqrtf(D)) / 2 / a; 
-            float x2 = (-b - sqrtf(D)) / 2 / a;
+            float x2 = (-b + sqrtf(D)) / 2 / a; 
+            float x1 = (-b - sqrtf(D)) / 2 / a;
 
             if (abs(a) < FLT_EPSILON)
                 x1 = -c / b;
 
+            
             if (0 <= x1 && x1 <= 1)
             {
                 return ginfo.shading.function.get_x_min() + 
@@ -133,18 +161,22 @@ namespace agg
                  return ginfo.shading.function.get_x_min() + 
                     (ginfo.shading.function.get_x_max() - ginfo.shading.function.get_x_min()) * x2;
             }
-            if (ginfo.continue_shading_b)
+            
+            if (ginfo.continue_shading_b && 
+                (0 >= x1 && x1 >= -extend_back_coef ||
+                0 >= x2 && x2 >= -extend_back_coef))
             {
-                if (x1 <= 0 || x2 <= 0)
-                    return ginfo.shading.function.get_x_min();
-
+                return ginfo.shading.function.get_x_min();
             }
-            if (ginfo.continue_shading_f)
+
+
+            if (ginfo.continue_shading_f &&
+                (1 <= x1 && x1 <= 1 + extend_front_coef ||
+                1 <= x2 && x2 <= 1 + extend_front_coef))
             {
-                if (x1 >= 1 || x2 >= 1)
-                    return ginfo.shading.function.get_x_max();
-
+                return ginfo.shading.function.get_x_max();
             }
+            
             return NAN_FLOAT;
         }
         virtual ~calcRadial() {}
@@ -153,6 +185,10 @@ namespace agg
         float r0, r1;
         NSStructures::Point p0,p1;
         NSStructures::GradientInfo ginfo;
+
+        float extend_front_coef, extend_back_coef;
+        float var_segment;
+        float extend_to_inf_constant;
     };
 
      /** 
@@ -218,6 +254,8 @@ namespace agg
         float cx, cy, factor;
         float inverseFactor;
         float invXsize, invYsize;
+
+
     };
 
     /** 

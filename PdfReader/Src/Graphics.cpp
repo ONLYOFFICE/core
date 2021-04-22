@@ -2813,7 +2813,7 @@ namespace PdfReader
 		double dT1 = pShading->GetDomain1();
 		int nComponentsCount = pShading->GetColorSpace()->GetComponentsCount();
 
-		if (0) // Графический тип рендера todo
+		if (true) // Графический тип рендера todo
 		{
 			double xmin, ymin, xmax, ymax;
 			m_pGState->GetUserClipBBox(&xmin, &ymin, &xmax, &ymax);

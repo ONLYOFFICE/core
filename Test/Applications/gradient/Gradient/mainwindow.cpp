@@ -102,7 +102,7 @@ void GenerateImg(QImage &img, std::vector<Point> &points, Info &info) {
 
 void MainWindow::on_RenderPic_clicked()
 {
-
+    /*
     CApplicationFontsWorker oWorker;
     oWorker.m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts_cache";
     oWorker.m_bIsNeedThumbnails = false;
@@ -114,9 +114,11 @@ void MainWindow::on_RenderPic_clicked()
     PDFREADER.LoadFromFile(L"test.pdf");
     int page = ui->lineEdit->text().toInt();
     PDFREADER.ConvertToRaster(page + 1, L"testpdf.bmp", 1);
-      QImage pm("testpdf.bmp");
-   // QImage pm(400, 400, QImage::Format_RGB888);
-   // GenerateImg(pm,  points, info);
+    */
+
+   //   QImage pm("testpdf.bmp");
+    QImage pm(400, 400, QImage::Format_RGB888);
+    GenerateImg(pm,  points, info);
     //setColor2(pm, 0x0000FF);
    //pm.invertPixels();
     ui->lable_test->setPixmap(QPixmap::fromImage(pm));

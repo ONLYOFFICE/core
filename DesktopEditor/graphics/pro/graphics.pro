@@ -70,6 +70,7 @@ INCLUDEPATH += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/zlib
 
 HEADERS += \
+    ../../raster/Metafile/CXmlOutput.h \
     ./../config.h \
     \
     ./../Matrix.h \
@@ -110,6 +111,7 @@ HEADERS += \
     ./../../raster/Metafile/svg/SVGTransformer.h
 
 SOURCES += \
+    ../../raster/Metafile/CXmlOutput.cpp \
     ./../Matrix.cpp \
     ./../GraphicsPath.cpp \
     ./../../raster/BgraFrame.cpp \

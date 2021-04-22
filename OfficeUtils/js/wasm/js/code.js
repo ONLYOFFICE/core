@@ -36,15 +36,20 @@ window.onload = function()
 		
 		var reader = new FileReader();
 		reader.onload = function(e) {
-			window.loadedZip = window.nativeZlibEngine.openZip(e.target.result);
+			window.loadedZip = window.nativeZlibEngine.OpenZipFromBuffer(e.target.result);
 			if (!window.loadedZip)
 				return;
-			var files = window.loadedZip.GetFilesInArchive();
+			var files = window.loadedZip.GetFilesInZip();
 			for (var i = 0; i < files.length; i++)
 				window.writeFile(files[i]);
-			window.loadedZip.closeZip();
+			window.loadedZip.CloseZip();
 			
-			var archive = window.loadedZip.CreateArchiveFromFiles(files);
+			var archive = window.loadedZip.CreateZipFromFiles(files);
+			window.loadedZip.OpenZipFromUint8Array(archive);
+			var files2 = window.loadedZip.GetFilesInZip();
+			for (var i = 0; i < files2.length; i++)
+				window.writeFile(files2[i]);
+			window.loadedZip.CloseZip();
 		};
 		reader.readAsArrayBuffer(file);
 	

@@ -134,7 +134,7 @@ void text_list_level_style_number::add_attributes( const xml::attributes_wc_ptr 
 
 void text_list_level_style_number::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    if		(L"style" == Ns && L"list-level-properties" == Name)
+    if (L"style" == Ns && L"list-level-properties" == Name)
         CP_CREATE_ELEMENT(list_level_properties_);    
 	else if (L"style" == Ns && L"text-properties" == Name)
         CP_CREATE_ELEMENT(style_text_properties_); 
@@ -157,7 +157,7 @@ void text_list_level_style_image::add_attributes( const xml::attributes_wc_ptr &
 
 void text_list_level_style_image::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    if		(L"style" == Ns && L"list-level-properties" == Name)
+    if (L"style" == Ns && L"list-level-properties" == Name)
         CP_CREATE_ELEMENT(list_level_properties_);    
 	else if (L"style" == Ns && L"text-properties" == Name)
         CP_CREATE_ELEMENT(style_text_properties_); 
@@ -348,13 +348,32 @@ void text_list_level_style_number::docx_convert(oox::docx_conversion_context & C
 					{
 						switch(text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_->get_type())
 						{
-							case style_numformat::romanUc:	num_format= L"upperRoman"; break;
-							case style_numformat::romanLc:	num_format= L"lowerRoman"; break;
-							case style_numformat::alphaUc:	num_format= L"upperLetter"; break;
-							case style_numformat::alphaLc:	num_format= L"lowerLetter"; break;
+							case style_numformat::romanUc:		num_format= L"upperRoman"; break;
+							case style_numformat::romanLc:		num_format= L"lowerRoman"; break;
+							
+							case style_numformat::alphaUc:		num_format= L"upperLetter"; break;
+							case style_numformat::alphaLc:		num_format= L"lowerLetter"; break;
+							
+							case style_numformat::russianUp:	num_format = L"russianUpper"; break;
+							case style_numformat::russianLo:	num_format = L"russianLower"; break;
+							
+							case style_numformat::aiueo:		num_format = L"russianLower"; break;
+							
+							case style_numformat::chineseCounting:	num_format = L"chineseCounting"; break;
+							case style_numformat::chineseLegal:		num_format = L"chineseLegalSimplified"; break;
+							
+							case style_numformat::ideographLegal:		num_format = L"ideographLegalTraditional"; break;
+							case style_numformat::ideographTraditional:	num_format = L"ideographTraditional"; break;
+							case style_numformat::ideographZodiac:		num_format = L"ideographZodiac"; break;
+							case style_numformat::ideographZodiacTraditional:	num_format = L"ideographZodiacTraditional"; break;
+							
+							case style_numformat::iroha:			num_format = L"iroha"; break;
+							
+							case style_numformat::koreanDigital:	num_format = L"koreanDigital"; break;
+							
 							case style_numformat::arabic:
 							default:
-																		num_format= L"decimal"; break;
+									num_format= L"decimal"; break;
 						}
 					}
 					CP_XML_ATTR(L"w:val", num_format);

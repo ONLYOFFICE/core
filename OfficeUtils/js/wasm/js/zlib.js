@@ -144,26 +144,25 @@ function Zlib()
     this.paths = [];
     this.files = [];
 	
-	this.CreateZipFromFiles = function(_files)
+	this.GetZip = function()
 	{
-		if (!this.isInit) return null;
-		if (this.zipFile) this.CloseZip();
-		this.zipFile = Module["_Zlib_Create"]();
-		this.paths = [];
-		this.files = [];
+		if (!this.isInit)  return null;
+		if (!this.zipFile) return null;
+		
+		if (this.files.length == 0)
+			this.GetFilesInZip();
+		
 		// вычисление длины дерева
 		var _paths = [];
 		var nLength = 4;
-		for (var i = 0; i < _files.length; i++)
+		for (var i = 0; i < this.files.length; i++)
 		{
-			_paths.push(allocString(_files[i].path));
+			_paths.push(allocString(this.files[i].path));
 			nLength += 4;
 			nLength += _paths[i].length;
-			this.paths.push(_files[i].path)
 
 			nLength += 4;
-			nLength += _files[i].length;
-			this.files.push(_files[i]);
+			nLength += this.files[i].length;
 		}
 		// создание дерева файлов
 		var tmpBuffer = new Uint8Array(nLength);
@@ -174,7 +173,7 @@ function Zlib()
 			(nLength >> 24) & 0xFF
 		], 0);
 		var index = 4;
-		for (var i = 0; i < _files.length; i++)
+		for (var i = 0; i < this.files.length; i++)
 		{
 			tmpBuffer.set([
 				(_paths[i].length >>  0) & 0xFF,
@@ -187,14 +186,14 @@ function Zlib()
 			index += _paths[i].length;
 			
 			tmpBuffer.set([
-				(_files[i].length >>  0) & 0xFF,
-				(_files[i].length >>  8) & 0xFF,
-				(_files[i].length >> 16) & 0xFF,
-				(_files[i].length >> 24) & 0xFF
+				(this.files[i].length >>  0) & 0xFF,
+				(this.files[i].length >>  8) & 0xFF,
+				(this.files[i].length >> 16) & 0xFF,
+				(this.files[i].length >> 24) & 0xFF
 			], index);
 			index += 4;
-			tmpBuffer.set(_files[i].file, index);
-			index += _files[i].length;
+			tmpBuffer.set(this.files[i].file, index);
+			index += this.files[i].length;
 		}
 		
 		var pointer = Module["_Zlib_Malloc"](tmpBuffer.length);
@@ -205,6 +204,18 @@ function Zlib()
 		var zip = new Uint8Array(Module["HEAP8"].buffer, pointerZip + 4, len);
 		return zip;
 	}
+	
+	this.CreateZipFromFiles = function(_files)
+	{
+		if (!this.isInit) return null;
+		if (this.zipFile) this.CloseZip();
+		this.zipFile = Module["_Zlib_Create"]();
+		for (var i = 0; i < _files.length; i++)
+		{
+			this.paths.push(_files[i].path);
+			this.files.push(_files[i]);
+		}
+	}
 
 	this.AddFileInZip = function(_file)
 	{
@@ -213,9 +224,7 @@ function Zlib()
 		var _files = this.GetFilesInZip();
 		var findFile = _files.find(o => o === _file);
         if (!findFile) _files.push(_file);
-		this.CreateZipFromFiles(_files);
-		findFile = this.files.find(o => o === _file);
-		return !!findFile;
+		return true;
 	}
 
     this.GetPathsInZip = function()

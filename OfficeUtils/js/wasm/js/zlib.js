@@ -148,9 +148,7 @@ function Zlib()
 	{
 		if (!this.isInit)  return null;
 		if (!this.zipFile) return null;
-		
-		if (this.files.length == 0)
-			this.GetFilesInZip();
+		this.GetFilesInZip();
 		
 		// вычисление длины дерева
 		var _paths = [];

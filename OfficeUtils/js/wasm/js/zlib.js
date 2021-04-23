@@ -214,16 +214,26 @@ function Zlib()
 		if (this.zipFile) this.CloseZip();
 		this.zipFile = Module["_Zlib_Create"]();
 		for (var i = 0; i < _files.length; i++)
-			this.files.push(_files[i]);
+			this.files.push({
+				path   : _files[i].path,
+				length : _files[i].length,
+				file   : _files[i].file
+			});
 	}
 
 	this.AddFileInZip = function(_file)
 	{
 		if (!this.isInit)  return false;
 		if (!this.zipFile) return false;
-		var _files = this.GetFilesInZip();
-		var findFile = _files.find(o => o === _file);
-        if (!findFile) this.files.push(_file);
+		this.GetFilesInZip();
+		var findFile = this.files.find(o => o.path == _file.path);
+		if (findFile && findFile.length != _file.length)
+		{
+			this.DeleteFileInZip(findFile.path)
+			this.files.push(_file);
+		}
+		else if (!findFile)
+			this.files.push(_file);
 		return true;
 	}
 	

@@ -373,6 +373,10 @@ core_windows {
 DEFINES += CRYPTOPP_DISABLE_ASM
 }
 
+core_ios:CONFIG+=support_bundle_dylibs
+
+!support_bundle_dylibs:CONFIG-=bundle_dylibs
+
 core_ios {
     bundle_dylibs {
         plugin {

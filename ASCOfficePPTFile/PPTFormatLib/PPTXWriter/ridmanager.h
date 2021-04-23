@@ -52,13 +52,13 @@ private:
     // for input --> rewrite --> output
     std::vector<_UINT32*> m_arrRID;         // It's for one slide animation
     std::vector<_UINT32*> m_arrSoundRef;    // It's for one slide _rels
-    int                   m_RID;
+    int                   m_RID;            // This is current rID, it adds for generating note in slede rels
 
     bool m_haveSetedSoundRIDCollection;
     std::vector<std::wstring*> m_soundRIDCollection; // It sets once
     std::vector<std::wstring > m_soundPaths; // It sets once
     // read from file id : needed id
-    std::map<int, int>         m_knownIDs;  // It's seting in the whole life period
+    std::map<int, int>         m_knownIDs;  // It's seting in the whole life object period
 };
 
 #endif // RIDMANAGER_H

@@ -120,6 +120,11 @@ void RIDManager::clearRIDSforSlide()
     m_RID = 1;
 }
 
+// When we read old records, we take one array for all slides.
+// New format has also this array with [audio1.wav, audio2.wav,...]
+// but it also has slide rels with absolutly new 'rID' that bind with new format main array,
+// and we need to get possition in old array for new 'rID'
+// This function dose it.
 int  RIDManager::getSoundPos(int oldID)
 {
     auto searchIter = m_knownIDs.find(oldID);

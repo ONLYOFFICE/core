@@ -838,6 +838,9 @@ void PPT_FORMAT::CShapeWriter::WriteShapeInfo()
 		m_oWriter.WriteString(std::wstring(L"\""));
 	}
 	m_oWriter.WriteString(std::wstring(L">"));
+
+    // TODO check pShapeElement->CElement.m_oAction.m_bPresent == true
+    // It need for button
 	if (!pShapeElement->m_sHyperlink.empty())
 	{
         std::wstring rId = m_pRels->WriteHyperlink(pShapeElement->m_sHyperlink);

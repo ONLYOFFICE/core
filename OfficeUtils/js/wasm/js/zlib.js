@@ -225,7 +225,9 @@ function Zlib()
 	{
 		if (!this.isInit)  return false;
 		if (!this.zipFile) return false;
-		this.GetFilesInZip();
+		if (!this.files.length) this.GetFilesInZip();
+		else if (!this.files[0].length) this.GetFilesInZip();
+		
 		var findFile = this.files.find(o => o.path == _file.path);
 		if (findFile && findFile.length != _file.length)
 		{
@@ -241,10 +243,12 @@ function Zlib()
 	{
 		if (!this.isInit)  return false;
 		if (!this.zipFile) return false;
-		var _files = this.GetFilesInZip();
-		for (var i = 0; i < _files.length; i++)
+		if (!this.files.length) this.GetFilesInZip();
+		else if (!this.files[0].length) this.GetFilesInZip();
+		
+		for (var i = 0; i < this.files.length; i++)
 		{
-			if (_files[i].path == _path)
+			if (this.files[i].path == _path)
 			{
 				this.files.splice(i, 1);
 				return true;

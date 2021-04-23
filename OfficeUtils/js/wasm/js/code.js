@@ -37,14 +37,17 @@ window.onload = function()
 		var reader = new FileReader();
 		reader.onload = function(e) {
 			window.loadedZip = window.nativeZlibEngine.OpenZipFromBuffer(e.target.result);
-			if (!window.loadedZip)
-				return;
+			if (!window.loadedZip) return;
 			var files = window.loadedZip.GetFilesInZip();
 			for (var i = 0; i < files.length; i++)
 				window.writeFile(files[i]);
 			window.loadedZip.CloseZip();
 			
-			var archive = window.loadedZip.CreateZipFromFiles(files);
+			window.loadedZip.CreateZipFromFiles(files);
+			files[0].path += "new";
+			window.loadedZip.AddFileInZip(files[0]);
+			window.loadedZip.DeleteFileInZip(files[1].path);
+			var archive = window.loadedZip.GetZip();
 			window.loadedZip.CloseZip();
 			
 			window.loadedZip.OpenZipFromUint8Array(archive);
@@ -54,7 +57,10 @@ window.onload = function()
 				files2[i].path += "new";
 				window.loadedZip.AddFileInZip(files2[i]);
 			}
+			var archive2 = window.loadedZip.GetZip();
+			window.loadedZip.CloseZip();
 			
+			window.loadedZip.OpenZipFromUint8Array(archive2);
 			var files3 = window.loadedZip.GetFilesInZip();
 			for (var i = 0; i < files3.length; i++)
 				window.writeFile(files3[i]);

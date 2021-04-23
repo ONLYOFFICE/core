@@ -142,7 +142,6 @@ function Zlib()
     this.zipFile = null;
 	this.memory  = null;
     this.isInit  = false;
-    this.paths = [];
     this.files = [];
 	
 	this.GetZip = function()
@@ -198,11 +197,14 @@ function Zlib()
 		}
 		
 		var pointer = Module["_Zlib_Malloc"](tmpBuffer.length);
+		if (!pointer) return null;
 		Module["HEAP8"].set(tmpBuffer, pointer);
 		var pointerZip = Module["_Zlib_CompressFiles"](this.zipFile, pointer);
+		if (!pointerZip) return null;
 		var _lenFile = new Int32Array(Module["HEAP8"].buffer, pointerZip, 4);
         var len = _lenFile[0];
 		var zip = new Uint8Array(Module["HEAP8"].buffer, pointerZip + 4, len);
+		Module["_Zlib_Free"](pointer);
 		return zip;
 	}
 	
@@ -212,10 +214,7 @@ function Zlib()
 		if (this.zipFile) this.CloseZip();
 		this.zipFile = Module["_Zlib_Create"]();
 		for (var i = 0; i < _files.length; i++)
-		{
-			this.paths.push(_files[i].path);
 			this.files.push(_files[i]);
-		}
 	}
 
 	this.AddFileInZip = function(_file)
@@ -224,8 +223,24 @@ function Zlib()
 		if (!this.zipFile) return false;
 		var _files = this.GetFilesInZip();
 		var findFile = _files.find(o => o === _file);
-        if (!findFile) _files.push(_file);
+        if (!findFile) this.files.push(_file);
 		return true;
+	}
+	
+	this.DeleteFileInZip = function(_path)
+	{
+		if (!this.isInit)  return false;
+		if (!this.zipFile) return false;
+		var _files = this.GetFilesInZip();
+		for (var i = 0; i < _files.length; i++)
+		{
+			if (_files[i].path == _path)
+			{
+				this.files.splice(i, 1);
+				return true;
+			}
+		}
+		return false;
 	}
 
     this.GetPathsInZip = function()
@@ -241,7 +256,7 @@ function Zlib()
 		
 		// получаем пути в архиве
         var pointer = Module["_Zlib_GetPathsInArchive"](this.zipFile);
-        if (pointer == 0)
+        if (!pointer)
         {
             Module["_Zlib_Destroy"](this.zipFile);
             Module["_Zlib_Free"](this.memory);
@@ -253,16 +268,25 @@ function Zlib()
         
         var buffer = new Uint8Array(Module["HEAP8"].buffer, pointer + 4, len);
         var index = 0;
+		var _paths = [];
         while (index < len)
         {
             var lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
             index += 4;
 			var _path = readFromUtf8(buffer, index, lenRec);			
-			var findPath = this.paths.find(o => o === _path);
+			var findPath = this.files.find(o => o.path === _path);
 			if (!findPath)
-				this.paths.push(_path);
+			{
+				this.files.push({
+					path   : _path,
+					length : 0,
+					file   : null
+				});
+				_paths.push(_path);
+			}
 			index += lenRec;
         }
+		return _paths;
     }
     
 	this.GetFilesInZip = function()
@@ -271,9 +295,10 @@ function Zlib()
 		if (!this.zipFile) return [];
 		
 		var _paths = this.GetPathsInZip();
+		var _files = [];
 		for (var i = 0; i < _paths.length; i++)
-			this.GetFileInZip(_paths[i]);
-		return this.files;
+			_files.push(this.GetFileInZip(_paths[i]));
+		return _files;
 	}
 	
     this.GetFileInZip = function(_path)
@@ -282,14 +307,15 @@ function Zlib()
         if (!this.zipFile) return null;
         
         var findFile = this.files.find(o => o.path === _path);
-        if (findFile) return findFile;
+        if (findFile && findFile.file) return findFile;
         
         var tmp = allocString(_path);
         var pointer = Module["_Zlib_Malloc"](tmp.length);
+		if (!pointer) return null;
         Module["HEAP8"].set(tmp.buf, pointer);
         
         var pointerFile = Module["_Zlib_GetFileFromArchive"](this.zipFile, pointer);
-        if (pointerFile == 0) 
+        if (!pointerFile) 
         {
             Module["_Zlib_Free"](pointer);
             return null;
@@ -299,15 +325,28 @@ function Zlib()
         var len = _lenFile[0];
         
         var buffer = new Uint8Array(Module["HEAP8"].buffer, pointerFile + 4, len);
-        var file = {
-            path   : _path,
-            length : len,
-            file   : buffer
-        };
-        this.files.push(file);
-        
+        if (findFile)
+		{
+			findFile.length = len;
+			findFile.file = buffer;
+			findFile = {
+				path   : _path,
+				length : len,
+				file   : buffer
+			};
+		}
+		else
+		{
+			findFile = {
+				path   : _path,
+				length : len,
+				file   : buffer
+			};
+			this.files.push(findFile);
+		}
+
         Module["_Zlib_Free"](pointer);
-        return file;
+        return findFile;
     }
     
     this.OpenZipFromBuffer = function(dataBuffer)
@@ -334,6 +373,7 @@ function Zlib()
             Module["_Zlib_Free"](this.memory);
             return null;
         }
+		this.GetPathsInZip();
         return this;
     }
 
@@ -344,7 +384,6 @@ function Zlib()
 		if (this.memory)  Module["_Zlib_Free"](this.memory);
         this.zipFile = null;
 		this.memory  = null;
-		this.paths = [];
         this.files = [];
     }
 }

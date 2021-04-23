@@ -103,14 +103,18 @@ struct STitleInfo
     std::wstring getGenres()
     {
         return std::accumulate(m_arGenres.begin(), m_arGenres.end(), std::wstring(),
-            [] (std::wstring& sRes, const std::wstring& vElem) { return sRes += vElem + L", "; });
+            [] (std::wstring& sRes, const std::wstring& vElem) { return sRes += (vElem.empty() ? L"" : (vElem + L", ")); });
     }
 
     // Разделитель ;
     std::wstring getAuthors()
     {
         return std::accumulate(m_arAuthors.begin(), m_arAuthors.end(), std::wstring(),
-            [] (std::wstring& sRes, const SAuthor& vElem) { return sRes += vElem.middle_name + L' ' + vElem.first_name + L' ' + vElem.last_name + L' ' + vElem.nickname + L';'; });
+            [] (std::wstring& sRes, const SAuthor& vElem) { return sRes +=
+                    (vElem.middle_name.empty() ? L"" : (vElem.middle_name + L' ')) +
+                    (vElem.first_name.empty()  ? L"" : (vElem.first_name  + L' ')) +
+                    (vElem.last_name.empty()   ? L"" : (vElem.last_name   + L' ')) +
+                    vElem.nickname + L';'; });
     }
 };
 

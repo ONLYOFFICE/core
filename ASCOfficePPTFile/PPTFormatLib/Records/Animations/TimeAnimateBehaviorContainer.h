@@ -54,11 +54,12 @@ public:
         if ( ReadHeader.ReadFromStream(pStream) )
             m_oAnimateBehaviorAtom.ReadFromStream ( ReadHeader, pStream );
 
-//        if ( m_oAnimateBehaviorAtom.m_bAnimationValuesPropertyUsed )
-//        {
-            if ( ReadHeader.ReadFromStream(pStream) )
-                m_oAnimateValueList.ReadFromStream ( ReadHeader, pStream );
-//        }
+        ReadHeader.ReadFromStream(pStream) ;
+        if (ReadHeader.RecType == RT_TimeAnimationValueList)
+            m_oAnimateValueList.ReadFromStream ( ReadHeader, pStream );
+        else
+            StreamUtils::StreamSkipBack(8, pStream);
+
 
         if ( m_oAnimateBehaviorAtom.m_bByPropertyUsed )
         {

@@ -412,13 +412,11 @@ void Animation::FillAudio(CRecordClientVisualElementContainer *pCVEC,
         this->m_pSoundContainer->GetRecordsByType(
                     &soundCont, false);
 
-        unsigned audioPos = pCVEC->m_oVisualShapeAtom.m_nOldIdRef - m_lNextRelsID - 2;
-        if (audioPos < soundCont.size())
+        unsigned oldId = (pCVEC->m_oVisualShapeAtom.m_nOldIdRef - m_nextRID + 1);
+        if (oldId < soundCont.size())
             oAudio.cMediaNode.tgtEl.name =
-                    static_cast<CRecordCString*>
-                    (soundCont[audioPos]->m_arRecords[0])->m_strText;
-
-
+                static_cast<CRecordCString*>
+                (soundCont[oldId]->m_arRecords[0])->m_strText;
     }
 }
 

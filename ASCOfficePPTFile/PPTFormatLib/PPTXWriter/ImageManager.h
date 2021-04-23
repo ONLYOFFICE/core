@@ -209,7 +209,11 @@ namespace PPT_FORMAT
 			m_mapHyperlinks.clear();
 		}
 
-        LONG getNextRelsID()const {return m_lNextRelsID;}
+        inline int getNextRId()const
+        {
+            return m_lNextRelsID;
+        }
+
 
         inline void StartMaster(int nIndexTheme, int nStartLayoutIndex, int nCountLayouts)
 		{

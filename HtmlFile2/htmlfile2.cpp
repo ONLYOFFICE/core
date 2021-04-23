@@ -1118,14 +1118,13 @@ private:
         sSelectors.push_back(oLast);
 
         // borders
-        /*
-        oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
+        oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors, true);
         std::wstring sColor = oStyle.m_pBorder.GetColorBottomSide();
         std::wstring sSz    = oStyle.m_pBorder.GetWidthBottomSideW();
         if (sSz != L"0")
             sBorders = L"<w:left w:val=\"single\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/><w:top w:val=\"single\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/><w:right w:val=\"single\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/><w:bottom w:val=\"single\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>";
-        */
 
+        /*
         NSCSS::CCompiledStyle oStyleSetting = m_oStylesCalculator.GetCompiledStyle(sSelectors, true);
         oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
         NSCSS::CCompiledStyle::StyleEquation(oStyle, oStyleSetting);
@@ -1150,6 +1149,7 @@ private:
                 }
             }
         }
+        */
 
         int nDeath = m_oLightReader.GetDepth();
         while(m_oLightReader.ReadNextSiblingNode(nDeath))

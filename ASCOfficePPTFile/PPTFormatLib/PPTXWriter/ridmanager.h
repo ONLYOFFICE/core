@@ -42,6 +42,8 @@ private:
     // It set once
     void setSoundRIDCollection(CRecordSoundCollectionContainer* pColection);
 
+    int  getSoundPos(int oldID);
+
     void searchSound (CRecordExtTimeNodeContainer* const pETNC);
     void searchSound (const std::vector<SOldAnimation> &arrAnim);
     void addSound(CRecordClientVisualElementContainer* const pCVEC);
@@ -55,6 +57,8 @@ private:
     bool m_haveSetedSoundRIDCollection;
     std::vector<std::wstring*> m_soundRIDCollection; // It sets once
     std::vector<std::wstring > m_soundPaths; // It sets once
+    // read from file id : needed id
+    std::map<int, int>         m_knownIDs;  // It's seting in the whole life period
 };
 
 #endif // RIDMANAGER_H

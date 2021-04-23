@@ -102,8 +102,11 @@ struct STitleInfo
     // Разделитель не важен ,
     std::wstring getGenres()
     {
-        return std::accumulate(m_arGenres.begin(), m_arGenres.end(), std::wstring(),
+        std::wstring sRes = std::accumulate(m_arGenres.begin(), m_arGenres.end(), std::wstring(),
             [] (std::wstring& sRes, const std::wstring& vElem) { return sRes += (vElem.empty() ? L"" : (vElem + L", ")); });
+        if (!sRes.empty())
+            sRes.erase(sRes.end() - 2, sRes.end());
+        return sRes;
     }
 
     // Разделитель ;

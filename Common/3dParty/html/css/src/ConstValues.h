@@ -1280,6 +1280,7 @@ namespace NSCSS
             {
                 none = 0,
                 underline,
+                lineThrough,
                 normal
             };
 
@@ -1433,6 +1434,11 @@ namespace NSCSS
                         arLevels[2] = unLevel;
                         enDecoration = NSConstValues::NSCssProperties::TextDecoration::underline;
                     }
+                    else if (sDecoration == L"line-through")
+                    {
+                            arLevels[2] = unLevel;
+                            enDecoration = NSConstValues::NSCssProperties::TextDecoration::lineThrough;
+                    }
                     else if (sDecoration == L"none")
                     {
                         arLevels[2] = unLevel;
@@ -1553,6 +1559,8 @@ namespace NSCSS
                 {
                     if (enDecoration == TextDecoration::underline)
                         return L"single";
+                    else if (enDecoration == TextDecoration::lineThrough)
+                        return L"line-through";
                     else if (enDecoration == TextDecoration::normal)
                         return L"none";
 

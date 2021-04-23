@@ -65,7 +65,7 @@ public :
     }
 
     virtual int DownloadFile() = 0;
-    virtual int UploadFile(){};
+    virtual int UploadFile(){ return 0;}
 
 public:
     std::wstring    m_sFilePath;       // Путь к сохраненному файлу на диске

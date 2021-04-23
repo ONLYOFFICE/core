@@ -31,7 +31,9 @@ include(../Common/WebSocket/websocket.pri)
 ixwebsocket {
 
     DEFINES += USE_IXWEBSOCKET    
-
+	
+	include(../Common/3dParty/ixwebsocket/ixwebsocket.pri)
+	
     HEADERS += \
         ./WebSocket/websocket.h \
         ./WebSocket/WebWorkerBase.h \
@@ -41,7 +43,6 @@ ixwebsocket {
         ./WebSocket/ixwebsocket_internal.cpp \
         ./WebSocket/managerWebSocket.cpp \
         
-    include(../Common/3dParty/ixwebsocket/ixwebsocket.pri)
 }
 
 socketrocket {

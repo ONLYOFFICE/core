@@ -42,5 +42,18 @@ core_mac {
 }
 
 core_windows {
+
+ INCLUDEPATH += \
+        $$PWD/../ixwebsocket/IXWebSocket/build/win_64/include \
+  
+    LIBS += $$PWD/../ixwebsocket/IXWebSocket/build/win_64/lib/ixwebsocket.lib
+    LIBS += $$PWD/../openssl/build/win_64/lib/libssl.lib
+    LIBS += $$PWD/../openssl/build/win_64/lib/libcrypto.lib
+	LIBS += -lwsock32
+	LIBS += -lws2_32
+	LIBS += -lIphlpapi
+	LIBS += -lcrypt32
+	LIBS += -lUser32
+	LIBS += -lshlwapi
     
 }

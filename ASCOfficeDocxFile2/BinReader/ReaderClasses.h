@@ -389,10 +389,12 @@ public:
     docRGB      Color;
 	docRGB      Fill;
 	CThemeColor ThemeColor;
+	CThemeColor ThemeFill;
 
 	bool bValue = false;
 	bool bColor = false;
 	bool bThemeColor = false;
+	bool bThemeFill = false;
 	bool bFill = false;
 	
 	Shd(){}
@@ -400,7 +402,7 @@ public:
     std::wstring ToString()
 	{
         std::wstring sShd;
-		if(bValue || bColor || (bThemeColor && ThemeColor.IsNoEmpty()))
+		if(bValue || bColor || (bThemeColor && ThemeColor.IsNoEmpty()) || (bThemeFill && ThemeFill.IsNoEmpty()))
 		{
 			sShd += L"<w:shd";
 			if(bValue)
@@ -454,12 +456,9 @@ public:
 			if (bFill)
 				sShd += L" w:fill=\"" + Fill.ToString() + L"\"";
 			
-			if (!bColor && !bFill)
-				sShd += L" w:color=\"auto\"";
-
 			if(bThemeColor && ThemeColor.IsNoEmpty())
 			{
-				if(ThemeColor.Auto && !bColor && !bFill)
+				if(ThemeColor.Auto && !bFill)
                     sShd += L" w:fill=\"auto\"";
 				if(ThemeColor.bColor)
                     sShd += L" w:themeFill=\"" + ThemeColor.ToStringColor() + L"\"";
@@ -467,6 +466,17 @@ public:
                     sShd += L" w:themeFillTint=\"" + ThemeColor.ToStringTint() + L"\"";
 				if(ThemeColor.bShade)
                     sShd += L" w:themeFillShade=\"" + ThemeColor.ToStringShade() + L"\"";
+			}
+			if(bThemeFill && ThemeFill.IsNoEmpty())
+			{
+				if(ThemeFill.Auto && !bColor)
+					sShd += L" w:color=\"auto\"";
+				if(ThemeFill.bColor)
+					sShd += L" w:themeColor=\"" + ThemeFill.ToStringColor() + L"\"";
+				if(ThemeFill.bTint)
+					sShd += L" w:themeTint=\"" + ThemeFill.ToStringTint() + L"\"";
+				if(ThemeFill.bShade)
+					sShd += L" w:themeShade=\"" + ThemeFill.ToStringShade() + L"\"";
 			}
             sShd += L"/>";
 		}

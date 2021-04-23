@@ -109,12 +109,15 @@ struct STitleInfo
     // Разделитель ;
     std::wstring getAuthors()
     {
-        return std::accumulate(m_arAuthors.begin(), m_arAuthors.end(), std::wstring(),
+        std::wstring sRes = std::accumulate(m_arAuthors.begin(), m_arAuthors.end(), std::wstring(),
             [] (std::wstring& sRes, const SAuthor& vElem) { return sRes +=
-                    (vElem.middle_name.empty() ? L"" : (vElem.middle_name + L' ')) +
-                    (vElem.first_name.empty()  ? L"" : (vElem.first_name  + L' ')) +
-                    (vElem.last_name.empty()   ? L"" : (vElem.last_name   + L' ')) +
-                    vElem.nickname + L';'; });
+               (vElem.middle_name.empty() ? L"" : (vElem.middle_name + L' ')) +
+               (vElem.first_name.empty()  ? L"" : (vElem.first_name  + L' ')) +
+               (vElem.last_name.empty()   ? L"" : (vElem.last_name   + L' ')) +
+               vElem.nickname + L';'; });
+        if (!sRes.empty())
+            sRes.erase(sRes.end() - 1);
+        return sRes;
     }
 };
 

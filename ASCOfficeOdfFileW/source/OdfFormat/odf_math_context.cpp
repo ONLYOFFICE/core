@@ -113,6 +113,7 @@ namespace odf_writer
 	odf_math_context::~odf_math_context()
 	{
 	}
+
 	void odf_math_context::set_styles_context(odf_style_context * style_context)
 	{
 		impl_->styles_context_ = style_context;

@@ -1,4 +1,3 @@
-window.loadedZip = null;
 window.onload = function()
 {
 	var holder = document.body;
@@ -36,35 +35,43 @@ window.onload = function()
 		
 		var reader = new FileReader();
 		reader.onload = function(e) {
-			window.loadedZip = window.nativeZlibEngine.OpenZipFromBuffer(e.target.result);
-			if (!window.loadedZip) return;
-			var files = window.loadedZip.GetFilesInZip();
-			for (var i = 0; i < files.length; i++)
-				window.writeFile(files[i]);
-			window.loadedZip.CloseZip();
-			
-			window.loadedZip.CreateZipFromFiles(files);
-			files[0].path += "new";
-			window.loadedZip.AddFileInZip(files[0]);
-			window.loadedZip.DeleteFileInZip(files[1].path);
-			var archive = window.loadedZip.GetZip();
-			window.loadedZip.CloseZip();
-			
-			window.loadedZip.OpenZipFromUint8Array(archive);
-			var files2 = window.loadedZip.GetFilesInZip();
-			for (var i = 0; i < files2.length; i++)
+			if (!window.nativeZlibEngine.open(e.target.result)) return;
+			var files = window.nativeZlibEngine.files;
+			for (var _path in files)
 			{
-				files2[i].path += "new";
-				window.loadedZip.AddFileInZip(files2[i]);
+				var _file = window.nativeZlibEngine.getFile(_path);
+				window.writeFile(_path, _file);
 			}
-			var archive2 = window.loadedZip.GetZip();
-			window.loadedZip.CloseZip();
+			window.nativeZlibEngine.close();
+
+			if (!window.nativeZlibEngine.create()) return;
+			for (var _path in files)
+			{
+				window.nativeZlibEngine.addFile(_path, files[_path]);
+				window.nativeZlibEngine.addFile(_path + "new", files[_path]);
+				window.nativeZlibEngine.removeFile(_path);
+			}
+			var archive = window.nativeZlibEngine.save();
+			window.nativeZlibEngine.close();
 			
-			window.loadedZip.OpenZipFromUint8Array(archive2);
-			var files3 = window.loadedZip.GetFilesInZip();
-			for (var i = 0; i < files3.length; i++)
-				window.writeFile(files3[i]);
-			window.loadedZip.CloseZip();
+			window.nativeZlibEngine.open(archive);
+			var files2 = window.nativeZlibEngine.files;
+			for (var _path in files2)
+			{
+				window.nativeZlibEngine.getFile(_path);
+				window.nativeZlibEngine.addFile(_path + "new", files2[_path]);
+			}
+			var archive2 = window.nativeZlibEngine.save();
+			window.nativeZlibEngine.close();
+			
+			window.nativeZlibEngine.open(archive2);
+			var files3 = window.nativeZlibEngine.files;
+			for (var _path in files3)
+			{
+				window.nativeZlibEngine.getFile(_path);
+				window.writeFile(_path, files3[_path]);
+			}
+			window.nativeZlibEngine.close();
 		};
 		reader.readAsArrayBuffer(file);
 	
@@ -72,10 +79,9 @@ window.onload = function()
 	};
 };
 
-window.writeFile = function(file)
+window.writeFile = function(path, file)
 {
 	if (!file) return;
 	var dst = document.getElementById("main");
-	dst.innerHTML += file.path + ' ' + file.length + ' ';
-	dst.innerHTML += "in"; // Uint8Array file.file;
+	dst.innerHTML += path + ' ' + file.length + '\n';
 };

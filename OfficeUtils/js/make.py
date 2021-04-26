@@ -88,8 +88,12 @@ base.replaceInFile("./zlib.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){
 base.replaceInFile("./zlib.js", "function getBinaryPromise(){", "function getBinaryPromise2(){")
 
 zlib_js_content = base.readFile("./zlib.js")
-engine_base_js_content = base.readFile("./wasm/js/zlib.js")
-engine_js_content = engine_base_js_content.replace("//module", zlib_js_content)
+desktop_fetch_content = base.readFile("./../../Common/js/desktop_fetch.js")
+string_utf8_content   = base.readFile("./../../Common/js/string_utf8.js")
+engine_base_js_content = base.readFile("./wasm/js/zlib_new.js")
+engine_js_content = engine_base_js_content.replace("//desktop_fetch", desktop_fetch_content)
+engine_js_content = engine_js_content.replace("//string_utf8", string_utf8_content)
+engine_js_content = engine_js_content.replace("//module",      zlib_js_content)
 
 # write new version
 base.writeFile("./deploy/zlib.js", engine_js_content)

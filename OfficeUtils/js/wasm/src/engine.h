@@ -130,9 +130,6 @@ public:
     unsigned char* buffer;
     unsigned long  size;
 
-    CData m_oPaths;
-    CData m_oFile;
-
 public:
     Zlib()
     {

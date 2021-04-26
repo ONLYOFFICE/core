@@ -117,10 +117,10 @@ unsigned char* Zlib_GetPathsInArchive(Zlib* p)
         BUFFER_IO* buf = new BUFFER_IO;
         buf->buffer = p->buffer;
         buf->nSize  = p->size;
-        unzFile uf = unzOpenHelp(buf);
+        unzFile uf  = unzOpenHelp(buf);
 
-        p->m_oPaths.ClearNoAttack();
-        p->m_oPaths.SkipLen();
+        CData* oPaths = new CData();
+        oPaths->SkipLen();
         do
         {
             unz_file_info file_info;
@@ -128,11 +128,11 @@ unsigned char* Zlib_GetPathsInArchive(Zlib* p)
             if (file_info.uncompressed_size != 0)
             {
                 std::string sPath = get_filename_from_unzfile(uf);
-                p->m_oPaths.WriteString((unsigned char*)sPath.c_str(), sPath.length());
+                oPaths->WriteString((unsigned char*)sPath.c_str(), sPath.length());
             }
         } while (UNZ_OK == unzGoToNextFile(uf));
-        p->m_oPaths.WriteLen();
-        return p->m_oPaths.GetBuffer();
+        oPaths->WriteLen();
+        return oPaths->GetBuffer();
     }
     return NULL;
 }
@@ -143,7 +143,7 @@ unsigned char* Zlib_GetFileFromArchive(Zlib* p, const char* path)
         BUFFER_IO* buf = new BUFFER_IO;
         buf->buffer = p->buffer;
         buf->nSize  = p->size;
-        unzFile uf = unzOpenHelp(buf);
+        unzFile uf  = unzOpenHelp(buf);
 
         unsigned char* file = new BYTE;
         unsigned long  nFileSize = 0;
@@ -152,9 +152,9 @@ unsigned char* Zlib_GetFileFromArchive(Zlib* p, const char* path)
         unzClose(uf);
         if (fileIsIn)
         {
-            p->m_oFile.Clear();
-            p->m_oFile.WriteString(file, nFileSize);
-            return p->m_oFile.GetBuffer();
+            CData* oFile = new CData();
+            oFile->WriteString(file, nFileSize);
+            return oFile->GetBuffer();
         }
     }
     return NULL;

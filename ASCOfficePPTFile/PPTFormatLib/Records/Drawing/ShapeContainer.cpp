@@ -1894,7 +1894,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
         }
 
         std::vector<CRecordInteractiveInfoAtom*> oArrayInteractive;
-        GetRecordsByType(&oArrayInteractive, true, true);
+        GetRecordsByType(&oArrayInteractive, true, false);
 
         if (!oArrayInteractive.empty())
         {

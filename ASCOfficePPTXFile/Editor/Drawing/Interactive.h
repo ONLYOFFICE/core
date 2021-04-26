@@ -60,50 +60,57 @@ namespace PPT_FORMAT
 			*this = oSrc;
 		}
 	};
-	class CInteractiveInfo
-	{
-	public:
-		CInteractiveInfo() 
-		{
-			m_bPresent = false;
-		}
+        class CInteractiveInfo
+        {
+        public:
+            enum : bool
+            {
+                click,
+                over
+            };
+            CInteractiveInfo()
+            {
+                m_bPresent = false;
+            }
 
-		CInteractiveInfo& operator=(const CInteractiveInfo& oSrc)
-		{
-			m_bPresent			= oSrc.m_bPresent;
-			m_lType				= oSrc.m_lType;
+            CInteractiveInfo& operator=(const CInteractiveInfo& oSrc)
+            {
+                m_bPresent			= oSrc.m_bPresent;
+                m_lType				= oSrc.m_lType;
 
-			m_lOleVerb			= oSrc.m_lOleVerb;
-			m_lJump				= oSrc.m_lJump;
-			m_lHyperlinkType	= oSrc.m_lHyperlinkType;
-			m_bAnimated			= oSrc.m_bAnimated;
-			m_bStopSound		= oSrc.m_bStopSound;
-			m_bCustomShowReturn	= oSrc.m_bCustomShowReturn;
-			m_bVisited			= oSrc.m_bVisited;
+                m_lOleVerb			= oSrc.m_lOleVerb;
+                m_lJump				= oSrc.m_lJump;
+                m_lHyperlinkType	= oSrc.m_lHyperlinkType;
+                m_bAnimated			= oSrc.m_bAnimated;
+                m_bStopSound		= oSrc.m_bStopSound;
+                m_bCustomShowReturn	= oSrc.m_bCustomShowReturn;
+                m_bVisited			= oSrc.m_bVisited;
 
-			m_strAudioFileName	= oSrc.m_strAudioFileName;
-			m_strHyperlink		= oSrc.m_strHyperlink;
-			return *this;
-		}
-		CInteractiveInfo(const CInteractiveInfo& oSrc)
-		{
-			*this = oSrc;
-		}
+                m_strAudioFileName	= oSrc.m_strAudioFileName;
+                m_strHyperlink		= oSrc.m_strHyperlink;
+                m_eActivation           = oSrc.m_eActivation;
+                return *this;
+            }
+            CInteractiveInfo(const CInteractiveInfo& oSrc)
+            {
+                *this = oSrc;
+            }
 
-		bool			m_bPresent;
+            bool			m_bPresent;
 
-		int				m_lType;
-		int				m_lOleVerb;
-		int				m_lJump;
-		int				m_lHyperlinkType;
-		bool			m_bAnimated;
-		bool			m_bStopSound;
-		bool			m_bCustomShowReturn;
-		bool			m_bVisited;
+            int				m_lType;
+            int				m_lOleVerb;
+            int				m_lJump;
+            int				m_lHyperlinkType;
+            bool			m_bAnimated;
+            bool			m_bStopSound;
+            bool			m_bCustomShowReturn;
+            bool			m_bVisited;
+            bool                        m_eActivation; // Click or over
 
-		std::wstring	m_strAudioFileName;
-		std::wstring	m_strHyperlink;
-	};
+            std::wstring	m_strAudioFileName;
+            std::wstring	m_strHyperlink;
+        };
 	class CTextInteractiveInfo
 	{
 	private:

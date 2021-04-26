@@ -3916,15 +3916,6 @@ namespace PdfReader
 
 	void RendererOutputDev::TransformToPixels(GrState *pGState, double &x, double &y)
 	{
-		double newx = m_arrMatrix[0] * x +  m_arrMatrix[1] * y;	
-		double newy = m_arrMatrix[2] * x +  m_arrMatrix[3] * y;
-		newx += m_arrMatrix[4];	
-		newy += m_arrMatrix[5];
-
-		// double width, height;
-		// m_pRenderer->get_Height(&height);
-		// m_pRenderer->get_Width(&width);
-
 		double xdpi, ydpi;
 		m_pRenderer->get_DpiX(&xdpi);
 		m_pRenderer->get_DpiY(&ydpi);
@@ -3932,8 +3923,19 @@ namespace PdfReader
 		double xcoef = pGState->GetHorDPI() / 25.4;
 		double ycoef = pGState->GetVerDPI() / 25.4;
 
-		x = newx * xcoef;
-		y = newy * ycoef;	
+		double newx = m_arrMatrix[0] * x * xcoef +  m_arrMatrix[1] * y * ycoef;	
+		double newy = m_arrMatrix[2] * x * xcoef +  m_arrMatrix[3] * y * ycoef;
+		newx += m_arrMatrix[4] * xcoef;	
+		newy += m_arrMatrix[5] * ycoef;
+
+		// double width, height;
+		// m_pRenderer->get_Height(&height);
+		// m_pRenderer->get_Width(&width);
+
+		
+
+		x = newx ;
+		y = newy ;	
 	}
 
 	void RendererOutputDev::FillStrokeGradientPatch(GrState *pGState, PdfReader::GrPatch *patch)
@@ -4065,19 +4067,21 @@ namespace PdfReader
 		
 		GrColorSpace *ColorSpace = pShading->GetColorSpace();;
 		float delta = (t1 - t0) / info.shading.function.get_resolution();
-		for (float t = t0; t <= t1; t += delta/100)
+		float t = t0;
+		for (size_t i = 0; i < info.shading.function.get_resolution(); i++)
 		{
 			PdfReader::GrColor c;
 			pShading->GetColor(t, &c);
+			t+=delta;
 			DWORD dword_color = ColorSpace->GetDwordColor(&c);
-			//info.shading.function.set_color((float)t, dword_color % 0x100, 
-			//	(dword_color >> 8) % 0x100, (dword_color >> 16) % 0x100, alpha);
+			info.shading.function.set_color(i, dword_color % 0x100, 
+				(dword_color >> 8) % 0x100, (dword_color >> 16) % 0x100, alpha);
 		}
 
 		((NSGraphics::IGraphicsRenderer*)m_pRenderer)->put_BrushGradInfo(info);
 		m_pRenderer->DrawPath(c_nWindingFillMode);
 			
-		m_pRenderer->EndCommand(c_nPathType);
+                m_pRenderer->EndCommand(c_nPathType);
 		m_pRenderer->put_BrushType(brush);
 	}
 	void RendererOutputDev::FillStrokeGradientTriangle(GrState *pGState, const std::vector<GrColor*> &colors, const std::vector<NSStructures::Point> &point)

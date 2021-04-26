@@ -2468,7 +2468,6 @@ namespace PdfReader
 	void Graphics::DoAxialShadingFill(GrAxialShading *pShading)
 	{
 		int nJ, nK, nKK;
-
 		// Сначала предоставляем возможность OuputDevice самому сделать Shading
 		if (m_pOut->UseAxialShadedFills() && m_pOut->AxialShadedFill(m_pGState, pShading))
 		{
@@ -2487,7 +2486,7 @@ namespace PdfReader
 		double dDy = dY1 - dY0;
 		bool bDxZero = fabs(dDx) < 0.01;
 		bool bDyZero = fabs(dDy) < 0.01;
-		if (true) // Графический тип рендера todo
+		if (1) // Графический тип рендера todo
 		{
 			double xmin, ymin, xmax, ymax;
 			m_pGState->GetUserClipBBox(&xmin, &ymin, &xmax, &ymax);

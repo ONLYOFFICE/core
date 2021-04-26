@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>593</width>
-    <height>675</height>
+    <width>852</width>
+    <height>729</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,9 +17,9 @@
    <widget class="QLabel" name="PDFLabel">
     <property name="geometry">
      <rect>
-      <x>90</x>
-      <y>10</y>
-      <width>411</width>
+      <x>20</x>
+      <y>50</y>
+      <width>771</width>
       <height>521</height>
      </rect>
     </property>
@@ -30,8 +30,8 @@
    <widget class="QLineEdit" name="PageLineEdit">
     <property name="geometry">
      <rect>
-      <x>230</x>
-      <y>550</y>
+      <x>370</x>
+      <y>610</y>
       <width>113</width>
       <height>26</height>
      </rect>
@@ -43,8 +43,8 @@
    <widget class="QPushButton" name="RenderButton">
     <property name="geometry">
      <rect>
-      <x>250</x>
-      <y>580</y>
+      <x>390</x>
+      <y>640</y>
       <width>80</width>
       <height>26</height>
      </rect>
@@ -56,8 +56,8 @@
    <widget class="QPushButton" name="RightButton">
     <property name="geometry">
      <rect>
-      <x>330</x>
-      <y>580</y>
+      <x>470</x>
+      <y>640</y>
       <width>80</width>
       <height>26</height>
      </rect>
@@ -69,8 +69,8 @@
    <widget class="QPushButton" name="LeftButton">
     <property name="geometry">
      <rect>
-      <x>170</x>
-      <y>580</y>
+      <x>310</x>
+      <y>640</y>
       <width>80</width>
       <height>26</height>
      </rect>
@@ -79,16 +79,71 @@
      <string>Left</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="OpenFileButton">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>10</y>
+      <width>80</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Open File</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="FileNameLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>251</width>
+      <height>26</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QScrollBar" name="horizontalScrollBar">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>580</y>
+      <width>781</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QScrollBar" name="verticalScrollBar">
+    <property name="geometry">
+     <rect>
+      <x>810</x>
+      <y>40</y>
+      <width>16</width>
+      <height>531</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>593</width>
+     <width>852</width>
      <height>23</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuPDF_viewer">
+    <property name="title">
+     <string>PDF viewer</string>
+    </property>
+   </widget>
+   <addaction name="menuPDF_viewer"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

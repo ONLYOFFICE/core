@@ -415,8 +415,9 @@ void Animation::FillAudio(CRecordClientVisualElementContainer *pCVEC,
         unsigned oldId = (pCVEC->m_oVisualShapeAtom.m_nOldIdRef);
         if (oldId < soundCont.size())
             oAudio.cMediaNode.tgtEl.name =
-                static_cast<CRecordCString*>
-                (soundCont[oldId]->m_arRecords[0])->m_strText;
+                    XmlUtils::EncodeXmlString(
+                        static_cast<CRecordCString*>
+                        (soundCont[oldId]->m_arRecords[0])->m_strText);
     }
 }
 

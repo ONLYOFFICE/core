@@ -93,6 +93,9 @@
     <ClCompile Include="OnlineOfficeBinToPdf.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="Src\AcroForm.cpp">
+      <Filter>Src\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Annotation.h">
@@ -168,6 +171,9 @@
       <Filter>Src</Filter>
     </ClInclude>
     <ClInclude Include="Src\FastStringToDouble.h">
+      <Filter>Src\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\AcroForm.h">
       <Filter>Src\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

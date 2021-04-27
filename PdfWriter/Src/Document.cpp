@@ -45,6 +45,7 @@
 #include "FontCidTT.h"
 #include "Shading.h"
 #include "Pattern.h"
+#include "AcroForm.h"'
 
 #include "../../DesktopEditor/agg-2.4/include/agg_span_hatch.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
@@ -78,6 +79,7 @@ namespace PdfWriter
 		memset((void*)m_sTTFontTag, 0x00, 8);
 		m_pTransparencyGroup = NULL;
 		m_pFreeTypeLibrary  = NULL;
+		m_pAcroForm         = NULL;
 
 		m_bPDFAConformance	= false;
 	}
@@ -165,6 +167,7 @@ namespace PdfWriter
 		m_unCompressMode    = COMP_NONE;
 		m_pJbig2            = NULL;
 		m_pTransparencyGroup= NULL;
+		m_pAcroForm         = NULL;
 		memset((void*)m_sTTFontTag, 0x00, 8);
 
 		m_vPages.clear();
@@ -814,5 +817,28 @@ namespace PdfWriter
 	{
 		double pPattern[] ={ dX0, dY0, dR0, dX1, dY1, dR1 };
 		return CreateShading(pPage, pPattern, false, pColors, pAlphas, pPoints, nCount, pExtGrState);
+	}
+	void CDocument::CreateTextField()
+	{
+		if (!CheckAcroForm())
+			return;
+
+		m_pAcroForm->Add("Fields", new CArrayObject());
+	}
+	bool CDocument::CheckAcroForm()
+	{
+		if (!m_pXref || !m_pCatalog)
+			return false;
+
+		if (!m_pAcroForm)
+		{
+			m_pAcroForm = new CAcroForm(m_pXref);
+			if (!m_pAcroForm)
+				return false;
+
+			m_pCatalog->Add("AcroForm", m_pAcroForm);
+		}
+
+		return (!!m_pAcroForm);
 	}
 }

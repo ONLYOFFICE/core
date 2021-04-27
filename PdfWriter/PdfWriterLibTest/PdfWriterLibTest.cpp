@@ -267,8 +267,8 @@ void TestDocument4()
 
 	CDestination* pDest = oPdf.CreateDestination(1);
 	pDest->SetXYZ(0, 792, 0);
-	CAnnotation* pAnnot = oPdf.CreateLinkAnnot(0, TRect(0, 100, 100, 0), pDest);
-	pAnnot = oPdf.CreateUriLinkAnnot(0, TRect(0, 200, 100, 100), "www.rbc.ru");
+	//CAnnotation* pAnnot = oPdf.CreateLinkAnnot(0, TRect(0, 100, 100, 0), pDest);
+	//pAnnot = oPdf.CreateUriLinkAnnot(0, TRect(0, 200, 100, 100), "www.rbc.ru");
 
 	oPdf.SaveToFile(L"D:/Test/PDF/Test4.pdf");
 	oPdf.Close();

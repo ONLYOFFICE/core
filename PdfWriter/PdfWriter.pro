@@ -53,6 +53,7 @@ LIBS += -lgdi32 \
 }
 
 HEADERS += \
+    Src/AcroForm.h \
     Src/Annotation.h \
     Src/Catalog.h \
     Src/Consts.h \
@@ -81,6 +82,7 @@ HEADERS += \
     Src/ICCProfile.h
 
 SOURCES += \
+    Src/AcroForm.cpp \
     Src/Annotation.cpp \
     Src/Catalog.cpp \
     Src/Destination.cpp \

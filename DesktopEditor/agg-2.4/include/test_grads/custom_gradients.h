@@ -273,7 +273,16 @@ namespace agg
         {
             float t = (x - p0.x) * (p1.x - p0.x) + (y - p0.y) * (p1.y - p0.y);
             t /= (p1.x - p0.x) * (p1.x - p0.x) + (p1.y - p0.y) * (p1.y - p0.y);
-            return t;
+
+            if (t < 0 && ginfo.continue_shading_b)
+                return ginfo.shading.function.get_x_min();
+
+            if (t > 1 && ginfo.continue_shading_f)
+                return ginfo.shading.function.get_x_max();
+
+            t = ginfo.shading.function.get_x_min() + 
+                (ginfo.shading.function.get_x_max() - ginfo.shading.function.get_x_min()) * t;
+            return t; 
         }
 
     private:
@@ -557,14 +566,6 @@ namespace agg
             if (t > m_oGradientInfo.shading.function.get_x_max() && !m_oGradientInfo.continue_shading_f)
                 return NAN_FLOAT;
 
-            if (t > m_oGradientInfo.largeRadius)
-                return 1;
-            if (t < m_oGradientInfo.littleRadius)
-                return 0;
-            if (m_oGradientInfo.largeRadius - m_oGradientInfo.littleRadius < FLT_EPSILON)
-                return t;
-
-            t = (t - m_oGradientInfo.littleRadius) / (m_oGradientInfo.largeRadius - m_oGradientInfo.littleRadius); // TODO optimize
             return t;
         }
 

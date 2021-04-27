@@ -38,15 +38,9 @@ namespace NSStructures
     */
     {
     public:
-        // Default constructor works only with one parameter functions
-        ColorFunction() : RESOLUTION(512), x_domain_min(0.0f), x_domain_max(1.0f)
+        ColorFunction() : RESOLUTION(0), x_domain_min(0.0f), x_domain_max(0.0f)
         {
-            values = std::vector<std::vector<ColorT>>(1, std::vector<ColorT>(RESOLUTION));
-            for (int i = 0; i < RESOLUTION; i++)
-            {
-                unsigned int value = 255 - (255 * ((float)i / RESOLUTION));
-                values[0][i] = ColorT(value, value, value);
-            }
+
         }
 
         ColorFunction(size_t res, float xmin, float xmax) : RESOLUTION(res), x_domain_min(xmin), x_domain_max(xmax)
@@ -155,9 +149,6 @@ namespace NSStructures
                 values[0][indexes[i]].b = hex2b(colors[i]);
                 values[0][indexes[i]].a = hex2a(colors[i]);
 
-                std::cout << colors[i] << ' ' << std::endl;
-                std::cout << hex2r(colors[i]) << ' ' << hex2g(colors[i]) << ' ' 
-                << hex2b(colors[i]) << ' ' << hex2a(colors[i]) << std::endl;
             }
             for (int i = 0; i < positions.size() - 1; i++) 
             {

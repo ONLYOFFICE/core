@@ -52,7 +52,7 @@ void MainWindow::on_RenderButton_clicked()
 
     PDFREADER.LoadFromFile(filename.toStdWString());
     int page = ui->PageLineEdit->text().toInt();
-    PDFREADER.ConvertToRaster(page + 1, L"testpdf.bmp", 1);
+    PDFREADER.ConvertToRaster(page - 1, L"testpdf.bmp", 1);
     QImage pm("testpdf.bmp");
 
     QImage to_draw = pm.copy((pm.size().width() - ui->PDFLabel->size().width()) * (pos_x / 99.),

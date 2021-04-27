@@ -4063,7 +4063,8 @@ namespace PdfReader
 		TransformToPixels(pGState, x1, y1);
 		TransformToPixels(pGState, x2, y2);
 
-		auto info = NSStructures::GInfoConstructor::get_linear({x1, y1}, {x2, y2}, t0, t1);
+		auto info = NSStructures::GInfoConstructor::get_linear({x1, y1}, {x2, y2}, t0, t1,
+		pShading->GetExtendStart(), pShading->GetExtendEnd());
 		
 		GrColorSpace *ColorSpace = pShading->GetColorSpace();;
 		float delta = (t1 - t0) / info.shading.function.get_resolution();

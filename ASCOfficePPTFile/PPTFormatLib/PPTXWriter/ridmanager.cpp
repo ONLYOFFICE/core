@@ -19,29 +19,25 @@ std::vector<std::wstring> RIDManager::getPathesForSlideRels()
 
 
     std::map<_UINT32, _UINT32*> mapRIDs;    // first value is old rId : second new rId
-    unsigned i = 0;
-    for (auto* pRID : m_arrRID)
+    for (unsigned i = 0; i < m_arrRID.size(); i++)
     {
+        auto* pRID = m_arrRID[i];
+        *(m_arrSoundRef[i]) = getSoundPos(*pRID);
+
         auto searchIter(mapRIDs.find(*pRID));
         if (searchIter == mapRIDs.end())
         {
+            paths.push_back(m_soundPaths[getSoundPos(*pRID)]);
             mapRIDs.insert(std::make_pair(*pRID, pRID));
-            *pRID = m_RID++;
+            *pRID = m_RID++;;
         }
         else
+        {
             *pRID = *(searchIter->second);
+        }
 
         if (i < m_soundRIDCollection.size())
-            *(m_soundRIDCollection[i++]) = std::to_wstring(*pRID);
-    }
-
-    for (auto RID : mapRIDs)
-    {
-        const unsigned soundPos = RID.first - 1;
-        if (soundPos < m_soundPaths.size())
-            paths.push_back(m_soundPaths[soundPos]);
-        else if (m_soundPaths.size())                   //TODO
-            paths.push_back(m_soundPaths.back());
+            *(m_soundRIDCollection[i]) = std::to_wstring(*pRID);
     }
 
     return paths;
@@ -54,7 +50,7 @@ void RIDManager::setRIDfromAnimation(Animation& anim)
     setSoundRIDCollection(anim.m_pSoundContainer);
     if (anim.m_pPPT10)
         searchSound(anim.m_pPPT10->m_pExtTimeNodeContainer);
-    if (!anim.m_arrOldAnim.empty())
+    else if (!anim.m_arrOldAnim.empty())
         searchSound(anim.m_arrOldAnim);
 }
 
@@ -111,7 +107,10 @@ void RIDManager::addSound(CRecordClientVisualElementContainer* const pCVEC)
     if (!pCVEC) return;
 
     if (pCVEC->m_bVisualShapeAtom)
+    {
         m_arrRID.push_back(&(pCVEC->m_oVisualShapeAtom.m_nObjectIdRef));
+        m_arrSoundRef.push_back(&(pCVEC->m_oVisualShapeAtom.m_nOldIdRef));
+    }
 }
 
 void RIDManager::clearRIDSforSlide()
@@ -119,4 +118,20 @@ void RIDManager::clearRIDSforSlide()
     m_arrRID.clear();
     m_arrSoundRef.clear();
     m_RID = 1;
+}
+
+// When we read old records, we take one array for all slides.
+// New format has also this array with [audio1.wav, audio2.wav,...]
+// but it also has slide rels with absolutly new 'rID' that bind with new format main array,
+// and we need to get possition in old array for new 'rID'
+// This function dose it.
+int  RIDManager::getSoundPos(int oldID)
+{
+    auto searchIter = m_knownIDs.find(oldID);
+    if (searchIter != m_knownIDs.end())
+        return searchIter->second;
+
+    unsigned nextNewId = m_knownIDs.size();
+    m_knownIDs.insert(std::make_pair(oldID, nextNewId));
+    return nextNewId;
 }

@@ -1177,7 +1177,7 @@ void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CSlideShow
         {
             type		= L"p:blinds";
             param_name	= L"dir";
-            param_value = transition.m_nEffectDirection ? L"vert" : L"horz";
+            param_value = transition.m_nEffectDirection ? L"horz" : L"vert";
         }break;
     case 3:
         {
@@ -1227,10 +1227,10 @@ void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CSlideShow
             param_name	= L"dir";
             switch(transition.m_nEffectDirection)
             {
-                case 0:	param_value = L"ru"; break;
-                case 1:	param_value = L"lu"; break;
-                case 2:	param_value = L"rd"; break;
-                case 3:	param_value = L"ld"; break;
+                case 5:	param_value = L"ru"; break;
+                case 4:	param_value = L"lu"; break;
+                case 7:	param_value = L"rd"; break;
+                case 6:	param_value = L"ld"; break;
             }
         }break;
     case 10:
@@ -1344,7 +1344,7 @@ void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CSlideShow
         bool bExternal = false;
         std::wstring rId = m_pShapeWriter->m_pRels->WriteAudio(transition.m_oAudio.m_strAudioFileName, bExternal);
         oWriter.WriteString(std::wstring(L"<p:sndAc><p:stSnd>"));
-        oWriter.WriteString(L"<p:snd r:embed=\"" + rId + L"\" name=\"" + transition.m_oAudio.m_sImageName + L"\"/>");
+        oWriter.WriteString(L"<p:snd r:embed=\"" + rId + L"\" name=\"" + XmlUtils::EncodeXmlString(transition.m_oAudio.m_sImageName) + L"\"/>");
         oWriter.WriteString(std::wstring(L"</p:stSnd></p:sndAc>"));
     }
     oWriter.WriteString(std::wstring(L"</p:transition>"));

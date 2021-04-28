@@ -1253,7 +1253,7 @@ namespace NSCSS
 
                 std::wstring GetRightSide() const
                 {
-                    if (fTopSide == fNoneValue || !bPermission)
+                    if (fRightSide == fNoneValue || !bPermission)
                         return std::wstring();
 
                     return (fRightSide >= -128.0f) ? std::to_wstring(static_cast<short int>(fRightSide  * 10.0f + ((fLeftSide > 0) ? 0.5f : -0.5f))) : L"-1280";

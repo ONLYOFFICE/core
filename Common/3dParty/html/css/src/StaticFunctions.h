@@ -79,21 +79,18 @@ namespace NSCSS
             return sFileContent;
         }
 
-        inline static bool ThereIsNumber(const std::wstring& sString)
+        inline static bool NumberInWString(const std::wstring& sString)
         {
             if (sString.empty())
                 return false;
 
             size_t posDigit = sString.find_first_of(L"0123456789");
-            size_t posNoDigit = sString.find_first_not_of(L" \n\r\t\f\v123456789.");
+//            size_t posNoDigit = sString.find_first_not_of(L" \n\r\t\f\v123456789.");
 
-            if (posDigit == std::wstring::npos)
-                return false;
-
-            if (posNoDigit == std::wstring::npos)
+            if (posDigit != std::wstring::npos)
                 return true;
 
-            return (posDigit < posNoDigit) || (posDigit == 0  && posNoDigit == 0);
+            return false;
         }
 
         inline std::wstring StripSymbols(const std::wstring& sValue, const std::wstring& sSymbols = L" \n\r\t\f\v")

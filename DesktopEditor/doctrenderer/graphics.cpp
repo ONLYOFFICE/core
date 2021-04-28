@@ -1210,6 +1210,11 @@ void CGraphics::put_brushTexture(std::wstring src, int type)
         std::wstring sExt = src.substr(src.rfind(L'.') + 1);
         if (sExt == L"svg")
         {
+            if (NSFile::CFileBinary::Exists(sName + L"wmf") && src.find(L"display") == 0)
+                strImage = sName + L"wmf";
+            else if (NSFile::CFileBinary::Exists(sName + L"emf") && src.find(L"display") == 0)
+                strImage = sName + L"emf";
+
             MetaFile::IMetaFile* pMetafile = MetaFile::Create(m_pApplicationFonts);
             pMetafile->LoadFromFile(strImage.c_str());
 
@@ -1220,15 +1225,6 @@ void CGraphics::put_brushTexture(std::wstring src, int type)
             pMetafile->ConvertToRaster(sName.c_str(), 4, 1000);
 
             RELEASEOBJECT(pMetafile);
-
-            /*
-            if (NSFile::CFileBinary::Exists(sName + L"wmf"))
-                sName += L"wmf";
-            else if (NSFile::CFileBinary::Exists(sName + L"emf"))
-                sName += L"emf";
-            else
-                sName += L"svg";
-            */
         }
         else
             sName += sExt;

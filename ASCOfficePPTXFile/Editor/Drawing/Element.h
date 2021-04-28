@@ -72,7 +72,7 @@ namespace PPT_FORMAT
 		double				m_dEndTime;
 
 		CTextInteractiveInfo m_oTextActions;
-		CInteractiveInfo	m_oActions;
+                std::vector<CInteractiveInfo>	m_arrActions;
 
 		CAnimationInfo		m_oAnimations;
 		CEffects			m_oEffects;
@@ -179,7 +179,7 @@ namespace PPT_FORMAT
 			pDublicate->m_lID						= m_lID;
 			pDublicate->m_lLayoutID					= m_lLayoutID;
 
-			pDublicate->m_oActions					= m_oActions;
+                        pDublicate->m_arrActions					= m_arrActions;
 			pDublicate->m_oTextActions				= m_oTextActions;
 			pDublicate->m_oAnimations				= m_oAnimations;
 			pDublicate->m_oEffects					= m_oEffects;

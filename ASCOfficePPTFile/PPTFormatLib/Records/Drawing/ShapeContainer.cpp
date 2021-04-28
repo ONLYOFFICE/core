@@ -1895,34 +1895,37 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
 
         std::vector<CRecordInteractiveInfoAtom*> oArrayInteractive;
         GetRecordsByType(&oArrayInteractive, true, false);
-
-        if (!oArrayInteractive.empty())
+        for (auto const* interactiveAtom : oArrayInteractive)
         {
-            pShapeElem->m_oActions.m_bPresent = true;
+            CInteractiveInfo interactiveInfo;
+            interactiveInfo.m_bPresent = true;
+            interactiveInfo.m_eActivation = (bool)interactiveAtom->m_oHeader.RecInstance;
 
             if (pMapIDs)
             {
                 CExFilesInfo* pInfo1 = pMapIDs->LockAudioFromCollection(oArrayInteractive[0]->m_nSoundIdRef);
                 if (NULL != pInfo1)
                 {
-                    pShapeElem->m_oActions.m_strAudioFileName = pInfo1->m_strFilePath;
+                    interactiveInfo.m_strAudioFileName = pInfo1->m_strFilePath;
                 }
                 CExFilesInfo* pInfo2 = pMapIDs->LockHyperlink(oArrayInteractive[0]->m_nExHyperlinkIdRef);
                 if (NULL != pInfo2)
                 {
-                    pShapeElem->m_oActions.m_strHyperlink = pInfo2->m_strFilePath;
+                    interactiveInfo.m_strHyperlink = pInfo2->m_strFilePath;
                 }
             }
 
-            pShapeElem->m_oActions.m_lType				= oArrayInteractive[0]->m_nAction;
-            pShapeElem->m_oActions.m_lOleVerb			= oArrayInteractive[0]->m_nOleVerb;
-            pShapeElem->m_oActions.m_lJump				= oArrayInteractive[0]->m_nJump;
-            pShapeElem->m_oActions.m_lHyperlinkType		= oArrayInteractive[0]->m_nHyperlinkType;
+            interactiveInfo.m_lType				= interactiveAtom->m_nAction;
+            interactiveInfo.m_lOleVerb			= interactiveAtom->m_nOleVerb;
+            interactiveInfo.m_lJump				= interactiveAtom->m_nJump;
+            interactiveInfo.m_lHyperlinkType	= interactiveAtom->m_nHyperlinkType;
 
-            pShapeElem->m_oActions.m_bAnimated			= oArrayInteractive[0]->m_bAnimated;
-            pShapeElem->m_oActions.m_bStopSound			= oArrayInteractive[0]->m_bStopSound;
-            pShapeElem->m_oActions.m_bCustomShowReturn	= oArrayInteractive[0]->m_bCustomShowReturn;
-            pShapeElem->m_oActions.m_bVisited			= oArrayInteractive[0]->m_bVisited;
+            interactiveInfo.m_bAnimated			= interactiveAtom->m_bAnimated;
+            interactiveInfo.m_bStopSound		= interactiveAtom->m_bStopSound;
+            interactiveInfo.m_bCustomShowReturn	= interactiveAtom->m_bCustomShowReturn;
+            interactiveInfo.m_bVisited			= interactiveAtom->m_bVisited;
+
+            pShapeElem->m_arrActions.push_back(interactiveInfo);
         }
 
         std::vector<CRecordTextInteractiveInfoAtom*> oArrayTextInteractive;

@@ -161,9 +161,10 @@ void Animation::FillAnim(
         tav.tm = std::to_wstring(
                     animValue->m_oTimeAnimationValueAtom.m_nTime  *100);
 
-        if (!animValue->m_VarFormula.m_Value.empty())
+        auto fmla = XmlUtils::EncodeXmlString(animValue->m_VarFormula.m_Value);
+        if (fmla.size())
         {
-            tav.fmla = animValue->m_VarFormula.m_Value;
+            tav.fmla = fmla;
         }
 
         oAnim.tavLst->list.push_back(tav);

@@ -53,6 +53,8 @@ namespace MetaFile
 		{
 			m_pPath = NULL;
 			m_pDC   = m_oPlayer.GetDC();
+
+			m_pOutputXml = NULL;
 		}
 
 		~CEmfFile()

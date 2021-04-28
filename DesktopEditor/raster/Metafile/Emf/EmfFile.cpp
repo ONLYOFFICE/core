@@ -382,7 +382,7 @@ static const struct ActionNamesEmf
 			if (NULL != m_pOutputXml)
 			{
 				m_pOutputXml->WriteNodeEnd(L"EMF");
-				m_pOutputXml->SaveToFile(NSFile::GetProcessDirectory() + L"/tests.xml");
+				m_pOutputXml->SaveToFile(NSFile::GetProcessDirectory() + L"/test.xml");
 			}
 		}
 	}
@@ -761,7 +761,15 @@ static const struct ActionNamesEmf
 				m_pOutputXml->WriteNode(L"Device",		m_oHeader.oDevice);
 				m_pOutputXml->WriteNode(L"Millimeters",		m_oHeader.oMillimeters);
 
-				//TODO: не хватает сохранения остальных записей, которые не используются
+				unsigned int unSize = m_ulRecordSize - 80;
+				if (unSize > 0)
+				{
+					BYTE *pData = new BYTE[unSize];
+					m_oStream.ReadBytes(pData, unSize);
+					m_oStream.SeekBack(unSize);
+					m_pOutputXml->WriteNode(L"Buffer", pData, unSize);
+					delete[] pData;
+				}
 
 				m_pOutputXml->WriteNodeEnd(L"EMR_HEADER");
 		}
@@ -801,9 +809,21 @@ static const struct ActionNamesEmf
 
 		if (m_pOutput && NULL != m_pOutputXml)
 		{	
-			m_pOutputXml->WriteNode(L"EMR_ALPHABLEND", oBitmap, {XmlArgument(L"Id", EMR_ALPHABLEND),
-									     XmlArgument(L"Size", m_ulRecordSize)});
-			//TODO: не хватает записи переменной BitmapBuffer
+			m_pOutputXml->WriteNodeBegin(L"EMR_ALPHABLEND", {XmlArgument(L"Id", EMR_ALPHABLEND),
+									 XmlArgument(L"Size", m_ulRecordSize)});
+				m_pOutputXml->WriteNode(L"", oBitmap);
+
+				unsigned int unSize = m_ulRecordSize - sizeof (TEmfAlphaBlend);
+				if (unSize > 0)
+				{
+					BYTE *pData = new BYTE[unSize];
+					m_oStream.ReadBytes(pData, unSize);
+					m_oStream.SeekBack(unSize);
+					m_pOutputXml->WriteNode(L"Buffer", pData, unSize);
+					delete[] pData;
+				}
+
+				m_pOutputXml->WriteNodeEnd(L"EMR_ALPHABLEND");
 		}
 
 		BYTE* pBgraBuffer = NULL;
@@ -852,9 +872,21 @@ static const struct ActionNamesEmf
 
 		if (m_pOutput && NULL != m_pOutputXml)
 		{
-			m_pOutputXml->WriteNode(L"EMR_STRETCHDIBITS", oBitmap, {XmlArgument(L"Id", EMR_STRETCHDIBITS),
-										XmlArgument(L"Size", m_ulRecordSize)});
-			//TODO: не хватает записи переменной BitmapBuffer
+			m_pOutputXml->WriteNodeBegin(L"EMR_STRETCHDIBITS", {XmlArgument(L"Id", EMR_STRETCHDIBITS),
+									    XmlArgument(L"Size", m_ulRecordSize)});
+				m_pOutputXml->WriteNode(L"", oBitmap);
+
+				unsigned int unSize = m_ulRecordSize - sizeof (TEmfStretchDIBITS);
+				if (unSize > 0)
+				{
+					BYTE *pData = new BYTE[unSize];
+					m_oStream.ReadBytes(pData, unSize);
+					m_oStream.SeekBack(unSize);
+					m_pOutputXml->WriteNode(L"Buffer", pData, unSize);
+					delete[] pData;
+				}
+
+				m_pOutputXml->WriteNodeEnd(L"EMR_STRETCHDIBITS");
 		}
 
 		BYTE* pBgraBuffer = NULL;
@@ -879,9 +911,21 @@ static const struct ActionNamesEmf
 
 		if (m_pOutput && NULL != m_pOutputXml)
 		{
-			m_pOutputXml->WriteNode(L"EMR_BITBLT", oBitmap, {XmlArgument(L"Id", EMR_BITBLT),
-									 XmlArgument(L"Size", m_ulRecordSize)});
-			//TODO: не хватает записи переменной BitmapBuffer
+			m_pOutputXml->WriteNodeBegin(L"EMR_BITBLT", {XmlArgument(L"Id", EMR_BITBLT),
+								     XmlArgument(L"Size", m_ulRecordSize)});
+				m_pOutputXml->WriteNode(L"", oBitmap);
+
+				unsigned int unSize = m_ulRecordSize - 92;
+				if (unSize > 0)
+				{
+					BYTE *pData = new BYTE[unSize];
+					m_oStream.ReadBytes(pData, unSize);
+					m_oStream.SeekBack(unSize);
+					m_pOutputXml->WriteNode(L"Buffer", pData, unSize);
+					delete[] pData;
+				}
+
+				m_pOutputXml->WriteNodeEnd(L"EMR_BITBLT");
 		}
 
 		BYTE* pBgraBuffer = NULL;
@@ -984,9 +1028,21 @@ static const struct ActionNamesEmf
 
 		if (m_pOutput && NULL != m_pOutputXml)
 		{
-			m_pOutputXml->WriteNode(L"EMR_SETDIBITSTODEVICE", oBitmap, {XmlArgument(L"Id", EMR_SETDIBITSTODEVICE),
-										    XmlArgument(L"Size", m_ulRecordSize)});
-			//TODO: не хватает записи переменной BitmapBuffer
+			m_pOutputXml->WriteNodeBegin(L"EMR_SETDIBITSTODEVICE", {XmlArgument(L"Id", EMR_SETDIBITSTODEVICE),
+										XmlArgument(L"Size", m_ulRecordSize)});
+				m_pOutputXml->WriteNode(L"", oBitmap);
+
+				unsigned int unSize = m_ulRecordSize - sizeof (TEmfSetDiBitsToDevice);
+				if (unSize > 0)
+				{
+					BYTE *pData = new BYTE[unSize];
+					m_oStream.ReadBytes(pData, unSize);
+					m_oStream.SeekBack(unSize);
+					m_pOutputXml->WriteNode(L"Buffer", pData, unSize);
+					delete[] pData;
+				}
+
+				m_pOutputXml->WriteNodeEnd(L"EMR_SETDIBITSTODEVICE");
 		}
 
 		BYTE* pBgraBuffer = NULL;
@@ -1007,9 +1063,21 @@ static const struct ActionNamesEmf
 
 		if (m_pOutput && NULL != m_pOutputXml)
 		{
-			m_pOutputXml->WriteNode(L"EMR_STRETCHBLT", oBitmap, {XmlArgument(L"Id", EMR_STRETCHBLT),
-									     XmlArgument(L"Size", m_ulRecordSize)});
-			//TODO: не хватает записи переменной BitmapBuffer
+			m_pOutputXml->WriteNodeBegin(L"EMR_STRETCHBLT", {XmlArgument(L"Id", EMR_STRETCHBLT),
+									 XmlArgument(L"Size", m_ulRecordSize)});
+				m_pOutputXml->WriteNode(L"", oBitmap);
+
+				unsigned int unSize = m_ulRecordSize - 100;
+				if (unSize > 0)
+				{
+					BYTE *pData = new BYTE[unSize];
+					m_oStream.ReadBytes(pData, unSize);
+					m_oStream.SeekBack(unSize);
+					m_pOutputXml->WriteNode(L"Buffer", pData, unSize);
+					delete[] pData;
+				}
+
+				m_pOutputXml->WriteNodeEnd(L"EMR_STRETCHBLT");
 		}
 
 		BYTE* pBgraBuffer = NULL;
@@ -1281,7 +1349,6 @@ static const struct ActionNamesEmf
 		{
 			m_pOutputXml->WriteNodeBegin(L"EMR_EXTCREATEPEN", {XmlArgument(L"Id", EMR_EXTCREATEPEN),
 									   XmlArgument(L"Size", m_ulRecordSize)});
-				m_oStream.SeekBack(16);
 				m_pOutputXml->WriteNode(L"ihPen",   ulPenIndex);
 				m_pOutputXml->WriteNode(L"offBmi",  m_oStream.ReadULong());
 				m_pOutputXml->WriteNode(L"cbBmi",   m_oStream.ReadULong());
@@ -1367,16 +1434,21 @@ static const struct ActionNamesEmf
 		}
 
 		if (m_pOutput && NULL != m_pOutputXml)
+		{
 					m_pOutputXml->WriteNodeEnd(L"LogPenEx");
+
+				if (current_size > 0 && current_size < INT_MAX)
+				{
+					BYTE *pData = new BYTE[current_size];
+					m_oStream.ReadBytes(pData, current_size);
+					m_oStream.SeekBack(current_size);
+					m_pOutputXml->WriteNode(L"Buffer", pData, current_size);
+				}
+				m_pOutputXml->WriteNodeEnd(L"EMR_EXTCREATEPEN");
+		}
 
 		// Пропускаем часть с картинкой, если она была
 		m_oStream.Skip(current_size);
-
-		if (m_pOutput && NULL != m_pOutputXml)
-		{
-				//TODO: не хватает сохранения
-				m_pOutputXml->WriteNodeEnd(L"EMR_EXTCREATEPEN");
-		}
 
 		m_oPlayer.RegisterObject(ulPenIndex, (CEmfObjectBase*)pPen);
 	}
@@ -1687,8 +1759,18 @@ static const struct ActionNamesEmf
 										      XmlArgument(L"Size", m_ulRecordSize)});
 				m_pOutputXml->WriteNode(L"ihBrush", ulBrushIndex);
 				m_pOutputXml->WriteNode(L"", oDibBrush);
-				m_pOutputXml->WriteNodeBegin(L"DeviceIndependentBitmap");
-				//TODO: не хватает сохранения переменной DeviceIndependentBitmap
+
+				unsigned int unSize = m_ulRecordSize - 24;
+
+				if (unSize > 0)
+				{
+					BYTE *pData = new BYTE[unSize];
+					m_oStream.ReadBytes(pData, unSize);
+					m_oStream.SeekBack(unSize);
+					m_pOutputXml->WriteNode(L"Buffer", pData, unSize);
+				}
+
+				m_pOutputXml->WriteNodeEnd(L"EMR_CREATEDIBPATTERNBRUSHPT");
 		}
 
 		if (ReadImage(oDibBrush.offBmi, oDibBrush.cbBmi, oDibBrush.offBits, oDibBrush.cbBits, sizeof(TEmfDibPatternBrush) + 12, &pBgraBuffer, &ulWidth, &ulHeight))
@@ -1699,12 +1781,6 @@ static const struct ActionNamesEmf
 
 			pBrush->SetDibPattern(pBgraBuffer, ulWidth, ulHeight);
 			m_oPlayer.RegisterObject(ulBrushIndex, (CEmfObjectBase*)pBrush);
-		}
-
-		if (m_pOutput && NULL != m_pOutputXml)
-		{
-					m_pOutputXml->WriteNodeEnd(L"DeviceIndependentBitmap");
-				m_pOutputXml->WriteNodeEnd(L"EMR_CREATEDIBPATTERNBRUSHPT");
 		}
 
 	}
@@ -1803,7 +1879,17 @@ static const struct ActionNamesEmf
                                                                                XmlArgument(L"Size", m_ulRecordSize)});
                                 m_pOutputXml->WriteNode(L"RgnDataSize", ulRgnDataSize);
                                 m_pOutputXml->WriteNode(L"RegionMode",  ulRegionMode);
-                                //TODO: не хватает сохранения переменной RgnData, которая в реализации пропускается
+
+                                unsigned int unSize = m_ulRecordSize - 8;
+
+				if (unSize > 0)
+				{
+					BYTE *pData = new BYTE[unSize];
+					m_oStream.ReadBytes(pData, unSize);
+					m_oStream.SeekBack(unSize);
+					m_pOutputXml->WriteNode(L"Buffer", pData, unSize);
+				}
+
                                 m_pOutputXml->WriteNodeEnd(L"EMR_EXTSELECTCLIPRGN");
                 }
 

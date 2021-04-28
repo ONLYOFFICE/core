@@ -115,6 +115,7 @@ void MainWindow::ReadXmlNode(XmlUtils::CXmlNode& oXmlNode, unsigned int unLevel)
     }
 
     XmlUtils::CXmlNodes oXmlChilds;
+    bool bEndNode = false;
 
     if (oXmlNode.GetChilds(oXmlChilds))
     {
@@ -128,9 +129,22 @@ void MainWindow::ReadXmlNode(XmlUtils::CXmlNode& oXmlNode, unsigned int unLevel)
         AddIndent(unLevel);
     }
     else
-        oTextCursor.insertText(QString::fromStdWString(oXmlNode.GetText()), m_oStandardTextFormat);
+    {
+        std::wstring wsText = oXmlNode.GetText();
 
-    oTextCursor.insertText(QString::fromStdWString(L"</" + oXmlNode.GetName() + L">\n"), oTextCharFormat);
+        if (wsText.empty())
+        {
+           oTextCursor.deletePreviousChar();
+           oTextCursor.insertText("/>\n", oTextCharFormat);
+           bEndNode = true;
+        }
+        else
+            oTextCursor.insertText(QString::fromStdWString(oXmlNode.GetText()), m_oStandardTextFormat);
+
+    }
+
+    if (!bEndNode)
+        oTextCursor.insertText(QString::fromStdWString(L"</" + oXmlNode.GetName() + L">\n"), oTextCharFormat);
 
 }
 

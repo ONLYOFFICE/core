@@ -1,4 +1,5 @@
 #include "CXmlOutput.h"
+#include "../../common/Base64.h"
 
 namespace MetaFile
 {
@@ -97,6 +98,18 @@ namespace MetaFile
         m_oXmlWriter.WriteNode(wsNameNode, std::to_wstring(unValueNode));
     }
 
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const BYTE *pValueNode, unsigned int unSizeValue)
+    {
+        int nSize = NSBase64::Base64EncodeGetRequiredLength(unSizeValue);
+        unsigned char* ucValue = new unsigned char[nSize];
+
+        NSBase64::Base64Encode(pValueNode, unSizeValue, ucValue, &nSize);
+        std::wstring wsValue(ucValue, ucValue + nSize);
+        m_oXmlWriter.WriteNode(wsNameNode, wsValue);
+
+        delete[] ucValue;
+    }
+
     void CXmlOutput::WriteNode(const std::wstring &wsNameNode, double dValueNode)
     {
         m_oXmlWriter.WriteNode(wsNameNode, dValueNode);
@@ -114,15 +127,16 @@ namespace MetaFile
 
     void CXmlOutput::WriteNode(const std::wstring &wsNameNode, std::vector<XmlArgument> arArguments)
     {
-        m_oXmlWriter.WriteNodeBegin(wsNameNode, !arArguments.empty());
+        m_oXmlWriter.WriteNodeBegin(wsNameNode, true);
 
         if (!arArguments.empty())
         {
             for (unsigned int i = 0; i < arArguments.size(); ++i)
                 WriteAttribute(arArguments[i].wsName, arArguments[i].wsValue);
-
-            m_oXmlWriter.WriteNodeEnd(wsNameNode, true, true);
         }
+
+        m_oXmlWriter.WriteNodeEnd(wsNameNode, true, true);
+
     }
 
     void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfRectL &oTEmfRectL, std::vector<XmlArgument> arArguments)

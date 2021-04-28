@@ -43,6 +43,7 @@ namespace MetaFile
         void WriteNode(const std::wstring& wsNameNode,  unsigned short usValueNode);
         void WriteNode(const std::wstring& wsNameNode,  unsigned char ucValueNode);
         void WriteNode(const std::wstring& wsNameNode,  unsigned int unValueNode);
+        void WriteNode(const std::wstring& wsNameNode,  const BYTE* pValueNode, unsigned int unSizeValue);
         void WriteNode(const std::wstring& wsNameNode,  double dValueNode);
         void WriteNode(const std::wstring& wsNameNode,  short shValueNode);
         void WriteNode(const std::wstring& wsNameNode,  int nValueNode);

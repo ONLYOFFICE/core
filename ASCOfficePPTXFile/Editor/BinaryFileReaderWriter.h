@@ -317,7 +317,6 @@ namespace NSBinPptxRW
 		void WriteStringUtf8(const std::wstring& sBuffer);
 		// --------------------------------------------------------
 		void WriteLONG64	(const _INT64& lValue);
-		void WriteDouble64	(const double& dValue);
 		// --------------------------------------------------------
 
 		CBinaryFileWriter();
@@ -557,7 +556,6 @@ namespace NSBinPptxRW
 		double GetDouble();
 		// 8 byte
 		_INT64 GetLong64();
-		double GetDouble64();
 		double GetDoubleReal();
 		//String
 		std::wstring GetString(_INT32 len, bool bDeleteZero = false);

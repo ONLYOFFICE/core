@@ -382,6 +382,8 @@ xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\">");
 								index = 168 + m_oNumFmts->m_arrItems.size();								
 								m_oNumFmts->m_arrItems.push_back(m_arrStyles2003[i]->m_oNumFmt.GetPointerEmptyNullable());
 							}
+							if (false == m_arrStyles2003[i]->m_oNumFmt.IsInit())
+								m_arrStyles2003[i]->m_oNumFmt.Init();
 							m_arrStyles2003[i]->m_oNumFmt->m_oNumFmtId = index;
 							
 							pStyleXfs->m_oApplyNumberFormat.Init();

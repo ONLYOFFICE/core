@@ -813,11 +813,6 @@ namespace NSBinPptxRW
 		m_lPosition += INT32_SIZEOF;
 		m_pStreamCur += INT32_SIZEOF;
 	}
-	void CBinaryFileWriter::WriteDouble64(const double& dValue)
-	{
-		_INT64 _val = (_INT64)(dValue * 100000);
-		WriteLONG64(_val);
-	}
 	void CBinaryFileWriter::WriteDouble(const double& dValue)
 	{
 		_INT64 _val = (_INT64)(dValue * 100000);
@@ -832,7 +827,7 @@ namespace NSBinPptxRW
 		}		
 		else
 		{
-			WriteLONG((long)_val);
+			WriteLONG((int)_val);
 		}
 	}
 	void CBinaryFileWriter::WriteDoubleReal(const double& dValue)
@@ -1052,8 +1047,20 @@ namespace NSBinPptxRW
 	}
 	void CBinaryFileWriter::WriteDouble1(int type, const double& val)
 	{
-		int _val = (int)(val * 10000);
-		WriteInt1(type, _val);
+		_INT64 _val = (_INT64)(val * 100000);
+
+		if (_val > 0x7fffffff)
+		{
+			WriteInt1(type, 0x7fffffff);
+		}
+		else if (_val < -0x7fffffff)
+		{
+			WriteInt1(type, -0x7fffffff);
+		}
+		else
+		{
+			WriteInt1(type, (int)_val);
+		}
 	}
 	void CBinaryFileWriter::WriteDouble2(int type, const NSCommon::nullable_double& val)
 	{
@@ -1906,12 +1913,9 @@ namespace NSBinPptxRW
 	}
 	double CBinaryFileReader::GetDouble()
 	{
-		return 1.0 * GetLong() / 100000;
+		return 1.0 * GetLong() / 100000.;
 	}
-	double CBinaryFileReader::GetDouble64()
-	{
-		return 1.0 * GetLong64() / 100000;
-	}	// 8 byte
+// 8 byte
 	double CBinaryFileReader::GetDoubleReal()
 	{
         if (m_lPos + (int)DOUBLE_SIZEOF > m_lSize)

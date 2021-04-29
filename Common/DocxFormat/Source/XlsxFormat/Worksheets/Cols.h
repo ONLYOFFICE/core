@@ -93,21 +93,24 @@ namespace OOX
 			{
 				nullable_double ptWidth;
 				nullable_bool bAutoFit;
+				nullable_string sStyleID;
 
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("bestFit"),		m_oBestFit)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("collapsed"),	m_oCollapsed )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("customWidth"),	m_oCustomWidth )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("hidden"),		m_oHidden )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("max"),			m_oMax )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("min"),			m_oMin )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("outlineLevel"),m_oOutlineLevel )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("phonetic"),	m_oPhonetic )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("style"),		m_oStyle )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("width"),		m_oWidth )
+					WritingElement_ReadAttributes_Read_if(oReader, _T("bestFit"), m_oBestFit)
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("collapsed"), m_oCollapsed)
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("customWidth"), m_oCustomWidth)
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("hidden"), m_oHidden)
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("max"), m_oMax)
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("min"), m_oMin)
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("outlineLevel"), m_oOutlineLevel)
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("phonetic"), m_oPhonetic)
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("style"), m_oStyle)
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("width"), m_oWidth)
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:Width"),	ptWidth )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:AutoFitWidth"),	bAutoFit )
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("ss:Width"), ptWidth)
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("ss:AutoFitWidth"), bAutoFit)
+
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("ss:StyleID"), sStyleID)
 				WritingElement_ReadAttributes_End( oReader )
 
 				if (ptWidth.IsInit())

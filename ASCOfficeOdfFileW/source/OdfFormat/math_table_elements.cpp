@@ -63,7 +63,7 @@ void math_mtable::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			for (size_t i = 0; i < content_.size(); i++)
 			{
@@ -93,7 +93,7 @@ void math_mtr::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			for (size_t i = 0; i < content_.size(); i++)
 			{
@@ -123,7 +123,7 @@ void math_mlabeledtr::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			for (size_t i = 0; i < content_.size(); i++)
 			{
@@ -152,7 +152,7 @@ void math_mtd::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			for (size_t i = 0; i < content_.size(); i++)
 			{
@@ -182,7 +182,7 @@ void math_maligngroup::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			for (size_t i = 0; i < content_.size(); i++)
 			{
@@ -213,7 +213,7 @@ void math_malignmark::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			for (size_t i = 0; i < content_.size(); i++)
 			{

@@ -324,4 +324,7 @@ typedef xml::writer::element<wchar_t> xml_element;
 
 #define CP_XML_NODE_SIMPLE() std::wstring NS_NAME = std::wstring(ns) + std::wstring(L":") + std::wstring(name); CP_XML_NODE(NS_NAME)
 
+#define CP_XML_NODE_SIMPLE_NONS() CP_XML_NODE(std::wstring(name))
+
+
 }

@@ -73,7 +73,7 @@ void office_math::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{			
 			semantics_->serialize(CP_XML_STREAM());
 		}
@@ -99,7 +99,7 @@ void math_semantics::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			for (size_t i = 0; i < content_.size(); i++)
 			{
@@ -131,7 +131,7 @@ void math_annotation::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			for (size_t i = 0; i < content_.size(); i++)
 			{
@@ -164,7 +164,7 @@ void math_annotation_xml::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{		
 			for (size_t i = 0; i < content_.size(); i++)
 			{

@@ -60,7 +60,7 @@ void math_msub::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			for (size_t i = 0; i < content_.size(); i++)
 			{
@@ -88,7 +88,7 @@ void math_msup::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			for (size_t i = 0; i < content_.size(); i++)
 			{
@@ -117,7 +117,7 @@ void math_msubsup::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			for (size_t i = 0; i < content_.size(); i++)
 			{
@@ -145,7 +145,7 @@ void math_none::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			for (size_t i = 0; i < content_.size(); i++)
 			{
@@ -174,7 +174,7 @@ void math_mprescripts::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			// pich_qa?
 			/*for (size_t i = 0; i < content_.size(); i++)
@@ -203,7 +203,7 @@ void math_mmultiscripts::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			for (size_t i = 0; i < content_.size(); i++)
 			{
@@ -236,7 +236,7 @@ void math_munderover::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			for (size_t i = 0; i < content_.size(); i++)
 			{
@@ -264,7 +264,7 @@ void math_mover::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			for (size_t i = 0; i < content_.size(); i++)
 			{
@@ -292,7 +292,7 @@ void math_munder::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			for (size_t i = 0; i < content_.size(); i++)
 			{

@@ -64,7 +64,7 @@ void math_mi::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			common_attlist_.serialize(CP_GET_XML_NODE());
 			for (size_t i = 0; i < content_.size(); i++)
@@ -94,7 +94,7 @@ void math_mo::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			common_attlist_.serialize(CP_GET_XML_NODE());
 			for (size_t i = 0; i < content_.size(); i++)
@@ -124,7 +124,7 @@ void math_mn::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			common_attlist_.serialize(CP_GET_XML_NODE());
 			for (size_t i = 0; i < content_.size(); i++)
@@ -154,7 +154,7 @@ void math_ms::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			common_attlist_.serialize(CP_GET_XML_NODE());
 			for (size_t i = 0; i < content_.size(); i++)
@@ -184,7 +184,7 @@ void math_mspace::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			common_attlist_.serialize(CP_GET_XML_NODE());
 			for (size_t i = 0; i < content_.size(); i++)
@@ -214,7 +214,7 @@ void math_mtext::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			common_attlist_.serialize(CP_GET_XML_NODE());
 			for (size_t i = 0; i < content_.size(); i++)
@@ -244,7 +244,7 @@ void math_mglyph::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			common_attlist_.serialize(CP_GET_XML_NODE());
 			for (size_t i = 0; i < content_.size(); i++)

@@ -61,7 +61,7 @@ void math_mstack::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			for (size_t i = 0; i < content_.size(); i++)
 			{
@@ -93,7 +93,7 @@ void math_msrow::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			for (size_t i = 0; i < content_.size(); i++)
 			{
@@ -123,7 +123,7 @@ void math_msline::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			for (size_t i = 0; i < content_.size(); i++)
 			{
@@ -159,7 +159,7 @@ void math_msgroup::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			for (size_t i = 0; i < content_.size(); i++)
 			{
@@ -197,7 +197,7 @@ void math_mlongdiv::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			for (size_t i = 0; i < content_.size(); i++)
 			{
@@ -233,7 +233,7 @@ void math_mscarry::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			for (size_t i = 0; i < content_.size(); i++)
 			{
@@ -270,7 +270,7 @@ void math_mscarries::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
-		CP_XML_NODE_SIMPLE()
+		CP_XML_NODE_SIMPLE_NONS()
 		{
 			for (size_t i = 0; i < content_.size(); i++)
 			{

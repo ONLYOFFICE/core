@@ -1258,7 +1258,7 @@ void BinaryStyleTableWriter::WriteXfs(const OOX::Spreadsheet::CXfs& xfs)
 {
 	int nCurPos = 0;
 	//ApplyAlignment
-	if(false != xfs.m_oApplyAlignment.IsInit())
+	if (false != xfs.m_oApplyAlignment.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::ApplyAlignment);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
@@ -1272,7 +1272,7 @@ void BinaryStyleTableWriter::WriteXfs(const OOX::Spreadsheet::CXfs& xfs)
 		m_oBcw.m_oStream.WriteBOOL(xfs.m_oApplyBorder->ToBool());
 	}
 	//ApplyFill
-	if(false != xfs.m_oApplyFill.IsInit())
+	if (false != xfs.m_oApplyFill.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::ApplyFill);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
@@ -1286,49 +1286,56 @@ void BinaryStyleTableWriter::WriteXfs(const OOX::Spreadsheet::CXfs& xfs)
 		m_oBcw.m_oStream.WriteBOOL(xfs.m_oApplyFont->ToBool());
 	}
 	//ApplyNumberFormat
-	if(false != xfs.m_oApplyNumberFormat.IsInit())
+	if (false != xfs.m_oApplyNumberFormat.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::ApplyNumberFormat);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBOOL(xfs.m_oApplyNumberFormat->ToBool());
 	}
+	//ApplyProtection
+	if (false != xfs.m_oApplyProtection.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::ApplyProtection);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(xfs.m_oApplyProtection->ToBool());
+	}
 	//BorderId
-	if(false != xfs.m_oBorderId.IsInit())
+	if (false != xfs.m_oBorderId.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::BorderId);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 		m_oBcw.m_oStream.WriteLONG(xfs.m_oBorderId->GetValue());
 	}
 	//FillId
-	if(false != xfs.m_oFillId.IsInit())
+	if (false != xfs.m_oFillId.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::FillId);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 		m_oBcw.m_oStream.WriteLONG(xfs.m_oFillId->GetValue());
 	}
 	//FontId
-	if(false != xfs.m_oFontId.IsInit())
+	if (false != xfs.m_oFontId.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::FontId);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 		m_oBcw.m_oStream.WriteLONG(xfs.m_oFontId->GetValue());
 	}
 	//NumFmtId
-	if(false != xfs.m_oNumFmtId.IsInit())
+	if (false != xfs.m_oNumFmtId.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::NumFmtId);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 		m_oBcw.m_oStream.WriteLONG(xfs.m_oNumFmtId->GetValue());
 	}
 	//QuotePrefix
-	if(false != xfs.m_oQuotePrefix.IsInit())
+	if (false != xfs.m_oQuotePrefix.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::QuotePrefix);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBOOL(xfs.m_oQuotePrefix->ToBool());
 	}
 	//PivotButton
-	if(false != xfs.m_oPivotButton.IsInit())
+	if (false != xfs.m_oPivotButton.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::PivotButton);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
@@ -1342,13 +1349,38 @@ void BinaryStyleTableWriter::WriteXfs(const OOX::Spreadsheet::CXfs& xfs)
 		m_oBcw.m_oStream.WriteLONG(xfs.m_oXfId->GetValue());
 	}
 	//Aligment
-	if(false != xfs.m_oAligment.IsInit())
+	if (false != xfs.m_oAligment.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::Aligment);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 		nCurPos = m_oBcw.WriteItemWithLengthStart();
 		WriteAligment(xfs.m_oAligment.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	//Protection 
+	if (false != xfs.m_oProtection.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::Protection);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		nCurPos = m_oBcw.WriteItemWithLengthStart();
+		WriteProtection(xfs.m_oProtection.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+}
+void BinaryStyleTableWriter::WriteProtection(const OOX::Spreadsheet::CProtection& protection)
+{
+	int nCurPos = 0;
+	if (false != protection.m_oHidden.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectionTypes::Hidden);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oHidden->ToBool());
+	}
+	if (false != protection.m_oLocked.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectionTypes::Locked);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oLocked->ToBool());
 	}
 }
 void BinaryStyleTableWriter::WriteAligment(const OOX::Spreadsheet::CAligment& aligment)
@@ -2137,6 +2169,18 @@ void BinaryWorkbookTableWriter::WriteProtection(const OOX::Spreadsheet::CWorkboo
 		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookProtection::SaltValue);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 		m_oBcw.m_oStream.WriteStringW(*protection.m_oWorkbookSaltValue);
+	}
+	if (protection.m_oLockStructure.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookProtection::LockStructure);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oLockStructure->ToBool());
+	}
+	if (protection.m_oLockWindows.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookProtection::LockWindows);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oLockWindows->ToBool());
 	}
 }
 void BinaryWorkbookTableWriter::WriteWorkbookPr(const OOX::Spreadsheet::CWorkbookPr& workbookPr)

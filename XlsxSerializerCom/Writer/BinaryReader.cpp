@@ -1722,6 +1722,11 @@ int BinaryStyleTableReader::ReadXfs(BYTE type, long length, void* poResult)
 		pXfs->m_oApplyNumberFormat.Init();
 		pXfs->m_oApplyNumberFormat->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
+	else if (c_oSerXfsTypes::ApplyProtection == type)
+	{
+		pXfs->m_oApplyProtection.Init();
+		pXfs->m_oApplyProtection->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
+	}
 	else if(c_oSerXfsTypes::BorderId == type)
 	{
 		pXfs->m_oBorderId.Init();
@@ -1757,6 +1762,11 @@ int BinaryStyleTableReader::ReadXfs(BYTE type, long length, void* poResult)
 		pXfs->m_oAligment.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadAligment, pXfs->m_oAligment.GetPointer());
 	}
+	else if (c_oSerXfsTypes::Protection == type)
+	{
+		pXfs->m_oProtection.Init();
+		READ2_DEF_SPREADSHEET(length, res, this->ReadProtection, pXfs->m_oProtection.GetPointer());
+	}
 	else if (c_oSerXfsTypes::XfId == type)
 	{
 		pXfs->m_oXfId.Init();
@@ -1766,6 +1776,24 @@ int BinaryStyleTableReader::ReadXfs(BYTE type, long length, void* poResult)
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 };
+int BinaryStyleTableReader::ReadProtection(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CProtection* pProtection = static_cast<OOX::Spreadsheet::CProtection*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+	if (c_oSerProtectionTypes::Hidden == type)
+	{
+		pProtection->m_oHidden.Init();
+		pProtection->m_oHidden->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
+	}
+	else if (c_oSerProtectionTypes::Locked == type)
+	{
+		pProtection->m_oLocked.Init();
+		pProtection->m_oLocked->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+		return res;
+}
 int BinaryStyleTableReader::ReadAligment(BYTE type, long length, void* poResult)
 {
 	OOX::Spreadsheet::CAligment* pAligment = static_cast<OOX::Spreadsheet::CAligment*>(poResult);

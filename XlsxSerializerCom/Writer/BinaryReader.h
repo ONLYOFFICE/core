@@ -180,6 +180,7 @@ namespace BinXlsxRW
 		int ReadCellXfs(BYTE type, long length, void* poResult);
 		int ReadXfs(BYTE type, long length, void* poResult);
 		int ReadAligment(BYTE type, long length, void* poResult);
+		int ReadProtection(BYTE type, long length, void* poResult);
 		int ReadDxfs(BYTE type, long length, void* poResult);
 		int ReadDxf(BYTE type, long length, void* poResult);
 		int ReadDxfExternal(OOX::Spreadsheet::CDxf* pDxf);

@@ -143,6 +143,11 @@ namespace BinXlsxRW
 		Aligment = 13,
 		Protection = 14
 	};}
+	namespace c_oSerProtectionTypes {enum c_oSerAligmentTypes
+	{
+		Hidden = 0,
+		Locked = 1
+	};}	
 	namespace c_oSerAligmentTypes{enum c_oSerAligmentTypes
 	{
 		Horizontal = 0,
@@ -222,12 +227,13 @@ namespace BinXlsxRW
 		SlicerCache = 20,
 		Protection = 21
 	};}	
-	namespace c_oSerWorkbookProtection{ enum c_oSerWorkbookProtection
-	{
+	namespace c_oSerWorkbookProtection {enum c_oSerWorkbookProtection{
 		AlgorithmName = 0,
 		SpinCount = 1,
 		HashValue = 2,
-		SaltValue = 3
+		SaltValue = 3,
+		LockStructure = 4,
+		LockWindows = 5
 	}; }
 	namespace c_oSerDbPrTypes{enum c_oSerDbPrTypes
 	{

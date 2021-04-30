@@ -177,21 +177,17 @@ namespace OOX
 			{
 				return et_x_Protection;
 			}
-
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("hidden"),      m_oHidden )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("locked"),      m_oLocked )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if ( oReader, _T("hidden"), m_oHidden )
+					WritingElement_ReadAttributes_Read_else_if ( oReader, _T("locked"), m_oLocked )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::COnOff<>>									m_oHidden;
-			nullable<SimpleTypes::COnOff<>>									m_oLocked;
+			nullable<SimpleTypes::COnOff<>> m_oHidden;
+			nullable<SimpleTypes::COnOff<>> m_oLocked;
 		};
 		//нереализован:
 		//<extLst>
